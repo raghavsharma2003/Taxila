@@ -1,0 +1,25 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-child-device-pairing",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "A child's own device pairs by a one-time 6-character code from the parent (10 min, single use, a new one replaces the old) and then holds a child-scoped session: an auth_session row plus a device_session row naming the child (migration 041), cookie tx_child (a d.-prefixed token, never taken for a parent token). Scope is deny-by-default: server/pair/scope.js lists the child routes the router marks, requireGuardian answers a device only on those and requireChild admits only its own child; every other route answers 403 scope.child_device. Unpair deletes the session row, ending the session on the next request. Reverse: when the parent corner is to be reachable from a paired device without the parent's own sign-in, or when route-level scope proves too coarse (a per-route capability instead).",
+   "source": "inbox/r7-platform-6.json"
+  },
+  {
+   "id": "ms-r7-pairing-db-2026-11-08",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "Pairing against the Neon test branch (tests/pair-db.run.mjs, n=4 route tests, 2026-11-08): a code lives 10 min and works once, a replaced code and an expired code answer the same 400 pair.invalid as a wrong one, a device reaches its own child's route (200) and gets 403 on the sibling, the parent corner, the placement note and the pairing admin, and after unpair its next request is 401. Unit: redeem is rate-limited per address (10 / 10 min) and per code (5 / 10 min).",
+   "source": "inbox/r7-platform-6.json"
+  }
+ ],
+ "edges": [
+  { "src": "dc-r7-child-device-pairing", "rel": "measured_by", "dst": "ms-r7-pairing-db-2026-11-08" }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-child-device-pairing`\nThe child no longer borrows the parent's phone: the parent shows a code, the child types it on their own device, and that device can then reach only the child's routes. The parent corner still needs the parent's own sign-in, and unpairing ends the device's session at once.\n",
+  "measurements": "## `ms-r7-pairing-db-2026-11-08`\nFour route tests on the test branch: the code expires and works once, a device stays inside its own child's routes, and unpairing ends its session on the very next request.\n"
+ }
+}

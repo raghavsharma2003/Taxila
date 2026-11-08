@@ -36,7 +36,8 @@ export function AccountStep() {
   const [err, setErr] = useState<string | null>(null);
   const [fieldErr, setFieldErr] = useState<FieldErrors>({});
 
-  useEffect(() => { loadMe().then(setMe, () => setMe(null)); }, []);
+  // r7 device pairing: a paired child device's session is no parent sign-in (the parent signs in here over it)
+  useEffect(() => { loadMe().then((m) => setMe(m?.guardian ? m : null), () => setMe(null)); }, []);
   const after = (m: Me | null, signedInNow = true) => {
     // ?next= is for a returning parent. A brand-new account (signup just now) goes through consent first, never
     // straight into the corner with no consent and no child.
@@ -81,7 +82,7 @@ export function AccountStep() {
     return (
       <StepFrame step="phone" title="You are signed in"
         footer={<Button block onClick={() => after(me, false)}>Continue</Button>}>
-        <p className="t-lead">Signed in as <strong>{me.guardian.email}</strong>.</p>
+        <p className="t-lead">Signed in as <strong>{me.guardian?.email}</strong>.</p>
         <Button variant="quiet" onClick={async () => { await postJson("/api/auth/logout", {}); setMe(await refreshMe()); }}>Not you? Sign out</Button>
       </StepFrame>
     );

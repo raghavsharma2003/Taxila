@@ -2,6 +2,7 @@
 // profile, DELETE MY ACCOUNT), Help and safety, Change PIN (PRODUCT-DESIGN-V2 §6.5.5), and the public helpline page.
 // Every consent-grade act asks for the account password, and its errors sit on the password field in sentences (§4.7).
 // Pages that would hold nothing real yet (Monthly talk, Family, Plan, Saved lessons) are not linked at all (P6).
+import { PairCard } from "../app/PairCard.tsx";
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Art, Button, HoldButton, Icon, PinPad, Speaker, TileGroup } from "../ui/index.ts";
@@ -95,6 +96,8 @@ export function Children() {
                   <Button small variant="secondary" onClick={() => nav(`/parent?c=${k.id}`)}>See {k.first_name}'s week</Button>
                   <Button small variant="quiet" aria-expanded={open === k.id} onClick={() => setOpen(open === k.id ? null : k.id)}>Delete profile</Button>
                 </div>
+                {/* r7 app-child-device-pairing (App): the child's own phone or tablet, by a one-time code */}
+                <PairCard childId={k.id} name={k.first_name} />
                 {open === k.id && <DeleteChild child={k} onDone={(n) => { setGone(n); setOpen(null); reload(); }} />}
               </li>
             ))}

@@ -3,6 +3,7 @@
 // (appended, idempotent). Pure: a synthetic kit topic.
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { lint, blind, apply, wrongArithmetic, kitTopic } from "../scripts/kits/kit-gaps.mjs";
 
 const T = "c8-maths-ch99-t01";
@@ -63,8 +64,37 @@ test("arithmetic lint reads Indian digit grouping (lakh commas) as one number, a
 const PILOT = ["c8-maths-ch05-t01", "c8-maths-ch11-t01", "c8-maths-ch01-t03", "c8-maths-ch03-t01", "c8-maths-ch04-t01",
   "c8-maths-ch05-t02", "c8-maths-ch06-t02", "c8-maths-ch06-t03", "c8-maths-ch09-t02", "c8-maths-ch10-t01"];
 
-test("c8 maths pilot: every skill has a worked example, a ≥ 3-item ladder and a misconception; every item blind-verified", () => {
-  for (const id of PILOT) {
+const C8 = JSON.parse(readFileSync(new URL("../data/kits/c8-maths.json", import.meta.url), "utf8")).topics.map((t) => t.topicId);
+
+test("c8 maths (pilot + chapter batches A-C): every skill has a worked example, a ≥ 3-item ladder and a misconception; every item blind-verified", () => {
+  assert.ok(PILOT.every((id) => C8.includes(id)));
+  for (const id of C8) {
+    const k = kitTopic(id);
+    const ex = new Set([k.workedExample.skillId, ...(k.skillExamples ?? []).map((x) => x.skillId)]);
+    const mis = new Set([...k.items.filter((i) => i.targetsMisconception).map((i) => i.skillId), ...k.misconceptions.map((m) => m.skillId).filter(Boolean)]);
+    for (const s of k.skills) {
+      assert.ok(ex.has(s.id), `${s.id}: worked example`);
+      assert.ok(k.items.filter((i) => i.skillId === s.id).length >= 3, `${s.id}: ladder`);
+      assert.ok(mis.has(s.id), `${s.id}: misconception`);
+    }
+    assert.ok(k.items.every((i) => i.verified?.agrees === true), `${id}: every item verified`);
+  }
+});
+
+test("c8 pilot scope (NCERT chapter only): no Cantor set; the rectangle converse needs bisecting diagonals; ch11 s1 has its own misconception", () => {
+  const fr = kitTopic("c8-maths-ch11-t01"), qd = kitTopic("c8-maths-ch04-t01");
+  assert.doesNotMatch(JSON.stringify(fr), /middle third|cantor/i, "the chapter builds the carpet, gasket and Koch snowflake only");
+  const s3 = qd.skillExamples.find((e) => e.skillId === "c8-maths-ch04-t01-s3");
+  assert.match(s3.problem, /KO = OM and LO = ON/, "the chapter's test: equal diagonals that bisect each other");
+  assert.doesNotMatch(JSON.stringify(s3.steps), /parallelogram/i, "t01 does not lean on t03's parallelogram facts");
+  assert.ok(fr.misconceptions.some((m) => m.skillId === "c8-maths-ch11-t01-s1"), "a misconception about following the rule");
+  assert.equal(fr.items.find((i) => i.id === "c8-maths-ch11-t01-i14").targetsMisconception, "c8-maths-ch11-t01-m-one-piece");
+});
+
+test("c9 maths (Ganita Manjari, batches D-F): every skill has a worked example, a ≥ 3-item ladder and a misconception; every item blind-verified", () => {
+  const C9 = JSON.parse(readFileSync(new URL("../data/kits/c9-maths.json", import.meta.url), "utf8")).topics.map((t) => t.topicId);
+  assert.equal(C9.length, 41);
+  for (const id of C9) {
     const k = kitTopic(id);
     const ex = new Set([k.workedExample.skillId, ...(k.skillExamples ?? []).map((x) => x.skillId)]);
     const mis = new Set([...k.items.filter((i) => i.targetsMisconception).map((i) => i.skillId), ...k.misconceptions.map((m) => m.skillId).filter(Boolean)]);

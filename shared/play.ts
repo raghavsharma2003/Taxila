@@ -48,7 +48,7 @@ export const MODES = {
   nishana: ["place", "compare", "hop"],
   "kyun-lab": ["fair-test"],
   kon: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends"],
-  nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
+  nazariya: ["views", "array", "floor", "powers", "mirror", "tri", "solid"],   // r4-khand; r7 nazariya2: tri (a triangle's cloth as half a rectangle), solid (faces / edges / corners of a solid turned in the hand)
   arena: ["pick"],
   stambh: ["bars", "picto"],
   yantra: ["beam", "circuit", "pendulum"],
@@ -57,9 +57,9 @@ export const MODES = {
   kila: ["multiples", "factors", "lcm", "divisibility"],
   naksha: ["locate", "route", "scale", "shape"],
   ghadi: ["set", "run", "race", "calendar"],
-  darpan: ["mirror", "turn"],
+  darpan: ["mirror", "turn", "tile"],   // r7 tilings2: tile (copies laid round one point until the corner closes)
   feeta: ["measure", "fence", "trip", "compare"],
-  guna: ["field", "pack", "story"],
+  guna: ["field", "pack", "story", "yard"],   // r7 place2: yard (a truck loaded to a named number; comma posts set for lakhs and crores)
   kram: ["grow", "machine", "beats", "nest"],
   hissa: ["fold", "pour", "grid", "story"],
   koshtak: ["tray", "bin"],
@@ -219,6 +219,9 @@ export type NazariyaAct =
   | { kind: "name"; n: number }                         // say how many blocks (array count; the next square / cube number)
   | { kind: "predict"; same: boolean }                  // array "turn": the turned array takes the same number of blocks?
   | { kind: "check" }                                   // commit the build: the law compares it with the goal
+  | { kind: "apex"; x: number; z: number }              // tri "more": the second tent's top corner to grid point (x, z)
+  | { kind: "turn"; dir: "left" | "right" | "over" }    // solid: turn the solid a quarter round, or tip it over
+  | { kind: "mark"; el: "face" | "edge" | "corner"; i: number }   // solid: stamp face i / run along edge i / pin corner i
   | { kind: "undo" };
 // ITEM-ARENA (round 4 G1)
 export type ArenaAct =
@@ -290,7 +293,9 @@ export type DarpanAct =
   | { kind: "line"; deg: number }                        // mirror: lay (or lift) the fold line through the centre at this angle
   | { kind: "turn"; by: number }                         // turn: move the dial by this many degrees (clockwise +)
   | { kind: "mark" }                                     // turn (order): mark (or unmark) the dial's present stop
-  | { kind: "run" }                                      // fold / spin: the law answers
+  | { kind: "lay"; t: number; c?: number }               // tile: lay a copy of tray tile t round the point (its corner c there)
+  | { kind: "lift"; j: number }                          // tile: lift the j-th copy laid
+  | { kind: "run" }                                      // fold / spin / tile the floor: the law answers
   | { kind: "undo" };
 // Feeta (round 7, length and distance): set a measuring instrument (a ribbon's cut on a ruler from 0, a cm tape, a fence
 // roll, a trip meter) or put lengths in order; the law (plain arithmetic in one unit) answers on "run", never on a clock
@@ -310,6 +315,7 @@ export type GunaAct =
   | { kind: "deal"; place: number }                      // pack: one crate of 10^place into every truck (one round)
   | { kind: "count"; n: number }                         // story: the vehicles / packets set out, or the jar's count
   | { kind: "stamp"; i: number; to: number }             // field (check): docket i marked 1 (could be right) or 2 (send back)
+  | { kind: "post"; at: number }                         // yard (commas): a comma post left of place `at` (again = lifted)
   | { kind: "run" }                                      // drive onto the weighbridge / send the trucks / run the story: the law answers
   | { kind: "undo" };
 // Kram (round 7, growing patterns and sequences): tiles laid to grow a figure a stage, a bag filled for a far stage, a step

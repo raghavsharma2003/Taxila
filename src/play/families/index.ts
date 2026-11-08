@@ -11,7 +11,7 @@ import { konLogic } from "./kon/kon.logic.ts";
 import { stambhLogic } from "./stambh/stambh.logic.ts";
 import { beamLogic } from "./yantra/beam.logic.ts";
 import { pendulumLogic } from "./yantra/pendulum.logic.ts";
-import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic } from "./nazariya/index.ts";   // r4-khand
+import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic, triLogic, solidLogic } from "./nazariya/index.ts";   // r4-khand
 import { arenaLogic } from "./arena/arena.logic.ts";
 import { circuitLogic } from "./yantra/circuit.logic.ts";
 import { kaalLogic } from "./kaal/kaal.logic.ts";
@@ -27,6 +27,7 @@ import { parkarLogic } from "./parkar/parkar.logic.ts";
 import { aankdeLogic } from "./aankde/aankde.logic.ts";
 import { paheliLogic } from "./paheli/paheli.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
+import { tileLogic } from "./darpan/tile.logic.ts";   // r7 tilings2
 import { feetaLogic } from "./feeta/feeta.logic.ts";
 
 type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
@@ -58,6 +59,8 @@ export const LOGIC: Record<string, AnyLogic> = {
   "nazariya/floor": asAny(floorLogic),
   "nazariya/powers": asAny(powersLogic),
   "nazariya/mirror": asAny(mirrorLogic),
+  "nazariya/tri": asAny(triLogic),       // r7 nazariya2: the cloth as half a rectangle (c6-maths-ch06-t03)
+  "nazariya/solid": asAny(solidLogic),   // r7 nazariya2: faces, edges and corners of a solid turned in the hand (c4-maths-ch01-t01)
   "arena/pick": asAny(arenaLogic),
   // round 7: Stambh, bar graphs and pictographs
   "stambh/bars": asAny(stambhLogic),
@@ -89,6 +92,7 @@ export const LOGIC: Record<string, AnyLogic> = {
   // round 7: Darpan, symmetry (lines of symmetry laid and folded; the smallest turn and the order of turn symmetry)
   "darpan/mirror": asAny(darpanLogic),
   "darpan/turn": asAny(darpanLogic),
+  "darpan/tile": asAny(tileLogic),   // r7 tilings2: copies round one point until the corner closes (c7-maths-ch14-t02)
   // round 7: Feeta, length and distance (a ruler, a cm tape, a garden fence, a trip meter, routes in order); never timed
   "feeta/measure": asAny(feetaLogic),
   "feeta/fence": asAny(feetaLogic),
@@ -99,6 +103,7 @@ export const LOGIC: Record<string, AnyLogic> = {
   "guna/field": asAny(gunaLogic),
   "guna/pack": asAny(gunaLogic),
   "guna/story": asAny(gunaLogic),
+  "guna/yard": asAny(gunaLogic),
   // round 7: Kram, growing patterns and sequences (a figure grown a stage, a bag for a far stage, step / rule machines,
   // rhythms of short and long beats, L-pieces and staircases nested into a square); never timed
   "kram/grow": asAny(kramLogic),

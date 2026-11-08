@@ -9,13 +9,14 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { gunaLogic, GUNA_MAL, malSetup, racksOf, RACKS } from "../src/play/families/guna/guna.logic.ts";
+import { gunaLogic, GUNA_MAL, malSetup, racksOf, RACKS, docketText } from "../src/play/families/guna/guna.logic.ts";
 import { coverage, entryKey, levelsFor, currentLevel, seedOf, hasPlay, entryFor } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { hiddenOf } from "../server/play/react.js";
 import { playActOf } from "../server/director/play-verbs.js";
 import { GAME_WEIGHT, FAMILIES, MODES, FAMILY_ARTS, sanitizeActs } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const ALL = Object.fromEntries(GUNA_MAL.map((m) => [m, `k-${m}`]));
@@ -43,11 +44,16 @@ const CASES = [
   ["pack", "each", { cap: [2, 6], q: [2, 9] }],
   ["story", "full", { cap: [3, 9], q: [2, 9] }],
   ["story", "all", { cap: [3, 9], q: [2, 9] }],
+  // r7 place2: place value on the yard's truck (class 4 numbers up to 9999; class 7 lakhs and crores; Indian commas)
+  ["yard", "build", { forms: ["named", "expanded", "numeral"] }],
+  ["yard", "build", { big: true, forms: ["named", "intl"] }],
+  ["yard", "commas", {}],
 ];
 const EXPECT = { "2x1": ["ones-only", "no-carry", "forget-carry"], "2x10,2xT": ["adds-ten", "no-zero", "forget-carry"], "3x1": [], "2x2,2xT": ["no-zero", "diagonal", "forget-carry"],
   "RxR,2xH": ["zero-count"], round: ["zero-count"], share: ["digitwise", "short"], all: ["drop"], full: ["up", "short"], left: ["quotient"],
-  BIG: ["zero-count", "zero-less", "zero-more"], roundbig: ["zero-count", "zero-less", "zero-more"], check: ["trusts", "must-equal"], each: ["short"] };
-const expectOf = (goal, g) => EXPECT[g.shapes ? g.shapes.join(",") : g.big ? "roundbig" : goal];
+  BIG: ["zero-count", "zero-less", "zero-more"], roundbig: ["zero-count", "zero-less", "zero-more"], check: ["trusts", "must-equal"], each: ["short"],
+  build: ["concat", "drop-zero"], buildbig: ["drop-zero", "crore-million"], commas: ["intl-commas"] };
+const expectOf = (goal, g) => EXPECT[g.shapes ? g.shapes.join(",") : g.big ? `${goal === "build" ? "build" : "round"}big` : goal];
 const levelsOf = (mode, goal, grammar, seeds = [1, 7, 42, 99]) => {
   const out = [];
   for (const seed of seeds) for (const fade of [1, 2, 3]) for (const c of gunaLogic.generate(req(mode, goal, seed, { grammar, fade }))) out.push(c);
@@ -63,11 +69,23 @@ const ORDERS = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]
 const claimsOf = (p) => ORDERS[p.ctx].map((i) => [p.a * p.b, p.a * p.b * 10, Math.floor((p.a * p.b) / 10)][i]);
 const roundDown = (x) => { const u = 10 ** (String(x).length - 1); return Math.floor(x / u) * u; };
 const roundUp = (x) => { const u = 10 ** (String(x).length - 1); return Math.ceil(x / u) * u; };
+/** build: the number a docket names, read by plain arithmetic from the words the child is shown (crore, lakh, thousand,
+ *  hundred, million; an expanded form's terms added) */
+const UNIT = { crore: 1e7, lakh: 1e5, thousand: 1e3, hundred: 100, million: 1e6 };
+function readDocket(text) {
+  if (text.includes("+")) return text.split("+").reduce((s, t) => s + Number(t.trim()), 0);
+  let total = 0, pending = 0;
+  for (const tok of text.split(" ")) { if (UNIT[tok]) { total += pending * UNIT[tok]; pending = 0; } else pending = Number(tok); }
+  return total + pending;
+}
+/** commas: the number written with commas left of the given places */
+const written = (n, posts) => [...String(n)].map((ch, i, all) => (i > 0 && posts.includes(all.length - i) ? `,${ch}` : ch)).join("");
 /** the checker's own copy of the set-up, fed every act the law accepted (undo pops its own stack) */
 function checker(p) {
   const places = (x) => String(x).split("").reverse().map(Number);
-  const racks = p.goal === "round" || p.goal === "check" ? String(nearestRound(p.a)).length + String(nearestRound(p.b)).length : String(p.a).length + String(p.b).length;
-  const st = { crates: new Array(racks).fill(0), ra: 0, rb: 0, dock: p.goal === "share" ? places(p.a) : p.goal === "each" ? [p.a] : [], given: 0, n: 0, marks: [0, 0, 0] }, stack = [];
+  const racks = p.goal === "build" || p.goal === "commas" ? p.b
+    : p.goal === "round" || p.goal === "check" ? String(nearestRound(p.a)).length + String(nearestRound(p.b)).length : String(p.a).length + String(p.b).length;
+  const st = { crates: p.goal === "commas" ? places(p.a) : new Array(racks).fill(0), ra: 0, rb: 0, dock: p.goal === "share" ? places(p.a) : p.goal === "each" ? [p.a] : [], given: 0, n: 0, marks: [0, 0, 0], posts: [] }, stack = [];
   return {
     st,
     feed(a) {
@@ -80,12 +98,15 @@ function checker(p) {
       if (a.kind === "deal") { st.dock[a.place] -= p.b; st.given += 10 ** a.place; }
       if (a.kind === "count") st.n = a.n;
       if (a.kind === "stamp") st.marks[a.i] = a.to;
+      if (a.kind === "post") st.posts = st.posts.includes(a.at) ? st.posts.filter((k) => k !== a.at) : [...st.posts, a.at];
     },
   };
 }
 /** does this set-up meet the task? read from the params' plain meaning */
 function verdict(p, st) {
   if (p.goal === "area") return crateValue(st.crates) === p.a * p.b;
+  if (p.goal === "build") return crateValue(st.crates) === readDocket(docketText(p));
+  if (p.goal === "commas") return written(p.a, st.posts) === p.a.toLocaleString("en-IN");
   if (p.goal === "round") return st.ra === nearestRound(p.a) && st.rb === nearestRound(p.b) && crateValue(st.crates) === nearestRound(p.a) * nearestRound(p.b);
   if (p.goal === "check") {
     // reasonable = inside the band the rounded sides allow (both down … both up); the estimate built first
@@ -101,7 +122,7 @@ const replayCheck = (level, acts) => { const k = checker(level.params); let s = 
 
 test("guna: the family is registered (FAMILIES, MODES, arts, logic for every mode, a verb that never chooses)", () => {
   assert.ok(FAMILIES.includes("guna"));
-  assert.deepEqual([...MODES.guna], ["field", "pack", "story"]);
+  assert.deepEqual([...MODES.guna], ["field", "pack", "story", "yard"]);
   assert.ok(FAMILY_ARTS.guna.length === 4);
   for (const m of MODES.guna) {
     assert.equal(LOGIC[`guna/${m}`], gunaLogic);
@@ -308,7 +329,7 @@ for (const [mode, goal, grammar] of CASES) {
     const times = [];
     for (let gi = 0; gi < 40; gi++) {
       let best = Infinity, cands = [];
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); cands = gunaLogic.generate(req(mode, goal, 100 + gi, { grammar, fade: 1 + (gi % 3) })); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); cands = gunaLogic.generate(req(mode, goal, 100 + gi, { grammar, fade: 1 + (gi % 3) })); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       for (const c of cands.slice(0, 4)) {
         const level = gunaLogic.validate(c.level), p = level.params, sol = gunaLogic.solve(level);
@@ -319,7 +340,9 @@ for (const [mode, goal, grammar] of CASES) {
           const r = rnd(), x = rnd();
           const a = pursue && r < 0.7 && k < sol.length ? sol[k++]
             : r < 0.12 ? { kind: "cut", side: x < 0.6 ? 0 : 1, at: 1 + Math.floor(rnd() * 120), ...(rnd() < 0.2 ? { correct: true } : {}) }
-            : r < 0.32 ? (p.goal === "check" && rnd() < 0.3 ? { kind: "stamp", i: Math.floor(x * 3), to: rnd() < 0.5 ? 1 : 2 } : { kind: "crate", place: Math.floor(x * 7), by: rnd() < 0.7 ? 1 : -1 })
+            : r < 0.32 ? (p.goal === "check" && rnd() < 0.3 ? { kind: "stamp", i: Math.floor(x * 3), to: rnd() < 0.5 ? 1 : 2 }
+              : p.goal === "commas" && rnd() < 0.8 ? { kind: "post", at: Math.floor(x * 9) }
+              : { kind: "crate", place: Math.floor(x * (p.goal === "build" ? 9 : 7)), by: rnd() < 0.7 ? 1 : -1 })
             : r < 0.38 ? { kind: "round", side: x < 0.5 ? 0 : 1, to: 10 * Math.floor(rnd() * 60) }
             : r < 0.5 ? { kind: "deal", place: Math.floor(x * 3) } : r < 0.58 ? { kind: "open", place: Math.floor(x * 3) }
             : r < 0.7 ? { kind: "count", n: Math.max(0, w + Math.floor((x - 0.5) * 6)) }
@@ -352,7 +375,7 @@ test("guna: every word the view shows exists in all three languages; vakya's wor
   const used = [...view.matchAll(/W\("(guna\.[a-zA-Z0-9.]+)"/g)].map((m) => m[1]);
   const extra = ["area", "round", "share", ...[0, 1, 2].flatMap((i) => [`all${i}`, `full${i}`, `left${i}`])].map((g) => `guna.goal.${g}`)
     .concat(["child", "book", "sweet", "rice", "marble"].map((x) => `guna.item.${x}`), ["bus", "auto", "box", "packet", "sack", "bag"].map((x) => `guna.per.${x}`),
-      ["big", "check", "each0", "each1", "each2"].map((g) => `guna.goal.${g}`));
+      ["big", "check", "each0", "each1", "each2", "build", "commas"].map((g) => `guna.goal.${g}`), ["crore", "lakh", "thousand", "hundred", "million"].map((u) => `guna.unit.${u}`));
   for (const k of [...used, ...extra]) for (const l of ["hinglish", "en", "hi"]) assert.ok(words[k]?.[l], `${k} ${l}`);
   const logic = readFileSync(`${ROOT}src/play/families/guna/guna.logic.ts`, "utf8").replace(/\/\/.*$/gm, "");
   assert.doesNotMatch(logic, /Math\.random|Date\.now|performance\.now|setTimeout|setInterval/);
@@ -365,21 +388,23 @@ const GE = () => coverage().entries.filter((e) => e.family === "guna");
 const sessionOf = (entry, over = {}) => ({ childId: "c1", key: entryKey(entry), skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
   mis: {}, pL: undefined, n: 0, seed: seedOf("c1", entryKey(entry), 0), door: "garam", recent: [], hist: null, ...over });
 
-test("guna coverage: the seventeen authored entries, mapped to real kit misconceptions; the nine multiply / divide topics are guna's now", () => {
+test("guna coverage: the twenty authored entries, mapped to real kit misconceptions; the nine multiply / divide topics and the two place-value topics are guna's now", () => {
   assert.deepEqual(GE().map((e) => `${e.topicId}|${e.mode}|${e.goal}`), [
     "c4-maths-ch13-t01|field|area", "c4-maths-ch13-t02|pack|share", "c4-maths-ch13-t02|story|all", "c5-maths-ch06-t01|field|area", "c5-maths-ch06-t02|field|area",
     "c5-maths-ch06-t02|field|round", "c5-maths-ch09-t01|pack|share", "c5-maths-ch09-t01|story|full", "c5-maths-ch09-t02|story|all", "c5-maths-ch09-t02|story|full", "c5-maths-ch09-t02|story|left",
-    "c7-maths-ch01-t03|field|area", "c7-maths-ch01-t03|field|round", "c5-maths-ch04-t02|field|check", "c4-maths-ch09-t02|pack|each", "c4-maths-ch09-t02|story|full", "c4-maths-ch09-t02|story|all"]);
+    "c7-maths-ch01-t03|field|area", "c7-maths-ch01-t03|field|round", "c5-maths-ch04-t02|field|check", "c4-maths-ch09-t02|pack|each", "c4-maths-ch09-t02|story|full", "c4-maths-ch09-t02|story|all",
+    "c4-maths-ch04-t01|yard|build", "c7-maths-ch01-t01|yard|build", "c7-maths-ch01-t01|yard|commas"]);
   const kits = ["c4", "c5", "c7"].map((k) => readFileSync(`${ROOT}data/kits/${k}-maths.json`, "utf8")).join("");
   const ids = new Set([...kits.matchAll(/"(c[457]-maths-ch\d+-t\d+-m-[a-z0-9-]+)"/g)].map((m) => m[1]));
   for (const e of GE()) { assert.ok(Object.keys(e.misMap).length >= 1, e.topicId); for (const kit of Object.values(e.misMap)) { assert.ok(kit.startsWith(`${e.topicId}-m-`), kit); assert.ok(ids.has(kit), `${kit} is a verified kit id`); } }
   for (const sk of ["c4-maths-ch13-t01-s1", "c4-maths-ch13-t01-s2", "c4-maths-ch13-t01-s3", "c4-maths-ch13-t02-s1", "c4-maths-ch13-t02-s3", "c5-maths-ch06-t01-s1", "c5-maths-ch06-t01-s2",
     "c5-maths-ch06-t02-s1", "c5-maths-ch06-t02-s3", "c5-maths-ch09-t01-s1", "c5-maths-ch09-t01-s2", "c5-maths-ch09-t01-s3", "c5-maths-ch09-t02-s1", "c5-maths-ch09-t02-s2", "c5-maths-ch09-t02-s3",
-    "c7-maths-ch01-t03-s1", "c7-maths-ch01-t03-s2", "c7-maths-ch01-t03-s3", "c5-maths-ch04-t02-s1", "c4-maths-ch09-t02-s1", "c4-maths-ch09-t02-s2", "c4-maths-ch09-t02-s3"]) {
+    "c7-maths-ch01-t03-s1", "c7-maths-ch01-t03-s2", "c7-maths-ch01-t03-s3", "c5-maths-ch04-t02-s1", "c4-maths-ch09-t02-s1", "c4-maths-ch09-t02-s2", "c4-maths-ch09-t02-s3",
+    "c4-maths-ch04-t01-s1", "c4-maths-ch04-t01-s2", "c4-maths-ch04-t01-s3", "c7-maths-ch01-t01-s1", "c7-maths-ch01-t01-s2"]) {
     assert.ok(hasPlay(sk), sk); assert.equal(entryFor({ skillId: sk }).family, "guna", sk);
   }
   // no honest mechanic: these stay with the net
-  for (const sk of ["c4-maths-ch13-t02-s2", "c5-maths-ch06-t01-s3", "c5-maths-ch06-t02-s2", "c5-maths-ch04-t02-s2", "c5-maths-ch04-t02-s3"]) assert.notEqual(entryFor({ skillId: sk })?.family, "guna", sk);
+  for (const sk of ["c4-maths-ch13-t02-s2", "c5-maths-ch06-t01-s3", "c5-maths-ch06-t02-s2", "c5-maths-ch04-t02-s2", "c5-maths-ch04-t02-s3", "c7-maths-ch01-t01-s3"]) assert.notEqual(entryFor({ skillId: sk })?.family, "guna", sk);
 });
 
 for (const e of GE()) for (const fade of [1, 2, 3]) {
@@ -437,4 +462,103 @@ test("guna: the rack limit is exactly what c7-maths-ch01-t03 needs; earlier entr
     }
   }
   assert.equal(most, RACKS, "c7-maths-ch01-t03 needs every rack the limit allows");
+});
+
+// r7 place2: the yard (place value). Beliefs by their written signatures; the law's rules; tampered params; the existing
+// levels unchanged (the pins above, plus the levelIds the play server served before the change)
+test("guna/yard: mal-rule signatures are the beliefs (the parts written in full one after another, the counts side by side without the empty places, a crore for a million, a comma after every three places)", () => {
+  const cat = (xs) => Number(xs.join(""));
+  for (const c of [...levelsOf("yard", "build", { forms: ["named", "expanded", "numeral"] }), ...levelsOf("yard", "build", { big: true, forms: ["named", "intl"] })]) {
+    const p = gunaLogic.validate(c.level).params, text = docketText(p);
+    const named = text.includes("+") ? text.split(" + ").map((t) => [Number(t), 1]) : [];
+    // a numeral is read as it is spoken: its thousands, its hundreds, the rest (9024 → 9 thousand 24)
+    if (/^\d+$/.test(text)) for (const [n, u] of [[Math.floor(p.a / 1000), 1000], [Math.floor(p.a / 100) % 10, 100], [p.a % 100, 1]]) { if (n) named.push([n, u]); }
+    else if (!text.includes("+")) { const toks = text.split(" "); for (let i = 0; i < toks.length; i++) { const u = UNIT[toks[i + 1]]; named.push([Number(toks[i]), u ?? 1]); if (u) i++; } }
+    const cc = malSetup(p, "concat");
+    if (cc) assert.equal(cc.load, cat(named.map(([n, u]) => n * u)), `${text}: concat`);
+    const dz = malSetup(p, "drop-zero");
+    if (dz) {
+      // the counts side by side; an expanded term keeps no zeros but the last one's
+      const last = named[named.length - 1], counts = text.includes("+") ? named.map(([n]) => String(n)[0]) : named.map(([n]) => n);
+      const tailZeros = text.includes("+") ? String(last[0]).length - 1 : String(last[1]).length - 1;
+      assert.equal(dz.load, Number(counts.join("") + "0".repeat(tailZeros)), `${text}: drop-zero`);
+      assert.ok(dz.load < p.a, "dropping an empty place makes the number smaller");
+    }
+    const cm = malSetup(p, "crore-million");
+    if (cm) {
+      const intl = text.includes("million");
+      assert.equal(cm.load, named.reduce((s, [n, u]) => s + n * (u === (intl ? 1e6 : 1e7) ? (intl ? 1e7 : 1e6) : u), 0), `${text}: crore-million`);
+    }
+  }
+  for (const c of levelsOf("yard", "commas", {})) {
+    const p = gunaLogic.validate(c.level).params, m = malSetup(p, "intl-commas");
+    assert.equal(written(p.a, m.posts), p.a.toLocaleString("en-US"), "a comma after every three places");
+    assert.notEqual(written(p.a, m.posts), p.a.toLocaleString("en-IN"));
+  }
+  // the kit's own examples
+  const lv = (a, b, ctx) => ({ goal: "build", face: 1, a, b, ctx });
+  assert.equal(malSetup(lv(4050, 6, 0), "concat").load, 400050); assert.equal(malSetup(lv(4050, 6, 0), "drop-zero").load, 450);
+  assert.equal(malSetup(lv(3006, 6, 2), "drop-zero").load, 36); assert.equal(malSetup(lv(30500000 + 9, 8, 0), "drop-zero").load, 359);
+  assert.equal(malSetup(lv(3004000, 8, 0), "drop-zero").load, 304000, "thirty lakh four thousand → 3,04,000");
+  assert.equal(malSetup(lv(7005000, 8, 3), "crore-million").load, 70005000, "7 million read as 7 crore");
+});
+
+test("guna/yard: the law's rules (racks hold nine; the truck must weigh the docket; a post toggles; run needs a load or a post; hidden values)", () => {
+  const b4 = gunaLogic.validate(gunaLogic.generate(req("yard", "build", 3, { grammar: { forms: ["named"] } }))[0].level), P = b4.params;
+  let s = gunaLogic.init(b4);
+  const ap = (lv, a) => { const r = gunaLogic.apply(lv, s, a, 1); s = r.state; return r.refused; };
+  assert.equal(s.crates.length, 6, "a class 4 truck has six racks");
+  assert.equal(ap(b4, { kind: "run" }), "load_first");
+  for (let i = 0; i < 9; i++) ap(b4, { kind: "crate", place: 0, by: 1 });
+  assert.equal(ap(b4, { kind: "crate", place: 0, by: 1 }), "rack_full", "fifty is never fifty crates of one");
+  for (const bad of [{ kind: "post", at: 3 }, { kind: "count", n: 3 }, { kind: "deal", place: 0 }, { kind: "cut", side: 0, at: 1 }, { kind: "round", side: 0, to: 10 }]) assert.ok(ap(b4, bad), JSON.stringify(bad));
+  assert.equal(ap(b4, { kind: "crate", place: 6, by: 1 }), "bad_crate");
+  assert.deepEqual(hiddenOf(b4), [String(P.a), P.a.toLocaleString("en-IN")], "the numeral is never said before the truck is loaded");
+  s = gunaLogic.init(b4);
+  for (const a of gunaLogic.solve(b4)) assert.equal(ap(b4, a), undefined);
+  assert.ok(s.done && crateValue(s.crates) === P.a);
+  const num = gunaLogic.validate(gunaLogic.generate(req("yard", "build", 3, { grammar: { forms: ["numeral"] } }))[0].level);
+  assert.deepEqual(hiddenOf(num), [], "a numeral docket shows the number itself");
+
+  const cm = gunaLogic.validate(gunaLogic.generate(req("yard", "commas", 4))[0].level), C = cm.params;
+  s = gunaLogic.init(cm);
+  assert.equal(crateValue(s.crates), C.a, "the number stands on the truck");
+  assert.equal(ap(cm, { kind: "run" }), "post_first");
+  assert.equal(ap(cm, { kind: "crate", place: 0, by: 1 }), "no_truck", "the crates are given");
+  for (const bad of [{ kind: "post", at: 0 }, { kind: "post", at: C.b }, { kind: "post", at: 1.5 }]) assert.equal(ap(cm, bad), "bad_post");
+  ap(cm, { kind: "post", at: 4 }); ap(cm, { kind: "post", at: 4 }); assert.deepEqual(s.posts, [], "a post set again is lifted");
+  ap(cm, { kind: "post", at: 3 }); ap(cm, { kind: "post", at: 6 });
+  assert.equal(ap(cm, { kind: "run" }), "missed");
+  assert.equal(ap(cm, { kind: "run" }), "change_first");
+  ap(cm, { kind: "post", at: 6 }); for (const k of [5, 7].filter((k) => k < C.b)) ap(cm, { kind: "post", at: k });
+  assert.equal(ap(cm, { kind: "run" }), undefined); assert.ok(s.done);
+  assert.deepEqual(hiddenOf(cm), [C.a.toLocaleString("en-IN")]);
+});
+
+test("guna/yard: tampered params are refused", () => {
+  const g = (goal, grammar = {}) => gunaLogic.generate(req("yard", goal, 6, { grammar }))[0].level;
+  const small = g("build", { forms: ["named"] }), big = g("build", { big: true, forms: ["named"] }), intl = g("build", { big: true, forms: ["intl"] }), cm = g("commas");
+  for (const lv of [small, big, intl, cm]) assert.ok(gunaLogic.validate(lv), lv.levelId);
+  const bad = (lv, patch) => ({ ...lv, params: { ...lv.params, ...patch } });
+  for (const [lv, patch] of [
+    [small, { a: 999 }], [small, { a: 10000 }], [small, { b: 7 }], [small, { ctx: 3 }], [small, { ctx: 4 }], [small, { ctx: -1 }], [small, { ctx: 1.5 }],
+    [big, { a: 99999 }], [big, { a: 1e8 }], [big, { ctx: 1 }], [big, { ctx: 2 }], [intl, { a: 12e6 }], [intl, { a: 999999 }],
+    [cm, { b: cm.params.b + 1 }], [cm, { a: 99999, b: 5 }], [cm, { ctx: 1 }], [cm, { a: 1e8, b: 9 }],
+  ]) assert.equal(gunaLogic.validate(bad(lv, patch)), null, `${lv.params.goal} ${JSON.stringify(patch)}`);
+  assert.equal(gunaLogic.validate({ ...small, mode: "field" }), null, "a goal belongs to its mode");
+  assert.equal(gunaLogic.validate({ ...gunaLogic.generate(req("field", "area", 6, { grammar: { shapes: ["2x1"] } }))[0].level, mode: "yard" }), null);
+});
+
+// r7 place2: the play server served these levelIds for the existing guna entries before the yard was added (three children
+// each, fade 1); the generator over every existing rule, 30 seeds, three fades and three classes hashed the same before
+// and after (110,160 candidates)
+test("guna: existing entries serve the same levels as before r7 place2 (pinned served levelIds)", () => {
+  const PIN = ["guna-area:14:7:0-60776597", "guna-area:14:4:0-806289595", "guna-area:13:5:0-276677232", "guna-share:72:2:0-782800392", "guna-share:68:4:0-731197390",
+    "guna-share:42:3:0-894555175", "guna-all:71:5:0-610421553", "guna-all:55:4:0-741123375", "guna-all:88:6:2-829095193", "guna-area:24:90:0-723919729", "guna-area:16:50:0-75252229", "guna-area:28:80:0-824220644"];
+  const ids = [];
+  for (const e of GE().filter((x) => x.mode !== "yard")) for (let k = 0; k < 3; k++) {
+    const key = entryKey(e);
+    ids.push(currentLevel({ ...sessionOf(e), childId: `pin${k}`, seed: seedOf(`pin${k}`, key, 0) }, e)?.levelId);
+  }
+  assert.deepEqual(ids.slice(0, PIN.length), PIN);
 });

@@ -14,6 +14,7 @@ import { hiddenOf } from "../server/play/react.js";
 import { playActOf } from "../server/director/play-verbs.js";
 import { GAME_WEIGHT, FAMILIES, MODES, FAMILY_ARTS } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const env = (acts) => acts.map((act, i) => ({ seq: i + 1, t: i * 400, via: "touch", act }));
@@ -73,10 +74,10 @@ function oracle(p, su) {
 
 test("darpan: the family is registered (FAMILIES, MODES, arts, logic for every mode, a verb that never chooses)", () => {
   assert.ok(FAMILIES.includes("darpan"));
-  assert.deepEqual([...MODES.darpan], ["mirror", "turn"]);
+  assert.deepEqual([...MODES.darpan], ["mirror", "turn", "tile"]);   // r7 tilings2: tile has its own logic (tests/r7-games-darpan-tile.test.mjs)
   assert.ok(FAMILY_ARTS.darpan.length === 4);
   for (const m of MODES.darpan) {
-    assert.equal(LOGIC[`darpan/${m}`], darpanLogic);
+    if (m !== "tile") assert.equal(LOGIC[`darpan/${m}`], darpanLogic);
     const v = playActOf("darpan", m);
     assert.ok(v && v.hi && v.en && v.act !== "choose", m);
   }
@@ -286,7 +287,7 @@ for (const [mode, goal, grammar, mals] of CASES) {
     const times = [];
     for (let gi = 0; gi < 40; gi++) {
       let best = Infinity, cands = [];
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); cands = darpanLogic.generate(req(mode, goal, 100 + gi, { grammar, misMap: mapOf(mals) })); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); cands = darpanLogic.generate(req(mode, goal, 100 + gi, { grammar, misMap: mapOf(mals) })); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       for (const c of cands.slice(0, 3)) {
         const level = darpanLogic.validate(c.level), p = level.params, sol = darpanLogic.solve(level);
@@ -336,7 +337,7 @@ test("darpan/mirror: every set of fold lines on many figures, the law ⇔ the or
 
 // the play server: every darpan coverage entry serves a proven level at every fade (levelsFor and currentLevel); the
 // solver's acts grade solved through the server; a claim never solves; a mal-rule the level discriminates folds its kit id
-const DE = () => coverage().entries.filter((e) => e.family === "darpan");
+const DE = () => coverage().entries.filter((e) => e.family === "darpan" && e.mode !== "tile");   // r7 tilings2: tile entries are tested in r7-games-darpan-tile
 const sessionOf = (entry, over = {}) => ({ childId: "c1", key: entryKey(entry), skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
   mis: {}, pL: undefined, n: 0, seed: seedOf("c1", entryKey(entry), 0), door: "garam", recent: [], hist: null, ...over });
 
@@ -363,6 +364,26 @@ test("darpan: engine words sit before vakya's (vakya's stay last), every key the
   const logic = readFileSync(`${ROOT}src/play/families/darpan/darpan.logic.ts`, "utf8").replace(/\/\/.*$/gm, "");
   assert.doesNotMatch(logic, /Math\.random|Date\.now|performance\.now|setTimeout/);
   assert.doesNotMatch(view.replace(/\/\/.*$/gm, ""), /Math\.random|Date\.now|#[0-9a-fA-F]{3,8}\b|rgba?\(/);
+});
+
+// r7 tilings2: the mirror and turn worlds are unchanged by the tile mode: the generator's output over every rule, seeds
+// 1-30 and fades 1-3 hashes the same as before it, and the levels served to two children per entry are the same levels
+test("darpan: the mirror and turn levels are pinned (generator hash and served levelIds, before the tile mode)", async () => {
+  const { createHash } = await import("node:crypto");
+  const { RULES } = await import("../server/play/tools/rules/darpan.mjs");
+  const h = createHash("sha256"); let n = 0;
+  for (const r of RULES.filter((x) => x.mode !== "tile")) for (let seed = 1; seed <= 30; seed++) for (const fade of [1, 2, 3]) {
+    const misMap = Object.fromEntries(Object.entries(r.misMap).map(([k, v]) => [k, `${r.topicId}-m-${v}`]));
+    for (const c of darpanLogic.generate({ family: "darpan", mode: r.mode, goal: r.goal, topicId: r.topicId, skillId: "x", classLevel: 5, fade, mis: {}, misMap, grammar: r.grammar, recent: [], seed })) { h.update(JSON.stringify([c.signature, c.difficulty, c.level])); n++; }
+  }
+  assert.equal(n, 10800);
+  assert.equal(h.digest("hex").slice(0, 16), "bcbf413f2eb9d6c7");
+  const ids = [];
+  for (const e of DE()) for (const child of ["c1", "c2"]) ids.push(currentLevel(sessionOf(e, { childId: child, seed: seedOf(child, entryKey(e), 0) }), e).levelId);
+  assert.deepEqual(ids, ["darpan-lines:square:4,0,0:two:0-330364004", "darpan-lines:square:4,0,0:two:0-128133950", "darpan-smallest:parallelogram:2:petal::2,2,2:45:15-600399233",
+    "darpan-smallest:parallelogram:2:petal::2,3,1:15:15-174554476", "darpan-order:parallelogram:2:petal::2,1,2:45:15-631996513", "darpan-order:parallelogram:2:petal::2,2,2:90:15-430827502",
+    "darpan-lines:rhombus:2,6,0:arrow:135-188056240", "darpan-lines:rhombus:5,3,0:arrow:45-787547670", "darpan-smallest:parallelogram:2:petal::4,3,1:15:1-694632511",
+    "darpan-smallest:parallelogram:2:petal::3,1,2:15:1-859930138", "darpan-order:parallelogram:2:petal::2,2,1:45:1-656852485", "darpan-order:parallelogram:2:petal::2,1,1:0:1-493829646"]);
 });
 
 for (const e of DE()) for (const fade of [1, 2, 3]) {
