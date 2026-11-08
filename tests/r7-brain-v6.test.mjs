@@ -48,7 +48,9 @@ describe("R1: segments from the assembled parts", () => {
     const none = boardPartsOf(move, line, null, { prev: v, bridge: br });
     assert.deepEqual(none.segments.map((x) => [x.atChar, x.boardRef.params.w]), [[line.indexOf("Rectangle"), 4]]);
     const own = boardPartsOf({ ...move, bridgeBeat: { ...ref("bridge", 3), kind: "bridge" } }, line, null, { prev: v, bridge: br });
-    assert.deepEqual(own.segments.map((x) => [x.atChar, x.boardRef.params.w]), [[line.indexOf("Ab tak"), 3], [line.indexOf("Rectangle"), 4]]);
+    // (director10: a bare 3-word verdict is no first page of its own; it is said over the bridge's board)
+    assert.deepEqual(own.boardRef, B(3));
+    assert.deepEqual(own.segments.map((x) => [x.atChar, x.boardRef.params.w]), [[line.indexOf("Rectangle"), 4]]);
   });
 
   test("without parts (Studio re-placing a line it replaced) the closure sentences place it as before", () => {
@@ -252,12 +254,15 @@ describe("R4 in the lesson (c6 skill-1 v2 fixture)", () => {
   };
   const say = (L, draft, extra = {}) => { replyDeps.chat = async () => ({ text: draft }); return textReply({ instructions: "x", state: { ...L.r.state, mode: "text", ...(extra.state ?? {}) }, kit: K, childText: extra.childText ?? "haan", verdict: extra.verdict, history: [], ui: L.r.ui, module: null }); };
 
-  test("an aside parked on one turn is returned to on the very next, with a real line", () => {
+  test("an aside parked while a card is live is returned to at the promised point — once that card is resolved — with a real line (v6.2 H2)", () => {
     const L = run();
     for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    const card = L.r.state.activeItemId;
     L.t("aapko virat pasand hai?", { ...cls("no_evidence"), request: { type: "answer_q" } });
     assert.ok((L.r.state.later ?? []).some((e) => /virat/i.test(e.topic) && !e.servedAt), JSON.stringify(L.r.state.later));
     L.t("haan");
+    if (L.r.state.activeItemId === card) assert.equal(L.r.move.returned, undefined, "never while the card it was parked on is live");
+    for (let i = 0; i < 4 && !L.r.move.returned; i++) L.t(String(L.r.state.scriptCard?.answer ?? "haan"), cls("correct"));
     assert.match(L.r.move.returned?.topic ?? "", /virat/i, JSON.stringify(L.r.move));
     assert.match(L.r.move.returned?.line ?? "", /Virat Kohli/);
   });

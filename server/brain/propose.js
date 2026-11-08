@@ -161,7 +161,7 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
       // boardRef/scriptBeat (as before: the beat's board when nothing is closed and the card shares it); each later part is a
       // segment from its character offset in the FINAL line (a closure → the beat's board → the card's own board)
       // v6: the assembled parts' texts (brain/say.js guard.parts) place them exactly when the line has them
-      ...boardPartsOf(next?.lastMove, String(line.text ?? ""), item ? ((next?.ctx?.lang === "english" ? item.prompt_en : item.prompt_hi) || item.prompt_en || null) : null, line.parts ?? null),
+      ...ofCardMarks(revealOnVerdict(boardPartsOf(next?.lastMove, String(line.text ?? ""), item ? ((next?.ctx?.lang === "english" ? item.prompt_en : item.prompt_hi) || item.prompt_en || null) : null, line.parts ?? null), next), next),
     },
     line: { lessonId, ...(line.teacherReplySeq != null ? { teacherReplySeq: line.teacherReplySeq } : {}), text: String(line.text ?? "") },
     // a page drawn for the child's request is a new page: it clears the board (never drawn over what was there)
@@ -223,6 +223,35 @@ const refOf = (b) => ({ scriptId: b.scriptId, beatId: b.beatId, kind: b.kind, ..
  * unsegmented and read against the next card's board); a missed card's close is its own part; a bridge with its own board
  * (move.bridgeBeat) is its own part, and with none it stays on the board before it (its words point at nothing, say.js).
  */
+/**
+ * v6.2 G3 (main, director10, with Studio): a right answer's verdict segment carries the key, so Studio's confirm-reveal fires on the
+ * answered card's board whether or not her page says the digits: { reveal: true, answers } (Studio's shape: true reveals answers[0], so
+ * the key is put first) on the first segment's scriptBeat, when that
+ * segment is on the answered card's board (move.closeBeat) and this turn graded the card right (turn.js lastVerdict / lastGraded).
+ */
+/**
+ * App's replay (LESSON-REPLAY-d10 3b, main approved): while the board on screen is not the open card's board, App collapses the
+ * card to "your question is waiting". Each page Brain sends says so: `ofCard` true on a page drawn on the open card's own board
+ * (state.js cardBeat, else the beat the card is asked on), false on any other. No open card, or no board: no field (today's
+ * behaviour). In a paged turn a new card is always on the LAST page (the card part is last in the plan, and segmentsAt never
+ * places a page after it), so App's pinned card switches at the last page switch.
+ */
+export function ofCardMarks(bp, next) {
+  const move = next?.lastMove;
+  const cardBoard = next?.activeItemId ? (move?.cardBeat?.board ?? move?.scriptBeat?.board ?? null) : null;
+  if (!cardBoard || !bp?.boardRef) return bp;
+  const key = JSON.stringify(cardBoard);
+  const of = (b) => JSON.stringify(b) === key;
+  return { ...bp, ofCard: of(bp.boardRef), ...(bp.segments ? { segments: bp.segments.map((g) => (g.boardRef ? { ...g, ofCard: of(g.boardRef) } : g)) } : {}) };
+}
+export function revealOnVerdict(bp, next) {
+  const g = next?.lastGraded, cb = next?.lastMove?.closeBeat;
+  if (!bp?.scriptBeat || !bp.boardRef || next?.lastVerdict !== "correct" || !g?.key || !cb?.board) return bp;
+  if (JSON.stringify(bp.boardRef) !== JSON.stringify(cb.board)) return bp;
+  const key = String(g.key);
+  const answers = [key, ...(bp.scriptBeat.answers?.length ? bp.scriptBeat.answers : (g.accept ?? [])).map(String).filter((a) => a !== key)];
+  return { ...bp, scriptBeat: { ...bp.scriptBeat, reveal: true, answers } };
+}
 export function boardPartsOf(move, line, card, parts = null) {
   const closing = move?.gave || move?.workedDone || move?.sayFirst?.length || parts?.prev;
   const plan = [
@@ -251,6 +280,8 @@ function spanOf(text, part) {
  * v6: with `parts` (say.js guard.parts) the closure, the missed card's close and the bridge are found by their own texts.
  */
 export const PAGE_MIN_WORDS = 5;
+// (a code verdict is 3-5 words: "Haan, sahi hai.", "Nahi, yeh jawab nahi hai.")
+export const FIRST_PAGE_MIN_WORDS = 6;
 export function segmentsAt(plan, line, card, parts = null) {
   const text = norm1(line);
   const closePart = plan.find((p) => p.part === "close");
@@ -291,6 +322,14 @@ export function segmentsAt(plan, line, card, parts = null) {
     const seg = text.slice(out[i].atChar, out[i + 1]?.atChar ?? text.length);
     const hasCard = at.card != null && at.card >= out[i].atChar && at.card < (out[i + 1]?.atChar ?? text.length + 1);
     if (!hasCard && seg.split(/\s+/).filter(Boolean).length < PAGE_MIN_WORDS) out.splice(i, 1);
+  }
+  // (director10, main: 9 of 31 unpaged turns opened on a code not-right verdict, "Nahi, yeh jawab nahi hai.", as a first page of
+  // its own; Studio cannot draw a page that short and a failing FIRST page fails the turn. A bare first page under PAGE_MIN_WORDS
+  // (FIRST_PAGE_MIN_WORDS) with no card and no number (a bare verdict) joins the next page: its words are said over that page's board — a bare verdict says nothing a board contradicts)
+  if (out.length > 1) {
+    const seg0 = text.slice(0, out[1].atChar);
+    const hasCard0 = at.card != null && at.card < out[1].atChar;
+    if (!hasCard0 && !/\d/.test(seg0) && seg0.split(/\s+/).filter(Boolean).length < FIRST_PAGE_MIN_WORDS) { out.shift(); out[0] = { ...out[0], atChar: 0, atClause: 0 }; }
   }
   for (let i = out.length - 1; i > 0; i--) if (JSON.stringify(out[i].boardRef) === JSON.stringify(out[i - 1].boardRef)) out.splice(i, 1);
   return out;

@@ -37,6 +37,8 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "hissa",      // round 7: multiplying and dividing fractions and decimals (a sheet folded twice, a jug poured into cups, a tenths grid, a place-value slide, stories)
   "koshtak",    // round 7: expressions (tray walls between terms, one lid to make a value, a bracket opened as jumps, like terms in bins)
   "parkar",     // round 7: ruler-and-compass constructions (triangles built from arcs and rays, bisectors, the 60° angle, altitudes by set-square)
+  "aankde",     // round 7: data (slips tallied in bundles of five, a lost row, the size sold most; towers levelled, a pour line; a line of cards folded to its middle)
+  "paheli",     // round 7: number puzzles (bags loaded by parity, magic squares, letter sums with carries, reverse-and-add palindromes)
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -62,6 +64,8 @@ export const MODES = {
   hissa: ["fold", "pour", "grid", "story"],
   koshtak: ["tray", "bin"],
   parkar: ["build", "bisect", "drop"],
+  aankde: ["tally", "stack", "line"],
+  paheli: ["pairs", "magic", "cipher", "mirror"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -330,7 +334,28 @@ export type ParkarAct =
   | { kind: "pin"; a: number; b: number; k: number }     // a spot pinned at crossing k of marks a and b
   | { kind: "run" }                                      // lay the tracing / walk the line / measure: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct;
+// Aankde (round 7, data and statistics): survey slips stroked into tally rows (upright, or across the four before it), a
+// lost row stroked, the stock crate put on a size; a block moved between towers, a level line set; value cards swapped and
+// the peg set on a card or a gap; the law answers on "run", never on a clock
+export type AankdeAct =
+  | { kind: "mark"; row: number; across: boolean }       // tally: the top slip (missing: one stroke) into row `row`, upright or across
+  | { kind: "crown"; row: number }                       // mode: the stock crate on row `row` (again = lifted)
+  | { kind: "move"; from: number; to: number }           // even: the top block of tower `from` onto tower `to`
+  | { kind: "line"; at: number }                         // pour: the level line at `at` blocks
+  | { kind: "swap"; i: number; j: number }               // middle: the cards at places i and j swapped
+  | { kind: "peg"; at: number }                          // middle: the peg at slot `at` (2i on card i, 2i + 1 in the gap after it)
+  | { kind: "run" }                                      // count / level / pour / fold: the law answers
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct;
+// Paheli (round 7, number puzzles): load bags onto the boat, put number tiles on the grid, give letters digit tiles, set a
+// start; the law (plain arithmetic: pairing, line sums, column addition with carries, reverse-and-add) answers on "run"
+export type PaheliAct =
+  | { kind: "load"; i: number }                           // pairs: dock item i onto the boat (again = off)
+  | { kind: "put"; v: number; cell: number }              // magic: tile v on cell 0..8 (a filled cell swaps; −1 = back to the tray)
+  | { kind: "digit"; l: string; d: number }               // cipher: letter l takes digit tile d (−1 = none)
+  | { kind: "start"; n: number }                          // mirror: the 2-digit start
+  | { kind: "run" }                                       // sail / add the lines / add it up / reverse and add: the law answers
+  | { kind: "undo" };
 // Hissa (round 7, multiplying and dividing fractions and decimals): a sheet folded across and down (the overlap tagged by
 // counting pieces); rope pieces laid on a metre track; a jug poured into full cups, the part-cup tagged as a fraction of a
 // cup; a tenths grid shaded both ways and the label's point placed; digits slid on a place-value chart; a bar spent twice
@@ -522,6 +547,8 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   hissa: ["kagaz", "chalk", "blueprint", "raat"],
   koshtak: ["kagaz", "chalk", "blueprint", "raat"],
   parkar: ["kagaz", "blueprint", "chalk", "raat"],
+  aankde: ["kagaz", "chalk", "blueprint", "raat"],
+  paheli: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;
