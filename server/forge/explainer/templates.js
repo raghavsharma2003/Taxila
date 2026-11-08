@@ -103,7 +103,8 @@ function fractionParts(c, tl) {
     for (let i = 1; i < parts; i++) tl.add({ op: "line", from: [x0 + i * pw, y0], to: [x0 + i * pw, y0 + H], weight: 1 }, 260, { gap: 60 });
     for (let i = 0; i < shade; i++) tl.add({ id: `s${i}`, op: "rect", at: [x0 + i * pw + 3, y0 + 3], w: pw - 6, h: H - 6, fill: "accent", ink: "accent", weight: 1 }, 380, { gap: 120 });
     // the parts count under the bar, then the fraction
-    tl.add({ op: "text", at: [200, 175], text: `${parts} equal parts`, size: "s", ink: "soft" }, 500);
+    // (director11 S3: the board's own words follow the lesson's Hindi mode — "2 equal parts" stayed English over Hindi lines)
+    tl.add({ op: "text", at: [200, 175], text: c.lang === "hi" ? `${parts} barabar hisse` : `${parts} equal parts`, size: "s", ink: "soft" }, 500);
   } else {
     const cx = 130, cy = 150, r = 95;
     tl.add({ op: "circle", c: [cx, cy], r, weight: 2, ...(whole === "roti" ? { fill: "soft" } : {}) }, 900);
@@ -115,8 +116,10 @@ function fractionParts(c, tl) {
   }
   const fx = whole === "bar" ? 200 : 310, fy = whole === "bar" ? 225 : 120;
   // round 4 content: nothing shaded writes no fraction ("0/5" is a number her line never said: W4)
-  if (shade > 0) tl.add({ id: "frac", op: "numwork", at: [fx - 14, fy], layout: "fraction", rows: [[String(shade)], [String(parts)]], ink: "accent", weight: 2 }, 800, { gap: 300 });
-  if (shade > 0) tl.add({ op: "highlight", target: "frac", style: "circle", ink: "mark" }, 600, { gap: 300 });
+  // (director11 S2: hideResult — a second view of a card that asks this fraction — writes none: the shading is the given)
+  if (shade > 0 && !c.hideResult) tl.add({ id: "frac", op: "numwork", at: [fx - 14, fy], layout: "fraction", rows: [[String(shade)], [String(parts)]], ink: "accent", weight: 2 }, 800, { gap: 300 });
+  if (shade > 0 && !c.hideResult) tl.add({ op: "highlight", target: "frac", style: "circle", ink: "mark" }, 600, { gap: 300 });
+  if (c.hideResult) delete facts.fraction;
   return { facts, counts: { parts, shaded: shade } };
 }
 
@@ -154,6 +157,11 @@ function fractionBars(c, tl) {
     for (let i = 1; i < b.parts; i++) tl.add({ op: "line", from: [round1(x0 + i * pw), y0], to: [round1(x0 + i * pw), y0 + H], weight: 1 }, cutMs, { gap: b.parts > 6 ? 60 : 140 });
     for (let i = 0; i < b.shade; i++) tl.add({ op: "rect", at: [round1(x0 + i * pw + 3), y0 + 3], w: round1(pw - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1 }, shadeMs, { gap: b.shade > 3 ? 120 : 260 });
     tl.add({ op: "text", at: [x0 + W + 45, y0 + H / 2 + 6], text: label, size: "m", ink: label === "?" ? "mark" : "accent" }, 500, { gap: 300 });
+    // (director11 S1: `ends` — the bars of a 0-1 line keep its 0 and 1, under each bar's ends)
+    if (c.ends) {
+      tl.add({ op: "text", at: [x0, y0 + H + 16], text: "0", size: "s", ink: "soft" }, 200, { gap: 60 });
+      tl.add({ op: "text", at: [x0 + W, y0 + H + 16], text: "1", size: "s", ink: "soft" }, 200, { gap: 40 });
+    }
     wholes.push({ parts: b.parts, shaded: b.shade, label });
   });
   // (one short fact per bar: the facts row keeps values of up to 40 characters)
@@ -171,14 +179,14 @@ function wholes(c, tl) {
   if (list.length < 1 || list.length > 2) return { error: "wholes_count" };
   for (const w of list) {
     if (!isInt(w?.parts, 2, 12) || !isInt(w.shade ?? 0, 0, w.parts) || (w.title !== undefined && (!fitsLabel(String(w.title)) || textProblem(String(w.title))))) return { error: "wholes_range" };
-    if (w.equal === false && w.parts < 3) return { error: "wholes_unequal_parts" };
   }
   if (c.as === "bar") return wholesAsBars(list, tl);
   const n = list.length, colW = 400 / n, r = n === 1 ? 95 : 72, cy = 128, counts = [], facts = {};
   list.forEach((w, k) => {
     const cx = round1(colW * k + colW / 2), shade = w.shade ?? 0;
     // the cuts, in degrees from 12 o'clock: equal pieces, or one half and the other half shared by the rest
-    const cuts = w.equal === false ? [0, 180, ...Array.from({ length: w.parts - 2 }, (_, i) => 180 + (180 * (i + 1)) / (w.parts - 1))] : Array.from({ length: w.parts }, (_, i) => (360 * i) / w.parts);
+    // (Learning's D1: two unequal pieces — the roti's "ek bada, ek chhota" — two thirds and one third)
+    const cuts = w.equal === false ? (w.parts === 2 ? [0, 240] : [0, 180, ...Array.from({ length: w.parts - 2 }, (_, i) => 180 + (180 * (i + 1)) / (w.parts - 1))]) : Array.from({ length: w.parts }, (_, i) => (360 * i) / w.parts);
     tl.add({ id: `w${k}`, op: "circle", c: [cx, cy], r, weight: 2 }, 800, { gap: k ? 300 : 0 });
     for (const a of cuts) tl.add({ op: "line", from: [cx, cy], to: [round1(cx + r * Math.sin(rad(a))), round1(cy - r * Math.cos(rad(a)))], weight: 1 }, 220, { gap: 60 });
     const edges = [...cuts, 360];
@@ -186,7 +194,8 @@ function wholes(c, tl) {
     const title = w.title !== undefined ? String(w.title) : "";
     if (title) writeFit(tl, title, cx, cy + r + 34, colW - 12, {}, { id: `t${k}`, ink: "accent", gap: 160, size: "s" });
     counts.push({ parts: w.parts, shaded: shade, label: title });
-    facts[`whole${k + 1}`] = `${w.parts} ${w.equal === false ? "unequal" : "equal"} parts${shade ? `, ${shade} shaded` : ""}`;
+    // (director11 S2: the whole is named by the title DRAWN under it — her line said "1 wala … 2 wala" over Cake A | Cake B)
+    facts[`whole${k + 1}`] = `${title ? `${title}: ` : ""}${w.parts} ${w.equal === false ? "unequal" : "equal"} parts${shade ? `, ${shade} shaded` : ""}`.slice(0, 40);
   });
   return { counts: { wholes: counts }, facts };
 }
@@ -201,7 +210,7 @@ function wholesAsBars(list, tl) {
   list.forEach((w, k) => {
     const y0 = top + k * (H + gapY), shade = w.shade ?? 0;
     // the cuts, as fractions of the strip: equal pieces, or one half and the other half shared by the rest
-    const cuts = w.equal === false ? [0.5, ...Array.from({ length: w.parts - 2 }, (_, i) => 0.5 + (0.5 * (i + 1)) / (w.parts - 1))] : Array.from({ length: w.parts - 1 }, (_, i) => (i + 1) / w.parts);
+    const cuts = w.equal === false ? (w.parts === 2 ? [2 / 3] : [0.5, ...Array.from({ length: w.parts - 2 }, (_, i) => 0.5 + (0.5 * (i + 1)) / (w.parts - 1))]) : Array.from({ length: w.parts - 1 }, (_, i) => (i + 1) / w.parts);
     tl.add({ id: `w${k}`, op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 900, { gap: k ? 900 : 0 });
     for (const f of cuts) tl.add({ op: "line", from: [round1(x0 + f * W), y0], to: [round1(x0 + f * W), y0 + H], weight: 1 }, 260, { gap: 140 });
     const edges = [0, ...cuts, 1];
@@ -209,7 +218,8 @@ function wholesAsBars(list, tl) {
     const title = w.title !== undefined ? String(w.title) : "";
     if (title) writeFit(tl, title, x0 + W + 60, y0 + H / 2 + 6, 110, {}, { id: `t${k}`, ink: "accent", gap: 300, size: "s" });
     counts.push({ parts: w.parts, shaded: shade, label: title });
-    facts[`whole${k + 1}`] = `${w.parts} ${w.equal === false ? "unequal" : "equal"} parts${shade ? `, ${shade} shaded` : ""}`;
+    // (director11 S2: the whole is named by the title DRAWN under it — her line said "1 wala … 2 wala" over Cake A | Cake B)
+    facts[`whole${k + 1}`] = `${title ? `${title}: ` : ""}${w.parts} ${w.equal === false ? "unequal" : "equal"} parts${shade ? `, ${shade} shaded` : ""}`.slice(0, 40);
   });
   return { counts: { wholes: counts }, facts: { ...facts, view: "strips" } };
 }
@@ -588,6 +598,7 @@ function placeValue(c, tl) {
 }
 
 function equalGroups(c, tl) {
+  if (Array.isArray(c.sizes)) return unequalGroups(c, tl);
   const { groups, each } = c;
   if (!isInt(groups, 2, 6) || !isInt(each, 1, 8)) return { error: "groups_range" };
   const gw = 340 / groups;
@@ -609,6 +620,34 @@ function equalGroups(c, tl) {
   }
   tl.add({ id: "eq", op: "numwork", at: [110, 240], layout: "equation", rows: [[String(groups), "×", String(each), "=", c.hideResult ? "?" : String(groups * each)]], weight: 2 }, 1000, { gap: 300 });
   return { counts: { groups, each }, facts: { groups, each, total: c.hideResult ? "? (child works it out)" : groups * each }, claims };
+}
+
+/**
+ * Learning's D1 (c4 s2 checks[1] marbles 7, 3, 3, 3; pencils 6, 3, 3): equal-groups@1 with `sizes` [2-6 groups of 1-10] —
+ * the same heap shared out into groups of THESE sizes, the groups not all the same. No equation: whether it is a fair share
+ * is the card's question. counts { groups, values: the sizes }.
+ */
+function unequalGroups(c, tl) {
+  const sizes = c.sizes;
+  if (sizes.length < 2 || sizes.length > 6 || sizes.some((n) => !isInt(n, 1, 10))) return { error: "groups_sizes" };
+  const groups = sizes.length, gw = 340 / groups, N = sizes.reduce((a, b) => a + b, 0), hc = Math.min(12, N), claims = [];
+  for (let g = 0; g < groups; g++) tl.add({ op: "ellipse", c: [30 + g * gw + gw / 2, 110], rx: gw / 2 - 6, ry: 66, weight: 1 }, 300, { gap: 80 });
+  const heap = (k) => [200 - ((hc - 1) * 12) / 2 + (k % hc) * 12, 196 + Math.floor(k / hc) * 11];
+  for (let k = 0; k < N; k++) tl.add({ id: `g${k}`, op: "circle", c: heap(k), r: 4.5, fill: "accent", ink: "accent", weight: 1 }, 40, { gap: 10 });
+  let k = 0;
+  sizes.forEach((each, g) => {
+    const gx = 30 + g * gw;
+    for (let i = 0; i < each; i++, k++) {
+      const cols = each > 4 ? 2 : 1;
+      const x = gx + gw / 2 + (cols === 2 ? (i % 2 ? 9 : -9) : 0), y = 110 - ((Math.ceil(each / cols) - 1) * 13) / 2 + Math.floor(i / cols) * 13;
+      const [hx, hy] = heap(k);
+      tl.add({ op: "move", target: `g${k}`, by: [round1(x - hx), round1(y - hy)] }, 650, i ? { with: true } : { gap: 220 });
+      claims.push({ id: `g${k}`, c: [round1(hx + round1(x - hx)), round1(hy + round1(y - hy))] });
+    }
+    // each group's own count under it
+    tl.add({ op: "text", at: [round1(gx + gw / 2), 196], text: String(each), size: "s", ink: "soft" }, 300, { gap: 120 });
+  });
+  return { counts: { groups, values: sizes.map(String) }, facts: { groups, sizes: sizes.join(", "), total: N, equal: sizes.every((n) => n === sizes[0]) ? "yes" : "no" }, claims };
 }
 
 // ───────────────────────────── diagrams ─────────────────────────────
@@ -1558,8 +1597,9 @@ function nameShape(tl, c, word, b) {
   if (!c.name) return {};
   const y = Math.max(20, b.y - 16);
   tl.add({ op: "text", at: [b.x, y], text: word, size: "s", ink: "soft", align: "start" }, 300, { gap: 120 });
-  if (c.trace && textBox(word, "s").w + textBox("perimeter", "s").w + 16 <= b.w) {
-    tl.add({ op: "text", at: [b.x + b.w, y], text: "perimeter", size: "s", ink: "mark", align: "end" }, 300, { gap: 60 });
+  const per = c.lang === "hi" ? "parimap" : "perimeter";
+  if (c.trace && textBox(word, "s").w + textBox(per, "s").w + 16 <= b.w) {
+    tl.add({ op: "text", at: [b.x + b.w, y], text: per, size: "s", ink: "mark", align: "end" }, 300, { gap: 60 });
     return { name: word, shows: "perimeter" };
   }
   return { name: word };
@@ -1770,7 +1810,9 @@ function derivedCounts(call, facts = {}) {
   }
 }
 
-export function expand(call, { band = "B3", lessonId = "", scriptId } = {}) {
+export function expand(call0, { band = "B3", lessonId = "", scriptId, lang = null } = {}) {
+  // (director11 S3: the lesson's language — the whiteboard intent's style.lang, "hi" in Hindi mode — for the words a template writes)
+  const call = lang && call0 && call0.lang == null ? { ...call0, lang } : call0;
   const build = BUILD[call?.template];
   if (!build) return { ok: false, script: null, facts: null, errors: [`unknown_template:${call?.template}`] };
   const tl = timeline(PACE[band] ?? 1);
