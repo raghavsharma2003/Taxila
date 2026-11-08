@@ -122,6 +122,9 @@ export function lint(add, kit) {
     for (const w of wrongArithmetic(it.answer)) e.push(`${at}: ${w}`);
   }
   if (add.newItems || scope) for (const [sid, n] of Object.entries(perSkill)) if (n < 3 && inScope(sid)) e.push(`${sid}: ${n} items after the additions, want ≥ 3`);
+  // every addition names what in the chapter it draws on (main 2026-11-08: chapter scope; science cites the chapter line)
+  // (required for scoped adds and adds that set requireSource; earlier batches predate the field)
+  if (scope || add.requireSource) for (const x of [...(add.skillExamples ?? []), ...(add.newMisconceptions ?? []), ...(add.newItems ?? [])]) if (!String(x.source ?? "").trim()) e.push(`${x.id ?? `${x.skillId} example`}: no source`);
   return e;
 }
 
