@@ -50,14 +50,24 @@ function wrongClause(text) {
   return vals.some(([, v]) => Math.abs(v - v0) > 1e-9) ? [`${parts.join(" = ")} (parts are ${vals.map(([, v]) => Math.round(v * 1e6) / 1e6).join(" vs ")})`] : [];
 }
 
+const existing_has = (kit, id) => kit.misconceptions.some((m) => m.id === id);
+
 export function lint(add, kit) {
   const e = [];
   if (!kit) return [`no kit topic ${add.topicId}`];
   const skillIds = kit.skills.map((s) => s.id);
-  if (!skillIds.includes(add.workedExampleSkill)) e.push(`workedExampleSkill ${add.workedExampleSkill} is not a kit skill`);
+  // main 2026-11-08 (c8/c9 English and Hindi): an add may be SCOPED to the skills it covers (language skills only; the
+  // literature and comprehension skills wait for the books). Coverage is then judged for those skills alone, and
+  // workedExampleSkill is optional (never a default guess: a wrong one marks a skill as taught when it is not).
+  const scope = Array.isArray(add.scope) ? add.scope : null;
+  if (scope) for (const sid of scope) if (!skillIds.includes(sid)) e.push(`scope ${sid} is not a kit skill`);
+  const inScope = (sid) => !scope || scope.includes(sid);
+  if ((!scope || add.workedExampleSkill != null) && !skillIds.includes(add.workedExampleSkill)) e.push(`workedExampleSkill ${add.workedExampleSkill} is not a kit skill`);
   const scripted = add.topicId === "c5-maths-ch02-t02";
-  const want = scripted ? [] : skillIds.filter((s) => s !== add.workedExampleSkill);
+  const taught = new Set([add.workedExampleSkill ?? (scope ? kit.workedExample?.skillId : undefined), ...(scope ? (kit.skillExamples ?? []).map((x) => x.skillId) : [])].filter(Boolean));
+  const want = scripted ? [] : skillIds.filter((s) => !taught.has(s) && inScope(s));
   const got = (add.skillExamples ?? []).map((x) => x.skillId);
+  if (scope) { for (const g of got) if (!scope.includes(g)) e.push(`skillExamples: ${g} is outside the add's scope`); }
   if (want.join() !== [...got].sort().join() && want.sort().join() !== [...got].sort().join()) e.push(`skillExamples cover ${got.join(",")}, want ${want.join(",")}`);
   const prompts = new Set([kit.workedExample?.problem, ...kit.items.map((i) => i.prompt_en)].map((x) => String(x ?? "").trim().toLowerCase()));
   for (const x of add.skillExamples ?? []) {
@@ -71,7 +81,10 @@ export function lint(add, kit) {
   const existing = new Set(kit.misconceptions.map((m) => m.id));
   const misBySkill = {};
   for (const i of kit.items) if (i.targetsMisconception) (misBySkill[i.skillId] ??= new Set()).add(i.targetsMisconception);
-  const needs = scripted ? ["c5-maths-ch02-t02-s2"] : skillIds.filter((s) => !misBySkill[s]);
+  for (const m of kit.misconceptions) if (m.skillId) (misBySkill[m.skillId] ??= new Set()).add(m.id);
+  // an item the add itself points at a misconception also gives its skill one
+  for (const i of add.newItems ?? []) if (i.targetsMisconception && existing_has(kit, i.targetsMisconception)) (misBySkill[i.skillId] ??= new Set()).add(i.targetsMisconception);
+  const needs = scripted ? ["c5-maths-ch02-t02-s2"] : skillIds.filter((s) => !misBySkill[s] && inScope(s));
   const newSkills = (add.newMisconceptions ?? []).map((m) => m.skillId);
   for (const s of needs) if (!newSkills.includes(s)) e.push(`no new misconception for ${s}`);
   for (const m of add.newMisconceptions ?? []) {
@@ -108,7 +121,7 @@ export function lint(add, kit) {
     if (it.verified) e.push(`${at}: verified is set by the blind solve, never authored`);
     for (const w of wrongArithmetic(it.answer)) e.push(`${at}: ${w}`);
   }
-  if (add.newItems) for (const [sid, n] of Object.entries(perSkill)) if (n < 3) e.push(`${sid}: ${n} items after the additions, want ≥ 3`);
+  if (add.newItems || scope) for (const [sid, n] of Object.entries(perSkill)) if (n < 3 && inScope(sid)) e.push(`${sid}: ${n} items after the additions, want ≥ 3`);
   return e;
 }
 

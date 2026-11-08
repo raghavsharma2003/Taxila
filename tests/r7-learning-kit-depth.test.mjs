@@ -106,3 +106,12 @@ test("c9 maths (Ganita Manjari, batches D-F): every skill has a worked example, 
     assert.ok(k.items.every((i) => i.verified?.agrees === true), `${id}: every item verified`);
   }
 });
+
+test("scoped adds (language skills only): coverage is judged for the scoped skills; skipped literature skills are not demanded", () => {
+  const scoped = { topicId: T, scope: [`${T}-s2`], skillExamples: [example], newMisconceptions: [], newItems: [item(5), item(6)] };
+  assert.deepEqual(lint(scoped, kit), [], "s1 (outside the scope) is not asked for");
+  assert.ok(lint({ ...scoped, newItems: [item(5)] }, kit).some((e) => /s2: 2 items/.test(e)), "the scoped skill still needs its ladder");
+  assert.ok(lint({ ...scoped, scope: [`${T}-s2`, "nope"] }, kit).some((e) => /scope nope/.test(e)));
+  assert.ok(lint({ ...scoped, skillExamples: [example, { ...example, skillId: `${T}-s1` }] }, kit).some((e) => /outside the add's scope/.test(e)));
+  assert.equal(apply(scoped, kit).workedExample.skillId, kit.workedExample.skillId, "no workedExampleSkill → the kit's worked example keeps its own label");
+});
