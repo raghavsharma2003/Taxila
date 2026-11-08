@@ -647,6 +647,22 @@ export function hookSlot(sk, interests = []) {
 function walkNextV2(s, input, prefix, sk) {
   const { kit } = input;
   friendOf = s.ctx.firstName ?? "";
+  // v6.4 K1: a card a remediation took over comes back once its follow-up card is closed (answered or let go); a miss on it
+  // then gives up with its key and why (afterMiss), so every posed card ends with its key said
+  {
+    const done = (id) => s.itemsDone.includes(id) || s.skipped.includes(id);
+    const rp = (s.reposeQ ?? []).find((r) => done(r.after) && s.activeItemId !== r.after);
+    if (rp) {
+      s.reposeQ = (s.reposeQ ?? []).filter((r) => r !== rp);
+      s.skipped = s.skipped.filter((x) => x !== rp.id);
+      s.reposed = [...(s.reposed ?? []), rp.id];
+      s.scriptCard = rp.item; s.phase = "practice";
+      activate(s, rp.item);
+      const beat = cardBeatRef(s, kit, rp.item);
+      return plan(moveKindFor(rp.item), SH.pose({ item: rp.item, prefix: SH.reposeAfterRemedy() }), { item: rp.item, probe: probeFor(rp.item), chips: optionChips(rp.item), reposed: true,
+        ...(beat ? { scriptBeat: beat } : {}) });
+    }
+  }
   const w = s.walk;
   const skillId = w.skillId;
   const lang = s.ctx.lang ?? "hinglish";
@@ -922,6 +938,10 @@ function walkRemedy(s, input, item) {
   if (!r) return null;
   s.remedied = [...(s.remedied ?? []), targets];
   s.skipped.push(item.id);
+  // v6.4 K1 (main, director12: misconception routes left the card without its key — c4 ×7, c6 steady never heard 30 cm / 20 cm):
+  // the card the remediation took over is posed again, once, after its follow-up card is closed
+  // (a replay of a recorded run walks what that run walked — tests/fixtures/replay.mjs runScriptOf marks it recordedRun)
+  if (!scriptFor(kit)?.script?.recordedRun) s.reposeQ = [...(s.reposeQ ?? []).filter((r) => r.id !== item.id), { id: item.id, after: `script:${item.skillId}:then:${targets}`, item }];
   s.activeItemId = undefined; s.hintLevel = 0;
   friendOf = s.ctx.firstName ?? "";
   const then = friendly(scriptThenItem(item.skillId, r));
@@ -1393,6 +1413,9 @@ function afterMiss(s, input, item) {
   // round 7 S3: misses per card (the card stays live until two misses plus help)
   if (verdict(input.cls) === "wrong") s.misses = { ...(s.misses ?? {}), [item.id]: (s.misses?.[item.id] ?? 0) + 1 };
   const { kit, cls } = input;
+  // v6.4 K1: a card posed again after its remediation, missed again: let go with its key and why (the give-up close, on its
+  // answerBoard), never a second remediation round
+  if (scriptOn() && (s.reposed ?? []).includes(item.id) && ["wrong", "stuck"].includes(verdict(input.cls))) return leaveItem(s, input, item, SH.reposeMissed());
   // round 7 T2: a scripted check answered wrong gets its misconception's scripted remediation and keyed follow-up
   const remedy = scriptOn() ? walkRemedy(s, input, item) : null;
   if (remedy) return remedy;
@@ -1623,7 +1646,9 @@ function helpMove(s, input, item, help) {
   }
   // dc-r7-script-walk-v2 R3: "another way / an example / slower" during a v2 walk is answered on its OWN current beat (its board
   // and numbers, smaller), never the kit's worked example; the beat's question stays the card (R2: nothing is used up)
-  if (scriptOn() && s.walk && ["another", "example", "story", "slower", "deeper"].includes(help) && skillScriptOf(kit, s.walk.skillId)?.explain?.[0]?.ask) {
+  // (v6.4 K1, director12 offtopic c4 row 36: "samajh nahi aaya" on a remediation's follow-up card re-taught the walk's NEXT beat and
+  // left the card without its key: a follow-up card or a check takes the path below, on its own idea)
+  if (scriptOn() && s.walk && !(item && (item.scriptThen || item.scriptCheck)) && ["another", "example", "story", "slower", "deeper"].includes(help) && skillScriptOf(kit, s.walk.skillId)?.explain?.[0]?.ask) {
     const [kind, id] = String(s.walk.beats[s.walk.i] ?? "").split(":");
     if (kind === "explain" || kind === "worked") {
       if (kind === "explain") s.walk.smaller = id;

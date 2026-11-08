@@ -785,3 +785,6 @@ export const frustrationFirst = () => (p5Flag("R3CONV")
 export const splitClose = () => "say only the closing lines given (the verdict, the answer and its reason); nothing new; end by asking in a few words if they are ready to go on";
 /** v6 R5: the card half of a split turn: the question as written, after at most one short lead-in; nothing taught again. */
 export const splitCard = () => "pose the question on the card as written, after at most one short lead-in; do not explain it again";
+// v6.4 K1: the card a remediation took over, asked again after its follow-up (no new teaching: the card itself)
+export const reposeAfterRemedy = () => "now the question from before, once more, for them to try with what they just did: say only that it is that question again, then the card";
+export const reposeMissed = () => "they missed that question again: code says its answer and why; no new teaching on it; then the next question";

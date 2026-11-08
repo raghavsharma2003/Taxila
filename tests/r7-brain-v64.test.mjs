@@ -88,4 +88,36 @@ describe("r7-brain-v64.test.mjs", () => {
     }
     assert.deepEqual(bad, []);
   });
+  // K1 — every card ends answered
+  /** The cards that left the table with neither a right answer nor their key said (a give-up or a close), in one lesson. */
+  async function unanswered(persona, topic) {
+    const T = TOPIC[topic];
+    // (the run's own script, walked by v6.4: not marked recordedRun, so K1's re-pose is on)
+    const { recordedRun, ...sc } = runScriptOf(RUN, T);
+    void recordedRun;
+    setScriptForTest(T, sc);
+    const { plans } = await replay(RUN, persona, T, 1e9);
+    const keyed = new Set(), seen = new Map();
+    let live = null;
+    plans.forEach((pl, k) => {
+      const st = pl.state, lm = st.lastMove ?? {};
+      if ((lm.gave?.answer || lm.workedDone?.answer) && pl.before.activeItemId) keyed.add(pl.before.activeItemId);
+      const now = st.activeItemId ?? null;
+      if (now && String(now).startsWith("script:")) seen.set(now, k);
+      live = now;
+    });
+    const end = plans.at(-1)?.state ?? {};
+    const bad = [];
+    for (const [id, k] of seen) {
+      // (a card still live at the end, or one asked in the lesson's last 3 turns, or waiting to be asked again, is not judged)
+      if (id === live || k >= plans.length - 3 || (end.reposeQ ?? []).some((r) => r.id === id)) continue;
+      if (!(end.itemsDone ?? []).includes(id) && !keyed.has(id)) bad.push(`${id.split(":").slice(-1)[0]} (last live row ${plans[k].row - 1}) left unanswered`);
+    }
+    return bad;
+  }
+  for (const persona of ["steady", "stuck", "offtopic", "steering"]) for (const topic of Object.keys(TOPIC)) {
+    test(`K1 predicate: every posed card ends answered right or with its key said (${persona} ${topic})`, async () => {
+      assert.deepEqual(await unanswered(persona, topic), []);
+    });
+  }
 });
