@@ -190,3 +190,46 @@ test("main, G2 addendum: W8 takes a two-bar compare whose bars ARE the two fract
   const r3 = await certifyBoardRef(B("1/4", "1/8", "1/2"), { line: "1/4 aur 1/8 mein kaunsa bada hai?", withhold: { values: [] } });
   assert.equal(r3.ok, false);
 });
+
+test("App's T55 (steady-c6, director10 index 54): page 0 that draws the board already up — T52's last page, the 6 cm square — is kept still, not redrawn with its perimeter walk crushed", async () => {
+  const { isMotionOp } = await import("../shared/whiteboard.js");
+  const T = "c6-maths-ch06-t01", s = lesson(T);
+  const rect12 = { template: "measured@1", params: { shape: "rect", unit: "m", w: 12, h: 5, trace: true } };
+  const sq6 = { template: "measured@1", params: { shape: "square", unit: "cm", w: 6, h: 6, trace: true } };
+  const rect7 = { template: "measured@1", params: { shape: "rect", unit: "cm", w: 7, h: 3, trace: true } };
+  const t52 = "Haan, sahi hai, kyunki 2 × (12 + 5) = 2 × 17 = 34 m. Yeh square hai. Iski chaaron bhujayein 6 cm ki hain, sab barabar. Chaar baar 6 cm jodne ki jagah seedha 4 × bhuja kar sakte ho. Jawab ek lambai hai, isliye cm mein aayega, square cm mein nahi. Toh is varg ka parimap kitna hai?";
+  const a = await s.turn(rect12, sb("e2"), t52, { segments: [{ atChar: 53, atClause: 1, boardRef: sq6, scriptBeat: sb("e3") }] });
+  assert.equal(a.state, "revealed");
+  assert.equal(a.artifact.script.switches?.length, 1, "T52: two pages, the square last");
+  const before = BF.pageTimingCounts().firstSame;
+  const t54 = "36 cm sahi nahi hai. Yeh aayat 7 cm lamba aur 3 cm chauda hai. Andar 1 cm ke tiles bichhao toh 7 × 3 = 21 tiles, woh area hai, varg cm mein. Dhaaga kinaare par chalta hai, toh 7, 3, 7 aur 3 jodo, jawab cm mein. Ab tak samajh aaya?";
+  const v = await s.turn(sq6, sb("e3"), t54, { segments: [{ atChar: 21, atClause: 1, boardRef: rect7, scriptBeat: sb("rem:c6-maths-ch06-t01-m-area-perimeter", "remediation") }] });
+  assert.equal(v.state, "revealed");
+  assert.equal(BF.pageTimingCounts().firstSame, before + 1, "page 0 is the square already up, kept");
+  const sw = v.artifact.script.switches[0].atMs;
+  const p0 = v.artifact.script.ops.filter((o) => o.id.startsWith("a.") && o.op !== "erase");
+  assert.ok(p0.length && p0.every((o) => o.endMs <= 200 && !isMotionOp(o)), "page 0 is shown complete at once, no motion");
+  assert.ok(sw > 200);
+  // the second page is the 7 × 3 rectangle, its walk intact
+  assert.ok(v.artifact.script.ops.some((o) => o.id.startsWith("b.") && isMotionOp(o)), "page 1 keeps its motion");
+});
+
+test("App's T55, the other half: a page whose retimed drawing runs past its switch is drawn STILL (its motion ops dropped), never squeezed into the last 120 ms", async () => {
+  const { isMotionOp } = await import("../shared/whiteboard.js");
+  const T = "c6-maths-ch06-t01", s = lesson(T);
+  const sq6 = { template: "measured@1", params: { shape: "square", unit: "cm", w: 6, h: 6, trace: true } };
+  const rect7 = { template: "measured@1", params: { shape: "rect", unit: "cm", w: 7, h: 3, trace: true } };
+  const before = BF.pageTimingCounts().stilled;
+  // a fresh lesson (nothing up to keep): page 0 is the square on its 5-word verdict, far shorter than its walk
+  const v = await s.turn(sq6, sb("e3"), "36 cm sahi nahi hai. Yeh aayat 7 cm lamba aur 3 cm chauda hai. Dhaaga kinaare par chalta hai, toh 7, 3, 7 aur 3 jodo, jawab cm mein. Ab tak samajh aaya?",
+    { segments: [{ atChar: 21, atClause: 1, boardRef: rect7, scriptBeat: sb("rem:c6-maths-ch06-t01-m-area-perimeter", "remediation") }] });
+  assert.equal(v.state, "revealed");
+  const sw = v.artifact.script.switches[0].atMs;
+  const p0 = v.artifact.script.ops.filter((o) => o.id.startsWith("a.") && o.op !== "erase");
+  assert.ok(p0.length, "page 0 is drawn");
+  assert.ok(!p0.some(isMotionOp), "its walk did not fit before the switch: the still square");
+  assert.ok(p0.every((o) => o.endMs <= sw), "everything on page 0 is drawn by its switch");
+  // (… and by her real onset: 5 words, ~1.67 s on the voice, App's measure)
+  assert.ok(p0.every((o) => o.endMs <= 1650), JSON.stringify(p0.map((o) => o.endMs)));
+  assert.equal(BF.pageTimingCounts().stilled, before + 1);
+});
