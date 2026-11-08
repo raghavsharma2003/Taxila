@@ -94,7 +94,9 @@ export async function certifyBoardRef(ref, { kit = null, item = null, line, with
   // compare that draws live over its 20-word card failed certification on W6 alone)
   const speechMs = Math.max(1500, speechMsOf(text));
   const w = withhold ?? (item && kit ? withheldValues(kit, { itemId: item.id, line: text }) : { values: [] });
-  const g = gateWhiteboard(retimeToLine(x.script, text), { reply: text, speechMs, withhold: w });
+  // (an authored ref is certified as the live gate takes a card's own board — board-sync gateCtxFor authoredRef: its cuts
+  // are the template's exact radii, not a model's circle cut by lines; Learning's c4 watermelon then-card, 2026-11-08)
+  const g = gateWhiteboard(retimeToLine(x.script, text), { reply: text, speechMs, withhold: w, authoredRef: true });
   // round 7 (main, director4 S2): the board must SHOW the numbers the ref authors (a template that cannot draw them, or
   // draws one as "?", fails the ref, never the child's screen)
   // (a grouped number — "4,815", "1,00,000" — is one number: place-value@1's Indian grouping failed numbers_not_shown)
