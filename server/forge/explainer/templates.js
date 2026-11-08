@@ -228,6 +228,19 @@ function unrolled(c, tl) {
   const num = (v) => (Number.isInteger(v) ? String(v) : String(Math.round(v * 10) / 10));
   const total = c.total === "?" || c.total == null ? "?" : Number(c.total);
   if (total !== "?" && !(Number.isFinite(total) && Math.abs(total - sides.reduce((a, b) => a + b, 0)) < 1e-6)) return { error: "unrolled_total" };
+  // (main, A1: a side whose length the live card asks is drawn, its label "?")
+  const hide = new Set(Array.isArray(c.hide) ? c.hide.filter((i) => Number.isInteger(i) && i >= 0 && i < sides.length) : []);
+  // (main, B: the shape itself, small, top left — "this shape, laid straight" — not to scale for a polygon)
+  const fig = c.figure && typeof c.figure === "object" ? c.figure : null;
+  if (fig) {
+    const bx = 30, by = 14, bw = 84, bh = 58, pts = figurePoints(fig);
+    if (!pts) return { error: "unrolled_figure" };
+    const xsF = pts.map((p) => p[0]), ysF = pts.map((p) => p[1]);
+    const k = Math.min(bw / Math.max(1e-6, Math.max(...xsF) - Math.min(...xsF)), bh / Math.max(1e-6, Math.max(...ysF) - Math.min(...ysF)));
+    const P = pts.map(([px, py]) => [round1(bx + (px - Math.min(...xsF)) * k), round1(by + (py - Math.min(...ysF)) * k)]);
+    if (fig.shape === "rect") tl.add({ id: "fig", op: "rect", at: P[0], w: round1(P[2][0] - P[0][0]), h: round1(P[2][1] - P[0][1]), weight: 2 }, 700);
+    else tl.add({ id: "fig", op: "polygon", points: P, weight: 2 }, 700);
+  }
   const x0 = 30, W = 340, y = 120, sum = sides.reduce((a, b) => a + b, 0);
   let x = x0;
   const xs = [x0];
@@ -236,8 +249,8 @@ function unrolled(c, tl) {
     tl.add({ id: `s${i}`, op: "line", from: [round1(x), y], to: [x1, y], weight: 3, ink: i % 2 ? "accent" : "chalk" }, 600, { gap: i ? 300 : 0 });
     tl.add({ op: "line", from: [x1, y - 9], to: [x1, y + 9], weight: 1 }, 160, { gap: 60 });
     // (a piece too short for its label has it below the line; the next above, so neighbours never overlap)
-    const lab = `${num(v)} ${unit}`, mid = round1((x + x1) / 2), roomy = textBox(lab, "s").w + 6 <= x1 - x;
-    tl.add({ op: "text", at: [mid, roomy || i % 2 === 0 ? y - 18 : y + 30], text: lab, size: "s" }, 400, { gap: 120 });
+    const lab = hide.has(i) ? "?" : `${num(v)} ${unit}`, mid = round1((x + x1) / 2), roomy = textBox(lab, "s").w + 6 <= x1 - x;
+    tl.add({ op: "text", at: [mid, roomy || i % 2 === 0 ? y - 18 : y + 30], text: lab, size: "s", ...(hide.has(i) ? { ink: "mark" } : {}) }, 400, { gap: 120 });
     x = x1; xs.push(x1);
   });
   tl.add({ op: "line", from: [x0, y - 9], to: [x0, y + 9], weight: 1 }, 160, { gap: 0 });
@@ -246,8 +259,21 @@ function unrolled(c, tl) {
   tl.add({ id: "ruler", op: "arrow", from: [x0, yr], to: [round1(x), yr], weight: 1 }, 700, { gap: 300 });
   tl.add({ op: "line", from: [x0, yr - 7], to: [x0, yr + 7], weight: 1 }, 160, { gap: 0 });
   tl.add({ id: "total", op: "text", at: [round1((x0 + x) / 2), yr + 30], text: total === "?" ? "?" : `${num(total)} ${unit}`, size: "m", ink: total === "?" ? "mark" : "accent" }, 500, { gap: 300 });
-  const sideValues = sides.map((v) => `${num(v)} ${unit}`);
-  return { counts: { sides: sides.length, sideValues }, facts: { sides: `${sides.length} sides laid in a straight line`, lengths: sideValues.join(", ").slice(0, 40), total: total === "?" ? "?" : `${num(total)} ${unit}` } };
+  const sideValues = sides.map((v, i) => (hide.has(i) ? "?" : `${num(v)} ${unit}`));
+  return { counts: { sides: sides.length, sideValues }, facts: { ...(fig ? { shape: fig.shape === "rect" ? (fig.w === fig.h ? "square" : "rectangle") : fig.shape === "triangle" ? "triangle" : `${fig.n}-sided shape` } : {}),
+    sides: `${sides.length} sides laid in a straight line`, lengths: sideValues.join(", ").slice(0, 40), total: total === "?" ? "?" : `${num(total)} ${unit}` } };
+}
+/** The outline of an unrolled figure, unscaled (y down): a rect's corners, a triangle from its three sides, a regular n-gon. */
+function figurePoints(f) {
+  if (f.shape === "rect" && Number(f.w) > 0 && Number(f.h) > 0) { const w = Number(f.w), h = Number(f.h); return [[0, 0], [w, 0], [w, h], [0, h]]; }
+  if (f.shape === "triangle" && Array.isArray(f.sides) && f.sides.length === 3) {
+    const [a, b, cc] = f.sides.map(Number);
+    if (!(a > 0 && b > 0 && cc > 0) || a + b <= cc || a + cc <= b || b + cc <= a) return null;
+    const px = (a * a + cc * cc - b * b) / (2 * a), py = Math.sqrt(Math.max(0, cc * cc - px * px));
+    return [[0, py], [a, py], [px, 0]];
+  }
+  if (f.shape === "polygon" && Number.isInteger(f.n) && f.n >= 3 && f.n <= 8) return Array.from({ length: f.n }, (_, i) => { const t = -Math.PI / 2 + (2 * Math.PI * i) / f.n; return [Math.cos(t), Math.sin(t)]; });
+  return null;
 }
 
 function fractionLine(c, tl) {

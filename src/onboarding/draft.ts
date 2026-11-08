@@ -18,6 +18,8 @@ export interface Draft {
   childId?: string;                                             // the profile created at P6
   /** round 7 F item 2: "which chapter is school on?" ({ subject: chapter number }), written after the child exists */
   schoolChapter?: Record<string, number>;
+  /** r7 (Learning to-app/007): "How does Maths feel for {name} right now?" ({ subject: view }), written after the child exists */
+  parentView?: Record<string, "hard" | "fine" | "easy">;
 }
 const KEY = "tx.onboarding";
 

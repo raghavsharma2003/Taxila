@@ -62,6 +62,7 @@ export const KX = {
   bootAi: K("AI teacher, not a person", "AI teacher, insaan nahi", "AI टीचर, इंसान नहीं"),
   bootPicture: K("Your picture", "Tumhari picture", "तुम्हारी तस्वीर"),
   bootLikes: K("What you like", "Tumhe kya pasand hai", "तुम्हें क्या पसंद है"),
+  bootFeel: K("How school feels", "School kaisa lagta hai", "स्कूल कैसा लगता है"),
   bootHi: K("Voice check", "Awaaz check", "आवाज़ जाँच"),
   madeForYou: K("Made for you", "Tumhare liye bana", "तुम्हारे लिए बना"),
   playAgain: K("Play again", "Phir se khelo", "फिर से खेलो"),

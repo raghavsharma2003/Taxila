@@ -225,7 +225,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
   const topBar = <TopBar m={m} a={a} notMeWindow={!!(notMeWindow ?? m.notMeWindow)} phaseLine={phaseLine} wide={L.kind === "wide"} />;
   // round 3 play mode (docs/design/round3/play/patches/04): the game's own goal rail is the card while a play piece is up
   const playMode = m.tray?.kind === "studio" && (m.tray.studio?.artifact?.kind as string | undefined) === "play";
-  const card = playMode ? null : <QuestionCard ask={m.ask} answer={m.answer} young={young} onHear={a.hearQuestion} onFix={a.fixAnswer} goal={m.ask ? null : m.shortTitle ? t("card.goal", { topic: m.shortTitle }) : null}
+  const card = playMode ? null : <QuestionCard ask={m.ask} answer={m.answer} waiting={!!m.askWaiting} young={young} onHear={a.hearQuestion} onFix={a.fixAnswer} goal={m.ask ? null : m.shortTitle ? t("card.goal", { topic: m.shortTitle }) : null}
     lead={m.intake && renderIntake ? renderIntake(m) : null} />;
   // The answer surfaces (tiles, the NumberPad, the Help menu over them) are AnswerTray's; the activity and the board
   // stay WorkTray's (W1-B). BUILD-PLAN W1-A items 3 and 11.

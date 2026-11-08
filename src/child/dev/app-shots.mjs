@@ -52,6 +52,8 @@ const MAP = {
 
 const API = {
   "/api/me": ME,
+  // the set-up's child step asks whether a parent PIN exists (r7 to-app/007 review shots)
+  "/api/parent/pin": { hasPin: false },
   "/api/child/boot": { me: ME, plan: PLAN },
   "/api/child/plan": PLAN,
   "/api/child/map": MAP,
@@ -99,7 +101,7 @@ export const SCREENS = {
   // r7 onboarding sweep: the parent set-up (Learning's src/onboarding, shot for review) and the child's first meeting
   "start-class": `/start/class`, "start-promises": `/start/promises`, "start-phone": `/start/phone`, "start-child": `/start/child`,
   "start-controls": `/start/controls`, "start-handover": `/start/handover`, "start-student": `/start/student`,
-  "hello-ai": `/c/${CID}/hello`, "hello-picture": `/c/${CID}/hello`, "hello-likes": `/c/${CID}/hello`, "hello-hi": `/c/${CID}/hello`,
+  "hello-ai": `/c/${CID}/hello`, "hello-picture": `/c/${CID}/hello`, "hello-likes": `/c/${CID}/hello`, "hello-feel": `/c/${CID}/hello`, "hello-hi": `/c/${CID}/hello`,
 };
 
 async function main() {
@@ -111,6 +113,8 @@ async function main() {
     await ctx.addCookies([{ name: "tx_in", value: "1", url: BASE }]);
     await ctx.grantPermissions(["microphone"], { origin: BASE }).catch(() => {});
     await ctx.addInitScript(() => { try { localStorage.setItem("taxila.child.6fc3f68e-0000-4000-8000-000000000001.prefs", JSON.stringify({ hello: true })); } catch { /* */ } });
+    // r7 (to-app/007): the set-up's child step needs its draft (class chosen, a first name) or it goes back to the class step
+    if (ONLY?.includes?.("start-child")) await ctx.addInitScript((cls) => { try { localStorage.setItem("tx.onboarding", JSON.stringify({ child: { classLevel: cls, firstName: "Riya" }, parentView: { maths: "hard" } })); } catch { /* */ } }, Number(CLS));
     await ctx.route("**/api/**", (route) => {
       const u = new URL(route.request().url());
       const body = API[u.pathname];
@@ -132,11 +136,16 @@ async function main() {
       }
       // Hello steps: click through to the step named (greet → ai → picture → likes/change → hi)
       const STEPS = { "hello-ai": ["hello-hear", "hello-next"], "hello-picture": ["hello-hear", "hello-next", "hello-gotit"], "hello-likes": ["hello-hear", "hello-next", "hello-gotit", "PIC", "hello-thatsme"],
-        "hello-hi": ["hello-hear", "hello-next", "hello-gotit", "PIC", "hello-thatsme", "hello-done", "hello-right"] };
+        "hello-feel": ["hello-hear", "hello-next", "hello-gotit", "PIC", "hello-thatsme", "hello-done", "hello-right", "feel-maths-tricky"],
+        "hello-hi": ["hello-hear", "hello-next", "hello-gotit", "PIC", "hello-thatsme", "hello-done", "hello-right", "hello-feel-next"] };
       for (const tid of STEPS[name] ?? []) {
         if (tid === "PIC") await page.evaluate(() => document.querySelector('[role="radio"]')?.click()).catch(() => {});
         else await page.evaluate((t) => document.querySelector(`[data-testid="${t}"]`)?.click(), tid).catch(() => {});
         await page.waitForTimeout(350);
+      }
+      if (name === "start-child") {
+        await page.evaluate(() => document.querySelector('[data-testid="onb-feel"]')?.scrollIntoView({ block: "center" })).catch(() => {});
+        await page.waitForTimeout(300);
       }
       if (name === "notebook-jar") {
         await page.click('[data-testid="nb-tab-jar"]').catch(() => {});

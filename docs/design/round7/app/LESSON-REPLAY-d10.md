@@ -52,3 +52,30 @@ In **15 of 58 board renders**, the pinned question names a different figure from
 **Before:** 39 of 273 caption clauses of this lesson were cut by the two-line clamp at 360. The caption box beside her picture is 195 px, and the clause chunker allowed 9 words, or 12 with the tail merge. At 412 it was 6.
 
 **Now:** `captions.ts` chunks a clause into the fewest pieces of at most 9 words and 38 characters, balanced by length. After the change, measured in the real caption box, 0 of 343 clauses are cut at 360 (class 6 and class 4), at 412 and at 1280. Only one chunk is 2 words ("Aamne-saamne ki").
+
+## After main's calls (2026-11-08): (3a) and (3b) built
+
+- **(3a), on the client only:** a paged turn's new card pins when the board's LAST page turns. The moment is computed on the board player's own clock: the line anchor, plus the reply's clause onsets, else `switches[].atMs`.
+  - **With an answer chip:** the old card, its chip and the verdict stay up through the verdict page.
+  - **No page turn:** if the last page never turns, the hand-over still gives the new card.
+  - **Code:** `src/child/lesson/cardTiming.ts` (pure reducers `cardOnAsk / cardOnPage / cardOnHandover`), `boardPage.ts` (`useBoardPage`) and `useDesk.ts`.
+  - **Assumption:** the new card belongs to the last page. Brain is to confirm it, or name the field that marks the card's page.
+- **(3b):** the card folds to "Your question is waiting" while the board's page is marked `ofCard: false`.
+  - **Restores:** when the card's board is back, or at her hand-over. A card with the child's answer on it never waits.
+  - **Flag placement:** read from the whiteboard script, or from the artifact for page 0, and from each `switches[k]` for page k+1.
+  - **Placeholder:** absent means today's behaviour. Brain will name the real field.
+- **Tests:** `tests/r7-app-card-timing.test.mjs` covers the T9-0 and T81-0 shapes with and without a chip, a real clause onset moving the switch, a last page that never turns, unpaged turns, and the (3b) rules.
+
+**The re-run.** The 58 board renders were walked through the real reducers. `ofCard` was emulated from the run as "this page's board is the board the open card was posed with".
+
+| | Before | After |
+|---|---|---|
+| Card about another figure than the board, shown in full | 15 of 58 | **0** |
+| Card on its own board | 43 | 43 |
+| Card waiting (3b) | 0 | 15 |
+
+- **Waiting:** T13-1, T15, T21-1, T23, T25, T41-1, T41-2, T47-1, T49, T55-1, T61-1, T61-2, T63, T65 and T77-1. That is the worked-example cases main expected, plus the explain and reteach pages that drew another figure under an open card.
+- **The verdict pages (3a):** T9-0 now keeps the triangle's card over the triangle, and T81-0 keeps the square's card over the 60 m square.
+- **Caveat:** the emulation has no answer chips. In the live flow, a card the child already answered stays up with their answer on it rather than waiting.
+
+Shots: `shots-replay-d10/after-*.png`. T21-1 waiting at 360 and 412, T61-2 waiting, and T81-0 with the matching card. The dev Desk takes `window.__deskWaiting` for these.

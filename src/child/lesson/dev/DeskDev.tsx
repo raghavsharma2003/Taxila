@@ -116,6 +116,8 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
     band, family, teacher: { id: rec.id, name: rec.name }, childName: young ? "Riya" : "Kabir",
     floor, sheet, strip, noPack: true, ask: askModel, answer,
     caption: { text: caption, speaking: floor === "speaking" || floor === "showing", mode: "phrase", lang: "hi-Latn" },
+    // r7 (3b): a replay marks the board as not the card's (window.__deskWaiting)
+    askWaiting: typeof window !== "undefined" && !!(window as unknown as { __deskWaiting?: boolean }).__deskWaiting,
     // r7: Me → "Voice only" (fixtures voice / voice-board)
     faceHidden: name === "voice" || name === "voice-board",
     // r7: the Later list and the moment cards (Brain's ui.later / ui.moment)
