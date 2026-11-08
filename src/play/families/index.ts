@@ -30,6 +30,7 @@ import { galtiLogic } from "./galti-pakdo/galti.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { tileLogic } from "./darpan/tile.logic.ts";   // r7 tilings2
 import { feetaLogic } from "./feeta/feeta.logic.ts";
+import { naapLogic } from "./feeta/naap.logic.ts";   // r7 naap
 
 type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
 const asAny = (l: unknown) => l as AnyLogic;
@@ -99,6 +100,12 @@ export const LOGIC: Record<string, AnyLogic> = {
   "feeta/fence": asAny(feetaLogic),
   "feeta/trip": asAny(feetaLogic),
   "feeta/compare": asAny(feetaLogic),
+  // r7 naap: science measuring, class 6 (a thread along a curve and a map road; thermometers picked, dipped and read; a
+  // scale read from a full mark with the eye above, foot-rulers along metres; things on a warmth shelf); never timed
+  "feeta/thread": asAny(naapLogic),
+  "feeta/thermo": asAny(naapLogic),
+  "feeta/scale": asAny(naapLogic),
+  "feeta/touch": asAny(naapLogic),
   // round 7: Guna, multi-digit multiplication and division (a field cut into place-value pieces and a weighed truck, a godown
   // shared into equal trucks, stories whose leftovers decide); nothing runs on a clock
   "guna/field": asAny(gunaLogic),
