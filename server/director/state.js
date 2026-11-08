@@ -768,23 +768,24 @@ function asideTopic(text, interests = []) {
   return m ? m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase() : null;
 }
 /**
- * v6 R4 (main, director8: 0 real returns in three topics; the hook's interest line said as the return was a maths analogy, not
- * content about what they raised): one plain, true line about a common aside, said when it is returned to. No digits (it is said
- * over whatever board is up). null for a topic not listed (her own sentence, held to the return rules in brain/say.js).
+ * v6.3 H2′ (main, director11: asides 1 of 24; "ek over mein chhe ball" and "cover drive" were canned facts, not what they said):
+ * the return line is built from THEIR words, said back to them (first person turned to second): a share is taken up ("kal tumne
+ * cricket khela, sixer maara: yeh sunke bahut achha laga."), a question of theirs is named as theirs. No digits, no lesson words.
+ * null when there is nothing usable.
  */
-const ASIDE_FACTS = [
-  [/\b(?:virat|kohli)\b/i, { hinglish: "Virat Kohli India ke liye batting karte hain, aur unka cover drive bahut mashhoor hai.", english: "Virat Kohli bats for India, and his cover drive is famous." }],
-  [/\bdhoni\b/i, { hinglish: "MS Dhoni India ke captain rahe hain, aur wicket ke peechhe bahut tez the.", english: "MS Dhoni was India's captain, and very quick behind the stumps." }],
-  [/\brohit\b/i, { hinglish: "Rohit Sharma India ke liye opening karte hain, aur lambe chhakke maarte hain.", english: "Rohit Sharma opens for India and hits long sixes." }],
-  [/\b(?:sixer|six)\b/i, { hinglish: "Sixer tab hota hai jab ball zameen chhuye bina boundary ke bahar jaati hai.", english: "A six is when the ball goes over the boundary without touching the ground." }],
-  [/\b(?:cricket|ipl|match)\b/i, { hinglish: "Cricket mein ek over mein chhe ball hoti hain, aur ek team mein gyarah khiladi.", english: "In cricket an over has six balls, and a team has eleven players." }],
-  [/\b(?:messi|ronaldo|football)\b/i, { hinglish: "Football mein ek team mein gyarah khiladi hote hain, aur sirf goalkeeper haath laga sakta hai.", english: "In football a team has eleven players, and only the goalkeeper may use their hands." }],
-  [/\bchess\b/i, { hinglish: "Chess mein har khiladi ke paas solah mohre hote hain.", english: "In chess each player has sixteen pieces." }],
-  [/\bkabaddi\b/i, { hinglish: "Kabaddi mein raider ek saans mein doosri taraf jaakar wapas aata hai.", english: "In kabaddi the raider goes to the other side and back in one breath." }],
-];
-export function asideFactOf(topic, lang = "hinglish") {
-  const f = ASIDE_FACTS.find(([re]) => re.test(String(topic ?? "")));
-  return f ? f[1][lang === "english" ? "english" : "hinglish"] : null;
+const YOU_FOR = [[/\bmaine\b/gi, "tumne"], [/\bmujhe\b/gi, "tumhe"], [/\bmera\b/gi, "tumhara"], [/\bmeri\b/gi, "tumhari"], [/\bmere\b/gi, "tumhare"], [/\bmain\b/gi, "tum"], [/\bhum\b/gi, "tum"], [/\bhumne\b/gi, "tumne"]];
+export function asideReturnLine(said, topic, lang = "hinglish") {
+  const t = String(said ?? "").replace(/\s+/g, " ").trim().replace(/[.!?\u0964]+$/, "");
+  if (!t || /\d/.test(t) || unsafeChildPhrase(t)) return null;
+  const T = String(topic ?? "").trim();
+  const en = lang === "english";
+  if (/\?\s*$/.test(String(said)) || /^(?:aap|aapko|aapka|aapki|kya|tum(?:he|ko|hara|hari)?|do you|are you|what|who|why)\b/i.test(t)) {
+    if (!T) return null;
+    return en ? `you asked me about ${T}; tell me more about ${T} after the lesson.` : `tumne mujhse ${T} ke baare mein poocha tha; lesson ke baad mujhe ${T} ke baare mein aur batana.`;
+  }
+  if (en) return `you told me "${t}", and I loved hearing it.`;
+  const you = YOU_FOR.reduce((x, [re, w]) => x.replace(re, w), t);
+  return `${you}: yeh sunke bahut achha laga.`;
 }
 function parkAside(s, kit, input, item) {
   if (!scriptOn() || !scriptIdOf(kit)) return;
@@ -1176,8 +1177,11 @@ function poseNext(s, input, prefix, preferred) {
   if (p5Flag("STEER") && s.later?.length && (s.activeItemId || (p5Flag("R3CONV") && s.lastMove?.itemId))) {
     // round 4 (round3-conversation C on prod: a cousin's wedding shared mid-teaching was promised "before the lesson ends"
     // and never came back): an open share is also brought back at an item boundary four or more turns after it was told
-    const due = dueParked(s.later, "item_resolved")
-      ?? (p5Flag("R4CONV") ? (s.later ?? []).find((p) => !p.servedAt && p.share && s.turn - (p.at ?? s.turn) >= 4) ?? null : null);
+    // (v6.3 H2′: in a scripted lesson an aside share is returned by step's own rule, at the promised point, never here)
+    const scriptedShares = scriptOn() && !!scriptIdOf(kit);
+    const open = scriptedShares ? (s.later ?? []).filter((p) => !p.share) : s.later;
+    const due = dueParked(open, "item_resolved")
+      ?? (p5Flag("R4CONV") && !scriptedShares ? (s.later ?? []).find((p) => !p.servedAt && p.share && s.turn - (p.at ?? s.turn) >= 4) ?? null : null);
     if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); s.servedNow = { topic: due.topic, share: !!due.share }; }
   }
   s.activeItemId = undefined; s.hintLevel = 0; s.pendingWhy = undefined;
@@ -2158,7 +2162,7 @@ function enterTeachback(s, prefix, kit) {
   // CONVERSATION-V2 §5: every open parked question is offered before the wrap
   if (p5Flag("STEER") && s.later?.length) {
     const due = dueParked(s.later, "before_wrap");
-    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); s.servedNow = { topic: due.topic, share: !!due.share }; }
+    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); s.servedNow = { topic: due.topic, share: !!due.share, said: due.said ?? null }; }
   }
   s.phase = "teachback"; s.teachbackAsked = true; s.activeItemId = undefined; s.hintLevel = 0;
   // The lesson's teach-back IS shape C01 (announced protégé teach-back): its answer is a probe turn in the budget.
@@ -2184,7 +2188,7 @@ function toWrap(s, { prefix, stopping = false }) {
   if (!stopping && p5Flag("R4CONV") && s.later?.length) {
     const due = dueParked(s.later, "before_wrap");
     if (due) {
-      s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share };
+      s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share, said: due.said ?? null };
       // round 7 T3 (listening contract): a parked promise is RETURNED before the wrap, on a turn of its own; the wrap waits (the
       // next turn wraps, or returns the next open one). TAXILA_R7_WRAP_BLOCK=off: folded into the wrap as before
       if (wrapBlockOn()) {
@@ -2894,23 +2898,34 @@ export function step(prev, input) {
   // this one, whatever the move (never on a safeguard, a wrap or a break)
   // v6.2 H2 (main, director10: c5-t02 5 of 6 returns early, mid-card): the promise is "after this part": an aside parked while a
   // card was live is returned to once that card is resolved (answered, let go, or another card up), never while it is still live
+  // v6.3 H2′ (main, director11: 1 of 24): the promise is "after this question". The promised card is the one on the table when they
+  // spoke, else the one posed on that turn, else the next one posed (the aside read runs before this turn's card is activated, so
+  // v6.2 recorded none and returned on the very next turn). It is returned to only once a park was said, only after that card is
+  // closed, and only at a boundary: never while a card is still live from before (a hint, a retry), never over a remediation's
+  // follow-up (another id, but the same card not yet closed), never inside a worked example, never on a request turn (a language
+  // switch, a picture: that turn answers the request). An unreturned one waits for the wrap.
   if (scriptOn() && scriptIdOf(input.kit)) {
-    for (const e of s.later ?? []) if (e.share && e.at === s.turn && e.onItem === undefined) { e.onItem = prev.activeItemId ?? null; e.said ??= String(input.text ?? "").replace(/\s+/g, " ").trim().slice(0, 80); }
+    for (const e of s.later ?? []) {
+      if (!e.share || e.servedAt != null) continue;
+      if (e.at === s.turn && e.onItem === undefined) {
+        e.onItem = prev.activeItemId ?? s.activeItemId ?? null;
+        e.parkSaid = move.kind !== "safeguard";
+        e.said ??= String(input.text ?? "").replace(/\s+/g, " ").trim().slice(0, 80);
+      } else if (e.onItem === null && e.at < s.turn && s.activeItemId) e.onItem = s.activeItemId;
+    }
   }
   if (scriptOn() && scriptIdOf(input.kit) && !s.servedNow && !["safeguard", "wrap", "break"].includes(move.kind)) {
-    const due = (s.later ?? []).find((e) => !e.servedAt && e.share && Number.isFinite(e.at) && s.turn - e.at >= 1
-      && (!e.onItem || (s.activeItemId !== e.onItem && !(s.splitHold?.activeItemId === e.onItem))));
+    const live = s.activeItemId ?? null;
+    const boundary = !(live && live === prev.activeItemId) && !String(live ?? "").includes(":then:") && !s.splitHold
+      && !/^worked/.test(move.scriptBeat?.beatId ?? "") && move.scriptBeat?.kind !== "remediation" && !move.request && !input.cls?.request?.type;
+    const due = boundary ? (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at
+      && live !== e.onItem) : null;
     if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share, said: due.said ?? null }; }
   }
   if (s.servedNow?.topic) {
-    // v6.2 H2 (director10: the canned "ek over mein chhe ball" repeated, "Virat ke sixer" invented): a topic's plain fact is said at
-    // most once a lesson; after that the return is about what THEY said, in their own words
     const lang = s.ctx.lang ?? "hinglish";
-    const fact = asideFactOf(s.servedNow.topic, lang);
-    const used = (s.asideFactsSaid ?? []).includes(fact);
-    const said = s.servedNow.said && !unsafeChildPhrase(s.servedNow.said) ? s.servedNow.said.replace(/[.!?]+$/, "") : null;
-    const line = fact && !used ? fact : said ? (lang === "english" ? `you told me "${said}", and I liked hearing it.` : `tumne bataya tha "${said}", sunke achha laga.`) : null;
-    if (fact && !used) s.asideFactsSaid = [...(s.asideFactsSaid ?? []), fact];
+    const said = s.servedNow.said ?? (s.later ?? []).find((e) => e.servedAt === s.turn && e.topic === s.servedNow.topic)?.said ?? null;
+    const line = said ? asideReturnLine(said, s.servedNow.topic, lang) : null;
     move.returned = { topic: s.servedNow.topic, share: !!s.servedNow.share, ...(line ? { line } : {}) };
   }
   // (v6, director9: a request turn — "samajh nahi aaya", "picture dikhao" — answers the request; a missed card's close waits for
