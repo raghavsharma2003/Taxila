@@ -3,14 +3,14 @@
  "note": "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand; counts are law families only (ITEM-ARENA is a net, its arena-only topics are listed in arenaOnly)",
  "counts": {
   "topicsInScope": 514,
-  "topicsCovered": 145,
-  "entries": 450,
-  "withMisconceptionMap": 146,
-  "mappedMisconceptions": 286,
+  "topicsCovered": 146,
+  "entries": 455,
+  "withMisconceptionMap": 147,
+  "mappedMisconceptions": 289,
   "bySubject": {
    "maths": {
     "inScope": 304,
-    "covered": 126
+    "covered": 127
    },
    "science": {
     "inScope": 146,
@@ -48,7 +48,7 @@
    },
    "7": {
     "inScope": 79,
-    "covered": 47
+    "covered": 48
    },
    "8": {
     "inScope": 71,
@@ -60,7 +60,7 @@
    }
   },
   "topicsAll": 830,
-  "topicsCoveredAll": 159,
+  "topicsCoveredAll": 160,
   "bySubjectAll": {
    "english": {
     "topics": 118,
@@ -76,7 +76,7 @@
    },
    "maths": {
     "topics": 304,
-    "covered": 126
+    "covered": 127
    },
    "science": {
     "topics": 146,
@@ -87,8 +87,8 @@
     "covered": 7
    }
   },
-  "arenaOnly": 93,
-  "arenaOnlyClass4to7": 5,
+  "arenaOnly": 92,
+  "arenaOnlyClass4to7": 4,
   "byFamily": {
    "todo-jodo": 15,
    "taraazu": 9,
@@ -101,7 +101,7 @@
    "guna": 11,
    "hissa": 5,
    "kaal": 6,
-   "kila": 6,
+   "kila": 7,
    "kon": 12,
    "koshtak": 2,
    "kram": 7,
@@ -3468,6 +3468,93 @@
    },
    "contexts": [],
    "why": "RULES c7-maths-ch11-t02 kila/lcm/meet · ACTS"
+  },
+  "c7-maths-ch11-t03-s1": {
+   "topicId": "c7-maths-ch11-t03",
+   "family": "kila",
+   "mode": "lcm",
+   "goal": "balance",
+   "grammar": {
+    "periods": [
+     4,
+     6,
+     8,
+     9,
+     10,
+     12,
+     14,
+     15,
+     16,
+     18
+    ],
+    "n": [
+     16,
+     72
+    ]
+   },
+   "misMap": {},
+   "contexts": [],
+   "why": "RULES c7-maths-ch11-t03 kila/lcm/balance · ACTS"
+  },
+  "c7-maths-ch11-t03-s2": {
+   "topicId": "c7-maths-ch11-t03",
+   "family": "kila",
+   "mode": "lcm",
+   "goal": "missing",
+   "grammar": {
+    "periods": [
+     4,
+     6,
+     8,
+     9,
+     10,
+     12,
+     14,
+     15,
+     16,
+     18
+    ],
+    "n": [
+     16,
+     72
+    ],
+    "hides": [
+     "b",
+     "wall",
+     "trap"
+    ]
+   },
+   "misMap": {},
+   "contexts": [],
+   "why": "RULES c7-maths-ch11-t03 kila/lcm/missing · ACTS"
+  },
+  "c7-maths-ch11-t03-s3": {
+   "topicId": "c7-maths-ch11-t03",
+   "family": "kila",
+   "mode": "lcm",
+   "goal": "three",
+   "grammar": {
+    "periods": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     8,
+     9,
+     10,
+     12
+    ],
+    "n": [
+     12,
+     72
+    ]
+   },
+   "misMap": {
+    "three-numbers": "c7-maths-ch11-t03-m-three-numbers"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch11-t03 kila/lcm/three · ACTS"
   },
   "c5-maths-ch03-t01-s1": {
    "topicId": "c5-maths-ch03-t01",
@@ -8766,42 +8853,6 @@
    "contexts": [],
    "why": "RULES c7-maths-ch11-t02 arena/pick/pick · ACTS"
   },
-  "c7-maths-ch11-t03-s1": {
-   "topicId": "c7-maths-ch11-t03",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch11-t03 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch11-t03-s2": {
-   "topicId": "c7-maths-ch11-t03",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch11-t03 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch11-t03-s3": {
-   "topicId": "c7-maths-ch11-t03",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch11-t03 arena/pick/pick · ACTS"
-  },
   "c7-maths-ch12-t01-s3": {
    "topicId": "c7-maths-ch12-t01",
    "family": "arena",
@@ -10244,7 +10295,6 @@
   "c3-maths-ch14-t02",
   "c6-science-ch05-t02",
   "c6-science-ch07-t02",
-  "c7-maths-ch11-t03",
   "c7-maths-ch14-t02",
   "c7-maths-ch15-t03",
   "c8-maths-ch01-t02",
@@ -13581,6 +13631,158 @@
    "misMap": {
     "product": "c7-maths-ch11-t02-m-product-always",
     "gcd-for-lcm": "c7-maths-ch11-t02-m-lcm-smaller"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch11-t03",
+   "title": "Properties and procedures",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "kila",
+   "mode": "lcm",
+   "goal": "balance",
+   "skillId": "c7-maths-ch11-t03-s1",
+   "skillIds": [
+    "c7-maths-ch11-t03-s1"
+   ],
+   "grammar": {
+    "periods": [
+     4,
+     6,
+     8,
+     9,
+     10,
+     12,
+     14,
+     15,
+     16,
+     18
+    ],
+    "n": [
+     16,
+     72
+    ]
+   },
+   "misMap": {}
+  },
+  {
+   "topicId": "c7-maths-ch11-t03",
+   "title": "Properties and procedures",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "kila",
+   "mode": "lcm",
+   "goal": "missing",
+   "skillId": "c7-maths-ch11-t03-s2",
+   "skillIds": [
+    "c7-maths-ch11-t03-s2"
+   ],
+   "grammar": {
+    "periods": [
+     4,
+     6,
+     8,
+     9,
+     10,
+     12,
+     14,
+     15,
+     16,
+     18
+    ],
+    "n": [
+     16,
+     72
+    ],
+    "hides": [
+     "b",
+     "wall",
+     "trap"
+    ]
+   },
+   "misMap": {}
+  },
+  {
+   "topicId": "c7-maths-ch11-t03",
+   "title": "Properties and procedures",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "kila",
+   "mode": "lcm",
+   "goal": "three",
+   "skillId": "c7-maths-ch11-t03-s3",
+   "skillIds": [
+    "c7-maths-ch11-t03-s3"
+   ],
+   "grammar": {
+    "periods": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     8,
+     9,
+     10,
+     12
+    ],
+    "n": [
+     12,
+     72
+    ]
+   },
+   "misMap": {
+    "three-numbers": "c7-maths-ch11-t03-m-three-numbers"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch11-t03",
+   "title": "Properties and procedures",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "kila",
+   "mode": "lcm",
+   "goal": "coprime",
+   "skillId": "c7-maths-ch11-t03-s3",
+   "skillIds": [
+    "c7-maths-ch11-t03-s3"
+   ],
+   "grammar": {
+    "periods": [
+     4,
+     8,
+     9,
+     15
+    ],
+    "n": [
+     30,
+     72
+    ]
+   },
+   "misMap": {
+    "prime-partner": "c7-maths-ch11-t03-m-coprime-prime"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch11-t03",
+   "title": "Properties and procedures",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "kila",
+   "mode": "lcm",
+   "goal": "mend",
+   "skillId": "c7-maths-ch11-t03-s3",
+   "skillIds": [
+    "c7-maths-ch11-t03-s3"
+   ],
+   "grammar": {
+    "n": [
+     16,
+     60
+    ]
+   },
+   "misMap": {
+    "any-pair": "c7-maths-ch11-t03-m-any-pair"
    }
   },
   {
