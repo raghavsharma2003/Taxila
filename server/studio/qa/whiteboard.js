@@ -613,7 +613,17 @@ export function gateWhiteboard(raw, ctx) {
   const okCount = (n) => said.has(n) || lineNums.has(n) || [...said].some((a) => [...said, ...lineNums].some((b) => a * b === n));
   // (director10 G2: a card's authored board of two or three separate wholes — fraction-bars, wholes — is that many wholes
   // side by side: the bars' outlines are wholes, never a partition she must say; each bar's own parts are still counted)
-  const badCount = said.size ? fams.filter((f) => !okCount(f.n) && !(ctx.wholes && f.n === ctx.wholes)).map((f) => `${f.kind} x${f.n}`) : [];
+  // (main, director10 G2: Learning's two-bar compares — "1/4 aur 1/8 mein kaunsa bada hai?" over a bar of 4 and a bar of 8 —
+  // were refused, so 13 c5-t02 boards went back to number lines: two equal wholes side by side are the fractions she
+  // compares, one whole per fraction, and each bar's parts and shaded parts are that fraction's own numbers)
+  const saidFracs = [...new Set((String(ctx.reply ?? "").match(/(?<![\d/])\d+\s*\/\s*\d+(?![\d/])/g) ?? []).map((f) => f.replace(/\s+/g, "")))];
+  const fracNums = new Set(saidFracs.flatMap((f) => f.split("/").map(Number)));
+  // (… and two bars of the same parts, 3/7 and 5/7, shade 3 + 5 = 8 pieces of one size: a sum of her numerators)
+  const nums = saidFracs.slice(0, 4).map((f) => Number(f.split("/")[0]));
+  const numSums = new Set(nums.flatMap((_, i) => nums.slice(i + 1).map((b) => nums[i] + b)));
+  if (nums.length >= 2) numSums.add(nums.reduce((a, b) => a + b, 0));
+  const okFrac = (n) => (saidFracs.length >= 2 && n === saidFracs.length) || fracNums.has(n) || numSums.has(n);
+  const badCount = said.size ? fams.filter((f) => !okCount(f.n) && !okFrac(f.n) && !(ctx.wholes && f.n === ctx.wholes)).map((f) => `${f.kind} x${f.n}`) : [];
   // (a clock's hands run from its centre: ctx.face, the asked thing is a face of numbers, studio/request.js faceDrawing)
   // (director10 G2: a card's OWN authored board cuts its wholes the way Learning authored them — wholes@1's radii, "1 bada,
   // 2 chhote" — certified with the card: the rule is for boards that draw a round whole of their own)

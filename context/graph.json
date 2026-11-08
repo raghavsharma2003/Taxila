@@ -26058,6 +26058,13 @@
    "at": "2026-11-07",
    "title": "director10's rows (claude/r4-conversation 14883b7f) replayed through Studio's seam on the director10 tree + int/r6 5534e97a, with Brain's bare-first-page join (1f2c46de) applied to the recorded segments. The 31 unpaged turns now draw 29/31. The 2 still failing are a close over a board that contradicts it: steady-c4 T62 (\"12 laddoo, 6 a group\" over e1's 8 dots) and c5-t02 steady T50 (\"5 rang wale\" over the 3/7 patti). Both are Learning data (no answerBoard). The 16 picture-request rows draw a second view 16/16: c4 wholes 0/2 → 2/2 strips; c6 measured and hexagon 0/4 → 4/4 unrolled (offtopic was already 1/1); fraction-bars → line 1/1; c5-t01's 3 two-scale rows now draw both scales. A first page refused on its own close went 30/31 → 4/31. The 26 freed were W5 on compare@1 words 13, W8 on two wholes 4, W8 on authored radii 8, and W17 1. The 4 left are each a close spoken over ANOTHER item's board: steady-c4 T46 (barfi 2/3 over the 3/4 grid), T62 and T72 (the 12- and 32-laddoo checks over e1's and e3's groups), and c5-t02 T50 (5/7 over 3/7). Two of these, T46 and T72, are kept as the card's board on screen (G1) and still contradict the close: that needs Brain's segment labels or Learning's answerBoard. Method: the card's board up on its run line (or the row Brain's line is written from), then the turn's segments; DATABASE_URL unset, no model calls. tests/r8-director10.test.mjs pins one row per item.",
    "source": "inbox/r7-studio-26.json"
+  },
+  {
+   "id": "ms-r7-m4-day1-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "M3/M4 60-day clock: day 1 = 2026-11-06, confirmed closed (Cost Management ActualCost by ServiceName, read 2026-11-08 09:16 UTC). Completes 2027-01-04, which meets even the worst-case reading of the 180-day clause (from the 2026-07-08 sponsorship start).\n\n2026-11-06 closed with 8 services ≥ $1: Container Apps 4.45, PostgreSQL 4.00, Foundry Models 3.33, Virtual Machines 2.20, Container Registry 1.75, Storage 1.46, Foundry Tools 1.45, Load Balancer 1.26. Virtual Network was 0.90, because the spares started ~10:55 UTC.\n\n2026-11-07 (near-final): 9 services ≥ $1 — ACA 4.46, PG 2.63, Models 1.93, VM 2.67, ACR 2.27, Storage 1.47, Tools 1.39, LB 1.92, VNet 1.56. Whole subscription $20.5/day.\n\nKeeper ledgers: 2026-11-07 had 16 runs (ACA + VM alternating every 1.5 h); 2026-11-08 had 6 runs by 09:00. The verifier report for 2026-11-08 is OK, with a projected runway of ₹129,630 at 2027-01-12.",
+   "source": "inbox/r7-main-22.json"
   }
  ],
  "edges": [
@@ -40770,6 +40777,11 @@
    "src": "dc-r7-second-view-every-template",
    "rel": "measured_by",
    "dst": "ms-r7-director10-drawing-replay-2026-11-07"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-r7-m4-day1-2026-11-06"
   }
  ]
 }
