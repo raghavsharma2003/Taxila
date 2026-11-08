@@ -326,11 +326,15 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     // v5 harness (director7: the one-board checker saw 13 of 51): a line with several parts (a closure, the beat, the card) is
     // checked part by part, each against the board drawn while it is said (intent.segments on her FINAL line: each part's
     // board preselected and taken on that part's own words, as Studio pages it)
-    let segs = null, unpaged = 0;
+    let segs = null, unpaged = 0, drawn = null;
+    const visualNow = p.r.move?.request === "visual";
     if (lane === "director" && reply && (next.lastMove?.scriptBeat || next.lastMove?.cardBeat)) {
       const item = boardItemOf(next, kit, findItem);
       const askF = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-seg-${++SEG_N}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: reply, ...(tGuard?.parts ? { parts: tGuard.parts } : {}) } });
       const parts = [{ atChar: 0, boardRef: askF.intent.boardRef, scriptBeat: askF.intent.scriptBeat }, ...(askF.intent.segments ?? [])].filter((x) => x.boardRef);
+      // (v6.3 harness, main on director11: the screen field and the picture check read what is actually DRAWN — her final line's
+      // pages as the seam pages them — never the board preselected before her line existed)
+      drawn = parts.map((pt) => ({ from: pt.atChar, board: pt.boardRef, beat: pt.scriptBeat?.beatId ?? null }));
       if (parts.length > 1) {
         // (v6.1, main on director9: model the seam's PAGED turn, not only each part on its own: production pages all parts in one
         // take (seam.js → pagesBoard); when one page cannot be drawn the whole turn falls back and no part's board — the
@@ -348,18 +352,23 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
           const wh = scr ? withheldStated(segText, { ...scr, boardRef: pt.boardRef }) : [];
           // v6 harness: each part's own board and when it starts (its clause; ~380 ms a word before it, the S2 timing check)
           const before = text.slice(0, pt.atChar).split(/\s+/).filter(Boolean).length;
+          const pic = visualNow ? pictureMismatch(segText, pt.boardRef).length : 0;
           return { from: pt.atChar, atClause: pt.atClause ?? null, estMs: before * 380, beat: pt.scriptBeat?.beatId ?? null, template: pk?.template ?? null, board: pt.boardRef,
-            contradictions: n + (wh.length ? 1 : 0), ...(wh.length ? { withheld: wh } : {}) };
+            contradictions: n + (wh.length ? 1 : 0), ...(wh.length ? { withheld: wh } : {}), ...(pic ? { picture: pic } : {}) };
         });
       }
     }
+    // (v6.3: the row's screen says what her final line draws: page 0's board, and every page when the turn is paged)
+    if (screen?.kind === "whiteboard" && drawn?.length) screen = { ...screen, preselected: screen.boardRef ?? null, boardRef: drawn[0].board, ...(drawn.length > 1 ? { pages: drawn } : {}) };
     const whole = segs ? 0 : next.lastMove?.scriptBeat || next.lastMove?.cardBeat ? screenContradictions(reply, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length
       + (screen?.kind === "whiteboard" && withheldStated(reply, screen).length ? 1 : 0) : 0;
     // v6 checker (main on director8: the code saw 1, 0, 0 of 10, 4, 45): (b) a picture asked for, described as something the board
     // does not draw; (c) a close's why borrowed from a point or a remediation; (d) a verdict with content said over a board
     // other than the answered card's
     const v6 = {
-      picture: p.r.move?.request === "visual" && screen?.kind === "whiteboard" ? pictureMismatch(reply, screen.boardRef ?? null).length : 0,
+      // (v6.3: each page's words against that page's board; a one-page turn against the board her final line draws)
+      picture: !visualNow ? 0 : segs ? segs.reduce((n, g) => n + (g.picture ?? 0), 0)
+        : screen?.kind === "whiteboard" ? pictureMismatch(reply, drawn?.[0]?.board ?? screen.boardRef ?? null).length : 0,
       borrowedWhy: borrowedWhy(reply, WHYS(kit)).length,
       // (v6.1) a turn in parts that Studio could not page; a picture asked for that drew the board already up, no second view
       unpaged,

@@ -42,6 +42,7 @@ const WORKED_FRAME_PART = { hinglish: ["Pehla kadam dekho.", "Iska shuruaati his
 // (director9: "Chalo, aage badhein?" was asked and then ignored, whatever they said: closures end on a statement, never a question)
 const SPLIT_ASK = { hinglish: ["Ab aage chalte hain.", "Chalo, ab aage.", "Ab agla hissa."], english: ["Now let's go on.", "On to the next bit.", "Now the next part."] };
 // v6.1 R9: a teaching turn past its beat's one check-in ends on a statement
+const SPLIT_CARD = { hinglish: ["Ab isi par ek sawaal.", "Ab is par ek chhota sawaal."], english: ["Now a question on this.", "Now a small question on this."] };
 const WORKED_GO = { hinglish: ["Ab agla kadam dekhte hain.", "Chalo, aage dekhte hain.", "Ab isse aage chalte hain."], english: ["Now the next step.", "Let's go on.", "Now we go on from here."] };
 /** v6.2: a check-in after teaching that is no worked step. */
 const BEAT_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?"], english: ["Does that make sense so far?", "Clear so far?"] };
@@ -1915,10 +1916,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // v6.1 R8 (main, director9 c6 stuck T23: "Is aayat ke kinaare par ek baar dhaaga lagana hai." — e3's opening — was taken
       // as the acknowledgement and said over e2's board): hers is the acknowledgement only when it takes up what THEY said
       const takesUp = (x) => /^(?:achha|accha|acha|theek|thik|hmm+|ok(?:ay)?|samajh\s+(?:gayi|gaya)|i\s+see|good|nice)\b|(?<![\p{L}])(?:tumne|tumhara|tumhari|tumhe|you|your)(?![\p{L}])/iu.test(x);
-      if (a0 && words(a0) <= 12 && !/\d/.test(a0) && !/[?？]/.test(a0) && !polarity(a0) && takesUp(a0) && !RULE_SAID.test(a0)) { ack = a0; ss = ss.slice(1); }
+      // (v6.3 R2: and only on a confident read of what they said; otherwise code's acknowledgement)
+      if (a0 && state.lastReadConfident !== false && words(a0) <= 12 && !/\d/.test(a0) && !/[?？]/.test(a0) && !polarity(a0) && takesUp(a0) && !RULE_SAID.test(a0)) { ack = a0; ss = ss.slice(1); }
       // v6.2 H3 (main, director10: "Theek, yeh tumhari soch thi." to "woh toh ho gaya na"): code's line says they told how they thought
       // only when they did (a reason in their words); anything else is a plain "okay"
-      else ack = REASON_SAID.test(saidNow) ? pickOf(PROBE_ACK[lang === "english" ? "english" : "hinglish"], state) : lang === "english" ? "Okay." : "Theek hai.";
+      else {
+        if (a0 && state.lastReadConfident === false && takesUp(a0) && !/[?？]/.test(a0)) { ss = ss.slice(1); guard.ackCode = true; }
+        ack = REASON_SAID.test(saidNow) ? pickOf(PROBE_ACK[lang === "english" ? "english" : "hinglish"], state) : lang === "english" ? "Okay." : "Theek hai.";
+      }
       guard.probeAck = true;
     }
     // v6 R3: a repeated miss on an adding card names exactly what their total left out
@@ -2014,7 +2019,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const goOn = () => pickOf((state.lastMove?.checkinOk ? (kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK) : WORKED_GO)[lang === "english" ? "english" : "hinglish"], state);
     const tail = card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
       : state.lastMove?.splitClose ? pickOf(SPLIT_ASK[lang === "english" ? "english" : "hinglish"], state)
-      : state.lastMove?.splitTeach ? goOn() : null);
+      // (v6.3 R2, main on director11: "Ab agla kadam dekhte hain." and then the same beat's card: the teaching half of a split turn
+      // is followed by ITS card, so it says a question on this comes, never a next step)
+      : state.lastMove?.splitTeach ? (state.lastMove?.checkinOk ? goOn() : pickOf(SPLIT_CARD[lang === "english" ? "english" : "hinglish"], state)) : null);
     // (v6 R5: the first half of a split turn says the closures only: none of her own teaching)
     if (state.lastMove?.splitClose) body = [];
     // v5 B5: a turn is at most about 60 words, except a worked step: her own sentences go first (from the end), never the
@@ -2041,7 +2048,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const keyS = (x) => norm(x).toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, "").trim();
     const seenS = new Set((tail ? sentences(tail) : []).map(keyS));
     const once = (xs) => xs.filter(Boolean).map(norm).filter((x) => { const kk = keyS(x); if (!kk || seenS.has(kk)) { if (kk) guard.dupDropped = (guard.dupDropped ?? 0) + 1; return false; } seenS.add(kk); return true; });
-    const noQ = (xs) => (tail ? xs.filter((x) => { const q = /[?？]/.test(x); if (q) guard.secondQuestion = (guard.secondQuestion ?? 0) + 1; return !q; }) : xs);
+    // (v6.3 W1, main on director11 c5-t02 steady T65: a worked example poses its question before "Diya hai …"; an authored worked
+    // line keeps its question — "Kisne kam cake khaya?" was dropped as a second question)
+    const authoredQ = new Set((workedLines ?? []).map(norm));
+    const noQ = (xs) => (tail ? xs.filter((x) => { const q = /[?？]/.test(x) && !authoredQ.has(norm(x)); if (q) guard.secondQuestion = (guard.secondQuestion ?? 0) + 1; return !q; }) : xs);
     // v6.1 (main's split policy B: "first trim HER own words"): a scripted turn over the word cap loses her own sentences in the
     // body (lead-ins, framings, her lines) before anything authored or code's is touched
     {

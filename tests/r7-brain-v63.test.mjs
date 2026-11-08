@@ -229,4 +229,62 @@ describe("r7-brain-v63.test.mjs", () => {
     assert.doesNotMatch(out.reply, /tukde barabar hain aur 1 tukda khaya gaya/, out.reply);
     assert.match(out.reply, /Chocolate ka kitna hissa khaya, bhinn mein batao\./, "the card stays: " + out.reply);
   });
+  test("W1: a worked example poses its question before 'Diya hai …' (c5-t02 steady, the cake problem)", async () => {
+    const T = TOPIC["c5-t02"];
+    setScriptForTest(T, runScriptOf(RUN, T));
+    const { kit, rows, last } = await replay(RUN, "steady", T, 65);
+    assert.equal(last.state.lastMove?.scriptBeat?.beatId, "worked:problem");
+    replyDeps.chat = async () => ({ text: rows[64].text });
+    const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
+    const q = out.reply.indexOf("Kisne kam cake khaya?"), d = out.reply.indexOf("Diya hai");
+    assert.ok(q >= 0 && d > q, out.reply);
+  });
+
+  test("W1: no lead-in of hers states the worked card's answer before they try it (c5-t02 steady row 26, offtopic row 32)", async () => {
+    for (const [persona, n] of [["steady", 26], ["offtopic", 32]]) {
+      const { out } = await at(persona, "c5-t02", n + 1);
+      const card = "Rahul ka tukda 1/6 hai, Sana ka tukda 1/3.";
+      const before = out.reply.slice(0, Math.max(0, out.reply.indexOf(card)));
+      assert.doesNotMatch(before, /bada hoga|se bada|Sana/i, `${persona} row ${n}: ${out.reply}`);
+      assert.ok(out.reply.includes(card), out.reply);
+    }
+  });
+  test("R1: a right answer's verdict on a single page draws the card's answerBoard (c5-t02 steady T7, T63; stuck T17; offtopic T13)", async () => {
+    const bad = [];
+    for (const [persona, t] of [["steady", 7], ["steady", 63], ["stuck", 17], ["offtopic", 13]]) {
+      const { out, last } = await at(persona, "c5-t02", t);
+      const ps = pagesOf(last, out, kitOf("c5-t02"));
+      const cb = last.state.lastMove?.closeBeat;
+      if (!cb?.answerBoard || JSON.stringify(ps[0].boardRef) !== JSON.stringify(cb.board)) bad.push(`${persona} T${t}: ${ps[0].boardRef?.template} ${JSON.stringify(ps[0].boardRef?.params).slice(0, 60)}`);
+    }
+    assert.deepEqual(bad, []);
+  });
+  test("R2: her own acknowledgement of a probe's answer only on a confident read; else code's (c5-t02 steering T45)", async () => {
+    const { last, rows, n } = await at("steering", "c5-t02", 45);
+    const T = TOPIC["c5-t02"];
+    const kit = kitOf("c5-t02");
+    const unsure = { ...last.state, lastReadConfident: false };
+    replyDeps.chat = async () => ({ text: rows[n].text });
+    const out = await textReply({ instructions: instructionsFor(unsure, kit), state: unsure, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
+    assert.match(rows[n].text, /^Riya, tumne tukde gin kar unke size ki tulna ki\./, "(the run's own acknowledgement)");
+    assert.doesNotMatch(out.reply, /size ki tulna/, out.reply);
+    assert.match(out.reply, /^(?:Theek hai|Theek, yeh tumhari soch thi|Achha)/, out.reply);
+    void T;
+  });
+  test("R2: Hindi number agreement after a count ('4 barabar tukde', never 'tukda'); a fraction is no count", async () => {
+    const { inHindiWords, agree } = await import("../server/brain/register.js");
+    assert.equal(inHindiWords("Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache."), "Ek pizza ke 4 barabar tukde the. 1 tukda kha liya gaya, aur 3 tukde bache.");
+    assert.equal(agree("1/4 hissa, 2 ka hissa, 5 bhuja"), "1/4 hissa, 2 ka hissa, 5 bhujayein");
+  });
+
+  test("R2: the teaching half of a split turn never promises 'the next step' when its own card follows (offtopic c6 e3)", async () => {
+    const T = TOPIC.c6;
+    setScriptForTest(T, runScriptOf(RUN, T));
+    const { kit, rows, last } = await replay(RUN, "offtopic", T, 17);
+    assert.ok(last.state.lastMove?.splitTeach, "the split teaching half: " + JSON.stringify(last.state.lastMove?.scriptBeat));
+    replyDeps.chat = async () => ({ text: rows[16].text });
+    const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
+    assert.match(rows[16].text, /Ab agla kadam dekhte hain\.$/, "(the run's tail)");
+    assert.doesNotMatch(out.reply, /agla kadam|aage dekhte|aage chalte/i, out.reply);
+  });
 });
