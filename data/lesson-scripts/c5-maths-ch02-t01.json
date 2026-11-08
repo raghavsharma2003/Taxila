@@ -134,7 +134,7 @@
        "hi": "1/3 ka matlab 0 se 1 ke 3 barabar gaps mein se pehla gap, toh woh isi line par hai",
        "en": "1/3 means the first of 3 equal gaps from 0 to 1, so it is on this line"
       },
-      "answerBoard": { "template": "fraction-line@1", "params": { "den": 3, "from": 0, "to": 1, "marks": [ { "num": 1, "label": "1/3" } ] } }
+      "board": { "template": "fraction-line@1", "params": {"den": 3, "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-line@1", "params": { "den": 3, "from": 0, "to": 1, "marks": [ { "num": 1, "label": "1/3" } ] } }
      },
      "simpler": {
       "hi": "0 se 1 ki line ko 2 barabar gaps mein baanto. Beech wala mark 1/2 hai, aur woh 0 aur 1 ke beech hi hai.",
@@ -197,7 +197,7 @@
        "hi": "beech ke marks se gaps hamesha ek zyada hote hain, 7 + 1 = 8",
        "en": "there is always one more gap than the marks in between, 7 + 1 = 8"
       },
-      "answerBoard": { "template": "fraction-line@1", "params": { "den": 8, "from": 0, "to": 1 } }
+      "board": { "template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-line@1", "params": { "den": 8, "from": 0, "to": 1 } }
      },
      "simpler": {
       "hi": "Marks mat gino, gaps gino. Line ke upar 3 marks se 4 barabar gaps bante hain.",
@@ -260,7 +260,7 @@
        "hi": "10 barabar gaps ka har gap 5 gaps wale gap se chhota hai, toh 1/10, 0 ke zyada paas rukta hai",
        "en": "each of 10 equal gaps is smaller than each of 5, so 1/10 stops closer to 0"
       },
-      "answerBoard": { "template": "fraction-line@1", "params": { "dens": [5, 10], "from": 0, "to": 1, "marks": [ [1, 5], [1, 10] ] } }
+      "board": { "template": "fraction-line@1", "params": {"dens": [5, 10], "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-line@1", "params": { "dens": [5, 10], "from": 0, "to": 1, "marks": [ [1, 5], [1, 10] ] } }
      },
      "simpler": {
       "hi": "Line ke jitne zyada gaps, har gap utna chhota. Isliye 1/8 wala pehla mark 0 ke bilkul paas hai.",
@@ -595,20 +595,7 @@
       ],
       "targets": "c5-maths-ch02-t01-m-whole-number-bias",
       "wrongIfMis": "after 1/3",
-      "board": {
-       "template": "fraction-line@1",
-       "params": {
-        "den": 3,
-        "from": 0,
-        "to": 1,
-        "marks": [
-         {
-          "num": 1,
-          "label": "1/3"
-         }
-        ]
-       }
-      },
+      "board": { "template": "fraction-line@1", "params": {"dens": [3, 6], "from": 0, "to": 1} },
       "why": {
        "hi": "1/6 ka hissa 1/3 ke hisse ka aadha hai, toh 1/6, 0 aur 1/3 ke beech rukta hai",
        "en": "a sixth is half of a third, so 1/6 stops between 0 and 1/3"
@@ -778,7 +765,7 @@
        "hi": "har hop 1/4 ka hai aur 0 se 3 hop liye, toh hum 3/4 par hain",
        "en": "each hop is 1/4 and we took 3 hops from 0, so we are at 3/4"
       },
-      "answerBoard": { "template": "fraction-line@1", "params": { "den": 4, "from": 0, "to": 1, "marks": [ { "num": 3, "label": "3/4" } ], "hop": { "num": 3 } } }
+      "board": { "template": "fraction-line@1", "params": {"den": 4, "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-line@1", "params": { "den": 4, "from": 0, "to": 1, "marks": [ { "num": 3, "label": "3/4" } ], "hop": { "num": 3 } } }
      },
      "simpler": {
       "hi": "Line ke 3 barabar gaps hain, har gap 1/3. 0 se 2 hop lo, aur tum 2/3 par pahunchte ho.",
@@ -837,7 +824,7 @@
        "hi": "har hop 1/5 ka hai, aur 5 hop milkar 5/5 = 1 banate hain",
        "en": "each hop is 1/5, and 5 hops make 5/5 = 1"
       },
-      "answerBoard": { "template": "fraction-line@1", "params": { "den": 5, "from": 0, "to": 1, "marks": [ { "num": 5, "label": "5/5 = 1" } ], "hop": { "num": 5 } } }
+      "board": { "template": "fraction-line@1", "params": {"den": 5, "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-line@1", "params": { "den": 5, "from": 0, "to": 1, "marks": [ { "num": 5, "label": "5/5 = 1" } ], "hop": { "num": 5 } } }
      },
      "simpler": {
       "hi": "Teesra hop theek 1 par utarta hai, isliye wahan 3/3 = 1 likha hai. Jab upar aur neeche barabar hon, hop theek 1 par khatam hote hain.",
@@ -1054,23 +1041,7 @@
      ],
      "targets": "c5-maths-ch02-t01-m-whole-number-bias",
      "wrongIfMis": "3/8",
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "1/4 ke 3 hop",
-        "items": [
-         "0 se 1"
-        ]
-       },
-       "right": {
-        "title": "1/8 ke 3 hop",
-        "items": [
-         "0 se 1"
-        ]
-       }
-      }
-     },
+     "board": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 1} },
      "why": {
       "hi": "1/4 ka hop 1/8 ke hop se do guna hai, toh 3 bade hop 3/4 tak jaate hain, 3/8 se aage",
       "en": "a 1/4 hop is twice a 1/8 hop, so 3 long hops reach 3/4, past 3/8 and closer to 1"
@@ -1240,23 +1211,7 @@
       ],
       "targets": "c5-maths-ch02-t01-m-whole-number-bias",
       "wrongIfMis": "after 2/4",
-      "board": {
-       "template": "fraction-line@1",
-       "params": {
-        "den": 4,
-        "from": 0,
-        "to": 1,
-        "marks": [
-         {
-          "num": 2,
-          "label": "2/4"
-         }
-        ],
-        "hop": {
-         "num": 2
-        }
-       }
-      },
+      "board": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 1} },
       "why": {
        "hi": "1/8 ka hop 1/4 ke hop ka aadha hai, toh 2 chhote hop sirf 2/8 tak jaate hain, 2/4 se pehle",
        "en": "a 1/8 hop is half a 1/4 hop, so 2 short hops reach only 2/8, before 2/4"
@@ -1428,7 +1383,7 @@
        "hi": "3 hop milkar 3/3 = 1 hain, toh chautha hop 1 ke baad 4/3 par jaata hai",
        "en": "3 hops make 3/3 = 1, so the 4th hop goes after 1, to 4/3"
       },
-      "answerBoard": { "template": "fraction-line@1", "params": { "den": 3, "from": 0, "to": 2, "marks": [ { "num": 3, "label": "1" }, { "num": 4, "label": "4/3" } ], "hop": { "num": 4 } } }
+      "board": { "template": "fraction-line@1", "params": {"den": 3, "from": 0, "to": 2} }, "answerBoard": { "template": "fraction-line@1", "params": { "den": 3, "from": 0, "to": 2, "marks": [ { "num": 3, "label": "1" }, { "num": 4, "label": "4/3" } ], "hop": { "num": 4 } } }
      },
      "simpler": {
       "hi": "Har poore mein 4 barabar gaps hain, toh 4 gaps chalke hum 1 par pahunchte hain. Gaps 1 ke aage bhi waise hi chalte hain.",
@@ -1488,7 +1443,7 @@
        "hi": "1/2 ke 2 hop milkar 1 banate hain, toh 6 hop 3 poore hain",
        "en": "2 half-hops make 1, so 6 hops make 3 wholes"
       },
-      "answerBoard": { "template": "fraction-line@1", "params": { "den": 2, "from": 0, "to": 3, "marks": [ { "num": 6, "label": "3" } ], "hop": { "num": 6 } } }
+      "board": { "template": "fraction-line@1", "params": {"den": 2, "from": 0, "to": 3} }, "answerBoard": { "template": "fraction-line@1", "params": { "den": 2, "from": 0, "to": 3, "marks": [ { "num": 6, "label": "3" } ], "hop": { "num": 6 } } }
      },
      "simpler": {
       "hi": "Pehle 4 hop 1 tak le jaate hain, phir 2 hop aur. Isliye 6/4, 1 aur 2 ke beech aata hai.",
@@ -1698,23 +1653,7 @@
      ],
      "targets": "c5-maths-ch02-t01-m-whole-number-bias",
      "wrongIfMis": "5/8",
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "1/4 ke 5 hop",
-        "items": [
-         "0 se 2"
-        ]
-       },
-       "right": {
-        "title": "1/8 ke 5 hop",
-        "items": [
-         "0 se 2"
-        ]
-       }
-      }
-     },
+     "board": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 2} },
      "why": {
       "hi": "1/4 ka hop 1/8 ke hop se do guna hai, toh 5 bade hop 5/4 tak, 5/8 se zyada door jaate hain",
       "en": "a 1/4 hop is twice a 1/8 hop, so 5 long hops reach 5/4, further from 0 than 5/8"
@@ -1893,20 +1832,7 @@
       ],
       "targets": "c5-maths-ch02-t01-m-whole-number-bias",
       "wrongIfMis": "3/4",
-      "board": {
-       "template": "fraction-line@1",
-       "params": {
-        "den": 4,
-        "from": 0,
-        "to": 2,
-        "marks": [
-         {
-          "num": 4,
-          "label": "1"
-         }
-        ]
-       }
-      },
+      "board": { "template": "fraction-line@1", "params": {"dens": [2, 4], "from": 0, "to": 2} },
       "why": {
        "hi": "3/2 mein upar ka 3 neeche ke 2 se bada hai, toh woh 1 ke aage hai, aur 3/4, 1 se pehle",
        "en": "in 3/2 the top 3 is bigger than the bottom 2, so it is past 1, while 3/4 is before 1"
