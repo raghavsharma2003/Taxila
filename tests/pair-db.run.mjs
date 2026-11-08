@@ -131,6 +131,25 @@ describe("child device pairing (test branch)", { skip: SKIP, concurrency: false,
     assert.equal((await call(`/api/studio/slot?lessonId=${sibLesson}&intentId=i1`, { cookie: parent })).status, 200, "the parent reaches both children's");
   });
 
+  test("boot on a device: this child only, no guardian email or id, no sibling name or id; the parent's boot is unchanged", async () => {
+    resetLimits();
+    const { cookie } = await pair(kid);
+    const r = await call(`/api/child/boot?childId=${kid}`, { cookie });
+    assert.equal(r.status, 200, JSON.stringify(r.body));
+    const { me } = r.body;
+    assert.equal(me.scope, "child");
+    assert.equal(me.guardian, null);
+    assert.deepEqual(me.consents, []);
+    assert.deepEqual(me.children.map((c) => [c.id, c.first_name]), [[kid, "Riya"]]);
+    assert.ok(!("guardian_id" in me.children[0]), "the child row's guardian_id is not sent");
+    const raw = JSON.stringify(r.body);
+    for (const leak of [`pair+${RUN}@test.invalid`, guardian, sib, "Kabir"]) assert.ok(!raw.includes(leak), `boot leaks ${leak}`);
+    const p = await call(`/api/child/boot?childId=${kid}`, { cookie: parent });
+    assert.equal(p.status, 200);
+    assert.equal(p.body.me.guardian.email, `pair+${RUN}@test.invalid`, "the parent's boot keeps today's shape");
+    assert.deepEqual(p.body.me.children.map((c) => c.first_name).sort(), ["Kabir", "Riya"]);
+  });
+
   test("devices list and unpair: the session ends at once, only the parent can do it", async () => {
     resetLimits();
     const { cookie } = await pair(kid);
