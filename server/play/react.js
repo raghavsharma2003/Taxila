@@ -30,6 +30,7 @@ import { koshtakHidden } from "../../src/play/families/koshtak/koshtak.logic.ts"
 import { parkarHidden } from "../../src/play/families/parkar/parkar.logic.ts";
 import { aankdeHidden } from "../../src/play/families/aankde/aankde.logic.ts";
 import { paheliHidden } from "../../src/play/families/paheli/paheli.logic.ts";
+import { galtiHidden } from "../../src/play/families/galti-pakdo/galti.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -94,6 +95,9 @@ export function hiddenOf(level) {
   // r7 paheli: the bags that make the load, the magic sum and the centre, the cracked digits, the starts that reach the
   // palindrome are never said first. Checked by family first: modes may share names with other families
   if (level.family === "paheli") return paheliHidden(level);
+  // r7 galti-pakdo: whether the working is all correct, the first wrong line, the mended line and the true x are never said
+  // first. Checked by family first: modes may share names with other families
+  if (level.family === "galti-pakdo") return galtiHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];
