@@ -6138,3 +6138,38 @@ galti-pakdo play-cert, 2026-11-08 (forge3-qa, local harness, sizes p360 / p412 /
 - **Cert:** 16 of 16 galti-pakdo samples pass at p360, p412 and l1366 (the table: 3880 of 3880). Counts are in server/forge3/certs/play.json.
 - **Tests:** tests/r7-games-galti-pakdo.test.mjs. An independent checker reads only the line text the child sees (each side evaluated as arithmetic, where the two sides meet, the claim put into the question) and agrees with the law on the first wrong line, the claim and whether it balances the question, for every generated level of both goals, all kinds and looks; the kinds come a third each over 960 served levels per goal (bounds 0.28-0.39); generator and picker p95 in CPU time.
 - **Browser runs:** both goals and all three kinds solved by real taps at 360 x 640 on seeds 3 and 17 (looks 1 and 3) and once more with the kind left to the seed (seeds 41, 77); page.mouse on the canvas targets, getByTestId on the DOM controls, never a dispatch. The smallest tap target in every run was 44 x 44 px. Shots in docs/design/round7/games/runshots-galti-pakdo/.
+
+
+<!-- merged from inbox/r7-main-29.json -->
+## `ms-r7-director12-hand-2026-11-08` (2026-11-08)
+
+director12: v6.3 on integration 14f. 16 lessons, counted by hand by 4 judges, with contradictions classified by mechanism.
+
+| Line | Count |
+|---|---|
+| Beats taught | 239/247 (97%) |
+| Verdicts | 203/203 |
+| Misgrades | 0/0 |
+| False keys | 0 |
+| Contradictions, by hand | 38 (paging 14, second view 4, data 17, model words 1, nothing-new 2) |
+
+director11 had 36.
+
+By topic:
+
+| Topic | director11 | director12 |
+|---|---|---|
+| c4 | 17 | 5 |
+| c5-t01 | 8 | 3 |
+| c6 | 5 | 1 |
+| c5-t02 | 6 | 29 |
+
+c5-t02's rise is new data from the ask boards (17), plus dedupe fragments and ask-board paging (10).
+
+Listening scored 3 in all four topics; register and promises 2.5–3.
+
+What went to zero: carried closes (from 22), canned aside facts (from 17), raw park templates (from 6).
+
+Cost ~$0.936 for 1,380 calls. Reply-ready p50 2.64 s.
+
+Full write-up: docs/design/round7/judgements/director12-2026-11-08.md.

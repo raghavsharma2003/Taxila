@@ -26401,6 +26401,20 @@
    "at": "2026-11-08",
    "title": "Safety (deferred to the safety pass): evals/safety-robust/build-known.mjs splits Devanagari at combining marks, so regenerating known-words after the c8/c9 Hindi language kits added fragments that are not words (विृक्ष, िचार, क्त, सु) alongside real ones. They are harmless today (KNOWN_NEAR only stops a token being read as a solo slot word), but a fragment could mask a garbled safety word. Not fixed now under the build-first directive (existing safety code stays as it is); the safety pass should tokenise by grapheme cluster and re-derive the list.",
    "source": "inbox/r7-main-28.json"
+  },
+  {
+   "id": "ms-r7-director12-hand-2026-11-08",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "director12: script walk v6.3 on 24fbd514 (int/r6 1a71ea86f integration 14f + Brain v6.3 35c1befa), 16 lessons, 1,380 calls ~$0.936, reply-ready p50 2.64 s / p90 4.27 s; counted by hand by 4 Claude judges (0-based rows, contradictions by mechanism): beats 239/247 (97%), verdicts 203/203, misgrades 0/0, false keys 0; contradictions 38 (paging 14, second view 4, data 17, model words 1, other/nothing-new 2) vs director11 36 (13/9/13/1/0). Per topic c4 17→5, c5-t01 8→3, c6 5→1, c5-t02 6→29 (17 data from the new ask boards posing 'isi patti' on a line and c3 without its ring; 10 paging from dedupe-cut remediation fragments refused by W8 and simplers on ask boards). Listening 3 in all four topics; register 2.5–3; promises 2.5–3. Carried 'Aur pehle wale' closes 22→0, canned aside facts 17→0, raw park templates 6→0; aside returns on time and in the child's words 1/6, 1/6, 2/5, 6/6 hollow; worked examples pose first (c6 6/6 vs 0/5).",
+   "source": "inbox/r7-main-29.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-4",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Script walk v6.4: no orphan lines; every card ends answered; asides answered. Brain: P2 a part whose page is refused is dropped whole, dedupe drops whole sentences only, a remediation is said whole or the walk moves to the next rung, a beat's simpler/recap on its own beat's board, a single-part turn draws its own line's board (predicate: 0 spoken parts without their own page); K1 after a misconception remediation and its then-card, the original card is posed again once, a second miss gives up with key + why on its answerBoard (predicate: every posed card ends with its key said); Q1 non-answer turns re-pose only the card, no 'Yaad karo' recital on a live card; H2″ return at the first boundary after the promised card, one model-written line (≤ 20 words, no lesson numbers, reuses a child content word) answering what the child said including their question, no new promise, no template, unreturned asides at the wrap; T1″ one close per worked card, no carried 'Pichhle sawaal' after a probe; L1 Hindi requests switch her own lines (root-cause c5/c6 vs c4); R3 neutral acks unless confident, no word-for-word re-pose; harness: imperative-question regex, picture check reads the second view, proxies report dropped pages. Studio: S4 second views for fraction-parts bars (circle), count keys and unmarked ask lines; S5 bring-back words from the card's own text incl. measured@1/shape@1; S6 preselect gated on her line, catalogue pages rescaled to join. Learning: D6 figureOf distinguishes bars from a line and the validator covers prompts ('patti'/'bar' ⇒ bars, 'rekha'/'nishaan'/'ringed' ⇒ line with the mark); D7 c5-t02 e1/e2 on bars, c3 with its ring, marble/pencil answerBoards with their equal companion. Why: director12 passes beats/verdicts/misgrades/false keys for the seventh run; three topics fell 30→9 contradictions; c5-t02's rise and most remaining paging come from two named mechanisms v6.3 itself introduced; listening/register/promises are below 3.5 everywhere. Reverse: director13 has more than 10 paging + second-view contradictions with P2 and S4–S6 in place → one code-drawn board per card, held; or the listening/register/promise axes stay below 3.5 with K1, Q1, H2″ and L1 in place → the turn's spoken framing moves to code templates and the model only fills the aside line.",
+   "source": "inbox/r7-main-29.json"
   }
  ],
  "edges": [
@@ -41248,6 +41262,21 @@
    "src": "dc-r7-games-galti-pakdo",
    "rel": "measured_by",
    "dst": "ms-r7-games-galti-pakdo-cert"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-4",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v6-3"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-4",
+   "rel": "measured_by",
+   "dst": "ms-r7-director12-hand-2026-11-08"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-3",
+   "rel": "measured_by",
+   "dst": "ms-r7-director12-hand-2026-11-08"
   }
  ]
 }

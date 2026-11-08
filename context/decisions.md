@@ -8998,3 +8998,33 @@ After a deploy, one command says whether pairing, placement, sign-in by code and
 - The picker gets a seeded difficulty nudge (± 0.12) so first levels differ across children (tested: at least 15 distinct of 20).
 
 Reverse if a child pilot shows lines are found by tapping each in turn (many refused flags per level) rather than by reading the steps, or the balance is never used before a verdict.
+
+
+<!-- merged from inbox/r7-main-29.json -->
+## `dc-r7-script-walk-v6-4` (2026-11-08)
+
+No orphan lines, every card ends answered, and asides get answered.
+
+**Brain:**
+- **P2:** a part whose page is refused is dropped whole. Dedupe never leaves fragments.
+- **K1:** after its then-card, the original card is posed again once, then given up with its key and why.
+- **Q1:** non-answer turns re-pose only the card, with no recital.
+- **H2″:** an aside gets a one-line reply at the first boundary that answers the child, with no template and no new promise.
+- **T1″:** one close per worked card.
+- **L1:** a Hindi request switches her own lines.
+- **R3:** neutral acknowledgements, and no word-for-word re-pose.
+
+**Studio:**
+- **S4:** real second views for fraction-parts bars, count keys and unmarked ask lines.
+- **S5:** bring-back words come from the card's own text.
+- **S6:** preselect is gated on her line.
+
+**Learning:**
+- **D6:** bars versus a line in figureOf, and the check covers prompts.
+- **D7:** c5-t02 e1/e2 on bars, c3 with its ring, and the equal companions.
+
+**Why:** director12 passes beats, verdicts, misgrades and false keys. Three topics fell from 30 to 9 contradictions. c5-t02's rise comes from two mechanisms that v6.3 itself introduced. Listening, register and promises are below 3.5 everywhere.
+
+**Reverse if:**
+- more than 10 paging plus second-view contradictions remain with P2 and S4–S6 in place: one code-drawn board per card;
+- the listening, register or promise axes stay below 3.5 with K1, Q1, H2″ and L1 in place: the spoken framing moves to code templates.
