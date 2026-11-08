@@ -15,3 +15,11 @@
 | guna-taps-c7-commas-solved-p360.png | solved by real taps only (international posts, a missed reading, then the lakh post moved): 1,09,258 |
 
 Also solved by real taps (not copied): yard/build at class 4, "1 thousand 15" (11 taps, including a wrong crate on 10⁴, a missed drive and the fix).
+
+**Short tray, after the crate-size fix** (360 × 600, solved by real taps only; every registered target ≥ 44 px):
+
+| File | What it shows |
+|---|---|
+| `short-taps-c7-build-solved-p360` | "8 million 61 thousand 126" on the 8-rack truck in two halves. Each rack past "−" is one wide add target, and the crates sit five over four at about 16 × 17 px (they were 12 × 11 three by three). Empty racks are the zeros. The bridge reads 80,61,126 after the drive. |
+| `short-taps-c7-build-missed-p360` | The same docket with a crate on the wrong rack: the bridge shows the miss and the wrong rack is marked |
+| `short-taps-c4-build-solved-p360` | Class 4, "1015" |

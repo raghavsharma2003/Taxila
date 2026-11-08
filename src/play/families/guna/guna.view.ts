@@ -544,16 +544,23 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const place = racks - 1 - k, col = split && k >= half ? 1 : 0, r = split ? k % half : k;
       const x = rackX + col * (rw + gap), y = rackY + r * rowH, cy = y + rowH / 2, n = s.crates[place];
       if (p.face < 3 || place === 0) P.text(c, placeLabel(place), x + labW / 2, cy, { size: 16, role: "ink2", weight: 700, font: "mono", maxW: labW - 2 });
-      if (!s.done) { api.target(`rack-${place}-take`, x + labW, y + 1, 44, 44); api.target(`rack-${place}-add`, x + rw - 44, y + 1, 44, 44); }
+      // a short tray (two halves side by side): no separate + button. The whole rack past "−" is the add target (a crate
+      // goes onto the rack the finger lands on), so the crates get the width a + button took: two rows of five and four,
+      // each crate about 16 x 17 at 360 px, where three by three gave 12 x 11. Every target stays at least 44 x 44.
+      if (!s.done) {
+        api.target(`rack-${place}-take`, x + labW, y + 1, 44, 44);
+        if (split) api.target(`rack-${place}-add`, x + labW + 44, y + 1, rw - labW - 44, 44);
+        else api.target(`rack-${place}-add`, x + rw - 44, y + 1, 44, 44);
+      }
       P.body(c, x + labW + 2, y + 4, 40, 38, { role: "panel", r: 8 });
       P.text(c, "−", x + labW + 22, cy, { size: 22, role: n > 0 ? "ink" : "ink3", weight: 800 });
-      P.body(c, x + rw - 42, y + 4, 40, 38, { role: "panel", r: 8 });
-      P.text(c, "+", x + rw - 22, cy, { size: 22, role: n < RACK ? "ink" : "ink3", weight: 800 });
-      // the slots: nine in a line, or (a narrow half) three by three
-      const sx0 = x + labW + 46, sw = rw - labW - 92;
-      const grid = sw / RACK < 9, cw = grid ? sw / 3 : sw / RACK, ch = grid ? (rowH - 10) / 3 : rowH - 18;
+      if (split) P.body(c, x + labW + 46, y + 4, rw - labW - 48, 38, { role: "panel", r: 8, lift: 0 });
+      else { P.body(c, x + rw - 42, y + 4, 40, 38, { role: "panel", r: 8 }); P.text(c, "+", x + rw - 22, cy, { size: 22, role: n < RACK ? "ink" : "ink3", weight: 800 }); }
+      // the slots: nine in a line, or (a narrow half) five over four
+      const sx0 = x + labW + (split ? 50 : 46), sw = split ? rw - labW - 56 : rw - labW - 92;
+      const grid = split || sw / RACK < 9, cw = grid ? sw / 5 : sw / RACK, ch = grid ? (rowH - 10) / 2 : rowH - 18;
       for (let i = 0; i < RACK; i++) {
-        const cx0 = sx0 + (grid ? (i % 3) * cw : i * cw), cy0 = grid ? y + 5 + (2 - Math.floor(i / 3)) * ch : y + 9;
+        const cx0 = sx0 + (grid ? (i % 5) * cw : i * cw), cy0 = grid ? y + 5 + (1 - Math.floor(i / 5)) * ch : y + 9;
         if (i < n) P.body(c, cx0 + 1, cy0 + 1, cw - 2, ch - 2, { role: placeRole(place), r: 2, seed: place * 10 + i });
         else if (!grid) P.stroke(c, [[cx0 + 1, y + rowH - 9], [cx0 + cw - 1, y + rowH - 9]], { role: "ink3", width: 1.5 });
       }
