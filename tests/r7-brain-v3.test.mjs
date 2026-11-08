@@ -226,20 +226,19 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     assert.equal(cardClauseOf("Pehla. Doosra wala vakya. Card ka sawaal kya hai?", "Card ka sawaal kya hai?"), 1);
   });
 
-  test("v4 W4: after a remediation's follow-up, the card they missed is closed with its answer", async () => {
+  test("v6.3 T1′ (retires v4 W4): after a remediation's follow-up, the card they missed is not closed later; a missed close is dropped", async () => {
     const L = run();
     for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
     L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
     assert.match(L.r.state.activeItemId, /:then:/);
     L.t("38", cls("correct"));
-    // (a right follow-up may get its why-probe first; the close comes on the move after the follow-up is done)
-    for (let i = 0; i < 3 && !L.r.move.closed; i++) L.t("har bhuja ek baar jodi", cls("correct"));
-    assert.equal(L.r.move.closed?.answer, "12 cm", JSON.stringify(L.r.move));
+    for (let i = 0; i < 3; i++) {
+      L.t("har bhuja ek baar jodi", cls("correct"));
+      assert.notEqual(L.r.move.closed?.answer, "12 cm", "v6.3: no close for a card not answered in the child's last turn: " + JSON.stringify(L.r.move));
+    }
     replyDeps.chat = async () => ({ text: "Bahut badhiya!" });
     const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "38", verdict: "correct", history: [], ui: L.r.ui, module: null });
-    // (v6, director8 judges: a why is only the card's own authored why; this fixture's card has none, so none is borrowed from
-    // the remediation's last sentence)
-    assert.match(out.reply, /Aur pehle wale sawaal ka jawab 12 cm tha\./, "v6: the close says its answer, with no borrowed why: " + out.reply);
+    assert.doesNotMatch(out.reply, /pehle wale sawaal ka jawab/i, "v6.3: no carried close: " + out.reply);
   });
 
   test("v5 B5: one verdict sentence; a sentence putting a method in the child's mouth goes; a long turn keeps its authored parts", async () => {

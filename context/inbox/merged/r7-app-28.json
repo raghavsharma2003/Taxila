@@ -1,0 +1,15 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-device-pairing",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "The child's own phone or tablet joins its profile with a one-time code the parent makes in the corner (Children: 'Put Taxila on {name}'s device', code plus QR, 10 minutes, one use, Unpair per device), redeemed at /pair into a child-scoped session. On that session /api/me is scope:'child', guardian:null, one child. Who opens that child, and /parent/* asks for the grown-up's own sign-in. Platform owns the routes (main's shape); App asks for a separate child-session cookie so a parent sign-in on the device does not erase the pairing. Identity stays the authenticated child id; the device holds only a revocable session. Reverse: the owner prefers child-mode PINs on a parent-signed-in device, or Platform cannot scope sessions.",
+   "source": "inbox/r7-app-28.json"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## `dc-r7-app-device-pairing`\nA child with their own phone no longer borrows the parent's for every lesson: one code from the grown-up, and the device opens straight to their lessons. The parent can take it back at any time.\n"
+ }
+}

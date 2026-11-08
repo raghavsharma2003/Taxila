@@ -16,6 +16,7 @@ import { hiddenOf } from "../server/play/react.js";
 import { playActOf } from "../server/director/play-verbs.js";
 import { GAME_WEIGHT, FAMILIES, MODES, FAMILY_ARTS, sanitizeActs } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const L = parkarLogic;
@@ -340,7 +341,7 @@ for (const [mode, goal] of CASES) {
     const IDS = ["A", "B", "C", "O", "M", "P1", "P2", "P3", "Z"];
     for (let gi = 0; gi < 30; gi++) {
       let best = Infinity, cands = [];
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); cands = L.generate(req(mode, goal, 100 + gi, { fade: 1 + (gi % 3) })); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); cands = L.generate(req(mode, goal, 100 + gi, { fade: 1 + (gi % 3) })); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       for (const c of cands.slice(0, 3)) {
         const level = L.validate(c.level), sol = L.solve(level), mals = PARKAR_MAL.map((m) => L.malActs(level, m)).filter(Boolean);

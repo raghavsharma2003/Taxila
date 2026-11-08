@@ -23,5 +23,12 @@ export function inHindiWords(line, { keep = [], card = null } = {}) {
   for (const [re, to] of HINDI) out = out.replace(re, (m) => (kept.some((k) => k === m.toLowerCase() || k.includes(m.toLowerCase())) ? m : keepCase(m, to)));
   // v6.1 R11 (director9: "Parimap (parimap)"): an English word glossed in brackets becomes the same word twice once it is in
   // Hindi words; the bracket goes
-  return out.replace(/(?<![\p{L}])(\p{L}+)\s*\(\s*\1\s*\)/giu, "$1") + tail;
+  return agree(out.replace(/(?<![\p{L}])(\p{L}+)\s*\(\s*\1\s*\)/giu, "$1")) + tail;
+}
+/** v6.3 R2 (main, director11 c4: "Ek pizza ke 4 barabar tukda the", "slice" made Hindi without its number): a count of two or more
+ *  takes the plural (tukde, hisse, bhujayein), one word between allowed; a fraction's denominator ("1/4 hissa") is no count. */
+const PLURAL = { tukda: "tukde", hissa: "hisse", bhuja: "bhujayein" };
+export function agree(text) {
+  return String(text ?? "").replace(/(?<![\d/.])\b([2-9]|[1-9]\d+)(\s+(?:\p{L}+\s+)?)(tukda|hissa|bhuja)(?![\p{L}])/giu,
+    (m, n, mid, w) => (/^(?:ka|ki|ke|wala|wali|wale|se|mein|par)\s+$/i.test(mid.trim() + " ") ? m : `${n}${mid}${keepCase(w, PLURAL[w.toLowerCase()])}`));
 }

@@ -196,3 +196,10 @@
 .kx-db-seal { --k-cut: 10px; display: flex; gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--k-secure); background: var(--k-panel); }
 .kx-db-seal-mark { width: 40px; height: 40px; flex: none; color: var(--k-secure); filter: drop-shadow(0 0 10px color-mix(in srgb, var(--k-secure) 45%, transparent)); }
 .kx-db-seal-mark svg { width: 100%; height: 100%; display: block; }
+
+/* r7 app-world-hangar-depth: the child's equipped emote rises once beside "Sent to {T}" (static under reduced motion) */
+.kx-db-sent { display: flex; align-items: center; gap: 8px; }
+.kx-db-flourish { display: inline-grid; place-items: center; filter: drop-shadow(0 0 10px currentColor); animation: kx-db-rise .9s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes kx-db-rise { from { transform: translateY(14px) scale(.6); opacity: .15; } 60% { transform: translateY(-4px) scale(1.12); opacity: 1; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .kx-db-flourish { animation: none; } }
+.kx[data-kmotion="reduced"] .kx-db-flourish { animation: none; }

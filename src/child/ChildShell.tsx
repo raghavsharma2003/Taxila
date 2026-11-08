@@ -3,6 +3,7 @@
 // It writes data-band on <html> and on its own [data-v2] root, and data-theme: ALWAYS "light" for Young (b1/b2 are
 // light-only, `ds-band-fork-older`), the child's Light / Dark / Match phone choice for Older. No child-facing error
 // copy beyond the designed T8 line: a missing session asks for a grown-up.
+import { pairedChildId } from "../app/device.ts";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import { ApiError, getMe, type ChildRow, type MeResponse } from "./api.ts";
@@ -91,7 +92,12 @@ export function ChildShell({ children }: { children?: ReactNode }) {
         setMe(m);
         setState(m.children.some((c) => c.id === cid) ? "ok" : "missing");
       })
-      .catch((e) => live && setState(e instanceof ApiError && e.status === 401 ? "signedout" : "error"));
+      .catch((e) => {
+        if (!live) return;
+        // r7 device pairing: a paired device whose pairing ended (the parent unpaired it) goes back to /pair, gently
+        if (e instanceof ApiError && e.status === 401 && pairedChildId()) { nav("/pair?unpaired=1", { replace: true }); return; }
+        setState(e instanceof ApiError && e.status === 401 ? "signedout" : "error");
+      });
     return () => {
       live = false;
     };

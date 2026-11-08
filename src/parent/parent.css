@@ -385,3 +385,14 @@ html:has(.pa[data-tabs="off"]) { scroll-padding-top: 64px; }
 .pa-tt-day { padding-top: 2px; }
 .pa-tt-subjects { display: grid; gap: 4px; min-width: 0; }
 .pa-timetable .pa-tt-subjects .pa-tt-chip { padding: 0; font: 600 12px/1 var(--sch-mono); letter-spacing: 0; min-width: 0; overflow: hidden; white-space: nowrap; }
+
+/* r7 app-child-device-pairing (App): the pairing card on Children */
+.pair-card { display: grid; gap: var(--space-2); margin-top: var(--space-2); }
+.pair-code-box { display: grid; gap: var(--space-2); }
+.pair-code-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.pair-code { margin: 0; font: 700 34px/1 var(--k-mono, ui-monospace, monospace); letter-spacing: .12em; }
+.pair-code--gone { font-size: 22px; letter-spacing: 0; color: var(--ink-2); }
+.pair-qr { flex: none; border-radius: 6px; }
+.pair-qr--wait { background: var(--surface-2, transparent); }
+.pair-devices { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-1); }
+.pair-device { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }

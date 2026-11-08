@@ -36,7 +36,9 @@ export const rangeOk = (b) => (RANGE[b.template] ? RANGE[b.template](b.params ??
 export const RANGE = {
   "fraction-parts@1": (p) => p.parts >= 2 && p.parts <= 12 && p.shade >= 0 && p.shade <= p.parts,
   "fraction-of@1": (p) => p.b >= 2 && p.b <= 6 && p.d >= 2 && p.d <= 6 && p.a >= 1 && p.a <= p.b && p.c >= 1 && p.c <= p.d,
-  "equal-groups@1": (p) => p.groups >= 2 && p.groups <= 6 && p.each >= 1 && p.each <= 8,
+  // Studio cb7108d7: `sizes` [2-6 groups of 1-10] draws the same heap shared into groups of THOSE sizes (unequal allowed)
+  "equal-groups@1": (p) => (Array.isArray(p.sizes) ? p.sizes.length >= 2 && p.sizes.length <= 6 && p.sizes.every((n) => Number.isInteger(n) && n >= 1 && n <= 10)
+    : p.groups >= 2 && p.groups <= 6 && p.each >= 1 && p.each <= 8),
   "compare@1": (p) => p.left?.items?.length >= 1 && p.right?.items?.length >= 1,
   // Studio 3dc6208a: measured@1 also draws polygons (sides 3-8, all labelled; names one per corner, ≤ 3 chars)
   "measured@1": (p) => ["m", "cm"].includes(p.unit) && (["rect", "square", "triangle", "circle"].includes(p.shape)
@@ -215,6 +217,40 @@ export const THEN_MAX = 120;
 export const SAY_MAX_WORDS = 45;
 export const SIMPLER_MAX_WORDS = 35;
 /**
+ * director11 D2: what a card's why says it is pointing at, against the board drawn under it at the close. PURE.
+ *  - a line / mark / ring (rekha, nishaan, line, mark) over a fraction picture (bars, wholes, parts, groups, grid) is a
+ *    mismatch: it belongs on a fraction-line or number-line-scale (geometry boards draw their own lines)
+ *  - a bar / strip (patti) is drawn as bars, or as a bar whole
+ *  - a round whole (cake, roti, pizza, laddoo, watermelon) is drawn as wholes or a round fraction-parts, not a line or bars
+ *  - group sizes listed in the why ("7, 3, 3, 3") are the groups drawn: never one equal-groups of another size
+ *  - a "not equal" why never closes over a board that draws only equal parts (D1: the judged figure, not the ideal one)
+ */
+export function whyFigureErrors(why, board) {
+  const t = `${why?.hi ?? ""} ${why?.en ?? ""}`.toLowerCase();
+  if (!t.trim() || !board?.template) return [];
+  const p = board.params ?? {}, tpl = board.template, out = [];
+  const isLine = tpl === "fraction-line@1" || tpl === "number-line-scale@1";
+  const isBar = tpl === "fraction-bars@1" || (tpl === "fraction-parts@1" && p.whole === "bar") || (tpl === "wholes@1" && p.as === "bar");
+  const isRound = (tpl === "wholes@1" && p.as !== "bar") || (tpl === "fraction-parts@1" && p.whole !== "bar");
+  // only where the board is a fraction picture: in geometry a "rekha" is a line segment and a "nishaan" a chalk mark on a
+  // wheel, both drawn by their own templates
+  const fractionBoard = ["fraction-bars@1", "wholes@1", "fraction-parts@1", "equal-groups@1", "shade-grid@1"].includes(tpl);
+  if (/\b(rekha|nishaan|number line|on the line|mark)\b/.test(t) && fractionBoard) out.push(`its why points at a line or a mark, the board is ${tpl}`);
+  if (/\b(patti|strip|bars?)\b/.test(t) && !/chocolate bar/.test(t) && !isBar && !isLine) out.push(`its why points at a bar, the board is ${tpl}`);
+  if (/\b(cake|roti|pizza|laddoo|tarbooz|watermelon)\b/.test(t) && (isLine || tpl === "fraction-bars@1")) out.push(`its why points at a round whole, the board is ${tpl}`);
+  const sizes = /\b(?:groups?|samooh)\s+(\d+(?:\s*,\s*\d+)+(?:\s*(?:,|and|aur)\s*\d+)?)/.exec(t);
+  if (sizes && tpl === "equal-groups@1") {
+    const ns = sizes[1].split(/\s*(?:,|and|aur)\s*/).map(Number);
+    if (Array.isArray(p.sizes)) { if (ns.join() !== p.sizes.join()) out.push(`its why lists groups ${ns.join(", ")}, the board draws groups ${p.sizes.join(", ")}`); }
+    else if (new Set(ns).size > 1) out.push(`its why lists unequal groups ${ns.join(", ")}, the board draws ${p.groups} equal groups of ${p.each}`);
+  }
+  const notEqual = /\b(not equal|barabar nahi|unequal)\b/.test(t);
+  const onlyEqual = (tpl === "wholes@1" && (p.wholes ?? []).every((w) => w.equal !== false)) || (tpl === "equal-groups@1" && !(Array.isArray(p.sizes) && new Set(p.sizes).size > 1)) || (tpl === "fraction-parts@1");
+  if (notEqual && onlyEqual) out.push(`its why judges "not equal", the board draws only equal parts (draw the judged figure)`);
+  return out;
+}
+
+/**
  * The posed figure of a board: what is drawn, never what answers (shade, marks, labels, hops). Equivalent drawings of
  * one figure compare equal, so a card may pose it one way and reveal it another:
  *   fractions   fraction-bars@1 parts and a 0-1 fraction-line@1's dens are both "these (distinct) denominators"
@@ -236,7 +272,7 @@ export function figureOf(board) {
     case "shape@1": case "measured@1": return `shape["${kind(p.shape)}"]`;
     case "fraction-parts@1": return `parts${JSON.stringify([p.parts, p.whole ?? null])}`;
     case "wholes@1": return `wholes${JSON.stringify((p.wholes ?? []).map((w) => [w.parts, w.equal !== false]))}`;
-    case "equal-groups@1": return `groups[${Number(p.groups) * Number(p.each)}]`;
+    case "equal-groups@1": return `groups[${Array.isArray(p.sizes) ? p.sizes.reduce((a, b) => a + Number(b), 0) : Number(p.groups) * Number(p.each)}]`;
     case "shade-grid@1": return `groups[${Number(p.rows) * Number(p.cols)}]`;
     case "number-line-scale@1": return `scale${JSON.stringify([p.from, p.to, p.step])}`;
     default: return `${board.template}${JSON.stringify(p)}`;
@@ -306,8 +342,17 @@ export function v22Errors(s) {
       ...(we.yourStep?.answerBoard ? [["workedExample.yourStep", we.yourStep, we.yourStep.board ?? we.board]] : [])];
     for (const [where, c, board] of shown) {
       const a = figureOf(c.answerBoard), b = figureOf(board);
-      if (a !== b) e.push(at(`${where}: its answerBoard poses ${a}, the board on screen while it is asked draws ${b ?? "nothing"}: give it its own unmarked board`));
+      // director11 D1: a judgement card may reveal the judged figure and then the equal one beside it (wholes appended)
+      const appended = c.answerBoard?.template === "wholes@1" && board?.template === "wholes@1"
+        && figureOf({ template: "wholes@1", params: { wholes: (c.answerBoard.params?.wholes ?? []).slice(0, (board.params?.wholes ?? []).length) } }) === b;
+      if (a !== b && !appended) e.push(at(`${where}: its answerBoard poses ${a}, the board on screen while it is asked draws ${b ?? "nothing"}: give it its own unmarked board`));
     }
+    // director11 D1/D2 (dc-r7-script-walk-v6-3): the board a card closes over (its answerBoard, else its own board) draws
+    // the figure its why names, in the answer state it judges. whyFigureErrors compares them.
+    const closes = [...k.explain.filter((b) => b.ask).map((b) => [`${b.id}.ask`, b.ask, b.ask.board ?? b.board]),
+      ...k.checks.map((c, i) => [`checks[${i}]`, c, c.board]), ...k.remediation.map((r, i) => [`remediation[${i}].then`, r.then, r.then?.board]).filter(([, c]) => c),
+      ...(we.yourStep ? [["workedExample.yourStep", { ...we.yourStep, why: we.yourStep.why ?? we.why }, we.yourStep.board ?? we.board]] : [])];
+    for (const [where, c, own] of closes) for (const m of whyFigureErrors(c.why, c.answerBoard ?? own)) e.push(at(`${where}: ${m}`));
     // integration 13 (Brain, state.js scriptWhyOf): the runtime silently drops a why over WHY_MAX_WORDS, so the checker
     // refuses one: every authored why (cards, worked example, its steps and yourStep) in hi and en
     const whys = [...cards.map(([where, c]) => [where, c.why]), ["workedExample", we.why], ...(we.steps ?? []).map((st, i) => [`workedExample.steps[${i}]`, st.why]),

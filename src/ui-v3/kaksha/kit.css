@@ -89,7 +89,7 @@
 .kx-log-tick { display: inline-flex; align-items: center; gap: 6px; color: var(--k-secure); font: 500 14px/1 var(--k-mono); align-self: center; }
 .kx-log-tick[data-help] { color: var(--k-ion); }
 .kx-log-boards { display: grid; gap: 10px; }
-.kx-log-board { --k-cut: 10px; overflow: hidden; border: 1px solid var(--k-line-2); background: var(--k-deep); }
+.kx-log-board { --k-cut: 10px; overflow: hidden; border: 1px solid var(--k-line-2); background: var(--k-deep); position: relative; aspect-ratio: 4 / 3; }
 .kx-log-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .kx-chip--go { color: var(--k-ink); border-color: var(--k-ion); }
 .kx-chip:disabled { opacity: .45; cursor: default; }
@@ -214,3 +214,7 @@
 .kx-feel-row { grid-template-columns: 1fr auto; }
 .kx-feel-row .kx-feel-faces { grid-column: 1 / -1; }
 .kx-feel-row .kx-feel-got { grid-row: 1; grid-column: 2; align-self: end; }
+/* r7 "Then and now" made the Notebook four tabs: at 360 the row scrolls sideways, each label on one line */
+.kx-nb-tabs { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+.kx-nb-tabs::-webkit-scrollbar { display: none; }
+.kx-nb-tabs button { flex: none; white-space: nowrap; }

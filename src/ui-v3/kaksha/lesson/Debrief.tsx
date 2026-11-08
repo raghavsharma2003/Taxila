@@ -12,6 +12,7 @@ import type { TapSource } from "../../../avatar/tap.ts";
 import type { DeskModel, DidCard } from "../../../child/lesson/model.ts";
 import type { ChildEmote, MadeForItem } from "../../../../shared/contracts.ts";
 import type { ReflectChoice } from "./made.ts";
+import type { EmoteLook } from "../play/cosmetics.ts";
 import { Glyph, type GlyphName } from "../kit.tsx";
 
 const EMOTE_GLYPH: Record<ChildEmote, GlyphName> = { wave: "hand", thanks: "heart", fun: "face" };
@@ -40,9 +41,11 @@ export interface DebriefProps {
   /** r7: "What helped?" and the emote, sent by the frame (no network in the Debrief); absent: the rows are not shown. */
   onReflect?: (lessonId: string, choice: ReflectChoice) => void;
   onEmote?: (lessonId: string, emote: ChildEmote) => void;
+  /** r7: the child's equipped Hangar emote, shown as the flourish when the goodbye is sent (colour and shape only). */
+  emote?: EmoteLook | null;
 }
 
-export function Debrief({ m, onFinish, before, loadAfter, loadMade, madeTo, onReflect, onEmote }: DebriefProps) {
+export function Debrief({ m, onFinish, before, loadAfter, loadMade, madeTo, onReflect, onEmote, emote }: DebriefProps) {
   const [secure, setSecure] = useState<DebriefSecure[] | null>(null);
   const [made, setMade] = useState<MadeForItem[]>([]);
   const [sealed, setSealed] = useState<DebriefSeal[]>([]);
@@ -55,18 +58,18 @@ export function Debrief({ m, onFinish, before, loadAfter, loadMade, madeTo, onRe
     if (loadMade) void loadMade().then((xs) => { if (live) setMade(xs); }, () => {});
     return () => { live = false; };
   }, [ending, before, loadAfter, loadMade]);
-  return <DebriefView m={m} onFinish={onFinish} secure={secure} sealed={sealed} made={made} madeTo={madeTo} onReflect={onReflect} onEmote={onEmote} />;
+  return <DebriefView m={m} onFinish={onFinish} secure={secure} sealed={sealed} made={made} madeTo={madeTo} onReflect={onReflect} onEmote={onEmote} emote={emote} />;
 }
 
 export interface DebriefViewProps {
   m: DeskModel; onFinish: () => void; secure: DebriefSecure[] | null; made?: MadeForItem[]; madeTo?: (id: string) => string;
   /** r7: chapters the ledger sealed in this lesson (nowSealed). */
   sealed?: DebriefSeal[];
-  onReflect?: (lessonId: string, choice: ReflectChoice) => void; onEmote?: (lessonId: string, emote: ChildEmote) => void;
+  onReflect?: (lessonId: string, choice: ReflectChoice) => void; onEmote?: (lessonId: string, emote: ChildEmote) => void; emote?: EmoteLook | null;
 }
 
 /** Presentational (the dev page renders it with fixtures). */
-export function DebriefView({ m, onFinish, secure, sealed = [], made = [], madeTo, onReflect, onEmote }: DebriefViewProps) {
+export function DebriefView({ m, onFinish, secure, sealed = [], made = [], madeTo, onReflect, onEmote, emote }: DebriefViewProps) {
   const [helped, setHelped] = useState<ReflectChoice | null>(null);
   const [emoted, setEmoted] = useState<ChildEmote | null>(null);
   const s = m.summary!;
@@ -217,7 +220,12 @@ export function DebriefView({ m, onFinish, secure, sealed = [], made = [], madeT
       {!s.ending && m.lessonId && onEmote && (
         <section className="kx-db-sec" aria-labelledby="kx-db-emote" data-testid="debrief-emote">
           <h2 id="kx-db-emote" className="kx-label">{kt("emoteQ", { T: m.teacher.name })}</h2>
-          {emoted ? <p className="kx-sub" role="status">{kt("emoteSent", { T: m.teacher.name })}</p> : (
+          {emoted ? (
+            <p className="kx-sub kx-db-sent" role="status">
+              {emote && <span className="kx-db-flourish" data-hue={emote.hue} style={{ color: `var(--k-hue-${emote.hue}, var(--k-ion))` }} data-testid="debrief-flourish"><Glyph name={emote.glyph} size={26} /></span>}
+              {kt("emoteSent", { T: m.teacher.name })}
+            </p>
+          ) : (
             <div className="kx-db-chips">
               {(["wave", "thanks", "fun"] as const).map((e) => (
                 <button key={e} type="button" className="kx-ghost kx-cut kx-db-chip" onClick={() => { setEmoted(e); onEmote(m.lessonId!, e); }}>

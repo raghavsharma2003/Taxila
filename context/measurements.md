@@ -6030,3 +6030,111 @@ paheli play-cert, 2026-11-07 (forge3-qa, local harness, sizes p360 / p412 / l136
 - **Tests:** tests/r7-games-paheli.test.mjs, 40 tests. An independent checker (it counts each bag's or tray's counters one by one, adds the 8 grid lines from its own index list, builds each letter row's number digit by digit, reverses through the decimal string) agrees with the law over at least 2000 random acts per goal; every coverage entry serves a proven level through the play server at every fade.
 - **Browser runs:** the opening board, a solved run and a misconception run per goal at 360 px in the dev harness; square, letters, load and reach solved by real taps only (page.mouse on the canvas targets, getByRole on the run button). Shots in docs/design/round7/games/runshots-paheli/.
 - **lint-ui:** 354 findings before and after (no new finding).
+
+
+<!-- merged from inbox/r7-games-maap.json -->
+## `ms-r7-games-maap-cert`
+
+The taraazu play-cert was run after the extension: `FORGE3_QA_LOCAL=1 node server/forge3/play-cert.js --only taraazu`, every art at p360, p412 and l1366 with the game mounted, 2026-11-08. All 3744 of 3744 samples pass at every size, including the new c4-maths-ch05-t02 weigh / fill cells.
+
+- **Law and server tests:** tests/r7-games-taraazu-weigh.test.mjs has 29 tests, all passing. They cover solve, shortcut-null, an independent fraction-label oracle over 2000 or more random acts, each new mal-rule landing on its own kit misconception, generator p95 under 50 ms, and currentLevel serving both new entries at every fade.
+- **Existing levels:** the generator hashes and 72 served levelIds (8 entries × 3 fades × 3 children) of every pre-existing taraazu entry were pinned before the change, and they are identical after it.
+- **Real taps:** the fraction levels were solved with real taps at 360 x 740 in Chromium, both weigh and fill, including the half-is-50, quarter-is-4 and pieces-not-size runs.
+
+
+<!-- merged from inbox/r7-games-nazariya2.json -->
+## `ms-r7-games-nazariya2-cert`
+
+nazariya play-cert, 2026-11-08 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction; counts in server/forge3/certs/play.json).
+
+- **Cert:** 280/280 nazariya samples pass at every size (56 new: tri 32, solid 24); the whole table 3784/3784. A first run failed solid/edges at p360 (Q2.whole: the goal line "Turn the cube and run your finger along every edge" was cut in the 320 px box); the solid goal lines were shortened and the solid entries re-judged with --resume.
+
+- **Tests:** tests/r7-games-nazariya.test.mjs, 28 tests, all pass: every new entry's levels validate, solve clean, are shortcut-free, each mal-rule lands on its own kit misconception, picker p95 under 50 ms, served through currentLevel at every fade; an independent checker (the cloth's area by the shoelace sum, tiles counted, faces / edges / corners from a hand table checked against Euler) agrees with the law over 1,500 acts per entry; the existing levels pinned.
+- **Other suites:** r7-games and play suites 1085 tests pass; npm run test:all 5536 tests, the only failing suite engines-browser.test.mjs (times out in a worktree: the node_modules symlink); lint-ui 354 before and after.
+- **Real-browser run shots** at 360 × 740: every goal opened, solved and shown with each belief; five goals (tri box, tri more, solid faces, edges, corners) solved with real taps only. Two fixes came from them: a tap right after a turn was lost while the turn was drawn, and the stage stopped on the last in-between frame of a turn (the pins never drawn). Shots in docs/design/round7/games/runshots-nazariya2/.
+
+
+<!-- merged from inbox/r7-games-place2.json -->
+## `ms-r7-games-place2-cert`
+
+guna play-cert, 2026-11-08 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 160/160 guna samples pass at p360, p412 and l1366 with the game mounted (20 entries × 2 seeds × 4 art directions, 3 entries new, 24 yard samples; smallest text 16 px; on a short phone tray the build truck stands in two halves of 44 px rows) (counts in server/forge3/certs/play.json).
+- **Tests:** tests/r7-games-guna.test.mjs has 116 tests (19 new), and all pass. They include build (class 4 and class 7) and commas cases. The independent checker reads the docket's words by plain arithmetic and checks commas against toLocaleString("en-IN"). Each new mal-rule lands on its own misconception, generator p95 is under 50 ms, and every new coverage entry serves through currentLevel at every fade.
+- **Other suites:** the r7-games and play suites pass (1055 tests). lint-ui is 354 before and after.
+- **Real-browser run shots** at 360 × 740: every goal opened, solved and shown with one belief. Three goals were solved with real taps only. Shots are in docs/design/round7/games/runshots-place2/.
+
+
+<!-- merged from inbox/r7-main-26.json -->
+## `ms-r7-director11-hand-2026-11-08` (2026-11-08)
+
+director11: v6.2 on integration 14a + Studio's pager. 16 lessons, counted by hand by 4 judges.
+
+| Line | Count |
+|---|---|
+| Beats taught | 212/217 (98%) |
+| Verdicts | 212/212 (100%) |
+| Misgrades | 0/0 |
+| False keys | 0 (3 borderline) |
+| Contradictions, by hand | 36 (judge classes: words 11, drawing 12, data 13) |
+
+By mechanism the 36 split: paging 13, second view 9, data 13, model words 1. director10: 52 (5 / 44 / 3).
+
+Unpaged turns 31 → 0. Turns over 60 words 95 → 75; the longest 132 → 105. Asides on time and about the child: 1 of 24.
+
+The code checker summed 139, including 114 verdictSeg flags; the judges overruled nearly all of them. Cost ~$0.958 (1,397 calls); reply-ready p50 2.80 s, p90 4.42 s.
+
+Full write-up: docs/design/round7/judgements/director11-2026-11-08.md.
+
+
+<!-- merged from inbox/r7-platform-6.json -->
+## `ms-r7-pairing-db-2026-11-08`
+Four route tests on the test branch: the code expires and works once, a device stays inside its own child's routes, and unpairing ends its session on the very next request.
+
+
+<!-- merged from inbox/r7-platform-7.json -->
+## `ms-r7-device-lesson-joins-2026-11-08`
+Four lesson paths were tried with a sibling's real lesson from a paired device and each refused it; the same test fails when the fix is taken out. A lower-numbered migration added late is still applied.
+
+
+<!-- merged from inbox/r7-games-kila2.json -->
+## `ms-r7-games-kila2-cert`
+
+kila play-cert, 2026-11-08 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction; counts in server/forge3/certs/play.json).
+
+- **Cert:** 136/136 kila samples pass at p360, p412 and l1366 with the game mounted (20 new samples for the five c7-maths-ch11-t03 entries, 4 art directions); the whole table 3840/3840.
+- **Tests:** tests/r7-games-kila-hl.test.mjs has 34 tests, all passing. They check that:
+  - every new goal's levels validate, solve cleanly and are shortcut-free;
+  - each mal-rule lands on its own misconception and commits the belief's own set-up;
+  - an independent checker (a plain wave counting shots, strides found by trial division) agrees with the law over 2,000+ random acts per goal;
+  - generator p95 stays under 50 ms;
+  - the levels vary across seeds (13 or more distinct first levels in 16 seeds per goal, and missing hides all three values);
+  - every new entry is served through currentLevel at every fade (three or more distinct levels for four children), and each mapped kit misconception is served;
+  - the existing levels are pinned.
+- **Other suites:** npm run test:all: 5630 tests, 5557 pass; the only failing suite is engines-browser.test.mjs (60 tests, the known worktree node_modules symlink timeout); r7-games and play suites 1155 tests pass; lint-ui 354 before and after.
+- **Real-browser run shots** at 360 × 740: every goal was opened, solved and shown with each belief. All five goals were solved with real taps only (page.mouse on the squares, getByRole on the buttons), on two seeds each. The shots led to three fixes: the wave on a 72-square path never finished in the shot (the run now rolls n ÷ 4 squares a second), goal lines were cut off, and coprime's pads were invisible (they now show as plinths). Shots are in docs/design/round7/games/runshots-kila2/.
+
+
+<!-- merged from inbox/r7-games-tilings2.json -->
+## `ms-r7-games-tilings2-cert`
+
+darpan play-cert, 2026-11-08 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction; counts in server/forge3/certs/play.json).
+
+- **Cert:** every darpan sample passes at every size, the new tile entries (close, alone, any) included.
+- **Tests:** tests/r7-games-darpan-tile.test.mjs and tests/r7-games-darpan.test.mjs, 67 tests, all pass. Every tile level validates, solves clean, and is shortcut-free. Each mal-rule lands on its own kit misconception. An independent checker ((n − 2) × 180 ÷ n, plain sums, and each drawn copy's corner measured off its points) agrees with the law over at least 2,000 random acts per goal. The solver's copies lie on the drawn floor. The generator p95 is under 50 ms. The level is served through currentLevel at every fade. The picker variety is checked, and the mirror / turn generator hash and served levelIds are pinned.
+- **Real-browser run shots** at 360 × 740: every goal opened, set up, solved and shown with its belief at fades 1-3 (36 shots, no page errors). All three goals were also solved with real taps only, each after a wrong go, a lift by a finger on the floor, and undos. Fixes made from looking at the shots: the uneven tile was too small and its labels collided (it is now drawn larger on its own card); the floor drawn under a closed triangle corner did not match the copies (the solver now lays edge to edge, and the floor is drawn only when the copies meet edge to edge); the goal lines were cut to fit one line. Shots are in docs/design/round7/games/runshots-tilings2/.
+
+
+<!-- merged from inbox/r7-app-32.json -->
+## `m-r7-app-lesson-replay-d11-2026-11-08`
+Method and the worst shots: docs/design/round7/app/LESSON-REPLAY-d11.md.
+
+
+<!-- merged from inbox/r7-games-galti-pakdo.json -->
+## `ms-r7-games-galti-pakdo-cert`
+
+galti-pakdo play-cert, 2026-11-08 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 16 of 16 galti-pakdo samples pass at p360, p412 and l1366 (the table: 3880 of 3880). Counts are in server/forge3/certs/play.json.
+- **Tests:** tests/r7-games-galti-pakdo.test.mjs. An independent checker reads only the line text the child sees (each side evaluated as arithmetic, where the two sides meet, the claim put into the question) and agrees with the law on the first wrong line, the claim and whether it balances the question, for every generated level of both goals, all kinds and looks; the kinds come a third each over 960 served levels per goal (bounds 0.28-0.39); generator and picker p95 in CPU time.
+- **Browser runs:** both goals and all three kinds solved by real taps at 360 x 640 on seeds 3 and 17 (looks 1 and 3) and once more with the kind left to the seed (seeds 41, 77); page.mouse on the canvas targets, getByTestId on the DOM controls, never a dispatch. The smallest tap target in every run was 44 x 44 px. Shots in docs/design/round7/games/runshots-galti-pakdo/.

@@ -24,7 +24,7 @@ import { kakshaThemeFor } from "../tokens.ts";
 import catalogJson from "../../../../data/kaksha/catalog.json";
 import { PlayBriefingContext, type PlayBriefing, type PlayCosmetics } from "../../../play/briefing.ts";
 import { Briefing } from "../play/Briefing.tsx";
-import { cosmeticsFor, lessonLook, type LessonLook } from "../play/cosmetics.ts";
+import { cosmeticsFor, emoteLook, lessonLook, type EmoteLook, type LessonLook } from "../play/cosmetics.ts";
 import { readEquipped } from "../memory.ts";
 import { syncEquipped } from "../equipSync.ts";
 import { world, type Catalog } from "../world.ts";
@@ -72,6 +72,7 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
   const [cosmetics, setCosmetics] = useState<PlayCosmetics | null>(null);
   // r7 app-world-hangar-depth: an equipped (and open) board theme tints the stage's board; a rim colours her frame
   const [look, setLook] = useState<LessonLook>({ board: null, rim: null });
+  const [emote, setEmote] = useState<EmoteLook | null>(null);
   useEffect(() => {
     let live = true;
     // the server's equip set first (another device's choice), else this device's
@@ -81,6 +82,7 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
       const eq = server ?? readEquipped(cid);
       setCosmetics(cosmeticsFor(eq, items));
       setLook(lessonLook(eq, items));
+      setEmote(emoteLook(eq, items));
     }, () => {});
     return () => { live = false; };
   }, [before, cid]);
@@ -88,8 +90,8 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
   const renderSummary = useCallback(
     (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => <Debrief {...p} before={before} loadAfter={() => loadMap(cid)}
       loadMade={() => Promise.all([madeBefore, readMade(cid)]).then(([b, a]) => madeSince(b, a))}
-      onReflect={(lessonId, choice) => void sendReflect(cid, lessonId, choice)} onEmote={(lessonId, e) => void sendEmote(cid, lessonId, e)} madeTo={(id) => `/c/${cid}/notebook?made=${encodeURIComponent(id)}`} />,
-    [before, loadMap, readMade, madeBefore, cid],
+      onReflect={(lessonId, choice) => void sendReflect(cid, lessonId, choice)} onEmote={(lessonId, e) => void sendEmote(cid, lessonId, e)} madeTo={(id) => `/c/${cid}/notebook?made=${encodeURIComponent(id)}`} emote={emote} />,
+    [before, loadMap, readMade, madeBefore, cid, emote],
   );
   const renderIntake = useCallback((m: DeskModel) => (m.intake ? <IntakeCard intake={m.intake} /> : null), []);
   // r7 app-lesson-stage-first (D7): the stage-first body; ?desk=v2 on the URL keeps the V2 Desk grid for comparison

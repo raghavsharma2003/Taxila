@@ -10,6 +10,7 @@ import { coverage, entryFor, entryKey, levelsFor, seedOf, hasPlay } from "../ser
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { hiddenOf } from "../server/play/react.js";
 import { GAME_WEIGHT } from "../shared/play.ts";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const ALL = Object.fromEntries(STAMBH_MAL.map((m) => [m, `k-${m}`]));
 const req = (mode, goal, seed, o = {}) => ({ family: "stambh", mode, goal, topicId: "t", skillId: "t-s1", classLevel: 6, fade: 1, mis: {}, misMap: ALL, grammar: {}, recent: [], seed, ...o });
@@ -156,7 +157,7 @@ for (const [mode, goal, grammar] of MODES.slice(0, 3)) {
     for (let g = 0; g < 40; g++) {
       // best of 3 (the generator is deterministic; a neighbour's load spike on a shared runner is not its cost)
       let best = Infinity, cands = [];
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); cands = stambhLogic.generate(req(mode, goal, 100 + g, { grammar })); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); cands = stambhLogic.generate(req(mode, goal, 100 + g, { grammar })); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       for (const c of cands.slice(0, 4)) {
         const level = stambhLogic.validate(c.level), sol = stambhLogic.solve(level);

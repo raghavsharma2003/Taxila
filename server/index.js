@@ -10,6 +10,8 @@ import { routes as modules } from "./routes/modules.js";
 import { routes as voice } from "./routes/voice.js";
 import { routes as tutor } from "./routes/tutor.js";
 import { routes as forge } from "./routes/forge.js";
+// round 7, stream G: child device pairing (a child-scoped session on the child's own device; server/pair)
+import { routes as pair } from "./pair/routes.js";
 import { routes as child } from "./routes/child.js";
 import { routes as placement } from "./routes/placement.js";
 // W1-C: the test clock (GET/POST /api/test/clock; @taxila.test accounts only). Seam applied by W1-D, owner of this file.
@@ -43,3 +45,5 @@ import { routes as signin } from "./signin/code.js";
 
 register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...placement, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...ops, ...signin, ...lane });
 export { handle, register };
+// child device pairing, registered on its own (the line above stays as App's 002 patch expects)
+register(pair);

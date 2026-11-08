@@ -15,6 +15,7 @@ import { realNow, runRequestClock } from "./comprehension/testclock.js";
 import { runTrace, ridOf, pidOf, isUuid } from "./trace/context.js";
 import { record, traceStats } from "./trace/writer.js";
 import { isDraining } from "./shutdown.js";
+import { childScoped } from "./pair/scope.js";
 
 const REVISION = process.env.CONTAINER_APP_REVISION || null;
 /** The operator key (a Container App secret, deploy-azure.mjs SECRET_ENV): fresh health numbers, the forced 500. */
@@ -231,6 +232,8 @@ export async function handle(req, res) {
 async function dispatch(req, res, key, fn, ctx, store) {
   try {
     if (!fn) return send(res, 404, { error: `no route ${key}` });
+    // child device pairing (server/auth.js): a paired device's session answers only on the routes scope.js lists
+    if (req && typeof req === "object") req[Symbol.for("taxila.childScope")] = childScoped(key);
     // the trace blob route reads its own raw body (bytes, not JSON)
     const raw = key === "POST /api/trace/blob";
     const body = !raw && ["POST", "PATCH", "PUT", "DELETE"].includes(req.method) ? await readJson(req) : {};

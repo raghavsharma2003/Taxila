@@ -25,7 +25,7 @@ export async function replay(run, persona, T, upto, { onPlan = null } = {}) {
   let s = { ...r0.state, brief, kitVerified: kit.verified, kitHash: kit.hash, mode: "text", recent: [{ who: "teacher", text: rows[0].text }] };
   let live = { state: newLearnerState({ childId: CHILD.id, classLevel }), maxSeq: 0 };
   const plans = [];
-  for (let i = 1; i < upto - 1; i += 2) {
+  for (let i = 1; i < Math.min(upto - 1, rows.length); i += 2) {
     const text = rows[i].text;
     s = { ...s, seq: s.seq + 1, recent: [...s.recent, { who: "child", text }] };
     const item = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;

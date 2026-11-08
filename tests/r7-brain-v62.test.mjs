@@ -51,11 +51,12 @@ describe("r7-brain-v62.test.mjs", () => {
     assert.match(out.reply, /^1\/8 sahi nahi hai\./, out.reply);
   });
 
-  test("T1/T2 replay director10 c5-t01 steady T37: one close, and a why said in her last turn is not said again", async () => {
+  test("T1/T2 replay director10 c5-t01 steady T37: a why said in her last turn is not said again; (v6.3 T1′) no worked close on the probe's answer", async () => {
     const { out, rows } = await at("steady", "c5-maths-ch02-t01", 37);
     assert.ok(rows[34].text.includes("kyunki raasta 4 barabar gaps mein bata hai") && rows[36].text.includes("kyunki raasta 4 barabar gaps mein bata hai"), "(the run said the why on T35 and again on T37)");
     assert.doesNotMatch(out.reply, /raasta 4 barabar gaps mein bata hai/, out.reply);
-    assert.match(out.reply, /Toh poora jawab: pehla khamba ghar se 1\/4 km door hai\./, out.reply);
+    // (v6.3 T1′: the verdict with its why closed the worked card on T35; T37 answers the why-probe, so no close is said)
+    assert.doesNotMatch(out.reply, /Toh poora jawab/, out.reply);
   });
 
   test("H4 replays director10 c4: no doubled sentence after Hindi words, no 'Now try.', no 'Bilkul, no sahi hai'", async () => {
@@ -145,24 +146,18 @@ describe("r7-brain-v62.test.mjs", () => {
     assert.equal(take("Is roti mein 1 tukda rangin hai aur 1 bina rang ka. Kya isliye rangin hissa 1/1 hai, haan ya nahi?").ack?.state, "revealed");
   });
 
-  test("T46 replay director10 steady c4 (Studio): a worked answer that closes another card than the one just answered pages onto the worked board", async () => {
+  test("T46 replay director10 steady c4 (v6.3 T1′ retires the carried worked close): only the card just answered is closed", async () => {
     const T = "c4-maths-ch05-t01";
     setScriptForTest(T, runScript(T));
     const { kit, rows, last } = await replay(RUN, "steady", T, 47);
     assert.equal(last.state.lastMove?.closeBeat?.beatId, "then:c4-maths-ch05-t01-m-part-part", "the card answered last turn: the 3/4 chocolate bar");
-    assert.equal(last.state.lastMove?.closedBeat?.beatId, "worked", "the close said now: the worked barfi 2/3");
+    assert.equal(last.state.lastMove?.closedBeat, undefined, "v6.3: the worked barfi, missed earlier, is not closed now");
     replyDeps.chat = async () => ({ text: rows[46].text });
     const out = await textReply({ instructions: "x", state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
-    assert.match(out.guard.parts.closed ?? "", /^Toh poora jawab: barfi ka 2\/3/, JSON.stringify(out.guard.parts));
-    assert.doesNotMatch(out.guard.parts.prev ?? "", /barfi/);
+    assert.equal(out.guard.parts.closed ?? "", "", JSON.stringify(out.guard.parts));
+    assert.doesNotMatch(out.reply, /pehle wale sawaal ka jawab/i, out.reply);
     const a = whiteboardIntentOf({ lessonId: "d10t46", turn: last.state.turn, beat: { id: "visual", type: "explain" }, next: last.state, kit, item: boardItemOf(last.state, kit, findItem), line: { text: out.reply, parts: out.guard.parts } });
-    const at = out.reply.indexOf("Toh poora jawab");
     const pages = [{ atChar: 0, boardRef: a.intent.boardRef, scriptBeat: a.intent.scriptBeat }, ...(a.intent.segments ?? [])];
-    const onBarfi = pages.filter((p) => p.atChar <= at).at(-1);
-    assert.equal(onBarfi.scriptBeat?.beatId, "worked", JSON.stringify(pages.map((p) => [p.atChar, p.scriptBeat?.beatId])));
-    assert.deepEqual(onBarfi.boardRef.params, { rows: 1, cols: 3, shade: 2, labels: false, hideResult: true }, "the barfi's 3 parts, 2 eaten — never the 3/4 grid");
-    // App 3b: only the new card's page (the last one) is the open card's board
-    assert.deepEqual(pages.map((p) => p.ofCard ?? a.intent.ofCard), [...pages.slice(0, -1).map(() => false), true], JSON.stringify(pages.map((p) => [p.atChar, p.ofCard])));
-    assert.equal(a.intent.ofCard, false, "the first page (the answered card's board) is not the open card's");
+    assert.ok(!pages.some((p) => p.scriptBeat?.beatId === "worked"), "no page for a closed-later card: " + JSON.stringify(pages.map((p) => [p.atChar, p.scriptBeat?.beatId])));
   });
 });

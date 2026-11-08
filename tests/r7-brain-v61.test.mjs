@@ -166,8 +166,14 @@ describe("r7-brain-v61.test.mjs", () => {
     const out = await sayAt(kit, p7, rows[6].text); // the run's own line: "Sixer ke baad ball boundary ke paar—wah, cricket mein fractions bhi …"
     assert.doesNotMatch(out.reply, /cricket mein fractions/, out.reply);
     assert.match(out.reply, /cricket/i, "a promise about it");
-    const p9 = plans.find((p) => p.row === 9);
-    assert.equal(p9.state.lastMove?.returned?.topic, "cricket", "returned to on the next turn");
+    // (v6.3 H2′ retires "the next turn": it is returned to once the card it was promised after is closed, never while it is live)
+    const e = (p7.state.later ?? []).find((l) => l.topic === "cricket");
+    assert.ok(e.onItem, "the promised card is recorded: " + JSON.stringify(e));
+    const { plans: all } = await replay(RUN, "offtopic", T1, 1e9);
+    const r = all.find((p) => p.state.lastMove?.returned?.topic === "cricket");
+    assert.ok(r, "returned to");
+    assert.notEqual(r.state.activeItemId, e.onItem, "after the promised card is closed");
+    assert.match(r.state.lastMove.returned.line ?? "", /cricket/, "in their words");
   });
 
   test("R10: in the Hindi mode a scripted card is shown and read in Hindi words", async () => {

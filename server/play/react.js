@@ -21,6 +21,7 @@ import { kilaHidden } from "../../src/play/families/kila/kila.logic.ts";
 import { ghadiHidden } from "../../src/play/families/ghadi/ghadi.logic.ts";
 import { nakshaHidden } from "../../src/play/families/naksha/naksha.logic.ts";
 import { darpanHidden } from "../../src/play/families/darpan/darpan.logic.ts";
+import { tileHidden } from "../../src/play/families/darpan/tile.logic.ts";
 import { feetaHidden } from "../../src/play/families/feeta/feeta.logic.ts";
 import { kramHidden } from "../../src/play/families/kram/kram.logic.ts";
 import { gunaHidden } from "../../src/play/families/guna/guna.logic.ts";
@@ -29,6 +30,7 @@ import { koshtakHidden } from "../../src/play/families/koshtak/koshtak.logic.ts"
 import { parkarHidden } from "../../src/play/families/parkar/parkar.logic.ts";
 import { aankdeHidden } from "../../src/play/families/aankde/aankde.logic.ts";
 import { paheliHidden } from "../../src/play/families/paheli/paheli.logic.ts";
+import { galtiHidden } from "../../src/play/families/galti-pakdo/galti.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -67,7 +69,8 @@ export function hiddenOf(level) {
   // flag's date, the winner's bib) is never said first. Checked by family first: ghadi's "set" and "run" are shared names
   if (level.family === "ghadi") return ghadiHidden(level);
   // r7 darpan: the count of mirror lines, the smallest turn (degrees and the fraction) and the order before the child finds them
-  if (level.family === "darpan") return darpanHidden(level);
+  // r7 tilings2: the gap to fill and how many copies close the corner
+  if (level.family === "darpan") return level.mode === "tile" ? tileHidden(level) : darpanHidden(level);
   // r7 feeta: the length / perimeter / metres the child must produce and the nearest route are never said first. Checked by
   // family first: feeta's "compare" is also nishana's mode name
   if (level.family === "feeta") return feetaHidden(level);
@@ -92,6 +95,9 @@ export function hiddenOf(level) {
   // r7 paheli: the bags that make the load, the magic sum and the centre, the cracked digits, the starts that reach the
   // palindrome are never said first. Checked by family first: modes may share names with other families
   if (level.family === "paheli") return paheliHidden(level);
+  // r7 galti-pakdo: whether the working is all correct, the first wrong line, the mended line and the true x are never said
+  // first. Checked by family first: modes may share names with other families
+  if (level.family === "galti-pakdo") return galtiHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];
@@ -99,6 +105,7 @@ export function hiddenOf(level) {
     case "bundles": return [p.a - p.b];
     case "place": case "compare": return [];
     case "views": case "array": case "floor": case "powers": case "mirror": return nazariyaHidden(level);   // r4-khand
+    case "tri": case "solid": return nazariyaHidden(level);   // r7 nazariya2: the cloth's area; how many faces / edges / corners
     case "bars": case "picto": return stambhHidden(level);   // round 7: the diff bar's value
     // r7: answers the law computes from what the child is told (never what is on screen as given)
     case "pair": case "close": return [openingOf(p)];        // ∠COB = 180 − ∠AOC; ∠B from the angle sum / isosceles

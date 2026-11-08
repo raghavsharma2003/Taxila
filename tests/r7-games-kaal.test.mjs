@@ -15,6 +15,7 @@ import { hiddenOf } from "../server/play/react.js";
 import { check, EVENTS } from "../server/play/tools/build-kaal.mjs";
 import { playActOf } from "../server/director/play-verbs.js";
 import { GAME_WEIGHT } from "../shared/play.ts";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const ALL = Object.fromEntries(KAAL_MAL.map((m) => [m, `k-${m}`]));
@@ -210,7 +211,7 @@ for (const [topicId, mode, goal, grammar] of [CASES[0], CASES[1], CASES[4], CASE
     const times = [];
     for (let g = 0; g < 60; g++) {
       let best = Infinity, cands = [];
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); cands = kaalLogic.generate(req(topicId, mode, goal, 200 + g, { grammar, fade: 1 + (g % 3) })); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); cands = kaalLogic.generate(req(topicId, mode, goal, 200 + g, { grammar, fade: 1 + (g % 3) })); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       for (const c of cands.slice(0, 8)) {
         const level = kaalLogic.validate(c.level), p = level.params, sol = kaalLogic.solve(level);

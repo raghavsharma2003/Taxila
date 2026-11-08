@@ -104,16 +104,19 @@ export async function loadTurnContext(req, lessonId) {
   const row = await one(
     `select l.*, to_jsonb(c) as child_row, to_jsonb(g) as guardian_row,
        (select granted from consent k where k.guardian_id = g.id and (k.child_id = c.id or k.child_id is null)
-          and k.purpose = 'core_tutoring' order by k.created_at desc limit 1) as core_ok
+          and k.purpose = 'core_tutoring' order by k.created_at desc limit 1) as core_ok,
+       (select d.child_id from device_session d where d.token_hash = s.token_hash) as device_child
      from lesson l join child c on c.id = l.child_id
      left join auth_session s on s.token_hash = $2 and s.expires_at > now()
      left join guardian g on g.id = s.guardian_id
      where l.id = $1`, [lessonId, sessionTokenHash(req) ?? ""]);
   if (!row) throw notFound("lesson not found");
-  const { child_row: child, guardian_row: g, core_ok: core, ...lesson } = row;
+  const { child_row: child, guardian_row: g, core_ok: core, device_child: deviceChild, ...lesson } = row;
   if (!sessionTokenHash(req)) throw unauthorized();
   if (!g) throw unauthorized("session expired");
   if (child.guardian_id !== g.id) throw forbidden("child not found for this account");
+  // a paired child device (migration 041) reaches its own child's lessons only, never a sibling's
+  if (deviceChild && deviceChild !== child.id) throw forbidden("child not found for this account");
   traceIdentify({ guardian: g, child }); traceLesson(lesson.id, (lesson.state?.turn ?? 0) + 1); // release 12 flight recorder
   return { lesson, guardian: { id: g.id, email: g.email, name: g.name, locale: g.locale }, child, core: !!core };
 }
@@ -1690,6 +1693,8 @@ export async function planTurn(base, cls, c) {
   // The verdict this turn's words must agree with (G-PRAISE-1): a kit item graded against its key, or "ungraded".
   const gradedTarget = targetFor(state, kit, activeItem);
   next.lastVerdict = verdictFor(cls, gradedTarget, { childText: c.childText });
+  // v6.3 R2 (main, director11): her own acknowledgement of a probe's answer is used only on a confident read; else code's
+  next.lastReadConfident = Number(cls?.confidence ?? 0) >= 0.85 && !/fallback|default/i.test(String(cls?.source ?? ""));
   // dc-r7-script-walk-v3 K1: a key closes once affirmed: the same answer said again right after it was called right is never
   // "not right" now (no verdict contradicts the previous turn's)
   const said = String(c.childText ?? "").toLowerCase().replace(/[^\p{L}\p{N}/.]+/gu, " ").trim();

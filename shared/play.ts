@@ -39,6 +39,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "parkar",     // round 7: ruler-and-compass constructions (triangles built from arcs and rays, bisectors, the 60° angle, altitudes by set-square)
   "aankde",     // round 7: data (slips tallied in bundles of five, a lost row, the size sold most; towers levelled, a pour line; a line of cards folded to its middle)
   "paheli",     // round 7: number puzzles (bags loaded by parity, magic squares, letter sums with carries, reverse-and-add palindromes)
+  "galti-pakdo", // round 7: a friend's working of an equation checked on the taraazu; the first wrong line caught and mended
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -48,7 +49,7 @@ export const MODES = {
   nishana: ["place", "compare", "hop"],
   "kyun-lab": ["fair-test"],
   kon: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends"],
-  nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
+  nazariya: ["views", "array", "floor", "powers", "mirror", "tri", "solid"],   // r4-khand; r7 nazariya2: tri (a triangle's cloth as half a rectangle), solid (faces / edges / corners of a solid turned in the hand)
   arena: ["pick"],
   stambh: ["bars", "picto"],
   yantra: ["beam", "circuit", "pendulum"],
@@ -57,15 +58,16 @@ export const MODES = {
   kila: ["multiples", "factors", "lcm", "divisibility"],
   naksha: ["locate", "route", "scale", "shape"],
   ghadi: ["set", "run", "race", "calendar"],
-  darpan: ["mirror", "turn"],
+  darpan: ["mirror", "turn", "tile"],   // r7 tilings2: tile (copies laid round one point until the corner closes)
   feeta: ["measure", "fence", "trip", "compare"],
-  guna: ["field", "pack", "story"],
+  guna: ["field", "pack", "story", "yard"],   // r7 place2: yard (a truck loaded to a named number; comma posts set for lakhs and crores)
   kram: ["grow", "machine", "beats", "nest"],
   hissa: ["fold", "pour", "grid", "story"],
   koshtak: ["tray", "bin"],
   parkar: ["build", "bisect", "drop"],
   aankde: ["tally", "stack", "line"],
   paheli: ["pairs", "magic", "cipher", "mirror"],
+  "galti-pakdo": ["kaapi"],   // the friend's notebook (kaapi)
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -219,6 +221,9 @@ export type NazariyaAct =
   | { kind: "name"; n: number }                         // say how many blocks (array count; the next square / cube number)
   | { kind: "predict"; same: boolean }                  // array "turn": the turned array takes the same number of blocks?
   | { kind: "check" }                                   // commit the build: the law compares it with the goal
+  | { kind: "apex"; x: number; z: number }              // tri "more": the second tent's top corner to grid point (x, z)
+  | { kind: "turn"; dir: "left" | "right" | "over" }    // solid: turn the solid a quarter round, or tip it over
+  | { kind: "mark"; el: "face" | "edge" | "corner"; i: number }   // solid: stamp face i / run along edge i / pin corner i
   | { kind: "undo" };
 // ITEM-ARENA (round 4 G1)
 export type ArenaAct =
@@ -290,7 +295,9 @@ export type DarpanAct =
   | { kind: "line"; deg: number }                        // mirror: lay (or lift) the fold line through the centre at this angle
   | { kind: "turn"; by: number }                         // turn: move the dial by this many degrees (clockwise +)
   | { kind: "mark" }                                     // turn (order): mark (or unmark) the dial's present stop
-  | { kind: "run" }                                      // fold / spin: the law answers
+  | { kind: "lay"; t: number; c?: number }               // tile: lay a copy of tray tile t round the point (its corner c there)
+  | { kind: "lift"; j: number }                          // tile: lift the j-th copy laid
+  | { kind: "run" }                                      // fold / spin / tile the floor: the law answers
   | { kind: "undo" };
 // Feeta (round 7, length and distance): set a measuring instrument (a ribbon's cut on a ruler from 0, a cm tape, a fence
 // roll, a trip meter) or put lengths in order; the law (plain arithmetic in one unit) answers on "run", never on a clock
@@ -310,6 +317,7 @@ export type GunaAct =
   | { kind: "deal"; place: number }                      // pack: one crate of 10^place into every truck (one round)
   | { kind: "count"; n: number }                         // story: the vehicles / packets set out, or the jar's count
   | { kind: "stamp"; i: number; to: number }             // field (check): docket i marked 1 (could be right) or 2 (send back)
+  | { kind: "post"; at: number }                         // yard (commas): a comma post left of place `at` (again = lifted)
   | { kind: "run" }                                      // drive onto the weighbridge / send the trucks / run the story: the law answers
   | { kind: "undo" };
 // Kram (round 7, growing patterns and sequences): tiles laid to grow a figure a stage, a bag filled for a far stage, a step
@@ -346,7 +354,7 @@ export type AankdeAct =
   | { kind: "peg"; at: number }                          // middle: the peg at slot `at` (2i on card i, 2i + 1 in the gap after it)
   | { kind: "run" }                                      // count / level / pour / fold: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct;
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct;
 // Paheli (round 7, number puzzles): load bags onto the boat, put number tiles on the grid, give letters digit tiles, set a
 // start; the law (plain arithmetic: pairing, line sums, column addition with carries, reverse-and-add) answers on "run"
 export type PaheliAct =
@@ -355,6 +363,14 @@ export type PaheliAct =
   | { kind: "digit"; l: string; d: number }               // cipher: letter l takes digit tile d (−1 = none)
   | { kind: "start"; n: number }                          // mirror: the 2-digit start
   | { kind: "run" }                                       // sail / add the lines / add it up / reverse and add: the law answers
+  | { kind: "undo" };
+// Galti Pakdo (round 7, checking a friend's working of an equation): the claim weighed in a line on the taraazu, the first
+// line that breaks flagged, its fix taken from three offers, or "sab sahi"; the law answers at once, never on a clock
+export type GaltiAct =
+  | { kind: "check"; line: number }                       // the claim x = v weighed in line `line` (0 = the question)
+  | { kind: "flag"; line: number }                        // line `line` is the first that breaks (the flagged line again: the offers reopen)
+  | { kind: "fix"; i: number }                            // mend: offer i takes the flagged line's place; the law rewrites below it
+  | { kind: "sab" }                                       // "sab sahi": every line follows
   | { kind: "undo" };
 // Hissa (round 7, multiplying and dividing fractions and decimals): a sheet folded across and down (the overlap tagged by
 // counting pieces); rope pieces laid on a metre track; a jug poured into full cups, the part-cup tagged as a fraction of a
@@ -549,6 +565,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   parkar: ["kagaz", "blueprint", "chalk", "raat"],
   aankde: ["kagaz", "chalk", "blueprint", "raat"],
   paheli: ["kagaz", "chalk", "blueprint", "raat"],
+  "galti-pakdo": ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;

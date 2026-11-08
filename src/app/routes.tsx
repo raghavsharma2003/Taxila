@@ -15,6 +15,9 @@ const Onboarding = lazy(() => import("../onboarding/index.tsx"));
 const CodeSignIn = lazy(() => import("./signin/CodeSignIn.tsx"));
 // r7 app-pricing-subscription: the plan cards (public site chrome; no payment step)
 const Pricing = lazy(() => import("./landing/Pricing.tsx"));
+// r7 app-child-device-pairing: the child's own device joins with the parent's code; the corner asks for the grown-up's sign-in there
+const Pair = lazy(() => import("./Pair.tsx"));
+const ParentOnly = lazy(() => import("./ParentOnly.tsx").then((m) => ({ default: m.ParentOnly })));
 const ParentCorner = lazy(() => import("../parent/index.tsx"));
 // The public pages share the marketing site's chrome (B4, PRODUCT-DESIGN-V2 §6.1.2): one lazy chunk, off the child path.
 const pub = (k: "Promises" | "Privacy" | "Help" | "Leaving" | "NotFound") => lazy(() => import("./Public.tsx").then((m) => ({ default: m[k] })));
@@ -59,13 +62,14 @@ export const routes: RouteObject[] = [
       { path: "/trust", element: <Navigate to="/promises" replace /> },
       { path: "/privacy", element: s(<Privacy />) },
       { path: "/pricing", element: s(<Pricing />) },
+      { path: "/pair", element: s(<Pair />) },
       { path: "/leaving", element: s(<Leaving />) },
       { path: "/help", element: s(<PublicHelp />) },
       { path: "/signin", element: s(<CodeSignIn />) },
       { path: "/start/*", element: s(<Onboarding />) },
       { path: "/who", element: <Who /> },
       { element: <ChildMode />, children: childRouteTree() },
-      { path: "/parent/*", element: s(<ParentCorner />) },
+      { path: "/parent/*", element: s(<ParentOnly><ParentCorner /></ParentOnly>) },
       ...(LessonDev ? [{ path: "/dev/lesson", element: s(<LessonDev />) }] : []),
       ...(AvatarDev ? [{ path: "/dev/avatar", element: s(<AvatarDev />) }] : []),
       ...(DeskDev ? [{ path: "/dev/desk", element: s(<DeskDev />) }] : []),
