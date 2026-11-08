@@ -33,6 +33,7 @@ import { makeGaltiView } from "./galti-pakdo/galti.view.ts";
 import { makeDarpanView } from "./darpan/darpan.view.ts";
 import { makeTileView } from "./darpan/tile.view.ts";   // r7 tilings2
 import { makeFeetaView } from "./feeta/feeta.view.ts";
+import { makeNaapView } from "./feeta/naap.view.ts";   // r7 naap
 
 export const VIEWS: Record<string, MakeView> = {
   "todo-jodo/atoms": makeAtomsView,
@@ -89,6 +90,10 @@ export const VIEWS: Record<string, MakeView> = {
   "feeta/fence": makeFeetaView,
   "feeta/trip": makeFeetaView,
   "feeta/compare": makeFeetaView,
+  "feeta/thread": makeNaapView,
+  "feeta/thermo": makeNaapView,
+  "feeta/scale": makeNaapView,
+  "feeta/touch": makeNaapView,
   "guna/field": makeGunaView,
   "guna/pack": makeGunaView,
   "guna/story": makeGunaView,

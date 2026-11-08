@@ -23,6 +23,7 @@ import { nakshaHidden } from "../../src/play/families/naksha/naksha.logic.ts";
 import { darpanHidden } from "../../src/play/families/darpan/darpan.logic.ts";
 import { tileHidden } from "../../src/play/families/darpan/tile.logic.ts";
 import { feetaHidden } from "../../src/play/families/feeta/feeta.logic.ts";
+import { naapHidden, NAAP_MODES } from "../../src/play/families/feeta/naap.logic.ts";
 import { kramHidden } from "../../src/play/families/kram/kram.logic.ts";
 import { gunaHidden } from "../../src/play/families/guna/guna.logic.ts";
 import { hissaHidden } from "../../src/play/families/hissa/hissa.logic.ts";
@@ -73,7 +74,9 @@ export function hiddenOf(level) {
   if (level.family === "darpan") return level.mode === "tile" ? tileHidden(level) : darpanHidden(level);
   // r7 feeta: the length / perimeter / metres the child must produce and the nearest route are never said first. Checked by
   // family first: feeta's "compare" is also nishana's mode name
-  if (level.family === "feeta") return feetaHidden(level);
+  // r7 naap (feeta's science modes): the curve's cm and the road's km, the water's reading, the eraser's length, the
+  // foot-rulers, the children's tenths and the jobs' temperatures the child is to know
+  if (level.family === "feeta") return NAAP_MODES.includes(level.mode) ? naapHidden(level) : feetaHidden(level);
   // r7 guna: the product (or the estimate), the quotient and its leftover, a story's answer are never said first. Checked by
   // family first: modes may share names with other families
   if (level.family === "guna") return gunaHidden(level);
