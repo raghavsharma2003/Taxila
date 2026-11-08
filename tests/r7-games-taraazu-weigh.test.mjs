@@ -6,7 +6,7 @@
 // server's currentLevel, as the server would.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { weighLogic, malAmount, labelOf, decompose, BOX_KG, BOX_G, JUGS_L, JUGS_ML, WEIGH_MAL } from "../src/play/families/taraazu/weigh.logic.ts";
+import { weighLogic, malAmount, labelOf, decompose, BOX_KG, BOX_G, JUGS_L, JUGS_ML, BOX_FR, BOX_FR5, JUGS_FR, WEIGH_MAL } from "../src/play/families/taraazu/weigh.logic.ts";
 import { balanceLogic } from "../src/play/families/taraazu/balance.logic.ts";
 import { proveLevel } from "../src/play/core/pick.ts";
 import { coverage, currentLevel, entryKey, seedOf } from "../server/play/levels.js";
@@ -18,17 +18,36 @@ import { LOGIC } from "../src/play/families/index.ts";
 
 const C4W = { "kg-is-100g": "k-kg100" }, C5W = { "mixed-concat": "k-concat", "fifty-as-half": "k-half" };
 const C4F = { "l-is-100ml": "k-l100" }, C5F = { "mixed-concat": "k-concat-ml" };
+const FR = { "half-is-50": "k-half50", "quarter-is-4": "k-q4", "pieces-not-size": "k-pieces" };
 const CASES = [
   ["weigh", { smalls: "simple" }, C4W],
   ["weigh", { smalls: "mixed" }, C5W],
   ["fill", { smalls: "simple" }, C4F],
   ["fill", { smalls: "mixed" }, C5F],
+  ["weigh", { frac: "sum" }, FR],
+  ["fill", { frac: "sum" }, FR],
+  ["fill", { frac: "one" }, FR],
 ];
+const nameOf = (g) => g.smalls ?? `frac-${g.frac}`;
 const req = (mode, seed, misMap, o = {}) => ({ family: "taraazu", mode, goal: mode === "fill" ? "fill" : "balance", topicId: "t", skillId: "t-s1", classLevel: 5, fade: 1, mis: {}, misMap, grammar: {}, recent: [], seed, ...o });
 const env = (acts) => acts.map((act, i) => ({ seq: i + 1, t: i * 400, via: "touch", act }));
 const run = (level, acts) => { let s = weighLogic.init(level); const ms = [], refused = []; acts.forEach((a, i) => { const r = weighLogic.apply(level, s, a, i + 1); s = r.state; ms.push(...r.moments); if (r.refused) refused.push(r.refused); }); return { s, ms, refused }; };
 /** THE ORACLE: the label as the child reads it, parsed to an integer of grams / ml (independent of the law's arithmetic) */
+const OF = { "½": [1, 2], "¼": [1, 4], "¾": [3, 4] };
 function oracle(level) {
+  const txt = labelOf(level.params);
+  if (/[½¼¾]/.test(txt)) {
+    // "¾ kg" / "½ kg + ¼ kg": each written fraction of 1000 (a kg in g, a litre in ml), added in plain integers
+    let sum = 0;
+    for (const part of txt.split(" + ")) {
+      const f = /^([½¼¾]) (kg|l)$/.exec(part);
+      assert.ok(f, `unparseable fraction label ${txt}`);
+      const [n, d] = OF[f[1]];
+      assert.equal((1000 * n) % d, 0);
+      sum += (1000 * n) / d;
+    }
+    return sum;
+  }
   const m = /^(?:(\d+) (kg|l))?(?: ?(\d+) (g|ml))?$/.exec(labelOf(level.params));
   assert.ok(m && (m[1] || m[3]), `unparseable label ${labelOf(level.params)}`);
   return (m[1] ? Number(m[1]) * 1000 : 0) + (m[3] ? Number(m[3]) : 0);
@@ -39,7 +58,7 @@ const P = (o) => ({ goal: "balance", big: 1, small: 250, form: "mixed", box: BOX
 const F = (o) => ({ goal: "fill", big: 1, small: 250, form: "mixed", box: JUGS_ML.map((b) => ({ ...b })), cap: 3000, ctx: "tanker", ...o });
 
 for (const [mode, grammar, misMap] of CASES) {
-  test(`taraazu/${mode} ${grammar.smalls}: solvable, shortcut-free, never a single weight / jug, each mal-rule lands on its own misconception`, () => {
+  test(`taraazu/${mode} ${nameOf(grammar)}: solvable, shortcut-free, never a single weight / jug, each mal-rule lands on its own misconception`, () => {
     const seen = new Set();
     let n = 0;
     for (const seed of [1, 7, 42, 99, 123]) for (const fade of [1, 2, 3]) for (const c of weighLogic.generate(req(mode, seed, misMap, { grammar, fade }))) {
@@ -77,7 +96,7 @@ for (const [mode, grammar, misMap] of CASES) {
       }
     }
     assert.ok(n >= 40, `only ${n} levels`);
-    for (const m of Object.keys(misMap)) assert.ok(seen.has(m), `${mode}/${grammar.smalls}: mal-rule ${m} never discriminated`);
+    for (const m of Object.keys(misMap)) assert.ok(seen.has(m), `${mode}/${nameOf(grammar)}: mal-rule ${m} never discriminated`);
   });
 }
 
@@ -105,6 +124,37 @@ test("taraazu weigh / fill: the mal-rule amounts are the beliefs (1 kg 250 g →
   assert.equal(decompose(1000, [{ size: 500, n: 1 }, { size: 200, n: 2 }], false), null, "copies are finite");
   assert.deepEqual(decompose(1250, JUGS_ML, true), [500, 500, 200, 50]);
   assert.equal(decompose(1225, JUGS_ML, true), null);
+});
+
+// r7 maap: fractions of a measure. The kit's beliefs as loads (½ → 50, ¼ → 400, a lone ¾ → 3 small pieces); never a weight
+// or jug equal to the label (the box has no 250 g at all, and no 500 on a ½ label); tampered fraction params refused
+const FP = (parts, small, o = {}) => P({ big: 0, small, form: "frac", parts, box: BOX_FR.map((b) => ({ ...b })), ...o });
+test("taraazu frac: ½ / ¼ / ¾ of a kg or l made in g / ml; each kit belief is its own load; the box never holds the label", () => {
+  const ALL = Object.keys(FR);
+  assert.equal(labelOf(FP([[3, 4]], 750)), "¾ kg");
+  assert.equal(labelOf(FP([[1, 2], [1, 4]], 750)), "½ kg + ¼ kg");
+  assert.equal(labelOf({ ...FP([[1, 4]], 250), goal: "fill", cap: 2000, box: JUGS_FR.map((b) => ({ ...b })), ctx: "chai" }), "¼ l");
+  assert.equal(malAmount(FP([[1, 2]], 500), "half-is-50", ALL), 50);
+  assert.equal(malAmount(FP([[1, 4]], 250), "quarter-is-4", ALL), 400);
+  assert.equal(malAmount(FP([[3, 4]], 750), "pieces-not-size", ALL), 300);
+  assert.equal(malAmount(FP([[1, 2], [1, 4]], 750), "half-is-50", ALL), 300, "50 + 250");
+  assert.equal(malAmount(FP([[1, 2], [1, 4]], 750), "quarter-is-4", ALL), 900, "500 + 400");
+  assert.equal(malAmount(FP([[1, 2], [1, 4]], 750), "pieces-not-size", ALL), null, "pieces only on a lone ¾");
+  assert.equal(malAmount(FP([[3, 4]], 750), "quarter-is-4", ALL), null, "no ¼ written: the belief says nothing here");
+  assert.equal(malAmount(FP([[1, 4]], 250), "half-is-50", ALL), null);
+  assert.equal(malAmount(FP([[3, 4]], 750), "kg-is-100g"), null, "the c4 kg belief never fires on a fraction label");
+  assert.equal(malAmount(P({ big: 1, small: 500 }), "half-is-50"), null, "a fraction belief never fires on a mixed label");
+  assert.equal(malAmount({ ...FP([[1, 2]], 500), goal: "fill", cap: 2000, box: JUGS_FR.map((b) => ({ ...b })), ctx: "chai" }, "half-is-50", ALL), 50);
+  for (const b of [BOX_FR, BOX_FR5, JUGS_FR]) assert.ok(!b.some((x) => x.size === 250 || x.size === 750 || x.size === 1000), "no weight / jug is a quarter, three-quarter or whole");
+  assert.ok(BOX_FR.find((b) => b.size === 100).n >= 3, "three 100 g weights: the pieces belief can be loaded as the kit says it");
+  // ½ kg with the 500 g weight is a lookup: a shortcut, never proved
+  const half5 = levelOf("weigh", FP([[1, 2]], 500, { box: BOX_FR5.map((b) => ({ ...b })) }));
+  assert.ok(half5 && weighLogic.shortcut(half5)); assert.equal(proveLevel(weighLogic, half5), null);
+  const ok = levelOf("weigh", FP([[1, 2], [1, 4]], 750));
+  assert.ok(ok);
+  for (const patch of [{ small: 700 }, { big: 1 }, { parts: [[2, 3]] }, { parts: [[1, 2], [1, 4], [1, 4]] }, { parts: [] }, { parts: "¾" }, { parts: [[1.5, 2]] }, { form: "mixed" }, { small: 1010, parts: [[1, 2], [1, 2]] }])
+    assert.equal(weighLogic.validate({ ...ok, params: { ...ok.params, ...patch } }), null, JSON.stringify(patch));
+  assert.equal(weighLogic.validate({ ...ok, params: { ...P({ big: 1, small: 250 }), parts: [[1, 4]] } }), null, "parts only with the fraction form");
 });
 
 test("taraazu weigh / fill: a label equal to one weight or jug is a shortcut and is never proved; the picker never serves it", () => {
@@ -206,7 +256,7 @@ test("taraazu weigh / fill: a verdict field in an act never decides; the first w
 // ≥ 2000 random acts per mode: the law never throws; every weigh / Dekho solves exactly when the oracle says the load is the
 // label; the generator's p95 (best of 3) stays ≤ 50 ms.
 for (const [mode, grammar, misMap] of CASES) {
-  test(`taraazu/${mode} ${grammar.smalls}: ≥ 2000 random acts; goal met ⇔ the integer oracle; generator p95 ≤ 50 ms`, () => {
+  test(`taraazu/${mode} ${nameOf(grammar)}: ≥ 2000 random acts; goal met ⇔ the integer oracle; generator p95 ≤ 50 ms`, () => {
     let seed = 17, acts = 0, solved = 0, missed = 0;
     const rnd = () => ((seed = (seed * 1103515245 + 12345) >>> 0) / 2 ** 32);
     const times = [];
@@ -262,18 +312,21 @@ test("taraazu: the equation / equality modes are untouched (their logic, modes a
 // id into the evidence; the teacher may not say the label in grams / ml before it is found
 const MINE = () => coverage().entries.filter((e) => e.family === "taraazu" && (e.mode === "weigh" || e.mode === "fill"));
 
-test("taraazu weigh / fill coverage: the four authored entries, mapped to the verified kit misconceptions", () => {
+test("taraazu weigh / fill coverage: the six authored entries, mapped to the verified kit misconceptions", () => {
   assert.deepEqual(MINE().map((e) => `${e.topicId}|${e.mode}|${e.goal}|${e.skillIds.join(",")}`), [
     "c4-maths-ch08-t01|weigh|balance|c4-maths-ch08-t01-s1,c4-maths-ch08-t01-s3",
     "c5-maths-ch08-t01|weigh|balance|c5-maths-ch08-t01-s2,c5-maths-ch08-t01-s3",
     "c4-maths-ch08-t02|fill|fill|c4-maths-ch08-t02-s1",
     "c5-maths-ch08-t02|fill|fill|c5-maths-ch08-t02-s2",
+    "c4-maths-ch05-t02|weigh|balance|c4-maths-ch05-t02-s1,c4-maths-ch05-t02-s3",
+    "c4-maths-ch05-t02|fill|fill|c4-maths-ch05-t02-s1,c4-maths-ch05-t02-s3",
   ]);
   assert.deepEqual(MINE().map((e) => e.misMap), [
     { "kg-is-100g": "c4-maths-ch08-t01-m-kg-is-100g" },
     { "mixed-concat": "c5-maths-ch08-t01-m-mixed-concat", "fifty-as-half": "c5-maths-ch08-t01-m-fifty-as-half" },
     { "l-is-100ml": "c4-maths-ch08-t02-m-l-is-100ml" },
     { "mixed-concat": "c5-maths-ch08-t02-m-mixed-concat" },
+    ...[0, 1].map(() => ({ "half-is-50": "c4-maths-ch05-t02-m-half-is-50", "quarter-is-4": "c4-maths-ch05-t02-m-quarter-is-4", "pieces-not-size": "c4-maths-ch05-t02-m-pieces-not-size" })),
   ]);
 });
 
