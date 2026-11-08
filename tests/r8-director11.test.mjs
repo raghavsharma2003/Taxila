@@ -110,3 +110,33 @@ test("S3: in Hindi mode a template's own words are Hindi — '2 barabar hisse', 
   const rect = expand({ template: "measured@1", shape: "rect", w: 6, h: 4, unit: "cm", name: true, trace: true }, { lang: "hi" });
   assert.ok(rect.ok && texts(rect.script).includes("parimap") && !texts(rect.script).includes("perimeter"));
 });
+
+test("Learning's D1: wholes@1 takes two unequal parts (the roti's 'ek bada, ek chhota'); equal-groups@1 `sizes` draws unequal groups (7, 3, 3, 3; 6, 3, 3); W8 counts a whole's shaded pieces as its shading, not more pieces", async () => {
+  const { certifyBoardRef } = await import("../server/forge/explainer/board-ref.js");
+  const { lintScript } = await import("../shared/whiteboard.js");
+  const roti = { template: "wholes@1", params: { wholes: [{ parts: 2, equal: false, title: "Roti" }] } };
+  for (const ref of [roti, { ...roti, params: { ...roti.params, as: "bar" } }]) {
+    const r = await certifyBoardRef(ref, { line: "Ek roti ke 2 tukde kiye: ek bada, ek chhota. Kya chhota tukda roti ka aadha hai?", withhold: { values: [] } });
+    assert.ok(r.ok, JSON.stringify(r.failed));
+  }
+  const x = expand({ template: "wholes@1", wholes: [{ parts: 2, equal: false, title: "Roti" }] });
+  assert.deepEqual(x.script.facts.onScreen, { whole1: "Roti: 2 unequal parts" });
+  for (const [sizes, line] of [[[7, 3, 3, 3], "Kanche 4 group mein baante: ek group mein 7, baaki teen mein 3-3. Kya har group barabar hai?"], [[6, 3, 3], "12 pencil 3 bachchon mein baanti: ek ko 6, doosre do ko 3-3. Kya har bachche ko 1/3 mila?"]]) {
+    const g = expand({ template: "equal-groups@1", sizes });
+    assert.ok(g.ok, String(g.errors));
+    assert.deepEqual(lintScript(g.script), []);
+    assert.deepEqual(g.script.facts.counts, { groups: sizes.length, values: sizes.map(String) });
+    assert.equal(g.script.ops.filter((o) => o.op === "circle").length, sizes.reduce((a, b) => a + b, 0));
+    assert.ok(!g.script.ops.some((o) => o.op === "numwork"), "no equation: whether it is a fair share is the card's question");
+    const r = await certifyBoardRef({ template: "equal-groups@1", params: { sizes } }, { line, withhold: { values: [] } });
+    assert.ok(r.ok, JSON.stringify(r.failed));
+  }
+  assert.equal(expand({ template: "equal-groups@1", sizes: [3] }).ok, false);
+  // shaded wholes: "ek ke 4 barabar tukdon mein se 3 rangin" over two shaded rotis (was "sector x7": 4 parts + 3 shaded)
+  const shaded = { template: "wholes@1", params: { wholes: [{ parts: 4, shade: 3, title: "Roti A" }, { parts: 4, shade: 1, title: "Roti B" }] } };
+  const r = await certifyBoardRef(shaded, { line: "Do ek jaisi roti: ek ke 4 barabar tukdon mein se 3 rangin, doosri ke 4 mein se 1. Kaunsi zyada rangin hai?", withhold: { values: [] } });
+  assert.ok(r.ok, JSON.stringify(r.failed));
+  // (her counts still bind: 4 pieces under "3 barabar tukde" stays refused)
+  const bad = await certifyBoardRef({ template: "wholes@1", params: { wholes: [{ parts: 4, shade: 1, title: "Roti" }] } }, { line: "Roti ke 3 barabar tukde hain, 1 rangin hai. Rangin hissa kitna hai?", withhold: { values: [] } });
+  assert.equal(bad.ok, false);
+});
