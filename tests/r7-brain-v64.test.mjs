@@ -12,6 +12,8 @@ import { findItem } from "../server/director/items.js";
 import { whiteboardIntentOf, boardItemOf } from "../server/brain/propose.js";
 import { pagesBoard, preselect, takePreselected, refKey as refKeyOf } from "../server/stagecraft/board-first.js";
 import { gateCtxFor } from "../server/stagecraft/board-sync.js";
+import { ASK_RE } from "../evals/child-sim/reactive.mjs";
+import { pictureMismatch } from "../evals/hybrid-side-by-side/checks.mjs";
 
 /** The page on screen before this turn: the live card's board, drawn on its own (production's L.wbPrevPage). */
 function keepOf(ask, board, kit) {
@@ -268,4 +270,16 @@ describe("r7-brain-v64.test.mjs", () => {
       assert.deepEqual(await renderFaults(persona, topic), []);
     });
   }
+
+  // Harness
+  test("harness: the child answers an imperative task (lagao, likho, batao, karo …), never a recital (c5-t02 stuck stalled on \"…kram mein lagao\")", () => {
+    for (const t of ["Ek hi poore ke yeh teen bhinn chhote se bade ke kram mein lagao: 1/3, 1/12, 1/6.", "Khaya hua hissa bhinn mein likho.", "16 m mein 12 m milao.", "Ab inhe chhote se bade mein karo."]) assert.ok(ASK_RE.test(t), t);
+    assert.ok(!ASK_RE.test("Yaad karo: neeche ka number tukde batata hai."));
+  });
+  test("harness: a picture line is read against the second view Studio drew, not only the card's board", () => {
+    const line = { template: "fraction-line@1", params: { marks: ["1/4"] } };
+    const said = "Screen par dekho: yeh patti 4 barabar hisson mein bati hai.";
+    assert.deepEqual(pictureMismatch(said, line), ["patti"], "the card's line board alone draws no strip");
+    assert.deepEqual(pictureMismatch(said, line, { view: "parts" }), [], "the bars Studio drew as the second view do");
+  });
 });
