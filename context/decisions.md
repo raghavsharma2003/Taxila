@@ -8978,3 +8978,23 @@ Main relayed an App wish: the growth page (growth.ts) would like a stamp per ski
 The pilot scope fixes were checked against secondary sources, because NCERT's site was down. Six kit entries carry a `source` field that says so and asks for a re-check against the NCERT PDFs. Main said not to block on it.
 
 **Reverse if:** the NCERT text differs.
+
+
+<!-- merged from inbox/r7-app-33.json -->
+## `dc-r7-app-live-checks`
+After a deploy, one command says whether pairing, placement, sign-in by code and the card's timing really work, on a test family it makes and removes itself.
+
+
+<!-- merged from inbox/r7-games-galti-pakdo.json -->
+## `dc-r7-games-galti-pakdo`
+
+**galti-pakdo** (catch the mistake, class 7, c7-maths-ch15-t03) is a law family, mode `kaapi` (the friend's notebook). Nothing in it runs on a clock and nothing is an answer box.
+
+- **The working.** A friend's working of a simple equation (ax ± b = c, a(x + b) = c by opening or by dividing, x ÷ a + b = c, ax + b = cx + d) is written line by line, its "=" signs in one column. Every line is made by the LAW: one step (open the bracket, take the number off the x side, take the x term off the right, divide by x's number, multiply by the divisor) done to both sides. A faulty working carries exactly one of the topic's own step bugs at one step: move-no-change (+b moved as +b), sign-slip (−b or an x term moved keeping its sign), part-bracket (a(x + b) as ax + b or x + ab), one-side (a step done to one side only), wrong-inverse (÷ undone by ÷, − or ×). Never a random typo.
+- **The kinds**, a third each, drawn from the level seed's first draw: sahi (every line by the law), lucky (one bug, but the next line goes on from the right line: the right answer from a wrong step, kit m-right-answer), neat (one bug carried to the end: a neat, plainly wrong last line, kit m-neat-correct). A lucky bug is never on the last step.
+- **The taraazu** (borrowed from taraazu/balance: beam on a pivot, damped spring, pans on strings, level needle): a line's ⚖ puts the claim x = v into THAT line; each pan carries a weight with its side's value and, under it, the side with v put in. The question tells the truth; a later line may balance while the question tips (the kit's check-in-the-original expectation).
+- **pakdo** (s1, s2): weigh, then "Sab sahi" (refused until the question is weighed) or tap the first line that breaks. **sudhaaro** (s3, s2): the caught line is replaced from three offers (the law's line and two lines other step bugs make there); the law rewrites the lines below and weighs the new claim in the question. The error's name is shown once mended.
+- **Mal-rules** (the child's, kit ids verified): neat-correct ("Sab sahi" on a neat working without weighing it: the law weighs the question and the beam tips), right-answer (the question weighed, it balances, then "Sab sahi" on a lucky working: a bracket and magnifier along the steps), check-later (the claim weighed in a later line before the question: it balances there, the magnifier sits by the question's ⚖). The step bugs are the friend's, never evidence about the child.
+- The picker gets a seeded difficulty nudge (± 0.12) so first levels differ across children (tested: at least 15 distinct of 20).
+
+Reverse if a child pilot shows lines are found by tapping each in turn (many refused flags per level) rather than by reading the steps, or the balance is never used before a verdict.

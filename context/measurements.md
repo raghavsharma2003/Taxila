@@ -6123,3 +6123,18 @@ darpan play-cert, 2026-11-08 (forge3-qa, local harness, p360 / p412 / l1366, the
 - **Cert:** every darpan sample passes at every size, the new tile entries (close, alone, any) included.
 - **Tests:** tests/r7-games-darpan-tile.test.mjs and tests/r7-games-darpan.test.mjs, 67 tests, all pass. Every tile level validates, solves clean, and is shortcut-free. Each mal-rule lands on its own kit misconception. An independent checker ((n − 2) × 180 ÷ n, plain sums, and each drawn copy's corner measured off its points) agrees with the law over at least 2,000 random acts per goal. The solver's copies lie on the drawn floor. The generator p95 is under 50 ms. The level is served through currentLevel at every fade. The picker variety is checked, and the mirror / turn generator hash and served levelIds are pinned.
 - **Real-browser run shots** at 360 × 740: every goal opened, set up, solved and shown with its belief at fades 1-3 (36 shots, no page errors). All three goals were also solved with real taps only, each after a wrong go, a lift by a finger on the floor, and undos. Fixes made from looking at the shots: the uneven tile was too small and its labels collided (it is now drawn larger on its own card); the floor drawn under a closed triangle corner did not match the copies (the solver now lays edge to edge, and the floor is drawn only when the copies meet edge to edge); the goal lines were cut to fit one line. Shots are in docs/design/round7/games/runshots-tilings2/.
+
+
+<!-- merged from inbox/r7-app-32.json -->
+## `m-r7-app-lesson-replay-d11-2026-11-08`
+Method and the worst shots: docs/design/round7/app/LESSON-REPLAY-d11.md.
+
+
+<!-- merged from inbox/r7-games-galti-pakdo.json -->
+## `ms-r7-games-galti-pakdo-cert`
+
+galti-pakdo play-cert, 2026-11-08 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 16 of 16 galti-pakdo samples pass at p360, p412 and l1366 (the table: 3880 of 3880). Counts are in server/forge3/certs/play.json.
+- **Tests:** tests/r7-games-galti-pakdo.test.mjs. An independent checker reads only the line text the child sees (each side evaluated as arithmetic, where the two sides meet, the claim put into the question) and agrees with the law on the first wrong line, the claim and whether it balances the question, for every generated level of both goals, all kinds and looks; the kinds come a third each over 960 served levels per goal (bounds 0.28-0.39); generator and picker p95 in CPU time.
+- **Browser runs:** both goals and all three kinds solved by real taps at 360 x 640 on seeds 3 and 17 (looks 1 and 3) and once more with the kind left to the seed (seeds 41, 77); page.mouse on the canvas targets, getByTestId on the DOM controls, never a dispatch. The smallest tap target in every run was 44 x 44 px. Shots in docs/design/round7/games/runshots-galti-pakdo/.

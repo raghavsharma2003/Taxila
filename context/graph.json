@@ -26366,6 +26366,41 @@
    "at": "2026-11-08",
    "title": "Main loop: pushing an integration after reading only the test:all summary. Integration 14e (int/r6 694f58557) was pushed while its status file said tsc=1 vite=1; the cause was the integration worktree's stale node_modules (App's new qrcode-generator dependency was in package.json and the lockfile but not installed), so the pushed tree was in fact sound, confirmed by npm ci then tsc 0, vite 0. What broke: the wait-loop printed only the test:all tail and the push step did not read the tsc/vite lines. Fix: the push step checks every status line (tsc, vite, testall) is 0, and an integration whose merge touches package-lock.json runs npm ci before its gate. The same session also merged integration 14e into the worktree while 14d's single-process `DATABASE_URL= npm test` was still running; it reported 2 failures (r7-app-notebook: the old 3-tab test read App's new 4-tab Notebook source), which were the edit, not the code. Fix: no merge, npm ci or file edit in the integration worktree until every gate stage, single-process included, has written its status; a contaminated run is re-run, not read.",
    "source": "inbox/r7-main-27.json"
+  },
+  {
+   "id": "m-r7-app-lesson-replay-d11-2026-11-08",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "director11 steering-c5-ch02-t01 and stuck-c4-ch05-t01 (80 pages) replayed through the real Desk at 360 on int/r6 694f58557. Boards drew 78/78 plus 2 second views, 0 text overlaps, 0 captions cut. Card over another figure shown in full: 0 and 0 (13 and 18 pages wait). New-card switches exactly on the last page: 6/6. Second views keeping the asked mark and labels: 2/2. Captions naming something not drawn: 2 (steering T13; T29-1, the card through T35, asks about a line in 10 gaps the board never draws) and 0. Pages with drawing crushed under int/r6's pager rules: 0 and 0. Verdict pages held complete under 1 s: 6 and 3. ofCard emulated (the run log does not record it). Not a gate.",
+   "source": "inbox/r7-app-32.json"
+  },
+  {
+   "id": "dc-r7-app-live-checks",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "scripts/live-checks.mjs runs the post-deploy checks against a base URL without the owner, on one fresh @taxila.test guardian (children Riya and Kabir) deleted in a finally, and prints a pass / fail / manual table:\n- pairing: redeem in an empty browser; no guardian email or sibling in any device response or on screen; parent routes refused; unpair → 401 → /pair?unpaired=1;\n- placement: both POSTs, the note, and the corner's 'Where Riya begins';\n- email code: with TAXILA_OPS_KEY; the real inbox stays MANUAL;\n- card timing: the Desk's page clock (QA log, localStorage tx.qa=1) and the card switch against the board player's erase, ±300 ms; best effort, MANUAL when no paged turn comes.\nExercised end to end against a mock with Platform's semantics. Reverse: Platform builds a server-side test harness that supersedes it.",
+   "source": "inbox/r7-app-33.json"
+  },
+  {
+   "id": "dc-r7-games-galti-pakdo",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "galti-pakdo (catch the mistake) as a never-timed law family for c7-maths-ch15-t03: a classmate's working of a simple equation, every line made by the law (a step done to both sides) plus at most one of the topic's own step bugs; the claim weighed in any line on the taraazu; the first wrong line tapped (pakdo, s1-s2) and mended from three offers (sudhaaro, s3-s2). A third each of all-correct, right-answer-from-a-wrong-step and plainly-wrong-last-line workings, drawn from the seed. Why: the topic was served only by ITEM-ARENA. Reverse: a child pilot shows lines are found by tapping each in turn rather than by reading the steps, or the balance is never used before a verdict.",
+   "source": "inbox/r7-games-galti-pakdo.json"
+  },
+  {
+   "id": "ms-r7-games-galti-pakdo-cert",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "galti-pakdo play-cert (forge3-qa, p360/p412/l1366, game mounted): 16/16 samples; an independent text checker agrees with the law; both goals and all three kinds solved by real taps at 360 x 640 on two seeds; smallest tap target 44 px.",
+   "source": "inbox/r7-games-galti-pakdo.json"
+  },
+  {
+   "id": "rj-r7-known-words-devanagari-fragments",
+   "kind": "rejection",
+   "at": "2026-11-08",
+   "title": "Safety (deferred to the safety pass): evals/safety-robust/build-known.mjs splits Devanagari at combining marks, so regenerating known-words after the c8/c9 Hindi language kits added fragments that are not words (विृक्ष, िचार, क्त, सु) alongside real ones. They are harmless today (KNOWN_NEAR only stops a token being read as a solo slot word), but a fragment could mask a garbled safety word. Not fixed now under the build-first directive (existing safety code stays as it is); the safety pass should tokenise by grapheme cluster and re-derive the list.",
+   "source": "inbox/r7-main-28.json"
   }
  ],
  "edges": [
@@ -41208,6 +41243,11 @@
    "src": "dc-r7-games-tilings2",
    "rel": "measured_by",
    "dst": "ms-r7-games-tilings2-cert"
+  },
+  {
+   "src": "dc-r7-games-galti-pakdo",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-galti-pakdo-cert"
   }
  ]
 }
