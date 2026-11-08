@@ -365,6 +365,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       unpaged,
       nothingNew: p.r.move?.request === "visual" && screen?.kind === "whiteboard" && !screen.altView && !!lastScreenKey && lastScreenKey === screenKeyOf(screen) ? 1 : 0,
       verdictSeg: verdictMisplaced({ graded: !!graded, verdict: firstS, answeredBoard: s.lastMove?.cardBeat?.board ?? s.lastMove?.scriptBeat?.board ?? null,
+        answerBoard: next.lastMove?.closeBeat?.answerBoard ? next.lastMove.closeBeat.board : null,
         firstBoard: segs?.[0]?.board ?? next.lastMove?.closeBeat?.board ?? (next.lastMove?.scriptBeat?.board ?? null) }) ? 1 : 0,
     };
     const contradictions = (segs ? segs.reduce((a, x) => a + x.contradictions, 0) : whole) + v6.picture + v6.borrowedWhy + v6.verdictSeg + v6.unpaged + v6.nothingNew;

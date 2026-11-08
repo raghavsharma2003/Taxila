@@ -97,11 +97,14 @@ export function borrowedWhy(text, whys) {
  * answered. `firstBoard`: the board of the part the line opens on; `answeredBoard`: the answered card's board (the board the
  * last turn ended on). True when both exist and differ and the verdict says more than a bare yes or no.
  */
-export function verdictMisplaced({ graded, firstBoard, answeredBoard, verdict = null }) {
+export function verdictMisplaced({ graded, firstBoard, answeredBoard, verdict = null, answerBoard = null }) {
   if (!graded || !firstBoard || !answeredBoard) return false;
   // (a bare "Haan, sahi hai." says nothing a board can contradict; a verdict with a number or a reason does)
-  if (verdict != null && !/\d/.test(verdict) && String(verdict).split(/\s+/).filter(Boolean).length <= 4) return false;
-  return JSON.stringify(paramsOf(firstBoard)) !== JSON.stringify(paramsOf(answeredBoard)) || firstBoard.template !== answeredBoard.template;
+  // (director11, main: the same rule as Brain's first-page join, propose.js FIRST_PAGE_MIN_WORDS: under 6 words and no digit)
+  if (verdict != null && !/\d/.test(verdict) && String(verdict).split(/\s+/).filter(Boolean).length < 6) return false;
+  const same = (b) => !!b && b.template === firstBoard.template && JSON.stringify(paramsOf(firstBoard)) === JSON.stringify(paramsOf(b));
+  // (v2.3: a card's authored answerBoard, its answer state, is the answered card's board for its close)
+  return !same(answeredBoard) && !same(answerBoard);
 }
 
 /**
