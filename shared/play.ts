@@ -389,6 +389,7 @@ export type ChumbakAct =
   | { kind: "dial"; by: number }                         // disha: the compass box turned a quarter (±1) in her hands
   | { kind: "go"; to: number }                           // disha/loha: she walks to spot `to` (0 by the iron, 1 away)
   | { kind: "run" }                                      // lift the cover / push the train / check the labels / the map is set / read the compass
+  | { kind: "undo" };
 // Bhaap (round 7, processes of water and air, class 6-7 science): a tool used once (heat, cool, a wait, a sail, a rain; `at` the
 // bench place it acts on), a thing put out (a glass from the fridge, a device high or low on the wall), or "ho gaya"; the law
 // answers each at once, never on a clock
