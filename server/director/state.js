@@ -808,10 +808,17 @@ export function asideReturnLine(said, topic, lang = "hinglish") {
   const you = YOU_FOR.reduce((x, [re, w]) => x.replace(re, w), t);
   return `${you}: yeh sunke bahut achha laga.`;
 }
+// v6.6 A2: the child asking her own taste ("aapko Virat pasand hai?") is answered on that turn (brain/say.js's honest line), never
+// parked for a later return
+const ASKS_HER_TASTE = /(?:aapko|tumhe|aap|tum)\b.*\bpasand|do you like|your favou?rite|aapka favourite/i;
 function parkAside(s, kit, input, item) {
   if (!scriptOn() || !scriptIdOf(kit)) return;
   const topic = input.cls?.request?.topic ?? asideTopic(input.text, s.ctx.interests);
   if (!topic || unsafeChildPhrase(topic)) return;
+  if (!scriptFor(kit)?.script?.recordedRun && ASKS_HER_TASTE.test(String(input.text ?? ""))) {
+    s.tasteAsked = { topic: String(topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 };
+    return;
+  }
   if ((s.later ?? []).some((e) => !e.servedAt && String(e.topic).toLowerCase() === String(topic).toLowerCase())) return;
   s.later = pushLater(s.later ?? [], { ...parkEntry({ topic, learning: false, turn: s.turn, itemOnTable: !!item }), share: true });
 }
@@ -3078,6 +3085,8 @@ export function step(prev, input) {
       && (live !== e.onItem || move.kind === "break")) : null;
     if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share, said: due.said ?? null }; }
   }
+  // v6.6 A2: the child asked her taste this turn: brain/say.js answers it now (the n-th time this lesson: a short form after the first)
+  if (s.tasteAsked?.turn === s.turn && move.kind !== "safeguard") move.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n };
   if (s.servedNow?.topic) {
     const lang = s.ctx.lang ?? "hinglish";
     const said = s.servedNow.said ?? (s.later ?? []).find((e) => e.servedAt === s.turn && e.topic === s.servedNow.topic)?.said ?? null;
@@ -3285,6 +3294,18 @@ export function liveBeatSimpler(s, kit) {
   const t = cur.kind === "explain" ? said(sk?.explain?.find((x) => x.id === cur.beatId)?.simpler)
     : cur.kind === "worked" ? said(sk?.workedExample?.simpler) ?? said(sk?.workedExample?.yourStep?.simpler) : null;
   return t ? { text: t, beat: cur } : null;
+}
+/**
+ * v6.6 A2 (main, director14: five asides never returned — the return was due, her line had none, and the queue counted it served):
+ * an aside whose return was not said this turn goes back on the queue, to come back at the next boundary (the wrap waits for it).
+ * Called by the turn (brain/turn.js, the harness) with the reply's guard. Returns the state.
+ */
+export function requeueMissedReturn(s, guard) {
+  const r = s?.lastMove?.returned;
+  if (!r?.topic || !(guard?.returnMissed || guard?.returnHeld) || guard?.returnSaid) return s;
+  const e = (s.later ?? []).find((x) => x.servedAt === s.turn && String(x.topic) === String(r.topic));
+  if (!e) return s;
+  return { ...s, later: s.later.map((x) => (x === e ? { ...x, servedAt: null, requeued: (x.requeued ?? 0) + 1 } : x)) };
 }
 /** v6.1 R9: the authored simpler (format 2.3) of the explain beat a move teaches, in the lesson language, or null. */
 function simplerOfBeat(s, kit, move) {

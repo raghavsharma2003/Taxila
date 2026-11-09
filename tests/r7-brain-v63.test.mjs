@@ -85,7 +85,8 @@ describe("r7-brain-v63.test.mjs", () => {
       // (v6.4 H2″: the return is hers, or one short retry call: the stub answers that call with a line about their words)
       const r0 = pl.state.lastMove?.returned;
       replyDeps.chat = async (_d, msgs) => (/^You are a warm teacher/.test(msgs?.[0]?.content ?? "") && r0
-        ? { text: `Wah, ${String(r0.said ?? r0.topic).split(/\s+/).find((w) => w.length > 4 && !/maine|mujhe|aapko/i.test(w)) ?? r0.topic} sunkar mazaa aa gaya!` }
+        // (v6.6 A2: a return answers them, never echoes or praises their words: "Wah, … sunkar mazaa aa gaya!" is an echo now)
+        ? { text: `${String(r0.said ?? r0.topic).split(/\s+/).find((w) => w.length > 4 && !/maine|mujhe|aapko/i.test(w)) ?? r0.topic} ke saath woh pal sach mein khaas raha hoga.` }
         : { text: rows[n].text });
       const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
       said[pl.state.turn] = out.reply;

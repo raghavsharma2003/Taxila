@@ -15,7 +15,8 @@ import { setScriptForTest } from "../server/director/script.js";
 import { findItem } from "../server/director/items.js";
 import { whiteboardIntentOf, boardItemOf } from "../server/brain/propose.js";
 import { joinParts } from "../server/brain/lineParts.js";
-import { liveBeatSimpler } from "../server/director/state.js";
+import { liveBeatSimpler, requeueMissedReturn } from "../server/director/state.js";
+import { returnLineOk, honestTasteLine } from "../server/brain/say.js";
 
 const RUN = "2026-11-09-director14";
 const DIR = new URL(`../evals/hybrid-side-by-side/results/${RUN}/`, import.meta.url).pathname;
@@ -132,6 +133,28 @@ describe("r7-brain-v66.test.mjs", () => {
         if (/apna tareeka batao/i.test(out.reply)) bad.push(`${tag}: a question of hers outside the card`);
       }
       assert.deepEqual(bad, []);
+    });
+  });
+  describe("A2: asides", () => {
+    test("a return answers, never echoes: praise of their words or two of their words back is no return (director14 ×4)", () => {
+      const said = "kal maine cricket khela, sixer maara";
+      for (const x of ["Wah, tumne cricket mein zabardast sixer maara!", "Haan Riya, kal tumne cricket khela aur sixer maara—ball ne boundary ki sair kar li!"]) assert.equal(returnLineOk(x, said, "cricket"), false, x);
+      assert.equal(returnLineOk("Cricket ke saath woh pal sach mein khaas raha hoga.", said, "cricket"), true);
+    });
+    test("the honest line never presumes their taste, ends on one question to them, and is short and different the second time", () => {
+      const a = honestTasteLine("Virat", "hinglish", 1), b = honestTasteLine("Virat", "hinglish", 2), c = honestTasteLine("Virat", "hinglish", 3);
+      for (const x of [a, b, c]) {
+        assert.doesNotMatch(x, /tumhari pasand hai|is yours/i, x);
+        assert.equal((x.match(/\?/g) ?? []).length, 1, x);
+        assert.ok(x.trim().endsWith("?"), x);
+      }
+      assert.notEqual(a, b); assert.notEqual(b, c);
+      assert.ok(b.split(/\s+/).length < a.split(/\s+/).length, b);
+    });
+    test("a return her line did not say goes back on the queue (the next boundary, the wrap at the latest)", () => {
+      const s = { turn: 9, lastMove: { returned: { topic: "cricket" } }, later: [{ id: "p1", topic: "cricket", at: 4, servedAt: 9, share: true }] };
+      assert.equal(requeueMissedReturn(s, { returnMissed: true }).later[0].servedAt, null);
+      assert.equal(requeueMissedReturn(s, { returnSaid: true }).later[0].servedAt, 9);
     });
   });
   describe("H3: contradictions read from the pages drawn", () => {

@@ -5,6 +5,7 @@
 // The HTTP route (server/routes/lesson.js) stays a thin adapter; lessonTurn(req, body) is the exported turn handler,
 // the seam W2-G's /api/lesson/turn-audio calls. Auth, dedupe/replay, the late-turn and outbox semantics are unchanged.
 import { alignParts } from "./lineParts.js";
+import { requeueMissedReturn } from "../director/state.js";
 import { q, one, guardStmt, GUARD_FAILED } from "../db.js";
 import { need, bad, forbidden, notFound, unauthorized, HttpError } from "../http.js";
 import { sessionTokenHash } from "../auth.js";
@@ -945,6 +946,8 @@ export async function lessonTurn(req, body, hooks = {}) {
       ? hit.result
       : await textReply({ instructions, state: next, kit, childText: said, trace, history: historyOf(next), verdict, ui: withStudioSlot(r.ui, studioSlot), module: boardAnswersAsk(r.move) ? null : next.module,
         ...(clauseHook ? clauseHook(next) : {}) }));
+    // v6.6 A2: an aside whose return her line did not say goes back on the queue (the next boundary, the wrap at the latest)
+    if (guard?.returnMissed && next?.lastMove?.returned) next.later = requeueMissedReturn(next, guard).later;
     // The content filter blocked the reply call that carried the child's words: fail CLOSED. The turn is
     // re-planned as a disclosure (safeguard move, incident row) and the fixed helpline line is sent, with no
     // further model call on the same words.

@@ -69,11 +69,18 @@ export const DENIES_AI = /(?<![\p{L}])(?:main\s+(?:ek\s+)?(?:insaan|human|asli)|
 /** v6.5 F2: they asked her own taste ("aapko Virat pasand hai?"). */
 const ASKS_TASTE = /(?:aapko|tumhe|aap|tum)\b.*\bpasand|do you like|your favou?rite|aapka favourite/i;
 /** v6.5 F2: her honest answer to their question about her taste, turned back to them (code's line, a statement). */
-export function honestTasteLine(topic, lang = "hinglish") {
-  const t = String(topic ?? "").trim() || (lang === "english" ? "that" : "yeh");
-  return lang === "english" ? `I'm an AI teacher, so I don't have favourites — but ${t} is yours, and I'll remember that.`
-    : `Main AI teacher hoon, toh meri apni koi pasand nahi — ${t} tumhari pasand hai, yeh main yaad rakhungi.`;
+// v6.6 A2 (main, director14: "Virat tumhari pasand hai" presumed their taste, and the line was said again on every ask): said on the
+// turn they ask, once per lesson in full; a later ask gets a short form. It never presumes their taste and ends on ONE question to
+// them, about the thing they asked
+export function honestTasteLine(topic, lang = "hinglish", n = 1) {
+  const t = String(topic ?? "").trim() || (lang === "english" ? "that" : "isme");
+  if (lang === "english") return n <= 1 ? `I'm an AI teacher, so I don't have favourites of my own. What do you like most about ${t}?`
+    : [`I'm an AI, so no favourites for me. Who is your favourite?`, `No favourites for me, I'm an AI. What do you like about ${t}?`][(n - 2) % 2];
+  return n <= 1 ? `Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe ${t} ke baare mein sabse achha kya lagta hai?`
+    : [`Main AI hoon, meri koi pasand nahi hoti. Tumhara favourite kaun hai?`, `Meri apni pasand nahi hoti, main AI hoon. Tumhe ${t} ke baare mein kya achha lagta hai?`][(n - 2) % 2];
 }
+/** v6.6 A2: how many times her honest line was said this lesson, plus this one (her recent turns). */
+const honestN = (state) => 1 + [...(state?.recent ?? [])].filter((t) => t.who === "teacher" && /\b(?:main\s+ai|i'?m\s+an?\s+ai|meri\s+(?:apni\s+)?(?:koi\s+)?pasand\s+nahi|no\s+favourites)/i.test(String(t.text ?? ""))).length;
 /** v6.5 F1: praise or an aside's topic (never said beside a wrong verdict). */
 const PRAISE_OR_ASIDE = /(?<![\p{L}])(?:wah|waah|shabash|zabardast|kamaal|bahut\s+badhiya|great|awesome|cricket|sixer|virat|kohli|match)(?![\p{L}])/iu;
 /** v6.5 P3: after a second view's own line, a pointer back to it (never a question: the card comes on its own page next). */
@@ -140,7 +147,12 @@ export function returnLineOk(x, said, topic) {
   if (/(?<![\p{L}])(?:baad\s+mein|lesson\s+ke\s+baad|phir\s+baat|thodi\s+der|later|after\s+the\s+lesson|wapas\s+aa\w*|laut\w*)(?![\p{L}])/iu.test(t)) return false;
   if (LESSON_SAID.test(t) || RULE_SAID.test(t)) return false;
   const theirs = (String(said ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? []).filter((w) => !RET_STOP.has(w));
-  const all = [...new Set([...theirs, ...(String(topic ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])])];
+  const topicW = String(topic ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [];
+  // v6.6 A2 (main, director14: "Wah, tumne cricket mein zabardast sixer maara!" ×4): a return answers what they said, never says it
+  // back — praise of it, or two of their own words besides the topic, is an echo
+  if (/^(?:wah|waah|shabash|zabardast|kya\s+baat|wow|great)\b/iu.test(t)) return false;
+  if (theirs.filter((w) => !topicW.includes(w) && new RegExp(`(?<![\\p{L}])${w}`, "iu").test(t)).length >= 2) return false;
+  const all = [...new Set([...theirs, ...topicW])];
   return all.some((w) => new RegExp(`(?<![\\p{L}])${w}`, "iu").test(t));
 }
 /** v6.3 R2: her own promise to come back, with no topic named (said once: code's park already promises). */
@@ -1971,7 +1983,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (kind === "park" && mine.length > parkOk.length) guard.parkFiltered = mine.length - parkOk.length;
       // (v6.3 R2: a park is promised once: when code's promise is said, her own promise sentence that names no topic goes)
       if (kind === "park" && !parkOk.length) { const n0 = ss.length; ss = ss.filter((x) => !(PROMISE_SAID.test(x) && !/\d/.test(x))); if (ss.length < n0) guard.parkDup = n0 - ss.length; }
-      if (kind === "park") aside.push(...(parkOk.length ? parkOk : [pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)]));
+      // v6.6 A2: one park promise per aside, ≤ 20 words, at most one question and only about the aside (no lesson number)
+      const park1 = parkOk.filter((x) => words(x) <= 20).slice(0, 1);
+      if (kind === "park") aside.push(...(park1.length ? park1 : [pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)]));
       else retMine.push(...mine.filter((x) => !/^(?:aur|and about)\s+\p{L}+\s+(?:ki baat\s*)?:/iu.test(x)));
     }
     // v6.4 H2″ (main, director12): the return is ONE line of hers that answers what they said — their question too — with one of their
@@ -1983,7 +1997,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       const said0 = ret.said ?? "";
       const pool = [...retMine, ...ss.filter((x) => !retMine.includes(x) && returnLineOk(x, said0, ret.topic))];
       // (v6.5 F2: asked her own taste, she answers honestly — an AI teacher has none — and turns it back to them)
-      let line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang) : pool.find((x) => returnLineOk(x, said0, ret.topic)) ?? null;
+      let line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : pool.find((x) => returnLineOk(x, said0, ret.topic)) ?? null;
       if (ASKS_TASTE.test(said0)) guard.returnHonest = true;
       ss = ss.filter((x) => x !== line);
       if (!line && said0) {
@@ -2265,7 +2279,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const prevPart = once([lead, ...noQ([ack, missS, g2, doneApart ? null : d2].filter(Boolean))]);
     const closedP = once([doneApart ? d2 : null, c2]);
     first.splice(0, first.length, ...once(first));
-    const asideP = once(noQ(aside));
+    // v6.6 A2: asked her own taste this turn — the honest line now, ending on its one question to them (never dropped for the card's)
+    const honestLine = state.lastMove?.tasteAsked?.topic ? honestTasteLine(state.lastMove.tasteAsked.topic, lang, state.lastMove.tasteAsked.n ?? honestN(state)) : null;
+    if (honestLine) guard.honestNow = true;
+    // (with the honest line said now, no other line of hers about being an AI or her taste rides beside it)
+    // (the return line itself — the honest line ends on its question to them — is never cut as a second question)
+    const retQ = guard.returnLine && /[?？]/.test(guard.returnLine) && aside.includes(guard.returnLine) ? guard.returnLine : null;
+    const asideP = once([...(honestLine ? [honestLine] : []), ...(retQ ? [retQ] : []), ...noQ(aside.filter((x) => x !== retQ).filter((x) => x === guard.returnLine || !(TASTE_CLAIM.test(x) || DENIES_AI.test(x) || (honestLine && /(?<![\p{L}])ai(?![\p{L}])/iu.test(x)))))]);
     body = once(noQ(body));
     const assembled = [...prevPart, ...closedP, ...first, ...asideP, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
@@ -2377,7 +2397,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const ret = state.lastMove?.returned;
     if (!clause.sent && ret?.topic && !guard.returnSaid && !guard.returnHeld && !guard.returnMissed) {
       const said0 = ret.said ?? "";
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang) : sentences(reply).map((x) => String(x).trim()).find((x) => returnLineOk(x, said0, ret.topic)) ?? null;
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : sentences(reply).map((x) => String(x).trim()).find((x) => returnLineOk(x, said0, ret.topic)) ?? null;
       if (line) { if (!String(reply).includes(line)) reply = `${line} ${reply}`.trim(); guard.returnSaid = true; guard.returnLine = line; } else guard.returnMissed = true;
     }
   }

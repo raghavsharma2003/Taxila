@@ -274,8 +274,10 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     replyDeps.chat = async () => ({ text: `Wah! ${card}` });
     const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "kal maine cricket khela, sixer maara", history: [], ui: L.r.ui, module: null });
     assert.match(out.reply, /cricket/i, out.reply);
+    // (v6.6 A2: asked her own taste, she answers on that turn — the ask is not parked for a later return)
     L.t("aapko virat pasand hai?", { ...cls("no_evidence"), request: { type: "answer_q" } });
-    assert.ok((L.r.state.later ?? []).some((x) => /virat/i.test(x.topic)), JSON.stringify(L.r.state.later));
+    assert.match(L.r.move.tasteAsked?.topic ?? "", /virat/i, JSON.stringify(L.r.move));
+    assert.ok(!(L.r.state.later ?? []).some((x) => /virat/i.test(x.topic) && !x.servedAt), JSON.stringify(L.r.state.later));
   });
 
   test("latency cut 1: a script draft whose only problems the assembly fixes is not rewritten; the turn equals the rewrite path's, but for her lead-in", async () => {

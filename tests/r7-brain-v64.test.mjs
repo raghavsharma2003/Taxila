@@ -168,11 +168,13 @@ describe("r7-brain-v64.test.mjs", () => {
       const n = pl.row - 1;
       // her recorded line for the turn; the retry (one short call) answers with a line of its own about their words
       replyDeps.chat = async (_d, msgs) => (/^You are a warm teacher/.test(msgs?.[0]?.content ?? "")
-        ? { text: `Wah, ${String(ret.said ?? ret.topic).split(/\s+/).find((w) => w.length > 4 && !/maine|mujhe|aapko/i.test(w)) ?? ret.topic} sunkar mazaa aa gaya!` }
+        // (v6.6 A2: a return never echoes or praises their words: the stub's line answers instead)
+        ? { text: `${String(ret.said ?? ret.topic).split(/\s+/).find((w) => w.length > 4 && !/maine|mujhe|aapko/i.test(w)) ?? ret.topic} ke saath woh pal sach mein khaas raha hoga.` }
         : { text: rows[n].text });
       const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
       if (/sunke bahut achha laga|tumne mujhse .* poocha tha|lesson ke baad mujhe/i.test(out.reply)) bad.push(`row ${n}: a fixed template | ${out.reply.slice(0, 120)}`);
-      const line = sentences(out.reply).find((x) => returnLineOk(x, ret.said, ret.topic));
+      // (v6.6 A2: asked her taste, her return is the honest line, which ends on its one question to them)
+      const line = sentences(out.reply).find((x) => returnLineOk(x, ret.said, ret.topic)) ?? (out.guard.returnHonest ? out.guard.returnLine : null);
       if (!line && !out.guard.returnMissed) bad.push(`row ${n}: no return line and none reported missed | ${out.reply.slice(0, 120)}`);
       if (line) lines.push(line);
     }

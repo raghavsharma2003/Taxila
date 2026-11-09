@@ -264,14 +264,15 @@ describe("R4 in the lesson (c6 skill-1 v2 fixture)", () => {
     const L = run();
     for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
     const card = L.r.state.activeItemId;
-    L.t("aapko virat pasand hai?", { ...cls("no_evidence"), request: { type: "answer_q" } });
+    // (v6.6 A2: a share is parked; a question about HER taste is answered on its own turn, never parked)
+    L.t("mujhe virat bahut pasand hai", { ...cls("no_evidence"), request: { type: "uptake", kind: "personal_share" } });
     assert.ok((L.r.state.later ?? []).some((e) => /virat/i.test(e.topic) && !e.servedAt), JSON.stringify(L.r.state.later));
     L.t("haan");
     if (L.r.state.activeItemId === card) assert.equal(L.r.move.returned, undefined, "never while the card it was parked on is live");
     for (let i = 0; i < 4 && !L.r.move.returned; i++) L.t(String(L.r.state.scriptCard?.answer ?? "haan"), cls("correct"));
     assert.match(L.r.move.returned?.topic ?? "", /virat/i, JSON.stringify(L.r.move));
     // (v6.4 H2″: no code line; the move carries their words for her one line)
-    assert.match(L.r.move.returned?.said ?? "", /virat pasand/i);
+    assert.match(L.r.move.returned?.said ?? "", /virat bahut pasand/i);
   });
 
   test("a return of hers that is an analogy or puts words in their mouth goes; the real line is said", async () => {

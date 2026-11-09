@@ -11,7 +11,7 @@
 // exactly the same words. Model calls per scenario: about 2 per turn per lane (the classifier when code cannot decide, and
 // her reply): 3 scenarios × 10 turns ≈ 120 small calls (6 lessons). Ask main before more than about 20 lessons.
 import { mkdirSync, writeFileSync } from "node:fs";
-import { initLessonState, step } from "../server/director/state.js";
+import { initLessonState, step, requeueMissedReturn } from "../server/director/state.js";
 import { findItem } from "../server/director/items.js";
 import { classify, classifyFast, targetFor } from "../server/director/classify.js";
 import { kitFromFile } from "../server/content/kits.js";
@@ -279,6 +279,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       const [t, ms] = await timed(() => textReply({ instructions, state: next, kit, childText: text, history: next.recent.slice(0, -1), ui: slot ? { ...ui, tray: "studio", studioSlot: slot } : ui, module: null }));
       replyMs += ms;
       reply = t.reply; guard = t.guard?.caught?.length ? t.guard.caught : null; tGuard = t.guard ?? null;
+      // (v6.6 A2: a return her line did not say goes back on the queue, as brain/turn.js does)
+      if (t.guard?.returnMissed && next?.lastMove?.returned) next = { ...next, later: requeueMissedReturn(next, t.guard).later };
       // (main's director2 judgement: a caught problem must be told apart from a fixed one) what was left after the rewrite, and
       // whether code replaced or repaired the line
       if (guard) guardAfter = { afterRewrite: t.guard.afterRewrite ?? null, replaced: !!t.guard.replaced, repaired: !!t.guard.repaired };
