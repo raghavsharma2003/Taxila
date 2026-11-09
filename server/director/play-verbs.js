@@ -124,6 +124,9 @@ export const PLAY_ACTS = Object.freeze({
   // r7 games: Rang (acids, bases, indicators and neutralisation, class 7 science): a dropper worked a drop at a time
   rang: { pehchaan: { act: "test", hi: "har ghol ki ek boond indicator par daalo aur rang dekh kar alag karo", en: "drop each liquid on an indicator and sort it by its colour" },
     milao: { act: "fill", hi: "boond-boond base daalo aur rang dekho", en: "add the base drop by drop and watch the colour" } },
+  // r7 games: Badlaav (physical and chemical changes, rusting and combustion, class 7 science): changes run and undone, a sigri tended
+  badlaav: { palat: { act: "test", hi: "badlaav karke dekho, ulta karke dekho, aur nishaan pehchaano", en: "run each change, try to undo it and spot the signs" },
+    aag: { act: "move", hi: "aag ki teen cheezon mein se ek hatao ya badhao, aur dekho kya hota hai", en: "take away or give more of a side of the fire and watch" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape
