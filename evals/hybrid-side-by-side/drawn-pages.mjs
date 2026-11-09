@@ -59,8 +59,8 @@ const strayFraction = (s, board) => {
  * Per teacher row: {closeOffBoard, cardAsAlt, modelWords} (0/1 each). `cardRow` is the teacher row that posed the card being
  * answered (the last row with a card id), `prevChild` the child's words between.
  */
-export function drawnContradictions(row, cardRow, prevChild, { answerBoard = null } = {}) {
-  const out = { closeOffBoard: 0, cardAsAlt: 0, modelWords: 0 };
+export function drawnContradictions(row, cardRow, prevChild, { answerBoard = null, beatBoard = null } = {}) {
+  const out = { closeOffBoard: 0, cardAsAlt: 0, modelWords: 0, partOffBeat: 0 };
   if (!row || row.who !== "teacher") return out;
   const pages = drawnPagesOf(row);
   if (!pages.length) return out;
@@ -82,9 +82,34 @@ export function drawnContradictions(row, cardRow, prevChild, { answerBoard = nul
       && !/^(?:rem|then):/.test(String(pages[0].beat ?? "")) && !/:then:/.test(String(row.check?.itemId ?? "")) && !/^(?:reteach|remediate)$/.test(String(row.move ?? ""));
     // (v6.6, director15: a not-right verdict that only names their answer — "16 m sahi nahi hai." — says nothing about either board;
     // brain/propose.js says it on the page it opens, a remediation's. Only a why or a key said off the answered card counts)
-    const bareNo = graded && graded !== "correct" && !/(?<![\p{L}])(?:kyunki|because|jawab\s+.{1,30}?\s+(?:tha|hai))(?![\p{L}])/iu.test(s1);
-    if (answered && !onAnswered && (bareNo ? leaves : contentful(s1) || contentful(closeWords.split(/(?<=[.!?।])\s/)[0] ?? "") || leaves)) out.closeOffBoard = 1;
-    if (graded === "correct" && answered && strayFraction(s1, answered)) out.modelWords = 1;
+    // (v6.7 H4, main's director15 ruling: a miss verdict naming their answer or any value — "2/1 sahi nahi hai." — said as the
+    // remediation's page opens COUNTS from director16; a bare one with no value — "Nahi, yeh jawab nahi hai." — says nothing)
+    const bareNo = graded && graded !== "correct" && !/\d|(?<![\p{L}])(?:kyunki|because|jawab\s+.{1,30}?\s+(?:tha|hai))(?![\p{L}])/iu.test(s1);
+    // (a graded turn with no verdict at all — her line is the next card — has no close to misplace: the missing verdict is counted
+    // apart, as the gate's verdictGiven)
+    const hasVerdict = gave || /(?<![\p{L}])(?:sahi|theek|bilkul|haan|nahi|galat|jawab|right|correct|not|yes)(?![\p{L}])/iu.test(s1);
+    if (answered && hasVerdict && !onAnswered && (bareNo ? leaves : contentful(s1) || contentful(closeWords.split(/(?<=[.!?।])\s/)[0] ?? "") || leaves)) out.closeOffBoard = 1;
+    // (v6.7 H4: the stated-fraction flag is dropped — main: it raised false flags, and V1 makes the verdict code's)
+    void strayFraction;
+  }
+  // (c) v6.7 H4: each part of her line on the page of its own beat (the harness records her line's parts with the beat each belongs
+  // on: row.pageParts [{ from, beat }]); a recorded run without them: a language or "didn't understand" turn whose first page is a
+  // remediation's while the live card is that remediation's follow-up — the follow-up's words over the remediation's figure
+  if (Array.isArray(row.pageParts) && row.pageParts.length) {
+    const pageAt = (from) => [...pages].reverse().find((p) => (p.from ?? 0) <= from) ?? pages[0];
+    for (const pp of row.pageParts) {
+      const pg = pageAt(pp.from ?? 0);
+      if (pp.beat && pg.beat && String(pp.beat).replace(/^explain:/, "") !== String(pg.beat).replace(/^explain:/, "")) { out.partOffBeat = 1; break; }
+    }
+  } else if (prevChild && /\blanguage\b/.test(String(prevChild.read ?? "")) && /^rem:/.test(String(pages[0].beat ?? ""))
+    && /:then:/.test(String(row.check?.itemId ?? "")) && String(row.check.itemId).endsWith(String(pages[0].beat).slice(4))) out.partOffBeat = 1;
+  // (a language turn whose move teaches an explain beat, drawn on a board that is not that beat's figure: c6 offtopic 32, a worked
+  // step's words over e3)
+  else if (prevChild && /\blanguage\b/.test(String(prevChild.read ?? "")) && pages.length === 1 && beatBoard) {
+    const m = /:explain:(e\d+)$/.exec(String(row.beat ?? ""));
+    const bb = m ? beatBoard(m[1]) : null;
+    // (the live card's own page is its words' page: an ask with its own figure is drawn there)
+    if (bb && !sameFigure(pages[0].board, bb) && !(row.check?.itemId && sameFigure(pages[0].board, cardBoardOf(row)))) out.partOffBeat = 1;
   }
   // (b) a picture asked for: the page carrying the card's words must draw the card's own board, not the alt view
   if (prevChild && VISUAL_READ.test(String(prevChild.read ?? "")) && row.card) {
@@ -98,14 +123,15 @@ export function drawnContradictions(row, cardRow, prevChild, { answerBoard = nul
 }
 
 /** every row of a recorded lesson: [{i, closeOffBoard, cardAsAlt, modelWords}] for the flagged ones */
-export function drawnContradictionsOf(rows, { answerBoardOf = () => null } = {}) {
+export function drawnContradictionsOf(rows, { answerBoardOf = () => null, beatBoardOf = null } = {}) {
   const flags = [];
   let cardRow = null, prevC = null;
   rows.forEach((r, i) => {
     if (r.who === "child") { prevC = r; return; }
     if (r.who !== "teacher") return;
-    const d = drawnContradictions(r, cardRow, prevC, { answerBoard: answerBoardOf(cardRow?.check?.itemId ?? null) });
-    if (d.closeOffBoard || d.cardAsAlt || d.modelWords) flags.push({ i, ...d });
+    const sk = /^(s\d+):/.exec(String(r.beat ?? ""))?.[1] ?? null;
+    const d = drawnContradictions(r, cardRow, prevC, { answerBoard: answerBoardOf(cardRow?.check?.itemId ?? null), beatBoard: beatBoardOf && sk ? (id) => beatBoardOf(sk, id) : null });
+    if (d.closeOffBoard || d.cardAsAlt || d.modelWords || d.partOffBeat) flags.push({ i, ...d });
     if (r.check?.itemId) cardRow = r;
     prevC = null;
   });

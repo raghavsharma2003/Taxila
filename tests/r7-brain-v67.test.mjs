@@ -7,6 +7,9 @@ import { textReply, replyDeps } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { setScriptForTest } from "../server/director/script.js";
+import { readFileSync, readdirSync } from "node:fs";
+import { drawnContradictionsOf } from "../evals/hybrid-side-by-side/drawn-pages.mjs";
+import { scriptsOf, answerBoardOf, beatBoardOf } from "../evals/hybrid-side-by-side/proxies-v64.mjs";
 
 const RUN = "2026-11-09-director15";
 const TOPIC = { c4: "c4-maths-ch05-t01", "c5-t01": "c5-maths-ch02-t01", "c5-t02": "c5-maths-ch02-t02", c6: "c6-maths-ch06-t01" };
@@ -73,6 +76,30 @@ describe("r7-brain-v67.test.mjs", () => {
       assert.ok(last.state.lastMove?.asideAgain || last.state.lastMove?.returned, JSON.stringify(last.state.lastMove).slice(0, 200));
       assert.match(out.reply, /cricket/i, out.reply);
       assert.doesNotMatch(out.reply, /ke baad karenge|baad baat karenge/i, out.reply);
+    });
+  });
+  describe("H4: the counter, part by part", () => {
+    test("director15: main's 5 hand rows and the named P4′ rows found; ≤ 2 other flags", () => {
+      const DIR = new URL(`../evals/hybrid-side-by-side/results/${RUN}/`, import.meta.url).pathname;
+      const scripts = scriptsOf(DIR);
+      const TAG = { "c4-ch05-t01": "c4", "c5-ch02-t01": "c5-t01", "c5-ch02-t02": "c5-t02", "c6-ch06-t01": "c6" };
+      const got = new Set();
+      for (const f of readdirSync(DIR).filter((x) => /^(steady|offtopic|stuck|steering)-.*\.json$/.test(x))) {
+        const j = JSON.parse(readFileSync(DIR + f, "utf8"));
+        const tag = TAG[f.slice(f.indexOf("-") + 1, -5)];
+        for (const d of drawnContradictionsOf(j.director, { answerBoardOf: (id) => answerBoardOf(scripts, j.topicId, id), beatBoardOf: beatBoardOf(scripts, j.topicId) })) got.add(`${tag} ${f.split("-")[0]} ${d.i}`);
+      }
+      const HAND = ["c4 steady 78", "c5-t02 steering 8", "c6 steering 8", "c6 offtopic 32", "c5-t02 offtopic 44"];
+      const P4P = ["c4 stuck 32", "c4 offtopic 16", "c5-t02 stuck 16", "c5-t02 offtopic 16"];
+      // (main's P4′ shape counted in c6 ×9 and c5-t01 ×7 too, unnamed: a flag there of that shape is no false flag)
+      const p4Shape = (k) => /^(?:c6|c5-t01) /.test(k);
+      // (c4 offtopic 34: the yourStep's simpler on closed e4's board — main's B1″ row)
+      const known = new Set(["c4 offtopic 34"]);
+      const hit = HAND.filter((k) => got.has(k));
+      assert.ok(hit.length >= 4, `hand rows: ${hit.length}/5, missed ${HAND.filter((k) => !got.has(k))}`);
+      for (const k of P4P) assert.ok(got.has(k), `P4′ row ${k}`);
+      const other = [...got].filter((k) => !HAND.includes(k) && !P4P.includes(k) && !p4Shape(k) && !known.has(k));
+      assert.ok(other.length <= 2, `other flags: ${other}`);
     });
   });
 });

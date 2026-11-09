@@ -55,6 +55,8 @@ export const answerBoardOf = (scripts, topicId, itemId) => {
   return sk.checks?.find((c) => c.id === rest)?.answerBoard ?? null;
 };
 
+/** v6.7 H4: an explain beat's board, by the row's skill tag ("s1") and beat id. */
+export const beatBoardOf = (scripts, topicId) => (sk, id) => scripts[topicId]?.skills?.find((x) => x.skillId.endsWith(`-${sk}`))?.explain?.find((b) => b.id === id)?.board ?? null;
 export function proxies(dir) {
   const scripts = scriptsOf(dir);
   const t = { lessons: 0, turns: 0, verdicts: 0, graded: 0, rightCalledWrong: 0, wrongCalledRight: 0, falseKeys: 0, contradictions: 0,
@@ -215,11 +217,11 @@ export function proxies(dir) {
     // a card still live when the lesson ends is not counted as unanswered
     for (const [id, at] of posed) if (!closed.has(id) && id !== liveCard) { t.unanswered++; t.rows.unanswered.push(`${tag} ${id.split(":").slice(2).join(":")}@${at}`); }
     if (skills.size > 1) t.skillLeft++;
-    for (const d of drawnContradictionsOf(rows, { answerBoardOf: (id) => answerBoardOf(scripts, j.topicId, id) })) {
-      const n = d.closeOffBoard + d.cardAsAlt + d.modelWords;
+    for (const d of drawnContradictionsOf(rows, { answerBoardOf: (id) => answerBoardOf(scripts, j.topicId, id), beatBoardOf: beatBoardOf(scripts, j.topicId) })) {
+      const n = d.closeOffBoard + d.cardAsAlt + d.modelWords + (d.partOffBeat ?? 0);
       t.drawn.total += n; t.drawn.closeOffBoard += d.closeOffBoard; t.drawn.cardAsAlt += d.cardAsAlt; t.drawn.modelWords += d.modelWords;
       t.drawn.perTopic[topic] = (t.drawn.perTopic[topic] ?? 0) + n;
-      t.drawn.rows.push(`${tag} ${d.i} ${d.closeOffBoard ? "close" : d.cardAsAlt ? "alt" : "words"}`);
+      t.drawn.rows.push(`${tag} ${d.i} ${d.closeOffBoard ? "close" : d.cardAsAlt ? "alt" : d.partOffBeat ? "part" : "words"}`);
     }
     t.latency[tag] = { replyReadyP50: q50(ready), readP50: q50(read), n: ready.length };
   }

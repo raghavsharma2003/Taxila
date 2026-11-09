@@ -377,6 +377,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         });
       }
     }
+    // (v6.7, main on director15 c5-t01 steering 14: page 0's segment recorded fraction-line@1 where bars were drawn — page 0 is the
+    // take on her line, so its template is the take's)
+    if (segs?.length && screen?.drawn === "take" && screen.template) segs[0] = { ...segs[0], template: screen.template };
     // (v6.3: the row's screen says what her final line draws: page 0's board, and every page when the turn is paged)
     if (screen?.kind === "whiteboard" && drawn?.length) screen = { ...screen, preselected: screen.boardRef ?? null, boardRef: drawn[0].board, ...(drawn.length > 1 ? { pages: drawn } : {}) };
     const whole = segs ? 0 : next.lastMove?.scriptBeat || next.lastMove?.cardBeat ? screenContradictions(reply, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length
@@ -404,7 +407,14 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     // turns Studio could not page. The v6 word checks stay recorded beside it (contradictionsV6), no longer in the count:
     // on director14 they flagged 8 turns the hand count did not)
     const contradictionsV6 = (segs ? segs.reduce((a, x) => a + x.contradictions, 0) : whole) + v6.picture + v6.borrowedWhy + v6.verdictSeg + v6.unpaged + v6.nothingNew + v6.droppedPages;
-    const rowDrawn = { who: "teacher", text: reply, card: ui?.ask?.text ?? null, check, gate: { answered }, move,
+    // (v6.7 H4: her line's parts and the beat each belongs on — the counter checks each part against the page drawn under it)
+    const lmB = next.lastMove ?? {};
+    const partBeat = { close: lmB.closeBeat?.beatId, closed: (lmB.closedBeat ?? lmB.closeBeat)?.beatId, bridge: lmB.bridgeBeat?.beatId, simpler: (lmB.simplerBeat ?? lmB.scriptBeat)?.beatId,
+      alt: lmB.cardBeat?.beatId, card: lmB.cardBeat?.beatId, body: lmB.scriptBeat?.beatId };
+    let atP = 0;
+    const pageParts = (tGuard?.parts?.list ?? []).map((pp) => { const o = { part: pp.part, from: atP, beat: pp.part === "close" && !/\d|kyunki|because|jawab|^(?:haan|bilkul|sahi)/i.test(pp.text) ? null : partBeat[pp.part] ?? null }; atP += String(pp.text ?? "").replace(/\s+/g, " ").trim().length + 1; return o; })
+      .filter((pp) => pp.beat);
+    const rowDrawn = { who: "teacher", text: reply, card: ui?.ask?.text ?? null, check, gate: { answered }, move, beat: sb ? beat : null, ...(pageParts.length ? { pageParts } : {}),
       ...(screen?.kind === "whiteboard" ? { screen: { ...screen, ...(drawn?.length > 1 ? { pages: drawn } : {}) } } : {}), ...(segs ? { segments: segs } : {}) };
     const lastChild = [...rows].reverse().find((r) => r.who === "child") ?? null;
     const dc = drawnContradictions(rowDrawn, [...rows].reverse().find((r) => r.who === "teacher" && r.check?.itemId) ?? null,
@@ -429,7 +439,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     // max(classify, reply), on a turn the model classified; whether her draft was rewritten, or the rewrite skipped by cut 1)
     const latency = { classifyPath: lastClassify?.path ?? null, parallelBoundMs: lastClassify?.path === "model" ? Math.max(classifyMs, replyMs) : classifyMs + replyMs,
       rewrite: !!tGuard?.rewritten, rewriteSkipped: tGuard?.rewriteSkipped ?? null };
-    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
+    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(pageParts.length ? { pageParts } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
       gate: { delivered, answered, verdictGiven, contradictions, contradictionsV6, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };

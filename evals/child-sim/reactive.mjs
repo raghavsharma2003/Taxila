@@ -52,7 +52,8 @@ const PROFILE = {
 
 /** The turns a harness should run per persona: past its leaveAfter, so the "bye" is played (H1.1: steady 40 + 1). */
 /** v6.5: the most turns the goodbye waits for an open card's close. */
-export const LEAVE_WAIT = 6;
+// (v6.7 H4, main on director15 c6 stuck 77: the wait ran out with the card still open after a miss) 10 turns
+export const LEAVE_WAIT = 10;
 export const maxTurnsFor = (persona) => (PROFILE[persona]?.leaveAfter ?? MIN_TURNS) + 1 + LEAVE_WAIT;
 
 /** Names the harness uses for a girl (verbs agree: "gayi", "karti"); any other name gets the masculine forms. [U] extend with the

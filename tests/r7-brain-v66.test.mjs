@@ -230,7 +230,8 @@ describe("r7-brain-v66.test.mjs", () => {
       }
       const hit = HAND.filter((k) => got.has(k));
       const falseFlags = [...got].filter((k) => !HAND.includes(k));
-      assert.ok(hit.length >= 20, `recall ${hit.length}/22; missed ${HAND.filter((k) => !got.has(k)).join(", ")}`);
+      // (v6.7 H4, main: the stated-fraction flag is dropped — c4 steady 20, the model-words row V1 removed, is no longer counted)
+      assert.ok(hit.length >= 19, `recall ${hit.length}/22; missed ${HAND.filter((k) => !got.has(k)).join(", ")}`);
       assert.ok(falseFlags.length <= 2, `false flags: ${falseFlags.join(", ")}`);
     });
     test("the unrolled checker hears 'patti'", () => {
