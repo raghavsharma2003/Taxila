@@ -26,7 +26,7 @@ export const BOARD_REFS = Object.freeze({
   "number-line-zoom@1": { subject: "maths", params: "value: a decimal with 1-2 places, 0-10", example: { value: 2.45 } },
   "column-op@1": { subject: "maths", params: "a, b 0-99999, op add|sub (b ≤ a), hideResult?", example: { a: 478, b: 356, op: "add" } },
   "place-value@1": { subject: "maths", params: "value 1-9999999", example: { value: 3456 } },
-  "equal-groups@1": { subject: "maths", params: "groups 2-6, each 1-8, hideResult? | sizes [2-6 groups of 1-10] (groups NOT all equal, each group's count under it, no equation); title? (short, over the board: \"8 ka 1/2 = 4\")", example: { groups: 3, each: 4 } },
+  "equal-groups@1": { subject: "maths", params: "groups 2-6, each 1-8, hideResult? | sizes [2-6 groups of 1-10] (groups NOT all equal, each group's count under it, no equation), equalTo? {groups 2-6, each 1-8} (the same total shared equally, drawn beside them: groups × each = the sizes' sum); title? (short, over the board: \"8 ka 1/2 = 4\")", example: { groups: 3, each: 4 } },
   "shade-grid@1": { subject: "maths", params: "rows 1-6, cols 1-10, shade 0-rows*cols | block [r, c], labels?, hideResult?", example: { rows: 3, cols: 5, shade: 6, labels: true, hideResult: true } },
   "area-grid@1": { subject: "maths", params: "w, h (ints), mode area|perimeter, unit cm|m|…, hideResult?", example: { w: 5, h: 3, mode: "area", unit: "cm" } },
   "measured@1": { subject: "maths", params: "shape rect|square (w, h) | triangle (sides [3]) | circle (r) | pentagon|hexagon|octagon|quadrilateral|polygon (sides [3-8], names? one per corner; labelled, not to scale); unit cm|m; name?, trace? (perimeter walk)", example: { shape: "rect", w: 6, h: 4, unit: "cm", name: true, trace: true } },
@@ -87,7 +87,7 @@ export function refNumbersOf(call) {
 export async function certifyBoardRef(ref, { kit = null, item = null, line, withhold = null } = {}) {
   const r = resolveBoardRef(ref, { kit, item });
   if (!r.ok) return { ok: false, failed: [r.why] };
-  const [{ gateWhiteboard, withheldValues }, { retimeToLine, regate }, { speechMsOf }] = await Promise.all([import("../../studio/qa/whiteboard.js"), import("../../stagecraft/board-sync.js"), import("../../studio/plan.js")]);
+  const [{ gateWhiteboard, withheldValues }, { retimeToLine, regate, refWholes }, { speechMsOf }] = await Promise.all([import("../../studio/qa/whiteboard.js"), import("../../stagecraft/board-sync.js"), import("../../studio/plan.js")]);
   const x = expand(r.call);
   const text = String(line ?? "");
   // (director10: the live gate's own estimate of her line — board-sync gateCtxFor — not a stricter 400 ms a word: a two-bar
@@ -96,7 +96,13 @@ export async function certifyBoardRef(ref, { kit = null, item = null, line, with
   const w = withhold ?? (item && kit ? withheldValues(kit, { itemId: item.id, line: text }) : { values: [] });
   // (an authored ref is certified as the live gate takes a card's own board — board-sync gateCtxFor authoredRef: its cuts
   // are the template's exact radii, not a model's circle cut by lines; Learning's c4 watermelon then-card, 2026-11-08)
-  const g = gateWhiteboard(retimeToLine(x.script, text), { reply: text, speechMs, withhold: w, authoredRef: true });
+  // (Learning's D7, main 2026-11-09: … and its separate wholes are wholes — two ribbons posed as "12 barabar tukdon mein se 5"
+  // and "6 … mein se 5", a reveal whose why says 3/5, 6/10 and 4/10 — as the live gate counts them: never her "2")
+  // (each bar is a whole her line names — its parts said, as a count or a denominator: a third bar she never mentions
+  // still binds, director10's "1/4 aur 1/8" over three bars)
+  const lineNs = new Set((text.match(/\d+/g) ?? []).map(Number));
+  const wn = (r.call.bars ?? []).every((b) => lineNs.has(Number(b?.parts))) ? refWholes(ref) : null;
+  const g = gateWhiteboard(retimeToLine(x.script, text), { reply: text, speechMs, withhold: w, authoredRef: true, ...(wn ? { wholes: wn } : {}) });
   // round 7 (main, director4 S2): the board must SHOW the numbers the ref authors (a template that cannot draw them, or
   // draws one as "?", fails the ref, never the child's screen)
   // (a grouped number — "4,815", "1,00,000" — is one number: place-value@1's Indian grouping failed numbers_not_shown)
