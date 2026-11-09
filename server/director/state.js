@@ -1453,7 +1453,8 @@ function afterMiss(s, input, item) {
   // card again): a second miss — a wrong answer or a "pata nahi" after an earlier one on this card — is never a bare re-pose: with no
   // helper line left unsaid on the card, it gives its key and why
   if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && isScriptCard(item) && ["wrong", "stuck"].includes(verdict(input.cls))
-    && (s.cardHelp?.id === item.id ? s.cardHelp.misses ?? 0 : 0) >= 1 && !helpLeft(s, input.kit, item)) return leaveItem(s, input, item, SH.reposeMissed());
+    && ((s.cardHelp?.id === item.id ? s.cardHelp.misses ?? 0 : 0) >= 1 || (!helpLeft(s, input.kit, item, { any: true }) && input.cls?.outcome !== "misconception"))
+    && !helpLeft(s, input.kit, item)) return leaveItem(s, input, item, SH.reposeMissed());
   // round 7 T2: a scripted check answered wrong gets its misconception's scripted remediation and keyed follow-up
   const remedy = scriptOn() ? walkRemedy(s, input, item) : null;
   if (remedy) return remedy;
@@ -3025,7 +3026,9 @@ export function step(prev, input) {
     const pointRung = k2 && !wrongNow && item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked"
       ? { text: sk?.explain?.find((b) => b.id === item.scriptAsk.beatId)?.point ?? null, beat: beatOf(item.scriptAsk.beatId) } : { text: null };
     const rungs = (help.misses >= 2 ? [...remRungs, own, pointRung] : [own, pointRung, ...remRungs]).map((x) => ({ ...x, text: x.text ? saidIn(x.text, lang) : null })).filter((x) => x.text && String(x.text).trim());
-    const sm = rungs.find((x) => !help.said.includes(normLine(x.text))) ?? null;
+    // (v6.7 K4, main on director15 c5-t01 stuck 12, steady 88, c6 stuck 72: "pata nahi, aap batao" and a first miss got the bare card:
+    // with no new rung, the card's own simpler is said again — never the bare re-pose)
+    const sm = rungs.find((x) => !help.said.includes(normLine(x.text))) ?? (k2 ? rungs.find((x) => x.text && x.beat?.kind !== "remediation") ?? null : null);
     if (sm) { move.simpler = String(sm.text).trim(); if (sm.beat) move.simplerBeat = sm.beat; help.said = [...help.said, normLine(sm.text)]; help.counted = s.turn;
       if (sm.beat?.kind === "remediation") s.remSaid = [...(s.remSaid ?? []), normLine(sm.text)]; }
     s.cardHelp = help;
@@ -3364,16 +3367,18 @@ export function requeueMissedReturn(s, guard) {
   return { ...s, later: s.later.map((x) => (x === e ? { ...x, servedAt: null, requeued: (x.requeued ?? 0) + 1 } : x)) };
 }
 /** v6.6 K3: whether a helper line (the card's simpler, its beat's simpler, its remediation's say or simpler) is left unsaid on it. */
-function helpLeft(s, kit, item) {
+function helpLeft(s, kit, item, { any = false } = {}) {
   const lang = s.ctx?.lang ?? "hinglish";
   const meta = item.scriptAsk ?? item.scriptCheck ?? item.scriptThen;
   const sk = skillScriptOf(kit, item.skillId);
   const rem = sk?.remediation?.find((r) => r.targets === (meta?.targets ?? null)) ?? null;
   const beat = item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked" ? sk?.explain?.find((b) => b.id === item.scriptAsk.beatId) : null;
   const said = new Set([...(s.cardHelp?.id === item.id ? s.cardHelp.said ?? [] : []), ...(s.remSaid ?? [])]);
-  const remDone = !!rem && (s.remedied ?? []).includes(rem.targets);
-  return [meta?.simpler, beat?.simpler, ...(remDone ? [] : [rem?.say, rem?.simpler])].map((x) => (x ? saidIn(x, lang) : null))
-    .some((t) => t && String(t).trim() && !said.has(normLine(t)));
+  const remDone = !any && !!rem && (s.remedied ?? []).includes(rem.targets);
+  // (a misconception's remediation is help too, whatever card it was matched on)
+  const remAny = any ? (sk?.remediation ?? []).filter((r) => r.targets === (meta?.targets ?? null) || r.targets === item.targetsMisconception) : [];
+  return [meta?.simpler, beat?.simpler, ...(remDone ? [] : [rem?.say, rem?.simpler]), ...remAny.flatMap((r) => [r.say, r.simpler])].map((x) => (x ? saidIn(x, lang) : null))
+    .some((t) => t && String(t).trim() && (any || !said.has(normLine(t))));
 }
 /** v6.1 R9: the authored simpler (format 2.3) of the explain beat a move teaches, in the lesson language, or null. */
 function simplerOfBeat(s, kit, move) {
