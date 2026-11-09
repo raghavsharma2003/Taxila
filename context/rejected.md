@@ -2880,3 +2880,13 @@ The tried approach: read the gate's automatic contradiction counter as a trend l
 **What broke:** on director14 it read 17 → 9 while the hand count went 13 → 22. It checks `closeBeat.board`, not the page actually drawn, so it is blind to both of the run's main mechanisms.
 
 Hand counts stay the gate. The counter must pass a director14 fixture before its numbers count as evidence.
+
+
+<!-- merged from inbox/r7-main-34.json -->
+## `rj-r7-question-drop-on-authored-text` (2026-11-09)
+
+The tried approach: drop every '?' sentence outside the card on scripted turns (v6.6), to stop model-written questions.
+
+**What broke:** it also removed authored rhetorical questions in points, added by Learning's register rewrite. director16 lost c5-t02's e1 point and c4's e3 point in all 8 of those lessons.
+
+A guard aimed at one author's text must check who wrote the sentence, not its punctuation.
