@@ -16,7 +16,7 @@ import { findItem } from "../server/director/items.js";
 import { whiteboardIntentOf, boardItemOf } from "../server/brain/propose.js";
 import { joinParts } from "../server/brain/lineParts.js";
 import { liveBeatSimpler, requeueMissedReturn } from "../server/director/state.js";
-import { returnLineOk, honestTasteLine } from "../server/brain/say.js";
+import { returnLineOk, honestTasteLine, notRightLead, freshForm, GAVE_FORMS } from "../server/brain/say.js";
 
 const RUN = "2026-11-09-director14";
 const DIR = new URL(`../evals/hybrid-side-by-side/results/${RUN}/`, import.meta.url).pathname;
@@ -133,6 +133,22 @@ describe("r7-brain-v66.test.mjs", () => {
         if (/apna tareeka batao/i.test(out.reply)) bad.push(`${tag}: a question of hers outside the card`);
       }
       assert.deepEqual(bad, []);
+    });
+  });
+  describe("F1′: code frames never repeat within 4 turns", () => {
+    const st = (...texts) => ({ recent: texts.map((text) => ({ who: "teacher", text })) });
+    test("'<answer> sahi nahi hai' has forms: not the one said in her last 4 turns (director14: up to 11 repeats)", () => {
+      const a = notRightLead("16 m", "hinglish", st("16 m sahi nahi hai. Phir se dekho."));
+      assert.doesNotMatch(a, /sahi nahi hai/, a);
+      assert.match(a, /16 m/);
+      const b = notRightLead("20", "hinglish", st("16 m sahi nahi hai.", `Jawab 18 nahi hai.`));
+      assert.doesNotMatch(b, /sahi nahi hai|^Jawab/, b);
+    });
+    test("the give-up has forms, fresh", () => {
+      const f = GAVE_FORMS.hinglish.next;
+      const a = freshForm(f, st("Is sawaal ka jawab 30 m tha, kyunki …"), "28 m", "");
+      assert.doesNotMatch(a, /^Is sawaal ka jawab/, a);
+      assert.match(a, /jawab 28 m tha/);
     });
   });
   describe("A2: asides", () => {

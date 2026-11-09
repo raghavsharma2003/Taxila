@@ -4,6 +4,7 @@
 import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { replay, runScriptOf } from "./fixtures/replay.mjs";
+import { FRAMES, TRY_FIRST } from "../server/brain/say.js";
 import { textReply, replyDeps, returnLineOk } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
@@ -136,7 +137,10 @@ describe("r7-brain-v64.test.mjs", () => {
       if (!card || pl.state.activeItemId !== pl.before.activeItemId) continue;
       replyDeps.chat = async () => ({ text: rows[n].text });
       const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
-      const rest = out.reply.replace(card, "").replace(/^\s*(?:Phir se dekho:|Here it is again:|Theek hai[,.]?|Achha[,.]?|Haan[,.]?|Zaroor[,.]?)\s*/i, "").trim();
+      // (v6.6 F1′: a re-pose frame in any of its forms; try-first an invitation)
+      const FR = [...FRAMES.again.hinglish, ...FRAMES.again.english, ...TRY_FIRST.hinglish, ...TRY_FIRST.english, "Theek hai,", "Theek hai.", "Achha,", "Achha.", "Haan,", "Haan.", "Zaroor,", "Zaroor."];
+      let rest = out.reply.replace(card, "").trim();
+      for (const f of FR) if (rest.toLowerCase().startsWith(f.toLowerCase())) { rest = rest.slice(f.length).trim(); break; }
       if (/Yaad karo:|Remember:/.test(out.reply)) bad.push(`row ${n}: "Yaad karo" | ${out.reply.slice(0, 100)}`);
       else if (sentences(rest).length) bad.push(`row ${n}: more than the card (${JSON.stringify(rest.slice(0, 80))})`);
     }

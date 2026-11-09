@@ -99,7 +99,8 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     // a wrong answer with the previous card's give-up reveal on the move: the reveal never comes before the verdict
     replyDeps.chat = async () => ({ text: `9 sahi nahi hai. Chalo phir se dekhte hain. ${card}` });
     const a = await textReply({ instructions: "x", state: { ...st, lastMove: { ...st.lastMove, gave: { answer: "38 m", why: "" } } }, kit: K, childText: "9", verdict: "not_yet", history: [], ui: L.r.ui, module: null });
-    assert.match(a.reply, /^9 sahi nahi hai\./, a.reply);
+    // (v6.6 F1′: a give-up never opens on their wrong answer again — code's plain not-right frame)
+    assert.match(a.reply, /^(?:Nahi, yeh jawab nahi hai|Yeh jawab sahi nahi hai|Abhi yeh sahi nahi hai|Nahi, yeh theek nahi hai)\./, a.reply);
     assert.ok(a.reply.includes("38 m"), "the reveal is still said");
     // a wrong answer whose line has no verdict at all: code adds it
     replyDeps.chat = async () => ({ text: card });
