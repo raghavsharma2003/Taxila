@@ -7,6 +7,7 @@ import { replay, runScriptOf } from "./fixtures/replay.mjs";
 import { textReply, replyDeps, BEAT_ASK, WORKED_ASK } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
+import { pictureMismatch } from "../evals/hybrid-side-by-side/checks.mjs";
 import { setScriptForTest } from "../server/director/script.js";
 import { findItem } from "../server/director/items.js";
 import { whiteboardIntentOf, boardItemOf, cardPageRefused } from "../server/brain/propose.js";
@@ -284,5 +285,12 @@ describe("r7-brain-v65.test.mjs", () => {
     const r = step({ ...last.state }, { event: "turn", kit, cls: { outcome: "no_evidence", confidence: 0.9, flags: {}, request: { type: "break" } }, text: "thak gayi, thoda break", now: 9_000_000 });
     assert.equal(r.move.kind, "break");
     assert.equal(r.move.returned?.topic, e.topic, JSON.stringify(r.move).slice(0, 200));
+  });
+
+  // Harness
+  test("harness: the picture checker reads Studio's unrolled view (a shape's sides laid on a line)", () => {
+    const rect = { template: "measured@1", params: { shape: "rectangle" } };
+    const said = "Screen par dekho: yeh rekha chaaron bhujayein ek seedh mein hai.";
+    assert.deepEqual(pictureMismatch(said, rect, { view: "unrolled" }), []);
   });
 });

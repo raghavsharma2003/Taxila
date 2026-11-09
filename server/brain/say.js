@@ -1981,8 +1981,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (ASKS_TASTE.test(said0)) guard.returnHonest = true;
       ss = ss.filter((x) => x !== line);
       if (!line && said0) {
+        // (v6.5 speed, main on director13: p50 2.64 → 3.06 s. Measured: the read (classify) call grew 893 → 1224 ms p50 with no code
+        // change, the reply 1614 → 1720 ms. This retry runs only on a return turn whose draft has no line, and is held to 1.5 s)
         try {
-          const r = await replyDeps.chat(DEPLOY.reply, [{ role: "system", content: returnNoteOf(said0, ret.topic, lang, true) }, { role: "user", content: said0 }], { maxTokens: 60, effort: "none", timeoutMs: 3000, trace });
+          const r = await replyDeps.chat(DEPLOY.reply, [{ role: "system", content: returnNoteOf(said0, ret.topic, lang, true) }, { role: "user", content: said0 }], { maxTokens: 40, effort: "none", timeoutMs: 1500, trace });
           const c = (String(r?.text ?? "").match(/[^.!?\u0964]+[.!?\u0964]?/) ?? [""])[0].trim();
           if (returnLineOk(c, said0, ret.topic)) { line = dot(c); guard.returnRetry = true; }
         } catch { /* no line: the return is not said this turn */ }

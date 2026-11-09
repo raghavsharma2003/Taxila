@@ -70,7 +70,7 @@ test("the stuck child answers right less often than the steady one (over 40 seed
 });
 
 // ───────────── H1.1 (director5 judgement, dc-r7-script-walk-v3) ─────────────
-import { PROBE_RE, isGirlName, maxTurnsFor } from "../evals/child-sim/reactive.mjs";
+import { PROBE_RE, isGirlName, maxTurnsFor, LEAVE_WAIT } from "../evals/child-sim/reactive.mjs";
 
 test("H1.1: a probe gets a short reason, never the card answer again (even with the card still on the table)", () => {
   for (const teacher of ["Tumne kaise jaana?", "Achha, kyun?", "Apne shabdon mein samjhao.", "Golu ko samjhao na.", "How did you know?"]) {
@@ -94,10 +94,16 @@ test("H1.1: verbs agree with the persona's name; the steady child stays 40 turns
   const lines = (name) => { const c = createReactiveChild({ persona: "steady", seed: 5, kit, name }); const out = []; for (let t = 0; t < maxTurnsFor("steady"); t++) out.push(c.reply({ turn: t, teacher: "Theek hai." }).text); return out.join(" | "); };
   assert.doesNotMatch(lines("Riya"), /\b(gaya|karta|jaata)\b/);
   assert.doesNotMatch(lines("Aarav"), /\b(gayi|karti|jaati)\b/);
-  assert.equal(maxTurnsFor("steady"), 41);
+  // (v6.5: + LEAVE_WAIT turns, used only while a card she asked is still open; the harness stops at the goodbye)
+  assert.equal(maxTurnsFor("steady"), 41 + LEAVE_WAIT);
   const c = createReactiveChild({ persona: "steady", seed: 9, kit });
   const kinds = Array.from({ length: maxTurnsFor("steady") }, (_, t) => c.reply({ turn: t, teacher: "Theek hai." }).kind);
   assert.equal(kinds.indexOf("leave"), 40, "steady leaves at turn 40, not 24");
+  // (v6.5 harness, main on director13: the goodbye waits for an open card's close, at most LEAVE_WAIT turns)
+  const c2 = createReactiveChild({ persona: "steady", seed: 9, kit });
+  // (a new card each turn, as a walk poses one: none was answered before the goodbye was due)
+  const k2 = Array.from({ length: maxTurnsFor("steady") }, (_, t) => c2.reply({ turn: t, teacher: "Kitna hissa khaya?", card: { itemId: `x:c${t}`, key: "3/4" } }).kind);
+  assert.equal(k2.indexOf("leave"), 40 + LEAVE_WAIT, "with a card open at turn 40 the goodbye waits");
 });
 
 // ───────────── H1.2 (director6 judgement, dc-r7-script-walk-v4) ─────────────

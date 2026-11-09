@@ -376,14 +376,14 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       borrowedWhy: borrowedWhy(reply, WHYS(kit)).length,
       // (v6.1) a turn in parts that Studio could not page; a picture asked for that drew the board already up, no second view
       unpaged,
-      // (reported, not counted as a contradiction: the words are said over the page before)
+      // (v6.5, main on director13: a spoken line whose page was dropped is said over the page before — counted as a contradiction)
       droppedPages,
       nothingNew: p.r.move?.request === "visual" && screen?.kind === "whiteboard" && !screen.altView && !!lastScreenKey && lastScreenKey === screenKeyOf(screen) ? 1 : 0,
       verdictSeg: verdictMisplaced({ graded: !!graded, verdict: firstS, answeredBoard: s.lastMove?.cardBeat?.board ?? s.lastMove?.scriptBeat?.board ?? null,
         answerBoard: next.lastMove?.closeBeat?.answerBoard ? next.lastMove.closeBeat.board : null,
         firstBoard: segs?.[0]?.board ?? next.lastMove?.closeBeat?.board ?? (next.lastMove?.scriptBeat?.board ?? null) }) ? 1 : 0,
     };
-    const contradictions = (segs ? segs.reduce((a, x) => a + x.contradictions, 0) : whole) + v6.picture + v6.borrowedWhy + v6.verdictSeg + v6.unpaged + v6.nothingNew;
+    const contradictions = (segs ? segs.reduce((a, x) => a + x.contradictions, 0) : whole) + v6.picture + v6.borrowedWhy + v6.verdictSeg + v6.unpaged + v6.nothingNew + v6.droppedPages;
     // v5 gate line: a key said ("jawab X tha") that is not one of the topic's authored key or accept forms is a false key
     // (one sentence at a time; "tumhara jawab sahi tha" states no key)
     const saidKeys = [...String(reply).matchAll(/jawab\s+([^.!?।]+?)\s+tha\b|answer was\s+([^.!?।]+?)(?:[,.]|$)/gi)].map((m) => String(m[1] ?? m[2]).trim().toLowerCase())
