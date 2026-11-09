@@ -516,11 +516,15 @@ for (const path of ["promptTeacher", "early audio"]) {
     try {
       link["speech"] = async () => audioBytes();
       const play = () => (path === "promptTeacher" ? link.promptTeacher({ text: "दो बटा दो? चलो देखते हैं।", seq: 3 }) : link["playEarly"](audioBytes()));
-      // no hold: sounds at once
+      // no hold: she sounds, and no hold was ever armed (the event, not a wall-clock bound: main 2026-11-09)
+      const holds = [];
+      const bargein = link["vtrace"].bargein.bind(link["vtrace"]);
+      link["vtrace"].bargein = (kind, d) => { if (kind === "verdict_hold") holds.push(d); return bargein(kind, d); };
       let t = Date.now();
       play();
       const free = await firstSoundAfter(link, events, t);
-      assert.ok(free !== null && free < 450, `no hold: ${free} ms`);
+      assert.ok(free !== null, "no hold: she sounds");
+      assert.deepEqual(holds, [], "no hold: none armed");
       link.interrupt();
       events.length = 0;
       // a closed-value commit's hold 700 ms ahead
@@ -528,7 +532,9 @@ for (const path of ["promptTeacher", "early audio"]) {
       t = Date.now();
       play();
       const held = await firstSoundAfter(link, events, t);
+      // a LOWER bound only (load can only lengthen it), and the hold itself as an event
       assert.ok(held !== null && held >= 680, `held: ${held} ms`);
+      assert.ok(holds.length >= 1 && holds[0].ms > 600, `a hold was armed: ${JSON.stringify(holds)}`);
     } finally { link.close(); env.restore(); }
   });
 }

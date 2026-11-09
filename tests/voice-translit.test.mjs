@@ -6,6 +6,7 @@ import { NUMBER_WORDS, cardinalOf } from "../server/voice/translit/numbers.js";
 import { romanToDeva } from "../server/voice/translit/rules.js";
 import { WORDS } from "../server/voice/spoken-lexicon.js";
 import { VOICE_CHOICES, voiceChoice, styleFor, spokenFor, documentFor, spokenText } from "../server/voice/voice-switch.js";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const T = (s, o = {}) => toDevanagari(s, { force: true, mode: "hinglish", ...o });
 const ON = { TAXILA_VOICE_DEVANAGARI: "1" };
@@ -80,9 +81,9 @@ test("output only replaces word spans: punctuation, spacing and digits are prese
 test("fast enough for the hot path: < 1 ms per reply", () => {
   const s = "Aarav, cricket pitch ko 6 equal parts mein baantiye. Sochiye, pehla mark start se kitni door hoga? Bittu ko baad mein aap samjhayenge.";
   T(s);
-  const t0 = performance.now();
+  const t0 = cpuNow(); // CPU time: this code's own work, not a shared runner's scheduler
   for (let i = 0; i < 500; i++) T(s);
-  assert.ok((performance.now() - t0) / 500 < 1, "mean > 1 ms");
+  assert.ok((cpuNow() - t0) / 500 < 1, "mean > 1 ms of CPU");
 });
 
 // ───────────── voice switch ─────────────
