@@ -143,7 +143,7 @@ for (const [mode, goal] of CASES) {
 
 test("chhaano: random play — the checker agrees with every split and vessel the law makes, and no part is ever lost", () => {
   const rnd = mulberry32(2026);
-  let accepted = 0;
+  let accepted = 0, thrown = 0;
   for (const [mode, goal] of CASES) for (const c of levelsOf(mode, goal, [5, 11])) {
     const level = L.validate(c.level), p = level.params;
     let s = L.init(level);
@@ -151,13 +151,14 @@ test("chhaano: random play — the checker agrees with every split and vessel th
       let a;
       if (mode === "sukha") {
         const m = DRY_SCENES[p.scene].tools[Math.floor(rnd() * DRY_SCENES[p.scene].tools.length)];
-        a = rnd() < 0.08 ? { kind: "done" } : rnd() < 0.05 ? { kind: "undo" } : { kind: "use", m, at: Math.floor(rnd() * s.piles.length), spot: rnd() < 0.8 ? "near" : "far" };
+        const sp = rnd(); a = rnd() < 0.08 ? { kind: "done" } : rnd() < 0.05 ? { kind: "undo" } : { kind: "use", m, at: Math.floor(rnd() * s.piles.length), ...(sp < 0.35 ? {} : { spot: sp < 0.85 ? "near" : "far" }) };
       } else {
         const tools = toolsOf(p), jars = jarsOf(p), r = rnd();
         a = r < 0.06 ? { kind: "done" } : r < 0.1 ? { kind: "undo" } : r < 0.3 ? { kind: "take", at: Math.floor(rnd() * s.ves.length), jar: Math.floor(rnd() * jars.length) } : { kind: "use", m: tools[Math.floor(rnd() * tools.length)], at: Math.floor(rnd() * s.ves.length) };
       }
       const r = L.apply(level, s, a, k + 1);
-      if (!r.refused && a.kind === "use" && mode === "sukha") {
+      if (!r.refused && a.kind === "use" && mode === "sukha" && r.state.why === "thrown") { assert.deepEqual(r.state.piles, s.piles, "a first throw separates nothing"); thrown++; }
+      else if (!r.refused && a.kind === "use" && mode === "sukha") {
         accepted++;
         const before = s.piles[a.at], want = checkSplit(a.m, before, p.scene, p.grain);
         const made = r.state.piles.filter((_, i) => i === a.at || i >= s.piles.length);
@@ -183,6 +184,7 @@ test("chhaano: random play — the checker agrees with every split and vessel th
     }
   }
   assert.ok(accepted > 300, `accepted acts ${accepted}`);
+  assert.ok(thrown > 20, `first throws ${thrown}`);
 });
 
 test("chhaano: the law's answers (threshing first, same weight, cannot pick, not settled, lost, the cloudy glass, the filter and the sun)", () => {
@@ -193,15 +195,15 @@ test("chhaano: the law's answers (threshing first, same weight, cannot pick, not
   assert.deepEqual(run(khet, [{ kind: "use", m: "sieve", at: 0 }]).refused, ["attached"]);
   // the wind drops rice and small stones together (both heavy); a pure pile is one part already
   const supa = lv("sukha", "kram", "sukha:kram:supa:rice+husk+stone");
-  const w = run(supa, [{ kind: "use", m: "winnow", at: 0, spot: "near" }, { kind: "use", m: "winnow", at: 0, spot: "near" }]);
+  const w = run(supa, [{ kind: "use", m: "winnow", at: 0 }, { kind: "use", m: "winnow", at: 0, spot: "near" }, { kind: "use", m: "winnow", at: 0 }]);
   assert.deepEqual(w.refused, ["same_weight"]); assert.deepEqual(w.s.piles, [["rice", "stone"], ["husk"]]);
-  assert.deepEqual(run(supa, [{ kind: "use", m: "winnow", at: 0, spot: "near" }, { kind: "use", m: "pick", at: 1 }]).refused, ["pure"]);
+  assert.deepEqual(run(supa, [{ kind: "use", m: "winnow", at: 0 }, { kind: "use", m: "winnow", at: 0, spot: "near" }, { kind: "use", m: "pick", at: 1 }]).refused, ["pure"]);
   // flour and bran cannot be picked by hand (the kit's "tries to handpick flour from bran")
   const chakki = lv("sukha", "farak", "sukha:farak:chakki:atta+bran", 1);
   assert.deepEqual(run(chakki, [{ kind: "use", m: "pick", at: 0 }]).refused, ["cannot_pick"]);
   assert.ok(run(chakki, [{ kind: "use", m: "sieve", at: 0 }, { kind: "done" }]).s.done);
   // "ho gaya" with a pile still mixed and two methods used: refused, but not the one-method belief
-  const two = run(khet, [{ kind: "use", m: "thresh", at: 0 }, { kind: "use", m: "winnow", at: 0, spot: "near" }, { kind: "done" }]);
+  const two = run(khet, [{ kind: "use", m: "thresh", at: 0 }, { kind: "use", m: "winnow", at: 0 }, { kind: "use", m: "winnow", at: 0, spot: "near" }, { kind: "done" }]);
   assert.deepEqual(two.refused, ["mixed"]); assert.ok(!two.ms.some((m) => m.kind === "misconception_consequence"));
   // settling: one wait, one step; decanting before it settles is refused; the decanted glass is a little cloudy with sand
   const lab = lv("geela", "nithaar", "geela:nithaar:lab:sand+salt");
@@ -227,6 +229,44 @@ test("chhaano: the law's answers (threshing first, same weight, cannot pick, not
   assert.deepEqual(run(nm, [{ kind: "use", m: "dry", at: 0 }, { kind: "take", at: 0, jar: 1 }]).refused, ["mixed"]);
   // undo steps back
   assert.equal(run(nm, [{ kind: "use", m: "filter", at: 0 }, { kind: "undo" }]).s.ves.length, 1);
+});
+
+// r7 quiz fix (lead, 2026-11-09): near / far was a 50/50 guess. A FIRST throw (one handful, no sack down) shows where the
+// light and the heavy parts land before the sack can be set; the heavy-far belief is a child who still sets it far after.
+test("chhaano sukha: winnowing starts with a first throw; the sack is refused before it; heavy-far is far AFTER the throw", () => {
+  let tested = 0;
+  for (const c of [...levelsOf("sukha", "farak"), ...levelsOf("sukha", "kram")]) {
+    const level = L.validate(c.level), sol = L.solve(level), k = sol.findIndex((a) => a.kind === "use" && a.m === "winnow");
+    if (k < 0) continue;
+    tested++;
+    const pre = sol.slice(0, k), at = sol[k].at, before = run(level, pre).s;
+    // the solver throws first, then sets the sack near the same pile
+    assert.ok(!("spot" in sol[k]), `${c.signature}: the throw first`);
+    assert.deepEqual(sol[k + 1], { kind: "use", m: "winnow", at, spot: "near" });
+    // a sack set before the throw is refused: nothing moves, no belief is read from a guess
+    for (const spot of ["near", "far"]) {
+      const r = run(level, [...pre, { kind: "use", m: "winnow", at, spot }]);
+      assert.deepEqual(r.refused, ["throw_first"], `${c.signature} ${spot}`);
+      assert.deepEqual(r.s.piles, before.piles);
+      assert.ok(!r.ms.some((m) => m.kind === "misconception_consequence"));
+    }
+    // the throw separates nothing; it is what the view shows (heavy near, light far) before the sack's place is asked
+    const t = run(level, [...pre, sol[k]]);
+    assert.deepEqual(t.refused, []); assert.equal(t.s.why, "thrown"); assert.deepEqual(t.s.piles, before.piles);
+    assert.ok(t.s.thrown.includes(before.piles[at].join("+")));
+    assert.ok(t.ms.some((m) => m.kind === "progress" && m.facts.thrown === "yes"));
+    assert.deepEqual(run(level, [...pre, sol[k], sol[k]]).refused, ["thrown_already"]);
+    // undo takes the throw back
+    assert.deepEqual(run(level, [...pre, sol[k], { kind: "undo" }, { kind: "use", m: "winnow", at, spot: "near" }]).refused, ["throw_first"]);
+    // heavy-far: the child saw the throw and still set the sack far
+    const mal = L.malActs(level, "heavy-far");
+    assert.ok(mal, `${c.signature}: heavy-far is served`);
+    const far = mal.findIndex((a) => a.spot === "far");
+    assert.equal(far, mal.length - 1);
+    const seen = run(level, mal.slice(0, far)).s;
+    assert.ok(seen.thrown.includes(seen.piles[mal[far].at].join("+")), `${c.signature}: the throw was seen before the far sack`);
+  }
+  assert.ok(tested >= 20, `winnowed levels ${tested}`);
 });
 
 test("chhaano: tampered params are refused; a claim in an act never decides; nothing is timed", () => {

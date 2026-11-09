@@ -5,7 +5,9 @@
 // it by the one difference that method uses (the kit's own expectations):
 //   gahaai  (threshing)  harvested stalks with grain on them: the stalks come away, the grain joins the rest
 //   phatko  (winnowing)  the mixture falls in the wind: the LIGHTER parts are carried farther, the heavier fall nearby
-//                        (qualitative: "near" and "far", never a distance); the child first sets the grain sack near or far
+//                        (qualitative: "near" and "far", never a distance). FIRST a throw: one handful of the pile tossed
+//                        with no sack down, so the child sees where the light and the heavy parts land; only then is the
+//                        grain sack set near or far (a sack set before that pile's throw is refused, "throw_first")
 //   chuno   (handpicking) the few, visible pieces that differ in colour or shape are picked out by hand (stones from dal)
 //   chhaano (sieving)    parts smaller than the holes fall through, bigger stay; same-size parts stay together whatever
 //                        their colour or weight
@@ -25,7 +27,8 @@
 //
 // The CHILD's beliefs (mal-rules; the kit's own misconception ids, each a deterministic act list with its own consequence):
 //   one-method    (t01 m1) "ho gaya" after a single method while a pile is still mixed: the mixed pile is shown
-//   heavy-far     (t01 m2) the grain sack set FAR before winnowing: the husk lands in it, the grain falls near
+//   heavy-far     (t01 m2) the grain sack set FAR after the first throw showed where each part lands: the husk lands in it,
+//                          the grain falls near
 //   same-size     (t01 m3) a pile sieved whose parts are all on one side of the holes: they pass (or stay) together
 //   salt-gone     (t02 m1) a liquid holding the dissolved part the jars want poured away: the puddle dries, the salt shows
 //   filter-salt   (t02 m2) the filter paper scooped into the salt / sugar jar: the paper holds none; a drop of the filtrate,
@@ -139,7 +142,9 @@ export interface ChhaanoState extends Undoable<ChhaanoState> {
   jars: WetPart[][];
   /** the methods that have separated something (distinct, in the order first used) */
   used: string[];
-  /** the law's last answer, for the view: "" | pure | attached | no_stalks | same_weight | far | cannot_pick | same_size |
+  /** sukha: the piles (their parts, joined) a first winnowing throw has been seen for */
+  thrown: string[];
+  /** the law's last answer, for the view: "" | thrown | pure | attached | no_stalks | same_weight | far | cannot_pick | same_size |
    *  mixed | not_settled | settled | nothing_settles | lost | salt_gone | only_water | wet | empty | not_there | not_it | not_yet
    *  | clear */
   why: string;
@@ -252,7 +257,7 @@ function validate(level: PlayLevel<unknown>): PlayLevel<ChhaanoParams> | null {
 
 function init(level: PlayLevel<ChhaanoParams>): ChhaanoState {
   const p = level.params;
-  const base = { used: [], why: "", on: -1, m: "", done: false, acts: 0, prev: null, depth: 0 };
+  const base = { used: [], thrown: [], why: "", on: -1, m: "", done: false, acts: 0, prev: null, depth: 0 };
   if (isDry(p)) return { ...base, piles: [sortParts(p.mix as DryPart[])], ves: [], jars: [] };
   return { ...base, piles: [], ves: [newVessel("beaker", true, p.mix as WetPart[])], jars: jarsOf(p).map(() => []) };
 }
@@ -288,8 +293,17 @@ function apply(level: PlayLevel<ChhaanoParams>, s: ChhaanoState, act: ChhaanoAct
     const m = act.m as DryMethod, j = Number(act.at);
     if (!DRY_METHODS.includes(m) || !sc.tools.includes(m)) return no("no_tool");
     if (!isInt(j) || j < 0 || j >= s.piles.length) return no("bad_pile");
-    const pile = s.piles[j], r = drySplit(m, pile, sc, p.grain as DryPart | "", act.spot);
-    const f: Facts = { pile: j, method: m, parts: pile.join("+") };
+    const pile = s.piles[j], key = pile.join("+"), f: Facts = { pile: j, method: m, parts: key };
+    if (m === "winnow" && (!act.spot || !s.thrown.includes(key))) {
+      // the first throw: one handful of this pile tossed with no sack down (where would the wind take each part?)
+      const probe = drySplit("winnow", pile, sc, p.grain as DryPart | "", "near");
+      if (typeof probe === "string") return no(probe, { why: probe, on: j, m }, mom("law_refused", seq, { ...f, why: probe }));
+      if (act.spot) return no("throw_first");
+      if (s.thrown.includes(key)) return no("thrown_already");
+      out.push(mom("progress", seq, { ...f, thrown: "yes" }));
+      return ok({ thrown: [...s.thrown, key], why: "thrown", on: j, m });
+    }
+    const r = drySplit(m, pile, sc, p.grain as DryPart | "", act.spot);
     if (typeof r === "string") {
       if (r === "far") return no("far", { why: "far", on: j, m }, mal("heavy-far", { ...f, spot: "far" }, "far"));
       if (r === "same_size") return no("same_size", { why: "same_size", on: j, m }, mal("same-size", f, "same_size"));
@@ -382,10 +396,11 @@ const run = (level: PlayLevel<ChhaanoParams>, acts: ChhaanoAct[]) => { let s = i
 /** the shortest act list (breadth first over the acts the law accepts; the state space is a few dozen) */
 function solve(level: PlayLevel<ChhaanoParams>): ChhaanoAct[] | null {
   const p = level.params;
-  const key = (s: ChhaanoState) => JSON.stringify([s.piles.map((x) => x.join("+")).sort(), s.ves.map((v) => (v.gone ? "-" : `${v.k}${v.wet ? "~" : ""}${v.settle}${v.parts.join("+")}`)), s.jars]);
+  const key = (s: ChhaanoState) => JSON.stringify([s.piles.map((x) => x.join("+")).sort(), [...s.thrown].sort(), s.ves.map((v) => (v.gone ? "-" : `${v.k}${v.wet ? "~" : ""}${v.settle}${v.parts.join("+")}`)), s.jars]);
   const moves = (s: ChhaanoState): ChhaanoAct[] => {
     const out: ChhaanoAct[] = [{ kind: "done" }];
-    if (isDry(p)) s.piles.forEach((_, i) => { for (const m of DRY_SCENES[p.scene].tools) out.push(m === "winnow" ? { kind: "use", m, at: i, spot: "near" } : { kind: "use", m, at: i }); });
+    // winnowing: the first throw (no sack), then the sack near
+    if (isDry(p)) s.piles.forEach((_, i) => { for (const m of DRY_SCENES[p.scene].tools) out.push(...(m === "winnow" ? [{ kind: "use", m, at: i } as ChhaanoAct, { kind: "use", m, at: i, spot: "near" } as ChhaanoAct] : [{ kind: "use", m, at: i } as ChhaanoAct])); });
     else s.ves.forEach((v, i) => { if (v.gone) return; for (const m of toolsOf(p)) out.push({ kind: "use", m, at: i }); jarsOf(p).forEach((_, q) => out.push({ kind: "take", at: i, jar: q })); });
     return out;
   };
@@ -410,7 +425,7 @@ function shortcut(level: PlayLevel<ChhaanoParams>): ChhaanoAct[] | null {
   const p = level.params, tries: ChhaanoAct[][] = [[{ kind: "done" }]];
   if (isDry(p) && p.goal === "kram") for (const m of DRY_SCENES[p.scene].tools) {
     const acts: ChhaanoAct[] = [];
-    for (let k = 0; k < 6; k++) for (let i = 0; i < 6; i++) acts.push(m === "winnow" ? { kind: "use", m, at: i, spot: "near" } : { kind: "use", m, at: i });
+    for (let k = 0; k < 6; k++) for (let i = 0; i < 6; i++) acts.push(...(m === "winnow" ? [{ kind: "use", m, at: i } as ChhaanoAct, { kind: "use", m, at: i, spot: "near" } as ChhaanoAct] : [{ kind: "use", m, at: i } as ChhaanoAct]));
     tries.push([...acts, { kind: "done" }]);
   }
   if (!isDry(p)) tries.push([...jarsOf(p).map((_, q): ChhaanoAct => ({ kind: "take", at: 0, jar: q })), { kind: "done" }]);
@@ -427,9 +442,11 @@ function reach(level: PlayLevel<ChhaanoParams>, want: (s: ChhaanoState) => numbe
       const at = want(s);
       if (at >= 0) return { acts, at };
       s.piles.forEach((_, i) => { for (const m of DRY_SCENES[p.scene].tools) {
-        const a: ChhaanoAct = m === "winnow" ? { kind: "use", m, at: i, spot: "near" } : { kind: "use", m, at: i };
-        const r = apply(level, s, a, 1);
-        if (!r.refused) next.push({ s: r.state, acts: [...acts, a] });
+        // winnowing is two acts: the first throw, then the sack near
+        const step: ChhaanoAct[] = m === "winnow" ? [{ kind: "use", m, at: i }, { kind: "use", m, at: i, spot: "near" }] : [{ kind: "use", m, at: i }];
+        let st = s, ok = true;
+        for (const a of step) { const r = apply(level, st, a, 1); if (r.refused) { ok = false; break; } st = r.state; }
+        if (ok) next.push({ s: st, acts: [...acts, ...step] });
       } });
     }
     frontier = next;
@@ -444,13 +461,19 @@ function malActs(level: PlayLevel<ChhaanoParams>, malId: string): ChhaanoAct[] |
       if (p.goal !== "kram") return null;
       const sol = solve(level);
       if (!sol) return null;
-      const first = sol[0], s = run(level, [first]);
-      return s.piles.some(unseparated) ? [first, { kind: "done" }] : null;
+      // the solution's acts up to its first split (winnowing: the throw, then the sack), then "ho gaya"
+      const k = sol.findIndex((_, i) => run(level, sol.slice(0, i + 1)).used.length === 1);
+      if (k < 0) return null;
+      const first = sol.slice(0, k + 1), s = run(level, first);
+      return s.piles.some(unseparated) ? [...first, { kind: "done" }] : null;
     }
     if (malId === "heavy-far") {
       if (!sc.tools.includes("winnow")) return null;
       const r = reach(level, (s) => s.piles.findIndex((x) => !x.includes("bundle") && x.some((y) => DRY[y].wt === "light") && x.some((y) => DRY[y].wt === "heavy")));
-      return r ? [...r.acts, { kind: "use", m: "winnow", at: r.at, spot: "far" }] : null;
+      if (!r) return null;
+      // the child SAW the first throw (the husk carried far, the grain near) and still set the sack far
+      const thrown = run(level, r.acts).thrown.includes(run(level, r.acts).piles[r.at].join("+"));
+      return [...r.acts, ...(thrown ? [] : [{ kind: "use", m: "winnow", at: r.at } as ChhaanoAct]), { kind: "use", m: "winnow", at: r.at, spot: "far" }];
     }
     if (malId === "same-size") {
       if (!sc.tools.includes("sieve")) return null;

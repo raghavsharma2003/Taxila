@@ -429,7 +429,8 @@ export type GatiAct =
   | { kind: "view"; ref: number }                         // watch from reference `ref` (do-gati: 0 the ground, 1 riding along)
   | { kind: "put"; lane: number; at: number }             // lane `lane` onto bin `at` (at rest / moving; a type; uniform / not)
   | { kind: "tag"; lane: number; at: number }             // do-gati: type `at` ticked on (or off) for lane `lane`
-  | { kind: "pick"; lane: number }                        // raftaar/aage: the lane flagged faster
+  | { kind: "chalk"; lane: number }                       // raftaar/aage: a mark where lane `lane`'s mover is, at the clock's time
+  | { kind: "pick"; lane: number }                        // raftaar/aage: the lane flagged faster (both marks for the same time first)
   | { kind: "mark"; at: number }                          // the speedometer / m/s counter set to `at`
   | { kind: "run" }                                       // the law answers the set-up
   | { kind: "undo" };

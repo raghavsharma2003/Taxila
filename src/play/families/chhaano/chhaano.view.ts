@@ -1,7 +1,9 @@
 // Chhaano · the 2D view (round 7, separating mixtures; class 6 science). Nothing here runs on a clock: every change waits for
 // the child's tap, and the animations only show what the law has already answered.
 //   sukha: the panel on top shows the chosen pile up close (each part with its name), or the method at work: the farmer's
-//          supa in the wind (heavier parts fall near, lighter ones are carried far; the grain sack where the child set it),
+//          supa in the wind (Winnow first throws one handful with no sack down: the heavier parts land near, the lighter
+//          are carried far, and they stay drawn on the Near / Far places while the child sets the grain sack; then the
+//          pile is winnowed with the sack where the child set it),
 //          the sieve (smaller than its holes fall through), the hand picking the few pieces, the stalks beaten. Below it the
 //          piles on the tray (tap one to choose it) and the methods of the scene (tap one to use it on the chosen pile).
 //   geela: the jars along the top (one per part to recover; tap one to scoop the chosen dry solid into it), the vessels on
@@ -85,6 +87,8 @@ export const makeChhaanoView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     actAt = now; aim = false;
     // sukha: a method's scene stays on the panel until the child chooses a pile; "ho gaya" refused shows the mixed pile
     panel = dry && last.m !== "done" && last.m !== "undo" && last.m !== "" ? "act" : "close";
+    // the first throw landed: the Near / Far places open over where its handful fell
+    if (dry && !refused && last.m === "winnow" && !last.spot && s.why === "thrown") { panel = "aim"; aim = true; }
     if (dry && last.m === "done" && refused) sel = Math.max(0, s.on);
     if (!dry && last.m !== "take" && last.m !== "done" && !refused && last.m !== "undo") {
       // follow the liquid: after a decant or a filter the new glass, after a wait the same beaker
@@ -120,7 +124,12 @@ export const makeChhaanoView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (kind === "spot") { act({ kind: "use", m: "winnow", at: sel, spot: rest as "near" | "far" }); return; }
     if (kind === "jar") { act({ kind: "take", at: sel, jar: Number(rest) }); return; }
     if (kind === "tool") {
-      if (rest === "winnow") { aim = !aim; panel = aim ? "aim" : "close"; api.sfx("select"); api.invalidate(); deps.changed(); return; }
+      if (rest === "winnow") {
+        // the first throw of this pile (no sack down); once seen, Winnow opens the sack's places again over its handful
+        const s = st();
+        if (!s.thrown.includes((s.piles[sel] ?? []).join("+"))) { act({ kind: "use", m: "winnow", at: sel }); return; }
+        aim = !aim; panel = aim ? "aim" : "close"; api.sfx("select"); api.invalidate(); deps.changed(); return;
+      }
       act({ kind: "use", m: rest, at: sel });
     }
   }
@@ -209,7 +218,7 @@ export const makeChhaanoView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       drawWind(c, g);
       const light = before.filter((x) => DRY[x].wt === "light"), heavy = before.filter((x) => DRY[x].wt === "heavy");
       const sackAt = last.spot === "far" ? farX(g) : nearX(g);
-      drawSack(c, sackAt, ground, last.spot === "far" ? (why === "far" ? light : []) : heavy);
+      if (last.spot) drawSack(c, sackAt, ground, last.spot === "far" ? (why === "far" ? light : []) : heavy);
       const nearPts = heapPts(heavy, nearX(g), ground - 4, 30, 18, 61, 0.8);
       const farPts = heapPts(why === "same_weight" && !heavy.length ? light : light, farX(g), ground - 4, 30, 16, 62, 0.8);
       const fly = (pts: typeof nearPts) => pts.forEach((q, i) => { const t = clamp(k * 1.25 - (i % 7) * 0.04, 0, 1), sx = src.x + (hash(q.k) - 0.5) * 16, sy = src.y + 10; particle(c, q.part, lerp(sx, q.x, t), lerp(sy, q.y, t) - Math.sin(t * Math.PI) * 10, q.k, 1.2); });
@@ -279,6 +288,17 @@ export const makeChhaanoView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       P.body(c, x - bw / 2, ground - bh, bw, bh, { role: "panel", r: 10, seed: spot === "near" ? 7 : 8, state: "hover" });
       P.stroke(c, [[x - 18, ground - 6], [x - 15, ground - 30], [x + 15, ground - 30], [x + 18, ground - 6]], { role: "ink3", width: 1.5, dash: [4, 4] });
       P.text(c, W(`chhaano.spot.${spot}`), x, ground - bh + 12, { size: 15, role: "ink", weight: 700 });
+    }
+    // the first throw: one handful of the chosen pile, no sack down; the heavier parts land near, the lighter are carried
+    // far (the law's own winnowing split), drawn over the two places the sack can go
+    const pile = (st().piles[sel] ?? []) as DryPart[], r = sc ? drySplit("winnow", pile, sc, p.grain as DryPart | "", "near") : "pure";
+    if (typeof r !== "string") {
+      const k = prog(0.1), src = { x: X + CW * 0.2, y: y0 + 46 };
+      const fly = (parts: readonly string[], x: number, salt: number) => heapPts(parts, x, ground - 6, 24, 12, salt, 0.55).forEach((q, i) => {
+        const t = clamp(k * 1.25 - (i % 7) * 0.04, 0, 1);
+        particle(c, q.part, lerp(src.x + (hash(q.k) - 0.5) * 12, q.x, t), lerp(src.y, q.y, t) - Math.sin(t * Math.PI) * 12, q.k, 1.3);
+      });
+      fly(r.stay, nearX(g), 64); fly(r.out[0], farX(g), 65);
     }
   }
   /** the sieve's holes against the particles, close up */
@@ -431,7 +451,7 @@ export const makeChhaanoView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function goal(): string {
     const s = st();
     if (s.done) return W(dry ? "chhaano.done.sukha" : "chhaano.done.geela");
-    if (dry && aim) return W("chhaano.aim");
+    if (dry && aim) return W(s.why === "thrown" ? "chhaano.why.thrown" : "chhaano.aim");
     const why = s.why, at = s.on;
     if (why) {
       const before = last.before.length ? last.before : (dry ? s.piles[at] : s.ves[at]?.parts) ?? [];

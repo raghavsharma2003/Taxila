@@ -9,9 +9,9 @@
 // - Watching a rolling bicycle wheel or a merry-go-round horse from the ground and riding along, and ticking every type of
 //   motion each thing shows, IS recognising more than one type at once (s3); one type ticked for each (the bicycle only
 //   straight ahead) is m3.
-// - Flagging the faster of two movers that went different distances in different times, with the clock leaving a mark on
-//   each lane at every interval, IS comparing speeds (c7-science-ch08-t02 s3); flagging the one that went farther (unequal
-//   times) is m1. Setting the speedometer from a trip stepped to its end on a marked track IS speed = distance ÷ time and,
+// - Chalking where each of two movers is after the SAME time (the flag is refused until both marks are for one time), then
+//   flagging the faster of the two that went different distances in different times, IS comparing speeds (c7-science-ch08-t02
+//   s3); flagging the one that went farther (unequal times, its totals read instead of the marks) is m1. Setting the speedometer from a trip stepped to its end on a marked track IS speed = distance ÷ time and,
 //   at look 3, average speed = total distance ÷ total time (s1, s2); the trip's distance set is m2, distance × time is m3
 //   (time ÷ distance is never a whole number on the speedometer, so the multiplying half of the belief is the one served).
 //   Stepping a car one second at a time on a track in metres under a km/h speedometer and setting its m/s IS the kit's

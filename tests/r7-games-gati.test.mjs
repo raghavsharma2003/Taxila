@@ -10,7 +10,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
-  gatiLogic as L, GATI_MAL, GATI_MODES, GOALS_OF, MAL_OF, KMH_TO_MS, msOf, TYPES, PRAKAAR, DOGATI, PERIOD, prakaarAt, dogatiAt, STORY_THINGS, RIDES, FIXED, tMaxOf, tNeedOf, UNITS,
+  gatiLogic as L, GATI_MAL, GATI_MODES, GOALS_OF, MAL_OF, KMH_TO_MS, msOf, TYPES, PRAKAAR, DOGATI, PERIOD, prakaarAt, dogatiAt, STORY_THINGS, RIDES, FIXED, KIT_THINGS, tMaxOf, tNeedOf, UNITS,
+  ghostOf, namesShown, sameTimeMarks, posOf, fasterOf, fartherOf,
 } from "../src/play/families/gati/gati.logic.ts";
 import { coverage, entryKey, levelsFor, currentLevel, seedOf, hasPlay, entryFor } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
@@ -37,7 +38,7 @@ const expect = (id) => KIT[id].expectations.join(" ");
 
 // ───────────────────────────── THE INDEPENDENT CHECKER (none of the law's helpers but the motion itself) ─────────────────────────────
 /** the checker's own story table: what each thing rides, and whether that vehicle moves */
-const VEHICLE = { passenger: "train", seat: "train", platform: "ground", pole: "ground", man: "ground", rider: "bus", boy: "bus", aman: "ground", tree: "ground", stop: "ground", mytrain: "ground", other: "train2" };
+const VEHICLE = { passenger: "train", seat: "train", platform: "ground", sign: "ground", man: "ground", rider: "bus", boy: "bus", aman: "ground", tree: "ground", stop: "ground", mytrain: "ground", other: "train2" };
 const MOVES = { train: true, bus: true, train2: true, ground: false };
 const restCheck = (target, ref) => VEHICLE[target] === VEHICLE[ref] || (!MOVES[VEHICLE[target]] && !MOVES[VEHICLE[ref]]);
 /** a path's motion types, read from the sampled path alone: along a line without turning back (linear), all the way round a
@@ -145,6 +146,10 @@ test("gati: every fact-number and named fact the law uses is the topic kit's own
   assert.deepEqual([...DOGATI.bicycle], [0, 1]); assert.deepEqual([...DOGATI.horse], [1, 2]);
   assert.match(K03, /passenger is at rest relative to the train seat but moving relative to the platform/);
   assert.match(K03, /bus stop/); assert.match(K03, /aman/); assert.match(K03, /train on the next track starts moving/);
+  // the things look 1's sandarbh scenes use: each is named in the kit's own scenes
+  const SCENE = { passenger: /passenger/, seat: /train seat/, platform: /platform/, sign: /a signboard/, rider: /sits in a moving bus/, boy: /the boy sitting next to/, aman: /aman stands at the bus stop/, stop: /bus stop/, tree: /a tree beside the road/, mytrain: /you sit in a train standing still at the platform/, other: /the train on the next track/ };
+  assert.deepEqual(Object.keys(SCENE).sort(), [...KIT_THINGS].sort());
+  for (const [t, re] of Object.entries(SCENE)) assert.match(K03, re, t);
   // uniform: equal distances in equal intervals of time
   assert.match(u03, /covering equal distances in equal intervals of time/); assert.match(u03, /unequal distances in equal intervals of time/);
 });
@@ -227,9 +232,15 @@ test("gati: the law's rules (the clock steps only when tapped and stops at its e
   assert.equal(ap(ni, { kind: "mark", at: 1000 }), "off_counter");
   assert.equal(ap(ni, { kind: "put", lane: 0, at: 0 }), "no_bins");
   const ag = g("raftaar", "aage"); s = L.init(ag);
+  assert.equal(ap(ag, { kind: "chalk", lane: 0 }), "step_first", "no mark before the clock moves");
   ap(ag, { kind: "tick" });
-  assert.equal(ap(ag, { kind: "run" }), "pick_first");
+  assert.equal(ap(ag, { kind: "run" }), "mark_same_time_first");
   assert.equal(ap(ag, { kind: "pick", lane: 2 }), "bad_lane");
+  ap(ag, { kind: "chalk", lane: 0 }); ap(ag, { kind: "chalk", lane: 1 });
+  assert.equal(ap(ag, { kind: "run" }), "pick_first");
+  assert.equal(ap(ag, { kind: "chalk", lane: 3 }), "bad_lane");
+  assert.equal(ap(ag, { kind: "chalk", lane: 0 }), "same_chalk");
+  assert.equal(ap(sd, { kind: "chalk", lane: 0 }), "no_chalk");
   const dg = g("drishti", "do-gati"); s = L.init(dg);
   for (let k = 0; k < tNeedOf(dg.params); k++) ap(dg, { kind: "tick" });
   ap(dg, { kind: "tag", lane: 0, at: 1 });
@@ -247,6 +258,117 @@ test("gati: the law's rules (the clock steps only when tapped and stops at its e
   assert.deepEqual(hiddenOf(sd), []);
 });
 
+// ───────────────────────────── r7 quiz fixes (the lead, 2026-11-09): the skill is the mechanic ─────────────────────────────
+const NAMES = [...Object.keys(PRAKAAR)];
+test("gati prakaar: before Check no look shows a thing or its name; only the light's trail is evidence", () => {
+  const words = JSON.parse(readFileSync(`${ROOT}data/play/engine-words.json`, "utf8")).words;
+  const view = readFileSync(`${ROOT}src/play/families/gati/gati.view.ts`, "utf8");
+  const draw = view.slice(view.indexOf("function drawPrakaar"), view.indexOf("function thingSketch"));
+  // the drawing and the name are both behind one gate, and that gate is the child's Check (never the look)
+  assert.doesNotMatch(draw, /look === 1/);
+  assert.match(draw, /const reveal = namesShown\(s\)/);
+  assert.equal((draw.match(/if \(reveal\)/g) ?? []).length, 2, "the sketch and the name, each behind the gate");
+  let n1 = 0;
+  for (const c of levelsOf("drishti", "prakaar")) {
+    const level = L.validate(c.level), sol = L.solve(level), run1 = sol.indexOf(sol.find((a) => a.kind === "run"));
+    if (level.params.look === 1) n1++;
+    let s = L.init(level);
+    for (const a of sol.slice(0, run1)) {
+      s = L.apply(level, s, a, 1).state;
+      assert.equal(namesShown(s), false, `${c.signature}: hidden before Check`);
+      // what the teacher and the board are told carries no thing's name either
+      const told = JSON.stringify([L.facts(level, s), L.board(level, s)]).toLowerCase();
+      for (const th of NAMES) for (const l of ["en", "hinglish"]) { const nm = words[`gati.thing.${th}`][l].toLowerCase().replace(/^(a|the) /, ""); assert.ok(!new RegExp(`\\b${nm}\\b`).test(told), `${c.signature}: ${nm} told before Check`); }
+    }
+    s = L.apply(level, s, sol[run1], 1).state;
+    assert.equal(namesShown(s), true, "revealed once checked");
+  }
+  assert.ok(n1 >= 10, `look-1 levels ${n1}`);
+});
+
+test("gati sandarbh: three reference cards at every look (a blind guess right 1 in 6); look 1 uses only the kit's own scenes", () => {
+  const stories = new Set();
+  for (const c of levelsOf("drishti", "sandarbh")) {
+    const p = L.validate(c.level).params;
+    assert.ok(p.refs.length >= 3, `${c.signature}: ${p.refs.length} cards`);
+    // the patterns a blind guesser could tap that the level does not refuse outright: never more than 1 in 6 right
+    const legal = 2 ** p.refs.length - 2;
+    assert.ok(1 / legal <= 1 / 6);
+    if (p.look === 1) {
+      stories.add(p.story);
+      assert.notEqual(p.story, "twin");
+      for (const x of [p.target, ...p.refs]) assert.ok(KIT_THINGS.includes(x), `${c.signature}: ${x} is not in the kit's scenes`);
+    }
+  }
+  assert.deepEqual([...stories].sort(), ["bus", "train"]);
+  // a level-1 card that is not the kit's, or two cards, is refused
+  const lv = L.generate(req("drishti", "sandarbh", 6, { fade: 1 })).find((c) => c.level.params.story === "train").level;
+  assert.equal(L.validate({ ...lv, params: { ...lv.params, refs: [...lv.params.refs.slice(0, 2), "man"].filter((x, i, a) => a.indexOf(x) === i) } }), null);
+  assert.equal(L.validate({ ...lv, params: { ...lv.params, refs: lv.params.refs.slice(0, 2) } }), null);
+});
+
+test("gati aage: the flag is refused until both runners are marked for the SAME time; a mark is where the runner was then", () => {
+  let n = 0;
+  for (const c of levelsOf("raftaar", "aage")) {
+    const level = L.validate(c.level), p = level.params, Tmin = Math.min(...p.movers.map((m) => m.T)), fast = fasterOf(p);
+    let s = L.init(level);
+    const ap = (a) => { const r = L.apply(level, s, a, 1); s = r.state; return r.refused; };
+    ap({ kind: "tick" });
+    assert.equal(ap({ kind: "pick", lane: fast }), "mark_same_time_first", "no marks: no flag");
+    ap({ kind: "chalk", lane: 0 });
+    assert.equal(ap({ kind: "pick", lane: fast }), "mark_same_time_first", "one mark: no flag");
+    if (Tmin >= 2) {
+      // marks for different times: no flag
+      ap({ kind: "tick" }); ap({ kind: "chalk", lane: 1 });
+      assert.deepEqual(s.chalk, [1, 2]); assert.equal(sameTimeMarks(s), false);
+      assert.equal(ap({ kind: "pick", lane: fast }), "mark_same_time_first");
+      ap({ kind: "chalk", lane: 0 });
+    } else ap({ kind: "chalk", lane: 1 });
+    // the same time: the flag is taken, and the faster one IS ahead at its mark
+    assert.equal(sameTimeMarks(s), true);
+    assert.ok(posOf(p.movers[fast], s.chalk[fast]) > posOf(p.movers[1 - fast], s.chalk[1 - fast]), `${c.signature}: ahead at the same time`);
+    assert.equal(ap({ kind: "pick", lane: fast }), undefined);
+    // a mover whose trip is over takes no mark (where it stopped says nothing about this time)
+    while (s.t <= Tmin) ap({ kind: "tick" });
+    const done = p.movers.findIndex((m) => m.T < s.t);
+    assert.equal(ap({ kind: "chalk", lane: done }), "trip_over");
+    // the farther-faster belief (the kit's ch08-t02 m1) is still served: marks placed, the totals then read instead
+    const mal = L.malActs(level, "farther-faster");
+    if (fartherOf(p) >= 0) {
+      assert.ok(mal, c.signature); n++;
+      const k = mal.findIndex((a) => a.kind === "pick");
+      assert.ok(sameTimeMarks(run(level, mal.slice(0, k)).s), "the mal child marked the same time too");
+    }
+  }
+  assert.ok(n >= 20, `farther-faster levels ${n}`);
+  // the coverage rule still maps it to the kit's m1
+  assert.deepEqual(GE().find((e) => e.goal === "aage").misMap, { "farther-faster": "c7-science-ch08-t02-m1" });
+});
+
+test("gati badlo and nikaalo: after Check a ghost at the typed speed for the same time lands ON the real mark exactly when the number is right", () => {
+  for (const goal of ["badlo", "nikaalo"]) for (const c of levelsOf("raftaar", goal)) {
+    const level = L.validate(c.level), p = level.params, sol = L.solve(level), right = sol.find((a) => a.kind === "mark").at;
+    const before = run(level, sol.slice(0, -1)).s;
+    assert.equal(ghostOf(p, before), null, "no ghost before Check");
+    const tries = [right, right + 1, Math.max(1, right - 1), ...(goal === "badlo" ? [p.kmh] : [])].filter((x) => x <= (goal === "badlo" ? 99 : 999));
+    for (const mal of goal === "nikaalo" ? ["speed-distance", "multiply"] : []) { const a = L.malActs(level, mal); if (a) tries.push(a.find((x) => x.kind === "mark").at); }
+    for (const at of new Set(tries)) {
+      const acts = [...sol.filter((a) => a.kind !== "mark" && a.kind !== "run"), { kind: "mark", at }, { kind: "run" }], s = run(level, acts).s;
+      const g = ghostOf(p, s);
+      assert.ok(g, `${c.signature} ${at}: a ghost after Check`);
+      assert.equal(g.t, goal === "nikaalo" ? p.legs.length : s.t, "the same time as the real mover");
+      assert.equal(g.d, at * g.t, "it drives at the typed speed");
+      assert.equal(g.real, goal === "nikaalo" ? p.legs.reduce((x, y) => x + y, 0) : msOf(p.kmh) * s.t, "the real mark");
+      assert.equal(g.d === g.real, s.done, `${c.signature} ${at}: lands on the real mark ⇔ right`);
+      // the track holds both (the view scales to g.max; nothing is clipped at the end, the multiply case included)
+      assert.ok(g.max >= g.d && g.max >= g.real);
+    }
+  }
+  const view = readFileSync(`${ROOT}src/play/families/gati/gati.view.ts`, "utf8");
+  assert.doesNotMatch(view, /Math\.min\(X\(/, "no ghost clipped at the track's end");
+  assert.equal((view.match(/ghostOf\(p, s\)/g) ?? []).length, 2, "both views draw the law's ghost");
+});
+
 test("gati: tampered params are refused", () => {
   const g = (mode, goal, fade = 2) => L.generate(req(mode, goal, 6, { fade }))[0].level;
   const sd = g("drishti", "sandarbh"), pk = g("drishti", "prakaar"), dg = g("drishti", "do-gati"), ag = g("raftaar", "aage"), ni = g("raftaar", "nikaalo"), ni3 = g("raftaar", "nikaalo", 3), bd = g("raftaar", "badlo"), ek = g("nishaan", "ek-saa");
@@ -255,7 +377,7 @@ test("gati: tampered params are refused", () => {
   const restRefs = (lv) => lv.params.refs.filter((r) => L.validate(bad(lv, { refs: [r] })) === null);
   void restRefs;
   for (const [lv, patch] of [
-    [sd, { v: 60 }], [sd, { target: "pole" }], [sd, { target: "seat" }], [sd, { refs: [sd.params.refs[0]] }], [sd, { refs: [...sd.params.refs, sd.params.refs[0]] }], [sd, { story: "ship" }], [sd, { refs: [sd.params.target, sd.params.refs[1]] }],
+    [sd, { v: 60 }], [sd, { target: "sign" }], [sd, { target: "pole" }], [sd, { target: "seat" }], [sd, { refs: sd.params.refs.slice(0, 2) }], [sd, { refs: [sd.params.refs[0]] }], [sd, { refs: [...sd.params.refs, sd.params.refs[0]] }], [sd, { story: "ship" }], [sd, { refs: [sd.params.target, sd.params.refs[1]] }],
     [pk, { things: ["train", "slide", "drop"] }], [pk, { things: ["wheel", "fan", "clock"] }], [pk, { things: ["train", "wheel", "string"] }], [pk, { phase: [0, 0] }], [pk, { things: ["train", "train", "swing"] }],
     [dg, { things: ["fan", "swing", "train"] }], [dg, { things: ["bicycle", "horse"] }], [dg, { things: ["bicycle", "rocket"] }],
     [ag, { movers: ag.params.movers.map((m) => ({ ...m, T: 9 })) }], [ag, { movers: [ag.params.movers[0], ag.params.movers[0]] }], [ag, { units: "kmph" }],
@@ -293,7 +415,7 @@ for (const [mode, goal] of CASES) {
         let s = L.init(level), k = 0;
         const chk = checker(p), pursue = rnd() < 0.5, lanes = p.refs?.length ?? p.things?.length ?? p.movers?.length ?? 1;
         for (let i = 0; i < 80 && !s.done; i++) {
-          const r = rnd(), pickK = ["tick", "view", "put", "tag", "pick", "mark"][Math.floor(rnd() * 6)];
+          const r = rnd(), pickK = ["tick", "view", "put", "tag", "pick", "mark", "chalk"][Math.floor(rnd() * 7)];
           const near = sol.find((a) => a.kind === "mark")?.at ?? 5;
           const a = pursue && r < 0.6 && k < sol.length ? sol[k++]
             : r < 0.12 ? { kind: "run", ...(rnd() < 0.3 ? { solved: true } : {}) } : r < 0.18 ? { kind: "undo" }
@@ -301,6 +423,7 @@ for (const [mode, goal] of CASES) {
             : pickK === "put" ? { kind: "put", lane: Math.floor(rnd() * (lanes + 1)), at: Math.floor(rnd() * 3) }
             : pickK === "tag" ? { kind: "tag", lane: Math.floor(rnd() * lanes), at: Math.floor(rnd() * 3) }
             : pickK === "pick" ? { kind: "pick", lane: Math.floor(rnd() * 2) }
+            : pickK === "chalk" ? { kind: "chalk", lane: Math.floor(rnd() * 2) }
             : { kind: "mark", at: rnd() < 0.6 ? Math.max(1, near + Math.round((rnd() - 0.5) * 4)) : 1 + Math.floor(rnd() * 200), ...(rnd() < 0.2 ? { correct: true } : {}) };
           const before = s, out = L.apply(level, s, a, i + 1);
           acts++;

@@ -8,8 +8,12 @@
 //                     one still: watch the same thing (the passenger, the man on the platform, your own train) from each
 //                     reference in turn while stepping the clock; the trail of its places, drawn as seen from the reference,
 //                     stays one dot (at rest compared with it) or spreads (moving compared with it). Each reference card
-//                     takes "at rest" or "moving"; the run checks each against the reference.
-//   drishti/prakaar   (s2) three or four things seen only as the light on their moving point (look 1: the thing drawn too):
+//                     takes "at rest" or "moving"; the run checks each against the reference. Three references at every
+//                     look (a blind guess is then right 1 in 6, never 1 in 4); look 1 uses only things the kit's own scenes
+//                     name (KIT_THINGS: the passenger, her seat, the platform, a signboard; the girl in the bus, the boy next
+//                     to her, Aman at the bus stop, the bus stop, the tree by the road).
+//   drishti/prakaar   (s2) three or four things seen only as the light on their moving point (the thing and its name are
+//                     shown only once the child has checked, at every look):
 //                     a train on a straight track, a ball dropped straight down, a child on a straight slide; a giant-wheel
 //                     seat, a fan blade tip, a clock hand tip; a swing, a pendulum, a boat ride, a plucked string. Step the
 //                     clock and the light leaves its path; put each on linear, circular or oscillatory. The run plays the
@@ -17,12 +21,15 @@
 //   drishti/do-gati   (s3) a rolling bicycle wheel, a merry-go-round horse, and things with one motion (a fan, a swing, a
 //                     train, a giant-wheel seat); watch from the ground or riding along with the thing; tick every type of
 //                     motion each shows (a rolling wheel turns round while the bicycle moves straight ahead).
-//   raftaar/aage      (c7-science-ch08-t02 s3) two movers on one track for different times: flag the faster one. The clock
-//                     leaves a mark at every hour (second, minute) on each lane: who is ahead after the same time.
+//   raftaar/aage      (c7-science-ch08-t02 s3) two movers on one track for different times: flag the faster one. The child
+//                     steps the clock and chalks a mark where each mover is (a mover whose trip is over takes no mark); the
+//                     flag is refused until both marks are for the SAME time: who is ahead after the same time.
 //   raftaar/nikaalo   (s1, s2; look 3 the kit's average speed) one mover's trip, stepped to its end on a marked track; set the
-//                     speedometer; the run drives a ghost at that speed for the same time beside it.
+//                     speedometer; the run drives a ghost at that speed for the same time beside it (ghostOf: it lands on
+//                     the trip's end mark exactly when the speed is right; the track grows to hold where it lands).
 //   raftaar/badlo     (s4) a speedometer in km/h (a multiple of 18, the kit's 36 km/h = 10 m/s and its siblings); step the
-//                     clock one second at a time on a track in metres; set the metres covered each second (m/s).
+//                     clock one second at a time on a track in metres; set the metres covered each second (m/s); the run
+//                     drives a ghost at that many m/s for the seconds stepped, landing on (or away from) the car's mark.
 //   nishaan/ek-saa    (c7-science-ch08-t03 s1, s2) three or four movers on straight tracks; each step of the clock drops a
 //                     chalk mark at each one; put each on uniform (equal distances in equal intervals) or non-uniform.
 // Mal-rules (verified kit misconception ids only, mapped in server/play/tools/rules/gati.mjs; each a deterministic set-up
@@ -130,17 +137,21 @@ export function dogatiAt(thing: DoGatiThing, phase: number, t: number, frame: 0 
 // sandarbh stories: who rides what (−1 = on the ground; else the vehicle index), the vehicles' speeds (world units a tick)
 export type Story = "train" | "bus" | "twin";
 export const STORY_THINGS: Record<Story, readonly string[]> = {
-  train: ["passenger", "seat", "platform", "pole", "man"],
+  train: ["passenger", "seat", "platform", "sign", "man"],
   bus: ["rider", "boy", "aman", "tree", "stop"],
-  twin: ["mytrain", "other", "platform", "pole"],
+  twin: ["mytrain", "other", "platform", "sign"],
 };
+/** the things the kit's own scenes name (ch05-t03: the passenger, the train seat and the platform; "a tree beside the road,
+ *  the platform or a signboard" as reference points; the girl in the bus, the boy sitting next to her, Aman at the bus stop;
+ *  your train and the train on the next track). Look 1 uses only these (the man on the platform is the scene's own) */
+export const KIT_THINGS: readonly string[] = ["passenger", "seat", "platform", "sign", "rider", "boy", "aman", "tree", "stop", "mytrain", "other"];
 /** the vehicle each thing rides (−1: the ground) */
-export const RIDES: Record<string, number> = { passenger: 0, seat: 0, platform: -1, pole: -1, man: -1, rider: 0, boy: 0, aman: -1, tree: -1, stop: -1, mytrain: 0, other: 1 };
+export const RIDES: Record<string, number> = { passenger: 0, seat: 0, platform: -1, sign: -1, man: -1, rider: 0, boy: 0, aman: -1, tree: -1, stop: -1, mytrain: 0, other: 1 };
 /** each story's vehicles, as speeds a tick (the twin's own train stands at the platform; the next train pulls out) */
 export const speedsOf = (story: Story, v: number): number[] => (story === "twin" ? [0, v] : [v]);
 export const SANDARBH_T = 6;
 /** things that are references only, never the watched thing */
-export const FIXED: readonly string[] = ["platform", "pole", "tree", "stop", "seat", "other"];
+export const FIXED: readonly string[] = ["platform", "sign","tree", "stop", "seat", "other"];
 /** the thing's speed on the ground */
 export const speedOfThing = (story: Story, v: number, id: string) => { const r = RIDES[id]; return r < 0 ? 0 : speedsOf(story, v)[r]; };
 /** at rest compared with the reference: its place, seen from the reference, never changes */
@@ -175,6 +186,8 @@ export interface GatiState extends Undoable<GatiState> {
   tags: number[];
   /** aage: the lane flagged faster (−1 = none) */
   pick: number;
+  /** aage: the clock time at which each lane's chalk mark was placed (−1 = none); the mark sits where its mover was then */
+  chalk: number[];
   /** nikaalo / badlo: the counter (0 = not set) */
   at: number;
   ended: boolean; runs: number; done: boolean; acts: number;
@@ -222,6 +235,21 @@ export const speedOf = (p: NikaaloParams) => totalOf(p) / p.legs.length;
 /** aage: where a mover is after t ticks (it stops at the end of its trip) */
 export const posOf = (m: Mover, t: number) => m.v * Math.min(t, m.T);
 export const distOf = (m: Mover) => m.v * m.T;
+/** aage: both lanes chalked, at the same time (the comparison the flag rests on) */
+export const sameTimeMarks = (s: Pick<GatiState, "chalk">) => s.chalk.length === 2 && s.chalk[0] >= 1 && s.chalk[0] === s.chalk[1];
+/** prakaar: the things (drawing and name) are shown only once the child has checked (at every look) */
+export const namesShown = (s: Pick<GatiState, "runs">) => s.runs > 0;
+/**
+ * nikaalo / badlo, after a run: the ghost driven at the counter's speed for the same time as the real mover (nikaalo: the
+ * whole trip; badlo: the seconds stepped), where it lands (d) and where the real mover's mark is (real). It lands on the
+ * real mark exactly when the counter is right. `max`: a track length that holds both (the view never clips the ghost).
+ */
+export function ghostOf(p: GatiParams, s: Pick<GatiState, "ended" | "at" | "t">): { t: number; d: number; real: number; max: number } | null {
+  if (!s.ended || !s.at) return null;
+  if (p.goal === "nikaalo") { const t = p.legs.length, D = totalOf(p); return { t, d: s.at * t, real: D, max: Math.max(D, s.at * t) }; }
+  if (p.goal === "badlo") { const t = s.t, ms = msOf(p.kmh); return { t, d: s.at * t, real: ms * t, max: Math.max(ms * tMaxOf(p), s.at * t) }; }
+  return null;
+}
 /** aage: the faster mover (speed = distance ÷ time) */
 export const fasterOf = (p: AageParams) => (p.movers[0].v > p.movers[1].v ? 0 : 1);
 export const fartherOf = (p: AageParams) => (distOf(p.movers[0]) > distOf(p.movers[1]) ? 0 : distOf(p.movers[1]) > distOf(p.movers[0]) ? 1 : -1);
@@ -319,10 +347,12 @@ function validParams(goal: GatiGoal, q: Record<string, unknown>, look: Look): Ga
       const story = q.story as Story, v = q.v, target = q.target, refs = q.refs as string[];
       // the watched thing is a person or a train (never the ground's things or a seat); a speed that keeps every trail on the scene
       if (!STORY_THINGS[story] || !isInt(v) || v < 10 || v > 20 || typeof target !== "string" || !STORY_THINGS[story].includes(target) || FIXED.includes(target)) return null;
-      if (!Array.isArray(refs) || refs.length < 2 || refs.length > 3 || !uniq(refs) || !refs.every((r) => typeof r === "string" && STORY_THINGS[story].includes(r) && r !== target)) return null;
+      if (!Array.isArray(refs) || refs.length !== 3 || !uniq(refs) || !refs.every((r) => typeof r === "string" && STORY_THINGS[story].includes(r) && r !== target)) return null;
+      // look 1: only the kit's own scenes (the train and the bus), only the things they name
+      if (look === 1 && (story === "twin" || ![target, ...refs].every((x) => KIT_THINGS.includes(x)))) return null;
       const p: SandarbhParams = { goal, look, story, v, target, refs: [...refs] };
       const r = rightPlace(p);
-      // at rest from one reference and moving from another (the kit's point); "the platform" and "the pole" never both
+      // at rest from one reference and moving from another (the kit's point)
       if (!r.includes(0) || !r.includes(1)) return null;
       if (story === "twin" && target !== "mytrain") return null;
       return p;
@@ -409,7 +439,7 @@ function validate(level: PlayLevel<unknown>): PlayLevel<GatiParams> | null {
 
 function init(level: PlayLevel<GatiParams>): GatiState {
   const n = lanesOf(level.params);
-  return { t: 0, view: 0, seen: 0, place: Array(n).fill(-1), tags: Array(n).fill(0), pick: -1, at: 0, ended: false, runs: 0, done: false, acts: 0, prev: null, depth: 0 };
+  return { t: 0, view: 0, seen: 0, place: Array(n).fill(-1), tags: Array(n).fill(0), pick: -1, chalk: level.params.goal === "aage" ? [-1, -1] : [], at: 0, ended: false, runs: 0, done: false, acts: 0, prev: null, depth: 0 };
 }
 
 const mom = (kind: Moment["kind"], seq: number, facts: Facts, mis?: string): Moment => ({ kind, seq, facts, ...(mis ? { misconceptionId: mis } : {}) });
@@ -453,10 +483,25 @@ function apply(level: PlayLevel<GatiParams>, s: GatiState, act: GatiAct, seq: nu
       const tags = [...s.tags]; tags[lane] ^= 1 << ty;
       return change({ tags });
     }
+    case "chalk": {
+      // a mark where the mover is now, at the clock's time (a mover whose trip is over has stopped: where it stands says
+      // nothing about how far it goes in this time)
+      if (p.goal !== "aage") return no("no_chalk");
+      const lane = Number(act.lane);
+      if (!isInt(lane) || lane < 0 || lane >= n) return no("bad_lane");
+      if (s.t < 1) return no("step_first");
+      if (s.t > p.movers[lane].T) return no("trip_over");
+      if (s.chalk[lane] === s.t) return no("same_chalk");
+      const chalk = [...s.chalk]; chalk[lane] = s.t;
+      out.push(mom("progress", seq, { lane, mark: s.t }));
+      return change({ chalk });
+    }
     case "pick": {
       if (p.goal !== "aage") return no("no_pick");
       const lane = Number(act.lane);
       if (!isInt(lane) || lane < 0 || lane >= n) return no("bad_lane");
+      // the flag rests on the comparison: both movers marked for the same time
+      if (!sameTimeMarks(s)) return no("mark_same_time_first");
       if (lane === s.pick) return no("same_pick");
       return change({ pick: lane });
     }
@@ -473,6 +518,7 @@ function apply(level: PlayLevel<GatiParams>, s: GatiState, act: GatiAct, seq: nu
       if (p.goal === "sandarbh" && p.refs.some((_, i) => !(s.seen & (1 << i)))) return no("watch_each");
       if (binsOf(p) && s.place.some((x) => x < 0)) return no("place_all_first");
       if (p.goal === "do-gati" && s.tags.some((x) => !x)) return no("tag_all_first");
+      if (p.goal === "aage" && !sameTimeMarks(s)) return no("mark_same_time_first");
       if (p.goal === "aage" && s.pick < 0) return no("pick_first");
       if (counterMax(p) && !s.at) return no("mark_first");
       const runs = s.runs + 1, ok = judge(p, s);
@@ -499,11 +545,17 @@ const n1 = (p: GatiParams) => lanesOf(p);
 const goalMet = (_l: PlayLevel<GatiParams>, s: GatiState) => s.done;
 
 // ───────────────────────────── set-ups as acts ─────────────────────────────
-export interface Setup { t?: number; views?: number[]; place?: number[]; tags?: number[]; pick?: number; at?: number }
+export interface Setup { t?: number; views?: number[]; place?: number[]; tags?: number[]; pick?: number; at?: number; chalk?: number }
 export function setupActs(p: GatiParams, su: Setup): GatiAct[] {
   const acts: GatiAct[] = [];
   const T = su.t ?? tNeedOf(p);
-  if (p.goal === "sandarbh") {
+  if (p.goal === "aage") {
+    // step to the marking time, chalk both lanes there, step on to T (never back), then flag
+    const c = su.chalk ?? 1;
+    for (let i = 0; i < c; i++) acts.push({ kind: "tick" });
+    acts.push({ kind: "chalk", lane: 0 }, { kind: "chalk", lane: 1 });
+    for (let i = c; i < Math.max(c, T); i++) acts.push({ kind: "tick" });
+  } else if (p.goal === "sandarbh") {
     // step with the first reference, then watch from each other one
     for (let i = 0; i < T; i++) acts.push({ kind: "tick" });
     for (const r of su.views ?? p.refs.map((_, i) => i).slice(1)) acts.push({ kind: "view", ref: r });
@@ -545,7 +597,8 @@ function rawMal(p: GatiParams, mal: string): Setup | null {
     case "curve-circular": return p.goal === "prakaar" ? { place: p.things.map((th) => (PRAKAAR[th] === 2 ? 1 : PRAKAAR[th])) } : null;
     // each thing one type: the bicycle only straight ahead, the horse only round
     case "one-type": return p.goal === "do-gati" ? { tags: p.things.map((th) => maskOf([DOGATI[th][0]])) } : null;
-    case "farther-faster": return p.goal === "aage" && fartherOf(p) >= 0 ? { t: tMaxOf(p), pick: fartherOf(p) } : null;
+    // the marks placed (the flag needs them), then the clock stepped to the end: the totals, not the marks, decide
+    case "farther-faster": return p.goal === "aage" && fartherOf(p) >= 0 ? { t: tMaxOf(p), chalk: 1, pick: fartherOf(p) } : null;
     case "speed-distance": return p.goal === "nikaalo" ? { at: totalOf(p) } : null;
     case "multiply": return p.goal === "nikaalo" ? { at: totalOf(p) * p.legs.length } : null;
     case "keeps-moving": return p.goal === "ek-saa" ? { place: p.movers.map((m) => (m.gaps.every((g) => g > 0) ? 0 : 1)) } : null;
@@ -637,12 +690,15 @@ function generate(req: GenRequest): Candidate<GatiParams>[] {
     let params: GatiParams | null = null, sig = "";
     if (goal === "sandarbh") {
       const story = pickOf<Story>(look === 1 ? ["train", "bus"] : ["train", "bus", "twin"]);
-      const things = STORY_THINGS[story], v = pickOf([12, 15, 18]);
+      // look 1: only the things the kit's own scenes name; three reference cards at every look
+      const things = STORY_THINGS[story].filter((t) => look > 1 || KIT_THINGS.includes(t)), v = pickOf([12, 15, 18]);
       const target = story === "twin" ? "mytrain" : pickOf(things.filter((t) => !FIXED.includes(t)));
       const rest = things.filter((t) => t !== target && restFrom(story, v, target, t)), move = things.filter((t) => t !== target && !restFrom(story, v, target, t));
       if (!rest.length || !move.length) continue;
-      const n = look === 1 ? 2 : 3, refs = [pickOf(rest), pickOf(move)];
-      if (n === 3) { const more = things.filter((t) => t !== target && !refs.includes(t)); if (!more.length) continue; refs.push(pickOf(more)); }
+      const refs = [pickOf(rest), pickOf(move)];
+      const more = things.filter((t) => t !== target && !refs.includes(t));
+      if (!more.length) continue;
+      refs.push(pickOf(more));
       const rs = shuffle(refs, rnd);
       params = { goal, look, story, v, target, refs: rs }; sig = `sandarbh:${story}:${target}:${rs.join(",")}:${v}`;
     } else if (goal === "prakaar") {
@@ -740,6 +796,7 @@ function facts(level: PlayLevel<GatiParams>, s: GatiState): Facts {
   if (p.goal === "do-gati") f.watching_from = s.view ? "riding along" : "the ground";
   if (binsOf(p)) f.placed = s.place.filter((x) => x >= 0).length;
   if (p.goal === "do-gati") f.ticked = s.tags.filter((x) => x).length;
+  if (p.goal === "aage") { f.marked = s.chalk.filter((c) => c >= 0).length; if (sameTimeMarks(s)) f.marks_at = s.chalk[0]; }
   if (p.goal === "aage" && s.pick >= 0) f.flagged = p.movers[s.pick].who;
   if (s.at) f.reading = s.at;
   if (s.runs) f.runs = s.runs;
@@ -752,7 +809,7 @@ function board(level: PlayLevel<GatiParams>, s: GatiState) {
     case "sandarbh": lines.push(`watching the ${p.target} from the ${p.refs[s.view]}`, ...p.refs.map((r, i) => `from the ${r}: ${s.place[i] < 0 ? "–" : s.place[i] ? "moving" : "at rest"}`)); break;
     case "prakaar": lines.push(...p.things.map((_, i) => `light ${i + 1} → ${s.place[i] < 0 ? "–" : TYPES[s.place[i]]}`)); break;
     case "do-gati": lines.push(...p.things.map((th, i) => `${th}: ${bitsOf(s.tags[i]).map((x) => TYPES[x]).join(" + ") || "–"}`)); break;
-    case "aage": lines.push(...p.movers.map((m) => `${m.who}: ${posOf(m, s.t)} ${UNITS[p.units].d} after ${s.t} ${UNITS[p.units].t}`), `faster: ${s.pick < 0 ? "–" : p.movers[s.pick].who}`); break;
+    case "aage": lines.push(...p.movers.map((m, i) => `${m.who}: ${posOf(m, s.t)} ${UNITS[p.units].d} after ${s.t} ${UNITS[p.units].t}; mark ${s.chalk[i] < 0 ? "–" : `${posOf(m, s.chalk[i])} ${UNITS[p.units].d} at ${s.chalk[i]} ${UNITS[p.units].t}`}`), `faster: ${s.pick < 0 ? "–" : p.movers[s.pick].who}`); break;
     case "nikaalo": lines.push(`${p.who}: ${p.legs.slice(0, s.t).reduce((a, b) => a + b, 0)} ${UNITS[p.units].d} after ${s.t} ${UNITS[p.units].t}`, `speedometer: ${s.at || "–"} ${UNITS[p.units].v}`); break;
     case "badlo": lines.push(`speedometer ${p.kmh} km/h; ${msOf(p.kmh) * s.t} m after ${s.t} s`, `m/s: ${s.at || "–"}`); break;
     case "ek-saa": lines.push(...p.movers.map((m, i) => `${m.who}: ${m.gaps.slice(0, s.t).join(", ")} m → ${s.place[i] < 0 ? "–" : s.place[i] ? "non-uniform" : "uniform"}`)); break;

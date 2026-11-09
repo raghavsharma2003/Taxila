@@ -5,16 +5,18 @@
 //              from the reference being watched from (it stays put on screen, everything else slides); the watched thing
 //              leaves a dot at every tick of the clock: one dot (at rest compared with it) or a row (moving). Under it, a
 //              card per reference: its eye (watch from it) and "at rest" / "moving"
-//   drishti/prakaar   a window per thing; only its light (look 1: the thing too) and the path the light leaves; three bins,
-//              linear, circular, oscillatory. The run plays the clock on to the end: a swing's light goes back over its arc,
-//              a wheel's goes all the way round; the things are then shown
+//   drishti/prakaar   a window per thing; only its light and the path the light leaves (no drawing, no name, at every look);
+//              three bins, linear, circular, oscillatory. The run plays the clock on to the end: a swing's light goes back
+//              over its arc, a wheel's goes all the way round; the things and their names are then shown
 //   drishti/do-gati   a row per thing: its window (from the ground, or riding along with it) and three type buttons
-//   raftaar/aage      two lanes on one marked track; each tick leaves a mark where each mover is; a lane tapped carries the
-//              "faster" flag. The run draws the distance each covered in the first interval, side by side
+//   raftaar/aage      two lanes on one marked track; the child steps the clock and taps "Mark here" on each lane to chalk
+//              where its mover is at that time; the flag button (one per lane) works only once both marks are for the same
+//              time. The run draws the distance each covered in the first interval, side by side
 //   raftaar/nikaalo   a lane on a marked track, the trip stepped to its end; the speedometer (a counter); the run drives a
-//              ghost at that speed for the same time beside it
+//              ghost at that speed for the same time beside it, the trip's end mark carried down to its track; the track
+//              grows to hold where the ghost lands (never clipped)
 //   raftaar/badlo     a speedometer in km/h, a track in metres stepped a second at a time; an m/s counter; the run drives a
-//              ghost at that many metres each second
+//              ghost at that many metres each second for the seconds stepped, the car's mark carried down to its track
 //   nishaan/ek-saa    lanes: each tick drops a chalk mark at each mover (look 1: each interval's distance listed under it);
 //              two bins, uniform and non-uniform
 // After a missed run only magnifiers mark what is not as it should be; never the key.
@@ -26,7 +28,7 @@ import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
 import {
-  binsOf, bitsOf, counterMax, distOf, dogatiAt, fasterOf, lanesOf, msOf, posOf, prakaarAt, PRAKAAR, PRAKAAR_T, rightPlace, RIDES, speedOfThing, tMaxOf, tNeedOf, totalOf, uniform, UNITS, want,
+  binsOf, bitsOf, counterMax, distOf, dogatiAt, fasterOf, ghostOf, lanesOf, msOf, namesShown, posOf, prakaarAt, PRAKAAR, PRAKAAR_T, rightPlace, RIDES, sameTimeMarks, speedOfThing, tMaxOf, tNeedOf, totalOf, uniform, UNITS, want,
   type AageParams, type BadloParams, type DoGatiParams, type EkSaaParams, type GatiParams, type GatiState, type NikaaloParams, type PrakaarParams, type SandarbhParams,
 } from "./gati.logic.ts";
 
@@ -74,7 +76,7 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         break;
       }
       case "do-gati": { laneY = HDR + 30; laneH = clamp((h - laneY - 6) / lanes, 76, 130); break; }
-      case "aage": { laneY = HDR + 4; laneH = clamp((h - HDR - 12) / 2.6, 80, 120); break; }
+      case "aage": { laneY = HDR + 4; laneH = clamp((h - HDR - 30) / 2.2, 120, 150); break; }
       case "badlo": { laneY = HDR + 4; laneH = clamp(wheelY - HDR - 8 - 50 - 64, 76, 104); break; }
       default: { laneY = HDR + 4; laneH = clamp((wheelY - HDR - 16) / 2, 70, 120); break; }
     }
@@ -94,7 +96,7 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (refused && refused !== "missed") { api.sfx("refuse"); api.fx.shake(2); }
     else if (last.kind === "run") { runAt = api.reduced ? api.t - 10 : api.t; api.sfx("slide"); }
     else if (last.kind === "tick") api.sfx("tick");
-    else if (last.kind === "put" || last.kind === "pick") api.sfx("land");
+    else if (last.kind === "put" || last.kind === "pick" || last.kind === "chalk") api.sfx("land");
     else api.sfx("tap");
     if (!s.ended) runAt = -1;
     void ms;
@@ -136,6 +138,7 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (kind === "down" && id?.startsWith("v-")) { const [i, b] = id.slice(2).split(":").map(Number); if (s.place[i] !== b) act({ kind: "put", lane: i, at: b }); return; }
     if (kind === "down" && id?.startsWith("tag-")) { const [i, b] = id.slice(4).split(":").map(Number); act({ kind: "tag", lane: i, at: b }); return; }
     if (kind === "down" && id?.startsWith("pick-")) { const i = Number(id.slice(5)); if (i !== s.pick) act({ kind: "pick", lane: i }); return; }
+    if (kind === "down" && id?.startsWith("chalk-")) { act({ kind: "chalk", lane: Number(id.slice(6)) }); return; }
     if (!binGoal) return;
     if (kind === "down") {
       if (id?.startsWith("lane-")) { drag = { lane: Number(id.slice(5)), x, y, moved: false }; ctl.finger(true); api.sfx("select"); }
@@ -212,7 +215,7 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
 
   // ───────────────────────────── sandarbh ─────────────────────────────
   /** world x of a story thing at time τ (things on a vehicle ride with it) */
-  const BASE: Record<string, number> = { passenger: -12, seat: -12, platform: 0, pole: 40, man: -45, rider: -12, boy: 12, aman: -30, tree: 50, stop: -48, mytrain: 0, other: 0 };
+  const BASE: Record<string, number> = { passenger: -12, seat: -12, platform: 0, sign: 40, man: -45, rider: -12, boy: 12, aman: -30, tree: 50, stop: -48, mytrain: 0, other: 0 };
   function drawSandarbh(c: CanvasRenderingContext2D): void {
     const P = api.P, s = st(), sp = p as SandarbhParams, tau = shownT();
     const xw = (id: string, t: number) => BASE[id] + speedOfThing(sp.story, sp.v, id) * t;
@@ -254,10 +257,10 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       // the platform in front, its pillars fixed to the ground
       P.body(c, x0 - 4, platY, sw + 8, 26, { role: "ink3", r: 0, fill: 0.22 });
       for (let g = Math.floor(lo / 60) * 60; g < hi; g += 60) P.stroke(c, [[X(g), platY + 4], [X(g), platY + 26]], { role: "ink3", width: 2 });
-      // the pole: a lamp post on the platform
-      const px = X(xw("pole", tau));
-      P.stroke(c, [[px, platY + 12], [px, platY - 46]], { role: "ink", width: 3 });
-      P.circle(c, px, platY - 48, 5, { role: "q4", fill: true });
+      // the signboard on the platform (the kit's own reference point)
+      const px = X(xw("sign", tau));
+      P.stroke(c, [[px, platY + 12], [px, platY - 34]], { role: "ink", width: 3 });
+      P.body(c, px - 15, platY - 52, 30, 18, { role: "q4", r: 3 });
     }
     if (sp.story === "train") { const sx = X(xw("seat", tau)); P.body(c, sx - 8, trackY - 22, 16, 10, { role: "q4", r: 2 }); seated("passenger", trackY); person("man", platY + 14); }
     if (sp.story === "bus") {
@@ -304,7 +307,9 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const rows = Math.ceil(lanes / 2), ww = (w - 24) / 2, wh = laneH - 8;
     // the run plays the clock on to the end (the whole path), shown over the sweep
     const tShow = s.ended && runAt >= 0 ? lerp(s.t, PRAKAAR_T, runK()) : shownT();
-    const reveal = pp.look === 1 || end;
+    // the things (drawing and name) only once the child has checked, and only after the first run has played on screen:
+    // before that, the light's trail is the only evidence (at every look)
+    const reveal = namesShown(s) && (s.runs > 1 || !s.ended || runAt < 0 || runK() >= 1);
     for (let i = 0; i < lanes; i++) {
       const col = i % 2, row = Math.floor(i / 2), x = 8 + col * (ww + 8), y = laneY + row * laneH + 2;
       if (!s.done) api.target(`lane-${i}`, x, y, ww, wh);
@@ -330,7 +335,7 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     bins3(c, [0, 1, 2].map((j) => [W(`gati.type.${j}`), W(`gati.type.${j}.sub`)] as [string, string]), badBins(), (lane) => String(lane + 1));
     if (end && s.done) P.tick(c, w - 26, binY - 14, 22, 1);
   }
-  /** the thing itself, lightly (look 1, and every look once the run has played) */
+  /** the thing itself, lightly (once the child has checked) */
   function thingSketch(c: CanvasRenderingContext2D, th: string, ph: number, t: number, S: (q: [number, number]) => [number, number], sc: number): void {
     const P = api.P, o = { role: "ink3" as Role, width: 2, alpha: 0.7 };
     if (th === "wheel" || th === "clock" || th === "fan") {
@@ -481,24 +486,34 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function drawAage(c: CanvasRenderingContext2D): void {
     const P = api.P, s = st(), ap = p as AageParams, tau = shownT(), u = UNITS[ap.units], end = shownEnd();
     const maxD = Math.max(...ap.movers.map(distOf)), x0 = 26, x1 = w - 56;
+    const canFlag = sameTimeMarks(s);
     ap.movers.forEach((m, i) => {
-      const y = laneY + i * laneH, ty = y + laneH - 34, on = s.pick === i;
-      if (!s.done) api.target(`pick-${i}`, 8, y + 2, w - 16, laneH - 6);
+      const y = laneY + i * laneH, ty = y + laneH - 34, on = s.pick === i, B = 44, by = y + 8;
       P.body(c, 8, y + 2, w - 16, laneH - 6, { role: "panel", r: 10, seed: 80 + i, state: on ? "selected" : "idle" });
-      P.textFit(c, W(`gati.who.${m.who}`), 70, y + 16, 110, 20, { size: 16, role: "ink2", weight: 700 });
+      // the flag button (it takes the flag only once both marks are for the same time)
+      if (!s.done) api.target(`pick-${i}`, 12, by, B, B);
+      P.body(c, 12, by, B, B, { role: on ? "q2" : "panel", r: 8, seed: 84 + i, state: on ? "selected" : canFlag ? "idle" : "dim" });
+      const fx = 12 + B / 2 - 7, fr: Role = on ? "panel" : canFlag ? "ink" : "ink3";
+      P.stroke(c, [[fx, by + 9], [fx, by + B - 8]], { role: fr, width: 2.5 });
+      P.fillPath(c, (g) => { g.beginPath(); g.moveTo(fx + 1, by + 9); g.lineTo(fx + 18, by + 15); g.lineTo(fx + 1, by + 21); g.closePath(); }, on || canFlag ? "red" : "paper", { outline: "ink" });
+      P.textFit(c, W(`gati.who.${m.who}`), 12 + B + 8 + 50, by + B / 2, 100, 22, { size: 16, role: "ink2", weight: 700 });
+      // the mark button: a chalk mark where this mover is now (not before the clock moved, not once its trip is over)
+      const MW = 104, mx = w - 12 - MW, canMark = s.t >= 1 && s.t <= m.T && s.chalk[i] !== s.t;
+      if (!s.done) api.target(`chalk-${i}`, mx, by, MW, B);
+      P.body(c, mx, by, MW, B, { role: "panel", r: 8, seed: 86 + i, state: canMark ? "idle" : "dim" });
+      P.stroke(c, [[mx + 14, by + 12], [mx + 14, by + B - 12]], { role: canMark ? "q2" : "ink3", width: 3 });
+      P.textFit(c, W("gati.chalk"), mx + 22 + (MW - 26) / 2, by + B / 2, MW - 28, B - 6, { size: 16, role: canMark ? "ink" : "ink3", weight: 700 });
       const X = track(c, x0, x1, ty, maxD, ap.look, u.d);
-      // where it was after each interval so far
-      for (let j = 1; j <= Math.floor(tau + 1e-6); j++) {
-        const d = posOf(m, j);
-        P.stroke(c, [[X(d), ty - 26], [X(d), ty]], { role: "q4", width: 2, alpha: j <= m.T ? 0.8 : 0.3 });
-        if (j <= m.T) P.text(c, `${j}`, X(d) + 7, ty - 21, { size: 16, role: "q4", weight: 800, font: "mono", align: "left" });
+      // the child's own mark: where this mover was at the time it was chalked
+      if (s.chalk[i] >= 0) {
+        const dc = posOf(m, s.chalk[i]);
+        P.stroke(c, [[X(dc), ty - 30], [X(dc), ty + 4]], { role: "q2", width: 3 });
+        P.text(c, `${s.chalk[i]} ${u.t}`, X(dc) + 6, ty - 24, { size: 16, role: "q2", weight: 800, font: "mono", align: "left" });
       }
       const d = m.v * Math.min(tau, m.T);
       moverIcon(c, m.who, X(d), ty - 1, i ? "q2" : "q1");
       // stopped: its trip
-      if (s.t >= m.T) P.chip(c, `${distOf(m)} ${u.d} · ${m.T} ${u.t}`, Math.min(w - 90, Math.max(110, X(distOf(m)) - 10)), y + 16, { size: 16 });
-      // the flag
-      if (on) { P.stroke(c, [[20, y + 10], [20, y + 40]], { role: "ink", width: 2.5 }); P.fillPath(c, (g) => { g.beginPath(); g.moveTo(21, y + 10); g.lineTo(38, y + 16); g.lineTo(21, y + 22); g.closePath(); }, "red", { outline: "ink" }); }
+      if (s.t >= m.T) P.chip(c, `${distOf(m)} ${u.d} · ${m.T} ${u.t}`, Math.min(w - 90, Math.max(110, X(distOf(m)) - 10)), by + B + 16, { size: 16 });
       // the run: the distance each covered in the first interval, side by side
       if (s.ended && runAt >= 0) {
         const k = runK(), d1 = posOf(m, 1);
@@ -513,7 +528,8 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function drawNikaalo(c: CanvasRenderingContext2D): void {
     const P = api.P, s = st(), np = p as NikaaloParams, tau = shownT(), u = UNITS[np.units], end = shownEnd();
     const D = totalOf(np), T = np.legs.length, x0 = 26, x1 = w - 56;
-    const ghostD = s.ended ? s.at * T : 0, maxD = Math.max(D, Math.min(ghostD, D * 1.25));
+    // after a run the track grows to hold where the ghost lands (the law's ghost: the counter's speed for the trip's time)
+    const gh = ghostOf(p, s), maxD = gh ? gh.max : D;
     const y = laneY, ty = y + laneH - 34;
     P.body(c, 8, y + 2, w - 16, laneH - 6, { role: "panel", r: 10, seed: 90 });
     P.textFit(c, W(`gati.who.${np.who}`), 70, y + 16, 110, 20, { size: 16, role: "ink2", weight: 700 });
@@ -524,15 +540,20 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (s.t >= T) P.chip(c, `${D} ${u.d} · ${T} ${u.t}`, Math.min(w - 90, Math.max(120, X(D) - 10)), y + 16, { size: 16 });
     // the run: a ghost at the speedometer's speed for the same time, beside it
     const gy = y + laneH + 6;
-    if (s.ended && runAt >= 0) {
-      const k = runK(), gt = k * T, gd = s.at * gt, gx = Math.min(X(gd), x1 + 6);
+    if (gh && runAt >= 0) {
+      const k = runK(), gt = k * gh.t, gd = s.at * gt, gx = X(gd);
       P.body(c, 8, gy, w - 16, laneH * 0.62, { role: "panel", r: 10, seed: 91, state: "dim" });
       const gty = gy + laneH * 0.62 - 14;
       P.stroke(c, [[x0, gty], [x1, gty]], { role: "ink3", width: 2 });
-      for (let j = 1; j <= Math.floor(gt + 1e-6); j++) { const xd = X(s.at * j); if (xd <= x1) P.stroke(c, [[xd, gty - 18], [xd, gty]], { role: "q4", width: 2, alpha: 0.6 }); }
+      // the trip's end, carried down onto the ghost's track: the ghost lands on it, or away from it
+      P.stroke(c, [[X(gh.real), ty + 4], [X(gh.real), gty]], { role: "q4", width: 2, alpha: 0.55, dash: [4, 4] });
+      P.stroke(c, [[X(gh.real), gty - 24], [X(gh.real), gty]], { role: "q4", width: 3 });
+      for (let j = 1; j <= Math.floor(gt + 1e-6); j++) P.stroke(c, [[X(s.at * j), gty - 18], [X(s.at * j), gty]], { role: "q2", width: 2, alpha: 0.6 });
       moverIcon(c, np.who, gx, gty - 1, "q1", 0.5);
       P.textFit(c, W("gati.ghost", { v: s.at, u: u.v }), w / 2 + 30, gy + 14, w - 140, 20, { size: 16, role: "ink2", weight: 700 });
-      if (end && !s.done) P.magnifier(c, Math.min(gx, x1) - 4, gty - 30, 14);
+      if (end) P.chip(c, `${gh.d} ${u.d}`, clamp(X(gh.d), 60, w - 60), gty + 16, { size: 16, ...(s.done ? {} : { role: "q2" as Role }) });
+      // the lens on the trip's end mark the ghost missed
+      if (end && !s.done) P.magnifier(c, Math.max(x0 + 8, X(gh.real) - 16), gty - 12, 14);
     }
     P.text(c, W(np.units === "kmh" ? "gati.speedometer" : "gati.speed"), cx0 - 14, wheelY - 12, { size: 16, role: "ink2", weight: 700, align: "left" });
     counter(c, u.v, true);
@@ -541,7 +562,8 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
 
   function drawBadlo(c: CanvasRenderingContext2D): void {
     const P = api.P, s = st(), bp = p as BadloParams, tau = shownT(), end = shownEnd(), ms = msOf(bp.kmh), T = tMaxOf(p);
-    const x0 = 26, x1 = w - 56, maxD = ms * T, y = laneY, ty = y + laneH - 34;
+    // after a run the track grows to hold where the ghost lands (never clipped)
+    const gh = ghostOf(p, s), x0 = 26, x1 = w - 56, maxD = gh ? gh.max : ms * T, y = laneY, ty = y + laneH - 34;
     P.body(c, 8, y + 2, w - 16, laneH - 6, { role: "panel", r: 10, seed: 92 });
     P.textFit(c, W(`gati.who.${bp.who}`), 70, y + 16, 110, 20, { size: 16, role: "ink2", weight: 700 });
     const X = track(c, x0, x1, ty, maxD, bp.look, "m");
@@ -557,13 +579,19 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     // the kit's own conversion (two lines when the box is narrow)
     P.body(c, 8, y + laneH, w - 16, 44, { role: "panel", r: 10, seed: 93, fill: 0.6 });
     P.textFit(c, W("gati.kit.convert"), w / 2, y + laneH + 22, w - 28, 42, { size: 16, role: "ink", weight: 700, font: "mono" });
-    if (s.ended && runAt >= 0) {
-      const gy = y + laneH + 50, gty = gy + 40, k = runK(), gt = k * T, gx = Math.min(X(s.at * gt), x1 + 6);
+    if (gh && runAt >= 0) {
+      // the ghost: the typed m/s for the same seconds the car was stepped, on its own track under the car's
+      const gy = y + laneH + 50, gty = gy + 46, k = runK(), gt = k * gh.t, gx = X(s.at * gt);
       P.stroke(c, [[x0, gty], [x1, gty]], { role: "ink3", width: 2 });
-      for (let j = 1; j <= Math.floor(gt + 1e-6); j++) { const xd = X(s.at * j); if (xd <= x1) P.stroke(c, [[xd, gty - 18], [xd, gty]], { role: "q4", width: 2, alpha: 0.6 }); }
+      // the car's mark after those seconds, carried down: the ghost lands on it, or away from it
+      P.stroke(c, [[X(gh.real), gty - 24], [X(gh.real), gty]], { role: "q4", width: 3 });
+      P.text(c, `${gh.t}`, X(gh.real) + 7, gty - 19, { size: 16, role: "q4", weight: 800, font: "mono", align: "left" });
+      for (let j = 1; j <= Math.floor(gt + 1e-6); j++) P.stroke(c, [[X(s.at * j), gty - 16], [X(s.at * j), gty]], { role: "q2", width: 2, alpha: 0.6 });
       moverIcon(c, bp.who, gx, gty - 1, "q1", 0.5);
-      P.textFit(c, W("gati.ghost", { v: s.at, u: "m/s" }), w / 2, gy + 10, w - 40, 20, { size: 16, role: "ink2", weight: 700 });
-      if (end && !s.done) P.magnifier(c, Math.min(gx, x1) - 4, gty - 30, 14);
+      P.textFit(c, W("gati.ghost", { v: s.at, u: "m/s" }), w / 2, gy + 6, w - 40, 20, { size: 16, role: "ink2", weight: 700 });
+      if (end) P.chip(c, `${gh.d} m`, clamp(X(gh.d), 50, w - 50), gty + 16, { size: 16, ...(s.done ? {} : { role: "q2" as Role }) });
+      // the lens on the car's mark the ghost missed
+      if (end && !s.done) P.magnifier(c, Math.max(x0 + 8, X(gh.real) - 16), gty - 12, 14);
     }
     counter(c, "m/s", true);
     if (end && s.done) P.tick(c, w - 26, wheelY - 14, 22, 1);
@@ -645,7 +673,7 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (p.goal === "sandarbh") ready = ready && p.refs.every((_, i) => s.seen & (1 << i));
     if (bins || p.goal === "sandarbh") ready = ready && s.place.every((x) => x >= 0);
     if (p.goal === "do-gati") ready = ready && s.tags.every((x) => x > 0);
-    if (p.goal === "aage") ready = ready && s.pick >= 0;
+    if (p.goal === "aage") ready = ready && s.pick >= 0 && sameTimeMarks(s);
     if (top) ready = ready && s.at > 0;
     out.push({ id: "run", label: W("gati.run"), aria: "check it", kind: "primary", group: "go", you: ready, disabled: !ready, onPress: () => act({ kind: "run" }) });
     return out;
