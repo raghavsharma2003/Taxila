@@ -76,4 +76,66 @@ describe("r7-brain-v65.test.mjs", () => {
     }
     assert.deepEqual(bad, []);
   });
+
+  // F1 — frames: no fragments or stray tokens, no echoed English answer, no praise or aside beside a wrong verdict, no invented method
+  const FRAG_ROWS = [["steady", "c4", 52], ["offtopic", "c4", 58], ["steady", "c5-t01", 80], ["offtopic", "c5-t02", 42], ["stuck", "c6", 18]];
+  const METHOD_ROWS = [["steady", "c6", 64], ["offtopic", "c4", 62], ["stuck", "c4", 28]];
+  const FRAME_OK = /^(?:Haan, sahi hai|Bilkul sahi|Achha|Theek hai|Okay|Alright|Phir se dekho:|Ek baar aur dekho:|Sawaal yeh hai:|Dhyan se dekho:)[.!]?$/i;
+  test("F1 predicate: no fragment, stray token or echoed English answer (judges' 5 rows)", async () => {
+    const bad = [];
+    for (const [persona, topic, n] of FRAG_ROWS) {
+      const { out } = await at(persona, topic, n);
+      const tag = `${persona} ${topic} row ${n}`;
+      if (/[—–]\s*,/.test(out.reply)) bad.push(`${tag}: "—," | ${out.reply.slice(0, 100)}`);
+      if (/\b(?:the|a|an)\s+\d+(?:st|nd|rd|th)\b/i.test(out.reply)) bad.push(`${tag}: their English answer echoed | ${out.reply.slice(0, 100)}`);
+      const short = sentences(out.reply).filter((x) => x.split(/\s+/).length <= 2 && !FRAME_OK.test(x));
+      if (short.length) bad.push(`${tag}: fragment ${JSON.stringify(short)} | ${out.reply.slice(0, 120)}`);
+    }
+    assert.deepEqual(bad, []);
+  });
+  test("F1 predicate: no praise, \"Wah\" or aside beside a wrong verdict (c6 offtopic 40)", async () => {
+    const { out } = await at("offtopic", "c6", 40);
+    assert.doesNotMatch(out.reply, /(?<![\p{L}])(?:wah|waah|shabash|zabardast|kamaal|bahut badhiya|cricket|sixer|virat)(?![\p{L}])/iu, out.reply);
+  });
+  test("F1 predicate: never a method of theirs they did not say — a \"Tumne …\" line uses only their words (judges' 3 rows)", async () => {
+    const bad = [];
+    const STOPM = new Set(["tumne", "tumhara", "tumhari", "tumhe", "bataya", "batayi", "kaha", "socha", "tareeka", "tarika", "achha", "theek", "haan", "sahi", "yahan", "isliye", "pehle", "phir", "kaise", "jaana"]);
+    for (const [persona, topic, n] of METHOD_ROWS) {
+      const { out, last } = await at(persona, topic, n);
+      const theirs = (String(last.child).toLowerCase().match(/\p{L}{3,}/gu) ?? []).map((w) => w.slice(0, 4));
+      for (const x of sentences(out.reply).filter((y) => /(?<![\p{L}])(?:tumne|tumhara|tumhari)(?![\p{L}])/iu.test(y))) {
+        const extra = (x.toLowerCase().match(/\p{L}{4,}/gu) ?? []).filter((w) => !STOPM.has(w) && !theirs.includes(w.slice(0, 4)));
+        if (extra.length) bad.push(`${persona} ${topic} row ${n}: "${x}" adds ${extra.join(", ")} (they said "${last.child}")`);
+      }
+    }
+    assert.deepEqual(bad, []);
+  });
+  // F1 — every code frame has several forms, none said twice within 4 of her turns; the two probe acks are gone;
+  // "Is sawaal ka jawab" for the card just answered or given up
+  const FRAMES = [/Nahi, yeh jawab nahi hai\./, /Phir se dekho:/, /Theek, yeh tumhari soch thi|Achha, tumne apna tareeka bataya/];
+  async function frameFaults(persona, topic) {
+    const T = TOPIC[topic];
+    setScriptForTest(T, runScriptOf(RUN, T));
+    const { kit, rows, plans } = await replay(RUN, persona, T, 1e9);
+    const bad = [], said = [];
+    for (const pl of plans) {
+      const n = pl.row - 1;
+      if (!rows[n]) continue;
+      replyDeps.chat = async () => ({ text: rows[n].text });
+      const recent = said.slice(-4).map((t) => ({ who: "teacher", text: t }));
+      const st = { ...pl.state, recent: [...(pl.state.recent ?? []).filter((x) => x.who !== "teacher").slice(-4), ...recent] };
+      const out = await textReply({ instructions: instructionsFor(st, kit), state: st, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
+      const r = out.reply;
+      if (FRAMES[2].test(r)) bad.push(`row ${n}: a deleted probe ack | ${r.slice(0, 80)}`);
+      for (const f of FRAMES.slice(0, 2)) if (f.test(r) && said.slice(-4).some((t) => f.test(t))) bad.push(`row ${n}: "${f.source}" again within 4 turns`);
+      if (/Pichhle sawaal ka (?:sahi )?jawab/.test(r) && pl.state.lastMove?.gave && !pl.state.lastMove?.closed) bad.push(`row ${n}: the card just given up called "Pichhle sawaal" | ${r.slice(0, 80)}`);
+      said.push(r);
+    }
+    return bad;
+  }
+  for (const persona of ["offtopic", "steering", "steady", "stuck"]) for (const topic of Object.keys(TOPIC)) {
+    test(`F1 predicate: frames vary, the deleted acks are gone, "Is sawaal ka jawab" for the card just given up (${persona} ${topic})`, async () => {
+      assert.deepEqual(await frameFaults(persona, topic), []);
+    });
+  }
 });

@@ -78,7 +78,10 @@ describe("r7-brain-v62.test.mjs", () => {
     const noReason = await sayTo("woh toh ho gaya na");
     assert.doesNotMatch(noReason.reply, /tumhari soch|tareeka bataya|kaise socha/, noReason.reply);
     const reason = await sayTo("maine pehle tukde gine, phir upar likha");
-    assert.match(reason.reply, /tumhari soch|tareeka bataya|kaise socha/, reason.reply);
+    // (v6.5 F1, main on director13: "Theek, yeh tumhari soch thi" and "Achha, tumne apna tareeka bataya" are deleted — code's
+    // acknowledgement is always the neutral one, reason or not)
+    assert.doesNotMatch(reason.reply, /tumhari soch|tareeka bataya|kaise socha/, reason.reply);
+    assert.match(reason.reply, /^(?:Achha|Theek hai)\./, reason.reply);
   });
 
   test("G3: a right answer's verdict segment on the answered card's board carries the key (reveal: true, answers[0] the key)", () => {

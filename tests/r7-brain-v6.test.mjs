@@ -87,7 +87,8 @@ describe("R1/R2/R5 in the lesson (c6 skill-1 v2 fixture)", () => {
   test("R5: a yes/no key is said as the right answer named, never '<nahi> tha' ('there was no answer')", async () => {
     const L = toCard(run());
     const out = await say(L, "Chalo aage badhte hain.", { state: { lastMove: { ...L.r.state.lastMove, gave: { answer: "nahi", why: "" } } } });
-    assert.match(out.reply, /Pichhle sawaal ka sahi jawab: nahi\./, out.reply);
+    // (v6.5 F1, main on director13: the card just given up is "is sawaal", the next card after it or not)
+    assert.match(out.reply, /Is sawaal ka sahi jawab: nahi\./, out.reply);
     assert.doesNotMatch(out.reply, /jawab nahi tha/);
   });
 
