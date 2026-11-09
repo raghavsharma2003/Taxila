@@ -202,7 +202,7 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     replyDeps.chat = async () => ({ text: "Koi baat nahi, ek alag tarah se dekhte hain." });
     const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "7 cm", verdict: "not_yet", history: [], ui: L.r.ui, module: null });
     const item = findItem(L.r.state, K, L.r.move.itemId ?? L.r.state.activeItemId);
-    const ask = whiteboardIntentOf({ lessonId: "L", turn: L.r.state.turn, beat: { id: "b", type: "explain" }, next: L.r.state, kit: K, item, line: { text: out.reply } });
+    const ask = whiteboardIntentOf({ lessonId: "L", turn: L.r.state.turn, beat: { id: "b", type: "explain" }, next: L.r.state, kit: K, item, line: { text: out.reply, parts: out.guard.parts } });
     // v5 B1: the say on the remediation board from 0, then the card on its own board from where the card starts
     assert.deepEqual(ask.intent.boardRef, L.r.move.scriptBeat.board, "the say's board comes first");
     const seg = ask.intent.segments ?? [];
@@ -219,7 +219,9 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     // a closure is spoken over the board it closes, before the switch
     const closeB = { template: "shape@1", params: { shape: "square" } };
     const line = `Haan, sahi hai. Toh poora jawab: 12 cm, kyunki sab jodo. ${card}`;
-    const parts = boardPartsOf({ workedDone: { answer: "12 cm" }, closeBeat: { board: closeB, kind: "check", beatId: "c1" }, cardBeat: { board: r0.then.board, kind: "check", beatId: "x", ownBoard: true } }, line, card);
+    // (v6.6 P4: the line as its parts — a line is never searched for its closure)
+    const parts = boardPartsOf({ workedDone: { answer: "12 cm" }, closeBeat: { board: closeB, kind: "check", beatId: "c1" }, cardBeat: { board: r0.then.board, kind: "check", beatId: "x", ownBoard: true } }, line, card,
+      { list: [{ part: "close", text: "Haan, sahi hai. Toh poora jawab: 12 cm, kyunki sab jodo." }, { part: "card", text: card }] });
     assert.deepEqual(parts.boardRef, closeB);
     assert.equal(parts.segments?.[0]?.atChar, closureEnd(line));
     assert.equal(line.slice(parts.segments[0].atChar), card);

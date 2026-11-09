@@ -312,7 +312,13 @@ export function pagesOfParts(move, list, line) {
       default: return move?.scriptBeat?.board ? move.scriptBeat : move?.cardBeat?.board ? move.cardBeat : move?.closeBeat?.board ? move.closeBeat : null;
     }
   };
-  let placed = offs.map((p) => ({ part: p.part, start: p.start, beat: beatFor(p.part), alt: p.part === "alt" }));
+  // (a close that says nothing about the card — no why, no key, only "not right": "Nahi, yeh jawab nahi hai. Koi baat nahi, ek alag tarah se
+  // dekhte hain." — has no board of its own: it is said over the page it opens, as a bare verdict always was)
+  // (a right verdict stays on the card it confirms: the board's reveal is on that page)
+  // (a not-right verdict that only names their answer — "7 cm sahi nahi hai." — says nothing a board shows: it opens the page after)
+  const says = (t) => /(?<![\p{L}])(?:kyunki|because|isliye|jawab\s+.{1,30}?\s+tha)(?![\p{L}])/iu.test(t) || /^(?:haan|bilkul|sahi|right|correct|yes)\b/i.test(t)
+    || (/\d/.test(t) && !/(?<![\p{L}])(?:nahi|nahin|not|galat)(?![\p{L}])/iu.test(t));
+  let placed = offs.map((p) => ({ part: p.part, start: p.start, beat: p.part === "close" && !says(p.text) && offs.length > 1 ? null : beatFor(p.part), alt: p.part === "alt" }));
   // (a part with no board rides on the page before it; leading ones on the first page with a board)
   for (let i = 1; i < placed.length; i++) if (!placed[i].beat) placed[i] = { ...placed[i], beat: placed[i - 1].beat, alt: placed[i - 1].alt };
   const firstB = placed.find((p) => p.beat);
@@ -340,7 +346,7 @@ export function pagesOfParts(move, list, line) {
     const closeT = offs.filter((p) => p.part === "close").map((p) => p.text).join(" ");
     const cardB = beatFor("card")?.board, closeB = beatFor("close")?.board;
     if (closeB && cardB && offs.some((p) => p.part === "card") && JSON.stringify(closeB) !== JSON.stringify(cardB)
-      && (/\d/.test(closeT) || closeT.split(/\s+/).filter(Boolean).length >= FIRST_PAGE_MIN_WORDS)
+      && says(closeT)
       && (out.length < 2 || JSON.stringify(out[0].boardRef) !== JSON.stringify(closeB))) throw new Error(`P4: a close and a next card are not two pages (${JSON.stringify(out.map((p) => p.parts))})`);
     if (offs.some((p) => p.part === "alt") && offs.some((p) => p.part === "card") && !(out[0].alt && out.length > 1 && out.at(-1).parts.includes("card") && !out.at(-1).alt)) {
       throw new Error(`P4: a picture turn is not the alt page then the card's page (${JSON.stringify(out.map((p) => [p.alt, p.parts]))})`);
@@ -350,10 +356,10 @@ export function pagesOfParts(move, list, line) {
 }
 export function boardPartsOf(move, line, card, parts = null) {
   // v6.6 P4: a line given as its parts is paged from them (the probe on the card just answered is asked on that card's board)
+  if (move?.kind === "probe" && move?.closeBeat?.board && move?.scriptBeat?.beatId && move.scriptBeat.beatId === move.closeBeat.beatId) {
+    move = { ...move, scriptBeat: { ...move.scriptBeat, board: move.closeBeat.board }, ...(move.cardBeat?.beatId === move.closeBeat.beatId ? { cardBeat: { ...move.cardBeat, board: move.closeBeat.board } } : {}) };
+  }
   if (parts?.list?.length) {
-    if (move?.kind === "probe" && move?.closeBeat?.board && move?.scriptBeat?.beatId && move.scriptBeat.beatId === move.closeBeat.beatId) {
-      move = { ...move, scriptBeat: { ...move.scriptBeat, board: move.closeBeat.board }, ...(move.cardBeat?.beatId === move.closeBeat.beatId ? { cardBeat: { ...move.cardBeat, board: move.closeBeat.board } } : {}) };
-    }
     const pages = norm1(line) ? pagesOfParts(move, parts.list, line) : null;
     if (pages?.length) {
       const segPlan = pages.flatMap((p) => p.parts.map((part) => ({ part, boardRef: p.boardRef, scriptBeat: p.scriptBeat })));
@@ -362,35 +368,11 @@ export function boardPartsOf(move, line, card, parts = null) {
         ...(segPlan.length > 1 ? { segmentPlan: segPlan } : {}) };
     }
   }
-  // v6.5 P3 (Studio's shape, director13): a picture turn drawn as a second view is two pages — the view under its own line (the
-  // card's board, asked as a picture: Studio draws its second view), then the card's own board from the card's first word. The two
-  // pages name the same board, so they are placed here, never merged
-  if (parts?.alt && move?.cardBeat?.board) {
-    const text = norm1(line);
-    // (where the card starts; in the Hindi mode the card is said in Hindi words, so the alt line's end marks it)
-    const at = cardAt(text, card) ?? spanOf(text, parts.alt)?.[1] ?? null;
-    const ref = refOf(move.cardBeat);
-    if (at != null && at > 0) return { boardRef: move.cardBeat.board, scriptBeat: ref, altPage: true, segments: [{ atChar: at, atClause: clauseAt(text, at), boardRef: move.cardBeat.board, scriptBeat: ref }] };
-  }
-  // v6.3 P1 (main, director11 c4 steady T58: "Tumne 12 ko 2 se barabar baanta." paged back off the answered card's answer board):
-  // a probe about the card just answered (its why) is asked on that card's board, the one its close is on
-  if (move?.kind === "probe" && move?.closeBeat?.board && move?.scriptBeat?.beatId && move.scriptBeat.beatId === move.closeBeat.beatId) {
-    move = { ...move, scriptBeat: { ...move.scriptBeat, board: move.closeBeat.board }, ...(move.cardBeat?.beatId === move.closeBeat.beatId ? { cardBeat: { ...move.cardBeat, board: move.closeBeat.board } } : {}) };
-  }
-  const closing = move?.gave || move?.workedDone || move?.sayFirst?.length || parts?.prev;
-  const plan = [
-    ...(closing && move?.closeBeat?.board ? [{ part: "close", boardRef: move.closeBeat.board, scriptBeat: refOf(move.closeBeat), ...(move?.sayFirst?.length ? { said: [...move.sayFirst] } : {}) }] : []),
-    ...(move?.closed && (move?.closedBeat ?? move?.closeBeat)?.board ? [{ part: "closed", boardRef: (move.closedBeat ?? move.closeBeat).board, scriptBeat: refOf(move.closedBeat ?? move.closeBeat) }] : []),
-    ...(parts?.bridge && move?.bridgeBeat?.board ? [{ part: "bridge", boardRef: move.bridgeBeat.board, scriptBeat: refOf(move.bridgeBeat) }] : []),
-    // v6.3 P1: a remediation's words (its say or simpler, as a miss's rung) on that remediation's board; the card then gets its own page
-    ...(parts?.simpler && move?.simplerBeat?.board ? [{ part: "simpler", boardRef: move.simplerBeat.board, scriptBeat: refOf(move.simplerBeat) }] : []),
-    ...(move?.scriptBeat?.board ? [{ part: "body", boardRef: move.scriptBeat.board, scriptBeat: refOf(move.scriptBeat) }] : []),
-    ...(move?.cardBeat?.board ? [{ part: "card", boardRef: move.cardBeat.board, scriptBeat: refOf(move.cardBeat) }] : []),
-  ];
-  if (!plan.length) return move?.scriptBeat ? { scriptBeat: refOf(move.scriptBeat) } : {};
-  const placed = segmentsAt(plan, line, card, parts);
-  const first = placed[0];
-  return { boardRef: first.boardRef, scriptBeat: first.scriptBeat, ...(placed.length > 1 ? { segments: placed.slice(1) } : {}), ...(plan.length > 1 ? { segmentPlan: plan } : {}) };
+  // v6.6 P4: a line with no parts (a line say.js did not assemble, a preselect before her line exists) is never searched for its
+  // parts: it is one page, on the board the turn is about (the beat's, else the card's, else the close's)
+  const one = move?.scriptBeat?.board ? move.scriptBeat : move?.cardBeat?.board ? move.cardBeat : move?.closeBeat?.board ? move.closeBeat : null;
+  if (!one) return move?.scriptBeat ? { scriptBeat: refOf(move.scriptBeat) } : {};
+  return { boardRef: one.board, scriptBeat: refOf(one) };
 }
 /** Where a part's text starts and ends in the line ([start, end] after the trailing space), or null. */
 function spanOf(text, part) {
