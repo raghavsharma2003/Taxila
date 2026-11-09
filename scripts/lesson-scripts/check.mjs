@@ -321,6 +321,48 @@ export function poolNameErrors(s) {
   walk(s, "");
   return e;
 }
+/** director14 D9.1: a spoken field (any { hi, en } text) never quotes a bare symbol: the voice reads "'?' wala nishaan".
+ * Say it in words ("question mark wala nishaan"); the board keeps its "?". Boards ({ template, params }) are not walked. */
+export function spokenSymbolErrors(s) {
+  const e = [], Q = `['"\u2018\u2019\u201C\u201D]`;
+  const bad = new RegExp(`${Q}\\s*[^\\p{L}\\p{N}\\s'"\u2018\u2019\u201C\u201D]{1,3}\\s*${Q}`, "u");
+  const walk = (x, path) => {
+    if (Array.isArray(x)) return x.forEach((v, i) => walk(v, `${path}[${i}]`));
+    if (!x || typeof x !== "object" || x.template) return;
+    for (const lang of ["hi", "en"]) if (typeof x[lang] === "string" && bad.test(x[lang])) e.push(`${path}${lang === "en" ? " (en)" : ""}: a quoted symbol is read out (${x[lang].match(bad)[0]}); say it in words`);
+    for (const [k, v] of Object.entries(x)) if (k !== "hi" && k !== "en") walk(v, path ? `${path}.${k}` : k);
+  };
+  walk(s.skills, "skills");
+  return e;
+}
+
+/** director14 D9.2: a remediation (its say and its simpler) never states the key of a card that is still to come: its own
+ * then-card, any keyed card of its skill (explain asks, the worked yourStep, checks, other then-cards) or of a later skill.
+ * Steady 44 / stuck 38: c5-t01's count-marks remediation said 1/4, the yourStep key. A key is matched by its fraction or
+ * number with its unit ("1/4 km" by "1/4"); bare whole numbers 0-10 and yes/no keys are too common to police. */
+export function remediationKeyErrors(s) {
+  const e = [];
+  const said = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
+  const keysOf = (k) => [...(k.explain ?? []).map((b) => [b.id, b.ask?.key, b.ask?.prompt]), ["workedExample.yourStep", k.workedExample?.yourStep?.key, k.workedExample?.yourStep?.prompt],
+    ...(k.checks ?? []).map((c) => [c.id, c.key, c.prompt]), ...(k.remediation ?? []).map((r, i) => [`remediation[${i}].then`, r.then?.key, r.then?.prompt])];
+  const core = (key) => {
+    const m = String(key ?? "").trim().match(/^(\d+(?:[./]\d+)?)(?:\s*[\p{L}]{1,6})?$/u);
+    if (!m) return null;
+    return /^\d+$/.test(m[1]) && Number(m[1]) <= 10 ? null : m[1];
+  };
+  const hasNum = (t, c) => new RegExp(`(^|[^\\d/.])${c.replace(/[./]/g, "\\$&")}([^\\d/]|$)`).test(` ${t} `);
+  s.skills.forEach((k, si) => {
+    // (a card whose own prompt says its key, a choice between named values, gives nothing away when the key was heard before)
+    const ahead = s.skills.slice(si).flatMap((kk) => keysOf(kk).map(([id, key, prompt]) => [`${kk.skillId}/${id}`, core(key), said(prompt)]))
+      .filter(([, c, prompt]) => c && !hasNum(prompt, c));
+    (k.remediation ?? []).forEach((r, i) => {
+      const t = ` ${said(r.say)} ${said(r.simpler)} `;
+      for (const [where, c] of ahead) if (hasNum(t, c)) e.push(`${k.skillId}/remediation[${i}]: states ${c}, the key of ${where} still to come`);
+    });
+  });
+  return e;
+}
+
 export function v22Errors(s) {
   const e = [];
   for (const k of s.skills) {
@@ -473,6 +515,15 @@ export function structureErrorsV2(s, kit) {
     const remFor = new Set(k.remediation.map((r) => r.targets));
     for (const t of targeted) if (!remFor.has(t)) e.push(at(`no remediation for ${t}`));
     for (const [j, r] of k.remediation.entries()) {
+      // director14 D9.3 (c5-t02 s1 steady 6: the then-card posed on its own answer, 1/7 and 1/9 already marked): a follow-up
+      // card is never posed with every value it names already marked (a reference mark the prompt names, "1/3 ka mark", is fine)
+      const tp = r.then?.board?.params ?? {};
+      if (r.then?.board?.template === "fraction-line@1") {
+        const val = (a, b) => Math.round((Number(a) / Number(b)) * 1e6);
+        const named = [...new Set([...`${r.then.prompt?.hi ?? ""} ${r.then.prompt?.en ?? ""}`.matchAll(/(\d+)\/(\d+)/g)].map((m) => val(m[1], m[2])))];
+        const marked = new Set((tp.marks ?? []).map((m) => (Array.isArray(m) ? val(m[0], m[1]) : val(m.num, tp.den))));
+        if (tp.hop || (named.length && named.every((v) => marked.has(v)))) e.push(at(`remediation[${j}].then is posed with its values already marked (its answer shows): drop the marks`));
+      }
       if (!mis.has(r.targets) || !r.move) e.push(at(`remediation${j} ${r.targets}`));
       e.push(...saidErrors(r.say, at(`rem${j}.say`)), ...keyedErrors(r.then, at(`rem${j}.then`), mis));
       if (/\bcount (them|the (pieces|parts|squares|units))\b/i.test(r.move ?? "")) e.push(at("remediation falls back to counting"));
@@ -485,6 +536,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s));
   return e;
 }
 

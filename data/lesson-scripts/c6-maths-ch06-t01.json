@@ -127,10 +127,7 @@
      "hi": "Ek triangle shape ki phoolon ki kyari hai. Iski bhujayein 7 m, 9 m aur 12 m hain. Kyari ke kinaare-kinaare ek baar baad lagani hai. Kitni lambi baad lagegi?",
      "en": "A flower bed is shaped like a triangle. Its sides are 7 m, 9 m and 12 m. A fence goes once along the edge of the bed. How long is the fence?"
     },
-    "givens": [
-     { "hi": "kyari triangle shape ki hai, ek band shape", "en": "the flower bed is a triangle, a closed shape" },
-     { "hi": "bhujayein 7 m, 9 m aur 12 m hain", "en": "the sides are 7 m, 9 m and 12 m" }
-    ],
+    "givens": [{"hi": "kyari ek band triangle hai, jiski bhujayein 7 m, 9 m aur 12 m hain", "en": "the bed is a closed triangle with sides 7 m, 9 m and 12 m"}],
     "find": { "hi": "baad ki lambai, yaani kyari ka parimap", "en": "the length of the fence, that is, the perimeter of the bed" },
     "steps": [
      {
@@ -353,11 +350,7 @@
      "hi": "Ek rectangle notebook cover 24 cm lamba aur 18 cm chauda hai. Iske kinaare par ek baar tape lagani hai. Kitni tape lagegi?",
      "en": "A rectangular notebook cover is 24 cm long and 18 cm wide. Tape goes once along its edge. How much tape is needed?"
     },
-    "givens": [
-     { "hi": "cover rectangle shape ka hai", "en": "the cover is a rectangle" },
-     { "hi": "lambai 24 cm hai", "en": "the length is 24 cm" },
-     { "hi": "chaudai 18 cm hai", "en": "the breadth is 18 cm" }
-    ],
+    "givens": [{"hi": "cover ek rectangle hai, 24 cm lamba aur 18 cm chauda", "en": "the cover is a rectangle 24 cm long and 18 cm wide"}],
     "find": { "hi": "tape ki lambai, yaani cover ka parimap", "en": "the length of tape, that is, the perimeter of the cover" },
     "steps": [
      {
@@ -471,13 +464,10 @@
     },
     {
      "targets": "c6-maths-ch06-t01-m-area-perimeter",
-     "move": "thread around vs tiles inside the same rectangle: thread along the edge → straightened on a ruler → cm (perimeter); tiles covering → square cm (area); 7 × 3 counts tiles, not thread",
-     "say": {
-      "hi": "Yeh rectangle 7 cm lamba aur 3 cm chauda hai. Andar 1 cm ke tiles bichhao toh 7 × 3 = 21 tiles, woh area hai, square cm mein. Dhaaga kinaare par chalta hai, toh 7, 3, 7 aur 3 jodo, jawab cm mein.",
-      "en": "This rectangle is 7 cm long and 3 cm wide. Lay 1 cm tiles inside and 7 × 3 = 21 tiles fit; that is the area, in square cm. A thread on the edge adds 7, 3, 7 and 3, in cm."
-     },
-     "simpler": { "hi": "Tiles andar ki jagah ginti hain, woh area hai. Dhaaga sirf kinaare par chalta hai, toh 7, 3, 7 aur 3 jodo.", "en": "Tiles count the space inside; that is area. The thread runs only on the edge, so add 7, 3, 7 and 3." },
-     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 7, "h": 3, "trace": true } },
+     "move": "thread around vs tiles inside the same rectangle: thread along the edge → straightened on a ruler → cm (perimeter); tiles covering → square cm (area); 7 × 2 counts tiles, not thread",
+     "say": { "hi": "Yeh rectangle 7 cm lamba aur 2 cm chauda hai. Andar 1 cm ke tiles bichhao toh 7 × 2 = 14 tiles, woh area hai, square cm mein. Dhaaga kinaare par chalta hai, toh 7, 2, 7 aur 2 jodo, jawab cm mein.", "en": "This rectangle is 7 cm long and 2 cm wide. Lay 1 cm tiles inside and 7 × 2 = 14 tiles fit; that is the area, in square cm. A thread on the edge adds 7, 2, 7 and 2, in cm." },
+     "simpler": { "hi": "Tiles andar ki jagah ginti hain, woh area hai. Dhaaga sirf kinaare par chalta hai, toh 7, 2, 7 aur 2 jodo.", "en": "Tiles count the space inside; that is area. The thread runs only on the edge, so add 7, 2, 7 and 2." },
+     "board": { "template": "measured@1", "params": {"shape": "rect", "unit": "cm", "w": 7, "h": 2, "trace": true} },
      "then": {
       "prompt": {
        "hi": "11 cm lambe aur 2 cm chaude bookmark ke kinaare par ek baar dhaaga lagta hai. Dhaaga kitna lamba hai?",
@@ -602,12 +592,7 @@
      "hi": "Rani 50 m lambe aur 30 m chaude rectangle park ke 3 chakkar daudti hai. Woh kul kitna daudti hai?",
      "en": "Rani runs 3 rounds of a rectangular park 50 m long and 30 m wide. How far does she run?"
     },
-    "givens": [
-     { "hi": "park rectangle hai", "en": "the park is a rectangle" },
-     { "hi": "lambai 50 m hai", "en": "the length is 50 m" },
-     { "hi": "chaudai 30 m hai", "en": "the breadth is 30 m" },
-     { "hi": "chakkar 3 hain", "en": "the number of rounds is 3" }
-    ],
+    "givens": [{"hi": "park ek rectangle hai, 50 m lamba aur 30 m chauda, aur Rani 3 chakkar lagati hai", "en": "the park is a rectangle 50 m long and 30 m wide, and Rani runs 3 rounds"}],
     "find": { "hi": "Rani kul kitni doori daudti hai", "en": "the total distance Rani runs" },
     "steps": [
      {

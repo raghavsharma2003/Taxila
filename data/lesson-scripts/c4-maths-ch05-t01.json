@@ -280,20 +280,7 @@
      "hi": "Ek lambi barfi ke 3 barabar tukde kiye. Usme se 2 tukde kha liye. Barfi ka kitna hissa khaya gaya?",
      "en": "A long barfi is cut into 3 equal pieces. 2 of the pieces are eaten. What fraction of the barfi is eaten?"
     },
-    "givens": [
-     {
-      "hi": "ek poori barfi",
-      "en": "1 whole barfi"
-     },
-     {
-      "hi": "barfi ke 3 barabar tukde",
-      "en": "3 equal pieces"
-     },
-     {
-      "hi": "2 tukde khaye gaye hain",
-      "en": "2 pieces eaten"
-     }
-    ],
+    "givens": [{"hi": "barfi ke 3 barabar tukde hain, aur unmein se 2 khaye gaye", "en": "the barfi is in 3 equal pieces, and 2 of them were eaten"}],
     "find": {
      "hi": "barfi ka kitna hissa khaya, fraction mein",
      "en": "the fraction of the barfi that is eaten"
@@ -349,7 +336,7 @@
       "hi": "Upar khaye hue tukde aate hain aur neeche saare tukde. Dono numbers ke beech ek line kheencho.",
       "en": "The eaten pieces go on top and all the pieces go at the bottom. Draw a line between the two numbers."
      },
-     "board": { "template": "fraction-parts@1", "params": {"parts": 3, "shade": 0, "whole": "bar"} }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts":3,"shade":2,"whole":"bar"} }
+     "board": { "template": "fraction-parts@1", "params": {"parts": 3, "shade": 2, "whole": "bar", "hideResult": true} }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts":3,"shade":2,"whole":"bar"} }
     },
     "answer": {
      "hi": "barfi ka 2/3 hissa khaya gaya",
@@ -474,35 +461,10 @@
    "remediation": [
     {
      "targets": "c4-maths-ch05-t01-m-unequal-parts",
-     "move": "fair-sharing story: 3 friends, one watermelon cut as 1 big slice + 2 small → fair? no; then paper strip folded into 3 same-size parts beside it → only same-size parts carry the name third",
-     "say": {
-      "hi": "Tarbooz ka 1 bada tukda aur 2 chhote tukde barabar nahi hain, toh koi tukda 1/3 nahi. Kaagaz ki patti ke 3 barabar hisse hain, toh har hissa 1/3 hai.",
-      "en": "A watermelon in 1 big slice and 2 small slices is not equal, so no slice is 1/3. A paper strip has 3 equal parts, so each part is 1/3."
-     },
-     "simpler": {
-      "hi": "Tukde barabar hon, tabhi 1/3 hota hai. Tarbooz ke tukde chhote-bade hain, patti ke 3 hisse barabar hain.",
-      "en": "Only equal pieces make 1/3. The watermelon slices are big and small; the strip's 3 parts are equal."
-     },
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Tarbooz",
-        "items": [
-         "1 bada tukda",
-         "2 chhote tukde",
-         "barabar nahi, 1/3 nahi"
-        ]
-       },
-       "right": {
-        "title": "Kaagaz ki patti",
-        "items": [
-         "3 barabar hisse",
-         "har hissa 1/3"
-        ]
-       }
-      }
-     },
+     "move": "fair-sharing story: one watermelon cut as 1 big slice + 2 small → fair? no → no slice has a fraction name; then a paper strip folded into 5 same-size parts → each part is 1/5 → only same-size parts carry a fraction name",
+     "say": { "hi": "Tarbooz ka 1 bada tukda aur 2 chhote tukde barabar nahi hain, toh kisi tukde ka fraction naam nahi. Kaagaz ki patti ke 5 barabar hisse hain, toh har hissa 1/5 hai.", "en": "A watermelon in 1 big slice and 2 small slices is not equal, so no slice has a fraction name. A paper strip has 5 equal parts, so each part is 1/5." },
+     "simpler": { "hi": "Tukde barabar hon, tabhi fraction ka naam milta hai. Tarbooz ke tukde chhote-bade hain, patti ke 5 hisse barabar hain.", "en": "Only equal pieces get a fraction name. The watermelon slices are big and small; the strip's 5 parts are equal." },
+     "board": { "template": "compare@1", "params": {"left": {"title": "Tarbooz", "items": ["1 bada tukda", "2 chhote tukde", "barabar nahi"]}, "right": {"title": "Kaagaz ki patti", "items": ["5 barabar hisse", "har hissa 1/5"]}} },
      "then": {
       "prompt": {
        "hi": "Ek roti ke 2 tukde hue, ek bada aur ek chhota. Kya chhota tukda roti ka aadha hai?",
@@ -766,16 +728,7 @@
      "hi": "15 pencil ka 1/3 kitni pencil hota hai?",
      "en": "What is 1/3 of 15 pencils?"
     },
-    "givens": [
-     {
-      "hi": "kul 15 pencil hain",
-      "en": "15 pencils in all"
-     },
-     {
-      "hi": "chahiye 15 ka 1/3",
-      "en": "fraction wanted: 1/3"
-     }
-    ],
+    "givens": [{"hi": "kul 15 pencil hain, aur unka 1/3 chahiye", "en": "there are 15 pencils in all, and we need 1/3 of them"}],
     "find": {
      "hi": "15 pencil ka 1/3 kitni pencil hai",
      "en": "how many pencils make 1/3 of 15"
@@ -968,34 +921,10 @@
     },
     {
      "targets": "c4-maths-ch05-t01-m-unequal-parts",
-     "move": "fair-share test on the same 16 marbles: uneven groups 7 + 3 + 3 + 3 beside equal groups 4 + 4 + 4 + 4 → only equal groups make quarters",
-     "say": {
-      "hi": "16 kanche ke alag group 7 + 3 + 3 + 3 barabar nahi hain. 16 ke barabar group 4 + 4 + 4 + 4 hain, toh sirf wahan har group 1/4 hai.",
-      "en": "The 16 marbles in groups 7 + 3 + 3 + 3 are not equal. The equal groups of 16 are 4 + 4 + 4 + 4, so only there each group is 1/4."
-     },
-     "simpler": {
-      "hi": "7 + 3 + 3 + 3 barabar group nahi hain. 4 + 4 + 4 + 4 barabar hain, toh sirf wahan har group 1/4 hai.",
-      "en": "7 + 3 + 3 + 3 are not equal groups. 4 + 4 + 4 + 4 are equal, so only there each group is 1/4."
-     },
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "16 ke alag group",
-        "items": [
-         "7 + 3 + 3 + 3",
-         "barabar nahi"
-        ]
-       },
-       "right": {
-        "title": "16 ke barabar group",
-        "items": [
-         "4 + 4 + 4 + 4",
-         "har group 1/4"
-        ]
-       }
-      }
-     },
+     "move": "fair-share test on the same 16 marbles: uneven groups 7 + 3 + 3 + 3 beside equal groups 4 + 4 + 4 + 4 → only equal groups make a fraction's share",
+     "say": { "hi": "16 kanche ke alag group 7 + 3 + 3 + 3 barabar nahi hain. 16 ke barabar group 4 + 4 + 4 + 4 hain, aur fraction ka hissa sirf barabar group se banta hai.", "en": "The 16 marbles in groups 7 + 3 + 3 + 3 are not equal. The equal groups of 16 are 4 + 4 + 4 + 4, and a fraction's share comes only from equal groups." },
+     "simpler": { "hi": "7 + 3 + 3 + 3 barabar group nahi hain. 4 + 4 + 4 + 4 barabar hain, aur fraction sirf barabar group se banta hai.", "en": "7 + 3 + 3 + 3 are not equal groups. 4 + 4 + 4 + 4 are equal, and a fraction comes only from equal groups." },
+     "board": { "template": "compare@1", "params": {"left": {"title": "16 ke alag group", "items": ["7 + 3 + 3 + 3", "barabar nahi"]}, "right": {"title": "16 ke barabar group", "items": ["4 + 4 + 4 + 4", "barabar group"]}} },
      "then": {
       "prompt": {
        "hi": "12 pencil ke group bane: 6, 3 aur 3. Kya 6 wala group saari pencilon ka ek-tihaai hai?",
@@ -1239,20 +1168,7 @@
      "hi": "Ek chocolate bar ka 1/3 bada hai, ya usi chocolate bar ka 1/4?",
      "en": "Which is bigger: 1/3 of a chocolate bar or 1/4 of the same chocolate bar?"
     },
-    "givens": [
-     {
-      "hi": "ek hi chocolate bar, dono ke liye wahi",
-      "en": "one chocolate bar, the same whole for both"
-     },
-     {
-      "hi": "pehla fraction 1/3 hai",
-      "en": "first fraction: 1/3"
-     },
-     {
-      "hi": "doosra fraction 1/4 hai",
-      "en": "second fraction: 1/4"
-     }
-    ],
+    "givens": [{"hi": "ek hi chocolate bar ka 1/3 aur usi bar ka 1/4", "en": "1/3 and 1/4 of the same chocolate bar"}],
     "find": {
      "hi": "wahi bar ka 1/3 aur 1/4 mein se bada kaunsa",
      "en": "the bigger of 1/3 and 1/4 of the same bar"
@@ -1435,34 +1351,10 @@
    "remediation": [
     {
      "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
-     "move": "fraction bars of the same length, one in 2 equal parts, one in 3 → predict the longer single piece → lay one piece from each side by side → more cuts of the same bar → each piece shorter",
-     "say": {
-      "hi": "Patti ke 2 barabar hisse karo, toh 1 hissa 1/2 hai, lamba tukda. Wahi patti ke 3 hisse karo, toh 1 hissa 1/3 hai, chhota tukda.",
-      "en": "Make 2 equal parts of a bar, and 1 part is 1/2, a long piece. Make 3 parts of the same bar, and 1 part is 1/3, a short piece."
-     },
-     "simpler": {
-      "hi": "Wahi patti ke 2 hisse karo toh 1/2 lamba tukda. 3 hisse karo toh 1/3 chhota tukda. Zyada hisse, chhota tukda.",
-      "en": "The same bar in 2 parts gives a long 1/2. In 3 parts it gives a short 1/3. More parts, smaller piece."
-     },
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Patti ke 2 hisse",
-        "items": [
-         "1 hissa = 1/2",
-         "lamba tukda"
-        ]
-       },
-       "right": {
-        "title": "Wahi patti, 3 hisse",
-        "items": [
-         "1 hissa = 1/3",
-         "chhota tukda"
-        ]
-       }
-      }
-     },
+     "move": "fraction bars of the same length, one in 4 equal parts, one in 8 → predict the longer single piece → lay one piece from each side by side → more cuts of the same bar → each piece shorter",
+     "say": { "hi": "Patti ke 4 barabar hisse karo, toh 1 hissa 1/4 hai, lamba tukda. Wahi patti ke 8 hisse karo, toh 1 hissa 1/8 hai, chhota tukda.", "en": "Make 4 equal parts of a bar, and 1 part is 1/4, a long piece. Make 8 parts of the same bar, and 1 part is 1/8, a short piece." },
+     "simpler": { "hi": "Wahi patti ke 4 hisse karo toh 1/4 lamba tukda. 8 hisse karo toh 1/8 chhota tukda. Zyada hisse, chhota tukda.", "en": "The same bar in 4 parts gives a long 1/4. In 8 parts it gives a short 1/8. More parts, smaller piece." },
+     "board": { "template": "compare@1", "params": {"left": {"title": "Patti ke 4 hisse", "items": ["1 hissa = 1/4", "lamba tukda"]}, "right": {"title": "Wahi patti, 8 hisse", "items": ["1 hissa = 1/8", "chhota tukda"]}} },
      "then": {
       "prompt": {
        "hi": "Do ek jaise cake: ek ke 6 barabar tukde, doosre ke 3 barabar tukde. Rahul: 6 wala tukda bada hai. Kya woh sahi hai?",

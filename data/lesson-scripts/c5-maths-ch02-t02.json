@@ -127,11 +127,7 @@
      "hi": "Do ek jaise chocolate bar hain. Rahul ko ek bar ka 1/6 milta hai, Sana ko doosre bar ka 1/3. Kise bada tukda milta hai?",
      "en": "There are two identical chocolate bars. Rahul gets 1/6 of one bar, Sana gets 1/3 of the other. Who gets the bigger piece?"
     },
-    "givens": [
-     { "hi": "do ek jaise chocolate bar", "en": "two identical chocolate bars" },
-     { "hi": "Rahul ka hissa: 1/6", "en": "Rahul's share: 1/6" },
-     { "hi": "Sana ka hissa: 1/3", "en": "Sana's share: 1/3" }
-    ],
+    "givens": [{"hi": "do ek jaise bar hain, Rahul ko 1/6 aur Sana ko 1/3 milta hai", "en": "two identical bars, Rahul gets 1/6 and Sana gets 1/3"}],
     "find": { "hi": "kise bada tukda milta hai", "en": "who gets the bigger piece" },
     "steps": [
      {
@@ -202,13 +198,13 @@
     },
     {
      "id": "c3",
-     "prompt": { "hi": "Yeh sankhya rekha 0 se 1 tak 4 barabar hisson mein bati hai. 0 ke baad pehle nishaan par '?' laga hai. Woh '?' wala nishaan 1/8 se bada hai ya chhota?", "en": "This number line from 0 to 1 is cut into 4 equal parts. The first mark after 0 has a '?' on it. Is that '?' mark bigger or smaller than 1/8?" },
+     "prompt": { "hi": "Yeh sankhya rekha 0 se 1 tak 4 barabar hisson mein bati hai. 0 ke baad pehle nishaan par question mark laga hai. Woh question mark wala nishaan 1/8 se bada hai ya chhota?", "en": "This number line from 0 to 1 is cut into 4 equal parts. The first mark after 0 has a question mark on it. Is that marked point bigger or smaller than 1/8?" },
      "key": "bigger",
      "accept": ["bada", "bada hai", "it is bigger", "1/4 is bigger", "1/4 bada hai"],
      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
      "wrongIfMis": "smaller",
      "board": { "template": "fraction-line@1", "params": {"den": 4, "from": 0, "to": 1, "mark": 1} },
-     "why": { "hi": "'?' wala nishaan 1/4 hai, aur 1/4 do 1/8 ke barabar hai, isliye woh 1/8 se bada hai", "en": "the '?' mark is 1/4, and 1/4 equals two 1/8s, so it is bigger than 1/8" },
+     "why": { "hi": "question mark wala nishaan 1/4 hai, aur 1/4 do 1/8 ke barabar hai, isliye woh 1/8 se bada hai", "en": "the question-mark point is 1/4, and 1/4 equals two 1/8s, so it is bigger than 1/8" },
      "answerBoard": { "template": "fraction-line@1", "params": {"den": 4, "from": 0, "to": 1, "marks": [{"num": 1, "label": "1/4"}]} },
      "simpler": { "hi": "Yeh line 4 barabar hisson mein bati hai. Jitne kam hisse, utna bada har hissa.", "en": "This line is split into 4 equal parts. The fewer the parts, the bigger each part." }
     }
@@ -239,7 +235,7 @@
       "accept": ["Ravi ne", "Ravi, 1/7", "1/7 wali"],
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
       "wrongIfMis": "{friend}",
-      "board": { "template": "fraction-line@1", "params": { "dens": [7, 9], "from": 0, "to": 1, "marks": [ [1, 7], [1, 9] ] } },
+      "board": { "template": "fraction-line@1", "params": {"dens": [7, 9], "from": 0, "to": 1} },
       "why": { "hi": "ek jaisi bottle ka 1/7 hissa 1/9 hisse se bada hai, isliye Ravi ne zyada nikala", "en": "of identical bottles, 1/7 is more than 1/9, so Ravi poured out more" },
       "answerBoard": { "template": "fraction-line@1", "params": { "dens": [7, 9], "from": 0, "to": 1, "marks": [ [1, 7], [1, 9] ] } },
       "simpler": { "hi": "Dono bottle ek jaisi hain. 1/7 aur 1/9 mein jiska neeche ka number chhota hai, uska hissa bada hai.", "en": "Both bottles are the same size. Of 1/7 and 1/9, the one with the smaller bottom number is the bigger part." }
@@ -388,11 +384,7 @@
      "hi": "Do ek jaise cake hain. Meena apne cake ka 5/8 khaati hai, Raju apne cake ka 3/8. Kisne kam cake khaya?",
      "en": "There are two identical cakes. Meena eats 5/8 of her cake, Raju eats 3/8 of his. Who ate less cake?"
     },
-    "givens": [
-     { "hi": "do ek jaise cake", "en": "two identical cakes" },
-     { "hi": "Meena ka hissa: 5/8", "en": "Meena's share: 5/8" },
-     { "hi": "Raju ka hissa: 3/8", "en": "Raju's share: 3/8" }
-    ],
+    "givens": [{"hi": "do ek jaise cake hain, Meena 5/8 aur Raju 3/8 khaate hain", "en": "two identical cakes, Meena eats 5/8 and Raju 3/8"}],
     "find": { "hi": "kisne kam cake khaya", "en": "who ate less cake" },
     "steps": [
      {
@@ -490,16 +482,10 @@
    "remediation": [
     {
      "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
-     "move": "same denominator = same SIZE of part, not the same amount → line 0 to 1 in 7 equal parts; 2/7 = 2 parts from 0, 5/7 = 5 parts from 0 → same-size parts, more of them = further from 0 = bigger",
-     "say": {
-      "hi": "Neeche ka 7 sirf hisse ka size batata hai, toh 2/7 aur 5/7 ke hisse ek hi size ke hain. 5/7 mein aise zyada hisse hain, isliye sankhya rekha par woh zero se zyada door hai aur bada hai.",
-      "en": "The bottom 7 only tells the size of a part, so the parts of 2/7 and 5/7 are the same size. 5/7 has more of those parts, so on the number line it is further from zero and bigger."
-     },
-     "simpler": { "hi": "2/7 aur 5/7 ke hisse ek hi size ke hain. 5/7 mein zyada hisse hain, isliye woh zero se door hai aur bada hai.", "en": "The parts of 2/7 and 5/7 are the same size. 5/7 has more parts, so it is further from zero and bigger." },
-     "board": {
-      "template": "fraction-line@1",
-      "params": { "den": 7, "from": 0, "to": 1, "marks": [ { "num": 2, "label": "2/7" }, { "num": 5, "label": "5/7" } ] }
-     },
+     "move": "same denominator = same SIZE of part, not the same amount → line 0 to 1 in 9 equal parts; 2/9 = 2 parts from 0, 7/9 = 7 parts from 0 → same-size parts, more of them = further from 0 = bigger",
+     "say": { "hi": "Neeche ka 9 sirf hisse ka size batata hai, toh 2/9 aur 7/9 ke hisse ek hi size ke hain. 7/9 mein aise zyada hisse hain, isliye sankhya rekha par woh zero se zyada door hai aur bada hai.", "en": "The bottom 9 only tells the size of a part, so the parts of 2/9 and 7/9 are the same size. 7/9 has more of those parts, so on the number line it is further from zero and bigger." },
+     "simpler": { "hi": "2/9 aur 7/9 ke hisse ek hi size ke hain. 7/9 mein zyada hisse hain, isliye woh zero se door hai aur bada hai.", "en": "The parts of 2/9 and 7/9 are the same size. 7/9 has more parts, so it is further from zero and bigger." },
+     "board": { "template": "fraction-line@1", "params": {"den": 9, "from": 0, "to": 1, "marks": [{"num": 2, "label": "2/9"}, {"num": 7, "label": "7/9"}]} },
      "then": {
       "prompt": {
        "hi": "Ek ribbon ke 10 barabar tukde hain. {friend} ne 3 tukde liye, Gopi ne 7. Zyada kiske paas hai, {friend} ke ya Gopi ke?",
@@ -704,11 +690,7 @@
      "hi": "Do ek jaise chocolate bar hain. Farhan ek bar ka 2/5 khaata hai, Isha doosre bar ka 2/3. Kisne zyada khaya?",
      "en": "There are two identical chocolate bars. Farhan eats 2/5 of one bar, Isha eats 2/3 of the other. Who ate more?"
     },
-    "givens": [
-     { "hi": "do ek jaise chocolate bar", "en": "two identical chocolate bars" },
-     { "hi": "Farhan ka hissa: 2/5", "en": "Farhan's share: 2/5" },
-     { "hi": "Isha ka hissa: 2/3", "en": "Isha's share: 2/3" }
-    ],
+    "givens": [{"hi": "do ek jaise bar hain, Farhan 2/5 aur Isha 2/3 khaate hain", "en": "two identical bars, Farhan eats 2/5 and Isha 2/3"}],
     "find": { "hi": "kisne zyada khaya", "en": "who ate more" },
     "steps": [
      {
@@ -800,16 +782,10 @@
    "remediation": [
     {
      "targets": "c5-maths-ch02-t02-m-tops-only",
-     "move": "two same-length strips laid on one 0-to-1 line: 3 quarter-pieces reach 3/4, 3 eighth-pieces reach only 3/8 → same number of pieces, quarter-pieces longer → 3/4 reaches twice as far",
-     "say": {
-      "hi": "Sankhya rekha ke 2 nishaan dekho: 1/8 wale 3 tukde sirf 3/8 tak pahunchte hain, par 1/4 wale 3 tukde 3/4 tak jaate hain. Tukde utne hi hain, par 1/4 wale tukde lambe hain.",
-      "en": "Look at the 2 marks on the number line: three 1/8 pieces reach only 3/8, but three 1/4 pieces reach 3/4. The number of pieces is the same, but the 1/4 pieces are longer."
-     },
-     "simpler": { "hi": "1/8 wale 3 tukde sirf 3/8 tak jaate hain. 1/4 wale 3 tukde 3/4 tak jaate hain. Tukde utne hi hain, par 1/4 wale lambe hain.", "en": "Three 1/8 pieces reach only 3/8. Three 1/4 pieces reach 3/4. The same number of pieces, but the 1/4 pieces are longer." },
-     "board": {
-      "template": "fraction-line@1",
-      "params": { "den": 8, "from": 0, "to": 1, "marks": [ { "num": 3, "label": "3/8" }, { "num": 6, "label": "3/4" } ] }
-     },
+     "move": "two same-length strips laid on one 0-to-1 line: 2 third-pieces reach 2/3, 2 sixth-pieces reach only 2/6 → same number of pieces, third-pieces longer → 2/3 reaches twice as far",
+     "say": { "hi": "Sankhya rekha ke 2 nishaan dekho: 1/6 wale 2 tukde sirf 2/6 tak pahunchte hain, par 1/3 wale 2 tukde 2/3 tak jaate hain. Tukde utne hi hain, par 1/3 wale tukde lambe hain.", "en": "Look at the 2 marks on the number line: two 1/6 pieces reach only 2/6, but two 1/3 pieces reach 2/3. The number of pieces is the same, but the 1/3 pieces are longer." },
+     "simpler": { "hi": "1/6 wale 2 tukde sirf 2/6 tak jaate hain. 1/3 wale 2 tukde 2/3 tak jaate hain. Tukde utne hi hain, par 1/3 wale lambe hain.", "en": "Two 1/6 pieces reach only 2/6. Two 1/3 pieces reach 2/3. The same number of pieces, but the 1/3 pieces are longer." },
+     "board": { "template": "fraction-line@1", "params": {"den": 6, "from": 0, "to": 1, "marks": [{"num": 2, "label": "2/6"}, {"num": 4, "label": "2/3"}]} },
      "then": {
       "prompt": {
        "hi": "Do ek jaise bar: ek ke 5 barabar tukdon mein se 3 rang wale, doosre ke 10 mein se 3. Zyada rang kismein, 3/5 ya 3/10?",
