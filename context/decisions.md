@@ -9080,3 +9080,122 @@ A picture turn is its own page, and frames read like a person.
 **Reverse if:**
 - director14 has more than 5 paging plus second-view contradictions with P3, P2′, S7 and S8 in place: one code-drawn board per card;
 - register is still below 3.5 with F1, F2 and B1 in place: the authored line plus a one-line code frame only.
+
+
+<!-- merged from inbox/r7-games-bhaap.json -->
+## `dc-r7-games-bhaap`
+
+**bhaap** (vapour, class 6-7 science) is a process family with four modes. Nothing in it runs on a clock and nothing is an answer box: the child runs each process one tap at a time.
+
+- **avastha** (c6-science-ch08-t01). A pot on the stove with a thermometer marked only at 0 °C and 100 °C, the kit's two numbers; the notches between and the freezer below carry no number. Heat and Cool move it a notch. At the 0 °C mark, heating melts the ice and cooling freezes the water. At the 100 °C mark the water boils: big bubbles, a clear gap where the vapour is invisible, then a white cloud of droplets. A cold lid turns the vapour back into drops.
+  - **badlo** (s2, s3): a card of changes to make in turn: melting, freezing, boiling, vapour to water, and dissolving sugar in the glass beside the pot. A change not next on the card breaks it; undo mends it.
+  - **bachao** (s3, s1): boil the water and keep all of it in the pot.
+- **bhaapan** (c6-science-ch08-t02). With no heat, each wait moves one unit (a scene value) from an open plate, a shirt or a wet floor into the air. A lens shows that vapour as faint dots. Vapour condenses only on a cold thing from the fridge. The tissue wipes the drops into the cup; they are clear even on a coloured drink.
+  - **os** (s2): the air already holds vapour; get drops into the cup.
+  - **wapas** (s3, s1): all the water back into the cup.
+  - The factors of evaporation (ch08-t03) stay kyun-lab's.
+- **hawa** (c7-science-ch07-t02).
+  - **naav** (s3): day or night, then waits. The land changes by 2 and the sea by 1 per wait, scene values for the kit's "faster", drawn only as warmer and cooler. The near-ground breeze blows from the cooler side to the warmer, and the sail moves the boat with it, out and back.
+  - **kamra** (s4, s1): three layers of air. An AC, heater or exhaust goes high or low on the wall. Each wait, a warmer layer below rises past a cooler one above.
+- **chakra** (c7-science-ch07-t04).
+  - **baadal** (s1): sun (invisible vapour), let it rise (a cloud of droplets), rain, then (looks 2, 3) flow back to the sea.
+  - **kuan** (s2, s3): rain fills the ground's gaps from the bottom: one row on open soil, plus one through the recharge pit from the concrete. The well gives water only while the water table is above its bottom.
+- **Mal-rules** (kit ids verified):
+  - t01 m3 sugar-melts: sugar dissolved when the card says melting.
+  - t01 m1 air-bubbles: "Done" after boiling open; the level fell.
+  - t01 m2 cloud-gas: the cold plate held up in the white cloud; the vapour escapes through the clear gap.
+  - t02 m1 glass-leak: a full warm coloured drink put out; no drop forms and nothing comes through.
+  - t02 m3 water-gone: "Done" with the plate dry and the water in the air.
+  - c7 t02 m2 day-landward: sailing out by day, or in at night.
+  - c7 t02 m3 cold-rises: the AC fitted low.
+  - t04 m3 vapour-rains: rain asked of vapour with no cloud.
+  - t04 m2 never-dry: pumping a dry well.
+- **Not admitted:**
+  - t02 m2 (evaporation only when boiling): no act differs in a scene with no stove.
+  - c7 t02 m1 (heat only moves up): its kit move is labelling arrows, a quiz.
+  - t04 m1 (an underground lake): the scene always draws water in the gaps.
+- **Quiz-in-costume risk:**
+  - kamra look 1 comes down to one High/Low choice plus waits.
+  - os comes down to choosing the cold thing.
+  - Both are named in the reversal.
+- The picker gets a seeded difficulty nudge (± 0.12).
+
+Reverse if a child pilot shows tools tapped in turn until something works (many refusals per level) rather than chosen by the process, or kamra's High/Low guessed rather than predicted.
+
+
+<!-- merged from inbox/r7-games-chhaano.json -->
+## `dc-r7-games-chhaano`
+
+**chhaano** (separate / sieve, class 6 science) is a law family with two modes. Nothing in it runs on a clock and nothing is an answer box.
+
+- **sukha** (c6-science-ch09-t01). A mixture lies on the tray as one pile. The child taps a pile, then a method, and the law splits it by the one difference that method uses. Threshing frees grain from stalks. Winnowing: the sack is set near or far first; the lighter part is carried far and the heavier falls near, never a distance. Handpicking takes the few visible pieces (the scene's own). A sieve lets through what is smaller than its holes: same-size parts pass or stay together whatever their colour or weight. A method whose difference the pile lacks separates nothing, and the law says why. Every property is a kit sentence (KIT_OF in the logic; the tests read them out of the kit). Weights are named only where the kit says, and a scene that winnows never holds a part without one.
+  - **farak** (s2): two parts and the one method their difference allows.
+  - **kram** (s3, s2): three or four parts, two or three methods in turn, threshing first.
+- **geela** (c6-science-ch09-t02). A beaker of water with solids in it; one jar per part to recover. The methods:
+  - Wait: settling advances one tap at a time; the scene value is 3 waits, no time claimed.
+  - Decant: once settled, the clearer liquid goes to a glass that stays a little cloudy with a trace sand or mud, so it must still be filtered, as in the kit's worked example.
+  - Pour away: refused when it would lose a wanted solid.
+  - Filter: insoluble solids stay on the paper; liquid and dissolved pass.
+  - Sun dry: the water goes and everything in it stays.
+  - Goals: nithaar (s1), chhaan (s2), namak (s3, s2). A dissolved solid is never drawn in the water.
+- **Mal-rules** (kit ids verified):
+  - t01 m1 one-method: "Done" after a single method with a pile still mixed.
+  - t01 m2 heavy-far: the sack set far; the husk lands in it.
+  - t01 m3 same-size: a same-size pile sieved; the lens shows the holes.
+  - t02 m1 salt-gone: the salty liquid poured away; the puddle dries and the salt shows.
+  - t02 m2 filter-salt: the filter paper scooped for the salt; it holds none, and a dried drop of the filtrate does.
+  - t02 m3 clear-pure: "Done" while a clear-looking liquid still holds the salt; a dried drop leaves it. The boil-before-drinking line is the teacher's, never a mechanic.
+  - nithaar and chhaan show none of the kit's three beliefs and map none.
+- Wrong methods are decisive refusals, so trial and error grades as incorrect evidence even when the level is finished. The picker gets a seeded difficulty nudge (± 0.12).
+
+Reverse if a child pilot shows methods are tried in turn on every pile (many refusals per level) rather than chosen by the difference, or the sack's place is guessed rather than predicted.
+
+
+<!-- merged from inbox/r7-games-gati.json -->
+## `dc-r7-games-gati`
+
+**gati** (motion, classes 6-7) is a law family with three modes. Nothing runs on a clock: time advances one interval per tap of the clock button, and the law answers a set-up only on "Check". Every fact is the topic kit's (asserted by tests/r7-games-gati.test.mjs): the three types linear / circular / oscillatory and their example things; the passenger at rest relative to the seat and moving relative to the platform; speed = distance ÷ time, average speed = total distance ÷ total time; 1 km/h = 1000 m ÷ 3600 s = 5/18 m/s (36 km/h = 10 m/s); uniform = equal distances in equal intervals. Distances and times in a scene are scene values.
+
+- **drishti/sandarbh** (c6-ch05-t03 s1): a train past a platform, a bus past a bus stop, or two trains with yours standing; the scene is drawn from the reference watched (it stays put, the rest slides), the watched thing leaves a dot per tick: one dot or a row. Each reference card takes at rest / moving; the run needs the clock stepped and every reference watched. Mal-rule no-reference (m1): the same verdict from every reference.
+- **drishti/prakaar** (s2): three or four lights (look 1 also the things); the path each leaves as the clock steps; bins linear / circular / oscillatory. The run plays the clock on to 12 and reveals the things. Mal-rule curve-circular (m2): every to-and-fro thing on circular (stepped part way, an arc looks like a wheel's arc).
+- **drishti/do-gati** (s3): a rolling bicycle wheel or a merry-go-round horse with one-motion things; watched from the ground or riding along; tick every type. Mal-rule one-type (m3): one type each (the bicycle only straight ahead).
+- **raftaar/aage** (c7-ch08-t02 s3): two movers for different times; each tick leaves a mark on each lane; flag the faster. Farther-and-slower or the same distance in different times. Mal-rule farther-faster (m1).
+- **raftaar/nikaalo** (s1, s2; look 3 average speed): a trip stepped to its end on a marked track; set the speed; the run drives a ghost at that speed for the same time. Mal-rules speed-distance (m2: the distance set), multiply (m3: distance × time; time ÷ distance is never a whole speed, so only the multiplying half is served).
+- **raftaar/badlo** (s4): a km/h speedometer, a metre track stepped by seconds, set the m/s; the kit's sentence shown; no kit misconception served.
+- **nishaan/ek-saa** (c7-ch08-t03 s1, s2): three or four movers drop a chalk mark per interval; uniform or non-uniform. Mal-rules keeps-moving (m1), same-totals (m2: the uneven mover with a uniform one's total in the same time), uniform-slow (m3: the fast uniform mover put on non-uniform). Each level's movers come from templates so each belief commits a distinct set-up.
+- Seeded difficulty nudge (± 0.1) so first levels differ across children (tested).
+
+Reverse if a child pilot shows the clock is not stepped before verdicts (refusals dominate) or that prakaar look 1 is answered from the names alone.
+
+
+<!-- merged from inbox/r7-games-kyun-chumbak.json -->
+## `dc-r7-games-kyun-chumbak`
+
+Magnets join **kyun-lab** as two modes (src/play/families/kyun-lab/chumbak.logic.ts, chumbak.view.ts); the fair-test lab and its c6-science-ch04-t01 magnet lab are untouched. Nothing runs on a clock. Every fact is a kit sentence (KIT_OF, read out of data/kits/c6-science.json by tests/r7-games-kyun-chumbak.test.mjs). The only fact-numbers are the kit's 20 pins and 8 pins (t02 m1 diagnostic) and the quarter turn (t03: east is a quarter turn clockwise from north). Pin counts along the magnet (5 at a pole, 1 in the middle, 0 off it), the 7 spots, carriage counts and break layouts are declared scene values.
+
+- **dhruv/sira** (t02 s1): touch a pin along a cover hiding a magnet (never at the cover's ends); flag the two poles; lift. middle-strong = m3.
+- **dhruv/jodo** (s2): turn carriages of a magnetic toy train and push; like poles push apart. Look 3 hides the letters. No belief mapped.
+- **dhruv/pakka** (s2): bars that look alike, one a magnet; bring either pole of a marked magnet to any end; "Magnet: X" holds only after a push. pull-proves = m4 (a plain iron nail clings to the same pole).
+- **dhruv/todo** (s3): a magnet imagined snapped (the kit's "never try it"), 2-4 pieces; label new ends N / S / no pole, test with the marked magnet. one-pole = m2.
+- **dhruv/taakat** (s3): dip the kit's small thin (20) and big grey (8) magnets; tag the stronger. big-stronger = m1.
+- **disha/latkao** (t03 s1): let a hung magnet go (it settles N end north whatever the twist); turn the map along it. No belief mapped.
+- **disha/ghoomo** (s2): turn herself (the box turns with her, the needle does not) and the box; read the letter ahead. needle-turns = m3.
+- **disha/loha** (s2): the same by a steel almirah, iron table or bar magnet (the needle turns to it); walk away first. iron-trust = m2.
+- Not admitted: t03 m1 (north is cold): no mechanic by ruling; the kit's ice-box remediation would need one. t03 s3 (make a compass): no act makes one.
+- Seeded difficulty nudge so first levels differ across children (tested).
+
+
+<!-- merged from inbox/r7-learning-35.json -->
+## `dc-r7-kit-depth-pilot-topics-no-new-misconceptions` (2026-11-09, F Learning)
+The pilot lesson scripts (c4 equal shares, c5 number line t01/t02, c6 perimeter) carry 2-3 checks per skill, and `check.mjs` fails a script when a kit misconception of its topic is never checked. A class 4-7 depth add that brings a new misconception to such a topic would break the pilot. So on a scripted topic the depth pass adds no misconception; a skill that needs one gets an existing item that honestly sets the trap tagged with a misconception the script already checks (c5-maths-ch02-t01-i03 'which mark is 3/5?' → m-count-marks; c4-maths-ch05-t01-rl-h2 'one crate of four, what fraction?' → m-part-part). Two authored misconceptions were dropped this way (c5 m-count-from-zero-mark, c4 m-denominator-as-count).
+
+**Reverse if:** a pilot script is re-authored with room for a new check; then add the misconception together with its check.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-r7-quizfix-gati-chhaano` (2026-11-09): gati and chhaano 'quiz in costume' fixes (the lead's review): the skill is the mechanic. gati prakaar shows no thing or name before Check at any look (the trail is the evidence); gati sandarbh has three reference cards at every look (a blind guess right 1 in 6, not 1 in 4) and look 1 uses only the kit's own scenes (the lamp post became the kit's signboard); gati aage refuses the flag until both movers are chalked for the SAME time by the child (the clock no longer drops marks itself; a mover whose trip is over takes no mark); gati nikaalo and badlo draw the law's ghost (typed speed, same time) landing on or away from the real mark, the track grown to hold it (never clipped); chhaano sukha winnowing starts with a first throw (one handful, no sack) before Near / Far is accepted. Mal-rules unchanged and still mapped (farther-faster = ch08-t02 m1 after same-time marks; heavy-far = ch09-t01 m2 after the throw). Reverse: a child pilot shows the marks or the throw become a rote extra tap (both placed and ignored, verdicts unchanged).
+- `dc-r7-two-bar-certify-wholes` (2026-11-09): Learning's D7 (main, 2026-11-09), extends dc-r7-card-board-authored-gate to certification. certifyBoardRef now counts an authored ref's separate wholes (fraction-bars bars, wholes@1 wholes) as wholes, as the live gate does (board-sync gateCtxFor authoredRef → refWholes). The condition: her line names each bar's parts, as a count ("12 barabar tukdon mein se 5") or a denominator ("3/5"). A bar her line never names still binds W8. Before this, certification counted the 2 outlines as an unspoken "2" ("rect x2") whenever her line did not say exactly two fractions. That covered the unshaded ribbons pose (no fraction said) and the 3/5 vs 4/10 reveal (three said: 3/5, 6/10, 4/10). Three c5-t02 cards had gone back to a line because of it: s3 checks[1], s2 rem1.then, s2 rem2.then. The live take already passed all of them. Reverse if a certified two-bar board is refused live, or a judge counts a bar the line did not name.
+- `dc-r7-equal-groups-equal-to` (2026-11-09): Learning's D7 (main, 2026-11-09): equal-groups@1 with `sizes` takes an optional `equalTo` {groups 2-6, each 1-8}, and groups × each must equal the sizes' sum (else groups_equal_to). Layout: the given groups take the left half, shared out from the heap as before, each with its count under it. A thin line separates them from the equal share on the right, which is drawn still: its own groups, each count under it. The share's dots are in the "good" ink and a shade smaller (r 4 against 4.5). Two reasons: they are what each WOULD get, and W8 counts them as their own family (16 beside 16, never "32"). Facts get equalShare ("4 groups of 4"); counts get equalTo {groups, each} (shared/whiteboard cleanCounts). c4's marble (7, 3, 3, 3 | 4 × 4) and pencil (6, 3, 3 | 3 × 4) answerBoards certify under their whys and verdicts. Under the pencil card's prompt the share's 4 fails W4: an answerBoard is drawn on the reveal, never under the prompt. Reverse if judges find the side-by-side share gives the answer away on a board shown before the reveal.
+- `dc-r7-second-view-last-page` (2026-11-09): director13 S7: a second view is built from the LAST page on screen and the ref of the card that drew it. Production's seam already did this: L.wbPrevPage and L.wbPrevRef take a paged turn's last page and lastRef, and the preselect gets avoid and avoidRef. Replayed through the seam, on the run's tree 0dd31feb1 and on Brain's replay of the lesson, c4 stuck row 18 draws the circle. The miss in director13 was the eval harness's own model of the seam. It preselected with avoid = the take of the turn's FIRST page and no ref, so after row 16 (the circle, then the card's bar) it took the circle as up. Brain's patch 016 (docs/patches/to-brain) makes the harness keep the page up as the seam does: the last page and its card ref, avoidRef to the preselect, keep and keepRef to the paged check. Reverse if a run on the patched harness and a seam replay disagree on which board is up.
+- `dc-r7-unmarked-bars-round` (2026-11-09): director13 S8, extends dc-r7-second-view-real. A fraction-bars card whose bars name no fraction (all "?", the ask is about the bars themselves) has a second view: each bar as a circle of the same parts, its shading kept, nothing named. One bar is drawn as fraction-parts round (hideResult); two or three bars as wholes@1 circles side by side (altView "wholes", which Brain's opener already describes). c5-t02 stuck row 20, "screen par dikhao na" over e2's 4- and 8-part "?" bars, re-showed the same bars and now draws two circles of 4 and 8. Reverse if judges find the circles confuse a bars ask more than the bars.
+- `dc-r7-p3-view-then-card` (2026-11-09): director13, Brain's P3 turn shape on Studio's seam. A picture turn sends one requestIntent: page 1 the card's ref (Studio's preselect turns it into the second view) under the view's own line, then a segment with the card's own boardRef under the card's words. pagesBoard draws the second view, then the card, and turns at the card's first word. The result and screens[0] carry altView. The second view's page no longer runs its own card-back (that would page inside page 1 when her view line names the figure); the turn's next page is the card. Pinned on c4 stuck 18 (circle, then bar) and c5-t02 stuck 20 (two circles, then the "?" bars). Reverse if Brain sends the view and the card as separate turns.
