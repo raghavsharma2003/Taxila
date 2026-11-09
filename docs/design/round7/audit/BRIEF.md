@@ -158,7 +158,7 @@ Paths follow `docs/design/round7/OWNERSHIP.md`; read it for the exact split.
 
 ### 7. app (fix; owner: app)
 
-**Paths:** `src/child` (not `lesson/headset.ts`), `src/ui-v3` (not the Scheduler files), `src/app`, `src/ui` (not `teacher/`), `src/stage`, `src/copy`, `src/styles`, `src/main.tsx`, `index.html`, `vite.config.ts`, `public/site`, `public/landing`, `public/brand`, `public/fonts`, `public/manifest.webmanifest`, `data/kaksha`.
+**Paths:** `src/child` (not `lesson/headset.ts`), `src/ui-v3` (not the Scheduler files), `src/app`, `src/ui` (not `teacher/`), `src/copy`, `src/styles`, `src/main.tsx`, `index.html`, `vite.config.ts`, `public/site`, `public/landing`, `public/brand`, `public/fonts`, `public/manifest.webmanifest`, `data/kaksha`.
 
 **Look for:**
 - Every route and screen: reachable? Does it handle loading, empty and error states without showing raw errors or English developer text to a child?
@@ -183,7 +183,7 @@ Paths follow `docs/design/round7/OWNERSHIP.md`; read it for the exact split.
 
 ### 9. face (fix; owner: face)
 
-**Paths:** `src/face-puppet`, `src/avatar`, `src/ui/teacher`, `server/face-puppet`, `server/routes/tutor.js`, `public/face-puppet`, `public/assets/teacher*`, `public/assets/gen/teacher`, `public/assets/gen/protege`, `art/`, `scripts/character` (over 1,000 files), `scripts/gpu`, `prototypes/`, `models/`, `shared/tutors.*`.
+**Paths:** `src/face-puppet`, `src/avatar`, `src/ui/teacher`, `server/face-puppet`, `server/routes/tutor.js`, `public/face-puppet`, `public/assets/teacher*`, `public/assets/gen/protege`, `art/`, `scripts/character` (over 1,000 files), `scripts/gpu`, `prototypes/`, `models/`, `shared/tutors.*`.
 
 **Look for:**
 - Which face a child sees today, and everything that belongs to faces that lost: old rigs, candidates and generators.
