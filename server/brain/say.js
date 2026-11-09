@@ -47,7 +47,7 @@ const SPLIT_ASK = { hinglish: ["Ab aage chalte hain.", "Chalo, ab aage.", "Ab ag
 const SPLIT_CARD = { hinglish: ["Ab isi par ek sawaal.", "Ab is par ek chhota sawaal.", "Ab ise ek sawaal se dekhte hain."], english: ["Now a question on this.", "Now a small question on this.", "Let's try a question on it."] };
 const WORKED_GO = { hinglish: ["Ab agla kadam dekhte hain.", "Chalo, aage dekhte hain.", "Ab isse aage chalte hain."], english: ["Now the next step.", "Let's go on.", "Now we go on from here."] };
 /** v6.2: a check-in after teaching that is no worked step. */
-export const BEAT_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yahan tak saaf hai?"], english: ["Does that make sense so far?", "Clear so far?", "All good so far?"] };
+export const BEAT_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yahan tak saaf hai?", "Kuch poochna hai ab tak?"], english: ["Does that make sense so far?", "Clear so far?", "All good so far?", "Anything to ask so far?"] };
 export const WORKED_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yeh kadam saaf hai?"], english: ["Does that make sense so far?", "Clear so far?", "Is that step clear?"] };
 // v6 R3 (director8 c4: 5 of 7 probe answers ignored): one line that takes up how they thought, before the next beat; it never
 // grades their reason (a probe is never right or wrong)
@@ -2003,6 +2003,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       const why = graded0?.why ? spokenMarks(String(graded0.why).trim(), lang) : null;
       const why1 = why ? (lang === "english" ? `, because ${joinable(why, { lower: true })}` : `, kyunki ${joinable(why, { lower: true })}`) : "";
       lead = dot(`${freshOf(FRAMES.right[lang === "english" ? "english" : "hinglish"], state).replace(/[.!?।—–\s-]+$/, "")}${why1}`);
+      // (v6.7 R4, main on director15: always "<frame>, kyunki <why>": the joint varies — never the one of her last 2 turns)
+      if (why && lang !== "english") {
+        const last2 = [...(state.recent ?? [])].filter((t) => t.who === "teacher").slice(-2).map((t) => String(t.text ?? ""));
+        const fr = freshOf(FRAMES.right.hinglish, state).replace(/[.!?।—–\s-]+$/, "");
+        const w = joinable(why, { lower: true });
+        const joints = [`${fr}, kyunki ${w}`, `${fr}. Dekho, ${w}`, `${fr}: ${w}`];
+        const used = (j) => last2.some((t) => j === 0 ? /, kyunki /.test(t) : j === 1 ? /\. Dekho, /.test(t) : /^[^.:]{3,25}: /.test(t));
+        const k = [0, 1, 2].find((j) => !used(j)) ?? 0;
+        lead = dot(joints[k]);
+      }
       guard.rightWhy = why ? "authored" : "none";
     }
     // v6.2 H4 (director10 c4: "Zaroor. Now try."): a bare English filler in a Hinglish lesson goes
@@ -2234,7 +2244,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // v6.1 R9: a check-in only where state.js allowed one (once per beat, on new teaching); else a statement that goes on
     // (v6.2, director10: "Yeh kadam saaf hai?" after something that was no step: a step's check-in names a step only on a worked step)
     // (v6.6 F1′: every code frame is the first form not said in her last 4 turns)
-    const goOn = () => freshOf((state.lastMove?.checkinOk ? (kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK) : WORKED_GO)[lang === "english" ? "english" : "hinglish"], state);
+    // (v6.7 R4, main on director15: "Yahan tak theek hai?" ×18 in c5-t01; "Ab agla kadam dekhte hain" straight after the problem): a
+    // check-in at most every third turn; after the worked problem, the steps start without a frame
+    const CHECKIN_ANY = new RegExp([...BEAT_ASK.hinglish, ...WORKED_ASK.hinglish, ...BEAT_ASK.english, ...WORKED_ASK.english].map((x) => x.replace(/[?]/g, "\\?")).join("|"), "i");
+    const checkinLately = [...(state.recent ?? [])].filter((t) => t.who === "teacher").slice(-2).some((t) => CHECKIN_ANY.test(String(t.text ?? "")));
+    const afterProblem = state.lastMove?.scriptBeat?.beatId === "worked:problem";
+    const goOn = () => (afterProblem ? null : freshOf((state.lastMove?.checkinOk && !checkinLately ? (kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK) : WORKED_GO)[lang === "english" ? "english" : "hinglish"], state));
     let tail = card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
       : state.lastMove?.splitClose ? freshOf(SPLIT_ASK[lang === "english" ? "english" : "hinglish"], state)
       // (v6.3 R2, main on director11: "Ab agla kadam dekhte hain." and then the same beat's card: the teaching half of a split turn

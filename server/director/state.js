@@ -726,8 +726,11 @@ function walkNextV2(s, input, prefix, sk) {
       // v3 V1: the worked example across turns: the problem (what is given, what to find) first, then its steps and their step
       if (!w.workedPosed) {
         w.workedPosed = true;
-        const problem = [saidIn(we.problem, lang), (we.givens ?? []).length ? `${lang === "english" ? "Given" : "Diya hai"}: ${(we.givens ?? []).map((g) => saidIn(g, lang)).filter(Boolean).join(", ")}` : null,
-          saidIn(we.find, lang) ? `${lang === "english" ? "We find" : "Dhoondhna hai"}: ${saidIn(we.find, lang)}` : null].filter(Boolean).map((x) => (/[.!?।]$/.test(x.trim()) ? x.trim() : `${x.trim()}.`));
+        // (v6.7 R4, main on director15: "Diya hai … Dhoondhna hai …" after the problem was the main monologue in every topic — the
+        // problem is stated once; a recorded run keeps what it walked)
+        const recital = !!scriptFor(kit)?.script?.recordedRun;
+        const problem = [saidIn(we.problem, lang), recital && (we.givens ?? []).length ? `${lang === "english" ? "Given" : "Diya hai"}: ${(we.givens ?? []).map((g) => saidIn(g, lang)).filter(Boolean).join(", ")}` : null,
+          recital && saidIn(we.find, lang) ? `${lang === "english" ? "We find" : "Dhoondhna hai"}: ${saidIn(we.find, lang)}` : null].filter(Boolean).map((x) => (/[.!?।]$/.test(x.trim()) ? x.trim() : `${x.trim()}.`));
         return plan("worked_example", join(prefix, SH.scriptWorkedProblem()), { skillId, format: "F2", stuck: true,
           content: [...bridgeLine, `worked example: ${saidIn(we.problem, lang) ?? ""}`], whiteboard: { kind: "math", value: clip(saidIn(we.problem, lang) ?? "") },
           rendered: problem, ...ref("worked", "worked:problem", we.board), ...sayFirst });

@@ -11,8 +11,8 @@ const HINDI = [
   [/\bhalf\b/gi, "aadha"], [/\bcompare(?=\s+kar)/gi, "tulna"], [/\bcompare\b/gi, "tulna karo"], [/\bbigger\b/gi, "bada"], [/\bsmaller\b/gi, "chhota"], [/\bgroups?\b/gi, "samooh"],
   [/\bsiblings\b/gi, "bhai-behen"], [/\bcorrect\b/gi, "sahi"], [/\bclear\b/gi, "saaf"],
   // (v6.4 L1, director12 c5-t01: "0 se 1 tak ki line hai, aur beech mein 2 marks" came back unchanged after "hindi mein batao")
-  [/\blines\b/gi, "rekhayein"], [/\bline\b/gi, "rekha"], [/\bmarks\b/gi, "nishaan"], [/\bmark\b/gi, "nishaan"],
-  [/\bspots?\b/gi, "jagah"], [/\bdistance\b/gi, "doori"], [/\bunits?\b/gi, "ikaai"], [/\bpoints?\b/gi, "bindu"],
+  [/\blines\b/gi, "rekhayein"], [/\bline\b/gi, "rekha"], [/\bmarks\b/gi, "nishaan"], [/(?<!question\s)\bmark\b/gi, "nishaan"],
+  [/\bke\s+ek\s+pakke\s+spots?\b/gi, "ki ek pakki jagah"], [/\bpakke\s+spots?\b/gi, "pakki jagah"], [/\bek\s+spot\b/gi, "ek jagah"], [/\bspots?\b/gi, "jagah"], [/\bdistance\b/gi, "doori"], [/\bunits?\b/gi, "ikaai"], [/\bpoints?\b/gi, "bindu"],
 ];
 const keepCase = (from, to) => (/^[A-Z]/.test(from) ? to.charAt(0).toUpperCase() + to.slice(1) : to);
 
