@@ -15,6 +15,7 @@ import { setScriptForTest } from "../server/director/script.js";
 import { findItem } from "../server/director/items.js";
 import { whiteboardIntentOf, boardItemOf } from "../server/brain/propose.js";
 import { joinParts } from "../server/brain/lineParts.js";
+import { liveBeatSimpler } from "../server/director/state.js";
 
 const RUN = "2026-11-09-director14";
 const DIR = new URL(`../evals/hybrid-side-by-side/results/${RUN}/`, import.meta.url).pathname;
@@ -98,6 +99,37 @@ describe("r7-brain-v66.test.mjs", () => {
           if (!ask.intent.request) bad.push(`${tag}: the alt page is not asked as the picture`);
         } else if (hasCard && ask.intent.request) bad.push(`${tag}: the bare card asked as a picture (the second view under the card's words)`);
         if (state.lastMove?.request !== "visual" && !state.lastMove?.visual) bad.push(`${tag}: not a picture turn`);
+      }
+      assert.deepEqual(bad, []);
+    });
+  });
+  describe("B1′: a Hindi request re-says the live beat's own simpler, then the card", () => {
+    // (the walk changes, so the replay walks it live: recordedRun off)
+    const atLive = async (persona, topic, n) => {
+      const T = TOPIC[topic];
+      const sc = runScriptOf(RUN, T); delete sc.recordedRun;
+      setScriptForTest(T, sc);
+      const { kit, rows, last } = await replay(RUN, persona, T, n + 1);
+      replyDeps.chat = async () => ({ text: rows[n].text });
+      const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
+      return { out, last, kit };
+    };
+    const ROWS = [["steady", "c4", 36], ["offtopic", "c4", 34], ["steady", "c6", 38], ["stuck", "c6", 8], ["offtopic", "c6", 32], ["steering", "c5-t01", 8]];
+    test("the live beat's simpler, on that beat's board, then the card re-posed; never another beat's (main's c4 and c6 rows)", async () => {
+      const bad = [];
+      for (const [persona, topic, n] of ROWS) {
+        const { out, last, kit } = await atLive(persona, topic, n);
+        const tag = `${persona} ${topic} row ${n}`;
+        const lm = last.state.lastMove ?? {};
+        if (lm.request !== "language") { bad.push(`${tag}: not a language request (${lm.request})`); continue; }
+        const lb = liveBeatSimpler(last.state, kit);
+        if (!lb) { bad.push(`${tag}: no live beat simpler`); continue; }
+        if (lm.simpler !== lb.text) bad.push(`${tag}: the simpler is not the live beat's`);
+        const head = norm(lb.text).split(" ").slice(0, 4).join(" ");
+        if (!norm(out.reply).includes(head)) bad.push(`${tag}: the live beat's simpler not said | ${out.reply.slice(0, 120)}`);
+        const card = norm(last.p.r.ui?.ask?.text ?? "");
+        if (card && !norm(out.reply).endsWith(card)) bad.push(`${tag}: the card not re-posed last`);
+        if (/apna tareeka batao/i.test(out.reply)) bad.push(`${tag}: a question of hers outside the card`);
       }
       assert.deepEqual(bad, []);
     });

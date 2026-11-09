@@ -2269,6 +2269,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     body = once(noQ(body));
     const assembled = [...prevPart, ...closedP, ...first, ...asideP, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
+    // v6.6 V1: nothing authored or code's left to say — her draft is never the line in its place: the beat's own authored line
+    // (else her sentences that ask nothing and carry no number)
+    else if (!assembled) {
+      const fb = contentFallback(state, kit, lang);
+      const plain = sentences(reply).map(norm).filter((x) => x && !/[?？]/.test(x) && !/\d/.test(x));
+      const r0 = fb ? norm(fb) : plain.join(" ");
+      if (r0 && r0 !== norm(reply)) { reply = r0; guard.emptyAssembly = fb ? "authored" : "plain"; }
+    }
     // v6.6 P4 (main, director14: 16 of 17 paging contradictions were a late pass rewriting the line and the planner's text search
     // failing): the line as its ORDERED PARTS, each named for its board (brain/propose.js pages from this list; every later pass's
     // edit is carried onto it word by word, brain/lineParts.js alignParts)

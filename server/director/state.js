@@ -3116,6 +3116,15 @@ export function step(prev, input) {
   // stream 2 R2 root cause: planModule reads move.visual (modules.js interactiveDefault), so it is set BEFORE planModule
   if (p.visual) move.visual = p.visual;
   const moduleCommands = reacting ? [] : planModule(s, { kit: input.kit, item, move, lang: s.ctx.lang, band: s.probeSess?.band ?? bandOf(s.ctx.classLevel), representation: p.representation });
+  // v6.6 B1′ (main, director14: c4 and c6 served e4's simpler to a Hindi request on another card): a language or clarify request
+  // re-says the LIVE beat's own authored simpler — the live card's beat (its ask's explain beat, its check, its remediation; the
+  // worked step during a worked example), else the walk's current beat — in their language, on that beat's board; the card is
+  // then re-posed. Never a closed card's or another beat's. (After the help ladder: a Hindi request re-says the beat, it
+  // climbs no rung)
+  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && ["language", "clarify"].includes(p.request)) {
+    const lb = liveBeatSimpler(s, input.kit);
+    if (lb) { move.simpler = lb.text; move.simplerBeat = lb.beat; move.smaller = true; }
+  }
   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
   if (p.request) move.request = p.request;
   // r12 RCA failure 4: the board the child asked to clear (brain/turn.js retires the Studio board and unmounts a rung)
@@ -3237,6 +3246,45 @@ function splitTeach(out, input, cap) {
   const teachUi = { status: "your_turn", ...(ui?.later ? { later: ui.later } : {}), ...(ui?.moment ? { moment: ui.moment } : {}) };
   s.lastUi = teachUi;
   return { ...out, state: s, move: teach, ui: teachUi, proposal: directorProposal(teach, { ui: teachUi, guidance: s.guidance, purpose: s.purpose }) };
+}
+/**
+ * v6.6 B1′: the live beat's authored simpler in the lesson language and that beat's ref (with its board), or null: the live
+ * card's own beat (an ask's explain beat or the worked step, a check, a then-card's remediation), else the walk's current beat.
+ */
+export function liveBeatSimpler(s, kit) {
+  const lang = s.ctx?.lang ?? "hinglish";
+  const said = (x) => { const t = x ? saidIn(x, lang) : null; return t && String(t).trim() ? String(t).trim() : null; };
+  const live = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
+  if (live && isScriptCard(live)) {
+    const sk = skillScriptOf(kit, live.skillId);
+    const ref = cardBeatRef(s, kit, live);
+    if (!sk || !ref) return null;
+    const base = { scriptId: scriptIdOf(kit), skillId: live.skillId };
+    if (live.scriptAsk) {
+      if (live.scriptAsk.beatId === "worked") {
+        const we = sk.workedExample ?? {};
+        const t = said(we.yourStep?.simpler) ?? said(we.simpler) ?? said(live.scriptAsk.simpler);
+        return t ? { text: t, beat: { ...base, beatId: "worked", kind: "worked", ...(we.board ? { board: we.board } : ref.board ? { board: ref.board } : {}) } } : null;
+      }
+      const b = sk.explain?.find((x) => x.id === live.scriptAsk.beatId);
+      const t = said(b?.ask?.simpler) ?? said(live.scriptAsk.simpler) ?? said(b?.simpler);
+      return t ? { text: t, beat: { ...base, beatId: b?.id ?? live.scriptAsk.beatId, kind: "explain", ...((b?.board ?? ref.board) ? { board: b?.board ?? ref.board } : {}) } } : null;
+    }
+    if (live.scriptCheck) {
+      const c = sk.checks?.find((x) => x.id === live.scriptCheck.checkId);
+      const t = said(c?.simpler) ?? said(live.scriptCheck.simpler);
+      return t ? { text: t, beat: { ...base, beatId: live.scriptCheck.checkId, kind: "check", ...(ref.board ? { board: ref.board } : {}) } } : null;
+    }
+    const r = sk.remediation?.find((x) => x.targets === live.scriptThen?.targets);
+    const t = said(r?.then?.simpler) ?? said(live.scriptThen?.simpler) ?? said(r?.simpler);
+    return t ? { text: t, beat: { ...base, beatId: `rem:${r?.targets ?? ""}`, kind: "remediation", ...((r?.board ?? ref.board) ? { board: r?.board ?? ref.board } : {}) } } : null;
+  }
+  const cur = currentBeatRef(s, kit);
+  if (!cur) return null;
+  const sk = skillScriptOf(kit, cur.skillId);
+  const t = cur.kind === "explain" ? said(sk?.explain?.find((x) => x.id === cur.beatId)?.simpler)
+    : cur.kind === "worked" ? said(sk?.workedExample?.simpler) ?? said(sk?.workedExample?.yourStep?.simpler) : null;
+  return t ? { text: t, beat: cur } : null;
 }
 /** v6.1 R9: the authored simpler (format 2.3) of the explain beat a move teaches, in the lesson language, or null. */
 function simplerOfBeat(s, kit, move) {
