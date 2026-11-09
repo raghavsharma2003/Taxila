@@ -36,6 +36,8 @@ import { chhaanoHidden } from "../../src/play/families/chhaano/chhaano.logic.ts"
 import { gatiHidden } from "../../src/play/families/gati/gati.logic.ts";
 import { chumbakHidden, CHUMBAK_MODES } from "../../src/play/families/kyun-lab/chumbak.logic.ts";
 import { bhaapHidden } from "../../src/play/families/bhaap/bhaap.logic.ts";
+import { aakashHidden } from "../../src/play/families/aakash/aakash.logic.ts";
+import { rangHidden } from "../../src/play/families/rang/rang.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -115,6 +117,12 @@ export function hiddenOf(level) {
   if (level.family === "kyun-lab" && CHUMBAK_MODES.includes(level.mode)) return chumbakHidden(level);
   // r7 bhaap: the tools a process needs (and, for a device, where it goes) are never said first. Checked by family first
   if (level.family === "bhaap") return bhaapHidden(level);
+  // r7 aakash: the words that give the idea away (the Earth turns west to east, once round is a year, tilted towards, in
+  // line) are never said first. Checked by family first
+  if (level.family === "aakash") return aakashHidden(level);
+  // r7 rang: the words that give the idea away (which colour means what, extra base turns green, each use's own base) are
+  // never said first. Checked by family first
+  if (level.family === "rang") return rangHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];
