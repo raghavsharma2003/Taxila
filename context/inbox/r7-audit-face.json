@@ -1,0 +1,40 @@
+{
+ "nodes": [
+  {
+   "id": "rj-r7-audit-face-parked-stage-holds-slot",
+   "kind": "rejection",
+   "at": "2026-11-09",
+   "title": "Tried (review v4 park/adopt + ship5 one-running-stage rule, as shipped to int/r6 21a): a face stage parked on unmount only stopped drawing and kept its place in the page's one-running-stage list until its park timer disposed it. Broke: the safety Help sheet mounts a second live face over the lesson's; when the sheet closed, the lesson's suspended stage stayed frozen for 1.5 s, or 10 s for a worker-backed stage (HANDOFF_PARK_MS, the default), over her voice. Now: PuppetStage.park() yields the slot at once and start() takes it back on adoption (tests/r7-audit-face.test.mjs FACE-01). Any new way to keep a stage alive off the page must yield the slot the same way."
+  },
+  {
+   "id": "rj-r7-audit-face-server-reads-public",
+   "kind": "rejection",
+   "at": "2026-11-09",
+   "title": "Tried (face-home-daily-greeting): server code deciding whether a shipped file exists by looking under public/. Broke: the production image copies dist/, server/, shared/, data/ and src/ only, so the check was always false there and GET /api/tutors/greeting could never return a clip. Now: the served build (dist/, or TAXILA_DIST) is checked first, then public/ (server/face-puppet/greetings.js clipDirs). tests/runtime-image-imports.test.mjs covers imports, not file reads: any server file read outside those five folders fails silently in production."
+  },
+  {
+   "id": "dc-r7-audit-face-protege-glance-not-while-listening",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "Corrects dc-r7-face-teachback-protege ('looks from the child to the protege while she listens, speaks or waits'): she glances at the protege only while she speaks or waits for the child. While the child talks she keeps her eyes on the child (src/avatar/behaviour.ts lookAt drops any look in LISTENING and THINKING, by design), so the listening glance was requested every 3.6 s and never shown. Teacher.tsx no longer requests it. Reverse only if behaviour.ts gains a deliberate listening look."
+  },
+  {
+   "id": "op-r7-audit-face-golu-vs-sprite",
+   "kind": "open",
+   "at": "2026-11-09",
+   "title": "Classes 1-3 teach-back: the prompt names the protege 'Golu, a pretend baby elephant' (server/compiler/characters/asha.js young.protege; shapes.js teachback and hook), the screen shows a cloud pup, a pebble or a sprout (src/ui/teacher/Protege.tsx). No elephant art exists. Needs Brain (species-free wording) or new art. docs/design/round7/audit/face.md FACE-03."
+  },
+  {
+   "id": "op-r7-audit-face-lamp2-sources-untracked",
+   "kind": "open",
+   "at": "2026-11-09",
+   "title": "lamp2 (one of the owner's three look choices) cannot be rebuilt from the repo: its painted key sources were read from a session scratch folder (scripts/character/puppet2d/lamp2/common.py L2_SCRATCH) and never committed; public/face-puppet/lamp2 is the only copy of the pack. r8 can be re-packed from tracked layers but not re-cut (polish-r8/work is untracked). face.md FACE-14."
+  },
+  {
+   "id": "op-r7-audit-face-r9-never-synced",
+   "kind": "open",
+   "at": "2026-11-09",
+   "title": "v4-review2-r9-sync-due (2026-10-05) recorded puppet polish r9 judged 4.2 vs r8 4.1 with its sync to production due; production still ships r8 and no decision or rejection covers r9 or r10 (art/character/puppet2d/polish-r9, polish-r10, 42 MB). Decide: sync, or record why not. face.md FACE-16."
+  }
+ ]
+}
