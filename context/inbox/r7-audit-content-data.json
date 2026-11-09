@@ -1,0 +1,28 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r7-audit-content-blind-solve",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "Whole-project audit, content-data: 1,802 items solved blind by Claude agents with keys withheld until answers were written (1,010 of 12,597 kit items in a seeded sample per class and subject, 264 of 2,647 diagnostics, 72 worked examples, all 456 placement items). 0 wrong keys. 14 English and Hindi items that depend on a story or poem the prompt does not carry could not be re-derived (unverified, not confirmed). Curriculum graph: 830 topics, 830 kits, no duplicate ids, no dangling, forward or circular prerequisites. Method and findings: docs/design/round7/audit/content-data.md."
+  },
+  {
+   "id": "dc-r7-topic-done-on-askable-skills",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "A topic is finished when every skill that has a loadable kit item is learned (server/content/next-topic.js decidingStates). Before, every kit skill counted, and 8 topics (4 class 5-6 Hindi recitation skills with no item, 4 class 8-9 English skills whose items the prompt budget drops) could never be finished: such a skill is taught but can never be answered unaided, so it stays 'practising'. Reverse if: every kit skill is guaranteed an item at load (a load-time check), or 'learned' gets a route that needs no item."
+  },
+  {
+   "id": "rj-r7-audit-skill-row-missing",
+   "kind": "rejection",
+   "at": "2026-11-09",
+   "title": "Drafted and caught by the skeptic pass before it shipped (audit 2026-11-09, first fix for CD-01): counting only askable skills in the topic's skillCount, on the belief that a skill with no item never gets a skill_state row. Wrong: the explain step, the faded worked step (keyed to kit.skills[0]) and teach-back all write the row, as 'practising'. The count then passes and every(LEARNED) still fails. Instead: filter the states themselves to askable skills as well as the count."
+  },
+  {
+   "id": "open-r7-kit-passage-unread",
+   "kind": "open",
+   "at": "2026-11-09",
+   "title": "The kit field `passage` (48 topics: all of classes 1-4 English, 2 of class 3 Hindi; 677 items) is read by no code, and 107 loaded class 5-9 English reading items carry their passage only in prompt_en, so a Hinglish lesson asks the question without the text. 102 of 430 class 8-9 English items are dropped at load by the prompt budget because each carries its own passage. One fix covers all three: one passage per topic, loaded with the kit and read before the first recall item. Needs a contract field and Brain."
+  }
+ ]
+}
