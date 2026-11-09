@@ -2173,7 +2173,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // v6.5 P3 (main, director13: "Isi line ke neeche …" and "Aisi hi … sankhya rekha" said over Studio's bars, 6 contradictions): a
     // picture turn drawn as a second view is that view's page alone — its one line and a short pointer, no card. The card stays
     // live and is re-posed on its own board on the next turn (the child's reply there re-poses it, as any non-answer does)
-    if (alt && asked && card && !graded) { body = [pickOf(ALT_POINT[lang === "english" ? "english" : "hinglish"], state)]; tail = null; guard.altOnly = true; }
+    // (Studio, director13 P3 shape: one turn of two pages — the second view under its own line, then the card's own board under
+    // the card's words; brain/propose.js pages it from guard.parts.alt)
+    if (alt && asked && card && !graded) { body = [asked]; guard.altOnly = true; guard.altLine = asked; }
     // v5 B5: a turn is at most about 60 words, except a worked step: her own sentences go first (from the end), never the
     // verdict, a closure, authored text or the card
     const MAX_WORDS = state.ctx?.plainWords ? 45 : 60;
@@ -2192,7 +2194,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // they just answered is said FIRST and together (the verdict with its reason, a give-up, the worked answer), so it is one
     // segment on THAT card's board; then a missed card's close (its own board); then the bridge (its own segment); then a parked
     // aside, the teaching and the card. The parts' texts ride on guard.parts (brain/propose.js places the segments from them).
-    if (asked) body = [asked, ...body.filter((x) => !/(?:screen|board)\s+(?:par|pe)|on the screen/i.test(x))];
+    if (asked && !guard.altOnly) body = [asked, ...body.filter((x) => !/(?:screen|board)\s+(?:par|pe)|on the screen/i.test(x))];
     // v6 R5 (director8: "Yeh hexagon hai. Yeh hexagon hai."; 24 c5-t02 turns asked two questions): a sentence is said once
     // (the card's own sentences win), and with a card or a check-in to end on, no other question of hers is asked
     const keyS = (x) => norm(x).toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, "").trim();
@@ -2292,7 +2294,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const simplerK = state.lastMove?.simpler ? new Set(sentences(norm(state.lastMove.simpler)).map(keyS)) : null;
     const simplerP = simplerK ? body.filter((x) => simplerK.has(keyS(x))) : [];
     guard.parts = { ...(prevPart.length ? { prev: hw(prevPart.join(" ")) } : {}), ...(closedP.length ? { closed: hw(closedP.join(" ")) } : {}), ...(bridgeS ? { bridge: hw(norm(bridgeS)) } : {}),
-      ...(lead ? { verdict: hw(norm(lead)) } : {}), ...(simplerP.length ? { simpler: hw(simplerP.join(" ")) } : {}) };
+      ...(lead ? { verdict: hw(norm(lead)) } : {}), ...(simplerP.length ? { simpler: hw(simplerP.join(" ")) } : {}), ...(guard.altLine ? { alt: hw(norm(guard.altLine)) } : {}) };
     // v6.5 P2′ (main, director13 c4 steady 56/60, offtopic 56): a card whose own page Studio would refuse is not said over the page
     // before it ("Kya yeh chhota tukda cake ka ek-chauthaai hai?" over c2's 1/3 bar). The card part is dropped and logged; it stays
     // live, and is posed alone next turn (a one-page turn, which Studio draws or keeps on its own)
@@ -2370,7 +2372,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     for (const fam of [FRAMES.notRight[L0], FRAMES.right[L0], FRAMES.again[L0]]) {
       const used = fam.find((f) => String(reply).toLowerCase().startsWith(f.toLowerCase().replace(/[.!?:]+$/, "")));
       if (!used) continue;
-      const fresh = freshOf(fam, state);
+      // (only a form she said in her last 4 turns is swapped: an opening that is not a repeat stays as it is)
+      const recentT = [...(state?.recent ?? [])].filter((t) => t.who === "teacher").slice(-4).map((t) => String(t.text ?? "").toLowerCase());
+      const head = used.toLowerCase().replace(/[.!?:]+$/, "");
+      const fresh = recentT.some((t) => t.includes(head)) ? freshOf(fam, state) : used;
       if (fresh !== used) { reply = fresh.replace(/[.!?:]+$/, "") + String(reply).slice(used.replace(/[.!?:]+$/, "").length); guard.frameFresh = true; }
       break;
     }

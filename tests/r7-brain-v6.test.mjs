@@ -457,7 +457,7 @@ describe("v6 (c5-t01 judge, Studio's alternate view)", () => {
     assert.doesNotMatch(out2.reply, /bilkul theek/, out2.reply);
   });
 
-  test("a picture ask is always acknowledged and keeps the card; on Studio's alternate view she names the new view of the same numbers (v6.5 P3: and says no card over it)", async () => {
+  test("a picture ask is always acknowledged and keeps the card; on Studio's alternate view she names the new view of the same numbers (v6.5 P3: the card on its own page after it)", async () => {
     const r = toCard();
     const card = r.ui.ask.text;
     const none = await say(r, `Theek hai, chalo isi sawaal par wapas aate hain. ${card}`, { childText: "drawing karke samjhao", state: { lastMove: { ...r.state.lastMove, request: "visual", visual: "diagram", scriptBeat: { ...r.state.lastMove.scriptBeat, board: { auto: true } } } } });
@@ -466,8 +466,8 @@ describe("v6 (c5-t01 judge, Studio's alternate view)", () => {
     const board = { template: "fraction-line@1", params: { den: 6, from: 0, to: 1, marks: [{ num: 1, label: "1/6" }, { num: 2, label: "1/3" }] } };
     const alt = await say(r, `Theek hai. ${card}`, { childText: "picture dikhao", state: { lastMove: { ...r.state.lastMove, request: "visual", visual: "diagram", altView: { view: "parts" }, scriptBeat: { ...r.state.lastMove.scriptBeat, board } } } });
     assert.match(alt.reply, /Dekho, yahi 1\/6 aur 1\/3 ab patti par\./, alt.reply);
-    // (v6.5 P3: the second view is its own page: no card over it; it stays live for the next turn)
-    assert.ok(!alt.reply.includes(card), alt.reply);
+    // (v6.5 P3: the card after the view, on its own page)
+    assert.ok(alt.reply.endsWith(card), alt.reply);
   });
 });
 

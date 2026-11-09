@@ -265,10 +265,13 @@ export function cardPageRefused({ lessonId, turn, next, kit, item, line }) {
 export function ofCardMarks(bp, next) {
   const move = next?.lastMove;
   const cardBoard = next?.activeItemId ? (move?.cardBeat?.board ?? move?.scriptBeat?.board ?? null) : null;
-  if (!cardBoard || !bp?.boardRef) return bp;
+  // (v6.5 P3: the first page of a picture turn is Studio's second view, never the card's own page, though it names the card's board)
+  const { altPage, ...bp0 } = bp ?? {};
+  if (!cardBoard || !bp0?.boardRef) return bp ? bp0 : bp;
+  bp = bp0;
   const key = JSON.stringify(cardBoard);
   const of = (b) => JSON.stringify(b) === key;
-  return { ...bp, ofCard: of(bp.boardRef), ...(bp.segments ? { segments: bp.segments.map((g) => (g.boardRef ? { ...g, ofCard: of(g.boardRef) } : g)) } : {}) };
+  return { ...bp, ofCard: altPage ? false : of(bp.boardRef), ...(bp.segments ? { segments: bp.segments.map((g) => (g.boardRef ? { ...g, ofCard: of(g.boardRef) } : g)) } : {}) };
 }
 export function revealOnVerdict(bp, next) {
   const g = next?.lastGraded, cb = next?.lastMove?.closeBeat;
@@ -279,6 +282,16 @@ export function revealOnVerdict(bp, next) {
   return { ...bp, scriptBeat: { ...bp.scriptBeat, reveal: true, answers } };
 }
 export function boardPartsOf(move, line, card, parts = null) {
+  // v6.5 P3 (Studio's shape, director13): a picture turn drawn as a second view is two pages — the view under its own line (the
+  // card's board, asked as a picture: Studio draws its second view), then the card's own board from the card's first word. The two
+  // pages name the same board, so they are placed here, never merged
+  if (parts?.alt && move?.cardBeat?.board) {
+    const text = norm1(line);
+    // (where the card starts; in the Hindi mode the card is said in Hindi words, so the alt line's end marks it)
+    const at = cardAt(text, card) ?? spanOf(text, parts.alt)?.[1] ?? null;
+    const ref = refOf(move.cardBeat);
+    if (at != null && at > 0) return { boardRef: move.cardBeat.board, scriptBeat: ref, altPage: true, segments: [{ atChar: at, atClause: clauseAt(text, at), boardRef: move.cardBeat.board, scriptBeat: ref }] };
+  }
   // v6.3 P1 (main, director11 c4 steady T58: "Tumne 12 ko 2 se barabar baanta." paged back off the answered card's answer board):
   // a probe about the card just answered (its why) is asked on that card's board, the one its close is on
   if (move?.kind === "probe" && move?.closeBeat?.board && move?.scriptBeat?.beatId && move.scriptBeat.beatId === move.closeBeat.beatId) {

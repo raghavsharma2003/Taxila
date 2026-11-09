@@ -45,19 +45,23 @@ describe("r7-brain-v65.test.mjs", () => {
     ["steady", "c5-t02", 18, { view: "parts", labels: [] }],
     ["offtopic", "c5-t02", 28, { view: "parts", labels: [] }],
   ];
-  test("P3 predicate: a picture turn drawn as a second view says that view's one line and no card over it (judges' 6 rows)", async () => {
+  test("P3 predicate: a picture turn is two pages — the second view under its own line, then the card on its own page from its first word (judges' 6 rows; Studio's shape, tests/r8-director13)", async () => {
     const bad = [];
     for (const [persona, topic, n, altView] of P3_ROWS) {
       const { out, last, ask } = await at(persona, topic, n, { lastMove: { altView } });
       const tag = `${persona} ${topic} row ${n}`;
       if (last.state.lastMove?.request !== "visual" && !last.state.lastMove?.visual) { bad.push(`${tag}: not a picture turn`); continue; }
-      const card = String(last.p.r.ui?.ask?.text ?? "");
+      const card = String(last.p.r.ui?.ask?.text ?? "").replace(/\s+/g, " ").trim();
+      const text = out.reply.replace(/\s+/g, " ").trim();
+      if (!text.endsWith(card)) { bad.push(`${tag}: the card is not the turn's last part | ${text.slice(-100)}`); continue; }
+      const segs = ask.intent.segments ?? [];
+      if (segs.length !== 1) { bad.push(`${tag}: ${segs.length + 1} pages`); continue; }
+      if (segs[0].atChar !== text.lastIndexOf(card)) bad.push(`${tag}: the card's page does not start at the card`);
+      if (ask.intent.ofCard !== false || segs[0].ofCard !== true) bad.push(`${tag}: ofCard ${ask.intent.ofCard} / ${segs[0].ofCard}`);
+      if (!ask.intent.request) bad.push(`${tag}: page 1 not asked as a picture`);
+      const before = text.slice(0, segs[0].atChar);
       const cardS = sentences(card).filter((x) => x.length > 12);
-      const said = cardS.filter((x) => out.reply.includes(x.replace(/[.!?।]+$/, "")));
-      if (said.length) bad.push(`${tag}: the card said over the second view | ${out.reply.slice(0, 160)}`);
-      if (/[?？]/.test(out.reply)) bad.push(`${tag}: a question over the second view | ${out.reply.slice(0, 160)}`);
-      if (ask.intent.segments?.length) bad.push(`${tag}: ${ask.intent.segments.length + 1} pages`);
-      if (sentences(out.reply).length > 2) bad.push(`${tag}: more than the view's line and one pointer | ${out.reply}`);
+      if (cardS.some((x) => before.includes(x.replace(/[.!?।]+$/, "")))) bad.push(`${tag}: card words under the second view | ${before}`);
     }
     assert.deepEqual(bad, []);
   });
