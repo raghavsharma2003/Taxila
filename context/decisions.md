@@ -9052,3 +9052,31 @@ Reverse if a child pilot shows points pressed without looking at the curve or th
 - `dc-r7-second-view-real` (2026-11-08): director12 S4, extends dc-r7-second-view-every-template. A fraction-parts@1 bar's second view is the same whole as a circle (altView "round"), and a circle's or roti's is the bar ("parts"). Both use the same parts and shading, any shade 0..parts. The fraction is written only when it is not a key or withheld value (hideResult otherwise). This replaces bar → number line. The card's figure counts as up when the page on screen is the same ref, or the same fraction-parts whole cut the same way with other shading. In that case the second view keeps the shading already on screen (c4 steady row 18: the card's 0-shaded bar under row 16's 3-shaded bar draws a circle with 3 shaded). A picture asked over an unmarked 0-1 ask line (no marks, mark, hop or target) is that line's bars, one per denominator, unnamed, with its 0 and 1 kept. This holds whether or not the line is up yet (c5-t02 steady/stuck row 18). A one-scale line is its scale's bar. A count key ("kitne barabar gaps?", 8) would leave every bar uncut and unnamed (main A1). Instead the second view is a smaller case of the same rule (altView "example"): one bar of 4 (or 3, 5, 6; never the key or key−1) with 1/d named. An unshaded whole's facts row no longer says "fraction 0/n". Reverse if judges find the example view teaches the count, or that a circle over a bar card confuses more than its number line did.
 - `dc-r7-card-back-own-words` (2026-11-08): director12 S5, extends director11's card-back rule. Her line brings the card's own board back as a second page where it names the card. The trigger words now come from the card itself: its prompt (ask.kit.item.prompt_hi/en, which Brain already sends) and its board's titles, labels and items. For lettered corners (measured@1 names) the word is the whole name and each side: pqrst, pq, qr … tp. Excluded are function words, the words every fraction or shape card says (barabar, hisse, number, parimap, bhuja …), and every word of the second view's own row (its caption). A card word in her first sentence is the caption and never turns the page; the template's figure words (patti, sankhya rekha, gol …) keep their old rule. c5-t01 steering row 14 now turns at "Wahi … sadak", and c6's pentagon at "Paanch kono wale khet PQRST". Reverse if judges count a page turned on a word that was not pointing at the card (then narrow to the prompt's nouns, or have Brain send the turn point).
 - `dc-r7-script-board-real-line` (2026-11-08): director12 S6. At preselect, a scripted beat's own board (its boardRef, not a second view) is no longer skipped when its facts row fails the gate. Her line is written from that row, so the row is never its judge. The board is gated once, on her real line, at the take; if refused there, the take falls through as before. c5-t02 steady row 78: c0's two "?" bars failed W8 on "wholes 2 equal bars" (no 6 said), and the catalogue's 800×500 board took the page. The pages now join as fraction-line → c0's bars. A paged turn whose pages have different board sizes no longer fails to join: each page is scaled uniformly onto the turn's largest board, centred, and drawn still (pageOnBoard, pagesRescaledCount). Reverse if a script board picked this way is refused at the take more often than the catalogue board it replaced was.
+
+
+<!-- merged from inbox/r7-main-31.json -->
+## `dc-r7-script-walk-v6-5` (2026-11-09)
+
+A picture turn is its own page, and frames read like a person.
+
+**Brain:**
+- **P3:** the second view gets its own line; the card is re-posed on its own board.
+- **P2′:** no line about a refused card page.
+- **F1:** varied, correct frames: 'Is sawaal ka jawab', no invented reads, no fragments.
+- **F2:** no first-person taste claims. She is honest about being an AI and turns the question to the child.
+- **B1:** no beatless model turns.
+- **K2:** help that escalates, never re-said, and re-poses in the same turn.
+- **A1:** canned facts filtered everywhere; asides returned by break.
+- **Speed and harness fixes.**
+
+**Studio:**
+- **S7:** the second view comes from the page on screen.
+- **S8:** a circle view for unmarked bars.
+
+**Learning:** D8 data fixes.
+
+**Why:** director13 has 13 contradictions (c6 at 0), all from three named mechanisms. Register fails everywhere, and most of that is code's own fixed frames.
+
+**Reverse if:**
+- director14 has more than 5 paging plus second-view contradictions with P3, P2′, S7 and S8 in place: one code-drawn board per card;
+- register is still below 3.5 with F1, F2 and B1 in place: the authored line plus a one-line code frame only.

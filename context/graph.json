@@ -26457,6 +26457,20 @@
    "at": "2026-11-08",
    "title": "director12's 17 picture-request rows (claude/r4-conversation e71b1caf, 2026-11-08-director12; 0-based rows) were replayed through Studio's seam on claude/r4-content (int/r6 c7fb65d36 merged). Method: the page up drawn on its own run line (the last segment of the turn before), then the picture turn on its exact text, with the card's prompt and key from the run's script. 16 of the 17 replay (steady-c5-t02 row 34 returns no take in the harness, before and after). Second views drawn: 7/16 → 15/16. Turns that bring the card back as a second page: 0 → 12. 3 of them come from S5's card words (c5-t01 steering 14 at \"Wahi\"; c6 steady 18 and offtopic 28 at \"Paanch\"). The other 9 come from director11's figure words (bar, line) in the run's old lines, which Brain rewrites from the new row. Every row main cited draws one: c4 steady 18, stuck 18 and steering 14 draw round (steady keeps the 3 shaded parts); c5-t01 stuck 18 draws example (no 8 written); c5-t02 steady 18 and stuck 18 draw parts (two unnamed bars, 0 and 1 kept); c5-t01 steering 14 turns back to the road at \"Wahi\"; c6 steady/offtopic 18/28 turn back at \"Paanch\". The one replayed row without a second view is uncited and the same before this change: offtopic-c4 row 28. There, row 26's circle was drawn by the ladder, not as the card's board, so no card ref is up. c5-t02 steady row 78 replayed through pagesBoard: null (catalogue 677×423 beside 400×300) → 2 pages, fraction-line then fraction-bars. No model calls, DATABASE_URL unset. tests/r8-director12.test.mjs pins each item.",
    "source": "inbox/r7-studio-27.json"
+  },
+  {
+   "id": "ms-r7-director13-hand-2026-11-09",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "director13: script walk v6.4 on int/r6 0dd31feb1 (integration 16), run by main (Brain's env lost its secrets), 16 lessons, 1,542 calls ~$1.047 (cap hit at 15/16; steering-c6 run alone), reply-ready per-lesson p50 median ~3.06 s (director12 2.64 s); counted by hand by 4 Claude judges (0-based rows, by mechanism): beats 241/243 (99%), verdicts 211/211, misgrades 0/0, false keys 0; contradictions 13 (paging 3, second view 8, data 1, other 1) vs director12 38; per topic c4 4, c5-t01 4, c5-t02 5 (from 29), c6 0 (first topic at zero); register 2.5–3 in all four topics, listening 3–3.5, promises 3–3.5. Brain's v6.4 proxies: orphan parts 5→0, unanswered cards 29→1, 'Yaad karo' 10→0, two-close 9→0, aside returns 9/9 on time in the child's words with 0 template, Hindi switch said 16/16, word-for-word re-poses 17→0.",
+   "source": "inbox/r7-main-31.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-5",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "Script walk v6.5: a picture turn is its own page; frames that read like a person. Brain: P3 a picture-request turn draws the second view with its own one line only, the card re-posed on its own board (second page or next turn), never over the alt view; P2′ a refused card page means no line about that card's figure; F1 every code frame has 3–5 natural forms with no repeat within 4 turns, 'Is sawaal ka jawab' for the card just answered or given up, no 'Theek, yeh tumhari soch thi', no praise or aside return in the same part as a wrong verdict, never invent the child's method, no fragments or stray tokens; F2 no first-person taste or experience claims, asked directly she says honestly in one line she is an AI teacher with no favourite and turns it to the child (never denies being an AI); B1 no beatless model turns: Hindi/clarify requests re-say the live beat's own simpler in Hindi on its board, never a question without a card; K2 'pata nahi' gets the card's simpler, a remediation already said is not re-said (give-up instead), the then-card's second miss gives the key, a simpler on a live card re-poses in the same turn, 'aage chalo' moves on, no model 'break'; A1 canned facts filtered from every draft, unreturned asides return by the next boundary or at break/stop; speed: find where p50 rose (2.64→~3.06 s); harness: unrolled in the picture checker, a spoken dropped page counts, goodbye waits for an open card's close. Studio: S7 second view from the last page on screen; S8 circle second view for unmarked bars asks. Learning: D8 title c4 c3's board, c5-t02 c3 ring and its simpler, equalTo companions, compares back on bars. Why: director13 passes beats/verdicts/misgrades/false keys for the eighth run; contradictions 38→13 with c6 at 0; all 11 drawing-side contradictions trace to three named mechanisms; register fails everywhere and the judges agree the fault is code's own fixed frames, so clause 2's 'more templates' is the wrong cure. Reverse: director14 has more than 5 paging + second-view contradictions with P3, P2′, S7 and S8 in place → one code-drawn board per card, held; register still below 3.5 with F1, F2 and B1 in place → spoken framing cut to the authored line plus a one-line code frame, the model writing only the aside reply.",
+   "source": "inbox/r7-main-31.json"
   }
  ],
  "edges": [
@@ -41364,6 +41378,21 @@
    "src": "dc-r7-script-board-real-line",
    "rel": "measured_by",
    "dst": "ms-r7-director12-drawing-replay-2026-11-08"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-5",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v6-4"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-5",
+   "rel": "measured_by",
+   "dst": "ms-r7-director13-hand-2026-11-09"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-4",
+   "rel": "measured_by",
+   "dst": "ms-r7-director13-hand-2026-11-09"
   }
  ]
 }

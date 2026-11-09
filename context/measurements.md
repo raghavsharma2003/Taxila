@@ -6187,3 +6187,25 @@ feeta naap, 2026-11-08 (forge3-qa, local harness, p360 / p412 / l1366, the game 
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r7-director12-drawing-replay-2026-11-08` (2026-11-08): director12's 17 picture-request rows (claude/r4-conversation e71b1caf, 2026-11-08-director12; 0-based rows) were replayed through Studio's seam on claude/r4-content (int/r6 c7fb65d36 merged). Method: the page up drawn on its own run line (the last segment of the turn before), then the picture turn on its exact text, with the card's prompt and key from the run's script. 16 of the 17 replay (steady-c5-t02 row 34 returns no take in the harness, before and after). Second views drawn: 7/16 → 15/16. Turns that bring the card back as a second page: 0 → 12. 3 of them come from S5's card words (c5-t01 steering 14 at "Wahi"; c6 steady 18 and offtopic 28 at "Paanch"). The other 9 come from director11's figure words (bar, line) in the run's old lines, which Brain rewrites from the new row. Every row main cited draws one: c4 steady 18, stuck 18 and steering 14 draw round (steady keeps the 3 shaded parts); c5-t01 stuck 18 draws example (no 8 written); c5-t02 steady 18 and stuck 18 draw parts (two unnamed bars, 0 and 1 kept); c5-t01 steering 14 turns back to the road at "Wahi"; c6 steady/offtopic 18/28 turn back at "Paanch". The one replayed row without a second view is uncited and the same before this change: offtopic-c4 row 28. There, row 26's circle was drawn by the ladder, not as the card's board, so no card ref is up. c5-t02 steady row 78 replayed through pagesBoard: null (catalogue 677×423 beside 400×300) → 2 pages, fraction-line then fraction-bars. No model calls, DATABASE_URL unset. tests/r8-director12.test.mjs pins each item.
+
+
+<!-- merged from inbox/r7-main-31.json -->
+## `ms-r7-director13-hand-2026-11-09` (2026-11-09)
+
+director13: v6.4 on integration 16, run by main. 16 lessons, counted by hand by 4 judges.
+
+| Line | Count |
+|---|---|
+| Beats taught | 241/243 (99%) |
+| Verdicts | 211/211 |
+| Misgrades | 0/0 |
+| False keys | 0 |
+| Contradictions, by hand | 13 (paging 3, second view 8, data 1, other 1) |
+
+director12 had 38. By topic: c4 4, c5-t01 4, c5-t02 5 (from 29), c6 0.
+
+Register scored 2.5–3 in all four topics.
+
+Cost was 1,542 calls, about $1.047. The per-lesson median of reply-ready p50 was about 3.06 s.
+
+Full write-up: docs/design/round7/judgements/director13-2026-11-09.md.
