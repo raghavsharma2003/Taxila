@@ -117,6 +117,10 @@ export const PLAY_ACTS = Object.freeze({
     bhaapan: { act: "wait", hi: "ruko, thandi cheez bahar rakho, aur boondein cup mein ponchho", en: "wait, put something cold out, and wipe the drops into the cup" },
     hawa: { act: "step", hi: "din ya raat karo, ruko, aur hawa ke saath chalo", en: "set day or night, wait, and go with the breeze" },
     chakra: { act: "step", hi: "dhoop se zameen tak, chakra ek-ek kadam chalao", en: "run the cycle a step at a time, from the sun down into the ground" } },
+  // r7 games: Aakash (the Earth's motions, seasons and eclipses, class 7 science): a model the child spins and moves round
+  aakash: { chakkar: { act: "turn", hi: "Prithvi ko ghumao aur Sooraj ke chaaron or le jao", en: "spin the Earth and take it round the Sun" },
+    ritu: { act: "move", hi: "Prithvi ko Sooraj ke chaaron or le jao aur dhoop ke dhabbe dekho", en: "move the Earth round the Sun and watch the patches of sunlight" },
+    grahan: { act: "move", hi: "Chaand ko Prithvi ke chaaron or chalao aur teenon ko ek line mein lao", en: "move the Moon round the Earth and bring the three into line" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape
