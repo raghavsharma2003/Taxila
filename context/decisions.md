@@ -9337,3 +9337,36 @@ Asides that come back, and every path through the parts.
 - **Facts:** kit expectations and misconceptions first; the per-change signs and undo directions from the kit's worked example and verified items (i01, i03, i06, i07, i08, i10, i04, rl-o2; t02 i10, i11, i12). Steps, glows, fuel pieces and days are scene values, never shown as numbers.
 
 Reverse if a child pilot shows the marks or answers tapped by trial rather than read from the picture.
+
+
+<!-- merged from inbox/r7-main-34.json -->
+## `dc-r7-held-board` (2026-11-09)
+
+**Reversal clause 1 taken, as written.** The board follows the card.
+- The screen shows the open card's board. It changes only where her words begin the next card's unit, at most once per turn.
+- No card is on screen that she has not said.
+- A picture's second view goes beside the held board.
+
+**Why:** director16 had 8 paging plus second-view contradictions, over the clause's 5. The clause had been left untaken three times. Two of the three remaining mechanisms become impossible under a held board.
+
+**Reverse if:** the worked-example or class-level axis falls below 3.5 because pictures were lost. Then P4 paging returns, and the held rule stays only for request turns.
+
+## `dc-r7-script-walk-v6-8` (2026-11-09)
+
+Beside the held board.
+
+**Brain:**
+- **A4:** an aside question ends her turn, with no silent card.
+- **G1:** sign-aware grading, plus a key test matrix.
+- **V1″:** the '?' drop applies to model text only.
+- **B1‴:** Hindi requests.
+- **R5:** code frames.
+
+**Studio:** the held-board seam.
+
+**Learning (D11):** units true of their card's board; a relaxed leak rule.
+
+**Reverse if:**
+- listening is still below 3.5: a request × beat-kind table;
+- any misgrade: no paid run until the key matrix passes;
+- the counter misses more than 1: it is retired as a gate input.

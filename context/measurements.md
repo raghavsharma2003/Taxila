@@ -6381,3 +6381,25 @@ badlaav play-cert, 2026-11-09 (forge3-qa, local harness, sizes p360 / p412 / l13
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r7-director15-s9b-root-cause-2026-11-09` (2026-11-09): director15 c6 stuck row 18 ("picture dikhao" over the remediation's lettered hexagon; the record re-drew the then-card's pentagon) was replayed through Brain's planTurn (tests/fixtures/replay.mjs, the run's recorded reads, no model calls). Production gets it right. Row 16 reaches Studio's seam as scriptBeat.kind "remediation", and row 18's preselect offers "unrolled": the hexagon laid straight (unrolled@1), then the pentagon. The miss is the eval harness's model of the seam. Its tree (2e9664b34, and int/r6 719104f57) never got patch 017's shownKind, so it passed the preselect no avoidKind. Its bookkeeping on the same replay gives the card's measured@1, the run's row; with the page-up kind it gives unrolled. Brain's patch 018 (docs/patches/to-brain) adds shownKind and avoidKind to the current harness; 017 no longer applies, and its S9 half is already in Brain's P4. Pinned: tests/r8-director15.test.mjs.
+
+
+<!-- merged from inbox/r7-main-34.json -->
+## `ms-r7-director16-hand-2026-11-09` (2026-11-09)
+
+director16: v6.7 on integration 20. 16 lessons, 1,472 calls, about $1.001, run by main. Counted by hand by 4 judges, with the P4′ shape counted for the first time.
+
+| Line | Count |
+|---|---|
+| Beats taught | 256/267 (96%; two authored points lost to the '?' drop) |
+| Verdicts | 263/263 |
+| Misgrades | **0/1** (a '-1/7 km' graded right) |
+| False keys | 0 |
+| Contradictions | **8** (paging 6, second view 2); director15 had 5 under the old rule, about 25 under this one |
+
+By topic: c4 5, c5-t01 0, c5-t02 2, c6 1.
+
+Register is 3.5 in all four topics for the first time. c6 passes every judge axis. Listening is 3 in three topics. 0 asides were lost.
+
+H4 flagged 1 of the 8.
+
+Full write-up: docs/design/round7/judgements/director16-2026-11-09.md.
