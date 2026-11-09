@@ -4,7 +4,7 @@
 import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { replay, runScriptOf } from "./fixtures/replay.mjs";
-import { textReply, replyDeps } from "../server/brain/say.js";
+import { textReply, replyDeps, BEAT_ASK, WORKED_ASK } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { setScriptForTest } from "../server/director/script.js";
@@ -163,6 +163,41 @@ describe("r7-brain-v65.test.mjs", () => {
   for (const persona of ["offtopic", "steering", "steady", "stuck"]) for (const topic of Object.keys(TOPIC)) {
     test(`F2 predicate: no first-person taste claim, never a denial of being an AI, an honest answer when asked (${persona} ${topic})`, async () => {
       assert.deepEqual(await personaFaults(persona, topic), []);
+    });
+  }
+
+  // B1 — no beatless model turns: a move with no card is the walk's own beat (its authored simpler), and asks no question of hers
+  test("B1 predicate: a turn between cards says the walk beat's authored simpler, gives away no key and asks no question (c5-t02 offtopic 4, 34)", async () => {
+    const bad = [];
+    for (const n of [4, 34]) {
+      const { out, last } = await at("offtopic", "c5-t02", n);
+      const lm = last.state.lastMove ?? {};
+      if (!lm.scriptBeat?.beatId || !lm.beatless) bad.push(`row ${n}: no beat of the walk on the move`);
+      if (/[?？]/.test(out.reply)) bad.push(`row ${n}: a question with no card | ${out.reply}`);
+      if (/3 tukdon ka tukda bada|kaunsa bhinn bada/i.test(out.reply)) bad.push(`row ${n}: the worked step's key | ${out.reply}`);
+    }
+    assert.deepEqual(bad, []);
+  });
+  const CHECKINS = new Set([...BEAT_ASK.hinglish, ...WORKED_ASK.hinglish, ...BEAT_ASK.english, ...WORKED_ASK.english]);
+  async function cardlessQuestions(persona, topic) {
+    const T = TOPIC[topic];
+    setScriptForTest(T, runScriptOf(RUN, T));
+    const { kit, rows, plans } = await replay(RUN, persona, T, 1e9);
+    const bad = [];
+    for (const pl of plans) {
+      const n = pl.row - 1;
+      // (a worked example's own authored question is code's: W1 poses it before "Diya hai")
+      if (!rows[n] || pl.p.r.ui?.ask || pl.state.lastMove?.kind === "wrap" || pl.state.lastMove?.kind === "worked_example" || /^worked/.test(pl.state.lastMove?.scriptBeat?.beatId ?? "")) continue;
+      replyDeps.chat = async () => ({ text: rows[n].text });
+      const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
+      const qs = sentences(out.reply).filter((x) => /[?？]/.test(x) && !CHECKINS.has(x));
+      if (qs.length && pl.state.lastMove?.scriptBeat) bad.push(`row ${n} (${pl.state.lastMove?.kind}): ${qs.join(" ")}`);
+    }
+    return bad;
+  }
+  for (const persona of ["offtopic", "steering", "steady", "stuck"]) for (const topic of Object.keys(TOPIC)) {
+    test(`B1 predicate: no question of hers on a scripted turn with no card (${persona} ${topic})`, async () => {
+      assert.deepEqual(await cardlessQuestions(persona, topic), []);
     });
   }
 });

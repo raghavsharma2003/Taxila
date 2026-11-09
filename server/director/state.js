@@ -2912,6 +2912,24 @@ export function step(prev, input) {
   // (miss 3, code's gave) — and no helper line is said twice on one card. Only the LIVE card's simpler, and only once it has been
   // posed: a card posed on this very turn gets none (director11 c5-t02 stuck T49, c6 stuck T42: the next card's simpler said
   // before that card was even asked).
+  // v6.5 B1 (main, director13 c5-t02 offtopic 4 and 34: a free reteach between cards gave away the worked step's key and asked a
+  // question no card had): in a scripted lesson, a move with no card and no beat is the walk's own beat — its authored simpler, on its
+  // board (a language or clarify request says it again, in their language: brain/say.js)
+  if (scriptOn() && scriptIdOf(input.kit) && !move.scriptBeat && !s.activeItemId && ["reteach", "explain", "hint", "repair", "practice"].includes(move.kind)
+    && Array.isArray(s.walk?.beats) && Number.isInteger(s.walk.i)) {
+    const sk = skillScriptOf(input.kit, s.walk.skillId);
+    const lang = s.ctx?.lang ?? "hinglish";
+    for (let k = Math.min(s.walk.i, s.walk.beats.length - 1); k >= 0 && sk; k--) {
+      const m = /^explain:(.+)$/.exec(String(s.walk.beats[k] ?? ""));
+      const b = m ? sk.explain?.find((x) => x.id === m[1]) : null;
+      const said = b ? saidIn0(b.simpler, lang) ?? saidIn0(b.point, lang) : null;
+      if (!said) continue;
+      move.simpler = String(said).trim();
+      move.scriptBeat = { scriptId: scriptIdOf(input.kit), skillId: s.walk.skillId, beatId: b.id, kind: "explain", ...(b.board ? { board: b.board } : {}) };
+      move.beatless = true;
+      break;
+    }
+  }
   if (scriptOn() && move.scriptBeat?.kind === "remediation" && move.rendered?.length && s.activeItemId) s.cardHelp = { id: s.activeItemId, said: move.rendered.map((x) => normLine(x)), misses: 0 };
   if (!move.simpler && scriptOn() && item && isScriptCard(item) && item.id === prev.activeItemId && ["hint", "reteach", "repair", "practice"].includes(move.kind)
     && (stuckTurn(input?.cls) || readIntent(String(input?.text ?? ""))?.type === "confused"
