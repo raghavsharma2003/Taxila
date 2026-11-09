@@ -490,7 +490,7 @@ export function structureErrorsV2(s, kit) {
 
 /** W: Studio's whiteboard gate on every board (W6 left to turn time). → { errors, w6 } */
 export async function boardErrors(s, kit) {
-  const [{ resolveBoardRef }, { expand }, { gateWhiteboard }, { retimeToLine }] = await Promise.all([
+  const [{ resolveBoardRef }, { expand }, { gateWhiteboard }, { retimeToLine, refWholes }] = await Promise.all([
     import("../../server/forge/explainer/board-ref.js"), import("../../server/forge/explainer/templates.js"),
     import("../../server/studio/qa/whiteboard.js"), import("../../server/stagecraft/board-sync.js")]);
   const errors = [], w6 = [];
@@ -498,7 +498,10 @@ export async function boardErrors(s, kit) {
     const r = resolveBoardRef(b.board, { kit });
     if (!r.ok) { errors.push(`${k.skillId}/${b.id}: ${r.why}`); continue; }
     const text = String(b.line ?? "");
-    const g = gateWhiteboard(retimeToLine(expand(r.call).script, text), { reply: text, speechMs: Math.max(1500, text.split(/\s+/).length * 400), withhold: b.withhold ?? { values: [] }, kit, asked: true });
+    // (as certifyBoardRef since Studio's 5982e751: a bar whose parts her line names is a whole of its own, never an unspoken "2")
+    const lineNs = new Set((text.match(/\d+/g) ?? []).map(Number));
+    const wn = (r.call.bars ?? []).every((x) => lineNs.has(Number(x?.parts))) ? refWholes(b.board) : null;
+    const g = gateWhiteboard(retimeToLine(expand(r.call).script, text), { reply: text, speechMs: Math.max(1500, text.split(/\s+/).length * 400), withhold: b.withhold ?? { values: [] }, kit, asked: true, ...(wn ? { wholes: wn } : {}) });
     const failed = g.checks.filter((c) => !c.pass);
     const timingOnly = (c) => c.id === "W6.timing" || (c.id === "W19.settled" && Array.isArray(c.detail) && c.detail.every((d) => d === "W6.timing"));
     const bad = failed.filter((c) => !timingOnly(c));

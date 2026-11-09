@@ -136,6 +136,42 @@
       "representation": "A dice and a matchbox side by side, faces ticked off together pair by pair",
       "moveShape": "Count both solids at the same time, top with top, front with front; ask what changed between them and what stayed the same"
      }
+    },
+    {
+     "id": "c4-maths-ch01-t01-m-pyramid-no-base",
+     "skillId": "c4-maths-ch01-t01-s3",
+     "source": "Shapes Around Us — faces and corners of other solids (square pyramid)",
+     "belief": "Counts only the triangle faces of a pyramid and leaves out the square base it stands on",
+     "signs": [
+      "Says a square pyramid has 4 faces",
+      "Counts only the faces that slope up to the top point",
+      "Does not lift the pyramid to check the bottom"
+     ],
+     "diagnostic": {
+      "prompt_en": "A card square pyramid stands on a table. Its square base lies flat on the table, and four triangles meet at the top point. How many faces does it have?",
+      "prompt_hi": "Ek card ka square pyramid table par rakha hai. Uska square base table par flat hai, aur chaar triangles upar ek point par milte hain. Iske kitne faces hain?",
+      "options": [
+       {
+        "text": "5 faces",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "4 faces",
+        "misconceptionId": "c4-maths-ch01-t01-m-pyramid-no-base",
+        "correct": false
+       },
+       {
+        "text": "6 faces",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A card square pyramid with its base painted a different colour from the triangles",
+      "moveShape": "child names the faces it sees → lift the pyramid and show the painted base → add the base to the triangle sides → 4 sides + 1 base"
+     }
     }
    ],
    "items": [
@@ -696,7 +732,8 @@
      "Faces: top and bottom, front and back, left and right, so ___ faces.",
      "Edges: 4 around the top, 4 around the bottom, ___ standing up, so ___ edges.",
      "Corners: 4 on top and ___ at the bottom, so ___ corners."
-    ]
+    ],
+    "skillId": "c4-maths-ch01-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -719,6 +756,63 @@
     "matchbox",
     "Diwali gift box",
     "building blocks"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch01-t01-s1",
+     "source": "Shapes Around Us — faces, edges and corners of solid shapes",
+     "problem": "Kabir holds a brick in his hands. Name three parts of the brick: the flat part his palm rests on, the straight line where two flat parts meet, and the point where three such lines meet.",
+     "givens": [
+      "a brick (a cuboid)",
+      "part 1: flat part under the palm",
+      "part 2: line where two flat parts meet",
+      "part 3: point where three lines meet"
+     ],
+     "find": "the name of each part",
+     "steps": [
+      {
+       "do": "flat surface of a solid → face",
+       "result": "part 1 is a face"
+      },
+      {
+       "do": "line where two faces meet → edge",
+       "result": "part 2 is an edge"
+      },
+      {
+       "do": "point where edges meet → corner",
+       "result": "part 3 is a corner"
+      }
+     ],
+     "answer": "Face, edge, corner",
+     "why": "flat surface → face → two faces meet in a line → edge → edges meet at a point → corner"
+    },
+    {
+     "skillId": "c4-maths-ch01-t01-s3",
+     "source": "Shapes Around Us — faces and corners of other solids (square pyramid)",
+     "problem": "A paper lamp is a square pyramid: one square at the bottom and four triangles on the sides that meet at one point on top. How many faces and how many corners does it have?",
+     "givens": [
+      "bottom: 1 square",
+      "sides: 4 triangles",
+      "the triangles meet at one top point"
+     ],
+     "find": "the number of faces and the number of corners",
+     "steps": [
+      {
+       "do": "faces: square base + triangle sides",
+       "result": "1 + 4 = 5 faces"
+      },
+      {
+       "do": "corners on the square base",
+       "result": "4 corners"
+      },
+      {
+       "do": "add the top point",
+       "result": "4 + 1 = 5 corners"
+      }
+     ],
+     "answer": "5 faces and 5 corners",
+     "why": "count the base and each side as faces → count the base's corners → the top point is one more corner"
+    }
    ]
   },
   {
@@ -1663,6 +1757,42 @@
       "representation": "Strip of paper marked with one unit, laid along a side and then along the slanting line",
       "moveShape": "Child measures both with the same paper strip and notices the slanting line sticks out past one unit"
      }
+    },
+    {
+     "id": "c4-maths-ch01-t03-m-alternate-core",
+     "skillId": "c4-maths-ch01-t03-s3",
+     "source": "Shapes Around Us — tile patterns on a grid",
+     "belief": "Continues a tile pattern by simply alternating two colours, instead of finding the whole part that repeats",
+     "signs": [
+      "Continues red, blue, blue, red as red, blue, red, blue",
+      "Looks only at the last tile and puts the other colour next",
+      "Cannot say which group of tiles repeats"
+     ],
+     "diagnostic": {
+      "prompt_en": "Tiles in a row go red, blue, blue, red, blue, blue, red. What are the next three tiles?",
+      "prompt_hi": "Ek line mein tiles aise hain: red, blue, blue, red, blue, blue, red. Agli 3 tiles kaun si hongi?",
+      "options": [
+       {
+        "text": "blue, blue, red",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "blue, red, blue",
+        "misconceptionId": "c4-maths-ch01-t03-m-alternate-core",
+        "correct": false
+       },
+       {
+        "text": "red, blue, blue",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "The tile row with each repeating group circled: (red, blue, blue) (red, blue, blue) (red …",
+      "moveShape": "child circles the first group that comes again → checks it repeats twice → finishes the open group → next group starts the same way"
+     }
     }
    ],
    "items": [
@@ -2220,7 +2350,8 @@
      "Go right ___ gaps and draw the bottom side.",
      "Go up ___ gaps and draw the right side.",
      "Go left 3 gaps and down 2 gaps to finish, back at the ___."
-    ]
+    ],
+    "skillId": "c4-maths-ch01-t03-s1"
    },
    "formats": {
     "primary": "F3",
@@ -2242,6 +2373,63 @@
     "kolam dots",
     "graph-paper designs",
     "bathroom tiles"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch01-t03-s2",
+     "source": "Shapes Around Us — shapes on a grid, turned shapes",
+     "problem": "On a square grid, a rectangle is 4 squares long and 2 squares tall. Asha turns the paper a quarter-turn. How long and how tall is the rectangle now, how many squares are inside it, and is it the same shape and size as before?",
+     "givens": [
+      "rectangle 4 squares long, 2 squares tall",
+      "the paper is turned a quarter-turn"
+     ],
+     "find": "the new length and height, the squares inside, and whether the shape and size changed",
+     "steps": [
+      {
+       "do": "squares inside before: 2 rows of 4",
+       "result": "4 + 4 = 8 squares"
+      },
+      {
+       "do": "quarter-turn → long side stands up",
+       "result": "2 squares long, 4 squares tall"
+      },
+      {
+       "do": "squares inside after: 4 rows of 2",
+       "result": "2 + 2 + 2 + 2 = 8 squares"
+      },
+      {
+       "do": "same sides, same squares",
+       "result": "same rectangle, only turned"
+      }
+     ],
+     "answer": "2 squares long and 4 squares tall, still 8 squares inside; the same shape and size",
+     "why": "turning moves the shape → its sides keep their lengths → squares inside stay the same → same shape, same size"
+    },
+    {
+     "skillId": "c4-maths-ch01-t03-s3",
+     "source": "Shapes Around Us — tile patterns on a grid",
+     "problem": "A row of tiles on a courtyard grid goes green, yellow, yellow, green, yellow, yellow, and so on. What colour is the 10th tile?",
+     "givens": [
+      "pattern: green, yellow, yellow, green, yellow, yellow, …"
+     ],
+     "find": "the colour of the 10th tile",
+     "steps": [
+      {
+       "do": "find the part that repeats",
+       "result": "green, yellow, yellow (3 tiles)"
+      },
+      {
+       "do": "green starts each repeat → jump by 3",
+       "result": "1 + 3 = 4, 4 + 3 = 7, 7 + 3 = 10"
+      },
+      {
+       "do": "10th tile is a starting tile",
+       "result": "green"
+      }
+     ],
+     "answer": "Green",
+     "why": "spot the repeating part → it starts every 3 tiles → green tiles fall on 1, 4, 7, 10"
+    }
    ]
   },
   {
@@ -2366,6 +2554,42 @@
      "remediation": {
       "representation": "Three objects shown together from the top, then from the front",
       "moveShape": "Child guesses which object a single view belongs to, then is shown a second view that settles it"
+     }
+    },
+    {
+     "id": "c4-maths-ch02-t01-m-front-shows-hidden",
+     "skillId": "c4-maths-ch02-t01-s2",
+     "source": "Hide and Seek — front views; objects hidden behind others",
+     "belief": "Puts every object into the front view, even the ones hidden directly behind another",
+     "signs": [
+      "Draws three squares for three boxes standing one behind another",
+      "Counts all the objects on the table instead of what the eye at the front can see",
+      "Draws the front view the same as the top view"
+     ],
+     "diagnostic": {
+      "prompt_en": "Three equal cube-shaped boxes stand in a line on a table, one directly behind another, going away from you. Looking straight at them from the front, at table height, what do you see?",
+      "prompt_hi": "Teen ek jaise cube-shaped boxes table par ek line mein rakhe hain, ek ke theek peeche doosra, tumse door jaate hue. Saamne se, table ki height par seedha dekho, toh kya dikhega?",
+      "options": [
+       {
+        "text": "One square",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Three squares in a row",
+        "misconceptionId": "c4-maths-ch02-t01-m-front-shows-hidden",
+        "correct": false
+       },
+       {
+        "text": "Two squares in a row",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Real boxes on a desk, the child's eye at table height in front of them, then a top view drawn beside the front view",
+      "moveShape": "child predicts the front view → crouches to table height and looks → names what blocks what → front view shows only the nearest outline"
      }
     }
    ],
@@ -3026,7 +3250,8 @@
      "You see only the round mouth of the glass, so the top view is a ___.",
      "Front view: look straight at it from the ___, at table height.",
      "You see its height and width, so the front view is a ___."
-    ]
+    ],
+    "skillId": "c4-maths-ch02-t01-s1"
    },
    "formats": {
     "primary": "F3",
@@ -3047,6 +3272,63 @@
     "bricks",
     "kitchen utensils",
     "tents at a mela"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch02-t01-s2",
+     "source": "Hide and Seek — front and side views of objects",
+     "problem": "A cone-shaped birthday cap stands on its round rim on a table. What shape is its front view, looking straight at it from the front at table height? What shape is its side view, looking straight at it from the side at table height?",
+     "givens": [
+      "a cone-shaped cap standing on its round rim",
+      "front view: straight from the front, at table height",
+      "side view: straight from the side, at table height"
+     ],
+     "find": "the shape of the front view and of the side view",
+     "steps": [
+      {
+       "do": "front view → outline only: wide rim at the bottom, point at the top",
+       "result": "a triangle"
+      },
+      {
+       "do": "turn to the side → the cap is round all the way",
+       "result": "same outline as the front"
+      },
+      {
+       "do": "side view outline",
+       "result": "a triangle"
+      }
+     ],
+     "answer": "Front view: a triangle; side view: a triangle",
+     "why": "front and side views show the flat outline at eye level → a cone narrows from rim to tip → both outlines are triangles"
+    },
+    {
+     "skillId": "c4-maths-ch02-t01-s3",
+     "source": "Hide and Seek — naming an object from its views",
+     "problem": "An object on a table looks like a square from the top, a square from the front and a square from the side. Which is it: a ball, a dice or a steel glass standing up?",
+     "givens": [
+      "top view: square",
+      "front view: square",
+      "side view: square",
+      "choices: ball, dice, steel glass standing up"
+     ],
+     "find": "which object it is",
+     "steps": [
+      {
+       "do": "top view square → rule out round tops",
+       "result": "ball (circle) and glass (circle) are out"
+      },
+      {
+       "do": "check the dice's front and side views",
+       "result": "both squares"
+      },
+      {
+       "do": "all three views match",
+       "result": "the dice"
+      }
+     ],
+     "answer": "The dice",
+     "why": "take one view at a time → strike out any object whose view does not match → the one left matches all views"
+    }
    ]
   },
   {
@@ -3172,6 +3454,42 @@
      "remediation": {
       "representation": "Hopscotch-style grid where each hop is counted only when the token lands on a new square",
       "moveShape": "Child hops the token and counts only landings; compare with counting squares touched"
+     }
+    },
+    {
+     "id": "c4-maths-ch02-t02-m-ignores-blocks",
+     "skillId": "c4-maths-ch02-t02-s2",
+     "source": "Hide and Seek — giving and following paths on a grid map",
+     "belief": "Thinks any path with the right number of steps across and up will work, without checking the squares it passes through",
+     "signs": [
+      "Gives a path straight through a pond, wall or building on the map",
+      "Checks only the end square, never the squares on the way",
+      "Says 'right then up' and 'up then right' are always both fine"
+     ],
+     "diagnostic": {
+      "prompt_en": "On a grid map, columns A to E go left to right and rows 1 to 5 go bottom to top. Ria starts at B2 and wants to reach D4. A wall fills square C2. Her friend says: go 2 steps right, then 2 steps up. Will that path work?",
+      "prompt_hi": "Ek grid map par columns A se E left se right jaate hain, aur rows 1 se 5 neeche se upar. Ria B2 se D4 tak jaana chahti hai. Square C2 mein deewar hai. Uski dost kehti hai: pehle 2 step right, phir 2 step upar. Kya yeh raasta chalega?",
+      "options": [
+       {
+        "text": "No, the wall at C2 is in the way",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Yes, 2 right and 2 up reaches D4",
+        "misconceptionId": "c4-maths-ch02-t02-m-ignores-blocks",
+        "correct": false
+       },
+       {
+        "text": "No, she needs 3 steps right",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A grid map with the wall square shaded and a counter the child moves one square at a time",
+      "moveShape": "child says the path → moves the counter square by square, naming each square → stops where a square is blocked → swaps the order and walks it again"
      }
     }
    ],
@@ -3707,6 +4025,33 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c4-maths-ch02-t02-i14",
+     "skillId": "c4-maths-ch02-t02-s2",
+     "source": "Hide and Seek — giving and following paths on a grid map",
+     "kind": "near_transfer",
+     "difficulty": 3,
+     "prompt_en": "On a farm grid map, columns A to E go left to right and rows 1 to 5 go bottom to top. The gate is at A2 and the well is at D5. A haystack fills square D2. Give a path from the gate to the well that has only one turn and does not go through the haystack.",
+     "prompt_hi": "Ek khet ke grid map par columns A se E left se right hain, aur rows 1 se 5 neeche se upar. Gate A2 par hai aur kuan D5 par. Square D2 mein bhoose ka dher hai. Gate se kuen tak aisa path batao jismein sirf ek turn ho aur jo bhoose ke dher se na guzre.",
+     "answer": "3 steps up, then 3 steps right",
+     "acceptable": [
+      "3 up then 3 right",
+      "up 3, right 3",
+      "three steps up, then three steps right"
+     ],
+     "hints": [
+      "How many steps right and how many steps up do you need from A2 to D5?",
+      "A to D is 3 steps right, and 2 to 5 is 3 steps up. Now check which order is clear.",
+      "Going right first passes B2, C2 and ___. Is that square free?",
+      "Right first hits the haystack at D2, so go 3 steps up, then 3 steps right."
+     ],
+     "targetsMisconception": "c4-maths-ch02-t02-m-ignores-blocks",
+     "verified": {
+      "solverAnswer": "Go up first: A2 up 3 squares to A5 (A3, A4, A5), then right 3 squares to D5 (B5, C5, D5). Going right first hits the haystack at D2.",
+      "agrees": true,
+      "note": "Blind-solved (class 4 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -3722,7 +4067,8 @@
      "Columns: A to C is ___ steps right.",
      "Rows: 1 to 4 is ___ steps up.",
      "Path: ___ steps right, then 3 steps ___."
-    ]
+    ],
+    "skillId": "c4-maths-ch02-t02-s1"
    },
    "formats": {
     "primary": "F3",
@@ -3743,6 +4089,66 @@
     "mela stalls",
     "cricket field positions",
     "hide and seek"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch02-t02-s2",
+     "source": "Hide and Seek — giving and following paths on a grid map",
+     "problem": "On a village grid map, columns A to E go left to right and rows 1 to 5 go bottom to top. Sonu's house is at B1 and the school is at E4. A pond fills squares C1 and D1. Give a path from the house to the school that has only one turn and does not go through the pond.",
+     "givens": [
+      "columns A to E, left to right; rows 1 to 5, bottom to top",
+      "house B1, school E4",
+      "pond at C1 and D1",
+      "only one turn"
+     ],
+     "find": "a one-turn path from B1 to E4 that avoids the pond",
+     "steps": [
+      {
+       "do": "columns B to E",
+       "result": "3 steps right"
+      },
+      {
+       "do": "rows 1 to 4",
+       "result": "3 steps up"
+      },
+      {
+       "do": "try right first → squares passed",
+       "result": "C1, D1: the pond, so no"
+      },
+      {
+       "do": "try up first → squares passed",
+       "result": "B2, B3, B4, then C4, D4, E4: all clear"
+      }
+     ],
+     "answer": "3 steps up, then 3 steps right",
+     "why": "count the steps across and up → try both one-turn orders → walk each square in your head → keep the order that misses the pond"
+    },
+    {
+     "skillId": "c4-maths-ch02-t02-s3",
+     "source": "Hide and Seek — left and right for someone facing another way",
+     "problem": "On a map, Arjun walks down the page, towards the bottom edge. The school is on the right-hand side of the page. Is the school on Arjun's left or on his right?",
+     "givens": [
+      "Arjun faces the bottom of the page",
+      "school on the page's right-hand side"
+     ],
+     "find": "whether the school is on Arjun's left or right",
+     "steps": [
+      {
+       "do": "a person facing the top of the page",
+       "result": "his right = the page's right"
+      },
+      {
+       "do": "Arjun faces the bottom → the opposite way",
+       "result": "his right = the page's left"
+      },
+      {
+       "do": "school on the page's right",
+       "result": "on Arjun's left"
+      }
+     ],
+     "answer": "On Arjun's left",
+     "why": "left and right go with the way a person faces → facing down the page flips them → page-right becomes his left"
+    }
    ]
   },
   {
@@ -7104,6 +7510,78 @@
       "representation": "Number line from 4200 to 4300 with 4250 marked",
       "moveShape": "Child finds the two hundreds neighbours and the halfway mark first, then places the number; ask which digit told them the side"
      }
+    },
+    {
+     "id": "c4-maths-ch04-t03-m-always-up",
+     "skillId": "c4-maths-ch04-t03-s1",
+     "source": "Thousands Around Us — nearest ten using the two neighbours and the halfway mark",
+     "belief": "Thinks rounding always means going up to the next ten",
+     "signs": [
+      "Rounds 43 to 50",
+      "Never checks the halfway mark before rounding",
+      "Says 'round off' means 'make it bigger'"
+     ],
+     "diagnostic": {
+      "prompt_en": "A shop has 43 kites. Round 43 to the nearest 10.",
+      "prompt_hi": "Ek dukaan mein 43 patang hain. 43 ko nearest 10 tak round karo.",
+      "options": [
+       {
+        "text": "40",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "50",
+        "misconceptionId": "c4-maths-ch04-t03-m-always-up",
+        "correct": false
+       },
+       {
+        "text": "30",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A number line from 40 to 50 with the halfway mark 45 drawn taller",
+      "moveShape": "child marks 43 on the line → asks which end it is closer to → below the halfway mark goes back to 40 → past it goes on to 50"
+     }
+    },
+    {
+     "id": "c4-maths-ch04-t03-m-about-is-exact",
+     "skillId": "c4-maths-ch04-t03-s3",
+     "source": "Thousands Around Us — about how many people live in a village (estimating by rounding)",
+     "belief": "Thinks a rounded 'about' number is the exact count",
+     "signs": [
+      "Reads 'about 3000 people' as exactly 3000 people",
+      "Is surprised when the real count is not a round number",
+      "Uses a rounded number as if it were the exact answer"
+     ],
+     "diagnostic": {
+      "prompt_en": "The school notice says 'about 600 children will go on the trip'. What does this tell you about the number of children?",
+      "prompt_hi": "School ke notice mein likha hai 'lagbhag 600 bachche trip par jaayenge'. Isse bachchon ki ginti ke baare mein kya pata chalta hai?",
+      "options": [
+       {
+        "text": "The number is near 600, a little more or a little less",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "The number is exactly 600, not one more or less",
+        "misconceptionId": "c4-maths-ch04-t03-m-about-is-exact",
+        "correct": false
+       },
+       {
+        "text": "The number is more than 1000, much bigger than 600",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A number line from 500 to 700 with the real count (say 587) and the rounded 600 both marked",
+      "moveShape": "child marks the real count → rounds it and marks 600 → sees two different points close together → 'about' names the nearby round number"
+     }
     }
    ],
    "items": [
@@ -7633,6 +8111,33 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c4-maths-ch04-t03-i14",
+     "skillId": "c4-maths-ch04-t03-s3",
+     "source": "Thousands Around Us — about how many people live in a village (estimating by rounding)",
+     "kind": "error_spot",
+     "difficulty": 2,
+     "prompt_en": "A newspaper says 'about 3000 people came to the village mela'. Raju says this means exactly 3000 people came. Is Raju right?",
+     "prompt_hi": "Akhbaar mein likha hai 'gaon ke mele mein lagbhag 3000 log aaye'. Raju kehta hai iska matlab theek 3000 log aaye. Kya Raju sahi hai?",
+     "answer": "No. 'About 3000' is a rounded number; the real count is near 3000 but may not be exactly 3000",
+     "acceptable": [
+      "no",
+      "no, it is a rounded number",
+      "no, it is near 3000"
+     ],
+     "hints": [
+      "What does the word 'about' tell you?",
+      "Newspapers often round big counts to an easy number.",
+      "The real count could be 2870 or 3120, which both round to ___.",
+      "No: 'about 3000' is rounded, so the real count is only near 3000."
+     ],
+     "targetsMisconception": "c4-maths-ch04-t03-m-about-is-exact",
+     "verified": {
+      "solverAnswer": "No. 'About 3000' is a rounded number: the real count is near 3000, a little more or a little less (e.g. anything from 2500 up to 3499 rounds to 3000).",
+      "agrees": true,
+      "note": "Blind-solved (class 4 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -7648,7 +8153,8 @@
      "The halfway mark is ___.",
      "7380 is ___ than 7500.",
      "So 7380 rounds to ___."
-    ]
+    ],
+    "skillId": "c4-maths-ch04-t03-s2"
    },
    "formats": {
     "primary": "F3",
@@ -7669,6 +8175,64 @@
     "shopping bills",
     "distances between cities",
     "mela visitors"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch04-t03-s1",
+     "source": "Thousands Around Us — nearest ten using the two neighbours and the halfway mark",
+     "problem": "A school bus carries 64 children to the mela. Round 64 to the nearest 10.",
+     "givens": [
+      "64 children"
+     ],
+     "find": "64 rounded to the nearest 10",
+     "steps": [
+      {
+       "do": "tens on either side",
+       "result": "60 and 70"
+      },
+      {
+       "do": "halfway mark between them",
+       "result": "65"
+      },
+      {
+       "do": "compare with the halfway mark",
+       "result": "64 is less than 65"
+      },
+      {
+       "do": "below halfway → the lower ten",
+       "result": "60"
+      }
+     ],
+     "answer": "60",
+     "why": "find the two neighbouring tens → find the halfway mark → below halfway is nearer the lower ten"
+    },
+    {
+     "skillId": "c4-maths-ch04-t03-s3",
+     "source": "Thousands Around Us — about how many people live in a village (estimating by rounding)",
+     "problem": "Rampur has 2380 people and Sonpur has 1790 people. Round each number to the nearest 1000 to find about how many people live in the two villages together.",
+     "givens": [
+      "Rampur: 2380 people",
+      "Sonpur: 1790 people",
+      "round to the nearest 1000"
+     ],
+     "find": "about how many people live in both villages together",
+     "steps": [
+      {
+       "do": "2380: neighbours 2000 and 3000, halfway 2500, below halfway",
+       "result": "2380 → 2000"
+      },
+      {
+       "do": "1790: neighbours 1000 and 2000, halfway 1500, above halfway",
+       "result": "1790 → 2000"
+      },
+      {
+       "do": "add the rounded numbers",
+       "result": "2000 + 2000 = 4000"
+      }
+     ],
+     "answer": "About 4000 people",
+     "why": "round each amount to the nearest thousand → easy numbers to add in the head → the sum is close to the real total"
+    }
    ]
   },
   {
@@ -8326,6 +8890,7 @@
      "geSource": "raters-v2",
      "demand": "apply",
      "relevel": "harder",
+     "targetsMisconception": "c4-maths-ch05-t01-m-part-part",
      "verified": {
       "solverAnswer": "one-quarter, 6 bottles",
       "agrees": true,
@@ -8379,7 +8944,8 @@
      "Share 15 pencils into ___ equal groups.",
      "Each group gets ___ pencils, because 3 groups of 5 make 15.",
      "So 1/3 of 15 is ___."
-    ]
+    ],
+    "skillId": "c4-maths-ch05-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -8401,6 +8967,62 @@
     "laddoos and bananas",
     "cricket team",
     "chocolate bars"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch05-t01-s1",
+     "source": "Sharing and Measuring — equal shares of a whole: halves, thirds, quarters",
+     "problem": "A chikki bar is cut into 3 pieces of the same size. Divya takes 1 piece. What fraction of the bar does Divya take, and what fraction is left?",
+     "givens": [
+      "1 chikki bar",
+      "3 pieces of the same size",
+      "Divya takes 1 piece"
+     ],
+     "find": "the fraction Divya takes and the fraction left",
+     "steps": [
+      {
+       "do": "check the pieces are equal",
+       "result": "yes: 3 equal parts"
+      },
+      {
+       "do": "1 of 3 equal parts",
+       "result": "1/3, one-third"
+      },
+      {
+       "do": "pieces left out of the 3",
+       "result": "2 of 3 equal parts: 2/3"
+      }
+     ],
+     "answer": "Divya takes 1/3 of the bar; 2/3 is left",
+     "why": "equal parts first → count the parts in the whole for the bottom number → count the parts taken for the top number"
+    },
+    {
+     "skillId": "c4-maths-ch05-t01-s3",
+     "source": "Sharing and Measuring — comparing unit fractions of the same whole",
+     "problem": "Two watermelons are the same size. One is cut into 3 equal pieces and the other into 4 equal pieces. Which piece is bigger: 1/3 of a watermelon or 1/4 of a watermelon, or are they the same?",
+     "givens": [
+      "two watermelons of the same size",
+      "one cut into 3 equal pieces",
+      "the other cut into 4 equal pieces"
+     ],
+     "find": "which is bigger, 1/3 or 1/4 of the same-size watermelon, or whether they are the same",
+     "steps": [
+      {
+       "do": "same whole → compare the number of equal pieces",
+       "result": "3 pieces and 4 pieces"
+      },
+      {
+       "do": "more pieces from the same whole → each piece smaller",
+       "result": "a quarter piece is smaller"
+      },
+      {
+       "do": "so the piece from 3 equal parts",
+       "result": "1/3 is bigger than 1/4"
+      }
+     ],
+     "answer": "1/3 of the watermelon is bigger",
+     "why": "same whole → cut into more equal parts → each part is smaller → 1/3 beats 1/4"
+    }
    ]
   },
   {
@@ -8531,6 +9153,78 @@
      "remediation": {
       "representation": "Four equal packets that together balance 1 kg",
       "moveShape": "Child shares 1000 g into 4 equal packets and names the weight of one; ask how many quarter packets make the kilo"
+     }
+    },
+    {
+     "id": "c4-maths-ch05-t02-m-metre-is-1000",
+     "skillId": "c4-maths-ch05-t02-s2",
+     "source": "Sharing and Measuring — fractions of a metre in centimetres",
+     "belief": "Uses 1000 for a whole metre, as for a kilo or a litre, so half a metre becomes 500 cm",
+     "signs": [
+      "Says half a metre is 500 cm",
+      "Says a quarter metre is 250 cm",
+      "Gives a length longer than a whole metre for part of a metre"
+     ],
+     "diagnostic": {
+      "prompt_en": "Riya needs half a metre of ribbon for her rakhi stall. How many centimetres is that?",
+      "prompt_hi": "Riya ko apne rakhi stall ke liye aadha metre ribbon chahiye. Woh kitne centimetre hua?",
+      "options": [
+       {
+        "text": "50 cm",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "500 cm",
+        "misconceptionId": "c4-maths-ch05-t02-m-metre-is-1000",
+        "correct": false
+       },
+       {
+        "text": "5 cm",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A metre scale beside a 1 kg packet and a 1 litre bottle, each labelled with its own whole: 100 cm, 1000 g, 1000 ml",
+      "moveShape": "child names the whole for this measure first → metre is 100 cm → half of 100 → check the part is shorter than the whole scale"
+     }
+    },
+    {
+     "id": "c4-maths-ch05-t02-m-add-tops-bottoms",
+     "skillId": "c4-maths-ch05-t02-s3",
+     "source": "Sharing and Measuring — combining fractions of a kilogram",
+     "belief": "Combines fractions of a measure by adding the top numbers and the bottom numbers, so 1/2 kg and 1/4 kg make 2/6 kg",
+     "signs": [
+      "Writes 1/2 + 1/4 = 2/6",
+      "Gets a total smaller than one of the parts it added",
+      "Does not turn the fractions into grams before adding"
+     ],
+     "diagnostic": {
+      "prompt_en": "Amma puts 1/2 kg of potatoes and 1/4 kg of onions into one bag. How much is in the bag?",
+      "prompt_hi": "Amma ek thaile mein 1/2 kg aaloo aur 1/4 kg pyaaz daalti hain. Thaile mein kitna saaman hai?",
+      "options": [
+       {
+        "text": "3/4 kg",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "2/6 kg",
+        "misconceptionId": "c4-maths-ch05-t02-m-add-tops-bottoms",
+        "correct": false
+       },
+       {
+        "text": "2/4 kg",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A kitchen scale with 250 g marks: 1/2 kg as two 250 g packets and 1/4 kg as one",
+      "moveShape": "turn each fraction into grams → 500 g and 250 g → add the grams → 750 g is three quarter-kilos → check the total is bigger than each part"
      }
     }
    ],
@@ -9104,7 +9798,8 @@
      "A quarter kilo is 1000 g shared into ___ equal parts, which is 250 g.",
      "Three-quarters is ___ of those parts: 250 + 250 + 250.",
      "So three-quarter kilo is ___ g."
-    ]
+    ],
+    "skillId": "c4-maths-ch05-t02-s1"
    },
    "formats": {
     "primary": "F4",
@@ -9125,6 +9820,66 @@
     "cloth and ribbon shop",
     "kirana store",
     "sweets shop"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch05-t02-s2",
+     "source": "Sharing and Measuring — fractions of a metre in centimetres",
+     "problem": "Amma buys a quarter metre of lace and three-quarter metre of ribbon. How many centimetres of lace and how many centimetres of ribbon is that?",
+     "givens": [
+      "lace: a quarter metre",
+      "ribbon: three-quarter metre",
+      "1 m = 100 cm"
+     ],
+     "find": "the lace and the ribbon in centimetres",
+     "steps": [
+      {
+       "do": "whole metre in centimetres",
+       "result": "100 cm"
+      },
+      {
+       "do": "quarter → 100 cm shared into 4 equal parts",
+       "result": "25 cm → 25 + 25 + 25 + 25 = 100"
+      },
+      {
+       "do": "three-quarters → 3 of those parts",
+       "result": "25 + 25 + 25 = 75 cm"
+      }
+     ],
+     "answer": "Lace 25 cm, ribbon 75 cm",
+     "why": "a metre is 100 cm → a quarter is 1 of 4 equal parts of 100 → three-quarters is 3 such parts"
+    },
+    {
+     "skillId": "c4-maths-ch05-t02-s3",
+     "source": "Sharing and Measuring — combining fractions of a litre",
+     "problem": "Dadi buys half a litre of milk in the morning and a quarter litre in the evening. How many millilitres does she buy in all? Is it more or less than 1 litre?",
+     "givens": [
+      "morning: half a litre",
+      "evening: a quarter litre",
+      "1 litre = 1000 ml"
+     ],
+     "find": "the total in millilitres, and whether it is more or less than 1 litre",
+     "steps": [
+      {
+       "do": "half a litre in ml",
+       "result": "500 ml → 500 + 500 = 1000"
+      },
+      {
+       "do": "a quarter litre in ml",
+       "result": "250 ml → 250 + 250 + 250 + 250 = 1000"
+      },
+      {
+       "do": "add the two amounts",
+       "result": "500 + 250 = 750 ml"
+      },
+      {
+       "do": "compare with 1 litre",
+       "result": "750 ml is less than 1000 ml"
+      }
+     ],
+     "answer": "750 ml in all, less than 1 litre",
+     "why": "turn each fraction of a litre into ml → same unit → add → compare with 1000 ml"
+    }
    ]
   },
   {
@@ -10115,6 +10870,42 @@
       "representation": "Grid shape with every unit edge on the boundary coloured, corners showing two coloured edges",
       "moveShape": "Child taps each coloured edge, not each square; ask how many edges a corner square gives"
      }
+    },
+    {
+     "id": "c4-maths-ch06-t02-m-misses-a-side",
+     "skillId": "c4-maths-ch06-t02-s1",
+     "source": "Measuring Length — distance around a shape by adding all its sides",
+     "belief": "Leaves out a side when adding the sides of a shape with many sides, often the last side back to the start",
+     "signs": [
+      "Adds 4 of the 5 sides of a five-sided shape",
+      "Stops adding before getting back to the starting corner",
+      "Cannot say how many sides the shape has"
+     ],
+     "diagnostic": {
+      "prompt_en": "A five-sided flower bed has sides of 3 m, 4 m, 2 m, 5 m and 6 m. What is the distance around it?",
+      "prompt_hi": "Ek paanch sides waali phoolon ki kyaari ki sides 3 m, 4 m, 2 m, 5 m aur 6 m hain. Iske chaaron taraf ki doori kitni hai?",
+      "options": [
+       {
+        "text": "20 m",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "14 m",
+        "misconceptionId": "c4-maths-ch06-t02-m-misses-a-side",
+        "correct": false
+       },
+       {
+        "text": "26 m",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "The shape drawn with each side to be ticked as it is added, and a toy ant walking the edge",
+      "moveShape": "child says how many sides first → ant walks the edge, ticking each side as its length is added → stop only when the ant is back at the start → ticks equal the number of sides"
+     }
     }
    ],
    "items": [
@@ -10689,7 +11480,8 @@
      "The sides are 150, 100, ___ and ___ cm.",
      "150 + 100 + 150 + 100 = ___.",
      "So ___ cm of lace is needed."
-    ]
+    ],
+    "skillId": "c4-maths-ch06-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -10711,6 +11503,64 @@
     "photo frame",
     "cricket ground boundary",
     "rangoli border"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch06-t02-s1",
+     "source": "Measuring Length — distance around a shape by adding all its sides",
+     "problem": "A five-sided rangoli board has sides of 12 cm, 8 cm, 10 cm, 8 cm and 12 cm. How much lace goes once around its edge?",
+     "givens": [
+      "5 sides: 12 cm, 8 cm, 10 cm, 8 cm, 12 cm",
+      "lace goes once around"
+     ],
+     "find": "the length of lace for the whole edge",
+     "steps": [
+      {
+       "do": "list every side once, going round",
+       "result": "12, 8, 10, 8, 12 (5 sides)"
+      },
+      {
+       "do": "add the first two",
+       "result": "12 + 8 = 20"
+      },
+      {
+       "do": "add the next two",
+       "result": "20 + 10 + 8 = 38"
+      },
+      {
+       "do": "add the last side",
+       "result": "38 + 12 = 50 cm"
+      }
+     ],
+     "answer": "50 cm of lace",
+     "why": "distance around = walk every side once back to the start → add all the side lengths → tick each side so none is missed"
+    },
+    {
+     "skillId": "c4-maths-ch06-t02-s3",
+     "source": "Measuring Length — distance around a shape versus the space inside it",
+     "problem": "On a square grid, a rectangle is 4 units long and 2 units tall. How many small squares are inside it, and how many units is the distance around it?",
+     "givens": [
+      "rectangle on a square grid",
+      "4 units long, 2 units tall"
+     ],
+     "find": "the number of small squares inside and the distance around in units",
+     "steps": [
+      {
+       "do": "space inside: 2 rows of 4 squares",
+       "result": "4 + 4 = 8 squares"
+      },
+      {
+       "do": "distance around: add the 4 sides",
+       "result": "4 + 2 + 4 + 2 = 12 units"
+      },
+      {
+       "do": "compare the two answers",
+       "result": "8 squares inside is not 12 units around"
+      }
+     ],
+     "answer": "8 squares inside; 12 units around",
+     "why": "inside → count the squares that fill it → around → add the lengths of the edges → two different questions, two different answers"
+    }
    ]
   },
   {
@@ -12264,7 +13114,8 @@
      "Add the rounded prices: 200 + 100 + 100 = ___.",
      "₹400 is well below ₹___, so the money is enough.",
      "Check exactly: 185 + 122 + 89 = ___, close to the estimate of 400."
-    ]
+    ],
+    "skillId": "c4-maths-ch07-t02-s2"
    },
    "formats": {
     "primary": "F4",
@@ -12285,6 +13136,63 @@
     "stationery shop",
     "train journey costs",
     "birthday party snacks"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch07-t02-s1",
+     "source": "The Cleanest Village — estimating a total cost by rounding prices",
+     "problem": "For the village clean-up, Salma buys a broom for ₹62, a dustpan for ₹29 and gloves for ₹47. Round each price to the nearest ₹10 and estimate the total cost.",
+     "givens": [
+      "broom ₹62",
+      "dustpan ₹29",
+      "gloves ₹47",
+      "round to the nearest ₹10"
+     ],
+     "find": "the estimated total cost",
+     "steps": [
+      {
+       "do": "round each price to the nearest ten",
+       "result": "62 → 60, 29 → 30, 47 → 50"
+      },
+      {
+       "do": "add the rounded prices",
+       "result": "60 + 30 + 50 = 140"
+      }
+     ],
+     "answer": "About ₹140",
+     "why": "round each price to an easy ten → add the easy numbers in the head → the sum is close to the real bill"
+    },
+    {
+     "skillId": "c4-maths-ch07-t02-s3",
+     "source": "The Cleanest Village — checking an exact answer with an estimate",
+     "problem": "Pinky adds ₹278 and ₹415 and gets ₹1693. Round each amount to the nearest hundred to check whether her answer is sensible.",
+     "givens": [
+      "₹278 + ₹415",
+      "Pinky's answer: ₹1693",
+      "round to the nearest hundred"
+     ],
+     "find": "whether ₹1693 is a sensible answer",
+     "steps": [
+      {
+       "do": "round each amount to the nearest hundred",
+       "result": "278 → 300, 415 → 400"
+      },
+      {
+       "do": "add the rounded amounts",
+       "result": "300 + 400 = 700"
+      },
+      {
+       "do": "compare her answer with the estimate",
+       "result": "1693 is far bigger than 700"
+      },
+      {
+       "do": "exact sum to confirm",
+       "result": "278 + 415 = 693"
+      }
+     ],
+     "answer": "Not sensible: the estimate is about ₹700, so ₹1693 is far too big; the exact sum is ₹693",
+     "why": "estimate first → the exact answer must land near the estimate → an answer far away means a slip"
+    }
    ]
   },
   {
@@ -12998,7 +13906,8 @@
      "1 kg 300 g = 1000 g + 300 g = ___ g.",
      "Compare 1300 g with ___ g: 1300 is more.",
      "So the ___ is heavier, by 50 g."
-    ]
+    ],
+    "skillId": "c4-maths-ch08-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -13019,6 +13928,57 @@
     "sabzi market",
     "sweets by the kilo",
     "post office parcels"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch08-t01-s1",
+     "source": "Weigh it, Pour it — 1 kg = 1000 g, changing kg and g into grams",
+     "problem": "A sack of potatoes at Ramu's vegetable shop weighs 4 kg 250 g. How many grams is that?",
+     "givens": [
+      "sack = 4 kg 250 g",
+      "1 kg = 1000 g"
+     ],
+     "find": "the weight of the sack in grams",
+     "steps": [
+      {
+       "do": "1 kg = 1000 g → change the kilograms",
+       "result": "4 × 1000 = 4000 g"
+      },
+      {
+       "do": "add the extra grams",
+       "result": "4000 + 250 = 4250 g"
+      }
+     ],
+     "answer": "4250 g",
+     "why": "1 kg is 1000 g → each kilogram becomes 1000 grams → add the grams left over"
+    },
+    {
+     "skillId": "c4-maths-ch08-t01-s3",
+     "source": "Weigh it, Pour it — adding weights in kg and g",
+     "problem": "Amma buys 1 kg 500 g of rice, 750 g of dal and 1 kg 250 g of sugar at the market. What is the total weight of her bag, in kilograms and grams?",
+     "givens": [
+      "rice = 1 kg 500 g",
+      "dal = 750 g",
+      "sugar = 1 kg 250 g"
+     ],
+     "find": "the total weight in kg and g",
+     "steps": [
+      {
+       "do": "change each weight to grams",
+       "result": "1500 g, 750 g, 1250 g"
+      },
+      {
+       "do": "add the grams",
+       "result": "1500 + 750 + 1250 = 3500 g"
+      },
+      {
+       "do": "split into kilograms and grams",
+       "result": "3000 g is 3 kg, 500 g left over"
+      }
+     ],
+     "answer": "3 kg 500 g (3500 g)",
+     "why": "same unit first → add → every 1000 g makes 1 kg"
+    }
    ]
   },
   {
@@ -13147,6 +14107,42 @@
      "remediation": {
       "representation": "1 l jug filled with ten 100 ml cups",
       "moveShape": "Child fills the jug cup by cup and counts the ml; ask how many cups and how many ml in all"
+     }
+    },
+    {
+     "id": "c4-maths-ch08-t02-m-drops-ml",
+     "skillId": "c4-maths-ch08-t02-s3",
+     "source": "Weigh it, Pour it — 'how much more' with litres and millilitres",
+     "belief": "In a 'how much more' capacity problem, takes away only the litres and forgets the millilitres",
+     "signs": [
+      "Says a 5 l bucket holds 4 l more than a 1 l 250 ml jug",
+      "Answers in whole litres even when the question has millilitres",
+      "Does not change litres to millilitres before taking away"
+     ],
+     "diagnostic": {
+      "prompt_en": "A bucket holds 5 l of water. A jug holds 1 l 250 ml. How much more water does the bucket hold than the jug?",
+      "prompt_hi": "Ek bucket mein 5 l paani aata hai. Ek jug mein 1 l 250 ml aata hai. Bucket mein jug se kitna zyada paani aata hai?",
+      "options": [
+       {
+        "text": "3 l 750 ml",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "4 l",
+        "misconceptionId": "c4-maths-ch08-t02-m-drops-ml",
+        "correct": false
+       },
+       {
+        "text": "4 l 250 ml",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A measuring jug marked every 250 ml standing beside the bucket",
+      "moveShape": "change both to ml → 5000 and 1250 → take away → 3750 ml → change back to l and ml → the ml part stays in the answer"
      }
     }
    ],
@@ -13705,7 +14701,8 @@
      "One litre fills ___ glasses of 250 ml, because 250 + 250 + 250 + 250 = 1000.",
      "2 litres fill 4 + ___ glasses.",
      "So ___ glasses are filled."
-    ]
+    ],
+    "skillId": "c4-maths-ch08-t02-s3"
    },
    "formats": {
     "primary": "F3",
@@ -13726,6 +14723,52 @@
     "buckets and mugs",
     "cooking oil",
     "lassi at a dhaba"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch08-t02-s1",
+     "source": "Weigh it, Pour it — 1 l = 1000 ml, changing litres into millilitres",
+     "problem": "Priya's family buys a 2 l 500 ml can of mustard oil. How many millilitres of oil is that?",
+     "givens": [
+      "can = 2 l 500 ml",
+      "1 l = 1000 ml"
+     ],
+     "find": "the oil in millilitres",
+     "steps": [
+      {
+       "do": "1 l = 1000 ml → change the litres",
+       "result": "2 × 1000 = 2000 ml"
+      },
+      {
+       "do": "add the extra millilitres",
+       "result": "2000 + 500 = 2500 ml"
+      }
+     ],
+     "answer": "2500 ml",
+     "why": "1 l is 1000 ml → each litre becomes 1000 millilitres → add the millilitres left over"
+    },
+    {
+     "skillId": "c4-maths-ch08-t02-s2",
+     "source": "Weigh it, Pour it — comparing capacities in l and ml",
+     "problem": "A steel lota holds 1 l 50 ml of water. A plastic bottle holds 1200 ml. Which one holds more, or do they hold the same?",
+     "givens": [
+      "lota = 1 l 50 ml",
+      "bottle = 1200 ml"
+     ],
+     "find": "which holds more",
+     "steps": [
+      {
+       "do": "change the lota to millilitres",
+       "result": "1000 + 50 = 1050 ml"
+      },
+      {
+       "do": "compare in the same unit",
+       "result": "1200 ml is more than 1050 ml"
+      }
+     ],
+     "answer": "The plastic bottle holds more: 1200 ml against 1050 ml",
+     "why": "same unit first → then compare the numbers → never compare the 1 of the litres with 1200"
+    }
    ]
   },
   {
@@ -14754,6 +15797,42 @@
       "representation": "Grouping boxes: pack groups of 4 and look at the leftover pile",
       "moveShape": "Child checks whether another full box can be made from the leftover pile; keep packing until it cannot"
      }
+    },
+    {
+     "id": "c4-maths-ch09-t02-m-share-subtract",
+     "skillId": "c4-maths-ch09-t02-s1",
+     "source": "Equal Groups — sharing equally",
+     "belief": "Thinks sharing equally among some people means taking that many away, so 15 shared among 3 gives 12 each",
+     "signs": [
+      "Says each of 3 monkeys gets 12 when 15 bananas are shared",
+      "Gives each person a share bigger than the whole allows",
+      "Does not check that all the shares together make the total"
+     ],
+     "diagnostic": {
+      "prompt_en": "20 rotis are shared equally among 4 people. How many rotis does each person get?",
+      "prompt_hi": "20 rotiyan 4 logon mein barabar baanti jaati hain. Har ek ko kitni rotiyan milti hain?",
+      "options": [
+       {
+        "text": "5",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "16",
+        "misconceptionId": "c4-maths-ch09-t02-m-share-subtract",
+        "correct": false
+       },
+       {
+        "text": "24",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Twenty counters dealt one by one onto 4 plates",
+      "moveShape": "deal one to each plate per round → stop when none are left → read one plate → check: 4 plates × share = 20"
+     }
     }
    ],
    "items": [
@@ -15335,7 +16414,8 @@
      "Each child gets ___ pencils.",
      "Leftover: 27 − 24 = ___, and 3 is less than 4, so no more full rounds.",
      "So each child gets 6 pencils and ___ are left over."
-    ]
+    ],
+    "skillId": "c4-maths-ch09-t02-s3"
    },
    "formats": {
     "primary": "F3",
@@ -15357,6 +16437,65 @@
     "teams for games",
     "pencils for the class",
     "bananas for monkeys at the zoo"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch09-t02-s1",
+     "source": "Equal Groups — sharing equally",
+     "problem": "Nani shares 32 mangoes equally among her 4 grandchildren. How many mangoes does each grandchild get?",
+     "givens": [
+      "32 mangoes",
+      "4 grandchildren",
+      "shared equally"
+     ],
+     "find": "mangoes for each grandchild",
+     "steps": [
+      {
+       "do": "give one to each child in a round → each round uses 4",
+       "result": "4 mangoes per round"
+      },
+      {
+       "do": "find how many rounds use up 32 with the 4-table",
+       "result": "4 × 8 = 32"
+      },
+      {
+       "do": "number of rounds = mangoes for each child",
+       "result": "8 each"
+      },
+      {
+       "do": "check nothing is left",
+       "result": "32 − 32 = 0"
+      }
+     ],
+     "answer": "8 mangoes each",
+     "why": "sharing equally → each round gives everyone one → number of rounds = each one's share → the 4-table finds the rounds"
+    },
+    {
+     "skillId": "c4-maths-ch09-t02-s2",
+     "source": "Equal Groups — making equal groups and the multiplication fact",
+     "problem": "Seema packs 45 eggs into trays that hold 5 eggs each. How many trays does she fill, and which multiplication fact shows it?",
+     "givens": [
+      "45 eggs",
+      "5 eggs in each tray"
+     ],
+     "find": "the number of trays and the matching fact",
+     "steps": [
+      {
+       "do": "each tray takes 5 → how many 5s make 45?",
+       "result": "count the groups of 5"
+      },
+      {
+       "do": "5-table",
+       "result": "5 × 9 = 45"
+      },
+      {
+       "do": "so the division",
+       "result": "45 ÷ 5 = 9"
+      }
+     ],
+     "answer": "9 trays; 5 × 9 = 45, so 45 ÷ 5 = 9",
+     "why": "grouping → count groups of 5 → the 5-table fact that makes 45 gives the number of groups"
+    }
    ]
   },
   {
@@ -15485,6 +16624,42 @@
      "remediation": {
       "representation": "Balance scale: both pans must weigh the same",
       "moveShape": "Child puts 6 + 3 on one pan and 2 on the other, then adds weights until it balances; ask what 'equals' told the scale to do"
+     }
+    },
+    {
+     "id": "c4-maths-ch10-t01-m-aim-for-nine",
+     "skillId": "c4-maths-ch10-t01-s3",
+     "source": "Elephants, Tigers, and Leopards — the 'reach 10' game",
+     "belief": "In the 'reach 10' game, tries to say 9, the number just before 10, not seeing that the friend then says 10",
+     "signs": [
+      "Jumps to 9 and is surprised when the friend says 10",
+      "Thinks the number right before 10 is the best one to say",
+      "Cannot say which number to land on before 10"
+     ],
+     "diagnostic": {
+      "prompt_en": "In the 'reach 10' game, players take turns adding 1 or 2, and whoever says 10 wins. Which number should Asha say to be sure of winning on her next turn: 7, 8 or 9?",
+      "prompt_hi": "'Reach 10' game mein baari-baari 1 ya 2 jodte hain, aur jo 10 bolega woh jeetega. Asha kaun sa number bole taaki agli baari mein woh pakka jeete: 7, 8 ya 9?",
+      "options": [
+       {
+        "text": "7",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "9",
+        "misconceptionId": "c4-maths-ch10-t01-m-aim-for-nine",
+        "correct": false
+       },
+       {
+        "text": "8",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A number strip from 0 to 10 with 10, 7, 4 and 1 coloured",
+      "moveShape": "start at 10 → from 8 or 9 the friend reaches 10 → step back 3 → 7 is safe → step back 3 again → 4 and 1"
      }
     }
    ],
@@ -16067,7 +17242,8 @@
      "68 + 30 = ___.",
      "We added 1 too ___, because 30 is 1 more than 29.",
      "So take away 1: 98 − 1 = ___."
-    ]
+    ],
+    "skillId": "c4-maths-ch10-t01-s2"
    },
    "formats": {
     "primary": "F6",
@@ -16089,6 +17265,65 @@
     "heights of friends",
     "bus stop counts",
     "pocket money"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch10-t01-s1",
+     "source": "Elephants, Tigers, and Leopards — patterns in the addition chart",
+     "problem": "In an addition chart, the row for 35 meets the column for 12 at 47. What is the entry where the row for 36 meets the column for 12? And where the row for 36 meets the column for 13?",
+     "givens": [
+      "row 35, column 12 → 47",
+      "each entry = row number + column number"
+     ],
+     "find": "the entries at row 36, column 12 and at row 36, column 13",
+     "steps": [
+      {
+       "do": "one row down → first number 1 more → entry 1 more",
+       "result": "47 + 1 = 48"
+      },
+      {
+       "do": "one column right → second number 1 more → entry 1 more",
+       "result": "48 + 1 = 49"
+      },
+      {
+       "do": "check by adding",
+       "result": "36 + 13 = 49"
+      }
+     ],
+     "answer": "48 and 49",
+     "why": "chart entry = row + column → 1 more in either → entry 1 more → one step down and one right adds 2"
+    },
+    {
+     "skillId": "c4-maths-ch10-t01-s3",
+     "source": "Elephants, Tigers, and Leopards — the 'reach 10' game",
+     "problem": "In the 'reach 10' game, two players take turns adding 1 or 2 to a total that starts at 0. Whoever says 10 wins. The total is 5 and it is your turn. What should you say, and how do you make sure you win?",
+     "givens": [
+      "each turn adds 1 or 2",
+      "whoever says 10 wins",
+      "total is 5, your turn"
+     ],
+     "find": "the number to say now and the plan to win",
+     "steps": [
+      {
+       "do": "count back from 10 in 3s → the safe numbers",
+       "result": "10, 7, 4, 1"
+      },
+      {
+       "do": "from 5, reach the next safe number",
+       "result": "5 + 2 = 7"
+      },
+      {
+       "do": "friend adds 1 or 2",
+       "result": "8 or 9"
+      },
+      {
+       "do": "add the other number so the two moves make 3",
+       "result": "7 + 3 = 10"
+      }
+     ],
+     "answer": "Say 7 (add 2); then whatever your friend adds, add the other number so you say 10",
+     "why": "friend's move + your move can always make 3 → land on 7 → 3 more is 10 → you say it"
+    }
    ]
   },
   {
@@ -16214,6 +17449,42 @@
      "remediation": {
       "representation": "Place-value chart with a thousands column that 985 leaves empty",
       "moveShape": "Child writes both counts in the chart and compares the thousands column first"
+     }
+    },
+    {
+     "id": "c4-maths-ch10-t02-m-wrong-cell",
+     "skillId": "c4-maths-ch10-t02-s1",
+     "source": "Elephants, Tigers, and Leopards — reading counts from a table",
+     "belief": "Reads the count from the wrong column of the table, such as the other year in the same row",
+     "signs": [
+      "Gives the 2018 count when asked for 2022",
+      "Finds the right state but not the right column",
+      "Reads the first number in the row whatever the question asks"
+     ],
+     "diagnostic": {
+      "prompt_en": "A tiger table has two columns: first 2018, then 2022. The Uttarakhand row reads 442, 560. The Maharashtra row reads 312, 444. How many tigers did Uttarakhand have in 2022?",
+      "prompt_hi": "Tiger table mein do columns hain: pehle 2018, phir 2022. Uttarakhand wali row mein 442, 560 likha hai. Maharashtra wali row mein 312, 444 likha hai. 2022 mein Uttarakhand mein kitne tiger the?",
+      "options": [
+       {
+        "text": "560",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "442",
+        "misconceptionId": "c4-maths-ch10-t02-m-wrong-cell",
+        "correct": false
+       },
+       {
+        "text": "444",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "The table with one finger on the row name and one on the column name",
+      "moveShape": "find the row → find the column → slide both fingers until they meet → read only that cell → say row, column and number together"
      }
     }
    ],
@@ -16792,7 +18063,8 @@
      "Ones: 8 − 6 = ___. Tens: 0 − 7 needs a borrow, so borrow from the hundreds: 10 − 7 = 3 and the 3 hundreds become 2.",
      "Hundreds: 2 − 9 needs a borrow, so borrow from the thousand: 12 − 9 = ___. Thousands: 0 left.",
      "So ___ more visitors came on Saturday. Check: 976 + 332 = 1308."
-    ]
+    ],
+    "skillId": "c4-maths-ch10-t02-s2"
    },
    "formats": {
     "primary": "F4",
@@ -16813,6 +18085,62 @@
     "visitors to a museum",
     "votes in a class election",
     "mangoes from two trees"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch10-t02-s1",
+     "source": "Elephants, Tigers, and Leopards — reading counts from a table",
+     "problem": "A table shows tigers counted in two years. Karnataka row: 2018 — 524, 2022 — 563. Madhya Pradesh row: 2018 — 526, 2022 — 785. Uttarakhand row: 2018 — 442, 2022 — 560. How many tigers did Madhya Pradesh have in 2018?",
+     "givens": [
+      "rows: Karnataka, Madhya Pradesh, Uttarakhand",
+      "columns: 2018, 2022"
+     ],
+     "find": "Madhya Pradesh's count in 2018",
+     "steps": [
+      {
+       "do": "find the Madhya Pradesh row",
+       "result": "526 and 785"
+      },
+      {
+       "do": "take the 2018 column in that row",
+       "result": "526"
+      }
+     ],
+     "answer": "526 tigers",
+     "why": "row picks the state → column picks the year → the count sits where they cross"
+    },
+    {
+     "skillId": "c4-maths-ch10-t02-s3",
+     "source": "Elephants, Tigers, and Leopards — ordering large counts, two-step question",
+     "problem": "Tigers counted in 2022: Karnataka 563, Madhya Pradesh 785, Uttarakhand 560, Maharashtra 444. Order the states from most to fewest tigers. How many more tigers does the top state have than the bottom state?",
+     "givens": [
+      "Karnataka 563",
+      "Madhya Pradesh 785",
+      "Uttarakhand 560",
+      "Maharashtra 444"
+     ],
+     "find": "the order, and the gap between the most and the fewest",
+     "steps": [
+      {
+       "do": "compare the hundreds",
+       "result": "7 hundreds is most, 4 hundreds is fewest"
+      },
+      {
+       "do": "563 and 560 have the same hundreds and tens → compare ones",
+       "result": "3 ones is more than 0 ones, so 563 is more"
+      },
+      {
+       "do": "write the order",
+       "result": "785, 563, 560, 444"
+      },
+      {
+       "do": "most minus fewest",
+       "result": "785 − 444 = 341"
+      }
+     ],
+     "answer": "Madhya Pradesh, Karnataka, Uttarakhand, Maharashtra; Madhya Pradesh has 341 more tigers than Maharashtra",
+     "why": "compare place by place from the left → order the counts → 'how many more' = bigger − smaller"
+    }
    ]
   },
   {
@@ -17484,6 +18812,32 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c4-maths-ch11-t01-i14",
+     "skillId": "c4-maths-ch11-t01-s1",
+     "kind": "error_spot",
+     "difficulty": 3,
+     "source": "Fun with Symmetry — the halves must match exactly when folded",
+     "prompt_en": "Ravi folds a paper rectangle, 12 cm long and 6 cm wide, from one corner to the opposite corner. He says the two halves are equal triangles, so the fold must be a line of symmetry. Is he right?",
+     "prompt_hi": "Ravi ek kaagaz ka rectangle, 12 cm lamba aur 6 cm chauda, ek corner se saamne wale corner tak fold karta hai. Woh kehta hai dono halves barabar triangles hain, isliye fold line of symmetry hogi. Kya woh sahi hai?",
+     "answer": "No; the halves are the same size, but when folded they do not lie exactly on top of each other: two corners stick out",
+     "acceptable": [
+      "no",
+      "not a line of symmetry"
+     ],
+     "hints": [
+      "What must happen to the two halves when you fold along a line of symmetry?",
+      "One half must lie exactly on the other, with nothing sticking out.",
+      "Fold the long rectangle corner to corner: do the corners stick ___?",
+      "Two corners stick out, so it is not a line of symmetry, even though the halves are equal."
+     ],
+     "targetsMisconception": "c4-maths-ch11-t01-m-equal-halves-is-symmetry",
+     "verified": {
+      "solverAnswer": "No. The two triangles are equal in size, but when folded along the diagonal of a 12 cm by 6 cm rectangle they do not land on top of each other, so the diagonal is not a line of symmetry.",
+      "agrees": true,
+      "note": "Blind-solved (class 4 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -17499,7 +18853,8 @@
      "Fold it side to side: the halves match, so that is a ___ line.",
      "Fold it corner to corner: two corners stick ___, so that is not a line of symmetry.",
      "So a rectangle has ___ lines of symmetry."
-    ]
+    ],
+    "skillId": "c4-maths-ch11-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -17520,6 +18875,64 @@
     "butterflies and leaves",
     "letters of names",
     "temple doors"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch11-t01-s1",
+     "source": "Fun with Symmetry — testing a fold line: the halves must match exactly",
+     "problem": "A square sheet of paper is folded along the line from one corner to the opposite corner. Is the fold a line of symmetry?",
+     "givens": [
+      "square sheet",
+      "fold from one corner to the opposite corner"
+     ],
+     "find": "whether the fold is a line of symmetry",
+     "steps": [
+      {
+       "do": "fold along the corner-to-corner line",
+       "result": "two triangles, one on top of the other"
+      },
+      {
+       "do": "check every edge and corner",
+       "result": "each lies exactly on another; nothing sticks out"
+      },
+      {
+       "do": "halves match exactly",
+       "result": "the fold is a line of symmetry"
+      }
+     ],
+     "answer": "Yes, the corner-to-corner fold of a square is a line of symmetry",
+     "why": "fold along the line → one half lies exactly on the other with nothing sticking out → it is a line of symmetry"
+    },
+    {
+     "skillId": "c4-maths-ch11-t01-s3",
+     "source": "Fun with Symmetry — lines of symmetry in letters",
+     "problem": "Think of the block capital letter H, with its crossbar exactly in the middle, and the block capital letter E. How many lines of symmetry does each have? Does H have more, fewer, or are they the same?",
+     "givens": [
+      "block capital H, crossbar in the middle",
+      "block capital E"
+     ],
+     "find": "the number of lines of symmetry of H and of E",
+     "steps": [
+      {
+       "do": "H: standing line down the middle",
+       "result": "left and right halves match, 1 line"
+      },
+      {
+       "do": "H: lying line through the crossbar",
+       "result": "top and bottom halves match, a 2nd line"
+      },
+      {
+       "do": "H: slanting folds",
+       "result": "parts stick out, not lines of symmetry"
+      },
+      {
+       "do": "E: lying line through the middle arm only",
+       "result": "1 line"
+      }
+     ],
+     "answer": "H has 2 lines (one standing, one lying); E has 1, so H has more",
+     "why": "try standing, lying and slanting folds → keep only folds where the halves match exactly → count them"
+    }
    ]
   },
   {
@@ -18238,7 +19651,8 @@
      "With a standing line, the mirror dot stays in the same ___, row 2.",
      "Count 3 squares to the ___ of the line.",
      "Mark the mirror dot there: ___ squares right of the line, in row 2."
-    ]
+    ],
+    "skillId": "c4-maths-ch11-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -18259,6 +19673,59 @@
     "diya patterns",
     "letters in names",
     "kite designs"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch11-t02-s1",
+     "source": "Fun with Symmetry — completing the other half by flipping",
+     "problem": "On squared paper, an arrow is drawn to the left of a standing mirror line. Its tail touches the line, it points to the left, and its head is 4 squares from the line. Where does the mirror arrow start, which way does it point, and where is its head?",
+     "givens": [
+      "standing mirror line",
+      "tail on the line",
+      "arrow points left",
+      "head 4 squares from the line"
+     ],
+     "find": "the start, direction and head of the mirror arrow",
+     "steps": [
+      {
+       "do": "a point on the line stays on the line",
+       "result": "mirror tail touches the line at the same place"
+      },
+      {
+       "do": "flip, don't slide → left becomes right",
+       "result": "mirror arrow points to the right, away from the line"
+      },
+      {
+       "do": "head: same distance on the other side",
+       "result": "4 squares to the right of the line"
+      }
+     ],
+     "answer": "It starts on the line, points to the right, and its head is 4 squares right of the line",
+     "why": "a mirror flips → what faces away from the line on one side faces away on the other → same distance from the line"
+    },
+    {
+     "skillId": "c4-maths-ch11-t02-s3",
+     "source": "Fun with Symmetry — completing across a lying line",
+     "problem": "A rangoli on squared paper has a lying mirror line across it. A flower dot is 2 squares above the line in column 3, and a leaf dot is 4 squares above the line in column 5. Where do their mirror dots go?",
+     "givens": [
+      "lying mirror line",
+      "flower: 2 squares above, column 3",
+      "leaf: 4 squares above, column 5"
+     ],
+     "find": "the places of the two mirror dots",
+     "steps": [
+      {
+       "do": "lying line → each mirror dot stays in its column",
+       "result": "columns 3 and 5"
+      },
+      {
+       "do": "count the same squares below the line",
+       "result": "flower 2 below, leaf 4 below"
+      }
+     ],
+     "answer": "Flower: 2 squares below the line in column 3; leaf: 4 squares below the line in column 5",
+     "why": "fold along the lying line → each dot lands straight down → same column, same distance below"
+    }
    ]
   },
   {
@@ -18388,6 +19855,42 @@
      "remediation": {
       "representation": "Geared clock where moving the minute hand drags the hour hand slowly",
       "moveShape": "Child turns the minute hand from 5:00 towards 6:00 and watches the hour hand creep; ask when the hour hand actually reaches 6"
+     }
+    },
+    {
+     "id": "c4-maths-ch12-t01-m-arrival-for-departure",
+     "skillId": "c4-maths-ch12-t01-s3",
+     "source": "Ticking Clocks and Turning Calendar — train timings on a railway board",
+     "belief": "Reads the arrival time when asked when a train leaves, mixing up the 'arrives' and 'departs' times",
+     "signs": [
+      "Says the train leaves at its arrival time",
+      "Reads the first time in the train's row whatever the question asks",
+      "Does not notice that a train cannot leave before it arrives"
+     ],
+     "diagnostic": {
+      "prompt_en": "A railway board shows the Shatabdi to Bhopal: arrives 10:05 a.m., departs 10:15 a.m. At what time does the train leave the station?",
+      "prompt_hi": "Railway board par Bhopal Shatabdi ke liye likha hai: arrives 10:05 a.m., departs 10:15 a.m. Train station se kitne baje nikalti hai?",
+      "options": [
+       {
+        "text": "10:15 a.m.",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "10:05 a.m.",
+        "misconceptionId": "c4-maths-ch12-t01-m-arrival-for-departure",
+        "correct": false
+       },
+       {
+        "text": "10:15 p.m.",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "The board drawn with two columns headed 'arrives' (train comes in) and 'departs' (train goes out)",
+      "moveShape": "ask: coming in or going out? → pick that column → read across the train's row → check: departs is later than arrives"
      }
     }
    ],
@@ -18926,6 +20429,59 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c4-maths-ch12-t01-i14",
+     "skillId": "c4-maths-ch12-t01-s3",
+     "kind": "practice",
+     "difficulty": 2,
+     "source": "Ticking Clocks and Turning Calendar — train timings on a railway board",
+     "prompt_en": "A railway board shows the Howrah Express: arrives 11:40 a.m., departs 11:55 a.m. At what time does the train leave the station?",
+     "prompt_hi": "Railway board par Howrah Express ke liye likha hai: arrives 11:40 a.m., departs 11:55 a.m. Train station se kitne baje nikalti hai?",
+     "answer": "11:55 a.m.",
+     "acceptable": [
+      "11:55",
+      "11:55 am",
+      "five minutes to twelve in the morning"
+     ],
+     "hints": [
+      "Is the question about the train coming in or going out?",
+      "Going out is 'departs'.",
+      "Departs: 11:___ a.m.",
+      "It leaves at 11:55 a.m."
+     ],
+     "targetsMisconception": "c4-maths-ch12-t01-m-arrival-for-departure",
+     "verified": {
+      "solverAnswer": "11:55 a.m.",
+      "agrees": true,
+      "note": "Blind-solved (class 4 batch, in-session); hand-read against the key; agrees."
+     }
+    },
+    {
+     "id": "c4-maths-ch12-t01-i15",
+     "skillId": "c4-maths-ch12-t01-s3",
+     "kind": "near_transfer",
+     "difficulty": 3,
+     "source": "Ticking Clocks and Turning Calendar — train timings, a.m. and p.m.",
+     "prompt_en": "A railway board shows two trains. The Pune train departs at 7:25 a.m. The Goa train departs at 7:10 p.m. Which train leaves in the evening, and at what time?",
+     "prompt_hi": "Railway board par do trains hain. Pune wali train 7:25 a.m. par departs karti hai. Goa wali train 7:10 p.m. par departs karti hai. Shaam ko kaun si train nikalti hai, aur kitne baje?",
+     "answer": "The Goa train, at 7:10 p.m.",
+     "acceptable": [
+      "Goa train",
+      "Goa, 7:10 p.m.",
+      "7:10 p.m."
+     ],
+     "hints": [
+      "Which of a.m. and p.m. is after noon?",
+      "p.m. is from noon to midnight, so evening times are p.m.",
+      "The train with p.m. is the ___ train.",
+      "The Goa train leaves in the evening, at 7:10 p.m."
+     ],
+     "verified": {
+      "solverAnswer": "The Goa train, at 7:10 p.m.",
+      "agrees": true,
+      "note": "Blind-solved (class 4 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -18941,7 +20497,8 @@
      "The long hand is on 11; count by ___: 5, 10, 15 … up to 11 numbers.",
      "11 × 5 = ___ minutes.",
      "So the time is ___."
-    ]
+    ],
+    "skillId": "c4-maths-ch12-t01-s1"
    },
    "formats": {
     "primary": "F3",
@@ -18962,6 +20519,61 @@
     "TV show timings",
     "bus timings",
     "morning and evening routines"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch12-t01-s2",
+     "source": "Ticking Clocks and Turning Calendar — a.m. and p.m.",
+     "problem": "Ravi wakes up at 6:30 in the morning, eats lunch at 1:15 in the afternoon and goes to bed at 9 o'clock at night. Write each time with a.m. or p.m.",
+     "givens": [
+      "wake up 6:30 in the morning",
+      "lunch 1:15 in the afternoon",
+      "bed 9:00 at night"
+     ],
+     "find": "the three times with a.m. or p.m.",
+     "steps": [
+      {
+       "do": "between midnight and noon → a.m.",
+       "result": "6:30 a.m."
+      },
+      {
+       "do": "between noon and midnight → p.m.",
+       "result": "1:15 p.m."
+      },
+      {
+       "do": "night, after noon → p.m.",
+       "result": "9:00 p.m."
+      }
+     ],
+     "answer": "6:30 a.m., 1:15 p.m., 9:00 p.m.",
+     "why": "a.m. covers midnight to noon → p.m. covers noon to midnight → find which half of the day"
+    },
+    {
+     "skillId": "c4-maths-ch12-t01-s3",
+     "source": "Ticking Clocks and Turning Calendar — reading train timings on a railway board",
+     "problem": "A railway board at Jaipur station shows two trains. Train to Delhi: arrives 5:40 a.m., departs 5:50 a.m. Train to Agra: arrives 2:15 p.m., departs 2:25 p.m. At what time does the Agra train leave, and is that in the morning or the afternoon?",
+     "givens": [
+      "Delhi train: arrives 5:40 a.m., departs 5:50 a.m.",
+      "Agra train: arrives 2:15 p.m., departs 2:25 p.m."
+     ],
+     "find": "the Agra train's leaving time and part of the day",
+     "steps": [
+      {
+       "do": "find the Agra train's row",
+       "result": "arrives 2:15 p.m., departs 2:25 p.m."
+      },
+      {
+       "do": "leaving → departs column",
+       "result": "2:25 p.m."
+      },
+      {
+       "do": "p.m. → after noon",
+       "result": "afternoon"
+      }
+     ],
+     "answer": "2:25 p.m., in the afternoon",
+     "why": "row picks the train → 'departs' gives the leaving time → p.m. says after noon"
+    }
    ]
   },
   {
@@ -19645,7 +21257,8 @@
      "Jump whole hours: 9:00 to 11:00 is ___ hours.",
      "Jump the extra minutes: 11:00 to 11:20 is ___ minutes.",
      "Add: 2 hours and 15 + 20 = ___ minutes, so 2 hours 35 minutes."
-    ]
+    ],
+    "skillId": "c4-maths-ch12-t02-s1"
    },
    "formats": {
     "primary": "F3",
@@ -19666,6 +21279,66 @@
     "cricket match length",
     "festival calendar",
     "cooking times"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch12-t02-s2",
+     "source": "Ticking Clocks and Turning Calendar — 60 minutes make 1 hour",
+     "problem": "Meera practises the harmonium for 45 minutes in the morning and 50 minutes in the evening. How long does she practise in all, in hours and minutes?",
+     "givens": [
+      "morning 45 minutes",
+      "evening 50 minutes",
+      "60 minutes = 1 hour"
+     ],
+     "find": "the total time in hours and minutes",
+     "steps": [
+      {
+       "do": "add the minutes",
+       "result": "45 + 50 = 95 minutes"
+      },
+      {
+       "do": "60 minutes make 1 hour → take out 60",
+       "result": "95 − 60 = 35 minutes"
+      },
+      {
+       "do": "write as hours and minutes",
+       "result": "1 hour 35 minutes"
+      }
+     ],
+     "answer": "1 hour 35 minutes",
+     "why": "minutes stop at 59 → every 60 minutes is 1 hour → take out 60 and keep the rest as minutes"
+    },
+    {
+     "skillId": "c4-maths-ch12-t02-s3",
+     "source": "Ticking Clocks and Turning Calendar — counting days and weeks on a calendar",
+     "problem": "Today is Monday, the 5th of the month. The school holidays start exactly 2 weeks and 3 days from today. On what date do they start, and on which day of the week?",
+     "givens": [
+      "today: Monday the 5th",
+      "2 weeks and 3 days later",
+      "1 week = 7 days"
+     ],
+     "find": "the date and day the holidays start",
+     "steps": [
+      {
+       "do": "change weeks to days",
+       "result": "2 × 7 = 14 days"
+      },
+      {
+       "do": "add the extra days",
+       "result": "14 + 3 = 17 days"
+      },
+      {
+       "do": "count on from the 5th, not counting today",
+       "result": "5 + 17 = 22"
+      },
+      {
+       "do": "2 weeks later is Monday again → 3 more days",
+       "result": "Monday the 19th → Thursday the 22nd"
+      }
+     ],
+     "answer": "Thursday, the 22nd",
+     "why": "a week is 7 days → after whole weeks the same weekday comes back → count on from today without counting today"
+    }
    ]
   },
   {
@@ -20394,6 +22067,33 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c4-maths-ch13-t01-i15",
+     "skillId": "c4-maths-ch13-t01-s3",
+     "kind": "error_spot",
+     "difficulty": 3,
+     "source": "The Transport Museum — multiplying a 3-digit number by a 1-digit number",
+     "prompt_en": "Golu worked out 126 × 3. He did 1 × 3 = 3, 2 × 3 = 6 and 6 × 3 = 18, and wrote the answer 3618. Is his answer right?",
+     "prompt_hi": "Golu ne 126 × 3 kiya. Usne 1 × 3 = 3, 2 × 3 = 6 aur 6 × 3 = 18 kiya, aur answer 3618 likha. Kya uska answer sahi hai?",
+     "answer": "No. 126 × 3 = 378: the 18 ones are 1 ten and 8 ones, so the 1 ten joins the 6 tens to make 7 tens",
+     "acceptable": [
+      "no",
+      "378",
+      "no, 378"
+     ],
+     "hints": [
+      "Is 126 × 3 near 300 or near 3000?",
+      "It is near 300, so 3618 is far too big.",
+      "300 + 60 + 18 = ___",
+      "126 × 3 = 378, not 3618."
+     ],
+     "targetsMisconception": "c4-maths-ch13-t01-m-no-carry",
+     "verified": {
+      "solverAnswer": "No. 126 x 3 = 300 + 60 + 18 = 378. Golu ignored place value (100 x 3 = 300, 20 x 3 = 60) and wrote the digit products side by side.",
+      "agrees": true,
+      "note": "Blind-solved (class 4 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -20409,7 +22109,8 @@
      "40 × 6 = ___.",
      "7 × 6 = ___.",
      "Add the parts: 240 + 42 = ___, so 47 × 6 = 282."
-    ]
+    ],
+    "skillId": "c4-maths-ch13-t01-s2"
    },
    "formats": {
     "primary": "F2",
@@ -20431,6 +22132,60 @@
     "cricket runs over many matches",
     "boxes of fruit",
     "rows in a stadium"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch13-t01-s1",
+     "source": "The Transport Museum — multiplying by 10 and multiples of 10",
+     "problem": "The museum shop packs toy buses in boxes of 30. How many toy buses are there in 8 boxes?",
+     "givens": [
+      "30 toy buses in a box",
+      "8 boxes"
+     ],
+     "find": "the number of toy buses",
+     "steps": [
+      {
+       "do": "30 is 3 tens",
+       "result": "30 = 3 × 10"
+      },
+      {
+       "do": "8 boxes of 3 tens",
+       "result": "3 × 8 = 24, so 24 tens"
+      },
+      {
+       "do": "24 tens",
+       "result": "24 × 10 = 240"
+      }
+     ],
+     "answer": "240 toy buses",
+     "why": "30 = 3 tens → 8 groups of 3 tens = 24 tens → times 10 puts a zero at the end"
+    },
+    {
+     "skillId": "c4-maths-ch13-t01-s3",
+     "source": "The Transport Museum — 3-digit × 1-digit in a story",
+     "problem": "The transport museum gets 245 visitors every day. How many visitors does it get in 3 days?",
+     "givens": [
+      "245 visitors a day",
+      "3 days"
+     ],
+     "find": "the visitors in 3 days",
+     "steps": [
+      {
+       "do": "split 245 into hundreds, tens and ones",
+       "result": "200 + 40 + 5"
+      },
+      {
+       "do": "multiply each part by 3",
+       "result": "200 × 3 = 600, 40 × 3 = 120, 5 × 3 = 15"
+      },
+      {
+       "do": "add the parts",
+       "result": "600 + 120 + 15 = 735"
+      }
+     ],
+     "answer": "735 visitors",
+     "why": "245 = 200 + 40 + 5 → 3 groups of each part → add the three products"
+    }
    ]
   },
   {
@@ -20563,6 +22318,42 @@
      "remediation": {
       "representation": "Acting out the trips with counters on boats until no one is left on the bank",
       "moveShape": "Child loads boats until all counters have crossed and counts the boats used; ask where the last 2 people sat"
+     }
+    },
+    {
+     "id": "c4-maths-ch13-t02-m-count-takeaways",
+     "skillId": "c4-maths-ch13-t02-s2",
+     "source": "The Transport Museum — division by repeated subtraction",
+     "belief": "In repeated subtraction, counts how many times something was taken away instead of how many groups were taken away",
+     "signs": [
+      "Says 60 ÷ 5 = 2 after taking away 50 and then 10",
+      "Gives an answer far too small and does not check by multiplying",
+      "Writes the number of subtraction steps as the answer"
+     ],
+     "diagnostic": {
+      "prompt_en": "Ria finds 70 ÷ 5 by repeated subtraction of fives. She takes away 50 first, then takes away 20, and reaches 0. What is 70 ÷ 5?",
+      "prompt_hi": "Ria 70 ÷ 5 fives ke repeated subtraction se nikaalti hai. Pehle woh 50 ghatati hai, phir 20 ghatati hai, aur 0 par pahunchti hai. 70 ÷ 5 kitna hai?",
+      "options": [
+       {
+        "text": "14",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "2",
+        "misconceptionId": "c4-maths-ch13-t02-m-count-takeaways",
+        "correct": false
+       },
+       {
+        "text": "10",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "70 counters in groups of 5, with one band round the first 10 groups and another round the next 4",
+      "moveShape": "write each chunk as 'so many fives' → add those numbers of fives → check: groups × 5 = 70"
      }
     }
    ],
@@ -21147,7 +22938,8 @@
      "Change the leftover ten into 10 ones: 10 + 6 = ___ ones.",
      "Share 16 ones: each child gets ___.",
      "Each child gets 2 tens and 4 ones = ₹___. Check: 4 × 24 = 96."
-    ]
+    ],
+    "skillId": "c4-maths-ch13-t02-s1"
    },
    "formats": {
     "primary": "F2",
@@ -21169,6 +22961,68 @@
     "sharing pocket money",
     "cutting rope and cloth",
     "packing sweets in boxes"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch13-t02-s2",
+     "source": "The Transport Museum — division by repeated subtraction, big chunks first",
+     "problem": "A school has 84 laddoos for Sports Day and puts 6 in each box. Using repeated subtraction, taking away big chunks first, find how many boxes are filled.",
+     "givens": [
+      "84 laddoos",
+      "6 in each box"
+     ],
+     "find": "the number of boxes",
+     "steps": [
+      {
+       "do": "take away 10 sixes",
+       "result": "84 − 60 = 24"
+      },
+      {
+       "do": "take away the sixes that are left",
+       "result": "24 − 24 = 0, that is 4 sixes"
+      },
+      {
+       "do": "add the sixes taken away",
+       "result": "10 + 4 = 14"
+      }
+     ],
+     "answer": "14 boxes",
+     "why": "each 6 taken away fills one box → take 10 boxes at once → add up the boxes, not the number of take-aways"
+    },
+    {
+     "skillId": "c4-maths-ch13-t02-s3",
+     "source": "The Transport Museum — 3-digit ÷ 1-digit, check by multiplying",
+     "problem": "The museum shares 476 tickets equally among 4 schools. How many tickets does each school get? Check by multiplying.",
+     "givens": [
+      "476 tickets",
+      "4 schools"
+     ],
+     "find": "the tickets for each school",
+     "steps": [
+      {
+       "do": "share the 4 hundreds",
+       "result": "1 hundred each, 0 hundreds left"
+      },
+      {
+       "do": "share the 7 tens",
+       "result": "1 ten each, 3 tens left"
+      },
+      {
+       "do": "change 3 tens to ones and add the 6 ones",
+       "result": "30 + 6 = 36 ones"
+      },
+      {
+       "do": "share the 36 ones",
+       "result": "36 ÷ 4 = 9"
+      },
+      {
+       "do": "check by multiplying",
+       "result": "119 × 4 = 476"
+      }
+     ],
+     "answer": "119 tickets each",
+     "why": "share hundreds, then tens, then ones → leftovers move down a place → multiply back to check"
+    }
    ]
   },
   {
@@ -22126,6 +23980,42 @@
       "representation": "Zoomed-in scale with the halfway mark drawn between two labels",
       "moveShape": "Child finds the number halfway between the two labels first, then compares it with the bar's top"
      }
+    },
+    {
+     "id": "c4-maths-ch14-t02-m-taller-bar-value",
+     "skillId": "c4-maths-ch14-t02-s2",
+     "source": "Data Handling — comparing bars: how many more",
+     "belief": "Answers a 'how many more' question with the value of the taller bar instead of the gap between the two bars",
+     "signs": [
+      "Says 40 when asked how many more kites were sold on Tuesday (40) than Monday (25)",
+      "Reads one bar and stops",
+      "Does not take the shorter bar's value from the taller bar's value"
+     ],
+     "diagnostic": {
+      "prompt_en": "In a bar graph of runs, Rohit's bar reaches 35 and Sameer's bar reaches 20. How many more runs did Rohit score than Sameer?",
+      "prompt_hi": "Runs ke bar graph mein Rohit ka bar 35 tak jaata hai aur Sameer ka bar 20 tak. Rohit ne Sameer se kitne runs zyada banaye?",
+      "options": [
+       {
+        "text": "15",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "35",
+        "misconceptionId": "c4-maths-ch14-t02-m-taller-bar-value",
+        "correct": false
+       },
+       {
+        "text": "55",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Two bars side by side with a dotted line across from the top of the shorter bar to the taller bar",
+      "moveShape": "read both bars → the part of the taller bar above the dotted line is the answer → taller − shorter → check: shorter + answer = taller"
+     }
     }
    ],
    "items": [
@@ -22703,7 +24593,8 @@
      "Monday's bar reaches the 25 mark, so ___ kites.",
      "Tuesday's bar reaches the 40 mark, so ___ kites.",
      "40 − 25 = ___, so 15 more kites were sold on Tuesday."
-    ]
+    ],
+    "skillId": "c4-maths-ch14-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -22724,6 +24615,62 @@
     "kites sold before Makar Sankranti",
     "cricket runs by players",
     "favourite festivals survey"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c4-maths-ch14-t02-s1",
+     "source": "Data Handling — reading a bar's value from the scale",
+     "problem": "In a bar graph of votes for class monitor, the scale goes up by 1: 0, 1, 2 and so on up to 10. Aman's bar is wide and its top is level with 6. Neha's bar is thin and its top is level with 9. How many votes did each get?",
+     "givens": [
+      "scale goes up by 1",
+      "Aman's bar: wide, top at 6",
+      "Neha's bar: thin, top at 9"
+     ],
+     "find": "the votes for Aman and for Neha",
+     "steps": [
+      {
+       "do": "only the top of a bar against the scale matters",
+       "result": "read the height, not the width"
+      },
+      {
+       "do": "read across from the top of Aman's bar",
+       "result": "6 votes"
+      },
+      {
+       "do": "read across from the top of Neha's bar",
+       "result": "9 votes"
+      }
+     ],
+     "answer": "Aman 6 votes, Neha 9 votes",
+     "why": "the scale is on the side → the top of each bar points to its number → width means nothing"
+    },
+    {
+     "skillId": "c4-maths-ch14-t02-s3",
+     "source": "Data Handling — scales in 10s and bars between marks",
+     "problem": "A bar graph of books borrowed from the school library has scale marks that start at 0: 0, 10, 20, 30, 40, 50. Monday's bar ends halfway between 30 and 40. Thursday's bar reaches the fourth mark above the 0 mark, not counting 0 itself. How many books were borrowed on each day?",
+     "givens": [
+      "scale 0, 10, 20, 30, 40, 50",
+      "Monday: halfway between 30 and 40",
+      "Thursday: fourth mark above 0"
+     ],
+     "find": "the books on Monday and on Thursday",
+     "steps": [
+      {
+       "do": "find the scale step",
+       "result": "each mark is 10 more"
+      },
+      {
+       "do": "halfway between 30 and 40 → half a step more",
+       "result": "30 + 5 = 35"
+      },
+      {
+       "do": "fourth mark above 0",
+       "result": "4 × 10 = 40"
+      }
+     ],
+     "answer": "Monday 35 books, Thursday 40 books",
+     "why": "read the scale step first → halfway between two marks is half a step more → marks × step"
+    }
    ]
   }
  ],

@@ -1578,7 +1578,8 @@
      "1,745: the tens digit is 4, so round down to ___.",
      "Add the rounded numbers: 2,400 + 1,700 = ___.",
      "The exact answer is 4,113, close to ___, so the estimate is sensible."
-    ]
+    ],
+    "skillId": "c5-maths-ch01-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -1601,6 +1602,72 @@
     "petrol planning on a road trip",
     "mela visitor counts",
     "school fee collections"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch01-t02-s1",
+     "source": "We the Travellers — I — rounding travel distances to the nearest 10, 100 and 1000",
+     "problem": "Papa's truck travelled 4,365 km in one month. Round 4,365 km to the nearest 10, to the nearest 100 and to the nearest 1000.",
+     "givens": [
+      "distance = 4,365 km"
+     ],
+     "find": "4,365 rounded to the nearest 10, 100 and 1000",
+     "steps": [
+      {
+       "do": "nearest 10 → look at the ones digit (5) → 5 or more, round up",
+       "result": "4,370 km"
+      },
+      {
+       "do": "nearest 100 → look at the tens digit (6) → 5 or more, round up",
+       "result": "4,400 km"
+      },
+      {
+       "do": "nearest 1000 → look at the hundreds digit (3) → less than 5, round down",
+       "result": "4,000 km"
+      },
+      {
+       "do": "check the 1000 answer on a line from 4,000 to 5,000",
+       "result": "4,365 is before the halfway mark 4,500, so nearer 4,000"
+      }
+     ],
+     "answer": "4,370 km (nearest 10); 4,400 km (nearest 100); 4,000 km (nearest 1000)",
+     "why": "pick the place → look only at the digit just to its right → 5 or more goes up, less than 5 stays → the number is now the nearer of the two round numbers"
+    },
+    {
+     "skillId": "c5-maths-ch01-t02-s3",
+     "source": "We the Travellers — I — estimating a trip's cost and deciding when 'about' is enough",
+     "problem": "Meena's family has ₹10,000 for a trip to nani's village. Train tickets cost ₹3,180 and the stay costs ₹2,940. Round each cost to the nearest thousand and use the estimate to decide: is ₹10,000 enough?",
+     "givens": [
+      "money = ₹10,000",
+      "tickets = ₹3,180",
+      "stay = ₹2,940"
+     ],
+     "find": "whether ₹10,000 is enough, decided by an estimate",
+     "steps": [
+      {
+       "do": "round ₹3,180 to the nearest thousand (hundreds digit 1)",
+       "result": "₹3,000"
+      },
+      {
+       "do": "round ₹2,940 to the nearest thousand (hundreds digit 9)",
+       "result": "₹3,000"
+      },
+      {
+       "do": "add the rounded costs",
+       "result": "3,000 + 3,000 = 6,000"
+      },
+      {
+       "do": "compare the estimate with the money",
+       "result": "about ₹6,000 is far below ₹10,000"
+      },
+      {
+       "do": "far from the limit → rounding cannot change the decision",
+       "result": "₹10,000 is enough"
+      }
+     ],
+     "answer": "Yes, ₹10,000 is enough: the cost is about ₹6,000",
+     "why": "round to a big place for a quick total → compare with the limit → if the total is far from the limit, the exact amount cannot change the yes/no → exact working is needed only when the estimate is close to the limit"
+    }
    ]
   },
   {
@@ -1846,6 +1913,7 @@
       "Count ___ gaps from 0.",
       "The 3rd mark after 0 is 3/5."
      ],
+     "targetsMisconception": "c5-maths-ch02-t01-m-count-marks",
      "verified": {
       "solverAnswer": "3rd mark after 0",
       "agrees": true,
@@ -2397,7 +2465,8 @@
      "Each gap is ___.",
      "Count ___ gaps from 0. That mark is 2/5.",
      "Check: 2/5 is ___ the middle, because 2/5 is less than 1/2."
-    ]
+    ],
+    "skillId": "c5-maths-ch02-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -2420,6 +2489,65 @@
     "running track laps",
     "train between two stations",
     "ribbon at a tailor's shop"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch02-t01-s1",
+     "source": "Fractions — marking unit fractions on a number line by equal parts",
+     "problem": "The road from home (0) to school (1) is drawn as a number line, split into equal gaps for sixths. A sweet shop is 1/6 of the way to school. Which mark after 0 shows 1/6?",
+     "givens": [
+      "home = 0",
+      "school = 1",
+      "sweet shop at 1/6"
+     ],
+     "find": "the mark for 1/6",
+     "steps": [
+      {
+       "do": "bottom number 6 → split 0 to 1 into 6 equal gaps",
+       "result": "5 marks in between"
+      },
+      {
+       "do": "one gap = one part of the whole",
+       "result": "each gap is 1/6"
+      },
+      {
+       "do": "go 1 gap from 0",
+       "result": "the first mark after 0 is 1/6"
+      }
+     ],
+     "answer": "The 1st mark after 0 (0 to 1 split into 6 equal gaps)",
+     "why": "the bottom number says how many equal gaps make the whole → one gap is one such part → a unit fraction is one gap from 0"
+    },
+    {
+     "skillId": "c5-maths-ch02-t01-s3",
+     "source": "Fractions — placing fractions greater than 1 on the number line",
+     "problem": "A number line goes from 0 to 2, and each whole is split into 4 equal gaps. Which mark after 0 shows 7/4?",
+     "givens": [
+      "line from 0 to 2",
+      "each whole split into 4 equal gaps"
+     ],
+     "find": "the place of 7/4",
+     "steps": [
+      {
+       "do": "each gap is a quarter",
+       "result": "4 gaps from 0 reach 1, so 4/4 = 1"
+      },
+      {
+       "do": "split 7 quarters into a whole and the rest",
+       "result": "4/4 + 3/4 = 7/4"
+      },
+      {
+       "do": "go to 1, then 3 more gaps",
+       "result": "the 3rd mark after 1"
+      },
+      {
+       "do": "check it lies before 2",
+       "result": "2 is 8/4, and 7/4 is one gap less"
+      }
+     ],
+     "answer": "The 7th mark after 0 (the 3rd mark after 1), between 1 and 2",
+     "why": "a fraction is a count of equal gaps from 0 → 4 quarters fill one whole → extra quarters carry on past 1 → so 7/4 sits after 1"
+    }
    ]
   },
   {
@@ -3234,7 +3362,63 @@
     "chocolate bars",
     "overs bowled in a cricket match"
    ],
-   "skillExamples": []
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch02-t02-s1",
+     "source": "Fractions — comparing unit fractions of the same whole",
+     "problem": "Two same-size ribbons. Rani cuts one into 5 equal pieces and takes 1 piece. Amit cuts the other into 10 equal pieces and takes 1 piece. Whose piece is longer: 1/5 or 1/10 of the ribbon, or are they the same?",
+     "givens": [
+      "same-size ribbons",
+      "Rani: 1 of 5 equal pieces",
+      "Amit: 1 of 10 equal pieces"
+     ],
+     "find": "the longer piece",
+     "steps": [
+      {
+       "do": "same whole → compare the size of one piece",
+       "result": "1/5 and 1/10 of the same ribbon"
+      },
+      {
+       "do": "more equal cuts of the same whole → each piece shorter",
+       "result": "a tenth is shorter than a fifth"
+      },
+      {
+       "do": "one piece each → the bigger piece wins",
+       "result": "1/5 > 1/10"
+      }
+     ],
+     "answer": "Rani's piece: 1/5 is longer than 1/10",
+     "why": "same whole → the bottom number counts the equal pieces → more pieces means each piece is smaller → a bigger bottom number gives a smaller unit fraction"
+    },
+    {
+     "skillId": "c5-maths-ch02-t02-s2",
+     "source": "Fractions — comparing fractions with the same denominator",
+     "problem": "Ravi and Sana each have a same-size pizza, and each pizza is cut into 8 equal slices. Ravi eats 3/8 of his pizza and Sana eats 5/8 of hers. Who eats more, or do they eat the same?",
+     "givens": [
+      "same-size pizzas",
+      "each cut into 8 equal slices",
+      "Ravi 3/8",
+      "Sana 5/8"
+     ],
+     "find": "who eats more",
+     "steps": [
+      {
+       "do": "same bottom number → same-size pieces",
+       "result": "both are eighths"
+      },
+      {
+       "do": "compare the number of pieces",
+       "result": "5 eighths and 3 eighths"
+      },
+      {
+       "do": "more same-size pieces → more pizza",
+       "result": "5/8 > 3/8"
+      }
+     ],
+     "answer": "Sana eats more: 5/8 > 3/8",
+     "why": "same denominator → every piece is the same size → only the count of pieces differs → the bigger top number is the bigger fraction"
+    }
+   ]
   },
   {
    "topicId": "c5-maths-ch02-t03",
@@ -6572,7 +6756,8 @@
      "Break 1 ten-thousand: 3 ten-thousands, 9 thousands, 9 hundreds, 9 tens and ___ ones.",
      "Subtract each place: 10 − 8 = ___, 9 − 6 = 3, 9 − 3 = 6, 9 − 2 = ___, 3 − 1 = 2.",
      "Answer ___. Check: 27,632 + 12,368 = 40,000."
-    ]
+    ],
+    "skillId": "c5-maths-ch04-t01-s2"
    },
    "formats": {
     "primary": "F2",
@@ -6596,6 +6781,65 @@
     "railway distances",
     "cricket season run totals",
     "village population changes"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch04-t01-s1",
+     "source": "We the Travellers — II — adding 5-digit numbers with regrouping",
+     "problem": "A highway toll counted 38,675 cars in June and 24,548 cars in July. How many cars is that in all?",
+     "givens": [
+      "June = 38,675 cars",
+      "July = 24,548 cars"
+     ],
+     "find": "the total number of cars",
+     "steps": [
+      {
+       "do": "ones",
+       "result": "5 + 8 = 13; write 3, carry 1 ten"
+      },
+      {
+       "do": "tens, with the carry",
+       "result": "7 + 4 + 1 = 12; write 2, carry 1 hundred"
+      },
+      {
+       "do": "hundreds, with the carry",
+       "result": "6 + 5 + 1 = 12; write 2, carry 1 thousand"
+      },
+      {
+       "do": "thousands, with the carry",
+       "result": "8 + 4 + 1 = 13; write 3, carry 1 ten-thousand"
+      },
+      {
+       "do": "ten-thousands, with the carry",
+       "result": "3 + 2 + 1 = 6"
+      }
+     ],
+     "answer": "63,223 cars",
+     "why": "add place by place from the ones → 10 of a place make 1 of the next place → carry it and add it in the next column"
+    },
+    {
+     "skillId": "c5-maths-ch04-t01-s3",
+     "source": "We the Travellers — II — travel and money problems with addition and subtraction",
+     "problem": "A family had ₹50,000 for a trip. They spent ₹18,650 on train tickets and ₹12,975 on a hotel. How much money is left?",
+     "givens": [
+      "money = ₹50,000",
+      "tickets = ₹18,650",
+      "hotel = ₹12,975"
+     ],
+     "find": "the money left",
+     "steps": [
+      {
+       "do": "two amounts spent → add them",
+       "result": "18,650 + 12,975 = 31,625"
+      },
+      {
+       "do": "money left → take the total spent from ₹50,000",
+       "result": "50,000 − 31,625 = 18,375"
+      }
+     ],
+     "answer": "₹18,375",
+     "why": "two spends join into one total spent → add → what remains is the whole minus the part spent → subtract"
+    }
    ]
   },
   {
@@ -7349,7 +7593,8 @@
      "3,335 is close to that, so it looks ___.",
      "Add back: 3,335 + 3,869 = ___.",
      "We got the ___ number, so the answer is right."
-    ]
+    ],
+    "skillId": "c5-maths-ch04-t02-s2"
    },
    "formats": {
     "primary": "F4",
@@ -7372,6 +7617,65 @@
     "map distances",
     "school fund totals",
     "train journey lengths"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch04-t02-s1",
+     "source": "We the Travellers — II — checking an answer by estimating first",
+     "problem": "Kiran added 4,875 km and 3,190 km and got 6,065 km. Check his answer by estimating first.",
+     "givens": [
+      "4,875 km + 3,190 km",
+      "Kiran's answer = 6,065 km"
+     ],
+     "find": "whether 6,065 km is reasonable",
+     "steps": [
+      {
+       "do": "round each to the nearest hundred",
+       "result": "4,900 and 3,200"
+      },
+      {
+       "do": "add the rounded numbers",
+       "result": "4,900 + 3,200 = 8,100"
+      },
+      {
+       "do": "compare with Kiran's answer",
+       "result": "6,065 is about 2,000 less than 8,100, so it is not reasonable"
+      },
+      {
+       "do": "add exactly",
+       "result": "4,875 + 3,190 = 8,065"
+      }
+     ],
+     "answer": "Not reasonable: the estimate is about 8,100 km, so 6,065 km is wrong; the sum is 8,065 km",
+     "why": "rounded numbers are close to the real ones → their sum is close to the real sum → an answer far from the estimate must have a slip"
+    },
+    {
+     "skillId": "c5-maths-ch04-t02-s3",
+     "source": "We the Travellers — II — does the answer make sense in the story?",
+     "problem": "Govind's school has 1,250 students. On sports day 1,180 students came. The register says 2,430 students were absent. Does that make sense? If not, how many were absent?",
+     "givens": [
+      "total students = 1,250",
+      "present = 1,180",
+      "register says absent = 2,430"
+     ],
+     "find": "whether 2,430 absent makes sense, and the right number",
+     "steps": [
+      {
+       "do": "absent students are part of all the students",
+       "result": "absent must be less than 1,250"
+      },
+      {
+       "do": "compare the register's number",
+       "result": "2,430 is more than 1,250, so it does not make sense"
+      },
+      {
+       "do": "absent = all students − present",
+       "result": "1,250 − 1,180 = 70"
+      }
+     ],
+     "answer": "No, it does not make sense; 70 students were absent",
+     "why": "a part can never be bigger than its whole → an answer bigger than the whole is wrong → the story's whole gives the limit"
+    }
    ]
   },
   {
@@ -8957,7 +9261,8 @@
      "2 km 75 m = 2,000 + 75 = ___ m.",
      "2,700 m stays ___ m.",
      "2,700 is more than 2,075, so 2,700 m is farther, by ___ m."
-    ]
+    ],
+    "skillId": "c5-maths-ch05-t02-s1"
    },
    "formats": {
     "primary": "F3",
@@ -8980,6 +9285,65 @@
     "village to town roads",
     "marathon routes",
     "cycling to tuition"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch05-t02-s2",
+     "source": "Far and Near — ordering distances given in km and m",
+     "problem": "From Riya's house, the school is 1 km and 300 m away, the temple is 1,030 m (one thousand and thirty metres) away, and the market is 1 km and 3 m away. Order the three places from nearest to farthest.",
+     "givens": [
+      "school = 1 km 300 m",
+      "temple = 1,030 m",
+      "market = 1 km 3 m"
+     ],
+     "find": "the order from nearest to farthest",
+     "steps": [
+      {
+       "do": "school → metres",
+       "result": "1,000 + 300 = 1,300 m"
+      },
+      {
+       "do": "market → metres",
+       "result": "1,000 + 3 = 1,003 m"
+      },
+      {
+       "do": "temple stays in metres",
+       "result": "1,030 m"
+      },
+      {
+       "do": "order the metre numbers",
+       "result": "1,003 < 1,030 < 1,300"
+      }
+     ],
+     "answer": "Market (1 km 3 m), temple (1,030 m), school (1 km 300 m)",
+     "why": "one unit for all → the numbers can be compared directly → order the numbers → same order for the distances"
+    },
+    {
+     "skillId": "c5-maths-ch05-t02-s3",
+     "source": "Far and Near — how much farther one distance is than another",
+     "problem": "From the bus stop, the school is 2 km 150 m away and the park is 1 km 480 m away. How much farther is the school than the park?",
+     "givens": [
+      "school = 2 km 150 m",
+      "park = 1 km 480 m"
+     ],
+     "find": "how much farther the school is",
+     "steps": [
+      {
+       "do": "school → metres",
+       "result": "2,000 + 150 = 2,150 m"
+      },
+      {
+       "do": "park → metres",
+       "result": "1,000 + 480 = 1,480 m"
+      },
+      {
+       "do": "farther by → subtract the smaller distance",
+       "result": "2,150 − 1,480 = 670 m"
+      }
+     ],
+     "answer": "670 m farther",
+     "why": "same unit first → 'how much farther' is the difference → subtract the shorter from the longer"
+    }
    ]
   },
   {
@@ -9699,7 +10063,8 @@
      "Multiply by the 2 tens: write ___ in the ones place, then 143 × 2 = 286, giving 2,860.",
      "Add the two parts: 572 + 2,860 = ___.",
      "Check by estimating: about 140 × 25 = ___."
-    ]
+    ],
+    "skillId": "c5-maths-ch06-t01-s3"
    },
    "formats": {
     "primary": "F2",
@@ -9722,6 +10087,60 @@
     "school uniform orders",
     "train coaches and seats",
     "cricket runs over a season"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch06-t01-s1",
+     "source": "The Dairy Farm — multiplying by multiples of 10",
+     "problem": "Each of 32 village farmers brings 30 litres of milk to the dairy. How many litres is that in all?",
+     "givens": [
+      "32 farmers",
+      "30 litres each"
+     ],
+     "find": "the total litres",
+     "steps": [
+      {
+       "do": "30 = 3 tens",
+       "result": "32 × 30 = 32 × 3 tens"
+      },
+      {
+       "do": "multiply by 3",
+       "result": "32 × 3 = 96"
+      },
+      {
+       "do": "96 tens → write it with a 0",
+       "result": "32 × 30 = 960"
+      }
+     ],
+     "answer": "960 litres",
+     "why": "a multiple of 10 is some tens → multiply by the digit → the answer is that many tens → a 0 in the ones place shows tens"
+    },
+    {
+     "skillId": "c5-maths-ch06-t01-s2",
+     "source": "The Dairy Farm — the area model for 2-digit × 2-digit",
+     "problem": "A dairy van carries 26 crates, with 14 milk packets in each crate. Use the area model to find the number of packets.",
+     "givens": [
+      "26 crates",
+      "14 packets per crate"
+     ],
+     "find": "26 × 14",
+     "steps": [
+      {
+       "do": "split each number by place",
+       "result": "26 = 20 + 6 and 14 = 10 + 4"
+      },
+      {
+       "do": "four boxes of the area model",
+       "result": "20 × 10 = 200, 20 × 4 = 80, 6 × 10 = 60, 6 × 4 = 24"
+      },
+      {
+       "do": "add the four parts",
+       "result": "200 + 80 + 60 + 24 = 364"
+      }
+     ],
+     "answer": "364 packets",
+     "why": "split both numbers into tens and ones → every part of one meets every part of the other → four boxes → their sum is the whole rectangle"
+    }
    ]
   },
   {
@@ -9854,6 +10273,42 @@
      "remediation": {
       "representation": "An array of 25 by 16 dots cut in half and the halves placed side by side",
       "moveShape": "Child cuts the array and rearranges it into 50 by 8; ask whether any dots were added"
+     }
+    },
+    {
+     "id": "c5-maths-ch06-t02-m-chop-to-round",
+     "skillId": "c5-maths-ch06-t02-s3",
+     "source": "The Dairy Farm — estimating products by rounding",
+     "belief": "When estimating a product, 'rounds' each number by chopping off its ones digit, so 59 × 32 is estimated as 50 × 30",
+     "signs": [
+      "Estimates 68 × 41 as 60 × 40 = 2,400 instead of 70 × 40",
+      "Every estimate comes out smaller than the exact product, never bigger",
+      "Never looks at whether the ones digit is 5 or more"
+     ],
+     "diagnostic": {
+      "prompt_en": "Estimate 59 × 32 by rounding each number to the nearest ten. Which estimate is correct?",
+      "prompt_hi": "59 × 32 ko estimate karo, har number ko nearest ten tak round karke. Kaun sa estimate sahi hai?",
+      "options": [
+       {
+        "text": "60 × 30 = 1,800",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "50 × 30 = 1,500",
+        "misconceptionId": "c5-maths-ch06-t02-m-chop-to-round",
+        "correct": false
+       },
+       {
+        "text": "60 × 40 = 2,400",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A number line from 50 to 60 with 59 marked, next to one from 30 to 40 with 32 marked",
+      "moveShape": "find the two tens around the number → which ten is nearer? → ones digit 5 or more goes up, less than 5 goes down → 59 is 1 away from 60 but 9 away from 50"
      }
     }
    ],
@@ -10470,7 +10925,8 @@
      "36 = 9 × ___.",
      "So 25 × 36 = 25 × 4 × 9 = ___ × 9.",
      "That is ___."
-    ]
+    ],
+    "skillId": "c5-maths-ch06-t02-s2"
    },
    "formats": {
     "primary": "F6",
@@ -10493,6 +10949,59 @@
     "rupee notes in bundles",
     "train fares for a group",
     "sweets packed for Diwali"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch06-t02-s1",
+     "source": "The Dairy Farm — multiplying by 10, 100 and 1000",
+     "problem": "One packet of curd costs ₹27. What do 10 packets, 100 packets and 1000 packets cost?",
+     "givens": [
+      "one packet = ₹27"
+     ],
+     "find": "the cost of 10, 100 and 1000 packets",
+     "steps": [
+      {
+       "do": "× 10 → each digit moves one place left",
+       "result": "27 × 10 = 270"
+      },
+      {
+       "do": "× 100 → each digit moves two places left",
+       "result": "27 × 100 = 2,700"
+      },
+      {
+       "do": "× 1000 → each digit moves three places left",
+       "result": "27 × 1000 = 27,000"
+      }
+     ],
+     "answer": "₹270, ₹2,700 and ₹27,000",
+     "why": "× 10 makes every ones into tens and every tens into hundreds → digits shift one place left → empty places get 0 → × 100 and × 1000 shift two and three places"
+    },
+    {
+     "skillId": "c5-maths-ch06-t02-s3",
+     "source": "The Dairy Farm — estimating products by rounding",
+     "problem": "A school orders 41 boxes with 68 laddoos in each box. Round each number to the nearest ten to estimate the number of laddoos.",
+     "givens": [
+      "41 boxes",
+      "68 laddoos per box"
+     ],
+     "find": "an estimate of 41 × 68",
+     "steps": [
+      {
+       "do": "round 68 to the nearest ten (ones digit 8)",
+       "result": "70"
+      },
+      {
+       "do": "round 41 to the nearest ten (ones digit 1)",
+       "result": "40"
+      },
+      {
+       "do": "basic fact, then the two zeros",
+       "result": "4 × 7 = 28, so 40 × 70 = 2,800"
+      }
+     ],
+     "answer": "About 2,800 laddoos",
+     "why": "round each number to a ten nearby → multiply the easy numbers → the product of the rounded numbers stays close to the real product"
+    }
    ]
   },
   {
@@ -10620,6 +11129,42 @@
      "remediation": {
       "representation": "Geoboard with a regular and an irregular hexagon side by side",
       "moveShape": "Child counts the sides of both with a finger; ask what name each gets"
+     }
+    },
+    {
+     "id": "c5-maths-ch07-t01-m-one-acute-enough",
+     "skillId": "c5-maths-ch07-t01-s3",
+     "source": "Shapes and Patterns — describing triangles by angles (right, acute, obtuse)",
+     "belief": "Calls a triangle 'acute-angled' as soon as it has one acute angle, without checking all three angles",
+     "signs": [
+      "Calls a set-square triangle 'acute' because two of its corners are sharp",
+      "Names a triangle by the first angle looked at",
+      "Says a triangle can be both right-angled and acute-angled"
+     ],
+     "diagnostic": {
+      "prompt_en": "A triangle has one right angle, and its other two angles are smaller than a right angle. What kind of triangle is it by its angles?",
+      "prompt_hi": "Ek triangle mein ek right angle hai, aur baaki do angles right angle se chhote hain. Angles ke hisaab se yeh kaun sa triangle hai?",
+      "options": [
+       {
+        "text": "A right-angled triangle",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "An acute-angled triangle",
+        "misconceptionId": "c5-maths-ch07-t01-m-one-acute-enough",
+        "correct": false
+       },
+       {
+        "text": "An obtuse-angled triangle",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A paper right-angle corner tested on each of the three corners of a set-square triangle in turn",
+      "moveShape": "test all three corners → any corner exactly a right angle → right-angled → any corner wider → obtuse-angled → only when all three are smaller → acute-angled"
      }
     }
    ],
@@ -11140,7 +11685,8 @@
      "Check that every side is ___: no curves.",
      "Count the sides: ___.",
      "Turning and uneven sides don't matter, so it is a ___."
-    ]
+    ],
+    "skillId": "c5-maths-ch07-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -11163,6 +11709,65 @@
     "road signs",
     "rangoli designs",
     "floor tiles"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch07-t01-s1",
+     "source": "Shapes and Patterns — naming polygons by their number of sides",
+     "problem": "Tanvi draws a closed shape made only of straight sides. It has 8 corners. Is it a polygon, and what is its name?",
+     "givens": [
+      "closed shape",
+      "only straight sides",
+      "8 corners"
+     ],
+     "find": "whether it is a polygon, and its name",
+     "steps": [
+      {
+       "do": "closed + only straight sides",
+       "result": "it is a polygon"
+      },
+      {
+       "do": "in a polygon, corners = sides",
+       "result": "8 sides"
+      },
+      {
+       "do": "8 sides → name",
+       "result": "octagon"
+      }
+     ],
+     "answer": "Yes, it is a polygon: an octagon",
+     "why": "a polygon is closed with only straight sides → each corner joins two sides, so corners and sides match → the name comes from the number of sides"
+    },
+    {
+     "skillId": "c5-maths-ch07-t01-s3",
+     "source": "Shapes and Patterns — describing triangles by equal sides and by angles",
+     "problem": "A paper kite is a triangle with sides 30 cm, 30 cm and 40 cm. Ravi holds the square corner of a book against each corner of the kite in turn, and every kite corner fits inside the book's corner with room to spare. Describe the triangle by its sides and by its angles.",
+     "givens": [
+      "sides 30 cm, 30 cm, 40 cm",
+      "each kite corner fits inside a book's square corner with room to spare"
+     ],
+     "find": "the triangle's description by sides and by angles",
+     "steps": [
+      {
+       "do": "compare the sides",
+       "result": "two sides are equal (30 cm and 30 cm), the third is different"
+      },
+      {
+       "do": "two equal sides → name by sides",
+       "result": "isosceles triangle"
+      },
+      {
+       "do": "book corner = right angle → each kite corner fits inside it",
+       "result": "all three angles are smaller than a right angle, so all three are acute"
+      },
+      {
+       "do": "all angles acute → name by angles",
+       "result": "acute-angled triangle"
+      }
+     ],
+     "answer": "An isosceles triangle (two equal sides) that is acute-angled (all three angles smaller than a right angle)",
+     "why": "by sides → count the equal sides → by angles → check all three angles, not just one → a triangle has one name of each kind"
+    }
    ]
   },
   {
@@ -11921,7 +12526,8 @@
      "The first triangle uses ___ sticks.",
      "8 triangles = the first triangle + 7 more: 3 + ___ × 2.",
      "3 + 14 = ___ sticks."
-    ]
+    ],
+    "skillId": "c5-maths-ch07-t02-s3"
    },
    "formats": {
     "primary": "F3",
@@ -11944,6 +12550,57 @@
     "stacking cups at a chai stall",
     "train coaches added one by one",
     "brick steps on a staircase"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch07-t02-s1",
+     "source": "Shapes and Patterns — continuing a growing pattern by finding the change",
+     "problem": "For Diwali, Anu lays diyas in rows: the first row has 2 diyas, the second 6, the third 10 and the fourth 14. How many diyas go in the fifth row?",
+     "givens": [
+      "rows: 2, 6, 10, 14 diyas"
+     ],
+     "find": "the number of diyas in the fifth row",
+     "steps": [
+      {
+       "do": "find the change between rows",
+       "result": "6 − 2 = 4, 10 − 6 = 4, 14 − 10 = 4"
+      },
+      {
+       "do": "same change each time → apply it to the last row",
+       "result": "14 + 4 = 18"
+      }
+     ],
+     "answer": "18 diyas",
+     "why": "look at what changes from one step to the next → check it is the same each time → add that change to the last step"
+    },
+    {
+     "skillId": "c5-maths-ch07-t02-s2",
+     "source": "Shapes and Patterns — matchstick patterns and their rule in words",
+     "problem": "Squares made of matchsticks in a row use 4, 7, 10 and 13 sticks for 1, 2, 3 and 4 squares. Say the rule of this pattern in words.",
+     "givens": [
+      "1 square: 4 sticks",
+      "2 squares: 7",
+      "3 squares: 10",
+      "4 squares: 13"
+     ],
+     "find": "the rule in words",
+     "steps": [
+      {
+       "do": "start of the pattern",
+       "result": "1 square uses 4 sticks"
+      },
+      {
+       "do": "change from step to step",
+       "result": "7 − 4 = 3, 10 − 7 = 3, 13 − 10 = 3"
+      },
+      {
+       "do": "why 3 → a new square shares one side with the last one",
+       "result": "each new square needs only 3 new sticks"
+      }
+     ],
+     "answer": "Start with 4 sticks for the first square, then add 3 sticks for each new square",
+     "why": "a rule names the start and the change → the change is the same each step → the shared side explains why it is 3 and not 4"
+    }
    ]
   },
   {
@@ -12075,6 +12732,42 @@
      "remediation": {
       "representation": "A balance with 1 kg on one pan and 900 g on the other",
       "moveShape": "Child predicts which pan drops, then checks; ask how many grams 1 kg is"
+     }
+    },
+    {
+     "id": "c5-maths-ch08-t01-m-subtract-separately",
+     "skillId": "c5-maths-ch08-t01-s3",
+     "source": "Weight and Capacity — subtracting weights in kg and g",
+     "belief": "Subtracts the kg parts and the g parts separately, taking the smaller gram number from the bigger, so 4 kg 300 g − 1 kg 800 g = 3 kg 500 g",
+     "signs": [
+      "Writes 800 − 300 in the gram column when the top gram number is the smaller one",
+      "Never changes 1 kg into 1,000 g when the grams run short",
+      "Gets answers about 1 kg too heavy in subtraction"
+     ],
+     "diagnostic": {
+      "prompt_en": "Amma had 4 kg 300 g of atta and used 1 kg 800 g. How much atta is left?",
+      "prompt_hi": "Amma ke paas 4 kg 300 g atta tha aur unhone 1 kg 800 g use kiya. Kitna atta bacha?",
+      "options": [
+       {
+        "text": "2 kg 500 g",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "3 kg 500 g",
+        "misconceptionId": "c5-maths-ch08-t01-m-subtract-separately",
+        "correct": false
+       },
+       {
+        "text": "6 kg 100 g",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Both weights written in grams on a place-value chart (4,300 g and 1,800 g)",
+      "moveShape": "change both to grams → 4,300 − 1,800 = 2,500 → change back: 2,500 g = 2 kg 500 g → or break 1 kg into 1,000 g when the grams run short"
      }
     }
    ],
@@ -12659,7 +13352,8 @@
      "1,130 g is ___ kg 130 g.",
      "Add the kilograms: 2 + 1 + 1 = ___ kg.",
      "Total: ___ kg 130 g."
-    ]
+    ],
+    "skillId": "c5-maths-ch08-t01-s3"
    },
    "formats": {
     "primary": "F3",
@@ -12682,6 +13376,56 @@
     "school bag weights",
     "mangoes by the kilo",
     "sweets for a festival"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch08-t01-s1",
+     "source": "Weight and Capacity — 1 kg = 1000 g",
+     "problem": "At the post office, one parcel weighs 7 kg and another weighs 6,000 g. Write the first in grams and the second in kilograms.",
+     "givens": [
+      "parcel 1 = 7 kg",
+      "parcel 2 = 6,000 g",
+      "1 kg = 1,000 g"
+     ],
+     "find": "7 kg in grams and 6,000 g in kilograms",
+     "steps": [
+      {
+       "do": "kg → g: each kg is 1,000 g",
+       "result": "7 × 1,000 = 7,000 g"
+      },
+      {
+       "do": "g → kg: how many 1,000 g in 6,000 g",
+       "result": "6,000 ÷ 1,000 = 6 kg"
+      }
+     ],
+     "answer": "7 kg = 7,000 g; 6,000 g = 6 kg",
+     "why": "1 kg is the same as 1,000 g → kilograms to grams multiplies by 1,000 → grams to kilograms divides by 1,000"
+    },
+    {
+     "skillId": "c5-maths-ch08-t01-s2",
+     "source": "Weight and Capacity — writing kg and g together in grams",
+     "problem": "A bag of potatoes weighs 3 kg 45 g. Write its weight in grams.",
+     "givens": [
+      "weight = 3 kg 45 g"
+     ],
+     "find": "the weight in grams",
+     "steps": [
+      {
+       "do": "kg part → grams",
+       "result": "3 × 1,000 = 3,000 g"
+      },
+      {
+       "do": "add the grams part",
+       "result": "3,000 + 45 = 3,045 g"
+      },
+      {
+       "do": "check the places",
+       "result": "45 g has no hundreds, so the hundreds digit is 0"
+      }
+     ],
+     "answer": "3,045 g",
+     "why": "change the kg part to grams → add the grams → empty places keep a 0, so the digits stay in their places"
+    }
    ]
   },
   {
@@ -12813,6 +13557,42 @@
      "remediation": {
       "representation": "Pouring simulation: the same 250 ml shown in a tall glass and a wide bowl",
       "moveShape": "Child pours the full glass into the bowl and back; ask whether any water was added or lost"
+     }
+    },
+    {
+     "id": "c5-maths-ch08-t02-m-hundred-ml",
+     "skillId": "c5-maths-ch08-t02-s1",
+     "source": "Weight and Capacity — 1 l = 1000 ml",
+     "belief": "Uses 100 instead of 1,000 when changing litres to millilitres, so 5 l = 500 ml",
+     "signs": [
+      "Writes 3 l as 300 ml",
+      "Says 2,000 ml is 20 l",
+      "Thinks four 250 ml glasses fill more than a 1 l bottle"
+     ],
+     "diagnostic": {
+      "prompt_en": "A jug holds 5 l of chaas. How many millilitres is that?",
+      "prompt_hi": "Ek jug mein 5 l chaas aati hai. Yeh kitne millilitre hue?",
+      "options": [
+       {
+        "text": "5,000 ml",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "500 ml",
+        "misconceptionId": "c5-maths-ch08-t02-m-hundred-ml",
+        "correct": false
+       },
+       {
+        "text": "50 ml",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A 1 l bottle poured into four 250 ml glasses, next to a 500 ml bottle that fills only two",
+      "moveShape": "1 l = 1,000 ml → each litre brings 1,000 ml → 5 litres → 5 × 1,000 = 5,000 ml → 500 ml is only half of one litre"
      }
     }
    ],
@@ -13399,7 +14179,8 @@
      "___ glasses of 250 ml make 1,000 ml.",
      "___ more glasses make the other 500 ml.",
      "4 + 2 = ___ glasses."
-    ]
+    ],
+    "skillId": "c5-maths-ch08-t02-s3"
    },
    "formats": {
     "primary": "F3",
@@ -13422,6 +14203,56 @@
     "cooking oil",
     "a water tanker",
     "medicine spoons"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch08-t02-s1",
+     "source": "Weight and Capacity — 1 l = 1000 ml",
+     "problem": "A school water cooler holds 6 l. A tank holds 9,000 ml. Write the cooler's capacity in ml and the tank's in litres.",
+     "givens": [
+      "cooler = 6 l",
+      "tank = 9,000 ml",
+      "1 l = 1,000 ml"
+     ],
+     "find": "6 l in ml and 9,000 ml in litres",
+     "steps": [
+      {
+       "do": "l → ml: each litre is 1,000 ml",
+       "result": "6 × 1,000 = 6,000 ml"
+      },
+      {
+       "do": "ml → l: how many 1,000 ml in 9,000 ml",
+       "result": "9,000 ÷ 1,000 = 9 l"
+      }
+     ],
+     "answer": "6 l = 6,000 ml; 9,000 ml = 9 l",
+     "why": "1 litre is the same as 1,000 ml → litres to ml multiplies by 1,000 → ml to litres divides by 1,000"
+    },
+    {
+     "skillId": "c5-maths-ch08-t02-s2",
+     "source": "Weight and Capacity — writing l and ml together in ml",
+     "problem": "A bottle of rose sherbet holds 1 l 80 ml. Write its capacity in ml.",
+     "givens": [
+      "capacity = 1 l 80 ml"
+     ],
+     "find": "the capacity in ml",
+     "steps": [
+      {
+       "do": "litre part → ml",
+       "result": "1 × 1,000 = 1,000 ml"
+      },
+      {
+       "do": "add the ml part",
+       "result": "1,000 + 80 = 1,080 ml"
+      },
+      {
+       "do": "check the places",
+       "result": "80 ml has no hundreds, so the hundreds digit is 0"
+      }
+     ],
+     "answer": "1,080 ml",
+     "why": "change the litre part to ml → add the ml → empty places keep a 0, so the digits stay in their places"
+    }
    ]
   },
   {
@@ -14207,7 +15038,8 @@
      "3 tens ÷ 7 = ___ tens, because 3 is less than 7.",
      "Bring down: 35 ones ÷ 7 = ___.",
      "Answer ___. Check: 105 × 7 = 735."
-    ]
+    ],
+    "skillId": "c5-maths-ch09-t01-s1"
    },
    "formats": {
     "primary": "F2",
@@ -14230,6 +15062,72 @@
     "sharing prize money",
     "seating a school assembly",
     "bus loads for a trip"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch09-t01-s2",
+     "source": "Coconut Farm — packing coconuts in sacks of 25 (dividing by a 2-digit number)",
+     "problem": "A coconut farm in Kerala packs 1,150 coconuts into sacks of 25. How many sacks are filled? Are any coconuts left over?",
+     "givens": [
+      "1,150 coconuts",
+      "25 coconuts in each sack"
+     ],
+     "find": "the number of full sacks and the coconuts left over",
+     "steps": [
+      {
+       "do": "take a big easy chunk: 40 sacks",
+       "result": "25 × 40 = 1000"
+      },
+      {
+       "do": "coconuts still to pack",
+       "result": "1150 − 1000 = 150"
+      },
+      {
+       "do": "how many 25s in 150",
+       "result": "25 × 6 = 150"
+      },
+      {
+       "do": "add the sacks",
+       "result": "40 + 6 = 46"
+      },
+      {
+       "do": "check: sacks × 25",
+       "result": "46 × 25 = 1150"
+      }
+     ],
+     "answer": "46 sacks, with no coconuts left over",
+     "why": "division = how many groups of 25 fit → take big chunks of 25s first → add the chunks → multiply back to check"
+    },
+    {
+     "skillId": "c5-maths-ch09-t01-s3",
+     "source": "Coconut Farm — remainder and checking with quotient × divisor + remainder",
+     "problem": "Divide 437 by 6. Write the quotient and the remainder, and check your answer.",
+     "givens": [
+      "dividend 437",
+      "divisor 6"
+     ],
+     "find": "the quotient and the remainder",
+     "steps": [
+      {
+       "do": "43 tens ÷ 6",
+       "result": "6 × 7 = 42, 1 ten left"
+      },
+      {
+       "do": "bring down the 7 ones: 17 ÷ 6",
+       "result": "6 × 2 = 12, 5 left"
+      },
+      {
+       "do": "remainder smaller than the divisor?",
+       "result": "5 is less than 6, so stop"
+      },
+      {
+       "do": "check: quotient × divisor + remainder",
+       "result": "72 × 6 + 5 = 437"
+      }
+     ],
+     "answer": "72 remainder 5",
+     "why": "share place by place → what cannot make a full group of 6 is the remainder → it must be less than 6 → quotient × divisor + remainder gives back the number"
+    }
    ]
   },
   {
@@ -14893,7 +15791,8 @@
      "10 cars carry ___ people.",
      "___ people are still left, and they need a car too.",
      "So ___ cars are needed."
-    ]
+    ],
+    "skillId": "c5-maths-ch09-t02-s1"
    },
    "formats": {
     "primary": "F4",
@@ -14916,6 +15815,60 @@
     "packing sweets in boxes",
     "pizza parties",
     "cutting ribbon for rakhi"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch09-t02-s2",
+     "source": "Coconut Farm — making sense of remainders (only full groups count)",
+     "problem": "Meera has ₹250. One cricket ball costs ₹40. How many balls can she buy?",
+     "givens": [
+      "₹250",
+      "₹40 for one ball"
+     ],
+     "find": "the number of balls she can buy",
+     "steps": [
+      {
+       "do": "balls she can pay for in full",
+       "result": "40 × 6 = 240, ₹10 left"
+      },
+      {
+       "do": "try one more ball",
+       "result": "40 × 7 = 280, more than 250"
+      },
+      {
+       "do": "₹10 cannot buy a ball → drop the remainder",
+       "result": "6 balls"
+      }
+     ],
+     "answer": "6 balls (₹10 is left over)",
+     "why": "only a full ₹40 buys a ball → the leftover ₹10 buys nothing → keep the quotient, drop the remainder"
+    },
+    {
+     "skillId": "c5-maths-ch09-t02-s3",
+     "source": "Coconut Farm — making sense of remainders (the leftover is the answer)",
+     "problem": "Dadi makes 75 laddoos and packs them in boxes of 8 for the neighbours. She keeps the laddoos that do not fill a box. How many laddoos does she keep?",
+     "givens": [
+      "75 laddoos",
+      "8 laddoos in each box"
+     ],
+     "find": "the laddoos Dadi keeps",
+     "steps": [
+      {
+       "do": "full boxes of 8",
+       "result": "8 × 9 = 72"
+      },
+      {
+       "do": "laddoos not in a full box",
+       "result": "75 − 72 = 3"
+      },
+      {
+       "do": "question asks for the leftover → answer is the remainder",
+       "result": "3 laddoos"
+      }
+     ],
+     "answer": "3 laddoos",
+     "why": "75 ÷ 8 = 9 remainder 3 → the story asks what is kept, not how many boxes → the remainder is the answer"
+    }
    ]
   },
   {
@@ -15576,7 +16529,8 @@
      "Turn a quarter turn: the Z does ___ match.",
      "Turn a ___ turn: the Z matches itself again.",
      "So Z matches ___ times in a full turn."
-    ]
+    ],
+    "skillId": "c5-maths-ch10-t01-s1"
    },
    "formats": {
     "primary": "F3",
@@ -15599,6 +16553,59 @@
     "paper pinwheels at the mela",
     "wheels of a cycle",
     "letters on a number plate"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch10-t01-s2",
+     "source": "Symmetrical Designs — how many times a design looks the same in one full turn",
+     "problem": "A flower design has 3 equal petals spread evenly around its centre. What is the smallest turn after which it looks the same?",
+     "givens": [
+      "3 equal petals",
+      "petals evenly spread around the centre"
+     ],
+     "find": "the smallest turn after which the design looks the same",
+     "steps": [
+      {
+       "do": "count the equal parts around the centre",
+       "result": "3 petals"
+      },
+      {
+       "do": "smallest turn moves each petal onto the next one",
+       "result": "a full turn split into 3 equal parts"
+      }
+     ],
+     "answer": "One-third of a full turn",
+     "why": "equal parts spread evenly → one turn step moves each part onto the next → number of parts = number of matches in a full turn"
+    },
+    {
+     "skillId": "c5-maths-ch10-t01-s3",
+     "source": "Symmetrical Designs — turn symmetry and mirror symmetry",
+     "problem": "Check a capital N, written in plain straight lines, for turn symmetry and for a mirror line.",
+     "givens": [
+      "a capital N in plain straight lines"
+     ],
+     "find": "whether N has turn symmetry, a mirror line, both or neither",
+     "steps": [
+      {
+       "do": "half turn about the centre",
+       "result": "N lands on itself: turn symmetry"
+      },
+      {
+       "do": "fold along a standing line through the middle",
+       "result": "the slanting stroke goes the wrong way: no match"
+      },
+      {
+       "do": "fold along a lying line through the middle",
+       "result": "top and bottom do not match"
+      },
+      {
+       "do": "put the checks together",
+       "result": "turn symmetry only, no mirror line"
+      }
+     ],
+     "answer": "N has turn symmetry (half turn) but no mirror line",
+     "why": "turn test = turn and compare → mirror test = fold and compare → they are separate tests → a shape can pass one and fail the other"
+    }
    ]
   },
   {
@@ -16306,7 +17313,8 @@
      "Turn the motif a ___ turn around the centre and draw it again.",
      "Repeat twice more so there are ___ copies.",
      "Check: turn the whole design a quarter turn; it lands on ___."
-    ]
+    ],
+    "skillId": "c5-maths-ch10-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -16329,6 +17337,62 @@
     "block-print patterns",
     "kite designs",
     "mehendi patterns"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch10-t02-s1",
+     "source": "Symmetrical Designs — completing a design about a mirror line on a dot grid",
+     "problem": "On a dot grid, a standing mirror line runs down the middle. Point A is 1 dot left of the line in the top row. Point B is 3 dots left of the line in the row below. Where do the mirror images of A and B go?",
+     "givens": [
+      "standing mirror line",
+      "A: 1 dot left, top row",
+      "B: 3 dots left, row below"
+     ],
+     "find": "where the mirror images of A and B go",
+     "steps": [
+      {
+       "do": "each point → same row, same distance, other side of the line",
+       "result": "rule"
+      },
+      {
+       "do": "point A",
+       "result": "1 dot right of the line, top row"
+      },
+      {
+       "do": "point B",
+       "result": "3 dots right of the line, row below"
+      }
+     ],
+     "answer": "A's image is 1 dot right of the line in the top row; B's image is 3 dots right of the line in the row below",
+     "why": "a mirror image is a flip, not a copy → each point keeps its row and its distance from the line → only the side changes"
+    },
+    {
+     "skillId": "c5-maths-ch10-t02-s3",
+     "source": "Symmetrical Designs — checking a design for both kinds of symmetry",
+     "problem": "A kolam has 4 equal petals and looks the same after every quarter turn. Priya adds one dot in the middle of the top petal only. What must she add so it looks the same after a quarter turn again?",
+     "givens": [
+      "4 equal petals",
+      "quarter-turn symmetry before the dot",
+      "one dot in the top petal"
+     ],
+     "find": "what to add to bring back quarter-turn symmetry",
+     "steps": [
+      {
+       "do": "quarter turn: top petal goes to the next petal",
+       "result": "dot lands on a petal with no dot: no match"
+      },
+      {
+       "do": "repeat the dot after each quarter turn",
+       "result": "a dot in the middle of all 4 petals"
+      },
+      {
+       "do": "turn again to check",
+       "result": "every dot lands on a dot: it matches"
+      }
+     ],
+     "answer": "The same dot in the middle of each of the other 3 petals (4 dots in all)",
+     "why": "a change must be repeated after every equal turn → one lone dot breaks the turn match → copy it into every petal → the design matches again"
+    }
    ]
   },
   {
@@ -16460,6 +17524,42 @@
      "remediation": {
       "representation": "Two half-square triangles cut out and joined into one square",
       "moveShape": "Child cuts two half squares and fits them together; ask how many whole squares they make"
+     }
+    },
+    {
+     "id": "c5-maths-ch11-t01-m-add-sides-for-area",
+     "skillId": "c5-maths-ch11-t01-s1",
+     "source": "Grandmother's Quilt — area by counting unit squares",
+     "belief": "Finds the area of a rectangle of squares by adding the squares along the length and along the breadth (5 by 3 → 8) instead of counting every row",
+     "signs": [
+      "Says a 5 by 3 patch covers 8 squares",
+      "Counts only the squares along the top row and one side",
+      "Adds one square, not a whole row, when the patch gets one row taller"
+     ],
+     "diagnostic": {
+      "prompt_en": "A quilt patch is 5 squares long and 3 squares wide. How many squares does it cover: 15 squares, 8 squares or 16 squares?",
+      "prompt_hi": "Ek quilt patch 5 squares lamba aur 3 squares chauda hai. Yeh kitne squares cover karta hai: 15 squares, 8 squares ya 16 squares?",
+      "options": [
+       {
+        "text": "15 squares",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "8 squares",
+        "misconceptionId": "c5-maths-ch11-t01-m-add-sides-for-area",
+        "correct": false
+       },
+       {
+        "text": "16 squares",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "The patch drawn as 3 rows of 5 squares, one row shaded at a time",
+      "moveShape": "one row = 5 squares → there are 3 such rows → 5 + 5 + 5 → adding 5 and 3 covers only the top row and one side"
      }
     }
    ],
@@ -17050,7 +18150,8 @@
      "Pair the half squares: 6 halves make ___ whole squares.",
      "Leave out the bits that are ___ than half a square.",
      "Area is about 9 + 3 = ___ square units."
-    ]
+    ],
+    "skillId": "c5-maths-ch11-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -17073,6 +18174,61 @@
     "garden beds",
     "rangoli on a grid",
     "leaves on squared paper"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch11-t01-s1",
+     "source": "Grandmother's Quilt — area by counting unit squares",
+     "problem": "A quilt patch on squared paper has 3 rows of squares: the top row has 6 squares, the middle row has 6 squares and the bottom row has 4 squares. What is the area of the patch?",
+     "givens": [
+      "top row 6 squares",
+      "middle row 6 squares",
+      "bottom row 4 squares"
+     ],
+     "find": "the area in square units",
+     "steps": [
+      {
+       "do": "squares in each row",
+       "result": "6, 6 and 4"
+      },
+      {
+       "do": "add the rows",
+       "result": "6 + 6 + 4 = 16"
+      },
+      {
+       "do": "each square is 1 square unit",
+       "result": "16 square units"
+      }
+     ],
+     "answer": "16 square units",
+     "why": "area = how many unit squares cover the shape → count row by row → add the rows"
+    },
+    {
+     "skillId": "c5-maths-ch11-t01-s3",
+     "source": "Grandmother's Quilt — area (space inside) and perimeter (length around)",
+     "problem": "A rectangular mat on squared paper is 4 squares long and 2 squares wide. Find its area and its perimeter. Which one tells the cloth needed, and which one tells the lace around it?",
+     "givens": [
+      "4 squares long",
+      "2 squares wide"
+     ],
+     "find": "the area, the perimeter, and what each one measures",
+     "steps": [
+      {
+       "do": "squares inside: 2 rows of 4",
+       "result": "4 × 2 = 8"
+      },
+      {
+       "do": "unit lengths around the edge",
+       "result": "4 + 2 + 4 + 2 = 12"
+      },
+      {
+       "do": "inside → area; around the edge → perimeter",
+       "result": "cloth = area, lace = perimeter"
+      }
+     ],
+     "answer": "Area 8 square units (the cloth); perimeter 12 units (the lace)",
+     "why": "area counts squares inside → perimeter counts unit lengths along the boundary → different things, so different numbers"
+    }
    ]
   },
   {
@@ -17209,6 +18365,42 @@
      "remediation": {
       "representation": "Grid rectangle with each unit edge drawn as a separate matchstick",
       "moveShape": "Child counts the matchsticks around the shape; ask how many sticks a corner square has on the edge"
+     }
+    },
+    {
+     "id": "c5-maths-ch11-t02-m-subtract-without-halving",
+     "skillId": "c5-maths-ch11-t02-s3",
+     "source": "Grandmother's Quilt — finding a missing side from the perimeter",
+     "belief": "Finds the missing breadth by taking the length away from the whole perimeter, without halving first (perimeter 40 m, length 12 m → breadth 28 m)",
+     "signs": [
+      "Gets a breadth longer than half the perimeter",
+      "Writes perimeter − length as the answer",
+      "Does not check by adding all four sides"
+     ],
+     "diagnostic": {
+      "prompt_en": "A rectangular garden needs 40 m of fence to go once around it. Its length is 12 m. What is its breadth: 8 m, 28 m or 16 m?",
+      "prompt_hi": "Ek rectangular garden ke chaaron taraf ek baar fence lagane ke liye 40 m chahiye. Uski length 12 m hai. Uski breadth kitni hai: 8 m, 28 m ya 16 m?",
+      "options": [
+       {
+        "text": "8 m",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "28 m",
+        "misconceptionId": "c5-maths-ch11-t02-m-subtract-without-halving",
+        "correct": false
+       },
+       {
+        "text": "16 m",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "The fence drawn as one long string cut into four pieces: length, breadth, length, breadth",
+      "moveShape": "the string holds two lengths and two breadths → halve it → one length + one breadth → take away the length → go round to check"
      }
     }
    ],
@@ -17825,7 +19017,8 @@
      "Length + breadth = 45 + 30 = ___ cm.",
      "Two of each: 2 × 75 = ___ cm.",
      "Check by adding all four: 45 + 30 + 45 + ___ = 150 cm."
-    ]
+    ],
+    "skillId": "c5-maths-ch11-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -17848,6 +19041,64 @@
     "running round the school ground",
     "borders for a classroom chart",
     "cushion covers"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch11-t02-s1",
+     "source": "Grandmother's Quilt — perimeter as the length of the boundary (adding all sides)",
+     "problem": "A rectangular table mat is 35 cm long and 20 cm wide. How much lace is needed to go once around its edge? Add the sides one by one.",
+     "givens": [
+      "length 35 cm",
+      "breadth 20 cm"
+     ],
+     "find": "the length of lace around the mat",
+     "steps": [
+      {
+       "do": "walk round: length, breadth, length, breadth",
+       "result": "35, 20, 35 and 20"
+      },
+      {
+       "do": "first length and breadth",
+       "result": "35 + 20 = 55"
+      },
+      {
+       "do": "second length and breadth",
+       "result": "35 + 20 = 55"
+      },
+      {
+       "do": "join the two halves of the walk",
+       "result": "55 + 55 = 110 cm"
+      }
+     ],
+     "answer": "110 cm",
+     "why": "perimeter = the whole boundary → walk once round → every side counted once → 4 sides, not 2"
+    },
+    {
+     "skillId": "c5-maths-ch11-t02-s3",
+     "source": "Grandmother's Quilt — finding a missing side from the perimeter",
+     "problem": "A rectangular pond in a park needs 60 m of fence to go once around it. Its length is 18 m. What is its breadth?",
+     "givens": [
+      "perimeter 60 m",
+      "length 18 m"
+     ],
+     "find": "the breadth",
+     "steps": [
+      {
+       "do": "perimeter holds 2 lengths and 2 breadths → halve it",
+       "result": "60 ÷ 2 = 30 m"
+      },
+      {
+       "do": "one length and one breadth make 30 m → take away the length",
+       "result": "30 − 18 = 12 m"
+      },
+      {
+       "do": "check by going round",
+       "result": "18 + 12 + 18 + 12 = 60 m"
+      }
+     ],
+     "answer": "12 m",
+     "why": "perimeter = 2 × (length + breadth) → half of it is length + breadth → subtract the length → check by going round"
+    }
    ]
   },
   {
@@ -18535,7 +19786,8 @@
      "Perimeters: 1 by 20 is ___; 2 by 10 is 24; 4 by 5 is 18.",
      "All three have the same area, ___.",
      "The squarest one, ___, has the shortest boundary."
-    ]
+    ],
+    "skillId": "c5-maths-ch11-t03-s2"
    },
    "formats": {
     "primary": "F3",
@@ -18558,6 +19810,72 @@
     "photo collages",
     "chocolate bar pieces",
     "parking spaces"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch11-t03-s1",
+     "source": "Grandmother's Quilt — making all the rectangles with a given number of square tiles",
+     "problem": "Make every rectangle you can with exactly 24 square tiles, using all the tiles. Count a rectangle and its turned-around copy as the same.",
+     "givens": [
+      "24 square tiles",
+      "all tiles used, no gaps"
+     ],
+     "find": "all the rectangles",
+     "steps": [
+      {
+       "do": "1 row",
+       "result": "1 × 24 = 24"
+      },
+      {
+       "do": "2 rows",
+       "result": "2 × 12 = 24"
+      },
+      {
+       "do": "3 rows",
+       "result": "3 × 8 = 24"
+      },
+      {
+       "do": "4 rows",
+       "result": "4 × 6 = 24"
+      },
+      {
+       "do": "5 rows leaves tiles over; 6 rows is 4 by 6 turned round",
+       "result": "stop"
+      }
+     ],
+     "answer": "1 by 24, 2 by 12, 3 by 8 and 4 by 6",
+     "why": "a rectangle of tiles = rows × tiles in a row → try each number of rows → keep those that use every tile → stop when the pairs repeat"
+    },
+    {
+     "skillId": "c5-maths-ch11-t03-s3",
+     "source": "Grandmother's Quilt — area and perimeter change separately",
+     "problem": "Compare a rectangle 2 squares by 6 squares with a rectangle 3 squares by 5 squares. Which has the longer boundary, which has more area, or are they the same?",
+     "givens": [
+      "rectangle A: 2 by 6",
+      "rectangle B: 3 by 5"
+     ],
+     "find": "how their perimeters and areas compare",
+     "steps": [
+      {
+       "do": "perimeter of A",
+       "result": "2 × (2 + 6) = 16"
+      },
+      {
+       "do": "perimeter of B",
+       "result": "2 × (3 + 5) = 16"
+      },
+      {
+       "do": "areas",
+       "result": "2 × 6 = 12, 3 × 5 = 15"
+      },
+      {
+       "do": "same boundary, different inside",
+       "result": "perimeters equal; B has more area"
+      }
+     ],
+     "answer": "Same perimeter (16 units each); areas 12 and 15 square units, so the 3 by 5 rectangle has more area",
+     "why": "perimeter counts the edge, area counts the inside → one can stay the same while the other changes → so check each separately"
+    }
    ]
   },
   {
@@ -19281,7 +20599,8 @@
      "A quarter of an hour = 60 ÷ 4 = ___ minutes.",
      "Add them: 120 + 15 = ___ minutes.",
      "Check on a clock: a ___ turn of the minute hand is 15 minutes."
-    ]
+    ],
+    "skillId": "c5-maths-ch12-t01-s3"
    },
    "formats": {
     "primary": "F3",
@@ -19304,6 +20623,58 @@
     "cooking times",
     "school periods",
     "cartoon episode lengths"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch12-t01-s1",
+     "source": "Racing Seconds — 60 seconds make a minute, 60 minutes make an hour",
+     "problem": "The school bell rings once every hour. How many minutes, and how many seconds, are there from one bell to the next?",
+     "givens": [
+      "1 hour between bells"
+     ],
+     "find": "the time between bells in minutes and in seconds",
+     "steps": [
+      {
+       "do": "1 hour = 60 minutes",
+       "result": "60 minutes"
+      },
+      {
+       "do": "each minute = 60 seconds → 60 lots of 60",
+       "result": "60 × 60 = 3,600 seconds"
+      }
+     ],
+     "answer": "60 minutes, which is 3,600 seconds",
+     "why": "1 hour = 60 minutes → 1 minute = 60 seconds → so 1 hour = 60 × 60 seconds"
+    },
+    {
+     "skillId": "c5-maths-ch12-t01-s2",
+     "source": "Racing Seconds — converting minutes into hours and minutes",
+     "problem": "A cricket innings lasted 215 minutes. Write this time in hours and minutes.",
+     "givens": [
+      "215 minutes"
+     ],
+     "find": "the time in hours and minutes",
+     "steps": [
+      {
+       "do": "how many full 60s in 215",
+       "result": "60 × 3 = 180"
+      },
+      {
+       "do": "minutes left over",
+       "result": "215 − 180 = 35"
+      },
+      {
+       "do": "write hours and minutes",
+       "result": "3 hours 35 minutes"
+      },
+      {
+       "do": "check",
+       "result": "180 + 35 = 215 minutes"
+      }
+     ],
+     "answer": "3 hours 35 minutes",
+     "why": "every 60 minutes make 1 hour → take out full 60s as hours → what is left stays as minutes"
+    }
    ]
   },
   {
@@ -20070,7 +21441,8 @@
      "38.6 is less than 39.1, so ___ won.",
      "Find the difference: from 38.6 to 39.0 is ___, and from 39.0 to 39.1 is 0.1.",
      "0.4 + 0.1 = ___, so Rina won by half a second."
-    ]
+    ],
+    "skillId": "c5-maths-ch12-t02-s2"
    },
    "formats": {
     "primary": "F4",
@@ -20093,6 +21465,69 @@
     "swimming lessons",
     "cycling to school",
     "holding-your-breath games"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch12-t02-s1",
+     "source": "Racing Seconds — comparing race timings (less time is faster)",
+     "problem": "In a 50 m race on sports day, Arjun took 9.4 seconds, Bilal 8.9 seconds and Chetan 9.1 seconds. Put them in order from fastest to slowest.",
+     "givens": [
+      "Arjun 9.4 s",
+      "Bilal 8.9 s",
+      "Chetan 9.1 s"
+     ],
+     "find": "the order from fastest to slowest",
+     "steps": [
+      {
+       "do": "same distance → less time is faster",
+       "result": "smallest time first"
+      },
+      {
+       "do": "compare the whole seconds",
+       "result": "Bilal (8) is fastest"
+      },
+      {
+       "do": "Arjun and Chetan both have 9 → compare the tenths",
+       "result": "9.1 is less than 9.4, so Chetan is ahead of Arjun"
+      },
+      {
+       "do": "write the order",
+       "result": "Bilal, Chetan, Arjun"
+      }
+     ],
+     "answer": "Bilal, Chetan, Arjun",
+     "why": "everyone runs the same 50 m → less time means faster → compare whole seconds first, then tenths"
+    },
+    {
+     "skillId": "c5-maths-ch12-t02-s3",
+     "source": "Racing Seconds — comparing timings given in minutes and seconds",
+     "problem": "In a 400 m race, Kavya took 1 minute 12 seconds and Pooja took 75 seconds. Who was faster, and by how many seconds?",
+     "givens": [
+      "Kavya 1 minute 12 seconds",
+      "Pooja 75 seconds"
+     ],
+     "find": "the faster runner and the difference",
+     "steps": [
+      {
+       "do": "change minutes to seconds",
+       "result": "1 minute = 60 seconds"
+      },
+      {
+       "do": "Kavya's time in seconds",
+       "result": "60 + 12 = 72"
+      },
+      {
+       "do": "compare in the same unit",
+       "result": "72 is less than 75, so Kavya is faster"
+      },
+      {
+       "do": "difference",
+       "result": "75 − 72 = 3"
+      }
+     ],
+     "answer": "Kavya, by 3 seconds",
+     "why": "put both times in the same unit → 1 minute is 60 seconds, not 100 → then less time is faster → subtract for the gap"
+    }
    ]
   },
   {
@@ -22415,7 +23850,8 @@
      "Turning right from north, she faces ___.",
      "Turning right again from east, she faces ___.",
      "So at the end she faces ___."
-    ]
+    ],
+    "skillId": "c5-maths-ch14-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -22438,6 +23874,62 @@
     "metro exits",
     "the rising and setting sun",
     "robot games"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch14-t01-s1",
+     "source": "Maps and Locations — north, south, east and west on a map",
+     "problem": "On a village map with north at the top, the school is in the middle. The well is straight below the school, the temple is straight to its right, and the pond is straight to its left. In which direction from the school is each one?",
+     "givens": [
+      "north at the top of the map",
+      "well below the school",
+      "temple to the right",
+      "pond to the left"
+     ],
+     "find": "the direction of the well, the temple and the pond from the school",
+     "steps": [
+      {
+       "do": "top of the map → north",
+       "result": "bottom of the map → south"
+      },
+      {
+       "do": "well is below the school",
+       "result": "well is south"
+      },
+      {
+       "do": "with north at the top, the right side → east",
+       "result": "temple is east"
+      },
+      {
+       "do": "the left side → west",
+       "result": "pond is west"
+      }
+     ],
+     "answer": "Well: south; temple: east; pond: west",
+     "why": "map key: north at the top → south opposite it → east to the right, west to the left"
+    },
+    {
+     "skillId": "c5-maths-ch14-t01-s3",
+     "source": "Maps and Locations — finding real north from the sun",
+     "problem": "In the evening, Raju stands in his yard facing the setting sun. Is north in front of him, behind him, on his left or on his right?",
+     "givens": [
+      "evening",
+      "Raju faces the setting sun"
+     ],
+     "find": "where north is for Raju",
+     "steps": [
+      {
+       "do": "the sun sets in the west",
+       "result": "Raju faces west"
+      },
+      {
+       "do": "turn right from west",
+       "result": "north"
+      }
+     ],
+     "answer": "On his right",
+     "why": "the sun sets in the west → so he faces west → facing west, north is on the right hand"
+    }
    ]
   },
   {
@@ -23152,7 +24644,8 @@
      "Each cm stands for ___ m.",
      "7 × 10 = ___ m.",
      "So you really walk ___ m, not 7 cm."
-    ]
+    ],
+    "skillId": "c5-maths-ch14-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -23175,6 +24668,59 @@
     "metro maps",
     "treasure-hunt maps",
     "cycling routes"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch14-t02-s1",
+     "source": "Maps and Locations — reading a map scale",
+     "problem": "A map of a mela ground says '1 cm stands for 100 m'. What real distance do 2 cm and half a centimetre on this map stand for?",
+     "givens": [
+      "1 cm stands for 100 m"
+     ],
+     "find": "the real distances for 2 cm and half a centimetre",
+     "steps": [
+      {
+       "do": "read the scale",
+       "result": "1 cm → 100 m"
+      },
+      {
+       "do": "2 cm is two lots of 1 cm",
+       "result": "2 × 100 = 200 m"
+      },
+      {
+       "do": "half a cm is half of 1 cm",
+       "result": "100 ÷ 2 = 50 m"
+      }
+     ],
+     "answer": "2 cm stands for 200 m; half a centimetre stands for 50 m",
+     "why": "the scale tells the real length for 1 cm → more cm, more real distance in the same steps → half a cm, half the distance"
+    },
+    {
+     "skillId": "c5-maths-ch14-t02-s3",
+     "source": "Maps and Locations — finding the map length from a real distance",
+     "problem": "On a village map, 1 cm stands for 50 m. The road from Ravi's house to the school is really 600 m long. How long should this road be drawn on the map?",
+     "givens": [
+      "1 cm stands for 50 m",
+      "road 600 m long"
+     ],
+     "find": "the road's length on the map",
+     "steps": [
+      {
+       "do": "how many 50 m pieces in 600 m",
+       "result": "600 ÷ 50 = 12"
+      },
+      {
+       "do": "each piece is 1 cm on the map",
+       "result": "12 cm"
+      },
+      {
+       "do": "check: map length × 50",
+       "result": "12 × 50 = 600 m"
+      }
+     ],
+     "answer": "12 cm",
+     "why": "each 50 m of road becomes 1 cm → so divide the real distance by 50 → multiply back to check"
+    }
    ]
   },
   {
@@ -23898,7 +25444,8 @@
      "3 full pictures = 3 × 10 = ___ trees.",
      "Half a picture = half of 10 = ___ trees.",
      "Total = 30 + 5 = ___ trees."
-    ]
+    ],
+    "skillId": "c5-maths-ch15-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -23921,6 +25468,67 @@
     "runs scored by batters",
     "how children come to school",
     "mangoes sold at the market"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch15-t01-s1",
+     "source": "Data Through Pictures — reading a pictograph where one picture stands for many",
+     "problem": "In a pictograph of mangoes sold at a fruit stall, each mango picture stands for 5 mangoes. The Monday row has 7 pictures and the Tuesday row has 4 pictures. How many mangoes were sold on each day, and how many more on Monday?",
+     "givens": [
+      "1 picture = 5 mangoes",
+      "Monday 7 pictures",
+      "Tuesday 4 pictures"
+     ],
+     "find": "mangoes sold each day and the difference",
+     "steps": [
+      {
+       "do": "read the key",
+       "result": "1 picture = 5 mangoes"
+      },
+      {
+       "do": "Monday",
+       "result": "7 × 5 = 35"
+      },
+      {
+       "do": "Tuesday",
+       "result": "4 × 5 = 20"
+      },
+      {
+       "do": "how many more",
+       "result": "35 − 20 = 15"
+      }
+     ],
+     "answer": "Monday 35 mangoes, Tuesday 20 mangoes; 15 more on Monday",
+     "why": "each picture stands for 5 → pictures × 5 gives the real number → compare the real numbers, not the pictures"
+    },
+    {
+     "skillId": "c5-maths-ch15-t01-s3",
+     "source": "Data Through Pictures — drawing a pictograph with a key",
+     "problem": "Class 5 children come to school in three ways: Walk 20, Bus 30, Cycle 15. In a pictograph with the key '1 picture = 10 children', how many pictures go in each row?",
+     "givens": [
+      "Walk 20",
+      "Bus 30",
+      "Cycle 15",
+      "key: 1 picture = 10 children"
+     ],
+     "find": "the number of pictures in each row",
+     "steps": [
+      {
+       "do": "Walk: how many tens in 20",
+       "result": "20 ÷ 10 = 2"
+      },
+      {
+       "do": "Bus: how many tens in 30",
+       "result": "30 ÷ 10 = 3"
+      },
+      {
+       "do": "Cycle: 15 is one ten and half a ten",
+       "result": "1 full picture and a half picture"
+      }
+     ],
+     "answer": "Walk 2 pictures, Bus 3 pictures, Cycle 1 and a half (one and a half) pictures",
+     "why": "key value = children per picture → divide each number by 10 → a leftover of 5 is half of 10 → draw half a picture"
+    }
    ]
   },
   {
@@ -24631,7 +26239,8 @@
      "Start the scale at ___.",
      "Monday's bar is 20, which is ___ steps; Tuesday's is 35, 7 steps; Wednesday's is 15, ___ steps.",
      "Label the days and the scale, and give the graph a ___."
-    ]
+    ],
+    "skillId": "c5-maths-ch15-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -24654,6 +26263,62 @@
     "how children come to school",
     "advertisements with graphs",
     "votes for a class monitor"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c5-maths-ch15-t02-s1",
+     "source": "Data Through Pictures — reading the height of a bar using the scale",
+     "problem": "A bar graph of books read in a month has scale marks 0, 10, 20, 30 and 40. Asha's bar reaches the 30 mark. Imran's bar is exactly half as tall as Asha's. How many books did each child read?",
+     "givens": [
+      "scale 0, 10, 20, 30, 40",
+      "Asha's bar at 30",
+      "Imran's bar half as tall as Asha's"
+     ],
+     "find": "the books read by Asha and by Imran",
+     "steps": [
+      {
+       "do": "each step on the scale",
+       "result": "10 books"
+      },
+      {
+       "do": "Asha: top of the bar on a mark",
+       "result": "30 books"
+      },
+      {
+       "do": "Imran: half the height → half the value",
+       "result": "30 ÷ 2 = 15"
+      }
+     ],
+     "answer": "Asha read 30 books and Imran read 15 books",
+     "why": "read across from the top of the bar to the scale → the scale starts at 0, so half the height means half the value"
+    },
+    {
+     "skillId": "c5-maths-ch15-t02-s3",
+     "source": "Data Through Pictures — comparison questions from a bar graph",
+     "problem": "A bar graph shows trees planted by three classes: Class 2 planted 25, Class 3 planted 40 and Class 5 planted 50. Which class planted the most, which the least, and how many more did Class 5 plant than Class 3?",
+     "givens": [
+      "Class 2: 25",
+      "Class 3: 40",
+      "Class 5: 50"
+     ],
+     "find": "the most, the least, and the difference between Class 5 and Class 3",
+     "steps": [
+      {
+       "do": "tallest bar",
+       "result": "Class 5 with 50"
+      },
+      {
+       "do": "shortest bar",
+       "result": "Class 2 with 25"
+      },
+      {
+       "do": "how many more → subtract",
+       "result": "50 − 40 = 10"
+      }
+     ],
+     "answer": "Most: Class 5; least: Class 2; Class 5 planted 10 more trees than Class 3",
+     "why": "taller bar → bigger number → 'how many more' = difference of the two bar values"
+    }
    ]
   }
  ],

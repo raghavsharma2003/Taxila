@@ -137,6 +137,42 @@
       "representation": "A 6 by 6 tile grid next to a row of 6 + 6 tiles",
       "moveShape": "Child builds both from tiles and counts; ask which picture is 'six sixes' and which is 'two sixes'"
      }
+    },
+    {
+     "id": "c6-maths-ch01-t01-m-odd-double",
+     "skillId": "c6-maths-ch01-t01-s1",
+     "source": "Patterns in Mathematics — 1.2 Patterns in numbers: odd and even numbers (Table 1)",
+     "belief": "To find the odd number at a position, just doubles the position, so gets an even number (says the 6th odd number is 12)",
+     "signs": [
+      "Says the 6th odd number is 12",
+      "Mixes up the 10th odd number with the 10th even number, 20",
+      "Gives an even answer when asked for an odd number"
+     ],
+     "diagnostic": {
+      "prompt_en": "Odd numbers go 1, 3, 5, 7, and so on. What is the 6th odd number?",
+      "prompt_hi": "Odd numbers aise chalte hain: 1, 3, 5, 7, aur aage. 6th odd number kaunsa hai?",
+      "options": [
+       {
+        "text": "11",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "12",
+        "misconceptionId": "c6-maths-ch01-t01-m-odd-double",
+        "correct": false
+       },
+       {
+        "text": "13",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Two rows of counters: even numbers 2, 4, 6 … on top, odd numbers 1, 3, 5 … below, each odd number just under its even partner",
+      "moveShape": "write the odd numbers under the even numbers → each odd is 1 less than the even above it → 6th even is 12 → 6th odd is 1 less → check the answer is odd"
+     }
     }
    ],
    "items": [
@@ -660,6 +696,33 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c6-maths-ch01-t01-i14",
+     "skillId": "c6-maths-ch01-t01-s1",
+     "kind": "error_spot",
+     "difficulty": 2,
+     "source": "Patterns in Mathematics — 1.2 Patterns in numbers: odd and even numbers (Table 1)",
+     "prompt_en": "Mohan says the 10th odd number is 20. Is he correct? If not, what is the 10th odd number?",
+     "prompt_hi": "Mohan kehta hai ki 10th odd number 20 hai. Kya woh sahi hai? Agar nahi, toh 10th odd number kya hai?",
+     "answer": "No; the 10th odd number is 19 (20 is the 10th even number)",
+     "acceptable": [
+      "19",
+      "no, 19",
+      "no, it is 19"
+     ],
+     "hints": [
+      "Is 20 an odd number or an even number?",
+      "20 is even, so it cannot be an odd number.",
+      "The 10th even number is 20; the odd number just before it is ___.",
+      "It is 19: 1, 3, 5, 7, 9, 11, 13, 15, 17, 19."
+     ],
+     "targetsMisconception": "c6-maths-ch01-t01-m-odd-double",
+     "verified": {
+      "solverAnswer": "No; 20 is even. The 10th odd number is 19",
+      "agrees": true,
+      "note": "Blind-solved (class 6 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -677,7 +740,8 @@
      "6th = 15 + ___ = 21.",
      "7th = 21 + 7 = ___.",
      "Rule in words: the nth triangular number is 1 + 2 + … + ___."
-    ]
+    ],
+    "skillId": "c6-maths-ch01-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -701,6 +765,65 @@
     "cricket scoreboard",
     "rangoli dots",
     "gift-box cubes"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch01-t01-s1",
+     "source": "Patterns in Mathematics — 1.2 Patterns in numbers: odd and even numbers (Table 1)",
+     "problem": "Reena writes the odd numbers in order, starting from 1. What is the 8th odd number, and which two even numbers sit on either side of it?",
+     "givens": [
+      "odd numbers start 1, 3, 5, …",
+      "position wanted: 8th"
+     ],
+     "find": "the 8th odd number and its two even neighbours",
+     "steps": [
+      {
+       "do": "odd numbers: start at 1, add 2 each time",
+       "result": "1, 3, 5, 7, 9, 11, 13, 15"
+      },
+      {
+       "do": "pick the 8th term",
+       "result": "15"
+      },
+      {
+       "do": "odd and even take turns → one less and one more",
+       "result": "15 − 1 = 14 and 15 + 1 = 16"
+      }
+     ],
+     "answer": "The 8th odd number is 15; the even numbers on either side are 14 and 16",
+     "why": "odd numbers start at 1 and jump by 2 → count the terms to the position → odd and even numbers alternate, so the neighbours are 1 less and 1 more"
+    },
+    {
+     "skillId": "c6-maths-ch01-t01-s3",
+     "source": "Patterns in Mathematics — 1.2 Patterns in numbers: cubes (Table 1)",
+     "problem": "A toy shop builds big cubes out of small wooden blocks: 1 block, then a 2 by 2 by 2 cube, then a 3 by 3 by 3 cube, and so on. How many small blocks are in the 6th cube? Say the rule in words.",
+     "givens": [
+      "1st cube: 1 block",
+      "2nd cube: 2 by 2 by 2",
+      "3rd cube: 3 by 3 by 3"
+     ],
+     "find": "the blocks in the 6th cube and the rule",
+     "steps": [
+      {
+       "do": "6th cube → 6 layers, each a 6 by 6 square",
+       "result": "6 layers of 6 by 6"
+      },
+      {
+       "do": "one layer",
+       "result": "6 × 6 = 36"
+      },
+      {
+       "do": "6 layers",
+       "result": "36 × 6 = 216"
+      },
+      {
+       "do": "rule in words",
+       "result": "multiply the position number by itself, then by itself again"
+      }
+     ],
+     "answer": "216 blocks; the nth cube number is n × n × n",
+     "why": "a cube is n layers of an n by n square → square number × n → cube numbers 1, 8, 27, 64, 125, 216"
+    }
    ]
   },
   {
@@ -835,6 +958,42 @@
      "remediation": {
       "representation": "Side-by-side dot arrays 3 by 3, 3 by 4 and 4 by 4 with their sides measured",
       "moveShape": "Child sorts arrays into 'square' and 'not square' and states the test they used; ask for the nearest square to 12 on each side"
+     }
+    },
+    {
+     "id": "c6-maths-ch01-t02-m-triangle-odd-rows",
+     "skillId": "c6-maths-ch01-t02-s1",
+     "source": "Patterns in Mathematics — 1.3 Visualising number sequences: triangular numbers as dot pictures",
+     "belief": "Draws a triangular-number picture with rows of 1, 3, 5, … dots (adding 2 per row) instead of rows of 1, 2, 3, …",
+     "signs": [
+      "Draws the 3rd triangular number with 9 dots",
+      "Makes each row two dots longer than the row above",
+      "Gets square numbers when asked for triangular numbers"
+     ],
+     "diagnostic": {
+      "prompt_en": "Pooja draws the 4th triangular number as a triangle of dots. How many dots go in the bottom row, and how many dots are there in all?",
+      "prompt_hi": "Pooja 4th triangular number ko dots ke triangle ki tarah banati hai. Bottom row mein kitne dots honge, aur total kitne dots?",
+      "options": [
+       {
+        "text": "4 in the bottom row, 10 in all",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "7 in the bottom row, 16 in all",
+        "misconceptionId": "c6-maths-ch01-t02-m-triangle-odd-rows",
+        "correct": false
+       },
+       {
+        "text": "5 in the bottom row, 15 in all",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Laddoos stacked in a triangle: 1 on top, then a row of 2, then 3, then 4",
+      "moveShape": "each new row → one laddoo longer than the row above → the 4th triangle's bottom row has 4 → add the rows 1 + 2 + 3 + 4"
      }
     }
    ],
@@ -1345,7 +1504,8 @@
      "Add a new column of 5 dots along the right side.",
      "Add ___ corner dot where the new row and column meet.",
      "New dots = 5 + 5 + 1 = ___, and 25 + 11 = 36 = 6 × 6."
-    ]
+    ],
+    "skillId": "c6-maths-ch01-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -1366,6 +1526,68 @@
     "courtyard tiles",
     "ladoo trays",
     "marching band rows"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch01-t02-s1",
+     "source": "Patterns in Mathematics — 1.3 Visualising number sequences: square and triangular numbers as dot pictures",
+     "problem": "Describe the dot picture for the 6th square number and for the 6th triangular number. How many dots does each picture have?",
+     "givens": [
+      "square number: a square of dots",
+      "triangular number: a triangle of dots"
+     ],
+     "find": "the two pictures and their dot counts",
+     "steps": [
+      {
+       "do": "square number → equal rows and columns",
+       "result": "6 rows of 6 dots"
+      },
+      {
+       "do": "count the square",
+       "result": "6 × 6 = 36"
+      },
+      {
+       "do": "triangular number → rows grow by one dot, starting at 1",
+       "result": "rows of 1, 2, 3, 4, 5 and 6 dots"
+      },
+      {
+       "do": "add the rows",
+       "result": "1 + 2 + 3 + 4 + 5 + 6 = 21"
+      }
+     ],
+     "answer": "Square: 6 rows of 6 dots, 36 dots; triangle: rows of 1 to 6 dots, 21 dots",
+     "why": "square number → same number of rows and columns → triangular number → each row one dot longer than the row above → count row by row"
+    },
+    {
+     "skillId": "c6-maths-ch01-t02-s3",
+     "source": "Patterns in Mathematics — 1.3 Visualising number sequences: square numbers as square dot pictures",
+     "problem": "Can 20 coins be laid out as a square picture, with equal rows and columns? Use pictures to decide.",
+     "givens": [
+      "20 coins",
+      "a square picture has equal rows and columns"
+     ],
+     "find": "whether 20 is a square number",
+     "steps": [
+      {
+       "do": "try a 4 by 4 square",
+       "result": "4 × 4 = 16, with 4 coins left over"
+      },
+      {
+       "do": "try the next square, 5 by 5",
+       "result": "5 × 5 = 25, 5 coins short"
+      },
+      {
+       "do": "no square fits between 4 by 4 and 5 by 5",
+       "result": "20 is not a square number"
+      },
+      {
+       "do": "20 in equal rows",
+       "result": "4 rows of 5: a rectangle, not a square"
+      }
+     ],
+     "answer": "No; the squares nearest 20 are 16 and 25, so 20 coins make a rectangle such as 4 by 5 but never a square",
+     "why": "a square picture needs equal rows and columns → square sizes jump from 4 by 4 to 5 by 5 → nothing in between → the picture proves 20 is not square"
+    }
    ]
   },
   {
@@ -1497,6 +1719,42 @@
      "remediation": {
       "representation": "The L-shape square picture with one border removed (the 1 in the corner, or a middle border)",
       "moveShape": "Child tries to build the square with a missing piece and sees the gap; ask which odd number is needed to fill it"
+     }
+    },
+    {
+     "id": "c6-maths-ch01-t03-m-square-side",
+     "skillId": "c6-maths-ch01-t03-s2",
+     "source": "Patterns in Mathematics — 1.4 Relations among number sequences: adding consecutive triangular numbers",
+     "belief": "When two triangular numbers next to each other are fitted into a square, takes the square's side from the smaller triangle (thinks 15 + 21 makes a 5 by 5 square)",
+     "signs": [
+      "Says 10 + 15 makes a 4 by 4 square",
+      "Gets a square smaller than the sum just added",
+      "Uses the smaller triangle's number of rows as the side of the square"
+     ],
+     "diagnostic": {
+      "prompt_en": "The 6th and 7th triangular numbers, 21 and 28, are fitted together into a square of dots. How many dots are on each side of the square?",
+      "prompt_hi": "6th aur 7th triangular numbers, 21 aur 28, ko jodkar dots ka ek square banaya gaya. Square ki har side par kitne dots hain?",
+      "options": [
+       {
+        "text": "7 dots on each side",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "6 dots on each side",
+        "misconceptionId": "c6-maths-ch01-t03-m-square-side",
+        "correct": false
+       },
+       {
+        "text": "8 dots on each side",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Two staircases of dots, rows 1 to 7 and rows 1 to 6, the smaller turned around and slid into the bigger's gap",
+      "moveShape": "fit the smaller staircase into the bigger one's gap → each row grows to the bigger triangle's longest row → the side is the bigger triangle's row count → check: side × side = the sum"
      }
     }
    ],
@@ -2093,7 +2351,8 @@
      "Add ___ dots as the next L: a 3 by 3 square, 9 dots.",
      "Add 7 dots as the next L: a ___ by 4 square, 16 dots.",
      "Each odd number is one L-shape, so 4 odd numbers make a 4 by 4 square."
-    ]
+    ],
+    "skillId": "c6-maths-ch01-t03-s1"
    },
    "formats": {
     "primary": "F3",
@@ -2115,6 +2374,67 @@
     "laddoo trays",
     "stadium seating",
     "garden tiles"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch01-t03-s2",
+     "source": "Patterns in Mathematics — 1.4 Relations among number sequences: adding consecutive triangular numbers",
+     "problem": "Add the 5th and 6th triangular numbers, 15 and 21. What kind of number do you get, and how does a dot picture show it?",
+     "givens": [
+      "5th triangular number 15: rows 1 to 5",
+      "6th triangular number 21: rows 1 to 6"
+     ],
+     "find": "the sum, its kind, and the picture",
+     "steps": [
+      {
+       "do": "add",
+       "result": "15 + 21 = 36"
+      },
+      {
+       "do": "turn the smaller triangle upside down",
+       "result": "its rows now run 5, 4, 3, 2, 1"
+      },
+      {
+       "do": "slide it into the staircase gap of the bigger triangle",
+       "result": "every row now has 6 dots"
+      },
+      {
+       "do": "count the rows of 6",
+       "result": "6 × 6 = 36, a square number"
+      }
+     ],
+     "answer": "36, a square number: the two triangles fit together into a 6 by 6 square",
+     "why": "the smaller triangle fills the staircase gap of the bigger one → every row becomes as long as the bigger triangle's bottom row → equal rows and columns → a square"
+    },
+    {
+     "skillId": "c6-maths-ch01-t03-s3",
+     "source": "Patterns in Mathematics — 1.4 Relations among number sequences: adding up and down (1 + 2 + … + n + … + 2 + 1)",
+     "problem": "Work out 1 + 2 + 1, then 1 + 2 + 3 + 2 + 1, then 1 + 2 + 3 + 4 + 3 + 2 + 1. What pattern do you see, and how does a dot picture show it always works?",
+     "givens": [
+      "sums that count up to a number and back down to 1"
+     ],
+     "find": "the pattern and the picture that explains it",
+     "steps": [
+      {
+       "do": "first two sums",
+       "result": "1 + 2 + 1 = 4, 1 + 2 + 3 + 2 + 1 = 9"
+      },
+      {
+       "do": "next sum",
+       "result": "1 + 2 + 3 + 4 + 3 + 2 + 1 = 16"
+      },
+      {
+       "do": "picture: a 4 by 4 dot square, read along slanting lines from one corner to the opposite corner",
+       "result": "the slanting lines hold 1, 2, 3, 4, 3, 2, 1 dots"
+      },
+      {
+       "do": "same reading on any square",
+       "result": "counting up to n and back down covers an n by n square"
+      }
+     ],
+     "answer": "The sums are 4, 9 and 16, the square numbers; the slanting lines of an n by n dot square hold 1, 2, …, n, …, 2, 1 dots, so every such sum is n × n",
+     "why": "test new cases → see squares → read a square's dots along slanting lines → the lines are exactly up-and-down counts → works for every size, not just the cases tried"
+    }
    ]
   },
   {
@@ -2250,6 +2570,42 @@
      "remediation": {
       "representation": "One side of the snowflake zoomed in, before and after a step",
       "moveShape": "Child counts the 4 pieces on one side, then multiplies by the number of sides; ask what happens to each of the 12 sides next"
+     }
+    },
+    {
+     "id": "c6-maths-ch01-t04-m-position-sides",
+     "skillId": "c6-maths-ch01-t04-s1",
+     "source": "Patterns in Mathematics — 1.5 Patterns in shapes: regular polygons (Table 3)",
+     "belief": "Takes a shape's position in the regular polygon sequence as its number of sides, forgetting the list starts at the triangle with 3 sides",
+     "signs": [
+      "Says the 4th shape has 4 sides",
+      "Calls the 5th shape a pentagon",
+      "Gives a number of sides 2 less than the right one"
+     ],
+     "diagnostic": {
+      "prompt_en": "The regular polygons are listed in order: triangle first, square second, pentagon third, and so on. How many sides does the 6th shape have?",
+      "prompt_hi": "Regular polygons ek order mein likhe hain: pehle triangle, doosra square, teesra pentagon, aur aage aise hi. 6th shape ki kitni sides hain?",
+      "options": [
+       {
+        "text": "8 sides",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "6 sides",
+        "misconceptionId": "c6-maths-ch01-t04-m-position-sides",
+        "correct": false
+       },
+       {
+        "text": "7 sides",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A row of cards: position 1 triangle, 2 square, 3 pentagon, with the number of sides written under each",
+      "moveShape": "read the first card → 3 sides at position 1 → each card adds one side → sides = position + 2 → check with the square at position 2"
      }
     }
    ],
@@ -2816,7 +3172,8 @@
      "Point 3 joins to ___ new points: 2 more lines.",
      "Point 4 joins to 1 new point: 1 more line.",
      "Total = 4 + 3 + 2 + 1 = ___, a triangular number."
-    ]
+    ],
+    "skillId": "c6-maths-ch01-t04-s2"
    },
    "formats": {
     "primary": "F3",
@@ -2838,6 +3195,69 @@
     "kite shapes",
     "kolam patterns",
     "snowflakes"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch01-t04-s1",
+     "source": "Patterns in Mathematics — 1.5 Patterns in shapes: regular polygons (Table 3)",
+     "problem": "The regular polygons are listed in order: triangle first, square second, pentagon third, and so on. How many sides and how many corners does the 5th shape have, and what is it called?",
+     "givens": [
+      "1st shape: triangle",
+      "2nd shape: square",
+      "3rd shape: pentagon"
+     ],
+     "find": "the sides, corners and name of the 5th shape",
+     "steps": [
+      {
+       "do": "1st shape, the triangle",
+       "result": "3 sides"
+      },
+      {
+       "do": "each next shape → one more side",
+       "result": "3, 4, 5, 6, 7 sides"
+      },
+      {
+       "do": "5th shape: 4 more sides than the triangle",
+       "result": "3 + 4 = 7"
+      },
+      {
+       "do": "a polygon has as many corners as sides",
+       "result": "7 corners: a regular heptagon"
+      }
+     ],
+     "answer": "7 sides and 7 corners; it is a regular heptagon",
+     "why": "the list starts at 3 sides, not 1 → each shape adds one side → corners always equal sides → the side counts are the counting numbers from 3"
+    },
+    {
+     "skillId": "c6-maths-ch01-t04-s3",
+     "source": "Patterns in Mathematics — 1.5 Patterns in shapes and 1.6 Relation to number sequences: Koch snowflake (Table 4)",
+     "problem": "The Koch snowflake starts as a triangle with 3 sides. At every step, each side is replaced by 4 smaller sides. How many sides does the 4th shape have, and what is the rule for the number sequence?",
+     "givens": [
+      "1st shape: 3 sides",
+      "each side becomes 4 sides at every step"
+     ],
+     "find": "the sides in the 4th shape and the rule",
+     "steps": [
+      {
+       "do": "2nd shape: every side becomes 4",
+       "result": "3 × 4 = 12"
+      },
+      {
+       "do": "3rd shape",
+       "result": "12 × 4 = 48"
+      },
+      {
+       "do": "4th shape",
+       "result": "48 × 4 = 192"
+      },
+      {
+       "do": "rule from the shape",
+       "result": "multiply by 4 each time, never add a fixed number"
+      }
+     ],
+     "answer": "192 sides; the sequence 3, 12, 48, 192 multiplies by 4 each time",
+     "why": "every old side turns into 4 new sides → the count is 4 times the one before → the shape pattern hides a multiply-by-4 number sequence"
+    }
    ]
   },
   {
@@ -6837,7 +7257,8 @@
      "26 has neighbours 25 and ___: not a supercell.",
      "40 has neighbours 26 and 8: supercell. 8 (end) < 40: not.",
      "Supercells: ___ and 40."
-    ]
+    ],
+    "skillId": "c6-maths-ch03-t01-s2"
    },
    "formats": {
     "primary": "F8",
@@ -6859,6 +7280,69 @@
     "queue at a ticket counter",
     "class marks table",
     "family height chart"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch03-t01-s1",
+     "source": "Number Play — 3.1 Numbers can tell us things: children say how many of their neighbours are taller",
+     "problem": "Six children stand in a line. Their heights, from left to right, are 132, 145, 128, 150, 141 and 138 cm. Each child says how many of their neighbours, the children right next to them, are taller. What does each child say, in order?",
+     "givens": [
+      "heights in order: 132, 145, 128, 150, 141, 138 cm",
+      "neighbours are only the children right next to you"
+     ],
+     "find": "the number each child says",
+     "steps": [
+      {
+       "do": "end children → only one neighbour",
+       "result": "132 cm has only 145 cm beside: says 1; 138 cm has only 141 cm beside: says 1"
+      },
+      {
+       "do": "145 cm: neighbours 132 and 128 cm",
+       "result": "none taller: says 0"
+      },
+      {
+       "do": "128 cm: neighbours 145 and 150 cm",
+       "result": "both taller: says 2"
+      },
+      {
+       "do": "150 cm: neighbours 128 and 141 cm; 141 cm: neighbours 150 and 138 cm",
+       "result": "150 cm says 0; 141 cm says 1"
+      }
+     ],
+     "answer": "1, 0, 2, 0, 1, 1",
+     "why": "compare each child only with the children touching them → the end children have one neighbour, the rest two → count how many of those are taller"
+    },
+    {
+     "skillId": "c6-maths-ch03-t01-s3",
+     "source": "Number Play — 3.2 Supercells: filling cells so that a condition holds",
+     "problem": "Put the numbers 1, 2, 3, 4 and 5 in a row of 5 cells, using each once, so that exactly 3 cells are supercells (a supercell is bigger than all its neighbours). Then say whether 4 supercells is possible.",
+     "givens": [
+      "numbers 1 to 5, each used once",
+      "5 cells in a row",
+      "supercell: bigger than every neighbour"
+     ],
+     "find": "one arrangement with 3 supercells, and whether 4 is possible",
+     "steps": [
+      {
+       "do": "two neighbours → the smaller one has a bigger neighbour",
+       "result": "two supercells can never sit side by side"
+      },
+      {
+       "do": "5 cells, no two supercells touching",
+       "result": "at most cells 1, 3 and 5: 3 supercells"
+      },
+      {
+       "do": "biggest numbers in cells 1, 3, 5; smallest in between",
+       "result": "5, 1, 4, 2, 3"
+      },
+      {
+       "do": "check each cell",
+       "result": "5 beats 1; 4 beats 1 and 2; 3 beats 2; 1 and 2 are not supercells"
+      }
+     ],
+     "answer": "One arrangement is 5, 1, 4, 2, 3 (others also work); 4 supercells is impossible, because supercells cannot touch and 5 cells hold at most 3",
+     "why": "a condition can have many answers → find one and check it → for 'none possible', give a reason that covers every arrangement → supercells cannot touch → at most every other cell"
+    }
    ]
   },
   {
@@ -6986,6 +7470,42 @@
      "remediation": {
       "representation": "Four digit tiles in four fixed slots, including a 0 tile",
       "moveShape": "Child arranges all four tiles in both orders, the 0 tile included; ask what happens to the number of slots if a tile is dropped"
+     }
+    },
+    {
+     "id": "c6-maths-ch03-t02-m-ends-only",
+     "skillId": "c6-maths-ch03-t02-s2",
+     "source": "Number Play — 3.5 Pretty palindromic patterns: palindromes",
+     "belief": "Decides a number is a palindrome by checking only its first and last digits",
+     "signs": [
+      "Calls 4314 a palindrome because it starts and ends with 4",
+      "Never reads the middle digits backwards",
+      "In reverse-and-add, stops at a sum like 1251 that matches only at the ends"
+     ],
+     "diagnostic": {
+      "prompt_en": "Is 52615 a palindrome?",
+      "prompt_hi": "Kya 52615 ek palindrome hai?",
+      "options": [
+       {
+        "text": "No: read backwards it is 51625",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Yes: it starts and ends with 5",
+        "misconceptionId": "c6-maths-ch03-t02-m-ends-only",
+        "correct": false
+       },
+       {
+        "text": "No: it is an odd number",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "The number written on a paper strip, folded in the middle so each digit faces its partner",
+      "moveShape": "pair the 1st digit with the last → the 2nd with the second-last → every pair must match → one mismatch means not a palindrome"
      }
     }
    ],
@@ -7485,7 +8005,8 @@
      "8991: biggest 9981, smallest 1899; 9981 − 1899 = ___.",
      "8082: biggest 8820, smallest 0288; 8820 − 288 = 8532.",
      "8532: biggest 8532, smallest 2358; 8532 − 2358 = ___, and it then repeats."
-    ]
+    ],
+    "skillId": "c6-maths-ch03-t02-s3"
    },
    "formats": {
     "primary": "F8",
@@ -7507,6 +8028,72 @@
     "calendar dates",
     "bus ticket numbers",
     "cricket jersey numbers"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch03-t02-s1",
+     "source": "Number Play — 3.4 Playing with digits: numbers with a given digit sum",
+     "problem": "What is the smallest 3-digit number whose digit sum is 20?",
+     "givens": [
+      "3-digit number",
+      "digit sum 20"
+     ],
+     "find": "the smallest such number",
+     "steps": [
+      {
+       "do": "smallest number → hundreds digit as small as possible",
+       "result": "tens and ones digits must carry the rest"
+      },
+      {
+       "do": "most the tens and ones digits can give",
+       "result": "9 + 9 = 18"
+      },
+      {
+       "do": "hundreds digit needed",
+       "result": "20 − 18 = 2"
+      },
+      {
+       "do": "write it, then check the digit sum",
+       "result": "2 + 9 + 9 = 20"
+      }
+     ],
+     "answer": "299",
+     "why": "the hundreds digit decides size most → keep it smallest → fill the tens and ones with 9s → whatever is left goes in the hundreds"
+    },
+    {
+     "skillId": "c6-maths-ch03-t02-s2",
+     "source": "Number Play — 3.5 Pretty palindromic patterns: reverse-and-add",
+     "problem": "Start with 87. Reverse the digits and add, and keep doing this until you reach a palindrome. Which palindrome do you reach?",
+     "givens": [
+      "start: 87",
+      "move: add the number to its reverse"
+     ],
+     "find": "the first palindrome reached",
+     "steps": [
+      {
+       "do": "reverse and add",
+       "result": "87 + 78 = 165"
+      },
+      {
+       "do": "not a palindrome → repeat",
+       "result": "165 + 561 = 726"
+      },
+      {
+       "do": "not a palindrome → repeat",
+       "result": "726 + 627 = 1353"
+      },
+      {
+       "do": "not a palindrome → repeat",
+       "result": "1353 + 3531 = 4884"
+      },
+      {
+       "do": "read the digits backwards",
+       "result": "4884 reads the same both ways"
+      }
+     ],
+     "answer": "4884, after 4 rounds of reverse-and-add",
+     "why": "reverse and add → check by reading backwards → not the same, so repeat with the new number → stop at the first number that reads the same both ways"
+    }
    ]
   },
   {
@@ -8163,7 +8750,8 @@
      "7 is odd: 22; then 11 → 34 → 17 → 52 → 26 → 13 → 40 → 20 → 10 → 5.",
      "5 → 16 → 8 → 4 → 2 → ___.",
      "Counting every arrow from 9 to 1 gives ___ steps."
-    ]
+    ],
+    "skillId": "c6-maths-ch03-t03-s1"
    },
    "formats": {
     "primary": "F8",
@@ -8182,6 +8770,73 @@
     "class puzzle board",
     "mobile calculator challenges",
     "board game turns"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch03-t03-s2",
+     "source": "Number Play — 3.10 An unsolved mystery, the Collatz conjecture: sequences reaching 1 and the 4, 2, 1 loop",
+     "problem": "Play the Collatz game from 12: halve an even number, and multiply an odd number by 3 and add 1. How many steps does it take to reach 1, and what happens if you keep going after 1?",
+     "givens": [
+      "start: 12",
+      "even → halve",
+      "odd → 3 × number + 1"
+     ],
+     "find": "the number of steps to 1 and what happens after",
+     "steps": [
+      {
+       "do": "12 even → halve, and halve again",
+       "result": "12 → 6 → 3"
+      },
+      {
+       "do": "3 is odd",
+       "result": "3 × 3 + 1 = 10"
+      },
+      {
+       "do": "10 → 5, and 5 is odd",
+       "result": "5 × 3 + 1 = 16"
+      },
+      {
+       "do": "16 → 8 → 4 → 2 → 1; count every arrow from 12",
+       "result": "9 steps"
+      },
+      {
+       "do": "keep going from 1",
+       "result": "1 × 3 + 1 = 4 → 2 → 1: the 4, 2, 1 loop"
+      }
+     ],
+     "answer": "9 steps: 12, 6, 3, 10, 5, 16, 8, 4, 2, 1; after 1 it loops 4, 2, 1 forever",
+     "why": "apply the rule one number at a time → count each change as one step → at 1 the odd rule gives 4 → 4 halves back to 1 → a loop"
+    },
+    {
+     "skillId": "c6-maths-ch03-t03-s3",
+     "source": "Number Play — 3.10 An unsolved mystery, the Collatz conjecture",
+     "problem": "Arjun plays the Collatz game for every starting number from 1 to 20, and every one reaches 1. He says this proves that every starting number reaches 1. Does it?",
+     "givens": [
+      "checked: starting numbers 1 to 20",
+      "all reached 1"
+     ],
+     "find": "whether the checks prove the claim",
+     "steps": [
+      {
+       "do": "what was checked",
+       "result": "only 20 starting numbers"
+      },
+      {
+       "do": "how many starting numbers there are",
+       "result": "counting numbers never end, so most are unchecked"
+      },
+      {
+       "do": "one number that never reaches 1 would break the claim",
+       "result": "nobody has found one, and nobody has shown none exists"
+      },
+      {
+       "do": "a claim believed but not proved",
+       "result": "a conjecture: the Collatz conjecture, still unsolved"
+      }
+     ],
+     "answer": "No; checking cases is not a proof, and whether every number reaches 1 is still an open question, the Collatz conjecture",
+     "why": "examples only cover the cases tried → there are endlessly many numbers → a proof must cover them all → none exists yet → so it stays a conjecture"
+    }
    ]
   },
   {
@@ -8306,6 +8961,42 @@
      "remediation": {
       "representation": "Play-money: 99 rupees shown as a ₹100 note with ₹1 owed back",
       "moveShape": "Child pays with the ₹100 note and gets ₹1 back; ask whether the extra rupee was added or taken away"
+     }
+    },
+    {
+     "id": "c6-maths-ch03-t04-m-crowded-sample",
+     "skillId": "c6-maths-ch03-t04-s2",
+     "source": "Number Play — 3.11 Simple estimation: estimating large quantities",
+     "belief": "Uses an untypical part, such as the most crowded row or the fullest page, as the sample and multiplies it up",
+     "signs": [
+      "Counts the packed front row of a hall and multiplies by the number of rows",
+      "Gets an estimate far bigger than the real count",
+      "Does not ask whether the counted part looks like the rest"
+     ],
+     "diagnostic": {
+      "prompt_en": "A school hall has 20 rows of chairs. The front row is packed with 30 children, but most rows have about 15 children. Which is the better estimate of the children in the hall?",
+      "prompt_hi": "School hall mein chairs ki 20 rows hain. Front row mein 30 bachche thoos-thoos kar baithe hain, par zyaadatar rows mein lagbhag 15 bachche hain. Hall mein bachchon ka better estimate kaunsa hai?",
+      "options": [
+       {
+        "text": "About 300, from 20 × 15",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "About 600, from 20 × 30",
+        "misconceptionId": "c6-maths-ch03-t04-m-crowded-sample",
+        "correct": false
+       },
+       {
+        "text": "About 35, from 20 + 15",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A seating plan of the hall with the front row coloured differently from the other rows",
+      "moveShape": "look at all the rows first → pick a row that looks like most of them → count it → multiply by the number of rows → an unusual row makes the estimate unusual"
      }
     }
    ],
@@ -8837,7 +9528,8 @@
      "20 × 40 = ___.",
      "Both were rounded, one up and one ___, so 800 is a fair estimate.",
      "The exact answer is 18 × 42 = ___, close to 800."
-    ]
+    ],
+    "skillId": "c6-maths-ch03-t04-s1"
    },
    "formats": {
     "primary": "F4",
@@ -8861,6 +9553,59 @@
     "kirana shop bills",
     "langar rotis",
     "train passengers"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch03-t04-s2",
+     "source": "Number Play — 3.11 Simple estimation: estimating large quantities",
+     "problem": "A storybook has 96 pages of text. On one typical page you count 212 words. Estimate the number of words in the book.",
+     "givens": [
+      "96 pages",
+      "about 212 words on a typical page"
+     ],
+     "find": "an estimate of the words in the book",
+     "steps": [
+      {
+       "do": "count one typical page as the sample",
+       "result": "about 212 words"
+      },
+      {
+       "do": "round both numbers",
+       "result": "96 → 100, 212 → 200"
+      },
+      {
+       "do": "multiply sample by number of pages",
+       "result": "100 × 200 = 20,000"
+      }
+     ],
+     "answer": "About 20,000 words",
+     "why": "pages hold about the same number of words → count one typical page → multiply by the number of pages → round first so the multiplying is quick"
+    },
+    {
+     "skillId": "c6-maths-ch03-t04-s3",
+     "source": "Number Play — 3.8 Mental math: adding with friendly numbers",
+     "problem": "Work out 198 + 467 in your head, and check that your answer is sensible.",
+     "givens": [
+      "198 + 467"
+     ],
+     "find": "the exact sum and a check",
+     "steps": [
+      {
+       "do": "198 is 2 less than 200 → add 200 instead",
+       "result": "200 + 467 = 667"
+      },
+      {
+       "do": "added 2 too many → take 2 away",
+       "result": "667 − 2 = 665"
+      },
+      {
+       "do": "check by rounding",
+       "result": "200 + 470 = 670, close to 665"
+      }
+     ],
+     "answer": "665",
+     "why": "swap an awkward number for a nearby round one → add → undo the change in the opposite direction → a rounded estimate shows the answer is sensible"
+    }
    ]
   },
   {
@@ -8995,6 +9740,42 @@
      "remediation": {
       "representation": "A frequency table with an automatic total row that turns red when it does not match the number surveyed",
       "moveShape": "Child adds the column first, then compares with the number asked; ask where an extra tick could have come from"
+     }
+    },
+    {
+     "id": "c6-maths-ch04-t01-m-vague-question",
+     "skillId": "c6-maths-ch04-t01-s1",
+     "source": "Data Handling and Presentation — 4.1 Collecting and organising data: collecting data to answer a question",
+     "belief": "Asks a vague or yes-no survey question that cannot answer what the data is for (asks 'Do you like games?' to decide which game to buy for)",
+     "signs": [
+      "Asks 'Do you like sports?' when the class must pick one sport",
+      "Lets answers be anything, so they cannot be grouped and counted",
+      "Collects data first and decides the question later"
+     ],
+     "diagnostic": {
+      "prompt_en": "Class 6 has money to buy equipment for one game only. Which question should they ask each child?",
+      "prompt_hi": "Class 6 ke paas sirf ek game ka equipment khareedne ke paise hain. Unhe har bachche se kaunsa question poochna chahiye?",
+      "options": [
+       {
+        "text": "Which one of cricket, kho-kho or football do you like best?",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Do you like playing games?",
+        "misconceptionId": "c6-maths-ch04-t01-m-vague-question",
+        "correct": false
+       },
+       {
+        "text": "How many hours did you play last week?",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "The class's real decision written at the top of the board, with the survey question written under it",
+      "moveShape": "write the decision first → ask what each answer must tell you → give fixed choices that match the decision → one answer per child"
      }
     }
    ],
@@ -9482,6 +10263,33 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c6-maths-ch04-t01-i14",
+     "skillId": "c6-maths-ch04-t01-s1",
+     "kind": "contrast",
+     "difficulty": 2,
+     "source": "Data Handling and Presentation — 4.1 Collecting and organising data: collecting data to answer a question",
+     "prompt_en": "The school canteen wants to know which one snack to make more of. Should it ask the children 'Do you eat snacks?' or 'Which one of samosa, poha or idli do you like best?'",
+     "prompt_hi": "School canteen jaanna chahti hai ki kaunsa ek snack zyaada banana chahiye. Kya use bachchon se poochna chahiye 'Kya tum snacks khaate ho?' ya 'Samosa, poha aur idli mein se tumhe kaunsa sabse achchha lagta hai?'",
+     "answer": "'Which one of samosa, poha or idli do you like best?', because its answers can be counted snack by snack",
+     "acceptable": [
+      "the second question",
+      "the samosa, poha or idli question",
+      "the second one"
+     ],
+     "hints": [
+      "What does the canteen need to decide?",
+      "It must pick one snack, so it needs each child's choice of snack.",
+      "A yes or no answer does not tell you which ___ the child likes.",
+      "The second question: its answers can be tallied snack by snack."
+     ],
+     "targetsMisconception": "c6-maths-ch04-t01-m-vague-question",
+     "verified": {
+      "solverAnswer": "The second: 'Which one of samosa, poha or idli do you like best?'",
+      "agrees": true,
+      "note": "Blind-solved (class 6 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -9499,7 +10307,8 @@
      "Samosa: ___, poha: 3, idli: 3.",
      "Check: 6 + 3 + 3 = ___, the number of answers.",
      "___ is the favourite."
-    ]
+    ],
+    "skillId": "c6-maths-ch04-t01-s2"
    },
    "formats": {
     "primary": "F4",
@@ -9521,6 +10330,71 @@
     "favourite festivals",
     "transport to school",
     "class picnic vote"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch04-t01-s1",
+     "source": "Data Handling and Presentation — 4.1 Collecting and organising data: collecting data to answer a question",
+     "problem": "Class 6B has 32 children. It wants to choose one day, Monday to Friday, for its craft club. Plan how to collect the data.",
+     "givens": [
+      "32 children",
+      "choices: Monday to Friday",
+      "one day to be chosen"
+     ],
+     "find": "a question and a way to record the answers",
+     "steps": [
+      {
+       "do": "one clear question with fixed choices",
+       "result": "'Which one day, Monday to Friday, suits you best?'"
+      },
+      {
+       "do": "every child answers once",
+       "result": "32 answers in all"
+      },
+      {
+       "do": "one tally mark per answer",
+       "result": "a tally row for each of the 5 days"
+      },
+      {
+       "do": "check, then decide",
+       "result": "the tallies must add to 32; the day with the most tallies is chosen"
+      }
+     ],
+     "answer": "Ask every child 'Which one day, Monday to Friday, suits you best?', put one tally mark per answer against that day, check the tallies add to 32, and choose the day with the most marks",
+     "why": "start from the decision → a fixed-choice question makes answers fall into a few groups → tallies count each group → the biggest group answers the question"
+    },
+    {
+     "skillId": "c6-maths-ch04-t01-s3",
+     "source": "Data Handling and Presentation — 4.1 Collecting and organising data: reading a frequency table",
+     "problem": "A survey of 40 families in a colony asks which milk they buy. The table says: cow milk 15, buffalo milk 11, packet milk 14. Check the table, then find the most popular milk and how many more families buy it than buffalo milk.",
+     "givens": [
+      "40 families surveyed",
+      "cow milk 15",
+      "buffalo milk 11",
+      "packet milk 14"
+     ],
+     "find": "the check, the most popular milk, and the difference",
+     "steps": [
+      {
+       "do": "add the frequencies",
+       "result": "15 + 11 + 14 = 40"
+      },
+      {
+       "do": "compare with the number surveyed",
+       "result": "matches 40 families: nothing missed or counted twice"
+      },
+      {
+       "do": "biggest frequency",
+       "result": "cow milk, 15 families"
+      },
+      {
+       "do": "subtract buffalo milk",
+       "result": "15 − 11 = 4"
+      }
+     ],
+     "answer": "The total is 40, so the table checks; cow milk is the most popular, bought by 4 more families than buffalo milk",
+     "why": "frequencies must add up to the number of answers → then the biggest frequency is the favourite → differences come from subtracting frequencies"
+    }
    ]
   },
   {
@@ -10251,7 +11125,8 @@
      "4 whole pictures stand for ___ kites.",
      "5 left over is ___ of 10, so add a half picture.",
      "The row has ___ pictures, all the same size and evenly spaced."
-    ]
+    ],
+    "skillId": "c6-maths-ch04-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -10272,6 +11147,69 @@
     "rotis made at home",
     "cricket runs",
     "students on school buses"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch04-t02-s1",
+     "source": "Data Handling and Presentation — 4.2 Pictographs: reading a pictograph with its key",
+     "problem": "A pictograph shows books read in a week. Key: 1 book picture = 6 books. Class 6A's row has 7 pictures and Class 6B's row has 5 pictures. How many books did each class read, and how many more did 6A read?",
+     "givens": [
+      "key: 1 picture = 6 books",
+      "6A: 7 pictures",
+      "6B: 5 pictures"
+     ],
+     "find": "books read by each class and the difference",
+     "steps": [
+      {
+       "do": "read the key first",
+       "result": "each picture stands for 6 books"
+      },
+      {
+       "do": "6A: pictures × key",
+       "result": "7 × 6 = 42"
+      },
+      {
+       "do": "6B: pictures × key",
+       "result": "5 × 6 = 30"
+      },
+      {
+       "do": "difference",
+       "result": "42 − 30 = 12"
+      }
+     ],
+     "answer": "6A read 42 books and 6B read 30 books; 6A read 12 more",
+     "why": "one picture stands for the key's number → count pictures → multiply by the key → then compare the totals"
+    },
+    {
+     "skillId": "c6-maths-ch04-t02-s3",
+     "source": "Data Handling and Presentation — 4.2 Pictographs: drawing a pictograph and choosing a key",
+     "problem": "A fruit seller sold 40 mangoes on Monday, 20 on Tuesday, 60 on Wednesday and 30 on Thursday. For a pictograph, which key is better: 1 picture = 4 mangoes or 1 picture = 10 mangoes? How many pictures does each day get?",
+     "givens": [
+      "sales: 40, 20, 60, 30",
+      "key choices: 4 or 10 mangoes per picture"
+     ],
+     "find": "the better key and the pictures per day",
+     "steps": [
+      {
+       "do": "try key 4",
+       "result": "60 ÷ 4 = 15 pictures, and 30 needs 7 and a half: long rows and a cut picture"
+      },
+      {
+       "do": "try key 10",
+       "result": "40 ÷ 10 = 4, 20 ÷ 10 = 2, 60 ÷ 10 = 6, 30 ÷ 10 = 3"
+      },
+      {
+       "do": "pick the key giving short rows of whole pictures",
+       "result": "1 picture = 10 mangoes"
+      },
+      {
+       "do": "draw",
+       "result": "same-size pictures, evenly spaced, key written beside the graph"
+      }
+     ],
+     "answer": "1 picture = 10 mangoes; Monday 4, Tuesday 2, Wednesday 6 and Thursday 3 pictures",
+     "why": "a good key divides every value → whole pictures, no awkward pieces → rows short enough to draw and read"
+    }
    ]
   },
   {
@@ -10995,7 +11933,8 @@
      "Start the runs axis at ___ and mark 0, 5, 10 … 40.",
      "Bar heights: 25 ÷ 5 = 5, 40 ÷ 5 = ___, 15 ÷ 5 = 3, 35 ÷ 5 = ___ units.",
      "Draw all bars the same ___ with equal gaps, label the axes and give a title."
-    ]
+    ],
+    "skillId": "c6-maths-ch04-t03-s2"
    },
    "formats": {
     "primary": "F3",
@@ -11016,6 +11955,66 @@
     "mobile data use",
     "rainfall by month",
     "school transport"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch04-t03-s1",
+     "source": "Data Handling and Presentation — 4.3 Bar graphs: reading values using the scale",
+     "problem": "A bar graph shows how children in a school travel. Scale: 1 unit = 20 children. The walk bar is 6 units tall, the bus bar is 4 units tall, and the cycle bar ends halfway between the 2 and 3 unit marks. How many children use each way?",
+     "givens": [
+      "scale: 1 unit = 20 children",
+      "walk: 6 units",
+      "bus: 4 units",
+      "cycle: halfway between 2 and 3 units"
+     ],
+     "find": "children for walk, bus and cycle",
+     "steps": [
+      {
+       "do": "walk: units × scale",
+       "result": "6 × 20 = 120"
+      },
+      {
+       "do": "bus: units × scale",
+       "result": "4 × 20 = 80"
+      },
+      {
+       "do": "cycle: the marks stand for 40 and 60 children",
+       "result": "halfway between 40 and 60 is 50"
+      }
+     ],
+     "answer": "Walk 120 children, bus 80 children, cycle 50 children",
+     "why": "a bar's height in units → multiply by the scale → a half unit is half the scale"
+    },
+    {
+     "skillId": "c6-maths-ch04-t03-s3",
+     "source": "Data Handling and Presentation — 4.3 Bar graphs: interpreting and comparing",
+     "problem": "A bar graph shows trees planted on Van Mahotsav, with scale 1 unit = 5 trees. The bars are: 6A 9 units, 6B 6 units, 6C 12 units, 6D 7 units. Which class planted the most, how many more than 6B did it plant, and which class planted twice as many as 6B?",
+     "givens": [
+      "scale: 1 unit = 5 trees",
+      "6A 9 units, 6B 6 units, 6C 12 units, 6D 7 units"
+     ],
+     "find": "the top class, the difference from 6B, and the class with twice 6B",
+     "steps": [
+      {
+       "do": "convert each bar",
+       "result": "6A 45, 6B 30, 6C 60, 6D 35 trees"
+      },
+      {
+       "do": "tallest bar",
+       "result": "6C, 60 trees"
+      },
+      {
+       "do": "difference from 6B",
+       "result": "60 − 30 = 30"
+      },
+      {
+       "do": "twice 6B",
+       "result": "2 × 30 = 60, which is 6C"
+      }
+     ],
+     "answer": "6C planted the most, 30 trees more than 6B, and 6C planted twice as many as 6B",
+     "why": "turn heights into values with the scale → the tallest bar is the biggest value → subtract for 'how many more' → multiply for 'twice as many'"
+    }
    ]
   },
   {
@@ -11952,6 +12951,42 @@
       "representation": "Two chairs: try every way to put them in equal rows",
       "moveShape": "Child finds only 1 row of 2 or 2 rows of 1; ask how that compares with 7 chairs"
      }
+    },
+    {
+     "id": "c6-maths-ch05-t02-m-sieve-stop",
+     "skillId": "c6-maths-ch05-t02-s2",
+     "source": "Prime Time — 5.2 Primes and composites: the sieve of Eratosthenes",
+     "belief": "In the sieve, stops after crossing out the multiples of 2 and 3, so numbers like 25, 49 and 77 are kept as primes",
+     "signs": [
+      "Lists 49 or 77 among the primes up to 100",
+      "Crosses out multiples of 2 and 3 and calls everything else prime",
+      "Keeps 25 and 35 because they are odd and not multiples of 3"
+     ],
+     "diagnostic": {
+      "prompt_en": "In the sieve up to 100, Aditi has crossed out the multiples of 2 and 3. The number 49 is still not crossed out. Is 49 a prime?",
+      "prompt_hi": "100 tak ki sieve mein Aditi ne 2 aur 3 ke multiples kaat diye hain. 49 abhi tak nahi kata. Kya 49 prime hai?",
+      "options": [
+       {
+        "text": "No: 49 = 7 × 7, so it is crossed out with the multiples of 7",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Yes: it was not crossed out by 2 or 3",
+        "misconceptionId": "c6-maths-ch05-t02-m-sieve-stop",
+        "correct": false
+       },
+       {
+        "text": "No: it is crossed out with the multiples of 5",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A 1 to 100 number chart with each prime's multiples crossed in a different colour",
+      "moveShape": "circle the next uncrossed number → cross all its multiples → repeat for 2, 3, 5 and 7 → only then read off the primes"
+     }
     }
    ],
    "items": [
@@ -12540,7 +13575,8 @@
      "Digit sum 5 + 1 = ___ is a multiple of 3, so try 3.",
      "51 ÷ 3 = ___, so 51 = 3 × 17.",
      "51 has factors 1, 3, 17, 51: more than two, so it is ___."
-    ]
+    ],
+    "skillId": "c6-maths-ch05-t02-s1"
    },
    "formats": {
     "primary": "F3",
@@ -12562,6 +13598,72 @@
     "tiles on a floor",
     "cricket team groups",
     "marching contingents on Republic Day"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch05-t02-s2",
+     "source": "Prime Time — 5.2 Primes and composites: the sieve of Eratosthenes",
+     "problem": "Use the sieve of Eratosthenes on the numbers from 60 to 80. Which primes are left?",
+     "givens": [
+      "numbers 60 to 80",
+      "cross out multiples of 2, 3, 5 and 7"
+     ],
+     "find": "the primes from 60 to 80",
+     "steps": [
+      {
+       "do": "cross out multiples of 2",
+       "result": "left: 61, 63, 65, 67, 69, 71, 73, 75, 77, 79"
+      },
+      {
+       "do": "cross out multiples of 3",
+       "result": "63, 69 and 75 go"
+      },
+      {
+       "do": "cross out multiples of 5",
+       "result": "65 goes"
+      },
+      {
+       "do": "cross out multiples of 7",
+       "result": "77 goes"
+      },
+      {
+       "do": "read what is left",
+       "result": "61, 67, 71, 73, 79"
+      }
+     ],
+     "answer": "61, 67, 71, 73 and 79",
+     "why": "every composite up to 100 is a multiple of 2, 3, 5 or 7 → crossing out those multiples removes all composites → what stays uncrossed is prime"
+    },
+    {
+     "skillId": "c6-maths-ch05-t02-s3",
+     "source": "Prime Time — 5.2 Primes and composites: 1 is neither prime nor composite; 2 is the only even prime",
+     "problem": "Sort 1, 2, 9 and 13 into prime, composite, or neither. Then say why 2 is the only even prime.",
+     "givens": [
+      "numbers 1, 2, 9, 13",
+      "prime: exactly two factors"
+     ],
+     "find": "the group of each number, and the reason about 2",
+     "steps": [
+      {
+       "do": "1: list its factors",
+       "result": "only 1, a single factor: neither prime nor composite"
+      },
+      {
+       "do": "2: list its factors",
+       "result": "1 and 2, exactly two: prime"
+      },
+      {
+       "do": "9 and 13: list their factors",
+       "result": "9 has 1, 3, 9: composite; 13 has 1, 13: prime"
+      },
+      {
+       "do": "any even number bigger than 2",
+       "result": "has 1, 2 and itself as factors: composite"
+      }
+     ],
+     "answer": "1 is neither; 2 and 13 are prime; 9 is composite; every even number bigger than 2 has 2 as an extra factor, so 2 is the only even prime",
+     "why": "prime means exactly two factors → 1 has only one → 2 has exactly two → every bigger even number has a third factor, 2"
+    }
    ]
   },
   {
@@ -13239,7 +14341,8 @@
      "Factors of 25: 1, ___, 25.",
      "Common factors: only ___.",
      "So 14 and 25 are ___, although neither is prime."
-    ]
+    ],
+    "skillId": "c6-maths-ch05-t03-s1"
    },
    "formats": {
     "primary": "F3",
@@ -13258,6 +14361,68 @@
     "gear teeth on a cycle",
     "two clocks ticking",
     "dance steps in two rhythms"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch05-t03-s2",
+     "source": "Prime Time — 5.3 Co-prime numbers for safekeeping treasures",
+     "problem": "Rani says 21 and 32 cannot be co-prime because neither of them is a prime number. Check her claim.",
+     "givens": [
+      "21 and 32",
+      "co-prime: the only common factor is 1"
+     ],
+     "find": "whether 21 and 32 are co-prime",
+     "steps": [
+      {
+       "do": "factors of 21",
+       "result": "1, 3, 7, 21"
+      },
+      {
+       "do": "factors of 32",
+       "result": "1, 2, 4, 8, 16, 32"
+      },
+      {
+       "do": "common factors",
+       "result": "only 1"
+      },
+      {
+       "do": "co-prime asks only about common factors, not about being prime",
+       "result": "21 and 32 are co-prime"
+      }
+     ],
+     "answer": "Rani's claim is wrong: 21 and 32 share only the factor 1, so they are co-prime even though neither is prime",
+     "why": "co-prime is about the pair's common factors → list both factor sets → only 1 shared → co-prime, whatever each number is on its own"
+    },
+    {
+     "skillId": "c6-maths-ch05-t03-s3",
+     "source": "Prime Time — 5.3 Co-prime numbers for safekeeping treasures",
+     "problem": "Without listing every factor, decide whether 17 and 23 are co-prime, and whether 35 and 36 are co-prime.",
+     "givens": [
+      "17 and 23 are different primes",
+      "35 and 36 are consecutive numbers"
+     ],
+     "find": "whether each pair is co-prime",
+     "steps": [
+      {
+       "do": "17 and 23 are different primes",
+       "result": "17 has factors 1, 17; 23 has factors 1, 23"
+      },
+      {
+       "do": "common factors",
+       "result": "only 1: 17 and 23 are co-prime"
+      },
+      {
+       "do": "35 and 36 are only 1 apart",
+       "result": "multiples of any number bigger than 1 are at least 2 apart"
+      },
+      {
+       "do": "no number bigger than 1 divides both",
+       "result": "only common factor 1: 35 and 36 are co-prime"
+      }
+     ],
+     "answer": "Both pairs are co-prime",
+     "why": "a prime's only factors are 1 and itself → two different primes share only 1 → multiples of any number above 1 are spaced at least 2 apart → numbers 1 apart share only 1"
+    }
    ]
   },
   {
@@ -13970,7 +15135,8 @@
      "10 is composite: 10 = 2 × ___.",
      "All leaves (3, 3, 2, 5) are ___, so stop.",
      "90 = 2 × 3 × 3 × 5; check: 2 × 9 × 5 = ___."
-    ]
+    ],
+    "skillId": "c6-maths-ch05-t04-s2"
    },
    "formats": {
     "primary": "F2",
@@ -13990,6 +15156,68 @@
     "packing laddoos",
     "cricket overs and balls",
     "calendar days"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch05-t04-s1",
+     "source": "Prime Time — 5.4 Prime factorisation: factor trees",
+     "problem": "Make a factor tree for 144, starting with 144 = 12 × 12, and keep splitting until you cannot split any more.",
+     "givens": [
+      "144 = 12 × 12"
+     ],
+     "find": "the finished factor tree and the product of its leaves",
+     "steps": [
+      {
+       "do": "split each 12",
+       "result": "12 = 3 × 4"
+      },
+      {
+       "do": "4 is composite → split it",
+       "result": "4 = 2 × 2"
+      },
+      {
+       "do": "3 and 2 are prime → stop",
+       "result": "leaves under each 12: 3, 2, 2"
+      },
+      {
+       "do": "multiply all the leaves",
+       "result": "2 × 2 × 2 × 2 × 3 × 3 = 144"
+      }
+     ],
+     "answer": "144 = 2 × 2 × 2 × 2 × 3 × 3",
+     "why": "split any composite into two factors → keep splitting every composite branch → stop when every leaf is prime → multiply the leaves back to check"
+    },
+    {
+     "skillId": "c6-maths-ch05-t04-s3",
+     "source": "Prime Time — 5.4 Prime factorisation: the same factorisation from any tree, and checking divisibility",
+     "problem": "Ravi starts a factor tree for 48 with 6 × 8; Ayesha starts with 4 × 12. Do they end with the same primes? Use the result to decide whether 48 is divisible by 16.",
+     "givens": [
+      "Ravi: 48 = 6 × 8",
+      "Ayesha: 48 = 4 × 12",
+      "16 = 2 × 2 × 2 × 2"
+     ],
+     "find": "whether the trees agree, and whether 16 divides 48",
+     "steps": [
+      {
+       "do": "Ravi's tree",
+       "result": "6 = 2 × 3, 8 = 2 × 2 × 2"
+      },
+      {
+       "do": "Ayesha's tree",
+       "result": "4 = 2 × 2, 12 = 2 × 2 × 3"
+      },
+      {
+       "do": "collect the leaves",
+       "result": "both trees: 2 × 2 × 2 × 2 × 3 = 48"
+      },
+      {
+       "do": "16 needs four 2s → 48 has four 2s",
+       "result": "48 ÷ 16 = 3"
+      }
+     ],
+     "answer": "Yes, both get 48 = 2 × 2 × 2 × 2 × 3; 48 is divisible by 16 because its prime factors include 2 × 2 × 2 × 2",
+     "why": "every tree ends at the same primes → a number divides 48 when its primes are all found among 48's primes → 16's four 2s are there"
+    }
    ]
   },
   {
@@ -14677,7 +15905,8 @@
      "4: last two digits 52 = 4 × ___, so yes.",
      "8: last three digits 352 = 8 × 44, so ___.",
      "9: digit sum 12 is not a multiple of ___, so no."
-    ]
+    ],
+    "skillId": "c6-maths-ch05-t05-s3"
    },
    "formats": {
     "primary": "F2",
@@ -14699,6 +15928,66 @@
     "train coaches and seats",
     "cricket overs",
     "shop stock packing"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch05-t05-s1",
+     "source": "Prime Time — 5.5 Divisibility tests: 10, 5 and 2 from the last digit",
+     "problem": "Is 2475 divisible by 2? By 5? By 10?",
+     "givens": [
+      "2475"
+     ],
+     "find": "divisibility by 2, 5 and 10",
+     "steps": [
+      {
+       "do": "look at the last digit",
+       "result": "5"
+      },
+      {
+       "do": "test for 2: last digit 0, 2, 4, 6 or 8?",
+       "result": "5 is odd: not divisible by 2"
+      },
+      {
+       "do": "test for 5: last digit 0 or 5?",
+       "result": "yes: divisible by 5"
+      },
+      {
+       "do": "test for 10: last digit 0?",
+       "result": "no: not divisible by 10"
+      }
+     ],
+     "answer": "Divisible by 5 only; not by 2 and not by 10",
+     "why": "every ten is a multiple of 2, 5 and 10 → only the ones digit can leave a remainder → so the last digit decides"
+    },
+    {
+     "skillId": "c6-maths-ch05-t05-s2",
+     "source": "Prime Time — 5.5 Divisibility tests: 4 from the last two digits and 8 from the last three digits",
+     "problem": "Is 7324 divisible by 4? Is it divisible by 8?",
+     "givens": [
+      "7324"
+     ],
+     "find": "divisibility by 4 and by 8",
+     "steps": [
+      {
+       "do": "4: test the last two digits",
+       "result": "24 = 4 × 6: divisible by 4"
+      },
+      {
+       "do": "why two digits are enough",
+       "result": "100 = 4 × 25, so the hundreds and thousands leave no remainder"
+      },
+      {
+       "do": "8: test the last three digits",
+       "result": "324 = 8 × 40 + 4: remainder 4"
+      },
+      {
+       "do": "why three digits are enough",
+       "result": "1000 = 8 × 125, so the thousands leave no remainder"
+      }
+     ],
+     "answer": "7324 is divisible by 4 but not by 8 (remainder 4)",
+     "why": "100 is a multiple of 4 and 1000 is a multiple of 8 → the higher places never leave a remainder → only the last two (for 4) or three (for 8) digits decide"
+    }
    ]
   },
   {
@@ -15370,6 +16659,33 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c6-maths-ch06-t01-i14",
+     "skillId": "c6-maths-ch06-t01-s3",
+     "source": "Perimeter and Area — perimeter of a rectangle, 2 × (length + breadth)",
+     "kind": "error_spot",
+     "difficulty": 3,
+     "prompt_en": "A rectangular vegetable patch has a perimeter of 40 m and a length of 12 m. Sunita says the breadth is 40 minus 12, which is 28 m. What is the correct breadth?",
+     "prompt_hi": "Ek rectangular sabzi ki kyaari ka perimeter 40 m hai aur length 12 m hai. Sunita kehti hai breadth 40 minus 12, yaani 28 m hai. Sahi breadth kitni hai?",
+     "answer": "8 m: half the perimeter is 40 ÷ 2 = 20 m, and 20 − 12 = 8",
+     "acceptable": [
+      "8 m",
+      "8",
+      "8 metres"
+     ],
+     "hints": [
+      "How many lengths and how many breadths does the boundary of a rectangle have?",
+      "Two of each, so 40 m is length + breadth taken twice.",
+      "Half of 40 is ___, and that minus 12 is ___.",
+      "Half the perimeter is 20 m, so the breadth is 8 m, not 28 m."
+     ],
+     "targetsMisconception": "c6-maths-ch06-t01-m-l-plus-b",
+     "verified": {
+      "solverAnswer": "8 m (40 / 2 = 20; 20 - 12 = 8)",
+      "agrees": true,
+      "note": "Blind-solved (class 6 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -15385,7 +16701,8 @@
      "Perimeter = 2 × (50 + 30) = 2 × 80 = ___ m.",
      "3 rounds = 3 × ___ m.",
      "3 × 160 = ___ m."
-    ]
+    ],
+    "skillId": "c6-maths-ch06-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -15406,6 +16723,60 @@
     "lace on a dupatta",
     "border of a rangoli",
     "boundary of a cricket ground"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch06-t01-s1",
+     "source": "Perimeter and Area — perimeter of a closed figure as the total length of its boundary",
+     "problem": "A five-sided flower bed in a Jaipur park has sides 8 m, 6 m, 7 m, 5 m and 9 m. How much fencing goes once around it?",
+     "givens": [
+      "five sides: 8 m, 6 m, 7 m, 5 m, 9 m"
+     ],
+     "find": "the perimeter of the flower bed",
+     "steps": [
+      {
+       "do": "once around → walk every side once",
+       "result": "5 sides to add"
+      },
+      {
+       "do": "add the first two, then the rest one by one",
+       "result": "8 + 6 + 7 + 5 + 9 = 35"
+      },
+      {
+       "do": "check: one length per side, none missed",
+       "result": "5 lengths used"
+      }
+     ],
+     "answer": "35 m of fencing",
+     "why": "perimeter = length of the whole boundary → boundary is made of the sides → add every side once"
+    },
+    {
+     "skillId": "c6-maths-ch06-t01-s3",
+     "source": "Perimeter and Area — perimeter of a rectangle, 2 × (length + breadth)",
+     "problem": "A rectangular kho-kho ground has a perimeter of 90 m. Its length is 27 m. What is its breadth?",
+     "givens": [
+      "perimeter = 90 m",
+      "length = 27 m",
+      "shape is a rectangle"
+     ],
+     "find": "the breadth",
+     "steps": [
+      {
+       "do": "perimeter = 2 × (length + breadth) → halve the perimeter",
+       "result": "90 ÷ 2 = 45"
+      },
+      {
+       "do": "length + breadth = 45 → take away the length",
+       "result": "45 − 27 = 18"
+      },
+      {
+       "do": "check with the formula",
+       "result": "2 × (27 + 18) = 90"
+      }
+     ],
+     "answer": "Breadth = 18 m",
+     "why": "going once round covers length + breadth twice → half the perimeter is one length + one breadth → subtract the length"
+    }
    ]
   },
   {
@@ -15533,6 +16904,42 @@
      "remediation": {
       "representation": "Floor tiles laid row by row on a grid of the room",
       "moveShape": "Child lays one row of 7 tiles, then counts rows; ask whether we are walking around or covering"
+     }
+    },
+    {
+     "id": "c6-maths-ch06-t02-m-half-as-whole",
+     "skillId": "c6-maths-ch06-t02-s1",
+     "source": "Perimeter and Area — area on squared paper: full squares and half squares",
+     "belief": "Counts each half square as a whole unit square when finding area on squared paper",
+     "signs": [
+      "Gives 20 sq cm for a shape covering 14 full and 6 half squares",
+      "Adds the number of full squares and the number of half squares directly",
+      "Gets an area larger than the rectangle drawn around the shape could hold"
+     ],
+     "diagnostic": {
+      "prompt_en": "On squared paper with 1 cm squares, a leaf shape covers 9 full squares and 6 half squares. What is its area?",
+      "prompt_hi": "1 cm squares wale squared paper par ek patti ka shape 9 poore squares aur 6 aadhe squares cover karta hai. Uska area kitna hai?",
+      "options": [
+       {
+        "text": "12 sq cm",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "15 sq cm",
+        "misconceptionId": "c6-maths-ch06-t02-m-half-as-whole",
+        "correct": false
+       },
+       {
+        "text": "9 sq cm",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Two half squares cut from paper and slid together to fill exactly one full square of the grid",
+      "moveShape": "pair up the half squares → each pair fills one full square → number of halves ÷ 2 → add to the full squares"
      }
     }
    ],
@@ -16123,7 +17530,8 @@
      "One row along the length holds ___ tiles.",
      "There are ___ rows across the width.",
      "Tiles = 6 × 4 = ___, so the area is 24 sq m."
-    ]
+    ],
+    "skillId": "c6-maths-ch06-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -16145,6 +17553,65 @@
     "chapati rolling board",
     "classroom floor",
     "carrom board"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch06-t02-s1",
+     "source": "Perimeter and Area — area on squared paper: full squares and half squares",
+     "problem": "On squared paper with 1 cm squares, Anil draws a kite. It covers 14 full squares and 6 half squares. What is its area?",
+     "givens": [
+      "each full square = 1 sq cm",
+      "14 full squares",
+      "6 half squares"
+     ],
+     "find": "the area of the kite",
+     "steps": [
+      {
+       "do": "full squares → 1 sq cm each",
+       "result": "14 sq cm"
+      },
+      {
+       "do": "two half squares fit together into one full square",
+       "result": "6 ÷ 2 = 3 full squares"
+      },
+      {
+       "do": "add the two parts",
+       "result": "14 + 3 = 17"
+      }
+     ],
+     "answer": "17 sq cm",
+     "why": "area = number of unit squares covered → two halves make one whole → full squares + half of the half squares"
+    },
+    {
+     "skillId": "c6-maths-ch06-t02-s3",
+     "source": "Perimeter and Area — exploring area and perimeter: same perimeter, different areas",
+     "problem": "Two rangoli boards each have a perimeter of 20 cm. One is a rectangle 8 cm long and 2 cm wide; the other is a square of side 5 cm. Which board covers more floor, or do they cover the same?",
+     "givens": [
+      "board A: rectangle 8 cm by 2 cm",
+      "board B: square of side 5 cm"
+     ],
+     "find": "which board has the greater area, or whether the areas are the same",
+     "steps": [
+      {
+       "do": "check the perimeters",
+       "result": "2 × (8 + 2) = 20 and 4 × 5 = 20"
+      },
+      {
+       "do": "area of the rectangle",
+       "result": "8 × 2 = 16"
+      },
+      {
+       "do": "area of the square",
+       "result": "5 × 5 = 25"
+      },
+      {
+       "do": "compare the areas",
+       "result": "25 sq cm > 16 sq cm"
+      }
+     ],
+     "answer": "The square board covers more: 25 sq cm against 16 sq cm, though both perimeters are 20 cm",
+     "why": "perimeter measures the boundary, area the inside → the same boundary can enclose different amounts → compare length × breadth, not the perimeters"
+    }
    ]
   },
   {
@@ -16864,7 +18331,8 @@
      "Rectangle area = 9 × 6 = ___ sq cm.",
      "The diagonal splits it into two ___ triangles.",
      "Triangle area = 54 ÷ 2 = ___ sq cm."
-    ]
+    ],
+    "skillId": "c6-maths-ch06-t03-s2"
    },
    "formats": {
     "primary": "F3",
@@ -16886,6 +18354,69 @@
     "samosa shapes",
     "kite halves",
     "sandwich cut corner to corner"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch06-t03-s1",
+     "source": "Perimeter and Area — area of a triangle: a rectangle cut along its diagonal",
+     "problem": "Kavya cuts a rectangular sheet of paper 10 cm long and 4 cm wide from one corner to the opposite corner. How do the two pieces compare, and what is the area of each piece?",
+     "givens": [
+      "rectangle 10 cm by 4 cm",
+      "cut along a diagonal"
+     ],
+     "find": "how the two pieces compare and the area of each",
+     "steps": [
+      {
+       "do": "cut along the diagonal → two right-angled triangles",
+       "result": "2 triangles"
+      },
+      {
+       "do": "turn one piece round and place it on the other",
+       "result": "they fit exactly: the triangles are identical"
+      },
+      {
+       "do": "area of the whole rectangle",
+       "result": "10 × 4 = 40"
+      },
+      {
+       "do": "two identical halves share it",
+       "result": "40 ÷ 2 = 20"
+      }
+     ],
+     "answer": "The two pieces are identical; each has area 20 sq cm",
+     "why": "the diagonal cuts the rectangle into two pieces that match exactly → each piece is half → triangle area = half of length × breadth"
+    },
+    {
+     "skillId": "c6-maths-ch06-t03-s3",
+     "source": "Perimeter and Area — area of a triangle drawn inside a rectangle on its base",
+     "problem": "A rectangle is 8 cm long and 6 cm wide. A triangle uses the whole 8 cm bottom side as its base, and its top corner is on the top side, 3 cm from the top-left corner. What is the area of the triangle?",
+     "givens": [
+      "rectangle 8 cm by 6 cm",
+      "triangle base = the 8 cm bottom side",
+      "top corner on the top side, 3 cm from the top-left corner"
+     ],
+     "find": "the area of the triangle",
+     "steps": [
+      {
+       "do": "draw a line straight down from the top corner → two smaller rectangles",
+       "result": "3 cm by 6 cm and 5 cm by 6 cm"
+      },
+      {
+       "do": "the triangle is half of each small rectangle",
+       "result": "3 × 6 = 18, half is 9; 5 × 6 = 30, half is 15"
+      },
+      {
+       "do": "add the two halves",
+       "result": "9 + 15 = 24"
+      },
+      {
+       "do": "compare with the whole rectangle",
+       "result": "8 × 6 = 48, and 48 ÷ 2 = 24"
+      }
+     ],
+     "answer": "24 sq cm, which is half of the 48 sq cm rectangle",
+     "why": "the line down splits the rectangle into two rectangles → each is cut along its diagonal → the triangle takes half of each → half of the whole"
+    }
    ]
   },
   {
@@ -18294,6 +19825,32 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c6-maths-ch07-t02-i14",
+     "skillId": "c6-maths-ch07-t02-s3",
+     "source": "Fractions — mixed fractions in measurement",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A tailor has 2 and 3 quarter metres of cloth. He cuts it into pieces that are each one quarter of a metre long. How many pieces does he get?",
+     "prompt_hi": "Ek darzi ke paas 2 aur 3 quarter metre kapda hai. Woh use ek-ek quarter metre ke tukdon mein kaatta hai. Use kitne tukde milenge?",
+     "answer": "11 pieces: 2 m make 2 × 4 = 8 quarters, and 8 + 3 = 11",
+     "acceptable": [
+      "11",
+      "11 pieces"
+     ],
+     "hints": [
+      "How many quarter metres are there in one whole metre?",
+      "Four, so count the quarters in the 2 whole metres first.",
+      "2 × 4 = ___, and then add the 3 extra quarters: ___",
+      "2 3/4 m is 11/4 m, so he gets 11 pieces."
+     ],
+     "targetsMisconception": "c6-maths-ch07-t02-m-mixed-wrong",
+     "verified": {
+      "solverAnswer": "11 pieces",
+      "agrees": true,
+      "note": "Blind-solved (class 6 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -18309,7 +19866,8 @@
      "17 ÷ 5 = 3 remainder ___, so 17/5 = 3 2/5.",
      "On the number line, go to 3, then split the space from 3 to 4 into ___ equal parts.",
      "Make 2 jumps of 1/5 past 3: that is ___."
-    ]
+    ],
+    "skillId": "c6-maths-ch07-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -18330,6 +19888,60 @@
     "milk in litres",
     "cloth in metres",
     "cricket overs (overs and balls)"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch07-t02-s1",
+     "source": "Fractions — marking fraction lengths on the number line",
+     "problem": "Place 9/4 on a number line that starts at 0. Between which two whole numbers does it lie?",
+     "givens": [
+      "the fraction 9/4",
+      "number line from 0"
+     ],
+     "find": "where 9/4 sits on the number line",
+     "steps": [
+      {
+       "do": "split each unit into 4 equal spaces → one jump is 1/4",
+       "result": "4 jumps make 1 whole"
+      },
+      {
+       "do": "4 jumps reach 1, 8 jumps reach 2",
+       "result": "2 × 4 = 8"
+      },
+      {
+       "do": "one more jump past 2",
+       "result": "9 jumps land one quarter of the way from 2 to 3"
+      }
+     ],
+     "answer": "9/4 lies between 2 and 3, one quarter-space past 2",
+     "why": "denominator = number of equal spaces in each unit → numerator = number of jumps from 0 → more jumps than one unit holds carries past 1"
+    },
+    {
+     "skillId": "c6-maths-ch07-t02-s3",
+     "source": "Fractions — mixed fractions in measurement",
+     "problem": "Meena's mother buys 3 3/4 kg of rice and packs it in bags of 1/4 kg each. How many bags does she fill?",
+     "givens": [
+      "rice = 3 3/4 kg",
+      "each bag = 1/4 kg"
+     ],
+     "find": "the number of 1/4 kg bags",
+     "steps": [
+      {
+       "do": "1 kg = four quarter-kgs → 3 whole kg",
+       "result": "3 × 4 = 12 quarters"
+      },
+      {
+       "do": "add the 3 extra quarters",
+       "result": "12 + 3 = 15"
+      },
+      {
+       "do": "so the rice is 15 quarter-kgs",
+       "result": "3 3/4 = 15/4"
+      }
+     ],
+     "answer": "15 bags",
+     "why": "a bag holds one 1/4 kg → number of bags = number of quarters in the rice → turn the mixed fraction into quarters"
+    }
    ]
   },
   {
@@ -22292,6 +23904,32 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c6-maths-ch08-t02-i13",
+     "skillId": "c6-maths-ch08-t02-s2",
+     "source": "Playing with Constructions — constructing a square with given side",
+     "kind": "error_spot",
+     "difficulty": 3,
+     "prompt_en": "To construct a square of side 5 cm, Arun draws AB = 5 cm. Then, without making any right angles, he uses the compass to mark C and D so that BC, CD and DA are all 5 cm. Will his figure always be a square?",
+     "prompt_hi": "5 cm side ka square banane ke liye Arun AB = 5 cm kheenchta hai. Phir bina koi right angle banaye, woh compass se C aur D mark karta hai taaki BC, CD aur DA sab 5 cm hon. Kya uska figure hamesha square hoga?",
+     "answer": "No: four equal sides can still lean over, so he must first draw right angles at A and B and then mark 5 cm on those lines",
+     "acceptable": [
+      "no",
+      "no, he needs right angles at A and B"
+     ],
+     "hints": [
+      "What two things must be true of every square?",
+      "All sides equal, and every angle 90°.",
+      "Arun made the sides equal, but did he make the angles ___?",
+      "No: without right angles the shape can lean, so it need not be a square."
+     ],
+     "targetsMisconception": "c6-maths-ch08-t02-m-equal-sides-square",
+     "verified": {
+      "solverAnswer": "No: without right angles it can come out as a rhombus with slanting angles; a square needs right angles too",
+      "agrees": true,
+      "note": "Blind-solved (class 6 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -22309,7 +23947,8 @@
      "Open the compass to ___ cm; from P mark S on the line at P, and from Q mark R on the line at Q.",
      "Join S to ___.",
      "Check: SR should measure ___ cm and every corner 90°."
-    ]
+    ],
+    "skillId": "c6-maths-ch08-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -22330,6 +23969,61 @@
     "carrom board",
     "notebook pages",
     "photo frames"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch08-t02-s1",
+     "source": "Playing with Constructions — squares and rectangles: opposite sides equal, all angles 90°",
+     "problem": "PQRS is a rectangle with PQ = 7 cm and QR = 4 cm. Find RS, SP and the angle at S.",
+     "givens": [
+      "PQRS is a rectangle",
+      "PQ = 7 cm",
+      "QR = 4 cm"
+     ],
+     "find": "RS, SP and the angle at S",
+     "steps": [
+      {
+       "do": "rectangle → opposite sides equal; RS is opposite PQ",
+       "result": "RS = 7 cm"
+      },
+      {
+       "do": "SP is opposite QR",
+       "result": "SP = 4 cm"
+      },
+      {
+       "do": "rectangle → every angle is a right angle",
+       "result": "angle S = 90°"
+      }
+     ],
+     "answer": "RS = 7 cm, SP = 4 cm, angle S = 90°",
+     "why": "a rectangle is defined by its properties → opposite sides equal and all four angles 90° → read each unknown off a property"
+    },
+    {
+     "skillId": "c6-maths-ch08-t02-s3",
+     "source": "Playing with Constructions — a square needs equal sides and right angles",
+     "problem": "After drawing a quadrilateral ABCD, Kiran checks it. All four sides measure 6 cm, but the angle at A measures 110°. Is ABCD a square?",
+     "givens": [
+      "AB = BC = CD = DA = 6 cm",
+      "angle A = 110°"
+     ],
+     "find": "whether ABCD is a square",
+     "steps": [
+      {
+       "do": "check the sides against a square's property",
+       "result": "all four sides equal: this property holds"
+      },
+      {
+       "do": "check the angles: a square needs every angle 90°",
+       "result": "angle A = 110°, not 90°"
+      },
+      {
+       "do": "one property fails → decide",
+       "result": "not a square"
+      }
+     ],
+     "answer": "No: the sides are all equal, but angle A is 110°, so ABCD is not a square",
+     "why": "a square must have all sides equal AND all angles 90° → equal sides alone allow a leaning shape → always measure an angle too"
+    }
    ]
   },
   {
@@ -23042,7 +24736,8 @@
      "With the point on A, draw an arc above and below ___.",
      "Without changing the ___, put the point on B and draw arcs that cross the first ones.",
      "The two crossings are each ___ cm from A and 4 cm from B."
-    ]
+    ],
+    "skillId": "c6-maths-ch08-t03-s2"
    },
    "formats": {
     "primary": "F3",
@@ -23063,6 +24758,61 @@
     "bus stop between two villages",
     "badminton court",
     "tying a swing between two trees"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch08-t03-s1",
+     "source": "Playing with Constructions — exploring the diagonals of a rectangle",
+     "problem": "In rectangle PQRS the diagonals PR and QS meet at O. PR is 16 cm long. Find QS, PO and OQ.",
+     "givens": [
+      "PQRS is a rectangle",
+      "diagonals PR and QS meet at O",
+      "PR = 16 cm"
+     ],
+     "find": "QS, PO and OQ",
+     "steps": [
+      {
+       "do": "rectangle → diagonals are equal",
+       "result": "QS = 16 cm"
+      },
+      {
+       "do": "diagonals cut each other in half → PO is half of PR",
+       "result": "16 ÷ 2 = 8"
+      },
+      {
+       "do": "OQ is half of QS",
+       "result": "16 ÷ 2 = 8"
+      }
+     ],
+     "answer": "QS = 16 cm, PO = 8 cm, OQ = 8 cm",
+     "why": "a rectangle's diagonals are equal → they meet at their midpoints → O is the same distance from every corner"
+    },
+    {
+     "skillId": "c6-maths-ch08-t03-s3",
+     "source": "Playing with Constructions — points equidistant from two given points",
+     "problem": "On a village map, two hand-pumps A and B are 6 cm apart. The panchayat wants a bench that is 5 cm from pump A and 5 cm from pump B. Where can it go, and in how many places?",
+     "givens": [
+      "AB = 6 cm on the map",
+      "bench must be 5 cm from A and 5 cm from B"
+     ],
+     "find": "the possible places for the bench",
+     "steps": [
+      {
+       "do": "open the compass to 5 cm, point on A → draw an arc above and below AB",
+       "result": "every point on it is 5 cm from A"
+      },
+      {
+       "do": "same opening, point on B → draw arcs crossing the first ones",
+       "result": "every point on these is 5 cm from B"
+      },
+      {
+       "do": "mark the crossings",
+       "result": "2 points, one on each side of AB"
+      }
+     ],
+     "answer": "At the two points where the 5 cm arcs from A and B cross, one on each side of AB: 2 places",
+     "why": "an arc of the compass keeps one distance from its centre → a crossing is on both arcs → it is 5 cm from A and 5 cm from B together"
+    }
    ]
   },
   {
@@ -23185,6 +24935,42 @@
      "remediation": {
       "representation": "A letter-symmetry checker where the child can drag a mirror line to any angle",
       "moveShape": "Child tests vertical, horizontal and slanting mirrors on each letter; ask which directions they forgot before"
+     }
+    },
+    {
+     "id": "c6-maths-ch09-t01-m-slide-copy",
+     "skillId": "c6-maths-ch09-t01-s3",
+     "source": "Symmetry — completing a figure about a given line of symmetry",
+     "belief": "Completes a symmetric figure by copying the given half across unchanged (sliding it) instead of flipping it over the line",
+     "signs": [
+      "Draws the copied half facing the same way, so an arrow pointing away from the line becomes one pointing towards it",
+      "Puts the part nearest the line far from the line in the copy",
+      "The finished figure does not fold onto itself along the line"
+     ],
+     "diagnostic": {
+      "prompt_en": "A vertical fold line is drawn on a page. On the left of it, Asha draws an arrow that points left, away from the line. She must draw a second arrow on the right so that the fold line is a line of symmetry. Which way should the new arrow point?",
+      "prompt_hi": "Ek page par ek vertical fold line bani hai. Uske left mein Asha ek arrow banati hai jo left ki taraf, line se door point karta hai. Use right side mein doosra arrow banana hai taaki fold line ek line of symmetry bane. Naya arrow kis taraf point karega?",
+      "options": [
+       {
+        "text": "It points right, away from the line",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "It points left, the same way as the first arrow",
+        "misconceptionId": "c6-maths-ch09-t01-m-slide-copy",
+        "correct": false
+       },
+       {
+        "text": "It points up, along the line",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Ink blot: draw the half in wet paint, fold the paper on the line, and press to print the other half",
+      "moveShape": "fold, don't slide → each point lands the same distance on the other side → near stays near, far stays far → the copy faces the opposite way"
      }
     }
    ],
@@ -23598,6 +25384,32 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c6-maths-ch09-t01-i13",
+     "skillId": "c6-maths-ch09-t01-s3",
+     "source": "Symmetry — completing a figure about a given line of symmetry on squared paper",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "On squared paper there is a vertical line of symmetry. On its left is a small triangle pointing left: its tip is 5 squares from the line and its flat side is 2 squares from the line. When you complete the figure, how far from the line are the tip and the flat side of the new triangle, and which way does it point?",
+     "prompt_hi": "Squared paper par ek vertical line of symmetry hai. Uske left mein ek chhota triangle hai jo left ki taraf point karta hai: uski tip line se 5 squares door hai aur flat side line se 2 squares door hai. Figure complete karne par naye triangle ki tip aur flat side line se kitni door hongi, aur woh kis taraf point karega?",
+     "answer": "Tip 5 squares to the right of the line, flat side 2 squares to the right; it points right, away from the line",
+     "acceptable": [
+      "tip 5 right, flat side 2 right, points right",
+      "points right"
+     ],
+     "hints": [
+      "When you fold along the line, where must each point of the triangle land?",
+      "Each point lands the same distance from the line, on the other side.",
+      "The tip is 5 squares away, so its partner is ___ squares to the right; the flat side's partner is ___ squares to the right.",
+      "Tip at 5 squares right, flat side at 2 squares right, so the new triangle points right, away from the line."
+     ],
+     "targetsMisconception": "c6-maths-ch09-t01-m-slide-copy",
+     "verified": {
+      "solverAnswer": "tip 5 squares right of the line, flat side 2 squares right of the line; it points right",
+      "agrees": true,
+      "note": "Blind-solved (class 6 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -23613,7 +25425,8 @@
      "Fold H top to bottom through the crossbar: the halves match, so the ___ line works.",
      "Try a slanting fold: the halves do ___ match.",
      "H has ___ lines of symmetry."
-    ]
+    ],
+    "skillId": "c6-maths-ch09-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -23634,6 +25447,61 @@
     "rangoli and kolam",
     "Ashoka emblem",
     "kite shapes"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch09-t01-s1",
+     "source": "Symmetry — line of symmetry: fold so the two halves overlap exactly",
+     "problem": "Is the horizontal line through the middle of the capital letter A a line of symmetry?",
+     "givens": [
+      "capital letter A",
+      "a horizontal line through its middle"
+     ],
+     "find": "whether the horizontal line is a line of symmetry",
+     "steps": [
+      {
+       "do": "fold A along the horizontal line, top onto bottom",
+       "result": "the pointed top lands on the two open legs"
+      },
+      {
+       "do": "compare the halves point for point",
+       "result": "they do not overlap exactly"
+      },
+      {
+       "do": "halves must match exactly → decide",
+       "result": "not a line of symmetry"
+      }
+     ],
+     "answer": "No: folding A along the horizontal line does not make the halves overlap, so it is not a line of symmetry",
+     "why": "a line of symmetry folds the figure onto itself exactly → test by folding → any mismatch rules the line out"
+    },
+    {
+     "skillId": "c6-maths-ch09-t01-s3",
+     "source": "Symmetry — completing a figure about a given line of symmetry on squared paper",
+     "problem": "On squared paper a vertical line of symmetry is drawn. Half of a triangle is on its left: corner P is on the line, corner R is on the line 4 squares below P, and corner Q is 3 squares to the left of R in the same row. Complete the figure.",
+     "givens": [
+      "vertical line of symmetry",
+      "P and R on the line, R 4 squares below P",
+      "Q 3 squares left of R, same row"
+     ],
+     "find": "the missing part that makes the line a line of symmetry",
+     "steps": [
+      {
+       "do": "points on the line stay where they are",
+       "result": "P and R are their own mirror points"
+      },
+      {
+       "do": "Q is 3 squares left → mirror point the same distance on the other side, same row",
+       "result": "Q′ is 3 squares right of R"
+      },
+      {
+       "do": "join P to Q′ and R to Q′",
+       "result": "the full triangle P Q Q′, with base Q Q′ 3 + 3 = 6 squares"
+      }
+     ],
+     "answer": "Add Q′ 3 squares to the right of R and join it to P and R; the completed figure is triangle P Q Q′ with a base 6 squares long",
+     "why": "folding along the line must land each point on its partner → partner is flipped across, same distance, same row → join the partners"
+    }
    ]
   },
   {
@@ -24274,6 +26142,30 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c6-maths-ch09-t02-i14",
+     "skillId": "c6-maths-ch09-t02-s1",
+     "source": "Symmetry — rotational symmetry: looks exactly the same after a turn less than a full turn",
+     "kind": "predict",
+     "difficulty": 2,
+     "prompt_en": "A ceiling fan has 3 identical blades, equally spaced. Seen from below, you turn it by a quarter turn about its centre. Will it look exactly the same as before?",
+     "prompt_hi": "Ek ceiling fan ke 3 ek jaise blades hain, barabar doori par. Neeche se dekhte hue aap use uske centre ke around quarter turn ghumate ho. Kya woh bilkul pehle jaisa dikhega?",
+     "answer": "No: a quarter turn is 90°, but the blades only fall into each other's places after 120°",
+     "acceptable": [
+      "no"
+     ],
+     "hints": [
+      "How far apart are the blades around the centre?",
+      "Three blades share the full turn of 360° equally.",
+      "360 ÷ 3 = ___°, and a quarter turn is ___°.",
+      "120° is needed but a quarter turn is only 90°, so it will not look the same."
+     ],
+     "verified": {
+      "solverAnswer": "No: 3 equal blades match after a third of a turn, not a quarter turn",
+      "agrees": true,
+      "note": "Blind-solved (class 6 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -24289,7 +26181,8 @@
      "Each corner moves into the next corner's place after 360° ÷ 6 = ___°.",
      "So the smallest turn that matches is 60°: the ___ of rotational symmetry.",
      "It matches ___ times in one full turn: order 6."
-    ]
+    ],
+    "skillId": "c6-maths-ch09-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -24310,6 +26203,64 @@
     "pinwheels and windmills",
     "rangoli",
     "bicycle wheel spokes"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch09-t02-s1",
+     "source": "Symmetry — rotational symmetry: looks exactly the same after a turn less than a full turn",
+     "problem": "A plain rectangular bus ticket is longer than it is wide. Turn it about its centre. Does it look exactly the same after a quarter turn? After a half turn? Does it have rotational symmetry?",
+     "givens": [
+      "plain rectangle, not a square",
+      "turned about its centre"
+     ],
+     "find": "whether it matches after a quarter turn and after a half turn, and whether it has rotational symmetry",
+     "steps": [
+      {
+       "do": "quarter turn (90°) → the long sides stand upright",
+       "result": "does not match the starting position"
+      },
+      {
+       "do": "half turn (180°) → each long side lands on the other long side",
+       "result": "matches exactly"
+      },
+      {
+       "do": "a match before the full turn → decide",
+       "result": "180° is less than 360°: rotational symmetry"
+      }
+     ],
+     "answer": "Not after a quarter turn; yes after a half turn, so the ticket has rotational symmetry",
+     "why": "rotational symmetry needs a match before one full turn → test turns smaller than 360° → one match is enough"
+    },
+    {
+     "skillId": "c6-maths-ch09-t02-s3",
+     "source": "Symmetry — figures with rotational symmetry but no line symmetry, and the other way round",
+     "problem": "Which kinds of symmetry does the capital letter Z have, and which does the capital letter A have: line symmetry, rotational symmetry, both, or neither?",
+     "givens": [
+      "capital Z",
+      "capital A"
+     ],
+     "find": "the kinds of symmetry each letter has",
+     "steps": [
+      {
+       "do": "Z: fold it every way",
+       "result": "no fold matches: no line symmetry"
+      },
+      {
+       "do": "Z: half turn about its centre",
+       "result": "top bar lands on bottom bar: matches, rotational symmetry"
+      },
+      {
+       "do": "A: fold along the vertical line",
+       "result": "halves match: line symmetry"
+      },
+      {
+       "do": "A: any turn less than a full turn",
+       "result": "never matches: no rotational symmetry"
+      }
+     ],
+     "answer": "Z has rotational symmetry only; A has line symmetry only",
+     "why": "folding tests line symmetry, turning tests rotational symmetry → the two tests are separate → a figure can pass one and fail the other"
+    }
    ]
   },
   {
@@ -25009,7 +26960,8 @@
      "Monday's profit is ___.",
      "Tuesday's loss is the opposite direction: ___.",
      "0 means neither profit nor ___: the reference point."
-    ]
+    ],
+    "skillId": "c6-maths-ch10-t01-s1"
    },
    "formats": {
     "primary": "F4",
@@ -25030,6 +26982,60 @@
     "pocket money owed",
     "quiz scores",
     "sea level and mountains"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch10-t01-s2",
+     "source": "The Other Side of Zero — negative numbers for floors below ground, temperatures below zero and money owed",
+     "problem": "Write each as an integer: (a) a parking floor 2 floors below the ground floor, (b) a temperature in Leh 7 degrees below zero, (c) Gopal owing ₹50 to a shopkeeper.",
+     "givens": [
+      "ground floor = 0",
+      "0 °C is zero temperature",
+      "owing nothing and having nothing = 0"
+     ],
+     "find": "the three integers",
+     "steps": [
+      {
+       "do": "floors above ground → positive; below → negative",
+       "result": "2 floors below = −2"
+      },
+      {
+       "do": "above 0 °C → positive; below → negative",
+       "result": "7 degrees below zero = −7 °C"
+      },
+      {
+       "do": "money you have → positive; money owed → negative",
+       "result": "owing ₹50 = −50"
+      }
+     ],
+     "answer": "(a) −2, (b) −7 °C, (c) −50 (rupees)",
+     "why": "each situation has a zero point → the usual direction is positive → the opposite direction gets a minus sign with the same count"
+    },
+    {
+     "skillId": "c6-maths-ch10-t01-s3",
+     "source": "The Other Side of Zero — the lift in a building: 0 for the ground floor, + above and − below",
+     "problem": "In a mall, the lift panel has buttons +2, 0 and −2. What does 0 mean, what does −2 mean, and what does +2 mean?",
+     "givens": [
+      "lift buttons +2, 0, −2"
+     ],
+     "find": "the meaning of each button",
+     "steps": [
+      {
+       "do": "0 → the reference point",
+       "result": "0 = the ground floor"
+      },
+      {
+       "do": "minus → the opposite direction from going up",
+       "result": "−2 = 2 floors below the ground floor"
+      },
+      {
+       "do": "plus → upward direction",
+       "result": "+2 = 2 floors above the ground floor"
+      }
+     ],
+     "answer": "0 is the ground floor; −2 is 2 floors below it; +2 is 2 floors above it",
+     "why": "an integer is a count from the reference point → the number says how far → the sign says which side of 0"
+    }
    ]
   },
   {
@@ -25154,6 +27160,42 @@
      "remediation": {
       "representation": "A number line that keeps scrolling left past 0",
       "moveShape": "Child keeps scrolling left and naming numbers; ask whether they ever reach the end"
+     }
+    },
+    {
+     "id": "c6-maths-ch10-t02-m-distance-drop-sign",
+     "skillId": "c6-maths-ch10-t02-s3",
+     "source": "The Other Side of Zero — moving on the number line: counting steps between integers",
+     "belief": "Finds how far apart a negative and a positive integer are by dropping the minus sign and subtracting the smaller number from the bigger",
+     "signs": [
+      "Says −2 and 5 are 3 steps apart",
+      "Gets a smaller gap when one number crosses 0 than when both are positive",
+      "Never counts the steps on each side of 0"
+     ],
+     "diagnostic": {
+      "prompt_en": "A lift goes from floor −2 up to floor 5. How many floors does it go up?",
+      "prompt_hi": "Ek lift floor −2 se upar floor 5 tak jaati hai. Woh kitne floors upar jaati hai?",
+      "options": [
+       {
+        "text": "7 floors",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "3 floors",
+        "misconceptionId": "c6-maths-ch10-t02-m-distance-drop-sign",
+        "correct": false
+       },
+       {
+        "text": "5 floors",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A vertical number line drawn as a building: floors −2 and −1 below the ground floor 0, floors 1 to 5 above",
+      "moveShape": "walk to 0 first → steps below 0 → then steps above 0 → add the two walks → the minus sign tells the side, it does not shorten the trip"
      }
     }
    ],
@@ -25712,7 +27754,8 @@
      "−6 is furthest left, then ___, then −1.",
      "0 comes next, then ___ on the right.",
      "Order: ___, −4, −1, 0, 2."
-    ]
+    ],
+    "skillId": "c6-maths-ch10-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -25733,6 +27776,62 @@
     "cricket run-rate above or below target",
     "sea level",
     "board-game moves"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch10-t02-s1",
+     "source": "The Other Side of Zero — the integer number line: negatives to the left of 0",
+     "problem": "Mark −3, 2, −5 and 0 on a number line. Which is furthest to the left?",
+     "givens": [
+      "the integers −3, 2, −5, 0"
+     ],
+     "find": "the place of each integer and the one furthest left",
+     "steps": [
+      {
+       "do": "mark 0 → positives go right",
+       "result": "2 is 2 steps right of 0"
+      },
+      {
+       "do": "negatives go left, as many steps as the number",
+       "result": "−3 is 3 steps left of 0"
+      },
+      {
+       "do": "−5 is 5 steps left → beyond −3",
+       "result": "−5 is 2 steps further left than −3"
+      },
+      {
+       "do": "read left to right",
+       "result": "−5, −3, 0, 2"
+      }
+     ],
+     "answer": "From left to right: −5, −3, 0, 2; −5 is furthest to the left",
+     "why": "0 sits in the middle → positives step right, negatives step left → a bigger number after the minus sign means further left"
+    },
+    {
+     "skillId": "c6-maths-ch10-t02-s3",
+     "source": "The Other Side of Zero — moving on the number line: counting steps between integers",
+     "problem": "How many unit steps apart are −6 and 4 on the number line?",
+     "givens": [
+      "the integers −6 and 4"
+     ],
+     "find": "the number of steps between them",
+     "steps": [
+      {
+       "do": "from −6 walk right to 0",
+       "result": "6 steps"
+      },
+      {
+       "do": "from 0 walk right to 4",
+       "result": "4 steps"
+      },
+      {
+       "do": "add the two walks",
+       "result": "6 + 4 = 10"
+      }
+     ],
+     "answer": "10 steps",
+     "why": "the two integers are on opposite sides of 0 → steps to 0 plus steps from 0 → the signs tell the sides, not a subtraction"
+    }
    ]
   },
   {
@@ -26497,7 +28596,8 @@
      "Add 3 zero pairs: 3 positives and 3 negatives (the value is still ___).",
      "Take away the 3 ___.",
      "5 negative tokens are left, so (−2) − 3 = ___."
-    ]
+    ],
+    "skillId": "c6-maths-ch10-t03-s2"
    },
    "formats": {
     "primary": "F3",
@@ -26519,6 +28619,68 @@
     "winter temperatures",
     "canteen account",
     "board-game moves forward and back"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch10-t03-s1",
+     "source": "The Other Side of Zero — adding integers with positive and negative tokens: zero pairs cancel",
+     "problem": "Work out (−6) + 4 with tokens.",
+     "givens": [
+      "(−6) + 4",
+      "a positive token and a negative token cancel to 0"
+     ],
+     "find": "the value of (−6) + 4",
+     "steps": [
+      {
+       "do": "put down 6 negative tokens and 4 positive tokens",
+       "result": "10 tokens on the table"
+      },
+      {
+       "do": "pair each positive with a negative → zero pairs",
+       "result": "4 zero pairs, worth 0"
+      },
+      {
+       "do": "remove the zero pairs → what is left",
+       "result": "2 negative tokens"
+      },
+      {
+       "do": "read the leftover tokens",
+       "result": "(−6) + 4 = −2"
+      }
+     ],
+     "answer": "(−6) + 4 = −2",
+     "why": "a positive and a negative token cancel → remove all zero pairs → the leftover tokens give the sign and size of the answer"
+    },
+    {
+     "skillId": "c6-maths-ch10-t03-s3",
+     "source": "The Other Side of Zero — subtracting a negative with tokens gives the same result as adding",
+     "problem": "In a school quiz, Meera's score is 5. The quizmaster finds that a penalty of −3 was given to her by mistake and takes it away. What is her score now?",
+     "givens": [
+      "score = 5",
+      "remove a penalty of −3"
+     ],
+     "find": "Meera's new score",
+     "steps": [
+      {
+       "do": "taking away the penalty → subtract the negative",
+       "result": "5 − (−3)"
+      },
+      {
+       "do": "5 positives, no negatives to remove → add 3 zero pairs",
+       "result": "8 positives and 3 negatives, still worth 5"
+      },
+      {
+       "do": "remove the 3 negatives",
+       "result": "8 positive tokens left"
+      },
+      {
+       "do": "compare with adding 3",
+       "result": "5 − (−3) = 8 = 5 + 3"
+      }
+     ],
+     "answer": "Her score is 8",
+     "why": "removing negatives leaves their positive partners behind → the total goes up → subtracting −3 gives the same result as adding 3"
+    }
    ]
   }
  ],
