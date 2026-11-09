@@ -25,7 +25,7 @@ import { speechMsOf, WB_BOARD } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
 import { catalogueEntry } from "./catalogue.js";
 import { fitLegible, scaleScript } from "./board-legible.js";
-import { scriptFacts, isMotionOp, shiftOp } from "../../shared/whiteboard.js";
+import { scriptFacts, isMotionOp, shiftOp, lintScript, opGeometry } from "../../shared/whiteboard.js";
 import { preferPicture } from "./beat-card.js";
 import { resolveBoardRef } from "../forge/explainer/board-ref.js";
 import { expand } from "../forge/explainer/templates.js";
@@ -976,6 +976,144 @@ export function pageOnBoard(script, board) {
   const sc = scaleScript({ ...script, board: b, ops: script.ops.filter((o) => !isMotionOp(o)) }, k);
   return { ...sc, board: { ...b, w: board.w, h: board.h }, ops: sc.ops.map((o) => shiftOp(o, dx, dy)) };
 }
+// ───────────────────────────── dc-r7-held-board (director16, main's v6.8) ─────────────────────────────
+/** The split board a picture ask is drawn on: the held board left, its second view right, each a 320-wide panel at 0.8 of its
+ *  geometry, text tokens kept whole. Measured on the child route at 360 × 640 portrait: the stage box is height-bound (about
+ *  202 × 180), so a 640 × 300 board is shown at the same scale as a single 400 × 300 board — both panels' words at the px a
+ *  board's words have today; at 360 × 800 and wider the scale only grows. */
+export const SPLIT_BOARD = Object.freeze({ w: 640, h: 300, panel: 320 });
+/** A board ref drawn as authored (no line, no gate): → { script, template, facts } or null. */
+function drawRef(ref, { band = "B3", lang = null } = {}) {
+  try {
+    const rr = resolveBoardRef(ref, {});
+    if (!rr.ok) return null;
+    const x = expand(rr.call, { band, lang });
+    return x?.ok ? { script: fitLegible(x.script), template: rr.call.template, facts: x.script.facts ?? x.facts } : null;
+  } catch { return null; }
+}
+/** The second view of the held board for a picture ask: → { call, view, line } (her picture line, built from what the view
+ *  draws: never "yahi numbers" over a view with none), or null when the board has no second view. */
+export function heldAltOf(ask) {
+  try {
+    const h = ask?.intent?.held;
+    if (!h?.board) return null;
+    const ac0 = altCall(h.board, { line: "", withheld: [], keys: liveKeys(ask, "") });
+    if (!ac0) return null;
+    const { view, ...call } = ac0;
+    return { call, view: ALT_VIEWS.has(view) ? view : "parts", line: altSay(ac0) };
+  } catch { return null; }
+}
+const still = (sc) => ({ ...sc, ops: sc.ops.filter((o) => !isMotionOp(o)).map((o) => ({ ...o, startMs: 0, endMs: Math.min(Math.max(1, o.endMs - o.startMs), 200) })), durationMs: 200 });
+const renameOps = (ops, pre) => { const m = new Map(ops.map((o) => [o.id, `${pre}${o.id}`.slice(0, 32)]));
+  return ops.map((o) => ({ ...o, id: m.get(o.id), ...(TARGETED.has(o.op) && m.has(o.target) ? { target: m.get(o.target) } : {}) })); };
+/** The held board and its second view side by side on one SPLIT_BOARD: the left panel as it stands (already drawn: still),
+ *  the view drawn in after it. → the normalized script, or null (a panel the lint refuses: the held board is then kept alone). */
+export function splitBoard(left, right, { leftStill = true } = {}) {
+  try {
+    const P = { w: SPLIT_BOARD.panel, h: SPLIT_BOARD.h };
+    // (measured on the child route at 360 × 640: a board alone is zoomed to its words by the player's frame, a split spans the
+    // whole 640 — its small words came out at 12 px against 16 px alone. In a split, small words are written one size up)
+    const up = (sc) => ({ ...sc, ops: sc.ops.map((o) => (o.op === "text" && (o.size ?? "m") === "s" ? { ...o, size: "m" } : o)) });
+    const L0 = pageOnBoard(up(leftStill ? still(left) : left), P), R0 = pageOnBoard(up(right), P);
+    const lops = renameOps(L0.ops, "l."), lEnd = Math.max(0, ...lops.map((o) => o.endMs));
+    const at = leftStill ? 200 : lEnd + 150;
+    const rops = renameOps(R0.ops, "r.").map((o) => ({ ...shiftOp(o, SPLIT_BOARD.panel, 0), startMs: o.startMs + at, endMs: o.endMs + at }));
+    const divider = { id: "split", op: "line", from: [SPLIT_BOARD.panel, 20], to: [SPLIT_BOARD.panel, SPLIT_BOARD.h - 20], ink: "soft", weight: 1, startMs: at, endMs: at + 150 };
+    const ops = [...lops, divider, ...rops];
+    if (ops.length > WB_LIMITS.maxOps) return null;
+    const raw = { ...left, scriptId: `${left.scriptId ?? "wb"}:split`.slice(0, 64), board: { ...(left.board ?? WB_BOARD), w: SPLIT_BOARD.w, h: SPLIT_BOARD.h }, ops,
+      durationMs: Math.max(...ops.map((o) => o.endMs)) + 200, facts: right.facts ?? left.facts };
+    delete raw.switches;
+    const n = normalizeScript(raw, { strict: false });
+    if (!n.ok) return null;
+    // (no word clipped or crossing into the other panel: every op inside the board, inside its own panel; no words touching)
+    if (lintScript(n.script).some((i) => ["inside_board", "text_overlap", "row_labels_touch"].includes(i.check))) return null;
+    const byId = new Map(n.script.ops.map((o) => [o.id, o]));
+    const crosses = n.script.ops.some((o) => {
+      if (o.op === "erase" || o.op === "highlight" || isMotionOp(o) || o.id === "split") return false;
+      const b = opGeometry(o, byId).box, left = String(o.id).startsWith("l.");
+      return left ? b.x + b.w > SPLIT_BOARD.panel + 2 : b.x < SPLIT_BOARD.panel - 2;
+    });
+    return crosses ? null : n.script;
+  } catch { return null; }
+}
+/** Pages joined on her line's clock: page i from its character `from` (estimated onset), each page erased at the next. */
+function joinPages(pages, text) {
+  const b0 = pages.map((g) => g.script.board ?? WB_BOARD).reduce((a, b) => (b.w * b.h > a.w * a.h ? b : a));
+  const sc = pages.map((g) => ((g.script.board ?? WB_BOARD).w === b0.w && (g.script.board ?? WB_BOARD).h === b0.h ? g.script : pageOnBoard(g.script, b0)));
+  const starts = pages.map((g, i) => (i ? Math.max(800, speechMsOf(String(text).slice(0, g.from))) : 0));
+  const ops = [];
+  sc.forEach((s, i) => {
+    const at = starts[i], next = starts[i + 1], pre = `${"abcdefgh"[i]}.`;
+    const page = renameOps(s.ops, pre).map((o) => (next !== undefined ? { ...o, startMs: Math.min(o.startMs + at, Math.max(at, next - 120)), endMs: Math.min(o.endMs + at, next) } : { ...o, startMs: o.startMs + at, endMs: o.endMs + at }));
+    ops.push(...page);
+    if (next !== undefined) ops.push(...page.filter((o) => DRAWN.has(o.op)).map((o, k) => ({ id: `${pre}x${k}`.slice(0, 32), op: "erase", target: o.id, startMs: next, endMs: next + 200 })));
+  });
+  if (ops.length > WB_LIMITS.maxOps) return null;
+  const raw = { ...sc[0], scriptId: `${sc[0].scriptId ?? "wb"}:held`.slice(0, 64), board: { ...(sc[0].board ?? WB_BOARD), w: b0.w, h: b0.h }, ops, durationMs: Math.max(...ops.map((o) => o.endMs)) + 200,
+    facts: sc.at(-1).facts ?? sc[0].facts,
+    switches: pages.slice(1).map((g, k) => ({ clause: g.clause ?? 0, atMs: starts[k + 1], ...firstWordOf(text, g.from) })) };
+  const n = normalizeScript(raw, { strict: false });
+  return n.ok ? n.script : null;
+}
+let heldCounts = { drawn: 0, kept: 0, switched: 0, split: 0, splitRefused: 0 };
+/** dc-r7-held-board: what the held-board path did (drawn new, kept still, switched once, split for a picture). */
+export const heldStats = () => ({ ...heldCounts });
+/**
+ * dc-r7-held-board (main's v6.8, Brain + Studio): a script turn's board is the board Brain HOLDS for the unit — the open card's
+ * board, or the just-answered card's answer-state board while its close is spoken — drawn as sent, from its ref, with no
+ * line-driven pick and no gate on her words. `intent.held` = { board, unit, switchTo?: { board, unit, atChar, atClause? } }:
+ * at most ONE switch, where her words begin the next unit's first spoken part. The held board already up (by ref) is KEPT
+ * (no redraw: a Hindi, clarify, aside or "sawaal kya hai" turn holds the board). A picture ask draws the held board's second
+ * view BESIDE it (splitBoard), never instead of it; her picture line is heldAltOf's, built from what the view draws.
+ * → { ok, script, kept?, split?, panels?, altView?, altLine?, screen, screens, lastRef, lastPage, held } or null.
+ */
+export function heldBoard(ask, { keepRef = null, keepPage = null } = {}) {
+  try {
+    const h = ask?.intent?.held;
+    if (!h?.board?.template) return null;
+    const band = ask?.intent?.style?.band ?? "B3", lang = ask?.intent?.style?.lang ?? null;
+    const text = String(ask?.line?.text ?? "");
+    const upSplit = keepPage?.board?.w === SPLIT_BOARD.w && keepPage?.board?.h === SPLIT_BOARD.h;
+    const same = !!keepRef && refKey(h.board) === keepRef && !!keepPage?.ops?.length;
+    const request = ask?.intent?.request ?? null;
+    const pic = request && request.kind !== "example" ? heldAltOf(ask) : null;
+    const sw = h.switchTo?.board?.template && Number.isInteger(h.switchTo.atChar) && h.switchTo.atChar > 0 && h.switchTo.atChar < text.length ? h.switchTo : null;
+    // the held board: the page up when it is this board (its split, too, when no new picture is asked), else drawn new
+    const base = same && !(pic && upSplit) ? { script: keepPage, template: h.board.template, facts: keepPage.facts ?? null, kept: true } : drawRef(h.board, { band, lang });
+    if (!base?.script) return null;
+    let page0 = base.script, altView = null, altLine = null, panels = null, split = false, altFacts = null;
+    if (pic) {
+      const ax = expand(pic.call, { band, lang });
+      const sp = ax?.ok ? splitBoard(upSplit && base.kept ? drawRef(h.board, { band, lang })?.script ?? base.script : base.script, fitLegible(ax.script), { leftStill: !!base.kept || same }) : null;
+      if (sp) { page0 = sp; split = true; altView = pic.view; altLine = pic.line; altFacts = ax.script.facts; panels = [upSplit ? drawRef(h.board, { band, lang })?.script ?? base.script : base.script, fitLegible(ax.script)]; heldCounts.split++; }
+      else heldCounts.splitRefused++;
+    }
+    const screen0 = screenOf({ template: base.template, facts: base.facts ?? {} }, base.facts ?? page0.facts, base.script);
+    const screenA = split ? screenOf({ template: pic.call.template, facts: altFacts ?? {} }, altFacts, panels[1]) : null;
+    if (!sw && base.kept && !split) { heldCounts.kept++;
+      // (a held board stands: shown at its end state at once, never drawn again)
+      return { ok: true, kept: true, script: still(keepPage), source: "kept", by: "script", template: base.template, facts: base.facts ?? keepPage.facts ?? null, screen: screen0, screens: [{ from: 0, ...screen0 }], lastRef: keepRef, lastPage: keepPage, held: { unit: h.unit ?? null, changed: false } }; }
+    let script = page0, screens = [{ from: 0, ...screen0, ...(screenA ? { beside: { ...screenA, altView } } : {}) }], lastRef = refKey(h.board), lastPage = page0, template = base.template;
+    if (sw) {
+      const nx = drawRef(sw.board, { band, lang });
+      if (nx?.script) {
+        const p0 = base.kept && !split ? still(page0) : page0;
+        const before = text.slice(0, sw.atChar).trim();
+        const clause = Number.isInteger(sw.atClause) ? sw.atClause : before ? splitSentences(before).reduce((n, part) => n + voiceClausesOf(part).length, 0) : 0;
+        const joined = joinPages([{ script: p0, from: 0 }, { script: nx.script, from: sw.atChar, clause }], text);
+        if (joined) {
+          script = joined; lastRef = refKey(sw.board); lastPage = nx.script; template = nx.template; heldCounts.switched++;
+          screens = [...screens, { from: sw.atChar, ...screenOf({ template: nx.template, facts: nx.facts ?? {} }, nx.facts, nx.script) }];
+        }
+      }
+    }
+    if (!base.kept) heldCounts.drawn++;
+    return { ok: true, script, source: "held", by: "script", template, facts: base.facts ?? null, ...(split ? { split: true, panels, altView, altLine, altFacts } : {}), screen: screens.at(-1), screens,
+      lastRef, lastPage, held: { unit: lastRef === refKey(h.board) ? h.unit ?? null : sw?.unit ?? null, changed: lastRef !== keepRef } };
+  } catch { return null; }
+}
+
 /** director12 S6: pages scaled onto the turn's board so they could join. */
 export const pagesRescaledCount = () => pagesRescaled;
 export const twoPageStats = () => ({ ...pageStats });

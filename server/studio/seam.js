@@ -1023,13 +1023,16 @@ export const studioSeam = {
       if (!r?.script) return false;
       // round 5 (stream 2): never the same page twice in a row (a kept board is the same board on purpose, not a new page)
       // (director5 SC2: a picture asked for re-shows the live scripted card's own board, even a page shown before)
-      if (r.source !== "kept" && !(request && r.by === "script") && shownBefore(r.script, { avoid: onPage, seen: L.wbSeen })) { console.info(`[studio] board refused: same page as on screen (source=${r.source ?? "line"})`); return false; }
+      if (r.source !== "kept" && r.source !== "held" && !(request && r.by === "script") && shownBefore(r.script, { avoid: onPage, seen: L.wbSeen })) { console.info(`[studio] board refused: same page as on screen (source=${r.source ?? "line"})`); return false; }
       // round 5 (sim lab boardfacts): a new page about something her line never mentions is not drawn (request.js syncedWithLine)
       // (a page drawn for what the CHILD asked to see is held to the ask, answersRequest, not to her line's words: battery
       // iter11 lost 3 such asks, "baraf / bhaap" vs "Ice / Steam", a Devanagari story page under her romanised line)
-      if (r.source !== "kept" && !ask?.requested && !ask?.intent?.request && !syncedWithLine(r.script, ask?.line?.text)) { console.info(`[studio] board refused: shares nothing with her line (source=${r.source ?? "line"})`); return false; }
+      if (r.source !== "kept" && r.source !== "held" && !ask?.requested && !ask?.intent?.request && !syncedWithLine(r.script, ask?.line?.text)) { console.info(`[studio] board refused: shares nothing with her line (source=${r.source ?? "line"})`); return false; }
       // round 4 content: the ONE gate before the board reaches the stage (the device's box, the client's own fit)
-      const g = certifyForTray({ kind: "whiteboard", script: r.script }, gateCtx(L, p));
+      // (dc-r7-held-board: a split board is certified panel by panel — each is a board of its own at the scale a single board
+      // has on the height-bound 360 × 640 tray; board-first.js SPLIT_BOARD)
+      const g = r.split && Array.isArray(r.panels) ? r.panels.map((sc) => certifyForTray({ kind: "whiteboard", script: dress(sc) }, gateCtx(L, p))).find((x) => !x.ok) ?? { ok: true }
+        : certifyForTray({ kind: "whiteboard", script: r.script }, gateCtx(L, p));
       if (!g.ok) { noteRefusal(L, p, g, `board:${r.source ?? "line"}`); return false; }
       // round 4 content, the beat-by-beat board (flag): the card this beat's board is (once per slot)
       if (beatBoardOn() && !p.card) { p.card = cardFor(L, ask, r.script, { template: r.template ?? null }); }
@@ -1052,6 +1055,9 @@ export const studioSeam = {
       // (a paged board: `screen` is the last page; `screens` [{ from, …screen }] each page from her line's character `from`)
       p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script, screen,
         ...(r.screens ? { screens: r.screens } : {}), ...(statedUnknown.length ? { statedAsUnknown: statedUnknown } : {}), ...(r.altView ? { altView: r.altView } : {}) };
+      // (dc-r7-held-board: a picture's split board, and the held unit the page is)
+      if (r.split) p.artifact.split = { panels: 2, panelW: boardFirst.SPLIT_BOARD.panel };
+      if (r.held) p.artifact.held = r.held;
       p.facts = r.script.facts ?? null;
       if (p.under) { const under = p.under; p.under = undefined; retirePiece(L, under, "replaced"); }
       p.state = "revealed"; p.failWhy = undefined; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
@@ -1099,6 +1105,14 @@ export const studioSeam = {
       L.pieces.delete(intentId); L.onScreen = onPrev;
       const failing = (given ? [{ id: shownBefore(given.script, { avoid: onPage, seen: L.wbSeen }) ? "same_page" : "tray" }] : boardSync.regate(boardSync.retime(ask.script, Math.max(800, Number(ask.script.durationMs) || 0), ctx0.speechMs), ask, ctx0).gate?.checks ?? []).filter((c) => c.pass !== true).map((c) => c.id);
       return { slotId: p.slotId, intentId, state: "failed", refused: failing.slice(0, 6) };
+    }
+    // dc-r7-held-board (director16): a script turn draws the unit board Brain holds — kept when it is the page up, switched at
+    // most once, its second view beside it on a picture ask. Never the line-driven ladder: refused, the page up stays
+    if (ask?.intent?.held) {
+      const hr = boardFirst.heldBoard(ask, { keepRef: L.wbPrevRef ?? null, keepPage: onPage ? L.wbPrevPage ?? onPage : null });
+      if (hr && drawn(hr)) { traceRecord("studio.board_held", { intentId, unit: hr.held?.unit ?? null, changed: !!hr.held?.changed, split: !!hr.split, kept: !!hr.kept }); return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact }; }
+      L.pieces.delete(intentId); L.onScreen = onPrev;
+      return { slotId: p.slotId, intentId, state: "failed", refused: ["held"] };
     }
     // round 7 (director7 B1/S2): a turn in segments (say, then-card, closure …): one page per segment, turning at each
     const two = ask?.intent?.then || ask?.intent?.segments?.length || ask?.intent?.cardBoard ? boardFirst.pagesBoard(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], keep: onPage ? L.wbPrevPage ?? onPage : null, keepRef: L.wbPrevRef ?? null }) : null;
@@ -1195,6 +1209,14 @@ export const studioSeam = {
   preselectedAltView(lessonId) {
     try { return lessons.get(lessonId)?.preAltView ?? null; } catch { return null; }
   },
+  /**
+   * dc-r7-held-board (director16): her picture line for the second view the last preselectWhiteboard drew beside the held
+   * board, built from what that view draws ("Wahi poora ab gol: 4 barabar hisse"; never "yahi numbers" over a view with
+   * none), or null (nothing is drawn beside: her line promises no picture). Read right after preselectWhiteboard.
+   */
+  preselectedAltLine(lessonId) {
+    try { return lessons.get(lessonId)?.preAltLine ?? null; } catch { return null; }
+  },
 
   /**
    * Round 2 content, board-first: pick the board for an accepted whiteboard ask BEFORE her line is written (turn.js, right
@@ -1207,7 +1229,7 @@ export const studioSeam = {
       const lessonId = ask?.line?.lessonId || ask?.intent?.lessonId;
       // (director8 S3′: the pick's second view, for preselectedAltView; cleared on every ask, whatever it picks)
       const L0 = lessonId ? lessons.get(lessonId) : null;
-      if (L0) L0.preAltView = null;
+      if (L0) { L0.preAltView = null; L0.preAltLine = null; }
       if (!lessonId || ask?.intent?.kind !== "whiteboard") return null;
       const L = lessonState(lessonId, {});
       // a continued board draws on the one on screen: her line is told what that board shows (values only), so it points
@@ -1222,6 +1244,15 @@ export const studioSeam = {
       const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
       if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete && !(ask.replaces && ask.replaces === on.intentId)) return null;
       if (L.pieces.has(String(ask.intent.intentId))) return null;
+      // dc-r7-held-board (director16): a script turn's board is the unit board Brain holds — no line-driven pick. Her line is
+      // written about the held board (its row); on a picture ask, about the view drawn beside it (preselectedAltLine)
+      if (ask?.intent?.held) {
+        const hr = boardFirst.heldBoard({ ...ask, line: { ...(ask.line ?? {}), text: "" } }, { keepRef: L.wbPrevRef ?? null, keepPage: L.wbPrevPage ?? null });
+        L.preAltView = hr?.altView ?? null; L.preAltLine = hr?.altLine ?? null;
+        if (!hr) return null;
+        const row = boardFirst.rowOfFacts(hr.facts ?? hr.script?.facts ?? {}, boardFirst.countsOf(hr.split ? hr.panels[0] : hr.script));
+        return row && hr.split && hr.altFacts ? `${row} · beside: ${String(boardFirst.rowOfFacts(hr.altFacts, boardFirst.countsOf(hr.panels[1])) ?? "").replace(/^[^·]*·\s*/, "")}` : row;
+      }
       const pk = boardFirst.preselect(ask, boardFirstOpts(L, ask));
       L.preAltView = pk?.altView ?? null;
       return pk?.row ?? null;
