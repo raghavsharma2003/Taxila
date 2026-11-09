@@ -59,6 +59,18 @@ let CARD_CHECKS = 0;
 /** v6.5 F1: the words a line about the child's method may use besides theirs (frame words, not content). */
 const METHOD_STOP = new Set(["tumne", "tumhara", "tumhari", "tumhe", "bataya", "batayi", "kaha", "socha", "tareeka", "tarika", "achha", "accha", "theek",
   "haan", "sahi", "yahan", "isliye", "pehle", "phir", "kaise", "jaana", "your", "you", "told", "said", "thought", "that", "this", "with", "what"]);
+/** v6.5 F2 (main's ruling on director13: "Haan, mujhe Virat pasand hai" in 7 of 9 returns): a first-person taste or experience claim. */
+export const TASTE_CLAIM = /(?<![\p{L}])(?:mujhe\s+(?:bhi\s+)?(?:\p{L}+\s+){0,3}(?:pasand|achha\s+lagta|achhi\s+lagti|bahut\s+achha)|mera\s+(?:favourite|pasandida)|meri\s+(?:favourite|pasand)|main\s+(?:bhi\s+)?(?:khelti|dekhti|khela|dekha)|i\s+(?:also\s+)?(?:like|love|enjoy)|my\s+favou?rite)(?![\p{L}])/iu;
+/** v6.5 F2: a line that says she is not an AI (she never says it). */
+export const DENIES_AI = /(?<![\p{L}])(?:main\s+(?:ek\s+)?(?:insaan|human|asli)|main\s+ai\s+nahi|i\s+am\s+(?:a\s+)?(?:human|real\s+person)|i'?m\s+not\s+an?\s+ai)(?![\p{L}])/iu;
+/** v6.5 F2: they asked her own taste ("aapko Virat pasand hai?"). */
+const ASKS_TASTE = /(?:aapko|tumhe|aap|tum)\b.*\bpasand|do you like|your favou?rite|aapka favourite/i;
+/** v6.5 F2: her honest answer to their question about her taste, turned back to them (code's line, a statement). */
+export function honestTasteLine(topic, lang = "hinglish") {
+  const t = String(topic ?? "").trim() || (lang === "english" ? "that" : "yeh");
+  return lang === "english" ? `I'm an AI teacher, so I don't have favourites — but ${t} is yours, and I'll remember that.`
+    : `Main AI teacher hoon, toh meri apni koi pasand nahi — ${t} tumhari pasand hai, yeh main yaad rakhungi.`;
+}
 /** v6.5 F1: praise or an aside's topic (never said beside a wrong verdict). */
 const PRAISE_OR_ASIDE = /(?<![\p{L}])(?:wah|waah|shabash|zabardast|kamaal|bahut\s+badhiya|great|awesome|cricket|sixer|virat|kohli|match)(?![\p{L}])/iu;
 /** v6.5 P3: after a second view's own line, a pointer back to it (never a question: the card comes on its own page next). */
@@ -115,6 +127,8 @@ export function returnLineOk(x, said, topic) {
   const n = t.split(/\s+/).filter(Boolean).length;
   if (n < 4 || n > 20) return false;
   if (/sunke bahut achha laga|tumne bataya tha|tumne mujhse .* poocha tha/i.test(t)) return false;
+  // (v6.5 F2: never a taste or experience of hers)
+  if (TASTE_CLAIM.test(t) || DENIES_AI.test(t)) return false;
   // (the old code return's "Aur X ki baat: <a fact>" frame is a fixed template too)
   if (/^(?:aur|and about)\s+\p{L}+\s+(?:ki baat\s*)?:/iu.test(t)) return false;
   // (v6 R4 still holds: never an analogy to the lesson, never words put in their mouth)
@@ -1960,7 +1974,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     else if (ret?.topic) {
       const said0 = ret.said ?? "";
       const pool = [...retMine, ...ss.filter((x) => !retMine.includes(x) && returnLineOk(x, said0, ret.topic))];
-      let line = pool.find((x) => returnLineOk(x, said0, ret.topic)) ?? null;
+      // (v6.5 F2: asked her own taste, she answers honestly — an AI teacher has none — and turns it back to them)
+      let line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang) : pool.find((x) => returnLineOk(x, said0, ret.topic)) ?? null;
+      if (ASKS_TASTE.test(said0)) guard.returnHonest = true;
       ss = ss.filter((x) => x !== line);
       if (!line && said0) {
         try {
@@ -2286,6 +2302,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   if (answeredNow && verdict === "correct" && lang !== "english" && !clause.sent) {
     const r0 = String(reply).replace(/^((?:\p{L}+,\s*)?)(?:no|yes)\s+(sahi\s+hai)/iu, (m, a, b) => `${a}${b}`);
     if (r0 !== reply) { reply = r0; guard.echoVerdict = true; }
+  }
+  // v6.5 F2 (main's ruling, director13): on any path, a sentence of hers claiming a taste or an experience of her own, or saying she is
+  // not an AI, goes (never her whole line); code's honest line says "meri apni koi pasand nahi" and is kept
+  if (!clause.sent) {
+    const ss2 = sentences(reply).map((x) => String(x).trim()).filter(Boolean);
+    const kept = ss2.filter((x) => !(TASTE_CLAIM.test(x) || DENIES_AI.test(x)));
+    if (kept.length && kept.length < ss2.length) { reply = kept.join(" "); guard.tasteDropped = ss2.length - kept.length; }
   }
   // v6.5 F1: a frame form that opens her line — hers or code's, on any path — is never the one said in her last 4 turns (a
   // streamed first clause is never changed)

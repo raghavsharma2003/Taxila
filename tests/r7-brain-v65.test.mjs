@@ -138,4 +138,31 @@ describe("r7-brain-v65.test.mjs", () => {
       assert.deepEqual(await frameFaults(persona, topic), []);
     });
   }
+
+  // F2 — no first-person taste or experience claims; asked directly, she answers honestly as an AI and turns it back to them
+  const TASTE = /(?<![\p{L}])(?:mujhe\s+(?:bhi\s+)?(?:\p{L}+\s+){0,3}(?:pasand|achha\s+lagta|achhi\s+lagti|bahut\s+achha)|mera\s+(?:favourite|pasandida)|meri\s+(?:favourite|pasand)|main\s+(?:bhi\s+)?(?:khelti|dekhti|khela|dekha)|i\s+(?:also\s+)?(?:like|love|enjoy)|my\s+favou?rite)(?![\p{L}])/iu;
+  const DENIES_AI = /(?<![\p{L}])(?:main\s+(?:ek\s+)?(?:insaan|human|asli)|main\s+ai\s+nahi|i\s+am\s+(?:a\s+)?(?:human|real\s+person)|i'?m\s+not\s+an?\s+ai)(?![\p{L}])/iu;
+  async function personaFaults(persona, topic) {
+    const T = TOPIC[topic];
+    setScriptForTest(T, runScriptOf(RUN, T));
+    const { kit, rows, plans } = await replay(RUN, persona, T, 1e9);
+    const bad = [];
+    for (const pl of plans) {
+      const n = pl.row - 1;
+      if (!rows[n]) continue;
+      const r0 = pl.state.lastMove?.returned;
+      // (the H2″ retry is answered with a taste claim, the shape director13's drafts had)
+      replyDeps.chat = async (_d, msgs) => (/^You are a warm teacher/.test(msgs?.[0]?.content ?? "") && r0 ? { text: `Mujhe bhi ${r0.topic} bahut pasand hai!` } : { text: rows[n].text });
+      const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
+      if (TASTE.test(out.reply)) bad.push(`row ${n}: a taste claim | ${out.reply.slice(0, 140)}`);
+      if (DENIES_AI.test(out.reply)) bad.push(`row ${n}: denies being an AI | ${out.reply.slice(0, 140)}`);
+      if (r0 && /(?:aapko|tumhe|aap)\b.*\bpasand|do you like|your favou?rite/i.test(r0.said ?? "") && !/\bAI\b/.test(out.reply)) bad.push(`row ${n}: asked her taste ("${r0.said}"), no honest AI answer | ${out.reply.slice(0, 140)}`);
+    }
+    return bad;
+  }
+  for (const persona of ["offtopic", "steering", "steady", "stuck"]) for (const topic of Object.keys(TOPIC)) {
+    test(`F2 predicate: no first-person taste claim, never a denial of being an AI, an honest answer when asked (${persona} ${topic})`, async () => {
+      assert.deepEqual(await personaFaults(persona, topic), []);
+    });
+  }
 });

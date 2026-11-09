@@ -277,7 +277,9 @@ describe("R4 in the lesson (c6 skill-1 v2 fixture)", () => {
     const lm = { ...L.r.state.lastMove, returned: { topic: "Virat", share: true, said: "aapko virat pasand hai?" } };
     const out = await say(L, `Virat ke baare mein tumne kaha tha ki tumhe woh pasand hain. Virat mujhe bhi bahut pasand hain, unki batting kamaal ki hai. Virat ka cover drive boundary ke poore round jaisa hai. ${L.r.ui.ask.text}`, { state: { lastMove: lm } });
     assert.doesNotMatch(out.reply, /tumne kaha|jaisa hai/, out.reply);
-    assert.match(out.reply, /Virat mujhe bhi bahut pasand hain/, out.reply);
+    // (v6.5 F2, main's ruling on director13: asked her own taste, she answers honestly — an AI teacher has none — never "mujhe bhi")
+    assert.doesNotMatch(out.reply, /mujhe bhi/i, out.reply);
+    assert.match(out.reply, /Main AI teacher hoon/, out.reply);
   });
 
   test("after 'hindi mein batao' her later turns are visibly in Hindi words", async () => {
