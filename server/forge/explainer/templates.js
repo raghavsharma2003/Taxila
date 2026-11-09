@@ -119,7 +119,8 @@ function fractionParts(c, tl) {
   // (director11 S2: hideResult — a second view of a card that asks this fraction — writes none: the shading is the given)
   if (shade > 0 && !c.hideResult) tl.add({ id: "frac", op: "numwork", at: [fx - 14, fy], layout: "fraction", rows: [[String(shade)], [String(parts)]], ink: "accent", weight: 2 }, 800, { gap: 300 });
   if (shade > 0 && !c.hideResult) tl.add({ op: "highlight", target: "frac", style: "circle", ink: "mark" }, 600, { gap: 300 });
-  if (c.hideResult) delete facts.fraction;
+  // (director12 S4: nor does its facts row — "fraction 0/4" under an unshaded bar is a number no board writes)
+  if (c.hideResult || shade === 0) delete facts.fraction;
   return { facts, counts: { parts, shaded: shade } };
 }
 
@@ -655,18 +656,27 @@ function equalGroups(c, tl) {
 function unequalGroups(c, tl) {
   const sizes = c.sizes;
   if (sizes.length < 2 || sizes.length > 6 || sizes.some((n) => !isInt(n, 1, 10))) return { error: "groups_sizes" };
+  const N = sizes.reduce((a, b) => a + b, 0);
+  // (Learning's D7, main 2026-11-09: `equalTo` {groups, each} — the SAME things shared equally, drawn beside the given
+  // groups: c4's marbles 7, 3, 3, 3 beside 4 × 4, pencils 6, 3, 3 beside 3 × 4; the card's why compares with that share)
+  const eq = c.equalTo && typeof c.equalTo === "object" ? c.equalTo : null;
+  if (eq && (!isInt(eq.groups, 2, 6) || !isInt(eq.each, 1, 8) || eq.groups * eq.each !== N)) return { error: "groups_equal_to" };
   const head = groupsTitle(c, tl);
   if (head.error) return head;
-  const groups = sizes.length, gw = 340 / groups, N = sizes.reduce((a, b) => a + b, 0), hc = Math.min(12, N), claims = [];
-  for (let g = 0; g < groups; g++) tl.add({ op: "ellipse", c: [30 + g * gw + gw / 2, 110], rx: gw / 2 - 6, ry: 66, weight: 1 }, 300, { gap: 80 });
-  const heap = (k) => [200 - ((hc - 1) * 12) / 2 + (k % hc) * 12, 196 + Math.floor(k / hc) * 11];
+  // (with the equal share beside them, the given groups take the left half, the share the right; a line between them)
+  const [x0, W] = eq ? [12, 186] : [30, 340];
+  const groups = sizes.length, gw = W / groups, hc = Math.min(eq ? 11 : 12, N), claims = [];
+  const ry = eq ? 62 : 66;
+  for (let g = 0; g < groups; g++) tl.add({ op: "ellipse", c: [round1(x0 + g * gw + gw / 2), 110], rx: round1(gw / 2 - (eq ? 4 : 6)), ry, weight: 1 }, 300, { gap: 80 });
+  const hx0 = x0 + W / 2;
+  const heap = (k) => [round1(hx0 - ((hc - 1) * 12) / 2 + (k % hc) * 12), 196 + Math.floor(k / hc) * 11];
   for (let k = 0; k < N; k++) tl.add({ id: `g${k}`, op: "circle", c: heap(k), r: 4.5, fill: "accent", ink: "accent", weight: 1 }, 40, { gap: 10 });
+  const spot = (gx, w, each, i) => { const cols = each > 4 ? 2 : 1; return [round1(gx + w / 2 + (cols === 2 ? (i % 2 ? 9 : -9) : 0)), round1(110 - ((Math.ceil(each / cols) - 1) * 13) / 2 + Math.floor(i / cols) * 13)]; };
   let k = 0;
   sizes.forEach((each, g) => {
-    const gx = 30 + g * gw;
+    const gx = x0 + g * gw;
     for (let i = 0; i < each; i++, k++) {
-      const cols = each > 4 ? 2 : 1;
-      const x = gx + gw / 2 + (cols === 2 ? (i % 2 ? 9 : -9) : 0), y = 110 - ((Math.ceil(each / cols) - 1) * 13) / 2 + Math.floor(i / cols) * 13;
+      const [x, y] = spot(gx, gw, each, i);
       const [hx, hy] = heap(k);
       tl.add({ op: "move", target: `g${k}`, by: [round1(x - hx), round1(y - hy)] }, 650, i ? { with: true } : { gap: 220 });
       claims.push({ id: `g${k}`, c: [round1(hx + round1(x - hx)), round1(hy + round1(y - hy))] });
@@ -674,7 +684,20 @@ function unequalGroups(c, tl) {
     // each group's own count under it
     tl.add({ op: "text", at: [round1(gx + gw / 2), 196], text: String(each), size: "s", ink: "soft" }, 300, { gap: 120 });
   });
-  return { counts: { groups, values: sizes.map(String) }, facts: { ...head, groups, sizes: sizes.join(", "), total: N, equal: sizes.every((n) => n === sizes[0]) ? "yes" : "no" }, claims };
+  if (eq) {
+    tl.add({ op: "line", from: [204, 50], to: [204, 210], weight: 1, ink: "soft" }, 300, { gap: 300 });
+    const ex0 = 210, ew = 180 / eq.groups;
+    for (let g = 0; g < eq.groups; g++) {
+      const gx = ex0 + g * ew;
+      tl.add({ op: "ellipse", c: [round1(gx + ew / 2), 110], rx: round1(ew / 2 - 4), ry, weight: 1 }, 300, { gap: 80 });
+      // (the share's dots in another ink, a shade smaller: they are what each WOULD get, not more of the same things — and
+      // the gate's W8 counts them as their own family: 16 beside 16, never "32")
+      for (let i = 0; i < eq.each; i++) tl.add({ op: "circle", c: spot(gx, ew, eq.each, i), r: 4, fill: "good", ink: "good", weight: 1 }, 40, { gap: 10 });
+      tl.add({ op: "text", at: [round1(gx + ew / 2), 196], text: String(eq.each), size: "s", ink: "soft" }, 300, { gap: 120 });
+    }
+  }
+  return { counts: { groups, values: sizes.map(String), ...(eq ? { equalTo: { groups: eq.groups, each: eq.each } } : {}) },
+    facts: { ...head, groups, sizes: sizes.join(", "), total: N, equal: sizes.every((n) => n === sizes[0]) ? "yes" : "no", ...(eq ? { equalShare: `${eq.groups} groups of ${eq.each}` } : {}) }, claims };
 }
 
 // ───────────────────────────── diagrams ─────────────────────────────

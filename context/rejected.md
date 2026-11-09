@@ -2829,3 +2829,33 @@ Rejected: treating ACR's async-poll 409 "Tag … already exists" as a failure. I
 Now read as "already present", and verified live.
 
 Lesson: fakes must model a provider's async-poll error codes.
+
+
+<!-- merged from inbox/r7-main-27.json -->
+## `rj-r7-main-push-on-testall-only` (2026-11-08)
+
+The main loop pushed integration 14e (int/r6 694f58557) after reading only the test:all summary. The status file said tsc=1 vite=1.
+
+The cause was the integration worktree's stale node_modules: App's new `qrcode-generator` dependency was in package.json and the lockfile but not installed. So the pushed tree was sound; after `npm ci`, tsc and vite both passed.
+
+**What broke:** the push step never read the tsc and vite lines.
+
+**Fix:**
+- Before a push, every status line (tsc, vite, testall) must be 0.
+- Any integration whose merge touches package-lock.json runs `npm ci` before its gate.
+
+**The same session also edited the tree mid-gate.** It merged integration 14e into the worktree while 14d's single-process run was still going. The run reported 2 failures: the old 3-tab r7-app-notebook test read App's new 4-tab Notebook source. That was the edit, not the code.
+
+**Fix:** no merge, `npm ci` or file edit in the integration worktree until every gate stage, single-process included, has written its status. A contaminated run is re-run, not read.
+
+
+<!-- merged from inbox/r7-main-28.json -->
+## `rj-r7-known-words-devanagari-fragments` (2026-11-08)
+
+Deferred to the safety pass.
+
+`evals/safety-robust/build-known.mjs` splits Devanagari at combining marks. Regenerating known-words after the c8/c9 Hindi language kits therefore added fragments that are not words (विृक्ष, िचार, क्त, सु), alongside real ones.
+
+They are harmless today, since KNOWN_NEAR only stops a token being read as a solo slot word. But a fragment could mask a garbled safety word.
+
+**Not fixed now,** under the build-first directive: existing safety code stays as it is. The safety pass should tokenise by grapheme cluster and re-derive the list.

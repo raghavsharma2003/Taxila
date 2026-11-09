@@ -114,6 +114,8 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   const caption = devText("__deskLine") ?? (young ? "Do barabar tukde gino. Kaunsa aadha hai?" : "Board dekho: 1/2 barabar 2/4. Toh ek half mein kitne quarters hote hain?");
   return {
     band, family, teacher: { id: rec.id, name: rec.name }, childName: young ? "Riya" : "Kabir",
+    // (a dev lesson id: the Debrief's per-lesson rows, "What helped?" and the goodbye emote, need one)
+    lessonId: name.startsWith("summary") ? "dev-lesson" : null,
     floor, sheet, strip, noPack: true, ask: askModel, answer,
     caption: { text: caption, speaking: floor === "speaking" || floor === "showing", mode: "phrase", lang: "hi-Latn" },
     // r7 (3b): a replay marks the board as not the card's (window.__deskWaiting)

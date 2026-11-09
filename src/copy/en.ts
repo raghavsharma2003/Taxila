@@ -270,6 +270,13 @@ export const R7 = {
   "jar.answered": "Answered",
   "jar.answeredOn": "answered on {date}",
   "jar.empty": "When {T} saves a question for later, it waits here.",
+  // r7 app-notebook-log growth page: "Then and now" (what became pakka, next to where it started; never a count)
+  "nb.growth": "Then and now",
+  "growth.then": "First met on {date}",
+  "growth.thenHint": "First met on {date}, with a hint",
+  "growth.now": "Pakka since {date}",
+  "growth.helped": "This helped",
+  "growth.empty": "When something becomes pakka, it shows here, next to where you started.",
   // r7 (Learning to-app/007): "Maths feels…" at Hello: a feeling, never a test (no right answer, no score)
   "feel.title": "How school feels right now",
   "feel.sub": "Pick a face. There is no right answer.",

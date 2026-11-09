@@ -223,15 +223,17 @@ describe("R3 in the lesson (c6 skill-1 v2 fixture)", () => {
 });
 function findKey(L) { const id = L.r.state.activeItemId; if (!id) return null; const it = L.r.state.scriptCard; return it?.id === id ? it.answer : null; }
 
-import { asideFactOf } from "../server/director/state.js";
+import { asideReturnLine } from "../server/director/state.js";
 import { inHindiWords } from "../server/brain/register.js";
 
 describe("R4: real returns and a register that changes", () => {
-  test("a known aside has one plain, true line about it (no digits); an unknown one has none", () => {
-    assert.match(asideFactOf("Virat", "hinglish"), /^Virat Kohli India ke liye batting/);
-    assert.match(asideFactOf("Sixer"), /boundary/);
-    assert.equal(asideFactOf("Dinosaur"), null);
-    for (const t of ["Virat", "Dhoni", "Cricket", "Football", "Chess"]) assert.doesNotMatch(asideFactOf(t), /\d/);
+  test("v6.3 H2′ (retires the canned facts): a return line is built from their own words, said back to them; a question is named as theirs", () => {
+    assert.equal(asideReturnLine("kal maine cricket khela, sixer maara", "cricket"), "kal tumne cricket khela, sixer maara: yeh sunke bahut achha laga.");
+    assert.equal(asideReturnLine("mujhe cricket pasand hai", "cricket"), "tumhe cricket pasand hai: yeh sunke bahut achha laga.");
+    assert.match(asideReturnLine("aapko virat pasand hai?", "Virat"), /^tumne mujhse Virat ke baare mein poocha tha/);
+    assert.equal(asideReturnLine("maine 3 sixer maare", "cricket"), null, "no digits (said over whatever board is up)");
+    assert.equal(asideReturnLine("", "cricket"), null);
+    for (const x of ["kal maine cricket khela", "aapko virat pasand hai?"]) assert.doesNotMatch(asideReturnLine(x, "cricket"), /over mein chhe ball|cover drive|gyarah khiladi/);
   });
 
   test("Hindi asked for: her English words become Hindi; the card and the must-say words stay", () => {
@@ -264,16 +266,17 @@ describe("R4 in the lesson (c6 skill-1 v2 fixture)", () => {
     if (L.r.state.activeItemId === card) assert.equal(L.r.move.returned, undefined, "never while the card it was parked on is live");
     for (let i = 0; i < 4 && !L.r.move.returned; i++) L.t(String(L.r.state.scriptCard?.answer ?? "haan"), cls("correct"));
     assert.match(L.r.move.returned?.topic ?? "", /virat/i, JSON.stringify(L.r.move));
-    assert.match(L.r.move.returned?.line ?? "", /Virat Kohli/);
+    // (v6.4 H2″: no code line; the move carries their words for her one line)
+    assert.match(L.r.move.returned?.said ?? "", /virat pasand/i);
   });
 
   test("a return of hers that is an analogy or puts words in their mouth goes; the real line is said", async () => {
     const L = run();
     for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
-    const lm = { ...L.r.state.lastMove, returned: { topic: "Virat", share: true, line: asideFactOf("Virat") } };
-    const out = await say(L, `Virat ke baare mein tumne kaha tha ki tumhe woh pasand hain. Virat ka cover drive boundary ke poore round jaisa hai. ${L.r.ui.ask.text}`, { state: { lastMove: lm } });
+    const lm = { ...L.r.state.lastMove, returned: { topic: "Virat", share: true, said: "aapko virat pasand hai?" } };
+    const out = await say(L, `Virat ke baare mein tumne kaha tha ki tumhe woh pasand hain. Virat mujhe bhi bahut pasand hain, unki batting kamaal ki hai. Virat ka cover drive boundary ke poore round jaisa hai. ${L.r.ui.ask.text}`, { state: { lastMove: lm } });
     assert.doesNotMatch(out.reply, /tumne kaha|jaisa hai/, out.reply);
-    assert.match(out.reply, /Virat Kohli India ke liye batting karte hain/, out.reply);
+    assert.match(out.reply, /Virat mujhe bhi bahut pasand hain/, out.reply);
   });
 
   test("after 'hindi mein batao' her later turns are visibly in Hindi words", async () => {
@@ -390,7 +393,7 @@ describe("R5: render hygiene", () => {
     assert.equal(notRightLead("Yes"), "Nahi, yeh jawab nahi hai.", "director9: a word of theirs is never said back");
   });
 
-  test("one verdict sentence: a second 'Haan, …' loses its verdict words; a bare restatement goes, a reason stays", async () => {
+  test("one verdict sentence: a second 'Haan, …' loses its verdict words; a bare restatement goes; (v6.3 R7) a reason of hers goes too", async () => {
     const L = toCard();
     const card = L.r.ui.ask.text;
     const out = await say(L, `Haan, sahi hai. Haan, 15 cm. ${card}`, { childText: "15 cm", verdict: "correct", state: { lastGraded: { key: "15 cm", accept: [], prompt: "" } } });
@@ -399,7 +402,10 @@ describe("R5: render hygiene", () => {
     const practice = { ...L.r.state.lastMove, kind: "practice", point: undefined, mustSay: [] };
     const out2 = await say(L, `Haan, sahi hai. Haan, 15 cm sahi hai—har bhuja ek hi baar gini gayi. ${card}`, { childText: "15 cm", verdict: "correct", state: { lastMove: practice, lastGraded: { key: "15 cm", accept: [], prompt: "" } } });
     assert.equal(out2.reply.match(/\bHaan\b/g)?.length, 1, out2.reply);
-    assert.match(out2.reply, /Har bhuja ek hi baar gini gayi\./, out2.reply);
+    // (v6.3 R7, main on director11 c4 steady T48: on a scripted card her own reason is model-written teaching; the why is only the
+    // card's authored one, and this card has none)
+    assert.doesNotMatch(out2.reply, /ek hi baar gini gayi/, out2.reply);
+    assert.ok(out2.reply.includes(card), out2.reply);
   });
 
   test("a sentence is said once, and the card is the one question", async () => {

@@ -15,7 +15,16 @@
 // foes ending in 4 for ÷4 is "divisible by 4 if its last digit is 4"; netting those ending in 3, 6, 9 for ÷3 is "uses the
 // last digit to test for 3"; netting every multiple of 3 for ÷9 is "divisible by 3 must be divisible by 9". The other
 // divisibility beliefs (even-for-4, digit-sum-for-4, four-test-for-8, last-digit-for-9, five-for-ten, only-zero-for-5,
-// any-odd-digit) are implemented but no kit here names them, so they map nowhere. The builder checks every id against the kits.
+// any-odd-digit) are implemented but no kit here names them, so they map nowhere. HCF × LCM (c7 ch11 t03, mode lcm): building
+// the wall (the biggest tower that hits both towers' squares) and the trap (where they first meet), then watching the scale lay
+// wall × trap beside a × b, IS verifying the relation (balance); setting the one hidden value of a, b, wall, trap so the scale
+// balances IS using it (missing); the trap for three towers beside their wall IS its limit: h × L is not a × b × c (three); a
+// partner that shares no stride with a composite tower IS a co-prime pair that need not be prime (coprime); a wall and a trap
+// whose product is the stones and whose bricks land on the trap IS "the HCF divides the LCM" (mend). The trap at a × b × c ÷ h
+// is "the relation holds for three numbers"; the partner on the pads' one prime (it divides the tower) is "co-prime means
+// prime"; keeping the draft wall that does not land on stones ÷ draft is "any HCF and LCM go together". product, low-wall,
+// lcm-over-a and pair-only are implemented but this kit names none of them, so they map nowhere. The builder checks every id
+// against the kits.
 import { R } from "./rule.mjs";
 
 export const family = "kila";
@@ -33,6 +42,11 @@ export const RULES = [
   R("c6-maths-ch05-t05", K, "divisibility", "tail", { "ends-in-four": "four-last-digit" }, { divisors: [4, 8], digits: [3, 5], foes: [8, 10] }),
   R("c6-maths-ch05-t05", K, "divisibility", "sum", { "last-digit-for-3": "three-last-digit", "three-for-nine": "nine-implies" }, { divisors: [3, 9], digits: [3, 5], foes: [8, 10] }),
   R("c7-maths-ch11-t02", K, "lcm", "meet", { product: "product-always", "gcd-for-lcm": "lcm-smaller" }, { periods: [4, 6, 8, 9, 10, 12], n: [20, 36], coprime: false }),
+  R("c7-maths-ch11-t03", K, "lcm", "balance", {}, { periods: [4, 6, 8, 9, 10, 12, 14, 15, 16, 18], n: [16, 72] }),
+  R("c7-maths-ch11-t03", K, "lcm", "missing", {}, { periods: [4, 6, 8, 9, 10, 12, 14, 15, 16, 18], n: [16, 72], hides: ["b", "wall", "trap"] }),
+  R("c7-maths-ch11-t03", K, "lcm", "three", { "three-numbers": "three-numbers" }, { periods: [2, 3, 4, 5, 6, 8, 9, 10, 12], n: [12, 72] }),
+  R("c7-maths-ch11-t03", K, "lcm", "coprime", { "prime-partner": "coprime-prime" }, { periods: [4, 8, 9, 15], n: [30, 72] }),
+  R("c7-maths-ch11-t03", K, "lcm", "mend", { "any-pair": "any-pair" }, { n: [16, 60] }),
 ];
 
 export const ACTS = {
@@ -48,4 +62,9 @@ export const ACTS = {
   "c6-maths-ch05-t05|tail": ["s2"],           // the tests for 4 and 8: the last two / three digits
   "c6-maths-ch05-t05|sum": ["s3"],            // the tests for 3 and 9: the digit sum
   "c7-maths-ch11-t02|meet": ["s1"],           // the LCM by listing multiples (the wave lists them)
+  "c7-maths-ch11-t03|balance": ["s1"],        // set the HCF wall and the LCM trap; the scale shows HCF × LCM = a × b
+  "c7-maths-ch11-t03|missing": ["s2"],        // the hidden one of a, b, HCF, LCM from the other three (the scale balances)
+  "c7-maths-ch11-t03|three": ["s3"],          // three towers: h × L is not a × b × c (the limit)
+  "c7-maths-ch11-t03|coprime": ["s3"],        // co-prime need not be prime: the composite partner meets at the product
+  "c7-maths-ch11-t03|mend": ["s3"],           // the HCF divides the LCM: a wall that does not land on the trap is refused
 };

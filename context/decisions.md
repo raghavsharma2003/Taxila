@@ -8820,3 +8820,235 @@ A child can learn on their own device.
 **Why:** child mode exists only on a phone where the parent is signed in, so every lesson starts by borrowing the parent's phone. Picked over the Notebook growth page (next) and World/Hangar depth.
 
 **Reverse if:** the owner prefers another route (for example a child phone OTP once a provider exists), or real families pair less than they borrow.
+
+
+<!-- merged from inbox/r7-games-maap.json -->
+## `dc-r7-games-maap`
+
+c4-maths-ch05-t02 (fractions in measurement) is played on the existing **taraazu** weigh (balance) and fill modes. No new family, mode or goal was added. A new label form, `frac`, writes the label as fractions of one kg / l: "¾ kg", "½ l", or a sum such as "½ kg + ¼ kg" (grammar `frac: "sum"`). The weight box (200 / 100 / 50 / 20 / 10 g, sometimes one 500 g) and the jugs (200 / 100 / 50 ml, sometimes 500 ml) never hold an amount equal to the label. There is no 250 g weight at all, and a ½ label never gets the 500, so the fraction of the big unit has to be made in the small one. Nothing is timed.
+
+The mal-rules are the kit's own three beliefs. **half-is-50** treats every ½ as 50, **quarter-is-4** treats every ¼ as 400, and **pieces-not-size** treats a lone ¾ as three 100 g / 100 ml pieces (acted as three 100s). The topic's skills s1 (kg / l) and s3 (adding fractions of a measure) are covered. s2 (½ / ¼ / ¾ m in cm) is not admitted, because taraazu has no tape.
+
+**Why taraazu, not feeta:** all three kit misconceptions and two of the three skills concern kg and litres, and the kit's remediations are a balance and a measuring jug. Feeta could carry only s2, which has no mapped misconception.
+
+**Reverse if** a child pilot shows the vessel filled by eye, or the balance solved by trial weighings without converting, or feeta gains a fraction-of-a-metre cut that carries the same beliefs.
+
+
+<!-- merged from inbox/r7-games-nazariya2.json -->
+## `dc-r7-games-nazariya2`
+
+**nazariya** gets two new modes, **tri** and **solid**, both drawn by 2D views (the Khand engine's registry names its five modes, so it never claims these). Every earlier nazariya level is unchanged: the generator over every existing entry (20 seeds × 3 fades × classes 4-6, 68,988 candidates) hashes the same before and after, and the served levelIds (two children per entry) are pinned in tests/r7-games-nazariya.test.mjs. Nothing is timed.
+
+- **Why nazariya.** It already owns the floor plot on which area is tiles (floor / fence) and the views of solids; a triangle's cloth on the same tiles, and a solid turned to be seen from every side, are its own world. No new family.
+- **tri/box** (c6-maths-ch06-t03 s1). A right-angled cloth lies on the plot; the child lays the rectangle it was cut from (base along one side, top corner on the opposite side). A rectangle with the slanted side as one of its sides (3-4-5 laid 5 by 4) is slant-side.
+- **tri/match** (s2; s3 with the top corner anywhere over the base). Lay one floor with as much floor as the cloth (b × h ÷ 2 tiles). Fade 1 draws the turned copy dashed (the rectangle, or the parallelogram) and the dropped height; later fades do not; a mistake draws the copy. b × h tiles is lxb; slant × leg ÷ 2 is slant-side (the kit's 10 for 3-4-5).
+- **tri/more** (s3). Tent A has its top corner over one end of the base; the child moves tent B's top corner (same base, a tap on a grid point) so B's cloth is more than A's. Sliding the corner along A's top line keeps the cloth the same: shape-looks.
+- **solid/faces, edges, corners** (c4-maths-ch01-t01 s1-s3). A cube or cuboid (faces, edges) or a square pyramid or triangular prism (corners), drawn as a picture shows it. Turn a quarter round either way, or tip it over; stamp a face, run a finger along an edge, pin a corner; only what is in sight takes a mark and a second mark is refused. Marking exactly the first picture's set is visible-only (after it the hidden ones show through dashed); pinning every corner when the edges were asked, or running every edge when the corners were, is edges-corners.
+- **Not admitted.** An obtuse triangle's outside height (no kit skill asks for it; a corner moved past the base still holds base × height ÷ 2 and the law says so). cuboid-different (one solid at a time never shows it). The curved solids (cylinder, cone, sphere): the kit's skills and beliefs are about flat faces only.
+
+**Reverse if** children lay match floors by trial against the tile count (many checks per level at fade 2-3), solve more by always raising the corner one row without looking at A, or mark solids by tapping everything in every turn (many refused marks per level).
+
+
+<!-- merged from inbox/r7-games-place2.json -->
+## `dc-r7-games-place2`
+
+**guna** gets a fourth mode, **yard**, for the two arena-only place-value topics. Every earlier guna level is unchanged. Before the change, the generator output for every existing rule was hashed over seeds 1..30 × fades 1..3 × classes 4/5/7 (110,160 candidates). The served levelIds of every existing entry (3 children each) were pinned. Both are identical after the change, and a test pins the served levelIds. Nothing is timed.
+
+- **Why guna, not todo-jodo bundles.** guna's truck already has one rack per place, nine crates at most to a rack, and place labels up to powers of ten. Loading it to an exact weight IS writing a number place by place: an empty rack is the zero, and fifty can never be fifty crates of one. bundles has one goal (subtraction) and five places. guna's truck only needed a rows layout of up to 8 racks (44 px rows fit the 324 px tray, where 8 columns would not).
+- **yard/build.** A docket names a number and the truck must weigh exactly that on the bridge. After the run, the bridge reads the load back with Indian commas. The docket is never answered before the run. Class 4 (c4-maths-ch04-t01 s1-s3): a 4-digit number on a six-rack truck, written as "4 thousand 50", as "4000 + 50", or as the numeral 4050. Class 7 (c7-maths-ch01-t01 s1, s2): a number in lakhs and crores ("3 crore 5 lakh 9") or in millions ("7 million 250 thousand") on an eight-rack truck (10⁷ … 1). At the third look only the ones rack is labelled.
+- **Mal-rules (kit ids verified).** concat (the parts written in full one after another: 4 thousand 50 → 4,00,050) → c4 concat. drop-zero (the parts' counts side by side, the empty places dropped: 450; 35,00,000; 3,04,000) → c4 drop-zero and c7 zero-placeholder. crore-million (a crore read as a million, or a million read as a crore) → c7 crore-million.
+- **yard/commas** (c7 s1). The number's crates stand in columns with its digits under them. A tap in a gap sets or lifts a comma post, and the bridge writes the number with the child's posts. A post after every three places → c7 intl-commas.
+- **Not admitted.** c7-maths-ch01-t01-s3 (comparing and ordering): no kit belief this truck shows honestly. Kit beliefs teen-ty (the dockets name parts with digits) and face-value (a crate is always worth its rack) have no set-up here.
+
+**Reverse if** children load class 7 trucks from the rack labels without reading the docket's units (watch whether misses cluster on the 10⁶ / 10⁷ racks at look 1 vs look 3), or set comma posts by trial (many post changes between readings).
+
+
+<!-- merged from inbox/r7-main-26.json -->
+## `dc-r7-script-walk-v6-3` (2026-11-08)
+
+Every line goes on its own board; turns and promises become predicates.
+
+**Brain:**
+- **P1:** every part on its own source's board, and no page switch inside a sentence.
+- **T1′:** zero turns with two closes, and no close for a card not answered in the child's preceding turn. A missed close is dropped.
+- **H2′:** no canned aside facts. Return only after a park, at the promised point, reusing the child's own word.
+- **H1′:** escalate simpler → remediation say → answer with its why. Never repeat a line, and only the live card's simpler after it is posed.
+- **W1:** no answer before the child's turn. Worked examples pose their question.
+- **R1:** single-page verdicts draw the answerBoard.
+- **R2:** a code acknowledgement unless confident; Hindi number agreement; no raw park template.
+
+**Studio:**
+- **S1:** second views keep the asked mark's position and the scale labels.
+- **S2:** captions come from drawn titles; shade-grid gets a real second view.
+- **S3:** labels switch with Hindi.
+
+**Learning:**
+- **D1:** judgement-card answerBoards draw the judged figure with its answer state.
+- **D2:** a why naming a figure must match its answerBoard.
+- **D3–D5:** targeted fixes.
+
+**Why:** director11 passed beats, verdicts, misgrades and false keys for the sixth run, and drawing fell 44 → 12. But 36 contradictions remain, and register and promises fail in every topic, because v6.2's T1 and H2 did not hold.
+
+**Reverse if:** director12 still has more than 10 paging plus second-view contradictions with P1 and S1–S3 in place. Then the board becomes one code-drawn board per card, held. If model-written words exceed 10, board sentences move to a code voice.
+
+
+<!-- merged from inbox/r7-platform-6.json -->
+## `dc-r7-child-device-pairing`
+The child no longer borrows the parent's phone: the parent shows a code, the child types it on their own device, and that device can then reach only the child's routes. The parent corner still needs the parent's own sign-in, and unpairing ends the device's session at once.
+
+
+<!-- merged from inbox/r7-platform-7.json -->
+## `dc-r7-device-lesson-joins`
+A paired device can open only its own child's lessons: a sibling's lesson is refused on every path that takes a lesson id.
+
+## `dc-r7-device-cohort-override-later`
+On a paired device, the owner's test-group switches for hands-free and the face look are not applied yet; the device gets the default until this is picked up.
+
+
+<!-- merged from inbox/r7-app-28.json -->
+## `dc-r7-app-device-pairing`
+A child with their own phone no longer borrows the parent's for every lesson: one code from the grown-up, and the device opens straight to their lessons. The parent can take it back at any time.
+
+
+<!-- merged from inbox/r7-app-29.json -->
+## `dc-r7-app-device-boot`
+The child's own device knows whose it is from a cookie the pairing left, and asks only child routes for the rest. Nothing on it shows a brother's or sister's name or the parent's email.
+
+
+<!-- merged from inbox/r7-app-30.json -->
+## `dc-r7-app-growth-page`
+A child who struggled can see it: the board from the day they first met fractions, and the day it became pakka, side by side. It is the reason to open the Notebook between lessons.
+
+
+<!-- merged from inbox/r7-learning-33.json -->
+## `dc-r7-script-why-figure` (2026-11-08, F Learning)
+Director11 found that whys and answer boards spoke about one figure while the screen showed another: a why naming a number line over a picture of rotis, or an equal cake drawn under a card that judged an unequal one. Two fixes follow from that. `scripts/lesson-scripts/check.mjs` now refuses a why whose named figure does not match the board it closes over. A judgement card's answerBoard now draws the judged figure, with the equal figure beside it when the why contrasts the two. Three cards lost their answerBoard because no template draws 2 unequal parts or unequal groups. Studio has been asked for both templates.
+
+**Reverse if:** those templates ship (put the boards back), or the runtime stops speaking the why over the board.
+
+## `dc-r7-kit-chapter-scope` (2026-11-08, F Learning)
+In the c8 depth pilot, two items sat outside the chapter: the Cantor set, and a rectangle test that leaned on parallelogram facts from a later topic. Both are now replaced, and both replacements were blind-solved 6/6. Every c8/c9 author prompt now carries the chapter-scope brief in `docs/design/round7/learning/C89-KIT-GAPS.md`: chapter statements only, topic order, a cited section for each addition, an error-spot item or nothing when a result is out of scope, and misconceptions about the skill's own move.
+
+**Reverse if:** a non-NCERT board whose chapter states more is targeted.
+
+
+<!-- merged from inbox/r7-app-31.json -->
+## `dc-r7-app-emote-flourish`
+The goodbye a child picked in the Hangar is now theirs on screen. What reaches the teacher is still just the word they tapped.
+
+
+<!-- merged from inbox/r7-games-kila2.json -->
+## `dc-r7-games-kila2`
+
+**kila** covers c7-maths-ch11-t03 (HCF × LCM = product: its use and its limits) with five new goals in its existing **lcm** mode. There is no new family and no new mode, so verbs, MODES and views are unchanged. Every earlier kila level is the same as before: the generator over every existing entry (20 seeds × 3 fades × classes 4-7, 53,940 candidates) hashes the same before and after, and the served levelIds (two children per entry) are pinned in tests/r7-games-kila-hl.test.mjs. Nothing is timed.
+
+- **Why kila.** Its lcm mode already has two towers that fire on their periods and a trap on the first square both hit, which is the LCM. The HCF is added to the same path as a **wall**: a brick wall on square h. As the wave passes, it lays a brick on every h-th square, so its bricks land on both towers' squares and, when the plan holds, on the trap. Under the path, a **scale** lays wall × trap beside the towers' product. Its sums and = / ≠ show only once the wave reaches the gate.
+- **balance** (s1). Two towers stand. The child builds the wall (the biggest tower that hits both) and sets the trap (their first meet), using a Wall / Trap tool pair. The scale balances. Unmapped beliefs: product (trap at a × b), low-wall (the smallest shared stride).
+- **missing** (s2). Three of tower a, tower b, the wall and the trap stand. The child sets the fourth (tower b, the wall or the trap) so the scale balances. Unmapped beliefs: lcm-over-a (b = trap ÷ a), low-wall, product.
+- **three** (s3). Three towers and their wall stand. The child sets the trap where all three first meet. Solved, the scale does not balance (h × L ≠ a × b × c, for example 1 × 20 ≠ 2 × 4 × 5), which is the law's limit. The trap at a × b × c ÷ h is **three-numbers**. pair-only (the trap where the first two meet) is unmapped.
+- **coprime** (s3). One composite tower stands (4, 8, 9 or 15). The child builds a partner from plinth pads so that the two first meet only at their product. The pads' one prime divides the tower, and the right partner is composite (for example 8 and 9 on a path of 72). Building the prime is **coprime-prime**: co-prime taken to mean prime.
+- **mend** (s3). A cloaked pair's product (the stones) and a draft wall that cannot hold it stand. The draft divides the stones, but it does not land on stones ÷ draft. The child sets a wall and a trap with wall × trap = stones and the wall's bricks landing on the trap. Keeping the draft and putting the trap on stones ÷ draft balances the scale, but the law refuses it: no brick lands on the trap. That is **any-pair**.
+- **Paths.** The new goals may run up to 72 squares, so 8 × 9 meet on the path. The existing goals keep their 36-square limit.
+
+**Reverse if** children solve balance and missing by trying squares one wave after another (many waves per level at fade 2-3), solve mend by trying every wall, or rarely build the composite partner in coprime after a prime-partner wave. Any of these means the scale is not doing the teaching.
+
+
+<!-- merged from inbox/r7-games-tilings2.json -->
+## `dc-r7-games-tilings2`
+
+**darpan** gets a third mode, **tile** (src/play/families/darpan/tile.logic.ts and tile.view.ts), for c7-maths-ch14-t02 Tilings, the family's known gap. No new family. The mirror and turn worlds keep their own logic file, which is untouched. Their generator hash (10,800 candidates over every rule, seeds 1-30, fades 1-3) and the levelIds served to two children per entry are pinned in tests/r7-games-darpan.test.mjs. Nothing is timed.
+
+- **The mechanic.** The child lays copies of a tile round one point, as a tiler fits paper tiles round a corner: each copy's corner sits at the point and its edge lies on the last copy's edge. The child then presses "Tile it". The law adds the corners at the point and shows the gap (an open wedge with its degrees), the overlap (the wedge the last copy runs over), or a closed corner. For one kind of tile laid edge to edge, it also shows the floor the corner repeats into (half-turns on each side's middle). A copy tapped on the floor is lifted. Fade 1 writes the degrees at the point and on the tray, fade 2 on the tray only, and fade 3 shows names alone.
+- **close** (s1, s3). One to three regular tiles from a real 360° corner are already laid. The child fills the rest from a tray of 2-3 regular tiles, mixing allowed (4.6.12, 3.12.12, 3.4.6.4 and so on). A level that any single kind could fill, or that one of each tray tile could fill, is never served. The fill that leaves the smallest visible gap or overlap (5°-30°) is **gap-ok**.
+- **alone** (s2, s1). The tray has three regular tiles, exactly one of which floors on its own (triangle, square or hexagon), and the corner takes one kind only. The first tile that does not floor, laid as many times as comes nearest a full turn (three pentagons, 36° gap; three decagons, 72° overlap), is **any-regular**.
+- **any** (s3). A scalene triangle (whole-degree corners, each 40°-140°) or an uneven four-sided tile, shown on a card with its corners lettered, sits beside a regular tile that does not floor. The child chooses which corner of each copy meets the point. The tile is only served when the idea's own mix is the only one of its corners that makes 360° within 12 copies: each triangle corner twice, or each four-sided corner once. Laying the regular tile is **only-regular**.
+- **Variety.** The picker's difficulty never rests on the kind of tile, and close draws three corner kinds per request. Across 30 children per fade the served levels differ (at least 20 distinct). alone serves all three floor tiles, any serves both triangles and four-sided tiles, and close serves at least four corner kinds. This is checked in tests.
+- **Not admitted.** Turned and flipped copies are not their own skill: a chosen corner meets the point, and flipping never changes the corner. Semi-regular tilings beyond one corner are not admitted, because the law checks one point, not that every vertex of a floor is the same.
+
+**Reverse if** children close corners by laying and lifting copies until the picture looks shut (many lifts and undos per level at fade 3), or if alone is solved by tray position rather than by the angle.
+
+
+<!-- merged from inbox/r7-learning-34.json -->
+## `o-r7-skill-first-try-stamp` (2026-11-08, F Learning; follow-up)
+Main relayed an App wish: the growth page (growth.ts) would like a stamp per skill of the child's first unaided try, with its date and outcome, so a growth line starts from a true baseline. Learning can derive it from kt_evidence, the first C0 or other outcome per skill, without a new write path. This is logged here and not built.
+
+**Reverse if:** growth.ts finds an equivalent in existing evidence rows.
+
+## `dc-r7-c8-scope-sources-secondary` (2026-11-08, F Learning)
+The pilot scope fixes were checked against secondary sources, because NCERT's site was down. Six kit entries carry a `source` field that says so and asks for a re-check against the NCERT PDFs. Main said not to block on it.
+
+**Reverse if:** the NCERT text differs.
+
+
+<!-- merged from inbox/r7-app-33.json -->
+## `dc-r7-app-live-checks`
+After a deploy, one command says whether pairing, placement, sign-in by code and the card's timing really work, on a test family it makes and removes itself.
+
+
+<!-- merged from inbox/r7-games-galti-pakdo.json -->
+## `dc-r7-games-galti-pakdo`
+
+**galti-pakdo** (catch the mistake, class 7, c7-maths-ch15-t03) is a law family, mode `kaapi` (the friend's notebook). Nothing in it runs on a clock and nothing is an answer box.
+
+- **The working.** A friend's working of a simple equation (ax ± b = c, a(x + b) = c by opening or by dividing, x ÷ a + b = c, ax + b = cx + d) is written line by line, its "=" signs in one column. Every line is made by the LAW: one step (open the bracket, take the number off the x side, take the x term off the right, divide by x's number, multiply by the divisor) done to both sides. A faulty working carries exactly one of the topic's own step bugs at one step: move-no-change (+b moved as +b), sign-slip (−b or an x term moved keeping its sign), part-bracket (a(x + b) as ax + b or x + ab), one-side (a step done to one side only), wrong-inverse (÷ undone by ÷, − or ×). Never a random typo.
+- **The kinds**, a third each, drawn from the level seed's first draw: sahi (every line by the law), lucky (one bug, but the next line goes on from the right line: the right answer from a wrong step, kit m-right-answer), neat (one bug carried to the end: a neat, plainly wrong last line, kit m-neat-correct). A lucky bug is never on the last step.
+- **The taraazu** (borrowed from taraazu/balance: beam on a pivot, damped spring, pans on strings, level needle): a line's ⚖ puts the claim x = v into THAT line; each pan carries a weight with its side's value and, under it, the side with v put in. The question tells the truth; a later line may balance while the question tips (the kit's check-in-the-original expectation).
+- **pakdo** (s1, s2): weigh, then "Sab sahi" (refused until the question is weighed) or tap the first line that breaks. **sudhaaro** (s3, s2): the caught line is replaced from three offers (the law's line and two lines other step bugs make there); the law rewrites the lines below and weighs the new claim in the question. The error's name is shown once mended.
+- **Mal-rules** (the child's, kit ids verified): neat-correct ("Sab sahi" on a neat working without weighing it: the law weighs the question and the beam tips), right-answer (the question weighed, it balances, then "Sab sahi" on a lucky working: a bracket and magnifier along the steps), check-later (the claim weighed in a later line before the question: it balances there, the magnifier sits by the question's ⚖). The step bugs are the friend's, never evidence about the child.
+- The picker gets a seeded difficulty nudge (± 0.12) so first levels differ across children (tested: at least 15 distinct of 20).
+
+Reverse if a child pilot shows lines are found by tapping each in turn (many refused flags per level) rather than by reading the steps, or the balance is never used before a verdict.
+
+
+<!-- merged from inbox/r7-main-29.json -->
+## `dc-r7-script-walk-v6-4` (2026-11-08)
+
+No orphan lines, every card ends answered, and asides get answered.
+
+**Brain:**
+- **P2:** a part whose page is refused is dropped whole. Dedupe never leaves fragments.
+- **K1:** after its then-card, the original card is posed again once, then given up with its key and why.
+- **Q1:** non-answer turns re-pose only the card, with no recital.
+- **H2″:** an aside gets a one-line reply at the first boundary that answers the child, with no template and no new promise.
+- **T1″:** one close per worked card.
+- **L1:** a Hindi request switches her own lines.
+- **R3:** neutral acknowledgements, and no word-for-word re-pose.
+
+**Studio:**
+- **S4:** real second views for fraction-parts bars, count keys and unmarked ask lines.
+- **S5:** bring-back words come from the card's own text.
+- **S6:** preselect is gated on her line.
+
+**Learning:**
+- **D6:** bars versus a line in figureOf, and the check covers prompts.
+- **D7:** c5-t02 e1/e2 on bars, c3 with its ring, and the equal companions.
+
+**Why:** director12 passes beats, verdicts, misgrades and false keys. Three topics fell from 30 to 9 contradictions. c5-t02's rise comes from two mechanisms that v6.3 itself introduced. Listening, register and promises are below 3.5 everywhere.
+
+**Reverse if:**
+- more than 10 paging plus second-view contradictions remain with P2 and S4–S6 in place: one code-drawn board per card;
+- the listening, register or promise axes stay below 3.5 with K1, Q1, H2″ and L1 in place: the spoken framing moves to code templates.
+
+
+<!-- merged from inbox/r7-games-feeta-naap.json -->
+## `dc-r7-games-feeta-naap`
+
+**naap** (नाप, a measurement): feeta's science modes for class 6 (src/play/families/feeta/naap.logic.ts, its own logic object registered for feeta/thread, thermo, scale, touch; naap.view.ts). Nothing runs on a clock; a thermometer's column is shown settling inside busy(), never raced. Facts come only from the topic kits; where a mechanic needs a number the kit does not give, the scene keeps it qualitative.
+
+- **thread/curve** (ch05-t02 s1): a curve (one straight stretch, the rest circular-arc bends) from a start dot to an end dot. Take the thread, the rubber band or the ruler; press it at the start, every bend and the end; straighten it onto the scale from 0; set the reading. A thread skipping a point runs straight across; a ruler rests on two points only; the band shrinks back once lifted (a shorter whole-cm reading that changes each lift: the kit's "usually too short once it relaxes", "different readings each time"; how much is the scene's, never claimed). Mal-rules: curve-cannot = m1 (the ruler on the straight stretch only), chord = m2 (start to end straight), band = m3.
+- **thread/map** (s3): the same on a map road, the kit's "1 cm = 10 km" (or its item's 20 km) above the map; the counter takes km.
+- **thermo/jobs** (ch07-t02 s1): jobs at the kit's numbers (a child's temperature about 37 °C, boiling water 100 °C, chai ~80, fridge water about 5 °C, tap water 26 °C) put on the clinical (about 35-42 °C) or lab (−10 to 110 °C) thermometer; dipped, off-range columns stop at the scale's end. clinical-hot = m1.
+- **thermo/read** (s2, s3): a lab thermometer (1 °C a small division, numbered every 10) dipped in warm water; taken out, the column moves away (falls, the kit's item; where it settles is the scene's, never a claimed number). read-out = m2. Warm-water readings 31-49 °C are reading-exercise values (as the kit's own 33 °C item), not claimed facts.
+- **thermo/fever** (s2): clinical thermometers read in tenths (36-39 °C window), only the kit's values: 36.8 and 37.2 (feel well), 37.0 (about 37), 38.5 (a fever); benches normal / fever. exact-37 = m3 (everyone above 37.0 on fever).
+- **scale/ruler** (ch05-t01 s2): an eraser slid onto a ruler with a blank edge before its 0 (looks 1-2) or a broken one from 2-4 (look 3); the eye left of, above or right of its raised far end, the sightline drawn (from a side it meets the scale one mark away: the scene's geometry, the kit says only that side readings are off). edge-start = m1, side-eye = m3.
+- **scale/foot** (s1): whole foot-rulers of 30 cm (the kit's "three 30 cm rulers", "1 foot is about 30 cm") along a cloth of 1-3 m. metre-foot = m2.
+- **touch/feel** (ch07-t01 s1, s3): things on a warmth shelf (ties share a step), a hand that says what it feels first; stories: a steel and a wooden thing in one room (metal-colder = m1), hot chai against a bucket of warm water (heat-temp = m2; heat-stored bars on the run), a bowl both hands are in after cold and warm water (touch-trust = m3). Thermometer columns are drawn by the law's order, no number.
+- Seeded difficulty nudge (± 0.1) so first levels differ across children. Not admitted: ch05-t02 s2 (tape round objects), ch05-t01 s3 (unit conversion), ch07-t01 s2 (°C).
+
+Reverse if a child pilot shows points pressed without looking at the curve or the shelf answered from names alone.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-r7-second-view-real` (2026-11-08): director12 S4, extends dc-r7-second-view-every-template. A fraction-parts@1 bar's second view is the same whole as a circle (altView "round"), and a circle's or roti's is the bar ("parts"). Both use the same parts and shading, any shade 0..parts. The fraction is written only when it is not a key or withheld value (hideResult otherwise). This replaces bar → number line. The card's figure counts as up when the page on screen is the same ref, or the same fraction-parts whole cut the same way with other shading. In that case the second view keeps the shading already on screen (c4 steady row 18: the card's 0-shaded bar under row 16's 3-shaded bar draws a circle with 3 shaded). A picture asked over an unmarked 0-1 ask line (no marks, mark, hop or target) is that line's bars, one per denominator, unnamed, with its 0 and 1 kept. This holds whether or not the line is up yet (c5-t02 steady/stuck row 18). A one-scale line is its scale's bar. A count key ("kitne barabar gaps?", 8) would leave every bar uncut and unnamed (main A1). Instead the second view is a smaller case of the same rule (altView "example"): one bar of 4 (or 3, 5, 6; never the key or key−1) with 1/d named. An unshaded whole's facts row no longer says "fraction 0/n". Reverse if judges find the example view teaches the count, or that a circle over a bar card confuses more than its number line did.
+- `dc-r7-card-back-own-words` (2026-11-08): director12 S5, extends director11's card-back rule. Her line brings the card's own board back as a second page where it names the card. The trigger words now come from the card itself: its prompt (ask.kit.item.prompt_hi/en, which Brain already sends) and its board's titles, labels and items. For lettered corners (measured@1 names) the word is the whole name and each side: pqrst, pq, qr … tp. Excluded are function words, the words every fraction or shape card says (barabar, hisse, number, parimap, bhuja …), and every word of the second view's own row (its caption). A card word in her first sentence is the caption and never turns the page; the template's figure words (patti, sankhya rekha, gol …) keep their old rule. c5-t01 steering row 14 now turns at "Wahi … sadak", and c6's pentagon at "Paanch kono wale khet PQRST". Reverse if judges count a page turned on a word that was not pointing at the card (then narrow to the prompt's nouns, or have Brain send the turn point).
+- `dc-r7-script-board-real-line` (2026-11-08): director12 S6. At preselect, a scripted beat's own board (its boardRef, not a second view) is no longer skipped when its facts row fails the gate. Her line is written from that row, so the row is never its judge. The board is gated once, on her real line, at the take; if refused there, the take falls through as before. c5-t02 steady row 78: c0's two "?" bars failed W8 on "wholes 2 equal bars" (no 6 said), and the catalogue's 800×500 board took the page. The pages now join as fraction-line → c0's bars. A paged turn whose pages have different board sizes no longer fails to join: each page is scaled uniformly onto the turn's largest board, centred, and drawn still (pageOnBoard, pagesRescaledCount). Reverse if a script board picked this way is refused at the take more often than the catalogue board it replaced was.

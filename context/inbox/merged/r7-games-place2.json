@@ -1,0 +1,24 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-place2",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "guna extended to place value: new mode yard (build: a truck of place racks loaded to a named number; commas: comma posts set between the racks for lakhs and crores) for c4-maths-ch04-t01 and c7-maths-ch01-t01 (s1, s2; s3 comparing stays with the net); existing guna levels unchanged. Reverse: children load from the rack labels without reading the docket, or posts are set by trial."
+  },
+  {
+   "id": "ms-r7-games-place2-cert",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "guna play-cert after place2: 160/160 guna samples pass at p360, p412 and l1366 with the game mounted (20 entries × 2 seeds × 4 art directions, 3 entries new, 24 yard samples; smallest text 16 px; on a short phone tray the build truck stands in two halves of 44 px rows); 116 guna law and server tests pass; lint-ui 354 before and after."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r7-games-place2", "rel": "measured_by", "dst": "ms-r7-games-place2-cert" },
+  { "src": "dc-r7-games-place2", "rel": "inherits", "dst": "dc-r7-games-guna2" }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-place2`\n\n**guna** gets a fourth mode, **yard**, for the two arena-only place-value topics. Every earlier guna level is unchanged. Before the change, the generator output for every existing rule was hashed over seeds 1..30 × fades 1..3 × classes 4/5/7 (110,160 candidates). The served levelIds of every existing entry (3 children each) were pinned. Both are identical after the change, and a test pins the served levelIds. Nothing is timed.\n\n- **Why guna, not todo-jodo bundles.** guna's truck already has one rack per place, nine crates at most to a rack, and place labels up to powers of ten. Loading it to an exact weight IS writing a number place by place: an empty rack is the zero, and fifty can never be fifty crates of one. bundles has one goal (subtraction) and five places. guna's truck only needed a rows layout of up to 8 racks (44 px rows fit the 324 px tray, where 8 columns would not).\n- **yard/build.** A docket names a number and the truck must weigh exactly that on the bridge. After the run, the bridge reads the load back with Indian commas. The docket is never answered before the run. Class 4 (c4-maths-ch04-t01 s1-s3): a 4-digit number on a six-rack truck, written as \"4 thousand 50\", as \"4000 + 50\", or as the numeral 4050. Class 7 (c7-maths-ch01-t01 s1, s2): a number in lakhs and crores (\"3 crore 5 lakh 9\") or in millions (\"7 million 250 thousand\") on an eight-rack truck (10⁷ … 1). At the third look only the ones rack is labelled.\n- **Mal-rules (kit ids verified).** concat (the parts written in full one after another: 4 thousand 50 → 4,00,050) → c4 concat. drop-zero (the parts' counts side by side, the empty places dropped: 450; 35,00,000; 3,04,000) → c4 drop-zero and c7 zero-placeholder. crore-million (a crore read as a million, or a million read as a crore) → c7 crore-million.\n- **yard/commas** (c7 s1). The number's crates stand in columns with its digits under them. A tap in a gap sets or lifts a comma post, and the bridge writes the number with the child's posts. A post after every three places → c7 intl-commas.\n- **Not admitted.** c7-maths-ch01-t01-s3 (comparing and ordering): no kit belief this truck shows honestly. Kit beliefs teen-ty (the dockets name parts with digits) and face-value (a crate is always worth its rack) have no set-up here.\n\n**Reverse if** children load class 7 trucks from the rack labels without reading the docket's units (watch whether misses cluster on the 10⁶ / 10⁷ racks at look 1 vs look 3), or set comma posts by trial (many post changes between readings).\n",
+  "measurements": "## `ms-r7-games-place2-cert`\n\nguna play-cert, 2026-11-08 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction).\n\n- **Cert:** 160/160 guna samples pass at p360, p412 and l1366 with the game mounted (20 entries × 2 seeds × 4 art directions, 3 entries new, 24 yard samples; smallest text 16 px; on a short phone tray the build truck stands in two halves of 44 px rows) (counts in server/forge3/certs/play.json).\n- **Tests:** tests/r7-games-guna.test.mjs has 116 tests (19 new), and all pass. They include build (class 4 and class 7) and commas cases. The independent checker reads the docket's words by plain arithmetic and checks commas against toLocaleString(\"en-IN\"). Each new mal-rule lands on its own misconception, generator p95 is under 50 ms, and every new coverage entry serves through currentLevel at every fade.\n- **Other suites:** the r7-games and play suites pass (1055 tests). lint-ui is 354 before and after.\n- **Real-browser run shots** at 360 × 740: every goal opened, solved and shown with one belief. Three goals were solved with real taps only. Shots are in docs/design/round7/games/runshots-place2/.\n"
+ }
+}

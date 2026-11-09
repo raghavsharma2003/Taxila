@@ -103,6 +103,14 @@ test("migrate: a failing file is rolled back whole, unrecorded, and stops the ru
   assert.ok(!c.db.created.some((t) => /table b|table c/.test(t)), "nothing of 002 or 003 applied");
 });
 
+test("migrate: a lower-numbered file added after higher ones were applied is still applied (a set, never 'max so far')", async () => {
+  // round 7: Platform's 041 lands after Learning's 044-047 are already in production
+  const c = fakeClient({ applied: ["001_a.sql", "003_c.sql"] });
+  const r = await migrate({ client: c, files: FILES });
+  assert.deepEqual(r.applied, ["002_b.sql"]);
+  assert.deepEqual(c.db.txs[0].at(-1).params, ["002_b.sql"]);
+});
+
 test("migrate: dry run reads only; a missing schema_migrations table means everything is pending and is not created", async () => {
   const c = fakeClient({ hasTable: false });
   const logs = [];

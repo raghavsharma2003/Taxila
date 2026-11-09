@@ -51,9 +51,13 @@ const OBJECTS = ["pizza", "roti", "cake", "laddoo", "chocolate", "patti", "strip
  * (b) a picture-request line against what is drawn: a sentence of hers that points at the screen and names a thing the board
  * does not draw ("Screen par dekho: poora pizza…" over a word table). Returns the things named.
  */
-export function pictureMismatch(text, board) {
+export function pictureMismatch(text, board, altView = null) {
   if (!board || board.auto) return [];
-  const has = boardNouns(board);
+  // (v6.4 harness, main on director12: a picture asked with the card's board up draws Studio's SECOND view — bars for a line,
+  // a line for bars — and her words describe that view: what it draws counts as drawn too)
+  const ALT = { parts: "bar patti strip parts hisse tukde", bars: "bar patti strip parts hisse tukde", line: "line rekha number", wholes: "parts hisse tukde", groups: "group samooh plate", round: "circle gol parts hisse tukde", example: "bar patti strip parts hisse tukde" };
+  const av = typeof altView === "string" ? altView : altView?.view ?? null;
+  const has = `${boardNouns(board)} ${av ? ALT[av] ?? "" : ""}`;
   const out = [];
   for (const s of sentencesOf(text)) {
     if (!POINT.test(s)) continue;
@@ -97,11 +101,14 @@ export function borrowedWhy(text, whys) {
  * answered. `firstBoard`: the board of the part the line opens on; `answeredBoard`: the answered card's board (the board the
  * last turn ended on). True when both exist and differ and the verdict says more than a bare yes or no.
  */
-export function verdictMisplaced({ graded, firstBoard, answeredBoard, verdict = null }) {
+export function verdictMisplaced({ graded, firstBoard, answeredBoard, verdict = null, answerBoard = null }) {
   if (!graded || !firstBoard || !answeredBoard) return false;
   // (a bare "Haan, sahi hai." says nothing a board can contradict; a verdict with a number or a reason does)
-  if (verdict != null && !/\d/.test(verdict) && String(verdict).split(/\s+/).filter(Boolean).length <= 4) return false;
-  return JSON.stringify(paramsOf(firstBoard)) !== JSON.stringify(paramsOf(answeredBoard)) || firstBoard.template !== answeredBoard.template;
+  // (director11, main: the same rule as Brain's first-page join, propose.js FIRST_PAGE_MIN_WORDS: under 6 words and no digit)
+  if (verdict != null && !/\d/.test(verdict) && String(verdict).split(/\s+/).filter(Boolean).length < 6) return false;
+  const same = (b) => !!b && b.template === firstBoard.template && JSON.stringify(paramsOf(firstBoard)) === JSON.stringify(paramsOf(b));
+  // (v2.3: a card's authored answerBoard, its answer state, is the answered card's board for its close)
+  return !same(answeredBoard) && !same(answerBoard);
 }
 
 /**

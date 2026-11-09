@@ -34,7 +34,7 @@ if (PLAN_STATE === "homework") PLAN.homework = { until: "20:00" };
 if (PLAN_STATE === "test_window") PLAN.testWindow = { subject: "science", from: "2026-11-05", to: "2026-11-08" };
 if (PLAN_STATE === "start") PLAN.jar = { waiting: 2 };
 if (PLAN_STATE === "resting") PLAN.opensAt = "16:00";
-const skill = (id, title, subject, state) => ({ skillId: id, title, subject, state });
+const skill = (id, title, subject, state) => ({ skillId: id, title, subject, state, topicId: id.replace(/-s\d+$/, "") });
 const SKILLS = [
   skill(`c${CLS}-maths-ch07-t01-s1`, "Fractional units and equal shares", "maths", "secure"),
   skill(`c${CLS}-maths-ch07-t03-s1`, "Equivalent fractions", "maths", "secure"),
@@ -42,6 +42,9 @@ const SKILLS = [
   skill(`c${CLS}-science-ch04-t01-s1`, "Magnets and their poles", "science", "secure"),
   skill(`c${CLS}-english-ch01-t01-s1`, "Summarising a story", "english", "got_it"),
 ];
+// r7 "Then and now": two skills became pakka after their notebook lessons; the angles one is secure from before 046 (no date)
+SKILLS[0].secureSince = "2026-11-06T10:20:00Z";
+SKILLS[1].secureSince = "2026-11-05T09:40:00Z";
 const MAP = {
   mode: "sky", hidden: false, empty: false, skills: SKILLS,
   subjects: [{ subject: "maths", book: "Ganita Prakash", chapters: [{ id: `c${CLS}-maths-ch07`, number: 7, title: "Fractions", sealed: false, here: true, school: true, secure: 2, total: 5,
@@ -78,7 +81,10 @@ const API = {
   ] },
   "/api/studio/notebook": arg("notebook", "1") === "0" ? { hidden: false, pages: [] } : { hidden: false, pages: [
     { lessonId: "l2", topicId: `c${CLS}-maths-ch07-t03`, title: "Equivalent fractions", startedAt: "2026-11-04T10:00:00Z", ended: true, boards: 3, first: null },
-    { lessonId: "l1", topicId: `c${CLS}-maths-ch07-t01`, title: "Fractional units", startedAt: "2026-11-03T10:00:00Z", ended: true, boards: 1, first: null },
+    { lessonId: "l1", topicId: `c${CLS}-maths-ch07-t01`, title: "Fractional units", startedAt: "2026-11-03T10:00:00Z", ended: true, boards: 1,
+      first: { v: 1, scriptId: "nb-l1", line: { lessonId: "l1" }, anchor: "line_audio_start", board: { w: 400, h: 300, ground: "chalk" }, mode: "fresh", durationMs: 1400,
+        ops: [{ id: "w", op: "rect", at: [80, 90], w: 240, h: 110, startMs: 0, endMs: 600 }, { id: "c", op: "line", from: [200, 90], to: [200, 200], startMs: 600, endMs: 900 },
+          { id: "s", op: "rect", at: [83, 93], w: 114, h: 104, fill: "accent", startMs: 900, endMs: 1200 }, { id: "t", op: "text", at: [200, 250], text: "1/2", size: "m", startMs: 1200, endMs: 1400 }] } },
   ] },
 };
 
@@ -98,6 +104,7 @@ export const SCREENS = {
   "ask-heard": `/c/${CID}/ask`,
   "notebook-made": `/c/${CID}/notebook?made=m1`,
   "notebook-jar": `/c/${CID}/notebook`,
+  "notebook-growth": `/c/${CID}/notebook?page=growth`,
   // r7 onboarding sweep: the parent set-up (Learning's src/onboarding, shot for review) and the child's first meeting
   "start-class": `/start/class`, "start-promises": `/start/promises`, "start-phone": `/start/phone`, "start-child": `/start/child`,
   "start-controls": `/start/controls`, "start-handover": `/start/handover`, "start-student": `/start/student`,

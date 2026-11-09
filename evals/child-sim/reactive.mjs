@@ -33,7 +33,9 @@ export const MIN_TURNS = 20;
 export const WHICH_MAX = 2;
 /** Her line poses a question: a "?" or an imperative ask ("batao", "bolo", "likho", "kitna", "kaunsa", "kya hoga"; English
  *  "tell", "what", "how many", "which", "find", "write"). director9: "…fraction mein batao." was never answered. */
-export const ASK_RE = /\?|\b(?:batao|bataiye|bolo|boliye|likho|nikalo|socho aur batao|kitn[aei]|kaun(?:sa|si|se)?|kya hoga|kahan|tell me|what|how many|how much|which|find|write)\b/i;
+// (v6.4, main on director12 c5-t02 stuck: "…chhote se bade ke kram mein lagao." was never answered: the imperatives that pose a
+// task — lagao, karo, jodo, bharo, chuno, gino, milao, dikhao — pose a question too)
+export const ASK_RE = /\?|\b(?:batao|bataiye|bolo|boliye|likho|likhiye|nikalo|lagao|lagaiye|(?<!yaad\s)karo|kariye|jodo|bharo|chuno|gino|milao|dikhao|socho aur batao|kitn[aei]|kaun(?:sa|si|se)?|kya hoga|kahan|tell me|what|how many|how much|which|find|write|put|arrange|order)\b/i;
 const posed = (teacher) => ASK_RE.test(String(teacher ?? ""));
 export const PERSONAS = Object.freeze(["steady", "stuck", "offtopic", "steering"]);
 export const EVENTS = Object.freeze(["dontknow", "picture", "cricket", "hindi", "selftry"]);
@@ -82,6 +84,9 @@ const LINES = {
   ack: ["haan", "achha", "theek hai", "hmm, achha", "haan samajh {gaya|gayi}"],
   done: ["woh toh ho gaya na", "haan, woh maine bata diya", "woh wala ho gaya, aage chalo"],
   which: ["sawaal kya hai?", "kya poochha, phir se bolo na", "kis cheez ka jawab dun?"],
+  // (v6.3 harness, main on director11: the c4 child plays a "what's the question?" and a "say it again" on a live card)
+  whichq: ["sawaal kya hai?"],
+  repeat: ["phir se bolo"],
   leave: ["bas aaj ke liye itna hi", "ab main {jaata|jaati} hoon, bye", "thak {gaya|gayi}, bye"],
 };
 
@@ -149,6 +154,13 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
     while (at.has(u)) u++;
     at.set(u, ev);
   }
+  // (v6.3 harness, main on director11) the c4 child also asks "sawaal kya hai?" and "phir se bolo" on a live card; scheduled after
+  // the persona's own events, so every other topic's child is the same child as before
+  if (/^c4-/.test(String(kit?.topicId ?? ""))) for (const [ev, t] of [["whichq", 6], ["repeat", 18]]) {
+    let u = t + (rng() < 0.5 ? 0 : 1);
+    while (at.has(u)) u++;
+    at.set(u, ev);
+  }
   // director7 (dc-r7-script-walk-v5): an event fires only where it makes sense. A scheduled event that does not fit its
   // turn waits (in schedule order) for the first turn that fits; one event per turn.
   const pending = [];
@@ -159,6 +171,7 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
     if (ev === "cricket") return !c.howWhy && !(c.keyed && c.asks && !c.done); // an aside on a telling turn, never as the reply to "kaise mila?"
     if (ev === "hindi") return !c.howWhy;                                    // a language request, not as a reason
     if (ev === "picture") return !c.howWhy;                                  // a picture request, not as a reason
+    if (ev === "whichq" || ev === "repeat") return c.keyed && c.asks && !c.done && !c.howWhy; // on a live card she just asked
     return true;
   };
   const misses = new Map();

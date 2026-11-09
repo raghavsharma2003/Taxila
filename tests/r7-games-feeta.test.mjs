@@ -15,6 +15,7 @@ import { hiddenOf } from "../server/play/react.js";
 import { playActOf } from "../server/director/play-verbs.js";
 import { GAME_WEIGHT, FAMILIES, MODES, FAMILY_ARTS, sanitizeActs } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const ALL = Object.fromEntries(FEETA_MAL.map((m) => [m, `k-${m}`]));
@@ -81,9 +82,10 @@ const replayCheck = (level, acts) => { const k = checker(level.params); let s = 
 
 test("feeta: the family is registered (FAMILIES, MODES, arts, logic for every mode, a verb that never chooses)", () => {
   assert.ok(FAMILIES.includes("feeta"));
-  assert.deepEqual([...MODES.feeta], ["measure", "fence", "trip", "compare"]);
+  // r7 naap added the science modes after these four (tests/r7-games-feeta-naap.test.mjs)
+  assert.deepEqual([...MODES.feeta].slice(0, 4), ["measure", "fence", "trip", "compare"]);
   assert.ok(FAMILY_ARTS.feeta.length === 4);
-  for (const m of MODES.feeta) {
+  for (const m of MODES.feeta.slice(0, 4)) {
     assert.equal(LOGIC[`feeta/${m}`], feetaLogic);
     const v = playActOf("feeta", m);
     assert.ok(v && v.hi && v.en && v.act !== "choose", m);
@@ -236,7 +238,7 @@ for (const [mode, goal, grammar] of CASES) {
     const times = [];
     for (let gi = 0; gi < 40; gi++) {
       let best = Infinity, cands = [];
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); cands = feetaLogic.generate(req(mode, goal, 100 + gi, { grammar, fade: 1 + (gi % 3) })); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); cands = feetaLogic.generate(req(mode, goal, 100 + gi, { grammar, fade: 1 + (gi % 3) })); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       for (const c of cands.slice(0, 4)) {
         const level = feetaLogic.validate(c.level), p = level.params, sol = feetaLogic.solve(level), n = p.items.length;
@@ -285,7 +287,8 @@ test("feeta: every word the view shows exists in all three languages; vakya's wo
 
 // the play server: every feeta coverage entry serves a proven level at every fade (levelsFor and currentLevel); the
 // solver's acts grade solved through the server; a claim never solves; a mal-rule the level discriminates folds its kit id
-const FE = () => coverage().entries.filter((e) => e.family === "feeta");
+// the length entries (the naap science entries are tested in tests/r7-games-feeta-naap.test.mjs)
+const FE = () => coverage().entries.filter((e) => e.family === "feeta" && ["measure", "fence", "trip", "compare"].includes(e.mode));
 const sessionOf = (entry, over = {}) => ({ childId: "c1", key: entryKey(entry), skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
   mis: {}, pL: undefined, n: 0, seed: seedOf("c1", entryKey(entry), 0), door: "garam", recent: [], hist: null, ...over });
 

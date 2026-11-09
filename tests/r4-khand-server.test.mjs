@@ -30,7 +30,7 @@ describe("r4-khand coverage", () => {
       for (const sk of e.skillIds) assert.ok(kit.skills.some((s) => s.id === sk), sk);
       assert.deepEqual(e.skillIds, ACTS[`${e.topicId}|${e.goal}`].map((x) => `${e.topicId}-${x}`));
     }
-    assert.equal(new Set(entries.map((e) => e.topicId)).size, 11);
+    assert.equal(new Set(entries.map((e) => e.topicId)).size, 13);   // r7 nazariya2: + c6-maths-ch06-t03 (tri), c4-maths-ch01-t01 (solid)
   });
   it("admission is by skill: each claimed skill finds a Nazariya entry whose act exercises it", () => {
     for (const e of NZ()) for (const sk of e.skillIds) {

@@ -253,8 +253,10 @@ test("main A1: a second view of a LIVE card never draws its key — c5-t01 e2's 
   assert.deepEqual(texts(px.script), ["8 m", "5 m", "7 m", "6 m", "?", "?"]);
   // a fraction ask (key 1/3) over its circle: the bar is unnamed and unshaded
   const third = { template: "fraction-parts@1", params: { parts: 3, shade: 1, whole: "circle" } };
-  // (director11 S1: only the VALUE is hidden — the card's own figure shows the shading, the bar keeps it, its name is "?")
-  assert.deepEqual(call(third, keyed(["1/3", "ek-tihaai"])).bars, [{ parts: 3, shade: 1, label: "?" }]);
+  // (director11 S1: only the VALUE is hidden — the card's own figure shows the shading, the bar keeps it, its name is "?";
+  // director12 S4: a circle's second view is the same whole as a bar, its fraction written nowhere)
+  const tc = call(third, keyed(["1/3", "ek-tihaai"]));
+  assert.deepEqual({ ...tc }, { template: "fraction-parts@1", parts: 3, shade: 1, whole: "bar", hideResult: true, view: "parts" });
   // and on the seam: e2's card up, the picture asked — no 8-part bar while the card is live
   const s = lesson("c5-maths-ch02-t01");
   const beat = keyed(["8", "8 gaps"]);

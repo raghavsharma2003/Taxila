@@ -74,8 +74,23 @@ describe("script walk v2", () => {
     assert.ok(L.r.move.rendered.some((x) => /cheenti/.test(x)), "its authored explanation, in Hinglish, spoken by code");
     assert.equal(L.r.ui.ask?.itemId, `script:${S1.skillId}:then:c6-maths-ch06-t01-m-missing-sides`);
     L.t("38 m", cls("correct"));
+    // (v6.4 K1: the card the remediation took over is asked again, once, before the walk goes on — after a why-probe, if one comes)
+    for (let k = 0; k < 2 && L.r.ui.ask?.itemId !== `script:${S1.skillId}:ask:e1`; k++) L.t("har bhuja jodi", cls("no_evidence"));
+    assert.equal(L.r.ui.ask?.itemId, `script:${S1.skillId}:ask:e1`, "the missed card again: " + JSON.stringify(L.r.move.scriptBeat));
+    L.t("12 cm", cls("correct"));
     let i = 0; while (i++ < 3 && L.r.move.scriptBeat?.beatId !== "e2") L.t("haan");
     assert.equal(L.r.move.scriptBeat.beatId, "e2", "then the walk goes on");
+  });
+
+  test("v6.4 K1: the card missed again after its remediation is let go with its key and why", () => {
+    const L = run(); toBeat(L, "e1");
+    L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    L.t("38 m", cls("correct"));
+    for (let k = 0; k < 2 && L.r.ui.ask?.itemId !== `script:${S1.skillId}:ask:e1`; k++) L.t("har bhuja jodi", cls("no_evidence"));
+    assert.equal(L.r.ui.ask?.itemId, `script:${S1.skillId}:ask:e1`);
+    L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    assert.ok(L.r.move.gave?.answer, "its key is said: " + JSON.stringify(L.r.move));
+    assert.notEqual(L.r.move.scriptBeat?.kind, "remediation", "no second remediation round");
   });
 
   test("R2: a diversion does not use the beat up", () => {
@@ -113,11 +128,11 @@ describe("script walk v2", () => {
     L.t("haan");
     assert.equal(L.r.move.scriptBeat.beatId, "worked");
     assert.equal(L.r.ui.ask?.itemId, `script:${S1.skillId}:ask:worked`);
-    // after their step (right here) the worked answer and its why are said; never as a give-up reveal
+    // after their step (right here) the worked answer is closed on that turn (the verdict with its why, or "Toh poora jawab");
+    // never as a give-up reveal, and (v6.3 T1′) never on a later turn, after a probe's answer or an okay
     L.t("20 m", cls("correct"));
-    let said = null;
-    for (let k = 0; k < 3 && !said; k++) { assert.ok(!L.r.move.gave, "no give-up reveal after a right step"); said = L.r.move.workedDone ?? null; if (!said) L.t("haan"); }
-    assert.ok(said && /20 m/.test(said.answer), "Toh poora jawab");
+    assert.ok(!L.r.move.gave, "no give-up reveal after a right step");
+    for (let k = 0; k < 3; k++) { L.t("haan"); assert.ok(!L.r.move.workedDone, "no worked close on a later turn: " + JSON.stringify(L.r.move.workedDone)); }
   });
 
   test("F4: the greet promises the slot's interest, not one the script cannot use", () => {

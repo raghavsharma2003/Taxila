@@ -13,6 +13,8 @@ export function buildOf(level, rawActs) {
   if (!v) return null;
   const r = replayAll(logic, v, sanitizeActs(rawActs));
   if (!logic.goalMet(v, r.state)) return null;
+  // r7 nazariya2: a solid's marks are no build on the plot (no heights to keep)
+  if (!Array.isArray(r.state.h) || !Number.isInteger(v.params.w)) return null;
   return { levelId: v.levelId, topicId: v.topicId, skillId: v.skillId, mode: v.mode, goal: v.goal, w: v.params.w, d: v.params.d, heights: r.state.h, base: v.params.base };
 }
 /** Save a solved build (idempotent). Never throws: a failed save never blocks play. */

@@ -59,7 +59,13 @@ export const PLAY_ACTS = Object.freeze({
   feeta: { measure: { act: "set", hi: "ruler se naapo aur feeta kaato", en: "measure with the ruler and cut the ribbon" },
     fence: { act: "set", hi: "baad kaato aur bagiche ko ghero", en: "cut the fence and go round the garden" },
     trip: { act: "set", hi: "meter set karo aur cycle chalao", en: "set the meter and ride the trip" },
-    compare: { act: "place", hi: "raaston ko chhote se bade kram mein rakho aur chalao", en: "put the routes from shortest to longest and ride them" } },
+    compare: { act: "place", hi: "raaston ko chhote se bade kram mein rakho aur chalao", en: "put the routes from shortest to longest and ride them" },
+    // r7 naap (science measuring): lay the thread along the curve and straighten it; dip and read the thermometers; read the
+    // scale from a full mark with the eye above; put things on the warmth shelf and check them with a thermometer
+    thread: { act: "set", hi: "dhaaga line ke saath bichhao, seedha karke scale par padho", en: "lay the thread along the line, straighten it and read the scale" },
+    thermo: { act: "set", hi: "thermometer lagao aur uska paimana padho", en: "use the thermometer and read its scale" },
+    scale: { act: "set", hi: "scale theek se lagao aur seedha upar se padho", en: "line up the scale and read it from directly above" },
+    touch: { act: "place", hi: "chhoo kar dekho, shelf par rakho, phir thermometer se jaancho", en: "feel them, put them on the shelf, then check with a thermometer" } },
   // r7 games: Guna (multi-digit multiplication and division): cut the field and load the truck; share the godown into trucks;
   // set out the vehicles / packets / jar and run the story
   guna: { field: { act: "load", hi: "khet kaato aur truck bharo", en: "cut the field and load the truck" },
@@ -93,6 +99,8 @@ export const PLAY_ACTS = Object.freeze({
     magic: { act: "place", hi: "har khaane mein ek number rakho, har line ka jod barabar", en: "put a number in every cell so every line adds the same" },
     cipher: { act: "set", hi: "har akshar ko ek ank do aur jod karo", en: "give each letter a digit and add it up" },
     mirror: { act: "set", hi: "shuru ka number set karo, ulta karke jodo", en: "set a start, then reverse and add" } },
+  // r7 games: Galti Pakdo (a friend's working): weigh the claim in the question, catch the first wrong line, mend it
+  "galti-pakdo": { kaapi: { act: "check", hi: "taraazu par jaancho aur pehli galat line pakdo", en: "check it on the balance and catch the first wrong line" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape
