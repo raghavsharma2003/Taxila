@@ -11,6 +11,7 @@ import { gcd, lcm } from "../../src/play/core/rat.ts";
 import { nazariyaHidden } from "../../src/play/families/nazariya/index.ts";
 import { stambhHidden } from "../../src/play/families/stambh/stambh.logic.ts";
 import { pendulumHidden } from "../../src/play/families/yantra/pendulum.logic.ts";
+import { roshniHidden } from "../../src/play/families/yantra/roshni.logic.ts";
 import { openingOf } from "../../src/play/families/kon/kon.logic.ts";
 import { angle2 } from "../../src/play/families/kon/kon.lines.ts";
 import { hopValue } from "../../src/play/families/nishana/line.logic.ts";
@@ -137,6 +138,7 @@ export function hiddenOf(level) {
     case "cross": return [Math.round(angle2(p))];             // r7 kon2: the reading ∠2 must show (equal to ∠1, or 180° − ∠1)
     case "hop": return p.hop ? [hopValue(p.hop)] : [];        // where the hop lands
     case "pendulum": return pendulumHidden(level);           // the thread lengths that keep the beat
+    case "roshni": return roshniHidden(level);               // r7 roshni: the words that give the idea away (translucent, sunlight, own light)
     case "weigh": case "fill": return weighHidden(level);    // round 7: the label in grams / ml
     case "rail": return vakyaHidden(level);                  // r7 vakya: the key sentence and its words, before the child builds them
     default: return [];

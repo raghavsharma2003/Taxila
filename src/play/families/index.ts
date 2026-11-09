@@ -15,6 +15,7 @@ import { pendulumLogic } from "./yantra/pendulum.logic.ts";
 import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic, triLogic, solidLogic } from "./nazariya/index.ts";   // r4-khand
 import { arenaLogic } from "./arena/arena.logic.ts";
 import { circuitLogic } from "./yantra/circuit.logic.ts";
+import { roshniLogic } from "./yantra/roshni.logic.ts";
 import { kaalLogic } from "./kaal/kaal.logic.ts";
 import { vakyaLogic } from "./vakya/vakya.logic.ts";
 import { kilaLogic } from "./kila/kila.logic.ts";
@@ -80,6 +81,7 @@ export const LOGIC: Record<string, AnyLogic> = {
   // round 7 E6: Yantra
   "yantra/beam": asAny(beamLogic),
   "yantra/pendulum": asAny(pendulumLogic),
+  "yantra/roshni": asAny(roshniLogic),     // r7 roshni: switch kit-named sources, place kit-named screens, LOOK: what the eye sees
   "yantra/circuit": asAny(circuitLogic),   // round 7 E6: wire a cell, a bulb and a switch; RUN closes the loop or not
   // round 7 SST: Kaal-nadi, events placed on the river of time (BCE left, CE right, no year 0)
   "kaal/place": asAny(kaalLogic),

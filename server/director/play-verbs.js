@@ -36,7 +36,8 @@ export const PLAY_ACTS = Object.freeze({
   // r7 games: E6 Yantra (science puzzle-physics)
   yantra: { beam: { act: "build", hi: "sheesha lagao aur chalao", en: "place the mirrors and run it" },
     circuit: { act: "build", hi: "taar jodo aur chalao", en: "wire it up and run it" },
-    pendulum: { act: "set", hi: "dhaaga set karo aur chalao", en: "set the thread and run it" } },
+    pendulum: { act: "set", hi: "dhaaga set karo aur chalao", en: "set the thread and run it" },
+    roshni: { act: "place", hi: "roshni jalao ya dhako, parda lagao aur dekho", en: "switch or cover the lights, place the screens and look" } },
   // r7 games: Kaal-nadi (SST time): the boat is brought to a year on the river of time and the stone dropped there
   kaal: { place: { act: "place", hi: "naav us saal tak le jao aur patthar giraao", en: "take the boat to the year and drop the stone" },
     order: { act: "place", hi: "har patthar ko uske saal par giraao", en: "drop each stone at its year" } },
