@@ -40,6 +40,9 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "aankde",     // round 7: data (slips tallied in bundles of five, a lost row, the size sold most; towers levelled, a pour line; a line of cards folded to its middle)
   "paheli",     // round 7: number puzzles (bags loaded by parity, magic squares, letter sums with carries, reverse-and-add palindromes)
   "galti-pakdo", // round 7: a friend's working of an equation checked on the taraazu; the first wrong line caught and mended
+  "chhaano",    // round 7: separating mixtures (class 6 science): methods chosen and applied in turn until every part is recovered
+  "gati",       // round 7: motion (a reference point, the types of motion, speed on a marked track, uniform trails); the child steps the clock
+  "bhaap",      // round 7: processes of water and air (states, evaporation and condensation, convection and breezes, the water cycle and groundwater); the child runs them a step at a time
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -47,7 +50,7 @@ export const MODES = {
   "todo-jodo": ["atoms", "strips", "bundles"],
   taraazu: ["equation", "equality", "weigh", "fill"],   // r7: weigh (kg / g on a pan balance), fill (l / ml with jugs)
   nishana: ["place", "compare", "hop"],
-  "kyun-lab": ["fair-test"],
+  "kyun-lab": ["fair-test", "dhruv", "disha"],   // r7 chumbak: magnets (dhruv: poles, push and pull; disha: finding directions)
   kon: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends"],
   nazariya: ["views", "array", "floor", "powers", "mirror", "tri", "solid"],   // r4-khand; r7 nazariya2: tri (a triangle's cloth as half a rectangle), solid (faces / edges / corners of a solid turned in the hand)
   arena: ["pick"],
@@ -68,6 +71,9 @@ export const MODES = {
   aankde: ["tally", "stack", "line"],
   paheli: ["pairs", "magic", "cipher", "mirror"],
   "galti-pakdo": ["kaapi"],   // the friend's notebook (kaapi)
+  chhaano: ["sukha", "geela"], // dry mixtures (handpick, thresh, winnow, sieve); mixtures in water (settle, decant, filter, evaporate)
+  gati: ["drishti", "raftaar", "nishaan"],   // the viewpoint (drishti), speed (raftaar), the marks (nishaan)
+  bhaap: ["avastha", "bhaapan", "hawa", "chakra"],   // states of water (avastha), evaporation and condensation (bhaapan), convection (hawa), the water cycle (chakra)
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -363,7 +369,42 @@ export type AankdeAct =
   | { kind: "peg"; at: number }                          // middle: the peg at slot `at` (2i on card i, 2i + 1 in the gap after it)
   | { kind: "run" }                                      // count / level / pour / fold: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct;
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct | ChhaanoAct | GatiAct | ChumbakAct | BhaapAct;
+// Kyun-Lab chumbak (round 7, magnets, class 6 science): a pin touched along a hidden magnet and its poles flagged; carriages
+// turned round and pushed together; a marked magnet's pole brought to an end; a snapped magnet's new ends labelled; magnets
+// dipped into pins; a hung magnet twisted and let go, a map turned; she turns, the compass box turns, she walks off the iron;
+// the law answers on "run" (or on a claim), never on a clock
+export type ChumbakAct =
+  | { kind: "probe"; at: number }                        // dhruv/sira: a pin touched to spot `at` along the cover
+  | { kind: "mark"; at: number }                         // dhruv/sira: spot `at` flagged as a pole (again = off)
+  | { kind: "flip"; i: number }                          // dhruv/jodo: carriage i turned round
+  | { kind: "near"; i: number; end: number; p: string }  // dhruv/pakka, todo: the marked magnet's pole p ("N" / "S") to thing i's end (0 left, 1 right)
+  | { kind: "label"; i: number; end: number; v: string } // dhruv/todo: piece i's end labelled "N", "S" or "-" (no pole)
+  | { kind: "claim"; i: number }                         // dhruv/pakka: bar i is the magnet; taakat: magnet i is the stronger
+  | { kind: "dip"; i: number }                           // dhruv/taakat: magnet i dipped into the pins and lifted
+  | { kind: "twist"; by: number }                        // disha/latkao: the hung magnet turned a quarter (±1) in the hand
+  | { kind: "let" }                                      // disha/latkao: let go; it hangs free
+  | { kind: "spin"; by: number }                         // disha/latkao: the map turned a quarter (±1)
+  | { kind: "turn"; by: number }                         // disha: she turns a quarter (±1), the compass in her hands with her
+  | { kind: "dial"; by: number }                         // disha: the compass box turned a quarter (±1) in her hands
+  | { kind: "go"; to: number }                           // disha/loha: she walks to spot `to` (0 by the iron, 1 away)
+  | { kind: "run" }                                      // lift the cover / push the train / check the labels / the map is set / read the compass
+  | { kind: "undo" };
+// Bhaap (round 7, processes of water and air, class 6-7 science): a tool used once (heat, cool, a wait, a sail, a rain; `at` the
+// bench place it acts on), a thing put out (a glass from the fridge, a device high or low on the wall), or "ho gaya"; the law
+// answers each at once, never on a clock
+export type BhaapAct =
+  | { kind: "use"; m: string; at?: number }      // tool m (heat, cool, lid, sugar, plate, wait, wipe, day, night, sail, sun, rise, rain, flow, pit, pump)
+  | { kind: "put"; what: string; at: number }    // bhaapan: a thing from the fridge onto bench place `at`; kamra: a device high (0) or low (1)
+  | { kind: "done" }
+  | { kind: "undo" };
+// Chhaano (round 7, separating mixtures, class 6 science): a method applied to one pile (sukha) or one vessel (geela), a dry
+// solid scooped into its jar, or "ho gaya"; the law answers at once, never on a clock (settling advances one wait at a time)
+export type ChhaanoAct =
+  | { kind: "use"; m: string; at: number; spot?: "near" | "far" }   // method m on pile / vessel `at` (winnow: the sack near or far)
+  | { kind: "take"; at: number; jar: number }                       // geela: the dry solid at `at` scooped into jar `jar`
+  | { kind: "done" }                                                // "ho gaya": every part is separated / recovered
+  | { kind: "undo" };
 // Paheli (round 7, number puzzles): load bags onto the boat, put number tiles on the grid, give letters digit tiles, set a
 // start; the law (plain arithmetic: pairing, line sums, column addition with carries, reverse-and-add) answers on "run"
 export type PaheliAct =
@@ -380,6 +421,18 @@ export type GaltiAct =
   | { kind: "flag"; line: number }                        // line `line` is the first that breaks (the flagged line again: the offers reopen)
   | { kind: "fix"; i: number }                            // mend: offer i takes the flagged line's place; the law rewrites below it
   | { kind: "sab" }                                       // "sab sahi": every line follows
+  | { kind: "undo" };
+// Gati (round 7, motion): the clock steps only when the child taps it; watch from a reference (or ride along), put things
+// on bins, tick types, flag the faster mover, set the speedometer; the law answers on "run"
+export type GatiAct =
+  | { kind: "tick" }                                      // the clock steps one interval (never on its own)
+  | { kind: "view"; ref: number }                         // watch from reference `ref` (do-gati: 0 the ground, 1 riding along)
+  | { kind: "put"; lane: number; at: number }             // lane `lane` onto bin `at` (at rest / moving; a type; uniform / not)
+  | { kind: "tag"; lane: number; at: number }             // do-gati: type `at` ticked on (or off) for lane `lane`
+  | { kind: "chalk"; lane: number }                       // raftaar/aage: a mark where lane `lane`'s mover is, at the clock's time
+  | { kind: "pick"; lane: number }                        // raftaar/aage: the lane flagged faster (both marks for the same time first)
+  | { kind: "mark"; at: number }                          // the speedometer / m/s counter set to `at`
+  | { kind: "run" }                                       // the law answers the set-up
   | { kind: "undo" };
 // Hissa (round 7, multiplying and dividing fractions and decimals): a sheet folded across and down (the overlap tagged by
 // counting pieces); rope pieces laid on a metre track; a jug poured into full cups, the part-cup tagged as a fraction of a
@@ -575,6 +628,9 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   aankde: ["kagaz", "chalk", "blueprint", "raat"],
   paheli: ["kagaz", "chalk", "blueprint", "raat"],
   "galti-pakdo": ["kagaz", "chalk", "blueprint", "raat"],
+  chhaano: ["kagaz", "chalk", "blueprint", "raat"],
+  gati: ["kagaz", "chalk", "blueprint", "raat"],
+  bhaap: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;

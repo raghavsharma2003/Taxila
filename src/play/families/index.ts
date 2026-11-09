@@ -7,6 +7,7 @@ import { balanceLogic } from "./taraazu/balance.logic.ts";
 import { weighLogic } from "./taraazu/weigh.logic.ts";
 import { lineLogic } from "./nishana/line.logic.ts";
 import { labLogic } from "./kyun-lab/lab.logic.ts";
+import { chumbakLogic } from "./kyun-lab/chumbak.logic.ts";   // r7 chumbak
 import { konLogic } from "./kon/kon.logic.ts";
 import { stambhLogic } from "./stambh/stambh.logic.ts";
 import { beamLogic } from "./yantra/beam.logic.ts";
@@ -27,6 +28,9 @@ import { parkarLogic } from "./parkar/parkar.logic.ts";
 import { aankdeLogic } from "./aankde/aankde.logic.ts";
 import { paheliLogic } from "./paheli/paheli.logic.ts";
 import { galtiLogic } from "./galti-pakdo/galti.logic.ts";
+import { chhaanoLogic } from "./chhaano/chhaano.logic.ts";
+import { gatiLogic } from "./gati/gati.logic.ts";
+import { bhaapLogic } from "./bhaap/bhaap.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { tileLogic } from "./darpan/tile.logic.ts";   // r7 tilings2
 import { feetaLogic } from "./feeta/feeta.logic.ts";
@@ -47,6 +51,10 @@ export const LOGIC: Record<string, AnyLogic> = {
   "nishana/compare": asAny(lineLogic),
   "nishana/hop": asAny(lineLogic),
   "kyun-lab/fair-test": asAny(labLogic),
+  // r7 chumbak: magnets, class 6 science (pins along a hidden magnet, a toy train, the sure test, a snapped magnet, the kit's
+  // 20 pins against 8; a hung magnet and a map, a compass turned with her, a compass by the iron); never timed
+  "kyun-lab/dhruv": asAny(chumbakLogic),
+  "kyun-lab/disha": asAny(chumbakLogic),
   "kon/turn": asAny(konLogic),
   "kon/set": asAny(konLogic),
   "kon/zone": asAny(konLogic),
@@ -144,5 +152,19 @@ export const LOGIC: Record<string, AnyLogic> = {
   "paheli/mirror": asAny(paheliLogic),
   // round 7: Galti Pakdo, a friend's working of an equation checked on the taraazu, the first wrong line caught and mended
   "galti-pakdo/kaapi": asAny(galtiLogic),
+  // round 7: Chhaano, separating mixtures (class 6 science): dry piles split by threshing, winnowing, handpicking and sieving;
+  // a beaker of water settled, decanted, filtered and dried in the sun, every solid scooped into its jar
+  "chhaano/sukha": asAny(chhaanoLogic),
+  "chhaano/geela": asAny(chhaanoLogic),
+  // round 7: Gati, motion (a reference point, the types of motion, speed on a marked track, uniform trails); never timed
+  "gati/drishti": asAny(gatiLogic),
+  "gati/raftaar": asAny(gatiLogic),
+  "gati/nishaan": asAny(gatiLogic),
+  // round 7: Bhaap, processes of water and air (class 6-7 science): the pot heated and cooled through its states, water
+  // evaporating and condensing, convection on the beach and in a room, the water cycle and the ground; a step per tap
+  "bhaap/avastha": asAny(bhaapLogic),
+  "bhaap/bhaapan": asAny(bhaapLogic),
+  "bhaap/hawa": asAny(bhaapLogic),
+  "bhaap/chakra": asAny(bhaapLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

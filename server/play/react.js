@@ -32,6 +32,10 @@ import { parkarHidden } from "../../src/play/families/parkar/parkar.logic.ts";
 import { aankdeHidden } from "../../src/play/families/aankde/aankde.logic.ts";
 import { paheliHidden } from "../../src/play/families/paheli/paheli.logic.ts";
 import { galtiHidden } from "../../src/play/families/galti-pakdo/galti.logic.ts";
+import { chhaanoHidden } from "../../src/play/families/chhaano/chhaano.logic.ts";
+import { gatiHidden } from "../../src/play/families/gati/gati.logic.ts";
+import { chumbakHidden, CHUMBAK_MODES } from "../../src/play/families/kyun-lab/chumbak.logic.ts";
+import { bhaapHidden } from "../../src/play/families/bhaap/bhaap.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -101,6 +105,16 @@ export function hiddenOf(level) {
   // r7 galti-pakdo: whether the working is all correct, the first wrong line, the mended line and the true x are never said
   // first. Checked by family first: modes may share names with other families
   if (level.family === "galti-pakdo") return galtiHidden(level);
+  // r7 chhaano: the methods the mixture needs (and, when it winnows, where the grain falls) are never said first. Checked
+  // by family first: modes may share names with other families
+  if (level.family === "chhaano") return chhaanoHidden(level);
+  // r7 gati: the speed a trip makes and the m/s a speedometer reading is are never said first. Checked by family first
+  if (level.family === "gati") return gatiHidden(level);
+  // r7 chumbak (kyun-lab's magnet modes): the pole spots, the carriages to turn, the magnet bar, the new poles at a break,
+  // the stronger magnet and its pins, the landmark's direction are never said first. Checked by family first
+  if (level.family === "kyun-lab" && CHUMBAK_MODES.includes(level.mode)) return chumbakHidden(level);
+  // r7 bhaap: the tools a process needs (and, for a device, where it goes) are never said first. Checked by family first
+  if (level.family === "bhaap") return bhaapHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];
