@@ -35,3 +35,8 @@ export function agree(text) {
   return String(text ?? "").replace(/\btulna karo (?=kar)/giu, "tulna ").replace(/(?<![\d/.])\b([2-9]|[1-9]\d+)(\s+(?:\p{L}+\s+)?)(tukda|hissa|bhuja)(?![\p{L}])/giu,
     (m, n, mid, w) => (/^(?:ka|ki|ke|wala|wali|wale|se|mein|par)\s+$/i.test(mid.trim() + " ") ? m : `${n}${mid}${keepCase(w, PLURAL[w.toLowerCase()])}`));
 }
+/** v6.8 R5 (main on director16, ×5: "Upar ka 1, jitne tukde humne liye"): a count of one takes the singular — "jitna tukda … liya". */
+export function agreeOne(text) {
+  return String(text ?? "").replace(/(?<![\d/.])\b1([,:]?\s+)jitne\s+(tukde|hisse)(\s+(?:\p{L}+\s+){0,2}?)(liye|mile|bache|khaye)(?![\p{L}])/giu,
+    (m, sep, w, mid, v) => `1${sep}jitna ${w.toLowerCase() === "tukde" ? "tukda" : "hissa"}${mid}${{ liye: "liya", mile: "mila", bache: "bacha", khaye: "khaya" }[v.toLowerCase()]}`);
+}
