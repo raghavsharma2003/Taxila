@@ -3156,9 +3156,25 @@ export function step(prev, input) {
   // worked step during a worked example), else the walk's current beat — in their language, on that beat's board; the card is
   // then re-posed. Never a closed card's or another beat's. (After the help ladder: a Hindi request re-says the beat, it
   // climbs no rung)
-  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && ["language", "clarify"].includes(p.request)) {
-    const lb = liveBeatSimpler(s, input.kit);
+  // (v6.7 B1″, main on director15 c4 stuck 24: "samajh nahi aaya" on a live then-card taught e4, a point not yet reached: a "didn't
+  // understand" on a live card whose move teaches another beat gets the live beat's simpler too)
+  const liveCardBeat = s.activeItemId ? (() => { const it = findItem(s, input.kit, s.activeItemId); return it && isScriptCard(it) ? cardBeatRef(s, input.kit, it) : null; })() : null;
+  const offBeat = p.request === "another" && liveCardBeat && move.scriptBeat?.beatId && String(move.scriptBeat.beatId).replace(/^explain:/, "") !== String(liveCardBeat.beatId);
+  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && (["language", "clarify"].includes(p.request) || offBeat)) {
+    let lb = liveBeatSimpler(s, input.kit);
+    // (v6.7 B1″, main on director15 c4 stuck 10, steering 8: "Ab Hindi mein" said the simpler of the turn before word for word): a
+    // simpler she said in her last turns is not said again — the beat's authored point is, in their language
+    const recentT = (s.recent ?? []).filter((t) => t.who === "teacher").slice(-3).map((t) => normLine(t.text ?? ""));
+    if (lb && p.request === "language" && recentT.some((t) => t.includes(normLine(lb.text).slice(0, 60)))) {
+      const sk = skillScriptOf(input.kit, lb.beat?.skillId);
+      const bid = String(lb.beat?.beatId ?? "").replace(/^explain:/, "");
+      const pt = sk?.explain?.find((b) => b.id === bid)?.point;
+      const t = pt ? saidIn(pt, s.ctx?.lang ?? "hinglish") : null;
+      lb = t && String(t).trim() && !recentT.some((x) => x.includes(normLine(t).slice(0, 60))) ? { ...lb, text: String(t).trim() } : null;
+    }
     if (lb) { move.simpler = lb.text; move.simplerBeat = lb.beat; move.smaller = true; }
+    // (off the live card's beat: the other beat's teaching is not said — the live beat's simpler is the turn, on its board)
+    if (lb && offBeat) { move.scriptBeat = { ...lb.beat }; delete move.rendered; delete move.point; delete move.mustSay; }
   }
   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
   if (p.request) move.request = p.request;
