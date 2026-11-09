@@ -47,7 +47,7 @@ Results:
 
 Facts: every food's result is the kit's (rules in `src/play/families/jaanch/jaanch.logic.ts` KIT_OF; the tests read each
 sentence out of `data/kits/c6-science.json`, item sentences only from verified items): potato (i03; the worked example's
-boiled potato leaves no oily patch), rice and roti (the starch-test expectation), rice water (i04, i07), idli (rl-o1),
+boiled potato leaves no oily patch), rice and roti (the starch-test expectation), rice water (i04, i07),
 cucumber little or no blue-black (i03), sugar solution not blue-black (the expectation, i04), milk (i07), paneer no blue-black
 and an oily patch (i08), groundnut no blue-black (i10) and a patch (the fat-test expectation), coconut and coconut oil (i05),
 roasted cashew (rl-o2), chips (i09), water (the expectation, i05), tomato (m3), the new snack (rl-h3). Drops and drying steps

@@ -98,7 +98,6 @@ test("jaanch: every food's result is cited to a kit sentence (read here from the
     rice: { starch: [true, "expectations", "turn blue-black where starch is present (potato, rice, roti)"] },
     roti: { starch: [true, "expectations", "turn blue-black where starch is present (potato, rice, roti)"] },
     ricewater: { starch: [true, "i04", "Only the rice water. Iodine shows starch"] },
-    idli: { starch: [true, "rl-o1", "Dilute iodine turns blue-black when starch is present"] },
     cucumber: { starch: [false, "i03", "the cucumber shows little or no blue-black"] },
     sugar: { starch: [false, "expectations", "sugar does not turn blue-black"] },
     milk: { starch: [false, "i07", "Milk does not turn blue-black with iodine"] },
@@ -255,11 +254,11 @@ test("jaanch: a result is never taken before its evidence is on the bench (the s
 });
 
 // ───────────────────────────── THE INDEPENDENT CHECKER (its own reading of the kit; none of the law's helpers) ─────────────────────────────
-// Iodine turns blue-black where starch is (potato, rice, roti, rice water, idli, the new snack) and stays its own brown on
+// Iodine turns blue-black where starch is (potato, rice, roti, rice water, the new snack) and stays its own brown on
 // cucumber, sugar solution, milk, paneer and groundnut; a food's patch on paper stays after drying if it has fat (groundnut,
 // coconut, coconut oil, cashew, chips, paneer, the new snack) and dries away if not (water, tomato, potato). A result is said
 // only after a few drops, or after the paper is dry and held to the light; dono moves on only with both said.
-const BLUE = new Set(["potato", "rice", "roti", "ricewater", "idli", "snack"]);
+const BLUE = new Set(["potato", "rice", "roti", "ricewater", "snack"]);
 const BROWN = new Set(["cucumber", "sugar", "milk", "paneer", "groundnut"]);
 const STAYS = new Set(["groundnut", "coconut", "oil", "cashew", "chips", "paneer", "snack"]);
 const GOES = new Set(["water", "tomato", "potato"]);

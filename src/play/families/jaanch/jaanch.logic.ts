@@ -55,8 +55,6 @@ export const KIT_OF: Record<string, Record<string, string>> = {
     "cucumber": "the cucumber shows little or no blue-black and stays the brownish-yellow colour of iodine",
     "rice water": "Only the rice water. Iodine shows starch; sugar is a carbohydrate but not starch, so it does not turn blue-black",
     "rice water is": "rice water (the starchy water from cooking rice)",
-    "idli": "you want to test an idli for starch",
-    "idli blue-black": "Dilute iodine turns blue-black when starch is present",
     "milk": "Milk does not turn blue-black with iodine",
     "paneer": "iodine shows no blue-black, the paper shows an oily patch",
     "coconut": "The coconut oil and the crushed coconut (both contain fat); the water patch dries and disappears",
@@ -86,7 +84,7 @@ export const KIT_OF: Record<string, Record<string, string>> = {
 /** a food on the bench: what iodine shows on it (starch) and whether its patch stays on dry paper (fat); a test the kit gives
  *  no result for is undefined and the food is never on that test's card. `liquid`: a drop goes on the paper, not a rub.
  *  KIT_OF: potato (i03, the worked example's boiled potato: blue-black, no oily patch); rice, roti (the starch test); rice
- *  water (i04, i07); idli (rl-o1); cucumber (i03: little or no blue-black); sugar solution (not sugar, i04); milk (i07);
+ *  water (i04, i07); cucumber (i03: little or no blue-black); sugar solution (not sugar, i04); milk (i07);
  *  paneer (i08: no blue-black, an oily patch); groundnut (the fat test, i02, i10: starch ✗); coconut and coconut oil (i05);
  *  roasted cashew (rl-o2); chips (i09); water (the fat test, i05); tomato (m3); the new snack (rl-h3) */
 export interface Food { starch?: boolean; fat?: boolean; liquid?: boolean }
@@ -95,7 +93,6 @@ export const FOODS = {
   rice: { starch: true },
   roti: { starch: true },
   ricewater: { starch: true, liquid: true },
-  idli: { starch: true },
   cucumber: { starch: false },
   sugar: { starch: false, liquid: true },
   milk: { starch: false, liquid: true },
@@ -127,9 +124,9 @@ const CTX = ["lab", "kaksha"] as const;
 const r = (look: Look, ...card: FoodId[]): Row => ({ card, ctx: CTX, look });
 /** iodine: sugar solution and a blue-black food on every card */
 const IODINE_ROWS: readonly Row[] = [
-  r(1, "potato", "sugar"), r(1, "ricewater", "sugar"), r(1, "sugar", "roti"), r(1, "idli", "sugar"), r(1, "sugar", "rice"),
-  r(2, "potato", "cucumber", "sugar"), r(2, "ricewater", "milk", "sugar"), r(2, "roti", "sugar", "cucumber"), r(2, "sugar", "idli", "milk"), r(2, "rice", "sugar", "paneer"),
-  r(3, "potato", "cucumber", "sugar", "ricewater"), r(3, "milk", "ricewater", "sugar", "idli"), r(3, "sugar", "roti", "cucumber", "rice"), r(3, "idli", "sugar", "paneer", "potato"), r(3, "rice", "milk", "sugar", "roti"),
+  r(1, "potato", "sugar"), r(1, "ricewater", "sugar"), r(1, "sugar", "roti"), r(1, "sugar", "rice"),
+  r(2, "potato", "cucumber", "sugar"), r(2, "ricewater", "milk", "sugar"), r(2, "roti", "sugar", "cucumber"), r(2, "sugar", "roti", "milk"), r(2, "rice", "sugar", "paneer"),
+  r(3, "potato", "cucumber", "sugar", "ricewater"), r(3, "milk", "ricewater", "sugar", "potato"), r(3, "sugar", "roti", "cucumber", "rice"), r(3, "roti", "sugar", "paneer", "potato"), r(3, "rice", "milk", "sugar", "roti"),
 ];
 /** kaagaz: water or a tomato, and a food whose patch stays, on every card */
 const KAAGAZ_ROWS: readonly Row[] = [
