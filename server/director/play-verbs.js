@@ -112,6 +112,11 @@ export const PLAY_ACTS = Object.freeze({
   gati: { drishti: { act: "watch", hi: "ghadi aage badhao aur har cheez se dekho", en: "step the clock and watch from each thing" },
     raftaar: { act: "step", hi: "ghadi aage badhao aur track par doori dekho", en: "step the clock and read the distance on the track" },
     nishaan: { act: "step", hi: "ghadi aage badhao aur nishaanon ki doori dekho", en: "step the clock and compare the gaps between the marks" } },
+  // r7 games: Bhaap (processes of water and air, class 6-7 science): the child runs each process a step at a time
+  bhaap: { avastha: { act: "heat", hi: "ek-ek nishaan garam ya thanda karo, aur har badlaav uske nishaan par dekho", en: "heat or cool it a notch at a time and watch each change at its mark" },
+    bhaapan: { act: "wait", hi: "ruko, thandi cheez bahar rakho, aur boondein cup mein ponchho", en: "wait, put something cold out, and wipe the drops into the cup" },
+    hawa: { act: "step", hi: "din ya raat karo, ruko, aur hawa ke saath chalo", en: "set day or night, wait, and go with the breeze" },
+    chakra: { act: "step", hi: "dhoop se zameen tak, chakra ek-ek kadam chalao", en: "run the cycle a step at a time, from the sun down into the ground" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape

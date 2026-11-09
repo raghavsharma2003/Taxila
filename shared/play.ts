@@ -42,6 +42,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "galti-pakdo", // round 7: a friend's working of an equation checked on the taraazu; the first wrong line caught and mended
   "chhaano",    // round 7: separating mixtures (class 6 science): methods chosen and applied in turn until every part is recovered
   "gati",       // round 7: motion (a reference point, the types of motion, speed on a marked track, uniform trails); the child steps the clock
+  "bhaap",      // round 7: processes of water and air (states, evaporation and condensation, convection and breezes, the water cycle and groundwater); the child runs them a step at a time
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -72,6 +73,7 @@ export const MODES = {
   "galti-pakdo": ["kaapi"],   // the friend's notebook (kaapi)
   chhaano: ["sukha", "geela"], // dry mixtures (handpick, thresh, winnow, sieve); mixtures in water (settle, decant, filter, evaporate)
   gati: ["drishti", "raftaar", "nishaan"],   // the viewpoint (drishti), speed (raftaar), the marks (nishaan)
+  bhaap: ["avastha", "bhaapan", "hawa", "chakra"],   // states of water (avastha), evaporation and condensation (bhaapan), convection (hawa), the water cycle (chakra)
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -367,7 +369,7 @@ export type AankdeAct =
   | { kind: "peg"; at: number }                          // middle: the peg at slot `at` (2i on card i, 2i + 1 in the gap after it)
   | { kind: "run" }                                      // count / level / pour / fold: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct | ChhaanoAct | GatiAct | ChumbakAct;
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct | ChhaanoAct | GatiAct | ChumbakAct | BhaapAct;
 // Kyun-Lab chumbak (round 7, magnets, class 6 science): a pin touched along a hidden magnet and its poles flagged; carriages
 // turned round and pushed together; a marked magnet's pole brought to an end; a snapped magnet's new ends labelled; magnets
 // dipped into pins; a hung magnet twisted and let go, a map turned; she turns, the compass box turns, she walks off the iron;
@@ -387,6 +389,13 @@ export type ChumbakAct =
   | { kind: "dial"; by: number }                         // disha: the compass box turned a quarter (±1) in her hands
   | { kind: "go"; to: number }                           // disha/loha: she walks to spot `to` (0 by the iron, 1 away)
   | { kind: "run" }                                      // lift the cover / push the train / check the labels / the map is set / read the compass
+// Bhaap (round 7, processes of water and air, class 6-7 science): a tool used once (heat, cool, a wait, a sail, a rain; `at` the
+// bench place it acts on), a thing put out (a glass from the fridge, a device high or low on the wall), or "ho gaya"; the law
+// answers each at once, never on a clock
+export type BhaapAct =
+  | { kind: "use"; m: string; at?: number }      // tool m (heat, cool, lid, sugar, plate, wait, wipe, day, night, sail, sun, rise, rain, flow, pit, pump)
+  | { kind: "put"; what: string; at: number }    // bhaapan: a thing from the fridge onto bench place `at`; kamra: a device high (0) or low (1)
+  | { kind: "done" }
   | { kind: "undo" };
 // Chhaano (round 7, separating mixtures, class 6 science): a method applied to one pile (sukha) or one vessel (geela), a dry
 // solid scooped into its jar, or "ho gaya"; the law answers at once, never on a clock (settling advances one wait at a time)
@@ -619,6 +628,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   "galti-pakdo": ["kagaz", "chalk", "blueprint", "raat"],
   chhaano: ["kagaz", "chalk", "blueprint", "raat"],
   gati: ["kagaz", "chalk", "blueprint", "raat"],
+  bhaap: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;
