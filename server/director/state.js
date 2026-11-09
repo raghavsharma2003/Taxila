@@ -3065,15 +3065,17 @@ export function step(prev, input) {
       } else if (e.onItem === null && e.at < s.turn && s.activeItemId) e.onItem = s.activeItemId;
     }
   }
-  if (scriptOn() && scriptIdOf(input.kit) && !s.servedNow && !["safeguard", "wrap", "break"].includes(move.kind)) {
+  // (v6.5 A1, main on director13 c5-t01 stuck 34 → never, c6 steady 36 → 82: an aside not yet returned comes back at a break or a
+  // stop at the latest — the child leaving or resting is the last boundary there is)
+  if (scriptOn() && scriptIdOf(input.kit) && !s.servedNow && !["safeguard", "wrap"].includes(move.kind)) {
     const live = s.activeItemId ?? null;
-    const boundary = !(live && live === prev.activeItemId) && !String(live ?? "").includes(":then:") && !s.splitHold
+    const boundary = move.kind === "break" || !(live && live === prev.activeItemId) && !String(live ?? "").includes(":then:") && !s.splitHold
       // (v6.4 H2″, director12 c5-t02 steering 23→40: the worked example's opening is a boundary, its steps and card are not)
       && !/^worked(?::step|$)/.test(move.scriptBeat?.beatId ?? "") && move.scriptBeat?.kind !== "remediation" && !move.request && !input.cls?.request?.type
       // (v6.5 F1, main on director13 c6 offtopic 40: no aside return beside a wrong verdict — it waits for the next boundary)
       && !(prev.activeItemId && ["incorrect", "misconception"].includes(String(input.cls?.outcome ?? "")));
     const due = boundary ? (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at
-      && live !== e.onItem) : null;
+      && (live !== e.onItem || move.kind === "break")) : null;
     if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share, said: due.said ?? null }; }
   }
   if (s.servedNow?.topic) {

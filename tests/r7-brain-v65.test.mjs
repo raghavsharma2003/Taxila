@@ -250,4 +250,39 @@ describe("r7-brain-v65.test.mjs", () => {
     const { out } = await at("stuck", "c4", 46, { lastMove: { kind: "break", request: undefined } });
     assert.doesNotMatch(out.reply, /aadha kab hota hai|teenon tukde/, out.reply);
   });
+
+  // A1 — asides: no canned fact about an aside on any turn; an aside unreturned by its card's close comes back, at a break at latest
+  test("A1 predicate: no canned fact about an aside on any turn (c5-t02 steady 46, 50; c6 offtopic 8; c6 stuck 38)", async () => {
+    const bad = [];
+    for (const [persona, topic, n] of [["steady", "c5-t02", 46], ["steady", "c5-t02", 50], ["offtopic", "c6", 8], ["stuck", "c6", 38]]) {
+      const { out } = await at(persona, topic, n);
+      if (/mashhoor|cover drive/i.test(out.reply)) bad.push(`${persona} ${topic} row ${n}: ${out.reply.slice(0, 160)}`);
+    }
+    assert.deepEqual(bad, []);
+  });
+  for (const persona of ["offtopic", "steering", "steady", "stuck"]) for (const topic of Object.keys(TOPIC)) {
+    test(`A1 predicate: every aside parked is returned by the lesson's end (${persona} ${topic})`, async () => {
+      const T = TOPIC[topic];
+      const sc = runScriptOf(RUN, T); delete sc.recordedRun;
+      setScriptForTest(T, sc);
+      const { plans } = await replay(RUN, persona, T, 1e9);
+      const end = plans.at(-1).state;
+      const open = (end.later ?? []).filter((e) => e.share && e.parkSaid && !e.servedAt);
+      // (the lesson's own end returns them at the wrap; a lesson the replay stops mid-walk counts only asides older than 12 turns)
+      const stale = open.filter((e) => end.turn - e.at > 12 && end.lastMove?.kind !== "wrap");
+      assert.deepEqual(stale.map((e) => `${e.topic} parked at ${e.at}, open at ${end.turn}`), []);
+    });
+  }
+  test("A1 predicate: a break returns an aside still open", async () => {
+    const T = TOPIC["c5-t01"];
+    const sc = runScriptOf(RUN, T); delete sc.recordedRun;
+    setScriptForTest(T, sc);
+    const { kit, last } = await replay(RUN, "stuck", T, 37);
+    const e = (last.state.later ?? []).find((x) => x.share && x.parkSaid && !x.servedAt);
+    assert.ok(e, "an aside open at row 36");
+    const { step } = await import("../server/director/state.js");
+    const r = step({ ...last.state }, { event: "turn", kit, cls: { outcome: "no_evidence", confidence: 0.9, flags: {}, request: { type: "break" } }, text: "thak gayi, thoda break", now: 9_000_000 });
+    assert.equal(r.move.kind, "break");
+    assert.equal(r.move.returned?.topic, e.topic, JSON.stringify(r.move).slice(0, 200));
+  });
 });

@@ -1987,7 +1987,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
           if (returnLineOk(c, said0, ret.topic)) { line = dot(c); guard.returnRetry = true; }
         } catch { /* no line: the return is not said this turn */ }
       }
-      if (line) { aside.push(line); guard.returnSaid = true; } else guard.returnMissed = true;
+      if (line) { aside.push(line); guard.returnSaid = true; guard.returnLine = line; } else guard.returnMissed = true;
     }
     // v6.3 H2′ (director11: "Aur Virat ki baat: …" mid-card, before the promised card was closed): an open aside that is neither
     // parked nor returned on this turn is not talked about by her either (a sentence naming it with no number of the lesson goes)
@@ -2315,9 +2315,44 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   if (!clause.sent && verdict !== "correct" && verdict !== "not_yet" && state.lastMove?.kind === "break" && !state.lastMove?.request && scriptFor(kit)?.script) {
     const offer = (x) => /(?<![\p{L}])(?:ruk\w*|break|band|aage\s+badh\w*|jaari|continue|stop|rest|aaram)(?![\p{L}])/iu.test(x);
     const ssb = sentences(reply).map((x) => String(x).trim()).filter(Boolean);
-    const kept = ssb.filter((x) => !/\d/.test(x) && !LESSON_SAID.test(x) && !RULE_SAID.test(x) && (!/[?？]/.test(x) || offer(x)));
-    const r1 = kept.length && kept.some(offer) ? kept.join(" ") : BREAK_OFFER[lang === "english" ? "english" : "hinglish"];
+    const retW = String(state.lastMove?.returned?.topic ?? "").toLowerCase().match(/\p{L}{4,}/u)?.[0] ?? null;
+    const isRet = (x) => !!retW && x.toLowerCase().includes(retW) && !/[?？]/.test(x);
+    const kept = ssb.filter((x) => isRet(x) || (!/\d/.test(x) && !LESSON_SAID.test(x) && !RULE_SAID.test(x) && (!/[?？]/.test(x) || offer(x))));
+    // (v6.5 A1: an aside returned at the break is said there, before the offer)
+    const r1 = kept.length && kept.some(offer) ? kept.join(" ") : [...kept.filter(isRet), BREAK_OFFER[lang === "english" ? "english" : "hinglish"]].join(" ");
     if (r1 !== reply) { reply = r1; guard.breakPlain = true; }
+  }
+  // v6.5 A1: a return due on a turn the scripted assembly did not build (a break, a stop — the latest boundary there is) is said
+  // here, before anything else: the honest line when they asked her taste (F2), else her own line that passes returnLineOk
+  {
+    const ret = state.lastMove?.returned;
+    if (!clause.sent && ret?.topic && !guard.returnSaid && !guard.returnHeld && !guard.returnMissed) {
+      const said0 = ret.said ?? "";
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang) : sentences(reply).map((x) => String(x).trim()).find((x) => returnLineOk(x, said0, ret.topic)) ?? null;
+      if (line) { if (!String(reply).includes(line)) reply = `${line} ${reply}`.trim(); guard.returnSaid = true; guard.returnLine = line; } else guard.returnMissed = true;
+    }
+  }
+  // v6.5 A1 (main, director13: "Virat ke cover drive kaafi mashhoor hai" ×4 on cards, c5-t02 steady 46/50, c6 offtopic 8, stuck 38):
+  // on every turn, a sentence of hers about an aside's topic that is a fact — not to the child, no lesson words, not something they
+  // just said — goes (a return or a reaction speaks to them; code's honest line does too)
+  if (!clause.sent) {
+    const topicW = [...new Set([...(state.later ?? []).map((e) => String(e.topic ?? "").toLowerCase().match(/\p{L}{4,}/u)?.[0]), "cricket", "virat", "kohli", "sixer", "dhoni"].filter(Boolean))];
+    const canned = (x) => { const t = x.toLowerCase(); const w = topicW.find((k) => new RegExp(`(?<![\\p{L}])${k}`, "iu").test(t));
+      // (their own word said back is no exemption — "Virat ke cover drive … mashhoor" answered "aapko Virat pasand hai?"; the park's
+      // promise is kept, and so is a line spoken to them)
+      const nm = (y) => String(y ?? "").replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?]+$/, "");
+      const isRet = !!guard.returnLine && nm(x) === nm(guard.returnLine);
+      return !!w && !isRet && !PROMISE_SAID.test(x) && !/(?<![\p{L}])(?:ke\s+baad|baad\s+mein|karenge|yaad\s+rahega|later)(?![\p{L}])/iu.test(x)
+        && !/(?<![\p{L}])(?:tum|tumne|tumhe|tumhari|tumhara|tumko|you|your|ai)(?![\p{L}])/iu.test(x) && !LESSON_SAID.test(x) && !/\d/.test(x); };
+    const ssc = sentences(reply).map((x) => String(x).trim()).filter(Boolean);
+    const kept = ssc.filter((x) => !canned(x));
+    if (kept.length && kept.length < ssc.length) { reply = kept.join(" "); guard.cannedDropped = ssc.length - kept.length; }
+    // (an aside parked THIS turn whose only mention was such a sentence is still said: code's promise, as when her words leave it out)
+    const parkedNow = (state.later ?? []).find((e) => e.at === state.turn && e.servedAt == null && e.share);
+    const pk = parkedNow ? String(parkedNow.topic ?? "").toLowerCase().match(/\p{L}{4,}/u)?.[0] : null;
+    if (pk && guard.cannedDropped && !new RegExp(`(?<![\\p{L}])${pk}`, "iu").test(reply) && state.lastMove?.kind !== "safeguard") {
+      reply = `${pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(parkedNow.topic)} ${reply}`.trim(); guard.parkRestored = true;
+    }
   }
   // v6.5 F2 (main's ruling, director13): on any path, a sentence of hers claiming a taste or an experience of her own, or saying she is
   // not an AI, goes (never her whole line); code's honest line says "meri apni koi pasand nahi" and is kept
