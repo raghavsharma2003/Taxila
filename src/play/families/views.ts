@@ -8,6 +8,7 @@ import { makeBalanceView } from "./taraazu/balance.view.ts";
 import { makeWeighView } from "./taraazu/weigh.view.ts";
 import { makeLineView } from "./nishana/line.view.ts";
 import { makeLabView } from "./kyun-lab/lab.view.ts";
+import { makeChumbakView } from "./kyun-lab/chumbak.view.ts";   // r7 chumbak
 import { makeKonView } from "./kon/kon.view.ts";
 import { makeStambhView } from "./stambh/stambh.view.ts";
 import { makeBeamView } from "./yantra/beam.view.ts";
@@ -30,6 +31,9 @@ import { makeParkarView } from "./parkar/parkar.view.ts";
 import { makeAankdeView } from "./aankde/aankde.view.ts";
 import { makePaheliView } from "./paheli/paheli.view.ts";
 import { makeGaltiView } from "./galti-pakdo/galti.view.ts";
+import { makeChhaanoView } from "./chhaano/chhaano.view.ts";
+import { makeGatiView } from "./gati/gati.view.ts";
+import { makeBhaapView } from "./bhaap/bhaap.view.ts";
 import { makeDarpanView } from "./darpan/darpan.view.ts";
 import { makeTileView } from "./darpan/tile.view.ts";   // r7 tilings2
 import { makeFeetaView } from "./feeta/feeta.view.ts";
@@ -47,6 +51,8 @@ export const VIEWS: Record<string, MakeView> = {
   "nishana/compare": makeLineView,
   "nishana/hop": makeLineView,
   "kyun-lab/fair-test": makeLabView,
+  "kyun-lab/dhruv": makeChumbakView,
+  "kyun-lab/disha": makeChumbakView,
   "kon/turn": makeKonView,
   "kon/set": makeKonView,
   "kon/zone": makeKonView,
@@ -119,5 +125,14 @@ export const VIEWS: Record<string, MakeView> = {
   "paheli/cipher": makePaheliView,
   "paheli/mirror": makePaheliView,
   "galti-pakdo/kaapi": makeGaltiView,
+  "chhaano/sukha": makeChhaanoView,
+  "chhaano/geela": makeChhaanoView,
+  "gati/drishti": makeGatiView,
+  "gati/raftaar": makeGatiView,
+  "gati/nishaan": makeGatiView,
+  "bhaap/avastha": makeBhaapView,
+  "bhaap/bhaapan": makeBhaapView,
+  "bhaap/hawa": makeBhaapView,
+  "bhaap/chakra": makeBhaapView,
 };
 export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }

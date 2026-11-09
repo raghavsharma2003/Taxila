@@ -63,7 +63,7 @@ export function lint(add, kit) {
   if (scope) for (const sid of scope) if (!skillIds.includes(sid)) e.push(`scope ${sid} is not a kit skill`);
   const inScope = (sid) => !scope || scope.includes(sid);
   if ((!scope || add.workedExampleSkill != null) && !skillIds.includes(add.workedExampleSkill)) e.push(`workedExampleSkill ${add.workedExampleSkill} is not a kit skill`);
-  const scripted = add.topicId === "c5-maths-ch02-t02";
+  const scripted = add.topicId === "c5-maths-ch02-t02" && !add.requireSource; // the next-30 batch only (its lesson script taught s1/s2)
   const taught = new Set([add.workedExampleSkill ?? (scope ? kit.workedExample?.skillId : undefined), ...(scope ? (kit.skillExamples ?? []).map((x) => x.skillId) : [])].filter(Boolean));
   const want = scripted ? [] : skillIds.filter((s) => !taught.has(s) && inScope(s));
   const got = (add.skillExamples ?? []).map((x) => x.skillId);

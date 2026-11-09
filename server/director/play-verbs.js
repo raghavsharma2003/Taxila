@@ -16,7 +16,11 @@ export const PLAY_ACTS = Object.freeze({
   nishana: { place: { act: "place", hi: "line par rakho", en: "place it on the line" }, compare: { act: "choose", hi: "chuniye", en: "choose" },
     // r7 games: integer operations as hops from a start on the line
     hop: { act: "place", hi: "jahan pahunchoge wahan rakho", en: "land it where the hop ends" } },
-  "kyun-lab": { "fair-test": { act: "test", hi: "ek cheez badlo aur test karo", en: "change one thing and test" } },
+  "kyun-lab": { "fair-test": { act: "test", hi: "ek cheez badlo aur test karo", en: "change one thing and test" },
+    // r7 chumbak: magnets (touch, flag, turn round, bring a pole near, label, dip; let the magnet hang, turn the map, turn
+    // yourself and the compass box)
+    dhruv: { act: "test", hi: "magnet paas lao, chhu kar dekho aur pole dhoondho", en: "bring the magnet near, test it and find the poles" },
+    disha: { act: "turn", hi: "ghoomo, compass ka dabba ghumao aur disha padho", en: "turn round, turn the compass box and read the direction" } },
   // r4-khand (claude/r4-khand, src/play/engines/khand/copy.json goal lines)
   nazariya: { views: { act: "build", hi: "banao", en: "build" }, array: { act: "fill_count", hi: "bharo, phir gino", en: "fill, then count" },
     floor: { act: "lay", hi: "farsh bichhao", en: "lay the floor" }, powers: { act: "build", hi: "banao", en: "build" }, mirror: { act: "build", hi: "banao", en: "build" } },
@@ -101,6 +105,18 @@ export const PLAY_ACTS = Object.freeze({
     mirror: { act: "set", hi: "shuru ka number set karo, ulta karke jodo", en: "set a start, then reverse and add" } },
   // r7 games: Galti Pakdo (a friend's working): weigh the claim in the question, catch the first wrong line, mend it
   "galti-pakdo": { kaapi: { act: "check", hi: "taraazu par jaancho aur pehli galat line pakdo", en: "check it on the balance and catch the first wrong line" } },
+  // r7 games: Chhaano (separating mixtures, class 6 science): methods applied in turn to a pile or a vessel of water
+  chhaano: { sukha: { act: "separate", hi: "tareeke ek ke baad ek lagao, har cheez alag karo", en: "use the methods in turn until every part is on its own" },
+    geela: { act: "separate", hi: "baithne do, nithaaro, filter karo ya sukhao, har cheez dabbe mein lo", en: "settle, decant, filter or dry it, and get each part into its jar" } },
+  // r7 games: Gati (motion): step the clock and watch from a reference, set a speed from a marked track, compare the marks
+  gati: { drishti: { act: "watch", hi: "ghadi aage badhao aur har cheez se dekho", en: "step the clock and watch from each thing" },
+    raftaar: { act: "step", hi: "ghadi aage badhao aur track par doori dekho", en: "step the clock and read the distance on the track" },
+    nishaan: { act: "step", hi: "ghadi aage badhao aur nishaanon ki doori dekho", en: "step the clock and compare the gaps between the marks" } },
+  // r7 games: Bhaap (processes of water and air, class 6-7 science): the child runs each process a step at a time
+  bhaap: { avastha: { act: "heat", hi: "ek-ek nishaan garam ya thanda karo, aur har badlaav uske nishaan par dekho", en: "heat or cool it a notch at a time and watch each change at its mark" },
+    bhaapan: { act: "wait", hi: "ruko, thandi cheez bahar rakho, aur boondein cup mein ponchho", en: "wait, put something cold out, and wipe the drops into the cup" },
+    hawa: { act: "step", hi: "din ya raat karo, ruko, aur hawa ke saath chalo", en: "set day or night, wait, and go with the breeze" },
+    chakra: { act: "step", hi: "dhoop se zameen tak, chakra ek-ek kadam chalao", en: "run the cycle a step at a time, from the sun down into the ground" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape

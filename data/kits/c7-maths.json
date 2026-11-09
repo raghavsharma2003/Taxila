@@ -736,7 +736,8 @@
      "Add 3 lakh: 7,___,00,000.",
      "Add 50 thousand: 7,03,___,000.",
      "Regroup in threes: ___ = 70.35 million."
-    ]
+    ],
+    "skillId": "c7-maths-ch01-t01-s1"
    },
    "formats": {
     "primary": "F3",
@@ -758,6 +759,71 @@
     "railway passengers per day",
     "Kumbh Mela crowd estimates",
     "film box-office collections"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch01-t01-s2",
+     "source": "Large Numbers Around Us — Indian and international place-value systems (lakh, crore, million)",
+     "problem": "A city has two crore thirty lakh people. Write this number with Indian commas, then say it in millions.",
+     "givens": [
+      "population = 2 crore 30 lakh"
+     ],
+     "find": "the number with Indian commas, and the same number in millions",
+     "steps": [
+      {
+       "do": "2 crore → 2,00,00,000; add 30 lakh",
+       "result": "2,30,00,000"
+      },
+      {
+       "do": "drop the Indian commas → regroup in threes from the right",
+       "result": "23,000,000"
+      },
+      {
+       "do": "read the international groups: 23 in the million group",
+       "result": "23 million"
+      },
+      {
+       "do": "check: 1 crore = 10 million and 10 lakh = 1 million",
+       "result": "20 + 3 = 23"
+      }
+     ],
+     "answer": "2,30,00,000 = 23,000,000 = 23 million",
+     "why": "same digits, only the grouping changes → Indian: 3 then pairs (lakh, crore) → international: threes (thousand, million) → 1 crore = 10 million"
+    },
+    {
+     "skillId": "c7-maths-ch01-t01-s3",
+     "source": "Large Numbers Around Us — comparing large numbers using place value",
+     "problem": "Last year one railway zone carried 6,84,48,000 passengers and another carried 6,85,03,000. Which zone carried more passengers?",
+     "givens": [
+      "zone A = 6,84,48,000",
+      "zone B = 6,85,03,000"
+     ],
+     "find": "the larger number",
+     "steps": [
+      {
+       "do": "count the digits of each",
+       "result": "8 digits each → no winner yet"
+      },
+      {
+       "do": "compare from the left: crore digit",
+       "result": "6 and 6 → same"
+      },
+      {
+       "do": "next: ten-lakh digit",
+       "result": "8 and 8 → same"
+      },
+      {
+       "do": "next: lakh digit",
+       "result": "4 and 5 → 5 is bigger"
+      },
+      {
+       "do": "the first place that differs decides",
+       "result": "6,85,03,000 > 6,84,48,000"
+      }
+     ],
+     "answer": "The second zone: 6,85,03,000 is more than 6,84,48,000",
+     "why": "more digits → bigger → same digits → compare place by place from the left → first different place decides, later digits do not matter"
+    }
    ]
   },
   {
@@ -1421,6 +1487,33 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c7-maths-ch01-t02-i14",
+     "skillId": "c7-maths-ch01-t02-s1",
+     "kind": "contrast",
+     "difficulty": 2,
+     "source": "Large Numbers Around Us — exact and approximate values",
+     "prompt_en": "Which of these must be an exact number: the number of train tickets to book for a family of 6 people, or the number of people watching an IPL match in a stadium?",
+     "prompt_hi": "Inme se kaun sa number exact hona chahiye: 6 logon ki family ke liye book karne wale train tickets, ya stadium mein IPL match dekh rahe logon ki ginti?",
+     "answer": "The train tickets: exactly 6, one for each person",
+     "acceptable": [
+      "train tickets",
+      "the tickets",
+      "the train tickets, 6"
+     ],
+     "hints": [
+      "Ask for each one: would being off by one cause a problem?",
+      "If one ticket is missing, one person cannot travel.",
+      "A crowd of 'about 40,000' is fine, but the tickets must be exactly how many?",
+      "The train tickets must be exact: 6 tickets for 6 people; the stadium crowd can be approximate."
+     ],
+     "targetsMisconception": "c7-maths-ch01-t02-m-rounded-wrong",
+     "verified": {
+      "solverAnswer": "The train tickets for 6 people must be exact",
+      "agrees": true,
+      "note": "Blind-solved (class 7 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -1436,7 +1529,8 @@
      "5 or more rounds up, so it becomes ___.",
      "Nearest lakh: look at the ten-thousands digit, which is ___.",
      "58 lakh becomes ___ lakh: 4,59,00,000."
-    ]
+    ],
+    "skillId": "c7-maths-ch01-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -1457,6 +1551,71 @@
     "train route distances",
     "shop bills",
     "stadium attendance"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch01-t02-s1",
+     "source": "Large Numbers Around Us — exact and approximate values",
+     "problem": "Anil's school must give two numbers: the number of bus seats to book for 43 students going on a trip, and the number of people who watched the Ganesh festival procession in town. Which number must be exact, and which can be approximate?",
+     "givens": [
+      "bus seats for 43 students",
+      "people watching the procession"
+     ],
+     "find": "which number must be exact and which can be approximate",
+     "steps": [
+      {
+       "do": "bus seats → ask: does being off by one matter",
+       "result": "yes: one seat short leaves a student behind"
+      },
+      {
+       "do": "so the seat count",
+       "result": "exact: 43 seats"
+      },
+      {
+       "do": "procession crowd → ask: can it be counted, does off by a few hundred matter",
+       "result": "cannot be counted one by one; a few hundred more or less changes nothing"
+      },
+      {
+       "do": "so the crowd count",
+       "result": "approximate, like 'about 5,000'"
+      }
+     ],
+     "answer": "Bus seats must be exact (43); the procession crowd can be approximate",
+     "why": "small error changes the result → exact → error changes nothing and counting is impossible → approximate"
+    },
+    {
+     "skillId": "c7-maths-ch01-t02-s3",
+     "source": "Large Numbers Around Us — rounding to a sensible place and the size of the error",
+     "problem": "A survey counted 3,47,62,500 saplings planted in a state. Round it to the nearest crore and to the nearest lakh. How far is each rounded value from the exact count, and which is closer?",
+     "givens": [
+      "exact count = 3,47,62,500"
+     ],
+     "find": "both rounded values, how far each is from the exact count, and which is closer",
+     "steps": [
+      {
+       "do": "nearest crore → ten-lakh digit is 4, less than 5 → round down",
+       "result": "3,00,00,000"
+      },
+      {
+       "do": "gap from the exact count",
+       "result": "3,47,62,500 − 3,00,00,000 = 47,62,500"
+      },
+      {
+       "do": "nearest lakh → ten-thousands digit is 6, 5 or more → round up",
+       "result": "3,48,00,000"
+      },
+      {
+       "do": "gap from the exact count",
+       "result": "3,48,00,000 − 3,47,62,500 = 37,500"
+      },
+      {
+       "do": "compare the two gaps",
+       "result": "37,500 is far smaller than 47,62,500"
+      }
+     ],
+     "answer": "Nearest crore: 3,00,00,000, off by 47,62,500. Nearest lakh: 3,48,00,000, off by only 37,500, so the nearest-lakh value is closer",
+     "why": "error = gap between exact and rounded → rounding to a bigger place makes a simpler number but a bigger error → pick the place the purpose needs"
+    }
    ]
   },
   {
@@ -2101,7 +2260,8 @@
      "6 × 5 = ___.",
      "Zeros taken off: 3 + 1 = ___.",
      "30 with four more zeros = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch01-t03-s1"
    },
    "formats": {
     "primary": "F2",
@@ -2123,6 +2283,71 @@
     "rotis made in a gurudwara langar",
     "runs across a cricket season",
     "mela ticket sales"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch01-t03-s2",
+     "source": "Large Numbers Around Us — estimating products by rounding",
+     "problem": "A school orders 5,870 notebooks at ₹395 each. Estimate the bill by rounding each number to its highest place.",
+     "givens": [
+      "notebooks = 5,870",
+      "price = ₹395 each"
+     ],
+     "find": "an estimate of the bill",
+     "steps": [
+      {
+       "do": "round 5,870 to the nearest thousand (hundreds digit 8)",
+       "result": "6,000"
+      },
+      {
+       "do": "round 395 to the nearest hundred (tens digit 9)",
+       "result": "400"
+      },
+      {
+       "do": "multiply the non-zero parts, then attach 3 + 2 zeros",
+       "result": "6,000 × 400 = 24,00,000"
+      },
+      {
+       "do": "check against the exact product",
+       "result": "5,870 × 395 = 23,18,650, close to 24 lakh"
+      }
+     ],
+     "answer": "About ₹24,00,000 (24 lakh rupees)",
+     "why": "round each factor to one non-zero digit → multiply those digits → count the zeros → the estimate shows the size of the answer"
+    },
+    {
+     "skillId": "c7-maths-ch01-t03-s3",
+     "source": "Large Numbers Around Us — patterns in products: zeros and the size of a product",
+     "problem": "Without long multiplication, find how many digits 3,000 × 70,000 has, and say the product in lakhs and crores.",
+     "givens": [
+      "3,000 × 70,000"
+     ],
+     "find": "the number of digits and the product in words",
+     "steps": [
+      {
+       "do": "multiply the non-zero parts",
+       "result": "3 × 7 = 21"
+      },
+      {
+       "do": "count the zeros taken off",
+       "result": "3 + 4 = 7"
+      },
+      {
+       "do": "21 followed by 7 zeros",
+       "result": "21,00,00,000"
+      },
+      {
+       "do": "count the digits",
+       "result": "2 + 7 = 9"
+      },
+      {
+       "do": "1 crore is 1 followed by 7 zeros → read it",
+       "result": "21 crore"
+      }
+     ],
+     "answer": "21,00,00,000: 9 digits, twenty-one crore",
+     "why": "every zero is one × 10 → zeros of the factors all move to the product → digits = digits of 21 plus the zeros"
+    }
    ]
   },
   {
@@ -3702,6 +3927,33 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c7-maths-ch02-t02-i15",
+     "skillId": "c7-maths-ch02-t02-s1",
+     "kind": "practice",
+     "difficulty": 2,
+     "source": "Arithmetic Expressions — terms of an expression",
+     "prompt_en": "How many terms does 8 × 5 − 12 ÷ 4 + 7 have? Name each term with its sign.",
+     "prompt_hi": "8 × 5 − 12 ÷ 4 + 7 mein kitne terms hain? Har term ko uske sign ke saath batao.",
+     "answer": "3 terms: 8 × 5, −(12 ÷ 4) and +7",
+     "acceptable": [
+      "3",
+      "three",
+      "3 terms"
+     ],
+     "hints": [
+      "Where do you cut an expression into terms?",
+      "Cut only at + and − signs; × and ÷ stay inside a term.",
+      "The pieces are 8 × 5, 12 ÷ 4 and 7, so how many terms?",
+      "3 terms: 8 × 5, −(12 ÷ 4) and +7."
+     ],
+     "targetsMisconception": "c7-maths-ch02-t02-m-left-to-right",
+     "verified": {
+      "solverAnswer": "3 terms: +8x5, -12/4, +7",
+      "agrees": true,
+      "note": "Blind-solved (class 7 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -3717,7 +3969,8 @@
      "Now the expression is 40 − 8 + ___ × 5.",
      "The terms are 40, −8 and +___.",
      "40 − 8 + 15 = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch02-t02-s2"
    },
    "formats": {
     "primary": "F2",
@@ -3738,6 +3991,91 @@
     "shop discounts",
     "metro card balance",
     "school trip budget"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch02-t02-s1",
+     "source": "Arithmetic Expressions — terms of an expression",
+     "problem": "Arjun writes the expression 45 − 6 × 3 + 20 ÷ 4 − 2. How many terms does it have? Name each term with its sign.",
+     "givens": [
+      "45 − 6 × 3 + 20 ÷ 4 − 2"
+     ],
+     "find": "the number of terms and each term with its sign",
+     "steps": [
+      {
+       "do": "cut the expression at every + and − sign (× and ÷ stay inside a term)",
+       "result": "45 | 6 × 3 | 20 ÷ 4 | 2"
+      },
+      {
+       "do": "give each piece the sign in front of it",
+       "result": "45, −(6 × 3), +(20 ÷ 4), −2"
+      },
+      {
+       "do": "count the pieces",
+       "result": "4 terms"
+      }
+     ],
+     "answer": "4 terms: 45, −(6 × 3), +(20 ÷ 4) and −2",
+     "why": "+ and − separate terms → × and ÷ join numbers into one term → each term carries the sign before it"
+    },
+    {
+     "skillId": "c7-maths-ch02-t02-s3",
+     "source": "Arithmetic Expressions — removing brackets with a minus sign in front",
+     "problem": "Meena has ₹150. She buys a pen for ₹35 and a notebook for ₹45. Her brother writes the money left as 150 − (35 + 45). Remove the brackets and find the money left.",
+     "givens": [
+      "150 − (35 + 45)"
+     ],
+     "find": "the expression without brackets and its value",
+     "steps": [
+      {
+       "do": "minus before the bracket → take away every term inside",
+       "result": "150 − 35 − 45"
+      },
+      {
+       "do": "subtract the first",
+       "result": "150 − 35 = 115"
+      },
+      {
+       "do": "subtract the second",
+       "result": "115 − 45 = 70"
+      },
+      {
+       "do": "check with the bracket first",
+       "result": "35 + 45 = 80 → 150 − 80 = 70"
+      }
+     ],
+     "answer": "150 − (35 + 45) = 150 − 35 − 45 = ₹70",
+     "why": "the bracket is one amount taken away → both prices leave the purse → so both terms get a minus sign"
+    },
+    {
+     "skillId": "c7-maths-ch02-t02-s4",
+     "source": "Arithmetic Expressions — swapping and grouping terms",
+     "problem": "Sana wants to find 76 − 29 + 24 − 11 in her head. Swap and group the terms to make it easy.",
+     "givens": [
+      "76 − 29 + 24 − 11"
+     ],
+     "find": "the value, found by swapping and grouping",
+     "steps": [
+      {
+       "do": "list the terms with their signs",
+       "result": "+76, −29, +24, −11"
+      },
+      {
+       "do": "swap → each sign moves with its own term",
+       "result": "76 + 24 − 29 − 11"
+      },
+      {
+       "do": "group the plus terms and the minus terms",
+       "result": "76 + 24 = 100, 29 + 11 = 40"
+      },
+      {
+       "do": "take away the minus group",
+       "result": "100 − 40 = 60"
+      }
+     ],
+     "answer": "60",
+     "why": "a term is its number with its sign → terms may be swapped and grouped if the signs travel with them → make round numbers first"
+    }
    ]
   },
   {
@@ -5254,7 +5592,8 @@
      "The 1 is in the ___ place: 0.1.",
      "6 hundredths = ___.",
      "2 thousandths = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch03-t02-s1"
    },
    "formats": {
     "primary": "F3",
@@ -5275,6 +5614,67 @@
     "petrol pump readings",
     "sprint timings",
     "kirana shop weights"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch03-t02-s2",
+     "source": "A Peek Beyond the Point — expanded form of decimals",
+     "problem": "A parcel weighs 12.708 kg. Write 12.708 in expanded form with fractions, then put the parts back together to check.",
+     "givens": [
+      "12.708"
+     ],
+     "find": "the expanded form of 12.708",
+     "steps": [
+      {
+       "do": "digits left of the point",
+       "result": "1 ten + 2 ones = 10 + 2"
+      },
+      {
+       "do": "first place after the point: tenths",
+       "result": "7 tenths = 7/10"
+      },
+      {
+       "do": "hundredths and thousandths",
+       "result": "0 hundredths, 8 thousandths = 8/1000"
+      },
+      {
+       "do": "put the parts back together",
+       "result": "10 + 2 + 0.7 + 0.008 = 12.708"
+      }
+     ],
+     "answer": "12.708 = 10 + 2 + 7/10 + 0/100 + 8/1000",
+     "why": "each place is one tenth of the place on its left → each digit × its place value → the parts add back to the number"
+    },
+    {
+     "skillId": "c7-maths-ch03-t02-s3",
+     "source": "A Peek Beyond the Point — decimal place value (a 'point' notation that is not a decimal)",
+     "problem": "Arjun bowled 3.4 overs in a cricket match. An over has 6 balls. How many balls did he bowl, and is 3.4 overs the same as the decimal 3.4?",
+     "givens": [
+      "3.4 overs",
+      "1 over = 6 balls"
+     ],
+     "find": "the number of balls, and whether 3.4 overs equals the decimal 3.4",
+     "steps": [
+      {
+       "do": "in overs, the digit after the point counts balls",
+       "result": "3.4 overs = 3 overs and 4 balls"
+      },
+      {
+       "do": "change overs to balls",
+       "result": "3 × 6 + 4 = 22"
+      },
+      {
+       "do": "4 balls as a part of an over",
+       "result": "4/6 of an over"
+      },
+      {
+       "do": "the decimal 3.4 means",
+       "result": "3 and 4/10, and 4/6 is not 4/10"
+      }
+     ],
+     "answer": "22 balls; no: 3.4 overs is 3 and 4/6 overs, while the decimal 3.4 is 3 and 4/10",
+     "why": "a decimal splits a whole into 10 equal parts → an over has 6 balls, not 10 → so the point in overs is only a separator"
+    }
    ]
   },
   {
@@ -6046,7 +6446,8 @@
      "Tenths: 5, 4, 4, so ___ is the largest.",
      "Hundredths: 5 > 0, so 0.450 ___ 0.405.",
      "Order: ___ < 0.45 < 0.5."
-    ]
+    ],
+    "skillId": "c7-maths-ch03-t03-s2"
    },
    "formats": {
     "primary": "F3",
@@ -6068,6 +6469,71 @@
     "petrol prices",
     "batting averages",
     "rainfall readings"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch03-t03-s1",
+     "source": "A Peek Beyond the Point — locating decimals on a number line by zooming in",
+     "problem": "Kavya walks 3.68 km to school. Find where 3.68 sits on a number line: between which whole numbers, between which tenths, how many hundredth steps past the smaller tenth, and which tenth it is nearer to.",
+     "givens": [
+      "3.68"
+     ],
+     "find": "the position of 3.68 on the number line",
+     "steps": [
+      {
+       "do": "whole numbers around it",
+       "result": "between 3 and 4"
+      },
+      {
+       "do": "zoom into 3 to 4, cut into 10 tenths",
+       "result": "between 3.6 and 3.7"
+      },
+      {
+       "do": "zoom into 3.6 to 3.7, cut into 10 hundredths",
+       "result": "8 small steps after 3.6"
+      },
+      {
+       "do": "steps left to reach 3.7",
+       "result": "3.7 − 3.68 = 0.02"
+      }
+     ],
+     "answer": "Between 3 and 4, between 3.6 and 3.7, 8 hundredth steps after 3.6, nearer to 3.7",
+     "why": "each zoom cuts a gap into 10 equal parts → ones, then tenths, then hundredths → the digits tell which gap and which step"
+    },
+    {
+     "skillId": "c7-maths-ch03-t03-s3",
+     "source": "A Peek Beyond the Point — finding a decimal between two decimals",
+     "problem": "Two ribbon pieces are 4.6 m and 4.7 m long. Find the length exactly halfway between them.",
+     "givens": [
+      "4.6 m",
+      "4.7 m"
+     ],
+     "find": "the decimal exactly halfway between 4.6 and 4.7",
+     "steps": [
+      {
+       "do": "write both with hundredths",
+       "result": "4.60 and 4.70"
+      },
+      {
+       "do": "size of the gap",
+       "result": "4.70 − 4.60 = 0.10"
+      },
+      {
+       "do": "half of 10 hundredths",
+       "result": "5 hundredths = 0.05"
+      },
+      {
+       "do": "step half the gap from the smaller one",
+       "result": "4.60 + 0.05 = 4.65"
+      },
+      {
+       "do": "check both sides",
+       "result": "4.65 − 4.60 = 0.05 and 4.70 − 4.65 = 0.05"
+      }
+     ],
+     "answer": "4.65 m",
+     "why": "add a zero → the gap becomes 10 hundredths → plenty of room between → half the gap lands exactly in the middle"
+    }
    ]
   },
   {
@@ -6823,7 +7289,8 @@
      "Line up the ___.",
      "Tenths: 6 + 8 = 14, write ___ and carry 1.",
      "The answer is ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch03-t04-s1"
    },
    "formats": {
     "primary": "F2",
@@ -6845,6 +7312,72 @@
     "cloth lengths at the tailor",
     "pocket money",
     "rainfall totals"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch03-t04-s2",
+     "source": "A Peek Beyond the Point — subtracting decimals with trading",
+     "problem": "Raju has a rope 20 m long. He cuts off 7.65 m for a swing. How much rope is left?",
+     "givens": [
+      "rope = 20 m",
+      "cut = 7.65 m"
+     ],
+     "find": "the length left",
+     "steps": [
+      {
+       "do": "write 20 as 20.00 → line up the points",
+       "result": "20.00 − 7.65"
+      },
+      {
+       "do": "no ones and no tenths in 20.00 → trade 1 ten into 9 ones, 9 tenths and 10 hundredths",
+       "result": "20.00 = 1 ten + 9 ones + 9 tenths + 10 hundredths = 19 ones + 9 tenths + 10 hundredths"
+      },
+      {
+       "do": "subtract place by place",
+       "result": "10 − 5 = 5, 9 − 6 = 3, 19 − 7 = 12"
+      },
+      {
+       "do": "read the answer",
+       "result": "12.35"
+      },
+      {
+       "do": "check by adding back",
+       "result": "12.35 + 7.65 = 20"
+      }
+     ],
+     "answer": "12.35 m",
+     "why": "points lined up → same places face each other → empty places become zeros → trade when the top digit is too small"
+    },
+    {
+     "skillId": "c7-maths-ch03-t04-s3",
+     "source": "A Peek Beyond the Point — estimating to check decimal sums",
+     "problem": "Asha added 23.8 + 9.35 and got 11.73. Use an estimate to check her answer, then find the exact sum.",
+     "givens": [
+      "23.8 + 9.35",
+      "Asha's answer = 11.73"
+     ],
+     "find": "whether 11.73 can be right, and the exact sum",
+     "steps": [
+      {
+       "do": "round each to the nearest whole number",
+       "result": "24 and 9"
+      },
+      {
+       "do": "add the rounded numbers",
+       "result": "24 + 9 = 33"
+      },
+      {
+       "do": "compare with her answer",
+       "result": "11.73 is far from 33 → wrong"
+      },
+      {
+       "do": "add exactly with points lined up",
+       "result": "23.80 + 9.35 = 33.15"
+      }
+     ],
+     "answer": "Her answer is wrong; the estimate is about 33 and the exact sum is 33.15",
+     "why": "round to whole numbers → easy sum → the true answer must be close to it → far away means a slip (here the points were not lined up)"
+    }
    ]
   },
   {
@@ -7607,7 +8140,8 @@
      "Add the chai: 12n + ___.",
      "Put n = 4: 12 × ___ + 10.",
      "= ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch04-t01-s2"
    },
    "formats": {
     "primary": "F1",
@@ -7628,6 +8162,64 @@
     "ages of brothers and sisters",
     "boxes of laddoos",
     "mobile data used per day"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch04-t01-s1",
+     "source": "Expressions using Letter-Numbers — a letter standing for a changing number (ages)",
+     "problem": "Mohan is 26 years older than his daughter Shreya. Find Mohan's age when Shreya is 5 and when she is 12. Then write Mohan's age when Shreya is s years old.",
+     "givens": [
+      "Mohan is 26 years older than Shreya"
+     ],
+     "find": "Mohan's age for Shreya = 5, 12 and s",
+     "steps": [
+      {
+       "do": "Shreya 5",
+       "result": "5 + 26 = 31"
+      },
+      {
+       "do": "Shreya 12",
+       "result": "12 + 26 = 38"
+      },
+      {
+       "do": "the rule never changes: add 26 → let s stand for any age of Shreya",
+       "result": "s + 26"
+      }
+     ],
+     "answer": "31 years, 38 years, and s + 26 years",
+     "why": "the same rule works for every age → a letter holds the changing number → s + 26 gives Mohan's age for any s"
+    },
+    {
+     "skillId": "c7-maths-ch04-t01-s3",
+     "source": "Expressions using Letter-Numbers — reading an expression as a situation",
+     "problem": "In a stationery shop, p is the price in rupees of one pencil box, and a geometry box costs ₹40. Say in words what 3p + 40 stands for, and find it when p is 25.",
+     "givens": [
+      "p = price of one pencil box (₹)",
+      "geometry box = ₹40",
+      "3p + 40"
+     ],
+     "find": "the meaning of 3p + 40 and its value for p = 25",
+     "steps": [
+      {
+       "do": "read 3p",
+       "result": "3 × p = the cost of 3 pencil boxes"
+      },
+      {
+       "do": "read + 40",
+       "result": "plus one geometry box"
+      },
+      {
+       "do": "whole expression",
+       "result": "the total cost of 3 pencil boxes and 1 geometry box"
+      },
+      {
+       "do": "put p = 25",
+       "result": "3 × 25 + 40 = 115"
+      }
+     ],
+     "answer": "3p + 40 is the total cost in rupees of 3 pencil boxes and 1 geometry box; it is ₹115 when p = 25",
+     "why": "a letter is a number (a price), not an object → 3p is 3 times that price → each term is one part of the bill"
+    }
    ]
   },
   {
@@ -8388,7 +8980,8 @@
      "Combine: 8x + ___.",
      "Substitute x = 5: 8 × ___ + 3.",
      "= ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch04-t02-s2"
    },
    "formats": {
     "primary": "F2",
@@ -8409,6 +9002,70 @@
     "auto fares",
     "cricket scoring",
     "shop bills"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch04-t02-s1",
+     "source": "Expressions using Letter-Numbers — substituting values into an expression",
+     "problem": "In a quiz, Riya's score is 5a − 2b + 3, where a is the number of right answers and b the number of wrong answers. Find her score when a = 4 and b = 6.",
+     "givens": [
+      "score = 5a − 2b + 3",
+      "a = 4",
+      "b = 6"
+     ],
+     "find": "the score",
+     "steps": [
+      {
+       "do": "5a means 5 × a",
+       "result": "5 × 4 = 20"
+      },
+      {
+       "do": "2b means 2 × b",
+       "result": "2 × 6 = 12"
+      },
+      {
+       "do": "put the terms back with their signs",
+       "result": "20 − 12 + 3 = 11"
+      }
+     ],
+     "answer": "11 points",
+     "why": "a number next to a letter means multiply → replace each letter by its value → work out each term → add and subtract the terms"
+    },
+    {
+     "skillId": "c7-maths-ch04-t02-s3",
+     "source": "Expressions using Letter-Numbers — matchstick patterns: writing and simplifying expressions",
+     "problem": "Ravi builds a row of matchstick houses. Each house has one floor stick and a roof of 2 slanting sticks, and walls stand between and at the ends of the houses, so neighbours share a wall. One house uses 5 sticks and two houses use 9. Write a simplified expression for the sticks in n houses, and find it for 10 houses.",
+     "givens": [
+      "1 house: 5 sticks",
+      "2 houses: 9 sticks",
+      "neighbouring houses share a wall"
+     ],
+     "find": "a simplified expression for n houses, and its value for 10 houses",
+     "steps": [
+      {
+       "do": "count each kind of stick for n houses",
+       "result": "floors n, roofs 2n, walls n + 1"
+      },
+      {
+       "do": "add the kinds",
+       "result": "n + 2n + n + 1"
+      },
+      {
+       "do": "combine the like terms",
+       "result": "4n + 1"
+      },
+      {
+       "do": "check n = 2",
+       "result": "4 × 2 + 1 = 9"
+      },
+      {
+       "do": "put n = 10",
+       "result": "4 × 10 + 1 = 41"
+      }
+     ],
+     "answer": "4n + 1 sticks; 41 sticks for 10 houses",
+     "why": "count each kind of stick separately → each kind is a term in n → like terms combine → check with a small case"
+    }
    ]
   },
   {
@@ -9169,7 +9826,8 @@
      "For n = 1, 3n = 3; the term is 5, so add ___.",
      "Check n = 2: 3 × 2 + 2 = ___.",
      "30th term: 3 × 30 + 2 = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch04-t03-s1"
    },
    "formats": {
     "primary": "F3",
@@ -9191,6 +9849,68 @@
     "wedding table seating",
     "runs per over in cricket",
     "brick steps on a staircase"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch04-t03-s2",
+     "source": "Expressions using Letter-Numbers — using a rule to test whether a number is in a pattern",
+     "problem": "At a school function, row 1 has 7 chairs, row 2 has 11, row 3 has 15, and so on. The rule for row n is 4n + 3. Is there a row with exactly 99 chairs? If yes, which row?",
+     "givens": [
+      "rule = 4n + 3",
+      "rows: 7, 11, 15, ..."
+     ],
+     "find": "whether 99 is a term, and its row",
+     "steps": [
+      {
+       "do": "undo the + 3",
+       "result": "99 − 3 = 96"
+      },
+      {
+       "do": "undo the 4 ×",
+       "result": "96 ÷ 4 = 24"
+      },
+      {
+       "do": "24 is a whole number → it is a row number",
+       "result": "yes, row 24"
+      },
+      {
+       "do": "check with the rule",
+       "result": "4 × 24 + 3 = 99"
+      }
+     ],
+     "answer": "Yes, row 24 has 99 chairs",
+     "why": "a number is in the pattern only if the rule can make it → undo the rule step by step → a whole-number n means yes"
+    },
+    {
+     "skillId": "c7-maths-ch04-t03-s3",
+     "source": "Expressions using Letter-Numbers — using algebra to explain a calendar pattern",
+     "problem": "On a calendar page, pick three dates one below the other in the same column, like 5, 12 and 19. Use algebra to explain why their sum is always 3 times the middle date.",
+     "givens": [
+      "three dates in one column of a calendar",
+      "a week has 7 days"
+     ],
+     "find": "why the sum is always 3 times the middle date",
+     "steps": [
+      {
+       "do": "call the middle date n",
+       "result": "above: n − 7, below: n + 7"
+      },
+      {
+       "do": "add the three",
+       "result": "(n − 7) + n + (n + 7)"
+      },
+      {
+       "do": "the − 7 and + 7 cancel → combine like terms",
+       "result": "3n"
+      },
+      {
+       "do": "check with 5, 12, 19",
+       "result": "5 + 12 + 19 = 36 = 3 × 12"
+      }
+     ],
+     "answer": "(n − 7) + n + (n + 7) = 3n, which is 3 times the middle date n, for any column",
+     "why": "one letter stands for every possible middle date → the sum simplifies to 3n → so it is true for all cases, not just the ones tried"
+    }
    ]
   },
   {
@@ -11576,7 +12296,8 @@
      "The corresponding angle at the bottom is ___, because the lines are parallel.",
      "The alternate angle is vertically ___ that angle.",
      "So the alternate angle is ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch05-t03-s2"
    },
    "formats": {
     "primary": "F3",
@@ -11597,6 +12318,64 @@
     "ladders against a wall",
     "zebra crossings",
     "notebook margins"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch05-t03-s1",
+     "source": "Parallel and Intersecting Lines — transversal: corresponding and alternate angles",
+     "problem": "Two lines going across the page are crossed by a slanting transversal. At the top crossing the angles are named 1 above-left, 2 above-right, 3 below-left, 4 below-right. At the bottom crossing they are 5 above-left, 6 above-right, 7 below-left, 8 below-right. Which angle corresponds to angle 2, and which angle is alternate to angle 4?",
+     "givens": [
+      "top crossing: 1, 2 above; 3, 4 below (left, right)",
+      "bottom crossing: 5, 6 above; 7, 8 below (left, right)"
+     ],
+     "find": "the angle corresponding to 2 and the angle alternate to 4",
+     "steps": [
+      {
+       "do": "corresponding → same position at the other crossing",
+       "result": "2 is above-right → 6 is above-right"
+      },
+      {
+       "do": "alternate → both between the two lines, on opposite sides of the transversal",
+       "result": "4 is between the lines, right side"
+      },
+      {
+       "do": "between the lines, left side, at the bottom crossing",
+       "result": "5 (above-left)"
+      }
+     ],
+     "answer": "Angle 6 corresponds to angle 2; angle 5 is alternate to angle 4",
+     "why": "corresponding = same corner at each crossing (F shape) → alternate = inside the two lines, opposite sides of the transversal (Z shape)"
+    },
+    {
+     "skillId": "c7-maths-ch05-t03-s3",
+     "source": "Parallel and Intersecting Lines — testing for parallel lines with corresponding angles",
+     "problem": "Two straight lines on Riya's sheet are crossed by a transversal. At the upper line, the angle above and to the right of the transversal is 110°. At the lower line, the angle below and to the right is 70°. Are the two lines parallel?",
+     "givens": [
+      "upper crossing, above-right = 110°",
+      "lower crossing, below-right = 70°"
+     ],
+     "find": "whether the lines are parallel",
+     "steps": [
+      {
+       "do": "upper crossing: below-right makes a linear pair with the 110°",
+       "result": "180 − 110 = 70°"
+      },
+      {
+       "do": "below-right at the upper crossing and below-right at the lower crossing",
+       "result": "a corresponding pair"
+      },
+      {
+       "do": "compare the corresponding pair",
+       "result": "70° and 70° → equal"
+      },
+      {
+       "do": "equal corresponding angles → lines parallel",
+       "result": "the lines are parallel"
+      }
+     ],
+     "answer": "Yes, they are parallel: the corresponding angles are both 70°",
+     "why": "find a corresponding pair using a linear pair → equal corresponding angles happen only when the lines are parallel → unequal means they meet"
+    }
    ]
   },
   {
@@ -12353,7 +13132,8 @@
      "So the 6 together add to an ___ number.",
      "Even + odd = ___.",
      "100 is even, so it is ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch06-t01-s3"
    },
    "formats": {
     "primary": "F6",
@@ -12374,6 +13154,67 @@
     "two-seater bus seats",
     "kabaddi team picks",
     "sharing sweets between two siblings"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch06-t01-s1",
+     "source": "Number Play — parity of sums and differences",
+     "problem": "Without adding or subtracting, decide whether 347 + 586 − 129 is odd or even.",
+     "givens": [
+      "347 + 586 − 129"
+     ],
+     "find": "odd or even",
+     "steps": [
+      {
+       "do": "parity of each number from its ones digit",
+       "result": "347 odd, 586 even, 129 odd"
+      },
+      {
+       "do": "odd + even",
+       "result": "odd"
+      },
+      {
+       "do": "odd − odd",
+       "result": "even"
+      },
+      {
+       "do": "check by working it out",
+       "result": "347 + 586 − 129 = 804"
+      }
+     ],
+     "answer": "Even",
+     "why": "odd = pairs plus one left over → odd + even keeps the one left over → odd − odd removes it → even"
+    },
+    {
+     "skillId": "c7-maths-ch06-t01-s2",
+     "source": "Number Play — parity of products and sums",
+     "problem": "Ravi buys 15 boxes with 13 pens in each, and 6 boxes with 9 pens in each. Without multiplying, decide whether the total number of pens is odd or even.",
+     "givens": [
+      "15 boxes × 13 pens",
+      "6 boxes × 9 pens"
+     ],
+     "find": "odd or even for the total",
+     "steps": [
+      {
+       "do": "15 × 13 → odd × odd",
+       "result": "odd"
+      },
+      {
+       "do": "6 × 9 → even × odd",
+       "result": "even"
+      },
+      {
+       "do": "odd + even",
+       "result": "odd"
+      },
+      {
+       "do": "check",
+       "result": "15 × 13 + 6 × 9 = 249"
+      }
+     ],
+     "answer": "Odd (the total is 249 pens)",
+     "why": "odd × odd → odd groups of odd size leave one unpaired → any even factor makes all pairs → then the sum rule decides"
+    }
    ]
   },
   {
@@ -13009,7 +13850,8 @@
      "Opposite cells add to ___.",
      "Corners: 2, 6, 4 and ___.",
      "Top row: 2 ___ 6."
-    ]
+    ],
+    "skillId": "c7-maths-ch06-t02-s2"
    },
    "formats": {
     "primary": "F6",
@@ -13030,6 +13872,67 @@
     "number-card games at a mela",
     "chess-board puzzles",
     "puzzle apps on a phone"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch06-t02-s1",
+     "source": "Number Play — magic squares: checking every line",
+     "problem": "A grid has top row 8, 3, 10; middle row 9, 7, 5; bottom row 4, 11, 6. Is it a magic square? If yes, what is its magic sum?",
+     "givens": [
+      "rows: 8 3 10 / 9 7 5 / 4 11 6"
+     ],
+     "find": "whether the grid is magic, and its magic sum",
+     "steps": [
+      {
+       "do": "add the 3 rows",
+       "result": "8 + 3 + 10 = 21, 9 + 7 + 5 = 21, 4 + 11 + 6 = 21"
+      },
+      {
+       "do": "add the 3 columns",
+       "result": "8 + 9 + 4 = 21, 3 + 7 + 11 = 21, 10 + 5 + 6 = 21"
+      },
+      {
+       "do": "add the 2 diagonals",
+       "result": "8 + 7 + 6 = 21, 10 + 7 + 4 = 21"
+      },
+      {
+       "do": "all 8 lines equal",
+       "result": "magic, sum 21"
+      }
+     ],
+     "answer": "Yes, it is a magic square with magic sum 21",
+     "why": "a magic square needs all 3 rows, 3 columns and 2 diagonals equal → check all 8 lines → one different line breaks it"
+    },
+    {
+     "skillId": "c7-maths-ch06-t02-s3",
+     "source": "Number Play — magic squares: what changes when every cell changes",
+     "problem": "Take the 1-9 magic square: 2 7 6 / 9 5 1 / 4 3 8. Multiply every number by 3. Is it still a magic square? What are the new magic sum and the new centre?",
+     "givens": [
+      "magic square 2 7 6 / 9 5 1 / 4 3 8, magic sum 15",
+      "every number × 3"
+     ],
+     "find": "whether it stays magic, the new sum and the new centre",
+     "steps": [
+      {
+       "do": "every line had 3 numbers adding to 15; each number is tripled",
+       "result": "each line sum is tripled"
+      },
+      {
+       "do": "new line sum",
+       "result": "3 × 15 = 45"
+      },
+      {
+       "do": "check the new top row 6, 21, 18",
+       "result": "6 + 21 + 18 = 45"
+      },
+      {
+       "do": "new centre",
+       "result": "3 × 5 = 15"
+      }
+     ],
+     "answer": "Yes, still magic; magic sum 45 and centre 15",
+     "why": "every line changes in the same way → all 8 line sums stay equal → tripling each cell triples each line sum"
+    }
    ]
   },
   {
@@ -13733,7 +14636,8 @@
      "Starts with S: 5 beats remain, so ___ rhythms.",
      "Starts with L: ___ beats remain, so 5 rhythms.",
      "Total: 8 + 5 = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch06-t03-s3"
    },
    "formats": {
     "primary": "F6",
@@ -13754,6 +14658,69 @@
     "paving a path with small and long tiles",
     "singles and twos in cricket",
     "folk dance steps"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch06-t03-s1",
+     "source": "Number Play — Virahanka numbers: counting rhythms of short and long syllables",
+     "problem": "A poet uses short syllables S (1 beat) and long syllables L (2 beats). Count all the rhythms of exactly 5 beats, sorting them by how many L's they have.",
+     "givens": [
+      "S = 1 beat",
+      "L = 2 beats",
+      "total = 5 beats"
+     ],
+     "find": "the number of 5-beat rhythms",
+     "steps": [
+      {
+       "do": "no L",
+       "result": "SSSSS → 1"
+      },
+      {
+       "do": "one L and three S → L can sit in 4 places",
+       "result": "LSSS, SLSS, SSLS, SSSL → 4"
+      },
+      {
+       "do": "two L's and one S → S can sit in 3 places",
+       "result": "SLL, LSL, LLS → 3"
+      },
+      {
+       "do": "three L's would need 6 beats",
+       "result": "not possible"
+      },
+      {
+       "do": "add the groups",
+       "result": "1 + 4 + 3 = 8"
+      }
+     ],
+     "answer": "8 rhythms",
+     "why": "sort by the number of L's → order matters, so count each place the L's or S can go → add the groups"
+    },
+    {
+     "skillId": "c7-maths-ch06-t03-s2",
+     "source": "Number Play — generating the Virahanka sequence",
+     "problem": "The numbers of rhythms for 1, 2, 3 and 4 beats are 1, 2, 3 and 5. Each next number is the sum of the previous two. How many rhythms have 10 beats?",
+     "givens": [
+      "1, 2, 3, 5 for 1 to 4 beats",
+      "next = sum of the previous two"
+     ],
+     "find": "the number of 10-beat rhythms",
+     "steps": [
+      {
+       "do": "5 and 6 beats",
+       "result": "3 + 5 = 8, 5 + 8 = 13"
+      },
+      {
+       "do": "7 and 8 beats",
+       "result": "8 + 13 = 21, 13 + 21 = 34"
+      },
+      {
+       "do": "9 and 10 beats",
+       "result": "21 + 34 = 55, 34 + 55 = 89"
+      }
+     ],
+     "answer": "89 rhythms",
+     "why": "each number = sum of the two before it → step forward one beat at a time → 1, 2, 3, 5, 8, 13, 21, 34, 55, 89"
+    }
    ]
   },
   {
@@ -14430,7 +15397,8 @@
      "5 + A = 12, so A = ___ with a carry of 1.",
      "Tens: 7 + 1 + ___ = 9.",
      "So ___ + 17 = 92."
-    ]
+    ],
+    "skillId": "c7-maths-ch06-t04-s1"
    },
    "formats": {
     "primary": "F6",
@@ -14451,6 +15419,70 @@
     "newspaper puzzle corners",
     "scoreboards with missing digits",
     "railway ticket number games"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch06-t04-s2",
+     "source": "Number Play — digits in disguise: letter sums",
+     "problem": "In the puzzle A + A + A = BA, each letter stands for a digit, different letters are different digits, and BA is a 2-digit number. Find A and B.",
+     "givens": [
+      "A + A + A = BA",
+      "different letters → different digits",
+      "BA is a 2-digit number"
+     ],
+     "find": "the digits A and B",
+     "steps": [
+      {
+       "do": "ones column: three A's must end in A",
+       "result": "A = 0 or A = 5 (0 + 0 + 0 = 0, 5 + 5 + 5 = 15)"
+      },
+      {
+       "do": "A = 0 gives 0, not a 2-digit number",
+       "result": "A = 5"
+      },
+      {
+       "do": "work out the sum",
+       "result": "5 + 5 + 5 = 15"
+      },
+      {
+       "do": "tens digit of the sum is B",
+       "result": "B = 1"
+      }
+     ],
+     "answer": "A = 5 and B = 1 (5 + 5 + 5 = 15)",
+     "why": "start with the ones column → it limits the letter to a few digits → test each against the other conditions → the carry gives the next letter"
+    },
+    {
+     "skillId": "c7-maths-ch06-t04-s3",
+     "source": "Number Play — digits in disguise: limits on sums and carries",
+     "problem": "In AB + C = DEF, AB is a 2-digit number, C is a 1-digit number and DEF is a 3-digit number. Each letter is a digit, and different letters are different digits. Find D and E.",
+     "givens": [
+      "AB: 2-digit",
+      "C: 1-digit",
+      "DEF: 3-digit"
+     ],
+     "find": "the digits D and E",
+     "steps": [
+      {
+       "do": "largest possible sum",
+       "result": "99 + 9 = 108"
+      },
+      {
+       "do": "the sum has 3 digits",
+       "result": "between 100 and 108"
+      },
+      {
+       "do": "hundreds digit of every number from 100 to 108",
+       "result": "D = 1"
+      },
+      {
+       "do": "tens digit of every number from 100 to 108",
+       "result": "E = 0"
+      }
+     ],
+     "answer": "D = 1 and E = 0",
+     "why": "find the biggest the sum can be → a 3-digit sum below 109 → its first two digits are fixed as 1 and 0"
+    }
    ]
   },
   {
@@ -15153,7 +16185,8 @@
      "6 + 8 = ___.",
      "14 ___ 13, so a triangle is possible.",
      "Draw 13 cm; from its ends draw arcs of 6 cm and ___ cm."
-    ]
+    ],
+    "skillId": "c7-maths-ch07-t01-s1"
    },
    "formats": {
     "primary": "F3",
@@ -15174,6 +16207,74 @@
     "kite frames",
     "bamboo scaffolding",
     "roof trusses"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch07-t01-s2",
+     "problem": "Priya wants to draw triangle ABC for a rangoli frame with AB = 7 cm, AC = 5 cm and BC = 6 cm, using a ruler and compass. How does she find the third corner C?",
+     "givens": [
+      "AB = 7 cm",
+      "AC = 5 cm",
+      "BC = 6 cm"
+     ],
+     "find": "the steps that place corner C, and the finished triangle",
+     "steps": [
+      {
+       "do": "check: two shorter sides against the longest",
+       "result": "5 + 6 = 11, which is more than 7, so a triangle is possible"
+      },
+      {
+       "do": "draw the longest side as the base",
+       "result": "AB = 7 cm"
+      },
+      {
+       "do": "compass open to 5 cm, centre A → arc above AB",
+       "result": "every point on this arc is 5 cm from A"
+      },
+      {
+       "do": "compass open to 6 cm, centre B → arc cutting the first arc",
+       "result": "the arcs cross at C, which is 5 cm from A and 6 cm from B"
+      },
+      {
+       "do": "join C to A and to B",
+       "result": "triangle ABC with AB = 7 cm, AC = 5 cm, BC = 6 cm"
+      }
+     ],
+     "answer": "C is where the 5 cm arc from A crosses the 6 cm arc from B; joining CA and CB gives triangle ABC with sides 7 cm, 5 cm and 6 cm",
+     "why": "C must be 5 cm from A → it lies on the 5 cm arc around A → C must be 6 cm from B → it lies on the 6 cm arc around B → the crossing point is the only place that is both",
+     "source": "A Tale of Three Intersecting Lines — constructing a triangle when its three sides are given, using arcs"
+    },
+    {
+     "skillId": "c7-maths-ch07-t01-s3",
+     "problem": "Arjun has two sticks, 6 cm and 10 cm long. He wants a third stick, a whole number of centimetres long, so that the three sticks make a triangle. Which lengths can the third stick be?",
+     "givens": [
+      "one stick = 6 cm",
+      "other stick = 10 cm",
+      "third stick is a whole number of cm"
+     ],
+     "find": "all possible whole-number lengths of the third stick",
+     "steps": [
+      {
+       "do": "if the third stick is the longest → it must be less than the other two together",
+       "result": "6 + 10 = 16, so the third stick is less than 16 cm"
+      },
+      {
+       "do": "if 10 cm is the longest → 6 cm and the third stick together must be more than 10 cm",
+       "result": "10 − 6 = 4, so the third stick is more than 4 cm"
+      },
+      {
+       "do": "list the whole numbers more than 4 and less than 16",
+       "result": "5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15"
+      },
+      {
+       "do": "count them",
+       "result": "11 lengths"
+      }
+     ],
+     "answer": "Any whole number from 5 cm to 15 cm: 11 possible lengths",
+     "why": "a triangle closes only when the longest side is less than the other two together → test with the third stick as the longest, then with 10 cm as the longest → keep the lengths that pass both",
+     "source": "A Tale of Three Intersecting Lines — the triangle inequality: each side is less than the sum of the other two"
+    }
    ]
   },
   {
@@ -15909,7 +17010,8 @@
      "Put one edge of the set-square along the ___ line.",
      "Slide it until the other edge passes through ___.",
      "The segment meets the line at ___°."
-    ]
+    ],
+    "skillId": "c7-maths-ch07-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -15930,6 +17032,61 @@
     "kite frames",
     "park slides",
     "triangular road signs"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch07-t02-s1",
+     "problem": "In triangle LMN, two segments are drawn from L to side MN. LA reaches A, the midpoint of MN, and makes an angle of 75° with MN. LB reaches a point B on MN and makes an angle of 90° with MN. Which segment is the altitude from L?",
+     "givens": [
+      "LA goes to the midpoint A of MN, at 75° to MN",
+      "LB meets MN at B, at 90° to MN"
+     ],
+     "find": "the altitude from L, and why the other segment is not",
+     "steps": [
+      {
+       "do": "altitude → from a vertex, meeting the opposite side at 90°",
+       "result": "test the angle each segment makes with MN"
+      },
+      {
+       "do": "LA: angle with MN",
+       "result": "75°, not 90°, so LA is not an altitude"
+      },
+      {
+       "do": "LB: angle with MN",
+       "result": "90°, so LB is the altitude from L to MN"
+      }
+     ],
+     "answer": "LB is the altitude from L; LA reaches the midpoint but meets MN at 75°, not 90°",
+     "why": "an altitude is fixed by the right angle at the opposite side → not by where the midpoint is → so test the angle, not the landing point",
+     "source": "A Tale of Three Intersecting Lines — altitude: the perpendicular from a vertex to the opposite side"
+    },
+    {
+     "skillId": "c7-maths-ch07-t02-s3",
+     "problem": "The front of a camping tent is a triangle. Its two slanting sides are 2.5 m each and its ground side is 3 m. A pole goes from the top of the tent to the ground and meets the ground at 90°; the pole is 2 m long. What is the height of the tent, and which segment is the altitude to the ground side?",
+     "givens": [
+      "slanting sides = 2.5 m each",
+      "ground side = 3 m",
+      "pole from the top meets the ground at 90°, length 2 m"
+     ],
+     "find": "the height of the tent and the segment that is the altitude",
+     "steps": [
+      {
+       "do": "height of the tent → altitude from the top vertex to the ground side",
+       "result": "the segment from the top that meets the ground at 90°"
+      },
+      {
+       "do": "which segment meets the ground at 90°?",
+       "result": "the pole; the slanting sides meet the ground at a slant"
+      },
+      {
+       "do": "read its length",
+       "result": "2 m"
+      }
+     ],
+     "answer": "The pole is the altitude to the ground side, so the height of the tent is 2 m (not 2.5 m, the slanting side)",
+     "why": "height is measured straight to the base at 90° → that segment is the altitude → a slanting side reaches the base at a slant, so it is longer than the height",
+     "source": "A Tale of Three Intersecting Lines — the altitude as the height of a triangle"
+    }
    ]
   },
   {
@@ -16633,7 +17790,8 @@
      "48° + 96° = ___.",
      "Angle R = 180° − ___.",
      "Angle R = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch07-t03-s2"
    },
    "formats": {
     "primary": "F3",
@@ -16654,6 +17812,69 @@
     "kites",
     "triangular road signs",
     "fielders standing in a triangle"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch07-t03-s1",
+     "problem": "A wooden set-square is a triangle with sides 6 cm, 8 cm and 10 cm. The angle between the 6 cm and 8 cm sides is 90°. Name the triangle by its sides and by its angles.",
+     "givens": [
+      "sides 6 cm, 8 cm, 10 cm",
+      "angle between the 6 cm and 8 cm sides = 90°"
+     ],
+     "find": "its name by sides and its name by angles",
+     "steps": [
+      {
+       "do": "compare the three sides",
+       "result": "6 cm, 8 cm and 10 cm are all different"
+      },
+      {
+       "do": "no two sides equal → name by sides",
+       "result": "scalene"
+      },
+      {
+       "do": "find the largest angle",
+       "result": "90°, a right angle"
+      },
+      {
+       "do": "one right angle → name by angles",
+       "result": "right-angled triangle"
+      }
+     ],
+     "answer": "By sides it is scalene; by angles it is right-angled (a scalene right triangle)",
+     "why": "by sides: count the equal sides → none → scalene; by angles: look at the largest angle → exactly 90° → right; the two names go together",
+     "source": "A Tale of Three Intersecting Lines — naming triangles by sides (equilateral, isosceles, scalene) and by angles (acute, right, obtuse)"
+    },
+    {
+     "skillId": "c7-maths-ch07-t03-s3",
+     "problem": "In triangle ABC, angle A is 70° and angle B is 50°. A line is drawn through C parallel to AB. Use the angles this line makes with CA and CB to find angle C and show why the three angles add to 180°.",
+     "givens": [
+      "angle A = 70°",
+      "angle B = 50°",
+      "line through C parallel to AB"
+     ],
+     "find": "the two angles at C made by the parallel line, and angle C",
+     "steps": [
+      {
+       "do": "CA cuts the two parallel lines → alternate angles",
+       "result": "angle between the new line and CA = angle A = 70°"
+      },
+      {
+       "do": "CB cuts the two parallel lines → alternate angles",
+       "result": "angle between the new line and CB = angle B = 50°"
+      },
+      {
+       "do": "the three angles at C lie along one straight line",
+       "result": "70° + angle C + 50° = 180°"
+      },
+      {
+       "do": "subtract the two copied angles from 180",
+       "result": "180 − 120 = 60, so angle C = 60°"
+      }
+     ],
+     "answer": "The line makes 70° with CA and 50° with CB; angle C = 60°; so 70° + 50° + 60° = 180°",
+     "why": "the parallel line copies angles A and B to the corner C as alternate angles → the copies and angle C fill a straight line → a straight angle is 180° → so the triangle's angles add to 180°",
+     "source": "A Tale of Three Intersecting Lines — angle sum of a triangle shown with a line through a vertex parallel to the opposite side"
+    }
    ]
   },
   {
@@ -17421,7 +18642,8 @@
      "Numerators: 3 × 2 = ___; denominators: 5 × 3 = 15.",
      "6/15 = ___.",
      "2/5 is ___ than 2/3."
-    ]
+    ],
+    "skillId": "c7-maths-ch08-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -17442,6 +18664,64 @@
     "pocket money saved",
     "water tank levels",
     "overs bowled in cricket"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch08-t01-s1",
+     "problem": "Ramesh fills 5 bottles, each with 2/3 litre of nimbu paani. How much nimbu paani does he use in all?",
+     "givens": [
+      "5 bottles",
+      "2/3 litre in each bottle"
+     ],
+     "find": "the total amount of nimbu paani",
+     "steps": [
+      {
+       "do": "5 equal amounts of 2/3 → multiply",
+       "result": "5 × 2/3"
+      },
+      {
+       "do": "multiply only the number of pieces by 5; the piece size stays thirds",
+       "result": "5 × 2 = 10, so 10/3 litres"
+      },
+      {
+       "do": "write as a mixed number",
+       "result": "10/3 = 3 1/3 litres"
+      }
+     ],
+     "answer": "10/3 litres = 3 1/3 litres",
+     "why": "5 × 2/3 → five lots of 2 thirds → 10 thirds → the count of pieces grows, the size of each piece (a third) does not change",
+     "source": "Working with Fractions — multiplying a fraction by a whole number as repeated addition"
+    },
+    {
+     "skillId": "c7-maths-ch08-t01-s3",
+     "problem": "Without multiplying first, decide whether 24 × 5/6 is more or less than 24, and whether 24 × 7/4 is more or less than 24. Then check both.",
+     "givens": [
+      "24 × 5/6",
+      "24 × 7/4"
+     ],
+     "find": "whether each product is more or less than 24, and its value",
+     "steps": [
+      {
+       "do": "compare the multiplier 5/6 with 1",
+       "result": "5/6 is less than 1, so the product is less than 24"
+      },
+      {
+       "do": "check",
+       "result": "24 × 5/6 = 120/6 = 20"
+      },
+      {
+       "do": "compare the multiplier 7/4 with 1",
+       "result": "7/4 is more than 1, so the product is more than 24"
+      },
+      {
+       "do": "check",
+       "result": "24 × 7/4 = 168/4 = 42"
+      }
+     ],
+     "answer": "24 × 5/6 = 20, less than 24; 24 × 7/4 = 42, more than 24",
+     "why": "multiplier less than 1 → only a part of 24 is taken → smaller; multiplier more than 1 → more than one whole 24 → bigger",
+     "source": "Working with Fractions — when a product is less than or more than the number multiplied"
+    }
    ]
   },
   {
@@ -18201,7 +19481,8 @@
      "Flip the divisor: 3/8 becomes ___.",
      "3/4 × 8/3 = ___.",
      "24/12 = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch08-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -18222,6 +19503,63 @@
     "sharing laddoos",
     "cooking recipes",
     "cloth at the tailor"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch08-t02-s1",
+     "problem": "Sita has 4 metres of lace. She cuts it into pieces of 1/5 metre each. How many pieces does she get?",
+     "givens": [
+      "lace = 4 m",
+      "each piece = 1/5 m"
+     ],
+     "find": "the number of pieces",
+     "steps": [
+      {
+       "do": "how many 1/5 m pieces fit in 1 m?",
+       "result": "5"
+      },
+      {
+       "do": "4 metres hold 4 lots of 5 pieces",
+       "result": "4 × 5 = 20"
+      },
+      {
+       "do": "check: 20 pieces of 1/5 m",
+       "result": "20 × 1/5 = 4"
+      }
+     ],
+     "answer": "20 pieces",
+     "why": "4 ÷ 1/5 asks how many fifths fit in 4 → each metre holds 5 fifths → 4 metres hold 4 × 5 fifths",
+     "source": "Working with Fractions — dividing a whole number by a unit fraction as 'how many fit'"
+    },
+    {
+     "skillId": "c7-maths-ch08-t02-s3",
+     "problem": "Find 6 ÷ 2/3. Is the answer more than 6, less than 6, or are they the same? Explain why.",
+     "givens": [
+      "6 ÷ 2/3"
+     ],
+     "find": "the quotient and how it compares with 6",
+     "steps": [
+      {
+       "do": "÷ 2/3 asks how many pieces of size 2/3 fit in 6",
+       "result": "each piece is less than 1 whole"
+      },
+      {
+       "do": "multiply by the reciprocal of the divisor",
+       "result": "6 × 3/2 = 18/2 = 9"
+      },
+      {
+       "do": "compare with 6",
+       "result": "9 is more than 6"
+      },
+      {
+       "do": "check by multiplying back",
+       "result": "9 × 2/3 = 6"
+      }
+     ],
+     "answer": "6 ÷ 2/3 = 9, which is more than 6",
+     "why": "the divisor is less than 1 → each piece is smaller than a whole → more pieces fit than there are wholes → the quotient is bigger than 6",
+     "source": "Working with Fractions — why dividing by a fraction less than 1 gives a bigger answer"
+    }
    ]
   },
   {
@@ -18951,7 +20289,8 @@
      "Book: 1/4 of ___ = ₹100.",
      "Left: 400 − 100 = ___.",
      "Check: 200 + 100 + 300 = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch08-t03-s2"
    },
    "formats": {
     "primary": "F4",
@@ -18972,6 +20311,69 @@
     "pocket money and savings",
     "water tanks",
     "class surveys"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch08-t03-s1",
+     "problem": "A tailor has 9 metres of cloth. Each kurta needs 3/4 metre. How many kurtas can he stitch? Choose the operation first, then solve.",
+     "givens": [
+      "cloth = 9 m",
+      "each kurta = 3/4 m"
+     ],
+     "find": "the operation and the number of kurtas",
+     "steps": [
+      {
+       "do": "read the situation",
+       "result": "how many 3/4 m pieces fit in 9 m"
+      },
+      {
+       "do": "how many fit → divide",
+       "result": "9 ÷ 3/4"
+      },
+      {
+       "do": "multiply by the reciprocal",
+       "result": "9 × 4/3 = 36/3 = 12"
+      },
+      {
+       "do": "check by multiplying back",
+       "result": "12 × 3/4 = 9"
+      }
+     ],
+     "answer": "Division: 9 ÷ 3/4 = 12 kurtas",
+     "why": "'how many fit' → division → divide by multiplying with the reciprocal → each piece is less than 1 m, so there are more kurtas than metres",
+     "source": "Working with Fractions — reading a word problem to choose multiplication or division"
+    },
+    {
+     "skillId": "c7-maths-ch08-t03-s3",
+     "problem": "A bag holds 15 kg of wheat. 2/3 of the wheat is used to make atta. Arif says 22 1/2 kg was used. Does his answer make sense? What is the correct amount?",
+     "givens": [
+      "bag = 15 kg",
+      "2/3 of the wheat is used",
+      "Arif's answer = 22 1/2 kg"
+     ],
+     "find": "whether 22 1/2 kg makes sense, and the correct amount",
+     "steps": [
+      {
+       "do": "2/3 is a part of the bag",
+       "result": "the amount used must be less than 15 kg"
+      },
+      {
+       "do": "compare Arif's answer with the whole bag",
+       "result": "22 1/2 kg is more than 15 kg, so it does not make sense"
+      },
+      {
+       "do": "find 2/3 of 15 kg",
+       "result": "15 × 2/3 = 30/3 = 10"
+      },
+      {
+       "do": "check size and unit",
+       "result": "10 kg is less than 15 kg"
+      }
+     ],
+     "answer": "No; 22 1/2 kg is more than the whole 15 kg bag. The correct amount is 10 kg",
+     "why": "a fraction less than 1 of an amount → a part → must be smaller than the whole → an answer bigger than the whole means the wrong operation",
+     "source": "Working with Fractions — checking that an answer to a fraction problem makes sense in size and units"
+    }
    ]
   },
   {
@@ -19108,6 +20510,42 @@
      "remediation": {
       "representation": "Tracing paper turner: try to fit the 2 × 8 rectangle onto the 4 × 4 square",
       "moveShape": "Child places the rectangle's tracing on the square in every way; ask whether it ever covers exactly"
+     }
+    },
+    {
+     "id": "c7-maths-ch09-t01-m-letter-order",
+     "skillId": "c7-maths-ch09-t01-s3",
+     "source": "Geometric Twins — corresponding vertices in a congruence statement",
+     "belief": "Pairs the corners of congruent triangles by alphabetical order of the letters instead of by their places in the congruence statement",
+     "signs": [
+      "For ΔABC ≅ ΔRPQ, says angle B matches angle Q because Q is the second letter of P, Q, R",
+      "Re-sorts the second triangle's letters alphabetically before pairing",
+      "Pairs side AB with PQ whatever order the statement gives"
+     ],
+     "diagnostic": {
+      "prompt_en": "Triangle ABC is congruent to triangle RPQ, written ΔABC ≅ ΔRPQ. Angle B is 70°. Which angle of triangle RPQ is also 70°?",
+      "prompt_hi": "Triangle ABC, triangle RPQ ke congruent hai, yaani ΔABC ≅ ΔRPQ. Angle B 70° hai. Triangle RPQ ka kaun sa angle bhi 70° hoga?",
+      "options": [
+       {
+        "text": "Angle P",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Angle Q",
+        "misconceptionId": "c7-maths-ch09-t01-m-letter-order",
+        "correct": false
+       },
+       {
+        "text": "Angle R",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "The two triangle names written one under the other in statement order, with an arrow from each letter to the letter below it",
+      "moveShape": "write the statement → join letters in the same place with arrows → read pairs only from the arrows → never re-sort the letters"
      }
     }
    ],
@@ -19667,7 +21105,8 @@
      "Place the tracing on the second shape, turning or ___ it if needed.",
      "Check that every corner and every ___ lines up.",
      "If everything matches, they are ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch09-t01-s1"
    },
    "formats": {
     "primary": "F3",
@@ -19688,6 +21127,67 @@
     "bangle boxes",
     "stamps and stickers",
     "stencils for rangoli"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch09-t01-s2",
+     "problem": "Triangle A is a paper cut-out with sides 3 cm, 4 cm and 5 cm. Triangle B is a paper cut-out that is the mirror image of A. Ananya traces A, flips the tracing over, and it covers B exactly. Are triangles A and B congruent?",
+     "givens": [
+      "A: sides 3 cm, 4 cm, 5 cm",
+      "B is the mirror image of A",
+      "the flipped tracing of A covers B exactly"
+     ],
+     "find": "whether A and B are congruent",
+     "steps": [
+      {
+       "do": "superpose: tracing of A placed on B",
+       "result": "it fits only after a flip"
+      },
+      {
+       "do": "flipping moves the shape; it does not stretch or shrink it",
+       "result": "the tracing still has sides 3 cm, 4 cm and 5 cm"
+      },
+      {
+       "do": "exact fit after a flip → same shape and same size",
+       "result": "A and B are congruent"
+      }
+     ],
+     "answer": "Yes, A and B are congruent: the flipped tracing covers B exactly",
+     "why": "congruent = one fits exactly on the other → turning or flipping only moves the figure → if it fits after a flip, shape and size are the same",
+     "source": "Geometric Twins — superposition after turning or flipping a figure"
+    },
+    {
+     "skillId": "c7-maths-ch09-t01-s3",
+     "problem": "Triangle RAM is congruent to triangle SHY, written ΔRAM ≅ ΔSHY. In triangle RAM, RA = 6 cm, AM = 8 cm and angle M = 40°. Find SH, HY and angle Y.",
+     "givens": [
+      "ΔRAM ≅ ΔSHY",
+      "RA = 6 cm",
+      "AM = 8 cm",
+      "angle M = 40°"
+     ],
+     "find": "SH, HY and angle Y",
+     "steps": [
+      {
+       "do": "read the matching corners in order",
+       "result": "R ↔ S, A ↔ H, M ↔ Y"
+      },
+      {
+       "do": "RA matches SH",
+       "result": "SH = 6 cm"
+      },
+      {
+       "do": "AM matches HY",
+       "result": "HY = 8 cm"
+      },
+      {
+       "do": "angle M matches angle Y",
+       "result": "angle Y = 40°"
+      }
+     ],
+     "answer": "SH = 6 cm, HY = 8 cm, angle Y = 40°",
+     "why": "a congruence statement lists matching corners in the same places → matching corners give matching sides and angles → they lie on top of each other, so they are equal",
+     "source": "Geometric Twins — corresponding vertices, sides and angles in a congruence statement"
+    }
    ]
   },
   {
@@ -20425,7 +21925,8 @@
      "Angle Q lies ___ PQ and QR.",
      "Two sides and the included angle: ___.",
      "So ΔPQR ≅ ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch09-t02-s1"
    },
    "formats": {
     "primary": "F3",
@@ -20446,6 +21947,68 @@
     "roof trusses",
     "plots of land",
     "set-squares"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch09-t02-s2",
+     "problem": "In triangle LMN, angle M = 90°, LN = 10 cm and LM = 6 cm. In triangle DEF, angle E = 90°, DF = 10 cm and DE = 6 cm. Are the triangles congruent? Name the rule and write the congruence statement.",
+     "givens": [
+      "angle M = 90°, LN = 10 cm, LM = 6 cm",
+      "angle E = 90°, DF = 10 cm, DE = 6 cm"
+     ],
+     "find": "whether they are congruent, the rule, and the matching corners",
+     "steps": [
+      {
+       "do": "right angles",
+       "result": "angle M = angle E = 90°"
+      },
+      {
+       "do": "hypotenuse = side opposite the right angle",
+       "result": "LN = DF = 10 cm"
+      },
+      {
+       "do": "one more side",
+       "result": "LM = DE = 6 cm"
+      },
+      {
+       "do": "RHS → match the corners",
+       "result": "L ↔ D, M ↔ E, N ↔ F"
+      }
+     ],
+     "answer": "Yes, by RHS: ΔLMN ≅ ΔDEF",
+     "why": "right angle + hypotenuse + one side → only one triangle can be drawn → so the two triangles fit exactly",
+     "source": "Geometric Twins — the RHS condition for right triangles"
+    },
+    {
+     "skillId": "c7-maths-ch09-t02-s3",
+     "problem": "Triangle 1 has angles of 50° and 60° at the two ends of a 4 cm side. Triangle 2 has angles of 50° and 60° at the two ends of a 7 cm side. Find the third angle of each. Are all three angles equal in both? Are the triangles congruent?",
+     "givens": [
+      "Triangle 1: 50° and 60° at the ends of a 4 cm side",
+      "Triangle 2: 50° and 60° at the ends of a 7 cm side"
+     ],
+     "find": "the third angles, and whether the triangles are congruent",
+     "steps": [
+      {
+       "do": "third angle of each by the angle sum",
+       "result": "180 − 110 = 70, so 70° in both"
+      },
+      {
+       "do": "compare all three angles",
+       "result": "50°, 60° and 70° in both triangles"
+      },
+      {
+       "do": "compare the sides between the 50° and 60° angles",
+       "result": "4 cm in one, 7 cm in the other"
+      },
+      {
+       "do": "a 7 cm side cannot cover a 4 cm side",
+       "result": "not congruent"
+      }
+     ],
+     "answer": "Both have angles 50°, 60° and 70°, but they are not congruent (4 cm side against 7 cm side), so equal angles do not guarantee congruence",
+     "why": "angles fix only the shape → the size can still change → congruence needs the same size too → so AAA is not a congruence rule",
+     "source": "Geometric Twins — why equal angles (AAA) do not give congruence"
+    }
    ]
   },
   {
@@ -21198,7 +22761,8 @@
      "Angle Z = ___.",
      "X + 52° + 52° = ___.",
      "Angle X = 180° − 104° = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch09-t03-s2"
    },
    "formats": {
     "primary": "F3",
@@ -21219,6 +22783,65 @@
     "kites",
     "coat hangers",
     "samosa shapes"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch09-t03-s1",
+     "problem": "The front of a tent is triangle PQR, with the two slanting sides PQ and PR equal. Angle Q is 58°. Which other angle of the triangle must be 58°?",
+     "givens": [
+      "PQ = PR",
+      "angle Q = 58°"
+     ],
+     "find": "the angle equal to angle Q",
+     "steps": [
+      {
+       "do": "equal sides",
+       "result": "PQ = PR"
+      },
+      {
+       "do": "angle facing each equal side",
+       "result": "PQ faces angle R; PR faces angle Q"
+      },
+      {
+       "do": "angles opposite equal sides are equal",
+       "result": "angle R = angle Q = 58°"
+      }
+     ],
+     "answer": "Angle R = 58°",
+     "why": "equal sides → look across from each one → the angles they face are equal → angle P sits between the equal sides, so it is not one of the pair",
+     "source": "Geometric Twins — angles opposite the equal sides of an isosceles triangle are equal"
+    },
+    {
+     "skillId": "c7-maths-ch09-t03-s3",
+     "problem": "In triangle ABC, AB = AC = 9 cm and BC = 8 cm. M is the midpoint of BC, and AM is joined. Use triangles ABM and ACM to show that angle B = angle C.",
+     "givens": [
+      "AB = AC = 9 cm",
+      "BC = 8 cm",
+      "M is the midpoint of BC"
+     ],
+     "find": "a reason why angle B = angle C",
+     "steps": [
+      {
+       "do": "M is the midpoint",
+       "result": "BM = CM = 4 cm"
+      },
+      {
+       "do": "list the three pairs of sides",
+       "result": "AB = AC, BM = CM, AM is shared"
+      },
+      {
+       "do": "three pairs of equal sides",
+       "result": "ΔABM ≅ ΔACM by SSS"
+      },
+      {
+       "do": "matching angles of congruent triangles",
+       "result": "angle B ↔ angle C, so angle B = angle C"
+      }
+     ],
+     "answer": "ΔABM ≅ ΔACM by SSS, so angle B = angle C",
+     "why": "split the triangle from the top to the midpoint of the base → the two halves have three equal sides → SSS makes them congruent → the base angles lie on each other, so they are equal",
+     "source": "Geometric Twins — proving the base angles of an isosceles triangle equal with two congruent halves"
+    }
    ]
   },
   {
@@ -21985,7 +23608,8 @@
      "Each time the first number drops by 1, the product goes up by ___.",
      "So (−1) × (−4) = 4 and (−2) × (−4) = ___.",
      "(−3) × (−4) = 8 + 4 = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch10-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -22006,6 +23630,64 @@
     "lift going down floors",
     "cricket run rate debts",
     "diving depth"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch10-t01-s1",
+     "problem": "A toy submarine starts at 0 and moves 4 m down in each move, so each move is −4. Where is it after 5 moves? Show the jumps and write the multiplication.",
+     "givens": [
+      "start at 0",
+      "each move = −4",
+      "5 moves"
+     ],
+     "find": "where the submarine ends up",
+     "steps": [
+      {
+       "do": "one move",
+       "result": "a jump of 4 to the negative side"
+      },
+      {
+       "do": "5 jumps of −4 from 0",
+       "result": "0 → −4 → −8 → −12 → −16 → −20"
+      },
+      {
+       "do": "write as multiplication",
+       "result": "5 × (−4) = −20"
+      }
+     ],
+     "answer": "−20 (20 m below the start); 5 × (−4) = −20",
+     "why": "5 × (−4) → five jumps of 4 toward the negative side → each jump moves 4 down → land at −20",
+     "source": "Operations with Integers — multiplying a positive by a negative integer as repeated movement"
+    },
+    {
+     "skillId": "c7-maths-ch10-t01-s3",
+     "problem": "Find (−1) × (−2) × (−3) × 4. Say the sign first, then the value.",
+     "givens": [
+      "(−1) × (−2) × (−3) × 4"
+     ],
+     "find": "the sign and value of the product",
+     "steps": [
+      {
+       "do": "multiply the first two negatives",
+       "result": "(−1) × (−2) = 2"
+      },
+      {
+       "do": "times the third negative",
+       "result": "2 × (−3) = −6"
+      },
+      {
+       "do": "times 4",
+       "result": "(−6) × 4 = −24"
+      },
+      {
+       "do": "check with the count of negatives",
+       "result": "3 negative factors, an odd number, so the product is negative"
+      }
+     ],
+     "answer": "Negative: (−1) × (−2) × (−3) × 4 = −24",
+     "why": "two negatives multiply to a positive → three negatives leave one negative unpaired → so the product is negative",
+     "source": "Operations with Integers — sign of a product of more than two integers"
+    }
    ]
   },
   {
@@ -22142,6 +23824,42 @@
      "remediation": {
       "representation": "Multiplication check: ? × 0 = −8",
       "moveShape": "Child tries several numbers times 0; ask whether any of them ever gives −8"
+     }
+    },
+    {
+     "id": "c7-maths-ch10-t02-m-drop-sign",
+     "skillId": "c7-maths-ch10-t02-s3",
+     "source": "Operations with Integers — dividing integers to find an equal change in each step",
+     "belief": "In a change problem, divides the sizes and reports the change per step without its sign, so a fall reads as a rise",
+     "signs": [
+      "Says the change per hour is 3 °C when the temperature fell 12 °C in 4 hours",
+      "Writes 12 ÷ 4 instead of (−12) ÷ 4 for a drop",
+      "Cannot tell from the answer whether the amount went up or down"
+     ],
+     "diagnostic": {
+      "prompt_en": "A diver goes from the surface at 0 m to −48 m in 4 equal stages. What is the change in each stage?",
+      "prompt_hi": "Ek diver surface yaani 0 m se −48 m tak 4 barabar stages mein jaata hai. Har stage mein change kitna hai?",
+      "options": [
+       {
+        "text": "−12 m in each stage",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "12 m in each stage",
+        "misconceptionId": "c7-maths-ch10-t02-m-drop-sign",
+        "correct": false
+       },
+       {
+        "text": "−44 m in each stage",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A vertical number line with 0 at the water surface and 4 equal arrows pointing down to −48",
+      "moveShape": "write the total change with its sign first → divide by the number of equal steps → the sign must match the arrows' direction → read it back as 'falls' or 'rises'"
      }
     }
    ],
@@ -22770,7 +24488,8 @@
      "The signs are different, so the answer is ___.",
      "So (−63) ÷ 7 = ___.",
      "Check: (−9) × 7 = ___. Correct."
-    ]
+    ],
+    "skillId": "c7-maths-ch10-t02-s2"
    },
    "formats": {
     "primary": "F2",
@@ -22790,6 +24509,60 @@
     "sharing a group debt",
     "lift moving down floors",
     "water level falling in a tank"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch10-t02-s1",
+     "problem": "From the fact 6 × (−9) = −54, write the two division facts, and check one of them.",
+     "givens": [
+      "6 × (−9) = −54"
+     ],
+     "find": "the two division facts",
+     "steps": [
+      {
+       "do": "product ÷ one factor = the other factor",
+       "result": "(−54) ÷ 6 = −9"
+      },
+      {
+       "do": "product ÷ the other factor",
+       "result": "(−54) ÷ (−9) = 6"
+      },
+      {
+       "do": "check by multiplying back",
+       "result": "(−9) × 6 = −54"
+      }
+     ],
+     "answer": "(−54) ÷ 6 = −9 and (−54) ÷ (−9) = 6",
+     "why": "division undoes multiplication → the product divided by one factor gives the other → each factor keeps its sign",
+     "source": "Operations with Integers — division as the inverse of multiplication for integers"
+    },
+    {
+     "skillId": "c7-maths-ch10-t02-s3",
+     "problem": "The water level of a village pond falls 36 cm in 6 days, by the same amount each day. Write the total change as an integer and find the change per day.",
+     "givens": [
+      "total fall = 36 cm",
+      "6 days",
+      "same fall each day"
+     ],
+     "find": "the change per day as an integer",
+     "steps": [
+      {
+       "do": "a fall → negative change",
+       "result": "total change = −36 cm"
+      },
+      {
+       "do": "share equally over 6 days",
+       "result": "(−36) ÷ 6 = −6"
+      },
+      {
+       "do": "check by multiplying back",
+       "result": "6 × (−6) = −36"
+      }
+     ],
+     "answer": "−6 cm per day (the level falls 6 cm each day)",
+     "why": "write the total change with its sign → divide by the number of equal days → a negative ÷ a positive is negative → the sign says the level falls",
+     "source": "Operations with Integers — dividing integers to find an equal change in each step"
+    }
    ]
   },
   {
@@ -23514,7 +25287,8 @@
      "48 = 2 × 2 × 2 × 2 × ___.",
      "Common primes: 2 × 2 × ___.",
      "HCF = ___. Check: 36 ÷ 12 = 3 and 48 ÷ 12 = 4."
-    ]
+    ],
+    "skillId": "c7-maths-ch11-t01-s2"
    },
    "formats": {
     "primary": "F2",
@@ -23534,6 +25308,69 @@
     "cutting ribbons into equal pieces",
     "planting rows in a field",
     "sharing kits at school"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch11-t01-s1",
+     "problem": "Find the HCF of 18 and 27 by listing their factors.",
+     "givens": [
+      "18",
+      "27"
+     ],
+     "find": "the HCF of 18 and 27",
+     "steps": [
+      {
+       "do": "list the factors of 18",
+       "result": "1, 2, 3, 6, 9, 18"
+      },
+      {
+       "do": "list the factors of 27",
+       "result": "1, 3, 9, 27"
+      },
+      {
+       "do": "keep the factors in both lists",
+       "result": "1, 3, 9"
+      },
+      {
+       "do": "take the highest",
+       "result": "HCF = 9"
+      }
+     ],
+     "answer": "HCF = 9",
+     "why": "list every number that divides each → keep the ones in both lists → the highest of those is the HCF",
+     "source": "Finding Common Ground — listing factors to find the common factors and the HCF"
+    },
+    {
+     "skillId": "c7-maths-ch11-t01-s3",
+     "problem": "A tent maker has two ropes, 42 m and 70 m long. He wants to cut both into pieces of the same length, as long as possible, with nothing left over. How long is each piece, and how many pieces does he get?",
+     "givens": [
+      "rope 1 = 42 m",
+      "rope 2 = 70 m",
+      "equal pieces, longest possible, nothing left over"
+     ],
+     "find": "the piece length and the number of pieces",
+     "steps": [
+      {
+       "do": "piece length must divide both lengths, and be the largest such → HCF",
+       "result": "HCF of 42 and 70"
+      },
+      {
+       "do": "prime factors",
+       "result": "42 = 2 × 3 × 7, 70 = 2 × 5 × 7"
+      },
+      {
+       "do": "multiply the common primes",
+       "result": "2 × 7 = 14"
+      },
+      {
+       "do": "count the pieces",
+       "result": "42 ÷ 14 = 3 and 70 ÷ 14 = 5, so 8 pieces"
+      }
+     ],
+     "answer": "Each piece is 14 m; he gets 8 pieces (3 from the 42 m rope and 5 from the 70 m rope)",
+     "why": "nothing left over → the length divides both → as long as possible → the highest common factor",
+     "source": "Finding Common Ground — HCF situations: the longest equal piece with nothing left over"
+    }
    ]
   },
   {
@@ -24289,7 +26126,8 @@
      "18 = 2 × 3 × ___.",
      "Take two 2s and ___ 3s.",
      "LCM = 2 × 2 × 3 × 3 = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch11-t02-s2"
    },
    "formats": {
     "primary": "F4",
@@ -24309,6 +26147,65 @@
     "runners lapping a track",
     "buying sweets in boxes",
     "festival lights blinking"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch11-t02-s1",
+     "problem": "Find the LCM of 6 and 10 by listing multiples.",
+     "givens": [
+      "6",
+      "10"
+     ],
+     "find": "the LCM of 6 and 10",
+     "steps": [
+      {
+       "do": "list multiples of 6",
+       "result": "6, 12, 18, 24, 30, 36"
+      },
+      {
+       "do": "list multiples of 10",
+       "result": "10, 20, 30, 40"
+      },
+      {
+       "do": "first number in both lists",
+       "result": "30"
+      }
+     ],
+     "answer": "LCM = 30",
+     "why": "list what each number reaches → the first number both lists share → that is the lowest common multiple",
+     "source": "Finding Common Ground — listing multiples to find the LCM"
+    },
+    {
+     "skillId": "c7-maths-ch11-t02-s3",
+     "problem": "Two buses leave a depot together at 7:00 am. One leaves every 12 minutes and the other every 16 minutes. Does this need the HCF or the LCM? When do they next leave together?",
+     "givens": [
+      "buses leave together at 7:00 am",
+      "one every 12 minutes",
+      "other every 16 minutes"
+     ],
+     "find": "HCF or LCM, and the next time they leave together",
+     "steps": [
+      {
+       "do": "things repeat; want when they meet again → a multiple of both gaps",
+       "result": "LCM"
+      },
+      {
+       "do": "multiples of 16",
+       "result": "16, 32, 48"
+      },
+      {
+       "do": "first one that 12 divides",
+       "result": "48 ÷ 12 = 4, so LCM = 48"
+      },
+      {
+       "do": "48 minutes after 7:00 am",
+       "result": "7:48 am"
+      }
+     ],
+     "answer": "LCM; they next leave together at 7:48 am",
+     "why": "together again → a time that is a multiple of both gaps → the first such time → LCM; the HCF is for splitting into equal parts, not for repeating",
+     "source": "Finding Common Ground — deciding whether a situation needs the HCF or the LCM"
+    }
    ]
   },
   {
@@ -24991,7 +26888,8 @@
      "6 × LCM = ___.",
      "LCM = 180 ÷ 6 = ___.",
      "Check: 6 divides ___, so it is possible."
-    ]
+    ],
+    "skillId": "c7-maths-ch11-t03-s2"
    },
    "formats": {
     "primary": "F8",
@@ -25011,6 +26909,65 @@
     "bells and buses",
     "tiles and floors",
     "number detective puzzles"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch11-t03-s1",
+     "problem": "For 15 and 25, find the HCF and the LCM, and check that HCF × LCM = 15 × 25.",
+     "givens": [
+      "15",
+      "25"
+     ],
+     "find": "the HCF, the LCM, and whether HCF × LCM equals 15 × 25",
+     "steps": [
+      {
+       "do": "prime factors",
+       "result": "15 = 3 × 5, 25 = 5 × 5"
+      },
+      {
+       "do": "HCF: common primes",
+       "result": "HCF = 5"
+      },
+      {
+       "do": "LCM: each prime the most times it appears",
+       "result": "3 × 5 × 5 = 75"
+      },
+      {
+       "do": "compare the two products",
+       "result": "5 × 75 = 375 and 15 × 25 = 375"
+      }
+     ],
+     "answer": "HCF = 5, LCM = 75; 5 × 75 = 375 = 15 × 25",
+     "why": "the HCF takes the shared primes → the LCM takes all the primes, shared ones once → together they use every prime of both numbers exactly once → so HCF × LCM = the product",
+     "source": "Finding Common Ground — HCF × LCM equals the product of two numbers"
+    },
+    {
+     "skillId": "c7-maths-ch11-t03-s3",
+     "problem": "For 2, 4 and 6, the HCF is 2 and the LCM is 12. Is HCF × LCM equal to 2 × 4 × 6, or not?",
+     "givens": [
+      "numbers 2, 4, 6",
+      "HCF = 2",
+      "LCM = 12"
+     ],
+     "find": "whether HCF × LCM equals the product of the three numbers",
+     "steps": [
+      {
+       "do": "HCF × LCM",
+       "result": "2 × 12 = 24"
+      },
+      {
+       "do": "product of the three numbers",
+       "result": "2 × 4 × 6 = 48"
+      },
+      {
+       "do": "compare",
+       "result": "24 is not 48"
+      }
+     ],
+     "answer": "Not equal: HCF × LCM = 24 but 2 × 4 × 6 = 48, so the relation does not hold for three numbers",
+     "why": "the relation pairs up the primes of exactly two numbers → with three numbers, shared primes are counted in more places → so check it, never assume it",
+     "source": "Finding Common Ground — the HCF × LCM relation is for two numbers only"
+    }
    ]
   },
   {
@@ -25737,7 +27694,8 @@
      "Ignore the points: 24 × 13 = ___.",
      "Decimal places: 1 + 1 = ___.",
      "2.4 × 1.3 = ___, close to the estimate."
-    ]
+    ],
+    "skillId": "c7-maths-ch12-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -25757,6 +27715,68 @@
     "petrol at a price per litre",
     "cloth bought by the metre",
     "recipe scaling"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch12-t01-s1",
+     "source": "Another Peek Beyond the Point — multiplying a decimal by 10, 100 and by 0.1, 0.01 (tenths and hundredths of it)",
+     "problem": "A ribbon piece is 3.6 m long. How long are 10 such pieces, and 100 such pieces? How long is 0.1 of one piece, and 0.01 of one piece?",
+     "givens": [
+      "one piece = 3.6 m",
+      "multipliers 10, 100, 0.1 and 0.01"
+     ],
+     "find": "3.6 × 10, 3.6 × 100, 3.6 × 0.1 and 3.6 × 0.01",
+     "steps": [
+      {
+       "do": "× 10 → each digit moves one place left",
+       "result": "3.6 × 10 = 36 m"
+      },
+      {
+       "do": "× 100 → each digit moves two places left",
+       "result": "3.6 × 100 = 360 m"
+      },
+      {
+       "do": "× 0.1 is × 1/10 → each digit moves one place right",
+       "result": "3.6 × 0.1 = 0.36 m"
+      },
+      {
+       "do": "× 0.01 is × 1/100 → each digit moves two places right",
+       "result": "3.6 × 0.01 = 0.036 m"
+      }
+     ],
+     "answer": "36 m, 360 m, 0.36 m and 0.036 m",
+     "why": "× 10 or × 100 → every digit's place value grows 10 or 100 times → digits shift left; × 0.1 = ÷ 10 and × 0.01 = ÷ 100 → place values shrink → digits shift right"
+    },
+    {
+     "skillId": "c7-maths-ch12-t01-s3",
+     "source": "Another Peek Beyond the Point — estimating a decimal product, then multiplying for a cost (₹ per kg × kg)",
+     "problem": "Rice costs ₹48.60 per kg. Meera buys 2.5 kg. Estimate the cost first, then find the exact cost.",
+     "givens": [
+      "price = ₹48.60 per kg",
+      "weight = 2.5 kg"
+     ],
+     "find": "an estimate and the exact cost of 2.5 kg",
+     "steps": [
+      {
+       "do": "round the price → about ₹50 per kg",
+       "result": "50 × 2.5 = 125"
+      },
+      {
+       "do": "₹48.60 = 48.6 → ignore the points",
+       "result": "486 × 25 = 12150"
+      },
+      {
+       "do": "decimal places: 1 in 48.6 + 1 in 2.5",
+       "result": "2 places → 121.50"
+      },
+      {
+       "do": "compare with the estimate",
+       "result": "₹121.50 is close to ₹125"
+      }
+     ],
+     "answer": "Estimate about ₹125; exact cost ₹121.50",
+     "why": "estimate first → fixes the size of the answer → whole-number product gives the digits → tenths × tenths = hundredths places the point → estimate catches a misplaced point"
+    }
    ]
   },
   {
@@ -25894,6 +27914,88 @@
      "remediation": {
       "representation": "Equal-ratio pairs: 4.8 ÷ 0.6 = 48 ÷ 6 = 480 ÷ 60",
       "moveShape": "Child checks each pair by multiplying back; ask what must happen to the dividend when the divisor is multiplied by 10"
+     }
+    },
+    {
+     "id": "c7-maths-ch12-t02-m-drop-zero",
+     "skillId": "c7-maths-ch12-t02-s1",
+     "source": "Another Peek Beyond the Point — dividing a decimal by a whole number",
+     "belief": "When dividing a decimal by a whole number, drops the placeholder zero in the quotient, writing 0.24 ÷ 6 = 0.4",
+     "signs": [
+      "Writes 0.24 ÷ 6 = 0.4",
+      "Writes 4.08 ÷ 4 = 1.2 instead of 1.02",
+      "Multiplying the answer back by the divisor gives ten times the starting number"
+     ],
+     "diagnostic": {
+      "prompt_en": "Sana pours 0.24 litres of juice equally into 6 small cups. How much juice goes into each cup?",
+      "prompt_hi": "Sana 0.24 litre juice ko 6 chhote cups mein barabar daalti hai. Har cup mein kitna juice jaata hai?",
+      "options": [
+       {
+        "text": "0.04 litres",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "0.4 litres",
+        "misconceptionId": "c7-maths-ch12-t02-m-drop-zero",
+        "correct": false
+       },
+       {
+        "text": "4 litres",
+        "misconceptionId": null,
+        "correct": false
+       },
+       {
+        "text": "0.004 litres",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "0.24 shaded as 24 small squares on a 10 × 10 grid, shared into 6 equal groups",
+      "moveShape": "write 0.24 as 24 hundredths → 24 hundredths ÷ 6 = 4 hundredths → 4 hundredths written as 0.04 → check 0.04 × 6 = 0.24"
+     }
+    },
+    {
+     "id": "c7-maths-ch12-t02-m-div10-right",
+     "skillId": "c7-maths-ch12-t02-s2",
+     "source": "Another Peek Beyond the Point — dividing a decimal by 10, 100 and 1000",
+     "belief": "Moves the digits the wrong way when dividing by 10, 100 or 1000, as if multiplying, so the answer gets bigger",
+     "signs": [
+      "Writes 3.7 ÷ 100 = 370",
+      "Gets each share bigger than the whole when something is divided among 10",
+      "Mixes up the direction for × 10 and ÷ 10"
+     ],
+     "diagnostic": {
+      "prompt_en": "A road 3.7 km long is divided into 100 equal parts for planting trees. How long is each part?",
+      "prompt_hi": "3.7 km lambi ek sadak ko ped lagaane ke liye 100 barabar hisson mein baanta gaya. Har hissa kitna lamba hai?",
+      "options": [
+       {
+        "text": "0.037 km",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "370 km",
+        "misconceptionId": "c7-maths-ch12-t02-m-div10-right",
+        "correct": false
+       },
+       {
+        "text": "0.37 km",
+        "misconceptionId": null,
+        "correct": false
+       },
+       {
+        "text": "37 km",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A place-value chart (hundreds to thousandths) with the digits of 3.7 on cards",
+      "moveShape": "ask: is each part smaller or bigger than the road? → smaller → slide the digit cards right, one place per zero → 3.7 → 0.37 → 0.037"
      }
     }
    ],
@@ -26475,7 +28577,8 @@
      "Multiply 6.3 by 100 as well: ___.",
      "630 ÷ 7 = ___.",
      "Check: 90 × 0.07 = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch12-t02-s3"
    },
    "formats": {
     "primary": "F3",
@@ -26495,6 +28598,64 @@
     "splitting a restaurant bill",
     "petrol per kilometre",
     "cloth for school uniforms"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch12-t02-s1",
+     "source": "Another Peek Beyond the Point — dividing a decimal by a whole number (as hundredths)",
+     "problem": "A farmer packs 8.25 kg of tomatoes equally into 3 bags. How much goes into each bag?",
+     "givens": [
+      "total = 8.25 kg",
+      "3 equal bags"
+     ],
+     "find": "8.25 ÷ 3",
+     "steps": [
+      {
+       "do": "write the decimal as hundredths",
+       "result": "8.25 = 825 hundredths"
+      },
+      {
+       "do": "share the hundredths among 3",
+       "result": "825 ÷ 3 = 275"
+      },
+      {
+       "do": "turn the hundredths back into a decimal",
+       "result": "275 hundredths = 2.75"
+      },
+      {
+       "do": "check: multiply back",
+       "result": "2.75 × 3 = 8.25"
+      }
+     ],
+     "answer": "2.75 kg in each bag",
+     "why": "a decimal is a count of hundredths → dividing the count by a whole number keeps the unit → hundredths stay hundredths → the point stays in the same place"
+    },
+    {
+     "skillId": "c7-maths-ch12-t02-s2",
+     "source": "Another Peek Beyond the Point — dividing a decimal by 10, 100 and 1000",
+     "problem": "A rope 245.5 m long is cut into 10 equal pieces. How long is each piece? How long would each piece be if it were cut into 100 equal pieces, or into 1000 equal pieces?",
+     "givens": [
+      "rope = 245.5 m",
+      "10, 100 or 1000 equal pieces"
+     ],
+     "find": "245.5 ÷ 10, 245.5 ÷ 100 and 245.5 ÷ 1000",
+     "steps": [
+      {
+       "do": "÷ 10 → each digit moves one place right",
+       "result": "245.5 ÷ 10 = 24.55 m"
+      },
+      {
+       "do": "÷ 100 → each digit moves two places right",
+       "result": "245.5 ÷ 100 = 2.455 m"
+      },
+      {
+       "do": "÷ 1000 → each digit moves three places right",
+       "result": "245.5 ÷ 1000 = 0.2455 m"
+      }
+     ],
+     "answer": "24.55 m, 2.455 m and 0.2455 m",
+     "why": "÷ 10 makes every place value a tenth of what it was → digits shift one place right per zero → the answer gets smaller, never bigger"
+    }
    ]
   },
   {
@@ -27158,7 +29319,8 @@
      "June and September together: 140 + 120 = ___.",
      "Compare: 250 is ___ than 260.",
      "So the statement is ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch13-t01-s2"
    },
    "formats": {
     "primary": "F4",
@@ -27178,6 +29340,67 @@
     "cricket scores",
     "how children travel to school",
     "ice-cream sales in summer"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch13-t01-s1",
+     "source": "Connecting the Dots... — which questions a given set of data can answer",
+     "problem": "A school mela ticket counter sold these tickets: Monday 45, Tuesday 60, Wednesday 38, Thursday 52, Friday 75. Which question can this data answer: (a) How many tickets were sold in all from Monday to Friday? (b) Which ride did the children enjoy the most? Answer the one it can.",
+     "givens": [
+      "tickets sold: Monday 45, Tuesday 60, Wednesday 38, Thursday 52, Friday 75"
+     ],
+     "find": "the question the data can answer, and its answer",
+     "steps": [
+      {
+       "do": "list what the data records",
+       "result": "number of tickets sold on each of five days"
+      },
+      {
+       "do": "test (a): needs only the daily numbers",
+       "result": "the data can answer (a)"
+      },
+      {
+       "do": "test (b): needs rides and children's liking, not recorded",
+       "result": "the data cannot answer (b)"
+      },
+      {
+       "do": "answer (a): add the five days",
+       "result": "45 + 60 + 38 + 52 + 75 = 270"
+      }
+     ],
+     "answer": "Question (a); 270 tickets were sold in all",
+     "why": "data answers only questions about what it records → check each question's needs against the columns → answer the one whose numbers are there"
+    },
+    {
+     "skillId": "c7-maths-ch13-t01-s3",
+     "source": "Connecting the Dots... — statements data cannot decide (the future, too few cases)",
+     "problem": "A shopkeeper noted umbrellas sold this week: Monday 2, Tuesday 14, Wednesday 16. Check the statement: 'Next Tuesday the shop will sell at least 14 umbrellas.' Is it true, false, or cannot tell from this data?",
+     "givens": [
+      "umbrellas sold: Monday 2, Tuesday 14, Wednesday 16",
+      "statement about next Tuesday"
+     ],
+     "find": "true, false or cannot tell",
+     "steps": [
+      {
+       "do": "what the data covers",
+       "result": "three days of this week only"
+      },
+      {
+       "do": "what the statement is about",
+       "result": "a day in the future"
+      },
+      {
+       "do": "data records what happened, not what will happen",
+       "result": "the table has no numbers for next Tuesday"
+      },
+      {
+       "do": "decide",
+       "result": "cannot tell from this data"
+      }
+     ],
+     "answer": "Cannot tell from this data",
+     "why": "data is a record of what already happened → the future is not in it, and three days are too few to show a pattern → so the answer is 'cannot tell', not true or false"
+    }
    ]
   },
   {
@@ -27965,7 +30188,8 @@
      "Mean = 50 ÷ 5 = ___.",
      "Order the data: 6, 7, ___, 12, 15.",
      "The middle value is 10, so the median is ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch13-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -27985,6 +30209,67 @@
     "shoe sizes in a shop",
     "monthly pocket money",
     "marks in a class test"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch13-t02-s1",
+     "source": "Connecting the Dots... — the mean (average) as the total shared equally",
+     "problem": "Priya scored 14, 17, 12, 18 and 16 marks out of 20 in five tests. Find her mean mark.",
+     "givens": [
+      "marks: 14, 17, 12, 18, 16",
+      "5 tests"
+     ],
+     "find": "the mean mark",
+     "steps": [
+      {
+       "do": "add all the marks",
+       "result": "14 + 17 + 12 + 18 + 16 = 77"
+      },
+      {
+       "do": "count the values",
+       "result": "5 tests"
+      },
+      {
+       "do": "share the total equally",
+       "result": "77 ÷ 5 = 15.4"
+      },
+      {
+       "do": "check it lies between the least and the greatest",
+       "result": "12 < 15.4 < 18"
+      }
+     ],
+     "answer": "Mean mark 15.4",
+     "why": "mean = total shared equally among the values → total ÷ number of values → it need not be one of the marks, but lies between the smallest and the largest"
+    },
+    {
+     "skillId": "c7-maths-ch13-t02-s3",
+     "source": "Connecting the Dots... — choosing a representative value when one value is extreme (mean or median)",
+     "problem": "Five children get this much pocket money in a week: ₹40, ₹50, ₹45, ₹55 and ₹310. Find the mean and the median. Which one better tells what a typical child gets?",
+     "givens": [
+      "pocket money: ₹40, ₹50, ₹45, ₹55, ₹310"
+     ],
+     "find": "the mean, the median, and the better representative value",
+     "steps": [
+      {
+       "do": "total",
+       "result": "40 + 50 + 45 + 55 + 310 = 500"
+      },
+      {
+       "do": "mean = total ÷ 5",
+       "result": "500 ÷ 5 = 100"
+      },
+      {
+       "do": "order the values → take the middle one",
+       "result": "40, 45, 50, 55, 310 → median ₹50"
+      },
+      {
+       "do": "compare the mean with the values",
+       "result": "4 of the 5 children get less than ₹100"
+      }
+     ],
+     "answer": "Mean ₹100, median ₹50; the median better shows a typical child",
+     "why": "one very large value pulls the total up → the mean moves away from most values → the median depends only on the middle of the ordered list → it stays typical"
+    }
    ]
   },
   {
@@ -28682,7 +30967,8 @@
      "Boys (blue): badminton 7, kho-kho 5, total ___.",
      "Difference: 19 − ___.",
      "___ more girls."
-    ]
+    ],
+    "skillId": "c7-maths-ch13-t03-s1"
    },
    "formats": {
     "primary": "F3",
@@ -28703,6 +30989,74 @@
     "adverts in magazines",
     "shop sales",
     "class test marks"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch13-t03-s2",
+     "source": "Connecting the Dots... — choosing a scale and planning a double bar graph",
+     "problem": "Books borrowed from the school library: in July, Class 6 borrowed 34 and Class 7 borrowed 46; in August, 58 and 72; in September, 40 and 65; in October, 28 and 50. The graph paper has 10 squares of height. Which scale, 1 square = 5, 10 or 20 books, fits and uses the most height? Plan the graph.",
+     "givens": [
+      "largest value = 72",
+      "10 squares of height",
+      "two classes, four months"
+     ],
+     "find": "the scale and the plan of the axes and legend",
+     "steps": [
+      {
+       "do": "find the largest value",
+       "result": "72 (Class 7, August)"
+      },
+      {
+       "do": "try 1 square = 5 books",
+       "result": "72 ÷ 5 = 14.4 → more than 10 squares, does not fit"
+      },
+      {
+       "do": "try 1 square = 10 books",
+       "result": "72 ÷ 10 = 7.2 → fits in 10 squares"
+      },
+      {
+       "do": "1 square = 20 books also fits but uses less height",
+       "result": "72 ÷ 20 = 3.6"
+      },
+      {
+       "do": "plan the axes and legend",
+       "result": "months along the bottom; books up the side from 0 in steps of 10; two bars per month; legend: one colour for Class 6, one for Class 7"
+      }
+     ],
+     "answer": "1 square = 10 books; months on the horizontal axis, books on the vertical axis from 0, two bars per month, legend for Class 6 and Class 7",
+     "why": "the tallest bar must fit the paper → divide the largest value by each scale → choose the one that fits and uses the most height → equal steps from 0 keep heights honest"
+    },
+    {
+     "skillId": "c7-maths-ch13-t03-s3",
+     "source": "Connecting the Dots... — misleading graphs: a vertical axis that does not start at 0",
+     "problem": "A tea stall's bar graph shows Masala chai 210 cups and Ginger tea 190 cups sold in a week. The vertical axis starts at 180 cups. How many times as tall does the Masala chai bar look, and is the graph fair?",
+     "givens": [
+      "Masala chai = 210 cups",
+      "Ginger tea = 190 cups",
+      "axis starts at 180"
+     ],
+     "find": "how many times as tall the bar looks, and whether the graph is fair",
+     "steps": [
+      {
+       "do": "note where the axis starts",
+       "result": "180, not 0"
+      },
+      {
+       "do": "drawn heights above 180",
+       "result": "210 − 180 = 30 and 190 − 180 = 10"
+      },
+      {
+       "do": "compare the drawn bars",
+       "result": "30 ÷ 10 = 3 → the Masala chai bar looks 3 times as tall"
+      },
+      {
+       "do": "compare the real values",
+       "result": "210 − 190 = 20 → only 20 more cups"
+      }
+     ],
+     "answer": "It looks 3 times as tall, but only 20 more cups were sold (210 against 190), so the graph is misleading",
+     "why": "bar height matches the value only when the axis starts at 0 → cutting the axis removes the same amount from every bar → a small difference looks large"
+    }
    ]
   },
   {
@@ -29462,7 +31816,8 @@
      "With centre P and the same width, cut the arc at Q; angle POQ = ___.",
      "From P and Q, draw ___ arcs crossing at R.",
      "Join OR: angle POR = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch14-t01-s3"
    },
    "formats": {
     "primary": "F2",
@@ -29483,6 +31838,68 @@
     "kite making",
     "carpentry joints",
     "map of two houses and a well"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch14-t01-s1",
+     "source": "Constructions and Tilings — perpendicular bisector with equal compass arcs from both ends",
+     "problem": "Draw a segment AB 7 cm long and construct its perpendicular bisector with ruler and compass.",
+     "givens": [
+      "AB = 7 cm",
+      "ruler and compass only"
+     ],
+     "find": "the perpendicular bisector of AB",
+     "steps": [
+      {
+       "do": "half of AB → compass must open more than this",
+       "result": "7 ÷ 2 = 3.5 cm"
+      },
+      {
+       "do": "centre A, opening 5 cm: arcs above and below AB",
+       "result": "two arcs from A"
+      },
+      {
+       "do": "centre B, same 5 cm opening: arcs crossing the first two → name the crossings",
+       "result": "P where the arcs cross above AB, Q where they cross below"
+      },
+      {
+       "do": "join P and Q",
+       "result": "PQ meets AB at M; AM = MB = 3.5 cm, angle PMA = 90°"
+      }
+     ],
+     "answer": "Line PQ is the perpendicular bisector: it passes through the midpoint M of AB (AM = MB = 3.5 cm) at 90°",
+     "why": "equal openings from A and from B → P and Q are each equally far from A and B → points equally far from A and B lie on the perpendicular bisector → so PQ is it"
+    },
+    {
+     "skillId": "c7-maths-ch14-t01-s2",
+     "source": "Constructions and Tilings — bisecting an angle with ruler and compass",
+     "problem": "Angle ABC is 80°. Bisect it with ruler and compass. How big is each half?",
+     "givens": [
+      "angle ABC = 80°",
+      "ruler and compass only"
+     ],
+     "find": "the bisector of angle ABC and the size of each half",
+     "steps": [
+      {
+       "do": "centre B: one arc cutting BA at P and BC at Q",
+       "result": "BP = BQ"
+      },
+      {
+       "do": "centres P and Q, same opening: arcs crossing inside the angle",
+       "result": "crossing point R"
+      },
+      {
+       "do": "join B to R",
+       "result": "ray BR"
+      },
+      {
+       "do": "two equal halves",
+       "result": "80 ÷ 2 = 40°"
+      }
+     ],
+     "answer": "BR bisects angle ABC; angle ABR = angle RBC = 40°",
+     "why": "B is equally far from P and Q, and so is R → BR is the line of symmetry of the shape BPRQ → folding along BR lays BA on BC → the two halves are equal"
+    }
    ]
   },
   {
@@ -30179,7 +32596,8 @@
      "Angles at a corner must add to ___°.",
      "360° ÷ 120° = ___, a whole number.",
      "So 3 hexagons meet at each corner with no gap: ___, they tile."
-    ]
+    ],
+    "skillId": "c7-maths-ch14-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -30199,6 +32617,62 @@
     "rangoli and kolam",
     "temple floor patterns",
     "bathroom tiles"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch14-t02-s1",
+     "source": "Constructions and Tilings — angles around a point add up to 360°",
+     "problem": "In a tiled courtyard, four tiles meet at one point. Three of their corners there measure 90°, 110° and 75°. What must the fourth corner measure so that there is no gap and no overlap?",
+     "givens": [
+      "corners at the point: 90°, 110°, 75° and one unknown"
+     ],
+     "find": "the fourth corner",
+     "steps": [
+      {
+       "do": "angles around a point",
+       "result": "total 360°"
+      },
+      {
+       "do": "add the known corners",
+       "result": "90 + 110 + 75 = 275"
+      },
+      {
+       "do": "subtract from 360",
+       "result": "360 − 275 = 85°"
+      },
+      {
+       "do": "check",
+       "result": "90 + 110 + 75 + 85 = 360"
+      }
+     ],
+     "answer": "85°",
+     "why": "tiles meeting at a point fill a full turn → the corners add to 360° → the missing corner is 360° minus the others"
+    },
+    {
+     "skillId": "c7-maths-ch14-t02-s3",
+     "source": "Constructions and Tilings — any quadrilateral tiles because its angles add to 360°",
+     "problem": "A tile is a quadrilateral with angles 70°, 100°, 120° and 70°. It is not regular. Can copies of it tile a floor with no gaps? Show why using the angles.",
+     "givens": [
+      "angles 70°, 100°, 120°, 70°"
+     ],
+     "find": "whether copies tile, and the angle reason",
+     "steps": [
+      {
+       "do": "add the four angles",
+       "result": "70 + 100 + 120 + 70 = 360"
+      },
+      {
+       "do": "put four copies at one point, each giving a different corner",
+       "result": "the four corners there add to 360° → no gap, no overlap"
+      },
+      {
+       "do": "repeat at every point where corners meet",
+       "result": "the copies cover the floor"
+      }
+     ],
+     "answer": "Yes: its angles add to 360°, so four copies meet at each point using each angle once, with no gap",
+     "why": "a full turn is 360° → every quadrilateral's angles add to 360° → one copy of each corner fills a point exactly → regular or not, it tiles"
+    }
    ]
   },
   {
@@ -30335,6 +32809,42 @@
      "remediation": {
       "representation": "Price tags: a tag with ₹a on one apple, then a number put in",
       "moveShape": "Child replaces a with ₹20 and reads the sentence again; ask whether a was an apple or a number"
+     }
+    },
+    {
+     "id": "c7-maths-ch15-t01-m-same-numbers",
+     "skillId": "c7-maths-ch15-t01-s3",
+     "source": "Finding the Unknown — checking an equation against the story with a trial value",
+     "belief": "Accepts an equation because it uses the story's numbers, without trying a value, so 2n + 3 = 22 and 2(n + 3) = 22 both seem to fit 'add 3, then double'",
+     "signs": [
+      "Says two different equations both fit the same story",
+      "Checks only that every number in the story appears in the equation",
+      "Never works out the story and the equation with the same trial value"
+     ],
+     "diagnostic": {
+      "prompt_en": "Tara thinks of a number, adds 3 to it, then doubles the result. She gets 22. Which equation fits this story: 2n + 3 = 22, or 2(n + 3) = 22, or do both fit?",
+      "prompt_hi": "Tara ek number sochti hai, usme 3 jodti hai, phir result ko double karti hai. Use 22 milta hai. Kaunsa equation is story mein fit hota hai: 2n + 3 = 22, ya 2(n + 3) = 22, ya dono fit hote hain?",
+      "options": [
+       {
+        "text": "Only 2(n + 3) = 22 fits",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Both fit",
+        "misconceptionId": "c7-maths-ch15-t01-m-same-numbers",
+        "correct": false
+       },
+       {
+        "text": "Only 2n + 3 = 22 fits",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Two columns side by side: the story's steps and the equation's steps, each worked with the same trial number",
+      "moveShape": "pick a number that works in the story (n = 8: 8 + 3 = 11, doubled 22) → put the same number in each equation → 2 × 8 + 3 = 19, 2 × (8 + 3) = 22 → keep only the one that matches"
      }
     }
    ],
@@ -30896,6 +33406,33 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c7-maths-ch15-t01-i14",
+     "skillId": "c7-maths-ch15-t01-s3",
+     "kind": "near_transfer",
+     "difficulty": 3,
+     "source": "Finding the Unknown — checking an equation against the story with a trial value",
+     "prompt_en": "Gita thinks of a number, doubles it, then adds 5, and gets 17. Does the equation 2(n + 5) = 17 fit this story? Try n = 6.",
+     "prompt_hi": "Gita ek number sochti hai, use double karti hai, phir 5 jodti hai, aur use 17 milta hai. Kya equation 2(n + 5) = 17 is story mein fit hota hai? n = 6 lekar try karo.",
+     "answer": "No: with n = 6 the story gives 6 × 2 + 5 = 17, but the equation gives 2 × (6 + 5) = 22; the fitting equation is 2n + 5 = 17",
+     "acceptable": [
+      "no",
+      "no, 2n + 5 = 17",
+      "it does not fit"
+     ],
+     "hints": [
+      "In the story, what happens to Gita's number first: doubling or adding 5?",
+      "Doubling comes first, so the 2 multiplies n alone, and 5 is added after.",
+      "With n = 6: story 6 × 2 + 5 = ___; equation 2 × (6 + 5) = ___.",
+      "17 and 22 differ, so 2(n + 5) = 17 does not fit; 2n + 5 = 17 does."
+     ],
+     "targetsMisconception": "c7-maths-ch15-t01-m-same-numbers",
+     "verified": {
+      "solverAnswer": "No. Story with n = 6: 6 × 2 = 12, 12 + 5 = 17 (works). Equation: 2(6 + 5) = 22 ≠ 17. The equation adds first and then doubles; the fitting equation is 2n + 5 = 17",
+      "agrees": true,
+      "note": "Blind-solved (class 7 batch, in-session); hand-read against the key; agrees."
+     }
     }
    ],
    "workedExample": {
@@ -30911,7 +33448,8 @@
      "Double his number is ___.",
      "4 more than that is 2m + ___.",
      "The equation is 2m + 4 = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch15-t01-s2"
    },
    "formats": {
     "primary": "F4",
@@ -30931,6 +33469,65 @@
     "ages in a family",
     "shopping bills",
     "marbles and cards"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch15-t01-s1",
+     "source": "Finding the Unknown — writing phrases as expressions with a letter-number",
+     "problem": "Aman is a years old. Write expressions for: (i) his age 5 years from now, (ii) his father's age, which is 3 times Aman's age, (iii) 4 less than his father's age.",
+     "givens": [
+      "Aman's age = a years"
+     ],
+     "find": "three expressions",
+     "steps": [
+      {
+       "do": "5 years from now → add 5",
+       "result": "a + 5"
+      },
+      {
+       "do": "3 times Aman's age",
+       "result": "3a"
+      },
+      {
+       "do": "4 less than 3a → subtract 4 from 3a",
+       "result": "3a − 4"
+      },
+      {
+       "do": "test with a = 10",
+       "result": "15, 30 and 26"
+      }
+     ],
+     "answer": "(i) a + 5, (ii) 3a, (iii) 3a − 4",
+     "why": "the letter stands for a number → each phrase is an operation on it → '4 less than' subtracts 4 from the amount named after it → a test number confirms the order"
+    },
+    {
+     "skillId": "c7-maths-ch15-t01-s3",
+     "source": "Finding the Unknown — checking an equation against the story with a trial value",
+     "problem": "Rekha buys 3 notebooks at ₹n each and pays with a ₹100 note. She gets ₹40 back. Does the equation 100 − 3n = 40 fit the story? Try n = 20.",
+     "givens": [
+      "3 notebooks at ₹n each",
+      "paid ₹100",
+      "change ₹40",
+      "equation 100 − 3n = 40"
+     ],
+     "find": "whether the equation fits the story",
+     "steps": [
+      {
+       "do": "work out the story with n = 20",
+       "result": "3 × 20 = 60, 100 − 60 = 40"
+      },
+      {
+       "do": "work out the equation with n = 20",
+       "result": "100 − 3 × 20 = 40"
+      },
+      {
+       "do": "compare the two",
+       "result": "both give ₹40 change → the equation fits"
+      }
+     ],
+     "answer": "Yes, 100 − 3n = 40 fits: with n = 20 the story and the equation both give ₹40",
+     "why": "a right equation follows the story's steps → a value that works in the story must make the equation true → if the two disagree, the equation is wrong"
+    }
    ]
   },
   {
@@ -31688,7 +34285,8 @@
      "Undo × 4: divide both sides by 4, x = ___.",
      "Check: 4 × 7 − 5 = 28 − 5 = ___.",
      "So x = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch15-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -31708,6 +34306,62 @@
     "shopping with a fixed budget",
     "think-of-a-number games",
     "sharing sweets"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch15-t02-s1",
+     "source": "Finding the Unknown — one-step equations: do the same to both sides",
+     "problem": "Pooja spent ₹14 at the mela and has ₹27 left. Solve x − 14 = 27 for the money x she started with.",
+     "givens": [
+      "x − 14 = 27"
+     ],
+     "find": "x",
+     "steps": [
+      {
+       "do": "undo − 14: add 14 to both sides",
+       "result": "x − 14 + 14 = 27 + 14"
+      },
+      {
+       "do": "simplify both sides",
+       "result": "x = 41"
+      },
+      {
+       "do": "check in the original",
+       "result": "41 − 14 = 27"
+      }
+     ],
+     "answer": "x = 41, so Pooja started with ₹41",
+     "why": "both sides are equal, like a balance → the same change to both keeps them equal → adding 14 undoes subtracting 14 → x is left alone"
+    },
+    {
+     "skillId": "c7-maths-ch15-t02-s3",
+     "source": "Finding the Unknown — the unknown on the right-hand side, then checking",
+     "problem": "Solve 34 = 5y + 9 and check your answer.",
+     "givens": [
+      "34 = 5y + 9"
+     ],
+     "find": "y",
+     "steps": [
+      {
+       "do": "undo + 9: subtract 9 from both sides",
+       "result": "25 = 5y"
+      },
+      {
+       "do": "undo × 5: divide both sides by 5",
+       "result": "5 = y"
+      },
+      {
+       "do": "read it the other way round",
+       "result": "y = 5"
+      },
+      {
+       "do": "check in the original",
+       "result": "5 × 5 + 9 = 34"
+      }
+     ],
+     "answer": "y = 5",
+     "why": "'=' means both sides are equal → it does not matter which side holds the unknown → undo the operations on both sides → check in the original equation"
+    }
    ]
   },
   {
@@ -32463,7 +35117,8 @@
      "Line 2 is wrong: 4(x − 2) = 4x − ___.",
      "Correct: 4x − 8 = 20, so 4x = 28 and x = ___.",
      "Check: 4 × (7 − 2) = 4 × 5 = ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch15-t03-s3"
    },
    "formats": {
     "primary": "F8",
@@ -32483,6 +35138,66 @@
     "detective games",
     "checking a cricket score sheet",
     "puzzle competitions"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch15-t03-s1",
+     "source": "Finding the Unknown — checking a claimed solution in the original equation",
+     "problem": "Shreya says x = 6 is the solution of 7x − 9 = 40. Check her claim by putting it into the equation.",
+     "givens": [
+      "7x − 9 = 40",
+      "claimed x = 6"
+     ],
+     "find": "whether x = 6 is a solution",
+     "steps": [
+      {
+       "do": "put x = 6 into the left side",
+       "result": "7 × 6 − 9 = 42 − 9 = 33"
+      },
+      {
+       "do": "compare with the right side",
+       "result": "33 is not 40"
+      },
+      {
+       "do": "decide",
+       "result": "x = 6 is not a solution"
+      }
+     ],
+     "answer": "No: 7 × 6 − 9 = 33, not 40, so x = 6 is not a solution",
+     "why": "a solution makes both sides of the original equation equal → substitute and work out each side → unequal sides mean the claim is wrong"
+    },
+    {
+     "skillId": "c7-maths-ch15-t03-s2",
+     "source": "Finding the Unknown — finding the first wrong line in someone's working",
+     "problem": "Arjun solved 4x − 6 = 18 like this. Line 1: 4x = 24. Line 2: x = 24 − 4. Line 3: x = 20. Which is the first wrong line, and what is the right answer?",
+     "givens": [
+      "4x − 6 = 18",
+      "Line 1: 4x = 24",
+      "Line 2: x = 24 − 4",
+      "Line 3: x = 20"
+     ],
+     "find": "the first wrong line and the correct x",
+     "steps": [
+      {
+       "do": "check the final answer in the original",
+       "result": "4 × 20 − 6 = 74, not 18"
+      },
+      {
+       "do": "test Line 1: add 6 to both sides",
+       "result": "18 + 6 = 24 → Line 1 is right"
+      },
+      {
+       "do": "test Line 2: undo × 4 by dividing by 4",
+       "result": "24 ÷ 4 = 6 → Line 2 subtracted instead, so it is the first wrong line"
+      },
+      {
+       "do": "redo from there and check",
+       "result": "x = 6; 4 × 6 − 6 = 18"
+      }
+     ],
+     "answer": "Line 2 is the first wrong line; x = 6",
+     "why": "a wrong answer means some line broke → test each line against the one before → the first line that does not follow is the mistake → redo from there and check in the original"
+    }
    ]
   }
  ],

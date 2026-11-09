@@ -49,9 +49,8 @@ test("B4 session: azure-speech carries the phrase list and both languages; a tra
 test("B4 phrasesFor: the kit's answers when it is quick; names + core when it is slow or fails", async () => {
   const lesson = { topic_id: "c4-maths-area", state: STATE };
   assert.ok((await phrasesFor(lesson, { kit: async () => KIT })).includes("सात"));
-  const t0 = Date.now();
-  const slow = await phrasesFor(lesson, { kit: () => new Promise((r) => setTimeout(() => r(KIT), 2000)), timeoutMs: 50 });
-  assert.ok(Date.now() - t0 < 1000, "never waits on a slow kit");
+  // event-driven: the kit NEVER answers, so getting phrases back at all means phrasesFor did not wait on it
+  const slow = await phrasesFor(lesson, { kit: () => new Promise(() => {}), timeoutMs: 50 });
   assert.ok(slow.includes("Aarav") && !slow.includes("सात" + "x") && !slow.includes("40 square cm"));
   assert.ok((await phrasesFor(lesson, { kit: async () => { throw new Error("db"); } })).includes("हाँ"));
 });

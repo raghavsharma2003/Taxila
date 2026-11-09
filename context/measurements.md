@@ -6187,3 +6187,89 @@ feeta naap, 2026-11-08 (forge3-qa, local harness, p360 / p412 / l1366, the game 
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r7-director12-drawing-replay-2026-11-08` (2026-11-08): director12's 17 picture-request rows (claude/r4-conversation e71b1caf, 2026-11-08-director12; 0-based rows) were replayed through Studio's seam on claude/r4-content (int/r6 c7fb65d36 merged). Method: the page up drawn on its own run line (the last segment of the turn before), then the picture turn on its exact text, with the card's prompt and key from the run's script. 16 of the 17 replay (steady-c5-t02 row 34 returns no take in the harness, before and after). Second views drawn: 7/16 → 15/16. Turns that bring the card back as a second page: 0 → 12. 3 of them come from S5's card words (c5-t01 steering 14 at "Wahi"; c6 steady 18 and offtopic 28 at "Paanch"). The other 9 come from director11's figure words (bar, line) in the run's old lines, which Brain rewrites from the new row. Every row main cited draws one: c4 steady 18, stuck 18 and steering 14 draw round (steady keeps the 3 shaded parts); c5-t01 stuck 18 draws example (no 8 written); c5-t02 steady 18 and stuck 18 draw parts (two unnamed bars, 0 and 1 kept); c5-t01 steering 14 turns back to the road at "Wahi"; c6 steady/offtopic 18/28 turn back at "Paanch". The one replayed row without a second view is uncited and the same before this change: offtopic-c4 row 28. There, row 26's circle was drawn by the ladder, not as the card's board, so no card ref is up. c5-t02 steady row 78 replayed through pagesBoard: null (catalogue 677×423 beside 400×300) → 2 pages, fraction-line then fraction-bars. No model calls, DATABASE_URL unset. tests/r8-director12.test.mjs pins each item.
+
+
+<!-- merged from inbox/r7-main-31.json -->
+## `ms-r7-director13-hand-2026-11-09` (2026-11-09)
+
+director13: v6.4 on integration 16, run by main. 16 lessons, counted by hand by 4 judges.
+
+| Line | Count |
+|---|---|
+| Beats taught | 241/243 (99%) |
+| Verdicts | 211/211 |
+| Misgrades | 0/0 |
+| False keys | 0 |
+| Contradictions, by hand | 13 (paging 3, second view 8, data 1, other 1) |
+
+director12 had 38. By topic: c4 4, c5-t01 4, c5-t02 5 (from 29), c6 0.
+
+Register scored 2.5–3 in all four topics.
+
+Cost was 1,542 calls, about $1.047. The per-lesson median of reply-ready p50 was about 3.06 s.
+
+Full write-up: docs/design/round7/judgements/director13-2026-11-09.md.
+
+
+<!-- merged from inbox/r7-games-bhaap.json -->
+## `ms-r7-games-bhaap-cert`
+
+bhaap play-cert, 2026-11-08 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 64 of 64 bhaap samples pass at p360, p412 and l1366: 8 entries × 2 seeds × 4 arts. The table: 4104 of 4104.
+- **Tests:** tests/r7-games-bhaap.test.mjs, 42 tests.
+  - An independent checker with its own reading of the kits agrees with every step the law takes over random play, and no water is made or destroyed. Its reading: melt and freeze only at the 0 °C mark, boil only at 100 °C; drops only on cold things; the land changing faster than the sea; the boat going with the breeze; a cloud only from risen vapour; one row of gaps per rain, two with the pit.
+  - A room check shows warm air never sinks and cool air never rises.
+  - Every KIT_OF sentence is in its kit. The only digits on screen are 0 °C and 100 °C.
+  - Generator and picker p95 are measured in CPU time.
+- **Browser runs:** every goal solved by real taps at 360 x 640 on seeds 3 and 17, 34 runs over two or three looks per goal; every mal-rule state reached the same way.
+  - Input: page.mouse on the canvas targets, getByTestId on the DOM buttons, never a dispatch.
+  - No clipped label; smallest tap target 50 px.
+  - Shots in docs/design/round7/games/runshots-bhaap/.
+
+
+<!-- merged from inbox/r7-games-chhaano.json -->
+## `ms-r7-games-chhaano-cert`
+
+chhaano play-cert, 2026-11-08 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 40 of 40 chhaano samples pass at p360, p412 and l1366: 5 entries × 2 seeds × 4 arts. The table: 3984 of 3984.
+- **Tests:** tests/r7-games-chhaano.test.mjs, 29 tests. An independent checker, with its own size, weight, dissolve and settle tables read from the kit's sentences, agrees with every split and vessel the law makes over random play, and no part is ever lost. Every top-level number is the settling waits (a declared scene value) or the picker's nudge; no chhaano word holds a digit. Generator and picker p95 are measured in CPU time.
+- **Browser runs:** every goal solved by real taps at 360 x 640 on seeds 3 and 17 (farak look 1; kram looks 1 and 3; nithaar 1; chhaan 2; namak 1 and 2), and every mal-rule state reached the same way. page.mouse on the canvas targets, getByTestId on the DOM buttons, never a dispatch. No clipped label; smallest tap target 50 px. Shots in docs/design/round7/games/runshots-chhaano/.
+
+
+<!-- merged from inbox/r7-games-gati.json -->
+## `ms-r7-games-gati-cert`
+
+gati play-cert, 2026-11-08 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction): 56 of 56 gati samples pass at p360, p412 and l1366 (the table: 4000 of 4000). Counts in server/forge3/certs/play.json.
+
+- **Tests:** tests/r7-games-gati.test.mjs (45 tests): an independent checker (its own story table; a thing's types read from its sampled path alone: along a line, winding round, turning back; the kit's own 1000 m ÷ 3600 s) agrees with the law over ≥ 2000 random acts per goal; each mal-rule lands on its own kit id; tampered params refused; generator and picker p95 in CPU time.
+- **Browser runs:** every goal solved by real taps at 360 x 640 on seeds 3, 17, 8 (looks 1, 3, 2; seed 17 drags lanes onto bins); every mal-rule state reached by real taps; page.mouse on canvas targets, getByTestId on DOM controls, never a dispatch. Smallest tap target 44 px; audit 3,744 targets over 7 goals × 4 seeds × 3 looks (arts rotated, the clock stepped to its end): none under 44 px, none outside the box. Shots in docs/design/round7/games/runshots-gati/.
+
+
+<!-- merged from inbox/r7-games-kyun-chumbak.json -->
+## `ms-r7-games-kyun-chumbak-cert`
+
+kyun-lab play-cert, 2026-11-08 (forge3-qa, local harness, p360 / p412 / l1366, every art direction): 64 of 64 dhruv/disha samples pass at every size; kyun-lab 208 of 208; the table 4104 of 4104 (server/forge3/certs/play.json). A first run failed p360 Q2.whole on all 64: the goal line was clipped in the 320 px Studio box; every goal / why / done line is now ≤ 64 characters (tested).
+
+- **Tests:** tests/r7-games-kyun-chumbak.test.mjs (41 tests): an independent checker (its own tables for where pins cling, which joint couples, what pushes, where the needle points) agrees with the law over random play; mal-rules fold their kit ids; tampered params refused; CPU-time speed bars; words in three languages, no digits but the kit's.
+- **Browser runs:** every goal solved by real taps at 360 x 640 on seeds 3 and 17 (looks 1-3), every mal-rule state reached, 24 audit runs across arts and languages; page.mouse on canvas targets and getByTestId on DOM controls, never a dispatch. Smallest target 48 px, nothing clipped. Shots in docs/design/round7/games/runshots-kyun-chumbak/.
+
+
+<!-- merged from inbox/r7-learning-35.json -->
+## `m-r7-c4-c7-kit-depth-agreement` (2026-11-09, F Learning)
+n = 260 packet entries (worked examples, items, misconception diagnostics) across 9 batches; method: a separate in-session Claude agent blind-solved the packet without keys; the main loop hand-read every answer against its key, fixed flagged wording, and re-solved every changed entry.
+
+| class | batches | agreement | re-solve of changed |
+|---|---|---|---|
+| 4 | C4A, C4B | 30/30, 35/35 | 5/5 |
+| 5 | C5A, C5B | 29/29, 28/28 | 19/19 |
+| 6 | C6A, C6B | 40/40, 30/30 | none changed |
+| 7 | C7A, C7B, C7C | 33/33, 30/30, 23/23 (+1 unanswered) | 6/6 |
+
+Fixes from the hand-read in class 7: a decimal-subtraction trade step (20.00 has no ones, so a ten is traded first), option reasons that cued a diagnostic's answer were cut to bare options (2 diagnostics), a construction's crossing points named, and an equation changed so its true solution is whole (7x − 9 = 40).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r7-quizfix-gati-chhaano` (2026-11-09): After the fixes: play-cert (forge3-qa, p360/p412/l1366) gati 56/56 and chhaano 40/40 samples pass at every size (table 4168/4168, other families' samples unchanged); real taps at 360 x 640 (page.mouse on audit targets, play-ctl test ids, never dispatch): 24 gati runs (sandarbh, prakaar, aage, nikaalo, badlo on seeds 3, 17, 8 plus mal and refusal states) and 14 chhaano sukha runs (farak, kram, the throw, every sukha mal-rule), all as expected, taps' acts equal to the law's; smallest target 44 x 44 (aage flag button, counter wheel halves).
+- `ms-r7-director13-second-views-2026-11-09` (2026-11-09): director13's 19 picture-request rows (int/r6 6a41eb540, 2026-11-09-director13, 0-based rows) replayed through Studio's seam on claude/r4-content. Method: the turn before on its own line with its recorded pages, the preselect before her line without pages as Brain does, then the picture turn on its run text with the card's prompt and key from the run's script. 15/19 draw a second view, including both rows main cited: c4 stuck 18 draws round, c5-t02 stuck 20 draws wholes. Of the 4 without one, 3 are cards whose own board was not up yet: steady-c4 18 (the roti card under the 3/4 bar), steady-c5-t01 64, steady-c5-t02 66 (compare words). The 4th, offtopic-c4 28, drew its second view in the run itself. The harness bookkeeping, mirrored on Brain's replay (tests/fixtures/replay.mjs, no model calls), reproduces the run's miss at c4 stuck 18 with the old page-up and gives round with patch 016. c5-t02 stuck 20 needs S8 and 016. tests/r8-director13.test.mjs pins each.

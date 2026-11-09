@@ -127,3 +127,21 @@ test("c8/c9 English and Hindi language-skill depth (scoped): every item blind-ve
     }
   }
 });
+
+test("c1-c7 maths (the young band and classes 4-7): every skill has a worked example, a ≥ 3-item ladder and a misconception; every item blind-verified; every added example names its source", () => {
+  for (const f of ["c1-maths", "c2-maths", "c3-maths", "c4-maths", "c5-maths", "c6-maths", "c7-maths"]) {
+    const k = JSON.parse(readFileSync(new URL(`../data/kits/${f}.json`, import.meta.url), "utf8"));
+    for (const t of k.topics) {
+      const ex = new Set([t.workedExample.skillId, ...(t.skillExamples ?? []).map((x) => x.skillId)]);
+      const mis = new Set([...t.items.filter((i) => i.targetsMisconception).map((i) => i.skillId), ...t.misconceptions.map((m) => m.skillId).filter(Boolean)]);
+      for (const s of t.skills) {
+        assert.ok(ex.has(s.id), `${s.id}: worked example`);
+        assert.ok(t.items.filter((i) => i.skillId === s.id).length >= 3, `${s.id}: ladder`);
+        assert.ok(mis.has(s.id), `${s.id}: misconception`);
+      }
+      assert.ok(t.items.every((i) => i.verified?.agrees === true), `${t.topicId}: every item verified`);
+      // (the next-30 batch in c4-c7 predates the source field)
+      if (/^c[123]-/.test(f)) for (const x of t.skillExamples ?? []) assert.ok(String(x.source ?? "").trim(), `${x.skillId}: example source`);
+    }
+  }
+});
