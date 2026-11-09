@@ -26667,6 +26667,20 @@
    "at": "2026-11-09",
    "title": "director14 S9b, extends dc-r7-second-view-last-page. The seam records the beat kind of the page up (L.wbPrevKind, beside wbPrevRef; a paged turn's lastKind) and passes it to the preselect as avoidKind. A picture asked while a REMEDIATION's board is up, and the card's own board is not, gets that remediation board's second view. c6 stuck 18: the lettered hexagon AB 10 … FA 9 is laid straight (unrolled), then the then-card's pentagon follows on the card's own page. Any other board up that is not the card still gets the card's own board, as before. Brain's patch 017 adds the same bookkeeping to the harness (shownKind). Reverse if judges find the remediation's view distracts from the card it precedes.",
    "source": "inbox/r7-studio-30.json"
+  },
+  {
+   "id": "ms-r7-director15-hand-2026-11-09",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "director15: script walk v6.6 on int/r6 2e9664b34 (integration 19), run by main, 16 lessons, 1,522 calls ~$1.035; reply-ready per-lesson p50 median 2640→2860 ms; counted by hand by 4 Claude judges (0-based rows, by mechanism): beats 265/266 (99.6%), verdicts 260/263 (the 3 misses all from the content-filter fallback), misgrades 0/0, false keys 0; contradictions 5 by main's consistent ruling (paging 4, data 1) vs director14 22, the lowest of round 7 (judges' raw count 7: the c4 judge also counted 2 bare miss verdicts naming the child's answer on the remediation's page, a shape the other three judges and director13/14 did not count, ~18 more instances); per topic c4 1, c5-t01 0 (from 10), c5-t02 2, c6 2; verdict-then-next-card turns paged correctly 132/134; picture turns 14/14 two pages. Listening 3 in all four topics; register 3–3.5; promises 2–3 (asides lost or parked in every topic); screen and speech 3.5–4.5. H3 counter missed 4 of 5 hand rows with ~20 false flags.",
+   "source": "inbox/r7-main-33.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-7",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "Script walk v6.7: asides that come back; every path through the parts. Brain: A3 root-cause why A2 did not fire live, with predicates replayed from the director15 rows (a taste question answered on the asking turn, 0 parked; every parked aside returned by its card's close or the wrap, 0 lost; an aside question ends her turn; a repeated aside acknowledged; an aside reply states nothing not in the child's words); P5 the content-filter fallback, B1′ and worked-step paths build parts, a fallback drops only model parts (every graded turn has a verdict part; every part on its own beat's board); P4′ a miss verdict naming the child's answer or a value is said on the answered card's page before the remediation's (counted as paging from director16); B1″ the live beat is the open card's beat or the running worked step, never a closed card, an untaught point or a remediation's board, and 'Ab Hindi mein' changes the words; V1′ the hook is authored only, a second miss always takes the scripted give-up (no model 'break'), no method reads; R4 register on the code side (the worked problem stated once, no 'Diya hai… Dhoondhna hai…' recital, varied close joints, check-ins 3–5 forms at most every third turn, mark→nishaan never touches 'question mark', no gender slips); K4 'aage chalo' after a closed card moves on, 'pata nahi, aap batao' gets the simpler, a first miss never a bare re-pose; H4 the counter checks each part's beat against the drawn page's beat, counts the P4′ shape, must flag director15's 5 hand rows plus the P4′ rows with ≤2 other false flags; speed: find the +220 ms. Studio: S9b root-cause c6 stuck 18 (no second view on a remediation's board). Learning: D10 the register rewrite of the four pilots' spoken fields (reversal clause 2 taken), the ask-board '?' lint, the c5-t02 s1 and c5-t01 key leaks, the validator's 'no later key' extended to then-cards and later distractors. Why: director15 contradictions 22→5 with false keys back to 0 and P4 paging 132/134 closes correctly; the remaining contradictions and all 3 missing verdicts are paths that bypass P4; listening, register and promises fail in every topic, led by lost or parked asides. Clause 1 not triggered at 4 by a consistent ruling (raw 6); clause 3 taken (counter missed 4/5). Reverse: director16 has more than 5 paging + second-view contradictions by hand with the P4′ shape counted → one code-drawn board per card, held, unconditionally; register still below 3.5 with D10 and R4 in place → code's frames move into the scripts, authored per topic by Learning; H4 misses more than 1 of the hand count → the 30-topic batch is screened only by hand judging.",
+   "source": "inbox/r7-main-33.json"
   }
  ],
  "edges": [
@@ -41724,6 +41738,26 @@
    "src": "dc-r7-remediation-second-view",
    "rel": "constrains",
    "dst": "dc-r7-second-view-last-page"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-7",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v6-6"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-7",
+   "rel": "measured_by",
+   "dst": "ms-r7-director15-hand-2026-11-09"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-6",
+   "rel": "measured_by",
+   "dst": "ms-r7-director15-hand-2026-11-09"
+  },
+  {
+   "src": "rj-r7-proxy-contradiction-trend",
+   "rel": "measured_by",
+   "dst": "ms-r7-director15-hand-2026-11-09"
   }
  ]
 }
