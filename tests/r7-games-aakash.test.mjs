@@ -342,3 +342,141 @@ test("aakash: every word the view shows exists in all three languages; vakya's w
   const ECON = /\b(points?|coins?|gems?|streaks?|lives|life left|rewards?|leaderboard|rank(ing)?|xp|level up|bonus|jackpot|loot|unlock(ed)?|hurry|jaldi|time'?s up|game over)\b/i;
   for (const [k, v] of Object.entries(words)) if (k.startsWith("aakash.")) for (const l of ["hinglish", "en", "hi"]) assert.doesNotMatch(v[l], ECON, `${k} ${l}`);
 });
+
+// ───────────────────────────── the view, drawn headless (a recording context; the law's own state) ─────────────────────────────
+// r7 aakash2 (lead, 2026-11-09): from above, a Moon off the Sun-Earth line that month still LOOKED lined up (only the side
+// strip showed it off). Now the view from above draws it lifted off its path (up when it passes above the line, down when
+// below, as in the strip) with a stalk and an arrow from its place on the path; on the line it sits on its path. And every
+// drag (the Earth spun or moved round, the Moon moved on) makes the law's own acts, one per step the finger sweeps.
+function fakeCtx() {
+  const t = { font: "10px x", drawn: [], fillStyle: "", strokeStyle: "", globalAlpha: 1, lineWidth: 1, textAlign: "center", textBaseline: "middle", lineCap: "", lineJoin: "" };
+  return new Proxy(t, {
+    get(o, k) {
+      if (k in o) return o[k];
+      if (k === "measureText") return (s) => ({ width: [...String(s)].length * Number(/(\d+)px/.exec(o.font)?.[1] ?? 16) * 0.56 });
+      if (k === "fillText") return (s) => { o.drawn.push({ s, font: o.font }); };
+      return () => ({ addColorStop() {} });
+    },
+    set(o, k, v) { o[k] = v; return true; },
+  });
+}
+let hooked = false;
+/** the view imports the words as JSON (a load hook adds the import attribute), once per process */
+async function hook() {
+  const { register } = await import("node:module");
+  if (!hooked) hooked = true, register("data:text/javascript," + encodeURIComponent(`export async function load(url, ctx, next) { if (url.endsWith(".json")) return next(url, { ...ctx, importAttributes: { ...ctx.importAttributes, type: "json" } }); return next(url, ctx); }`));
+}
+async function viewOf(level, W = 360, H = 430) {
+  await hook();
+  const { ART, Painter, newAudit } = await import("../src/play/core/styles.ts");
+  const V = await import("../src/play/families/aakash/aakash.view.ts");
+  const audit = newAudit("kagaz", false); audit.box = { w: W, h: H };
+  const box = { state: L.init(level), acts: [] };
+  let view = null;
+  const ctl = { get state() { return box.state; }, dispatch(a) { const r = L.apply(level, box.state, a, box.acts.length + 1); box.state = r.state; box.acts.push(a); view.react(r.moments, r.refused); return r; }, finger() {} };
+  const api = { w: W, h: H, dpr: 1, t: 50, P: new Painter(ART.kagaz, audit, false), art: ART.kagaz, tw: {}, fx: { burst() {}, shake() {}, flash() {} }, reduced: true, young: false,
+    sfx() {}, target(id, x, y, w, h) { audit.targets.push({ id, x, y, w, h }); }, invalidate() {}, layer() { return null; },
+    hit(x, y) { const t = [...audit.targets].reverse().find((r) => x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h); return t ? t.id : null; } };
+  view = V.makeAakashView(api, { level, ctl, lang: "en", changed() {} });
+  view.layout(W, H);
+  const draw = () => { api.t += 5; audit.targets.length = 0; audit.texts.length = 0; audit.clipped = 0; const c = fakeCtx(); view.draw(c); return { targets: [...audit.targets], texts: [...audit.texts], clipped: audit.clipped }; };
+  return { view, ctl, box, api, draw };
+}
+const centre = (t) => [t.x + t.w / 2, t.y + t.h / 2];
+const tgt = (d, id) => d.targets.find((t) => t.id === id);
+
+test("aakash grahan view: from above, an off-line Moon is drawn lifted off its path (up above, down below); on the line it sits on it; the side strip is in every state", async () => {
+  await hook();
+  const { heightOf, onLine } = await import("../src/play/families/aakash/aakash.logic.ts");
+  const { moonCue } = await import("../src/play/families/aakash/aakash.view.ts");
+  // the cue: none exactly when the Moon is on the line; above / below as the side strip draws it
+  for (let k = 0; k < MOON; k++) for (let e = 0; e < PATH; e++) {
+    const c = moonCue(heightOf(k, e));
+    assert.equal(c.way === "", onLine(k, e), `k ${k} e ${e}`);
+    if (c.way) assert.equal(c.way, heightOf(k, e) > 0 ? "above" : "below");
+  }
+  const levels = [...levelsOf("grahan", "chaaya", [1]), ...levelsOf("grahan", "kab", [1])].map((c) => L.validate(c.level));
+  let states = 0;
+  for (const level of [levels[0], levels.at(-1)]) for (const [W, H] of [[360, 430], [390, 520], [900, 520]]) {
+    const v = await viewOf(level, W, H), w0 = L.init(level).w;
+    const at = (k, e) => { v.box.state = { ...L.init(level), w: { ...w0, k, pos: e } }; const d = v.draw(); return { d, moon: tgt(d, "moon") }; };
+    for (let k = 0; k < MOON; k++) for (let e = 0; e < PATH; e++) {
+      // the same place on its path (k) in a month with the opposite height (e + 2): only the lift differs
+      const a = at(k, e), b = at(k, (e + 2) % PATH), h = heightOf(k, e), dy = centre(a.moon)[1] - centre(b.moon)[1];
+      assert.equal(centre(a.moon)[0], centre(b.moon)[0], "the Moon's place on its path is the same");
+      if (h === 0) assert.ok(Math.abs(dy) < 0.5, `on the line it sits on its path (k ${k} e ${e}: ${dy})`);
+      else if (h > 0) assert.ok(dy <= -8, `above the line it is drawn up (k ${k} e ${e}: ${dy})`);
+      else assert.ok(dy >= 8, `below the line it is drawn down (k ${k} e ${e}: ${dy})`);
+      // at new and full moon off the line it is lifted clear (of the Earth's shadow; its own shadow passes the Earth by)
+      if ((k === 0 || k === 4) && h !== 0) assert.ok(Math.abs(dy) >= 36, `new / full moon off the line, lifted clear (${dy})`);
+      // the side strip is drawn in every state; the Moon stays touchable, inside the box; no label is clipped
+      assert.ok(a.d.texts.some((t) => t.s.startsWith("From the side")), "the side strip");
+      assert.ok(a.moon.w >= 44 && a.moon.h >= 44 && a.moon.y >= 0 && a.moon.y + a.moon.h <= H, `moon target ${a.moon.y}`);
+      assert.equal(a.d.clipped, 0, "no label clipped");
+      states++;
+    }
+  }
+  assert.equal(states, 2 * 3 * MOON * PATH);
+  // every-month stays reachable and honest: at the off-line new / full moon the claim is still offered and still refused
+  let shown = 0;
+  for (const level of levels.filter((l) => l.params.goal === "kab")) {
+    const acts = L.malActs(level, "every-month");
+    if (!acts) continue;
+    const v = await viewOf(level);
+    for (const a of acts.slice(0, -1)) v.ctl.dispatch(a);
+    assert.ok(!onLine(v.box.state.w.k, v.box.state.w.pos));
+    assert.ok(moonCue(heightOf(v.box.state.w.k, v.box.state.w.pos)).way, "drawn off its path");
+    assert.ok(v.view.controls().some((c) => c.id === "done"), "the claim is offered");
+    const r = v.ctl.dispatch(acts.at(-1));
+    assert.equal(r.refused, "off_line"); assert.ok(r.moments.some((m) => m.misconceptionId === "every-month"));
+    shown++;
+  }
+  assert.ok(shown > 0);
+});
+
+test("aakash view: a finger drag makes the law's own acts, one per step swept (the Moon round the Earth, the Earth round its path, the Earth spun)", async () => {
+  /** a drag round (cx, cy) from (x0, y0), forward by `sweep` radians (sx, sy: an ellipse) */
+  const drag = (view, x0, y0, cx, cy, sweep, sx = 1, sy = 1) => {
+    const a0 = Math.atan2(-(y0 - cy) / sy, (x0 - cx) / sx), r = Math.hypot((x0 - cx) / sx, (y0 - cy) / sy), n = Math.ceil(Math.abs(sweep) / 0.1);
+    view.pointer("down", x0, y0);
+    let x = x0, y = y0;
+    for (let i = 1; i <= n; i++) { const a = a0 + (sweep * i) / n; x = cx + sx * r * Math.cos(a); y = cy - sy * r * Math.sin(a); view.pointer("move", x, y); }
+    view.pointer("up", x, y);
+  };
+  /** where the target `id` is drawn with the world's value `key` set to q (the state is put back) */
+  const place = (v, id, key, q) => { const s0 = v.box.state; v.box.state = { ...s0, w: { ...s0.w, [key]: q } }; const c = centre(tgt(v.draw(), id)); v.box.state = s0; v.draw(); return c; };
+  // grahan: the Moon dragged three places round the Earth (the Earth's centre lies between the Moon's place and the opposite one,
+  // in a month when both are on the line); backwards moves nothing
+  {
+    const level = L.validate(levelsOf("grahan", "chaaya", [1]).find((c) => c.level.params.look === 1).level), v = await viewOf(level), k0 = v.box.state.w.k;
+    const e = v.box.state.w.pos, onK = 2 * e;   // on the line at k = 2e and 2e + 4 this month
+    const [ax, ay] = place(v, "moon", "k", onK % MOON), [bx, by] = place(v, "moon", "k", (onK + 4) % MOON), cx = (ax + bx) / 2, cy = (ay + by) / 2;
+    const [mx, my] = centre(tgt(v.draw(), "moon"));
+    drag(v.view, mx, my, cx, cy, 3 * (Math.PI / 4));
+    assert.deepEqual(v.box.acts, [U("moon"), U("moon"), U("moon")]); assert.equal(v.box.state.w.k, (k0 + 3) % MOON);
+    const [nx, ny] = centre(tgt(v.draw(), "moon"));
+    drag(v.view, nx, ny, cx, cy, -1.2);
+    assert.equal(v.box.acts.length, 3, "a drag backwards moves nothing");
+  }
+  // saal: twirled on the spot (the finger never leaves the Earth) spins it; dragged off round the Sun it goes round
+  {
+    const lv = L.validate(levelsOf("chakkar", "saal", [1, 7]).find((c) => saalRow(c.level.params).card.join() === "day,year").level);
+    const v = await viewOf(lv), d = v.draw(), [ex, ey] = centre(tgt(d, "earth")), [sx, sy] = centre(tgt(d, "sun-0"));
+    drag(v.view, ex + 12, ey, ex, ey, 2 * Math.PI);
+    assert.deepEqual(v.box.acts, Array(SPIN).fill(U("spin")), "one whole twirl: a whole spin");
+    v.ctl.dispatch(D); assert.equal(v.box.state.w.next, 1, "a day");
+    const [e2x, e2y] = centre(tgt(v.draw(), "earth"));
+    drag(v.view, e2x, e2y, sx, sy, 2 * Math.PI);
+    assert.deepEqual(v.box.acts.slice(SPIN + 1), Array(PATH).fill(U("round")), "dragged once all the way round the Sun");
+    v.ctl.dispatch(D); assert.ok(v.box.state.done, "a year");
+  }
+  // ritu: the Earth dragged half way round its path (an ellipse seen from the side)
+  {
+    const v = await viewOf(L.validate(levelsOf("ritu", "jhuk", [1])[0].level)), pos0 = v.box.state.w.pos;
+    const [ax, ay] = place(v, "earth", "pos", 0), [, by] = place(v, "earth", "pos", 1), [cx2] = place(v, "earth", "pos", 2), [, dy2] = place(v, "earth", "pos", 3);
+    const cx = (ax + cx2) / 2, cy = (by + dy2) / 2, [ex, ey] = centre(tgt(v.draw(), "earth"));
+    void ay;
+    drag(v.view, ex, ey, cx, cy, Math.PI, ax - cx, cy - by);
+    assert.deepEqual(v.box.acts, [U("round"), U("round")]); assert.equal(v.box.state.w.pos, (pos0 + 2) % PATH);
+  }
+});

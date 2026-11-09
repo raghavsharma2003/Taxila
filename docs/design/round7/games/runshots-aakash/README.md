@@ -68,4 +68,86 @@ Results:
 | mal-kab-every-month-p360.png | every-month (t03 m1): Eclipse! at full moon in a month when the Moon passes below the line (the side strip, magnified): "no eclipse" |
 | mal-kab-phase-shadow-p360.png | phase-shadow in kab: the same belief, a month off the line |
 
+## Follow-up (r7 aakash2, 2026-11-09): the Moon off the line, and real drags
+
+**1. The view from above no longer shows an off-line Moon as lined up.** Before, a Moon that passes above or below the
+Sun-Earth line that month sat on its path in the view from above. At an off-line full moon it sat inside the Earth's
+shadow, so it looked like an eclipse. Only the side strip showed it was off.
+
+Both allowed fixes were built and shot at 360 × 640 on the same states (kab seeds 3 and 17, the Moon at the card's full
+moon in an off-line month):
+- **(a) lift**: the Moon is drawn lifted off its path, with its place on the path kept as a dashed ring and a stalk
+  with an arrow from that ring to the Moon. It is drawn up when it passes above the line and down when below, the same
+  way the side strip draws it. The lift is largest at new and full moon.
+- **(b) link**: the side strip is lined up under the view from above, with a dashed line from one Moon to the other
+  and both Moons ringed.
+
+**(a) was chosen.** With (b), the Moon from above still sat inside the shadow, and a child had to follow the dashed line
+down to see that it was off. With (a), the Moon from above is clearly clear of the shadow (full moon), and its own shadow
+passes over or under the Earth (new moon).
+
+How (a) is drawn:
+- The side strip stays and is drawn in every grahan state.
+- It is a picture. It has no angle, no tilt number and no word ("above" and "below" stay hidden words until the child's
+  claim; then the side strip names the way, as before).
+- The law is unchanged. A claim of an eclipse at an off-line new or full moon is still offered and still refused, with
+  its own every-month consequence (cue-kab-s17-offline-claimed).
+- The label "Moon from Earth" now stays left of the top of the Moon's path, so a lifted Moon never sits on it.
+
+Pinned by `tests/r7-games-aakash.test.mjs`, test "aakash grahan view: ...". The view is drawn headless for every Moon
+place × month, at 360 × 430, 390 × 520 and 900 × 520. The test checks:
+- The Moon's target moves up when it is above the line, down when below, and not at all on the line.
+- At an off-line new or full moon it moves by at least 36 px.
+- The side strip is drawn in every state.
+- The Moon target stays ≥ 44 px and inside the box.
+- No label is clipped.
+- every-month is still offered and still refused.
+
+**2. Real drags.** Before, one drag made one step, a drag past half a turn wrapped round and counted backwards, and in
+saal the Earth could not be spun by finger: dragging it always meant "Go round". The view now works like this:
+- The sweep is summed move by move, and one drag makes as many steps as it sweeps (rounded, at least one past 0.25 rad).
+  Each step is the law's own act, dispatched in turn, and a refused step stops the rest.
+- On ritu's path, which is an ellipse seen from the side, the angle is the path's own, so a quarter turn of the finger
+  is a quarter of the way round.
+- In saal, a twirl that never leaves the Earth spins it, and a drag off along the path goes round the Sun.
+- While the finger is down, a dashed ring shows where the Earth or the Moon will land.
+- Backward drags still move nothing.
+- "Months pass" (kab) has no drag by design: nothing on screen moves as months pass except the crossing places. It stays
+  a tap, as do Shine (dhoop) and the claim buttons.
+
+The second test, "aakash view: a finger drag makes the law's own acts ...", pins these drags headless:
+- three Moon places round the Earth;
+- a backward drag that does nothing;
+- a whole twirl in saal that makes eight spins, and a whole drag round the Sun that makes four quarters;
+- half way round ritu's path.
+
+The drag driver solves goals with `page.mouse.down/move/up` on the canvas and never calls `__play.dispatch`. Each run of
+the same moving act in the law's solve becomes ONE drag that sweeps that many steps. The run passes only if the acts
+recorded are exactly the solve's and every one is touch.
+
+| goal | dragged | seeds × looks | result |
+|---|---|---|---|
+| chakkar/din | the Earth spun (arc over the disc) | 3, 17, 29 × 1, 3 | 6/6 solved, every act touch, acts = the solve |
+| chakkar/saal | the Earth twirled on the spot (spin) and dragged round the Sun (go round) | 3, 17, 29 × 1, 3 | 6/6 solved, every act touch, acts = the solve |
+| ritu/jhuk | the Earth round its path | 3, 17, 29 × 1, 3 | 6/6 solved, every act touch, acts = the solve |
+| ritu/dhoop | the Earth round its path (Shine is a tap) | 3, 17, 29 × 1, 3 | 6/6 solved, every act touch, acts = the solve |
+| grahan/chaaya | the Moon round the Earth | 3, 17, 29 × 1, 3 | 6/6 solved, every act touch, acts = the solve |
+| grahan/kab | the Moon round the Earth (Months pass is a tap, by design) | 3, 17, 29 × 1, 3 | 6/6 solved, every act touch, acts = the solve |
+
+36 of 36 runs were solved, with 74 drags in all. A single drag swept up to 2π: a whole twirl for one day in saal, and
+once round the Sun for one year. No label was clipped. The smallest tap target is still 48 px (the Sun, 48 × 60; the Moon
+and the Earth are 48 × 48).
+
+| file | what it shows |
+|---|---|
+| drag-din-f*-s*-solved-p360.png | din solved by finger spins: one drag per run of spins (up to seven steps in one sweep) |
+| drag-saal-f*-s*-solved-p360.png | saal solved by finger: a day by one twirl on the Earth, a year by one drag once round the Sun |
+| drag-jhuk-f*-s*-solved-p360.png, drag-dhoop-f*-s*-solved-p360.png | ritu solved by dragging the Earth round its path |
+| drag-chaaya-f*-s*-solved-p360.png, drag-kab-f*-s*-solved-p360.png | grahan solved by dragging the Moon round the Earth |
+| drag-chaaya-f3-s3-mid-drag-p360.png | a drag under way: the finger on the Moon, the dashed ring where it will land; released, it made three Moon steps |
+| cue-kab-s3-offline-p360.png | kab: the card's full moon in a month the Moon passes below the line. From above it is drawn down, out of the Earth's shadow, with the stalk and arrow from its place |
+| cue-kab-s17-offline-p360.png | the same in a month it passes above the line: drawn up, clear of the shadow |
+| cue-kab-s17-offline-claimed-p360.png, cue-kab-s3-offline-claimed-p360.png | Eclipse! claimed there anyway: refused (every-month), the side strip names "above the line" |
+| cue-chaaya-s17-online-p360.png | for comparison, a month when the Moon is on the line: it sits on its path, on the crossing place |
+
 Not admitted: t03 m3 (sunglasses, or looking at a partly covered Sun) has no mechanic. It is the teacher's safety line.

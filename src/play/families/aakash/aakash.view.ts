@@ -7,9 +7,14 @@
 //              Sun in the middle, the Earth on its path, its spins and its way round counted as dots; ritu the path seen a
 //              little from the side, the Earth with its leaning axis, the point closest to the Sun marked, and under it each
 //              half's sunlight on graph paper (the same bundle of light: a small bright patch or a bigger dim one); grahan the
-//              Sun's light from the left, the Earth, the Moon on its way round (where its path crosses the line marked), a
-//              strip from the side (the Moon above, below or on the line) and the Moon as seen from the Earth
-//   the tools below (tap one; or drag the Earth or the Moon along its way, or spin the Earth with a finger).
+//              Sun's light from the left, the Earth, the Moon on its way round (where its path crosses the line marked; a
+//              Moon off the line that month is drawn lifted off its path, up or down, with a stalk and an arrow from its
+//              place, so from above it never looks lined up when it is not), a strip from the side (the Moon above, below or
+//              on the line; always drawn) and the Moon as seen from the Earth
+//   the tools below (tap one; or drag: the Earth spun with a finger (din; saal, the finger staying on the Earth), the Earth
+//   moved round its path (saal, ritu), the Moon moved round the Earth (grahan); one drag makes as many steps as it sweeps,
+//   each the law's own act, a dashed ring showing where it will land). "Months pass" has no drag: nothing on screen moves
+//   as the months pass but the crossing places, so it stays a tap.
 // After a wrong move only magnifiers mark what to look at again (never the key, never a cross).
 import type { AakashAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
@@ -24,6 +29,12 @@ import {
 
 const HOLD = 1.6;   // s: the stage keeps drawing after an act (the last beat lands inside it)
 const TAU = Math.PI * 2;
+/** grahan, the view from above: the cue for a Moon at height `h` (heightOf: above the Sun-Earth line > 0, below < 0, on it 0).
+ *  Off the line it is drawn lifted off its path by `lift` (up for above, down for below, as in the strip from the side) with
+ *  a stalk and an arrow from its place on the path; on the line it sits on its path. A picture: never an angle or a number. */
+export const moonCue = (h: number): { way: "above" | "below" | ""; lift: number } => ({ way: h > 0.05 ? "above" : h < -0.05 ? "below" : "", lift: Math.abs(h) > 0.05 ? h : 0 });
+/** the value each moving tool turns */
+const KEY_OF: Record<string, "r" | "pos" | "k"> = { spin: "r", round: "pos", moon: "k", months: "pos" };
 
 /** a stable 0..1 hash (star places are the level's own, never random per frame) */
 const hash = (n: number) => { let x = (n | 0) * 374761393; x = (x ^ (x >>> 13)) * 1274126177; return ((x ^ (x >>> 16)) >>> 0) / 4294967296; };
@@ -39,12 +50,16 @@ export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const lamp = p.scene === "lamp";
   let w = 360, h = 400;
   let actAt = -10, doneAt = -10, cheered = false;
-  let last: { m: string; before: AakashW | null } = { m: "", before: null };
-  /** a finger on the Earth or the Moon (a drag along its way) or on the Sun */
-  let drag: null | { id: string; x: number; y: number; a0: number; moved: boolean } = null;
+  /** the last act (a drag can make several steps of one tool: `steps` of them, glided together from `before`) */
+  let last: { m: string; before: AakashW | null; steps?: number } = { m: "", before: null };
+  /** a finger on the Earth or the Moon (a drag along its way): the angle swept forward round its pivot (and, in saal, round
+   *  the Earth's own centre), summed move by move */
+  let drag: null | { id: string; x: number; y: number; a: number; aE: number; sweep: number; sweepE: number; far: number; moved: boolean } = null;
   let down: { x: number; y: number } | null = null;
-  /** where the things are this frame (for the drags) */
-  let pivot = { x: 0, y: 0 };
+  /** where the things are this frame (for the drags): the pivot of the thing's way round (sx, sy: ritu's path is an ellipse)
+   *  and, in saal, the Earth itself */
+  let pivot: { x: number; y: number; sx?: number; sy?: number } = { x: 0, y: 0 };
+  let earthAt = { x: 0, y: 0, r: 0 };
 
   function layout(bw: number, bh: number): void { w = bw; h = bh; }
   const act = (a: AakashAct) => {
@@ -76,8 +91,11 @@ export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   /** a value glided from the act's before-state to now (wrapping forward on a ring of `n`) */
   const glide = (key: "r" | "pos" | "k", n: number): number => {
     const now = st().w[key], b = last.before;
-    if (!b || b[key] === now || api.t - actAt >= HOLD) return now;
-    const d = (((now - b[key]) % n) + n) % n;
+    if (!b || api.t - actAt >= HOLD) return now;
+    let d = (((now - b[key]) % n) + n) % n;
+    // a drag all the way round comes back to where it began: glide the whole way
+    if (d === 0 && (last.steps ?? 0) >= n && KEY_OF[last.m] === key) d = last.steps ?? 0;
+    if (d === 0) return now;
     return b[key] + d * prog();
   };
 
@@ -87,24 +105,47 @@ export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (kind === "tool") act({ kind: "use", m: rest });
     else if (kind === "sun") act({ kind: "use", m: "sun" });
   }
-  /** the angle of (x, y) round the pivot (math sense: counterclockwise positive, screen y down) */
-  const angAt = (x: number, y: number) => Math.atan2(-(y - pivot.y), x - pivot.x);
+  /** the angle of (x, y) round the pivot (math sense: counterclockwise positive, screen y down); on ritu's path seen from the
+   *  side (an ellipse) the angle is the path's own, so a quarter of the way round is a quarter turn of the finger */
+  const angAt = (x: number, y: number, o: { x: number; y: number; sx?: number; sy?: number } = pivot) => Math.atan2(-(y - o.y) / (o.sy ?? 1), (x - o.x) / (o.sx ?? 1));
+  const wrapPi = (a: number) => { while (a > Math.PI) a -= TAU; while (a < -Math.PI) a += TAU; return a; };
+  /** what a drag makes (the tool) and how many steps of its ring the finger has swept forward (0: not enough, or backwards) */
+  function dragPlan(d: NonNullable<typeof drag>): { m: string; n: number } {
+    // saal: the Earth turned on the spot with the finger (the finger never leaves the Earth) spins it; dragged off along its
+    // path round the Sun, it goes round
+    if (d.id === "earth" && goal === "saal" && d.far <= earthAt.r + 16) return { m: "spin", n: d.sweepE > 0.6 ? clamp(Math.round(d.sweepE / (TAU / SPIN)), 1, SPIN) : 0 };
+    const m = d.id === "earth" ? "round" : d.id === "moon" ? "moon" : "spin", ring = m === "round" ? PATH : m === "moon" ? MOON : SPIN;
+    return { m, n: d.sweep > 0.25 ? clamp(Math.round(d.sweep / (TAU / ring)), 1, ring) : 0 };
+  }
   function pointer(kind: PointerKind, x: number, y: number): void {
     if (st().done) { drag = null; down = null; return; }
     if (kind === "down") {
       const id = api.hit(x, y);
-      if (id === "earth" || id === "moon" || id === "spin") { drag = { id, x, y, a0: angAt(x, y), moved: false }; ctl.finger(true); api.sfx("select"); }
+      if (id === "earth" || id === "moon" || id === "spin") { drag = { id, x, y, a: angAt(x, y), aE: angAt(x, y, earthAt), sweep: 0, sweepE: 0, far: Math.hypot(x - earthAt.x, y - earthAt.y), moved: false }; ctl.finger(true); api.sfx("select"); }
       else down = { x, y };
       return;
     }
-    if (kind === "move" && drag) { if (Math.hypot(x - drag.x, y - drag.y) > 8) drag.moved = true; api.invalidate(); return; }
+    if (kind === "move" && drag) {
+      if (Math.hypot(x - drag.x, y - drag.y) > 8) drag.moved = true;
+      // the sweep is summed move by move, so a drag more than half way round still counts forward
+      const a = angAt(x, y), aE = angAt(x, y, earthAt);
+      drag.sweep += wrapPi(a - drag.a); drag.sweepE += wrapPi(aE - drag.aE);
+      drag.a = a; drag.aE = aE; drag.far = Math.max(drag.far, Math.hypot(x - earthAt.x, y - earthAt.y));
+      api.invalidate(); return;
+    }
     if ((kind === "up" || kind === "cancel") && drag) {
+      if (kind === "up") pointer("move", x, y);
       const d = drag; drag = null; ctl.finger(false);
-      if (kind === "cancel" || !d.moved) { api.invalidate(); deps.changed(); return; }
-      // the way it was dragged round its pivot: forward (counterclockwise, the only way it goes) moves it one step
-      let da = angAt(x, y) - d.a0; while (da > Math.PI) da -= TAU; while (da < -Math.PI) da += TAU;
-      if (da > 0.25) act({ kind: "use", m: d.id === "earth" ? "round" : d.id === "moon" ? "moon" : "spin" });
-      else { api.sfx("refuse"); api.invalidate(); deps.changed(); }
+      if (!d || kind === "cancel" || !d.moved) { api.invalidate(); deps.changed(); return; }
+      // the way it was dragged round its pivot: forward (counterclockwise, the only way it goes) moves it as many steps as
+      // the finger swept (each step is the law's own act; a refused step stops the rest)
+      const { m, n } = dragPlan(d);
+      if (n > 0) {
+        const before = { ...st().w };
+        let made = 0;
+        for (let i = 0; i < n; i++) { last = { m, before, steps: made + 1 }; const r = ctl.dispatch({ kind: "use", m }); if (r.refused) break; made++; }
+        deps.changed();
+      } else { api.sfx("refuse"); api.invalidate(); deps.changed(); }
       return;
     }
     if (kind === "up" && down) { const d0 = down; down = null; if (Math.hypot(x - d0.x, y - d0.y) < 14) { const id = api.hit(d0.x, d0.y); if (id) tap(id); } return; }
@@ -161,6 +202,14 @@ export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const P = api.P, a = -toSun;   // screen angle of the sun direction
     P.fillPath(c, (q) => q.arc(x, y, r, 0, TAU), mat, { outline: "ink2", width: 1.5 });
     P.fillPath(c, (q) => { q.arc(x, y, r, a + Math.PI / 2, a + (3 * Math.PI) / 2); q.closePath(); }, "shadow", { outline: null, alpha: 0.55 });
+  }
+  /** while a finger drags the Earth or the Moon along its way: a dashed ring where it will land (`at(n)`, n steps on) */
+  function ghost(c: CanvasRenderingContext2D, at: (n: number) => [number, number, number]): void {
+    if (!drag || !drag.moved) return;
+    const { m, n } = dragPlan(drag);
+    if (!n || m === "spin") return;
+    const [x, y, r] = at(n);
+    api.P.stroke(c, Array.from({ length: 25 }, (_, i): [number, number] => [x + (r + 3) * Math.cos((i / 24) * TAU), y + (r + 3) * Math.sin((i / 24) * TAU)]), { role: "q2", width: 2.5, dash: [4, 4] });
   }
   function stars(c: CanvasRenderingContext2D, x: number, y: number, ww: number, hh: number, n: number): void {
     for (let i = 0; i < n; i++) api.P.circle(c, x + hash(i * 7 + p.lay) * ww, y + hash(i * 13 + p.lay + 3) * hh, 1.2, { role: "ink3", fill: true, alpha: 0.7 });
@@ -242,6 +291,8 @@ export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (!s.done) api.target("sun-0", cx - 26, cy - 26, 52, 52);
     if (s.why === "sun_still") P.magnifier(c, cx + 26, cy - 26, 16);
     const ea = (pos * TAU) / PATH, ex = cx + Ro * Math.cos(ea), ey = cy - Ro * Math.sin(ea), er = 20;
+    earthAt = { x: ex, y: ey, r: er };
+    ghost(c, (n) => { const a = ((s.w.pos + n) * TAU) / PATH; return [cx + Ro * Math.cos(a), cy - Ro * Math.sin(a), er]; });
     ball(c, ex, ey, er, ea + Math.PI, "water");
     // the place on it: the spin turns it (glided)
     const rr = glide("r", SPIN), pa = ea + Math.PI + (rr * TAU) / SPIN;
@@ -274,7 +325,8 @@ export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     P.stroke(c, [[nx, ny + 6], [nx + 8, cy + ry + 2]], { role: "ink3", width: 1 });
     P.textFit(c, W("aakash.closest"), nx + 40, cy + ry + 22, 96, 36, { size: 14, role: s.why === "near_winter" ? "look" : "ink2", weight: 700 });
     // the Earth: its axis leans the same way on screen all the way round (it keeps pointing the same way in space)
-    pivot = { x: cx, y: cy };
+    pivot = { x: cx, y: cy, sx: rx, sy: ry };
+    ghost(c, (n) => { const [gx, gy] = at(s.w.pos + n); return [gx, gy, 19]; });
     const pos = glide("pos", PATH), ea = (pos * TAU) / PATH, ex = cx + rx * Math.cos(ea), ey = cy - ry * Math.sin(ea), er = 19;
     ball(c, ex, ey, er, Math.atan2(-(cy - ey), sunX - ex), "water");
     const lean = -0.4, ax = Math.sin(lean), ay = -Math.cos(lean);   // the axis on screen: up and to the left
@@ -344,9 +396,23 @@ export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     P.circle(c, ex, ey, Rm, { role: "ink3", width: 1.5 });
     for (const q of [2 * s.w.pos, 2 * s.w.pos + 4]) { const a = Math.PI + (q * TAU) / MOON; P.fillPath(c, (qq) => qq.rect(ex + Rm * Math.cos(a) - 4, ey - Rm * Math.sin(a) - 4, 8, 8), "red", { outline: "ink3", width: 1 }); }
     ball(c, ex, ey, er, Math.PI, "water");
-    const ma = Math.PI + (k * TAU) / MOON, mx = ex + Rm * Math.cos(ma), my = ey - Rm * Math.sin(ma);
-    // the Moon's shadow towards the Earth at new moon (faint when it passes above or below the line)
-    if (s.w.k === NEW_AT && !moving) P.fillPath(c, (q) => { q.moveTo(mx, my - mr); q.lineTo(ex - er, ey - 3); q.lineTo(ex - er, ey + 3); q.lineTo(mx, my + mr); q.closePath(); }, "shadow", { outline: null, alpha: on ? 0.7 : 0.18 });
+    const ma = Math.PI + (k * TAU) / MOON, mx0 = ex + Rm * Math.cos(ma), my0 = ey - Rm * Math.sin(ma);
+    const hgt = moving && b4 ? lerp(heightOf(b4.k, b4.pos), heightOf(s.w.k, s.w.pos), prog()) : heightOf(s.w.k, s.w.pos);
+    // off the line this month the Moon is drawn lifted off its path (up when it passes above the line, down when below, as
+    // in the strip from the side): its place on the path stays marked (the foot) and a stalk with an arrow points to it, so
+    // from above it never looks lined up when it is not (a picture: no angle, no number)
+    // (lifted furthest at new and full moon, where it matters, less at the top and bottom of its path, where room is short)
+    const LIFT = clamp(Rm * 0.5, 20, 30), liftAt = (a: number, hh: number) => moonCue(hh).lift * LIFT * (0.6 + 0.4 * Math.abs(Math.cos(a)));
+    const cue = moonCue(hgt), mx = mx0, my = my0 - liftAt(ma, hgt);
+    ghost(c, (n) => { const a = Math.PI + ((s.w.k + n) * TAU) / MOON; return [ex + Rm * Math.cos(a), ey - Rm * Math.sin(a) - liftAt(a, heightOf(s.w.k + n, s.w.pos)), mr]; });
+    if (cue.way) {
+      const up = cue.way === "above", foot = my0 + (up ? -(mr - 1) : mr - 1), tip = my + (up ? mr + 2 : -(mr + 2));
+      P.stroke(c, Array.from({ length: 17 }, (_, i): [number, number] => [mx0 + (mr - 1) * Math.cos((i / 16) * TAU), my0 + (mr - 1) * Math.sin((i / 16) * TAU)]), { role: "ink2", width: 1.5, dash: [2, 3] });
+      if ((up ? foot - tip : tip - foot) > 2) P.stroke(c, [[mx0, foot], [mx, tip]], { role: "look", width: 2.5 });
+      arrowHead(c, mx, tip, up ? -Math.PI / 2 : Math.PI / 2, "look");
+    }
+    // the Moon's shadow towards the Earth at new moon (off the line it passes above or below the Earth)
+    if (s.w.k === NEW_AT && !moving) P.fillPath(c, (q) => { q.moveTo(mx, my - mr); q.lineTo(ex - er, my - 3); q.lineTo(ex - er, my + 3); q.lineTo(mx, my + mr); q.closePath(); }, "shadow", { outline: null, alpha: on ? 0.7 : 0.18 });
     const eclLunar = s.w.k === FULL_AT && on && !moving;
     P.fillPath(c, (q) => q.arc(mx, my, mr, 0, TAU), eclLunar ? "rust" : "white", { outline: "ink2", width: 1.5 });
     if (!eclLunar) P.fillPath(c, (q) => { q.arc(mx, my, mr, -Math.PI / 2, Math.PI / 2); q.closePath(); }, "shadow", { outline: null, alpha: 0.55 });
@@ -355,9 +421,10 @@ export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (["off_line", "phase", "wrong_side"].includes(s.why)) P.magnifier(c, mx + mr + 6, my - mr - 4, 16);
     P.text(c, W("aakash.earth"), ex, ey + er + 14, { size: 14, role: "ink", weight: 700 });
     // the Moon from the Earth (its phase: how much of its sunlit half faces us)
-    const fx = X + 22, fy = Y + 20, fw = Math.min(CW * 0.6, 220);
+    // (its label stays left of the top of the Moon's path, where a Moon lifted off the line may be drawn)
+    const fx = X + 22, fy = Y + 20, fw = Math.min(ex - 16 - (fx + 18), 220);
     phase(c, fx, fy, 11, s.w.k, eclLunar);
-    P.textFit(c, W("aakash.seen"), fx + 18 + fw / 2, fy, fw, 20, { size: 14, role: "ink2", weight: 700 });
+    P.textFit(c, W("aakash.seen"), fx + 18, fy, fw, 34, { size: 14, role: "ink2", weight: 700, align: "left" });
     // from the side: the Sun-Earth line, the Moon above, below or on it
     const sy = Y + topH + 4, lx0 = X + 16, lx1 = X + CW - 16, ly = sy + sideH / 2 + 8, hs = sideH * 0.2;
     P.body(c, X + 6, sy, CW - 12, sideH - 4, { role: "panel", r: 10, seed: 7, state: s.why === "off_line" ? "look" : "idle" });
@@ -367,7 +434,6 @@ export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const sex = lerp(lx0, lx1, 0.62), sRm = (lx1 - lx0) * 0.24;
     P.fillPath(c, (q) => q.rect(sex, ly - 6, lx1 - sex, 12), "shadow", { outline: null, alpha: 0.3 });
     P.fillPath(c, (q) => q.arc(sex, ly, 9, 0, TAU), "water", { outline: "ink2", width: 1.2 });
-    const hgt = moving && b4 ? lerp(heightOf(b4.k, b4.pos), heightOf(s.w.k, s.w.pos), prog()) : heightOf(s.w.k, s.w.pos);
     const smx = sex + sRm * Math.cos(ma), smy = ly - hgt * hs;
     P.fillPath(c, (q) => q.arc(smx, smy, 6, 0, TAU), eclLunar ? "rust" : "white", { outline: "ink2", width: 1.2 });
     if (s.w.k === NEW_AT && !moving) P.stroke(c, [[smx + 6, smy], [sex - 9, smy]], { role: on ? "ink" : "ink3", width: on ? 3 : 1.5, dash: on ? undefined : [3, 3] });
