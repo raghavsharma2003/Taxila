@@ -1,0 +1,13 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r7-director15-s9b-root-cause-2026-11-09",
+      "kind": "measurement",
+      "at": "2026-11-09",
+      "title": "director15 c6 stuck row 18 (\"picture dikhao\" over the remediation's lettered hexagon; the record re-drew the then-card's pentagon) was replayed through Brain's planTurn (tests/fixtures/replay.mjs, the run's recorded reads, no model calls). Production gets it right. Row 16 reaches Studio's seam as scriptBeat.kind \"remediation\", and row 18's preselect offers \"unrolled\": the hexagon laid straight (unrolled@1), then the pentagon. The miss is the eval harness's model of the seam. Its tree (2e9664b34, and int/r6 719104f57) never got patch 017's shownKind, so it passed the preselect no avoidKind. Its bookkeeping on the same replay gives the card's measured@1, the run's row; with the page-up kind it gives unrolled. Brain's patch 018 (docs/patches/to-brain) adds shownKind and avoidKind to the current harness; 017 no longer applies, and its S9 half is already in Brain's P4. Pinned: tests/r8-director15.test.mjs."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-remediation-second-view", "rel": "measured_by", "dst": "ms-r7-director15-s9b-root-cause-2026-11-09" }
+  ]
+}
