@@ -204,10 +204,13 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "7 cm", verdict: "not_yet", history: [], ui: L.r.ui, module: null });
     const item = findItem(L.r.state, K, L.r.move.itemId ?? L.r.state.activeItemId);
     const ask = whiteboardIntentOf({ lessonId: "L", turn: L.r.state.turn, beat: { id: "b", type: "explain" }, next: L.r.state, kit: K, item, line: { text: out.reply, parts: out.guard.parts } });
-    // v5 B1: the say on the remediation board from 0, then the card on its own board from where the card starts
-    assert.deepEqual(ask.intent.boardRef, L.r.move.scriptBeat.board, "the say's board comes first");
-    const seg = ask.intent.segments ?? [];
-    assert.equal(seg.length, 1, JSON.stringify(ask.intent));
+    // v5 B1: the say on the remediation board, then the card on its own board from where the card starts
+    // (v6.7 P4′, main's director15 ruling: "7 cm sahi nahi hai." names their answer, so it is said on the answered card's page first)
+    assert.deepEqual(ask.intent.boardRef, L.r.move.closeBeat.board, "the miss verdict naming their answer is on the answered card's page");
+    let seg = ask.intent.segments ?? [];
+    assert.equal(seg.length, 2, JSON.stringify(ask.intent));
+    assert.deepEqual(seg[0].boardRef, L.r.move.scriptBeat.board, "then the say's board");
+    seg = seg.slice(1);
     assert.deepEqual(seg[0].boardRef, r0.then.board);
     assert.equal(seg[0].scriptBeat.ownBoard, true);
     assert.ok(seg[0].scriptBeat.answers?.includes(r0.then.key), JSON.stringify(seg[0].scriptBeat));

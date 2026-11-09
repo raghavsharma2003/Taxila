@@ -1199,29 +1199,48 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // v6.1 (director9 c5-t02 offtopic T7: a filtered rewrite spoke only the card, dropping the beat's explanation and the aside):
   // in a scripted turn the neutral line is the move's own authored words (the closures, the point or rendered lines, a parked
   // aside's acknowledgement) and then the card; anything else keeps the fixed neutral line
+  // v6.7 P5 (main, director15 c5-t02 offtopic 44, c5-t01 steady 86, c6 steady 14: the filter's fallback replaced her whole line — no
+  // verdict, no why, the close over the next card's board): the fallback is BUILT IN PARTS like an assembled turn — code's verdict
+  // (the frame and the authored why), a give-up with its why, a missed card's close, a park, the authored teaching, the card — so
+  // its pages are its parts' boards. Only her words are dropped.
+  let neutralParts = null;
   const scriptNeutral = () => {
     const lm = state.lastMove ?? {};
     if (!(lm.scriptBeat || lm.splitClose) || CLOSING_MOVES.has(lm.kind)) return null;
-    const en = state.ctx?.lang === "english";
+    const L = state.ctx?.lang === "english" ? "english" : "hinglish";
+    const en = L === "english";
     const d = (x) => { const t = String(x ?? "").replace(/\s+/g, " ").trim(); return t ? (/[.!?\u0964]$/.test(t) ? t : `${t}.`) : null; };
+    const why = (w) => (w && String(w).trim() ? (en ? `, because ${joinable(spokenMarks(w, L), { lower: true })}` : `, kyunki ${joinable(spokenMarks(w, L), { lower: true })}`) : "");
     const parked = (state.later ?? []).find((p) => p.at === state.turn && p.servedAt == null);
-    const parts = [
-      lm.gave?.answer ? (en ? `This question's answer was ${lm.gave.answer}.` : `Is sawaal ka jawab ${lm.gave.answer} tha.`) : null,
-      lm.closed?.answer ? (en ? `And the earlier question's answer was ${lm.closed.answer}.` : `Aur pehle wale sawaal ka jawab ${lm.closed.answer} tha.`) : null,
-      parked ? pickOf(PARK_ACK[en ? "english" : "hinglish"], state)(parked.topic) : null,
-      ...(lm.rendered?.length ? lm.rendered.map(d) : [d(lm.point)]),
-      ui?.ask?.text ? String(ui.ask.text).trim() : null,
-    ].filter(Boolean);
-    const line = parts.join(" ").replace(/\s+/g, " ").trim();
-    return line && !problems(line).some((p) => ENFORCED.has(p)) ? line : null;
+    const v = verdict ?? state.lastVerdict ?? null;
+    const g0 = state.lastGraded ?? null;
+    const said0 = String(childText ?? "").trim();
+    const verdictS = v === "correct" ? d(`${freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, "")}${why(g0?.why)}`)
+      : v === "not_yet" ? notRightLead(lm.gave ? "" : said0, L, state) : null;
+    const gf = GAVE_FORMS[L];
+    const gaveS = lm.gave?.answer ? freshForm(ui?.ask?.text ? gf.next : gf.now, state, lm.gave.answer, why(lm.gave.why)) : null;
+    const list = [
+      { part: "close", text: [verdictS, gaveS].filter(Boolean).join(" ") },
+      { part: "closed", text: lm.closed?.answer ? (en ? `And the earlier question's answer was ${lm.closed.answer}${why(lm.closed.why)}.` : `Aur pehle wale sawaal ka jawab ${lm.closed.answer} tha${why(lm.closed.why)}.`) : "" },
+      { part: "aside", text: parked ? freshOf(PARK_ACK[L].map((f) => f(parked.topic)), state) : "" },
+      ...(lm.simpler ? [{ part: "simpler", text: d(lm.simpler) }] : []),
+      ...(lm.rendered?.length ? lm.rendered.map((x) => ({ part: "body", text: d(x) })) : lm.point && !lm.simpler ? [{ part: "body", text: d(lm.point) }] : []),
+      { part: "card", text: ui?.ask?.text ? String(ui.ask.text).trim() : "" },
+    ];
+    const parts = cleanParts(list);
+    const line = joinParts(parts);
+    if (!line || problems(line).some((p) => ENFORCED.has(p))) return null;
+    neutralParts = parts;
+    return line;
   };
-  const neutralLine = () => scriptNeutral() ?? filterNeutralReply(state, item);
+  const neutralLine = () => { neutralParts = null; return scriptNeutral() ?? filterNeutralReply(state, item); };
+  const neutralGuard = (r0) => (neutralParts && joinParts(neutralParts) === String(r0 ?? "").replace(/\s+/g, " ").trim() ? { lineParts: neutralParts, parts: { list: neutralParts }, neutralParts: true } : {});
   const blockedAfterDraft = async (e, code) => {
-    if (nonHarmFilter(e)) return { reply: neutralLine(), guard: { caught: ["content_filter_nonharm"], rewritten: false, replaced: true } };
+    if (nonHarmFilter(e)) { const r0 = neutralLine(); return { reply: r0, guard: { caught: ["content_filter_nonharm"], rewritten: false, replaced: true, ...neutralGuard(r0) } }; }
     const probe = await childWordsTrip(probeWords(history, childText), { trace });
     if (probe === "clear") {
       console.warn(`[lesson] ${code} blocked but the child's own words pass: a neutral line`);
-      return { reply: neutralLine(), guard: { caught: [code], rewritten: false, replaced: true } };
+      { const r0 = neutralLine(); return { reply: r0, guard: { caught: [code], rewritten: false, replaced: true, ...neutralGuard(r0) } }; }
     }
     console.warn(`[lesson] ${code} blocked; the child's own words ${probe === "harm" ? "trip the filter" : "could not be cleared"}`);
     return blocked(probe);
@@ -1314,7 +1333,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // One retry on the system prompt and this turn only (the history may carry what tripped it); if that is blocked too, a
     // neutral fallback line, never the helplines. Harm categories (sexual, self_harm, violence, hate) and unreadable blocks
     // still fail CLOSED below, exactly as before.
-    const neutral = (code) => ({ reply: neutralLine(), guard: { caught: [code], rewritten: false, replaced: true } });
+    const neutral = (code) => { const r0 = neutralLine(); return { reply: r0, guard: { caught: [code], rewritten: false, replaced: true, ...neutralGuard(r0) } }; };
     const lone = [messages[0], messages[messages.length - 1], ...(lastNotes ? [{ role: "system", content: lastNotes }] : [])];
     // 14.4.1 (sim lab p26h on 5c127d1a, QA 4b3d875c: a class 8 answer about the British, blocked on hate on the prompt and on
     // this turn alone, got only the fixed carry-on, with no question): one more try with their words NOT shown, so her line is

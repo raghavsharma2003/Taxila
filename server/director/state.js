@@ -3310,8 +3310,12 @@ export function liveBeatSimpler(s, kit) {
       const t = said(c?.simpler) ?? said(live.scriptCheck.simpler);
       return t ? { text: t, beat: { ...base, beatId: live.scriptCheck.checkId, kind: "check", ...(ref.board ? { board: ref.board } : {}) } } : null;
     }
+    // (v6.7 P5, main on director15 c5-t02 steering 8, c6 steering 8: the then-card's own simpler was drawn on the remediation's
+    // board: a simpler is drawn on the board of the beat it comes from — the then-card's on the then-card's)
     const r = sk.remediation?.find((x) => x.targets === live.scriptThen?.targets);
-    const t = said(r?.then?.simpler) ?? said(live.scriptThen?.simpler) ?? said(r?.simpler);
+    const own = said(r?.then?.simpler) ?? said(live.scriptThen?.simpler);
+    if (own) return { text: own, beat: { ...ref, ...(ref.board ? { board: ref.board } : {}) } };
+    const t = said(r?.simpler);
     return t ? { text: t, beat: { ...base, beatId: `rem:${r?.targets ?? ""}`, kind: "remediation", ...((r?.board ?? ref.board) ? { board: r?.board ?? ref.board } : {}) } } : null;
   }
   const cur = currentBeatRef(s, kit);
