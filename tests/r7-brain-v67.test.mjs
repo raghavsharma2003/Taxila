@@ -78,6 +78,30 @@ describe("r7-brain-v67.test.mjs", () => {
       assert.doesNotMatch(out.reply, /ke baad karenge|baad baat karenge/i, out.reply);
     });
   });
+  describe("P5: every graded turn has a verdict part", () => {
+    for (const [persona, topic] of [["steady", "c5-t01"], ["steady", "c6"]]) {
+      test(`a close part on every graded turn, the filter's fallback included (${persona} ${topic})`, async () => {
+        const T = TOPIC[topic];
+        const sc = runScriptOf(RUN, T); delete sc.recordedRun;
+        setScriptForTest(T, sc);
+        const { kit, rows, plans } = await replay(RUN, persona, T, 1e9);
+        const bad = [];
+        let k = 0;
+        for (const pl of plans) {
+          const n = pl.row - 1;
+          if (!rows[n] || !["correct", "not_yet"].includes(pl.state.lastVerdict) || pl.state.lastMove?.kind === "safeguard") continue;
+          // (every third graded turn through the content filter's fallback)
+          const filtered = ++k % 3 === 0;
+          replyDeps.chat = async () => { if (filtered) { const e = new Error("blocked"); e.code = "content_filter"; e.filterCats = ["jailbreak"]; throw e; } return { text: rows[n].text }; };
+          const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
+          const list = out.guard.parts?.list ?? out.guard.lineParts ?? null;
+          if (!list) continue;
+          if (!list.some((p) => p.part === "close")) bad.push(`row ${n}${filtered ? " (filtered)" : ""}: no verdict part | ${out.reply.slice(0, 90)}`);
+        }
+        assert.deepEqual(bad, []);
+      });
+    }
+  });
   describe("H4: the counter, part by part", () => {
     test("director15: main's 5 hand rows and the named P4′ rows found; ≤ 2 other flags", () => {
       const DIR = new URL(`../evals/hybrid-side-by-side/results/${RUN}/`, import.meta.url).pathname;
