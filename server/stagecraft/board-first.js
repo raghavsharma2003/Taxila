@@ -330,7 +330,7 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
  * The preselected board for this ask, re-timed to her REAL line and re-gated with the full gate W0-W9 against it. → the
  * board-sync result shape ({ ok, script, gate, source: "first", syncMs }) or null (the ladder runs). Consumes the pick.
  */
-export function takePreselected(ask, ctx, t0 = Date.now()) {
+export function takePreselected(ask, ctx, t0 = Date.now(), { cardBack: back = true } = {}) {
   try {
     const id = String(ask?.intent?.intentId ?? "");
     const p = picks.get(id);
@@ -371,7 +371,7 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
     // (the pick's screen was computed before her line existed, masked: R4 read "40 m lamba" against a screen with no 40)
     const out = { ok: true, script: r.script, gate: r.gate, usd: 0, ms: Date.now() - t0, source: "first", by: p.by, template: p.template, ...(p.altView ? { altView: p.altView } : {}), ...(p.sameCard ? { sameCard: true } : {}),
       screen: withReveals(screenOf({ template: p.template, facts: { ...(p.raw?.facts ?? p.facts ?? {}), ...(p.counts ? { counts: p.counts } : {}) } }, r.script?.facts ?? p.facts, r.script), revealed), syncMs: Date.now() - t0 };
-    return p.altView ? cardBack(ask, ctx, out, t0, p.predicted) : out;
+    return p.altView && back ? cardBack(ask, ctx, out, t0, p.predicted) : out;
   } catch { return null; }
 }
 
@@ -699,7 +699,17 @@ function altCall0(ref, { line = "", withheld = [], up = null } = {}) {
     if (c.template === "fraction-bars@1" && Array.isArray(c.bars)) {
       const named = c.bars.filter((b) => b && b.label !== "?" && Number.isInteger(b.parts) && b.parts >= 2 && b.parts <= 12 && Number.isInteger(b.shade) && b.shade >= 1 && b.shade <= b.parts);
       const dens = [...new Set(named.map((b) => b.parts))];
-      if (!named.length || dens.length > 2) return null;
+      // (director13 S8, c5-t02 stuck row 20: an unmarked bars ask — "?" bars of 4 and 8, the card asks which piece is bigger —
+      // had no second view and re-showed the same bars. Its second view is each bar as a circle of the same parts, its shading
+      // kept, nothing named: one bar → fraction-parts round, two or three → wholes@1 circles side by side)
+      if (!named.length) {
+        const bs = c.bars.filter((b) => b && Number.isInteger(b.parts) && b.parts >= 2 && b.parts <= 12);
+        if (!bs.length || bs.length !== c.bars.length || bs.length > 3) return null;
+        const sh = (b) => (Number.isInteger(b.shade) && b.shade >= 0 && b.shade <= b.parts ? b.shade : 0);
+        if (bs.length === 1) return { template: "fraction-parts@1", parts: bs[0].parts, shade: sh(bs[0]), whole: "circle", hideResult: true, view: "round" };
+        return { template: "wholes@1", wholes: bs.map((b) => ({ parts: b.parts, equal: true, ...(sh(b) ? { shade: sh(b) } : {}) })), view: "wholes" };
+      }
+      if (dens.length > 2) return null;
       if (dens.length === 1) return { template: "fraction-line@1", den: dens[0], from: 0, to: 1, marks: [...new Map(named.map((b) => [b.shade, { num: b.shade, label: `${b.shade}/${b.parts}` }])).values()], view: "line" };
       return { template: "fraction-line@1", dens, from: 0, to: 1, marks: named.map((b) => [b.shade, b.parts]), view: "line" };
     }
@@ -861,7 +871,8 @@ export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null 
       delete intent.then; delete intent.segments; delete intent.cardBoard; if (i) delete intent.request;
       const a = { ...ask, intent, mode: i ? "fresh" : ask.mode, line: { ...(ask.line ?? {}), text: g.text } };
       if (!picks.has(String(intent.intentId))) preselect(a, { kit, redact });
-      return takePreselected(a, gateCtxFor(a, { kit, redact, prior: [] }));
+      // (director13, Brain's P3: the second view's own page never brings the card back itself — the turn's next page is the card)
+      return takePreselected(a, gateCtxFor(a, { kit, redact, prior: [] }), Date.now(), { cardBack: !(i === 0 && sg.length > 1) });
     });
     // (director9, Brain's replay of c5-t01 steady T21: a 3-word tail page failed W6 and took the whole turn down with it —
     // the verdict page's revealed 1/8 never reached the screen. A LATER page that fails is dropped: the page before it
@@ -895,6 +906,9 @@ export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null 
     sg = kept.map((i) => sg[i]);
     const lastRef = refKey(sg.at(-1).boardRef);
     if (takes.length === 1) return { ...takes[0], screens: [{ from: 0, ...(takes[0].screen ?? {}) }], lastRef };
+    // (director13, Brain's P3: a picture turn pages its second view first, under its own line, then the card's own board —
+    // the turn is flagged as the second view it opens with)
+    const alt0 = takes[0].altView ? { altView: takes[0].altView } : {};
     // (director12 S6: a page on another board size — the catalogue's 677×423 beside a template's 400×300 — is scaled onto
     // the turn's largest board, centred, drawn still: before, the whole turn failed to join)
     const dims = (t) => t.script.board ?? WB_BOARD;
@@ -934,8 +948,8 @@ export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null 
     const n = normalizeScript(raw, { strict: false });
     if (!n.ok || !n.script?.switches?.length) return null;
     pageStats.drawn++;
-    return { ok: true, script: n.script, gate: last.gate, usd: 0, ms: 0, source: "first", by: "script", template: last.template, syncMs: 0,
-      screen: last.screen, screens: sg.map((g, i) => ({ from: g.from, ...takes[i].screen })), lastRef, lastPage: last.script };
+    return { ok: true, script: n.script, gate: last.gate, usd: 0, ms: 0, source: "first", by: "script", template: last.template, syncMs: 0, ...alt0,
+      screen: last.screen, screens: sg.map((g, i) => ({ from: g.from, ...takes[i].screen, ...(takes[i].altView ? { altView: takes[i].altView } : {}) })), lastRef, lastPage: last.script };
   } catch { return null; }
 }
 /** (director7's first form) */

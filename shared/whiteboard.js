@@ -356,6 +356,8 @@ function cleanCounts(c) {
       .map((x) => ({ parts: x.parts, shaded: x.shaded, label: smallStr(x.label) ? x.label : "" }));
     if (ws.length) out.wholes = ws;
   }
+  // (Learning's D7: equal-groups@1's equal share drawn beside unequal groups — { groups, each })
+  if (c.equalTo && Number.isInteger(c.equalTo.groups) && Number.isInteger(c.equalTo.each) && c.equalTo.groups >= 1 && c.equalTo.groups <= 12 && c.equalTo.each >= 0 && c.equalTo.each <= 100) out.equalTo = { groups: c.equalTo.groups, each: c.equalTo.each };
   for (const k of ["angles", "amounts"]) if (Array.isArray(c[k])) { const ns = c[k].slice(0, 6).filter((n) => Number.isFinite(n) && n >= 0 && n <= 100000); if (ns.length) out[k] = ns; }
   return Object.keys(out).length ? out : null;
 }

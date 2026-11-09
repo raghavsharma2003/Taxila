@@ -159,3 +159,41 @@ test("director12 S6: a script board's preselect is judged on her real line, not 
   assert.ok(pts.every(([x, y]) => x >= 0 && x <= 400 && y >= 0 && y <= 300));
   assert.equal(p.ops.length, L1.ops.length);
 });
+
+test("Learning's D7 (main 2026-11-09): a card's two-bar compare certifies as the live gate takes it — the bars are wholes when her line names each bar's parts (c5-t02 s3 checks[1] ribbons pose; s2 rem1.then 3/5 vs 4/10 reveal); a bar she never names still binds", async () => {
+  const { certifyBoardRef } = await import("../server/forge/explainer/board-ref.js");
+  const B = (bars) => ({ template: "fraction-bars@1", params: { bars } });
+  const ribbons = B([{ parts: 12, shade: 0, label: "?" }, { parts: 6, shade: 0, label: "?" }]);
+  const r1 = await certifyBoardRef(ribbons, { withhold: { values: [] },
+    line: "Anjali aur Gopi ke paas ek jaise ribbon hain. Anjali apne ribbon ke 12 barabar tukdon mein se 5 kaatti hai, Gopi apne ribbon ke 6 barabar tukdon mein se 5. Lamba tukda kisne kaata, Anjali ne ya Gopi ne?" });
+  assert.ok(r1.ok, JSON.stringify(r1.failed));
+  const r2 = await certifyBoardRef(B([{ parts: 5, shade: 3, label: "3/5" }, { parts: 10, shade: 4, label: "4/10" }]), { withhold: { values: [] }, line: "3/5 utna hai jitna 6/10, aur 6/10, 4/10 se zyada hai" });
+  assert.ok(r2.ok, JSON.stringify(r2.failed));
+  const r3 = await certifyBoardRef(B([{ parts: 8, shade: 7, label: "7/8" }, { parts: 10, shade: 9, label: "9/10" }]), { withhold: { values: [] }, line: "9/10 mein 1/10 kam hai aur 7/8 mein 1/8 kam, aur 1/10 ka gap 1/8 ke gap se chhota hai" });
+  assert.ok(r3.ok, JSON.stringify(r3.failed));
+  const r4 = await certifyBoardRef(B([{ parts: 4, shade: 1, label: "1/4" }, { parts: 8, shade: 1, label: "1/8" }, { parts: 2, shade: 1, label: "1/2" }]), { withhold: { values: [] }, line: "1/4 aur 1/8 mein kaunsa bada hai?" });
+  assert.equal(r4.ok, false, "a third bar her line never names");
+});
+
+test("Learning's D7 (main 2026-11-09): equal-groups@1 `equalTo` draws the equal share beside the given groups — c4's marbles 7, 3, 3, 3 beside 4 × 4, pencils 6, 3, 3 beside 3 × 4 — and certifies under the cards' whys", async () => {
+  const { certifyBoardRef } = await import("../server/forge/explainer/board-ref.js");
+  const { expand } = await import("../server/forge/explainer/templates.js");
+  const marbles = { sizes: [7, 3, 3, 3], equalTo: { groups: 4, each: 4 } };
+  const x = expand({ template: "equal-groups@1", ...marbles });
+  assert.ok(x.ok, String(x.errors));
+  assert.deepEqual(x.facts.counts, { groups: 4, values: ["7", "3", "3", "3"], equalTo: { groups: 4, each: 4 } });
+  assert.equal(x.facts.onScreen.equalShare, "4 groups of 4");
+  const texts = x.script.ops.filter((o) => o.op === "text").map((o) => o.text);
+  assert.deepEqual(texts, ["7", "3", "3", "3", "4", "4", "4", "4"]);
+  assert.equal(x.script.ops.filter((o) => o.op === "circle" && o.ink === "good").length, 16, "the share's 16, in its own ink");
+  assert.ok(x.script.ops.filter((o) => o.op === "ellipse").every((o) => o.c[0] - o.rx >= 0 && o.c[0] + o.rx <= 400));
+  // (the share must be the same things: groups × each = the sizes' sum)
+  assert.equal(expand({ template: "equal-groups@1", sizes: [7, 3, 3, 3], equalTo: { groups: 3, each: 4 } }).ok, false);
+  for (const [params, why] of [[marbles, "group 7, 3, 3, 3 barabar nahi; 16 ke ek-chauthaai mein har group 4 ka hota, 4 × 4 = 16"],
+    [{ sizes: [6, 3, 3], equalTo: { groups: 3, each: 4 } }, "group 6, 3, 3 barabar nahi; 12 ke ek-tihaai mein har group 4 ka hota, 3 × 4 = 12"]]) {
+    const r = await certifyBoardRef({ template: "equal-groups@1", params }, { line: why, withhold: { values: [] } });
+    assert.ok(r.ok, `${why}: ${JSON.stringify(r.failed)}`);
+  }
+  // (without equalTo the board is as before)
+  assert.equal(expand({ template: "equal-groups@1", sizes: [7, 3, 3, 3] }).facts.counts.equalTo, undefined);
+});
