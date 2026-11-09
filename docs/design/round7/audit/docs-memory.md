@@ -19,22 +19,22 @@ Status: **fix** = I fix it now under the phase-2 rule; **inbox** = proposed in `
 
 | id | sev | kind | owner | title | where | fix | status |
 |---|---|---|---|---|---|---|---|
-| DOCS-01 | P2 | inconsistent | main | Owner page says the Founders Hub automation is "not running", "apply by 2026-11-07" and still asks for a yes/no; it has been live since 2026-11-06 | OWNER:8, :22 | Replace with "done; live since 2026-11-06; clock completes 2027-01-04; only the secret rotation before 2027-03-09 remains" | fix |
-| DOCS-02 | P2 | inconsistent | main | Owner page header is from integration 9: test counts, "nothing has been tried live", "$6 of model calls" | OWNER:3-7, :14 | Update to integration 21a figures from the director16 judgement | fix |
-| DOCS-03 | P2 | inconsistent | main | Owner page's lesson-quality history stops at director8 and still gives "every sentence on its own board" as the rule; director16 took the opposite rule | OWNER:143-154 | Add the director16 entry and the held-board decision | fix |
-| DOCS-04 | P2 | inconsistent | main | M3.md says the M4 hardening is "not applied … you run the apply"; memory records it applied 2026-11-06 | M3:3-4, :181-198 | State it live; mark section 7 steps done | fix |
-| DOCS-05 | P2 | inconsistent | main | HANDOFF says "this branch (`handoff/2026-10-27`) is the whole project" and "next release 14.4.3 = this branch"; CLAUDE.md sends every new session there first; work is on `int/r6`, round 7 | HANDOFF:1-5, :41, :86-87; CLAUDE.md:26 | A dated "state on 2026-11-09" block at the top pointing to the round-7 docs; label §1-§3 as the 2026-10-27 snapshot | fix (HANDOFF); main (CLAUDE.md line) |
-| DOCS-06 | P2 | inconsistent | main | HANDOFF §6: Founders Hub "plan proposed, owner decision pending", `taxila-cin-pg` "unused, ₹602/day" | HANDOFF:169-170, :177-185 | Point to M3.md: live since 2026-11-06, PG on B2s as one of the counted services | fix |
-| DOCS-07 | P2 | inconsistent | main | Three different gates are written down: HANDOFF and three stream handoffs say `npm test` before a commit; CLAUDE.md says `npm run test:all`; the deploy gate itself runs `npm test` plus a prompt-budget check | HANDOFF:19, :134; docs/handoff/4b.md:96, qa.md:46, stream3.md:93-94; CLAUDE.md:52; infra/gate.mjs:23 | In HANDOFF say which is which (commit gate = CLAUDE.md's; deploy gate = `infra/gate.mjs`); a dated note in each stream handoff | fix |
-| DOCS-08 | P2 | inconsistent | main | PIPELINE gives three stream branches that do not exist (`claude/r7-brain`, `-voice`, `-studio`) | PIPELINE:19, :51, :81, :267 | Use the branches in SESSIONS.md | fix |
-| DOCS-09 | P2 | inconsistent | main | PIPELINE says integration is `int/r7`; it is `int/r6` | PIPELINE:227, :265, :267, :269 | Replace | fix |
-| DOCS-10 | P2 | broken | main | PIPELINE tells main to write `OWNERSHIP.json` and `scripts/ownership-check.mjs` "which fails any merge…"; neither exists | PIPELINE:266, :334-335 | Say what is true: the table in OWNERSHIP.md, checked by review | fix |
-| DOCS-11 | P2 | inconsistent | main | PIPELINE still plans a week-1 side-by-side to pick the default lane and "use them on BOTH lanes"; decided 2026-11-04 (Director default, agent lane frozen), then authored scripts | PIPELINE:358-362, :44, :48, :110, :272 | Add the decision to D.1; mark the items closed | fix |
-| DOCS-12 | P2 | inconsistent | main | `shared/learner.ts` has two owners: OWNERSHIP gives it to Learning, PIPELINE and the file itself give the BANDS table to Brain | OWNERSHIP:13; PIPELINE:198, :407-408; shared/learner.ts:18 | Split the row: BANDS table = Brain | fix |
+| DOCS-01 | P2 | inconsistent | main | Owner page says the Founders Hub automation is "not running", "apply by 2026-11-07" and still asks for a yes/no; it has been live since 2026-11-06 | OWNER:8, :22 | Replace with "done; live since 2026-11-06; clock completes 2027-01-04; only the secret rotation before 2027-03-09 remains" | fixed |
+| DOCS-02 | P2 | inconsistent | main | Owner page header is from integration 9: test counts, "nothing has been tried live", "$6 of model calls" | OWNER:3-7, :14 | Update to integration 21a figures from the director16 judgement | fixed |
+| DOCS-03 | P2 | inconsistent | main | Owner page's lesson-quality history stops at director8 and still gives "every sentence on its own board" as the rule; director16 took the opposite rule | OWNER:143-154 | Add the director16 entry and the held-board decision | fixed |
+| DOCS-04 | P2 | inconsistent | main | M3.md says the M4 hardening is "not applied … you run the apply"; memory records it applied 2026-11-06 | M3:3-4, :181-198 | State it live; mark section 7 steps done | fixed |
+| DOCS-05 | P2 | inconsistent | main | HANDOFF says "this branch (`handoff/2026-10-27`) is the whole project" and "next release 14.4.3 = this branch"; CLAUDE.md sends every new session there first; work is on `int/r6`, round 7 | HANDOFF:1-5, :41, :86-87; CLAUDE.md:26 | A dated "state on 2026-11-09" block at the top pointing to the round-7 docs; label §1-§3 as the 2026-10-27 snapshot | fixed (HANDOFF); main (CLAUDE.md line) |
+| DOCS-06 | P2 | inconsistent | main | HANDOFF §6: Founders Hub "plan proposed, owner decision pending", `taxila-cin-pg` "unused, ₹602/day" | HANDOFF:169-170, :177-185 | Point to M3.md: live since 2026-11-06, PG on B2s as one of the counted services | fixed |
+| DOCS-07 | P2 | inconsistent | main | Three different gates are written down: HANDOFF and one stream handoff say `npm test` before a commit; CLAUDE.md says `npm run test:all`; the deploy gate itself runs `npm test` plus a prompt-budget check | HANDOFF:19, :134; docs/handoff/qa.md:46; CLAUDE.md:52; infra/gate.mjs:23 | In HANDOFF say which is which (commit gate = CLAUDE.md's; deploy gate = `infra/gate.mjs`); a dated note in each stream handoff | fixed |
+| DOCS-08 | P2 | inconsistent | main | PIPELINE gives three stream branches that do not exist (`claude/r7-brain`, `-voice`, `-studio`) | PIPELINE:19, :51, :81, :267 | Use the branches in SESSIONS.md | fixed |
+| DOCS-09 | P2 | inconsistent | main | PIPELINE says integration is `int/r7`; it is `int/r6` | PIPELINE:227, :265, :267, :269 | Replace | fixed |
+| DOCS-10 | P2 | broken | main | PIPELINE tells main to write `OWNERSHIP.json` and `scripts/ownership-check.mjs` "which fails any merge…"; neither exists | PIPELINE:266, :334-335 | Say what is true: the table in OWNERSHIP.md, checked by review | fixed |
+| DOCS-11 | P2 | inconsistent | main | PIPELINE still plans a week-1 side-by-side to pick the default lane and "use them on BOTH lanes"; decided 2026-11-04 (Director default, agent lane frozen), then authored scripts | PIPELINE:358-362, :44, :48, :110, :272 | Add the decision to D.1; mark the items closed | fixed |
+| DOCS-12 | P2 | inconsistent | main | `shared/learner.ts` has two owners: OWNERSHIP gives it to Learning, PIPELINE and the file itself give the BANDS table to Brain | OWNERSHIP:13; PIPELINE:198, :407-408; shared/learner.ts:18 | Split the row: BANDS table = Brain | fixed |
 | DOCS-13 | P2 | inconsistent | main | "One owner per path" is false for 25 live paths (e.g. `data/lesson-scripts/**`, `server/pair/**`, `server/signin/**`, `evals/hybrid-side-by-side/**`, `scripts/kits/**`) | OWNERSHIP:5-14 | Assign them (proposal in the evidence note) | main |
-| DOCS-14 | P2 | inconsistent | main | OWNERSHIP marks six built paths "(new)", lists two that no longer exist and three never built | OWNERSHIP:9-14 | Drop "(new)"; mark "(not built)"; remove the dead two | fix |
-| DOCS-15 | P2 | no longer needed | main | PIPELINE's opening section "What a child can do end to end today" is the 2026-11-04 state (tap-to-talk for all, no placement, 74 topics with games) and "Merge-first" is done | PIPELINE:5-15, :253-261 | Retitle both as dated/done; keep the text | fix |
-| DOCS-16 | P2 | inconsistent | main | ARCH is still "draft v0, 2026-10-02": realtime voice as the default lane, Vercel functions as the server, one route and one method that do not exist, 9 routes of ~25, "audio is never stored" | ARCH:9, :20, :28, :30, :49, :59-62, :111, :122, :127 | Correct those statements; say at the top what it is | fix |
+| DOCS-14 | P2 | inconsistent | main | OWNERSHIP marks six built paths "(new)", lists two that no longer exist and three never built | OWNERSHIP:9-14 | Drop "(new)"; mark "(not built)"; remove the dead two | fixed |
+| DOCS-15 | P2 | no longer needed | main | PIPELINE's opening section "What a child can do end to end today" is the 2026-11-04 state (tap-to-talk for all, no placement, 74 topics with games) and "Merge-first" is done | PIPELINE:5-15, :253-261 | Retitle both as dated/done; keep the text | fixed |
+| DOCS-16 | P2 | inconsistent | main | ARCH is still "draft v0, 2026-10-02": realtime voice as the default lane, Vercel functions as the server, one route and one method that do not exist, 9 routes of ~25, "audio is never stored" | ARCH:9, :20, :28, :30, :49, :59-62, :111, :122, :127 | Correct those statements; say at the top what it is | fixed |
 | DOCS-17 | P2 | broken | main | 229 edges written in already-merged inbox files never reached the graph (25 of them "supersedes" with both ends present); the merger skips them without failing | context/inbox/merged/*; scripts/merge-inbox.mjs:23 | Re-propose the 96 valid ones; make the merger fail on an unknown relation | inbox (edges); main (script) |
 | DOCS-18 | P2 | inconsistent | main | Memory reads as if production moved to India, the database is Neon Singapore, and AWS model APIs are allowed; none is true | decisions.md:5-19, :2149, :2341, :2377 | Three new decisions that supersede them | inbox |
 | DOCS-19 | P2 | inconsistent | main | The 3D / multi-tutor face decisions read as live; one 2D teacher shipped | decisions.md:325, :2367, :2520 vs :5236, :5552; server/routes/tutor.js:3 | Supersedes edges | inbox |
@@ -48,13 +48,13 @@ Status: **fix** = I fix it now under the phase-2 rule; **inbox** = proposed in `
 | DOCS-27 | P3 | inconsistent | main | 55 decisions are still "proposed", including the duplex engine that shipped and is on for everyone | decisions.md:3779, :5047; src/duplex/config.ts:80 | Status sweep (needs a direct graph edit) | main |
 | DOCS-28 | P3 | inconsistent | main | Supersession stated in prose with no edge (5 cases); `deploy-classify-grok` has two headings that disagree | decisions.md:942 vs :978, :2292, :2407, :2446, :2452, :5711 | Edges; delete the first heading | inbox (edges); main (heading) |
 | DOCS-29 | P3 | inconsistent | main | Reversal conditions that fired or point at retired nodes, with no linked follow-up | decisions.md:2348, :2416, :3680 | Edges as listed | inbox |
-| DOCS-30 | P3 | inconsistent | main | PIPELINE D.9 and two Games items still plan to "revive ITEM-ARENA and Khand MEASURE"; both decided otherwise | PIPELINE:131, :134, :379 | Cite the two decisions | fix |
-| DOCS-31 | P3 | inconsistent | main | Owner page game counts are from integration 9 (maths 63, science 17); coverage file says 129 and 40 | OWNER:176-182; data/play/coverage.json | Update | fix |
-| DOCS-32 | P3 | inconsistent | main | PIPELINE's migration number reservations disagree with `db/migrations/README.md` | PIPELINE:266, :465-466 | Point to the README | fix |
-| DOCS-33 | P3 | inconsistent | main | PIPELINE D.6 says session-first start "becomes the default for everyone"; the code default is off | PIPELINE:372-373; server/director/session/flags.js:19-21 | Say it is not switched on | fix |
-| DOCS-34 | P3 | inconsistent | main | Small PIPELINE/OWNERSHIP drifts: "integration every 48 h" (five on 2026-11-09); frozen safety files named differently in the two docs | PIPELINE:269, :467, :472; OWNERSHIP:7-8 | Correct | fix |
-| DOCS-35 | P3 | broken | main | Entry docs name inbox files that are not there: `context/inbox/r7-face.json`, `context/inbox/r1442-s2.json` | HANDOFF:110; docs/handoff/stream2.md:43 | Correct the paths | fix |
-| DOCS-36 | P3 | broken | main | Three instructions name things that are gone: `BESIDE_NAME_WAIT_MS`, a `DEPLOY_WRITE` role "routed", `src/onboarding/steps/ChildProfile.tsx` | docs/handoff/stream3.md:117; docs/ops/MODEL-STACK.md:107; docs/patches/to-app/007-coldstart-answers.md:22 | Correct | fix |
+| DOCS-30 | P3 | inconsistent | main | PIPELINE D.9 and two Games items still plan to "revive ITEM-ARENA and Khand MEASURE"; both decided otherwise | PIPELINE:131, :134, :379 | Cite the two decisions | fixed |
+| DOCS-31 | P3 | inconsistent | main | Owner page game counts are from integration 9 (maths 63, science 17); coverage file says 129 and 40 | OWNER:176-182; data/play/coverage.json | Update | fixed |
+| DOCS-32 | P3 | inconsistent | main | PIPELINE's migration number reservations disagree with `db/migrations/README.md` | PIPELINE:266, :465-466 | Point to the README | fixed |
+| DOCS-33 | P3 | inconsistent | main | PIPELINE D.6 says session-first start "becomes the default for everyone"; the code default is off | PIPELINE:372-373; server/director/session/flags.js:19-21 | Say it is not switched on | fixed |
+| DOCS-34 | P3 | inconsistent | main | Small PIPELINE/OWNERSHIP drifts: "integration every 48 h" (five on 2026-11-09); frozen safety files named differently in the two docs | PIPELINE:269, :467, :472; OWNERSHIP:7-8 | Correct | fixed |
+| DOCS-35 | P3 | broken | main | Entry docs name inbox files that are not there: `context/inbox/r7-face.json`, `context/inbox/r1442-s2.json` | HANDOFF:110; docs/handoff/stream2.md:43 | Correct the paths | fixed |
+| DOCS-36 | P3 | broken | main | Three instructions name things that are gone: `BESIDE_NAME_WAIT_MS`, a `DEPLOY_WRITE` role "routed", `src/onboarding/steps/ChildProfile.tsx` | docs/handoff/stream3.md:117; docs/ops/MODEL-STACK.md:107; docs/patches/to-app/007-coldstart-answers.md:22 | Correct | fixed |
 | DOCS-37 | P3 | broken | main | The audit brief lists two area paths that do not exist (`src/stage`, `public/assets/gen/teacher`) | docs/design/round7/audit/BRIEF.md:161, :186 | Main's file, in use by 13 sessions: main corrects | main |
 | DOCS-38 | P3 | inconsistent | main | CLAUDE.md: Deploy names only the web step (the round-7 command is `scripts/release.mjs`); Gates omits the prompt-budget check that CI and the deploy gate require; Layout says route tables live in `routes/*.js` (13 are elsewhere) | CLAUDE.md:40, :48-49, :52-56 | Three sentence edits (text in the evidence note) | main |
 | DOCS-39 | P3 | inconsistent | main | `docs/patches`: one patch pending, one half-applied, one never applied though a gate test asserts on its text, one malformed; numbers collide (three `001`s in to-brain) | docs/patches/to-brain/011-script-scene-ref.patch, 017-harness-card-page.patch; to-app/001-handsfree-default.patch; to-platform/001-placement-routes.patch | Routed to the owning streams; an index file with status | main |
@@ -62,7 +62,7 @@ Status: **fix** = I fix it now under the phase-2 rule; **inbox** = proposed in `
 | DOCS-41 | P3 | no longer needed | main | `docs/` is 2.78 GB in git, 2.3 GB of it media from finished probes (5,300 png, 3,250 wav/pcm, 970 mp3) and about 300 MB of handoff archives that also sit in Azure Storage | docs/research/voice (980 MB), docs/design/teacher (369 MB), docs/handoff (343 MB) | Move finished-probe media to Storage, keep the write-ups; needs main and the owner | main |
 | DOCS-42 | P3 | not good enough | main | Gate tests import code from `docs/` and assert on patch text, so no old doc tree can be archived without breaking the gate | tests/scene-runtime.test.mjs:7, tests/spoken.test.mjs:8, tests/r4-kaksha-play.test.mjs:69 and 20 more | Move the two imported modules and the fixtures under `tests/fixtures/` first | main (tests-evals area) |
 | DOCS-43 | P3 | broken | main | ctx-arch names three files that do not exist | ctx-arch:14, :33, :203 | Note in the closing entry | inbox |
-| DOCS-44 | P3 | inconsistent | main | STARTUP-PROMPT tells a new session to check out `handoff/2026-10-27` and merge the round-4/5 branches | docs/handoff/STARTUP-PROMPT.md:10-22, :44 | Head it "used once on 2026-10-27; do not reuse" | fix |
+| DOCS-44 | P3 | inconsistent | main | STARTUP-PROMPT tells a new session to check out `handoff/2026-10-27` and merge the round-4/5 branches | docs/handoff/STARTUP-PROMPT.md:10-22, :44 | Head it "used once on 2026-10-27; do not reuse" | fixed |
 
 Counts: 44 findings. By severity: P0 0, P1 0, P2 25, P3 19. By kind: broken 6, inconsistent 32, not good enough 3, no longer needed 3.
 
@@ -97,7 +97,8 @@ hold ≥ $1/day … A plan was proposed, owner decision pending". Against M3:3, 
 
 **DOCS-07.** HANDOFF:134 "`npx tsc -b && npx vite build && npm test`"; CLAUDE.md:52 "`npx tsc -b && npx vite build && npm
 run test:all` must pass"; `infra/gate.mjs:23` (the deploy gate) runs `npm test` and `scripts/check-prompt-budget.mjs`. None is
-wrong alone; a reader of one page does not learn there are two gates. docs/handoff/stream3.md:94 also says `npm test` runs `tests/index.js`; `package.json` has
+wrong alone; a reader of one page does not learn there are two gates. (docs/handoff/4b.md:96 and stream3.md:93-94, first
+listed here, turned out to quote the deploy gate correctly, and `tests/index.js` is real; they are not part of this finding.) docs/handoff/stream3.md:94 also says `npm test` runs `tests/index.js`; `package.json` has
 `"test": "node --test tests/"`.
 
 **DOCS-08, 09.** PIPELINE:19 "(branch claude/r7-brain)", :51, :81; SESSIONS:7-9 gives `claude/r4-conversation`,
@@ -332,3 +333,29 @@ to "refuted" when it could not reproduce the evidence. It re-ran the counts with
   - DOCS-40: dropped `docs/harvest/json` (two docs cite it).
 - **Not re-checked by the skeptic:** the claim that the code safety scan now catches the 13 lines (DOCS-23, last paragraph);
   the split of the 22 drifted patches in DOCS-39.
+
+## Fixes made on this branch (phase 2)
+
+All are text corrections in `HANDOFF.md` and `docs/`, each dated in place so the reader can see what was changed and when.
+Nothing was deleted, and `CLAUDE.md`, `context/*.md`, `graph.json` and the brief are untouched.
+
+| Findings | File | What changed |
+|---|---|---|
+| DOCS-01, 02, 03, 31 | docs/design/round7/OWNER.md | Header, row 1 and row 7 now say what is true (Founders Hub running; release blocked on the two Neon keys); the director16 result and the held-board decision added; game coverage from `data/play/coverage.json` |
+| DOCS-04 | docs/design/round7/M3.md | M4 stated as live; section 7 says which steps are done |
+| DOCS-05, 06, 07, 35 | HANDOFF.md | A "state on 2026-11-09" note at the top; §1 and §2 labelled as the 2026-10-27 snapshot; both gates explained; §6 points to M3.md; dead inbox path removed |
+| DOCS-08, 09, 10, 11, 15, 30, 32, 33, 34 | docs/design/round7/PIPELINE.md | Real branch names and `int/r6`; the ownership-check script described as never written; lane decision, games decisions, migration numbers and session-first default corrected with dates; the two superseded sections retitled |
+| DOCS-12, 14, 34 | docs/design/round7/OWNERSHIP.md | BANDS table split between Brain and Learning; "(new)" removed from six built paths; three marked "(not built)"; two dead paths removed; all four frozen safety files named |
+| DOCS-16 | docs/ARCHITECTURE.md | A "what has changed since this draft" note; the Vercel box, the Singapore label, the two wrong routes, the off-critical-path sentence and "audio is never stored" corrected |
+| DOCS-07, 35, 36, 44 | docs/handoff/qa.md, stream2.md, stream3.md, STARTUP-PROMPT.md; docs/ops/MODEL-STACK.md; docs/patches/to-app/007-coldstart-answers.md | One dated correction each |
+
+**Test:** `tests/r7-audit-docs.test.mjs`, 11 checks. All 11 failed before the fixes and pass after. They compare docs with
+the files on disk or with each other (paths exist, routes are registered, branch names match SESSIONS.md, the owner page
+agrees with M3.md), not with numbers the next integration will change.
+
+One check asks something of the main loop's routine: the owner page must mention the decision id that the newest
+`judgements/directorN-*.md` takes. It is what would have caught DOCS-03. If that is unwelcome in the gate, delete that one
+test; the others do not depend on it.
+
+Not fixed, because the rule for this area says to wait: DOCS-13, 37, 38, 39, 40, 41, 42 and the `CLAUDE.md` half of DOCS-05.
+Proposed through the inbox file, not applied: DOCS-17 to 19, 21 to 23, 26, 28, 29, 43. Needs the main loop directly: DOCS-20, 24, 25, 27.
