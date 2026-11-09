@@ -5,6 +5,7 @@
 import { boardWords } from "./board-words.js";
 import { inHindiWords } from "./register.js";
 import { cardPageRefused } from "./propose.js";
+import { cleanParts, joinParts, alignParts } from "./lineParts.js";
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { floorViolations, scrubPii, filterSafe } from "../director/safety.js";
@@ -2249,6 +2250,22 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     body = once(noQ(body));
     const assembled = [...prevPart, ...closedP, ...first, ...asideP, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
+    // v6.6 P4 (main, director14: 16 of 17 paging contradictions were a late pass rewriting the line and the planner's text search
+    // failing): the line as its ORDERED PARTS, each named for its board (brain/propose.js pages from this list; every later pass's
+    // edit is carried onto it word by word, brain/lineParts.js alignParts)
+    if (assembled) {
+      const bridgeK = state.lastMove?.bridgeSaid ? unpointed(dot(state.lastMove.bridgeSaid)) : null;
+      const simplerK0 = state.lastMove?.simpler ? new Set(sentences(norm(state.lastMove.simpler)).map(keyS)) : null;
+      guard.lineParts = cleanParts([
+        { part: "close", text: prevPart.join(" ") },
+        { part: "closed", text: closedP.join(" ") },
+        ...first.map((x) => ({ part: x === bridgeK ? "bridge" : "close", text: x })),
+        { part: "aside", text: asideP.join(" ") },
+        ...body.map((x) => ({ part: guard.altOnly && x === asked ? "alt" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
+        { part: tail && tail === card ? "card" : "body", text: tail ?? "" },
+      ]);
+      if (joinParts(guard.lineParts) !== norm(reply)) guard.lineParts = alignParts(guard.lineParts, reply);
+    }
     // v6 R4: Hindi asked for: her spoken words in Hindi from here on (the card and the beat's must-say words stay)
     const hindiOn = state.ctx?.lang === "hindi" && !!state.ctx?.langPinned;
     const keepW = (state.lastMove?.mustSay ?? []).flatMap((m) => (typeof m === "object" && m ? [m.hi, m.en] : [m]));
@@ -2301,7 +2318,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (card && reply.includes(card)) {
       const cut = reply.slice(0, reply.lastIndexOf(card)).trim();
       // (each check its own pick id: Studio's picks are module-level, keyed by intent id)
-      if (cut && cardPageRefused({ lessonId: `say-${state.ctx?.sessionId ?? "x"}-${++CARD_CHECKS}`, turn: state.turn ?? 0, next: state, kit, item, line: { text: reply, parts: guard.parts } })) {
+      if (cut && cardPageRefused({ lessonId: `say-${state.ctx?.sessionId ?? "x"}-${++CARD_CHECKS}`, turn: state.turn ?? 0, next: state, kit, item,
+        line: { text: reply, parts: { ...guard.parts, ...(guard.lineParts ? { list: alignParts(guard.lineParts, reply) } : {}) } } })) {
         guard.cardPageDropped = { itemId: state.activeItemId ?? null, board: state.lastMove?.cardBeat?.board?.template ?? null };
         reply = cut;
       }
@@ -2382,6 +2400,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   }
   // round 7 A5: a sent clause is never withdrawn (see streamAsk); the lock's fallback passes every guard
   if (clause.sent && !String(reply).replace(/\s+/g, " ").trim().startsWith(clause.sent.s1)) { reply = clause.sent.fallback; guard.clauseFallback = true; }
+  // v6.6 P4: the parts follow every edit above, word by word; the page plan reads them (guard.parts.list)
+  if (guard.lineParts) { guard.lineParts = alignParts(guard.lineParts, reply); if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts }; }
   // The final words, checked once more (debug and the evals read it): what reached the child.
   const final = problems(reply).filter((p) => p !== "long" || words(reply) > max);
   if (final.length) guard.final = final;

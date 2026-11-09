@@ -358,7 +358,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         const text = String(reply).replace(/\s+/g, " ").trim();
         segs = parts.map((pt, i) => {
           const segText = text.slice(pt.atChar, parts[i + 1]?.atChar ?? text.length);
-          const a = { ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:s${i}`, boardRef: pt.boardRef, scriptBeat: pt.scriptBeat, segments: undefined, segmentPlan: undefined }, line: { ...askF.line, text: "" } };
+          // (v6.6, as Studio's pagesBoard: a later page is never asked as the picture — only the first page draws the second view;
+          // director14's c5-t01 segments recorded the card page drawn as the alt because this copy kept the request)
+          const a = { ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:s${i}`, boardRef: pt.boardRef, scriptBeat: pt.scriptBeat, segments: undefined, segmentPlan: undefined, ...(i ? { request: undefined } : {}) }, line: { ...askF.line, text: "" } };
           const pk = preselect(a, { kit });
           let scr = pk?.screen ?? null;
           try { const aR = { ...a, line: { ...a.line, text: segText } }; const tk = takePreselected(aR, gateCtxFor(aR, { kit, redact: [], prior: [] })); if (tk?.screen) scr = tk.screen; } catch { /* the preselect's board */ }

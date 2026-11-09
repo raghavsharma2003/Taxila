@@ -4,6 +4,7 @@
 //   evidence, the learner model, the Director's step) → word + guard (say.js) → commit (one transaction).
 // The HTTP route (server/routes/lesson.js) stays a thin adapter; lessonTurn(req, body) is the exported turn handler,
 // the seam W2-G's /api/lesson/turn-audio calls. Auth, dedupe/replay, the late-turn and outbox semantics are unchanged.
+import { alignParts } from "./lineParts.js";
 import { q, one, guardStmt, GUARD_FAILED } from "../db.js";
 import { need, bad, forbidden, notFound, unauthorized, HttpError } from "../http.js";
 import { sessionTokenHash } from "../auth.js";
@@ -1066,7 +1067,9 @@ export async function lessonTurn(req, body, hooks = {}) {
       // line, is a picture OF a thing ("Aloo ka picture: brown skin, gol shape") asks the board for THAT thing (code-gated:
       // drawableSubject), so the page and her words meet; owner replay of a95d2ff1 turn 22 drew the rules table under it
       const wbAsk = whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
-        item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: teacherReply, teacherReplySeq, ...(guard?.parts ? { parts: guard.parts } : {}) } });
+        item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: teacherReply, teacherReplySeq,
+          // (v6.6 P4: her line's parts carried onto the words this turn will say — the gender repair and an opener fix edit them)
+          ...(guard?.parts ? { parts: guard.parts.list ? { ...guard.parts, list: alignParts(guard.parts.list, teacherReply) } : guard.parts } : {}) } });
       // v6.5 P2′: her line dropped the card whose own page Studio would refuse (brain/say.js guard.cardPageDropped). The board picked
       // before her line was that card's; Studio's take reads a pick by intent id, so the line's own board is picked under a new id
       // (never the card's figure under her close)

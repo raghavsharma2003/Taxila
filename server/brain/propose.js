@@ -15,6 +15,7 @@ import { BANDS } from "../learner/bands.js";
 import { splitSentences } from "../voice/sentences.js";
 import * as BF from "../stagecraft/board-first.js";
 import { gateCtxFor } from "../stagecraft/board-sync.js";
+import { offsetsOf } from "./lineParts.js";
 
 /** The Director's proposal with the kernel's turn rules: one move (mandatory in its rank), safety freezes the rest. */
 export function directorProposalOf(r) {
@@ -150,7 +151,12 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
   // (v6.1, director9 c5-t02: "picture dikhao" with nothing named carries no `see`, so the ask carried no request and Studio's
   // second view — keyed on a request — never came: a picture ask is always a request, at least "show")
   const visualNow = next?.lastMove?.request === "visual" || (!!next?.lastMove?.visual && next.lastMove.visual !== "game");
-  const request = (visualNow ? requestOfSee(next.lastMove.see) ?? { kind: "show" } : null) ?? (next?.lastMove?.request === "example" ? { kind: "example" } : null);
+  // (v6.6, main on director14 c5-t01 steady 18: the content filter dropped the picture's own line and the bare card was said over
+  // the second view): a scripted picture turn whose line has the card and no alt part is the card on its own board — no second
+  // view is asked under the card's words
+  const list = line?.parts?.list ?? null;
+  const cardNoAlt = !!list && list.some((p) => p.part === "card") && !list.some((p) => p.part === "alt");
+  const request = (visualNow && !cardNoAlt ? requestOfSee(next.lastMove.see) ?? { kind: "show" } : null) ?? (next?.lastMove?.request === "example" ? { kind: "example" } : null);
   return {
     intent: {
       intentId: `${lessonId}:wb:${turn}`, lessonId, kind: "whiteboard", skillId, ...(item?.id ? { itemIds: [item.id] } : {}),
@@ -281,7 +287,81 @@ export function revealOnVerdict(bp, next) {
   const answers = [key, ...(bp.scriptBeat.answers?.length ? bp.scriptBeat.answers : (g.accept ?? [])).map(String).filter((a) => a !== key)];
   return { ...bp, scriptBeat: { ...bp.scriptBeat, reveal: true, answers } };
 }
+/**
+ * v6.6 P4 (main, director14): the pages of a line given as its ordered parts (brain/say.js guard.lineParts, kept through every
+ * later edit): each part on its own board, offsets from the join — never a search of the text. A part with no board of its own
+ * (an aside, a bridge with no board, a close with no answered board) is said over the page it follows (the first, over the page
+ * after it). Consecutive parts on one board are one page; a picture turn's alt part is its own page (Studio's second view) and
+ * the card part the next, both naming the card's board. The short-page rules are segmentsAt's.
+ */
+const STRICT_PAGES = () => !!process.env.NODE_TEST_CONTEXT || process.env.TAXILA_STRICT_PAGES === "1";
+export function pagesOfParts(move, list, line) {
+  const text = norm1(line);
+  const offs = offsetsOf(list);
+  if (STRICT_PAGES() && offs.map((p) => p.text).join(" ") !== text) throw new Error(`P4: the parts are not the line (${JSON.stringify(offs.map((p) => p.part))})`);
+  const closing = move?.gave || move?.workedDone || move?.sayFirst?.length || offs.some((p) => p.part === "close");
+  const beatFor = (part) => {
+    switch (part) {
+      case "close": return closing && move?.closeBeat?.board ? move.closeBeat : null;
+      case "closed": return move?.closed ? (move.closedBeat ?? move.closeBeat ?? null) : null;
+      case "bridge": return move?.bridgeBeat?.board ? move.bridgeBeat : null;
+      case "simpler": return move?.simplerBeat?.board ? move.simplerBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
+      case "alt": case "card": return move?.cardBeat?.board ? move.cardBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
+      case "body": return move?.scriptBeat?.board ? move.scriptBeat : move?.cardBeat?.board ? move.cardBeat : null;
+      case "aside": return null;
+      default: return move?.scriptBeat?.board ? move.scriptBeat : move?.cardBeat?.board ? move.cardBeat : move?.closeBeat?.board ? move.closeBeat : null;
+    }
+  };
+  let placed = offs.map((p) => ({ part: p.part, start: p.start, beat: beatFor(p.part), alt: p.part === "alt" }));
+  // (a part with no board rides on the page before it; leading ones on the first page with a board)
+  for (let i = 1; i < placed.length; i++) if (!placed[i].beat) placed[i] = { ...placed[i], beat: placed[i - 1].beat, alt: placed[i - 1].alt };
+  const firstB = placed.find((p) => p.beat);
+  if (!firstB) return null;
+  placed = placed.map((p) => (p.beat ? p : { ...p, beat: firstB.beat, alt: firstB.alt }));
+  const pages = [];
+  for (const p of placed) {
+    const last = pages.at(-1);
+    if (last && JSON.stringify(last.beat.board) === JSON.stringify(p.beat.board) && last.alt === p.alt) { last.parts.push(p.part); continue; }
+    pages.push({ atChar: p.start, beat: p.beat, alt: p.alt, parts: [p.part] });
+  }
+  const hasCard = (i) => pages[i].parts.includes("card");
+  const seg = (i) => text.slice(pages[i].atChar, pages[i + 1]?.atChar ?? text.length);
+  // (segmentsAt's rules: a later page under PAGE_MIN_WORDS with no card is no page; a bare first page — no number, under
+  // FIRST_PAGE_MIN_WORDS, no card — joins the next. Never an alt page: Studio's second view is a page of its own)
+  for (let i = pages.length - 1; i > 0; i--) if (!hasCard(i) && !pages[i].alt && seg(i).split(/\s+/).filter(Boolean).length < PAGE_MIN_WORDS) { pages[i - 1].parts.push(...pages[i].parts); pages.splice(i, 1); }
+  if (pages.length > 1 && !hasCard(0) && !pages[0].alt && !/\d/.test(seg(0)) && seg(0).split(/\s+/).filter(Boolean).length < FIRST_PAGE_MIN_WORDS) {
+    pages[1] = { ...pages[1], atChar: 0, parts: [...pages[0].parts, ...pages[1].parts] }; pages.shift();
+  }
+  for (let i = pages.length - 1; i > 0; i--) if (JSON.stringify(pages[i].beat.board) === JSON.stringify(pages[i - 1].beat.board) && pages[i].alt === pages[i - 1].alt) { pages[i - 1].parts.push(...pages[i].parts); pages.splice(i, 1); }
+  const out = pages.map((p, i) => ({ atChar: i ? p.atChar : 0, atClause: clauseAt(text, i ? p.atChar : 0), boardRef: p.beat.board, scriptBeat: refOf(p.beat), alt: p.alt, parts: p.parts }));
+  if (STRICT_PAGES()) {
+    // P4 predicates (main): a close that says something, then a card on another board, is ≥ 2 pages, the first on the answered
+    // card's board; a picture turn is the alt page, then the card on its own board
+    const closeT = offs.filter((p) => p.part === "close").map((p) => p.text).join(" ");
+    const cardB = beatFor("card")?.board, closeB = beatFor("close")?.board;
+    if (closeB && cardB && offs.some((p) => p.part === "card") && JSON.stringify(closeB) !== JSON.stringify(cardB)
+      && (/\d/.test(closeT) || closeT.split(/\s+/).filter(Boolean).length >= FIRST_PAGE_MIN_WORDS)
+      && (out.length < 2 || JSON.stringify(out[0].boardRef) !== JSON.stringify(closeB))) throw new Error(`P4: a close and a next card are not two pages (${JSON.stringify(out.map((p) => p.parts))})`);
+    if (offs.some((p) => p.part === "alt") && offs.some((p) => p.part === "card") && !(out[0].alt && out.length > 1 && out.at(-1).parts.includes("card") && !out.at(-1).alt)) {
+      throw new Error(`P4: a picture turn is not the alt page then the card's page (${JSON.stringify(out.map((p) => [p.alt, p.parts]))})`);
+    }
+  }
+  return out;
+}
 export function boardPartsOf(move, line, card, parts = null) {
+  // v6.6 P4: a line given as its parts is paged from them (the probe on the card just answered is asked on that card's board)
+  if (parts?.list?.length) {
+    if (move?.kind === "probe" && move?.closeBeat?.board && move?.scriptBeat?.beatId && move.scriptBeat.beatId === move.closeBeat.beatId) {
+      move = { ...move, scriptBeat: { ...move.scriptBeat, board: move.closeBeat.board }, ...(move.cardBeat?.beatId === move.closeBeat.beatId ? { cardBeat: { ...move.cardBeat, board: move.closeBeat.board } } : {}) };
+    }
+    const pages = norm1(line) ? pagesOfParts(move, parts.list, line) : null;
+    if (pages?.length) {
+      const segPlan = pages.flatMap((p) => p.parts.map((part) => ({ part, boardRef: p.boardRef, scriptBeat: p.scriptBeat })));
+      return { boardRef: pages[0].boardRef, scriptBeat: pages[0].scriptBeat, ...(pages[0].alt ? { altPage: true } : {}),
+        ...(pages.length > 1 ? { segments: pages.slice(1).map(({ atChar, atClause, boardRef, scriptBeat }) => ({ atChar, atClause, boardRef, scriptBeat })) } : {}),
+        ...(segPlan.length > 1 ? { segmentPlan: segPlan } : {}) };
+    }
+  }
   // v6.5 P3 (Studio's shape, director13): a picture turn drawn as a second view is two pages — the view under its own line (the
   // card's board, asked as a picture: Studio draws its second view), then the card's own board from the card's first word. The two
   // pages name the same board, so they are placed here, never merged
