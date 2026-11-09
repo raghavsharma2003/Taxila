@@ -7,6 +7,7 @@
 // and it points at the one action on the screen (Start). No name, no subject, no claim about the child, and no
 // gendered verb about the child (Hindi past participles agree with the subject: "tum aa gaye" assumes a boy).
 import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const GREETING_TZ = "Asia/Kolkata";
@@ -48,10 +49,17 @@ function hash(s) {
   return h >>> 0;
 }
 
-const PUBLIC = fileURLToPath(new URL("../../public/", import.meta.url));
+/** Where a rendered clip can be on this machine. The production image holds the built client only (Dockerfile: dist/ is
+ *  copied, public/ is not), so the served copy is dist/audio (TAXILA_DIST when the server serves another build:
+ *  server/serve.mjs); a checkout running the API beside Vite has public/audio. Audit FACE-02: only public/ was checked,
+ *  so in production no clip could ever be found and her greeting stayed silent whatever was rendered. */
+export const clipDirs = (env = process.env) => [
+  env.TAXILA_DIST ? `${resolve(env.TAXILA_DIST)}/` : fileURLToPath(new URL("../../dist/", import.meta.url)),
+  fileURLToPath(new URL("../../public/", import.meta.url)),
+];
 export const clipUrl = (id) => `/audio/hello-day-${id}.mp3`;
 /** Whether the line's clip has been rendered (the client then lip-syncs it; otherwise it shows the line, silently). */
-export const clipExists = (id, exists = existsSync) => exists(`${PUBLIC}audio/hello-day-${id}.mp3`);
+export const clipExists = (id, exists = existsSync, dirs = clipDirs()) => dirs.some((d) => exists(`${d}audio/hello-day-${id}.mp3`));
 
 /**
  * Today's greeting for a child: one line per child per local day (stable all day, different across children and days),

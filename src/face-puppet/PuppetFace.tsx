@@ -77,8 +77,7 @@ const PARK_MS = 1500;
 let parked: { stage: PuppetStage; key: string; hand: string; timer: number } | null = null;
 function park(stage: PuppetStage, key: string, hand: string): void {
   if (parked) { window.clearTimeout(parked.timer); parked.stage.dispose(); }
-  stage.stop();
-  stage.canvas.remove();
+  stage.park(); // stops, leaves the DOM and hands the running slot back to a face it suspended (stage.ts yieldSlot)
   const timer = window.setTimeout(() => { if (parked?.stage === stage) parked = null; stage.dispose(); }, canHandOff(stage) ? HANDOFF_PARK_MS : PARK_MS);
   parked = { stage, key, hand, timer };
 }
