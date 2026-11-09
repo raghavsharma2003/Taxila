@@ -9249,3 +9249,34 @@ Reverse if a child pilot shows the claim buttons tapped by trial at every step (
 - **Numbers:** none on screen. The drops a glass takes, the glass's capacity and the gudhal drops are scene values with no fact claimed.
 
 Reverse if a child pilot shows the bins tapped by trial (many not_sure / wrong_bin refusals per level) rather than read from the colours.
+
+
+<!-- merged from inbox/r7-main-32.json -->
+## `dc-r7-script-walk-v6-6` (2026-11-09)
+
+Pages by construction, and no model words on a graded turn.
+
+**Brain:**
+- **P4:** her line is an ordered list of parts, each with its board. Later passes edit within a part. The page plan is that list, and no text search is used.
+- **V1** (reversal clause 2 taken): the verdict is a code frame plus the authored why. The model writes only the aside reply.
+- **B1′:** Hindi and clarify requests re-say the live beat's own simpler.
+- **A2:** a pending-aside queue no later request can clear, plus the honest-AI line on the turn the child asks.
+- **F1′:** every code frame family is varied.
+- **K3:** the give-up comes before the bridge, the parent card is re-posed, and "aage chalo" moves on.
+- **H3:** the counter reads the pages actually drawn, and must flag director14's hand rows.
+
+**Studio:**
+- **S9:** a picture turn's card page draws the card's own board.
+- **S9b:** second views on remediation boards too.
+
+**Learning:**
+- **D9:** no bare symbols in spoken text; a remediation never states a later card's key; three board fixes; worked-example givens folded into one sentence.
+
+**Why:** director14's contradictions rose from 13 to 22, and false keys from 0 to 1. Both trace to `say.js` editing her line after the page plan took its part texts, and to keeping the model's own verdict words. Register has sat at 2.5–3 for five runs.
+
+**Clause 1** (21 > 5) is not taken as written: a held board per card keeps the card-seam failure and breaks picture requests. Its intent is taken as P4.
+
+**Reverse if:**
+- director15 has more than 5 paging plus second-view contradictions by hand: one code-drawn board per card, held, unconditionally.
+- register is still below 3.5 with V1 and F1′ in place: Learning rewrites the pilot scripts' spoken fields for register.
+- the counter misses more than 2 of the hand count: README proxy trends stop counting as evidence.

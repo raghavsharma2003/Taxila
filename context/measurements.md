@@ -6313,3 +6313,31 @@ rang play-cert, 2026-11-09 (forge3-qa, local harness, sizes p360 / p412 / l1366,
   - every mal-rule state reached the same way (8);
   - no clipped label; smallest tap target 48 px.
 - **Shots:** docs/design/round7/games/runshots-rang/.
+
+
+<!-- merged from inbox/r7-main-32.json -->
+## `ms-r7-director14-hand-2026-11-09` (2026-11-09)
+
+director14: v6.5 on integration 17. 16 lessons, 1,428 calls, about $0.980, run by main. Counted by hand by 4 judges, with contradictions classified by mechanism.
+
+| Line | Count |
+|---|---|
+| Beats taught | 254/256 (99%) |
+| Verdicts | 247/248 |
+| Misgrades | 0/0 |
+| False keys | **1**, the first in nine runs (c4 steady 20, a model-written verdict sentence) |
+| Contradictions, by hand | **22** (paging 17, second view 4, model words 1); director13 had 13 |
+
+By topic: c4 2, c5-t01 10, c5-t02 5, c6 5 (from 0).
+
+16 of the 17 paging contradictions are one mechanism: a graded close, opened with a v6.5 verdict variant, said over the next card's board.
+
+Register scored 3 in all four topics; listening 3–3.5; promises 2.5–3.5.
+
+What went to zero (Brain's proxies): frame repeats (from 49), taste claims (from 9), remediations re-said (from 7), canned facts (from 5), and droppedPages (from 3).
+
+Speed: reply-ready p50 3091 → 2640 ms; read p50 1215 → 1070 ms.
+
+The automatic counter read 9 contradictions where the hand count is 22.
+
+Full write-up: docs/design/round7/judgements/director14-2026-11-09.md.

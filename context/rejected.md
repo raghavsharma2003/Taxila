@@ -2859,3 +2859,24 @@ Deferred to the safety pass.
 They are harmless today, since KNOWN_NEAR only stops a token being read as a solo slot word. But a fragment could mask a garbled safety word.
 
 **Not fixed now,** under the build-first directive: existing safety code stays as it is. The safety pass should tokenise by grapheme cluster and re-derive the list.
+
+
+<!-- merged from inbox/r7-main-32.json -->
+## `rj-r7-pages-found-by-text-search` (2026-11-09)
+
+The tried approach: find a turn's page boundaries by searching the finished line for each part's text (`segmentsAt`: `spanOf` on `guard.parts`, with a `closureEnd` fallback).
+
+**What broke:** it fails whenever a pass edits the line after the part texts are taken. It has now broken three times:
+- v6.3's dedupe cut remediation fragments;
+- refused pages left their lines spoken over the wrong board;
+- v6.5's F1 opener swap emptied the close part. That put 16 graded closes over the next card's board in director14.
+
+Replaced by pages by construction (v6.6 P4).
+
+## `rj-r7-proxy-contradiction-trend` (2026-11-09)
+
+The tried approach: read the gate's automatic contradiction counter as a trend line.
+
+**What broke:** on director14 it read 17 → 9 while the hand count went 13 → 22. It checks `closeBeat.board`, not the page actually drawn, so it is blind to both of the run's main mechanisms.
+
+Hand counts stay the gate. The counter must pass a director14 fixture before its numbers count as evidence.

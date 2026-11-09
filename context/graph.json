@@ -26625,6 +26625,34 @@
    "at": "2026-11-09",
    "title": "rang play-cert (forge3-qa, p360/p412/l1366): every rang sample passes at every size (32 samples; table 4248/4248); every goal solved by real taps at 360 x 640 on seeds 3 and 17 at all three looks (24 runs); every mal-rule state reached (8); no clipped label; smallest tap target 48 px; tests/r7-games-rang.test.mjs 29 tests.",
    "source": "inbox/r7-games-rang.json"
+  },
+  {
+   "id": "ms-r7-director14-hand-2026-11-09",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "director14: script walk v6.5 on int/r6 c98ee3617 (integration 17), run by main, 16 lessons, 1,428 calls ~$0.980 in one run; reply-ready per-lesson p50 median 3091→2640 ms, read p50 1215→1070 ms; counted by hand by 4 Claude judges (0-based rows, by mechanism): beats 254/256 (99%), verdicts 247/248, misgrades 0/0, false keys 1 (first in nine runs: c4 steady 20, a model-written verdict sentence '…milkar 1/3 hota hai' over the 1/2 roti); contradictions 22 (paging 17, second view 4, model words 1) vs director13 13; per topic c4 2, c5-t01 10, c5-t02 5, c6 5 (from 0). 16 of the 17 paging are one new mechanism: a graded close opened with a v6.5 verdict variant said over the next card's board (23/104 verdict-then-next turns unpaged vs 6/92). Register 3 in all four topics; listening 3–3.5; promises 2.5–3.5. Brain's v6.5 proxies: frameRepeat 49→0, taste claims 9→0, remediations re-said 7→0, canned facts 5→0, 'Pichhle sawaal' on the live card 11→0, droppedPages 3→0. The gate's automatic counter read 9 contradictions against the hand count of 22.",
+   "source": "inbox/r7-main-32.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-6",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "Script walk v6.6: pages by construction; no model words on a graded turn. Brain: P4 say.js returns her line as an ordered list of parts (close, closed, bridge, simpler, alt, aside, body, card), each with its board; every later pass edits within a part; the line is their join and the page plan is the list (spanOf/closureEnd text search deleted from planning); predicates throw in tests: a graded close plus a next card is ≥2 pages with the first on the answered card's board, a picture turn is the alt part then the card part on the card's board, every part in order in the final line; V1 (reversal clause 2 taken) the verdict is a code frame plus the authored why (never the model's own affirmation), scripted turns are the authored line plus one code frame, the model writes only the aside reply (≤20 words, ≤1 question, about the aside); B1′ Hindi/clarify re-says the LIVE beat's own simpler (the worked step during a worked example), code drops any '?' sentence outside the card or aside; A2 a pending-aside queue no later request clears, returned by the next boundary or at break/stop, one park promise, the honest-AI line on the turn asked, once, never presuming the child's taste, ending on one question to them, returns never echoes; F1′ every code frame family (incl. '<answer> sahi nahi hai', give-up, re-pose, check-ins, 'Sahi, Riya—') has 3–5 forms with no repeat within 4 turns anywhere in her line, try-first gets an invitation, no code-speak; K3 the last card of a skill gives key+why before the bridge, the parent card re-posed after its then-card even past a probe, a second miss never a bare re-pose, 'aage chalo' during a K1 re-pose gives the key and moves on; H3 the contradiction counter reads the pages actually drawn and must flag ≥20/22 of director14's hand rows with ≤2 false flags before the next paid run. Studio: S9 a picture turn's card page draws the card's own board (c5-t01 4/4 drew the alt on both pages); S9b second views on remediation boards. Learning: D9 no bare symbols in spoken fields ('question mark wala nishaan'), a remediation never states a later card's key, c5-t02 s1 then-card on its unmarked board, c4 yourStep board draws the eaten pieces, worked-example givens folded into one spoken sentence. Why: director14 contradictions rose 13→22 and false keys 0→1; 16 of 17 paging trace to v6.5's F1 swap editing her line after the page plan's part texts were taken; the false key and the invented reads trace to the model's own verdict words; register has sat at 2.5–3 for five runs through two remedies. Clause 1 (21 > 5) not taken as written: a held board per card does not remove a close said over the next card at a card seam, and would make every picture request 'nothing new'; its intent, removing the part that keeps breaking, is taken as P4. Reverse: director15 has more than 5 paging + second-view contradictions by hand → one code-drawn board per card, held, unconditionally (third run in which clause 1's count was exceeded); register still below 3.5 with V1 and F1′ in place → Learning rewrites the four pilot scripts' spoken fields for register before any batch; H3's counter misses more than 2 of the hand count → README proxy trend lines are not used as evidence until fixed.",
+   "source": "inbox/r7-main-32.json"
+  },
+  {
+   "id": "rj-r7-pages-found-by-text-search",
+   "kind": "rejection",
+   "at": "2026-11-09",
+   "title": "Finding a turn's page boundaries by searching the finished line for each part's text (propose.js segmentsAt: spanOf on guard.parts, closureEnd fallback). It breaks whenever any pass edits the line after the part texts are taken: v6.3's sentence dedupe cut remediation fragments; refused pages left lines spoken over the wrong board; v6.5's F1 opener swap ('Haan, sahi hai' → 'Bilkul sahi') after guard.parts made the close part come out empty, putting 16 graded closes over the next card's board in director14. Replaced by pages by construction (v6.6 P4).",
+   "source": "inbox/r7-main-32.json"
+  },
+  {
+   "id": "rj-r7-proxy-contradiction-trend",
+   "kind": "rejection",
+   "at": "2026-11-09",
+   "title": "Reading the gate's automatic contradiction counter (gate.v6 / proxies-v64) as a trend: on director14 it read 17→9, an improvement, while the hand count went 13→22. It checks closeBeat.board rather than the page drawn, so it cannot see a close spoken on the next card's page or a picture turn's card page drawn as the alt view (c5-t01 0/10 seen, c5-t02 0/5 with 5 false flags, c6 1/5, c4 0/2). Hand counts remain the gate; the counter must pass a director14 fixture (v6.6 H3) before its numbers are read as evidence.",
+   "source": "inbox/r7-main-32.json"
   }
  ],
  "edges": [
@@ -41627,6 +41655,41 @@
    "src": "dc-r7-games-rang",
    "rel": "measured_by",
    "dst": "ms-r7-games-rang-cert"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-6",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v6-5"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-6",
+   "rel": "measured_by",
+   "dst": "ms-r7-director14-hand-2026-11-09"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-5",
+   "rel": "measured_by",
+   "dst": "ms-r7-director14-hand-2026-11-09"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-6",
+   "rel": "caused_by",
+   "dst": "rj-r7-pages-found-by-text-search"
+  },
+  {
+   "src": "rj-r7-pages-found-by-text-search",
+   "rel": "measured_by",
+   "dst": "ms-r7-director14-hand-2026-11-09"
+  },
+  {
+   "src": "rj-r7-proxy-contradiction-trend",
+   "rel": "measured_by",
+   "dst": "ms-r7-director14-hand-2026-11-09"
+  },
+  {
+   "src": "rj-r7-proxy-contradiction-trend",
+   "rel": "constrains",
+   "dst": "dc-r7-script-walk-v6-6"
   }
  ]
 }
