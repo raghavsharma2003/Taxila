@@ -1129,7 +1129,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // r5-latency: hedged (azure.js hedged): a call still out at REPLY_HEDGE_MS gets an identical twin, the first answer wins
   // overflow: false for a speculative bet (brain/turn.js speculate): a throttled bet just loses, the real reply still moves;
   // the real reply's hedge twin goes to the overflow account (azure.js chat twin, 14.4), a bet's never does
-  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace, hedgeMs: REPLY_HEDGE_MS(), ...(overflow ? { twin: "overflow" } : { overflow: false }) }).then((r) => r.text.trim());
+  // v6.6 V1: every draft the model wrote this turn (her own words, as against code's lines put in later)
+  const modelSaid = [];
+  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace, hedgeMs: REPLY_HEDGE_MS(), ...(overflow ? { twin: "overflow" } : { overflow: false }) }).then((r) => { const t = r.text.trim(); modelSaid.push(t); return t; });
   let reply;
   const guardSlot = {};
   // The content filter blocking the reply call (the child's words are in it) is a safety signal, not an
@@ -1222,6 +1224,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const extra = [...(draft ? [{ role: "assistant", content: draft }] : []), { role: "system", content: leadSlotNote({ lead: state.lastMove?.lead ?? null, why, ageBand: state.ctx.ageBand,
       first: bridge, confirm: R3 && verdict === "correct" && !checkin, noAnswer: R3 && bridge && (wordsVerdict === "unverified" || wordsVerdict === "attempt") }) }];
     const raw = clauseOn && !draft ? await streamAsk([...messages, ...extra]) : await ask([...messages, ...extra]);
+    modelSaid.push(String(raw ?? ""));
     const lead = cleanLead(raw, askEnd, leadMax);
     return leadOk(lead, [item?.answer, ...(item?.acceptable ?? [])], shortLead ? { min: LEAD_MIN_FIRST } : undefined) ? composeTurn(lead, askEnd) : null;
   };
@@ -1327,6 +1330,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       return { reply: fallbackReply(state, item), guard: { caught: ["unavailable"], rewritten: false, replaced: true } };
     }
   }
+  modelSaid.push(String(reply ?? ""));
   let found = problems(reply);
   const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}), ...(guardSlot.used ? { leadSlot: true } : {}), ...(guardSlot.filter ? { filter: guardSlot.filter } : {}), ...(guardSlot.masked ? { masked: true } : {}) };
   // r4-latency (TAXILA_TTS_FIRST_SENTENCE, SHADOW): can the draft's first TTS sentence be LOCKED now — could it start speaking
@@ -1861,6 +1865,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (lead && (inventedDraft || strayNums(lead).length)) { guard.falseNumbers = [...(guard.falseNumbers ?? []), ...strayNums(lead)]; lead = codeVerdict(); guard.verdictCode = true; }
     // v6.1 R11 (director9 c4 ×8: "Yes sahi nahi hai", their English said back): a not-right verdict in a scripted turn is code's
     if (lead && verdict === "not_yet" && !guard.verdictCode) { const cv = codeVerdict(); if (norm(lead) !== norm(cv)) { lead = cv; guard.verdictCode = "notRight"; } }
+    // v6.6 V1: a graded wrong answer always has code's verdict, her draft empty or not
+    if (!lead && graded && verdict === "not_yet") { lead = codeVerdict(); guard.verdictCode = "notRight"; }
     // v6.1 R11 (director9: a stray Devanagari switch mid-lesson): her lines are in the lesson's script, never a sudden Devanagari one
     { const n0 = ss.length; ss = ss.filter((x) => !/\p{Script=Devanagari}/u.test(x)); if (ss.length < n0) guard.scriptSwitch = n0 - ss.length; }
     const before = ss.length;
@@ -1918,15 +1924,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const statesMis = (x) => { const t = ` ${String(x).toLowerCase()} `; return wims.some((w) => new RegExp(`(?<![\\p{L}\\p{N}/])${w.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}(?![\\p{L}\\p{N}/])`, "u").test(t))
       && !/(?<![\p{L}])(?:nahi|nahin|not|galat|sahi\s+nahi)(?![\p{L}])/iu.test(t); };
     { const n0 = ss.length; ss = ss.filter((x) => !statesMis(x)); if (ss.length < n0) guard.misStated = n0 - ss.length; }
-    if (lead && verdict === "correct" && graded) {
-      const bare = String(lead).split(/(?<![\p{L}])(?:kyunki|because|isliye|matlab|since)(?![\p{L}])/iu)[0].replace(/[\s,;]+$/, "").trim();
+    // v6.6 V1 (main, director14: the false key at c4 steady 20, "Sahi, Riya—1 rangin tukda aur 2 barabar tukde milkar 1/3 hota hai",
+    // was her own words kept as the verdict; so were the invented methods and the doubled whys): a right answer's verdict is code's
+    // frame and the card's authored why — never her words
+    if (verdict === "correct" && graded) {
       const why = graded0?.why ? String(graded0.why).trim() : null;
-      const hadWhy = bare.length < String(lead).replace(/[.!?।]+$/, "").trim().length;
-      if (hadWhy || why) {
-        const why1 = why ? (lang === "english" ? `, because ${joinable(why, { lower: true })}` : `, kyunki ${joinable(why, { lower: true })}`) : "";
-        lead = dot(`${(bare && affirmsAnswer(bare) && words(bare) >= 2 ? bare : freshOf(FRAMES.right[lang === "english" ? "english" : "hinglish"], state)).replace(/[.!?।—–\s-]+$/, "")}${why1}`);
-        guard.rightWhy = why ? "authored" : "none";
-      }
+      const why1 = why ? (lang === "english" ? `, because ${joinable(why, { lower: true })}` : `, kyunki ${joinable(why, { lower: true })}`) : "";
+      lead = dot(`${freshOf(FRAMES.right[lang === "english" ? "english" : "hinglish"], state).replace(/[.!?।—–\s-]+$/, "")}${why1}`);
+      guard.rightWhy = why ? "authored" : "none";
     }
     // v6.2 H4 (director10 c4: "Zaroor. Now try."): a bare English filler in a Hinglish lesson goes
     if (lang !== "english") { const n0 = ss.length; ss = ss.filter((x) => !/^(?:now\s+try|try\s+now|let'?s\s+(?:try|go|see)|try\s+it|go\s+on|okay|ok|good|great|nice|well\s+done)[.!]?$/i.test(norm(x))); if (ss.length < n0) guard.fillerDropped = n0 - ss.length; }
@@ -2035,11 +2040,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // as the acknowledgement and said over e2's board): hers is the acknowledgement only when it takes up what THEY said
       const takesUp = (x) => /^(?:achha|accha|acha|theek|thik|hmm+|ok(?:ay)?|samajh\s+(?:gayi|gaya)|i\s+see|good|nice)\b|(?<![\p{L}])(?:tumne|tumhara|tumhari|tumhe|you|your)(?![\p{L}])/iu.test(x);
       // (v6.3 R2: and only on a confident read of what they said; otherwise code's acknowledgement)
-      if (a0 && state.lastReadConfident !== false && words(a0) <= 12 && !/\d/.test(a0) && !/[?？]/.test(a0) && !polarity(a0) && takesUp(a0) && !RULE_SAID.test(a0)) { ack = a0; ss = ss.slice(1); }
+      // v6.6 V1 (main, director14): acknowledgements are code's, neutral — never her read of how they thought
+      if (false) { ack = a0; ss = ss.slice(1); }
       // v6.2 H3 (main, director10: "Theek, yeh tumhari soch thi." to "woh toh ho gaya na"): code's line says they told how they thought
       // only when they did (a reason in their words); anything else is a plain "okay"
       else {
-        if (a0 && state.lastReadConfident === false && takesUp(a0) && !/[?？]/.test(a0)) { ss = ss.slice(1); guard.ackCode = true; }
+        if (a0 && takesUp(a0) && !/[?？]/.test(a0)) { ss = ss.slice(1); guard.ackCode = true; }
         // v6.4 R3 (main, director12): a line about how they thought only on a confident read; otherwise a neutral one
         const L0 = lang === "english" ? "english" : "hinglish";
         ack = freshOf(NEUTRAL_ACK[L0], state);
@@ -2084,6 +2090,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (asked) { ss = ss.filter((x) => !/(?:screen|board|dekho|yahan|look|see)/i.test(x) && !/[?？]/.test(x) && !/\d/.test(x)).slice(0, 1); guard.boardWords = true; }
     const clean = (x) => x && !/[?？]/.test(x) && words(x) <= 14 && !foreignOf(x).length;
     const oneClause = (x) => { const c = String(x).split(/[,;:—–]|\s-\s/)[0]; return dot(words(c) >= 3 ? c : x); };
+    // v6.6 V1: her sentences as they stand here — on a scripted turn none of them is said outside the aside reply
+    const herK = new Set(modelSaid.flatMap((t) => sentences(t)).map((x) => norm(x).toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, "").trim()));
     let body;
     if (workedLines?.length) {
       // (the model's own words on a code-rendered turn: only a framing sentence, and only when no verdict leads)
@@ -2242,6 +2250,17 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // (director10 steady c4 T46, Studio: "Toh poora jawab: barfi ka 2/3 …" rode on the then-card's 3/4 grid) a worked answer that
     // closes another card than the one just answered (its close is the worked beat's, state.js closedBeat) is said with that close,
     // on the worked board, never on the answered card's
+    // v6.6 V1 (clause 2, main on director14): on a scripted turn her framing is the authored line plus one code frame — a sentence
+    // that is only hers (a framing, a lead-in, a read of their method, a question of her own) is not said; the model writes only
+    // the aside reply. B1′: no question outside the card or the aside ("Apna tareeka batao", "7 marks se 8 gaps kaise pata chala?")
+    {
+      const authoredK = new Set([...(point ? sentences(point) : []), ...(workedLines ?? []), ...(state.lastMove?.simpler ? sentences(state.lastMove.simpler) : []),
+        ...(state.lastMove?.cardPoint ? sentences(state.lastMove.cardPoint) : []), ...(card ? sentences(card) : []), ...(asked ? [asked] : []), ...(missS ? [missS] : []),
+        ...(state.lastMove?.sayFirst ?? [])].map(keyS));
+      const n0 = body.length;
+      body = body.filter((x) => !herK.has(keyS(x)) || authoredK.has(keyS(x)));
+      if (body.length < n0) guard.hersDropped = n0 - body.length;
+    }
     const doneApart = !!d2 && state.lastMove?.closedBeat?.beatId === "worked" && state.lastMove?.closeBeat?.beatId !== "worked";
     const prevPart = once([lead, ...noQ([ack, missS, g2, doneApart ? null : d2].filter(Boolean))]);
     const closedP = once([doneApart ? d2 : null, c2]);

@@ -252,8 +252,9 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     replyDeps.chat = async () => ({ text: `Haan, sahi hai. Haan, tumne bilkul sahi socha. Tumne pehle sab ko jodkar phir guna kiya. ${card}` });
     const out = await textReply({ instructions: "x", state: st, kit: K, childText: "12 cm", verdict: "correct", history: [], ui: L.r.ui, module: null });
     assert.equal((out.reply.match(/\bsahi\b/g) ?? []).length, 1, out.reply);
-    assert.match(out.reply, /tumne bilkul sahi socha/, "the richer verdict stays: " + out.reply);
-    assert.doesNotMatch(out.reply, /Haan, sahi hai\./, out.reply);
+    // (v6.6 V1, main on director14: the verdict is code's frame, never her words — "the richer verdict stays" is retired)
+    assert.match(out.reply, /^(?:Haan, sahi hai|Bilkul sahi|Haan, bilkul theek|Sahi jawab)\b/, out.reply);
+    assert.doesNotMatch(out.reply, /tumne bilkul sahi socha/, out.reply);
     assert.doesNotMatch(out.reply, /Tumne pehle sab ko jodkar/, out.reply);
     assert.ok(out.reply.trim().endsWith(card), out.reply);
     const long = Array.from({ length: 8 }, (_, i) => `Yeh ek lambi baat hai jo number ${i} ke baare mein hai.`).join(" ");
