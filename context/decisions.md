@@ -9370,3 +9370,22 @@ Beside the held board.
 - listening is still below 3.5: a request × beat-kind table;
 - any misgrade: no paid run until the key matrix passes;
 - the counter misses more than 1: it is retired as a gate input.
+
+
+<!-- merged from inbox/r7-games-yantra-roshni.json -->
+## `dc-r7-games-yantra-roshni`
+
+**yantra/roshni** (light, class 7 science, c7-science-ch11-t01) is a fourth yantra mode. Nothing runs on a clock: a switch, a screen or a cover changes only on a tap, and Look asks the law what the eye sees; the eye's view is shown only after a look, with the light's path drawn out from each source (never from the eye).
+
+- **parda** (s2): lit sources; the kit's screens (clear glass, clean water, air as the empty slot; butter paper, frosted glass, oiled paper; cardboard, wood, a steel plate, a brick wall) placed so the eye sees each light as the card shows.
+- **roshan** (s3): switches on the kit's sources (the Sun, a star, a candle flame, a glowing bulb, a firefly); the Moon is lit only by sunlight, a steel plate by any source; looks 2-3 add opaque screens to keep a light out of the eye's sight.
+- **dhak** (s1): every source lit; exactly as many cardboard covers as sources; make the room dark.
+- **Mal-rules** (kit ids): m3 blur-clear (a translucent screen in a lane the card wants clear); m1 moon-alone (Look with the Moon wanted and no sunlight on it) and moon-cover (a cover on the Moon); m2 look-hard (Look with no light on).
+- **Eye safety:** the Sun's lane always has a brick wall before the eye; the Sun is never in parda and never on a card as seen. Any eye-safety line is the teacher's.
+- **Numbers:** none on screen; the covers are a scene value drawn as squares.
+
+Reverse if a child pilot shows parda placements made by trial rather than by what each material lets through.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-r7-held-board-studio` (2026-11-09): dc-r7-held-board, Studio's half (main's v6.8 on director16, reversal clause 1). Contract proposed to Brain: a script turn's whiteboard intent carries intent.held = { board, unit, switchTo?: { board, unit, atChar, atClause? } }. With it, Studio draws held.board from its ref as authored: no line-driven preselect, no gate on her words, no ladder fallback. A refusal keeps the page up. held.board equal to the board up (by ref) is KEPT, shown at its end state with no redraw, so Hindi, clarify, aside and "sawaal kya hai" turns hold the board. At most one switch, to switchTo.board from her words at atChar. A picture ask draws the held board's second view BESIDE it on one split board, 640 × 300: the held board left (still), the view right, each a 320-wide panel at 0.8 geometry. Small words are written one size up, every op stays inside its own panel, and the panels are certified one by one. If the lint refuses a panel, the held board stays alone, never the view instead of it. Her picture line comes from the drawn view: studioSeam.preselectedAltLine ("Wahi poora ab gol: 4 barabar hisse", "Pizza: 3 alag-alag tukde"), never "yahi numbers". S9b's remediation-board view does not fire under held. Reverse with the held rule (main's reversal: the teaching axes below 3.5 because a point or remediation lost its own picture).
