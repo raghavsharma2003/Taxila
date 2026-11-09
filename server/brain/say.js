@@ -4,6 +4,7 @@
 // server/routes/lesson.js unchanged by W2-E BR1 (BUILD-PLAN W2-E #2); the lesson start and the turn both call it.
 import { boardWords } from "./board-words.js";
 import { inHindiWords } from "./register.js";
+import { cardPageRefused } from "./propose.js";
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { floorViolations, scrubPii, filterSafe } from "../director/safety.js";
@@ -56,6 +57,7 @@ const PROBE_ACK = {
   hinglish: ["Achha, tumne apna tareeka bataya.", "Theek, yeh tumhari soch thi."],
   english: ["Okay, thanks for telling me how you thought.", "Right, that was your way of thinking."],
 };
+let CARD_CHECKS = 0;
 /** v6.5 P3: after a second view's own line, a pointer back to it (never a question: the card comes on its own page next). */
 const ALT_POINT = { hinglish: ["Ise dhyan se dekh lo.", "Pehle ise achhe se dekh lo.", "Thoda ise dekho, phir sawaal par aate hain."],
   english: ["Take a good look at this.", "Have a careful look at it first.", "Look at this for a moment; then back to the question."] };
@@ -2230,6 +2232,17 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const simplerP = simplerK ? body.filter((x) => simplerK.has(keyS(x))) : [];
     guard.parts = { ...(prevPart.length ? { prev: hw(prevPart.join(" ")) } : {}), ...(closedP.length ? { closed: hw(closedP.join(" ")) } : {}), ...(bridgeS ? { bridge: hw(norm(bridgeS)) } : {}),
       ...(lead ? { verdict: hw(norm(lead)) } : {}), ...(simplerP.length ? { simpler: hw(simplerP.join(" ")) } : {}) };
+    // v6.5 P2′ (main, director13 c4 steady 56/60, offtopic 56): a card whose own page Studio would refuse is not said over the page
+    // before it ("Kya yeh chhota tukda cake ka ek-chauthaai hai?" over c2's 1/3 bar). The card part is dropped and logged; it stays
+    // live, and is posed alone next turn (a one-page turn, which Studio draws or keeps on its own)
+    if (card && reply.includes(card)) {
+      const cut = reply.slice(0, reply.lastIndexOf(card)).trim();
+      // (each check its own pick id: Studio's picks are module-level, keyed by intent id)
+      if (cut && cardPageRefused({ lessonId: `say-${state.ctx?.sessionId ?? "x"}-${++CARD_CHECKS}`, turn: state.turn ?? 0, next: state, kit, item, line: { text: reply, parts: guard.parts } })) {
+        guard.cardPageDropped = { itemId: state.activeItemId ?? null, board: state.lastMove?.cardBeat?.board?.template ?? null };
+        reply = cut;
+      }
+    }
   }
   // v6.2 H4 (director10 c4 offtopic T23, a break move: "Bilkul, no sahi hai: …"): on any move, a right answer is never confirmed by
   // saying their English word back

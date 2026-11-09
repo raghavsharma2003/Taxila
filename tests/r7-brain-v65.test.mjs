@@ -9,7 +9,7 @@ import { chat } from "../server/azure.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { setScriptForTest } from "../server/director/script.js";
 import { findItem } from "../server/director/items.js";
-import { whiteboardIntentOf, boardItemOf } from "../server/brain/propose.js";
+import { whiteboardIntentOf, boardItemOf, cardPageRefused } from "../server/brain/propose.js";
 
 const RUN = "2026-11-09-director13";
 const TOPIC = { c4: "c4-maths-ch05-t01", "c5-t01": "c5-maths-ch02-t01", "c5-t02": "c5-maths-ch02-t02", c6: "c6-maths-ch06-t01" };
@@ -57,6 +57,22 @@ describe("r7-brain-v65.test.mjs", () => {
       if (/[?？]/.test(out.reply)) bad.push(`${tag}: a question over the second view | ${out.reply.slice(0, 160)}`);
       if (ask.intent.segments?.length) bad.push(`${tag}: ${ask.intent.segments.length + 1} pages`);
       if (sentences(out.reply).length > 2) bad.push(`${tag}: more than the view's line and one pointer | ${out.reply}`);
+    }
+    assert.deepEqual(bad, []);
+  });
+
+  // P2′ — a card whose own page Studio refuses is not said over the page before it
+  const P2B_ROWS = [["steady", "c4", 56], ["steady", "c4", 60], ["offtopic", "c4", 56]];
+  test("P2′ predicate: a refused card page means no line about that card's figure; the part is dropped and logged (judges' 3 rows)", async () => {
+    const bad = [];
+    for (const [persona, topic, n] of P2B_ROWS) {
+      const { out, last, state, kit } = await at(persona, topic, n);
+      const tag = `${persona} ${topic} row ${n}`;
+      const card = String(last.p.r.ui?.ask?.text ?? "");
+      const item = boardItemOf(state, kit, findItem);
+      const refused = cardPageRefused({ lessonId: `v65p2-${persona}-${n}`, turn: state.turn, next: state, kit, item, line: { text: out.reply, parts: out.guard.parts } });
+      if (card && out.reply.includes(card.slice(0, 30)) && refused) bad.push(`${tag}: the card said, its page refused | ${out.reply.slice(-140)}`);
+      if (!out.reply.includes(card.slice(0, 30)) && !out.guard.cardPageDropped) bad.push(`${tag}: the card left out with no log`);
     }
     assert.deepEqual(bad, []);
   });

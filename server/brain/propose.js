@@ -13,6 +13,8 @@ import { relationalProposals } from "./relational-adapter.js";
 import { EXPLAIN_BEATS } from "./beat.js";
 import { BANDS } from "../learner/bands.js";
 import { splitSentences } from "../voice/sentences.js";
+import * as BF from "../stagecraft/board-first.js";
+import { gateCtxFor } from "../stagecraft/board-sync.js";
 
 /** The Director's proposal with the kernel's turn rules: one move (mandatory in its rank), safety freezes the rest. */
 export function directorProposalOf(r) {
@@ -236,6 +238,30 @@ const refOf = (b) => ({ scriptId: b.scriptId, beatId: b.beatId, kind: b.kind, ..
  * behaviour). In a paged turn a new card is always on the LAST page (the card part is last in the plan, and segmentsAt never
  * places a page after it), so App's pinned card switches at the last page switch.
  */
+/**
+ * v6.5 P2′ (main, director13 c4 steady 56/60, offtopic 56: c3's page refused, "Kya yeh chhota tukda cake ka ek-chauthaai hai?"
+ * said over c2's 1/3 bar): whether Studio would refuse the CARD's own page of this line — the last page of a paged turn — taken
+ * as stagecraft/board-first.js pagesBoard takes a later page (its board, its words, a check on its own board). Pure code, no
+ * model; its pick has its own id, so the real ask's picks are untouched. A one-page turn is never "refused" here.
+ */
+export function cardPageRefused({ lessonId, turn, next, kit, item, line }) {
+  try {
+    const a = whiteboardIntentOf({ lessonId, turn, beat: { id: "visual", type: "explain" }, next, kit, item, line });
+    const segs = a.intent.segments ?? [];
+    const card = next?.activeItemId ? next?.lastMove?.cardBeat?.board ?? null : null;
+    const last = segs.at(-1);
+    if (!last || !card || JSON.stringify(last.boardRef) !== JSON.stringify(card)) return false;
+    const text = String(line?.text ?? "").replace(/\s+/g, " ").trim().slice(last.atChar);
+    const beat = { ...(last.scriptBeat ?? {}) };
+    if (!beat.kind) beat.kind = "check";
+    if (beat.kind === "check" && beat.ownBoard === undefined) beat.ownBoard = true;
+    const intent = { ...a.intent, intentId: `${a.intent.intentId}:cardpg`, boardRef: last.boardRef, scriptBeat: beat };
+    delete intent.then; delete intent.segments; delete intent.cardBoard; delete intent.request; delete intent.segmentPlan;
+    const one = { ...a, intent, mode: "fresh", line: { ...a.line, text } };
+    BF.preselect(one, { kit });
+    return !BF.takePreselected(one, gateCtxFor(one, { kit, redact: [], prior: [] }))?.script;
+  } catch { return false; }
+}
 export function ofCardMarks(bp, next) {
   const move = next?.lastMove;
   const cardBoard = next?.activeItemId ? (move?.cardBeat?.board ?? move?.scriptBeat?.board ?? null) : null;

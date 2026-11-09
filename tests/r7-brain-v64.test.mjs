@@ -40,7 +40,8 @@ describe("r7-brain-v64.test.mjs", () => {
     const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
     const item = boardItemOf(last.state, kit, findItem);
     const a = whiteboardIntentOf({ lessonId: `v64-${persona}-${topic}-${n}`, turn: last.state.turn, beat: { id: "visual", type: "explain" }, next: last.state, kit, item, line: { text: out.reply, parts: out.guard.parts } });
-    const pre = whiteboardIntentOf({ lessonId: `v64p-${persona}-${topic}-${n}`, turn: last.state.turn, beat: { id: "visual", type: "explain" }, next: last.state, kit, item, line: { text: "" } });
+    // (v6.5 P2′: a turn whose card part was dropped is preselected again from her line, under a new id: brain/turn.js)
+    const pre = whiteboardIntentOf({ lessonId: `v64p-${persona}-${topic}-${n}`, turn: last.state.turn, beat: { id: "visual", type: "explain" }, next: last.state, kit, item, line: out.guard.cardPageDropped ? { text: out.reply, parts: out.guard.parts } : { text: "" } });
     const text = out.reply.replace(/\s+/g, " ").trim();
     const ps = [{ atChar: 0, boardRef: a.intent.boardRef, scriptBeat: a.intent.scriptBeat }, ...(a.intent.segments ?? [])];
     const pages = ps.map((p, i) => ({ ...p, text: text.slice(p.atChar, ps[i + 1]?.atChar ?? text.length) }));

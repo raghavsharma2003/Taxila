@@ -1067,6 +1067,13 @@ export async function lessonTurn(req, body, hooks = {}) {
       // drawableSubject), so the page and her words meet; owner replay of a95d2ff1 turn 22 drew the rules table under it
       const wbAsk = whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
         item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: teacherReply, teacherReplySeq, ...(guard?.parts ? { parts: guard.parts } : {}) } });
+      // v6.5 P2′: her line dropped the card whose own page Studio would refuse (brain/say.js guard.cardPageDropped). The board picked
+      // before her line was that card's; Studio's take reads a pick by intent id, so the line's own board is picked under a new id
+      // (never the card's figure under her close)
+      if (guard?.cardPageDropped && typeof studioSeam.preselectWhiteboard === "function") {
+        wbAsk.intent = { ...wbAsk.intent, intentId: `${wbAsk.intent.intentId}:cardout` };
+        seamSafe("studio.preselectWhiteboard", () => studioSeam.preselectWhiteboard(wbAsk), null);
+      }
       const lineThing = r.move?.request === "visual" && !wbAsk.intent.request?.subject && r.move?.visual !== "game" ? pictureSubjectOf(teacherReply) : null;
       if (lineThing && drawableSubject(lineThing)) { wbAsk.intent = { ...wbAsk.intent, request: { kind: "picture", subject: lineThing } }; wbAsk.mode = "fresh"; }
       const ack = seamSafe("studio.requestIntent", () => (typeof studioSeam.requestIntent === "function"
