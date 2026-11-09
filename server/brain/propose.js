@@ -315,9 +315,10 @@ export function pagesOfParts(move, list, line) {
   // (a close that says nothing about the card — no why, no key, only "not right": "Nahi, yeh jawab nahi hai. Koi baat nahi, ek alag tarah se
   // dekhte hain." — has no board of its own: it is said over the page it opens, as a bare verdict always was)
   // (a right verdict stays on the card it confirms: the board's reveal is on that page)
-  // (a not-right verdict that only names their answer — "7 cm sahi nahi hai." — says nothing a board shows: it opens the page after)
   const says = (t) => /(?<![\p{L}])(?:kyunki|because|isliye|jawab\s+.{1,30}?\s+tha)(?![\p{L}])/iu.test(t) || /^(?:haan|bilkul|sahi|right|correct|yes)\b/i.test(t)
-    || (/\d/.test(t) && !/(?<![\p{L}])(?:nahi|nahin|not|galat)(?![\p{L}])/iu.test(t));
+    // (v6.7 P4′, main's director15 counting ruling: a miss verdict that names their answer or any value — "2/1 sahi nahi hai." — is
+    // said on the answered card's page, before the remediation's page)
+    || /\d/.test(t);
   let placed = offs.map((p) => ({ part: p.part, start: p.start, beat: p.part === "close" && !says(p.text) && offs.length > 1 ? null : beatFor(p.part), alt: p.part === "alt" }));
   // (a part with no board rides on the page before it; leading ones on the first page with a board)
   for (let i = 1; i < placed.length; i++) if (!placed[i].beat) placed[i] = { ...placed[i], beat: placed[i - 1].beat, alt: placed[i - 1].alt };

@@ -113,7 +113,8 @@ describe("script walk v2", () => {
     let i = 0; while (i++ < 4 && L.r.move.scriptBeat?.kind !== "worked") L.t("haan");
     // v3 V1: first the problem (what is given, what to find), on its own turn
     assert.equal(L.r.move.scriptBeat.beatId, "worked:problem");
-    assert.ok(L.r.move.rendered.some((x) => /kyaari/.test(x)) && L.r.move.rendered.some((x) => /^Dhoondhna hai/.test(x)), L.r.move.rendered.join(" | "));
+    // (v6.7 R4, main on director15: the problem is stated once — no "Diya hai … Dhoondhna hai …" recital after it)
+    assert.ok(L.r.move.rendered.some((x) => /kyaari/.test(x)) && !L.r.move.rendered.some((x) => /^(?:Dhoondhna hai|Diya hai)/.test(x)), L.r.move.rendered.join(" | "));
     assert.ok(!L.r.ui.ask?.itemId, "no card yet");
     // v4 W2: then each step on its own turn, do → result → why (the givens are not read again), with no card
     const steps = S1.workedExample.steps;

@@ -125,9 +125,15 @@ describe("r7-brain-v66.test.mjs", () => {
         if (lm.request !== "language") { bad.push(`${tag}: not a language request (${lm.request})`); continue; }
         const lb = liveBeatSimpler(last.state, kit);
         if (!lb) { bad.push(`${tag}: no live beat simpler`); continue; }
-        if (lm.simpler !== lb.text) bad.push(`${tag}: the simpler is not the live beat's`);
-        const head = norm(lb.text).split(" ").slice(0, 4).join(" ");
-        if (!norm(out.reply).includes(head)) bad.push(`${tag}: the live beat's simpler not said | ${out.reply.slice(0, 120)}`);
+        // (v6.7 B1″: a simpler said in her last turns is not said again word for word — the beat's point instead, else nothing new)
+        const recentT = (last.state.recent ?? []).filter((t) => t.who === "teacher").slice(-3).map((t) => norm(t.text).toLowerCase());
+        const repeated = recentT.some((t) => t.includes(norm(lb.text).toLowerCase().slice(0, 60)));
+        if (repeated) { if (lm.simpler && recentT.some((t) => t.includes(norm(lm.simpler).toLowerCase().slice(0, 60)))) bad.push(`${tag}: said again word for word`); }
+        else {
+          if (lm.simpler !== lb.text) bad.push(`${tag}: the simpler is not the live beat's`);
+          const head = norm(lb.text).split(" ").slice(0, 4).join(" ");
+          if (!norm(out.reply).includes(head)) bad.push(`${tag}: the live beat's simpler not said | ${out.reply.slice(0, 120)}`);
+        }
         const card = norm(last.p.r.ui?.ask?.text ?? "");
         if (card && !norm(out.reply).endsWith(card)) bad.push(`${tag}: the card not re-posed last`);
         if (/apna tareeka batao/i.test(out.reply)) bad.push(`${tag}: a question of hers outside the card`);
@@ -224,7 +230,8 @@ describe("r7-brain-v66.test.mjs", () => {
       }
       const hit = HAND.filter((k) => got.has(k));
       const falseFlags = [...got].filter((k) => !HAND.includes(k));
-      assert.ok(hit.length >= 20, `recall ${hit.length}/22; missed ${HAND.filter((k) => !got.has(k)).join(", ")}`);
+      // (v6.7 H4, main: the stated-fraction flag is dropped — c4 steady 20, the model-words row V1 removed, is no longer counted)
+      assert.ok(hit.length >= 19, `recall ${hit.length}/22; missed ${HAND.filter((k) => !got.has(k)).join(", ")}`);
       assert.ok(falseFlags.length <= 2, `false flags: ${falseFlags.join(", ")}`);
     });
     test("the unrolled checker hears 'patti'", () => {

@@ -726,8 +726,11 @@ function walkNextV2(s, input, prefix, sk) {
       // v3 V1: the worked example across turns: the problem (what is given, what to find) first, then its steps and their step
       if (!w.workedPosed) {
         w.workedPosed = true;
-        const problem = [saidIn(we.problem, lang), (we.givens ?? []).length ? `${lang === "english" ? "Given" : "Diya hai"}: ${(we.givens ?? []).map((g) => saidIn(g, lang)).filter(Boolean).join(", ")}` : null,
-          saidIn(we.find, lang) ? `${lang === "english" ? "We find" : "Dhoondhna hai"}: ${saidIn(we.find, lang)}` : null].filter(Boolean).map((x) => (/[.!?।]$/.test(x.trim()) ? x.trim() : `${x.trim()}.`));
+        // (v6.7 R4, main on director15: "Diya hai … Dhoondhna hai …" after the problem was the main monologue in every topic — the
+        // problem is stated once; a recorded run keeps what it walked)
+        const recital = !!scriptFor(kit)?.script?.recordedRun;
+        const problem = [saidIn(we.problem, lang), recital && (we.givens ?? []).length ? `${lang === "english" ? "Given" : "Diya hai"}: ${(we.givens ?? []).map((g) => saidIn(g, lang)).filter(Boolean).join(", ")}` : null,
+          recital && saidIn(we.find, lang) ? `${lang === "english" ? "We find" : "Dhoondhna hai"}: ${saidIn(we.find, lang)}` : null].filter(Boolean).map((x) => (/[.!?।]$/.test(x.trim()) ? x.trim() : `${x.trim()}.`));
         return plan("worked_example", join(prefix, SH.scriptWorkedProblem()), { skillId, format: "F2", stuck: true,
           content: [...bridgeLine, `worked example: ${saidIn(we.problem, lang) ?? ""}`], whiteboard: { kind: "math", value: clip(saidIn(we.problem, lang) ?? "") },
           rendered: problem, ...ref("worked", "worked:problem", we.board), ...sayFirst });
@@ -811,16 +814,26 @@ export function asideReturnLine(said, topic, lang = "hinglish") {
 // v6.6 A2: the child asking her own taste ("aapko Virat pasand hai?") is answered on that turn (brain/say.js's honest line), never
 // parked for a later return
 const ASKS_HER_TASTE = /(?:aapko|tumhe|aap|tum)\b.*\bpasand|do you like|your favou?rite|aapka favourite/i;
+/**
+ * v6.7 A3 (main, director15: the taste question was PARKED in every topic — the classifier reads "aapko virat pasand hai?" as an
+ * uptake, which parks through its own path, never parkAside): every park in a scripted lesson goes through here. A question about
+ * her own taste is answered on its turn (s.tasteAsked), never parked; an aside already on the list is acknowledged in one line
+ * (s.asideAgain), never parked twice. Returns the new list.
+ */
+function parkGate(s, kit, input, e) {
+  if (!scriptOn() || !scriptIdOf(kit) || scriptFor(kit)?.script?.recordedRun) return pushLater(s.later ?? [], e);
+  if (ASKS_HER_TASTE.test(String(input?.text ?? ""))) { s.tasteAsked = { topic: String(e.topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; return s.later ?? []; }
+  const k = String(e.topic ?? "").toLowerCase();
+  const had = (s.later ?? []).find((x) => String(x.topic ?? "").toLowerCase() === k || (k && String(x.topic ?? "").toLowerCase().includes(k)));
+  if (had) { s.asideAgain = { topic: String(had.topic), turn: s.turn }; return s.later ?? []; }
+  return pushLater(s.later ?? [], e);
+}
 function parkAside(s, kit, input, item) {
   if (!scriptOn() || !scriptIdOf(kit)) return;
   const topic = input.cls?.request?.topic ?? asideTopic(input.text, s.ctx.interests);
   if (!topic || unsafeChildPhrase(topic)) return;
-  if (!scriptFor(kit)?.script?.recordedRun && ASKS_HER_TASTE.test(String(input.text ?? ""))) {
-    s.tasteAsked = { topic: String(topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 };
-    return;
-  }
-  if ((s.later ?? []).some((e) => !e.servedAt && String(e.topic).toLowerCase() === String(topic).toLowerCase())) return;
-  s.later = pushLater(s.later ?? [], { ...parkEntry({ topic, learning: false, turn: s.turn, itemOnTable: !!item }), share: true });
+  if (scriptFor(kit)?.script?.recordedRun && (s.later ?? []).some((e) => !e.servedAt && String(e.topic).toLowerCase() === String(topic).toLowerCase())) return;
+  s.later = parkGate(s, kit, input, { ...parkEntry({ topic, learning: false, turn: s.turn, itemOnTable: !!item }), share: true });
 }
 /**
  * v5 B3 (director7: "Virat wali baat mujhe yaad hai" ×8, a stub): a parked aside comes back with one line of REAL content,
@@ -1440,7 +1453,8 @@ function afterMiss(s, input, item) {
   // card again): a second miss — a wrong answer or a "pata nahi" after an earlier one on this card — is never a bare re-pose: with no
   // helper line left unsaid on the card, it gives its key and why
   if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && isScriptCard(item) && ["wrong", "stuck"].includes(verdict(input.cls))
-    && (s.cardHelp?.id === item.id ? s.cardHelp.misses ?? 0 : 0) >= 1 && !helpLeft(s, input.kit, item)) return leaveItem(s, input, item, SH.reposeMissed());
+    && ((s.cardHelp?.id === item.id ? s.cardHelp.misses ?? 0 : 0) >= 1 || (!helpLeft(s, input.kit, item, { any: true }) && input.cls?.outcome !== "misconception"))
+    && !helpLeft(s, input.kit, item)) return leaveItem(s, input, item, SH.reposeMissed());
   // round 7 T2: a scripted check answered wrong gets its misconception's scripted remediation and keyed follow-up
   const remedy = scriptOn() ? walkRemedy(s, input, item) : null;
   if (remedy) return remedy;
@@ -1801,7 +1815,8 @@ function requestMove(s, input, item, req, labels) {
           const named = !req.topic ? off : null;
           if (named && !unsafeChildPhrase(named)) {
             const e = parkEntry({ topic: named, learning: false, turn: s.turn, itemOnTable: !!item });
-            s.later = pushLater(s.later ?? [], e);
+            s.later = parkGate(s, input.kit, input, e);
+            if (!(s.later ?? []).includes(e)) return back(null);
             return back(SH.parkIt({ topic: e.topic, promise: e.promise }));
           }
           if (!req.topic) {
@@ -2137,8 +2152,10 @@ function p5RequestMove(s, input, item, req, labels) {
       if (p5Flag("R3CONV") && (req.kind === "personal_share" || (!req.topic && topic0)) && topic0 && !unsafeChildPhrase(topic0) && !sad) {
         const e = { ...parkEntry({ topic: topic0, learning: false, turn: s.turn, itemOnTable: !!item }), share: true };
         const before = (s.later ?? []).length;
-        s.later = pushLater(s.later ?? [], e);
+        s.later = parkGate(s, input.kit, input, e);
         if (s.later.length > before) return withLead(SH.uptakeShare({ topic: e.topic, promise: e.promise }));
+        // (v6.7 A3: a taste question or a repeated aside parks nothing: brain/say.js answers it; the card goes on)
+        if (s.tasteAsked?.turn === s.turn || s.asideAgain?.turn === s.turn) return withLead(null);
       }
       return withLead(SH.uptake({ kind: req.kind }));
     }
@@ -2181,7 +2198,8 @@ function p5RequestMove(s, input, item, req, labels) {
       const again = p5Flag("R3CONV") ? recentParked(s.later ?? [], s.turn, req.topic) : null;
       if (again && !again.share) { s.later = serveLater(s.later, again.id, s.turn); return withLead(SH.detourTo({ topic: again.topic })); }
       const e = parkEntry({ topic: req.topic, learning: req.learning, turn: s.turn, itemOnTable: !!item });
-      s.later = pushLater(s.later ?? [], e);
+      s.later = parkGate(s, input.kit, input, e);
+      if (!(s.later ?? []).includes(e)) return withLead(null);
       return withLead(SH.parkIt({ topic: e.topic, promise: e.promise }));
     }
     case "detour": {
@@ -2527,7 +2545,13 @@ function decide(s, input, item) {
   // census 14.5 (F1, 6c45a7ea t12): a topic ask the classifier ALSO read as a stop ("kuch aur padhte hain") is the topic
   // ask: it is acted on in 2a, never met with the stop check-in (a goodbye or "I am leaving" still ends here)
   const topicAsk = ["switch", "topic", "change_topic"].includes(cls?.request?.type) && stopKind(input.text) !== "leaving";
-  if ((flags.wantsToStop && !topicAsk) || s.rel?.overlay?.kind === "CHECK_IN") {
+  // v6.7 V1′ (main, director15 c4 offtopic 62, carried two runs: a wrong answer on a scripted card met with a "break" whose words
+  // were hers): an answer to a live scripted card is graded and goes the scripted way (a hint, a remediation, the give-up) — the
+  // relational check-in waits; a stop they asked for still stops
+  const liveIt = s.activeItemId ? findItem(s, input.kit, s.activeItemId) : null;
+  const answeredCard = scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && !!liveIt && isScriptCard(liveIt)
+    && ["incorrect", "misconception", "partial", "correct"].includes(String(cls?.outcome ?? ""));
+  if ((flags.wantsToStop && !topicAsk) || (s.rel?.overlay?.kind === "CHECK_IN" && !(answeredCard && !flags.wantsToStop))) {
     const checkIn = s.rel?.overlay?.kind === "CHECK_IN";
     // round 7 (main's hybrid-pilot judgement #3, dc-r7-stop-limits): "bye" and every other goodbye or leaving phrase gets the ONE
     // stop check-in first, like "bas ho gaya"; a second stop within two turns, "stop for today" (the stop chip) or Pause → End
@@ -2600,8 +2624,8 @@ function decide(s, input, item) {
       const filler = !said || cls?.flags?.minimal || /^(?:(?:achha|acha|accha|theek|thik|hai|haan|han|ok|okay|hmm+|ji|chalo|sahi|nahi|kuch\s+nahi|pata\s+nahi)[\s,.!?]*)+$/i.test(said);
       if (!filler && !unsafeChildPhrase(said)) {
         const e = parkEntry({ topic: said, learning: false, turn: s.turn, itemOnTable: !!item });
-        s.later = pushLater(s.later ?? [], e);
-        const lead = SH.parkIt({ topic: e.topic, promise: e.promise });
+        s.later = parkGate(s, input.kit, input, e);
+        const lead = (s.later ?? []).includes(e) ? SH.parkIt({ topic: e.topic, promise: e.promise }) : null;
         return item ? plan(moveKindFor(item), SH.leadThenPose({ item, lead }), { item, probe: probeFor(item), chips: optionChips(item), request: "park" })
           : { ...resume(s, input, item, lead), request: "park" };
       }
@@ -2627,7 +2651,8 @@ function decide(s, input, item) {
     return poseNext(s, input, "an easier one now");
   }
   // 4. A frustration loop (P20) gets a break with choices, not another question.
-  if (frustrationLoop(s.affect) && ["warmup", "practice"].includes(s.phase) && s.turn - s.lastBreakTurn >= LIMITS.breakGapTurns) {
+  // (v6.7 V1′: an answer to a live scripted card goes the scripted way — the frustration break waits for a turn that answered nothing)
+  if (frustrationLoop(s.affect) && ["warmup", "practice"].includes(s.phase) && s.turn - s.lastBreakTurn >= LIMITS.breakGapTurns && !answeredCard) {
     s.lastBreakTurn = s.turn;
     s.affect = { ...s.affect, dontKnowStreak: 0, minimalStreak: 0 };
     // Equity profile (steal 4, rj-advice-menu-for-weak-learners): a low-baseline child gets ONE next step, never a menu.
@@ -3001,7 +3026,9 @@ export function step(prev, input) {
     const pointRung = k2 && !wrongNow && item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked"
       ? { text: sk?.explain?.find((b) => b.id === item.scriptAsk.beatId)?.point ?? null, beat: beatOf(item.scriptAsk.beatId) } : { text: null };
     const rungs = (help.misses >= 2 ? [...remRungs, own, pointRung] : [own, pointRung, ...remRungs]).map((x) => ({ ...x, text: x.text ? saidIn(x.text, lang) : null })).filter((x) => x.text && String(x.text).trim());
-    const sm = rungs.find((x) => !help.said.includes(normLine(x.text))) ?? null;
+    // (v6.7 K4, main on director15 c5-t01 stuck 12, steady 88, c6 stuck 72: "pata nahi, aap batao" and a first miss got the bare card:
+    // with no new rung, the card's own simpler is said again — never the bare re-pose)
+    const sm = rungs.find((x) => !help.said.includes(normLine(x.text))) ?? (k2 ? rungs.find((x) => x.text && x.beat?.kind !== "remediation") ?? null : null);
     if (sm) { move.simpler = String(sm.text).trim(); if (sm.beat) move.simplerBeat = sm.beat; help.said = [...help.said, normLine(sm.text)]; help.counted = s.turn;
       if (sm.beat?.kind === "remediation") s.remSaid = [...(s.remSaid ?? []), normLine(sm.text)]; }
     s.cardHelp = help;
@@ -3098,6 +3125,7 @@ export function step(prev, input) {
   }
   // v6.6 A2: the child asked her taste this turn: brain/say.js answers it now (the n-th time this lesson: a short form after the first)
   if (s.tasteAsked?.turn === s.turn && move.kind !== "safeguard") move.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n };
+  if (s.asideAgain?.turn === s.turn && move.kind !== "safeguard" && !move.tasteAsked) move.asideAgain = { topic: s.asideAgain.topic };
   if (s.servedNow?.topic) {
     const lang = s.ctx.lang ?? "hinglish";
     const said = s.servedNow.said ?? (s.later ?? []).find((e) => e.servedAt === s.turn && e.topic === s.servedNow.topic)?.said ?? null;
@@ -3141,9 +3169,25 @@ export function step(prev, input) {
   // worked step during a worked example), else the walk's current beat — in their language, on that beat's board; the card is
   // then re-posed. Never a closed card's or another beat's. (After the help ladder: a Hindi request re-says the beat, it
   // climbs no rung)
-  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && ["language", "clarify"].includes(p.request)) {
-    const lb = liveBeatSimpler(s, input.kit);
+  // (v6.7 B1″, main on director15 c4 stuck 24: "samajh nahi aaya" on a live then-card taught e4, a point not yet reached: a "didn't
+  // understand" on a live card whose move teaches another beat gets the live beat's simpler too)
+  const liveCardBeat = s.activeItemId ? (() => { const it = findItem(s, input.kit, s.activeItemId); return it && isScriptCard(it) ? cardBeatRef(s, input.kit, it) : null; })() : null;
+  const offBeat = p.request === "another" && liveCardBeat && move.scriptBeat?.beatId && String(move.scriptBeat.beatId).replace(/^explain:/, "") !== String(liveCardBeat.beatId);
+  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && (["language", "clarify"].includes(p.request) || offBeat)) {
+    let lb = liveBeatSimpler(s, input.kit);
+    // (v6.7 B1″, main on director15 c4 stuck 10, steering 8: "Ab Hindi mein" said the simpler of the turn before word for word): a
+    // simpler she said in her last turns is not said again — the beat's authored point is, in their language
+    const recentT = (s.recent ?? []).filter((t) => t.who === "teacher").slice(-3).map((t) => normLine(t.text ?? ""));
+    if (lb && p.request === "language" && recentT.some((t) => t.includes(normLine(lb.text).slice(0, 60)))) {
+      const sk = skillScriptOf(input.kit, lb.beat?.skillId);
+      const bid = String(lb.beat?.beatId ?? "").replace(/^explain:/, "");
+      const pt = sk?.explain?.find((b) => b.id === bid)?.point;
+      const t = pt ? saidIn(pt, s.ctx?.lang ?? "hinglish") : null;
+      lb = t && String(t).trim() && !recentT.some((x) => x.includes(normLine(t).slice(0, 60))) ? { ...lb, text: String(t).trim() } : null;
+    }
     if (lb) { move.simpler = lb.text; move.simplerBeat = lb.beat; move.smaller = true; }
+    // (off the live card's beat: the other beat's teaching is not said — the live beat's simpler is the turn, on its board)
+    if (lb && offBeat) { move.scriptBeat = { ...lb.beat }; delete move.rendered; delete move.point; delete move.mustSay; }
   }
   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
   if (p.request) move.request = p.request;
@@ -3295,8 +3339,12 @@ export function liveBeatSimpler(s, kit) {
       const t = said(c?.simpler) ?? said(live.scriptCheck.simpler);
       return t ? { text: t, beat: { ...base, beatId: live.scriptCheck.checkId, kind: "check", ...(ref.board ? { board: ref.board } : {}) } } : null;
     }
+    // (v6.7 P5, main on director15 c5-t02 steering 8, c6 steering 8: the then-card's own simpler was drawn on the remediation's
+    // board: a simpler is drawn on the board of the beat it comes from — the then-card's on the then-card's)
     const r = sk.remediation?.find((x) => x.targets === live.scriptThen?.targets);
-    const t = said(r?.then?.simpler) ?? said(live.scriptThen?.simpler) ?? said(r?.simpler);
+    const own = said(r?.then?.simpler) ?? said(live.scriptThen?.simpler);
+    if (own) return { text: own, beat: { ...ref, ...(ref.board ? { board: ref.board } : {}) } };
+    const t = said(r?.simpler);
     return t ? { text: t, beat: { ...base, beatId: `rem:${r?.targets ?? ""}`, kind: "remediation", ...((r?.board ?? ref.board) ? { board: r?.board ?? ref.board } : {}) } } : null;
   }
   const cur = currentBeatRef(s, kit);
@@ -3319,16 +3367,18 @@ export function requeueMissedReturn(s, guard) {
   return { ...s, later: s.later.map((x) => (x === e ? { ...x, servedAt: null, requeued: (x.requeued ?? 0) + 1 } : x)) };
 }
 /** v6.6 K3: whether a helper line (the card's simpler, its beat's simpler, its remediation's say or simpler) is left unsaid on it. */
-function helpLeft(s, kit, item) {
+function helpLeft(s, kit, item, { any = false } = {}) {
   const lang = s.ctx?.lang ?? "hinglish";
   const meta = item.scriptAsk ?? item.scriptCheck ?? item.scriptThen;
   const sk = skillScriptOf(kit, item.skillId);
   const rem = sk?.remediation?.find((r) => r.targets === (meta?.targets ?? null)) ?? null;
   const beat = item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked" ? sk?.explain?.find((b) => b.id === item.scriptAsk.beatId) : null;
   const said = new Set([...(s.cardHelp?.id === item.id ? s.cardHelp.said ?? [] : []), ...(s.remSaid ?? [])]);
-  const remDone = !!rem && (s.remedied ?? []).includes(rem.targets);
-  return [meta?.simpler, beat?.simpler, ...(remDone ? [] : [rem?.say, rem?.simpler])].map((x) => (x ? saidIn(x, lang) : null))
-    .some((t) => t && String(t).trim() && !said.has(normLine(t)));
+  const remDone = !any && !!rem && (s.remedied ?? []).includes(rem.targets);
+  // (a misconception's remediation is help too, whatever card it was matched on)
+  const remAny = any ? (sk?.remediation ?? []).filter((r) => r.targets === (meta?.targets ?? null) || r.targets === item.targetsMisconception) : [];
+  return [meta?.simpler, beat?.simpler, ...(remDone ? [] : [rem?.say, rem?.simpler]), ...remAny.flatMap((r) => [r.say, r.simpler])].map((x) => (x ? saidIn(x, lang) : null))
+    .some((t) => t && String(t).trim() && (any || !said.has(normLine(t))));
 }
 /** v6.1 R9: the authored simpler (format 2.3) of the explain beat a move teaches, in the lesson language, or null. */
 function simplerOfBeat(s, kit, move) {
