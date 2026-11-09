@@ -6273,3 +6273,43 @@ Fixes from the hand-read in class 7: a decimal-subtraction trade step (20.00 has
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r7-quizfix-gati-chhaano` (2026-11-09): After the fixes: play-cert (forge3-qa, p360/p412/l1366) gati 56/56 and chhaano 40/40 samples pass at every size (table 4168/4168, other families' samples unchanged); real taps at 360 x 640 (page.mouse on audit targets, play-ctl test ids, never dispatch): 24 gati runs (sandarbh, prakaar, aage, nikaalo, badlo on seeds 3, 17, 8 plus mal and refusal states) and 14 chhaano sukha runs (farak, kram, the throw, every sukha mal-rule), all as expected, taps' acts equal to the law's; smallest target 44 x 44 (aage flag button, counter wheel halves).
 - `ms-r7-director13-second-views-2026-11-09` (2026-11-09): director13's 19 picture-request rows (int/r6 6a41eb540, 2026-11-09-director13, 0-based rows) replayed through Studio's seam on claude/r4-content. Method: the turn before on its own line with its recorded pages, the preselect before her line without pages as Brain does, then the picture turn on its run text with the card's prompt and key from the run's script. 15/19 draw a second view, including both rows main cited: c4 stuck 18 draws round, c5-t02 stuck 20 draws wholes. Of the 4 without one, 3 are cards whose own board was not up yet: steady-c4 18 (the roti card under the 3/4 bar), steady-c5-t01 64, steady-c5-t02 66 (compare words). The 4th, offtopic-c4 28, drew its second view in the run itself. The harness bookkeeping, mirrored on Brain's replay (tests/fixtures/replay.mjs, no model calls), reproduces the run's miss at c4 stuck 18 with the old page-up and gives round with patch 016. c5-t02 stuck 20 needs S8 and 016. tests/r8-director13.test.mjs pins each.
+
+
+<!-- merged from inbox/r7-games-aakash.json -->
+## `ms-r7-games-aakash-cert`
+
+aakash play-cert, 2026-11-09 (forge3-qa, local harness, sizes p360 / p412 / l1366, every art direction).
+
+- **Cert:** every aakash sample passes at every size; the table stands at 4216 of 4216.
+- **Tests:** tests/r7-games-aakash.test.mjs, 33 tests:
+  - an independent checker, with its own reading of the kit's sentences, agrees with every step the law takes over random play;
+  - every mal-rule folds its kit id;
+  - every kit sentence the law rests on is found in the kit;
+  - no aakash word holds a digit except the kit's 24 and 365¼;
+  - every goal, why and done line fits the 320 px Studio box;
+  - generator and picker p95 are measured in CPU time.
+- **Browser runs** (page.mouse on the canvas targets, getByTestId on the DOM buttons, never a dispatch):
+  - every goal solved by real taps at 360 x 640 on seeds 3 and 17 at looks 1 to 3 (36 runs);
+  - din also solved by finger drags;
+  - every mal-rule state reached the same way;
+  - no clipped label; smallest tap target 48 px.
+- **Shots:** docs/design/round7/games/runshots-aakash/.
+
+
+<!-- merged from inbox/r7-games-rang.json -->
+## `ms-r7-games-rang-cert`
+
+rang play-cert, 2026-11-09 (forge3-qa, local harness, sizes p360 / p412 / l1366, every art direction).
+
+- **Cert:** every rang sample passes at every size (32 samples); the table stands at 4248 of 4248.
+- **Tests:** tests/r7-games-rang.test.mjs, 29 tests:
+  - an independent checker, with its own reading of the kit (the liquids' kinds read out of the kit's sorted-table answer and its neutral sentence), agrees with every step the law takes over random play;
+  - every mal-rule folds its kit id; the not-admitted beliefs have no mechanic;
+  - every colour and every liquid is traced to a kit sentence; no rang word holds a digit or a word for tasting, touching or drinking;
+  - every goal, why and done line fits the 320 px Studio box;
+  - generator and picker p95 are measured in CPU time.
+- **Browser runs** (page.mouse on the canvas targets, getByTestId on the DOM buttons, never a dispatch):
+  - every goal solved by real taps at 360 x 640 on seeds 3 and 17 at looks 1 to 3 (24 runs);
+  - every mal-rule state reached the same way (8);
+  - no clipped label; smallest tap target 48 px.
+- **Shots:** docs/design/round7/games/runshots-rang/.

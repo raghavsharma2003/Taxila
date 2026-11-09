@@ -26597,6 +26597,34 @@
    "at": "2026-11-09",
    "title": "director13's 19 picture-request rows (int/r6 6a41eb540, 2026-11-09-director13, 0-based rows) replayed through Studio's seam on claude/r4-content. Method: the turn before on its own line with its recorded pages, the preselect before her line without pages as Brain does, then the picture turn on its run text with the card's prompt and key from the run's script. 15/19 draw a second view, including both rows main cited: c4 stuck 18 draws round, c5-t02 stuck 20 draws wholes. Of the 4 without one, 3 are cards whose own board was not up yet: steady-c4 18 (the roti card under the 3/4 bar), steady-c5-t01 64, steady-c5-t02 66 (compare words). The 4th, offtopic-c4 28, drew its second view in the run itself. The harness bookkeeping, mirrored on Brain's replay (tests/fixtures/replay.mjs, no model calls), reproduces the run's miss at c4 stuck 18 with the old page-up and gives round with patch 016. c5-t02 stuck 20 needs S8 and 016. tests/r8-director13.test.mjs pins each.",
    "source": "inbox/r7-studio-29.json"
+  },
+  {
+   "id": "dc-r7-games-aakash",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "aakash (sky) as a never-timed law family for class 7 science chapter 12: a model the child spins and moves round. chakkar (t01): din (s1, s2) the Earth from above its North Pole spun west to east until the card's place is at sunrise, noon, sunset or midnight (the eastern place first); saal (s3, s1) a day as one spin on the spot and a year as once round. ritu (t02): jhuk (s1, s3) the Earth moved round with its axis keeping its way, to the card's half and season; dhoop (s2) ice melted only under straight light (the same bundle of light on graph paper, small and bright or spread). grahan (t03): chaaya (s1, s2) the Moon moved to the eclipse; kab (s3) months pass until the crossing places line up. Facts only from the kit; the only digits are its about 24 hours and about 365¼ days. Why: the three topics had no game. Reverse: a child pilot shows the claim buttons (Now!, Here!, Eclipse!) are tapped by trial at every step (many decisive refusals per level) rather than judged from the model.",
+   "source": "inbox/r7-games-aakash.json"
+  },
+  {
+   "id": "ms-r7-games-aakash-cert",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "aakash play-cert (forge3-qa, p360/p412/l1366): every aakash sample passes at every size (table 4216/4216); every goal solved by real taps at 360 x 640 on seeds 3 and 17 at all three looks (36 runs), din also by finger drags, every mal-rule state reached; no clipped label; smallest tap target 48 px; tests/r7-games-aakash.test.mjs 33 tests.",
+   "source": "inbox/r7-games-aakash.json"
+  },
+  {
+   "id": "dc-r7-games-rang",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "rang (colour) as a never-timed law family for class 7 science chapter 2: a dropper worked a drop at a time. pehchaan (t01): litmus (s2) and desi (s3) drop each of the kit's household liquids onto blue/red litmus or haldi paper/gudhal water and sort it acidic, basic or neutral, a sort taken only when the colours seen leave one kind (desi's gudhal water short at looks 2-3, so haldi finds the bases first). milao (t02): boond (s2, s1) baking soda into lemon juice or vinegar with gudhal water until the pink goes (green on a look-3 item), plain water beside it; ilaaj (s3, s1) the kit's uses (ant bite: baking soda; stomach acid: antacid; acidic soil: lime). Facts, colours and liquids only from the kit; drop counts are scene values and never shown. Why: the two topics had no game. Reverse: a child pilot shows the bins tapped by trial (many not_sure / wrong_bin refusals per level) rather than read from the colours.",
+   "source": "inbox/r7-games-rang.json"
+  },
+  {
+   "id": "ms-r7-games-rang-cert",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "rang play-cert (forge3-qa, p360/p412/l1366): every rang sample passes at every size (32 samples; table 4248/4248); every goal solved by real taps at 360 x 640 on seeds 3 and 17 at all three looks (24 runs); every mal-rule state reached (8); no clipped label; smallest tap target 48 px; tests/r7-games-rang.test.mjs 29 tests.",
+   "source": "inbox/r7-games-rang.json"
   }
  ],
  "edges": [
@@ -41589,6 +41617,16 @@
    "src": "dc-r7-unmarked-bars-round",
    "rel": "measured_by",
    "dst": "ms-r7-director13-second-views-2026-11-09"
+  },
+  {
+   "src": "dc-r7-games-aakash",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-aakash-cert"
+  },
+  {
+   "src": "dc-r7-games-rang",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-rang-cert"
   }
  ]
 }

@@ -9199,3 +9199,53 @@ The pilot lesson scripts (c4 equal shares, c5 number line t01/t02, c6 perimeter)
 - `dc-r7-second-view-last-page` (2026-11-09): director13 S7: a second view is built from the LAST page on screen and the ref of the card that drew it. Production's seam already did this: L.wbPrevPage and L.wbPrevRef take a paged turn's last page and lastRef, and the preselect gets avoid and avoidRef. Replayed through the seam, on the run's tree 0dd31feb1 and on Brain's replay of the lesson, c4 stuck row 18 draws the circle. The miss in director13 was the eval harness's own model of the seam. It preselected with avoid = the take of the turn's FIRST page and no ref, so after row 16 (the circle, then the card's bar) it took the circle as up. Brain's patch 016 (docs/patches/to-brain) makes the harness keep the page up as the seam does: the last page and its card ref, avoidRef to the preselect, keep and keepRef to the paged check. Reverse if a run on the patched harness and a seam replay disagree on which board is up.
 - `dc-r7-unmarked-bars-round` (2026-11-09): director13 S8, extends dc-r7-second-view-real. A fraction-bars card whose bars name no fraction (all "?", the ask is about the bars themselves) has a second view: each bar as a circle of the same parts, its shading kept, nothing named. One bar is drawn as fraction-parts round (hideResult); two or three bars as wholes@1 circles side by side (altView "wholes", which Brain's opener already describes). c5-t02 stuck row 20, "screen par dikhao na" over e2's 4- and 8-part "?" bars, re-showed the same bars and now draws two circles of 4 and 8. Reverse if judges find the circles confuse a bars ask more than the bars.
 - `dc-r7-p3-view-then-card` (2026-11-09): director13, Brain's P3 turn shape on Studio's seam. A picture turn sends one requestIntent: page 1 the card's ref (Studio's preselect turns it into the second view) under the view's own line, then a segment with the card's own boardRef under the card's words. pagesBoard draws the second view, then the card, and turns at the card's first word. The result and screens[0] carry altView. The second view's page no longer runs its own card-back (that would page inside page 1 when her view line names the figure); the turn's next page is the card. Pinned on c4 stuck 18 (circle, then bar) and c5-t02 stuck 20 (two circles, then the "?" bars). Reverse if Brain sends the view and the card as separate turns.
+
+
+<!-- merged from inbox/r7-games-aakash.json -->
+## `dc-r7-games-aakash`
+
+**aakash** (sky, class 7 science, chapter 12) is a law family with three modes. Nothing runs on a clock and nothing is an answer box: the child spins the Earth, moves it round the Sun, moves the Moon round the Earth, or lets months pass, a step per tap (or a finger drag), and claims the card's moment on the model.
+
+- **chakkar** (c7-science-ch12-t01). The Sun never moves.
+  - din (s1, s2): the Earth from above its North Pole; spin it west to east until the card's place is at sunrise, noon, sunset or midnight, then Now!. The sky over the place shows the Sun rising in the east. Look 3 has Arunachal one spin step ahead of Gujarat (a scene value, not to scale).
+  - saal (s3, s1): a day is one whole spin at one place on the path; a year is once all the way round.
+- **ritu** (c7-science-ch12-t02). The axis leans the same way all the way round, and the law refuses to turn it. The closest point is marked in the northern winter (the kit). Each half's share of the same bundle of light is drawn on graph paper (patch sizes are scene values).
+  - jhuk (s1, s3): take the Earth to the card's half and season.
+  - dhoop (s2): melt the ice with one day of sun, which works only where the light falls straight.
+- **grahan** (c7-science-ch12-t03). The Moon's path crosses the Sun-Earth line at two places, which turn as months pass. A side strip shows the Moon above, below or on the line (a picture, never an angle).
+  - chaaya (s1, s2): the crossing places sit at new and full moon.
+  - kab (s3): months must pass first.
+- **Mal-rules** (kit ids):
+  - t01 m1 sun-goes (the Sun dragged round);
+  - t01 m2 spin-year (Done on a year after a spin on the spot) and trip-day (going round for a day);
+  - t02 m1 near-summer (the north's summer claimed at the closest point);
+  - t02 m2 axis-turns (the axis tilted to the Sun);
+  - t02 m3 slant-same (sunshine on the ice under slanting light);
+  - t03 m1 every-month (an eclipse claimed at new or full moon off the line);
+  - t03 m2 phase-shadow (a lunar eclipse claimed at a part-lit moon).
+- **Not admitted:** t03 m3 (sunglasses, a partly covered Sun): no mechanic, by ruling; it is the teacher's safety line. t03 s4 has no act.
+- **Numbers:** the only digits on screen are the kit's about 24 hours and about 365¼ days. Every other number (8 spin steps, 4 places on the path, 8 Moon places, the east place one step ahead, the closest point, the patch sizes) is a declared scene value with no fact claimed. No angle, distance or date is drawn.
+
+Reverse if a child pilot shows the claim buttons tapped by trial at every step (many decisive refusals per level) rather than judged from the model.
+
+
+<!-- merged from inbox/r7-games-rang.json -->
+## `dc-r7-games-rang`
+
+**rang** (colour, class 7 science, chapter 2) is a law family with two modes. Nothing runs on a clock and nothing is an answer box: the child drops a drop from a cup onto an indicator, sorts the cup by the colours it gave, or adds a base to a glass a drop at a time and says when the colour is right. Nothing is tasted, touched or drunk; the only way a liquid moves is the dropper, and any safety line is the teacher's.
+
+- **pehchaan** (c7-science-ch02-t01). The kit's liquids only: lemon juice, vinegar, soap solution, baking soda solution, pure water, sugar solution, common salt solution. A sort is taken only when the colours seen leave one kind.
+  - litmus (s2): blue and red litmus strips; a neutral liquid needs both.
+  - desi (s3): haldi paper and gudhal water; at looks 2 and 3 the gudhal water is one drop per cup that is not a base (a scene value), so haldi finds the bases first (the kit's own way).
+- **milao** (c7-science-ch02-t02). Gudhal water in an acid is pink; the pink fades as a base goes in, is gone at the right amount, and turns green past it. Once a base is in, the glass is labelled "A salt and water form / Heat is given out".
+  - boond (s2, s1): baking soda solution into lemon juice or vinegar, plain water on the bench too.
+  - ilaaj (s3, s1): the kit's uses: an ant bite's formic acid with baking soda, too much stomach acid with an antacid (milk of magnesia), acidic soil with lime (chuna); lemon juice (an acid itself) and plain water beside them.
+- **Mal-rules** (kit ids):
+  - t01 m3 made-red (a base sorted acidic because haldi went red) and own-red (a neutral liquid sorted acidic on red litmus alone): the other indicator shows the same liquid giving the same kind;
+  - t02 m2 water-only (Done on a pink glass after plain water);
+  - t02 m3 too-much (Done for no pink after extra base: it is green);
+  - t02 m1 harm-mix (Danger! once a base is in: the label of what forms; no harm mechanic).
+- **Not admitted** (the lead's ruling, the teacher's lines): t01 m1 (acids burn), t01 m2 (tasting is fine), t01 m4 (bases always safe). t01 s1 and s4 have no act.
+- **Numbers:** none on screen. The drops a glass takes, the glass's capacity and the gudhal drops are scene values with no fact claimed.
+
+Reverse if a child pilot shows the bins tapped by trial (many not_sure / wrong_bin refusals per level) rather than read from the colours.
