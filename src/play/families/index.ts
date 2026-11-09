@@ -31,6 +31,7 @@ import { galtiLogic } from "./galti-pakdo/galti.logic.ts";
 import { chhaanoLogic } from "./chhaano/chhaano.logic.ts";
 import { gatiLogic } from "./gati/gati.logic.ts";
 import { bhaapLogic } from "./bhaap/bhaap.logic.ts";
+import { aakashLogic } from "./aakash/aakash.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { tileLogic } from "./darpan/tile.logic.ts";   // r7 tilings2
 import { feetaLogic } from "./feeta/feeta.logic.ts";
@@ -166,5 +167,10 @@ export const LOGIC: Record<string, AnyLogic> = {
   "bhaap/bhaapan": asAny(bhaapLogic),
   "bhaap/hawa": asAny(bhaapLogic),
   "bhaap/chakra": asAny(bhaapLogic),
+  // round 7: Aakash, the Earth's motions, seasons and eclipses (class 7 science): the Earth spun and moved round the Sun, its
+  // axis kept, the Moon moved round the Earth; a step per tap
+  "aakash/chakkar": asAny(aakashLogic),
+  "aakash/ritu": asAny(aakashLogic),
+  "aakash/grahan": asAny(aakashLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }
