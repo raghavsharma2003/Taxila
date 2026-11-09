@@ -53,7 +53,7 @@ Results:
 | mal-desi-made-red-p360.png | made-red (t01 m3): a base sorted acidic because haldi went red. Gudhal for the same cup is drawn dashed, green: "Gudhal goes green for baking soda solution too: it was basic." |
 | mal-boond-water-only-p360.png, mal-ilaaj-water-only-p360.png | water-only (t02 m2): Done on a pink glass after plain water: "Water only dilutes it: still pink, still acidic." |
 | mal-boond-too-much-p360.png, mal-ilaaj-too-much-p360.png | too-much (t02 m3): Done for no pink after a drop past the right amount. The glass is green: "Green now: the extra base made it basic." |
-| mal-boond-harm-mix-p360.png, mal-ilaaj-harm-mix-p360.png | harm-mix (t02 m1): Danger! once a base is in. Nothing harmful is drawn; the label of what forms is magnified: "It forms a salt and water; heat is given out." |
+| mal-boond-harm-mix-p360.png, mal-ilaaj-harm-mix-p360.png, mal-boond-harm-mix-hinglish-p360.png | harm-mix (t02 m1): the child's claim "Harmful!" (Hinglish "Yeh nuksaan karega") once a base is in; a plain button, no alarm or screen effect. Nothing harmful is drawn; the label of what forms is magnified: "It forms a salt and water; heat is given out." |
 
 Not admitted, by the lead's ruling: t01 m1 (acids are dangerous and burn), t01 m2 (tasting is fine; acids taste sour) and
 t01 m4 (bases are always safe) have no mechanic. They are the teacher's lines.
