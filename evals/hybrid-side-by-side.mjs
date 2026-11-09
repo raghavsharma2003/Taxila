@@ -31,7 +31,7 @@ import { __test } from "../server/routes/lesson.js";
 // round 7 S4 (main: "upgrade the harness so it runs Studio's board pick and Games' entryFor in-process and records what would be
 // on screen each turn"): the pure parts of turn.js's visual path
 import { whiteboardIntentOf, boardItemOf, altViewOfRow } from "../server/brain/propose.js";
-import { preselect, takePreselected, pagesBoard, pagesDroppedCount } from "../server/stagecraft/board-first.js";
+import { preselect, takePreselected, pagesBoard, pagesDroppedCount, refKey } from "../server/stagecraft/board-first.js";
 import { gateCtxFor } from "../server/stagecraft/board-sync.js";
 import { entryFor } from "../server/play/levels.js";
 import { askTruth, VISUAL_NOT_YET, VISUAL_DRAWING } from "../server/director/shapes.js";
@@ -183,6 +183,10 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
   // (director9 c5-t02: S3′'s second view drew 0/3 here because the board already on screen was never given to the preselect,
   // as production's seam does through boardFirstOpts.avoid: the page drawn last is passed on, like the lesson's wbPrev)
   let shownScript = null;
+  // (Studio director13 S7, c4 stuck 18: production's seam also passes the ref of the card whose board is the page up — the
+  // LAST page of a paged turn (L.wbPrevRef / L.wbPrevPage). Without it the preselect saw the first page of row 16 as up, the
+  // circle, and the picture over the card's bar re-drew the bar: no second view)
+  let shownRef = null;
   for (let i = 0; i < MAX; i++) {
     let text = lines?.[i];
     let leaving = false;
@@ -249,7 +253,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         // (preselect caches its pick by intentId = lessonId:wb:turn: one id per lesson, never the harness's shared LESSON.id)
         // (one id per lesson, Studio on director9: a persona's lesson keeps its own prefix; lines are empty for the reactive child)
         const ask = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-${persona ?? lines.join("|").length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
-        const pick = preselect(ask, { kit, ...(shownScript ? { avoid: shownScript } : {}) });
+        const pick = preselect(ask, { kit, ...(shownScript ? { avoid: shownScript } : {}), ...(shownRef ? { avoidRef: shownRef } : {}) });
         pickAsk = pick ? ask : null;
         if (process.env.HARNESS_DEBUG_SCREEN) console.error("[screen]", kit.topicId, JSON.stringify({ intent: ask.intent, item: item?.id ?? null, phase: next.phase, pick: pick ? pick.template ?? pick.by : null }));
         if (pick) {
@@ -298,6 +302,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         screen = { ...screen, drawn: "take", counts: took.screen.counts ?? screen.counts ?? null, numbers: took.screen.numbers ?? null,
           ...(took.screen.labels != null ? { onScreen: { ...(screen.onScreen ?? {}), labels: Array.isArray(took.screen.labels) ? took.screen.labels.join(" | ") : String(took.screen.labels) } } : {}) };
         shownScript = took.script ?? shownScript;
+        // (as seam.js drawn(): the card's ref when the card's own board was drawn; a second view names no card)
+        shownRef = took.lastRef !== undefined ? took.lastRef : took.by === "script" && !took.altView ? refKey(pickAsk.intent.boardRef) : null;
         slot = { artifact: { ...(slot?.artifact ?? {}), screen: took.screen } };
       } else { screen = { ...screen, drawn: "preselect" }; }
     }
@@ -342,7 +348,11 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         // (v6.4 harness, main on director12: a later page Studio cannot draw is dropped and its words ride on the page before:
         // the proxies report how many, per turn)
         const d0 = pagesDroppedCount();
-        try { unpaged = pagesBoard({ ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:pg` }, line: { ...askF.line, text: String(reply) } }, { kit }) ? 0 : 1; } catch { unpaged = 1; }
+        let pg = null;
+        try { pg = pagesBoard({ ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:pg` }, line: { ...askF.line, text: String(reply) } }, { kit, ...(shownScript ? { keep: shownScript } : {}), ...(shownRef ? { keepRef: shownRef } : {}) }); } catch { pg = null; }
+        unpaged = pg ? 0 : 1;
+        // (S7: a paged turn leaves its LAST page up — the next turn's second view is built from that page, as the seam does)
+        if (pg?.script) { shownScript = pg.lastPage ?? pg.script; shownRef = pg.lastRef ?? null; }
         droppedPages = Math.max(0, pagesDroppedCount() - d0);
         const text = String(reply).replace(/\s+/g, " ").trim();
         segs = parts.map((pt, i) => {
@@ -376,14 +386,14 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       borrowedWhy: borrowedWhy(reply, WHYS(kit)).length,
       // (v6.1) a turn in parts that Studio could not page; a picture asked for that drew the board already up, no second view
       unpaged,
-      // (reported, not counted as a contradiction: the words are said over the page before)
+      // (v6.5, main on director13: a spoken line whose page was dropped is said over the page before — counted as a contradiction)
       droppedPages,
       nothingNew: p.r.move?.request === "visual" && screen?.kind === "whiteboard" && !screen.altView && !!lastScreenKey && lastScreenKey === screenKeyOf(screen) ? 1 : 0,
       verdictSeg: verdictMisplaced({ graded: !!graded, verdict: firstS, answeredBoard: s.lastMove?.cardBeat?.board ?? s.lastMove?.scriptBeat?.board ?? null,
         answerBoard: next.lastMove?.closeBeat?.answerBoard ? next.lastMove.closeBeat.board : null,
         firstBoard: segs?.[0]?.board ?? next.lastMove?.closeBeat?.board ?? (next.lastMove?.scriptBeat?.board ?? null) }) ? 1 : 0,
     };
-    const contradictions = (segs ? segs.reduce((a, x) => a + x.contradictions, 0) : whole) + v6.picture + v6.borrowedWhy + v6.verdictSeg + v6.unpaged + v6.nothingNew;
+    const contradictions = (segs ? segs.reduce((a, x) => a + x.contradictions, 0) : whole) + v6.picture + v6.borrowedWhy + v6.verdictSeg + v6.unpaged + v6.nothingNew + v6.droppedPages;
     // v5 gate line: a key said ("jawab X tha") that is not one of the topic's authored key or accept forms is a false key
     // (one sentence at a time; "tumhara jawab sahi tha" states no key)
     const saidKeys = [...String(reply).matchAll(/jawab\s+([^.!?।]+?)\s+tha\b|answer was\s+([^.!?।]+?)(?:[,.]|$)/gi)].map((m) => String(m[1] ?? m[2]).trim().toLowerCase())

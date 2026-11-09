@@ -51,7 +51,9 @@ const PROFILE = {
 };
 
 /** The turns a harness should run per persona: past its leaveAfter, so the "bye" is played (H1.1: steady 40 + 1). */
-export const maxTurnsFor = (persona) => (PROFILE[persona]?.leaveAfter ?? MIN_TURNS) + 1;
+/** v6.5: the most turns the goodbye waits for an open card's close. */
+export const LEAVE_WAIT = 6;
+export const maxTurnsFor = (persona) => (PROFILE[persona]?.leaveAfter ?? MIN_TURNS) + 1 + LEAVE_WAIT;
 
 /** Names the harness uses for a girl (verbs agree: "gayi", "karti"); any other name gets the masculine forms. [U] extend with the
  *  harness's personas. A trailing -a / -i / -ee is read as a girl's name unless listed as a boy's. */
@@ -183,7 +185,12 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
     persona, seed, name, girl, schedule: new Map(at), pending, log,
     reply(input = {}) {
       const turn = Number(input.turn ?? log.length);
-      if (turn >= P.leaveAfter && turn >= MIN_TURNS) return say({ text: pick(rng, LINES.leave), kind: "leave" });
+      // (v6.5 harness, main on director13: the goodbye waits for an open card's close — a card she just asked and not yet answered —
+      // up to LEAVE_WAIT turns, so a lesson never ends on an unanswered card because the child left mid-question)
+      const cLeave = input.card ?? input.ask ?? null;
+      const cidLeave = input.card?.itemId ?? `${input.beat?.skillId ?? ""}/${input.beat?.beatId ?? ""}`;
+      const openCard = !!(cLeave && cLeave.key != null && String(cLeave.key).trim() && posed(input.teacher) && !answered.has(cidLeave));
+      if (turn >= P.leaveAfter && turn >= MIN_TURNS && (!openCard || turn >= P.leaveAfter + LEAVE_WAIT)) return say({ text: pick(rng, LINES.leave), kind: "leave" });
       if (at.has(turn)) { pending.push(at.get(turn)); at.delete(turn); }
       if (pending.length) {
         const c0 = input.card ?? input.ask ?? null;

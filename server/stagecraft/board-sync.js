@@ -207,7 +207,7 @@ function refWords(ref) {
   return [...out];
 }
 /** How many separate wholes a script board ref draws side by side (bars, wholes): a count of WHOLES, never a partition. */
-function refWholes(ref) {
+export function refWholes(ref) {
   const p = ref?.params ?? {};
   const n = Array.isArray(p.bars) ? p.bars.length : Array.isArray(p.wholes) ? p.wholes.length : 0;
   return n >= 2 ? n : null;

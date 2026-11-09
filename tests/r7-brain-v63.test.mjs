@@ -195,7 +195,8 @@ describe("r7-brain-v63.test.mjs", () => {
       const rem = (kit && last.state.lastMove?.simplerBeat?.board) ?? null;
       if (!onRem || !String(onRem.scriptBeat?.beatId ?? "").startsWith("rem:")) bad.push(`${persona} ${topic} T${t}: remediation words on ${onRem?.scriptBeat?.beatId} | ${onRem?.text?.slice(0, 80)}`);
       if (!rem) bad.push(`${persona} ${topic} T${t}: no remediation board`);
-      if (JSON.stringify(ps.at(-1).boardRef) !== JSON.stringify(lm.cardBeat?.board)) bad.push(`${persona} ${topic} T${t}: the card is not on its own board`);
+      // (v6.5 P2′: or, when Studio would refuse the card's own page, the card is not said on this turn at all — logged)
+      if (JSON.stringify(ps.at(-1).boardRef) !== JSON.stringify(lm.cardBeat?.board) && !out.guard.cardPageDropped) bad.push(`${persona} ${topic} T${t}: the card is not on its own board`);
     }
     assert.deepEqual(bad, []);
   });

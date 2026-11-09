@@ -87,7 +87,8 @@ describe("R1/R2/R5 in the lesson (c6 skill-1 v2 fixture)", () => {
   test("R5: a yes/no key is said as the right answer named, never '<nahi> tha' ('there was no answer')", async () => {
     const L = toCard(run());
     const out = await say(L, "Chalo aage badhte hain.", { state: { lastMove: { ...L.r.state.lastMove, gave: { answer: "nahi", why: "" } } } });
-    assert.match(out.reply, /Pichhle sawaal ka sahi jawab: nahi\./, out.reply);
+    // (v6.5 F1, main on director13: the card just given up is "is sawaal", the next card after it or not)
+    assert.match(out.reply, /Is sawaal ka sahi jawab: nahi\./, out.reply);
     assert.doesNotMatch(out.reply, /jawab nahi tha/);
   });
 
@@ -276,7 +277,9 @@ describe("R4 in the lesson (c6 skill-1 v2 fixture)", () => {
     const lm = { ...L.r.state.lastMove, returned: { topic: "Virat", share: true, said: "aapko virat pasand hai?" } };
     const out = await say(L, `Virat ke baare mein tumne kaha tha ki tumhe woh pasand hain. Virat mujhe bhi bahut pasand hain, unki batting kamaal ki hai. Virat ka cover drive boundary ke poore round jaisa hai. ${L.r.ui.ask.text}`, { state: { lastMove: lm } });
     assert.doesNotMatch(out.reply, /tumne kaha|jaisa hai/, out.reply);
-    assert.match(out.reply, /Virat mujhe bhi bahut pasand hain/, out.reply);
+    // (v6.5 F2, main's ruling on director13: asked her own taste, she answers honestly — an AI teacher has none — never "mujhe bhi")
+    assert.doesNotMatch(out.reply, /mujhe bhi/i, out.reply);
+    assert.match(out.reply, /Main AI teacher hoon/, out.reply);
   });
 
   test("after 'hindi mein batao' her later turns are visibly in Hindi words", async () => {
@@ -454,7 +457,7 @@ describe("v6 (c5-t01 judge, Studio's alternate view)", () => {
     assert.doesNotMatch(out2.reply, /bilkul theek/, out2.reply);
   });
 
-  test("a picture ask is always acknowledged and keeps the card; on Studio's alternate view she names the new view of the same numbers", async () => {
+  test("a picture ask is always acknowledged and keeps the card; on Studio's alternate view she names the new view of the same numbers (v6.5 P3: the card on its own page after it)", async () => {
     const r = toCard();
     const card = r.ui.ask.text;
     const none = await say(r, `Theek hai, chalo isi sawaal par wapas aate hain. ${card}`, { childText: "drawing karke samjhao", state: { lastMove: { ...r.state.lastMove, request: "visual", visual: "diagram", scriptBeat: { ...r.state.lastMove.scriptBeat, board: { auto: true } } } } });
@@ -463,7 +466,8 @@ describe("v6 (c5-t01 judge, Studio's alternate view)", () => {
     const board = { template: "fraction-line@1", params: { den: 6, from: 0, to: 1, marks: [{ num: 1, label: "1/6" }, { num: 2, label: "1/3" }] } };
     const alt = await say(r, `Theek hai. ${card}`, { childText: "picture dikhao", state: { lastMove: { ...r.state.lastMove, request: "visual", visual: "diagram", altView: { view: "parts" }, scriptBeat: { ...r.state.lastMove.scriptBeat, board } } } });
     assert.match(alt.reply, /Dekho, yahi 1\/6 aur 1\/3 ab patti par\./, alt.reply);
-    assert.ok(alt.reply.endsWith(card));
+    // (v6.5 P3: the card after the view, on its own page)
+    assert.ok(alt.reply.endsWith(card), alt.reply);
   });
 });
 
