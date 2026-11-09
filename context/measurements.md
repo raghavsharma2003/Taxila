@@ -6341,3 +6341,29 @@ Speed: reply-ready p50 3091 → 2640 ms; read p50 1215 → 1070 ms.
 The automatic counter read 9 contradictions where the hand count is 22.
 
 Full write-up: docs/design/round7/judgements/director14-2026-11-09.md.
+
+
+<!-- merged from inbox/r7-main-33.json -->
+## `ms-r7-director15-hand-2026-11-09` (2026-11-09)
+
+director15: v6.6 on integration 19. 16 lessons, 1,522 calls, about $1.035, run by main. Counted by hand by 4 judges.
+
+| Line | Count |
+|---|---|
+| Beats taught | 265/266 |
+| Verdicts | 260/263 (the 3 misses are all the content-filter fallback) |
+| Misgrades | 0/0 |
+| False keys | 0 |
+| Contradictions | **5** under main's consistent ruling (paging 4, data 1); the judges' raw count is 7; director14 had 22 |
+
+By topic: c4 1, c5-t01 0 (from 10), c5-t02 2, c6 2.
+
+P4 pages graded closes correctly 132/134. Picture turns are two pages, 14/14.
+
+Listening scored 3 in all four topics; register 3–3.5; promises 2–3 (asides lost or parked everywhere); screen and speech 3.5–4.5.
+
+The H3 counter missed 4 of the 5 hand rows.
+
+Reply-ready p50 2.64 → 2.86 s.
+
+Full write-up: docs/design/round7/judgements/director15-2026-11-09.md.

@@ -9285,3 +9285,35 @@ Pages by construction, and no model words on a graded turn.
 ## Merged inbox entries (write-up from the entry text)
 - `dc-r7-card-page-own-board` (2026-11-09): director14 S9: a LATER page of a paged turn whose segment is marked ofCard true (Brain's ofCardMarks: the card part of a picture turn) is the card's own page. pagesBoard passes each segment's ofCard to its page and marks that page cardPage; Studio's preselect never makes a cardPage a second view, even with the turn's picture request still on it. The rule is not keyed to ofCard on the turn's FIRST page: Brain marks the card's board ofCard true before her line exists, and that page of a picture turn is the second view. Production already drew c5-t01 stuck 18 right: on the seam, the example bar, then the den 8 line from "Isi". The miss came from the eval harness's part-by-part check. Each part kept the turn's request and no ofCard, so the card's part was preselected as a second view too, and the record said fraction-bars on both pages. Brain's patch 017 (docs/patches/to-brain) takes each part as pagesBoard does. Reverse if Brain ever marks a page ofCard true that should show a second view.
 - `dc-r7-remediation-second-view` (2026-11-09): director14 S9b, extends dc-r7-second-view-last-page. The seam records the beat kind of the page up (L.wbPrevKind, beside wbPrevRef; a paged turn's lastKind) and passes it to the preselect as avoidKind. A picture asked while a REMEDIATION's board is up, and the card's own board is not, gets that remediation board's second view. c6 stuck 18: the lettered hexagon AB 10 … FA 9 is laid straight (unrolled), then the then-card's pentagon follows on the card's own page. Any other board up that is not the card still gets the card's own board, as before. Brain's patch 017 adds the same bookkeeping to the harness (shownKind). Reverse if judges find the remediation's view distracts from the card it precedes.
+
+
+<!-- merged from inbox/r7-main-33.json -->
+## `dc-r7-script-walk-v6-7` (2026-11-09)
+
+Asides that come back, and every path through the parts.
+
+**Brain:**
+- **A3:** root-cause the asides, with predicates replayed from the rows: 0 parked taste questions, 0 lost asides, an aside question ends her turn.
+- **P5:** the fallback, Hindi/clarify and worked-step paths build parts; a fallback drops only model parts.
+- **P4′:** a miss verdict that names a value goes on the answered card's page.
+- **B1″:** the right live beat.
+- **V1′:** no model hook, no model break, no method reads.
+- **R4:** code-side register: no recital, varied joints and check-ins, "question mark" left intact.
+- **K4:** help fixes.
+- **H4:** the counter checks part beat against page beat.
+- **Speed:** find the +220 ms.
+
+**Studio:**
+- **S9b:** root-cause the missing second view on a remediation's board.
+
+**Learning:**
+- **D10:** the register rewrite of the four pilots (clause 2 taken), plus a lint and two key leaks.
+
+**Why:** contradictions fell from 22 to 5 and false keys are back to 0. What remains bypasses P4. Listening, register and promises fail everywhere, led by asides.
+
+**Clauses:** clause 1 is not triggered at 4, under a consistent ruling; the raw count is 6, and the ruled shape counts from director16. Clause 3 is taken.
+
+**Reverse if:**
+- more than 5 paging plus second-view contradictions in director16, with the P4′ shape counted: the held board, unconditionally;
+- register still below 3.5 after D10 and R4: the frames move into the scripts, per topic;
+- the counter misses more than 1: the batch is screened by hand only.
