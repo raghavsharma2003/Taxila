@@ -80,7 +80,10 @@ export function drawnContradictions(row, cardRow, prevChild, { answerBoard = nul
     // (a remediation's own page — "rem:" or its then-card — is where a wrong answer is meant to go)
     const leaves = graded && graded !== "correct" && row.check?.itemId !== cardRow.check?.itemId
       && !/^(?:rem|then):/.test(String(pages[0].beat ?? "")) && !/:then:/.test(String(row.check?.itemId ?? "")) && !/^(?:reteach|remediate)$/.test(String(row.move ?? ""));
-    if (answered && !onAnswered && (contentful(s1) || contentful(closeWords.split(/(?<=[.!?।])\s/)[0] ?? "") || leaves)) out.closeOffBoard = 1;
+    // (v6.6, director15: a not-right verdict that only names their answer — "16 m sahi nahi hai." — says nothing about either board;
+    // brain/propose.js says it on the page it opens, a remediation's. Only a why or a key said off the answered card counts)
+    const bareNo = graded && graded !== "correct" && !/(?<![\p{L}])(?:kyunki|because|jawab\s+.{1,30}?\s+(?:tha|hai))(?![\p{L}])/iu.test(s1);
+    if (answered && !onAnswered && (bareNo ? leaves : contentful(s1) || contentful(closeWords.split(/(?<=[.!?।])\s/)[0] ?? "") || leaves)) out.closeOffBoard = 1;
     if (graded === "correct" && answered && strayFraction(s1, answered)) out.modelWords = 1;
   }
   // (b) a picture asked for: the page carrying the card's words must draw the card's own board, not the alt view
