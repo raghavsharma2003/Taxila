@@ -127,6 +127,10 @@ export const PLAY_ACTS = Object.freeze({
   // r7 games: Badlaav (physical and chemical changes, rusting and combustion, class 7 science): changes run and undone, a sigri tended
   badlaav: { palat: { act: "test", hi: "badlaav karke dekho, ulta karke dekho, aur nishaan pehchaano", en: "run each change, try to undo it and spot the signs" },
     aag: { act: "move", hi: "aag ki teen cheezon mein se ek hatao ya badhao, aur dekho kya hota hai", en: "take away or give more of a side of the fire and watch" } },
+  // r7 games: Jaanch (testing food for starch and fat, class 6 science): iodine a drop at a time, a food rubbed on paper and dried
+  jaanch: { neela: { act: "test", hi: "khaane par iodine ki boond-boond daalo aur rang dekho", en: "drop iodine on each food, a drop at a time, and watch its colour" },
+    daag: { act: "test", hi: "khaana kaagaz par ragdo, sookhne do, aur roshni mein daag dekho", en: "rub each food on paper, let it dry and look at the patch in the light" },
+    thali: { act: "test", hi: "har khaane ki dono jaanch karo aur dono nateeje likho", en: "run both tests on each food and record both results" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape
