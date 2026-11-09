@@ -15,6 +15,19 @@ const ASIDE = /\b(?:cricket|virat|kohli|sixer|six|match|ipl|dhoni|football|bat|b
 const PARK = /yaad rahega|baad mein (?:baat|aate)|sawaal khatam karke|uspar aate|iski baat|pakka|ke baad karenge|(?:ant|baad) mein .*lautenge/i;
 const TEMPLATE = /(?:^|\.\s*)(?:aur|and about)\s+\p{L}+\s+(?:ki baat\s*)?:|sunke bahut achha laga|tumne bataya tha|tumne mujhse .* poocha tha/iu;
 const CANNED = /ek over mein chhe ball|Virat Kohli India ke liye|gyarah khiladi|cover drives?\b.*mashhoor|kaafi mashhoor ha/i;
+// v6.5 (main, director13 judgement): frames, persona, beatless turns, remediations re-said, canned facts on any turn
+const FRAME_FORMS = [
+  ["Nahi, yeh jawab nahi hai", "Yeh jawab sahi nahi hai", "Abhi yeh sahi nahi hai", "Nahi, yeh theek nahi hai"],
+  ["Haan, sahi hai", "Bilkul sahi", "Haan, bilkul theek", "Sahi jawab"],
+  ["Phir se dekho:", "Ek baar aur dekho:", "Sawaal yeh hai:", "Dhyan se dekho:"],
+].map((fam) => fam.map((f) => f.toLowerCase().replace(/[.:]+$/, "")));
+const TASTE = /(?<![\p{L}])(?:mujhe\s+(?:bhi\s+)?(?:\p{L}+\s+){0,3}(?:pasand|achha\s+lagta|achhi\s+lagti|bahut\s+achha)|mera\s+(?:favourite|pasandida)|meri\s+(?:favourite|pasand)|main\s+(?:bhi\s+)?(?:khelti|dekhti|khela|dekha)|i\s+(?:also\s+)?(?:like|love|enjoy)|my\s+favou?rite)(?![\p{L}])/iu;
+const DENIES_AI = /(?<![\p{L}])(?:main\s+(?:ek\s+)?(?:insaan|human|asli)|main\s+ai\s+nahi|i\s+am\s+(?:a\s+)?(?:human|real\s+person)|i'?m\s+not\s+an?\s+ai)(?![\p{L}])/iu;
+const CHECKIN = /^(?:Yahan tak theek hai|Ab tak samajh aaya|Yeh kadam saaf hai|Does that make sense so far|Clear so far|Is that step clear)\?$/i;
+const ASIDE_FACT = /(?<![\p{L}])(?:cricket|virat|kohli|sixer|dhoni)(?![\p{L}])/iu;
+const SPEAKS_TO = /(?<![\p{L}])(?:tum|tumne|tumhe|tumhari|tumhara|tumko|you|your|ai|yaad\s+rahega|ke\s+baad|baad\s+mein|karenge|lautenge|uspar)(?![\p{L}])/iu;
+const q50 = (a) => { const s = [...a].filter((x) => typeof x === "number").sort((x, y) => x - y); return s.length ? s[Math.floor(0.5 * (s.length - 1))] : null; };
+const normS = (x) => String(x ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
 const ENGLISH_W = /(?<![\p{L}])(?:fractions?|parts?|pieces?|sides?|perimeter|total|marks?|lines?|equal|answer|steps?)(?![\p{L}])/giu;
 
 function scriptsOf(dir) {
@@ -49,6 +62,7 @@ export function proxies(dir) {
     orphan: 0, unanswered: 0, yaadKaroLive: 0, twoClose: 0, carriedAfterProbe: 0, carriedAll: 0,
     returns: 0, returnsOnTime: 0, returnsTheirWord: 0, returnsTemplate: 0, canned: 0,
     hindiRequests: 0, hindiSaid: 0, hindiEnglishAfter: 0, reposeBare: 0, sameAsPrev: 0, samajhAaya: 0, aglaKadam: 0, skillLeft: 0,
+    frameRepeat: 0, tasteClaim: 0, deniesAi: 0, cardlessQ: 0, remediationResaid: 0, cannedAnyTurn: 0, pichhleLive: 0, latency: {},
     rows: { orphan: [], unanswered: [], yaadKaroLive: [], twoClose: [], carriedAfterProbe: [], returnsLate: [], returnsTemplate: [], hindiMiss: [], reposeBare: [], droppedPages: [] } };
   for (const f of readdirSync(dir).filter((x) => /^(steady|offtopic|stuck|steering)-.*\.json$/.test(x)).sort()) {
     const j = JSON.parse(readFileSync(`${dir}/${f}`, "utf8"));
@@ -59,9 +73,13 @@ export function proxies(dir) {
     t.lessons++;
     let prevT = null, prevCard = null, liveCard = null, parked = null, hindiAt = -1, seenAside = false;
     const posed = new Map(), closed = new Set();
+    const herTurns = [], remSaid = new Map(), ready = [], read = [];
+    // a remediation's authored say (this run's own scripts), as she would say it
+    const remSays = (scripts[j.topicId]?.skills ?? []).flatMap((sk) => (sk.remediation ?? []).map((r) => normS(typeof r.say === "object" ? r.say?.hi ?? r.say?.en : r.say))).filter((x) => x.split(" ").length >= 6);
     const skills = new Set();
     rows.forEach((r, i) => {
       if (r.who === "child") {
+        if (typeof r.classifyMs === "number") read.push(r.classifyMs);
         if (ASIDE.test(r.text ?? "")) seenAside = true;
         if (ASIDE.test(r.text ?? "") && !parked) parked = { at: i, said: r.text, card: prevCard, topicW: (String(r.text).match(ASIDE) ?? [""])[0].toLowerCase(), parkSaid: false };
         if (/hindi|हिंदी|हिन्दी/i.test(r.text ?? "") && !/english/i.test(r.text ?? "")) { hindiAt = i; }
@@ -137,6 +155,31 @@ export function proxies(dir) {
         }
       }
       if (CANNED.test(text)) t.canned++;
+      // v6.5 proxies
+      if (typeof r.replyReadyMs === "number") ready.push(r.replyReadyMs);
+      { // F1: a code frame form she opened with in one of her last 4 turns, opened with again
+        const lo = text.toLowerCase();
+        for (const fam of FRAME_FORMS) { const f = fam.find((x) => lo.startsWith(x)); if (f && herTurns.slice(-4).some((h) => h.startsWith(f))) { t.frameRepeat++; (t.rows.frameRepeat ??= []).push(`${tag} ${i} ${f}`); } }
+        herTurns.push(lo);
+      }
+      if (TASTE.test(text)) { t.tasteClaim++; (t.rows.tasteClaim ??= []).push(`${tag} ${i} ${ss.find((x) => TASTE.test(x))?.slice(0, 70)}`); }
+      if (DENIES_AI.test(text)) { t.deniesAi++; (t.rows.deniesAi ??= []).push(`${tag} ${i}`); }
+      { // B1: a question of hers on a scripted turn with no card (code's check-ins and a worked example's own question aside)
+        const scripted = /^script:/.test(String(r.check?.itemId ?? "")) || !!r.beat;
+        const qs = ss.filter((x) => /[?？]/.test(x) && !CHECKIN.test(x));
+        // (a why-probe and the skill's hook ask their own question with no card, by design: not beatless)
+        if (!r.card && scripted && !/worked|hook/.test(String(r.beat ?? "")) && !["wrap", "worked_example", "break", "probe"].includes(String(r.move ?? "")) && qs.length) {
+          t.cardlessQ++; (t.rows.cardlessQ ??= []).push(`${tag} ${i} ${qs[0].slice(0, 70)}`); }
+      }
+      { // K2: a remediation's authored say spoken a second time in the lesson
+        const nt = normS(text);
+        for (const rs of remSays) if (nt.includes(rs.slice(0, 60))) { const k = remSaid.get(rs) ?? 0; if (k) { t.remediationResaid++; (t.rows.remediationResaid ??= []).push(`${tag} ${i}`); } remSaid.set(rs, k + 1); }
+      }
+      // A1: a sentence about an aside's topic that speaks to no one, with no lesson words or numbers (a canned fact), on any turn
+      if (ss.some((x) => ASIDE_FACT.test(x) && !SPEAKS_TO.test(x) && !TASTE.test(x) && !/\d/.test(x) && !/(?<![\p{L}])(?:fraction|bhinn|tukd|hiss|line|rekha|bhuja|parimap|perimeter|boundary|pitch)\w*/iu.test(x))) {
+        t.cannedAnyTurn++; (t.rows.cannedAnyTurn ??= []).push(`${tag} ${i} ${ss.find((x) => ASIDE_FACT.test(x) && !SPEAKS_TO.test(x))?.slice(0, 70)}`); }
+      // F1: "Pichhle sawaal" for the card this turn graded or gave up (it is "is sawaal")
+      if (/Pichhle sawaal ka (?:sahi )?jawab/i.test(text) && (g.answered || r.check?.gave)) { t.pichhleLive++; (t.rows.pichhleLive ??= []).push(`${tag} ${i}`); }
       // R3 / register proxy: "compare" made "tulna karo" before a verb ("tulna karo kar", "tulna karo kiya")
       if (/tulna karo (?:kar|kiya|ki|ke)\b/i.test(text)) { t.registerJoin = (t.registerJoin ?? 0) + 1; t.rows.registerJoin = [...(t.rows.registerJoin ?? []), `${tag} ${i}`]; }
       // H2″ proxy: her sentence about an aside topic (cricket, Virat …) on a turn that neither parks it nor returns to it
@@ -168,6 +211,7 @@ export function proxies(dir) {
     // a card still live when the lesson ends is not counted as unanswered
     for (const [id, at] of posed) if (!closed.has(id) && id !== liveCard) { t.unanswered++; t.rows.unanswered.push(`${tag} ${id.split(":").slice(2).join(":")}@${at}`); }
     if (skills.size > 1) t.skillLeft++;
+    t.latency[tag] = { replyReadyP50: q50(ready), readP50: q50(read), n: ready.length };
   }
   return t;
 }
