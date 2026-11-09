@@ -948,6 +948,7 @@ function walkRemedy(s, input, item) {
   s.scriptCard = then;
   // v3 V1: a v2 remediation's authored explanation is spoken by code, and its follow-up card is posed on the same move
   const sayLine = r.say ? saidIn(r.say, s.ctx.lang ?? "hinglish") : null;
+  if (sayLine) s.remSaid = [...(s.remSaid ?? []), normLine(sayLine)];
   if (sayLine) {
     activate(s, then);
     // (v4 W4 closed the missed card with its answer once the follow-up was done. v6.3 T1′, main's director11 judges, 16 of 19
@@ -1409,6 +1410,8 @@ function afterWhy(s, input, item) {
   return next ? { ...next, probeAck: true } : next;
 }
 
+/** v6.5 K2: "let's go on" said to a probe or a break offer (never an answer). */
+const MOVE_ON = /(?<![\p{L}])(?:aage\s+(?:chalo|badho|badhein|chalte\s+hain)|next|(?:woh|wo|yeh)?\s*(?:wala\s+)?ho\s+gaya|bata\s+(?:diya|chuki|chuka)|move\s+on|go\s+on|let'?s\s+go)(?![\p{L}])/iu;
 function afterMiss(s, input, item) {
   // round 7 S3: misses per card (the card stays live until two misses plus help)
   if (verdict(input.cls) === "wrong") s.misses = { ...(s.misses ?? {}), [item.id]: (s.misses?.[item.id] ?? 0) + 1 };
@@ -1416,6 +1419,13 @@ function afterMiss(s, input, item) {
   // v6.4 K1: a card posed again after its remediation, missed again: let go with its key and why (the give-up close, on its
   // answerBoard), never a second remediation round
   if (scriptOn() && (s.reposed ?? []).includes(item.id) && ["wrong", "stuck"].includes(verdict(input.cls))) return leaveItem(s, input, item, SH.reposeMissed());
+  // v6.5 K2 (main, director13 c6 stuck 52, c5-t01 stuck 44: a follow-up card missed twice got a third hint): a then-card's second
+  // miss gives its key and why; and (c6 offtopic 18/58, c5-t02 stuck 10/24/38: one remediation said three times) a second miss on a
+  // card whose remediation was already said in the lesson gives up the same way — never that remediation again
+  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && verdict(input.cls) === "wrong" && (s.misses?.[item.id] ?? 0) >= 2) {
+    const tg = item.scriptCheck?.targets ?? item.scriptAsk?.targets ?? null;
+    if (item.scriptThen || (tg && (s.remedied ?? []).includes(tg))) return leaveItem(s, input, item, SH.reposeMissed());
+  }
   // round 7 T2: a scripted check answered wrong gets its misconception's scripted remediation and keyed follow-up
   const remedy = scriptOn() ? walkRemedy(s, input, item) : null;
   if (remedy) return remedy;
@@ -2541,6 +2551,12 @@ function decide(s, input, item) {
   }
   // p5-interaction: what the UNDERSTAND note read alongside a graded answer (a parked question, a hedge, a check)
   if (p5Flag("STEER") && cls?.alsoPark) s.later = pushLater(s.later ?? [], parkEntry({ ...cls.alsoPark, turn: s.turn, itemOnTable: true }));
+  // v6.5 K2 (main, director13 c5-t02 steady 54–56: "woh wala ho gaya, aage chalo" to a why-probe got a stop menu, then her own
+  // question again): "aage chalo", "ho gaya", "bata diya" — not an answer — moves on: a pending probe is closed, a break offer resumed
+  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && MOVE_ON.test(String(input.text ?? "")) && !(cls && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome))) {
+    if (item && s.pendingWhy === item.id) return { ...afterWhy(s, { ...input, cls: { outcome: "no_evidence", confidence: 1, source: "help", flags: {} } }, item), request: "move_on" };
+    if (s.lastMove?.kind === "break") { s.stopAsked = undefined; s.sidebar = undefined; return { ...resume(s, input, item, "they said to go on: straight back in, no fuss"), request: "move_on" }; }
+  }
   if (chipId === "stop:continue" || req?.type === "continue") {
     s.stopAsked = undefined; s.sidebar = undefined;
     return resume(s, input, item, "they chose to keep going: straight back in, warmly, no fuss");
@@ -2957,10 +2973,19 @@ export function step(prev, input) {
     const own = remSimpler ? { text: remSimpler, beat: remOf(remJust) } : meta?.simpler ? { text: meta.simpler, beat: null } : { text: beatSimpler ?? null, beat: beatSimpler ? beatOf(item.scriptAsk.beatId) : null };
     const help = s.cardHelp?.id === item.id ? s.cardHelp : { id: item.id, said: [], misses: 0 };
     help.misses += 1;
-    const remRungs = [{ text: rem?.say, beat: remOf(rem) }, { text: rem?.simpler, beat: remOf(rem) }];
-    const rungs = (help.misses >= 2 ? [...remRungs, own] : [own, ...remRungs]).map((x) => ({ ...x, text: x.text ? saidIn(x.text, lang) : null })).filter((x) => x.text && String(x.text).trim());
+    // v6.5 K2 (main, director13): a remediation already said in the lesson is never said again on another card; and "pata nahi" (no
+    // wrong answer) gets the card's own simpler, else its beat's point — never a remediation (c4 stuck 10, 16)
+    // (a replay of a recorded run walks what that run walked: tests/fixtures/replay.mjs runScriptOf marks it recordedRun)
+    const k2 = !scriptFor(input.kit)?.script?.recordedRun;
+    const remDone = k2 && !!rem && ((s.remedied ?? []).includes(rem.targets) || (s.remSaid ?? []).includes(normLine(saidIn(rem.say ?? "", lang) ?? "")));
+    const wrongNow = !k2 || ["incorrect", "misconception", "partial"].includes(input?.cls?.outcome);
+    const remRungs = remDone || !wrongNow ? [] : [{ text: rem?.say, beat: remOf(rem) }, { text: rem?.simpler, beat: remOf(rem) }];
+    const pointRung = k2 && !wrongNow && item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked"
+      ? { text: sk?.explain?.find((b) => b.id === item.scriptAsk.beatId)?.point ?? null, beat: beatOf(item.scriptAsk.beatId) } : { text: null };
+    const rungs = (help.misses >= 2 ? [...remRungs, own, pointRung] : [own, pointRung, ...remRungs]).map((x) => ({ ...x, text: x.text ? saidIn(x.text, lang) : null })).filter((x) => x.text && String(x.text).trim());
     const sm = rungs.find((x) => !help.said.includes(normLine(x.text))) ?? null;
-    if (sm) { move.simpler = String(sm.text).trim(); if (sm.beat) move.simplerBeat = sm.beat; help.said = [...help.said, normLine(sm.text)]; help.counted = s.turn; }
+    if (sm) { move.simpler = String(sm.text).trim(); if (sm.beat) move.simplerBeat = sm.beat; help.said = [...help.said, normLine(sm.text)]; help.counted = s.turn;
+      if (sm.beat?.kind === "remediation") s.remSaid = [...(s.remSaid ?? []), normLine(sm.text)]; }
     s.cardHelp = help;
   }
   // (whichever path chose it — a request's smaller re-teach, a beat's simpler — a helper line already said on this live card is
@@ -2976,7 +3001,8 @@ export function step(prev, input) {
       const lang = s.ctx?.lang ?? "hinglish";
       const rb = rem?.board ? { scriptId: scriptIdOf(input.kit), skillId: live.skillId, beatId: `rem:${rem.targets}`, kind: "remediation", board: rem.board } : null;
       const bb = beat?.board ? { scriptId: scriptIdOf(input.kit), skillId: live.skillId, beatId: `explain:${beat.id}`, kind: "explain", board: beat.board } : null;
-      const next = [{ t: meta?.simpler }, { t: beat?.simpler, b: bb }, { t: rem?.say, b: rb }, { t: rem?.simpler, b: rb }].map((x) => ({ ...x, t: x.t ? saidIn(x.t, lang) : null }))
+      const remDone = !scriptFor(input.kit)?.script?.recordedRun && !!rem && ((s.remedied ?? []).includes(rem.targets) || (s.remSaid ?? []).includes(normLine(saidIn(rem.say ?? "", lang) ?? "")));
+      const next = [{ t: meta?.simpler }, { t: beat?.simpler, b: bb }, ...(remDone ? [] : [{ t: rem?.say, b: rb }, { t: rem?.simpler, b: rb }])].map((x) => ({ ...x, t: x.t ? saidIn(x.t, lang) : null }))
         .filter((x) => x.t && String(x.t).trim()).find((x) => !help.said.includes(normLine(x.t)));
       delete move.simplerBeat;
       if (next) { move.simpler = String(next.t).trim(); if (next.b) move.simplerBeat = next.b; } else delete move.simpler;
@@ -3195,7 +3221,9 @@ export function splitLong(out, input) {
 function splitTeach(out, input, cap) {
   const { state: s, move, ui } = out;
   const card = ui?.ask?.text;
-  const body = [move.point, ...(move.rendered ?? [])];
+  // (v6.5 K2, main on director13 c4 steady 8, offtopic 26, steering 30: a smaller re-teach speaks the beat's short simpler, not its
+  // point — measured by what is said, it re-poses the card in the same turn, never "Ab isi par ek sawaal" and a wait)
+  const body = move.smaller && move.simpler && !scriptFor(input.kit)?.script?.recordedRun ? [move.simpler, ...(move.rendered ?? [])] : [move.point, ...(move.rendered ?? [])];
   if (!card || !body.some(Boolean) || !move.itemId || wordsIn(body, card) + 8 <= cap) return out;
   const teach = { ...move, splitTeach: true, ...(checkinFor(s, move) ? { checkinOk: true } : {}) };
   const held = { kind: "practice", shape: SH.splitCard(), itemId: move.itemId, skillId: move.skillId, hintLevel: move.hintLevel,

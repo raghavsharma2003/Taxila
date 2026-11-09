@@ -200,4 +200,54 @@ describe("r7-brain-v65.test.mjs", () => {
       assert.deepEqual(await cardlessQuestions(persona, topic), []);
     });
   }
+
+  // K2 — help and pace. These change the walk, so the replay walks it live (recordedRun off: tests/fixtures/replay.mjs)
+  const atLive = async (persona, topic, n, opts = {}) => {
+    const T = TOPIC[topic];
+    const sc = runScriptOf(RUN, T); delete sc.recordedRun;
+    setScriptForTest(T, sc);
+    const { kit, rows, last } = await replay(RUN, persona, T, n + 1);
+    const state = opts.lastMove ? { ...last.state, lastMove: { ...last.state.lastMove, ...opts.lastMove } } : last.state;
+    replyDeps.chat = async () => ({ text: rows[n].text });
+    const out = await textReply({ instructions: instructionsFor(state, kit), state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null, ...(opts.verdict ? { verdict: opts.verdict } : {}) });
+    return { out, last, state };
+  };
+  test("K2 predicate: a then-card's second miss gives its key and why (c6 stuck 52, c5-t01 stuck 44)", async () => {
+    for (const [persona, topic, n] of [["stuck", "c6", 52], ["stuck", "c5-t01", 44]]) {
+      const { out, last } = await atLive(persona, topic, n);
+      assert.match(String(last.before.activeItemId), /:then:/, `${persona} ${topic} row ${n}: a then-card`);
+      assert.ok(last.state.lastMove?.gave?.answer, `${persona} ${topic} row ${n}: the key given | ${out.reply.slice(0, 120)}`);
+      assert.match(out.reply, /Is sawaal ka (?:sahi )?jawab/, out.reply);
+    }
+  });
+  test("K2 predicate: a remediation said once in the lesson is never said again on another card (c5-t02 stuck 24, 38; c6 offtopic 18, 58)", async () => {
+    for (const [persona, topic, n, said] of [["stuck", "c5-t02", 24, /8 bada number hai, par 1\/8 chhota hissa hai/], ["stuck", "c5-t02", 38, /8 bada number hai, par 1\/8 chhota hissa hai/],
+      ["offtopic", "c6", 18, /har bhuja ka naam aur lambai bolo/], ["offtopic", "c6", 58, /Kinaare par dhaaga lapeto/]]) {
+      const { out } = await atLive(persona, topic, n);
+      assert.doesNotMatch(out.reply, said, `${persona} ${topic} row ${n}: ${out.reply.slice(0, 160)}`);
+    }
+  });
+  test("K2 predicate: 'pata nahi' gets the card's own simpler or point, never a remediation (c4 stuck 10)", async () => {
+    const { out } = await atLive("stuck", "c4", 10);
+    assert.doesNotMatch(out.reply, /Bache hue tukde neeche kabhi nahi aate/, out.reply);
+  });
+  test("K2 predicate: a simpler on a live card re-poses it in the same turn, never 'Ab isi par ek sawaal' and a wait (c4 steady 8, offtopic 26, steering 30)", async () => {
+    for (const [persona, n] of [["steady", 8], ["offtopic", 26], ["steering", 30]]) {
+      const { out, last } = await atLive(persona, "c4", n);
+      assert.ok(!last.state.lastMove?.splitTeach && last.p.r.ui?.ask, `${persona} c4 row ${n}: split`);
+      assert.doesNotMatch(out.reply, /Ab (?:isi|is) par ek (?:chhota )?sawaal/, out.reply);
+      assert.match(out.reply, /\?$/, out.reply);
+    }
+  });
+  test("K2 predicate: 'woh wala ho gaya, aage chalo' to a why-probe moves on, never a stop menu (c5-t02 steady 54)", async () => {
+    const { out, last } = await atLive("steady", "c5-t02", 54);
+    assert.equal(last.state.lastMove?.request, "move_on");
+    assert.notEqual(last.state.lastMove?.kind, "break");
+    assert.doesNotMatch(out.reply, /chunein|band karein/i, out.reply);
+  });
+  test("K2 predicate: a break she was not asked for teaches nothing and asks no lesson question (c4 stuck 46's line)", async () => {
+    // (row 46's own draft is that break line: "Nahi, kyunki teenon tukde barabar nahi hain … Ab batao: aadha kab hota hai?")
+    const { out } = await at("stuck", "c4", 46, { lastMove: { kind: "break", request: undefined } });
+    assert.doesNotMatch(out.reply, /aadha kab hota hai|teenon tukde/, out.reply);
+  });
 });

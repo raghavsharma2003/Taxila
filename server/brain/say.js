@@ -56,6 +56,8 @@ const REASON_SAID = /(?<![\p{L}])(?:kyunki|kyonki|isliye|maine|mene|humne|socha|
 // (v6.5 F1, main on director13: "Theek, yeh tumhari soch thi" and "Achha, tumne apna tareeka bataya" are deleted: code's ack is
 // always the neutral one)
 let CARD_CHECKS = 0;
+/** v6.5 K2: code's offer on a break the child did not ask for. */
+const BREAK_OFFER = { hinglish: "Thoda ruk jaate hain. Chuno: aage badhein, chhota break lein, ya aaj ke liye band karein?", english: "Let's pause for a moment. Choose: keep going, take a short break, or stop for today?" };
 /** v6.5 F1: the words a line about the child's method may use besides theirs (frame words, not content). */
 const METHOD_STOP = new Set(["tumne", "tumhara", "tumhari", "tumhe", "bataya", "batayi", "kaha", "socha", "tareeka", "tarika", "achha", "accha", "theek",
   "haan", "sahi", "yahan", "isliye", "pehle", "phir", "kaise", "jaana", "your", "you", "told", "said", "thought", "that", "this", "with", "what"]);
@@ -2306,6 +2308,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   if (answeredNow && verdict === "correct" && lang !== "english" && !clause.sent) {
     const r0 = String(reply).replace(/^((?:\p{L}+,\s*)?)(?:no|yes)\s+(sahi\s+hai)/iu, (m, a, b) => `${a}${b}`);
     if (r0 !== reply) { reply = r0; guard.echoVerdict = true; }
+  }
+  // v6.5 K2 (main, director13 c4 stuck 46: a break move said "Nahi, kyunki teenon tukde barabar nahi hain … Ab batao: aadha kab hota
+  // hai?"): a break the child did not ask for, in a scripted lesson, teaches nothing and asks no lesson question — only the offer
+  // (a break that also graded their answer keeps its verdict: only a break where they answered nothing is plain)
+  if (!clause.sent && verdict !== "correct" && verdict !== "not_yet" && state.lastMove?.kind === "break" && !state.lastMove?.request && scriptFor(kit)?.script) {
+    const offer = (x) => /(?<![\p{L}])(?:ruk\w*|break|band|aage\s+badh\w*|jaari|continue|stop|rest|aaram)(?![\p{L}])/iu.test(x);
+    const ssb = sentences(reply).map((x) => String(x).trim()).filter(Boolean);
+    const kept = ssb.filter((x) => !/\d/.test(x) && !LESSON_SAID.test(x) && !RULE_SAID.test(x) && (!/[?？]/.test(x) || offer(x)));
+    const r1 = kept.length && kept.some(offer) ? kept.join(" ") : BREAK_OFFER[lang === "english" ? "english" : "hinglish"];
+    if (r1 !== reply) { reply = r1; guard.breakPlain = true; }
   }
   // v6.5 F2 (main's ruling, director13): on any path, a sentence of hers claiming a taste or an experience of her own, or saying she is
   // not an AI, goes (never her whole line); code's honest line says "meri apni koi pasand nahi" and is kept
