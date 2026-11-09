@@ -54,6 +54,9 @@ export interface TutorFaceProps {
   noProbe?: boolean;
   /** UI language for the accessible "<name>, AI teacher" on every tier. */
   lang?: string;
+  /** The name the child gave her (Teacher.tsx: useTeacher). Default the character's own. The accessible name and the
+   *  voice ring use it, so they never disagree with the "{T} · AI teacher" caption (audit FACE-06). */
+  name?: string;
   /** The child's "voice and board only" presentation (prefs.face === "voice") → tier E. */
   voiceOnly?: boolean;
 }
@@ -128,7 +131,8 @@ const bandKey = (b: string): BandKey => (b === "b1" || b === "b2" || b === "b3" 
 
 export function TutorFace(p: TutorFaceProps) {
   const tutor: TutorCharacter = faceTutor(p.tutorId, String(p.band));
-  const label = `${tutor.displayName.roman}, ${copy("aiTeacher", p.lang ?? "english")}`;
+  const shownName = p.name?.trim() || tutor.displayName.roman;
+  const label = `${shownName}, ${copy("aiTeacher", p.lang ?? "english")}`;
   const look = useMemo(() => rigLookFor(tutor), [tutor.id]);
   const initial = useMemo(() => {
     const d = decideTier(p.tier, { voiceOnly: p.voiceOnly });
@@ -264,7 +268,7 @@ export function TutorFace(p: TutorFaceProps) {
     return (
       <div className={`${cls} tx-tutorface--voice`} style={p.style} data-tier="E" data-tutor={tutor.id} role="img" aria-label={label}>
         <VoiceRing sources={sources} color={tutor.look.signatureColor} />
-        <span className="tx-tutorface-name" aria-hidden="true">{tutor.displayName.roman}</span>
+        <span className="tx-tutorface-name" aria-hidden="true">{shownName}</span>
         <span className="tx-tutorface-ai" aria-hidden="true">{copy("aiTeacher", p.lang ?? "english")}</span>
       </div>
     );

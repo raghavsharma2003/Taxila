@@ -75,3 +75,73 @@ test("FACE-02: a greeting clip is found where the production image keeps it (dis
   assert.match(docker, /COPY --from=build \/app\/dist \.\/dist/);
   assert.doesNotMatch(docker, /COPY public /, "if the image ever copies public/, this finding's premise changes");
 });
+
+// FACE-04: the day's greeting was marked as given before the clip played, and the trigger was pointerdown, which does not
+// unlock sound for a touch. A refused play, a load error or a Start tap that left the home spent the greeting silently.
+test("FACE-04: the greeting starts on a gesture that unlocks sound, and the day is spent only once she is heard", async () => {
+  const G = await import("../src/face-puppet/useDailyGreeting.ts");
+  assert.deepEqual([...G.GREETING_GESTURES], ["pointerup", "keydown"], "touch activation is granted on pointerup, never pointerdown");
+  const h = src("src/face-puppet/useDailyGreeting.ts");
+  assert.doesNotMatch(h, /"pointerdown"/);
+  assert.match(h, /for \(const t of GREETING_GESTURES\)/);
+  assert.match(h, /addEventListener\("playing", \(\) => \{ if \(!alive\) return; mark\(g\.day\); setSpeaking\(true\); \}\)/, "marked at her first sound");
+  assert.match(h, /if \(!g\.clip\) \{ mark\(g\.day\); glance\(\); return; \}/, "no clip: the glance is the greeting");
+  const go = h.slice(h.indexOf("const go = () =>"), h.indexOf("audio.play()"));
+  assert.equal((go.match(/mark\(g\.day\)/g) ?? []).length, 2, "no unconditional mark before play()");
+});
+
+// FACE-05: <Protege> asked for a glance every 3.6 s while she LISTENED too, and Behaviour.lookAt drops a look in
+// listening (she keeps her eyes on the child), so those cues were emitted and never seen.
+test("FACE-05: the protege glance is asked for only in states where her eyes can go there", async () => {
+  const { Behaviour } = await import("../src/avatar/behaviour.ts");
+  const looked = (state) => {
+    const b = new Behaviour({ band: "b1", seed: 3 });
+    b.setState(state);
+    b.update(1, { herRms: 0, herVoiced: false, childLevel: 0 });
+    b.lookAt(18, -10, 1.3, "protege");
+    return b.log.some((e) => e.detail === "look:protege");
+  };
+  assert.equal(looked("listening"), false, "a look while the child talks is dropped by design");
+  assert.equal(looked("speaking"), true);
+  assert.equal(looked("your_turn"), true);
+  const t = src("src/ui/teacher/Teacher.tsx");
+  assert.match(t, /glance=\{p\.floor === "speaking" \|\| p\.floor === "your_turn"\}/);
+  assert.doesNotMatch(t, /glance=\{[^}]*listening/);
+});
+
+// FACE-06: the caption said the name the child gave her; the face's accessible name and the voice ring said "Asha".
+test("FACE-06: the face is named as the caption names her", () => {
+  assert.match(src("src/ui/teacher/Teacher.tsx"), /name=\{rec\.name\}/);
+  assert.match(src("src/face-puppet/LessonFace.tsx"), /name=\{p\.name\}/);
+  assert.match(src("src/face-puppet/PuppetFace.tsx"), /const label = `\$\{p\.name\?\.trim\(\) \|\| tutor\.displayName\.roman\}, /);
+  const tf = src("src/avatar/TutorFace.tsx");
+  assert.match(tf, /const shownName = p\.name\?\.trim\(\) \|\| tutor\.displayName\.roman;/);
+  assert.match(tf, /tx-tutorface-name" aria-hidden="true">\{shownName\}</, "the voice ring prints the same name");
+  assert.doesNotMatch(tf, /const label = `\$\{tutor\.displayName\.roman\}/);
+});
+
+// FACE-08: two class -> band tables; class 4 was b2 in one and b3 in the other.
+test("FACE-08: shared/tutors.js bandOfClass agrees with the app's bandForClass for every class", async () => {
+  const { bandOfClass } = await import("../shared/tutors.js");
+  const { bandForClass } = await import("../src/child/band.ts");
+  for (let c = 1; c <= 9; c++) assert.equal(bandOfClass(c), bandForClass(c), `class ${c}`);
+  assert.equal(bandOfClass(4), "b3");
+});
+
+// FACE-09: GET /api/tutors answered the raw saved id (a parked tutor for an old row) beside tutors: ["asha"].
+test("FACE-09: GET /api/tutors names the teacher the child really has", async () => {
+  const T = await import("../server/routes/tutor.js");
+  const sent = {};
+  const res = { writeHead(code, h) { sent.code = code; sent.h = h; }, setHeader() {}, end(b) { sent.body = JSON.parse(b); } };
+  const child = { id: "00000000-0000-4000-8000-000000000001", class_level: 7, teacher_id: "arjun", teacher_name: null, tutor_chosen_at: null, first_name: "A", language_pref: "english" };
+  const saved = { requireChild: T.deps.requireChild, one: T.deps.one };
+  T.deps.requireChild = async () => ({ child });
+  T.deps.one = async () => null; // no live lesson
+  try {
+    await T.routes["GET /api/tutors"]({ url: `/api/tutors?childId=${child.id}`, headers: {} }, res);
+  } finally {
+    Object.assign(T.deps, saved);
+  }
+  assert.equal(sent.body.current, "asha");
+  assert.ok(sent.body.tutors.includes(sent.body.current), "current is always one of the offered tutors");
+});

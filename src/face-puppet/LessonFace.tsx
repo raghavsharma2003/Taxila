@@ -17,6 +17,6 @@ export function LessonFace(p: TutorFaceProps) {
   const off = !puppet2dEnabled() || puppetServerKnownOff();
   return (
     <PuppetFace tutorId={tutor.id} band={String(p.band)} status={p.status} teacher={p.teacher} mic={p.mic} reducedMotion={p.reducedMotion}
-      gentle={p.gentle} affect={p.affect ?? null} framing={p.framing ?? "medium"} still={off || p.tier === "D"} lang={p.lang} className={p.className} />
+      gentle={p.gentle} affect={p.affect ?? null} framing={p.framing ?? "medium"} still={off || p.tier === "D"} lang={p.lang} name={p.name} className={p.className} />
   );
 }

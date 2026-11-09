@@ -39,6 +39,8 @@ export interface PuppetFaceProps {
   /** Poster only (cards, several faces on one screen): no WebGL context. */
   still?: boolean;
   lang?: string;
+  /** The name the child gave her; default the character's own (the accessible "<name>, AI teacher"; audit FACE-06). */
+  name?: string;
   /** A Director affect window (TutorFace's `affect` prop: ReactionGate-gated upstream), armed for her next onset. */
   affect?: Emotion | null;
   gentle?: boolean;
@@ -102,7 +104,7 @@ export const PUPPET_TUTORS: ReadonlySet<string> = new Set(["asha"]);
 
 export function PuppetFace(p: PuppetFaceProps) {
   const tutor = faceTutor(p.tutorId, p.band);
-  const label = `${tutor.displayName.roman}, ${copy("aiTeacher", p.lang ?? "english")}`;
+  const label = `${p.name?.trim() || tutor.displayName.roman}, ${copy("aiTeacher", p.lang ?? "english")}`;
   const host = useRef<HTMLDivElement>(null);
   const stage = useRef<PuppetStage | null>(null);
   const [look, setLook] = useState<PuppetLook | null>(() => faceLookNow());
