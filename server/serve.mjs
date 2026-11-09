@@ -134,7 +134,11 @@ const warmed = RELAY ? {} : await warmSync();
 if (Object.keys(warmed).length) console.log(`[serve] boot warm ${JSON.stringify(warmed)}`);
 
 const server = http.createServer((req, res) => {
-  const path = decodeURIComponent((req.url || "/").split("?")[0]);
+  // A malformed escape ("/%", "/%E0%A4") makes decodeURIComponent throw; uncaught here it took the whole process down
+  // (every lesson and socket on the replica), from one unauthenticated request. It is a bad request, nothing more.
+  let path;
+  try { path = decodeURIComponent((req.url || "/").split("?")[0]); }
+  catch { res.writeHead(400, { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" }); return res.end("bad request"); }
   if (RELAY) {
     if (path === "/api/health") return handle(req, res);
     res.writeHead(404, { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" });
