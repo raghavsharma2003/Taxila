@@ -26681,6 +26681,27 @@
    "at": "2026-11-09",
    "title": "Script walk v6.7: asides that come back; every path through the parts. Brain: A3 root-cause why A2 did not fire live, with predicates replayed from the director15 rows (a taste question answered on the asking turn, 0 parked; every parked aside returned by its card's close or the wrap, 0 lost; an aside question ends her turn; a repeated aside acknowledged; an aside reply states nothing not in the child's words); P5 the content-filter fallback, B1′ and worked-step paths build parts, a fallback drops only model parts (every graded turn has a verdict part; every part on its own beat's board); P4′ a miss verdict naming the child's answer or a value is said on the answered card's page before the remediation's (counted as paging from director16); B1″ the live beat is the open card's beat or the running worked step, never a closed card, an untaught point or a remediation's board, and 'Ab Hindi mein' changes the words; V1′ the hook is authored only, a second miss always takes the scripted give-up (no model 'break'), no method reads; R4 register on the code side (the worked problem stated once, no 'Diya hai… Dhoondhna hai…' recital, varied close joints, check-ins 3–5 forms at most every third turn, mark→nishaan never touches 'question mark', no gender slips); K4 'aage chalo' after a closed card moves on, 'pata nahi, aap batao' gets the simpler, a first miss never a bare re-pose; H4 the counter checks each part's beat against the drawn page's beat, counts the P4′ shape, must flag director15's 5 hand rows plus the P4′ rows with ≤2 other false flags; speed: find the +220 ms. Studio: S9b root-cause c6 stuck 18 (no second view on a remediation's board). Learning: D10 the register rewrite of the four pilots' spoken fields (reversal clause 2 taken), the ask-board '?' lint, the c5-t02 s1 and c5-t01 key leaks, the validator's 'no later key' extended to then-cards and later distractors. Why: director15 contradictions 22→5 with false keys back to 0 and P4 paging 132/134 closes correctly; the remaining contradictions and all 3 missing verdicts are paths that bypass P4; listening, register and promises fail in every topic, led by lost or parked asides. Clause 1 not triggered at 4 by a consistent ruling (raw 6); clause 3 taken (counter missed 4/5). Reverse: director16 has more than 5 paging + second-view contradictions by hand with the P4′ shape counted → one code-drawn board per card, held, unconditionally; register still below 3.5 with D10 and R4 in place → code's frames move into the scripts, authored per topic by Learning; H4 misses more than 1 of the hand count → the 30-topic batch is screened only by hand judging.",
    "source": "inbox/r7-main-33.json"
+  },
+  {
+   "id": "dc-r7-games-badlaav",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "badlaav (change) as a never-timed law family for class 7 science chapter 5. palat (t01): nishaan (s2, s1) run a kit change and mark the kit sign it showed or 'nothing new'; ulta (s3, s1) run it, try to undo it (cool / warm), say it came back, is the same stuff not back (torn paper on every card) or a new substance; ghol (s4) ghee and wax on a warm tawa, sugar and salt into cold water on a kitchen scale whose pointer stays put as it dissolves. aag (t02): trikon (s2, s1) a sigri and its fire triangle: take the wood out, lid on (out a wait at a time), lid off, fan; raakh (s4, s1) a fire burnt down a wait a piece, a closer look finds the gases, each product into the air or left behind; jang (s3) iron kept damp or dry, another day, rust only with water and air. No act lights a fire; the fire is a picture. Facts only from kit expectations, misconceptions, the worked example and verified items; steps, glows, pieces and days are scene values. Why: the two topics had no game. Reverse: a child pilot shows the marks / answers tapped by trial (many not_seen / wrong refusals per level) rather than read from the picture.",
+   "source": "inbox/r7-games-badlaav.json"
+  },
+  {
+   "id": "ms-r7-games-badlaav-cert",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "badlaav play-cert (forge3-qa, p360/p412/l1366): every badlaav sample passes at every size (48 samples); every goal solved by real taps at 360 x 640 on seeds 3 and 17 at all three looks (36 runs); every mal-rule state reached (8); smallest tap target 48 px; tests/r7-games-badlaav.test.mjs 38 tests.",
+   "source": "inbox/r7-games-badlaav.json"
+  },
+  {
+   "id": "ms-r7-director15-s9b-root-cause-2026-11-09",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "director15 c6 stuck row 18 (\"picture dikhao\" over the remediation's lettered hexagon; the record re-drew the then-card's pentagon) was replayed through Brain's planTurn (tests/fixtures/replay.mjs, the run's recorded reads, no model calls). Production gets it right. Row 16 reaches Studio's seam as scriptBeat.kind \"remediation\", and row 18's preselect offers \"unrolled\": the hexagon laid straight (unrolled@1), then the pentagon. The miss is the eval harness's model of the seam. Its tree (2e9664b34, and int/r6 719104f57) never got patch 017's shownKind, so it passed the preselect no avoidKind. Its bookkeeping on the same replay gives the card's measured@1, the run's row; with the page-up kind it gives unrolled. Brain's patch 018 (docs/patches/to-brain) adds shownKind and avoidKind to the current harness; 017 no longer applies, and its S9 half is already in Brain's P4. Pinned: tests/r8-director15.test.mjs.",
+   "source": "inbox/r7-studio-31.json"
   }
  ],
  "edges": [
@@ -41758,6 +41779,16 @@
    "src": "rj-r7-proxy-contradiction-trend",
    "rel": "measured_by",
    "dst": "ms-r7-director15-hand-2026-11-09"
+  },
+  {
+   "src": "dc-r7-games-badlaav",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-badlaav-cert"
+  },
+  {
+   "src": "dc-r7-remediation-second-view",
+   "rel": "measured_by",
+   "dst": "ms-r7-director15-s9b-root-cause-2026-11-09"
   }
  ]
 }

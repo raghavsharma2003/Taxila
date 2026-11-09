@@ -33,6 +33,7 @@ import { gatiLogic } from "./gati/gati.logic.ts";
 import { bhaapLogic } from "./bhaap/bhaap.logic.ts";
 import { aakashLogic } from "./aakash/aakash.logic.ts";
 import { rangLogic } from "./rang/rang.logic.ts";
+import { badlaavLogic } from "./badlaav/badlaav.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { tileLogic } from "./darpan/tile.logic.ts";   // r7 tilings2
 import { feetaLogic } from "./feeta/feeta.logic.ts";
@@ -177,5 +178,9 @@ export const LOGIC: Record<string, AnyLogic> = {
   // colours, a base added drop by drop; a step per tap
   "rang/pehchaan": asAny(rangLogic),
   "rang/milao": asAny(rangLogic),
+  // round 7: Badlaav, physical and chemical changes, rusting and combustion (class 7 science): changes run and undone, solids
+  // melted or dissolved, a sigri's triangle, a fire burnt down, iron kept damp or dry; a step per tap
+  "badlaav/palat": asAny(badlaavLogic),
+  "badlaav/aag": asAny(badlaavLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

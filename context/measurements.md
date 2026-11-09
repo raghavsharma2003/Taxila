@@ -6367,3 +6367,17 @@ The H3 counter missed 4 of the 5 hand rows.
 Reply-ready p50 2.64 → 2.86 s.
 
 Full write-up: docs/design/round7/judgements/director15-2026-11-09.md.
+
+
+<!-- merged from inbox/r7-games-badlaav.json -->
+## `ms-r7-games-badlaav-cert`
+
+badlaav play-cert, 2026-11-09 (forge3-qa, local harness, sizes p360 / p412 / l1366, every art direction): every badlaav sample passes at every size (48 samples).
+
+- **Tests:** tests/r7-games-badlaav.test.mjs, 38 tests: an independent checker with its own reading of the kit agrees with every accepted act over random play; mal-rules fold their kit ids; every fact traced to a kit sentence (item sentences only from verified items); no digit, economy word or lighting word; no act lights a fire; not-admitted m3 has no mechanic; lines fit the Studio box; variety across children; CPU-time speed bars.
+- **Browser runs** (page.mouse on canvas targets, getByTestId on DOM buttons, never a dispatch): every goal solved at 360 x 640 on seeds 3 and 17 at looks 1 to 3 (36 runs); every mal-rule state reached (8); smallest tap target 48 px.
+- **Shots:** docs/design/round7/games/runshots-badlaav/.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r7-director15-s9b-root-cause-2026-11-09` (2026-11-09): director15 c6 stuck row 18 ("picture dikhao" over the remediation's lettered hexagon; the record re-drew the then-card's pentagon) was replayed through Brain's planTurn (tests/fixtures/replay.mjs, the run's recorded reads, no model calls). Production gets it right. Row 16 reaches Studio's seam as scriptBeat.kind "remediation", and row 18's preselect offers "unrolled": the hexagon laid straight (unrolled@1), then the pentagon. The miss is the eval harness's model of the seam. Its tree (2e9664b34, and int/r6 719104f57) never got patch 017's shownKind, so it passed the preselect no avoidKind. Its bookkeeping on the same replay gives the card's measured@1, the run's row; with the page-up kind it gives unrolled. Brain's patch 018 (docs/patches/to-brain) adds shownKind and avoidKind to the current harness; 017 no longer applies, and its S9 half is already in Brain's P4. Pinned: tests/r8-director15.test.mjs.

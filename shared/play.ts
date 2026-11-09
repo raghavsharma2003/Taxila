@@ -45,6 +45,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "bhaap",      // round 7: processes of water and air (states, evaporation and condensation, convection and breezes, the water cycle and groundwater); the child runs them a step at a time
   "aakash",     // round 7: the Earth's motions, seasons and eclipses (class 7 science): a model the child spins and moves round, a step at a time
   "rang",       // round 7: acids, bases, indicators and neutralisation (class 7 science): a dropper the child works a drop at a time
+  "badlaav",    // round 7: physical and chemical changes, rusting and combustion (class 7 science): changes the child runs, undoes and tends a step at a time
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -78,6 +79,7 @@ export const MODES = {
   bhaap: ["avastha", "bhaapan", "hawa", "chakra"],   // states of water (avastha), evaporation and condensation (bhaapan), convection (hawa), the water cycle (chakra)
   aakash: ["chakkar", "ritu", "grahan"],   // rotation and revolution (chakkar), seasons (ritu), eclipses (grahan)
   rang: ["pehchaan", "milao"],   // natural indicators (pehchaan), neutralisation (milao)
+  badlaav: ["palat", "aag"],   // physical and chemical changes (palat), rusting and combustion (aag)
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -373,7 +375,7 @@ export type AankdeAct =
   | { kind: "peg"; at: number }                          // middle: the peg at slot `at` (2i on card i, 2i + 1 in the gap after it)
   | { kind: "run" }                                      // count / level / pour / fold: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct | ChhaanoAct | GatiAct | ChumbakAct | BhaapAct | AakashAct | RangAct;
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct | ChhaanoAct | GatiAct | ChumbakAct | BhaapAct | AakashAct | RangAct | BadlaavAct;
 // Kyun-Lab chumbak (round 7, magnets, class 6 science): a pin touched along a hidden magnet and its poles flagged; carriages
 // turned round and pushed together; a marked magnet's pole brought to an end; a snapped magnet's new ends labelled; magnets
 // dipped into pins; a hung magnet twisted and let go, a map turned; she turns, the compass box turns, she walks off the iron;
@@ -416,6 +418,19 @@ export type RangAct =
   | { kind: "drop"; at: number; ind: string }    // pehchaan: a drop from cup `at` onto indicator `ind` (blue, red, haldi, gudhal)
   | { kind: "sort"; at: number; bin: string }    // pehchaan: cup `at` sorted (acid, base, neutral)
   | { kind: "use"; m: string }                   // milao: soda, antacid, lime, lemon, water, danger
+  | { kind: "done" }
+  | { kind: "undo" };
+// Badlaav (round 7, physical and chemical changes, rusting and combustion, class 7 science): a change run, marked, undone and
+// filed (palat); a solid put on the tawa or into the water; a side of a sigri's fire triangle taken away or given more; a fire
+// let burn down a wait at a time and what it became placed; iron put somewhere damp or dry and another day (aag). The law answers
+// each at once, never on a clock; no act lights a fire
+export type BadlaavAct =
+  | { kind: "run" }                              // palat: run the card's change
+  | { kind: "mark"; s: string }                  // nishaan: a sign it showed (gas, colour, heat, smell, solid) or "same"
+  | { kind: "file"; bin: string }                // ulta: back, same, new
+  | { kind: "put"; at: number; to: string }      // ghol: the solid to tawa / water (at 0); jang: piece `at` to damp / dry
+  | { kind: "place"; p: string; to: string }     // raakh: a product (co2, vapour, smoke, ash) to air / left
+  | { kind: "use"; m: string; at?: number }      // cool, warm, wait, stir, gone, fuel, lid, unlid, fan, look, day, wipe (at)
   | { kind: "done" }
   | { kind: "undo" };
 // Chhaano (round 7, separating mixtures, class 6 science): a method applied to one pile (sukha) or one vessel (geela), a dry
@@ -653,6 +668,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   bhaap: ["kagaz", "chalk", "blueprint", "raat"],
   aakash: ["kagaz", "chalk", "blueprint", "raat"],
   rang: ["kagaz", "chalk", "blueprint", "raat"],
+  badlaav: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;
