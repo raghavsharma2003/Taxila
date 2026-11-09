@@ -139,11 +139,16 @@ test("rang: no word holds a number, an economy word, or a word for tasting, touc
   for (const m of view.matchAll(/"([^"\n]*)"/g)) strings.push([`view "${m[1]}"`, m[1]]);
   const BODY = /\b(tast\w*|touch\w*|drink\w*|sip|sips|lick\w*|tongue|fingers?|mouth|swallow\w*|eat|eats|eating|chakh\w*|chhoo\w*|chhu\w*|piyo|peena|pee lo|piyein|munh|jeebh|ungli|khao|khana|chaat\w*)\b/i;
   const BODY_HI = /चख|चाख|छू|छुओ|पियो|पीना|पीओ|पिएँ|मुँह|मुंह|जीभ|उँगली|उंगली|खाओ|खाना|चाट/;
+  const SAFE = /\b(safe\w*|harmless|unharmful|no harm|surakshit|bezarar|nuksaan nahi\w*|koi nuksaan nahi)\b/i;
+  const SAFE_HI = /सुरक्षित|हानिरहित|हानिकारक नहीं|नुकसान नहीं|बेज़रर|बेजरर/;
   const ECON = /\b(points?|coins?|gems?|streaks?|lives|life left|rewards?|leaderboard|rank(ing)?|xp|level up|bonus|jackpot|loot|unlock(ed)?|hurry|jaldi|time'?s up|game over)\b/i;
   for (const [where, s] of strings) {
     assert.doesNotMatch(s, BODY, `${where}: "${s}"`);
     assert.doesNotMatch(s, BODY_HI, `${where}: "${s}"`);
     assert.doesNotMatch(s, ECON, `${where}: "${s}"`);
+    // the lead's ruling on t02 m1: the answer is the kit's "a salt and water form, heat is given out", never "safe"
+    assert.doesNotMatch(s, SAFE, `${where}: "${s}"`);
+    assert.doesNotMatch(s, SAFE_HI, `${where}: "${s}"`);
   }
   // no number on screen: drop counts are scene values, never shown as digits
   for (const [k, v] of RANG_WORDS) for (const l of LANGS) assert.doesNotMatch(v[l].replace(/\{\w+\}/g, ""), /[0-9०-९]/, `${k} ${l} states a number`);
@@ -209,7 +214,7 @@ for (const [mode, goal] of CASES) {
 // sentence; a cup may be sorted only into its own kind, and only once the colours seen leave no other kind. t02: hibiscus
 // water in the acid is pink until the base drops added reach what the glass takes (plus a drop for each drop of lemon juice,
 // an acid itself), its own colour at exactly that, green past it; plain water never changes the colour (it only dilutes);
-// "Done" is taken only at the colour the card asks for; "Danger!" never changes anything.
+// "Done" is taken only at the colour the card asks for; "Harmful!" (the child's claim) never changes anything.
 const KIND = { lemon: "acid", vinegar: "acid", soap: "base", soda: "base", water: "neutral", sugar: "neutral", salt: "neutral" };
 const SAYS = { blue: { acid: "red", base: "blue", neutral: "blue" }, red: { acid: "red", base: "blue", neutral: "red" }, haldi: { acid: "yellow", base: "red", neutral: "yellow" }, gudhal: { acid: "pink", base: "green", neutral: "own" } };
 function checkCups(p, hist, a, s0, s1, refused) {
@@ -224,7 +229,7 @@ function checkCups(p, hist, a, s0, s1, refused) {
   }
 }
 function checkGlass(p, g, a, s0, s1, refused) {
-  if (a.kind === "use" && a.m === "danger") assert.ok(refused, "Danger! never changes anything");
+  if (a.kind === "use" && a.m === "danger") assert.ok(refused, "the Harmful! claim never changes anything");
   if (refused) { assert.deepEqual(s1.w, s0.w, "a refused act changes nothing"); return; }
   const row = p.goal === "boond" ? boondRow(p).card : ilaajRow(p).card, it = row[g.next];
   const base = p.goal === "boond" ? "soda" : { ant: "soda", stomach: "antacid", soil: "lime" }[it.cse];
@@ -266,7 +271,7 @@ test("rang: random play — the checker agrees with every step the law takes", (
   assert.ok(accepted > 400 && sorts > 40 && dones > 10, `accepted ${accepted}, sorts ${sorts}, dones ${dones}`);
 });
 
-test("rang: the law's answers (litmus, haldi first, a short gudhal, the pink that goes, water, green, Danger!)", () => {
+test("rang: the law's answers (litmus, haldi first, a short gudhal, the pink that goes, water, green, the Harmful! claim)", () => {
   const lv = (mode, goal, fade, pred) => { for (let seed = 1; seed < 60; seed++) { const c = L.generate(req(mode, goal, seed, { fade })).find((x) => pred(x.level.params)); if (c) return L.validate(c.level); } throw new Error(`no ${goal}`); };
   // litmus: an acid is decided by blue litmus alone; a neutral liquid needs both strips; red litmus alone leaves it open
   const lit = lv("pehchaan", "litmus", 1, () => true), cups = cupsOf(lit.params);

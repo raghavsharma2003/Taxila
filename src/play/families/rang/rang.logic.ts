@@ -28,7 +28,7 @@
 //                       stays blue for it too
 //   water-only (t02 m2) "Done" on a pink glass after plain water went in: water only dilutes; it stays pink, acidic
 //   too-much   (t02 m3) "Done" for no pink after more base than it needed: it has turned green, basic
-//   harm-mix   (t02 m1) "Danger!" once a base has gone into the acid: the label shows what forms, a salt and water (heat
+//   harm-mix   (t02 m1) the claim "Harmful!" ("Yeh nuksaan karega") once a base has gone into the acid: the label shows what forms, a salt and water (heat
 //                       given out); nothing harmful is drawn
 // Not admitted (by the lead's ruling, the teacher's lines, never a mechanic): t01 m1 (acids are dangerous and burn), t01 m2
 // (tasting is fine; acids taste sour), t01 m4 (bases are always safe). No act here tastes, touches or drinks anything.
