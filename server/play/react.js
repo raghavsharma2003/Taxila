@@ -38,6 +38,7 @@ import { chumbakHidden, CHUMBAK_MODES } from "../../src/play/families/kyun-lab/c
 import { bhaapHidden } from "../../src/play/families/bhaap/bhaap.logic.ts";
 import { aakashHidden } from "../../src/play/families/aakash/aakash.logic.ts";
 import { rangHidden } from "../../src/play/families/rang/rang.logic.ts";
+import { badlaavHidden } from "../../src/play/families/badlaav/badlaav.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -123,6 +124,9 @@ export function hiddenOf(level) {
   // r7 rang: the words that give the idea away (which colour means what, extra base turns green, each use's own base) are
   // never said first. Checked by family first
   if (level.family === "rang") return rangHidden(level);
+  // r7 badlaav: the words that give the idea away (a new substance, it cannot be reversed, dissolving needs no heat, oxygen,
+  // where the burnt fuel went, rust needs water) are never said first. Checked by family first
+  if (level.family === "badlaav") return badlaavHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];
