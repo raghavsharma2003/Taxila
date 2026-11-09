@@ -2270,7 +2270,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // v6.5 B1 (main, director13 c5-t02 offtopic 4: "2/5 aur 2/3 mein kaunsa bada hai?" with no card): in a scripted lesson, a turn
     // with no card asks no question of hers — only code's own check-in may ask
     // (the worked example's own authored question is code's, not hers: a code-rendered turn keeps it)
-    if (!card && !workedLines?.length && kindNow !== "worked_example" && scriptFor(kit)?.script) { const n0 = body.length; body = body.filter((x) => !/[?？]/.test(x)); if (body.length < n0) guard.cardlessQ = n0 - body.length; }
+    // (v6.8 V1″, main on director16 rj-r7-question-drop-on-authored-text: "Neeche ka 4? Patti ke 4 barabar tukde." — a rhetorical
+    // question written into an authored point — was dropped and the point lost in 8 lessons: only HER questions go)
+    const authoredText0 = [point, ...(workedLines ?? []), state.lastMove?.simpler, state.lastMove?.cardPoint, ...(state.lastMove?.sayFirst ?? [])].filter(Boolean).map((x) => norm(x)).join(" ");
+    const authored0 = (x) => !!authoredText0 && authoredText0.includes(norm(x).replace(/[.!?।]+$/, ""));
+    if (!card && !workedLines?.length && kindNow !== "worked_example" && scriptFor(kit)?.script) { const n0 = body.length; body = body.filter((x) => !/[?？]/.test(x) || authored0(x)); if (body.length < n0) guard.cardlessQ = n0 - body.length; }
     // v6.5 P3 (main, director13: "Isi line ke neeche …" and "Aisi hi … sankhya rekha" said over Studio's bars, 6 contradictions): a
     // picture turn drawn as a second view is that view's page alone — its one line and a short pointer, no card. The card stays
     // live and is re-posed on its own board on the next turn (the child's reply there re-poses it, as any non-answer does)
@@ -2305,7 +2309,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const once = (xs) => xs.filter(Boolean).map(norm).filter((x) => { const kk = keyS(x); if (!kk || seenS.has(kk)) { if (kk) guard.dupDropped = (guard.dupDropped ?? 0) + 1; return false; } seenS.add(kk); return true; });
     // (v6.3 W1, main on director11 c5-t02 steady T65: a worked example poses its question before "Diya hai …"; an authored worked
     // line keeps its question — "Kisne kam cake khaya?" was dropped as a second question)
-    const authoredQ = new Set((workedLines ?? []).map(norm));
+    const authoredQ = new Set([...(workedLines ?? []), ...(point ? [point, dot(point), ...sentences(point)] : []), ...(state.lastMove?.simpler ? [state.lastMove.simpler, dot(state.lastMove.simpler)] : []), ...(state.lastMove?.simpler ? sentences(state.lastMove.simpler) : []), ...(state.lastMove?.cardPoint ? sentences(state.lastMove.cardPoint) : [])].map(norm));
     const noQ = (xs) => (tail ? xs.filter((x) => { const q = /[?？]/.test(x) && !authoredQ.has(norm(x)); if (q) guard.secondQuestion = (guard.secondQuestion ?? 0) + 1; return !q; }) : xs);
     // v6.1 (main's split policy B: "first trim HER own words"): a scripted turn over the word cap loses her own sentences in the
     // body (lead-ins, framings, her lines) before anything authored or code's is touched
@@ -2352,8 +2356,17 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         ...(state.lastMove?.cardPoint ? sentences(state.lastMove.cardPoint) : []), ...(card ? sentences(card) : []), ...(asked ? [asked] : []), ...(missS ? [missS] : []),
         ...(state.lastMove?.sayFirst ?? []).flatMap((x) => [x, ...sentences(x)]), ...codeLines].map(keyS));
       const n0 = body.length;
-      body = body.filter((x) => !herK.has(keyS(x)) || authoredK.has(keyS(x)));
+      // (v6.8 V1″, main on director16 c4/c6 stuck 2 and steering 2, c5-t02 steering 2: her copy after the hook survived — a later
+      // pass (an opener, a dash, a register word) had reworded her sentence, so its exact key was not in herK. Hers is matched by
+      // words too; and a hook turn says the authored hook and code's lines only)
+      const herW = [...herK].map((k) => new Set(k.split(" ").filter(Boolean)));
+      const hersLoose = (x) => { const w = keyS(x).split(" ").filter(Boolean); if (w.length < 3) return false;
+        return herW.some((h) => w.filter((t) => h.has(t)).length >= Math.ceil(w.length * 0.7)); };
+      const hookTurn = kindNow === "hook" && (state.lastMove?.sayFirst ?? []).length > 0;
+      body = body.filter((x) => authoredK.has(keyS(x)) || (!hookTurn && !herK.has(keyS(x)) && !hersLoose(x)));
       if (body.length < n0) guard.hersDropped = n0 - body.length;
+      // (v6.4 R3 after the drop: a card left bare and said before still gets its frame)
+      if (card && !lead && !body.length && !guard.reposeFrame && herPrev && prevHas(card)) { body = [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; guard.reposeFrame = true; }
     }
     const doneApart = !!d2 && state.lastMove?.closedBeat?.beatId === "worked" && state.lastMove?.closeBeat?.beatId !== "worked";
     const prevPart = once([lead, ...noQ([ack, missS, g2, doneApart ? null : d2].filter(Boolean))]);
