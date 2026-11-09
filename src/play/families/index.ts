@@ -32,6 +32,7 @@ import { chhaanoLogic } from "./chhaano/chhaano.logic.ts";
 import { gatiLogic } from "./gati/gati.logic.ts";
 import { bhaapLogic } from "./bhaap/bhaap.logic.ts";
 import { aakashLogic } from "./aakash/aakash.logic.ts";
+import { rangLogic } from "./rang/rang.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { tileLogic } from "./darpan/tile.logic.ts";   // r7 tilings2
 import { feetaLogic } from "./feeta/feeta.logic.ts";
@@ -172,5 +173,9 @@ export const LOGIC: Record<string, AnyLogic> = {
   "aakash/chakkar": asAny(aakashLogic),
   "aakash/ritu": asAny(aakashLogic),
   "aakash/grahan": asAny(aakashLogic),
+  // round 7: Rang, acids, bases, indicators and neutralisation (class 7 science): drops onto indicators, cups sorted by their
+  // colours, a base added drop by drop; a step per tap
+  "rang/pehchaan": asAny(rangLogic),
+  "rang/milao": asAny(rangLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

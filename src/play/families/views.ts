@@ -35,6 +35,7 @@ import { makeChhaanoView } from "./chhaano/chhaano.view.ts";
 import { makeGatiView } from "./gati/gati.view.ts";
 import { makeBhaapView } from "./bhaap/bhaap.view.ts";
 import { makeAakashView } from "./aakash/aakash.view.ts";
+import { makeRangView } from "./rang/rang.view.ts";
 import { makeDarpanView } from "./darpan/darpan.view.ts";
 import { makeTileView } from "./darpan/tile.view.ts";   // r7 tilings2
 import { makeFeetaView } from "./feeta/feeta.view.ts";
@@ -138,5 +139,7 @@ export const VIEWS: Record<string, MakeView> = {
   "aakash/chakkar": makeAakashView,
   "aakash/ritu": makeAakashView,
   "aakash/grahan": makeAakashView,
+  "rang/pehchaan": makeRangView,
+  "rang/milao": makeRangView,
 };
 export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }

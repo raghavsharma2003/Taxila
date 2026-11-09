@@ -121,6 +121,9 @@ export const PLAY_ACTS = Object.freeze({
   aakash: { chakkar: { act: "turn", hi: "Prithvi ko ghumao aur Sooraj ke chaaron or le jao", en: "spin the Earth and take it round the Sun" },
     ritu: { act: "move", hi: "Prithvi ko Sooraj ke chaaron or le jao aur dhoop ke dhabbe dekho", en: "move the Earth round the Sun and watch the patches of sunlight" },
     grahan: { act: "move", hi: "Chaand ko Prithvi ke chaaron or chalao aur teenon ko ek line mein lao", en: "move the Moon round the Earth and bring the three into line" } },
+  // r7 games: Rang (acids, bases, indicators and neutralisation, class 7 science): a dropper worked a drop at a time
+  rang: { pehchaan: { act: "test", hi: "har ghol ki ek boond indicator par daalo aur rang dekh kar alag karo", en: "drop each liquid on an indicator and sort it by its colour" },
+    milao: { act: "fill", hi: "boond-boond base daalo aur rang dekho", en: "add the base drop by drop and watch the colour" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape
