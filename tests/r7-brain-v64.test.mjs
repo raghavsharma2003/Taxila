@@ -78,11 +78,10 @@ describe("r7-brain-v64.test.mjs", () => {
       if (pages.length === 1 && JSON.stringify(pre.intent.boardRef) !== JSON.stringify(ask.intent.boardRef)) bad.push(`${tag}: one page, but the preselect is ${pre.intent.boardRef?.template} ${JSON.stringify(pre.intent.boardRef?.params).slice(0, 40)} and her line's ${ask.intent.boardRef?.template}`);
       // a paged turn the seam can page (as production does: a first page on the board already up — the live card's — is kept
       // still; Studio's pagesBoard keep / keepRef)
-      // (steady c5-t02 row 78 is Studio's: fraction-line@1 and fraction-bars@1 are drawn on different board sizes, 400×300 and
-      // 677×423, and pagesBoard refuses a turn whose pages differ in size — reported to main for Studio)
+      // (steady c5-t02 row 78 was exempt until Studio's S6 (04cf99ac) dropped the catalogue fallback: both its pages are now c0's
+      // own 400×300 script boards, so it pages like every other row)
       const upRef = last.before.lastMove?.cardBeat?.board ?? last.before.lastMove?.scriptBeat?.board ?? null;
-      const STUDIO_SIZE = new Set(["steady c5-t02 row 78"]);
-      if (pages.length > 1 && !STUDIO_SIZE.has(tag)) {
+      if (pages.length > 1) {
         let ok = null;
         try { ok = pagesBoard({ ...ask, intent: { ...ask.intent, intentId: `${ask.intent.intentId}:pg` }, line: { ...ask.line, text: out.reply } }, { kit, ...(upRef ? { keepRef: refKeyOf(upRef), keep: keepOf(ask, upRef, kit) } : {}) }); } catch { ok = null; }
         if (!ok) bad.push(`${tag}: unpaged (${pages.map((p) => `${p.scriptBeat?.beatId}:${p.text.split(/\s+/).length}w`).join(" | ")})`);
