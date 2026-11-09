@@ -195,7 +195,9 @@ describe("r7-brain-v65.test.mjs", () => {
       if (!rows[n] || pl.p.r.ui?.ask || pl.state.lastMove?.kind === "wrap" || pl.state.lastMove?.kind === "worked_example" || /^worked/.test(pl.state.lastMove?.scriptBeat?.beatId ?? "")) continue;
       replyDeps.chat = async () => ({ text: rows[n].text });
       const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
-      const qs = sentences(out.reply).filter((x) => /[?？]/.test(x) && !CHECKINS.has(x));
+      // (v6.7 A3: an aside's own question — the honest line, a return — is code's and ends her turn: not a question of hers)
+      const asideQ = [out.guard.returnLine, ...(out.guard.lineParts ?? []).filter((p) => p.part === "aside").map((p) => p.text)].filter(Boolean).join(" ");
+      const qs = sentences(out.reply).filter((x) => /[?？]/.test(x) && !CHECKINS.has(x) && !asideQ.includes(x.trim()));
       if (qs.length && pl.state.lastMove?.scriptBeat) bad.push(`row ${n} (${pl.state.lastMove?.kind}): ${qs.join(" ")}`);
     }
     return bad;
@@ -283,10 +285,12 @@ describe("r7-brain-v65.test.mjs", () => {
     const sc = runScriptOf(RUN, T); delete sc.recordedRun;
     setScriptForTest(T, sc);
     const { kit, last } = await replay(RUN, "stuck", T, 37);
-    const e = (last.state.later ?? []).find((x) => x.share && x.parkSaid && !x.servedAt);
-    assert.ok(e, "an aside open at row 36");
     const { step } = await import("../server/director/state.js");
-    const r = step({ ...last.state }, { event: "turn", kit, cls: { outcome: "no_evidence", confidence: 0.9, flags: {}, request: { type: "break" } }, text: "thak gayi, thoda break", now: 9_000_000 });
+    // (v6.7 A3: row 33's "aapko virat pasand hai?" is answered on its turn, never parked — a share is parked here instead)
+    const p0 = step({ ...last.state }, { event: "turn", kit, cls: { outcome: "no_evidence", confidence: 0.9, flags: {}, request: { type: "uptake", kind: "personal_share" } }, text: "kal maine cricket khela, sixer maara", now: 8_000_000 });
+    const e = (p0.state.later ?? []).find((x) => x.share && x.parkSaid && !x.servedAt);
+    assert.ok(e, JSON.stringify(p0.state.later));
+    const r = step({ ...p0.state }, { event: "turn", kit, cls: { outcome: "no_evidence", confidence: 0.9, flags: {}, request: { type: "break" } }, text: "thak gayi, thoda break", now: 9_000_000 });
     assert.equal(r.move.kind, "break");
     assert.equal(r.move.returned?.topic, e.topic, JSON.stringify(r.move).slice(0, 200));
   });

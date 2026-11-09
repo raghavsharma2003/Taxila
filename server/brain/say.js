@@ -79,6 +79,18 @@ export function honestTasteLine(topic, lang = "hinglish", n = 1) {
   return n <= 1 ? `Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe ${t} ke baare mein sabse achha kya lagta hai?`
     : [`Main AI hoon, meri koi pasand nahi hoti. Tumhara favourite kaun hai?`, `Meri apni pasand nahi hoti, main AI hoon. Tumhe ${t} ke baare mein kya achha lagta hai?`][(n - 2) % 2];
 }
+/** v6.7 A3: a parked aside's return — one question about their thing, in code, naming only their topic (fresh within 4 turns). */
+const RETURN_Q = {
+  hinglish: [(t) => `Ab tumhari ${t} wali baat: usmein tumhe sabse achha kya lagta hai?`, (t) => `${capT(t)} ke baare mein batao: tumhe usmein sabse mazedaar kya lagta hai?`, (t) => `Chalo, ab ${t} ki baat: usmein tumhara favourite kya hai?`],
+  english: [(t) => `Now your ${t}: what do you like most about it?`, (t) => `Tell me about ${t}: what's the most fun part?`, (t) => `So, ${t}: what's your favourite thing about it?`],
+};
+export const returnQuestion = (topic, lang = "hinglish", state = null) => freshForm(RETURN_Q[lang === "english" ? "english" : "hinglish"], state, String(topic ?? "").trim() || (lang === "english" ? "that" : "woh"));
+/** v6.7 A3: an aside said again, already on the list: one line, no new promise. */
+const ASIDE_AGAIN = {
+  hinglish: [(t) => `${capT(t)} wali baat maine likh li hai.`, (t) => `Haan, ${t} — woh mujhe yaad hai.`],
+  english: [(t) => `I've noted ${t} down.`, (t) => `Yes, ${t} — I've got that.`],
+};
+export const asideAgainLine = (topic, lang = "hinglish", state = null) => freshForm(ASIDE_AGAIN[lang === "english" ? "english" : "hinglish"], state, String(topic ?? "").trim());
 /** v6.6 A2: how many times her honest line was said this lesson, plus this one (her recent turns). */
 const honestN = (state) => 1 + [...(state?.recent ?? [])].filter((t) => t.who === "teacher" && /\b(?:main\s+ai|i'?m\s+an?\s+ai|meri\s+(?:apni\s+)?(?:koi\s+)?pasand\s+nahi|no\s+favourites)/i.test(String(t.text ?? ""))).length;
 /** v6.5 F1: praise or an aside's topic (never said beside a wrong verdict). */
@@ -2014,7 +2026,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (kind === "park" && !parkOk.length) { const n0 = ss.length; ss = ss.filter((x) => !(PROMISE_SAID.test(x) && !/\d/.test(x))); if (ss.length < n0) guard.parkDup = n0 - ss.length; }
       // v6.6 A2: one park promise per aside, ≤ 20 words, at most one question and only about the aside (no lesson number)
       const park1 = parkOk.filter((x) => words(x) <= 20).slice(0, 1);
-      if (kind === "park") aside.push(...(park1.length ? park1 : [freshOf(PARK_ACK[lang === "english" ? "english" : "hinglish"].map((f) => f(topic)), state)]));
+      // v6.7 A3: the promise is code's (her park line invented a fact: "Virat ke cover drives ka zikr mast hai")
+      void park1;
+      if (kind === "park") aside.push(freshOf(PARK_ACK[lang === "english" ? "english" : "hinglish"].map((f) => f(topic)), state));
       else retMine.push(...mine.filter((x) => !/^(?:aur|and about)\s+\p{L}+\s+(?:ki baat\s*)?:/iu.test(x)));
     }
     // v6.4 H2″ (main, director12): the return is ONE line of hers that answers what they said — their question too — with one of their
@@ -2024,20 +2038,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (ret?.topic && graded && verdict === "not_yet") guard.returnHeld = true;
     else if (ret?.topic) {
       const said0 = ret.said ?? "";
-      const pool = [...retMine, ...ss.filter((x) => !retMine.includes(x) && returnLineOk(x, said0, ret.topic))];
-      // (v6.5 F2: asked her own taste, she answers honestly — an AI teacher has none — and turns it back to them)
-      let line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : pool.find((x) => returnLineOk(x, said0, ret.topic)) ?? null;
+      // v6.7 A3 (main, director15: parked asides lost in every topic — her draft had no return line, the retry found none; a reply
+      // invented "Virat ke cover drives ka zikr mast hai"): the return is code's, and says nothing that is not in their words — the
+      // honest line to a question about her taste, else one question about their thing. No model call (the retry is gone: v6.6's
+      // +calls per turn)
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : returnQuestion(ret.topic, lang, state);
       if (ASKS_TASTE.test(said0)) guard.returnHonest = true;
-      ss = ss.filter((x) => x !== line);
-      if (!line && said0) {
-        // (v6.5 speed, main on director13: p50 2.64 → 3.06 s. Measured: the read (classify) call grew 893 → 1224 ms p50 with no code
-        // change, the reply 1614 → 1720 ms. This retry runs only on a return turn whose draft has no line, and is held to 1.5 s)
-        try {
-          const r = await replyDeps.chat(DEPLOY.reply, [{ role: "system", content: returnNoteOf(said0, ret.topic, lang, true) }, { role: "user", content: said0 }], { maxTokens: 40, effort: "none", timeoutMs: 1500, trace });
-          const c = (String(r?.text ?? "").match(/[^.!?\u0964]+[.!?\u0964]?/) ?? [""])[0].trim();
-          if (returnLineOk(c, said0, ret.topic)) { line = dot(c); guard.returnRetry = true; }
-        } catch { /* no line: the return is not said this turn */ }
-      }
+      { const k = String(ret.topic ?? "").toLowerCase(); ss = ss.filter((x) => !k || !x.toLowerCase().includes(k)); }
       if (line) { aside.push(line); guard.returnSaid = true; guard.returnLine = line; } else guard.returnMissed = true;
     }
     // v6.3 H2′ (director11: "Aur Virat ki baat: …" mid-card, before the promised card was closed): an open aside that is neither
@@ -2320,9 +2327,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // (with the honest line said now, no other line of hers about being an AI or her taste rides beside it)
     // (the return line itself — the honest line ends on its question to them — is never cut as a second question)
     const retQ = guard.returnLine && /[?？]/.test(guard.returnLine) && aside.includes(guard.returnLine) ? guard.returnLine : null;
-    const asideP = once([...(honestLine ? [honestLine] : []), ...(retQ ? [retQ] : []), ...noQ(aside.filter((x) => x !== retQ).filter((x) => x === guard.returnLine || !(TASTE_CLAIM.test(x) || DENIES_AI.test(x) || (honestLine && /(?<![\p{L}])ai(?![\p{L}])/iu.test(x)))))]);
+    // v6.7 A3: an aside said again, already on the list, gets one line (no promise, nothing of hers)
+    const againLine = !honestLine && state.lastMove?.asideAgain?.topic ? asideAgainLine(state.lastMove.asideAgain.topic, lang, state) : null;
+    if (againLine) { guard.asideAgain = true; guard.againLine = againLine; }
+    const asideP = once([...(honestLine ? [honestLine] : []), ...(againLine ? [againLine] : []), ...(retQ ? [retQ] : []), ...noQ(aside.filter((x) => x !== retQ).filter((x) => x === guard.returnLine || !(TASTE_CLAIM.test(x) || DENIES_AI.test(x) || (honestLine && /(?<![\p{L}])ai(?![\p{L}])/iu.test(x)))))]);
     body = once(noQ(body));
-    const assembled = [...prevPart, ...closedP, ...first, ...asideP, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
+    // v6.7 A3 (main, director15: the honest line buried by the next card in the same breath): an aside question ends her turn — it is
+    // said last, and the card waits (still live, re-posed on the next turn)
+    const asideQ = asideP.length && /[?？]\s*$/.test(asideP.at(-1)) && !graded0?.ungraded ? true : false;
+    if (asideQ && tail) { guard.cardHeld = true; tail = null; }
+    const assembled = (asideQ ? [...prevPart, ...closedP, ...first, ...body, ...asideP] : [...prevPart, ...closedP, ...first, ...asideP, ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
     // v6.6 V1: nothing authored or code's left to say — her draft is never the line in its place: the beat's own authored line
     // (else her sentences that ask nothing and carry no number)
@@ -2342,9 +2356,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         { part: "close", text: prevPart.join(" ") },
         { part: "closed", text: closedP.join(" ") },
         ...first.map((x) => ({ part: x === bridgeK ? "bridge" : "close", text: x })),
-        { part: "aside", text: asideP.join(" ") },
+        ...(asideQ ? [] : [{ part: "aside", text: asideP.join(" ") }]),
         ...body.map((x) => ({ part: guard.altOnly && x === asked ? "alt" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
         { part: tail && tail === card ? "card" : "body", text: tail ?? "" },
+        ...(asideQ ? [{ part: "aside", text: asideP.join(" ") }] : []),
       ]);
       if (joinParts(guard.lineParts) !== norm(reply)) guard.lineParts = alignParts(guard.lineParts, reply);
     }
@@ -2432,7 +2447,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const ret = state.lastMove?.returned;
     if (!clause.sent && ret?.topic && !guard.returnSaid && !guard.returnHeld && !guard.returnMissed) {
       const said0 = ret.said ?? "";
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : sentences(reply).map((x) => String(x).trim()).find((x) => returnLineOk(x, said0, ret.topic)) ?? null;
+      // (v6.7 A3: code's line, as on an assembled turn — the honest line or one question about their thing)
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : returnQuestion(ret.topic, lang, state);
       if (line) { if (!String(reply).includes(line)) reply = `${line} ${reply}`.trim(); guard.returnSaid = true; guard.returnLine = line; } else guard.returnMissed = true;
     }
   }
@@ -2445,7 +2461,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // (their own word said back is no exemption — "Virat ke cover drive … mashhoor" answered "aapko Virat pasand hai?"; the park's
       // promise is kept, and so is a line spoken to them)
       const nm = (y) => String(y ?? "").replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?]+$/, "");
-      const isRet = !!guard.returnLine && nm(x) === nm(guard.returnLine);
+      const isRet = (!!guard.returnLine && nm(x) === nm(guard.returnLine)) || (!!guard.againLine && nm(x) === nm(guard.againLine));
       return !!w && !isRet && !PROMISE_SAID.test(x) && !/(?<![\p{L}])(?:ke\s+baad|baad\s+mein|karenge|yaad\s+rahega|later)(?![\p{L}])/iu.test(x)
         && !/(?<![\p{L}])(?:tum|tumne|tumhe|tumhari|tumhara|tumko|you|your|ai)(?![\p{L}])/iu.test(x) && !LESSON_SAID.test(x) && !/\d/.test(x); };
     const ssc = sentences(reply).map((x) => String(x).trim()).filter(Boolean);

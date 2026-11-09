@@ -811,16 +811,26 @@ export function asideReturnLine(said, topic, lang = "hinglish") {
 // v6.6 A2: the child asking her own taste ("aapko Virat pasand hai?") is answered on that turn (brain/say.js's honest line), never
 // parked for a later return
 const ASKS_HER_TASTE = /(?:aapko|tumhe|aap|tum)\b.*\bpasand|do you like|your favou?rite|aapka favourite/i;
+/**
+ * v6.7 A3 (main, director15: the taste question was PARKED in every topic — the classifier reads "aapko virat pasand hai?" as an
+ * uptake, which parks through its own path, never parkAside): every park in a scripted lesson goes through here. A question about
+ * her own taste is answered on its turn (s.tasteAsked), never parked; an aside already on the list is acknowledged in one line
+ * (s.asideAgain), never parked twice. Returns the new list.
+ */
+function parkGate(s, kit, input, e) {
+  if (!scriptOn() || !scriptIdOf(kit) || scriptFor(kit)?.script?.recordedRun) return pushLater(s.later ?? [], e);
+  if (ASKS_HER_TASTE.test(String(input?.text ?? ""))) { s.tasteAsked = { topic: String(e.topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; return s.later ?? []; }
+  const k = String(e.topic ?? "").toLowerCase();
+  const had = (s.later ?? []).find((x) => String(x.topic ?? "").toLowerCase() === k || (k && String(x.topic ?? "").toLowerCase().includes(k)));
+  if (had) { s.asideAgain = { topic: String(had.topic), turn: s.turn }; return s.later ?? []; }
+  return pushLater(s.later ?? [], e);
+}
 function parkAside(s, kit, input, item) {
   if (!scriptOn() || !scriptIdOf(kit)) return;
   const topic = input.cls?.request?.topic ?? asideTopic(input.text, s.ctx.interests);
   if (!topic || unsafeChildPhrase(topic)) return;
-  if (!scriptFor(kit)?.script?.recordedRun && ASKS_HER_TASTE.test(String(input.text ?? ""))) {
-    s.tasteAsked = { topic: String(topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 };
-    return;
-  }
-  if ((s.later ?? []).some((e) => !e.servedAt && String(e.topic).toLowerCase() === String(topic).toLowerCase())) return;
-  s.later = pushLater(s.later ?? [], { ...parkEntry({ topic, learning: false, turn: s.turn, itemOnTable: !!item }), share: true });
+  if (scriptFor(kit)?.script?.recordedRun && (s.later ?? []).some((e) => !e.servedAt && String(e.topic).toLowerCase() === String(topic).toLowerCase())) return;
+  s.later = parkGate(s, kit, input, { ...parkEntry({ topic, learning: false, turn: s.turn, itemOnTable: !!item }), share: true });
 }
 /**
  * v5 B3 (director7: "Virat wali baat mujhe yaad hai" ×8, a stub): a parked aside comes back with one line of REAL content,
@@ -1801,7 +1811,8 @@ function requestMove(s, input, item, req, labels) {
           const named = !req.topic ? off : null;
           if (named && !unsafeChildPhrase(named)) {
             const e = parkEntry({ topic: named, learning: false, turn: s.turn, itemOnTable: !!item });
-            s.later = pushLater(s.later ?? [], e);
+            s.later = parkGate(s, input.kit, input, e);
+            if (!(s.later ?? []).includes(e)) return back(null);
             return back(SH.parkIt({ topic: e.topic, promise: e.promise }));
           }
           if (!req.topic) {
@@ -2137,8 +2148,10 @@ function p5RequestMove(s, input, item, req, labels) {
       if (p5Flag("R3CONV") && (req.kind === "personal_share" || (!req.topic && topic0)) && topic0 && !unsafeChildPhrase(topic0) && !sad) {
         const e = { ...parkEntry({ topic: topic0, learning: false, turn: s.turn, itemOnTable: !!item }), share: true };
         const before = (s.later ?? []).length;
-        s.later = pushLater(s.later ?? [], e);
+        s.later = parkGate(s, input.kit, input, e);
         if (s.later.length > before) return withLead(SH.uptakeShare({ topic: e.topic, promise: e.promise }));
+        // (v6.7 A3: a taste question or a repeated aside parks nothing: brain/say.js answers it; the card goes on)
+        if (s.tasteAsked?.turn === s.turn || s.asideAgain?.turn === s.turn) return withLead(null);
       }
       return withLead(SH.uptake({ kind: req.kind }));
     }
@@ -2181,7 +2194,8 @@ function p5RequestMove(s, input, item, req, labels) {
       const again = p5Flag("R3CONV") ? recentParked(s.later ?? [], s.turn, req.topic) : null;
       if (again && !again.share) { s.later = serveLater(s.later, again.id, s.turn); return withLead(SH.detourTo({ topic: again.topic })); }
       const e = parkEntry({ topic: req.topic, learning: req.learning, turn: s.turn, itemOnTable: !!item });
-      s.later = pushLater(s.later ?? [], e);
+      s.later = parkGate(s, input.kit, input, e);
+      if (!(s.later ?? []).includes(e)) return withLead(null);
       return withLead(SH.parkIt({ topic: e.topic, promise: e.promise }));
     }
     case "detour": {
@@ -2600,8 +2614,8 @@ function decide(s, input, item) {
       const filler = !said || cls?.flags?.minimal || /^(?:(?:achha|acha|accha|theek|thik|hai|haan|han|ok|okay|hmm+|ji|chalo|sahi|nahi|kuch\s+nahi|pata\s+nahi)[\s,.!?]*)+$/i.test(said);
       if (!filler && !unsafeChildPhrase(said)) {
         const e = parkEntry({ topic: said, learning: false, turn: s.turn, itemOnTable: !!item });
-        s.later = pushLater(s.later ?? [], e);
-        const lead = SH.parkIt({ topic: e.topic, promise: e.promise });
+        s.later = parkGate(s, input.kit, input, e);
+        const lead = (s.later ?? []).includes(e) ? SH.parkIt({ topic: e.topic, promise: e.promise }) : null;
         return item ? plan(moveKindFor(item), SH.leadThenPose({ item, lead }), { item, probe: probeFor(item), chips: optionChips(item), request: "park" })
           : { ...resume(s, input, item, lead), request: "park" };
       }
@@ -3098,6 +3112,7 @@ export function step(prev, input) {
   }
   // v6.6 A2: the child asked her taste this turn: brain/say.js answers it now (the n-th time this lesson: a short form after the first)
   if (s.tasteAsked?.turn === s.turn && move.kind !== "safeguard") move.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n };
+  if (s.asideAgain?.turn === s.turn && move.kind !== "safeguard" && !move.tasteAsked) move.asideAgain = { topic: s.asideAgain.topic };
   if (s.servedNow?.topic) {
     const lang = s.ctx.lang ?? "hinglish";
     const said = s.servedNow.said ?? (s.later ?? []).find((e) => e.servedAt === s.turn && e.topic === s.servedNow.topic)?.said ?? null;
