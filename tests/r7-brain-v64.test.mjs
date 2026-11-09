@@ -4,6 +4,7 @@
 import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { replay, runScriptOf } from "./fixtures/replay.mjs";
+import { FRAMES, TRY_FIRST } from "../server/brain/say.js";
 import { textReply, replyDeps, returnLineOk } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
@@ -136,7 +137,10 @@ describe("r7-brain-v64.test.mjs", () => {
       if (!card || pl.state.activeItemId !== pl.before.activeItemId) continue;
       replyDeps.chat = async () => ({ text: rows[n].text });
       const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
-      const rest = out.reply.replace(card, "").replace(/^\s*(?:Phir se dekho:|Here it is again:|Theek hai[,.]?|Achha[,.]?|Haan[,.]?|Zaroor[,.]?)\s*/i, "").trim();
+      // (v6.6 F1′: a re-pose frame in any of its forms; try-first an invitation)
+      const FR = [...FRAMES.again.hinglish, ...FRAMES.again.english, ...TRY_FIRST.hinglish, ...TRY_FIRST.english, "Theek hai,", "Theek hai.", "Achha,", "Achha.", "Haan,", "Haan.", "Zaroor,", "Zaroor."];
+      let rest = out.reply.replace(card, "").trim();
+      for (const f of FR) if (rest.toLowerCase().startsWith(f.toLowerCase())) { rest = rest.slice(f.length).trim(); break; }
       if (/Yaad karo:|Remember:/.test(out.reply)) bad.push(`row ${n}: "Yaad karo" | ${out.reply.slice(0, 100)}`);
       else if (sentences(rest).length) bad.push(`row ${n}: more than the card (${JSON.stringify(rest.slice(0, 80))})`);
     }
@@ -168,11 +172,13 @@ describe("r7-brain-v64.test.mjs", () => {
       const n = pl.row - 1;
       // her recorded line for the turn; the retry (one short call) answers with a line of its own about their words
       replyDeps.chat = async (_d, msgs) => (/^You are a warm teacher/.test(msgs?.[0]?.content ?? "")
-        ? { text: `Wah, ${String(ret.said ?? ret.topic).split(/\s+/).find((w) => w.length > 4 && !/maine|mujhe|aapko/i.test(w)) ?? ret.topic} sunkar mazaa aa gaya!` }
+        // (v6.6 A2: a return never echoes or praises their words: the stub's line answers instead)
+        ? { text: `${String(ret.said ?? ret.topic).split(/\s+/).find((w) => w.length > 4 && !/maine|mujhe|aapko/i.test(w)) ?? ret.topic} ke saath woh pal sach mein khaas raha hoga.` }
         : { text: rows[n].text });
       const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
       if (/sunke bahut achha laga|tumne mujhse .* poocha tha|lesson ke baad mujhe/i.test(out.reply)) bad.push(`row ${n}: a fixed template | ${out.reply.slice(0, 120)}`);
-      const line = sentences(out.reply).find((x) => returnLineOk(x, ret.said, ret.topic));
+      // (v6.6 A2: asked her taste, her return is the honest line, which ends on its one question to them)
+      const line = sentences(out.reply).find((x) => returnLineOk(x, ret.said, ret.topic)) ?? (out.guard.returnHonest ? out.guard.returnLine : null);
       if (!line && !out.guard.returnMissed) bad.push(`row ${n}: no return line and none reported missed | ${out.reply.slice(0, 120)}`);
       if (line) lines.push(line);
     }

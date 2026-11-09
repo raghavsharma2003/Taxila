@@ -11,7 +11,7 @@
 // exactly the same words. Model calls per scenario: about 2 per turn per lane (the classifier when code cannot decide, and
 // her reply): 3 scenarios × 10 turns ≈ 120 small calls (6 lessons). Ask main before more than about 20 lessons.
 import { mkdirSync, writeFileSync } from "node:fs";
-import { initLessonState, step } from "../server/director/state.js";
+import { initLessonState, step, requeueMissedReturn } from "../server/director/state.js";
 import { findItem } from "../server/director/items.js";
 import { classify, classifyFast, targetFor } from "../server/director/classify.js";
 import { kitFromFile } from "../server/content/kits.js";
@@ -22,6 +22,7 @@ import { saidMust, scriptOn, scriptWhyNot, scriptFor, fillFriend } from "../serv
 const scriptForKit = (kit) => scriptFor(kit)?.script ?? null;
 import { createReactiveChild, maxTurnsFor } from "./child-sim/reactive.mjs";
 import { withheldStated, pictureMismatch, authoredWhys, borrowedWhy, verdictMisplaced, falseAnswerNumbers } from "./hybrid-side-by-side/checks.mjs";
+import { drawnContradictions } from "./hybrid-side-by-side/drawn-pages.mjs";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
 import { agentBreach, noteAgentTurn, resetAgentRuns } from "../server/agent/invariants.js";
 import { newLearnerState } from "../server/comprehension/fuse.js";
@@ -278,6 +279,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       const [t, ms] = await timed(() => textReply({ instructions, state: next, kit, childText: text, history: next.recent.slice(0, -1), ui: slot ? { ...ui, tray: "studio", studioSlot: slot } : ui, module: null }));
       replyMs += ms;
       reply = t.reply; guard = t.guard?.caught?.length ? t.guard.caught : null; tGuard = t.guard ?? null;
+      // (v6.6 A2: a return her line did not say goes back on the queue, as brain/turn.js does)
+      if (t.guard?.returnMissed && next?.lastMove?.returned) next = { ...next, later: requeueMissedReturn(next, t.guard).later };
       // (main's director2 judgement: a caught problem must be told apart from a fixed one) what was left after the rewrite, and
       // whether code replaced or repaired the line
       if (guard) guardAfter = { afterRewrite: t.guard.afterRewrite ?? null, replaced: !!t.guard.replaced, repaired: !!t.guard.repaired };
@@ -357,7 +360,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         const text = String(reply).replace(/\s+/g, " ").trim();
         segs = parts.map((pt, i) => {
           const segText = text.slice(pt.atChar, parts[i + 1]?.atChar ?? text.length);
-          const a = { ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:s${i}`, boardRef: pt.boardRef, scriptBeat: pt.scriptBeat, segments: undefined, segmentPlan: undefined }, line: { ...askF.line, text: "" } };
+          // (v6.6, as Studio's pagesBoard: a later page is never asked as the picture — only the first page draws the second view;
+          // director14's c5-t01 segments recorded the card page drawn as the alt because this copy kept the request)
+          const a = { ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:s${i}`, boardRef: pt.boardRef, scriptBeat: pt.scriptBeat, segments: undefined, segmentPlan: undefined, ...(i ? { request: undefined } : {}) }, line: { ...askF.line, text: "" } };
           const pk = preselect(a, { kit });
           let scr = pk?.screen ?? null;
           try { const aR = { ...a, line: { ...a.line, text: segText } }; const tk = takePreselected(aR, gateCtxFor(aR, { kit, redact: [], prior: [] })); if (tk?.screen) scr = tk.screen; } catch { /* the preselect's board */ }
@@ -393,7 +398,20 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         answerBoard: next.lastMove?.closeBeat?.answerBoard ? next.lastMove.closeBeat.board : null,
         firstBoard: segs?.[0]?.board ?? next.lastMove?.closeBeat?.board ?? (next.lastMove?.scriptBeat?.board ?? null) }) ? 1 : 0,
     };
-    const contradictions = (segs ? segs.reduce((a, x) => a + x.contradictions, 0) : whole) + v6.picture + v6.borrowedWhy + v6.verdictSeg + v6.unpaged + v6.nothingNew + v6.droppedPages;
+    // (v6.6 H3, main on director14: the counter read 9 where hand read 22 — it read closeBeat.board, not what was drawn. The
+    // count is now the PAGES DRAWN: a graded close or a give-up's key on a page that is not the answered card's figure, a
+    // picture turn's card page drawn as the alt view, a verdict stating a fraction the answered board does not draw; plus the
+    // turns Studio could not page. The v6 word checks stay recorded beside it (contradictionsV6), no longer in the count:
+    // on director14 they flagged 8 turns the hand count did not)
+    const contradictionsV6 = (segs ? segs.reduce((a, x) => a + x.contradictions, 0) : whole) + v6.picture + v6.borrowedWhy + v6.verdictSeg + v6.unpaged + v6.nothingNew + v6.droppedPages;
+    const rowDrawn = { who: "teacher", text: reply, card: ui?.ask?.text ?? null, check, gate: { answered }, move,
+      ...(screen?.kind === "whiteboard" ? { screen: { ...screen, ...(drawn?.length > 1 ? { pages: drawn } : {}) } } : {}), ...(segs ? { segments: segs } : {}) };
+    const lastChild = [...rows].reverse().find((r) => r.who === "child") ?? null;
+    const dc = drawnContradictions(rowDrawn, [...rows].reverse().find((r) => r.who === "teacher" && r.check?.itemId) ?? null,
+      lastChild && rows.at(-1) === lastChild ? lastChild : null,
+      { answerBoard: next.lastMove?.closeBeat?.answerBoard ? next.lastMove.closeBeat.board : null });
+    v6.drawn = dc;
+    const contradictions = dc.closeOffBoard + dc.cardAsAlt + dc.modelWords + v6.unpaged + v6.droppedPages + v6.nothingNew;
     // v5 gate line: a key said ("jawab X tha") that is not one of the topic's authored key or accept forms is a false key
     // (one sentence at a time; "tumhara jawab sahi tha" states no key)
     const saidKeys = [...String(reply).matchAll(/jawab\s+([^.!?।]+?)\s+tha\b|answer was\s+([^.!?।]+?)(?:[,.]|$)/gi)].map((m) => String(m[1] ?? m[2]).trim().toLowerCase())
@@ -412,7 +430,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     const latency = { classifyPath: lastClassify?.path ?? null, parallelBoundMs: lastClassify?.path === "model" ? Math.max(classifyMs, replyMs) : classifyMs + replyMs,
       rewrite: !!tGuard?.rewritten, rewriteSkipped: tGuard?.rewriteSkipped ?? null };
     rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
-      gate: { delivered, answered, verdictGiven, contradictions, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),
+      gate: { delivered, answered, verdictGiven, contradictions, contradictionsV6, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
     lastBoardUp = boardUp;

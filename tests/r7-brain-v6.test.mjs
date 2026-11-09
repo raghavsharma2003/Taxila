@@ -24,7 +24,9 @@ describe("R1: segments from the assembled parts", () => {
   test("a graded-right verdict with its reason is one segment on the answered card's board; the beat starts after it", () => {
     const line = "Haan, sahi hai, kyunki chaaron bhujayein judi: 22 cm. Ab ek naya shape dekhte hain. Iska parimap kitna hai?";
     const move = { closeBeat: ref("c1", 9), scriptBeat: ref("c2", 5), cardBeat: ref("c2", 5) };
-    const out = boardPartsOf(move, line, "Iska parimap kitna hai?", { prev: "Haan, sahi hai, kyunki chaaron bhujayein judi: 22 cm.", verdict: "Haan, sahi hai, kyunki chaaron bhujayein judi: 22 cm." });
+    const out = boardPartsOf(move, line, "Iska parimap kitna hai?", { prev: "Haan, sahi hai, kyunki chaaron bhujayein judi: 22 cm.", verdict: "Haan, sahi hai, kyunki chaaron bhujayein judi: 22 cm.",
+      // (v6.6 P4: the line as its parts, as say.js gives it)
+      list: [{ part: "close", text: "Haan, sahi hai, kyunki chaaron bhujayein judi: 22 cm." }, { part: "body", text: "Ab ek naya shape dekhte hain." }, { part: "card", text: "Iska parimap kitna hai?" }] });
     assert.deepEqual(out.boardRef, B(9), "the verdict and its reason are said over the card they answered");
     assert.equal(out.segments.length, 1);
     assert.equal(out.segments[0].atChar, line.indexOf("Ab ek naya"));
@@ -36,7 +38,7 @@ describe("R1: segments from the assembled parts", () => {
     const c = "Aur pehle wale sawaal ka jawab 20 cm tha.";
     const line = `${v} ${c} Ek triangle ki bhujayein 7 m, 9 m aur 12 m hain. Kitni lambi baad lagegi?`;
     const move = { closeBeat: ref("e3", 9), closed: { answer: "20 cm" }, closedBeat: ref("then:x", 6), scriptBeat: { ...ref("worked", 7), kind: "worked" } };
-    const out = boardPartsOf(move, line, null, { prev: v, verdict: v, closed: c });
+    const out = boardPartsOf(move, line, null, { prev: v, verdict: v, closed: c, list: [{ part: "close", text: v }, { part: "closed", text: c }, { part: "body", text: line.slice(line.indexOf("Ek triangle")) }] });
     assert.deepEqual(out.boardRef, B(9));
     assert.deepEqual(out.segments.map((x) => [x.atChar, x.boardRef.params.w]), [[line.indexOf("Aur pehle"), 6], [line.indexOf("Ek triangle"), 7]]);
   });
@@ -45,9 +47,10 @@ describe("R1: segments from the assembled parts", () => {
     const v = "Haan, sahi hai.", br = "Ab tak humne bhujaon se parimap nikala.";
     const line = `${v} ${br} Rectangle mein lambai do baar aati hai.`;
     const move = { closeBeat: ref("c2", 9), sayFirst: [br], scriptBeat: { ...ref("e1", 4), kind: "explain" } };
-    const none = boardPartsOf(move, line, null, { prev: v, bridge: br });
+    const list = [{ part: "close", text: v }, { part: "bridge", text: br }, { part: "body", text: "Rectangle mein lambai do baar aati hai." }];
+    const none = boardPartsOf(move, line, null, { prev: v, bridge: br, list });
     assert.deepEqual(none.segments.map((x) => [x.atChar, x.boardRef.params.w]), [[line.indexOf("Rectangle"), 4]]);
-    const own = boardPartsOf({ ...move, bridgeBeat: { ...ref("bridge", 3), kind: "bridge" } }, line, null, { prev: v, bridge: br });
+    const own = boardPartsOf({ ...move, bridgeBeat: { ...ref("bridge", 3), kind: "bridge" } }, line, null, { prev: v, bridge: br, list });
     // (director10: a bare 3-word verdict is no first page of its own; it is said over the bridge's board)
     assert.deepEqual(own.boardRef, B(3));
     assert.deepEqual(own.segments.map((x) => [x.atChar, x.boardRef.params.w]), [[line.indexOf("Rectangle"), 4]]);
@@ -261,14 +264,15 @@ describe("R4 in the lesson (c6 skill-1 v2 fixture)", () => {
     const L = run();
     for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
     const card = L.r.state.activeItemId;
-    L.t("aapko virat pasand hai?", { ...cls("no_evidence"), request: { type: "answer_q" } });
+    // (v6.6 A2: a share is parked; a question about HER taste is answered on its own turn, never parked)
+    L.t("mujhe virat bahut pasand hai", { ...cls("no_evidence"), request: { type: "uptake", kind: "personal_share" } });
     assert.ok((L.r.state.later ?? []).some((e) => /virat/i.test(e.topic) && !e.servedAt), JSON.stringify(L.r.state.later));
     L.t("haan");
     if (L.r.state.activeItemId === card) assert.equal(L.r.move.returned, undefined, "never while the card it was parked on is live");
     for (let i = 0; i < 4 && !L.r.move.returned; i++) L.t(String(L.r.state.scriptCard?.answer ?? "haan"), cls("correct"));
     assert.match(L.r.move.returned?.topic ?? "", /virat/i, JSON.stringify(L.r.move));
     // (v6.4 H2″: no code line; the move carries their words for her one line)
-    assert.match(L.r.move.returned?.said ?? "", /virat pasand/i);
+    assert.match(L.r.move.returned?.said ?? "", /virat bahut pasand/i);
   });
 
   test("a return of hers that is an analogy or puts words in their mouth goes; the real line is said", async () => {

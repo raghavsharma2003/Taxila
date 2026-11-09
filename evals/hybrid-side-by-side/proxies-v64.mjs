@@ -2,6 +2,7 @@
 // per-turn gate fields, counted the same way for every run given, so two runs sit side by side.
 //   node evals/hybrid-side-by-side/proxies-v64.mjs evals/hybrid-side-by-side/results/<runA> [<runB> …]
 // These are PROXIES: main's judges count by hand. Each counter says what it matches.
+import { drawnContradictionsOf } from "./drawn-pages.mjs";
 import { readFileSync, readdirSync } from "node:fs";
 import { verdictMisplaced } from "./checks.mjs";
 
@@ -30,7 +31,7 @@ const q50 = (a) => { const s = [...a].filter((x) => typeof x === "number").sort(
 const normS = (x) => String(x ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
 const ENGLISH_W = /(?<![\p{L}])(?:fractions?|parts?|pieces?|sides?|perimeter|total|marks?|lines?|equal|answer|steps?)(?![\p{L}])/giu;
 
-function scriptsOf(dir) {
+export function scriptsOf(dir) {
   try { return Object.fromEntries(readdirSync(`${dir}/scripts`).map((f) => { const j = JSON.parse(readFileSync(`${dir}/scripts/${f}`, "utf8")); return [j.topicId, j]; })); } catch { return {}; }
 }
 /** A scripted card id → its authored key words (for the Hindi check: a key word stays as written). */
@@ -44,7 +45,7 @@ function keyOf(scripts, topicId, itemId) {
   const said = (x) => (x && typeof x === "object" ? `${x.hi ?? ""} ${x.en ?? ""}` : x ?? "");
   return [said(card?.key), ...(card?.accept ?? []).map(said)].join(" ").toLowerCase();
 }
-const answerBoardOf = (scripts, topicId, itemId) => {
+export const answerBoardOf = (scripts, topicId, itemId) => {
   const m = /^script:([^:]+):(.+)$/.exec(String(itemId ?? ""));
   const sk = m && scripts[topicId]?.skills?.find((s) => s.skillId === m[1]);
   if (!sk) return null;
@@ -63,6 +64,8 @@ export function proxies(dir) {
     returns: 0, returnsOnTime: 0, returnsTheirWord: 0, returnsTemplate: 0, canned: 0,
     hindiRequests: 0, hindiSaid: 0, hindiEnglishAfter: 0, reposeBare: 0, sameAsPrev: 0, samajhAaya: 0, aglaKadam: 0, skillLeft: 0,
     frameRepeat: 0, tasteClaim: 0, deniesAi: 0, cardlessQ: 0, remediationResaid: 0, cannedAnyTurn: 0, pichhleLive: 0, latency: {},
+    // v6.6 H3: contradictions read from the pages drawn (drawn-pages.mjs), per kind, with the rows
+    drawn: { total: 0, closeOffBoard: 0, cardAsAlt: 0, modelWords: 0, perTopic: {}, rows: [] },
     rows: { orphan: [], unanswered: [], yaadKaroLive: [], twoClose: [], carriedAfterProbe: [], returnsLate: [], returnsTemplate: [], hindiMiss: [], reposeBare: [], droppedPages: [] } };
   for (const f of readdirSync(dir).filter((x) => /^(steady|offtopic|stuck|steering)-.*\.json$/.test(x)).sort()) {
     const j = JSON.parse(readFileSync(`${dir}/${f}`, "utf8"));
@@ -212,6 +215,12 @@ export function proxies(dir) {
     // a card still live when the lesson ends is not counted as unanswered
     for (const [id, at] of posed) if (!closed.has(id) && id !== liveCard) { t.unanswered++; t.rows.unanswered.push(`${tag} ${id.split(":").slice(2).join(":")}@${at}`); }
     if (skills.size > 1) t.skillLeft++;
+    for (const d of drawnContradictionsOf(rows, { answerBoardOf: (id) => answerBoardOf(scripts, j.topicId, id) })) {
+      const n = d.closeOffBoard + d.cardAsAlt + d.modelWords;
+      t.drawn.total += n; t.drawn.closeOffBoard += d.closeOffBoard; t.drawn.cardAsAlt += d.cardAsAlt; t.drawn.modelWords += d.modelWords;
+      t.drawn.perTopic[topic] = (t.drawn.perTopic[topic] ?? 0) + n;
+      t.drawn.rows.push(`${tag} ${d.i} ${d.closeOffBoard ? "close" : d.cardAsAlt ? "alt" : "words"}`);
+    }
     t.latency[tag] = { replyReadyP50: q50(ready), readP50: q50(read), n: ready.length };
   }
   return t;

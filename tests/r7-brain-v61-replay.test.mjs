@@ -52,7 +52,8 @@ describe("r7-brain-v61-replay.test.mjs", () => {
     replyDeps.chat = async () => ({ text: "Bilkul, Riya: pehla hissa 1/8 km hai." });
     const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
     // (R7: the right answer's reason is the card's authored why, said by code)
-    assert.match(out.reply, /^Bilkul, Riya: pehla hissa 1\/8 km hai, kyunki sadak 8 barabar hisson mein hai/, out.reply);
+    // (v6.6 V1: the verdict is code's frame, never her words, with the authored why)
+    assert.match(out.reply, /^(?:Haan, sahi hai|Bilkul sahi|Haan, bilkul theek|Sahi jawab), kyunki sadak 8 barabar hisson mein hai/, out.reply);
     const a21 = intentAt(L, last, kit, out.reply, out.guard?.parts);
     // the dropping side (Brain): a 3-word tail ("Ab agla hissa.") was its own page back on the answered card's board; Studio could
     // not draw that page in its time (W6.timing), the paged turn failed and the revealed verdict page never reached the screen

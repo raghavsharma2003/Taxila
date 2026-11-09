@@ -57,7 +57,8 @@ export function pictureMismatch(text, board, altView = null) {
   // a line for bars — and her words describe that view: what it draws counts as drawn too)
   const ALT = { parts: "bar patti strip parts hisse tukde", bars: "bar patti strip parts hisse tukde", line: "line rekha number", wholes: "parts hisse tukde", groups: "group samooh plate", round: "circle gol parts hisse tukde", example: "bar patti strip parts hisse tukde",
     // (v6.5, main on director13: Studio's unrolled view lays a shape's sides end to end on a line)
-    unrolled: "line rekha sides side bhuja bhujayein seedhi straight" };
+    // (v6.6, main on director14: the unrolled sides are drawn as a strip, "patti")
+    unrolled: "line rekha sides side bhuja bhujayein seedhi straight patti strip" };
   const av = typeof altView === "string" ? altView : altView?.view ?? null;
   const has = `${boardNouns(board)} ${av ? ALT[av] ?? "" : ""}`;
   const out = [];

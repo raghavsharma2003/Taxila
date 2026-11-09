@@ -896,4 +896,4 @@ export interface ScriptBeatOnAsk {
 /** `ofCard` (App's LESSON-REPLAY-d10 3b): this page's board is the open card's own board (true) or another (false); absent when no
  *  card is open — the same field rides on the intent for its first page. A new card is always on the last page. */
 export interface BoardSegment { atChar: number; atClause?: number | null; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk; ofCard?: boolean }
-export interface BoardSegmentPart { part: "close" | "closed" | "bridge" | "body" | "card"; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk; said?: string[] }
+export interface BoardSegmentPart { part: "close" | "closed" | "bridge" | "simpler" | "alt" | "aside" | "body" | "card" | "line"; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk; said?: string[] }

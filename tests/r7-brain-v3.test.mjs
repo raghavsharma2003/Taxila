@@ -99,7 +99,8 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     // a wrong answer with the previous card's give-up reveal on the move: the reveal never comes before the verdict
     replyDeps.chat = async () => ({ text: `9 sahi nahi hai. Chalo phir se dekhte hain. ${card}` });
     const a = await textReply({ instructions: "x", state: { ...st, lastMove: { ...st.lastMove, gave: { answer: "38 m", why: "" } } }, kit: K, childText: "9", verdict: "not_yet", history: [], ui: L.r.ui, module: null });
-    assert.match(a.reply, /^9 sahi nahi hai\./, a.reply);
+    // (v6.6 F1′: a give-up never opens on their wrong answer again — code's plain not-right frame)
+    assert.match(a.reply, /^(?:Nahi, yeh jawab nahi hai|Yeh jawab sahi nahi hai|Abhi yeh sahi nahi hai|Nahi, yeh theek nahi hai)\./, a.reply);
     assert.ok(a.reply.includes("38 m"), "the reveal is still said");
     // a wrong answer whose line has no verdict at all: code adds it
     replyDeps.chat = async () => ({ text: card });
@@ -202,7 +203,7 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     replyDeps.chat = async () => ({ text: "Koi baat nahi, ek alag tarah se dekhte hain." });
     const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "7 cm", verdict: "not_yet", history: [], ui: L.r.ui, module: null });
     const item = findItem(L.r.state, K, L.r.move.itemId ?? L.r.state.activeItemId);
-    const ask = whiteboardIntentOf({ lessonId: "L", turn: L.r.state.turn, beat: { id: "b", type: "explain" }, next: L.r.state, kit: K, item, line: { text: out.reply } });
+    const ask = whiteboardIntentOf({ lessonId: "L", turn: L.r.state.turn, beat: { id: "b", type: "explain" }, next: L.r.state, kit: K, item, line: { text: out.reply, parts: out.guard.parts } });
     // v5 B1: the say on the remediation board from 0, then the card on its own board from where the card starts
     assert.deepEqual(ask.intent.boardRef, L.r.move.scriptBeat.board, "the say's board comes first");
     const seg = ask.intent.segments ?? [];
@@ -219,7 +220,9 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     // a closure is spoken over the board it closes, before the switch
     const closeB = { template: "shape@1", params: { shape: "square" } };
     const line = `Haan, sahi hai. Toh poora jawab: 12 cm, kyunki sab jodo. ${card}`;
-    const parts = boardPartsOf({ workedDone: { answer: "12 cm" }, closeBeat: { board: closeB, kind: "check", beatId: "c1" }, cardBeat: { board: r0.then.board, kind: "check", beatId: "x", ownBoard: true } }, line, card);
+    // (v6.6 P4: the line as its parts — a line is never searched for its closure)
+    const parts = boardPartsOf({ workedDone: { answer: "12 cm" }, closeBeat: { board: closeB, kind: "check", beatId: "c1" }, cardBeat: { board: r0.then.board, kind: "check", beatId: "x", ownBoard: true } }, line, card,
+      { list: [{ part: "close", text: "Haan, sahi hai. Toh poora jawab: 12 cm, kyunki sab jodo." }, { part: "card", text: card }] });
     assert.deepEqual(parts.boardRef, closeB);
     assert.equal(parts.segments?.[0]?.atChar, closureEnd(line));
     assert.equal(line.slice(parts.segments[0].atChar), card);
@@ -250,8 +253,9 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     replyDeps.chat = async () => ({ text: `Haan, sahi hai. Haan, tumne bilkul sahi socha. Tumne pehle sab ko jodkar phir guna kiya. ${card}` });
     const out = await textReply({ instructions: "x", state: st, kit: K, childText: "12 cm", verdict: "correct", history: [], ui: L.r.ui, module: null });
     assert.equal((out.reply.match(/\bsahi\b/g) ?? []).length, 1, out.reply);
-    assert.match(out.reply, /tumne bilkul sahi socha/, "the richer verdict stays: " + out.reply);
-    assert.doesNotMatch(out.reply, /Haan, sahi hai\./, out.reply);
+    // (v6.6 V1, main on director14: the verdict is code's frame, never her words — "the richer verdict stays" is retired)
+    assert.match(out.reply, /^(?:Haan, sahi hai|Bilkul sahi|Haan, bilkul theek|Sahi jawab)\b/, out.reply);
+    assert.doesNotMatch(out.reply, /tumne bilkul sahi socha/, out.reply);
     assert.doesNotMatch(out.reply, /Tumne pehle sab ko jodkar/, out.reply);
     assert.ok(out.reply.trim().endsWith(card), out.reply);
     const long = Array.from({ length: 8 }, (_, i) => `Yeh ek lambi baat hai jo number ${i} ke baare mein hai.`).join(" ");
@@ -271,8 +275,10 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     replyDeps.chat = async () => ({ text: `Wah! ${card}` });
     const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "kal maine cricket khela, sixer maara", history: [], ui: L.r.ui, module: null });
     assert.match(out.reply, /cricket/i, out.reply);
+    // (v6.6 A2: asked her own taste, she answers on that turn — the ask is not parked for a later return)
     L.t("aapko virat pasand hai?", { ...cls("no_evidence"), request: { type: "answer_q" } });
-    assert.ok((L.r.state.later ?? []).some((x) => /virat/i.test(x.topic)), JSON.stringify(L.r.state.later));
+    assert.match(L.r.move.tasteAsked?.topic ?? "", /virat/i, JSON.stringify(L.r.move));
+    assert.ok(!(L.r.state.later ?? []).some((x) => /virat/i.test(x.topic) && !x.servedAt), JSON.stringify(L.r.state.later));
   });
 
   test("latency cut 1: a script draft whose only problems the assembly fixes is not rewritten; the turn equals the rewrite path's, but for her lead-in", async () => {

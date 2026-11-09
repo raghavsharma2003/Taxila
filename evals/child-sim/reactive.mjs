@@ -179,6 +179,7 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
   const misses = new Map();
   const whichAsked = new Map();                   // director9: "which question?" per card, capped so no persona loops
   const answered = new Set();                     // H1.2: cards answered right are not answered again
+  let liveLeave = null;                           // v6.6: the last keyed card she posed, still open across a turn with no card id
   const log = [];
   const say = (out) => { const o = { ...out, text: gendered(out.text, girl) }; log.push(o); return o; };
   return {
@@ -189,7 +190,11 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
       // up to LEAVE_WAIT turns, so a lesson never ends on an unanswered card because the child left mid-question)
       const cLeave = input.card ?? input.ask ?? null;
       const cidLeave = input.card?.itemId ?? `${input.beat?.skillId ?? ""}/${input.beat?.beatId ?? ""}`;
-      const openCard = !!(cLeave && cLeave.key != null && String(cLeave.key).trim() && posed(input.teacher) && !answered.has(cidLeave));
+      // (v6.6, main on director14 c6 stuck 65: a remediation turn re-asks the open card with no card id of its own — the card is
+      // still open while her line asks and it is not answered)
+      if (cLeave && cLeave.key != null && String(cLeave.key).trim()) liveLeave = cidLeave;
+      const openCard = posed(input.teacher) && (cLeave && cLeave.key != null && String(cLeave.key).trim() ? !answered.has(cidLeave)
+        : !!liveLeave && !answered.has(liveLeave));
       if (turn >= P.leaveAfter && turn >= MIN_TURNS && (!openCard || turn >= P.leaveAfter + LEAVE_WAIT)) return say({ text: pick(rng, LINES.leave), kind: "leave" });
       if (at.has(turn)) { pending.push(at.get(turn)); at.delete(turn); }
       if (pending.length) {
