@@ -166,7 +166,8 @@ export function proxies(dir) {
       if (DENIES_AI.test(text)) { t.deniesAi++; (t.rows.deniesAi ??= []).push(`${tag} ${i}`); }
       { // B1: a question of hers on a scripted turn with no card (code's check-ins and a worked example's own question aside)
         const scripted = /^script:/.test(String(r.check?.itemId ?? "")) || !!r.beat;
-        const qs = ss.filter((x) => /[?？]/.test(x) && !CHECKIN.test(x));
+        // (a quoted board mark, "'?' wala nishaan", names the mark and asks nothing)
+        const qs = sentences(text.replace(/(['"‘“])\s*[?？]\s*(['"’”])/g, "$1mark$2")).filter((x) => /[?？]/.test(x) && !CHECKIN.test(x));
         // (a why-probe and the skill's hook ask their own question with no card, by design: not beatless)
         if (!r.card && scripted && !/worked|hook/.test(String(r.beat ?? "")) && !["wrap", "worked_example", "break", "probe"].includes(String(r.move ?? "")) && qs.length) {
           t.cardlessQ++; (t.rows.cardlessQ ??= []).push(`${tag} ${i} ${qs[0].slice(0, 70)}`); }
