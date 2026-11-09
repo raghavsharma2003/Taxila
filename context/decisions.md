@@ -9317,3 +9317,23 @@ Asides that come back, and every path through the parts.
 - more than 5 paging plus second-view contradictions in director16, with the P4′ shape counted: the held board, unconditionally;
 - register still below 3.5 after D10 and R4: the frames move into the scripts, per topic;
 - the counter misses more than 1: the batch is screened by hand only.
+
+
+<!-- merged from inbox/r7-games-badlaav.json -->
+## `dc-r7-games-badlaav`
+
+**badlaav** (change, class 7 science, chapter 5) is a law family with two modes. Nothing runs on a clock: slow changes advance by the child's own Wait or Another day taps. No act lights a fire; the fire is a picture that responds when a side of its triangle is taken away or given more, and no hand is drawn near it.
+
+- **palat** (c7-science-ch05-t01):
+  - nishaan (s2, s1): run a kit change (melting ghee, ice or wax, freezing water, tearing paper; burning a wick, curdling milk, baking soda in lemon juice, roasting a chapati, rusting) and mark the kit sign it showed (gas bubbles, colour change, heat or light, a new smell, a new solid) or Nothing new.
+  - ulta (s3, s1): run it, try to undo it (cool it / warm it), then say It came back / Same stuff, not back / A new substance. Torn paper is on every card.
+  - ghol (s4): ghee and wax on a warm tawa (no water), sugar and salt into cold water on a kitchen scale; wait or stir a step; the pointer stays where it went.
+- **aag** (c7-science-ch05-t02):
+  - trikon (s2, s1): take the wood out, lid on (goes out a wait at a time), lid off, fan it; items ask for it out (keeping the wood, or no lid) or burning more strongly (some starting under a lid).
+  - raakh (s4, s1): wait burns a piece; smoke and ash seen, carbon dioxide and water vapour found by Look closely; each into the air or left behind; Done.
+  - jang (s3): nails and railing put damp (air and water) or dry (air, no water); Another day; rust grows only where damp; no flame.
+- **Mal-rules** (kit ids): t01 m2 looks-new (a change of state marked or said new), t01 m1 undo-all (It came back of one that did not), t01 m3 sugar-melts (sugar or salt on the tawa), t01 m4 gone (Gone! of dissolving sugar or salt; the scale), t02 m2 fan-heat (fanning a lidded sigri), t02 m1 vanished (Done without looking for the gases), t02 m4 just-dirt (wiping rust).
+- **Not admitted** (the lead's ruling, a fire-safety line, the teacher's): t02 m3 (water can put out every kind of fire). No act puts water on a fire.
+- **Facts:** kit expectations and misconceptions first; the per-change signs and undo directions from the kit's worked example and verified items (i01, i03, i06, i07, i08, i10, i04, rl-o2; t02 i10, i11, i12). Steps, glows, fuel pieces and days are scene values, never shown as numbers.
+
+Reverse if a child pilot shows the marks or answers tapped by trial rather than read from the picture.
