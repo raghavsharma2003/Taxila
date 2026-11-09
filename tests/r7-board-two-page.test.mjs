@@ -31,16 +31,16 @@ test("director7: the say plays over the remediation board, the then-prompt over 
   assert.equal(s.switches.length, 1);
   const { clause, atMs } = s.switches[0];
   assert.ok(atMs > 2000, `the turn is after the say (${atMs} ms)`);
-  // page A, under the say: the three marks; page B, from the then-prompt: its 1/3 mark (not 1/5 | 1/2)
+  // page A, under the say: the three marks; page B, from the then-prompt: its 1/8 mark (not 1/12 | 1/6)
   const before = s.ops.filter((o) => o.startMs < atMs), after = s.ops.filter((o) => o.startMs >= atMs && o.op !== "erase");
-  assert.deepEqual(["1/5", "1/2"].filter((t) => texts(before).includes(t)), ["1/5", "1/2"]);
-  assert.ok(texts(after).includes("1/3") && !texts(after).some((t) => ["1/5", "1/2"].includes(t)));
+  assert.deepEqual(["1/12", "1/6"].filter((t) => texts(before).includes(t)), ["1/12", "1/6"]);
+  assert.ok(texts(after).includes("1/8") && !texts(after).some((t) => ["1/12", "1/6"].includes(t)));
   // page A is erased at the turn, every op of it
   const drawnA = before.filter((o) => !["erase", "highlight"].includes(o.op)).map((o) => o.id);
   assert.deepEqual(s.ops.filter((o) => o.op === "erase" && o.startMs === atMs).map((o) => o.target).sort(), [...drawnA].sort());
   // the screen is the then-card's page; `screens` gives each page from her line's character `from`
-  assert.ok(ack.artifact.screen.numbers.includes("1/3"));
-  assert.ok(ack.artifact.screens[0].numbers.includes("1/5") && ack.artifact.screens[0].from === 0);
+  assert.ok(ack.artifact.screen.numbers.includes("1/8"));
+  assert.ok(ack.artifact.screens[0].numbers.includes("1/12") && ack.artifact.screens[0].from === 0);
   assert.equal(line.slice(ack.artifact.screens[1].from).startsWith(then), true);
   // the turn is the voice's own clause index of the then-prompt (sentences, then clauses)
   assert.ok(Number.isInteger(clause) && clause >= 2, `clause ${clause}`);
@@ -73,8 +73,8 @@ test("director7: without a then marker (or with a bad one) the turn draws one pa
 test("director7 B1/S2: three segments (say, then-card, closure) — each segment's clauses play over its own board; each page turns on its own clause onset", () => {
   const id = "d7-three";
   seam.studioSeam.prefetch({ lessonId: id, purpose: "practice", kit, topicId: T, child: { id: "child-d7c", class_level: 5, language_pref: "hinglish" } });
-  const closure = "Toh poora jawab: 1/6, 0 aur 1/3 ke beech aata hai.";
-  const closureRef = { template: "fraction-line@1", params: { den: 6, from: 0, to: 1, marks: [{ num: 1, label: "1/6" }, { num: 2, label: "1/3" }] } };
+  const closure = "Toh poora jawab: 1/9, 0 aur 1/8 ke beech aata hai.";
+  const closureRef = { template: "fraction-line@1", params: { dens: [8, 9], from: 0, to: 1, marks: [[1, 8], [1, 9]] } };
   const full = `${line} ${closure}`;
   const a = ask(id);
   delete a.intent.then;
@@ -88,9 +88,9 @@ test("director7 B1/S2: three segments (say, then-card, closure) — each segment
   const [s1, s2] = s.switches;
   assert.ok(s1.atMs < s2.atMs && s1.clause < s2.clause);
   const page = (lo, hi) => texts(s.ops.filter((o) => o.op !== "erase" && o.startMs >= lo && o.startMs < hi));
-  assert.ok(page(0, s1.atMs).includes("1/5"), "the say over its 2-mark board");
-  assert.ok(page(s1.atMs, s2.atMs).includes("1/3") && !page(s1.atMs, s2.atMs).includes("1/5"), "the then-prompt over the then-card's board");
-  assert.ok(page(s2.atMs, Infinity).includes("1/6"), "the closure over its own board");
+  assert.ok(page(0, s1.atMs).includes("1/12"), "the say over its 2-mark board");
+  assert.ok(page(s1.atMs, s2.atMs).includes("1/8") && !page(s1.atMs, s2.atMs).includes("1/12"), "the then-prompt over the then-card's board");
+  assert.ok(page(s2.atMs, Infinity).includes("1/9"), "the closure over its own board");
   assert.deepEqual(ack.artifact.screens.map((x) => x.from), [0, say.length + 1, line.length + 1]);
   // the player: each page moves with its own clause's onset (the second 500 ms early, the third 700 ms late)
   const onsets = []; onsets[s1.clause] = s1.atMs - 500; onsets[s2.clause] = s2.atMs + 700;

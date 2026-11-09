@@ -336,30 +336,80 @@ export function spokenSymbolErrors(s) {
   return e;
 }
 
-/** director14 D9.2: a remediation (its say and its simpler) never states the key of a card that is still to come: its own
- * then-card, any keyed card of its skill (explain asks, the worked yourStep, checks, other then-cards) or of a later skill.
- * Steady 44 / stuck 38: c5-t01's count-marks remediation said 1/4, the yourStep key. A key is matched by its fraction or
- * number with its unit ("1/4 km" by "1/4"); bare whole numbers 0-10 and yes/no keys are too common to police. */
+/** director14 D9.2 + director15 D10.4: a remediation never states a value of a card still to come. Its say, its simpler
+ * and its then-card (prompt, key, why, simpler) are checked against every keyed card of its skill (a remediation can fire
+ * at any of them: explain asks, the worked yourStep, checks; other then-cards) and of every later skill: their keys AND
+ * their distractors (`wrongIfMis`), choice cards included (steady 44: c5-t02's s1 remediation said 1/4, e2's key, firing
+ * at e1; c5-t01's whole-number-bias remediation used e3's distractor 1/5). A value is matched by its fraction or number
+ * with its unit ("1/4 km" by "1/4"); bare whole numbers 0-10 are too common to police in teaching lines, except that a
+ * then-card's own key a/b states b when a card still to come has the whole-number key b (c5-t01: the count-marks
+ * then-card's 1/8 m gave e2's "8 gaps" before e2 was posed again). */
 export function remediationKeyErrors(s) {
   const e = [];
   const said = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
-  const keysOf = (k) => [...(k.explain ?? []).map((b) => [b.id, b.ask?.key, b.ask?.prompt]), ["workedExample.yourStep", k.workedExample?.yourStep?.key, k.workedExample?.yourStep?.prompt],
-    ...(k.checks ?? []).map((c) => [c.id, c.key, c.prompt]), ...(k.remediation ?? []).map((r, i) => [`remediation[${i}].then`, r.then?.key, r.then?.prompt])];
-  const core = (key) => {
-    const m = String(key ?? "").trim().match(/^(\d+(?:[./]\d+)?)(?:\s*[\p{L}]{1,6})?$/u);
+  const cardsOf = (k) => [...(k.explain ?? []).map((b) => [b.id, b.ask]), ["workedExample.yourStep", k.workedExample?.yourStep],
+    ...(k.checks ?? []).map((c) => [c.id, c]), ...(k.remediation ?? []).map((r, i) => [`remediation[${i}].then`, r.then])].filter(([, c]) => c);
+  const core = (v) => {
+    const m = String(v ?? "").trim().match(/^(\d+(?:[./]\d+)?)(?:\s*[\p{L}]{1,6})?$/u);
     if (!m) return null;
     return /^\d+$/.test(m[1]) && Number(m[1]) <= 10 ? null : m[1];
   };
+  const whole = (v) => { const m = String(v ?? "").trim().match(/^(\d+)(?:\s*[\p{L}]{1,6})?$/u); return m && Number(m[1]) >= 2 ? m[1] : null; };
   const hasNum = (t, c) => new RegExp(`(^|[^\\d/.])${c.replace(/[./]/g, "\\$&")}([^\\d/]|$)`).test(` ${t} `);
+  const valuesOf = (kk, list) => list.flatMap(([id, c]) => [["key", c.key], ["distractor", c.wrongIfMis]]
+    .map(([kind, v]) => ({ where: `${kk.skillId}/${id}`, card: c, kind, v: core(v), w: kind === "key" ? whole(v) : null })));
   s.skills.forEach((k, si) => {
-    // (a card whose own prompt says its key, a choice between named values, gives nothing away when the key was heard before)
-    const ahead = s.skills.slice(si).flatMap((kk) => keysOf(kk).map(([id, key, prompt]) => [`${kk.skillId}/${id}`, core(key), said(prompt)]))
-      .filter(([, c, prompt]) => c && !hasNum(prompt, c));
+    const later = s.skills.slice(si + 1).flatMap((kk) => valuesOf(kk, cardsOf(kk)));
     (k.remediation ?? []).forEach((r, i) => {
-      const t = ` ${said(r.say)} ${said(r.simpler)} `;
-      for (const [where, c] of ahead) if (hasNum(t, c)) e.push(`${k.skillId}/remediation[${i}]: states ${c}, the key of ${where} still to come`);
+      // (still to come: from the first card that can call this remediation — the first of the walk's asks, yourStep and checks
+      // targeting its misconception — on, every then-card of the skill, and every later skill; a card already behind is not)
+      const walk = cardsOf(k).filter(([id]) => !id.startsWith("remediation["));
+      const f = walk.findIndex(([, c]) => c.targets === r.targets);
+      const ahead = [...valuesOf(k, f < 0 ? walk : walk.slice(f)), ...valuesOf(k, cardsOf(k).filter(([id]) => id.startsWith("remediation["))), ...later];
+      const parts = [["", ` ${said(r.say)} ${said(r.simpler)} `], [".then", ` ${said(r.then?.prompt)} ${r.then?.key ?? ""} ${said(r.then?.why)} ${said(r.then?.simpler)} `]];
+      for (const [part, t] of parts) for (const a of ahead) {
+        if (a.card === r.then) continue;
+        if (a.v && hasNum(t, a.v)) e.push(`${k.skillId}/remediation[${i}]${part}: states ${a.v}, the ${a.kind} of ${a.where} still to come`);
+        if (part && a.w && /\//.test(core(r.then?.key) ?? "") && core(r.then.key).split("/")[1] === a.w) e.push(`${k.skillId}/remediation[${i}].then: its key ${r.then.key} states ${a.w}, the key of ${a.where} still to come`);
+      }
     });
   });
+  return [...new Set(e)];
+}
+
+/** director15 D10 (Brain R4 drops the code-side "Diya hai … Dhoondhna hai …" recital, so the worked problem is the one
+ * line always said): every number a worked example's givens or find use is stated in its problem. */
+export function workedProblemNumberErrors(s) {
+  const e = [], nums = (t) => String(t ?? "").match(/\d+(?:[./]\d+)?/g) ?? [];
+  for (const k of s.skills) {
+    const we = k.workedExample;
+    if (!we?.problem) continue;
+    for (const lang of ["hi", "en"]) {
+      const have = new Set(nums(we.problem[lang]).flatMap((n) => [n, ...n.split("/")]));
+      const extra = [...(we.givens ?? []).map((g) => g?.[lang]), we.find?.[lang]].flatMap(nums).filter((n) => !have.has(n));
+      if (extra.length) e.push(`${k.skillId}/workedExample: its givens/find use ${[...new Set(extra)].join(", ")}, which its problem${lang === "en" ? " (en)" : ""} never states`);
+    }
+  }
+  return e;
+}
+
+/** director15 D10.2 (c4 steady 78: "Kya tab ek hissa is aadhe se bada hoga?" over a half labelled "?"): an ask's board
+ * never puts "?" on a value its prompt states: a bar of p parts labelled "?" when the prompt names 1/p (in digits or as
+ * aadha / tihaai / chauthai), or a line's "?" mark k/den when the prompt says k/den. */
+export function askBoardQuestionErrors(s) {
+  const e = [];
+  const said = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
+  const WORD = { 2: /\b(aadh[aeiā]+|half|halves)\b/i, 3: /\b(tihaa?i|ek-tihaa?i|thirds?)\b/i, 4: /\b(chautha+i|ek-chautha+i|quarters?)\b/i };
+  const states = (t, n, d) => new RegExp(`(^|[^\\d/])${n}/${d}([^\\d]|$)`).test(t) || (n === 1 && WORD[d]?.test(t));
+  const asks = (k) => [...(k.explain ?? []).filter((b) => b.ask).map((b) => [b.id, b.ask.prompt, b.ask.board ?? b.board]),
+    ["workedExample.yourStep", k.workedExample?.yourStep?.prompt, k.workedExample?.yourStep?.board ?? k.workedExample?.board],
+    ...(k.checks ?? []).map((c) => [c.id, c.prompt, c.board]), ...(k.remediation ?? []).map((r, i) => [`remediation[${i}].then`, r.then?.prompt, r.then?.board])];
+  for (const k of s.skills) for (const [id, prompt, board] of asks(k)) {
+    if (!prompt || !board) continue;
+    const t = said(prompt), p = board.params ?? {};
+    if (board.template === "fraction-bars@1") for (const b of p.bars ?? []) if (b.label === "?" && states(t, 1, b.parts)) e.push(`${k.skillId}/${id}: its board labels the 1/${b.parts} bar "?" though its prompt states it`);
+    if (board.template === "fraction-line@1" && Number.isInteger(p.mark) && p.den && states(t, p.mark, p.den)) e.push(`${k.skillId}/${id}: its board marks ${p.mark}/${p.den} "?" though its prompt states it`);
+  }
   return e;
 }
 
@@ -536,7 +586,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s));
   return e;
 }
 
