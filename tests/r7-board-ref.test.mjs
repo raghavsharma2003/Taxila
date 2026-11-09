@@ -158,10 +158,10 @@ test("director5 SC2: a scripted remediation board goes up only on the turn its e
   open("sc2-a");
   assert.equal(seam.studioSeam.requestIntent(ask("sc2-a", "Koi baat nahi, ek baar aur sochte hain.")), null);
   assert.equal(seam._lesson("sc2-a").onScreen, null);
-  // the c5 whole-number-bias board: the SCRIPT's three marks (1/8, 1/4, 1/2), not the code's one-mark line
+  // the c5 whole-number-bias board: the SCRIPT's three marks (1/5, 1/2; Learning D9: no key still to come), not the code's one-mark line
   const p = BF.preselect(ask("sc2-b", ""), { kit });
   assert.equal(p?.by, "script");
-  assert.deepEqual(p.screen.counts.marks.map((m) => m.label), ["1/8", "1/4", "1/2"]);
+  assert.deepEqual(p.screen.counts.marks.map((m) => m.label), ["1/5", "1/2"]);
   // a picture asked for while the card is live: its board again, even though that page was seen before
   const { pageSig } = await import("../server/studio/request.js");
   const seen = new Set([pageSig(p.script)]);
