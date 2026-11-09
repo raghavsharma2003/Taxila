@@ -23,7 +23,7 @@ test("altViewOfRow: a row of bars is the second view, with its shaded fractions;
   assert.equal(altViewOfRow(null), null);
 });
 
-test("cross-seam: picture asked with the card's board up → Studio's row names the bars → her line names the same numbers on the new view, card kept", async () => {
+test("cross-seam: picture asked with the card's board up → Studio's row names the bars → her line names the same numbers on the new view (v6.5 P3: the card is not said over it)", async () => {
   const T = "c5-maths-ch02-t02", kit = kitFromFile(getTopic(T)), L = `v6alt-${Date.now()}`;
   seam.studioSeam.prefetch({ lessonId: L, purpose: "practice", kit, topicId: T, child: { id: `c-${L}`, class_level: 5, language_pref: "hinglish" } });
   const ref = { template: "fraction-line@1", params: { den: 6, from: 0, to: 1, marks: [{ num: 1, label: "1/6" }, { num: 2, label: "1/3" }] } };
@@ -45,7 +45,9 @@ test("cross-seam: picture asked with the card's board up → Studio's row names 
     replyDeps.chat = async () => ({ text: `Theek hai, chalo isi sawaal par wapas aate hain. ${card}` });
     const out = await textReply({ instructions: "x", state, kit, childText: "picture dikhao", history: [], ui: { ask: { itemId: "x", text: card } }, module: null });
     assert.match(out.reply, /^Dekho, yahi 1\/6 aur 1\/3 ab patti par\./, out.reply);
-    assert.ok(out.reply.endsWith(card), "the card stays, last");
+    // (v6.5 P3, main on director13: the second view is its own page — the card stays live, re-posed on its own board next turn)
+    assert.ok(!out.reply.includes(card), "the card is not said over the second view: " + out.reply);
+    assert.equal(out.guard.altOnly, true);
   } finally { replyDeps.chat = chat; }
 });
 
@@ -68,7 +70,7 @@ test("replay director9 c5-t02 offtopic T26 ('drawing karke samjhao' with e3's li
   assert.equal(pic?.altView, "parts", `the second view is picked (template ${pic?.template})`);
   const alt = altViewOfRow(pic.row);
   assert.deepEqual(alt?.labels, ["1/8", "1/4"], String(pic.row).slice(0, 200));
-  // 3. her line: the same numbers on the new view, the card kept
+  // 3. her line: the same numbers on the new view (v6.5 P3: the card is not said over it)
   const state = { ...initLessonState({ topicId: T, kit, ctx: { ...CTX, classLevel: 5, lang: "hinglish" }, seed: 7, now: 0 }), mode: "text",
     lastMove: { kind: "practice", request: "visual", visual: "diagram", altView: alt, scriptBeat: { scriptId: "s", skillId: "x", beatId: "e3", kind: "explain", board: ref } } };
   try {
@@ -76,7 +78,7 @@ test("replay director9 c5-t02 offtopic T26 ('drawing karke samjhao' with e3's li
     const out = await textReply({ instructions: "x", state, kit, childText: "drawing karke samjhao", history: [], ui: { ask: { itemId: "x", text: card } }, module: null });
     assert.match(out.reply, /^Dekho, yahi 1\/8 aur 1\/4 ab patti par\./, out.reply);
     assert.doesNotMatch(out.reply, /line banao/, "never tells the child to draw it");
-    assert.ok(out.reply.endsWith(card));
+    assert.ok(!out.reply.includes(card), out.reply);
   } finally { replyDeps.chat = chat; }
 });
 

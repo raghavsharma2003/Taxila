@@ -56,6 +56,9 @@ const PROBE_ACK = {
   hinglish: ["Achha, tumne apna tareeka bataya.", "Theek, yeh tumhari soch thi."],
   english: ["Okay, thanks for telling me how you thought.", "Right, that was your way of thinking."],
 };
+/** v6.5 P3: after a second view's own line, a pointer back to it (never a question: the card comes on its own page next). */
+const ALT_POINT = { hinglish: ["Ise dhyan se dekh lo.", "Pehle ise achhe se dekh lo.", "Thoda ise dekho, phir sawaal par aate hain."],
+  english: ["Take a good look at this.", "Have a careful look at it first.", "Look at this for a moment; then back to the question."] };
 /** v6.4 R3: the acknowledgement when the read of what they said is not confident: neutral, it claims nothing about it. */
 const NEUTRAL_ACK = { hinglish: ["Achha.", "Theek hai."], english: ["Okay.", "Alright."] };
 /**
@@ -2092,7 +2095,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // v6.1 R9: a check-in only where state.js allowed one (once per beat, on new teaching); else a statement that goes on
     // (v6.2, director10: "Yeh kadam saaf hai?" after something that was no step: a step's check-in names a step only on a worked step)
     const goOn = () => pickOf((state.lastMove?.checkinOk ? (kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK) : WORKED_GO)[lang === "english" ? "english" : "hinglish"], state);
-    const tail = card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
+    let tail = card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
       : state.lastMove?.splitClose ? pickOf(SPLIT_ASK[lang === "english" ? "english" : "hinglish"], state)
       // (v6.3 R2, main on director11: "Ab agla kadam dekhte hain." and then the same beat's card: the teaching half of a split turn
       // is followed by ITS card, so it says a question on this comes, never a next step)
@@ -2106,6 +2109,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // v6.4 R3: a card said again word for word gets a frame ("Phir se dekho:"), never the same words with nothing new
     const prevHas = (c) => { const k = norm(c).toLowerCase(); return herPrev.includes(k) || (state.ctx?.lang === "hindi" && inHindiWords(herPrev).toLowerCase().includes(k)); };
     if (card && !lead && !body.length && herPrev && prevHas(card)) { body = [lang === "english" ? "Here it is again:" : "Phir se dekho:"]; guard.reposeFrame = true; }
+    // v6.5 P3 (main, director13: "Isi line ke neeche …" and "Aisi hi … sankhya rekha" said over Studio's bars, 6 contradictions): a
+    // picture turn drawn as a second view is that view's page alone — its one line and a short pointer, no card. The card stays
+    // live and is re-posed on its own board on the next turn (the child's reply there re-poses it, as any non-answer does)
+    if (alt && asked && card && !graded) { body = [pickOf(ALT_POINT[lang === "english" ? "english" : "hinglish"], state)]; tail = null; guard.altOnly = true; }
     // v5 B5: a turn is at most about 60 words, except a worked step: her own sentences go first (from the end), never the
     // verdict, a closure, authored text or the card
     const MAX_WORDS = state.ctx?.plainWords ? 45 : 60;
