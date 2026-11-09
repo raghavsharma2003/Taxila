@@ -1,0 +1,22 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-card-page-own-board",
+      "kind": "decision",
+      "at": "2026-11-09",
+      "title": "director14 S9: a LATER page of a paged turn whose segment is marked ofCard true (Brain's ofCardMarks: the card part of a picture turn) is the card's own page. pagesBoard passes each segment's ofCard to its page and marks that page cardPage; Studio's preselect never makes a cardPage a second view, even with the turn's picture request still on it. The rule is not keyed to ofCard on the turn's FIRST page: Brain marks the card's board ofCard true before her line exists, and that page of a picture turn is the second view. Production already drew c5-t01 stuck 18 right: on the seam, the example bar, then the den 8 line from \"Isi\". The miss came from the eval harness's part-by-part check. Each part kept the turn's request and no ofCard, so the card's part was preselected as a second view too, and the record said fraction-bars on both pages. Brain's patch 017 (docs/patches/to-brain) takes each part as pagesBoard does. Reverse if Brain ever marks a page ofCard true that should show a second view."
+    },
+    {
+      "id": "dc-r7-remediation-second-view",
+      "kind": "decision",
+      "at": "2026-11-09",
+      "title": "director14 S9b, extends dc-r7-second-view-last-page. The seam records the beat kind of the page up (L.wbPrevKind, beside wbPrevRef; a paged turn's lastKind) and passes it to the preselect as avoidKind. A picture asked while a REMEDIATION's board is up, and the card's own board is not, gets that remediation board's second view. c6 stuck 18: the lettered hexagon AB 10 … FA 9 is laid straight (unrolled), then the then-card's pentagon follows on the card's own page. Any other board up that is not the card still gets the card's own board, as before. Brain's patch 017 adds the same bookkeeping to the harness (shownKind). Reverse if judges find the remediation's view distracts from the card it precedes."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-card-page-own-board", "rel": "part_of", "dst": "dc-r7-script-walk-v6-3" },
+    { "src": "dc-r7-card-page-own-board", "rel": "constrains", "dst": "dc-r7-p3-view-then-card" },
+    { "src": "dc-r7-remediation-second-view", "rel": "part_of", "dst": "dc-r7-script-walk-v6-3" },
+    { "src": "dc-r7-remediation-second-view", "rel": "constrains", "dst": "dc-r7-second-view-last-page" }
+  ]
+}

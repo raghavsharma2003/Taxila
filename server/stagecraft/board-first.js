@@ -224,7 +224,7 @@ function candidates(ask, kit, lessonId, band, predicted) {
  * @param {any} ask whiteboardIntentOf(...) with an empty line
  * @param {{ kit?: any, redact?: string[], now?: number }} o
  */
-export function preselect(ask, { kit, redact = [], now = Date.now(), certify = null, pictureFirst = false, avoid = null, seen = null, avoidRef = null } = {}) {
+export function preselect(ask, { kit, redact = [], now = Date.now(), certify = null, pictureFirst = false, avoid = null, seen = null, avoidRef = null, avoidKind = null } = {}) {
   try {
     if (!boardFirstOn() || !kit) return null;
     const id = String(ask?.intent?.intentId ?? "");
@@ -260,14 +260,24 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
     const request = ask?.intent?.request ?? null;
     // director8 S3′ (amends SC2): a picture asked for while the card's own board is the page on screen: the second view of
     // the same numbers goes first (her line is written from ITS row); none → the re-show below, as before
-    const card0 = request && request.kind !== "example" ? cands.find((c) => c.by === "script") : null;
+    // (director14 S9: a LATER page of a turn that is the card's own — ofCard true on its segment, the card part of a picture
+    // turn — is the card's board, never a second view: c5-t01 stuck 18's record said bars of quarters under "Isi rekha ke
+    // neeche … 7 nishaan". Not ofCard on the turn's first page: Brain marks the card's board ofCard true before her line exists,
+    // and that page of a picture turn IS the second view)
+    const ownPage = ask?.intent?.cardPage === true;
+    const card0 = request && request.kind !== "example" && !ownPage ? cands.find((c) => c.by === "script") : null;
     // (director10 G4: the card on screen by its ref — the page up was drawn, masked and labelled, on its own line;
     // director12 S4: or the same figure with other shading — c4 steady T16's 3-shaded bar under the card's 0-shaded one)
     const cardUp = sameFigure(ask?.intent?.boardRef, avoidRef);
     // (director12 S4, c5-t02 steady/stuck T18: a picture asked over an unmarked ask line — "Screen par 0 se 1 tak ki line
     // hai" — is the line's bars, whether or not that line is up yet: the line itself is no new picture)
-    if (card0 && ((avoid && (cardUp || samePage(card0.script, avoid) || shownBefore(card0.script, { avoid }))) || unmarkedLine(ask?.intent?.boardRef))) {
-      const ac0 = altCall(ask.intent.boardRef, { line: predicted, withheld: ctx.withhold?.values ?? [], keys: liveKeys(ask, ""), up: cardUp ? upRefOf(avoidRef) : null });
+    // (director14 S9b, c6 stuck 18: a picture asked right after a remediation — its board up, not the card's — drew the card
+    // again, nothing new. The remediation's board up has a second view of its own: that board, seen another way)
+    const upRef = !cardUp && avoidKind === "remediation" ? upRefOf(avoidRef) : null;
+    const remAlt = card0 && upRef ? altCall(upRef, { line: predicted, withheld: ctx.withhold?.values ?? [], keys: liveKeys(ask, "") }) : null;
+    const ownAlt = card0 && ((avoid && (cardUp || samePage(card0.script, avoid) || shownBefore(card0.script, { avoid }))) || unmarkedLine(ask?.intent?.boardRef));
+    if (card0 && (ownAlt || remAlt)) {
+      const ac0 = ownAlt ? altCall(ask.intent.boardRef, { line: predicted, withheld: ctx.withhold?.values ?? [], keys: liveKeys(ask, ""), up: cardUp ? upRefOf(avoidRef) : null }) : remAlt;
       const { view, ...ac } = ac0 ?? {};
       const ax = ac0 ? expand(ac, { band, lang: ask?.intent?.style?.lang ?? null }) : null;
       // (judged against a line that says the bars — her line is written from this row: "2 barabar bar: ek 6 barabar hisson mein …")
@@ -869,6 +879,9 @@ export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null 
       if (i && beat.kind === "check" && beat.ownBoard === undefined) beat.ownBoard = true;
       const intent = { ...ask.intent, intentId: i ? `${id}:p${i}` : id, boardRef: g.boardRef, scriptBeat: beat };
       delete intent.then; delete intent.segments; delete intent.cardBoard; if (i) delete intent.request;
+      // (director14 S9: each page carries its own ofCard — the card part of a picture turn is the card's own page)
+      if (typeof g.ofCard === "boolean") intent.ofCard = g.ofCard; else if (i) delete intent.ofCard;
+      if (i && g.ofCard === true) intent.cardPage = true; else delete intent.cardPage;
       const a = { ...ask, intent, mode: i ? "fresh" : ask.mode, line: { ...(ask.line ?? {}), text: g.text } };
       if (!picks.has(String(intent.intentId))) preselect(a, { kit, redact });
       // (director13, Brain's P3: the second view's own page never brings the card back itself — the turn's next page is the card)
@@ -904,8 +917,8 @@ export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null 
     if (kept.length < takes0.length) pagesDropped += takes0.length - kept.length;
     const takes = kept.map((i) => takes0[i]);
     sg = kept.map((i) => sg[i]);
-    const lastRef = refKey(sg.at(-1).boardRef);
-    if (takes.length === 1) return { ...takes[0], screens: [{ from: 0, ...(takes[0].screen ?? {}) }], lastRef };
+    const lastRef = refKey(sg.at(-1).boardRef), lastKind = sg.at(-1).scriptBeat?.kind ?? (sg.length > 1 ? "check" : ask?.intent?.scriptBeat?.kind ?? null);
+    if (takes.length === 1) return { ...takes[0], screens: [{ from: 0, ...(takes[0].screen ?? {}) }], lastRef, lastKind };
     // (director13, Brain's P3: a picture turn pages its second view first, under its own line, then the card's own board —
     // the turn is flagged as the second view it opens with)
     const alt0 = takes[0].altView ? { altView: takes[0].altView } : {};
@@ -949,7 +962,7 @@ export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null 
     if (!n.ok || !n.script?.switches?.length) return null;
     pageStats.drawn++;
     return { ok: true, script: n.script, gate: last.gate, usd: 0, ms: 0, source: "first", by: "script", template: last.template, syncMs: 0, ...alt0,
-      screen: last.screen, screens: sg.map((g, i) => ({ from: g.from, ...takes[i].screen, ...(takes[i].altView ? { altView: takes[i].altView } : {}) })), lastRef, lastPage: last.script };
+      screen: last.screen, screens: sg.map((g, i) => ({ from: g.from, ...takes[i].screen, ...(takes[i].altView ? { altView: takes[i].altView } : {}) })), lastRef, lastKind, lastPage: last.script };
   } catch { return null; }
 }
 /** (director7's first form) */
