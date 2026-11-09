@@ -1064,6 +1064,8 @@ export const studioSeam = {
       p.lastPage = L.wbPrevPage;
       L.wbPrevRef = p.refKey = r.lastRef !== undefined ? r.lastRef : r.source === "kept" ? (L.wbPrevRef ?? null)
         : r.source === "first" && r.by === "script" && !r.altView ? boardFirst.refKey(ask?.intent?.boardRef) : null;
+      // (director14 S9b: and the beat that drew it — a remediation's board up gets a second view of its own on a picture ask)
+      L.wbPrevKind = p.refKind = !L.wbPrevRef ? null : r.lastKind !== undefined ? r.lastKind : r.source === "kept" ? (L.wbPrevKind ?? null) : ask?.intent?.scriptBeat?.kind ?? null;
       (L.wbSeen ??= new Set()).add(pageSig(r.script));
       // a KEPT board is the page already up, not a new one: the notebook (board_page) does not list it twice
       if (r.source !== "kept") writeBoardPage(L, p, r.script, ask);
@@ -1360,7 +1362,7 @@ export const studioSeam = {
     if (on) retirePiece(L, on.intentId, "replaced");
     L.pieces.set(intentId, p);
     L.onScreen = intentId;
-    L.wbPrev = null; L.wbPrevPage = null; L.wbPrevRef = null; L.wbUnder = [];
+    L.wbPrev = null; L.wbPrevPage = null; L.wbPrevRef = null; L.wbPrevKind = null; L.wbUnder = [];
     const slot = slotOf(p, "revealed");
     push(L, { t: "slot", slot });
     push(L, { t: "status", status: { state: "revealed", intentId, buildSha: "image", facts: p.facts } });
@@ -1373,7 +1375,7 @@ export const studioSeam = {
     const L = lessons.get(lessonId);
     if (!L) return false;
     if (L.onScreen) retirePiece(L, L.onScreen, "cleared");
-    L.wbPrev = null; L.wbPrevPage = null; L.wbPrevRef = null; L.wbUnder = []; L.wbBeatHead = null;
+    L.wbPrev = null; L.wbPrevPage = null; L.wbPrevRef = null; L.wbPrevKind = null; L.wbUnder = []; L.wbBeatHead = null;
     return true;
   },
 
@@ -1408,7 +1410,7 @@ function boardBack(L, on, line, withhold, move) {
   const g = gatedSlot(L, prev, prev.state, "on_screen");
   if (!g) return null;
   retirePiece(L, on.intentId, "replaced");
-  L.onScreen = prev.intentId; L.wbPrev = prev.artifact.script; L.wbPrevPage = prev.lastPage ?? prev.artifact.script; L.wbPrevRef = prev.refKey ?? null; L.wbUnder = [...prev.artifact.script.ops];
+  L.onScreen = prev.intentId; L.wbPrev = prev.artifact.script; L.wbPrevPage = prev.lastPage ?? prev.artifact.script; L.wbPrevRef = prev.refKey ?? null; L.wbPrevKind = prev.refKind ?? null; L.wbUnder = [...prev.artifact.script.ops];
   L.shown = { intentId: prev.intentId, revealing: false };
   prev.lines = [...(prev.lines ?? []), String(line ?? "").slice(0, 600)].slice(-3);
   traceRecord("studio.board_back", { intentId: prev.intentId, from: on.intentId });
@@ -1696,5 +1698,6 @@ function boardFirstOpts(L, ask) {
     // round 5 (stream 2): never the page already on the board again
     avoid: L.onScreen && L.pieces.get(L.onScreen)?.kind === "whiteboard" ? L.wbPrev ?? null : null, seen: L.wbSeen,
     // (director10 G4: the card whose board is the page on screen, by its ref: that page was drawn on ITS line)
-    avoidRef: L.onScreen && L.pieces.get(L.onScreen)?.kind === "whiteboard" ? L.wbPrevRef ?? null : null };
+    avoidRef: L.onScreen && L.pieces.get(L.onScreen)?.kind === "whiteboard" ? L.wbPrevRef ?? null : null,
+    avoidKind: L.onScreen && L.pieces.get(L.onScreen)?.kind === "whiteboard" ? L.wbPrevKind ?? null : null };
 }
