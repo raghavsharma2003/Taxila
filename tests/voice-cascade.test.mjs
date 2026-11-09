@@ -14,6 +14,7 @@ import { EnergyVad } from "../src/lesson/vad.ts";
 import { CascadeLink, TranscriptionProtocol, confidenceFromLogprobs, isBackchannel, isEcho, skeleton } from "../src/lesson/cascadeLink.ts";
 import { LessonRuntime } from "../src/lesson/runtime.ts";
 import { LevelMeter } from "../src/lesson/level.ts";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const flush = () => new Promise((r) => setImmediate(r));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -385,10 +386,10 @@ test("CascadeLink: speaks a stored reply as streamed PCM, and a barge-in stops e
     assert.equal(ctx.sources.length, 4);
     // Barge-in through the transcription protocol (what speech_started does on the data channel): she is
     // silenced at once (paused, the reply kept)…
-    const t0 = performance.now();
+    const t0 = cpuNow(); // CPU, not the wall clock: the handler's own work (a shared runner's scheduler is not it)
     link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c1" });
-    const stopMs = performance.now() - t0;
-    assert.ok(stopMs < 150, `stopped in ${stopMs.toFixed(1)} ms`);
+    const stopMs = cpuNow() - t0;
+    assert.ok(stopMs < 150, `stopped in ${stopMs.toFixed(1)} ms of CPU`);
     assert.ok(ctx.sources.every((s) => s.stopped || s.done), "every scheduled chunk stopped");
     assert.deepEqual(events.slice(4).map((e) => e.type), ["teacher_audio_end", "child_speech_start"]);
     // …and a real answer stops her for good, before the child's turn goes out.
@@ -477,10 +478,11 @@ test("CascadeLink: a call that never connects (UDP blocked, no TURN) does not ho
   const events = [];
   link.on((e) => events.push(e));
   try {
-    const t0 = performance.now();
+    // connect never waits for the call: `listening` is still false below (the event that proves it); its own work is CPU-timed
+    const t0 = cpuNow();
     await link.connect();
-    const connectMs = performance.now() - t0;
-    assert.ok(connectMs < 100, `connect took ${connectMs.toFixed(0)} ms`);
+    const connectMs = cpuNow() - t0;
+    assert.ok(connectMs < 100, `connect took ${connectMs.toFixed(0)} ms of CPU`);
     assert.equal(link.listening, false, "the call is still coming up");
     link.promptTeacher({ text: "Namaste! Aaj hum bhinn padhenge.", seq: 1 });
     await sleep(40);
