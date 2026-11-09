@@ -173,6 +173,41 @@ describe("r7-brain-v66.test.mjs", () => {
       assert.equal(requeueMissedReturn(s, { returnSaid: true }).later[0].servedAt, 9);
     });
   });
+  describe("K3: every card ends with its key", () => {
+    const live = async (persona, topic, n) => {
+      const T = TOPIC[topic];
+      const sc = runScriptOf(RUN, T); delete sc.recordedRun;
+      setScriptForTest(T, sc);
+      const { kit, rows, last } = await replay(RUN, persona, T, n + 1);
+      replyDeps.chat = async () => ({ text: rows[n].text });
+      const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
+      return { out, last };
+    };
+    test("the last card of a skill gives its key and why before the bridge (c5-t02 stuck 54); the '?' mark is said in words", async () => {
+      const { out, last } = await live("stuck", "c5-t02", 54);
+      assert.ok(last.state.lastMove?.gave?.answer, JSON.stringify(last.state.lastMove));
+      assert.match(out.reply, /jawab bada/i, out.reply);
+      assert.doesNotMatch(out.reply, /'\s*\?\s*'/, out.reply);
+    });
+    test("the parent card is re-posed after its then-card, even where a probe would come between (c5-t02 stuck 66)", async () => {
+      const { last } = await live("stuck", "c5-t02", 66);
+      assert.match(String(last.before.activeItemId), /:then:/);
+      assert.match(String(last.state.activeItemId), /:ask:e2$/, String(last.state.activeItemId));
+      assert.notEqual(last.state.lastMove?.kind, "probe");
+    });
+    test("a second miss is never a bare re-pose (c6 steering 38, c5-t01 stuck 68)", async () => {
+      for (const [persona, topic, n] of [["steering", "c6", 38], ["stuck", "c5-t01", 68]]) {
+        const { out, last } = await live(persona, topic, n);
+        assert.ok(last.state.lastMove?.gave?.answer || last.state.lastMove?.simpler, `${persona} ${topic} ${n}: ${out.reply.slice(0, 120)}`);
+      }
+    });
+    test("'aage chalo' on a live card gives its key and moves on, never the stop menu (c5-t01 steady 16)", async () => {
+      const { out, last } = await live("steady", "c5-t01", 16);
+      assert.equal(last.state.lastMove?.request, "move_on");
+      assert.ok(last.state.lastMove?.gave?.answer, JSON.stringify(last.state.lastMove));
+      assert.doesNotMatch(out.reply, /Chuno: aage badhein/, out.reply);
+    });
+  });
   describe("H3: contradictions read from the pages drawn", () => {
     // main's 22 hand rows on director14 (17 paging, 4 second view, 1 model words)
     const HAND = ["c4 steady 20", "c4 steady 54", "c5-t01 steady 18", "c5-t01 stuck 18", "c5-t01 offtopic 26", "c5-t01 steering 14",

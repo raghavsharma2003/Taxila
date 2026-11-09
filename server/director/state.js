@@ -1387,7 +1387,10 @@ function afterCorrect(s, input, item) {
     if (p) return p;
   }
   if (unaided && cls?.reason === "right") return poseNext(s, input, SH.CONFIRM.whyGood);
-  const probePlan = unaided ? probePlanFor(s, item, kit, input.voice) : null;
+  // v6.6 K3 (main, director14 c5-t02 stuck 66: a then-card answered right got a why-probe, the parent card it stood in for was never
+  // re-posed): a then-card whose parent waits to be re-posed gets no probe — the parent comes next
+  const parentWaits = scriptOn() && !scriptFor(kit)?.script?.recordedRun && (s.reposeQ ?? []).some((r) => r.after === item.id);
+  const probePlan = unaided && !parentWaits ? probePlanFor(s, item, kit, input.voice) : null;
   if (probePlan) {
     s.pendingWhy = item.id;
     s.pendingProbe = probePlan;
@@ -1433,6 +1436,11 @@ function afterMiss(s, input, item) {
     const tg = item.scriptCheck?.targets ?? item.scriptAsk?.targets ?? null;
     if (item.scriptThen || (tg && (s.remedied ?? []).includes(tg))) return leaveItem(s, input, item, SH.reposeMissed());
   }
+  // v6.6 K3 (main, director14 c4 stuck 46, c6 steering 38, c5-t01 stuck 68: a second miss got only "<answer> sahi nahi hai" and the
+  // card again): a second miss — a wrong answer or a "pata nahi" after an earlier one on this card — is never a bare re-pose: with no
+  // helper line left unsaid on the card, it gives its key and why
+  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && isScriptCard(item) && ["wrong", "stuck"].includes(verdict(input.cls))
+    && (s.cardHelp?.id === item.id ? s.cardHelp.misses ?? 0 : 0) >= 1 && !helpLeft(s, input.kit, item)) return leaveItem(s, input, item, SH.reposeMissed());
   // round 7 T2: a scripted check answered wrong gets its misconception's scripted remediation and keyed follow-up
   const remedy = scriptOn() ? walkRemedy(s, input, item) : null;
   if (remedy) return remedy;
@@ -2563,6 +2571,9 @@ function decide(s, input, item) {
   if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && MOVE_ON.test(String(input.text ?? "")) && !(cls && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome))) {
     if (item && s.pendingWhy === item.id) return { ...afterWhy(s, { ...input, cls: { outcome: "no_evidence", confidence: 1, source: "help", flags: {} } }, item), request: "move_on" };
     if (s.lastMove?.kind === "break") { s.stopAsked = undefined; s.sidebar = undefined; return { ...resume(s, input, item, "they said to go on: straight back in, no fuss"), request: "move_on" }; }
+    // v6.6 K3 (main, director14 c5-t02 steady 58, c5-t01 steady 16: "aage chalo" on a re-posed card got the stop menu): on a live
+    // scripted card it gives the card's key and why and moves on — never the stop menu
+    if (item && isScriptCard(item) && s.activeItemId === item.id) return { ...leaveItem(s, input, item, SH.reposeMissed()), request: "move_on" };
   }
   if (chipId === "stop:continue" || req?.type === "continue") {
     s.stopAsked = undefined; s.sidebar = undefined;
@@ -3306,6 +3317,18 @@ export function requeueMissedReturn(s, guard) {
   const e = (s.later ?? []).find((x) => x.servedAt === s.turn && String(x.topic) === String(r.topic));
   if (!e) return s;
   return { ...s, later: s.later.map((x) => (x === e ? { ...x, servedAt: null, requeued: (x.requeued ?? 0) + 1 } : x)) };
+}
+/** v6.6 K3: whether a helper line (the card's simpler, its beat's simpler, its remediation's say or simpler) is left unsaid on it. */
+function helpLeft(s, kit, item) {
+  const lang = s.ctx?.lang ?? "hinglish";
+  const meta = item.scriptAsk ?? item.scriptCheck ?? item.scriptThen;
+  const sk = skillScriptOf(kit, item.skillId);
+  const rem = sk?.remediation?.find((r) => r.targets === (meta?.targets ?? null)) ?? null;
+  const beat = item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked" ? sk?.explain?.find((b) => b.id === item.scriptAsk.beatId) : null;
+  const said = new Set([...(s.cardHelp?.id === item.id ? s.cardHelp.said ?? [] : []), ...(s.remSaid ?? [])]);
+  const remDone = !!rem && (s.remedied ?? []).includes(rem.targets);
+  return [meta?.simpler, beat?.simpler, ...(remDone ? [] : [rem?.say, rem?.simpler])].map((x) => (x ? saidIn(x, lang) : null))
+    .some((t) => t && String(t).trim() && !said.has(normLine(t)));
 }
 /** v6.1 R9: the authored simpler (format 2.3) of the explain beat a move teaches, in the lesson language, or null. */
 function simplerOfBeat(s, kit, move) {

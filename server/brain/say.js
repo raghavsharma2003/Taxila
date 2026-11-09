@@ -482,6 +482,11 @@ export function freshOf(xs, state) {
   return xs.find((x) => !said.some((t) => t.includes(head(x)))) ?? xs[0];
 }
 /** v6.5 F1: the forms of code's frames (the first is the one the older tests know). */
+/** v6.6 K3: a board's "'?'" mark named in a spoken line is said in words ("sawaal wala nishaan"), never a "?" glyph. */
+export function spokenMarks(t, lang = "hinglish") {
+  return String(t ?? "").replace(/(['"‘“])\s*[?？]\s*(['"’”])\s*(?:wala\s+|wali\s+|wale\s+)?/g, lang === "english" ? "the question " : "sawaal wala ")
+    .replace(/\b(sawaal wala)\s+(?:wala|wali|wale)\b/g, "$1").replace(/\s{2,}/g, " ");
+}
 /** v6.6 F1′: a code form with a slot ("<answer> sahi nahi hai"): the first whose fixed words were not said in her last 4 turns. */
 export function freshForm(fns, state, ...args) {
   const said = [...(state?.recent ?? [])].filter((t) => t.who === "teacher").slice(-4).map((t) => String(t.text ?? "").toLowerCase());
@@ -1857,7 +1862,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const gaveA = state.lastMove?.gave?.answer ? norm(state.lastMove.gave.answer) : null;
     const key0s = String(item?.answer ?? "").trim();
     // v5 B5: a give-up or a close says the answer AND its why (state.js scriptWhyOf: the authored rule)
-    const whyS = (w) => (w && String(w).trim() ? (lang === "english" ? `, because ${joinable(w, { lower: true })}` : `, kyunki ${joinable(w, { lower: true })}`) : "");
+    // (v6.6 K3, main on director14 c5-t02 stuck 54: an authored why naming the board's "'?'" mark read as a second question and the
+    // give-up's key was cut, and the voice reads "?" aloud: the mark is said in words)
+    const whyS = (w) => (w && String(w).trim() ? (lang === "english" ? `, because ${joinable(spokenMarks(w, lang), { lower: true })}` : `, kyunki ${joinable(spokenMarks(w, lang), { lower: true })}`) : "");
     // v6 (director8 c4 ×6: "Pichhle sawaal ka jawab nahi tha" heard as "there was no answer"): a yes/no key is said as the
     // right answer named, never as "<nahi> tha"
     const yesNo = (a) => /^(?:haan|ha|nahi|nahin|yes|no)$/i.test(String(a ?? "").trim());
@@ -1962,7 +1969,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // was her own words kept as the verdict; so were the invented methods and the doubled whys): a right answer's verdict is code's
     // frame and the card's authored why — never her words
     if (verdict === "correct" && graded) {
-      const why = graded0?.why ? String(graded0.why).trim() : null;
+      const why = graded0?.why ? spokenMarks(String(graded0.why).trim(), lang) : null;
       const why1 = why ? (lang === "english" ? `, because ${joinable(why, { lower: true })}` : `, kyunki ${joinable(why, { lower: true })}`) : "";
       lead = dot(`${freshOf(FRAMES.right[lang === "english" ? "english" : "hinglish"], state).replace(/[.!?।—–\s-]+$/, "")}${why1}`);
       guard.rightWhy = why ? "authored" : "none";
@@ -2177,7 +2184,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const closedA = state.lastMove?.closed?.answer ? norm(state.lastMove.closed.answer) : null;
     const closedW = whyS(state.lastMove?.closed?.why);
     const wd = state.lastMove?.workedDone;
-    const wdA = wd?.answer ? joinable(String(wd.answer).replace(/^\s*(?:toh|so)\s+/i, "")) : null, wdW = wd?.why ? joinable(wd.why, { lower: true }) : null;
+    const wdA = wd?.answer ? joinable(String(wd.answer).replace(/^\s*(?:toh|so)\s+/i, "")) : null, wdW = wd?.why ? joinable(spokenMarks(wd.why, lang), { lower: true }) : null;
     // v6 (director8 c6 stuck T37: "Toh poora jawab: … 28 m …" then "Aur pehle wale sawaal ka jawab 28 m tha" with the same why):
     // a close is said once: the earlier card's close goes when the give-up or the worked answer already says its answer
     const numsIn = (t) => (String(t ?? "").match(/\d+(?:[./]\d+)?/g) ?? []).join(" ");
