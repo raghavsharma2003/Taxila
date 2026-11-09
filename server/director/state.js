@@ -2541,7 +2541,13 @@ function decide(s, input, item) {
   // census 14.5 (F1, 6c45a7ea t12): a topic ask the classifier ALSO read as a stop ("kuch aur padhte hain") is the topic
   // ask: it is acted on in 2a, never met with the stop check-in (a goodbye or "I am leaving" still ends here)
   const topicAsk = ["switch", "topic", "change_topic"].includes(cls?.request?.type) && stopKind(input.text) !== "leaving";
-  if ((flags.wantsToStop && !topicAsk) || s.rel?.overlay?.kind === "CHECK_IN") {
+  // v6.7 V1′ (main, director15 c4 offtopic 62, carried two runs: a wrong answer on a scripted card met with a "break" whose words
+  // were hers): an answer to a live scripted card is graded and goes the scripted way (a hint, a remediation, the give-up) — the
+  // relational check-in waits; a stop they asked for still stops
+  const liveIt = s.activeItemId ? findItem(s, input.kit, s.activeItemId) : null;
+  const answeredCard = scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && !!liveIt && isScriptCard(liveIt)
+    && ["incorrect", "misconception", "partial", "correct"].includes(String(cls?.outcome ?? ""));
+  if ((flags.wantsToStop && !topicAsk) || (s.rel?.overlay?.kind === "CHECK_IN" && !(answeredCard && !flags.wantsToStop))) {
     const checkIn = s.rel?.overlay?.kind === "CHECK_IN";
     // round 7 (main's hybrid-pilot judgement #3, dc-r7-stop-limits): "bye" and every other goodbye or leaving phrase gets the ONE
     // stop check-in first, like "bas ho gaya"; a second stop within two turns, "stop for today" (the stop chip) or Pause → End
@@ -2641,7 +2647,8 @@ function decide(s, input, item) {
     return poseNext(s, input, "an easier one now");
   }
   // 4. A frustration loop (P20) gets a break with choices, not another question.
-  if (frustrationLoop(s.affect) && ["warmup", "practice"].includes(s.phase) && s.turn - s.lastBreakTurn >= LIMITS.breakGapTurns) {
+  // (v6.7 V1′: an answer to a live scripted card goes the scripted way — the frustration break waits for a turn that answered nothing)
+  if (frustrationLoop(s.affect) && ["warmup", "practice"].includes(s.phase) && s.turn - s.lastBreakTurn >= LIMITS.breakGapTurns && !answeredCard) {
     s.lastBreakTurn = s.turn;
     s.affect = { ...s.affect, dontKnowStreak: 0, minimalStreak: 0 };
     // Equity profile (steal 4, rj-advice-menu-for-weak-learners): a low-baseline child gets ONE next step, never a menu.

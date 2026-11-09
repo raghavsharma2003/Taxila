@@ -2123,7 +2123,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       guard.probeAck = true;
     }
     // v6 R3: a repeated miss on an adding card names exactly what their total left out
-    const miss = kindNow === "hint" && verdict === "not_yet" && card ? missingPieces(card, saidNow, item?.answer) : null;
+    // (v6.7 V1′, main on director15 c6 stuck 48: "Tumhare jod mein 7 m nahi juda" reads their method — a guess about what they did:
+    // never said)
+    const miss = null; void missingPieces;
     const unit = String(item?.answer ?? "").match(/\d\s*([a-zA-Z]+)\s*$/)?.[1] ?? "";
     const missS = miss ? (() => { const xs = miss.map((n) => `${n}${unit ? ` ${unit}` : ""}`); const list = xs.length > 1 ? `${xs.slice(0, -1).join(", ")} ${lang === "english" ? "and" : "aur"} ${xs.at(-1)}` : xs[0];
       return lang === "english" ? `Your total leaves out ${list}.` : `Tumhare jod mein ${list} nahi juda.`; })() : null;
@@ -2273,7 +2275,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // v5 B4: the authored bridge (and the hook's interest line) at a skill change, said by code unless her lines carry it
     // v6: a bridge with no board of its own never sends their eyes to the screen ("Wahi 8 laddoo dekho:" over another board)
     const unpointed = (x) => (state.lastMove?.bridgeBeat?.board ? x : norm(String(x).replace(/\s*\b(?:screen|board)\s+(?:par|pe)\b/gi, "").replace(/\s+dekho\b(?=\s*[:,.]|\s)/gi, "").replace(/\s+([:,.])/g, "$1")));
-    const first = (state.lastMove?.sayFirst ?? []).map(dot).filter((x) => !pointSaid([...ss, ...body].join(" "), x)).map(unpointed);
+    // (v6.7 V1′, main on director15: the hook is authored only — her words never stand in for it, and none follow it; her copy of
+    // it is dropped as hers, the authored line is said)
+    const first = (state.lastMove?.sayFirst ?? []).map(dot).map(unpointed);
     // v6 (main, director8 hand judges: 10 / 4 / 45 firm contradictions, the checker saw 1 / 0 / 0): everything about the card
     // they just answered is said FIRST and together (the verdict with its reason, a give-up, the worked answer), so it is one
     // segment on THAT card's board; then a missed card's close (its own board); then the bridge (its own segment); then a parked
@@ -2331,7 +2335,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     {
       const authoredK = new Set([...(point ? sentences(point) : []), ...(workedLines ?? []), ...(state.lastMove?.simpler ? sentences(state.lastMove.simpler) : []),
         ...(state.lastMove?.cardPoint ? sentences(state.lastMove.cardPoint) : []), ...(card ? sentences(card) : []), ...(asked ? [asked] : []), ...(missS ? [missS] : []),
-        ...(state.lastMove?.sayFirst ?? []), ...codeLines].map(keyS));
+        ...(state.lastMove?.sayFirst ?? []).flatMap((x) => [x, ...sentences(x)]), ...codeLines].map(keyS));
       const n0 = body.length;
       body = body.filter((x) => !herK.has(keyS(x)) || authoredK.has(keyS(x)));
       if (body.length < n0) guard.hersDropped = n0 - body.length;
