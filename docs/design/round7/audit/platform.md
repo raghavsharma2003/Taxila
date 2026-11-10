@@ -5,7 +5,8 @@ Branch `claude/r7-audit-platform`, from `int/r6` at integration 21a. 60 findings
 
 Counts: **P0 2, P1 3, P2 30, P3 25.** By kind: broken 25, inconsistent 21, not good enough 10, no longer needed 4.
 
-Status words: **fixed** (sha given), **fixing** (I fix it under the phase 2 rule: in my area, broken or inconsistent, no
+Phase 2 (2026-11-10, second session): statuses below are current. Proposals are in `platform-proposals.md`; migrations
+are written, not applied. Status words: **fixed** (sha given), **fixing** (I fix it under the phase 2 rule: in my area, broken or inconsistent, no
 migration, no deploy-script behaviour, no deletion), **main** (needs main's reply: deploy script, migration, deletion,
 redesign), **routed** (another stream owns the file).
 
@@ -14,65 +15,65 @@ redesign), **routed** (another stream owns the file).
 | id | sev | kind | owner | title | where | fix | status |
 |---|---|---|---|---|---|---|---|
 | PLAT-01 | P0 | broken | platform | One request `GET /%` kills the web process | `server/serve.mjs:137` | catch the decode, answer 400 | fixed 6fa4df68 |
-| PLAT-03 | P0 | broken | platform | Rollback after a failed web deploy sends production to the revision that just failed | `scripts/deploy-azure.mjs:116-124, 134-140, 470-475`; `scripts/release.mjs:140` | no `previous` label = refuse; add `--to <revision>` fed from the captured revision; drop `web` from the hint | main |
-| PLAT-04 | P1 | broken | platform | The nightly job cannot load its sweep in the worker image, so trace retention (30/90-day deletion) never runs | `Dockerfile.worker:9-14`; `server/conductor/sweep.js:23`; `server/conductor/ops.mjs:60-69` | `COPY src ./src` in `Dockerfile.worker` and in `deploy-worker.mjs` `localContext()`; extend the packaged test to import `sweep.js` | main |
+| PLAT-03 | P0 | broken | platform | Rollback after a failed web deploy sends production to the revision that just failed | `scripts/deploy-azure.mjs:116-124, 134-140, 470-475`; `scripts/release.mjs:140` | no `previous` label = refuse; add `--to <revision>` fed from the captured revision; drop `web` from the hint | fixed 891d1d8c |
+| PLAT-04 | P1 | broken | platform | The nightly job cannot load its sweep in the worker image, so trace retention (30/90-day deletion) never runs | `Dockerfile.worker:9-14`; `server/conductor/sweep.js:23`; `server/conductor/ops.mjs:60-69` | `COPY src ./src` in `Dockerfile.worker` and in `deploy-worker.mjs` `localContext()`; extend the packaged test to import `sweep.js` | fixed 891d1d8c |
 | PLAT-06 | P1 | broken | voice | A paired child device is refused on the same-origin D5 voice socket | `server/duplex/d5route.js:113`; `server/auth.js:68`; `server/serve.mjs:166-171` | set the child-scope mark on the request in `handleD5Upgrade` before `authorizeD5` | routed |
-| PLAT-07 | P1 | broken | platform + learning | On a paired device the child's avatar, interests and Hello picks never save (403, swallowed) | `server/pair/scope.js:9-16`; `src/child/api.ts:119,123`; `src/child/screens/Hello.tsx:102,117`; `Me.tsx:72` | add both routes to the scope AND make `updateChild` / onboarding refuse parent-only fields from a device (see note) | main |
-| PLAT-05 | P2 | broken | platform | The 5-wrong-tries limit on emailed sign-in codes does not hold under parallel requests | `server/signin/code.js:118-126` | record the attempt first, then count | fixing |
+| PLAT-07 | P1 | broken | platform + learning | On a paired device the child's avatar, interests and Hello picks never save (403, swallowed) | `server/pair/scope.js:9-16`; `src/child/api.ts:119,123`; `src/child/screens/Hello.tsx:102,117`; `Me.tsx:72` | add both routes to the scope AND make `updateChild` / onboarding refuse parent-only fields from a device (see note) | fixed 083f8de8 (platform half); learning half: patch to-learning/005 |
+| PLAT-05 | P2 | broken | platform | The 5-wrong-tries limit on emailed sign-in codes does not hold under parallel requests | `server/signin/code.js:118-126` | record the attempt first, then count | fixed 14b31b7b |
 | PLAT-08 | P2 | broken | learning | A password set through reset with a leading or trailing space can never log in | `server/routes/account.js:163,172` vs `:30,57`; `server/http.js:57-63` | read the password untrimmed in signup and login | routed |
 | PLAT-09 | P2 | broken | learning | Deleting a child leaves that child's paired device signed in, able to act on a sibling's lesson | `server/routes/account.js:410-415`; `db/migrations/041…sql:12`; `server/brain/turn.js:110,121`; `server/routes/studio.js:43` | delete the device's `auth_session` rows in `deleteChild`'s transaction | routed |
 | PLAT-10 | P2 | broken | learning | The burst limiter on sign-in routes is keyed on a value the caller chooses | `server/routes/parent.js:82`; `server/router.js:86-90` | with no valid session, key on `ipOf(req)` | routed |
-| PLAT-11 | P2 | inconsistent | platform | Each new sign-in code resets the wrong-try count while older codes stay valid | `server/signin/code.js:92-95, 115-118` | spend open codes when a new one is made | fixing |
-| PLAT-12 | P2 | broken | platform | A non-UUID child id answers 500, not 4xx | `server/auth.js:104` | UUID test at the top of `requireChild` | fixing |
-| PLAT-13 | P2 | inconsistent | platform | A paired device's flight recording is stored with no child, cannot be tier 2, and survives a child erase | `server/pair/scope.js`; `server/trace/routes.js:30-32, 65, 92`; `src/trace/bus.ts:128` | add the two trace routes to the scope | fixing |
-| PLAT-14 | P2 | broken | platform | Anyone can forge the ops page's numbers | `server/trace/routes.js:45-58`; `server/ops/routes.js:36-45` | `and src = 'server'` on the three queries | fixing |
-| PLAT-15 | P2 | inconsistent | games | Code reads `child_controls.play_verb`; no migration creates it | `server/play/dress.js:34`; `server/play/routes.js:70,83,139,151` | a migration plus the parent control, or remove `withVerb` | routed (migration) |
+| PLAT-11 | P2 | inconsistent | platform | Each new sign-in code resets the wrong-try count while older codes stay valid | `server/signin/code.js:92-95, 115-118` | spend open codes when a new one is made | fixed 14b31b7b |
+| PLAT-12 | P2 | broken | platform | A non-UUID child id answers 500, not 4xx | `server/auth.js:104` | UUID test at the top of `requireChild` | fixed d3cf6170 |
+| PLAT-13 | P2 | inconsistent | platform | A paired device's flight recording is stored with no child, cannot be tier 2, and survives a child erase | `server/pair/scope.js`; `server/trace/routes.js:30-32, 65, 92`; `src/trace/bus.ts:128` | add the two trace routes to the scope | fixed d3cf6170 |
+| PLAT-14 | P2 | broken | platform | Anyone can forge the ops page's numbers | `server/trace/routes.js:45-58`; `server/ops/routes.js:36-45` | `and src = 'server'` on the three queries | fixed 14b31b7b |
+| PLAT-15 | P2 | inconsistent | games | Code reads `child_controls.play_verb`; no migration creates it | `server/play/dress.js:34`; `server/play/routes.js:70,83,139,151` | a migration plus the parent control, or remove `withVerb` | migration 042 written 8d9c6161 (not applied); parent control: games |
 | PLAT-16 | P2 | broken | studio | Revealing a practice play offer throws inside `onReveal` | `server/studio/seam.js:615-617, 895-897`; `server/studio/archetypes/index.js:34-37` | return early for `play` as for `scene` | routed |
-| PLAT-19 | P2 | not good enough | platform | The web process's database pool has no connect or statement timeout | `server/db.js:49-53` (vs `server/conductor/pg.js:41`) | `connectionTimeoutMillis: 10_000` and a statement timeout | main |
-| PLAT-20 | P2 | broken | platform | The Forge G2 runner cannot be redeployed: its own closure guard exits 1 | `scripts/forge-g2-deploy.mjs:27-48`; `infra/forge-runner/Dockerfile:11-16` | add the seven missing files, or retire the lane (its nightly job is paused) | main |
-| PLAT-22 | P2 | not good enough | platform | A release that crosses 18:00 IST stops half done: web new, worker old | `scripts/release.mjs:81-82`; `scripts/deploy-worker.mjs:50`; `scripts/release-core.mjs:44` | pass `--force` to the worker step once the release's own freeze step passed | main |
-| PLAT-23 | P2 | inconsistent | platform | `deploy-azure.mjs` has no evening-freeze check | `scripts/deploy-azure.mjs` (none) | the same `inFreeze` check unless `--force` | main |
+| PLAT-19 | P2 | not good enough | platform | The web process's database pool has no connect or statement timeout | `server/db.js:49-53` (vs `server/conductor/pg.js:41`) | `connectionTimeoutMillis: 10_000` and a statement timeout | proposal |
+| PLAT-20 | P2 | broken | platform | The Forge G2 runner cannot be redeployed: its own closure guard exits 1 | `scripts/forge-g2-deploy.mjs:27-48`; `infra/forge-runner/Dockerfile:11-16` | add the seven missing files, or retire the lane (its nightly job is paused) | proposal |
+| PLAT-22 | P2 | not good enough | platform | A release that crosses 18:00 IST stops half done: web new, worker old | `scripts/release.mjs:81-82`; `scripts/deploy-worker.mjs:50`; `scripts/release-core.mjs:44` | pass `--force` to the worker step once the release's own freeze step passed | fixed 891d1d8c |
+| PLAT-23 | P2 | inconsistent | platform | `deploy-azure.mjs` has no evening-freeze check | `scripts/deploy-azure.mjs` (none) | the same `inFreeze` check unless `--force` | fixed 891d1d8c |
 | PLAT-24 | P2 | inconsistent | main | CLAUDE.md and HANDOFF.md describe a deploy that leaves the worker and jobs on the old image | CLAUDE.md "Deploy", "Gates"; `HANDOFF.md:139`; `RELEASE-16.md:3-4`; `infra/gate.mjs:23` | CLAUDE.md "Deploy" = `node scripts/release.mjs <sha>`; one gate definition | routed |
 | PLAT-25 | P2 | inconsistent | main | CI runs the prompt-budget check; the commit gate does not | `.github/workflows/gates.yml:40`; CLAUDE.md "Gates" | a `tests/*.test.mjs` that runs `scripts/check-prompt-budget.mjs` | routed |
-| PLAT-26 | P2 | not good enough | platform | Re-running `infra/eyes.mjs` switches the worker-liveness alert off | `infra/eyes.mjs:34-36, 66-69`; `server/worker.mjs:218` | enable the rule when `taxila-worker` exists | main |
-| PLAT-27 | P2 | inconsistent | platform | The handoff key list lacks six names the release and server need | `scripts/handoff/keys.json` | add the six names | fixing |
-| PLAT-28 | P2 | not good enough | platform | The worker rollback can be refused while the web is already rolled back | `scripts/release-core.mjs:128`; `scripts/deploy-worker.mjs:55, 73-75` | a rollback path that skips gate evidence for an image that already served | main |
-| PLAT-30 | P2 | broken | platform | Client clock skew is subtracted twice | `src/trace/bus.ts:61, 107`; `server/trace/routes.js:53,56` | one side only | fixing |
-| PLAT-31 | P2 | broken | platform | Two model calls within 10 ms overwrite each other's trace blob | `server/trace/model.js:61`; `server/trace/blob.js:20,24` | a seq that keeps its counter inside 12 characters | fixing |
-| PLAT-32 | P2 | broken | platform | One string cut mid-emoji fails the whole client trace batch (500) | `server/trace/routes.js:54, 76`; `server/trace/writer.js:74` | `scrubUnstorable` in `clientRow` | fixing |
-| PLAT-33 | P2 | inconsistent | platform | The client never sends the page-load id the server reads | `server/trace/context.js:28-33`; `src/trace/net.ts` | send `x-taxila-pid` | fixing |
-| PLAT-34 | P2 | not good enough | platform | A trace blob whose row is gone or never landed is never deleted | `server/trace/erase.js:15-19, 54, 61-72`; `src/trace/tier2.ts:31` | retention also lists the container by day and deletes by age | main |
-| PLAT-35 | P2 | broken | platform + voice | D5 voice spend never reaches `lesson.cost` | `server/duplex/d5route.js:138`; `server/cost/meter.js:16`; `server/cost/rollup.js:54` | pass the lesson, child and guardian ids through `d5Session` | fixing (meter); routed (call site) |
+| PLAT-26 | P2 | not good enough | platform | Re-running `infra/eyes.mjs` switches the worker-liveness alert off | `infra/eyes.mjs:34-36, 66-69`; `server/worker.mjs:218` | enable the rule when `taxila-worker` exists | fixed 891d1d8c |
+| PLAT-27 | P2 | inconsistent | platform | The handoff key list lacks six names the release and server need | `scripts/handoff/keys.json` | add the six names | fixed 891d1d8c |
+| PLAT-28 | P2 | not good enough | platform | The worker rollback can be refused while the web is already rolled back | `scripts/release-core.mjs:128`; `scripts/deploy-worker.mjs:55, 73-75` | a rollback path that skips gate evidence for an image that already served | fixed 891d1d8c |
+| PLAT-30 | P2 | broken | platform | Client clock skew is subtracted twice | `src/trace/bus.ts:61, 107`; `server/trace/routes.js:53,56` | one side only | fixed a7f5ecfd |
+| PLAT-31 | P2 | broken | platform | Two model calls within 10 ms overwrite each other's trace blob | `server/trace/model.js:61`; `server/trace/blob.js:20,24` | a seq that keeps its counter inside 12 characters | fixed a7f5ecfd |
+| PLAT-32 | P2 | broken | platform | One string cut mid-emoji fails the whole client trace batch (500) | `server/trace/routes.js:54, 76`; `server/trace/writer.js:74` | `scrubUnstorable` in `clientRow` | fixed a7f5ecfd |
+| PLAT-33 | P2 | inconsistent | platform | The client never sends the page-load id the server reads | `server/trace/context.js:28-33`; `src/trace/net.ts` | send `x-taxila-pid` | fixed a7f5ecfd |
+| PLAT-34 | P2 | not good enough | platform | A trace blob whose row is gone or never landed is never deleted | `server/trace/erase.js:15-19, 54, 61-72`; `src/trace/tier2.ts:31` | retention also lists the container by day and deletes by age | proposal |
+| PLAT-35 | P2 | broken | platform + voice | D5 voice spend never reaches `lesson.cost` | `server/duplex/d5route.js:138`; `server/cost/meter.js:16`; `server/cost/rollup.js:54` | pass the lesson, child and guardian ids through `d5Session` | fixed 4e0904a5 (meter); routed (call site) |
 | PLAT-36 | P2 | broken | brain | The lesson cost rollup runs before its events land, once; abandoned lessons never get a cost | `server/routes/lesson.js:436-438, 828`; `server/trace/writer.js:11` | flush before the rollup; re-roll the last day's lessons nightly | routed |
-| PLAT-37 | P2 | inconsistent | platform | `taxila-fast-bg` is charged at about 19 times its price | `server/cost/prices.js:13-28, 64` | add the row | fixing |
-| PLAT-38 | P2 | not good enough | platform | The ledger never uses the cached-token price | `server/azure.js:197-200, 492-494` | pass the normalised usage | fixing |
+| PLAT-37 | P2 | inconsistent | platform | `taxila-fast-bg` is charged at about 19 times its price | `server/cost/prices.js:13-28, 64` | add the row | fixed 4e0904a5 |
+| PLAT-38 | P2 | not good enough | platform | The ledger never uses the cached-token price | `server/azure.js:197-200, 492-494` | pass the normalised usage | fixed 4e0904a5 |
 | PLAT-39 | P2 | broken | platform + voice + studio | Three kinds of spend have no meter | `server/voice/speech.js:504-506`; `server/trace/model.js:42`; `server/forge/g2/model.js:42` | meter each | routed |
-| PLAT-40 | P2 | inconsistent | platform | The teacher-agent deployment is not protected as a hot pool | `server/lanes.js:9, 35-41`; `server/agent/flags.js:38` | add it to `sharedHot()` | fixing |
-| PLAT-17 | P3 | inconsistent | brain | Migration 016 was edited in place after it was applied | `db/migrations/016_brain.sql:38-41`; `server/brain/trace.js:141` | a new migration with the two columns, then drop the probe | main (migration) |
-| PLAT-18 | P3 | inconsistent | platform | `migrate.mjs --job` skips the `--prod` / `--backup` check | `scripts/migrate.mjs:31-37` | require them on the job path too | main |
-| PLAT-21 | P3 | broken | platform | RELEASE-16 §6 (`--migrate job`, after the India move) cannot finish | `RELEASE-16.md:137-145`; `scripts/release-core.mjs:42`; `scripts/deploy-azure.mjs:269-270` | pass the db-copy report as migrations evidence to both deploys | main |
+| PLAT-40 | P2 | inconsistent | platform | The teacher-agent deployment is not protected as a hot pool | `server/lanes.js:9, 35-41`; `server/agent/flags.js:38` | add it to `sharedHot()` | fixed 4e0904a5 |
+| PLAT-17 | P3 | inconsistent | brain | Migration 016 was edited in place after it was applied | `db/migrations/016_brain.sql:38-41`; `server/brain/trace.js:141` | a new migration with the two columns, then drop the probe | migration 043 written 8d9c6161 (not applied); probe removal: brain |
+| PLAT-18 | P3 | inconsistent | platform | `migrate.mjs --job` skips the `--prod` / `--backup` check | `scripts/migrate.mjs:31-37` | require them on the job path too | fixed 891d1d8c |
+| PLAT-21 | P3 | broken | platform | RELEASE-16 §6 (`--migrate job`, after the India move) cannot finish | `RELEASE-16.md:137-145`; `scripts/release-core.mjs:42`; `scripts/deploy-azure.mjs:269-270` | pass the db-copy report as migrations evidence to both deploys | fixed 891d1d8c |
 | PLAT-29 | P3 | not good enough | face | The greeting-clip check looks at a path the image does not have | `server/face-puppet/greetings.js:51,54` | check under `dist/` too | routed |
 | PLAT-02 | P3 | broken | platform | A cookie with a bare `%` fails every signed-in route | `server/http.js:48` | keep the raw value | fixed 6fa4df68 |
-| PLAT-41 | P3 | not good enough | platform | About 200 server settings exist only on the live Container App | `server/**` (249 names read, 201 in neither deploy script nor `keys.json`) | one checked-in manifest the deploy diffs | main |
-| PLAT-42 | P3 | broken | platform | The ops page understates cost per lesson-minute | `server/ops/routes.js:47-49, 56, 63` | minutes of costed lessons only | fixing |
-| PLAT-43 | P3 | broken | platform | Trace batch size is counted in characters, the server limit is bytes | `src/trace/bus.ts:99`; `server/trace/routes.js:61-62` | count bytes | fixing |
-| PLAT-44 | P3 | inconsistent | platform | After a lesson the client keeps recording under that lesson's id | `src/trace/lesson.ts:17` | clear it on unmount | fixing |
-| PLAT-45 | P3 | inconsistent | platform | The client and server masks have drifted; sign-in and pairing codes are stored in request traces | `src/trace/mask.ts:10-26`; `server/trace/mask.js:6-19`; `shared/trace.ts:104-107` | one shared list; mask the code on the two routes | main (design) |
-| PLAT-46 | P3 | inconsistent | platform + voice | `d5.session` names two different events | `src/voice/trace.ts:429`; `server/cost/meter.js:16`; `server/cost/rollup.js:29,54` | rollup counts only the server one | fixing |
-| PLAT-47 | P3 | broken | platform | Failed image and speech calls count as spend | `server/cost/rollup.js:23`; `server/studio/picture.js:76-79` | skip rows whose status is not 2xx | fixing |
-| PLAT-48 | P3 | inconsistent | platform | `taxila-transcribe` is priced at $1.02/h instead of $0.36/h | `server/cost/prices.js:40-45, 75` | key the deployment names | fixing |
-| PLAT-49 | P3 | broken | platform | `VITE_BUILD_SHA` is set by nothing | `src/main.tsx:15`; `Dockerfile` | build arg from the deploy script | main |
-| PLAT-50 | P3 | not good enough | platform | The worker never flushes the recorder on shutdown | `server/worker.mjs:193-205` | flush before closing the pool | main |
-| PLAT-51 | P3 | not good enough | platform | First concurrent queries each build a pool; the pool is never closed | `server/db.js:56-63` | memoise the promise; export a close | main |
+| PLAT-41 | P3 | not good enough | platform | About 200 server settings exist only on the live Container App | `server/**` (249 names read, 201 in neither deploy script nor `keys.json`) | one checked-in manifest the deploy diffs | proposal |
+| PLAT-42 | P3 | broken | platform | The ops page understates cost per lesson-minute | `server/ops/routes.js:47-49, 56, 63` | minutes of costed lessons only | fixed 14b31b7b |
+| PLAT-43 | P3 | broken | platform | Trace batch size is counted in characters, the server limit is bytes | `src/trace/bus.ts:99`; `server/trace/routes.js:61-62` | count bytes | fixed a7f5ecfd |
+| PLAT-44 | P3 | inconsistent | platform | After a lesson the client keeps recording under that lesson's id | `src/trace/lesson.ts:17` | clear it on unmount | fixed a7f5ecfd |
+| PLAT-45 | P3 | inconsistent | platform | The client and server masks have drifted; sign-in and pairing codes are stored in request traces | `src/trace/mask.ts:10-26`; `server/trace/mask.js:6-19`; `shared/trace.ts:104-107` | one shared list; mask the code on the two routes | proposal |
+| PLAT-46 | P3 | inconsistent | platform + voice | `d5.session` names two different events | `src/voice/trace.ts:429`; `server/cost/meter.js:16`; `server/cost/rollup.js:29,54` | rollup counts only the server one | fixed 4e0904a5 |
+| PLAT-47 | P3 | broken | platform | Failed image and speech calls count as spend | `server/cost/rollup.js:23`; `server/studio/picture.js:76-79` | skip rows whose status is not 2xx | fixed 4e0904a5 |
+| PLAT-48 | P3 | inconsistent | platform | `taxila-transcribe` is priced at $1.02/h instead of $0.36/h | `server/cost/prices.js:40-45, 75` | key the deployment names | fixed 4e0904a5 |
+| PLAT-49 | P3 | broken | platform | `VITE_BUILD_SHA` is set by nothing | `src/main.tsx:15`; `Dockerfile` | build arg from the deploy script | fixed 84543940 |
+| PLAT-50 | P3 | not good enough | platform | The worker never flushes the recorder on shutdown | `server/worker.mjs:193-205` | flush before closing the pool | proposal |
+| PLAT-51 | P3 | not good enough | platform | First concurrent queries each build a pool; the pool is never closed | `server/db.js:56-63` | memoise the promise; export a close | proposal |
 | PLAT-52 | P3 | inconsistent | learning | `PATCH /api/children` skips the validation `POST` has; account delete leaves the `tx_in` cookie | `server/routes/account.js:305-306, 325, 412` | reuse the normaliser; clear both cookies | routed |
-| PLAT-53 | P3 | inconsistent | platform | `TAXILA_TRACE=0` leaves the recorder on; `TAXILA_BOOT_WARM=off` leaves warm-up on | `server/trace/writer.js:32`; `server/boot-warm.js:14` | both accept `off`, `0`, `false` | fixing |
-| PLAT-54 | P3 | inconsistent | platform | The classify deployment default differs between code and deploy | `server/azure.js:22`; `scripts/deploy-azure.mjs:406` | one default | main |
-| PLAT-55 | P3 | inconsistent | platform | Migrations README and RELEASE-16 text are behind the code | `db/migrations/README.md:54-58`; `RELEASE-16.md:93, 121, 149-150` | correct the lines | fixing |
-| PLAT-56 | P3 | no longer needed | main | Six tables nothing reads or writes | `module_run`, `calendar`, `rate_bucket`, `kt_params`, `voicesig.calibration`, `voicesig.population_norm` | one drop migration | main (migration) |
-| PLAT-57 | P3 | no longer needed | several | Dead routes and route tables | `server/duplex/routes.js`; `server/routes/modules.js`; placement registered twice; three uncalled routes | delete | main (deletion) |
-| PLAT-58 | P3 | no longer needed | platform | Scripts nothing depends on | see note | delete three now; four after their docs are updated | main (deletion) |
-| PLAT-59 | P3 | no longer needed | platform | Dead exports and set-only settings | see note | delete | main (deletion) |
-| PLAT-60 | P3 | inconsistent | platform | `deploy-worker.mjs --from-tree` defaults to an old session branch | `scripts/deploy-worker.mjs:64` | require the branch | main |
+| PLAT-53 | P3 | inconsistent | platform | `TAXILA_TRACE=0` leaves the recorder on; `TAXILA_BOOT_WARM=off` leaves warm-up on | `server/trace/writer.js:32`; `server/boot-warm.js:14` | both accept `off`, `0`, `false` | fixed 4e0904a5 |
+| PLAT-54 | P3 | inconsistent | platform | The classify deployment default differs between code and deploy | `server/azure.js:22`; `scripts/deploy-azure.mjs:406` | one default | proposal (brain) |
+| PLAT-55 | P3 | inconsistent | platform | Migrations README and RELEASE-16 text are behind the code | `db/migrations/README.md:54-58`; `RELEASE-16.md:93, 121, 149-150` | correct the lines | fixed 8d9c6161 |
+| PLAT-56 | P3 | no longer needed | main | Six tables nothing reads or writes | `module_run`, `calendar`, `rate_bucket`, `kt_params`, `voicesig.calibration`, `voicesig.population_norm` | one drop migration | migration 050 written 8d9c6161 (not applied; calendar kept, it is read) |
+| PLAT-57 | P3 | no longer needed | several | Dead routes and route tables | `server/duplex/routes.js`; `server/routes/modules.js`; placement registered twice; three uncalled routes | delete | deleted 36339683 (platform parts); voice, games, studio parts left to them |
+| PLAT-58 | P3 | no longer needed | platform | Scripts nothing depends on | see note | delete three now; four after their docs are updated | deleted 36339683 (three); four kept (docs or context cite them) |
+| PLAT-59 | P3 | no longer needed | platform | Dead exports and set-only settings | see note | delete | deleted 36339683 (most); TRACE_KINDS kept; test-only and deploy-set names kept |
+| PLAT-60 | P3 | inconsistent | platform | `deploy-worker.mjs --from-tree` defaults to an old session branch | `scripts/deploy-worker.mjs:64` | require the branch | fixed 891d1d8c |
 
 ## Evidence notes
 
@@ -248,3 +249,17 @@ and the code say 1.32.
 - **Not read:** `infra/studio-qa/` (not this area), the bodies of `infra/m3/keeper-job.mjs`, `verify-job.mjs`, `vm.js`,
   `scripts/region/db-copy.sh`. No `.env*` file was read; `scripts/handoff/keys.json` holds names only.
 - **Not run:** anything under `scripts/` or `infra/` that reaches Azure or a database; no deploy; no model call.
+
+## Phase 2 notes (2026-11-10)
+
+- **PLAT-56 corrected:** `calendar` is read (`server/conductor/view.js:108`, the Conductor's day kinds); migration 050
+  drops the other five. The migration test checks every dropped table against server/ and scripts/ SQL.
+- **PLAT-04 confirmed by loading:** an image-shaped directory without `src/` fails to load `routes/account.js`
+  (ERR_MODULE_NOT_FOUND on `src/modules/frame/engines/geoboard.logic.ts`); the test now loads the sweep from exactly what
+  `Dockerfile.worker` copies.
+- **PLAT-07:** the router refuses, before the handler, any body field from a device-only session outside
+  `server/pair/scope.js DEVICE_FIELDS`; the handlers' own check is patch to-learning/005.
+- **PLAT-20** is a proposal, not a fix: the runner's imports now reach 18 files outside its image, including the database
+  module and the recorder, which do not belong in the untrusted build container.
+- **PLAT-40:** the teacher agent's deployment joins the hot pools only while some lesson can reach the agent lane
+  (TAXILA_TEACHER=agent, or a cohort and not off), so the Studio arms on taxila-gpt6 stay uncapped otherwise.
