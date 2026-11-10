@@ -27527,6 +27527,20 @@
    "at": "2026-11-10",
    "title": "The catalogue under the Claude rubric (evals/studio-catalogue/claude-sample-2026-11-10): 20 of 369 checked catalogue games, seeded sample (seed 20261110), rendered at p360 / p412 / l1366 and judged by a separate Claude agent (Opus) on rubric v1. 4/20 pass; 11/20 (55%) have a content fault (off topic 4, register 3, wrong key 2, wrong fact 1, answer given away 1); 5 more fail on readability only (17 unreadable faults in 13 pieces, mostly repeated engine layouts). The old DeepSeek-V4-Flash check passed all 20. Also: the tray certificates (certs/catalogue.json, 2026-10-09) are stale — every sampled game fails Q1/Q4 at p360 on today's render, where the certificate says it passes.",
    "source": "inbox/r7-studio-37.json"
+  },
+  {
+   "id": "ms-r8-design-review-2026-11-10",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "Design review of the app as released (release 16, int/r6 integration 24), by the main loop from pixels: n = 179 screens at each of phone 360x740 and desktop 1366x768, captured by a Sonnet agent with a faked API and a simulated child; facts counted by grep over all CSS: 3 token systems live (classic, v3, Kaksha), 351 distinct hex colours, 69 font-size values, 44 corner radii, 36 CSS files. Judged faults in order of cost: (1) the teacher's face is a big-eyed toddler cartoon and the largest thing on home and lesson; (2) the board is thin white strokes and monospace one-line fractions in a mostly empty frame; (3) the chrome is terminal-styled (slash-labels, grid, clipped corners, mono uppercase), and the parent corner was built dark against DESIGN-V3; (4) the question is not the strongest element on the phone lesson screen (seven stacked zones); (5) three designs live at once; (6) broken-looking states (blank white offline home, empty stage boxes). Kept: the desktop lesson structure, the games' blueprint look, the parent corner's content, no streaks or points. This is one reviewer's judgement of stills; no child or parent was asked, and motion and audio were not seen.",
+   "source": "inbox/r8-main-2.json"
+  },
+  {
+   "id": "dc-r8-design-revamp-two-directions",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "The UI revamp goes ahead in two phases. Phase 1 now: a design session builds two directions as static prototypes of eight screens at two sizes (A 'paper and ink': warm light ground, the board as paper, marigold and indigo; B 'night class': the current dark calmed, terminal affectations removed) and one page comparing current, A and B for the owner. Phase 2 after the owner picks: one token set (at most 8 type sizes, 3 radii, under 30 colours), then the lesson screen and board, home, onboarding, the parent corner (light), and the classic skin retired. Fixed in both directions, not taste: the board is the hero and maths is typeset as maths with colour carrying meaning; the question is the second strongest element with one primary action; the teacher is a small presence, never the hero image (the owner chooses the teacher's look separately); no slash-labels, grid, clipped corners or chevrons; every state has a designed fallback. Why: the owner called the UI extremely bad on 2026-11-10 having seen only the October build, then left the call to the main loop; the review of the current build (ms-r8-design-review-2026-11-10) found three of October's faults still present and one new one; the look is taste, so the owner picks from pixels rather than from a description. Reverse if: the owner, having used release 16, says the current look is acceptable (then only the non-taste fixes are built on the current skin); or neither direction is picked (then a third is drawn from the owner's stated reasons before any product code changes).",
+   "source": "inbox/r8-main-2.json"
   }
  ],
  "edges": [
@@ -44114,6 +44128,16 @@
    "src": "dc-r8-approval-lane-studio",
    "rel": "constrains",
    "dst": "stagecraft-spec-default-deployment"
+  },
+  {
+   "src": "dc-r8-design-revamp-two-directions",
+   "rel": "measured_by",
+   "dst": "ms-r8-design-review-2026-11-10"
+  },
+  {
+   "src": "dc-owner-direction-is-main-loops-2026-11-10",
+   "rel": "constrains",
+   "dst": "dc-r8-design-revamp-two-directions"
   }
  ]
 }

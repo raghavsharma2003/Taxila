@@ -9715,3 +9715,20 @@ Release 16 (`e807f07`, integration 24) replaced production. Production is the bu
 
 ## Merged inbox entries (write-up from the entry text)
 - `dc-r8-approval-lane-studio` (2026-11-10): The approval lane (STUDIO-11; main's go on docs/design/round7/studio/APPROVAL-LANE.md; layer 3 of dc-r8-selection-before-generation), built. A generated Stagecraft spec reaches a child only when approved OFFLINE: scripts/approve-generate.mjs (the one paid step, main runs it with the key; ≤ 2 attempts a topic, hard --usd cap, manifest of each call's deployment, tokens and cost), scripts/approve-check.mjs (today's predicate checks and a render in the real Desk tray at p360, p412 and l1366, writing a judge packet), a separate Claude judge on rubric v1 (data/studio-approved/JUDGE-PROMPT.md: the images, the spec as data, the cards and keys, the mix-up, never the author's reasoning), scripts/approve-store.mjs (data/studio-approved/<topic>/<id>.json, the commit is the approval; the verdict, the prompt's sha256 and the images' sha256 kept). The tray gate accepts an approved hash at the sizes its render passed (server/studio/approved.js approvedVerdict); the runtime calls no judge. Each piece is FOR { topic, skill, misconceptionId, beat: rem:<misconceptionId> } with a `because`: the seam reveals it only on the scripted remediation for that mix-up marked `piece` (Brain to-brain/022, Learning to-learning/006); any other child gets the script's board. Reverse if approved pieces are judged worse than the script's boards in a director run.
+
+
+<!-- merged from inbox/r8-main-2.json -->
+## `dc-r8-design-revamp-two-directions` (2026-11-10)
+
+The UI revamp goes ahead in two phases.
+
+- **Phase 1, now:** two directions as static prototypes of eight screens at two sizes, and one page comparing current, A and B for the owner. A is "paper and ink" (warm light ground, the board as paper). B is "night class" (the current dark, calmed).
+- **Phase 2, after the owner picks:** one token set, then the lesson screen and board, home, onboarding, the parent corner (light), and the classic skin retired.
+
+**Fixed in both directions:** the board is the hero and maths is typeset as maths; the question is the second strongest element; the teacher is a small presence, never the hero image; no slash-labels, grid, clipped corners or chevrons; every state has a designed fallback.
+
+**Why:** the owner called the UI extremely bad having seen only the October build, then left the call to the main loop. The review of the current build found three of October's faults still present and one new one. The look is taste, so the owner picks from pixels.
+
+**Reverse if:**
+- the owner, having used release 16, says the current look is acceptable: only the non-taste fixes are built, on the current skin;
+- neither direction is picked: a third is drawn from the owner's stated reasons before any product code changes.
