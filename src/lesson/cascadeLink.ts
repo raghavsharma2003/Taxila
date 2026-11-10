@@ -732,7 +732,19 @@ export class CascadeLink implements TeacherLink {
 
   interrupt(): void {
     this.stopAck();
-    this.stopReply("cancelled", true);
+    this.stopByHand();
+  }
+
+  /**
+   * audit V-04: a stop that comes from outside the engine (a tap: pause, hear again, a typed or tapped answer, the talk
+   * button) is reported to the engine as her line ENDED. "Stopped" alone is not enough: the governor ignores it and keeps
+   * her turn, so the mic gate opened but the child's next answer was never committed (tests/audit-voice-small.test.mjs).
+   */
+  private stopByHand(): void {
+    const cur = this.current;
+    const audible = !!cur && (cur.playing || !!cur.paused);
+    this.stopReply("cancelled", true, false);
+    if (audible) this.duplex?.replyEnded();
   }
 
   // ───────────── round 3: the acknowledgement (src/latency/ack.ts) ─────────────
@@ -850,7 +862,7 @@ export class CascadeLink implements TeacherLink {
     void this.ctx?.resume().catch(() => {});
     // A press is the child's explicit "my turn": she stops outright (no pause-and-decide).
     this.clearBargeTimers();
-    this.stopReply("cancelled", true);
+    this.stopByHand();
     // r4-latency: the press opens a new child turn for the echo and the prefetch, as child_speech_start does on hands-free
     // (onChildEvent). Without it the AckClient kept the last reply's closed turn and never asked on tap-to-talk (page-clock
     // timeline 2026-10-10: 0 turn-ack requests in 24 tap-to-talk turns; round 3: 0 in 21). Every echo rule stays the

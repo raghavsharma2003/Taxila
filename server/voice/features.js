@@ -28,7 +28,6 @@ import { bad, need, notFound, send, HttpError } from "../http.js";
 /** Every feature the client may send, with its physical range. Anything else is rejected. */
 export const FEATURE_RANGES = {
   durationMs: [0, 120_000], voicedFrac: [0, 1], f0MedianHz: [50, 800], f0IqrSt: [0, 36],
-  // audit V-24: the whole-turn slope gets the end slope's range: a short "haan" rises that steeply (122 st/s measured)
   f0SlopeStPerS: [-200, 200], f0EndSlopeStPerS: [-200, 200], rmsMeanDb: [-130, 0], rmsStdDb: [0, 80],
   rmsP90Db: [-130, 0], pauseCount: [0, 500], pauseTotalMs: [0, 120_000], longestPauseMs: [0, 120_000],
   pauseFrac: [0, 1], flatVoicedRuns: [0, 500], onsetMs: [0, 20_000], words: [0, 2000], speechRateWps: [0, 15],

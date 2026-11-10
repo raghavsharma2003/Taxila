@@ -1,22 +1,46 @@
 {
  "nodes": [
   {
-   "id": "dc-r7-audit-voice-engine-stop-every-path",
+   "id": "rj-r7-audit-voice-stop-without-telling-engine",
+   "kind": "rejected",
+   "title": "Stopping her reply in the link without telling the hands-free engine: on D4 the mic stayed gated and answers were dropped as echo",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "rj-r7-audit-voice-bridge-dropped-sink",
+   "kind": "rejected",
+   "title": "UiBridge.cachingStream wrapped the speech fetch with two arguments and dropped the player's sink: no visemes, no word onsets, clause onsets without playAt in the child app",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "dc-r7-audit-voice-stream-stall-watch",
    "kind": "decision",
-   "at": "2026-11-10",
-   "title": "An engine told her line started (replyAudible) is told it stopped on EVERY path: tap, pause, hear again, a new line. CascadeLink.stopReply tells it unless finishReply or the engine's own stop already did (audit V-04)"
+   "title": "A reply whose audio ran out and whose stream sends nothing for 5 s ends with what was heard (PcmStreamPlayer.stallMs)",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "dc-r7-audit-voice-call-open-time-limit",
+   "kind": "decision",
+   "title": "The transcription call's token and connection requests are each limited to 10 s; past that the link falls back to the talk button",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "open-r7-audit-voice-holdcue-live",
+   "kind": "open",
+   "title": "The thinking-pause cue is live in hands-free although r3vs-holdcue-shadow says shadow until a children's pilot (audit V-22)",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "open-r7-audit-voice-expressive-default",
+   "kind": "open",
+   "title": "w2g-expressive-layer-built (default on for DragonHD) against rj-ssml-delivery-plan-2026-10-04 (listeners preferred plain): the blind test is still pending (audit V-27)",
+   "at": "2026-11-10"
   },
   {
    "id": "rj-r7-audit-voice-verdict-at-her-start",
    "kind": "rejection",
    "at": "2026-11-10",
    "title": "Marking a closed-answer verdict as played when her reply STARTS (audit V-09): broke 'fast mouth, late verdict' (her uptake sounds before the verdict word, and a correction then must still revoke). Kept instead: revocable until max(her start, verdictNotBefore) + REVOCABLE_MS"
-  },
-  {
-   "id": "fd-r7-audit-voice-clause-sink-dropped",
-   "kind": "finding",
-   "at": "2026-11-10",
-   "title": "The child app's speech stream (uiBridge.cachingStream) dropped the player's clause sink, so every line lost the player-clock clause onsets and viseme batches w2gfix-clause-events-on-player-clock had fixed; the dev pages build the link without the bridge, which is why it looked fine there (audit V-13, fixed)"
   },
   {
    "id": "dc-r7-audit-voice-holdcue-unsubscribed",
@@ -39,14 +63,24 @@
  ],
  "edges": [
   {
-   "src": "rj-r7-audit-voice-verdict-at-her-start",
-   "rel": "constrains",
-   "dst": "dc-r7-audit-voice-engine-stop-every-path"
+   "src": "rj-r7-audit-voice-bridge-dropped-sink",
+   "rel": "regressed",
+   "dst": "w2gfix-clause-events-on-player-clock"
   },
   {
-   "src": "fd-r7-audit-voice-clause-sink-dropped",
+   "src": "open-r7-audit-voice-holdcue-live",
+   "rel": "contradicts",
+   "dst": "r3vs-holdcue-shadow"
+  },
+  {
+   "src": "open-r7-audit-voice-expressive-default",
+   "rel": "contradicts",
+   "dst": "rj-ssml-delivery-plan-2026-10-04"
+  },
+  {
+   "src": "rj-r7-audit-voice-verdict-at-her-start",
    "rel": "constrains",
-   "dst": "w2gfix-clause-events-on-player-clock"
+   "dst": "rj-r7-audit-voice-stop-without-telling-engine"
   },
   {
    "src": "dc-r7-audit-voice-holdcue-unsubscribed",
@@ -67,11 +101,21 @@
    "src": "fd-r7-audit-voice-switch-translit-not-wired",
    "rel": "constrains",
    "dst": "rs7-translit-roman-to-devanagari"
+  },
+  {
+   "src": "dc-r7-audit-voice-holdcue-unsubscribed",
+   "rel": "supersedes",
+   "dst": "open-r7-audit-voice-holdcue-live"
+  },
+  {
+   "src": "dc-r7-audit-voice-expressive-default-off",
+   "rel": "supersedes",
+   "dst": "open-r7-audit-voice-expressive-default"
   }
  ],
  "md": {
-  "decisions": "## `dc-r7-audit-voice-engine-stop-every-path`\n\nThe hands-free engine learns that her line is sounding from `replyAudible` and holds the floor (half-duplex D4 gates the mic) until it hears `replyEnded` or `replyStopped`. Only `finishReply` sent those, and a tap that stopped her (pause, hear again, a new line) cleared `current` first, so `finishReply` never ran: on D4 the mic stayed shut for 30 s, two answers were dropped as echo. Now `CascadeLink.stopReply` tells the engine on every path; `finishReply` and the engine's own stop pass `tellEngine = false` so it is never told twice.\n\n**Reverse if** the engine gains its own playback clock (it then needs no telling).\n\n## `dc-r7-audit-voice-holdcue-unsubscribed`\n\n`src/duplex/liveTap.ts` no longer subscribes `live.estimate` to `holdBus.onThinkingPause`. The cue still publishes for its counters. Main's decision on audit V-22: `r3vs-holdcue-shadow` says shadow until a children's pilot, and the recorded trial prevented 0 of 12 cut-offs and delayed one turn by 2.0 s.\n\n**Reverse when** a children's pilot shows the cue prevents cut-offs without delaying turns.\n\n## `dc-r7-audit-voice-expressive-default-off`\n\n`server/voice/voices.js expressiveOn`: DragonHD's per-clause SSML plan only with `TAXILA_VOICE_EXPRESSIVE=1` (or on / dhd / all). Before, it was on unless set to 0, against `rj-ssml-delivery-plan-2026-10-04` (2.10 vs 2.40, choppy / slow). Main's decision on audit V-27, listed for the owner in `docs/design/round7/audit/voice-proposals.md`.\n\n**Reverse if** a blind listen on children's lines prefers the planned SSML.\n",
-  "rejected": "## `rj-r7-audit-voice-verdict-at-her-start`\n\n**Tried:** (audit V-09) nothing in the app sends the governor's `her_verdict`, so a closed-answer reply stayed revocable for its whole length and a \"हाँ\" four seconds in cut it. First fix: mark the verdict played when her reply starts.\n\n**What broke:** `tests/duplex-runtime.test.mjs` \"G7 revoke … (fast mouth, late verdict)\": her uptake sounds BEFORE the verdict word (verdictNotBefore is after her start), and a child correction in that gap must still revoke.\n\n**Instead:** revocable until `max(herStartAt, verdictNotBefore) + REVOCABLE_MS` (1.5 s), or until `her_verdict` if anything ever sends it.\n",
-  "open": "## `fd-r7-audit-voice-switch-translit-not-wired`\n\nRecord correction (audit V-29). `rs7-voice-switch` and `rs7-translit-roman-to-devanagari` read as shipped steps; neither is called by any live path (`voice-switch.js` styleFor / synthesize, `translit/index.js` toDevanagari are reached only from tests and evals). Main decided not to wire them now. One data fix landed: `bara` is no longer a hand entry for twelve (`sabse bara` would have become `सबसे बारह`); NUMBER_AMBIG still reads it as twelve in a run of numbers.\n\n## `fd-r7-audit-voice-clause-sink-dropped`\n\n`src/lesson/uiBridge.ts cachingStream` called `fetchSpeechStream(req, signal)` without the player's clause sink: every teacher line in the child app lost the player-clock clause onsets (board timing) and viseme batches (lip-sync) that `w2gfix-clause-events-on-player-clock` put there. Fixed in audit V-13 with a test; worth a look on a phone that the face and board are back in step.\n"
+  "rejected": "## rj-r7-audit-voice-stop-without-telling-engine (2026-11-10)\n**Tried (shipped until the audit):** `CascadeLink.stopReply` cleared `current` before stopping playback, and only `finishReply` (reached from the playback's `ended`) told the duplex engine. **Broke:** a stop from a tap (pause, hear again, a typed answer) never reached the engine. It kept her 'speaking': on D4 half-duplex the mic stayed gated for 30 s in the repro and two answers were dropped as her echo. `herStopped` alone is not enough either: the governor's `her_stopped` is a no-op, so the floor stays hers. **Instead:** a stop by hand reports her line as ended (`stopByHand` → `duplex.replyEnded()`). Rule: whoever tells the engine she started must tell it she stopped on every path (tests/audit-voice-link.test.mjs, V-04).\n\n## rj-r7-audit-voice-bridge-dropped-sink (2026-11-10)\n**Tried (shipped until the audit):** `UiBridge.cachingStream = async (req, signal) => fetchSpeechStream(req, signal)`. **Broke:** `SpeechStreamFetch` has a third argument, the player's `ClauseSink`. Without it clause onsets were emitted at parse time with no `playAt` and viseme and word batches were dropped, in the child app only (the dev pages build the link without the bridge, and the bridge test called it with two arguments). This silently undid `w2gfix-clause-events-on-player-clock`. **Instead:** the wrapper is typed as `SpeechStreamFetch` and passes the sink (V-13).\n\n## `rj-r7-audit-voice-verdict-at-her-start`\n\n**Tried:** (audit V-09) nothing in the app sends the governor's `her_verdict`, so a closed-answer reply stayed revocable for its whole length and a \"हाँ\" four seconds in cut it. First fix: mark the verdict played when her reply starts.\n\n**What broke:** `tests/duplex-runtime.test.mjs` \"G7 revoke … (fast mouth, late verdict)\": her uptake sounds BEFORE the verdict word (verdictNotBefore is after her start), and a child correction in that gap must still revoke.\n\n**Instead:** revocable until `max(herStartAt, verdictNotBefore) + REVOCABLE_MS` (1.5 s), or until `her_verdict` if anything ever sends it.\n",
+  "decisions": "## dc-r7-audit-voice-stream-stall-watch (2026-11-10)\n`PcmStreamPlayer` arms a watch when its last scheduled audio ends with the stream still open. If no byte arrives for `stallMs` (5 s) the request is abandoned and the reply ends as completed with what was heard, like a mid-reply failure. Before, a stalled connection (or the server hang fixed as V-01) left the lesson on 'speaking' with no exit. Reverse if phones on slow links show real gaps over 5 s mid-reply (raise the number; do not remove the watch).\n\n## dc-r7-audit-voice-call-open-time-limit (2026-11-10)\n`CascadeLink.open()` limits the token request and the call's connection request to `openTimeoutMs` (10 s, the same as the channel-open wait) each. A stalled request used to leave the dock on 'getting ready to listen' with no talk button, and a reconnect never gave up. Past the limit the link falls back to push-to-talk recording, which also ends the hands-free expectation in the bridge.\n\n## `dc-r7-audit-voice-holdcue-unsubscribed`\n\n`src/duplex/liveTap.ts` no longer subscribes `live.estimate` to `holdBus.onThinkingPause`. The cue still publishes for its counters. Main's decision on audit V-22: `r3vs-holdcue-shadow` says shadow until a children's pilot, and the recorded trial prevented 0 of 12 cut-offs and delayed one turn by 2.0 s.\n\n**Reverse when** a children's pilot shows the cue prevents cut-offs without delaying turns.\n\n## `dc-r7-audit-voice-expressive-default-off`\n\n`server/voice/voices.js expressiveOn`: DragonHD's per-clause SSML plan only with `TAXILA_VOICE_EXPRESSIVE=1` (or on / dhd / all). Before, it was on unless set to 0, against `rj-ssml-delivery-plan-2026-10-04` (2.10 vs 2.40, choppy / slow). Main's decision on audit V-27, listed for the owner in `docs/design/round7/audit/voice-proposals.md`.\n\n**Reverse if** a blind listen on children's lines prefers the planned SSML.\n",
+  "open": "## open-r7-audit-voice-holdcue-live (2026-11-10)\nAudit V-22. `r3vs-holdcue-shadow` keeps the thinking-pause cue shadow until a children's pilot; `rejected.md` records 0 of 12 cut-offs prevented and one 2.0 s false delay. The cue is wired into the live engine (`src/duplex/liveTap.ts:50-54`) and went live when hands-free became every child's default. Decide: unsubscribe it, or record the decision to run it live.\n\n## open-r7-audit-voice-expressive-default (2026-11-10)\nAudit V-27. Expressive SSML is default on for DragonHD (`w2g-expressive-layer-built`); `rj-ssml-delivery-plan-2026-10-04` records listeners scoring the same shape below plain. The blind test named as the reversal condition has not run.\n\n## `fd-r7-audit-voice-switch-translit-not-wired`\n\nRecord correction (audit V-29). `rs7-voice-switch` and `rs7-translit-roman-to-devanagari` read as shipped steps; neither is called by any live path (`voice-switch.js` styleFor / synthesize, `translit/index.js` toDevanagari are reached only from tests and evals). Main decided not to wire them now. One data fix landed: `bara` is no longer a hand entry for twelve (`sabse bara` would have become `सबसे बारह`); NUMBER_AMBIG still reads it as twelve in a run of numbers.\n\n"
  }
 }
