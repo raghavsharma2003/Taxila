@@ -14,6 +14,32 @@ const WEAK_P = 0.4;
 const MAX_BACKCHAIN = 3;
 
 /**
+ * The skills of a kit that can ever be "learned": those with at least one loaded item a child answers (not teach-back).
+ * "learned" needs an unaided right answer to an item of that skill (learner/kt/ledger.js), so a skill whose items were
+ * all dropped at load, or that never had one (reading aloud, recitation), would keep its topic unfinished for ever.
+ * A topic is decided on these skills only, on the lesson side (nextTopicFor) and the parent page (routes/parent.js).
+ * @param {{ skills: { id: string }[], items: { skillId: string, kind: string }[] } | null | undefined} kit
+ * @returns {Set<string>}
+ */
+export function askableSkillIds(kit) {
+  const withItem = new Set((kit?.items ?? []).filter((i) => i.kind !== "teachback").map((i) => i.skillId));
+  return new Set((kit?.skills ?? []).map((s) => s.id).filter((id) => withItem.has(id)));
+}
+
+/**
+ * The states that decide a topic, and how many skills must have one: the askable skills only (askableSkillIds).
+ * With no kit (or a kit with nothing askable) every state decides, as before.
+ * @template {{ skillId: string }} S
+ * @param {S[]} states  @param {Parameters<typeof askableSkillIds>[0]} kit
+ * @returns {{ states: S[], skillCount: number }}
+ */
+export function decidingStates(states, kit) {
+  const askable = askableSkillIds(kit);
+  if (!askable.size) return { states, skillCount: kit?.skills?.length ?? 0 };
+  return { states: states.filter((s) => askable.has(s.skillId)), skillCount: askable.size };
+}
+
+/**
  * @param {{ status: string, pKnown: number, attempts: number }[]} states  skill states of one topic
  * @param {number} [skillCount]  how many skills the topic's kit has (unknown → only the rows decide)
  * @returns {"unseen"|"in_progress"|"weak"|"learned"|"mastered"}
@@ -25,27 +51,6 @@ export function topicStatus(states, skillCount = 0) {
   if (complete && states.every((s) => LEARNED.has(s.status))) return "learned";
   if (states.some((s) => s.attempts >= WEAK_ATTEMPTS && s.pKnown < WEAK_P)) return "weak";
   return "in_progress";
-}
-
-/**
- * Skill ids of a kit that have at least one item to ask. "Learned" needs an unaided correct answer to an item of the
- * skill (learner/kt/ledger.js), so a skill with nothing to ask can be taught but never learned: counting it kept eight
- * topics "in progress" for ever (CD-01). Reading-aloud skills have no item; some English skills lose every item at load.
- * @param {{ skills: { id: string }[], items: { skillId: string }[] } | null} kit
- * @returns {Set<string>}
- */
-export function askableSkillIds(kit) {
-  const withItem = new Set((kit?.items ?? []).map((i) => i.skillId));
-  return new Set((kit?.skills ?? []).map((s) => s.id).filter((id) => withItem.has(id)));
-}
-
-/**
- * PURE. The rows that decide a topic and how many skills it has, given the askable skill ids (askableSkillIds), or null
- * when the kit cannot be read (then every row decides and the count is unknown).
- * @param {{ skillId: string }[]} states @param {Set<string> | null} askable
- */
-export function decidingStates(states, askable) {
-  return askable ? { states: states.filter((s) => askable.has(s.skillId)), count: askable.size } : { states, count: 0 };
 }
 
 /**
@@ -152,10 +157,12 @@ export async function nextTopicFor(child, { subject, chapter, startGE, date, rev
   }
   // in parallel (QA D22: one awaited kit read per topic made the parent's reads slow)
   const tids = [...byTopic.keys()];
-  const askable = await Promise.all(tids.map((tid) => getKit(tid, { generate: false }).then(askableSkillIds, () => null)));
-  // a topic is decided only on the skills that have something to ask (CD-01); a topic with no readable kit keeps all its rows
-  const decided = new Map(tids.map((tid, i) => [tid, decidingStates(byTopic.get(tid), askable[i])]));
-  const statusOf = (tid) => { const d = decided.get(tid); return d ? topicStatus(d.states, d.count) : "unseen"; };
+  const kits = await Promise.all(tids.map((tid) => getKit(tid, { generate: false }).catch(() => null)));
+  const deciding = new Map(tids.map((tid, i) => [tid, decidingStates(byTopic.get(tid), kits[i])]));
+  const statusOf = (tid) => {
+    const d = deciding.get(tid);
+    return d ? topicStatus(d.states, d.skillCount) : "unseen";
+  };
   // Prerequisite ids can point outside the seed; only known topics are candidates.
   const prereqsOf = (tid) => (getTopic(tid)?.prerequisites ?? []).filter((p) => getTopic(p));
   // round 7 F: inside a test window with chapters, revise only those (revisionPick); null → the usual choice below

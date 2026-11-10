@@ -23,10 +23,8 @@ test("CD-01: every kit topic can reach 'mastered' once its askable skills are ma
   for (const id of ALL_TOPICS) {
     const kit = kitFromFile(getTopic(id));
     assert.ok(kit, `kit for ${id}`);
-    const askable = askableSkillIds(kit);
-    const rows = masteredRows(kit).filter((r) => askable.has(r.skillId));
-    const d = decidingStates(rows, askable);
-    if (topicStatus(d.states, d.count) !== "mastered") stuck.push(id);
+    const d = decidingStates(masteredRows(kit), kit);
+    if (topicStatus(d.states, d.skillCount) !== "mastered") stuck.push(id);
   }
   assert.deepEqual(stuck, []);
 });
@@ -36,9 +34,9 @@ test("CD-01: a skill with nothing to ask does not hold a topic back (class 5 Hin
   const kit = kitFromFile(getTopic(id));
   const askable = askableSkillIds(kit);
   assert.ok(askable.size < kit.skills.length, "this topic has a skill with no item");
-  const d = decidingStates(masteredRows(kit).filter((r) => askable.has(r.skillId)), askable);
+  const d = decidingStates(masteredRows(kit), kit);
   const order = topicSequence(5, "hindi");
-  const statusOf = (t) => (t === id ? topicStatus(d.states, d.count) : "unseen");
+  const statusOf = (t) => (t === id ? topicStatus(d.states, d.skillCount) : "unseen");
   const picked = pickTopic(order, statusOf, () => []);
   assert.notEqual(picked, id);
   assert.ok(picked && order.includes(picked), "a later topic is picked");
@@ -177,10 +175,10 @@ const placementWithFile = () => readdirSync(placementDir).filter((f) => /^c\d+-/
 test("CD-13/14: one of each exact-duplicate pair and the class-3 sum anchored at class 8 are retired, and still on file", () => {
   const retired = placementWithFile().filter(({ it }) => it.retired).map(({ it }) => it.id).sort();
   assert.deepEqual(retired, ["pl-c3-maths-m01", "pl-c4-evs-e09", "pl-c5-maths-l02", "pl-c5-maths-l05", "pl-c5-maths-l07", "pl-c8-maths-e10", "pl-c8-maths-l10"]);
-  const bank = new Set(loadBank().map((i) => i.id));
+  const bank = new Set(loadBank().filter((i) => !i.retired).map((i) => i.id));
   for (const id of retired) assert.ok(!bank.has(id), id);
   const key = (it) => `${it.class}|${it.prompt_en.replace(/\W+/g, " ").toLowerCase()}|${it.answer}`;
-  const live = loadBank();
+  const live = loadBank().filter((i) => !i.retired);
   for (const [a, b] of [["pl-c5-maths-m10", "pl-c5-maths-l02"], ["pl-c5-maths-m12", "pl-c5-maths-l07"], ["pl-c5-maths-m11", "pl-c5-maths-l05"], ["pl-c3-maths-e05", "pl-c3-maths-m01"], ["pl-c8-maths-m01", "pl-c8-maths-e10"], ["pl-c4-evs-m02", "pl-c4-evs-e09"]]) {
     assert.ok(live.some((i) => i.id === a), `${a} stays in the bank`);
     assert.ok(!live.some((i) => i.id === b), `${b} is out`);
@@ -194,7 +192,7 @@ test("CD-13: each close-variant pair shares a pairId, and a round never asks bot
   for (const [pid, rows] of byPair) assert.equal(rows.length, 2, pid);
   for (const [pid, rows] of byPair) {
     const [first, second] = rows.map(({ it, f }) => ({ ...it, class: Number(/^c(\d+)/.exec(f)[1]), subject: f.replace(/^c\d+-|\.json$/g, "") }));
-    const pool = loadBank().filter((i) => i.subject === first.subject && i.class === first.class);
+    const pool = loadBank().filter((i) => !i.retired && i.subject === first.subject && i.class === first.class);
     const asked = [{ item: pool.find((i) => i.id === first.id), y: 1 }];
     for (let k = 0; k < 40; k++) {
       const next = nextItem({ classLevel: first.class, pool, asked, rnd: () => (k % 10) / 10 });

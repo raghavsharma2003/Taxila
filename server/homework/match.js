@@ -52,13 +52,32 @@ function classItems(classLevel) {
 
 /** A small subject vocabulary for the last rung (whole words, any case; Roman Hindi and English). [U] */
 export const SUBJECT_VOCAB = {
-  maths: ["add", "subtract", "multiply", "divide", "fraction", "fractions", "sum", "difference", "product", "remainder", "perimeter", "area", "angle", "triangle", "number", "numbers", "equation", "jod", "ghatao", "guna", "bhag", "bhinn"],
-  science: ["force", "light", "magnet", "cell", "plant", "plants", "acid", "motion", "energy", "electric", "circuit"],
-  evs: ["plant", "plants", "animal", "animals", "water", "food", "family", "pani"],
-  english: ["noun", "verb", "adjective", "sentence", "paragraph", "poem", "story", "grammar", "tense", "pronoun"],
+  maths: ["add", "subtract", "multiply", "divide", "fraction", "fractions", "sum", "difference", "product", "remainder", "perimeter", "area", "angle", "triangle", "number", "numbers", "equation", "jod", "ghatao", "guna", "bhag", "bhinn", "maths", "math", "mathematics", "ganit"],
+  science: ["force", "light", "magnet", "cell", "plant", "plants", "acid", "motion", "energy", "electric", "circuit", "science", "vigyan"],
+  evs: ["plant", "plants", "animal", "animals", "water", "food", "family", "pani", "evs", "paryavaran"],
+  english: ["noun", "verb", "adjective", "sentence", "paragraph", "poem", "story", "grammar", "tense", "pronoun", "english", "angrezi"],
   hindi: ["संज्ञा", "क्रिया", "विशेषण", "कविता", "कहानी", "वाक्य", "व्याकरण"],
-  sst: ["map", "history", "river", "mountain", "government", "democracy", "kingdom", "empire", "climate"],
+  sst: ["map", "history", "river", "mountain", "government", "democracy", "kingdom", "empire", "climate", "sst", "geography", "civics"],
 };
+
+/**
+ * Words that never name a topic: Hinglish and English filler, and school-day activity words (rj-r4t-activity-word-as-topic:
+ * "copy check ki" once found "Checking reasonableness"). [U]
+ */
+export const FILLER = new Set(("homework hw kaam work question questions sawal sawaal prashn exercise worksheet page copy notebook "
+  + "check test revision class school teacher sir maam ma'am miss help solve answer answers karna karni karne kar karo kiya "
+  + "diya diye mila likhna likho padhna samjhao samjha samajh batao ka ki ke ko se me mein mai main par pe hai hain tha thi "
+  + "aur ya ye yeh woh wo kya kaise kaun mera meri mere mujhe hum humko aaj kal wala wali wale waala waali bhi toh please "
+  + "about do my me i our today tomorrow got have has need want some").split(" "));
+
+/** PURE. The words of a homework sentence that can name a topic, in order (fillers and stop words removed). */
+export const topicWords = (text) => tokens(text).filter((w) => !FILLER.has(w) && !/^\d/.test(w));
+
+/** The topic its words name: all of them together first, then each one alone (the first that names a topic). */
+function topicFromWords(words, cls) {
+  if (!words.length) return null;
+  return findTopic(words.join(" "), cls) ?? (words.length > 1 ? words.map((w) => findTopic(w, cls)).find(Boolean) ?? null : null);
+}
 
 /**
  * PURE (apart from the cached kit read). The best rung for a homework question.
@@ -80,8 +99,9 @@ export function matchHomework(text, child) {
     return { rung, topicId: t ? t.id : null, subject: extra.subject ?? t?.subject, chapter: t?.chapter?.number ?? null, topicTitle: t?.title ?? null, ...extra };
   };
   if (best) return shape("kit_item", best.it.topicId, { itemId: best.it.itemId, score: Math.round(best.s * 100) / 100 });
-  // rung 2: a topic or chapter of the class book
-  const t = findTopic(String(text), cls);
+  // rung 2: a topic or chapter of the class book. findTopic needs EVERY long word to start a title word, so it is given the
+  // topic words only (rj-r4t-findtopic-as-intake: a whole sentence never matches), then each of them alone.
+  const t = topicFromWords(topicWords(text), cls);
   if (t) return shape("topic", t.id);
   // rung 3: the subject only
   const words = new Set(q);
