@@ -28,7 +28,8 @@ test("the pool: three parts of the day per language, unique ids, short lines, no
 
 test("India time: the day key and the part of the day", () => {
   assert.deepEqual(localDay(at("2026-11-04T02:00:00Z")), { day: "2026-11-04", hour: 7 });
-  assert.equal(localDay(at("2026-11-04T19:00:00Z")).day, "2026-11-05", "00:30 IST is the next day");
+  assert.equal(localDay(at("2026-11-04T19:00:00Z")).day, "2026-11-04", "00:30 IST is still the evening of the 4th: the day turns at 04:00");
+  assert.equal(localDay(at("2026-11-04T22:30:00Z")).day, "2026-11-05", "04:00 IST starts the 5th");
   assert.equal(partOf(7), "morning"); assert.equal(partOf(13), "afternoon"); assert.equal(partOf(20), "evening"); assert.equal(partOf(2), "evening");
   assert.equal(langOf("tamil"), "hinglish");
 });

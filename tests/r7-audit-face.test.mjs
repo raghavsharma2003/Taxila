@@ -145,3 +145,36 @@ test("FACE-09: GET /api/tutors names the teacher the child really has", async ()
   assert.equal(sent.body.current, "asha");
   assert.ok(sent.body.tutors.includes(sent.body.current), "current is always one of the offered tutors");
 });
+
+// FACE-07: the greeting never repeats yesterday's line, claims no history, and turns its day at 04:00 like Kaksha Home.
+test("FACE-07: a child never gets the same greeting line two days running", async () => {
+  const { lineIndex } = await import("../server/face-puppet/greetings.js");
+  for (let c = 0; c < 200; c++) {
+    let prev = -1;
+    for (let d = 1; d <= 40; d++) {
+      const i = lineIndex(`child-${c}`, `2026-11-${String(d).padStart(2, "0")}`.replace(/^2026-11-(3[1-9]|[4-9]\d)$/, (_, n) => `2026-12-${String(n - 30).padStart(2, "0")}`), 3);
+      assert.notEqual(i, prev, `child-${c} day ${d}`);
+      prev = i;
+    }
+  }
+  assert.equal(lineIndex("c-1", "2026-11-04", 3), lineIndex("c-1", "2026-11-04", 3), "stable within a day");
+});
+
+test("FACE-07: no greeting line claims a history; each slot keeps three lines", async () => {
+  const { GREETINGS } = await import("../server/face-puppet/greetings.js");
+  for (const parts of Object.values(GREETINGS)) for (const lines of Object.values(parts)) {
+    assert.equal(lines.length, 3);
+    for (const [id, t] of lines) assert.doesNotMatch(t, /again|left off|jahan ruke|फिर से|रुके थे|phir se/i, id);
+  }
+});
+
+test("FACE-07: the server's day and Kaksha Home's greeting word share one 04:00 helper", async () => {
+  const { partOfDay, learningDay, DAY_START_HOUR } = await import("../shared/day.js");
+  assert.equal(DAY_START_HOUR, 4);
+  assert.equal(partOfDay(3), "evening"); assert.equal(partOfDay(4), "morning");
+  assert.equal(learningDay(new Date("2026-11-04T19:00:00Z"), "Asia/Kolkata").day, "2026-11-04");
+  const home = readFileSync(new URL("../src/ui-v3/kaksha/screens/KakshaHome.tsx", import.meta.url), "utf8");
+  assert.match(home, /shared\/day\.js/);
+  const srv = readFileSync(new URL("../server/face-puppet/greetings.js", import.meta.url), "utf8");
+  assert.match(srv, /shared\/day\.js/);
+});
