@@ -49,7 +49,7 @@
       "accept": ["chhota", "chhota hoga", "small", "smaller than before"],
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
       "wrongIfMis": "bigger",
-      "why": { "hi": "wahi patti ab 8 mein bati hai, toh har hissa chhota padta hai, 1/8 bas 1/4 ka aadha", "en": "the same bar now has 8 parts, so each part comes out smaller: 1/8 is just half of 1/4" },
+      "why": { "hi": "2 patti, lambai ek hi, par neeche wali 8 mein bati hai, toh uska har hissa chhota", "en": "2 bars of one length, but the lower one has 8 parts, so each of its parts is smaller" },
       "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 1, "label": "1/4"}, {"parts": 8, "shade": 0, "label": "?"}]} }, "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 4, "shade": 1, "label": "1/4" }, { "parts": 8, "shade": 1, "label": "1/8" } ] } }
      },
      "simpler": { "hi": "Ek hi roti socho, pehle 4 log baantein, phir 8 log. Log badhe, toh har ek ke haath ka tukda kaisa hua, yeh socho.", "en": "Think of one roti, shared first by 4 people, then by 8. More people, so what happens to each person's piece, think about that." }
@@ -107,14 +107,14 @@
       "simpler": { "hi": "Upar 1 aur 1, matlab dono ke haath ek-ek tukda. Ab socho, kiska tukda mota.", "en": "1 on top and 1 on top, so each got one piece. Now think whose piece is chunkier." }
      },
      {
-      "do": { "hi": "Phir dekho, kiska bar kitne hisson mein kata", "en": "Then see how many parts each bar was cut into" },
+      "do": { "hi": "Phir dekho, kiska bar kitne hisson mein kata: upar wala Rahul ka, neeche wala Sana ka", "en": "Then see how many parts each bar was cut into: the top one is Rahul's, the bottom one Sana's" },
       "result": "Rahul ka bar 6 hisson mein, Sana ka sirf 3 mein",
       "why": { "hi": "hisson ki ginti se hi pata chalta hai ki ek tukda kitna bada hai", "en": "the number of parts is what tells you how big one piece is" },
       "simpler": { "hi": "6 mein kata bar, matlab patle-patle tukde. 3 mein kata, matlab mote tukde.", "en": "A bar cut into 6 gives thin pieces. Cut into 3, it gives chunky ones." }
      }
     ],
     "yourStep": {
-     "prompt": { "hi": "Tum batao, bada tukda kisko mila, Rahul ko ya Sana ko?", "en": "Now you tell me, who got the bigger piece, Rahul or Sana?" },
+     "prompt": { "hi": "Tum batao, bada tukda kisko mila, Rahul ko ya Sana ko?", "en": "Now you tell me, who got the bigger piece, Rahul or Sana?" }, "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 6, "shade": 0, "label": ""}, {"parts": 3, "shade": 0, "label": ""}]} },
      "key": "Sana",
      "accept": ["Sana ko", "Sana ka", "Sana, 1/3", "Sana ko bada tukda mila"],
      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
@@ -146,7 +146,7 @@
      "accept": ["1/12 < 1/6 < 1/3", "1/12 1/6 1/3", "1/12, phir 1/6, phir 1/3"],
      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
      "wrongIfMis": "1/3, 1/6, 1/12",
-     "board": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 3, "shade": 1, "label": "1/3" }, { "parts": 12, "shade": 1, "label": "1/12" }, { "parts": 6, "shade": 1, "label": "1/6" } ] } },
+     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 3, "shade": 0, "label": ""}, {"parts": 12, "shade": 0, "label": ""}, {"parts": 6, "shade": 0, "label": ""}]} },
      "why": { "hi": "poora ek ho toh 1/12 ke tukde sabse chhote, 1/6 beech mein, aur 1/3 sabse bade", "en": "in one whole, 1/12 pieces are the smallest, 1/6 sits in the middle, and 1/3 is the biggest" },
      "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 12, "shade": 1, "label": "1/12" }, { "parts": 6, "shade": 1, "label": "1/6" }, { "parts": 3, "shade": 1, "label": "1/3" } ] } },
      "simpler": { "hi": "Sirf neeche ke number dekho: teen, barah, chhe. Jiska neeche sabse bada, uska tukda sabse chhota.", "en": "Look only at the bottom numbers: three, twelve, six. The biggest bottom number has the smallest piece." }
@@ -191,8 +191,7 @@
      }
     }
    ],
-   "bridgeToNext": { "hi": "Ab tak har baar sirf ek tukda tha, jaise 1/4 aur 1/8, toh tukde ka size hi sab tay karta tha. Agla sawaal alag hai: neeche ka number same, upar ka alag.", "en": "Until now it was always one piece, like 1/4 and 1/8, so the piece size settled everything. Next is different: the same bottom number, different top numbers." },
-   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "ek hi tukda", "items": ["1/4", "1/8"] }, "right": { "title": "neeche ka number same", "items": ["3/7", "5/7"] } } }
+   "bridgeToNext": { "hi": "Ab tak har baar sirf ek tukda tha, toh tukde ka size hi sab tay karta tha. Agla khel alag hai: neeche ka number same, upar ka alag.", "en": "Until now it was always one piece, so the piece size settled everything. Next is a different game: the same bottom number, different top numbers." }
   },
   {
    "skillId": "c5-maths-ch02-t02-s2",
@@ -345,7 +344,7 @@
      "wrongIfMis": "{friend}",
      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 4, "title": "Cake"}, {"parts": 12, "title": "Cake"}]} },
      "why": { "hi": "Ben ka 2/4 aadha cake hai, jabki 3/12 bas 1/4 cake", "en": "Ben's 2/4 is half the cake, while 3/12 is just 1/4 of it" },
-     "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 4, "title": "2/4"}, {"parts": 12, "title": "3/12"}]} },
+     "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 4, "shade": 2, "title": "2/4"}, {"parts": 12, "shade": 3, "title": "3/12"}]} },
      "simpler": { "hi": "12 wale cake ke 3 tukde jodo, toh 4 wale cake ka bas ek tukda banta hai.", "en": "Put 3 pieces of the 12-piece cake together and you get just one piece of the 4-piece cake." }
     },
     {
@@ -408,7 +407,7 @@
     {
      "targets": "c5-maths-ch02-t02-m-gap-thinking",
      "move": "two equal strips, 8 parts and 10: take two parts off each → 6/8 and 8/10, the same count short, but the 8-strip's parts are chunkier → its gap is bigger → smaller gap = closer to the whole = bigger",
-     "say": { "hi": "Upar ki patti 8 hisson mein hai, neeche ki 10 mein. Dono se do-do hisse hatao, toh 6/8 aur 8/10 bachte hain. Par 8 wali ke hisse mote hain, toh uska gap bada. Jiska gap chhota, wahi 1 ke zyada paas, aur bada.", "en": "The top bar is in 8 parts, the bottom one in 10. Take two parts off each and 6/8 and 8/10 are left. But the 8-bar's parts are chunkier, so its gap is bigger. The smaller gap is closer to 1, and bigger." },
+     "say": { "hi": "Upar ki patti 8 hisson mein hai, neeche ki 10 mein, toh upar ke hisse mote. Socho, dono mein do-do hisse khaali hon: 6/8 aur 8/10. Upar ke khaali hisse mote, toh uska gap bada. Jiska gap chhota, wahi 1 ke zyada paas.", "en": "The top bar is in 8 parts, the bottom one in 10, so the top parts are chunkier. Imagine two parts empty in each: 6/8 and 8/10. The top's empty parts are chunkier, so its gap is bigger. The smaller gap is closer to 1." },
      "simpler": { "hi": "Socho poori patti tak kitna bacha. Jahan mote hisse gayab hain, wahan kami zyada.", "en": "Think how much is left to fill the bar. Where the chunkier parts are missing, more is missing." },
      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 8, "shade": 6, "label": "6/8"}, {"parts": 10, "shade": 8, "label": "8/10"}]} },
      "then": {
@@ -424,8 +423,7 @@
      }
     }
    ],
-   "bridgeToNext": { "hi": "Neeche ka number same tha, toh upar wale ne faisla kiya. Ab ulta khel: upar ka number same, neeche ka alag.", "en": "When the bottom number matched, the top one decided. Now the flip side: the top number matches, the bottom one differs." },
-   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "neeche ka number same", "items": ["3/7", "5/7"] }, "right": { "title": "upar ka number same", "items": ["3/5", "3/8"] } } }
+   "bridgeToNext": { "hi": "Neeche ka number same tha, toh upar wale ne faisla kiya. Ab ulta khel: upar ka number same, neeche ka alag.", "en": "When the bottom number matched, the top one decided. Now the flip side: the top number matches, the bottom one differs." }
   },
   {
    "skillId": "c5-maths-ch02-t02-s3",
@@ -581,7 +579,7 @@
      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
      "wrongIfMis": "Anjali",
      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 12, "shade": 0, "label": "?"}, {"parts": 6, "shade": 0, "label": "?"}]} },
-     "why": { "hi": "5-5 tukde dono ke, par Gopi ka 1/6 tukda Anjali ke 1/12 ka do guna, toh 5/6 lamba", "en": "5 pieces each, but Gopi's 1/6 piece is double Anjali's 1/12, so his 5/6 is longer than her 5/12" },
+     "why": { "hi": "5-5 tukde dono ke, par Gopi ka har tukda Anjali ke tukde ka do guna, toh Gopi ka hissa lamba", "en": "5 pieces each, but each of Gopi's pieces is double one of Anjali's, so Gopi's share is longer" },
      "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 12, "shade": 5, "label": "5/12"}, {"parts": 6, "shade": 5, "label": "5/6"}]} },
      "simpler": { "hi": "5 aur 5, ginti barabar. 6 mein kati patti ke tukde 12 mein kati patti ke tukdon se lambe.", "en": "5 and 5, the count matches. Pieces of the strip cut in 6 are longer than pieces of the strip cut in 12." }
     },
@@ -645,7 +643,7 @@
     {
      "targets": "c5-maths-ch02-t02-m-gap-thinking",
      "move": "two equal strips, 10 parts and 12: each part below thinner → 8/10 and 10/12 both two parts short, but the thin parts missing take less room → compare the size of the missing pieces, not their number → 10/12 bigger",
-     "say": { "hi": "Gap ka size dekho. Upar ki patti 10 hisson mein hai, neeche ki 12 mein, toh neeche ka har hissa patla. 8/10 aur 10/12 dono mein do hisse kam hain, par neeche ke do patle hisse kam jagah lete hain, isliye 10/12 bada.", "en": "Look at the size of the gap. The top bar is in 10 parts, the bottom one in 12, so each part below is thinner. 8/10 and 10/12 are both two parts short, but two thin parts take up less room, so 10/12 is bigger." },
+     "say": { "hi": "Gap ka size dekho. Upar ki patti 10 hisson mein hai, neeche ki 12 mein, toh neeche ka har hissa patla. Socho, dono mein do-do hisse khaali hon: 8/10 aur 10/12. Neeche ke do patle hisse kam jagah lete hain, isliye 10/12 bada.", "en": "Look at the size of the gap. The top bar is in 10 parts, the bottom one in 12, so each part below is thinner. Imagine two parts empty in each: 8/10 and 10/12. Two thin parts take up less room, so 10/12 is bigger." },
      "simpler": { "hi": "Neeche ke hisse patle hain. Patle hisse gayab hon, toh kami bhi kam hoti hai.", "en": "The parts below are thinner. When thin parts are missing, less is missing." },
      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 10, "shade": 8, "label": "8/10"}, {"parts": 12, "shade": 10, "label": "10/12"}]} },
      "then": {

@@ -430,6 +430,51 @@ export function rhetoricalQuestionErrors(s) {
   return e;
 }
 
+/** director17 D12 (c5-t02: the s1 worked board showed 1/6 and 1/3 shaded, so the yourStep "which is bigger" was a picture
+ * read; c2's order card was posed on labelled shaded bars): no card is posed on a board that shows its answer — its
+ * answerBoard itself, or two or more wholes / bars already shaded or named so the compare or order reads off the picture.
+ * The yourStep is posed over its own board, else the worked example's. */
+export function answerOnBoardErrors(s) {
+  const e = [];
+  const shown = (board) => {
+    const p = board?.params ?? {};
+    const xs = board?.template === "fraction-bars@1" ? (p.bars ?? []) : board?.template === "wholes@1" ? (p.wholes ?? []) : [];
+    // (a "?" bar is the one asked: its shading is the given and its name the question)
+    return xs.filter((x) => x.label !== "?").filter((x) => (x.shade ?? 0) > 0 || (x.label != null && x.label !== "?" && x.label !== "" && /\d+\s*\/\s*\d+/.test(String(x.label))) || /\d+\s*\/\s*\d+/.test(String(x.title ?? ""))).length;
+  };
+  for (const k of s.skills) {
+    const we = k.workedExample;
+    const cards = [...k.explain.filter((b) => b.ask).map((b) => [b.id, b.ask, b.ask.board ?? b.board]),
+      ...(we?.yourStep ? [["workedExample.yourStep", we.yourStep, we.yourStep.board ?? we.board]] : []),
+      ...k.checks.map((c) => [c.id, c, c.board]), ...k.remediation.map((r, i) => [`remediation[${i}].then`, r.then, r.then?.board])];
+    for (const [id, c, board] of cards) {
+      if (!board || !c) continue;
+      if (shown(board) >= 2) e.push(`${k.skillId}/${id}: posed on ${board.template} with ${shown(board)} wholes already shaded or named (the compare reads off the picture); pose it on unnamed, unshaded bars`);
+    }
+  }
+  return e;
+}
+
+/** director17 D12 (c5-t02 e1's why "1/8 bas 1/4 ka aadha" gave e2's key): a card's why — said at its close, before the next
+ * card — never states the key of a card still to come in its skill (fractions and numbers above 10). */
+export function whyKeyErrors(s) {
+  const e = [];
+  const core = (v) => { const m = String(v ?? "").trim().match(/^(\d+(?:[./]\d+)?)(?:\s*[\p{L}]{1,6})?$/u); if (!m) return null; return /^\d+$/.test(m[1]) && Number(m[1]) <= 10 ? null : m[1]; };
+  const hasNum = (t, c) => new RegExp(`(^|[^\\d/.])${c.replace(/[./]/g, "\\$&")}([^\\d/]|$)`).test(` ${t} `);
+  const said = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
+  // (within the skill: a later skill re-uses the basic fractions as its own new idea)
+  for (const k of s.skills) { const seq = [...k.explain.filter((b) => b.ask).map((b) => [`${k.skillId}/${b.id}`, b.ask]),
+    ...(k.workedExample?.yourStep ? [[`${k.skillId}/workedExample.yourStep`, k.workedExample.yourStep]] : []), ...k.checks.map((c) => [`${k.skillId}/${c.id}`, c])];
+  seq.forEach(([where, c], i) => {
+    const own = core(c.key);
+    for (const [later, l] of seq.slice(i + 1)) {
+      const v = core(l.key);
+      if (v && v !== own && hasNum(said(c.why), v)) e.push(`${where}.why: states ${v}, the key of ${later} still to come`);
+    }
+  }); }
+  return [...new Set(e)];
+}
+
 /** director15 D10.2 (c4 steady 78: "Kya tab ek hissa is aadhe se bada hoga?" over a half labelled "?"): an ask's board
  * never puts "?" on a value its prompt states: a bar of p parts labelled "?" when the prompt names 1/p (in digits or as
  * aadha / tihaai / chauthai), or a line's "?" mark k/den when the prompt says k/den. */
@@ -518,7 +563,9 @@ export function v22Errors(s) {
       const n = String(w?.[lang] ?? "").split(/\s+/).filter(Boolean).length;
       if (n > WHY_MAX_WORDS) e.push(at(`${where}.why${lang === "en" ? " (en)" : ""}: ${n} words > ${WHY_MAX_WORDS} (the runtime drops it)`));
     }
-    if (k.bridgeToNext && !k.bridgeBoard?.template) e.push(at("bridgeToNext: a bridgeBoard { template, params } it points at"));
+    // (director17 D12, dc-r7-script-walk-v6-9 N2: from v2.3 a bridge belongs to the next card's unit and has no board of its own)
+    if ((s.version ?? 1) >= 2.3) { if (k.bridgeBoard) e.push(at("bridgeBoard: a bridge is spoken over the next card's board (v6.9 N2); remove it")); }
+    else if (k.bridgeToNext && !k.bridgeBoard?.template) e.push(at("bridgeToNext: a bridgeBoard { template, params } it points at"));
     // director9 (dc-r7-script-walk-v6-1, format v2.3, additive): an authored smaller re-explanation on every beat, worked
     // step and card. Brain says it on "samajh nahi aaya" / "pata nahi"; the model no longer writes one (it stated wrong maths).
     const said2 = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
@@ -627,7 +674,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s));
   return e;
 }
 
