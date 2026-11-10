@@ -586,7 +586,7 @@ function wholesOfCompare(c) {
 
 /** The second views a pick names (artifact.altView): parts (bars), line, wholes, strips (wholes as bars), unrolled (a ruler),
  *  round (a circle), example (a smaller case of the same rule: a count key's own figure would show the count). */
-const ALT_VIEWS = new Set(["parts", "line", "wholes", "strips", "unrolled", "round", "example"]);
+const ALT_VIEWS = new Set(["parts", "line", "wholes", "strips", "unrolled", "round", "example", "grid"]);
 /** The row a second view's line is written from (and judged against before her line exists). */
 /** main v6.9 S11: a fraction in her picture line is said as words ("ek-chauthai", "teen bata paanch"), never "(1/4)". */
 const NUM_HI = ["shunya", "ek", "do", "teen", "chaar", "paanch", "chhe", "saat", "aath", "nau", "das", "gyaarah", "baarah"];
@@ -604,6 +604,7 @@ function altSay(ac0) {
   const named = (b) => (b.label === "?" || b.label === "" || !b.shade ? "" : `, yaani ${fracSay(b.shade, b.parts)}`);
   if (view === "example") { const b = ac.bars[0]; return `Ek chhota udaharan: ek patti ${b.parts} barabar hisson mein, ${b.shade} rangin${named(b)}`; }
   const bar = (b) => `${b.parts} barabar hisson mein${b.shade ? `, ${b.shade} rangin${named(b)}` : ""}`;
+  if (ac.template === "shade-grid@1") return `Wahi ${NUM_HI[ac.rows] ?? ac.rows} group ab ek jaal mein: ${ac.rows} qatarein, har qatar mein ${ac.cols}`;
   return ac.wholes ? ac.wholes.map((w) => `${w.title ?? "ek"}: ${w.parts} ${w.equal === false ? "alag-alag" : "barabar"} tukde${w.shade ? `, ${w.shade} rangin` : ""}`).join("; ")
     : ac.bars ? (ac.bars.length === 1 ? `Ek patti, ${bar(ac.bars[0])}` : `${(NUM_HI[ac.bars.length] ?? String(ac.bars.length)).replace(/^./, (c) => c.toUpperCase())} barabar pattiyaan: ${ac.bars.map((b) => `ek ${bar(b)}`).join("; ")}`)
     : ac.template === "fraction-parts@1" ? `Wahi poora ab ${ac.whole === "bar" ? "patti" : "gol"}: ${ac.parts} barabar hisse${ac.shade ? `, ${ac.shade} rangin${ac.hideResult ? "" : `, yaani ${fracSay(ac.shade, ac.parts)}`}` : ""}`
@@ -718,6 +719,12 @@ function altCall0(ref, { line = "", withheld = [], up = null } = {}) {
     // (director10 G4, from the LIVE card's figure) two wholes in pieces → the same wholes as strips; a polygon's sides → its
     // boundary laid straight on a ruler, the total its card asks a "?" unless her line says it; equal bars → their line
     if (c.template === "wholes@1" && c.as !== "bar" && Array.isArray(c.wholes) && c.wholes.length) return { template: "wholes@1", as: "bar", wholes: c.wholes, view: "strips" };
+    // (main v6.10 P6 fixtures, c4 s3: wholes drawn as strips have the same wholes as circles — the same parts, the same shading)
+    if (c.template === "wholes@1" && c.as === "bar" && Array.isArray(c.wholes) && c.wholes.length) return { template: "wholes@1", wholes: c.wholes, view: "wholes" };
+    // (P6 fixtures, c4 s2: equal groups have a second view — the same groups as the rows of a grid, each row as many as one
+    // group, the rows and columns named and the total not written when the board hides it; unequal sizes have none)
+    if (c.template === "equal-groups@1" && !Array.isArray(c.sizes) && Number.isInteger(c.groups) && c.groups >= 2 && c.groups <= 6 && Number.isInteger(c.each) && c.each >= 1 && c.each <= 10)
+      return { template: "shade-grid@1", rows: c.groups, cols: c.each, shade: 0, labels: true, ...(c.hideResult ? { hideResult: true } : {}), view: "grid" };
     const ps = sidesOf(c);
     if (ps) {
       const sum = Math.round(ps.sides.reduce((a, b) => a + b, 0) * 10) / 10;
@@ -1014,9 +1021,8 @@ function drawRef(ref, { band = "B3", lang = null } = {}) {
     return x?.ok ? { script: fitLegible(x.script), template: rr.call.template, facts: x.script.facts ?? x.facts } : null;
   } catch { return null; }
 }
-/** The second view of the held board for a picture ask: → { call, view, line } (her picture line, built from what the view
- *  draws: never "yahi numbers" over a view with none), or null when the board has no second view. */
-export function heldAltOf(ask) {
+/** The second view's CALL for the held board (internal: a caller takes the view and its line from pictureTurn, together). */
+function heldViewCall(ask) {
   try {
     const h = ask?.intent?.held;
     if (!h?.board) return null;
@@ -1025,6 +1031,39 @@ export function heldAltOf(ask) {
     const { view, ...call } = ac0;
     return { call, view: ALT_VIEWS.has(view) ? view : "parts", line: altSay(ac0) };
   } catch { return null; }
+}
+/**
+ * main v6.10 P6 (director18: 9 of 16 picture turns spoke a picture line over a board "kept" with no view — the line and the
+ * drawing came from two calls): a picture turn in ONE call. → { board, view, line, script, layout } — the held board (left),
+ * the view drawn beside it (right) and her picture line built from THAT view; or { board, view: null, line: null, … } when no
+ * view can be built or laid out (Brain then says one honest sentence and nothing describes a view). A turn with a view is
+ * never "kept": the split is drawn (the held panel still when it was already the page up). null: no held board to draw.
+ * @param {object} ask the whiteboard ask (intent.held)  @param {{ keepRef?: string|null, keepPage?: object|null }} [o]
+ */
+export function pictureTurn(ask, { keepRef = null, keepPage = null } = {}) {
+  try {
+    const h = ask?.intent?.held;
+    if (!h?.board?.template) return null;
+    const band = ask?.intent?.style?.band ?? "B3", lang = ask?.intent?.style?.lang ?? null;
+    const board = drawRef(h.board, { band, lang });
+    if (!board?.script) return null;
+    const none = { board, view: null, line: null, script: null, layout: { split: false } };
+    const v = heldViewCall(ask);
+    if (!v) return none;
+    const ax = expand(v.call, { band, lang });
+    if (!ax?.ok) return none;
+    const right = fitLegible(ax.script);
+    const upSame = !!keepRef && refKey(h.board) === keepRef && !!keepPage?.ops?.length;
+    const script = splitBoard(board.script, right, { leftStill: upSame });
+    if (!script) { heldCounts.splitRefused++; return none; }
+    return { board, view: { call: v.call, view: v.view, script: right, facts: ax.script.facts ?? null, template: v.call.template }, line: v.line, script,
+      layout: { split: true, panels: [{ side: "left", role: "held", template: board.template, unit: h.unit ?? null }, { side: "right", role: "view", template: v.call.template, view: v.view }] } };
+  } catch { return null; }
+}
+/** A picture turn's view and line, from pictureTurn (the same call that draws it): → { call, view, line } or null (no view). */
+export function heldAltOf(ask, o = {}) {
+  const pt = pictureTurn(ask, o);
+  return pt?.view ? { call: pt.view.call, view: pt.view.view, line: pt.line } : null;
 }
 const still = (sc) => ({ ...sc, ops: sc.ops.filter((o) => !isMotionOp(o)).map((o) => ({ ...o, startMs: 0, endMs: Math.min(Math.max(1, o.endMs - o.startMs), 200) })), durationMs: 200 });
 const renameOps = (ops, pre) => { const m = new Map(ops.map((o) => [o.id, `${pre}${o.id}`.slice(0, 32)]));
@@ -1091,33 +1130,52 @@ export const heldStats = () => ({ ...heldCounts });
  * view BESIDE it (splitBoard), never instead of it; her picture line is heldAltOf's, built from what the view draws.
  * → { ok, script, kept?, split?, panels?, altView?, altLine?, screen, screens, lastRef, lastPage, held } or null.
  */
-export function heldBoard(ask, { keepRef = null, keepPage = null } = {}) {
+/** Where her line's first unit part starts, after any leading joints (Brain's line parts, part "aside": an aside reply or
+ *  acknowledgement — words about no unit's board): → its char offset, 0 (no joint first, or no parts), or -1 (joints only). */
+function jointLead(list, text) {
+  if (!Array.isArray(list) || !list.length) return 0;
+  let at = 0, any = false;
+  for (const p of list) {
+    const t = String(p?.text ?? "").trim();
+    if (!t) continue;
+    const pos = text.indexOf(t, at);
+    if (p.part !== "aside") return any && pos > 0 ? pos : 0;
+    any = true;
+    if (pos >= 0) at = pos + t.length;
+  }
+  return any ? -1 : 0;
+}
+export function heldBoard(ask, { keepRef = null, keepPage = null, picture = undefined } = {}) {
   try {
     const h = ask?.intent?.held;
     if (!h?.board?.template) return null;
     const band = ask?.intent?.style?.band ?? "B3", lang = ask?.intent?.style?.lang ?? null;
     const text = String(ask?.line?.text ?? "");
-    const upSplit = keepPage?.board?.w === SPLIT_BOARD.w && keepPage?.board?.h === SPLIT_BOARD.h;
     const same = !!keepRef && refKey(h.board) === keepRef && !!keepPage?.ops?.length;
     const request = ask?.intent?.request ?? null;
-    const pic = request && request.kind !== "example" ? heldAltOf(ask) : null;
-    const sw = h.switchTo?.board?.template && Number.isInteger(h.switchTo.atChar) && h.switchTo.atChar > 0 && h.switchTo.atChar < text.length ? h.switchTo : null;
-    // the held board: the page up when it is this board (its split, too, when no new picture is asked), else drawn new
-    const base = same && !(pic && upSplit) ? { script: keepPage, template: h.board.template, facts: keepPage.facts ?? null, kept: true } : drawRef(h.board, { band, lang });
+    // (P6: the picture decided once — `picture`, the pictureTurn result her line was built from, wins over the take's own ask;
+    // without it, a picture ask decides here, the same way)
+    const pt = picture !== undefined ? picture : request && request.kind !== "example" ? pictureTurn(ask, { keepRef, keepPage }) : null;
+    const pic = pt?.view ? pt : null;
+    // (main v6.10, director18 c5-t02 offtopic 10, c6 offtopic 10 and steering 28: the next unit's board went up at char 0, under
+    // an aside acknowledgement. A new held board never goes up under a joint: the board up stays through her leading joints and
+    // the new one comes in at her first unit part; a line of joints only changes nothing)
+    const lead = !pic && !same && !h.switchTo && !!keepRef && !!keepPage?.ops?.length ? jointLead(ask?.line?.parts?.list, text) : 0;
+    const upKept = lead !== 0 ? { script: keepPage, template: upRefOf(keepRef)?.template ?? keepPage.template ?? null, facts: keepPage.facts ?? null, kept: true } : null;
+    const sw0 = h.switchTo?.board?.template && Number.isInteger(h.switchTo.atChar) && h.switchTo.atChar > 0 && h.switchTo.atChar < text.length ? h.switchTo : null;
+    const sw = sw0 ?? (lead > 0 && lead < text.length ? { board: h.board, unit: h.unit, atChar: lead } : null);
+    // the held board: the page up when it is this board (its split, too, when no new picture is asked), else drawn new. A turn
+    // with a view is never kept (P6): its split is drawn, the held panel still when it was already the page up
+    const base = pic ? pic.board : upKept ?? (same ? { script: keepPage, template: h.board.template, facts: keepPage.facts ?? null, kept: true } : drawRef(h.board, { band, lang }));
     if (!base?.script) return null;
     let page0 = base.script, altView = null, altLine = null, panels = null, split = false, altFacts = null;
-    if (pic) {
-      const ax = expand(pic.call, { band, lang });
-      const sp = ax?.ok ? splitBoard(upSplit && base.kept ? drawRef(h.board, { band, lang })?.script ?? base.script : base.script, fitLegible(ax.script), { leftStill: !!base.kept || same }) : null;
-      if (sp) { page0 = sp; split = true; altView = pic.view; altLine = pic.line; altFacts = ax.script.facts; panels = [upSplit ? drawRef(h.board, { band, lang })?.script ?? base.script : base.script, fitLegible(ax.script)]; heldCounts.split++; }
-      else heldCounts.splitRefused++;
-    }
+    if (pic) { page0 = pic.script; split = true; altView = pic.view.view; altLine = pic.line; altFacts = pic.view.facts; panels = [pic.board.script, pic.view.script]; heldCounts.split++; }
     const screen0 = screenOf({ template: base.template, facts: base.facts ?? {} }, base.facts ?? page0.facts, base.script);
-    const screenA = split ? screenOf({ template: pic.call.template, facts: altFacts ?? {} }, altFacts, panels[1]) : null;
+    const screenA = split ? screenOf({ template: pic.view.template, facts: altFacts ?? {} }, altFacts, panels[1]) : null;
     if (!sw && base.kept && !split) { heldCounts.kept++;
       // (a held board stands: shown at its end state at once, never drawn again)
       return { ok: true, kept: true, script: still(keepPage), source: "kept", by: "script", template: base.template, facts: base.facts ?? keepPage.facts ?? null, screen: screen0, screens: [{ from: 0, ...screen0 }], lastRef: keepRef, lastPage: keepPage, layout: { split: false }, held: { unit: h.unit ?? null, changed: false } }; }
-    let script = page0, screens = [{ from: 0, ...screen0, ...(screenA ? { beside: { ...screenA, altView } } : {}) }], lastRef = refKey(h.board), lastPage = page0, template = base.template;
+    let script = page0, screens = [{ from: 0, ...screen0, ...(screenA ? { beside: { ...screenA, altView } } : {}) }], lastRef = upKept ? keepRef : refKey(h.board), lastPage = page0, template = base.template;
     if (sw) {
       const nx = drawRef(sw.board, { band, lang });
       if (nx?.script) {
@@ -1133,7 +1191,7 @@ export function heldBoard(ask, { keepRef = null, keepPage = null } = {}) {
     }
     if (!base.kept) heldCounts.drawn++;
     // (main v6.9, recording: the judges could not confirm "beside" — the layout as one field: split or not, and which panels)
-    const layout = split ? { split: true, panels: [{ side: "left", role: "held", template: base.template, unit: h.unit ?? null }, { side: "right", role: "view", template: pic.call.template, view: altView }] } : { split: false };
+    const layout = split ? pic.layout : { split: false };
     return { ok: true, script, source: "held", by: "script", template, facts: base.facts ?? null, ...(split ? { split: true, panels, altView, altLine, altFacts } : {}), layout, screen: screens.at(-1), screens,
       lastRef, lastPage, held: { unit: lastRef === refKey(h.board) ? h.unit ?? null : sw?.unit ?? null, changed: lastRef !== keepRef } };
   } catch { return null; }

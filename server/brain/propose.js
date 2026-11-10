@@ -156,7 +156,11 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
   // the second view): a scripted picture turn whose line has the card and no alt part is the card on its own board — no second
   // view is asked under the card's words
   const list = line?.parts?.list ?? null;
-  const cardNoAlt = !!list && list.some((p) => p.part === "card") && !list.some((p) => p.part === "alt");
+  // (v6.10 P6, main on director18: 9 picture turns lost their request here — the final line's parts did not tag the picture line —
+  // so the take kept the board while her line described a view. A picture turn's request is decided ONCE, by its take: a view
+  // built (lastMove.altLine) keeps it whatever the parts say; a take with no view (altLine null) asks for none)
+  const promised = Object.prototype.hasOwnProperty.call(next?.lastMove ?? {}, "altLine") ? (next.lastMove.altLine ? "view" : "none") : null;
+  const cardNoAlt = promised === "view" ? false : promised === "none" ? true : !!list && list.some((p) => p.part === "card") && !list.some((p) => p.part === "alt");
   // (a replay of a recorded run pages as that run paged: tests/fixtures/replay.mjs runScriptOf marks it recordedRun)
   const held = (next?.lastMove?.scriptBeat || next?.lastMove?.cardBeat) && !scriptFor(kit)?.script?.recordedRun ? heldOf({ move: next.lastMove, list: line?.parts?.list ?? null, line: String(line?.text ?? ""), kit, up: next?.heldUp ?? null,
     graded: ["correct", "not_yet"].includes(next?.lastVerdict) }) : null;
@@ -215,7 +219,7 @@ export function cardAt(reply, card) {
 /** The clause where the card starts (cardAt → clauseAt). */
 export const cardClauseOf = (reply, card) => { const at = cardAt(reply, card); return at == null ? null : clauseAt(reply, at); };
 // the closure sentences say.js assembles (the give-up reveal, "Toh poora jawab", the missed card's close), in either language
-const CLOSURE = /(?:Pichhle sawaal ka jawab|Toh poora jawab|Aur pehle wale sawaal ka jawab|The last question's answer was|So the full answer|And the earlier question's answer was)[^.!?\u0964]*(?:[.!?\u0964]+|$)/g;
+const CLOSURE = /(?:Pichhle sawaal ka jawab|Toh poora jawab|Aur pehle wale sawaal ka jawab|The last question's answer was|So the full answer|Iska jawab hai|The answer here is|And the earlier question's answer was)[^.!?\u0964]*(?:[.!?\u0964]+|$)/g;
 const CLOSED = /(?:Aur pehle wale sawaal ka jawab|And the earlier question's answer was)[^.!?\u0964]*(?:[.!?\u0964]+|$)/;
 const norm1 = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const skipSpace = (r, i) => { while (i < r.length && r[i] === " ") i++; return i; };

@@ -321,7 +321,9 @@ describe("R5: a turn too long for one is split, never cut", () => {
     replyDeps.chat = async () => ({ text: "Bahut badhiya!" });
     const out = await textReply({ instructions: "x", state: { ...split.state, mode: "text" }, kit: K, childText: "haan", history: [], ui: split.ui, module: null });
     assert.match(out.reply, /pehle wale sawaal ka jawab 12 cm tha/, out.reply);
-    assert.match(out.reply, /(?:Ab aage chalte hain|Chalo, ab aage|Ab agla hissa)\.$/, "closures end on a statement, never a question: " + out.reply);
+    // (v6.10 R7, main on director18: nothing is appended after a closing split's closures — "Ab aage chalte hain." is gone)
+    assert.doesNotMatch(out.reply, /Ab aage chalte hain|Chalo, ab aage|Ab agla hissa/, out.reply);
+    assert.doesNotMatch(out.reply, /[?？]\s*$/, "closures end on a statement, never a question: " + out.reply);
     const held = split.state.splitHold;
     const r2 = step({ ...split.state, recent: [] }, { event: "turn", kit: K, cls: cls("no_evidence"), text: "haan", now: 9e6 });
     assert.equal(r2.move.kind, held.move.kind, "the held beat comes next, unchanged");
