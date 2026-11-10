@@ -62,7 +62,8 @@ import { relationalViolations, relationalHits, repairSelfGender, safetyPreface, 
 import { characterForState } from "../compiler/characters/index.js";
 import { nextBeat, uiBeatOf } from "./beat.js";
 import { momentOf } from "./moment.js";
-import { brainTraceStmt, columnReady, comprehensionReasons, formatDecisionOf, inputsHashOf, reteachDecisionOf, tableReady } from "./trace.js";
+import { brainTraceStmt, columnReady, comprehensionReasons, decisionRecordStmt, formatDecisionOf, inputsHashOf, reteachDecisionOf, tableReady } from "./trace.js";
+import { knowsDecisionsOf } from "../director/knows-walk.js";
 import { FACTS_ROW_PREFIX } from "../director/modules.js";
 import { engagementOf, frustrationLoop, initialAffect } from "../learner/affect.js";
 import { turnSignals } from "../persona/signals.js";
@@ -1468,7 +1469,9 @@ export async function lessonTurn(req, body, hooks = {}) {
         serverMs: performance.now() - t0, kernelUs: kernel.us, legalMode: child.legal_mode ?? "M1",
         withIds: traceIdsOk, itemId: target?.mode === "item" ? activeItem?.id ?? null : null, misconceptionId: cls?.misconceptionId ?? cls?.voiced ?? null })] : []),
       ...(traceOk && decisionOk ? [reteachDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" }),
-        formatDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" })].filter(Boolean) : []),
+        formatDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" }),
+        // round 8: the because records this turn acted on (and the start's, with the first turn), as knows.<choice> rows
+        ...knowsDecisionsOf(state, next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1", stmt: decisionRecordStmt })].filter(Boolean) : []),
       // Learning patch 004b: a jar question served at a later boundary this turn is kept
       ...jarKept.stmts,
       // Seam (W1-D): the Conductor's turn event lands with the turn, or not at all.
