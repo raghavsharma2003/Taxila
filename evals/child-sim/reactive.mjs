@@ -90,6 +90,8 @@ const LINES = {
   // (v6.3 harness, main on director11: the c4 child plays a "what's the question?" and a "say it again" on a live card)
   whichq: ["sawaal kya hai?"],
   repeat: ["phir se bolo"],
+  // (v6.11 J2: the reply to her return question about the aside — what they like in it, in their own words)
+  returned: ["sixer, jab ball seedha bahar jaati hai", "batting sabse achhi lagti hai", "jab Virat chauka maarta hai, woh"],
   leave: ["bas aaj ke liye itna hi", "ab main {jaata|jaati} hoon, bye", "thak {gaya|gayi}, bye"],
 };
 
@@ -198,6 +200,8 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
         : !!liveLeave && !answered.has(liveLeave));
       if (turn >= P.leaveAfter && turn >= MIN_TURNS && (!openCard || turn >= P.leaveAfter + LEAVE_WAIT)) return say({ text: pick(rng, LINES.leave), kind: "leave" });
       if (at.has(turn)) { pending.push(at.get(turn)); at.delete(turn); }
+      // (v6.11 J2: her return question about the aside is answered, before any event or card: the child's reply to what she asked)
+      if (input.returned) return say({ text: pick(rng, LINES.returned), kind: "event", event: "returned" });
       if (pending.length) {
         const c0 = input.card ?? input.ask ?? null;
         const cid = input.card?.itemId ?? `${input.beat?.skillId ?? ""}/${input.beat?.beatId ?? ""}`;

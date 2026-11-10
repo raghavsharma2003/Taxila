@@ -66,8 +66,18 @@ const LESSON = { id: "11111111-1111-1111-1111-11111111aaaa", started_at: new Dat
 if (DRY) {
   // stubbed lines: the agent's call fails (it falls back, as on a live error) and her line is a fixed sentence
   // the dry meter counts the calls a live run would make (her line, and the classifier when code cannot decide), to size caps
-  replyDeps.chat = async () => { dryCall("reply"); return { text: "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?" }; };
-  replyDeps.chatStream = async () => { dryCall("reply"); return { text: "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?" }; };
+  // (v6.11 J2: the dry stand-in for her one sentence on the child's answer to her return question — a sentence with one of their
+  // words, so the matrix runs the J2 path and its predicate without a model)
+  const STUB = "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?";
+  const J2_SKIP = new Set(["mujhe", "maine", "sabse", "achhi", "achha", "lagti", "lagta", "seedha", "bahar", "jaati", "maarta"]);
+  const dryText = (msgs) => {
+    const note = [...(msgs ?? [])].reverse().find((m) => m.role === "system")?.content ?? "";
+    const said = /and the child answered: "([^"]*)"/.exec(String(note))?.[1];
+    const w = said ? (said.toLowerCase().match(/\p{L}{4,}/gu) ?? []).find((x) => !J2_SKIP.has(x)) : null;
+    return w ? `${w[0].toUpperCase()}${w.slice(1)} wala pal sach mein zabardast lagta hoga. ${STUB}` : STUB;
+  };
+  replyDeps.chat = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
+  replyDeps.chatStream = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
 } else if (!process.env.AZURE_OPENAI_ENDPOINT) {
   console.error("no AZURE_OPENAI_ENDPOINT: run with node --env-file=.env.local, or --dry for the plumbing check");
   process.exit(2);
@@ -211,7 +221,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       const childIn = (turn) => ({ turn, teacher: [...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "",
         beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card: cardSaid ? card : null, ask: cardSaid ? ask : null, boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",
         // (H1.1: her probe or teach-back move is unkeyed: the child gives a reason; else the child reads her line)
-        ...(["probe", "teachback"].includes(s.lastMove?.kind) ? { probe: true } : {}) });
+        ...(["probe", "teachback"].includes(s.lastMove?.kind) ? { probe: true } : {}),
+        // (v6.11 J2: her last turn was an aside's return question: the child answers it, about the aside)
+        ...(lastT?.returnSaid ? { returned: true } : {}) });
       let out = child.reply(childIn(i));
       // (c6 steering 51: the goodbye came during an open card — up to 10 turns it waits; the child answers the card instead)
       const openSaid = !!lastT?.card && cardSaid && /[?？]\s*$/.test(String(lastT.text ?? "").trim());
@@ -309,6 +321,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       // (v6.8 A4, as brain/turn.js: an aside question ended her turn — the unsaid card is neither pinned nor graded)
       if (t.guard?.cardHeld && next?.activeItemId) { next = { ...next, cardUnsaid: next.activeItemId }; if (ui?.ask) ui = { ...ui, ask: null, chips: [] }; }
       if (t.guard?.asideEnd) next = { ...next, asideReplyDue: true };
+      if (next) next = { ...next, returnAsked: t.guard?.asideEnd && t.guard?.returnSaid && next.lastMove?.returned?.topic ? { topic: next.lastMove.returned.topic } : undefined };
       // (main's director2 judgement: a caught problem must be told apart from a fixed one) what was left after the rewrite, and
       // whether code replaced or repaired the line
       if (guard) guardAfter = { afterRewrite: t.guard.afterRewrite ?? null, replaced: !!t.guard.replaced, repaired: !!t.guard.repaired };

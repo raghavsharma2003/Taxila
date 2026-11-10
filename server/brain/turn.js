@@ -966,6 +966,8 @@ export async function lessonTurn(req, body, hooks = {}) {
     if (guard?.cardHeld && next?.activeItemId) { next.cardUnsaid = next.activeItemId; if (r.ui?.ask) r = { ...r, ui: { ...r.ui, ask: null, chips: [] } }; }
     // (v6.9 A5: her turn ended on an aside question — the next reply is read as about it, or as what it asks)
     if (guard?.asideEnd) next.asideReplyDue = true;
+    // (v6.11 J2: that question was an aside's return: the reply answers it — state.js reads it as the aside's own reply)
+    if (next) next.returnAsked = guard?.asideEnd && guard?.returnSaid && next.lastMove?.returned?.topic ? { topic: next.lastMove.returned.topic } : undefined;
     // The content filter blocked the reply call that carried the child's words: fail CLOSED. The turn is
     // re-planned as a disclosure (safeguard move, incident row) and the fixed helpline line is sent, with no
     // further model call on the same words.
