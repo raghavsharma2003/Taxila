@@ -27414,6 +27414,27 @@
    "at": "2026-11-10",
    "title": "Code trace on int/r6 (integration 24 tree), read-only, by a Sonnet agent for main, n = one pass over server/routes/lesson.js, server/director/state.js, script.js, items.js, server/content/next-topic.js, server/learner/**, server/play/**, server/stagecraft/**, server/forge3/**: the script walk reads no learner state (walks every beat of every scripted skill in kit order, state.js:1282-1290); per-child variation in a scripted lesson is the hook's interest slot (exact label match; 4 onboarding tiles have no slot, 2 slots name tiles that do not exist), the language, and a friend name picked from a fixed list; the lesson brief passes only wrapAt and hardStopAt and is usually null (TAXILA_CONDUCTOR_PLAN off); script cards and game levels do write kt_evidence (script:<skill>:..., play:<levelId>) and the ledger folds them; no generated visual can be shown (nothing sets a verdict; judgeArtifact has no caller); 4 scripts are live and 30 staged. Not verified by the trace: whether 'simpler used' counts as assisted, whether a script give-up weighs as a kit leave, the writer's params_version default (kt-r2) against the ledger's kt-r3, live legal modes.",
    "source": "inbox/r8-main-1.json"
+  },
+  {
+   "id": "ms-release-e807f07",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "Released e807f07 with scripts/release.mjs: web taxila-web--se807f07-4jnx (was taxila-web--sc7a4798-cx0n), worker + canary/nightly jobs on taxila-worker:e807f07 (was 3cd45e8); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs e807f07 --rollback.",
+   "source": "inbox/release-e807f07.json"
+  },
+  {
+   "id": "dc-r16-production-is-the-test-build-2026-11-10",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Release 16 (e807f07, integration 24) replaced production on 2026-11-10 on the owner's word that nobody is using it; production is the build the owner tests, and no staging app is created (the owner offered $40-50 a month for one; main declined). The 16 pending production migrations (031, 034-047, 050) were applied through the Neon connector, chosen by the owner over reading the app's secret: backup branch pre-release-e807f07 (no compute) first, a rehearsal of all 49 statements on branch rehearse-release-e807f07, then one all-or-nothing transaction on main (project taxila-us), with schema_migrations rows written as scripts/migrate-core.mjs writes them; verified 46 rows. release.mjs ran with --migrate skip and --force (the X37 evening freeze protects lessons in progress; there are none). Why: the release had waited since director16 on a Neon key the owner did not want to hand over; the connector needs no key in the repo or the chat. Reverse if: a real family starts using production (then: staging app via scripts/staging.mjs before any further release, the freeze is honoured again, and migrations go through scripts/migrate.mjs with a key in the secret store); or a migration applied by hand is found to differ from what migrate.mjs would have done (then restore from the backup branch and re-apply by script).",
+   "source": "inbox/r7-main-39.json"
+  },
+  {
+   "id": "rj-release-blocked-on-neon-key",
+   "kind": "rejection",
+   "at": "2026-11-10",
+   "title": "Waiting on NEON_API_KEY and NEON_PROJECT_ID to release round 7 (listed as the owner's item from director16 to director18, about five days). What broke: the release sat blocked on a key the owner did not want to supply ('key rotation I don't want to do'), while the session held a Neon connector able to take the backup branch and run the same statements. Also wrong in the record: OWNER.md said the block was 'production migration 041'; production was at 030 and 16 files were pending, not 8. The count was never read from production's schema_migrations until release day. Lesson: read the target's state before naming a blocker, and ask the owner for the decision (may I use the connector?) rather than for a key.",
+   "source": "inbox/r7-main-39.json"
   }
  ],
  "edges": [
@@ -43931,6 +43952,21 @@
    "src": "dc-owner-direction-is-main-loops-2026-11-10",
    "rel": "constrains",
    "dst": "dc-r8-selection-before-generation"
+  },
+  {
+   "src": "dc-r16-production-is-the-test-build-2026-11-10",
+   "rel": "measured_by",
+   "dst": "ms-release-e807f07"
+  },
+  {
+   "src": "rj-release-blocked-on-neon-key",
+   "rel": "constrains",
+   "dst": "dc-r16-production-is-the-test-build-2026-11-10"
+  },
+  {
+   "src": "dc-owner-direction-is-main-loops-2026-11-10",
+   "rel": "constrains",
+   "dst": "dc-r16-production-is-the-test-build-2026-11-10"
   }
  ]
 }
