@@ -168,3 +168,16 @@ test("approval lane, generate (main 2026-11-10: c4's two attempts logged ok, no 
   assert.match(src, /if \(oc\.kind === "candidate"\) done = /);
   assert.match(src, /if \(oc\.kind === "refused"\) \{/);
 });
+
+test("approval lane: a content refusal on a romanised number word says so in plain words (main 2026-11-10: 'Teen hisse' read as English, three times)", async () => {
+  const { numberWords, attemptOutcome } = await import("../server/studio/approved.js");
+  assert.deepEqual(numberWords("Teen barabar hisse"), ["teen"]);
+  assert.deepEqual(numberWords("Teenon hisse barabar"), [], "a word that only begins with one is not one");
+  assert.deepEqual(numberWords("3 hisse"), []);
+  const why = attemptOutcome({ ok: true, payload: { spec: {} }, checks: { contentSafe: false, contentFindings: [{ key: "waves.1.title", code: "content_safety_2", text: "Teen hisse" }] } }).why;
+  assert.match(why, /"Teen hisse" \(waves\.1\.title\) carries the number word "teen".*write the number in digits/);
+  // (and the spec prompt asks for digits — the rule last, where rules that must fire go)
+  const { specPrompt } = await import("../server/stagecraft/builders.js");
+  const m = specPrompt({ id: "x", archetype: "slice-at@1", kind: "game", need: "contrast_misconception", premise: { misconceptionId: "c4-maths-ch05-t01-m-unequal-parts" } }, { topicId: "c4-maths-ch05-t01", band: "B3", lang: "hinglish", misconceptionId: "c4-maths-ch05-t01-m-unequal-parts" });
+  assert.match(m.at(-1).content, /as digits \(3 hisse\), never as words \(teen, chaar\)\. Return only the JSON\.$/);
+});
