@@ -135,6 +135,7 @@ export function offered(prompt) {
 /** one kit item → a challenge, or null with the reason */
 export function challengeOf(it, t) {
   if (it?.verified?.agrees !== true) return { why: "not verified" };
+  if (it.passageId) return { why: "needs its passage" };   // the text it asks about is stored beside the topic, not in the prompt
   const pe = String(it.prompt_en ?? ""), ph = String(it.prompt_hi ?? "");
   if (OPEN.test(pe)) return { why: "open prompt" };
   if (PICTURE.test(pe)) return { why: "points at a picture" };
