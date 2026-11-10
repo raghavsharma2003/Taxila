@@ -1,7 +1,57 @@
 # Architecture
 
-(filled in from the spec phase)
+<!-- context-repair-2026-11-09: header and current map -->
+> **What this file is.** A dated log of what each build session wrote down about the system on the day it wrote it,
+> in the order merged. Entries below the map are history: many say "open", "not built" or "not applied" about things the
+> code has since done, and nothing in the log records the close (audit DOCS-23; the closing entries are in
+> `ms-audit-open-items-closed-2026-11-09`). Read the map first, trust the code over any entry, and use
+> `node scripts/context.mjs --node <id>` for what replaced what.
 
+## Current map, 2026-11-10
+
+Written from the code on `int/r6` at integration 21a (round 7). Where a path is named, it exists.
+
+**Two processes, one image.** `server/serve.mjs` serves the built client (`dist/`) and the API on one port: Azure Container
+Apps `taxila-web`. `server/worker.mjs` is `taxila-worker`, the Conductor's background host (a leader-only ticker, a dirty
+set of children, and fast and slow job lanes). `server/index.js` registers every route table (`server/routes/*.js` and feature
+folders); `api/[...route].js` is only a shim. Data is Postgres (Neon) through `server/db.js`; the schema is
+`db/migrations` (001 to 047), applied by `scripts/migrate.mjs` (the test branch unless `--prod`). All model calls go through
+`server/azure.js` (role-named deployments, `server/lanes.js` keeps background calls from starving the live ones).
+
+**A lesson turn.** `server/routes/lesson.js` starts a lesson and takes each turn. The lane is chosen once at start and pinned:
+the Director lane (default: `server/director` decides the beat, `server/brain` says it) or the Teacher agent lane
+(`server/agent`, owner cohort or `TAXILA_TEACHER=agent`; `server/agent/flags.js`). Both run behind the same safety floor
+(`server/safety`, `server/director/safety.js`: frozen). Answers are classified against verified keys in code
+(`server/director/classify.js`, `server/grading`); a model never grades. Content: `server/content` (kits in `data/kits`,
+syllabus in `data/curriculum`); `server/compiler` builds the teacher's instructions (one teacher, Asha, classes 1-9).
+
+**What the system learns about the child.** `server/learner` (knowledge tracing, affect from dialogue, formats),
+`server/comprehension` (did the child understand, checks, belief), `server/signals`, `server/voicesig` (answer pace, shadow),
+`server/relational` (what the teacher remembers; the parent can read and delete it).
+
+**What gets made while she teaches.** `server/forge` and `server/forge3` (personalised pieces), `server/studio` (the Studio
+channel and the board), `server/stagecraft` (speculative content ahead of the turn), `server/play` (game families, graded by
+replaying the child's own acts).
+
+**Voice.** `server/voice` (speech out, realtime session, prewarm), `server/duplex` (hands-free listening: on for everyone since
+round 7, kill switch `TAXILA_DUPLEX=off`), `server/latency` (acknowledgement, turn prefetch).
+
+**The child's day, the parent, the account.** `server/conductor` (plans the day; runs in the worker), `server/reports` (parent
+reports), `server/placement`, `server/homework`, `server/pair` (a child's own device), `server/signin` (emailed code),
+`server/routes/account.js` and `parent.js`. Owner view: `server/ops`, `server/cost`, `server/trace` (flight recorder).
+
+**The client** (React 19, `src/main.tsx`). `src/app` holds the routes (landing, who, sign-in, pairing); `src/child` the child's
+shell and lesson screen; `src/lesson` the live-lesson runtime (turns, audio, hands-free); `src/ui-v3/kaksha` the Kaksha screens;
+`src/face-puppet` Asha's face (the 2D puppet; `src/avatar` holds the parked 3D head and the voice ring); `src/studio-v2`,
+`src/play`, `src/modules` the boards, games and sandboxed engines; `src/parent`, `src/onboarding`; `src/duplex`, `src/voice`,
+`src/voicesig`, `src/latency`, `src/trace`, `src/stagecraft`, `src/signals`. `shared/` holds the seams between client, server
+and content (`contracts.ts`).
+
+**Around the code.** `tests/` (run by `npm run test:all`), `evals/` (measured harnesses), `scripts/` (deploys:
+`release.mjs`, `deploy-azure.mjs`; one-offs; `gpu/` is the AWS build harness, an open owner question), `context/` (this memory),
+`docs/` (research, design rounds, handoffs; `docs/design/round7/` is current).
+
+---
 
 ## Merged inbox entries (write-up from the entry text)
 - `open-real-child-audio` (2026-10-02): No real-child audio yet: ASR WER, endpointing and latency from India unmeasured

@@ -2890,3 +2890,8 @@ The tried approach: drop every '?' sentence outside the card on scripted turns (
 **What broke:** it also removed authored rhetorical questions in points, added by Learning's register rewrite. director16 lost c5-t02's e1 point and c4's e3 point in all 8 of those lessons.
 
 A guard aimed at one author's text must check who wrote the sentence, not its punctuation.
+
+
+<!-- merged from inbox/r7-audit-docs-memory.json -->
+## `rj-audit-inbox-edges-silently-skipped`
+An edge written in an inbox file is not an edge in the memory until someone has checked. The merger skips an edge whose relation it does not know, or whose end is missing, and says so only on the console; the file is then moved to `merged/` and the check passes. By 2026-11-09, 229 edges had been lost this way. The cost is concrete: a decision that was replaced in words (the 3D teacher, the studio evidence rule, the old benches) still comes back from a query as current. What to do instead: use only the seven relations, and make the merger fail rather than skip.

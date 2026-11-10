@@ -13,7 +13,11 @@ child's whole learning day and reports deeply to parents.
   Storage, Container Registry). No Anthropic/Claude-on-Foundry or other Marketplace models, no third-party AI
   APIs (ElevenLabs, Sarvam, Simli, HeyGen, Suno, …) — research may cite them, builds may not call them.
   Neon Postgres is allowed (owner's separate Neon grant). Hosting moves from Vercel to Azure Container Apps.
-- **Model policy:** main loop and every build/review agent on the top model at high effort; no downgrades.
+- **Model policy (owner, 2026-11-10):** Fable 5.2 orchestrates (the main loop: decisions, triage, synthesis). Build and fix
+  sessions run on Opus 5.5 (complex or multi-file work) or Sonnet 5.5 (well-scoped work against a spec) at medium effort,
+  raised to high only when a task fails at medium. File search, log reading and other cheap-to-check sub-tasks run on
+  Haiku 5.5. Source: Anthropic's model guide. (Replaces "top model at high effort for every agent, no downgrades": 13 Fable
+  audit sessions hit the Fable usage limit within 35 minutes on 2026-11-09 and stopped mid-work.)
 - **Build first; test, safety and compliance later (owner, 2026-10-27).** The product (architecture, stack, UI/UX,
   backend) is not final, so do not spend effort on safety batteries, compliance or large test runs now. Order: build
   the full product with all features → test it ourselves and iterate on internal feedback until it fully works → only

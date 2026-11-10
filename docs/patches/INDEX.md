@@ -13,7 +13,7 @@ A `.md` file is a written ask, not a patch; its status is in the note where it w
 numbered 001, three 002, three 005, two each of 003, 008 and 011), `to-app` (three 001, two 002), `to-platform` (three 001)
 and `to-voice` (two 001, no 002). Always cite a patch by its full file name.
 
-**Open items: 3 of 45 patches.**
+**Open items: 2 of 45 patches** (to-brain/011 and the second hunk of to-brain/017). `to-app/001-handsfree-default.patch` was open on 2026-11-09 and is now **superseded** (see its row).
 
 ## from-platform
 
@@ -27,7 +27,7 @@ and `to-voice` (two 001, no 002). Always cite a patch by its full file name.
 | File | Status | Lines | Target | Note |
 |---|---|---|---|---|
 | 001-face-teacher-stills-ledger.patch | applied | 20/20 | `src/child/art.tsx`, `src/ui/Art.tsx` |  |
-| 001-handsfree-default.patch | **not applied** | 0/8 | `src/child/copy.ts`, `src/child/prefs.ts` +1 | None of its 8 added lines are in the tree: `src/child/prefs.ts` still defaults `talk: "tap"` and carries a separate `handsFree` pref. `tests/r7-voice-handsfree.test.mjs` asserts on this patch's text. Routed to the app audit. |
+| 001-handsfree-default.patch | **superseded** | 0/8 | `src/child/copy.ts`, `src/child/prefs.ts` +1 | Not to be applied (app audit, confirmed 2026-11-10): hands-free is already the default for every child through the server (`dc-r7-handsfree-default`, `server/duplex/config.js`), so the patch's client default is not wanted. `tests/r7-voice-handsfree.test.mjs` still asserts on this patch's text; that test is the app's to re-point. |
 | 001-school-here.md | written ask | — | — | Landed. |
 | 002-face-landing-portrait-own-still.patch | applied | 4/4 | `src/app/landing/Site.tsx` |  |
 | 002-handsfree-first-frame.patch | landed, edited since | 7/15 | `src/child/lesson/useDesk.ts` | 7 of 15 added lines are in the tree. |

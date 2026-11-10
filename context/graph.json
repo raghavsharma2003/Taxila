@@ -42,7 +42,7 @@
    "kind": "decision",
    "title": "Live teacher voice = gpt-realtime-2.1 full, director-driven per turn",
    "at": "2026-10-02",
-   "status": "live"
+   "status": "superseded"
   },
   {
    "id": "meera-realtime-azure",
@@ -68,7 +68,7 @@
    "kind": "decision",
    "title": "server_vad 0.6/900 ms + auto-response; director refreshes instructions between turns",
    "at": "2026-10-02",
-   "status": "live"
+   "status": "superseded"
   },
   {
    "id": "open-real-child-audio",
@@ -81,7 +81,7 @@
    "kind": "decision",
    "title": "Vercel project taxila, one catch-all function in sin1, SSO-private until launch",
    "at": "2026-10-02",
-   "status": "live"
+   "status": "superseded"
   },
   {
    "id": "claude-on-foundry-credits",
@@ -94,14 +94,14 @@
    "kind": "decision",
    "title": "Forge coder gpt-5.3-codex, designer gpt-5.6-sol, video sora-2",
    "at": "2026-10-02",
-   "status": "live"
+   "status": "superseded"
   },
   {
    "id": "forge-infra-azure",
    "kind": "decision",
    "title": "Forge on Azure Container Apps + Blob Storage taxilaforge",
    "at": "2026-10-02",
-   "status": "provisioned"
+   "status": "superseded"
   },
   {
    "id": "azure-only-compute",
@@ -8406,7 +8406,7 @@
   {
    "id": "duplex-no-model-in-child-turn",
    "kind": "decision",
-   "status": "proposed",
+   "status": "superseded",
    "at": "2026-10-04",
    "title": "No model decides, interrupts or grades inside the child's turn; a calibrated decision model may only SHORTEN a hold, inside [candidate silence, hold cap], never end a turn below the candidate, never trigger speech. TypeSafe Jev (typed calibrated decisions, 70-500 ms vendor) is not Direct-from-Azure and too slow for the critical path anyway; its pattern is replicated on Azure (logprob-scored classify deployment if it returns logprobs, or a Qwen2.5-0.5B head on ACA) and tested in D3 (ECE <= 0.08). Reverse if E-C5 finds an intervention class with cut-off-correct <= 2% and better next-turn learning.",
    "source": "inbox/duplex-architecture.json"
@@ -9496,7 +9496,7 @@
   {
    "id": "duplex-safety-alt-readings",
    "kind": "decision",
-   "status": "proposed",
+   "status": "superseded",
    "at": "2026-10-04",
    "title": "Duplex partial safety runs the SAME shipped predicate (scanSafety) over extra readings of every partial: her echo stripped (echo.js stripAll) and punctuation removed. Why: TaxilaFDB F10 showed her echo interleaved inside a disclosure ('मुझे खुद पानी को चोट और लगानी') breaks the predicate's phrase, and the predicate misses 'कभी कभी लगता है मैं ना रहूं।' when the STT's danda follows the last word (true without the danda). After the fix: distress detected 84/84 test streams, safeguard over a talking child 0. One predicate, more readings — not a fork. Reverse if: server/director/safety.js normalises punctuation itself (then drop the punctuation reading) or alt readings produce false safety trips (0/24 benign on test today).",
    "source": "inbox/duplex-engine.json"
@@ -21826,7 +21826,7 @@
    "id": "dc-r144-deep-marks-switch",
    "kind": "decision",
    "at": "2026-10-15",
-   "status": "proposed",
+   "status": "superseded",
    "title": "The deep-kind audit's 1,927 marks are measured before they are applied: TAXILA_KIT_DEEP_MARKS=1 (off by default) loads data/kits/deep-marks-2026-10-15.json as deep: false through the kit loader; the patch itself (main's deep-kind-fix, items.js plainEvidence) is applied on claude/r4-conversation and changes nothing while no kit carries deep: false. The sim lab's 2x2 (marks off/on x a kind-only / audit-aware decided child) decides. Reversal: on apply, write the marks into the kits (evals/kit-deep-kinds/apply.mjs --write) and remove the switch and the list; on reject, remove both and keep the patch's code inert.",
    "source": "inbox/r144-4a.json"
   },
@@ -26758,6 +26758,74 @@
    "at": "2026-11-09",
    "title": "The picture split at 360 × 640 portrait, on the real child route (Playwright, the whiteboard player). The stage box is height-bound, about 202 × 180 px above the teacher's PiP, so a 400 × 300 board is drawn at 0.505–0.6 and a 400 × 600 stack at 0.34. A 640 × 300 board keeps the height-bound scale. Measured: with words kept at their size, the split's smallest word was 12 px against 16 px for the rectangle alone (the player zooms a lone board to its words). With small words one size up in the split, both the pizza and rectangle splits have every word inside the stage box and words no smaller than the board alone, with no tap target on the board. Of 8 sample card boards, 7 split; the lettered hexagon's six side labels refuse the lint and its board stays alone. The rectangle's unrolled side labels are tight but do not touch. tests/r8-held-board-browser.test.mjs pins it.",
    "source": "inbox/r7-studio-32.json"
+  },
+  {
+   "id": "rj-audit-inbox-edges-silently-skipped",
+   "kind": "rejection",
+   "at": "2026-11-09",
+   "title": "Tried: sessions wrote memory edges with relations outside the seven the graph knows (informs, implements, refines, supports …) or with from/to keys. What broke: merge-inbox printed 'skip edge' and carried on, the file moved to merged/, and context.mjs --check still passed. 229 of 3,062 inbox edges never reached the graph; 25 of the 96 well-formed ones are 'supersedes', so replaced decisions still read as current. Do not rely on an edge having merged; the merger should fail on an unknown relation and the check should compare merged-inbox edges with the graph.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "ms-audit-inbox-edges-dropped-2026-11-09",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "n": 3062,
+   "method": "script over context/inbox/merged/*.json against graph.json at int/r6 8bb6b188",
+   "title": "Edges in merged inbox files that are not in the graph: 229 of 3,062. 130 use an unknown relation, 3 lack an endpoint, 96 are well-formed with both ends present (part_of 27, supersedes 25, caused_by 22, measured_by 15, constrains 4, inherits 3). The 96 are re-proposed in this file.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "dc-audit-india-move-not-cut-over",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "Record of fact, as HANDOFF.md §6 and M3.md state it: the 2026-10-04 India move never cut over. Production is taxila-web in eastus2 on Neon (us-east-1); taxila-cin-pg holds no product data and is kept (on B2s since 2026-11-06) as one of the Founders Hub counted services. The India hot path is round 7 Platform's scripted, not-applied work. Reverse: the owner approves the cutover and scripts/region/* is applied.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "dc-audit-prod-db-neon-us-east-1",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "Record of fact: the production database is the Neon project in us-east-1 named in dc-owner-other-neon-project-not-used, not the Singapore project and Vercel sin1 functions that infra-segment describes. Reverse: a database move is applied.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "ms-audit-kit-census-2026-11-09",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "n": 38,
+   "method": "count over data/kits/c*.json at int/r6 8bb6b188",
+   "title": "Kit census: 830 topics and 12,597 items in 38 files (was 565 topics / 7,385 items on 2026-10-02). The blind-verified share was not recounted.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "ms-audit-open-items-closed-2026-11-09",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "method": "each open entry's claim checked against the code at int/r6 8bb6b188; list with file:line in docs/design/round7/audit/docs-memory.md (DOCS-22, DOCS-23)",
+   "title": "Open items the code has since closed: migrate defaults to the test branch; the W1-B module call sites and the engine re-check are in server/brain/turn.js and server/director/modules.js; data/kits-parts.json shipped; Stagecraft is wired into the turn and on by default; Home kicks planToday when TAXILA_CONDUCTOR_PLAN=on; route crashes are beaconed; the stop phrase and 'deeper' are read by code; taxila.dev is the public URL; the deploy sets TAXILA_STT_MODEL; the lesson-time client wiring (plan state, refusal screen) exists.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "dc-audit-aws-not-called-by-product",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Record of what can be checked about AWS, 2026-11-10; it decides nothing new. No product code (server/, src/, shared/, package.json) mentions Bedrock, the AWS SDK or amazonaws.com; AWS appears only in offline build and training scripts (scripts/gpu, scripts/voice/v3, scripts/voice/stt-v3, scripts/voicesig/aws-check.py). CLAUDE.md's Azure-only rule (owner, 2026-10-02) covers every paid AI and compute resource the product calls. Which owner statement ended the AWS-credit plan of owner-aws-credit-funded-india-first-2026-10-04 is not recorded anywhere, so no supersedes edge is written. Reverse: the owner records that a product path may call AWS.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "op-audit-build-gpu-aws-owner",
+   "kind": "open",
+   "at": "2026-11-10",
+   "title": "Does the AWS GPU build harness (scripts/gpu: used by the 3D face jobs and by the voice training scripts scripts/voice/v3 and stt-v3; nothing in the product runs it) stay, or retire with the 3D head? This is the owner's question; no session may decide it. Until answered, scripts/gpu is kept.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "comprehension-review-open-2026-10-02",
+   "kind": "open",
+   "at": "2026-10-02",
+   "title": "The CE-M1 bar fails under both families (0.627 / 0.475), and CE-M4 now fails at 14 pp after the truth-leak fix. Per SIM6, thresholds were NOT tuned to the simulator.",
+   "source": "open.md"
   }
  ],
  "edges": [
@@ -41905,6 +41973,1066 @@
    "src": "dc-r7-held-board-studio",
    "rel": "measured_by",
    "dst": "ms-r7-held-board-split-360-2026-11-09"
+  },
+  {
+   "src": "ms-audit-inbox-edges-dropped-2026-11-09",
+   "rel": "caused_by",
+   "dst": "rj-audit-inbox-edges-silently-skipped"
+  },
+  {
+   "src": "dc-audit-india-move-not-cut-over",
+   "rel": "supersedes",
+   "dst": "india-move-southindia-azure-pg-2026-10-04"
+  },
+  {
+   "src": "dc-audit-prod-db-neon-us-east-1",
+   "rel": "supersedes",
+   "dst": "infra-segment"
+  },
+  {
+   "src": "dc-audit-prod-db-neon-us-east-1",
+   "rel": "inherits",
+   "dst": "dc-owner-other-neon-project-not-used"
+  },
+  {
+   "src": "dc-r4-single-teacher-asha",
+   "rel": "supersedes",
+   "dst": "avatar-tutor-selection"
+  },
+  {
+   "src": "owner-2d-ship-at-4-2026-10-05",
+   "rel": "supersedes",
+   "dst": "owner-2d-bar-4-5-2026-10-04"
+  },
+  {
+   "src": "owner-2d-ship-at-4-2026-10-05",
+   "rel": "supersedes",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "ms-r1442-live",
+   "rel": "supersedes",
+   "dst": "ms-r1441-live"
+  },
+  {
+   "src": "ms-r1441-live",
+   "rel": "supersedes",
+   "dst": "ms-r144-live"
+  },
+  {
+   "src": "ms-r144-live",
+   "rel": "supersedes",
+   "dst": "ms-r1432-live"
+  },
+  {
+   "src": "ms-r1432-live",
+   "rel": "supersedes",
+   "dst": "ms-r1431-live"
+  },
+  {
+   "src": "ms-r1431-live",
+   "rel": "supersedes",
+   "dst": "ms-r143-live"
+  },
+  {
+   "src": "ms-r143-live",
+   "rel": "supersedes",
+   "dst": "ms-r142-live"
+  },
+  {
+   "src": "ms-audit-kit-census-2026-11-09",
+   "rel": "supersedes",
+   "dst": "kit-census-2026-10-02"
+  },
+  {
+   "src": "ms-r7-m4-day1-2026-11-06",
+   "rel": "supersedes",
+   "dst": "open-r7-m4-billing-assumptions"
+  },
+  {
+   "src": "rj-r145-kit-deep-marks",
+   "rel": "supersedes",
+   "dst": "open-r143-kit-kind-pose-mismatch"
+  },
+  {
+   "src": "rj-r145-kit-deep-marks",
+   "rel": "supersedes",
+   "dst": "dc-r143-kit-deep-false"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "supersedes",
+   "dst": "dc-r7-m3-credit-unlock"
+  },
+  {
+   "src": "image-default-flare-low-2026-10-04",
+   "rel": "supersedes",
+   "dst": "owner-gpt-image-2-default-2026-10-04"
+  },
+  {
+   "src": "owner-stt-cost-plan-2026-10-04",
+   "rel": "supersedes",
+   "dst": "owner-always-listen-full-session-2026-10-04"
+  },
+  {
+   "src": "stt-mai2-stream-primary-india-2026-10-04",
+   "rel": "supersedes",
+   "dst": "stt-default-live-transcribe-kw-reaffirmed"
+  },
+  {
+   "src": "taxila-dev-live-2026-10-04",
+   "rel": "supersedes",
+   "dst": "open-india-public-url"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-migrate-default-test-branch"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "w1b-open-lesson-wiring-guard"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "engines-v1-server-recheck"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-engines-v1-wiring"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "truth-open-parts-data-unshipped"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-stagecraft-patches-unapplied"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-home-calls-plan-today"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-e2e-stop-reader-gap"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "prod-live-stt-gpt4o-transcribe"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-lt-client-wiring-2"
+  },
+  {
+   "src": "duplex-verdict-anchor-last-voice",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-turn-pace",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-stageb-features-only-no-vouch",
+   "rel": "constrains",
+   "dst": "duplex-lexical-horizon-guard"
+  },
+  {
+   "src": "duplex-wait-time-ii-backstop",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "m-taxilafdb-test-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-taxilafdb"
+  },
+  {
+   "src": "m-taxilafdb-l2-live-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-taxilafdb"
+  },
+  {
+   "src": "m-taxilafdb-l2-live-2026-10-04",
+   "rel": "inherits",
+   "dst": "m-d2-duplex-live-stt-2026-10-04"
+  },
+  {
+   "src": "rj-llm-semantic-cutoff-benefit",
+   "rel": "inherits",
+   "dst": "m-d5-duplex-model-arm-2026-10-04"
+  },
+  {
+   "src": "duplex-runtime-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-verdict-delay-2s",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-hold-grant-fresh-words",
+   "rel": "constrains",
+   "dst": "duplex-lexical-horizon-guard"
+  },
+  {
+   "src": "rj-duplex-fanin-single-commit-slot",
+   "rel": "constrains",
+   "dst": "duplex-lexical-horizon-guard"
+  },
+  {
+   "src": "rj-duplex-no-text-resume-1600",
+   "rel": "measured_by",
+   "dst": "m-d2-duplex-live-stt-2026-10-04"
+  },
+  {
+   "src": "forge-live-is-g1-fill",
+   "rel": "caused_by",
+   "dst": "forge-live-codegen-race"
+  },
+  {
+   "src": "foundry-w2-deployments-2026-10-04",
+   "rel": "part_of",
+   "dst": "plan-superhuman-waves"
+  },
+  {
+   "src": "open-bedrock-quota-and-enablement",
+   "rel": "inherits",
+   "dst": "scout-text-build-bedrock-still-blocked-2026-10-04"
+  },
+  {
+   "src": "owner-gpt-image-2-default-2026-10-04",
+   "rel": "part_of",
+   "dst": "owner-azure-first-aws-second-2026-10-04"
+  },
+  {
+   "src": "dc-r144-d5-unheard-not-silence",
+   "rel": "measured_by",
+   "dst": "ms-r144-d5-false-silence"
+  },
+  {
+   "src": "dc-r144-fanin-carried-burst-item",
+   "rel": "measured_by",
+   "dst": "ms-r144-d5-overlap-words-lost"
+  },
+  {
+   "src": "dc-r144-negation-surface-key",
+   "rel": "measured_by",
+   "dst": "ms-r144-negation-echo"
+  },
+  {
+   "src": "rj-r144-governor-carry-check",
+   "rel": "measured_by",
+   "dst": "ms-r144-d5-overlap-words-lost"
+  },
+  {
+   "src": "dc-r144-unheard-never-escalates",
+   "rel": "measured_by",
+   "dst": "ms-r144-unheard-three-in-a-row"
+  },
+  {
+   "src": "dec-r3fix-fitshape-optional-clauses",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-budget-500-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-server-runs-frame-normalize",
+   "rel": "caused_by",
+   "dst": "open-r3rv-measure-engine-for-mass"
+  },
+  {
+   "src": "dec-r3fix-arith-and-ui-guards",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-truth-errors-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-switch-topic",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-requests-honoured-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-young-help-on-demand",
+   "rel": "caused_by",
+   "dst": "open-r3rv-young-help-covers-activity"
+  },
+  {
+   "src": "open-r3fix-latency-not-fixed",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-silence-after-answer-2026-10-10"
+  },
+  {
+   "src": "ship5-fix-ta8-structural",
+   "rel": "supersedes",
+   "dst": "rj-ship5-filter-safeguard-no-calm-face"
+  },
+  {
+   "src": "ship5-fix-generated-keys-verified",
+   "rel": "supersedes",
+   "dst": "rj-ship5-stagecraft-model-key"
+  },
+  {
+   "src": "ship5-fix-template-board-regated",
+   "rel": "supersedes",
+   "dst": "rj-ship5-board-fallback-ungated"
+  },
+  {
+   "src": "ship5-fix-tone-guard-needs-no-words",
+   "rel": "supersedes",
+   "dst": "rj-ship5-duplex-tone-guard-distress"
+  },
+  {
+   "src": "stagecraft-no-livepath-failover",
+   "rel": "supersedes",
+   "dst": "stagecraft-spec-default-deployment"
+  },
+  {
+   "src": "stylised-3d-halt-r4-owner-decision",
+   "rel": "supersedes",
+   "dst": "stylised-3d-halt-r3-owner-decision"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-stylised-face-commissioned"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "character-built-in-house"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-human-first-gpu"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-bakeoff-verdict"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "gnm-adopted-identity-base"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-polished-verdict"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-stylised-3d-glb"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "open-stylised-panel"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "measured_by",
+   "dst": "stylised-concepts-2026-10-04"
+  },
+  {
+   "src": "stylised-c-two-arm-method",
+   "rel": "caused_by",
+   "dst": "stylised-c-owner-directive"
+  },
+  {
+   "src": "stylised-c-two-arm-method",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-refs-2026-10-04"
+  },
+  {
+   "src": "stylised-c-arm-a-wins",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r1"
+  },
+  {
+   "src": "stylised-c-arm-a-wins",
+   "rel": "part_of",
+   "dst": "stylised-c-two-arm-method"
+  },
+  {
+   "src": "rj-stylised-c-arm-b-sculpt-target",
+   "rel": "caused_by",
+   "dst": "meas-stylised-c-judge-r1"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r2"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r3"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r4"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-budget-2026-10-04"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "caused_by",
+   "dst": "rj-stylised-c-sdf-surface-ceiling"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "constrains",
+   "dst": "stylised-c-owner-directive"
+  },
+  {
+   "src": "stylised-3d-halt-r4-owner-decision",
+   "rel": "caused_by",
+   "dst": "stylised-c-3d-failing-verdict"
+  },
+  {
+   "src": "meas-stylised-c-judge-r4",
+   "rel": "supersedes",
+   "dst": "meas-stylised-polish-r2-blind-replicate"
+  },
+  {
+   "src": "rj-stylised-c-sdf-surface-ceiling",
+   "rel": "caused_by",
+   "dst": "meas-stylised-c-judge-r2"
+  },
+  {
+   "src": "rj-agent-authored-stylised-face",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r2"
+  },
+  {
+   "src": "rj-stylised-c-arm-a-traps",
+   "rel": "caused_by",
+   "dst": "meas-stylised-c-gates-2026-10-04"
+  },
+  {
+   "src": "rj-stylised-c-arm-b-traps",
+   "rel": "caused_by",
+   "dst": "meas-stylised-c-spend-2026-10-04"
+  },
+  {
+   "src": "voice-blind-ab-2026-10-04",
+   "rel": "measured_by",
+   "dst": "voice-clips-off-and-numbers-normalised"
+  },
+  {
+   "src": "voice-blind-spliced-breaths-rejected",
+   "rel": "caused_by",
+   "dst": "voice-clips-off-and-numbers-normalised"
+  },
+  {
+   "src": "m-vs-frontend-cpu-2026-10-04",
+   "rel": "supersedes",
+   "dst": "rj-vs-direct-dft-logmel"
+  },
+  {
+   "src": "rj-w1c-script-child-cannot-fill-fade",
+   "rel": "supersedes",
+   "dst": "rj-w2int-three-day-c31-plus1"
+  },
+  {
+   "src": "w2f-whiteboard-no-reveal",
+   "rel": "part_of",
+   "dst": "w2f-whiteboard-archetype"
+  },
+  {
+   "src": "w2f-whiteboard-not-a-build",
+   "rel": "part_of",
+   "dst": "w2f-whiteboard-archetype"
+  },
+  {
+   "src": "w2f-whiteboard-bench-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2f-whiteboard-bench-2026-10-04"
+  },
+  {
+   "src": "w2f-acceptance-local-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2f-acceptance-local-2026-10-04"
+  },
+  {
+   "src": "w2f-chatstream-empty-stream-diagnostics",
+   "rel": "part_of",
+   "dst": "w2f-chatstream-empty-is-error"
+  },
+  {
+   "src": "w2f-router-bench-not-comparable",
+   "rel": "caused_by",
+   "dst": "rj-w2f-probe-portrait-viewport"
+  },
+  {
+   "src": "w2hfix-grade-by-item",
+   "rel": "supersedes",
+   "dst": "w2h-studio-evidence-one-event-per-item"
+  },
+  {
+   "src": "w2hfix-retire-incorrect-evidence",
+   "rel": "supersedes",
+   "dst": "w2h-studio-evidence-one-event-per-item"
+  },
+  {
+   "src": "rj-w2hfix-pointer-grader",
+   "rel": "caused_by",
+   "dst": "w2h-studio-evidence-one-event-per-item"
+  },
+  {
+   "src": "w2hfix-facts-row-from-slot",
+   "rel": "supersedes",
+   "dst": "w2h-seam-patches-turn-say"
+  },
+  {
+   "src": "rj-w2hfix-facts-row-before-arbitration",
+   "rel": "caused_by",
+   "dst": "w2h-seam-patches-turn-say"
+  },
+  {
+   "src": "w2hfix-studio-answers-reach-lesson",
+   "rel": "part_of",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2hfix-one-task-at-a-time",
+   "rel": "part_of",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2hfix-contrast-params-from-misconception",
+   "rel": "part_of",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2hfix-two-row-bars",
+   "rel": "part_of",
+   "dst": "w2h-skeleton-as-activity-first-rung"
+  },
+  {
+   "src": "w2hfix-spend-row-at-race",
+   "rel": "part_of",
+   "dst": "w2h-library-identity-gate-cache"
+  },
+  {
+   "src": "w2hfix-frame-incidents-two-lessons",
+   "rel": "part_of",
+   "dst": "w2h-library-identity-gate-cache"
+  },
+  {
+   "src": "w2hfix-local-acceptance-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2h-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "w2hfix-stage-browser-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2h-stage-browser-2026-10-04"
+  },
+  {
+   "src": "w2hfix-minor-hardening",
+   "rel": "part_of",
+   "dst": "w2h-host-assembles-frame"
+  },
+  {
+   "src": "m-w2ifix-inlesson-negatives-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2i-signals-negative-control-2026-10-04"
+  },
+  {
+   "src": "w2ifix-leave-anchoring",
+   "rel": "part_of",
+   "dst": "w2i-signals-lexical-bilingual"
+  },
+  {
+   "src": "w2ifix-third-party-ask-verb",
+   "rel": "part_of",
+   "dst": "w2i-grooming-predicate"
+  },
+  {
+   "src": "w2ifix-pleading-never-releases",
+   "rel": "part_of",
+   "dst": "w2i-stop-protocol"
+  },
+  {
+   "src": "w2ifix-harm-on-safety-turns",
+   "rel": "part_of",
+   "dst": "w2i-policy-one-entry"
+  },
+  {
+   "src": "rj-w2i-unanchored-leave-lexicon",
+   "rel": "caused_by",
+   "dst": "w2i-signals-lexical-bilingual"
+  },
+  {
+   "src": "rj-w2i-generic-report-verbs-third-party",
+   "rel": "caused_by",
+   "dst": "w2i-grooming-predicate"
+  },
+  {
+   "src": "rj-w2i-pleading-releases",
+   "rel": "caused_by",
+   "dst": "w2i-stop-protocol"
+  },
+  {
+   "src": "rj-w2i-harm-false-on-safety-turns",
+   "rel": "caused_by",
+   "dst": "w2i-policy-one-entry"
+  },
+  {
+   "src": "w2ifix-compile-note-position-deferred",
+   "rel": "part_of",
+   "dst": "w2i-seam-patches"
+  },
+  {
+   "src": "w2ifix-stop-case-warn-until-patch",
+   "rel": "part_of",
+   "dst": "w2i-seam-patches"
+  },
+  {
+   "src": "dc-audit-aws-not-called-by-product",
+   "rel": "constrains",
+   "dst": "owner-aws-credit-funded-india-first-2026-10-04"
+  },
+  {
+   "src": "op-audit-build-gpu-aws-owner",
+   "rel": "caused_by",
+   "dst": "dc-audit-aws-not-called-by-product"
+  },
+  {
+   "src": "aws-build-gpu",
+   "rel": "caused_by",
+   "dst": "aws-credits-2026-10-03"
+  },
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "caused_by",
+   "dst": "b3-parent-claim-gate"
+  },
+  {
+   "src": "dek-in-pitr-database",
+   "rel": "caused_by",
+   "dst": "b3-account-deletion"
+  },
+  {
+   "src": "safety-parent-notice-settle",
+   "rel": "caused_by",
+   "dst": "b3-alert-only-when-released"
+  },
+  {
+   "src": "safety-parent-notice-settle",
+   "rel": "caused_by",
+   "dst": "b3-erasure-waits-for-safeguarding"
+  },
+  {
+   "src": "b3-account-deletion",
+   "rel": "caused_by",
+   "dst": "b3-erasure-waits-for-safeguarding"
+  },
+  {
+   "src": "b3-parent-try-at-home-from-letter",
+   "rel": "caused_by",
+   "dst": "b3-try-at-home-one-state"
+  },
+  {
+   "src": "b3-account-deletion",
+   "rel": "caused_by",
+   "dst": "b3-open-n4-deletion-notice"
+  },
+  {
+   "src": "gpu-harness",
+   "rel": "part_of",
+   "dst": "aws-build-gpu"
+  },
+  {
+   "src": "face3d-models",
+   "rel": "caused_by",
+   "dst": "face3d-nc-deps-rejected"
+  },
+  {
+   "src": "gpu-identity-target-flag",
+   "rel": "caused_by",
+   "dst": "marigold-albedo-as-projection-source"
+  },
+  {
+   "src": "aws-quota-approved-2026-10-03",
+   "rel": "caused_by",
+   "dst": "gpu-harness-proof-2026-10-03"
+  },
+  {
+   "src": "face3d-models",
+   "rel": "caused_by",
+   "dst": "head-crop-matte-for-hunyuan-shape"
+  },
+  {
+   "src": "hv-omni-listing",
+   "rel": "part_of",
+   "dst": "dragonhdomni-not-production"
+  },
+  {
+   "src": "live-studio-spec",
+   "rel": "part_of",
+   "dst": "owner-superhuman-teacher-2026-10-04"
+  },
+  {
+   "src": "live-studio-spec",
+   "rel": "measured_by",
+   "dst": "live-studio-bench-2026-10-04"
+  },
+  {
+   "src": "live-studio-spec",
+   "rel": "measured_by",
+   "dst": "live-studio-transfer-2026-10-04"
+  },
+  {
+   "src": "rj-flux2-pro-labels-and-indian-prompts",
+   "rel": "caused_by",
+   "dst": "rj-flux2-pro-text-free-primary"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "stt-refresh-2026-10-04-synthetic"
+  },
+  {
+   "src": "stt-refresh-2026-10-04-synthetic",
+   "rel": "caused_by",
+   "dst": "stt-hinglish-v2-synthetic"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "gpt-transcribe-fabricates-nonspeech"
+  },
+  {
+   "src": "gpt-transcribe-fabricates-nonspeech",
+   "rel": "caused_by",
+   "dst": "gpt4o-transcribe-fabricates-noise"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "mai-transcribe-15-hallucinates-silence"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "gpt-realtime-whisper-no-context"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "mai-stream-refuses-context"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "live-tx-d4-ablation"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "azure-billed-open-models"
+  },
+  {
+   "src": "voice-lane-cascade-default",
+   "rel": "caused_by",
+   "dst": "oss-tts-hindi-landscape"
+  },
+  {
+   "src": "oss-tts-hindi-landscape",
+   "rel": "caused_by",
+   "dst": "indicf5-last-in-indian-preference-study"
+  },
+  {
+   "src": "own-teacher-voice-record-once",
+   "rel": "caused_by",
+   "dst": "t4-cannot-serve-3b-codec-tts"
+  },
+  {
+   "src": "azure-billed-open-models",
+   "rel": "caused_by",
+   "dst": "own-teacher-voice-record-once"
+  },
+  {
+   "src": "dc-r141-filter-probe-child-words",
+   "rel": "part_of",
+   "dst": "dc-r141-content-filter-by-category"
+  },
+  {
+   "src": "dec-r5-lat-continuer-gate-tuned",
+   "rel": "part_of",
+   "dst": "dec-r5-lat-continuer-positive-gate"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-1-brain",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-2-brain",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6-1-brain"
+  },
+  {
+   "src": "dc-r7-stt-cost-client-reported",
+   "rel": "part_of",
+   "dst": "dc-r7-cost-ledger"
+  },
+  {
+   "src": "dc-r7-board-places-template",
+   "rel": "part_of",
+   "dst": "dc-r7-maps-no-outline"
+  },
+  {
+   "src": "dc-r7-second-view-real",
+   "rel": "part_of",
+   "dst": "dc-r7-second-view-every-template"
+  },
+  {
+   "src": "rj-aws-transcribe-live-stt",
+   "rel": "caused_by",
+   "dst": "scout-2026-10-04-transcribe-hi"
+  },
+  {
+   "src": "rj-aws-transcribe-live-stt",
+   "rel": "caused_by",
+   "dst": "stt-hinglish-v2-synthetic"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw",
+   "rel": "caused_by",
+   "dst": "stt-hinglish-v2-synthetic"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw",
+   "rel": "caused_by",
+   "dst": "gpt4o-transcribe-fabricates-noise"
+  },
+  {
+   "src": "voice-lane-cascade-default",
+   "rel": "caused_by",
+   "dst": "stt-default-live-transcribe-kw"
+  },
+  {
+   "src": "stylised-3d-halt-r4-owner-decision",
+   "rel": "measured_by",
+   "dst": "meas-stylised-polish-r2-blind-replicate"
+  },
+  {
+   "src": "teacher-brain-code-kernel",
+   "rel": "part_of",
+   "dst": "owner-superhuman-teacher-2026-10-04"
+  },
+  {
+   "src": "teacher-brain-code-kernel",
+   "rel": "measured_by",
+   "dst": "teacher-brain-beat-policy-2026-10-04"
+  },
+  {
+   "src": "llm-beat-proposer-live",
+   "rel": "measured_by",
+   "dst": "teacher-brain-beat-policy-2026-10-04"
+  },
+  {
+   "src": "teacher-brain-signals-on-classify",
+   "rel": "measured_by",
+   "dst": "teacher-brain-classify-piggyback-2026-10-04"
+  },
+  {
+   "src": "teacher-brain-interest-two-day",
+   "rel": "measured_by",
+   "dst": "teacher-brain-classify-piggyback-2026-10-04"
+  },
+  {
+   "src": "teacher-brain-beat-layer",
+   "rel": "part_of",
+   "dst": "live-studio-spec"
+  },
+  {
+   "src": "teacher-brain-experiments-registry",
+   "rel": "part_of",
+   "dst": "decision-records-with-propensities"
+  },
+  {
+   "src": "teacher-polished-verdict",
+   "rel": "caused_by",
+   "dst": "rocketbox-as-premium-face"
+  },
+  {
+   "src": "teacher-polished-verdict",
+   "rel": "caused_by",
+   "dst": "vroid-sample-as-teacher"
+  },
+  {
+   "src": "ui-child-voice-on-cascade",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "voice-blind-r3-page",
+   "rel": "caused_by",
+   "dst": "voice-blind-r2-page"
+  },
+  {
+   "src": "voice-blind-r3-page",
+   "rel": "caused_by",
+   "dst": "voice-next-situation-delivery-2026-10-04"
+  },
+  {
+   "src": "voice-blind-r3-page",
+   "rel": "caused_by",
+   "dst": "rj-loudnorm-dynamic-for-stimuli"
+  },
+  {
+   "src": "voice-blind-r3-page",
+   "rel": "caused_by",
+   "dst": "voice-blind-r3-page-check-2026-10-04"
+  },
+  {
+   "src": "voice-lane-cascade-default",
+   "rel": "caused_by",
+   "dst": "voice-v2-ai-judge-proxy"
+  },
+  {
+   "src": "voice-blind-none-human-2026-10-04",
+   "rel": "caused_by",
+   "dst": "voice-v3-screen-2026-10-04"
+  },
+  {
+   "src": "gpt-audio-not-a-judge",
+   "rel": "caused_by",
+   "dst": "rj-realtime-judge-hinglish-delivery"
+  },
+  {
+   "src": "voice-v3-screen-2026-10-04",
+   "rel": "caused_by",
+   "dst": "voice-v3-scan-render-list"
+  },
+  {
+   "src": "voice-ga-only-for-minors",
+   "rel": "constrains",
+   "dst": "voice-v3-scan-render-list"
+  },
+  {
+   "src": "voice-escalation-ladder",
+   "rel": "caused_by",
+   "dst": "voice-v3-scan-render-list"
+  },
+  {
+   "src": "voice-v3-scan-render-list",
+   "rel": "caused_by",
+   "dst": "rj-open-tts-licence-barred-2026-10"
+  },
+  {
+   "src": "voice-v3-screen-2026-10-04",
+   "rel": "caused_by",
+   "dst": "voice-v3-render-ttfb-2026-10-04"
+  },
+  {
+   "src": "t4-cannot-serve-3b-codec-tts",
+   "rel": "caused_by",
+   "dst": "voice-v3-render-ttfb-2026-10-04"
+  },
+  {
+   "src": "voice-v3-screen-2026-10-04",
+   "rel": "caused_by",
+   "dst": "voice-v3-render-nova-fidelity"
+  },
+  {
+   "src": "voice-blind-r2-page",
+   "rel": "caused_by",
+   "dst": "voice-v3-screen-2026-10-04"
+  },
+  {
+   "src": "voice-blind-r2-page",
+   "rel": "caused_by",
+   "dst": "voice-blind-none-human-2026-10-04"
+  },
+  {
+   "src": "voice-blind-r2-page",
+   "rel": "caused_by",
+   "dst": "rj-loudnorm-dynamic-for-stimuli"
+  },
+  {
+   "src": "vs-l2-bar-95ci-200",
+   "rel": "caused_by",
+   "dst": "rj-vs-l2-bar-80ci-at-pilot-scale"
+  },
+  {
+   "src": "vs-filler-detector-ami",
+   "rel": "measured_by",
+   "dst": "m-vs-filler-ami-2026-10-04"
+  },
+  {
+   "src": "vs-filler-detector-ami",
+   "rel": "caused_by",
+   "dst": "rj-vs-knowledge-head-on-public-data"
+  },
+  {
+   "src": "vs-no-paid-compute-cpu-training",
+   "rel": "measured_by",
+   "dst": "m-voicesig-train-cost-2026-10-04"
+  },
+  {
+   "src": "vs-verify-guards-2026-10-04",
+   "rel": "caused_by",
+   "dst": "rj-vs-haanji-as-filler"
+  },
+  {
+   "src": "vs-verify-guards-2026-10-04",
+   "rel": "caused_by",
+   "dst": "rj-vs-absolute-filler-lead"
+  },
+  {
+   "src": "vs-verify-guards-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-vs-verify-capture-chain-2026-10-04"
+  },
+  {
+   "src": "rj-vs-absolute-filler-lead",
+   "rel": "measured_by",
+   "dst": "m-vs-verify-fleurs-lead-2026-10-04"
+  },
+  {
+   "src": "w2a-migration-019",
+   "rel": "caused_by",
+   "dst": "rj-w2a-test-window-table"
+  },
+  {
+   "src": "w2a-forgot-password-acs",
+   "rel": "caused_by",
+   "dst": "rj-w2a-await-reset-mail"
+  },
+  {
+   "src": "w2a-forgot-password-acs",
+   "rel": "caused_by",
+   "dst": "rj-w2a-acs-conn-unquoted"
   }
  ]
 }
