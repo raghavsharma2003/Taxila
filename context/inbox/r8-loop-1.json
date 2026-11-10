@@ -35,6 +35,12 @@
       "kind": "rejection",
       "at": "2026-11-10",
       "title": "Tried (round 8 Loop, before merge): remediating her open ledger mix-up instead of the card's authored target when the classifier named nothing on a wrong answer. What broke (design review, no run): it answers a mix-up the wrong answer did not show, e.g. a count-the-marks card missed gets the 'fractions are not numbers' remediation. Instead: the ledger mix-up's check is asked first (dc-r8-k3-ledger-asks-classifier-remediates)."
+    },
+    {
+      "id": "fd-r8-play-never-compresses",
+      "kind": "finding",
+      "at": "2026-11-10",
+      "title": "Play alone never certifies a delayed check (the ledger's rule: a game row carries weight but is never the delayed check and never sets unaided), so a child whose record comes only from games can never have a skill compressed by K1. Her games still change the lesson: the first card (a met skill's easiest unseen item) and her open mix-up's check asked first (evals/knows-her, child 'player', 2 named differences on every pilot topic). Kept as is (main, 2026-11-10)."
     }
   ],
   "edges": [
@@ -67,6 +73,11 @@
       "src": "dc-r8-k3-ledger-asks-classifier-remediates",
       "rel": "supersedes",
       "dst": "rj-r8-k3-ledger-remediation"
+    },
+    {
+      "src": "fd-r8-play-never-compresses",
+      "rel": "constrains",
+      "dst": "cp-r8-knows"
     }
   ]
 }
