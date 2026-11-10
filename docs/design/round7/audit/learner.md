@@ -77,7 +77,7 @@ migration, or outside my paths); **report** = for the owner named.
 | LEARN-32 | P2 | inconsistent | learning | Home says "This week: can now …" above "Lessons this week: 0" | `server/routes/parent.js:451-463` | One week window for both | fixed |
 | LEARN-33 | P2 | broken | learning | An open lesson with no ledger row keeps adding minutes to the week (5,760 by Friday) | `server/reports/truth.js:52-57` | End it at its start, as the stored letter does | fixed (open lesson with no answer counts at most 60 min "so far", in both copies of the rule) |
 | LEARN-34 | P2 | inconsistent | learning | Home's "Recent lessons" never gets the short title the Lessons list uses | `server/routes/parent.js:949` | Same topic mapper | fixed |
-| LEARN-35 | P1 | not good enough | learning | At 900 px and wider, Teaching and Sign out cannot be reached | `src/parent/Shell.tsx:76-85` | Add both to the rail | main |
+| LEARN-35 | P1 | not good enough | learning | At 900 px and wider, Teaching and Sign out cannot be reached | `src/parent/Shell.tsx:76-85` | Add both to the rail | fixed |
 | LEARN-36 | P2 | inconsistent | learning | "Download everything" exports the old evidence table, not the one every screen shows | `server/routes/parent.js:1469,1483` | Export the ledger rows | main |
 | LEARN-37 | P2 | no longer needed | learning | The "lessons started after the bedtime you set" line can never fire: nothing writes a bedtime | `server/reports/rest.js:17-21`, `templates.js:232-235` | Remove, or add the control | main |
 | LEARN-38 | P2 | inconsistent | learning | An unanswered consent shows the "yes" effect text | `src/parent/Pages.tsx:164` | Show the "no" effect when not granted | fixed |
@@ -92,9 +92,9 @@ migration, or outside my paths); **report** = for the owner named.
 | LEARN-47 | P2 | inconsistent | platform | On a paired child device the Hello feel picks are refused (same as PLAT-07) | `server/pair/scope.js:6,12` | Allow `POST /api/placement/onboarding` in the scope (platform); the handler now drops `parentView` from a device (learning half, fixed) | report (platform) |
 | LEARN-48 | P3 | broken | learning | Weave callbacks that lose an opener slot are closed unasked (latent: no kit has hosts) | `server/comprehension/store.js:58-63` | Keep expired entries open | fixed |
 | LEARN-49 | P3 | no longer needed | learning + owner | The session-first lane (1,069 lines) is off by default and no deploy file turns it on; parts of it run on every lesson (`schoolPointerStmts`) | `server/director/session/**`, `flags.js:20-23` | Owner decides: ship or shelve | main |
-| LEARN-50 | P3 | no longer needed | learning | Dead code in the learner model and comprehension engine | see note | Delete | main |
-| LEARN-51 | P3 | no longer needed | learning | Dead code in the Conductor; `conductor_usage` is read but never written | see note | Delete or wire | main |
-| LEARN-52 | P3 | no longer needed | learning | Dead code in the parent routes and set-up screens | see note | Delete | main |
+| LEARN-50 | P3 | no longer needed | learning | Dead code in the learner model and comprehension engine | see note | Delete | fixed (part; see learner-proposals.md §5) |
+| LEARN-51 | P3 | no longer needed | learning | Dead code in the Conductor; `conductor_usage` is read but never written | see note | Delete or wire | fixed (part; see learner-proposals.md §5) |
+| LEARN-52 | P3 | no longer needed | learning | Dead code in the parent routes and set-up screens | see note | Delete | fixed (part; see learner-proposals.md §5) |
 | LEARN-53 | P3 | inconsistent | learning | `shared/learner.ts` types lag the server | `shared/learner.ts:91,149-154` | Add `"late"` to `via` and `placementPending` to `Ledger` | fixed |
 | LEARN-54 | P3 | inconsistent | learning | Small copy and rule mismatches in the parent corner | see note | See note | main |
 
@@ -113,6 +113,8 @@ needed 6. None refuted; 15 corrected (see "Skeptic pass" below).
 | PLAT-09 | P2 | platform | Deleting a child left its paired device's session alive, read as a parent session by three hand-written joins | `childEraseStmts` deletes the devices' `auth_session` rows in the erasure's transaction, before the child row | fixed |
 | PLAT-10 | P2 | platform | The sign-in burst limiter was keyed on a cookie the caller chooses | Keyed on the ingress's address (rightmost hop) unless the caller already checked the session | fixed |
 | PLAT-52 | P3 | platform | PATCH child skipped POST's checks; account delete left `tx_in` | `childPatchOf` checks and shapes every field as POST does; both cookies cleared | fixed |
+| SEAM-09 | P1 | seams | Four parent controls saved and nothing read them (extra time, data saver, words on screen, larger text) | Hidden, values kept; `src/parent/controlReaders.ts` names each control's reader, and `r7-audit-control-readers` fails if a shown control has none. Wiring them: learner-proposals.md §4 | fixed |
+| PLAT-07 patch | — | platform | `docs/patches/to-learning/005-device-child-picks.patch` | Covered by the learning half already on this branch (403 on parent fields from a device; a device's parentView is dropped) | covered |
 
 ## Fixes on this branch (phase 2)
 
