@@ -1,7 +1,7 @@
 {
  "topicId": "c4-maths-ch04-t01",
  "classLevel": 4,
- "version": 2.2,
+ "version": 2.3,
  "status": "draft",
  "terms": [
   {
@@ -41,6 +41,64 @@
    "en": "zero"
   }
  ],
+ "joints": {
+  "asidePark": [
+   {
+    "hi": "Achha, {aside} wali baat yaad rakhti hoon. Pehle yeh number apni jagah mein rakh lete hain.",
+    "en": "Okay, I'll keep the {aside} bit in mind. First let's put this number in its places."
+   },
+   {
+    "hi": "Mazedaar! {aside} ki baat thodi der mein karenge, abhi yeh ank poore karte hain.",
+    "en": "Fun! We'll get to {aside} soon; first let's finish these digits."
+   },
+   {
+    "hi": "{aside} wali baat sambhaal ke rakhi hai. Pehle hazaar, sau, dahaai, ekai dekh lete hain.",
+    "en": "I've kept the {aside} bit safe. Let's look at thousands, hundreds, tens and ones first."
+   }
+  ],
+  "asideReturn": [
+   {
+    "hi": "Number ho gaya, ab tumhari baat: tumne kaha tha {said}. Thoda aur batao.",
+    "en": "Number done, now your bit: you said {said}. Tell me a little more."
+   },
+   {
+    "hi": "Tumne {said} bola tha na? Usmein sabse achha kya laga?",
+    "en": "You said {said}, didn't you? What did you like best about it?"
+   },
+   {
+    "hi": "Chalo, ab woh {said} wali baat. Phir kya hua?",
+    "en": "Okay, now the {said} part. What happened next?"
+   }
+  ],
+  "hindiSwitch": [
+   {
+    "hi": "Theek hai, ab Hindi mein number likhte hain.",
+    "en": "Sure, let's write numbers in English now."
+   },
+   {
+    "hi": "Achha, yeh Hindi mein samjhaati hoon, jagah aur value wahi rahenge.",
+    "en": "Okay, I'll say this in English; the places and values stay the same."
+   },
+   {
+    "hi": "Haan, Hindi mein hi chalte hain.",
+    "en": "Yes, English it is."
+   }
+  ],
+  "askAgain": [
+   {
+    "hi": "Mujhe theek se sunai nahi diya. Ek baar phir bologe?",
+    "en": "I didn't quite hear that. Will you say it once more?"
+   },
+   {
+    "hi": "Thoda sa chhoot gaya. Apna number ek-ek ank karke phir batao.",
+    "en": "I missed a bit of that. Tell me your number again, digit by digit."
+   },
+   {
+    "hi": "Awaaz saaf nahi aayi. Aaram se ek baar aur bolo.",
+    "en": "Your voice didn't come through clearly. Say it once more, slowly."
+   }
+  ]
+ },
  "skills": [
   {
    "skillId": "c4-maths-ch04-t01-s1",
@@ -116,8 +174,31 @@
        "five thousand one hundred forty-six"
       ],
       "why": {
-       "hi": "hazaar mein 5, sau mein 1, dahaai mein 4 aur ekai mein 6 rakhne se 5146 banta hai",
-       "en": "5 thousands, 1 hundred, 4 tens and 6 ones make 5146"
+       "hi": "7465 ki tarah, hazaar ki jagah 5, sau 1, dahaai 4 aur ekai 6 rakhne se 5146 banta hai",
+       "en": "like 7465, 5 thousands, 1 hundred, 4 tens and 6 ones make 5146"
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Jagah",
+         "items": [
+          "hazaar",
+          "sau",
+          "dahaai",
+          "ekai"
+         ]
+        },
+        "right": {
+         "title": "7465",
+         "items": [
+          "7",
+          "4",
+          "6",
+          "5"
+         ]
+        }
+       }
       }
      },
      "simpler": {
@@ -176,8 +257,30 @@
       "targets": "c4-maths-ch04-t01-m-concat",
       "wrongIfMis": "600010028",
       "why": {
-       "hi": "six thousand se hazaar mein 6, one hundred se sau mein 1, twenty-eight se dahaai 2, ekai 8, toh 6128",
-       "en": "six thousand gives 6 thousands, one hundred gives 1 hundred, twenty-eight gives 2 tens, 8 ones, so 6128"
+       "hi": "2345 ki tarah, shabdon mein se har jagah ek ank aata hai: hazaar 6, sau 1, dahaai 2, ekai 8, yaani 6128",
+       "en": "just as two thousand three hundred forty-five gave 2345, six thousand one hundred twenty-eight gives 6128"
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Shabdon mein",
+         "items": [
+          "two thousand",
+          "three hundred",
+          "forty-five"
+         ]
+        },
+        "right": {
+         "title": "Jagah mein",
+         "items": [
+          "hazaar: 2",
+          "sau: 3",
+          "dahaai 4, ekai 5",
+          "2345"
+         ]
+        }
+       }
       }
      },
      "simpler": {
@@ -235,8 +338,29 @@
       "targets": "c4-maths-ch04-t01-m-teen-ty",
       "wrongIfMis": "2530",
       "why": {
-       "hi": "two thousand se 2, five hundred se 5, aur thirteen mein 1 dahaai aur 3 ekai, toh 2513",
-       "en": "two thousand gives 2, five hundred gives 5, and thirteen has 1 ten and 3 ones, so 2513"
+       "hi": "two thousand se 2, five hundred se 5, aur thirteen mein 1 dahaai aur 3 ekai hain, toh 2513",
+       "en": "like sixteen is 16, not sixty, 60, thirteen has 1 ten and 3 ones, so 2513"
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "sixteen",
+         "items": [
+          "1 dahaai",
+          "6 ekai",
+          "16"
+         ]
+        },
+        "right": {
+         "title": "sixty",
+         "items": [
+          "6 dahaai",
+          "0 ekai",
+          "60"
+         ]
+        }
+       }
       }
      },
      "simpler": {
@@ -252,8 +376,8 @@
     },
     "givens": [
      {
-      "hi": "shabdon mein number: three thousand eight hundred twenty-seven",
-      "en": "the number in words: three thousand eight hundred twenty-seven"
+      "hi": "Number shabdon mein diya hai: three thousand eight hundred twenty-seven.",
+      "en": "The number is given in words: three thousand eight hundred twenty-seven."
      }
     ],
     "find": {
@@ -307,6 +431,31 @@
      "simpler": {
       "hi": "Twenty-seven mein do dahaai aur saat ekai hain. Unhe dahaai aur ekai ke khaanon mein rakho.",
       "en": "Twenty-seven has two tens and seven ones. Put them in the tens and ones boxes."
+     },
+     "why": {
+      "hi": "shabdon mein se hazaar ki jagah 3, sau mein 8, aur twenty-seven se dahaai 2, ekai 7 aata hai: 3827",
+      "en": "three thousand eight hundred twenty-seven gives 3, 8, 2 and 7, one in each place: 3827"
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Shabdon mein",
+        "items": [
+         "three thousand",
+         "eight hundred",
+         "twenty-seven"
+        ]
+       },
+       "right": {
+        "title": "Jagah mein",
+        "items": [
+         "hazaar: 3",
+         "sau: 8",
+         "dahaai, ekai"
+        ]
+       }
+      }
      }
     },
     "answer": {
@@ -358,28 +507,47 @@
       "template": "compare@1",
       "params": {
        "left": {
-        "title": "Cycle ka daam",
+        "title": "four thousand",
         "items": [
-         "four thousand",
          "seven hundred",
          "fifteen"
         ]
        },
        "right": {
-        "title": "Likho",
+        "title": "Jagah",
         "items": [
-         "numbers mein"
+         "hazaar, sau",
+         "dahaai, ekai"
         ]
        }
       }
      },
      "why": {
-      "hi": "four thousand se 4, seven hundred se 7, aur fifteen mein 1 dahaai aur 5 ekai, toh 4715",
-      "en": "four thousand gives 4, seven hundred gives 7, and fifteen has 1 ten and 5 ones, so 4715"
+      "hi": "fifteen se dahaai 1 aur ekai 5 aata hai, aur hazaar ki jagah 4, sau ki 7, toh 4715 banta hai",
+      "en": "four thousand gives 4, seven hundred gives 7, and fifteen gives 1 ten and 5 ones: 4715"
      },
      "simpler": {
-      "hi": "Fifteen mein ek dahaai aur paanch ekai hain. Four thousand aur seven hundred ko bhi apni-apni jagah ka ek ank do.",
-      "en": "Fifteen has one ten and five ones. Give four thousand and seven hundred one digit each in their own places too."
+      "hi": "Har jagah mein ek ank: hazaar, sau, dahaai, ekai. Fifteen mein ek dahaai aur paanch ekai hain.",
+      "en": "One digit in each place: thousands, hundreds, tens, ones. Fifteen has one ten and five ones."
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "four thousand",
+        "items": [
+         "seven hundred",
+         "fifteen"
+        ]
+       },
+       "right": {
+        "title": "Jagah",
+        "items": [
+         "hazaar, sau",
+         "dahaai, ekai"
+        ]
+       }
+      }
      }
     },
     {
@@ -398,27 +566,47 @@
       "template": "compare@1",
       "params": {
        "left": {
-        "title": "Nine thousand",
+        "title": "nine thousand",
         "items": [
          "three hundred",
          "forty-one"
         ]
        },
        "right": {
-        "title": "Likho",
+        "title": "Jagah",
         "items": [
-         "numbers mein"
+         "hazaar, sau",
+         "dahaai, ekai"
         ]
        }
       }
      },
      "why": {
-      "hi": "nine thousand se 9, three hundred se 3, aur forty-one mein 4 dahaai aur 1 ekai, toh 9341",
-      "en": "nine thousand gives 9, three hundred gives 3, and forty-one has 4 tens and 1 one, so 9341"
+      "hi": "har jagah ek ank aata hai: 9 hazaar, 3 sau, aur forty-one se dahaai 4, ekai 1, toh 9341",
+      "en": "nine thousand gives 9, three hundred gives 3, and forty-one gives 4 tens and 1 one: 9341"
      },
      "simpler": {
-      "hi": "Har hissa apni jagah ka ek ank deta hai. Forty-one mein chaar dahaai aur ek ekai hain.",
-      "en": "Each part gives one digit in its own place. Forty-one has four tens and one one."
+      "hi": "Har jagah mein ek ank: hazaar, sau, dahaai, ekai. Forty-one mein chaar dahaai aur ek ekai hain.",
+      "en": "One digit in each place: thousands, hundreds, tens, ones. Forty-one has four tens and one one."
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "nine thousand",
+        "items": [
+         "three hundred",
+         "forty-one"
+        ]
+       },
+       "right": {
+        "title": "Jagah",
+        "items": [
+         "hazaar, sau",
+         "dahaai, ekai"
+        ]
+       }
+      }
      }
     },
     {
@@ -457,12 +645,31 @@
       }
      },
      "why": {
-      "hi": "2614 mein dahaai 1 aur ekai 4 hai, matlab two thousand six hundred fourteen",
-      "en": "2614 has 1 ten and 4 ones, so it is two thousand six hundred fourteen"
+      "hi": "scoreboard ke 2614 mein dahaai 1 aur ekai 4 hai, toh ise six hundred fourteen padha jaata hai, forty nahi",
+      "en": "2614 has 1 ten and 4 ones, so it reads two thousand six hundred fourteen, not forty"
      },
      "simpler": {
       "hi": "2614 mein dahaai aur ekai ki jagah ke ank dekho. Forty bolne ka matlab hota hai ekai mein shunya.",
       "en": "Look at the tens and ones digits of 2614. Saying forty means the ones place has zero."
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Scoreboard",
+        "items": [
+         "2614"
+        ]
+       },
+       "right": {
+        "title": "Padha",
+        "items": [
+         "two thousand",
+         "six hundred",
+         "forty"
+        ]
+       }
+      }
      }
     }
    ],
@@ -500,27 +707,6 @@
       "hi": "Har khaane mein sirf ek ank jaata hai. 5, 3, 6 aur 1 ko 4 khaanon mein rakho, toh 5361 banta hai.",
       "en": "Each box takes just one digit. Put 5, 3, 6 and 1 in the 4 boxes and you get 5361."
      },
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Khaane",
-        "items": [
-         "hazaar: 5",
-         "sau: 3",
-         "dahaai: 6",
-         "ekai: 1"
-        ]
-       },
-       "right": {
-        "title": "Number",
-        "items": [
-         "5361",
-         "4 ank"
-        ]
-       }
-      }
-     },
      "then": {
       "prompt": {
        "hi": "Seven thousand two hundred eighty-four ko numbers mein likho, har khaane mein ek ank.",
@@ -536,27 +722,47 @@
        "template": "compare@1",
        "params": {
         "left": {
-         "title": "Seven thousand",
+         "title": "seven thousand",
          "items": [
           "two hundred",
           "eighty-four"
          ]
         },
         "right": {
-         "title": "Har khaane mein",
+         "title": "Jagah",
          "items": [
-          "ek ank"
+          "hazaar, sau",
+          "dahaai, ekai"
          ]
         }
        }
       },
       "why": {
-       "hi": "seven thousand se 7, two hundred se 2, aur eighty-four mein 8 dahaai aur 4 ekai, toh 7284",
-       "en": "seven thousand gives 7, two hundred gives 2, and eighty-four has 8 tens and 4 ones, so 7284"
+       "hi": "eighty-four se dahaai 8 aur ekai 4 aate hain, aur baaki jagah 7 hazaar, 2 sau, toh 7284",
+       "en": "seven thousand gives 7, two hundred gives 2, and eighty-four gives 8 tens and 4 ones: 7284"
       },
       "simpler": {
-       "hi": "Har khaane mein sirf ek ank rakho. Eighty-four mein aath dahaai aur chaar ekai hain.",
-       "en": "Put just one digit in each box. Eighty-four has eight tens and four ones."
+       "hi": "Har jagah mein sirf ek ank: hazaar, sau, dahaai, ekai. Eighty-four mein aath dahaai aur chaar ekai hain.",
+       "en": "Only one digit in each place: thousands, hundreds, tens, ones. Eighty-four has eight tens and four ones."
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "seven thousand",
+         "items": [
+          "two hundred",
+          "eighty-four"
+         ]
+        },
+        "right": {
+         "title": "Jagah",
+         "items": [
+          "hazaar, sau",
+          "dahaai, ekai"
+         ]
+        }
+       }
       }
      }
     },
@@ -570,27 +776,6 @@
      "simpler": {
       "hi": "Seventeen matlab 1 dahaai aur 7 ekai, yaani 17. Seventy matlab 7 dahaai, yaani 70.",
       "en": "Seventeen is 1 ten and 7 ones, so 17. Seventy is 7 tens, so 70."
-     },
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "seventeen",
-        "items": [
-         "1 dahaai",
-         "7 ekai",
-         "17"
-        ]
-       },
-       "right": {
-        "title": "seventy",
-        "items": [
-         "7 dahaai",
-         "0 ekai",
-         "70"
-        ]
-       }
-      }
      },
      "then": {
       "prompt": {
@@ -607,27 +792,47 @@
        "template": "compare@1",
        "params": {
         "left": {
-         "title": "Three thousand",
+         "title": "three thousand",
          "items": [
           "one hundred",
           "nineteen"
          ]
         },
         "right": {
-         "title": "Nineteen",
+         "title": "Jagah",
          "items": [
-          "kitni dahaai"
+          "hazaar, sau",
+          "dahaai, ekai"
          ]
         }
        }
       },
       "why": {
-       "hi": "three thousand se 3, one hundred se 1, aur nineteen mein 1 dahaai aur 9 ekai, toh 3119",
-       "en": "three thousand gives 3, one hundred gives 1, and nineteen has 1 ten and 9 ones, so 3119"
+       "hi": "nineteen mein sirf 1 dahaai aur 9 ekai hain, aur baaki jagah 3 hazaar, 1 sau, toh 3119 banta hai",
+       "en": "three thousand gives 3, one hundred gives 1, and nineteen gives 1 ten and 9 ones: 3119"
       },
       "simpler": {
-       "hi": "Nineteen mein sirf ek dahaai aur nau ekai hain. Three thousand aur one hundred ko bhi apni jagah ka ek ank do.",
-       "en": "Nineteen has just one ten and nine ones. Give three thousand and one hundred one digit each in their places too."
+       "hi": "Nineteen mein sirf ek dahaai aur nau ekai hain. Hazaar aur sau ki jagah ko bhi ek-ek ank do.",
+       "en": "Nineteen has just one ten and nine ones. Give the thousands and hundreds places one digit each too."
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "three thousand",
+         "items": [
+          "one hundred",
+          "nineteen"
+         ]
+        },
+        "right": {
+         "title": "Jagah",
+         "items": [
+          "hazaar, sau",
+          "dahaai, ekai"
+         ]
+        }
+       }
       }
      }
     }
@@ -635,23 +840,6 @@
    "bridgeToNext": {
     "hi": "Ab hum 4 ank wala number padh aur likh sakte hain. Agle hisse mein dekhenge ki har ank ki value kitni hai, kyunki ek hi ank alag jagah par alag value rakhta hai.",
     "en": "Now we can read and write a 4-digit number. Next we see what each digit is worth, because the same digit in a different place has a different value."
-   },
-   "bridgeBoard": {
-    "template": "compare@1",
-    "params": {
-     "left": {
-      "title": "Ek hi ank",
-      "items": [
-       "alag jagah par"
-      ]
-     },
-     "right": {
-      "title": "Value",
-      "items": [
-       "alag value"
-      ]
-     }
-    }
    }
   },
   {
@@ -678,48 +866,31 @@
    "explain": [
     {
      "id": "e1",
-     "convey": "4625: each digit × the worth of its place → 4000, 600, 20, 5; the same chart gives every digit its value",
+     "convey": "7382: each digit's value comes from its place → 3 in hundreds = 300, 8 in tens = 80, 2 in ones = 2; asked: the 7 in thousands",
      "mustSay": [
       {
        "hi": "jagah se value",
        "en": "value from the place"
       },
       {
-       "hi": "4 ki value 4000",
-       "en": "the 4 is worth 4000"
+       "hi": "3 ki value 300",
+       "en": "the 3 is worth 300"
       }
      ],
      "board": {
-      "template": "compare@1",
+      "template": "place-value@1",
       "params": {
-       "left": {
-        "title": "Jagah",
-        "items": [
-         "hazaar",
-         "sau",
-         "dahaai",
-         "ekai"
-        ]
-       },
-       "right": {
-        "title": "4625 mein value",
-        "items": [
-         "4000",
-         "600",
-         "20",
-         "5"
-        ]
-       }
+       "value": 7382
       }
      },
      "point": {
-      "hi": "4625 mein 4 hazaar ki jagah par hai, isliye uski value 4000 hai. 6 sau ki jagah par hai, value 600. 2 dahaai ki jagah par, value 20, aur 5 ekai ki jagah par, value 5.",
-      "en": "In 4625 the 4 is in the thousands place, so it is worth 4000. The 6 is in the hundreds place, worth 600. The 2 is in the tens place, worth 20, and the 5 is in the ones place, worth 5."
+      "hi": "Ank ki value uski jagah se banti hai. 7382 mein 3 sau ki jagah par hai, isliye uski value 300 hai. 8 dahaai ki jagah par hai, value 80, aur 2 ekai ki jagah par, value 2.",
+      "en": "A digit's value comes from its place. In 7382 the 3 is in the hundreds place, so it is worth 300. The 8 is in the tens place, worth 80, and the 2 is in the ones place, worth 2."
      },
      "ask": {
       "prompt": {
-       "hi": "Ab number 7382 lo. Isme 7 ki value kitni hai?",
-       "en": "Now take the number 7382. What is the 7 worth?"
+       "hi": "Isi number 7382 mein 7 ki value kitni hai?",
+       "en": "In this same number 7382, what is the 7 worth?"
       },
       "key": "7000",
       "accept": [
@@ -732,11 +903,17 @@
       "why": {
        "hi": "7382 mein 7 hazaar ki jagah par hai, toh uski value 7000 hai",
        "en": "in 7382 the 7 is in the thousands place, so it is worth 7000"
+      },
+      "answerBoard": {
+       "template": "place-value@1",
+       "params": {
+        "value": 7382
+       }
       }
      },
      "simpler": {
-      "hi": "Ank ki value uski jagah se aati hai. 7382 mein 7 hazaar ki jagah par hai, jaise 4625 mein 4 tha.",
-      "en": "A digit's value comes from its place. In 7382 the 7 is in the thousands place, just like the 4 in 4625."
+      "hi": "7382 mein 7 sabse baayen hai, yaani hazaar ki jagah. Ab socho, 7 hazaar kitna hota hai.",
+      "en": "In 7382 the 7 is furthest left, in the thousands place. Now think how much 7 thousands is."
      }
     },
     {
@@ -791,8 +968,27 @@
       "targets": "c4-maths-ch04-t01-m-face-value",
       "wrongIfMis": "9",
       "why": {
-       "hi": "4391 mein 9 dahaai ki jagah par hai, aur 9 dahaai = 90",
-       "en": "in 4391 the 9 is in the tens place, and 9 tens = 90"
+       "hi": "4391 mein 9 dahaai ki jagah par hai, toh uski value 90 hai, jaise ekai ka 5 sirf 5 tha",
+       "en": "as 5 is worth 5000 in 5281 but 5 in 8125, the 9 of 4391 is in the tens: 90"
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "5281",
+         "items": [
+          "5 hazaar ki jagah",
+          "value 5000"
+         ]
+        },
+        "right": {
+         "title": "8125",
+         "items": [
+          "5 ekai ki jagah",
+          "value 5"
+         ]
+        }
+       }
       }
      },
      "simpler": {
@@ -848,8 +1044,29 @@
        "5,178"
       ],
       "why": {
-       "hi": "5000 + 100 + 70 + 8 milkar 5178 banta hai",
-       "en": "5000 + 100 + 70 + 8 together make 5178"
+       "hi": "3426 ki tarah, 5 hazaar, 1 sau, 7 dahaai aur 8 ekai ke blocks milkar number 5178 banate hain",
+       "en": "as 3000 + 400 + 20 + 6 made 3426, 5000 + 100 + 70 + 8 make 5178"
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Blocks",
+         "items": [
+          "3 hazaar",
+          "4 sau",
+          "2 dahaai",
+          "6 ekai"
+         ]
+        },
+        "right": {
+         "title": "Number",
+         "items": [
+          "3000 + 400 + 20 + 6",
+          "3426"
+         ]
+        }
+       }
       }
      },
      "simpler": {
@@ -865,8 +1082,8 @@
     },
     "givens": [
      {
-      "hi": "ticket ka number 5739 hai",
-      "en": "the ticket number is 5739"
+      "hi": "Ticket par number 5739 chhapa hai.",
+      "en": "The ticket has the number 5739 printed on it."
      }
     ],
     "find": {
@@ -919,6 +1136,33 @@
      "simpler": {
       "hi": "5000, 700, 30 aur 9 ko ek-ek karke jodo. Jo number bane, use ticket ke number se milao.",
       "en": "Add 5000, 700, 30 and 9 one by one. Match the number you get with the ticket number."
+     },
+     "why": {
+      "hi": "5 hazaar, 7 sau, 3 dahaai aur 9 ekai ki value jodo: 5000 + 700 + 30 + 9 = 5739",
+      "en": "the ticket's four values add up: 5000 + 700 + 30 + 9 = 5739"
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Ticket",
+        "items": [
+         "5 hazaar",
+         "7 sau",
+         "3 dahaai",
+         "9 ekai"
+        ]
+       },
+       "right": {
+        "title": "Value",
+        "items": [
+         "5000",
+         "700",
+         "30",
+         "9"
+        ]
+       }
+      }
      }
     },
     "answer": {
@@ -933,7 +1177,7 @@
      "template": "compare@1",
      "params": {
       "left": {
-       "title": "Ticket ka number",
+       "title": "Ticket",
        "items": [
         "5 hazaar",
         "7 sau",
@@ -969,20 +1213,9 @@
      "targets": "c4-maths-ch04-t01-m-face-value",
      "wrongIfMis": "8",
      "board": {
-      "template": "compare@1",
+      "template": "place-value@1",
       "params": {
-       "left": {
-        "title": "Notebook",
-        "items": [
-         "2864"
-        ]
-       },
-       "right": {
-        "title": "Ank",
-        "items": [
-         "8"
-        ]
-       }
+       "value": 2864
       }
      },
      "why": {
@@ -992,6 +1225,12 @@
      "simpler": {
       "hi": "2864 mein 8 baayen se doosri jagah par hai, yaani sau ki jagah. Ab socho, 8 sau kitne hote hain.",
       "en": "In 2864 the 8 is second from the left, the hundreds place. Now think how much 8 hundreds is."
+     },
+     "answerBoard": {
+      "template": "place-value@1",
+      "params": {
+       "value": 2864
+      }
      }
     },
     {
@@ -1019,20 +1258,39 @@
         ]
        },
        "right": {
-        "title": "100 wala packet",
+        "title": "100 ke packet",
         "items": [
-         "koi nahi"
+         "0"
         ]
        }
       }
      },
      "why": {
-      "hi": "6 carton se 6000, 4 packet se 40, aur 3 khuli: 6000 + 40 + 3 = 6043",
-      "en": "6 cartons give 6000, 4 packets give 40, and 3 loose: 6000 + 40 + 3 = 6043"
+      "hi": "6 carton se 6000, 4 packet se 40, 3 khuli pencil, aur 100 ke packet 0 hain, toh 6043",
+      "en": "in the godown, 6 cartons of 1000 and 4 packets of 10 give 6000 + 40, plus 3 makes 6043"
      },
      "simpler": {
       "hi": "6 carton se hazaar ki jagah 6, 4 packet se dahaai ki jagah 4, aur 3 ekai. 100 wala packet nahi, toh sau ki jagah khaali rahegi.",
       "en": "6 cartons put 6 in thousands, 4 packets put 4 in tens, and 3 ones. There is no packet of 100, so the hundreds place stays empty."
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Godown",
+        "items": [
+         "6 carton: 1000-1000",
+         "4 packet: 10-10",
+         "3 khuli pencil"
+        ]
+       },
+       "right": {
+        "title": "100 ke packet",
+        "items": [
+         "0"
+        ]
+       }
+      }
      }
     },
     {
@@ -1052,20 +1310,9 @@
      "targets": "c4-maths-ch04-t01-m-face-value",
      "wrongIfMis": "Yes",
      "board": {
-      "template": "compare@1",
+      "template": "place-value@1",
       "params": {
-       "left": {
-        "title": "Number",
-        "items": [
-         "7520"
-        ]
-       },
-       "right": {
-        "title": "Kehna hai",
-        "items": [
-         "7 ki value 7"
-        ]
-       }
+       "value": 7520
       }
      },
      "why": {
@@ -1075,6 +1322,12 @@
      "simpler": {
       "hi": "7520 mein 7 sabse baayen hai, yaani hazaar ki jagah. Value jagah se aati hai, toh 7 hazaar socho.",
       "en": "In 7520 the 7 is on the far left, the thousands place. Value comes from the place, so think of 7 thousands."
+     },
+     "answerBoard": {
+      "template": "place-value@1",
+      "params": {
+       "value": 7520
+      }
      }
     }
    ],
@@ -1112,25 +1365,6 @@
       "hi": "Hazaar ki jagah ka 1 ek bada block hai. Usme 1000 chhote cube aate hain, isliye woh 1 matlab 1000.",
       "en": "A 1 in the thousands place is one big block. It holds 1000 small cubes, so that 1 means 1000."
      },
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Hazaar ka block",
-        "items": [
-         "ank 1",
-         "1000 cube"
-        ]
-       },
-       "right": {
-        "title": "Ekai ka cube",
-        "items": [
-         "ank 1",
-         "1 cube"
-        ]
-       }
-      }
-     },
      "then": {
       "prompt": {
        "hi": "6215 mein ank 6 kis jagah par hai? Uski value kitni hai?",
@@ -1145,20 +1379,9 @@
       "targets": "c4-maths-ch04-t01-m-face-value",
       "wrongIfMis": "6",
       "board": {
-       "template": "compare@1",
+       "template": "place-value@1",
        "params": {
-        "left": {
-         "title": "Number",
-         "items": [
-          "6215"
-         ]
-        },
-        "right": {
-         "title": "Ank",
-         "items": [
-          "6"
-         ]
-        }
+        "value": 6215
        }
       },
       "why": {
@@ -1168,6 +1391,12 @@
       "simpler": {
        "hi": "6215 mein 6 sabse baayen hai, yaani hazaar ki jagah. Ab socho, 6 hazaar kitna hota hai.",
        "en": "In 6215 the 6 is on the far left, the thousands place. Now think how much 6 thousands is."
+      },
+      "answerBoard": {
+       "template": "place-value@1",
+       "params": {
+        "value": 6215
+       }
       }
      }
     },
@@ -1181,27 +1410,6 @@
      "simpler": {
       "hi": "Khaali teeli ke liye 0 likho. Hazaar 5, sau 0, dahaai 2, ekai 7, toh number 5027 hai.",
       "en": "Write 0 for the empty spike. Thousands 5, hundreds 0, tens 2, ones 7, so the number is 5027."
-     },
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Abacus",
-        "items": [
-         "hazaar: 5",
-         "sau: koi nahi",
-         "dahaai: 2",
-         "ekai: 7"
-        ]
-       },
-       "right": {
-        "title": "Number",
-        "items": [
-         "5027",
-         "527 nahi"
-        ]
-       }
-      }
      },
      "then": {
       "prompt": {
@@ -1229,18 +1437,38 @@
         "right": {
          "title": "Abacus",
          "items": [
-          "4 teeliyon wala"
+          "4 teeli"
          ]
         }
        }
       },
       "why": {
-       "hi": "hazaar 8, sau 3, dahaai ki khaali teeli ka 0, ekai 4: 8304",
-       "en": "8 thousands, 3 hundreds, 0 for the empty tens spike, 4 ones: 8304"
+       "hi": "abacus ki 4 teeli: hazaar par 8 mani, sau par 3, dahaai par koi nahi toh 0, ekai par 4 hain: 8304",
+       "en": "the abacus has 8 thousands, 3 hundreds, no tens so 0, and 4 ones: 8304"
       },
       "simpler": {
        "hi": "Har teeli ek jagah hai: hazaar mein 8, sau mein 3, ekai mein 4. Khaali dahaai wali teeli ki jagah shunya likho.",
        "en": "Each spike is one place: 8 in thousands, 3 in hundreds, 4 in ones. Write zero for the empty tens spike."
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Mani",
+         "items": [
+          "hazaar: 8",
+          "sau: 3",
+          "dahaai: koi nahi",
+          "ekai: 4"
+         ]
+        },
+        "right": {
+         "title": "Abacus",
+         "items": [
+          "4 teeli"
+         ]
+        }
+       }
       }
      }
     }
@@ -1248,23 +1476,6 @@
    "bridgeToNext": {
     "hi": "Abhi dekha ki khaali jagah par 0 likhna padta hai. Ab aise numbers likhenge jinke beech mein zero hain, aur unhe har jagah ki value mein khol kar likhenge, jise expanded form kehte hain.",
     "en": "We just saw that an empty place needs a 0. Next we write numbers with zeros inside them, and open them up into the value of each place, which is called the expanded form."
-   },
-   "bridgeBoard": {
-    "template": "compare@1",
-    "params": {
-     "left": {
-      "title": "Khaali jagah",
-      "items": [
-       "0"
-      ]
-     },
-     "right": {
-      "title": "Expanded form",
-      "items": [
-       "har jagah ki value"
-      ]
-     }
-    }
    }
   },
   {
@@ -1317,8 +1528,7 @@
        "right": {
         "title": "Zero hata do",
         "items": [
-         "450",
-         "sirf chaar sau pachaas"
+         "450"
         ]
        }
       }
@@ -1339,8 +1549,28 @@
       "targets": "c4-maths-ch04-t01-m-drop-zero",
       "wrongIfMis": "36",
       "why": {
-       "hi": "hazaar mein 3, sau aur dahaai khaali hain toh unme 0, ekai mein 6: 3006",
-       "en": "3 thousands, 0 in the empty hundreds and tens, 6 ones: 3006"
+       "hi": "hazaar 3, khaali sau aur dahaai mein 0, ekai 6 aata hai: 3006; zero hata do toh number badal jaata hai",
+       "en": "3 thousands, 0 hundreds, 0 tens and 6 ones make 3006, just as dropping 4050's zeros gives 450"
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "4050",
+         "items": [
+          "hazaar: 4",
+          "sau: 0",
+          "dahaai: 5",
+          "ekai: 0"
+         ]
+        },
+        "right": {
+         "title": "Zero hata do",
+         "items": [
+          "450"
+         ]
+        }
+       }
       }
      },
      "simpler": {
@@ -1396,8 +1626,27 @@
       "targets": "c4-maths-ch04-t01-m-concat",
       "wrongIfMis": "900040",
       "why": {
-       "hi": "9 hazaar, 0 sau, 4 dahaai, 0 ekai: 9040, sirf 4 ank",
-       "en": "9 thousands, 0 hundreds, 4 tens, 0 ones: 9040, just 4 digits"
+       "hi": "9 hazaar, 0 sau, 4 dahaai, 0 ekai se sahi number 9040 banta hai, 4 ank ka; 700080 jaisa 6 ank galat",
+       "en": "like 7080, 9040 needs just 4 digits: 9 thousands, 0 hundreds, 4 tens, 0 ones"
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Galat",
+         "items": [
+          "700080",
+          "6 ank"
+         ]
+        },
+        "right": {
+         "title": "Sahi",
+         "items": [
+          "7080",
+          "4 ank"
+         ]
+        }
+       }
       }
      },
      "simpler": {
@@ -1454,8 +1703,25 @@
       "targets": "c4-maths-ch04-t01-m-drop-zero",
       "wrongIfMis": "8000 + 700",
       "why": {
-       "hi": "8070 mein 8 hazaar ki jagah par aur 7 dahaai ki jagah par hai, toh 8000 + 70",
-       "en": "in 8070 the 8 is in the thousands place and the 7 in the tens place, so 8000 + 70"
+       "hi": "8070 mein 8 hazaar ki jagah aur 7 dahaai ki jagah par hai, toh 8000 + 70",
+       "en": "like 6035 is 6000 + 30 + 5 and 6305 is 6000 + 300 + 5, so 8070 is 8000 + 70"
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "6305",
+         "items": [
+          "6000 + 300 + 5"
+         ]
+        },
+        "right": {
+         "title": "6035",
+         "items": [
+          "6000 + 30 + 5"
+         ]
+        }
+       }
       }
      },
      "simpler": {
@@ -1471,8 +1737,8 @@
     },
     "givens": [
      {
-      "hi": "shabdon mein number: six thousand forty-two",
-      "en": "the number in words: six thousand forty-two"
+      "hi": "Number shabdon mein diya hai: six thousand forty-two.",
+      "en": "The number is given in words: six thousand forty-two."
      }
     ],
     "find": {
@@ -1525,6 +1791,29 @@
      "simpler": {
       "hi": "Forty-two mein chaar dahaai aur do ekai hain. Unhe dahaai aur ekai ke khaanon mein rakho.",
       "en": "Forty-two has four tens and two ones. Put them in the tens and ones boxes."
+     },
+     "why": {
+      "hi": "shabdon mein se hazaar ki jagah 6, sau mein 0, aur forty-two se dahaai 4, ekai 2 aata hai: 6042",
+      "en": "six thousand forty-two gives 6 thousands, 0 hundreds, 4 tens and 2 ones: 6042"
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Shabdon mein",
+        "items": [
+         "six thousand",
+         "forty-two"
+        ]
+       },
+       "right": {
+        "title": "Jagah mein",
+        "items": [
+         "hazaar: 6",
+         "sau: 0"
+        ]
+       }
+      }
      }
     },
     "answer": {
@@ -1572,27 +1861,45 @@
       "template": "compare@1",
       "params": {
        "left": {
-        "title": "Gaon ki aabaadi",
+        "title": "Aabaadi",
         "items": [
-         "paanch hazaar",
-         "nau"
+         "paanch hazaar nau"
         ]
        },
        "right": {
-        "title": "Likho",
+        "title": "Jagah",
         "items": [
-         "ankon mein"
+         "hazaar, sau",
+         "dahaai, ekai"
         ]
        }
       }
      },
      "why": {
-      "hi": "paanch hazaar se hazaar mein 5, sau aur dahaai mein 0, ekai mein 9: 5009",
-      "en": "five thousand gives 5 thousands, 0 hundreds and 0 tens, and 9 ones: 5009"
+      "hi": "paanch hazaar nau mein hazaar ki jagah 5, sau aur dahaai 0, aur ekai 9 hai, toh aabaadi 5009 hai",
+      "en": "five thousand nine has 5 thousands, 0 hundreds, 0 tens and 9 ones: 5009"
      },
      "simpler": {
       "hi": "Hazaar ki jagah paanch aur ekai ki jagah nau aayega. Beech ki sau aur dahaai ki jagah khaali hai, wahan shunya likho.",
       "en": "Thousands gets five and ones gets nine. The hundreds and tens places in between are empty, so write zero there."
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Aabaadi",
+        "items": [
+         "paanch hazaar nau"
+        ]
+       },
+       "right": {
+        "title": "Jagah",
+        "items": [
+         "hazaar, sau",
+         "dahaai, ekai"
+        ]
+       }
+      }
      }
     },
     {
@@ -1625,12 +1932,29 @@
       }
      },
      "why": {
-      "hi": "8 hazaar, 0 sau, 6 dahaai, 0 ekai: 8060, sirf 4 ank",
-      "en": "8 thousands, 0 hundreds, 6 tens, 0 ones: 8060, just 4 digits"
+      "hi": "8 hazaar, 0 sau, 6 dahaai, 0 ekai se sahi number 8060 banta hai; 800060 likha toh 6 ank ho gaye",
+      "en": "eight thousand sixty has 8 thousands, 0 hundreds, 6 tens, 0 ones: 8060, just 4 digits"
      },
      "simpler": {
       "hi": "Hazaar wale number mein sirf chaar ank hote hain. Sixty se chhe dahaai milte hain, aur khaali jagah par shunya aata hai.",
       "en": "A number in the thousands has only four digits. Sixty gives six tens, and an empty place gets a zero."
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Likha",
+        "items": [
+         "800060"
+        ]
+       },
+       "right": {
+        "title": "Eight thousand sixty",
+        "items": [
+         "sahi number"
+        ]
+       }
+      }
      }
     },
     {
@@ -1665,12 +1989,29 @@
       }
      },
      "why": {
-      "hi": "5608 mein 6 sau ki jagah par hai, toh uska hissa 600 hai",
+      "hi": "5608 mein 6 sau ki jagah par hai, toh expanded form mein 6 ka hissa 600 hai",
       "en": "in 5608 the 6 is in the hundreds place, so its part is 600"
      },
      "simpler": {
       "hi": "5608 mein 6 kis jagah par hai, woh dekho. Daayen se pehli jagah ekai, doosri dahaai, teesri sau.",
       "en": "See which place the 6 is in 5608. From the right, the first place is ones, the second tens, the third hundreds."
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Number",
+        "items": [
+         "5608"
+        ]
+       },
+       "right": {
+        "title": "Expanded form",
+        "items": [
+         "6 ka hissa"
+        ]
+       }
+      }
      }
     }
    ],
@@ -1708,27 +2049,6 @@
       "hi": "Khaali sau aur dahaai mein 0 likho: hazaar 2, phir 0, 0, aur ekai 8. Toh 2008 banta hai, 28 nahi.",
       "en": "Put 0 in the empty hundreds and tens: thousands 2, then 0, 0, then ones 8. So it is 2008, not 28."
      },
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "2008",
-        "items": [
-         "hazaar: 2",
-         "sau: 0",
-         "dahaai: 0",
-         "ekai: 8"
-        ]
-       },
-       "right": {
-        "title": "Zero chhoda",
-        "items": [
-         "28",
-         "sirf atthaees"
-        ]
-       }
-      }
-     },
      "then": {
       "prompt": {
        "hi": "Aath hazaar teen ko ankon mein likho. Har khaali jagah par 0 aayega.",
@@ -1746,7 +2066,8 @@
         "left": {
          "title": "Aath hazaar teen",
          "items": [
-          "ankon mein"
+          "hazaar, sau",
+          "dahaai, ekai"
          ]
         },
         "right": {
@@ -1758,12 +2079,30 @@
        }
       },
       "why": {
-       "hi": "hazaar mein 8, sau aur dahaai mein 0, ekai mein 3: 8003",
-       "en": "8 thousands, 0 hundreds and 0 tens, 3 ones: 8003"
+       "hi": "aath hazaar teen mein hazaar 8, khaali sau aur dahaai ki jagah 0, ekai 3 aata hai: 8003",
+       "en": "eight thousand three has 8 thousands, 0 hundreds and 0 tens, and 3 ones: 8003"
       },
       "simpler": {
        "hi": "Hazaar ki jagah aath aur ekai ki jagah teen aayega. Sau aur dahaai ki jagah khaali hai, wahan 0 likho.",
        "en": "Thousands gets eight and ones gets three. The hundreds and tens places are empty, so write 0 there."
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Aath hazaar teen",
+         "items": [
+          "hazaar, sau",
+          "dahaai, ekai"
+         ]
+        },
+        "right": {
+         "title": "Khaali jagah",
+         "items": [
+          "0"
+         ]
+        }
+       }
       }
      }
     },
@@ -1777,27 +2116,6 @@
      "simpler": {
       "hi": "Sirf 4 khaane bharo: hazaar 2, sau 0, dahaai 3, ekai 0. Toh two thousand thirty 2030 hai.",
       "en": "Fill just 4 boxes: thousands 2, hundreds 0, tens 3, ones 0. So two thousand thirty is 2030."
-     },
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Khaane",
-        "items": [
-         "hazaar: 2",
-         "sau: 0",
-         "dahaai: 3",
-         "ekai: 0"
-        ]
-       },
-       "right": {
-        "title": "Number",
-        "items": [
-         "2030",
-         "200030 galat"
-        ]
-       }
-      }
      },
      "then": {
       "prompt": {
@@ -1820,7 +2138,7 @@
          ]
         },
         "right": {
-         "title": "Khaanon mein",
+         "title": "Khaane",
          "items": [
           "sirf 4"
          ]
@@ -1828,12 +2146,29 @@
        }
       },
       "why": {
-       "hi": "5 hazaar, 0 sau, 7 dahaai, 0 ekai: 5070, sirf 4 khaane",
-       "en": "5 thousands, 0 hundreds, 7 tens, 0 ones: 5070, just 4 boxes"
+       "hi": "5 hazaar, 0 sau, 7 dahaai aur 0 ekai se 5070 banta hai, sirf 4 khaane mein",
+       "en": "five thousand seventy has 5 thousands, 0 hundreds, 7 tens and 0 ones: 5070 in 4 boxes"
       },
       "simpler": {
        "hi": "Sirf 4 khaane banao. Five thousand se hazaar ka khaana bharo, seventy se saat dahaai, aur khaali jagah par shunya.",
        "en": "Make just 4 boxes. Five thousand fills the thousands box, seventy gives seven tens, and the empty place gets zero."
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Five thousand seventy",
+         "items": [
+          "numbers mein"
+         ]
+        },
+        "right": {
+         "title": "Khaane",
+         "items": [
+          "sirf 4"
+         ]
+        }
+       }
       }
      }
     }

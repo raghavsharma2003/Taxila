@@ -33,6 +33,12 @@ test("D13.1: one sentence said every time is refused; a return without {said}, a
   const u = script("c4-maths-ch05-t01");
   u.joints.asidePark[1] = { hi: "{aside} ki baat hum is sawaal ke baad karenge.", en: "We'll do {aside} after this question." };
   assert.ok(jointErrors(u).some((x) => /asidePark\[1\]: a park promises no question/.test(x)));
+  // v6.10 (c5-t02 steady 38): a language switch promises nothing beyond its turn
+  for (const id of PILOTS) assert.ok(script(id).joints.hindiSwitch.every((f) => !/\bab se\b|from now/i.test(f.hi + " " + f.en)), id);
+  const w = script("c4-maths-ch05-t01");
+  w.joints.hindiSwitch[1] = { hi: "Achha, ab se Hindi mein samjhaati hoon.", en: "Okay, I'll explain in English from now on." };
+  assert.ok(jointErrors(w).some((x) => /hindiSwitch\[1\]: a switch promises nothing beyond this turn/.test(x)));
+  assert.ok(jointErrors(w).some((x) => /hindiSwitch\[1\] \(en\): a switch promises nothing beyond this turn/.test(x)));
   const v = script("c4-maths-ch05-t01");
   delete v.joints;
   assert.deepEqual(jointErrors(v), ["joints: a { asidePark, asideReturn, hindiSwitch, askAgain } block, three forms each (D13)"]);

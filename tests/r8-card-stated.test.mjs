@@ -62,7 +62,8 @@ test(`director8 S1: on every check and then-card (${DIRS.join(" + ")}), no numbe
     // 1. no "?" the gate wrote stands for a number the card states
     const masked = statedAsUnknown(t.script, c.text, ask.intent.intentId);
     // 2. no number the board AUTHORS (labels, sides, items) and the card states is missing from what is drawn
-    const shown = new Set(t.script.ops.flatMap((o) => (o.op === "text" || o.op === "label" ? nums(o.text) : o.op === "numwork" ? (o.rows ?? []).flat().map(String) : [])));
+    // (a grouped number — place-value@1 draws 2864 as "2,864" — is one number, as board-ref.js's `grouped` reads it)
+    const shown = new Set(t.script.ops.flatMap((o) => (o.op === "text" || o.op === "label" ? [...nums(o.text), ...(String(o.text ?? "").match(/\d+(?:,\d{2,3}(?!\d))+/g) ?? []).map((g) => g.replace(/,/g, ""))] : o.op === "numwork" ? (o.rows ?? []).flat().map(String) : [])));
     const r = resolveBoardRef(c.board, {});
     const authored = r.ok ? refNumbersOf(r.call) : [];
     const missing = authored.filter((v) => said.has(v) && !shown.has(v));

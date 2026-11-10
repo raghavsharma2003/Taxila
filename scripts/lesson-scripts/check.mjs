@@ -532,7 +532,9 @@ export function whyVerbErrors(s) {
  * words, in the topic's own words; slots: {said} (the child's own words, required in every asideReturn form) and {aside}
  * (the topic the child raised); no other slot, and no form names a topic the child did not raise. The park promises no
  * "question" (there may be none open: director17 "is sawaal ke baad" with no card); the park and the language switch ask
- * nothing. hindiSwitch.hi is said on a switch to Hindi, .en on a switch to English. */
+ * nothing. hindiSwitch.hi is said on a switch to Hindi, .en on a switch to English. A switch promises nothing beyond its own
+ * turn: no "ab se" / "from now on" (v6.10, c5-t02 steady 38; Brain's jointOf skips such forms, leaving two). {topic} is
+ * Brain's alias of {aside}. */
 export const JOINT_KINDS = ["asidePark", "asideReturn", "hindiSwitch", "askAgain"];
 export const JOINT_MAX_WORDS = 16;
 export function jointErrors(s) {
@@ -552,11 +554,12 @@ export function jointErrors(s) {
         if (seen.has(n)) e.push(`${at}: the same form twice`); seen.add(n);
         const w = t.replace(/\{[a-z]+\}/g, "X").split(/\s+/).filter(Boolean).length;
         if (w > JOINT_MAX_WORDS) e.push(`${at}: ${w} words > ${JOINT_MAX_WORDS}`);
-        for (const slot of t.match(/\{[^}]*\}/g) ?? []) if (!["{said}", "{aside}"].includes(slot) || (slot === "{aside}" && !/^aside/.test(kind)) || (slot === "{said}" && kind !== "asideReturn")) e.push(`${at}: slot ${slot} is not allowed here`);
+        for (const slot of t.match(/\{[^}]*\}/g) ?? []) if (!["{said}", "{aside}", "{topic}"].includes(slot) || (slot !== "{said}" && !/^aside/.test(kind)) || (slot === "{said}" && kind !== "asideReturn")) e.push(`${at}: slot ${slot} is not allowed here`);
         if (kind === "asideReturn" && !t.includes("{said}")) e.push(`${at}: the return picks up what the child said: put {said} in it`);
         if (TOPICS.test(t.replace(/\{[a-z]+\}/g, ""))) e.push(`${at}: names a topic (${t.match(TOPICS)[0]}) the child may not have raised; use {aside}`);
         if (kind === "asidePark" && /sawaal|question/i.test(t)) e.push(`${at}: a park promises no question (none may be open)`);
         if ((kind === "asidePark" || kind === "hindiSwitch") && /[?？]/.test(t)) e.push(`${at}: asks nothing`);
+        if (kind === "hindiSwitch" && /\bab se\b|\baage se\b|\bhamesha\b|from now on|\bfrom now\b|from here on/i.test(t)) e.push(`${at}: a switch promises nothing beyond this turn (no "ab se" / "from now on")`);
       });
     }
   }

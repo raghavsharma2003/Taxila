@@ -2988,3 +2988,15 @@ The tried approach: waiting on `NEON_API_KEY` and `NEON_PROJECT_ID` to release r
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-r8-k3-ledger-remediation` (2026-11-10): Tried (round 8 Loop, before merge): remediating her open ledger mix-up instead of the card's authored target when the classifier named nothing on a wrong answer. What broke (design review, no run): it answers a mix-up the wrong answer did not show, e.g. a count-the-marks card missed gets the 'fractions are not numbers' remediation. Instead: the ledger mix-up's check is asked first (dc-r8-k3-ledger-asks-classifier-remediates).
+
+
+<!-- merged from inbox/r7-main-40.json -->
+## `rj-r7-replay-tests-as-proof-of-walk-fixes` (2026-11-10)
+
+The tried approach: proving a walk fix with a test that replays a recorded lesson up to one row and checks the next move (the tests behind v6.6 to v6.10).
+
+**What broke:**
+- The clarify-at-a-check-in row was reported fixed in v6.10, with a test on director18's rows c4 steering 6 and c5-t01 steering 6. It failed on those same two rows in director19, its third failing run. The paid run walks a new lesson whose earlier turns differ from the recording.
+- No test of that form can see a fault nobody listed: a park sentence said twice in a row, a re-pose frame on a first posing, a return stacked on a card. All three were new in director19 and all three are visible in a free 27-second dry run.
+
+Replays stay as regression pins. Evidence for a walk fix is a predicate over the whole dry matrix, seen failing before the fix.

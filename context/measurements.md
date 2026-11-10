@@ -6580,3 +6580,45 @@ A read-only code trace of the integration 24 tree (one pass, by a Sonnet agent f
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r8-catalogue-claude-sample` (2026-11-10): The catalogue under the Claude rubric (evals/studio-catalogue/claude-sample-2026-11-10): 20 of 369 checked catalogue games, seeded sample (seed 20261110), rendered at p360 / p412 / l1366 and judged by a separate Claude agent (Opus) on rubric v1. 4/20 pass; 11/20 (55%) have a content fault (off topic 4, register 3, wrong key 2, wrong fact 1, answer given away 1); 5 more fail on readability only (17 unreadable faults in 13 pieces, mostly repeated engine layouts). The old DeepSeek-V4-Flash check passed all 20. Also: the tray certificates (certs/catalogue.json, 2026-10-09) are stale — every sampled game fails Q1/Q4 at p360 on today's render, where the certificate says it passes.
+
+
+<!-- merged from inbox/r8-main-2.json -->
+## `ms-r8-design-review-2026-11-10` (2026-11-10)
+
+A design review of the app as released (release 16), by the main loop from pixels.
+
+- **n:** 179 screens at each of two sizes (phone 360 × 740, desktop 1366 × 768), captured with a faked API and a simulated child.
+- **Counted over all CSS:** 3 token systems live, 351 distinct hex colours, 69 font-size values, 44 corner radii, 36 CSS files.
+- **Judged faults, in order of cost:** the teacher's toddler-cartoon face as the largest thing on home and lesson; the board as thin strokes and monospace one-line fractions in a mostly empty frame; terminal-styled chrome, with the parent corner built dark; the question not the strongest element on the phone lesson screen; three designs live at once; broken-looking states (a blank white offline home).
+- **Kept:** the desktop lesson structure, the games' look, the parent corner's content.
+
+**Limits:** one reviewer's judgement of stills. No child or parent was asked. Motion and audio were not seen.
+
+Full write-up: docs/design/round8/DESIGN-REVIEW.md.
+
+
+<!-- merged from inbox/r7-main-40.json -->
+## `ms-r7-director19-hand-2026-11-10` (2026-11-10)
+
+director19: Brain v6.10 and its follow-up, Studio P6 and Learning D13 on integration 25c (`d0dd1d5a0`). 16 lessons, 1,544 calls, about $1.071, run by main. Counted by hand by 4 judges on Opus 5.5.
+
+| Line | Count |
+|---|---|
+| Beats taught | 289/290 |
+| Verdicts | 262/262 |
+| Misgrades | 0 |
+| False keys | 0 |
+| An unsaid card's board on screen | 0 |
+| Held cost | 0 |
+| Her words against the board | **1** by main's ruling (c4 steady 62), 2 by the judges' count |
+| Picture requests with a true second view | 15/16; picture lines with no view drawn: 0 (director18: 9) |
+
+| Axis | c4 | c5-t01 | c5-t02 | c6 |
+|---|---|---|---|---|
+| Listening | 3 | 3 | 3 | 3.5 |
+| Register | 3 | 3 | 3 | 3 |
+| Promises | 3.5 | 3 | 3 | 3 |
+
+**Main's check after judging, same tree:** the harness's dry matrix (16 lessons, model stubbed) runs in 27 seconds and shows the doubled park sentence in 7 lessons, the orphan aside return in 11, and "Phir se dekho:" 42 times across all 16. The other code-written faults were not checked dry.
+
+Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
