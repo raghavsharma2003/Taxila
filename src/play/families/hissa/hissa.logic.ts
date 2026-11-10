@@ -7,9 +7,11 @@
 //   fold/times  w × a/b: w rope pieces, each a/b of a metre, laid end to end on a metre track marked in b parts; the child
 //               lays them and tags the rope's whole length in metres (pieces of 1/b over b)
 //   pour/fit    w litres ÷ a cup of c/d litre · pour/part a/b litre ÷ c/d · pour/deci a decimal jug ÷ a decimal glass: the
-//               child pours full cups one at a time (the jug refuses a cup it cannot fill), then tags the part-cup that is
-//               left as a fraction OF A CUP; on "run" the rest goes into the last cup: the jug must be empty and the tag must
-//               be what that cup holds
+//               child first SAYS how many full cups the jug will fill (a committed count, before the first pour, held
+//               until the run answers: games audit GAMES-08, pouring to the brim was the whole answer), then pours full cups
+//               one at a time (the jug refuses a cup it cannot fill) and tags the part-cup that is left as a fraction OF A
+//               CUP; on "run" the rest goes into the last cup: the count said must be the cups that fit, the jug must be
+//               empty and the tag must be what that cup holds. Pouring alone never wins: the count is what is graded
 //   grid/mul    a/10 × c/10 on a grid of units cut in tenths: the child shades a tenths across and c tenths down; the overlap's
 //               small squares (hundredths) are counted onto a label and the child slides the decimal point into place
 //   grid/shift  × / ÷ 10, 100, 1000 (and × 0.1, 0.01): the digits sit on a place-value chart and the child slides them,
@@ -58,6 +60,9 @@ export interface HissaState extends Undoable<HissaState> {
   lay: number;
   /** pour: full cups poured */
   cups: number;
+  /** pour: the count of full cups the child said the jug will fill (−1 = not said); `lock`: a cup has been poured since it
+   *  was said, so it stands (an undo keeps it) until a run answers */
+  say: number; lock: boolean;
   /** the tag: top and bottom (bottom 0 = not set; top 0 = nothing) */
   tag: number[];
   /** shift: places slid (+ to the left, × 10 each); a zero written at the end */
@@ -136,9 +141,9 @@ export function wantStr(p: HissaParams): string {
 }
 
 /** a set-up: what the child commits before the run (only the goal's own fields matter) */
-export interface Setup { f0?: number; k0?: number; f1?: number; k1?: number; on?: number; lay?: number; cups?: number; tag?: number[]; sh?: number; zero?: boolean; pt?: number }
+export interface Setup { f0?: number; k0?: number; f1?: number; k1?: number; on?: number; lay?: number; cups?: number; say?: number; tag?: number[]; sh?: number; zero?: boolean; pt?: number }
 const FIELDS: Record<HissaGoal, readonly (keyof Setup)[]> = {
-  of: ["f0", "k0", "f1", "k1", "tag"], times: ["lay", "tag"], fit: ["cups", "tag"], part: ["cups", "tag"], deci: ["cups", "tag"],
+  of: ["f0", "k0", "f1", "k1", "tag"], times: ["lay", "tag"], fit: ["say", "tag"], part: ["say", "tag"], deci: ["say", "tag"],
   mul: ["k0", "k1", "pt"], shift: ["sh", "zero"], rest: ["f0", "k0", "on", "f1", "k1"], scale: ["f0", "lay"],
 };
 const sameField = (x: Setup, y: Setup, k: keyof Setup) => {
@@ -155,7 +160,7 @@ export function judge(p: HissaParams, s: Setup): boolean {
   switch (p.goal) {
     case "of": return f0 > 1 && f1 > 1 && k0 * p.b === p.a * f0 && k1 * p.d === p.c * f1 && !!t && qEq(t, want(p));
     case "times": return s.lay === p.w && !!t && qEq(t, want(p));
-    case "fit": case "part": case "deci": { const v = want(p), wh = qFloor(v); return s.cups === wh && !!t && qEq(t, qSub(v, q(wh))); }
+    case "fit": case "part": case "deci": { const v = want(p), wh = qFloor(v); return s.say === wh && s.cups === wh && !!t && qEq(t, qSub(v, q(wh))); }
     case "mul": return k0 === p.a && k1 === p.c && s.pt === 2;
     case "shift": return s.sh === p.c;
     case "rest": return f0 > 1 && f1 > 1 && k0 * p.b === p.a * f0 && s.on === 1 && k1 * p.d === p.c * f1;
@@ -163,8 +168,8 @@ export function judge(p: HissaParams, s: Setup): boolean {
   }
 }
 
-/** a value poured as whole cups and a part-cup tag */
-const asCups = (v: Q): Setup => { const wh = qFloor(v), r = qSub(v, q(wh)); return { cups: wh, tag: r.n === 0 ? [0, 0] : [r.n, r.d] }; };
+/** a value as whole cups (said, and poured) and a part-cup tag */
+const asCups = (v: Q): Setup => { const wh = qFloor(v), r = qSub(v, q(wh)); return { say: wh, cups: wh, tag: r.n === 0 ? [0, 0] : [r.n, r.d] }; };
 function rawMal(p: HissaParams, mal: string): Setup | null {
   if (!MAL_OF[p.goal].includes(mal)) return null;
   switch (mal) {
@@ -191,6 +196,7 @@ function legal(p: HissaParams, s: Setup): boolean {
   if (!inF(s.f0, s.k0) || !inF(s.f1, s.k1)) return false;
   if (s.lay !== undefined && (!isInt(s.lay) || s.lay < 0 || s.lay > MAX_LAY)) return false;
   if (s.cups !== undefined && (!isInt(s.cups) || s.cups < 0 || s.cups > qFloor(qDiv(jugOf(p), cupOf(p))))) return false;
+  if (s.say !== undefined && (!isInt(s.say) || s.say < 0 || s.say > MAX_CUPS)) return false;
   if (p.goal === "mul" && (!isInt(s.pt) || s.pt < 0 || s.pt > 3)) return false;
   return true;
 }
@@ -304,9 +310,9 @@ function validate(level: PlayLevel<unknown>): PlayLevel<HissaParams> | null {
 }
 
 function init(level: PlayLevel<HissaParams>): HissaState {
-  return { f: [1, 1], k: [0, 0], on: 0, lay: 0, cups: 0, tag: [0, 0], sh: 0, zero: false, pt: 0, ended: false, runs: 0, done: false, acts: 0, prev: null, depth: 0 };
+  return { f: [1, 1], k: [0, 0], on: 0, lay: 0, cups: 0, say: -1, lock: false, tag: [0, 0], sh: 0, zero: false, pt: 0, ended: false, runs: 0, done: false, acts: 0, prev: null, depth: 0 };
 }
-export const setupOf = (s: HissaState): Setup => ({ f0: s.f[0], k0: s.k[0], f1: s.f[1], k1: s.k[1], on: s.on, lay: s.lay, cups: s.cups, tag: s.tag, sh: s.sh, zero: s.zero, pt: s.pt });
+export const setupOf = (s: HissaState): Setup => ({ f0: s.f[0], k0: s.k[0], f1: s.f[1], k1: s.k[1], on: s.on, lay: s.lay, cups: s.cups, say: s.say, tag: s.tag, sh: s.sh, zero: s.zero, pt: s.pt });
 /** pour: what the jug still holds */
 export const jugLeft = (p: HissaParams, cups: number): Q => qSub(jugOf(p), qMul(q(cups), cupOf(p)));
 /** mul: how many tenths the grid can take on a side */
@@ -317,7 +323,8 @@ function apply(level: PlayLevel<HissaParams>, s: HissaState, act: HissaAct, seq:
   if (s.done) return { state: s, moments: [], refused: "level_over" };
   const bump = (st: HissaState): HissaState => ({ ...st, acts: s.acts + 1 });
   const no = (code: string) => ({ state: bump(s), moments: out, refused: code });
-  if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1 }, moments: [] };
+  // a count that a pour has already tested stands through an undo (taking the pours back never un-says it)
+  if (act.kind === "undo") { const back = popUndo(s); return { state: { ...back, ...(s.lock ? { say: s.say, lock: true } : {}), acts: s.acts + 1 }, moments: [] }; }
   if (s.acts === 0) out.push(mom("first_act", seq, { act: act.kind }));
   const change = (patch: Partial<HissaState>) => ({ state: bump(pushUndo(s, { ...s, ...patch, ended: false })), moments: out });
   const pour = g === "fit" || g === "part" || g === "deci";
@@ -355,11 +362,21 @@ function apply(level: PlayLevel<HissaParams>, s: HissaState, act: HissaAct, seq:
       if (n === s.lay) return no("same_lay");
       return change({ lay: n });
     }
+    case "count": {
+      if (!pour) return no("no_count");
+      const n = Number(act.n);
+      if (!isInt(n) || n < 0 || n > MAX_CUPS) return no("bad_count");
+      if (s.lock) return no("said");                                    // the jug is testing it: the run answers first
+      if (n === s.say) return no("same_count");
+      out.push(mom("prediction_committed", seq, { count: n }));
+      return change({ say: n });
+    }
     case "pour": {
       if (!pour) return no("no_jug");
+      if (s.say < 0) return no("count_first");                         // say how many first; the jug then shows it
       if (qLt(jugLeft(p, s.cups), cupOf(p))) return no("not_full");   // a full cup, or none
       if (s.cups >= MAX_CUPS) return no("no_cups");
-      return change({ cups: s.cups + 1 });
+      return change({ cups: s.cups + 1, lock: true });
     }
     case "tag": {
       if (g !== "of" && g !== "times" && !pour) return no("no_tag");
@@ -397,12 +414,14 @@ function apply(level: PlayLevel<HissaParams>, s: HissaState, act: HissaAct, seq:
       if ((g === "of" || g === "times") && (!s.tag[1] || !tagVal(s.tag))) return no("tag_first");
       if (g === "times" && !s.lay) return no("lay_first");
       if (g === "scale" && !s.lay) return no("lay_first");
+      if (pour && s.say < 0) return no("count_first");
       if (pour && !s.cups && !s.tag[0]) return no("pour_first");
       if (pour && !tagVal(s.tag)) return no("tag_first");
       if (g === "mul" && (!s.k[0] || !s.k[1])) return no("shade_first");
       if (g === "shift" && !s.sh && !s.zero) return no("slide_first");
       const su = setupOf(s), runs = s.runs + 1, ok = judge(p, su);
-      const end = bump({ ...s, ended: true, runs, done: ok });
+      // the law has answered: a count the jug tested may be said again
+      const end = bump({ ...s, ended: true, runs, done: ok, lock: false });
       const f: Facts = { goal: g, run: runs };
       if (ok) { out.push(mom("solved", seq, f)); return { state: end, moments: out }; }
       for (const mal of Object.keys(level.mal)) {
@@ -412,7 +431,7 @@ function apply(level: PlayLevel<HissaParams>, s: HissaState, act: HissaAct, seq:
       // near: the right folds / pours / shading with the tag or point one step off; one share or one place off
       const t = tagVal(s.tag), w = want(p);
       const near = g === "of" || g === "times" ? !!t && t.d === w.d && Math.abs(t.n - w.n) === 1
-        : pour ? s.cups === qFloor(w) || (qFloor(w) > 0 && Math.abs(s.cups - qFloor(w)) === 1 && s.tag[0] === 0)
+        : pour ? (s.say === qFloor(w) && s.cups === qFloor(w)) || (qFloor(w) > 0 && Math.abs(s.say - qFloor(w)) === 1 && s.tag[0] === 0)
         : g === "mul" ? s.k[0] === p.a && s.k[1] === p.c
         : g === "shift" ? Math.abs(s.sh - p.c) === 1
         : g === "rest" ? s.on === 1 && s.k[0] * p.b === p.a * s.f[0]
@@ -445,7 +464,11 @@ export function setupActs(p: HissaParams, su: Setup): HissaAct[] {
     if (su.zero) acts.push({ kind: "zero" });
     const sh = su.sh ?? 0;
     for (let i = 0; i < Math.abs(sh); i++) acts.push({ kind: "slide", by: sh > 0 ? 1 : -1 });
-  } else for (let i = 0; i < (su.cups ?? 0); i++) acts.push({ kind: "pour" });
+  } else {
+    // pour: the count is said first; the pours test it
+    if (su.say !== undefined && su.say >= 0) acts.push({ kind: "count", n: su.say });
+    for (let i = 0; i < (su.cups ?? 0); i++) acts.push({ kind: "pour" });
+  }
   const t = su.tag ?? [0, 0];
   if (t[1]) acts.push({ kind: "tag", part: 1, v: t[1] });
   if (t[0]) acts.push({ kind: "tag", part: 0, v: t[0] });
@@ -480,13 +503,14 @@ export function shortcutActs(p: HissaParams): HissaAct[][] {
   if (g === "of") for (const tag of [[p.a, p.b], [p.c, p.d], [p.a + p.c, p.b + p.d]]) tries.push({ f0: p.b, k0: p.a, f1: p.d, k1: p.c, tag });
   if (g === "times") for (const tag of [[p.a, p.b], [p.w, 1], [p.w * p.a, p.w * p.b]]) tries.push({ lay: p.w, tag });
   if (g === "fit" || g === "part" || g === "deci") {
-    // pouring every cup the jug fills IS the division (how many fit), so it is no shortcut; the part-cup is the idea after it
+    // the count said first is how many fit (the division); the part-cup is the idea after it. A count of the jug's own
+    // number, or the right count with the part-cup left untagged or named in litres, never wins
     const all = qFloor(want(p));
-    if (want(p).d > 1) tries.push({ cups: all, tag: [0, 0] });
+    if (want(p).d > 1) tries.push({ say: all, cups: all, tag: [0, 0] });
     const jugN = qFloor(jugOf(p));
-    if (jugN !== all) tries.push({ cups: Math.min(all, jugN), tag: [0, 0] });
+    if (jugN !== all) tries.push({ say: jugN, cups: all, tag: [0, 0] }, { say: jugN, cups: Math.min(all, jugN), tag: [0, 0] });
     const left = jugLeft(p, all);
-    if (left.n) tries.push({ cups: all, tag: [left.n, left.d] });
+    if (left.n) tries.push({ say: all, cups: all, tag: [left.n, left.d] });
   }
   if (g === "mul") for (const pt of [0, 1, 3]) tries.push({ k0: p.a, k1: p.c, pt });
   if (g === "shift") tries.push({ sh: -p.c, zero: false });
@@ -519,7 +543,7 @@ function difficultyOf(p: HissaParams): number {
   switch (p.goal) {
     case "of": return Math.min(1, 0.3 + f + 0.02 * p.b * p.d);
     case "times": return Math.min(1, 0.25 + f + 0.03 * p.b + 0.03 * p.w);
-    case "fit": case "part": case "deci": return Math.min(1, 0.3 + f + 0.02 * qFloor(v) + (v.d > 1 ? 0.15 : 0) + (p.goal === "part" ? 0.1 : 0));
+    case "fit": case "part": case "deci": return Math.min(1, 0.3 + f + 0.02 * qFloor(v) + (v.d > 1 ? 0.03 : 0) /* a part-cup left over: a small step only (at 0.15 the normal door never served one: 0 of 180 for pour/part) */ + (p.goal === "part" ? 0.1 : 0));
     case "mul": return Math.min(1, 0.3 + f + (p.a >= 10 || p.c >= 10 ? 0.15 : 0));
     case "shift": return Math.min(1, 0.25 + f + 0.06 * Math.abs(p.c) + (p.c < 0 ? 0.08 : 0));
     case "rest": return Math.min(1, 0.35 + f + 0.02 * p.b * p.d);
@@ -603,7 +627,7 @@ function facts(level: PlayLevel<HissaParams>, s: HissaState): Facts {
   if (p.goal === "rest" && s.on) f.on = s.on === 1 ? "left" : "whole";
   if (p.goal === "times" || p.goal === "scale") f.laid = s.lay;
   if (p.goal === "scale") f.shares = s.f[0];
-  if (p.goal === "fit" || p.goal === "part" || p.goal === "deci") f.cups = s.cups;
+  if (p.goal === "fit" || p.goal === "part" || p.goal === "deci") { f.cups = s.cups; if (s.say >= 0) f.said = s.say; }
   if (p.goal === "mul") { f.tenths = `${s.k[0]} × ${s.k[1]}`; f.point = s.pt; }
   if (p.goal === "shift") { f.slid = s.sh; if (s.zero) f.zero = "yes"; }
   const t = tagVal(s.tag);
@@ -616,7 +640,7 @@ function board(level: PlayLevel<HissaParams>, s: HissaState) {
   const p = level.params, lines: string[] = [], t = `${s.tag[0]}/${s.tag[1] || "–"}`;
   if (p.goal === "of") lines.push(`${p.a}/${p.b} × ${p.c}/${p.d}`, `folds: ${s.f[0]} × ${s.f[1]}`, `shaded: ${s.k[0]} · ${s.k[1]}`, `tag: ${t}`);
   if (p.goal === "times") lines.push(`${p.w} × ${p.a}/${p.b}`, `laid: ${s.lay}`, `tag: ${t}`);
-  if (p.goal === "fit" || p.goal === "part" || p.goal === "deci") lines.push(`jug ÷ cup`, `cups: ${s.cups}`, `part cup: ${t}`);
+  if (p.goal === "fit" || p.goal === "part" || p.goal === "deci") lines.push(`jug ÷ cup`, `said: ${s.say < 0 ? "?" : s.say}`, `cups: ${s.cups}`, `part cup: ${t}`);
   if (p.goal === "mul") lines.push(`${p.a / 10} × ${p.c / 10}`, `shaded: ${s.k[0]} × ${s.k[1]}`, `point: ${s.pt}`);
   if (p.goal === "shift") lines.push(`${decStr(shiftX(p))} × 10^${p.c}`, `slid: ${s.sh}`);
   if (p.goal === "rest") lines.push(`${p.w}: ${p.a}/${p.b}, then ${p.c}/${p.d} of the rest`, `folds: ${s.f[0]} · ${s.f[1]}`, `on: ${s.on}`);
@@ -629,5 +653,8 @@ function grade(level: PlayLevel<HissaParams>, acts: PlayActEnvelope<HissaAct>[])
 
 export const hissaLogic: FamilyLogic<HissaParams, HissaState, HissaAct> = {
   family: "hissa", modes: ["fold", "pour", "grid", "story"], malRules: HISSA_MAL,
+  // grid/shift: one slide count wins (a lucky tap 14 to 22 %, games audit GAMES-03): its correct enters at CHANCE_WEIGHT. Pour
+  // is not here: its count is said before the jug shows it, among 0..20, and the part-cup tag must be right too (GAMES-08)
+  oneDecision: ["shift"],
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };

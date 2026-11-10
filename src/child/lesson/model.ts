@@ -98,7 +98,7 @@ export interface DeskModel {
   answer: AnswerChip | null;
   /** r7 (3b): the board on screen is not this open question's board: the card waits, quietly ("your question is waiting"). */
   askWaiting?: boolean;
-  caption: { text: string; speaking: boolean; mode: "phrase" | "icons"; lang?: string };
+  caption: { text: string; speaking: boolean; mode: "phrase" | "icons"; lang?: string; soundFailed?: boolean };
   tray: TrayModel | null;
   answerForm: AnswerForm;
   phase: DeskPhase | null;

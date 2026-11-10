@@ -15,7 +15,7 @@ import { coverage, entryKey, levelsFor, currentLevel, seedOf, hasPlay, entryFor 
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { hiddenOf } from "../server/play/react.js";
 import { playActOf } from "../server/director/play-verbs.js";
-import { GAME_WEIGHT, FAMILIES, MODES, FAMILY_ARTS, sanitizeActs } from "../shared/play.ts";
+import { CHANCE_WEIGHT, GAME_WEIGHT, FAMILIES, MODES, FAMILY_ARTS, sanitizeActs } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
 
 const ROOT = new URL("../", import.meta.url).pathname;
@@ -50,13 +50,16 @@ const levelsOf = (mode, goal, grammar, seeds = [1, 7, 42, 99]) => {
 // ───────────────────────────── THE INDEPENDENT CHECKER (plain integer arithmetic, none of the law's code) ─────────────────────────────
 /** the checker's own copy of the set-up, fed every act the law accepted (undo pops its own stack) */
 function checker() {
-  const st = { f0: 1, k0: 0, f1: 1, k1: 0, on: 0, lay: 0, cups: 0, t0: 0, t1: 0, sh: 0, zero: false, pt: 0 }, stack = [];
+  const st = { f0: 1, k0: 0, f1: 1, k1: 0, on: 0, lay: 0, cups: 0, say: -1, lock: false, t0: 0, t1: 0, sh: 0, zero: false, pt: 0 }, stack = [];
   return {
     st,
     feed(a) {
-      if (a.kind === "run") return;
-      if (a.kind === "undo") { if (stack.length) Object.assign(st, stack.pop()); return; }
+      // a run the law answered frees a count the jug was testing; an undo never takes back a tested count
+      if (a.kind === "run") { st.lock = false; return; }
+      if (a.kind === "undo") { const keep = st.lock ? { say: st.say, lock: true } : {}; if (stack.length) Object.assign(st, stack.pop()); Object.assign(st, keep); return; }
       stack.push({ ...st });
+      if (a.kind === "count") st.say = a.n;
+      if (a.kind === "pour") st.lock = true;
       if (a.kind === "fold") { const keep = (k) => (a.n < 2 ? 0 : Math.min(k, a.n)); if (a.side === 0) { st.f0 = a.n; st.k0 = keep(st.k0); } else { st.f1 = a.n; st.k1 = keep(st.k1); } }
       if (a.kind === "shade") { if (a.side === 0) st.k0 = a.k; else st.k1 = a.k; }
       if (a.kind === "base") st.on = a.on;
@@ -79,7 +82,7 @@ function verdict(p, st) {
       // the jug jn/jd litres, the cup c/d: how many cups fit is (jn·d) ÷ (jd·c); what is left over, in cups, is rem/(jd·c)
       const jn = p.goal === "fit" ? w : a, jd = p.goal === "fit" ? 1 : b;
       const whole = Math.floor((jn * d) / (jd * c)), rem = jn * d - whole * jd * c;
-      if (st.cups !== whole) return false;
+      if (st.cups !== whole || st.say !== whole) return false;   // the count said first is the cups that fit
       return rem === 0 ? st.t0 === 0 : st.t1 > 0 && st.t0 * jd * c === rem * st.t1;
     }
     case "mul": return st.k0 === a && st.k1 === c && st.pt === 2;
@@ -208,9 +211,14 @@ test("hissa: the law's rules (folds toggle shading within them; a jug pours only
 
   const fit = hissaLogic.validate(hissaLogic.generate(req("pour", "fit", 4, { grammar: { unit: 1 } }))[0].level), F = fit.params;
   s = hissaLogic.init(fit);
-  assert.equal(ap(fit, { kind: "run" }), "pour_first");
+  assert.equal(ap(fit, { kind: "run" }), "count_first", "the count is said before anything runs");
+  assert.equal(ap(fit, { kind: "pour" }), "count_first", "and before the jug shows it");
   const n = F.w * F.d;
+  assert.equal(ap(fit, { kind: "count", n: 21 }), "bad_count");
+  assert.equal(ap(fit, { kind: "count", n }), undefined);
+  assert.equal(ap(fit, { kind: "run" }), "pour_first");
   for (let i = 0; i < n; i++) assert.equal(ap(fit, { kind: "pour" }), undefined);
+  assert.equal(ap(fit, { kind: "count", n: n + 1 }), "said", "a count the jug is testing stands until the run");
   assert.equal(ap(fit, { kind: "pour" }), "not_full", "a full cup, or none");
   assert.equal(ap(fit, { kind: "run" }), undefined); assert.ok(s.done, `${F.w} ÷ 1/${F.d} = ${n}`);
   assert.equal(ap(fit, { kind: "pour" }), "level_over");
@@ -265,7 +273,7 @@ test("hissa: a claim in an act never decides; the first run decides the evidence
   assert.notEqual(forged.evidence[0]?.outcome, "correct");
   const ok = hissaLogic.grade(level, env(hissaLogic.solve(level)));
   assert.equal(ok.verdict, "solved"); assert.equal(ok.evidence[0].outcome, "correct"); assert.ok(ok.clean);
-  const wrong = [{ kind: "tag", part: 1, v: 7 }, { kind: "tag", part: 0, v: 1 }, { kind: "run" }, { kind: "tag", part: 1, v: 0 }, { kind: "tag", part: 0, v: 0 }, ...hissaLogic.solve(level)];
+  const wrong = [{ kind: "count", n: 9 }, { kind: "tag", part: 1, v: 7 }, { kind: "tag", part: 0, v: 1 }, { kind: "run" }, { kind: "tag", part: 1, v: 0 }, { kind: "tag", part: 0, v: 0 }, ...hissaLogic.solve(level)];
   const g = hissaLogic.grade(level, env(wrong));
   assert.equal(g.verdict, "solved"); assert.equal(g.evidence[0].outcome, "incorrect");
   assert.deepEqual(hissaLogic.grade(level, env(wrong)), g);
@@ -293,7 +301,7 @@ for (const [mode, goal, grammar] of CASES) {
             : r < 0.24 ? { kind: "shade", side: x < 0.5 ? 0 : 1, k: Math.floor(rnd() * 14) }
             : r < 0.28 ? { kind: "base", on: x < 0.5 ? 1 : 2 }
             : r < 0.33 ? { kind: "lay", n: Math.floor(x * 10) }
-            : r < 0.43 ? { kind: "pour" }
+            : r < 0.38 ? { kind: "pour" } : r < 0.43 ? { kind: "count", n: Math.floor(rnd() * 18) }
             : r < 0.55 ? { kind: "tag", part: x < 0.5 ? 0 : 1, v: Math.floor(rnd() * 30) }
             : r < 0.62 ? { kind: "slide", by: x < 0.5 ? 1 : -1 } : r < 0.64 ? { kind: "zero" } : r < 0.68 ? { kind: "point", at: Math.floor(x * 4) }
             : r < 0.9 ? { kind: "run", ...(rnd() < 0.3 ? { solved: true } : {}) } : { kind: "undo" };
@@ -365,7 +373,9 @@ for (const e of HE()) for (const fade of [1, 2, 3]) {
       const g = gradeActs(level, env(hissaLogic.solve(level)), { final: true });
       assert.equal(g.grade.verdict, "solved");
       const rows = lessonEvidence(g.grade, level);
-      assert.equal(rows[0].outcome, "correct"); assert.equal(rows[0].weight, GAME_WEIGHT); assert.ok(e.skillIds.includes(rows[0].skillId));
+      // grid/shift is one slide count (a lucky first tap lands it): its correct enters at the chance-adjusted weight (GAMES-03);
+      // pour's count is said among 0..20 before the jug shows it and needs the part-cup too, so it keeps the game weight
+      assert.equal(rows[0].outcome, "correct"); assert.equal(rows[0].weight, e.goal === "shift" ? CHANCE_WEIGHT : GAME_WEIGHT); assert.ok(e.skillIds.includes(rows[0].skillId));
       const forged = gradeActs(level, [{ seq: 1, t: 0, act: { kind: "run", solved: true, correct: true, verdict: "solved" } }], { final: true });
       assert.notEqual(forged.grade.verdict, "solved");
       for (const kitId of level.proof.discriminates) {
@@ -378,3 +388,100 @@ for (const e of HE()) for (const fade of [1, 2, 3]) {
     }
   });
 }
+
+// games audit GAMES-08: pouring until the jug refused, then Run, won every pour level (the child never decided a count). Now
+// the count is said first and graded: Run without one is refused, pouring alone never wins, a wrong count grades incorrect
+// (the kit's belief where one maps), the right count wins; a count the jug has tested cannot be taken back by undo.
+const POUR = () => HE().filter((e) => e.mode === "pour");
+test("hissa pour (GAMES-08): pour until the jug refuses, then run, never wins on any served pour level", () => {
+  assert.deepEqual(POUR().map((e) => `${e.topicId}|${e.goal}`), ["c7-maths-ch08-t02|fit", "c7-maths-ch08-t02|part", "c7-maths-ch12-t02|deci"]);
+  for (const e of POUR()) for (const fade of [1, 2, 3]) for (const child of ["c1", "c2", "c3", "audit-child"]) {
+    const level = currentLevel(sessionOf(e, { fade, childId: child, seed: seedOf(child, entryKey(e), 0) }), e);
+    const acts = [...Array.from({ length: 20 }, () => ({ kind: "pour" })), { kind: "run" }];
+    const r = run(level, acts);
+    assert.ok(!r.s.done, `${level.levelId}: pouring alone won`);
+    assert.ok(r.refused.every((c) => c === "count_first"), r.refused.join(","));
+    const g = gradeActs(level, env(acts), { final: true });
+    assert.notEqual(g.grade.verdict, "solved"); assert.notEqual(g.grade.evidence[0]?.outcome, "correct");
+    // the audit's own replay: pour × 8, run
+    assert.notEqual(gradeActs(level, env([...Array.from({ length: 8 }, () => ({ kind: "pour" })), { kind: "run" }]), { final: true }).grade.verdict, "solved");
+  }
+});
+
+test("hissa pour (GAMES-08): a committed right count wins (correct, game weight); a wrong count grades incorrect, as the kit's belief where one maps", () => {
+  let mapped = 0, levels = 0;
+  for (const e of POUR()) for (const fade of [1, 2, 3]) for (const child of ["c1", "c2", "c3", "c4", "c5"]) {
+    const level = currentLevel(sessionOf(e, { fade, childId: child, seed: seedOf(child, entryKey(e), 0) }), e), p = level.params;
+    const sol = hissaLogic.solve(level), whole = sol.filter((a) => a.kind === "pour").length;
+    assert.deepEqual(sol[0], { kind: "count", n: whole }, "the solver says the count first");
+    const ok = gradeActs(level, env(sol), { final: true });
+    assert.equal(ok.grade.verdict, "solved"); assert.ok(ok.grade.clean);
+    assert.equal(ok.grade.evidence[0].outcome, "correct"); assert.equal(ok.grade.evidence[0].weight, GAME_WEIGHT);
+    // a wrong count (the cups then poured to the brim, the right part-cup tagged): the run misses, the evidence is not correct
+    for (const n of [0, 1, whole - 1, whole + 1, whole + 2, 20].filter((x) => x >= 0 && x <= 20 && x !== whole)) {
+      const acts = [{ kind: "count", n }, ...sol.slice(1)];
+      const r = run(level, acts);
+      assert.ok(!r.s.done && r.refused.at(-1) === "missed", `${level.levelId} count ${n}`);
+      const g = gradeActs(level, env(acts), { final: true });
+      assert.ok(["incorrect", "partial"].includes(g.grade.evidence[0].outcome), `${level.levelId} count ${n}`);
+      assert.equal(g.grade.evidence[0].weight, GAME_WEIGHT);
+      // recovering after the run answered: the count may be said again, and the level solves; the evidence keeps the miss
+      const back = gradeActs(level, env([...acts, { kind: "count", n: whole }, { kind: "run" }]), { final: true });
+      assert.equal(back.grade.verdict, "solved", `${level.levelId} recovers`); assert.notEqual(back.grade.evidence[0].outcome, "correct");
+    }
+    for (const mal of Object.keys(level.mal)) {
+      if (!malSetup(p, mal)) continue;
+      const acts = hissaLogic.malActs(level, mal);
+      assert.equal(acts[0].kind, "count", "the belief is in the count said");
+      const g = gradeActs(level, env(acts), { final: true });
+      assert.equal(g.grade.evidence[0].outcome, "incorrect"); assert.equal(g.grade.evidence[0].misconceptionId, level.mal[mal]);
+      mapped++;
+    }
+    levels++;
+  }
+  assert.ok(mapped > 10 && levels === 45, `mapped ${mapped}, levels ${levels}`);
+});
+
+test("hissa pour (GAMES-08): a tested count stands through undo; the run frees it", () => {
+  const level = hissaLogic.validate(hissaLogic.generate(req("pour", "fit", 9, { grammar: { unit: 1 } }))[0].level), p = level.params, whole = p.w * p.d;
+  let s = hissaLogic.init(level);
+  const ap = (a) => { const r = hissaLogic.apply(level, s, a, 1); s = r.state; return r.refused; };
+  ap({ kind: "count", n: whole + 1 }); assert.equal(ap({ kind: "count", n: whole + 1 }), "same_count");
+  ap({ kind: "count", n: whole + 2 }); assert.equal(s.say, whole + 2, "before any pour the count may change");
+  ap({ kind: "undo" }); assert.equal(s.say, whole + 1, "and an untested count undoes like any act");
+  for (let i = 0; i < whole; i++) ap({ kind: "pour" });
+  assert.equal(ap({ kind: "pour" }), "not_full");
+  for (let i = 0; i < whole + 3; i++) ap({ kind: "undo" });
+  assert.equal(s.cups, 0); assert.equal(s.say, whole + 1, "taking the pours back never un-says the count");
+  assert.equal(ap({ kind: "count", n: whole }), "said");
+  for (let i = 0; i < whole; i++) ap({ kind: "pour" });
+  assert.equal(ap({ kind: "run" }), "missed");
+  assert.equal(ap({ kind: "count", n: whole }), undefined, "the law answered: the count may be said again");
+  assert.equal(ap({ kind: "run" }), undefined); assert.ok(s.done);
+  const view = readFileSync(`${ROOT}src/play/families/hissa/hissa.view.ts`, "utf8");
+  assert.match(view, /kind: "count"/, "the view sends the count");
+});
+
+test("hissa grid/shift (GAMES-03): one slide count is a one-decision goal: a correct enters at CHANCE_WEIGHT, a miss at GAME_WEIGHT", () => {
+  assert.deepEqual([...hissaLogic.oneDecision], ["shift"]);
+  for (const e of HE().filter((x) => x.goal === "shift")) for (const fade of [1, 2, 3]) {
+    const level = currentLevel(sessionOf(e, { fade }), e), p = level.params;
+    const ok = hissaLogic.grade(level, env(hissaLogic.solve(level)));
+    assert.equal(ok.evidence[0].outcome, "correct"); assert.equal(ok.evidence[0].weight, CHANCE_WEIGHT);
+    const wrong = hissaLogic.grade(level, env([...Array.from({ length: Math.abs(p.c) }, () => ({ kind: "slide", by: p.c > 0 ? -1 : 1 })), { kind: "run" }]));
+    assert.notEqual(wrong.evidence[0].outcome, "correct"); assert.equal(wrong.evidence[0].weight, GAME_WEIGHT);
+  }
+});
+
+test("hissa pour/part: the normal door serves part-cup levels too (main 2026-11-10: at a 0.15 step for the left-over cup, 0 of 180 were)", async () => {
+  const { coverage, levelsFor } = await import("../server/play/levels.js");
+  const { logicFor } = await import("../src/play/families/index.ts");
+  const L = logicFor("hissa", "pour"), e = coverage().entries.find((x) => x.family === "hissa" && x.goal === "part");
+  let n = 0, part = 0;
+  for (let seed = 1; seed <= 30; seed++) for (const fade of [1, 2, 3]) {
+    const s = { childId: `c${seed}`, key: `${e.topicId}|${e.family}/${e.mode}|${e.goal}`, skillId: e.skillId, classLevel: e.classLevel, fade, lang: "hinglish", mis: {}, n: 0, seed, door: "garam", recent: [] };
+    const lv = levelsFor(s, e)?.garam; if (!lv) continue;
+    n++; if (L.solve(L.validate(lv)).some((a) => a.kind === "tag")) part++;
+  }
+  assert.ok(n >= 60 && part >= n * 0.2 && part < n, `${part} of ${n} normal-door part levels leave a part-cup`);
+});

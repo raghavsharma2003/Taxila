@@ -143,6 +143,33 @@ const voiceOf = (segments) => {
 };
 
 /**
+ * PURE. The lesson slot's learner-state decisions, by the planner's rules (R8 opener, R1 / R15 success-first, R15 and the
+ * test window's new-skill budget, R5 prerequisite check, R9 foundation share). The planner uses it for the day plan's
+ * lesson slot; slot.js lessonDecisionsAtStart uses it at a lesson start that has no plan, so the two never disagree.
+ * @param {{ adapt: { gapDays?: number|null, successFirst?: boolean, prereqChecked?: string[] }, view: Record<string, { value?: any }>,
+ *   testWindow?: { to: string } | null, subject?: string|null, learningDay: string }} x
+ * @returns {{ opener: "standard_retrieval"|"reanchor_light", successFirst: boolean, newSkillBudget: 0|1,
+ *   prereqCheck: { skillId: string, forTopicId: string, prereqTopicId: string } | null, foundationShare: number|null, pick: any, firstWeek: any }}
+ */
+export function lessonDecisions({ adapt, view, testWindow = null, subject = null, learningDay }) {
+  const opener = adapt.gapDays != null && adapt.gapDays >= PLAN.reanchorGapDays ? "reanchor_light" : "standard_retrieval";
+  const pick = prereqPick(view["kt.wheelSpin"]?.value, adapt.prereqChecked);
+  const fshare = subject ? foundationShare(view["learner.placementGap"]?.value?.[subject], !!testWindow) : null;
+  const fw = subject ? firstWeekRule(view["learner.firstWeek"]?.value?.[subject]) : null;
+  return {
+    opener,
+    successFirst: !!adapt.successFirst || !!fw?.successFirst,
+    newSkillBudget: (testWindow && daysBetween(learningDay, testWindow.to) < 2) || fw?.newSkillBudget === 0 ? 0 : 1,
+    prereqCheck: pick ? { skillId: pick.skillId, forTopicId: pick.topicId, prereqTopicId: pick.prereq.topicId } : null,
+    foundationShare: fshare,
+    pick, firstWeek: fw,
+    // which rules fired (the brief's adaptTrace): R1 a hard last close, R15 the first week, apart (round-8 reader)
+    rules: [...new Set([opener !== "standard_retrieval" ? "R8" : null, adapt.successFirst ? "R1" : null,
+      fw?.successFirst || fw?.newSkillBudget === 0 ? "R15" : null, pick ? "R5" : null, fshare !== null ? "R9" : null].filter(Boolean))].sort(),
+  };
+}
+
+/**
  * PURE. PlannerInputs → { plan, firings }. The plan carries no version/childId (decide adds them).
  * Priority stack (§4.4): holds/rest → homework (none at M0) → test window → due reviews → level path → promises.
  */
@@ -208,7 +235,10 @@ export function planDay(inputs) {
         segments = segments.map((s) => (RT_LANES.has(s.laneWanted) ? { ...s, laneWanted: "cascade" } : s));
         fire("R10", "budget", "laneMix", "cascade", ["usage.voiceSecMonth"]);
       }
-      const opener = adapt.gapDays !== null && adapt.gapDays >= PLAN.reanchorGapDays ? "reanchor_light" : "standard_retrieval";
+      const subj = slotSubject(school);
+      // the lesson's learner-state decisions: one function, shared with a start that has no plan (lessonDecisions)
+      const dec = lessonDecisions({ adapt, view: inputs.view, testWindow, subject: subj?.subject ?? null, learningDay: day.learningDay });
+      const opener = dec.opener;
       if (opener !== "standard_retrieval") fire("R8", "kt", "opener", opener, ["counters.lastActiveDay"]);
       if (adapt.successFirst) fire("R1", "vibe", "successFirst", true, ["adapt.closes"]);
       if (lateSitting && segments.reduce((a, s) => a + s.minutes, 0) === minSetMin) fire("R2", "vibe", "sessionMin", minSetMin, ["adapt.closes"]);
@@ -217,20 +247,19 @@ export function planDay(inputs) {
       const promise = inputs.promises[0];
       if (promise) why.push({ code: "teacher_promise", ref: promise.id });
       const targetMin = segments.reduce((a, s) => a + s.minutes, 0);
-      const subj = slotSubject(school);
       if (subj && subj.why !== "test_window") why.push({ code: subj.why, ref: subj.subject });
       // R5: a wheel-spinning skill with a weak prerequisite → this lesson checks that prerequisite first
-      const pick = prereqPick(inputs.view["kt.wheelSpin"]?.value, adapt.prereqChecked);
+      const pick = dec.pick;
       if (pick) {
         why.push({ code: "prereq_gap", ref: pick.prereq.topicId });
         fire("R5", "kt", "prereqCheck", pick.prereq.topicId, ["kt.wheelSpin"]);
       }
       // R9: a child placed below her class gets a foundation share of the lesson (halved in a test window)
-      const fshare = subj ? foundationShare(inputs.view["learner.placementGap"]?.value?.[subj.subject], !!testWindow) : null;
+      const fshare = dec.foundationShare;
       if (fshare !== null) fire("R9", "kt", "foundationShare", fshare, ["learner.placementGap"]);
       // R15 (round 7 F cold start): a subject started from onboarding answers runs its first week success-first, the
       // first two lessons with no new skill, until its θ has settled (placement/coldstart.js firstWeekRule)
-      const fw = subj ? firstWeekRule(inputs.view["learner.firstWeek"]?.value?.[subj.subject]) : null;
+      const fw = dec.firstWeek;
       if (fw?.successFirst && !adapt.successFirst) fire("R15", "kt", "successFirst", true, ["learner.firstWeek"]);
       if (fw?.newSkillBudget === 0) fire("R15", "kt", "newSkillBudget", 0, ["learner.firstWeek"]);
       slots.push({ id: `${day.learningDay}:L1`, kind: "live_lesson", targetMin, window: slotWindow, segments,
@@ -239,8 +268,8 @@ export function planDay(inputs) {
         ...(subj ? { subject: subj.subject } : {}),
         // round 7 F item 8: her open promises (teacher.promise, e.g. a Question-jar revisit) this lesson keeps
         ...(inputs.promises.length ? { promisesDue: inputs.promises.slice(0, 2).map((p) => p.id) } : {}),
-        voiceSecWanted: voiceOf(segments), why, opener, successFirst: !!adapt.successFirst || !!fw?.successFirst,
-        pace: { newSkillBudget: (testWindow && daysBetween(day.learningDay, testWindow.to) < 2) || fw?.newSkillBudget === 0 ? 0 : 1 },
+        voiceSecWanted: voiceOf(segments), why, opener, successFirst: dec.successFirst,
+        pace: { newSkillBudget: dec.newSkillBudget },
         ...(testWindow ? { testChapters: testWindow.chapters } : {}) });
       remaining -= targetMin;
     }

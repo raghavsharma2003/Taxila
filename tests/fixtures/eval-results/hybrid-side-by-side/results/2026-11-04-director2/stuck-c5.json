@@ -1,0 +1,179 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj fractions ko number line par cricket pitch jaise place karenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1061
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya. Socho ek line ko chaar barabar parts mein baanta; ek part ko number line par kaise dhoondhogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 2046,
+   "replyReadyMs": 3107,
+   "guard": [
+    "leak",
+    "twoq"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 876
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 0 se 1 tak chocolate ko 4 equal pieces karo; har gap 1/4 hai. Do gaps aage wala point ka fraction kya hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1948,
+   "replyReadyMs": 2824,
+   "guard": [
+    "answerinq"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 682
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, dheere chalte hain. 0 se 1 tak line ko 5 equal gaps mein baanto. Har gap 1/5 hai. Pehla point kaunsa fraction hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1336,
+   "replyReadyMs": 2018
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 754
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 0 se 1 tak line ke 5 barabar hisse karo. Har hissa 1/5 hai. Pehla nishaan kaunsa fraction hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1182,
+   "replyReadyMs": 1936
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "no_evidence",
+   "classifyMs": 2093
+  },
+  {
+   "who": "teacher",
+   "text": "5 kul hisse hain, par pehla nishaan 1 hissa hai: isliye fraction 1/5. Doosra nishaan kya hoga?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1459,
+   "replyReadyMs": 3552
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1003
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, doosra nishaan 2 gaps aage hai, isliye woh 2/5 hota hai. Agla step dekhna hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1924,
+   "replyReadyMs": 2927,
+   "guard": [
+    "quiz"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1897
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, kalpana karo: 0 se 1 tak 5 barabar khaane hain; doosra khaana 2/5 hai. Pehla khaana kya hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2423,
+   "replyReadyMs": 4320,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1135
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, Riya. Pehla khaana 1/5 hota hai, kyunki woh 0 se ek gap aage hai. Ab 2/5 wala nishaan batao.",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 973,
+   "replyReadyMs": 2108
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "no_evidence",
+   "classifyMs": 927
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 7 kaha. Yahan hum fraction ka naam dhoondh rahe hain, isliye 2/5 likhna hoga. 2/5, 1/2 se pehle hai ya baad?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 2363,
+   "replyReadyMs": 3290,
+   "guard": [
+    "negates"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1047
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, koi baat nahi. Hum aage chal sakte hain, thoda break le sakte hain, ya aaj ke liye stop kar sakte hain. Tum batao.",
+   "move": "break",
+   "card": null,
+   "replyMs": 1907,
+   "replyReadyMs": 2954,
+   "guard": [
+    "wrap"
+   ]
+  }
+ ],
+ "agent": []
+}

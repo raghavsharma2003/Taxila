@@ -13,7 +13,7 @@ import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
 import { kitPath } from "./fixtures/kit-path.mjs";
 
-const DIR = new URL("../evals/hybrid-side-by-side/results/2026-11-04-director2/", import.meta.url);
+const DIR = new URL("./fixtures/eval-results/hybrid-side-by-side/results/2026-11-04-director2/", import.meta.url);
 const R7_FLAGS = ["TAXILA_R7_PARK_TOPIC", "TAXILA_R7_BYE_CHECKIN", "TAXILA_R7_FRUSTRATION"];
 const KEEP = {};
 describe("S1: no flagged line ships (director2 replayed through the guards)", () => {

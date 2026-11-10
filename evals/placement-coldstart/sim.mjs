@@ -64,7 +64,7 @@ function runChild({ C, theta, cond, ans }) {
   const placement = site ? { [strand]: { mu: site.mu, sd: Math.max(SITE_SD_MIN, site.sd) } } : {};
   let t = DATE.getTime();
   let ep = newEpoch(initialBase({ strands: [strand], classLevel: C, openedAt: new Date(t), epochId: "e0", placement }));
-  const start0 = r ? r.startGE : calendarGE(C);
+  const start0 = r && r.startGE != null ? r.startGE : calendarGE(C);   // no start from the answers (LEARN-07): the calendar
   const trail = [];
   let ev = 0;
   for (let L = 1; L <= LESSONS; L++) {

@@ -4,14 +4,14 @@ Updated by the main loop at each integration. Header, row 1, row 7, section 3b (
 - **Build checks:** tsc and the build are green.
 - **Unit tests:** 6293 of 6306 pass, 0 failures, single-process included (director16 judgement, on integration 20).
 - **Live model calls so far:** the lesson-brain runs director1–16, about $1 a run since director14 (director16: 1,472 calls, about $1.00).
-- **Nothing from round 7 is released:** production is 14.4.3 since 2026-11-10 (the October release 14.4.2 plus one crash fix from the audit: a malformed URL could stop the web process). Release 16 is blocked on `NEON_API_KEY` and `NEON_PROJECT_ID` for production migration 041 (director16 judgement).
+- **Round 7 is released:** production is release 16 (commit `e807f07`, integration 24) since 2026-11-10 14:24 UTC, web and worker together. The owner said on 2026-11-10 that production can be replaced because nobody is using it, and chose the Neon connector for the database: a backup branch `pre-release-e807f07` first, a rehearsal on a copy, then the 16 pending migrations (031, 034 to 047, 050) in one transaction. Production is now the build the owner tests; no staging app (owner offered it; main declined until real families are on production). Roll back with `node scripts/release.mjs e807f07 --rollback`.
 - **Founders Hub (row 7): done, nothing to apply.** The automation (`scripts/m3.mjs`) has been live since 2026-11-06 08:24 UTC and the M4 hardening since about 10:55 UTC the same day. Day 1 of the 60 is 2026-11-06, counted with 8 services; the clock completes on 2027-01-04. `taxila-cin-pg` was downsized to B2s and is one of the counted services. Details: `M3.md`.
 
 ## 1. Decisions only you can make
 
 | # | What | Options / note |
 |---|---|---|
-| 1 | **Keys for the release.** The Azure keys were in place on 2026-11-06 (the Founders Hub automation was applied with them). What blocks release 16 is `NEON_API_KEY` and `NEON_PROJECT_ID`, needed for production migration 041. | Add the two Neon keys as environment variables, then the main loop runs `node scripts/handoff/write-env-local.mjs`. |
+| 1 | ~~Keys for the release.~~ **Closed 2026-11-10:** release 16 went out with the migrations applied through the Neon connector, so no Neon key is needed. | Nothing to do. Two Neon branches were made and are left in place: `pre-release-e807f07` (backup) and `rehearse-release-e807f07` (rehearsal); say if you want them removed. |
 | 2 | **Spend batch** (section 2) | Approve all, some tiers, or none. Nothing runs until you say yes. |
 | 3 | **Teacher face**: r8 / lamp2 / lamp2 + new jaw | Everything you need is on one page: `face/OWNER-FACE-REVIEW.md` (on claude/r7-face, PR #49). It covers the look, the greeting clips, the pose stills and the low-end-phone pass, with evidence for each. Lip timing within ±50 ms: r8 89%, lamp2 67% (its mouth barely moves), lamp2 + jaw 100%. |
 | 4 | Account for the owner test cohorts | They are keyed to an email that matches no guardian, e.g. the guardian of the test child "Kiko". |
@@ -183,6 +183,9 @@ in parts, start with tiers 1 and 2 (~$21).
   - Write-up: `judgements/director18-2026-11-10.md`.
 
 ## 4. Calls the main loop took that you may want to reverse
+
+- **Round 8 is planned** (`docs/design/round8/PLAN.md`). Its aim: a child's second lesson differs from her first because of what she did in the first, and every difference names the fact behind it. Today a scripted lesson is the same for every child apart from one interest line and the language.
+  She will first know a child by choosing among checked material (which parts to shorten, which card first, which fix for her mix-up). Content generated during a lesson stays limited to pictures that code can check. (`dc-r8-selection-before-generation`, `dc-r8-one-reader-with-because`)
 
 - **Khand MEASURE is not shipped.** Its 2D form was a number pad plus left/right buttons, exactly what OWNER-RESET #3 rejects.
   It is replaced by *taraazu* (a kirana pan balance with real weights, and pouring jugs) on the same four topics.

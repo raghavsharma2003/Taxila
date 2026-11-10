@@ -16,6 +16,9 @@ export const GS_BY_TYPE = Object.freeze({
   T1: { g: 0.20, s: 0.10 }, T2: { g: 0.20, s: 0.10 }, T3: { g: 0.25, s: 0.12 }, T4: { g: 0.15, s: 0.15 }, T5: { g: 0.10, s: 0.20 },
 });
 export const TEACH_CAP = 0.10;
+/** Teaching's total gain per skill per lesson (re-teaches included) [U]: before this, every re-teach added up to +0.10, so
+ *  a child who got every answer wrong climbed on the re-teaches alone (audit LEARN-02, params kt-r3). */
+export const TEACH_LESSON_CAP = 0.20;
 const P_MIN = 1e-6, P_MAX = 1 - 1e-6;
 
 export const clampP = (p) => Math.min(P_MAX, Math.max(P_MIN, p));
@@ -54,21 +57,29 @@ export function gatedEmission(ev, R, confusionOverrides) {
  * guessers over the pL 0.6 "does it" line (comprehension sim: not_yet accuracy 0.62 with game evidence, 0.75 without).
  */
 // studio (W2-H, LIVE-STUDIO D12 §3.10): host-graded Studio answers weigh like modules until ledger-game-full-weight resolves
-export const SOURCE_WEIGHT = Object.freeze({ game: 0.5, module: 0.75, studio: 0.75 });
+// home (round 8, home play): a game level cleared at home, outside any lesson, weighs as a game (learner-evidence.md item 7)
+export const SOURCE_WEIGHT = Object.freeze({ game: 0.5, module: 0.75, studio: 0.75, home: 0.5 });
+/** A home-play event: via "game" (kt_evidence's via check has no "home") with an id that starts "home:" (replay-stable). */
+export const isHomePlay = (ev) => ev?.via === "game" && String(ev.id ?? "").startsWith("home:");
 /**
  * The source an event's weight comes from: its via, except a late verdict's correction (via 'late',
  * comprehension/later.js lateEvent), which carries its held event's game / module source in its id (`<id>:late:<via>`).
  */
-export const sourceOf = (ev) => (ev.via === "late" ? /:late:(game|module|studio)$/.exec(String(ev.id ?? ""))?.[1] ?? "late" : ev.via);
-/** Rule 4 tempering exponent: assisted ^0.5, gaming window ^0.25, controllerEasy ^0.5, unverified kit ^0.5, source (game/module). */
+export const sourceOf = (ev) => (ev.via === "late" ? /:late:(game|module|studio)$/.exec(String(ev.id ?? ""))?.[1] ?? "late" : isHomePlay(ev) ? "home" : ev.via);
+/** Rule 4 tempering exponent: assisted ^0.5, gaming window ^0.25, controllerEasy ^0.5, unverified kit ^0.5, a leaked right answer ^0.5, source (game/module). */
 export function temper(ev) {
   let x = SOURCE_WEIGHT[sourceOf(ev)] ?? 1;
   if (ev.assisted) x *= 0.5;
   if (ev.gamingWindowKt) x *= 0.25;
   if (ev.controllerEasy) x *= 0.5;
   if (ev.kitVerified === false) x *= 0.5;
+  // a right answer after the teacher leaked it (or help was asked first) is half evidence on K, as facets.js E11 halves it
+  // on U/T. Open items already close such an answer at C4 (adapter.js); this covers choice items and probes (LEARN-29).
+  if (ev.preAttemptHelp && LEAK_HALVES.includes(outcomeName(ev.cls, ev.outcome))) x *= 0.5;
   return x;
 }
+/** The positive outcomes a leak halves (facets.js isPositiveOutcome's list). */
+const LEAK_HALVES = Object.freeze(["full", "high", "caught_fixed", "caught", "right", "pass", "C0", "first_correct"]);
 
 /**
  * Raw log-evidence per skill of one event, from the PRE-event pLs (conjunctive items, kt-algorithms §1.5:

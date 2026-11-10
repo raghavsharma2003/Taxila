@@ -6,7 +6,8 @@ import { Button, ButtonLink, ErrorNote, Field, Icon, PinPad } from "../ui/index.
 import { Teacher } from "../ui/teacher/Teacher.tsx";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { Spot } from "../child/art.tsx";
-import { ApiError, errText, getJson, loadMe, lockBeacon, postJson, type ChildRow } from "../app/api.ts";
+import { ApiError, getJson, loadMe, lockBeacon, postJson, type ChildRow } from "../app/api.ts";
+import { setupError } from "./setupRules.ts";
 import { useGate } from "../parent/Gate.tsx";
 import { isGateError } from "../parent/api.ts";
 import { StepFrame } from "./Layout.tsx";
@@ -59,7 +60,7 @@ export function ControlsStep() {
       const g = await getJson<{ hasPin: boolean; firstSetNeedsPassword?: boolean }>("/api/parent/pin");
       setHasPin(g.hasPin);
       setNeedPw(!g.hasPin && !!g.firstSetNeedsPassword);
-    })().catch((e) => setErr(errText(e)));
+    })().catch((e) => setErr(setupError(e)));
   }, [d.childId, nav]);
 
   const onPin = (p: string) => {
@@ -95,7 +96,7 @@ export function ControlsStep() {
     } catch (e) {
       if (pinSaved && isGateError(e)) { setErr("The Parent corner locked. Enter the PIN to continue."); relock(); return; }
       if (e instanceof ApiError && (e.body as { gate?: string } | null)?.gate === "password") setNeedPw(true);
-      setErr(errText(e));
+      setErr(setupError(e));
       // Only a refused PIN clears the PIN pad; a failed controls write keeps it (the PIN may already be saved).
       if (stage === "pin") resetPinUi();
     } finally {

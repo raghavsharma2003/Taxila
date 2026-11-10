@@ -38,6 +38,21 @@ test("no gate test applies or asserts on a patch file", () => {
   assert.deepEqual(hits, [], "assert on the code the patch became; a patch file is not gate material");
 });
 
+// Result folders of finished experiments are evidence, not gate material: what a test needs is copied into tests/fixtures/eval-results/
+// (TE-06), so a results folder can be moved or deleted without failing the gate. (Eval CODE under evals/ may still be imported.)
+const EVAL_RESULTS = /evals\/[\w.-]+\/(results|out)\/|evals\/results\//;
+test("no gate test reads an evals/*/results (or out) folder", () => {
+  const hits = [];
+  for (const f of walk(TESTS)) {
+    if (/gate-reads-no-docs\.test\.mjs$/.test(f)) continue;
+    readFileSync(f, "utf8").split("\n").forEach((line, i) => {
+      if (/^\s*(\/\/|\*|\/\*)/.test(line)) return;
+      if (EVAL_RESULTS.test(line.replace(/\s\/\/.*$/, ""))) hits.push(`${f.slice(TESTS.length)}:${i + 1}: ${line.trim().slice(0, 110)}`);
+    });
+  }
+  assert.deepEqual(hits, [], "copy what the test reads into tests/fixtures/eval-results/");
+});
+
 test("no gate test or fixture reads from docs/", () => {
   const hits = [];
   for (const f of walk(TESTS)) {

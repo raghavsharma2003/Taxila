@@ -5,6 +5,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { konLogic, targetOf, malHeading, meets, openingOf, openingAt, KIND_ZONE } from "../src/play/families/kon/kon.logic.ts";
 import coverage from "../data/play/coverage.json" with { type: "json" };
+import { CHANCE_WEIGHT, GAME_WEIGHT } from "../shared/play.ts";
 
 const MODE = { kind: "zone", match: "zone", linear: "pair", tri: "close", iso: "close" };
 const req = (goal, seed, misMap, grammar = {}) => ({ family: "kon", mode: MODE[goal], goal, topicId: "t", skillId: "t-s1", classLevel: 6, fade: 1, mis: {}, misMap, grammar, recent: [], seed });
@@ -30,6 +31,8 @@ for (const [goal, misMap, grammar] of CASES) {
       const solved = run(level, konLogic.solve(level));
       assert.ok(solved.s.done && solved.ms.some((m) => m.kind === "solved"), `${c.signature} solves`);
       assert.equal(konLogic.shortcut(level), null, `${c.signature} has a shortcut`);
+      // zone/kind is one turn into a wide zone (a lucky tap lands it): its correct enters at the chance-adjusted weight (GAMES-03)
+      assert.equal(konLogic.grade(level, konLogic.solve(level).map((act, i) => ({ seq: i + 1, t: 0, via: "touch", act }))).evidence[0].weight, goal === "kind" ? CHANCE_WEIGHT : GAME_WEIGHT);
       for (const mal of Object.keys(misMap)) {
         const acts = konLogic.malActs(level, mal);
         if (!acts) continue;

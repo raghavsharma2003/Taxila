@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { withheldStated, pictureMismatch, authoredWhys, borrowedWhy, verdictMisplaced, falseAnswerNumbers } from "../evals/hybrid-side-by-side/checks.mjs";
 
-const D8 = (f) => JSON.parse(readFileSync(new URL(`../evals/hybrid-side-by-side/results/2026-11-06-director8/${f}`, import.meta.url), "utf8")).director;
+const D8 = (f) => JSON.parse(readFileSync(new URL(`./fixtures/eval-results/hybrid-side-by-side/results/2026-11-06-director8/${f}`, import.meta.url), "utf8")).director;
 const SCRIPT = (t) => JSON.parse(readFileSync(new URL(`../data/lesson-scripts/${t}.json`, import.meta.url), "utf8"));
 
 test("(a) a value the board shows as '?' that her line states (director8 c5-t02 steady T35: 1/3, 1/12, 1/6 over '?' items)", () => {

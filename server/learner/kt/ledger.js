@@ -16,8 +16,8 @@
 // writer.ledgerStmts inserts them in exactly that order (foldOrder), so the database hands out seq in the
 // order the cached fold applied them and a replay of kt_evidence reproduces kt_skill_state byte for byte.
 // There is deliberately no id tiebreak: ids are opaque strings ("e10" < "e9"), not an order.
-import { formOf, fsrsGrade, isDelayedMiss, isDelayedSuccess, isGenerativePass, isUnaidedCorrect, ITEM_CLASSES, outcomeName, recentValue, EMISSIONS } from "./outcomes.js";
-import { dropReason, logEvidence, logit, sigmoid, sourceOf, spend, teachStep, temper, tEff, transition } from "./bktr.js";
+import { formOf, fsrsGrade, isDelayedMiss, isDelayedSuccess, isFailedCard, isGenerativePass, isUnaidedCorrect, ITEM_CLASSES, outcomeName, recentValue, EMISSIONS } from "./outcomes.js";
+import { dropReason, isHomePlay, logEvidence, logit, sigmoid, sourceOf, spend, teachStep, temper, tEff, transition, TEACH_LESSON_CAP } from "./bktr.js";
 import { nextReviewAt, retrievability, review } from "./fsrs.js";
 import { addObs, currentTheta, defaultItemMeta, initialBase, newEpoch, openEpoch, withPlacement, strandOfSkill, subjectOfSkill, subjectOfStrand, thetaObs } from "./ability.js";
 import { priorFromTheta } from "./priors.js";
@@ -25,7 +25,12 @@ import { isPlacementRow, siteOf } from "./placement.js";
 import { misconceptionEffects, misLogLR, newMisconception, spendMis, updateMisconception } from "./misconception.js";
 
 // round 2 (2026-10-07): reteach ladder + fresh re-check items and corroborate rules change how evidence folds.
-export const PARAMS_VERSION = "kt-r2-2026-10-07";
+// kt-r3 (audit 2026-11-09): no learning step after a failed card; teaching's gain capped per skill per lesson (LEARN-02); a
+// held "why" folds no K step until its blind grade lands (LEARN-05); per-lesson budgets kept by lesson (LEARN-28); a leaked
+// answer at half weight on every class (LEARN-29).
+export const PARAMS_VERSION = "kt-r3-2026-11-10";
+/** The shapeId the round-8 reader puts on the first check card of a lesson it opened "compressed" at a learned skill. */
+export const RECHECK = "recheck";
 export const LEARNED_P = 0.95;
 export const DELAY_MS = 20 * 3600_000;
 /**
@@ -57,6 +62,26 @@ function newSkill(skillId, prior, topicType, epochId, seq, paramsVersion) {
     prior: { pL0: prior.pL0, source: prior.source, epochId, seq },
     aDay: null, bDay: null, learnedAt: null, anchorAt: null, anchorSession: null, delayedMisses: 0, nextReviewAt: null, items: [],
   };
+}
+
+/** An event folded without its blind verdict (comprehension/later.js HELD_PREFIX): no K step until its late correction. */
+export const isHeld = (ev) => String(ev?.graderVersion ?? "").startsWith("held:");
+
+/** Home play's cap on log-evidence per skill per learning day (item 7) [U]: about a 3× likelihood ratio either way. */
+export const HOME_DAY_LOG_CAP = Math.log(3);
+/** The skill's home-play budget for the event's learning day (null when the event is not home play). */
+function homeDay(L, ev, k, sess) {
+  if (!isHomePlay(ev)) return null;
+  const cur = L.homeBudget?.[k];
+  const b = cur && cur.day === sess.day ? { ...cur } : { day: sess.day, sum: 0, stepped: false };
+  L.homeBudget = { ...(L.homeBudget ?? {}), [k]: b };
+  return b;
+}
+function homeSpend(b, applied) {
+  const next = Math.max(-HOME_DAY_LOG_CAP, Math.min(HOME_DAY_LOG_CAP, b.sum + applied));
+  const out = next - b.sum;
+  b.sum = next;
+  return out;
 }
 
 function newSession(ev) {
@@ -102,13 +127,45 @@ export const foldOrder = (events) => [...events].sort((a, b) => (a.seq ?? Infini
  *   eta?: number, confusion?: any, cohort?: string, paraEnabled?: boolean, onTheta?: (o: any) => void, onKt?: (evId: string, skillId: string) => void }} FoldCtx
  */
 export function fold(ledger, events, ctx = {}) {
+  const f = openFold(ledger);
+  for (const ev of foldOrder(events)) f.apply(ev, ctx);
+  return f.L;
+}
+
+/**
+ * A fold opened once over a COPY of `ledger` (the input is never mutated); `apply(ev)` folds one event into `L` in
+ * place. comprehension/fuse.js folds event by event through one of these: before (audit LEARN-25) it called fold() per
+ * event, copying the whole ledger (seen grows with every event) each time, which was quadratic: 10 s at 8,000 events.
+ * Objects already copied in this fold are mutated in place, so a caller that needs an object's PRE-event state must copy
+ * the fields it reads before apply.
+ */
+export function openFold(ledger) {
   const L = { ...ledger, skills: { ...ledger.skills }, mis: { ...ledger.mis }, ability: { ...ledger.ability }, seen: { ...ledger.seen },
     session: ledger.session ? structuredClone(ledger.session) : null,
+    ...(ledger.recentSessions ? { recentSessions: structuredClone(ledger.recentSessions) } : {}),
+    ...(ledger.held ? { held: { ...ledger.held } } : {}),
     ...(ledger.placementPending ? { placementPending: structuredClone(ledger.placementPending) } : {}) };
   const owned = new Set();
   const own = (bag, k) => { const x = bag[k]; if (x && !owned.has(x)) { bag[k] = structuredClone(x); owned.add(bag[k]); } return bag[k]; };
-  for (const ev of foldOrder(events)) applyOne(L, ev, ctx, own);
-  return L;
+  return { L, apply: (ev, ctx = {}) => applyOne(L, ev, ctx, own) };
+}
+
+/** How many earlier lessons' per-lesson state the ledger keeps (LEARN-28). */
+export const RECENT_SESSIONS = 3;
+/**
+ * Make `ev`'s lesson the open session. A lesson switched away from is kept (up to RECENT_SESSIONS), so a second lesson
+ * open at the same time, or an answer that lands after another lesson began, picks its own budgets back up instead of
+ * starting them again from zero (audit LEARN-28: two open lessons reset every per-lesson evidence cap).
+ */
+function enterSession(L, ev) {
+  if (L.session?.sessionId === ev.sessionId) return;
+  const recent = { ...(L.recentSessions ?? {}) };
+  if (L.session) recent[L.session.sessionId] = L.session;
+  L.session = recent[ev.sessionId] ?? newSession(ev);
+  delete recent[ev.sessionId];
+  const ids = Object.keys(recent);
+  for (const id of ids.slice(0, Math.max(0, ids.length - RECENT_SESSIONS))) delete recent[id];
+  if (ids.length) L.recentSessions = recent; else delete L.recentSessions;
 }
 /** One event, online. Throws on an event older than the ledger's last seq (re-fold from the log instead). */
 export const foldEvidence = (ledger, ev, ctx) => fold(ledger, [ev], ctx);
@@ -150,8 +207,17 @@ function applyOne(L, ev, ctx, own) {
   // A late verdict's correction (comprehension/later.js, via 'late'): the K step already ran on the fallback event it
   // corrects, so the ledger only records it as seen (no K, θ, session or budget change); the facets apply it (fuse.js).
   if (isPlacementRow(ev)) return applyPlacement(L, ev);
-  if (ev.via === "late") { L.seen[ev.id] = ev.seq ?? null; if (ev.seq != null) L.lastSeq = ev.seq; return; }
-  if (!L.session || L.session.sessionId !== ev.sessionId) L.session = newSession(ev);
+  // LEARN-05 (kt-r3): an event folded without its blind verdict is held: seen, no K step. Its late correction then takes
+  // the full step, so the same verdict gives the same mastery whether it lands in time or late. A late correction whose
+  // event was not held (written before kt-r3: the fallback already took the K step) is only recorded as seen.
+  if (isHeld(ev)) { L.held = { ...(L.held ?? {}), [ev.id]: 1 }; L.seen[ev.id] = ev.seq ?? null; if (ev.seq != null) L.lastSeq = ev.seq; return; }
+  if (ev.via === "late") {
+    const base = String(ev.id).replace(/:late(?::[a-z]+)?$/, "");
+    if (!L.held?.[base]) { L.seen[ev.id] = ev.seq ?? null; if (ev.seq != null) L.lastSeq = ev.seq; return; }
+    const { [base]: _done, ...rest } = L.held;
+    if (Object.keys(rest).length) L.held = rest; else delete L.held;
+  }
+  enterSession(L, ev);
   const sess = L.session;
   const markSeen = () => { L.seen[ev.id] = ev.seq ?? null; if (ev.seq != null) L.lastSeq = ev.seq; };
 
@@ -202,8 +268,11 @@ function applyTeach(L, ev, sess, ctx) {
     const T = tEff(sk.topicType, ctx.eta ?? 0);
     const gained = ss.teachGain[ev.episodeId] ?? 0;
     if (!ss.episodes.includes(ev.episodeId)) {
-      const pL = teachStep(sk.pL, T, gained);
+      // per episode ≤ TEACH_CAP (teachStep), and per skill per lesson ≤ TEACH_LESSON_CAP, re-teaches included (LEARN-02)
+      const room = Math.max(0, TEACH_LESSON_CAP - (ss.teachTotal ?? 0));
+      const pL = Math.min(teachStep(sk.pL, T, gained), sk.pL + room);
       ss.teachGain[ev.episodeId] = gained + (pL - sk.pL);
+      ss.teachTotal = (ss.teachTotal ?? 0) + (pL - sk.pL);
       sk.pL = pL;
       ss.episodes.push(ev.episodeId);
     }
@@ -224,11 +293,19 @@ function applyEvidence(L, ev, sess, ctx) {
   const x = temper(ev);
   ks.forEach((k, i) => {
     const sk = sks[i], ss = sessSkill(sess, k);
-    const { applied, budget } = misOnly ? { applied: 0, budget: ss.budget } : spend(ss.budget, ev.cls, raw[i] * x);
-    ss.budget = budget;
+    const spent = misOnly ? { applied: 0, budget: ss.budget } : spend(ss.budget, ev.cls, raw[i] * x);
+    ss.budget = spent.budget;
+    // home play (item 7): per skill per learning day, its evidence is capped at ±HOME_DAY_LOG_CAP and it takes at most one
+    // learning step, so an afternoon of one game can move a skill a little but never far (and never certify it)
+    const home = homeDay(L, ev, k, sess);
+    const applied = home ? homeSpend(home, spent.applied) : spent.applied;
     const q = sigmoid(logit(sk.pL) + applied);
     let pL = q;
-    if (!ss.episodes.includes(ev.episodeId)) { pL = transition(q, tEff(sk.topicType, ctx.eta ?? 0)); ss.episodes.push(ev.episodeId); }
+    // a card that ended without a right answer teaches nothing: no learning step (LEARN-02)
+    if (!ss.episodes.includes(ev.episodeId)) {
+      if (!isFailedCard(ev.cls, ev.outcome) && !(home && home.stepped)) { pL = transition(q, tEff(sk.topicType, ctx.eta ?? 0)); if (home) home.stepped = true; }
+      ss.episodes.push(ev.episodeId);
+    }
     sk.pL = pL;
     // Rule 8: FSRS once per skill per session, on the first retrieval-type event; C0 + a passed
     // transfer/why in the same episode upgrades the grade to 4.
@@ -282,7 +359,7 @@ function advanceDisplay(sk, ev, sess, ss, isTarget, novel = true) {
   // round 3 play (docs/design/round3/play/DESIGN.md §8, in-game-success-as-mastery): a game act moves pL at the game
   // weight but is never the delayed check, never spends it, and never sets "unaided": only a bare item outside the game
   // can make a skill learned or secure (DragonBox 3.5 h: no paper gain; Nuraydin 2022: trained task only)
-  const game = sourceOf(ev) === "game";
+  const game = sourceOf(ev) === "game" || sourceOf(ev) === "home";   // home play is a game act too (item 7)
   ss.attempted = true;
   if (rank(sk.display) < rank("practising")) sk.display = "practising";
 
@@ -336,6 +413,23 @@ function advanceDisplay(sk, ev, sess, ss, isTarget, novel = true) {
       reanchor(sk, sess);    // C1 / C2 (G = 2): neither a pass nor a miss; only these re-anchor (§6.4.1)
     }                        // anything else (an error-spot caught but not fixed, NA): not a check at all
   }
+
+  // A lesson the reader opened "compressed" at a learned skill's first check card (shapeId "recheck", round-8 ruling):
+  // a right answer is a re-check of that learned skill (the delayed check when `due` holds, else a review), never a second
+  // "unaided on first exposure"; a miss withdraws the status the compression trusted: back to practising, the delayed and
+  // durable flags cleared, so the full unit walked next can earn learned_today again from a fresh (a) + (b) day.
+  const recheck = ev.shapeId === RECHECK && produce && !game && rank(sk.display) >= rank("learned_today");
+  if (recheck && isDelayedMiss(ev.cls, ev.outcome)) {
+    ss.checkDone = true;
+    sk.display = "practising";
+    sk.flags.delayed = false; sk.flags.durable7 = false; sk.flags.durable30 = false;
+    sk.aDay = null; sk.bDay = null; sk.learnedAt = null;
+    sk.delayedMisses = 0;
+    sk.refresh = true;
+    reanchor(sk, sess);
+    return;
+  }
+  if (recheck) return;
 
   if (produce && clean && !game && isUnaidedCorrect(ev.cls, ev.outcome)) { sk.aDay = sess.day; sk.flags.unaided = true; }
   if (produce && clean && isGenerativePass(ev.cls, ev.outcome)) { sk.bDay = sess.day; sk.flags.generative = true; }

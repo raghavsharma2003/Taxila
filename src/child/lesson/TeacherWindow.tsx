@@ -27,10 +27,12 @@ export function SpeechRow({ m, media, floor, size }: { m: DeskModel; media: Face
         <Teacher teacherId={m.teacher.id} band={m.band} floor={floor} form={m.faceForm} meters={media.meters} mic={media.mic}
           reducedMotion={m.reducedMotion} label="tag" ground={false} framing="close" lights={m.lights} affect={m.affect ?? null} />
       </div>
-      {m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />}
+      {m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor, m.caption.soundFailed)} lang={m.caption.lang} soundFailed={m.caption.soundFailed} />}
     </div>
   );
 }
 
 /** At the hand-over the caption fades to empty (yielding/your_turn): the question lives on the card. */
-export const captionVisible = (floor: Floor) => floor === "speaking" || floor === "showing";
+/** Her caption shows while she speaks, and (JRN-01) whenever her sound failed for the line: then it is the only place her
+ *  words are, and the floor never reaches "speaking". */
+export const captionVisible = (floor: Floor, soundFailed = false) => soundFailed || floor === "speaking" || floor === "showing";

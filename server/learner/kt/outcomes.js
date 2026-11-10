@@ -95,6 +95,12 @@ export function isGenerativePass(cls, o) {
     || (cls === "probe.errorspot" && n === "caught_fixed");
 }
 
+/**
+ * A card that ended without a right answer (item C4 / IDK, a wrong choice, a failed solo round). It is evidence against
+ * the skill and teaches nothing: no learning step follows it (audit LEARN-02, params kt-r3).
+ */
+export const isFailedCard = (cls, o) => ITEM_CLASSES.has(cls) && ["C4", "IDK", "wrong", "fail"].includes(outcomeName(cls, o));
+
 /** (a) unaided correct: C0 on an item or a solo round (form is checked by the caller). */
 export const isUnaidedCorrect = (cls, o) => (cls === "item.open" || cls === "solo" || isMcq(cls)) && recentValue(cls, o) === 1;
 

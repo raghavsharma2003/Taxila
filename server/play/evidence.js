@@ -9,6 +9,7 @@
 // event from ever being, or spending, the delayed check, and from setting "unaided".
 import { signSession, verifySession } from "./session.js";
 import { fromLegacyEvidence } from "../learner/kt/adapter.js";
+import { CHANCE_WEIGHT } from "../../shared/play.ts";
 
 export const EV_KIND = "play-ev";
 /** at most this many play levels fold into one turn (a backlog after a reconnect) */
@@ -47,13 +48,16 @@ export function playKtEvents(c, opts) {
     levelIds.push(v.levelId);
     for (const r of v.rows) {
       if (c.skillOk && !c.skillOk(r.skillId)) continue;
+      // a lucky-tap-guessable correct (the server's own row says CHANCE_WEIGHT: FamilyLogic.oneDecision, games audit
+      // GAMES-03) is tempered exactly as the arena is: controllerEasy, so kt/bktr.js gives game 0.5 × 0.5 = 0.25
+      const chance = r.weight === CHANCE_WEIGHT;
       const ev = fromLegacyEvidence(
         { skillId: r.skillId, outcome: r.outcome === "partial" ? "incorrect" : r.outcome, itemId: `play:${v.levelId}`, probe: "P10", hintsUsed: 0, ...(r.misconceptionId ? { misconceptionId: r.misconceptionId } : {}) },
         { id: `${c.lessonId}:${c.childSeq}:play:${k++}`, sessionId: c.lessonId, sessionStartAt, at, episodeId: `${c.lessonId}:play:${v.levelId}`, grader: "code",
           ...(c.topicType ? { topicType: c.topicType } : {}), ...(c.kitVerified === false ? { kitVerified: false } : {}),
           ...(r.discriminates ? { discriminates: r.discriminates } : {}), triesBefore: 0, episodeEnded: true,
           // ITEM-ARENA: a recognition among a few targets, tempered like an easy controller (kt/bktr.js), never a production
-          ...(String(v.levelId).startsWith("arena-") ? { form: "recognise", controllerEasy: true } : {}) });
+          ...(String(v.levelId).startsWith("arena-") ? { form: "recognise", controllerEasy: true } : chance ? { controllerEasy: true } : {}) });
       if (ev) events.push({ ...ev, target: r.skillId, via: "game" });
     }
   }

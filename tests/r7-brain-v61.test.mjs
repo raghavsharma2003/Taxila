@@ -228,10 +228,14 @@ describe("r7-brain-v61.test.mjs", () => {
   test("split policy B (main): closures never split a turn on their own; only authored teaching plus its card over the cap is split", async () => {
     const { splitLong } = await import("../server/director/state.js");
     const s = { ctx: {}, lastMove: null };
-    const out = { state: s, move: { kind: "explain", itemId: "x", point: "Ek chhota point.", closed: { answer: "30 m", why: "bahut lamba kaaran ".repeat(12) }, gave: { answer: "5", why: "aur ek lamba kaaran ".repeat(10) } }, ui: { ask: { text: "Kitna?" } } };
+    const out = { state: s, move: { kind: "explain", itemId: "x", point: "Ek chhota point.", closed: { answer: "30 m", why: "bahut lamba kaaran ".repeat(12) } }, ui: { ask: { text: "Kitna?" } } };
     const r = splitLong(out, { event: "turn" });
     assert.equal(r.move.splitClose, undefined, "no closing split");
     assert.equal(r.move.kind, "explain");
+    // (v6.10 R7, main on director18: after a GIVE-UP the turn is the key and its why, then a check-in; the next point on the next turn)
+    const g = splitLong({ state: { ctx: {}, lastMove: null }, move: { ...out.move, gave: { answer: "5", why: "kaaran" } }, ui: { ask: { text: "Kitna?" } } }, { event: "turn" });
+    assert.equal(g.move.splitClose, true);
+    assert.equal(g.move.gaveCheck, true);
   });
 
   test("v2.3 answerBoard (director9 item 4): a card answered right shows its authored answer-state board over its close, never while live", async () => {

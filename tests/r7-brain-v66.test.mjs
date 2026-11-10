@@ -19,7 +19,7 @@ import { liveBeatSimpler, requeueMissedReturn } from "../server/director/state.j
 import { returnLineOk, honestTasteLine, notRightLead, freshForm, GAVE_FORMS } from "../server/brain/say.js";
 
 const RUN = "2026-11-09-director14";
-const DIR = new URL(`../evals/hybrid-side-by-side/results/${RUN}/`, import.meta.url).pathname;
+const DIR = new URL(`./fixtures/eval-results/hybrid-side-by-side/results/${RUN}/`, import.meta.url).pathname;
 const TOPIC = { c4: "c4-maths-ch05-t01", "c5-t01": "c5-maths-ch02-t01", "c5-t02": "c5-maths-ch02-t02", c6: "c6-maths-ch06-t01" };
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const TAG = { "c4-ch05-t01": "c4", "c5-ch02-t01": "c5-t01", "c5-ch02-t02": "c5-t02", "c6-ch06-t01": "c6" };
@@ -225,8 +225,10 @@ describe("r7-brain-v66.test.mjs", () => {
     });
     test("'aage chalo' on a live card gives its key and moves on, never the stop menu (c5-t01 steady 16)", async () => {
       const { out, last } = await live("steady", "c5-t01", 16);
-      assert.equal(last.state.lastMove?.request, "move_on");
-      assert.ok(last.state.lastMove?.gave?.answer, JSON.stringify(last.state.lastMove));
+      // (v6.10 T2, main on director18: "woh wala ho gaya" right after the card was posed is asked for once more — never the key, never the
+      // stop menu; a second one moves on with the key, as before)
+      assert.equal(last.state.lastMove?.request, "ask_again");
+      assert.ok(!last.state.lastMove?.gave?.answer, JSON.stringify(last.state.lastMove));
       assert.doesNotMatch(out.reply, /Chuno: aage badhein/, out.reply);
     });
   });

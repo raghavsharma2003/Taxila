@@ -43,7 +43,10 @@ describe("r7-brain-v67.test.mjs", () => {
         if ((last.state.later ?? []).some((e) => /virat/i.test(e.topic) && e.servedAt == null)) bad.push(`${tag}: parked`);
         if (!last.state.lastMove?.tasteAsked) bad.push(`${tag}: not answered on its turn`);
         if (!/Main AI|meri (?:apni )?(?:koi )?pasand nahi/i.test(out.reply)) bad.push(`${tag}: no honest line | ${out.reply.slice(0, 100)}`);
-        if (!norm(out.reply).endsWith("?") || !/(?:kya lagta hai|kaun hai)\?$/.test(norm(out.reply))) bad.push(`${tag}: the aside question does not end her turn | ${out.reply.slice(-90)}`);
+        // (v6.10 T2, main on director18 c6 offtopic 18: during a worked STEP the aside is answered first, without its question back, and the
+        // step follows — the aside's question ends her turn everywhere else)
+        if (out.guard?.asideFirst) { if (!/^(?:Main AI|Meri apni pasand)/.test(norm(out.reply))) bad.push(`${tag}: a worked step's aside not first | ${out.reply.slice(0, 90)}`); }
+        else if (!norm(out.reply).endsWith("?") || !/(?:kya lagta hai|kaun hai)\?$/.test(norm(out.reply))) bad.push(`${tag}: the aside question does not end her turn | ${out.reply.slice(-90)}`);
         if (/cover drive|mast hai/i.test(out.reply)) bad.push(`${tag}: a fact of hers`);
       }
       assert.deepEqual(bad, []);
@@ -104,7 +107,7 @@ describe("r7-brain-v67.test.mjs", () => {
   });
   describe("H4: the counter, part by part", () => {
     test("director15: main's 5 hand rows and the named P4′ rows found; ≤ 2 other flags", () => {
-      const DIR = new URL(`../evals/hybrid-side-by-side/results/${RUN}/`, import.meta.url).pathname;
+      const DIR = new URL(`./fixtures/eval-results/hybrid-side-by-side/results/${RUN}/`, import.meta.url).pathname;
       const scripts = scriptsOf(DIR);
       const TAG = { "c4-ch05-t01": "c4", "c5-ch02-t01": "c5-t01", "c5-ch02-t02": "c5-t02", "c6-ch06-t01": "c6" };
       const got = new Set();

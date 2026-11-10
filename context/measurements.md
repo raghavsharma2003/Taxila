@@ -6535,3 +6535,48 @@ All 9 are one mechanism: a picture request whose line describes a second view th
 18 of 18 bridges switched at their first spoken part. `layout` is recorded on no row.
 
 Full write-up: docs/design/round7/judgements/director18-2026-11-10.md.
+
+
+<!-- merged from inbox/r7-audit-hissa.json -->
+## `ms-r7-audit-games-03-08-replay`
+
+Games audit `play-family.mjs` (branch claude/r7-audit-games), 2026-11-10.
+
+- **Method:** run over hissa, galti-pakdo, nazariya and kon with `--trials 200`, DATABASE_URL blank. Each entry plays 18 levels (fades 1-3 × garam/teekha × 3 seeds), with 200 random act lists per level drawn from the solver's own act shapes. Rates are per goal: "any win" is a win after misses; "luck" is a first-try `correct`.
+- **Before → after.** Hissa pour:
+  - fit (3600 trials): any-win 43.7 → 1.8 %, luck 24.5 → 0.9 %.
+  - part (3600): any-win 42.6 → 2.4 %, luck 29.7 → 1.3 %.
+  - deci (3600): any-win 42.6 → 0.4 %, luck 23.5 → 0.3 %.
+- **Chance-weighted goals:** rates are unchanged by design. The weight of their lucky corrects moves 0.5 → 0.25:
+  - galti pakdo: any-win 48.1 %, luck 41.4 % (3600 trials).
+  - hissa shift: 13.9 % / 13.5 % (7200).
+  - nazariya tri more: 30.2 % / 26.0 % (3600).
+  - kon zone kind: 16.4 % / 10.3 % (10800).
+- **UI:** the pour count was driven by real taps at 360 × 640 in en, hi and hinglish. 39 of 39 checks pass (targets ≥ 44 px, text ≥ 16 px, 0 clipped labels or goal lines, 0 overflow, 0 errors): docs/design/round7/games/runshots-hissa/.
+
+
+<!-- merged from inbox/r8-main-1.json -->
+## `ms-r8-walk-reads-no-learner-state-2026-11-10` (2026-11-10)
+
+A read-only code trace of the integration 24 tree (one pass, by a Sonnet agent for main; no tests run).
+
+- The script walk reads no learner state: it walks every beat of every scripted skill in kit order (`server/director/state.js:1282-1290`).
+- Per-child variation in a scripted lesson: the hook's interest slot (exact label match; 4 onboarding tiles have no slot, 2 slots name tiles that do not exist), the language, and a friend name from a fixed list.
+- The lesson brief passes only `wrapAt` and `hardStopAt`, and is usually null (`TAXILA_CONDUCTOR_PLAN` is off).
+- Script cards and game levels do write `kt_evidence`, and the ledger folds them.
+- No generated visual can be shown: nothing sets a verdict, and `judgeArtifact` has no caller.
+- 4 scripts are live, 30 staged.
+
+**Not verified by the trace:** whether "simpler used" counts as assisted; whether a script give-up weighs as a kit leave; the writer's `params_version` default (kt-r2) against the ledger's kt-r3; live legal modes. These are with the learner session.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-e807f07` (2026-11-10): Released e807f07 with scripts/release.mjs: web taxila-web--se807f07-4jnx (was taxila-web--sc7a4798-cx0n), worker + canary/nightly jobs on taxila-worker:e807f07 (was 3cd45e8); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs e807f07 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-knows-her-2026-11-10` (2026-11-10): evals/knows-her (deterministic, no model; n = 4 pilot topics × 5 simulated children, 2026-11-10): the no-history child gets exactly the script's default walk with an empty because on 4/4 topics; meera (skill 1 learned + delayed check, 12-day gap) vs kabir (last lesson closed badly, open ledger mix-up, wheel-spin with a cross-topic prerequisite where one exists, likes trains and drawing) differ in 5, 6, 6, 5 named ways (c4-ch05-t01, c5-ch02-t01, c5-ch02-t02, c6-ch06-t01), each traced to a learner fact; a games-only child (play: evidence) differs from the new child in 2 ways on every topic (first card, her mix-up's check first); every walk passes the because predicate and dropping any applied record makes it fail. Method limit: the walk is walk.mjs, a pure model of state.js's script walk, not the product's step(); the learner facts are fixtures in knows.js's input shape.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-catalogue-claude-sample` (2026-11-10): The catalogue under the Claude rubric (evals/studio-catalogue/claude-sample-2026-11-10): 20 of 369 checked catalogue games, seeded sample (seed 20261110), rendered at p360 / p412 / l1366 and judged by a separate Claude agent (Opus) on rubric v1. 4/20 pass; 11/20 (55%) have a content fault (off topic 4, register 3, wrong key 2, wrong fact 1, answer given away 1); 5 more fail on readability only (17 unreadable faults in 13 pieces, mostly repeated engine layouts). The old DeepSeek-V4-Flash check passed all 20. Also: the tray certificates (certs/catalogue.json, 2026-10-09) are stale — every sampled game fails Q1/Q4 at p360 on today's render, where the certificate says it passes.
