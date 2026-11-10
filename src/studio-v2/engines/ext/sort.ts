@@ -13,6 +13,7 @@ import { drawCoach, drawIntro, drawStatCard } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, SUBJECT_ACCENT, backdrop, devaReady, shuffled, textBlock } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
+import { dots } from "../../core/dots.ts";
 
 const PAD_X = 520, PAD_Y = 285, IT_W = 240, IT_H = 96, BIN_Y = 448, BIN_H = 150, TOOL_X = 30, TOOL_W = 150;
 const TOOL_NAME: Record<Tool, string> = { magnet: "tMagnet", torch: "tTorch", tank: "tTank", tester: "tTester", flame: "tFlame", iodine: "tIodine", paper: "tPaper", biuret: "tBiuret", turmeric: "tTurmeric", litmus: "tLitmus", rose: "tRose" };
@@ -200,7 +201,7 @@ function create(api: EngineApi, spec: SortSpec): EngineInstance {
     drawTool(ctx, now);
     for (const f of g.flying) { const tone = f.verdict === "right" ? C.mint : f.t > 0 ? C.ion : C.amber; drawItem(ctx, f, f.t > 0.6 ? clamp(1 - (f.t - 0.6) / 0.3, 0, 1) : 1, tone); if (f.verdict !== "right" && f.t < 0) magnifier(ctx, f.x + IT_W / 2 + 4, f.y - IT_H / 2, C.amber, 0.85); if (f.verdict === "right" && f.t > 0.3) tick(ctx, f.x + IT_W / 2, f.y - IT_H / 2, C.mint, 0.8); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.roundR}/${g.roundN}`, T.sorted], [String(g.tests), T.tests]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.sorted], [String(g.tests), T.tests]] });
     drawCoach(api, ctx, T.coach, flow.state === "play" ? g.coachA : 0, now, 120);

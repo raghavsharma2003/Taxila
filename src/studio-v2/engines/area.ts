@@ -9,6 +9,7 @@ import { bloom, roundRect, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
 const AREA = { x: 60, y: 168, w: 880, h: 420 };
 interface Rect { c: number; r: number; w: number; h: number }
@@ -39,7 +40,7 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
   function startRound(i: number) {
     g.r = i; g.state = "intro"; g.stateT = 0; g.t = 0; g.introA = 0; g.attempts = 0; g.claimed = null; g.flash = null; sprouts.length = 0;
     seedDrift(); api.tw.add(g, { introA: 1 }, { dur: 0.45 });
-    api.task(`${T.round} ${i + 1}/${spec.rounds.length}`, goalText() + (round().different ? ` · ${T.newShape}` : ""));
+    api.task(`${T.round} ${dots(i, spec.rounds.length)}`, goalText() + (round().different ? ` · ${T.newShape}` : ""));
     sfx.blip({ f: 220, f2: 440, dur: 0.35, type: "triangle", gain: 0.12 });
     api.event("round_start", { round: i + 1, goal: round().goal, target: round().target, targets: round().targets ?? null });
   }
@@ -91,7 +92,7 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
     const q = g.drag ? rectOf(g.drag.a, g.drag.b) : g.claimed;
     hud.set("area", q ? `${q.w * q.h}` : "—", { tone: q && round().goal === "area" && q.w * q.h === round().target ? "mint" : null });
     hud.set("per", q ? `${2 * (q.w + q.h)}` : "—", { tone: q && round().goal !== "area" && 2 * (q.w + q.h) === round().target ? "mint" : null });
-    if (g.r >= 0) hud.set("plot", `${g.r + 1}/${spec.rounds.length}`);
+    if (g.r >= 0) hud.set("plot", `${dots(g.r, spec.rounds.length)}`);
   }
   function paintBg(c: Ctx) {
     const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#0A0D12"); gr.addColorStop(1, "#0F1511"); c.fillStyle = gr; c.fillRect(0, 0, W, H);
@@ -147,7 +148,7 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
     fx.drawWorld(ctx);
     ctx.restore();
     if (g.compare && g.state === "end") drawCompare(ctx, g.compare, g.endA);
-    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${g.r + 1} / ${spec.rounds.length}`, title: round().goal === "maxArea" ? "Most area" : round().goal === "area" ? `Area ${round().target}` : `Perimeter ${round().target}`, sub: round().different ? T.newShape : goalText(), accent: C.mint });
+    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${dots(g.r, spec.rounds.length)}`, title: round().goal === "maxArea" ? "Most area" : round().goal === "area" ? `Area ${round().target}` : `Perimeter ${round().target}`, sub: round().different ? T.newShape : goalText(), accent: C.mint });
     if (g.state === "end" && !g.compare) { const res = g.results[g.results.length - 1]; drawStatCard(api, ctx, { a: g.endA, head: res?.verdict === "right" ? `${T.round} ${g.r + 1} · ${T.claim}` : T.timeUp, color: res?.verdict === "right" ? C.mint : C.amber, ticked: res?.verdict === "right", stats: [[res && res.w ? `${res.w}×${res.h}` : "—", "shape"], [res && res.w ? `${res.w * res.h}` : "—", T.area], [`${res?.attempts ?? 0}`, "tries"]] }); }
     if (g.state === "final") drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.results.filter((r) => r.verdict === "right").length}/${spec.rounds.length}`, "plots"], [`${g.results.reduce((a, b) => a + b.attempts, 0)}`, "tries"]] });
     // (the coach line only where it fits above the grid: the grid fills the play area, and on a laptop the task pill and HUD reach

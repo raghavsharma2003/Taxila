@@ -9,6 +9,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
 const L = 380, BH = 58, G0 = 520;
 interface Bar { wave: number; idx: number; cut?: number; parts?: number; label: string; x: number; y: number; vx: number; vy: number; rot: number; vr: number; cuts: number[]; done: boolean; t: number; a: number }
@@ -199,7 +200,7 @@ function create(api: EngineApi, spec: SliceSpec): EngineInstance {
     fx.drawWorld(ctx);
     ctx.restore();
     if (g.compare && g.compare.a > 0.01) drawCompare(ctx, g.compare);
-    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.wave} ${g.waveIdx + 1} / ${spec.waves.length}`, title: wave().title, sub: wave().sub });
+    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.wave} ${dots(g.waveIdx, spec.waves.length)}`, title: wave().title, sub: wave().sub });
     if (g.state === "end" && !g.compare) drawStatCard(api, ctx, { a: g.endA, head: `${T.wave} ${g.waveIdx + 1}`, ticked: true, stats: [[`${g.waveRes.filter((r) => r.verdict === "right").length}/${g.waveRes.length}`, T.sliced], [`${accOf(g.waveRes)}%`, T.accuracy], [`×${g.best}`, T.chain]] });
     if (g.state === "final") { const worst = [...g.results].sort((a, b) => b.err - a.err)[0]; drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.results.filter((r) => r.verdict === "right").length}/${g.results.length}`, T.sliced], [`${accOf(g.results)}%`, T.accuracy], [`×${g.best}`, T.chain]], foot: worst && worst.err > 0.035 ? `toughest: ${worst.label}` : undefined }); }
     drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now);

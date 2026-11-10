@@ -144,9 +144,10 @@ describe("item 4: the legend", () => {
     assert.ok(BOARD_WORDS.includes("answer") && BOARD_WORDS.includes("jawab"), "its words are template words for the live gate");
     assert.equal(words(ok({ ...call, legend: false })).length, 0);
     assert.equal(words(ok({ template: "fraction-parts@1", parts: 4, shade: 1, whole: "bar", mixup: "4 parts make the whole", legend: false })).length, 0);
-    // (by default only on a board that uses the new grammar — a mix-up or a relation — with 2+ roles: an authored board's
-    // words stay the ones it was certified with)
-    assert.equal(words(ok(plain)).length, 0);
+    // (main 2026-11-10: the default on every full board with 2+ meaning roles — Learning's checker takes BOARD_WORDS; a split
+    // panel or picture view passes legend: false, tests/r8-held-board and r8-picture-turn)
+    assert.deepEqual(words(ok(plain)), ["shaded part", "your answer"]);
+    assert.equal(words(ok({ template: "fraction-bars@1", bars: [{ parts: 2, shade: 1, label: "1/2" }] })).length, 0, "one meaning role: no legend");
     assert.deepEqual(words(ok({ ...plain, mixup: "same size, more parts" })), ["shaded part", "your answer", "easy to mix up"]);
   });
   it("swatches draw each role's shape (the legend survives greyscale too)", () => {

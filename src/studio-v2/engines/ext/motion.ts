@@ -10,6 +10,7 @@ import { sfx } from "../../core/sfx.ts";
 import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, fmtNum, taskPill, textBlock } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
 
 const SL = { x0: 170, x1: 690, y: 572 };
 const BTN = { swing: { x: 800, y: 250, w: 170, h: 70 }, lock: { x: 800, y: 510, w: 170, h: 70 }, run: { x: 800, y: 510, w: 170, h: 70 }, pedal: { x: 790, y: 330, w: 180, h: 240 } };
@@ -158,7 +159,7 @@ function create(api: EngineApi, spec: MotionSpec): EngineInstance {
     }
     if (done) { if (ok) tick(ctx, 765, 200, C.mint, 1); else magnifier(ctx, 760, 200, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
   }

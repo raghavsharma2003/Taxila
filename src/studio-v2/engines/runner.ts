@@ -9,6 +9,7 @@ import { bloom, magnifier, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
 const LY = 440, X0 = 90, X1 = 910, BASE_V = 170;
 const fmt = (v: number) => { const s = Math.abs(v) < 1e-9 ? "0" : (Math.round(v * 1000) / 1000).toString(); return s.replace("-", "−"); };
@@ -88,7 +89,7 @@ function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
     }
     if (g.state === "end" && g.stateT > 3.1) { if (g.r + 1 < spec.rounds.length) startRound(g.r + 1); else { g.state = "final"; g.finalA = 0; api.tw.add(g, { finalA: 1 }, { dur: 0.6 }); api.done({ gates: g.results.length, through: g.results.filter((x) => x.verdict === "right").length, accuracy: accOf(g.results) }); } }
     if (g.state !== "final" && g.r >= 0) {
-      hud.set("round", `${g.r + 1}/${spec.rounds.length}`);
+      hud.set("round", `${dots(g.r, spec.rounds.length)}`);
       hud.set("chain", `×${g.chain}`, { bump: true, tone: g.chain >= 3 ? "ion" : null });
       const a = g.results.length ? accOf(g.results) : null; hud.set("acc", a == null ? "—" : `${a}%`, { meter: a == null ? 0 : a / 100, tone: a != null && a >= 85 ? "mint" : null });
     }
@@ -162,7 +163,7 @@ function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
       api.text(ctx, fmt(callVal()), 500, 225, { font: "display", size: 104, weight: 800, align: "center", baseline: "middle", glow: C.ion });
       ctx.restore();
     }
-    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${g.r + 1} / ${spec.rounds.length}`, title: round().title, sub: round().sub });
+    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${dots(g.r, spec.rounds.length)}`, title: round().title, sub: round().sub });
     if (g.state === "end") drawStatCard(api, ctx, { a: g.endA, head: `${T.round} ${g.r + 1}`, ticked: true, stats: [[`${g.roundRes.filter((r) => r.verdict === "right").length}/${g.roundRes.length}`, T.gates], [`${accOf(g.roundRes)}%`, T.accuracy], [`×${g.best}`, T.chain]] });
     if (g.state === "final") { const worst = [...g.results].sort((a, b) => b.err - a.err)[0]; drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.results.filter((r) => r.verdict === "right").length}/${g.results.length}`, T.gates], [`${accOf(g.results)}%`, T.accuracy], [`×${g.best}`, T.chain]], foot: worst && worst.err > 0.025 ? `toughest: ${worst.call.replace("-", "−")}` : undefined }); }
     drawCoach(api, ctx, T.coach, g.state === "run" ? g.coachA : 0, now, 590);

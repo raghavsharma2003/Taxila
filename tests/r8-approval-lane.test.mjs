@@ -175,9 +175,24 @@ test("approval lane: a content refusal on a romanised number word says so in pla
   assert.deepEqual(numberWords("Teenon hisse barabar"), [], "a word that only begins with one is not one");
   assert.deepEqual(numberWords("3 hisse"), []);
   const why = attemptOutcome({ ok: true, payload: { spec: {} }, checks: { contentSafe: false, contentFindings: [{ key: "waves.1.title", code: "content_safety_2", text: "Teen hisse" }] } }).why;
-  assert.match(why, /"Teen hisse" \(waves\.1\.title\) carries the number word "teen".*write the number in digits/);
+  // (main 2026-11-10: the cause is likely, not proven — the message says so)
+  assert.match(why, /the content check scored "Teen hisse" \(waves\.1\.title\) 2; number words such as 'teen' are the likely cause: write digits/);
   // (and the spec prompt asks for digits — the rule last, where rules that must fire go)
   const { specPrompt } = await import("../server/stagecraft/builders.js");
   const m = specPrompt({ id: "x", archetype: "slice-at@1", kind: "game", need: "contrast_misconception", premise: { misconceptionId: "c4-maths-ch05-t01-m-unequal-parts" } }, { topicId: "c4-maths-ch05-t01", band: "B3", lang: "hinglish", misconceptionId: "c4-maths-ch05-t01-m-unequal-parts" });
   assert.match(m.at(-1).content, /as digits \(3 hisse\), never as words \(teen, chaar\)\. Return only the JSON\.$/);
+});
+
+test("approval lane, predicate (main 2026-11-10, c5-t02 withdrawn): every value a line piece asks the child to place lands exactly on a tick of its line", async () => {
+  const { valuesOnTicks } = await import("../server/studio/approved.js");
+  const wave = (ticks, scaffoldTicks, items) => ({ title: "w", sub: "s", line: [0, 1], ticks, scaffoldTicks, speed: 90, gap: 2, items });
+  assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(8, 8, [["1/2"], ["1/4"], ["1/8"], ["3/8"]])] }).ok, true);
+  const off = valuesOnTicks("catch-on-line@1", { waves: [wave(8, 8, [["1/3"], ["1/6"]])] });
+  assert.equal(off.ok, false); assert.match(off.why, /1\/3 is not on a tick of a line with ticks 8/);
+  assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(0, 0, [["1/3"]])] }).ok, true, "an unmarked line holds any value");
+  assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(0, 4, [["1/3"]])] }).ok, false, "a scaffold that is drawn must hold it too");
+  assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(6, 6, [["1/2", "3/6"], ["1 1/3"]])] }).ok, true, "a mixed number, and both labels of a pod");
+  // (the store: the two withdrawn pilots are gone, c6 stays)
+  assert.ok(!fs.existsSync(path.join(ROOT, "data/studio-approved/c5-maths-ch02-t02")) && !fs.existsSync(path.join(ROOT, "data/studio-approved/c4-maths-ch05-t01")));
+  assert.ok(fs.existsSync(path.join(ROOT, "data/studio-approved/c6-maths-ch06-t01")));
 });

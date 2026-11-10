@@ -279,7 +279,7 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
     if (card0 && (ownAlt || remAlt)) {
       const ac0 = ownAlt ? altCall(ask.intent.boardRef, { line: predicted, withheld: ctx.withhold?.values ?? [], keys: liveKeys(ask, ""), up: cardUp ? upRefOf(avoidRef) : null }) : remAlt;
       const { view, ...ac } = ac0 ?? {};
-      const ax = ac0 ? expand(ac, { band, lang: ask?.intent?.style?.lang ?? null }) : null;
+      const ax = ac0 ? expand({ ...ac, legend: false }, { band, lang: ask?.intent?.style?.lang ?? null }) : null;
       // (judged against a line that says the bars — her line is written from this row: "2 barabar bar: ek 6 barabar hisson mein …")
       const say = altSay(ac0);
       if (ax?.ok) cands.unshift({ by: "script", template: ac.template, script: ax.script, facts: ax.script.facts, altView: ALT_VIEWS.has(view) ? view : "parts", say, call: ac });
@@ -1054,11 +1054,12 @@ export function pageOnBoard(script, board) {
  *  board's words have today; at 360 × 800 and wider the scale only grows. */
 export const SPLIT_BOARD = Object.freeze({ w: 640, h: 300, panel: 320 });
 /** A board ref drawn as authored (no line, no gate): → { script, template, facts } or null. */
-function drawRef(ref, { band = "B3", lang = null } = {}) {
+// (panel: the board is drawn as one half of a split — never with a legend: a legend is for a full board only, main 2026-11-10)
+function drawRef(ref, { band = "B3", lang = null, panel = false } = {}) {
   try {
     const rr = resolveBoardRef(ref, {});
     if (!rr.ok) return null;
-    const x = expand(rr.call, { band, lang });
+    const x = expand(panel ? { ...rr.call, legend: false } : rr.call, { band, lang });
     return x?.ok ? { script: fitLegible(x.script), template: rr.call.template, facts: x.script.facts ?? x.facts } : null;
   } catch { return null; }
 }
@@ -1103,11 +1104,13 @@ export function pictureTurn(ask, { keepRef = null, keepPage = null, variant = 0 
     const none = { board, view: null, line: null, script: null, layout: { split: false } };
     const v = heldViewCall(ask, variant);
     if (!v) return none;
-    const ax = expand(v.call, { band, lang });
+    const ax = expand({ ...v.call, legend: false }, { band, lang });
     if (!ax?.ok) return none;
     const right = fitLegible(ax.script);
     const upSame = !!keepRef && refKey(h.board) === keepRef && !!keepPage?.ops?.length;
-    const script = splitBoard(board.script, right, { leftStill: upSame });
+    // (the held board as a split's left panel is drawn without its legend: a legend is for a full board)
+    const panel = drawRef(h.board, { band, lang, panel: true }) ?? board;
+    const script = splitBoard(panel.script, right, { leftStill: upSame });
     if (!script) { heldCounts.splitRefused++; return none; }
     // (v6.11: her picture line never states the open card's key, in digits or in words — a naming clause that would is dropped;
     // a line that still states it has no view at all)

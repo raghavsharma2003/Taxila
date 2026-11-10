@@ -2123,13 +2123,13 @@ function derivedCounts(call, facts = {}) {
  * role's own SHAPE (a tinted box, a dashed box, a ring, a dashed line), and its label (≤ 24 characters, the board's
  * language) — laid out below the figure in at most 3 rows. Drawn when the call asks (`legend: true`), or when a board that
  * uses the new grammar (a mix-up marker or a relation line) carries two or more meaning roles; never with `legend: false`.
- * (Not by default on every board with two roles: a legend writes words her line does not say — W5 — and the authored
- * boards of the four pilots were certified without them. Reverse once Learning's checker takes BOARD_WORDS as template words.)
+ * Since 2026-11-10 the default on every full board with two or more meaning roles; never in a split panel.
  */
 function legendRows(tl, c, labels = {}) {
   const used = MEANING_ROLES.filter((r) => tl.ops.some((o) => o.role === r));
-  const grammar = c.mixup != null || c.relation != null;
-  if (c.legend === false || !used.length || (c.legend !== true && !(grammar && used.length >= 2))) return {};
+  // (main 2026-11-10: the legend is the default on every FULL board with 2+ meaning roles — Learning's checker takes BOARD_WORDS;
+  // a split panel or a picture view passes legend: false, server/stagecraft/board-first.js)
+  if (c.legend === false || !used.length || (c.legend !== true && used.length < 2)) return {};
   const words = { ...LEGEND[langOf(c)], ...labels };
   const items = used.map((r) => ({ r, t: String(words[r] ?? r) }));
   if (items.some((i) => [...i.t].length > 24 || textProblem(i.t))) return { error: "legend_label" };

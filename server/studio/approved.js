@@ -26,13 +26,13 @@ export const APPROVAL_SIZES = Object.freeze(["p412", "l1366"]);
 export const PILOT_TARGETS = Object.freeze([
   // (main 2026-11-10, after the retry judge: each `how` in the engine's own terms)
   { topicId: "c4-maths-ch05-t01", archetype: "slice-at@1", misconceptionId: "c4-maths-ch05-t01-m-unequal-parts",
-    how: "marks false on every wave (marks draw the equal cut points: the child must judge equal size herself); every wave's sub agrees with its own items (a wave of {parts: 4} says chaar, never teen); one count per wave; plain Roman Hinglish, no Devanagari" },
+    how: "marks false on every wave (marks draw the equal cut points: the child must judge equal size herself); every wave's sub agrees with its own items (a wave of {parts: 4} says chaar, never teen); one count per wave; no sub states the rule (never that the pieces must be the same size): subs say only what to do; plain Roman Hinglish" },
   { topicId: "c5-maths-ch02-t01", archetype: "catch-on-line@1", misconceptionId: "c5-maths-ch02-t01-m-count-marks",
     how: "ticks is the number of EQUAL GAPS from 0 to 1 (ticks 4 draws 3 marks). Set every wave's ticks to its fractions' denominator (thirds: ticks 3) and scaffoldTicks equal to ticks; every item lands on a mark; no title or sub says where an item goes (never middle, half, pehla or any mark); subs say only what to do; Roman Hinglish only" },
   // (catch-on-line's pods hold ONE value — two labels in a pod must be equal: the mix-up is shown by catching unit fractions one
   // at a time on one line, never by pairing two to compare; the first two calls paired 1/4 with 1/8 and fell back)
   { topicId: "c5-maths-ch02-t02", archetype: "catch-on-line@1", misconceptionId: "c5-maths-ch02-t02-m-bigger-denominator",
-    how: "catch unit fractions one at a time on ONE 0 to 1 line (1/2, 1/3, 1/4, 1/6, 1/8, one fraction per item, never two different fractions in one item), so 1/8 lands nearest 0 and 1/2 farthest; a later wave may mark only the half; no title or sub states the rule she must find or names where an item goes (no 'half mark', never that a bigger bottom number makes a smaller piece): they say only what to do" },
+    how: "catch unit fractions one per item on ONE 0 to 1 line; ticks a common multiple of every denominator on that line (1/2, 1/4, 1/8: ticks 8; 1/3, 1/6: ticks 6) so each lands on a tick; 1/8 lands nearest 0; no title or sub names where an item goes or says a bigger bottom number makes a smaller piece: subs say only what to do" },
   { topicId: "c6-maths-ch06-t01", archetype: "area-claim@1", misconceptionId: "c6-maths-ch06-t01-m-area-perimeter",
     how: "every string plain class-6 Hinglish in Roman script: no stake, claim, plot, sq or units in English. The goal reads '<area> <n> <sq> <units>' and '<perimeter> <n> <units>', so set sq to varg and units to ikai (area 40 varg ikai); coach like Grid par khet banao; claim like BAN GAYA" },
 ]);
@@ -66,12 +66,14 @@ export function beatFor(topicId, misconceptionId) {
  */
 /** Romanised Hindi number words a content check reads as English (main 2026-11-10: "Teen hisse" failed content_safety_2 three
  *  times, "teen" read as the English word): a string carrying one should write the number in digits. → the words found. */
-const NUMBER_WORDS = ["ek", "do", "teen", "chaar", "char", "paanch", "panch", "chhe", "che", "saat", "aath", "nau", "das", "gyarah", "barah"];
+// (only the number words that are ALSO English words a content check reads as sensitive: "teen". "do", "char", "das" are
+// ordinary English or harmless and would warn on every English explainer)
+const NUMBER_WORDS = ["teen"];
 export function numberWords(text) { const t = String(text ?? "").toLowerCase(); return NUMBER_WORDS.filter((w) => new RegExp(`(^|[^a-z])${w}([^a-z]|$)`).test(t)); }
 /** The plain-words reason for a content refusal that a number word explains. */
 export function numberWordHint(findings) {
   const hits = (findings ?? []).filter((f) => f.text && numberWords(f.text).length);
-  return hits.length ? `; ${hits.map((f) => `"${f.text}" (${f.key}) carries the number word ${numberWords(f.text).map((w) => `"${w}"`).join(", ")}: the content check reads it as English — write the number in digits`).join("; ")}` : "";
+  return hits.length ? `; ${hits.map((f) => `the content check scored "${f.text}" (${f.key}) ${String(f.code).replace(/^content_safety_/, "")}; number words such as ${numberWords(f.text).map((w) => `'${w}'`).join(", ")} are the likely cause: write digits`).join("; ")}` : "";
 }
 export function attemptOutcome(r) {
   if (!r?.ok) return { kind: "refused", why: String(r?.why ?? "refused") };
@@ -79,6 +81,29 @@ export function attemptOutcome(r) {
   const failed = Object.entries(r.checks ?? {}).filter(([k, v]) => v === false || (v && typeof v === "object" && v.ok === false)).map(([k]) => k);
   if (failed.length) return { kind: "refused", why: `ok, but its checks failed: ${failed.join(", ")}${numberWordHint(r.checks?.contentFindings)}` };
   return { kind: "candidate" };
+}
+
+/**
+ * main 2026-11-10 (c5-t02's approval withdrawn: 1/3 and 1/6 asked on a line of eighth ticks): every value a spec asks the
+ * child to place lands EXACTLY on a tick of the line it is on — the board must be able to show its own answer. A predicate,
+ * not an instruction. catch-on-line@1: a wave's `ticks` (and `scaffoldTicks`, when its scaffold is drawn) is the number of
+ * equal gaps per unit; 0 or 1 draws no inner tick (an unmarked line holds any value). → { ok, why, misses: [...] }.
+ */
+export function valuesOnTicks(archetype, spec) {
+  const misses = [];
+  const val = (t) => { const m = /^\s*(\d+)\s+(\d+)\s*\/\s*(\d+)\s*$/.exec(String(t)) ?? null; if (m) return [Number(m[1]) * Number(m[3]) + Number(m[2]), Number(m[3])];
+    const f = /^\s*(\d+)\s*\/\s*(\d+)\s*$/.exec(String(t)); if (f) return [Number(f[1]), Number(f[2])]; const n = /^\s*(\d+)\s*$/.exec(String(t)); return n ? [Number(n[1]), 1] : null; };
+  if (archetype === "catch-on-line@1") {
+    for (const [wi, w] of (spec?.waves ?? []).entries()) for (const it of w.items ?? []) for (const label of [].concat(it)) {
+      const v = val(label);
+      if (!v) continue;
+      for (const [name, t] of [["ticks", w.ticks], ["scaffoldTicks", w.scaffoldTicks]]) {
+        if (!(Number(t) > 1)) continue;
+        if ((v[0] * t) % v[1] !== 0) misses.push(`wave ${wi + 1} "${w.title ?? ""}": ${label} is not on a tick of a line with ${name} ${t}`);
+      }
+    }
+  }
+  return { ok: misses.length === 0, why: misses.length ? misses.slice(0, 4).join("; ") : null, misses };
 }
 
 let memo = null, storeDir = STORE_DIR;
