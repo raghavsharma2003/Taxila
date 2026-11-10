@@ -27,3 +27,17 @@ export function assertPickWork(label, picked, calls, { maxConsidered, maxCalls }
   if (picked.considered > maxConsidered) throw new Error(`${label}: considered ${picked.considered} candidates (bound ${maxConsidered}, picker cap ${PICK_CANDIDATE_CAP})`);
   if (calls > maxCalls) throw new Error(`${label}: ${calls} calls into the family logic (bound ${maxCalls})`);
 }
+
+/**
+ * How much more CPU the work takes on a bigger input, as a ratio of MEDIANS taken in the same run. A millisecond limit measures
+ * the machine as much as the code; a growth ratio does not (both sides slow down together) and still catches the regression
+ * such a limit guards against (a loop that went quadratic, a table scanned per call). Linear work on k times the input gives
+ * about k; assert a bound a few times above that.
+ */
+export function growth(runSmall, runBig, { reps = 40, warm = 5, batch = 1 } = {}) {
+  const cpu = () => { const u = process.cpuUsage(); return (u.user + u.system) / 1000; };
+  const many = (run) => () => { for (let i = 0; i < batch; i++) run(); };
+  const med = (r) => { const run = many(r); for (let i = 0; i < warm; i++) run(); const xs = []; for (let i = 0; i < reps; i++) { const t0 = cpu(); run(); xs.push(cpu() - t0); } xs.sort((a, b) => a - b); return xs[Math.floor(xs.length / 2)] || 1e-3; };
+  const small = med(runSmall), big = med(runBig);
+  return { small, big, ratio: big / small };
+}

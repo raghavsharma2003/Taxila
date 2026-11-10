@@ -627,9 +627,12 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     const was = prevFloor.current;
     prevFloor.current = floor;
     if ((was === "speaking" || was === "showing") && floor !== "speaking" && floor !== "showing" && teacherCap?.final) setPolite(teacherCap.text);
+    // JRN-01: her sound failed, so the floor went from thinking straight back to the child: her words are what she "said"
+    // (before, "Asha is thinking" stayed in the live region and her line was never announced)
+    else if (facts.tts && (was === "thinking" || was === "heard") && (floor === "your_turn" || floor === "idle") && teacherCap?.final) setPolite(teacherCap.text);
     else if (floor === "thinking") setPolite(t("sr.thinking", { T: ctx.teacherName }));
     else if (floor === "listening") setPolite(t("sr.listening"));
-  }, [floor, teacherCap, ctx.teacherName]);
+  }, [floor, teacherCap, ctx.teacherName, facts.tts]);
 
   // ───────── starting: no second start gate ─────────
   const [gate, setGate] = useState<null | "starting" | "locked">(null);
@@ -826,7 +829,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     // r7 (3b): Brain's ofCard flag on the page now up; absent → never waits (today's behaviour)
     askWaiting: cardWaiting({ hasAsk: !!item.ask, hasAnswer: !!answer, ofCard: geometryOut === "work" && tray?.kind === "studio" ? pageOfCard(cardBoard, boardPage) : undefined,
       handedOver: floor === "your_turn" || floor === "yielding" }),
-    caption: { text: teacherCap?.text ?? "", speaking: floor === "speaking" || floor === "showing", mode: captionsOn ? "phrase" : "icons", lang: langAttr(ctx.lessonLang) },
+    caption: { text: teacherCap?.text ?? "", speaking: floor === "speaking" || floor === "showing", mode: captionsOn ? "phrase" : "icons", lang: langAttr(ctx.lessonLang), soundFailed: facts.tts },
     tray: tray && geometryOut === "work" ? { ...tray } : null,
     answerForm,
     phase,

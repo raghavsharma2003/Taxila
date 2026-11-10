@@ -14,7 +14,7 @@ before(() => { if (!hadPerf) globalThis.performance = { now: () => Date.now() };
 after(() => { if (!hadPerf) delete globalThis.performance; });
 const { PuppetDriver } = await import("../src/face-puppet/driver.ts");
 const { Behaviour } = await import("../src/avatar/behaviour.ts");
-const DIR = new URL("../evals/face-puppet/out/diya/", import.meta.url).pathname;
+const DIR = new URL("./fixtures/eval-results/face-puppet/out/diya/", import.meta.url).pathname;
 const SR = 24000, FPS = 60;
 
 function speech() {

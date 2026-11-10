@@ -167,12 +167,11 @@ test("14.4: the labels read distress and the words read is slow: the turn waits 
 test("14.4: a words read with no answer within the cap is unnamed: the full script", async () => {
   process.env.TAXILA_BESIDE_CAP_MS = "300";
   try {
-    const t0 = Date.now();
+    // the words read answers an hour from now (unref'd, so it never holds the process): run() returning proves the 300 ms cap decided
     const { out } = await run({ labels: () => json(label({ distress: true })),
-      "beside@grok-4-1-fast-non-reasoning": () => new Promise((r) => setTimeout(() => r(json({ distress: false, about: "none" })), 2500)) });
+      "beside@grok-4-1-fast-non-reasoning": () => new Promise((r) => { setTimeout(() => r(json({ distress: false, about: "none" })), 3_600_000).unref(); }) });
     assert.equal(out.flags.distress, true);
     assert.equal(out.flags.distressAbout, undefined, "no name: never a check-in");
-    assert.ok(Date.now() - t0 < 2400, `waited ${Date.now() - t0} ms`);
   } finally { delete process.env.TAXILA_BESIDE_CAP_MS; }
 });
 

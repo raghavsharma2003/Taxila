@@ -277,7 +277,7 @@ describe("r7-brain-v68.test.mjs", () => {
   // 36; b: c4 steady 36, offtopic 34, c5-t02 offtopic 32; c: c4 steady 18, c5-t02 stuck 18) — retired as a gate input above 1 miss —
   // and every silently pinned card as "an unsaid card on screen"
   describe("H5: the held-board counter on director16", () => {
-    const D = new URL("../evals/hybrid-side-by-side/results/2026-11-09-director16/", import.meta.url).pathname;
+    const D = new URL("./fixtures/eval-results/hybrid-side-by-side/results/2026-11-09-director16/", import.meta.url).pathname;
     const flagged = new Map();
     for (const f of readdirSync(D).filter((x) => x.endsWith(".json") && x !== "meter.json")) {
       const j = JSON.parse(readFileSync(D + f, "utf8"));

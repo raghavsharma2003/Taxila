@@ -46,10 +46,10 @@ test("it is never a test: no question marks, no score words, no exclamation, fac
 test("set-up asks the parent the same, optional, and posts parentView after the child exists and before the PIN", () => {
   const c = read("src/onboarding/ChildProfile.tsx");
   const iChapters = c.indexOf("parentApi.setSchoolChapter(child.id");
-  const iView = c.indexOf("parentApi.setParentView(child.id, d.parentView)");
+  const iView = c.indexOf("parentApi.setParentView(child.id, views)");   // audit LEARN-44: views = parentViewToSend(…)
   const iPin = c.indexOf('await postJson("/api/parent/pin", { pin: pin1 }); pinSaved = true');
   assert.ok(iChapters > 0 && iView > iChapters && iPin > iView, "chapters, then the parent's view, then the PIN");
-  assert.match(c, /feelSubjects\(cl\)\.map\(\(s\) => \(\s*<FeelPicker/);
+  assert.match(c, /feelChipsFor\(cl, bookSubjects\)\.map\(\(s\) => \(\s*<FeelPicker/);   // audit LEARN-44: only the class's books
   assert.match(c, /if \(v === "unsure"\) delete pv\[s\]; else pv\[s\] = v;/);
   assert.doesNotMatch(c.slice(c.indexOf('data-testid="onb-feel"'), c.indexOf('data-testid="onb-feel"') + 1500), /\b(behind|on track|ahead)\b/i, "no level word to the parent");
 });
