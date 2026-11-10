@@ -1,0 +1,33 @@
+{
+ "nodes": [
+  {
+   "id": "rj-r7-audit-uncaught-decode-kills-replica",
+   "kind": "rejection",
+   "title": "A throw in the http request listener of server/serve.mjs is an uncaught exception: one GET /% (malformed percent-escape) exited the web process",
+   "at": "2026-11-09"
+  },
+  {
+   "id": "rj-r7-audit-rollback-fallback-picks-failed-revision",
+   "kind": "rejection",
+   "title": "deploy-azure --rollback guessed the previous revision when no `previous` label existed; after a failed smoke the newest non-current revision is the one that just failed",
+   "at": "2026-11-09"
+  },
+  {
+   "id": "rj-r7-audit-count-then-write-try-limit",
+   "kind": "rejection",
+   "title": "A try limit that counts, tests, then writes the attempt does not hold under parallel requests; write the attempt first, then count",
+   "at": "2026-11-09"
+  },
+  {
+   "id": "op-r7-audit-worker-image-needs-src",
+   "kind": "decision",
+   "title": "The worker image copies src/: the nightly job's sweep imports routes/account.js, whose static imports reach src/modules/frame/engines/*.logic.ts; without it trace retention never ran",
+   "at": "2026-11-10"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "rejected": "## rj-r7-audit-uncaught-decode-kills-replica\n**What was there:** `decodeURIComponent(req.url…)` at the top of the request listener in `server/serve.mjs`, outside any try. **What broke:** `GET /%` threw `URIError`; nothing under `server/` handles `uncaughtException`, so the process exited and every lesson, stream and voice socket on the replica dropped, from one request with no sign-in (reproduced locally, n=1, 2026-11-09). **Now:** the decode is caught and answers 400 (`6fa4df68`, `tests/r7-audit-platform-serve.test.mjs`). **Rule:** code that runs in the bare listener before `handle()` must not throw; the router's try/catch does not cover it. The same decode in `parseCookies` turned any cookie with a bare `%` into a 500 on every signed-in route.\n\n## rj-r7-audit-rollback-fallback-picks-failed-revision\n**What was there:** `trafficRoles` in `scripts/deploy-azure.mjs` fell back to the newest revision that was not current and not `Unhealthy` when no traffic entry carried the `previous` label. **What broke (read from the code, not run against Azure):** the deploy's own PATCH drops the `previous` label, and a failed smoke leaves traffic as `[prev current]` with the new revision deactivated, so the fallback chose the failed revision and `rollback()` re-activated it at 100%; `release.mjs` printed the rollback hint exactly in that case. **Now (`891d1d8c`):** rollback goes to the captured revision and never guesses. **Rule:** a rollback target is recorded before the change, never inferred after it.\n\n## rj-r7-audit-count-then-write-try-limit\n**What was there:** `verifyCode` in `server/signin/code.js` read the wrong-try count, tested the code, then inserted the attempt. **What broke:** requests sent together all read a count under the limit, so the 5-try bound did not hold; and each new code reset the count while older codes stayed valid. **Now (`14b31b7b`):** the attempt is written before it is counted, and a new code spends the earlier ones. The in-process burst limiter in front (`server/routes/parent.js` `rateLimit`) is keyed on a caller-chosen value and is still open with Learning (audit PLAT-10).\n",
+  "decisions": "## op-r7-audit-worker-image-needs-src\n**`Dockerfile.worker` copies `src/` (`891d1d8c`).** `server/conductor/ops.mjs --nightly` runs in the worker image and calls `sweepTestAccounts`, which imports `server/routes/account.js`; its static imports reach `server/director/engine-check.js`, which imports `src/modules/frame/engines/*.logic.ts`. Without `src/` the import threw, the outer catch ended the job, and the next line, the only caller of `traceRetention` (30/90-day deletion of recordings), never ran. The worker's own boot graph has no `src/` import, so the worker started fine and the existing image tests (which check `Dockerfile` and `worker.mjs`) saw nothing. **Reverse if:** the sweep stops importing route modules (for example `SAFETY_OPEN_SQL` moves to a leaf module) and a test proves the nightly job's whole import graph stays inside `server/`, `shared/`, `data/`.\n"
+ }
+}
