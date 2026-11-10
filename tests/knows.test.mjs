@@ -116,7 +116,7 @@ test("K1: every skill compressed → allKnown with a record (the caller decides 
 test("K4: a wheel-spinning skill gets its prerequisite checked in the warm-up", () => {
   const brief = { prereqCheck: { skillId: A, forTopicId: TOPIC, prereqTopicId: "c8-test-ch02-t01" } };
   const r = prereqCheckOf({ brief });
-  assert.deepEqual(r.prereqCheck, { skillId: A, topicId: "c8-test-ch02-t01" });
+  assert.deepEqual(r.prereqCheck, { skillId: A, topicId: "c8-test-ch02-t01", prereqSkillId: null });
   assert.equal(r.because[0].fact.kind, "wheel_spin"); assert.match(r.because[0].source, /R5/);
   assert.deepEqual(prereqCheckOf({ brief: { prereqCheck: { skillId: A } } }), { prereqCheck: null, because: [] });
   assert.deepEqual(prereqCheckOf({ brief: null }), { prereqCheck: null, because: [] });
