@@ -76,8 +76,48 @@ if (DRY) {
     const w = said ? (said.toLowerCase().match(/\p{L}{4,}/gu) ?? []).find((x) => !J2_SKIP.has(x)) : null;
     return w ? `${w[0].toUpperCase()}${w.slice(1)} wala pal sach mein zabardast lagta hoga. ${STUB}` : STUB;
   };
-  replyDeps.chat = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
-  replyDeps.chatStream = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
+  // (main, live offtopic after release 18: J2's sentence was the joint 2 times in 3. --j2-live N, with --dry: the lesson stays dry, and
+  // each turn that answers a child's reply to her return sends ITS OWN prompt to the live reply model N times; every draft's sentences
+  // are read by replyToReturnWhy (the clause that refuses each) and written to <out>/j2-replay.json. Spend is estimated before each
+  // exchange (request characters / 4 in, 300 out); an exchange that would pass --j2-usd (default 0.10) is not sent, and the run stops.
+  // Needs the reply model's endpoint: node --env-file=.env.local … --dry --j2-live 20)
+  const J2_LIVE = Number(arg("j2-live", "0"));
+  if (J2_LIVE > 0) {
+    if (!process.env.AZURE_OPENAI_ENDPOINT) { console.error("--j2-live needs the reply model: run with node --env-file=.env.local"); process.exit(2); }
+    const { usdOf } = await import("../server/azure.js");
+    const { replyToReturnWhy } = await import("../server/brain/say.js");
+    const J2_USD = Number(arg("j2-usd", "0.10"));
+    const live = replyDeps.chat;
+    const report = { n: J2_LIVE, usdCap: J2_USD, usd: 0, exchanges: [] };
+    const save = () => { mkdirSync(OUT, { recursive: true }); writeFileSync(`${OUT}/j2-replay.json`, JSON.stringify(report, null, 1) + "\n"); };
+    const sents = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?।])\s+(?=\S)/).filter(Boolean);
+    const j2Chat = async (d, msgs, opts) => {
+      const note = [...(msgs ?? [])].reverse().find((m) => m.role === "system")?.content ?? "";
+      const said = /and the child answered: "([^"]*)"/.exec(String(note))?.[1];
+      if (!said) { dryCall("reply"); return { text: dryText(msgs) }; }
+      const est = usdOf(d, { in: Math.round(JSON.stringify(msgs).length / 4), cached: 0, out: 300, reasoning: 0 }) * J2_LIVE;
+      if (report.usd + est > J2_USD) { report.stopped = `the next exchange (~$${est.toFixed(4)}) would pass $${J2_USD} (spent ~$${report.usd.toFixed(4)})`; save(); console.error(`STOP: ${report.stopped}`); process.exit(4); }
+      const x = { said, samples: [] };
+      for (let k = 0; k < J2_LIVE; k++) {
+        const r = await live(d, msgs, { ...(opts ?? {}), maxTokens: 220, effort: "none", timeoutMs: 15000 });
+        const ss = sents(r?.text).map((y) => ({ s: y, why: replyToReturnWhy(y, said) }));
+        x.samples.push({ text: r?.text ?? "", pass: ss.some((y) => y.why === null), sentences: ss });
+      }
+      report.usd += est;
+      const refused = {};
+      for (const sm of x.samples.filter((y) => !y.pass)) { const w = sm.sentences[0]?.why ?? "none"; refused[w] = (refused[w] ?? 0) + 1; }
+      x.passRate = x.samples.filter((y) => y.pass).length / J2_LIVE;
+      x.firstSentenceRefusedBy = refused;
+      report.exchanges.push(x); save();
+      dryCall("reply");
+      return { text: dryText(msgs) };
+    };
+    replyDeps.chat = j2Chat;
+    replyDeps.chatStream = async (d, msgs, opts) => j2Chat(d, msgs, opts);
+  } else {
+    replyDeps.chat = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
+    replyDeps.chatStream = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
+  }
 } else if (!process.env.AZURE_OPENAI_ENDPOINT) {
   console.error("no AZURE_OPENAI_ENDPOINT: run with node --env-file=.env.local, or --dry for the plumbing check");
   process.exit(2);
@@ -511,7 +551,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     // (v6.10 harness, main on director18 steering 50: a break or stop menu had no held record — a turn with no unit part keeps the board
     // up, and its record says so)
     if (!heldRec && lane === "director" && reply && next.heldUp?.unit) heldRec = { unit: next.heldUp.unit, changed: false, kept: true, drawn: "kept", pages: [], intent: { unit: next.heldUp.unit, noUnit: true }, layout: { split: false } };
-    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
+    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), ...(tGuard?.j2 ? { j2: { line: tGuard.j2.line ?? null, refused: tGuard.j2.refused ?? [] } } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
       gate: { delivered, answered, verdictGiven, contradictions, contradictionsV6, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
@@ -533,7 +573,7 @@ const MATRIX = process.argv.includes("--matrix");
 // H1 (director5): --reactive plays the reactive child (evals/child-sim/reactive.mjs), persona = the scenario name
 const REACTIVE = process.argv.includes("--reactive");
 const runs = MATRIX
-  ? (arg("topics", "") ? arg("topics", "").split(",").map((t) => [t.trim(), Number(/^c(\d+)-/.exec(t.trim())?.[1] ?? 6)]) : MATRIX_TOPICS).flatMap(([topicId, classLevel]) => ["steady", "offtopic", "stuck", "steering"].map((name) => ({ topicId, classLevel, name })))
+  ? (arg("topics", "") ? arg("topics", "").split(",").map((t) => [t.trim(), Number(/^c(\d+)-/.exec(t.trim())?.[1] ?? 6)]) : MATRIX_TOPICS).flatMap(([topicId, classLevel]) => (arg("scenario", "") ? arg("scenario", "").split(",").map((x) => x.trim()) : ["steady", "offtopic", "stuck", "steering"]).map((name) => ({ topicId, classLevel, name })))
   : arg("scenario", "steady,offtopic,stuck").split(",").filter((n) => SCENARIOS[n]).map((name) => ({ topicId: arg("topic", "c6-maths-ch06-t01"), classLevel: Number(arg("class", "6")), name }));
 // (a run finished in parts: --skip leaves out lessons already written, by output name)
 const SKIP = new Set(arg("skip", "").split(",").map((x) => x.trim()).filter(Boolean));
