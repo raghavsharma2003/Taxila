@@ -26,13 +26,13 @@ export const APPROVAL_SIZES = Object.freeze(["p412", "l1366"]);
 export const PILOT_TARGETS = Object.freeze([
   // (main 2026-11-10, after the retry judge: each `how` in the engine's own terms)
   { topicId: "c4-maths-ch05-t01", archetype: "slice-at@1", misconceptionId: "c4-maths-ch05-t01-m-unequal-parts",
-    how: "every wave's sub must agree with its own items: a sub that names a number of parts names exactly the items' parts value (a wave of {parts: 4} says chaar, never teen); one count per wave; plain Roman Hinglish, no Devanagari" },
+    how: "marks false on every wave (marks draw the equal cut points: the child must judge equal size herself); every wave's sub agrees with its own items (a wave of {parts: 4} says chaar, never teen); one count per wave; plain Roman Hinglish, no Devanagari" },
   { topicId: "c5-maths-ch02-t01", archetype: "catch-on-line@1", misconceptionId: "c5-maths-ch02-t01-m-count-marks",
-    how: "ticks is the number of EQUAL GAPS from 0 to 1 (ticks 4 draws 3 marks). Set every wave's ticks to its fractions' denominator (thirds: ticks 3) and scaffoldTicks equal to ticks; every item lands on a mark; a sub names a gap count only when it equals ticks; Roman Hinglish only" },
+    how: "ticks is the number of EQUAL GAPS from 0 to 1 (ticks 4 draws 3 marks). Set every wave's ticks to its fractions' denominator (thirds: ticks 3) and scaffoldTicks equal to ticks; every item lands on a mark; no title or sub says where an item goes (never middle, half, pehla or any mark); subs say only what to do; Roman Hinglish only" },
   // (catch-on-line's pods hold ONE value — two labels in a pod must be equal: the mix-up is shown by catching unit fractions one
   // at a time on one line, never by pairing two to compare; the first two calls paired 1/4 with 1/8 and fell back)
   { topicId: "c5-maths-ch02-t02", archetype: "catch-on-line@1", misconceptionId: "c5-maths-ch02-t02-m-bigger-denominator",
-    how: "catch unit fractions one at a time on ONE 0 to 1 line (1/2, 1/3, 1/4, 1/6, 1/8, one fraction per item, never two different fractions in one item), so 1/8 lands nearest 0 and 1/2 farthest; a later wave may mark only the half; no title or sub states the rule she must find (never that a bigger bottom number makes a smaller piece): they say only what to do" },
+    how: "catch unit fractions one at a time on ONE 0 to 1 line (1/2, 1/3, 1/4, 1/6, 1/8, one fraction per item, never two different fractions in one item), so 1/8 lands nearest 0 and 1/2 farthest; a later wave may mark only the half; no title or sub states the rule she must find or names where an item goes (no 'half mark', never that a bigger bottom number makes a smaller piece): they say only what to do" },
   { topicId: "c6-maths-ch06-t01", archetype: "area-claim@1", misconceptionId: "c6-maths-ch06-t01-m-area-perimeter",
     how: "every string plain class-6 Hinglish in Roman script: no stake, claim, plot, sq or units in English. The goal reads '<area> <n> <sq> <units>' and '<perimeter> <n> <units>', so set sq to varg and units to ikai (area 40 varg ikai); coach like Grid par khet banao; claim like BAN GAYA" },
 ]);

@@ -150,7 +150,9 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
     if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${g.r + 1} / ${spec.rounds.length}`, title: round().goal === "maxArea" ? "Most area" : round().goal === "area" ? `Area ${round().target}` : `Perimeter ${round().target}`, sub: round().different ? T.newShape : goalText(), accent: C.mint });
     if (g.state === "end" && !g.compare) { const res = g.results[g.results.length - 1]; drawStatCard(api, ctx, { a: g.endA, head: res?.verdict === "right" ? `${T.round} ${g.r + 1} · ${T.claim}` : T.timeUp, color: res?.verdict === "right" ? C.mint : C.amber, ticked: res?.verdict === "right", stats: [[res && res.w ? `${res.w}×${res.h}` : "—", "shape"], [res && res.w ? `${res.w * res.h}` : "—", T.area], [`${res?.attempts ?? 0}`, "tries"]] }); }
     if (g.state === "final") drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.results.filter((r) => r.verdict === "right").length}/${spec.rounds.length}`, "plots"], [`${g.results.reduce((a, b) => a + b.attempts, 0)}`, "tries"]] });
-    drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 140);
+    // (the coach line only where it fits above the grid: the grid fills the play area, and on a laptop the task pill and HUD reach
+    // its top row — judged unreadable on the c6 pilot, 2026-11-10; the task pill already says what to do)
+    if (api.chromeBottom() + 10 + Math.max(38, api.minLabel) * 1.6 < gy - 14) drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 140);
   }
   function drawCompare(ctx: Ctx, c: { shapes: { w: number; h: number }[]; per: number }, a: number) {
     ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = "rgba(10,12,18,.8)"; ctx.fillRect(0, 0, W, H);

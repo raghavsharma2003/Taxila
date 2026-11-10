@@ -163,14 +163,18 @@ export function createBuilders(deps = {}) {
     // Q8 on every child-visible string the model WROTE: strings already in this topic's checked authored spec (or the
     // reviewed default) were checked when that spec was; the new ones go through Content Safety (+ the brain classifier
     // for Hindi / Hinglish) — fail closed (ship5 p4-content: this keeps Content Safety to the strings that need it)
-    let contentSafe = true;
+    // (main 2026-11-10: a contentSafe false must say WHICH string and why — the findings ride on the checks: { key, code, text })
+    let contentSafe = true, contentFindings = null;
     if (deps.q8) {
       const known = new Set(Object.values(stringsOfSpec(authoredSpec(key.topicId, c.archetype) ?? (ENGINE_SPECS[c.archetype] ?? ENGINE_SPECS_EXT[c.archetype])?.defaultSpec ?? {})));
       const fresh = Object.fromEntries(Object.entries(stringsOfSpec(v.spec)).filter(([, t]) => !known.has(t)).slice(0, 60));
-      if (Object.keys(fresh).length) { try { contentSafe = !!(await deps.q8(fresh, key.lang))?.ok; } catch { contentSafe = false; } }
+      if (Object.keys(fresh).length) {
+        try { const q = await deps.q8(fresh, key.lang); contentSafe = !!q?.ok; if (!contentSafe) contentFindings = (q?.findings ?? []).slice(0, 20).map((f) => ({ key: f.key, code: f.code, text: fresh[f.key] ?? null })); }
+        catch (e) { contentSafe = false; contentFindings = [{ key: "-", code: `q8_threw: ${String(e?.code ?? e?.message ?? e).slice(0, 60)}`, text: null }]; }
+      }
     }
     const onTopic = !!ENGINE_SPECS[c.archetype]?.outcomes.topics.includes(key.topicId) || !!authoredSpec(key.topicId, c.archetype);
-    return { ok: true, usd, payload: { rung: "generated_spec", archetype: c.archetype, spec: v.spec, lateBind: [] }, checks: ok({ spec: { ok: true, repairs: v.repairs.length, fellBack: false }, contentSafe, onTopic }), facts: facts(c, factsOfSpec(c.archetype, v.spec)) };
+    return { ok: true, usd, payload: { rung: "generated_spec", archetype: c.archetype, spec: v.spec, lateBind: [] }, checks: ok({ spec: { ok: true, repairs: v.repairs.length, fellBack: false }, contentSafe, onTopic, ...(contentFindings ? { contentFindings } : {}) }), facts: facts(c, factsOfSpec(c.archetype, v.spec)) };
   }
 
   async function image(c, dep, signal, key) {

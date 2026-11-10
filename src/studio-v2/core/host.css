@@ -51,7 +51,7 @@
   backdrop-filter: blur(10px); pointer-events: none; transition: border-color .3s, opacity .3s, transform .35s cubic-bezier(.2,.8,.2,1); }
 .sv2-task.hidden { opacity: 0; }
 /* With a HUD row on screen the task pill takes the second rail line, never on top of the readouts. */
-.sv2-hud.on ~ .sv2-task { top: 10.6cqh; }
+.sv2-hud.on ~ .sv2-task { top: 12.4cqh; }   /* (2026-11-10: below the HUD row with room — at l1366 the goal pill touched the readouts) */
 .sv2-hud.on ~ .sv2-task.swap { transform: translateX(-50%) translateY(-6px); }
 .sv2-task .step { font: 600 clamp(9px, 1.15cqw, 13px)/1 var(--sv2-mono); letter-spacing: .08em; color: var(--sv2-ink-3); white-space: nowrap; }
 .sv2-task.nostep .step { display: none; }
