@@ -17,7 +17,7 @@ import { requireGuardian, requireChild, hasConsent } from "../auth.js";
 import { getTopic, topicSequence, SUBJECT_ORDER } from "../content/curriculum.js";
 import { kitFromFile } from "../content/kits.js";
 import { topicOf, skillById, misconceptionById } from "../content/index.js";
-import { topicStatus, decidingStates } from "../content/next-topic.js";
+import { decidingStates } from "../content/next-topic.js";
 import { AzureError, tts } from "../azure.js";
 import { allowSpeech, DEFAULT_VOICE, MAX_TTS_CHARS } from "./tts.js";
 import { MIN_DELAY_MS } from "../learner/bkt.js";
@@ -34,7 +34,7 @@ import { listReports, previewReport, reportById, termOf, windowOf } from "../rep
 import { HOW, renderFixed } from "../reports/templates.js";
 import { shortTitleOf } from "../director/state.js";
 import { COUNTED_LESSON_SQL, loadTruth, loadLessonTally, claimRows, topicTruth, lessonFactsSummary, renderSummaryLine, summaryClaimsHold,
-  supersede, engineRow, lessonEndMs, GRADER_WORDS, nextTopicOf } from "../reports/truth.js";
+  supersede, engineRow, lessonEndMs, nextTopicOf } from "../reports/truth.js";
 
 export const PIN_RE = /^\d{4,6}$/;
 export const PIN_MAX_TRIES = 5;
@@ -340,17 +340,6 @@ export function foldDelayedChecks(rows) {
   return { passed, misses };
 }
 
-/** skill_id → foldDelayedChecks for a child (one query; only skills with a P10 row can have a delayed check). */
-async function delayedCheckMap(childId, skillIds = null) {
-  const rows = await q(`select skill_id, at, probe, outcome, hints_used, lesson_id from evidence
-      where child_id = $1 and outcome <> 'no_evidence' and ($2::text[] is null or skill_id = any($2::text[]))
-        and skill_id in (select skill_id from evidence where child_id = $1 and probe = 'P10')
-      order by skill_id, at, id`, [childId, skillIds]);
-  const by = new Map();
-  for (const r of rows) { if (!by.has(r.skill_id)) by.set(r.skill_id, []); by.get(r.skill_id).push(r); }
-  return new Map([...by].map(([k, v]) => [k, foldDelayedChecks(v)]));
-}
-
 const LEARNED = new Set(["learned_today", "mastered", "due"]);
 
 /**
@@ -376,12 +365,6 @@ export function parentState(row, dc = null) {
   if (s === "introduced" && !(Number(row?.attempts) > 0)) return { level: 0, key: "unseen", recheck: false };
   if (s === "introduced" || s === "practising") return { level: 1, key: "practising", recheck: false };
   return { level: 0, key: "unseen", recheck: false };
-}
-
-/** topicStatus (content/next-topic.js) → parent state. "weak" is never shown as a word (PX4): it reads as practising. */
-export function topicParentState(status) {
-  return ({ mastered: { level: 3, key: "mastered" }, learned: { level: 2, key: "learned_today" }, in_progress: { level: 1, key: "practising" },
-    weak: { level: 1, key: "practising" } })[status] ?? { level: 0, key: "unseen" };
 }
 
 /** What kind of check a probe was, in plain words (§6.4 "what kind of check"). Shapes for the client to word. */
@@ -1386,8 +1369,6 @@ export function lessonSpeech(name, { topic, ended, checked, unaided }) {
   if (!checked) return `${noStop(topic)}. No answers were checked in this lesson.`;
   return `${noStop(topic)}. ${checked === 1 ? "1 answer was" : `${checked} answers were`} checked. ${name} got ${unaided} right on their own.`;
 }
-/** @deprecated the old IS HAFTE read-aloud name; the page read-aloud is homeSpeech. */
-export const hafteSpeech = homeSpeech;
 
 // ───────────────────────────── reports (server/reports/**) ─────────────────────────────
 

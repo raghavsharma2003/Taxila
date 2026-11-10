@@ -1,105 +1,136 @@
 # Audit 2026-11-09, learner: proposals for main and the owner
 
-These are the findings in `learner.md` that are not plain bugs: model changes (they need a params version bump), redesigns,
-deletions and owner choices. Each says what a child or parent sees now, the change, and what it costs. Nothing here is
-built. Ids match `learner.md`.
+What is not fixed on the branch, in main's three groups: decisions first (each with a failing test on a concrete child),
+one-line calls, real redesigns. Then the controls hidden for SEAM-09 and what is left of the deletions. Ids match
+`learner.md`. Nothing here is built.
 
-## Learner model (each needs a params version bump; a replay re-scores stored children)
+## 1. Decisions first (learner model, placement, set-up)
 
-**LEARN-02 (P1). A child who gets everything wrong ends with a high estimate.**
-- Now: 60 wrong answers on a pilot topic end at 0.75-0.83. The "weak foundation" rule and the support level stop treating
-  the child as struggling. No screen says "mastered" (the word stays "practising"), but the teacher stops going back.
-- Change, pick one: (a) no learning step on a card that ended without a right answer; or (b) drop the 1/j weighting on the
-  failure side only, so each wrong card counts in full. Also cap re-teach gain per skill per lesson (today +0.10 each).
-- Cost: about half a day with a replay of the pilot sims. (b) is the smaller change.
+Each has a test in `tests/r7-audit-learner-pending.test.mjs` that fails today. It is marked `todo`, so the gate stays
+green; drop the `todo` with the fix. A model change needs a params version bump, and a replay re-scores stored children.
 
-**LEARN-04 (P2). "Gets the answers" is true for a child who never answered unaided.** Gate the estimate arm of `does` on
-the ledger's unaided flag. Only the Director's probes read it today. An hour.
+**LEARN-02 (P1). A child who gets every answer wrong ends with a high estimate.**
+- Test: one class-5 skill, 10 cards in one lesson, each ending without a right answer (C4). After 1 card the estimate is
+  0.147; after 10 it is 0.704. The weak-foundation rule (`next-topic.js`: 3+ attempts and below 0.4) never fires, so the
+  child is moved on instead of back.
+- Smallest change (tried against the test: it passes): in `kt/ledger.js` (line 231), no learning step (`transition`) for an
+  item event whose evidence is negative. A card that ended without a right answer teaches nothing, so the estimate cannot
+  climb on failures.
+- What else it moves:
+  - Every wrong-then-right sequence loses one learning step per failed card, so "learned today" can come one right answer
+    later on a hard skill.
+  - More "weak" topics mean more back-chaining to prerequisites, and the support level stays higher for longer.
+  - Replay the four pilots and the next-day-check sim before shipping.
+- Tried and not enough: weighing failed cards in full instead of 1/j (`bktr.js` `spend`). The session clamp (±log 50)
+  still stops them, and the learning steps still climb: 0.704 after 10, as now.
+- Re-teach gain (+0.10 per re-teach, `applyTeach`) adds to the climb on the script walk. Cap it per skill per lesson as a
+  second step if the replay still climbs.
 
-**LEARN-05 (P1). The same answer gets a different mastery when the blind grader is late.** Hold the fallback as
-no-evidence and let the late verdict carry the full step. Half a day: it touches `ledger.js` and `later.js` together.
+**LEARN-04 (P2). "Gets the answers" is true for a child who never answered.**
+- Test: taught twice and never answered (estimate 0.659, no answers at all). The ladder (`comprehension/state.js:33`)
+  reads `does` and puts the child above "not yet".
+- Smallest change: `does = recent ≥ 2 right || (pL ≥ K_DO && the ledger's unaided flag)`.
+- What it moves: only the Director's probe choice. No screen shows this state today.
 
-**LEARN-28 (P2). Two open lessons reset every per-lesson evidence cap.** Keep recent lesson budgets by lesson id, not "the
-current one". A few hours.
+**LEARN-05 (P1). The same blind "why" verdict gives a different state when it arrives late.**
+- Test: two right answers, then a "why". The classifier guessed "none" and the blind grader says "present".
+  - In time: learned today (0.980).
+  - Late: practising (0.905). The late verdict reaches U and T but never K (`ledger.js:153`).
+- Smallest change: when a why is held for the blind grader, fold the fallback as no-evidence on K. Let the late
+  correction carry the K step (`later.js` `lateEvent` drops `via: late` for K and keeps it for U/T).
+- What it moves: every why answer whose verdict settles late (the settle stats log the share) moves K by the verdict
+  instead of the guess. The replay order changes, so the ledger's "byte for byte" replay test needs its seq strip extended.
 
-**LEARN-29 (P2, narrowed). A leaked answer counts in full on choice items and probes.** Apply `preAttemptHelp` in
-`temper`, as facets already do (half weight). An hour.
+**LEARN-07 (P1). Any "how does school feel" answer starts a class-5 child 7 chapters back.**
+- Test: class 5 maths on 9 Nov. The calendar alone gives chapter 9; a parent's "Easy" gives chapter 2 and "About right"
+  chapter 1. The note then says "starts a little before".
+- Smallest change: in `coldstart.js` `coldStartResult`, return no start (null) for "fine" and "easy" with no child
+  "tricky". Only a below-level signal moves the start back. The note follows (no `easier` line without a start).
+- What it moves: most families answer "About right", so most children start at the calendar chapter. Placement still
+  learns from lessons (`refinedStart`). Check against `rj-topic-relative-difficulty-easiest-first`: chapter-1 starts were
+  rejected once already, by another route.
 
-**LEARN-25 (P2). Rebuilding a child's model is quadratic** (10 s at 8,000 events on the one replica). Copy the ledger once
-per fold, not once per event. Pure speed; no score changes, so no version bump. An hour.
+**LEARN-10 (P1). Set-up shows raw developer text** ("Failed to fetch", "internal error").
+- Test: `ChildProfile.tsx`, `Consent.tsx` and `Setup.tsx` set the error from `errText(e)`, which is `e.message`.
+- Smallest change: `setErr(parentError(e))` (`src/parent/copy.ts`). Keep a 400 that names a field (the spoken-name rule)
+  on its field.
+- What it moves: copy only.
 
-**LEARN-26 (P2). Writers outside the turn fold before taking the lock; Studio answers never reach `skill_state`.** Re-read
-`max(seq)` after the lock and refold if it moved; project Studio events like lesson events. Half a day, and Studio owns
-half of it.
+**LEARN-06 (migration).** `docs/patches/to-platform/003-placement-subjects.patch` widens the placement subject check to
+the six cold-start subjects. When it lands, widen `PLACEMENT_TABLE_SUBJECTS` in `server/routes/placement.js` to match;
+`r7-audit-placement-subjects` pins the two together.
 
-## Placement and set-up
+## 2. One-line calls (small; mostly need a yes)
 
-**LEARN-07 (P1). Any feel answer, even "Easy", starts the child 5-8 chapters back and says "a little before".**
-- Now: a class-5 child on 9 Nov with no answer starts at chapter 9 (the calendar); "About right" → chapter 1; "Easy" →
-  chapter 2.
-- Change: an answer with no below-level signal ("About right", "Easy") sets no start: the calendar start stands. Only
-  "Hard" or a child's "tricky" moves the start back. The note follows the start.
-- Cost: an hour. Check against `rj-topic-relative-difficulty-easiest-first` (chapter-1 starts were rejected once already).
+| id | sev | what is wrong now | the change | cost |
+|---|---|---|---|---|
+| LEARN-19 | P2 | With limits on, the home's daily cap comes from a stale, band-clamped plan, not the parent's setting | `child.js:266`: use `controls.capMin` first | minutes |
+| LEARN-29 | P2 | A leaked answer counts in full on choice items and probes | `bktr.js` `temper`: half weight on `preAttemptHelp`, as facets do (params bump) | an hour |
+| LEARN-30 | P2 | A skill mastered then clearly lost still counts as mastered for the next topic | `topicStatus`: test "weak" before "mastered" (rerun pilot sims) | minutes |
+| LEARN-36 | P2 | "Download everything" exports the old evidence table | export `kt_evidence` rows | an hour |
+| LEARN-39 | P2 | Schedule says "planned for 5:00 pm on the days you chose" before anything is saved | say no time is set yet | minutes |
+| LEARN-40 | P2 | "Explained in their own words" has two rules | drop the half explanation from the notes (decision `w2a-checker-explained-line` left it open) | minutes |
+| LEARN-41 | P2 | Home says "can now"; `reports-k7-locked-words` forbids it anywhere | owner: narrow the decision to letters, or change Home's words | minutes |
+| LEARN-43 | P2 | The child step can sit on "One moment" for ever when the PIN read fails | a "Try again" on a failed read | an hour |
+| LEARN-44 | P2 | Classes 1-2 get an EVS chip the server drops; "Not sure" cannot clear an answer | chips from the class's subjects; send "unsure" | an hour |
+| LEARN-45 | P2 | Board must be picked, but only the header shows it | default CBSE, not required | minutes |
+| LEARN-46 | P2 | A signed-in parent with no child is asked for consent twice | skip to the child step when consent is on file | an hour |
+| LEARN-25 | P2 | Rebuilding a child's model is quadratic (10 s at 8,000 events, one replica) | copy the ledger once per fold, not once per event (no score change) | an hour |
+| LEARN-28 | P2 | Two open lessons reset every per-lesson evidence cap | keep recent lesson budgets by lesson id (params bump) | a few hours |
+| LEARN-37 | P2 | The after-bedtime rest line can never fire: nothing writes a bedtime | owner: add a bedtime control, or remove the branch (`rest.js`, two templates, `check.js:268`, its test) | an hour either way |
 
-**LEARN-06 (migration).** `docs/patches/to-platform/003-placement-subjects.patch` widens the `placement` subject check to
-the six cold-start subjects. When it lands, widen `PLACEMENT_TABLE_SUBJECTS` in `server/routes/placement.js` to match (the
-test `r7-audit-placement-subjects` pins the two together).
+## 3. Real redesigns
 
-**LEARN-10 (P1). Set-up shows raw developer text** ("Failed to fetch", "internal error"). Use the parent corner's error
-sentences, but keep field 400s (the spoken-name rule) on their field. Two hours.
+**LEARN-20 (P2). The plan's learner-state decisions reach neither the home nor the lesson.** These are the opener,
+success-first, the new-skill budget, the foundation share and the review burst. The lesson takes only the two clock times.
+Brain and Learning together: the lesson start passes the whole brief, and the Director reads it. Turning
+`TAXILA_CONDUCTOR_PLAN` on is now safe for the clock (LEARN-01 is fixed), but it is pointless until there is a reader.
 
-**LEARN-43 (P2).** The child step can sit on "One moment" for ever when the PIN read fails. Add "Try again". An hour.
-**LEARN-44 (P2).** Classes 1-2 see an EVS chip the server drops; "Not sure" cannot clear an earlier answer. Chips from the
-class's own subjects; send "unsure". An hour.
-**LEARN-45 (P2).** Board must be picked, but nothing but the header reads it. Default CBSE, not required. Minutes.
-**LEARN-46 (P2).** A signed-in parent with no child is asked for consent twice. Skip to the child step when consent is on
-file. An hour.
+**LEARN-23 (P2). A new Conductor actor ignores the parent's saved lesson days and length**, and `settingChangedStmts` has
+no caller. Read them when the actor is created, and emit `parent.setting_changed` from `setControls`. Half a day.
 
-## Conductor
+**LEARN-26 (P2). Writers outside the turn fold before taking the lock; Studio answers never reach `skill_state`.**
+Re-read `max(seq)` after the lock and refold if it moved; project Studio events as lesson events are projected. Half a
+day; Studio owns half of it.
 
-**LEARN-20 (P2). The plan's learner-state decisions (opener, success-first, new-skill budget, foundation share, review
-burst) reach neither the home nor the lesson.** A design call for Brain and Learning together: the lesson start would pass
-the whole brief, and the Director would read it. Do not turn `TAXILA_CONDUCTOR_PLAN` on before LEARN-01 is in (it is now).
+**LEARN-16 (P1). Progress shows nothing for lessons on earlier-class topics.** Add an "Earlier steps" group per subject,
+with no class number (`grade-equivalent-parent-band` rejects a class label). Half a day.
 
-**LEARN-19 (P2).** With limits on, the home's daily cap comes from a stale, band-clamped plan. Use the parent's saved cap.
-An hour.
-**LEARN-23 (P2).** A new Conductor actor ignores the parent's saved lesson days and length; `settingChangedStmts` has no
-caller. Read them at creation, and emit the event from `setControls`. Half a day.
+**LEARN-42 (P2). The adaptive placement round is unreachable.** Main told content-data to use its code (retired items,
+pairs), so it is not deleted. Mount it (fix the class-9 and grader faults in `learner.md` first) or remove it later.
 
-## Parent corner
+**LEARN-49 (P3, owner). The session-first lane** (1,069 lines) is off by default but partly runs on every lesson. Ship it
+or shelve it. Shelving is a refactor, not a deletion.
 
-**LEARN-35 (P1). At 900 px and wider, Teaching and Sign out cannot be reached** (the rail has neither). Add both to the
-rail. An hour. This is App's shell pattern: Learning owns `src/parent`, so it is ours, but it changes the look.
-**LEARN-16 (P1).** Progress shows nothing for lessons on earlier-class topics. An "Earlier steps" group per subject, with no
-class number (`grade-equivalent-parent-band` rejects a class label). Half a day.
-**LEARN-36 (P2).** "Download everything" exports the old evidence table. Export the ledger rows (`kt_evidence`), which
-every screen shows. An hour.
-**LEARN-39 (P2).** Schedule says "planned for 5:00 pm on the days you chose" before anything is saved. Say no time is set
-yet. Minutes.
-**LEARN-40 (P2).** "Explained in their own words" has two rules. Decision `w2a-checker-explained-line` left it open: drop
-the half explanation from the notes so both say the same. Minutes once decided.
-**LEARN-41 (P2, owner).** Home says "can now", and decision `reports-k7-locked-words` forbids it anywhere. Owner picks:
-narrow the decision to the letters, or change the Home words.
-**LEARN-54 (P3).** Small copy and rule mismatches (listed in `learner.md`). An hour together.
-**LEARN-30 (P2, content).** A skill mastered and then clearly lost still counts as mastered for the next topic: test
-"weak" before "mastered" in `topicStatus`. Minutes; it changes topic choice, so run the pilot sims.
+## 4. Controls hidden for SEAM-09: wiring them into the child plan
 
-## Deletions (each needs main's go; one commit, with an inbox entry naming the last commit that holds each path)
+Hidden on the branch (values kept): Extra time to answer, Data saver, Words on screen, Larger text and a calmer screen.
+`src/parent/controlReaders.ts` lists each with `reader: null`. A control comes back when its reader is named there, and
+`r7-audit-control-readers` checks the reader really reads the column. What each would take:
 
-- **LEARN-37.** The after-bedtime rest line can never fire (nothing writes a bedtime). Remove the after-bedtime branch,
-  its templates and its test, or add the bedtime control. Keep the "longer lessons" line.
-- **LEARN-42.** The adaptive placement round is unreachable. Mount it or remove `session.js`, `grade.js`, `bank.js` and the
-  CAT half of `cat.js`. Keep `schoolYearFraction` and `startChapter` (the cold start uses them). Removing also means
-  `tests/rs6-placement`, `r7-learning-placement`, `pair-scope`, two evals, and the decision `rs6-placement-cat`. The fixes
-  routed here (retired items, pairs) are on it now, so mounting it is cheaper than it was.
-- **LEARN-49 (owner).** The session-first lane (1,069 lines) is off by default but partly runs on every lesson. Ship or
-  shelve; shelving is a refactor, not a deletion.
-- **LEARN-50.** Dead code in the learner model: `bkt.js` except `MIN_DELAY_MS`, the dead readers in `model.js`,
-  `briefSkills`, `reteachOutcomeStmt`, `armPosteriorStmt`, `ratchetStmts`, `COMP_TABLES`. Do not delete `kt/gen.js` (test
-  fixture) or `kt/index.js` (an eval); `rep_fluency` and the seam patches are cited by decisions; `protege.js` is specified.
-- **LEARN-51.** Conductor: `settingChangedStmts` (or wire it, LEARN-23), `consentChangedStmts`, `actorRowStmts`, `floorTo`,
-  `sessionFirstOn`, the handlers with no emitter, and the Scheduler gallery helpers together with their test.
-  `conductor_usage` is read and never written: wire or drop the voice-budget rule.
-- **LEARN-52.** `parent.js`: `delayedCheckMap`, `topicParentState`, `hafteSpeech`, the `what=hafte` alias, unused
-  response fields, and the `comprehension` card (a full fold per evidence open). Set-up: `MeetStep`, `TrustStep` (unrouted).
-  `SummaryStep`, `VerifyStep`, `ControlsStep` are reachable by URL and used by e2e tests: keep.
+- **Words on screen** (`captions_always`): send it in the home payload (`child.js` already reads it into `controls`).
+  The child app makes it the default of `prefs.captionsAlways` (`src/child/ChildShell.tsx:123`), and the child's own Me
+  switch still overrides it. App owns the client half. Two hours. This one matters most: set-up writes it from the
+  "hard to hear" answer.
+- **Larger text and a calmer screen** (`comfort_mode`): the same path into `prefs.largeText` plus reduced motion. Two
+  hours, App.
+- **Extra time to answer** (`extra_time`): pass it in the lesson start, and Voice scales the end-of-turn silence and
+  barge-in timers (normal / more / most, for example ×1, ×1.5, ×2). Half a day, Voice.
+- **Data saver** (`data_saver`): pass it in the lesson start. Voice picks the lower-rate audio and the client skips
+  pictures above a size. Half a day across Voice and App, and only worth it once audio cost per lesson is measured.
+- **Weekly letter channel** (`report_channel`): already hidden until a second channel sends. Its reader is Platform's
+  Notifier.
+
+## 5. Deletions done and left
+
+Done (`15969844`, inbox entry `r7-audit-learner-dead-code-removed`): the dead readers and writers in `learner/model.js`,
+`floorTo`, `sessionFirstOn`, `delayedCheckMap`, `topicParentState`, `hafteSpeech`, two unused parent imports, and the
+`TrustStep` alias.
+
+Left on purpose, each with its reason in the inbox entry:
+- Cited by context as open work: `reteachOutcomeStmt`, `armPosteriorStmt`, `actorRowStmts`.
+- Designed call sites: `consentChangedStmts`, `settingChangedStmts` (LEARN-23).
+- Used by a test, an eval or a pending patch: `kt/gen.js`, `kt/index.js`, `withDue`, `loadLedger`, `MeetStep`.
+- Waiting on a decision: the placement CAT (LEARN-42), the session-first lane (LEARN-49), the bedtime branch (LEARN-37).
+- Not done yet: the Scheduler gallery helpers and their test (LEARN-51), and the unused response fields and the
+  `comprehension` card in `parent.js` (LEARN-52). The client must be checked field by field first.
