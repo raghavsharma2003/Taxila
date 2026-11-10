@@ -113,7 +113,7 @@
       "why": {
        "hi": "71 ka 7 dahai hai, toh woh 3256 ke dahai wale 5 ke neeche aata hai",
        "en": "the 7 of 71 is tens, so it goes under the 5 in the tens of 3256"
-      }, "answerBoard": { "template": "place-value@1", "params": {"value": 3256} }
+      }, "answerBoard": { "template": "place-value@1", "params": {"value": 3256, "mark": {"place": "tens"}} }
      },
      "simpler": {
       "hi": "71 ko bhi daayen se likho, jaise 48 likha tha. Jo ank ikai ke neeche gaya, 7 uske theek baayen wale ghar mein aayega.",
@@ -210,7 +210,7 @@
       "why": {
        "hi": "63 toh 100 se bhi chhota hai, toh jawab 3256 se thoda aage, 3319, yaani 3300 ke paas",
        "en": "63 is less than even 100, so the answer is just past 3256: 3319, near 3300"
-      }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3256", "items": ["+ 63"]}, "right": {"title": "63", "items": ["100 se chhota"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "3256", "items": ["+ 63"]}, "right": {"title": "63", "items": ["100 se chhota"]}} }
+      }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3256", "items": ["+ 63"]}, "right": {"title": "63", "items": ["100 se chhota"]}, "mark": {"side": "right", "add": "jawab: 3300"}} }, "board": { "template": "compare@1", "params": {"left": {"title": "3256", "items": ["+ 63"]}, "right": {"title": "63", "items": ["100 se chhota"]}} }
      },
      "simpler": {
       "hi": "63 toh 100 se bhi chhota hai. Isliye jawab 3256 se bas thoda hi aage jaayega.",
@@ -318,7 +318,7 @@
      "simpler": {
       "hi": "78 ko daayen se likho, taaki ikai ke neeche ikai aaye. Ikai se jodna shuru karo aur carry aage bhejna mat bhoolo.",
       "en": "Write 78 from the right, so ones sit under ones. Start adding from the ones and do not forget to send the carry on."
-     }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4615", "items": ["ikai: 5"]}, "right": {"title": "78", "items": ["ikai: 8"]}} }
+     }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4615", "items": ["ikai: 5"]}, "right": {"title": "78", "items": ["ikai: 8"]}, "mark": {"side": "right", "add": "jawab: 4693"}} }
     },
     {
      "id": "c2",
@@ -355,7 +355,7 @@
      "simpler": {
       "hi": "1876 ke neeche 547 daayen se likho. Ikai, dahai aur sau, teeno mein carry banega, use dhyaan se aage bhejo.",
       "en": "Write 547 under 1876 from the right. The ones, tens and hundreds all make a carry, so send each one on carefully."
-     }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pehle din", "items": ["1876 ticket"]}, "right": {"title": "Doosre din", "items": ["547 ticket"]}} }
+     }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pehle din", "items": ["1876 ticket"]}, "right": {"title": "Doosre din", "items": ["547 ticket"]}, "mark": {"side": "right", "add": "jawab: 2423"}} }
     }
    ],
    "ladder": [
@@ -409,7 +409,7 @@
       "simpler": {
        "hi": "52 ko daayen se likho, taaki ikai ke neeche ikai aur dahai ke neeche dahai aaye. Phir har ghar alag se jodo.",
        "en": "Write 52 from the right, so ones sit under ones and tens under tens. Then add each place on its own."
-      }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2634", "items": ["ikai: 4"]}, "right": {"title": "52", "items": ["ikai: 2"]}} }
+      }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2634", "items": ["ikai: 4"]}, "right": {"title": "52", "items": ["ikai: 2"]}, "mark": {"side": "right", "add": "jawab: 2686"}} }
      }
     }
    ],
@@ -571,7 +571,7 @@
       ],
       "targets": "c4-maths-ch07-t01-m-borrow-across-zero",
       "wrongIfMis": "Yes",
-      "why": { "hi": "check mein 4647 + 2357 = 7004 aata hai, 6004 nahi, toh jawab 4647 galat hai", "en": "the check gives 4647 + 2357 = 7004, not 6004, so the answer 4647 is wrong" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "6004 − 2357", "items": ["jawab 4647"]}, "right": {"title": "Check", "items": ["4647 + 2357"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "6004 − 2357", "items": ["jawab 4647"]}, "right": {"title": "Check", "items": ["4647 + 2357"]}} }
+      "why": { "hi": "check mein 4647 + 2357 = 7004 aata hai, 6004 nahi, toh jawab 4647 galat hai", "en": "the check gives 4647 + 2357 = 7004, not 6004, so the answer 4647 is wrong" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "6004 − 2357", "items": ["jawab 4647"]}, "right": {"title": "Check", "items": ["4647 + 2357"]}, "mark": {"side": "left", "add": "jawab: No"}} }, "board": { "template": "compare@1", "params": {"left": {"title": "6004 − 2357", "items": ["jawab 4647"]}, "right": {"title": "Check", "items": ["4647 + 2357"]}} }
      },
      "simpler": {
       "hi": "Jawab sahi hai ya nahi, jod kar check karo. 4647 aur 2357 ko column mein jodo, aur dekho 6004 aata hai ya nahi.",
@@ -701,7 +701,7 @@
      "simpler": {
       "hi": "826 ke neeche 459 likho aur ikai se ghatana shuru karo. Jahan upar wala ank chhota ho, wahan agle ghar se udhaar lo.",
       "en": "Write 459 under 826 and start subtracting from the ones. Where the top digit is smaller, borrow from the next place."
-     }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "₹826", "items": ["paas the"]}, "right": {"title": "₹459", "items": ["kitaab"]}} }
+     }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "₹826", "items": ["paas the"]}, "right": {"title": "₹459", "items": ["kitaab"]}, "mark": {"side": "right", "add": "jawab: 367"}} }
     },
     {
      "id": "c2",
@@ -737,7 +737,7 @@
      "simpler": {
       "hi": "Ikai aur dahai mein kuch nahi hai, toh udhaar seedha sau ke ghar se lo. Use beech wale ghar se hokar ikai tak le jao.",
       "en": "The ones and tens are empty, so borrow straight from the hundreds. Pass it through the middle place down to the ones."
-     }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "700 kursiyan", "items": ["school mein"]}, "right": {"title": "264 kursiyan", "items": ["doosre hall mein"]}} }
+     }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "700 kursiyan", "items": ["school mein"]}, "right": {"title": "264 kursiyan", "items": ["doosre hall mein"]}, "mark": {"side": "right", "add": "jawab: 436"}} }
     },
     {
      "id": "c3",
@@ -774,7 +774,7 @@
      "simpler": {
       "hi": "8003 ke beech ke dono ghar khaali hain, toh udhaar hazaar se lo aur beech se hokar ikai tak le jao. Phir har ghar mein ghatao.",
       "en": "Both middle places of 8003 are empty, so borrow from the thousands and pass it through to the ones. Then subtract in each place."
-     }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "8003 ticket", "items": ["chhape gaye"]}, "right": {"title": "4567 ticket", "items": ["bik gaye"]}} }
+     }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "8003 ticket", "items": ["chhape gaye"]}, "right": {"title": "4567 ticket", "items": ["bik gaye"]}, "mark": {"side": "right", "add": "jawab: 3436"}} }
     }
    ],
    "ladder": [
@@ -845,7 +845,7 @@
       "simpler": {
        "hi": "Har ghar mein upar wale ank mein se neeche wala ghatao. Jahan upar wala chhota ho, wahan baayen wale ghar se udhaar lo.",
        "en": "In each place take the bottom digit from the top one. Where the top one is smaller, borrow from the place on the left."
-      }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "534", "items": ["upar"]}, "right": {"title": "286", "items": ["neeche"]}} }
+      }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "534", "items": ["upar"]}, "right": {"title": "286", "items": ["neeche"]}, "mark": {"side": "right", "add": "jawab: 248"}} }
      }
     },
     {
@@ -877,7 +877,7 @@
       "simpler": {
        "hi": "Udhaar sau ke ghar se aata hai, aur beech ka 0 9 ban jaata hai. Ab har ghar mein upar mein se neeche wala ghatao.",
        "en": "The borrow comes from the hundreds, and the middle 0 becomes 9. Now in each place take the bottom from the top."
-      }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "600", "items": ["upar"]}, "right": {"title": "245", "items": ["neeche"]}} }
+      }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "600", "items": ["upar"]}, "right": {"title": "245", "items": ["neeche"]}, "mark": {"side": "right", "add": "jawab: 355"}} }
      }
     }
    ],
@@ -958,7 +958,7 @@
       ],
       "targets": "c4-maths-ch07-t01-m-keyword-more-add",
       "wrongIfMis": "jodna",
-      "why": { "hi": "cycle ka poora ₹1200 pata hai aur ₹750 jama hai, toh khaali hissa 1200 − 750 hai", "en": "the cycle's whole ₹1200 is known and ₹750 is saved, so the empty part is 1200 − 750" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Poora", "items": ["₹1200 cycle"]}, "right": {"title": "Hissa", "items": ["₹750 jama", "khaali hissa"]}} }
+      "why": { "hi": "cycle ka poora ₹1200 pata hai aur ₹750 jama hai, toh khaali hissa 1200 − 750 hai", "en": "the cycle's whole ₹1200 is known and ₹750 is saved, so the empty part is 1200 − 750" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Poora", "items": ["₹1200 cycle"]}, "right": {"title": "Hissa", "items": ["₹750 jama", "khaali hissa"]}, "mark": {"side": "right", "add": "jawab: ghatana"}} }
      },
      "simpler": {
       "hi": "Yahan poora 1200 pata hai, aur ek hissa 750 bhi. Jab poora pata ho aur ek hissa gayab, toh socho kaunsa kaam chahiye.",
@@ -1010,7 +1010,7 @@
        "1,845",
        "1845 km"
       ],
-      "why": { "hi": "dono hisse pata hain aur poora, yaani kul safar, gayab hai, toh 1360 + 485 = 1845 km", "en": "both parts are known and the whole, the total trip, is missing, so 1360 + 485 = 1845 km" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Dono hisse", "items": ["train 1360 km", "bus 485 km"]}, "right": {"title": "Poora", "items": ["kul safar gayab"]}} }
+      "why": { "hi": "dono hisse pata hain aur poora, yaani kul safar, gayab hai, toh 1360 + 485 = 1845 km", "en": "both parts are known and the whole, the total trip, is missing, so 1360 + 485 = 1845 km" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Dono hisse", "items": ["train 1360 km", "bus 485 km"]}, "right": {"title": "Poora", "items": ["kul safar gayab"]}, "mark": {"side": "right", "add": "jawab: 1845"}} }
      },
      "simpler": {
       "hi": "Yahan dono hisse pata hain, aur poora safar gayab hai. Toh 1360 aur 485 ko column mein jodo.",
@@ -1048,7 +1048,7 @@
       ],
       "targets": "c4-maths-ch07-t01-m-keyword-more-add",
       "wrongIfMis": "2250",
-      "why": { "hi": "kit ka poora ₹1400 hai aur ₹850 hain, toh gayab hissa 1400 − 850 = 550", "en": "the kit's whole is ₹1400 and ₹850 is there, so the missing part is 1400 − 850 = 550" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Poora", "items": ["₹1400 kit"]}, "right": {"title": "Hissa", "items": ["₹850 hain", "gayab hissa"]}} }
+      "why": { "hi": "kit ka poora ₹1400 hai aur ₹850 hain, toh gayab hissa 1400 − 850 = 550", "en": "the kit's whole is ₹1400 and ₹850 is there, so the missing part is 1400 − 850 = 550" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Poora", "items": ["₹1400 kit"]}, "right": {"title": "Hissa", "items": ["₹850 hain", "gayab hissa"]}, "mark": {"side": "right", "add": "jawab: 550"}} }
      },
      "simpler": {
       "hi": "Poora daam 1400 hai, aur tumhare paas ek hissa 850. Gayab hissa nikaalne ke liye 1400 mein se 850 ghatao.",
@@ -1121,7 +1121,7 @@
      "simpler": {
       "hi": "1620 mein se 875 ghatao, ikai se shuru karke, aur jahan zaroorat ho udhaar lo. Jawab 700 ke aas-paas aana chahiye.",
       "en": "Take 875 from 1620, starting with the ones, and borrow where needed. The answer should be close to 700."
-     }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Poora safar", "items": ["1620 km"]}, "right": {"title": "Pehle din", "items": ["875 km", "baaki gayab"]}} }, "why": { "hi": "poora safar 1620 km aur pehle din 875 km, toh baaki gayab hissa 1620 − 875 = 745 km", "en": "the whole trip is 1620 km, the first day 875 km, so the missing rest is 1620 − 875 = 745 km" }
+     }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Poora safar", "items": ["1620 km"]}, "right": {"title": "Pehle din", "items": ["875 km", "baaki gayab"]}, "mark": {"side": "right", "add": "jawab: 745"}} }, "why": { "hi": "poora safar 1620 km aur pehle din 875 km, toh baaki gayab hissa 1620 − 875 = 745 km", "en": "the whole trip is 1620 km, the first day 875 km, so the missing rest is 1620 − 875 = 745 km" }
     },
     "answer": {
      "hi": "unhe aur 745 km chalana hai",
@@ -1183,7 +1183,7 @@
      "simpler": {
       "hi": "Poora daam 1250 hai, aur Sohan ke paas ek hissa 780. Gayab hissa nikaalne ke liye poore mein se hissa ghatao.",
       "en": "The whole price is 1250, and Sohan has one part, 780. To find the missing part, take the part away from the whole."
-     }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Cycle", "items": ["₹1250"]}, "right": {"title": "Paas hain", "items": ["₹780"]}} }
+     }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Cycle", "items": ["₹1250"]}, "right": {"title": "Paas hain", "items": ["₹780"]}, "mark": {"side": "right", "add": "jawab: 470"}} }
     },
     {
      "id": "c2",
@@ -1194,7 +1194,7 @@
      "wrongIfMis": "4080",
      "board": { "template": "compare@1", "params": {"left": {"title": "Kul milakar", "items": ["2400 kitaabein"]}, "right": {"title": "Hindi", "items": ["1680"]}} },
      "why": { "hi": "kul milakar 2400 kitaabein hain aur 1680 Hindi ki, toh 2400 − 1680 = 720", "en": "there are 2400 books altogether and 1680 are Hindi, so 2400 − 1680 = 720" },
-     "simpler": { "hi": "Kul 2400 kitaabein poora hai, aur Hindi wali 1680 ek hissa. English wali gayab hissa hain, toh poore mein se Hindi wali ghatao.", "en": "The 2400 books are the whole, and the 1680 Hindi books are one part. The English books are the missing part, so take the Hindi books from the whole." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Kul milakar", "items": ["2400 kitaabein"]}, "right": {"title": "Hindi", "items": ["1680"]}} }
+     "simpler": { "hi": "Kul 2400 kitaabein poora hai, aur Hindi wali 1680 ek hissa. English wali gayab hissa hain, toh poore mein se Hindi wali ghatao.", "en": "The 2400 books are the whole, and the 1680 Hindi books are one part. The English books are the missing part, so take the Hindi books from the whole." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Kul milakar", "items": ["2400 kitaabein"]}, "right": {"title": "Hindi", "items": ["1680"]}, "mark": {"side": "right", "add": "jawab: 720"}} }
     }
    ],
    "ladder": [
@@ -1258,7 +1258,7 @@
       "simpler": {
        "hi": "Poora daam 540 hai, aur tumhare paas ek hissa 375. Baaki hissa nikaalne ke liye 540 mein se 375 ghatao.",
        "en": "The whole price is 540, and you have one part, 375. To find the part left, take 375 away from 540."
-      }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pencil box", "items": ["₹540"]}, "right": {"title": "Paas hain", "items": ["₹375"]}} }
+      }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pencil box", "items": ["₹540"]}, "right": {"title": "Paas hain", "items": ["₹375"]}, "mark": {"side": "right", "add": "jawab: 165"}} }
      }
     }
    ],
