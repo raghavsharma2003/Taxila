@@ -213,15 +213,18 @@ describe("r7-brain-v65.test.mjs", () => {
     const T = TOPIC[topic];
     const sc = runScriptOf(RUN, T); delete sc.recordedRun;
     setScriptForTest(T, sc);
-    const { kit, rows, last } = await replay(RUN, persona, T, n + 1);
+    const { kit, rows, last, plans } = await replay(RUN, persona, T, n + 1);
     const state = opts.lastMove ? { ...last.state, lastMove: { ...last.state.lastMove, ...opts.lastMove } } : last.state;
     replyDeps.chat = async () => ({ text: rows[n].text });
     const out = await textReply({ instructions: instructionsFor(state, kit), state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null, ...(opts.verdict ? { verdict: opts.verdict } : {}) });
-    return { out, last, state };
+    return { out, last, state, plans };
   };
   test("K2 predicate: a then-card's second miss gives its key and why (c6 stuck 52, c5-t01 stuck 44)", async () => {
     for (const [persona, topic, n] of [["stuck", "c6", 52], ["stuck", "c5-t01", 44]]) {
-      const { out, last } = await atLive(persona, topic, n);
+      const { out, last, plans } = await atLive(persona, topic, n);
+      // (v6.9 T1.6, main on director17: a miss after its simpler is spent gives the key at once — the then-card can close before this
+      // row; then its key was given where it closed)
+      if (!/:then:/.test(String(last.before.activeItemId))) { assert.ok(plans.some((pl) => /:then:/.test(String(pl.before.activeItemId)) && pl.state.activeItemId !== pl.before.activeItemId && pl.state.lastMove?.gave?.answer), `${persona} ${topic}: the then-card closed with its key`); continue; }
       assert.match(String(last.before.activeItemId), /:then:/, `${persona} ${topic} row ${n}: a then-card`);
       assert.ok(last.state.lastMove?.gave?.answer, `${persona} ${topic} row ${n}: the key given | ${out.reply.slice(0, 120)}`);
       assert.match(out.reply, /Is sawaal ka (?:sahi )?jawab/, out.reply);
@@ -243,7 +246,8 @@ describe("r7-brain-v65.test.mjs", () => {
       const { out, last } = await atLive(persona, "c4", n);
       assert.ok(!last.state.lastMove?.splitTeach && last.p.r.ui?.ask, `${persona} c4 row ${n}: split`);
       assert.doesNotMatch(out.reply, /Ab (?:isi|is) par ek (?:chhota )?sawaal/, out.reply);
-      assert.match(out.reply, /\?$/, out.reply);
+      // (the card itself ends her turn — an authored card can end on "batao.")
+      assert.ok(String(out.reply).replace(/\s+/g, " ").trim().endsWith(String(last.p.r.ui.ask.text).replace(/\s+/g, " ").trim()), out.reply);
     }
   });
   test("K2 predicate: 'woh wala ho gaya, aage chalo' to a why-probe moves on, never a stop menu (c5-t02 steady 54)", async () => {
