@@ -20,7 +20,8 @@ test("five set-up steps, in the approved order; adding a child is two", () => {
   // the language is asked on step 1, with her samples
   const cls = code(src("src/onboarding/steps/Class.tsx"));
   assert.match(cls, /LangTile/);
-  assert.match(cls, /ready = !!c\.classLevel && !!c\.board && !!speak/);
+  assert.match(cls, /ready = !!c\.classLevel && !!speak/);   // audit LEARN-45: the board defaults to CBSE
+  assert.match(cls, /const board = c\.board \?\? "cbse";/);
 });
 
 test("the AI-honesty promise and the 2-s hold are unchanged", () => {
