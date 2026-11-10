@@ -64,15 +64,16 @@ test("partialPostOn: off unless TAXILA_DUPLEX_PARTIAL_POST=on", () => {
   assert.equal(partialPostOn({ TAXILA_DUPLEX_PARTIAL_POST: "1" }), false);
 });
 
-test("/api/lesson/turn-audio: the turn's words reach a listener as a final before the turn runs", async () => {
+test("/api/lesson/turn-audio: the turn's words reach a listener as a final once the turn has authorised the lesson, before the reply", async () => {
   _resetChildText();
   const { _turnAudio, turnAudioDeps } = await import("../server/routes/voice.js");
   const order = [];
   onChildText(L, (e) => order.push(["text", e.text, e.final, e.itemId]));
-  Object.assign(turnAudioDeps, { style: () => ({}), synth: async function* () {}, lessonTurn: async () => { order.push(["turn"]); return { teacherReply: "", teacherReplySeq: 2 }; } });
+  Object.assign(turnAudioDeps, { style: () => ({}), synth: async function* () {}, lessonTurn: async (req, body, o) => { order.push(["auth"]); o.authorized?.(); order.push(["turn"]); return { teacherReply: "", teacherReplySeq: 2 }; } });
   const res = { statusCode: 0, writableEnded: false, writeHead() {}, flushHeaders() {}, write() { return true; }, end() { this.writableEnded = true; }, on() {}, once() {}, off() {} };
   try {
     await _turnAudio({ headers: { cookie: "tx_session=t", accept: "application/x-taxila-pcm-frames;v=2" }, url: "/api/lesson/turn-audio" }, res, { lessonId: L, turnSeq: 4, childText: "chaar" });
-    assert.deepEqual(order, [["text", "chaar", true, "turn:4"], ["turn"]]);
+    // (TEACHER-05, owner's audit: never before the lesson is authorised)
+    assert.deepEqual(order, [["auth"], ["text", "chaar", true, "turn:4"], ["turn"]]);
   } finally { Object.assign(turnAudioDeps, { lessonTurn: null, style: null, synth: null }); _resetChildText(); }
 });

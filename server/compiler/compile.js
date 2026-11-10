@@ -326,7 +326,7 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
   // round 4 (conversation): what the child's request must get this turn, last (position is mechanism; director/shapes.js
   // MUST_NOTE). A note, never a line; droppable (shed before anything else here when the section is over its cap).
   const must = move.must && move.kind !== "safeguard" && move.kind !== "wrap" && !fix.length
-    ? [{ text: `THIS TURN FIRST (a note, not words to say): ${String(move.must).replace(/["“”]/g, "").slice(0, 300)}`, drop: 9 }] : [];
+    ? [{ text: `THIS TURN FIRST (a note, not words to say): ${String(move.must).replace(/["“”]/g, "")}`, drop: 9 }] : [];
   return [
     ...lead,
     ...must,

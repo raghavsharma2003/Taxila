@@ -185,3 +185,16 @@ test("tired AND an easier ask is the easier ask with empathy, never a break; a p
   const n = turn(r, cls("incorrect"), { text: "yes also why is the sky blue" });
   assert.match(n.move.must ?? "", /sky/);
 });
+
+// TEACHER-11 (owner's audit): the must-do notes were joined then cut at 300 characters — "a game, in simpler words" (332) lost the
+// end of its second note. Budget gates throw, they do not cut: the whole note reaches her instructions
+test("TEACHER-11: a game asked in simpler words keeps both notes whole in THIS TURN FIRST", async () => {
+  const { ALSO_NOTE } = await import("../server/director/shapes.js");
+  const r = toPractice();
+  const must = [MUST_NOTE.visual_game, ALSO_NOTE.simpler].filter(Boolean).join("; ");
+  assert.ok(must.length > 300, `the two notes are ${must.length} characters`);
+  const st = { ...withBrief(r), lastMove: { ...r.state.lastMove, must } };
+  const out = instructionsFor(st, K, "text");
+  const tail = String(ALSO_NOTE.simpler).replace(/["“”]/g, "").slice(-40);
+  assert.ok(out.includes(tail), `the second note's end is said: …${tail}`);
+});
