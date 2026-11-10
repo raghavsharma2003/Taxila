@@ -22,7 +22,12 @@ describe("r7-brain-v610.test.mjs", () => {
       for (const [p, t, n] of BAD) assert.ok(pictureRowFlag(rowsOf(RUN, p, T[t])[n]), `${p} ${t} ${n}`);
       for (const [p, t, n] of GOOD) assert.equal(pictureRowFlag(rowsOf(RUN, p, T[t])[n]), null, `${p} ${t} ${n}`);
     });
-    test("the predicate throws in tests on a picture line with no view", () => {
+    test("the predicate throws in tests on a picture line with no view", (t) => {
+      // pictureTruth is strict only under the test runner (NODE_TEST_CONTEXT, set by `node --test` for its child processes
+      // but NOT in-process under --experimental-test-isolation=none, which scripts/test-leak-check.mjs uses): declare it here.
+      const had = process.env.NODE_TEST_CONTEXT;
+      process.env.NODE_TEST_CONTEXT ??= "v610-strict";
+      t.after(() => { if (had === undefined) delete process.env.NODE_TEST_CONTEXT; });
       assert.throws(() => pictureTruth([{ part: "alt" }, { part: "card" }], { view: null, layout: { split: false } }), /P6/);
       assert.equal(pictureTruth([{ part: "alt" }], { view: "parts" }), null);
       assert.equal(pictureTruth([{ part: "body" }], { view: null }), null);
