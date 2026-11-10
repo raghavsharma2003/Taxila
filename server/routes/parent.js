@@ -31,6 +31,7 @@ import { madeForOf } from "../reports/madeFor.js";
 import { listReports, previewReport, reportById, termOf, windowOf } from "../reports/index.js";
 import { HOW, renderFixed } from "../reports/templates.js";
 import { shortTitleOf } from "../director/state.js";
+import { skillScriptOf, scriptAskItem, scriptCheckItem, scriptThenItem } from "../director/script.js";
 import { COUNTED_LESSON_SQL, loadTruth, loadLessonTally, claimRows, topicTruth, lessonFactsSummary, renderSummaryLine, summaryClaimsHold,
   supersede, engineRow, lessonEndMs, GRADER_WORDS, nextTopicOf } from "../reports/truth.js";
 
@@ -990,11 +991,37 @@ async function homeData(child, guardian) {
 const stateOut = (t) => ({ level: t.level, key: t.key, recheck: t.recheck });
 
 /** Words for a kit item's prompt (the question as the kit poses it), by the engine row's item key. */
+/**
+ * PURE. The card a script item key names (`script:<skill>:ask:<beat>`, `script:<skill>:<checkId>`,
+ * `script:<skill>:then:<mix-up>`), built by the same card builders the Director uses, or null (audit LEARN-24: the
+ * sheet looked only in the kit's items, so it quoted the teacher's line before the answer instead of the question).
+ */
+export function scriptCard(kit, itemKey, skillId) {
+  const m = /^script:([^:]+):(.+)$/.exec(String(itemKey ?? ""));
+  if (!m) return null;
+  const sk = skillScriptOf(kit, m[1] || skillId);
+  if (!sk) return null;
+  const rest = m[2];
+  if (rest.startsWith("ask:")) {
+    const beat = rest.slice(4);
+    const a = beat === "worked" ? sk.workedExample?.yourStep : (sk.explain ?? []).find((b) => b.id === beat)?.ask;
+    return a ? scriptAskItem(sk.skillId, beat, a) : null;
+  }
+  if (rest.startsWith("then:")) {
+    const r = (sk.remediation ?? []).find((x) => x.targets === rest.slice(5));
+    return r?.then ? scriptThenItem(sk.skillId, r) : null;
+  }
+  const c = (sk.checks ?? []).find((x) => x.id === rest);
+  return c ? scriptCheckItem(sk.skillId, c) : null;
+}
+
 async function itemPrompt(itemKey, skillId) {
   if (!itemKey || String(itemKey).startsWith("teach:")) return null;
   try {
     const tid = topicOf(skillId);
     const kit = tid ? kitFromFile(getTopic(tid)) : null;
+    const card = String(itemKey).startsWith("script:") ? scriptCard(kit, itemKey, skillId) : null;
+    if (card) return quote(card.prompt_en || card.prompt_hi, 30);
     const it = kit?.items?.find((i) => i.id === itemKey) ?? kit?.misconceptions?.find((m) => m.diagnostic && `diag:${m.id}` === itemKey)?.diagnostic;
     return it ? quote(it.prompt_en || it.prompt_hi, 30) : null;
   } catch { return null; }
