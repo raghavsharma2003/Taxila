@@ -17,7 +17,7 @@
 // order the cached fold applied them and a replay of kt_evidence reproduces kt_skill_state byte for byte.
 // There is deliberately no id tiebreak: ids are opaque strings ("e10" < "e9"), not an order.
 import { formOf, fsrsGrade, isDelayedMiss, isDelayedSuccess, isFailedCard, isGenerativePass, isUnaidedCorrect, ITEM_CLASSES, outcomeName, recentValue, EMISSIONS } from "./outcomes.js";
-import { dropReason, logEvidence, logit, sigmoid, sourceOf, spend, teachStep, temper, tEff, transition, TEACH_LESSON_CAP } from "./bktr.js";
+import { dropReason, isHomePlay, logEvidence, logit, sigmoid, sourceOf, spend, teachStep, temper, tEff, transition, TEACH_LESSON_CAP } from "./bktr.js";
 import { nextReviewAt, retrievability, review } from "./fsrs.js";
 import { addObs, currentTheta, defaultItemMeta, initialBase, newEpoch, openEpoch, withPlacement, strandOfSkill, subjectOfSkill, subjectOfStrand, thetaObs } from "./ability.js";
 import { priorFromTheta } from "./priors.js";
@@ -29,6 +29,8 @@ import { misconceptionEffects, misLogLR, newMisconception, spendMis, updateMisco
 // held "why" folds no K step until its blind grade lands (LEARN-05); per-lesson budgets kept by lesson (LEARN-28); a leaked
 // answer at half weight on every class (LEARN-29).
 export const PARAMS_VERSION = "kt-r3-2026-11-10";
+/** The shapeId the round-8 reader puts on the first check card of a lesson it opened "compressed" at a learned skill. */
+export const RECHECK = "recheck";
 export const LEARNED_P = 0.95;
 export const DELAY_MS = 20 * 3600_000;
 /**
@@ -64,6 +66,23 @@ function newSkill(skillId, prior, topicType, epochId, seq, paramsVersion) {
 
 /** An event folded without its blind verdict (comprehension/later.js HELD_PREFIX): no K step until its late correction. */
 export const isHeld = (ev) => String(ev?.graderVersion ?? "").startsWith("held:");
+
+/** Home play's cap on log-evidence per skill per learning day (item 7) [U]: about a 3× likelihood ratio either way. */
+export const HOME_DAY_LOG_CAP = Math.log(3);
+/** The skill's home-play budget for the event's learning day (null when the event is not home play). */
+function homeDay(L, ev, k, sess) {
+  if (!isHomePlay(ev)) return null;
+  const cur = L.homeBudget?.[k];
+  const b = cur && cur.day === sess.day ? { ...cur } : { day: sess.day, sum: 0, stepped: false };
+  L.homeBudget = { ...(L.homeBudget ?? {}), [k]: b };
+  return b;
+}
+function homeSpend(b, applied) {
+  const next = Math.max(-HOME_DAY_LOG_CAP, Math.min(HOME_DAY_LOG_CAP, b.sum + applied));
+  const out = next - b.sum;
+  b.sum = next;
+  return out;
+}
 
 function newSession(ev) {
   const startAt = new Date(ev.sessionStartAt ?? ev.at).toISOString();
@@ -274,12 +293,19 @@ function applyEvidence(L, ev, sess, ctx) {
   const x = temper(ev);
   ks.forEach((k, i) => {
     const sk = sks[i], ss = sessSkill(sess, k);
-    const { applied, budget } = misOnly ? { applied: 0, budget: ss.budget } : spend(ss.budget, ev.cls, raw[i] * x);
-    ss.budget = budget;
+    const spent = misOnly ? { applied: 0, budget: ss.budget } : spend(ss.budget, ev.cls, raw[i] * x);
+    ss.budget = spent.budget;
+    // home play (item 7): per skill per learning day, its evidence is capped at ±HOME_DAY_LOG_CAP and it takes at most one
+    // learning step, so an afternoon of one game can move a skill a little but never far (and never certify it)
+    const home = homeDay(L, ev, k, sess);
+    const applied = home ? homeSpend(home, spent.applied) : spent.applied;
     const q = sigmoid(logit(sk.pL) + applied);
     let pL = q;
     // a card that ended without a right answer teaches nothing: no learning step (LEARN-02)
-    if (!ss.episodes.includes(ev.episodeId)) { if (!isFailedCard(ev.cls, ev.outcome)) pL = transition(q, tEff(sk.topicType, ctx.eta ?? 0)); ss.episodes.push(ev.episodeId); }
+    if (!ss.episodes.includes(ev.episodeId)) {
+      if (!isFailedCard(ev.cls, ev.outcome) && !(home && home.stepped)) { pL = transition(q, tEff(sk.topicType, ctx.eta ?? 0)); if (home) home.stepped = true; }
+      ss.episodes.push(ev.episodeId);
+    }
     sk.pL = pL;
     // Rule 8: FSRS once per skill per session, on the first retrieval-type event; C0 + a passed
     // transfer/why in the same episode upgrades the grade to 4.
@@ -333,7 +359,7 @@ function advanceDisplay(sk, ev, sess, ss, isTarget, novel = true) {
   // round 3 play (docs/design/round3/play/DESIGN.md §8, in-game-success-as-mastery): a game act moves pL at the game
   // weight but is never the delayed check, never spends it, and never sets "unaided": only a bare item outside the game
   // can make a skill learned or secure (DragonBox 3.5 h: no paper gain; Nuraydin 2022: trained task only)
-  const game = sourceOf(ev) === "game";
+  const game = sourceOf(ev) === "game" || sourceOf(ev) === "home";   // home play is a game act too (item 7)
   ss.attempted = true;
   if (rank(sk.display) < rank("practising")) sk.display = "practising";
 
@@ -387,6 +413,23 @@ function advanceDisplay(sk, ev, sess, ss, isTarget, novel = true) {
       reanchor(sk, sess);    // C1 / C2 (G = 2): neither a pass nor a miss; only these re-anchor (§6.4.1)
     }                        // anything else (an error-spot caught but not fixed, NA): not a check at all
   }
+
+  // A lesson the reader opened "compressed" at a learned skill's first check card (shapeId "recheck", round-8 ruling):
+  // a right answer is a re-check of that learned skill (the delayed check when `due` holds, else a review), never a second
+  // "unaided on first exposure"; a miss withdraws the status the compression trusted: back to practising, the delayed and
+  // durable flags cleared, so the full unit walked next can earn learned_today again from a fresh (a) + (b) day.
+  const recheck = ev.shapeId === RECHECK && produce && !game && rank(sk.display) >= rank("learned_today");
+  if (recheck && isDelayedMiss(ev.cls, ev.outcome)) {
+    ss.checkDone = true;
+    sk.display = "practising";
+    sk.flags.delayed = false; sk.flags.durable7 = false; sk.flags.durable30 = false;
+    sk.aDay = null; sk.bDay = null; sk.learnedAt = null;
+    sk.delayedMisses = 0;
+    sk.refresh = true;
+    reanchor(sk, sess);
+    return;
+  }
+  if (recheck) return;
 
   if (produce && clean && !game && isUnaidedCorrect(ev.cls, ev.outcome)) { sk.aDay = sess.day; sk.flags.unaided = true; }
   if (produce && clean && isGenerativePass(ev.cls, ev.outcome)) { sk.bDay = sess.day; sk.flags.generative = true; }
