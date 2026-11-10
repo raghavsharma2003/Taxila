@@ -14,6 +14,7 @@ import { getTopic } from "../server/content/curriculum.js";
 import { assertWalkExplained } from "../server/director/knows.js";
 import { createReactiveChild, maxTurnsFor } from "../evals/child-sim/reactive.mjs";
 import { seedLearner, SEEDED } from "../evals/knows-her/seed.mjs";
+import { knowsPracticeStart } from "../server/director/knows-walk.js";
 import { childrenFor, PILOT_TOPICS } from "../evals/knows-her/children.mjs";
 import { CTX } from "./fixtures/kit.mjs";
 import { eventsOf } from "./fixtures/knows/events.mjs";
@@ -27,8 +28,9 @@ function seededLesson(topicId, learner) {
   const seeded = seedLearner(topicId, learner);
   const classLevel = Number(/^c(\d+)-/.exec(topicId)[1]);
   const s0 = initLessonState({ topicId, kit, ctx: { ...CTX, classLevel, lang: "hinglish", interests: seeded.interests, firstMeeting: false }, seed: 7, now: 0,
-    knows: seeded.plan, warmupItems: seeded.warmup });
+    knows: seeded.plan, warmupItems: seeded.warmup, level: seeded.level, activeMisconceptionIds: seeded.activeMisconceptionIds });
   if (s0.knows) s0.knowsApplied = seeded.applied;
+  knowsPracticeStart(s0, kit, { level: seeded.level, activeMisconceptionIds: seeded.activeMisconceptionIds });
   let r = step(s0, { event: "start", kit, now: 0 });
   const child = createReactiveChild({ persona: "steady", seed: 7, kit, name: "Riya" });
   const moves = [r.move], states = [r.state];
@@ -47,7 +49,7 @@ function seededLesson(topicId, learner) {
     r = step({ ...s, recent: [...(s.recent ?? []), { who: "teacher", text: (r.move.mustSay ?? []).join(" ") }, { who: "child", text: out.text }] }, { event: "turn", kit, cls: c, text: out.text, now: (i + 1) * 20_000 });
     s = r.state; moves.push(r.move); states.push(s);
   }
-  return { kit, moves, states, final: s, plan: seeded.plan };
+  return { kit, moves, states, final: s, plan: seeded.plan, queue: s0.knowsPractice?.defaultQueue ?? null };
 }
 
 describe("round 8: the seeded children, dry, through the real walk", () => {
@@ -60,8 +62,8 @@ describe("round 8: the seeded children, dry, through the real walk", () => {
       const L = seededLesson(topicId, learner);
       const applied = L.final.knowsApplied ?? [];
       const because = [...L.plan.because, ...applied.filter((b) => !L.plan.because.some((p) => p.choice === b.choice && p.on === b.on))];
-      const events = eventsOf({ script, kit, moves: L.moves, plan: L.plan });
-      assertWalkExplained({ script, kit, because, events });
+      const events = eventsOf({ script, kit, moves: L.moves, plan: L.plan, states: L.states });
+      assertWalkExplained({ script, kit, because, events, queue: L.queue });
       // (a choice shows only where the lesson reached it: the steady child leaves after about 40 turns)
       const reached = (skillId) => events.some((e) => e.kind === "beat" && e.skillId === skillId && /^check:/.test(e.beat));
       assert.ok(L.moves.length >= 10, `${L.moves.length} moves`);

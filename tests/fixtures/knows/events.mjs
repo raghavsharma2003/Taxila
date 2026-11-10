@@ -1,6 +1,6 @@
 // The real walk's moves read back as knows.js assertWalkExplained events (shared by the real-walk tests). Pure.
 /** The real moves as assertWalkExplained events. */
-export function eventsOf({ script, kit, moves, plan }) {
+export function eventsOf({ script, kit, moves, plan, states = null }) {
   const ladders = new Map(script.skills.map((sk) => [sk.skillId, new Set((sk.ladder ?? []).map((x) => x.itemId))]));
   const targetsOf = new Map(script.skills.flatMap((sk) => [
     ...(sk.explain ?? []).filter((b) => b.ask).map((b) => [`script:${sk.skillId}:ask:${b.id}`, b.ask.targets ?? null]),
@@ -30,6 +30,9 @@ export function eventsOf({ script, kit, moves, plan }) {
       if (sk) out.push({ kind: "beat", skillId: sk[0], beat: `ladder:${id}` });
     }
     if (id && String(id).startsWith("script:") && !String(id).includes(":then:")) lastCard = id;
+    // the kit-practice picks this move made (knows-walk.js knowsPick's log), in order
+    if (states) { const i = moves.indexOf(m), now = states[i]?.practiceLog ?? [], before = i > 0 ? states[i - 1]?.practiceLog ?? [] : [];
+      for (const x of now.slice(before.length)) out.push({ kind: "practice", itemId: x.itemId, skillId: x.skillId, source: x.source }); }
   }
   return out;
 }

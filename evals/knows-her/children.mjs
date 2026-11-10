@@ -85,6 +85,8 @@ export function childrenFor(topicId) {
           brief: { opener: "standard_retrieval", successFirst: true, newSkillBudget: 1, adaptTrace: ["R1"],
             ...(spin && prereq ? { prereqCheck: { skillId: spin.id, forTopicId: topicId, prereqTopicId: topicOfSkill(prereq) } } : {}) },
           interests: ["trains", "drawing"], memory: { likes: true, lastActiveDay: day(1) },
+          // (the learner view's level, for the practice queue: behind his class and flagged weak)
+          level: { theta: Number(/^c(\d+)-/.exec(topicId)[1]) - 1.5, weak: true },
         },
         answer: (card) => (card.id === lm?.cardId ? { verdict: "wrong" } : card.id === cm?.cardId ? { verdict: "wrong", misconceptionId: cm.misconceptionId } : { verdict: "right" }),
       },
