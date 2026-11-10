@@ -198,3 +198,8 @@ What only live billing can settle, on the first closed day after the M4 apply (2
 3. Did managed Run Command pass the protectedParameter as an env var? The apply prints M3-RUNNER-OK, or M3-RUNNER-FAIL no env parameter.
 4. Does the ledger show runs by both aca and vm?
 5. Did 2026-11-06 count as day 1 (the report's `day1`; `status` prints the day-1 candidate line)?
+
+
+<!-- merged from inbox/r7-audit-docs-memory.json -->
+## op-audit-build-gpu-aws-owner
+Does the AWS GPU build harness (`scripts/gpu`) stay? It runs the 3D face jobs and the voice training scripts; nothing in the product runs it, and it calls a service outside the Azure-only rule. The question is the owner's. Until it is answered nothing under `scripts/gpu` is deleted or extended.

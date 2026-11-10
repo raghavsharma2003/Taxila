@@ -939,13 +939,6 @@ The opener set for the session-open delayed checks = `ktView.due()` ∪ {display
 - grok-4-1-fast-non-reasoning: p50 ~0.6 s, but 2 of ~60 calls hung to the 4 s / 7 s timeouts (an 8.1 s and a 4.1 s Director turn). With the hedge, Director p90 1629 ms (n=20) vs 1872-2424 without.
 - Reverse if: duplicates exceed ~10% of classify calls (cost), or the deployment's p90 rises above 1.5 s (raise the delay).
 
-## deploy-classify-grok (proposed)
-**Recommend DEPLOY_CLASSIFY=grok-4-1-fast-non-reasoning with DEPLOY_REPLY=taxila-fast for the cascade lane.** (2026-10-02, needs adoption: set in the Container App env)
-- Latency: total median 2966 ms / p90 3163 (n=20) vs 3275 / 4422 for taxila-fast classify on the same code (n=20). Quality on the real classify(): 75/80 exact vs 72/80, 0 graded-wrong, distress 10/10 (`classify-accuracy-2026-10-02`). It is Direct-from-Azure (Azure-only directive holds). DEPLOY_REPLY stays taxila-fast: ds41 rewrote more and slower; V4-Pro classify was slower (3649 ms).
-- Reverse if: a larger multi-topic labelled set shows grok more graded-wrong than taxila-fast, or its distress flag misses a case the predicate does not catch.
-
-
-<!-- merged from inbox/comprehension-review.json -->
 ## e6-span-fail-closed
 A positive `grader: "llm"` event moves U/T only when `spanOk === true`. Rationale: the INTEGRATION.md call site copied `spanOk` from an optional field, and the old check (`spanOk === false`) let an omitted field certify a verdict that no code had checked. **Reverse if** the closed-label grader is replaced by a code operator for that class.
 
@@ -9409,3 +9402,14 @@ Reverse if a child pilot shows results said by trial rather than read from the d
 
 ## Merged inbox entries (write-up from the entry text)
 - `dc-r7-bars-unnamed` (2026-11-09): Learning's D11 (relayed by main): fraction-bars@1 takes an UNNAMED bar, label "". It draws no name, its facts row says "<parts> equal parts" (no shaded count or value), and the label-value check skips it; a named bar is still checked. A compare card ("2/3 ya 3/10?") can now be posed honestly. Before, an unshaded bar could only say "?" (over a fraction the prompt states: director16 c5-t02 steady 70–92) or be named, which shades it and answers the card. The second view treats "" like "?": unnamed bars become circles (S8) and name no fraction. Under the held board an unnamed-bars card stands in the split's left panel. Pinned in tests/r8-held-board.test.mjs.
+
+
+<!-- merged from inbox/r7-audit-docs-memory.json -->
+## `dc-audit-india-move-not-cut-over`
+The memory read as if production had moved to India. It has not: the move was decided on 2026-10-04 and never cut over. This entry records the state so that a query stops returning the move as current; it decides nothing new.
+
+## `dc-audit-prod-db-neon-us-east-1`
+The first infrastructure entry names a Singapore database and Vercel functions. Neither is where production runs. This entry records the state; it decides nothing new.
+
+## `dc-audit-aws-not-called-by-product`
+Only what can be checked. A search of `server/`, `src/`, `shared/` and `package.json` for Bedrock, the AWS SDK and amazonaws.com finds nothing, so no product path calls AWS (2026-11-10). AWS appears in the offline build and training scripts: `scripts/gpu`, `scripts/voice/v3`, `scripts/voice/stt-v3`, `scripts/voicesig/aws-check.py`. CLAUDE.md's Azure-only rule covers what the product calls. The older entry that planned to use AWS credits (`owner-aws-credit-funded-india-first-2026-10-04`) has no recorded ending, and this entry does not invent one: no supersedes edge.

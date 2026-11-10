@@ -42,7 +42,7 @@
    "kind": "decision",
    "title": "Live teacher voice = gpt-realtime-2.1 full, director-driven per turn",
    "at": "2026-10-02",
-   "status": "live"
+   "status": "superseded"
   },
   {
    "id": "meera-realtime-azure",
@@ -68,7 +68,7 @@
    "kind": "decision",
    "title": "server_vad 0.6/900 ms + auto-response; director refreshes instructions between turns",
    "at": "2026-10-02",
-   "status": "live"
+   "status": "superseded"
   },
   {
    "id": "open-real-child-audio",
@@ -81,7 +81,7 @@
    "kind": "decision",
    "title": "Vercel project taxila, one catch-all function in sin1, SSO-private until launch",
    "at": "2026-10-02",
-   "status": "live"
+   "status": "superseded"
   },
   {
    "id": "claude-on-foundry-credits",
@@ -94,14 +94,14 @@
    "kind": "decision",
    "title": "Forge coder gpt-5.3-codex, designer gpt-5.6-sol, video sora-2",
    "at": "2026-10-02",
-   "status": "live"
+   "status": "superseded"
   },
   {
    "id": "forge-infra-azure",
    "kind": "decision",
    "title": "Forge on Azure Container Apps + Blob Storage taxilaforge",
    "at": "2026-10-02",
-   "status": "provisioned"
+   "status": "superseded"
   },
   {
    "id": "azure-only-compute",
@@ -8382,7 +8382,7 @@
   {
    "id": "duplex-arch-six-loops-device-floor",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Duplex teacher = a duplex CONTROLLER around the cascade, not a native duplex model: six loops (listen, understand, think, speak, build + a floor manager) on two clocks; the floor manager is a pure reducer ON THE DEVICE (20-32 ms ticks), the server thinks; models write notes/drafts/builds, code holds the floor (docs/research/duplex/ARCHITECTURE.md). Reverse if an India phone RTT to the India app is <= 40 ms p90 and a server-side floor measures equal on false take-overs and yield latency (D6).",
    "source": "inbox/duplex-architecture.json"
@@ -8390,7 +8390,7 @@
   {
    "id": "duplex-fast-mouth-late-verdict",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Fast mouth, late verdict: after a closed answer the first ~1-1.5 s of teacher audio is verdict-free (uptake of the child's own value / neutral opener) and the commit is revocable until the first verdict-bearing word; a child self-repair inside that window yields, merges and re-grades (M-B1 21/21 hesitant first values wrong; M-C1 43% of self-repair breaks still sent). Reverse if E1 shows self-repairs after a complete value in < 2% of closed answers.",
    "source": "inbox/duplex-architecture.json"
@@ -8406,7 +8406,7 @@
   {
    "id": "duplex-no-model-in-child-turn",
    "kind": "decision",
-   "status": "proposed",
+   "status": "superseded",
    "at": "2026-10-04",
    "title": "No model decides, interrupts or grades inside the child's turn; a calibrated decision model may only SHORTEN a hold, inside [candidate silence, hold cap], never end a turn below the candidate, never trigger speech. TypeSafe Jev (typed calibrated decisions, 70-500 ms vendor) is not Direct-from-Azure and too slow for the critical path anyway; its pattern is replicated on Azure (logprob-scored classify deployment if it returns logprobs, or a Qwen2.5-0.5B head on ACA) and tested in D3 (ECE <= 0.08). Reverse if E-C5 finds an intervention class with cut-off-correct <= 2% and better next-turn learning.",
    "source": "inbox/duplex-architecture.json"
@@ -8422,7 +8422,7 @@
   {
    "id": "duplex-content-blind-nods",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Listening nods are content-blind (prosody-timed backchannel opportunities only, single continuer form, <= 1 per 3 s, never in number/choice answers or SAFETY_ATTEND); suppressing nods after a wrong step would itself leak the verdict (design-v2-face-verdict-neutral). Audio 'mm' stays off by default (E-C3). Reverse if D5 shows content-blind nods after wrong steps read as agreement by >= 60% of child raters.",
    "source": "inbox/duplex-architecture.json"
@@ -8430,7 +8430,7 @@
   {
    "id": "duplex-result-triage",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Speech track and work track are independent: results landing mid-conversation are triaged in code as INTERRUPT (safety only), WHEN_IDLE (builds/whiteboard/library mounts become a Studio reveal proposal at the next /turn, kernel decides) or SILENT (notes, hints, learner updates as quiet context); nothing new reaches the screen while the child holds the floor; partial-intent may launch prefetch only, never live codegen. Reverse if D9 shows WHEN_IDLE reveals ready at the TRP < 50% because of the wait.",
    "source": "inbox/duplex-architecture.json"
@@ -9414,7 +9414,7 @@
   {
    "id": "duplex-echo-by-audio-span",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "EchoSubtractor matches her words that were audible inside the item's audio span regardless of the text's arrival time; empty-skeleton tails join a run by surface; on word-timed sources a single token whose own time sits on her same word is echo. Reverse if recorded sessions (ET-1) show children's words deleted (> 1% of answers).",
    "source": "inbox/duplex-critique.json"
@@ -9422,7 +9422,7 @@
   {
    "id": "duplex-unreadable-script",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Transcript tokens in a script other than Devanagari/Latin (STT hallucination, 5/90 real segments) set LexicalMarkers.unreadable: never complete, never re-voiced, backstop first sound is a verdict-free prompt; the Director should ask again. Reverse if a future STT stops hallucinating scripts (0 in 500 real segments).",
    "source": "inbox/duplex-critique.json"
@@ -9430,7 +9430,7 @@
   {
    "id": "duplex-turn-pace",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Within-turn pace: the longest pause this turn after which the child resumed x TURN_PACE.k (1.3, chosen on train slow-child world: k0 12.6%/1.5% cut/missed, k1.3 10.1%/3.6%, k1.6 9.6%/6.9%) floors later backstops (cap 6 s) and the verdict delay (cap 4 s); granted holds excluded. Reverse if ET-2 shows missed replies up > 3 pt with no cut-off gain.",
    "source": "inbox/duplex-critique.json"
@@ -9480,7 +9480,7 @@
   {
    "id": "duplex-stage-a-ships-2026-10-04",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Duplex engine: stage A (rules + governor, src/duplex/engineRules.ts) is THE engine; the fast LLM semantic estimate stays behind flags.semantic (off); stage B stays behind flags.trained (off). Why: on the frozen TaxilaFDB test split (960 streams, held-out template families AND voices) stage A cut children off in 2.3% (FAST lane) / 2.6% (D4) of 732 thinking pauses vs cascade-900 31.3%, silence-640 74.2-82.8%, Smart Turn v3.2 off-the-shelf 36.9-64.2%, at a decision gap p50 370 ms (FAST) / 1,140 ms (D4), dominating the whole silence frontier (no threshold < 5% cut-offs without ~100% missed replies); the LLM did not lower cut-offs (3.6% / 4.6%, overlapping CIs) and costs ~640 ms per call; stage B failed the promotion gates (closed-loop cut-offs 13-55%). Reverse if: real-child audio (E1) shows stage A's cut-offs above silence-640 on the same audio, or a stage B trained on consented real audio beats stage A on held-out children (tick AUC beyond CI AND closed-loop cut-offs <= stage A at equal gap AND ECE <= 0.05 per context AND <= 30 ms on ACA 2 vCPU).",
    "source": "inbox/duplex-engine.json"
@@ -9488,7 +9488,7 @@
   {
    "id": "duplex-stageb-features-only-no-vouch",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Only a floor model that READS AUDIO (audioMs > 0) may vouch for unseen audio at G5 (adapter.ts TrainedEngine.latestAcoustic); a features-only model's pComplete is also capped by the rules' horizon-penalised estimate. Why: letting the features-only stage B vouch removed the lexical horizon: 32/40 verdicts on repaired values and 86.9% thinking-pause cut-offs on TaxilaFDB test (D4), vs 1/40 and 13.4% after the fix. Reverse if: a features-only model is shown to predict the unseen tail (it cannot: it sees the same stale words).",
    "source": "inbox/duplex-engine.json"
@@ -9496,7 +9496,7 @@
   {
    "id": "duplex-safety-alt-readings",
    "kind": "decision",
-   "status": "proposed",
+   "status": "superseded",
    "at": "2026-10-04",
    "title": "Duplex partial safety runs the SAME shipped predicate (scanSafety) over extra readings of every partial: her echo stripped (echo.js stripAll) and punctuation removed. Why: TaxilaFDB F10 showed her echo interleaved inside a disclosure ('मुझे खुद पानी को चोट और लगानी') breaks the predicate's phrase, and the predicate misses 'कभी कभी लगता है मैं ना रहूं।' when the STT's danda follows the last word (true without the danda). After the fix: distress detected 84/84 test streams, safeguard over a talking child 0. One predicate, more readings — not a fork. Reverse if: server/director/safety.js normalises punctuation itself (then drop the punctuation reading) or alt readings produce false safety trips (0/24 benign on test today).",
    "source": "inbox/duplex-engine.json"
@@ -9582,7 +9582,7 @@
   {
    "id": "duplex-runtime-2026-10-04",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Duplex v2 runtime shape: a device-side EngineHost (src/duplex/host.ts) builds one EngineTick per 100 ms timer AND per stream event (20 ms frames' voice edges, STT partial/final, her playback start/verdict/end/stopped, screen, Director context, async estimate) and runs engine.tick behind the ONE code governor (src/duplex/governor.ts, G1-G11); engines come from one factory (src/duplex/adapter.ts createEngine): stage A rules (engineRules.ts) today, TrainedEngine (ONNX via an injected onnxruntime, feature spec cce-features/1, <= 20 MB, falls back to stage A on any stale tick) when flags.trained AND a model are present, so stage B lands with no code change. The server slice (server/duplex/slice.js + routes.js) keeps the authorities the device must not hold: partials fan-in with the lexical horizon (fanin.js), known-text echo subtraction of her own TTS words (echo.js), sticky safety on every partial (partialSafety.js, the shipped scanSafety), speculative drafts + TTS warm-up of the code-built uptake driven by the PrepareHint stream with cancellation (speculator.js), build intents from partials (buildIntent.js; misconception values server-only). Hands-free and full-session: no press/release API anywhere in the duplex modules (test-asserted); push-to-talk survives only as the W2 recording/typed fallback. Shadow mode emits log rows only (numbers + closed codes, never child words). Reverse if: the host's per-tick cost on a low-end Android (DX-1) exceeds 5 ms p95 or the event-tick design misses a decision the timer would catch; then fold event ticks into the 100 ms timer (decisions only, perception stays continuous).",
    "source": "inbox/duplex-runtime.json"
@@ -9590,7 +9590,7 @@
   {
    "id": "duplex-verdict-delay-2s",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Fast mouth, late verdict: the verdict-bearing words of a closed-answer reply play no earlier than the child's last value end + 2.0 s (config VERDICT.delayMs; was 1.2 s in the v2 draft). The first sound (the code-built uptake of the child's own value) is not delayed: only the verdict segment, which the player holds (INTEGRATION.md §4). Evidence M-D7 (n = 96 scenarios x 10 seeds, fast word-timed lane): verdict played before the child finished / on a value the child then repaired = 13/9 of 379 at 1.2 s, 4/4 at 1.6 s, 0/0 at 2.0 s; first-audio p50 unchanged (2,027 vs 2,019 ms). Caveat: tuned on one author's scripted self-corrections (repair pauses 400-1,500 ms +-20 %), so it is a corpus bound, not a child bound. Reverse if: DX-6 on TaxilaFDB or real consented children shows repairs after a value pause > 2.0 s at a rate that matters (then raise, or key it to the child's own repair-pause p90), or that 2.0 s reads as unnatural hesitation in a blind listen against 1.2-1.6 s with 0 wrong-value verdicts.",
    "source": "inbox/duplex-runtime.json"
@@ -9598,7 +9598,7 @@
   {
    "id": "duplex-overlap-stay-ducked",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Overlap while she speaks: a burst still voicing at 250-449 ms is UNDECIDED (stay ducked at 0.2, keep listening) instead of adding +1.0 barge-in evidence (config OVERLAP.earlyVoicedZ = 0); it yields at the sustain threshold (OVERLAP.sustainedMs: 450 ms here; 600 ms after the TaxilaFDB tuning workstream), on a raised/rising onset, after her yes/no question (~200-300 ms), or when words land; a burst that ends short reads as a continuer and she un-ducks. The reflex duck at onset (~40 ms) already backs her voice off. Evidence M-D7 fast lane: the eager rule yielded on 20/30 continuers ('हम्म/अच्छा/ओके' over her) and resumed ~0.8 s later, vs 0/30 now; cost: barge-in yield p50 500 ms (fast) / 600 ms (D4, MAI) vs 300 ms (yes/no answers still yield at 300 ms). Reverse if: on real audio (DX-5) the stay-ducked rule's barge-in yield p50 exceeds 600 ms or children re-try their interruption, while the eager rule's continuer false-yields stay under 10 %.",
    "source": "inbox/duplex-runtime.json"
@@ -9606,7 +9606,7 @@
   {
    "id": "duplex-explain-sentence-cap",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Stage A without a fresh semantic read is uncertain about the end of a teach-back: in open_explanation a finished SENTENCE (verb-final, falling contour) caps pComplete at 0.8 < speakPc 0.9 (engineRules.ts EXPLAIN_SENTENCE_CAP), so only a fresh semantic estimate on the same text, an idk / complete question / repeat request, or the governor's context backstop (B3: 2.0 s at decision time, 2.5 s after the TaxilaFDB tuning change; x2.5 on an open tail) ends it. Evidence M-D7 (pre-cap dev run, 3 seeds): 'triangle के तीन sides होते हैं' + 1.6 s pause and 'जो ऊपर होता है ना' were taken over 3/3 and 3/3 (revoked before audio only because the reply was slow); after the cap 0 hard cut-offs in explanations; explanation gap p50 ~2.03 s on every lane (~2.53 s with the raised backstop) (the price, paid until the semantic call lands). Reverse when: the semantic arm (server/duplex/semantic.js, taxila-fast) is measured on TaxilaFDB F2 with thinking-pause cut-offs <= silence-640 on the same audio; then the cap applies only while the semantic estimate is stale.",
    "source": "inbox/duplex-runtime.json"
@@ -9744,7 +9744,7 @@
   {
    "id": "duplex-verdict-blind-timing",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "The engine's completeness is 'a complete answer of the asked form', never 'the right answer': the expected-answer context carries {form, slots, units, options}, never the key or misconception values, so right and wrong answers get the same reply timing (latency would otherwise leak the verdict, like correctness-keyed nods; design-v2-rejected-correctness-face) and no key material reaches the device (v1 §6.7). The owner brief's 'expected answer form/key' is honoured for form only, deliberately. Reverse only if a blind test shows children cannot detect a >= 300 ms right/wrong latency difference; the key stays off the device regardless.",
    "source": "inbox/duplex-v2.json"
@@ -9752,7 +9752,7 @@
   {
    "id": "duplex-lexical-horizon-guard",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Words count only once they cover the audio: TranscriptView carries coverageEndMs and unseenVoicedMs (child voiced audio after the last covered word); lexical completeness is discounted and SPEAK/CUT_IN vetoed (governor G5) when unseenVoicedMs > 120 ms unless a fresh acoustic estimate vouches for the tail. Coverage comes from Nemotron token times (scale) or the MAI micro-commit probe (commit at a >= 150 ms acoustic micro-pause; the final covers all audio, 68 ms from Chennai) (pilot); D4 has no timings (713 ms lag) and cannot meet the 350 ms gap. Evidence M-D6: wrong values on stale prefixes 5/13 -> 0/11 with the guard. Reverse if the India-lane STT gives word coverage within 100 ms p90 (the guard becomes a no-op but stays).",
    "source": "inbox/duplex-v2.json"
@@ -9915,7 +9915,7 @@
   {
    "id": "rs4-v2-rung1-engine-spec",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "Studio v2 = 16 reviewed engines (8 games, 4 simulations, 4 explainers) + a model-written JSON spec per piece, mounted as rung 1 inside the W2-H host (patch 01 adds the `engine` artifact kind). The model never writes code on this rung; validateSpec repairs the spec or returns the reviewed default and never throws. Reverse if child playtests show spec-filled engines feel samey across lessons (repeat-play drop-off worse than W2-H code builds), or if the spec bench usable-after-repair rate falls below 90% for an archetype on the production planner.",
    "source": "inbox/prework-rs4.json"
@@ -9923,7 +9923,7 @@
   {
    "id": "rs4-shared-pure-grader",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "Grading is one pure function, gradeAnswer(archetype, spec, itemId, rawValue) in shared/studio-spec.ts, run by the client host and re-run by the server (patch 02, createGradeSessionV2). The frame's own `correct` field is never read. Engine and host verdicts agreed on every graded answer in the record battery. Reverse if a needed act cannot be expressed as a raw value plus the spec (then grade that act server-side from the host log only, still never from the frame).",
    "source": "inbox/prework-rs4.json"
@@ -9931,7 +9931,7 @@
   {
    "id": "rs4-host-recorded-input",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "Simulations that grade a process (phase-shift, shadow-play) send `{ $hostLog: name }` references; the host substitutes its own recorded input channel (api.record) and the grader replays it with the same fixed step. Inputs are quantised to 0.1 s sim boundaries so the replay is exact. The largest answer measured was 1768 B (phase-shift with host log), so the server bound for v2 answers is 256 KB, not W2-H's 512 B. Reverse if logs over 256 KB occur in real sessions (then checkpoint state server-side every N s).",
    "source": "inbox/prework-rs4.json"
@@ -9939,7 +9939,7 @@
   {
    "id": "rs4-safe-zone-measured",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "The stage contract is measured, not trusted. Every text draw is checked against the label safe zone (0..180 x 0..75) and the PiP safe zone (837.5..1000 x 0..162.5) via ctx.getTransform, and labels under 38 world units are counted (tooSmall). FX pops are clamped out of the zones, and pop-in overshoot counts as decoration. Reverse if the PiP or label moves (update the zones in core/tokens.ts, then re-run record.mjs).",
    "source": "inbox/prework-rs4.json"
@@ -9955,7 +9955,7 @@
   {
    "id": "rs4-junk-labels-rejected",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "Spec strings that contain NaN, undefined, null, Infinity or '[object ' are treated like markup and fall back to the reviewed string. Found by the Playwright fuzz: seed 5 on area-claim rendered 'NaN' as a unit label. Reverse if a legitimate label in some language contains one of these tokens.",
    "source": "inbox/prework-rs4.json"
@@ -10422,7 +10422,7 @@
    "id": "vs-filler-detector-ami",
    "kind": "decision",
    "at": "2026-10-04",
-   "status": "proposed",
+   "status": "shipped",
    "reverseIf": "VS-A8 on child pilot audio: filler recall < 0.6 at <= 0.05 FP.",
    "title": "Stage-2 public-data component = per-frame filled-pause detector trained on AMI (CC BY 4.0) over the product front-end features; feeds F3 acoustic only.",
    "source": "inbox/voicesig.json"
@@ -10431,7 +10431,7 @@
    "id": "vs-z-on-server",
    "kind": "decision",
    "at": "2026-10-04",
-   "status": "proposed",
+   "status": "shipped",
    "reverseIf": "A device stage-2 head needs z inputs (K2 embedding branch).",
    "title": "Device sends raw measurements KnowledgeVoice.f; server z-scores against the voicesig baseline (deviation from SPEC 1.5 z-on-device).",
    "source": "inbox/voicesig.json"
@@ -10440,7 +10440,7 @@
    "id": "vs-voice-lr-over-text",
    "kind": "decision",
    "at": "2026-10-04",
-   "status": "proposed",
+   "status": "shipped",
    "reverseIf": "A fitted head without a text-only counterfactual; then dAUROC-matched calibration.",
    "title": "lrV = odds(h all terms)/odds(h text-only terms), gated qA x maturity, clipped to ladder cap; replaces SIGNALS A1/L4 term (replaceTimingTerm).",
    "source": "inbox/voicesig.json"
@@ -20359,7 +20359,7 @@
    "id": "r4c-dc-screen-claims-by-predicate",
    "kind": "decision",
    "at": "2026-10-11",
-   "status": "proposed",
+   "status": "shipped",
    "title": "Proposed for release 13 (main decides): a sentence that points at the screen or board is checked against what is mounted (a game needs a play piece; its content words must be words the mounted piece shows), and the screen repair drops only the pointing, never the content (r12/rca/patches/r13-fix-2-5-screen-claims.diff). Reversal: a battery shows false flags on legitimate pointing lines above a bar main sets.",
    "source": "inbox/r4-conversation.json"
   },
@@ -21790,7 +21790,7 @@
    "id": "dc-r144-ways-chips-lang",
    "kind": "decision",
    "at": "2026-10-15",
-   "status": "proposed",
+   "status": "shipped",
    "title": "r5 QA D41 (14.4): the ways-in chips (picture / story / game / back, director/state.js waysChips) go through chipLabels(lang) like the stop and check-in chips (Hinglish 'Picture dikhao / Kahani mein batao / Game khelte hain / Lesson par wapas', Hindi 'तस्वीर दिखाओ / कहानी में बताओ / गेम खेलते हैं / पाठ पर वापस'); the Director still reads the ids, and each label said aloud reads as its request (a Devanagari story ask needs its telling verb, so 'इस कहानी में राजा कौन है' is not one). The Hinglish LANGUAGE rule (compiler/compile.js) no longer follows a switch to English: her English words, even a whole English line ('Can we do the lesson now?'), keep Hinglish; only a language request (requests.js 'language', PINNED) changes it. Reversal: a Hinglish-pref child who keeps writing English and is understood worse in Hinglish (owner report or sim-lab register check).",
    "source": "inbox/r144-4a.json"
   },
@@ -21826,7 +21826,7 @@
    "id": "dc-r144-deep-marks-switch",
    "kind": "decision",
    "at": "2026-10-15",
-   "status": "proposed",
+   "status": "superseded",
    "title": "The deep-kind audit's 1,927 marks are measured before they are applied: TAXILA_KIT_DEEP_MARKS=1 (off by default) loads data/kits/deep-marks-2026-10-15.json as deep: false through the kit loader; the patch itself (main's deep-kind-fix, items.js plainEvidence) is applied on claude/r4-conversation and changes nothing while no kit carries deep: false. The sim lab's 2x2 (marks off/on x a kind-only / audit-aware decided child) decides. Reversal: on apply, write the marks into the kits (evals/kit-deep-kinds/apply.mjs --write) and remove the switch and the list; on reject, remove both and keep the patch's code inert.",
    "source": "inbox/r144-4a.json"
   },
@@ -23898,7 +23898,7 @@
    "id": "r5a-dc-understood-is-earned",
    "kind": "decision",
    "at": "2026-10-14",
-   "status": "proposed",
+   "status": "shipped",
    "title": "Agent lane: the per-skill read 'understood' is earned in code (server/agent/agent.js earnedRead): right answers on two different items, or one on a why / transfer item, and no wrong answer after the last right one; otherwise held at partly (or not), and the model is shown its unsupported claim. Motivated by 61/164 overclaims on 571b301.",
    "reversal": "the sim lab shows underclaims (understood withheld from a child who has it) outnumbering the overclaims it removes",
    "source": "inbox/r7-main-3-remerge-old.json"
@@ -26779,6 +26779,74 @@
    "at": "2026-11-09",
    "title": "Learning's D11 (relayed by main): fraction-bars@1 takes an UNNAMED bar, label \"\". It draws no name, its facts row says \"<parts> equal parts\" (no shaded count or value), and the label-value check skips it; a named bar is still checked. A compare card (\"2/3 ya 3/10?\") can now be posed honestly. Before, an unshaded bar could only say \"?\" (over a fraction the prompt states: director16 c5-t02 steady 70–92) or be named, which shades it and answers the card. The second view treats \"\" like \"?\": unnamed bars become circles (S8) and name no fraction. Under the held board an unnamed-bars card stands in the split's left panel. Pinned in tests/r8-held-board.test.mjs.",
    "source": "inbox/r7-studio-33.json"
+  },
+  {
+   "id": "rj-audit-inbox-edges-silently-skipped",
+   "kind": "rejection",
+   "at": "2026-11-09",
+   "title": "Tried: sessions wrote memory edges with relations outside the seven the graph knows (informs, implements, refines, supports …) or with from/to keys. What broke: merge-inbox printed 'skip edge' and carried on, the file moved to merged/, and context.mjs --check still passed. 229 of 3,062 inbox edges never reached the graph; 25 of the 96 well-formed ones are 'supersedes', so replaced decisions still read as current. Do not rely on an edge having merged; the merger should fail on an unknown relation and the check should compare merged-inbox edges with the graph.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "ms-audit-inbox-edges-dropped-2026-11-09",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "n": 3062,
+   "method": "script over context/inbox/merged/*.json against graph.json at int/r6 8bb6b188",
+   "title": "Edges in merged inbox files that are not in the graph: 229 of 3,062. 130 use an unknown relation, 3 lack an endpoint, 96 are well-formed with both ends present (part_of 27, supersedes 25, caused_by 22, measured_by 15, constrains 4, inherits 3). The 96 are re-proposed in this file.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "dc-audit-india-move-not-cut-over",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "Record of fact, as HANDOFF.md §6 and M3.md state it: the 2026-10-04 India move never cut over. Production is taxila-web in eastus2 on Neon (us-east-1); taxila-cin-pg holds no product data and is kept (on B2s since 2026-11-06) as one of the Founders Hub counted services. The India hot path is round 7 Platform's scripted, not-applied work. Reverse: the owner approves the cutover and scripts/region/* is applied.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "dc-audit-prod-db-neon-us-east-1",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "Record of fact: the production database is the Neon project in us-east-1 named in dc-owner-other-neon-project-not-used, not the Singapore project and Vercel sin1 functions that infra-segment describes. Reverse: a database move is applied.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "ms-audit-kit-census-2026-11-09",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "n": 38,
+   "method": "count over data/kits/c*.json at int/r6 8bb6b188",
+   "title": "Kit census: 830 topics and 12,597 items in 38 files (was 565 topics / 7,385 items on 2026-10-02). The blind-verified share was not recounted.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "ms-audit-open-items-closed-2026-11-09",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "method": "each open entry's claim checked against the code at int/r6 8bb6b188; list with file:line in docs/design/round7/audit/docs-memory.md (DOCS-22, DOCS-23)",
+   "title": "Open items the code has since closed: migrate defaults to the test branch; the W1-B module call sites and the engine re-check are in server/brain/turn.js and server/director/modules.js; data/kits-parts.json shipped; Stagecraft is wired into the turn and on by default; Home kicks planToday when TAXILA_CONDUCTOR_PLAN=on; route crashes are beaconed; the stop phrase and 'deeper' are read by code; taxila.dev is the public URL; the deploy sets TAXILA_STT_MODEL; the lesson-time client wiring (plan state, refusal screen) exists.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "dc-audit-aws-not-called-by-product",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Record of what can be checked about AWS, 2026-11-10; it decides nothing new. No product code (server/, src/, shared/, package.json) mentions Bedrock, the AWS SDK or amazonaws.com; AWS appears only in offline build and training scripts (scripts/gpu, scripts/voice/v3, scripts/voice/stt-v3, scripts/voicesig/aws-check.py). CLAUDE.md's Azure-only rule (owner, 2026-10-02) covers every paid AI and compute resource the product calls. Which owner statement ended the AWS-credit plan of owner-aws-credit-funded-india-first-2026-10-04 is not recorded anywhere, so no supersedes edge is written. Reverse: the owner records that a product path may call AWS.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "op-audit-build-gpu-aws-owner",
+   "kind": "open",
+   "at": "2026-11-10",
+   "title": "Does the AWS GPU build harness (scripts/gpu: used by the 3D face jobs and by the voice training scripts scripts/voice/v3 and stt-v3; nothing in the product runs it) stay, or retire with the 3D head? This is the owner's question; no session may decide it. Until answered, scripts/gpu is kept.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "comprehension-review-open-2026-10-02",
+   "kind": "open",
+   "at": "2026-10-02",
+   "title": "The CE-M1 bar fails under both families (0.627 / 0.475), and CE-M4 now fails at 14 pp after the truth-leak fix. Per SIM6, thresholds were NOT tuned to the simulator.",
+   "source": "open.md"
   }
  ],
  "edges": [
@@ -41936,6 +42004,1066 @@
    "src": "dc-r7-bars-unnamed",
    "rel": "part_of",
    "dst": "dc-r7-held-board"
+  },
+  {
+   "src": "ms-audit-inbox-edges-dropped-2026-11-09",
+   "rel": "caused_by",
+   "dst": "rj-audit-inbox-edges-silently-skipped"
+  },
+  {
+   "src": "dc-audit-india-move-not-cut-over",
+   "rel": "supersedes",
+   "dst": "india-move-southindia-azure-pg-2026-10-04"
+  },
+  {
+   "src": "dc-audit-prod-db-neon-us-east-1",
+   "rel": "supersedes",
+   "dst": "infra-segment"
+  },
+  {
+   "src": "dc-audit-prod-db-neon-us-east-1",
+   "rel": "inherits",
+   "dst": "dc-owner-other-neon-project-not-used"
+  },
+  {
+   "src": "dc-r4-single-teacher-asha",
+   "rel": "supersedes",
+   "dst": "avatar-tutor-selection"
+  },
+  {
+   "src": "owner-2d-ship-at-4-2026-10-05",
+   "rel": "supersedes",
+   "dst": "owner-2d-bar-4-5-2026-10-04"
+  },
+  {
+   "src": "owner-2d-ship-at-4-2026-10-05",
+   "rel": "supersedes",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "ms-r1442-live",
+   "rel": "supersedes",
+   "dst": "ms-r1441-live"
+  },
+  {
+   "src": "ms-r1441-live",
+   "rel": "supersedes",
+   "dst": "ms-r144-live"
+  },
+  {
+   "src": "ms-r144-live",
+   "rel": "supersedes",
+   "dst": "ms-r1432-live"
+  },
+  {
+   "src": "ms-r1432-live",
+   "rel": "supersedes",
+   "dst": "ms-r1431-live"
+  },
+  {
+   "src": "ms-r1431-live",
+   "rel": "supersedes",
+   "dst": "ms-r143-live"
+  },
+  {
+   "src": "ms-r143-live",
+   "rel": "supersedes",
+   "dst": "ms-r142-live"
+  },
+  {
+   "src": "ms-audit-kit-census-2026-11-09",
+   "rel": "supersedes",
+   "dst": "kit-census-2026-10-02"
+  },
+  {
+   "src": "ms-r7-m4-day1-2026-11-06",
+   "rel": "supersedes",
+   "dst": "open-r7-m4-billing-assumptions"
+  },
+  {
+   "src": "rj-r145-kit-deep-marks",
+   "rel": "supersedes",
+   "dst": "open-r143-kit-kind-pose-mismatch"
+  },
+  {
+   "src": "rj-r145-kit-deep-marks",
+   "rel": "supersedes",
+   "dst": "dc-r143-kit-deep-false"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "supersedes",
+   "dst": "dc-r7-m3-credit-unlock"
+  },
+  {
+   "src": "image-default-flare-low-2026-10-04",
+   "rel": "supersedes",
+   "dst": "owner-gpt-image-2-default-2026-10-04"
+  },
+  {
+   "src": "owner-stt-cost-plan-2026-10-04",
+   "rel": "supersedes",
+   "dst": "owner-always-listen-full-session-2026-10-04"
+  },
+  {
+   "src": "stt-mai2-stream-primary-india-2026-10-04",
+   "rel": "supersedes",
+   "dst": "stt-default-live-transcribe-kw-reaffirmed"
+  },
+  {
+   "src": "taxila-dev-live-2026-10-04",
+   "rel": "supersedes",
+   "dst": "open-india-public-url"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-migrate-default-test-branch"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "w1b-open-lesson-wiring-guard"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "engines-v1-server-recheck"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-engines-v1-wiring"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "truth-open-parts-data-unshipped"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-stagecraft-patches-unapplied"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-home-calls-plan-today"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-e2e-stop-reader-gap"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "prod-live-stt-gpt4o-transcribe"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-lt-client-wiring-2"
+  },
+  {
+   "src": "duplex-verdict-anchor-last-voice",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-turn-pace",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-stageb-features-only-no-vouch",
+   "rel": "constrains",
+   "dst": "duplex-lexical-horizon-guard"
+  },
+  {
+   "src": "duplex-wait-time-ii-backstop",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "m-taxilafdb-test-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-taxilafdb"
+  },
+  {
+   "src": "m-taxilafdb-l2-live-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-taxilafdb"
+  },
+  {
+   "src": "m-taxilafdb-l2-live-2026-10-04",
+   "rel": "inherits",
+   "dst": "m-d2-duplex-live-stt-2026-10-04"
+  },
+  {
+   "src": "rj-llm-semantic-cutoff-benefit",
+   "rel": "inherits",
+   "dst": "m-d5-duplex-model-arm-2026-10-04"
+  },
+  {
+   "src": "duplex-runtime-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-verdict-delay-2s",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-hold-grant-fresh-words",
+   "rel": "constrains",
+   "dst": "duplex-lexical-horizon-guard"
+  },
+  {
+   "src": "rj-duplex-fanin-single-commit-slot",
+   "rel": "constrains",
+   "dst": "duplex-lexical-horizon-guard"
+  },
+  {
+   "src": "rj-duplex-no-text-resume-1600",
+   "rel": "measured_by",
+   "dst": "m-d2-duplex-live-stt-2026-10-04"
+  },
+  {
+   "src": "forge-live-is-g1-fill",
+   "rel": "caused_by",
+   "dst": "forge-live-codegen-race"
+  },
+  {
+   "src": "foundry-w2-deployments-2026-10-04",
+   "rel": "part_of",
+   "dst": "plan-superhuman-waves"
+  },
+  {
+   "src": "open-bedrock-quota-and-enablement",
+   "rel": "inherits",
+   "dst": "scout-text-build-bedrock-still-blocked-2026-10-04"
+  },
+  {
+   "src": "owner-gpt-image-2-default-2026-10-04",
+   "rel": "part_of",
+   "dst": "owner-azure-first-aws-second-2026-10-04"
+  },
+  {
+   "src": "dc-r144-d5-unheard-not-silence",
+   "rel": "measured_by",
+   "dst": "ms-r144-d5-false-silence"
+  },
+  {
+   "src": "dc-r144-fanin-carried-burst-item",
+   "rel": "measured_by",
+   "dst": "ms-r144-d5-overlap-words-lost"
+  },
+  {
+   "src": "dc-r144-negation-surface-key",
+   "rel": "measured_by",
+   "dst": "ms-r144-negation-echo"
+  },
+  {
+   "src": "rj-r144-governor-carry-check",
+   "rel": "measured_by",
+   "dst": "ms-r144-d5-overlap-words-lost"
+  },
+  {
+   "src": "dc-r144-unheard-never-escalates",
+   "rel": "measured_by",
+   "dst": "ms-r144-unheard-three-in-a-row"
+  },
+  {
+   "src": "dec-r3fix-fitshape-optional-clauses",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-budget-500-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-server-runs-frame-normalize",
+   "rel": "caused_by",
+   "dst": "open-r3rv-measure-engine-for-mass"
+  },
+  {
+   "src": "dec-r3fix-arith-and-ui-guards",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-truth-errors-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-switch-topic",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-requests-honoured-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-young-help-on-demand",
+   "rel": "caused_by",
+   "dst": "open-r3rv-young-help-covers-activity"
+  },
+  {
+   "src": "open-r3fix-latency-not-fixed",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-silence-after-answer-2026-10-10"
+  },
+  {
+   "src": "ship5-fix-ta8-structural",
+   "rel": "supersedes",
+   "dst": "rj-ship5-filter-safeguard-no-calm-face"
+  },
+  {
+   "src": "ship5-fix-generated-keys-verified",
+   "rel": "supersedes",
+   "dst": "rj-ship5-stagecraft-model-key"
+  },
+  {
+   "src": "ship5-fix-template-board-regated",
+   "rel": "supersedes",
+   "dst": "rj-ship5-board-fallback-ungated"
+  },
+  {
+   "src": "ship5-fix-tone-guard-needs-no-words",
+   "rel": "supersedes",
+   "dst": "rj-ship5-duplex-tone-guard-distress"
+  },
+  {
+   "src": "stagecraft-no-livepath-failover",
+   "rel": "supersedes",
+   "dst": "stagecraft-spec-default-deployment"
+  },
+  {
+   "src": "stylised-3d-halt-r4-owner-decision",
+   "rel": "supersedes",
+   "dst": "stylised-3d-halt-r3-owner-decision"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-stylised-face-commissioned"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "character-built-in-house"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-human-first-gpu"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-bakeoff-verdict"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "gnm-adopted-identity-base"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-polished-verdict"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-stylised-3d-glb"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "open-stylised-panel"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "measured_by",
+   "dst": "stylised-concepts-2026-10-04"
+  },
+  {
+   "src": "stylised-c-two-arm-method",
+   "rel": "caused_by",
+   "dst": "stylised-c-owner-directive"
+  },
+  {
+   "src": "stylised-c-two-arm-method",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-refs-2026-10-04"
+  },
+  {
+   "src": "stylised-c-arm-a-wins",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r1"
+  },
+  {
+   "src": "stylised-c-arm-a-wins",
+   "rel": "part_of",
+   "dst": "stylised-c-two-arm-method"
+  },
+  {
+   "src": "rj-stylised-c-arm-b-sculpt-target",
+   "rel": "caused_by",
+   "dst": "meas-stylised-c-judge-r1"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r2"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r3"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r4"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-budget-2026-10-04"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "caused_by",
+   "dst": "rj-stylised-c-sdf-surface-ceiling"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "constrains",
+   "dst": "stylised-c-owner-directive"
+  },
+  {
+   "src": "stylised-3d-halt-r4-owner-decision",
+   "rel": "caused_by",
+   "dst": "stylised-c-3d-failing-verdict"
+  },
+  {
+   "src": "meas-stylised-c-judge-r4",
+   "rel": "supersedes",
+   "dst": "meas-stylised-polish-r2-blind-replicate"
+  },
+  {
+   "src": "rj-stylised-c-sdf-surface-ceiling",
+   "rel": "caused_by",
+   "dst": "meas-stylised-c-judge-r2"
+  },
+  {
+   "src": "rj-agent-authored-stylised-face",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r2"
+  },
+  {
+   "src": "rj-stylised-c-arm-a-traps",
+   "rel": "caused_by",
+   "dst": "meas-stylised-c-gates-2026-10-04"
+  },
+  {
+   "src": "rj-stylised-c-arm-b-traps",
+   "rel": "caused_by",
+   "dst": "meas-stylised-c-spend-2026-10-04"
+  },
+  {
+   "src": "voice-blind-ab-2026-10-04",
+   "rel": "measured_by",
+   "dst": "voice-clips-off-and-numbers-normalised"
+  },
+  {
+   "src": "voice-blind-spliced-breaths-rejected",
+   "rel": "caused_by",
+   "dst": "voice-clips-off-and-numbers-normalised"
+  },
+  {
+   "src": "m-vs-frontend-cpu-2026-10-04",
+   "rel": "supersedes",
+   "dst": "rj-vs-direct-dft-logmel"
+  },
+  {
+   "src": "rj-w1c-script-child-cannot-fill-fade",
+   "rel": "supersedes",
+   "dst": "rj-w2int-three-day-c31-plus1"
+  },
+  {
+   "src": "w2f-whiteboard-no-reveal",
+   "rel": "part_of",
+   "dst": "w2f-whiteboard-archetype"
+  },
+  {
+   "src": "w2f-whiteboard-not-a-build",
+   "rel": "part_of",
+   "dst": "w2f-whiteboard-archetype"
+  },
+  {
+   "src": "w2f-whiteboard-bench-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2f-whiteboard-bench-2026-10-04"
+  },
+  {
+   "src": "w2f-acceptance-local-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2f-acceptance-local-2026-10-04"
+  },
+  {
+   "src": "w2f-chatstream-empty-stream-diagnostics",
+   "rel": "part_of",
+   "dst": "w2f-chatstream-empty-is-error"
+  },
+  {
+   "src": "w2f-router-bench-not-comparable",
+   "rel": "caused_by",
+   "dst": "rj-w2f-probe-portrait-viewport"
+  },
+  {
+   "src": "w2hfix-grade-by-item",
+   "rel": "supersedes",
+   "dst": "w2h-studio-evidence-one-event-per-item"
+  },
+  {
+   "src": "w2hfix-retire-incorrect-evidence",
+   "rel": "supersedes",
+   "dst": "w2h-studio-evidence-one-event-per-item"
+  },
+  {
+   "src": "rj-w2hfix-pointer-grader",
+   "rel": "caused_by",
+   "dst": "w2h-studio-evidence-one-event-per-item"
+  },
+  {
+   "src": "w2hfix-facts-row-from-slot",
+   "rel": "supersedes",
+   "dst": "w2h-seam-patches-turn-say"
+  },
+  {
+   "src": "rj-w2hfix-facts-row-before-arbitration",
+   "rel": "caused_by",
+   "dst": "w2h-seam-patches-turn-say"
+  },
+  {
+   "src": "w2hfix-studio-answers-reach-lesson",
+   "rel": "part_of",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2hfix-one-task-at-a-time",
+   "rel": "part_of",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2hfix-contrast-params-from-misconception",
+   "rel": "part_of",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2hfix-two-row-bars",
+   "rel": "part_of",
+   "dst": "w2h-skeleton-as-activity-first-rung"
+  },
+  {
+   "src": "w2hfix-spend-row-at-race",
+   "rel": "part_of",
+   "dst": "w2h-library-identity-gate-cache"
+  },
+  {
+   "src": "w2hfix-frame-incidents-two-lessons",
+   "rel": "part_of",
+   "dst": "w2h-library-identity-gate-cache"
+  },
+  {
+   "src": "w2hfix-local-acceptance-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2h-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "w2hfix-stage-browser-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2h-stage-browser-2026-10-04"
+  },
+  {
+   "src": "w2hfix-minor-hardening",
+   "rel": "part_of",
+   "dst": "w2h-host-assembles-frame"
+  },
+  {
+   "src": "m-w2ifix-inlesson-negatives-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2i-signals-negative-control-2026-10-04"
+  },
+  {
+   "src": "w2ifix-leave-anchoring",
+   "rel": "part_of",
+   "dst": "w2i-signals-lexical-bilingual"
+  },
+  {
+   "src": "w2ifix-third-party-ask-verb",
+   "rel": "part_of",
+   "dst": "w2i-grooming-predicate"
+  },
+  {
+   "src": "w2ifix-pleading-never-releases",
+   "rel": "part_of",
+   "dst": "w2i-stop-protocol"
+  },
+  {
+   "src": "w2ifix-harm-on-safety-turns",
+   "rel": "part_of",
+   "dst": "w2i-policy-one-entry"
+  },
+  {
+   "src": "rj-w2i-unanchored-leave-lexicon",
+   "rel": "caused_by",
+   "dst": "w2i-signals-lexical-bilingual"
+  },
+  {
+   "src": "rj-w2i-generic-report-verbs-third-party",
+   "rel": "caused_by",
+   "dst": "w2i-grooming-predicate"
+  },
+  {
+   "src": "rj-w2i-pleading-releases",
+   "rel": "caused_by",
+   "dst": "w2i-stop-protocol"
+  },
+  {
+   "src": "rj-w2i-harm-false-on-safety-turns",
+   "rel": "caused_by",
+   "dst": "w2i-policy-one-entry"
+  },
+  {
+   "src": "w2ifix-compile-note-position-deferred",
+   "rel": "part_of",
+   "dst": "w2i-seam-patches"
+  },
+  {
+   "src": "w2ifix-stop-case-warn-until-patch",
+   "rel": "part_of",
+   "dst": "w2i-seam-patches"
+  },
+  {
+   "src": "dc-audit-aws-not-called-by-product",
+   "rel": "constrains",
+   "dst": "owner-aws-credit-funded-india-first-2026-10-04"
+  },
+  {
+   "src": "op-audit-build-gpu-aws-owner",
+   "rel": "caused_by",
+   "dst": "dc-audit-aws-not-called-by-product"
+  },
+  {
+   "src": "aws-build-gpu",
+   "rel": "caused_by",
+   "dst": "aws-credits-2026-10-03"
+  },
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "caused_by",
+   "dst": "b3-parent-claim-gate"
+  },
+  {
+   "src": "dek-in-pitr-database",
+   "rel": "caused_by",
+   "dst": "b3-account-deletion"
+  },
+  {
+   "src": "safety-parent-notice-settle",
+   "rel": "caused_by",
+   "dst": "b3-alert-only-when-released"
+  },
+  {
+   "src": "safety-parent-notice-settle",
+   "rel": "caused_by",
+   "dst": "b3-erasure-waits-for-safeguarding"
+  },
+  {
+   "src": "b3-account-deletion",
+   "rel": "caused_by",
+   "dst": "b3-erasure-waits-for-safeguarding"
+  },
+  {
+   "src": "b3-parent-try-at-home-from-letter",
+   "rel": "caused_by",
+   "dst": "b3-try-at-home-one-state"
+  },
+  {
+   "src": "b3-account-deletion",
+   "rel": "caused_by",
+   "dst": "b3-open-n4-deletion-notice"
+  },
+  {
+   "src": "gpu-harness",
+   "rel": "part_of",
+   "dst": "aws-build-gpu"
+  },
+  {
+   "src": "face3d-models",
+   "rel": "caused_by",
+   "dst": "face3d-nc-deps-rejected"
+  },
+  {
+   "src": "gpu-identity-target-flag",
+   "rel": "caused_by",
+   "dst": "marigold-albedo-as-projection-source"
+  },
+  {
+   "src": "aws-quota-approved-2026-10-03",
+   "rel": "caused_by",
+   "dst": "gpu-harness-proof-2026-10-03"
+  },
+  {
+   "src": "face3d-models",
+   "rel": "caused_by",
+   "dst": "head-crop-matte-for-hunyuan-shape"
+  },
+  {
+   "src": "hv-omni-listing",
+   "rel": "part_of",
+   "dst": "dragonhdomni-not-production"
+  },
+  {
+   "src": "live-studio-spec",
+   "rel": "part_of",
+   "dst": "owner-superhuman-teacher-2026-10-04"
+  },
+  {
+   "src": "live-studio-spec",
+   "rel": "measured_by",
+   "dst": "live-studio-bench-2026-10-04"
+  },
+  {
+   "src": "live-studio-spec",
+   "rel": "measured_by",
+   "dst": "live-studio-transfer-2026-10-04"
+  },
+  {
+   "src": "rj-flux2-pro-labels-and-indian-prompts",
+   "rel": "caused_by",
+   "dst": "rj-flux2-pro-text-free-primary"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "stt-refresh-2026-10-04-synthetic"
+  },
+  {
+   "src": "stt-refresh-2026-10-04-synthetic",
+   "rel": "caused_by",
+   "dst": "stt-hinglish-v2-synthetic"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "gpt-transcribe-fabricates-nonspeech"
+  },
+  {
+   "src": "gpt-transcribe-fabricates-nonspeech",
+   "rel": "caused_by",
+   "dst": "gpt4o-transcribe-fabricates-noise"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "mai-transcribe-15-hallucinates-silence"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "gpt-realtime-whisper-no-context"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "mai-stream-refuses-context"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "live-tx-d4-ablation"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "azure-billed-open-models"
+  },
+  {
+   "src": "voice-lane-cascade-default",
+   "rel": "caused_by",
+   "dst": "oss-tts-hindi-landscape"
+  },
+  {
+   "src": "oss-tts-hindi-landscape",
+   "rel": "caused_by",
+   "dst": "indicf5-last-in-indian-preference-study"
+  },
+  {
+   "src": "own-teacher-voice-record-once",
+   "rel": "caused_by",
+   "dst": "t4-cannot-serve-3b-codec-tts"
+  },
+  {
+   "src": "azure-billed-open-models",
+   "rel": "caused_by",
+   "dst": "own-teacher-voice-record-once"
+  },
+  {
+   "src": "dc-r141-filter-probe-child-words",
+   "rel": "part_of",
+   "dst": "dc-r141-content-filter-by-category"
+  },
+  {
+   "src": "dec-r5-lat-continuer-gate-tuned",
+   "rel": "part_of",
+   "dst": "dec-r5-lat-continuer-positive-gate"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-1-brain",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-2-brain",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6-1-brain"
+  },
+  {
+   "src": "dc-r7-stt-cost-client-reported",
+   "rel": "part_of",
+   "dst": "dc-r7-cost-ledger"
+  },
+  {
+   "src": "dc-r7-board-places-template",
+   "rel": "part_of",
+   "dst": "dc-r7-maps-no-outline"
+  },
+  {
+   "src": "dc-r7-second-view-real",
+   "rel": "part_of",
+   "dst": "dc-r7-second-view-every-template"
+  },
+  {
+   "src": "rj-aws-transcribe-live-stt",
+   "rel": "caused_by",
+   "dst": "scout-2026-10-04-transcribe-hi"
+  },
+  {
+   "src": "rj-aws-transcribe-live-stt",
+   "rel": "caused_by",
+   "dst": "stt-hinglish-v2-synthetic"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw",
+   "rel": "caused_by",
+   "dst": "stt-hinglish-v2-synthetic"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw",
+   "rel": "caused_by",
+   "dst": "gpt4o-transcribe-fabricates-noise"
+  },
+  {
+   "src": "voice-lane-cascade-default",
+   "rel": "caused_by",
+   "dst": "stt-default-live-transcribe-kw"
+  },
+  {
+   "src": "stylised-3d-halt-r4-owner-decision",
+   "rel": "measured_by",
+   "dst": "meas-stylised-polish-r2-blind-replicate"
+  },
+  {
+   "src": "teacher-brain-code-kernel",
+   "rel": "part_of",
+   "dst": "owner-superhuman-teacher-2026-10-04"
+  },
+  {
+   "src": "teacher-brain-code-kernel",
+   "rel": "measured_by",
+   "dst": "teacher-brain-beat-policy-2026-10-04"
+  },
+  {
+   "src": "llm-beat-proposer-live",
+   "rel": "measured_by",
+   "dst": "teacher-brain-beat-policy-2026-10-04"
+  },
+  {
+   "src": "teacher-brain-signals-on-classify",
+   "rel": "measured_by",
+   "dst": "teacher-brain-classify-piggyback-2026-10-04"
+  },
+  {
+   "src": "teacher-brain-interest-two-day",
+   "rel": "measured_by",
+   "dst": "teacher-brain-classify-piggyback-2026-10-04"
+  },
+  {
+   "src": "teacher-brain-beat-layer",
+   "rel": "part_of",
+   "dst": "live-studio-spec"
+  },
+  {
+   "src": "teacher-brain-experiments-registry",
+   "rel": "part_of",
+   "dst": "decision-records-with-propensities"
+  },
+  {
+   "src": "teacher-polished-verdict",
+   "rel": "caused_by",
+   "dst": "rocketbox-as-premium-face"
+  },
+  {
+   "src": "teacher-polished-verdict",
+   "rel": "caused_by",
+   "dst": "vroid-sample-as-teacher"
+  },
+  {
+   "src": "ui-child-voice-on-cascade",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "voice-blind-r3-page",
+   "rel": "caused_by",
+   "dst": "voice-blind-r2-page"
+  },
+  {
+   "src": "voice-blind-r3-page",
+   "rel": "caused_by",
+   "dst": "voice-next-situation-delivery-2026-10-04"
+  },
+  {
+   "src": "voice-blind-r3-page",
+   "rel": "caused_by",
+   "dst": "rj-loudnorm-dynamic-for-stimuli"
+  },
+  {
+   "src": "voice-blind-r3-page",
+   "rel": "caused_by",
+   "dst": "voice-blind-r3-page-check-2026-10-04"
+  },
+  {
+   "src": "voice-lane-cascade-default",
+   "rel": "caused_by",
+   "dst": "voice-v2-ai-judge-proxy"
+  },
+  {
+   "src": "voice-blind-none-human-2026-10-04",
+   "rel": "caused_by",
+   "dst": "voice-v3-screen-2026-10-04"
+  },
+  {
+   "src": "gpt-audio-not-a-judge",
+   "rel": "caused_by",
+   "dst": "rj-realtime-judge-hinglish-delivery"
+  },
+  {
+   "src": "voice-v3-screen-2026-10-04",
+   "rel": "caused_by",
+   "dst": "voice-v3-scan-render-list"
+  },
+  {
+   "src": "voice-ga-only-for-minors",
+   "rel": "constrains",
+   "dst": "voice-v3-scan-render-list"
+  },
+  {
+   "src": "voice-escalation-ladder",
+   "rel": "caused_by",
+   "dst": "voice-v3-scan-render-list"
+  },
+  {
+   "src": "voice-v3-scan-render-list",
+   "rel": "caused_by",
+   "dst": "rj-open-tts-licence-barred-2026-10"
+  },
+  {
+   "src": "voice-v3-screen-2026-10-04",
+   "rel": "caused_by",
+   "dst": "voice-v3-render-ttfb-2026-10-04"
+  },
+  {
+   "src": "t4-cannot-serve-3b-codec-tts",
+   "rel": "caused_by",
+   "dst": "voice-v3-render-ttfb-2026-10-04"
+  },
+  {
+   "src": "voice-v3-screen-2026-10-04",
+   "rel": "caused_by",
+   "dst": "voice-v3-render-nova-fidelity"
+  },
+  {
+   "src": "voice-blind-r2-page",
+   "rel": "caused_by",
+   "dst": "voice-v3-screen-2026-10-04"
+  },
+  {
+   "src": "voice-blind-r2-page",
+   "rel": "caused_by",
+   "dst": "voice-blind-none-human-2026-10-04"
+  },
+  {
+   "src": "voice-blind-r2-page",
+   "rel": "caused_by",
+   "dst": "rj-loudnorm-dynamic-for-stimuli"
+  },
+  {
+   "src": "vs-l2-bar-95ci-200",
+   "rel": "caused_by",
+   "dst": "rj-vs-l2-bar-80ci-at-pilot-scale"
+  },
+  {
+   "src": "vs-filler-detector-ami",
+   "rel": "measured_by",
+   "dst": "m-vs-filler-ami-2026-10-04"
+  },
+  {
+   "src": "vs-filler-detector-ami",
+   "rel": "caused_by",
+   "dst": "rj-vs-knowledge-head-on-public-data"
+  },
+  {
+   "src": "vs-no-paid-compute-cpu-training",
+   "rel": "measured_by",
+   "dst": "m-voicesig-train-cost-2026-10-04"
+  },
+  {
+   "src": "vs-verify-guards-2026-10-04",
+   "rel": "caused_by",
+   "dst": "rj-vs-haanji-as-filler"
+  },
+  {
+   "src": "vs-verify-guards-2026-10-04",
+   "rel": "caused_by",
+   "dst": "rj-vs-absolute-filler-lead"
+  },
+  {
+   "src": "vs-verify-guards-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-vs-verify-capture-chain-2026-10-04"
+  },
+  {
+   "src": "rj-vs-absolute-filler-lead",
+   "rel": "measured_by",
+   "dst": "m-vs-verify-fleurs-lead-2026-10-04"
+  },
+  {
+   "src": "w2a-migration-019",
+   "rel": "caused_by",
+   "dst": "rj-w2a-test-window-table"
+  },
+  {
+   "src": "w2a-forgot-password-acs",
+   "rel": "caused_by",
+   "dst": "rj-w2a-await-reset-mail"
+  },
+  {
+   "src": "w2a-forgot-password-acs",
+   "rel": "caused_by",
+   "dst": "rj-w2a-acs-conn-unquoted"
   }
  ]
 }
