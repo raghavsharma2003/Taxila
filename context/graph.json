@@ -27527,6 +27527,41 @@
    "at": "2026-11-10",
    "title": "The catalogue under the Claude rubric (evals/studio-catalogue/claude-sample-2026-11-10): 20 of 369 checked catalogue games, seeded sample (seed 20261110), rendered at p360 / p412 / l1366 and judged by a separate Claude agent (Opus) on rubric v1. 4/20 pass; 11/20 (55%) have a content fault (off topic 4, register 3, wrong key 2, wrong fact 1, answer given away 1); 5 more fail on readability only (17 unreadable faults in 13 pieces, mostly repeated engine layouts). The old DeepSeek-V4-Flash check passed all 20. Also: the tray certificates (certs/catalogue.json, 2026-10-09) are stale — every sampled game fails Q1/Q4 at p360 on today's render, where the certificate says it passes.",
    "source": "inbox/r7-studio-37.json"
+  },
+  {
+   "id": "ms-r8-design-review-2026-11-10",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "Design review of the app as released (release 16, int/r6 integration 24), by the main loop from pixels: n = 179 screens at each of phone 360x740 and desktop 1366x768, captured by a Sonnet agent with a faked API and a simulated child; facts counted by grep over all CSS: 3 token systems live (classic, v3, Kaksha), 351 distinct hex colours, 69 font-size values, 44 corner radii, 36 CSS files. Judged faults in order of cost: (1) the teacher's face is a big-eyed toddler cartoon and the largest thing on home and lesson; (2) the board is thin white strokes and monospace one-line fractions in a mostly empty frame; (3) the chrome is terminal-styled (slash-labels, grid, clipped corners, mono uppercase), and the parent corner was built dark against DESIGN-V3; (4) the question is not the strongest element on the phone lesson screen (seven stacked zones); (5) three designs live at once; (6) broken-looking states (blank white offline home, empty stage boxes). Kept: the desktop lesson structure, the games' blueprint look, the parent corner's content, no streaks or points. This is one reviewer's judgement of stills; no child or parent was asked, and motion and audio were not seen.",
+   "source": "inbox/r8-main-2.json"
+  },
+  {
+   "id": "dc-r8-design-revamp-two-directions",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "The UI revamp goes ahead in two phases. Phase 1 now: a design session builds two directions as static prototypes of eight screens at two sizes (A 'paper and ink': warm light ground, the board as paper, marigold and indigo; B 'night class': the current dark calmed, terminal affectations removed) and one page comparing current, A and B for the owner. Phase 2 after the owner picks: one token set (at most 8 type sizes, 3 radii, under 30 colours), then the lesson screen and board, home, onboarding, the parent corner (light), and the classic skin retired. Fixed in both directions, not taste: the board is the hero and maths is typeset as maths with colour carrying meaning; the question is the second strongest element with one primary action; the teacher is a small presence, never the hero image (the owner chooses the teacher's look separately); no slash-labels, grid, clipped corners or chevrons; every state has a designed fallback. Why: the owner called the UI extremely bad on 2026-11-10 having seen only the October build, then left the call to the main loop; the review of the current build (ms-r8-design-review-2026-11-10) found three of October's faults still present and one new one; the look is taste, so the owner picks from pixels rather than from a description. Reverse if: the owner, having used release 16, says the current look is acceptable (then only the non-taste fixes are built on the current skin); or neither direction is picked (then a third is drawn from the owner's stated reasons before any product code changes).",
+   "source": "inbox/r8-main-2.json"
+  },
+  {
+   "id": "ms-r7-director19-hand-2026-11-10",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "director19: Brain v6.10 + follow-up, Studio P6, Learning D13 on int/r6 d0dd1d5a0, run by main, 16 lessons, 1,544 calls ~$1.071 (a first attempt was killed by a worker restart after 4 lessons, ~$0.25, unused); counted by hand by 4 Claude judges on Opus 5.5 (0-based rows): beats 289/290, verdicts 262/262, misgrades 0, false keys 0, unsaid boards 0, held cost 0; words against board 1 by main's ruling (c4 steady 62, a planned board change not drawn) and 2 by the judges' count (c6 steady 18, the honest 'no second picture' line on the hexagon, ruled an unmet request, not a contradiction); picture requests 15/16 drew a true split view, 0 picture lines with no view (director18: 9); no card answered right was posed again. Axes: listening c4 3 (was 3.5), c5-t01 3, c5-t02 3, c6 3.5; register 3 in all four (c5-t01 and c6 fell from 3.5); promises c4 3.5, others 3. Main's check after judging, same tree: the harness's dry matrix (16 lessons, model stubbed) runs in 27 s and shows the doubled park sentence in 7 lessons, the orphan aside return in 11 and 'Phir se dekho:' 42 times in all 16; the other code-written faults were not checked dry.",
+   "source": "inbox/r7-main-40.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-11",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Script walk v6.11: the dry matrix as a gate; responses compiled, not chosen; the aside return gets its own turn. G2: the 16 lessons run dry inside test:all with one predicate file that throws on each fault director19 found (a sentence twice in a turn; a joint form reused before the others; an unfilled slot or the child's first-person words in her mouth; a re-pose frame on a first posing; a question to the child plus a card in one turn; key + new point + new card in one turn; a give-up with spent help answered without the key; clarify at a check-in answered with a card; a planned board change not drawn; a board change under a joint; a worked example closed without its answer; an English word beside its Hindi twin); no paid run while it is red; every later fix adds its predicate first. C1: a pure compileScript turns each unit into an explicit map, part x request x help state -> exactly one response built from authored fields; the validator fails a hole or a double; the walk looks up, it does not decide; a dry-matrix predicate checks each turn against the compiled response. J2: the return says one authored question on {aside} and stops, no card that turn; her answer to the child's reply is one reply-model sentence behind a predicate (<= 14 words, no question, no taste claim, uses a content word of the reply), else a neutral joint; {said} leaves the authored forms (Learning D14); joint forms rotate. F1: Brain lists every code-written sentence in say.js with counts; each is authored per topic with three forms, kept as a neutral frame of <= 3 words, or removed; the AI-identity line is not touched (safety floor frozen). Clauses of v6.10: 1 not triggered (0 picture lines with no view); 2 triggered (listening < 3.5 in three topics) taken as C1; 3 triggered (register < 3.5 in all four) taken as F1; 4 not triggered. Order: G2 and the rendering fixes first, released as release 17 when the dry matrix is green; C1, J2, F1 follow and director20 judges them. The regenerated 30-topic batch stays held from children. Why: four runs of hand fixes in one 4,000-line state machine each fixed their targets and moved or added faults, and replay tests written with each fix passed while the next paid run failed on the same row (clarify at a check-in: third run). Reverse if in director20: dry matrix green and the paid run shows a fault on its list -> that predicate is wrong, no paid run until it fails on the paid row; listening < 3.5 with compiled responses -> the failing cells are re-authored by Learning, runtime untouched; the model-written aside reply fails its predicate more than 1 in 5 or is wrong about the child's words -> back to a neutral joint and aside listening becomes its own work; any misgrade, unsaid board or held cost -> as before.",
+   "source": "inbox/r7-main-40.json"
+  },
+  {
+   "id": "rj-r7-replay-tests-as-proof-of-walk-fixes",
+   "kind": "rejection",
+   "at": "2026-11-10",
+   "title": "Proving a walk fix with a test that replays a recorded lesson up to one row and checks the next move (the form of the tests behind v6.6 to v6.10). What broke: the clarify-at-a-check-in row was reported fixed in v6.10 with a test on director18's rows c4 steering 6 and c5-t01 steering 6, and failed on those same two rows in director19, its third failing run; the paid run walks a new lesson whose earlier turns differ from the recording. And no test of that form can see faults nobody listed: a park sentence said twice in a row, a re-pose frame on a first posing, a return stacked on a card (all new in director19, all visible in a free 27-second dry run of the 16 lessons). Replays stay as regression pins; they are not evidence that the next run will pass. Evidence for a walk fix is a predicate over the whole dry matrix, seen failing before the fix.",
+   "source": "inbox/r7-main-40.json"
   }
  ],
  "edges": [
@@ -44114,6 +44149,46 @@
    "src": "dc-r8-approval-lane-studio",
    "rel": "constrains",
    "dst": "stagecraft-spec-default-deployment"
+  },
+  {
+   "src": "dc-r8-design-revamp-two-directions",
+   "rel": "measured_by",
+   "dst": "ms-r8-design-review-2026-11-10"
+  },
+  {
+   "src": "dc-owner-direction-is-main-loops-2026-11-10",
+   "rel": "constrains",
+   "dst": "dc-r8-design-revamp-two-directions"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-11",
+   "rel": "measured_by",
+   "dst": "ms-r7-director19-hand-2026-11-10"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-10",
+   "rel": "measured_by",
+   "dst": "ms-r7-director19-hand-2026-11-10"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-11",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v6-10"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-11",
+   "rel": "part_of",
+   "dst": "dc-r7-held-board"
+  },
+  {
+   "src": "rj-r7-replay-tests-as-proof-of-walk-fixes",
+   "rel": "measured_by",
+   "dst": "ms-r7-director19-hand-2026-11-10"
+  },
+  {
+   "src": "rj-r7-replay-tests-as-proof-of-walk-fixes",
+   "rel": "constrains",
+   "dst": "dc-r7-script-walk-v6-11"
   }
  ]
 }
