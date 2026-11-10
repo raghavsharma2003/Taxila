@@ -89,7 +89,8 @@ export interface EvidenceEvent {
    * `studio` (W2 seam commit; LIVE-STUDIO §3.10): a host-graded answer inside a Studio piece, ×0.75 like a module. Nothing
    * writes it yet: W2-H adds the weight, and 017_studio.sql widens the kt_evidence via check (012 lists the rest).
    */
-  via?: "dialogue" | "game" | "module" | "callback" | "weave" | "studio";
+  /** `late`: a blind grader's verdict that arrived after the turn (comprehension/later.js LATE_VIA); seen, never a K step. */
+  via?: "dialogue" | "game" | "module" | "callback" | "weave" | "studio" | "late";
   ebo?: string;
   /** The probe shape (C01-C36) that elicited the answer. */
   shapeId?: string;
@@ -151,6 +152,8 @@ export interface Ledger {
   skills: Record<SkillId, KtSkillState>; mis: Record<MisconceptionId, MisconceptionState>;
   ability: Record<string, EpochAbility>; seen: Record<string, number | null>; lastSeq: number;
   session: unknown | null;
+  /** A placement round's prior site per subject, waiting for that strand's epoch to open (kt/ledger.js; round 7 F). */
+  placementPending?: Record<string, unknown>;
 }
 
 // ───────────────────────────── the CHILD brief (§9.1) ─────────────────────────────
