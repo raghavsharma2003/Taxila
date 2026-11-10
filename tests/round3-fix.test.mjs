@@ -6,6 +6,7 @@ import { describe, test, afterEach } from "node:test";
 import assert from "node:assert/strict";
 
 import { initLessonState, step } from "../server/director/state.js";
+import { setScriptForTest } from "../server/director/script.js";
 import { findItem } from "../server/director/items.js";
 import { classifyFast, targetFor } from "../server/director/classify.js";
 import { scanSafety } from "../server/director/safety.js";
@@ -595,3 +596,8 @@ describe("round3 fix: an example she was ASKED for may use its own numbers besid
     assert.ok(out2.guard.caught.includes("parts"), "a sentence about the screen is still checked against it");
   });
 });
+
+// This file walks real kits through the Director, which loads each topic's real lesson script into server/director/script.js's
+// per-topic cache (read once per topic per process). Under --experimental-test-isolation=none that cache outlives this file and a
+// later suite driving a mini-kit on the same topicId would walk the real script. Clear it as the last test (an after() runs too late).
+test("cleanup: the script cache this file filled is cleared for the next suite", () => { setScriptForTest(); });
