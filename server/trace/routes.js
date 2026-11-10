@@ -66,7 +66,9 @@ export async function traceBatch(req, res, body) {
   if (!traceRateOk(`b:${pid}`, RATE.batches) || !traceRateOk(`bi:${ipOf(req)}`, RATE.batches * 4)) throw new HttpError(429, "trace rate limit");
   const g = await guardianOrNull(req);
   const tier = g ? tierForEmail(g.email) : 1;
-  const childOf = await childrenOfLessons(g?.id, body.events.map((e) => e?.sid)).catch(() => new Map());
+  const all = await childrenOfLessons(g?.id, body.events.map((e) => e?.sid)).catch(() => new Map());
+  // a paired device names its own child's lessons only, never a sibling's
+  const childOf = g?.deviceChildId ? new Map([...all].filter(([, c]) => c === g.deviceChildId)) : all;
   const rows = [];
   let rejected = 0;
   for (const e of body.events.slice(0, 2000)) {

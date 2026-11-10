@@ -7,7 +7,7 @@
 import { scryptSync, randomBytes, timingSafeEqual, createHash } from "crypto";
 import { q, one } from "./db.js";
 import { HttpError, parseCookies, unauthorized, forbidden } from "./http.js";
-import { traceIdentify } from "./trace/context.js";
+import { traceIdentify, isUuid } from "./trace/context.js";
 
 const COOKIE = "tx_session";
 /** The child-scoped device session (server/pair/routes.js sets it on redeem). */
@@ -99,6 +99,8 @@ function touchDevice(hash, now = Date.now()) {
 }
 /** → { guardian, child } or throws 403 if the child is not this guardian's. */
 export async function requireChild(req, childId) {
+  // a child id is a uuid (migration 001): anything else is "not found" here, not a Postgres 22P02 and a 500 (PLAT-12)
+  if (!isUuid(childId)) throw forbidden("child not found for this account");
   const guardian = await requireGuardian(req);
   if (guardian.deviceChildId && guardian.deviceChildId !== childId) throw forbidden("child not found for this account");
   const child = await one("select * from child where id = $1 and guardian_id = $2", [childId, guardian.id]);
