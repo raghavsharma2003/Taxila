@@ -104,9 +104,10 @@ async function noteFor(child) {
  * change of answer moves where topic choice starts, never adds a second site to the ledger.
  */
 async function onboarding(req, res, body) {
-  const { child } = await requireChild(req, body?.childId);
+  const { guardian, child } = await requireChild(req, body?.childId);
   const row = await one("select onboarding_answers from child where id = $1", [child.id]);
-  const answers = mergeAnswers(row?.onboarding_answers, body, child.class_level);
+  // A paired child device sends the child's own picks only: the parent's view is the parent's (audit PLAT-07).
+  const answers = mergeAnswers(row?.onboarding_answers, guardian.deviceChildId ? { childPicks: body?.childPicks } : body, child.class_level);
   await q("update child set onboarding_answers = $2 where id = $1", [child.id, JSON.stringify(answers)]);
   const existing = await q(`select distinct on (subject) subject, result->>'source' as source from placement
       where child_id = $1 and completed_at is not null and result is not null order by subject, completed_at desc`, [child.id]);

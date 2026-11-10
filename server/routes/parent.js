@@ -67,6 +67,16 @@ export async function hashSecret(pw) {
   const h = await scryptP(String(pw), salt, 32, { N: 16384, r: 8, p: 1 });
   return `scrypt$16384$8$1$${salt.toString("base64")}$${h.toString("base64")}`;
 }
+/**
+ * The password as typed, then (only when it differs) trimmed: signup trimmed passwords before audit PLAT-08, so an account made
+ * then with a space at either end holds the trimmed hash. One extra scrypt, only for such a password.
+ */
+export async function passwordMatches(password, hash, verify = verifySecret) {
+  if (await verify(password, hash)) return true;
+  const trimmed = password.trim();
+  return trimmed !== password && !!trimmed && verify(trimmed, hash);
+}
+
 export async function verifySecret(pw, stored) {
   const [alg, n, r, p, salt, hash] = String(stored || "").split("$");
   if (alg !== "scrypt" || !salt || !hash) return false;
@@ -77,9 +87,14 @@ export async function verifySecret(pw, stored) {
 
 // In-process burst limiter. The DB counters below are the real bound (they hold across replicas); this only
 // stops one session from queueing hundreds of scrypt calls in a second.
+// Keyed on the session only when the caller has already checked it (`{ session: true }`, after requireGuardian /
+// requireParent): an unchecked cookie is a value the caller chooses, so a fresh random one per request used to buy a
+// fresh bucket (audit PLAT-10). Otherwise on the caller's address as the ingress saw it (ipOf: the rightmost hop).
+// The same rule as router.js ipOf (importing the router from here is a cycle: the router loads this file).
+const ipOf = (req) => String(req.headers?.["x-forwarded-for"] || "").split(",").map((h) => h.trim()).filter(Boolean).at(-1) || req.socket?.remoteAddress || null;
 const bursts = new Map();
-export function rateLimit(req, route, now = Date.now()) {
-  const who = sessionHash(req) || req.headers?.["x-forwarded-for"]?.split(",")[0]?.trim() || req.socket?.remoteAddress || "anon";
+export function rateLimit(req, route, now = Date.now(), { session = false } = {}) {
+  const who = (session && sessionHash(req)) || ipOf(req) || "anon";
   const key = `${route}:${who}`;
   const list = (bursts.get(key) || []).filter((t) => now - t < 60_000);
   if (list.length >= ATTEMPTS_PER_MIN) {
@@ -160,7 +175,7 @@ export async function checkAccountPassword(guardianId, password, purpose) {
     throw new HttpError(403, "too many password tries; try again later", { gate: "wait", lockedUntil: until, code: "too_many_tries" });
   }
   const row = await one("select pw_hash from guardian where id = $1", [guardianId]);
-  if (!password || !(await verifySecret(String(password), row?.pw_hash))) {
+  if (!password || !(await passwordMatches(String(password), row?.pw_hash))) {
     await audit(guardianId, `${purpose}_denied`, { triesLeft: PW_MAX_TRIES - c.n });
     throw bad("account password is incorrect", { triesLeft: PW_MAX_TRIES - c.n, code: "password_wrong", field: "password" });
   }
@@ -211,7 +226,7 @@ async function getPin(req, res) {
  */
 async function setPin(req, res, body) {
   const g = await requireGuardian(req);
-  rateLimit(req, "pin");
+  rateLimit(req, "pin", undefined, { session: true });
   const { pin } = need(body, "pin");
   const p = String(pin);
   checkPinShape(p);
@@ -241,7 +256,7 @@ async function setPin(req, res, body) {
  */
 async function resetPin(req, res, body) {
   const g = await requireGuardian(req);
-  rateLimit(req, "reset");
+  rateLimit(req, "reset", undefined, { session: true });
   const { pin, password } = need(body, "pin", "password");
   const p = String(pin);
   checkPinShape(p);
@@ -258,7 +273,7 @@ async function resetPin(req, res, body) {
 /** body: { pin } → gate state, or 403 with { gate: "locked", triesLeft } / { gate: "wait", lockedUntil }. */
 async function unlock(req, res, body) {
   const g = await requireGuardian(req);
-  rateLimit(req, "unlock");
+  rateLimit(req, "unlock", undefined, { session: true });
   const { pin } = need(body, "pin");
   await applyDueReset(g.id);
   // Count the try BEFORE checking it, atomically: concurrent guesses each take their own number, so a burst
@@ -1458,7 +1473,7 @@ async function reportEvidence(req, res) {
  */
 async function exportAll(req, res, body) {
   const g = await requireParent(req);
-  rateLimit(req, "export");
+  rateLimit(req, "export", undefined, { session: true });
   await checkAccountPassword(g.id, body.password, "export");
   const guardian = await one("select email, name, phone, locale, created_at from guardian where id = $1", [g.id]);
   const kids = await q("select * from child where guardian_id = $1 order by created_at", [g.id]);
