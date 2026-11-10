@@ -66,6 +66,10 @@ export function build() {
     entries.push({ topicId: r.topicId, title: c.title, classLevel: c.classLevel, subject: c.subject, family: r.family, mode: r.mode, goal: r.goal,
       skillId: skillIds[0], skillIds, grammar: r.grammar, misMap, ...(r.arts ? { arts: r.arts } : {}) });
   }
+  // one entry per session key (server/play/levels.js entryKey): entryByKey takes the first match, so a second entry under
+  // the same key is never served (audit GAMES-02)
+  const seenKey = new Set();
+  for (const e of entries) { const k = `${e.topicId}|${e.family}/${e.mode}|${e.goal}`; if (seenKey.has(k)) problems.push(`${k}: two coverage entries share this key; the second is never served (give it a goal of its own or fold it into the first)`); seenKey.add(k); }
   const inScope = [...cur.values()].filter((t) => /-(maths|science|evs)-/.test(t.id));
   // r7 (main 2026-11-04): ITEM-ARENA is a last-resort net and never counts as game coverage; its arena-only topics are
   // the law-family backlog (arenaOnly below)

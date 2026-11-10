@@ -25,8 +25,8 @@ export function interestTags(interests) {
   return Object.entries(INTEREST_TAGS).filter(([, re]) => re.test(text)).map(([k]) => k).slice(0, 4);
 }
 
-/** The parent's wording switch (O-G4): the child's parent control when set (child.play_verb, read by readVerb from
- *  child_controls; patch request 02 adds the column), else the operator default TAXILA_PLAY_VERB=scan|fire (default fire). */
+/** The parent's wording switch (O-G4): the child's parent control when set (child.play_verb, read by withVerb from
+ *  child_controls.play_verb, migration 042; the parent sets it in Controls, "Words in the 3D games"), else the operator default TAXILA_PLAY_VERB=scan|fire (default fire). */
 export const verbFor = (child, env = process.env) => (child?.play_verb === "scan" || child?.play_verb === "fire" ? child.play_verb : env.TAXILA_PLAY_VERB === "scan" ? "scan" : "fire");
 /** The child row with its parent's play verb attached (a missing column or row = the operator default). Never throws. */
 export async function withVerb(child, q) {

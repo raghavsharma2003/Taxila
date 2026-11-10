@@ -15,11 +15,12 @@
 import type { Candidate, FamilyLogic, Facts, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel, StambhAct } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
 import { mulberry32 } from "../../core/rng.ts";
+import { focusMal } from "../../core/pick.ts";
 
 export type StambhMode = "bars" | "picto";
 export interface StambhParams {
   goal: "draw" | "diff";
-  /** units per crate (bars) or per icon (picto, the key): 1, 2, 5, 10, 50, 100 */
+  /** units per crate (bars) or per icon (picto, the key): 1, 2, 4, 5, 10, 50, 100 */
   step: number;
   /** a half crate / half icon exists (only for an even step) */
   half: boolean;
@@ -41,7 +42,7 @@ const MAL_OF: Record<StambhMode, readonly string[]> = {
   bars: ["scale-as-one", "gridline-count", "half-ignored", "half-whole"],
   picto: ["key-ignored", "half-ignored", "half-whole"],
 };
-export const STEPS = [1, 2, 5, 10, 50, 100] as const;
+export const STEPS = [1, 2, 4, 5, 10, 50, 100] as const;
 /** context id → its category ids (each has a word stambh.cat.<id>) and the step sizes the numbers make sense at */
 export const CONTEXTS: Record<string, { cats: string[]; small: boolean; big: boolean }> = {
   sport: { cats: ["cricket", "kabaddi", "hockey", "chess", "tennis"], small: true, big: true },
@@ -230,7 +231,7 @@ function malActs(level: PlayLevel<StambhParams>, mal: string): StambhAct[] | nul
   return m ? buildActs(level.params, m) : null;
 }
 
-interface StambhGrammar { steps?: number[]; half?: boolean; goal?: "draw" | "diff" }
+interface StambhGrammar { steps?: number[]; half?: boolean; goal?: "draw" | "diff"; focusSteps?: number[] }
 function difficultyOf(p: StambhParams): number {
   const t = targetHalves(p), cols = buildable(p);
   const odd = cols.filter((i) => t[i] % 2 === 1).length;
@@ -246,27 +247,27 @@ function generate(req: GenRequest): Candidate<StambhParams>[] {
   const rnd = mulberry32(req.seed), out: Candidate<StambhParams>[] = [], seen = new Set<string>();
   const labels = req.fade as 1 | 2 | 3;
   const maxCats = req.classLevel <= 5 ? 4 : 5;
-  const int = (lo: number, hi: number) => lo + Math.floor(rnd() * (hi - lo + 1));
   const mk = (params: StambhParams, sig: string): Candidate<StambhParams> => ({
     signature: sig, difficulty: difficultyOf(params),
     level: { v: "play@1", levelId: `stambh-${sig}-${req.seed}`.replace(/[^a-z0-9:/.,_-]/gi, "_"), family: "stambh", mode, topicId: req.topicId, skillId: req.skillId,
       fade: req.fade, goal, params, targets: Object.values(req.misMap), mal: req.misMap, slip: null, context: params.ctx, seed: req.seed,
       proof: { solvable: true, shortcutFree: true, minActs: 2, solutions: 1, discriminates: [], pFirstTry: 0, score: 0, genMs: 0 } },
   });
-  for (let k = 0; k < 60 && out.length < 24; k++) {
-    const step = steps[Math.floor(rnd() * steps.length)];
+  /** one candidate: `fitAll` keeps every value within the axis / row in UNITS (so one crate / icon per unit fits) */
+  const attempt = (rnd: () => number, step: number, fitAll: boolean | null, shows?: string): void => {
+    const int = (lo: number, hi: number) => lo + Math.floor(rnd() * (hi - lo + 1));
     const half = g.half !== false && step % 2 === 0;
     const ctxIds = Object.keys(CONTEXTS).filter((id) => (step >= 10 ? CONTEXTS[id].big : CONTEXTS[id].small));
     const ctxId = ctxIds[Math.floor(rnd() * ctxIds.length)];
     const n = goal === "diff" ? 3 : int(3, maxCats);
     const cap = mode === "bars" ? int(6, 10) : int(8, 10);
     // a third of the small-step levels keep every value within the axis / row in UNITS, so the one-per-unit belief can show
-    const fit = step > 1 && step <= 5 && rnd() < 0.4;
+    const fit = fitAll ?? (step > 1 && step <= 5 && rnd() < 0.4);
     const hi = fit ? Math.floor((2 * cap) / step) : 2 * cap;
-    if (hi < 4) continue;
+    if (hi < 4) return;
     const pool: number[] = [];
     for (let h = 2; h <= hi; h++) if (half || h % 2 === 0) pool.push(h);
-    if (pool.length < n) continue;
+    if (pool.length < n) return;
     const hs: number[] = [];
     while (hs.length < n) { const h = pool[Math.floor(rnd() * pool.length)]; if (!hs.includes(h)) hs.push(h); }
     if (half && !hs.some((h) => h % 2 === 1) && rnd() < 0.7) { const i = Math.floor(rnd() * n), h = hs[i] + (hs[i] < hi ? 1 : -1); if (!hs.includes(h) && h >= 2) hs[i] = h; }
@@ -280,14 +281,27 @@ function generate(req: GenRequest): Candidate<StambhParams>[] {
       const more = rnd() < 0.55;
       const dh = half ? int(1, 6) : 2 * int(1, 3);
       const th = hs[of] + (more ? dh : -dh);
-      if (th < 2 || th > 2 * cap || th === hs[other] || (th % 2 === 1 && !half)) continue;
+      if (th < 2 || th > 2 * cap || th === hs[other] || (th % 2 === 1 && !half)) return;
       hs[build] = th;
       params = { ...params, values: hs.map((h) => valueOf(h, step)), given, build, of, n: valueOf(dh, step), more };
       sig = `${mode}:diff:${step}:${cap}:${params.values.join(",")}:${of}${more ? "+" : "-"}${build}`;
     }
-    if (seen.has(sig)) continue;
+    if (seen.has(sig)) return;
+    // a focus level must actually show its belief (diff: the bar to build can end past the axis in units)
+    if (shows && !malHalves(mode, params, shows)) return;
     seen.add(sig);
     out.push(mk(params, sig));
+  };
+  for (let k = 0; k < 60 && out.length < 24; k++) attempt(rnd, steps[Math.floor(rnd() * steps.length)], null);
+  // GAMES-01: when the Director's focus is the one-per-unit belief (c6 "ignores the key" / "counts the squares, ignores the
+  // scale") and the topic's own steps are too big for one crate / icon per unit to fit (5 and up at c6), add levels at the
+  // entry's `focusSteps` (small keys / scales its kit uses, cited in the rules file) with every value within the axis / row
+  // in units, so that belief's stacks differ from the law's. A separate seed stream: unfocused levels stay as they were.
+  const fm = focusMal(req);
+  const fsteps = (Array.isArray(g.focusSteps) ? g.focusSteps : []).filter((x) => x > 1 && (STEPS as readonly number[]).includes(x));
+  if ((fm === "scale-as-one" || fm === "key-ignored") && MAL_OF[mode].includes(fm) && fsteps.length) {
+    const frnd = mulberry32((req.seed ^ 0x5f0c) >>> 0), before = out.length;
+    for (let k = 0; k < 40 && out.length < before + 8; k++) attempt(frnd, fsteps[Math.floor(frnd() * fsteps.length)], true, fm);
   }
   return out;
 }

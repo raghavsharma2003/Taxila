@@ -279,7 +279,14 @@ export const makeVakyaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     }
     if (drag?.moved) drawWagon(c, drag.id, s.train.includes(drag.id), true);
     // the first contact: how to play, in the lesson's language (only before the first act)
-    if (!ctl.acts.length && yardTop + 30 + yardRows * ROW_Y + 20 < h) P.textFit(c, W("vakya.hint"), w / 2, Math.min(h - 22, yardTop + 30 + yardRows * ROW_Y + 10), w - 20, 44, { size: 14, role: "ink2" });
+    // its own band under the yard panel (audit GAMES-07: centred 10 px under the panel's edge, a two-line hint at 360 px
+    // touched the yard card when the yard grew to two rows): two lines' room when there is space, else one line, else none
+    if (!ctl.acts.length) {
+      const below = yardTop + Math.min(yardH, h - yardTop - 6) + 8, room = h - 6 - below;
+      // one line only when it fits whole there (textW measures bold at FONT px: an upper bound for 14 px), never cut short
+      const hint = W("vakya.hint"), oneLine = (textW(c, hint) * 14) / FONT <= w - 20;
+      if (room >= 44 || (room >= 22 && oneLine)) P.textFit(c, hint, w / 2, below + Math.min(room, 44) / 2, w - 20, Math.min(room, 44), { size: 14, role: "ink2" });
+    }
     if (s.done) P.text(c, W("vakya.arrived"), w / 2, Math.min(h - 16, trackBottom + 2), { size: 14, role: "ink2", weight: 700 });
     else if (s.spark !== null && ranAt >= 0 && api.t >= sparkAt) { const [x, y] = sparkPoint(); P.chip(c, W("vakya.stopped"), clamp(x, 70, w - 70), Math.max(14, y - WH / 2 - 14), { size: 14, role: "look", font: "ui" }); }
   }

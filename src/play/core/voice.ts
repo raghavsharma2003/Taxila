@@ -7,6 +7,7 @@
 // Discrete acts only: speech partials arrive 1.4-2.6 s late (MODEL-STACK), so voice never drives a drag. "bas" is never a
 // game word: it belongs to the lesson's stop check-in.
 import type { Lang } from "../../../shared/play.ts";
+import { spokenNumber } from "../../../server/grading/spoken-number.js";
 
 export type VoiceIntent =
   | { verb: "number"; n: number }
@@ -26,6 +27,16 @@ const NUM: Record<string, number> = {
   chhe: 6, chhah: 6, che: 6, six: 6, saat: 7, sat: 7, seven: 7, aath: 8, ath: 8, eight: 8, nau: 9, nine: 9, das: 10, dus: 10, ten: 10,
   gyarah: 11, eleven: 11, barah: 12, baarah: 12, twelve: 12, terah: 13, thirteen: 13, pandrah: 15, fifteen: 15, bees: 20, twenty: 20,
   "एक": 1, "दो": 2, "तीन": 3, "चार": 4, "पांच": 5, "पाँच": 5, "छह": 6, "छः": 6, "सात": 7, "आठ": 8, "नौ": 9, "दस": 10,
+};
+/** A single number word: the game's own table first (its short forms: "do" is a helper after a verb, handled below), then
+ *  the shared reader the lesson uses (server/grading/spoken-number.js), so the game and the lesson hear the same numbers
+ *  ("solah", "chaudah", "सोलह", "ग्यारह" were missing here: audit SEAM-01). A word the shared reader reads only as a fraction
+ *  or a decimal is not a whole number word. */
+const numWord = (t: string): number | undefined => {
+  if (NUM[t] !== undefined) return NUM[t];
+  if (!/^[\p{L}\p{M}]+$/u.test(t) || FRAC[t] || DENOM[t] !== undefined) return undefined;
+  const v = spokenNumber(t);
+  return typeof v === "number" && Number.isInteger(v) && v >= 0 && v <= 9999 ? v : undefined;
 };
 /** whole-word fractions ("aadha" = 1/2, "paav" = 1/4, "teen chauthai" = 3/4 is handled as a number + "chauthai") */
 const FRAC: Record<string, [number, number]> = { aadha: [1, 2], adha: [1, 2], half: [1, 2], "आधा": [1, 2], paav: [1, 4], pav: [1, 4], quarter: [1, 4], "पाव": [1, 4], tihai: [1, 3], third: [1, 3] };
@@ -74,13 +85,14 @@ export function parseVoice(text: string, _lang: Lang = "hinglish"): VoiceIntent 
     const t = raw[i], prev = i ? raw[i - 1] : "";
     const frac = /^(\d{1,3})\/(\d{1,3})$/.exec(t);
     if (frac) { n = Number(frac[1]); d = Number(frac[2]); continue; }
-    if (FRAC[t]) { [n, d] = FRAC[t]; if (n !== null && i > 0 && NUM[prev] !== undefined) n = NUM[prev] * (FRAC[t][0]); continue; }
+    if (FRAC[t]) { [n, d] = FRAC[t]; if (n !== null && i > 0 && numWord(prev) !== undefined) n = (numWord(prev) as number) * (FRAC[t][0]); continue; }
     if (DENOM[t] !== undefined && n !== null) { d = DENOM[t]; continue; }
     if (/^\d{1,4}$/.test(t)) { if (n === null) n = Number(t); else if (d === null && ["by", "upon"].includes(prev)) d = Number(t); else return null; continue; }
     // "do" right after a verb is the helper ("kaat do", "tod do"), never the number two
     if (t === "do" && verb !== null && n !== null) continue;
     if (t === "do" && verb !== null && i === raw.length - 1) continue;
-    if (NUM[t] !== undefined) { if (n === null) n = NUM[t]; else if (d === null && ["by", "upon", "बटा"].includes(prev)) d = NUM[t]; else if (d === null) return null; continue; }
+    const nw = numWord(t);
+    if (nw !== undefined) { if (n === null) n = nw; else if (d === null && ["by", "upon", "बटा"].includes(prev)) d = nw; else if (d === null) return null; continue; }
     if (t === "a" && raw.length <= 3 && (raw[i + 1] === "zyada" || raw[i + 1] === "more" || i === raw.length - 1)) { which = "A"; continue; }
     if (t === "b") { which = "B"; continue; }
     if (t === "zyada" || t === "more" || t === "pehle" || t === "first" || t === "chhota" || t === "smaller") { more = true; continue; }
