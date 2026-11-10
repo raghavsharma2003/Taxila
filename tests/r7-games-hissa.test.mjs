@@ -472,3 +472,16 @@ test("hissa grid/shift (GAMES-03): one slide count is a one-decision goal: a cor
     assert.notEqual(wrong.evidence[0].outcome, "correct"); assert.equal(wrong.evidence[0].weight, GAME_WEIGHT);
   }
 });
+
+test("hissa pour/part: the normal door serves part-cup levels too (main 2026-11-10: at a 0.15 step for the left-over cup, 0 of 180 were)", async () => {
+  const { coverage, levelsFor } = await import("../server/play/levels.js");
+  const { logicFor } = await import("../src/play/families/index.ts");
+  const L = logicFor("hissa", "pour"), e = coverage().entries.find((x) => x.family === "hissa" && x.goal === "part");
+  let n = 0, part = 0;
+  for (let seed = 1; seed <= 30; seed++) for (const fade of [1, 2, 3]) {
+    const s = { childId: `c${seed}`, key: `${e.topicId}|${e.family}/${e.mode}|${e.goal}`, skillId: e.skillId, classLevel: e.classLevel, fade, lang: "hinglish", mis: {}, n: 0, seed, door: "garam", recent: [] };
+    const lv = levelsFor(s, e)?.garam; if (!lv) continue;
+    n++; if (L.solve(L.validate(lv)).some((a) => a.kind === "tag")) part++;
+  }
+  assert.ok(n >= 60 && part >= n * 0.2 && part < n, `${part} of ${n} normal-door part levels leave a part-cup`);
+});

@@ -543,7 +543,7 @@ function difficultyOf(p: HissaParams): number {
   switch (p.goal) {
     case "of": return Math.min(1, 0.3 + f + 0.02 * p.b * p.d);
     case "times": return Math.min(1, 0.25 + f + 0.03 * p.b + 0.03 * p.w);
-    case "fit": case "part": case "deci": return Math.min(1, 0.3 + f + 0.02 * qFloor(v) + (v.d > 1 ? 0.15 : 0) + (p.goal === "part" ? 0.1 : 0));
+    case "fit": case "part": case "deci": return Math.min(1, 0.3 + f + 0.02 * qFloor(v) + (v.d > 1 ? 0.03 : 0) /* a part-cup left over: a small step only (at 0.15 the normal door never served one: 0 of 180 for pour/part) */ + (p.goal === "part" ? 0.1 : 0));
     case "mul": return Math.min(1, 0.3 + f + (p.a >= 10 || p.c >= 10 ? 0.15 : 0));
     case "shift": return Math.min(1, 0.25 + f + 0.06 * Math.abs(p.c) + (p.c < 0 ? 0.08 : 0));
     case "rest": return Math.min(1, 0.35 + f + 0.02 * p.b * p.d);
