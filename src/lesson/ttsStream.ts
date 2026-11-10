@@ -25,6 +25,12 @@ const MAX_LEAD_S = 0.3;
 /** Resume backs up to the last pause between words within this window (else by RESUME_BACKUP_S). */
 const RESUME_SEARCH_S = 1.2;
 const RESUME_BACKUP_S = 0.3;
+/**
+ * audit V-02: her audio has run out mid-reply and no byte has come for this long: the stream is treated as over (a stalled
+ * connection sends no bytes, no close and no error; without this her line never ended and the lesson stayed on "speaking").
+ * Well above an underrun gap on a slow link (those are tenths of a second).
+ */
+export const STALL_MS = 4_000;
 
 /**
  * Where to resume a reply cut at `pos`: the middle of the last ≥60 ms quiet stretch (a gap between words)
@@ -497,9 +503,11 @@ export class PcmStreamPlayer {
   private readonly ctx: AudioContext;
   private current: { stop: () => void } | null = null;
   private lead = START_LEAD_S;
+  private readonly stallMs: number;
 
   /** `destination` is where the teacher's voice goes (an analyser chain ending at the speakers). */
-  constructor(ctx: AudioContext, destination: AudioNode) {
+  constructor(ctx: AudioContext, destination: AudioNode, opts: { stallMs?: number } = {}) {
+    this.stallMs = opts.stallMs ?? STALL_MS;
     this.ctx = ctx;
     this.output = ctx.createGain();
     this.output.connect(destination);
@@ -632,6 +640,7 @@ export class PcmStreamPlayer {
       finished = true;
       abort.abort();
       silenceSources();
+      disarmStall();
       if (vSent.size) puppetCut();
       if (this.current === handle) this.current = null;
       if (!didStart) rejectStart(new Error(status === "stopped" ? "speech stopped" : "no speech audio"));
@@ -642,6 +651,24 @@ export class PcmStreamPlayer {
     };
     const handle = { stop: () => finish("stopped") };
     this.current = handle;
+    // audit V-02: the stall watch. Armed when the last scheduled source ends with the stream still open; a chunk or a
+    // pause disarms it. On expiry the fetch is abandoned and the reply ends with what was heard, like a mid-reply failure.
+    let stallTimer: ReturnType<typeof setTimeout> | null = null;
+    let stalled = false;
+    const disarmStall = () => { if (stallTimer !== null) { clearTimeout(stallTimer); stallTimer = null; } };
+    const armStall = () => {
+      disarmStall();
+      if (finished || streamDone || paused || !didStart) return;
+      stallTimer = setTimeout(() => {
+        stallTimer = null;
+        if (finished || streamDone || paused || sources.size > 0) return;
+        stalled = true;
+        streamDone = true;
+        abort.abort(); // releases the reader (and the request)
+        maybeDone();
+      }, this.stallMs);
+      (stallTimer as { unref?: () => void }).unref?.(); // Node (tests): never hold the process open
+    };
 
     const append = (samples: Float32Array) => {
       if (total + samples.length > buf.length) {
@@ -689,10 +716,12 @@ export class PcmStreamPlayer {
       schedPos = total;
       sendVisemes();
       sources.add(src);
+      disarmStall();
       src.onended = () => {
         sources.delete(src);
         src.disconnect();
         maybeDone();
+        if (sources.size === 0) armStall();
       };
     };
     /** The sample sounding now. */
@@ -714,7 +743,8 @@ export class PcmStreamPlayer {
       } catch {
         streamDone = true;
         if (!finished) {
-          if (abort.signal.aborted) finish("stopped");
+          if (stalled) maybeDone(); // the stall watch abandoned the stream: what was heard is the reply
+          else if (abort.signal.aborted) finish("stopped");
           else if (!didStart) finish("failed");
           else maybeDone(); // mid-reply failure: what arrived still plays (or resumes) to its end
         }
@@ -733,6 +763,7 @@ export class PcmStreamPlayer {
         const sounding = didStart && sources.size > 0;
         const pos = sounding ? heardPos() : schedPos;
         paused = true;
+        disarmStall();
         silenceSources();
         schedPos = Math.min(pos, total);
         // onsets that were scheduled but never sounded are told again, on the resumed timeline
@@ -749,6 +780,7 @@ export class PcmStreamPlayer {
         this.duck(1);
         pump();
         maybeDone();
+        if (sources.size === 0) armStall(); // resumed at the very end of what arrived, the stream still open
       },
       remainingS: () => (total - (paused ? schedPos : heardPos())) / PCM_RATE,
     };

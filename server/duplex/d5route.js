@@ -4,7 +4,7 @@
 // while the global switch is on (no cohort gate; the kill switch TAXILA_DUPLEX=off or a pinned d4 lane refuses). Served by server/serve.mjs
 // (Azure Container Apps); the Vercel shim cannot hold a socket, and the client falls back to D4 when this refuses.
 import { one } from "../db.js";
-import { requireChild, hasConsent } from "../auth.js";
+import { requireChild, hasConsent, CHILD_SCOPE } from "../auth.js";
 import { HttpError } from "../http.js";
 import { acceptWebSocket, refuseUpgrade, upgradeProblem } from "../ws.js";
 import { modeFor } from "./config.js";
@@ -109,6 +109,10 @@ export async function handleD5Upgrade(req, socket, head, deps = {}) {
     const host = String(req.headers["x-forwarded-host"] ?? req.headers.host ?? "");
     if (origin && host && new URL(origin, "http://x").host !== host) return refuseUpgrade(socket, 403, "cross-origin");
     const lessonId = new URL(req.url ?? "/", "http://x").searchParams.get("lessonId");
+    // audit V-12: the upgrade does not pass through the router, which is where a child-scoped route is marked
+    // (server/router.js); /api/duplex/ is in the paired device's scope (server/pair/scope.js), so mark it here, or a
+    // paired child device is refused (403) the ear /api/duplex/config told it to use
+    req[CHILD_SCOPE] = true;
     try {
       who = await authorizeD5(req, { lessonId, env, ...(deps.authorize ?? {}) });
     } catch (e) {

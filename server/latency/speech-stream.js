@@ -134,6 +134,11 @@ export async function speakStreamed(o) {
       spoken.push(clause);
       i++;
     }
+  } catch (e) {
+    // audit V-01: a speech job that throws must release a producer parked on a full queue (nothing else wakes it), or
+    // the finally below waits on it for ever and the response never ends
+    ctl.abort();
+    throw e;
   } finally {
     if (stopped || o.signal?.aborted) ctl.abort();
     // a stopped reply does not wait for the model's stream to end (the caller aborts the model call with its own signal)

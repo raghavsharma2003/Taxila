@@ -12,52 +12,70 @@ Forty findings. The skeptic refuted none; it narrowed fourteen, and those are wr
 
 ## Findings
 
-Status: **fix** = I fix it now under the phase 2 rule; **main** = waits for main's reply (a deletion, a redesign, a decision in project memory, or a file outside the area).
+Status: **fixed** = fixed on this branch with a test that fails before the fix and passes after (`tests/audit-voice-link.test.mjs`, `tests/audit-voice-small.test.mjs`); **open** = confirmed, mine to fix under the phase 2 rule, not fixed yet (see "Fix status"); **main** = waits for main's reply (a deletion, a redesign, a decision in project memory, or a file outside the area).
 
 | id | sev | kind | owner | title | where | fix | status |
 |---|---|---|---|---|---|---|---|
-| V-01 | P0 | broken | voice | Streamed reply never ends when speech synthesis fails with clauses queued | `server/latency/speech-stream.js:108,138-140` | abort on a thrown error so the parked producer is released | fix |
-| V-02 | P0 | broken | voice | Her voice stalls mid-line and the lesson stays on "speaking" for good | `src/lesson/ttsStream.ts:706-711` | a stall timer in the player: audio ran out and no bytes for a few seconds ends the line | fix |
-| V-04 | P0 | broken | voice | A tap that silences her (pause, hear again) is never told to the hands-free engine; on D4 the mic stays shut | `src/lesson/cascadeLink.ts:1196-1208, 611-613, 719-722` | `stopReply` tells the engine she stopped | fix |
-| V-05 | P0 | broken | voice | After a self-correction her reply to the corrected answer is thrown away | `src/duplex/cascadeDuplex.ts:216`, `cascadeLink.ts:566-571` | clear the drop when the merged turn is committed | fix |
-| V-06 | P0 | broken | voice | When her reply never sounds, the same answer is sent again about 18 s later | `src/duplex/governor.ts:576`, `live.ts:848` | start a fresh turn at the 6 s expiry | fix |
-| V-07 | P0 | broken | voice | Hands-free stays "live" but deaf when mic frames stop or carry no pitch; no fallback to the talk button | `src/duplex/cascadeDuplex.ts:266-269`, `audio.ts:229-233`, `governor.ts:370-372` | a running no-frames check that steps aside; a transcript with no device onset seeds the onset | fix |
-| V-03 | P1 | broken | voice | The transcription call can hang while it connects; the dock says "getting ready" with no talk button and no time limit | `src/lesson/cascadeLink.ts:1252,1314`, `src/lesson/handsFree.ts:39` | time-limit the token and connection requests | fix |
-| V-13 | P1 | broken | voice | Every teacher line in the child app loses lip-sync and board timing | `src/lesson/uiBridge.ts:322-324` | pass the third argument through | fix |
-| V-10 | P1 | broken | voice | An answer given 7-13 s after her question, equal to the previous answer, is silently dropped | `src/duplex/live.ts:923,960,999` | forget the last commit once its reply has played | fix |
-| V-12 | P1 | broken | voice | The D5 ear refuses a paired child device (403), so it falls back to D4 | `server/serve.mjs:162-166`, `server/duplex/d5route.js:81` | mark the upgrade request child-scoped in `handleD5Upgrade` | fix |
-| V-08 | P1 | broken | voice | "kya?" over her line stops her and nothing follows (D5 and full duplex) | `src/duplex/host.ts:616`, `audio.ts:74-76`, `governor.ts:365,511` | keep the carried onset; `sil ?? t - phaseSince` | fix |
-| V-09 | P1 | broken | voice | Any child sound during her reply to a number answer cuts the reply (D5 and full duplex) | `src/duplex/governor.ts:160-161,221` | send the verdict event when her reply starts | fix |
-| V-11 | P1 | broken | voice | Her own echo ducks her voice on D5: the "not her pitch" guard is disconnected | `src/duplex/cascadeDuplex.ts:233-236` | forward the fifth argument | fix |
-| V-17 | P1 | broken | voice | Maths read aloud wrong: "75000-25000" as a phone number, "by 1250" as a year, "9.30 baje" as a decimal, dates as slashes, bare `=` `+` `/` and `πr²` left as symbols | `server/voice/spoken.js:162,342,348,538,552`, `spoken-lexicon.js:208` | narrow the phone pattern and year cues; add date, dot-time, π and spaced-operator rules | fix |
-| V-14 | P1 | broken | voice | Typed lessons: pause does not hold her voice and resume has nothing to replay | `src/lesson/uiBridge.ts:176`, `textLink.ts:53,103` | give the TextLink the bridge's stream | fix |
-| V-26 | P1 | broken | voice | The DragonHD path deletes bracketed maths and starred words from her line | `server/voice/expressive/compile/dhd.js:35` | strip only letters-only brackets; unwrap stars | fix |
-| V-20 | P1 | not good enough | voice | Every streamed reply also synthesises itself a second time (wasted Azure speech), outside the speech rate limit | `server/routes/voice.js:414-417`, `server/voice/prewarm.js:54` | drop the prewarm when the reply was streamed; count the stream in the limiter | fix |
+| V-01 | P0 | broken | voice | Streamed reply never ends when speech synthesis fails with clauses queued | `server/latency/speech-stream.js:108,138-140` | abort on a thrown error so the parked producer is released | **fixed** |
+| V-02 | P0 | broken | voice | Her voice stalls mid-line and the lesson stays on "speaking" for good | `src/lesson/ttsStream.ts:706-711` | a stall timer in the player: audio ran out and no bytes for a few seconds ends the line | **fixed** |
+| V-04 | P0 | broken | voice | A tap that silences her (pause, hear again) is never told to the hands-free engine; on D4 the mic stays shut | `src/lesson/cascadeLink.ts:1196-1208, 611-613, 719-722` | `stopReply` tells the engine she stopped | **fixed** |
+| V-05 | P0 | broken | voice | After a self-correction her reply to the corrected answer is thrown away | `src/duplex/cascadeDuplex.ts:216`, `cascadeLink.ts:566-571` | clear the drop when the merged turn is committed | open |
+| V-06 | P0 | broken | voice | When her reply never sounds, the same answer is sent again about 18 s later | `src/duplex/governor.ts:576`, `live.ts:848` | start a fresh turn at the 6 s expiry | open |
+| V-07 | P0 | broken | voice | Hands-free stays "live" but deaf when mic frames stop or carry no pitch; no fallback to the talk button | `src/duplex/cascadeDuplex.ts:266-269`, `audio.ts:229-233`, `governor.ts:370-372` | a running no-frames check that steps aside; a transcript with no device onset seeds the onset | open |
+| V-03 | P1 | broken | voice | The transcription call can hang while it connects; the dock says "getting ready" with no talk button and no time limit | `src/lesson/cascadeLink.ts:1252,1314`, `src/lesson/handsFree.ts:39` | time-limit the token and connection requests | **fixed** |
+| V-13 | P1 | broken | voice | Every teacher line in the child app loses lip-sync and board timing | `src/lesson/uiBridge.ts:322-324` | pass the third argument through | **fixed** |
+| V-10 | P1 | broken | voice | An answer given 7-13 s after her question, equal to the previous answer, is silently dropped | `src/duplex/live.ts:923,960,999` | forget the last commit once its reply has played | open |
+| V-12 | P1 | broken | voice | The D5 ear refuses a paired child device (403), so it falls back to D4 | `server/serve.mjs:162-166`, `server/duplex/d5route.js:81` | mark the upgrade request child-scoped in `handleD5Upgrade` | **fixed** |
+| V-08 | P1 | broken | voice | "kya?" over her line stops her and nothing follows (D5 and full duplex) | `src/duplex/host.ts:616`, `audio.ts:74-76`, `governor.ts:365,511` | keep the carried onset; `sil ?? t - phaseSince` | open |
+| V-09 | P1 | broken | voice | Any child sound during her reply to a number answer cuts the reply (D5 and full duplex) | `src/duplex/governor.ts:160-161,221` | send the verdict event when her reply starts | open |
+| V-11 | P1 | broken | voice | Her own echo ducks her voice on D5: the "not her pitch" guard is disconnected | `src/duplex/cascadeDuplex.ts:233-236` | forward the fifth argument | **fixed** |
+| V-17 | P1 | broken | voice | Maths read aloud wrong: "75000-25000" as a phone number, "by 1250" as a year, "9.30 baje" as a decimal, dates as slashes, bare `=` `+` `/` and `πr²` left as symbols | `server/voice/spoken.js:162,342,348,538,552`, `spoken-lexicon.js:208` | narrow the phone pattern and year cues; add date, dot-time, π and spaced-operator rules | open |
+| V-14 | P1 | broken | voice | Typed lessons: pause does not hold her voice and resume has nothing to replay | `src/lesson/uiBridge.ts:176`, `textLink.ts:53,103` | give the TextLink the bridge's stream | **fixed** |
+| V-26 | P1 | broken | voice | The DragonHD path deletes bracketed maths and starred words from her line | `server/voice/expressive/compile/dhd.js:35` | strip only letters-only brackets; unwrap stars | open |
+| V-20 | P1 | not good enough | voice | Every streamed reply also synthesises itself a second time (wasted Azure speech), outside the speech rate limit | `server/routes/voice.js:414-417`, `server/voice/prewarm.js:54` | drop the prewarm when the reply was streamed; count the stream in the limiter | open |
 | V-22 | P1 | inconsistent | voice | The thinking-pause cue is live in hands-free although the decision says shadow until a children's pilot | `src/duplex/liveTap.ts:50-54`; `context/decisions.md:5481`; `context/rejected.md:2348` | unsubscribe the cue from the live engine until the pilot | main |
-| V-15 | P2 | broken | voice | "Fix" or "Try again" can act on an older lesson's held answer | `src/lesson/outbox.ts:342,350,363` | filter by lesson id | fix |
-| V-16 | P2 | broken | voice | A fix that lands just as the server answers is reported as sent, sends nothing and leaves a ghost answer | `src/lesson/outbox.ts:405-409` | remove the record from `active` as soon as the send resolves | fix |
-| V-19 | P2 | broken | voice | Hands-free turns post the same prefetch text more than once (duplicate classify and speculative replies) | `src/latency/prefetch.ts:89,104`, `duplexTurn.ts:51` | keep the same-text guard across item ids | fix |
-| V-18 | P2 | broken | voice | The device voice detector can latch "speaking" for the rest of the lesson | `src/lesson/vad.ts:50` | ignore all-zero frames in the floor; a ceiling on one "speaking" run | fix |
-| V-23 | P2 | broken | voice | Voice-signal numbers include up to 800 ms before the child spoke | `src/voicesig/lessonFeatures.ts:145-146` | window from the measured start | fix |
-| V-24 | P2 | broken | voice | A short "haan" with a steep pitch slope gets all its voice features rejected | `server/voice/features.js:31` | same range for both slopes | fix |
-| V-25 | P2 | inconsistent | voice | A turn that fails after her first clause reaches the client as 502, not its real status | `server/routes/voice.js:407-411`, `src/lesson/ttsStream.ts:447,461` | carry the status in the end frame and reject with it | fix |
-| V-21 | P2 | inconsistent | voice | Four comments say voice signals are shadow; they act by default (owner decision of 2026-10-27) on placeholder calibration | `server/voicesig/gate.js:3`, `adapter.js:1-4,41`, `server/brain/turn.js:546-547` | correct the comments in the voice files; `turn.js` comment by patch to brain | fix |
+| V-15 | P2 | broken | voice | "Fix" or "Try again" can act on an older lesson's held answer | `src/lesson/outbox.ts:342,350,363` | filter by lesson id | **fixed** |
+| V-16 | P2 | broken | voice | A fix that lands just as the server answers is reported as sent, sends nothing and leaves a ghost answer | `src/lesson/outbox.ts:405-409` | remove the record from `active` as soon as the send resolves | **fixed** |
+| V-19 | P2 | broken | voice | Hands-free turns post the same prefetch text more than once (duplicate classify and speculative replies) | `src/latency/prefetch.ts:89,104`, `duplexTurn.ts:51` | keep the same-text guard across item ids | open |
+| V-18 | P2 | broken | voice | The device voice detector can latch "speaking" for the rest of the lesson | `src/lesson/vad.ts:50` | ignore all-zero frames in the floor; a ceiling on one "speaking" run | open |
+| V-23 | P2 | broken | voice | Voice-signal numbers include up to 800 ms before the child spoke | `src/voicesig/lessonFeatures.ts:145-146` | window from the measured start | open |
+| V-24 | P2 | broken | voice | A short "haan" with a steep pitch slope gets all its voice features rejected | `server/voice/features.js:31` | same range for both slopes | **fixed** |
+| V-25 | P2 | inconsistent | voice | A turn that fails after her first clause reaches the client as 502, not its real status | `server/routes/voice.js:407-411`, `src/lesson/ttsStream.ts:447,461` | carry the status in the end frame and reject with it | open |
+| V-21 | P2 | inconsistent | voice | Four comments say voice signals are shadow; they act by default (owner decision of 2026-10-27) on placeholder calibration | `server/voicesig/gate.js:3`, `adapter.js:1-4,41`, `server/brain/turn.js:546-547` | correct the comments in the voice files; `turn.js` comment by patch to brain | open |
 | V-27 | P2 | inconsistent | main | Project memory disagrees with itself: expressive SSML is default on for DragonHD, and a rejection entry records listeners preferring plain | `server/voice/voices.js:77-82`; `context/decisions.md:3362`; `context/rejected.md:1422` | owner call: run the pending blind test or default it off | main |
 | V-29 | P2 | inconsistent | voice | The voice switch and Roman-to-Devanagari step are recorded as wired; nothing calls them. "sabse bara" would become "सबसे बारह" | `server/voice/voice-switch.js:56,65`, `translit/numbers.js:27`; `context/decisions.md:5083` | wire it or correct the record; remove `bara` from twelve either way | main |
-| V-33 | P2 | broken | voice | The headset check matches the phone's own earpiece and any Bluetooth speaker | `src/child/lesson/headset.ts:11` | drop `earpiece` and bare `bluetooth` | fix |
+| V-33 | P2 | broken | voice | The headset check matches the phone's own earpiece and any Bluetooth speaker | `src/child/lesson/headset.ts:11` | drop `earpiece` and bare `bluetooth` | open |
 | V-34 | P2 | not good enough | voice | The Opus decoder is flushed after every packet; a stale flush can fail the next decoder | `src/lesson/opus.ts:90-106` | guard the stale catch now; the flush change needs a listening check | main |
 | V-40 | P2 | inconsistent | voice | The live child-text pipeline has no listener, and the emit runs before the request is authorised | `server/duplex/childText.js`, `server/routes/voice.js:398`, `server/routes/lesson.js:902` | emit after `lessonTurn` returns | main |
-| V-30 | P3 | inconsistent | voice | "Hear" says the child's name differently from the streamed voice | `server/routes/tts.js:66,85` | pass `sayName` | fix |
-| V-28 | P3 | inconsistent | voice | The uptake prelude keeps the lowered pitch its comment says it removes (flag off) | `server/voice/expressive/render.js:94` | strip any pitch value | fix |
-| V-31 | P3 | broken | voice | The prelude warm reads a field the request never has (flag off) | `server/routes/voice.js:562,566` | read `childText` | fix |
-| V-32 | P3 | inconsistent | voice | Shadow telemetry's reason and safety counts can never match | `src/duplex/shadowTelemetry.ts:126,134` | compare the reason part of `detail` | fix |
-| V-35 | P3 | inconsistent | voice | A device forced to shadow runs live when the server answer is unknown; stale header | `src/duplex/flags.ts:147-148,177-182` | check the device key first; reset the partial-post flag | fix |
+| V-30 | P3 | inconsistent | voice | "Hear" says the child's name differently from the streamed voice | `server/routes/tts.js:66,85` | pass `sayName` | open |
+| V-28 | P3 | inconsistent | voice | The uptake prelude keeps the lowered pitch its comment says it removes (flag off) | `server/voice/expressive/render.js:94` | strip any pitch value | **fixed** |
+| V-31 | P3 | broken | voice | The prelude warm reads a field the request never has (flag off) | `server/routes/voice.js:562,566` | read `childText` | open |
+| V-32 | P3 | inconsistent | voice | Shadow telemetry's reason and safety counts can never match | `src/duplex/shadowTelemetry.ts:126,134` | compare the reason part of `detail` | **fixed** |
+| V-35 | P3 | inconsistent | voice | A device forced to shadow runs live when the server answer is unknown; stale header | `src/duplex/flags.ts:147-148,177-182` | check the device key first; reset the partial-post flag | **fixed** |
 | V-36 | P3 | no longer needed | voice | The realtime lane is dev-only but ships, and the runtime defaults to it | `src/lesson/runtime.ts:32-36,181,309` | owner decision already asked for in `gap-map.json:792`; dependency list below | main |
 | V-37 | P3 | no longer needed | voice | Fourteen `server/duplex` modules have no live importer | `server/duplex/routes.js:1` and list below | delete with their five tests and three evals | main |
 | V-38 | P3 | no longer needed | voice | Three hand-run AWS scripts from finished bake-offs | `scripts/voice/v3`, `scripts/voice/stt-v3`, `scripts/voicesig/aws-check.py` | delete (about 1.1 MB, mostly lockfiles) | main |
 | V-39 | P3 | no longer needed | voice | Dead client and server code in the area | list below | delete | main |
 
 Counts: P0 6, P1 12, P2 12, P3 10. Broken 25, inconsistent 9, not good enough 2, no longer needed 4.
+
+## Fix status (2026-11-10)
+
+Fixed, 14: V-01, V-02, V-03, V-04, V-11, V-12, V-13, V-14, V-15, V-16, V-24, V-28, V-32, V-35.
+
+- V-04 differs from the table's one-line fix: telling the engine "stopped" is not enough (the governor ignores it and keeps her turn), so a stop by hand reports her line as ended. Checked on the engine under a fake clock: the mic gate releases and the child's next answer is committed.
+- V-32 fixes the reason code only. The safety count compares against codes the engine never emits; it stays wrong until someone names the right codes.
+- V-02 and V-03 add two numbers: a 4 s stall limit on a reply's stream, and a 10 s limit on each of the call's two requests.
+
+Open, 17. Two helper sessions that were fixing the engine and the spoken forms were cut off by a usage limit before they changed anything, so these are untouched:
+
+- Hands-free engine: V-05, V-06, V-07, V-08, V-09, V-10, V-18. V-05 and V-06 are still P0.
+- Spoken forms: V-17, V-26.
+- Server: V-20, V-25.
+- Small, written and then taken back out because they had no test yet: V-23, V-30, V-31. Each is a one-line change described in its row.
+- V-19: taken back out. Under the engine the link's own prefetch calls may not run at all, so the proposed fix could stop prefetch for the rest of a lesson. It needs a trace of one hands-free turn first.
+- V-33: the earpiece label was never checked on a phone; it should be before the pattern changes.
+- V-21: comments only.
 
 ## Evidence notes
 
