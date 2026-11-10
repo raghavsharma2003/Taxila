@@ -76,6 +76,12 @@ async function results(req, res) {
 /** Subjects a cold start covers for a class: those with a curriculum for it. */
 export const COLD_SUBJECTS = Object.freeze(["maths", "evs", "science", "english", "hindi", "sst"]);
 export const coldSubjectsFor = (classLevel) => COLD_SUBJECTS.filter((s) => topicSequence(Number(classLevel), s).length > 0);
+/**
+ * Subjects the `placement` table accepts (036_placement.sql check). Until a migration widens it (docs/patches/to-platform/
+ * 003-placement-subjects.patch), an answer for another subject is kept in onboarding_answers but makes no placement row: the
+ * insert used to fail the whole save with a 500, and every later save after it (audit LEARN-06).
+ */
+export const PLACEMENT_TABLE_SUBJECTS = Object.freeze(["maths", "evs", "science"]);
 
 /**
  * PURE. Merge a request's answers into the stored ones: only known subjects for the class and known values; "unsure"
@@ -113,6 +119,7 @@ async function onboarding(req, res, body) {
       where child_id = $1 and completed_at is not null and result is not null order by subject, completed_at desc`, [child.id]);
   const had = new Map(existing.map((r) => [r.subject, r.source ?? "cat"]));
   for (const subject of coldSubjectsFor(child.class_level)) {
+    if (!PLACEMENT_TABLE_SUBJECTS.includes(subject)) continue;
     if (had.get(subject) && had.get(subject) !== "onboarding") continue;
     const result = coldStartResult({ subject, classLevel: Number(child.class_level), parentView: answers.parentView[subject], childPick: answers.childPicks[subject] });
     if (!result) continue;
