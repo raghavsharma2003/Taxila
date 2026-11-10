@@ -16,8 +16,8 @@
 // writer.ledgerStmts inserts them in exactly that order (foldOrder), so the database hands out seq in the
 // order the cached fold applied them and a replay of kt_evidence reproduces kt_skill_state byte for byte.
 // There is deliberately no id tiebreak: ids are opaque strings ("e10" < "e9"), not an order.
-import { formOf, fsrsGrade, isDelayedMiss, isDelayedSuccess, isGenerativePass, isUnaidedCorrect, ITEM_CLASSES, outcomeName, recentValue, EMISSIONS } from "./outcomes.js";
-import { dropReason, logEvidence, logit, sigmoid, sourceOf, spend, teachStep, temper, tEff, transition } from "./bktr.js";
+import { formOf, fsrsGrade, isDelayedMiss, isDelayedSuccess, isFailedCard, isGenerativePass, isUnaidedCorrect, ITEM_CLASSES, outcomeName, recentValue, EMISSIONS } from "./outcomes.js";
+import { dropReason, logEvidence, logit, sigmoid, sourceOf, spend, teachStep, temper, tEff, transition, TEACH_LESSON_CAP } from "./bktr.js";
 import { nextReviewAt, retrievability, review } from "./fsrs.js";
 import { addObs, currentTheta, defaultItemMeta, initialBase, newEpoch, openEpoch, withPlacement, strandOfSkill, subjectOfSkill, subjectOfStrand, thetaObs } from "./ability.js";
 import { priorFromTheta } from "./priors.js";
@@ -25,7 +25,10 @@ import { isPlacementRow, siteOf } from "./placement.js";
 import { misconceptionEffects, misLogLR, newMisconception, spendMis, updateMisconception } from "./misconception.js";
 
 // round 2 (2026-10-07): reteach ladder + fresh re-check items and corroborate rules change how evidence folds.
-export const PARAMS_VERSION = "kt-r2-2026-10-07";
+// kt-r3 (audit 2026-11-09): no learning step after a failed card; teaching's gain capped per skill per lesson (LEARN-02); a
+// held "why" folds no K step until its blind grade lands (LEARN-05); per-lesson budgets kept by lesson (LEARN-28); a leaked
+// answer at half weight on every class (LEARN-29).
+export const PARAMS_VERSION = "kt-r3-2026-11-10";
 export const LEARNED_P = 0.95;
 export const DELAY_MS = 20 * 3600_000;
 /**
@@ -202,8 +205,11 @@ function applyTeach(L, ev, sess, ctx) {
     const T = tEff(sk.topicType, ctx.eta ?? 0);
     const gained = ss.teachGain[ev.episodeId] ?? 0;
     if (!ss.episodes.includes(ev.episodeId)) {
-      const pL = teachStep(sk.pL, T, gained);
+      // per episode ≤ TEACH_CAP (teachStep), and per skill per lesson ≤ TEACH_LESSON_CAP, re-teaches included (LEARN-02)
+      const room = Math.max(0, TEACH_LESSON_CAP - (ss.teachTotal ?? 0));
+      const pL = Math.min(teachStep(sk.pL, T, gained), sk.pL + room);
       ss.teachGain[ev.episodeId] = gained + (pL - sk.pL);
+      ss.teachTotal = (ss.teachTotal ?? 0) + (pL - sk.pL);
       sk.pL = pL;
       ss.episodes.push(ev.episodeId);
     }
@@ -228,7 +234,8 @@ function applyEvidence(L, ev, sess, ctx) {
     ss.budget = budget;
     const q = sigmoid(logit(sk.pL) + applied);
     let pL = q;
-    if (!ss.episodes.includes(ev.episodeId)) { pL = transition(q, tEff(sk.topicType, ctx.eta ?? 0)); ss.episodes.push(ev.episodeId); }
+    // a card that ended without a right answer teaches nothing: no learning step (LEARN-02)
+    if (!ss.episodes.includes(ev.episodeId)) { if (!isFailedCard(ev.cls, ev.outcome)) pL = transition(q, tEff(sk.topicType, ctx.eta ?? 0)); ss.episodes.push(ev.episodeId); }
     sk.pL = pL;
     // Rule 8: FSRS once per skill per session, on the first retrieval-type event; C0 + a passed
     // transfer/why in the same episode upgrades the grade to 4.

@@ -16,6 +16,9 @@ export const GS_BY_TYPE = Object.freeze({
   T1: { g: 0.20, s: 0.10 }, T2: { g: 0.20, s: 0.10 }, T3: { g: 0.25, s: 0.12 }, T4: { g: 0.15, s: 0.15 }, T5: { g: 0.10, s: 0.20 },
 });
 export const TEACH_CAP = 0.10;
+/** Teaching's total gain per skill per lesson (re-teaches included) [U]: before this, every re-teach added up to +0.10, so
+ *  a child who got every answer wrong climbed on the re-teaches alone (audit LEARN-02, params kt-r3). */
+export const TEACH_LESSON_CAP = 0.20;
 const P_MIN = 1e-6, P_MAX = 1 - 1e-6;
 
 export const clampP = (p) => Math.min(P_MAX, Math.max(P_MIN, p));
