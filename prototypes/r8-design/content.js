@@ -69,8 +69,8 @@
   // ---------- board 2: thirds on a number line from 0 to 2 ----------
   function boardThirds(shape) {
     const tall = shape === "tall";
-    const W = tall ? 600 : 820, H = tall ? 370 : 380;
-    const x0 = tall ? 56 : 90, unit = tall ? 244 : 320, ly = tall ? 206 : 206;
+    const W = tall ? 470 : 820, H = tall ? 370 : 380;
+    const x0 = tall ? 40 : 90, unit = tall ? 190 : 320, ly = tall ? 206 : 206;
     const X = (v) => x0 + v * unit;
     const p = [];
     p.push(`<rect class="fade bd-focus-fill" style="--i:1" x="${X(0)}" y="${ly - 14}" width="${unit}" height="28" rx="4"/>`);
@@ -82,7 +82,7 @@
     p.push(`<g class="fade" style="--i:2">${[0, 1, 2].map((v) => `<text class="bd-num bd-ink-t" x="${X(v)}" y="${ly + 74}" font-size="42" text-anchor="middle">${v}</text>`).join("")}</g>`);
     // what we are talking about: one whole is three thirds
     p.push(brace(X(0) + 4, X(1) - 4, ly - 40, 18, "bd-focus", 3));
-    p.push(`<text class="fade bd-lbl bd-focus-t" style="--i:4" x="${X(0.5)}" y="${ly - 82}" font-size="27" text-anchor="middle">1 whole = 3 equal parts</text>`);
+    p.push(`<text class="fade bd-lbl bd-focus-t" style="--i:4" x="${X(0) - 8}" y="${ly - 82}" font-size="27" text-anchor="start">1 whole = 3 equal parts</text>`);
     // her answer: 1/3 placed on the first mark
     const ax = X(1 / 3);
     p.push(`<g class="ans-pin" style="--i:5">
