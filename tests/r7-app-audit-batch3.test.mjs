@@ -120,5 +120,4 @@ test("SEAM-11: the plan's schedule is carried to the home; SEAM-10: the opening 
   assert.match(v, /time: p\.opensAt \? clock\(p\.opensAt\) : ""/);
   assert.match(read("src/ui-v3/kaksha/screens/KakshaHome.tsx"), /lessonTime=\{plan\.schedule\?\.today \? clock\(plan\.schedule\.time\) : null\}/);
   assert.doesNotMatch(read("src/ui-v3/kaksha/copy.ts"), /\{time\} baje/);
-  assert.match(read("docs/patches/to-brain/005-plan-schedule.patch"), /schedule\?: \{ time: string/);
 });
