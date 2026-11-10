@@ -730,6 +730,7 @@ export class LessonRuntime {
   private async revokedTurn(input: ChildInput, sentText: string): Promise<void> {
     const rest = freshWords(input.childText, sentText);
     if (await this.outbox.edit(input.childText)) {
+      this.link?.keepNextReply?.(); // audit V-05: the one reply now answers the merged words; it is not the revoked one's
       // the revoked turn was still in flight: the merged words replace it under its turnSeq; if it landed meanwhile the
       // server replays it (editLanded) and runTurn then sends the new words alone
       this.revokeRest = rest ? { ...input, childText: rest } : null;

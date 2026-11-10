@@ -573,7 +573,9 @@ export class Governor {
       this.pose = det.kind;
       this.lastActs.react = t;
     }
-    if (this.phase === "committed" && t - this.phaseSince > COMMITTED_MAX_MS) { this.spoke = null; this.go("child_turn", t); }
+    // audit V-06: the floor returns with a FRESH turn: the committed words were sent already, and left in the transcript the
+    // engine committed them again once the in-flight guard expired (the same answer posted a second time)
+    if (this.phase === "committed" && t - this.phaseSince > COMMITTED_MAX_MS) { this.spoke = null; this.beginTurn(t, null); this.go("child_turn", t); }
     return d;
   }
 }

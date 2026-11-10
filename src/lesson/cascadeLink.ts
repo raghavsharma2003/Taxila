@@ -642,7 +642,7 @@ export class CascadeLink implements TeacherLink {
     }
     if (status === "completed") this.duplex?.replyEnded();
     else this.duplex?.replyStopped();
-    this.stopReply(status === "stopped" ? "cancelled" : status, false);
+    this.stopReply(status === "stopped" ? "cancelled" : status, false, false);
   }
 
   /**
@@ -714,6 +714,10 @@ export class CascadeLink implements TeacherLink {
       this.duplex.replyText(text);
     }
     if (cur.early.ended) this.finishReply(cur, cur.early.ended);
+  }
+
+  keepNextReply(): void {
+    this.duplex?.keepReply();
   }
 
   interrupt(): void {
@@ -1192,11 +1196,15 @@ export class CascadeLink implements TeacherLink {
   /**
    * End the current reply. byChild: the child cut it off before it completed — sounding, paused or still
    * loading — so the turn is marked interrupted (the server must not believe she was heard to the end).
+   * tellEngine: the hands-free engine was told she started (replyAudible), so it must be told she stopped on every path
+   * (a tap, pause, hear-again, a new line): without it the engine stays in her turn with the mic gated (audit V-04).
+   * Only finishReply (it tells the engine itself) and the engine's own stop pass false.
    */
-  private stopReply(status: "completed" | "cancelled" | "failed", byChild: boolean): void {
+  private stopReply(status: "completed" | "cancelled" | "failed", byChild: boolean, tellEngine = true): void {
     const cur = this.current;
     if (!cur) return;
     this.current = null;
+    if (tellEngine && cur.playing) this.duplex?.replyStopped();
     if (this.pauseTimer) clearTimeout(this.pauseTimer);
     this.pauseTimer = null;
     cur.playback.stop();
@@ -1520,7 +1528,7 @@ export class CascadeLink implements TeacherLink {
       resume: () => this.resumeReply(),
       stop: () => {
         this.clearBargeTimers();
-        this.stopReply("cancelled", true);
+        this.stopReply("cancelled", true, false); // the engine stopped her itself: it already knows
       },
       emitChild: (e) => {
         if (e.type === "child_final") {

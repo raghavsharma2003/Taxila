@@ -178,6 +178,38 @@ test("duplex on: the engine's pause / resume / stop drive her playback; today's 
   } finally { link.close(); env.restore(); }
 });
 
+test("audit V-04: a tap that stops her line (interrupt, pause-then-continue, hear again) tells the engine she stopped", { skip }, async () => {
+  const { env, link, events } = await duplexLink();
+  try {
+    let stopped = 0;
+    const orig = link.duplex.replyStopped.bind(link.duplex);
+    link.duplex.replyStopped = () => { stopped++; orig(); };
+    link.promptTeacher({ text: "Dekho, ek roti ke chaar barabar hisse karo. Har hissa ek chauthai hai.", seq: 5 });
+    await sleep(40);
+    assert.ok(events.some((e) => e.type === "teacher_audio_start"));
+    link.interrupt();
+    assert.equal(stopped, 1, "the engine heard she stopped");
+    assert.equal(link.duplex.live.herHalted, true);
+    // the engine's own stop does not tell it twice
+    link.promptTeacher({ text: "Achha, aur batao.", seq: 6 });
+    await sleep(40);
+    link.duplex.live.o.port.stop();
+    assert.equal(stopped, 1);
+  } finally { link.close(); env.restore(); }
+});
+
+test("audit V-05: after a revoke, a merged turn that superseded it in flight keeps its one reply (keepNextReply)", { skip }, async () => {
+  const { env, link, events } = await duplexLink();
+  try {
+    link.duplex.live.o.port.dropReply(1);
+    link.keepNextReply();
+    events.length = 0;
+    link.promptTeacher({ text: "Haan, teen sahi hai.", seq: 7 });
+    await sleep(40);
+    assert.ok(events.some((e) => e.type === "teacher_audio_start"), JSON.stringify(events.map((e) => e.type)));
+  } finally { link.close(); env.restore(); }
+});
+
 test("duplex off (or absent): today's link — a final is the turn, server speech_started pauses her", { skip }, async () => {
   const { env, link, events, states, pc } = await duplexLink({ mode: "off" });
   try {
