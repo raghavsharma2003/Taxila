@@ -28,6 +28,7 @@ import { bestCard, getChildMap, getLessonSummary } from "../api.ts";
 import { Spot } from "../art.tsx";
 import { ChildScreen, useKx } from "../chrome.tsx";
 import { Glyph, Panel, StatePanel } from "../../ui-v3/kaksha/kit.tsx";
+import { patchSummaries } from "../madeMatch.ts";
 import { useChild } from "../ChildShell.tsx";
 import { t } from "../copy.ts";
 import { Icon } from "../pictos.tsx";
@@ -101,6 +102,7 @@ export function Notebook() {
   const [search] = useSearchParams();
   const madeId = search.get("made");
   const [page, setPage] = useState<"lessons" | "made" | "jar" | "growth">(madeId ? "made" : search.get("page") === "growth" ? "growth" : "lessons");
+  useEffect(() => { if (madeId) setPage("made"); }, [madeId]); // APP-07: follow a link to a piece after mount
   // the Question jar (Learning's GET /api/child/jar): its page shows only when the route answers
   const [jar, setJar] = useState<JarItem[] | null>(null);
   useEffect(() => {
@@ -134,7 +136,8 @@ export function Notebook() {
         if (ac.signal.aborted) return;
         missing.forEach((a, i) => { if (sums[i]) cache[a.lessonId] = sums[i]!; });
         keepSummaries(cid, cache, list.map((a) => a.lessonId));
-        setPages(list.map((a) => page(a, cache[a.lessonId] ?? null)));
+        // APP-02: patch the summaries onto the pages already shown (the server's pages, boards and Replay stay)
+        setPages((prev) => patchSummaries<LessonSummary, Page>(prev, cache));
       });
     }
     return () => ac.abort();

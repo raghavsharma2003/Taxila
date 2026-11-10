@@ -259,6 +259,9 @@ export const R7 = {
   // r7 app-ask-voice: "Say it" on Ask
   // r7 app-pwa-install
   "app.install": "Put Taxila on this phone",
+  "who.err": "Taxila could not open just now. Check the internet and try again.",
+  "who.retry": "Try again",
+  "who.help": "Get help",
   "app.installNote": "It opens like an app, with its own icon.",
   "ask.say": "Say it",
   "ask.listening": "Listening… tap when done",

@@ -23,6 +23,7 @@ import { HelpSheet } from "./sheets/HelpSheet.tsx";
 import { HintSheet } from "./sheets/HintSheet.tsx";
 import { PauseSheet } from "./sheets/Pause.tsx";
 import { Summary } from "./Summary.tsx";
+import { isAnswerTray } from "./answers.ts";
 import { captionVisible, SpeechRow, TeacherWindow } from "./TeacherWindow.tsx";
 import { TroubleScreen } from "./TroubleScreen.tsx";
 import { TroubleStrip } from "./TroubleStrip.tsx";
@@ -229,7 +230,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
     lead={m.intake && renderIntake ? renderIntake(m) : null} />;
   // The answer surfaces (tiles, the NumberPad, the Help menu over them) are AnswerTray's; the activity and the board
   // stay WorkTray's (W1-B). BUILD-PLAN W1-A items 3 and 11.
-  const answerTray = m.tray && (m.tray.kind === "tiles" || m.tray.kind === "pad" || !!m.tray.overlay);
+  const answerTray = m.tray && isAnswerTray(m.tray);
   const tray = m.tray && L.geometry === "work" ? answerTray ? (
     <AnswerTray tray={m.tray} floor={floor} young={young} actions={a} slash={m.padSlash} comma={m.padComma} />
   ) : (
@@ -241,7 +242,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
 
   let body: ReactNode;
   if (renderBody) {
-    const isAnswer = (tr: NonNullable<DeskModel["tray"]>) => tr.kind === "tiles" || tr.kind === "pad" || !!tr.overlay;
+    const isAnswer = isAnswerTray;
     const renderTray = (tr: NonNullable<DeskModel["tray"]>) => isAnswer(tr)
       ? <AnswerTray tray={tr} floor={floor} young={young} actions={a} slash={m.padSlash} comma={m.padComma} />
       : <WorkTray tray={tr} floor={floor} young={young} modules={media.modules} lang={media.lang} ageBand={media.ageBand} actions={a} onModuleFailed={a.moduleFailed} />;
