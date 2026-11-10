@@ -13,10 +13,10 @@ Status: **in progress** (pushed early; more findings follow).
 | id | sev | kind | owner | title | where | fix | status |
 |---|---|---|---|---|---|---|---|
 | STUDIO-01 | P1 | broken | studio | shade-grid@1 with labels and a shown fraction fails its own lint for every grid of 2+ rows, so the claims board for "N columns aur M rows" draws nothing | `server/forge/explainer/templates.js:439`, called by `server/stagecraft/claims-board.js:98` | move the fraction from `y0 + H + 34` to `y0 + H + 56` | patch 003 |
-| STUDIO-02 | P2 | inconsistent | studio | catalogue boards are served for topics whose cross-check failed or never ran (13 topics, 102 boards); the game and explainer of the same topics are withheld | `server/stagecraft/catalogue.js:136-143` (served by `board-first.js:217`, `board-sync.js:470`) | skip the boards when the record is not checked | patch 004 |
+| STUDIO-02 | P2 | inconsistent | studio | catalogue boards are served for topics whose cross-check failed or never ran (13 topics, 102 boards); the game and explainer of the same topics are withheld | `server/stagecraft/catalogue.js:136-143` (the boards loop) (served by `board-first.js:217`, `board-sync.js:470`) | skip the boards when the record is not checked | patch 004 |
 | STUDIO-03 | P2 | not good enough | studio | 13 catalogue topics have no usable game or explainer; 7 failed the cross-check on real errors (oxygen sorted as "Burns", a "-10" rule on a 50, 45, 40 pattern, a ₹550 key for ₹36,250 + ₹18,750) and 6 were never checked; one more game is refused for an unsafe string | `data/studio-catalogue/topics/` (list below) | re-author the 13 and re-run the cross-check; the 7 errors are listed so the authoring prompt can be fixed first | open |
 | STUDIO-04 | P3 | no longer needed | studio | `POST /api/forge/requests` and `POST /api/forge/prefetch` have no caller anywhere (client, scripts, tests/prod); the lesson warms fills through `forgeSeam.prefetchLessonFills` instead | `server/routes/forge.js:51-77` | delete both routes; move `publicFill` and `limit` (used by two tests) or drop them with the routes | proposal (needs main) |
-| STUDIO-05 | P3 | broken | studio | the beat card's progress dots stop moving from the 9th board: 8 dots are drawn and all are "done", so no dot is "now" | `src/studio/StudioStage.tsx:328` (`card.n` grows per board: `server/stagecraft/beat-card.js:42`) | mark dot `min(n, 8) - 1` as now: `i < Math.min(card.n, 8) - 1` | open |
+| STUDIO-05 | P3 | broken | studio | the beat card's progress dots stop moving from the 9th board: 8 dots are drawn and all are "done", so no dot is "now" | `src/studio/StudioStage.tsx:337` (`card.n` grows per board: `server/stagecraft/beat-card.js:42`) | mark dot `min(n, 8) - 1` as now: `i < Math.min(card.n, 8) - 1` | open |
 | STUDIO-06 | P3 | no longer needed | studio | five `.patch` files inside product folders were applied in the W2 integration and now apply neither forward nor backward | `server/forge/seam-patches/*.patch` (3), `server/studio/seam-patches/*.patch` (2) | delete them; `context/` cites them by name as method, so add an inbox entry with the last commit that holds them | proposal (needs main) |
 | STUDIO-07 | P3 | inconsistent | studio | the Studio v2 node tests live outside `tests/`, so neither `npm test` nor `npm run test:all` runs them (9 tests; they pass today when run by hand) | `src/studio-v2/tests/studio-v2.test.mjs`; `scripts/test-shard.mjs:28` reads only `tests/` | move the file to `tests/studio-v2.test.mjs` (fix its relative imports) | open |
 | STUDIO-08 | P3 | inconsistent | studio | Stagecraft's default mode is "on" in `lesson.js` and in its header, but `StagecraftHost` falls back to "off" when no mode is passed | `server/stagecraft/host.js:30` vs `server/stagecraft/lesson.js:27-30` | `o.mode ?? stagecraftMode()` (one default, one place) | open |
@@ -99,6 +99,57 @@ pins `rolldown 1.2.12` for its own image, which is why the gate service itself w
 - `docs/patches/to-studio/004-catalogue-boards-need-check.patch` (STUDIO-02) with
   `tests/r7-audit-studio-catalogue-boards.test.mjs`: 1/3 before, 3/3 after; 170 existing tests that read the catalogue pass.
 
+## The brief's four questions
+
+- **`src/studio` against `src/studio-v2`, `server/forge` against `server/forge3`: which is live?** All four are live.
+  `src/studio` is the stage every Studio piece renders in (`WorkTray.tsx`, `useDesk.ts`, the notebook screens).
+  `src/studio-v2` is the engine library behind it: the Stagecraft renderer mounts it (`src/stagecraft/controller.ts:10-27`);
+  only its `gallery/` and `tools/` are dev-only (not build inputs), and its tests are not run (STUDIO-07). `server/forge`
+  holds the G1 fills the Director mounts (`forge/seam.js`, warmed at lesson start) and the board templates every board
+  path draws with (`forge/explainer/**`). `server/forge3` holds the tray gate every reveal passes (`tray-gate.js`), the
+  certificates, the board art and the play composer. What is left over: the two `/api/forge/*` routes (STUDIO-04) and the
+  five applied `.patch` files (STUDIO-06).
+- **Board templates that draw something false, clip at 360 px or fail their own lint.** I expanded every template over a
+  parameter grid (counts below) and checked the drawn shaded count against the fraction and the written column-op answer
+  against the sum: no false drawing found. The templates refuse rather than draw wrong. One fails its own lint on calls
+  that are used in a lesson (STUDIO-01); one is advertised for ranges it cannot lay out (STUDIO-09). Clipping at 360 px is
+  the stage's job (`boardFit.ts` lays the board out for the box at a 14 px floor); not re-measured here.
+- **Catalogue entries nothing can reach.** 13 topics have no usable game or explainer (STUDIO-03), and their boards were
+  still served (STUDIO-02). Every catalogue topic is in the curriculum, and every certificate names a catalogue topic.
+- **Speculative builds: what a child sees when one fails or is late.** On default settings no speculative build reaches a
+  child. The live race needs a gate service that is not wired (`seam.js:450`, and `gap-map.json:933`), so a "live"
+  decision falls to the skeleton-as-activity, which the stage shows as a normal activity; while anything is being made
+  the stage keeps the last finished piece or the calm ground (`StudioStage.tsx:114`, `143-147`), never a spinner or an error.
+  A frame that errors becomes its skeleton (`StudioStage.tsx:281-290`); a slot that ends empty gives the tray back.
+  Stagecraft's generated specs are paid for and always refused (STUDIO-11). If the gate is wired, live builds would still
+  not run in the production image (STUDIO-12).
+
 ## Coverage
 
-(filled in at the end)
+**Read fully:** `server/routes/studio.js`, `server/routes/forge.js`, `server/forge/seam.js`, `server/forge/index.js`
+(requestFill, prefetch), `server/studio/picture.js`, `server/stagecraft/claims-board.js`, `catalogue.js`, `beat-card.js`,
+`lesson.js`, `host.js` (constructor and input), `src/studio/StudioStage.tsx`, `src/studio/renderers.ts`,
+`src/studio/useStudio.ts` (wire and api), `infra/studio-qa/*`, `server/forge3/certify.js`, the maths templates in
+`server/forge/explainer/templates.js` (lines 95-705) and its `expand` / claims code, `board-ref.js`.
+
+**Sampled:** `server/studio/seam.js` (about 400 of 1,734 lines: registry, runPiece, onReveal, mount rows),
+`server/stagecraft/conductor.js` (rungs, spec launch), `builders.js` (spec, image, live), `config.js`,
+`server/forge3/tray-gate.js` (stagecraft and frame cases), `shared/whiteboard.js` (lint and numwork geometry),
+`server/studio/plan.js` (planBuild), `src/modules/whiteboard/StudioWhiteboard.tsx` (header, timing),
+`src/studio/skeletons.tsx` (registry).
+
+**Measured (pure code, no network):**
+- template expansion grids: fraction-parts 264, column-op 190, combine-count 187, equal-groups 40, fraction-of 400,
+  fraction-line (show) 365, number-line-hop 180, place-value 11, shade-grid 236 + 4,616, fraction-bars 6, area-grid 960,
+  bar-chart 45, angle 70, measured 451, wholes 25, unrolled 6, timeline 4, flow 4, cycle 4, compare 1, zoom 6, scale 6;
+- `loadCatalogue()` over all 385 topic files; the explainer library (316 entries) through `checkCall` and `expand`;
+- the certificate table against the catalogue; the client import graph for `src/studio*`, `src/stagecraft`,
+  `src/modules/whiteboard`; every `process.env` read in the area and where it is set;
+- the production import of `build.js` / `qa/gate.js` without `rolldown`; the studio-qa image's file layout.
+
+**Not read:** `src/studio-v2/engines/**` and `core/**` (about 11,000 lines; their own 9 tests pass when run by hand),
+`shared/studio-spec-ext/**`, `server/studio/build.js`, `router.js`, `qa/players/**`, `server/forge3/compose.js`,
+`art.js`, the G1 planner and templates (`server/forge/planner.js`, `templates.js`, `generator.js`),
+`src/stagecraft/controller.ts`, and the catalogue's game and explainer content beyond its recorded checks.
+`board-first.js` and `board-sync.js` were read only where cited: the held board (director16, "Decision:
+dc-r7-held-board") is being built in them now and is not a finding here.

@@ -1,0 +1,40 @@
+{
+ "nodes": [
+  {
+   "id": "audit-studio-2026-11-10",
+   "kind": "measurement",
+   "title": "Studio area audit, 2026-11-10 (docs/design/round7/audit/studio.md): 12 findings (P1 1, P2 4, P3 7); patches 003 (shade-grid fraction) and 004 (catalogue boards need the cross-check) in docs/patches/to-studio with tests",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "m-audit-shade-grid-lint",
+   "kind": "measurement",
+   "title": "shade-grid@1 with labels on and the fraction shown failed its own text-overlap lint for every grid of 2+ rows: 1,080 of 1,080 block calls (rows 1-6 x cols 1-10 x every block). The fraction numwork box starts ~35 units above its `at` row; at y0+H+34 it sat on the 'N rows' label. With y0+H+56: 4,616 of 4,616 pass. The claims board (claims-board.js:98) makes exactly this call",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "m-audit-catalogue-usable",
+   "kind": "measurement",
+   "title": "Studio catalogue at int/r6 21a: 385 topic files; games ok 368, unchecked 9, missing 4, unsafe string 1, safety-excluded 3; cross-check pass 369, fail 7, missing 9. 13 records whose check did not pass still served 102 whiteboard boards (game and explainer withheld). Explainer library: 316 of 316 entries pass truth and expand",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "open-audit-stagecraft-spec-spend",
+   "kind": "open",
+   "title": "Stagecraft launches paid generated_spec builds by default (taxila-fast-bg, ~$0.0013 each, cap $0.06 per lesson-hour) that the tray gate always refuses: no code sets a judge verdict (forge3/gate.js judgeArtifact has no caller). Either wire the judge (owner cost question, gap-map 914) or stop launching the rung without one",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "open-audit-rolldown-runtime",
+   "kind": "open",
+   "title": "server/studio/fixers.js and qa/static.js import rolldown/parseAst, which reaches the production image only through vite (a devDependency); the image installs --omit=dev, so build.js and qa/gate.js fail to import there. Add rolldown 1.2.12 to dependencies before STUDIO_QA_URL is wired",
+   "at": "2026-11-10"
+  }
+ ],
+ "edges": [
+  { "src": "m-audit-shade-grid-lint", "rel": "part_of", "dst": "audit-studio-2026-11-10" },
+  { "src": "m-audit-catalogue-usable", "rel": "part_of", "dst": "audit-studio-2026-11-10" },
+  { "src": "open-audit-stagecraft-spec-spend", "rel": "part_of", "dst": "audit-studio-2026-11-10" },
+  { "src": "open-audit-rolldown-runtime", "rel": "part_of", "dst": "audit-studio-2026-11-10" }
+ ]
+}
