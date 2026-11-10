@@ -8,6 +8,9 @@ import { classifyFast } from "../server/director/classify.js";
 import { replay, runScriptOf } from "./fixtures/replay.mjs";
 import { textReply, replyDeps, BEAT_ASK, WORKED_ASK, rotateOf, wordAnswer } from "../server/brain/say.js";
 import { agreeOne } from "../server/brain/register.js";
+import { heldCount, heldFlags } from "../evals/hybrid-side-by-side/held-units.mjs";
+import { whiteboardIntentOf, heldUpOf } from "../server/brain/propose.js";
+import { findItem } from "../server/director/items.js";
 import { chat } from "../server/azure.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { setScriptForTest } from "../server/director/script.js";
@@ -263,6 +266,73 @@ describe("r7-brain-v68.test.mjs", () => {
         assert.ok(!p.r.move.checkin && p.r.move.kind !== "break", `${p.r.move.kind} ${p.r.move.checkin}`);
         assert.equal(p.r.move.request, "move_on");
       } finally { setScriptForTest(); if (KEEP !== undefined) process.env.TAXILA_R7_SCRIPT = KEEP; }
+    });
+  });
+
+  // H5 (main's dc-r7-held-board): the held-board counter flags director16's 8 judged rows (a: c4 steady 46, offtopic 46, c6 offtopic
+  // 36; b: c4 steady 36, offtopic 34, c5-t02 offtopic 32; c: c4 steady 18, c5-t02 stuck 18) — retired as a gate input above 1 miss —
+  // and every silently pinned card as "an unsaid card on screen"
+  describe("H5: the held-board counter on director16", () => {
+    const D = new URL("../evals/hybrid-side-by-side/results/2026-11-09-director16/", import.meta.url).pathname;
+    const flagged = new Map();
+    for (const f of readdirSync(D).filter((x) => x.endsWith(".json") && x !== "meter.json")) {
+      const j = JSON.parse(readFileSync(D + f, "utf8"));
+      const sc = JSON.parse(readFileSync(`${D}scripts/${j.topicId}.json`, "utf8"));
+      for (const x of heldCount(j.director, sc)) flagged.set(`${f.replace(".json", "")} ${x.row}`, x.flags);
+    }
+    test("the 8 judged rows are flagged (≤1 miss)", () => {
+      const EIGHT = ["steady-c4-ch05-t01 46", "offtopic-c4-ch05-t01 46", "offtopic-c6-ch06-t01 36", "steady-c4-ch05-t01 36", "offtopic-c4-ch05-t01 34", "offtopic-c5-ch02-t02 32", "steady-c4-ch05-t01 18", "stuck-c5-ch02-t02 18"];
+      const missed = EIGHT.filter((k) => !flagged.has(k));
+      assert.ok(missed.length <= 1, `missed: ${missed.join(", ")}`);
+    });
+    test("main's silent pins are flagged as an unsaid card on screen", () => {
+      const PINS = ["steady-c5-ch02-t01 40", "stuck-c5-ch02-t01 38", "offtopic-c5-ch02-t01 20", "steering-c5-ch02-t01 26", "steady-c5-ch02-t02 40", "stuck-c5-ch02-t02 58", "offtopic-c5-ch02-t02 18", "offtopic-c5-ch02-t02 42", "offtopic-c4-ch05-t01 6", "steady-c6-ch06-t01 40"];
+      assert.deepEqual(PINS.filter((k) => !(flagged.get(k) ?? []).some((x) => /unsaid card/.test(x.why))), []);
+    });
+  });
+
+  // dc-r7-held-board: the predicates (propose.js heldPredicates, thrown under tests) over every turn of the 16 director16 lessons
+  // walked live — on the run's own scripts and on Learning's D11 data — the board carried from turn to turn as production does
+  describe("held board: Brain's predicates over 16 lessons", () => {
+    const RUN = "2026-11-09-director16";
+    const TOPIC = { c4: "c4-maths-ch05-t01", "c5-t02": "c5-maths-ch02-t02", c6: "c6-maths-ch06-t01", "c5-t01": "c5-maths-ch02-t01" };
+    for (const data of ["director16", "D11"]) test(`${data} scripts: ≤1 change a turn, a change only at a spoken new unit's first part, every spoken part on the held unit; H5 reads 0 on the walk`, async () => {
+      const KEEP = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT;
+      const errs = [], h5 = [];
+      let turns = 0, held = 0, switched = 0;
+      try {
+        for (const [topic, T] of Object.entries(TOPIC)) for (const persona of ["steady", "stuck", "offtopic", "steering"]) {
+          const sc = data === "D11" ? JSON.parse(readFileSync(`${DIR}${T}.json`, "utf8")) : runScriptOf(RUN, T);
+          delete sc.recordedRun; setScriptForTest(T, sc);
+          const { kit, rows, plans } = await replay(RUN, persona, T, 1e9);
+          let up = null;
+          for (const pl of plans) {
+            const n = pl.row - 1; if (!rows[n]) continue;
+            replyDeps.chat = async () => ({ text: rows[n].text });
+            const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
+            const next = { ...pl.state, heldUp: up };
+            turns++;
+            try {
+              const a = whiteboardIntentOf({ lessonId: "L", turn: n, beat: { id: "visual", type: "explain" }, next, kit, item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null,
+                line: { text: out.reply, ...(out.guard?.parts ? { parts: out.guard.parts } : {}) } });
+              const H = a.intent.held;
+              if (!H) continue;
+              held++; if (H.switchTo) switched++;
+              if (a.intent.segments) errs.push(`${persona} ${topic} ${n}: a held turn paged`);
+              up = heldUpOf(H);
+              // (H5 on the walk: no card pinned unsaid; every spoken part on its held unit)
+              // (the held predicates above already hold every spoken part to its unit; here: no card on screen that is not said)
+              const text = out.reply.replace(/\s+/g, " ").trim();
+              const f = heldFlags({ text, card: out.guard?.cardHeld ? null : pl.p.r.ui?.ask?.text ?? null }, null); // (as turn.js: A4 drops ui.ask)
+              if (f.length) h5.push(`${persona} ${topic} ${n}: ${f.map((x) => x.why).join("; ")}`);
+            } catch (e) { errs.push(`${persona} ${topic} ${n}: ${e.message.slice(0, 160)}`); }
+          }
+        }
+      } finally { replyDeps.chat = chat; setScriptForTest(); if (KEEP !== undefined) process.env.TAXILA_R7_SCRIPT = KEEP; }
+      assert.deepEqual(errs, []);
+      assert.ok(held > turns * 0.8, `${held} of ${turns} turns held`);
+      assert.ok(switched > 0);
+      assert.deepEqual(h5, []);
     });
   });
 });
