@@ -14,7 +14,7 @@ import { playKtEvents, signEvidence } from "../server/play/evidence.js";
 import { temper } from "../server/learner/kt/bktr.js";
 
 const env = (acts) => acts.map((act, i) => ({ seq: i + 1, t: i * 400, via: "touch", act }));
-const ONE = { "galti-pakdo": ["pakdo"], hissa: ["shift"], nazariya: ["more"], kon: ["kind"] };
+const ONE = { "galti-pakdo": ["pakdo"], hissa: ["shift"], nazariya: ["more"], kon: ["kind", "turn", "corr", "alt"] };
 const FAMS = Object.keys(ONE);
 const sessionOf = (e, child, fade) => ({ childId: child, key: entryKey(e), skillId: e.skillId, lessonId: null, classLevel: e.classLevel, fade, lang: "hinglish", childArt: null, lastArt: null,
   mis: {}, pL: undefined, n: 0, seed: seedOf(child, entryKey(e), 0), door: "garam", recent: [], hist: null });
@@ -25,15 +25,17 @@ function wrongActs(level, logic) {
   if (level.goal === "pakdo") { const sol = logic.solve(level), at = sol.find((a) => a.kind === "flag")?.line ?? 0; return [{ kind: "flag", line: at === 1 ? 2 : 1 }]; }
   if (level.goal === "shift") return [...Array.from({ length: Math.abs(p.c) }, () => ({ kind: "slide", by: p.c > 0 ? -1 : 1 })), { kind: "run" }];
   if (level.goal === "kind") return [{ kind: "turn", deg: p.start }, { kind: "commit" }];
+  // kon turn and cross (main 2026-11-10): the dial a quarter turn off the answer
+  if (["turn", "corr", "alt"].includes(level.goal)) { const d = logic.solve(level).find((a) => a.kind === "turn")?.deg ?? 0; return [{ kind: "turn", deg: (d + 90) % 360 }, { kind: "commit" }]; }
   if (level.goal === "more") return [{ kind: "apex", x: p.tri.x0, z: p.tri.zb - 1 }, { kind: "check" }];
   return null;
 }
 
-test("chance weight: the constant is the arena's (GAME_WEIGHT × the controllerEasy temper), and exactly these goals are one-decision", () => {
+test("chance weight: the constant is the arena's (GAME_WEIGHT × the controllerEasy temper), and exactly these goals are one-decision (kon turn and cross added 2026-11-10)", () => {
   assert.equal(CHANCE_WEIGHT, GAME_WEIGHT * 0.5);
   assert.equal(temper({ via: "game", controllerEasy: true }), CHANCE_WEIGHT, "the arena's own path");
   const marked = [...new Set(Object.values(LOGIC))].filter((l) => l.oneDecision?.length).map((l) => `${l.family}:${l.oneDecision.join(",")}`).sort();
-  assert.deepEqual(marked, ["galti-pakdo:pakdo", "hissa:shift", "kon:kind", "nazariya:more"]);
+  assert.deepEqual(marked, ["galti-pakdo:pakdo", "hissa:shift", "kon:kind,turn,corr,alt", "nazariya:more"]);
 });
 
 for (const fam of FAMS) {
