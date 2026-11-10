@@ -9678,3 +9678,19 @@ One pure module, `server/director/knows.js` (`planFor`), turns learner state int
 **Reverse if:** a choice needs mid-turn state `planFor` cannot see without running every turn (then a per-turn reader, still one module).
 
 **Done when:** two simulated children with different histories get lessons differing in four named ways with no model call (`evals/knows-her`), and a judged run scores "taught this child" at 3.5 or above with the existing gate passing.
+
+
+<!-- merged from inbox/r7-main-39.json -->
+## `dc-r16-production-is-the-test-build-2026-11-10` (2026-11-10)
+
+Release 16 (`e807f07`, integration 24) replaced production. Production is the build the owner tests; no staging app.
+
+- **The owner's word:** production can be replaced because nobody is using it; a staging app at $40 to $50 a month was offered and main declined it.
+- **Database:** 16 pending migrations (031, 034 to 047, 050) applied through the Neon connector, the owner's choice. Backup branch `pre-release-e807f07` first, a rehearsal of all 49 statements on `rehearse-release-e807f07`, then one transaction on main. Verified: 46 rows in `schema_migrations`.
+- **Release:** `scripts/release.mjs e807f07 --migrate skip --force`. The evening freeze protects lessons in progress; there are none.
+
+**Why:** the release had waited since director16 on a Neon key the owner did not want to hand over. The connector needs no key in the repo or the chat.
+
+**Reverse if:**
+- a real family starts using production: a staging app (`scripts/staging.mjs`) before any further release, the freeze honoured again, migrations through `scripts/migrate.mjs` with a key in the secret store;
+- a migration applied by hand is found to differ from what `migrate.mjs` would have done: restore from the backup branch and re-apply by script.
