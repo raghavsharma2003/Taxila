@@ -64,11 +64,20 @@ export function beatFor(topicId, misconceptionId) {
  * attempts both logged ok, and neither a candidate nor a refused file was written — an ok result whose content checks failed
  * fell between the two). → { kind: "candidate" } | { kind: "refused", why }.
  */
+/** Romanised Hindi number words a content check reads as English (main 2026-11-10: "Teen hisse" failed content_safety_2 three
+ *  times, "teen" read as the English word): a string carrying one should write the number in digits. → the words found. */
+const NUMBER_WORDS = ["ek", "do", "teen", "chaar", "char", "paanch", "panch", "chhe", "che", "saat", "aath", "nau", "das", "gyarah", "barah"];
+export function numberWords(text) { const t = String(text ?? "").toLowerCase(); return NUMBER_WORDS.filter((w) => new RegExp(`(^|[^a-z])${w}([^a-z]|$)`).test(t)); }
+/** The plain-words reason for a content refusal that a number word explains. */
+export function numberWordHint(findings) {
+  const hits = (findings ?? []).filter((f) => f.text && numberWords(f.text).length);
+  return hits.length ? `; ${hits.map((f) => `"${f.text}" (${f.key}) carries the number word ${numberWords(f.text).map((w) => `"${w}"`).join(", ")}: the content check reads it as English — write the number in digits`).join("; ")}` : "";
+}
 export function attemptOutcome(r) {
   if (!r?.ok) return { kind: "refused", why: String(r?.why ?? "refused") };
   if (!r.payload?.spec) return { kind: "refused", why: "ok but no spec in the payload" };
   const failed = Object.entries(r.checks ?? {}).filter(([k, v]) => v === false || (v && typeof v === "object" && v.ok === false)).map(([k]) => k);
-  if (failed.length) return { kind: "refused", why: `ok, but its checks failed: ${failed.join(", ")}` };
+  if (failed.length) return { kind: "refused", why: `ok, but its checks failed: ${failed.join(", ")}${numberWordHint(r.checks?.contentFindings)}` };
   return { kind: "candidate" };
 }
 

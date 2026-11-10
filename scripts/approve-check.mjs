@@ -14,7 +14,7 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { checkSpec, kitTopicAny } from "../server/stagecraft/catalogue.js";
-import { specHash, fileHash, JUDGED_SIZES, APPROVAL_SIZES } from "../server/studio/approved.js";
+import { specHash, fileHash, JUDGED_SIZES, APPROVAL_SIZES, numberWords } from "../server/studio/approved.js";
 import { boardTwinFor } from "../server/stagecraft/builders.js";
 
 const arg = (k, d = null) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -78,6 +78,9 @@ const index = [];
 try {
   for (const p of list) {
     const kit = kitTopicAny(p.topicId);
+    // (main 2026-11-10: a romanised number word in a child-visible string trips the content check — say so in plain words)
+    const words = []; JSON.stringify(p.spec ?? {}, (k, v) => { if (typeof v === "string" && numberWords(v).length) words.push(`"${v}"`); return v; });
+    if (words.length) console.log(`${p.id}: WARNING number words in ${words.slice(0, 6).join(", ")} — the content check reads them as English; write numbers in digits`);
     const pred = checkSpec(p.archetype, p.spec, kit);
     const dir = path.join(OUT, p.id);
     fs.mkdirSync(dir, { recursive: true });
