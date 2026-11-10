@@ -111,9 +111,11 @@ describe("r7-brain-v610.test.mjs", () => {
     for (const k of ["asidePark", "asideReturn", "hindiSwitch", "askAgain"]) assert.ok((jointOf(kit, k, "hinglish", { aside: "cricket", said: "sixer maara" }) ?? []).length >= 2, k);
     assert.ok(!(jointOf(kit, "hindiSwitch", "hinglish") ?? []).some((x) => /ab se/i.test(x)));
     const r = returnQuestion("cricket", "hinglish", { turn: 3, seed: 1, recent: [] }, { said: "kal maine cricket khela, sixer maara", kit });
-    // (v6.11 G2/J2, main on director19: {said} forms put the child's own words in her mouth — the return names their topic, never their sentence)
+    // (v6.11 G2/J2 and Learning D14.1, main on director19: {said} forms put the child's own words in her mouth — the return is one
+    // question on the aside's topic, never the child's sentence, with no slot left unfilled)
     assert.match(r, /cricket/i, r);
     assert.doesNotMatch(r, /maine|sixer maara|\{/i, r);
+    assert.match(r.trim(), /\?$/, r);
     const park = parkAckOf({ turn: 3, recent: [] }, "hinglish", kit).map((f) => f("cricket"));
     assert.ok(park.length >= 3 && park.every((x) => /cricket/i.test(x) && !/\{/.test(x)), JSON.stringify(park));
   });
