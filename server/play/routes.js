@@ -28,10 +28,11 @@ import { playFactsRow } from "../../shared/play.ts";
 import { baseSpec, dressSpecFor, withVerb } from "./dress.js";
 import { engineFor } from "../../src/play/engines/registry.ts";
 import { record as traceRecord } from "../trace/writer.js";
+import { foldHomeLevel, writeHomeEvents } from "./home.js";
 
 const bad = (msg) => new HttpError(400, msg);
 /** Test seam (round 8): the child check and the db query the routes use; tests swap them inside a test and restore. */
-export const playDeps = { requireChild, q: async (...a) => (await import("../db.js")).q(...a) };
+export const playDeps = { requireChild, q: async (...a) => (await import("../db.js")).q(...a), writeHome: writeHomeEvents };
 const dbq = (...a) => playDeps.q(...a);
 
 function sessionOut(s) { return signSession(s); }
@@ -115,10 +116,12 @@ export const routes = {
     // inside a lesson: the server's own rows, signed for this child and lesson (the turn folds only a verified token)
     // round 8 P3: the level's trail (the server's own replay: misses, mal-rules, undos, acts vs the solver's minimum) is
     // signed WITH the rows. From the home (no lessonId) the same rows, as source "home", and the trail are signed for the
-    // child alone (homeToken); nothing folds a home token yet (server/play/home.js, TAXILA_HOME_PLAY_FOLD off)
+    // child alone (homeToken), and (round 8 follow-up A) folded right here into her learner state through the learner's
+    // mapping (server/play/home.js foldHomeLevel; TAXILA_HOME_PLAY_FOLD on unless off)
     const trail = ended ? g.trail : null;
     const evidenceToken = ended && s.lessonId && rows.length ? signEvidence({ childId: s.childId, lessonId: s.lessonId, levelId: level.levelId, rows, ...(trail ? { trail } : {}) }) : undefined;
     const homeToken = ended && !s.lessonId && rows.length ? signHomeEvidence({ childId: s.childId, levelId: level.levelId, rows, ...(trail ? { trail } : {}) }) : undefined;
+    const home = homeToken ? await foldHomeLevel({ child, token: homeToken, skillOk: (id) => id === entry.skillId || (entry.skillIds ?? []).includes(id), q: dbq, write: playDeps.writeHome }) : null;
     const seam = seamOf(g.grade, level, fresh, !!b.impasse);
     const seamToken = seam && s.lessonId ? signSeam({ childId: s.childId, lessonId: s.lessonId, kind: seam.kind, row: playFactsRow({ game: `${level.family}/${level.mode}`, ...seam.facts }) }) : undefined;
     // the belief this level's first decision showed is the next level's focus (the current level's inputs never change);
@@ -127,7 +130,7 @@ export const routes = {
     const s2 = afterLevelBody(s, { grade: ended ? g.grade : null, level, history });
     // release 12 flight recorder: every act's grade moment, and the level's outcome when it ends
     traceRecord(ended ? "play.outcome" : "play.act", { family: level.family, mode: level.mode, levelId: level.levelId, final: !!b.final, impasse: !!b.impasse,
-      moments: fresh.map((m) => m.kind), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen, home: !s.lessonId, ...(trail ? { trail } : {}) } : {}),
+      moments: fresh.map((m) => m.kind), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen, home: !s.lessonId, ...(home ? { homeFolded: home.folded, homeCapped: home.capped } : {}), ...(trail ? { trail } : {}) } : {}),
       reaction: typeof reaction === "string" ? reaction : reaction?.text ?? null, engine: seenEngine }, { ...(typeof s.lessonId === "string" && s.lessonId.length === 36 ? { sid: s.lessonId } : {}) });
     const out = { levelId: level.levelId, moments: fresh, reaction, ...(seamToken ? { seamToken } : {}), ...(ended ? { grade: g.grade, doors: doorsFor(s2, entry, s.lang, child?.first_name), evidence: rows, ...(trail ? { trail } : {}), ...(evidenceToken ? { evidenceToken } : {}), ...(homeToken ? { homeToken } : {}) } : {}),
       seam, sessionId: sessionOut(s2) };
