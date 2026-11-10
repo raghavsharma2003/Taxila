@@ -9590,3 +9590,91 @@ One draw, one line; the request table's wrong and missing rows; her joints autho
 - listening is still below 3.5 in a topic: that topic's failing request handling is authored turn by turn in the script, and code stops choosing;
 - register is below 3.5 with authored joints: every remaining code-written sentence is listed and authored or removed;
 - any misgrade, unsaid board or held cost: as in v6.9's clauses.
+
+
+<!-- merged from inbox/r7-audit-tests-evals-removed.json -->
+## r7-audit-tests-evals-removals
+**Removed in one commit after a whole-repo search found no importer, package.json script, CI or Docker use, test, doc instruction or context citation: `_q.mjs` (ad hoc DB query), `tests/client-voice-smoke.mjs` and `tests/voice-cascade-browser.mjs` (paid real-API hand harnesses), `evals/webrtc-harness-server.mjs`, `evals/model-scout-2026-10-05/` (7.4 MB, only a self reference). Last commit that holds all of them: `c2e496c8` (recover with `git show c2e496c8:<path>`). Kept on purpose: `tests/client-e2e.mjs` (docs/research and PRODUCT-DESIGN-V2 cite it as the mock-Director reference), the big result folders (conversation-r3 129 MB etc.: docs cite them; no longer read by the gate after TE-06).**
+
+
+<!-- merged from inbox/r7-audit-hissa.json -->
+## `dc-r7-hissa-pour-count`
+
+**hissa pour now grades a committed count** (games audit GAMES-08, 2026-11-10).
+
+- **Before:** tapping Pour until the jug refused, then Run, solved every served pour level, clean and with evidence `correct`. The served levels all had remainder 0, so pouring to the brim was the whole answer, and the child never decided a count.
+- **Now:** the child first says how many full cups (glasses) the jug will fill, on a − ? + stepper (act `{ kind: "count", n }`, 0..20).
+  - Pour and Run are refused until a count is said (`count_first`).
+  - Once a cup is poured the count stands: an undo of the pours does not take it back (`said`). The run then answers.
+  - The run needs the count said = the cups that fit = the cups poured, and the part-cup tag right.
+  - A wrong count misses. The mal-rules (div-smaller, no-flip, flip-first, div-half, scale-one) are now set-ups of the count said plus the tag, so a wrong count matching a belief folds that kit id.
+  - After a missed run the count may be said again; the evidence keeps the first miss.
+- **Unchanged:** pouring is still how the child sees it, and nothing is timed.
+- **Fades:** at fades 1 and 2 the jug's cup marks are drawn, so a child can count them before saying. That is the scaffold, and fade 3 is bare.
+- **Supersedes** the line in `dc-r7-games-hissa` that says pouring every full cup IS the division and is no shortcut.
+- **Reverse if** a pilot shows the count is read off the marks without counting.
+
+## `dc-r7-play-one-decision-weight`
+
+**One-decision play goals grade a correct outcome at the arena's chance-adjusted weight** (games audit GAMES-03, 2026-11-10).
+
+- **Goals:** galti-pakdo `pakdo`, hissa grid `shift`, nazariya tri `more` and kon zone `kind`. Each is one pick, which a lucky first tap lands 14 to 41 % of the time in the audit's random-tapping model.
+- **Weights:** their `correct` rows carry `CHANCE_WEIGHT` = 0.25 (shared/play.ts), which is GAME_WEIGHT × the controllerEasy temper 0.5: exactly how arena evidence enters. `incorrect` and `partial` rows stay at GAME_WEIGHT, because a miss is not luck.
+- **Mechanism:** one per-goal marker, `FamilyLogic.oneDecision`, read by `gradeLevel` (src/play/core/replay.ts) where the evidence weight is set. `playKtEvents` (server/play/evidence.js) folds a signed CHANCE_WEIGHT row with `controllerEasy: true`, so kt/bktr.js tempers it to 0.25.
+- **Why not a second decision:** a "why" pick or a second card bolted onto these levels would make them a quiz in costume, and the arena already uses this weighting.
+- **Hissa pour is not marked:** after the count fix its count is a free choice among 0..20, said before the jug shows it, and the part-cup must be right too. Random tapping lands it 0.3 to 1.3 %.
+- **Reverse if** a goal gains a second real decision, or its measured first-try luck falls under about 5 %.
+
+
+<!-- merged from inbox/r7-audit-learner-2.json -->
+## r7-audit-topic-decided-on-askable-skills
+**`askableSkillIds` / `decidingStates` (server/content/next-topic.js): a skill whose items were all dropped at load, or that never had one (reading aloud, recitation), can never be 'learned', so it no longer holds its topic open. Used by nextTopicFor and routes/parent.js syllabus (audit CD-01 and its parent copy).** Reverse if: those skills get a gradable item (then they decide again automatically).
+
+## r7-audit-learner-dead-code-removed
+**Removed, each checked for importers (static and dynamic) in server/, src/, scripts/, api/, tests/, evals/, shared/, package.json, Dockerfiles and context/. The last commit that holds all of them is `24472528`.**
+- `server/learner/model.js`: `loadSkillStates`, `loadDueSkills`, `saveSkillState`, `flagMisconception`, `loadKtSkillStates`, `loadKtMisconceptions`, `ktDueCount`, and their private helpers `fromRow`, `expectRows`.
+- `server/conductor/clock.js`: `floorTo`.
+- `server/director/session/flags.js`: `sessionFirstOn`.
+- `server/routes/parent.js`: `delayedCheckMap`, `topicParentState`, `hafteSpeech`; unused imports `topicStatus`, `GRADER_WORDS`.
+- `src/onboarding/Consent.tsx`: the `TrustStep` alias (no route uses it).
+Kept on purpose: `reteachOutcomeStmt`, `armPosteriorStmt`, `actorRowStmts` (context/open.md and open-conductor-m0-deliverables cite them as open work); `consentChangedStmts`, `settingChangedStmts` (designed call sites; LEARN-23 proposes wiring them); `kt/gen.js`, `kt/index.js` (test fixture, eval); `withDue`, `loadLedger`, `MeetStep` (a test, an eval, a pending patch use them); the placement CAT (LEARN-42: content-data was told to use it); the session-first lane (LEARN-49, owner).
+
+## learner-kt-r3-params
+**Main approved 2026-11-10 (audit LEARN-02, 04, 05, 25, 28, 29). Replay on the four pilots, before and after: `evals/learner-pilot-replay/results/2026-11-10/README.md`. An all-wrong child's 24-63 wrong answers used to end at 0.40-0.83, above the prior on every skill; under kt-r3 they end at 0.13-0.25 and the weak-foundation rule fires on all 12 skills. All-right and mixed children are unchanged within 0.003.** One consequence to know: where the blind grader never answers (an offline sim, a grader outage), no why or teach-back counts, so no skill reaches "learned today". Reverse if: a replay of real lessons shows children who do learn held at practising because their verdicts settle late and the correction is lost.
+
+## placement-start-below-level-only
+**Main approved 2026-11-10 (audit LEARN-07). Before it, a class-5 child on 9 Nov started at chapter 1 for "About right" and chapter 2 for "Easy", against chapter 9 by the calendar. This does not repeat `rj-topic-relative-difficulty-easiest-first`: it removes chapter-1 starts instead of adding them. Cold-start sim (n = 300, SIMULATED): for on-track children, the error at lesson 1 drops from 0.77 to 0.63; too-hard first lessons rise from 0.08 to 0.11.** Reverse if: real first lessons show "About right" children at the calendar chapter failing their first items more than the old start did.
+
+
+<!-- merged from inbox/r8-main-1.json -->
+## `dc-r8-selection-before-generation` (2026-11-10)
+
+Round 8: she knows the child first by choosing among verified things, not by generating during the lesson.
+
+| Layer | What changes per child | Checked by |
+|---|---|---|
+| 1. Selection | topic, opener, compressed units, first card, remediation, hook, joints | predicates; no model |
+| 2. Dress | an example's nouns and labels, same numbers and key | validator, for every dress |
+| 3. Library | mix-up-aimed visuals built ahead of the lesson | Claude judges in batches |
+| 4. Live | a visual built in the lesson | predicates at three sizes, for template families where that is enough |
+
+**Why:** earlier display failures all came from ungated live generation; a model never grades; judges are Claude in-session and builds are Azure-only, so judged generation happens ahead of the lesson; layers 1 and 2 cost nothing per lesson.
+
+**Reverse if:**
+- a child sees a repeated example or visual within five lessons on a topic: widen layer 4 for that family;
+- layer 4 shows 0 display faults over a judged batch of 100 across three sizes: it becomes the default for that family;
+- dress costs Learning more than half a day per topic: generate dress offline and judge it.
+
+Plan: docs/design/round8/PLAN.md.
+
+## `dc-r8-one-reader-with-because` (2026-11-10)
+
+One pure module, `server/director/knows.js` (`planFor`), turns learner state into a scripted lesson's choices and returns a `because` record for each. `state.js` keeps one call site per choice. A predicate throws in tests when the walk departs from script order with no `because`. The parent's lesson page shows the `because` lines.
+
+**Choices:** K1 compress a learned skill (a miss returns to the full unit); K2 success first; K3 remediation by her real mix-up; K4 prerequisite check; K5 no new skill before a test or in week one; K6 hook and joints by interest through the registry; K7 opener after a gap; K8 prefer a scripted topic among equals.
+
+**Why:** the learner audit found seven plan decisions computed and then dropped at seven seams (LEARN-20), and the walk reads no learner state today.
+
+**Reverse if:** a choice needs mid-turn state `planFor` cannot see without running every turn (then a per-turn reader, still one module).
+
+**Done when:** two simulated children with different histories get lessons differing in four named ways with no model call (`evals/knows-her`), and a judged run scores "taught this child" at 3.5 or above with the existing gate passing.

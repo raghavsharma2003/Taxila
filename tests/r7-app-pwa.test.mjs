@@ -77,7 +77,7 @@ test("buildId: the deploy's commit, else the entry bundle's content hash", async
   assert.equal(buildId(undefined, "http://localhost:5173/src/main.tsx"), "dev");
 });
 
-test("the kill switch: deletes every cache, unregisters, reloads open windows (a copy of docs/design/round7/app/sw-kill.js, the file PWA.md tells an operator to copy to public/sw.js)", async () => {
+test("the kill switch: deletes every cache, unregisters, reloads open windows (a test copy of the operator's emergency sw-kill file)", async () => {
   const { log, left } = await runWorker("tests/fixtures/sw-kill.js", "https://taxila.test/sw.js", ["taxila-shell-a", "taxila-shell-b"]);
   assert.deepEqual(left, []);
   assert.ok(log.unregistered);

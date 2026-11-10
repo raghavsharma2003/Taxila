@@ -10,7 +10,7 @@ import { getTopic } from "../../server/content/curriculum.js";
 import { planTurn } from "../../server/brain/turn.js";
 import { newLearnerState } from "../../server/comprehension/fuse.js";
 
-export const rowsOf = (run, persona, T) => JSON.parse(readFileSync(new URL(`../../evals/hybrid-side-by-side/results/${run}/${persona}-${T.replace("-maths", "")}.json`, import.meta.url), "utf8")).director;
+export const rowsOf = (run, persona, T) => JSON.parse(readFileSync(new URL(`./eval-results/hybrid-side-by-side/results/${run}/${persona}-${T.replace("-maths", "")}.json`, import.meta.url), "utf8")).director;
 
 /** → { kit, rows, plans: [{ row, p, state }] } walked through planTurn up to teacher row `upto` (1-based). */
 export async function replay(run, persona, T, upto, { onPlan = null } = {}) {
@@ -47,4 +47,4 @@ export async function replay(run, persona, T, upto, { onPlan = null } = {}) {
  * A run's own copy of a lesson script, marked `recordedRun`: Brain's validator checks it as that run's validator did (a why over
  * WHY_MAX_WORDS, refused since 2.3's rule, was then silently left unsaid by scriptWhyOf), so the replay walks what the run walked.
  */
-export const runScriptOf = (run, T) => ({ ...JSON.parse(readFileSync(new URL(`../../evals/hybrid-side-by-side/results/${run}/scripts/${T}.json`, import.meta.url), "utf8")), recordedRun: run });
+export const runScriptOf = (run, T) => ({ ...JSON.parse(readFileSync(new URL(`./eval-results/hybrid-side-by-side/results/${run}/scripts/${T}.json`, import.meta.url), "utf8")), recordedRun: run });

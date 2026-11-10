@@ -27351,6 +27351,69 @@
    "at": "2026-11-10",
    "title": "Script walk v6.10: one draw, one line; the request table's wrong and missing rows; her joints authored. P6: a picture turn is one function returning the drawing and the line built from it (held board left, view right); 'kept' never applies to a picture turn with a view; no view -> no picture line, one honest sentence; a predicate throws when a picture line is spoken with no view in the record; fixtures are director18's 9 rows; production's seam and the harness use the same function and the record carries layout. T2: a test per not-followed row (clarify at a point's check-in re-says the point; an aside with no card open is not parked 'is sawaal ke baad'; 'ab se Hindi mein' with nothing live changes the language; an aside during a worked step is answered first); a language or clarify request never spends a card's simpler or remediation; after an aside reply the walk resumes at the unit's next unsaid part; an answer given before the card was posed is asked for once more, never keyed; try-first with no card open poses the card; 'Kuch poochna hai?' removed as a check-in form. A6: the aside acknowledgement is removed (fitted 0 times in two runs). R7: after a give-up the key and why, then a check-in, next point next turn; a step opener names its own step or is omitted; nothing appended after a bridge. Harness: the child sim does not answer an unsaid card; goodbye waits for an open card; changed/kept compare against the board up before the turn. Learning D13: aside park, aside return (with a slot for what the child said), Hindi switch and ask-again lines authored per topic, three forms each; c4 s2 e3 on a new heap; c5-t02 e1 why as a sentence, gap remediation one part short and true of unshaded bars, s1 c1 answer board shaded; the staged 30-topic batch is regenerated under D11-D13 and stays staged. Clause 2 of v6.9 (listening < 3.5 with T1) taken: rules not followed are fixed in the runtime, rules wrong or missing are re-authored with Learning. Plan change: the pilot loop becomes one stream of three; the main effort moves to learner state changing what is taught and generated content reaching a child. Reverse in director19: a picture line with no view drawn -> picture requests answered with the held board and one honest line until Studio's view passes a fixture per pilot board template; listening still < 3.5 in a topic -> that topic's failing request handling is authored turn by turn in the script and code stops choosing; register < 3.5 with authored joints -> every remaining code-written sentence is listed and authored or removed; any misgrade, unsaid board or held cost -> as in v6.9's clauses.",
    "source": "inbox/r7-main-38.json"
+  },
+  {
+   "id": "r7-audit-tests-evals-removals",
+   "kind": "decision",
+   "title": "Removed as unreferenced (nothing imports, runs, cites or reads them): _q.mjs, tests/client-voice-smoke.mjs, tests/voice-cascade-browser.mjs, evals/webrtc-harness-server.mjs, evals/model-scout-2026-10-05/. Last commit holding them: c2e496c8.",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-tests-evals-removed.json"
+  },
+  {
+   "id": "dc-r7-hissa-pour-count",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "hissa pour (fit, part, deci): the child says how many full cups the jug will fill before the first pour, and the run grades that count. Pour and Run are refused until a count is said. Once a cup is poured the count stands (undo keeps it) until the run answers. A wrong count misses, as the kit belief where one maps (the mal-rules are now in the count said). Why: games audit GAMES-08, where pour × 8 then Run solved every served pour level, clean and correct, and the child never decided a count. Supersedes the line in dc-r7-games-hissa that said pouring every full cup IS the division. Reverse if: a child pilot shows the count is read off the jug's cup marks at fades 1 and 2 without counting (then hide the marks until the first pour).",
+   "source": "inbox/r7-audit-hissa.json"
+  },
+  {
+   "id": "dc-r7-play-one-decision-weight",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "One-decision play goals (galti-pakdo pakdo, hissa grid/shift, nazariya tri/more, kon zone/kind) enter a CORRECT outcome at CHANCE_WEIGHT 0.25. This is the arena's chance-adjusted weight: GAME_WEIGHT 0.5 × the controllerEasy temper. Incorrect and partial outcomes stay at GAME_WEIGHT. One mechanism: FamilyLogic.oneDecision (per-goal), read in gradeLevel where the row weight is set; playKtEvents folds a CHANCE_WEIGHT row as controllerEasy. Why: games audit GAMES-03, where a random first tap lands these goals 14 to 41 % of the time. A second decision bolted on would make them a quiz in costume. Hissa pour is not marked, because after the count fix random tapping lands it 0.3 to 1.3 %. Reverse if: a goal gains a second real decision, or measured first-try luck on it falls under about 5 %.",
+   "source": "inbox/r7-audit-hissa.json"
+  },
+  {
+   "id": "ms-r7-audit-games-03-08-replay",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "Games audit play-family replay, hissa, galti-pakdo, nazariya and kon (200 random act lists per level, 18 levels per entry, no network or DB), before and after the fix. Hissa pour any-win / first-try luck: fit 43.7 / 24.5 % → 1.8 / 0.9 %; part 42.6 / 29.7 % → 2.4 / 1.3 %; deci 42.6 / 23.5 % → 0.4 / 0.3 %. The chance-weighted goals' rates are unchanged by design, and their lucky corrects now carry weight 0.25 instead of 0.5: galti pakdo 48.1 / 41.4 %, hissa shift 13.9 / 13.5 %, tri more 30.2 / 26.0 %, kon kind 16.4 / 10.3 %.",
+   "source": "inbox/r7-audit-hissa.json"
+  },
+  {
+   "id": "learner-kt-r3-params",
+   "kind": "decision",
+   "title": "Learner params kt-r3: no learning step after a failed card, teaching capped +0.20 per skill per lesson, unverdicted why/teach-back held on K until the late verdict, per-lesson budgets kept by lesson, leaked right answers at half weight, one ledger copy per fused batch",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-learner-2.json"
+  },
+  {
+   "id": "placement-start-below-level-only",
+   "kind": "decision",
+   "title": "Cold start: only a below-level answer (Hard, tricky) sets a start; About right and Easy keep the calendar's start",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-learner-2.json"
+  },
+  {
+   "id": "dc-r8-selection-before-generation",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8: she knows the child first by choosing among verified things, not by generating during the lesson. Four layers: (1) selection by code from the learner model (topic, opener, compressed units, first card, remediation, hook, joints), checked by predicates; (2) dress: an example's nouns and labels from authored closed sets per interest, same numbers and key, validator proves every line and board true for every dress; (3) library: mix-up-aimed visuals generated offline, judged by Claude in batches, approved into the ready-made library; (4) live generation only for template families where predicates at three screen sizes are enough. Why: earlier display failures all came from ungated live generation; a model never grades; judges are Claude in-session and builds are Azure-only, so judged generation must happen ahead of the lesson; layers 1 and 2 cost nothing per lesson. Reverse if: a child sees a repeated example or visual within five lessons on a topic (widen layer 4 for that family); layer 4 shows 0 display faults over a judged batch of 100 across three sizes (it becomes the default for that family); dress costs Learning more than half a day per topic (generate dress offline and judge it).",
+   "source": "inbox/r8-main-1.json"
+  },
+  {
+   "id": "dc-r8-one-reader-with-because",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8: one pure module (server/director/knows.js, planFor) turns learner state into a scripted lesson's choices (opener, hook slot, compressed skills, first card, remediation per card, ladder order) and returns a because record {choice, fact, source} for each; state.js keeps one call site per choice; a predicate throws in tests when the walk departs from script order with no because; the parent's lesson page shows the because lines. Choices K1-K8: compress a learned skill with a passed delayed check (a miss returns to the full unit), success first, remediation by the child's real mix-up, prerequisite check, no new skill before a test or in week one, hook and joints by interest through the registry, opener after a gap, prefer a scripted topic among equals. The brief is cut at lesson start from learner state whether or not a day plan exists. Why: the learner audit found seven plan decisions computed then dropped at seven seams (LEARN-20); the walk reads no learner state today (state.js walks every beat in kit order). Reverse if: a choice needs mid-turn state planFor cannot see without running every turn (then a per-turn reader, still one module). Done when: two simulated children with different histories get lessons differing in four named ways with no model call (evals/knows-her), and a judged run scores 'taught this child' at 3.5+ with the existing gate passing.",
+   "source": "inbox/r8-main-1.json"
+  },
+  {
+   "id": "ms-r8-walk-reads-no-learner-state-2026-11-10",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "Code trace on int/r6 (integration 24 tree), read-only, by a Sonnet agent for main, n = one pass over server/routes/lesson.js, server/director/state.js, script.js, items.js, server/content/next-topic.js, server/learner/**, server/play/**, server/stagecraft/**, server/forge3/**: the script walk reads no learner state (walks every beat of every scripted skill in kit order, state.js:1282-1290); per-child variation in a scripted lesson is the hook's interest slot (exact label match; 4 onboarding tiles have no slot, 2 slots name tiles that do not exist), the language, and a friend name picked from a fixed list; the lesson brief passes only wrapAt and hardStopAt and is usually null (TAXILA_CONDUCTOR_PLAN off); script cards and game levels do write kt_evidence (script:<skill>:..., play:<levelId>) and the ledger folds them; no generated visual can be shown (nothing sets a verdict; judgeArtifact has no caller); 4 scripts are live and 30 staged. Not verified by the trace: whether 'simpler used' counts as assisted, whether a script give-up weighs as a kit leave, the writer's params_version default (kt-r2) against the ledger's kt-r3, live legal modes.",
+   "source": "inbox/r8-main-1.json"
   }
  ],
  "edges": [
@@ -43833,6 +43896,41 @@
    "src": "dc-owner-direction-is-main-loops-2026-11-10",
    "rel": "constrains",
    "dst": "dc-r7-script-walk-v6-10"
+  },
+  {
+   "src": "dc-r7-hissa-pour-count",
+   "rel": "measured_by",
+   "dst": "ms-r7-audit-games-03-08-replay"
+  },
+  {
+   "src": "dc-r7-play-one-decision-weight",
+   "rel": "measured_by",
+   "dst": "ms-r7-audit-games-03-08-replay"
+  },
+  {
+   "src": "dc-r7-hissa-pour-count",
+   "rel": "part_of",
+   "dst": "dc-r7-games-hissa"
+  },
+  {
+   "src": "dc-r8-selection-before-generation",
+   "rel": "constrains",
+   "dst": "dc-r8-one-reader-with-because"
+  },
+  {
+   "src": "dc-r8-one-reader-with-because",
+   "rel": "measured_by",
+   "dst": "ms-r8-walk-reads-no-learner-state-2026-11-10"
+  },
+  {
+   "src": "dc-r8-selection-before-generation",
+   "rel": "measured_by",
+   "dst": "ms-r8-walk-reads-no-learner-state-2026-11-10"
+  },
+  {
+   "src": "dc-owner-direction-is-main-loops-2026-11-10",
+   "rel": "constrains",
+   "dst": "dc-r8-selection-before-generation"
   }
  ]
 }

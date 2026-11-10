@@ -237,10 +237,9 @@ test("hedgedFallback: the hedge goes to the fallback deployment; a fast failure 
   // a primary that never answers: only the hedge can resolve this (no wall-clock bound needed; a miss would hang the test)
   let r = await hedgedFallback(never, after(10, "fb"), 50);
   assert.deepEqual(r, { value: "fb", backup: true }, "the backup started at the hedge");
-  const t = Date.now();
-  r = await hedgedFallback(after(5, new Error("404"), true), after(5, "fb"), 20_000);
+  // an hour-long hedge point: returning at all proves the backup started on the failure, not at the hedge (a miss hangs)
+  r = await hedgedFallback(after(5, new Error("404"), true), after(5, "fb"), 3_600_000);
   assert.equal(r.value, "fb");
-  assert.ok(Date.now() - t < 10_000, "a fast primary failure starts the backup at once, not at the 20 s hedge");
   r = await hedgedFallback(after(5, "primary"), after(50, "fb"), 20);
   assert.deepEqual(r, { value: "primary", backup: false });
   const filter = Object.assign(new Error("blocked"), { code: "content_filter" });

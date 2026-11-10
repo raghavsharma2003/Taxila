@@ -103,7 +103,7 @@ export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray, 
   const faceAt: "stage" | "pip" | "tile" | "none" = !work ? "stage" : L.tile ? "tile" : L.pip ? "pip" : "none";
   const capRect = L.caption && L.tile && faceAt === "stage" ? { ...L.caption, y: L.tile.y, h: L.caption.h + L.tile.h + 8 } : L.caption;
   const faceRect = faceAt === "tile" ? L.tile : faceAt === "pip" ? L.pip : faceAt === "stage" ? heroRect(L.slot) : null;
-  const capOn = m.captionsOn && captionVisible(floor);
+  const capOn = m.captionsOn && captionVisible(floor, m.caption.soundFailed);
   // the PiP's box relative to the slot (only while she is the PiP): the stage's truth for pieces that must keep it clear
   const pipZone = faceAt === "pip" && L.pip
     ? { w: L.pip.w, h: L.pip.h, right: L.slot.x + L.slot.w - (L.pip.x + L.pip.w), bottom: L.slot.y + L.slot.h - (L.pip.y + L.pip.h) }
@@ -119,9 +119,9 @@ export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray, 
           style={{ height: L.slot.h, ...(pipZone ? { ["--pip-zone-w" as string]: `${pipZone.w}px`, ["--pip-zone-h" as string]: `${pipZone.h}px`,
             ["--pip-zone-right" as string]: `${pipZone.right}px`, ["--pip-zone-bottom" as string]: `${pipZone.bottom}px` } : {}) }}>
           {work && <div className="ks-piece" key={pieceKey(work)}>{renderTray(work)}</div>}
-          {!work && capOn && !L.caption && <div className="ks-hero-cap">{<Caption text={m.caption.text} speaking={m.caption.speaking} visible lang={m.caption.lang} />}</div>}
+          {!work && capOn && !L.caption && <div className="ks-hero-cap">{<Caption text={m.caption.text} speaking={m.caption.speaking} visible lang={m.caption.lang} soundFailed={m.caption.soundFailed} />}</div>}
           {work && faceAt !== "tile" && capOn && (
-            <div className="ks-subtitle" data-testid="subtitle"><Caption text={m.caption.text} speaking={m.caption.speaking} visible lang={m.caption.lang} /></div>
+            <div className="ks-subtitle" data-testid="subtitle"><Caption text={m.caption.text} speaking={m.caption.speaking} visible lang={m.caption.lang} soundFailed={m.caption.soundFailed} /></div>
           )}
         </div>
         <div className="ks-rail" style={{ height: L.rail.h }} ref={railBody} data-zone="card">{card}</div>
@@ -149,7 +149,7 @@ export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray, 
       </div>
       {capRect && capRect.h > 40 && (
         <div className="ks-caption" style={px(capRect)} data-zone="caption">
-          {m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />}
+          {m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor, m.caption.soundFailed)} lang={m.caption.lang} soundFailed={m.caption.soundFailed} />}
         </div>
       )}
       {answerUp && tray && L.answer && <div className="ks-answer" style={px(L.answer)} data-zone="tray">{renderTray(tray)}</div>}

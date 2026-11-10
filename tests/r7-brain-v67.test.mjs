@@ -104,7 +104,7 @@ describe("r7-brain-v67.test.mjs", () => {
   });
   describe("H4: the counter, part by part", () => {
     test("director15: main's 5 hand rows and the named P4′ rows found; ≤ 2 other flags", () => {
-      const DIR = new URL(`../evals/hybrid-side-by-side/results/${RUN}/`, import.meta.url).pathname;
+      const DIR = new URL(`./fixtures/eval-results/hybrid-side-by-side/results/${RUN}/`, import.meta.url).pathname;
       const scripts = scriptsOf(DIR);
       const TAG = { "c4-ch05-t01": "c4", "c5-ch02-t01": "c5-t01", "c5-ch02-t02": "c5-t02", "c6-ch06-t01": "c6" };
       const got = new Set();
