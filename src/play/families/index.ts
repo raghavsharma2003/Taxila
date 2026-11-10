@@ -35,6 +35,7 @@ import { bhaapLogic } from "./bhaap/bhaap.logic.ts";
 import { aakashLogic } from "./aakash/aakash.logic.ts";
 import { rangLogic } from "./rang/rang.logic.ts";
 import { badlaavLogic } from "./badlaav/badlaav.logic.ts";
+import { jaanchLogic } from "./jaanch/jaanch.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { tileLogic } from "./darpan/tile.logic.ts";   // r7 tilings2
 import { feetaLogic } from "./feeta/feeta.logic.ts";
@@ -184,5 +185,10 @@ export const LOGIC: Record<string, AnyLogic> = {
   // melted or dissolved, a sigri's triangle, a fire burnt down, iron kept damp or dry; a step per tap
   "badlaav/palat": asAny(badlaavLogic),
   "badlaav/aag": asAny(badlaavLogic),
+  // round 7: Jaanch, testing food for starch and fat (class 6 science): dilute iodine a drop at a time, a food rubbed on paper
+  // left to dry a Wait at a time, both tests on one food; a step per tap
+  "jaanch/neela": asAny(jaanchLogic),
+  "jaanch/daag": asAny(jaanchLogic),
+  "jaanch/thali": asAny(jaanchLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

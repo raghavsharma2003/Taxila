@@ -5,7 +5,7 @@
 // The HTTP route (server/routes/lesson.js) stays a thin adapter; lessonTurn(req, body) is the exported turn handler,
 // the seam W2-G's /api/lesson/turn-audio calls. Auth, dedupe/replay, the late-turn and outbox semantics are unchanged.
 import { alignParts } from "./lineParts.js";
-import { requeueMissedReturn } from "../director/state.js";
+import { requeueMissedReturn, cardUnsaidNow } from "../director/state.js";
 import { q, one, guardStmt, GUARD_FAILED } from "../db.js";
 import { need, bad, forbidden, notFound, unauthorized, HttpError } from "../http.js";
 import { sessionTokenHash } from "../auth.js";
@@ -948,6 +948,9 @@ export async function lessonTurn(req, body, hooks = {}) {
         ...(clauseHook ? clauseHook(next) : {}) }));
     // v6.6 A2: an aside whose return her line did not say goes back on the queue (the next boundary, the wrap at the latest)
     if (guard?.returnMissed && next?.lastMove?.returned) next.later = requeueMissedReturn(next, guard).later;
+    // v6.8 A4 (main on director16 c5-t01 steady 40): an aside question ended her turn — the card she did not say is neither
+    // pinned nor graded; the next reply gets code's acknowledgement, then the card aloud (planTurn reads cardUnsaid)
+    if (guard?.cardHeld && next?.activeItemId) { next.cardUnsaid = next.activeItemId; if (r.ui?.ask) r = { ...r, ui: { ...r.ui, ask: null, chips: [] } }; }
     // The content filter blocked the reply call that carried the child's words: fail CLOSED. The turn is
     // re-planned as a disclosure (safeguard move, incident row) and the fixed helpline line is sent, with no
     // further model call on the same words.
@@ -1648,6 +1651,8 @@ export async function planTurn(base, cls, c) {
   // a bare "3" was a wrong answer in code and a hint on a card the child cannot see). Distress, a request the bytes read, a
   // chip or an engine's machine answer are never touched.
   if (cls) cls = asPlayAct(cls, { state, childText: c.childText, chipId: c.chipId, moduleOnly, gameAct: null });
+  // v6.8 A4: the reply to her aside question is never graded against the card she did not say: it is re-posed, after code's ack
+  if (cls && cardUnsaidNow(state) && !cls.flags?.distress && !cls.flags?.wantsToStop && cls.source !== "chip") cls = { ...cls, outcome: "no_evidence", confidence: 1, request: { type: "repeat", src: "card_unsaid" }, cardUnsaid: true };
   const affectNow = moduleOnly ? state.affect
     : nextAffect(state.affect, { read: cls?.flags ?? {}, outcome: cls?.outcome, itemId: state.activeItemId, answer: c.answer });
   const discount = gamingDiscount(affectNow);
