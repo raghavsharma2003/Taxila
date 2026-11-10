@@ -2,6 +2,7 @@
 // 2026-10-16 08-10 UTC the primary reply account stood at the 6 s cap on 29% of taxila-fast calls, and a twin on the SAME
 // deployment hit the same wall; evals/latency/reply-hedge-arm.mjs: hung primary 0/12 answered vs 12/12 on the twin.
 import { describe, test, beforeEach, afterEach } from "node:test";
+import { _resetDefaultLanes } from "../server/lanes.js";
 import assert from "node:assert/strict";
 import { chat } from "../server/azure.js";
 import { _setTraceDeps, _resetTrace, flushTrace } from "../server/trace/writer.js";
@@ -16,7 +17,7 @@ beforeEach(() => {
     AZURE_OPENAI_API_KEY_OVERFLOW: "k-over", TAXILA_OVERFLOW_DEPLOYMENTS: "taxila-fast" });
   delete process.env.TAXILA_REPLY_TWIN;
 });
-afterEach(() => { globalThis.fetch = realFetch; for (const k of KEYS) if (env[k] === undefined) delete process.env[k]; else process.env[k] = env[k]; });
+afterEach(() => { _resetDefaultLanes(); globalThis.fetch = realFetch; for (const k of KEYS) if (env[k] === undefined) delete process.env[k]; else process.env[k] = env[k]; });
 const ok = (text) => new Response(JSON.stringify({ choices: [{ finish_reason: "stop", message: { content: text } }], usage: { prompt_tokens: 3, completion_tokens: 1 } }), { status: 200 });
 /** primary: "hang" (answers only when aborted: never) | ms to answer after; the overflow answers at once */
 const stub = (primary) => { globalThis.fetch = async (url, init) => {
