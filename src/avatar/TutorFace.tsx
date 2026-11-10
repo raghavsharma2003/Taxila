@@ -40,8 +40,6 @@ export interface TutorFaceProps {
   /** The child's mic level. */
   mic?: { readonly value: number };
   reducedMotion?: boolean;
-  /** "Gentle face": head and lower-face expression × 0.5. */
-  gentle?: boolean;
   framing?: "medium" | "close";
   /** Force a tier (dev/test; `?face=` in the URL does the same). */
   tier?: FaceTier;
@@ -57,8 +55,6 @@ export interface TutorFaceProps {
   /** The name the child gave her (Teacher.tsx: useTeacher). Default the character's own. The accessible name and the
    *  voice ring use it, so they never disagree with the "{T} · AI teacher" caption (audit FACE-06). */
   name?: string;
-  /** The child's "voice and board only" presentation (prefs.face === "voice") → tier E. */
-  voiceOnly?: boolean;
 }
 
 let cachedFacts: ReturnType<typeof detectStaticFacts> | null = null;
@@ -72,7 +68,6 @@ const PENDING_AFFECT_MS = 15_000;
 
 /** Look ids whose rig failed or was demoted to D on this page: later mounts start on the plate (tier D). */
 const rigFailedThisPage = new Set<string>();
-export const faceRigFailed = (lookId: string) => rigFailedThisPage.has(lookId);
 if (import.meta.env?.DEV && typeof window !== "undefined") (window as unknown as { __faceContextLosses?: () => number }).__faceContextLosses = faceContextLosses;
 
 /** `?face=` is a dev/test override: honoured only in dev builds or with VITE_DEV_ROUTES=1, never in production. */
@@ -99,14 +94,14 @@ try {
 }
 
 /** The stage-1 decision for this browser, computed once per page. */
-export function decideTier(override?: FaceTier | null, opts: { voiceOnly?: boolean } = {}): TierDecision {
+export function decideTier(override?: FaceTier | null): TierDecision {
   const forced = override ?? (OVERRIDE_OK && typeof location !== "undefined" ? tierOverride(location.search) : null);
   if (forced) {
     const fps = forced === "B" ? { speaking: 30, listening: 30, idle: 20 } : { speaking: 20, listening: 20, idle: 15 };
     return { tier: forced, pixelRatio: forced === "B" ? Math.min(typeof devicePixelRatio === "number" ? devicePixelRatio : 1, 1.25) : 1, fps, why: ["override"] };
   }
   cachedFacts ??= detectStaticFacts();
-  return staticTier({ ...cachedFacts, contextLosses, battery, voiceOnly: !!opts.voiceOnly });
+  return staticTier({ ...cachedFacts, contextLosses, battery });
 }
 
 /** The rig look for a tutor when face.rig is on and the look ships everything the lesson path needs, else null. */
@@ -135,17 +130,17 @@ export function TutorFace(p: TutorFaceProps) {
   const label = `${shownName}, ${copy("aiTeacher", p.lang ?? "english")}`;
   const look = useMemo(() => rigLookFor(tutor), [tutor.id]);
   const initial = useMemo(() => {
-    const d = decideTier(p.tier, { voiceOnly: p.voiceOnly });
+    const d = decideTier(p.tier);
     return !p.tier && look && rigFailedThisPage.has(look.id) && (d.tier === "B" || d.tier === "Blite")
       ? { ...d, tier: "D" as FaceTier, why: [...d.why, "rig failed earlier this page"] }
       : d;
-  }, [p.tier, p.voiceOnly, look]);
+  }, [p.tier, look]);
   const [tier, setTier] = useState<FaceTier>(initial.tier);
   useEffect(() => setTier(initial.tier), [initial]); // presentation pref / forced tier changed
   const host = useRef<HTMLDivElement>(null);
   const stage = useRef<Stage3D | null>(null);
-  const live = useRef({ status: p.status, reducedMotion: !!p.reducedMotion, gentle: !!p.gentle, mic: p.mic });
-  live.current = { status: p.status, reducedMotion: !!p.reducedMotion, gentle: !!p.gentle, mic: p.mic };
+  const live = useRef({ status: p.status, reducedMotion: !!p.reducedMotion, mic: p.mic });
+  live.current = { status: p.status, reducedMotion: !!p.reducedMotion, mic: p.mic };
   const onEvent = useRef(p.onEvent);
   onEvent.current = p.onEvent;
   const [face, setFace] = useState<"plate" | "rig">("plate");
@@ -225,7 +220,7 @@ export function TutorFace(p: TutorFaceProps) {
             else if (e.type === "reveal") setFace("rig");
           },
         });
-        s.set({ status: live.current.status, reducedMotion: live.current.reducedMotion, gentle: live.current.gentle });
+        s.set({ status: live.current.status, reducedMotion: live.current.reducedMotion });
         stage.current = s;
         s.start();
         // Queued before the stage loaded: the affect arms for her next onset; a look still pending plays now.
@@ -256,8 +251,8 @@ export function TutorFace(p: TutorFaceProps) {
   }, [threeD, tutor.id, p.framing, sources]);
 
   useEffect(() => {
-    stage.current?.set({ status: p.status, reducedMotion: !!p.reducedMotion, gentle: !!p.gentle });
-  }, [p.status, p.reducedMotion, p.gentle]);
+    stage.current?.set({ status: p.status, reducedMotion: !!p.reducedMotion });
+  }, [p.status, p.reducedMotion]);
 
   useEffect(() => {
     if (p.affect) arm({ emotion: p.affect, intensity: 1 });

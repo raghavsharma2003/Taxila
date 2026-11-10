@@ -43,7 +43,6 @@ export interface PuppetFaceProps {
   name?: string;
   /** A Director affect window (TutorFace's `affect` prop: ReactionGate-gated upstream), armed for her next onset. */
   affect?: Emotion | null;
-  gentle?: boolean;
   className?: string;
   onEvent?: (e: PuppetStageEvent) => void;
 }
@@ -234,8 +233,8 @@ export function PuppetFace(p: PuppetFaceProps) {
   }, [p.still, tutor.id, p.framing, sources, stageOff, look, armed]);
 
   useEffect(() => {
-    stage.current?.set({ status: p.status, reducedMotion: !!p.reducedMotion, gentle: !!p.gentle });
-  }, [p.status, p.reducedMotion, p.gentle]);
+    stage.current?.set({ status: p.status, reducedMotion: !!p.reducedMotion });
+  }, [p.status, p.reducedMotion]);
 
   useEffect(() => {
     if (p.affect) stage.current?.driver.affect(p.affect, 1, performance.now());
