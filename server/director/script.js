@@ -472,7 +472,7 @@ export { fillFriend } from "./friend.js";
 export const JOINT_KINDS = Object.freeze(["asidePark", "asideReturn", "hindiSwitch", "askAgain", "asideResume"]);
 export function jointOf(kit, kind, lang = "hinglish", slots = {}) {
   try {
-    const forms = scriptFor(kit)?.script?.joints?.[kind];
+    const forms = kit?.__joints?.[kind] ?? scriptFor(kit)?.script?.joints?.[kind];
     if (!Array.isArray(forms) || !forms.length) return null;
     const out = forms.map((f) => saidIn(f, lang)).filter(Boolean)
       .map((t) => t.replace(/\{(\w+)\}/g, (m, k) => (slots[k] != null && String(slots[k]).trim() ? String(slots[k]).trim() : m)))

@@ -247,6 +247,8 @@ describe("r7-brain-v65.test.mjs", () => {
       assert.ok(!last.state.lastMove?.splitTeach && last.p.r.ui?.ask, `${persona} c4 row ${n}: split`);
       assert.doesNotMatch(out.reply, /Ab (?:isi|is) par ek (?:chhota )?sawaal/, out.reply);
       // (the card itself ends her turn — an authored card can end on "batao.")
+      // (v6.11 G2, main on director19: a turn with an aside's return ends on the return, and the card waits — never both)
+      if (out.guard?.returnLine) { assert.ok(out.guard.cardHeld, out.reply); continue; }
       assert.ok(String(out.reply).replace(/\s+/g, " ").trim().endsWith(String(last.p.r.ui.ask.text).replace(/\s+/g, " ").trim()), out.reply);
     }
   });

@@ -191,6 +191,9 @@ describe("r7-brain-v68.test.mjs", () => {
     for (const [persona, topic, n] of [["offtopic", "c4", 34], ["offtopic", "c5-t02", 32]]) test(`${persona} ${topic} ${n}: Hindi during a worked step says that step's own line, on the worked board`, async () => {
       const { out, last, sc } = await at(persona, topic, n);
       const bid = last.before.lastMove?.scriptBeat?.beatId;
+      // (v6.11 G2: an aside no longer skips the worked problem, so offtopic c4's recorded walk now reaches row 34 on the problem itself —
+      // Hindi there re-says the problem's part on the worked board, never another beat's)
+      if (bid === "worked:problem") { assert.equal(last.state.lastMove.scriptBeat?.beatId?.startsWith("worked"), true, out.reply); return; }
       assert.match(String(bid), /^worked:step\d+$/);
       const we = sc.skills.find((k) => k.skillId === last.before.lastMove.scriptBeat.skillId).workedExample;
       const st = we.steps[Number(/\d+$/.exec(bid)[0]) - 1];
@@ -270,7 +273,8 @@ describe("r7-brain-v68.test.mjs", () => {
         const item = pl.before.activeItemId ? kit.items?.find((i) => i.id === pl.before.activeItemId) ?? null : null;
         const p = await planTurn(pl.before, { outcome: "no_evidence", confidence: 0.9, source: "model", flags: { wantsToStop: true } }, { kit, child: CHILD, lesson: LESSON, activeItem: item, moduleOnly: false, moduleEvents: [], answer: pl.child, childText: pl.child, leaked: false, live: Promise.resolve({ state: pl.p.learner.after, maxSeq: 0 }), carried: [], now: 9e6 });
         assert.ok(!p.r.move.checkin && p.r.move.kind !== "break", `${p.r.move.kind} ${p.r.move.checkin}`);
-        assert.equal(p.r.move.request, "move_on");
+        // (v6.10 T2: right after a card is posed, "woh wala ho gaya" is asked for once more first — still never a stop menu)
+        assert.ok(["move_on", "ask_again"].includes(p.r.move.request), p.r.move.request);
       } finally { setScriptForTest(); if (KEEP !== undefined) process.env.TAXILA_R7_SCRIPT = KEEP; }
     });
   });
