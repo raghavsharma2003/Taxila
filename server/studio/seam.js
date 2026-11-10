@@ -309,7 +309,49 @@ function gatedSlot(L, p, state = p.state, where = "slot") {
     if (certifyForTray(sk, ctx).ok) return { ...slot, state: "fallback_shown", artifact: sk };
   }
   noteRefusal(L, p, r, where);
+  if (r.cert === "studio-v2-small") phonePlayFor(L, p);
   return null;
+}
+/**
+ * main's ruling (2026-11-10, ENGINES-360.md): on a phone too small to play a Studio v2 world, the lesson offers in its place the
+ * PLAY FAMILY that covers the skill (data/play/coverage.json): the Games picker chooses the family and level (forge3/live.js →
+ * server/play/start.js startSession → choose.js chooseEntry) from the skill and the device's size; the piece carries its
+ * because ("phone: <family> covers this skill") into the facts row. Only a game's place (an explainer's keeps the script's
+ * board); once per skill per lesson; asynchronous — the play piece goes up as an asked-for one does (pendingPlay, early slot).
+ * Switch STUDIO_PHONE_PLAY ("off": the script's board only).
+ */
+export const phonePlayStats = { asked: 0, served: 0 };
+/** The Stagecraft bridge's door (its own gate refusal at p360): { kind, need, skillId, topicId, archetype, intentId }. */
+export function phonePlayInstead(lessonId, piece) { phonePlayFor(lessons.get(lessonId), piece); }
+function phonePlayFor(L, p) {
+  try {
+    if (process.env.FORGE3_PLAY === "0" || String(process.env.STUDIO_PHONE_PLAY ?? "on").toLowerCase() === "off") return;
+    if (!L || L.safety || L.studioControl === "off" || p?.source === "play" || !(p?.kind === "game" || p?.need === "practice")) return;
+    const skillId = p.skillId ?? null, topicId = p.topicId ?? L.topicId ?? null, child = L.child;
+    if (!child?.id || !(skillId || topicId) || !admitPlay(skillId, topicId)) return;
+    const key = `${skillId ?? ""}|${topicId ?? ""}`;
+    if ((L.phonePlayAsked ??= new Set()).has(key)) return;
+    L.phonePlayAsked.add(key);
+    phonePlayStats.asked++;
+    const lessonId = L.lessonId, vp = viewportOf(lessonId).vp;
+    // (C2 Games, 2026-11-10: buildLive is the door; `reason: "phone"` makes the play side write its own because record — ours
+    // stays until theirs lands, theirs wins where both are present; `need` is the beat's own goal, for a truthful trace)
+    buildLive({ ask: "game", need: p.need ?? "practice", reason: "phone", lessonId, child: { id: child.id, class_level: child.class_level, language_pref: child.language_pref }, skillId, topicId, vp, lesson: L.forge3 ?? null },
+      { q: deps.q ?? undefined }).then((r) => {
+      if (!r?.artifact?.play || L.safety || lessons.get(lessonId) !== L) return;
+      L.forge3 = r.lesson;
+      const fam = r.artifact.play.family, n = [...L.pieces.values()].filter((x) => x.source === "play").length + 1;
+      const intentId = `${lessonId}:play:${n}`;
+      const because = `phone: ${fam} covers this skill`;
+      const piece = { intentId, slotId: `${intentId}:slot`, kind: "game", archetype: `play:${fam}/${r.artifact.play.mode}`, source: "play", phone: true, because,
+        artifact: r.artifact, facts: { ...(r.facts ?? {}), because }, skillId: r.artifact.play.skillId ?? skillId, need: "practice", requested: false, state: "ready", retired: false, createdAt: Date.now(), composeMs: r.ms, instead: p.intentId };
+      L.pieces.set(intentId, piece);
+      L.pendingPlay = { intentId, turn: L.turn };
+      traceRecord("studio.phone_play", { family: fam, skillId: piece.skillId, vp, instead: p.archetype ?? null });
+      const early = process.env.TAXILA_EARLY_PIECE === "0" ? null : gatedSlot(L, piece, "revealed", "early");
+      if (early) { push(L, { t: "slot", slot: early, early: true }); L.pendingPlay.early = true; phonePlayStats.served++; }
+    }).catch(() => { /* the script's board stands */ });
+  } catch { /* never throws into the turn */ }
 }
 /**
  * round 7 M5a: the scene piece for an animation ask, waiting for this turn's slotFor (L.pendingPlay, as a play piece

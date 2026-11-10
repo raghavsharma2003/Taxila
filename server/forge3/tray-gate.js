@@ -94,6 +94,13 @@ export function trayGateHealth() {
 export const _setSkeletonCertificates = (t) => { skeletonMemo = t; };
 export const _setModuleCertificates = (t) => { moduleMemo = t; };
 /** Tests only: certify Studio v2 pieces as if relaid and judged at all three sizes (the merge mechanics behind the gate). */
+/**
+ * main's ruling (2026-11-10, after the re-certification): where a Studio v2 world is too small to play (the 360 px phone), its
+ * board twin — the engine's name and four kit key terms, no figure — is not a lesson visual; the gate REFUSES the piece and
+ * the child keeps the script's held board. Switch STUDIO_V2_TWIN_AT_SMALL ("on" serves the twin as before; default off).
+ * Reverse when the twin carries the piece's own figure and a separate judge passes it at p360.
+ */
+export const twinAtSmall = (env = process.env) => String(env.STUDIO_V2_TWIN_AT_SMALL ?? "off").trim().toLowerCase() === "on";
 let studioV2Test = false;
 export const _certifyStudioV2ForTests = (on) => { studioV2Test = !!on; };
 
@@ -211,6 +218,8 @@ export function certifyForTray(artifact, ctx = {}) {
       case "stagecraft": {
         const sc = artifact.stagecraft ?? {};
         if (sc.rung === "board") return out(false, "none", "a Stagecraft board rung (boards come from the whiteboard path)");
+        // (main 2026-11-10: a world too small to play is refused at any rung — the twin is a word card, not a lesson visual)
+        if (!studioV2Test && !studioV2PlayableAt(vp, { young }) && !twinAtSmall()) return out(false, "studio-v2-small", `a Studio v2 world is too small to play at ${vp}: refused, the script's board stands (its twin is a word card)`);
         // (the approval lane, STUDIO-11: a generated spec approved OFFLINE — its hash in data/studio-approved, rendered here at the
         // three sizes and passed by a separate Claude judge — is shown at the sizes its render passed; the runtime calls no judge)
         const ap = sc.rung === "generated_spec" ? approvedVerdict(sc.archetype, sc.spec) : null;

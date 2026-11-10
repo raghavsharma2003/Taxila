@@ -1,0 +1,37 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-studio-v2-refused-at-360",
+      "kind": "decision",
+      "at": "2026-11-10",
+      "title": "main's ruling: where a Studio v2 world is too small to play (the 360 px phone), the tray gate refuses it at every rung (cert studio-v2-small) and the child keeps the script's held board. Its board twin was the engine's codename and four kit key terms with no figure, and two separate judges failed it 24 of 24. Switch STUDIO_V2_TWIN_AT_SMALL (default off). Approval is judged at p412 and l1366 only (APPROVAL_SIZES), and a record stores p360 false.",
+      "reverse": "the twin carries the piece's own figure and a separate judge passes it at p360"
+    },
+    {
+      "id": "dc-r7-phone-play-family",
+      "kind": "decision",
+      "at": "2026-11-10",
+      "title": "main's ruling: on a phone, a refused Studio v2 game's place goes to the play family that covers the skill. Coverage comes from data/play/coverage.json. The Games picker chooses the family and level (buildLive → startSession → chooseEntry), given the skill and the device's size. The piece carries because 'phone: <family> covers this skill'. It applies once per skill per lesson, only in a game's place; switch STUDIO_PHONE_PLAY. For maths and science 186 of 382 catalogue topics are covered.",
+      "reverse": "a director run on a 360 phone shows the play family's level is off the skill the lesson is teaching"
+    },
+    {
+      "id": "dc-r7-regenerate-not-rescue",
+      "kind": "decision",
+      "at": "2026-11-10",
+      "title": "main's ruling: no bulk re-judge of the old catalogue (about 650M tokens for 760 pieces whose sample passes at 20% and whose engines are changing). The catalogue stays withheld under dc-r7-catalogue-judged. Pieces are judged on demand, in batches of 10, and only those that can be shown soon: the 4 pilot topics and the 30 staged maths topics, classes 4-7, at p412 and l1366, after the l1366 engine fixes. When a topic gets a script, its pieces are regenerated through the approval lane with a `how` in the engine's terms, not rescued from the old catalogue. Sonnet is not used as a judge.",
+      "reverse": "a judged sample of 50 old pieces for scripted topics passing at 80% or better (rescuing would then be cheaper than regenerating)"
+    },
+    {
+      "id": "oi-r7-studio-v2-portrait",
+      "kind": "open_item",
+      "at": "2026-11-10",
+      "title": "OPEN, not approved (main 2026-11-10): a portrait mode in the Studio v2 core (about 2 days), then portrait layouts for story-rail, beat-line and sort-storm (about 5 days) and town-lab, era-drop and land-lab (about 6 days). That is about 13 days for the 163 language, SST and EVS topics no play family covers. It waits because no topic in those subjects has a teaching script yet, and a phone-native game without a lesson around it teaches nothing.",
+      "reverse": "Learning scripts language, SST or EVS topics"
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-studio-v2-refused-at-360", "rel": "constrains", "dst": "dc-r7-catalogue-judged" },
+    { "src": "dc-r7-phone-play-family", "rel": "supersedes", "dst": "dc-r7-phone-play-family-first" },
+    { "src": "dc-r7-regenerate-not-rescue", "rel": "constrains", "dst": "dc-r7-catalogue-judged" }
+  ]
+}
