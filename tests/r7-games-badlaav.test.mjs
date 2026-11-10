@@ -9,6 +9,7 @@
 // lighting a fire; no act lights a fire; the not-admitted belief has no mechanic; tampered params are refused; a claim never
 // decides; first levels differ across children; the generator and picker are fast (CPU time); every coverage entry serves a
 // proven level through the play server.
+import { backlogged } from "./_backlog.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -438,8 +439,7 @@ test("badlaav coverage: six entries on the two topics, mapped to their kit misco
   for (const s of ["s1", "s2", "s3", "s4"]) { assert.ok(hasPlay(`${T1}-${s}`), `${T1}-${s}`); assert.ok(hasPlay(`${T2}-${s}`), `${T2}-${s}`); }
   assert.equal(entryFor({ skillId: `${T1}-s4` }).family, "badlaav");
   assert.equal(entryFor({ skillId: `${T2}-s3` }).family, "badlaav");
-  const backlog = readFileSync(`${ROOT}docs/design/round7/games/law-backlog.md`, "utf8");
-  for (const t of [T1, T2]) assert.doesNotMatch(backlog, new RegExp(t));
+  for (const t of [T1, T2]) assert.deepEqual(backlogged(t), [], `${t} is still in the law backlog`);
 });
 
 for (const e of BG()) for (const fade of [1, 2, 3]) {

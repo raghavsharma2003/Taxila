@@ -8,6 +8,7 @@
 // every colour, every liquid and every property the law uses is a kit sentence; no rang word holds a number or a word for
 // tasting, touching or drinking; tampered params are refused; a claim never decides; first levels differ across children;
 // the generator and picker are fast (CPU time); and every coverage entry serves a proven level through the play server.
+import { backlogged } from "./_backlog.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -355,8 +356,7 @@ test("rang coverage: four entries on the two topics, mapped to their kit misconc
   for (const s of ["s1", "s2", "s3"]) assert.ok(hasPlay(`${T2}-${s}`), `${T2}-${s}`);
   assert.equal(entryFor({ skillId: `${T1}-s2` }).family, "rang");
   assert.equal(entryFor({ skillId: `${T2}-s1` }).family, "rang");
-  const backlog = readFileSync(`${ROOT}docs/design/round7/games/law-backlog.md`, "utf8");
-  for (const t of [T1, T2]) assert.doesNotMatch(backlog, new RegExp(t));
+  for (const t of [T1, T2]) assert.deepEqual(backlogged(t), [], `${t} is still in the law backlog`);
 });
 
 for (const e of RG()) for (const fade of [1, 2, 3]) {

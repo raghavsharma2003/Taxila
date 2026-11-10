@@ -7,6 +7,7 @@
 // sentence of the kit and every number is the kit's own or a declared scene value; tampered params are refused; a claim
 // never decides; first levels differ across children; the generator and picker are fast (CPU time); every coverage entry
 // serves a proven level through the play server; the existing kyun-lab fair-test lab is untouched.
+import { backlogged } from "./_backlog.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -274,8 +275,7 @@ test("chumbak coverage: eight entries on c6-science-ch04-t02 and -t03, mapped to
     const id = `c6-science-${sk}`;
     assert.ok(hasPlay(id)); assert.equal(entryFor({ skillId: id }).family, "kyun-lab"); assert.equal(entryFor({ skillId: id }).goal, goal);
   }
-  const backlog = readFileSync(`${ROOT}docs/design/round7/games/law-backlog.md`, "utf8");
-  assert.doesNotMatch(backlog, /c6-science-ch04-t0[23]/);
+  assert.deepEqual(backlogged(/c6-science-ch04-t0[23]/), [], "still in the law backlog");
   // the magnetic-materials lab is still the fair-test lab
   assert.equal(entryFor({ skillId: "c6-science-ch04-t01-s1" }).mode, "fair-test");
 });

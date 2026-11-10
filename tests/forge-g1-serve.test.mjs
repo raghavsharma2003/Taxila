@@ -252,7 +252,7 @@ describe("drift pins", () => {
     for (const r of G1_RENDERERS) assert.ok(registered.includes(r), `G1 derives ${r} but the frame does not register it`);
   });
   test("the vendored scene@1 validator equals the docs source (header and --emit guard aside)", () => {
-    const docs = readFileSync(new URL("../docs/research/content/genui-scene-dsl.mjs", import.meta.url), "utf8").split("\n");
+    const docs = readFileSync(new URL("./fixtures/genui-scene-dsl.mjs", import.meta.url), "utf8").split("\n");
     const vend = readFileSync(new URL("../server/forge/scene/dsl.mjs", import.meta.url), "utf8").split("\n").slice(4);
     const strip = (lines) => lines.filter((l) => !l.includes('process.argv.includes("--emit")'));
     assert.equal(strip(vend).join("\n"), strip(docs).join("\n"));

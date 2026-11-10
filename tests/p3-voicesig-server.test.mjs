@@ -302,15 +302,13 @@ test("restriction-12 lint: no state-of-mind word in any identifier, key or strin
     .filter((f) => /\.(ts|js|mjs)$/.test(f) && !f.endsWith("server/voicesig/lint.js"));
   const hits = [];
   for (const f of files) hits.push(...emotionWordsIn(code(readFileSync(f, "utf8"))).map((w) => `${f.slice(ROOT.length)}: ${w}`));
-  // the code lines each patch ADDS (comments stripped)
-  const pdir = join(ROOT, "docs/design/ship5/p3-voicesig/patches");
-  for (const f of walk(pdir).filter((x) => x.endsWith(".diff"))) {
-    const added = readFileSync(f, "utf8").split("\n").filter((l) => l.startsWith("+") && !l.startsWith("+++")).map((l) => l.slice(1)).join("\n");
-    const isSql = /\.sql/.test(added) || /migration/.test(f);
-    const body = isSql ? added.replace(/--.*$/gm, "") : code(added);
-    // parent-facing consent copy is prose for adults about pace, never a reading of the child: checked by the claims test below
-    hits.push(...emotionWordsIn(body).map((w) => `${f.slice(ROOT.length)}: ${w}`));
+  // the voicesig-only files the ship5 patches landed (comments stripped); the patch files themselves are no longer read.
+  // (The shared files they also touched, brain/turn.js and brain/reasons.js, legitimately carry affect words of their own.)
+  for (const f of ["src/voice/features.ts", "src/voicesig/ort.ts"]) {
+    hits.push(...emotionWordsIn(code(readFileSync(join(ROOT, f), "utf8"))).map((w) => `${f}: ${w}`));
   }
+  { const sql = readFileSync(join(ROOT, "db/migrations/021_voicesig.sql"), "utf8").replace(/--.*$/gm, "");
+    hits.push(...emotionWordsIn(sql).map((w) => `db/migrations/021_voicesig.sql: ${w}`)); }
   assert.deepEqual(hits, []);
   assert.ok(files.length >= 15, `scanned ${files.length} files`);
 });
@@ -345,15 +343,10 @@ test("10k generated turns: no state-of-mind word in any output, no output at all
   assert.ok(states > 1000, `the pipeline did read states (${states})`);
 });
 
-// ───────── the migration (patch 07) ─────────
+// ───────── the migration ─────────
 
 test("G-VS-SCHEMA on the shipped migration: numbers only, voicesig schema, cascade on erasure", () => {
-  const live = join(ROOT, "db/migrations/021_voicesig.sql");
-  const patch = join(ROOT, "docs/design/ship5/p3-voicesig/patches/07-migration-021.diff");
-  let sql;
-  if (existsSync(live)) sql = readFileSync(live, "utf8");
-  else if (existsSync(patch)) sql = readFileSync(patch, "utf8").split("\n").filter((l) => l.startsWith("+") && !l.startsWith("+++")).map((l) => l.slice(1)).join("\n");
-  else return;
+  const sql = readFileSync(join(ROOT, "db/migrations/021_voicesig.sql"), "utf8");
   const c = sql.toLowerCase().replace(/--.*$/gm, "");
   assert.ok(/create schema if not exists voicesig/.test(c));
   for (const bad of [/\btranscript\b/, /\baudio\b/, /\bembedding\b/, /\bstate\b\s+text/, /\bturn_id\b/, /\butterance\b/, /\bvs_state\b/]) assert.ok(!bad.test(c), `${bad}`);

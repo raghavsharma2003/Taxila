@@ -9,6 +9,7 @@
 // kit sentence and every number on screen is the kit's; tampered params are refused; a claim never decides; first levels
 // differ across children; the generator and picker are fast (CPU time); and every coverage entry serves a proven level
 // through the play server.
+import { backlogged } from "./_backlog.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -291,8 +292,7 @@ test("bhaap coverage: eight entries on the four topics, mapped to their kit misc
     for (const s of skills) assert.ok(hasPlay(`${topic}-${s}`), `${topic}-${s}`);
     assert.equal(entryFor({ skillId: `${topic}-${skills[0]}` }).family, "bhaap");
   }
-  const backlog = readFileSync(`${ROOT}docs/design/round7/games/law-backlog.md`, "utf8");
-  for (const t of Object.values(TOPIC)) assert.doesNotMatch(backlog, new RegExp(t));
+  for (const t of Object.values(TOPIC)) assert.deepEqual(backlogged(t), [], `${t} is still in the law backlog`);
   // the factors of evaporation stay kyun-lab's
   assert.ok(coverage().entries.some((e) => e.topicId === "c6-science-ch08-t03" && e.family === "kyun-lab"));
   assert.ok(!BH().some((e) => e.topicId === "c6-science-ch08-t03"));

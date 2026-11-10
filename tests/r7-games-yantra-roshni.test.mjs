@@ -8,6 +8,7 @@
 // every source and material on the bench is named in the kit; no ray is ever drawn from the eye and the eye never looks at
 // the Sun; no word holds a number or an economy word; tampered params are refused; first levels differ across children;
 // the generator and picker are fast (CPU time); and every coverage entry serves a proven level through the play server.
+import { backlogged } from "./_backlog.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -323,7 +324,7 @@ test("roshni coverage: three entries on ch11-t01, one per skill, mapped to the t
   assert.deepEqual(MINE().map((e) => e.misMap), [{ "blur-clear": `${T}-m3` }, { "moon-alone": `${T}-m1`, "look-hard": `${T}-m2` }, { "moon-cover": `${T}-m1` }]);
   for (const e of MINE()) for (const kit of Object.values(e.misMap)) assert.ok(TOPIC.misconceptions.some((x) => x.id === kit), kit);
   for (const s of ["s1", "s2", "s3"]) { assert.ok(hasPlay(`${T}-${s}`)); assert.equal(entryFor({ skillId: `${T}-${s}` }).mode, "roshni"); }
-  assert.doesNotMatch(readFileSync(`${ROOT}docs/design/round7/games/law-backlog.md`, "utf8"), new RegExp(T));
+  assert.deepEqual(backlogged(T), [], `${T} is still in the law backlog`);
   // the beam's own topics stay the beam's
   for (const t of ["c7-science-ch11-t03", "c7-science-ch11-t04"]) assert.ok(coverage().entries.some((e) => e.topicId === t && e.mode === "beam"));
 });
