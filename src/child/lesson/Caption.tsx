@@ -11,7 +11,10 @@ import { clauseAt, clauses } from "./captions.ts";
 // its first clause (QA pass 14, lessons 414955cb / a20930e5: the slot failed, the tray went, the caption restarted at "Kabir,")
 let speakingLine: { text: string; t0: number } | null = null;
 
-export function Caption({ text, speaking, visible, lang }: { text: string; speaking: boolean; visible: boolean; lang?: string }) {
+export function Caption({ text, speaking: voiced, visible, lang, soundFailed = false }: { text: string; speaking: boolean; visible: boolean; lang?: string; soundFailed?: boolean }) {
+  // JRN-01: her sound failed, so the caption is the only place her words are: it steps through her clauses at reading
+  // pace, exactly as if she were speaking, and stays on the last (before, it showed only the last clause)
+  const speaking = voiced || (soundFailed && visible);
   const list = clauses(text);
   const [ms, setMs] = useState(0);
   const t0 = useRef(0);

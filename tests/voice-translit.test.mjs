@@ -1,5 +1,6 @@
 // RS-7: Roman Hinglish → Devanagari before TTS (server/voice/translit) and the voice switch (server/voice/voice-switch.js).
 import test from "node:test";
+import { growth } from "./_work.mjs";
 import assert from "node:assert/strict";
 import { toDevanagari, analyze, devanagariOn, safetyText } from "../server/voice/translit/index.js";
 import { NUMBER_WORDS, cardinalOf } from "../server/voice/translit/numbers.js";
@@ -78,12 +79,13 @@ test("output only replaces word spans: punctuation, spacing and digits are prese
   assert.equal(out.replace(/[ऀ-ॿ]+/g, "X"), "X,  X-X   X — 3 X  X!");
 });
 
-test("fast enough for the hot path: < 1 ms per reply", () => {
+test("fast enough for the hot path: the cost grows with the reply's length (linear), never faster", () => {
+  // a ratio of CPU medians taken in the same run, not a millisecond limit (a busy machine slows both sides alike); each call gets
+  // its own text, so a cache hit cannot stand in for the work
   const s = "Aarav, cricket pitch ko 6 equal parts mein baantiye. Sochiye, pehla mark start se kitni door hoga? Bittu ko baad mein aap samjhayenge.";
-  T(s);
-  const t0 = cpuNow(); // CPU time: this code's own work, not a shared runner's scheduler
-  for (let i = 0; i < 500; i++) T(s);
-  assert.ok((cpuNow() - t0) / 500 < 1, "mean > 1 ms of CPU");
+  let n = 0;
+  const { ratio, small, big } = growth(() => T(`${s} ${n++}`), () => T(`${Array(8).fill(s).join(" ")} ${n++}`), { batch: 30 });
+  assert.ok(ratio < 24, `8x the text cost ${ratio.toFixed(1)}x the CPU (linear is about 8)`);
 });
 
 // ───────────── voice switch ─────────────

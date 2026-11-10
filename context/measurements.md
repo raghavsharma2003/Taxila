@@ -6535,3 +6535,36 @@ All 9 are one mechanism: a picture request whose line describes a second view th
 18 of 18 bridges switched at their first spoken part. `layout` is recorded on no row.
 
 Full write-up: docs/design/round7/judgements/director18-2026-11-10.md.
+
+
+<!-- merged from inbox/r7-audit-hissa.json -->
+## `ms-r7-audit-games-03-08-replay`
+
+Games audit `play-family.mjs` (branch claude/r7-audit-games), 2026-11-10.
+
+- **Method:** run over hissa, galti-pakdo, nazariya and kon with `--trials 200`, DATABASE_URL blank. Each entry plays 18 levels (fades 1-3 × garam/teekha × 3 seeds), with 200 random act lists per level drawn from the solver's own act shapes. Rates are per goal: "any win" is a win after misses; "luck" is a first-try `correct`.
+- **Before → after.** Hissa pour:
+  - fit (3600 trials): any-win 43.7 → 1.8 %, luck 24.5 → 0.9 %.
+  - part (3600): any-win 42.6 → 2.4 %, luck 29.7 → 1.3 %.
+  - deci (3600): any-win 42.6 → 0.4 %, luck 23.5 → 0.3 %.
+- **Chance-weighted goals:** rates are unchanged by design. The weight of their lucky corrects moves 0.5 → 0.25:
+  - galti pakdo: any-win 48.1 %, luck 41.4 % (3600 trials).
+  - hissa shift: 13.9 % / 13.5 % (7200).
+  - nazariya tri more: 30.2 % / 26.0 % (3600).
+  - kon zone kind: 16.4 % / 10.3 % (10800).
+- **UI:** the pour count was driven by real taps at 360 × 640 in en, hi and hinglish. 39 of 39 checks pass (targets ≥ 44 px, text ≥ 16 px, 0 clipped labels or goal lines, 0 overflow, 0 errors): docs/design/round7/games/runshots-hissa/.
+
+
+<!-- merged from inbox/r8-main-1.json -->
+## `ms-r8-walk-reads-no-learner-state-2026-11-10` (2026-11-10)
+
+A read-only code trace of the integration 24 tree (one pass, by a Sonnet agent for main; no tests run).
+
+- The script walk reads no learner state: it walks every beat of every scripted skill in kit order (`server/director/state.js:1282-1290`).
+- Per-child variation in a scripted lesson: the hook's interest slot (exact label match; 4 onboarding tiles have no slot, 2 slots name tiles that do not exist), the language, and a friend name from a fixed list.
+- The lesson brief passes only `wrapAt` and `hardStopAt`, and is usually null (`TAXILA_CONDUCTOR_PLAN` is off).
+- Script cards and game levels do write `kt_evidence`, and the ledger folds them.
+- No generated visual can be shown: nothing sets a verdict, and `judgeArtifact` has no caller.
+- 4 scripts are live, 30 staged.
+
+**Not verified by the trace:** whether "simpler used" counts as assisted; whether a script give-up weighs as a kit leave; the writer's `params_version` default (kt-r2) against the ledger's kt-r3; live legal modes. These are with the learner session.

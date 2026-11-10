@@ -100,9 +100,14 @@ export function coldStartResult({ subject, classLevel, parentView, childPick, da
   const { site, used, expected } = siteOf({ classLevel, parentView, childPick, date });
   if (!site) return null;
   const post = posteriorStart(subject, classLevel, site, expected, tune);
+  // Only a below-level answer (a parent's "Hard", a child's "tricky") moves where lessons start. "About right" and "Easy"
+  // keep the calendar's start (startGE null): the class prior sits at the start of the class year, so any posterior from
+  // them landed 5-8 chapters back and the note said "a little before" (audit LEARN-07). The site still seeds θ, and a
+  // settled θ refines the start later (refinedStart).
+  const below = parentView === "hard" || childPick === "tricky";
   return {
     source: "onboarding", at: new Date(date).toISOString(), strand: strandOf(subject), classLevel, n: 0, expected,
-    mean: post.mu, sd: post.sd, startGE: post.startGE, startRule: "coldstart",
+    mean: post.mu, sd: post.sd, startGE: below ? post.startGE : null, startRule: below ? "coldstart" : "calendar",
     answers: { ...(PARENT_SITE[parentView] ? { parentView } : {}), ...(CHILD_SITE[childPick] ? { childPick } : {}) }, used,
     placement: { [strandOf(subject)]: site },
   };
@@ -116,10 +121,13 @@ export function coldStartResult({ subject, classLevel, parentView, childPick, da
  * @param {{ startGE?: number } | null | undefined} result @param {{ mu: number, sd: number } | null | undefined} theta
  * @returns {{ startGE: number, from: "theta"|"placement" } | null}
  */
+/** A stored start GE as a number, NaN when there is none (null: Number(null) is 0, which read as "start at chapter 1"). */
+export const geOf = (v) => (v == null || v === "" ? NaN : Number(v));
+
 export function refinedStart(result, theta, { zStart = Z_START, settleSd = SETTLE_SD } = {}) {
   if (settled(theta, { settleSd }))
     return { startGE: r2(Math.max(0, Number(theta.mu) - zStart * Number(theta.sd))), from: "theta" };
-  if (Number.isFinite(Number(result?.startGE))) return { startGE: Number(result.startGE), from: "placement" };
+  if (Number.isFinite(geOf(result?.startGE))) return { startGE: geOf(result.startGE), from: "placement" };
   return null;
 }
 

@@ -6,6 +6,10 @@ one-line calls, real redesigns. Then the controls hidden for SEAM-09 and what is
 
 ## 1. Decisions first (learner model, placement, set-up)
 
+**Main approved all of these on 2026-11-10 and they are built** (params kt-r3; replay before and after in
+`evals/learner-pilot-replay/results/2026-11-10/README.md`). Main picked "no learning step on a failed card, and cap the
+re-teach gain per skill per lesson" for LEARN-02. The notes below are kept as the record of what was proposed.
+
 Each has a test in `tests/r7-audit-learner-pending.test.mjs` that fails today. It is marked `todo`, so the gate stays
 green; drop the `todo` with the fix. A model change needs a params version bump, and a replay re-scores stored children.
 
@@ -81,10 +85,7 @@ the six cold-start subjects. When it lands, widen `PLACEMENT_TABLE_SUBJECTS` in 
 
 ## 3. Real redesigns
 
-**LEARN-20 (P2). The plan's learner-state decisions reach neither the home nor the lesson.** These are the opener,
-success-first, the new-skill budget, the foundation share and the review burst. The lesson takes only the two clock times.
-Brain and Learning together: the lesson start passes the whole brief, and the Director reads it. Turning
-`TAXILA_CONDUCTOR_PLAN` on is now safe for the clock (LEARN-01 is fixed), but it is pointless until there is a reader.
+**LEARN-20 (P2): see section 6, "From what she knows to what she is taught". Main kept it as the next round's core.**
 
 **LEARN-23 (P2). A new Conductor actor ignores the parent's saved lesson days and length**, and `settingChangedStmts` has
 no caller. Read them when the actor is created, and emit `parent.setting_changed` from `setControls`. Half a day.
@@ -134,3 +135,39 @@ Left on purpose, each with its reason in the inbox entry:
 - Waiting on a decision: the placement CAT (LEARN-42), the session-first lane (LEARN-49), the bedtime branch (LEARN-37).
 - Not done yet: the Scheduler gallery helpers and their test (LEARN-51), and the unused response fields and the
   `comprehension` card in `parent.js` (LEARN-52). The client must be checked field by field first.
+
+## 6. LEARN-20: from what she knows to what she is taught (one page, for Brain and Learning)
+
+The Conductor plans each child's day from the learner model (`server/conductor/planner.js`, `adapt.js`). It writes a
+lesson slot into `day_plan`, and `server/conductor/slot.js` `lessonBriefOf` cuts a brief from that slot at lesson start.
+The lesson start (`server/routes/lesson.js:366`) passes on two fields of that brief, `wrapAt` and `hardStopAt`. The
+Director reads nothing else. The only full reader, `server/director/session/prior.js` `planPrior`, sits on the
+session-first lane, which is off by default. The home (`server/routes/child.js`) takes the daily cap and "about N min".
+
+| decision (rule) | what the planner decides, from which learner state | where it is dropped today | the smallest reader on the Director side |
+|---|---|---|---|
+| opener (R8) | `reanchor_light` after a gap of `reanchorGapDays` or more (`counters.lastActiveDay`) instead of the usual retrieval opener | `lesson.js` never reads `brief.opener`; the warm-up is always the delayed-check openers (`planChecks`) | at start, `reanchor_light` → one easier warm-up item (difficulty − 1) before the due checks, no new skill in the first 3 turns |
+| successFirst (R1, R15) | the last lesson closed badly (`adapt.closes`), or it is the first week (`learner.firstWeek`) | not passed | `initLessonState({ successFirst })` → the first practice item of the lesson is the easiest unseen one of the skill (`items.js` already sorts by difficulty; take the head) |
+| newSkillBudget (R15, test window) | 0 in the first week or when a test is under 2 days away, else 1 | not passed; the home's topic and the lesson's topic come from `nextTopicOf` either way | 0 → `nextTopicOf` returns a revision topic (the test window code path already exists: `revisionPick`) instead of a new one |
+| prereqCheck (R5) | a wheel-spinning skill (`kt.wheelSpin`) gets one check of its weakest prerequisite, at most every `recheckDays` | not passed; `decide.js` marks it run when the slot's lesson ends (LEARN-21 now stops a homework start from doing that) | add the prerequisite's retrieval item to `warmupItems` (the same `warmupItemsFor(skillIds)` call); then the "check ran" mark is true |
+| foundationShare (R9) | ≤ 0.6 of teaching minutes on foundation work when placement says the child is behind (`learner.placementGap`) | not passed; topic choice back-chains on its own rule | `pickTopic`'s back-chain depth: allow one more prerequisite step when the share is ≥ 0.5 (the one place topic choice already goes "down") |
+| review burst (reviewItemIds, R0) | FSRS reviews due (`kt.dueCount`) | not passed; the lesson builds its own warm-up from `dueForChecks` | already equivalent: drop it from the slot, or pass the ids into `warmupItemsFor` so the two lists cannot differ |
+| promisesDue (item 8) | the Question-jar promises to keep today | passed another way: `lesson.js` reads the jar itself (`jarLaterEntries`) | none needed; drop it from the brief or read it from there |
+| testChapters | the parent's test window | passed another way: `nextTopicOf(child, { testWindow })` reads `child_controls` | none needed |
+| soloRounds (R7) | base per band; R7 (adaptive) is not built | not passed | the Director's solo phase length; only worth it once R7 exists |
+| wrapAt / hardStopAt | the slot's planned length and window | passed and read (`state.js` `pastBrief`) | done; the window binds only with the family's limits on (LEARN-01) |
+
+**What this costs.**
+- The first five rows are each a few lines on the Director side (Brain's files: `server/routes/lesson.js`,
+  `server/director/state.js`, `items.js`), plus passing the whole `lessonBrief` object at the start, in place of the
+  two fields.
+- Learning keeps the planner and `lessonBriefOf`. No migration.
+- The risk is a plan from the night before steering today's lesson. `lessonBriefOf` is cut at the start from the latest
+  plan version, and `TAXILA_CONDUCTOR_PLAN` (off) only adds the morning kick on home open.
+
+**Order, if Brain agrees:**
+1. successFirst and prereqCheck: the ones a struggling child feels.
+2. newSkillBudget: before exams.
+3. The opener.
+4. foundationShare, after the placement change (LEARN-07) has run a few weeks.
+

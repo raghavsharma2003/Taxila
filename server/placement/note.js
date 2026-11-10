@@ -8,7 +8,7 @@ import { lineViolations } from "../reports/gate.js";
 import { LANGS } from "../reports/config.js";
 import { schoolStartIndex } from "../content/next-topic.js";
 import { topicSequence, getTopic } from "../content/curriculum.js";
-import { coldStartResult } from "./coldstart.js";
+import { coldStartResult, geOf } from "./coldstart.js";
 
 /** A placement gap at least this big (expected − start, GE) adds "starts a little before the class's chapter" (R9's line). */
 export const EASIER_GAP = 0.5;
@@ -36,7 +36,7 @@ export function placementClaims({ child, results, date = new Date() }) {
     const topic = startTopicOf({ classLevel: child.class_level, subject, startGE: r.startGE, schoolChapter: child.school_chapter?.[subject], date });
     if (!topic) continue;
     out.push({ id: `place:${subject}:start`, shapeId: "place.start", subject, slots: { name, subject, skill: topic.title }, topicId: topic.id });
-    if (Number(r.expected) - Number(r.startGE) >= EASIER_GAP) out.push({ id: `place:${subject}:easier`, shapeId: "place.easier", subject, slots: { subject } });
+    if (Number(r.expected) - geOf(r.startGE) >= EASIER_GAP) out.push({ id: `place:${subject}:easier`, shapeId: "place.easier", subject, slots: { subject } });
     if (r.answers?.parentView) out.push({ id: `place:${subject}:parent`, shapeId: `place.parent_${r.answers.parentView}`, subject, slots: { subject } });
     if (r.answers?.childPick) out.push({ id: `place:${subject}:child`, shapeId: `place.child_${r.answers.childPick}`, subject, slots: { name, subject } });
   }
@@ -61,14 +61,14 @@ export function checkPlacementNote(claims, { child, results, answers = {}, date 
           childPick: answers.childPicks?.[c.subject], date: r.at ?? date });
         if (!re) why.push("answers make no estimate");
         else {
-          if (re.startGE !== Number(r.startGE)) why.push(`startGE ${r.startGE} ≠ ${re.startGE} from the answers`);
+          if ((re.startGE ?? null) !== (Number.isFinite(geOf(r.startGE)) ? geOf(r.startGE) : null)) why.push(`startGE ${r.startGE} ≠ ${re.startGE} from the answers`);
           if (JSON.stringify(re.answers) !== JSON.stringify(r.answers ?? {})) why.push("stored answers ≠ the child's answers");
         }
         if (c.shapeId === "place.start") {
           const t = startTopicOf({ classLevel: child.class_level, subject: c.subject, startGE: r.startGE, schoolChapter: child.school_chapter?.[c.subject], date });
           if (!t || t.title !== c.slots.skill || t.id !== c.topicId) why.push("start topic ≠ topic choice's start");
         }
-        if (c.shapeId === "place.easier" && !(Number(r.expected) - Number(r.startGE) >= EASIER_GAP)) why.push("no gap for the easier line");
+        if (c.shapeId === "place.easier" && !(Number(r.expected) - geOf(r.startGE) >= EASIER_GAP)) why.push("no gap for the easier line");
         if (c.shapeId.startsWith("place.parent_") && c.shapeId !== `place.parent_${answers.parentView?.[c.subject]}`) why.push("parent line ≠ the parent's answer");
         if (c.shapeId.startsWith("place.child_") && c.shapeId !== `place.child_${answers.childPicks?.[c.subject]}`) why.push("child line ≠ the child's pick");
       }

@@ -201,7 +201,7 @@ export function spokenNameOf(v) {
   if (v == null) return null;
   const s = String(v).normalize("NFC").trim().replace(/\s+/g, " ");
   if (!s) return null;
-  if (s.length > 40 || !/^[\p{L}\p{M}][\p{L}\p{M} '\-]*$/u.test(s)) throw bad("the spoken name may hold letters, spaces, ' and - (at most 40)");
+  if (s.length > 40 || !/^[\p{L}\p{M}][\p{L}\p{M} '\-]*$/u.test(s)) throw bad("the spoken name may hold letters, spaces, ' and - (at most 40)", { field: "nameSpoken", code: "name_spoken.shape" });
   return s;
 }
 

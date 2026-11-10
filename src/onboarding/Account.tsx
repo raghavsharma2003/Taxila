@@ -3,6 +3,7 @@
 // screen is laid out so OTP drops in: the number field already sits first with its why-line and the
 // no-calls promise, and `OtpSlot` marks where the code field goes.
 // The grown-up hold gate now sits on step 3 (Our promises), before this step (V2 §3.2). Typed fields persist (G-ONB-6).
+import { consentOnFile } from "./setupRules.ts";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, ErrorNote, Field, Icon } from "../ui/index.ts";
@@ -44,7 +45,8 @@ export function AccountStep() {
     const fresh = signedInNow && mode === "signup";
     if (next && !fresh) return nav(next, { replace: true });
     if (m && m.children.length && (mode === "login" || !signedInNow)) return nav("/who", { replace: true });
-    nav("/start/consent");
+    // a parent who already agreed (account consent on file, no child yet) is not asked again (audit LEARN-46)
+    nav(!fresh && consentOnFile(m?.consents) ? "/start/child" : "/start/consent");
   };
   // Already signed in and sent here with somewhere to go back to: go straight there (no extra Continue screen).
   useEffect(() => { if (me && next) nav(next, { replace: true }); }, [me, next, nav]);
