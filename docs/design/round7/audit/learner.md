@@ -60,13 +60,13 @@ migration, or outside my paths); **report** = for the owner named.
 | LEARN-16 | P1 | not good enough | learning | Progress shows nothing for lessons taught on earlier-class topics | `server/routes/parent.js:1187-1210` | An "Earlier steps" group per subject (no class number) | main |
 | LEARN-17 | P1 | inconsistent | learning | The Teaching page tells the parent "You thought …" | `src/parent/Teaching.tsx:47` vs `src/parent/Home.tsx:253` | Same rewording as Home | fix |
 | LEARN-18 | P1 | broken | learning | "Earlier notes" is not newest first; daily notes fall off the list | `server/reports/store.js:25` | Order by the note's window end | fix |
-| LEARN-20 | P1 | not good enough | learning + brain | The plan's learner-state decisions reach neither the home nor the lesson | `server/routes/child.js:207,271-273`, `server/routes/lesson.js:366` | Needs a Director reader; a design call | main |
+| LEARN-20 | P2 | not good enough | learning + brain | The plan's learner-state decisions reach neither the home nor the lesson | `server/routes/child.js:207,271-273`, `server/routes/lesson.js:366` | Needs a Director reader; a design call | main |
 | LEARN-04 | P2 | inconsistent | learning | The belief "gets the answers" is true for a child who never answered unaided | `server/comprehension/state.js:33` | Gate the estimate arm on the ledger's unaided flag (params version bump) | main |
 | LEARN-19 | P2 | inconsistent | learning | With limits on, the home's daily cap comes from the plan, which is stale and band-clamped against the parent's setting | `server/routes/child.js:156,256`, `server/conductor/planner.js:76` | Use the parent's saved cap | main |
 | LEARN-21 | P2 | broken | learning | An Ask or Practice start uses up today's lesson slot and marks the prerequisite check as run | `server/conductor/decide.js:241-242,252-255` | Fall back to the lesson slot only for a live lesson | fix |
 | LEARN-22 | P2 | inconsistent | learning | The home card's lesson length changes after the first start of the day (25 → 22 min) | `server/routes/child.js:74,273` | Use the slot's length only while it is unstarted | fix |
 | LEARN-23 | P2 | not good enough | learning | A new Conductor actor ignores the parent's saved lesson days and length | `server/conductor/step.js:36-45`, `index.js:90-91` | Read them at creation and at sync | main |
-| LEARN-24 | P2 | inconsistent | learning | "How do we know?" cannot find the question of a script card; it quotes the teacher's line before it instead | `server/routes/parent.js:974-982` | Resolve `script:` ids from the lesson script | fix |
+| LEARN-24 | P3 | inconsistent | learning | "How do we know?" cannot find the question of a script card; it quotes the teacher's line before it instead | `server/routes/parent.js:974-982` | Resolve `script:` ids from the lesson script | fix |
 | LEARN-25 | P2 | not good enough | learning | Rebuilding a child's model after a restart is quadratic (10 s at 8,000 events) and blocks the one replica | `server/comprehension/fuse.js:47-52`, `server/learner/kt/ledger.js:105` | Copy the ledger once per fold | main |
 | LEARN-26 | P2 | not good enough | learning + studio | Writers outside the turn fold before taking the lock; Studio answers never reach `skill_state` | `server/comprehension/later.js:373-391`, `server/placement/kt.js:20-28`, `server/studio/grade.js:173-180` | Guard on `max(seq)` after the lock; project Studio events | main |
 | LEARN-27 | P2 | broken | learning | A re-teach nobody answered after is scored as a failed teaching method | `server/comprehension/resolve.js:83-84` | No reward when nothing was graded | fix |
@@ -77,28 +77,42 @@ migration, or outside my paths); **report** = for the owner named.
 | LEARN-32 | P2 | inconsistent | learning | Home says "This week: can now …" above "Lessons this week: 0" | `server/routes/parent.js:451-463` | One week window for both | fix |
 | LEARN-33 | P2 | broken | learning | An open lesson with no ledger row keeps adding minutes to the week (5,760 by Friday) | `server/reports/truth.js:52-57` | End it at its start, as the stored letter does | fix |
 | LEARN-34 | P2 | inconsistent | learning | Home's "Recent lessons" never gets the short title the Lessons list uses | `server/routes/parent.js:949` | Same topic mapper | fix |
-| LEARN-35 | P2 | not good enough | learning | At 900 px and wider, Teaching and Sign out cannot be reached | `src/parent/Shell.tsx:76-85` | Add both to the rail | main |
+| LEARN-35 | P1 | not good enough | learning | At 900 px and wider, Teaching and Sign out cannot be reached | `src/parent/Shell.tsx:76-85` | Add both to the rail | main |
 | LEARN-36 | P2 | inconsistent | learning | "Download everything" exports the old evidence table, not the one every screen shows | `server/routes/parent.js:1469,1483` | Export the ledger rows | main |
 | LEARN-37 | P2 | no longer needed | learning | The "lessons started after the bedtime you set" line can never fire: nothing writes a bedtime | `server/reports/rest.js:17-21`, `templates.js:232-235` | Remove, or add the control | main |
 | LEARN-38 | P2 | inconsistent | learning | An unanswered consent shows the "yes" effect text | `src/parent/Pages.tsx:164` | Show the "no" effect when not granted | fix |
 | LEARN-39 | P2 | not good enough | learning | Schedule states "planned for 5:00 pm on the days you chose" before anything is saved | `src/parent/Controls.tsx:87,121` | Say no time is set yet | main |
 | LEARN-40 | P2 | inconsistent | learning | "Explained in their own words" has two rules (notes count a half explanation; the lesson card does not) | `server/reports/derive.js:15-16` vs `truth.js:355` | Open item of decision `w2a-checker-explained-line`; drop the half | main |
 | LEARN-41 | P2 | inconsistent | owner | Home says "can now"; decision `reports-k7-locked-words` forbids it anywhere | `server/routes/parent.js:1270`, `src/parent/copy.ts:18` | Owner picks: narrow the decision or change the words | main |
-| LEARN-42 | P2 | no longer needed | learning | The adaptive placement round (426 items, 5 files) is not reachable from any screen | `server/placement/{session,cat,grade,bank}.js`, `server/routes/placement.js:35-67` | Mount it or remove it; if mounted, fix its class-9 and grader faults first | main |
+| LEARN-42 | P2 | no longer needed | learning | The adaptive placement round (426 items) is not reachable from any screen | `server/placement/{session,grade,bank}.js` and the CAT half of `cat.js`, `server/routes/placement.js:35-67` | Mount it or remove it (keep `schoolYearFraction` and `startChapter`, which the cold start uses); if mounted, fix its class-9 and grader faults first | main |
 | LEARN-43 | P2 | not good enough | learning | The child step can stay on "One moment" for ever | `src/onboarding/ChildProfile.tsx:59-67` | A "Try again" on a failed read | main |
 | LEARN-44 | P2 | inconsistent | learning | Classes 1–2 are shown an EVS chip the server drops; "Not sure" cannot clear an earlier answer | `src/onboarding/ChildProfile.tsx:109-115,154-171` | Chips from the class's subjects; send "unsure" | main |
 | LEARN-45 | P2 | not good enough | learning | "Board" must be picked but nothing reads it | `src/onboarding/steps/Class.tsx:28-44` | Default CBSE, not required | main |
 | LEARN-46 | P2 | not good enough | learning | A signed-in parent on a new device is asked for consent twice | `src/onboarding/steps/Class.tsx:35` | Skip to the child step when consent is done | main |
-| LEARN-47 | P2 | inconsistent | platform | On a paired child device the Hello feel picks are refused | `server/pair/scope.js:6,12` | Allow `POST /api/placement/onboarding` | report (platform) |
+| LEARN-47 | P2 | inconsistent | platform | On a paired child device the Hello feel picks are refused (same as PLAT-07) | `server/pair/scope.js:6,12` | Allow `POST /api/placement/onboarding` in the scope (platform); the handler now drops `parentView` from a device (learning half, fixed) | report (platform) |
 | LEARN-48 | P3 | broken | learning | Weave callbacks that lose an opener slot are closed unasked (latent: no kit has hosts) | `server/comprehension/store.js:58-63` | Keep expired entries open | fix |
-| LEARN-49 | P3 | no longer needed | learning + owner | The session-first lane (about 1,300 lines) is off by default and no deploy file turns it on | `server/director/session/**`, `flags.js:20-23` | Owner decides: ship or shelve | main |
+| LEARN-49 | P3 | no longer needed | learning + owner | The session-first lane (1,069 lines) is off by default and no deploy file turns it on; parts of it run on every lesson (`schoolPointerStmts`) | `server/director/session/**`, `flags.js:20-23` | Owner decides: ship or shelve | main |
 | LEARN-50 | P3 | no longer needed | learning | Dead code in the learner model and comprehension engine | see note | Delete | main |
 | LEARN-51 | P3 | no longer needed | learning | Dead code in the Conductor; `conductor_usage` is read but never written | see note | Delete or wire | main |
 | LEARN-52 | P3 | no longer needed | learning | Dead code in the parent routes and set-up screens | see note | Delete | main |
-| LEARN-53 | P3 | inconsistent | learning | `shared/learner.ts` types lag the server | `shared/learner.ts:45-58,91,149-154` | Add the missing members | fix |
+| LEARN-53 | P3 | inconsistent | learning | `shared/learner.ts` types lag the server | `shared/learner.ts:91,149-154` | Add `"late"` to `via` and `placementPending` to `Ledger` | fix |
 | LEARN-54 | P3 | inconsistent | learning | Small copy and rule mismatches in the parent corner | see note | See note | main |
 
-Counts: P0 1 · P1 18 · P2 28 · P3 7. Broken 16 · inconsistent 21 · not good enough 11 · no longer needed 6.
+Counts after the skeptic pass: P0 1 · P1 18 · P2 27 · P3 8. Broken 16 · inconsistent 21 · not good enough 11 · no longer
+needed 6. None refuted; 15 corrected (see "Skeptic pass" below).
+
+### Routed in from other audits (all fixed on this branch)
+
+| id | sev | from | title | fix | status |
+|---|---|---|---|---|---|
+| CD-01 (parent copy) | P1 | content-data | Progress counted every kit skill, so a topic with a skill that has no item (reading aloud, or all items dropped at load) never showed as finished | One helper, `askableSkillIds` / `decidingStates` in `server/content/next-topic.js`, decides a topic on its askable skills for both `nextTopicFor` and the parent's Progress page | fixed |
+| CD-13/14 (placement side) | P2 | content-data | Placement must skip `retired: true` items and never ask two items of one `pairId` | `poolFor` draws only usable items; `nextItem` drops a candidate whose `pairId` was asked; `loadBank` keeps retired items so an old round still reads | fixed |
+| homework | P1 | content-data | "fractions ka homework hai" found only the subject: findTopic got the whole sentence | The caller strips filler and activity words (`FILLER`), tries the words together then one by one; `findTopic` unchanged; subject names reach the subject rung | fixed |
+| PLAT-07 (learning half) | P1 | platform | A paired device could change parent fields when no PIN is set, and send `parentView` | `updateChild` refuses parent fields from a device (403); onboarding takes only `childPicks` from a device. The scope change stays with platform | fixed |
+| PLAT-08 | P2 | platform | A password with a space at either end, set through reset, could never log in | Signup and login read it as typed; `passwordMatches` also tries the trimmed form so older accounts still log in | fixed |
+| PLAT-09 | P2 | platform | Deleting a child left its paired device's session alive, read as a parent session by three hand-written joins | `childEraseStmts` deletes the devices' `auth_session` rows in the erasure's transaction, before the child row | fixed |
+| PLAT-10 | P2 | platform | The sign-in burst limiter was keyed on a cookie the caller chooses | Keyed on the ingress's address (rightmost hop) unless the caller already checked the session | fixed |
+| PLAT-52 | P3 | platform | PATCH child skipped POST's checks; account delete left `tx_in` | `childPatchOf` checks and shapes every field as POST does; both cookies cleared | fixed |
 
 ## Evidence notes
 
@@ -248,4 +262,40 @@ sixth on-time review is scheduled for 2042, `kt/fsrs.js:52-54`); `ledger.js:17` 
 - **Run:** the turn planner over the four pilot scripts (all right, all wrong, mixed, an M0 child); the planner and brief
   for LEARN-01, 19, 21, 22; report previews for LEARN-11, 12, 13, 18; ledger folds for LEARN-02 to 05, 25, 27 to 29, 48;
   the cold start for LEARN-07. Not run against a database or a browser: LEARN-08, 09, 26, 43, 46, 47 are from the code.
-- **Skeptic pass:** see the end of this file.
+- **Skeptic pass:** see below.
+
+## Skeptic pass
+
+One sub-agent was given the 54 findings and asked to refute each at its `file:line`, defaulting to refuted when it could not
+reproduce. I then re-read the code for LEARN-01, 03, 11, 12, 13, 14 and 24 myself. Result: none refuted, 37 upheld, 15
+corrected. The corrections are now in the table and here:
+
+- **LEARN-06:** set-up offers only maths and EVS or science (`src/child/feel.ts:10`), so the failing save is reachable from the
+  parent corner's School plan (`SchoolPlan.tsx:155`), not from set-up.
+- **LEARN-14:** the example was wrong. A second-try answer (C1) reads "Right, on their own" on the skill sheet (`truth.js:117`)
+  and "Partly right" in the Notes drawer. The disagreement and the fix stand.
+- **LEARN-20:** no child or parent sees it; unused wiring and a design call. P1 → P2.
+- **LEARN-24:** the fallback quotes the teacher's line just before the child's answer, which is normally the turn that asked
+  the card. P2 → P3.
+- **LEARN-29:** narrower. On open items a leak becomes C4 on mastery, not full weight; full weight holds only for choice items
+  and probes (`temper` ignores `preAttemptHelp`, facets halve it).
+- **LEARN-35:** a parent on a laptop cannot sign out. P2 → P1.
+- **LEARN-39:** the deletion receipt's "7 days" is not a placeholder: decision `dek-in-pitr-database` backs it. The schedule
+  sentence finding stands.
+- **LEARN-42:** `cat.js` cannot go whole: `schoolYearFraction` and `startChapter` are live in the cold start.
+- **LEARN-45:** the board is shown in the parent header (`Shell.tsx:111`); only logic ignores it. The fix stands.
+- **LEARN-47:** the same finding as PLAT-07. The handler side is fixed here; the scope is platform's.
+- **LEARN-49:** 1,069 lines, and not inert: `state.js`, `lesson.js`, `compile.js` and `rows.js` import it and
+  `schoolPointerStmts` runs at every lesson end. Shelving it is a refactor, not a deletion.
+- **LEARN-50:** `withDue` is dead too. Not to be deleted: `kt/gen.js` (a fixture for five tests) and `kt/index.js` (an eval
+  uses it) move instead; `rep_fluency` read-only is a recorded decision (`decisions.md:2138`); the seam patches are cited at
+  `decisions.md:2138,2177`; `protege.js` is specified in COMPREHENSION-ENGINE §4.4.
+- **LEARN-51:** the Scheduler helpers are pinned by `src/ui-v3/__tests__/schedule.test.mjs`; delete together if at all.
+- **LEARN-52:** `SummaryStep` and `VerifyStep` are routed (reachable by URL only), like `ControlsStep`. Only `MeetStep` and
+  `TrustStep` are unrouted.
+- **LEARN-53:** `OUTCOMES` matches the server. The real lags are `via` without `"late"` and `Ledger` without
+  `placementPending`.
+
+Fix notes from the skeptic: LEARN-02 can also be fixed by dropping the 1/j weighting on the failure side; LEARN-03's fix
+should also cover script `:then:<mix-up>` cards; LEARN-10's fix should keep field-level 400 messages (the spoken-name rule)
+on their field.
