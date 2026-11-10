@@ -344,7 +344,7 @@ test("CascadeLink: WebRTC unavailable → push-to-talk recording; a recorded tur
     link.talkStart();
     await sleep(260);
     link.talkEnd();
-    await sleep(PTT_WAIT);
+    await until(() => events.some((e) => e.type === "child_final"));
     const fin = events.find((e) => e.type === "child_final");
     assert.ok(fin, JSON.stringify(events.map((e) => e.type)));
     assert.equal(fin.text, "teen chauthai");
@@ -356,7 +356,7 @@ test("CascadeLink: WebRTC unavailable → push-to-talk recording; a recorded tur
     events.length = 0;
     link.talkStart();
     link.talkEnd();
-    await sleep(PTT_WAIT);
+    await until(() => events.some((e) => e.type === "child_silent"));
     assert.deepEqual(events.map((e) => e.type), ["child_speech_start", "child_speech_end", "child_silent"]);
     assert.equal(clips.length, 1);
   } finally {
@@ -380,7 +380,8 @@ test("CascadeLink: speaks a stored reply as streamed PCM, and a barge-in stops e
     events.length = 0;
     link.promptTeacher({ text: "Achha! Ab batao, kaun bada hai?", seq: 7 });
     assert.deepEqual(reqs, [{ lessonId: "L1", seq: 7 }], "speaks the stored turn by seq, never free text");
-    await sleep(40);
+    // ready when all four streamed chunks are scheduled (a count of work done, not a 40 ms wait: a loaded machine streams slower)
+    assert.ok(await until(() => FakeAudioContext.last?.sources.length >= 4), `scheduled ${FakeAudioContext.last?.sources.length} of 4 chunks`);
     assert.deepEqual(events.map((e) => e.type), ["response_start", "teacher_delta", "teacher_done", "teacher_audio_start"]);
     const ctx = FakeAudioContext.last;
     assert.equal(ctx.sources.length, 4);
@@ -401,7 +402,7 @@ test("CascadeLink: speaks a stored reply as streamed PCM, and a barge-in stops e
     // A reply that plays to the end completes.
     events.length = 0;
     link.promptTeacher({ text: "Shabash!", seq: 8 });
-    await sleep(1200);
+    assert.ok(await until(() => events.some((e) => e.type === "response_done")), "the reply plays to the end");
     assert.deepEqual(events.map((e) => e.type), ["response_start", "teacher_delta", "teacher_done", "teacher_audio_start", "teacher_audio_end", "response_done"]);
     assert.equal(events.at(-1).status, "completed");
   } finally {
@@ -442,15 +443,14 @@ test("runtime + CascadeLink: a spoken final becomes one Director turn with its A
     assert.equal(starts[0].mode, "cascade");
     assert.deepEqual(linkCtx, [{ mode: "text", cascade: true }]);
     assert.equal(rt.state.mode, "text");
-    await sleep(30);
-    assert.equal(rt.state.status, "speaking");
+    assert.ok(await until(() => rt.state.status === "speaking"), `status ${rt.state.status}`);
     // The child talks over the opening (barge-in), then finishes a turn.
     link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c1" });
     assert.equal(rt.state.status, "listening");
     link.protocol.handle({ type: "input_audio_buffer.speech_stopped", item_id: "c1" });
     assert.equal(rt.state.status, "thinking");
     link.protocol.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "c1", transcript: "teen chauthai", logprobs: [{ logprob: -0.1 }] });
-    await sleep(30);
+    assert.ok(await until(() => turns.length >= 1), "the spoken final became a turn");
     assert.equal(turns.length, 1);
     assert.equal(turns[0].childText, "teen chauthai");
     assert.ok(Math.abs(turns[0].asrConfidence - Math.exp(-0.1)) < 1e-9);
@@ -485,7 +485,7 @@ test("CascadeLink: a call that never connects (UDP blocked, no TURN) does not ho
     assert.ok(connectMs < 100, `connect took ${connectMs.toFixed(0)} ms of CPU`);
     assert.equal(link.listening, false, "the call is still coming up");
     link.promptTeacher({ text: "Namaste! Aaj hum bhinn padhenge.", seq: 1 });
-    await sleep(40);
+    await until(() => events.some((e) => e.type === "teacher_audio_start"));
     const firstAudio = events.find((e) => e.type === "teacher_audio_start");
     assert.ok(firstAudio, "her opening sounds while the call is still connecting");
     console.log(`fallback path: start → connect ${connectMs.toFixed(1)} ms, → first opening audio < 40 ms more (fake audio, 5 ms TTS)`);
@@ -538,7 +538,7 @@ test("CascadeLink: microphone denied → typed lesson, her voice still plays", a
     link.setPushToTalk(true);
     link.talkStart(); // no-ops without a mic
     link.promptTeacher({ text: "Achha, batao.", seq: 2 });
-    await sleep(40);
+    await until(() => events.some((e) => e.type === "teacher_audio_start"));
     assert.ok(events.some((e) => e.type === "teacher_audio_start"));
     link.sendChild("teen chauthai");
     const fin = events.find((e) => e.type === "child_final");
