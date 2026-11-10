@@ -38,6 +38,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { verdictFor, certificates } from "./certify.js";
 import { approvedVerdict } from "../studio/approved.js";
+import { passageFits } from "../studio/passage.js";
 import { playCertificates, playPassed } from "./compose.js";
 import { fitBoard, minPxAt } from "../../src/studio/boardFit.ts";
 import { boardFrame } from "../../src/studio/boardView.ts";
@@ -199,6 +200,13 @@ export function certifyForTray(artifact, ctx = {}) {
         if (!box) return out(false, "whiteboard-fit", "no box for this class");
         const r = boardAt(artifact.script, box, { young });
         return out(r.ok, "whiteboard-fit", r.why);
+      }
+      case "passage": {
+        // (round 7 PASSAGE.md: reading matter in real text — certified by predicate at the device's box: 16 px type, a line of
+        // 12+ characters, the 44 px page buttons and 2+ lines in view; a page taller than the box scrolls inside it)
+        const box = ctx.box ?? contractBox(vp, { young });
+        const r = passageFits(artifact, box, { young });
+        return out(r.ok, "passage-fit", r.why);
       }
       case "stagecraft": {
         const sc = artifact.stagecraft ?? {};

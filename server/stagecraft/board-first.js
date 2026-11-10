@@ -685,6 +685,8 @@ function keyless(call, keys, { ownParts = false } = {}) {
     return marks.length ? { ...call, marks } : null;
   }
   if (call.template === "fraction-parts@1") return isFrac(call.shade, call.parts) ? { ...call, hideResult: true } : call;
+  // (equal groups' grid view: a count key that is its rows, its columns or its total would be written on the board — no view)
+  if (call.template === "shade-grid@1") return [call.rows, call.cols, call.rows * call.cols].some((n) => numKeys.includes(n)) ? null : call;
   if (call.template === "unrolled@1") {
     const sum = call.sides.reduce((a, b) => a + b, 0);
     const hide = call.sides.map((v, i) => (numKeys.includes(v) ? i : -1)).filter((i) => i >= 0);
@@ -723,8 +725,12 @@ function altCall0(ref, { line = "", withheld = [], up = null } = {}) {
     if (c.template === "wholes@1" && c.as === "bar" && Array.isArray(c.wholes) && c.wholes.length) return { template: "wholes@1", wholes: c.wholes, view: "wholes" };
     // (P6 fixtures, c4 s2: equal groups have a second view — the same groups as the rows of a grid, each row as many as one
     // group, the rows and columns named and the total not written when the board hides it; unequal sizes have none)
-    if (c.template === "equal-groups@1" && !Array.isArray(c.sizes) && Number.isInteger(c.groups) && c.groups >= 2 && c.groups <= 6 && Number.isInteger(c.each) && c.each >= 1 && c.each <= 10)
-      return { template: "shade-grid@1", rows: c.groups, cols: c.each, shade: 0, labels: true, ...(c.hideResult ? { hideResult: true } : {}), view: "grid" };
+    // (main v6.10, Learning's D13 c4 s2 e3: "20 marbles as 2 groups of 10" is written as sizes [10, 10] — sizes all EQUAL are the
+    // same equal groups; unequal sizes have no grid)
+    const eqSizes = Array.isArray(c.sizes) && c.sizes.length >= 2 && c.sizes.every((n) => Number.isInteger(n) && n === c.sizes[0]) && !c.equalTo;
+    const g = c.template === "equal-groups@1" ? (eqSizes ? { groups: c.sizes.length, each: c.sizes[0] } : !Array.isArray(c.sizes) ? { groups: c.groups, each: c.each } : null) : null;
+    if (g && Number.isInteger(g.groups) && g.groups >= 2 && g.groups <= 6 && Number.isInteger(g.each) && g.each >= 1 && g.each <= 10)
+      return { template: "shade-grid@1", rows: g.groups, cols: g.each, shade: 0, labels: true, ...(c.hideResult ? { hideResult: true } : {}), view: "grid" };
     const ps = sidesOf(c);
     if (ps) {
       const sum = Math.round(ps.sides.reduce((a, b) => a + b, 0) * 10) / 10;

@@ -66,7 +66,8 @@ test("LEARN-26: writers outside the turn guard on max(seq) after the lock, retry
   const before = { skills: { a: { pL: 0.3 }, b: { pL: 0.5 } } }, after = { skills: { a: { pL: 0.4 }, b: { pL: 0.5 } } };
   const st = W.projectionStmts({ id: "c1", legal_mode: "M1" }, before, after, 0, (sk) => ({ skillId: "a", pKnown: sk.pL, status: "practising", attempts: 1, correctUnaided: 0, generativePass: false, delayedPass: false, lastSeen: new Date(0).toISOString() }));
   assert.equal(st.length, 1, "only the changed skill");
-  for (const f of ["server/placement/kt.js", "server/comprehension/later.js"]) {
+  // (Studio's half, to-studio/005: server/studio/grade.js writeStudioEvidence)
+  for (const f of ["server/placement/kt.js", "server/comprehension/later.js", "server/studio/grade.js"]) {
     const src = readFileSync(new URL(`../${f}`, import.meta.url), "utf8");
     assert.match(src, /W\.seqGuardStmt\(child\.id, live\.maxSeq\)/, f);
     assert.match(src, /GUARD_FAILED && attempt < W\.FOLD_RETRIES/, f);

@@ -37,6 +37,7 @@ import * as stagecraft from "../stagecraft/seam-bridge.js";
 import { startStagecraft, stopStagecraft, touchStagecraft } from "../stagecraft/lesson.js";
 import { forgetPictureLesson } from "./picture.js";
 import { approvedFor } from "./approved.js";
+import { passageArtifact } from "./passage.js";
 import { factsOfSpec } from "../stagecraft/builders.js";
 import * as boardSync from "../stagecraft/board-sync.js";
 import { sceneFor } from "../forge/animate/scenes.js";
@@ -250,7 +251,7 @@ export function slotOf(p, state = p.state) {
   if (p.source === "scene") return { slotId: p.slotId, intentId: p.intentId, state: state === "fallback_ready" ? "fallback_shown" : state, ...(p.artifact ? { artifact: p.artifact } : {}) };
   // round 3 forge: a play piece (server/forge3/live.js) is its PlayArtifact; the play server grades it from raw acts
   // (the approval lane: an approved generated piece is its own StagecraftArtifact, made and gated in requestIntent)
-  if (p.source === "play" || p.source === "approved") return { slotId: p.slotId, intentId: p.intentId, state: state === "fallback_ready" ? "fallback_shown" : state, ...(p.artifact ? { artifact: p.artifact } : {}) };
+  if (p.source === "play" || p.source === "approved" || p.source === "passage") return { slotId: p.slotId, intentId: p.intentId, state: state === "fallback_ready" ? "fallback_shown" : state, ...(p.artifact ? { artifact: p.artifact } : {}) };
   // round 5: a picture (studio/picture.js) is its own artifact, like a board
   const art = p.artifact?.kind === "whiteboard" || p.artifact?.kind === "image" ? p.artifact : p.kind === "whiteboard" || p.kind === "image" ? undefined : artifactOf(p);
   const st = state === "fallback_ready" ? "fallback_shown" : state;
@@ -1235,6 +1236,34 @@ export const studioSeam = {
    * director8 S3′ (Brain): the second view the last preselectWhiteboard picked for this lesson ("parts": fraction-bars@1,
    * her line describes the bars), or null. preselectWhiteboard's row is unchanged; read this right after it. Never throws.
    */
+  /**
+   * round 7 (PASSAGE.md; main's yes 2026-11-10): a kit passage on the tray as reading matter — the kit's text exactly, paged,
+   * `page` (1-based) the page she is reading from (Brain passes it with the passage beat, and again while the question and its
+   * hints run). One piece per passage per lesson: a later call only turns the page. Certified by predicate at the device's box
+   * (tray-gate "passage"); refused → { state: "failed" } and nothing changes on screen. Never throws.
+   * @param {string} lessonId @param {{ passage: { id: string, text: string, title?: string|null, kind?: string|null }, page?: number, lang?: string|null }} o
+   */
+  showPassage(lessonId, { passage, page = 1, lang = null } = {}) {
+    try {
+      const L = lessons.get(lessonId);
+      if (!L || L.safety || L.studioControl === "off" || !passage?.id || !String(passage.text ?? "").trim()) return null;
+      const intentId = `${lessonId}:passage:${String(passage.id).slice(0, 48)}`;
+      const art = passageArtifact(passage, { page, lang });
+      const prev = L.pieces.get(intentId) ?? null;
+      const p = prev ?? { intentId, slotId: `${intentId}:slot`, kind: "passage", archetype: "passage", source: "passage", skillId: null, itemId: null, retired: false, createdAt: Date.now() };
+      const g = certifyForTray(art, gateCtx(L, p));
+      if (!g.ok) { noteRefusal(L, p, g, "passage"); return { slotId: p.slotId, intentId, state: "failed", refused: [g.why] }; }
+      Object.assign(p, { artifact: art, state: "revealed", retired: false, revealedAt: Date.now(), revealedTurn: L.turn,
+        facts: { kind: "passage", archetype: "passage", onScreen: { passage: art.passage.id, page: art.passage.page, pages: art.passage.pages.length } } });
+      if (!prev) L.pieces.set(intentId, p);
+      if (L.onScreen && L.onScreen !== intentId) retirePiece(L, L.onScreen, "replaced");
+      L.onScreen = intentId;
+      push(L, { t: "slot", slot: slotOf(p, "revealed") });
+      traceRecord("studio.passage", { intentId, passage: art.passage.id, page: art.passage.page, pages: art.passage.pages.length });
+      return { slotId: p.slotId, intentId, state: "revealed", artifact: art, page: art.passage.page, pages: art.passage.pages.length };
+    } catch { return null; }
+  },
+
   preselectedAltView(lessonId) {
     try { return lessons.get(lessonId)?.preAltView ?? null; } catch { return null; }
   },

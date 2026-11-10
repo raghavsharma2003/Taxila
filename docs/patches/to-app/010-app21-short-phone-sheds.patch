@@ -1,0 +1,96 @@
+From: Studio (C1), 2026-11-10 — audit APP-21 (and the journey audit's 360 × 640 number-pad shot), routed to Studio by main
+Subject: [PATCH 010] a short phone sheds before the lesson column overflows: the mic dock stays on screen
+
+At 360 × 640 with the number pad up, solveStage returned overflow: true with the dock's bottom at y 700 (the audit's call:
+{ width: 360, height: 640, family: "older", answerNeed: 232, chips: true, artifact: true }), so the lesson scrolled and the mic
+dock sat below the fold. Budget phones are 360 × 640-720 after browser bars (context/rejected.md:34).
+
+solvePhone now sheds in order before it allows overflow:
+1. the steer chips, only while an answer surface is up and only when the stage would otherwise fall below its full minimum
+   (the child is answering on the pad and steers by voice);
+2. the stage, down to its slot minimum under the rail;
+3. the slot, down to SLOT_FLOOR (112).
+Only below that does it report overflow. Any layout that fits at its full minimum is unchanged (360 × 720 and 360 × 800 with the
+pad, 412 × 915, and 360 × 640 with no answer surface). The pad keeps its full size; the dock ends at y 632.
+
+At 360 × 640 the artifact slot is then 156 high (it was 176 on a scrolling page). The tray gate certifies boards at the box the
+client reports, so a board that does not fit the smaller box is not shown there. Merge with care beside APP-04, as the audit
+notes. Test: tests/r7-app21-short-phone.test.mjs (it fails on the current file and passes after). Apply with `git apply`.
+
+diff --git a/src/ui-v3/kaksha/lesson/stageLayout.ts b/src/ui-v3/kaksha/lesson/stageLayout.ts
+index 7d3632c42..0de6fda4e 100644
+--- a/src/ui-v3/kaksha/lesson/stageLayout.ts
++++ b/src/ui-v3/kaksha/lesson/stageLayout.ts
+@@ -73,6 +73,8 @@ export const STAGE = {
+   wideMinWidth: 900, landscapeMaxHeight: 520,
+ } as const;
+ 
++/** The smallest artifact slot a short phone may show (the stage gives way down to this before the dock leaves the screen). */
++export const SLOT_FLOOR = 112;
+ const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
+ const need = (n: number | undefined) => (n && n > 0 ? Math.ceil(n) : 0);
+ 
+@@ -97,14 +99,21 @@ function solvePhone(i: StageInput, fs: number): StageLayout {
+   const top = STAGE.top;
+   const kb = !!i.keyboard;
+   const dock = kb ? Math.round(STAGE.dockKeyboard + 24 * (fs - 1)) : Math.round(STAGE.dock[i.family] + 44 * (fs - 1));
+-  const chips = i.chips && !kb && !i.play ? Math.round(STAGE.chips * Math.min(fs, 1.3)) : 0;
+   const strip = need(i.strip);
+   const answer = kb ? 0 : need(i.answerNeed);
+   const rail = Math.max(Math.round(STAGE.rail * fs), need(i.railNeed));
+   // top · 4 · stage · 8 · answer (+8) · chips · strip · dock · pad
+-  const fixed = top + 4 + STAGE.gap + (answer ? answer + STAGE.gap : 0) + chips + strip + dock + STAGE.pad;
++  const fixedWith = (chipsH: number) => top + 4 + STAGE.gap + (answer ? answer + STAGE.gap : 0) + chipsH + strip + dock + STAGE.pad;
++  // (audit APP-21 / JRN: 360 × 640 with the number pad up scrolled the mic dock below the fold. Before anything overflows, a
++  // short phone sheds in order: the steer chips while an answer surface is up (the child is answering on it, and steers by
++  // voice), then the stage down to its slot minimum under the rail, then the slot down to SLOT_FLOOR. Only below that is the
++  // column allowed to overflow. A layout that fits at its full minimum is unchanged.)
++  let chips = i.chips && !kb && !i.play ? Math.round(STAGE.chips * Math.min(fs, 1.3)) : 0;
++  const full = kb ? rail + 64 : STAGE.stageMin;
++  if (chips && answer && H - fixedWith(chips) < full) chips = 0;
++  const fixed = fixedWith(chips);
+   let stageH = H - fixed;
+-  const min = kb ? rail + 64 : STAGE.stageMin;
++  const min = kb ? full : stageH >= full ? full : Math.max(rail + SLOT_FLOOR, Math.min(full, rail + STAGE.slotMin, stageH));
+   const overflow = stageH < min;
+   stageH = Math.max(stageH, min);
+   const stage: Rect = { x: g, y: top + 4, w: W - 2 * g, h: stageH };
+diff --git a/tests/r7-app21-short-phone.test.mjs b/tests/r7-app21-short-phone.test.mjs
+new file mode 100644
+index 000000000..8801627b8
+--- /dev/null
++++ b/tests/r7-app21-short-phone.test.mjs
+@@ -0,0 +1,33 @@
++// Audit APP-21 (and the journey audit's 360 × 640 dock): with the number pad up on a 360 × 640 phone the lesson column
++// overflowed and the mic dock sat below the fold (the audit's call: overflow true, the dock's bottom at 700). A short phone
++// now sheds before it overflows: the steer chips while an answer surface is up, then the stage down to its slot minimum,
++// then the slot down to SLOT_FLOOR. Layouts that fit at their full minimum are unchanged.
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { solveStage, SLOT_FLOOR, STAGE } from "../src/ui-v3/kaksha/lesson/stageLayout.ts";
++
++test("APP-21: 360 × 640 with the number pad up keeps the dock on screen (chips fold, the slot gives way, nothing overflows)", () => {
++  const r = solveStage({ width: 360, height: 640, family: "older", answerNeed: 232, chips: true, artifact: true });
++  assert.equal(r.overflow, false);
++  assert.ok(r.dock.y + r.dock.h <= 640, `dock bottom ${r.dock.y + r.dock.h}`);
++  assert.equal(r.chips, null, "the steer chips fold while the pad is up on a short phone");
++  assert.ok(r.slot.h >= SLOT_FLOOR, `slot ${r.slot.h}`);
++  assert.ok(r.answer && r.answer.h === 232, "the pad keeps its full size");
++});
++
++test("APP-21: what already fit is unchanged — the chips stay and the stage keeps its full minimum", () => {
++  for (const [w, h] of [[360, 720], [360, 800], [412, 915]]) {
++    const r = solveStage({ width: w, height: h, family: "older", answerNeed: 232, chips: true, artifact: true });
++    assert.equal(r.overflow, false, `${w}x${h}`);
++    assert.ok(r.chips, `${w}x${h}: chips stay`);
++    assert.ok(r.stage.h >= STAGE.stageMin, `${w}x${h}: stage ${r.stage.h}`);
++  }
++  const noPad = solveStage({ width: 360, height: 640, family: "older", chips: true, artifact: true });
++  assert.ok(noPad.chips && noPad.stage.h >= STAGE.stageMin, "no answer surface up: nothing is shed");
++});
++
++test("APP-21: below the floor it still reports overflow (never a slot smaller than SLOT_FLOOR)", () => {
++  const r = solveStage({ width: 360, height: 520, family: "young", answerNeed: 300, chips: true, artifact: true });
++  assert.equal(r.overflow, true);
++  assert.ok(r.slot.h >= SLOT_FLOOR);
++});

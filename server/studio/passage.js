@@ -81,3 +81,30 @@ export function pageAt(paged, offset) {
   const p = (paged?.pages ?? []).find((x) => offset >= x.start && offset < x.end);
   return p ? p.n : 1;
 }
+
+/**
+ * The tray artifact for a passage (shared/studio.ts kind "passage"): the kit's text paged, the page she is reading from.
+ * @param {{ id: string, text: string, title?: string|null, kind?: string|null }} passage @param {{ page?: number, lang?: string|null }} [o]
+ */
+export function passageArtifact(passage, { page = 1, lang = null } = {}) {
+  const paged = pagePassage(passage);
+  const n = Math.min(paged.pages.length, Math.max(1, Math.floor(Number(page) || 1)));
+  return { kind: "passage", passage: { id: String(passage?.id ?? ""), title: passage?.title ?? null, kind: passage?.kind ?? null, lang: lang ?? (DEVA.test(String(passage?.text ?? "")) ? "hi" : "en"),
+    pages: paged.pages.map((p) => ({ n: p.n, text: p.text })), page: n } };
+}
+
+/** The renderer's layout at a box, by predicate (src/studio/PassageRenderer.tsx: 12 px padding, 16 px type (18 Young), line
+ *  height 1.6, a 44 px button row when paged): → { ok, why, lines, scrolls } for the TALLEST page. */
+export function passageFits(artifact, box, { young = false } = {}) {
+  const ps = artifact?.passage;
+  if (!ps || !Array.isArray(ps.pages) || !ps.pages.length || !box?.w || !box?.h) return { ok: false, why: "no passage or no box" };
+  const fs = young ? 18 : 16, lh = fs * 1.6, w = box.w - 24;
+  const per = (t) => Math.max(1, Math.floor(w / (fs * (DEVA.test(t) ? 0.62 : 0.55))));
+  if (per("x") < 12) return { ok: false, why: `a line of ${per("x")} characters at ${box.w} px` };
+  const linesOf = (t) => String(t).split("\n").reduce((n, l) => n + Math.max(1, Math.ceil([...l.trim()].length / per(l))), 0);
+  const chrome = 24 + (ps.title ? lh + 4 : 0) + (ps.pages.length > 1 ? 44 + 8 : 0);
+  const room = Math.floor((box.h - chrome) / lh);
+  if (room < 2) return { ok: false, why: `room for ${room} line(s) at ${box.w}×${box.h}` };
+  const lines = Math.max(...ps.pages.map((p) => linesOf(p.text)));
+  return { ok: true, why: lines > room ? `the longest page scrolls (${lines} lines, ${room} in view)` : "every page fits", lines, scrolls: lines > room };
+}

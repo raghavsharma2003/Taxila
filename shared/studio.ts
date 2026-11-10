@@ -148,6 +148,9 @@ export type StudioArtifact =
   | { kind: "scene"; stage?: StageSize; scene: import("./scene.js").Scene }
   /** A Stagecraft piece (STAGECRAFT P9): an RS-4 engine spec, a library variant, a passed live build or the board twin,
    *  mounted by src/stagecraft (StagecraftRenderer → StageController → the Studio v2 host). Never a loading state. */
+  /** round 7 (PASSAGE.md): a kit passage as reading matter — the kit's text EXACTLY, paged by server/studio/passage.js, real
+   *  wrapped text at ≥ 16 px with page buttons; `page` (1-based) is the page she is reading from. Never a whiteboard. */
+  | { kind: "passage"; stage?: StageSize; passage: { id: string; title?: string | null; kind?: string | null; lang?: string | null; pages: { n: number; text: string }[]; page: number } }
   | { kind: "stagecraft"; stage?: StageSize; stagecraft: { rung: string; archetype?: string; spec?: unknown; boardTwin?: { values?: Record<string, unknown>; board?: { title: string; lines: string[] } } | null; board?: { values?: Record<string, unknown> } | null; cue?: { clauseIdx: number; preRollMs: number; crossFadeMs: number }; buildSha?: string | null; blobUrl?: string | null } };
 export type StudioArtifactKind = StudioArtifact["kind"];
 

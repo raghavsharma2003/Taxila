@@ -4,7 +4,7 @@
 // by Stagecraft's own generatedSpec builder (the same prompt, validators and checks as the live rung), at most 2 attempts a
 // topic, under a hard USD cap.
 //
-//   node --env-file=.env.local scripts/approve-generate.mjs --topics c4-maths-ch05-t01,c5-maths-ch02-t01,c5-maths-ch02-t02,c6-maths-ch06-t01 --out data/studio-approved/candidates [--usd 0.25] [--dry]
+//   node --env-file=.env.local scripts/approve-generate.mjs --topics c4-maths-ch05-t01,c5-maths-ch02-t01,c5-maths-ch02-t02,c6-maths-ch06-t01 --out data/studio-approved/candidates [--usd 0.25] [--dry] [--keep-refused]
 //
 // Writes <out>/<topicId>.candidate.json (the target, the spec, its checks) and <out>/manifest.json (each call's deployment,
 // tokens, cost and outcome; the total). Reads the key only from the process env (server/azure.js); prints no secret and no
@@ -15,9 +15,13 @@ import path from "node:path";
 import { PILOT_TARGETS, beatFor, specHash } from "../server/studio/approved.js";
 import { specPrompt, createBuilders } from "../server/stagecraft/builders.js";
 import { kindOf } from "../server/stagecraft/catalogue.js";
+import { validateAny } from "../shared/studio-spec-ext/index.ts";
 
 const arg = (k, d = null) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
 const DRY = process.argv.includes("--dry");
+// --keep-refused: a refused attempt's spec as the model returned it, why it was refused and what the engine's repair dropped,
+// beside the candidates as <topic>.refused-<attempt>.json (main, 2026-11-10: c5-t02 fell back twice and nothing said why)
+const KEEP_REFUSED = process.argv.includes("--keep-refused");
 const OUT = path.resolve(arg("--out", "data/studio-approved/candidates"));
 const CAP = Number(arg("--usd", "0.25"));
 const MAX_ATTEMPTS = 2;
@@ -33,7 +37,7 @@ const targets = topics.map((t) => {
 if (!Number.isFinite(CAP) || CAP <= 0) throw new Error("--usd must be a positive number");
 
 const key = (t) => ({ topicId: t.topicId, band: "B3", lang: "hinglish", misconceptionId: t.misconceptionId });
-const cand = (t) => ({ id: `approve:${t.topicId}`, archetype: t.archetype, kind: kindOf(t.archetype), need: "contrast_misconception", premise: { misconceptionId: t.misconceptionId } });
+const cand = (t) => ({ id: `approve:${t.topicId}`, archetype: t.archetype, kind: kindOf(t.archetype), need: "contrast_misconception", premise: { misconceptionId: t.misconceptionId, ...(t.how ? { how: t.how } : {}) } });
 
 console.log(`approval lane — generate: ${targets.length} topics, ≤ ${MAX_ATTEMPTS} attempts each, cap $${CAP.toFixed(2)}${DRY ? " (dry: no call)" : ""}`);
 for (const t of targets) {
@@ -45,10 +49,10 @@ if (DRY) process.exit(0);
 const [{ chat, usdOf, normUsage }, { q8Strings }, { specChainCfg }] = await Promise.all([import("../server/azure.js"), import("../server/studio/plan.js"), import("../server/stagecraft/lesson.js")]);
 const dep = specChainCfg().chains?.spec?.[0] ?? "taxila-fast-bg";
 const calls = [];
-let spent = 0;
+let spent = 0, lastRaw = null;
 // (the builder's own chat call, wrapped only to record the deployment and tokens — never the request or its headers)
 const deps = {
-  chat: async (d, messages, o) => { const r = await chat(d, messages, o); calls.at(-1).tokens = normUsage(r.usage); return r; },
+  chat: async (d, messages, o) => { const r = await chat(d, messages, o); calls.at(-1).tokens = normUsage(r.usage); lastRaw = r.json ?? null; return r; },
   // taxila-fast-bg is taxila-fast's background twin, priced as taxila-fast (lesson.js productionDeps)
   usdOf: (d, u) => usdOf(d === "taxila-fast-bg" || d === "taxila-stagecraft" ? "taxila-fast" : d, u),
   normUsage,
@@ -67,6 +71,11 @@ for (const t of targets) {
     spent += usd;
     Object.assign(calls.at(-1), { usd: Math.round(usd * 1e6) / 1e6, ok: !!r?.ok, why: r?.ok ? null : r?.why ?? "refused" });
     console.log(`  ${t.topicId} attempt ${attempt}: ${r?.ok ? "candidate" : `refused (${r?.why})`}  $${usd.toFixed(5)}`);
+    if (!r?.ok && KEEP_REFUSED) {
+      const v = (() => { try { const x = validateAny(t.archetype, lastRaw); return { fellBack: !!x.fellBack, repairs: (x.repairs ?? []).slice(0, 60) }; } catch (e) { return { error: String(e?.message ?? e).slice(0, 200) }; } })();
+      fs.writeFileSync(path.join(OUT, `${t.topicId}.refused-${attempt}.json`), JSON.stringify({ v: 1, target: t, why: r?.why ?? "refused", validator: v, raw: lastRaw }, null, 2) + "\n");
+    }
+    lastRaw = null;
     if (r?.ok && r.checks?.contentSafe !== false) done = { r, attempt };
     if (spent > CAP) throw new Error(`USD cap passed: $${spent.toFixed(4)} > $${CAP.toFixed(2)}`);
   }
