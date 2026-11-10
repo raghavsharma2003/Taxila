@@ -26730,6 +26730,34 @@
    "at": "2026-11-09",
    "title": "Dropping every '?' sentence outside the card on scripted turns (v6.6, say.js cardlessQ / noQ(body)) to stop model-written questions. It also removed authored text: Learning's D10 register rewrite added rhetorical questions to points ('Neeche ka 4? Patti ke 4 barabar tukde.', 'Neeche 3 kyun? Kyunki…'), and director16 lost c5-t02's e1 point and c4's e3 point in all 8 of those lessons. A guard aimed at one author's text must check who wrote the sentence, not its punctuation; v6.8 V1″ limits the drop to model sentences.",
    "source": "inbox/r7-main-34.json"
+  },
+  {
+   "id": "dc-r7-games-yantra-roshni",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "yantra/roshni (light) as a never-timed mode for class 7 science c7-science-ch11-t01: a light bench (a lane per thing, a slot for a screen, the child's eye on the right). parda (s2) place kit-named screens so the eye sees each lit source clearly / not clearly / not at all as the card shows; roshan (s3) switch kit-named sources and place opaque screens so the eye sees only the card's things (a non-luminous thing only by a source's light reflected; only sunlight lights the Moon); dhak (s1) cover, with exactly as many cardboard covers as sources, everything that gives out its own light. Mal-rules: m3 blur-clear, m1 moon-alone and moon-cover, m2 look-hard. Rays are drawn only from sources; the Sun's lane is always walled from the eye. Why: the topic had no game. Reverse: a child pilot shows parda placements made by trial (many refused looks per level) rather than by what each material lets through.",
+   "source": "inbox/r7-games-yantra-roshni.json"
+  },
+  {
+   "id": "ms-r7-games-yantra-roshni-cert",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "yantra/roshni play-cert (forge3-qa, p360/p412/l1366): every roshni sample passes at every size (24 new samples; table 4272/4272; the existing yantra samples unchanged); every goal solved by real taps at 360 x 640 on seeds 3 and 17 at all three looks (18 runs); every mal-rule state reached (4); no clipped label; smallest tap target 48 px; tests/r7-games-yantra-roshni.test.mjs 18 tests.",
+   "source": "inbox/r7-games-yantra-roshni.json"
+  },
+  {
+   "id": "dc-r7-held-board-studio",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "dc-r7-held-board, Studio's half (main's v6.8 on director16, reversal clause 1). Contract proposed to Brain: a script turn's whiteboard intent carries intent.held = { board, unit, switchTo?: { board, unit, atChar, atClause? } }. With it, Studio draws held.board from its ref as authored: no line-driven preselect, no gate on her words, no ladder fallback. A refusal keeps the page up. held.board equal to the board up (by ref) is KEPT, shown at its end state with no redraw, so Hindi, clarify, aside and \"sawaal kya hai\" turns hold the board. At most one switch, to switchTo.board from her words at atChar. A picture ask draws the held board's second view BESIDE it on one split board, 640 × 300: the held board left (still), the view right, each a 320-wide panel at 0.8 geometry. Small words are written one size up, every op stays inside its own panel, and the panels are certified one by one. If the lint refuses a panel, the held board stays alone, never the view instead of it. Her picture line comes from the drawn view: studioSeam.preselectedAltLine (\"Wahi poora ab gol: 4 barabar hisse\", \"Pizza: 3 alag-alag tukde\"), never \"yahi numbers\". S9b's remediation-board view does not fire under held. Reverse with the held rule (main's reversal: the teaching axes below 3.5 because a point or remediation lost its own picture).",
+   "source": "inbox/r7-studio-32.json"
+  },
+  {
+   "id": "ms-r7-held-board-split-360-2026-11-09",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "The picture split at 360 × 640 portrait, on the real child route (Playwright, the whiteboard player). The stage box is height-bound, about 202 × 180 px above the teacher's PiP, so a 400 × 300 board is drawn at 0.505–0.6 and a 400 × 600 stack at 0.34. A 640 × 300 board keeps the height-bound scale. Measured: with words kept at their size, the split's smallest word was 12 px against 16 px for the rectangle alone (the player zooms a lone board to its words). With small words one size up in the split, both the pizza and rectangle splits have every word inside the stage box and words no smaller than the board alone, with no tap target on the board. Of 8 sample card boards, 7 split; the lettered hexagon's six side labels refuse the lint and its board stays alone. The rectangle's unrolled side labels are tight but do not touch. tests/r8-held-board-browser.test.mjs pins it.",
+   "source": "inbox/r7-studio-32.json"
   }
  ],
  "edges": [
@@ -41857,6 +41885,26 @@
    "src": "dc-r7-script-walk-v6-8",
    "rel": "caused_by",
    "dst": "rj-r7-question-drop-on-authored-text"
+  },
+  {
+   "src": "dc-r7-games-yantra-roshni",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-yantra-roshni-cert"
+  },
+  {
+   "src": "dc-r7-held-board-studio",
+   "rel": "part_of",
+   "dst": "dc-r7-held-board"
+  },
+  {
+   "src": "dc-r7-held-board-studio",
+   "rel": "supersedes",
+   "dst": "dc-r7-remediation-second-view"
+  },
+  {
+   "src": "dc-r7-held-board-studio",
+   "rel": "measured_by",
+   "dst": "ms-r7-held-board-split-360-2026-11-09"
   }
  ]
 }

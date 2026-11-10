@@ -58,7 +58,7 @@ export const MODES = {
   nazariya: ["views", "array", "floor", "powers", "mirror", "tri", "solid"],   // r4-khand; r7 nazariya2: tri (a triangle's cloth as half a rectangle), solid (faces / edges / corners of a solid turned in the hand)
   arena: ["pick"],
   stambh: ["bars", "picto"],
-  yantra: ["beam", "circuit", "pendulum"],
+  yantra: ["beam", "circuit", "pendulum", "roshni"],   // r7 roshni: sources of light and materials (a light bench, the eye on its right)
   kaal: ["place", "order"],
   vakya: ["rail"],
   kila: ["multiples", "factors", "lcm", "divisibility"],

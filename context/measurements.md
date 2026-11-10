@@ -6403,3 +6403,18 @@ Register is 3.5 in all four topics for the first time. c6 passes every judge axi
 H4 flagged 1 of the 8.
 
 Full write-up: docs/design/round7/judgements/director16-2026-11-09.md.
+
+
+<!-- merged from inbox/r7-games-yantra-roshni.json -->
+## `ms-r7-games-yantra-roshni-cert`
+
+yantra/roshni play-cert, 2026-11-09 (forge3-qa, local harness, p360 / p412 / l1366, every art direction).
+
+- **Cert:** every roshni sample passes at every size (24 new samples); the table stands at 4272 of 4272; the existing yantra samples are unchanged.
+- **Tests:** tests/r7-games-yantra-roshni.test.mjs, 18 tests: an independent checker (its own reading of the kit) agrees with what the eye sees at every look over random play; every mal-rule folds its kit id; every source and material is read out of the kit's sentences; no ray starts at the eye; the Sun's lane is always walled; CPU-time speed bars.
+- **Browser runs** (page.mouse on the canvas targets, getByTestId on the DOM buttons, never a dispatch): every goal solved at 360 x 640 on seeds 3 and 17 at looks 1 to 3 (18 runs); every mal-rule state reached (4); no clipped label; smallest tap target 48 px.
+- **Shots:** docs/design/round7/games/runshots-yantra-roshni/.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r7-held-board-split-360-2026-11-09` (2026-11-09): The picture split at 360 × 640 portrait, on the real child route (Playwright, the whiteboard player). The stage box is height-bound, about 202 × 180 px above the teacher's PiP, so a 400 × 300 board is drawn at 0.505–0.6 and a 400 × 600 stack at 0.34. A 640 × 300 board keeps the height-bound scale. Measured: with words kept at their size, the split's smallest word was 12 px against 16 px for the rectangle alone (the player zooms a lone board to its words). With small words one size up in the split, both the pizza and rectangle splits have every word inside the stage box and words no smaller than the board alone, with no tap target on the board. Of 8 sample card boards, 7 split; the lettered hexagon's six side labels refuse the lint and its board stays alone. The rectangle's unrolled side labels are tight but do not touch. tests/r8-held-board-browser.test.mjs pins it.

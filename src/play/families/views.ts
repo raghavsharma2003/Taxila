@@ -18,6 +18,7 @@ import { makeTriView } from "./nazariya/tri.view.ts";     // r7 nazariya2
 import { makeSolidView } from "./nazariya/solid.view.ts"; // r7 nazariya2
 import { makeArenaView } from "./arena/arena.view.ts";
 import { makeCircuitView } from "./yantra/circuit.view.ts";
+import { makeRoshniView } from "./yantra/roshni.view.ts";
 import { makeKaalView } from "./kaal/kaal.view.ts";
 import { makeVakyaView } from "./vakya/vakya.view.ts";
 import { makeKilaView } from "./kila/kila.view.ts";
@@ -77,6 +78,7 @@ export const VIEWS: Record<string, MakeView> = {
   "yantra/beam": makeBeamView,
   "yantra/pendulum": makePendulumView,
   "yantra/circuit": makeCircuitView,
+  "yantra/roshni": makeRoshniView,
   "kaal/place": makeKaalView,
   "kaal/order": makeKaalView,
   "vakya/rail": makeVakyaView,
