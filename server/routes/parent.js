@@ -28,6 +28,7 @@ import { speakable } from "../voice/spoken.js";
 import { ITEM_CLASSES } from "../learner/kt/outcomes.js";
 import { learningDay, isoWeek, addDays, zonedToUtc } from "../conductor/clock.js";
 import { madeForOf } from "../reports/madeFor.js";
+import { verbFor } from "../play/dress.js";
 import { listReports, previewReport, reportById, termOf, windowOf } from "../reports/index.js";
 import { HOW, renderFixed } from "../reports/templates.js";
 import { outcomeName } from "../learner/kt/outcomes.js";
@@ -492,12 +493,14 @@ export function defaultControls(classLevel) {
  */
 export const reportChannels = () => (process.env.TAXILA_REPORT_WHATSAPP === "on" ? ["whatsapp", "app"] : ["app"]);
 const EXTRA_TIME = ["normal", "more", "most"];
+const PLAY_VERBS = ["fire", "scan"];
 const controlsOut = (row, child) => row ? {
   dailyMinutes: row.daily_minutes, hoursStart: row.hours_start, hoursEnd: row.hours_end, captionsAlways: row.captions_always,
   comfortMode: row.comfort_mode, address: row.address, reportChannel: row.report_channel, saved: true,
   textOnly: !!row.text_only, homeworkToday: !!row.homework_until && new Date(row.homework_until) > new Date(),
   limitsOn: !!row.limits_on, extraTime: EXTRA_TIME.includes(row.extra_time) ? row.extra_time : "normal", dataSaver: !!row.data_saver,
-} : { ...defaultControls(child.class_level), saved: false, textOnly: false, homeworkToday: false };
+  playVerb: verbFor(row),
+} : { ...defaultControls(child.class_level), saved: false, textOnly: false, homeworkToday: false, playVerb: verbFor(null) };
 
 const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
 /** Validate a partial controls body against the current values → the full row to store. */
@@ -519,6 +522,13 @@ export function mergeControls(current, body) {
   if (body.extraTime !== undefined) {
     if (!EXTRA_TIME.includes(body.extraTime)) throw bad("extra time must be normal, more or most");
     out.extraTime = body.extraTime;
+  }
+  // the play wording switch (O-G4, audit PLAT-15): "fire" ("daago" at non-living targets) or "scan" in the 3D games; the
+  // effective value is returned (the operator default TAXILA_PLAY_VERB when the parent never chose), and written only
+  // when the parent sends it
+  if (body.playVerb !== undefined) {
+    if (!PLAY_VERBS.includes(body.playVerb)) throw bad("game words must be fire or scan");
+    out.playVerb = body.playVerb;
   }
   if (body.address !== undefined) {
     if (body.address !== null && !["tum", "aap"].includes(body.address)) throw bad("address must be tum or aap");
@@ -578,6 +588,13 @@ async function setControls(req, res, body) {
   if (body.limitsOn !== undefined || body.extraTime !== undefined || body.dataSaver !== undefined) {
     saved2 = await one("update child_controls set limits_on = $2, extra_time = $3, data_saver = $4 where child_id = $1 returning *",
       [child.id, !!c.limitsOn, c.extraTime ?? "normal", !!c.dataSaver]).catch((e) => {
+      if (e?.code === "42703") throw new HttpError(503, "this setting is not available yet");
+      throw e;
+    }) ?? saved2;
+  }
+  // 042 column (audit PLAT-15): the parent's play wording switch, read by server/play/dress.js withVerb on the play routes
+  if (body.playVerb !== undefined) {
+    saved2 = await one("update child_controls set play_verb = $2 where child_id = $1 returning *", [child.id, c.playVerb]).catch((e) => {
       if (e?.code === "42703") throw new HttpError(503, "this setting is not available yet");
       throw e;
     }) ?? saved2;

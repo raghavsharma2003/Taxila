@@ -45,9 +45,9 @@ test("nazariya2: the modes are registered (MODES, logic, a verb, drawn by the 2D
   assert.deepEqual([...SOLID_MAL], ["visible-only", "edges-corners"]);
 });
 
-test("nazariya2 coverage: the seven new entries, mapped to verified kit misconceptions; both topics are nazariya's", () => {
+test("nazariya2 coverage: the six new entries, mapped to verified kit misconceptions; both topics are nazariya's", () => {
   assert.deepEqual(NEW().map((e) => `${e.topicId}|${e.mode}|${e.goal}|${Object.keys(e.misMap).join(",")}`), [
-    "c6-maths-ch06-t03|tri|box|slant-side", "c6-maths-ch06-t03|tri|more|shape-looks", "c6-maths-ch06-t03|tri|match|lxb,slant-side", "c6-maths-ch06-t03|tri|match|lxb",
+    "c6-maths-ch06-t03|tri|box|slant-side", "c6-maths-ch06-t03|tri|more|shape-looks", "c6-maths-ch06-t03|tri|match|lxb,slant-side",
     "c4-maths-ch01-t01|solid|edges|visible-only,edges-corners", "c4-maths-ch01-t01|solid|faces|visible-only", "c4-maths-ch01-t01|solid|corners|visible-only,edges-corners"]);
   const kits = ["c4", "c6"].map((k) => readFileSync(`${ROOT}data/kits/${k}-maths.json`, "utf8")).join("");
   const ids = new Set([...kits.matchAll(/"(c[46]-maths-ch\d+-t\d+-m-[a-z0-9-]+)"/g)].map((m) => m[1]));
@@ -274,4 +274,19 @@ test("tri and solid: the first level served differs across children", async () =
     const floor = e.mode === "tri" && e.goal === "match" && !e.grammar?.any ? 4 : 8;
     assert.ok(sigs.size >= floor, `${e.topicId} ${e.mode}/${e.goal}: ${sigs.size} distinct first levels over 20 children (floor ${floor})`);
   }
+});
+
+test("nazariya tri match: one coverage entry lays both right-angled and any-apex cloths (audit GAMES-02)", async () => {
+  const { RULES } = await import("../server/play/tools/rules/nazariya.mjs");
+  assert.equal(RULES.filter((r) => r.topicId === "c6-maths-ch06-t03" && r.mode === "tri" && r.goal === "match").length, 1);
+  const { logicFor } = await import("../src/play/families/index.ts");
+  const L = logicFor("nazariya", "tri");
+  const kinds = new Set();
+  for (let seed = 1; seed <= 6; seed++) for (const c of L.generate({ family: "nazariya", mode: "tri", seed, goal: "match", grammar: {}, fade: 1, skillId: "c6-maths-ch06-t03-s3", topicId: "c6-maths-ch06-t03", classLevel: 6, mis: {}, misMap: {}, recent: [] })) {
+    const t = c.level.params.tri; kinds.add(t.xa === t.x0 || t.xa === t.x1 ? "right" : "any");
+  }
+  assert.deepEqual([...kinds].sort(), ["any", "right"]);
+  const cov = JSON.parse(readFileSync(new URL("../data/play/coverage.json", import.meta.url), "utf8"));
+  const keys = cov.entries.map((e) => `${e.topicId}|${e.family}/${e.mode}|${e.goal}`);
+  assert.equal(new Set(keys).size, keys.length, "no two coverage entries share a session key");
 });

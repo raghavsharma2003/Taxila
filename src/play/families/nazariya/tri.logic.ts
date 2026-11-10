@@ -236,9 +236,14 @@ function malActs(level: PlayLevel<TriParams>, mal: string): NazariyaAct[] | null
 }
 
 const JITTER = 0.35;
+const goal0 = (req: GenRequest): TriGoal => (req.goal as TriGoal) ?? "match";
 function generate(req: GenRequest): Candidate<TriParams>[] {
+  // match also lays cloths whose top corner is anywhere over the base (s3), beside the right-angled ones (s2); `any: false`
+  // keeps them right-angled. (audit GAMES-02: this was a second coverage entry, { any: true }, under the same key as the
+  // first, so entryByKey always took the first and the any-apex cloths were never served.)
   const g = req.grammar as { plot?: [number, number]; any?: boolean };
-  const goal = (req.goal as TriGoal) ?? "match";
+  const any = goal0(req) === "match" && g.any !== false;
+  const goal = goal0(req);
   const rnd = mulberry32(req.seed), out: Candidate<TriParams>[] = [];
   const [w, d] = g.plot ?? [12, 9];
   const plot: Plot = { w, d, hmax: 1, base: zeros(w * d), lock: zeros(w * d) };
@@ -246,15 +251,15 @@ function generate(req: GenRequest): Candidate<TriParams>[] {
   for (let b = 2; b <= maxB; b++) for (let h = 2; h <= maxH; h++) {
     const triple = Number.isInteger(Math.hypot(b, h));
     if (!triple && rnd() > 0.45) continue;
-    for (const right of [0, 1]) {
+    for (const right of any ? [0, 1, 2] : [0, 1]) {
       const x0 = Math.floor(rnd() * (w - b + 1)), zb = (goal === "more" ? h + 1 : h) + Math.floor(rnd() * (d - h - (goal === "more" ? 1 : 0) + 1));
       if (zb > d) continue;
       const x1 = x0 + b, za = zb - h;
-      const xa = goal === "match" && g.any ? x0 + 1 + Math.floor(rnd() * (b - 1)) : right ? x1 : x0;
+      const xa = right === 2 ? x0 + 1 + Math.floor(rnd() * (b - 1)) : right ? x1 : x0;
       const params: TriParams = { ...plot, goal, tri: { x0, x1, zb, xa, za } };
       if (!validate(params)) continue;
       // a seeded nudge (± JITTER / 2): without it the picker's nearest-to-band triangle was the same for every child (3-4-5)
-      const diff = Math.max(0, Math.min(1, (b * h) / 70 + (goal === "more" ? 0.15 : goal === "match" ? 0.1 : 0) + (g.any ? 0.1 : 0) + (rnd() - 0.5) * JITTER));
+      const diff = Math.max(0, Math.min(1, (b * h) / 70 + (goal === "more" ? 0.15 : goal === "match" ? 0.1 : 0) + (right === 2 ? 0.1 : 0) + (rnd() - 0.5) * JITTER));
       out.push({ signature: `${goal}:${b}x${h}:${xa - x0}`, difficulty: diff, level: lvl(req, "tri", goal, params, `${goal}-${b}x${h}-${right}-${x0}-${za}`, "khand") });
     }
   }

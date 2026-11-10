@@ -72,3 +72,21 @@ describe("play voice: intents press the controls on screen", () => {
     assert.equal(pressesFor({ verb: "here" }, [{ id: "commit", disabled: true }]), null);
   });
 });
+
+describe("game voice hears the numbers the lesson hears (audit SEAM-01)", () => {
+  it("falls back to the shared spokenNumber for words its own table lacks", async () => {
+    const { spokenNumber } = await import("../server/grading/spoken-number.js");
+    for (const [w, v] of [["solah", 16], ["chaudah", 14], ["सोलह", 16], ["ग्यारह", 11], ["athaarah", 18], ["sixteen", 16]]) {
+      assert.equal(spokenNumber(w), v, w);
+      assert.deepEqual(parseVoice(w), { verb: "number", n: v }, w);
+    }
+    assert.deepEqual(parseVoice("solah kaat do"), { verb: "cut", n: 16 });
+    assert.deepEqual(parseVoice("ग्यारह"), { verb: "number", n: 11 });
+  });
+  it("keeps its own grammar: 'do' after a verb is a helper, fractions stay fractions, an unknown word is no command", () => {
+    assert.deepEqual(parseVoice("das kaat do"), { verb: "cut", n: 10 });
+    assert.deepEqual(parseVoice("teen chauthai"), { verb: "fraction", n: 3, d: 4 });
+    assert.deepEqual(parseVoice("aadha"), { verb: "fraction", n: 1, d: 2 });
+    assert.equal(parseVoice("solah banana"), null);
+  });
+});

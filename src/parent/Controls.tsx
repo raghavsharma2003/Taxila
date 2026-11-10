@@ -302,7 +302,7 @@ export default function Controls() {
     if (g === "time") return !!c.limitsOn !== !!base.limitsOn || c.dailyMinutes !== base.dailyMinutes || c.hoursStart !== base.hoursStart || c.hoursEnd !== base.hoursEnd;
     if (g === "pace") return (c.extraTime ?? "normal") !== (base.extraTime ?? "normal") || !!c.dataSaver !== !!base.dataSaver;
     if (g === "voice") return c.address !== base.address || (lang ?? current.language_pref) !== current.language_pref;
-    if (g === "screen") return c.captionsAlways !== base.captionsAlways || c.comfortMode !== base.comfortMode;
+    if (g === "screen") return c.captionsAlways !== base.captionsAlways || c.comfortMode !== base.comfortMode || (c.playVerb ?? "fire") !== (base.playVerb ?? "fire");
     return c.reportChannel !== base.reportChannel;
   };
   const save = async (g: Group) => {
@@ -312,7 +312,7 @@ export default function Controls() {
     try {
       const fields: Partial<ControlsT> = g === "time" ? { limitsOn: !!c.limitsOn, dailyMinutes: c.dailyMinutes, hoursStart: c.hoursStart, hoursEnd: c.hoursEnd }
         : g === "pace" ? { extraTime: c.extraTime ?? "normal", dataSaver: !!c.dataSaver }
-        : g === "voice" ? { address: c.address } : g === "screen" ? { captionsAlways: c.captionsAlways, comfortMode: c.comfortMode } : { reportChannel: c.reportChannel };
+        : g === "voice" ? { address: c.address } : g === "screen" ? { captionsAlways: c.captionsAlways, comfortMode: c.comfortMode, ...((c.playVerb ?? "fire") !== (base?.playVerb ?? "fire") ? { playVerb: c.playVerb } : {}) } : { reportChannel: c.reportChannel };
       const out = await parentApi.setControls(current.id, fields);
       if (g === "voice" && lang && lang !== current.language_pref) {
         await request("PATCH", "/api/children", { childId: current.id, languagePref: lang });
@@ -415,6 +415,13 @@ export default function Controls() {
               <TileGroup label="Larger text and a calmer screen" columns={2} value={c.comfortMode ? "on" : "off"} onChange={(v) => patch({ comfortMode: v === "on" })}
                 options={[{ value: "on", label: "On" }, { value: "off", label: "Off" }]} />
               <p className="pa-effect">Bigger words and less movement on {name}'s screens.</p>
+            </div>
+            {/* audit PLAT-15: the play wording switch (O-G4), read by the 3D games through server/play/dress.js */}
+            <div className="pa-control">
+              <h3 className="pa-h3">Words in the 3D games</h3>
+              <TileGroup label="Words in the 3D games" columns={2} value={c.playVerb ?? "fire"} onChange={(v) => patch({ playVerb: v as "fire" | "scan" })}
+                options={[{ value: "fire", label: "Fire" }, { value: "scan", label: "Scan" }]} />
+              <p className="pa-effect">{(c.playVerb ?? "fire") === "scan" ? `${name} points and scans. The games never say "fire".` : `${name} aims and fires at objects, never at people or animals.`}</p>
             </div>
           </GroupCard>
           {/* dc-r7 D5: the channel choice shows only once a second channel really sends (Platform's Notifier) */}

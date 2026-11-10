@@ -3,14 +3,14 @@
 // saved build and the lesson loop. API checks call no model; the lesson turn (P8) and the browser ask (A1) cost a few
 // model calls.
 //
-//   K0 routes   /api/play/admit admits a Khand skill (family nazariya)
+//   K0 routes   the coverage admits a Khand skill (family nazariya) (GET /api/play/admit went with audit GAMES-04)
 //   K1 levels   /api/play/start serves a proven level for EVERY Nazariya entry (topic + goal), with an art and a world
 //   K2 truth    the level's own solution, posted act by act as raw acts, is graded solved by the SERVER's replay
 //   K3 claims   a mal-rule's acts dressed in claim fields are not graded solved, and fold the kit misconception
 //   K4 tamper   an edited session token → 400; a foreign level id → 409
 //   K5 doors    /api/play/next serves the next level
 //   K6 lines    every micro-line the server sent passes the play guard and never says the level's key
-//   K7 builds   the solved levels' builds are saved from the server's replay and listed by /api/play/builds (heights only)
+//   (K7, the saved builds listed by /api/play/builds, went with audit GAMES-04: nothing ever showed them)
 //   P8 lesson   a lesson + a play session tied to it: the solved level's signed evidence and seam ride a module-only turn →
 //               she takes a full turn and exactly one kt_evidence row via "game" lands (local only); the same tokens and a
 //               forged one fold nothing
@@ -24,6 +24,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { withTestAccount, ok, warn, done, BASE, isLocal, dbq } from "./lib.mjs";
+import { entryFor } from "../../server/play/levels.js";
 import { LOGIC } from "../../src/play/families/index.ts";
 import { reactionProblems } from "../../shared/play.ts";
 import { nazariyaHidden } from "../../src/play/families/nazariya/index.ts";
@@ -34,13 +35,13 @@ const OUT = arg("out", join(process.cwd(), "docs", "design", "round4", "build", 
 mkdirSync(OUT, { recursive: true });
 const env = (acts) => acts.map((act, i) => ({ seq: i + 1, t: i * 700, via: "touch", act }));
 const ENTRIES = cov.entries.filter((e) => e.family === "nazariya");
-const report = { at: new Date().toISOString(), base: BASE, local: isLocal, entries: [], builds: null, lesson: null, ask: [], beat: null };
+const report = { at: new Date().toISOString(), base: BASE, local: isLocal, entries: [], lesson: null, ask: [], beat: null };
 const p90 = (xs) => { const s = [...xs].sort((a, b) => a - b); return s.length ? s[Math.min(s.length - 1, Math.ceil(0.9 * s.length) - 1)] : null; };
 const tStart = [], tAct = [];
 
 await withTestAccount(async ({ api, child }) => {
-  const adm = await api("GET", `/api/play/admit?skillId=${ENTRIES[0].skillId}`, undefined, [200, 404]);
-  if (!ok(adm.status === 200 && adm.play === true && adm.family === "nazariya", `K0 /api/play/admit admits ${ENTRIES[0].skillId} as nazariya/${adm.mode}`)) return;
+  const adm = entryFor({ skillId: ENTRIES[0].skillId });
+  if (!ok(adm?.family === "nazariya", `K0 the coverage admits ${ENTRIES[0].skillId} as nazariya/${adm?.mode}`)) return;
   const solvedIds = [];
   for (const e of ENTRIES) {
     const id = `${e.topicId}/${e.goal}`, row = { id };
@@ -81,12 +82,6 @@ await withTestAccount(async ({ api, child }) => {
     } catch (err) { ok(false, `${id}: ${String(err.message ?? err).slice(0, 200)}`); row.error = String(err.message ?? err).slice(0, 200); }
     report.entries.push(row);
   }
-  // K7 builds
-  const b = await api("GET", `/api/play/builds?childId=${child.id}`);
-  const got = new Set((b.builds ?? []).map((x) => x.levelId));
-  report.builds = { n: (b.builds ?? []).length, sample: (b.builds ?? []).slice(0, 2) };
-  ok(solvedIds.length > 0 && solvedIds.every((id) => got.has(id)), `K7 every solved level's build is saved and listed (${got.size} listed, ${solvedIds.length} solved)`);
-  ok((b.builds ?? []).every((x) => Array.isArray(x.heights) && x.heights.length === x.w * x.d && !("score" in x)), "K7 a build is heights only (no score, no count)");
 
   // P8 the in-lesson loop on a Khand topic
   try {

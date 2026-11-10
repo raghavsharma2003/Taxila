@@ -16,6 +16,7 @@
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { withTestAccount, ok, warn, done, BASE, isLocal, dbq } from "./lib.mjs";
+import { entryFor } from "../../server/play/levels.js";
 import { LOGIC } from "../../src/play/families/index.ts";
 import { reactionProblems } from "../../shared/play.ts";
 import { ENGINE_THEMES } from "../../src/play/engines/core3d/api.ts";
@@ -115,8 +116,8 @@ await withTestAccount(async ({ api }) => {
     if (PER_SKILL) for (const skillId of [...new Set(cov.entries.filter((x) => x.family === "nishana" && x.topicId === topicId).flatMap((x) => x.skillIds))]) {
       try {
         const les = await api("POST", "/api/lesson/start", { childId: child.id, mode: "text", topicId });
-        const adm = await api("GET", `/api/play/admit?skillId=${skillId}`);
-        ok(adm.play === true && adm.family === "nishana", `C9c ${skillId}: admitted by skill (${adm.family}/${adm.mode} ${adm.goal})`);
+        const adm = entryFor({ skillId });   // GET /api/play/admit went with audit GAMES-04; the coverage is what admits
+        ok(adm?.family === "nishana", `C9c ${skillId}: admitted by skill (${adm?.family}/${adm?.mode} ${adm?.goal})`);
         const ps = await api("POST", "/api/play/start", { childId: child.id, skillId, lessonId: les.lessonId, lang: "hinglish" });
         const r = await foldThrough(api, child, les.lessonId, { play: { sessionId: ps.sessionId } }, 1, `C9c ${skillId}`);
         ok(r.skillId === skillId, `C9c ${skillId}: the evidence is on that skill (${r.skillId})`);
