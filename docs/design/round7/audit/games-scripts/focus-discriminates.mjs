@@ -12,18 +12,22 @@ for (const e of coverage().entries) {
   if (!e.misMap || !Object.keys(e.misMap).length) continue;
   const L = logicFor(e.family, e.mode); if (!L) continue;
   const key = entryKey(e);
-  for (const [malId, kitId] of Object.entries(e.misMap)) for (const fade of [1, 2, 3]) for (let n = 0; n < 3; n++) {
-    const s = { childId: "audit-child", key, skillId: e.skillId, classLevel: e.classLevel, fade, lang: "hinglish", mis: { [kitId]: 0.7 }, focus: kitId, n, seed: seedOf("audit-child", key, n), door: "garam", recent: [], hist: null };
+  for (const [malId, kitId] of Object.entries(e.misMap)) for (const skillId of e.skillIds) for (const fade of [1, 2, 3]) for (let n = 0; n < 3; n++) {
+    const s = { childId: "audit-child", key, skillId, classLevel: e.classLevel, fade, lang: "hinglish", mis: { [kitId]: 0.7 }, focus: kitId, n, seed: seedOf("audit-child", key, n), door: "garam", recent: [], hist: null };
     const lv = currentLevel(s, e, "Asha");
     if (!lv) { out.noLevel.push({ key, kitId, fade, n }); continue; }
     out.checked++;
     const v = L.validate(lv); if (!v) continue;
     const disc = (v.proof?.discriminates ?? []);
-    if (!disc.includes(kitId)) out.notDiscriminating.push({ key, kitId, malId, fade, n, discriminates: disc, targets: v.targets });
+    if (!disc.includes(kitId)) out.notDiscriminating.push({ key, kitId, malId, skillId, fade, n, discriminates: disc, targets: v.targets });
+    else (out.hit ??= new Set()).add(`${key}|${kitId}`);
     if (L.malRules.includes(malId)) { let ma = null; try { ma = L.malActs(v, malId); } catch { /* */ } if (ma?.length && L.goalMet(v, replayAll(L, v, env(ma)).state)) out.malWinsOnFocus.push({ key, kitId, malId, fade, n }); }
   }
 }
+// a belief counts as reachable if ANY of the entry's skills (a lesson names its skill) yields a level that discriminates it
+out.neverDiscriminated = [...new Set(out.notDiscriminating.map((x) => `${x.key} :: ${x.kitId} (rule ${x.malId})`))].filter((k) => !out.hit?.has(k.replace(/ :: /, "|").replace(/ \(rule.*$/, "")));
 const byKit = {}; for (const x of out.notDiscriminating) { const k = `${x.key} :: ${x.kitId}`; byKit[k] = (byKit[k] ?? 0) + 1; }
+console.log(`beliefs no skill of the entry can ever discriminate (any skill, fades 1-3, 3 seeds): ${out.neverDiscriminated.length}`); for (const k of out.neverDiscriminated) console.log(`  NEVER ${k}`);
 console.log(`checked ${out.checked} focused levels; not discriminating the focus: ${out.notDiscriminating.length} (${Object.keys(byKit).length} entry/belief pairs); mal-rule acts win on the focus level: ${out.malWinsOnFocus.length}; no level: ${out.noLevel.length}`);
-for (const [k, n] of Object.entries(byKit).slice(0, 80)) console.log(`  ${n}/9  ${k}`);
-if (process.argv.includes("--json")) writeFileSync(process.argv[process.argv.indexOf("--json") + 1], JSON.stringify(out, null, 1));
+for (const [k, n] of Object.entries(byKit).slice(0, 80)) console.log(`  ${n} levels  ${k}`);
+if (process.argv.includes("--json")) writeFileSync(process.argv[process.argv.indexOf("--json") + 1], JSON.stringify({ ...out, hit: undefined }, null, 1));
