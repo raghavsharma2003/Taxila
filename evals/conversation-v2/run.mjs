@@ -27,7 +27,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..");
 const argv = process.argv.slice(2);
 const arg = (k, d) => { const i = argv.indexOf(`--${k}`); return i >= 0 ? argv[i + 1] : d; };
-process.env.TAXILA_BASE ||= arg("base", "https://taxila.dev");
+process.env.TAXILA_BASE ||= arg("base", ""); // no default: tests/prod/lib.mjs refuses an empty base
 const { withTestAccount, BASE } = await import("../../tests/prod/lib.mjs");
 const { CASES } = await import("./cases.mjs");
 const { TOPICS, SLOTS } = await import("./topics.mjs");

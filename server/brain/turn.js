@@ -5,7 +5,7 @@
 // The HTTP route (server/routes/lesson.js) stays a thin adapter; lessonTurn(req, body) is the exported turn handler,
 // the seam W2-G's /api/lesson/turn-audio calls. Auth, dedupe/replay, the late-turn and outbox semantics are unchanged.
 import { alignParts } from "./lineParts.js";
-import { requeueMissedReturn } from "../director/state.js";
+import { requeueMissedReturn, cardUnsaidNow } from "../director/state.js";
 import { q, one, guardStmt, GUARD_FAILED } from "../db.js";
 import { need, bad, forbidden, notFound, unauthorized, HttpError } from "../http.js";
 import { sessionTokenHash } from "../auth.js";
@@ -49,7 +49,7 @@ import { relationalSeam } from "../relational/seam.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
 import { affirmOpenerFix, fallbackReply, floorContentOf, harmTalk, safeguardLine, safetyTalkAllowed, scrubbed, textReply, UNNUMBERED_TIERS } from "./say.js";
 import { arbitrate } from "./kernel.js";
-import { boardItemOf, proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE, altViewOfRow } from "./propose.js";
+import { boardItemOf, proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE, altViewOfRow, heldUpOf } from "./propose.js";
 import { INTERACTIVE_ASKS } from "../forge3/compose.js";
 
 /** round 3 forge: the child asked to play / see it move and an engine (not the template rung) is in the tray: keep it. */
@@ -729,6 +729,12 @@ export async function lessonTurn(req, body, hooks = {}) {
     const altView = altViewOfRow(wbFirstRow, hint) ?? hint;
     if (altView) next.lastMove = { ...next.lastMove, altView };
   }
+  // dc-r7-held-board (main's v6.8, mechanism c: "Dekho, yahi numbers ab patti par" over a view with no numbers): on a held turn her
+  // picture line is Studio's, built from the view it draws beside the held board; null — nothing drawn beside — promises no picture
+  if (r.move?.request === "visual" && next.lastMove && next.lastMove.scriptBeat && typeof studioSeam.preselectedAltLine === "function") {
+    const altLine = wbFirstRow ? seamSafe("studio.preselectedAltLine", () => studioSeam.preselectedAltLine(lesson.id), null) : null;
+    next.lastMove = { ...next.lastMove, altLine: altLine ? String(altLine) : null };
+  }
   // round 7 (C1 studio-board-pointing-truth): a thing they asked to see is pointed at once only when a certified board-first
   // page is ready BEFORE her line (it lands as she speaks); otherwise the board draws later and she describes it in words
   if (!late && r.move?.request === "visual" && pointShapeFor(next.lastMove?.shape, { boardFirst: !!wbFirstRow }) !== next.lastMove?.shape) {
@@ -948,6 +954,9 @@ export async function lessonTurn(req, body, hooks = {}) {
         ...(clauseHook ? clauseHook(next) : {}) }));
     // v6.6 A2: an aside whose return her line did not say goes back on the queue (the next boundary, the wrap at the latest)
     if (guard?.returnMissed && next?.lastMove?.returned) next.later = requeueMissedReturn(next, guard).later;
+    // v6.8 A4 (main on director16 c5-t01 steady 40): an aside question ended her turn — the card she did not say is neither
+    // pinned nor graded; the next reply gets code's acknowledgement, then the card aloud (planTurn reads cardUnsaid)
+    if (guard?.cardHeld && next?.activeItemId) { next.cardUnsaid = next.activeItemId; if (r.ui?.ask) r = { ...r, ui: { ...r.ui, ask: null, chips: [] } }; }
     // The content filter blocked the reply call that carried the child's words: fail CLOSED. The turn is
     // re-planned as a disclosure (safeguard move, incident row) and the fixed helpline line is sent, with no
     // further model call on the same words.
@@ -1100,6 +1109,8 @@ export async function lessonTurn(req, body, hooks = {}) {
         studioSlot = { slotId: String(ack2.slotId), intentId: String(ack2.intentId), state: ack2.state ?? "planning", ...(ack2.artifact ? { artifact: ack2.artifact } : {}), ...(Number.isFinite(ack2.etaMs) && !ack2.artifact ? { etaMs: ack2.etaMs } : {}) };
         wbAcked = true;
         next.wbBeat = kernel.beat?.id;
+        // dc-r7-held-board: the board this turn ends on is the next turn's held board up (Studio keeps it when it is held again)
+        if (wbAsk.intent.held) next.heldUp = heldUpOf(wbAsk.intent.held);
         // The live board IS the explanation surface: the Director's template rung (explainer@1) is not mounted beside it
         // (the client's tray shows one thing; a mounted module would win the tray over the studio slot). Its mount / param
         // commands go, a rung already on screen is unmounted, and its facts row leaves the move's content, so the next turn
@@ -1648,6 +1659,8 @@ export async function planTurn(base, cls, c) {
   // a bare "3" was a wrong answer in code and a hint on a card the child cannot see). Distress, a request the bytes read, a
   // chip or an engine's machine answer are never touched.
   if (cls) cls = asPlayAct(cls, { state, childText: c.childText, chipId: c.chipId, moduleOnly, gameAct: null });
+  // v6.8 A4: the reply to her aside question is never graded against the card she did not say: it is re-posed, after code's ack
+  if (cls && cardUnsaidNow(state) && !cls.flags?.distress && !cls.flags?.wantsToStop && cls.source !== "chip") cls = { ...cls, outcome: "no_evidence", confidence: 1, request: { type: "repeat", src: "card_unsaid" }, cardUnsaid: true };
   const affectNow = moduleOnly ? state.affect
     : nextAffect(state.affect, { read: cls?.flags ?? {}, outcome: cls?.outcome, itemId: state.activeItemId, answer: c.answer });
   const discount = gamingDiscount(affectNow);
