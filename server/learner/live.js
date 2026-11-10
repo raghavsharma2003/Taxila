@@ -123,6 +123,10 @@ export function answerEvents(c) {
   const turnVia = c.moduleOnly || MODULE_SOURCES.has(cls?.source) ? "module" : cls?.source === "game" ? "game" : "dialogue";
   const viaOf = (ev) => (MODULE_SOURCES.has(ev?.source) ? "module" : ev?.source === "game" ? "game" : turnVia);
   const meta = (it, ev) => ({ via: viaOf(ev), ...(it?.coincidentFor?.length ? { coincident: true } : {}) });
+  // An item that targets a mix-up discriminates it: a right answer there is evidence against the mix-up (kt/misconception.js
+  // discriminating_correct). Kit items carry targetsMisconception; a script's then-card names its mix-up in scriptThen.targets.
+  // Without this no lesson answer could ever clear a mix-up in the ledger (audit LEARN-03).
+  const disc = (it) => { const m = it?.targetsMisconception ?? it?.scriptThen?.targets; return typeof m === "string" && m ? { discriminates: m } : {}; };
   for (const ev of evidence) {
     if (ev.probe === "P1") continue;                                          // one teach-back event, below
     const item = ev.itemId ? activeItem : null;
@@ -138,14 +142,14 @@ export function answerEvents(c) {
     const correct = ev.outcome === "correct";
     if (!correct && ev.misconceptionId) ep.mis = ev.misconceptionId;
     if (options >= 2 || ev.probe === "P7") {
-      const e = fromLegacyEvidence(ev, base({ episodeId, options, triesBefore: ep.wrong, ...(c.chipId?.startsWith("opt:") ? { form: "recognise" } : {}) }));
+      const e = fromLegacyEvidence(ev, base({ episodeId, options, triesBefore: ep.wrong, ...disc(item), ...(c.chipId?.startsWith("opt:") ? { form: "recognise" } : {}) }));
       if (e) events.push({ ...e, target: ev.skillId, ...meta(item, ev) });
       if (correct) ep.closed = true; else ep.wrong += 1;
       continue;
     }
     if (correct) {
       const { misconceptionId: _own, ...rest } = ev;
-      const e = fromLegacyEvidence({ ...rest, ...(ep.mis ? { misconceptionId: ep.mis } : {}) }, base({ episodeId, triesBefore: ep.wrong }));
+      const e = fromLegacyEvidence({ ...rest, ...(ep.mis ? { misconceptionId: ep.mis } : {}) }, base({ episodeId, triesBefore: ep.wrong, ...disc(item) }));
       if (e) events.push({ ...e, target: ev.skillId, ...meta(item, ev) });
       ep.closed = true;
     } else {
