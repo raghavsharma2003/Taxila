@@ -43,44 +43,44 @@ migration, or outside my paths); **report** = for the owner named.
 
 | id | sev | kind | owner | title | where | fix | status |
 |---|---|---|---|---|---|---|---|
-| LEARN-01 | P0 | broken | learning | A lesson started after the planned window's end wraps on the child's first answer | `server/conductor/slot.js:27-42` | No `hardStopAt` unless the family's limits are on; `wrapAt` = start + target minutes | fix |
+| LEARN-01 | P0 | broken | learning | A lesson started after the planned window's end wraps on the child's first answer | `server/conductor/slot.js:27-42` | No `hardStopAt` unless the family's limits are on; `wrapAt` = start + target minutes | fixed |
 | LEARN-02 | P1 | broken | learning | A child who gets every answer wrong ends with a rising, then high, mastery estimate | `server/learner/kt/ledger.js:199-212,231`, `kt/bktr.js:99-108` | No learning step on a failed card; cap re-teach gain per skill per lesson (params version bump) | main |
-| LEARN-03 | P1 | broken | learning | A mix-up can never be cleared in the ledger by lesson answers | `server/learner/live.js:141,148` | Pass `discriminates: item.targetsMisconception` on item events | fix |
+| LEARN-03 | P1 | broken | learning | A mix-up can never be cleared in the ledger by lesson answers | `server/learner/live.js:141,148` | Pass `discriminates: item.targetsMisconception` on item events | fixed |
 | LEARN-05 | P1 | inconsistent | learning | Same answer, same blind verdict: different mastery depending on whether the grader was late | `server/learner/kt/ledger.js:153`, `server/comprehension/later.js:321-358` | Hold the fallback as no-evidence; let the late verdict carry the full step (params version bump) | main |
-| LEARN-06 | P1 | broken | learning | A "how does it feel" answer for English, Hindi or SST makes the save fail (500), then every later save too | `server/routes/placement.js:77,114-121`, `db/migrations/036_placement.sql:9` | Migration widening the subject check (main); until then skip a subject the table refuses instead of failing | fix (interim) + main (migration) |
+| LEARN-06 | P1 | broken | learning | A "how does it feel" answer for English, Hindi or SST makes the save fail (500), then every later save too | `server/routes/placement.js:77,114-121`, `db/migrations/036_placement.sql:9` | Migration widening the subject check (main); until then skip a subject the table refuses instead of failing | fixed (interim) + main (migration) |
 | LEARN-07 | P1 | inconsistent | learning | Any feel answer, even "Easy", starts the child at chapter 1–2 and says "a little before" | `server/placement/coldstart.js:78-91`, `server/placement/note.js:39` | No `startGE` when the answer shows no below-level signal | main |
-| LEARN-08 | P1 | broken | learning | A bad "how it sounds" spelling creates the child, then errors; the retry creates a twin | `server/routes/account.js:290-297` | Validate the spelling before the insert | fix |
-| LEARN-09 | P1 | broken | learning | "Add a child" after an interrupted set-up overwrites the existing child | `src/onboarding/ChildProfile.tsx:94-101`, `src/onboarding/draft.ts:50-53` | Clear the draft's child id when the add flow starts | fix |
+| LEARN-08 | P1 | broken | learning | A bad "how it sounds" spelling creates the child, then errors; the retry creates a twin | `server/routes/account.js:290-297` | Validate the spelling before the insert | fixed |
+| LEARN-09 | P1 | broken | learning | "Add a child" after an interrupted set-up overwrites the existing child | `src/onboarding/ChildProfile.tsx:94-101`, `src/onboarding/draft.ts:50-53` | Clear the draft's child id when the add flow starts | fixed |
 | LEARN-10 | P1 | not good enough | learning | Set-up shows raw developer text to the parent ("Failed to fetch", "internal error") | `src/onboarding/ChildProfile.tsx:65,126`, `Consent.tsx:97`, `Setup.tsx:62,98` | Use the parent-corner error sentences | main |
-| LEARN-11 | P1 | broken | learning | "This month" and "This term" fail with an error when the period has no lessons | `server/reports/gate.js:106` | Exempt every `header.zero*` shape | fix |
-| LEARN-12 | P1 | broken | learning | A full week's letter with the "lessons getting longer" line fails its own cap and is never stored | `server/reports/claims.js:171,227-235`, `config.js:30` | The rest line takes a row's place on weekly | fix |
-| LEARN-13 | P1 | broken | learning | Monthly "gave a hint N times" counts answers that got no hint | `server/reports/claims.js:19-20`, `check.js:33-34` | Hinted = outcomes 2,3,4; solved = 2,3 | fix |
-| LEARN-14 | P1 | inconsistent | learning | The Notes "How do we know?" drawer and the skill sheet word the same answer differently | `server/routes/parent.js:1399-1400,1441-1442` vs `server/reports/truth.js:112-135` | The drawer uses `engineRow` | fix |
-| LEARN-15 | P1 | inconsistent | learning | The skill sheet says "Right, on their own" where the lesson card says "Right, with a hint" | `server/routes/parent.js:1020`, `src/parent/EvidenceSheet.tsx:48-49` | Send the hinted result word when the row was not first-try unaided | fix |
+| LEARN-11 | P1 | broken | learning | "This month" and "This term" fail with an error when the period has no lessons | `server/reports/gate.js:106` | Exempt every `header.zero*` shape | fixed |
+| LEARN-12 | P1 | broken | learning | A full week's letter with the "lessons getting longer" line fails its own cap and is never stored | `server/reports/claims.js:171,227-235`, `config.js:30` | The rest line takes a row's place on weekly | fixed |
+| LEARN-13 | P1 | broken | learning | Monthly "gave a hint N times" counts answers that got no hint | `server/reports/claims.js:19-20`, `check.js:33-34` | Hinted = outcomes 2,3,4; solved = 2,3 | fixed |
+| LEARN-14 | P1 | inconsistent | learning | The Notes "How do we know?" drawer and the skill sheet word the same answer differently | `server/routes/parent.js:1399-1400,1441-1442` vs `server/reports/truth.js:112-135` | The drawer uses `engineRow` | fixed |
+| LEARN-15 | P1 | inconsistent | learning | The skill sheet says "Right, on their own" where the lesson card says "Right, with a hint" | `server/routes/parent.js:1020`, `src/parent/EvidenceSheet.tsx:48-49` | Send the hinted result word when the row was not first-try unaided | fixed |
 | LEARN-16 | P1 | not good enough | learning | Progress shows nothing for lessons taught on earlier-class topics | `server/routes/parent.js:1187-1210` | An "Earlier steps" group per subject (no class number) | main |
-| LEARN-17 | P1 | inconsistent | learning | The Teaching page tells the parent "You thought …" | `src/parent/Teaching.tsx:47` vs `src/parent/Home.tsx:253` | Same rewording as Home | fix |
-| LEARN-18 | P1 | broken | learning | "Earlier notes" is not newest first; daily notes fall off the list | `server/reports/store.js:25` | Order by the note's window end | fix |
+| LEARN-17 | P1 | inconsistent | learning | The Teaching page tells the parent "You thought …" | `src/parent/Teaching.tsx:47` vs `src/parent/Home.tsx:253` | Same rewording as Home | fixed |
+| LEARN-18 | P1 | broken | learning | "Earlier notes" is not newest first; daily notes fall off the list | `server/reports/store.js:25` | Order by the note's window end | fixed |
 | LEARN-20 | P2 | not good enough | learning + brain | The plan's learner-state decisions reach neither the home nor the lesson | `server/routes/child.js:207,271-273`, `server/routes/lesson.js:366` | Needs a Director reader; a design call | main |
 | LEARN-04 | P2 | inconsistent | learning | The belief "gets the answers" is true for a child who never answered unaided | `server/comprehension/state.js:33` | Gate the estimate arm on the ledger's unaided flag (params version bump) | main |
 | LEARN-19 | P2 | inconsistent | learning | With limits on, the home's daily cap comes from the plan, which is stale and band-clamped against the parent's setting | `server/routes/child.js:156,256`, `server/conductor/planner.js:76` | Use the parent's saved cap | main |
-| LEARN-21 | P2 | broken | learning | An Ask or Practice start uses up today's lesson slot and marks the prerequisite check as run | `server/conductor/decide.js:241-242,252-255` | Fall back to the lesson slot only for a live lesson | fix |
-| LEARN-22 | P2 | inconsistent | learning | The home card's lesson length changes after the first start of the day (25 → 22 min) | `server/routes/child.js:74,273` | Use the slot's length only while it is unstarted | fix |
+| LEARN-21 | P2 | broken | learning | An Ask or Practice start uses up today's lesson slot and marks the prerequisite check as run | `server/conductor/decide.js:241-242,252-255` | Fall back to the lesson slot only for a live lesson | fixed |
+| LEARN-22 | P2 | inconsistent | learning | The home card's lesson length changes after the first start of the day (25 → 22 min) | `server/routes/child.js:74,273` | Use the slot's length only while it is unstarted | main (goes with LEARN-20: the two lengths agree once the plan exists before the home is shown) |
 | LEARN-23 | P2 | not good enough | learning | A new Conductor actor ignores the parent's saved lesson days and length | `server/conductor/step.js:36-45`, `index.js:90-91` | Read them at creation and at sync | main |
-| LEARN-24 | P3 | inconsistent | learning | "How do we know?" cannot find the question of a script card; it quotes the teacher's line before it instead | `server/routes/parent.js:974-982` | Resolve `script:` ids from the lesson script | fix |
+| LEARN-24 | P3 | inconsistent | learning | "How do we know?" cannot find the question of a script card; it quotes the teacher's line before it instead | `server/routes/parent.js:974-982` | Resolve `script:` ids from the lesson script | fixed |
 | LEARN-25 | P2 | not good enough | learning | Rebuilding a child's model after a restart is quadratic (10 s at 8,000 events) and blocks the one replica | `server/comprehension/fuse.js:47-52`, `server/learner/kt/ledger.js:105` | Copy the ledger once per fold | main |
 | LEARN-26 | P2 | not good enough | learning + studio | Writers outside the turn fold before taking the lock; Studio answers never reach `skill_state` | `server/comprehension/later.js:373-391`, `server/placement/kt.js:20-28`, `server/studio/grade.js:173-180` | Guard on `max(seq)` after the lock; project Studio events | main |
-| LEARN-27 | P2 | broken | learning | A re-teach nobody answered after is scored as a failed teaching method | `server/comprehension/resolve.js:83-84` | No reward when nothing was graded | fix |
+| LEARN-27 | P2 | broken | learning | A re-teach nobody answered after is scored as a failed teaching method | `server/comprehension/resolve.js:83-84` | No reward when nothing was graded | fixed |
 | LEARN-28 | P2 | not good enough | learning | Two open lessons reset every per-lesson evidence cap | `server/learner/kt/ledger.js:154` | Keep recent lesson budgets by id | main |
 | LEARN-29 | P2 | inconsistent | learning | An answer the teacher leaked counts at full weight on mastery but half or none elsewhere | `server/learner/kt/bktr.js:64-71` vs `server/comprehension/facets.js:42` | Half weight in `temper` (params version bump) | main |
 | LEARN-30 | P2 | inconsistent | learning (content) | A skill that was mastered and then clearly lost still counts as mastered for the next topic | `server/content/next-topic.js:24-26` | Test "weak" before "mastered" | report (content-data area) |
-| LEARN-31 | P2 | inconsistent | learning | A child with no lessons gets a "Try at home" card with Done / Not this week | `server/routes/parent.js:820-831` | None when the week is empty | fix |
-| LEARN-32 | P2 | inconsistent | learning | Home says "This week: can now …" above "Lessons this week: 0" | `server/routes/parent.js:451-463` | One week window for both | fix |
-| LEARN-33 | P2 | broken | learning | An open lesson with no ledger row keeps adding minutes to the week (5,760 by Friday) | `server/reports/truth.js:52-57` | End it at its start, as the stored letter does | fix |
-| LEARN-34 | P2 | inconsistent | learning | Home's "Recent lessons" never gets the short title the Lessons list uses | `server/routes/parent.js:949` | Same topic mapper | fix |
+| LEARN-31 | P2 | inconsistent | learning | A child with no lessons gets a "Try at home" card with Done / Not this week | `server/routes/parent.js:820-831` | None when the week is empty | fixed |
+| LEARN-32 | P2 | inconsistent | learning | Home says "This week: can now …" above "Lessons this week: 0" | `server/routes/parent.js:451-463` | One week window for both | main (which window the headline should use is a wording call) |
+| LEARN-33 | P2 | broken | learning | An open lesson with no ledger row keeps adding minutes to the week (5,760 by Friday) | `server/reports/truth.js:52-57` | End it at its start, as the stored letter does | main (truth.js documents "an open lesson runs so far"; a cap is a rule change) |
+| LEARN-34 | P2 | inconsistent | learning | Home's "Recent lessons" never gets the short title the Lessons list uses | `server/routes/parent.js:949` | Same topic mapper | fixed |
 | LEARN-35 | P1 | not good enough | learning | At 900 px and wider, Teaching and Sign out cannot be reached | `src/parent/Shell.tsx:76-85` | Add both to the rail | main |
 | LEARN-36 | P2 | inconsistent | learning | "Download everything" exports the old evidence table, not the one every screen shows | `server/routes/parent.js:1469,1483` | Export the ledger rows | main |
 | LEARN-37 | P2 | no longer needed | learning | The "lessons started after the bedtime you set" line can never fire: nothing writes a bedtime | `server/reports/rest.js:17-21`, `templates.js:232-235` | Remove, or add the control | main |
-| LEARN-38 | P2 | inconsistent | learning | An unanswered consent shows the "yes" effect text | `src/parent/Pages.tsx:164` | Show the "no" effect when not granted | fix |
+| LEARN-38 | P2 | inconsistent | learning | An unanswered consent shows the "yes" effect text | `src/parent/Pages.tsx:164` | Show the "no" effect when not granted | fixed |
 | LEARN-39 | P2 | not good enough | learning | Schedule states "planned for 5:00 pm on the days you chose" before anything is saved | `src/parent/Controls.tsx:87,121` | Say no time is set yet | main |
 | LEARN-40 | P2 | inconsistent | learning | "Explained in their own words" has two rules (notes count a half explanation; the lesson card does not) | `server/reports/derive.js:15-16` vs `truth.js:355` | Open item of decision `w2a-checker-explained-line`; drop the half | main |
 | LEARN-41 | P2 | inconsistent | owner | Home says "can now"; decision `reports-k7-locked-words` forbids it anywhere | `server/routes/parent.js:1270`, `src/parent/copy.ts:18` | Owner picks: narrow the decision or change the words | main |
@@ -90,12 +90,12 @@ migration, or outside my paths); **report** = for the owner named.
 | LEARN-45 | P2 | not good enough | learning | "Board" must be picked but nothing reads it | `src/onboarding/steps/Class.tsx:28-44` | Default CBSE, not required | main |
 | LEARN-46 | P2 | not good enough | learning | A signed-in parent on a new device is asked for consent twice | `src/onboarding/steps/Class.tsx:35` | Skip to the child step when consent is done | main |
 | LEARN-47 | P2 | inconsistent | platform | On a paired child device the Hello feel picks are refused (same as PLAT-07) | `server/pair/scope.js:6,12` | Allow `POST /api/placement/onboarding` in the scope (platform); the handler now drops `parentView` from a device (learning half, fixed) | report (platform) |
-| LEARN-48 | P3 | broken | learning | Weave callbacks that lose an opener slot are closed unasked (latent: no kit has hosts) | `server/comprehension/store.js:58-63` | Keep expired entries open | fix |
+| LEARN-48 | P3 | broken | learning | Weave callbacks that lose an opener slot are closed unasked (latent: no kit has hosts) | `server/comprehension/store.js:58-63` | Keep expired entries open | fixed |
 | LEARN-49 | P3 | no longer needed | learning + owner | The session-first lane (1,069 lines) is off by default and no deploy file turns it on; parts of it run on every lesson (`schoolPointerStmts`) | `server/director/session/**`, `flags.js:20-23` | Owner decides: ship or shelve | main |
 | LEARN-50 | P3 | no longer needed | learning | Dead code in the learner model and comprehension engine | see note | Delete | main |
 | LEARN-51 | P3 | no longer needed | learning | Dead code in the Conductor; `conductor_usage` is read but never written | see note | Delete or wire | main |
 | LEARN-52 | P3 | no longer needed | learning | Dead code in the parent routes and set-up screens | see note | Delete | main |
-| LEARN-53 | P3 | inconsistent | learning | `shared/learner.ts` types lag the server | `shared/learner.ts:91,149-154` | Add `"late"` to `via` and `placementPending` to `Ledger` | fix |
+| LEARN-53 | P3 | inconsistent | learning | `shared/learner.ts` types lag the server | `shared/learner.ts:91,149-154` | Add `"late"` to `via` and `placementPending` to `Ledger` | fixed |
 | LEARN-54 | P3 | inconsistent | learning | Small copy and rule mismatches in the parent corner | see note | See note | main |
 
 Counts after the skeptic pass: P0 1 · P1 18 · P2 27 · P3 8. Broken 16 · inconsistent 21 · not good enough 11 · no longer
@@ -113,6 +113,33 @@ needed 6. None refuted; 15 corrected (see "Skeptic pass" below).
 | PLAT-09 | P2 | platform | Deleting a child left its paired device's session alive, read as a parent session by three hand-written joins | `childEraseStmts` deletes the devices' `auth_session` rows in the erasure's transaction, before the child row | fixed |
 | PLAT-10 | P2 | platform | The sign-in burst limiter was keyed on a cookie the caller chooses | Keyed on the ingress's address (rightmost hop) unless the caller already checked the session | fixed |
 | PLAT-52 | P3 | platform | PATCH child skipped POST's checks; account delete left `tx_in` | `childPatchOf` checks and shapes every field as POST does; both cookies cleared | fixed |
+
+## Fixes on this branch (phase 2)
+
+Each has a test that fails without the fix. Tests: `tests/r7-audit-learner.test.mjs` (LEARN-21, 24, 27, 31, 38, 48, 53),
+`r7-audit-reports` (11, 12, 13, 18), `r7-audit-parent-words` (14, 15, 17), `r7-audit-mixup-discriminates` (03),
+`r7-audit-placement-subjects` (06), `r7-audit-onboarding-add` (09), `r7-learning-day-plan` (01), and for 08 the account suite.
+
+| id | what changed |
+|---|---|
+| LEARN-01 | `server/conductor/slot.js`: the plan's window binds a lesson only when the family's limits are on; otherwise the lesson wraps at its planned length from the start. |
+| LEARN-03 | `server/learner/live.js`: a right answer on an item that targets a mix-up carries `discriminates`, so the ledger's mix-up can come down. |
+| LEARN-06 | `server/routes/placement.js`: a feel answer for a subject the table refuses is kept but makes no row. **Interim**: the real fix is a migration widening 036's check. |
+| LEARN-08 | `server/routes/account.js`: the spoken-name check runs before the child insert. |
+| LEARN-09 | `src/onboarding`: Add a child forgets a stale draft child id. |
+| LEARN-11, 12, 13, 18 | `server/reports`: empty month and term notes pass the gate; the weekly rest line takes a row's place; hints are counted from C2 (one pinned count in `r7-learning-reports-monthly` changed); notes are listed by window end. |
+| LEARN-14, 15, 17 | `server/routes/parent.js`, `src/parent`: the Notes drawer reads results through `engineRow`; a right answer after help is "with a hint" on the skill sheet; Teaching names the child. |
+| LEARN-21 | `server/conductor/decide.js`: only a lesson (kind `live`, or none) falls back to today's lesson slot. |
+| LEARN-24 | `server/routes/parent.js` `scriptCardOf`: a `script:` item key resolves to its authored prompt on the skill sheet. |
+| LEARN-27 | `server/comprehension/resolve.js`: no answer within the 30-day horizon closes the attempt with no outcome and no reward. `tests/comprehension-reteach.test.mjs` pinned "failed, reward 0" for this case with no recorded reason; it now expects the new result. **Main: say if the old result was intended.** |
+| LEARN-31 | `server/routes/parent.js` `tryAtHomeFrom`: no card for a week with no lesson. |
+| LEARN-34 | `server/routes/parent.js`: Home's recent lessons use the Lessons list's topic mapper. |
+| LEARN-38 | `src/parent/copy.ts` `consentEffect`: an unanswered choice shows the "without it" effect. |
+| LEARN-48 | `server/comprehension/store.js`: expired weave entries stay out of the closing update. |
+| LEARN-53 | `shared/learner.ts`: `via` gains `late` and `placement`; `Ledger.placementPending`. |
+
+Not fixed, moved from "fix" to "main": LEARN-22, 32 and 33 (reasons in the table). Proposed context entries:
+`context/inbox/r7-audit-learner.json`.
 
 ## Evidence notes
 

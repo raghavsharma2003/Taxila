@@ -81,6 +81,10 @@ export function resolveAttempt(a, events, laterAttempts = [], now = Date.now()) 
   }
   const outcome = st.resolvedDelayed ? "resolved_delayed" : st.resolvedNext ? "resolved_next" : st.repairedNow ? "repaired_now" : null;
   const final = st.resolvedDelayed || now - at >= HORIZON_MS;
+  // Audit 2026-11-09 LEARN-27: the horizon passed and the child never answered on the skill again (no graded answer in the
+  // lesson or after it). That says nothing about the re-teach: closed with no outcome and no reward, so it neither adds a
+  // failure to the arm's shared posterior nor reads as a failed class for this child (reteach.js lastTwoFailed).
+  if (final && !outcome && !firstLater) return { outcome: null, final: true, reward: null, stages: st };
   return { outcome: outcome ?? (final ? "failed" : null), final, reward: outcome || final ? armReward(st) : null, stages: st };
 }
 
@@ -101,7 +105,8 @@ export function resolveAttempts(rows, events, { now = Date.now(), band } = {}) {
     if (!final) {
       const later = sorted.slice(i + 1).map((b) => ({ skillId: b.skill_id, sessionId: b.session_id, at: new Date(b.at).toISOString() }));
       const res = resolveAttempt(a, events, later, now);
-      if (res.outcome && (res.outcome !== outcome || res.final || (res.reward ?? null) !== (reward ?? null))) {
+      // (a final resolution with no outcome closes the row too: LEARN-27, nobody answered within the horizon)
+      if ((res.outcome || res.final) && (res.outcome !== outcome || res.final || (res.reward ?? null) !== (reward ?? null))) {
         updates.push({ id: r.id, armId: r.arm_id, outcome: res.outcome, reward: res.reward, final: res.final, cluster: clusterOf(r.skill_id, band) });
         outcome = res.outcome; reward = res.reward; final = res.final;
       }
