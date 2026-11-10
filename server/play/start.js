@@ -1,7 +1,7 @@
 // Starting a play session, outside any route (the /api/play/start route, and the lesson's Stagecraft seam that turns
 // forge's compose() "play" rung into a PlayArtifact: docs/design/round3/forge/FOR-PLAY.md §2.3). No model call.
 import { signSession, verifySession } from "./session.js";
-import { artFor, beliefOf, currentLevel, entriesFor, entryByKey, entryKey, levelsFor, seedOf } from "./levels.js";
+import { artFor, beliefOf, currentLevel, entriesFor, entryByKey, entryKey, levelsFor, seedOf, withWhy } from "./levels.js";
 import { chooseEntry, fadeFor } from "./choose.js";
 
 /** child.language_pref is hinglish | hindi | english; play speaks hinglish | hi | en */
@@ -87,6 +87,7 @@ export async function startSession(child, o = {}, q = undefined) {
   if (because.length) s.because = because;
   const level = currentLevel(s, entry, child.first_name);
   if (!level) return null;
+  withWhy(s, level);   // round 8 H: the child's line for this level's because (display only), when it has one
   const art = artFor(s, entry);
   s.lastArt = art.art;
   return { sessionId: signSession(s), level, art, entry, session: s, because, inputs };

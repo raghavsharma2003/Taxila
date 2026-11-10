@@ -88,7 +88,7 @@ function App() {
   (window as unknown as { __playLevel: PlayLevel; __playNext: unknown }).__playLevel = level;
   return (
     <div style={{ position: "fixed", inset: 0 }}>
-      <PlayStage level={level} art={art} lang={lang} classLevel={classLevel} caption={caption} teacherName="Ira" debug demo={demo} reducedMotion={reduced} sound={devSound} engine={engine} verb={verb} dress={dress}
+      <PlayStage level={level} art={art} lang={lang} classLevel={classLevel} caption={caption} teacherName="Ira" debug demo={demo} reducedMotion={reduced} sound={devSound} engine={engine} verb={verb} dress={dress} why={q.get("why")}
         doors={solved ? doors.map((d) => ({ ...d, hint: d.door === "garam" ? (lang === "en" ? "one more like this" : "isi tarah ka ek aur") : (lang === "en" ? "a bit harder" : "thoda mushkil") })) : null}
         onDoor={(d) => { setDoor(d.door); setSeed((s) => s + 101); setCaption(null); }}
         world={WORLD}

@@ -9,6 +9,7 @@ import { pickArt } from "../../shared/play.ts";
 import { registerKaalEvents } from "../../src/play/families/kaal/kaal.logic.ts";
 import { fillFriendDeep } from "../director/friend.js";
 import { adaptAfter, chooseEntry, liftedPL, settleBecause } from "./choose.js";
+import { nextSaid, whyLine } from "./why.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let COVERAGE = null;
@@ -153,6 +154,7 @@ export function nextBody(s, entry, door) {
   if (to !== entry) body.switched = { from: s.key, n };
   delete body.nextFocus; delete body.nextLift; delete body.nextBecause; delete body.nextKey; delete body.nextSwitch;
   delete body.because;   // a because explains ONE level's choice (round 8); the next level carries its own or none
+  delete body.why;
   if (door === "teekha") {
     const r = levelsFor(body, to);
     if (r && !r.teekha && (body.fade ?? 1) < 3) body = { ...body, fade: (body.fade ?? 1) + 1, door: "garam", up: true };
@@ -162,11 +164,25 @@ export function nextBody(s, entry, door) {
   const level = currentLevel(body, to);
   const b = [sw ? settleBecause(sw, level) : null, pending ? settleBecause(pending, level) : null].filter(Boolean);
   if (b.length) body.because = b;
-  return body;
+  return withWhy(body, level);
 }
 
 /** The coverage entry a session body points at (after a switch, the new one). */
 export const entryOfBody = (s, fallback = null) => entryByKey(s?.key) ?? fallback;
+
+/**
+ * Round 8 H: the child's "why this game" line for the level a body serves (server/play/why.js; display only), with the
+ * reasons already spoken this session. Mutates and returns the body.
+ */
+export function withWhy(body, level) {
+  delete body.why;
+  const w = level ? whyLine(body.because, { lang: body.lang, seed: body.seed, level, said: body.whySaid ?? [] }) : null;
+  if (!w) return body;
+  body.why = { text: w.text, speak: w.speak, reason: w.reason };
+  const said = nextSaid(body.whySaid, w);
+  if (said.length) body.whySaid = said;
+  return body;
+}
 
 /**
  * Follow-up B: a later level may switch family at most once a session, only when the session focus CHANGES to a mix-up
