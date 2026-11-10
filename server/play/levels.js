@@ -40,6 +40,28 @@ export function entryFor({ skillId = null, topicId = null, family = null, goal =
   if (topicId) { const e = cov.entries.find((x) => ok(x) && x.topicId === topicId); if (e) return e; }
   return null;
 }
+/** Round 8 P1: EVERY coverage entry admitting the skill (across families and modes), in file order (the first is
+ *  entryFor's). A turn with no skill known keeps the topic's one entry (its evidence is on that entry's own skill). */
+export function entriesFor({ skillId = null, topicId = null, family = null, goal = null } = {}, cov = coverage()) {
+  if (playOff()) return [];
+  const ok = (e) => (!family || e.family === family) && (!goal || e.goal === goal);
+  if (skillId) return cov.entries.filter((x) => ok(x) && x.skillIds.includes(skillId));
+  const e = entryFor({ topicId, family, goal }, cov);
+  return e ? [e] : [];
+}
+/** The kit's belief text for a kit misconception id (data/kits/<class>-<subject>.json), for a `because` fact; the id when
+ *  the kit has none. Each kit file is read once, and only when a because needs its text. */
+const KIT_BELIEFS = new Map();
+export function beliefOf(misId) {
+  const m = /^(c\d-[a-z]+)-/.exec(String(misId ?? ""));
+  if (!m) return misId ?? null;
+  if (!KIT_BELIEFS.has(m[1])) {
+    const map = new Map();
+    try { for (const t of JSON.parse(readFileSync(join(ROOT, "data/kits", `${m[1]}.json`), "utf8")).topics ?? []) for (const x of t.misconceptions ?? []) if (x?.id && x.belief) map.set(x.id, String(x.belief)); } catch { /* the id stands */ }
+    KIT_BELIEFS.set(m[1], map);
+  }
+  return KIT_BELIEFS.get(m[1]).get(misId) ?? misId;
+}
 export const entryKey = (e) => `${e.topicId}|${e.family}/${e.mode}|${e.goal}`;
 export function entryByKey(key, cov = coverage()) { return cov.entries.find((e) => entryKey(e) === key) ?? null; }
 /** Is there a play game for this skill? (the Director's admission check, patched in by docs/design/round3/play/patches) */
@@ -118,6 +140,7 @@ export function nextBody(s, entry, door) {
   const focus = s.nextFocus ?? s.focus ?? null;
   const body = { ...s, n, seed: seedOf(s.childId, s.key, n), door, harder: false, recent, ...(focus ? { focus } : {}) };
   delete body.nextFocus;
+  delete body.because;   // a because explains ONE level's choice (round 8); the next level carries its own or none
   if (door === "teekha") {
     const r = levelsFor(body, entry);
     if (r && !r.teekha && (body.fade ?? 1) < 3) return { ...body, fade: (body.fade ?? 1) + 1, door: "garam", up: true };
