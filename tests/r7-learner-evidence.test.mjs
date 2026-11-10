@@ -1,5 +1,5 @@
 // Round 8 groundwork (main, 2026-11-10): the learner model's facts the Director-side reader will trust, verified from code.
-// docs/design/round7/audit/learner-evidence.md is the report; each section here is one of its six questions. Pure, no DB.
+// The learner-evidence report (round 7 audit) answers six questions; each section here is one of them. Pure, no DB.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { ktEvidenceStmt } from "../server/learner/writer.js";
@@ -7,8 +7,8 @@ import { fold, newLedger, PARAMS_VERSION } from "../server/learner/kt/ledger.js"
 import * as LIVE from "../server/learner/live.js";
 const { answerEvents, closeEvents, snapshotFromKt, isLearnedChecked } = LIVE;
 const cardHelp = LIVE.cardHelp ?? (() => 0);
-// 2b-2d need docs/patches/to-main/001-script-card-help.patch (not applied: it fails three Brain replay predicates)
-const PENDING = { todo: "docs/patches/to-main/001-script-card-help.patch, waits on a Brain change" };
+// 2b-2d need the held script-card help change (learner-evidence report, question 2: it fails three Brain replay predicates)
+const PENDING = { todo: "the held script-card help change waits on a Brain change" };
 import { fuseEvidence, newLearnerState } from "../server/comprehension/fuse.js";
 import { lessonDecisions } from "../server/conductor/planner.js";
 import { decisionsFromState } from "../server/conductor/slot.js";
