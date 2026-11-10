@@ -463,6 +463,9 @@ export function claimHolds(kind, state, rows, now = new Date()) {
  */
 export function homeHeadline({ skills, rowsBySkill, totalRows, lessonsEver, lessonsThisWeek, preferPractising = null, now = new Date() }) {
   if (!lessonsEver) return { kind: "none", canNow: null, practising: null };
+  // "This week" speaks of this calendar week only, as "Lessons this week" does (audit LEARN-32: a rolling 7 days put
+  // "can now …" above "Lessons this week: 0" on a Monday)
+  if (!lessonsThisWeek && lessonsEver > 1) return { kind: "no_week", canNow: null, practising: null };
   const recent = now.getTime() - HEADLINE_RECENT_DAYS * 86400_000;
   const seen = skills.filter((s) => s.lastSeen && new Date(s.lastSeen).getTime() >= recent);
   const rowsOf = (id) => rowsBySkill.get(id) ?? [];
@@ -967,7 +970,7 @@ async function homeData(child, guardian) {
   const practising = head.practising ? claimOut(head.practising, "practising") : null;
   const [tryAtHome0, alert, next] = await stage2;
   const tryAtHome = reconcileTryAtHome(tryAtHome0, { canNow, practising }, child.first_name);
-  const topicOut = (tid) => { const t = getTopic(tid); return t ? { id: t.id, title: t.title, chapter: t.chapter.title, subject: t.subject } : { id: tid, title: tid }; };
+  const topicOut = topicOf_;   // the Lessons list's mapper, with the short title (audit LEARN-34)
   const minutesById = new Map(week.all.map((l) => [l.id, l.minutes]));
   return {
     child: childOut(child),

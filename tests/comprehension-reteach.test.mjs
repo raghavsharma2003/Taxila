@@ -172,3 +172,12 @@ test("every trigger a re-teach decision can write is allowed by the reteach_atte
   for (const t of triggers) assert.ok(allowed.has(t), `trigger '${t}' is not allowed by the check (${[...allowed].join(", ")})`);
   assert.ok(triggers.has("misconception_seen") && triggers.has("two_fails_post_rung3"));
 });
+
+test("audit LEARN-27: a re-teach nobody answered after is no evidence about the method (no reward), not a failure", async () => {
+  const { resolveAttempt } = await import("../server/comprehension/resolve.js");
+  const a = { id: "r1", skillId: "s1", sessionId: "L1", misId: null, at: "2026-10-01T10:00:00.000Z" };
+  const out = resolveAttempt(a, [], [], Date.parse("2026-11-02T10:00:00.000Z"));
+  assert.equal(out.final, true);
+  assert.equal(out.reward, null);
+  assert.notEqual(out.outcome, "failed");
+});
