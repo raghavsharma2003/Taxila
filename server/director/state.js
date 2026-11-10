@@ -769,7 +769,8 @@ function walkNextV2(s, input, prefix, sk) {
       if (gone(item.id)) { w.i += 1; continue; }
       s.scriptCard = item; s.phase = "practice";
       activate(s, item);
-      return plan("practice", SH.pose({ item, prefix }), { item, probe: probeFor(item), ...ref("check", c.id, c.board, item), ...gaveWorked(), ...sayFirst });
+      const ks = knowsSayFirst(s, lang); // round 8 allKnown: she says she is skipping what they know (once)
+      return plan("practice", SH.pose({ item, prefix }), { item, probe: probeFor(item), ...ref("check", c.id, c.board, item), ...gaveWorked(), ...sayFirst, ...(ks.length ? { sayFirst: [...(sayFirst.sayFirst ?? []), ...ks] } : {}) });
     }
     w.i += 1;
   }
@@ -1403,6 +1404,7 @@ function notePace(s, item, right) {
 
 function afterCorrect(s, input, item) {
   const { kit, cls } = input;
+  if (scriptOn()) knowsCompressAnswer(s, kit, skillScriptOf(kit, item.skillId), item, "right"); // round 8 K1: a known skill's check, right
   notePace(s, item, true);
   const unaided = s.hintLevel === 0;
   s.itemsDone.push(item.id); s.practiced += 1;
@@ -1456,6 +1458,8 @@ const MOVE_ON = /(?<![\p{L}])(?:aage\s+(?:chalo|badho|badhein|chalte\s+hain)|nex
 function afterMiss(s, input, item) {
   // round 7 S3: misses per card (the card stays live until two misses plus help)
   if (verdict(input.cls) === "wrong") s.misses = { ...(s.misses ?? {}), [item.id]: (s.misses?.[item.id] ?? 0) + 1 };
+  // round 8 K1: a known skill's opening check missed → its full unit (recorded), never its remediation
+  if (scriptOn() && knowsCompressAnswer(s, input.kit, skillScriptOf(input.kit, item.skillId), item, verdict(input.cls))) { s.skipped.push(item.id); return poseNext(s, input, null); }
   const { kit, cls } = input;
   // v6.4 K1: a card posed again after its remediation, missed again: let go with its key and why (the give-up close, on its
   // answerBoard), never a second remediation round
