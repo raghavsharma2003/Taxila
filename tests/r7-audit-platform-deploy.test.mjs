@@ -124,3 +124,9 @@ test("PLAT-04: the nightly job's sweep loads from exactly what Dockerfile.worker
     assert.match(r.stdout, /LOADED/, r.stdout + r.stderr);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+test("PLAT-27: the handoff key list names every setting the release and the server read that it lacked", () => {
+  const keys = JSON.parse(readFileSync(join(ROOT, "scripts/handoff/keys.json"), "utf8"));
+  for (const k of ["NEON_API_KEY", "NEON_PROJECT_ID", "DATABASE_URL_DIRECT", "AZURE_SPEECH_KEY", "AZURE_SPEECH_REGION", "TAXILA_D5_TICKET_KEY"]) assert.ok(keys.includes(k), k);
+  assert.equal(new Set(keys).size, keys.length, "no name twice");
+});
