@@ -4,7 +4,7 @@
 // (cookie tx_child: an auth_session row plus a device_session row naming the child, migration 041). It reaches only the routes
 // server/pair/scope.js lists (the router marks them), and only for its own child; every other route treats it as
 // forbidden (403 scope.child_device). Identity stays the authenticated child id; the device holds a revocable session.
-import { scryptSync, randomBytes, timingSafeEqual, createHash } from "crypto";
+import { scryptSync, randomBytes, createHash } from "crypto";
 import { q, one } from "./db.js";
 import { HttpError, parseCookies, unauthorized, forbidden } from "./http.js";
 import { traceIdentify, isUuid } from "./trace/context.js";
@@ -29,13 +29,6 @@ export function hashPassword(pw) {
   const salt = randomBytes(16);
   const h = scryptSync(pw, salt, KEYLEN, { N, r: R, p: P });
   return `scrypt$${N}$${R}$${P}$${salt.toString("base64")}$${h.toString("base64")}`;
-}
-export function verifyPassword(pw, stored) {
-  const [alg, n, r, p, salt, hash] = String(stored).split("$");
-  if (alg !== "scrypt") return false;
-  const want = Buffer.from(hash, "base64");
-  const got = scryptSync(pw, Buffer.from(salt, "base64"), want.length, { N: +n, r: +r, p: +p });
-  return want.length === got.length && timingSafeEqual(want, got);
 }
 const sha = (s) => createHash("sha256").update(s).digest("hex");
 

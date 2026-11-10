@@ -13,7 +13,6 @@ import { routes as forge } from "./routes/forge.js";
 // round 7, stream G: child device pairing (a child-scoped session on the child's own device; server/pair)
 import { routes as pair } from "./pair/routes.js";
 import { routes as child } from "./routes/child.js";
-import { routes as placement } from "./routes/placement.js";
 // W1-C: the test clock (GET/POST /api/test/clock; @taxila.test accounts only). Seam applied by W1-D, owner of this file.
 import { routes as testClock } from "./comprehension/testclock.js";
 // W2-D: the mid-sitting realtime → cascade lane switch (POST /api/lesson/lane). One-line seam; the route lives in W2-D's module.
@@ -43,7 +42,7 @@ import { routes as ops } from "./ops/routes.js";
 // r7 app-auth-email-otp (stream E): guardian sign-in by an emailed code
 import { routes as signin } from "./signin/code.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...placement, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...ops, ...signin, ...lane });
+register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...ops, ...signin, ...lane });
 export { handle, register };
 // child device pairing, registered on its own (the line above stays as App's 002 patch expects)
 register(pair);

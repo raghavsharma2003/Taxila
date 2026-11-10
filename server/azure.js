@@ -25,9 +25,6 @@ export const DEPLOY = {
   // Image lane (ROUTER-CHANGES A4, 2026-10-04): gpt-image-2.5-flare. No server route calls it yet (offline scripts and
   // the future Studio image lane); IMAGE below carries the quality and the fallback order every caller must use.
   get image() { return process.env.DEPLOY_IMAGE || "taxila-image25-flare"; },
-  // STAGECRAFT spec rung (patch P6): its own deployment once owner action O-1 creates it; until then the reply lane's
-  // BACKGROUND twin. Never the reply deployment itself (stagecraft-reply-lane-isolation).
-  get stagecraftSpec() { return process.env.DEPLOY_STAGECRAFT_SPEC || "taxila-fast-bg"; },
 };
 
 /**

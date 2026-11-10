@@ -84,7 +84,6 @@ export function setSession(lessonId: string | null | undefined): void {
     for (const l of sessionListeners) { try { l(sid); } catch { /* never breaks the bus */ } }
   });
 }
-export const setTurn = (turn: number | null | undefined): void => { S.turn = typeof turn === "number" ? turn : undefined; };
 
 export const getTier = (): TraceTier => S.tier;
 export function setTier(tier: unknown): void {
