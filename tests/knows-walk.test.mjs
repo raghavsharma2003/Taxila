@@ -13,6 +13,7 @@ import { knowsWarmup, knowsDecisionsOf } from "../server/director/knows-walk.js"
 import { decisionRecordStmt } from "../server/brain/trace.js";
 import { childrenFor, PILOT_TOPICS, NOW } from "../evals/knows-her/children.mjs";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { eventsOf } from "./fixtures/knows/events.mjs";
 
 const FLAGS = ["TAXILA_R7_SCRIPT", "TAXILA_R7_SCRIPT_DIR", "TAXILA_R7_ONE_LIVE", "TAXILA_R8_KNOWS"];
 const KEEP = {};
@@ -39,37 +40,6 @@ function walkReal(topicId, { plan, answer, interests = [] }) {
   return { script, kit, moves, states, final: r.state, plan };
 }
 
-/** The real moves as assertWalkExplained events. */
-function eventsOf({ script, kit, moves, plan }) {
-  const ladders = new Map(script.skills.map((sk) => [sk.skillId, new Set((sk.ladder ?? []).map((x) => x.itemId))]));
-  const targetsOf = new Map(script.skills.flatMap((sk) => [
-    ...(sk.explain ?? []).filter((b) => b.ask).map((b) => [`script:${sk.skillId}:ask:${b.id}`, b.ask.targets ?? null]),
-    ...(sk.checks ?? []).map((c) => [`script:${sk.skillId}:${c.id}`, c.targets ?? null])]));
-  const out = [];
-  let lastCard = null;
-  for (const m of moves) {
-    const b = m.scriptBeat;
-    const id = m.item?.id ?? m.itemId ?? null;
-    if (id && id === plan?.firstCard && !out.some((e) => e.kind === "first")) out.push({ kind: "first", itemId: id });
-    else if (id && /^c\d+-/.test(String(id)) && !String(id).startsWith(kit.topicId)) out.push({ kind: "prereq", topicId: String(id).replace(/-(i|rl-)[\w-]*$/, "") });
-    if (b?.kind === "hook") {
-      const sk = script.skills.find((x) => x.skillId === b.skillId);
-      const said = [...(m.sayFirst ?? []), ...(m.content ?? [])].join(" ");
-      const index = (sk.hook.interestSlots ?? []).findIndex((x) => x.use && said.includes(x.use.hi ?? x.use));
-      out.push({ kind: "hook", skillId: b.skillId, index: Math.max(0, index) });
-      out.push({ kind: "beat", skillId: b.skillId, beat: "hook" });
-    } else if (b?.kind === "explain") out.push({ kind: "beat", skillId: b.skillId, beat: `explain:${b.beatId}` });
-    else if (b?.kind === "worked") out.push({ kind: "beat", skillId: b.skillId, beat: "worked" });
-    else if (b?.kind === "check") out.push({ kind: "beat", skillId: b.skillId, beat: `check:${b.beatId}` });
-    else if (b?.kind === "remediation") out.push({ kind: "remedy", cardId: lastCard, targets: b.beatId.replace(/^rem:/, ""), authored: targetsOf.get(lastCard) ?? null });
-    else if (id && !String(id).startsWith("script:") && id !== plan?.firstCard) {
-      const sk = [...ladders].find(([, set]) => set.has(id));
-      if (sk) out.push({ kind: "beat", skillId: sk[0], beat: `ladder:${id}` });
-    }
-    if (id && String(id).startsWith("script:") && !String(id).includes(":then:")) lastCard = id;
-  }
-  return out;
-}
 const applied = (st) => st.knowsApplied ?? [];
 const choices = (st) => applied(st).map((b) => b.choice);
 
