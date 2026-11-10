@@ -114,8 +114,6 @@ export function answerEvents(c) {
   const topicType = activeItem?.topicType ?? kit.topicType;
   const kitVerified = (activeItem?.kitVerified ?? kit.verified) !== false;
   let ep = prev.kt?.ep ?? null;
-  // script cards helped earlier this lesson (a simpler said, a miss, the key said): carried across episodes (see `cardHelp`)
-  const helped = { helped: ep?.helped ?? [], keyed: ep?.keyed ?? [] };
   if (ep?.closed && ep.itemId !== prev.activeItemId) ep = null;              // a closed episode on another item is done
   const events = [], deferred = [];
   const ctr = { k: 0 };
@@ -138,7 +136,7 @@ export function answerEvents(c) {
       if (e) deferred.push({ ...e, target: ev.skillId, ...meta(item, ev), ...(c.shapeId ? { shapeId: c.shapeId } : {}), ...(c.deferenceDiscount ? { deferenceDiscount: true } : {}) });
       continue;
     }
-    if (!ep || ep.itemId !== ev.itemId) ep = { itemId: ev.itemId, skillId: ev.skillId, wrong: 0, mis: null, closed: false, mcq: !!item?.options?.length, ...helped };
+    if (!ep || ep.itemId !== ev.itemId) ep = { itemId: ev.itemId, skillId: ev.skillId, wrong: 0, mis: null, closed: false, mcq: !!item?.options?.length };
     if (ep.closed) continue;
     const options = item?.options?.length ?? 0;
     const correct = ev.outcome === "correct";
@@ -151,10 +149,7 @@ export function answerEvents(c) {
     }
     if (correct) {
       const { misconceptionId: _own, ...rest } = ev;
-      // a script card answered right after help on it this lesson is never unaided: its authored simpler (or a miss and its
-      // re-teach) is one rung, its key said at a give-up makes the answer worth what a kit item's leave is (C4)
-      const hintsUsed = Math.max(Number(ev.hintsUsed) || 0, cardHelp(ep, ev.itemId));
-      const e = fromLegacyEvidence({ ...rest, hintsUsed, ...(ep.mis ? { misconceptionId: ep.mis } : {}) }, base({ episodeId, triesBefore: ep.wrong, ...disc(item) }));
+      const e = fromLegacyEvidence({ ...rest, ...(ep.mis ? { misconceptionId: ep.mis } : {}) }, base({ episodeId, triesBefore: ep.wrong, ...disc(item) }));
       if (e) events.push({ ...e, target: ev.skillId, ...meta(item, ev) });
       ep.closed = true;
     } else {
@@ -168,7 +163,6 @@ export function answerEvents(c) {
     const e = fromLegacyEvidence({ ...tb[0], skillId: skillIds[0] }, base({ episodeId: `${lessonId}:teachback` }));
     if (e) deferred.push({ ...e, skillIds, target: skillIds[0], shapeId: "C01", via: "dialogue" });
   }
-  if (!ep && (helped.helped.length || helped.keyed.length)) ep = { itemId: null, closed: true, ...helped };
   return { events, deferred, ep, k: ctr.k };
 }
 
@@ -178,11 +172,6 @@ export function answerEvents(c) {
  * @param {any} c answerEvents' input plus { next, hold } @param {{ ep: any, k: number }} a answerEvents' result
  * @returns {{ events: any[], ep: any }}
  */
-/** Rungs a script card's help this lesson is worth: its key said → 4 (as a kit item's leave), a simpler or a miss → 1. */
-export const cardHelp = (ep, itemId) => (ep?.keyed?.includes(itemId) ? 4 : ep?.helped?.includes(itemId) ? 1 : 0);
-const isScriptId = (id) => String(id ?? "").startsWith("script:");
-const add = (xs, id) => (xs?.includes(id) ? xs : [...(xs ?? []), id].slice(-40));
-
 export function closeEvents(c, a) {
   const { lessonId, next, kit, activeItem } = c;
   const ctr = { k: a.k };
@@ -194,14 +183,9 @@ export function closeEvents(c, a) {
     const ev = { skillId: ep.skillId, itemId: ep.itemId, probe: "P15", outcome: "incorrect", hintsUsed: 4, weight: 1, ...(ep.mis ? { misconceptionId: ep.mis } : {}) };
     const e = fromLegacyEvidence(ev, base({ episodeId: `${lessonId}:${ep.itemId}`, triesBefore: ep.wrong, episodeEnded: true }));
     if (e) events.push({ ...e, target: ep.skillId, via: c.moduleOnly ? "module" : "dialogue" });
-    ep = { ...ep, closed: true, ...(isScriptId(ep.itemId) ? { helped: add(ep.helped, ep.itemId) } : {}) };
+    ep = { ...ep, closed: true };
   }
   const move = next.lastMove;
-  // LEARN audit (round 8 facts): help on a script card this turn, remembered for a later answer to the same card
-  const card = activeItem?.id;
-  if (move?.gave?.answer && isScriptId(card)) ep = { ...(ep ?? { itemId: null, closed: true }), keyed: add(ep?.keyed, card) };
-  if (move?.simpler && isScriptId(next.activeItemId)) ep = { ...(ep ?? { itemId: null, closed: true }), helped: add(ep?.helped, next.activeItemId) };
-  if (ep && !ep.closed && ep.wrong > 0 && isScriptId(ep.itemId)) ep = { ...ep, helped: add(ep.helped, ep.itemId) };
   if (move && !c.hold && TEACH_MOVES.has(move.kind) && move.skillId) {
     const t = base({});
     events.push({ ...teachEvent({ id: t.id, sessionId: lessonId, sessionStartAt: t.sessionStartAt, at: t.at,
