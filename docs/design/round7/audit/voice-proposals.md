@@ -40,7 +40,7 @@ The report listed fifteen `server/duplex` modules with no live importer. Checked
 
 ## 4. Dead code removed (V-39), and what stayed
 
-Removed (one commit, listed in `context/inbox/r7-audit-voice.json`): `server/voice/expressive/compile/mai.js` and `omni.js` (only one test read them), and `AckRationer` / `ackBank` in `src/lesson/latency.ts` (only one test).
+Removed (one commit, listed in `context/inbox/r7-audit-voice.json`): `server/voice/expressive/compile/mai.js` and `omni.js` (no engine used them; only one test read them).
 
 Kept, because the rule says so:
 
@@ -48,6 +48,7 @@ Kept, because the rule says so:
 - `turnModel.ts loadSmartTurn`: cited in `context/decisions.md`.
 - `src/voicesig/frontend/encoder.ts`: its types are imported by `head.ts`, `ort.ts` and `bus.ts`, and the voicesig evals construct it.
 - `GET /api/voicesig/status`: used by `tests/prod` and cited in `context/measurements.md`.
+- `AckRationer` / `ackBank` (`src/lesson/latency.ts`): the live acknowledgement is `src/latency/ack.ts`, but `tests/ui-v2-latency.test.mjs` uses `AckRationer` as the clip policy in G-WAIT-1, the check that her waiting and nod timing never track whether the answer was right (it also guards the live floor). Rewrite that test against the live ack rules first, then remove it.
 - `GET /api/voice/trends`: no client, but it is the parent-trends half of the voice-features design; removing a parent feature is your call, not a cleanup.
 
 ## 5. The Opus decoder flush (V-34): left as it is
