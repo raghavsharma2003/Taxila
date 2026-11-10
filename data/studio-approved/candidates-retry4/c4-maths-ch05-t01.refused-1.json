@@ -1,0 +1,182 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c4-maths-ch05-t01",
+    "archetype": "slice-at@1",
+    "misconceptionId": "c4-maths-ch05-t01-m-unequal-parts",
+    "how": "marks false on every wave (marks draw the equal cut points: the child must judge equal size herself); every wave's sub agrees with its own items (a wave of {parts: 4} says chaar, never teen); one count per wave; plain Roman Hinglish, no Devanagari",
+    "skillId": "c4-maths-ch05-t01-s1",
+    "beat": "rem:c4-maths-ch05-t01-m-unequal-parts",
+    "when": "remediation",
+    "check": "c4-maths-ch05-t01-s1:c1"
+  },
+  "why": "ok, but its checks failed: contentSafe",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": false,
+    "spec": {
+      "ok": true,
+      "repairs": 1,
+      "fellBack": false
+    },
+    "contentFindings": [
+      {
+        "key": "waves.1.title",
+        "code": "content_safety_2",
+        "text": "Teen barabar hisse"
+      }
+    ]
+  },
+  "spec": {
+    "archetype": "slice-at@1",
+    "skills": [
+      "c4-maths-ch05-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Barabar tukde banao",
+      "wave": "Round",
+      "cut": "Itna hissa kaato",
+      "parts": "Barabar hisse",
+      "exact": "BILKUL SAHI",
+      "close": "KAafi paas",
+      "offBy": "itna antar",
+      "runDone": "Run poora",
+      "accuracy": "sahi nishana",
+      "sliced": "kaata",
+      "chain": "lagataar sahi",
+      "smaller": "chhota tukda"
+    },
+    "waves": [
+      {
+        "title": "Do barabar hisse",
+        "sub": "Poore cake ko do barabar hisson mein kaato",
+        "items": [
+          {
+            "parts": 2
+          }
+        ],
+        "gravity": 0.9,
+        "gap": 2.4,
+        "marks": false
+      },
+      {
+        "title": "Teen barabar hisse",
+        "sub": "Poore cake ko teen barabar hisson mein kaato",
+        "items": [
+          {
+            "cut": "1/3"
+          }
+        ],
+        "gravity": 0.9,
+        "gap": 2.6,
+        "marks": false
+      },
+      {
+        "title": "Chaar barabar hisse",
+        "sub": "",
+        "items": [
+          {
+            "parts": 4
+          }
+        ],
+        "gravity": 0.85,
+        "gap": 2.8,
+        "marks": false
+      },
+      {
+        "title": "Ek chauthai",
+        "sub": "Chaar barabar hisson mein se ek tukda kaato",
+        "items": [
+          {
+            "cut": "1/4"
+          }
+        ],
+        "gravity": 0.8,
+        "gap": 3,
+        "marks": false,
+        "targets": "c4-maths-ch05-t01-m-unequal-parts"
+      }
+    ]
+  },
+  "validator": {
+    "fellBack": false,
+    "repairs": [
+      "string:sub"
+    ]
+  },
+  "raw": {
+    "archetype": "slice-at@1",
+    "skills": [
+      "c4-maths-ch05-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Barabar tukde banao",
+      "wave": "Round",
+      "cut": "Itna hissa kaato",
+      "parts": "Barabar hisse",
+      "exact": "BILKUL SAHI",
+      "close": "KAafi paas",
+      "offBy": "itna antar",
+      "runDone": "Run poora",
+      "accuracy": "sahi nishana",
+      "sliced": "kaata",
+      "chain": "lagataar sahi",
+      "smaller": "chhota tukda"
+    },
+    "waves": [
+      {
+        "title": "Do barabar hisse",
+        "sub": "Poore cake ko do barabar hisson mein kaato",
+        "items": [
+          {
+            "parts": 2
+          }
+        ],
+        "gravity": 0.9,
+        "gap": 2.4,
+        "marks": false
+      },
+      {
+        "title": "Teen barabar hisse",
+        "sub": "Poore cake ko teen barabar hisson mein kaato",
+        "items": [
+          {
+            "cut": "1/3"
+          }
+        ],
+        "gravity": 0.9,
+        "gap": 2.6,
+        "marks": false
+      },
+      {
+        "title": "Chaar barabar hisse",
+        "sub": "Poore cake ko chaar barabar hisson mein kaato",
+        "items": [
+          {
+            "parts": 4
+          }
+        ],
+        "gravity": 0.85,
+        "gap": 2.8,
+        "marks": false
+      },
+      {
+        "title": "Ek chauthai",
+        "sub": "Chaar barabar hisson mein se ek tukda kaato",
+        "items": [
+          {
+            "cut": "1/4"
+          }
+        ],
+        "gravity": 0.8,
+        "gap": 3,
+        "marks": false,
+        "targets": "c4-maths-ch05-t01-m-unequal-parts"
+      }
+    ]
+  }
+}
