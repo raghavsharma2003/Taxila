@@ -18,7 +18,7 @@ test("jawDrop: follows the jaw, capped at the max drop, and closes with the mbp 
 });
 
 test("the battery evidence: route (b) seals every bilabial and puts >= 80% of lines within ±50 ms", () => {
-  const r = JSON.parse(readFileSync(new URL("../docs/design/round7/face/route-b-battery.json", import.meta.url), "utf8"));
+  const r = JSON.parse(readFileSync(new URL("./fixtures/face-route-b-battery.json", import.meta.url), "utf8"));
   const [a, b] = r.bilabialWords.withLamp2Rule.split("/").map(Number);
   assert.equal(a, b, "all bilabial words sealed");
   assert.ok(r.offset.keys.within50 >= 0.8, `within ±50 ms: ${r.offset.keys.within50}`);

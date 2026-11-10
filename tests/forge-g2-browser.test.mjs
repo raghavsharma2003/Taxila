@@ -55,14 +55,22 @@ test("harness (browser): a scripted builder that writes a valid mechanic and sub
   const browser = await launchBrowser();
   const b = briefFor("c6-maths-ch07-t05");
   const design = { ...D["stepping-stones@1"], id: "frog-hop@1" };
+  // warm the browser and the page path once (a cold first play is the slow one under the gate's parallel load); the result is not asserted
+  { const { browserGate } = await import("../server/forge/g2/qa.js");
+    await browserGate({ html: buildBundle(G("stepping-stones"), design).html, levels: b.levels.visible, topicId: "c6-maths-ch07-t05", ageBand: b.brief.ageBand, browser }); }
   const src = G("stepping-stones");
   let n = 0;
   const call = (name, args) => ({ id: `r${++n}`, status: "completed", ms: 1, usage: { input_tokens: 1000, input_tokens_details: { cached_tokens: 500 }, output_tokens: 100 },
     output: [{ type: "function_call", name, call_id: `c${n}`, arguments: JSON.stringify(args) }] });
   const script = [call("read_file", { path: "design.json" }), call("write_mechanic", { content: src }), call("run_check", { name: "play" }), call("submit", { summary: "done" })];
   try {
-    const r = await buildMechanic({ design, levels: b.levels, topicId: "c6-maths-ch07-t05", ageBand: b.brief.ageBand, browser, respondFn: async () => script.shift() });
-    assert.equal(r.outcome.kind, "green");
+    const r = await buildMechanic({ design, levels: b.levels, topicId: "c6-maths-ch07-t05", ageBand: b.brief.ageBand, browser, respondFn: async () => {
+      // a play check that does not come back green sends the harness back to the model; say so plainly instead of dying on undefined.usage
+      const next = script.shift();
+      if (!next) throw new Error(`the scripted builder ran out of responses after ${n} steps: a play check was not green, so the harness asked the model again`);
+      return next;
+    } });
+    assert.equal(r.outcome.kind, "green", `outcome ${JSON.stringify(r.outcome)}; last steps ${JSON.stringify((r.trajectory ?? []).slice(-3).map((t) => ({ tool: t.tool, ok: t.ok, obs: t.obs?.slice(0, 200), error: t.error })))}`);
     assert.equal(r.ledger.steps, 4);
     assert.ok(r.final.gates.every((g) => g.status === "pass"), JSON.stringify(r.final.gates.filter((g) => g.status !== "pass")));
     assert.ok(r.ledger.usd > 0);

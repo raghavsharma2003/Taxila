@@ -45,7 +45,7 @@ test("worker: drops the rig on loss, rebuilds on restore, answers every frame; t
 });
 
 test("measured: both paths come back live after a first loss and hold her still after a second", () => {
-  const r = JSON.parse(src("docs/design/round7/face/context-loss.json"));
+  const r = JSON.parse(src("tests/fixtures/face-context-loss.json"));
   for (const arm of ["worker", "main"]) {
     const a = r.arms[arm];
     assert.equal(a.firstLossBackLive, a.n, `${arm}: back live after the first loss`);

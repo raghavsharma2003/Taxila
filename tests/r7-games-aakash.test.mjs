@@ -9,6 +9,7 @@
 // kit sentence and every number on screen is the kit's; tampered params are refused; a claim never decides; first levels
 // differ across children; the generator and picker are fast (CPU time); and every coverage entry serves a proven level
 // through the play server.
+import { backlogged } from "./_backlog.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -21,7 +22,7 @@ import { GAME_WEIGHT, FAMILIES, MODES, FAMILY_ARTS, sanitizeActs } from "../shar
 import { LOGIC } from "../src/play/families/index.ts";
 import { pickLevels } from "../src/play/core/pick.ts";
 import { mulberry32 } from "../src/play/core/rng.ts";
-import { cpuNow } from "./_cpu-ms.mjs";
+import { counted } from "./_work.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const KIT = JSON.parse(readFileSync(`${ROOT}data/kits/c7-science.json`, "utf8"));
@@ -265,8 +266,7 @@ test("aakash coverage: six entries on the three topics, mapped to their kit misc
     for (const s of skills) assert.ok(hasPlay(`${topic}-${s}`), `${topic}-${s}`);
     assert.equal(entryFor({ skillId: `${topic}-${skills[0]}` }).family, "aakash");
   }
-  const backlog = readFileSync(`${ROOT}docs/design/round7/games/law-backlog.md`, "utf8");
-  for (const t of Object.values(TOPIC)) assert.doesNotMatch(backlog, new RegExp(t));
+  for (const t of Object.values(TOPIC)) assert.deepEqual(backlogged(t), [], `${t} is still in the law backlog`);
 });
 
 for (const e of AK()) for (const fade of [1, 2, 3]) {
@@ -308,13 +308,17 @@ test("aakash: the first level served differs across children", () => {
   }
 });
 
-test("aakash: the generator and the picker are fast (CPU time, p95 ≤ 50 ms)", () => {
-  const gen = [], pick = [];
+test("aakash: the generator's and the picker's work is bounded (counted, not timed)", () => {
+  // measured 2026-11-10 over every case below: at most 9 candidates and 466 calls into the family logic per pick; bounds are 3x above that. A count is the same on every machine; a
+  // 50 ms p95 read 5 ms idle and 110 ms under the gate's load (tests/_work.mjs).
+  const gen = [], calls = [], considered = [], counter = counted(L);
   for (const [mode, goal] of CASES) for (const fade of [1, 2, 3]) for (let seed = 1; seed <= 6; seed++) {
-    let t0 = cpuNow(); L.generate(req(mode, goal, seed * 31, { fade })); gen.push(cpuNow() - t0);
-    t0 = cpuNow(); pickLevels(L, req(mode, goal, seed * 31, { fade })); pick.push(cpuNow() - t0);
+    gen.push(L.generate(req(mode, goal, seed * 31, { fade })).length);
+    counter.reset(); const picked = pickLevels(counter.logic, req(mode, goal, seed * 31, { fade })); assert.ok(picked); calls.push(counter.calls()); considered.push(picked.considered);
   }
-  for (const [name, xs] of [["generate", gen], ["pick", pick]]) { xs.sort((a, b) => a - b); const p95 = xs[Math.floor(xs.length * 0.95)]; assert.ok(p95 <= 50, `${name} p95 ${p95.toFixed(1)} ms`); }
+  assert.ok(Math.max(...gen) <= 27, `generate made ${Math.max(...gen)} candidates`);
+  assert.ok(Math.max(...considered) <= 27, `pick considered ${Math.max(...considered)}`);
+  assert.ok(Math.max(...calls) <= 1400, `pick made ${Math.max(...calls)} calls into the family logic`);
 });
 
 test("aakash: every word the view shows exists in all three languages; vakya's words stay last; no economy word", () => {

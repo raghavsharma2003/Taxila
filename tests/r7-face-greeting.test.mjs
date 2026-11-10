@@ -65,6 +65,6 @@ test("client: owed once per day; the glance targets the Start button", async () 
   G.glanceAtStart(7);
   off();
   assert.deepEqual(seen, [{ kind: "gaze", target: "start", holdMs: F.GAZE_HOLD_MS.greeting, reason: "greeting", seq: 7 }]);
-  const patch = readFileSync(new URL("../docs/patches/to-app/004-face-home-daily-greeting.patch", import.meta.url), "utf8");
+  const patch = readFileSync(new URL("../src/ui-v3/kaksha/screens/KakshaHome.tsx", import.meta.url), "utf8"); // the App's home wiring (was patch to-app/004)
   assert.match(patch, /useDailyGreeting\(cid/);
 });

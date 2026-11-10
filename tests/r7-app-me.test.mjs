@@ -2,7 +2,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { execFileSync } from "node:child_process";
 
 const read = (p) => fs.readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 
@@ -45,9 +44,6 @@ test("the Teacher screen shows the memory items with Forget this and the consent
   assert.match(read("src/child/screens/Me.tsx"), /testid="me-remembers"/);
 });
 
-test("the child memory route patch for Brain applies to the tree", () => {
-  // (A Brain, after applying it at 5aa89a15 with the note through the relational writer: once the routes are in the tree the
-  // patch is landed, so only an unlanded patch must still apply)
-  if (/"GET \/api\/child\/memory"/.test(read("server/relational/routes.js"))) return;
-  execFileSync("git", ["apply", "--check", "docs/patches/to-brain/008-app-child-memory-route.patch"], { cwd: new URL("..", import.meta.url) });
+test("the child memory route is in the tree (Brain landed it; the patch file is no longer read)", () => {
+  assert.match(read("server/relational/routes.js"), /"GET \/api\/child\/memory"/);
 });

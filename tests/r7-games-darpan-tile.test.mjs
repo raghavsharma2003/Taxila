@@ -15,7 +15,6 @@ import { hiddenOf } from "../server/play/react.js";
 import { playActOf } from "../server/director/play-verbs.js";
 import { GAME_WEIGHT, MODES } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
-import { cpuNow } from "./_cpu-ms.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const env = (acts) => acts.map((act, i) => ({ seq: i + 1, t: i * 400, via: "touch", act }));
@@ -230,14 +229,14 @@ test("darpan/tile: a claim in an act never decides; the first go decides the evi
 });
 
 for (const [goal, grammar, mals] of CASES) {
-  test(`darpan/tile/${goal}: ≥ 2000 random acts; the go's verdict ⇔ the independent oracle; never throws; generator p95 ≤ 50 ms`, () => {
+  test(`darpan/tile/${goal}: ≥ 2000 random acts; the go's verdict ⇔ the independent oracle; never throws; generator work bounded (counted, not timed)`, () => {
     let seed = 31, acts = 0, solved = 0, judged = 0;
     const rnd = () => ((seed = (seed * 1103515245 + 12345) >>> 0) / 2 ** 32);
-    const times = [];
+    const candCounts = []; // candidates per generate/pick: a count, not a clock (tests/_work.mjs)
     for (let gi = 0; gi < 40; gi++) {
-      let best = Infinity, cands = [];
-      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); cands = tileLogic.generate(req(goal, 100 + gi, { grammar, misMap: mapOf(mals) })); best = Math.min(best, cpuNow() - t0); }
-      times.push(best);
+      let cands = [];
+      cands = tileLogic.generate(req(goal, 100 + gi, { grammar, misMap: mapOf(mals) }));
+      candCounts.push(cands.length);
       for (const c of cands.slice(0, 3)) {
         const level = tileLogic.validate(c.level), p = level.params, sol = tileLogic.solve(level);
         let s = tileLogic.init(level), k = 0;
@@ -256,10 +255,9 @@ for (const [goal, grammar, mals] of CASES) {
         if (tileLogic.goalMet(level, s)) { solved++; assert.ok(oracle(p, s.put)); }
       }
     }
-    times.sort((a, b) => a - b);
     assert.ok(acts >= 2000, `only ${acts} acts`);
     assert.ok(judged > 20 && solved > 0, `judged ${judged}, solved ${solved}`);
-    assert.ok(times[Math.floor(times.length * 0.95)] <= 50, `generator p95 ${times[Math.floor(times.length * 0.95)]} ms`);
+    assert.ok(Math.max(...candCounts) <= 48, `${Math.max(...candCounts)} candidates per call (measured 2026-11-10: 16; bound is 3x)`);
   });
 }
 
