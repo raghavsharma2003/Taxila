@@ -35,7 +35,8 @@
 
 import { interestOf } from "../../shared/interests.js";
 
-export const CHOICES = Object.freeze(["compress", "compress_fallback", "allKnown", "firstCard", "ladderOrder", "checkOrder", "remedy", "prereqCheck", "revision", "hookSlot", "opener", "topic"]);
+export const CHOICES = Object.freeze(["compress", "compress_fallback", "allKnown", "firstCard", "ladderOrder", "checkOrder", "remedy", "prereqCheck", "revision", "hookSlot", "opener", "topic",
+  "practiceOrder", "practiceDiag", "practiceFast", "practiceEasier"]);
 
 /** Ledger displays that count as learned (ledger.js DISPLAY rank >= learned_today), plus legacyStatus's "due". */
 const LEARNED = new Set(["learned_today", "mastered", "durable", "due"]);
@@ -357,6 +358,36 @@ export function topicFor({ candidates = [], brief = null, scripted = [] } = {}) 
   return { topicId: pick.topicId, mode, because };
 }
 
+// ───────────── the kit-practice phase (after the script's walk): her queue and this lesson's picks ─────────────
+const DIAG = "diag:";
+const skillOrder = (ids, skillOf) => {
+  const m = new Map();
+  for (const id of ids) { if (String(id).startsWith(DIAG)) continue; const k = skillOf(id); if (!k) continue; if (!m.has(k)) m.set(k, []); m.get(k).push(id); }
+  return m;
+};
+/**
+ * Her practice queue against a child with no history (director/items.js buildPracticeQueue with no mix-ups and no level).
+ * Two learner-driven departures, each a record: the diagnostic chosen for her open mix-up (`practiceDiag`), and the order
+ * within a skill set by her level (theta, the weak flag: `practiceOrder`, carrying her queue). Pure: the caller builds both
+ * queues. Cross-skill interleaving is the queue's own rule and is not a departure.
+ * @param {{ kit, queue: string[], defaultQueue: string[], level?: { theta?: number|null, weak?: boolean }|null, activeMisconceptionIds?: string[] }} a
+ */
+export function practicePlanOf({ kit, queue = [], defaultQueue = [], level = null, activeMisconceptionIds = [] }) {
+  const because = [];
+  const skillOf = (id) => (kit?.items ?? []).find((i) => i.id === id)?.skillId ?? null;
+  const diagOf = (q) => q.find((id) => String(id).startsWith(DIAG)) ?? null;
+  const d = diagOf(queue), d0 = diagOf(defaultQueue);
+  if (d && d !== d0) because.push(rec("practiceDiag", d, { kind: "open_mixup", misconceptionId: d.slice(DIAG.length), insteadOf: d0 }, "kt_misconception (activeMisconceptionIds)"));
+  const a = skillOrder(queue, skillOf), b = skillOrder(defaultQueue, skillOf);
+  const differs = [...a].some(([k, ids]) => JSON.stringify(ids) !== JSON.stringify(b.get(k) ?? [])) || [...b.keys()].some((k) => !a.has(k));
+  if (differs) {
+    const kind = level?.weak ? "weak" : level?.theta != null ? "theta" : "level";
+    because.push(rec("practiceOrder", kit?.topicId ?? null, { kind, theta: level?.theta ?? null, weak: !!level?.weak, order: queue.filter((id) => !String(id).startsWith(DIAG)) },
+      "learner view (theta, weak)"));
+  }
+  return { because, activeMisconceptionIds: [...activeMisconceptionIds] };
+}
+
 // ───────────── B: the predicate (tests): a walk never departs from the script without a because ─────────────
 /**
  * The script's default walk as card/beat keys, mirroring director/state.js poseNext at round 8's start: each scripted skill
@@ -400,14 +431,29 @@ export function expectedWalk(script, kit, because = []) {
  *   Once the expected walk is spent, later cards are the kit's own practice (director/items.js selectNext) and are not checked.
  * @returns {true}
  */
-export function assertWalkExplained({ script, kit, because = [], events = [] }) {
+export function assertWalkExplained({ script, kit, because = [], events = [], queue = null }) {
   const fail = (n, why) => { throw new Error(`walk departs from the script with no because record at event ${n}: ${why}`); };
   const has = (choice, on) => because.some((b) => b.choice === choice && (on === undefined || b.on === on));
   const expected = expectedWalk(script, kit, because);
   const seenItems = new Set();
   const seenKeys = new Set();
   let at = 0;
+  // the kit-practice phase: within a skill, a pick from the queue follows the queue's order (hers when a practiceOrder record
+  // carries it, else the no-history queue); an item out of that order needs a pick record on it
+  const order = because.find((b) => b.choice === "practiceOrder")?.fact?.order ?? (queue ?? []).filter((id) => !String(id).startsWith("diag:"));
+  const skillOfItem = (id) => (kit?.items ?? []).find((i) => i.id === id)?.skillId ?? null;
+  const perSkill = skillOrder(order, skillOfItem);
+  const defaultDiag = (queue ?? []).find((id) => String(id).startsWith("diag:")) ?? null;
   events.forEach((e, n) => {
+    if (e.kind === "practice") {
+      seenItems.add(e.itemId);
+      if (e.source !== "queue" || !queue) return;
+      if (String(e.itemId).startsWith("diag:")) { if (e.itemId !== defaultDiag && !has("practiceDiag", e.itemId)) fail(n, `diagnostic ${e.itemId} (the no-history queue's is ${defaultDiag})`); return; }
+      const k = skillOfItem(e.itemId);
+      const next = (perSkill.get(k) ?? []).find((id) => !seenItems.has(id) || id === e.itemId);
+      if (next !== e.itemId && !has("practiceFast", e.itemId) && !has("practiceEasier", e.itemId)) fail(n, `practice pick ${e.itemId}; the queue's next for ${k} is ${next ?? "none"}`);
+      return;
+    }
     if (e.kind === "first") { if (!has("firstCard", e.itemId) && !has("opener", e.itemId)) fail(n, `card ${e.itemId} put first`); seenItems.add(e.itemId); return; }
     if (e.kind === "prereq") { if (!has("prereqCheck", e.topicId)) fail(n, `prerequisite check of ${e.topicId}`); return; }
     if (e.kind === "remedy") { if (e.targets !== e.authored && !has("remedy", e.cardId)) fail(n, `remediation ${e.targets} for ${e.cardId} (authored ${e.authored})`); return; }
