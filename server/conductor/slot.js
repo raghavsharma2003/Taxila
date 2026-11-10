@@ -7,7 +7,9 @@
 // What a brief never carries (V26, V30): θ, η, a gap number, a placement level, or anything about a sibling. The
 // foundation share is a lesson proportion, not a level.
 import { BAND } from "./config.js";
-import { addMin, learningDay, localTime, zonedToUtc } from "./clock.js";
+import { addMin, daysBetween, learningDay, localTime, zonedToUtc } from "./clock.js";
+import { lessonDecisions } from "./planner.js";
+import { R5 } from "./adapt.js";
 
 export const OPENERS = Object.freeze(["standard_retrieval", "reanchor_light", "goal_review", "thread_return", "callback"]);
 /** soloRounds base per band (R7 is not built: base only). */
@@ -87,4 +89,42 @@ async function limitsFor(childId, q) {
       query("select limits_on from child_controls where child_id = $1", [childId]).catch(() => [])]);
     return limitsOnFor({ limitsOn: !!rows?.[0]?.limits_on });
   } catch { return false; }
+}
+
+/**
+ * The lesson's learner-state decisions at its start when there is NO day plan (TAXILA_CONDUCTOR_PLAN is off, so most
+ * starts have none): the same rules and names as the plan's lesson slot (planner.js lessonDecisions), from the same
+ * inputs read now: the Conductor's state when the child has one (gap since the last active day, success-first after a
+ * bad close, prerequisite checks already run, the parent's test windows), the view's wheel-spinning skills, placement gap
+ * and first-week rule, and the lesson's subject. With a plan, use lessonBriefOf: tests/r7-learner-evidence keeps the two
+ * equal on the same inputs.
+ * @param {string} childId
+ * @param {{ now?: Date, subject?: string|null, q?: (t: string, p?: unknown[]) => Promise<any[]>, view?: Record<string, any> }} [o]
+ * @returns {Promise<ReturnType<typeof lessonDecisions> | null>} null on any read error (the start then runs as before)
+ */
+export async function lessonDecisionsAtStart(childId, { now = new Date(), subject = null, q, view } = {}) {
+  try {
+    const query = q ?? (await import("../db.js")).q;
+    const [r] = await query("select tz from child_routine where child_id = $1", [childId]).catch(() => []);
+    const tz = r?.tz || "Asia/Kolkata";
+    const day = learningDay(now, tz);
+    const [cs] = await query("select state from conductor_state where child_id = $1", [childId]).catch(() => []);
+    const st = cs?.state ?? null;
+    const v = view ?? await (await import("./view.js")).loadView({ q: query }, childId, tz, now).catch(() => ({}));
+    return decisionsFromState(st, v, { day, subject });
+  } catch { return null; }
+}
+
+/** PURE. lessonDecisions from a Conductor state (or none) and a loaded view, as planner.js inputsFor builds them. */
+export function decisionsFromState(st, view, { day, subject = null }) {
+  const lastActive = st?.counters?.lastActiveDay ?? null;
+  const checked = Object.entries(st?.adapt?.prereqChecked ?? {}).filter(([, d]) => daysBetween(d, day) < R5.recheckDays).map(([k]) => k).sort();
+  const testWindow = (st?.school?.testWindows ?? []).filter((w) => w.from <= day && day <= w.to)
+    .sort((a, b) => (a.subject + a.to < b.subject + b.to ? -1 : 1))[0] ?? null;
+  const pick = (k) => (view?.[k] && !view[k].stale ? { value: view[k].value } : undefined);
+  return lessonDecisions({
+    adapt: { gapDays: lastActive ? Math.min(30, daysBetween(lastActive, day)) : null, successFirst: !!st?.adapt?.successFirstNext, prereqChecked: checked },
+    view: { "kt.wheelSpin": pick("kt.wheelSpin"), "learner.placementGap": pick("learner.placementGap"), "learner.firstWeek": pick("learner.firstWeek") },
+    testWindow, subject, learningDay: day,
+  });
 }

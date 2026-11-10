@@ -259,8 +259,13 @@ export function legacySkillState(sk, now) {
 /** The Director's slice of a skill (state.js snapshotSkill's fields), from the ledger. */
 export function snapshotFromKt(sk, now) {
   const s = legacySkillState(sk, now);
-  return { pKnown: s.pKnown, status: legacyStatus(sk, now), attempts: s.attempts, correctUnaided: s.correctUnaided, generativePass: s.generativePass };
+  return { pKnown: s.pKnown, status: legacyStatus(sk, now), attempts: s.attempts, correctUnaided: s.correctUnaided, generativePass: s.generativePass,
+    // round 8 (the Director's reader): learned AND its delayed check passed (a later session, ≥ 2 learning days, a new
+    // item, unaided): the one fact that says a skill can be skipped to its check card rather than taught again
+    learnedChecked: isLearnedChecked(sk) };
 }
+/** Learned (display ≥ learned_today) and the delayed check passed (flags.delayed). */
+export const isLearnedChecked = (sk) => !!sk && rank(sk.display) >= rank("learned_today") && !!sk.flags?.delayed;
 
 /**
  * Skills whose delayed check is due at session open (INTEGRATION.md §4): ktView.due() AND every learned skill

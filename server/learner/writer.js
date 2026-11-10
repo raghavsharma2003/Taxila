@@ -10,7 +10,7 @@ import { q, tx } from "../db.js";
 import { assertWritable, canWrite, classifyChildTable, isRatchetDown, legalModeOf, tablesForbiddenIn } from "./mode.js";
 import { dropReason } from "./kt/bktr.js";
 import { ENGINE_VERSION, currentTheta } from "./kt/ability.js";
-import { foldOrder } from "./kt/ledger.js";
+import { foldOrder, PARAMS_VERSION } from "./kt/ledger.js";
 // W2 seam commit (BUILD-PLAN §4): the Relational OS writers (W2-I) are reached through this module too, so a learner or
 // relational write has one import point. A name defined here shadows a same-named relational export (ESM rule).
 export * from "../relational/writers.js";
@@ -156,7 +156,7 @@ export function ktEvidenceStmt(child, ev) {
   [ev.id, c.id, ev.sessionId, ev.sessionStartAt ?? ev.at, ev.episodeId, ev.at ?? ev.sessionStartAt, ev.skillIds, ev.teach ? "teach" : ev.cls, ev.teach ? -1 : ev.outcome,
     ev.grader ?? "code", ev.graderVersion ?? "v0", ev.itemKey ?? "", !!ev.teach, ev.assisted ?? null, !!ev.controllerEasy, !!ev.gamingWindowKt,
     !!ev.preAttemptHelp, ev.form ?? null, ev.target ?? null, ev.topicType ?? null, ev.misconceptionId ?? null, ev.discriminates ?? null,
-    ev.misRoute ?? null, ev.entryRung ?? 0, !!ev.contaminated, ev.kitVerified ?? null, ev.paramsVersion ?? "kt-r2-2026-10-07", legalModeOf(c),
+    ev.misRoute ?? null, ev.entryRung ?? 0, !!ev.contaminated, ev.kitVerified ?? null, ev.paramsVersion ?? PARAMS_VERSION, legalModeOf(c),
     // CE contract fields (007_comprehension.sql): the facet fold reads them on replay, so they are the log too.
     ev.via ?? null, ev.ebo ?? null, ev.shapeId ?? null, ev.weaveHost ?? null, !!ev.coincident, !!ev.unfamiliarContext, !!ev.deferenceDiscount,
     typeof ev.spanOk === "boolean" ? ev.spanOk : null]);
