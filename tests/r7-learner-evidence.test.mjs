@@ -8,7 +8,8 @@ import * as LIVE from "../server/learner/live.js";
 const { answerEvents, closeEvents, snapshotFromKt, isLearnedChecked } = LIVE;
 const cardHelp = LIVE.cardHelp ?? (() => 0);
 // 2b-2d need the held script-card help change (learner-evidence report, question 2: it fails three Brain replay predicates)
-const PENDING = { todo: "the held script-card help change waits on a Brain change" };
+// (live since Brain v6.10: the script-card help change landed with the walk rule — a card answered right is not posed again this lesson)
+const PENDING = {};
 import { fuseEvidence, newLearnerState } from "../server/comprehension/fuse.js";
 import { lessonDecisions } from "../server/conductor/planner.js";
 import { decisionsFromState } from "../server/conductor/slot.js";

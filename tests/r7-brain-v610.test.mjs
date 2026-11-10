@@ -110,4 +110,21 @@ describe("r7-brain-v610.test.mjs", () => {
     const park = parkAckOf({ turn: 3, recent: [] }, "hinglish", kit).map((f) => f("cricket"));
     assert.ok(park.length >= 3 && park.every((x) => /cricket/i.test(x) && !/\{/.test(x)), JSON.stringify(park));
   });
+
+  // Main's ruling with Learning's script-card evidence (to-main 001, live in tests/r7-learner-evidence.test.mjs 2b-2d): a script card
+  // answered right in this lesson, with or without help, is never posed again in it — on director18's 16 lessons walked live
+  test("a script card answered right is not posed again in the lesson (16 lessons walked live)", async () => {
+    const bad = [];
+    for (const t of Object.keys(T)) for (const p of ["steady", "stuck", "offtopic", "steering"]) {
+      const ts = await walk(p, t, 200, { run: RUN });
+      const right = new Set();
+      for (const x of ts) {
+        const id = x.pl.p.r.ui?.ask?.itemId;
+        if (id && right.has(id) && !x.pl.state.lastMove?.request) bad.push(`${p} ${t} ${x.n}: ${id} posed again | ${x.out.reply.slice(0, 80)}`);
+        for (const r of x.pl.state.rightCards ?? []) right.add(r);
+      }
+      if (ts.at(-1)?.pl.state.rightRepose) bad.push(`${p} ${t}: rightRepose ${ts.at(-1).pl.state.rightRepose}`);
+    }
+    assert.deepEqual(bad, []);
+  });
 });

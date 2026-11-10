@@ -1296,7 +1296,9 @@ function poseNext(s, input, prefix, preferred) {
   const skipped = new Set(s.skipped);
   const queued = s.nextItemId && !skipped.has(s.nextItemId) ? findItem(s, kit, s.nextItemId) : null;
   const verifying = s.verify && !skipped.has(`diag:${s.verify}`) ? findItem(s, kit, `diag:${s.verify}`) : null;
-  const item = preferred ?? verifying ?? queued ?? selectNext(s, kit, { easier: s.easier });
+  // (v6.10: a script card answered right this lesson is never posed again in it)
+  const rightNow = (it) => !!it && String(it.id).startsWith("script:") && (s.rightCards ?? []).includes(it.id) ? null : it;
+  const item = rightNow(preferred) ?? verifying ?? rightNow(queued) ?? selectNext(s, kit, { easier: s.easier });
   if (verifying && queued) s.queue = [queued.id, ...s.queue.filter((id) => id !== queued.id)];
   s.nextItemId = undefined; s.easier = false; s.verify = undefined;
   if (!item) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix, kit);
@@ -3354,6 +3356,12 @@ export function step(prev, input) {
   if (laterRows) ui.later = laterRows;
   const moment = input.event === "turn" ? momentOf(prev.later, s.later, move, { turn: s.turn }) : null;
   if (moment) ui.moment = moment;
+  // (v6.10, main's ruling with Learning's script-card evidence: a script card answered right in this lesson — with help or without — is
+  // never posed again in this lesson, whatever her belief; verifying an assisted right answer is a later lesson's delayed check)
+  if (input?.event === "turn" && input.cls?.outcome === "correct" && prev?.activeItemId && String(prev.activeItemId).startsWith("script:")) s.rightCards = [...new Set([...(s.rightCards ?? []), prev.activeItemId])];
+  if (ui?.ask?.itemId && (s.rightCards ?? []).includes(ui.ask.itemId) && s.posedAt?.[ui.ask.itemId] != null && s.posedAt[ui.ask.itemId] < s.turn && !s.lastMove?.request) s.rightRepose = (s.rightRepose ?? 0) + 1;
+  // (v6.10: the turn each card was first posed on — a later pose of the same card is a re-pose, framed as one, whatever the history says)
+  if (ui?.ask?.itemId && s.posedAt?.[ui.ask.itemId] == null) s.posedAt = { ...(s.posedAt ?? {}), [ui.ask.itemId]: s.turn };
   s.lastUi = ui; // what a hold re-sends (chips are momentary on the client: absent would clear them)
   // the card pins (capPlan): how many teacher turns in a row (turns with no question on the card do not break the run)
   // have pinned this question

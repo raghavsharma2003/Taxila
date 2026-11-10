@@ -2190,6 +2190,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // v6 R3/R5 (director8: verbatim repeats of 63–67-word turns): no sentence of her previous turn is said again in her own words
     // (the authored parts and the card are code's, and stay)
     const herPrev = norm([...(state.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").toLowerCase();
+    // (v6.10: the card was posed on an earlier turn of this lesson — state.js posedAt — so this pose is a re-pose)
+    const posedBefore = !!ui?.ask?.itemId && state.posedAt?.[ui.ask.itemId] != null && state.posedAt[ui.ask.itemId] < (state.turn ?? 0);
     const saidBefore = (x) => { const t = norm(x).toLowerCase().replace(/[.!?\u0964]+$/, ""); return !!herPrev && t.length > 12 && herPrev.includes(t); };
     { const n0 = ss.length; ss = ss.filter((x) => !saidBefore(x)); if (ss.length < n0) guard.repeatDropped = n0 - ss.length; }
     // v6 R3: a probe answered: one line that takes up how they thought (hers when she wrote one), before anything new
@@ -2390,7 +2392,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (!lead) { const a = freshOf(jointOf(kit, "asideResume", lang) ?? ASIDE_RESUME[lang === "english" ? "english" : "hinglish"], state); body = [a, ...body]; codeLines.push(a); guard.asideResumeLine = a; }
       guard.asideResume = true;
     }
-    else if (card && !lead && !body.length && herPrev && prevHas(card)) { body = [freshOf((state.lastMove?.request === "selftry" ? TRY_FIRST : FRAMES.again)[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(body[0]); guard.reposeFrame = true; }
+    else if (card && !lead && !body.length && ((herPrev && prevHas(card)) || posedBefore)) { body = [freshOf((state.lastMove?.request === "selftry" ? TRY_FIRST : FRAMES.again)[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(body[0]); guard.reposeFrame = true; }
     // (v6.6 F1′: asked to try first, the card is said with an invitation even the first time)
     else if (card && !lead && !body.length && state.lastMove?.request === "selftry") { body = [freshOf(TRY_FIRST[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(body[0]); guard.reposeFrame = "selftry"; }
     // v6.5 B1 (main, director13 c5-t02 offtopic 4: "2/5 aur 2/3 mein kaunsa bada hai?" with no card): in a scripted lesson, a turn
@@ -2498,7 +2500,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       body = body.filter((x) => authoredK.has(keyS(x)) || (!hookTurn && !herK.has(keyS(x)) && !hersLoose(x)));
       if (body.length < n0) guard.hersDropped = n0 - body.length;
       // (v6.4 R3 after the drop: a card left bare and said before still gets its frame)
-      if (card && !lead && !body.length && !guard.reposeFrame && herPrev && prevHas(card)) { body = [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; guard.reposeFrame = true; }
+      if (card && !lead && !body.length && !guard.reposeFrame && ((herPrev && prevHas(card)) || posedBefore)) { body = [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; guard.reposeFrame = true; }
     }
     const doneApart = !!d2 && state.lastMove?.closedBeat?.beatId === "worked" && state.lastMove?.closeBeat?.beatId !== "worked";
     const prevPart = once([lead, ...noQ([ack, missS, g2, doneApart ? null : d2].filter(Boolean))]);
