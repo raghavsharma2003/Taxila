@@ -6,7 +6,8 @@ files, so no product code is changed here. Small, certain fixes are written as p
 
 Branch `claude/r7-audit-studio`, from `int/r6` at integration 21a (`8bb6b188`).
 
-Status: **in progress** (pushed early; more findings follow).
+Status: **final**. Skeptic pass (one sub-agent, asked to refute each finding): 10 confirmed, 2 partly confirmed
+(STUDIO-03, STUDIO-06; corrections folded into their notes), none refuted.
 
 ## Findings
 
@@ -20,7 +21,7 @@ Status: **in progress** (pushed early; more findings follow).
 | STUDIO-06 | P3 | no longer needed | studio | five `.patch` files inside product folders were applied in the W2 integration and now apply neither forward nor backward | `server/forge/seam-patches/*.patch` (3), `server/studio/seam-patches/*.patch` (2) | delete them; `context/` cites them by name as method, so add an inbox entry with the last commit that holds them | proposal (needs main) |
 | STUDIO-07 | P3 | inconsistent | studio | the Studio v2 node tests live outside `tests/`, so neither `npm test` nor `npm run test:all` runs them (9 tests; they pass today when run by hand) | `src/studio-v2/tests/studio-v2.test.mjs`; `scripts/test-shard.mjs:28` reads only `tests/` | move the file to `tests/studio-v2.test.mjs` (fix its relative imports) | open |
 | STUDIO-08 | P3 | inconsistent | studio | Stagecraft's default mode is "on" in `lesson.js` and in its header, but `StagecraftHost` falls back to "off" when no mode is passed | `server/stagecraft/host.js:30` vs `server/stagecraft/lesson.js:27-30` | `o.mode ?? stagecraftMode()` (one default, one place) | open |
-| STUDIO-09 | P3 | not good enough | studio | number-line-hop@1 is advertised (and authorable) for ranges it cannot lay out: 63 of 180 calls on a grid of the advertised range are refused (an equation with negatives runs off the board; "+1" then "-1" labels overlap) | `server/forge/explainer/templates.js:507-547`, `server/forge/explainer/board-ref.js:22` | narrow the advertised range to what lays out, or wrap the equation row | open |
+| STUDIO-09 | P3 | not good enough | studio | number-line-hop@1 is advertised (and authorable) for ranges it cannot lay out: 63 of 180 calls on a grid of the advertised range are refused (an equation with negatives runs off the board; "+1" then "-1" labels overlap) | `server/forge/explainer/templates.js:507-547`, `server/forge/explainer/board-ref.js:24` | narrow the advertised range to what lays out, or wrap the equation row | open |
 | STUDIO-10 | P3 | not good enough | studio | the picture lane's per-job and per-lesson maps are never pruned, so a long-running replica keeps one entry per picture and per lesson forever | `server/studio/picture.js:47-55`, `118-120` | drop a lesson's `perLesson` / `failed` rows and its jobs when the seam forgets the lesson, or cap the maps like `cache` | open |
 | STUDIO-11 | P2 | not good enough | studio | Stagecraft pays for generated specs that can never be shown: the conductor launches the `generated_spec` rung on `taxila-fast-bg` by default, but the tray gate refuses every generated spec ("not judged at the child's sizes") because nothing ever sets a judge verdict | `server/stagecraft/conductor.js:260`, `server/stagecraft/lesson.js:99-100`, `server/forge3/tray-gate.js:205-208`; `server/forge3/gate.js:22` `judgeArtifact` has no caller | launch the spec rung only when a judge lane is configured (`FORGE3_QA_URL`), the way `seam.js:450` skips live builds without a gate: pass `rungs` without `generated_spec` to the host otherwise | open |
 | STUDIO-12 | P2 | broken | studio | the live build race and the local gate cannot load in the production image: `server/studio/fixers.js` imports `rolldown/parseAst`, but `rolldown` arrives only through `vite` (a devDependency) and the image installs with `--omit=dev`. Dormant today (no gate URL is set), so it breaks silently the day the gate is wired | `server/studio/fixers.js:14`, `server/studio/qa/static.js:4`; `Dockerfile:13`; `package.json` (no `rolldown`) | add `rolldown` 1.2.12 to `dependencies` (the version vite and the studio-qa image already use), via a platform patch | open |
@@ -46,7 +47,8 @@ Failed checks (from each file's `check.issues`): `c4-maths-ch03-t02` (rule "-10"
 round in a turn-symmetry topic), `c7-maths-ch08-t01` (a round that does not reach its misconception),
 `c7-maths-ch09-t03` (the prompt gives away the answer), `c7-science-ch04-t03` (oxygen classed as "Burns"). Never
 checked: `c4-maths-ch04-t02`, `c4-maths-ch07-t02`, `c4-maths-ch13-t02`, `c6-maths-ch07-t02`, `c6-maths-ch07-t04`,
-`c7-science-ch09-t02`. Children on these topics get no catalogue game or explainer (the code boards still serve).
+`c7-science-ch09-t02`. Children on these topics get no catalogue game or explainer (the code boards still serve). Three more records
+(`c7-science-ch06-t01` to `t03`) have none on purpose: they are under the child-safety floor, not a finding.
 
 **STUDIO-04.** `grep -rn "api/forge/requests\|api/forge/prefetch"` over `src scripts tests evals server` finds only the
 route table. `routes/lesson.js:457` warms through `forgeSeam.prefetchLessonFills`, which also registers `onFill`; the
@@ -59,7 +61,9 @@ lesson, so a normal lesson passes 8.
 
 **STUDIO-06.** `git apply --check` and `git apply --check -R` both fail for all five. `context/decisions.md:5241`
 (`w2int-seam-patches-applied`) records that they were applied on 2026-10-05. `context/measurements.md:1380, 2288, 2845`
-and `context/architecture.md:68` name them as the tree a measurement ran on, so per RULES2 they stay until main agrees;
+and `context/architecture.md:68` name them as the tree a measurement ran on. The skeptic found the added lines of four
+of them in the code (7/7, 2/3, 13/13, 1/1) but only 5 of 15 for `w2h-turn-slot.patch`: that one was hand-merged and has
+moved on since (`decisions.md:4647`), so it should be read before it is deleted. All five are cited, so per RULES2 they stay until main agrees;
 the files remain in git history.
 
 **STUDIO-07.** `scripts/test-shard.mjs:28` lists `tests/*.test.mjs` only; `package.json` `test` is `node --test tests/`.
@@ -71,7 +75,8 @@ any other caller (tests, evals) that builds a host without a mode silently gets 
 **STUDIO-09.** Grid: start -20..100 step 7 × ten hop lists within the advertised range. Refusals: `line_too_long` 36
 (by design, span > 40), `inside_board:eq` 9 (e.g. start -20, hops [3, 3, 3, 3]: the equation row starts at x 60 and runs
 past 400), `text_overlap` 18 (hops [1, -1]: both hop labels at the same middle). A refused template steps the ladder
-down; nothing false is drawn, but an author or the model is offered calls that cannot draw.
+down; nothing false is drawn, but an author or the model is offered calls that cannot draw. The skeptic's random sample
+of the advertised range: 897 of 2,000 refused.
 
 **STUDIO-10.** `jobs.set(id, …)` on every picture and `perLesson.set(lessonId, …)` on every lesson that asks one; only
 `_resetPictures` (tests) clears them. `failed` is cleared only when the next turn of the same lesson reads it.
