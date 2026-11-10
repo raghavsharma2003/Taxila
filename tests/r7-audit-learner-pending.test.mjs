@@ -80,7 +80,7 @@ test("LEARN-07: a parent's 'Easy' never starts a class-5 child before the calend
   assert.ok(easy.placement, "the answer still seeds the estimate");
 });
 
-test("LEARN-10: set-up never shows a raw error message to the parent", { todo: "LEARN-10: main decides the set-up copy" }, () => {
+test("LEARN-10: set-up never shows a raw error message to the parent", () => {
   for (const f of ["ChildProfile.tsx", "Consent.tsx", "Setup.tsx"]) {
     const src = readFileSync(new URL(`../src/onboarding/${f}`, import.meta.url), "utf8");
     assert.doesNotMatch(src, /setErr\(errText\(/, `${f} shows e.message ("Failed to fetch", "internal error")`);

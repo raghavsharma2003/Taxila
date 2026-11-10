@@ -12,14 +12,14 @@ import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, ErrorNote, Field, Icon, PinPad } from "../ui/index.ts";
 import { defaultTutorFor } from "../../shared/tutors.js";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
-import { ApiError, errText, getJson, lockBeacon, postJson, refreshMe, request } from "../app/api.ts";
+import { ApiError, getJson, lockBeacon, postJson, refreshMe, request } from "../app/api.ts";
+import { feelChipsFor, parentViewToSend, setupError } from "./setupRules.ts";
 import { useGate } from "../parent/Gate.tsx";
 import { isGateError } from "../parent/api.ts";
 import { kidLook, StepFrame } from "./Layout.tsx";
 import { clearDraft, draftForAdd, useDraft } from "./draft.ts";
 import { defaultsFor } from "./Setup.tsx";
 import { ChapterPicker, FeelPicker } from "../parent/SchoolPlan.tsx";
-import { feelSubjects } from "../child/feel.ts";
 import { NamePreview } from "./NamePreview.tsx";
 import { parentApi, type ChapterRef } from "../parent/api.ts";
 import { teacherBandFor } from "./teacherBand.ts";
@@ -54,20 +54,32 @@ export function ChildStep() {
   const first = c.firstName?.trim() ?? "";
   // round 7 F item 2: "which maths chapter is school on?" (optional; the next maths lesson starts there)
   const [mathsChapters, setMathsChapters] = useState<ChapterRef[] | null>(null);
+  // the subjects the class's book has (LEARN-44: classes 1-2 have no EVS book, so no EVS chip); null until read
+  const [bookSubjects, setBookSubjects] = useState<string[] | null>(null);
+  const [clearedFeel, setClearedFeel] = useState<string[]>([]);
   useEffect(() => {
     if (!cl) return;
-    parentApi.chapters(cl).then((r) => setMathsChapters(r.chapters.maths ?? []), () => setMathsChapters([]));
+    parentApi.chapters(cl).then((r) => {
+      setMathsChapters(r.chapters.maths ?? []);
+      setBookSubjects(Object.entries(r.chapters).filter(([, v]) => (v as unknown[])?.length).map(([k]) => k));
+    }, () => setMathsChapters([]));
   }, [cl]);
 
+  // LEARN-43: a failed PIN read offers "Try again" (it sat on "One moment" for ever)
+  const [pinTry, setPinTry] = useState(0);
+  const [pinReadFailed, setPinReadFailed] = useState(false);
   useEffect(() => {
+    setPinReadFailed(false);
     getJson<{ hasPin: boolean; firstSetNeedsPassword?: boolean }>("/api/parent/pin").then((g) => {
       setHasPin(g.hasPin);
       setNeedPw(!g.hasPin && !!g.firstSetNeedsPassword);
+      setErr(null);
     }, (e) => {
       if (e instanceof ApiError && e.status === 401) return nav("/start/phone?next=/start/child");
-      setErr(errText(e));
+      setPinReadFailed(true);
+      setErr(setupError(e));
     });
-  }, [nav]);
+  }, [nav, pinTry]);
 
   const onPin = (p: string) => {
     if (!pin1) { setPin1(p); setResetKey((k) => k + 1); return; }
@@ -113,8 +125,9 @@ export function ChildStep() {
         await parentApi.setSchoolChapter(child.id, subject, chapter).catch((e3) => { if (isGateError(e3)) throw e3; });
       }
       // r7 (Learning to-app/007): how each main subject feels to the parent, for cold-start placement; a miss never stops set-up
-      if (d.parentView && Object.keys(d.parentView).length) {
-        await parentApi.setParentView(child.id, d.parentView).catch((e3) => { if (isGateError(e3)) throw e3; });
+      const views = parentViewToSend(d.parentView, clearedFeel);
+      if (Object.keys(views).length) {
+        await parentApi.setParentView(child.id, views).catch((e3) => { if (isGateError(e3)) throw e3; });
       }
       if (!pinSaved && pin1) { stage = "pin"; await postJson("/api/parent/pin", { pin: pin1 }); pinSaved = true; setHasPin(true); }
       await refreshMe();
@@ -126,7 +139,7 @@ export function ChildStep() {
       if (e2 instanceof ApiError && e2.status === 401) return nav("/start/phone?next=/start/child");
       if (isGateError(e2)) { if (pinSaved) setErr("The Parent corner locked. Enter the PIN to continue."); relock(); return; }
       if (e2 instanceof ApiError && (e2.body as { gate?: string } | null)?.gate === "password") setNeedPw(true);
-      setErr(errText(e2));
+      setErr(setupError(e2));
       if (stage === "pin") resetPinUi();
     } finally {
       setBusy(false);
@@ -165,13 +178,13 @@ export function ChildStep() {
         {cl && (
           <section className="card card-flat stack-sm" aria-labelledby="onb-feel-h" data-testid="onb-feel">
             <h2 id="onb-feel-h" className="t-h3" style={{ fontFamily: "var(--font-text)" }}>{`How does school feel for ${first || "your child"} right now?`}</h2>
-            {feelSubjects(cl).map((s) => (
+            {feelChipsFor(cl, bookSubjects).map((s) => (
               <FeelPicker key={s} subject={s} name={first || "your child"} value={d.parentView?.[s] ?? null}
-                onChange={(v) => set((cur) => {
+                onChange={(v) => { if (v === "unsure") setClearedFeel((cs) => (cs.includes(s) ? cs : [...cs, s])); set((cur) => {
                   const pv = { ...(cur.parentView ?? {}) };
                   if (v === "unsure") delete pv[s]; else pv[s] = v;
                   return { parentView: pv };
-                })} />
+                }); }} />
             ))}
             <p className="t-note">Optional. One tap each. It only sets where the first lessons begin; the lessons adjust from there.</p>
           </section>
@@ -191,6 +204,7 @@ export function ChildStep() {
         {/* round 5: no class-time window by default, so no hours are promised here (limits live in the Parent corner) */}
         <p className="t-note">{`Lessons open any time. You can set a daily limit in the Parent corner.`}</p>
         <ErrorNote>{err}</ErrorNote>
+        {pinReadFailed && <Button variant="secondary" small onClick={() => setPinTry((n) => n + 1)}>Try again</Button>}
         <div className="onb-go">
           {!ready && <span className="t-note" id="child-why">{why}</span>}
           <Button type="submit" block disabled={!ready || busy} aria-describedby={ready ? undefined : "child-why"} icon={<Icon name="chevron" />}>{busy ? "Saving" : go}</Button>
