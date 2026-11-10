@@ -6,7 +6,6 @@ import { handle, register } from "./router.js";
 import { routes as lesson } from "./routes/lesson.js";
 import { routes as tts } from "./routes/tts.js";
 import { routes as parent } from "./routes/parent.js";
-import { routes as modules } from "./routes/modules.js";
 import { routes as voice } from "./routes/voice.js";
 import { routes as tutor } from "./routes/tutor.js";
 import { routes as forge } from "./routes/forge.js";
@@ -43,7 +42,7 @@ import { routes as ops } from "./ops/routes.js";
 // r7 app-auth-email-otp (stream E): guardian sign-in by an emailed code
 import { routes as signin } from "./signin/code.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...placement, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...ops, ...signin, ...lane });
+register({ ...lesson, ...tts, ...parent, ...voice, ...tutor, ...forge, ...child, ...placement, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...ops, ...signin, ...lane });
 export { handle, register };
 // child device pairing, registered on its own (the line above stays as App's 002 patch expects)
 register(pair);

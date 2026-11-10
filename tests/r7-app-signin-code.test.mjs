@@ -97,6 +97,12 @@ test("the wiring patches apply (or are already applied)", () => {
     const at = new URL("..", import.meta.url).pathname;
     let ok = false;
     try { execFileSync("git", ["apply", "--check", p], { cwd: at, stdio: "pipe" }); ok = true; } catch { /* maybe applied */ }
+    if (!ok && p.includes("002-signin-code-routes")) {
+      // applied and since edited around (platform owns server/index.js; the audit removed the empty modules table from
+      // the same register line), so a reverse apply no longer matches: check what the patch did instead
+      const idx = fs.readFileSync(at + "server/index.js", "utf8");
+      ok = /import \{ routes as signin \} from "\.\/signin\/code\.js";/.test(idx) && /register\(\{[^}]*\.\.\.signin[^}]*\}\)/.test(idx);
+    }
     if (!ok) { execFileSync("git", ["apply", "--check", "--reverse", p], { cwd: at, stdio: "pipe" }); ok = true; }
     assert.ok(ok, p);
   }
