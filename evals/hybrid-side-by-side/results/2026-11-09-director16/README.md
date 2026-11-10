@@ -112,3 +112,59 @@ All figures are in ms. The first table is pooled over all turns; the per-lesson 
 | stuck c5-t02 | 2430 | 937 | 2588 | 876 | 34 |
 | stuck c6 | 3060 | 942 | 2558 | 897 | 35 |
 | **Median of the lessons** | **2805** | **1011** | **2789** | **1093** | |
+
+## Held board, Brain v6.8 (offline; no model or Azure calls)
+
+The held-board work (dc-r7-held-board) was checked against director16's own rows and Learning's D11 data.
+
+### Units whose teaching names a figure their card board lacks
+
+Counted with Learning's validator (`scripts/lesson-scripts/check.mjs`: `unitFigureErrors`, plus `boardErrors`' W10 unit-board errors) over the four pilot scripts:
+
+| Scripts | Unit-figure errors | W10 unit-board errors |
+| :--- | ---: | ---: |
+| Before D11 (this run's `scripts/`) | 19 (c4 9, c5-t01 1, c5-t02 9, c6 0) | 21 (c4 7, c5-t01 9, c5-t02 5, c6 0) |
+| After D11 (`data/lesson-scripts`, 2da789733) | 0 | 0 |
+
+### H5 counter (`evals/hybrid-side-by-side/held-units.mjs`)
+
+H5 runs on every teacher row, single-page turns included, reading the take. On each row it checks three things:
+- each spoken part's unit against the unit of the page it is said over;
+- whether a pinned card is never said;
+- whether a picture line says "the same numbers" over a view that does not show them.
+
+Its 38 flagged rows fall into three separate lines, so the hand judges can check each one:
+
+1. **The 8 judged contradictions: all 8 flagged.**
+   - (a) c4 steady 46, c4 offtopic 46, c6 offtopic 36;
+   - (b) c4 steady 36, c4 offtopic 34, c5-t02 offtopic 32;
+   - (c) c4 steady 18, c5-t02 stuck 18.
+2. **The 10 silent pins: all 10 flagged as "an unsaid card on screen".**
+   - c5-t01 steady 40, stuck 38, offtopic 20, steering 26;
+   - c5-t02 steady 40, stuck 58, offtopic 18, offtopic 42;
+   - c4 offtopic 6;
+   - c6 steady 40.
+   - (c4 steady 46, offtopic 46 and c6 offtopic 36 are pins too; they are counted in line 1.)
+3. **20 other rows.** The held rule removes all of these by construction. They were not judged contradictions:
+   - **14 closes said over the remediation page that followed them:**
+     - c4 offtopic 56; c4 steering 10, 28; c4 stuck 50;
+     - c5-t01 offtopic 8; c5-t01 steady 10; c5-t01 steering 10; c5-t01 stuck 58;
+     - c5-t02 offtopic 58; c5-t02 steady 6, 56, 84; c5-t02 steering 6, 54.
+   - **4 teaching parts said over the next skill's bridge page:** c4 offtopic 62, c6 offtopic 40, c5-t02 steady 96, c5-t02 stuck 52.
+   - **2 "the same numbers" picture lines over a view with no number up:** c5-t02 offtopic 26, c5-t01 steering 14.
+
+### Brain's predicates (`server/brain/propose.js` heldOf / heldPredicates, thrown under tests)
+
+These are pinned in `tests/r7-brain-v68.test.mjs`:
+- at most one board change per turn;
+- a change only at the first spoken part of a new unit;
+- every spoken part on the held unit, or on the switched unit from the switch onward;
+- no graded answer to an unsaid card (A4: turn.js planTurn's cardUnsaid).
+
+Over the 16 lessons walked live, nothing throws, and H5 reads 0 on both the run's own scripts and D11's.
+
+**Unit boards.** Each unit's board is picked by code from its card (main's call):
+- an ask's own board, else its beat's;
+- the yourStep's board, else the worked board;
+- the then-card's board, else its remediation's;
+- a check's own board.
