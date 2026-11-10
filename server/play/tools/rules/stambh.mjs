@@ -15,9 +15,14 @@ export const RULES = [
   R("c4-maths-ch14-t02", S, "bars", "draw", { "scale-as-one": "count-squares", "half-ignored": "between-marks", "half-whole": "between-marks" }, { steps: [1, 2, 5], half: true }),
   R("c5-maths-ch15-t01", S, "picto", "draw", { "key-ignored": "ignore-scale", "half-whole": "round-up-pictures" }, { steps: [2, 5, 10], half: true }),
   R("c5-maths-ch15-t02", S, "bars", "draw", { "scale-as-one": "count-gridlines" }, { steps: [2, 5, 10], half: true }),
-  R("c6-maths-ch04-t02", S, "picto", "draw", { "key-ignored": "ignore-key", "half-whole": "half-symbol" }, { steps: [5, 10, 50, 100], half: true }),
-  R("c6-maths-ch04-t03", S, "bars", "draw", { "scale-as-one": "count-units" }, { steps: [5, 10, 50, 100], half: true }),
-  R("c6-maths-ch04-t03", S, "bars", "diff", { "scale-as-one": "count-units" }, { steps: [5, 10, 50, 100], half: true }),
+  // focusSteps (GAMES-01): at keys / scales of 5 and up no c6 data set fits one icon / crate per unit, so "ignores the key" /
+  // "counts the squares" could never show. When the Director's focus is that belief the generator adds levels at these
+  // smaller steps, each one the topic's own kit uses: key 2 (c6-maths-ch04-t02-i13, "1 picture = 2 kites", which targets
+  // ignore-key) and key 4 (-i10 "1 picture = 4 laddoos", -rl-o2 "1 circle = 4 GB"); scale 4 (c6-maths-ch04-t03-rl-o1,
+  // "each square represents 4 km", with a half square).
+  R("c6-maths-ch04-t02", S, "picto", "draw", { "key-ignored": "ignore-key", "half-whole": "half-symbol" }, { steps: [5, 10, 50, 100], half: true, focusSteps: [2, 4] }),
+  R("c6-maths-ch04-t03", S, "bars", "draw", { "scale-as-one": "count-units" }, { steps: [5, 10, 50, 100], half: true, focusSteps: [4] }),
+  R("c6-maths-ch04-t03", S, "bars", "diff", { "scale-as-one": "count-units" }, { steps: [5, 10, 50, 100], half: true, focusSteps: [4] }),
 ];
 
 export const ACTS = {
