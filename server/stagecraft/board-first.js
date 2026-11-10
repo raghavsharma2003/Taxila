@@ -707,7 +707,8 @@ function altCall0(ref, { line = "", withheld = [], up = null } = {}) {
       return { template: "unrolled@1", sides: ps.sides, unit: ps.unit, total: said && !held ? sum : "?", ...(ps.figure ? { figure: ps.figure } : {}), view: "unrolled" };
     }
     if (c.template === "fraction-bars@1" && Array.isArray(c.bars)) {
-      const named = c.bars.filter((b) => b && b.label !== "?" && Number.isInteger(b.parts) && b.parts >= 2 && b.parts <= 12 && Number.isInteger(b.shade) && b.shade >= 1 && b.shade <= b.parts);
+      // (an unnamed bar — label "", Learning's D11 — is no more named than a "?" one)
+      const named = c.bars.filter((b) => b && b.label !== "?" && b.label !== "" && Number.isInteger(b.parts) && b.parts >= 2 && b.parts <= 12 && Number.isInteger(b.shade) && b.shade >= 1 && b.shade <= b.parts);
       const dens = [...new Set(named.map((b) => b.parts))];
       // (director13 S8, c5-t02 stuck row 20: an unmarked bars ask — "?" bars of 4 and 8, the card asks which piece is bigger —
       // had no second view and re-showed the same bars. Its second view is each bar as a circle of the same parts, its shading
