@@ -9,7 +9,6 @@ import { readFileSync } from "node:fs";
 import { lineLogic, malHop, hopText } from "../src/play/families/nishana/line.logic.ts";
 import { pickLevels } from "../src/play/core/pick.ts";
 import coverage from "../data/play/coverage.json" with { type: "json" };
-import { cpuNow } from "./_cpu-ms.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const DIV = { grammar: { ops: ["÷"] }, misMap: { "div-neg-neg": "k-sign-mix", "div-by-size": "k-sign-mix" } };
@@ -87,21 +86,20 @@ for (const [name, kind] of [["÷", DIV], ["decimal", DEC]]) {
     assert.deepEqual([...seen].sort(), Object.keys(kind.misMap).sort(), "every mal-rule has levels that tell it apart");
   });
 
-  test(`nishana2 ${name}: the picker serves proven levels (shortcut null) and the generator's p95 ≤ 50 ms`, () => {
-    const times = [];
+  test(`nishana2 ${name}: the picker serves proven levels (shortcut null) and the generator's work is bounded (counted, not timed)`, () => {
+    const candCounts = []; // candidates per generate/pick: a count, not a clock (tests/_work.mjs)
     for (let seed = 1; seed <= 40; seed++) {
       const fade = 1 + (seed % 3);
-      let best = Infinity, r = null;
-      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); r = pickLevels(lineLogic, req(seed, kind, fade)); best = Math.min(best, cpuNow() - t0); }
-      times.push(best);
+      let r = null;
+      r = pickLevels(lineLogic, req(seed, kind, fade));
+      candCounts.push(r.considered);
       assert.ok(r, `seed ${seed}`);
       for (const lv of [r.garam, r.teekha].filter(Boolean)) {
         assert.equal(lineLogic.shortcut(lv), null, lv.levelId);
         assert.ok(lineLogic.validate(lv), lv.levelId);
       }
     }
-    times.sort((a, b) => a - b);
-    assert.ok(times[Math.floor(times.length * 0.95)] < 50, `p95 ${times[Math.floor(times.length * 0.95)]} ms`);
+    assert.ok(Math.max(...candCounts) <= 300, `${Math.max(...candCounts)} candidates per call (measured 2026-11-10: 100; bound is 3x)`);
   });
 
   test(`nishana2 ${name}: ≥ 2000 random acts; solved ⇔ the pod sits on the independent checker's answer; never throws`, () => {

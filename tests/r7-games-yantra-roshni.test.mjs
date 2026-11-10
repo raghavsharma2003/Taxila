@@ -8,6 +8,7 @@
 // every source and material on the bench is named in the kit; no ray is ever drawn from the eye and the eye never looks at
 // the Sun; no word holds a number or an economy word; tampered params are refused; first levels differ across children;
 // the generator and picker are fast (CPU time); and every coverage entry serves a proven level through the play server.
+import { backlogged } from "./_backlog.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -22,7 +23,7 @@ import { GAME_WEIGHT, MODES, sanitizeActs } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
 import { pickLevels } from "../src/play/core/pick.ts";
 import { mulberry32 } from "../src/play/core/rng.ts";
-import { cpuNow } from "./_cpu-ms.mjs";
+import { counted } from "./_work.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const KIT = JSON.parse(readFileSync(`${ROOT}data/kits/c7-science.json`, "utf8"));
@@ -323,7 +324,7 @@ test("roshni coverage: three entries on ch11-t01, one per skill, mapped to the t
   assert.deepEqual(MINE().map((e) => e.misMap), [{ "blur-clear": `${T}-m3` }, { "moon-alone": `${T}-m1`, "look-hard": `${T}-m2` }, { "moon-cover": `${T}-m1` }]);
   for (const e of MINE()) for (const kit of Object.values(e.misMap)) assert.ok(TOPIC.misconceptions.some((x) => x.id === kit), kit);
   for (const s of ["s1", "s2", "s3"]) { assert.ok(hasPlay(`${T}-${s}`)); assert.equal(entryFor({ skillId: `${T}-${s}` }).mode, "roshni"); }
-  assert.doesNotMatch(readFileSync(`${ROOT}docs/design/round7/games/law-backlog.md`, "utf8"), new RegExp(T));
+  assert.deepEqual(backlogged(T), [], `${T} is still in the law backlog`);
   // the beam's own topics stay the beam's
   for (const t of ["c7-science-ch11-t03", "c7-science-ch11-t04"]) assert.ok(coverage().entries.some((e) => e.topicId === t && e.mode === "beam"));
 });
@@ -369,11 +370,15 @@ test("roshni: the first level served differs across children (seeded difficulty 
   assert.ok(d.size >= 4);
 });
 
-test("roshni: the generator and the picker are fast (CPU time, p95 ≤ 50 ms)", () => {
-  const gen = [], pick = [];
+test("roshni: the generator's and the picker's work is bounded (counted, not timed)", () => {
+  // measured 2026-11-10 over every case below: at most 12 candidates and 234 calls into the family logic per pick; bounds are 3x above that. A count is the same on every machine; a
+  // 50 ms p95 read 5 ms idle and 110 ms under the gate's load (tests/_work.mjs).
+  const gen = [], calls = [], considered = [], counter = counted(L);
   for (const goal of ROSHNI_GOALS) for (const fade of [1, 2, 3]) for (let seed = 1; seed <= 6; seed++) {
-    let t0 = cpuNow(); L.generate(req(goal, seed * 31, { fade })); gen.push(cpuNow() - t0);
-    t0 = cpuNow(); pickLevels(L, req(goal, seed * 31, { fade })); pick.push(cpuNow() - t0);
+    gen.push(L.generate(req(goal, seed * 31, { fade })).length);
+    counter.reset(); const picked = pickLevels(counter.logic, req(goal, seed * 31, { fade })); assert.ok(picked); calls.push(counter.calls()); considered.push(picked.considered);
   }
-  for (const [name, xs] of [["generate", gen], ["pick", pick]]) { xs.sort((a, b) => a - b); const p95 = xs[Math.floor(xs.length * 0.95)]; assert.ok(p95 <= 50, `${name} p95 ${p95.toFixed(1)} ms`); }
+  assert.ok(Math.max(...gen) <= 36, `generate made ${Math.max(...gen)} candidates`);
+  assert.ok(Math.max(...considered) <= 36, `pick considered ${Math.max(...considered)}`);
+  assert.ok(Math.max(...calls) <= 800, `pick made ${Math.max(...calls)} calls into the family logic`);
 });

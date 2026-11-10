@@ -9,7 +9,7 @@
 // - Resumable: every finished job is appended to <out>/ledger.jsonl; a re-run skips it.
 // - Azure only AUTHORS. Checking is Claude's (owner 2026-10-27: judges and evaluation use Claude): the run writes
 //   <out>/verify-packet.jsonl (each item WITHOUT its key) for the in-session blind solve, and <out>/keys.jsonl. Nothing is
-//   written to data/kits; scripts/kits/merge.mjs folds only items whose blind solve agreed.
+//   written to data/kits; a run's items reach data/kits only after the in-session blind solve agreed (the merge script was one-off and is gone).
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 

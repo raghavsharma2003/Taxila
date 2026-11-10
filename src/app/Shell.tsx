@@ -52,7 +52,7 @@ export function Footer() {
 
 /** Release 11 (dc-r4-volt-everywhere): the public site's paths load and fail in Volt night. K's tokens are in the main
  *  stylesheet, so the scope attributes are enough; the few styles are token vars (no palette here). */
-const PUBLIC_PATH = /^\/(promises|privacy|help|leaving|trust)?\/?$/;
+const PUBLIC_PATH = /^\/(promises|privacy|help|leaving|trust|pricing|pair|signin)?\/?$/; // APP-13: index.html's first-paint list is the same
 const VOLT = { className: "kx", "data-klook": "volt", "data-ktheme": "night" } as const;
 const voltGround = { background: "var(--k-void)", color: "var(--k-ink)", fontFamily: "var(--k-sans)", minHeight: "100dvh" } as const;
 

@@ -18,7 +18,7 @@ import { playActOf } from "../server/director/play-verbs.js";
 import { CHANCE_WEIGHT, GAME_WEIGHT, FAMILIES, MODES, FAMILY_ARTS, sanitizeActs } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
 import { pickLevels } from "../src/play/core/pick.ts";
-import { cpuNow } from "./_cpu-ms.mjs";
+import { counted } from "./_work.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const L = galtiLogic;
@@ -266,13 +266,17 @@ test("galti-pakdo: the first level served differs across children", () => {
   }
 });
 
-test("galti-pakdo: the generator and the picker are fast (CPU time, p95 ≤ 50 ms)", () => {
-  const gen = [], pick = [];
+test("galti-pakdo: the generator's and the picker's work is bounded (counted, not timed)", () => {
+  // measured 2026-11-10 over every case below: at most 28 candidates and 533 calls into the family logic per pick; bounds are 3x above that. A count is the same on every machine; a
+  // 50 ms p95 read 5 ms idle and 110 ms under the gate's load (tests/_work.mjs).
+  const gen = [], calls = [], considered = [], counter = counted(L);
   for (const goal of ["pakdo", "sudhaaro"]) for (const fade of [1, 2, 3]) for (let seed = 1; seed <= 12; seed++) {
-    let t0 = cpuNow(); L.generate(req(goal, seed * 31, { fade })); gen.push(cpuNow() - t0);
-    t0 = cpuNow(); pickLevels(L, req(goal, seed * 31, { fade })); pick.push(cpuNow() - t0);
+    gen.push(L.generate(req(goal, seed * 31, { fade })).length);
+    counter.reset(); const picked = pickLevels(counter.logic, req(goal, seed * 31, { fade })); assert.ok(picked); calls.push(counter.calls()); considered.push(picked.considered);
   }
-  for (const [name, xs] of [["generate", gen], ["pick", pick]]) { xs.sort((a, b) => a - b); const p95 = xs[Math.floor(xs.length * 0.95)]; assert.ok(p95 <= 50, `${name} p95 ${p95.toFixed(1)} ms`); }
+  assert.ok(Math.max(...gen) <= 84, `generate made ${Math.max(...gen)} candidates`);
+  assert.ok(Math.max(...considered) <= 84, `pick considered ${Math.max(...considered)}`);
+  assert.ok(Math.max(...calls) <= 1600, `pick made ${Math.max(...calls)} calls into the family logic`);
 });
 
 test("galti-pakdo: every word the view shows exists in all three languages; vakya's words stay last; no clock, randomness or colour literal", () => {

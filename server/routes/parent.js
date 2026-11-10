@@ -17,7 +17,7 @@ import { requireGuardian, requireChild, hasConsent } from "../auth.js";
 import { getTopic, topicSequence, SUBJECT_ORDER } from "../content/curriculum.js";
 import { kitFromFile } from "../content/kits.js";
 import { topicOf, skillById, misconceptionById } from "../content/index.js";
-import { topicStatus } from "../content/next-topic.js";
+import { topicStatus, decidingStates } from "../content/next-topic.js";
 import { AzureError, tts } from "../azure.js";
 import { allowSpeech, DEFAULT_VOICE, MAX_TTS_CHARS } from "./tts.js";
 import { MIN_DELAY_MS } from "../learner/bkt.js";
@@ -26,12 +26,12 @@ import { beliefFor, conceptCard } from "../comprehension/index.js";
 import { CADENCES, LANGS, LANG_OF_PREF } from "../reports/config.js";
 import { speakable } from "../voice/spoken.js";
 import { ITEM_CLASSES } from "../learner/kt/outcomes.js";
+import { skillScriptOf, scriptAskItem, scriptCheckItem, scriptThenItem, fillFriend } from "../director/script.js";
 import { learningDay, isoWeek, addDays, zonedToUtc } from "../conductor/clock.js";
 import { madeForOf } from "../reports/madeFor.js";
 import { verbFor } from "../play/dress.js";
 import { listReports, previewReport, reportById, termOf, windowOf } from "../reports/index.js";
 import { HOW, renderFixed } from "../reports/templates.js";
-import { outcomeName } from "../learner/kt/outcomes.js";
 import { shortTitleOf } from "../director/state.js";
 import { COUNTED_LESSON_SQL, loadTruth, loadLessonTally, claimRows, topicTruth, lessonFactsSummary, renderSummaryLine, summaryClaimsHold,
   supersede, engineRow, lessonEndMs, GRADER_WORDS, nextTopicOf } from "../reports/truth.js";
@@ -68,6 +68,16 @@ export async function hashSecret(pw) {
   const h = await scryptP(String(pw), salt, 32, { N: 16384, r: 8, p: 1 });
   return `scrypt$16384$8$1$${salt.toString("base64")}$${h.toString("base64")}`;
 }
+/**
+ * The password as typed, then (only when it differs) trimmed: signup trimmed passwords before audit PLAT-08, so an account made
+ * then with a space at either end holds the trimmed hash. One extra scrypt, only for such a password.
+ */
+export async function passwordMatches(password, hash, verify = verifySecret) {
+  if (await verify(password, hash)) return true;
+  const trimmed = password.trim();
+  return trimmed !== password && !!trimmed && verify(trimmed, hash);
+}
+
 export async function verifySecret(pw, stored) {
   const [alg, n, r, p, salt, hash] = String(stored || "").split("$");
   if (alg !== "scrypt" || !salt || !hash) return false;
@@ -78,9 +88,14 @@ export async function verifySecret(pw, stored) {
 
 // In-process burst limiter. The DB counters below are the real bound (they hold across replicas); this only
 // stops one session from queueing hundreds of scrypt calls in a second.
+// Keyed on the session only when the caller has already checked it (`{ session: true }`, after requireGuardian /
+// requireParent): an unchecked cookie is a value the caller chooses, so a fresh random one per request used to buy a
+// fresh bucket (audit PLAT-10). Otherwise on the caller's address as the ingress saw it (ipOf: the rightmost hop).
+// The same rule as router.js ipOf (importing the router from here is a cycle: the router loads this file).
+const ipOf = (req) => String(req.headers?.["x-forwarded-for"] || "").split(",").map((h) => h.trim()).filter(Boolean).at(-1) || req.socket?.remoteAddress || null;
 const bursts = new Map();
-export function rateLimit(req, route, now = Date.now()) {
-  const who = sessionHash(req) || req.headers?.["x-forwarded-for"]?.split(",")[0]?.trim() || req.socket?.remoteAddress || "anon";
+export function rateLimit(req, route, now = Date.now(), { session = false } = {}) {
+  const who = (session && sessionHash(req)) || ipOf(req) || "anon";
   const key = `${route}:${who}`;
   const list = (bursts.get(key) || []).filter((t) => now - t < 60_000);
   if (list.length >= ATTEMPTS_PER_MIN) {
@@ -161,7 +176,7 @@ export async function checkAccountPassword(guardianId, password, purpose) {
     throw new HttpError(403, "too many password tries; try again later", { gate: "wait", lockedUntil: until, code: "too_many_tries" });
   }
   const row = await one("select pw_hash from guardian where id = $1", [guardianId]);
-  if (!password || !(await verifySecret(String(password), row?.pw_hash))) {
+  if (!password || !(await passwordMatches(String(password), row?.pw_hash))) {
     await audit(guardianId, `${purpose}_denied`, { triesLeft: PW_MAX_TRIES - c.n });
     throw bad("account password is incorrect", { triesLeft: PW_MAX_TRIES - c.n, code: "password_wrong", field: "password" });
   }
@@ -212,7 +227,7 @@ async function getPin(req, res) {
  */
 async function setPin(req, res, body) {
   const g = await requireGuardian(req);
-  rateLimit(req, "pin");
+  rateLimit(req, "pin", undefined, { session: true });
   const { pin } = need(body, "pin");
   const p = String(pin);
   checkPinShape(p);
@@ -242,7 +257,7 @@ async function setPin(req, res, body) {
  */
 async function resetPin(req, res, body) {
   const g = await requireGuardian(req);
-  rateLimit(req, "reset");
+  rateLimit(req, "reset", undefined, { session: true });
   const { pin, password } = need(body, "pin", "password");
   const p = String(pin);
   checkPinShape(p);
@@ -259,7 +274,7 @@ async function resetPin(req, res, body) {
 /** body: { pin } → gate state, or 403 with { gate: "locked", triesLeft } / { gate: "wait", lockedUntil }. */
 async function unlock(req, res, body) {
   const g = await requireGuardian(req);
-  rateLimit(req, "unlock");
+  rateLimit(req, "unlock", undefined, { session: true });
   const { pin } = need(body, "pin");
   await applyDueReset(g.id);
   // Count the try BEFORE checking it, atomically: concurrent guesses each take their own number, so a burst
@@ -834,18 +849,24 @@ const HOME_PICTURES = { maths: ["home/roti"] };
  * "Try at home" on the home. Lane A preview of this week, never stored, no model call; null during a safety hold,
  * when the report tables are not migrated, or when the week has nothing yet.
  */
+/** PURE. The "Try at home" card from this week's preview report, or null (no report, an empty week, no home line). */
+export function tryAtHomeFrom(r, period) {
+  if (!r) return null;
+  // a week with no lesson has nothing to try at home yet (audit 2026-11-09 LEARN-31: the generic line made a card with
+  // Done / Not this week for a child who had never had a lesson)
+  if (r.claims.some((x) => x.shapeId === "header.zero")) return null;
+  const line = r.renders.en.lines.find((l) => l.section === "home" && !l.voiceOnly);
+  if (!line) return null;
+  const c = line.claimId ? r.claims.find((x) => x.id === line.claimId) : null;
+  return { text: line.text, claimId: line.claimId ?? null, skillId: c?.skillId ?? null, cadence: "weekly", period, pictures: HOME_PICTURES[c?.slots?.object] ?? [] };
+}
 async function tryAtHomeOf(child, hold) {
   if (hold) return null;
   try {
     const today = learningDay(new Date(), await tzOf(child.id));
     const period = isoWeek(today);
     const out = await previewReport(child.id, { cadence: "weekly", period }, { db: { q } });
-    const r = out.report;
-    if (!r) return null;
-    const line = r.renders.en.lines.find((l) => l.section === "home" && !l.voiceOnly);
-    if (!line) return null;
-    const c = line.claimId ? r.claims.find((x) => x.id === line.claimId) : null;
-    return { text: line.text, claimId: line.claimId ?? null, skillId: c?.skillId ?? null, cadence: "weekly", period, pictures: HOME_PICTURES[c?.slots?.object] ?? [] };
+    return tryAtHomeFrom(out.report, period);
   } catch (e) {
     if (!missingTable(e)) console.warn(`[parent] try-at-home withheld: ${e.message}`);
     return null;
@@ -975,7 +996,8 @@ async function homeData(child, guardian) {
     alert,
     held: !!hold,
     week: { lessons: week.lessons, minutes: week.minutes },
-    recent: recent.map((l) => ({ id: l.id, topic: topicOut(l.topic_id), startedAt: l.started_at,
+    // (the same topic mapper as the Lessons list, so one lesson has one short name: audit 2026-11-09 LEARN-34)
+    recent: recent.map((l) => ({ id: l.id, topic: topicOf_(l.topic_id), startedAt: l.started_at,
       minutes: minutesById.get(String(l.id)) ?? (l.ended_at ? Math.max(0, Math.round((new Date(l.ended_at) - new Date(l.started_at)) / 60000)) : null) })),
     // the skill list one level down names only skills the engine has a scored row on (never a taught-only "Practising")
     skills: titled.filter((x) => x.level > 0),
@@ -987,12 +1009,43 @@ async function homeData(child, guardian) {
 /** skillTruth → the LedgerState the client renders (level, key, recheck). */
 const stateOut = (t) => ({ level: t.level, key: t.key, recheck: t.recheck });
 
+/**
+ * PURE (apart from the cached script read). The script-walk card behind an engine row's item key, or null. The Director
+ * stores a card as `script:<skill>:ask:<beat>` (an explain beat's question, or the worked example's own step as beat
+ * "worked"), `script:<skill>:then:<mix-up>` (a remediation's follow-up) or `script:<skill>:<checkId>` (director/script.js).
+ * Audit 2026-11-09 LEARN-24: these were looked up among the kit's items only, so the sheet never showed a card's question.
+ */
+export function scriptCardOf(kit, itemKey, childName = "") {
+  const key = String(itemKey ?? "");
+  if (!key.startsWith("script:")) return null;
+  const sk = (kit?.skills ?? []).map((x) => x.id).filter((id) => key.startsWith(`script:${id}:`)).sort((a, b) => b.length - a.length)[0];
+  const script = sk ? skillScriptOf(kit, sk) : null;
+  if (!script) return null;
+  const rest = key.slice(`script:${sk}:`.length);
+  let card = null;
+  if (rest.startsWith("ask:")) {
+    const beat = rest.slice(4);
+    const ask = beat === "worked" ? script.workedExample?.yourStep : script.explain?.find((x) => x.id === beat)?.ask;
+    card = ask && typeof ask === "object" ? scriptAskItem(sk, beat, ask) : null;
+  } else if (rest.startsWith("then:")) {
+    const r = script.remediation?.find((x) => x.targets === rest.slice(5));
+    card = r?.then ? scriptThenItem(sk, r) : null;
+  } else {
+    const c = script.checks?.find((x) => x.id === rest);
+    card = c ? scriptCheckItem(sk, c) : null;
+  }
+  const text = card ? card.prompt_en || card.prompt_hi : null;
+  return text ? { ...card, prompt: String(fillFriend(text, childName)) } : null;
+}
+
 /** Words for a kit item's prompt (the question as the kit poses it), by the engine row's item key. */
-async function itemPrompt(itemKey, skillId) {
+async function itemPrompt(itemKey, skillId, childName = "") {
   if (!itemKey || String(itemKey).startsWith("teach:")) return null;
   try {
     const tid = topicOf(skillId);
     const kit = tid ? kitFromFile(getTopic(tid)) : null;
+    const card = scriptCardOf(kit, itemKey, childName);
+    if (card) return quote(card.prompt, 30);
     const it = kit?.items?.find((i) => i.id === itemKey) ?? kit?.misconceptions?.find((m) => m.diagnostic && `diag:${m.id}` === itemKey)?.diagnostic;
     return it ? quote(it.prompt_en || it.prompt_hi, 30) : null;
   } catch { return null; }
@@ -1032,9 +1085,11 @@ async function evidence(req, res) {
   const rows = await Promise.all(shown.map(async (r) => {
     const own = r.turnSeq != null ? turnAt.get(`${r.lessonId}:${r.turnSeq}`) : null;
     const before = r.turnSeq != null ? turnAt.get(`${r.lessonId}:${r.turnSeq - 1}`) : null;
-    const prompt = (await itemPrompt(r.itemKey, skill)) ?? (before?.speaker === "teacher" ? quote(before.text, 30) : null);
+    const prompt = (await itemPrompt(r.itemKey, skill, child.first_name)) ?? (before?.speaker === "teacher" ? quote(before.text, 30) : null);
     return {
-      id: r.id, at: r.at, kind: r.kind, probe: r.cls, outcome: r.outcome, result: r.result, hintsUsed: r.hintsUsed, lessonId: r.lessonId,
+      // "right" after asking for help first is not "on their own" (audit LEARN-15): the lesson card says "with a hint"
+      id: r.id, at: r.at, kind: r.kind, probe: r.cls, outcome: r.outcome, result: r.result === "right" && r.hintsUsed > 0 ? "right_hint" : r.result,
+      hintsUsed: r.hintsUsed, lessonId: r.lessonId,
       prompt, words: own?.speaker === "child" && !String(own.text).startsWith("[") ? quote(own.text) : null,
       grader: r.grader, graderWords: r.graderWords, misconception: r.misconceptionId ? beliefs.get(r.misconceptionId) ?? null : null,
     };
@@ -1209,10 +1264,12 @@ async function syllabus(req, res) {
       const t = getTopic(id);
       let ch = chapters.at(-1);
       if (!ch || ch.id !== t.chapter.id) chapters.push(ch = { id: t.chapter.id, number: t.chapter.number, title: t.chapter.title, topics: [] });
-      let skillCount = 0;
-      try { skillCount = kitFromFile(t)?.skills.length ?? 0; } catch { /* no kit file */ }
+      let kit = null;
+      try { kit = kitFromFile(t); } catch { /* no kit file */ }
       const sk = skillsOf.get(t.id) ?? [];
-      ch.topics.push({ id: t.id, title: t.title, ...topicTruth(sk, skillCount), skills: sk });
+      // decided on the skills a child can answer, as the lesson side does (CD-01: a skill with no item never finishes)
+      const d = decidingStates(sk, kit);
+      ch.topics.push({ id: t.id, title: t.title, ...topicTruth(d.states, d.skillCount), skills: sk });
     }
     subjects.push({ subject, book: getTopic(ids[0]).book, chapters });
   }
@@ -1413,8 +1470,20 @@ const noVoice = (renders) => Object.fromEntries(Object.entries(renders).map(([l,
 const EV_KIND = { "item.open": "practice", "item.mcq2": "practice", "item.mcq3": "practice", "item.mcq4": "practice", solo: "practice", teach: "taught",
   "probe.why": "why", "probe.teachback": "teachback", "probe.transfer.near": "near_transfer", "probe.transfer.far": "far_transfer",
   "probe.errorspot": "error_spot", "probe.predict": "predict", para: "practice" };
-const RIGHT = new Set(["C0", "first_correct", "full", "high", "pass", "caught_fixed", "right"]);
-const PART = new Set(["C1", "C2", "partial", "mid", "caught"]);
+/**
+ * PURE. One kt_evidence row → the drawer's result and help words, read through engineRow (reports/truth.js), the one
+ * reading every other surface uses (audit LEARN-14: the drawer had its own sets and called a second-try answer "partly"
+ * where the skill sheet said "right"). The drawer's vocabulary is smaller: a right answer with hints is "right" + "hint";
+ * an answer worked through with full help, or matching a mix-up, is "not_yet" (the mix-up is flagged separately).
+ */
+export function drawerResult(e) {
+  if (e.cls === "teach") return { result: "taught", help: "none" };
+  const r = engineRow(e);
+  const result = !r?.result ? "not_yet" : r.result === "right" || r.result === "right_hint" ? "right" : r.result === "partly" ? "partly"
+    : r.result === "not_sure" ? "not_sure" : "not_yet";
+  const help = r?.preAttemptHelp ? "asked_first" : (r?.hintsUsed ?? 0) > 0 || Number(e.entry_rung) > 0 ? "hint" : "none";
+  return { result, help };
+}
 
 /**
  * GET /api/parent/report/evidence?childId=&id=&claimId=  ("Kaise pata?") → the rows behind ONE line, re-read from the
@@ -1453,10 +1522,9 @@ async function reportEvidence(req, res) {
     claim: evidenceClaimOut(c),
     window: { from: r.window_from ?? r.window?.from, to: r.window_to ?? r.window?.to },
     evidence: ev.map((e) => {
-      const name = e.cls === "teach" ? "taught" : outcomeName(e.cls, Number(e.outcome)) ?? "?";
+      const { result, help } = drawerResult(e);
       return { id: e.id, at: e.occurred_at, skill: titles.get(e.skill_ids[0]) ?? e.skill_ids[0], kind: EV_KIND[e.cls] ?? "practice",
-        result: e.cls === "teach" ? "taught" : RIGHT.has(name) ? "right" : PART.has(name) ? "partly" : name === "IDK" ? "not_sure" : "not_yet",
-        help: e.pre_attempt_help ? "asked_first" : Number(e.entry_rung) > 0 ? "hint" : "none", checkedBy: e.grader, game: e.via === "game", session: e.session_id,
+        result, help, checkedBy: e.grader, game: e.via === "game", session: e.session_id,
         matchesMixup: !!c.ref?.misconceptionId && e.misconception_id === c.ref.misconceptionId };
     }),
     lessons: lessons.map((l) => { const t = getTopic(l.topic_id); return { id: l.id, topic: t?.title ?? l.topic_id, startedAt: l.started_at,
@@ -1473,7 +1541,7 @@ async function reportEvidence(req, res) {
  */
 async function exportAll(req, res, body) {
   const g = await requireParent(req);
-  rateLimit(req, "export");
+  rateLimit(req, "export", undefined, { session: true });
   await checkAccountPassword(g.id, body.password, "export");
   const guardian = await one("select email, name, phone, locale, created_at from guardian where id = $1", [g.id]);
   const kids = await q("select * from child where guardian_id = $1 order by created_at", [g.id]);

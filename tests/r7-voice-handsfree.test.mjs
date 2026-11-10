@@ -9,6 +9,7 @@ import fs from "node:fs";
 
 import { duplexLane, modeFor } from "../server/duplex/config.js";
 import { authorizeD5 } from "../server/duplex/d5route.js";
+import { DEFAULT_PREFS } from "../src/child/prefs.ts";
 import { resolveDuplexMode, resolveDuplexLane, resetDuplexFlagCache } from "../src/duplex/flags.ts";
 
 const VL = { AZURE_AI_CENTRALINDIA_ENDPOINT: "https://vl.example.cognitiveservices.azure.com/", AZURE_AI_CENTRALINDIA_KEY: "k" };
@@ -70,9 +71,7 @@ test("r7 handsfree: the client runs hands-free when the switch is unreadable (la
   }
 });
 
-test("r7 handsfree: the App patch makes hands-free the saved default and drops the headset-only rule", () => {
-  const p = fs.readFileSync(new URL("../docs/patches/to-app/001-handsfree-default.patch", import.meta.url), "utf8");
-  assert.match(p, /^\+.*talk: "open",/m);
-  assert.match(p, /^-.*talk: "tap",/m);
-  assert.match(p, /^-.*openMicNeeds/m);
+test("r7 handsfree: hands-free is the unset default (null, not tap) and the lesson only starts muted for an explicit false", () => {
+  assert.equal(DEFAULT_PREFS.handsFree, null);
+  assert.match(fs.readFileSync(new URL("../src/child/lesson/LessonScreen.tsx", import.meta.url), "utf8"), /startMuted: prefs\.handsFree === false/);
 });

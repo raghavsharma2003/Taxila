@@ -939,13 +939,6 @@ The opener set for the session-open delayed checks = `ktView.due()` ∪ {display
 - grok-4-1-fast-non-reasoning: p50 ~0.6 s, but 2 of ~60 calls hung to the 4 s / 7 s timeouts (an 8.1 s and a 4.1 s Director turn). With the hedge, Director p90 1629 ms (n=20) vs 1872-2424 without.
 - Reverse if: duplicates exceed ~10% of classify calls (cost), or the deployment's p90 rises above 1.5 s (raise the delay).
 
-## deploy-classify-grok (proposed)
-**Recommend DEPLOY_CLASSIFY=grok-4-1-fast-non-reasoning with DEPLOY_REPLY=taxila-fast for the cascade lane.** (2026-10-02, needs adoption: set in the Container App env)
-- Latency: total median 2966 ms / p90 3163 (n=20) vs 3275 / 4422 for taxila-fast classify on the same code (n=20). Quality on the real classify(): 75/80 exact vs 72/80, 0 graded-wrong, distress 10/10 (`classify-accuracy-2026-10-02`). It is Direct-from-Azure (Azure-only directive holds). DEPLOY_REPLY stays taxila-fast: ds41 rewrote more and slower; V4-Pro classify was slower (3649 ms).
-- Reverse if: a larger multi-topic labelled set shows grok more graded-wrong than taxila-fast, or its distress flag misses a case the predicate does not catch.
-
-
-<!-- merged from inbox/comprehension-review.json -->
 ## e6-span-fail-closed
 A positive `grader: "llm"` event moves U/T only when `spanOk === true`. Rationale: the INTEGRATION.md call site copied `spanOk` from an optional field, and the old check (`spanOk === false`) let an omitted field certify a verdict that no code had checked. **Reverse if** the closed-label grader is replaced by a code operator for that class.
 
@@ -9409,3 +9402,87 @@ Reverse if a child pilot shows results said by trial rather than read from the d
 
 ## Merged inbox entries (write-up from the entry text)
 - `dc-r7-bars-unnamed` (2026-11-09): Learning's D11 (relayed by main): fraction-bars@1 takes an UNNAMED bar, label "". It draws no name, its facts row says "<parts> equal parts" (no shaded count or value), and the label-value check skips it; a named bar is still checked. A compare card ("2/3 ya 3/10?") can now be posed honestly. Before, an unshaded bar could only say "?" (over a fraction the prompt states: director16 c5-t02 steady 70–92) or be named, which shades it and answers the card. The second view treats "" like "?": unnamed bars become circles (S8) and name no fraction. Under the held board an unnamed-bars card stands in the split's left panel. Pinned in tests/r8-held-board.test.mjs.
+
+
+<!-- merged from inbox/r7-audit-docs-memory.json -->
+## `dc-audit-india-move-not-cut-over`
+The memory read as if production had moved to India. It has not: the move was decided on 2026-10-04 and never cut over. This entry records the state so that a query stops returning the move as current; it decides nothing new.
+
+## `dc-audit-prod-db-neon-us-east-1`
+The first infrastructure entry names a Singapore database and Vercel functions. Neither is where production runs. This entry records the state; it decides nothing new.
+
+## `dc-audit-aws-not-called-by-product`
+Only what can be checked. A search of `server/`, `src/`, `shared/` and `package.json` for Bedrock, the AWS SDK and amazonaws.com finds nothing, so no product path calls AWS (2026-11-10). AWS appears in the offline build and training scripts: `scripts/gpu`, `scripts/voice/v3`, `scripts/voice/stt-v3`, `scripts/voicesig/aws-check.py`. CLAUDE.md's Azure-only rule covers what the product calls. The older entry that planned to use AWS credits (`owner-aws-credit-funded-india-first-2026-10-04`) has no recorded ending, and this entry does not invent one: no supersedes edge.
+
+
+<!-- merged from inbox/r7-audit-learner.json -->
+## learner-brief-hardstop-limits-only
+**A lesson brief's `hardStopAt` is the slot's window end only when the family's day limits are on (`child_controls.limits_on`, or `TAXILA_DAY_LIMITS=on`) and the window is still open at the start; otherwise there is none. `wrapAt` is the start plus the slot's planned minutes, pulled back to the hard stop when there is one.** `server/conductor/slot.js` (2026-11-10, audit LEARN-01). Reverse if: the owner brings day windows back as a default; then the start must be refused or warned at the home, never ended on the first answer.
+
+
+<!-- merged from inbox/r7-audit-model-policy.json -->
+## `dc-owner-model-policy-top-model-high-effort`
+CLAUDE.md's old model-policy line: main loop and every build and review agent on the top model at high effort, no downgrades. Written down here so that the new policy can supersede something. The line carried no date; the oldest tracked copy is the 2026-11-06 repository commit.
+
+## `dc-owner-model-policy-2026-11-10`
+The owner's directive of 2026-11-10 (CLAUDE.md carries the same text). Fable 5.2 orchestrates: the main loop, for decisions, triage and synthesis. Build and fix sessions run on Opus 5.5 for complex or multi-file work, or Sonnet 5.5 for well-scoped work against a spec, at medium effort; high only when a task fails at medium. File search, log reading and other cheap-to-check sub-tasks run on Haiku 5.5. Source: Anthropic's model guide. Why: 13 Fable audit sessions hit the Fable usage limit within 35 minutes on 2026-11-09 and stopped mid-work, so the old rule (top model, high effort, no downgrades for everyone) could not be kept. Reverse if the owner restores it, or a task class keeps failing at high effort on its assigned model.
+
+
+<!-- merged from inbox/r7-audit-platform.json -->
+## op-r7-audit-worker-image-needs-src
+**`Dockerfile.worker` copies `src/` (`891d1d8c`).** `server/conductor/ops.mjs --nightly` runs in the worker image and calls `sweepTestAccounts`, which imports `server/routes/account.js`; its static imports reach `server/director/engine-check.js`, which imports `src/modules/frame/engines/*.logic.ts`. Without `src/` the import threw, the outer catch ended the job, and the next line, the only caller of `traceRetention` (30/90-day deletion of recordings), never ran. The worker's own boot graph has no `src/` import, so the worker started fine and the existing image tests (which check `Dockerfile` and `worker.mjs`) saw nothing. **Reverse if:** the sweep stops importing route modules (for example `SAFETY_OPEN_SQL` moves to a leaf module) and a test proves the nightly job's whole import graph stays inside `server/`, `shared/`, `data/`.
+
+## r7-audit-platform-deletions
+**Removed (last held in c3977509):** scripts/offkit-cards.mjs, scripts/reveals-unit-sweep.mjs, scripts/self-answer-sweep.mjs (no importer, package script, workflow, Dockerfile, test or doc); server/auth.js verifyPassword (no importer; hashPassword stays, evals and tests use it); server/azure.js DEPLOY.stagecraftSpec (read nowhere; only old patches under docs/ name it); shared/trace.ts TraceSrc, TraceBlobResponse, TraceMe (no importer); src/trace/bus.ts setTurn and src/trace/flag.ts flagStats (no caller). **Kept on purpose:** the second registration of the placement routes in server/index.js (harmless; tests/r7-app-signin-code.test.mjs reverse-checks an applied patch whose context is that line); shared/trace.ts TRACE_KINDS and TraceKind (the documented kind list the writer's JSDoc points to); server/lanes.js twinFor and server/endpoints.js laneHost/laneHosts (tests read them); scripts/handoff/blob.py and redact.py (docs/handoff/STORAGE.md says they built the archives); scripts/r4-session-env.mjs (context/architecture.md cites it); scripts/region/staging.mjs (docs/ops/INDIA-MOVE.md tells the reader to run it). **Left to their owners:** server/duplex/routes.js (voice), server/routes/modules.js (games), POST /api/forge/requests, POST /api/forge/prefetch and GET /api/studio/health (studio).
+
+## r7-audit-games05-modules-route-table
+**Removed:** `server/routes/modules.js` (`export const routes = {}`) and its import and spread in `server/index.js`; the file is still in 764d1754. No route, test, script or Dockerfile read it. `tests/r7-app-signin-code.test.mjs` reverse-applied the already-applied patch to-platform/002 to prove it was in, which pins the register line forever; it now checks the patch's effect (index.js imports and registers the sign-in routes) when the reverse no longer matches.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-r7-topic-done-on-askable-skills` (2026-11-09): A topic is finished when every skill that has a loadable kit item is learned (server/content/next-topic.js decidingStates). Before, every kit skill counted, and 8 topics (4 class 5-6 Hindi recitation skills with no item, 4 class 8-9 English skills whose items the prompt budget drops) could never be finished: such a skill is taught but can never be answered unaided, so it stays 'practising'. Reverse if: every kit skill is guaranteed an item at load (a load-time check), or 'learned' gets a route that needs no item.
+- `dc-r7-passages-stored-once` (2026-11-10): A kit stores each story, poem, letter or scene once per topic (topic.passages: id, text, title?, kind?) and an item points at it (item.passageId); the question prompts are short and never carry the text. 500 items in 116 topics; 202 class 5-9 items had the text lifted out of prompt_en and prompt_hi; 8 long science, EVS and English prompts were shortened. kit.lint.itemsDropped is 0 for every kit and a test fails otherwise (it was 111, 102 of them class 8-9 English). While the lesson cannot show a passage, normalizeKit moves every item with a passageId to kit.heldItems (4%); TAXILA_PASSAGES=on puts them back. Lesson half: docs/design/round7/learning/PASSAGE.md and patch to-brain/020 (read aloud in classes 1-3, on the board from class 4, once per passage per lesson). Reverse if: the lesson shows passages and the hold-out flag is on for good, then delete the flag and heldItems.
+- `dc-r7-placement-retire-not-delete` (2026-11-10): A placement item that duplicates another is marked retired: true and stays on file (bank.js usable() already skips it). Retired: pl-c5-maths-l02, l05, l07, pl-c3-maths-m01, pl-c8-maths-e10, pl-c4-evs-e09 (one of each exact pair: the one whose ge sits further from its raters' mean) and pl-c8-maths-l10 (class 3-4 sum anchored at class 8, only usable by adjudication). Four close-variant pairs share a pairId (pair-c4-maths-garden-boundary, pair-c7-maths-opposite-angle, pair-c6-science-wet-shirt, pair-c7-science-chewing-starch) and cat.js asks at most one per round. c8-maths now has 29 usable items (the floor test says 30 elsewhere). Reverse if: the bank is regenerated with deduplication.
+- `dc-r7-minikit-removed` (2026-11-10): The mini-kit generator is deleted (server/content/minikit.js; getKit returns the file kit or null and ignores generate). All 830 curriculum topics have a kit file, so it could not run; a test pins that every topic loads from its file. Supersedes the ws2-director-minikit-keys policy for model-written keys. Reverse if: a topic is added to the curriculum before its kit is written (then a kit-less topic returns null, which callers treat as no kit; restore from 55983111).
+- `dc-r7-friend-devanagari-patch` (2026-11-10): The Hindi kits name the friend रिया as plain text (55 whole-word uses, c3-c9); the slot never reached Devanagari. Patch to-brain/019 changes friend.js (a string with more Devanagari than Latin letters gets the name in Devanagari; the child's own name in either script is skipped) together with the data change, which must not be applied alone. Not applied on this branch.
+- `dc-r7-audit-face-protege-glance-not-while-listening` (2026-11-09): Corrects dc-r7-face-teachback-protege ('looks from the child to the protege while she listens, speaks or waits'): she glances at the protege only while she speaks or waits for the child. While the child talks she keeps her eyes on the child (src/avatar/behaviour.ts lookAt drops any look in LISTENING and THINKING, by design), so the listening glance was requested every 3.6 s and never shown. Teacher.tsx no longer requests it. Reverse only if behaviour.ts gains a deliberate listening look.
+- `dc-r7-audit-face-lamp2-pack-is-only-copy` (2026-11-09): lamp2 (one of the owner's three look choices): its painted key sources lived only in a session scratch folder (scripts/character/puppet2d/lamp2/common.py L2_SCRATCH) and that folder no longer exists (the earlier Face session confirmed), so they are gone for good. public/face-puppet/lamp2 (22 files) is the only copy of the pack: keep it, never delete it as 'rebuildable'; changing lamp2 means painting and paying again. r8 can still be re-packed from tracked layers (pack.py and sync-runtime reproduce the shipped pack byte for byte, checked 2026-11-10) but not re-cut (polish-r8/work is untracked). face.md FACE-14.
+- `dc-r7-audit-face-deleted-lost-looks` (2026-11-10): Deleted as repository weight, nothing reads them (importers, package.json, CI, Dockerfiles, tests, context citations checked; r8 re-pack proved unchanged after): art/character/puppet2d/polish-r3..polish-r7 and scripts/character/puppet2d/polish-r3..polish-r7 and judge-r1..judge-r7-blind.mjs; art/character/puppet2d/V and scripts/character/puppet2d/V (the vector puppet that lost); art/character/puppet2d/P except work/mouth-ref-cfront.png, mouth-base-blank.png, mouth-mask2.png, rest.png (read by polish-r8, r9, r10 mouth scripts; scripts/character/puppet2d/P kept); scripts/character/polished; scripts/gpu/jobs/hello/runs (untracked, ignored by scripts/gpu/.gitignore). Last commit that holds all of them: 345b5f7c (git show 345b5f7c:<path>); each was last changed in ae880e84 (2026-11-06). .gitignore now lists the four kept P/work files as exceptions, so the tracked set and .gitignore agree. Kept on purpose: 3D head and Arjun, polish-r2 layers, polish-r8, r9, r10, lamp1, lamp2, route-b, prototypes/, src/face-puppet/adapter.tsx. Also removed: src/ui/teacher/useDelight.ts, unused prefetchLook/lookIds/faceRigFailed, the voiceOnly and gentle props of TutorFace/PuppetFace/LessonFace, the .tx-picker css. App's share of the dead code (getTutors, chooseTutor, SITE_TUTORS, TeacherPortrait) is docs/patches/to-app/008-face-dead-code.patch.
+- `dc-r7-audit-face-greeting-day-and-lines` (2026-11-10): Daily greeting (FACE-07): a child never gets the same line two days running (server/face-puppet/greetings.js lineIndex: per-child offset, per-child step of 1..n-1 per day); six lines that claimed history ('pick up where we left off', 'Hi again', and their Hindi and Hinglish forms) were replaced by new ids *-m4 and *-a4 (each slot still has three lines; no clips were rendered, so no file names changed meaning); the greeting's day and Kaksha Home's greeting word both turn at 04:00 through shared/day.js (learningDay, partOfDay).
+- `dc-r7-audit-studio-fixes` (2026-11-10): Owner's whole-project audit, Studio list (docs/design/round7/audit/studio.md on claude/r7-audit-studio; each finding verified before fixing). STUDIO-11: without a judge lane (FORGE3_QA_URL unset) Stagecraft no longer launches the generated_spec rung (lesson.js judgeRungsCfg passes every other rung; preferredRung falls to engine_default): the tray gate refuses every unjudged spec, so each launch (~$0.0013 on taxila-fast-bg) bought nothing. Reverse when a judge lane is wired. STUDIO-01: shade-grid@1's shown fraction moved to y0 + H + 56 under the rows label (audit patch 003; 0/2 → 2/2). STUDIO-02/03: catalogue boards follow the blind cross-check like the game and explainer (patch 004; 1/3 → 3/3); the 13 topics whose check failed (7) or never ran (6) stay withheld, not hand-fixed, until they are re-authored and re-checked. STUDIO-05: beat-card dots (src/studio/beatDots.ts) keep one dot 'now' from the 9th board. STUDIO-09: number-line-hop@1 refuses up front ('hops_layout') and board-ref advertises only what lays out: all hops one way, or two where the second goes back at most half the first; landings within 30; with 2+ hops each ≥ 2 and ≥ 1/8 of the spread (1/5 with a 3-character number); the equation row is centred. STUDIO-08: one Stagecraft mode default ('on', config.js stagecraftMode) for lesson.js and StagecraftHost. STUDIO-10: picture.js forgets a lesson's count, failure and finished jobs when the seam forgets the lesson, and caps jobs at 500. STUDIO-07: the Studio v2 node tests moved to tests/studio-v2.test.mjs (now run by npm test and test:all).
+- `dc-r7-audit-studio-deletions` (2026-11-10): Deleted after the owner's audit (STUDIO-04, STUDIO-06); the last commit that holds each is b1fc76f7d. server/routes/forge.js (POST /api/forge/requests and /api/forge/prefetch: no caller anywhere; the lesson warms fills through forgeSeam.prefetchLessonFills), with its publicFill and limit tests and shared/forge.ts ForgeRequestResponse. The five applied Studio seam patches: server/forge/seam-patches/w1b-lesson-wiring.patch, w2b-parts-repair.patch, w2b-watch-only.patch; server/studio/seam-patches/w2h-say-screen-targets.patch, w2h-turn-slot.patch (read first: every hunk is in turn.js in a later form; its facts row is superseded by factsRowForSlot / withFactsRows). context/ entries that cite them by name as the tree a measurement ran on read them at b1fc76f7d. The seven seam patches of other streams (brain, comprehension, director, relational) are not Studio's and stay.
+
+
+<!-- merged from inbox/r7-audit-voice.json -->
+## dc-r7-audit-voice-stream-stall-watch (2026-11-10)
+`PcmStreamPlayer` arms a watch when its last scheduled audio ends with the stream still open. If no byte arrives for `stallMs` (5 s) the request is abandoned and the reply ends as completed with what was heard, like a mid-reply failure. Before, a stalled connection (or the server hang fixed as V-01) left the lesson on 'speaking' with no exit. Reverse if phones on slow links show real gaps over 5 s mid-reply (raise the number; do not remove the watch).
+
+## dc-r7-audit-voice-call-open-time-limit (2026-11-10)
+`CascadeLink.open()` limits the token request and the call's connection request to `openTimeoutMs` (10 s, the same as the channel-open wait) each. A stalled request used to leave the dock on 'getting ready to listen' with no talk button, and a reconnect never gave up. Past the limit the link falls back to push-to-talk recording, which also ends the hands-free expectation in the bridge.
+
+
+<!-- merged from inbox/r7-main-35.json -->
+## `dc-r7-script-walk-v6-9` (2026-11-10)
+
+The held board stays. Turns that teach nothing hold it too, and request handling becomes one table.
+
+**Brain:**
+- **N1:** a turn with no unit part (aside, acknowledgement, break, stop or goodbye menu) sends the board that is up and does not advance the unit. The predicates throw on these paths.
+- **N2:** a bridge belongs to the next card's unit.
+- **T1:** one request table, request x beat kind -> one response shape, with a test per row from director17.
+- **A5:** the aside acknowledgement only when the reply is about the aside.
+- **R6:** authored lines are never re-inflected; one step opener per turn; the picture line is punctuated.
+
+**Studio:** S10 the split second view uses only the held board's own parts; S11 'barabar' for equal parts; the seam draws only the held intent; the harness records the split.
+
+**Learning (D12):** bridges lose their own board; no board shows the answer its next card asks for; c4's s2 points model one grouping.
+
+**Why:** held cost was 0 and about 214 of 221 board changes were right, so the held board removed the problem it was chosen for. What is left is nine turns that teach nothing and still moved the board, two bridges, and one card's split view. Listening has sat at 3 through eight single fixes because each patched one request on one beat kind.
+
+**Clauses:** 1 (held cost) not triggered; 2 (listening) taken as T1; 3 (misgrades) not triggered; 4 (the counter) taken, H5 retired as a gate input.
+
+**Reverse if, in director18:**
+- an unsaid board is on screen with N1 in place: Studio's seam refuses any board whose unit has no spoken part that turn;
+- listening is still below 3.5 with T1: the failing rows are re-authored with Learning per topic before any runtime change;
+- held cost is above 0: that unit gets paging back;
+- any misgrade: no paid run until the key matrix covers it.

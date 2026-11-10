@@ -11,7 +11,8 @@ export type ProtegeKind = "cloud-pup" | "pebble-friend" | "sprout-sprite";
 export type ProtegeMood = "neutral" | "happy" | "puzzled";
 export const PROTEGE_KINDS: readonly ProtegeKind[] = ["cloud-pup", "pebble-friend", "sprout-sprite"];
 export const PROTEGE_BASE = "/assets/teacher/protege/1/";
-/** How often her eyes go to the protégé (ms), and only while she is listening or speaking. */
+/** How often her eyes go to the protégé (ms): while she speaks or waits for the child, never while the child is talking
+ *  (she listens with her eyes on the child: src/avatar/behaviour.ts lookAt). */
 export const PROTEGE_GLANCE_EVERY_MS = 3600;
 
 export const protegeSrc = (kind: ProtegeKind, mood: ProtegeMood) => `${PROTEGE_BASE}${kind}${mood === "neutral" ? "" : `-${mood}`}.webp`;

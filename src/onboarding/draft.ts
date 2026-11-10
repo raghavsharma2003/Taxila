@@ -47,6 +47,11 @@ export const clearDraft = () => {
   const { lang } = readStore<Draft>(KEY, {});
   writeStore(KEY, lang ? { lang } : null);
 };
+/**
+ * PURE. What "Add a child" does to a draft when it starts: forget the child id an earlier, interrupted set-up saved, so the
+ * new child is created rather than PATCHed over the first one (audit LEARN-09). The class and name being typed stay.
+ */
+export const draftForAdd = (d: Draft): Draft => (d.childId ? { ...d, childId: undefined } : d);
 export const clearDraftChild = () => {
   const d = readStore<Draft>(KEY, {});
   writeStore(KEY, { ...d, child: undefined, childId: undefined });

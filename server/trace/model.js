@@ -10,6 +10,16 @@ import { putTraceBlob, traceBlobPath, traceBlobConfigured } from "./blob.js";
 import { usdChat, usdTts } from "../cost/prices.js";
 
 let blobSeq = 0;
+const PROC = Math.floor(Math.random() * 36 ** 2);
+/**
+ * PURE. A blob's seq inside the 12 characters traceBlobPath keeps (PLAT-31: `${Date.now()}${n}` lost the counter and
+ * the last millisecond digit to the cut, so two calls within 10 ms overwrote each other's blob). The path is already
+ * under its day, so: time of day in ms (6, base 36) + this process (2) + the counter (4, wraps at 1.68 M).
+ */
+export function blobSeqOf(now, n, proc = PROC) {
+  const b36 = (v, w) => Math.floor(v).toString(36).padStart(w, "0").slice(-w);
+  return b36(now % 86_400_000, 6) + b36(proc % 36 ** 2, 2) + b36(n % 36 ** 4, 4);
+}
 const sha = (s) => createHash("sha256").update(s).digest("hex").slice(0, 16);
 
 /** The prompt messages of a request body (chat completions, responses, or a plain `messages` list). */
@@ -58,7 +68,7 @@ export function recordModelCall(m) {
       output: text ?? null, ...(m.error ? { error: m.error } : {}), ...(Array.isArray(m.filterCats) ? { filterCats: m.filterCats } : {}) };
     const c = traceCtx();
     if ((c?.tier ?? 1) >= 2 && traceBlobConfigured() && m.body) {
-      const path = traceBlobPath({ sid: c?.sid ?? "server", src: "server", seq: `${Date.now()}${++blobSeq}`, ext: "json" });
+      const path = traceBlobPath({ sid: c?.sid ?? "server", src: "server", seq: blobSeqOf(Date.now(), ++blobSeq), ext: "json" });
       const payload = JSON.stringify({ request: m.body, response: m.out ?? (text != null ? { text } : null) });
       data.blob = { ref: path, bytes: Buffer.byteLength(payload), type: "application/json" };
       putTraceBlob(path, payload, "application/json").catch((e) => record("model.call.blob_failed", { ref: path, error: String(e?.message ?? e).slice(0, 160) }));

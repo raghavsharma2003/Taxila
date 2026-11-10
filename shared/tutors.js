@@ -98,10 +98,13 @@ export const TUTORS = [
 
 export const tutorById = (id) => TUTORS.find((t) => t.id === id) ?? null;
 
-/** Visual band from the class (never the content level; tutor-selection-ux §4). */
+/** Visual band from the class (never the content level; tutor-selection-ux §4). The same cut as the app's
+ *  bandForClass (src/child/band.ts): B1 classes 1-2, B2 class 3 (the rest of the young register, shared/bands.ts),
+ *  B3 4-7, B4 8-9. Class 4 was still B2 here after round 7 moved it out of the young register (audit FACE-08);
+ *  tests/r7-audit-face.test.mjs keeps the two tables equal. */
 export function bandOfClass(cls) {
   const c = Number(cls) || 1;
-  return c <= 2 ? "b1" : c <= 4 ? "b2" : c <= 7 ? "b3" : "b4";
+  return c <= 2 ? "b1" : c <= 3 ? "b2" : c <= 7 ? "b3" : "b4";
 }
 
 /** [min, max] options shown per band (AVATAR §7.1). */

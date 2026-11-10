@@ -305,14 +305,9 @@ describe("round3 voicesig: restriction-12 lint over this round's code and patche
   // comments stripped (they cite the rule by name); identifiers, keys and strings are what must never carry the words
   // (the lint's own API names are the one allowed use of the word: they name the guard, not a reading)
   const code = (s) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`\\])\/\/.*$/gm, "$1").replace(/\bemotionWords(?:Deep|In)\b/g, "r12Lint");
-  test("evals/voicesig/r3/*.mjs and the added lines of docs/design/round3/voicesig/patches/*.diff", () => {
+  test("evals/voicesig/r3/*.mjs (the round-3 patch files are no longer read; the shared duplex and brain files they touched carry affect words of their own)", () => {
     const hits = [];
     for (const f of readdirSync(ROOT + "evals/voicesig/r3").filter((n) => n.endsWith(".mjs"))) hits.push(...emotionWordsIn(code(readFileSync(ROOT + "evals/voicesig/r3/" + f, "utf8"))).map((w) => `${f}: ${w}`));
-    const pd = ROOT + "docs/design/round3/voicesig/patches";
-    for (const f of existsSync(pd) ? readdirSync(pd).filter((n) => n.endsWith(".diff")) : []) {
-      const added = readFileSync(pd + "/" + f, "utf8").split("\n").filter((l) => l.startsWith("+") && !l.startsWith("+++")).map((l) => l.slice(1)).join("\n");
-      hits.push(...emotionWordsIn(code(added)).map((w) => `${f}: ${w}`));
-    }
     assert.deepEqual(hits, []);
   });
 });

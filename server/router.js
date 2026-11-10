@@ -15,7 +15,8 @@ import { realNow, runRequestClock } from "./comprehension/testclock.js";
 import { runTrace, ridOf, pidOf, isUuid } from "./trace/context.js";
 import { record, traceStats } from "./trace/writer.js";
 import { isDraining } from "./shutdown.js";
-import { childScoped } from "./pair/scope.js";
+import { childScoped, deviceFieldsRefused } from "./pair/scope.js";
+import { deviceOnly, scopeRefused } from "./auth.js";
 
 const REVISION = process.env.CONTAINER_APP_REVISION || null;
 /** The operator key (a Container App secret, deploy-azure.mjs SECRET_ENV): fresh health numbers, the forced 500. */
@@ -238,6 +239,8 @@ async function dispatch(req, res, key, fn, ctx, store) {
     const raw = key === "POST /api/trace/blob";
     const body = !raw && ["POST", "PATCH", "PUT", "DELETE"].includes(req.method) ? await readJson(req) : {};
     ctx.body = body;
+    // a paired device sends only the child's own fields on a route the parent shares (PLAT-07), checked before the handler
+    if (deviceOnly(req) && deviceFieldsRefused(key, body).length) throw scopeRefused();
     const lessonId = body?.lessonId ?? (() => { try { return new URL(req.url || "/", "http://x").searchParams.get("lessonId"); } catch { return null; } })();
     if (isUuid(lessonId)) store.sid = lessonId;
     await runRequestClock(req, () => fn(req, res, body));

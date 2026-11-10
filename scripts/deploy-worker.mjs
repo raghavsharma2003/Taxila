@@ -9,7 +9,9 @@
 // The worker gets taxila-web's model / storage env (report.daily's writer and Forge read them) and its secrets by
 // value, never printed. forge.g2.nightly stays paused (server/conductor/handlers.js) unless FORGE_G2_NIGHTLY=on.
 //
-//   node scripts/deploy-worker.mjs [--dry-run] [--force] [--jobs] [--jobs-only] [--from-tree [--branch B]] [--image-tag TAG]
+//   node scripts/deploy-worker.mjs [--dry-run] [--force] [--jobs] [--jobs-only] [--from-tree --branch B] [--image-tag TAG [--served]]
+//   --served: TAG already ran in production (scripts/release.mjs --rollback): no gate stamp is asked for it
+//   --migrations-evidence FILE: for a private (in-VNet) target database, the db-copy report, as for deploy-azure
 //   --image-tag TAG: deploy taxila-worker:TAG already in ACR (scripts/release.mjs builds web + worker once at one sha);
 //                  TAG must be a commit sha prefix, and the gate and migrations checks run for THAT commit, not HEAD
 //   test targets:  --app NAME (default taxila-worker; jobs are prefixed by it) --db test (the Neon TEST branch,
@@ -23,6 +25,7 @@
 import { ROOT, acrBuild, arm, loadEnv, sleep } from "../infra/azure.mjs";
 import { REPO, branchName, gateEvidence, headSha, migrationsGate, shaOfTag } from "../infra/gate.mjs";
 import { directUrl } from "../server/conductor/pg.js";
+import { checkMigrationsEvidence, fromTreeBranch, privateDbHost, workerContextFile, workerGateNeeded } from "./deploy-core.mjs";
 import { createRequire } from "module";
 const require_ = createRequire(import.meta.url);
 
@@ -31,6 +34,7 @@ const argv = process.argv.slice(2);
 const flag = (f) => argv.includes(f);
 const opt = (f, d) => { const i = argv.indexOf(f); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : d; };
 const DRY = flag("--dry-run"), FORCE = flag("--force"), JOBS = flag("--jobs") || flag("--jobs-only"), JOBS_ONLY = flag("--jobs-only");
+const SERVED = flag("--served"), MIG_EVIDENCE = opt("--migrations-evidence", null);
 // --web: the web app whose env, registries and model/storage secrets the worker copies (round 7: taxila-staging's own
 // worker copies taxila-staging, never production's taxila-web)
 const APP = opt("--app", "taxila-worker"), WEB = opt("--web", "taxila-web"), ACR = "taxilacr", API = "api-version=2024-03-01";
@@ -60,8 +64,8 @@ if (IMAGE_TAG) {
   /* the image exists (release.mjs built it from the pushed commit); nothing to push or build here */
 } else if (FROM_TREE && !DRY) {
   const { execSync } = await import("child_process");
-  if (execSync("git status --porcelain -- server shared data db/migrations package.json package-lock.json Dockerfile.worker", { cwd: ROOT }).toString().trim()) throw new Error("--from-tree needs the worker context (server, shared, data, db/migrations, package files, Dockerfile.worker) clean");
-  const onto = opt("--branch", "claude/blissful-mayer-icwe2j");
+  if (execSync("git status --porcelain -- server shared data db/migrations src package.json package-lock.json Dockerfile.worker", { cwd: ROOT }).toString().trim()) throw new Error("--from-tree needs the worker context (server, shared, data, db/migrations, src, package files, Dockerfile.worker) clean");
+  const onto = fromTreeBranch(opt("--branch", null));
   execSync(`git fetch -q origin ${onto}`, { cwd: ROOT });
   try { execSync(`git merge-base --is-ancestor ${full} FETCH_HEAD`, { cwd: ROOT }); }
   catch { throw new Error(`--from-tree: ${sha} is not on origin/${onto}; push it first`); }
@@ -70,7 +74,9 @@ if (IMAGE_TAG) {
   const remote = execSync(`git ls-remote origin refs/heads/${branch}`, { cwd: ROOT }).toString().slice(0, 40);
   if (remote !== full) throw new Error(`HEAD ${sha} is not pushed (origin has ${remote.slice(0, 7)}): push first`);
 }
-if (PROD) {
+if (!workerGateNeeded({ prod: PROD, served: SERVED, imageTag: IMAGE_TAG })) {
+  if (PROD) console.log(`gate: not asked (--served: taxila-worker:${tag} already ran in production)`);
+} else {
   const ev = await gateEvidence(full);
   if (!ev && !DRY) throw new Error(`no passing gate for ${sha}: run \`node scripts/deploy-azure.mjs --gate --dry-run\` first. Refusing to deploy the worker.`);
   console.log(`gate: ${ev || "NONE (dry run continues)"}`);
@@ -80,7 +86,7 @@ if (PROD) {
 function localContext() {
   const { execFileSync } = require_("child_process");
   const all = execFileSync("git", ["ls-files", "-co", "--exclude-standard", "-z"], { cwd: ROOT, maxBuffer: 64 << 20 }).toString().split("\0");
-  return all.filter((f) => /^(server|shared|data|db\/migrations)\//.test(f) || ["package.json", "package-lock.json", "Dockerfile.worker"].includes(f));
+  return all.filter(workerContextFile);
 }
 // ── 1. image ──
 const image = `${ACR}.azurecr.io/taxila-worker:${tag}`;
@@ -108,7 +114,18 @@ secrets.push({ name: "database-url-direct", value: directUrl(pooled) });
 // The target database must hold every migration of the sha being deployed, whatever the gate evidence was (a CI run
 // cannot check production's schema_migrations). The worker's own boot check would refuse to start anyway; this
 // refuses before a revision or a job is created.
-if (!LOCAL) {
+const dbHost = (() => { try { return new URL(pooled).hostname; } catch { return ""; } })();
+if (!LOCAL && privateDbHost(dbHost)) {
+  // a private (in-VNet) database: the db-copy report is the evidence (PLAT-21), as deploy-azure's migrationsGateFor
+  try {
+    if (!MIG_EVIDENCE) throw new Error(`migrations gate: ${dbHost} is private (VNet only); pass --migrations-evidence <the db-copy report>`);
+    const { readFileSync } = await import("fs");
+    const { execFileSync } = await import("child_process");
+    const files = execFileSync("git", ["ls-tree", "--name-only", full, "db/migrations/"], { cwd: ROOT, encoding: "utf8" }).split("\n").map((f) => f.split("/").pop()).filter((f) => f.endsWith(".sql"));
+    checkMigrationsEvidence(JSON.parse(readFileSync(MIG_EVIDENCE, "utf8")), { host: dbHost, files, sha7: sha });
+    console.log(`migrations: the evidence shows every db/migrations file of ${sha} on ${dbHost}`);
+  } catch (e) { if (!DRY) throw e; console.log(`WARN ${e.message} (dry run continues)`); }
+} else if (!LOCAL) {
   try { await migrationsGate(pooled, full); console.log(`migrations: every db/migrations file of ${sha} is applied on the target database`); }
   catch (e) { if (!DRY) throw e; console.log(`WARN ${e.message} (dry run continues)`); }
 }

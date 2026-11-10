@@ -14,9 +14,12 @@ import { KxPage } from "../kit.tsx";
 import { HomeStateView } from "./HomeState.tsx";
 import { useTeacher } from "../../../ui/teacher/useTeacher.ts";
 import { useDailyGreeting } from "../../../face-puppet/useDailyGreeting.ts";
+import { partOfDay } from "../../../../shared/day.js";
 import { KakshaRoot } from "../Shell.tsx";
 import { HomeView, type HomeViewProps } from "../views.tsx";
 import { kt, RING_LABEL } from "../copy.ts";
+import { dockForPlan } from "../nav-model.ts";
+import { tr7 } from "../../../copy/en.ts";
 
 /** A subject id in words (the World's ring names: Maths, Science, …). */
 const subjectName = (s: string | null): string | null => (s ? (RING_LABEL[s] ? kt(RING_LABEL[s]) : s) : null);
@@ -24,9 +27,9 @@ import { useChildNav } from "./useNav.ts";
 import { useKxGo } from "./go.ts";
 
 export function greetingFor(d = new Date()): HomeViewProps["greeting"] {
-  const h = d.getHours();
-  // r5 QA: 00:20 said "Morning, Riya"; until 04:00 (the learning day's start) it is still the evening
-  return h < 4 || h >= 17 ? "evening" : h < 12 ? "morning" : "day";
+  // r5 QA: 00:20 said "Morning, Riya"; until 04:00 (the learning day's start) it is still the evening (shared/day.js)
+  const part = partOfDay(d.getHours());
+  return part === "afternoon" ? "day" : part;
 }
 
 export function KakshaHome() {
@@ -45,12 +48,12 @@ export function KakshaHome() {
     const kind = plan.signedOut ? "signedout" : plan.state === "safety_hold" ? "hold" : "offline";
     return (
       <KxPage family={family} reducedMotion={reducedMotion} screen="home" testid="home" title={null} backTo={null} meTo={kn.meTo} parentTo="/parent"
-        dock={kind === "hold" ? kn.dock.filter((d) => d.key !== "ask" && d.key !== "practice") : kind === "offline" ? kn.dock.filter((d) => d.key !== "ask") : kn.dock} active="home" go={go}>
+        dock={kind === "signedout" ? kn.dock : dockForPlan(kn.dock, plan)} active="home" go={go}>
         <div data-plan-state={kind === "signedout" ? "signedout" : plan.state} data-plan-source={plan.source} className="kx-home-state">
           <HomeStateView kind={kind} packReady={plan.packReady} practiceTo={`/c/${cid}/practice`} signInTo={`/start/phone?login=1&next=${encodeURIComponent(`/c/${cid}`)}`}
             onRetry={reload} go={go}
             help={(close, grownUp, setGrownUp) => (
-              <HelpSheet teacherId={child.teacher_id ?? ""} band={band} childName={child.first_name} backVisible grownUp={grownUp} faceForm={faceFormOf(prefs.face).form}
+              <HelpSheet teacherId={child.teacher_id ?? ""} band={band} childName={child.first_name} backVisible backLabel={kind === "hold" ? tr7("nb.close") : undefined} grownUp={grownUp} faceForm={faceFormOf(prefs.face).form}
                 onGrownUp={() => setGrownUp(true)} onGrownUpBack={() => setGrownUp(false)} onGrownUpHere={() => { setGrownUp(false); close(); }} onBack={close} />
             )} />
         </div>
@@ -80,7 +83,7 @@ export function KakshaHome() {
           madeFor={plan.madeFor.map((it) => ({ id: it.id, title: it.title, still: it.still, to: `/c/${cid}/notebook?made=${encodeURIComponent(it.id)}` }))}
           jarWaiting={(plan.jarWaiting ?? 0) > 0}
           startTo={state === "homework" ? `/c/${cid}/ask?homework=1` : continueTo ?? startTo} resuming={!!continueTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} go={go}
-          dock={kn.dock} meTo={kn.meTo} />
+          dock={dockForPlan(kn.dock, plan)} meTo={kn.meTo} />
       </div>
     </KakshaRoot>
   );

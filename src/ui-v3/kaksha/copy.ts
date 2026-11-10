@@ -21,7 +21,7 @@ export const KX = {
   greetMorning: K("Morning, {name}.", "Good morning, {name}.", "सुप्रभात, {name}।"),
   greetDay: K("Hi, {name}.", "Hi, {name}.", "नमस्ते, {name}।"),
   greetEvening: K("Evening, {name}.", "Shaam ho gayi, {name}.", "शाम हो गई, {name}।"),
-  openSub: K("Just start. Asha takes it from there.", "Bas shuru karo. Baaki Asha sambhaal legi.", "बस शुरू करो। बाकी आशा सँभाल लेगी।"),
+  openSub: K("Just start. {T} takes it from there.", "Bas shuru karo. Baaki {T} sambhaal legi.", "बस शुरू करो। बाकी {T} सँभाल लेगी।"),
   doneSub: K("Today's session is done. Another one is fine if you like.", "Aaj ka session ho gaya. Chaho toh ek aur.", "आज का सेशन हो गया। चाहो तो एक और।"),
   restSub: K("Lessons open again at {time}. Your orbit is open any time.", "Lessons {time} baje phir khulenge.", "पाठ {time} बजे फिर खुलेंगे।"),
   cappedSub: K("That's today's time. See you tomorrow.", "Aaj ka time ho gaya. Kal milte hain.", "आज का समय हो गया। कल मिलते हैं।"),
@@ -30,7 +30,7 @@ export const KX = {
   forParents: K("For parents", "Bade log", "बड़ों के लिए"),
   notMe: K("Not {name}?", "{name} nahi?", "{name} नहीं?"),
   // Hello (K-P13, audit B02): what really happens next, for every start (session-first or a planned lesson)
-  helloOlder: K("First a quick chat, then Asha teaches from there. Nobody sees a score.", "Pehle thodi baat, phir Asha padhayegi. Score koi nahi dekhta.", "पहले थोड़ी बात, फिर आशा पढ़ाएगी। स्कोर कोई नहीं देखता।"),
+  helloOlder: K("First a quick chat, then {T} teaches from there. Nobody sees a score.", "Pehle thodi baat, phir {T} padhayegi. Score koi nahi dekhta.", "पहले थोड़ी बात, फिर {T} पढ़ाएगी। स्कोर कोई नहीं देखता।"),
   back: K("Back", "Wapas", "वापस"),
   // r7 app-lesson-moments-later: the moment cards and the Later list (stage overlays)
   later: K("Later", "Baad mein", "बाद में"),

@@ -29,6 +29,8 @@ const CATALOG = catalogJson as unknown as Catalog;
 export interface DebriefProps {
   m: DeskModel;
   meters: TapSource[];
+  /** APP-26: run the finish step, then go to `to` (a "Made for you" tile). */
+  onFinishTo?: (to: string) => void;
   onFinish: () => void;
   /** The map read when the lesson opened (null: unknown). */
   before: Promise<MapLike | null>;
@@ -45,7 +47,7 @@ export interface DebriefProps {
   emote?: EmoteLook | null;
 }
 
-export function Debrief({ m, onFinish, before, loadAfter, loadMade, madeTo, onReflect, onEmote, emote }: DebriefProps) {
+export function Debrief({ m, onFinish, onFinishTo, before, loadAfter, loadMade, madeTo, onReflect, onEmote, emote }: DebriefProps) {
   const [secure, setSecure] = useState<DebriefSecure[] | null>(null);
   const [made, setMade] = useState<MadeForItem[]>([]);
   const [sealed, setSealed] = useState<DebriefSeal[]>([]);
@@ -58,18 +60,18 @@ export function Debrief({ m, onFinish, before, loadAfter, loadMade, madeTo, onRe
     if (loadMade) void loadMade().then((xs) => { if (live) setMade(xs); }, () => {});
     return () => { live = false; };
   }, [ending, before, loadAfter, loadMade]);
-  return <DebriefView m={m} onFinish={onFinish} secure={secure} sealed={sealed} made={made} madeTo={madeTo} onReflect={onReflect} onEmote={onEmote} emote={emote} />;
+  return <DebriefView m={m} onFinish={onFinish} onFinishTo={onFinishTo} secure={secure} sealed={sealed} made={made} madeTo={madeTo} onReflect={onReflect} onEmote={onEmote} emote={emote} />;
 }
 
 export interface DebriefViewProps {
-  m: DeskModel; onFinish: () => void; secure: DebriefSecure[] | null; made?: MadeForItem[]; madeTo?: (id: string) => string;
+  m: DeskModel; onFinish: () => void; onFinishTo?: (to: string) => void; secure: DebriefSecure[] | null; made?: MadeForItem[]; madeTo?: (id: string) => string;
   /** r7: chapters the ledger sealed in this lesson (nowSealed). */
   sealed?: DebriefSeal[];
   onReflect?: (lessonId: string, choice: ReflectChoice) => void; onEmote?: (lessonId: string, emote: ChildEmote) => void; emote?: EmoteLook | null;
 }
 
 /** Presentational (the dev page renders it with fixtures). */
-export function DebriefView({ m, onFinish, secure, sealed = [], made = [], madeTo, onReflect, onEmote, emote }: DebriefViewProps) {
+export function DebriefView({ m, onFinish, onFinishTo, secure, sealed = [], made = [], madeTo, onReflect, onEmote, emote }: DebriefViewProps) {
   const [helped, setHelped] = useState<ReflectChoice | null>(null);
   const [emoted, setEmoted] = useState<ChildEmote | null>(null);
   const s = m.summary!;
@@ -181,7 +183,7 @@ export function DebriefView({ m, onFinish, secure, sealed = [], made = [], madeT
               );
               return (
                 <li key={it.id}>
-                  {madeTo ? <a className="kx-db-made-item kx-cut" href={madeTo(it.id)} aria-label={`${kt("playAgain")}: ${it.title}`}>{tile}</a> : <span className="kx-db-made-item kx-cut">{tile}</span>}
+                  {madeTo ? <a className="kx-db-made-item kx-cut" href={madeTo(it.id)} onClick={onFinishTo ? (e) => { e.preventDefault(); onFinishTo(madeTo(it.id)); } : undefined} aria-label={`${kt("playAgain")}: ${it.title}`}>{tile}</a> : <span className="kx-db-made-item kx-cut">{tile}</span>}
                 </li>
               );
             })}

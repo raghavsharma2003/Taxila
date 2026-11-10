@@ -1,5 +1,16 @@
 # Taxila: handoff to the next Claude Code session (2026-10-27)
 
+> **State on 2026-11-09 (added by the docs audit; read this first).** This file is the snapshot written on 2026-10-27.
+> The owner's directives in §0 and the practical notes in §4 and §5 still hold. The state described in §1 to §3 and §6
+> has moved on:
+> - Work is in **round 7** on the integration branch **`int/r6`**, not on `handoff/2026-10-27`. Sessions and branches:
+>   `docs/design/round7/SESSIONS.md`. Who owns which path: `docs/design/round7/OWNERSHIP.md`.
+> - What is built, what the owner must decide and what the latest lesson run found: `docs/design/round7/OWNER.md`.
+>   The plan: `docs/design/round7/PIPELINE.md`. Lesson-quality write-ups: `docs/design/round7/judgements/`.
+> - Production is still 14.4.2. 14.4.3 was never deployed by itself; its code is part of `int/r6`.
+> - The Founders Hub automation in §6 is no longer a proposal: it has been live since 2026-11-06 (`docs/design/round7/M3.md`).
+> - The whole-project audit of 2026-11-09 is in `docs/design/round7/audit/`.
+
 This branch (`handoff/2026-10-27`) is the whole project as of 2026-10-27. Read this file first, then `CLAUDE.md`, then
 `context/` (start with `context/rejected.md`). Nothing here repeats what `context/` already records in detail; this file
 says where everything is, what state it is in, and how the owner wants work done from now on.
@@ -16,7 +27,7 @@ says where everything is, what state it is in, and how the owner wants work done
    3. Only when we are about to put it in front of real users do the security / safety / compliance pass.
 
    Existing safety code stays where it is (do not rip it out), but do not spend effort extending or measuring it.
-   Unit tests and the build gates (`tsc`, `vite build`, `npm test`) still run on code changes. Large sim-lab and QA
+   Unit tests and the build gates (`tsc`, `vite build`, the test suites; exact commands in §5) still run on code changes. Large sim-lab and QA
    batteries are not the default.
 2. **Azure usage: sensible, not a hard rule.** Keep Azure usage from being unnecessarily high. If something needs high
    usage (big batteries, bulk generation, many model calls), ask the owner first. This is guidance, not a ban: the
@@ -32,7 +43,7 @@ The cost incident behind (2) and (3) is in §6.
 
 ---
 
-## 1. Where things are
+## 1. Where things are (as of 2026-10-27; see the note at the top)
 
 | What | Where |
 |---|---|
@@ -48,7 +59,7 @@ The cost incident behind (2) and (3) is in §6.
 
 ---
 
-## 2. Product state (what exists)
+## 2. Product state (what existed on 2026-10-27; for today see `docs/design/round7/OWNER.md`)
 
 Taxila is an AI tutor for Indian classes 1–9 (CBSE/NCERT, RBSE): a Hindi-English voice teacher driven by a server-side
 **Director** (`server/director/`), a reply brain (`server/brain/`), one compiler for every lane (`server/compiler/`),
@@ -74,7 +85,8 @@ Release history and what each shipped: `context/measurements.md` (`ms-r*-live` e
   Gate (`node scripts/deploy-azure.mjs --gate --dry-run`) was started on d3ebc66f and stopped when stream 2 landed;
   re-run it on this branch's head before deploying.
 
-Known open product work (from `context/` "open-*" nodes and the task list):
+Known open product work on 2026-10-27 (from `context/` "open-*" nodes and the task list; round 7 has since taken up
+most of it, see `docs/design/round7/PIPELINE.md`):
 - the understanding phase (`open-r1441-teaching-question-unread`);
 - the kit pipeline for 4A's 293 English-only items (`docs/research/census/2026-10-21-kits-english-only-forms.json`);
 - QA's ac4e8e88 findings:
@@ -105,9 +117,9 @@ push all unpushed work and a `docs/handoff/<name>.md` to its branch, and is idle
 | stream 2 (content / board / Studio) | `claude/r4-content` | whiteboard, Studio, Forge-in-lesson |
 | stream 3 (latency) | `claude/r4-latency` | latency, overflow, regions |
 | QA (break-it) | `claude/r5-qa` | real-lesson QA on TEST |
-| sim lab | `claude/r5-simlab` | simulated children + judges (`evals/simlab/`); results in `evals/simlab/results/` |
+| sim lab | `claude/r5-simlab` | simulated children + judges (`evals/simlab/`); the results are on that branch only, under evals/simlab/results/ |
 | others | `claude/r4-asha`, `claude/r4-games-core`, `claude/r4-khand`, `claude/r4-app-design` | teacher face/rig, games, design |
-| superseded | `claude/r4-asha-rig2` | salvaged by path into `claude/r7-face` (round 7, 2026-11-04: rig2 docs, lamp2/lamp3 tooling, demo, pack-report; its 10 context nodes routed via `context/inbox/r7-face.json`). Do not merge (dc-r7-no-branch-merges). |
+| superseded | `claude/r4-asha-rig2` | salvaged by path into `claude/r7-face` (round 7, 2026-11-04: rig2 docs, lamp2/lamp3 tooling, demo, pack-report; its 10 context nodes routed via the inbox file r7-face.json, since merged). Do not merge (dc-r7-no-branch-merges). |
 
 Round 7 (2026-11-04) re-created the streams: see `docs/design/round7/SESSIONS.md` for the current session/branch map.
 
@@ -131,7 +143,10 @@ CLI in the container.
 
 ## 5. How to work in this repo (practical)
 
-- Gates before any code commit: `npx tsc -b && npx vite build && npm test`. The old session's side worktree was a
+- Gates before any code commit, as in `CLAUDE.md`: `npx tsc -b && npx vite build && npm run test:all` (every suite in
+  its own process). The deploy gate is stricter and separate: `infra/gate.mjs` runs tsc, the build, single-process
+  `npm test` and the prompt-budget check, and stamps the commit. (On 2026-10-27 the commit gate was plain `npm test`.)
+  The old session's side worktree was a
   sparse checkout without `public/assets/teacher/`. There, 6 asset tests and 4 tray/RCA browser tests failed. Those
   are environment failures; re-check them in a full checkout. The full integration tree passed the gate for 14.4.2.
 - Deploy:
@@ -144,6 +159,8 @@ CLI in the container.
 - Context logging: drop entries in `context/inbox/*.json` (`{nodes, edges, md:{decisions, measurements, rejected}}`;
   kinds `decision|measurement|rejection`; edge rels `measured_by, caused_by, inherits, supersedes, blocks, part_of,
   constrains`), then `node scripts/merge-inbox.mjs` and `node scripts/context.mjs --check`.
+  Since 2026-11-10 the merger refuses a file whole if an edge uses any other relation or points at a node that does not
+  exist: it exits 1 and leaves the file in the inbox (before, such edges were skipped silently and 229 were lost).
 - Model-only harnesses run with `DATABASE_URL=` empty (never against prod). Replay harnesses this session used:
   `relreplay.mjs`, `p08replay.mjs`, `linereplay.mjs`, `endfacts-ab.mjs` (in the scratchpad archive).
 - Outbound HTTPS goes through the container's proxy; Node needs `NODE_USE_ENV_PROXY=1`.
@@ -166,7 +183,8 @@ CLI in the container.
     (₹24k) and gpt-4o-mini-tts (the sim lab's child voice, ₹15k).
   - Hence directive 3: judges run on Claude now.
 - Fixed daily cost ≈ ₹1,500 across all projects. Taxila's share is ≈ ₹1,000:
-  - `taxila-cin-pg` Postgres (Central India) ₹602/day. It is **unused**: the India move decided 2026-10-04
+  - `taxila-cin-pg` Postgres (Central India) ₹602/day on 2026-10-24. Since 2026-11-06 it is on the smaller B2s size and is
+    kept as one of the services the Founders Hub automation counts (`docs/design/round7/M3.md`). It holds no product data: the India move decided 2026-10-04
     (`dc-*india*`) never cut over, and production is still Neon.
   - `taxila-web` ₹150, `studio-qa` ₹75, `taxila-sin-staging` ₹38, `taxila-worker` ₹38, a load balancer + IP ₹70.
 
@@ -174,12 +192,13 @@ CLI in the container.
 - $25k grant (Milestone 3, current Founders Hub rules): **5+ distinct Azure services, each ≥ $1 spend, ~60 continuous
   days**; automatic.
   - As of 2026-10-24 only Container Apps and PostgreSQL hold ≥ $1/day every day.
-  - A plan was proposed, owner decision pending:
+  - **Done since:** the automation went live on 2026-11-06, with 9 services held above $1 a day.
+    Everything current is in `docs/design/round7/M3.md`. The plan as it stood on 2026-10-24:
     - downsize `taxila-cin-pg` to Burstable (still counts, cheaper);
     - a small capped daily job using Foundry Models + Foundry Tools (speech);
     - upgrade `taxilacr` to Premium;
     - the vp-research VM as a buffer.
-  - Ask the owner before doing any of it.
+  - (On 2026-10-27 this read "ask the owner before doing any of it"; it has since been applied.)
 
 Scripts used for this analysis (read-only, Cost Management REST): `cost.mjs`, `daily.mjs`, `monthly.mjs`,
 `svcdaily.mjs`, `deps.mjs`, `bill*.mjs`, `budget.mjs` in the scratchpad archive.
@@ -188,4 +207,5 @@ Scripts used for this analysis (read-only, Cost Management REST): `cost.mjs`, `d
 
 ## 7. First steps for the new session
 
-See `docs/handoff/STARTUP-PROMPT.md`.
+On 2026-10-27 this was `docs/handoff/STARTUP-PROMPT.md` (used once, for that handoff; do not reuse it: it checks out
+the old branch). Today: read the note at the top of this file, then `CLAUDE.md`, then `docs/design/round7/OWNER.md`.

@@ -27,7 +27,7 @@ test("sidecarUrl and remaining: the url next to the clip; a resumed clip keeps o
   assert.deepEqual(r.words.map((w) => w.text), ["b"]);
 });
 
-test("the App patch wires the Hello clip to the bridge", () => {
-  const p = readFileSync(new URL("../docs/patches/to-app/003-face-hello-clip-visemes.patch", import.meta.url), "utf8");
+test("the App wires the Hello clip to the bridge", () => {
+  const p = readFileSync(new URL("../src/child/voice.ts", import.meta.url), "utf8");
   assert.match(p, /attachClipVisemes\(a, src, ctx\.current\)/);
 });

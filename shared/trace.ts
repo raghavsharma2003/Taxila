@@ -22,7 +22,6 @@ export interface TraceEvent {
 }
 
 export type TraceTier = 1 | 2;
-export type TraceSrc = TraceEvent["src"];
 
 /** A blob pointer inside `data.blob` (POST /api/trace/blob returns the `ref`). */
 export interface TraceBlobRef {
@@ -40,6 +39,8 @@ export const TRACE_MAX_BATCH_BYTES = 256 * 1024;
 export const TRACE_FLUSH_MS = 2000;
 /** The request-id header the client sets on every /api call; the server echoes it on srv.* events. */
 export const TRACE_RID_HEADER = "x-taxila-rid";
+/** The page-load id on every /api call (server/trace/context.js pidOf; `_pid` in the query for an EventSource). */
+export const TRACE_PID_HEADER = "x-taxila-pid";
 
 // ───────────────────────────── transport ─────────────────────────────
 /** POST /api/trace/batch. Auth is the session cookie; anonymous public pages send pid only (no cid/gid: the server fills those). */
@@ -55,17 +56,6 @@ export interface TraceBatchResponse {
   /** Events refused (oversized, malformed, a src other than "client", a tier the account does not have). */
   rejected: number;
   /** The tier this account records at (the client must not send tier-2 events otherwise). */
-  tier: TraceTier;
-}
-
-/**
- * POST /api/trace/blob?sid=&src=&seq=&ext=&type=  (body: the raw bytes). Tier-2 accounts for client media; the server writes
- * its own tier-2 blobs (model prompts and raw responses) directly. Returns the ref to put in `data.blob`.
- */
-export interface TraceBlobResponse extends TraceBlobRef {}
-
-/** GET /api/me carries this, so the client knows which tier to record at (and shows the REC chip at tier 2). */
-export interface TraceMe {
   tier: TraceTier;
 }
 

@@ -170,6 +170,9 @@ if (!DRY) {
   mkdirSync(OUT, { recursive: true });
   const file = `${OUT}db-copy-${MODE}-${report.at.replace(/[:.]/g, "-")}.json`;
   writeFileSync(file, JSON.stringify(report, null, 2));
+  // the newest report of this mode at a fixed path: scripts/release.mjs --migrate job passes it to both deploys as the
+  // migrations evidence (scripts/deploy-core.mjs LATEST_EVIDENCE; audit PLAT-21)
+  writeFileSync(`${OUT}db-copy-${MODE}-latest.json`, JSON.stringify(report, null, 2));
   const r = report.result;
   if (r) {
     console.log(`result: ${r.ok ? "OK" : "FAILED"}${r.stage ? ` at ${r.stage}: ${r.error}` : ""}`);

@@ -10,8 +10,8 @@
 //   401 → "signedout" (the shell asks a grown-up to sign in).
 // While the first read is in flight the home shows a neutral busy card with NO action (source "loading"): a Start link
 // before the server answered could start a lesson the server is about to refuse (capped / resting / done).
-// "resume" is shown as "start" until the lesson route can resume a lesson by id (RESUME_BY_ID): a "Continue" card whose
-// tap starts a new lesson would be a signal that lies (§3.4). The server's own state stays in `serverState`.
+// "resume" is a real Continue now (RESUME_BY_ID is true: the lesson route reopens a lesson by id); the flag stays so a build
+// that cannot resume shows "start" rather than a Continue that starts a new lesson (§3.4). The server's own state stays in `serverState`.
 import { useCallback, useEffect, useState } from "react";
 import type { ChildHomeState, ChildPlanResponse, DidCard, MadeForItem } from "../../shared/contracts.ts";
 import { ApiError, getJson } from "../lesson/api.ts";

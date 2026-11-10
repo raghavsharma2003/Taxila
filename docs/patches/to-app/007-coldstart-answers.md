@@ -19,7 +19,7 @@ GET  /api/placement/note?childId=                                               
 - `note.lines.{en,hinglish,hi}` are checked parent lines. Show them as they are, never rebuilt client-side.
 - Client helpers already exist in `src/parent/api.ts`: `parentApi.setParentView` and `parentApi.placementNote`.
 
-## Ask 1: parent, in set-up (src/onboarding/steps/ChildProfile.tsx)
+## Ask 1: parent, in set-up (src/onboarding/ChildProfile.tsx)
 
 Put this under the optional "Which maths chapter is school on?". For the 1-2 main subjects of the class:
 
