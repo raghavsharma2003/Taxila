@@ -3,7 +3,9 @@
 // network, no model, no database. Each child answers every card by a fixed rule, so a run is deterministic:
 //   right   every answer right            wrong   every answer wrong (re-teaches included)
 //   mixed   right, wrong, right, wrong …   weak    one right in four
-//   why     every item right; every "why" left to the late path (the blind grade arrives after the turn)
+//   why     every item right; the blind grade of every "why" and teach-back never lands in time (held on K since kt-r3;
+//           the late correction is not modelled, so this child shows what a lesson looks like while the grader is down)
+// The blind grader answers in time for the others: "present" for right and mixed, "absent" for wrong and weak.
 // Each child gets up to LESSONS lessons on one pilot topic, one a day, and the run reports per child and skill: the prior
 // (the estimate before the first event), the estimate and display at the end, the answers given, whether the topic's
 // "weak foundation" rule (next-topic.js: ≥ 3 attempts and estimate < 0.4) fires, and the topic status.
@@ -28,6 +30,9 @@ const IT = await imp("server/director/items.js");
 const LV = await imp("server/learner/live.js");
 const CMP = await imp("server/comprehension/index.js");
 const NT = await imp("server/content/next-topic.js");
+const LT = await imp("server/comprehension/later.js");
+// the blind grader, offline: a store that keeps nothing, and a verdict per child (see `verdict` below)
+LT._setStore({ async persist() { return { fallback: false, written: true }; }, async claim() { return {}; }, async read() { return {}; }, async correct() { return false; } });
 const { getKit } = await imp("server/content/index.js");
 const { BRIEF } = await import(pathToFileURL(join(MAIN, "tests/fixtures/kit.mjs")).href);
 
@@ -81,6 +86,11 @@ for (const topicId of PILOTS) {
         ROWS.stageTurns(s, [{ speaker: "teacher", text: "..." }, { speaker: "child", text }]);
         const out = await T.planTurn(s, cls, { kit, child: childRow, lesson: lessonRow, activeItem: item, moduleOnly: false, live, now: t, childText: text, answer: text, typed: true, carried: T.carriedFrom(s) });
         live = { state: out.learner.after, maxSeq: 0 };
+        if (profile !== "why") {
+          const label = profile === "right" || profile === "mixed" ? "present" : "absent";
+          for (const d of out.r.state?.kt?.deferred ?? []) if (d.grade) LT.gradeLater(d.event, d.grade, { grade: async (r) => ({ label, spanOk: label === "present", op: "R-EXP", targetId: r.target.id, graderVersion: "replay", model: null, ms: 0, span: null }) });
+          await new Promise((res) => setTimeout(res, 2));
+        }
         for (const k of skillIds) if (prior[k] === undefined && live.state.ledger.skills[k]) prior[k] = live.state.ledger.skills[k].prior?.pL0 ?? live.state.ledger.skills[k].pL;
         step = out.r;
       }
