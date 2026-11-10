@@ -3,7 +3,9 @@
 // level the session token points at, and re-grades the RAW acts (server/play/grade.js): the client's verdict is never read.
 // No model call on any of these paths; quotas cannot 429 them.
 //
-//   POST /api/play/start   { childId, skillId? | topicId?, goal?, lessonId?, lang?, art?, fade? } → session, level, art, bank, world
+//   POST /api/play/start   { childId, skillId? | topicId?, goal?, lessonId?, lang?, art?, fade? } → session, level, art, bank, world, because?
+//   (because?: round 8, [{ choice, fact, source }] for a game / level / fade chosen from what the learner model holds; absent
+//   when the choice is the default. It also rides the signed session body, so /level and the parent page read the same.)
 //   POST /api/play/act     { sessionId, levelId, acts, final?, impasse? } → moments, reaction, grade?, doors?, seam?
 //   POST /api/play/next    { sessionId, door } → session, level, art, bank
 //   POST /api/play/level   { sessionId } → session, level, art           (the Studio renderer's mount)
@@ -15,7 +17,7 @@
 import { readJson, send, HttpError } from "../http.js";
 import { requireChild } from "../auth.js";
 import { signSession, verifySession } from "./session.js";
-import { artFor, coverage, currentLevel, entryByKey, nextBody, play3dOff } from "./levels.js";
+import { afterLevelBody, artFor, coverage, currentLevel, entryByKey, nextBody, play3dOff } from "./levels.js";
 import { startSession } from "./start.js";
 import { gradeActs, lessonEvidence } from "./grade.js";
 import { reactionFor } from "./react.js";
@@ -27,16 +29,21 @@ import { engineFor } from "../../src/play/engines/registry.ts";
 import { record as traceRecord } from "../trace/writer.js";
 
 const bad = (msg) => new HttpError(400, msg);
-const dbq = async (...a) => (await import("../db.js")).q(...a);
+/** Test seam (round 8): the child check and the db query the routes use; tests swap them inside a test and restore. */
+export const playDeps = { requireChild, q: async (...a) => (await import("../db.js")).q(...a) };
+const dbq = (...a) => playDeps.q(...a);
 
 function sessionOut(s) { return signSession(s); }
+/** round 8 P1/P2: the why of the current level's choice ({ choice, fact, source }[]), only when it departs from the default */
+export const becauseOut = (s) => (Array.isArray(s?.because) && s.because.length ? { because: s.because } : {});
 function doorsFor(s, entry, lang, name = "") {
   const hint = (d) => (lang === "en" ? (d === "garam" ? "one more like this" : "a bit harder") : lang === "hi" ? (d === "garam" ? "इसी तरह का एक और" : "थोड़ा मुश्किल") : d === "garam" ? "isi tarah ka ek aur" : "thoda mushkil");
-  const garam = currentLevel(nextBody(s, entry, "garam"), entry, name);
+  const g = nextBody(s, entry, "garam"), garam = currentLevel(g, entry, name);
   if (!garam) return [];
   const t = nextBody(s, entry, "teekha"), teekha = currentLevel(t, entry, name);
-  // a teekha that is the same level as garam is no choice (the fade could not go up): one door
-  return [{ door: "garam", level: garam, hint: hint("garam") }, ...(teekha && (teekha.levelId !== garam.levelId || teekha.fade !== garam.fade) ? [{ door: "teekha", level: { ...teekha, door: "teekha" }, hint: hint("teekha") }] : [])];
+  // a teekha that is the same level as garam is no choice (the fade could not go up): one door. Each door carries the
+  // round 8 because of the level behind it (the same record /next returns with that level)
+  return [{ door: "garam", level: garam, hint: hint("garam"), ...becauseOut(g) }, ...(teekha && (teekha.levelId !== garam.levelId || teekha.fade !== garam.fade) ? [{ door: "teekha", level: { ...teekha, door: "teekha" }, hint: hint("teekha"), ...becauseOut(t) }] : [])];
 }
 function seamOf(grade, level, moments, impasse) {
   if (impasse) return { kind: "impasse", facts: grade?.facts ?? {} };
@@ -51,7 +58,7 @@ export const routes = {
   "POST /api/play/start": async (req, res, body) => {
     const b = body && typeof body === "object" ? body : await readJson(req);   // the router already read the body
     if (!b?.childId) throw bad("childId required");
-    const { child } = await requireChild(req, b.childId);
+    const { child } = await playDeps.requireChild(req, b.childId);
     const r = await startSession(child, { skillId: b.skillId, topicId: b.topicId, goal: b.goal, lessonId: b.lessonId, lang: b.lang, art: b.art, fade: b.fade }, dbq);
     if (!r) return send(res, 404, { error: "no_play_for_skill" });
     // the world is drawn from the child's own ledger (the same truth the Garden/Sky map reads); a failed read draws every
@@ -59,7 +66,7 @@ export const routes = {
     let mapState = () => ({ shape: "not_started", recheck: false });
     // the world's ledger read and the parent's verb read run together
     const [truth, vChild] = await Promise.all([
-      import("../reports/truth.js").then(async (m) => ({ m, t: await m.loadTruth(child) })).catch(() => null),
+      import("../reports/truth.js").then(async (m) => ({ m, t: await m.loadTruth(child, { q: dbq }) })).catch(() => null),
       withVerb(child, dbq),
     ]);
     if (truth) try { mapState = mapStateFrom(truth.t, truth.m.MAP_SHAPE); } catch { /* ahead */ }
@@ -67,7 +74,7 @@ export const routes = {
     // release 12 flight recorder: the game mounted (inside a lesson, on the lesson's timeline)
     traceRecord("play.mount", { family: r.entry.family, mode: r.level?.mode ?? null, levelId: r.level?.levelId ?? null, skillId: b.skillId ?? null, topicId: r.entry.topicId ?? b.topicId ?? null,
       goal: b.goal ?? null, art: r.art?.art ?? r.art ?? null, lessonId: b.lessonId ?? null }, { ...(typeof b.lessonId === "string" && b.lessonId.length === 36 ? { sid: b.lessonId } : {}) });
-    send(res, 200, { sessionId: r.sessionId, level: r.level, art: r.art, bank: [], world, dress: baseSpec(r.session, r.level, vChild)?.spec ?? null, ...(play3dOff() ? { render: "2d" } : {}) });
+    send(res, 200, { sessionId: r.sessionId, level: r.level, art: r.art, bank: [], world, dress: baseSpec(r.session, r.level, vChild)?.spec ?? null, ...becauseOut(r.session), ...(play3dOff() ? { render: "2d" } : {}) });
   },
 
   /** the level a session token points at (the Studio renderer mounts a PlayArtifact from its sessionId) */
@@ -75,19 +82,19 @@ export const routes = {
     const b = body && typeof body === "object" ? body : await readJson(req);   // the router already read the body
     const s = verifySession(b?.sessionId);
     if (!s) throw bad("bad_session");
-    const { child } = await requireChild(req, s.childId);
+    const { child } = await playDeps.requireChild(req, s.childId);
     const entry = entryByKey(s.key);
     if (!entry) throw bad("stale_session");
     const level = currentLevel(s, entry, child?.first_name);
     if (!level) return send(res, 409, { error: "no_level" });
-    send(res, 200, { sessionId: b.sessionId, level, art: artFor(s, entry), dress: baseSpec(s, level, await withVerb(child, dbq))?.spec ?? null, ...(play3dOff() ? { render: "2d" } : {}) });
+    send(res, 200, { sessionId: b.sessionId, level, art: artFor(s, entry), dress: baseSpec(s, level, await withVerb(child, dbq))?.spec ?? null, ...becauseOut(s), ...(play3dOff() ? { render: "2d" } : {}) });
   },
 
   "POST /api/play/act": async (req, res, body) => {
     const b = body && typeof body === "object" ? body : await readJson(req);   // the router already read the body
     const s = verifySession(b?.sessionId);
     if (!s) throw bad("bad_session");
-    const { child } = await requireChild(req, s.childId);
+    const { child } = await playDeps.requireChild(req, s.childId);
     const entry = entryByKey(s.key);
     if (!entry) throw bad("stale_session");
     const level = currentLevel(s, entry, child?.first_name);
@@ -108,9 +115,10 @@ export const routes = {
     const evidenceToken = ended && s.lessonId && rows.length ? signEvidence({ childId: s.childId, lessonId: s.lessonId, levelId: level.levelId, rows }) : undefined;
     const seam = seamOf(g.grade, level, fresh, !!b.impasse);
     const seamToken = seam && s.lessonId ? signSeam({ childId: s.childId, lessonId: s.lessonId, kind: seam.kind, row: playFactsRow({ game: `${level.family}/${level.mode}`, ...seam.facts }) }) : undefined;
-    // the belief this level's first decision showed is the next level's focus (the current level's inputs never change)
+    // the belief this level's first decision showed is the next level's focus (the current level's inputs never change);
+    // round 8 P2: a clean first-try win steps the next level's band up, and each step's because rides to the next level
     const seen = ended ? rows.find((r) => r.misconceptionId)?.misconceptionId ?? null : null;
-    const s2 = { ...s, hist: history, ...(seen ? { nextFocus: seen } : {}) };
+    const s2 = afterLevelBody(s, { grade: ended ? g.grade : null, level, history });
     // release 12 flight recorder: every act's grade moment, and the level's outcome when it ends
     traceRecord(ended ? "play.outcome" : "play.act", { family: level.family, mode: level.mode, levelId: level.levelId, final: !!b.final, impasse: !!b.impasse,
       moments: fresh.map((m) => m.kind), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen } : {}),
@@ -124,7 +132,7 @@ export const routes = {
     const b = body && typeof body === "object" ? body : await readJson(req);   // the router already read the body
     const s = verifySession(b?.sessionId);
     if (!s) throw bad("bad_session");
-    const { child } = await requireChild(req, s.childId);
+    const { child } = await playDeps.requireChild(req, s.childId);
     const entry = entryByKey(s.key);
     if (!entry) throw bad("stale_session");
     const door = b.door === "teekha" ? "teekha" : "garam";
@@ -134,14 +142,14 @@ export const routes = {
     if (!level) return send(res, 409, { error: "no_level" });
     const art = artFor(next, entry);
     next.lastArt = art.art;
-    send(res, 200, { sessionId: sessionOut(next), level, art, bank: [], dress: baseSpec(next, level, await withVerb(child, dbq))?.spec ?? null, ...(play3dOff() ? { render: "2d" } : {}) });
+    send(res, 200, { sessionId: sessionOut(next), level, art, bank: [], dress: baseSpec(next, level, await withVerb(child, dbq))?.spec ?? null, ...becauseOut(next), ...(play3dOff() ? { render: "2d" } : {}) });
   },
 
   "POST /api/play/dress": async (req, res, body) => {
     const b = body && typeof body === "object" ? body : await readJson(req);   // the router already read the body
     const s = verifySession(b?.sessionId);
     if (!s) throw bad("bad_session");
-    const { child } = await requireChild(req, s.childId);
+    const { child } = await playDeps.requireChild(req, s.childId);
     const entry = entryByKey(s.key);
     if (!entry) throw bad("stale_session");
     const level = currentLevel(s, entry, child?.first_name);
