@@ -3,7 +3,9 @@
 //   node scripts/deploy-azure.mjs --gate             run the gates on HEAD (clean tree), stamp the sha, then deploy
 //   node scripts/deploy-azure.mjs                    deploy HEAD; REFUSES unless HEAD has a passing gate stamp
 //   node scripts/deploy-azure.mjs --dry-run [--gate] every check (pushed, gate stamp, app readable), then the plan; no write
-//   node scripts/deploy-azure.mjs --rollback         move 100% of traffic back to the previous revision (timed)
+//   node scripts/deploy-azure.mjs --rollback [--to REV]  move 100% of traffic back to REV, else to the revision labelled
+//                                                    `previous`; with neither it refuses, never guesses (PLAT-03)
+//   --force: deploy inside the X37 evening freeze (18:00-21:30 IST; scripts/release.mjs checks it once and passes --force)
 //   flags: --app NAME (default taxila-web) · --image-tag TAG (deploy an image already in ACR; skips the build and the
 //          pushed check). TAG must be a commit sha prefix (the tags this script builds are); the gate is checked for
 //          EXACTLY that commit, never for HEAD, and --stamp-sha, if given, must name the same commit. Any other tag is
@@ -47,12 +49,14 @@ import { execSync, spawnSync } from "child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { ROOT, acrBuild, arm, loadEnv, until, SUB_PATH } from "../infra/azure.mjs";
 import { REPO, gateEvidence, migrationsGate, runGates, shaOfTag } from "../infra/gate.mjs";
+import { checkMigrationsEvidence, privateDbHost, rollbackTarget, webFreezeRefusal } from "./deploy-core.mjs";
 
 loadEnv();
 const argv = process.argv.slice(2);
 const flag = (f) => argv.includes(f);
 const opt = (f, d) => { const i = argv.indexOf(f); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : d; };
-const DRY = flag("--dry-run"), GATE = flag("--gate"), ROLLBACK = flag("--rollback");
+const DRY = flag("--dry-run"), GATE = flag("--gate"), ROLLBACK = flag("--rollback"), FORCE = flag("--force");
+const TO = opt("--to", null);
 const APP = opt("--app", "taxila-web");
 const optAll = (f) => argv.flatMap((a, i) => (a === f && argv[i + 1] ? [argv[i + 1]] : []));
 const RG = opt("--rg", process.env.AZURE_RESOURCE_GROUP);
@@ -112,23 +116,16 @@ async function servedBy(url, rev, { n = 3, maxMs = 180_000 } = {}) {
 }
 function record(entry) { try { mkdirSync(ROOT + "node_modules/.cache", { recursive: true }); writeFileSync(LOG, JSON.stringify({ at: new Date().toISOString(), app: APP, ...entry }) + "\n", { flag: "a" }); } catch { /* best effort */ } }
 
-/** The revision currently taking traffic, and the one to roll back to. */
-function trafficRoles(app, revs) {
-  const tr = app.properties.configuration.ingress.traffic || [];
-  const byWeight = [...tr].filter((t) => t.revisionName).sort((a, b) => b.weight - a.weight);
-  const current = byWeight[0]?.revisionName || app.properties.latestReadyRevisionName;
-  const labelled = tr.find((t) => t.label === "previous" && t.revisionName !== current)?.revisionName;
-  const fallback = revs.filter((r) => r.name !== current && r.properties.healthState !== "Unhealthy")
-    .sort((a, b) => Date.parse(b.properties.createdTime) - Date.parse(a.properties.createdTime))[0]?.name;
-  return { current, previous: labelled || fallback || null };
-}
+/** The revision currently taking traffic, and the one to roll back to (scripts/deploy-core.mjs rollbackTarget). */
+const trafficRoles = (app, revs) => rollbackTarget({ traffic: app.properties.configuration.ingress.traffic || [], revisions: revs,
+  latestReady: app.properties.latestReadyRevisionName, to: TO });
 
 async function rollback() {
   const app = await getApp();
   if (app.properties.configuration.activeRevisionsMode !== "Multiple") throw new Error(`${APP} is in ${app.properties.configuration.activeRevisionsMode} revision mode; --rollback needs a deploy by this script first`);
   const revs = await listRevs();
-  const { current, previous } = trafficRoles(app, revs);
-  if (!previous) throw new Error("no previous revision to roll back to");
+  const { current, previous, why } = trafficRoles(app, revs);
+  if (!previous) throw new Error(`no revision to roll back to: ${why}`);
   console.log(`rollback ${APP}: ${current} → ${previous}`);
   if (DRY) return console.log("dry run: no change");
   let prev = await getRev(previous);
@@ -266,17 +263,12 @@ async function checkLaneDeployments(env) {
  */
 async function migrationsGateFor(dbUrl, sha) {
   const host = (() => { try { return new URL(dbUrl).hostname; } catch { return ""; } })();
-  if (!/\.postgres\.database\.azure\.com$/.test(host)) return migrationsGate(dbUrl, sha);
+  if (!privateDbHost(host)) return migrationsGate(dbUrl, sha);
   if (!MIG_EVIDENCE) throw new Error(`migrations gate: ${host} is private (VNet only); run \`node scripts/region/db-copy.mjs --check-migrations --sha ${sha.slice(0, 7)}\` and pass --migrations-evidence <its report>`);
   if (!existsSync(MIG_EVIDENCE)) throw new Error(`migrations gate: ${MIG_EVIDENCE} not found`);
   const ev = JSON.parse(readFileSync(MIG_EVIDENCE, "utf8"));
-  if (ev.targetHost !== host) throw new Error(`migrations gate: evidence is for ${ev.targetHost}, the target is ${host}`);
-  if (!(Date.now() - Date.parse(ev.at) < 6 * 3600_000)) throw new Error(`migrations gate: evidence from ${ev.at} is older than 6 h`);
   const files = sh(`git ls-tree --name-only ${sha} db/migrations/`).split("\n").map((f) => f.split("/").pop()).filter((f) => f.endsWith(".sql"));
-  const have = new Set(ev.targetMigrations || []);
-  const missing = files.filter((f) => !have.has(f));
-  if (missing.length) throw new Error(`migrations gate: ${host} lacks ${missing.join(", ")} (evidence ${ev.at}). Refusing to deploy ${sha.slice(0, 7)}.`);
-  return [];
+  return checkMigrationsEvidence(ev, { host, files, sha7: sha.slice(0, 7) });
 }
 
 /**
@@ -481,11 +473,13 @@ async function deploy() {
   for (const r of await listRevs()) {
     if (r.properties.active && !keep.has(r.name)) await arm("POST", `${APP_PATH}/revisions/${r.name}/deactivate?${API}`).then(() => console.log(`  deactivated ${r.name}`), (e) => console.warn(`  deactivate ${r.name}: ${e.message}`));
   }
-  console.log(`live: https://${cfg.ingress.fqdn} serves ${newRev} (image ${sha}); rollback: node scripts/deploy-azure.mjs --rollback (${elapsed()})`);
+  console.log(`live: https://${cfg.ingress.fqdn} serves ${newRev} (image ${sha}); rollback: node scripts/deploy-azure.mjs --rollback --to ${prev} (${elapsed()})`);
   record({ action: "deploy", sha, rev: newRev, prev, result: "live", seconds: (Date.now() - t0) / 1000 });
 }
 
 try {
+  const frozen = webFreezeRefusal({ app: APP, rollback: ROLLBACK, dry: DRY, force: FORCE });
+  if (frozen) throw new Error(frozen);
   if (ROLLBACK) await rollback();
   else await deploy();
 } catch (e) {

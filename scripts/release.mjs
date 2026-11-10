@@ -132,10 +132,10 @@ const t0 = Date.now();
 if (ROLLBACK) {
   const rb = { steps: state.rollback ?? {} };
   const r = await runSteps({ steps, state: rb, exec: { cmd, fn: {} }, save: (s) => { state.rollback = s.steps; save(state); }, log: console.log });
-  console.log(r.ok ? `rolled back ${s7}: web on previous, worker + jobs on ${state.steps.capture.data.workerTag} (${Math.round((Date.now() - t0) / 1000)} s)` : `ROLLBACK STOPPED at ${r.failed}: ${r.error}`);
+  console.log(r.ok ? `rolled back ${s7}: web on ${state.steps.capture?.data?.webRevision ?? "previous"}, worker + jobs on ${state.steps.capture.data.workerTag} (${Math.round((Date.now() - t0) / 1000)} s)` : `ROLLBACK STOPPED at ${r.failed}: ${r.error}`);
   process.exit(r.ok ? 0 : 1);
 }
 const r = await runSteps({ steps, state, exec: { cmd, fn }, save, log: console.log });
 console.log(r.ok ? `released ${s7} in ${Math.round((Date.now() - t0) / 1000)} s (${r.ran.length} steps run, ${r.skipped.length} resumed past)`
-  : `RELEASE STOPPED at ${r.failed}: ${r.error}\n  re-run \`node scripts/release.mjs ${s7}\` to resume there${["web", "cohort", "worker"].includes(r.failed) ? `, or \`node scripts/release.mjs ${s7} --rollback\`` : ""}`);
+  : `RELEASE STOPPED at ${r.failed}: ${r.error}\n  re-run \`node scripts/release.mjs ${s7}\` to resume there${["web", "cohort", "worker"].includes(r.failed) ? `, or \`node scripts/release.mjs ${s7} --rollback\` (the web goes to the revision captured before the release)` : ""}`);
 process.exit(r.ok ? 0 : 1);
