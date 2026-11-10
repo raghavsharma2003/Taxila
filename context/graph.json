@@ -27414,6 +27414,119 @@
    "at": "2026-11-10",
    "title": "Code trace on int/r6 (integration 24 tree), read-only, by a Sonnet agent for main, n = one pass over server/routes/lesson.js, server/director/state.js, script.js, items.js, server/content/next-topic.js, server/learner/**, server/play/**, server/stagecraft/**, server/forge3/**: the script walk reads no learner state (walks every beat of every scripted skill in kit order, state.js:1282-1290); per-child variation in a scripted lesson is the hook's interest slot (exact label match; 4 onboarding tiles have no slot, 2 slots name tiles that do not exist), the language, and a friend name picked from a fixed list; the lesson brief passes only wrapAt and hardStopAt and is usually null (TAXILA_CONDUCTOR_PLAN off); script cards and game levels do write kt_evidence (script:<skill>:..., play:<levelId>) and the ledger folds them; no generated visual can be shown (nothing sets a verdict; judgeArtifact has no caller); 4 scripts are live and 30 staged. Not verified by the trace: whether 'simpler used' counts as assisted, whether a script give-up weighs as a kit leave, the writer's params_version default (kt-r2) against the ledger's kt-r3, live legal modes.",
    "source": "inbox/r8-main-1.json"
+  },
+  {
+   "id": "ms-release-e807f07",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "Released e807f07 with scripts/release.mjs: web taxila-web--se807f07-4jnx (was taxila-web--sc7a4798-cx0n), worker + canary/nightly jobs on taxila-worker:e807f07 (was 3cd45e8); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs e807f07 --rollback.",
+   "source": "inbox/release-e807f07.json"
+  },
+  {
+   "id": "dc-r16-production-is-the-test-build-2026-11-10",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Release 16 (e807f07, integration 24) replaced production on 2026-11-10 on the owner's word that nobody is using it; production is the build the owner tests, and no staging app is created (the owner offered $40-50 a month for one; main declined). The 16 pending production migrations (031, 034-047, 050) were applied through the Neon connector, chosen by the owner over reading the app's secret: backup branch pre-release-e807f07 (no compute) first, a rehearsal of all 49 statements on branch rehearse-release-e807f07, then one all-or-nothing transaction on main (project taxila-us), with schema_migrations rows written as scripts/migrate-core.mjs writes them; verified 46 rows. release.mjs ran with --migrate skip and --force (the X37 evening freeze protects lessons in progress; there are none). Why: the release had waited since director16 on a Neon key the owner did not want to hand over; the connector needs no key in the repo or the chat. Reverse if: a real family starts using production (then: staging app via scripts/staging.mjs before any further release, the freeze is honoured again, and migrations go through scripts/migrate.mjs with a key in the secret store); or a migration applied by hand is found to differ from what migrate.mjs would have done (then restore from the backup branch and re-apply by script).",
+   "source": "inbox/r7-main-39.json"
+  },
+  {
+   "id": "rj-release-blocked-on-neon-key",
+   "kind": "rejection",
+   "at": "2026-11-10",
+   "title": "Waiting on NEON_API_KEY and NEON_PROJECT_ID to release round 7 (listed as the owner's item from director16 to director18, about five days). What broke: the release sat blocked on a key the owner did not want to supply ('key rotation I don't want to do'), while the session held a Neon connector able to take the backup branch and run the same statements. Also wrong in the record: OWNER.md said the block was 'production migration 041'; production was at 030 and 16 files were pending, not 8. The count was never read from production's schema_migrations until release day. Lesson: read the target's state before naming a blocker, and ask the owner for the decision (may I use the connector?) rather than for a key.",
+   "source": "inbox/r7-main-39.json"
+  },
+  {
+   "id": "dc-r7-picture-turn-once",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Studio's P6 (main's v6.10, dc-r7-script-walk-v6-10; director18's 9 contradictions: a picture line spoken over a board 'kept' with no view — line from heldAltOf at the preselect, drawing from heldBoard at the take). board-first pictureTurn(ask, { keepRef, keepPage }) returns { board, view, line, script, layout } in one call: the held board left, the view right, the line built from that view; no view (none buildable, or the split refused) → view null AND line null. A turn with a view is never kept. heldBoard takes the decided result as `picture` and draws exactly that; the seam caches the preselect's decision per intent and the take uses it; heldAltOf is the same call's view and line. New views: wholes drawn as strips → their circles; equal groups → a grid (rows = groups). Fixtures (tests/r8-picture-turn.test.mjs): every card/ask/worked board of the four pilots — fraction-parts 13/13, wholes 17/17, fraction-bars 16/19, fraction-line 42/65, measured 19/20, equal-groups 8/10, shade-grid 1/4, compare 0/3, shape@1 0/7 — each with a view whose line names only what the view draws, or none and no line (reasons listed in the test). Also: a new held board never goes up under a leading aside joint (switched in at her first unit part; joints only → the board up stays). Brain patch to-brain/021-picture-turn-once.patch (harness decides once, records row.held.layout) supersedes Studio's 019-held-layout-record (deleted). Reverse per main: any picture line with no view drawn in director19 → pictures answered by the held board and one honest line until every pilot template passes.",
+   "source": "inbox/r7-studio-36.json"
+  },
+  {
+   "id": "cp-r8-knows",
+   "kind": "component",
+   "at": "2026-11-10",
+   "title": "server/director/knows.js: the one pure reader (no I/O, no model, clock injected). planFor({ script, kit, skills, history, mixups, brief, interests, memory, now }) → { allKnown, opener, hookSlot, compress, firstCard, checkOrder, ladderOrder, prereqCheck, because }; per-turn remedyNow (the classifier's mix-up, else the authored target); topicFor (K5, K8: topic choice, made before a lesson exists); assertWalkExplained (the predicate tests use: a walk that departs from the script's default order or pick with no matching because record throws). knows-words.js turns because records into the parent's lines (Hinglish/English, 2+ shapes per kind, no ids). Not yet called by state.js or lesson.js (round 8 part D waits on Brain's v6.10).",
+   "source": "inbox/r8-loop-1.json"
+  },
+  {
+   "id": "ms-r8-knows-her-2026-11-10",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "evals/knows-her (deterministic, no model; n = 4 pilot topics × 5 simulated children, 2026-11-10): the no-history child gets exactly the script's default walk with an empty because on 4/4 topics; meera (skill 1 learned + delayed check, 12-day gap) vs kabir (last lesson closed badly, open ledger mix-up, wheel-spin with a cross-topic prerequisite where one exists, likes trains and drawing) differ in 5, 6, 6, 5 named ways (c4-ch05-t01, c5-ch02-t01, c5-ch02-t02, c6-ch06-t01), each traced to a learner fact; a games-only child (play: evidence) differs from the new child in 2 ways on every topic (first card, her mix-up's check first); every walk passes the because predicate and dropping any applied record makes it fail. Method limit: the walk is walk.mjs, a pure model of state.js's script walk, not the product's step(); the learner facts are fixtures in knows.js's input shape.",
+   "source": "inbox/r8-loop-1.json"
+  },
+  {
+   "id": "dc-r8-k3-ledger-asks-classifier-remediates",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "K3 (main's ruling 2026-11-10): her open ledger mix-up (needsVerify or p >= 0.7) changes what is ASKED: a check whose authored target is that mix-up is posed first among the skill's checks (because, source 'ledger'). Remediation answers only what she just showed: the mix-up the classifier named on that answer when the skill has a remediation for it, else the card's authored target. A ledger tier that remediated a mix-up the wrong answer did not show was built and dropped before merge. Reverse if a judged run shows the probe-first check repeatedly opening a skill on a card she cannot yet reach.",
+   "source": "inbox/r8-loop-1.json"
+  },
+  {
+   "id": "dc-r8-k7-first-card-only",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "K7 (opener after a gap of 7+ days, from brief.opener or memory.lastActiveDay) is one easier card at the head of the warm-up, after any due delayed check (rj-truth-retention-order-starves-check); the plan's 'no new skill in the first three turns' is not built, because greet + warm-up already fill those turns in a scripted lesson. K2 (success first) chooses the same card slot (the easiest unseen kit item of a skill she has met) and also orders walked ladders easiest first. Reverse if a judged gap-return lesson reaches a new skill's explain inside its first three child turns.",
+   "source": "inbox/r8-loop-1.json"
+  },
+  {
+   "id": "fd-r8-k5-k8-are-topic-choice",
+   "kind": "finding",
+   "at": "2026-11-10",
+   "title": "K5 (no new skill before a test or in week one) and K8 (scripted topic first) cannot live in the lesson walk: the topic is chosen before planFor runs (reports/truth.js nextTopicOf → content/next-topic.js pickTopic / revisionPick, Learning's files). knows.js topicFor is the pure chooser; its call site is a patch to Learning. K6 likewise needs shared/interests.js (Learning's) to carry a per-interest `near` list; knows.js holds the table (NEAR) and reads the registry's `near` first once the patch lands.",
+   "source": "inbox/r8-loop-1.json"
+  },
+  {
+   "id": "rj-r8-k3-ledger-remediation",
+   "kind": "rejection",
+   "at": "2026-11-10",
+   "title": "Tried (round 8 Loop, before merge): remediating her open ledger mix-up instead of the card's authored target when the classifier named nothing on a wrong answer. What broke (design review, no run): it answers a mix-up the wrong answer did not show, e.g. a count-the-marks card missed gets the 'fractions are not numbers' remediation. Instead: the ledger mix-up's check is asked first (dc-r8-k3-ledger-asks-classifier-remediates).",
+   "source": "inbox/r8-loop-1.json"
+  },
+  {
+   "id": "fd-r8-play-never-compresses",
+   "kind": "finding",
+   "at": "2026-11-10",
+   "title": "Play alone never certifies a delayed check (the ledger's rule: a game row carries weight but is never the delayed check and never sets unaided), so a child whose record comes only from games can never have a skill compressed by K1. Her games still change the lesson: the first card (a met skill's easiest unseen item) and her open mix-up's check asked first (evals/knows-her, child 'player', 2 named differences on every pilot topic). Kept as is (main, 2026-11-10).",
+   "source": "inbox/r8-loop-1.json"
+  },
+  {
+   "id": "r7-learner-home-play-rule",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "A level won at home is a game act: game weight, chance weight for one-decision goals, never unaided, never the delayed check, capped at log 3 and one learning step per skill per day; its trail sets the outcome, not the weight",
+   "source": "inbox/r7-audit-learner-3.json"
+  },
+  {
+   "id": "r7-learner-recheck-opener",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "A compressed opener's first check card (shapeId recheck): a right answer is a re-check (never a second learned); one miss sends the skill back to practising with the delayed flag cleared",
+   "source": "inbox/r7-audit-learner-3.json"
+  },
+  {
+   "id": "r7-learner-probe-for-mixup",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "A right answer on any card whose targets include a mix-up discriminates it; a card posed to verify a mix-up names it in probeFor",
+   "source": "inbox/r7-audit-learner-3.json"
+  },
+  {
+   "id": "dc-r8-approval-lane-studio",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "The approval lane (STUDIO-11; main's go on docs/design/round7/studio/APPROVAL-LANE.md; layer 3 of dc-r8-selection-before-generation), built. A generated Stagecraft spec reaches a child only when approved OFFLINE: scripts/approve-generate.mjs (the one paid step, main runs it with the key; ≤ 2 attempts a topic, hard --usd cap, manifest of each call's deployment, tokens and cost), scripts/approve-check.mjs (today's predicate checks and a render in the real Desk tray at p360, p412 and l1366, writing a judge packet), a separate Claude judge on rubric v1 (data/studio-approved/JUDGE-PROMPT.md: the images, the spec as data, the cards and keys, the mix-up, never the author's reasoning), scripts/approve-store.mjs (data/studio-approved/<topic>/<id>.json, the commit is the approval; the verdict, the prompt's sha256 and the images' sha256 kept). The tray gate accepts an approved hash at the sizes its render passed (server/studio/approved.js approvedVerdict); the runtime calls no judge. Each piece is FOR { topic, skill, misconceptionId, beat: rem:<misconceptionId> } with a `because`: the seam reveals it only on the scripted remediation for that mix-up marked `piece` (Brain to-brain/022, Learning to-learning/006); any other child gets the script's board. Reverse if approved pieces are judged worse than the script's boards in a director run.",
+   "reverse": "an approved piece is judged worse than the script's own board at its remediation in a director run",
+   "source": "inbox/r7-studio-37.json"
+  },
+  {
+   "id": "ms-r8-catalogue-claude-sample",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "The catalogue under the Claude rubric (evals/studio-catalogue/claude-sample-2026-11-10): 20 of 369 checked catalogue games, seeded sample (seed 20261110), rendered at p360 / p412 / l1366 and judged by a separate Claude agent (Opus) on rubric v1. 4/20 pass; 11/20 (55%) have a content fault (off topic 4, register 3, wrong key 2, wrong fact 1, answer given away 1); 5 more fail on readability only (17 unreadable faults in 13 pieces, mostly repeated engine layouts). The old DeepSeek-V4-Flash check passed all 20. Also: the tray certificates (certs/catalogue.json, 2026-10-09) are stale — every sampled game fails Q1/Q4 at p360 on today's render, where the certificate says it passes.",
+   "source": "inbox/r7-studio-37.json"
   }
  ],
  "edges": [
@@ -43931,6 +44044,76 @@
    "src": "dc-owner-direction-is-main-loops-2026-11-10",
    "rel": "constrains",
    "dst": "dc-r8-selection-before-generation"
+  },
+  {
+   "src": "dc-r16-production-is-the-test-build-2026-11-10",
+   "rel": "measured_by",
+   "dst": "ms-release-e807f07"
+  },
+  {
+   "src": "rj-release-blocked-on-neon-key",
+   "rel": "constrains",
+   "dst": "dc-r16-production-is-the-test-build-2026-11-10"
+  },
+  {
+   "src": "dc-owner-direction-is-main-loops-2026-11-10",
+   "rel": "constrains",
+   "dst": "dc-r16-production-is-the-test-build-2026-11-10"
+  },
+  {
+   "src": "dc-r7-picture-turn-once",
+   "rel": "part_of",
+   "dst": "dc-r7-held-board"
+  },
+  {
+   "src": "dc-r7-picture-turn-once",
+   "rel": "supersedes",
+   "dst": "dc-r7-held-board-v69-studio"
+  },
+  {
+   "src": "cp-r8-knows",
+   "rel": "part_of",
+   "dst": "dc-r8-one-reader-with-because"
+  },
+  {
+   "src": "cp-r8-knows",
+   "rel": "measured_by",
+   "dst": "ms-r8-knows-her-2026-11-10"
+  },
+  {
+   "src": "dc-r8-k3-ledger-asks-classifier-remediates",
+   "rel": "part_of",
+   "dst": "dc-r8-one-reader-with-because"
+  },
+  {
+   "src": "dc-r8-k7-first-card-only",
+   "rel": "part_of",
+   "dst": "dc-r8-one-reader-with-because"
+  },
+  {
+   "src": "fd-r8-k5-k8-are-topic-choice",
+   "rel": "constrains",
+   "dst": "dc-r8-one-reader-with-because"
+  },
+  {
+   "src": "dc-r8-k3-ledger-asks-classifier-remediates",
+   "rel": "supersedes",
+   "dst": "rj-r8-k3-ledger-remediation"
+  },
+  {
+   "src": "fd-r8-play-never-compresses",
+   "rel": "constrains",
+   "dst": "cp-r8-knows"
+  },
+  {
+   "src": "dc-r8-approval-lane-studio",
+   "rel": "measured_by",
+   "dst": "ms-r8-catalogue-claude-sample"
+  },
+  {
+   "src": "dc-r8-approval-lane-studio",
+   "rel": "constrains",
+   "dst": "stagecraft-spec-default-deployment"
   }
  ]
 }

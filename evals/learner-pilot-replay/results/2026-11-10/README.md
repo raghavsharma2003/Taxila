@@ -19,7 +19,9 @@ Reproduce: `node evals/learner-pilot-replay/replay.mjs --root <checkout> --label
   all 12. The support level reads "worked" (pKnown < 0.35) for every one.
 - **Weak (one right in four):** ends lower (0.39-0.71, was 0.55-0.98). One skill crosses into "weak". Several weak
   children now answer fewer cards in three lessons (the Director wraps or moves on differently once the estimate is low).
-- **All right, mixed:** estimates within 0.003. Display unchanged except one mixed skill (c5-maths-ch02-t02 s1: learned today → practising); I have not traced why that one skill changes.
+- **All right, mixed:** estimates within 0.003. Display unchanged except one mixed skill (c5-maths-ch02-t02 s1: learned today → practising). Traced in
+  `docs/design/round7/audit/learner-evidence.md`, item 8: the missed cards no longer add a learning step, so the estimate
+  reaches 0.95 only after her unaided right answers are behind her.
 - **Not here:** LEARN-07 (placement) is a separate run below. LEARN-26 is a write-path guard and moves no estimate.
 
 ## Per child and skill

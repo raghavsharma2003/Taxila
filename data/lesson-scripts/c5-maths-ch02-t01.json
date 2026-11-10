@@ -48,7 +48,7 @@
    "hi": "dedh",
    "en": "one and a half"
   }
- ],
+ ], "joints": { "asidePark": [{"hi": "Achha, {aside} wali baat yaad rahegi. Pehle is line par apna mark dhoondh lete hain.", "en": "Okay, I'll keep the {aside} bit in mind. First let's find our mark on this line."}, {"hi": "{aside} ki baat thodi der mein karenge. Abhi line wahin hai, chalo uspar chalte hain.", "en": "We'll talk about {aside} in a little while. The line is still here, let's walk it."}, {"hi": "Wah, {aside}! Use sambhaal ke rakhti hoon, pehle yeh gaps gin lete hain.", "en": "Oh, {aside}! I'll keep that safe; first let's count these gaps."}], "asideReturn": [{"hi": "Ab tumhari baat: {said}. Uske baare mein aur batao na.", "en": "Now your thing: {said}. Tell me more about it."}, {"hi": "Tumne kaha tha {said}. Usmein tumhe sabse mazedaar kya laga?", "en": "You said {said}. What did you find most fun about it?"}, {"hi": "Woh {said} wali baat adhoori reh gayi thi. Phir kya hua?", "en": "That {said} bit was left halfway. What happened then?"}], "hindiSwitch": [{"hi": "Theek hai, ab Hindi mein line par chalte hain.", "en": "Sure, let's walk the line in English now."}, {"hi": "Achha, yeh Hindi mein bolti hoon. Line aur marks wahi rahenge.", "en": "Okay, I'll say this in English. The line and the marks stay the same."}, {"hi": "Haan, Hindi mein hi samjhaati hoon.", "en": "Yes, I'll explain in English."}], "askAgain": [{"hi": "Mujhe theek se sunai nahi diya. Kaunsa mark, ek baar phir bolo.", "en": "I didn't quite hear that. Which mark? Say it once more."}, {"hi": "Thoda chhoot gaya mujhse. Apna jawab dobara batao na.", "en": "I missed a bit there. Tell me your answer again."}, {"hi": "Awaaz saaf nahi aayi. Aaram se phir se bolo.", "en": "Your voice didn't come through clearly. Say it again, slowly."}] },
  "skills": [
   {
    "skillId": "c5-maths-ch02-t01-s1",
@@ -123,38 +123,9 @@
     {
      "id": "e2",
      "convey": "same 0 to 1, now 3 marks inside → 4 equal gaps (gaps = marks inside + 1); bottom number = number of equal gaps in 0 to 1; first mark from 0 = end of 1 gap = 1/4; the name comes from gaps, not marks",
-     "mustSay": [
-      {
-       "hi": "3 marks",
-       "en": "3 marks"
-      },
-      {
-       "hi": "4 barabar gaps",
-       "en": "4 equal gaps"
-      },
-      {
-       "hi": "1/4",
-       "en": "1/4"
-      }
-     ],
-     "board": {
-      "template": "fraction-line@1",
-      "params": {
-       "dens": [
-        4,
-        8
-       ],
-       "from": 0,
-       "to": 1,
-       "marks": [
-        [
-         1,
-         4
-        ]
-       ]
-      }
-     },
-     "point": { "hi": "Wahi 0 se 1 ki line, par ab upar 3 marks hain. Marks mat gino, gaps gino: 4 barabar gaps. Toh 0 ke baad pehla mark hai 1/4.", "en": "Same line from 0 to 1, but now there are 3 marks on top. Don't count the marks, count the gaps: 4 equal gaps. So the first mark after 0 is 1/4." },
+     "mustSay": [{"hi": "4 marks", "en": "4 marks"}, {"hi": "5 barabar gaps", "en": "5 equal gaps"}, {"hi": "1/5", "en": "1/5"}],
+     "board": { "template": "fraction-line@1", "params": {"dens": [5, 8], "from": 0, "to": 1, "marks": [[1, 5]]} },
+     "point": { "hi": "Wahi 0 se 1 ki line, par ab upar 4 marks hain. Marks mat gino, gaps gino: 5 barabar gaps. Toh 0 ke baad pehla mark hai 1/5.", "en": "Same line from 0 to 1, but now there are 4 marks on top. Don't count the marks, count the gaps: 5 equal gaps. So the first mark after 0 is 1/5." },
      "ask": {
       "prompt": { "hi": "Ab line ke neeche dekho. Wahan 0 aur 1 ke beech 7 marks hain, sab barabar doori par. Neeche line kitne barabar gaps mein bati hai?", "en": "Now look under the line. There are 7 marks between 0 and 1, all evenly spaced. How many equal gaps does that make below?" },
       "key": "8",
@@ -167,9 +138,9 @@
       "targets": "c5-maths-ch02-t01-m-count-marks",
       "wrongIfMis": "7",
       "why": { "hi": "beech ke marks se gaps hamesha ek zyada, toh 7 marks ke 8 gaps", "en": "there's always one more gap than marks in between, so 7 marks make 8 gaps" },
-      "board": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 1, "marks": [[1, 4]]} }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 1} }
+      "board": { "template": "fraction-line@1", "params": {"dens": [5, 8], "from": 0, "to": 1, "marks": [[1, 5]]} }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [5, 8], "from": 0, "to": 1} }
      },
-     "simpler": { "hi": "Upar 3 marks the aur gaps 4, yaani gaps ek zyada. Neeche ke 7 marks par bhi yahi chalega.", "en": "On top there were 3 marks and 4 gaps, one more gap. The same works for the 7 marks below." }
+     "simpler": { "hi": "Upar 4 marks the aur gaps 5, yaani gaps ek zyada. Neeche ke 7 marks par bhi yahi chalega.", "en": "On top there were 4 marks and 5 gaps, one more gap. The same works for the 7 marks below." }
     },
     {
      "id": "e3",

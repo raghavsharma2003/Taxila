@@ -4,14 +4,23 @@
 const FRIENDS = ["Zoya", "Kabir", "Meera", "Arjun", "Ishaan", "Tara"];
 const FRIENDS_F = ["Zoya", "Meera", "Tara", "Diya"];
 const FRIENDS_M = ["Kabir", "Arjun", "Ishaan", "Aman"];
-const pickNot = (list, me) => list.find((n) => n.toLowerCase() !== me) ?? list[0];
+/** The same names in Devanagari, for a Hindi string (CD-17: the Hindi kits named the friend रिया, a name that was never a slot). */
+export const DEVANAGARI = Object.freeze({ Zoya: "ज़ोया", Kabir: "कबीर", Meera: "मीरा", Arjun: "अर्जुन", Ishaan: "ईशान", Tara: "तारा", Diya: "दीया", Aman: "अमन" });
+/** A string is Hindi when it has more Devanagari letters than Latin ones. */
+const isDevanagari = (t0) => { const t = t0.replace(/\{friend[FM]?\}/g, ""); return (t.match(/[\u0900-\u097F]/g)?.length ?? 0) > (t.match(/[A-Za-z]/g)?.length ?? 0); };
+// the child's own name, in either script, is never picked
+const pickNot = (list, me) => list.find((n) => n.toLowerCase() !== me && DEVANAGARI[n].normalize("NFC") !== me) ?? list[0];
 
-/** A string with every {friend} / {friendF} / {friendM} slot filled (unchanged when it has none). */
+/**
+ * A string with every {friend} / {friendF} / {friendM} slot filled (unchanged when it has none). A Hindi (Devanagari) string
+ * gets the name in Devanagari; the English and Hinglish prompts of the same item get the same friend in Latin letters.
+ */
 export function fillFriend(text, childName = "") {
   const t = String(text ?? "");
   if (!t.includes("{friend")) return text;
-  const me = String(childName ?? "").trim().toLowerCase();
-  return t.replaceAll("{friendF}", pickNot(FRIENDS_F, me)).replaceAll("{friendM}", pickNot(FRIENDS_M, me)).replaceAll("{friend}", pickNot(FRIENDS, me));
+  const me = String(childName ?? "").trim().toLowerCase().normalize("NFC");
+  const name = (list) => { const n = pickNot(list, me); return isDevanagari(t) ? DEVANAGARI[n] : n; };
+  return t.replaceAll("{friendF}", name(FRIENDS_F)).replaceAll("{friendM}", name(FRIENDS_M)).replaceAll("{friend}", name(FRIENDS));
 }
 
 const FILLED = new WeakMap();

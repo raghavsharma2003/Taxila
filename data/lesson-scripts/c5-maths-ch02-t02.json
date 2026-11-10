@@ -16,7 +16,7 @@
   { "hi": "chhota", "en": "smaller" },
   { "hi": "ek chauthai", "en": "one quarter" },
   { "hi": "aadha", "en": "one half" }
- ],
+ ], "joints": { "asidePark": [{"hi": "Achha, {aside} wali baat yaad rakhti hoon. Pehle yeh do hisse tol lete hain.", "en": "Okay, I'll remember the {aside} bit. First let's weigh up these two pieces."}, {"hi": "{aside} ki baat thodi der mein karenge, pakka. Abhi yeh mukabla poora karte hain.", "en": "We'll talk about {aside} in a little while, promise. Let's finish this comparison first."}, {"hi": "Wah, {aside}! Use sambhaal ke rakhi. Chalo, pehle dekhein kaunsa tukda bada hai.", "en": "Oh, {aside}! I've kept that safe. Let's first see which piece is bigger."}], "asideReturn": [{"hi": "Ab tumhari baat: tumne bataya tha {said}. Uske baare mein aur batao.", "en": "Now your thing: you told me {said}. Tell me more about it."}, {"hi": "Tumne {said} kaha tha na? Usmein sabse achha kya laga?", "en": "You said {said}, didn't you? What did you like best?"}, {"hi": "Chalo, ab woh {said} wali baat. Aage kya hua?", "en": "Okay, now the {said} part. What happened next?"}], "hindiSwitch": [{"hi": "Theek hai, ab Hindi mein tukde milaate hain.", "en": "Sure, let's compare the pieces in English now."}, {"hi": "Achha, yeh Hindi mein bolti hoon. Patti wahi rahegi.", "en": "Okay, I'll say this in English. The bars stay the same."}, {"hi": "Haan, Hindi mein hi chalte hain.", "en": "Yes, English it is."}], "askAgain": [{"hi": "Mujhe theek se sunai nahi diya. Kaunsa bada, ek baar phir bolo.", "en": "I didn't quite hear that. Which one is bigger? Say it once more."}, {"hi": "Thoda sa chhoot gaya. Apna jawab dobara batao na.", "en": "I missed a bit of that. Tell me your answer again."}, {"hi": "Awaaz saaf nahi aayi. Aaram se phir se bolo.", "en": "Your voice didn't come through clearly. Say it again, slowly."}] },
  "skills": [
   {
    "skillId": "c5-maths-ch02-t02-s1",
@@ -49,7 +49,7 @@
       "accept": ["chhota", "chhota hoga", "small", "smaller than before"],
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
       "wrongIfMis": "bigger",
-      "why": { "hi": "2 patti, lambai ek hi, par neeche wali 8 mein bati hai, toh uska har hissa chhota", "en": "2 bars of one length, but the lower one has 8 parts, so each of its parts is smaller" },
+      "why": { "hi": "dono patti barabar lambi hain, par upar wali 4 hisson mein hai, neeche wali 8 mein, isliye neeche ka hissa chhota hai", "en": "both bars are equally long, but the top one has 4 parts, the lower 8, so a lower part is smaller" },
       "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 1, "label": "1/4"}, {"parts": 8, "shade": 0, "label": "?"}]} }, "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 4, "shade": 1, "label": "1/4" }, { "parts": 8, "shade": 1, "label": "1/8" } ] } }
      },
      "simpler": { "hi": "Ek hi roti socho, pehle 4 log baantein, phir 8 log. Log badhe, toh har ek ke haath ka tukda kaisa hua, yeh socho.", "en": "Think of one roti, shared first by 4 people, then by 8. More people, so what happens to each person's piece, think about that." }
@@ -136,7 +136,7 @@
      "wrongIfMis": "1/10",
      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 10, "title": "Roti"}, {"parts": 5, "title": "Roti"}]} },
      "why": { "hi": "5 tukdon wali roti ka 1/5, 10 tukdon wali roti ke 1/10 se do guna bada hai", "en": "a 1/5 piece of the 5-piece roti is twice a 1/10 piece of the 10-piece roti" },
-     "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 10, "title": "1/10"}, {"parts": 5, "title": "1/5"}]} },
+     "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 10, "shade": 1, "title": "1/10"}, {"parts": 5, "shade": 1, "title": "1/5"}]} },
      "simpler": { "hi": "Roti wahi hai. Jitne kam log baantenge, har ek ko utna bada tukda milega.", "en": "It's the same roti. The fewer people sharing it, the bigger each piece." }
     },
     {
@@ -407,8 +407,8 @@
     {
      "targets": "c5-maths-ch02-t02-m-gap-thinking",
      "move": "two equal strips, 8 parts and 10: take two parts off each → 6/8 and 8/10, the same count short, but the 8-strip's parts are chunkier → its gap is bigger → smaller gap = closer to the whole = bigger",
-     "say": { "hi": "Upar ki patti 8 hisson mein hai, neeche ki 10 mein, toh upar ke hisse mote. Socho, dono mein do-do hisse khaali hon: 6/8 aur 8/10. Upar ke khaali hisse mote, toh uska gap bada. Jiska gap chhota, wahi 1 ke zyada paas.", "en": "The top bar is in 8 parts, the bottom one in 10, so the top parts are chunkier. Imagine two parts empty in each: 6/8 and 8/10. The top's empty parts are chunkier, so its gap is bigger. The smaller gap is closer to 1." },
-     "simpler": { "hi": "Socho poori patti tak kitna bacha. Jahan mote hisse gayab hain, wahan kami zyada.", "en": "Think how much is left to fill the bar. Where the chunkier parts are missing, more is missing." },
+     "say": { "hi": "Upar ki patti 8 hisson mein hai, neeche ki 10 mein, toh upar ka har hissa mota. Socho, dono mein se ek-ek hissa hata do. Upar se mota hissa gaya, toh uski kami badi. Jiski kami chhoti, wahi 1 ke zyada paas.", "en": "The top bar is in 8 parts, the bottom in 10, so each top part is thicker. Imagine taking one part from each. The top loses a thick part, so its gap is bigger. The smaller gap is closer to 1." },
+     "simpler": { "hi": "Dono se ek-ek hissa hi gaya. Ab bas dekho, kiska gaya hissa mota tha.", "en": "Each lost just one part. Now only see whose missing part was thicker." },
      
      "then": {
       "prompt": { "hi": "Do patti, ek jitni lambi. Ek ke 8 barabar hisse, doosri ke 10. Dono mein bas ek hissa kam. Kaunsa bada, 7/8 ya 9/10?", "en": "Two strips, both the same length. One in 8 equal parts, one in 10. Each is one part short. Which is bigger, 7/8 or 9/10?" },
@@ -643,8 +643,8 @@
     {
      "targets": "c5-maths-ch02-t02-m-gap-thinking",
      "move": "two equal strips, 10 parts and 12: each part below thinner → 8/10 and 10/12 both two parts short, but the thin parts missing take less room → compare the size of the missing pieces, not their number → 10/12 bigger",
-     "say": { "hi": "Gap ka size dekho. Upar ki patti 10 hisson mein hai, neeche ki 12 mein, toh neeche ka har hissa patla. Socho, dono mein do-do hisse khaali hon: 8/10 aur 10/12. Neeche ke do patle hisse kam jagah lete hain, isliye 10/12 bada.", "en": "Look at the size of the gap. The top bar is in 10 parts, the bottom one in 12, so each part below is thinner. Imagine two parts empty in each: 8/10 and 10/12. Two thin parts take up less room, so 10/12 is bigger." },
-     "simpler": { "hi": "Neeche ke hisse patle hain. Patle hisse gayab hon, toh kami bhi kam hoti hai.", "en": "The parts below are thinner. When thin parts are missing, less is missing." },
+     "say": { "hi": "Gap ka size dekho. Upar ki patti 10 hisson mein hai, neeche ki 12 mein, toh neeche ka har hissa patla. Socho, dono mein se ek-ek hissa hata do. Neeche se patla hissa gaya, toh uski kami chhoti, aur woh 1 ke zyada paas.", "en": "Look at the gap. The top bar is in 10 parts, the bottom in 12, so each bottom part is thinner. Imagine taking one part from each. The bottom loses a thin part, so its gap is smaller and it sits closer to 1." },
+     "simpler": { "hi": "Dono se ek-ek hissa hi gaya. Patla hissa jaaye, toh kami bhi kam hoti hai.", "en": "Each lost just one part. When a thin part goes, the gap is smaller too." },
      
      "then": {
       "prompt": { "hi": "Ek bar ke 10 barabar tukdon mein se 9 bache, waise hi bar ke 12 mein se 11. Ek-ek tukda kam. Kaunsa bada, 9/10 ya 11/12?", "en": "9 of 10 equal pieces left of one bar, 11 of 12 of a bar like it. Each is one short. Which is bigger, 9/10 or 11/12?" },

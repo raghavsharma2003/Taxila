@@ -1,0 +1,14 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-picture-turn-once",
+      "kind": "decision",
+      "at": "2026-11-10",
+      "title": "Studio's P6 (main's v6.10, dc-r7-script-walk-v6-10; director18's 9 contradictions: a picture line spoken over a board 'kept' with no view — line from heldAltOf at the preselect, drawing from heldBoard at the take). board-first pictureTurn(ask, { keepRef, keepPage }) returns { board, view, line, script, layout } in one call: the held board left, the view right, the line built from that view; no view (none buildable, or the split refused) → view null AND line null. A turn with a view is never kept. heldBoard takes the decided result as `picture` and draws exactly that; the seam caches the preselect's decision per intent and the take uses it; heldAltOf is the same call's view and line. New views: wholes drawn as strips → their circles; equal groups → a grid (rows = groups). Fixtures (tests/r8-picture-turn.test.mjs): every card/ask/worked board of the four pilots — fraction-parts 13/13, wholes 17/17, fraction-bars 16/19, fraction-line 42/65, measured 19/20, equal-groups 8/10, shade-grid 1/4, compare 0/3, shape@1 0/7 — each with a view whose line names only what the view draws, or none and no line (reasons listed in the test). Also: a new held board never goes up under a leading aside joint (switched in at her first unit part; joints only → the board up stays). Brain patch to-brain/021-picture-turn-once.patch (harness decides once, records row.held.layout) supersedes Studio's 019-held-layout-record (deleted). Reverse per main: any picture line with no view drawn in director19 → pictures answered by the held board and one honest line until every pilot template passes."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-picture-turn-once", "rel": "part_of", "dst": "dc-r7-held-board" },
+    { "src": "dc-r7-picture-turn-once", "rel": "supersedes", "dst": "dc-r7-held-board-v69-studio" }
+  ]
+}

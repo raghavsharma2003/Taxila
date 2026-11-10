@@ -68,7 +68,7 @@ planFor({ script, skills, mixups, brief, interests, memory }) →
 |---|---|---|---|
 | K1 | **Compress a known skill.** A skill the ledger holds as learned, with a passed delayed check, opens at its first check card. A right answer moves on; a miss returns to the full unit | `kt_skill_state` status, delayed-check result | walks every beat |
 | K2 | **Success first.** After a lesson that closed badly, or in the first week, the first card is the easiest unseen one | `adapt.closes`, `learner.firstWeek` | not passed to the lesson |
-| K3 | **Remediation by her real mix-up.** The remediation is chosen by the mix-up the classifier just named, then by her open mix-ups in the ledger, then by the card's authored target | `cls.misconceptionId`, `kt_misconception` | authored target only |
+| K3 | **Remediation by the mix-up she just showed; a probe for the one she holds.** The remediation is chosen by the mix-up the classifier just named, else the card's authored target. An open mix-up in her ledger does not pick a remediation (the wrong answer did not show it): it moves the check card that targets it to the front of that skill's checks | `cls.misconceptionId`, `kt_misconception` | authored target only; fixed check order |
 | K4 | **Prerequisite check.** A skill she is spinning on gets one check of its weakest prerequisite in the warm-up | `kt.wheelSpin` | computed, dropped |
 | K5 | **No new skill before a test or in week one.** The topic is a revision topic | `newSkillBudget` | computed, dropped |
 | K6 | **Hook and joints by interest.** Every onboarding tile maps to a slot through the interest registry (today `trains`, `building`, `stories`, `dance` fall to slot 0, and two slots name tiles that do not exist) | `child.interests` | exact label match |
@@ -77,6 +77,10 @@ planFor({ script, skills, mixups, brief, interests, memory }) →
 
 The brief is cut at lesson start from learner state whether or not a day plan exists, so none of this waits on `TAXILA_CONDUCTOR_PLAN`.
 
+## Rulings since the plan was set
+
+- 2026-11-10, from the Loop session's design note: K3's ledger tier became a probe (above). K5 and K8 are topic choice, made before the walk, so they are a pure `topicFor` with its call site in `server/content/next-topic.js`. K7 is one easier item first in the warm-up, after any due delayed check (`rj-truth-retention-order-starves-check`), with no three-turn hold. A lesson where every skill compresses and every check is right returns `allKnown`.
+
 ## Streams
 
 | Stream | Owner | Work | Waits on |
@@ -84,7 +88,8 @@ The brief is cut at lesson start from learner state whether or not a day plan ex
 | **Loop** | new session, `claude/r8-loop` | `knows.js`, K1 to K8, the `because` trace, the two-children eval (`evals/knows-her/`), the parent page's "why" lines | integration 24 |
 | **Evidence** | learner audit session | verify and fix: the writer's `params_version` default (`kt-r2`) against the ledger's (`kt-r3`); whether "simpler used" counts as assisted; whether a give-up on a script card weighs as a kit leave; game events reaching the Conductor; the brief without a day plan | none |
 | **Pilot loop** | Brain, Studio, Learning | v6.10, P6, D13 → director19 | each other |
-| **Made for her** | Studio | the approval lane: wire the verdict, one generated mix-up visual shown in a scripted lesson (layer 4 for one template family), then the offline library (layer 3) | Studio's `APPROVAL-LANE.md` proposal |
+| **Play** | Games | P1: one picker over every game that admits the skill, ranked by what it would reveal about her open mix-ups, with a `because` for each choice. P2: the next level follows what she just did. P3: a compact trail of how she played, and play from the home screen signed for the learner model | the Evidence stream's rule for how much home play counts |
+| **Made for her** | Studio | the offline approval lane (layer 3): a generated visual per pilot topic aimed at one named mix-up, checked by predicates at three sizes, judged by a separate Claude judge, stored approved, and accepted by the tray gate by hash. Main runs the paid spec calls; streams hold no key. Then a 20-topic sample re-check of the older catalogue | none (`docs/design/round7/studio/APPROVAL-LANE.md` approved 2026-11-10) |
 | **Dress** | Learning | format 2.4 `dress` sets for the four pilots, validator | director19 passing |
 | **Scale** | Learning | the 30 staged topics regenerated and judged in one batch; then batches of 30 by `SCALE.md` | director19 passing; owner's yes for bulk Azure spend |
 | **Release** | Platform | round 7 to production (release 16) | owner: Neon key for the pending migrations |

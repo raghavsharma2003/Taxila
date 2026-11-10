@@ -462,3 +462,23 @@ export function saidMust(line, mustSay = [], lang = "hinglish") {
 
 // v2.1 / v2.2: the {friend}, {friendF} and {friendM} slots (server/director/friend.js)
 export { fillFriend } from "./friend.js";
+
+/**
+ * v6.10 (main's director18 decision, with Learning D13): her joints are authored per topic — the aside park, the aside return (with a
+ * `{said}` slot for what the child said), the Hindi switch line, the ask-again line and the aside resume. A script carries them as
+ * `joints: { <kind>: [form, …] }`, each form a string or { hi, en }. → the forms for `kind` in `lang` (slots filled), or null when the
+ * script has none (code's own forms are used then). Code picks among them; with forms present it never falls back to a fixed sentence.
+ */
+export const JOINT_KINDS = Object.freeze(["asidePark", "asideReturn", "hindiSwitch", "askAgain", "asideResume"]);
+export function jointOf(kit, kind, lang = "hinglish", slots = {}) {
+  try {
+    const forms = scriptFor(kit)?.script?.joints?.[kind];
+    if (!Array.isArray(forms) || !forms.length) return null;
+    const out = forms.map((f) => saidIn(f, lang)).filter(Boolean)
+      .map((t) => t.replace(/\{(\w+)\}/g, (m, k) => (slots[k] != null && String(slots[k]).trim() ? String(slots[k]).trim() : m)))
+      // (v6.10 T2.3, main on director18: a switch line never promises a change for every turn after — "ab se …" forms are not said)
+      .filter((t) => kind !== "hindiSwitch" || !/(?<![\p{L}])(?:ab se|from now)(?![\p{L}])/iu.test(t))
+      .map((t) => t.replace(/^\p{Ll}/u, (c) => c.toUpperCase()));
+    return out.length ? out : null;
+  } catch { return null; }
+}

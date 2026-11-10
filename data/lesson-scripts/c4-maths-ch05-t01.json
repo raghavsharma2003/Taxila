@@ -40,7 +40,7 @@
    "hi": "baantna",
    "en": "to share"
   }
- ],
+ ], "joints": { "asidePark": [{"hi": "Achha, {aside} wali baat yaad rakhti hoon. Pehle yeh hissa barabar baant lete hain.", "en": "Okay, I'll remember the {aside} bit. First let's share this out equally."}, {"hi": "Mazedaar! {aside} ki baat thodi der mein karenge, abhi yeh baantna poora karte hain.", "en": "Fun! We'll get to {aside} in a little while; first let's finish this sharing."}, {"hi": "{aside} wali baat maine sambhaal ke rakhi hai. Chalo, pehle yeh tukde dekh lete hain.", "en": "I've kept the {aside} bit safe. Let's look at these pieces first."}], "asideReturn": [{"hi": "Ab tumhari baat: tumne kaha tha {said}. Uske baare mein thoda aur batao.", "en": "Now your turn: you said {said}. Tell me a little more about it."}, {"hi": "Tumne {said} bola tha na? Usmein sabse achha kya laga?", "en": "You said {said}, didn't you? What was the best part?"}, {"hi": "Chalo, ab woh {said} wali baat. Phir kya hua?", "en": "Okay, now the {said} part. What happened next?"}], "hindiSwitch": [{"hi": "Theek hai, ab Hindi mein baantte hain.", "en": "Sure, let's do the sharing in English now."}, {"hi": "Achha, yeh Hindi mein samjhaati hoon, tukde wahi rahenge.", "en": "Okay, I'll say this in English; the pieces stay the same."}, {"hi": "Haan, Hindi mein hi chalte hain.", "en": "Yes, English it is."}], "askAgain": [{"hi": "Mujhe theek se sunai nahi diya. Ek baar phir bologe?", "en": "I didn't quite hear that. Will you say it once more?"}, {"hi": "Thoda sa chhoot gaya. Apna jawab phir se batao na.", "en": "I missed a bit of that. Tell me your answer again."}, {"hi": "Awaaz saaf nahi aayi. Aaram se ek baar aur bolo.", "en": "Your voice didn't come through clearly. Say it once more, slowly."}] },
  "skills": [
   {
    "skillId": "c4-maths-ch05-t01-s1",
@@ -449,18 +449,18 @@
     },
     {
      "id": "e3",
-     "convey": "12 marbles shown as half (2 equal groups of 6, the bottom 2 of 1/2) → method: bottom number → that many equal groups → the size of one group is the answer; then 1/4 of the same 12 → 4 equal groups",
+     "convey": "20 marbles shown as half (2 equal groups of 10, the bottom 2 of 1/2) → method: bottom number → that many equal groups → the size of one group is the answer; then 1/4 of the same 20 → 4 equal groups",
      "mustSay": [{"hi": "neeche ka number", "en": "the bottom number"}, {"hi": "1/4", "en": "1/4"}],
-     "board": { "template": "equal-groups@1", "params": {"groups": 2, "each": 6} },
-     "point": { "hi": "Yeh 12 kanche hain, 2 barabar group mein, har group mein 6. Yeh 12 ka aadha hai, kyunki 1/2 mein neeche 2 hai. Tarika hamesha wahi hai: neeche ka number dekho, utne barabar group banao, aur ek group gino. 1/4 mein neeche 4 hai.", "en": "Here are 12 marbles, in 2 equal groups, 6 in each group. That's half of 12, because in 1/2 the bottom is 2. The method is always the same: look at the bottom number, make that many equal groups, and count one group. In 1/4 the bottom is 4." },
+     "board": { "template": "equal-groups@1", "params": {"sizes": [10, 10]} },
+     "point": { "hi": "Yeh 20 kanche hain, 2 barabar group mein, har group mein 10. Yeh 20 ka aadha hai, kyunki 1/2 mein neeche 2 hai. Tarika hamesha wahi hai: neeche ka number dekho, utne barabar group banao, aur ek group gino. 1/4 mein neeche 4 hai.", "en": "Here are 20 marbles, in 2 equal groups, 10 in each group. That is half of 20, because 1/2 has 2 at the bottom. The way is always the same: look at the bottom number, make that many equal groups, and count one group. 1/4 has 4 at the bottom." },
      "ask": {
-      "prompt": { "hi": "In 12 kanchon ka 1/4 kitna hai?", "en": "What is 1/4 of these 12 marbles?" },
-      "key": "3",
-      "accept": ["teen", "three", "3 kanche"],
-      "why": { "hi": "4 barabar group banao toh har group mein 3 kanche, aur 4 × 3 = 12", "en": "4 equal groups of the 12 marbles hold 3 each, and 4 × 3 = 12" },
-      "board": { "template": "equal-groups@1", "params": {"groups": 2, "each": 6} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 4, "each": 3} }
+      "prompt": { "hi": "In 20 kanchon ka 1/4 kitna hai?", "en": "What is 1/4 of these 20 marbles?" },
+      "key": "5",
+      "accept": ["paanch", "five", "5 kanche", "5 marbles"],
+      "why": { "hi": "4 barabar group banao toh har group mein 5 kanche aate hain, aur 4 × 5 = 20", "en": "make 4 equal groups and each group gets 5 marbles, and 4 × 5 = 20" },
+      "board": { "template": "equal-groups@1", "params": {"sizes": [10, 10]} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 4, "each": 5} }
      },
-     "simpler": { "hi": "4 group banane hain. Dono group ko phir se 2 barabar hisson mein baanto.", "en": "We need 4 groups. Split each of the 2 groups into 2 equal parts again." }
+     "simpler": { "hi": "4 group banane hain. Dono group ko phir se 2 barabar hisson mein baanto.", "en": "You need 4 groups. Split each of the two groups into 2 equal parts again." }
     }
    ],
    "workedExample": {
