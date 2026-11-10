@@ -9,7 +9,7 @@ import { setScriptForTest } from "../server/director/script.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { planFor, assertWalkExplained, defaultWalk } from "../server/director/knows.js";
-import { knowsWarmup, knowsDecisionsOf } from "../server/director/knows-walk.js";
+import { knowsWarmup, knowsDecisionsOf, knowsPracticeStart } from "../server/director/knows-walk.js";
 import { decisionRecordStmt } from "../server/brain/trace.js";
 import { childrenFor, PILOT_TOPICS, NOW } from "../evals/knows-her/children.mjs";
 import { CTX, cls } from "./fixtures/kit.mjs";
@@ -25,6 +25,7 @@ function walkReal(topicId, { plan, answer, interests = [] }) {
   const kw = knowsWarmup(plan, [], { kit, max: 4 });
   let s0 = initLessonState({ topicId, kit, ctx: { ...CTX, classLevel: Number(topicId.slice(1, 2)), lang: "hinglish", interests }, seed: 7, now: 0, warmupItems: kw.items, knows: plan });
   if (s0.knows) s0.knowsApplied = kw.because.map((b) => ({ ...b, turn: 0 }));
+  knowsPracticeStart(s0, kit, {});
   let r = step(s0, { event: "start", kit, now: 0 });
   const moves = [r.move], states = [r.state];
   let prevAsk = null;
@@ -37,7 +38,7 @@ function walkReal(topicId, { plan, answer, interests = [] }) {
     r = step({ ...r.state, recent }, { event: "turn", kit, cls: c, text, now: (r.state.turn + 1) * 20_000 });
     moves.push(r.move); states.push(r.state);
   }
-  return { script, kit, moves, states, final: r.state, plan };
+  return { script, kit, moves, states, final: r.state, plan, queue: s0.knowsPractice?.defaultQueue ?? null };
 }
 
 const applied = (st) => st.knowsApplied ?? [];
@@ -53,9 +54,9 @@ describe("round 8 D: the real walk with a plan", () => {
 
     test(`${topicId}: no history → the default walk, no record`, () => {
       const w = walkReal(topicId, { plan: planOf("new"), answer: () => ({ verdict: "right" }) });
-      const ev = eventsOf(w);
+      const ev = eventsOf({ ...w, states: w.states });
       assert.deepEqual(applied(w.final), []);
-      assertWalkExplained({ script: C.script, kit: C.kit, because: [], events: ev });
+      assertWalkExplained({ script: C.script, kit: C.kit, because: [], events: ev, queue: w.queue });
       const keys = [...new Set(ev.filter((e) => e.kind === "beat").map((e) => `${e.skillId}|${e.beat}`))];
       assert.deepEqual(keys, defaultWalk(C.script, C.kit).slice(0, keys.length), "a prefix of the script's walk");
       assert.ok(keys.length >= 8, `${keys.length} beats walked`);
@@ -65,9 +66,9 @@ describe("round 8 D: the real walk with a plan", () => {
       test(`${topicId}: ${name}'s real walk is explained by its records`, () => {
         const plan = planOf(name);
         const w = walkReal(topicId, { plan, answer: C.children[name].answer, interests: C.children[name].input.interests });
-        const ev = eventsOf(w);
+        const ev = eventsOf({ ...w, states: w.states });
         const because = [...plan.because, ...applied(w.final).filter((b) => !plan.because.some((p) => p.choice === b.choice && p.on === b.on))];
-        assertWalkExplained({ script: C.script, kit: C.kit, because, events: ev });
+        assertWalkExplained({ script: C.script, kit: C.kit, because, events: ev, queue: w.queue });
         const ch = choices(w.final);
         if (name === "meera") { assert.ok(ch.includes("compress"), ch.join()); assert.ok(ch.includes("opener"), ch.join()); assert.ok(ev.some((e) => e.kind === "first")); }
         if (name === "meeraForgot") assert.ok(ch.includes("compress_fallback"), ch.join());
@@ -81,8 +82,8 @@ describe("round 8 D: the real walk with a plan", () => {
       const plan = planFor({ script: C.script, kit: C.kit, skills, now: NOW });
       assert.equal(plan.allKnown, true);
       const w = walkReal(topicId, { plan, answer: () => ({ verdict: "right" }) });
-      const ev = eventsOf(w);
-      assertWalkExplained({ script: C.script, kit: C.kit, because: [...plan.because, ...applied(w.final)], events: ev });
+      const ev = eventsOf({ ...w, states: w.states });
+      assertWalkExplained({ script: C.script, kit: C.kit, because: [...plan.because, ...applied(w.final)], events: ev, queue: w.queue });
       const said = w.moves.flatMap((m) => m.sayFirst ?? []).filter((x) => /pehle se achhe se aata/.test(x));
       assert.equal(said.length, 1);
       assert.ok(choices(w.final).includes("allKnown"));

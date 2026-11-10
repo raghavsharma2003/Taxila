@@ -22,6 +22,12 @@ const RECORDS = [
   { choice: "hookSlot", on: S, fact: { kind: "interest", interest: "trains", slotInterest: "vehicles", via: "near" } },
   { choice: "hookSlot", on: S, fact: { kind: "interest", interest: "cricket", slotInterest: "cricket", via: "exact" } },
   { choice: "topic", on: T, fact: { kind: "scripted", insteadOf: "x" } },
+  { choice: "practiceOrder", on: T, fact: { kind: "weak", theta: 3.5, weak: true, order: [] } },
+  { choice: "practiceOrder", on: T, fact: { kind: "theta", theta: 5.2, weak: false, order: [] } },
+  { choice: "practiceDiag", on: "diag:x", fact: { kind: "open_mixup", misconceptionId: M } },
+  { choice: "practiceFast", on: "i09", fact: { kind: "fast_unaided", skillId: S } },
+  { choice: "practiceEasier", on: "i02", fact: { kind: "two_misses", skillId: S } },
+  { choice: "practiceEasier", on: "i02", fact: { kind: "asked", skillId: S } },
 ];
 const ctx = (lang, seed) => ({ lang, seed, name: "Riya", skills: { [S]: { hi: "bhinn ki pehchaan", en: "naming fractions" } }, topics: { [T]: "Halves and quarters" },
   mixups: { [M]: { hi: "bada neeche wala number, bada tukda", en: "a bigger bottom number means a bigger piece" } } });

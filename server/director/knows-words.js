@@ -123,6 +123,37 @@ export function becauseLine(rec, ctx = {}) {
         `Pehli misaal ${ex} ki thi${same ? "" : ` (${likes} ke kareeb)`}, kyunki ${name} ko ${likes} pasand hai.`,
       ], seed);
     }
+    case "practiceOrder:weak": case "practiceOrder:theta": case "practiceOrder:level": return pick(en ? [
+      `The practice questions were ordered to match where ${name} is right now, starting from ones within reach.`,
+      `Practice was set at ${name}'s current level, so each question was a step from the last.`,
+    ] : [
+      `Abhyaas ke sawaal ${name} ke abhi ke star ke hisaab se rakhe, pehunch mein aane wale sawaalon se shuru karke.`,
+      `Abhyaas ${name} ke aaj ke star par rakha, taaki har sawaal pichhle se ek kadam aage ho.`,
+    ], seed);
+    case "practiceDiag:open_mixup": return pick(en ? [
+      `One practice question was chosen to check the idea "${mix(f.misconceptionId)}", which came up before.`,
+      `Practice included a question about "${mix(f.misconceptionId)}", to see if it is settled now.`,
+    ] : [
+      `Abhyaas mein ek sawaal "${mix(f.misconceptionId)}" wali baat jaanchne ke liye rakha, jo pehle dikhi thi.`,
+      `Ek sawaal yeh dekhne ke liye tha ki "${mix(f.misconceptionId)}" wali baat ab saaf hai ya nahi.`,
+    ], seed);
+    case "practiceFast:fast_unaided": return pick(en ? [
+      `${name} answered "${skill(f.skillId)}" quickly and without help, so the next question was a harder one.`,
+      `Quick, unaided answers on "${skill(f.skillId)}" moved practice straight to a harder question.`,
+    ] : [
+      `${name} ne "${skill(f.skillId)}" ke sawaal jaldi aur bina madad ke kiye, isliye agla sawaal mushkil wala diya.`,
+      `"${skill(f.skillId)}" mein tez aur bina madad ke jawab aaye, toh abhyaas seedhe ek mushkil sawaal par gaya.`,
+    ], seed);
+    case "practiceEasier:two_misses": case "practiceEasier:asked": {
+      const asked = f.kind === "asked";
+      return pick(en ? [
+        `${asked ? `${name} asked for an easier one` : "After two questions in a row that did not go through"}, the next question on "${skill(f.skillId)}" was a gentler one.`,
+        `${asked ? "On request" : "After two tries that needed more"}, practice on "${skill(f.skillId)}" stepped back to an easier question.`,
+      ] : [
+        `${asked ? `${name} ne aasaan sawaal maanga` : "Lagaatar do sawaal nahi bane"}, isliye "${skill(f.skillId)}" ka agla sawaal halka rakha.`,
+        `${asked ? "Maangne par" : "Do koshishon ke baad"} "${skill(f.skillId)}" ka abhyaas ek aasaan sawaal par laaya.`,
+      ], seed);
+    }
     case "topic:scripted": return pick(en ? [
       `"${topic(rec.on)}" was picked among equally due topics because its full lesson is ready.`,
       `Of the topics due today, "${topic(rec.on)}" has a complete prepared lesson, so it came first.`,

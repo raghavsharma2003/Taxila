@@ -3,7 +3,8 @@
 // (s.knows undefined: a lesson started before round 8, an Ask, a practice set) every function gives the walk's own default.
 // Every choice that departs from the script's default records its because once, with the turn it fired on, in
 // s.knowsApplied; the turn route writes the new ones as decision_record rows (knowsDecisionsOf).
-import { planFor, beatsFor, afterCompressCheck, ladderFor, hardestFirst, remedyNow, openCheckOf, checkCardId } from "./knows.js";
+import { buildPracticeQueue } from "./items.js";
+import { planFor, practicePlanOf, beatsFor, afterCompressCheck, ladderFor, hardestFirst, remedyNow, openCheckOf, checkCardId } from "./knows.js";
 
 /** Record a because the walk acted on (once per choice and target). */
 export function noteBecause(s, rec) {
@@ -145,4 +146,41 @@ export function knowsMark(s, item) {
   const recheck = w?.compress && !w.compress.done && w.compress.cardId === item.id;
   const probe = (s.knows.because ?? []).find((b) => b.choice === "checkOrder" && b.fact?.cardId === item.id)?.fact?.misconceptionId ?? null;
   return recheck || probe ? { ...item, ...(recheck ? { recheck: true } : {}), ...(probe ? { probeFor: probe } : {}) } : item;
+}
+
+// ───────────── the kit-practice phase ─────────────
+/**
+ * The lesson start: her practice queue (state.queue, built with her level and mix-ups) against a no-history child's
+ * (buildPracticeQueue with neither). Departures are recorded at turn 0; the no-history queue is kept for the predicate.
+ */
+export function knowsPracticeStart(s, kit, { level = null, activeMisconceptionIds = [] } = {}) {
+  if (!s?.knows || !Array.isArray(s.queue) || s.practiceSet) return s;
+  const defaultQueue = buildPracticeQueue(kit, {});
+  const p = practicePlanOf({ kit, queue: s.queue, defaultQueue, level, activeMisconceptionIds });
+  s.knowsPractice = { defaultQueue };
+  for (const b of p.because) noteBecause(s, b);
+  return s;
+}
+/**
+ * poseNext's pick, after it is made: which branch chose it (ladder / verify / queued / queue), and the in-lesson reason when
+ * the queue's pick is not the next item of its skill in queue order: a skill she is answering fast and unaided (pace.fast:
+ * its hardest item) or the gentlest item after two misses in a row, or when she asked for an easier one. Logged in
+ * s.practiceLog (the predicate's events). Returns the item unchanged.
+ */
+export function knowsPick(s, kit, item, { preferred = null, verifying = null, queued = null, easier = false } = {}) {
+  if (!s?.knows || !item || String(item.id).startsWith("script:")) return item;
+  const source = item === preferred ? "ladder" : item === verifying ? "verify" : item === queued ? "queued" : "queue";
+  if (source === "queue" && !String(item.id).startsWith("diag:")) {
+    const seen = new Set([...(s.itemsDone ?? []), ...(s.skipped ?? []), ...(s.shownIds ?? []), ...(s.practiceLog ?? []).map((x) => x.itemId)]);
+    const order = (s.knows.because ?? []).concat(s.knowsApplied ?? []).find((b) => b.choice === "practiceOrder")?.fact?.order ?? s.knowsPractice?.defaultQueue ?? s.queue ?? [];
+    const skillOf = (id) => (kit?.items ?? []).find((i) => i.id === id)?.skillId ?? null;
+    const next = order.find((id) => !String(id).startsWith("diag:") && skillOf(id) === item.skillId && !seen.has(id));
+    if (next && next !== item.id) {
+      const k = item.skillId;
+      if (easier) noteBecause(s, { choice: "practiceEasier", on: item.id, fact: { kind: (s.pace?.miss?.[k] ?? 0) >= 2 ? "two_misses" : "asked", skillId: k, insteadOf: next }, source: "this lesson's answers" });
+      else if (s.pace?.fast?.includes(k)) noteBecause(s, { choice: "practiceFast", on: item.id, fact: { kind: "fast_unaided", skillId: k, insteadOf: next }, source: "this lesson's answers" });
+    }
+  }
+  s.practiceLog = [...(s.practiceLog ?? []), { itemId: item.id, skillId: item.skillId ?? null, source, turn: s.turn ?? 0 }];
+  return item;
 }

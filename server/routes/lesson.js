@@ -25,7 +25,7 @@ import { scrubPii, scanSafety, floorViolations, helpLeadOf } from "../director/s
 import { laneFor } from "../agent/flags.js";
 import { agentTurn, eventOf, applyAgentTurn } from "../agent/agent.js";
 import { initLessonState, step, LIMITS, shortTitleOf } from "../director/state.js";
-import { knowsPlanAtStart, knowsWarmup } from "../director/knows-walk.js";
+import { knowsPlanAtStart, knowsWarmup, knowsPracticeStart } from "../director/knows-walk.js";
 import { scriptFor } from "../director/script.js";
 import { resolveAddress, codeSwitchAddress } from "../director/register.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
@@ -377,6 +377,7 @@ export async function lessonStart(req, body) {
   // Learning patch 004b: what she promised last time (the Question jar hook) rides in as Later entries; the opening serves one
   if (view?.jar?.length) state0.later = jarLaterEntries(view.jar);
   if (state0.knows) state0.knowsApplied = kw.because.map((b) => ({ ...b, turn: 0 })); // round 8: the warm-up's because (K2, K4, K7)
+  knowsPracticeStart(state0, kit, { level: view ? { theta: view.theta?.value ?? null, weak: !!view.weak?.weak } : null, activeMisconceptionIds }); // round 8: her practice queue's because
   const recent = askSafety.distress ? null : await carriedP;
   const carried = recent ? { kind: recent.family ?? null, incidentId: String(recent.id) } : null;
   const first = askSafety.distress
