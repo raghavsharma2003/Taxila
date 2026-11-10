@@ -346,10 +346,10 @@ async function deploy() {
       const files = execFileSync("git", ["ls-files", "-co", "--exclude-standard", "-z"], { cwd: ROOT, maxBuffer: 64 << 20 }).toString().split("\0")
         .filter((f) => f && !/^(docs|art|context|evals)\//.test(f) && !f.startsWith("scripts/character/"));
       console.log(`building taxila-web:${sha} from the working tree (${files.length} files)…`);
-      await acrBuild({ registry: REGISTRY, images: [`taxila-web:${sha}`], dockerfile: "Dockerfile", dir: ROOT, files });
+      await acrBuild({ registry: REGISTRY, images: [`taxila-web:${sha}`], dockerfile: "Dockerfile", dir: ROOT, files, buildArgs: { VITE_BUILD_SHA: sha } });
     } else if (!IMAGE_TAG) {
       console.log(`building taxila-web:${sha} from ${branch}…`);
-      await acrBuild({ registry: REGISTRY, images: [`taxila-web:${sha}`, "taxila-web:latest"], dockerfile: "Dockerfile", git: { repo: REPO, branch } });
+      await acrBuild({ registry: REGISTRY, images: [`taxila-web:${sha}`, "taxila-web:latest"], dockerfile: "Dockerfile", git: { repo: REPO, branch }, buildArgs: { VITE_BUILD_SHA: sha } });
     }
     built = true;
   };

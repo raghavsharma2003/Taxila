@@ -130,3 +130,16 @@ test("PLAT-27: the handoff key list names every setting the release and the serv
   for (const k of ["NEON_API_KEY", "NEON_PROJECT_ID", "DATABASE_URL_DIRECT", "AZURE_SPEECH_KEY", "AZURE_SPEECH_REGION", "TAXILA_D5_TICKET_KEY"]) assert.ok(keys.includes(k), k);
   assert.equal(new Set(keys).size, keys.length, "no name twice");
 });
+
+test("PLAT-49: the web image is built with VITE_BUILD_SHA, which the page reads as its build id", async () => {
+  const { acrRunBody } = await import("../infra/azure.mjs");
+  const b = acrRunBody({ images: ["taxila-web:abc1234"], sourceLocation: "s", dockerfile: "Dockerfile", buildArgs: { VITE_BUILD_SHA: "abc1234" } });
+  assert.deepEqual(b.arguments, [{ name: "VITE_BUILD_SHA", value: "abc1234", isSecret: false }]);
+  assert.equal("arguments" in acrRunBody({ images: [], sourceLocation: "s", dockerfile: "Dockerfile.worker" }), false, "no args, no field");
+  const df = readFileSync(join(ROOT, "Dockerfile"), "utf8");
+  const build = df.split(/^FROM /m)[1];
+  assert.ok(build.indexOf("ARG VITE_BUILD_SHA") >= 0 && build.indexOf("ARG VITE_BUILD_SHA") < build.indexOf("RUN npm run build"), "ARG before the build");
+  assert.match(build, /ENV VITE_BUILD_SHA=\$VITE_BUILD_SHA/);
+  for (const f of ["scripts/deploy-azure.mjs", "scripts/release.mjs"]) assert.match(readFileSync(join(ROOT, f), "utf8"), /buildArgs: \{ VITE_BUILD_SHA: /, f);
+  assert.match(readFileSync(join(ROOT, "src/main.tsx"), "utf8"), /import\.meta\.env\.VITE_BUILD_SHA/);
+});

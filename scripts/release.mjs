@@ -95,7 +95,7 @@ const fn = {
   async images() {
     for (const [image, dockerfile] of [[`taxila-web:${s7}`, "Dockerfile"], [`taxila-worker:${s7}`, "Dockerfile.worker"]]) {
       console.log(`  building ${image} from ${REPO}@${s7}…`);
-      await acrBuild({ images: [image], dockerfile, git: { repo: REPO, branch: sha } });   // git context #<commit>: the commit, not a moving tip
+      await acrBuild({ images: [image], dockerfile, git: { repo: REPO, branch: sha }, ...(dockerfile === "Dockerfile" ? { buildArgs: { VITE_BUILD_SHA: s7 } } : {}) });   // git context #<commit>: the commit, not a moving tip
     }
     return { images: [`taxila-web:${s7}`, `taxila-worker:${s7}`] };
   },
