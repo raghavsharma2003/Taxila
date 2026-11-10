@@ -34,12 +34,11 @@ export const RULES = [
   // lay the rectangle the right-angled cloth was cut from (s1; a rectangle with the slanted side as one of its sides is
   // slant-side). more: tent B's top corner moved so its cloth is more than tent A's on the same base (s3; the corner slid
   // along A's top line, "the middle one looks bigger", is shape-looks). match: lay as much floor as the cloth (s2, and s3
-  // when the top corner is anywhere over the base); the b × h floor is lxb, slant × leg ÷ 2 is slant-side. Not admitted: an
+  // when the top corner is anywhere over the base: one entry, its generator lays both cloths); the b × h floor is lxb, slant × leg ÷ 2 is slant-side. Not admitted: an
   // obtuse triangle's outside height (no kit skill asks for it).
   R("c6-maths-ch06-t03", N, "tri", "box", { "slant-side": "slant-side" }, {}),
   R("c6-maths-ch06-t03", N, "tri", "more", { "shape-looks": "shape-looks" }, {}),
   R("c6-maths-ch06-t03", N, "tri", "match", { lxb: "lxb", "slant-side": "slant-side" }, {}),
-  R("c6-maths-ch06-t03", N, "tri", "match", { lxb: "lxb" }, { any: true }),
   // r7 nazariya2 · faces, edges and corners of a solid turned in the hand (mode solid, a 2D view): stamp every face, run a
   // finger along every edge, pin every corner; only what is in sight can be marked. Marking exactly the first picture's
   // faces / edges / corners is visible-only; pinning every corner when the edges were asked (or running every edge when

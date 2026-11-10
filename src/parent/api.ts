@@ -30,6 +30,8 @@ export interface ControlsT {
   textOnly?: boolean; homeworkToday?: boolean;
   /** round 7 F (dc-r7 D5): the family's own daily-limit opt-in; Extra time to answer; Data saver. */
   limitsOn?: boolean; extraTime?: "normal" | "more" | "most"; dataSaver?: boolean;
+  /** audit PLAT-15: the words the 3D games use for the action (O-G4); the server returns the effective value. */
+  playVerb?: "fire" | "scan";
 }
 export interface ChildOut { id: string; firstName: string; classLevel: number; board: string; schoolMedium: string; languagePref: string; avatar: string | null }
 export interface TopicRef { id: string; title: string; shortTitle?: string | null; chapter?: string; subject?: string }

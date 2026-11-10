@@ -134,6 +134,6 @@ test("one door: the NEVER predicate is defined only in server/director/safety.js
 const lessonSrc = ["../server/routes/lesson.js", "../server/brain/say.js", "../server/brain/turn.js"]
   .map((p) => (existsSync(new URL(p, import.meta.url)) ? readFileSync(new URL(p, import.meta.url), "utf8") : "")).join("\n");
 const wired = /floorViolations\s*\(/.test(lessonSrc);
-test("lesson.js reply guards call floorViolations (text draft + voice transcript → state.correction)", { todo: !wired && "not wired yet: see context/inbox/harvest-ports.json integration call sites" }, () => {
+test("lesson.js reply guards call floorViolations (text draft + voice transcript → state.correction)", () => {
   assert.ok(wired);
 });

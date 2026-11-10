@@ -1,4 +1,6 @@
-// Device kv → signal-layer evidence (SPEC §4). SHADOW ONLY in this build: every output carries `lrVApplied = 1` unless
+// Device kv → signal-layer evidence (SPEC §4). The EVIDENCE is shadow in this build (audit V-21: only the evidence; the
+// lesson seam's default `internal` mode, server/voicesig/lesson.js, still lets a state pick the Director's tie-breakers):
+// every output carries `lrVApplied = 1` unless
 // the mode is "on" AND the state's ladder level is ≥ 1 AND its calibration was fitted on outcome-labelled child data —
 // none of which is true today (ladder.js ships every state at L0). Pure: no clock, no I/O, no env reads (the caller passes
 // its env), so it runs inside server/signals' purity budget once proposal A2 lands.
@@ -38,7 +40,7 @@ export const TH = Object.freeze({ fluent: 0.85, fragile: 0.55, held: 0.5, rapidA
 const fin = (x) => typeof x === "number" && Number.isFinite(x);
 const odds = (p) => Math.min(1e6, Math.max(1e-6, p / (1 - p)));
 
-/** TAXILA_VOICESIG = off | shadow | on (default off). */
+/** The adapter's own read of TAXILA_VOICESIG = off | shadow | on (unset: off). The lesson seam's mode is seamMode (lesson.js). */
 export function vsMode(env = {}) {
   const m = String(env.TAXILA_VOICESIG ?? "off").trim().toLowerCase();
   return m === "on" || m === "shadow" ? m : "off";

@@ -5,7 +5,7 @@
 import { createHash } from "crypto";
 import { learningDay } from "../conductor/clock.js";
 import { subjectOfSkill } from "../learner/kt/ability.js";
-import { CAPS, CALIBRATION, CHANGE_MIN_DELTA, CHANGE_MIN_MONTHS, CHANGE_MIN_N, CHANGE_P, CHANGE_P_MANY, HARD_MIN_N, HOLD_GAP_DAYS, HOLD_MIN_N, LANGS, MIXUP_MIN_K, MIXUP_MIN_N, ROUTINE_MIN_LESSONS, TRICKY_MIN_N, WAYS_MIN_N } from "./config.js";
+import { CAPS, CALIBRATION, CHANGE_MIN_DELTA, CHANGE_MIN_MONTHS, CHANGE_MIN_N, CHANGE_P, CHANGE_P_MANY, HARD_MIN_N, HOLD_GAP_DAYS, HOLD_MIN_N, LANGS, MIXUP_MIN_K, MIXUP_MIN_N, OPEN_SO_FAR_MAX_MIN, ROUTINE_MIN_LESSONS, TRICKY_MIN_N, WAYS_MIN_N } from "./config.js";
 import { bySkill, delayedSuccesses, inWindow, isAttempt, isErrorspotFixed, isExplained, isFirstTryUnaided, isTransferPass } from "./derive.js";
 import { dateParts } from "./facts.js";
 import { lineViolations } from "./gate.js";
@@ -37,7 +37,8 @@ export const lessonEndMs = (l, events, openUntil) => {
   if (l.endedAt) return Date.parse(l.endedAt);
   const last = events.filter((e) => e.sessionId === l.id).map((e) => Date.parse(e.at)).reduce((a, b) => Math.max(a, b), -Infinity);
   if (Number.isFinite(last)) return last;
-  return openUntil ? Math.max(Date.parse(l.startedAt), Date.parse(openUntil)) : Date.parse(l.startedAt);
+  const start = Date.parse(l.startedAt);
+  return openUntil ? Math.max(start, Math.min(Date.parse(openUntil), start + OPEN_SO_FAR_MAX_MIN * 60_000)) : start;
 };
 const minutesOf = (lessons, events, openUntil) => Math.round(lessons.reduce((a, l) => a + (lessonEndMs(l, events, openUntil) - Date.parse(l.startedAt)), 0) / 60_000);
 /** Ledger displays under learned_today: next-topic.js treats such a topic as not done and teaches it (or its prerequisite) again. */

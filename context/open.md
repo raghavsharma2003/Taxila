@@ -216,3 +216,9 @@ Audit V-22. `r3vs-holdcue-shadow` keeps the thinking-pause cue shadow until a ch
 
 ## open-r7-audit-voice-expressive-default (2026-11-10)
 Audit V-27. Expressive SSML is default on for DragonHD (`w2g-expressive-layer-built`); `rj-ssml-delivery-plan-2026-10-04` records listeners scoring the same shape below plain. The blind test named as the reversal condition has not run.
+
+
+<!-- merged from inbox/r7-audit-voice-fix.json -->
+## `fd-r7-audit-voice-switch-translit-not-wired`
+
+Record correction (audit V-29). `rs7-voice-switch` and `rs7-translit-roman-to-devanagari` read as shipped steps; neither is called by any live path (`voice-switch.js` styleFor / synthesize, `translit/index.js` toDevanagari are reached only from tests and evals). Main decided not to wire them now. One data fix landed: `bara` is no longer a hand entry for twelve (`sabse bara` would have become `सबसे बारह`); NUMBER_AMBIG still reads it as twelve in a run of numbers.

@@ -8,7 +8,8 @@
 //      through merge-inbox.mjs, if it is still in the inbox.
 //   2. DOCS-17: every edge in a merged inbox file that never reached the graph is merged (96 valid as written), mapped
 //      onto the seven relations (scripts/lib/context-edges.mjs), or dropped and listed in inbox/merged/DROPPED.json
-//      with its reason. An edge already listed there stays dropped (that is what makes a second run a no-op).
+//      with its reason. A listed edge is read again on every run, so widening the mapping places it and takes it off
+//      the list; the pass repeats until nothing more is placed, which is what makes a second run a no-op.
 //   3. DOCS-20: a live / provisioned / proposed node that something supersedes becomes "superseded" (context.mjs also
 //      prints "superseded by X" from the edges).
 //   4. DOCS-28: the first of two "deploy-classify-grok" headings ("proposed, needs adoption") is removed; the second says
@@ -45,15 +46,19 @@ const droppedPath = join(MERGED, "DROPPED.json");
 const prior = existsSync(droppedPath) ? JSON.parse(readFileSync(droppedPath, "utf8")).dropped || [] : [];
 const dropped = new Map(prior.map((d) => [edgeKey(normalizeEdge(d.edge)), d]));
 let added = 0, mapped = 0;
-for (const f of readdirSync(MERGED).filter((x) => x.endsWith(".json") && x !== "DROPPED.json").sort()) {
-  let j;
-  try { j = JSON.parse(readFileSync(join(MERGED, f), "utf8")); } catch { continue; }
-  for (const raw of j.edges || []) {
-    const key = edgeKey(normalizeEdge(raw));
-    if (dropped.has(key)) continue;
-    const r = placeEdge(raw, g, ix);
-    if (r.drop) { dropped.set(key, { edge: normalizeEdge(raw), from: f, reason: r.drop }); continue; }
-    if (r.add && !ix.have.has(edgeKey(r.add))) { g.edges.push(r.add); ix.have.add(edgeKey(r.add)); added++; if (r.mapped) mapped++; }
+for (let placed = 1; placed > 0;) {
+  placed = 0;
+  ix.shapes = indexOf(g).shapes; // an edge placed in the last pass may be the first of its shape
+  for (const f of readdirSync(MERGED).filter((x) => x.endsWith(".json") && x !== "DROPPED.json").sort()) {
+    let j;
+    try { j = JSON.parse(readFileSync(join(MERGED, f), "utf8")); } catch { continue; }
+    for (const raw of j.edges || []) {
+      const key = edgeKey(normalizeEdge(raw));
+      const r = placeEdge(raw, g, ix);
+      if (r.drop) { if (!dropped.has(key)) dropped.set(key, { edge: normalizeEdge(raw), from: f, reason: r.drop }); else dropped.get(key).reason = r.drop; continue; }
+      dropped.delete(key);
+      if (r.add && !ix.have.has(edgeKey(r.add))) { g.edges.push(r.add); ix.have.add(edgeKey(r.add)); added++; placed++; if (r.mapped) mapped++; }
+    }
   }
 }
 const list = [...dropped.values()].sort((a, b) => edgeKey(normalizeEdge(a.edge)).localeCompare(edgeKey(normalizeEdge(b.edge))));

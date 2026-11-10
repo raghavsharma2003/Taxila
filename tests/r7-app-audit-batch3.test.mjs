@@ -120,4 +120,6 @@ test("SEAM-11: the plan's schedule is carried to the home; SEAM-10: the opening 
   assert.match(v, /time: p\.opensAt \? clock\(p\.opensAt\) : ""/);
   assert.match(read("src/ui-v3/kaksha/screens/KakshaHome.tsx"), /lessonTime=\{plan\.schedule\?\.today \? clock\(plan\.schedule\.time\) : null\}/);
   assert.doesNotMatch(read("src/ui-v3/kaksha/copy.ts"), /\{time\} baje/);
+  // the contract field itself is Brain's (patch to-brain/005-plan-schedule; status in docs/patches/INDEX.md): a gate test never
+  // asserts on a patch file (tests/gate-reads-no-docs.test.mjs)
 });

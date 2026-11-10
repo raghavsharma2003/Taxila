@@ -21,9 +21,11 @@ export interface VadOptions {
   minDb?: number;
   /** "sustain" once per utterance when the level has stayed loud this long (ms) without a break. */
   sustainMs?: number;
+  /** One "speaking" run longer than this (ms) is a floor that went wrong, not a child: offset, and the floor re-learns. */
+  maxSpeakMs?: number;
 }
 
-const DEFAULTS: Required<VadOptions> = { onsetDb: 14, onsetMs: 90, offsetMs: 400, offsetDb: 8, minDb: -52, sustainMs: 120 };
+const DEFAULTS: Required<VadOptions> = { onsetDb: 14, onsetMs: 90, offsetMs: 400, offsetDb: 8, minDb: -52, sustainMs: 120, maxSpeakMs: 20_000 };
 
 export type VadEvent = "onset" | "sustain" | "offset" | null;
 
@@ -37,6 +39,7 @@ export class EnergyVad {
   /** Consecutive loud ms (in either state) and whether this utterance already sent "sustain". */
   private run = 0;
   private sustained = false;
+  private speakMs = 0;
 
   constructor(opts: VadOptions = {}) {
     this.opts = { ...DEFAULTS, ...opts };
@@ -47,7 +50,9 @@ export class EnergyVad {
     const db = rms > 0 ? 20 * Math.log10(rms) : -100;
     const o = this.opts;
     // The floor follows quiet frames quickly and loud ones very slowly, so speech does not become "noise".
-    if (!this.speaking) this.floorDb += (db - this.floorDb) * (db < this.floorDb ? 0.3 : 0.01);
+    // Audit V-18: an all-zero frame (a held or muted mic) is not the room: it dragged the floor to -90, the room's own
+    // level then read as speech and, the floor frozen while speaking, the detector never heard an offset again.
+    if (!this.speaking && rms > 0) this.floorDb += (db - this.floorDb) * (db < this.floorDb ? 0.3 : 0.01);
     this.floorDb = Math.max(-90, Math.min(-25, this.floorDb));
     const loud = db >= Math.max(o.minDb, this.floorDb + o.onsetDb);
     const quiet = db < Math.max(o.minDb, this.floorDb + o.offsetDb);
@@ -58,9 +63,18 @@ export class EnergyVad {
         this.speaking = true;
         this.sustained = false;
         this.below = 0;
+        this.speakMs = 0;
         return "onset";
       }
       return null;
+    }
+    this.speakMs += frameMs;
+    if (this.speakMs >= o.maxSpeakMs) {
+      // audit V-18: a ceiling on one run; the level now is the room
+      this.speaking = false;
+      this.above = 0;
+      this.floorDb = Math.max(-90, Math.min(-25, db));
+      return "offset";
     }
     if (!this.sustained && this.run >= o.sustainMs) {
       this.sustained = true;

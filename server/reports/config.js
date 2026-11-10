@@ -14,6 +14,11 @@ export const RENDER_VERSION = "pr-5";   // pr-5: the term report (S14 Then → n
  */
 export const CALIBRATION = Object.freeze({ k7Passed: false });
 
+/**
+ * An open lesson with no engine row counts in a "so far" view for at most this long (audit LEARN-33: a lesson left open
+ * with no answer ran to "now" and added 5,760 minutes to the week by Friday). A lesson still running has rows soon.
+ */
+export const OPEN_SO_FAR_MAX_MIN = 60;
 export const CADENCES = Object.freeze(["daily", "weekly", "monthly", "term"]);
 export const LANGS = Object.freeze(["en", "hinglish", "hi"]);
 /** child.language_pref → report language. */

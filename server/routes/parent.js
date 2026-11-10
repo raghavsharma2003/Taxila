@@ -17,7 +17,7 @@ import { requireGuardian, requireChild, hasConsent } from "../auth.js";
 import { getTopic, topicSequence, SUBJECT_ORDER } from "../content/curriculum.js";
 import { kitFromFile } from "../content/kits.js";
 import { topicOf, skillById, misconceptionById } from "../content/index.js";
-import { topicStatus, decidingStates } from "../content/next-topic.js";
+import { decidingStates } from "../content/next-topic.js";
 import { AzureError, tts } from "../azure.js";
 import { allowSpeech, DEFAULT_VOICE, MAX_TTS_CHARS } from "./tts.js";
 import { MIN_DELAY_MS } from "../learner/bkt.js";
@@ -29,11 +29,12 @@ import { ITEM_CLASSES } from "../learner/kt/outcomes.js";
 import { skillScriptOf, scriptAskItem, scriptCheckItem, scriptThenItem, fillFriend } from "../director/script.js";
 import { learningDay, isoWeek, addDays, zonedToUtc } from "../conductor/clock.js";
 import { madeForOf } from "../reports/madeFor.js";
+import { verbFor } from "../play/dress.js";
 import { listReports, previewReport, reportById, termOf, windowOf } from "../reports/index.js";
 import { HOW, renderFixed } from "../reports/templates.js";
 import { shortTitleOf } from "../director/state.js";
 import { COUNTED_LESSON_SQL, loadTruth, loadLessonTally, claimRows, topicTruth, lessonFactsSummary, renderSummaryLine, summaryClaimsHold,
-  supersede, engineRow, lessonEndMs, GRADER_WORDS, nextTopicOf } from "../reports/truth.js";
+  supersede, engineRow, lessonEndMs, nextTopicOf } from "../reports/truth.js";
 
 export const PIN_RE = /^\d{4,6}$/;
 export const PIN_MAX_TRIES = 5;
@@ -339,17 +340,6 @@ export function foldDelayedChecks(rows) {
   return { passed, misses };
 }
 
-/** skill_id → foldDelayedChecks for a child (one query; only skills with a P10 row can have a delayed check). */
-async function delayedCheckMap(childId, skillIds = null) {
-  const rows = await q(`select skill_id, at, probe, outcome, hints_used, lesson_id from evidence
-      where child_id = $1 and outcome <> 'no_evidence' and ($2::text[] is null or skill_id = any($2::text[]))
-        and skill_id in (select skill_id from evidence where child_id = $1 and probe = 'P10')
-      order by skill_id, at, id`, [childId, skillIds]);
-  const by = new Map();
-  for (const r of rows) { if (!by.has(r.skill_id)) by.set(r.skill_id, []); by.get(r.skill_id).push(r); }
-  return new Map([...by].map(([k, v]) => [k, foldDelayedChecks(v)]));
-}
-
 const LEARNED = new Set(["learned_today", "mastered", "due"]);
 
 /**
@@ -375,12 +365,6 @@ export function parentState(row, dc = null) {
   if (s === "introduced" && !(Number(row?.attempts) > 0)) return { level: 0, key: "unseen", recheck: false };
   if (s === "introduced" || s === "practising") return { level: 1, key: "practising", recheck: false };
   return { level: 0, key: "unseen", recheck: false };
-}
-
-/** topicStatus (content/next-topic.js) → parent state. "weak" is never shown as a word (PX4): it reads as practising. */
-export function topicParentState(status) {
-  return ({ mastered: { level: 3, key: "mastered" }, learned: { level: 2, key: "learned_today" }, in_progress: { level: 1, key: "practising" },
-    weak: { level: 1, key: "practising" } })[status] ?? { level: 0, key: "unseen" };
 }
 
 /** What kind of check a probe was, in plain words (§6.4 "what kind of check"). Shapes for the client to word. */
@@ -463,6 +447,9 @@ export function claimHolds(kind, state, rows, now = new Date()) {
  */
 export function homeHeadline({ skills, rowsBySkill, totalRows, lessonsEver, lessonsThisWeek, preferPractising = null, now = new Date() }) {
   if (!lessonsEver) return { kind: "none", canNow: null, practising: null };
+  // "This week" speaks of this calendar week only, as "Lessons this week" does (audit LEARN-32: a rolling 7 days put
+  // "can now …" above "Lessons this week: 0" on a Monday)
+  if (!lessonsThisWeek && lessonsEver > 1) return { kind: "no_week", canNow: null, practising: null };
   const recent = now.getTime() - HEADLINE_RECENT_DAYS * 86400_000;
   const seen = skills.filter((s) => s.lastSeen && new Date(s.lastSeen).getTime() >= recent);
   const rowsOf = (id) => rowsBySkill.get(id) ?? [];
@@ -507,12 +494,14 @@ export function defaultControls(classLevel) {
  */
 export const reportChannels = () => (process.env.TAXILA_REPORT_WHATSAPP === "on" ? ["whatsapp", "app"] : ["app"]);
 const EXTRA_TIME = ["normal", "more", "most"];
+const PLAY_VERBS = ["fire", "scan"];
 const controlsOut = (row, child) => row ? {
   dailyMinutes: row.daily_minutes, hoursStart: row.hours_start, hoursEnd: row.hours_end, captionsAlways: row.captions_always,
   comfortMode: row.comfort_mode, address: row.address, reportChannel: row.report_channel, saved: true,
   textOnly: !!row.text_only, homeworkToday: !!row.homework_until && new Date(row.homework_until) > new Date(),
   limitsOn: !!row.limits_on, extraTime: EXTRA_TIME.includes(row.extra_time) ? row.extra_time : "normal", dataSaver: !!row.data_saver,
-} : { ...defaultControls(child.class_level), saved: false, textOnly: false, homeworkToday: false };
+  playVerb: verbFor(row),
+} : { ...defaultControls(child.class_level), saved: false, textOnly: false, homeworkToday: false, playVerb: verbFor(null) };
 
 const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
 /** Validate a partial controls body against the current values → the full row to store. */
@@ -534,6 +523,13 @@ export function mergeControls(current, body) {
   if (body.extraTime !== undefined) {
     if (!EXTRA_TIME.includes(body.extraTime)) throw bad("extra time must be normal, more or most");
     out.extraTime = body.extraTime;
+  }
+  // the play wording switch (O-G4, audit PLAT-15): "fire" ("daago" at non-living targets) or "scan" in the 3D games; the
+  // effective value is returned (the operator default TAXILA_PLAY_VERB when the parent never chose), and written only
+  // when the parent sends it
+  if (body.playVerb !== undefined) {
+    if (!PLAY_VERBS.includes(body.playVerb)) throw bad("game words must be fire or scan");
+    out.playVerb = body.playVerb;
   }
   if (body.address !== undefined) {
     if (body.address !== null && !["tum", "aap"].includes(body.address)) throw bad("address must be tum or aap");
@@ -593,6 +589,13 @@ async function setControls(req, res, body) {
   if (body.limitsOn !== undefined || body.extraTime !== undefined || body.dataSaver !== undefined) {
     saved2 = await one("update child_controls set limits_on = $2, extra_time = $3, data_saver = $4 where child_id = $1 returning *",
       [child.id, !!c.limitsOn, c.extraTime ?? "normal", !!c.dataSaver]).catch((e) => {
+      if (e?.code === "42703") throw new HttpError(503, "this setting is not available yet");
+      throw e;
+    }) ?? saved2;
+  }
+  // 042 column (audit PLAT-15): the parent's play wording switch, read by server/play/dress.js withVerb on the play routes
+  if (body.playVerb !== undefined) {
+    saved2 = await one("update child_controls set play_verb = $2 where child_id = $1 returning *", [child.id, c.playVerb]).catch((e) => {
       if (e?.code === "42703") throw new HttpError(503, "this setting is not available yet");
       throw e;
     }) ?? saved2;
@@ -967,7 +970,7 @@ async function homeData(child, guardian) {
   const practising = head.practising ? claimOut(head.practising, "practising") : null;
   const [tryAtHome0, alert, next] = await stage2;
   const tryAtHome = reconcileTryAtHome(tryAtHome0, { canNow, practising }, child.first_name);
-  const topicOut = (tid) => { const t = getTopic(tid); return t ? { id: t.id, title: t.title, chapter: t.chapter.title, subject: t.subject } : { id: tid, title: tid }; };
+  const topicOut = topicOf_;   // the Lessons list's mapper, with the short title (audit LEARN-34)
   const minutesById = new Map(week.all.map((l) => [l.id, l.minutes]));
   return {
     child: childOut(child),
@@ -1366,8 +1369,6 @@ export function lessonSpeech(name, { topic, ended, checked, unaided }) {
   if (!checked) return `${noStop(topic)}. No answers were checked in this lesson.`;
   return `${noStop(topic)}. ${checked === 1 ? "1 answer was" : `${checked} answers were`} checked. ${name} got ${unaided} right on their own.`;
 }
-/** @deprecated the old IS HAFTE read-aloud name; the page read-aloud is homeSpeech. */
-export const hafteSpeech = homeSpeech;
 
 // ───────────────────────────── reports (server/reports/**) ─────────────────────────────
 

@@ -1,0 +1,51 @@
+{
+ "solved": 144,
+ "agreed": 144,
+ "findings": [
+  {
+   "id": "c9-science-ch09-t01-i02",
+   "verdict": "question_flawed",
+   "prompt_en": "Predict: the same reaction is done in an open glass on the balance. What happens to the reading, and why?",
+   "key": "It drops, because the carbon dioxide gas escapes into the air; ...",
+   "mine": "Drops if the reaction gives off a gas (conditional); reaction not stated",
+   "why": "The prompt says 'the same reaction' / 'wahi reaction' but never names it. The key assumes a CO2-producing reaction from an earlier item. Served on its own (retrieval, review, diagnostic reuse) it is unanswerable; for a non-gas reaction the reading would not change. Needs the reaction named in the prompt (e.g. baking soda + vinegar)."
+  },
+  {
+   "id": "c7-science-ch09-t02-i07",
+   "verdict": "acceptable_wrong",
+   "prompt_en": "Sneha writes: 'Every animal needs a mouth, teeth and a stomach to digest food.' Find two counter-examples.",
+   "key": "Amoeba has no mouth, teeth or stomach...; birds and snakes have no teeth for chewing. acceptable: [\"amoeba\",\"birds\",\"snake has no chewing teeth\"]",
+   "mine": "Amoeba, birds (also hydra, earthworm)",
+   "why": "Snakes have a mouth, teeth (fangs and rows of teeth) and a stomach, so a snake is not a counter-example to the sentence as written; 'snake has no chewing teeth' quietly changes the claim to 'chewing teeth'. Amoeba and birds are true counter-examples. Minor, but the acceptable form and the key sentence teach that snakes lack teeth by implication."
+  }
+ ],
+ "hinglish": [
+  {
+   "id": "c7-science-ch04-t01-i03",
+   "phrase": "kaun ki aawaaz goonjegi",
+   "why": "Ungrammatical: possessive of 'kaun' is 'kiski' ('kiski aawaaz goonjegi')."
+  },
+  {
+   "id": "DIAG:c9-science-ch01-t03-m2",
+   "phrase": "Kya theory bada hokar law ban jaati hai?",
+   "why": "Gender mismatch inside one sentence: 'theory ... jaati hai' is feminine, so it must be 'badi hokar'."
+  },
+  {
+   "id": "DIAG:c8-science-ch01-t01-m3",
+   "phrase": "Usse aur kya chahiye?",
+   "why": "'Usse' means 'from her/than that'; the intended word is 'Use' (she needs). Reads as a typo that changes meaning."
+  }
+ ],
+ "level": [
+  {
+   "id": "c9-science-ch01-t02-i05",
+   "why": "Adding 2 m and 50 cm with a unit conversion is class 3-4 arithmetic; far below class 9 even as a units warm-up."
+  }
+ ],
+ "other_notes": [
+  "All 144 keys agree in substance with my blind answers; no key_wrong found. All numeric keys re-checked: 9-1=8 cm; 100/20=5 and 60/10=6 m/s; 0.75*35+0.25*37=35.5 u; 2 m+0.5 m=2.5 m; a=4 m/s^2; Cl-35/37 neutrons 18/20.",
+  "Context-dependent prompts that still happen to be answerable but would read oddly if served standalone: c6-science-ch04-t01-i06 ('You correctly said aluminium foil won't stick') and c8-science-ch12-t01-i03 ('after the small fish increase a lot', scenario not restated).",
+  "The 24 DIAG mcq keys have no 'acceptable' list (undefined); each key text matches exactly one option. DIAG:c8-science-ch13-t01-m2 has two distractors that both say Mercury (not an error, just a weak distractor set).",
+  "Many free-response 'acceptable' lists contain single-fragment forms that cover only part of a two-part question (e.g. c6-science-ch02-t03-i01 'camel desert'; c7-science-ch01-t01-i04 'because of air'; c6-science-ch07-t01-i07 'chai higher temperature'). Not wrong answers, but if matching is any-of they would mark a half answer fully right."
+ ]
+}
