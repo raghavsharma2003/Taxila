@@ -4,6 +4,8 @@
 //   GET /api/ops/summary   ?hours=24 (1-168) → the numbers
 // Who: a signed-in guardian whose email (or its sha256) is in TAXILA_OPS_FOR, the same list shape as the other owner
 // cohorts (TAXILA_ACK_CONTINUER_FOR), so the owner's account is keyed by env without a code change. Anyone else gets 404.
+// The trace numbers read server rows only (src = 'server'): POST /api/trace/batch takes any client `kind`, so a client
+// row of kind srv.res would otherwise add a fake live lesson, 5xx or latency sample (PLAT-14).
 // Counts and timings only: no child names, no text; a live lesson shows as the first 8 characters of its id.
 import { createHash } from "node:crypto";
 import { requireGuardian } from "../auth.js";
@@ -34,26 +36,28 @@ export async function opsSummary(query, { hours = 24 } = {}) {
   const h = Math.min(168, Math.max(1, Math.round(Number(hours) || 24)));
   const [live, turns, errs, cost, meters] = await Promise.all([
     query(`select sid, min(t) as first, max(t) as last, count(*)::int as calls from trace_event
-      where kind = 'srv.res' and data->>'route' like 'POST /api/lesson/%' and t > now() - interval '15 minutes'
+      where kind = 'srv.res' and src = 'server' and data->>'route' like 'POST /api/lesson/%' and t > now() - interval '15 minutes'
       and sid ~ '^[0-9a-f-]{36}$' group by sid having max(t) > now() - interval '5 minutes' order by max(t) desc limit 50`),
     query(`select count(*)::int as n,
         percentile_cont(0.5) within group (order by (data->>'ms')::numeric) as p50,
         percentile_cont(0.9) within group (order by (data->>'ms')::numeric) as p90,
         count(*) filter (where (data->>'status')::int >= 500)::int as errors
-      from trace_event where kind = 'srv.res' and data->>'route' = $2 and t > now() - make_interval(hours => $1::int)`, [h, TURN]),
+      from trace_event where kind = 'srv.res' and src = 'server' and data->>'route' = $2 and t > now() - make_interval(hours => $1::int)`, [h, TURN]),
     query(`select data->>'route' as route, count(*)::int as n from trace_event
-      where kind = 'srv.res' and (data->>'status')::int >= 500 and t > now() - make_interval(hours => $1::int)
+      where kind = 'srv.res' and src = 'server' and (data->>'status')::int >= 500 and t > now() - make_interval(hours => $1::int)
       group by 1 order by 2 desc limit 10`, [h]),
     query(`select count(*)::int as lessons, coalesce(sum((cost->>'usd')::numeric), 0)::float8 as usd,
         coalesce(sum(extract(epoch from ended_at - started_at) / 60), 0)::float8 as minutes,
-        count(*) filter (where cost is null)::int as uncosted
+        count(*) filter (where cost is null)::int as uncosted,
+        coalesce(sum(extract(epoch from ended_at - started_at) / 60) filter (where cost is not null), 0)::float8 as costed_minutes
       from lesson where ended_at > now() - make_interval(hours => $1::int)`, [h]),
     query(`select m.key as meter, coalesce(sum((m.value->>'usd')::numeric), 0)::float8 as usd
       from lesson, jsonb_each(cost->'meters') m where ended_at > now() - make_interval(hours => $1::int) and cost is not null
       group by 1 order by 2 desc`, [h]),
   ]);
   const t = turns[0] ?? {}, c = cost[0] ?? {};
-  const costedMin = c.lessons && c.uncosted < c.lessons ? c.minutes : 0;
+  // $ per minute over the costed lessons' minutes only (PLAT-42): dividing costed $ by every lesson's minutes understated it
+  const costedMin = Number(c.costed_minutes) || 0;
   return {
     at: new Date().toISOString(), hours: h,
     live: { lessons: live.length, list: live.map((r) => ({ id: String(r.sid).slice(0, 8), minutes: Math.round((Date.parse(r.last) - Date.parse(r.first)) / 6000) / 10, calls: r.calls, lastSecAgo: Math.round((Date.now() - Date.parse(r.last)) / 1000) })) },

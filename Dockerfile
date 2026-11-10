@@ -4,6 +4,10 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
+# the deploy's commit (scripts/deploy-azure.mjs and scripts/release.mjs pass it): the page's trace build id and the
+# service worker's cache name (src/main.tsx, src/app/install.ts). Unset, both fall back to the bundle's content hash.
+ARG VITE_BUILD_SHA=""
+ENV VITE_BUILD_SHA=$VITE_BUILD_SHA
 RUN npm run build
 
 FROM node:22-slim

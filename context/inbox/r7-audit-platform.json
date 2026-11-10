@@ -1,0 +1,57 @@
+{
+ "nodes": [
+  {
+   "id": "rj-r7-audit-uncaught-decode-kills-replica",
+   "kind": "rejection",
+   "title": "A throw in the http request listener of server/serve.mjs is an uncaught exception: one GET /% (malformed percent-escape) exited the web process",
+   "at": "2026-11-09"
+  },
+  {
+   "id": "rj-r7-audit-rollback-fallback-picks-failed-revision",
+   "kind": "rejection",
+   "title": "deploy-azure --rollback guessed the previous revision when no `previous` label existed; after a failed smoke the newest non-current revision is the one that just failed",
+   "at": "2026-11-09"
+  },
+  {
+   "id": "rj-r7-audit-count-then-write-try-limit",
+   "kind": "rejection",
+   "title": "A try limit that counts, tests, then writes the attempt does not hold under parallel requests; write the attempt first, then count",
+   "at": "2026-11-09"
+  },
+  {
+   "id": "op-r7-audit-worker-image-needs-src",
+   "kind": "decision",
+   "title": "The worker image copies src/: the nightly job's sweep imports routes/account.js, whose static imports reach src/modules/frame/engines/*.logic.ts; without it trace retention never ran",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "r7-audit-platform-deletions",
+   "kind": "decision",
+   "title": "Audit platform (PLAT-57/58/59): removed code nothing reads; every removed path is still in commit c3977509",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "r7-audit-platform-calendar-kept",
+   "kind": "rejection",
+   "title": "Rejected: dropping the calendar table (PLAT-56 listed it as unused). server/conductor/view.js reads it for the Conductor's day kinds; migration 050 drops the other five only",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "rj-r7-audit-cap-teacher-agent-pool",
+   "kind": "rejection",
+   "title": "Rejected twice: capping background calls on taxila-gpt6 (the teacher agent's deployment and a Studio build arm). The W2-E measurement stands: the cap starved live Studio builds and the whiteboard",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "r7-audit-games05-modules-route-table",
+   "kind": "decision",
+   "title": "Removed server/routes/modules.js (an empty route table) and its registration in server/index.js (games audit GAMES-05, main's request); last held in 764d1754",
+   "at": "2026-11-10"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "rejected": "## rj-r7-audit-uncaught-decode-kills-replica\n**What was there:** `decodeURIComponent(req.url\u2026)` at the top of the request listener in `server/serve.mjs`, outside any try. **What broke:** `GET /%` threw `URIError`; nothing under `server/` handles `uncaughtException`, so the process exited and every lesson, stream and voice socket on the replica dropped, from one request with no sign-in (reproduced locally, n=1, 2026-11-09). **Now:** the decode is caught and answers 400 (`6fa4df68`, `tests/r7-audit-platform-serve.test.mjs`). **Rule:** code that runs in the bare listener before `handle()` must not throw; the router's try/catch does not cover it. The same decode in `parseCookies` turned any cookie with a bare `%` into a 500 on every signed-in route.\n\n## rj-r7-audit-rollback-fallback-picks-failed-revision\n**What was there:** `trafficRoles` in `scripts/deploy-azure.mjs` fell back to the newest revision that was not current and not `Unhealthy` when no traffic entry carried the `previous` label. **What broke (read from the code, not run against Azure):** the deploy's own PATCH drops the `previous` label, and a failed smoke leaves traffic as `[prev current]` with the new revision deactivated, so the fallback chose the failed revision and `rollback()` re-activated it at 100%; `release.mjs` printed the rollback hint exactly in that case. **Now (`891d1d8c`):** rollback goes to the captured revision and never guesses. **Rule:** a rollback target is recorded before the change, never inferred after it.\n\n## rj-r7-audit-count-then-write-try-limit\n**What was there:** `verifyCode` in `server/signin/code.js` read the wrong-try count, tested the code, then inserted the attempt. **What broke:** requests sent together all read a count under the limit, so the 5-try bound did not hold; and each new code reset the count while older codes stayed valid. **Now (`14b31b7b`):** the attempt is written before it is counted, and a new code spends the earlier ones. The in-process burst limiter in front (`server/routes/parent.js` `rateLimit`) is keyed on a caller-chosen value and is still open with Learning (audit PLAT-10).\n\n## r7-audit-platform-calendar-kept\nThe platform audit listed calendar among six tables nothing reads. The migration test that checks every dropped table against server/ and scripts/ SQL found server/conductor/view.js:108 reading it (the Conductor's day-kind lookup). Migration 050 drops module_run, rate_bucket, kt_params, voicesig.calibration and voicesig.population_norm only. Reversal: if the Conductor stops reading calendar, drop it in a later migration.\n\n## rj-r7-audit-cap-teacher-agent-pool\n**Proposed (audit PLAT-40, fixed in 4e0904a5, reverted 2026-11-10 on main's decision):** add the teacher agent's deployment (`TAXILA_TEACHER_DEPLOY`, default taxila-gpt6) to `sharedHot()` whenever a lesson can reach the agent lane, so a live agent turn is protected from background traffic on the same pool. **Why it was rejected:** `server/lanes.js`'s header records the earlier measurement (W2-E fixer, `createLanes` with a fake clock): capping background calls on a deployment that no hot lane shares made the 21st prefetch build wait 55 s and starved live Studio builds and the live whiteboard. taxila-gpt6 is a Studio build arm, so the cap brings that back. **Reverse only if:** a measurement shows agent turns on taxila-gpt6 actually getting 429s or queueing behind Studio traffic (see platform-proposals.md, PLAT-40), and the fix protects those turns without capping Studio builds (for example a separate deployment for the agent).\n",
+  "decisions": "## op-r7-audit-worker-image-needs-src\n**`Dockerfile.worker` copies `src/` (`891d1d8c`).** `server/conductor/ops.mjs --nightly` runs in the worker image and calls `sweepTestAccounts`, which imports `server/routes/account.js`; its static imports reach `server/director/engine-check.js`, which imports `src/modules/frame/engines/*.logic.ts`. Without `src/` the import threw, the outer catch ended the job, and the next line, the only caller of `traceRetention` (30/90-day deletion of recordings), never ran. The worker's own boot graph has no `src/` import, so the worker started fine and the existing image tests (which check `Dockerfile` and `worker.mjs`) saw nothing. **Reverse if:** the sweep stops importing route modules (for example `SAFETY_OPEN_SQL` moves to a leaf module) and a test proves the nightly job's whole import graph stays inside `server/`, `shared/`, `data/`.\n\n## r7-audit-platform-deletions\n**Removed (last held in c3977509):** scripts/offkit-cards.mjs, scripts/reveals-unit-sweep.mjs, scripts/self-answer-sweep.mjs (no importer, package script, workflow, Dockerfile, test or doc); server/auth.js verifyPassword (no importer; hashPassword stays, evals and tests use it); server/azure.js DEPLOY.stagecraftSpec (read nowhere; only old patches under docs/ name it); shared/trace.ts TraceSrc, TraceBlobResponse, TraceMe (no importer); src/trace/bus.ts setTurn and src/trace/flag.ts flagStats (no caller). **Kept on purpose:** the second registration of the placement routes in server/index.js (harmless; tests/r7-app-signin-code.test.mjs reverse-checks an applied patch whose context is that line); shared/trace.ts TRACE_KINDS and TraceKind (the documented kind list the writer's JSDoc points to); server/lanes.js twinFor and server/endpoints.js laneHost/laneHosts (tests read them); scripts/handoff/blob.py and redact.py (docs/handoff/STORAGE.md says they built the archives); scripts/r4-session-env.mjs (context/architecture.md cites it); scripts/region/staging.mjs (docs/ops/INDIA-MOVE.md tells the reader to run it). **Left to their owners:** server/duplex/routes.js (voice), server/routes/modules.js (games), POST /api/forge/requests, POST /api/forge/prefetch and GET /api/studio/health (studio).\n\n## r7-audit-games05-modules-route-table\n**Removed:** `server/routes/modules.js` (`export const routes = {}`) and its import and spread in `server/index.js`; the file is still in 764d1754. No route, test, script or Dockerfile read it. `tests/r7-app-signin-code.test.mjs` reverse-applied the already-applied patch to-platform/002 to prove it was in, which pins the register line forever; it now checks the patch's effect (index.js imports and registers the sign-in routes) when the reverse no longer matches.\n"
+ }
+}
