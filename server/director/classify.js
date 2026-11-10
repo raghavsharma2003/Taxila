@@ -614,7 +614,15 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // check-in tier (state.js checkTier), never cleared
     ...(safety.distress && safety.kind === "self_harm" && lessonHyperbole(text) ? { idiom: "lesson_hyperbole" } : {}),
   };
-  const done = (outcome, source, extra = {}) => ({ result: { outcome, confidence: 1, source, flags, ...extra }, flags, text });
+  // v6.8 G1 (main, director16 c5-t01 stuck 63: "-1/7 km" graded right against "1/7 km" — the key match dropped the sign): an
+  // answer said negative is never right for a key that is not; the sign is part of the value
+  const NEG = /(?:^|[\s(])(?:[-−–]\s*(?=\d)|minus\b|negative\b|rin\b|ऋण)/iu;
+  const negSaid = NEG.test(` ${text}`);
+  const negKey = [target?.key, ...(target?.also ?? [])].filter(Boolean).some((k) => NEG.test(` ${String(k)}`));
+  const done = (outcome, source, extra = {}) => {
+    if (outcome === "correct" && negSaid && !negKey && source !== "chip") { outcome = "incorrect"; extra = { ...extra, signMismatch: true }; }
+    return { result: { outcome, confidence: 1, source, flags, ...extra }, flags, text };
+  };
 
   // Taps and module answers are machine truth: no model, no transcript.
   if (chipId && target.options && /^opt:\d+$/.test(chipId)) {
@@ -897,6 +905,16 @@ export function needsModelDistressRead(result, text) {
  *   covered?: string[], missing?: string[],
  *   flags: { dontKnow: boolean, asksForAnswer: boolean, minimal: boolean, offTopic: boolean, distress: boolean, distressKind: string|null, wantsToStop: boolean } }>}
  */
+const NEG_SIGN = /(?:^|[\s(])(?:[-−–]\s*(?=\d)|minus\b|negative\b|rin\b|ऋण)/iu;
+/** v6.8 G1: a "correct" whose answer is said negative while no form of the key is, made incorrect. */
+export function signMismatch(out, target, text) {
+  const r = out?.result ?? out;
+  if (!r || r.outcome !== "correct") return out;
+  const negKey = [target?.key, ...(target?.also ?? [])].filter(Boolean).some((k) => NEG_SIGN.test(` ${String(k)}`));
+  if (negKey || !NEG_SIGN.test(` ${String(text ?? "")}`)) return out;
+  const fixed = { ...r, outcome: "incorrect", signMismatch: true };
+  return out?.result ? { ...out, result: fixed } : fixed;
+}
 export async function classify(args) {
   const fast = classifyFast(args);
   if (!fast.stray) return classifyRead(args, fast);
@@ -971,7 +989,9 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
     // `fallback`: the fallback deployment answered (brain_trace cls_source.fallback); the label is a model label either way
     // round2 truth (grading/corroborate.js): the label is a proposal; a credit the child's words cannot carry, or a fail of
     // words that ARE the key, becomes no evidence (a re-ask the Director grades in code), never a wrong grade
-    return corroborate({ target, text, result: { ...label, source: "model", flags, ...(signals ? { signals } : {}), ...(viaFallback ? { fallback: true } : {}) } });
+    const out = corroborate({ target, text, result: { ...label, source: "model", flags, ...(signals ? { signals } : {}), ...(viaFallback ? { fallback: true } : {}) } });
+    // v6.8 G1: the model's credit is held to the sign too — an answer said negative is never right for a key that is not
+    return signMismatch(out, target, text);
   };
   const filtered = () => {
     console.warn("[classify] blocked by the content filter: routed to safeguarding");
