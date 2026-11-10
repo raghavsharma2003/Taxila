@@ -8,7 +8,7 @@ import { requireChild } from "../auth.js";
 import { AzureError, tts } from "../azure.js";
 import { bad, need, notFound, HttpError } from "../http.js";
 import { teacherForLesson } from "../compiler/characters/index.js";
-import { speakable, spokenOptsForChild } from "../voice/spoken.js";
+import { speakable, spokenOptsForChild, sayNameOf } from "../voice/spoken.js";
 import { cascadeEngine, dhdVoiceFor, expressiveOn } from "../voice/voices.js";
 import { dhdClip } from "../voice/azureTts.js";
 import { compileDhd, plainSsml } from "../voice/expressive/compile/dhd.js";
@@ -39,6 +39,12 @@ export function allowSpeech(guardianId, now = Date.now()) {
   return ok;
 }
 
+/**
+ * The spoken-form options for "Hear": the child's cell AND the parent's spoken spelling of the name, as the streamed voice
+ * uses (server/routes/voice.js). Audit V-30: Hear said the name as written while her streamed line said it as spelled.
+ */
+export const spokenFor = (child) => { const n = sayNameOf(child); return n ? { ...spokenOptsForChild(child), sayName: n } : spokenOptsForChild(child); };
+
 /** @type {(req: any, res: any, body: import("../../shared/contracts").TtsRequest) => Promise<void>} */
 export async function speak(req, res, body) {
   const { lessonId, seq } = need(body, "lessonId", "seq");
@@ -63,7 +69,7 @@ export async function speak(req, res, body) {
   // the rest of the sitting keeps (styleForChild laneSwitched).
   if (cascadeEngine() === "dhd" && !lesson.lane_switched && dhdVoiceFor(teacher.id).usable) {
     try {
-      audio = await dhdHear(lessonId, seq, text, teacher.id, spokenOptsForChild(child));
+      audio = await dhdHear(lessonId, seq, text, teacher.id, spokenFor(child));
     } catch (e) {
       count("engine_fallback");
       console.warn(`[voice] identity change on Hear: dhd → oai ${voice} (${e?.code || e?.status || "error"})`);
@@ -82,7 +88,7 @@ export async function speak(req, res, body) {
     // No delivery `instructions`: the teacher's voice is chosen by blind ear, not by an unmeasured prompt.
     // The voice gets the SPOKEN form (numerals, notation, helplines digit by digit: server/voice/spoken.js);
     // the stored turn and the caption keep the written text.
-    const said = process.env.TAXILA_TTS_SPOKEN === "0" ? text : speakable(text, spokenOptsForChild(child));
+    const said = process.env.TAXILA_TTS_SPOKEN === "0" ? text : speakable(text, spokenFor(child));
     audio = await tts(said, VOICES.has(voice) ? voice : DEFAULT_VOICE);
   } catch (e) {
     if (e instanceof AzureError) throw new HttpError(502, "speech service unavailable");
