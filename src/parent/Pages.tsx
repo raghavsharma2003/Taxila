@@ -161,7 +161,8 @@ function Choice({ c, me, childId, teacherName, onSaved }: { c: (typeof CHOICES)[
         <Speaker src={`/api/parent/speak?what=consent&row=${c.purpose}`} label={`Listen: ${c.title}`} />
       </div>
       <p>Now: <strong>{now === null ? "Not answered" : now ? c.yes : c.no}</strong></p>
-      <p className="pa-effect">{now === false ? c.effectNo(teacherName) : c.effectYes}</p>
+      {/* an unanswered choice is not a yes: show what "no" means until it is granted (audit LEARN-38) */}
+      <p className="pa-effect">{now === true ? c.effectYes : c.effectNo(teacherName)}</p>
       {!editing ? <Button small variant="secondary" onClick={() => { setEditing(true); setPick(now === null ? null : now ? "yes" : "no"); }}>Change</Button> : (
         <div className="pa-stack-sm">
           <TileGroup label={c.title} columns={2} value={pick} onChange={(v) => setPick(v as "yes" | "no")}
