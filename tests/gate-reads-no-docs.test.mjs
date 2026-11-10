@@ -20,6 +20,22 @@ function walk(d, out = []) {
   return out;
 }
 
+// A patch file is never the subject of a gate test: not read, not `git apply --check`ed (main, integration 22: the path and the
+// apply call can sit on different lines, so this looks at the whole file, not line by line).
+const PATCH_APPLY = /docs\/patches|\bgit\b[\s\S]{0,200}["'`]apply["'`]|\bexecFileSync\([^)]*["'`]apply["'`]/;
+const APPLIES_PATCHES_ON_PURPOSE = new Set([]);
+
+test("no gate test applies or asserts on a patch file", () => {
+  const hits = [];
+  for (const f of walk(TESTS)) {
+    const name = f.split("/").pop();
+    if (NAMES_DOCS_ON_PURPOSE.has(name) || APPLIES_PATCHES_ON_PURPOSE.has(name)) continue;
+    const body = readFileSync(f, "utf8").split("\n").filter((l) => !/^\s*(\/\/|\*|\/\*)/.test(l)).join("\n");
+    if (PATCH_APPLY.test(body)) hits.push(f.slice(TESTS.length));
+  }
+  assert.deepEqual(hits, [], "assert on the code the patch became; a patch file is not gate material");
+});
+
 test("no gate test or fixture reads from docs/", () => {
   const hits = [];
   for (const f of walk(TESTS)) {
