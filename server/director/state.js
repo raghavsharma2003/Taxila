@@ -705,7 +705,8 @@ function walkNextV2(s, input, prefix, sk) {
     const sayFirst = bridge ? { sayFirst: [bridge], bridgeSaid: bridge, ...bridgeBeat } : {};
     if (kind === "hook") {
       w.i += 1;
-      const slot = hookSlot(sk, s.ctx.interests);
+      const ks = knowsHookSlot(s, sk); // round 8 K6: the plan's slot (undefined: no plan)
+      const slot = ks !== undefined ? ks : hookSlot(sk, s.ctx.interests);
       const use = saidIn(slot?.use, lang);
       return plan("hook", join(prefix, SH.scriptHook({ bridge: !!bridge })), { format: "F4", content: [...bridgeLine, `hook: ${sk.hook.convey}`, ...(use ? [`their world: ${use}`] : [])], ...ref("hook", "hook"),
         ...([bridge, use].some(Boolean) ? { sayFirst: [bridge, use].filter(Boolean) } : {}), ...(bridge ? { bridgeSaid: bridge, ...bridgeBeat } : {}) });
@@ -1056,7 +1057,8 @@ function warmup(s, input, item) {
     if (first) activate(s, first);
     // F4 (dc-r7-script-walk-v2): with a v2 script, the greet promises only an interest its hook's slots use
     const sk0 = scriptOn() ? skillScriptOf(input.kit, input.kit.skills[0]?.id) : null;
-    const slotInterest = sk0?.explain?.[0]?.ask ? hookSlot(sk0, s.ctx.interests)?.interest ?? null : undefined;
+    const gs = knowsGreetSlot(s, sk0); // round 8 K6: the greet promises the plan's slot
+    const slotInterest = sk0?.explain?.[0]?.ask ? (gs !== undefined ? gs : hookSlot(sk0, s.ctx.interests))?.interest ?? null : undefined;
     // Learning patch 004b: a question kept in the jar last time is the first thing she comes back to (a promise kept)
     const jar = (s.later ?? []).find((p) => p.jarId && p.servedAt == null);
     if (jar) s.later = serveLater(s.later, jar.id, s.turn);
