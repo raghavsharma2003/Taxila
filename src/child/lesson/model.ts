@@ -1,5 +1,5 @@
 // The Desk's view model: everything the lesson screen shows, as plain data. The live controller (useDesk.ts)
-// derives it from the runtime, the floor and the outbox; the dev fixtures (dev/DeskFixtures.tsx) write it by hand,
+// derives it from the runtime, the floor and the outbox; the dev page (dev/DeskDev.tsx) writes it by hand,
 // so every floor, trouble and feedback state can be pinned and photographed deterministically.
 import type { Emotion } from "../../avatar/behaviour.ts";
 import type { Floor } from "../../lesson/floor.ts";
@@ -205,6 +205,8 @@ export interface DeskActions {
   troubleAction(a: "wait" | "try_again" | "finish_now" | "send_again" | "play_again" | "hear_now" | "sign_in" | "go_home" | "type_instead" | "ok" | "continue_live"): void;
   dismissNoMic(): void;
   finish(): void;
+  /** APP-26: the finish step (done-today mark, notebook entry), then go to `to` instead of Home. */
+  finishTo?(to: string): void;
   moduleEvent(ev: unknown): void;
   /** W1 seam (BUILD-PLAN §2): the WorkTray's module reported an error or never loaded (WorkTray onModuleFailed). A no-op
    *  until W1-A fills it; moduleEvent still receives the error event as before. */

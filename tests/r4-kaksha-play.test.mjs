@@ -8,6 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { recipe } from "../src/ui-v3/kaksha/play/recipe.ts";
 import { cosmeticsFor } from "../src/ui-v3/kaksha/play/cosmetics.ts";
+import { K_VOLT_NIGHT } from "../src/ui-v3/kaksha/tokens.ts";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const read = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
@@ -48,7 +49,9 @@ test("recipe lines for decimals, whole numbers and rounding", () => {
 
 test("cosmetics: only open items tint the engine; colours come from the Kaksha palette; nothing equipped → null", () => {
   const items = [{ id: "hull-thirds", kind: "hull", hue: "plasma", open: true }, { id: "trail-green", kind: "trail", hue: "secure", open: true }, { id: "trail-magnet", kind: "trail", hue: "science", open: false }];
-  assert.deepEqual(cosmeticsFor({ hull: "hull-thirds", trail: "trail-green" }, items), { hull: 0x3ee6ff, trail: 0x7cf5b5 });
+  // APP-17: the colours are the look the child is on (Volt ships for both families), not the retired classic Night palette
+  const P = K_VOLT_NIGHT, num = (h) => parseInt(h.slice(1), 16);
+  assert.deepEqual(cosmeticsFor({ hull: "hull-thirds", trail: "trail-green" }, items), { hull: num(P.move), trail: num(P.secure) });
   assert.deepEqual(cosmeticsFor({ trail: "trail-magnet" }, items), null, "a stale device choice for an unopened part never shows");
   assert.deepEqual(cosmeticsFor({ hull: "trail-green" }, items), null, "an item only fills its own slot");
   assert.equal(cosmeticsFor({}, items), null);

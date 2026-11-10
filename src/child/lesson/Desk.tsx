@@ -23,6 +23,7 @@ import { HelpSheet } from "./sheets/HelpSheet.tsx";
 import { HintSheet } from "./sheets/HintSheet.tsx";
 import { PauseSheet } from "./sheets/Pause.tsx";
 import { Summary } from "./Summary.tsx";
+import { isAnswerTray } from "./answers.ts";
 import { captionVisible, SpeechRow, TeacherWindow } from "./TeacherWindow.tsx";
 import { TroubleScreen } from "./TroubleScreen.tsx";
 import { TroubleStrip } from "./TroubleStrip.tsx";
@@ -84,7 +85,7 @@ export interface DeskProps {
   /** r4 K-P2: a skin name written on the root as data-skin (CSS only: the zones, layout and behaviour never change). */
   skin?: string;
   /** r4 K-P2: the lesson-end screen in place of the Summary (the Kaksha Debrief). Absent: today's Summary. */
-  renderSummary?: (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => ReactNode;
+  renderSummary?: (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void; onFinishTo?: (to: string) => void }) => ReactNode;
   /** r4 K-P12: the skin's intake card (m.intake), drawn at the top of the Question card. Absent: nothing (today). */
   renderIntake?: (m: DeskModel) => ReactNode;
   /** r7 app-lesson-stage-first: a skin's own body in place of the Desk's phone / wide grids. The Desk still owns the
@@ -219,7 +220,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
     return <div {...rootAttrs}><TroubleScreen m={m} id={full} onAction={a.troubleAction} code={supportCode} />{liveRegions}</div>;
   }
   if (m.summary) {
-    return <div {...rootAttrs} data-summary="1">{renderSummary ? renderSummary({ m, meters: media.meters, onFinish: a.finish }) : <Summary m={m} meters={media.meters} onFinish={a.finish} />}{liveRegions}</div>;
+    return <div {...rootAttrs} data-summary="1">{renderSummary ? renderSummary({ m, meters: media.meters, onFinish: a.finish, onFinishTo: a.finishTo }) : <Summary m={m} meters={media.meters} onFinish={a.finish} />}{liveRegions}</div>;
   }
 
   const topBar = <TopBar m={m} a={a} notMeWindow={!!(notMeWindow ?? m.notMeWindow)} phaseLine={phaseLine} wide={L.kind === "wide"} />;
@@ -229,9 +230,9 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
     lead={m.intake && renderIntake ? renderIntake(m) : null} />;
   // The answer surfaces (tiles, the NumberPad, the Help menu over them) are AnswerTray's; the activity and the board
   // stay WorkTray's (W1-B). BUILD-PLAN W1-A items 3 and 11.
-  const answerTray = m.tray && (m.tray.kind === "tiles" || m.tray.kind === "pad" || !!m.tray.overlay);
+  const answerTray = m.tray && isAnswerTray(m.tray);
   const tray = m.tray && L.geometry === "work" ? answerTray ? (
-    <AnswerTray tray={m.tray} floor={floor} young={young} actions={a} slash={m.padSlash} comma={m.padComma} />
+    <AnswerTray tray={m.tray} floor={floor} young={young} actions={a} slash={m.padSlash} comma={m.padComma} askKey={m.ask?.itemId ?? m.ask?.text ?? null} />
   ) : (
     <WorkTray tray={m.tray} floor={floor} young={young} modules={media.modules} lang={media.lang} ageBand={media.ageBand} actions={a} onModuleFailed={a.moduleFailed} />
   ) : null;
@@ -241,9 +242,9 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
 
   let body: ReactNode;
   if (renderBody) {
-    const isAnswer = (tr: NonNullable<DeskModel["tray"]>) => tr.kind === "tiles" || tr.kind === "pad" || !!tr.overlay;
+    const isAnswer = isAnswerTray;
     const renderTray = (tr: NonNullable<DeskModel["tray"]>) => isAnswer(tr)
-      ? <AnswerTray tray={tr} floor={floor} young={young} actions={a} slash={m.padSlash} comma={m.padComma} />
+      ? <AnswerTray tray={tr} floor={floor} young={young} actions={a} slash={m.padSlash} comma={m.padComma} askKey={m.ask?.itemId ?? m.ask?.text ?? null} />
       : <WorkTray tray={tr} floor={floor} young={young} modules={media.modules} lang={media.lang} ageBand={media.ageBand} actions={a} onModuleFailed={a.moduleFailed} />;
     body = renderBody({ m, a, media, topBar, card, dock, strip, renderTray, isAnswerTray: isAnswer, floor, lit });
   } else if (L.kind === "wide" && L.wide) {

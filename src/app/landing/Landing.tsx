@@ -10,7 +10,7 @@
 // (tests/prod/r11-site-captures.mjs writes public/site/*.webp), never a mock-up or stock art.
 import { PRICES, priceSet, rupees } from "../site.ts";
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Icon } from "../../ui/index.ts";
 import { useSurface } from "../band.ts";
 import { Helplines, PrimaryCta, PromiseSpot, Rupee, SiteFooter, SiteHeader, VOLT_NIGHT, useCanonical } from "./Site.tsx";
@@ -106,6 +106,13 @@ export default function Landing() {
   useEffect(() => { document.title = "Taxila · a personal AI teacher for classes 1 to 9"; }, []);
   useCanonical();
   const [open, setOpen] = useState<number | null>(null);
+  // APP-11: "/#lesson" from another public page lands here with a hash the router does not scroll to
+  const { hash } = useLocation();
+  useEffect(() => {
+    if (!hash) return;
+    const el = document.getElementById(decodeURIComponent(hash.slice(1)));
+    if (el) el.scrollIntoView({ block: "start" });
+  }, [hash]);
 
   return (
     <div {...VOLT_NIGHT} data-page="landing">

@@ -3,6 +3,7 @@
 // It writes data-band on <html> and on its own [data-v2] root, and data-theme: ALWAYS "light" for Young (b1/b2 are
 // light-only, `ds-band-fork-older`), the child's Light / Dark / Match phone choice for Older. No child-facing error
 // copy beyond the designed T8 line: a missing session asks for a grown-up.
+import { tr7 } from "../copy/en.ts";
 import { pairedChildId } from "../app/device.ts";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
@@ -137,7 +138,7 @@ export function ChildShell({ children }: { children?: ReactNode }) {
             <KxRoot family="older" reducedMotion={false} screen="gate">
               <div className="kx-screen kx-page"><main className="kx-page-main kx-home-state">
                 <StatePanel glyph={state === "error" ? "offline" : "door"} tone={state === "error" ? "rose" : undefined} headId="kx-gate-h"
-                  title={state === "error" ? t("connectionWeak") : t("grownupSignIn")}>
+                  title={state === "error" ? t("connectionWeak") : state === "missing" ? tr7("gate.missing") : t("grownupSignIn")}>
                   {state === "error" ? (
                     <Ghost onClick={() => setN((x) => x + 1)}><Glyph name="replay" size={20} /> {t("tryAgain")}</Ghost>
                   ) : (
@@ -151,7 +152,7 @@ export function ChildShell({ children }: { children?: ReactNode }) {
           )}
           {state !== "loading" && !kxBoot() && (
             <div className="cs-card cs-gate-card">
-              <h1 tabIndex={-1}>{state === "error" ? t("connectionWeak") : t("grownupSignIn")}</h1>
+              <h1 tabIndex={-1}>{state === "error" ? t("connectionWeak") : state === "missing" ? tr7("gate.missing") : t("grownupSignIn")}</h1>
               {state === "error" ? (
                 <button type="button" className="cs-btn cs-btn--primary" onClick={() => setN((x) => x + 1)}>{t("tryAgain")}</button>
               ) : (

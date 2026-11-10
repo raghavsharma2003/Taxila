@@ -18,7 +18,7 @@ import { artTierD, Spot, useTopicArt } from "../art.tsx";
 import { ChildScreen } from "../chrome.tsx";
 import { useChild } from "../ChildShell.tsx";
 import { clock, t } from "../copy.ts";
-import { subjectWords, tw, tw2 } from "../../copy/en.ts";
+import { subjectWords, tr7, tw, tw2 } from "../../copy/en.ts";
 import { Icon, Picto } from "../pictos.tsx";
 import { practiceOffered, usePlan, type HomePlan } from "../plan.ts";
 import { SkyStar } from "../progress/StateShape.tsx";
@@ -260,7 +260,7 @@ function SafetyHoldCard({ headId }: { headId: string }) {
         <Icon name="help" size={22} /><span>{tw2("home.hold.help")}</span>
       </button>
       {open && (
-        <HelpSheet teacherId={child.teacher_id ?? ""} band={band} childName={child.first_name} backVisible grownUp={grownUp} faceForm={face}
+        <HelpSheet teacherId={child.teacher_id ?? ""} band={band} childName={child.first_name} backVisible backLabel={tr7("nb.close")} grownUp={grownUp} faceForm={face}
           onGrownUp={() => setGrownUp(true)} onGrownUpBack={() => setGrownUp(false)} onGrownUpHere={() => { setGrownUp(false); setOpen(false); }}
           onBack={() => setOpen(false)} />
       )}

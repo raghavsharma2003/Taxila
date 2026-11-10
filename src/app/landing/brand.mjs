@@ -70,28 +70,11 @@ const SHARE_HTML = `<html><body style="margin:0"><div id="c" style="width:1200px
   <div style="font-size:44px;font-weight:600;line-height:1.25;margin-top:24px">A personal AI teacher<br>for classes 1 to 9</div>
   <div style="font-size:30px;margin-top:20px;opacity:.85">Lessons by voice, in English, Hindi or both</div></div></div></body></html>`;
 
-const MANIFEST = {
-  name: "Taxila",
-  short_name: "Taxila",
-  description: "A personal AI teacher for classes 1 to 9.",
-  start_url: "/who",
-  scope: "/",
-  display: "standalone",
-  background_color: CREAM,
-  theme_color: CREAM,
-  icons: [
-    { src: "/brand/icon-192.png", sizes: "192x192", type: "image/png" },
-    { src: "/brand/icon-512.png", sizes: "512x512", type: "image/png" },
-    { src: "/brand/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
-    { src: "/brand/monochrome-432.png", sizes: "432x432", type: "image/png", purpose: "monochrome" },
-    { src: "/favicon.svg", sizes: "any", type: "image/svg+xml" },
-  ],
-};
+// APP-34: public/manifest.webmanifest is hand-kept (Volt colours, id, current icons): this script no longer writes it.
 
 if (process.argv[1] && import.meta.url === `file://${process.argv[1]}`) {
   fs.mkdirSync(path.join(ROOT, "public/brand"), { recursive: true });
   for (const [f, s] of Object.entries(OUT)) fs.writeFileSync(path.join(ROOT, f), s);
-  fs.writeFileSync(path.join(ROOT, "public/manifest.webmanifest"), JSON.stringify(MANIFEST, null, 2) + "\n");
   const { chromium } = await import("playwright");
   const browser = await chromium.launch();
   const page = await browser.newPage();
