@@ -25,12 +25,14 @@ export function misconceptionSummary(L, comp, skillId, misOf) {
 /**
  * The ladder (§2.4), on already-read inputs. Exported for the property tests.
  * @param {{ display: string, pL: number, recent: number[], delayedMisses: number, U: number, T: number,
- *   nonGameU: boolean, nonGameT: boolean, mStar: number, verified: boolean, longDelayPos: boolean }} x
+ *   nonGameU: boolean, nonGameT: boolean, mStar: number, verified: boolean, longDelayPos: boolean, unaided?: boolean }} x
  * @param {typeof TH} [th] thresholds (launch TH; an override exists ONLY for sensitivity reports, never fitted: SIM6)
  * @returns {{ state: 'not_yet'|'shallow'|'fragile'|'understood'|'durable', reason: string }}
  */
 export function ladder(x, th = TH) {
-  const does = x.recent.filter((r) => r === 1).length >= 2 || x.pL >= th.K_DO;
+  // the estimate arm needs at least one unaided right answer ever (the ledger's flag): teaching alone lifts pL past K_DO,
+  // and a child who never answered read as "gets the answers" (audit LEARN-04)
+  const does = x.recent.filter((r) => r === 1).length >= 2 || (x.pL >= th.K_DO && x.unaided === true);
   if (x.mStar >= th.M_CONFIRMED && x.verified) return { state: "not_yet", reason: "wrong_idea_confirmed" };
   if (x.U >= th.U_FRAGILE && x.delayedMisses >= 1) return { state: "fragile", reason: "forgot_not_never" };
   if (!does) return { state: "not_yet", reason: "not_doing_yet" };
@@ -55,7 +57,7 @@ export function beliefFor(skillId, { ledger, comp, now, misconceptionsOf, th }) 
   const U = c?.U.p ?? FACET.U0, T = c?.T.p ?? FACET.T0;
   const m = misconceptionSummary(ledger, comp, skillId, misconceptionsOf);
   const longDelayPos = Math.max(c?.U.lastPosDelayDays ?? 0, c?.T.lastPosDelayDays ?? 0) >= TH.DURABLE_DELAY_DAYS;
-  const { state, reason } = ladder({ display: sk.display, pL: sk.pL, recent: sk.recent, delayedMisses: sk.delayedMisses, U, T,
+  const { state, reason } = ladder({ display: sk.display, pL: sk.pL, recent: sk.recent, delayedMisses: sk.delayedMisses, U, T, unaided: !!sk.flags?.unaided,
     nonGameU: !!c?.U.nonGame, nonGameT: !!c?.T.nonGame, mStar: m.mStar, verified: m.verified, longDelayPos }, th ? { ...TH, ...th } : TH);
   const open = [];
   if (U < TH.U_STOP) open.push("U");

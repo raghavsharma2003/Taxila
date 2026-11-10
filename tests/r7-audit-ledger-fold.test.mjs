@@ -47,3 +47,30 @@ test("LEARN-28: a second open lesson does not reset the first lesson's budgets",
   assert.equal(L3.session.sessionId, "A");
   assert.ok(L3.session.skills[S].budget.byClass["item.open"] >= 6, "A picks up its own count again (1/j weighting continues)");
 });
+
+test("LEARN-29: a right answer after a leak is half evidence on K for choice items and probes too", async () => {
+  const { temper } = await import("../server/learner/kt/bktr.js");
+  const mcq = { cls: "item.mcq4", outcome: 0, via: "dialogue" };
+  assert.equal(temper(mcq), 1);
+  assert.equal(temper({ ...mcq, preAttemptHelp: true }), 0.5);
+  assert.equal(temper({ cls: "probe.why", outcome: 0, preAttemptHelp: true }), 0.5);
+  assert.equal(temper({ ...mcq, outcome: 1, preAttemptHelp: true }), 1, "a wrong answer is not halved");
+});
+
+test("LEARN-26: writers outside the turn guard on max(seq) after the lock, retry, and project skill_state", async () => {
+  const { readFileSync } = await import("node:fs");
+  const W = await import("../server/learner/writer.js");
+  const g = W.seqGuardStmt("c1", 41);
+  assert.match(g.text, /max\(seq\) from kt_evidence where child_id = \$1\), 0\) = \$2/);
+  assert.deepEqual(g.params, ["c1", 41]);
+  const before = { skills: { a: { pL: 0.3 }, b: { pL: 0.5 } } }, after = { skills: { a: { pL: 0.4 }, b: { pL: 0.5 } } };
+  const st = W.projectionStmts({ id: "c1", legal_mode: "M1" }, before, after, 0, (sk) => ({ skillId: "a", pKnown: sk.pL, status: "practising", attempts: 1, correctUnaided: 0, generativePass: false, delayedPass: false, lastSeen: new Date(0).toISOString() }));
+  assert.equal(st.length, 1, "only the changed skill");
+  for (const f of ["server/placement/kt.js", "server/comprehension/later.js"]) {
+    const src = readFileSync(new URL(`../${f}`, import.meta.url), "utf8");
+    assert.match(src, /W\.seqGuardStmt\(child\.id, live\.maxSeq\)/, f);
+    assert.match(src, /GUARD_FAILED && attempt < W\.FOLD_RETRIES/, f);
+    assert.match(src, /W\.projectionStmts\(/, f);
+    assert.match(src, /out\[i \+ 3\]/, f);
+  }
+});

@@ -63,15 +63,20 @@ export const SOURCE_WEIGHT = Object.freeze({ game: 0.5, module: 0.75, studio: 0.
  * comprehension/later.js lateEvent), which carries its held event's game / module source in its id (`<id>:late:<via>`).
  */
 export const sourceOf = (ev) => (ev.via === "late" ? /:late:(game|module|studio)$/.exec(String(ev.id ?? ""))?.[1] ?? "late" : ev.via);
-/** Rule 4 tempering exponent: assisted ^0.5, gaming window ^0.25, controllerEasy ^0.5, unverified kit ^0.5, source (game/module). */
+/** Rule 4 tempering exponent: assisted ^0.5, gaming window ^0.25, controllerEasy ^0.5, unverified kit ^0.5, a leaked right answer ^0.5, source (game/module). */
 export function temper(ev) {
   let x = SOURCE_WEIGHT[sourceOf(ev)] ?? 1;
   if (ev.assisted) x *= 0.5;
   if (ev.gamingWindowKt) x *= 0.25;
   if (ev.controllerEasy) x *= 0.5;
   if (ev.kitVerified === false) x *= 0.5;
+  // a right answer after the teacher leaked it (or help was asked first) is half evidence on K, as facets.js E11 halves it
+  // on U/T. Open items already close such an answer at C4 (adapter.js); this covers choice items and probes (LEARN-29).
+  if (ev.preAttemptHelp && LEAK_HALVES.includes(outcomeName(ev.cls, ev.outcome))) x *= 0.5;
   return x;
 }
+/** The positive outcomes a leak halves (facets.js isPositiveOutcome's list). */
+const LEAK_HALVES = Object.freeze(["full", "high", "caught_fixed", "caught", "right", "pass", "C0", "first_correct"]);
 
 /**
  * Raw log-evidence per skill of one event, from the PRE-event pLs (conjunctive items, kt-algorithms §1.5:

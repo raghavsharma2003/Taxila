@@ -48,12 +48,12 @@ test("LEARN-02 (real pipeline): 60 wrong answers on a pilot topic end below wher
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("LEARN-04: taught but never answered is not 'gets the answers'", { todo: "LEARN-04: main decides the model change" }, () => {
+test("LEARN-04: taught but never answered is not 'gets the answers'", () => {
   const x = { display: "practising", pL: 0.659, recent: [], delayedMisses: 0, U: 0.5, T: 0.2, nonGameU: true, nonGameT: true, mStar: 0, verified: false, longDelayPos: false };
   assert.equal(ladder(x).state, "not_yet", "no answer at all, yet the ladder reads 'does'");
 });
 
-test("LEARN-05: the same blind 'why' verdict gives the same state whether it arrives in time or late", { todo: "LEARN-05: main decides the model change" }, () => {
+test("LEARN-05: the same blind 'why' verdict gives the same state whether it arrives in time or late", () => {
   const res = [{ targetId: "x", label: "present", spanOk: true }];
   n = 0; const a = [ev({}), ev({})]; const w1 = ev({ cls: "probe.why", outcome: 2, grader: "llm" });   // the classifier guessed "none"
   const inTime = fold(fresh(), [...a, finalEvent(w1, res).event]).skills[S];
@@ -62,7 +62,7 @@ test("LEARN-05: the same blind 'why' verdict gives the same state whether it arr
   assert.equal(late.display, inTime.display, `in time ${inTime.display} (${inTime.pL.toFixed(3)}), late ${late.display} (${late.pL.toFixed(3)})`);
 });
 
-test("LEARN-07: a parent's 'Easy' never starts a class-5 child before the calendar's chapter", { todo: "LEARN-07: main decides the placement change" }, () => {
+test("LEARN-07: a parent's 'Easy' never starts a class-5 child before the calendar's chapter", () => {
   const date = new Date("2026-11-09T06:00:00Z");
   const order = topicSequence(5, "maths");
   const calendar = schoolStartIndex(order, getTopic, { classLevel: 5, date });
@@ -72,6 +72,12 @@ test("LEARN-07: a parent's 'Easy' never starts a class-5 child before the calend
     const ch = (k) => getTopic(order[k]).chapter.number;
     assert.ok(i >= calendar, `${parentView}: chapter ${ch(i)}, the calendar alone gives chapter ${ch(calendar)}`);
   }
+  // a below-level answer still moves the start back, and the note says so; "Easy" makes no "a little before" line
+  const hard = coldStartResult({ subject: "maths", classLevel: 5, parentView: "hard", date });
+  assert.ok(schoolStartIndex(order, getTopic, { classLevel: 5, startGE: hard.startGE, date }) < calendar);
+  const easy = coldStartResult({ subject: "maths", classLevel: 5, parentView: "easy", date });
+  assert.equal(easy.startGE, null);
+  assert.ok(easy.placement, "the answer still seeds the estimate");
 });
 
 test("LEARN-10: set-up never shows a raw error message to the parent", { todo: "LEARN-10: main decides the set-up copy" }, () => {

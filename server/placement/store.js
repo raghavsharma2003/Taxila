@@ -1,7 +1,7 @@
 // Reads over finished placement rounds (migration 036): the summary a parent sees and the start GE topic choice uses.
 import { q } from "../db.js";
 import { startChapter } from "./cat.js";
-import { refinedStart } from "./coldstart.js";
+import { refinedStart, geOf } from "./coldstart.js";
 import { topicSequence, getTopic } from "../content/curriculum.js";
 
 /**
@@ -36,14 +36,14 @@ export async function placementResultsOf(childId, { q_ = q } = {}) {
 
 
 /** PURE. { [subject]: startGE } from placementResultsOf (content/next-topic.js nextTopicFor's `startGE`). */
-export const startGEOf = (results) => Object.fromEntries(Object.entries(results ?? {}).filter(([, r]) => Number.isFinite(Number(r?.startGE))).map(([s, r]) => [s, Number(r.startGE)]));
+export const startGEOf = (results) => Object.fromEntries(Object.entries(results ?? {}).filter(([, r]) => Number.isFinite(geOf(r?.startGE))).map(([s, r]) => [s, geOf(r.startGE)]));
 
 /**
  * PURE. { [subject]: grade levels below the class's expected level } for subjects placed below it (conductor R9's
  * foundation share), to .5. A result without its `expected` (an older round) or at/above expected is left out.
  */
 export const placementGapOf = (results) => Object.fromEntries(Object.entries(results ?? {})
-  .map(([s, r]) => [s, Number(r?.expected) - Number(r?.startGE)])
+  .map(([s, r]) => [s, Number(r?.expected) - geOf(r?.startGE)])
   .filter(([, g]) => Number.isFinite(g) && g >= 0.5)
   .map(([s, g]) => [s, Math.round(g * 2) / 2])
   .sort(([a], [b]) => (a < b ? -1 : 1)));

@@ -121,15 +121,19 @@ test("lateEvent: deterministic id, via late, the grader's outcome and span check
   assert.equal(lessonOfEvent(ev.id), LESSON); assert.equal(lessonOfEvent("nope:1:0"), null);
 });
 
-test("folding a correction: K is untouched (the fallback took the K step), U moves, replay of both rows is stable", () => {
+test("folding a correction: the fallback is held on K (kt-r3), the late verdict takes the K step, U moves, replay of both rows is stable", () => {
   const ev = why();
   const fallback = finalEvent(ev, undefined).event;                       // what the turn folded: classifier outcome, spanOk false
+  assert.match(fallback.graderVersion, /^held:/, "the fallback is marked held");
   const s0 = newLearnerState({ childId: "c", classLevel: 5 });
   const s1 = fuseEvidence(s0, [{ ...fallback, seq: 1 }]);
   const late = { ...lateEvent(ev, PRESENT), seq: 2 };
   const s2 = fuseEvidence(s1, [late]);
-  assert.equal(s2.ledger.skills.s1.pL, s1.ledger.skills.s1.pL, "no second K step");
-  assert.equal(JSON.stringify(s2.ledger.ability), JSON.stringify(s1.ledger.ability), "no θ observation");
+  // audit LEARN-05: the classifier's guess moves no mastery; the blind verdict, late, takes the one K step
+  assert.equal(s1.ledger.skills.s1, undefined, "no K step from the guess");
+  assert.ok(s2.ledger.skills.s1 && s2.ledger.held === undefined, "the late verdict took the K step and released the hold");
+  // the strand's epoch opens with the K step (as it did at the fallback before kt-r3), but a why is no θ observation
+  for (const ep of Object.values(s2.ledger.ability)) { assert.deepEqual(ep.seen, [], "no θ observation"); assert.ok(Object.values(ep.nObs).every((x) => x === 0)); }
   assert.ok(s1.comp.skills.s1.U.p === s0.comp.skills.s1?.U.p || s1.comp.skills.s1.U.n === 0, "the unchecked positive carried no U (E6)");
   assert.ok(s2.comp.skills.s1.U.p > s1.comp.skills.s1.U.p, "the late checked verdict moves U");
   assert.equal(s2.ledger.seen[late.id], 2, "the ledger records it (writer stages it; seq order holds)");

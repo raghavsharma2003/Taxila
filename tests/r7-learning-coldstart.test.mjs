@@ -28,15 +28,15 @@ test("no answer, no estimate: a child known only by class keeps today's start ru
   assert.deepEqual(siteOf({ classLevel: 6, date: DATE }).used, ["class"]);
 });
 
-test("answers order the start: hard < fine < easy, child picks likewise; never above the class's expected level, never below 0", () => {
+test("only a below-level answer sets a start (audit LEARN-07): hard and tricky move it back; fine, easy and okay keep the calendar's", () => {
   for (const C of [1, 3, 5, 6, 8, 9]) {
-    // class 1 starts sit at GE 0 (the start of class 1): there is nowhere lower to go, so only "not decreasing" there
-    const lt = (a, b) => (C === 1 ? a <= b : a < b);
     const [h, f, e] = ["hard", "fine", "easy"].map((parentView) => at(C, { parentView }));
-    assert.ok(lt(h.startGE, f.startGE) && lt(f.startGE, e.startGE), `class ${C}: ${h.startGE} ${f.startGE} ${e.startGE}`);
     const [t, o, y] = ["tricky", "okay", "easy"].map((childPick) => at(C, { childPick }));
-    assert.ok(lt(t.startGE, o.startGE) && lt(o.startGE, y.startGE), `class ${C} picks`);
-    for (const r of [h, f, e, t, o, y]) assert.ok(r.startGE <= r.expected && r.startGE >= 0, `class ${C} ${r.startGE} vs ${r.expected}`);
+    for (const r of [f, e, o, y]) { assert.equal(r.startGE, null, `class ${C}`); assert.equal(r.startRule, "calendar"); assert.ok(r.placement, "still seeds the estimate"); }
+    for (const r of [h, t]) assert.ok(r.startGE <= r.expected && r.startGE >= 0, `class ${C} ${r.startGE} vs ${r.expected}`);
+    // with a below-level answer, the other answer still orders the start: hard + easy pick sits above hard + tricky pick
+    const he = at(C, { parentView: "hard", childPick: "easy" }), ht = at(C, { parentView: "hard", childPick: "tricky" });
+    assert.ok(C === 1 ? ht.startGE <= he.startGE : ht.startGE < he.startGE, `class ${C}: ${ht.startGE} ${he.startGE}`);
   }
 });
 

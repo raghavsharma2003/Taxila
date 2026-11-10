@@ -62,6 +62,9 @@ function newSkill(skillId, prior, topicType, epochId, seq, paramsVersion) {
   };
 }
 
+/** An event folded without its blind verdict (comprehension/later.js HELD_PREFIX): no K step until its late correction. */
+export const isHeld = (ev) => String(ev?.graderVersion ?? "").startsWith("held:");
+
 function newSession(ev) {
   const startAt = new Date(ev.sessionStartAt ?? ev.at).toISOString();
   return { sessionId: ev.sessionId, startAt, day: dayOf(startAt), skills: {}, episodes: [], thetaW: {}, thetaCount: {}, drops: {}, misBudget: {} };
@@ -185,7 +188,16 @@ function applyOne(L, ev, ctx, own) {
   // A late verdict's correction (comprehension/later.js, via 'late'): the K step already ran on the fallback event it
   // corrects, so the ledger only records it as seen (no K, θ, session or budget change); the facets apply it (fuse.js).
   if (isPlacementRow(ev)) return applyPlacement(L, ev);
-  if (ev.via === "late") { L.seen[ev.id] = ev.seq ?? null; if (ev.seq != null) L.lastSeq = ev.seq; return; }
+  // LEARN-05 (kt-r3): an event folded without its blind verdict is held: seen, no K step. Its late correction then takes
+  // the full step, so the same verdict gives the same mastery whether it lands in time or late. A late correction whose
+  // event was not held (written before kt-r3: the fallback already took the K step) is only recorded as seen.
+  if (isHeld(ev)) { L.held = { ...(L.held ?? {}), [ev.id]: 1 }; L.seen[ev.id] = ev.seq ?? null; if (ev.seq != null) L.lastSeq = ev.seq; return; }
+  if (ev.via === "late") {
+    const base = String(ev.id).replace(/:late(?::[a-z]+)?$/, "");
+    if (!L.held?.[base]) { L.seen[ev.id] = ev.seq ?? null; if (ev.seq != null) L.lastSeq = ev.seq; return; }
+    const { [base]: _done, ...rest } = L.held;
+    if (Object.keys(rest).length) L.held = rest; else delete L.held;
+  }
   enterSession(L, ev);
   const sess = L.session;
   const markSeen = () => { L.seen[ev.id] = ev.seq ?? null; if (ev.seq != null) L.lastSeq = ev.seq; };
