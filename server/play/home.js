@@ -67,9 +67,10 @@ export function homeKtEvents(c, opts) {
           ...(r.discriminates ? { discriminates: r.discriminates } : {}), triesBefore: 0, episodeEnded: true,
           ...(String(v.levelId).startsWith("arena-") ? { form: "recognise", controllerEasy: true } : chance ? { controllerEasy: true } : {}) });
       if (!ev) continue;
-      // rules 2 and 3: the event's source is "game" — the ledger's never-unaided, never-the-check guard — and nothing else
+      // rules 2 and 3: the event is a home play to the ledger (bktr.js isHomePlay: via "game", id "home:…", source "home"),
+      // which the ledger never counts as unaided and never lets be or spend the delayed check; nothing else is emitted
       const e = { ...ev, target: r.skillId, via: "game", home: true, ...(v.trail ? { playTrail: v.trail } : {}) };
-      if (sourceOf(e) !== "game") { out.dropped++; continue; }
+      if (sourceOf(e) !== "home") { out.dropped++; continue; }
       out.events.push(e);
     }
   }
