@@ -22,7 +22,7 @@ import { preludeTokenOk } from "../voice/expressive/prelude.js";
 import { edgeTrim, silence } from "../voice/expressive/pauses.js";
 import { FRAME, FRAMES_CONTENT_TYPE, frameWriter, codecOf } from "../voice/frames.js";
 import { count } from "../voice/expressive/telemetry.js";
-import { spokenOptsForChild } from "../voice/spoken.js";
+import { spokenOptsForChild, sayNameOf } from "../voice/spoken.js";
 import { routes as featureRoutes } from "../voice/features.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { seamSafe } from "../seam-safe.js";
@@ -95,7 +95,7 @@ export function styleForChild(child, ageBand, pinnedTeacherId, pinnedName, opts 
   const teacher = pinnedTeacherId ? teacherForLesson(child, pinnedTeacherId, pinnedName) : teacherFor(child);
   // round 7 (name preview): the parent's spoken spelling of the name (child.name_spoken, F Learning's 038) for audio only
   const cell = spokenOptsForChild(child, ageBand);
-  const sayName = child?.name_spoken && child?.first_name ? { written: String(child.first_name), spoken: String(child.name_spoken) } : null;
+  const sayName = sayNameOf(child);
   const base = speechStyle(teacher, VOICES.has(teacher.voice) ? teacher.voice : DEFAULT_VOICE, sayName ? { ...cell, sayName } : cell);
   // HUMAN-VOICE B1: the cascade voice from config (server/voice/voices.js): DragonHD when Azure Speech is configured,
   // the character's gpt-4o-mini-tts voice as the fallback (and the only voice when it is not).
@@ -394,8 +394,6 @@ async function turnAudio(req, res, body) {
   // round 7 (B5 ↔ Brain A5): the Director's locked first clause (brain/say.js streamAsk) is spoken HERE the moment it is
   // guarded, while the rest of the reply is written: the fold opens at that clause, exactly as for the agent lane
   const hooks = { onAgentSay: early.onAgentSay, onClause: (ev) => early.onDirectorClause(ev) };
-  // round 7 (Studio M4, server/duplex/childText.js): the turn's words as sent, for in-process listeners, before the turn runs
-  if (body?.lessonId && typeof body?.childText === "string") emitChildText({ lessonId: body.lessonId, itemId: `turn:${body.turnSeq ?? ""}`, text: body.childText, final: true });
   const specP = !body?.typed && !body?.chipId ? Promise.resolve((turnAudioDeps.takeAgentSpec ?? takeAgentSpec)(body?.lessonId, body?.childText)).catch(() => null) : null;
   specP?.then((s) => { if (s) hooks.agentSpec = s; });
   const settleSpec = async (why) => settleAgentSpec(body?.lessonId, await specP, why);
@@ -406,11 +404,15 @@ async function turnAudio(req, res, body) {
     await settleSpec("turn failed");
     if (!early.opened) throw e;
     await early.done().catch(() => {});
-    early.w.json(FRAME.end, { t: "end", status: "error", error: e instanceof HttpError ? e.message : "turn failed" });
+    // audit V-25: the status travels too, so the client rejects with the turn's real error (a 409 "lesson has ended", a 429)
+    early.w.json(FRAME.end, { t: "end", status: "error", error: e instanceof HttpError ? e.message : "turn failed", code: e instanceof HttpError ? e.status : 500 });
     res.end();
     return;
   }
   await settleSpec("turn done");
+  // round 7 (Studio M4, server/duplex/childText.js): the turn's words as sent, for in-process listeners. Audit V-40: only
+  // after lessonTurn returned (the request was authorised for this lesson); before, any caller's words reached them first
+  if (body?.lessonId && typeof body?.childText === "string") { try { emitChildText({ lessonId: body.lessonId, itemId: `turn:${body.turnSeq ?? ""}`, text: body.childText, final: true }); } catch { /* the turn goes on */ } }
   if (early.opened) {
     // audit V-20: the turn prewarmed this reply (brain/turn.js) although it was streamed here: its speech jobs are aborted
     // now (before, they ran to the end, a second synthesis of every streamed reply), and the streamed reply counts once in
@@ -567,11 +569,13 @@ async function startAudio(req, res, body) {
  * turn, never a verdict). Never awaited; never written to the database.
  */
 function warmPrelude(req, body, tokenHash) {
-  if (process.env.TAXILA_UPTAKE_PRELUDE !== "1" || typeof body?.text !== "string" || !body.text.trim()) return;
-  if (!/^[0-9a-f-]{36}$/i.test(String(body.lessonId))) return;
+  // audit V-31: a TurnRequest carries the child's words as `childText` (there is no `text`): the warm never ran
+  const said = typeof body?.childText === "string" ? body.childText : "";
+  if (process.env.TAXILA_UPTAKE_PRELUDE !== "1" || !said.trim()) return false;
+  if (!/^[0-9a-f-]{36}$/i.test(String(body.lessonId))) return false;
   void (async () => {
     const { keyTokenOf } = await import("../brain/moment.js");
-    const token = keyTokenOf(body.text);
+    const token = keyTokenOf(said);
     if (!token) return;
     const row = await one(`select l.state->'ctx'->>'teacherId' as lesson_teacher, l.state->'ctx'->>'teacherName' as lesson_teacher_name, (l.state ? 'laneSwitch') as lane_switched, c.*
         from auth_session s join lesson l on l.id = $1 join child c on c.id = l.child_id and c.guardian_id = s.guardian_id
@@ -587,7 +591,10 @@ function warmPrelude(req, body, tokenHash) {
     const job = speakChunk(token, style, undefined, render);
     for await (const _ of job.read()) { /* drain into the memory cache */ }
   })().catch((e) => console.warn("[voice] prelude warm failed:", e?.message));
+  return true;
 }
+/** Tests only: whether the prelude warm starts for this request body. */
+export const _warmPrelude = warmPrelude;
 
 export const routes = {
   "POST /api/lesson/turn-audio": turnAudio,

@@ -636,6 +636,11 @@ const RESIDUAL_RE = /\d+(?:\.\d+)?/g;
  * @param {string} text
  * @param {{ written?: string, spoken?: string } | null | undefined} sayName
  */
+/** The child row's name pair for sayChildName (null when the parent gave no spoken spelling). */
+export function sayNameOf(child) {
+  return child?.name_spoken && child?.first_name ? { written: String(child.first_name), spoken: String(child.name_spoken) } : null;
+}
+
 export function sayChildName(text, sayName) {
   const w = String(sayName?.written ?? "").trim(), s = String(sayName?.spoken ?? "").trim();
   if (!w || !s || w === s) return String(text);

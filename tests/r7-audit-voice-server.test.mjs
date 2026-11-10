@@ -96,3 +96,81 @@ test("V-17: subtraction, round numbers, 'by', dot-times, dates, a dial number be
   assert.equal(speakable("Call 98765 43210", EN), "Call nine eight seven six five four three two one zero");
   assert.equal(speakable("in 1947", EN), "in nineteen forty-seven");
 });
+
+// ── V-25 (server half): the error end frame carries the turn's status ──
+import { HttpError } from "../server/http.js";
+import { parseFrames, FRAME } from "../server/voice/frames.js";
+test("V-25: a turn that fails after her first clause writes its status in the end frame", async () => {
+  Object.assign(turnAudioDeps, { style: () => ({}), synth: async function* (clause) { yield Buffer.from(clause); },
+    lessonTurn: async (req, body, hooks) => { hooks.onClause({ text: "Achha." }); await new Promise((r) => setTimeout(r, 10)); throw new HttpError(409, "lesson has ended"); } });
+  const res = { chunks: [], statusCode: 0, writableEnded: false, writeHead(c) { this.statusCode = c; }, flushHeaders() {}, write(b) { this.chunks.push(Buffer.from(b)); return true; },
+    end() { this.writableEnded = true; }, on() {}, once() {}, off() {} };
+  try {
+    await _turnAudio({ headers: { cookie: "tx_session=t", accept: "application/x-taxila-pcm-frames;v=2" }, url: "/api/lesson/turn-audio" }, res, { lessonId: "00000000-0000-0000-0000-0000000000c6" });
+    const end = parseFrames(Buffer.concat(res.chunks)).find((f) => f.type === FRAME.end);
+    assert.equal(end.payload.status, "error");
+    assert.equal(end.payload.code, 409);
+  } finally { Object.assign(turnAudioDeps, { lessonTurn: null, style: null, synth: null }); }
+});
+
+// ── V-40: the child's words reach child-text listeners only after the turn was authorised ──
+import { onChildText } from "../server/duplex/childText.js";
+test("V-40: a refused turn-audio request emits nothing to the lesson's listeners; an accepted one emits its words", async () => {
+  const lessonId = "00000000-0000-0000-0000-0000000000d4";
+  const got = [];
+  const off = onChildText(lessonId, (e) => got.push(e.text));
+  const res = () => ({ chunks: [], statusCode: 0, writableEnded: false, writeHead(c) { this.statusCode = c; }, flushHeaders() {}, write(b) { this.chunks.push(Buffer.from(b)); return true; },
+    end() { this.writableEnded = true; }, on() {}, once() {}, off() {} });
+  const req = { headers: { cookie: "tx_session=t", accept: "application/x-taxila-pcm-frames;v=2" }, url: "/api/lesson/turn-audio" };
+  try {
+    Object.assign(turnAudioDeps, { style: () => ({}), synth: async function* () {}, lessonTurn: async () => { throw new HttpError(403, "not your lesson"); } });
+    await assert.rejects(_turnAudio(req, res(), { lessonId, childText: "kisi aur ka jawab" }), (e) => e.status === 403);
+    assert.deepEqual(got, []);
+    turnAudioDeps.lessonTurn = async () => ({ teacherReply: "Achha.", teacherReplySeq: 4, late: true });
+    await _turnAudio(req, res(), { lessonId, childText: "teen" });
+    assert.deepEqual(got, ["teen"]);
+  } finally { off(); Object.assign(turnAudioDeps, { lessonTurn: null, style: null, synth: null }); }
+});
+
+// ── V-21: the voice files no longer say the voicesig default is shadow ──
+import { readFileSync as readSrc } from "node:fs";
+import { seamMode } from "../server/voicesig/lesson.js";
+test("V-21: the default voicesig mode is internal (acts on tie-breakers), and gate.js does not call the default shadow", () => {
+  assert.equal(seamMode({}), "internal");
+  assert.doesNotMatch(readSrc(new URL("../server/voicesig/gate.js", import.meta.url), "utf8"), /default shadow/);
+});
+
+// ── V-28: the uptake prelude is said at her own pitch (the calm row's drop is removed, whatever its value) ──
+import { preludeRender } from "../server/voice/expressive/render.js";
+import { dhdVoiceFor } from "../server/voice/voices.js";
+test("V-28: preludeRender's DragonHD document carries no pitch", () => {
+  const r = preludeRender("62", { engine: "dhd", dhd: dhdVoiceFor("asha"), spoken: {} });
+  assert.doesNotMatch(r.ssml, /pitch=/);
+});
+
+// ── V-31: the prelude warm reads the turn's childText ──
+import { _warmPrelude } from "../server/routes/voice.js";
+test("V-31: with the prelude flag on, a turn's childText starts the warm (it read a `text` field no turn has)", (t) => {
+  const prev = process.env.TAXILA_UPTAKE_PRELUDE;
+  process.env.TAXILA_UPTAKE_PRELUDE = "1";
+  t.after(() => { if (prev === undefined) delete process.env.TAXILA_UPTAKE_PRELUDE; else process.env.TAXILA_UPTAKE_PRELUDE = prev; });
+  const warn = console.warn; console.warn = () => {}; // no database here: the warm's own lookup fails quietly
+  t.after(() => { setTimeout(() => { console.warn = warn; }, 50); });
+  assert.equal(_warmPrelude({}, { lessonId: "00000000-0000-0000-0000-0000000000e1", childText: "62" }, "h"), true);
+  assert.equal(_warmPrelude({}, { lessonId: "00000000-0000-0000-0000-0000000000e1", childText: "  " }, "h"), false);
+});
+
+// ── V-30: "Hear" says the child's name the way the streamed voice does ──
+import { spokenFor } from "../server/routes/tts.js";
+test("V-30: Hear's spoken options carry the parent's spoken spelling of the name", () => {
+  const child = { first_name: "Aarav", name_spoken: "Aa-rav", class_level: 4, language_pref: "hinglish" };
+  assert.equal(speakable("Shabaash Aarav!", spokenFor(child)), "Shabaash Aa-rav!");
+  assert.equal(spokenFor({ first_name: "Meera", class_level: 4 }).sayName, undefined);
+});
+
+// ── V-29: "bara" (big) is not twelve outside a number context ──
+import { toDevanagari } from "../server/voice/translit/index.js";
+test("V-29: 'sabse bara' is never 'सबसे बारह'; 'bara' in a run of numbers is still twelve", () => {
+  assert.doesNotMatch(toDevanagari("Yeh sabse bara number hai.", { force: true }), /बारह/);
+  assert.match(toDevanagari("Gyarah, bara, terah.", { force: true }), /बारह/);
+});

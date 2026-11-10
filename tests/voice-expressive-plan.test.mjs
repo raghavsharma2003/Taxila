@@ -80,7 +80,11 @@ const SAFETY_REPLIES = [
 ];
 const style = { engine: "dhd", dhd: { voice: "en-IN-Diya:DragonHDLatestNeural", baseRate: -35 }, voice: "marin", instructions: "", version: "t", spoken: { mode: "hinglish" } };
 
-test("HV-3: 200 safety fixtures → 0 fillers, 0 non-verbals, only [calm], helplines digit by digit, 300 ms between sentences", () => {
+test("HV-3: 200 safety fixtures → 0 fillers, 0 non-verbals, only [calm], helplines digit by digit, 300 ms between sentences", (t) => {
+  // audit V-27: the expressive layer is off by default; this test exercises it, so it switches it on (restored after)
+  const prevExpr = process.env.TAXILA_VOICE_EXPRESSIVE;
+  process.env.TAXILA_VOICE_EXPRESSIVE = "1";
+  t.after(() => { if (prevExpr === undefined) delete process.env.TAXILA_VOICE_EXPRESSIVE; else process.env.TAXILA_VOICE_EXPRESSIVE = prevExpr; });
   const gov = createGovernor({ now: () => 0 });
   let n = 0;
   for (let i = 0; i < 200; i++) {

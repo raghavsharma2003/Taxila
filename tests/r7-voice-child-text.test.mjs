@@ -64,7 +64,8 @@ test("partialPostOn: off unless TAXILA_DUPLEX_PARTIAL_POST=on", () => {
   assert.equal(partialPostOn({ TAXILA_DUPLEX_PARTIAL_POST: "1" }), false);
 });
 
-test("/api/lesson/turn-audio: the turn's words reach a listener as a final before the turn runs", async () => {
+// audit V-40: after the turn returned (the request was authorised for the lesson), never before it ran
+test("/api/lesson/turn-audio: the turn's words reach a listener as a final once the turn was authorised", async () => {
   _resetChildText();
   const { _turnAudio, turnAudioDeps } = await import("../server/routes/voice.js");
   const order = [];
@@ -73,6 +74,6 @@ test("/api/lesson/turn-audio: the turn's words reach a listener as a final befor
   const res = { statusCode: 0, writableEnded: false, writeHead() {}, flushHeaders() {}, write() { return true; }, end() { this.writableEnded = true; }, on() {}, once() {}, off() {} };
   try {
     await _turnAudio({ headers: { cookie: "tx_session=t", accept: "application/x-taxila-pcm-frames;v=2" }, url: "/api/lesson/turn-audio" }, res, { lessonId: L, turnSeq: 4, childText: "chaar" });
-    assert.deepEqual(order, [["text", "chaar", true, "turn:4"], ["turn"]]);
+    assert.deepEqual(order, [["turn"], ["text", "chaar", true, "turn:4"]]);
   } finally { Object.assign(turnAudioDeps, { lessonTurn: null, style: null, synth: null }); _resetChildText(); }
 });

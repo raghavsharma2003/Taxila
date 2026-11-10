@@ -142,7 +142,9 @@ export class VoicesigLessonFeatures implements VoiceFeaturesLike {
     if (!u || e.type !== "child_final" || !this.head) return u;
     try {
       const c = {
-        fromT: u.at - PREROLL_MS,
+        // audit V-23: u.at is already the MEASURED speech start (src/voice/tracker.ts: the frames' own start, after its
+        // pre-roll search); taking the pre-roll off again read up to 800 ms before the child spoke
+        fromT: u.at,
         toT: u.at + u.features.durationMs + POSTROLL_MS,
         teacherEndAt: !u.bargeIn && typeof u.features.onsetMs === "number" ? u.at - u.features.onsetMs : null,
         words: u.features.words,

@@ -3,14 +3,12 @@
 //   1. `?duplex=1|0|shadow|default` in any URL writes (or clears) the device key below (the owner's test switch);
 //   2. localStorage "tx.flag.duplex" = "1" | "0" | "shadow";
 //   3. the server's runtime kill switch: GET /api/duplex/config → { duplex: "on" | "off" | "shadow" } (env TAXILA_DUPLEX on the
-//      Container App, no rebuild; round 3: "on" for the owner-test cohort TAXILA_DUPLEX_LIVE_FOR while everyone else is
-//      "shadow"). [Superseded by round 7, D2: unknown now runs hands-free ON, lane D4.] Round 3 (duplex, 2026-10-09): when the route is missing, slow (3 s) or errors the lesson runs SHADOW (the
-//      engine only logs; the child gets today's path), never live: production is shadow because the switch criteria are not
-//      met (docs/design/round3/duplex/CRITERIA.md), and a network hiccup must not turn an unproven floor on for a child. Before,
-//      it failed OPEN to the build default "on". A build default "off" still wins;
-//   4. VITE_DUPLEX = "0" | "shadow" at build time;
-//   5. on (only when the server answered and did not say otherwise).
-// A device forced on (1) is not overridden by the server switch; a device forced off (0) always wins.
+//      Container App, no rebuild). When the route is missing, slow (3 s) or errors, the lesson runs hands-free ON on lane D4
+//      (round 7, D2, dc-r7-handsfree-default: hands-free is every child's default); a build default "off" still wins;
+//   4. VITE_DUPLEX = "0" at build time;
+//   5. on.
+// A device key always wins over the server (audit V-35: "shadow" too; before, a device forced to shadow ran LIVE whenever the
+// server's answer was unknown).
 // Presentation and turn-taking only: the safety floor (scanSafety + the model distress read on every committed turn, the AI
 // disclosure, the helplines) is identical on both sides of it.
 export type DuplexMode = "on" | "off" | "shadow";
@@ -140,13 +138,13 @@ export function prefetchDuplexConfig(): void {
 /** The mode for a lesson starting now. */
 export async function resolveDuplexMode(fetcher?: typeof fetch): Promise<DuplexMode> {
   const dev = deviceDuplex();
-  if (dev === "off" || dev === "on") return traced(dev, "device_key", dev, undefined);
+  if (dev === "off" || dev === "on" || dev === "shadow") return traced(dev, "device_key", dev, undefined);
   const srv = await serverDuplex(fetcher);
   if (srv === "off") return traced("off", "server_off", dev, srv);
   // round 7 (D2, dc-r7-handsfree-default): an unreadable switch is HANDS-FREE on D4 (the lane stays d4 without a definite
   // answer, so no D5 stream is asked for), never tap: hands-free is every child's default; a build default "off" still wins
   if (srv === null) return traced(buildDuplex() === "off" ? "off" : "on", "server_unknown", dev, srv);
-  if (dev === "shadow" || srv === "shadow") return traced("shadow", dev === "shadow" ? "device_key" : "server_shadow", dev, srv);
+  if (srv === "shadow") return traced("shadow", "server_shadow", dev, srv);
   return traced(srv, "server", dev, srv);
 }
 /** r12 flight recorder: the resolved mode, which rule decided it, and what the server said (the "why did I tap" record). */
@@ -179,4 +177,5 @@ export function resetDuplexFlagCache(): void {
   serverMode = null;
   serverAnswer = undefined;
   serverLane = "d4";
+  serverPartialPost = false; // audit V-35: a test's (or a re-sign-in's) earlier server answer never leaks into the next
 }

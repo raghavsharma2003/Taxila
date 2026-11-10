@@ -91,7 +91,7 @@ export function preludeRender(token, style) {
   if (!t) return null;
   if (style?.engine === "dhd") {
     const c = { text: t, emotion: "calm", intensity: 0.3, pace: "normal", pauseBeforeMs: 0, nonverbalBefore: "none", sentenceStart: true };
-    return { engine: "dhd", ssml: compileDhd([c], { ...style.dhd, baseRate: style.dhd.baseRate }, { register: "normal", pitch: 0, spoken: style.spoken }).replace(/ pitch="-6%"/g, ""), store: "memory" };
+    return { engine: "dhd", ssml: compileDhd([c], { ...style.dhd, baseRate: style.dhd.baseRate }, { register: "normal", pitch: 0, spoken: style.spoken }).replace(/ pitch="[^"]*"/g, "") /* audit V-28: any pitch, not only -6% */, store: "memory" };
   }
   return { engine: "oai", text: t, instructions: style?.instructions ?? "", store: "memory" };
 }
