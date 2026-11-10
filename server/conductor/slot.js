@@ -15,8 +15,11 @@ const SOLO_BASE = Object.freeze({ B1: 1, B2: 1, B3: 2, B4: 2 });
 
 /**
  * PURE. The LessonBrief for a lesson starting `at` from today's plan.
+ * The slot's window is a clock gate, so it binds only when the family's limits are on (`limits`, dc-r7 D5): otherwise
+ * there is no hard stop and the lesson wraps at its planned length from the start (dc-r14-no-clock-gates; audit LEARN-01:
+ * a lesson started after the window's end used to wrap on the child's first answer).
  * @param {any} plan  day_plan.plan (planner.js planDay's plan, as decide adopted it)
- * @param {{ version?: number, lessonId?: string, at: Date, tz: string, day: string }} x
+ * @param {{ version?: number, lessonId?: string, at: Date, tz: string, day: string, limits?: boolean }} x
  * @returns {null | {
  *   lessonId: string|null, slotId: string, planVersion: number, band: string, subject: string|null, targetMin: number,
  *   segments: Array<{ kind: string, minutes: number, lane: string }>, wrapAt: string, hardStopAt: string,
@@ -24,22 +27,19 @@ const SOLO_BASE = Object.freeze({ B1: 1, B2: 1, B3: 2, B4: 2 });
  *   soloRounds: number, newSkillBudget: 0|1|2, prereqCheck?: { skillId: string, forTopicId: string, prereqTopicId: string },
  *   foundationShare?: number, testChapters?: number[], why: Array<{ code: string, ref: string }>, adaptTrace: string[] }}
  */
-export function lessonBriefOf(plan, { version = 1, lessonId = null, at, tz, day }) {
+export function lessonBriefOf(plan, { version = 1, lessonId = null, at, tz, day, limits = false }) {
   const slot = plan?.slots?.find((s) => s.kind === "live_lesson");
   if (!slot || !plan.band || !BAND[plan.band]) return null;
   const targetMin = Math.max(1, Number(slot.targetMin) || 0);
-  // wrap at the planned length from the start; hard stop at the slot's window end (bedtime − 60 at the latest, V2)
-  const startHM = localTime(at, tz);
-  const wrapHM = addMin(startHM, targetMin);
-  const endHM = slot.window?.[1] ?? wrapHM;
-  const toIso = (hm) => zonedToUtc(day, hm, tz).toISOString();
-  // a wrap past the window end is pulled back to it (the Director wraps at the earlier, at a natural stop)
-  const wrapIso = toIso(wrapHM), hardIso = toIso(endHM);
+  // wrap at the planned length from the start; with limits on, hard stop at the slot's window end (bedtime − 60 at the
+  // latest, V2) and a wrap past it is pulled back to it (the Director wraps at the earlier, at a natural stop)
+  const wrapIso = new Date(at.getTime() + targetMin * 60_000).toISOString();
+  const hardIso = limits ? zonedToUtc(day, slot.window?.[1] ?? addMin(localTime(at, tz), targetMin), tz).toISOString() : null;
   const nb = slot.pace?.newSkillBudget;
   return {
     lessonId, slotId: slot.id, planVersion: version, band: plan.band, subject: slot.subject ?? null, targetMin,
     segments: (slot.segments ?? []).map((g) => ({ kind: g.kind, minutes: g.minutes, lane: g.laneWanted })),
-    wrapAt: wrapIso < hardIso ? wrapIso : hardIso, hardStopAt: hardIso,
+    wrapAt: hardIso && hardIso < wrapIso ? hardIso : wrapIso, hardStopAt: hardIso,
     holdNewTopics: nb === 0,
     reviewItemIds: [...(slot.reviewItemIds ?? [])],
     promisesDue: [...(slot.promisesDue ?? [])],
@@ -74,5 +74,17 @@ export async function todaysPlan(childId, { now = new Date(), q } = {}) {
 /** today's plan → its brief for a lesson starting now (null when there is no lesson slot). */
 export async function lessonBriefFor(childId, { now = new Date(), lessonId = null, q } = {}) {
   const t = await todaysPlan(childId, { now, q });
-  return t ? { plan: t.plan, brief: lessonBriefOf(t.plan, { version: t.version, lessonId, at: now, tz: t.tz, day: t.day }) } : null;
+  if (!t) return null;
+  const limits = await limitsFor(childId, q);
+  return { plan: t.plan, brief: lessonBriefOf(t.plan, { version: t.version, lessonId, at: now, tz: t.tz, day: t.day, limits }) };
+}
+
+/** Does the family's daily limit (and so the slot's window) apply to this child? routes/child.js limitsOnFor; off on any error. */
+async function limitsFor(childId, q) {
+  try {
+    const query = q ?? (await import("../db.js")).q;
+    const [{ limitsOnFor }, rows] = await Promise.all([import("../routes/child.js"),
+      query("select limits_on from child_controls where child_id = $1", [childId]).catch(() => [])]);
+    return limitsOnFor({ limitsOn: !!rows?.[0]?.limits_on });
+  } catch { return false; }
 }
