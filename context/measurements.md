@@ -6595,3 +6595,30 @@ A design review of the app as released (release 16), by the main loop from pixel
 **Limits:** one reviewer's judgement of stills. No child or parent was asked. Motion and audio were not seen.
 
 Full write-up: docs/design/round8/DESIGN-REVIEW.md.
+
+
+<!-- merged from inbox/r7-main-40.json -->
+## `ms-r7-director19-hand-2026-11-10` (2026-11-10)
+
+director19: Brain v6.10 and its follow-up, Studio P6 and Learning D13 on integration 25c (`d0dd1d5a0`). 16 lessons, 1,544 calls, about $1.071, run by main. Counted by hand by 4 judges on Opus 5.5.
+
+| Line | Count |
+|---|---|
+| Beats taught | 289/290 |
+| Verdicts | 262/262 |
+| Misgrades | 0 |
+| False keys | 0 |
+| An unsaid card's board on screen | 0 |
+| Held cost | 0 |
+| Her words against the board | **1** by main's ruling (c4 steady 62), 2 by the judges' count |
+| Picture requests with a true second view | 15/16; picture lines with no view drawn: 0 (director18: 9) |
+
+| Axis | c4 | c5-t01 | c5-t02 | c6 |
+|---|---|---|---|---|
+| Listening | 3 | 3 | 3 | 3.5 |
+| Register | 3 | 3 | 3 | 3 |
+| Promises | 3.5 | 3 | 3 | 3 |
+
+**Main's check after judging, same tree:** the harness's dry matrix (16 lessons, model stubbed) runs in 27 seconds and shows the doubled park sentence in 7 lessons, the orphan aside return in 11, and "Phir se dekho:" 42 times across all 16. The other code-written faults were not checked dry.
+
+Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.

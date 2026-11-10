@@ -9732,3 +9732,26 @@ The UI revamp goes ahead in two phases.
 **Reverse if:**
 - the owner, having used release 16, says the current look is acceptable: only the non-taste fixes are built, on the current skin;
 - neither direction is picked: a third is drawn from the owner's stated reasons before any product code changes.
+
+
+<!-- merged from inbox/r7-main-40.json -->
+## `dc-r7-script-walk-v6-11` (2026-11-10)
+
+The dry matrix as a gate; responses compiled, not chosen; the aside return gets its own turn.
+
+- **G2:** the 16 lessons run dry inside `test:all`, with one predicate file that throws on each fault director19 found. No paid run while it is red. Every later fix adds its predicate first and sees it fail.
+- **C1:** a pure `compileScript` turns each unit into an explicit map: part × request × help state → exactly one response, built from authored fields. The validator fails a hole or a double. The walk looks the response up; it does not decide.
+- **J2:** the return says one authored question on `{aside}` and stops. Her answer to the child's reply is one reply-model sentence behind a predicate, else a neutral joint. `{said}` leaves the authored forms.
+- **F1:** every code-written sentence is listed with its count, then authored per topic, kept as a neutral frame of three words or fewer, or removed. The AI-identity line is not touched.
+
+**Why:** four runs of hand fixes in one 4,000-line state machine each fixed their targets and moved or added faults elsewhere, and the replay tests written with each fix passed while the next paid run failed.
+
+**Clauses of v6.10:** 1 not triggered; 2 (listening) taken as C1; 3 (register) taken as F1; 4 not triggered.
+
+**Order:** G2 and the rendering fixes first, released as release 17 when the dry matrix is green. C1, J2 and F1 follow; director20 judges them. The regenerated 30-topic batch stays held from children.
+
+**Reverse if, in director20:**
+- the dry matrix was green and the paid run shows a fault on its list: that predicate is wrong, and no paid run until it fails on the paid row;
+- listening is below 3.5 with compiled responses: the failing cells are re-authored by Learning, and the runtime is not touched;
+- the model-written aside reply fails its predicate more than one time in five, or is wrong about the child's words: back to a neutral joint, and listening to an aside becomes its own piece of work;
+- any misgrade, unsaid board or held cost: as before.

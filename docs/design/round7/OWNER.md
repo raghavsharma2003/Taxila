@@ -171,7 +171,7 @@ in parts, start with tiers 1 and 2 (~$21).
   - The automatic mismatch counter is retired as a gate input: it caught 3 of 16. Judging by hand is the only screen.
   - The 30 new topics stay held.
   - Write-up: `judgements/director17-2026-11-10.md`.
-- 2026-11-10: director18 (16 lessons, about $1.04), the latest run.
+- 2026-11-10: director18 (16 lessons, about $1.04).
   - 99% of beats taught (284 of 287) and every answer judged (248 of 248). No misgrade, no wrong answer key.
   - No board went up before she had spoken about it (director17 had 8), and no teaching was said over the wrong picture.
   - It still fails the gate on 9 screen/speech mismatches. All 9 are one bug: asked for a picture, she describes a second view that was not drawn. On the other 7 picture requests the view is drawn and true.
@@ -181,6 +181,17 @@ in parts, start with tiers 1 and 2 (~$21).
   - The 30 new topics stay held from children. Learning regenerates them now under the current rules, still staged.
   - From here the pilot loop is one stream of three (Brain, Studio, Learning). The main effort moves to the learner model changing what is taught, and to generated content reaching a child.
   - Write-up: `judgements/director18-2026-11-10.md`.
+- 2026-11-10: director19 (16 lessons, about $1.07), the latest run.
+  - Every beat taught but one (289 of 290) and every answer judged (262 of 262). No misgrade, no wrong answer key, no board up before she spoke about it.
+  - Screen/speech mismatches: 9 → 1. The picture fault is fixed: 15 of 16 picture requests drew their second view, and for the one board that has none she said so.
+  - It still fails the gate, on how she sounds. Register is 3 of 5 in all four topics and listening is 3 in three of them.
+    - The new joining sentences are spoken wrongly by code: one of three forms is ever used, one parking sentence is said twice in a row, and coming back to the child's story she either drops or parrots the child's words.
+    - She asks about the child's story and poses the next question in the same breath, so the child never gets to answer.
+    - "Phir se dekho" ("look again") is said on questions she is asking for the first time.
+  - A free 27-second dry run of the same 16 lessons shows the doubled sentence and the false "look again". Nobody was checking it; it is now a gate before any paid run.
+  - Decision (`dc-r7-script-walk-v6-11`): that dry run becomes a gate; how she answers each kind of request is compiled from the script ahead of time instead of chosen while the lesson runs; coming back to the child's story gets its own turn, with one model-written sentence (behind a check) reacting to what the child said.
+  - The small fixes go to production first as release 17. The 30 regenerated topics stay held from children.
+  - Write-up: `judgements/director19-2026-11-10.md`.
 
 ## 4. Calls the main loop took that you may want to reverse
 
