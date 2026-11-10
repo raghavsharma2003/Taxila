@@ -1,22 +1,5 @@
-From: Games (C2), 2026-11-10 — round 8 Play follow-up F (main's decision): the parent page says why each game was chosen and how its levels went
-Subject: play `because` and trail on the parent's Teaching page through server/director/knows-words.js becauseLines
-
-What: (1) knows-words.js learns the play vocabulary: becauseLine hands any record of kind "play.*" to a new playLine
-(pick_mixup, pick_novelty, pick_fit, fade_history, fade_director, mixup_focus, step_up, step_down, switch, studio_gate;
-Hinglish / English, two shapes each, the record's own fact text is never shown), becauseLines dedupes play records by kind,
-mix-up and game, and a new trailLine says how a level went (first try / after a few tries / not finished, extra moves),
-never a verdict on the child. knows-words.js is under server/director/** (Brain / the Loop session per OWNERSHIP.md), so the
-vocabulary is part of this patch. (2) server/reports/teaching.js playLinesOf reads the last week's play rows from the
-flight recorder (trace_event play.mount / play.next carry the level's because, play.outcome its trail; written by
-server/play/routes.js) and teachingOf returns `play: { because, trail }`; mix-up titles come from the kit (as in 008).
-(3) src/parent/api.ts + Teaching.tsx: an "In games this week" card. (4) tests/r8-parent-play-because.test.mjs.
-Why: the play picker and the between-level steps now choose from what the learner model holds; the parent should read why,
-in the same plain words as the lesson's because lines. Made against int/r6 without 008-r8-teaching-because.patch: the
-bindings do not clash (knows-words is imported as a namespace here), but after 008 two server/reports/teaching.js hunks
-(the imports and teachingOf's return) need a hand merge (`patch -p1` applies the other files with fuzz). Made with `git diff origin/int/r6`. Applies with `git apply`.
-
 diff --git a/server/director/knows-words.js b/server/director/knows-words.js
-index 535c12de3..721d5278d 100644
+index 3d095489f..8c5f2af5c 100644
 --- a/server/director/knows-words.js
 +++ b/server/director/knows-words.js
 @@ -20,6 +20,7 @@ const cap = (t) => (t ? t[0].toUpperCase() + t.slice(1) : t);
@@ -27,11 +10,11 @@ index 535c12de3..721d5278d 100644
    const en = String(ctx.lang ?? "").toLowerCase().startsWith("en");
    const name = String(ctx.name ?? "").trim() || (en ? "Your child" : "Aapke bachche");
    const f = rec?.fact ?? {};
-@@ -134,6 +135,108 @@ export function becauseLine(rec, ctx = {}) {
+@@ -165,6 +166,108 @@ export function becauseLine(rec, ctx = {}) {
    }
  }
  
-+// ───────────── round 8 Play (docs/patches/to-learning/009) ─────────────
++// ───────────── round 8 Play (docs/patches/to-learning/011) ─────────────
 +// A play session's because records { choice, fact, source, kind: "play.*", when?, mis? } (server/play/choose.js) and a
 +// level's trail (server/play/trail.js). The record's fact is the play server's own text (it may hold the kit's belief) and
 +// is NOT shown: each line is built from the kind, the game's title and the mix-up's title, like every line above.
@@ -136,7 +119,7 @@ index 535c12de3..721d5278d 100644
  /**
   * The lines for a lesson's because list: one per record the page explains, in order; records that say the same thing (a
   * remediation planned for several cards from one mix-up) are said once.
-@@ -142,7 +245,8 @@ export function becauseLines(because = [], ctx = {}) {
+@@ -173,7 +276,8 @@ export function becauseLines(because = [], ctx = {}) {
    const seen = new Set(), out = [];
    for (const rec of because ?? []) {
      const f = rec?.fact ?? {};
@@ -147,23 +130,24 @@ index 535c12de3..721d5278d 100644
      seen.add(key);
      const line = becauseLine(rec, ctx);
 diff --git a/server/reports/teaching.js b/server/reports/teaching.js
-index 83bdd9ddf..0e242e863 100644
+index dde707832..0173297a4 100644
 --- a/server/reports/teaching.js
 +++ b/server/reports/teaching.js
-@@ -11,6 +11,7 @@ import { getTopic } from "../content/curriculum.js";
- import { COUNTED_LESSON_SQL } from "./truth.js";
+@@ -14,7 +14,7 @@ import { COUNTED_LESSON_SQL } from "./truth.js";
  import { madeForOf } from "./madeFor.js";
  import { WAY_LABEL } from "./templates.js";
-+import * as knowsWords from "../director/knows-words.js";
+ import { getKit } from "../content/index.js";
+-import { becauseLines } from "../director/knows-words.js";
++import { becauseLines, trailLine } from "../director/knows-words.js";
  
  const n2 = (n) => (n === 1 ? "once" : n === 2 ? "twice" : `${n} times`);
  /** " twice" / " 3 times"; nothing for once (a single move needs no count). */
-@@ -67,6 +68,30 @@ export function whyLines(rows, { name, T, ways = [] }) {
-   return out.slice(0, MAX_LINES);
+@@ -88,6 +88,30 @@ export function becauseOf(rows, { name, lang, kit = null, seed = 0 }) {
+   return becauseLines(recs, { lang, name, seed, skills, mixups, topics });
  }
  
 +/**
-+ * PURE. round 8 Play (docs/patches/to-learning/009): the last week's play from the flight recorder (trace_event: play.mount
++ * PURE. round 8 Play (docs/patches/to-learning/011): the last week's play from the flight recorder (trace_event: play.mount
 + * and play.next carry the level's `because`, play.outcome its `trail`) → the parent's lines through knows-words. Titles:
 + * the game by its family name; a mix-up by the kit's belief (as the lesson lines do).
 + * @param {{ kind: string, data: any }[]} rows newest first
@@ -181,18 +165,18 @@ index 83bdd9ddf..0e242e863 100644
 +    if (typeof x === "string" && x) { const f = x.split("/")[0]; games[x] = f.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join("-"); }
 +  }
 +  return {
-+    because: knowsWords.becauseLines(because, { name, lang, seed, games, mixups }).slice(0, 6),
-+    trail: trails.slice(0, 5).map((t) => knowsWords.trailLine(t, { lang, games })).filter(Boolean),
++    because: becauseLines(because, { name, lang, seed, games, mixups }).slice(0, 6),
++    trail: trails.slice(0, 5).map((t) => trailLine(t, { lang, games })).filter(Boolean),
 +  };
 +}
 +
  /** Fixed copy: how the teacher works, the same for every child (no claim about the child). */
  export const APPROACH = Object.freeze([
    "Starts each lesson with a few questions from earlier topics, so they stay fresh.",
-@@ -88,6 +113,19 @@ export async function teachingOf(child, { T, q = dbq } = {}) {
-   const ways = ids.length ? await q("select lesson_id, chosen from decision_record where lesson_id = any($1::uuid[]) and point_id = 'explain_format' order by id",
+@@ -113,6 +137,19 @@ export async function teachingOf(child, { T, q = dbq } = {}) {
+   const knows = ids.length ? await q("select lesson_id, point_id, options from decision_record where lesson_id = any($1::uuid[]) and point_id like 'knows.%' order by id",
      [ids]).catch(() => []) : [];
-   const madeFor = await madeForOf(child.id, { limit: 6, q }).catch(() => []);
+   const kits = new Map(await Promise.all([...new Set(lessons.map((l) => l.topic_id))].map(async (t) => [t, await getKit(t, { generate: false }).catch(() => null)])));
 +  // round 8 Play: the last week's games (the play routes' flight-recorder rows for this child)
 +  const playRows = await q("select kind, data from trace_event where cid = $1 and kind in ('play.mount', 'play.next', 'play.outcome') and t > now() - interval '7 days' order by t desc limit 60",
 +    [child.id]).catch(() => []);
@@ -202,25 +186,25 @@ index 83bdd9ddf..0e242e863 100644
 +  for (const id of mixIds) {
 +    const topic = /^(c\d-[a-z]+-ch\d+-t\d+)-/.exec(id)?.[1];
 +    if (!topic) continue;
-+    if (!kitsByTopic.has(topic)) kitsByTopic.set(topic, await import("../content/index.js").then((m) => m.getKit(topic, { generate: false })).catch(() => null));
++    if (!kitsByTopic.has(topic)) kitsByTopic.set(topic, await getKit(topic, { generate: false }).catch(() => null));
 +    const b = kitsByTopic.get(topic)?.misconceptions?.find((x) => x.id === id)?.belief;
 +    if (b) mixups[id] = { en: b };
 +  }
    return {
      approach: APPROACH,
      lessons: lessons.map((l) => ({
-@@ -96,5 +134,6 @@ export async function teachingOf(child, { T, q = dbq } = {}) {
-         ways: ways.filter((w) => String(w.lesson_id) === String(l.id)).map((w) => w.chosen) }),
+@@ -122,5 +159,6 @@ export async function teachingOf(child, { T, q = dbq } = {}) {
+       because: becauseOf(knows.filter((r) => String(r.lesson_id) === String(l.id)), { name: child.first_name, lang: child.language_pref, kit: kits.get(l.topic_id), seed: String(l.id) }),
      })),
      madeFor,
 +    play: playLinesOf(playRows, { name: child.first_name, lang: child.language_pref, seed: String(child.id), mixups }),
    };
  }
 diff --git a/src/parent/Teaching.tsx b/src/parent/Teaching.tsx
-index 3dc8b12d8..87626806f 100644
+index 254efda16..b5821eac2 100644
 --- a/src/parent/Teaching.tsx
 +++ b/src/parent/Teaching.tsx
-@@ -40,6 +40,13 @@ export default function Teaching() {
+@@ -43,6 +43,13 @@ export default function Teaching() {
                </ul>
              )}
            </section>
@@ -235,12 +219,12 @@ index 3dc8b12d8..87626806f 100644
              <section className="pa-card" aria-labelledby="pa-t-made">
                <h2 id="pa-t-made" className="pa-h2">Made for {name}</h2>
 diff --git a/src/parent/api.ts b/src/parent/api.ts
-index 83a7490a7..d44160ca7 100644
+index ebce91817..b61b3c69e 100644
 --- a/src/parent/api.ts
 +++ b/src/parent/api.ts
 @@ -10,6 +10,8 @@ export interface TeachingOut {
    teacher: string; approach: string[];
-   lessons: { id: string; topic: string | null; startedAt: string; why: { code: string; n: number; text: string }[] }[];
+   lessons: { id: string; topic: string | null; startedAt: string; why: { code: string; n: number; text: string }[]; because?: string[] }[];
    madeFor: import("../../shared/contracts.ts").MadeForItem[];
 +  /** round 8 Play: why each game / level / help level was chosen this week, and how levels went (server/reports/teaching.js) */
 +  play?: { because: string[]; trail: string[] };
@@ -249,11 +233,11 @@ index 83a7490a7..d44160ca7 100644
  export interface GateState {
 diff --git a/tests/r8-parent-play-because.test.mjs b/tests/r8-parent-play-because.test.mjs
 new file mode 100644
-index 000000000..494c10bbb
+index 000000000..631110e00
 --- /dev/null
 +++ b/tests/r8-parent-play-because.test.mjs
 @@ -0,0 +1,45 @@
-+// Round 8 Play (docs/patches/to-learning/009): the parent page says why each game, level and help level was chosen, and
++// Round 8 Play (docs/patches/to-learning/011): the parent page says why each game, level and help level was chosen, and
 +// how levels went, from the play routes' flight-recorder rows, through server/director/knows-words.js. Pure; no DB.
 +import test from "node:test";
 +import assert from "node:assert/strict";
