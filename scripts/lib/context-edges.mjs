@@ -14,9 +14,14 @@ export const edgeKey = (e) => `${e.src}|${e.rel}|${e.dst}`;
  *   A supports B     -> B measured_by A when A is a measurement, else B caused_by A
  *   synonyms with the same meaning, reversed or renamed: A measures B -> B measured_by A; A superseded_by B -> B supersedes A;
  *   A constrained_by B -> B constrains A; A refined_by B -> B part_of A; A motivated-by B -> A caused_by B;
- *   A evidence B (B a measurement, A a decision or rejection) -> A measured_by B.
- * Everything else (extends, related, about, explains, rejected_for, guarded_by, amends, found_by, depends_on ...) has no
- * honest home among the seven and is dropped with its reason.
+ *   A evidence B / A found_by B -> A measured_by B when B is a measurement, else A caused_by B.
+ * Widened 2026-11-10 (main loop, after the audit's second reading placed 18 more edges):
+ *   A extends B      -> A measured_by B when B is a measurement, else A part_of B
+ *   A amends B, A about B -> A part_of B
+ *   A explains B     -> B caused_by A
+ *   A rejected_for B, A guarded_by B -> A caused_by B
+ *   A depends_on B   -> A constrains B  (the graph reads "src constrains dst" as "dst bounds src")
+ * `related` has no direction and names none of the seven, so it is dropped with its reason, as is any other word.
  */
 export function mapRelation(e, kindOf) {
   const { src: a, rel, dst: b } = e;
@@ -29,7 +34,12 @@ export function mapRelation(e, kindOf) {
     case "constrained_by": return { src: b, rel: "constrains", dst: a };
     case "refined_by": return { src: b, rel: "part_of", dst: a };
     case "motivated-by": return { src: a, rel: "caused_by", dst: b };
-    case "evidence": return kindOf(b) === "measurement" && ["decision", "rejection"].includes(kindOf(a)) ? { src: a, rel: "measured_by", dst: b } : null;
+    case "evidence": case "found_by": return { src: a, rel: kindOf(b) === "measurement" ? "measured_by" : "caused_by", dst: b };
+    case "extends": return { src: a, rel: kindOf(b) === "measurement" ? "measured_by" : "part_of", dst: b };
+    case "amends": case "about": return { src: a, rel: "part_of", dst: b };
+    case "explains": return { src: b, rel: "caused_by", dst: a };
+    case "rejected_for": case "guarded_by": return { src: a, rel: "caused_by", dst: b };
+    case "depends_on": return { src: a, rel: "constrains", dst: b };
     default: return null;
   }
 }

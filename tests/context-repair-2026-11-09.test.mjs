@@ -71,7 +71,8 @@ const messy = () => fixture({
       { src: "d3", rel: "refines", dst: "d1" },                     // d3 part_of d1
       { src: "m1", rel: "supports", dst: "d3" },                    // a measurement: d3 measured_by m1
       { src: "r1", rel: "supports", dst: "d4" },                    // not a measurement: d4 caused_by r1
-      { src: "d4", rel: "extends", dst: "d2" },                     // no honest mapping: dropped
+      { src: "d4", rel: "extends", dst: "d2" },                     // widened 2026-11-10: d4 part_of d2
+      { src: "d4", rel: "related", dst: "d2" },                     // no direction, no honest mapping: dropped
       { src: "d4", rel: "part_of", dst: "ghost" },                  // endpoint missing: dropped
       { src: "d4", rel: "supersedes", dst: "d3" },                  // d3 is proposed and superseded: flips
     ] },
@@ -95,7 +96,8 @@ test("repair: merges, maps, drops with reasons, flips statuses, fixes open.md an
   assert.equal(st.d1, "superseded"); assert.equal(st.d3, "superseded"); assert.equal(st.d4, "proposed (patch 01)", "nothing supersedes d4");
   const dropped = JSON.parse(readFileSync(join(root, "context/inbox/merged/DROPPED.json"), "utf8")).dropped;
   assert.equal(dropped.length, 2);
-  assert.ok(dropped.some((d) => d.edge.rel === "extends" && /no honest mapping/.test(d.reason)));
+  assert.ok(dropped.some((d) => d.edge.rel === "related" && /no honest mapping/.test(d.reason)));
+  assert.ok(has(g, "d4", "part_of", "d2"), "extends: A part_of B");
   assert.ok(dropped.some((d) => d.edge.dst === "ghost" && /endpoint not in the graph: ghost/.test(d.reason)));
   assert.ok(g.nodes.some((n) => n.id === "o-no-node-2026-10-02" && n.kind === "open" && n.title === "first line of the item"));
   const dec = readFileSync(join(root, "context/decisions.md"), "utf8");
