@@ -1,6 +1,7 @@
 // Round 8 Play P3: the trail (how a level went, from the server's own replay), signed WITH the evidence rows; home play
-// signed for the child (source "home", no lesson) and never folded while TAXILA_HOME_PLAY_FOLD is off; the home fold's
-// four rules with the flag on (game / chance weight, never unaided, never the delayed check, per-skill per-day cap).
+// signed for the child (source "home", no lesson) and folded at /act through the learner's mapping (kt/home.js
+// homePlayEvent; TAXILA_HOME_PLAY_FOLD on unless off): game / chance weight, never unaided, never the delayed check, the
+// per-skill per-day volume bound, and an afternoon of one game never certifies a skill.
 // Pure functions + the real families; no DB.
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -11,14 +12,14 @@ import { buildTrail, cleanTrail, TRAIL_KEYS, TRAIL_MAX_MAL, TRAIL_V } from "../s
 import { gradeActs, lessonEvidence, minActsOf } from "../server/play/grade.js";
 import { entryFor, entryKey, currentLevel, seedOf, coverage } from "../server/play/levels.js";
 import { signEvidence, verifyEvidence, playKtEvents, signHomeEvidence, verifyHomeEvidence, homeRows, EV_KIND, HOME_KIND } from "../server/play/evidence.js";
-import { homeKtEvents, homeFoldOn, HOME_DAILY_CAP, HOME_FOLD_FLAG } from "../server/play/home.js";
+import { homeKtEvents, homeFoldOn, foldHomeLevel, priorHomeLevels, HOME_DAILY_CAP, HOME_FOLD_FLAG } from "../server/play/home.js";
 import { signSession } from "../server/play/session.js";
 import { routes, playDeps } from "../server/play/routes.js";
 import { LOGIC } from "../src/play/families/index.ts";
 import { env } from "../src/play/core/pick.ts";
 import { sanitizeActs, CHANCE_WEIGHT, GAME_WEIGHT } from "../shared/play.ts";
 import { temper } from "../server/learner/kt/bktr.js";
-import { fold, newLedger } from "../server/learner/kt/ledger.js";
+import { fold, newLedger, dayOf, HOME_DAY_LOG_CAP } from "../server/learner/kt/ledger.js";
 
 const SKILL = "c5-maths-ch02-t01-s2";   // nishana/place: a number-line fraction, three mapped mal-rules
 const entry = entryFor({ skillId: SKILL });
@@ -159,7 +160,10 @@ test("P3 routes: /act returns the trail; a lesson gets an evidenceToken carrying
   try {
     playDeps.requireChild = async (_req, id) => ({ guardian: { id: "g" }, child: { id, class_level: 5, first_name: "Riya", language_pref: "hinglish" } });
     playDeps.q = async () => [];
+    const written = [];
+    playDeps.writeHome = async (_child, evs) => { written.push(...evs); return { written: true, n: evs.length }; };
     const home = await playOnce(null, (lv, lg) => lg.solve(lv));
+    assert.equal(written.length, 1, "the home level folded at /act (decision A)"); assert.equal(written[0].target, SKILL); assert.match(written[0].id, /^home:/);
     assert.equal(home.body.trail.solved, true); assert.equal(home.body.trail.firstTry, true); assert.equal(home.body.trail.levelId, home.lv.levelId);
     assert.ok(!("evidenceToken" in home.body)); assert.ok(typeof home.body.homeToken === "string");
     const hv = verifyHomeEvidence(home.body.homeToken, { childId: CHILD });
@@ -167,7 +171,7 @@ test("P3 routes: /act returns the trail; a lesson gets an evidenceToken carrying
     assert.deepEqual(home.body.evidence.map((r) => r.source), ["game"], "the display rows are unchanged");
     const LES = "11111111-1111-4111-8111-111111111111";
     const les = await playOnce(LES, (lv, lg) => [...(Object.keys(lv.mal).map((m) => lg.malActs(lv, m)).find(Boolean) ?? []), ...lg.solve(lv)]);
-    assert.ok(!("homeToken" in les.body));
+    assert.ok(!("homeToken" in les.body)); assert.equal(written.length, 1, "a lesson level never folds as home play");
     const lv = verifyEvidence(les.body.evidenceToken, { childId: CHILD, lessonId: LES });
     assert.deepEqual(lv.trail, les.body.trail); assert.equal(lv.trail.misses, 1); assert.equal(lv.trail.firstTry, false);
     // mid-level posts carry no trail and no token
@@ -179,39 +183,52 @@ test("P3 routes: /act returns the trail; a lesson gets an evidenceToken carrying
   } finally { Object.assign(playDeps, saved); }
 });
 
-// ───────────────────────────── the home fold ─────────────────────────────
+
+// ───────────────────────────── the home fold (round 8 follow-up A: live, through the learner's mapping) ─────────────────────────────
 
 const ON = { [HOME_FOLD_FLAG]: "on" };
 const SK = "c6-maths-ch05-t04-s1";
 const H = 3600_000, DAY = 24 * H;
 const T0 = Date.UTC(2026, 9, 1, 4, 30);   // 10:00 IST
 const row = (outcome = "correct", weight = GAME_WEIGHT, skillId = SK) => ({ skillId, outcome, source: "game", itemId: "play:x", probe: "P10", hintsUsed: 0, weight });
-const homeTok = (levelId, rows, now) => signHomeEvidence({ childId: "c1", levelId, rows }, { key, now });
+const homeTok = (levelId, rows, now, trail) => signHomeEvidence({ childId: "c1", levelId, rows, ...(trail ? { trail } : {}) }, { key, now });
+const trailOf = (o = {}) => ({ v: TRAIL_V, levelId: "L", skillId: SK, game: "kila/lcm", fade: 1, solved: true, firstTry: true, misses: 0, refused: 0, mal: [], undos: 0, hints: 0, acts: 3, minActs: 3, extra: 0, ...o });
 
-test("P3 home fold: off by default — nothing folds, and nothing in the server calls it", () => {
-  assert.equal(homeFoldOn({}), false); assert.equal(homeFoldOn({ [HOME_FOLD_FLAG]: "off" }), false); assert.equal(homeFoldOn(ON), true);
-  const now = Date.now();
-  const r = homeKtEvents({ tokens: [homeTok("L1", [row()], now)], childId: "c1", now, env: {} }, { key, now });
+test("A home fold: ON by default (off only when set off / 0 / false / no); the one production caller is /api/play/act", () => {
+  assert.equal(homeFoldOn({}), true); assert.equal(homeFoldOn(ON), true);
+  for (const v of ["off", "0", "false", "no", " OFF "]) assert.equal(homeFoldOn({ [HOME_FOLD_FLAG]: v }), false, v);
+  const now = T0;
+  const r = homeKtEvents({ tokens: [homeTok("L1", [row()], now)], childId: "c1", now, env: { [HOME_FOLD_FLAG]: "off" } }, { key, now });
   assert.equal(r.off, true); assert.equal(r.events.length, 0);
-  const prev = process.env[HOME_FOLD_FLAG];
-  try { delete process.env[HOME_FOLD_FLAG]; assert.equal(homeKtEvents({ tokens: [homeTok("L1", [row()], now)], childId: "c1", now }, { key, now }).events.length, 0); }
-  finally { if (prev !== undefined) process.env[HOME_FOLD_FLAG] = prev; }
+  assert.equal(homeKtEvents({ tokens: [homeTok("L1", [row()], now)], childId: "c1", now, env: {} }, { key, now }).events.length, 1);
   const callers = [];
-  const walk = (d) => { for (const f of readdirSync(d, { withFileTypes: true })) { const p = join(d, f.name); if (f.isDirectory()) walk(p); else if (/\.(m?js|ts)$/.test(f.name) && p !== join("server", "play", "home.js") && readFileSync(p, "utf8").includes("homeKtEvents")) callers.push(p); } };
+  const walk = (d) => { for (const f of readdirSync(d, { withFileTypes: true })) { const p = join(d, f.name); if (f.isDirectory()) walk(p); else if (/\.(m?js|ts)$/.test(f.name) && p !== join("server", "play", "home.js") && /\bfoldHomeLevel\b|\bhomeKtEvents\b/.test(readFileSync(p, "utf8"))) callers.push(p); } };
   walk("server");
-  assert.deepEqual(callers, [], "no production caller yet");
+  assert.deepEqual(callers, [join("server", "play", "routes.js")]);
 });
 
-test("P3 home fold rule 1: the game weight, the chance weight for one-decision goals, any other weight dropped", () => {
+test("A home fold: each verified level is the learner's homePlayEvent — the trail sets the outcome, the row the chance weight", () => {
   const now = T0;
-  const r = homeKtEvents({ tokens: [homeTok("La", [row("correct", GAME_WEIGHT)], now), homeTok("Lb", [row("correct", CHANCE_WEIGHT)], now), homeTok("Lc", [row("incorrect", GAME_WEIGHT)], now), homeTok("Ld", [row("correct", 1)], now)],
-    childId: "c1", now, env: ON }, { key, now });
-  assert.equal(r.off, false); assert.equal(r.events.length, 3); assert.equal(r.dropped, 1);
-  assert.deepEqual(r.events.map((e) => temper(e)), [GAME_WEIGHT, CHANCE_WEIGHT, GAME_WEIGHT]);
-  for (const e of r.events) { assert.equal(e.via, "game"); assert.equal(e.home, true); assert.match(e.episodeId, /^home:/); assert.equal(e.grader, "code"); }
-  // a lesson token is refused here too
-  const lesson = signEvidence({ childId: "c1", lessonId: "les1", levelId: "Le", rows: [row()] }, { key, now });
+  const r = homeKtEvents({ tokens: [
+    homeTok("La", [row("correct", GAME_WEIGHT)], now, trailOf({ levelId: "La" })),
+    homeTok("Lb", [row("correct", CHANCE_WEIGHT)], now, trailOf({ levelId: "Lb" })),
+    homeTok("Lc", [row("correct", GAME_WEIGHT)], now, trailOf({ levelId: "Lc", firstTry: false, misses: 2, mal: [{ rule: "product", mis: "c6-m-x" }] })),
+    homeTok("Ld", [row("correct", 1)], now),
+    homeTok("Le", [row("incorrect", GAME_WEIGHT)], now, trailOf({ levelId: "Le", solved: false, firstTry: false, misses: 1, extra: null })),
+  ], childId: "c1", now, env: ON }, { key, now });
+  assert.equal(r.events.length, 4); assert.equal(r.dropped, 1, "a row of any other weight is dropped");
+  const day = dayOf(now);
+  const [a, , c, e] = r.events;
+  assert.equal(a.id, `home:c1:${day}:La:0`); assert.equal(a.sessionId, `home:c1:${day}`); assert.equal(a.graderVersion, "home-play-v1");
+  assert.equal(a.outcome, 0, "a clean first-try win is C0");
+  assert.equal(c.outcome, 1, "a win after misses is a later try"); assert.equal(c.misconceptionId, "c6-m-x", "the kit mis of the mal-rule her miss matched");
+  assert.notEqual(e.outcome, 0); assert.equal(e.target, SK);
+  assert.deepEqual(r.events.map((x) => temper(x)), [GAME_WEIGHT, CHANCE_WEIGHT, GAME_WEIGHT, GAME_WEIGHT]);
+  for (const x of r.events) { assert.equal(x.via, "game"); assert.match(x.episodeId, /^home:/); assert.equal(x.grader, "code"); assert.ok(x.playTrail); }
+  // a lesson token is refused here; a token of another child too
+  const lesson = signEvidence({ childId: "c1", lessonId: "les1", levelId: "Lf", rows: [row()] }, { key, now });
   assert.equal(homeKtEvents({ tokens: [lesson], childId: "c1", now, env: ON }, { key, now }).rejected, 1);
+  assert.equal(homeKtEvents({ tokens: [homeTok("Lg", [row()], now)], childId: "c2", now, env: ON }, { key, now }).rejected, 1);
 });
 
 const L0 = () => newLedger({ childId: "c", classLevel: 6 });
@@ -223,8 +240,31 @@ function lessonSession(sid, t, specs) {
     skillIds: [SK], itemKey: `k${seq}`, cls: "item.open", outcome: 0, grader: "code", graderVersion: "g", topicType: "T1", ...o }));
 }
 
-test("P3 home fold rules 2 and 3: home levels alone never set unaided; a home win days later is never the delayed check and never spends it", () => {
-  // rule 2: many clean home wins (across days, under the cap) — pL moves, unaided never set, never learned_today
+test("A home fold: an afternoon of one game (30 clean first-try home levels of one skill, one IST day) never makes it learned, mastered or unaided", () => {
+  const now = T0 + 4 * H;   // 14:00 IST
+  const toks = Array.from({ length: 30 }, (_, i) => homeTok(`Af${i}`, [row()], now - (30 - i) * 5 * 60_000, trailOf({ levelId: `Af${i}` })));
+  // as /act folds them: one level at a time, each with the levels already folded that day as prior
+  let L = L0();
+  const prior = [];
+  let folded = 0;
+  for (const t of toks) {
+    const r = homeKtEvents({ tokens: [t], childId: "c1", now, env: ON, prior }, { key, now });
+    for (const e of r.events) prior.push({ skillId: e.target, at: e.at, levelId: e.episodeId.split(":").at(-1) });
+    folded += r.events.length;
+    L = fold(L, seqd(r.events));
+  }
+  assert.equal(folded, HOME_DAILY_CAP, "the volume bound: the rest are not written");
+  const sk = L.skills[SK];
+  assert.equal(sk.flags.unaided, false); assert.equal(sk.flags.delayed, false);
+  assert.ok(!["learned_today", "mastered", "durable"].includes(sk.display), sk.display);
+  // the ledger's own rule is what bounds it: ±ln 3 of evidence and one learning step that day
+  assert.ok(Math.abs(L.homeBudget[SK].sum) <= HOME_DAY_LOG_CAP + 1e-9);
+  const p0 = sk.prior?.pL0 ?? 0.4;
+  const o = (p0 / (1 - p0)) * Math.exp(HOME_DAY_LOG_CAP), pc = o / (1 + o);
+  assert.ok(sk.pL <= pc + (1 - pc) * 0.3 + 1e-9, `pL ${sk.pL.toFixed(3)} from ${p0}`);
+});
+
+test("A home fold rules 2 and 3: home levels never set unaided; a home win days later is never the delayed check and never spends it", () => {
   let L = L0();
   for (let d = 0; d < 3; d++) {
     const now = T0 + d * DAY;
@@ -235,7 +275,6 @@ test("P3 home fold rules 2 and 3: home levels alone never set unaided; a home wi
     assert.ok(L.skills[SK].pL > before, "a home win moves pL");
   }
   assert.equal(L.skills[SK].flags.unaided, false); assert.equal(L.skills[SK].display, "practising");
-  // rule 3: learned today in a lesson, then a home win two days later: not the check, not spent; the bare item after it is
   const L1 = fold(L0(), lessonSession("A", T0, [{}, {}, {}, {}, { cls: "probe.why", outcome: 0, grader: "llm" }, {}]));
   assert.equal(L1.skills[SK].display, "learned_today");
   const now = T0 + 2 * DAY;
@@ -244,29 +283,47 @@ test("P3 home fold rules 2 and 3: home levels alone never set unaided; a home wi
   assert.equal(afterHome.skills[SK].flags.delayed, false); assert.equal(afterHome.skills[SK].display, "learned_today");
   const afterItem = fold(afterHome, lessonSession("B", now, [{}]));
   assert.equal(afterItem.skills[SK].flags.delayed, true, "the check was not spent by the home level"); assert.equal(afterItem.skills[SK].display, "mastered");
-  // a home miss two days later is not a delayed miss either
   const m = homeKtEvents({ tokens: [homeTok("Lm", [row("incorrect")], now)], childId: "c1", now, env: ON }, { key, now });
   const afterMiss = fold(L1, seqd(m.events));
   assert.equal(afterMiss.skills[SK].delayedMisses, 0); assert.equal(afterMiss.skills[SK].refresh, false);
 });
 
-test("P3 home fold rule 4: at most HOME_DAILY_CAP levels per skill per learning day (IST), prior folds included", () => {
-  assert.equal(HOME_DAILY_CAP, 3);
+test("A home fold volume bound: HOME_DAILY_CAP levels per skill per learning day (IST), prior folds included; a level folds once a day", () => {
+  assert.equal(HOME_DAILY_CAP, 24);
   const now = T0, o = { key, now };
-  const five = [1, 2, 3, 4, 5].map((i) => homeTok(`C${i}`, [row()], now));
-  const r = homeKtEvents({ tokens: five, childId: "c1", now, env: ON }, o);
-  assert.equal(r.events.length, 3); assert.equal(r.capped, 2);
-  // two already folded today → one more; yesterday's do not count; a level already folded is never folded again
+  const many = Array.from({ length: 12 }, (_, i) => homeTok(`C${i}`, [row()], now));
+  // 20 already folded today → 4 more; yesterday's do not count; a level already folded today is not folded again
   const today = new Date(now - 2 * H).toISOString(), yesterday = new Date(now - DAY).toISOString();
-  const p = homeKtEvents({ tokens: five, childId: "c1", now, env: ON, prior: [{ skillId: SK, at: today, levelId: "C1" }, { skillId: SK, at: today, levelId: "X" }, { skillId: SK, at: yesterday }, { skillId: SK, at: yesterday }] }, o);
-  assert.equal(p.events.length, 1); assert.equal(p.events[0].episodeId, "home:C2");
-  // another skill has its own cap
-  const mixed = [...five, ...[1, 2, 3, 4].map((i) => homeTok(`D${i}`, [row("correct", GAME_WEIGHT, "c6-maths-ch05-t04-s2")], now))];
-  const m = homeKtEvents({ tokens: mixed, childId: "c1", now, env: ON }, o);
-  assert.equal(m.events.filter((e) => e.target === SK).length, 3); assert.equal(m.events.filter((e) => e.target === "c6-maths-ch05-t04-s2").length, 3);
+  const prior = [...Array.from({ length: 19 }, (_, i) => ({ skillId: SK, at: today, levelId: `X${i}` })), { skillId: SK, at: today, levelId: "C0" }, { skillId: SK, at: yesterday }, { skillId: SK, at: yesterday }];
+  const p = homeKtEvents({ tokens: many, childId: "c1", now, env: ON, prior }, o);
+  assert.equal(p.events.length, 4); assert.equal(p.events[0].episodeId, `home:c1:${dayOf(now)}:C1`); assert.ok(p.capped >= 1);
+  // another skill has its own bound
+  const other = homeKtEvents({ tokens: [homeTok("D1", [row("correct", GAME_WEIGHT, "c6-maths-ch05-t04-s2")], now)], childId: "c1", now, env: ON, prior }, o);
+  assert.equal(other.events.length, 1);
   // the learning day is IST: 23:00 IST and 01:00 IST the next day are two days
   const late = Date.UTC(2026, 9, 1, 17, 30), early = late + 2 * H;
-  const prior = [1, 2, 3].map(() => ({ skillId: SK, at: new Date(late).toISOString() }));
-  assert.equal(homeKtEvents({ tokens: [homeTok("E1", [row()], early)], childId: "c1", now: early, env: ON, prior }, { key, now: early }).events.length, 1);
-  assert.equal(homeKtEvents({ tokens: [homeTok("E2", [row()], late)], childId: "c1", now: late, env: ON, prior }, { key, now: late }).events.length, 0);
+  const full = Array.from({ length: HOME_DAILY_CAP }, () => ({ skillId: SK, at: new Date(late).toISOString() }));
+  assert.equal(homeKtEvents({ tokens: [homeTok("E1", [row()], early)], childId: "c1", now: early, env: ON, prior: full }, { key, now: early }).events.length, 1);
+  assert.equal(homeKtEvents({ tokens: [homeTok("E2", [row()], late)], childId: "c1", now: late, env: ON, prior: full }, { key, now: late }).events.length, 0);
+});
+
+test("A home fold at /act: prior read back from kt_evidence (no home table), written through the route's writer seam", async () => {
+  const now = Date.now();
+  const day = dayOf(now);
+  const seen = [];
+  const q = async (sql, params) => { seen.push([sql, params]); return [{ episode_id: `home:c1:${day}:Lp`, target: SK, skill_ids: [SK], occurred_at: new Date(now - 60_000).toISOString() }]; };
+  const pr = await priorHomeLevels("c1", day, q);
+  assert.deepEqual(pr, [{ skillId: SK, at: new Date(now - 60_000).toISOString(), levelId: "Lp" }]);
+  assert.match(seen[0][0], /from kt_evidence/); assert.equal(seen[0][1][1], `home:c1:${day}`);
+  const got = [];
+  const write = async (_c, evs) => { got.push(...evs); return { written: true, n: evs.length }; };
+  // the route's token is signed with the process key (no opts)
+  const tok = signHomeEvidence({ childId: "c1", levelId: "Lq", rows: [row()] }, { now });
+  const r = await foldHomeLevel({ child: { id: "c1" }, token: tok, q, write, now, env: ON });
+  assert.equal(r.off, false); assert.equal(r.folded, 1); assert.equal(got.length, 1); assert.equal(got[0].episodeId, `home:c1:${day}:Lq`);
+  // the level already folded today (read back) is not folded again
+  const again = await foldHomeLevel({ child: { id: "c1" }, token: signHomeEvidence({ childId: "c1", levelId: "Lp", rows: [row()] }, { now }), q, write, now, env: ON });
+  assert.equal(again.folded, 0); assert.equal(got.length, 1);
+  assert.equal((await foldHomeLevel({ child: { id: "c1" }, token: tok, q, write, now, env: { [HOME_FOLD_FLAG]: "off" } })).off, true);
+  assert.equal((await priorHomeLevels("c1", day, async () => { throw new Error("no db"); })).length, 0, "a failed read is no prior");
 });

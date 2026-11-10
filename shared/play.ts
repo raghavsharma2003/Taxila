@@ -768,7 +768,16 @@ export interface PlayStartRequest {
   skillId?: string; topicId?: string;
   lessonId?: string;                 // inside a lesson: the session is tied to it (seam facts, evidence)
   lang?: Lang; art?: ArtId | null; fade?: Fade;
+  /** round 8 follow-up C: the fade is the Director's deliberate choice (honoured inside a lesson only): it beats her history */
+  fadeFrom?: "director";
+  /** round 8 follow-up F: her previous play session token (the server verifies it): what she just played, for novelty */
+  prev?: string;
 }
+/** Round 8 H: the child's "why this game" line (server/play/why.js; display only, never a grade). `speak`: the first time
+ *  this reason is shown in the session (the client still does not speak it while the lesson's teacher is speaking). */
+export interface PlayWhy { text: string; speak: boolean; reason: "mixup" | "up" | "down" | "switch" }
+/** Round 8: why a game / level / fade was chosen (server/play/choose.js). */
+export interface PlayBecause { choice: string; fact: string; source: string; kind?: string; when?: "earlier" | "now"; mis?: string }
 export interface PlayStartResponse {
   sessionId: string;
   level: PlayLevel;
@@ -779,6 +788,8 @@ export interface PlayStartResponse {
   world: PlayWorldFamily | null;
   /** round 4: the base dress when a real-game engine renders this level (the model's delta comes from /api/play/dress) */
   dress?: import("../src/play/engines/core3d/api.ts").DressedSpec | null;
+  because?: PlayBecause[];
+  why?: PlayWhy;
 }
 /** Round 8 P3: a level's trail (server/play/trail.js buildTrail). Child-free, fixed shape, bounded. */
 export interface PlayTrail {
@@ -825,7 +836,10 @@ export interface PlayActResponse {
 }
 /** POST /api/play/next */
 export interface PlayNextRequest { sessionId: string; door: Door }
-export interface PlayNextResponse { sessionId: string; level: PlayLevel; art: ArtPick; bank: Reaction[]; dress?: import("../src/play/engines/core3d/api.ts").DressedSpec | null }
+export interface PlayNextResponse { sessionId: string; level: PlayLevel; art: ArtPick; bank: Reaction[]; dress?: import("../src/play/engines/core3d/api.ts").DressedSpec | null;
+  because?: PlayBecause[]; why?: PlayWhy;
+  /** round 8 follow-up B: the session switched family (once at most): the new family's world, to remount */
+  switched?: { from: string; to: string }; world?: PlayWorldFamily | null }
 /** POST /api/play/dress { sessionId } → the validated dress for the current level (base when late / invalid / off) */
 export interface PlayDressResponse { dress: import("../src/play/engines/core3d/api.ts").DressedSpec; source: "model" | "base"; ms: number }
 /** GET /api/play/world?childId= */

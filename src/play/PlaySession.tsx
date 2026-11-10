@@ -2,12 +2,16 @@
 // micro-line at a play turn-point, offers the server's two doors after a level, and reports level ends upward (the lesson
 // forwards the seam and the server's evidence rows; GRAMMAR.md §6). The local controller never waits on the network.
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import type { ArtId, Lang, PlayActEnvelope, PlayActResponse, PlayDressResponse, PlayLevel, PlayWorldFamily } from "../../shared/play.ts";
+import type { ArtId, Lang, PlayActEnvelope, PlayActResponse, PlayDressResponse, PlayLevel, PlayWhy, PlayWorldFamily } from "../../shared/play.ts";
 import type { PlayCosmetics } from "./briefing.ts";
 import { PlayStage, type PlayDoor, type PlayEvent } from "./PlayStage.tsx";
 import { playApi } from "./client.ts";
 import type { DressedSpec } from "./engines/core3d/api.ts";
-import { musicPref } from "./engines/core3d/host.ts";
+import { musicPref, TEACHER_SPEAKING } from "./engines/core3d/host.ts";
+
+/** Round 8 H: the window event a play piece raises to have its why-line said aloud by whoever owns a voice on the page
+ *  (detail { text, reason }); raised at most once per reason per session, never while the lesson's teacher is speaking. */
+export const PLAY_SAY = "taxila:play-say";
 
 export interface PlaySessionProps {
   sessionId: string;
@@ -34,6 +38,10 @@ export interface PlaySessionProps {
   dressReply?: Promise<PlayDressResponse | null> | null;
   /** r4 K-P4: the child's Hangar colours for the engine (colour only; laws, levels, acts and grades never read them) */
   cosmetics?: PlayCosmetics | null;
+  /** round 8 H: the first level's why-line (the server's; display only) */
+  why?: PlayWhy | null;
+  /** round 8 H: say a why-line aloud (the host's voice); absent → the PLAY_SAY window event */
+  onSay?(text: string, reason: string): void;
   /** renderer override (the harness): "3d" lets a software GPU through */
   engine?: "auto" | "2d" | "3d";
   /** the certification harness reads canvas pixels: keep the WebGL drawing buffer (never set for a child) */
@@ -47,6 +55,25 @@ export function PlaySession(p: PlaySessionProps) {
   const [caption, setCaption] = useState<string | null>(null);
   const [doors, setDoors] = useState<PlayDoor[] | null>(null);
   const [dress, setDress] = useState<DressedSpec | null>(p.dress ?? null);
+  // round 8 follow-up B: a family switch brings the new family's world; H: each level's why-line
+  const [world, setWorld] = useState<PlayWorldFamily | null>(p.world ?? null);
+  const [why, setWhy] = useState<PlayWhy | null>(p.why ?? null);
+  const teacherOn = useRef(false);
+  const saidRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const on = (e: Event) => { teacherOn.current = !!(e as CustomEvent<{ on?: boolean }>).detail?.on; };
+    window.addEventListener(TEACHER_SPEAKING, on);
+    return () => window.removeEventListener(TEACHER_SPEAKING, on);
+  }, []);
+  // said aloud once per session per reason; while the lesson's teacher speaks the line is shown, not spoken (no two voices)
+  useEffect(() => {
+    if (!why?.speak || saidRef.current.has(why.reason) || teacherOn.current) return;
+    saidRef.current.add(why.reason);
+    if (p.onSay) { p.onSay(why.text, why.reason); return; }
+    try { window.dispatchEvent(new CustomEvent(PLAY_SAY, { detail: { text: why.text, reason: why.reason } })); } catch { /* no window */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [why]);
   // the model's story wrapper stays for the whole segment (continuity); the theme still rotates per level (base rules)
   const carry = useRef<DressedSpec["dress"]["wrapper"] | null>(null);
   useEffect(() => {
@@ -94,12 +121,15 @@ export function PlaySession(p: PlaySessionProps) {
   const onDoor = useCallback(async (d: PlayDoor) => {
     const r = await playApi.next({ sessionId: sidRef.current, door: d.door });
     if (!r) { p.onFail?.("next"); return; }
-    setSid(r.sessionId); setArt(r.art.art); setLevel(r.level);
-    if (r.dress) setDress(carry.current ? { ...r.dress, dress: { ...r.dress.dress, wrapper: carry.current }, from: { ...r.dress.from, wrapper: "model" } } : r.dress);
+    // follow-up B: a new family is a new world: its map, and no story wrapper carried from the other engine
+    if (r.switched) { carry.current = null; setWorld(r.world ?? null); }
+    setSid(r.sessionId); setArt(r.art.art); setLevel(r.level); setWhy(r.why ?? null);
+    if (r.switched) setDress(r.dress ?? null);
+    else if (r.dress) setDress(carry.current ? { ...r.dress, dress: { ...r.dress.dress, wrapper: carry.current }, from: { ...r.dress.from, wrapper: "model" } } : r.dress);
   }, [p]);
 
   // r4 K-P4: the Hangar colours ride on the dress the engine wears (one object per dress, so no spurious redress)
   const worn = useMemo(() => (dress && p.cosmetics ? { ...dress, cosmetics: p.cosmetics } : dress), [dress, p.cosmetics]);
   return <PlayStage level={level} art={art} lang={p.lang} classLevel={p.classLevel} caption={caption} face={p.face} teacherName={p.teacherName}
-    doors={doors} onDoor={onDoor} world={p.world ?? null} onEvent={onEvent} reducedMotion={p.reducedMotion} heard={p.heard} embedded={p.embedded} dress={worn} engine={p.engine} verb={dress?.verb} preserveDrawing={p.preserveDrawing} />;
+    doors={doors} onDoor={onDoor} world={world} why={why?.text ?? null} onEvent={onEvent} reducedMotion={p.reducedMotion} heard={p.heard} embedded={p.embedded} dress={worn} engine={p.engine} verb={dress?.verb} preserveDrawing={p.preserveDrawing} />;
 }

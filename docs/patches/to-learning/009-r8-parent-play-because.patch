@@ -1,0 +1,300 @@
+From: Games (C2), 2026-11-10 — round 8 Play follow-up F (main's decision): the parent page says why each game was chosen and how its levels went
+Subject: play `because` and trail on the parent's Teaching page through server/director/knows-words.js becauseLines
+
+What: (1) knows-words.js learns the play vocabulary: becauseLine hands any record of kind "play.*" to a new playLine
+(pick_mixup, pick_novelty, pick_fit, fade_history, fade_director, mixup_focus, step_up, step_down, switch, studio_gate;
+Hinglish / English, two shapes each, the record's own fact text is never shown), becauseLines dedupes play records by kind,
+mix-up and game, and a new trailLine says how a level went (first try / after a few tries / not finished, extra moves),
+never a verdict on the child. knows-words.js is under server/director/** (Brain / the Loop session per OWNERSHIP.md), so the
+vocabulary is part of this patch. (2) server/reports/teaching.js playLinesOf reads the last week's play rows from the
+flight recorder (trace_event play.mount / play.next carry the level's because, play.outcome its trail; written by
+server/play/routes.js) and teachingOf returns `play: { because, trail }`; mix-up titles come from the kit (as in 008).
+(3) src/parent/api.ts + Teaching.tsx: an "In games this week" card. (4) tests/r8-parent-play-because.test.mjs.
+Why: the play picker and the between-level steps now choose from what the learner model holds; the parent should read why,
+in the same plain words as the lesson's because lines. Made against int/r6 without 008-r8-teaching-because.patch: the
+bindings do not clash (knows-words is imported as a namespace here), but after 008 two server/reports/teaching.js hunks
+(the imports and teachingOf's return) need a hand merge (`patch -p1` applies the other files with fuzz). Made with `git diff origin/int/r6`. Applies with `git apply`.
+
+diff --git a/server/director/knows-words.js b/server/director/knows-words.js
+index 535c12de3..721d5278d 100644
+--- a/server/director/knows-words.js
++++ b/server/director/knows-words.js
+@@ -20,6 +20,7 @@ const cap = (t) => (t ? t[0].toUpperCase() + t.slice(1) : t);
+  * @returns {string|null}  null for a record this page does not explain
+  */
+ export function becauseLine(rec, ctx = {}) {
++  if (String(rec?.kind ?? "").startsWith("play.")) return playLine(rec, ctx);
+   const en = String(ctx.lang ?? "").toLowerCase().startsWith("en");
+   const name = String(ctx.name ?? "").trim() || (en ? "Your child" : "Aapke bachche");
+   const f = rec?.fact ?? {};
+@@ -134,6 +135,108 @@ export function becauseLine(rec, ctx = {}) {
+   }
+ }
+ 
++// ───────────── round 8 Play (docs/patches/to-learning/009) ─────────────
++// A play session's because records { choice, fact, source, kind: "play.*", when?, mis? } (server/play/choose.js) and a
++// level's trail (server/play/trail.js). The record's fact is the play server's own text (it may hold the kit's belief) and
++// is NOT shown: each line is built from the kind, the game's title and the mix-up's title, like every line above.
++const gameOf = (rec) => /([a-z][a-z-]*\/[a-z][a-z0-9-]*)/.exec(String(rec?.choice ?? rec?.game ?? ""))?.[1] ?? null;
++
++/** One play because record → a line, or null. ctx.games: titles by "family/mode"; ctx.mixups: titles by kit mis id. */
++export function playLine(rec, ctx = {}) {
++  const en = String(ctx.lang ?? "").toLowerCase().startsWith("en");
++  const name = String(ctx.name ?? "").trim() || (en ? "Your child" : "Aapke bachche");
++  const seed = hash(`${ctx.seed ?? 0}|${rec?.kind}|${rec?.choice}`);
++  const g = said(ctx.games?.[gameOf(rec)], en) ?? (en ? "a game" : "ek khel");
++  const m = said(ctx.mixups?.[rec?.mis], en) ?? (en ? "a mix-up seen before" : "ek purani uljhan");
++  const earlier = rec?.when === "earlier";
++  const more = /more help/.test(String(rec?.choice ?? ""));
++  switch (rec?.kind) {
++    case "play.pick_mixup": return pick(en ? [
++      `The game started with ${g}, because "${m}" came up ${earlier ? "in earlier lessons" : "in this lesson"}.`,
++      `${cap(g)} came first: its first level shows "${m}" clearly, which came up ${earlier ? "before" : "today"}.`,
++    ] : [
++      `Khel ${g} se shuru hua, kyunki "${m}" wali baat ${earlier ? "pichhli classon mein" : "isi class mein"} dikhi thi.`,
++      `Pehle ${g} khela, kyunki uska pehla level "${m}" wali baat saaf dikhata hai.`,
++    ], seed);
++    case "play.pick_novelty": return pick(en ? [
++      `${cap(g)} this time, for a change from the game ${name} had just played.`,
++      `A different game (${g}), since ${name} had just played another one.`,
++    ] : [
++      `Is baar ${g}, taaki abhi khele gaye khel se kuch alag ho.`,
++      `Alag khel (${g}), kyunki ${name} ne abhi doosra khel khela tha.`,
++    ], seed);
++    case "play.pick_fit": return pick(en ? [
++      `${cap(g)} was picked because its first level suits where ${name} is on this skill now.`,
++      `The first level of ${g} matched where ${name} is on this skill best.`,
++    ] : [
++      `${cap(g)} chuna, kyunki uska pehla level ${name} ke abhi ke star ke hisaab se theek tha.`,
++      `Is hisse mein ${name} jahan hai, ${g} ka pehla level wahin se shuru hota hai.`,
++    ], seed);
++    case "play.fade_history": return pick(en ? [
++      `The game gave ${more ? "more" : "less"} help, from how ${name} has done on this skill so far.`,
++      `${more ? "More" : "Less"} help in the game, going by ${name}'s answers on this skill.`,
++    ] : [
++      `Khel mein ${more ? "zyada" : "kam"} madad di, is hisse ke pichhle jawabon ke hisaab se.`,
++      `${name} ke ab tak ke jawab dekhkar khel mein ${more ? "zyada" : "kam"} madad rakhi.`,
++    ], seed);
++    case "play.fade_director": return pick(en ? [
++      "The lesson set how much help the game gave.",
++      "How much help the game gave was the teacher's choice in the lesson.",
++    ] : [
++      "Khel mein kitni madad ho, yeh class ne tay kiya.",
++      "Khel ki madad kitni ho, yeh teacher ne class mein tay kiya.",
++    ], seed);
++    case "play.mixup_focus": return pick(en ? [
++      `One move followed the idea "${m}", so the next level was one that shows it clearly.`,
++      `After a move that followed "${m}", the next level looked at exactly that.`,
++    ] : [
++      `Ek chaal "${m}" wali soch se aayi, isliye agla level wahi baat saaf dikhane wala tha.`,
++      `"${m}" wali chaal ke baad agla level usi baat par tha.`,
++    ], seed);
++    case "play.step_up": return pick(en ? [
++      `${name} solved a level on the first try, so the next one was a step harder.`,
++      "Solved on the first try: the next level went one step up.",
++    ] : [
++      `${name} ne ek level pehli koshish mein kiya, isliye agla thoda mushkil tha.`,
++      "Pehli baar mein hal hua, to agla level ek kadam aage tha.",
++    ], seed);
++    case "play.step_down": return pick(en ? [
++      "After a level that took more than one try, the next one was a step easier.",
++      "The next level went one step back down, after one that took a few tries.",
++    ] : [
++      "Ek level mein ek se zyada koshish lagi, isliye agla thoda aasaan rakha.",
++      "Kuch koshishon wale level ke baad agla ek kadam aasaan tha.",
++    ], seed);
++    case "play.switch": return pick(en ? [
++      `The game changed to ${g}, to look at "${m}" another way.`,
++      `${cap(g)} next: the same idea, "${m}", in a different game.`,
++    ] : [
++      `Khel badal kar ${g} kiya, taaki "${m}" wali baat doosre tareeke se dikhe.`,
++      `Wahi baat, "${m}", ab ${g} mein dekhi.`,
++    ], seed);
++    case "play.studio_gate": return pick(en ? [
++      `On a phone the bigger activity does not fit, so ${name} played ${g} instead.`,
++      `${cap(g)} was played because the bigger activity is too small to use on a phone.`,
++    ] : [
++      `Phone par bada activity theek se nahi aata, isliye ${g} khela.`,
++      `Phone ki screen chhoti thi, to bade activity ki jagah ${g}.`,
++    ], seed);
++    default: return null;
++  }
++}
++
++/** A level's trail (server/play/trail.js) → one plain line: how it went, never a verdict on the child. null when unreadable. */
++export function trailLine(t, ctx = {}) {
++  if (!t || typeof t !== "object" || typeof t.game !== "string") return null;
++  const en = String(ctx.lang ?? "").toLowerCase().startsWith("en");
++  const g = cap(said(ctx.games?.[t.game], en) ?? (en ? "A game" : "Ek khel"));
++  const extra = Number.isFinite(t.extra) && t.extra > 0 ? t.extra : 0;
++  const more = extra ? (en ? `, ${extra} move${extra === 1 ? "" : "s"} more than the shortest way` : `, sabse chhote raaste se ${extra} chaal zyada`) : "";
++  if (t.solved && t.firstTry) return en ? `${g}: solved on the first try${more}.` : `${g}: pehli koshish mein hal${more}.`;
++  if (t.solved) return en ? `${g}: solved after a few tries${more}.` : `${g}: kuch koshishon ke baad hal${more}.`;
++  return en ? `${g}: not finished this time.` : `${g}: is baar poora nahi hua.`;
++}
++
+ /**
+  * The lines for a lesson's because list: one per record the page explains, in order; records that say the same thing (a
+  * remediation planned for several cards from one mix-up) are said once.
+@@ -142,7 +245,8 @@ export function becauseLines(because = [], ctx = {}) {
+   const seen = new Set(), out = [];
+   for (const rec of because ?? []) {
+     const f = rec?.fact ?? {};
+-    const key = ["remedy", "checkOrder"].includes(rec?.choice) ? `${rec.choice}|${f.kind}|${f.misconceptionId}` : `${rec?.choice}|${rec?.on}|${f.kind}`;
++    const key = String(rec?.kind ?? "").startsWith("play.") ? `${rec.kind}|${rec.mis ?? ""}|${gameOf(rec) ?? ""}`
++      : ["remedy", "checkOrder"].includes(rec?.choice) ? `${rec.choice}|${f.kind}|${f.misconceptionId}` : `${rec?.choice}|${rec?.on}|${f.kind}`;
+     if (seen.has(key)) continue;
+     seen.add(key);
+     const line = becauseLine(rec, ctx);
+diff --git a/server/reports/teaching.js b/server/reports/teaching.js
+index 83bdd9ddf..0e242e863 100644
+--- a/server/reports/teaching.js
++++ b/server/reports/teaching.js
+@@ -11,6 +11,7 @@ import { getTopic } from "../content/curriculum.js";
+ import { COUNTED_LESSON_SQL } from "./truth.js";
+ import { madeForOf } from "./madeFor.js";
+ import { WAY_LABEL } from "./templates.js";
++import * as knowsWords from "../director/knows-words.js";
+ 
+ const n2 = (n) => (n === 1 ? "once" : n === 2 ? "twice" : `${n} times`);
+ /** " twice" / " 3 times"; nothing for once (a single move needs no count). */
+@@ -67,6 +68,30 @@ export function whyLines(rows, { name, T, ways = [] }) {
+   return out.slice(0, MAX_LINES);
+ }
+ 
++/**
++ * PURE. round 8 Play (docs/patches/to-learning/009): the last week's play from the flight recorder (trace_event: play.mount
++ * and play.next carry the level's `because`, play.outcome its `trail`) → the parent's lines through knows-words. Titles:
++ * the game by its family name; a mix-up by the kit's belief (as the lesson lines do).
++ * @param {{ kind: string, data: any }[]} rows newest first
++ */
++export function playLinesOf(rows, { name, lang, seed = 0, mixups = {} } = {}) {
++  const because = [], trails = [];
++  for (const r of rows ?? []) {
++    let d = r?.data ?? {};
++    if (typeof d === "string") { try { d = JSON.parse(d); } catch { d = {}; } }
++    if ((r.kind === "play.mount" || r.kind === "play.next") && Array.isArray(d.because)) because.push(...d.because.filter((b) => String(b?.kind ?? "").startsWith("play.")));
++    if (r.kind === "play.outcome" && d.trail && typeof d.trail === "object") trails.push(d.trail);
++  }
++  const games = {};
++  for (const x of [...because.map((b) => /([a-z][a-z-]*\/[a-z][a-z0-9-]*)/.exec(String(b.choice ?? ""))?.[1]), ...trails.map((t) => t.game)]) {
++    if (typeof x === "string" && x) { const f = x.split("/")[0]; games[x] = f.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join("-"); }
++  }
++  return {
++    because: knowsWords.becauseLines(because, { name, lang, seed, games, mixups }).slice(0, 6),
++    trail: trails.slice(0, 5).map((t) => knowsWords.trailLine(t, { lang, games })).filter(Boolean),
++  };
++}
++
+ /** Fixed copy: how the teacher works, the same for every child (no claim about the child). */
+ export const APPROACH = Object.freeze([
+   "Starts each lesson with a few questions from earlier topics, so they stay fresh.",
+@@ -88,6 +113,19 @@ export async function teachingOf(child, { T, q = dbq } = {}) {
+   const ways = ids.length ? await q("select lesson_id, chosen from decision_record where lesson_id = any($1::uuid[]) and point_id = 'explain_format' order by id",
+     [ids]).catch(() => []) : [];
+   const madeFor = await madeForOf(child.id, { limit: 6, q }).catch(() => []);
++  // round 8 Play: the last week's games (the play routes' flight-recorder rows for this child)
++  const playRows = await q("select kind, data from trace_event where cid = $1 and kind in ('play.mount', 'play.next', 'play.outcome') and t > now() - interval '7 days' order by t desc limit 60",
++    [child.id]).catch(() => []);
++  const mixIds = [...new Set(playRows.flatMap((r) => (Array.isArray(r?.data?.because) ? r.data.because.map((b) => b?.mis) : [])).filter((x) => typeof x === "string"))];
++  const kitsByTopic = new Map();
++  const mixups = {};
++  for (const id of mixIds) {
++    const topic = /^(c\d-[a-z]+-ch\d+-t\d+)-/.exec(id)?.[1];
++    if (!topic) continue;
++    if (!kitsByTopic.has(topic)) kitsByTopic.set(topic, await import("../content/index.js").then((m) => m.getKit(topic, { generate: false })).catch(() => null));
++    const b = kitsByTopic.get(topic)?.misconceptions?.find((x) => x.id === id)?.belief;
++    if (b) mixups[id] = { en: b };
++  }
+   return {
+     approach: APPROACH,
+     lessons: lessons.map((l) => ({
+@@ -96,5 +134,6 @@ export async function teachingOf(child, { T, q = dbq } = {}) {
+         ways: ways.filter((w) => String(w.lesson_id) === String(l.id)).map((w) => w.chosen) }),
+     })),
+     madeFor,
++    play: playLinesOf(playRows, { name: child.first_name, lang: child.language_pref, seed: String(child.id), mixups }),
+   };
+ }
+diff --git a/src/parent/Teaching.tsx b/src/parent/Teaching.tsx
+index 3dc8b12d8..87626806f 100644
+--- a/src/parent/Teaching.tsx
++++ b/src/parent/Teaching.tsx
+@@ -40,6 +40,13 @@ export default function Teaching() {
+               </ul>
+             )}
+           </section>
++          {d.data.play && (d.data.play.because.length > 0 || d.data.play.trail.length > 0) && (
++            <section className="pa-card" aria-labelledby="pa-t-play">
++              <h2 id="pa-t-play" className="pa-h2">In games this week</h2>
++              {d.data.play.because.length > 0 && <ul className="pa-list">{d.data.play.because.map((t) => <li key={t}>{t}</li>)}</ul>}
++              {d.data.play.trail.length > 0 && <ul className="pa-list pa-meta">{d.data.play.trail.map((t, i) => <li key={`${i}-${t}`}>{t}</li>)}</ul>}
++            </section>
++          )}
+           {d.data.madeFor.length > 0 && (
+             <section className="pa-card" aria-labelledby="pa-t-made">
+               <h2 id="pa-t-made" className="pa-h2">Made for {name}</h2>
+diff --git a/src/parent/api.ts b/src/parent/api.ts
+index 83a7490a7..d44160ca7 100644
+--- a/src/parent/api.ts
++++ b/src/parent/api.ts
+@@ -10,6 +10,8 @@ export interface TeachingOut {
+   teacher: string; approach: string[];
+   lessons: { id: string; topic: string | null; startedAt: string; why: { code: string; n: number; text: string }[] }[];
+   madeFor: import("../../shared/contracts.ts").MadeForItem[];
++  /** round 8 Play: why each game / level / help level was chosen this week, and how levels went (server/reports/teaching.js) */
++  play?: { because: string[]; trail: string[] };
+ }
+ 
+ export interface GateState {
+diff --git a/tests/r8-parent-play-because.test.mjs b/tests/r8-parent-play-because.test.mjs
+new file mode 100644
+index 000000000..494c10bbb
+--- /dev/null
++++ b/tests/r8-parent-play-because.test.mjs
+@@ -0,0 +1,45 @@
++// Round 8 Play (docs/patches/to-learning/009): the parent page says why each game, level and help level was chosen, and
++// how levels went, from the play routes' flight-recorder rows, through server/director/knows-words.js. Pure; no DB.
++import test from "node:test";
++import assert from "node:assert/strict";
++import { becauseLines, playLine, trailLine } from "../server/director/knows-words.js";
++import { playLinesOf } from "../server/reports/teaching.js";
++
++const KINDS = ["play.pick_mixup", "play.pick_novelty", "play.pick_fit", "play.fade_history", "play.fade_director", "play.mixup_focus", "play.step_up", "play.step_down", "play.switch", "play.studio_gate"];
++const rec = (kind, o = {}) => ({ choice: "kila/lcm first", fact: "Confuses factors with multiples", source: "x", kind, mis: "c6-m-fm", when: "earlier", ...o });
++
++test("every play because kind has a line in both languages; the record's fact text is never shown", () => {
++  for (const lang of ["english", "hinglish"]) for (const kind of KINDS) for (let seed = 0; seed < 4; seed++) {
++    const t = playLine(rec(kind), { lang, name: "Riya", seed, games: { "kila/lcm": "Kila" }, mixups: { "c6-m-fm": "factors and multiples" } });
++    assert.ok(t && t.length > 10, `${kind} ${lang}`);
++    assert.ok(!t.includes("Confuses factors with multiples"), t);
++    assert.ok(!/c6-|play\.|kila\/lcm/.test(t), `no internal id: ${t}`);
++  }
++  assert.equal(playLine({ kind: "play.unknown" }), null);
++});
++
++test("becauseLines takes play records beside lesson records and says each once", () => {
++  const lines = becauseLines([rec("play.step_up"), rec("play.step_up"), rec("play.switch", { choice: "switch to todo-jodo/atoms" })], { lang: "english", name: "Riya" });
++  assert.equal(lines.length, 2);
++});
++
++test("the trail line: how a level went, never a verdict on the child", () => {
++  const t = { v: 1, game: "kila/lcm", solved: true, firstTry: false, misses: 2, extra: 1 };
++  assert.match(trailLine(t, { lang: "english", games: { "kila/lcm": "Kila" } }), /^Kila: solved after a few tries, 1 move more/);
++  assert.match(trailLine({ ...t, firstTry: true, extra: 0 }, { lang: "hinglish" }), /pehli koshish mein hal\.$/);
++  assert.match(trailLine({ ...t, solved: false }, { lang: "english" }), /not finished this time/);
++  assert.equal(trailLine(null), null);
++});
++
++test("playLinesOf: the play routes' trace rows (mount / next because, outcome trail) → lines", () => {
++  const rows = [
++    { kind: "play.outcome", data: { trail: { v: 1, game: "kila/lcm", solved: true, firstTry: true, misses: 0, extra: 0 } } },
++    { kind: "play.next", data: JSON.stringify({ because: [{ choice: "next level a step harder", fact: "x", source: "play_grade", kind: "play.step_up" }] }) },
++    { kind: "play.mount", data: { because: [rec("play.pick_mixup")] } },
++  ];
++  const out = playLinesOf(rows, { name: "Riya", lang: "english", mixups: { "c6-m-fm": { en: "factors and multiples" } } });
++  assert.equal(out.because.length, 2); assert.equal(out.trail.length, 1);
++  assert.match(out.trail[0], /^Kila: solved on the first try/);
++  assert.ok(out.because.some((l) => l.includes("factors and multiples")));
++  assert.deepEqual(playLinesOf([], {}), { because: [], trail: [] });
++});
