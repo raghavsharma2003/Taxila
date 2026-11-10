@@ -1,0 +1,1301 @@
+From: Learning (F, claude/r7-audit-content-data)
+Subject: [PATCH 001] the arena leaves out kit items that are about a stored passage (audit CD-02, CD-03)
+
+The kits now store each story, poem or letter once per topic and an item points at it with `passageId`; the question itself is
+short (docs/design/round7/learning/PASSAGE.md). The arena builder reads the raw kit, so after that change an arena challenge such
+as "How much did Gopal pay for the well?" would be asked with no scene. 25 challenges are about a passage item, 10 of them in
+classes 5 to 9, where the text used to sit inside the prompt.
+
+- server/play/tools/build-arena.mjs: `challengeOf` returns { why: "needs its passage" } for an item with a `passageId`.
+- data/arena/**: rebuilt with `node server/play/tools/build-arena.mjs` (3,005 challenges become 2,980; the 212 eligible topics
+  are unchanged). vakya, kaal and coverage banks were rebuilt too and do not change.
+- tests/r7-audit-arena-passage.test.mjs: the builder skips the item; no arena challenge on disk is about a passage item.
+
+When the lesson can show a passage (TAXILA_PASSAGES=on), the arena can ask these again if it shows the passage beside the question.
+
+diff --git a/data/arena/c1-english.json b/data/arena/c1-english.json
+index 103baaa9..a76fd97f 100644
+--- a/data/arena/c1-english.json
++++ b/data/arena/c1-english.json
+@@ -152,35 +152,6 @@
+    ],
+    "keyText": "no"
+   },
+-  {
+-   "id": "c1-english-ch07-t01-i04",
+-   "topicId": "c1-english-ch07-t01",
+-   "skillId": "c1-english-ch07-t01-s4",
+-   "difficulty": 2,
+-   "itemKind": "contrast",
+-   "prompt": {
+-    "en": "Meenu is a girl. Which is right: 'He eats idli' or 'She eats idli'?",
+-    "hi": "Meenu ek ladki hai. Sahi kaunsa hai: 'He eats idli' ya 'She eats idli'?"
+-   },
+-   "hint": "For a girl we use...",
+-   "mis": "c1-english-ch07-t01-m1",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "choice",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "He eats idli"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "She eats idli"
+-    }
+-   ],
+-   "keyText": "She eats idli"
+-  },
+   {
+    "id": "c1-english-ch07-t01-i06",
+    "topicId": "c1-english-ch07-t01",
+diff --git a/data/arena/c2-english.json b/data/arena/c2-english.json
+index 70b8bcc8..1c6d14df 100644
+--- a/data/arena/c2-english.json
++++ b/data/arena/c2-english.json
+@@ -93,35 +93,6 @@
+    ],
+    "keyText": "no"
+   },
+-  {
+-   "id": "c2-english-ch01-t01-i06",
+-   "topicId": "c2-english-ch01-t01",
+-   "skillId": "c2-english-ch01-t01-s1",
+-   "difficulty": 3,
+-   "itemKind": "predict",
+-   "prompt": {
+-    "en": "Here is a NEW line, not in our rhyme: 'Ring, ring, I ride so far, faster than a little ___.' Which word fits and rhymes with 'far': 'car' or 'fan'?",
+-    "hi": "Ek nayi line suno, jo hamari rhyme mein nahi hai: 'Ring, ring, I ride so far, faster than a little ___.' Kaunsa word fit hoga aur 'far' se rhyme karega — 'car' ya 'fan'?"
+-   },
+-   "hint": "Listen to the end of 'far': -ar.",
+-   "mis": "c2-english-ch01-t01-m-rhyme-first-sound",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "choice",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "car"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "fan"
+-    }
+-   ],
+-   "keyText": "car"
+-  },
+   {
+    "id": "c2-english-ch01-t01-i08",
+    "topicId": "c2-english-ch01-t01",
+@@ -150,34 +121,6 @@
+    ],
+    "keyText": "on the seat"
+   },
+-  {
+-   "id": "c2-english-ch02-t01-i02",
+-   "topicId": "c2-english-ch02-t01",
+-   "skillId": "c2-english-ch02-t01-s1",
+-   "difficulty": 1,
+-   "itemKind": "practice",
+-   "prompt": {
+-    "en": "Two girls are jumping over a long rope. What game are they playing: skipping or cricket?",
+-    "hi": "Do ladkiyan lambi rassi ke upar kood rahi hain. Kaunsa game hai — skipping ya cricket?"
+-   },
+-   "hint": "Cricket needs a bat. These girls have a rope.",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "choice",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "skipping"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "cricket"
+-    }
+-   ],
+-   "keyText": "skipping"
+-  },
+   {
+    "id": "c2-english-ch03-t01-i02",
+    "topicId": "c2-english-ch03-t01",
+@@ -263,35 +206,6 @@
+    ],
+    "keyText": "stop"
+   },
+-  {
+-   "id": "c2-english-ch04-t01-i11",
+-   "topicId": "c2-english-ch04-t01",
+-   "skillId": "c2-english-ch04-t01-s1",
+-   "difficulty": 2,
+-   "itemKind": "practice",
+-   "prompt": {
+-    "en": "Tara came to school on Monday. Today is Tuesday. Did Tara come yesterday or tomorrow?",
+-    "hi": "Tara Monday ko school aayi. Aaj Tuesday hai. Toh Tara 'yesterday' aayi ya 'tomorrow'? Dhyaan do — Hindi ka 'kal' dono ke liye hota hai!"
+-   },
+-   "hint": "One word is for the day that is gone, one for the day still to come.",
+-   "mis": "c2-english-ch04-t01-m-kal-confusion",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "choice",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "yesterday"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "tomorrow"
+-    }
+-   ],
+-   "keyText": "yesterday"
+-  },
+   {
+    "id": "c2-english-ch05-t01-i03",
+    "topicId": "c2-english-ch05-t01",
+@@ -592,37 +506,6 @@
+    ],
+    "keyText": "toe"
+   },
+-  {
+-   "id": "c2-english-ch11-t01-i07",
+-   "topicId": "c2-english-ch11-t01",
+-   "skillId": "c2-english-ch11-t01-s3",
+-   "difficulty": 3,
+-   "itemKind": "why",
+-   "prompt": {
+-    "en": "Was the monkey really helping the cats? Why do you think so?",
+-    "hi": "Kya bandar sach mein billiyon ki madad kar raha tha? Tumhe aisa kyun lagta hai?"
+-   },
+-   "hint": "Did the cats get any roti?",
+-   "mis": "c2-english-ch11-t01-m-kind-monkey",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "yesno",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "yes",
+-     "word": "yes"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "no",
+-     "word": "no"
+-    }
+-   ],
+-   "keyText": "no"
+-  },
+   {
+    "id": "c2-english-ch12-t01-i01",
+    "topicId": "c2-english-ch12-t01",
+@@ -679,37 +562,6 @@
+     }
+    ],
+    "keyText": "many drops"
+-  },
+-  {
+-   "id": "c2-english-ch12-t01-i11",
+-   "topicId": "c2-english-ch12-t01",
+-   "skillId": "c2-english-ch12-t01-s1",
+-   "difficulty": 2,
+-   "itemKind": "error_spot",
+-   "prompt": {
+-    "en": "Bittu says 'hand' and 'hat' rhyme because both start with /h/. Is he right? Which word from our poem rhymes with 'hand'?",
+-    "hi": "Bittu kehta hai 'hand' aur 'hat' rhyme karte hain kyunki dono /h/ se shuru hote hain. Kya woh sahi hai? Hamari poem mein 'hand' ke saath kaunsa rhyme karta hai?"
+-   },
+-   "hint": "Hand ends in -and. Does 'hat' end in -and?",
+-   "mis": "c2-english-ch12-t01-m-rhyme-first-sound",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "yesno",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "yes",
+-     "word": "yes"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "no",
+-     "word": "no"
+-    }
+-   ],
+-   "keyText": "no"
+   }
+  ]
+ }
+diff --git a/data/arena/c3-english.json b/data/arena/c3-english.json
+index 451cf15d..45b2590d 100644
+--- a/data/arena/c3-english.json
++++ b/data/arena/c3-english.json
+@@ -63,34 +63,6 @@
+    ],
+    "keyText": "a red apple"
+   },
+-  {
+-   "id": "c3-english-ch02-t01-i13",
+-   "topicId": "c3-english-ch02-t01",
+-   "skillId": "c3-english-ch02-t01-s1",
+-   "difficulty": 2,
+-   "itemKind": "contrast",
+-   "prompt": {
+-    "en": "Which word starts with the same sound as 'chew': 'chair' or 'shoe'?",
+-    "hi": "'Chew' jaisi shuruaati awaaz kis word mein hai — 'chair' ya 'shoe'?"
+-   },
+-   "hint": "/ch/ is a short, sharp sound. /sh/ is a long, soft sound.",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "choice",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "chair"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "shoe"
+-    }
+-   ],
+-   "keyText": "chair"
+-  },
+   {
+    "id": "c3-english-ch03-t01-i02",
+    "topicId": "c3-english-ch03-t01",
+@@ -128,36 +100,6 @@
+    ],
+    "keyText": "4 sides"
+   },
+-  {
+-   "id": "c3-english-ch04-t01-i09",
+-   "topicId": "c3-english-ch04-t01",
+-   "skillId": "c3-english-ch04-t01-s1",
+-   "difficulty": 3,
+-   "itemKind": "why",
+-   "prompt": {
+-    "en": "The poem says 'Butterflies dancing'. Do butterflies really dance? Why does the poet say so?",
+-    "hi": "Poem kehti hai 'Butterflies dancing'. Kya titliyan sach mein naachti hain? Poet aisa kyun kehta hai?"
+-   },
+-   "hint": "It goes up and down and round and round.",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "yesno",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "yes",
+-     "word": "yes"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "no",
+-     "word": "no"
+-    }
+-   ],
+-   "keyText": "no"
+-  },
+   {
+    "id": "c3-english-ch05-t01-i05",
+    "topicId": "c3-english-ch05-t01",
+@@ -271,37 +213,6 @@
+    ],
+    "keyText": "big"
+   },
+-  {
+-   "id": "c3-english-ch10-t01-i07",
+-   "topicId": "c3-english-ch10-t01",
+-   "skillId": "c3-english-ch10-t01-s4",
+-   "difficulty": 3,
+-   "itemKind": "why",
+-   "prompt": {
+-    "en": "The poem says the moon whispers 'Sleep well tonight'. Does the moon really talk? Why does the poet say so?",
+-    "hi": "Poem kehti hai chaand whisper karta hai 'Sleep well tonight'. Kya chaand sach mein bolta hai? Poet aisa kyun kehta hai?"
+-   },
+-   "hint": "What feeling does a soft whisper give?",
+-   "mis": "c3-english-ch10-t01-m-literal-personification",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "yesno",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "yes",
+-     "word": "yes"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "no",
+-     "word": "no"
+-    }
+-   ],
+-   "keyText": "no"
+-  },
+   {
+    "id": "c3-english-ch10-t01-i08",
+    "topicId": "c3-english-ch10-t01",
+diff --git a/data/arena/c4-english.json b/data/arena/c4-english.json
+index c4b4f232..41fabefc 100644
+--- a/data/arena/c4-english.json
++++ b/data/arena/c4-english.json
+@@ -64,37 +64,6 @@
+    ],
+    "keyText": "yes"
+   },
+-  {
+-   "id": "c4-english-ch01-t01-i12",
+-   "topicId": "c4-english-ch01-t01",
+-   "skillId": "c4-english-ch01-t01-s2",
+-   "difficulty": 4,
+-   "itemKind": "why",
+-   "prompt": {
+-    "en": "The poem says, 'Together we can open doors.' Is it only about real doors? What does it mean?",
+-    "hi": "Poem kehti hai, 'Together we can open doors.' Kya sirf ghar ke darwaze ki baat hai? Iska matlab kya hai?"
+-   },
+-   "hint": "A door can be a way into something new.",
+-   "mis": "c4-english-ch01-t01-m-literal-only",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "yesno",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "yes",
+-     "word": "yes"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "no",
+-     "word": "no"
+-    }
+-   ],
+-   "keyText": "no"
+-  },
+   {
+    "id": "c4-english-ch01-t01-rl-o2",
+    "topicId": "c4-english-ch01-t01",
+@@ -302,145 +271,6 @@
+    ],
+    "keyText": "kindness can lead to friendship"
+   },
+-  {
+-   "id": "c4-english-ch06-t01-i01",
+-   "topicId": "c4-english-ch06-t01",
+-   "skillId": "c4-english-ch06-t01-s1",
+-   "difficulty": 1,
+-   "itemKind": "retrieval",
+-   "prompt": {
+-    "en": "How old was Louis when he hurt his eye?",
+-    "hi": "Louis ki aankh mein chot lagi tab woh kitne saal ka tha?"
+-   },
+-   "hint": "It was in his father's workshop.",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "numeric",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "3"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "13"
+-    },
+-    {
+-     "id": "o3",
+-     "text": "4"
+-    },
+-    {
+-     "id": "o4",
+-     "text": "5"
+-    }
+-   ],
+-   "keyText": "3"
+-  },
+-  {
+-   "id": "c4-english-ch06-t01-i03",
+-   "topicId": "c4-english-ch06-t01",
+-   "skillId": "c4-english-ch06-t01-s1",
+-   "difficulty": 2,
+-   "itemKind": "retrieval",
+-   "prompt": {
+-    "en": "How many dots does the Braille system use?",
+-    "hi": "Braille system mein kitne dots hote hain?"
+-   },
+-   "hint": "Louis made it simpler.",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "numeric",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "11"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "5"
+-    },
+-    {
+-     "id": "o3",
+-     "text": "7"
+-    },
+-    {
+-     "id": "o4",
+-     "text": "6"
+-    }
+-   ],
+-   "keyText": "6"
+-  },
+-  {
+-   "id": "c4-english-ch06-t01-i07",
+-   "topicId": "c4-english-ch06-t01",
+-   "skillId": "c4-english-ch06-t01-s3",
+-   "difficulty": 3,
+-   "itemKind": "contrast",
+-   "prompt": {
+-    "en": "Louis 'invented' Braille. Is that the same as 'discovered'? Explain the difference.",
+-    "hi": "Louis ne Braille 'invent' kiya. Kya ye 'discover' jaisa hi hai? Farak samjhao."
+-   },
+-   "hint": "One word means make, the other means find.",
+-   "mis": "c4-english-ch06-t01-m-invent-discover",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "yesno",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "yes",
+-     "word": "yes"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "no",
+-     "word": "no"
+-    }
+-   ],
+-   "keyText": "no"
+-  },
+-  {
+-   "id": "c4-english-ch07-t01-i02",
+-   "topicId": "c4-english-ch07-t01",
+-   "skillId": "c4-english-ch07-t01-s1",
+-   "difficulty": 1,
+-   "itemKind": "retrieval",
+-   "prompt": {
+-    "en": "At what time does the child in the poem get up?",
+-    "hi": "Poem mein bachcha kitne baje uthta hai?"
+-   },
+-   "hint": "'Up at ...'",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "numeric",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "6"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "8"
+-    },
+-    {
+-     "id": "o3",
+-     "text": "7"
+-    },
+-    {
+-     "id": "o4",
+-     "text": "16"
+-    }
+-   ],
+-   "keyText": "6"
+-  },
+   {
+    "id": "c4-english-ch07-t01-i03",
+    "topicId": "c4-english-ch07-t01",
+@@ -472,36 +302,6 @@
+    ],
+    "keyText": "no"
+   },
+-  {
+-   "id": "c4-english-ch07-t01-i10",
+-   "topicId": "c4-english-ch07-t01",
+-   "skillId": "c4-english-ch07-t01-s2",
+-   "difficulty": 3,
+-   "itemKind": "predict",
+-   "prompt": {
+-    "en": "A boy sleeps late, eats chips and never plays. Will he feel 'full of beans'? Why?",
+-    "hi": "Ek ladka der se sota hai, chips khaata hai aur kabhi khelta nahi. Kya woh 'full of beans' feel karega? Kyun?"
+-   },
+-   "hint": "Does the boy do those things?",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "yesno",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "yes",
+-     "word": "yes"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "no",
+-     "word": "no"
+-    }
+-   ],
+-   "keyText": "no"
+-  },
+   {
+    "id": "c4-english-ch07-t01-rl-o2",
+    "topicId": "c4-english-ch07-t01",
+diff --git a/data/arena/c6-hindi.json b/data/arena/c6-hindi.json
+index 3197b863..6f4fde78 100644
+--- a/data/arena/c6-hindi.json
++++ b/data/arena/c6-hindi.json
+@@ -225,34 +225,6 @@
+    ],
+    "keyText": "no"
+   },
+-  {
+-   "id": "c6-hindi-ch11-t01-rl-g1",
+-   "topicId": "c6-hindi-ch11-t01",
+-   "skillId": "c6-hindi-ch11-t01-s2",
+-   "difficulty": 3,
+-   "itemKind": "practice",
+-   "prompt": {
+-    "en": "Which poetic mood fits this passage better—वीर रस or करुण रस?",
+-    "hi": "इस प्रसंग में वीर रस है या करुण रस?"
+-   },
+-   "hint": "प्रसंग में साहस और उत्साह का भाव पहचानो।",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "choice",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "वीर रस"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "करुण रस"
+-    }
+-   ],
+-   "keyText": "वीर रस"
+-  },
+   {
+    "id": "c6-hindi-ch11-t01-rl-g2",
+    "topicId": "c6-hindi-ch11-t01",
+diff --git a/data/arena/c7-english.json b/data/arena/c7-english.json
+index 8bbd7053..c1ef4e79 100644
+--- a/data/arena/c7-english.json
++++ b/data/arena/c7-english.json
+@@ -35,38 +35,6 @@
+    ],
+    "keyText": "speak very softly"
+   },
+-  {
+-   "id": "c7-english-ch01-t01-rl-h4",
+-   "topicId": "c7-english-ch01-t01",
+-   "skillId": "c7-english-ch01-t01-s1",
+-   "difficulty": 4,
+-   "itemKind": "near_transfer",
+-   "prompt": {
+-    "en": "Which feeling best explains Sana’s actions: curiosity, boredom, or anger?",
+-    "hi": "Sana ke kaam ko kaunsi feeling samjhati hai: curiosity, boredom, ya anger?"
+-   },
+-   "hint": "Look at what she asks the team.",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "choice",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "curiosity"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "boredom"
+-    },
+-    {
+-     "id": "o3",
+-     "text": "anger"
+-    }
+-   ],
+-   "keyText": "curiosity"
+-  },
+   {
+    "id": "c7-english-ch02-t01-i03",
+    "topicId": "c7-english-ch02-t01",
+@@ -295,69 +263,6 @@
+    ],
+    "keyText": "an hour"
+   },
+-  {
+-   "id": "c7-english-ch11-t01-i03",
+-   "topicId": "c7-english-ch11-t01",
+-   "skillId": "c7-english-ch11-t01-s4",
+-   "difficulty": 3,
+-   "itemKind": "contrast",
+-   "prompt": {
+-    "en": "Does the speaker dislike her home and friends? How do you know?",
+-    "hi": "Kya speaker ko apna ghar aur dost pasand nahi? Kaise pata?"
+-   },
+-   "hint": "What job does 'though' do?",
+-   "mis": "c7-english-ch11-t01-m-though-means-because",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "yesno",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "yes",
+-     "word": "yes"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "no",
+-     "word": "no"
+-    }
+-   ],
+-   "keyText": "no"
+-  },
+-  {
+-   "id": "c7-english-ch11-t01-i07",
+-   "topicId": "c7-english-ch11-t01",
+-   "skillId": "c7-english-ch11-t01-s2",
+-   "difficulty": 2,
+-   "itemKind": "practice",
+-   "prompt": {
+-    "en": "Which word best describes the mood: angry, longing or bored?",
+-    "hi": "Kavita ka mood kaisa hai: angry, longing ya bored?"
+-   },
+-   "hint": "Is she upset or wishing?",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "choice",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "angry"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "longing"
+-    },
+-    {
+-     "id": "o3",
+-     "text": "bored"
+-    }
+-   ],
+-   "keyText": "longing"
+-  },
+   {
+    "id": "c7-english-ch11-t01-rl-o1",
+    "topicId": "c7-english-ch11-t01",
+diff --git a/data/arena/c8-english.json b/data/arena/c8-english.json
+index 03afc7ac..0612ad0e 100644
+--- a/data/arena/c8-english.json
++++ b/data/arena/c8-english.json
+@@ -31,42 +31,6 @@
+    ],
+    "keyText": "The king told Rama that he was clever."
+   },
+-  {
+-   "id": "c8-english-ch03-t01-i01",
+-   "topicId": "c8-english-ch03-t01",
+-   "skillId": "c8-english-ch03-t01-s1",
+-   "difficulty": 1,
+-   "itemKind": "retrieval",
+-   "prompt": {
+-    "en": "How much did Gopal pay for the well?",
+-    "hi": "Scene suno. Gopal ne kuan kitne mein khareeda tha?"
+-   },
+-   "hint": "It is a number of coins.",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "numeric",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "50 coins"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "60 coins"
+-    },
+-    {
+-     "id": "o3",
+-     "text": "5 coins"
+-    },
+-    {
+-     "id": "o4",
+-     "text": "51 coins"
+-    }
+-   ],
+-   "keyText": "50 coins"
+-  },
+   {
+    "id": "c8-english-ch04-t01-i05",
+    "topicId": "c8-english-ch04-t01",
+@@ -95,107 +59,6 @@
+     }
+    ],
+    "keyText": "(b) 'His arm had been injured before the battle began.'"
+-  },
+-  {
+-   "id": "c8-english-ch06-t01-i01",
+-   "topicId": "c8-english-ch06-t01",
+-   "skillId": "c8-english-ch06-t01-s1",
+-   "difficulty": 1,
+-   "itemKind": "retrieval",
+-   "prompt": {
+-    "en": "At what time did Dadi take Meena to the milk society?",
+-    "hi": "Letter suno. Dadi Meena ko kitne baje milk society le gayi?"
+-   },
+-   "hint": "It was very early.",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "numeric",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "6 am"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "7 am"
+-    },
+-    {
+-     "id": "o3",
+-     "text": "8 am"
+-    },
+-    {
+-     "id": "o4",
+-     "text": "12 am"
+-    }
+-   ],
+-   "keyText": "6 am"
+-  },
+-  {
+-   "id": "c8-english-ch09-t01-i14",
+-   "topicId": "c8-english-ch09-t01",
+-   "skillId": "c8-english-ch09-t01-s4",
+-   "difficulty": 2,
+-   "itemKind": "practice",
+-   "prompt": {
+-    "en": "Which is the best topic sentence for a descriptive paragraph about a hill town? (a) The air smells of pine trees. (b) Mussoorie is a cool, green town in the hills. (c) We bought hot corn near the market.",
+-    "hi": "Hill town ke baare mein descriptive paragraph likhna hai. Inmein se best topic sentence kaunsa hai? (a) The air smells of pine trees. (b) Mussoorie is a cool, green town in the hills. (c) We bought hot corn near the market."
+-   },
+-   "hint": "A topic sentence names the place and the big idea, not one small fact.",
+-   "mis": "c8-english-ch09-t01-m-detail-as-main",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "choice",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "(a) The air smells of pine trees."
+-    },
+-    {
+-     "id": "o2",
+-     "text": "(b) Mussoorie is a cool, green town in the hills."
+-    },
+-    {
+-     "id": "o3",
+-     "text": "(c) We bought hot corn near the market"
+-    }
+-   ],
+-   "keyText": "(b) Mussoorie is a cool, green town in the hills."
+-  },
+-  {
+-   "id": "c8-english-ch09-t01-i15",
+-   "topicId": "c8-english-ch09-t01",
+-   "skillId": "c8-english-ch09-t01-s4",
+-   "difficulty": 3,
+-   "itemKind": "near_transfer",
+-   "prompt": {
+-    "en": "Pick the best closing line for this paragraph: (a) The giant wheel ride costs thirty rupees. (b) For one week every year, the mela fills our town with joy. (c) My cousin lives in Pune.",
+-    "hi": "Is paragraph ke liye best closing line chuno: (a) The giant wheel ride costs thirty rupees. (b) For one week every year, the mela fills our town with joy. (c) My cousin lives in Pune."
+-   },
+-   "hint": "It comes back to the main idea, the mela, instead of adding one more small fact.",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "choice",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "(a) The giant wheel ride costs thirty rupees."
+-    },
+-    {
+-     "id": "o2",
+-     "text": "(b) For one week every year, the mela fills our town with joy."
+-    },
+-    {
+-     "id": "o3",
+-     "text": "(c) My cousin lives in Pune"
+-    }
+-   ],
+-   "keyText": "(b) For one week every year, the mela fills our town with joy."
+   }
+  ]
+ }
+diff --git a/data/arena/c9-english.json b/data/arena/c9-english.json
+index f6cc23d6..02b5a061 100644
+--- a/data/arena/c9-english.json
++++ b/data/arena/c9-english.json
+@@ -30,78 +30,6 @@
+     }
+    ],
+    "keyText": "vocation"
+-  },
+-  {
+-   "id": "c9-english-ch10-t01-i01",
+-   "topicId": "c9-english-ch10-t01",
+-   "skillId": "c9-english-ch10-t01-s1",
+-   "difficulty": 1,
+-   "itemKind": "retrieval",
+-   "prompt": {
+-    "en": "How many runners were in the race?",
+-    "hi": "Race mein kitne runners the?"
+-   },
+-   "hint": "It is the very first word of the poem.",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "numeric",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "9"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "19"
+-    },
+-    {
+-     "id": "o3",
+-     "text": "10"
+-    },
+-    {
+-     "id": "o4",
+-     "text": "18"
+-    }
+-   ],
+-   "keyText": "9"
+-  },
+-  {
+-   "id": "c9-english-ch15-t01-i01",
+-   "topicId": "c9-english-ch15-t01",
+-   "skillId": "c9-english-ch15-t01-s1",
+-   "difficulty": 1,
+-   "itemKind": "retrieval",
+-   "prompt": {
+-    "en": "By how many seconds did Anjali fail her first trial?",
+-    "hi": "Anjali pehle trial mein kitne seconds se reh gayi?"
+-   },
+-   "hint": "It is a small number.",
+-   "verified": {
+-    "by": "kit blind solver",
+-    "agrees": true
+-   },
+-   "form": "numeric",
+-   "options": [
+-    {
+-     "id": "o1",
+-     "text": "5 seconds"
+-    },
+-    {
+-     "id": "o2",
+-     "text": "8 seconds"
+-    },
+-    {
+-     "id": "o3",
+-     "text": "14 seconds"
+-    },
+-    {
+-     "id": "o4",
+-     "text": "4 seconds"
+-    }
+-   ],
+-   "keyText": "4 seconds"
+   }
+  ]
+ }
+diff --git a/data/arena/index.json b/data/arena/index.json
+index 3cc60c07..8426149a 100644
+--- a/data/arena/index.json
++++ b/data/arena/index.json
+@@ -48,10 +48,10 @@
+   },
+   "c1-english-ch07-t01": {
+    "file": "c1-english",
+-   "challenges": 3,
++   "challenges": 2,
+    "eligible": false,
+    "skills": {
+-    "c1-english-ch07-t01-s4": 2,
++    "c1-english-ch07-t01-s4": 1,
+     "c1-english-ch07-t01-s2": 1
+    }
+   },
+@@ -512,20 +512,18 @@
+   },
+   "c2-english-ch01-t01": {
+    "file": "c2-english",
+-   "challenges": 5,
++   "challenges": 4,
+    "eligible": false,
+    "skills": {
+-    "c2-english-ch01-t01-s1": 4,
++    "c2-english-ch01-t01-s1": 3,
+     "c2-english-ch01-t01-s3": 1
+    }
+   },
+   "c2-english-ch02-t01": {
+    "file": "c2-english",
+-   "challenges": 1,
++   "challenges": 0,
+    "eligible": false,
+-   "skills": {
+-    "c2-english-ch02-t01-s1": 1
+-   }
++   "skills": {}
+   },
+   "c2-english-ch03-t01": {
+    "file": "c2-english",
+@@ -538,11 +536,9 @@
+   },
+   "c2-english-ch04-t01": {
+    "file": "c2-english",
+-   "challenges": 1,
++   "challenges": 0,
+    "eligible": false,
+-   "skills": {
+-    "c2-english-ch04-t01-s1": 1
+-   }
++   "skills": {}
+   },
+   "c2-english-ch05-t01": {
+    "file": "c2-english",
+@@ -594,18 +590,16 @@
+   },
+   "c2-english-ch11-t01": {
+    "file": "c2-english",
+-   "challenges": 1,
++   "challenges": 0,
+    "eligible": false,
+-   "skills": {
+-    "c2-english-ch11-t01-s3": 1
+-   }
++   "skills": {}
+   },
+   "c2-english-ch12-t01": {
+    "file": "c2-english",
+-   "challenges": 3,
++   "challenges": 2,
+    "eligible": false,
+    "skills": {
+-    "c2-english-ch12-t01-s1": 2,
++    "c2-english-ch12-t01-s1": 1,
+     "c2-english-ch12-t01-s3": 1
+    }
+   },
+@@ -1053,11 +1047,9 @@
+   },
+   "c3-english-ch02-t01": {
+    "file": "c3-english",
+-   "challenges": 1,
++   "challenges": 0,
+    "eligible": false,
+-   "skills": {
+-    "c3-english-ch02-t01-s1": 1
+-   }
++   "skills": {}
+   },
+   "c3-english-ch03-t01": {
+    "file": "c3-english",
+@@ -1069,11 +1061,9 @@
+   },
+   "c3-english-ch04-t01": {
+    "file": "c3-english",
+-   "challenges": 1,
++   "challenges": 0,
+    "eligible": false,
+-   "skills": {
+-    "c3-english-ch04-t01-s1": 1
+-   }
++   "skills": {}
+   },
+   "c3-english-ch05-t01": {
+    "file": "c3-english",
+@@ -1114,10 +1104,9 @@
+   },
+   "c3-english-ch10-t01": {
+    "file": "c3-english",
+-   "challenges": 2,
++   "challenges": 1,
+    "eligible": false,
+    "skills": {
+-    "c3-english-ch10-t01-s4": 1,
+     "c3-english-ch10-t01-s2": 1
+    }
+   },
+@@ -1772,11 +1761,11 @@
+   },
+   "c4-english-ch01-t01": {
+    "file": "c4-english",
+-   "challenges": 4,
++   "challenges": 3,
+    "eligible": false,
+    "skills": {
+     "c4-english-ch01-t01-s1": 2,
+-    "c4-english-ch01-t01-s2": 2
++    "c4-english-ch01-t01-s2": 1
+    }
+   },
+   "c4-english-ch02-t01": {
+@@ -1814,20 +1803,16 @@
+   },
+   "c4-english-ch06-t01": {
+    "file": "c4-english",
+-   "challenges": 3,
++   "challenges": 0,
+    "eligible": false,
+-   "skills": {
+-    "c4-english-ch06-t01-s1": 2,
+-    "c4-english-ch06-t01-s3": 1
+-   }
++   "skills": {}
+   },
+   "c4-english-ch07-t01": {
+    "file": "c4-english",
+-   "challenges": 5,
++   "challenges": 3,
+    "eligible": false,
+    "skills": {
+-    "c4-english-ch07-t01-s1": 1,
+-    "c4-english-ch07-t01-s2": 4
++    "c4-english-ch07-t01-s2": 3
+    }
+   },
+   "c4-english-ch08-t01": {
+@@ -3275,10 +3260,9 @@
+   },
+   "c6-hindi-ch11-t01": {
+    "file": "c6-hindi",
+-   "challenges": 2,
++   "challenges": 1,
+    "eligible": false,
+    "skills": {
+-    "c6-hindi-ch11-t01-s2": 1,
+     "c6-hindi-ch11-t01-s3": 1
+    }
+   },
+@@ -4035,11 +4019,10 @@
+   },
+   "c7-english-ch01-t01": {
+    "file": "c7-english",
+-   "challenges": 2,
++   "challenges": 1,
+    "eligible": false,
+    "skills": {
+-    "c7-english-ch01-t01-s4": 1,
+-    "c7-english-ch01-t01-s1": 1
++    "c7-english-ch01-t01-s4": 1
+    }
+   },
+   "c7-english-ch02-t01": {
+@@ -4111,11 +4094,9 @@
+   },
+   "c7-english-ch11-t01": {
+    "file": "c7-english",
+-   "challenges": 3,
++   "challenges": 1,
+    "eligible": false,
+    "skills": {
+-    "c7-english-ch11-t01-s4": 1,
+-    "c7-english-ch11-t01-s2": 1,
+     "c7-english-ch11-t01-s1": 1
+    }
+   },
+@@ -5138,11 +5119,9 @@
+   },
+   "c8-english-ch03-t01": {
+    "file": "c8-english",
+-   "challenges": 1,
++   "challenges": 0,
+    "eligible": false,
+-   "skills": {
+-    "c8-english-ch03-t01-s1": 1
+-   }
++   "skills": {}
+   },
+   "c8-english-ch04-t01": {
+    "file": "c8-english",
+@@ -5160,11 +5139,9 @@
+   },
+   "c8-english-ch06-t01": {
+    "file": "c8-english",
+-   "challenges": 1,
++   "challenges": 0,
+    "eligible": false,
+-   "skills": {
+-    "c8-english-ch06-t01-s1": 1
+-   }
++   "skills": {}
+   },
+   "c8-english-ch07-t01": {
+    "file": "c8-english",
+@@ -5180,11 +5157,9 @@
+   },
+   "c8-english-ch09-t01": {
+    "file": "c8-english",
+-   "challenges": 2,
++   "challenges": 0,
+    "eligible": false,
+-   "skills": {
+-    "c8-english-ch09-t01-s4": 2
+-   }
++   "skills": {}
+   },
+   "c8-english-ch10-t01": {
+    "file": "c8-english",
+@@ -6060,11 +6035,9 @@
+   },
+   "c9-english-ch10-t01": {
+    "file": "c9-english",
+-   "challenges": 1,
++   "challenges": 0,
+    "eligible": false,
+-   "skills": {
+-    "c9-english-ch10-t01-s1": 1
+-   }
++   "skills": {}
+   },
+   "c9-english-ch11-t01": {
+    "file": "c9-english",
+@@ -6092,11 +6065,9 @@
+   },
+   "c9-english-ch15-t01": {
+    "file": "c9-english",
+-   "challenges": 1,
++   "challenges": 0,
+    "eligible": false,
+-   "skills": {
+-    "c9-english-ch15-t01-s1": 1
+-   }
++   "skills": {}
+   },
+   "c9-english-ch16-t01": {
+    "file": "c9-english",
+@@ -6992,16 +6963,17 @@
+  "counts": {
+   "topics": 830,
+   "eligible": 212,
+-  "challenges": 3005,
++  "challenges": 2980,
+   "leftOut": {
+-   "open or short answer (tier B)": 7622,
+-   "points at a picture": 414,
+-   "open prompt": 864,
+-   "offered choices: not exactly one key": 219,
++   "open or short answer (tier B)": 7188,
++   "points at a picture": 403,
++   "needs its passage": 500,
++   "open prompt": 840,
++   "offered choices: not exactly one key": 215,
+    "estimate (a near decoy could be right)": 167,
+-   "two numbers in the key": 212,
++   "two numbers in the key": 211,
+    "acceptable values disagree": 87,
+-   "ordering (v2)": 6,
++   "ordering (v2)": 5,
+    "too few decoys": 1
+   }
+  }
+diff --git a/server/play/tools/build-arena.mjs b/server/play/tools/build-arena.mjs
+index 28b833e6..cf60ce5a 100644
+--- a/server/play/tools/build-arena.mjs
++++ b/server/play/tools/build-arena.mjs
+@@ -124,6 +124,7 @@ export function offered(prompt) {
+ /** one kit item → a challenge, or null with the reason */
+ export function challengeOf(it, t) {
+   if (it?.verified?.agrees !== true) return { why: "not verified" };
++  if (it.passageId) return { why: "needs its passage" };   // the text it asks about is stored beside the topic, not in the prompt
+   const pe = String(it.prompt_en ?? ""), ph = String(it.prompt_hi ?? "");
+   if (OPEN.test(pe)) return { why: "open prompt" };
+   if (PICTURE.test(pe)) return { why: "points at a picture" };
+diff --git a/tests/r7-audit-arena-passage.test.mjs b/tests/r7-audit-arena-passage.test.mjs
+new file mode 100644
+index 00000000..2bf57243
+--- /dev/null
++++ b/tests/r7-audit-arena-passage.test.mjs
+@@ -0,0 +1,20 @@
++// The arena asks a question on its own: an item that is about a stored passage (kit item.passageId) is left out.
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { readFileSync, readdirSync } from "node:fs";
++import { challengeOf } from "../server/play/tools/build-arena.mjs";
++
++test("challengeOf leaves out an item that needs its passage", () => {
++  const it = { id: "x", skillId: "s", kind: "practice", prompt_en: "Where did Meenu sit?", prompt_hi: "Meenu kahaan baithi?", answer: "By the river", verified: { agrees: true }, passageId: "p1" };
++  assert.deepEqual(challengeOf(it, { topicId: "t" }), { why: "needs its passage" });
++});
++
++test("no arena challenge is about a passage item", () => {
++  const withPassage = new Set();
++  const kits = new URL("../data/kits/", import.meta.url);
++  for (const f of readdirSync(kits).filter((x) => /^c\d+-[a-z]+\.json$/.test(x))) for (const t of JSON.parse(readFileSync(new URL(f, kits), "utf8")).topics) for (const i of t.items) if (i.passageId) withPassage.add(i.id);
++  const arena = new URL("../data/arena/", import.meta.url);
++  const bad = [];
++  for (const f of readdirSync(arena).filter((x) => /^c\d+-/.test(x))) for (const c of JSON.parse(readFileSync(new URL(f, arena), "utf8")).challenges) if (withPassage.has(c.id)) bad.push(c.id);
++  assert.deepEqual(bad, []);
++});
