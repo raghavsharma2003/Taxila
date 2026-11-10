@@ -5,6 +5,8 @@
 import { q } from "../db.js";
 import { getTopic, topicSequence, SUBJECT_ORDER } from "./curriculum.js";
 import { getKit, topicOf } from "./index.js";
+import { readdirSync } from "node:fs";
+import { topicFor } from "../director/knows.js";
 
 const LEARNED = new Set(["learned_today", "mastered", "due"]);
 const DONE = new Set(["learned", "mastered"]);
@@ -109,6 +111,35 @@ export function revisionPick(order, statusOf, prereqsOf, { chapterOf, chapters, 
   return id ? { id, mode: "teach" } : reviewPick();
 }
 
+/** Topics with a live lesson script (data/lesson-scripts/<topicId>.json), read once. */
+let SCRIPTED = null;
+export function scriptedTopicIds() {
+  if (!SCRIPTED) { try { SCRIPTED = new Set(readdirSync(new URL("../../data/lesson-scripts/", import.meta.url)).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5))); } catch { SCRIPTED = new Set(); } }
+  return SCRIPTED;
+}
+/**
+ * PURE. round 8 K5 + K8 (server/director/knows.js topicFor) around pickTopic's choice. Candidates: the pick (rank 0), the
+ * other not-done topics of its chapter whose prerequisites are all done, at the same status (rank 0: equally due), and every
+ * other topic in `order` she has met or not (rank 1). With brief.newSkillBudget 0 a topic she has met wins over a new one
+ * (K5); among the rank-0 topics a scripted one wins (K8). Each departure from `pick` carries its because.
+ * @returns {{ id: string, mode: "teach"|"review", because: object[] }}
+ */
+export function knowsPick(pick, order, statusOf, prereqsOf, { brief = null, scripted = scriptedTopicIds() } = {}) {
+  const ch = getTopic(pick)?.chapter?.number ?? null;
+  const ready = (t) => prereqsOf(t).every((p) => DONE.has(statusOf(p)));
+  const tie = (t) => ch != null && getTopic(t)?.chapter?.number === ch && statusOf(t) === statusOf(pick) && !DONE.has(statusOf(t)) && ready(t);
+  // the rest in the order a met topic should be revised in: one she is still working on first (in curriculum order), then
+  // finished ones nearest the pick first (the latest in the sequence before it), then new ones. topicFor takes the first met
+  // one when no new skill fits, so in plain curriculum order it revised her OLDEST finished topic over the one in progress.
+  const at = new Map(order.map((t, i) => [t, i]));
+  const pref = (t) => { const s = statusOf(t); return s === "unseen" ? [2, at.get(t)] : DONE.has(s) ? [1, -at.get(t)] : [0, at.get(t)]; };
+  const rest = order.filter((t) => t !== pick).sort((a, b) => { const x = pref(a), y = pref(b); return x[0] - y[0] || x[1] - y[1]; });
+  const candidates = [pick, ...rest].map((t) => ({ topicId: t, status: statusOf(t), rank: t === pick || tie(t) ? 0 : 1 }))
+    .filter((c) => c.rank === 0 || c.status !== "unseen" || brief?.newSkillBudget !== 0);
+  const r = topicFor({ candidates, brief, scripted });
+  return { id: r.topicId ?? pick, mode: r.mode, because: r.because };
+}
+
 /** Flag `content.f0` (shared with director/items.js): on unless TAXILA_CONTENT_F0=off. */
 const contentF0 = () => process.env.TAXILA_CONTENT_F0 !== "off";
 /** CBSE year: April start, about ten teaching months. 0 = start of the year, 1 = end. */
@@ -146,7 +177,7 @@ export function schoolStartIndex(order, topicOf, { classLevel, chapter, startGE,
  * @param {{ subject?: string, chapter?: Record<string, number>, startGE?: Record<string, number>, date?: Date|string }} [opts]
  * @returns {Promise<import("./curriculum.js").Topic | null>}
  */
-export async function nextTopicFor(child, { subject, chapter, startGE, date, revise } = {}) {
+export async function nextTopicFor(child, { subject, chapter, startGE, date, revise, brief = null } = {}) {
   const rows = await q("select skill_id, p_known, status, attempts from skill_state where child_id = $1", [child.id]);
   const byTopic = new Map();
   for (const r of rows) {
@@ -177,7 +208,11 @@ export async function nextTopicFor(child, { subject, chapter, startGE, date, rev
       ? schoolStartIndex(order, getTopic, { classLevel: child.class_level, chapter: chapter?.[subj] ?? child.school_chapter?.[subj], startGE: startGE?.[subj], date })
       : 0;
     const id = order.length ? pickTopic(order, statusOf, prereqsOf, { start }) : null;
-    if (id) return getTopic(id);
+    if (id) {
+      // round 8 K5/K8: a met topic before a new one when no new skill fits today; a scripted topic among equally due ones
+      const k = knowsPick(id, order, statusOf, prereqsOf, { brief });
+      return { ...getTopic(k.id), ...(k.mode === "review" ? { revision: "review" } : {}), ...(k.because.length ? { because: k.because } : {}) };
+    }
   }
   return null;
 }

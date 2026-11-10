@@ -15,7 +15,7 @@
   { "hi": "sheersh", "en": "vertex" },
   { "hi": "aar-paar / aamne-saamne", "en": "across / opposite" },
   { "hi": "poora chakkar (360°)", "en": "full turn (360°)" }
- ], "joints": { "asidePark": [{"hi": "Achha, {aside} wali baat yaad rakhti hoon. Pehle yeh angle naap lete hain.", "en": "Okay, I'll remember the {aside} bit. First let's measure this angle."}, {"hi": "{aside} ki baat thodi der mein karenge. Abhi yeh crossing dekh lete hain.", "en": "We'll talk about {aside} in a little while. Let's look at this crossing first."}, {"hi": "Wah, {aside}! Use sambhaal ke rakhti hoon. Chalo, pehle seedhi line par chalte hain.", "en": "Oh, {aside}! I'll keep that safe. Let's go along the straight line first."}], "asideReturn": [{"hi": "Ab tumhari baat: tumne kaha tha {said}. Uske baare mein thoda aur batao.", "en": "Now your thing: you said {said}. Tell me a bit more about it."}, {"hi": "Tumne {said} bataya tha na? Usmein sabse mazedaar kya tha?", "en": "You told me {said}, didn't you? What was the most fun part?"}, {"hi": "Chalo, ab woh {said} wali baat. Phir kya hua?", "en": "Okay, now the {said} bit. What happened then?"}], "hindiSwitch": [{"hi": "Theek hai, ab Hindi mein angle dekhte hain.", "en": "Sure, let's look at the angles in English now."}, {"hi": "Achha, yeh Hindi mein samjhaati hoon. Crossing wahi rahegi.", "en": "Okay, I'll say this in English. The crossing stays the same."}, {"hi": "Haan, Hindi mein hi chalte hain.", "en": "Yes, English it is."}], "askAgain": [{"hi": "Mujhe theek se sunai nahi diya. Kitne degree, ek baar phir bolo.", "en": "I didn't quite hear that. How many degrees? Say it once more."}, {"hi": "Thoda sa chhoot gaya. Apna jawab dobara batao na.", "en": "I missed a bit of that. Tell me your answer again."}, {"hi": "Awaaz saaf nahi aayi. Aaram se phir se bolo, degree ke saath.", "en": "Your voice didn't come through clearly. Say it again slowly, with the degrees."}] },
+ ], "joints": {"asidePark":[{"hi":"Achha, {aside} wali baat main yaad rakhti hoon, thodi der mein usi par aayenge.","en":"Okay, I'll keep the {aside} bit in mind, and we'll come back to it soon."},{"hi":"Yeh kaat-ti rekhaon wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once these crossing lines is done, we will surely talk about {aside}."},{"hi":"Wah, {aside} ki baat sambhaal ke rakhi hai, baad mein zaroor sunungi.","en":"Oh, I've kept the {aside} bit safe, and I'll surely hear it later."}],"asideReturn":[{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"},{"hi":"{aside} mein kahan cheezein ek-doosre ko kaat-ti hain?","en":"Where do things cross each other in {aside}?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."}]},
  "skills": [
   {
    "skillId": "c7-maths-ch05-t01-s1",
@@ -173,11 +173,8 @@
     {
      "targets": "c7-maths-ch05-t01-m-linear-90",
      "move": "protractor fan on the straight line: one arm at 0°, the other at 180° → a straight line is a half turn, 180°; 90° is only a corner, half of the straight line; a linear pair fills the whole 180°",
-     "say": {
-      "hi": "Protractor ko seedhi line par rakho: ek siraa 0° par, doosra 180° par. Seedhi line aadha chakkar hai, 180°, aur 90° toh sirf ek kona hai, uska aadha.",
-      "en": "Put a protractor on the straight line: one end at 0°, the other at 180°. A straight line is half a turn, 180°, and 90° is only a corner, half of it."
-     },
-     "simpler": { "hi": "Seedhi line aadha chakkar hai, 180°. 90° toh sirf ek kona hai, uska aadha.", "en": "A straight line is half a turn, 180°. 90° is only a corner, half of it." },
+     "say": { "hi": "Protractor ko seedhi line par rakho: ek siraa 0° par, doosra 180° par. Seedhi line aadha chakkar hai, 180°.", "en": "Put a protractor on the straight line: one end at 0°, the other at 180°. A straight line is half a turn, 180°." },
+     "simpler": { "hi": "Seedhi line aadha chakkar hai, 180°.", "en": "A straight line is half a turn, 180°." },
      
      "then": {
       "prompt": {
@@ -434,19 +431,7 @@
      },
      "simpler": { "hi": "Line ghumao toh saamne wale angle saath mein badhte ya ghatte hain. Isliye sirf saamne wale angle barabar hote hain, bagal wale nahi.", "en": "Turn a line and opposite angles grow or shrink together. So only opposite angles are equal, not neighbouring ones." },
      
-     "then": {
-      "prompt": {
-       "hi": "Crossing par upar aur neeche wale angle ka jod 100° hai. Baayein wala angle kitna hai?",
-       "en": "At a crossing the top and bottom angles add up to 100°. What is the left angle?"
-      },
-      "key": "130°",
-      "accept": ["130", "130 degree", "130 degrees"],
-      "targets": "c7-maths-ch05-t01-m-all-equal",
-      "wrongIfMis": "50°",
-      "board": { "template": "compare@1", "params": {"left": {"title": "upar aur neeche", "items": ["jod 100°"]}, "right": {"title": "baayein wala", "items": ["angle"]}} },
-      "why": { "hi": "upar aur neeche ka jod 100° hai, toh har ek 50°, aur baayein wala angle 180° − 50° = 130°", "en": "top and bottom add to 100°, so each is 50°, and the left angle is 180° − 50° = 130°" },
-      "simpler": { "hi": "Upar aur neeche wale barabar hain, toh 100° ka aadha ek angle hai. Baayein wala uske saath milkar seedhi line poori karta hai.", "en": "The top and bottom angles are equal, so one of them is half of 100°. The left angle completes a straight line with it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar aur neeche", "items": ["jod 100°"]}, "right": {"title": "baayein wala", "items": ["angle"]}} }
-     }
+     "then": { "prompt": {"hi": "Crossing par upar aur neeche wale angle ka jod 140° hai. Baayein wala angle kitna hai?", "en": "At a crossing the top and bottom angles add up to 140°. What is the left angle?"}, "key": "110°", "accept": ["110", "110 degree", "110 degrees"], "targets": "c7-maths-ch05-t01-m-all-equal", "wrongIfMis": "70°", "board": {"template": "compare@1", "params": {"left": {"title": "upar aur neeche", "items": ["jod 140°"]}, "right": {"title": "baayein wala", "items": ["angle"]}}}, "why": {"hi": "upar aur neeche ka jod 140° hai, toh har ek 70°, aur baayein wala angle 180° − 70° = 110°", "en": "top and bottom add to 140°, so each is 70°, and the left angle is 180° − 70° = 110°"}, "simpler": {"hi": "Upar aur neeche wale barabar hain, toh 140° ka aadha ek angle hai. Baayein wala uske saath milkar seedhi line poori karta hai.", "en": "The top and bottom angles are equal, so one of them is half of 140°. The left angle completes a straight line with it."}, "answerBoard": {"template": "compare@1", "params": {"left": {"title": "upar aur neeche", "items": ["jod 140°"]}, "right": {"title": "baayein wala", "items": ["angle"]}}} }
     }
    ],
    "bridgeToNext": {

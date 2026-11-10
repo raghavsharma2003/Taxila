@@ -8,30 +8,31 @@
 // Labels are English UI chrome (owner directive; the child-facing words for the pictures are src/copy/en.ts's).
 
 /**
- * @typedef {{ id: string, label: string, tile: boolean, skin: string, studio: boolean, words: string[] }} Interest
+ * @typedef {{ id: string, label: string, tile: boolean, skin: string, studio: boolean, words: string[], near: string[] }} Interest
  *   tile: an onboarding / Hello picture; skin: the Forge G1 skin it renders as (strings.js INTEREST_IDS);
  *   studio: on Studio's interest allowlist (a build may re-skin a context with it); words: whole-word cues the persona
- *   reads in the child's own speech (session-scoped; signals.js).
+ *   reads in the child's own speech (session-scoped; signals.js). near: the interests closest to this one, in order: where a
+ *   lesson script's hook goes when it has no slot for this interest (round 8 K6, server/director/knows.js slotFor).
  */
 /** @type {readonly Interest[]} */
 export const INTEREST_REGISTRY = Object.freeze([
-  { id: "cricket", label: "Cricket", tile: true, skin: "cricket", studio: true, words: ["cricket", "batting", "bowler", "wicket", "ipl", "sixer", "century"] },
-  { id: "football", label: "Football", tile: true, skin: "football", studio: true, words: ["football", "goal", "penalty"] },
-  { id: "space", label: "Space", tile: true, skin: "space", studio: true, words: ["space", "rocket", "planet", "isro", "astronaut", "moon", "chandrayaan", "stars"] },
-  { id: "animals", label: "Animals", tile: true, skin: "animals", studio: true, words: ["animal", "dog", "cat", "puppy", "kutta", "billi", "tiger", "elephant", "haathi", "bird"] },
-  { id: "drawing", label: "Drawing", tile: true, skin: "drawing", studio: true, words: ["drawing", "draw", "painting", "colour", "color", "sketch"] },
-  { id: "music", label: "Music", tile: true, skin: "films_music", studio: true, words: ["song", "music", "gaana", "singing", "guitar"] },
-  { id: "dance", label: "Dance", tile: true, skin: "films_music", studio: true, words: ["dance", "dancing", "naach"] },
-  { id: "cooking", label: "Cooking", tile: true, skin: "food", studio: true, words: ["cook", "cooking", "roti", "recipe", "kitchen", "cake", "khana banana"] },
-  { id: "trains", label: "Trains", tile: true, skin: "trains", studio: true, words: ["train", "railway", "engine", "station"] },
-  { id: "stories", label: "Stories", tile: true, skin: "stories", studio: true, words: ["story", "stories", "kahani", "book", "reading"] },
-  { id: "building", label: "Building", tile: true, skin: "building", studio: true, words: ["building", "lego", "blocks", "build"] },
-  { id: "nature", label: "Nature", tile: true, skin: "nature", studio: true, words: ["tree", "garden", "plant", "flower", "river", "mountain", "pahad"] },
+  { id: "cricket", label: "Cricket", tile: true, skin: "cricket", studio: true, words: ["cricket", "batting", "bowler", "wicket", "ipl", "sixer", "century"], near: ["football", "games", "drawing"] },
+  { id: "football", label: "Football", tile: true, skin: "football", studio: true, words: ["football", "goal", "penalty"], near: ["cricket", "games", "drawing"] },
+  { id: "space", label: "Space", tile: true, skin: "space", studio: true, words: ["space", "rocket", "planet", "isro", "astronaut", "moon", "chandrayaan", "stars"], near: ["vehicles", "nature", "drawing"] },
+  { id: "animals", label: "Animals", tile: true, skin: "animals", studio: true, words: ["animal", "dog", "cat", "puppy", "kutta", "billi", "tiger", "elephant", "haathi", "bird"], near: ["nature", "drawing", "games"] },
+  { id: "drawing", label: "Drawing", tile: true, skin: "drawing", studio: true, words: ["drawing", "draw", "painting", "colour", "color", "sketch"], near: ["building", "games"] },
+  { id: "music", label: "Music", tile: true, skin: "films_music", studio: true, words: ["song", "music", "gaana", "singing", "guitar"], near: ["dance", "games", "drawing"] },
+  { id: "dance", label: "Dance", tile: true, skin: "films_music", studio: true, words: ["dance", "dancing", "naach"], near: ["music", "games", "drawing"] },
+  { id: "cooking", label: "Cooking", tile: true, skin: "food", studio: true, words: ["cook", "cooking", "roti", "recipe", "kitchen", "cake", "khana banana"], near: ["nature", "drawing", "games"] },
+  { id: "trains", label: "Trains", tile: true, skin: "trains", studio: true, words: ["train", "railway", "engine", "station"], near: ["vehicles", "games", "drawing"] },
+  { id: "stories", label: "Stories", tile: true, skin: "stories", studio: true, words: ["story", "stories", "kahani", "book", "reading"], near: ["drawing", "animals", "games"] },
+  { id: "building", label: "Building", tile: true, skin: "building", studio: true, words: ["building", "lego", "blocks", "build"], near: ["drawing", "games"] },
+  { id: "nature", label: "Nature", tile: true, skin: "nature", studio: true, words: ["tree", "garden", "plant", "flower", "river", "mountain", "pahad"], near: ["animals", "cricket", "drawing"] },
   // Session-detected only (no picture): what children bring up themselves.
-  { id: "dinosaurs", label: "Dinosaurs", tile: false, skin: "animals", studio: true, words: ["dinosaur", "t-rex", "trex", "dino"] },
-  { id: "cartoons", label: "Cartoons", tile: false, skin: "generic", studio: false, words: ["cartoon", "anime", "doraemon", "chhota bheem", "shinchan", "pokemon"] },
-  { id: "games", label: "Games", tile: false, skin: "generic", studio: false, words: ["game", "minecraft", "ludo", "video game", "level up", "roblox"] },
-  { id: "vehicles", label: "Vehicles", tile: false, skin: "vehicles", studio: true, words: ["car", "bike", "truck", "bus", "plane", "aeroplane"] },
+  { id: "dinosaurs", label: "Dinosaurs", tile: false, skin: "animals", studio: true, words: ["dinosaur", "t-rex", "trex", "dino"], near: ["animals", "nature", "games"] },
+  { id: "cartoons", label: "Cartoons", tile: false, skin: "generic", studio: false, words: ["cartoon", "anime", "doraemon", "chhota bheem", "shinchan", "pokemon"], near: ["games", "drawing"] },
+  { id: "games", label: "Games", tile: false, skin: "generic", studio: false, words: ["game", "minecraft", "ludo", "video game", "level up", "roblox"], near: ["cricket", "drawing"] },
+  { id: "vehicles", label: "Vehicles", tile: false, skin: "vehicles", studio: true, words: ["car", "bike", "truck", "bus", "plane", "aeroplane"], near: ["trains", "games", "drawing"] },
 ]);
 
 const BY_ID = new Map(INTEREST_REGISTRY.map((x) => [x.id, x]));

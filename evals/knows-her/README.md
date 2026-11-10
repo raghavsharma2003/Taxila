@@ -58,7 +58,7 @@ authored target.
   shows what `planFor` decides and that a walk following it is explained, not that the product walks it. Part D adds a test
   that runs `step()` with a plan and applies the same predicate to the real moves.
 - **The learner facts' inputs.** The records are given as fixtures in the shape `knows.js`'s header names. That the ledger
-  produces them (the `delayedPassed` flag, the brief without a day plan) is the Evidence stream's work.
+  produces them (the `learnedChecked` flag, the brief without a day plan) is the Evidence stream's work.
 - **K4 and K2's ladder reorder do not show on c4 and c6.** No cross-topic prerequisite exists for their first skills, and
   the last skills' ladders are already easiest first, so the reorder changes nothing that is walked.
 - **Learning.** Nothing here measures a child or a learning gain.

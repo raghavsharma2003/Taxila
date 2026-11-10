@@ -21,7 +21,7 @@
     "round": "Round",
     "sorted": "sorted",
     "tests": "tests",
-    "coach": "Test it, then sort it",
+    "coach": "Drag each card into its bin",
     "runDone": "Belt cleared",
     "missed": "missed",
     "why": "because",
@@ -131,17 +131,15 @@
     },
     {
      "title": "Forest gifts",
-     "sub": "Sort what forests give us",
+     "sub": "Which things come from forests?",
      "bins": [
       {
        "id": "forest-gift",
-       "label": "Forest gives",
-       "glyph": "tree"
+       "label": "Forest gives"
       },
       {
-       "id": "other-use",
-       "label": "Other use",
-       "glyph": "house"
+       "id": "other-source",
+       "label": "Other source"
       }
      ],
      "tools": [],
@@ -182,21 +180,27 @@
        "src": "c6-science-ch11-t01-i10"
       },
       {
-       "id": "soil-wash",
-       "text": "Soil washed away",
-       "glyph": "rain",
-       "bin": "other-use",
-       "src": "c6-science-ch11-t01-i05"
+       "id": "soil-hold",
+       "text": "Roots hold soil",
+       "bin": "forest-gift",
+       "src": "c6-science-ch11-t01-i10"
       },
       {
        "id": "solar-light",
        "text": "Solar light",
        "glyph": "bulb",
-       "bin": "other-use",
+       "bin": "other-source",
+       "src": "c6-science-ch11-t01-i02"
+      },
+      {
+       "id": "clay-pot",
+       "text": "Clay pots",
+       "bin": "other-source",
        "src": "c6-science-ch11-t01-i02"
       }
      ],
-     "speed": 1.1
+     "speed": 1.1,
+     "targets": "c6-science-ch11-t01-m3"
     }
    ]
   },
@@ -2007,43 +2011,49 @@
   {
    "itemId": "r2:wood",
    "key": "Forest gives",
-   "prompt": "Wood → which of [Forest gives | Other use]",
+   "prompt": "Wood → which of [Forest gives | Other source]",
    "src": "c6-science-ch11-t01-i10"
   },
   {
    "itemId": "r2:fruits",
    "key": "Forest gives",
-   "prompt": "Fruits → which of [Forest gives | Other use]",
+   "prompt": "Fruits → which of [Forest gives | Other source]",
    "src": "c6-science-ch11-t01-i10"
   },
   {
    "itemId": "r2:honey",
    "key": "Forest gives",
-   "prompt": "Honey → which of [Forest gives | Other use]",
+   "prompt": "Honey → which of [Forest gives | Other source]",
    "src": "c6-science-ch11-t01-i10"
   },
   {
    "itemId": "r2:medicines",
    "key": "Forest gives",
-   "prompt": "Medicines → which of [Forest gives | Other use]",
+   "prompt": "Medicines → which of [Forest gives | Other source]",
    "src": "c6-science-ch11-t01-i10"
   },
   {
    "itemId": "r2:animal-home",
    "key": "Forest gives",
-   "prompt": "Animal homes → which of [Forest gives | Other use]",
+   "prompt": "Animal homes → which of [Forest gives | Other source]",
    "src": "c6-science-ch11-t01-i10"
   },
   {
-   "itemId": "r2:soil-wash",
-   "key": "Other use",
-   "prompt": "Soil washed away → which of [Forest gives | Other use]",
-   "src": "c6-science-ch11-t01-i05"
+   "itemId": "r2:soil-hold",
+   "key": "Forest gives",
+   "prompt": "Roots hold soil → which of [Forest gives | Other source]",
+   "src": "c6-science-ch11-t01-i10"
   },
   {
    "itemId": "r2:solar-light",
-   "key": "Other use",
-   "prompt": "Solar light → which of [Forest gives | Other use]",
+   "key": "Other source",
+   "prompt": "Solar light → which of [Forest gives | Other source]",
+   "src": "c6-science-ch11-t01-i02"
+  },
+  {
+   "itemId": "r2:clay-pot",
+   "key": "Other source",
+   "prompt": "Clay pots → which of [Forest gives | Other source]",
    "src": "c6-science-ch11-t01-i02"
   }
  ],

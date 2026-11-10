@@ -8,7 +8,7 @@ import type { ClaimRow } from "./claims.ts";
 /** GET /api/parent/teaching (round 7 F): how the teacher works, and what she did in the last lessons and why (closed codes). */
 export interface TeachingOut {
   teacher: string; approach: string[];
-  lessons: { id: string; topic: string | null; startedAt: string; why: { code: string; n: number; text: string }[] }[];
+  lessons: { id: string; topic: string | null; startedAt: string; why: { code: string; n: number; text: string }[]; because?: string[] }[];
   madeFor: import("../../shared/contracts.ts").MadeForItem[];
 }
 
