@@ -158,8 +158,9 @@ test("App's render check (BOARDS-RENDER.md): number-line-scale@1 tick labels nev
   assert.ok(x.ok, String(x.errors));
   assert.deepEqual(lintScript(x.script), []);
   assert.deepEqual(x.script.facts.counts.marks.map((m) => m.label), ["300", "400", "500"]);
-  // the player's digits: 0.6 em (11.5 units at 19.2), not the letter estimate
-  assert.equal(Math.round(textBox("100000", "m").w), Math.round(6 * 24 * 0.6));
+  // the player's digits: the numeral face's measured tabular advance (STIX Two Text 0.495 em, round 8 item 7:
+  // docs/design/round8/font-measure-2026-11-10.json), not the letter estimate (was Geist Mono's 0.6)
+  assert.equal(Math.round(textBox("100000", "m").w), Math.round(6 * 24 * 0.495));
   // a number line whose own labels touch is a lint issue
   const crowded = { scriptId: "c", board: { w: 400, h: 300 }, durationMs: 2000, ops: [{ id: "nl", op: "numwork", at: [30, 180], layout: "number_line", rows: [["0", "100", "200", "300", "400", "500", "600", "700", "800", "900", "1000"]], range: [0, 1000], w: 340, startMs: 0, endMs: 1200 }] };
   assert.ok(lintScript(crowded).some((i) => i.check === "row_labels_touch"));

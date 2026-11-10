@@ -38,8 +38,45 @@ export const GROUNDS = Object.freeze(["chalk", "paper", "grid"]);
 export const NUM_LAYOUTS = Object.freeze(["column_add", "column_sub", "column_mul", "long_div", "fraction", "equation", "number_line"]);
 /** Board-unit font sizes of the three text sizes; a cell of numwork is size m. */
 export const TEXT_SIZE = Object.freeze({ s: 18, m: 24, l: 34 });
-/** Average glyph advance as a share of the font size (a handwriting face; measured loosely, used for boxes only). */
-const ADVANCE = 0.58;
+/**
+ * round 8 (board grammar item 7, "a maths face"): the board's text faces, one per text role, and each face's MEASURED
+ * advances (em-fractions of the font size). numeral: a number, a fraction or a numwork cell, in STIX Two Text (lining
+ * numerals); word: every other word, in Atkinson Hyperlegible Next 600; deva: a Devanagari word, Mukta 600 (the word
+ * stack falls back to it per glyph). The player draws with `family`/`weight` (src/modules/whiteboard/Player.tsx, faces in
+ * faces.css, self-hosted); the fit, the lint and the templates measure with `advance`. Measured 2026-11-10 from the woff2
+ * files in headless Chromium at 1000 px, as the player draws them (SVG text, tabular-nums), the letters weighted by their
+ * frequency on the pilot scripts' and BOARD_REFS boards: docs/design/round8/font-measure-2026-11-10.json (n, method).
+ * Classes: digit (tabular: every digit one advance), space, op (+ − × ÷ =, numeral face), other (any other character);
+ * any Devanagari codepoint is deva.char, whatever the run's face.
+ */
+export const TEXT_FACES = Object.freeze({
+  numeral: Object.freeze({ family: '"Board STIX Two Text", "Board Mukta", "STIX Two Text", "Times New Roman", serif', weight: 400, advance: Object.freeze({ digit: 0.495, space: 0.235, op: 0.712, other: 0.37 }) }),
+  word: Object.freeze({ family: '"Board Atkinson Hyperlegible Next", "Board Mukta", "Atkinson Hyperlegible Next", Mukta, system-ui, sans-serif', weight: 600, advance: Object.freeze({ digit: 0.632, space: 0.303, other: 0.565 }) }),
+  deva: Object.freeze({ family: '"Board Atkinson Hyperlegible Next", "Board Mukta", Mukta, "Noto Sans Devanagari", system-ui, sans-serif', weight: 600, advance: Object.freeze({ char: 0.384 }) }),
+});
+/** A run that is only a number, a fraction or an equation's numerals and operators (drawn in the numeral face). */
+const NUMERAL = /^[\d\s.,/:?+\-−×÷=%°]+$/u;
+const DEVA_CHAR = /[ऀ-ॿ]/u;
+/** THE text-role mapping (one, for the renderer and the measure): a text → "numeral" | "word" | "deva". A numwork cell or
+ *  a stacked fraction's numeral is numeral whatever it holds (pass numeral: true). */
+export function textFace(text, { numeral = false } = {}) {
+  const s = String(text ?? "");
+  if (DEVA_CHAR.test(s)) return "deva";
+  return numeral || NUMERAL.test(s) ? "numeral" : "word";
+}
+/** A run's drawn width as a share of its font size (multiply by the size for board units), in its face's measured advances. */
+export function textEm(text, face = textFace(text)) {
+  const A = TEXT_FACES[face === "numeral" ? "numeral" : "word"].advance;
+  let w = 0;
+  for (const c of String(text ?? "")) {
+    if (DEVA_CHAR.test(c)) w += TEXT_FACES.deva.advance.char;
+    else if (c >= "0" && c <= "9") w += A.digit;
+    else if (/\s/u.test(c)) w += A.space;
+    else if (A.op !== undefined && /[+−×÷=]/u.test(c)) w += A.op;
+    else w += A.other;
+  }
+  return w;
+}
 
 const isNum = (n) => typeof n === "number" && Number.isFinite(n);
 const ID_RE = /^[A-Za-z0-9_.:-]{1,32}$/;
@@ -61,9 +98,8 @@ export function textProblem(t) {
 }
 
 /** A text's box in board units (centre-anchored when align is middle). */
-/** The player's numerals (Geist Mono, App's render measure 2026-11-07: 11.5 board units a digit at 19.2): 0.6 em each. */
-export const DIGIT_ADVANCE = 0.6;
-const NUMERAL = /^[\d\s.,/:?+\-−×÷=%°]+$/u;
+/** A numeral's advance (STIX Two Text, tabular: every digit 0.495 em; TEXT_FACES.numeral). */
+export const DIGIT_ADVANCE = TEXT_FACES.numeral.advance.digit;
 export function textBox(text, size = "m", at = [0, 0], align = "middle") {
   const fs = TEXT_SIZE[size] ?? TEXT_SIZE.m;
   // round 8 (board grammar item 1): a text with a simple fraction in it is drawn STACKED: its box is the stack's
@@ -72,9 +108,8 @@ export function textBox(text, size = "m", at = [0, 0], align = "middle") {
     const x = align === "start" ? at[0] : align === "end" ? at[0] - runs.w : at[0] - runs.w / 2;
     return { x, y: at[1] - runs.h / 2, w: runs.w, h: runs.h };
   }
-  // (a number is drawn in monospace digits, wider than the average letter the estimate assumes: App's 360 dp shots had
-  // "100200300" run together where the estimate saw room)
-  const w = Math.max(fs * 0.6, [...String(text)].length * fs * (NUMERAL.test(String(text)) ? DIGIT_ADVANCE : ADVANCE));
+  // (round 8 item 7: measured per face — a number in the numeral face, a word in the word face: TEXT_FACES)
+  const w = Math.max(fs * 0.6, fs * textEm(text));
   const h = fs * 1.2;
   const x = align === "start" ? at[0] : align === "end" ? at[0] - w : at[0] - w / 2;
   return { x, y: at[1] - h * 0.75, w, h };
@@ -89,7 +124,7 @@ const FRAC_RE = /(?<![\d/.,])(\d{1,2}|\?)\s*\/\s*(\d{1,2})(?![\d/.,])/g;
 export const stackNumeral = (fs) => Math.max(TEXT_SIZE.s, round1(fs * 0.8));
 /** The rule under a stacked numerator: about 0.065 em of the numeral (design r8), never a hairline. */
 export const stackRule = (ns) => Math.max(1.6, round2(ns * 0.065));
-const pieceW = (t, fs) => [...t].length * fs * (NUMERAL.test(t) ? DIGIT_ADVANCE : ADVANCE);
+const pieceW = (t, fs) => fs * textEm(t);
 /**
  * A text as runs when it holds a simple fraction (b ≤ 12): [{ t } | { n, d }] with each run's width, the whole run's width
  * and height (board units, at text size `size`). null when the text has no fraction (drawn as one line, as before).
@@ -105,7 +140,7 @@ export function fractionRuns(text, size = "m") {
     if (!(d >= 1 && d <= 12)) continue;
     const before = s.slice(last, m.index).trim();
     if (before) pieces.push({ t: before, w: pieceW(before, fs) });
-    pieces.push({ n: m[1], d: m[2], w: Math.max(m[1].length, m[2].length) * ns * DIGIT_ADVANCE + ns * 0.36 });
+    pieces.push({ n: m[1], d: m[2], w: Math.max(textEm(m[1], "numeral"), textEm(m[2], "numeral")) * ns + ns * 0.36 });
     last = m.index + m[0].length; any = true;
   }
   if (!any) return null;
@@ -122,7 +157,7 @@ export function fractionRuns(text, size = "m") {
 export function fracStack(cx, barY, n, d, ns, halfW) {
   const off = ns * 0.62;
   return {
-    texts: [{ x: round1(cx), y: round1(barY - off), text: String(n), size: ns, align: "middle" }, { x: round1(cx), y: round1(barY + off), text: String(d), size: ns, align: "middle" }],
+    texts: [{ x: round1(cx), y: round1(barY - off), text: String(n), size: ns, align: "middle", face: "numeral" }, { x: round1(cx), y: round1(barY + off), text: String(d), size: ns, align: "middle", face: "numeral" }],
     path: `M${f1(cx - halfW)},${f1(barY)} L${f1(cx + halfW)},${f1(barY)}`,
     width: stackRule(ns),
   };
@@ -725,7 +760,8 @@ export function opGeometry(op, byId = new Map()) {
       const g = braceGeometry(op);
       return { paths: [g.d], texts: [], box: g.box };
     }
-    case "numwork": return numworkGeometry(op, rnd, amp);
+    // (round 8 item 7: a numwork cell is drawn in the numeral face whatever it holds: TEXT_FACES)
+    case "numwork": { const g = numworkGeometry(op, rnd, amp); return { ...g, texts: g.texts.map((t) => ({ ...t, face: "numeral" })) }; }
     case "highlight": {
       const t = byId.get(op.target);
       const b = t ? opGeometry(t, byId).box : { x: 0, y: 0, w: 0, h: 0 };
@@ -837,7 +873,7 @@ function numworkGeometry(op, rnd, amp) {
   });
   if (op.layout === "long_div" && rows[0]?.length >= 2) {
     const dv = textBox(rows[0][0] + " ", "m", [x0, y0], "start");
-    paths.push(polyPath([[dv.x + dv.w, y0 + 6], [dv.x + dv.w, y0 - fs], [dv.x + dv.w + Math.max(40, rows[0][1].length * fs * ADVANCE + 12), y0 - fs]], rnd, amp * 0.4));
+    paths.push(polyPath([[dv.x + dv.w, y0 + 6], [dv.x + dv.w, y0 - fs], [dv.x + dv.w + Math.max(40, fs * textEm(rows[0][1], "numeral") + 12), y0 - fs]], rnd, amp * 0.4));
   }
   const w = Math.max(...rows.map((r) => textBox(r.join(" "), "m", [x0, y0], "start").w), 20);
   // (a row of stacked fractions is taller than a line, centred on its row: the box holds its stacks)
@@ -867,7 +903,7 @@ export function lintScript(script) {
     if (o.op === "text" || o.op === "label" || o.op === "numwork" || o.op === "brace") textOps.push({ o, b });
     // a number line's own row labels never touch each other (App, 2026-11-07: "100200300…" at 0-1000 step 100, 360 dp)
     if (o.op === "numwork" && o.layout === "number_line") {
-      const xs = g.texts.map((t) => ({ x: t.x, w: [...String(t.text)].length * t.size * DIGIT_ADVANCE })).sort((p, q) => p.x - q.x);
+      const xs = g.texts.map((t) => ({ x: t.x, w: t.size * textEm(t.text, "numeral") })).sort((p, q) => p.x - q.x);
       for (let k = 1; k < xs.length; k++) {
         const gap = (xs[k].x - xs[k].w / 2) - (xs[k - 1].x + xs[k - 1].w / 2);
         if (gap < 6) { issues.push({ id: o.id, check: "row_labels_touch", detail: { gap: Math.round(gap), at: k } }); break; }

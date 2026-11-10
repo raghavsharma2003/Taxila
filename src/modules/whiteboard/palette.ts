@@ -32,8 +32,8 @@ export function paletteFor(ground: Ground): Palette {
   return ground === "chalk" ? CHALK : ground === "grid" ? { ...PAPER, grid: "#E6DCCB" } : PAPER;
 }
 
-/** A handwriting face from the system (the frame's CSP allows no web fonts): legible first, hand-made second. */
-export const HAND_FONT = '"Segoe Print", "Chalkboard SE", "Comic Sans MS", "Comic Neue", casual, "Noto Sans Devanagari", system-ui, sans-serif';
+/** The board's faces are no longer a system handwriting face: round 8 (board grammar item 7) draws a numeral face and a word
+ *  face, self-hosted (faces.css; shared/whiteboard.js TEXT_FACES, the same table the fit measures with). */
 
 /**
  * r4 (owner directive "modern, futuristic, Gen-Alpha", main session 2026-10-10): the board under the Kaksha skin. The
@@ -42,6 +42,8 @@ export const HAND_FONT = '"Segoe Print", "Chalkboard SE", "Comic Sans MS", "Comi
  * edge --k-line-2 (no wooden frame), grid --k-line, text and strokes --k-ink, soft --k-ink-3, the emphasised quantity
  * --k-ion, attention --k-look (Kaksha: "look again", never red, never a verdict; --k-her is hers alone), a tick --k-secure; the product's sans for words, Kaksha's mono for numbers. Every ground
  * (chalk, paper, grid) takes the skin's one ground; grid keeps its lines. → null when the tokens are not present.
+ * (round 8 item 7: font / numFont are read but no longer drawn on the board: the board's own faces, shared/whiteboard.js
+ * TEXT_FACES, under every skin, so what the fit measures is what is drawn)
  */
 export interface BoardSkin { palette: Palette; font: string; numFont: string }
 export const K_BOARD_VARS = ["--k-deep", "--k-line", "--k-line-2", "--k-ink", "--k-ink-3", "--k-ion", "--k-look", "--k-secure", "--k-sans", "--k-mono"] as const;
