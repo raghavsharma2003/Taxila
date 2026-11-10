@@ -5,6 +5,9 @@ const HINDI = [
   [/\bnumber\s+lines?\b/gi, "sankhya rekha"], [/\bfractions\b/gi, "bhinn"], [/\bfraction\b/gi, "bhinn"],
   [/\bnumerators?\b/gi, "ansh"], [/\bdenominators?\b/gi, "har"],
   [/\bequal\b/gi, "barabar"], [/\bparts\b/gi, "hisse"], [/\bpart\b/gi, "hissa"], [/\bpieces\b/gi, "tukde"], [/\bpiece\b/gi, "tukda"],
+  // (v6.9 R6, main on director17: "Tab jitne slice the" became "jitne tukda the": a slice after jitne, kitne, saare, sab, kai, a count
+  // word or a number of two or more is plural)
+  [/\b(jitne|kitne|saare|sare|sab|kai|do|teen|chaar|paanch|chhah|saat|aath|nau|das|[2-9]|[1-9]\d+)\s+slice\b/gi, (m, w) => `${w} tukde`],
   [/\bslices\b/gi, "tukde"], [/\bslice\b/gi, "tukda"], [/\bperimeter\b/gi, "parimap"], [/\bsides\b/gi, "bhujayein"], [/\bside\b/gi, "bhuja"],
   [/\btotal\b/gi, "kul"], [/\banswer\b/gi, "jawab"], [/\bsteps?\b/gi, "kadam"], [/\brectangles?\b/gi, "aayat"], [/\bsquares?\b/gi, "varg"],
   [/\btriangles?\b/gi, "tribhuj"], [/\blength\b/gi, "lambai"], [/\b(?:breadth|width)\b/gi, "chaudai"], [/\bshapes?\b/gi, "aakaar"],
@@ -23,7 +26,7 @@ export function inHindiWords(line, { keep = [], card = null } = {}) {
   const [head, tail] = at >= 0 ? [text.slice(0, at), text.slice(at)] : [text, ""];
   const kept = keep.map((k) => String(k ?? "").trim().toLowerCase()).filter(Boolean);
   let out = head;
-  for (const [re, to] of HINDI) out = out.replace(re, (m) => (kept.some((k) => k === m.toLowerCase() || k.includes(m.toLowerCase())) ? m : keepCase(m, to)));
+  for (const [re, to] of HINDI) out = out.replace(re, (m, ...g) => (kept.some((k) => k === m.toLowerCase() || k.includes(m.toLowerCase())) ? m : typeof to === "function" ? to(m, ...g) : keepCase(m, to)));
   // v6.1 R11 (director9: "Parimap (parimap)"): an English word glossed in brackets becomes the same word twice once it is in
   // Hindi words; the bracket goes
   return agree(out.replace(/(?<![\p{L}])(\p{L}+)\s*\(\s*\1\s*\)/giu, "$1")) + tail;
@@ -34,9 +37,4 @@ const PLURAL = { tukda: "tukde", hissa: "hisse", bhuja: "bhujayein" };
 export function agree(text) {
   return String(text ?? "").replace(/\btulna karo (?=kar)/giu, "tulna ").replace(/(?<![\d/.])\b([2-9]|[1-9]\d+)(\s+(?:\p{L}+\s+)?)(tukda|hissa|bhuja)(?![\p{L}])/giu,
     (m, n, mid, w) => (/^(?:ka|ki|ke|wala|wali|wale|se|mein|par)\s+$/i.test(mid.trim() + " ") ? m : `${n}${mid}${keepCase(w, PLURAL[w.toLowerCase()])}`));
-}
-/** v6.8 R5 (main on director16, ×5: "Upar ka 1, jitne tukde humne liye"): a count of one takes the singular — "jitna tukda … liya". */
-export function agreeOne(text) {
-  return String(text ?? "").replace(/(?<![\d/.])\b1([,:]?\s+)jitne\s+(tukde|hisse)(\s+(?:\p{L}+\s+){0,2}?)(liye|mile|bache|khaye)(?![\p{L}])/giu,
-    (m, sep, w, mid, v) => `1${sep}jitna ${w.toLowerCase() === "tukde" ? "tukda" : "hissa"}${mid}${{ liye: "liya", mile: "mila", bache: "bacha", khaye: "khaya" }[v.toLowerCase()]}`);
 }

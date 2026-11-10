@@ -7,7 +7,6 @@ import { readFileSync, readdirSync } from "node:fs";
 import { classifyFast } from "../server/director/classify.js";
 import { replay, runScriptOf } from "./fixtures/replay.mjs";
 import { textReply, replyDeps, BEAT_ASK, WORKED_ASK, rotateOf, wordAnswer } from "../server/brain/say.js";
-import { agreeOne } from "../server/brain/register.js";
 import { heldCount, heldFlags } from "../evals/hybrid-side-by-side/held-units.mjs";
 import { whiteboardIntentOf, heldUpOf } from "../server/brain/propose.js";
 import { findItem } from "../server/director/items.js";
@@ -135,11 +134,12 @@ describe("r7-brain-v68.test.mjs", () => {
         assert.equal(st.activeItemId, s1.activeItemId, "the same card stays live");
         assert.ok(!["reteach", "hint"].includes(p.r.move.kind), `not graded: ${p.r.move.kind}`);
         assert.ok(!st.misses?.[s1.activeItemId], "no miss counted");
-        assert.ok(st.lastMove?.asideAck);
+        assert.ok(!st.lastMove?.asideAck, "a number is an answer, not a reply about the aside (v6.9 A5)");
         assert.ok(!p.evidence.some((e) => /miscon|incorrect|wrong/i.test(JSON.stringify(e))), "no evidence graded");
         replyDeps.chat = async () => ({ text: "Achha! Ab sawaal dekho." });
         const o2 = await textReply({ instructions: instructionsFor(st, kit), state: st, kit, childText: "1/2", history: [], ui: p.r.ui, module: null });
-        assert.ok(o2.guard.asideAck, o2.reply);
+        // (v6.9 A5, main on director17: "1/2" is an answer, not a reply about the aside — no acknowledgement; the card, never graded)
+        assert.ok(!o2.guard.asideAck, o2.reply);
         assert.match(o2.reply, new RegExp(`${card.slice(0, 30).replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}`));
         assert.doesNotMatch(o2.reply, /sahi nahi|galat|jawab nahi/i);
       } finally { replyDeps.chat = chat; setScriptForTest(); if (KEEP !== undefined) process.env.TAXILA_R7_SCRIPT = KEEP; }
@@ -173,6 +173,8 @@ describe("r7-brain-v68.test.mjs", () => {
     });
     test("c4 stuck 8: 'ab Hindi mein' is followed by the live part (e1) in words her last turn did not use, then the card", async () => {
       const { out, last, sc } = await at("stuck", "c4", 8);
+      // (v6.9 T1: with nothing of the live part left unsaid in her last four turns, the key and its why)
+      if (last.state.lastMove.gave?.answer) { assert.match(out.reply, /jawab/i); return; }
       const e1 = sc.skills[0].explain.find((b) => b.id === "e1");
       const lastT = norm([...last.state.recent].reverse().find((t) => t.who === "teacher")?.text);
       const sim = norm(said(e1.ask?.simpler ?? e1.simpler));
@@ -207,7 +209,8 @@ describe("r7-brain-v68.test.mjs", () => {
   });
 
   // R5 (main on director16): check-in forms rotate over the lesson; a worked close says its why once; no "Ab agla kadam" after a
-  // remediation; no "Pehla kadam dekho. Pehle …"; "1, jitna tukda … liya"; a word key in the colon form; "aage chalo" never stops
+  // remediation; no "Pehla kadam dekho. Pehle …"; a word key in the colon form; "aage chalo" never stops (v6.9 R6 reversed v6.8's
+  // "1, jitna tukda … liya": authored lines are never re-inflected — tests/r7-brain-v69.test.mjs)
   describe("R5: her frames", () => {
     const RUN = "2026-11-09-director16";
     const TOPIC = { c4: "c4-maths-ch05-t01", "c5-t02": "c5-maths-ch02-t02", c6: "c6-maths-ch06-t01", "c5-t01": "c5-maths-ch02-t01" };
@@ -217,12 +220,10 @@ describe("r7-brain-v68.test.mjs", () => {
       for (let k = 0; k < 8; k++) assert.notEqual(rotateOf(xs, st(k, xs[0], "a")), xs[0]);
       assert.deepEqual(new Set(Array.from({ length: 8 }, (_, k) => rotateOf(xs, st(k)))), new Set(xs));
     });
-    test("agreeOne and wordAnswer", () => {
-      assert.equal(agreeOne("Upar ka 1, jitne tukde humne liye."), "Upar ka 1, jitna tukda humne liya.");
-      assert.equal(agreeOne("Upar ka 3, jitne tukde humne liye."), "Upar ka 3, jitne tukde humne liye.");
+    test("wordAnswer", () => {
       assert.ok(wordAnswer("Gopi ke paas") && !wordAnswer("29 m") && !wordAnswer("2/5"));
     });
-    test("over all 16 director16 lessons walked live: no 'Pehla kadam dekho. Pehle', no 'Ab agla kadam' on a remediation, no 'jawab Gopi ke paas tha', no '1, jitne tukde', a worked close's why once, ≥3 check-in forms per topic and none above half", async () => {
+    test("over all 16 director16 lessons walked live: no 'Pehla kadam dekho. Pehle', no 'Ab agla kadam' on a remediation, no 'jawab Gopi ke paas tha', a worked close's why once, ≥3 check-in forms per topic and none above half", async () => {
       const forms = [...new Set([...BEAT_ASK.hinglish, ...WORKED_ASK.hinglish])];
       const bad = [];
       const KEEP = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT;
@@ -241,7 +242,6 @@ describe("r7-brain-v68.test.mjs", () => {
               if (/Pehla kadam dekho\. Pehle/.test(r)) bad.push(`${tag}: doubled first step | ${r.slice(0, 100)}`);
               if (pl.state.lastMove?.scriptBeat?.kind === "remediation" && /Ab agla kadam/.test(r)) bad.push(`${tag}: next step after a remediation`);
               if (/jawab Gopi ke paas tha/.test(r)) bad.push(`${tag}: "jawab Gopi ke paas tha"`);
-              if (/\b1, jitne tukde/.test(r)) bad.push(`${tag}: "1, jitne tukde"`);
               const m = /Dekho, ([^.]+)\. Toh poora jawab: [^.]*kyunki ([^.]+)\./.exec(r);
               if (m && m[2].includes(m[1].slice(0, 30))) bad.push(`${tag}: the why twice`);
             }
