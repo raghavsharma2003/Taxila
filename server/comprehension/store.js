@@ -59,7 +59,10 @@ export function weaveStmts(child, q) {
   const mode = gate(child);
   const open = q.filter((e) => e.status === "queued" || e.status === "hosted");
   return [
-    { text: "update weave_queue set status='done' where child_id=$1 and status in ('queued','hosted') and not (skill_id = any($2))", params: [child.id, open.map((e) => e.skillId)] },
+    // an expired entry no opener slot consumed stays open in the table (it expires again and competes at the next start);
+    // closing it here dropped a callback nobody ever asked (audit LEARN-48)
+    { text: "update weave_queue set status='done' where child_id=$1 and status in ('queued','hosted') and not (skill_id = any($2))",
+      params: [child.id, [...open, ...q.filter((e) => e.status === "expired")].map((e) => e.skillId)] },
     ...open.map((e) => ({
       text: `insert into weave_queue (child_id, skill_id, kind, anchor_at, earliest_at, due_at, topics_since, host_candidates, host, status, legal_mode_at_write)
         values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
