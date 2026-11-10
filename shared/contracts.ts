@@ -17,12 +17,23 @@ export interface KitItem {
   prompt_en: string; prompt_hi: string; answer: string; acceptable: string[];
   hints: [string, string, string, string]; targetsMisconception?: string;
   verified?: { solverAnswer: string; agrees: boolean; note?: string };
+  /** The passage this question is about (TopicKit.passages). The prompts are the short question only. */
+  passageId?: string;
 }
 export interface KitMisconception {
   id: string; belief: string; signs: string[];
   /** null when the kit's diagnostic is invalid or cannot be pinned in the prompt budget (server/content/kits.js normalizeKit). */
   diagnostic: { prompt_en: string; prompt_hi: string; options: { text: string; misconceptionId: string | null; correct: boolean }[] } | null;
   remediation: { representation: string; moveShape: string };
+}
+/** A text a group of items is about (a story, poem, letter, notice or scene): stored once per topic, never inside a prompt. */
+export interface KitPassage {
+  id: string;
+  /** The text. Poems and letters keep their line breaks as "\n". Never contains an authoring note. */
+  text: string;
+  title?: string;
+  /** "picture": a scene described in words for a picture board; absent for reading text. */
+  kind?: "picture";
 }
 export interface TopicKit {
   topicId: string; topicType: TopicType;
@@ -32,6 +43,10 @@ export interface TopicKit {
   workedExample: { problem: string; steps: string[]; fadedVersion: string[] } | null;
   formats: { primary: FormatFamily; secondary: string[]; engineHints: string[] };
   interestContexts: string[];
+  /** The texts the items point at (KitItem.passageId). Absent when the topic has none. */
+  passages?: KitPassage[];
+  /** Items that need a passage, kept out of `items` until the lesson can show one (TAXILA_PASSAGES). */
+  heldItems?: KitItem[];
   /** false for an on-the-fly mini-kit (model-written keys): its evidence weighs half. Set by the server loader. */
   verified?: boolean;
 }
@@ -300,6 +315,7 @@ export interface TurnRequest {
    * round 7 (PIPELINE A11 voice-interrupt-awareness): how much of her LAST line the child heard before cutting in, on ANY
    * lane (the cascade player's position; the duplex engine's own copy stays in `duplex.heardUpTo`, read second). The
    * server marks the unsaid tail and gives the move an "interrupted after X" fact. null / absent = heard it all.
+   * Not built yet (PIPELINE Brain 11, Voice 8; audit SEAM-05): no client sends it and no server code reads it.
    */
   heardUpTo?: { chars: number; words: number; ms: number } | null;
   /**
@@ -312,6 +328,7 @@ export interface TurnRequest {
     genId?: string | null;
     safetyPending?: { kind: "self_harm" | "abuse" | "fear" | null; source: "predicate" | "model_note" | null } | null;
     superseded?: string[];
+    /** Not built yet (PIPELINE Brain 11, Voice 8; audit SEAM-05): no server code reads it. */
     heardUpTo?: { chars: number; words: number; ms: number } | null;
     cutInReason?: "safety" | "word_search_cue" | "off_task_drift" | "question_to_her" | "hold_offer" | null;
     /**
@@ -554,6 +571,8 @@ export interface ChildPlanResponse {
   capRemaining: number | null; capMin: number; usedMin: number;
   /** "resting": when lessons open again (local time, HH:MM). */
   opensAt: string | null;
+  /** The parent's planned lesson time (HH:MM, 24-hour), its length, and whether today is one of the lesson days: a plan, never a lock. Null when none is set. */
+  schedule?: { time: string; minutes: number | null; today: boolean } | null;
   packReady: null; day: string; tz: string;
   teacher: TeacherCard;
   /** Surfaces hidden by the parent's "Only this session" choice (learning_profile consent off). */

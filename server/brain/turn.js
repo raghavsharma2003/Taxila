@@ -547,8 +547,10 @@ export async function lessonTurn(req, body, hooks = {}) {
   // ship5 p3-voicesig (server/voicesig/lesson.js): the knowledge state this spoken turn's on-device timing numbers
   // (TurnRequest.voiceFeatures.kv) read against the child's own baseline, the transcript and the grader verdict. Pure,
   // well under a millisecond, never awaited on the network. A disclosure turn (predicate, classifier, duplex floor) gets
-  // nothing; a state reaches the consumers only through the precision gate (measured on children >= 0.80), and until then
-  // it is shadow: trace codes only, and the plan below is exactly the pre-voicesig plan.
+  // nothing. Its EVIDENCE reaches the learner model only through the precision gate (measured on children >= 0.80), and
+  // until then moves nothing; but under the default TAXILA_VOICESIG=internal (server/voicesig/lesson.js seamMode, owner
+  // 2026-10-27) a computed state DOES pick the plan's tie-breakers below (followUpProbe, gentlerHint, slowerPace), on a
+  // placeholder prior. Set TAXILA_VOICESIG=shadow for trace codes only.
   const vsTurn = seamSafe("voicesig.turn", () => voicesigSeam.turn({ kv: body.voiceFeatures?.kv, typed: !!body.typed || moduleOnly || !!help || laneResume,
     bargeIn: !!body.teacherInterrupted, safety: !!cls?.flags?.distress || !!pendingSafety || !!fast?.flags?.distress, childText, cls, item: activeItem,
     context: body.voiceFeatures?.context, vsb: state.vsb, classLevel: child.class_level, env: process.env }), null);
