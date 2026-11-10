@@ -467,3 +467,17 @@ test("serve: mount params come from the server's expansion; a forged correct:tru
   assert.equal(gradeEvent("c6-maths-ch07-t05", { type: "answer", engine: "g2:x@1", data: { value: { kind: "g2.commit", item: item.id, ref: { item: item.id, slot: "key" }, value: item.key.v } } }).reject, "shape", "no attempt → no evidence");
   assert.equal(mountFor("c6-maths-ch07-t05", { engine: "fraction-bars@1", src: "x" }), null);
 });
+
+test("g2 levels: an item or diagnostic carrying a {friend} slot is not a G2 item, and no eligible spec carries the braces (audit CD-16)", () => {
+  const topic = { topicId: "c1-maths-ch05-t02", misconceptions: [] };
+  const item = { id: "x-i01", prompt_en: "{friendF} has 3 laddoos and gets 2 more. How many now?", prompt_hi: "{friendF} ke paas 3 laddoo hain, 2 aur mile. Ab kitne?", answer: "5", verified: { agrees: true, solverAnswer: "5" } };
+  assert.deepEqual(itemSpec(item, topic), { skip: "friend_slot" });
+  assert.ok(itemSpec({ ...item, prompt_en: "Asha has 3 laddoos and gets 2 more. How many now?", prompt_hi: "Asha ke paas 3 laddoo hain, 2 aur mile. Ab kitne?" }, topic).spec);
+  const m = { id: "x-m1", diagnostic: { prompt_en: "Who is right?", prompt_hi: "Kaun sahi hai?", options: [{ text: "{friendM}", correct: true }, { text: "Sonu", correct: false }] } };
+  assert.deepEqual(diagnosticSpec(m, "x"), { skip: "friend_slot" });
+  for (const id of ["c1-maths-ch05-t02", "c4-maths-ch01-t03", "c9-maths-ch11-t02"]) {
+    const t = loadTopic(id);
+    if (!t) continue;
+    for (const it of t.items || []) { const r = itemSpec(it, t); if (r.spec) assert.doesNotMatch(JSON.stringify(r.spec), /\{friend/, it.id); }
+  }
+});
