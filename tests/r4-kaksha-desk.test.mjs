@@ -86,7 +86,7 @@ test("Skin CSS: tokens only, scoped to the Kaksha frame/skin, hides nothing, kee
 test("K-P2 wiring: Desk takes a skin and an end screen; LessonScreen mounts Kaksha only behind the flag and the cohort", () => {
   const desk = read("src/child/lesson/Desk.tsx");
   assert.match(desk, /"data-skin": skin \|\| undefined/);
-  assert.match(desk, /renderSummary \? renderSummary\(\{ m, meters: media\.meters, onFinish: a\.finish \}\) : <Summary /, "absent → today's Summary");
+  assert.match(desk, /renderSummary \? renderSummary\(\{ m, meters: media\.meters, onFinish: a\.finish, onFinishTo: a\.finishTo \}\) : <Summary /, "absent → today's Summary");
   for (const z of ["teacher", "window", "caption", "card", "tray", "strip", "dock", "top"]) assert.match(desk, new RegExp(`data-zone="${z}"`), z);
   const ls = read("src/child/lesson/LessonScreen.tsx");
   assert.match(ls, /lazy\(\(\) => import\("\.\.\/\.\.\/ui-v3\/kaksha\/lesson\/KakshaLesson\.tsx"\)\)/, "a lazy chunk");
