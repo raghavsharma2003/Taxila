@@ -251,6 +251,25 @@ export function ledgerStmts(child, before, after, events, { currentTheta: thetaO
 }
 
 /** The serialising lock for one child's learner writes (LEARNER-MODEL §5: order by seq under the lock). */
+/**
+ * Aborts the transaction (1/0) unless the child's kt_evidence still ends at `maxSeq`: a writer outside the turn (placement
+ * prior, late correction) folds before it takes the lock, so a turn that committed in between would be folded over and
+ * its cached fold go stale. On the abort the writer reloads and folds again (audit LEARN-26).
+ */
+export const seqGuardStmt = (childId, maxSeq) => stmt("session",
+  "select 1 / (case when coalesce((select max(seq) from kt_evidence where child_id = $1), 0) = $2 then 1 else 0 end) as ok", [String(childId), Number(maxSeq) || 0]);
+/**
+ * The 001 skill_state projection of every skill a fold changed (the turn writes the same, brain/turn.js). Writers outside
+ * the turn left it out, so their evidence never reached skill_state, which topic choice reads (audit LEARN-26).
+ * @param {(sk: any, now: number) => any} project live.js legacySkillState (passed in: live.js imports this module)
+ */
+export function projectionStmts(child, before, after, now, project) {
+  const changed = Object.keys(after.skills).filter((id) => JSON.stringify(before.skills[id]) !== JSON.stringify(after.skills[id])).sort();
+  return changed.map((id) => skillStateStmt(child.id, project(after.skills[id], now), child));
+}
+/** How many times a writer outside the turn reloads and folds again when its seq guard fails. */
+export const FOLD_RETRIES = 3;
+
 export const lockStmt = (childId) => stmt("session", "select pg_advisory_xact_lock(hashtext($1)) is null as locked", [String(childId)]);
 
 /**

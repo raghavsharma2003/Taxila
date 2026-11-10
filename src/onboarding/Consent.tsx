@@ -7,7 +7,8 @@ import { Button, ErrorNote, HoldButton, Icon, Speaker, TileGroup } from "../ui/i
 import { defaultTutorFor } from "../../shared/tutors.js";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { Spot } from "../child/art.tsx";
-import { ApiError, errText, postJson } from "../app/api.ts";
+import { ApiError, postJson } from "../app/api.ts";
+import { setupError } from "./setupRules.ts";
 import { PROMISES } from "../app/promises.ts";
 import { StepFrame } from "./Layout.tsx";
 import { useDraft } from "./draft.ts";
@@ -92,7 +93,7 @@ export function ConsentStep() {
       nav("/start/child");
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) return nav("/start/phone?next=/start/consent");
-      setErr(errText(e));
+      setErr(setupError(e));
     } finally {
       setBusy(false);
     }

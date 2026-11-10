@@ -23,6 +23,7 @@ const NO_GUARD = {
   "server/learner/model.js": "replay into the fold: kt/ledger.js and comprehension/fuse.js skip it by isPlacementRow",
   "server/learner/live.js": "the cached fold (same replay) and its row-count consistency check, which must count every row",
   "server/brain/supersede.js": "re-fold without a turn's rows (same replay), max(seq) bookkeeping, and the move of a turn's own rows",
+  "server/learner/writer.js": "seqGuardStmt: the child's max(seq) for the writers' fold guard (audit LEARN-26), which must count every row",
   "server/reports/eval/sim-week.mjs": "an eval harness: picks ANOTHER child's row id to plant as a mutant citation; counts nothing",
 };
 const SCOPED = /\bsession_id\s*=\s*(\$\d|any\(|l\.id)|\bid\s*=\s*(\$\d|any\()/;
