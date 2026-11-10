@@ -384,6 +384,7 @@ export function expectedWalk(script, kit, because = []) {
  *   { kind: "hook", skillId, index } (the hook slot used), { kind: "first", itemId } (a card put first in the warm-up),
  *   { kind: "prereq", topicId }, { kind: "remedy", cardId, targets, authored }. Other kinds (warm-up, reposes, asides) are
  *   not script choices and are ignored. The walk may stop early (the clock, the wrap): a prefix of the expected walk passes.
+ *   Once the expected walk is spent, later cards are the kit's own practice (director/items.js selectNext) and are not checked.
  * @returns {true}
  */
 export function assertWalkExplained({ script, kit, because = [], events = [] }) {
@@ -401,6 +402,7 @@ export function assertWalkExplained({ script, kit, because = [], events = [] }) 
     if (e.kind !== "beat") return;
     const key = `${e.skillId}|${e.beat}`;
     if (seenKeys.has(key)) return; // a re-posed card
+    if (at >= expected.length) return; // the script's walk is spent: what follows is the kit's own practice, not a script choice
     // an expected card already posed in another role (the warm-up's first card) is not skipped
     while (at < expected.length && expected[at] !== key && seenItems.has(String(expected[at].split("|ladder:")[1] ?? ""))) at += 1;
     if (expected[at] !== key) fail(n, `got ${key}, the script's walk${because.length ? " (with its because records)" : ""} expects ${expected[at] ?? "nothing more"}`);

@@ -239,6 +239,12 @@ test("B: her open mix-up's check asked first needs its checkOrder record", () =>
   assert.ok(assertWalkExplained({ script, kit, because: p.because, events: beats(swapped) }));
 });
 
+test("B: after the script's walk is spent, the kit's own practice is not a script choice", () => {
+  const def = defaultWalk(script, kit);
+  assert.ok(assertWalkExplained({ script, kit, events: beats([...def, `${A}|ladder:${TOPIC}-i01`]) }));
+  assert.throws(() => assertWalkExplained({ script, kit, events: beats([...def.slice(0, -1), `${A}|ladder:${TOPIC}-i01`]) }), undefined, "before the end it is still a departure");
+});
+
 test("B: a ladder card already posed first in the warm-up is not a skip", () => {
   const def = defaultWalk(script, kit);
   const first = `${TOPIC}-i04`;
