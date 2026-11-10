@@ -123,6 +123,13 @@ test("builders: a generated spec citing an unknown kit id is unusable; a valid o
   assert.deepEqual(Object.values(q8Saw), ["Prime hunt in the bazaar"], "Q8 sees exactly the strings the model wrote");
   const blocked = await createBuilders({ chat: async () => ({ json: clone(fresh), usage: {} }), q8: async () => ({ ok: false }) }).generatedSpec({ archetype: "sieve-storm@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, key);
   assert.equal(blocked.checks.contentSafe, false, "a Q8 finding makes the spec unshowable (allChecks)");
+  // (main 2026-11-10: a refusal names the string and why — c4's attempt 1 said only "contentSafe")
+  const named = await createBuilders({ chat: async () => ({ json: clone(fresh), usage: {} }), q8: async (strings) => ({ ok: false, findings: [{ key: Object.keys(strings)[0], code: "brain_violence" }] }) })
+    .generatedSpec({ archetype: "sieve-storm@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, key);
+  assert.deepEqual(named.checks.contentFindings.map((f) => [f.code, f.text]), [["brain_violence", "Prime hunt in the bazaar"]]);
+  const threw = await createBuilders({ chat: async () => ({ json: clone(fresh), usage: {} }), q8: async () => { throw Object.assign(new Error("x"), { code: "timeout" }); } })
+    .generatedSpec({ archetype: "sieve-storm@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, key);
+  assert.match(threw.checks.contentFindings[0].code, /^q8_threw: timeout/, "a check that could not run says so (fail closed, but not mistaken for unsafe text)");
 });
 
 // ───────────── host grading ─────────────

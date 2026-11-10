@@ -44,7 +44,10 @@ async function drawnAt(viewport, script) {
     const r = (e) => { const x = e.getBoundingClientRect(); return { x: x.x, y: x.y, w: x.width, h: x.height }; };
     const box = document.querySelector('[data-testid="studio-box"]');
     const texts = [...box.querySelectorAll("svg text")].filter((t) => (t.textContent ?? "").trim() && getComputedStyle(t).opacity !== "0")
-      .map((t) => ({ text: t.textContent, b: r(t), px: t.getBoundingClientRect().height }));
+      // (px: the word's rendered font size — its font-size times its on-screen scale. Round 8 item 7 draws numerals and words in
+      // two faces, so a box's height is the face's ascent + descent, not its size: a STIX "?" at 24 boxed 13 px, an Atkinson
+      // word at 24 boxed 16 px, on the same board)
+      .map((t) => ({ text: t.textContent, b: r(t), px: Number(t.getAttribute("font-size")) * Math.hypot(t.getScreenCTM().a, t.getScreenCTM().b) }));
     const taps = [...box.querySelectorAll("button, a, [role=button], input")].map((e) => r(e));
     return { box: r(box), texts, taps };
   });

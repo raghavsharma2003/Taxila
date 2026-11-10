@@ -52,6 +52,8 @@ export interface PlayStageProps {
   doors?: PlayDoor[] | null;
   onDoor?(d: PlayDoor): void;
   world?: PlayWorldFamily | null;
+  /** round 8 H: the child's "why this game" line (the server's text; display only), shown above the goal */
+  why?: string | null;
   onEvent?(e: PlayEvent): void;
   reducedMotion?: boolean;
   sound?: boolean;
@@ -107,6 +109,8 @@ export function PlayStage(props: PlayStageProps) {
   const entry = useMemo(() => (props.engine === "2d" ? null : engineFor(level.family, level.mode, level.goal)), [level.family, level.mode, level.goal, props.engine]);
   const [render, setRender] = useState<{ kind: "2d" | "3d" | "wait"; why: string; tier?: PlayTier; mod?: EngineModule | null; mount?: typeof MountStage3D }>(() => ({ kind: entry ? "wait" : "2d", why: entry ? "loading" : "no engine" }));
   const engineIdRef = useRef<string | null>(null);
+  // round 8 follow-up B: the engine the mounted 3D stage runs (a family switch must remount, never relevel another engine)
+  const stageEngineRef = useRef<string | null>(null);
   useEffect(() => {
     if (!entry) { setRender((r) => (r.kind === "2d" ? r : { kind: "2d", why: "no engine" })); return; }
     if (render.kind === "3d" && engineIdRef.current === entry.id) return;   // the world persists across levels
@@ -155,13 +159,15 @@ export function PlayStage(props: PlayStageProps) {
     const stage3d = stageRef.current && "core" in stageRef.current ? (stageRef.current as Stage3DHandle) : null;
     const spec = specRef.current;
     if (render.kind === "3d" && render.mod && render.mount && spec) {
+      // a family switch: until THIS level's engine is loaded (or the 2D view is chosen), the old engine is never re-levelled
+      if (!entry || engineIdRef.current !== entry.id) return;
       const deps: EngineDeps = { level, ctl, lang, spec, changed };
-      if (stage3d && stage3d.engine.relevel) { try { stage3d.core.progress.set("level", level.levelId, { level: "start" }); stage3d.engine.relevel(deps); viewRef.current = stage3d.engine; if (props.debug) exposeDebug(stage3d, ctl, logic); changed(); onEvent.current?.({ type: "ready", engine: entry?.id ?? null }); return; } catch { /* remount below */ } }
+      if (stage3d && stage3d.engine.relevel && stageEngineRef.current === entry.id) { try { stage3d.core.progress.set("level", level.levelId, { level: "start" }); stage3d.engine.relevel(deps); viewRef.current = stage3d.engine; if (props.debug) exposeDebug(stage3d, ctl, logic); changed(); onEvent.current?.({ type: "ready", engine: entry?.id ?? null }); return; } catch { /* remount below */ } }
       stageRef.current?.dispose(); stageRef.current = null; viewRef.current = null;
       const h = render.mount(host, render.mod.create, deps, { tier: render.tier === "3d-lite" ? "3d-lite" : "3d", young, reducedMotion: props.reducedMotion, sound: props.sound, musicAllowed: musicRef.current === "on", preserveDrawing: !!props.preserveDrawing, seed: level.seed,
         onFail: (why) => { onEvent.current?.({ type: "fail3d", why }); setRender({ kind: "2d", why }); } });
       if (h) {
-        stageRef.current = h; viewRef.current = h.engine;
+        stageRef.current = h; viewRef.current = h.engine; stageEngineRef.current = entry.id;
         if (props.debug) exposeDebug(h, ctl, logic);
         changed(); onEvent.current?.({ type: "ready", engine: entry?.id ?? null });
         if (props.demo || spec.dress.teacherMove === "ghost-first") setTimeout(() => (viewRef.current as EngineView | null)?.demo?.(), 900);
@@ -300,6 +306,7 @@ export function PlayStage(props: PlayStageProps) {
         )}
       </div>
       <div className="pl-rail">
+        {props.why ? <p className="pl-why" data-testid="play-why">{props.why}</p> : null}
         <p className="pl-goal" data-testid="play-goal">{goal}</p>
         <div className="pl-readouts">{readouts.map((r) => <span key={r.k} className="pl-readout" data-role={r.role}><i>{r.k}</i><b>{r.v}</b></span>)}</div>
       </div>

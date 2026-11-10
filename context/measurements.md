@@ -6643,3 +6643,8 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-d71c2ca` (2026-11-10): Released d71c2ca with scripts/release.mjs: web taxila-web--sd71c2ca-yt3l (was taxila-web--s9004a0b-tlys), worker + canary/nightly jobs on taxila-worker:d71c2ca (was 9004a0b); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs d71c2ca --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `m-r8-board-faces-measured` (2026-11-10): Measured advances as a fraction of the font size (the old constant in brackets): digit in the numeral face 0.495 (0.60, Geist Mono; all ten digits the same width); letters in the word face 0.565, frequency-weighted (0.58); a digit inside a word 0.632; space 0.235 numeral / 0.303 word; + − × ÷ = 0.712; ? . / 0.37; Devanagari 0.384 per character (0.58). For numbers the prediction is exact at the median. For words the median is 9% under and the 95th percentile 20% under: short labels like 'cm' are dominated by the wide 'm', and a per-letter table would fix that.
+- `m-r8-board-faces-fit` (2026-11-10): 0 boards changed their fit verdict at any size, in either direction; all 1,816 build and pass. The smallest word went up on 202 to 383 boards per size (the narrower faces fit tighter). One board went down: staged c6-maths-ch02-t02 skills[1].explain[2] shape@1, 18.8 to 16.9 px at p412, still above the 14 px floor. unrolled@1 and cycle@1 needed spacing fixes to keep their layouts.

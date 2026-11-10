@@ -1,0 +1,46 @@
+{
+ "nodes": [
+  {
+   "id": "m-r8-board-faces-measured",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "n": 299,
+   "method": "the self-hosted woff2 files (@fontsource 5.3.0: STIX Two Text 400, Atkinson Hyperlegible Next 600, Mukta 600) loaded in headless Chromium, canvas measureText at 1000 px, drawn as the board draws text; samples are the text of 299 boards (the four pilot scripts plus the BOARD_REFS examples): 815 number strings and 253 word strings. docs/design/round8/font-measure-2026-11-10.json",
+   "title": "Measured advances as a fraction of the font size (the old constant in brackets): digit in the numeral face 0.495 (0.60, Geist Mono; all ten digits the same width); letters in the word face 0.565, frequency-weighted (0.58); a digit inside a word 0.632; space 0.235 numeral / 0.303 word; + − × ÷ = 0.712; ? . / 0.37; Devanagari 0.384 per character (0.58). For numbers the prediction is exact at the median. For words the median is 9% under and the 95th percentile 20% under: short labels like 'cm' are dominated by the wide 'm', and a per-letter table would fix that."
+  },
+  {
+   "id": "m-r8-board-faces-fit",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "n": 1816,
+   "method": "every board and answerBoard in the 34 lesson and staged scripts plus 29 BOARD_REFS examples, judged by boardAt at the p360, p412 and l1366 contract boxes, young and older, before and after the face change",
+   "title": "0 boards changed their fit verdict at any size, in either direction; all 1,816 build and pass. The smallest word went up on 202 to 383 boards per size (the narrower faces fit tighter). One board went down: staged c6-maths-ch02-t02 skills[1].explain[2] shape@1, 18.8 to 16.9 px at p412, still above the 14 px floor. unrolled@1 and cycle@1 needed spacing fixes to keep their layouts."
+  },
+  {
+   "id": "dc-r8-board-faces",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Board text faces by role (Design r8, the same in both directions; main's go): numerals, fractions and numwork cells in STIX Two Text; words in Atkinson Hyperlegible Next 600; Devanagari in Mukta 600. All are OFL and self-hosted woff2 bundled by Vite (no font CDN). They are named 'Board …' so the board draws exactly the measured files. The handwriting face is gone, because a hand face reads as a toy. One mapping: shared/whiteboard.js TEXT_FACES and textFace().",
+   "reverse": "the owner's chosen direction asks for different faces, or a director run shows a class 4-5 child misreading the serif numerals"
+  },
+  {
+   "id": "dc-r8-two-judge-approval",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "main's ruling: a stored approval needs TWO separate Claude judges to pass the content items (every fault kind except unreadable); readability stays with one judge. A split verdict is a fail, recorded with both reasons (approve-store --verdicts2, refused.json). Generation: every attempt ends in exactly one of a candidate file or a refused file with its reason (attemptOutcome), and a contentSafe refusal names the string and its code. First results: c6 stored; c4 (judge 1: the guide marks give the cuts away; judge 2: a reservation about the same marks), c5-t01 and c5-t02 (both judges: titles name where an item goes) refused.",
+   "reverse": "a run of 20 pieces where the two judges never split would let one judge suffice"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-board-faces",
+   "rel": "measured_by",
+   "dst": "m-r8-board-faces-measured"
+  },
+  {
+   "src": "dc-r8-board-faces",
+   "rel": "measured_by",
+   "dst": "m-r8-board-faces-fit"
+  }
+ ]
+}

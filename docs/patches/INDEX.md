@@ -71,6 +71,8 @@ and `to-voice` (two 001, no 002). Always cite a patch by its full file name.
 | 016-harness-page-up.patch | landed | 11/13 | `evals/hybrid-side-by-side.mjs` | 11 of 13 added lines are in the tree; later edits changed the rest. |
 | 017-harness-card-page.patch | **partly; the rest is likely overtaken** | 5/10 | `evals/hybrid-side-by-side.mjs` | Its S9b half (`shownKind`, `avoidKind`) is in the harness through patch 018. Of its S9 half, "the picture request on the first page only" is in the harness (Brain, v6.6); the `ofCard` / `cardPage` pass-through is not. The held board (`dc-r7-held-board`) drops line-driven paging, so this is probably no longer needed: Brain confirms. |
 | 018-harness-page-up-kind.patch | applied | 6/6 | `evals/hybrid-side-by-side.mjs` |  |
+| 023-play-facts-row-trail.patch | **pending** (2026-11-10) | 0/2 | `server/brain/turn.js` | From Games (claude/r8-play-follow): keep the whole verified play facts row (200 -> 240 chars); the level_end row now leads with the trail summary and the because kinds. |
+| 024-play-why-voice.md | written ask | — | — | From Games: have the teacher say the play why-line (`taxila:play-say`) when the floor is free; play shows it, has no voice. |
 
 ## to-learning
 
@@ -80,6 +82,7 @@ and `to-voice` (two 001, no 002). Always cite a patch by its full file name.
 | 002-face-onboarding-teacher-direct.patch | applied | 8/8 | `src/onboarding/Setup.tsx`, `src/onboarding/steps/Meet.tsx` |  |
 | 003-db-probe-timer-unref.patch | applied | 3/3 | `tests/comprehension-db.test.mjs`, `tests/comprehension-w1c-db.test.mjs` +1 |  |
 | 004-signin-code-links.patch | applied | 8/8 | `src/onboarding/Account.tsx`, `src/onboarding/Forgot.tsx` |  |
+| 009-r8-parent-play-because.patch | **pending** (2026-11-10) | 0/~150 | `server/director/knows-words.js`, `server/reports/teaching.js` +3 | From Games (claude/r8-play-follow): play because + trail on the Teaching page through knows-words (play vocabulary added); compatible with 008. |
 
 ## to-platform
 

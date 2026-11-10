@@ -1,0 +1,135 @@
+{
+  "v": 1,
+  "id": "gen-c6-maths-ch06-t01-254ee040",
+  "approved": true,
+  "hash": "254ee040bb674374c4c7e0bd4ec75a62",
+  "archetype": "area-claim@1",
+  "spec": {
+    "archetype": "area-claim@1",
+    "skills": [
+      "c6-maths-ch06-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Grid par khet banao",
+      "round": "Daud",
+      "area": "kshetrafal",
+      "perimeter": "ghera",
+      "claim": "BAN GAYA",
+      "need": "chahiye",
+      "sq": "varg",
+      "units": "ikai",
+      "newShape": "is baar naya aakar",
+      "maxArea": "sabse bada kshetrafal",
+      "runDone": "Khet taiyar",
+      "timeUp": "Samay khatam"
+    },
+    "grid": {
+      "cols": 15,
+      "rows": 10
+    },
+    "drift": 0.7,
+    "rounds": [
+      {
+        "goal": "area",
+        "target": 40,
+        "seconds": 30,
+        "different": false
+      },
+      {
+        "goal": "perimeter",
+        "target": 26,
+        "seconds": 26,
+        "different": true,
+        "targets": "c6-maths-ch06-t01-m-area-perimeter"
+      },
+      {
+        "goal": "perimeter",
+        "target": 20,
+        "seconds": 28,
+        "different": true
+      },
+      {
+        "goal": "perimeter",
+        "target": 38,
+        "seconds": 30,
+        "different": false
+      }
+    ]
+  },
+  "for": {
+    "topic": "c6-maths-ch06-t01",
+    "skill": "c6-maths-ch06-t01-s1",
+    "misconceptionId": "c6-maths-ch06-t01-m-area-perimeter",
+    "beat": "rem:c6-maths-ch06-t01-m-area-perimeter",
+    "when": "remediation"
+  },
+  "because": {
+    "mixup": {
+      "id": "c6-maths-ch06-t01-m-area-perimeter",
+      "belief": "Confuses perimeter with area, multiplying length by breadth for the perimeter",
+      "signs": [
+        "Says the perimeter of a 6 cm by 4 cm rectangle is 24",
+        "Uses square units for perimeter",
+        "Says 'perimeter is inside the shape'"
+      ]
+    },
+    "rule": "shown only to a child the learner model holds this mix-up for, at this beat; any other child gets the script's own board"
+  },
+  "source": "generated",
+  "predicate": {
+    "ok": true,
+    "why": null
+  },
+  "render": {
+    "byViewport": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "images": [
+      {
+        "vp": "p412",
+        "file": "piece-p412.png",
+        "sha256": "7a1f3fe9f690a4b0290a88f70a31fb24e58c127dd2c19b86e33215b70c87bede"
+      },
+      {
+        "vp": "l1366",
+        "file": "piece-l1366.png",
+        "sha256": "fbb80043e0031a4f0deea1657d55a8d3ab351f50318abe207853cfba059471bf"
+      }
+    ]
+  },
+  "judge": {
+    "verdict": "pass",
+    "by": "a separate Claude judge (Opus), packet only, p412+l1366",
+    "promptSha256": "c8d5b5b6d81bd84969a870aad50b106e4d3f4ecd4948cca85fa7fedfdc866fa6",
+    "prompt": "data/studio-approved/JUDGE-PROMPT.md",
+    "faults": [],
+    "readable": {
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "All targets can be built on the 15x10 grid: area 40, then perimeters 26, 20 and 38. The units are right: area is 'varg ikai' and perimeter ('ghera') is 'ikai'. Every perimeter target matches a verified key (26, 20, 38). The meters show 'kshetrafal' and 'ghera' side by side, and round 2 asks for a new shape with ghera 26 right after area 40. A child who multiplies for perimeter will see the ghera meter disagree with them, which covers the mix-up. On p412 the coach line 'Grid par khet banao' is low-contrast grey but still legible, and the grid cells are small but whole. p360 was not judged (not supplied, by instruction)."
+  },
+  "judge2": {
+    "verdict": "fail",
+    "by": "a second separate Claude judge (Opus), packet only",
+    "content": "pass",
+    "faults": [
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screenshot",
+        "detail": "The coach text \"Grid par khet banao\" is drawn over the top row of grid cells, and the goal pill \"Daud 1/4 kshetrafal 40 varg ikai\" butts against the bottom of the \"KSHETRAFAL — / GHERA — / DAUD 1/4\" pills: overlapping elements."
+      }
+    ],
+    "notes": "All targets can be built on the 15x10 grid (area 40 as 8x5; perimeters 26, 20 and 38 as 8x5, 5x5 and 12x7) and match the topic keys. Building area 40 and then a different shape with perimeter 26 shows a child who multiplies for perimeter where she goes wrong. The labels are plain class-6 Hindi in Roman script (\"kshetrafal\", \"ghera\", \"varg ikai\"); \"Daud\" for round is unusual but understandable."
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-10T20:20:11.379Z"
+  },
+  "approvedAt": "2026-11-10T20:42:17.990Z"
+}

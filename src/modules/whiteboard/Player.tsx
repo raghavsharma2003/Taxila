@@ -8,8 +8,10 @@
 // template rungs). Reduced motion: every op appears complete at its startMs, nothing is animated along a path.
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import type { WbOp, WhiteboardScript } from "../../../shared/studio.ts";
-import { erasers, isIdentity, isMotionOp, morphAt, motionMatrix, opGeometry, opProgress, sweepAt, visibleShare, type OpGeometry } from "../../../shared/whiteboard.js";
-import { HAND_FONT, paletteFor, isNumeric, roleColor, type BoardSkin, type Ink, type Palette, type Role } from "./palette.ts";
+import { erasers, isIdentity, isMotionOp, morphAt, motionMatrix, opGeometry, opProgress, sweepAt, textFace, visibleShare, TEXT_FACES, type OpGeometry } from "../../../shared/whiteboard.js";
+import { paletteFor, roleColor, type BoardSkin, type Ink, type Palette, type Role } from "./palette.ts";
+// round 8 (board grammar item 7): the board's faces, self-hosted (Vite bundles the woff2 files)
+import "./faces.css";
 
 const WEIGHT: Record<number, number> = { 1: 2.4, 2: 3.4, 3: 5 };
 const nowMs = () => performance.now();
@@ -43,7 +45,8 @@ export interface WhiteboardPlayerProps {
    * minor 12: "point to the stamen" style covert checks, graded by the host from the op id, never by the frame).
    */
   onTapText?: (op: { id: string; text: string }) => void;
-  /** r4: the skin's board (palette and faces, palette.ts kakshaBoardSkin); absent = today's board. */
+  /** r4: the skin's board (its palette, palette.ts kakshaBoardSkin); absent = today's board. The faces are the board's own
+   *  under every skin (round 8 item 7: the fit measures them; shared/whiteboard.js TEXT_FACES). */
   skin?: BoardSkin | null;
 }
 
@@ -77,7 +80,7 @@ function useTimeline(startAt: number | null, endMs: number, frozenAt: number | u
 
 export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion = false, width = "100%", height = "100%", className, pulse, onDone, frozenAt, clauseOnsets, switchAt, onTapText, skin }: WhiteboardPlayerProps) {
   const script = useMemo(() => onLineClock(given, clauseOnsets, switchAt), [given, clauseOnsets, switchAt]);
-  // r4: under a skin (Kaksha) the board takes the skin's palette and faces; without one, exactly as before
+  // r4: under a skin (Kaksha) the board takes the skin's palette; without one, exactly as before
   const pal = skin?.palette ?? paletteFor(script.board.ground);
   const { w: BW, h: BH } = script.board;
   const all = useMemo(() => [...(prior ?? []), ...script.ops], [prior, script]);
@@ -100,7 +103,7 @@ export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion 
   const pulseBox = pulse ? geoms.get(pulse.target)?.box ?? null : null;
   return (
     <svg className={className} viewBox={`0 0 ${BW} ${BH}`} width={width} height={height} preserveAspectRatio="xMidYMid meet"
-      role="img" aria-label={ariaOf(script)} data-wb-t={Math.max(0, Math.round(t))} style={{ display: "block", overflow: "hidden", fontFamily: skin?.font ?? HAND_FONT }} data-skin={skin ? "kaksha" : undefined}>
+      role="img" aria-label={ariaOf(script)} data-wb-t={Math.max(0, Math.round(t))} style={{ display: "block", overflow: "hidden", fontFamily: TEXT_FACES.word.family, fontWeight: TEXT_FACES.word.weight }} data-skin={skin ? "kaksha" : undefined}>
       <rect x={0} y={0} width={BW} height={BH} fill={pal.ground} />
       {pal.grid && <Grid w={BW} h={BH} color={pal.grid} />}
       {all.map((op) => {
@@ -109,7 +112,7 @@ export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion 
         const vis = visibleShare(op, t, er);
         const p = q(op);
         if (p <= 0 || vis <= 0) return null;
-        if (!moved.has(op.id)) return <OpView key={op.id} op={op} g={geoms.get(op.id)!} p={p} vis={vis} pal={pal} reducedMotion={reducedMotion} numFont={skin?.numFont ?? null} />;
+        if (!moved.has(op.id)) return <OpView key={op.id} op={op} g={geoms.get(op.id)!} p={p} vis={vis} pal={pal} reducedMotion={reducedMotion} />;
         // round 7 (motion ops): an op a motion acts on is drawn under its transform at t (slid, hopped, turned, scaled,
         // carried along a path), with its points morphed and its fill swept in; reduced motion: each started motion is at
         // its end at once. Strokes keep their width under a scale (divided back by it).
@@ -119,7 +122,7 @@ export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion 
         const sweep = sweepAt(all, op.id, t, reducedMotion);
         const M = motionMatrix(all, op.id, t, reducedMotion);
         const k = Math.max(0.3, Math.sqrt(Math.abs(M[0] * M[3] - M[1] * M[2])));
-        const view = <OpView key={op.id} op={shown} g={g} p={p} vis={vis} pal={pal} reducedMotion={reducedMotion} numFont={skin?.numFont ?? null} sweep={sweep} strokeScale={k} />;
+        const view = <OpView key={op.id} op={shown} g={g} p={p} vis={vis} pal={pal} reducedMotion={reducedMotion} sweep={sweep} strokeScale={k} />;
         if (isIdentity(M)) return <g key={op.id} data-moved={op.id}>{view}</g>;
         return <g key={op.id} transform={`matrix(${M.map((v) => v.toFixed(4)).join(" ")})`} data-moved={op.id}>{view}</g>;
       })}
@@ -147,7 +150,7 @@ const Grid = memo(function Grid({ w, h, color }: { w: number; h: number; color: 
   return <path d={lines.join(" ")} stroke={color} strokeWidth={1} fill="none" />;
 });
 
-const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion, numFont = null, sweep = null, strokeScale = 1 }: { op: WbOp; g: OpGeometry; p: number; vis: number; pal: Palette; reducedMotion: boolean; numFont?: string | null; sweep?: { p: number; dir: "up" | "down" | "left" | "right" } | null; strokeScale?: number }) {
+const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion, sweep = null, strokeScale = 1 }: { op: WbOp; g: OpGeometry; p: number; vis: number; pal: Palette; reducedMotion: boolean; sweep?: { p: number; dir: "up" | "down" | "left" | "right" } | null; strokeScale?: number }) {
   // round 8: an op with a role is drawn in its role's colour (the shape is the role's own: geometry and the dash below)
   const role = (op as { role?: Role }).role;
   const color = role ? roleColor(pal, role) : pal.ink[(op.ink ?? "chalk") as Ink];
@@ -187,9 +190,12 @@ const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion, numFont
         if (s <= 0) return null;
         const chars = [...tx.text];
         const shown = reducedMotion || s >= 1 ? tx.text : chars.slice(0, Math.max(1, Math.ceil(chars.length * s))).join("");
+        // round 8 (item 7): the run's text role picks its face — a number, a fraction or a numwork cell in the numeral face,
+        // other words in the word face (Devanagari falls back to Mukta): shared/whiteboard.js textFace, the fit's measure
+        const face = TEXT_FACES[tx.face ?? textFace(tx.text)];
         return (
           <text key={i} x={tx.x} y={tx.y} fontSize={tx.size} fill={color} textAnchor={tx.align === "start" ? "start" : tx.align === "end" ? "end" : "middle"}
-            dominantBaseline="middle" style={{ fontVariantNumeric: "tabular-nums", ...(numFont && isNumeric(tx.text) ? { fontFamily: numFont } : {}) }}>{shown}</text>
+            dominantBaseline="middle" data-face={tx.face ?? textFace(tx.text)} style={{ fontVariantNumeric: "tabular-nums", fontFamily: face.family, fontWeight: face.weight }}>{shown}</text>
         );
       })}
       {pulse && p > 0 && p < 1 && !reducedMotion && (

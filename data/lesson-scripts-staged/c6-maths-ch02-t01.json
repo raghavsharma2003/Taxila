@@ -63,7 +63,7 @@
       },
       "key": "line segment",
       "why": { "hi": "kinaara rekhakhand hai: uske 2 endpoints hain aur lambai hai, jabki bindu ki koi lambai nahi", "en": "the edge is a line segment: it has 2 endpoints and a length, while a point has no length" },
-      "accept": ["rekhakhand", "segment", "a line segment"], "answerBoard": { "template": "compare@1", "params": {"left": {"title": "bindu", "items": ["koi lambai nahi"]}, "right": {"title": "rekhakhand", "items": ["2 endpoints"]}} }
+      "accept": ["rekhakhand", "segment", "a line segment"], "answerBoard": { "template": "compare@1", "params": {"left": {"title": "bindu", "items": ["koi lambai nahi"]}, "right": {"title": "rekhakhand", "items": ["2 endpoints"]}, "mark": {"side": "right"}} }
      },
      "simpler": { "hi": "Bindu sirf ek jagah hai, jaise pencil ki nok ka nishaan, uski lambai nahi hoti. Rekhakhand 2 endpoints par rukta hai, isliye use ruler se naap sakte hain.", "en": "A point is just a spot, like a pencil-tip mark, with no length. A piece that stops at 2 endpoints can be measured with a ruler." }
     },
@@ -89,7 +89,7 @@
       "why": { "hi": "rekhakhand rukta hai, par line ke dono taraf arrows hain; 5 cm aur 50 cm sirf uske hisse hain", "en": "a line segment stops, but a line has arrows on both sides; 5 cm and 50 cm are only parts of it" },
       "accept": ["no", "nahin", "same line", "ek hi line"],
       "targets": "c6-maths-ch02-t01-m-longer-line",
-      "wrongIfMis": "haan", "answerBoard": { "template": "compare@1", "params": {"left": {"title": "rekhakhand", "items": ["rukta hai"]}, "right": {"title": "line", "items": ["dono taraf arrows"]}} }
+      "wrongIfMis": "haan", "answerBoard": { "template": "compare@1", "params": {"left": {"title": "rekhakhand", "items": ["rukta hai"]}, "right": {"title": "line", "items": ["dono taraf arrows"]}, "mark": {"side": "right", "add": "jawab: nahi"}} }
      },
      "simpler": { "hi": "Rekhakhand do endpoints par rukta hai. Line ke dono taraf arrows hain, woh kabhi nahi rukti, isliye uski lambai naap nahi sakte.", "en": "Every line segment stops at two endpoints. A line has arrows on both sides and never stops, so its length cannot be measured." }
     },
@@ -115,7 +115,7 @@
       "why": { "hi": "roshni suraj se shuru hokar sirf ek taraf jaati hai, dono taraf nahi", "en": "the light starts at the sun and goes one way, like a ray's single arrow, not a line's arrows on both sides" },
       "accept": ["kiran", "a ray"],
       "targets": "c6-maths-ch02-t01-m-ray-two-ends",
-      "wrongIfMis": "line segment", "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ray", "items": ["ek taraf arrow"]}, "right": {"title": "line", "items": ["dono taraf arrows"]}} }
+      "wrongIfMis": "line segment", "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ray", "items": ["ek taraf arrow"]}, "right": {"title": "line", "items": ["dono taraf arrows"]}, "mark": {"side": "left"}} }
      },
      "simpler": { "hi": "Kiran ek endpoint se shuru hoti hai, wahan dot lagate hain. Phir woh sirf ek disha mein chalti rehti hai, isliye doosri taraf ek arrow hota hai.", "en": "It starts at one endpoint, marked with a dot. Then it goes on in just one direction, so the other end has an arrow." }
     }
@@ -156,7 +156,7 @@
      "accept": ["rekha", "a line"],
      "targets": "c6-maths-ch02-t01-m-longer-line",
      "wrongIfMis": "line segment",
-     "simpler": { "hi": "Arrow ka matlab hai ki us taraf woh rukti nahi. Dono taraf arrows hain, toh socho kaunsi cheez dono taraf chalti rehti hai.", "en": "An arrow means it does not stop on that side. With arrows at both ends, think which one goes on both ways." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ray", "items": ["ek endpoint"]}, "right": {"title": "rekhakhand", "items": ["do endpoints"]}} }, "why": { "hi": "track ke dono taraf arrows hain: ray jaisa ek endpoint nahi, rekhakhand jaise do endpoints bhi nahi", "en": "arrows at both ends: not one endpoint like a ray, nor two like a line segment, so no endpoint at all" }
+     "simpler": { "hi": "Arrow ka matlab hai ki us taraf woh rukti nahi. Dono taraf arrows hain, toh socho kaunsi cheez dono taraf chalti rehti hai.", "en": "An arrow means it does not stop on that side. With arrows at both ends, think which one goes on both ways." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ray", "items": ["ek endpoint"]}, "right": {"title": "rekhakhand", "items": ["do endpoints"]}, "mark": {"side": "right"}} }, "why": { "hi": "track ke dono taraf arrows hain: ray jaisa ek endpoint nahi, rekhakhand jaise do endpoints bhi nahi", "en": "arrows at both ends: not one endpoint like a ray, nor two like a line segment, so no endpoint at all" }
     },
     "answer": { "hi": "(a) bindu, (b) ray, (c) line segment aur (d) line", "en": "(a) point, (b) ray, (c) line segment and (d) line" },
     "why": {
@@ -178,7 +178,7 @@
      "targets": "c6-maths-ch02-t01-m-longer-line",
      "wrongIfMis": "haan",
      "board": { "template": "compare@1", "params": { "left": { "title": "line AB", "items": ["dono taraf arrows"] }, "right": { "title": "drawing", "items": ["7 cm"] } } },
-     "simpler": { "hi": "Dono taraf arrows ka matlab line AB kahin nahi rukti. 7 cm sirf kaagaz par bani drawing ki lambai hai.", "en": "Arrows at both ends mean line AB never stops. 7 cm is only the length of the drawing on paper." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "line AB", "items": ["dono taraf arrows"]}, "right": {"title": "drawing", "items": ["7 cm"]}} }
+     "simpler": { "hi": "Dono taraf arrows ka matlab line AB kahin nahi rukti. 7 cm sirf kaagaz par bani drawing ki lambai hai.", "en": "Arrows at both ends mean line AB never stops. 7 cm is only the length of the drawing on paper." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "line AB", "items": ["dono taraf arrows"]}, "right": {"title": "drawing", "items": ["7 cm"]}, "mark": {"side": "right", "add": "jawab: nahi"}} }
     },
     {
      "id": "c2",
@@ -192,7 +192,7 @@
      "targets": "c6-maths-ch02-t01-m-ray-two-ends",
      "wrongIfMis": "line segment",
      "board": { "template": "compare@1", "params": { "left": { "title": "shuru", "items": ["headlight"] }, "right": { "title": "aage", "items": ["badhti jaati"] } } },
-     "simpler": { "hi": "Roshni headlight se shuru hoti hai, wahan endpoint hai. Phir woh ek hi disha mein aage jaati rehti hai, rukti nahi.", "en": "The light starts at the headlight; there is an endpoint there. Then it keeps going in one direction and does not stop." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "shuru", "items": ["headlight"]}, "right": {"title": "aage", "items": ["badhti jaati"]}} }
+     "simpler": { "hi": "Roshni headlight se shuru hoti hai, wahan endpoint hai. Phir woh ek hi disha mein aage jaati rehti hai, rukti nahi.", "en": "The light starts at the headlight; there is an endpoint there. Then it keeps going in one direction and does not stop." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "shuru", "items": ["headlight"]}, "right": {"title": "aage", "items": ["badhti jaati"]}, "mark": {"side": "right", "add": "jawab: ray"}} }
     }
    ],
    "ladder": [
@@ -226,7 +226,7 @@
       "targets": "c6-maths-ch02-t01-m-longer-line",
       "wrongIfMis": "haan",
       "board": { "template": "compare@1", "params": { "left": { "title": "5 cm drawing", "items": ["line CD"] }, "right": { "title": "9 cm drawing", "items": ["line CD"] } } },
-      "simpler": { "hi": "Jo kabhi nahi rukti, uski lambai naap nahi sakte. 5 cm aur 9 cm sirf do drawings ke hisse hain, line wahi hai.", "en": "Something that never stops cannot be measured. 5 cm and 9 cm are only two drawn parts; the line is the same." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "5 cm drawing", "items": ["line CD"]}, "right": {"title": "9 cm drawing", "items": ["line CD"]}} }
+      "simpler": { "hi": "Jo kabhi nahi rukti, uski lambai naap nahi sakte. 5 cm aur 9 cm sirf do drawings ke hisse hain, line wahi hai.", "en": "Something that never stops cannot be measured. 5 cm and 9 cm are only two drawn parts; the line is the same." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "5 cm drawing", "items": ["line CD"]}, "right": {"title": "9 cm drawing", "items": ["line CD"]}, "mark": {"side": "right", "add": "jawab: nahi"}} }
      }
     },
     {
@@ -246,7 +246,7 @@
       "targets": "c6-maths-ch02-t01-m-ray-two-ends",
       "wrongIfMis": "2",
       "board": { "template": "compare@1", "params": { "left": { "title": "lighthouse", "items": ["roshni shuru"] }, "right": { "title": "samundar", "items": ["chalti rehti"] } } },
-      "simpler": { "hi": "Roshni jahan se shuru hoti hai, wahan endpoint hota hai. Jis taraf woh rukti nahi, us taraf koi endpoint nahi hota.", "en": "Where the light starts, there is an endpoint. On the side where it never stops, there is no endpoint." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "lighthouse", "items": ["roshni shuru"]}, "right": {"title": "samundar", "items": ["chalti rehti"]}} }
+      "simpler": { "hi": "Roshni jahan se shuru hoti hai, wahan endpoint hota hai. Jis taraf woh rukti nahi, us taraf koi endpoint nahi hota.", "en": "Where the light starts, there is an endpoint. On the side where it never stops, there is no endpoint." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "lighthouse", "items": ["roshni shuru"]}, "right": {"title": "samundar", "items": ["chalti rehti"]}, "mark": {"side": "right", "add": "jawab: 1"}} }
      }
     }
    ],
@@ -296,7 +296,7 @@
       },
       "key": "NM",
       "why": { "hi": "segment ke dono endpoints M aur N hain, toh ulta likha NM bhi wahi segment hai", "en": "the segment's two endpoints are M and N, so written the other way round, NM names the same segment" },
-      "accept": ["segment NM", "line segment NM", "N M"], "answerBoard": { "template": "compare@1", "params": {"left": {"title": "rekhakhand", "items": ["AB ya BA"]}, "right": {"title": "line", "items": ["AB ya BA"]}} }
+      "accept": ["segment NM", "line segment NM", "N M"], "answerBoard": { "template": "compare@1", "params": {"left": {"title": "rekhakhand", "items": ["AB ya BA"]}, "right": {"title": "line", "items": ["AB ya BA"]}, "mark": {"side": "right", "add": "jawab: NM"}} }
      },
      "simpler": { "hi": "Line segment AB ko ulta padhkar BA bhi likh sakte hain, dono sahi hain. Segment aur line mein letters ka kram badalne se kuch nahi badalta.", "en": "Line segment AB can also be written BA, read the other way; both are right. For a segment or a line, swapping the letters changes nothing." }
     },
@@ -318,7 +318,7 @@
       "why": { "hi": "ray QP ke naam ka pehla letter Q hai, aur ray wahin se shuru hoti hai", "en": "the first letter of ray QP is Q, and that is where the ray starts" },
       "accept": ["point Q", "Q se"],
       "targets": "c6-maths-ch02-t01-m-ray-order",
-      "wrongIfMis": "P", "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ray AB", "items": ["A se shuru"]}, "right": {"title": "ray BA", "items": ["B se shuru"]}} }
+      "wrongIfMis": "P", "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ray AB", "items": ["A se shuru"]}, "right": {"title": "ray BA", "items": ["B se shuru"]}, "mark": {"side": "left", "add": "jawab: Q"}} }
      },
      "simpler": { "hi": "Ray ke naam ka pehla letter uska endpoint hai, wahin se ray shuru hoti hai. Ray AB, A se shuru hoti hai, aur ray BA, B se.", "en": "The first letter of a ray's name is its endpoint, where the ray starts. Ray AB starts at A, and ray BA starts at B." }
     },
@@ -340,7 +340,7 @@
       "why": { "hi": "ray KL sirf K se shuru hoti hai, L raaste par ek point hai, wahan rukti nahi, toh 1 endpoint", "en": "ray KL starts only at K; it passes L without stopping there, so it has 1 endpoint" },
       "accept": ["ek", "one", "1 endpoint", "ek endpoint"],
       "targets": "c6-maths-ch02-t01-m-ray-two-ends",
-      "wrongIfMis": "2", "answerBoard": { "template": "compare@1", "params": {"left": {"title": "A", "items": ["endpoint"]}, "right": {"title": "B", "items": ["raaste par"]}} }
+      "wrongIfMis": "2", "answerBoard": { "template": "compare@1", "params": {"left": {"title": "A", "items": ["endpoint"]}, "right": {"title": "B", "items": ["raaste par"]}, "mark": {"side": "left", "add": "jawab: 1"}} }
      },
      "simpler": { "hi": "Ray AB, A se shuru hoti hai aur B se guzarkar aage chalti rehti hai. B par woh rukti nahi, isliye B endpoint nahi hai.", "en": "Ray AB starts at A, passes through B and keeps going. It does not stop at B, so B is not an endpoint." }
     }
@@ -372,7 +372,7 @@
      "accept": ["OB", "O B", "kiran OB"],
      "targets": "c6-maths-ch02-t01-m-ray-order",
      "wrongIfMis": "ray BO",
-     "simpler": { "hi": "Naam endpoint O se shuru karo. Phir us point ka letter likho jisse ray guzarti hai.", "en": "Begin the name with the endpoint O. Then write the letter of the point the ray passes through." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "O se do rays"}], "vertex": "O", "arm": "B ki taraf"} }, "why": { "hi": "yeh ray O se shuru hokar B ki taraf jaati hai, isliye naam O se shuru hota hai: ray OB", "en": "this ray starts at O and goes towards B, so its name begins with O: ray OB" }
+     "simpler": { "hi": "Naam endpoint O se shuru karo. Phir us point ka letter likho jisse ray guzarti hai.", "en": "Begin the name with the endpoint O. Then write the letter of the point the ray passes through." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "O se do rays"}], "vertex": "O", "arm": "B ki taraf", "mark": {"index": 0, "show": "bigger"}} }, "why": { "hi": "yeh ray O se shuru hokar B ki taraf jaati hai, isliye naam O se shuru hota hai: ray OB", "en": "this ray starts at O and goes towards B, so its name begins with O: ray OB" }
     },
     "answer": { "hi": "O se do alag rays banti hain, ray OA aur ray OB", "en": "two different rays start at O: ray OA and ray OB" },
     "why": {
@@ -394,7 +394,7 @@
      "targets": "c6-maths-ch02-t01-m-ray-order",
      "wrongIfMis": "S",
      "board": { "template": "compare@1", "params": { "left": { "title": "ray ST", "items": ["S se shuru"] }, "right": { "title": "ray TS", "items": ["kis point se"] } } },
-     "simpler": { "hi": "Naam ka pehla letter hi ray ka endpoint hota hai. Ray TS ka pehla letter dekho.", "en": "The first letter of the name is the ray's endpoint. Look at the first letter of ray TS." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ray ST", "items": ["S se shuru"]}, "right": {"title": "ray TS", "items": ["kis point se"]}} }
+     "simpler": { "hi": "Naam ka pehla letter hi ray ka endpoint hota hai. Ray TS ka pehla letter dekho.", "en": "The first letter of the name is the ray's endpoint. Look at the first letter of ray TS." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ray ST", "items": ["S se shuru"]}, "right": {"title": "ray TS", "items": ["kis point se"]}, "mark": {"side": "left", "add": "jawab: T"}} }
     },
     {
      "id": "c2",
@@ -408,7 +408,7 @@
      "targets": "c6-maths-ch02-t01-m-ray-two-ends",
      "wrongIfMis": "2",
      "board": { "template": "compare@1", "params": { "left": { "title": "G", "items": ["shuru"] }, "right": { "title": "H", "items": ["guzarti"] } } },
-     "simpler": { "hi": "Ray G se shuru hoti hai, wahan endpoint hai. H par woh rukti nahi, aage chalti rehti hai.", "en": "The ray starts at G; there is an endpoint there. It does not stop at H; it keeps going." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "G", "items": ["shuru"]}, "right": {"title": "H", "items": ["guzarti"]}} }
+     "simpler": { "hi": "Ray G se shuru hoti hai, wahan endpoint hai. H par woh rukti nahi, aage chalti rehti hai.", "en": "The ray starts at G; there is an endpoint there. It does not stop at H; it keeps going." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "G", "items": ["shuru"]}, "right": {"title": "H", "items": ["guzarti"]}, "mark": {"side": "right", "add": "jawab: 1"}} }
     },
     {
      "id": "c3",
@@ -422,7 +422,7 @@
      "targets": "c6-maths-ch02-t01-m-ray-order",
      "wrongIfMis": "haan",
      "board": { "template": "compare@1", "params": { "left": { "title": "ray MN", "items": ["M, N"] }, "right": { "title": "ray NM", "items": ["N, M"] } } },
-     "simpler": { "hi": "Ray MN, M se shuru hokar N ki taraf jaati hai. Ray NM, N se shuru hoti hai aur ulti taraf jaati hai.", "en": "Ray MN starts at M and goes towards N. Ray NM starts at N and goes the opposite way." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ray MN", "items": ["M, N"]}, "right": {"title": "ray NM", "items": ["N, M"]}} }
+     "simpler": { "hi": "Ray MN, M se shuru hokar N ki taraf jaati hai. Ray NM, N se shuru hoti hai aur ulti taraf jaati hai.", "en": "Ray MN starts at M and goes towards N. Ray NM starts at N and goes the opposite way." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ray MN", "items": ["M, N"]}, "right": {"title": "ray NM", "items": ["N, M"]}, "mark": {"side": "right", "add": "jawab: nahi"}} }
     }
    ],
    "ladder": [
@@ -453,7 +453,7 @@
       "targets": "c6-maths-ch02-t01-m-ray-order",
       "wrongIfMis": "E",
       "board": { "template": "compare@1", "params": { "left": { "title": "ray DE", "items": ["torch"] }, "right": { "title": "D ya E", "items": ["kis point"] } } },
-      "simpler": { "hi": "Jis point se ray shuru hoti hai, wahi naam mein pehle aata hai. Torch wahin hoti hai jahan se roshni nikalti hai.", "en": "The point where a ray starts comes first in its name. The torch is where the light comes out." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ray DE", "items": ["torch"]}, "right": {"title": "D ya E", "items": ["kis point"]}} }
+      "simpler": { "hi": "Jis point se ray shuru hoti hai, wahi naam mein pehle aata hai. Torch wahin hoti hai jahan se roshni nikalti hai.", "en": "The point where a ray starts comes first in its name. The torch is where the light comes out." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ray DE", "items": ["torch"]}, "right": {"title": "D ya E", "items": ["kis point"]}, "mark": {"side": "right", "add": "jawab: D"}} }
      }
     },
     {
@@ -479,7 +479,7 @@
       "targets": "c6-maths-ch02-t01-m-ray-two-ends",
       "wrongIfMis": "2",
       "board": { "template": "compare@1", "params": { "left": { "title": "U", "items": ["laser nikalta"] }, "right": { "title": "V", "items": ["guzarta"] } } },
-      "simpler": { "hi": "Laser U se nikalta hai, wahan endpoint hai. V par woh rukta nahi, aage chalta rehta hai.", "en": "The laser comes out of U; there is an endpoint there. It does not stop at V; it keeps going." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "U", "items": ["laser nikalta"]}, "right": {"title": "V", "items": ["guzarta"]}} }
+      "simpler": { "hi": "Laser U se nikalta hai, wahan endpoint hai. V par woh rukta nahi, aage chalta rehta hai.", "en": "The laser comes out of U; there is an endpoint there. It does not stop at V; it keeps going." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "U", "items": ["laser nikalta"]}, "right": {"title": "V", "items": ["guzarta"]}, "mark": {"side": "left", "add": "jawab: 1"}} }
      }
     }
    ],

@@ -14,7 +14,18 @@ export const NUM_LAYOUTS: readonly string[];
 export const TEXT_SIZE: Readonly<{ s: number; m: number; l: number }>;
 
 export interface Box { x: number; y: number; w: number; h: number }
-export interface DrawnText { x: number; y: number; text: string; size: number; align: string; small?: boolean }
+/** face: the run's text role when its op decides it (a numwork cell, a stacked numeral); else textFace(text). */
+export interface DrawnText { x: number; y: number; text: string; size: number; align: string; small?: boolean; face?: TextFace }
+export type TextFace = "numeral" | "word" | "deva";
+/** The board's faces per text role: the family and weight the player draws with, the measured advances (em) the fit uses. */
+export const TEXT_FACES: Readonly<{
+  numeral: Readonly<{ family: string; weight: number; advance: Readonly<{ digit: number; space: number; op: number; other: number }> }>;
+  word: Readonly<{ family: string; weight: number; advance: Readonly<{ digit: number; space: number; other: number }> }>;
+  deva: Readonly<{ family: string; weight: number; advance: Readonly<{ char: number }> }>;
+}>;
+export const DIGIT_ADVANCE: number;
+export function textFace(text: string, opts?: { numeral?: boolean }): TextFace;
+export function textEm(text: string, face?: TextFace): number;
 /** widths: a path's own stroke width (a fraction's rule), else the op's; dashed: a path drawn dashed (a slot's box); slotFill: the slot box's tint. */
 export interface OpGeometry { paths: string[]; texts: DrawnText[]; fill?: string; box: Box; widths?: (number | undefined)[]; dashed?: boolean[]; slotFill?: string }
 export interface FractionRuns { pieces: ({ t: string; w: number } | { n: string; d: string; w: number })[]; fs: number; ns: number; gap: number; w: number; h: number }

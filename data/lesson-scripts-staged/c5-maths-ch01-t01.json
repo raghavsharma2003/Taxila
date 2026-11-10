@@ -108,7 +108,7 @@
       ],
       "targets": "c5-maths-ch01-t01-m-zero-placeholder",
       "wrongIfMis": "1,000",
-      "why": { "hi": "jaise 99,999 + 1 = 1,00,000, waise hi 9,999 ke saare 9 bhar jaate hain aur 10,000 banta hai", "en": "just as 99,999 + 1 = 1,00,000, all the 9s of 9,999 fill up and make 10,000" }, "answerBoard": { "template": "place-value@1", "params": {"value": 99999} }
+      "why": { "hi": "jaise 99,999 + 1 = 1,00,000, waise hi 9,999 ke saare 9 bhar jaate hain aur 10,000 banta hai", "en": "just as 99,999 + 1 = 1,00,000, all the 9s of 9,999 fill up and make 10,000" }, "answerBoard": { "template": "place-value@1", "params": {"value": 99999, "mark": {"place": "tens"}} }
      },
      "simpler": { "hi": "99,999 mein har khaana poora bhara hai. Isme 1 jodo toh saare khaane bhar jaate hain aur aage ek naya khaana khulta hai.", "en": "In 99,999 every place is full. Add 1 and all the places fill up, and a new place opens in front." }
     },
@@ -151,7 +151,7 @@
       "why": {
        "hi": "70,080 mein 7 das-hazaar ki jagah aur 8 dahai ki jagah hai, baaki jagah 0",
        "en": "in 70,080 the 7 is in the ten thousands place and the 8 in the tens; the other places are 0"
-      }, "answerBoard": { "template": "place-value@1", "params": {"value": 10500} }
+      }, "answerBoard": { "template": "place-value@1", "params": {"value": 10500, "mark": {"place": "thousands"}} }
      },
      "simpler": { "hi": "10,500 mein hazaar ka khaana khaali hai, isliye wahan 0 baitha hai. Toh 1 das-hazaar ka hai, aur hum das hazaar paanch sau padhte hain.", "en": "In 10,500 the thousands place is empty, so a 0 sits there. So the 1 is ten thousand, and we read ten thousand five hundred." }
     },
@@ -316,7 +316,7 @@
       "hi": "60,040 mein 6 das-hazaar ki jagah aur 4 dahai ki jagah hai",
       "en": "in 60,040 the 6 is in the ten thousands place and the 4 in the tens"
      },
-     "simpler": { "hi": "60,040 ko comma pe todo, comma ke left wala hissa hazaar hai. Phir right wale hisse mein dekho, kaunse khaane mein ank hai.", "en": "Break 60,040 at the comma; the part left of the comma is thousands. Then see which place in the right part has a digit." }, "answerBoard": { "template": "place-value@1", "params": {"value": 60040} }
+     "simpler": { "hi": "60,040 ko comma pe todo, comma ke left wala hissa hazaar hai. Phir right wale hisse mein dekho, kaunse khaane mein ank hai.", "en": "Break 60,040 at the comma; the part left of the comma is thousands. Then see which place in the right part has a digit." }, "answerBoard": { "template": "place-value@1", "params": {"value": 60040, "mark": {"place": "thousands"}} }
     },
     {
      "id": "c2",
@@ -448,7 +448,7 @@
        "hi": "50,600 mein 5 das-hazaar ki jagah aur 6 sau ki jagah hai",
        "en": "in 50,600 the 5 is in the ten thousands place and the 6 in the hundreds"
       },
-      "simpler": { "hi": "50,600 ko comma pe todo: left mein hazaar wala hissa, right mein baaki. Dono hisse unke naam ke saath padho.", "en": "Break 50,600 at the comma: the thousands part on the left, the rest on the right. Read both parts with their names." }, "answerBoard": { "template": "place-value@1", "params": {"value": 50600} }
+      "simpler": { "hi": "50,600 ko comma pe todo: left mein hazaar wala hissa, right mein baaki. Dono hisse unke naam ke saath padho.", "en": "Break 50,600 at the comma: the thousands part on the left, the rest on the right. Read both parts with their names." }, "answerBoard": { "template": "place-value@1", "params": {"value": 50600, "mark": {"place": "hundreds"}} }
      }
     }
    ],
@@ -787,7 +787,7 @@
      "wrongIfMis": "hazaar",
      "board": { "template": "compare@1", "params": {"left": {"title": "group", "items": ["8", "06", "125"]}, "right": {"title": "naam", "items": ["8 ka naam", "hazaar", "baaki"]}} },
      "why": { "hi": "naam se: baaki group 125, hazaar ka 06, aur doosre comma ke left wale 8 ka naam lakh hai", "en": "by name: the rest group is 125, the thousands 06, and the 8 left of the second comma is lakh" },
-     "simpler": { "hi": "Right se pehla comma hazaar ke liye lagta hai. Doosre comma ke left wala ank hazaar se agle bade khaane mein hai.", "en": "The first comma from the right is for thousands. The digit left of the second comma is in the next bigger place after thousands." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "group", "items": ["8", "06", "125"]}, "right": {"title": "naam", "items": ["8 ka naam", "hazaar", "baaki"]}} }
+     "simpler": { "hi": "Right se pehla comma hazaar ke liye lagta hai. Doosre comma ke left wala ank hazaar se agle bade khaane mein hai.", "en": "The first comma from the right is for thousands. The digit left of the second comma is in the next bigger place after thousands." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "group", "items": ["8", "06", "125"]}, "right": {"title": "naam", "items": ["8 ka naam", "hazaar", "baaki"]}, "mark": {"side": "right", "add": "jawab: lakh"}} }
     }
    ],
    "ladder": [
@@ -1040,7 +1040,7 @@
      ],
      "targets": "c5-maths-ch01-t01-m-first-digit-compare",
      "wrongIfMis": "C",
-     "simpler": { "hi": "Ab das-hazaar ka ank dekho, yaani lakh ke theek baad wala ank. Jis doori ka yeh ank bada ho, wahi train sabse door gayi.", "en": "Now look at the ten thousands digit, the one just after the lakhs. The distance with the bigger digit there is the train that went farthest." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "train", "items": ["A", "B", "C"]}, "right": {"title": "km", "items": ["248600", "284060", "98750"]}} }, "why": { "hi": "A 2,48,600 aur B 2,84,060 mein das-hazaar ka 8, 4 se bada, aur C 98,750 chhota hai", "en": "of A 2,48,600 and B 2,84,060, B's ten thousands digit 8 beats 4, and C 98,750 is smaller" }
+     "simpler": { "hi": "Ab das-hazaar ka ank dekho, yaani lakh ke theek baad wala ank. Jis doori ka yeh ank bada ho, wahi train sabse door gayi.", "en": "Now look at the ten thousands digit, the one just after the lakhs. The distance with the bigger digit there is the train that went farthest." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "train", "items": ["A", "B", "C"]}, "right": {"title": "km", "items": ["248600", "284060", "98750"]}, "mark": {"side": "left", "item": 1}} }, "why": { "hi": "A 2,48,600 aur B 2,84,060 mein das-hazaar ka 8, 4 se bada, aur C 98,750 chhota hai", "en": "of A 2,48,600 and B 2,84,060, B's ten thousands digit 8 beats 4, and C 98,750 is smaller" }
     },
     "answer": {
      "hi": "kram hai B 2,84,060 km, A 2,48,600 km, phir C 98,750 km",
@@ -1105,7 +1105,7 @@
       }
      },
      "why": { "hi": "doosra shehar 1,12,000 chhah ank ka hai, aur pehla shehar 89,500 sirf paanch ank ka", "en": "the second town's 1,12,000 has six digits, and the first town's 89,500 only five" },
-     "simpler": { "hi": "Dono numbers ke ank gino, 89,500 mein paanch ank hain. Jis number mein zyada ank hon, us shehar mein zyada log hain.", "en": "Count the digits of both numbers; 89,500 has five digits. The town whose number has more digits has more people." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla shehar", "items": ["89500"]}, "right": {"title": "doosra shehar", "items": ["112000"]}} }
+     "simpler": { "hi": "Dono numbers ke ank gino, 89,500 mein paanch ank hain. Jis number mein zyada ank hon, us shehar mein zyada log hain.", "en": "Count the digits of both numbers; 89,500 has five digits. The town whose number has more digits has more people." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla shehar", "items": ["89500"]}, "right": {"title": "doosra shehar", "items": ["112000"]}, "mark": {"side": "right"}} }
     },
     {
      "id": "c2",
@@ -1142,7 +1142,7 @@
       }
      },
      "why": { "hi": "pehla gaana 4,35,000 aur doosra 4,53,000; lakh mein dono 4, par das-hazaar mein 5, 3 se bada hai", "en": "the first song 4,35,000 and the second 4,53,000 both have 4 lakhs, but in ten thousands 5 is bigger than 3" },
-     "simpler": { "hi": "Dono numbers mein lakh ka ank barabar hai. Ab agla khaana, yaani das-hazaar ka ank milao.", "en": "Both numbers have the same lakh digit. Now match the next place, the ten thousands digit." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla gaana", "items": ["435000"]}, "right": {"title": "doosra gaana", "items": ["453000"]}} }
+     "simpler": { "hi": "Dono numbers mein lakh ka ank barabar hai. Ab agla khaana, yaani das-hazaar ka ank milao.", "en": "Both numbers have the same lakh digit. Now match the next place, the ten thousands digit." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla gaana", "items": ["435000"]}, "right": {"title": "doosra gaana", "items": ["453000"]}, "mark": {"side": "right"}} }
     },
     {
      "id": "c3",
@@ -1179,7 +1179,7 @@
       }
      },
      "why": { "hi": "truck Y ke 96,000 mein sirf paanch ank hain, aur X 1,08,000 aur Z 1,80,000 mein chhah", "en": "truck Y's 96,000 has only five digits, while X's 1,08,000 and Z's 1,80,000 have six" },
-     "simpler": { "hi": "Pehle teeno dooriyon ke ank gino. Jis number mein sabse kam ank hon, wahi sabse chhota hai.", "en": "First count the digits of all three distances. The number with the fewest digits is the smallest." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "truck", "items": ["X", "Y", "Z"]}, "right": {"title": "km", "items": ["108000", "96000", "180000"]}} }
+     "simpler": { "hi": "Pehle teeno dooriyon ke ank gino. Jis number mein sabse kam ank hon, wahi sabse chhota hai.", "en": "First count the digits of all three distances. The number with the fewest digits is the smallest." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "truck", "items": ["X", "Y", "Z"]}, "right": {"title": "km", "items": ["108000", "96000", "180000"]}, "mark": {"side": "left", "item": 1}} }
     }
    ],
    "ladder": [
@@ -1250,7 +1250,7 @@
        }
       },
       "why": { "hi": "doosra mela 1,02,000 chhah ank ka hai, aur pehla mela 87,000 sirf paanch ank ka", "en": "the second fair's 1,02,000 has six digits, and the first fair's 87,000 only five" },
-      "simpler": { "hi": "87,000 mein paanch ank hain aur 1,02,000 mein chhah. Jis number mein zyada ank hon, woh bada hota hai.", "en": "87,000 has five digits and 1,02,000 has six. The number with more digits is bigger." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla mela", "items": ["87000"]}, "right": {"title": "doosra mela", "items": ["102000"]}} }
+      "simpler": { "hi": "87,000 mein paanch ank hain aur 1,02,000 mein chhah. Jis number mein zyada ank hon, woh bada hota hai.", "en": "87,000 has five digits and 1,02,000 has six. The number with more digits is bigger." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla mela", "items": ["87000"]}, "right": {"title": "doosra mela", "items": ["102000"]}, "mark": {"side": "right"}} }
      }
     }
    ],

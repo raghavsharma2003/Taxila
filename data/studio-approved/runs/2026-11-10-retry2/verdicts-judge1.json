@@ -1,0 +1,56 @@
+[
+  {
+    "id": "gen-c5-maths-ch02-t01-bffb1ecd",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "spec.waves[0].title / sub",
+        "detail": "Wave 1 asks the child to place \"1/2\" on a 0-1 line with 2 gaps, and the title and sub say where it goes: \"Aadha raasta\" and \"Do equal gaps ka middle mark\"."
+      },
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "spec.waves[1].sub",
+        "detail": "\"4 equal gaps mein pehla mark\" gives the place of \"1/4\" (the same as the verified card key \"1/4\" for the first mark of 4 gaps)."
+      },
+      {
+        "item": 1,
+        "kind": "other",
+        "where": "spec.waves[1].sub vs items",
+        "detail": "The sub \"4 equal gaps mein pehla mark\" is wrong for the wave's other items \"2/4\" and \"3/4\", which are the 2nd and 3rd marks, not the first."
+      }
+    ],
+    "readable": { "p412": true, "l1366": true },
+    "notes": "Numbers and positions are correct: each wave's ticks match its denominator, so a child who counts marks instead of gaps lands in the wrong place, which covers the mix-up. The coach line \"Dock ko drag karke mark pakdo\" is dim grey but legible at both sizes."
+  },
+  {
+    "id": "gen-c5-maths-ch02-t02-14fe3de9",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "spec.waves[2].title",
+        "detail": "Wave 3 asks the child to place \"1/2\" on a 2-gap line, and its title \"Half mark\" names where it goes."
+      }
+    ],
+    "readable": { "p412": true, "l1366": true },
+    "notes": "All unit-fraction positions are correct, and placing 1/8, 1/6, 1/4, 1/3, 1/2 on one 0-1 line shows a child who thinks a bigger bottom number means more where that belief goes wrong. Waves 1 and 2 put \"1/6\" and \"1/3\" on an eighths line and \"1/8\" and \"1/4\" on a sixths line, so these items fall between scaffold marks. That may confuse a class-5 child, but it is not a wrong fact, so it is not counted."
+  },
+  {
+    "id": "gen-c6-maths-ch06-t01-254ee040",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 first screen",
+        "detail": "The coach text \"Grid par khet banao\" is drawn over the top row of grid cells, and the goal pill \"Daud 1/4 kshetrafal 40 varg ikai\" runs into the bottom edges of the \"KSHETRAFAL —\" / \"GHERA —\" / \"DAUD 1/4\" pills above it."
+      }
+    ],
+    "readable": { "p412": true, "l1366": false },
+    "notes": "Targets are correct and all fit on the 15x10 grid: area 40, then perimeters 26 (e.g. 8x5), 20 and 38 (12x7). The area-then-perimeter rounds with a live ghera counter catch a child who multiplies to get the perimeter. The p412 screen lays out cleanly."
+  }
+]

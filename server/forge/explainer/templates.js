@@ -394,7 +394,9 @@ function unrolled(c, tl) {
     // (a piece too short for its label has it below the line; the next above, so neighbours never overlap)
     // (roomy at the next size up: a split board writes small labels one size up — director19 c6 steady 18, the hexagon's six
     // "5 cm" labels collided beside the held board — so a label alternates below whenever the larger one would not fit)
-    const lab = hide.has(i) ? "?" : `${num(v)} ${unit}`, mid = round1((x + x1) / 2), roomy = textBox(lab, "m").w + 6 <= x1 - x;
+    // (round 8 item 7: … at the split panel's own scale — server/stagecraft/board-first.js SPLIT_BOARD: a 320 panel from this
+    // 400 board, 0.8 of its geometry, words kept — so a measured "5 cm" that fits its piece here still alternates there)
+    const lab = hide.has(i) ? "?" : `${num(v)} ${unit}`, mid = round1((x + x1) / 2), roomy = textBox(lab, "m").w + 6 <= (x1 - x) * 0.8;
     tl.add({ op: "text", at: [mid, roomy || i % 2 === 0 ? y - 18 : y + 30], text: lab, size: "s", ...(hide.has(i) ? { ink: "mark" } : {}) }, 400, { gap: 120 });
     x = x1; xs.push(x1);
   });
@@ -986,7 +988,7 @@ function flow(c, tl) {
 function cycle(c, tl) {
   const stages = c.stages;
   if (!Array.isArray(stages) || stages.length < 3 || stages.length > 6 || !stages.every(fitsLabel)) return { error: "stages" };
-  const n = stages.length, cx = 200, cy = 152, rx = n <= 4 ? 130 : 128, ry = 100, legs = [];
+  const n = stages.length, cx = 200, cy = 152, rx = n <= 4 ? 130 : 128, ry = 100, legs = [], placed = [];
   const at = (i) => { const a = -Math.PI / 2 + (2 * Math.PI * i) / n; return [cx + rx * Math.cos(a), cy + ry * Math.sin(a)]; };
   for (let i = 0; i < n; i++) {
     const maxW = n <= 4 ? 160 : 140;
@@ -996,6 +998,7 @@ function cycle(c, tl) {
     // keep the word on the board: its centre moves in from the edge by half its width
     const x = Math.min(400 - fw / 2 - 4, Math.max(fw / 2 + 4, x0));
     writeFit(tl, stages[i], x, y, maxW, {}, { id: `t${i}`, ms: 550, gap: 120, ink: i === 0 ? "accent" : undefined });
+    placed.push({ x, y, w: fw });
     const [nx0, ny] = at((i + 1) % n);
     const nxt = stages[(i + 1) % n], nh = (fitWidth(nxt, n <= 4 ? 160 : 140) ?? 0) / 2 + 4;
     const nx = Math.min(400 - nh, Math.max(nh, nx0));
@@ -1005,7 +1008,11 @@ function cycle(c, tl) {
     legs.push(bentLeg([sx, sy], [ex, ey], -0.25));
   }
   if (c.centre && fitsLabel(c.centre)) {
-    const size = sizeFor(c.centre, 150);
+    // (round 8 item 7: the centre word fits BETWEEN the stage words on its row, not only within 150: with the measured faces
+    // "water cycle" fits 150 at m and ran into "collection" at the left)
+    const row = placed.filter((p) => Math.abs(p.y - cy) < 40);
+    const room = Math.min(cx - Math.max(cx - 77, ...row.filter((p) => p.x < cx).map((p) => p.x + p.w / 2)), Math.min(cx + 77, ...row.filter((p) => p.x > cx).map((p) => p.x - p.w / 2)) - cx);
+    const size = sizeFor(c.centre, 2 * room - 4);
     if (size) tl.add({ op: "text", at: [cx, cy], text: c.centre, size, ink: "soft" }, 500, { gap: 200 });
   }
   tl.add({ op: "highlight", target: "t0", style: "circle", ink: "mark" }, 600, { gap: 300 });
