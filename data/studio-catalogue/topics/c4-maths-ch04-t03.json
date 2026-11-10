@@ -40,73 +40,162 @@
     "each": "each",
     "inLast": "in the last"
    },
-   "title": "Dukaan Rush",
+   "title": "Round It at the Dukaan",
    "rounds": [
     {
-     "mode": "pay",
-     "title": "Build the bill",
-     "sub": "Use an exact amount",
+     "mode": "estimate",
+     "title": "Nearest ten",
+     "sub": "Round each price to the nearest 10",
      "customers": [
       {
        "items": [
         {
-         "name": "Pencils",
-         "price": 150,
-         "qty": 4
+         "name": "Pencil",
+         "price": 4300,
+         "qty": 1
         },
         {
          "name": "Eraser",
-         "price": 50,
-         "qty": 2
+         "price": 1800,
+         "qty": 1
         }
-       ]
+       ],
+       "budget": 6500
       },
       {
        "items": [
         {
-         "name": "Lunch box",
-         "price": 850,
+         "name": "Notebook",
+         "price": 3800,
+         "qty": 2
+        }
+       ],
+       "budget": 7000
+      },
+      {
+       "items": [
+        {
+         "name": "Ruler",
+         "price": 1200,
+         "qty": 1
+        },
+        {
+         "name": "Glue",
+         "price": 2700,
+         "qty": 1
+        },
+        {
+         "name": "Sharpener",
+         "price": 900,
+         "qty": 1
+        }
+       ],
+       "budget": 5500
+      }
+     ],
+     "coins": true,
+     "speed": 0.8,
+     "targets": "c4-maths-ch04-t03-m-always-up"
+    },
+    {
+     "mode": "estimate",
+     "title": "Nearest hundred",
+     "sub": "Round each price to the nearest 100",
+     "customers": [
+      {
+       "items": [
+        {
+         "name": "School bag",
+         "price": 48000,
          "qty": 1
         },
         {
          "name": "Water bottle",
-         "price": 650,
-         "qty": 1
-        }
-       ]
-      }
-     ],
-     "coins": true,
-     "speed": 1
-    },
-    {
-     "mode": "change",
-     "title": "Give back change",
-     "sub": "Round first to estimate",
-     "customers": [
-      {
-       "items": [
-        {
-         "name": "Cricket bat",
-         "price": 1450,
+         "price": 29000,
          "qty": 1
         }
        ],
-       "pays": 2000
+       "budget": 70000
       },
       {
        "items": [
         {
-         "name": "Kite",
-         "price": 350,
-         "qty": 3
+         "name": "Shoes",
+         "price": 42000,
+         "qty": 1
+        },
+        {
+         "name": "Raincoat",
+         "price": 31000,
+         "qty": 1
         }
        ],
-       "pays": 2000
+       "budget": 80000
+      },
+      {
+       "items": [
+        {
+         "name": "Lamp",
+         "price": 24900,
+         "qty": 1
+        },
+        {
+         "name": "Mat",
+         "price": 15100,
+         "qty": 1
+        }
+       ],
+       "budget": 45000
       }
      ],
      "coins": true,
-     "speed": 1.1
+     "speed": 0.85,
+     "targets": "c4-maths-ch04-t03-m-truncate"
+    },
+    {
+     "mode": "estimate",
+     "title": "Nearest thousand",
+     "sub": "Round each price to the nearest 1000",
+     "customers": [
+      {
+       "items": [
+        {
+         "name": "Cycle",
+         "price": 245000,
+         "qty": 1
+        }
+       ],
+       "budget": 260000
+      },
+      {
+       "items": [
+        {
+         "name": "TV",
+         "price": 590000,
+         "qty": 1
+        }
+       ],
+       "budget": 550000
+      },
+      {
+       "items": [
+        {
+         "name": "Almirah",
+         "price": 382000,
+         "qty": 1
+        },
+        {
+         "name": "Chair",
+         "price": 115000,
+         "qty": 1
+        }
+       ],
+       "budget": 540000
+      }
+     ],
+     "coins": true,
+     "speed": 0.9,
+     "targets": "c4-maths-ch04-t03-m-chain-rounding"
     }
    ]
   },
@@ -1810,23 +1899,48 @@
  "keys": [
   {
    "itemId": "r1:0",
-   "key": "₹7",
-   "prompt": "pay: 4×Pencils@₹1.50, 2×Eraser@₹0.50"
+   "key": "true",
+   "prompt": "estimate: 1×Pencil@₹43, 1×Eraser@₹18 has ₹65"
   },
   {
    "itemId": "r1:1",
-   "key": "₹15",
-   "prompt": "pay: 1×Lunch box@₹8.50, 1×Water bottle@₹6.50"
+   "key": "false",
+   "prompt": "estimate: 2×Notebook@₹38 has ₹70"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "true",
+   "prompt": "estimate: 1×Ruler@₹12, 1×Glue@₹27, 1×Sharpener@₹9 has ₹55"
   },
   {
    "itemId": "r2:0",
-   "key": "₹5.50",
-   "prompt": "change: 1×Cricket bat@₹14.50 pays ₹20"
+   "key": "false",
+   "prompt": "estimate: 1×School bag@₹480, 1×Water bottle@₹290 has ₹700"
   },
   {
    "itemId": "r2:1",
-   "key": "₹9.50",
-   "prompt": "change: 3×Kite@₹3.50 pays ₹20"
+   "key": "true",
+   "prompt": "estimate: 1×Shoes@₹420, 1×Raincoat@₹310 has ₹800"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "true",
+   "prompt": "estimate: 1×Lamp@₹249, 1×Mat@₹151 has ₹450"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "true",
+   "prompt": "estimate: 1×Cycle@₹2,450 has ₹2,600"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "false",
+   "prompt": "estimate: 1×TV@₹5,900 has ₹5,500"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "true",
+   "prompt": "estimate: 1×Almirah@₹3,820, 1×Chair@₹1,150 has ₹5,400"
   }
  ],
  "check": {

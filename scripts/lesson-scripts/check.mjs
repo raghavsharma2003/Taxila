@@ -27,7 +27,7 @@ export const kitTopic = (topicId) => {
   return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")).topics.find((t) => t.topicId === topicId) ?? null : null;
 };
 export const scriptOf = (topicId) => JSON.parse(readFileSync(join(SCRIPTS, `${topicId}.json`), "utf8"));
-export const allTopics = () => readdirSync(SCRIPTS).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)).sort();
+export const allTopics = () => readdirSync(SCRIPTS).filter((f) => /^c\d+-.*\.json$/.test(f)).map((f) => f.slice(0, -5)).sort();
 
 /** Board parameter ranges (Studio's templates, server/forge/explainer/templates.js and board-ref.js). */
 /** A board whose template has no range rule here is left to Studio's own resolver and gate (certifyBoardRef), as long as
@@ -298,6 +298,8 @@ export function figureOf(board) {
     case "equal-groups@1": return `groups[${Array.isArray(p.sizes) ? p.sizes.reduce((a, b) => a + Number(b), 0) : Number(p.groups) * Number(p.each)}]`;
     case "shade-grid@1": return `groups[${Number(p.rows) * Number(p.cols)}]`;
     case "number-line-scale@1": return `scale${JSON.stringify([p.from, p.to, p.step])}`;
+    // (to-studio 006, D14.7a: an answer mark on these four is a highlight on the same figure)
+    case "compare@1": case "angle@1": case "number-line-hop@1": case "place-value@1": { const { mark, ...rest } = p; return `${board.template}${JSON.stringify(rest)}`; }
     default: return `${board.template}${JSON.stringify(p)}`;
   }
 }
@@ -337,6 +339,44 @@ export function spokenSymbolErrors(s) {
   return e;
 }
 
+/** director19 D14.7b (batch D's hand fixes: "barabar", "90°", "reflex" got past the number-only rule): the values a card's key
+ * and accept list carry. `nums`: a fraction, or a number above 10, with or without its unit or sign ("90°", "₹50", "4000 m",
+ * "1/4 km"); `words`: a word key or word accept form (4+ letters, not a yes/no or a number word) that the card's own prompt
+ * does not already offer (a choice card's options are said in its prompt: naming one is not a leak). */
+const YESNO = /^(yes|no|haan|han|nahi|nahin|ji|right|wrong|sahi|galat|true|false|same|equal|barabar|dono|both|none|never|always|kabhi|hamesha|koi)$/i;
+const NUMWORD = /^(zero|one|two|three|four|five|six|seven|eight|nine|ten|ek|do|teen|chaar|char|paanch|chhah|chhe|saat|aath|nau|das|half|aadha|aadhi)$/i;
+// (comparatives, order and quantity words are the teaching's own vocabulary: never a key's giveaway on their own)
+const COMMON = /^(zyada|jyada|kam|bada|badi|bade|chhota|chhoti|chhote|more|less|bigger|smaller|larger|longer|shorter|lamba|lambi|chhoti|pehle|pehla|pehli|baad|first|last|next|saare|sare|sab|all|jodo|jod|ghatao|ghata|add|subtract|guna|baanto|upar|neeche|aage|peeche|left|right|daayen|baayen|seedha|ulta|plus|minus|times|ganit|aur|or|and)$/i;
+export function keyValues(c) {
+  const said = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
+  const prompt = ` ${said(c?.prompt).toLowerCase()} `;
+  const inPrompt = (w) => new RegExp(`(?<![\\p{L}\\p{N}])${w.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}(?![\\p{L}\\p{N}])`, "u").test(prompt);
+  const forms = [c?.key, ...(c?.accept ?? [])].map((v) => String(v ?? "").trim()).filter(Boolean);
+  const nums = new Set(), words = new Set();
+  for (const f of forms) {
+    const m = f.match(/^(?:₹|rs\.?\s*)?(\d+(?:[./]\d+)?)\s*(?:°|%|[\p{L}.]{1,12})?$/iu);
+    if (m && !(/^\d+$/.test(m[1]) && Number(m[1]) <= 10)) nums.add(m[1]);
+  }
+  // (a word key: the key itself, one word; a choice card — any of its key or accept forms offered in its prompt — names
+  // its options aloud, so none of them leaks)
+  const k = String(c?.key ?? "").trim().toLowerCase();
+  const choice = forms.some((f) => inPrompt(f.toLowerCase()));
+  if (!choice && /^[\p{L}][\p{L}-]{3,}$/u.test(k) && !YESNO.test(k) && !NUMWORD.test(k) && !COMMON.test(k)) words.add(k);
+  return { nums: [...nums], words: [...words] };
+}
+/** The numbers the walk's points (point, mustSay, simpler) have taught by the end of each skill: a constant of the topic ("a
+ * right angle is 90°") said again in a why or a remediation is the lesson, not a giveaway (D14.7b unit values only). */
+export function taughtBy(s) {
+  const said = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
+  const out = new Map(); const acc = new Set();
+  for (const k of s.skills ?? []) {
+    for (const b of k.explain ?? []) for (const n of [said(b.point), ...(b.mustSay ?? []).map(said), said(b.simpler)].join(" ").match(/\d+(?:[./]\d+)?/g) ?? []) acc.add(n);
+    out.set(k.skillId, new Set(acc));
+  }
+  return out;
+}
+const hasWord = (t, w) => new RegExp(`(?<![\\p{L}])${w}(?![\\p{L}])`, "iu").test(String(t ?? ""));
+
 /** director14 D9.2 + director15 D10.4: a remediation never states a value of a card still to come. Its say, its simpler
  * and its then-card (prompt, key, why, simpler) are checked against every keyed card of its skill (a remediation can fire
  * at any of them: explain asks, the worked yourStep, checks; other then-cards) and of every later skill: their keys AND
@@ -346,7 +386,7 @@ export function spokenSymbolErrors(s) {
  * then-card's own key a/b states b when a card still to come has the whole-number key b (c5-t01: the count-marks
  * then-card's 1/8 m gave e2's "8 gaps" before e2 was posed again). */
 export function remediationKeyErrors(s) {
-  const e = [];
+  const e = [], TAUGHT = taughtBy(s);
   const said = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
   const cardsOf = (k) => [...(k.explain ?? []).map((b) => [b.id, b.ask]), ["workedExample.yourStep", k.workedExample?.yourStep],
     ...(k.checks ?? []).map((c) => [c.id, c]), ...(k.remediation ?? []).map((r, i) => [`remediation[${i}].then`, r.then])].filter(([, c]) => c);
@@ -371,6 +411,10 @@ export function remediationKeyErrors(s) {
       const parts = [["", ` ${said(r.say)} ${said(r.simpler)} `], [".then", ` ${said(r.then?.prompt)} ${r.then?.key ?? ""} ${said(r.then?.why)} ${said(r.then?.simpler)} `]];
       for (const [part, t] of parts) for (const a of ahead) {
         if (a.card === r.then) continue;
+        // (D14.7b: unit and word keys from the card's key and accept list; keys only, not distractors)
+        if (a.kind === "key") { const kv = keyValues(a.card), taught = TAUGHT.get(a.where.split("/")[0]) ?? new Set();
+          for (const n of kv.nums) if (n !== a.v && !taught.has(n) && hasNum(t, n)) e.push(`${k.skillId}/remediation[${i}]${part}: states ${n}, the key of ${a.where} still to come`);
+          for (const w of kv.words) if (hasWord(t, w)) e.push(`${k.skillId}/remediation[${i}]${part}: says "${w}", the key of ${a.where} still to come`); }
         if (a.v && hasNum(t, a.v)) e.push(`${k.skillId}/remediation[${i}]${part}: states ${a.v}, the ${a.kind} of ${a.where} still to come`);
         if (part && a.w && /\//.test(core(r.then?.key) ?? "") && core(r.then.key).split("/")[1] === a.w) e.push(`${k.skillId}/remediation[${i}].then: its key ${r.then.key} states ${a.w}, the key of ${a.where} still to come`);
       }
@@ -458,7 +502,7 @@ export function answerOnBoardErrors(s) {
 /** director17 D12 (c5-t02 e1's why "1/8 bas 1/4 ka aadha" gave e2's key): a card's why — said at its close, before the next
  * card — never states the key of a card still to come in its skill (fractions and numbers above 10). */
 export function whyKeyErrors(s) {
-  const e = [];
+  const e = [], TAUGHT = taughtBy(s);
   const core = (v) => { const m = String(v ?? "").trim().match(/^(\d+(?:[./]\d+)?)(?:\s*[\p{L}]{1,6})?$/u); if (!m) return null; return /^\d+$/.test(m[1]) && Number(m[1]) <= 10 ? null : m[1]; };
   const hasNum = (t, c) => new RegExp(`(^|[^\\d/.])${c.replace(/[./]/g, "\\$&")}([^\\d/]|$)`).test(` ${t} `);
   const said = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
@@ -467,9 +511,14 @@ export function whyKeyErrors(s) {
     ...(k.workedExample?.yourStep ? [[`${k.skillId}/workedExample.yourStep`, k.workedExample.yourStep]] : []), ...k.checks.map((c) => [`${k.skillId}/${c.id}`, c])];
   seq.forEach(([where, c], i) => {
     const own = core(c.key);
+    const ownKv = keyValues(c);
     for (const [later, l] of seq.slice(i + 1)) {
       const v = core(l.key);
       if (v && v !== own && hasNum(said(c.why), v)) e.push(`${where}.why: states ${v}, the key of ${later} still to come`);
+      // (D14.7b: unit and word keys, from the later card's key and accept list; a value this card also answers is its own)
+      const kv = keyValues(l);
+      for (const n of kv.nums) if (n !== v && n !== own && !ownKv.nums.includes(n) && !(TAUGHT.get(k.skillId) ?? new Set()).has(n) && hasNum(said(c.why), n)) e.push(`${where}.why: states ${n}, the key of ${later} still to come`);
+      for (const w of kv.words) if (!ownKv.words.includes(w) && String(c.key ?? "").toLowerCase() !== w && hasWord(said(c.why), w)) e.push(`${where}.why: says "${w}", the key of ${later} still to come`);
     }
   }); }
   return [...new Set(e)];
@@ -529,19 +578,40 @@ export function whyVerbErrors(s) {
 
 /** director18 D13 (dc-r7-script-walk-v6-10): her joints are authored per topic. `joints` { asidePark, asideReturn,
  * hindiSwitch, askAgain }, each ≥ 3 distinct { hi, en } forms (a single authored sentence is said every time), each ≤ 16
- * words, in the topic's own words; slots: {said} (the child's own words, required in every asideReturn form) and {aside}
- * (the topic the child raised); no other slot, and no form names a topic the child did not raise. The park promises no
- * "question" (there may be none open: director17 "is sawaal ke baad" with no card); the park and the language switch ask
- * nothing. hindiSwitch.hi is said on a switch to Hindi, .en on a switch to English. A switch promises nothing beyond its own
- * turn: no "ab se" / "from now on" (v6.10, c5-t02 steady 38; Brain's jointOf skips such forms, leaving two). {topic} is
- * Brain's alias of {aside}. */
+ * words, in the topic's own words; never naming a topic the child did not raise.
+ * director19 D14 (dc-r7-script-walk-v6-11; the park's second sentence said twice, the return's {said} dropped or parroted in
+ * first person, "ab Hindi mein baantte hain", "Mujhe theek se sunai nahi diya" to a child who spoke clearly):
+ * - no form carries {said}: a child's sentence cannot be said back grammatically by code. The only slot is {aside} (Brain's
+ *   alias {topic}), in the aside kinds.
+ * - asidePark: ONE sentence holding {aside} that promises the return and nothing else (no next action: the walk says what is
+ *   next), asking nothing, promising no "question".
+ * - asideReturn: ONE question on {aside}, and nothing after it (the return is its own turn; the child answers next).
+ * - hindiSwitch: one plain sentence that she will say it in Hindi (.hi) / in English (.en): no odd verb, no "?", nothing
+ *   beyond its turn ("ab se", "from now on": v6.10, c5-t02 steady 38).
+ * - askAgain: neutral ("Ek baar aur batao."): never claims she did not hear, never a question (a yes/no card would read it as
+ *   the card).
+ * - no form holds an English word whose Hindi twin the same script's spoken Hindi uses (data/lesson-twins.json,
+ *   shared with Brain's dry-matrix predicate). */
 export const JOINT_KINDS = ["asidePark", "asideReturn", "hindiSwitch", "askAgain"];
 export const JOINT_MAX_WORDS = 16;
+export const TWINS = JSON.parse(readFileSync(new URL("../../data/lesson-twins.json", import.meta.url), "utf8")).twins;
+const wordRe = (w) => new RegExp(`(?<![\\p{L}])${w.replace(/\s+/g, "\\s+")}(?![\\p{L}])`, "iu");
+/** The twin pairs whose Hindi side the script's own spoken Hindi uses (joints excluded). */
+export function twinsUsedBy(s) {
+  const { joints, ...rest } = s ?? {};
+  const hiText = [];
+  const walk = (x, k) => { if (typeof x === "string") { if (k === "hi") hiText.push(x); } else if (Array.isArray(x)) x.forEach((y) => walk(y, k)); else if (x && typeof x === "object") for (const [kk, v] of Object.entries(x)) walk(v, kk === "hi" ? "hi" : k === "hi" ? "hi" : kk); };
+  walk(rest, null);
+  const t = hiText.join(" \n ");
+  return TWINS.filter((p) => p.hi.some((h) => wordRe(h).test(t)));
+}
+const sentencesOf = (t) => String(t ?? "").trim().split(/(?<=[.!?？।])\s+(?=\S)/).filter((x) => /[\p{L}\p{N}{]/u.test(x));
 export function jointErrors(s) {
   const e = [], j = s.joints;
   if (!j || typeof j !== "object") return ["joints: a { asidePark, asideReturn, hindiSwitch, askAgain } block, three forms each (D13)"];
   const norm = (t) => String(t ?? "").toLowerCase().replace(/\{[a-z]+\}/g, "{}").replace(/[^\p{L}\p{N}{} ]+/gu, " ").replace(/\s+/g, " ").trim();
   const TOPICS = /\b(cricket|football|kabaddi|ipl|cartoon|cartoons|movie|movies|film|game|games|video game|mobile|phone|gaana|gaane|song|dance|doraemon|chhota bheem|pokemon|youtube)\b/i;
+  const twins = twinsUsedBy(s);
   for (const kind of JOINT_KINDS) {
     const forms = j[kind];
     if (!Array.isArray(forms) || forms.length < 3) { e.push(`joints.${kind}: at least 3 forms (got ${Array.isArray(forms) ? forms.length : 0})`); continue; }
@@ -554,12 +624,34 @@ export function jointErrors(s) {
         if (seen.has(n)) e.push(`${at}: the same form twice`); seen.add(n);
         const w = t.replace(/\{[a-z]+\}/g, "X").split(/\s+/).filter(Boolean).length;
         if (w > JOINT_MAX_WORDS) e.push(`${at}: ${w} words > ${JOINT_MAX_WORDS}`);
-        for (const slot of t.match(/\{[^}]*\}/g) ?? []) if (!["{said}", "{aside}", "{topic}"].includes(slot) || (slot !== "{said}" && !/^aside/.test(kind)) || (slot === "{said}" && kind !== "asideReturn")) e.push(`${at}: slot ${slot} is not allowed here`);
-        if (kind === "asideReturn" && !t.includes("{said}")) e.push(`${at}: the return picks up what the child said: put {said} in it`);
+        const aside = /^aside/.test(kind);
+        for (const slot of t.match(/\{[^}]*\}/g) ?? []) {
+          if (slot === "{said}") e.push(`${at}: no {said}: a child's words cannot be said back by code (D14); return on {aside}`);
+          else if (!["{aside}", "{topic}"].includes(slot) || !aside) e.push(`${at}: slot ${slot} is not allowed here`);
+        }
+        if (aside && !/\{(aside|topic)\}/.test(t)) e.push(`${at}: an aside ${kind === "asidePark" ? "park" : "return"} names it with {aside}`);
         if (TOPICS.test(t.replace(/\{[a-z]+\}/g, ""))) e.push(`${at}: names a topic (${t.match(TOPICS)[0]}) the child may not have raised; use {aside}`);
-        if (kind === "asidePark" && /sawaal|question/i.test(t)) e.push(`${at}: a park promises no question (none may be open)`);
-        if ((kind === "asidePark" || kind === "hindiSwitch") && /[?？]/.test(t)) e.push(`${at}: asks nothing`);
-        if (kind === "hindiSwitch" && /\bab se\b|\baage se\b|\bhamesha\b|from now on|\bfrom now\b|from here on/i.test(t)) e.push(`${at}: a switch promises nothing beyond this turn (no "ab se" / "from now on")`);
+        const sents = sentencesOf(t);
+        if (kind === "asidePark") {
+          if (sents.length !== 1) e.push(`${at}: a park is ONE sentence that promises the return (got ${sents.length}); the walk says what is next`);
+          if (/sawaal|question/i.test(t)) e.push(`${at}: a park promises no question (none may be open)`);
+          if (/[?？]/.test(t)) e.push(`${at}: asks nothing`);
+          if (/\b(pehle|abhi\s+yeh|chalo|let'?s|first)\b/i.test(t)) e.push(`${at}: a park promises the return and nothing else (no next action: the walk says it)`);
+        }
+        if (kind === "asideReturn" && (sents.length !== 1 || !/[?？]$/.test(t) || (t.match(/[?？]/g) ?? []).length !== 1)) e.push(`${at}: a return is ONE question on {aside} and nothing after it (D14)`);
+        if (kind === "hindiSwitch") {
+          if (/[?？]/.test(t)) e.push(`${at}: asks nothing`);
+          if (sents.length !== 1) e.push(`${at}: one plain sentence`);
+          if (lang === "hi" && !/\bhindi\b/i.test(t)) e.push(`${at}: says plainly she will say it in Hindi`);
+          if (lang === "en" && !/\benglish\b/i.test(t)) e.push(`${at}: says plainly she will say it in English`);
+          if (/\b(baant|milaa|chal|naap|gin)\w*/i.test(t) && lang === "hi") e.push(`${at}: an odd verb for switching language ("${t.match(/\b(baant|milaa|chal|naap|gin)\w*/i)[0]}"): say she will say it in Hindi`);
+          if (/\bab se\b|\baage se\b|\bhamesha\b|from now on|\bfrom now\b|from here on/i.test(t)) e.push(`${at}: a switch promises nothing beyond this turn (no "ab se" / "from now on")`);
+        }
+        if (kind === "askAgain") {
+          if (/[?？]/.test(t)) e.push(`${at}: never a question (a yes/no card would take it as the card)`);
+          if (/sunai|suna nahi|sun nahi|saaf nahi|chhoot|hear|heard|missed|clearly|awaaz/i.test(t)) e.push(`${at}: never claims she did not hear (the child may have spoken clearly)`);
+        }
+        if (lang === "hi") for (const p of twins) for (const en of p.en) if (wordRe(en).test(t.replace(/\{[a-z]+\}/g, ""))) e.push(`${at}: "${en}" while this script says "${p.hi.find((h) => true)}" (twins.json): use the script's word`);
       });
     }
   }
@@ -633,6 +725,7 @@ export function v22Errors(s) {
       ...k.remediation.map((r, i) => [`remediation[${i}].then`, r.then, r.then?.board]).filter(([, c]) => c?.answerBoard),
       ...(we.yourStep?.answerBoard ? [["workedExample.yourStep", we.yourStep, we.yourStep.board ?? we.board]] : [])];
     for (const [where, c, board] of shown) {
+      if (["compare@1", "angle@1", "number-line-hop@1", "place-value@1"].includes(board?.template) && board?.params?.mark !== undefined) e.push(at(`${where}: its posing board carries an answer mark (to-studio 006): only an answerBoard does`));
       const a = figureOf(c.answerBoard), b = figureOf(board);
       // director11 D1: a judgement card may reveal the judged figure and then the equal one beside it (wholes appended)
       const appended = c.answerBoard?.template === "wholes@1" && board?.template === "wholes@1"

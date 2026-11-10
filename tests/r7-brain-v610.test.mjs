@@ -111,7 +111,8 @@ describe("r7-brain-v610.test.mjs", () => {
     for (const k of ["asidePark", "asideReturn", "hindiSwitch", "askAgain"]) assert.ok((jointOf(kit, k, "hinglish", { aside: "cricket", said: "sixer maara" }) ?? []).length >= 2, k);
     assert.ok(!(jointOf(kit, "hindiSwitch", "hinglish") ?? []).some((x) => /ab se/i.test(x)));
     const r = returnQuestion("cricket", "hinglish", { turn: 3, seed: 1, recent: [] }, { said: "kal maine cricket khela, sixer maara", kit });
-    assert.match(r, /sixer maara/, r);
+    // (director19 D14.1, dc-r7-script-walk-v6-11: the return is one question on {aside}; a child's words are never said back)
+    assert.ok(/cricket/.test(r) && !/sixer maara|\{/.test(r) && /\?$/.test(r.trim()), r);
     const park = parkAckOf({ turn: 3, recent: [] }, "hinglish", kit).map((f) => f("cricket"));
     assert.ok(park.length >= 3 && park.every((x) => /cricket/i.test(x) && !/\{/.test(x)), JSON.stringify(park));
   });
