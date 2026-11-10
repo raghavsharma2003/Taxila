@@ -368,3 +368,28 @@ Proposed through the inbox file, not applied: DOCS-17 to 19, 21 to 23, 26, 28, 2
 - **`context.mjs --check`** also compares merged-inbox edges against the graph and DROPPED.json, fails a live or proposed node that something supersedes, and reads `open.md`.
 - **Model policy** (owner, 2026-11-10) is in CLAUDE.md, with a matching decision in `context/inbox/r7-audit-model-policy.json` that supersedes the old rule.
 - **Not done, left for main:** DOCS-27 (a status sweep of the 55 "proposed" nodes) and DOCS-42 (move the gate's imports out of `docs/`).
+
+## Addendum, 2026-11-10: two sessions worked on this branch
+
+The first audit session stopped on a usage limit on 2026-11-09 with the report, the doc fixes and the main loop's first
+decisions pushed. A second session then did the memory repairs above and pushed them. The first session resumed without
+knowing that and built the same repairs again locally; that duplicate was not pushed. What it adds to the pushed work:
+
+- **`tests/r7-audit-docs.test.mjs`, 15 checks** that the entry docs agree with the repo: backticked paths exist; routes
+  named in `docs/ARCHITECTURE.md` are registered; PIPELINE and SESSIONS name the same branches; OWNERSHIP marks match the
+  disk and everything directly under `server/`, `src/`, `shared/` and `data/` has an owner; the owner page agrees with
+  M3.md and cites the newest judgement's decision; `CLAUDE.md` names the real gate and deploy commands; the brief lists
+  no dead area path. Each failed before the doc fixes. One of them asks something of the main loop's routine (the owner
+  page must mention the decision the newest `judgements/directorN-*.md` takes); delete that one test if it is unwelcome.
+- **DOCS-27, partly closed.** 26 of the decisions still marked "proposed" are now "shipped": step 3b of the repair
+  script, with the proving file named beside each id. Left as "proposed", on purpose: 6 that touch the frozen safety
+  code, and about 20 where a targeted search did not prove the decision either way or the decision is about process or
+  evidence, not something one code line shows. This was a search per decision, not a full read of each.
+- **DOCS-41, the exact first step.** `scripts/docs-archive-plan.mjs` and `docs/ARCHIVE-remove.txt`: 6,112 media files,
+  1,123 MB, that no code and no kept write-up names. A proposal; nothing removed. See "Step 0" in `docs/ARCHIVE.md`.
+- A line in `HANDOFF.md` §5 saying the merger now refuses a file it cannot place.
+
+Two things the duplicate did differently, for the main loop to weigh; neither is applied here:
+- It mapped more of the old relation words (`extends`, `measures`, `evidence`, `motivated-by`, `amends`, `about`, and the
+  inverses `superseded_by` and `refined_by`) and so dropped 9 edges where the pushed repair drops 27.
+- Its `STATUS` table also set `dc-r4dx-continuer-classifier-option-a` to superseded (its own text says so; no edge does).

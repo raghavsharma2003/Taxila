@@ -15,6 +15,7 @@
 //      it is set in scripts/deploy-azure.mjs.
 //   5. DOCS-24: context/architecture.md gets a header saying it is a dated log and a "Current map, 2026-11-10".
 //   6. open.md headings with no node get one.
+//   3b. DOCS-27: 26 decisions still marked "proposed" whose code exists become "shipped" (the table SHIPPED below).
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { join, resolve } from "node:path";
@@ -68,6 +69,41 @@ for (const e of g.edges) if (e.rel === "supersedes") by.set(e.dst, e.src);
 let flipped = 0;
 for (const n of g.nodes) if (by.has(n.id) && CURRENT_STATUS.test(String(n.status ?? ""))) { n.status = "superseded"; flipped++; }
 report.push(`status: ${flipped} node(s) set to superseded`);
+
+// 3b ── DOCS-27: a decision still marked "proposed" whose named constant or module is in the code (checked 2026-11-10 at
+// integration 21b; the comment on each line is the proof). Only a status that still starts with "proposed" is changed.
+// The other proposed decisions are left alone on purpose: docs/design/round7/audit/docs-memory.md lists them and why.
+const SHIPPED = {
+  "duplex-arch-six-loops-device-floor": "shipped", // src/duplex/governor.ts (the floor state machine)
+  "duplex-fast-mouth-late-verdict": "shipped", // src/duplex/config.ts VERDICT; src/duplex/host.ts (the verdict-free uptake)
+  "duplex-content-blind-nods": "shipped", // src/duplex/config.ts (backchannel opportunity)
+  "duplex-result-triage": "shipped", // server/duplex/triage.js
+  "duplex-echo-by-audio-span": "shipped", // server/duplex/echo.js EchoSubtractor, used by src/duplex/host.ts
+  "duplex-unreadable-script": "shipped", // src/duplex/governor.ts (unreadable newest words)
+  "duplex-turn-pace": "shipped", // src/duplex/config.ts TURN_PACE k 1.3
+  "duplex-stage-a-ships-2026-10-04": "shipped", // src/duplex/engineRules.ts; hands-free is the default (server/duplex/config.js)
+  "duplex-stageb-features-only-no-vouch": "shipped", // src/duplex/host.ts latestAcoustic
+  "duplex-runtime-2026-10-04": "shipped", // src/duplex/host.ts EngineHost
+  "duplex-verdict-delay-2s": "shipped", // src/duplex/config.ts VERDICT.delayMs 2000
+  "duplex-overlap-stay-ducked": "shipped", // src/duplex/host.ts (undecided burst, duck release)
+  "duplex-explain-sentence-cap": "shipped", // src/duplex/engineRules.ts EXPLAIN_SENTENCE_CAP
+  "duplex-lexical-horizon-guard": "shipped", // src/duplex/host.ts coverageEndMs
+  "duplex-verdict-blind-timing": "shipped", // src/duplex/form.ts (the expected-answer grammar)
+  "rs4-v2-rung1-engine-spec": "shipped", // shared/studio-spec.ts (one schema per archetype)
+  "rs4-shared-pure-grader": "shipped", // shared/studio-spec.ts gradeAnswer
+  "rs4-host-recorded-input": "shipped", // src/studio-v2/engines/shadow.ts ($hostLog)
+  "rs4-safe-zone-measured": "shipped", // src/studio-v2/core/draw.ts ZONES
+  "rs4-junk-labels-rejected": "shipped", // shared/studio-spec.ts (failure-shaped tokens)
+  "vs-z-on-server": "shipped", // server/voicesig/adapter.js
+  "vs-voice-lr-over-text": "shipped", // server/voicesig/adapter.js replaceTimingTerm
+  "vs-filler-detector-ami": "shipped", // src/voicesig/ort.ts
+  "r4c-dc-screen-claims-by-predicate": "shipped", // server/brain/say.js screenContradictions
+  "dc-r144-ways-chips-lang": "shipped", // server/director/state.js chipLabels
+  "r5a-dc-understood-is-earned": "shipped", // server/agent/agent.js earnedRead
+};
+let shipped = 0;
+for (const n of g.nodes) if (SHIPPED[n.id] && /^proposed/.test(String(n.status ?? ""))) { n.status = "shipped"; shipped++; }
+report.push(`status: ${shipped} proposed decision(s) set to shipped`);
 
 // 6 ── open.md headings that name no node
 const openPath = join(CTX, "open.md");

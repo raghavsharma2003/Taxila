@@ -8382,7 +8382,7 @@
   {
    "id": "duplex-arch-six-loops-device-floor",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Duplex teacher = a duplex CONTROLLER around the cascade, not a native duplex model: six loops (listen, understand, think, speak, build + a floor manager) on two clocks; the floor manager is a pure reducer ON THE DEVICE (20-32 ms ticks), the server thinks; models write notes/drafts/builds, code holds the floor (docs/research/duplex/ARCHITECTURE.md). Reverse if an India phone RTT to the India app is <= 40 ms p90 and a server-side floor measures equal on false take-overs and yield latency (D6).",
    "source": "inbox/duplex-architecture.json"
@@ -8390,7 +8390,7 @@
   {
    "id": "duplex-fast-mouth-late-verdict",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Fast mouth, late verdict: after a closed answer the first ~1-1.5 s of teacher audio is verdict-free (uptake of the child's own value / neutral opener) and the commit is revocable until the first verdict-bearing word; a child self-repair inside that window yields, merges and re-grades (M-B1 21/21 hesitant first values wrong; M-C1 43% of self-repair breaks still sent). Reverse if E1 shows self-repairs after a complete value in < 2% of closed answers.",
    "source": "inbox/duplex-architecture.json"
@@ -8422,7 +8422,7 @@
   {
    "id": "duplex-content-blind-nods",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Listening nods are content-blind (prosody-timed backchannel opportunities only, single continuer form, <= 1 per 3 s, never in number/choice answers or SAFETY_ATTEND); suppressing nods after a wrong step would itself leak the verdict (design-v2-face-verdict-neutral). Audio 'mm' stays off by default (E-C3). Reverse if D5 shows content-blind nods after wrong steps read as agreement by >= 60% of child raters.",
    "source": "inbox/duplex-architecture.json"
@@ -8430,7 +8430,7 @@
   {
    "id": "duplex-result-triage",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Speech track and work track are independent: results landing mid-conversation are triaged in code as INTERRUPT (safety only), WHEN_IDLE (builds/whiteboard/library mounts become a Studio reveal proposal at the next /turn, kernel decides) or SILENT (notes, hints, learner updates as quiet context); nothing new reaches the screen while the child holds the floor; partial-intent may launch prefetch only, never live codegen. Reverse if D9 shows WHEN_IDLE reveals ready at the TRP < 50% because of the wait.",
    "source": "inbox/duplex-architecture.json"
@@ -9414,7 +9414,7 @@
   {
    "id": "duplex-echo-by-audio-span",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "EchoSubtractor matches her words that were audible inside the item's audio span regardless of the text's arrival time; empty-skeleton tails join a run by surface; on word-timed sources a single token whose own time sits on her same word is echo. Reverse if recorded sessions (ET-1) show children's words deleted (> 1% of answers).",
    "source": "inbox/duplex-critique.json"
@@ -9422,7 +9422,7 @@
   {
    "id": "duplex-unreadable-script",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Transcript tokens in a script other than Devanagari/Latin (STT hallucination, 5/90 real segments) set LexicalMarkers.unreadable: never complete, never re-voiced, backstop first sound is a verdict-free prompt; the Director should ask again. Reverse if a future STT stops hallucinating scripts (0 in 500 real segments).",
    "source": "inbox/duplex-critique.json"
@@ -9430,7 +9430,7 @@
   {
    "id": "duplex-turn-pace",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Within-turn pace: the longest pause this turn after which the child resumed x TURN_PACE.k (1.3, chosen on train slow-child world: k0 12.6%/1.5% cut/missed, k1.3 10.1%/3.6%, k1.6 9.6%/6.9%) floors later backstops (cap 6 s) and the verdict delay (cap 4 s); granted holds excluded. Reverse if ET-2 shows missed replies up > 3 pt with no cut-off gain.",
    "source": "inbox/duplex-critique.json"
@@ -9480,7 +9480,7 @@
   {
    "id": "duplex-stage-a-ships-2026-10-04",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Duplex engine: stage A (rules + governor, src/duplex/engineRules.ts) is THE engine; the fast LLM semantic estimate stays behind flags.semantic (off); stage B stays behind flags.trained (off). Why: on the frozen TaxilaFDB test split (960 streams, held-out template families AND voices) stage A cut children off in 2.3% (FAST lane) / 2.6% (D4) of 732 thinking pauses vs cascade-900 31.3%, silence-640 74.2-82.8%, Smart Turn v3.2 off-the-shelf 36.9-64.2%, at a decision gap p50 370 ms (FAST) / 1,140 ms (D4), dominating the whole silence frontier (no threshold < 5% cut-offs without ~100% missed replies); the LLM did not lower cut-offs (3.6% / 4.6%, overlapping CIs) and costs ~640 ms per call; stage B failed the promotion gates (closed-loop cut-offs 13-55%). Reverse if: real-child audio (E1) shows stage A's cut-offs above silence-640 on the same audio, or a stage B trained on consented real audio beats stage A on held-out children (tick AUC beyond CI AND closed-loop cut-offs <= stage A at equal gap AND ECE <= 0.05 per context AND <= 30 ms on ACA 2 vCPU).",
    "source": "inbox/duplex-engine.json"
@@ -9488,7 +9488,7 @@
   {
    "id": "duplex-stageb-features-only-no-vouch",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Only a floor model that READS AUDIO (audioMs > 0) may vouch for unseen audio at G5 (adapter.ts TrainedEngine.latestAcoustic); a features-only model's pComplete is also capped by the rules' horizon-penalised estimate. Why: letting the features-only stage B vouch removed the lexical horizon: 32/40 verdicts on repaired values and 86.9% thinking-pause cut-offs on TaxilaFDB test (D4), vs 1/40 and 13.4% after the fix. Reverse if: a features-only model is shown to predict the unseen tail (it cannot: it sees the same stale words).",
    "source": "inbox/duplex-engine.json"
@@ -9582,7 +9582,7 @@
   {
    "id": "duplex-runtime-2026-10-04",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Duplex v2 runtime shape: a device-side EngineHost (src/duplex/host.ts) builds one EngineTick per 100 ms timer AND per stream event (20 ms frames' voice edges, STT partial/final, her playback start/verdict/end/stopped, screen, Director context, async estimate) and runs engine.tick behind the ONE code governor (src/duplex/governor.ts, G1-G11); engines come from one factory (src/duplex/adapter.ts createEngine): stage A rules (engineRules.ts) today, TrainedEngine (ONNX via an injected onnxruntime, feature spec cce-features/1, <= 20 MB, falls back to stage A on any stale tick) when flags.trained AND a model are present, so stage B lands with no code change. The server slice (server/duplex/slice.js + routes.js) keeps the authorities the device must not hold: partials fan-in with the lexical horizon (fanin.js), known-text echo subtraction of her own TTS words (echo.js), sticky safety on every partial (partialSafety.js, the shipped scanSafety), speculative drafts + TTS warm-up of the code-built uptake driven by the PrepareHint stream with cancellation (speculator.js), build intents from partials (buildIntent.js; misconception values server-only). Hands-free and full-session: no press/release API anywhere in the duplex modules (test-asserted); push-to-talk survives only as the W2 recording/typed fallback. Shadow mode emits log rows only (numbers + closed codes, never child words). Reverse if: the host's per-tick cost on a low-end Android (DX-1) exceeds 5 ms p95 or the event-tick design misses a decision the timer would catch; then fold event ticks into the 100 ms timer (decisions only, perception stays continuous).",
    "source": "inbox/duplex-runtime.json"
@@ -9590,7 +9590,7 @@
   {
    "id": "duplex-verdict-delay-2s",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Fast mouth, late verdict: the verdict-bearing words of a closed-answer reply play no earlier than the child's last value end + 2.0 s (config VERDICT.delayMs; was 1.2 s in the v2 draft). The first sound (the code-built uptake of the child's own value) is not delayed: only the verdict segment, which the player holds (INTEGRATION.md §4). Evidence M-D7 (n = 96 scenarios x 10 seeds, fast word-timed lane): verdict played before the child finished / on a value the child then repaired = 13/9 of 379 at 1.2 s, 4/4 at 1.6 s, 0/0 at 2.0 s; first-audio p50 unchanged (2,027 vs 2,019 ms). Caveat: tuned on one author's scripted self-corrections (repair pauses 400-1,500 ms +-20 %), so it is a corpus bound, not a child bound. Reverse if: DX-6 on TaxilaFDB or real consented children shows repairs after a value pause > 2.0 s at a rate that matters (then raise, or key it to the child's own repair-pause p90), or that 2.0 s reads as unnatural hesitation in a blind listen against 1.2-1.6 s with 0 wrong-value verdicts.",
    "source": "inbox/duplex-runtime.json"
@@ -9598,7 +9598,7 @@
   {
    "id": "duplex-overlap-stay-ducked",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Overlap while she speaks: a burst still voicing at 250-449 ms is UNDECIDED (stay ducked at 0.2, keep listening) instead of adding +1.0 barge-in evidence (config OVERLAP.earlyVoicedZ = 0); it yields at the sustain threshold (OVERLAP.sustainedMs: 450 ms here; 600 ms after the TaxilaFDB tuning workstream), on a raised/rising onset, after her yes/no question (~200-300 ms), or when words land; a burst that ends short reads as a continuer and she un-ducks. The reflex duck at onset (~40 ms) already backs her voice off. Evidence M-D7 fast lane: the eager rule yielded on 20/30 continuers ('हम्म/अच्छा/ओके' over her) and resumed ~0.8 s later, vs 0/30 now; cost: barge-in yield p50 500 ms (fast) / 600 ms (D4, MAI) vs 300 ms (yes/no answers still yield at 300 ms). Reverse if: on real audio (DX-5) the stay-ducked rule's barge-in yield p50 exceeds 600 ms or children re-try their interruption, while the eager rule's continuer false-yields stay under 10 %.",
    "source": "inbox/duplex-runtime.json"
@@ -9606,7 +9606,7 @@
   {
    "id": "duplex-explain-sentence-cap",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Stage A without a fresh semantic read is uncertain about the end of a teach-back: in open_explanation a finished SENTENCE (verb-final, falling contour) caps pComplete at 0.8 < speakPc 0.9 (engineRules.ts EXPLAIN_SENTENCE_CAP), so only a fresh semantic estimate on the same text, an idk / complete question / repeat request, or the governor's context backstop (B3: 2.0 s at decision time, 2.5 s after the TaxilaFDB tuning change; x2.5 on an open tail) ends it. Evidence M-D7 (pre-cap dev run, 3 seeds): 'triangle के तीन sides होते हैं' + 1.6 s pause and 'जो ऊपर होता है ना' were taken over 3/3 and 3/3 (revoked before audio only because the reply was slow); after the cap 0 hard cut-offs in explanations; explanation gap p50 ~2.03 s on every lane (~2.53 s with the raised backstop) (the price, paid until the semantic call lands). Reverse when: the semantic arm (server/duplex/semantic.js, taxila-fast) is measured on TaxilaFDB F2 with thinking-pause cut-offs <= silence-640 on the same audio; then the cap applies only while the semantic estimate is stale.",
    "source": "inbox/duplex-runtime.json"
@@ -9744,7 +9744,7 @@
   {
    "id": "duplex-verdict-blind-timing",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "The engine's completeness is 'a complete answer of the asked form', never 'the right answer': the expected-answer context carries {form, slots, units, options}, never the key or misconception values, so right and wrong answers get the same reply timing (latency would otherwise leak the verdict, like correctness-keyed nods; design-v2-rejected-correctness-face) and no key material reaches the device (v1 §6.7). The owner brief's 'expected answer form/key' is honoured for form only, deliberately. Reverse only if a blind test shows children cannot detect a >= 300 ms right/wrong latency difference; the key stays off the device regardless.",
    "source": "inbox/duplex-v2.json"
@@ -9752,7 +9752,7 @@
   {
    "id": "duplex-lexical-horizon-guard",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Words count only once they cover the audio: TranscriptView carries coverageEndMs and unseenVoicedMs (child voiced audio after the last covered word); lexical completeness is discounted and SPEAK/CUT_IN vetoed (governor G5) when unseenVoicedMs > 120 ms unless a fresh acoustic estimate vouches for the tail. Coverage comes from Nemotron token times (scale) or the MAI micro-commit probe (commit at a >= 150 ms acoustic micro-pause; the final covers all audio, 68 ms from Chennai) (pilot); D4 has no timings (713 ms lag) and cannot meet the 350 ms gap. Evidence M-D6: wrong values on stale prefixes 5/13 -> 0/11 with the guard. Reverse if the India-lane STT gives word coverage within 100 ms p90 (the guard becomes a no-op but stays).",
    "source": "inbox/duplex-v2.json"
@@ -9915,7 +9915,7 @@
   {
    "id": "rs4-v2-rung1-engine-spec",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "Studio v2 = 16 reviewed engines (8 games, 4 simulations, 4 explainers) + a model-written JSON spec per piece, mounted as rung 1 inside the W2-H host (patch 01 adds the `engine` artifact kind). The model never writes code on this rung; validateSpec repairs the spec or returns the reviewed default and never throws. Reverse if child playtests show spec-filled engines feel samey across lessons (repeat-play drop-off worse than W2-H code builds), or if the spec bench usable-after-repair rate falls below 90% for an archetype on the production planner.",
    "source": "inbox/prework-rs4.json"
@@ -9923,7 +9923,7 @@
   {
    "id": "rs4-shared-pure-grader",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "Grading is one pure function, gradeAnswer(archetype, spec, itemId, rawValue) in shared/studio-spec.ts, run by the client host and re-run by the server (patch 02, createGradeSessionV2). The frame's own `correct` field is never read. Engine and host verdicts agreed on every graded answer in the record battery. Reverse if a needed act cannot be expressed as a raw value plus the spec (then grade that act server-side from the host log only, still never from the frame).",
    "source": "inbox/prework-rs4.json"
@@ -9931,7 +9931,7 @@
   {
    "id": "rs4-host-recorded-input",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "Simulations that grade a process (phase-shift, shadow-play) send `{ $hostLog: name }` references; the host substitutes its own recorded input channel (api.record) and the grader replays it with the same fixed step. Inputs are quantised to 0.1 s sim boundaries so the replay is exact. The largest answer measured was 1768 B (phase-shift with host log), so the server bound for v2 answers is 256 KB, not W2-H's 512 B. Reverse if logs over 256 KB occur in real sessions (then checkpoint state server-side every N s).",
    "source": "inbox/prework-rs4.json"
@@ -9939,7 +9939,7 @@
   {
    "id": "rs4-safe-zone-measured",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "The stage contract is measured, not trusted. Every text draw is checked against the label safe zone (0..180 x 0..75) and the PiP safe zone (837.5..1000 x 0..162.5) via ctx.getTransform, and labels under 38 world units are counted (tooSmall). FX pops are clamped out of the zones, and pop-in overshoot counts as decoration. Reverse if the PiP or label moves (update the zones in core/tokens.ts, then re-run record.mjs).",
    "source": "inbox/prework-rs4.json"
@@ -9955,7 +9955,7 @@
   {
    "id": "rs4-junk-labels-rejected",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "Spec strings that contain NaN, undefined, null, Infinity or '[object ' are treated like markup and fall back to the reviewed string. Found by the Playwright fuzz: seed 5 on area-claim rendered 'NaN' as a unit label. Reverse if a legitimate label in some language contains one of these tokens.",
    "source": "inbox/prework-rs4.json"
@@ -10422,7 +10422,7 @@
    "id": "vs-filler-detector-ami",
    "kind": "decision",
    "at": "2026-10-04",
-   "status": "proposed",
+   "status": "shipped",
    "reverseIf": "VS-A8 on child pilot audio: filler recall < 0.6 at <= 0.05 FP.",
    "title": "Stage-2 public-data component = per-frame filled-pause detector trained on AMI (CC BY 4.0) over the product front-end features; feeds F3 acoustic only.",
    "source": "inbox/voicesig.json"
@@ -10431,7 +10431,7 @@
    "id": "vs-z-on-server",
    "kind": "decision",
    "at": "2026-10-04",
-   "status": "proposed",
+   "status": "shipped",
    "reverseIf": "A device stage-2 head needs z inputs (K2 embedding branch).",
    "title": "Device sends raw measurements KnowledgeVoice.f; server z-scores against the voicesig baseline (deviation from SPEC 1.5 z-on-device).",
    "source": "inbox/voicesig.json"
@@ -10440,7 +10440,7 @@
    "id": "vs-voice-lr-over-text",
    "kind": "decision",
    "at": "2026-10-04",
-   "status": "proposed",
+   "status": "shipped",
    "reverseIf": "A fitted head without a text-only counterfactual; then dAUROC-matched calibration.",
    "title": "lrV = odds(h all terms)/odds(h text-only terms), gated qA x maturity, clipped to ladder cap; replaces SIGNALS A1/L4 term (replaceTimingTerm).",
    "source": "inbox/voicesig.json"
@@ -20359,7 +20359,7 @@
    "id": "r4c-dc-screen-claims-by-predicate",
    "kind": "decision",
    "at": "2026-10-11",
-   "status": "proposed",
+   "status": "shipped",
    "title": "Proposed for release 13 (main decides): a sentence that points at the screen or board is checked against what is mounted (a game needs a play piece; its content words must be words the mounted piece shows), and the screen repair drops only the pointing, never the content (r12/rca/patches/r13-fix-2-5-screen-claims.diff). Reversal: a battery shows false flags on legitimate pointing lines above a bar main sets.",
    "source": "inbox/r4-conversation.json"
   },
@@ -21790,7 +21790,7 @@
    "id": "dc-r144-ways-chips-lang",
    "kind": "decision",
    "at": "2026-10-15",
-   "status": "proposed",
+   "status": "shipped",
    "title": "r5 QA D41 (14.4): the ways-in chips (picture / story / game / back, director/state.js waysChips) go through chipLabels(lang) like the stop and check-in chips (Hinglish 'Picture dikhao / Kahani mein batao / Game khelte hain / Lesson par wapas', Hindi 'तस्वीर दिखाओ / कहानी में बताओ / गेम खेलते हैं / पाठ पर वापस'); the Director still reads the ids, and each label said aloud reads as its request (a Devanagari story ask needs its telling verb, so 'इस कहानी में राजा कौन है' is not one). The Hinglish LANGUAGE rule (compiler/compile.js) no longer follows a switch to English: her English words, even a whole English line ('Can we do the lesson now?'), keep Hinglish; only a language request (requests.js 'language', PINNED) changes it. Reversal: a Hinglish-pref child who keeps writing English and is understood worse in Hinglish (owner report or sim-lab register check).",
    "source": "inbox/r144-4a.json"
   },
@@ -23898,7 +23898,7 @@
    "id": "r5a-dc-understood-is-earned",
    "kind": "decision",
    "at": "2026-10-14",
-   "status": "proposed",
+   "status": "shipped",
    "title": "Agent lane: the per-skill read 'understood' is earned in code (server/agent/agent.js earnedRead): right answers on two different items, or one on a why / transfer item, and no wrong answer after the last right one; otherwise held at partly (or not), and the model is shown its unsupported claim. Motivated by 61/164 overclaims on 571b301.",
    "reversal": "the sim lab shows underclaims (understood withheld from a child who has it) outnumbering the overclaims it removes",
    "source": "inbox/r7-main-3-remerge-old.json"

@@ -159,6 +159,8 @@ CLI in the container.
 - Context logging: drop entries in `context/inbox/*.json` (`{nodes, edges, md:{decisions, measurements, rejected}}`;
   kinds `decision|measurement|rejection`; edge rels `measured_by, caused_by, inherits, supersedes, blocks, part_of,
   constrains`), then `node scripts/merge-inbox.mjs` and `node scripts/context.mjs --check`.
+  Since 2026-11-10 the merger refuses a file whole if an edge uses any other relation or points at a node that does not
+  exist: it exits 1 and leaves the file in the inbox (before, such edges were skipped silently and 229 were lost).
 - Model-only harnesses run with `DATABASE_URL=` empty (never against prod). Replay harnesses this session used:
   `relreplay.mjs`, `p08replay.mjs`, `linereplay.mjs`, `endfacts-ab.mjs` (in the scratchpad archive).
 - Outbound HTTPS goes through the container's proxy; Node needs `NODE_USE_ENV_PROXY=1`.
