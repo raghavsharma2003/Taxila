@@ -10,7 +10,7 @@ export interface ChildPrefs {
   sounds: boolean | null;
   /** Haptic tick on YOUR TURN where supported. */
   haptics: boolean;
-  /** Talk mode: tap-to-talk (default) or open mic (Older, headset only). Legacy: r7 reads `handsFree`. */
+  /** Talk mode, read only by the older headset open-mic rule (LessonScreen openMicAllowed) and the mic trace; the lesson's hands-free start reads `handsFree`, not this (APP-61). */
   talk: "tap" | "open";
   /** r7 (D2): hands-free is the default for every child (null = default on); false = tap to talk (the lesson starts with
    *  the mic switched off and the Talk button showing, the same switch as the dock's Mute). */
@@ -19,8 +19,6 @@ export interface ChildPrefs {
   face: "face" | "small" | "voice";
   /** Quiet mode: type or tap; the lesson starts in text mode. */
   quiet: boolean;
-  /** Progress world. null = band default (Bagiya Young, Aasmaan Older). */
-  world: "bagiya" | "aasmaan" | null;
   /** Comfort: larger text, calmer screen ("kam halchal"). */
   largeText: boolean;
   calm: boolean;
@@ -28,14 +26,8 @@ export interface ChildPrefs {
   bandUp: boolean;
   /** Older theme. */
   theme: "system" | "light" | "dark";
-  /** Mirror the split layout (left-handed). */
-  mirror: boolean;
   /** First run (C1-C3) done on this device. */
   hello: boolean;
-  /** Young picture choice at C1 (one of a fixed set, never unlockable). */
-  picture: string | null;
-  /** Older: tum / aap, the child's answer wins. */
-  address: "tum" | "aap" | null;
   /** Laptop keyboard shortcuts in the lesson (Space, 1-4, R, H, C, Esc); A9: can be turned off. */
   shortcuts: boolean;
   /** The push-to-talk note ("Tap the mic to talk, then tap Done") was dismissed: it never shows again (flows G8). */
@@ -43,8 +35,8 @@ export interface ChildPrefs {
 }
 
 export const DEFAULT_PREFS: ChildPrefs = {
-  captionsAlways: false, sounds: null, haptics: true, talk: "tap", handsFree: null, face: "face", quiet: false, world: null,
-  largeText: false, calm: false, bandUp: false, theme: "system", mirror: false, hello: false, picture: null, address: null,
+  captionsAlways: false, sounds: null, haptics: true, talk: "tap", handsFree: null, face: "face", quiet: false,
+  largeText: false, calm: false, bandUp: false, theme: "system", hello: false,
   shortcuts: true, pttNoteSeen: false,
 };
 

@@ -55,7 +55,11 @@ test("open mic: only Older, only with a headset (or a passed probe), never after
   assert.equal(hasHeadset([{ kind: "audiooutput", label: "Speaker" }, { kind: "audioinput", label: "Built-in Microphone" }]), false);
   assert.equal(hasHeadset([{ kind: "audiooutput", label: "" }]), false, "no labels before permission → tap");
   assert.equal(hasHeadset([{ kind: "audiooutput", label: "Wired Headphones" }]), true);
-  assert.equal(hasHeadset([{ kind: "audiooutput", label: "boAt Rockerz (Bluetooth)" }]), true);
+  // audit V-33: "Bluetooth" alone is not a headset (a speaker is Bluetooth too): uncertain → tap-to-talk
+  assert.equal(hasHeadset([{ kind: "audiooutput", label: "boAt Rockerz (Bluetooth)" }]), false);
+  assert.equal(hasHeadset([{ kind: "audiooutput", label: "Galaxy Buds2 (Bluetooth)" }]), true);
+  assert.equal(hasHeadset([{ kind: "audiooutput", label: "JBL Flip 5 (Bluetooth)" }]), false);
+  assert.equal(hasHeadset([{ kind: "audiooutput", label: "Headset earpiece" }]), false, "Chrome on Android's name for the phone's own receiver");
   assert.equal(hasHeadset([{ kind: "videoinput", label: "Headset camera" }]), false);
   const base = { older: true, wanted: true, headset: true, echoDemoted: false };
   assert.equal(openMicAllowed(base), true);

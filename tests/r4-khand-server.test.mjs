@@ -1,6 +1,6 @@
 // r4-khand · the Nazariya family on the play server: coverage entries (built from server/play/tools/rules/nazariya.mjs and
 // checked against the kits), the server's re-grade of raw acts on the level it regenerates, the lesson evidence rows, the
-// reaction bank (data/play/reactions/nazariya.json) and the saved build (server/play/builds.js). No DB, no network: the
+// reaction bank (data/play/reactions/nazariya.json) (the saved-build store went with audit GAMES-04: nothing ever showed it). No DB, no network: the
 // requireChild routes and the saved row are exercised on the local production build by tests/prod/r4-khand-loop.mjs.
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
@@ -8,7 +8,6 @@ import { readFileSync } from "node:fs";
 import { coverage, entryFor, entryKey, levelsFor, seedOf, hasPlay } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { bank, reactionFor, floorOk, hiddenOf } from "../server/play/react.js";
-import { buildOf } from "../server/play/builds.js";
 import { RULES, ACTS } from "../server/play/tools/rules/nazariya.mjs";
 import { LOGIC } from "../src/play/families/index.ts";
 import { env } from "../src/play/core/pick.ts";
@@ -107,17 +106,5 @@ describe("r4-khand reactions", () => {
         for (const m of g.moments) { t += 5; const r = reactionFor([m], { lang: "en", level, solved: false, history: hist, nowS: t }); hist = r.history; if (r.reaction) for (const h of hidden) assert.ok(!new RegExp(`(^|[^0-9])${h}([^0-9]|$)`).test(r.reaction.text), `${r.reaction.text} says ${h}`); }
       }
     }
-  });
-});
-
-describe("r4-khand saved builds", () => {
-  it("a build is kept only from the server's replay of a solved level, as heights; unsolved, foreign or tampered → nothing", () => {
-    const e = NZ().find((x) => x.mode === "views"), level = levelsFor(sessionOf(e), e).garam, logic = LOGIC["nazariya/views"];
-    const b = buildOf(level, env(logic.solve(level)));
-    assert.ok(b); assert.equal(b.heights.length, b.w * b.d); assert.equal(b.levelId, level.levelId);
-    assert.equal(buildOf(level, env(logic.solve(level).slice(0, -1))), null);
-    assert.equal(buildOf({ ...level, family: "taraazu" }, env(logic.solve(level))), null);
-    assert.equal(buildOf({ ...level, params: { ...level.params, w: 99 } }, env(logic.solve(level))), null);
-    assert.ok(!("score" in b) && !("count" in b));
   });
 });

@@ -200,7 +200,8 @@ test("director5: every v2 script board is preselected as the script's and drawn 
       if (p?.by !== "script" || !t) misses.push(tag);
     }
   }
-  assert.ok(n >= 60, `${n} script boards`);
+  // (director17 D12, main: the held board draws no remediation board of its own, so c6 and c5-t02 removed theirs: 53 at D12)
+  assert.ok(n >= 50, `${n} script boards`);
   assert.deepEqual(misses.filter((m) => !KNOWN.has(m)), []);
 });
 

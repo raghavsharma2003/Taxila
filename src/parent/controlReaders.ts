@@ -8,6 +8,8 @@ export const CONTROL_READERS: Readonly<Record<string, { column: string; reader: 
   hoursStart: { column: "hours_start", reader: "server/routes/child.js" },
   limitsOn: { column: "limits_on", reader: "server/routes/child.js" },
   address: { column: "address", reader: "server/routes/lesson.js" },
+  // audit PLAT-15: the play wording switch, read by the 3D games (main, integration 23)
+  playVerb: { column: "play_verb", reader: "server/play/dress.js" },
   // unread today: hidden until the child's plan carries them (learner-proposals.md, "Wire the hidden controls")
   extraTime: { column: "extra_time", reader: null },
   dataSaver: { column: "data_saver", reader: null },

@@ -6489,3 +6489,49 @@ Listening is 3 in all four topics. Register fell to 3 in c4. Picture requests: 1
 The automatic counter (H5) caught 3 of 16, with over 100 false flags.
 
 Full write-up: docs/design/round7/judgements/director17-2026-11-10.md.
+
+
+<!-- merged from inbox/r7-main-36.json -->
+## `ms-r1443-live` (2026-11-10)
+
+Release 14.4.3 went live at 11:46 UTC: `taxila-web--sc7a4798-cx0n`, branch `hotfix/14.4.3`. It is 14.4.2 plus one fix from the platform audit.
+
+**Before** (proven on localhost against the 14.4.2 commit): `GET /%` exits the web process, and a cookie holding a bare `%` makes signed-in routes answer 500.
+
+**The hotfix:** 3 files, no migration. Its gate: 3,618 tests pass, 0 fail; CI green.
+
+**The deploy** (web only, by main): image built, new revision at 0%, smoke 4/4, then 100%.
+
+**After, on the live site:** health ok on the new revision; `GET /%` answers 400 and the site stays healthy; the cookie case answers 401; the home page loads.
+
+**Rollback:** `taxila-web--sac4e8e8-3x6d` (14.4.2) is kept. Roll back to it by name; the script's `--rollback` can pick a failed revision (fixed on int/r6 only).
+
+The script's `--gate` option hung with no output here; the deploy used its check of the commit's CI result.
+
+
+<!-- merged from inbox/r7-main-38.json -->
+## `ms-r7-director18-hand-2026-11-10` (2026-11-10)
+
+director18: Brain v6.9, Studio v6.9 and Learning D12 on integration 23 (`2239d0005`). 16 lessons, 1,513 calls, about $1.044, run by main. Counted by hand by 4 judges on Opus 5.5.
+
+| Line | Count |
+|---|---|
+| Beats taught | 284/287 |
+| Verdicts | 248/248 |
+| Misgrades | 0 |
+| False keys | 0 |
+| An unsaid card's board on screen | 0 (director17: 8) |
+| Held-cost and paging contradictions | 0 |
+| Her words against the board | **9** (c4 1, c5-t01 3, c5-t02 3, c6 2) |
+
+All 9 are one mechanism: a picture request whose line describes a second view that was not drawn. 7 of the 16 picture requests drew a true split view.
+
+| Axis | c4 | c5-t01 | c5-t02 | c6 |
+|---|---|---|---|---|
+| Listening | 3.5 | 3 | 3 | 3.5 |
+| Register | 3 | 3.5 | 3 | 3.5 |
+| Screen and speech | 4 | 3.5 | 3 | 3.5 |
+
+18 of 18 bridges switched at their first spoken part. `layout` is recorded on no row.
+
+Full write-up: docs/design/round7/judgements/director18-2026-11-10.md.

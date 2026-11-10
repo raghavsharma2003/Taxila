@@ -108,9 +108,12 @@ async function playOnce(browser, { html, levels, init, wrongPaths = true, captur
     await page.goto(HOST, { waitUntil: "load", timeout: left() });
     const frameHandle = await page.waitForSelector("#f", { timeout: left() });
     const frame = await frameHandle.contentFrame();
-    await page.waitForFunction(() => window.__pageReady === 1, null, { timeout: Math.min(8000, left()) });
+    // (tests audit, main v6.9: the steps that MUST happen wait on their readiness, bounded only by the check's own deadline —
+    // fixed 4-8 s caps were the forge-g2 browser flake under the gate's parallel load. A tap's answer may legitimately not
+    // come, so waitAnswer, whose miss is ignored, keeps its short cap)
+    await page.waitForFunction(() => window.__pageReady === 1, null, { timeout: left() });
     checks.push({ id: "Q2.ready", status: "pass", detail: `${Date.now() - t0} ms` });
-    await frame.waitForFunction(() => window.__forgeSeam && (window.__forgeSeam.targets().length > 0 || window.__forgeSeam.state().failed), null, { timeout: Math.min(8000, left()) });
+    await frame.waitForFunction(() => window.__forgeSeam && (window.__forgeSeam.targets().length > 0 || window.__forgeSeam.state().failed), null, { timeout: left() });
     const seam = (fn, arg) => frame.evaluate(fn, arg);
     const box = await frameHandle.boundingBox();
     const answersSeen = () => page.evaluate(() => window.__hostEvents.filter((e) => e.type === "answer" || e.type === "error").length);
@@ -214,7 +217,7 @@ async function playOnce(browser, { html, levels, init, wrongPaths = true, captur
         const n1 = await answersSeen(); await tap(k); await waitAnswer(n1).catch(() => {});
       }
       // advance (kit waits 700 ms after a correct commit)
-      await frame.waitForFunction((prev) => { const x = window.__forgeSeam.state(); return x.won || x.failed || x.li !== prev.li || x.ii !== prev.ii; }, { li: s.li, ii: s.ii }, { timeout: Math.min(4000, left()) })
+      await frame.waitForFunction((prev) => { const x = window.__forgeSeam.state(); return x.won || x.failed || x.li !== prev.li || x.ii !== prev.ii; }, { li: s.li, ii: s.ii }, { timeout: left() })
         .catch(() => checks.push({ id: "Q4.advance", status: "fail", detail: `${spec.id}: no advance after the key` }));
       if (checks.some((c) => c.status === "fail" && c.id.startsWith("Q4"))) break;
     }

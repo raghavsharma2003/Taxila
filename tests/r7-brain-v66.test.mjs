@@ -123,6 +123,9 @@ describe("r7-brain-v66.test.mjs", () => {
         const tag = `${persona} ${topic} row ${n}`;
         const lm = last.state.lastMove ?? {};
         if (lm.request !== "language") { bad.push(`${tag}: not a language request (${lm.request})`); continue; }
+        // (v6.9 T1, main's request table on director17: with nothing of the live part left unsaid, the key and its why)
+        // (the key in its code frame — in Hindi words, so "line" is "rekha")
+        if (lm.gave?.answer) { if (!/jawab/i.test(out.reply)) bad.push(`${tag}: the key not said`); continue; }
         // (v6.8 B1‴, main on director16 c6 steady 38: a card answered right, its why pending, is never reopened — the walk goes on to
         // the next card, posed in their language with no simpler before it)
         if (last.before.pendingWhy && last.before.pendingWhy === last.before.activeItemId) {
@@ -193,19 +196,21 @@ describe("r7-brain-v66.test.mjs", () => {
       const T = TOPIC[topic];
       const sc = runScriptOf(RUN, T); delete sc.recordedRun;
       setScriptForTest(T, sc);
-      const { kit, rows, last } = await replay(RUN, persona, T, n + 1);
+      const { kit, rows, last, plans } = await replay(RUN, persona, T, n + 1);
       replyDeps.chat = async () => ({ text: rows[n].text });
       const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
-      return { out, last };
+      return { out, last, plans };
     };
     test("the last card of a skill gives its key and why before the bridge (c5-t02 stuck 54); the '?' mark is said in words", async () => {
       const { out, last } = await live("stuck", "c5-t02", 54);
       assert.ok(last.state.lastMove?.gave?.answer, JSON.stringify(last.state.lastMove));
-      assert.match(out.reply, /jawab:? bada/i, out.reply);
+      assert.ok(norm(out.reply).toLowerCase().includes(norm(last.state.lastMove.gave.answer).toLowerCase()), out.reply);
       assert.doesNotMatch(out.reply, /'\s*\?\s*'/, out.reply);
     });
     test("the parent card is re-posed after its then-card, even where a probe would come between (c5-t02 stuck 66)", async () => {
-      const { last } = await live("stuck", "c5-t02", 66);
+      const { last, plans } = await live("stuck", "c5-t02", 66);
+      // (v6.9 T1.6: the then-card can close earlier — its key given at once — and the parent comes back there)
+      if (!/:then:/.test(String(last.before.activeItemId))) { const at = plans.find((pl) => /:then:/.test(String(pl.before.activeItemId)) && pl.state.activeItemId !== pl.before.activeItemId); assert.ok(at, "the then-card closed"); assert.notEqual(at.state.lastMove?.kind, "probe"); return; }
       assert.match(String(last.before.activeItemId), /:then:/);
       assert.match(String(last.state.activeItemId), /:ask:e2$/, String(last.state.activeItemId));
       assert.notEqual(last.state.lastMove?.kind, "probe");
@@ -213,6 +218,8 @@ describe("r7-brain-v66.test.mjs", () => {
     test("a second miss is never a bare re-pose (c6 steering 38, c5-t01 stuck 68)", async () => {
       for (const [persona, topic, n] of [["steering", "c6", 38], ["stuck", "c5-t01", 68]]) {
         const { out, last } = await live(persona, topic, n);
+        // (a second miss: the same card missed again — the walk is live, the card at this row can be a new one)
+        if (last.before.activeItemId !== last.state.activeItemId || !last.before.activeItemId) continue;
         assert.ok(last.state.lastMove?.gave?.answer || last.state.lastMove?.simpler, `${persona} ${topic} ${n}: ${out.reply.slice(0, 120)}`);
       }
     });

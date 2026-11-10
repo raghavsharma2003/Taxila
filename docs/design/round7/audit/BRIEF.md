@@ -158,7 +158,7 @@ Paths follow `docs/design/round7/OWNERSHIP.md`; read it for the exact split.
 
 ### 7. app (fix; owner: app)
 
-**Paths:** `src/child` (not `lesson/headset.ts`), `src/ui-v3` (not the Scheduler files), `src/app`, `src/ui` (not `teacher/`), `src/copy`, `src/styles`, `src/main.tsx`, `index.html`, `vite.config.ts`, `public/site`, `public/landing`, `public/brand`, `public/fonts`, `public/manifest.webmanifest`, `data/kaksha`.
+**Paths:** `src/child` (not `lesson/headset.ts`), `src/ui-v3` (not the Scheduler files), `src/app`, `src/ui` (not `teacher/`), `src/copy`, `src/styles`, `src/main.tsx`, `index.html`, `vite.config.ts`, `public/site`, `public/brand`, `public/fonts`, `public/manifest.webmanifest`, `data/kaksha`.
 
 **Look for:**
 - Every route and screen: reachable? Does it handle loading, empty and error states without showing raw errors or English developer text to a child?

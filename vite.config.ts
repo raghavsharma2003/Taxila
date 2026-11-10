@@ -99,7 +99,11 @@ export function rigGlbs(env: Record<string, string | undefined> = process.env): 
           }
         }
       }
-      if (removed) this.info?.(`dropped ${removed} rig GLB(s) from ${teacher} (face.rig is off; VITE_FACE_RIG=1 keeps them)`);
+      // APP-62: the KTX2 texture decoder (basis/r180, ~580 KB) is requested only by the rig loader (src/avatar/three/rig.ts) to
+      // decode those GLBs' textures; with the GLBs gone nothing on default flags can ask for it. The plates stay (fallback).
+      const basis = join(teacher, "basis");
+      if (existsSync(basis)) { rmSync(basis, { recursive: true, force: true }); removed++; }
+      if (removed) this.info?.(`dropped ${removed} rig GLB(s) and the texture decoder from ${teacher} (face.rig is off; VITE_FACE_RIG=1 keeps them)`);
     },
   };
 }

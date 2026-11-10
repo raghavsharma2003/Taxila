@@ -5,14 +5,15 @@
 // (server/forge3/qa/checks.js; class 4-5 at the 16 px floor). The verdict table is what compose() may offer at a size.
 //
 //   FORGE3_QA_LOCAL=1 node server/forge3/play-cert.js --harness <built harness dir> [--out server/forge3/certs/play.json]
-//     [--shots <dir>] [--shot-every 7] [--seeds 2] [--only <family>]
+//     [--shots <dir>] [--shot-every 7] [--seeds 2] [--only <family>] [--no-focus]
 // Round 4 G1: a (family, mode) that a real-game engine renders (src/play/engines/registry.ts) is judged on BOTH renderers a
 // child can get: the 2D view (a 2D-tier device, the board twin) in every art direction, cells `<art>@c<band>` as before
 // (what forge3 compose reads), and the 3D engine in every theme of its art pack, cells `3d:<theme>@c<band>` (the harness
 // page is told which renderer to mount; the WebGL drawing buffer is kept so the pixel checks can read it). --only merges
 // into the existing table instead of replacing it.
 // Levels come from the play coverage file's entries as the play server serves them (coverageLevels below), so the table is
-// judged on the levels a child actually gets, in every art direction the family can wear.
+// judged on the levels a child actually gets, in every art direction the family can wear; plus (unless --no-focus) the level
+// served when the Director's focus names each mapped misconception (GAMES-01), when that level differs.
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -40,7 +41,7 @@ export function levelFor(logic, family, mode, { seed = 1, classLevel = 6, gramma
  * Served levels for a coverage entry, as the play server would serve them to a fresh child of the entry's class: the
  * same session body startSession builds (server/play/start.js), seeds n = 0..k-1, the picker's garam door.
  */
-export async function coverageLevels(entry, k = 2) {
+export async function coverageLevels(entry, k = 2, opts = {}) {
   const { currentLevel, entryKey, seedOf } = await import("../play/levels.js");
   const out = [];
   for (let n = 0; n < k; n++) {
@@ -48,6 +49,14 @@ export async function coverageLevels(entry, k = 2) {
     const s = { childId: `qa-${n}`, key, skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
       mis: {}, pL: undefined, n: 0, seed: seedOf(`qa-${n}`, key, 0), door: "garam", recent: [], hist: null };
     try { const lv = currentLevel(s, entry); if (lv && !out.some((x) => x.levelId === lv.levelId)) out.push(lv); } catch { /* a generator that throws serves nothing */ }
+  }
+  // GAMES-01: the level served after the lesson saw a mapped misconception (the Director's focus) can be a different shape
+  // (a judging strip pair, a no-CO2 leaf pair, a small key or scale); one per belief, when it differs from the above
+  if (opts.focus) for (const kit of Object.values(entry.misMap ?? {})) {
+    const key = entryKey(entry);
+    const s = { childId: "qa-0", key, skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
+      mis: { [kit]: 0.7 }, focus: kit, pL: undefined, n: 0, seed: seedOf("qa-0", key, 0), door: "garam", recent: [], hist: null };
+    try { const lv = currentLevel(s, entry); if (lv && !out.some((x) => x.levelId === lv.levelId)) out.push(lv); } catch { /* serves nothing */ }
   }
   return out;
 }
@@ -139,7 +148,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const key = `${entry.family}/${entry.mode}`;
     if (done.has(`${entry.topicId}|${key}|${entry.goal}`)) continue;
     const band = entry.classLevel <= 5 ? 4 : 7;
-    const levels = await coverageLevels(entry, seeds);
+    const levels = await coverageLevels(entry, seeds, { focus: !argv.includes("--no-focus") });
     if (!levels.length) { table.samples.push({ topicId: entry.topicId, key, goal: entry.goal, noLevel: true }); console.log(`${entry.topicId} ${key}: no served level`); continue; }
     for (const level of levels) for (const art of FAMILY_ARTS[entry.family] ?? []) {
       // judged as the child sees it: a PlayArtifact on the REAL Studio stage (PlayStudioRenderer → PlaySession) in the Desk's

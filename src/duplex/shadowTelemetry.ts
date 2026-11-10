@@ -57,6 +57,8 @@ export interface ShadowSummary {
 
 const SPEAKS = new Set(["SPEAK", "CUT_IN"]);
 const SAFETY_CODES = new Set(["safeguard", "safety"]);
+/** The reason part of a governed row's detail code ("speak:turn_end:uptake" → "turn_end"). */
+const detailReason = (d: string | null): string | null => (d ? (d.split(":")[1] ?? d) : null);
 /** Closed set of reason codes allowed into the summary (anything else becomes "other"). */
 const REASONS = new Set(["turn_end", "backstop_silence", "wt1_nudge", "safeguard", "safety", "word_search_cue", "off_task_drift", "question_to_her", "hold_offer", "repeat_request"]);
 
@@ -123,7 +125,9 @@ export class ShadowTelemetry {
 
   /** The engine's governed row (CascadeDuplexOptions.log). */
   row(r: ShadowRow): void {
-    if (r.reasons.some((c) => SAFETY_CODES.has(c)) || (r.detail && SAFETY_CODES.has(r.detail))) this.safetyRows++;
+    // audit V-32: `detail` is "speak:<reason>:<firstSound>" (host.ts detailCode), never a bare reason: compare its reason part
+    const dr = detailReason(r.detail);
+    if (r.reasons.some((c) => SAFETY_CODES.has(c)) || (dr && SAFETY_CODES.has(dr))) this.safetyRows++;
     if (r.action.startsWith("fallback:")) { if (this.fallbacks.length < 8) this.fallbacks.push(r.action.slice(9, 40)); return; }
     if (SPEAKS.has(r.action) && !this.herOn) {
       this.turn ??= newTurn();
@@ -131,9 +135,7 @@ export class ShadowTelemetry {
         this.turn.engineAt = r.t;
         this.turn.engineGap = this.voiced || this.lastVoiceEnd === null ? 0 : Math.max(0, r.t - this.lastVoiceEnd);
         this.turn.lastVoiceEndAtSpeak = this.lastVoiceEnd;
-        // audit V-32: detail is `speak:<reason>:<firstSound>` (host.ts), so the reason is its second part
-        const said = r.detail?.split(":")[1] ?? r.detail;
-        const why = said && REASONS.has(said) ? said : r.reasons.find((c) => REASONS.has(c)) ?? null;
+        const why = dr && REASONS.has(dr) ? dr : r.reasons.find((c) => REASONS.has(c)) ?? null;
         this.turn.reason = why;
       }
     }

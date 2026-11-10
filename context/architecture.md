@@ -493,3 +493,7 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 ## Merged inbox entries (write-up from the entry text)
 - `open-r7-audit-voice-holdcue-live` (2026-11-10): The thinking-pause cue is live in hands-free although r3vs-holdcue-shadow says shadow until a children's pilot (audit V-22)
 - `open-r7-audit-voice-expressive-default` (2026-11-10): w2g-expressive-layer-built (default on for DragonHD) against rj-ssml-delivery-plan-2026-10-04 (listeners preferred plain): the blind test is still pending (audit V-27)
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-r7-audit-voice-switch-translit-not-wired` (2026-11-10): Record correction (audit V-29): rs7-voice-switch (server/voice/voice-switch.js) and rs7-translit-roman-to-devanagari (server/voice/translit) are recorded as wired; no live code path calls voice-switch's styleFor/synthesize or toDevanagari. Both stay unwired by main's decision. 'bara' removed from the twelve hand entries (it is बड़ा, big; NUMBER_AMBIG keeps it as twelve in a number context)

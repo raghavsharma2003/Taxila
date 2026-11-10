@@ -49,6 +49,6 @@ const el =
   screen === "world" ? <WorldView childName="Riya" world={q.get("when") === "yesterday" && yesterday ? yesterday : today} yesterday={yesterday} hidden={q.get("hidden") === "1"} reducedMotion={reduced} backTo="?screen=home" hangarTo="?screen=hangar" />
   : screen === "hangar" ? <HangarView items={items} equipped={equipped} onEquip={() => {}} reducedMotion={reduced} backTo="?screen=world" />
   : <HomeView childName="Riya" family={family} reducedMotion={reduced} state={(q.get("state") as "start") ?? "start"} greeting="evening" teacher={teacher}
-      startTo="?screen=world" worldTo="?screen=world" parentTo="?screen=home" opensAt="5:00 pm" />;
+      startTo="?screen=world" worldTo="?screen=world" parentTo="?screen=home" opensAt="17:00" />;
 
 createRoot(document.getElementById("root")!).render(<KakshaRoot family={family} reducedMotion={reduced} screen={screen}>{el}</KakshaRoot>);

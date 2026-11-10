@@ -404,6 +404,7 @@ async function postFolded<T>(path: string, req: unknown, keyOf: (t: T) => { less
   let audioFollows = false;
   let streaming = false;
   let early: EarlySay | null = null;
+  let endError: ApiError | null = null;
   void (async () => {
     try {
       for await (const f of readFrames(body)) {
@@ -442,6 +443,10 @@ async function postFolded<T>(path: string, req: unknown, keyOf: (t: T) => { less
           const w = writer.write(f.payload as Uint8Array);
           if (streaming && !early && !gotTurn) w.catch(() => {});
           else await w;
+        } else if (f.type === FRAME.end && !gotTurn) {
+          // audit V-25: a turn that failed after her first clause ends the stream with its real status (was always 502)
+          const d = f.payload as Record<string, unknown>;
+          if (d.status === "error") endError = new ApiError(typeof d.code === "number" ? d.code : 502, typeof d.error === "string" ? d.error : `${path} failed`, d);
         } else if (f.type === FRAME.event && (f.payload as Record<string, unknown>).t === "say") {
           try { early?.say(String((f.payload as Record<string, unknown>).text ?? "")); } catch { /* captions only */ }
         } else if (ttsReq) {
@@ -458,7 +463,7 @@ async function postFolded<T>(path: string, req: unknown, keyOf: (t: T) => { less
           } else if (e) emit(e);
         }
       }
-      if (!gotTurn) rejectTurn(new ApiError(502, `${path} ended without a response`, null));
+      if (!gotTurn) rejectTurn(endError ?? new ApiError(502, `${path} ended without a response`, null));
       await writer.close().catch(() => {});
     } catch (e) {
       if (!gotTurn) rejectTurn(e);
