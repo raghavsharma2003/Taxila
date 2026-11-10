@@ -68,7 +68,7 @@ planFor({ script, skills, mixups, brief, interests, memory }) →
 |---|---|---|---|
 | K1 | **Compress a known skill.** A skill the ledger holds as learned, with a passed delayed check, opens at its first check card. A right answer moves on; a miss returns to the full unit | `kt_skill_state` status, delayed-check result | walks every beat |
 | K2 | **Success first.** After a lesson that closed badly, or in the first week, the first card is the easiest unseen one | `adapt.closes`, `learner.firstWeek` | not passed to the lesson |
-| K3 | **Remediation by her real mix-up.** The remediation is chosen by the mix-up the classifier just named, then by her open mix-ups in the ledger, then by the card's authored target | `cls.misconceptionId`, `kt_misconception` | authored target only |
+| K3 | **Remediation by the mix-up she just showed; a probe for the one she holds.** The remediation is chosen by the mix-up the classifier just named, else the card's authored target. An open mix-up in her ledger does not pick a remediation (the wrong answer did not show it): it moves the check card that targets it to the front of that skill's checks | `cls.misconceptionId`, `kt_misconception` | authored target only; fixed check order |
 | K4 | **Prerequisite check.** A skill she is spinning on gets one check of its weakest prerequisite in the warm-up | `kt.wheelSpin` | computed, dropped |
 | K5 | **No new skill before a test or in week one.** The topic is a revision topic | `newSkillBudget` | computed, dropped |
 | K6 | **Hook and joints by interest.** Every onboarding tile maps to a slot through the interest registry (today `trains`, `building`, `stories`, `dance` fall to slot 0, and two slots name tiles that do not exist) | `child.interests` | exact label match |
@@ -76,6 +76,10 @@ planFor({ script, skills, mixups, brief, interests, memory }) →
 | K8 | **Prefer a scripted topic** among equally due candidates, while scripts are few | script existence | not considered |
 
 The brief is cut at lesson start from learner state whether or not a day plan exists, so none of this waits on `TAXILA_CONDUCTOR_PLAN`.
+
+## Rulings since the plan was set
+
+- 2026-11-10, from the Loop session's design note: K3's ledger tier became a probe (above). K5 and K8 are topic choice, made before the walk, so they are a pure `topicFor` with its call site in `server/content/next-topic.js`. K7 is one easier item first in the warm-up, after any due delayed check (`rj-truth-retention-order-starves-check`), with no three-turn hold. A lesson where every skill compresses and every check is right returns `allKnown`.
 
 ## Streams
 
