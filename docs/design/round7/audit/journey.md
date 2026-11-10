@@ -33,13 +33,13 @@ Nothing under 44 px on any child screen except the items in JRN-08. No sideways 
 
 | id | sev | kind | owner | title | where | fix | status |
 |---|---|---|---|---|---|---|---|
-| JRN-01 | P1 | broken | voice | When speech cannot be fetched, none of the teacher's words reach the screen and "Asha is thinking" never clears | `src/lesson/textLink.ts` (speech start and failure path); caption build in `src/child/lesson/useDesk.ts:354,804` | when both speech paths fail, still emit the reply's caption and hand the turn back | open |
+| JRN-01 | P1 | broken | voice | When speech cannot be fetched, none of the teacher's words reach the screen and "Asha is thinking" never clears | cause not traced. `src/lesson/textLink.ts:98-100` emits the caption before the speech fetch and `:203-208` releases the floor on failure (a code-only skeptic read says it should work), yet the page held no teacher text; look at what the card shows when the floor is not "speaking" (`src/child/lesson/useDesk.ts:354,804`) | show the reply's caption on the card whenever sound failed, and find why "Asha is thinking" stays | open (reproduced, cause open) |
 | JRN-02 | P1 | broken | app | At 360x640 the "mic is off" card runs under the steer chips: its "Not now" button (y 426-474) sits under the chip row (y 400-448) and its second line is cut off | `src/child/lesson/AnswerDock.tsx` and the lesson layout (`src/ui-v3/kaksha/lesson/stageLayout.ts`) | give the notice a slot of its own, or one line and a visible dismiss | open |
 | JRN-03 | P1 | inconsistent | app | The held child's Help sheet ends with "Back to the lesson", but a held child has no lesson to go back to (the Home says "Let's take a break today") | held Home help sheet; screenshot `JRN-held-help-back-to-lesson-360.png` | label it "Close" for `safety_hold` | open |
 | JRN-04 | P2 | not good enough | app | Hello (the first screen a child ever sees) pushes its next step below the fold at 360x640: "Next" at y 683, "That's me" at y 670, "Next" after the school-feel faces at y 716. While the first line plays, the only button says "PLAYING" and is disabled | `src/child/screens/Hello.tsx` | keep the primary button in the bottom bar; shrink the face on short screens | open |
 | JRN-05 | P2 | not good enough | app | Tab strips cut the last tab with no sign there is more: Notebook ("Questions" starts at x=358 of 360; "Made for you" is cut) and the parent Notes cadence strip ("This term" at 307-403) | `src/child/screens/Notebook.tsx` tabs; `src/parent/Report.tsx` | wrap to two rows, or fade the edge | open |
-| JRN-06 | P3 | not good enough | app | Small targets: public Help page "112" link 24x22 (412 wide); Pair "Back" 38x48; onboarding sound check "I heard it" box 22x22 | `src/app/Public.tsx`, `src/app/Pair.tsx`, `src/onboarding/Check.tsx` | min 44 px hit area | open |
-| JRN-07 | P3 | inconsistent | app | The onboarding sound-check page has no "Step n of 5" header and no progress bar, unlike the class, promises, account and consent pages | `src/onboarding/Check.tsx` | same header | open |
+| JRN-06 | P3 | not good enough | app | Small targets: public Help page "112" link 24x22 (412 wide); Pair "Back" 38 wide (its 48 px height is fine; the "I heard it" box is 22 px but its label is 48 px tall, so that one is not a finding) | `src/app/Public.tsx:116`, `src/app/Pair.tsx` | min 44 px hit area | open |
+| JRN-07 | P3 | inconsistent | app | The onboarding sound-check page has no "Step n of 5" header and no progress bar, unlike the class, promises, account and consent pages | `src/onboarding/Check.tsx:91` passes `step="check"`, which is not in `STEPS` (`src/onboarding/Layout.tsx:36`), so the header and bar are skipped | add it to the step list or pass a real step | open |
 
 ## Evidence notes
 
@@ -48,6 +48,10 @@ Nothing under 44 px on any child screen except the items in JRN-08. No sideways 
 - **JRN-03.** `JRN-held-help-back-to-lesson-360.png` (class 5 child, dark skin, held): the sheet is readable there; the wording is the issue.
 - **JRN-04.** `JRN-hello-next-below-fold-360.png`, `JRN-hello-last-step-360.png`. Button bottoms read from the page: 683, 670, 716.
 - **JRN-05.** `JRN-notebook-tabs-clipped-360.png`, `JRN-parent-notes-tabs-clipped-360.png`.
+
+## Skeptic pass
+
+A sub-agent tried to refute the seven new findings from the code. JRN-03 and JRN-07 confirmed. JRN-04, JRN-05 and JRN-06 partly (the pixel positions came from the running app; it checked code only). It could not reproduce JRN-01 from `textLink.ts`, so JRN-01 is kept as reproduced on screen with the cause open, and the checkbox part of JRN-06 was dropped. JRN-02 was not checked by it; the overlap is in the screenshot.
 
 ## What worked (so the owner knows what was checked)
 
