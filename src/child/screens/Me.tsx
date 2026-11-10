@@ -56,7 +56,7 @@ function Choice<T extends string>({ id, label, value, options, set, icon }:
 }
 
 export function Me() {
-  const { cid, child, band, family, prefs, setPrefs, refresh } = useChild();
+  const { cid, child, me, band, family, prefs, setPrefs, refresh } = useChild();
   const { plan } = usePlan(cid);
   const rec = useTeacher(child.teacher_id, band);
   const older = family === "older";
@@ -120,7 +120,7 @@ export function Me() {
             <LinkRow onClick={() => setPicking(true)} label={t("myPicture")} lead={<Avatar id={child.avatar} size={36} />} testid="change-picture"
               tail={<span className="kx-tagline">{kt("change")}</span>} />
             <LinkRow to={`/c/${cid}/teacher`} label={tr7("mem.row", { T: rec.name })} glyph="memory" testid="me-remembers" />
-            <LinkRow to="/who" label={t("switchLearner")} glyph="switch" testid="switch-learner" />
+            {me.scope !== "child" && <LinkRow to="/who" label={t("switchLearner")} glyph="switch" testid="switch-learner" />}
             {installOffer && <LinkRow onClick={() => void installOffer()} label={tr7("app.install")} note={tr7("app.installNote")} glyph="play" testid="install-app" />}
           </Rows>
         </Panel>

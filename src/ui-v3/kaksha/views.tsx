@@ -2,6 +2,7 @@
 // screens/ feed them from ChildShell and the server; the dev page feeds them fixtures for shots and the lint harness.
 // Rules every view keeps: ONE plasma "your move" element per screen state (data-volt); the teacher's name always with
 // "AI teacher"; no lock glyphs, no "n of m", no points (tests/r4-kaksha-lint.test.mjs); English chrome (G-EN-1).
+import { dayOf } from "../../child/growth.ts";
 import { useState, type MouseEvent, type ReactNode } from "react";
 import { Comms, Sky } from "./Shell.tsx";
 import { Orbit } from "./Orbit.tsx";
@@ -192,7 +193,7 @@ export function WorldView(p: WorldViewProps) {
   const whenSeg = p.yesterday ? (
     <div className="kx-seg" role="radiogroup" aria-label="When">
       {(["yesterday", "today"] as const).map((k) => (
-        <button key={k} type="button" role="radio" aria-checked={when === k} onClick={() => setWhen(k)}>{kt(k)}</button>
+        <button key={k} type="button" role="radio" aria-checked={when === k} onClick={() => { setWhen(k); setPick(null); }}>{kt(k)}</button>
       ))}
     </div>
   ) : null;
@@ -262,7 +263,7 @@ export function WorldView(p: WorldViewProps) {
                   <li key={c.id} className="kx-seal kx-cut" style={{ ["--c" as string]: `var(--k-r-${c.subject === "sst" ? "social" : c.subject})` }}>
                     <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3l14 6v10c0 9-6 15-14 18C12 34 6 28 6 19V9z" fill="none" stroke="currentColor" strokeWidth="2.4" /><path d="M13 20l5 5 9-10" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     <span>{c.title}</span>
-                    {c.sealedAt && <span className="kx-seal-since">{kt("sealedSince", { date: new Date(c.sealedAt).toLocaleDateString(undefined, { day: "numeric", month: "short" }) })}</span>}
+                    {c.sealedAt && <span className="kx-seal-since">{kt("sealedSince", { date: dayOf(c.sealedAt) })}</span>}
                   </li>
                 ))}
               </ul>

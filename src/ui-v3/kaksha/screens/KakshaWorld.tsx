@@ -1,7 +1,7 @@
 // Kaksha World at /c/:cid/map and the Hangar at /c/:cid/hangar when `ui.kaksha` is on (BUILD-SPEC §4). Both are pure
 // functions of GET /api/child/map through world.ts and data/kaksha/catalog.json. With learning_profile consent off the
 // map is hidden: the World shows the planet and the Hangar only (identity without the academic record).
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useChild } from "../../../child/ChildShell.tsx";
 import { useChildMap } from "../../../child/useChildMap.ts";
@@ -56,11 +56,13 @@ export function KakshaHangar() {
   const w = useWorld();
   const [equipped, setEquipped] = useState(() => readEquipped(cid));
   // the server's set (another device's choice) replaces this device's when it has one
-  useEffect(() => { let live = true; void syncEquipped(cid).then((eq) => { if (live && eq) setEquipped(eq); }); return () => { live = false; }; }, [cid]);
+  // APP-28: not when the child equipped something since this screen opened (a slow read must not undo their tap)
+  const touched = useRef(false);
+  useEffect(() => { let live = true; void syncEquipped(cid).then((eq) => { if (live && eq && !touched.current) setEquipped(eq); }); return () => { live = false; }; }, [cid]);
   const kn = useChildNav();
   return (
     <KakshaRoot family={family} reducedMotion={reducedMotion} screen="hangar">
-      <HangarView items={w.today.items} equipped={equipped} onEquip={(slot, id) => { const next = writeEquipped(cid, slot, id); setEquipped(next); void pushEquipped(cid, next); }}
+      <HangarView items={w.today.items} equipped={equipped} onEquip={(slot, id) => { touched.current = true; const next = writeEquipped(cid, slot, id); setEquipped(next); void pushEquipped(cid, next); }}
         reducedMotion={reducedMotion} backTo={`/c/${cid}/map`} go={go} dock={kn.dock} meTo={kn.meTo} />
     </KakshaRoot>
   );

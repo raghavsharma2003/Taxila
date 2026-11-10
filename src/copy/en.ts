@@ -144,8 +144,8 @@ export const W2A = {
   "auth.err.signin": "That email and password do not match.",
   "auth.err.name.missing": "Enter your name.",
   "auth.err.network": "We could not reach Taxila. Check the internet and try again.",
-  "auth.err.generic": "Something went wrong. Please try again.",
-  "auth.err.wait": "Too many tries. Wait a few minutes and try again.",
+  "auth.err.generic": "Something went wrong. Try again.",
+  "auth.err.wait": "Too many tries. Wait a minute, then try again.",
   // onboarding step 8: the sound and mic check
   "check.title": "Check sound and the microphone",
   "check.body": "So {child} can hear {T} and {T} can hear {child}.",
@@ -259,6 +259,7 @@ export const R7 = {
   // r7 app-ask-voice: "Say it" on Ask
   // r7 app-pwa-install
   "app.install": "Put Taxila on this phone",
+  "gate.missing": "We could not find this learner. Go back and pick who is learning.",
   "who.err": "Taxila could not open just now. Check the internet and try again.",
   "who.retry": "Try again",
   "who.help": "Get help",

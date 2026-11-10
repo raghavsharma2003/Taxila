@@ -11,12 +11,11 @@
 // /api/studio/notebook/pages replays one lesson's boards in the order they were drawn). Each page opens a replay (her
 // boards redrawn one after another, in the real Studio stage) and "Continue this lesson" (a new lesson on the same topic).
 // The device's own record below is kept for the best question card and as the fallback when the server list fails.
-// WHERE THE PAGES CAME FROM before round 4 (open item for the server owner): no endpoint lists a child's lessons, so the page list is
-// the lesson ids THIS DEVICE recorded at each summary's Finish (prefs.ts artefacts). A second device, a reinstall or
-// cleared storage therefore shows fewer pages than the child has had. The empty line never claims "no lessons yet"
-// unless the server's plan says so (state "first"); otherwise it says only what is true on any device. Summaries are
-// immutable once a lesson ended, so each is fetched once and kept on the device (no N+1 on every open), at most
-// SUMMARY_CONCURRENCY at a time. Replace the source with a server list (GET /api/child/notebook) when it exists.
+// WHERE THE PAGES COME FROM: the server's list (GET /api/studio/notebook, every device) leads; the lesson ids THIS DEVICE
+// recorded at each summary's Finish (prefs.ts artefacts) fill in a page the server list lacks and give its best question card,
+// and are the whole list when the server read fails. The empty line never claims "no lessons yet" unless the server's plan
+// says so (state "first"). Summaries are immutable once a lesson ended, so each is fetched once and kept on the device
+// (no N+1 on every open), at most SUMMARY_CONCURRENCY at a time, and patched onto the pages already shown.
 import { useEffect, useState } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { MadeShelf, readMadeCards } from "./NotebookMade.tsx";
@@ -168,7 +167,7 @@ export function Notebook() {
               const card = p.summary ? bestCard(p.summary.cards) : null;
               return (
                 <Panel as="li" key={p.lessonId} className="kx-log-page" testid="notebook-page"
-                  eyebrow={young ? undefined : new Date(p.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}>
+                  eyebrow={young ? undefined : dayOf(p.at)}>
                   <h2 className="kx-panel-title">{p.topic}</h2>
                   {card ? (
                     <div className="kx-log-card">
@@ -225,7 +224,7 @@ export function Notebook() {
                   p.chips.length > 0 && <p className="nb-chips" data-speech="">{p.chips.slice(-3).join(" · ")}</p>
                 )}
                 {(p.boards ?? 0) > 0 && <BoardPage cid={cid} page={p} young={young} />}
-                {!young && <p className="nb-date">{new Date(p.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</p>}
+                {!young && <p className="nb-date">{dayOf(p.at)}</p>}
               </li>
             );
           })}

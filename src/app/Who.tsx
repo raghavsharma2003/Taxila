@@ -51,7 +51,7 @@ export default function Who() {
     document.title = "Who is learning? · Taxila";
     loadMe().then((me) => {
       // r5 QA D18: signed out on a phone that has had a learner here (a remembered last child) → Sign in, not a new account
-      if (!me) return nav(readStore<string | null>(LAST_CHILD_KEY, null) ? "/start/phone?login=1" : "/start/lang", { replace: true });
+      if (!me) return nav(readStore<string | null>(LAST_CHILD_KEY, null) ? "/start/phone?login=1" : "/start/class", { replace: true });
       // r7 device pairing: a paired child device opens its one child, with no picker and no other names on this device
       if (me.scope === "child" && me.children[0]) return nav(`/c/${me.children[0].id}`, { replace: true });
       if (!me.children.length) return nav("/start/child", { replace: true });

@@ -1,6 +1,7 @@
 // The Notebook's "Questions" page (r7 app-notebook-log; STUDENT-FLOW §7, the Question jar): what she parked to come back
 // to. Learning's GET /api/child/jar (claude/r7-learning 28778c11d): waiting items oldest first ("she'll bring this back"),
 // then answered ones (struck through, with the day). No counts, no delete. null: the route is not there (the tab hides).
+import { dayOf } from "../growth.ts";
 import { tr7 } from "../../copy/en.ts";
 import { Glyph, Panel, StatePanel } from "../../ui-v3/kaksha/kit.tsx";
 
@@ -17,7 +18,7 @@ export async function readJar(cid: string, signal?: AbortSignal): Promise<JarIte
   }
 }
 
-const day = (at: string) => new Date(at).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+const day = (at: string) => dayOf(at);
 
 export function JarPage({ items, name }: { items: JarItem[]; name: string }) {
   if (!items.length) return <StatePanel glyph="ask" line={tr7("jar.empty", { T: name })} testid="jar-empty" />;

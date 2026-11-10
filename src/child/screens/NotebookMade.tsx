@@ -2,6 +2,7 @@
 // newest first (GET /api/studio/made-for: revealed, not hidden, not a plain board), no counts and no completion meter.
 // A tap plays it again in the real Studio stage (the card's replay artifact; no lesson id in the intent, so the stage
 // opens no stream and posts nothing). ?made=<id> (the Home's and the Debrief's links) opens that piece at once.
+import { dayOf } from "../growth.ts";
 import { useEffect, useState } from "react";
 import { StudioStage } from "../../studio/StudioStage.tsx";
 import type { StudioSlot } from "../../../shared/studio.ts";
@@ -56,7 +57,7 @@ export function MadeShelf({ cid, young, openId, name }: { cid: string; young: bo
               onClick={() => setOpen(c.id)} aria-label={`${kt("playAgain")}: ${c.title}`} data-testid="made-tile">
               <span className="kx-made-ico" aria-hidden="true"><Glyph name="play" size={26} /></span>
               <b>{c.title}</b>
-              <span className="kx-tagline">{new Date(c.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span>
+              <span className="kx-tagline">{dayOf(c.at)}</span>
             </button>
           </li>
         ))}

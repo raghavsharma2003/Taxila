@@ -84,7 +84,7 @@ export interface DeskNav {
   who(): void;
   signIn(): void;
   parent(): void;
-  finished(): void;
+  finished(to?: string): void;
   /** round 3 fix (experience B8): start a lesson on this topic (the child chose "Start <topic>" on a switch offer). */
   start?(topicId: string): void;
 }
@@ -986,7 +986,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       setSheet("pause");
     },
     resume: () => {
-      const replayTurn = (sheet === "pause" || sheet === "break") && resumeTurn.current;
+      const replayTurn = (sheet === "pause" || sheet === "break" || sheet === "end") && resumeTurn.current;
       resumeTurn.current = false;
       const newer = (bridge?.speechWaiting ?? 0) > 0;
       setSheet(null);
@@ -1004,7 +1004,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       if (state.phase === "live") runtime.tapChip({ id: "break:rest", label: REQUESTS.rest[ctx.lessonLang === "hindi" ? 1 : ctx.lessonLang === "english" ? 2 : 0] });
     },
     pickStop: (c) => { bridge?.stopReplay(); runtime.tapChip(c); },
-    cancelEnd: () => setSheet(null),
+    cancelEnd: () => a.resume(), // APP-30: "Keep going" resumes like Continue, replaying the line Pause cut
     endLesson: () => {
       setSheet(null);
       ptt.stop();
@@ -1062,6 +1062,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       setFacts((f) => ({ ...f, noMicCardSeen: true }));
     },
     finish: () => nav.finished(),
+    finishTo: (to) => nav.finished(to),
     moduleEvent: (ev) => {
       // round 3 forge (patch 07): the Studio stage's "slot ended empty" (WorkTray studioToLesson) gives the tray back; it is
       // a Desk event, never sent to the lesson
