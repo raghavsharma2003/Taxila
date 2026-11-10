@@ -265,10 +265,14 @@ export class CascadeDuplex {
     if (this.closed) { this.stopTap?.(); this.stopTap = null; return false; }
     if (this.mode === "on") { this.s.setServerVad(this.o.lane === "d5" ? D5_SERVER_VAD_MS : DUPLEX_SERVER_VAD_MS); this.vadSet = true; }
     this.live.start();
-    const framesAt = this.live.stats.frames;
-    this.later(() => {
-      if (!this.closed && this.fallbackReason === null && this.live.stats.frames === framesAt) this.live.degrade("no_frames");
+    // audit V-07: a RUNNING check (before: once, 3 s after start): mic frames that stop later (a suspended context, a dead
+    // worklet) leave the engine live but deaf; it steps aside to the talk button instead
+    const watch = (framesAt: number) => this.later(() => {
+      if (this.closed || this.fallbackReason !== null) return;
+      if (this.live.stats.frames === framesAt) this.live.degrade("no_frames");
+      else watch(this.live.stats.frames);
     }, NO_FRAMES_MS);
+    watch(this.live.stats.frames);
     this.push();
     return true;
   }
@@ -326,6 +330,8 @@ export class CascadeDuplex {
   replyDropPending(): boolean {
     return !this.closed && !this.fallbackReason && this.mode === "on" && this.now() < this.dropUntil;
   }
+  /** The revoked turn was superseded in flight (its reply is the merged turn's): nothing to drop (audit V-05). */
+  keepReply(): void { this.dropUntil = 0; }
   shouldDropReply(): boolean {
     if (this.closed || this.fallbackReason || this.mode !== "on") return false;
     if (this.now() < this.dropUntil) { this.dropUntil = 0; return true; }

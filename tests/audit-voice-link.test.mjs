@@ -1,6 +1,5 @@
 // Audit 2026-11-09, voice (docs/design/round7/audit/voice.md): the hangs and the bridge. Each test fails on int/r6 at 21a.
-//   V-01 a streamed reply ends (with the error) when speech synthesis fails with clauses queued
-//   V-02 her line ends when its stream stalls mid-reply
+// (V-01 and V-02 are tested in tests/r7-audit-voice-server.test.mjs and r7-audit-voice-client.test.mjs.)
 //   V-03 the transcription call's token and connection requests are time-limited (the link falls back to the talk button)
 //   V-04 a tap that silences her tells the hands-free engine her line is over
 //   V-13 the bridge passes the player's sink to the speech fetch (lip-sync, board timing)
@@ -9,15 +8,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { speakStreamed } from "../server/latency/speech-stream.js";
 import { frame, FRAME } from "../server/voice/frames.js";
-import { PcmStreamPlayer } from "../src/lesson/ttsStream.ts";
 import { CascadeLink } from "../src/lesson/cascadeLink.ts";
 import { UiBridge } from "../src/lesson/uiBridge.ts";
 import { LevelMeter } from "../src/lesson/level.ts";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const settledWithin = (p, ms) => Promise.race([p.then((v) => ({ ok: true, v }), (e) => ({ ok: false, e })), sleep(ms).then(() => null)]);
 
 class FakeParam { constructor(v) { this.value = v; } cancelScheduledValues() {} setTargetAtTime(v) { this.value = v; } }
 class FakeNode { connect() {} disconnect() {} }
@@ -66,51 +62,6 @@ function browser({ sdp = "ok" } = {}) {
   return { sdpAborted: () => sdpAborted, restore() { for (const [k, d] of Object.entries(saved)) d ? Object.defineProperty(globalThis, k, d) : delete globalThis[k]; } };
 }
 const token = async () => ({ token: "ek_x", expiresAt: 0, base: "https://x.invalid/openai/v1", session: {} });
-
-// ───────────── V-01 ─────────────
-
-test("V-01 speakStreamed: a speech failure with clauses still queued rejects instead of hanging", async () => {
-  const text = "Ek baat batao. Do aur do kitne hote hain? Socho aaram se. Jaldi nahi hai. Main sun rahi hoon. ";
-  const failing = async function* () { await sleep(10); throw new Error("speech 429"); };
-  const r = await settledWithin(speakStreamed({ deltas: (async function* () { yield text; })(), synth: failing, emit: () => {} }), 1000);
-  assert.ok(r, "the call settled (before the fix the producer stayed parked on the full queue)");
-  assert.equal(r.ok, false);
-  assert.match(String(r.e?.message), /speech 429/);
-});
-
-// ───────────── V-02 ─────────────
-
-test("V-02 PcmStreamPlayer: a stream that stalls mid-reply ends the line with what was heard", async () => {
-  const player = new PcmStreamPlayer(new FakeAudioContext(), new FakeNode(), { stallMs: 60 });
-  let cancelled = false;
-  // 0.25 s of audio, then nothing: no bytes, no close, no error (a stalled connection)
-  const pb = player.play(async () => new ReadableStream({ start(c) { c.enqueue(new Uint8Array(24_000 * 2 * 0.25)); }, cancel() { cancelled = true; } }));
-  await pb.started;
-  const r = await settledWithin(pb.ended, 1500);
-  assert.ok(r, "ended resolved (before the fix it never did)");
-  assert.equal(r.v, "completed");
-  assert.equal(player.playing, false);
-  assert.equal(cancelled, true, "the stalled request is abandoned");
-});
-
-test("V-02 PcmStreamPlayer: gaps shorter than the stall time do not end a reply early", async () => {
-  const player = new PcmStreamPlayer(new FakeAudioContext(), new FakeNode(), { stallMs: 400 });
-  const pb = player.play(async () => new ReadableStream({
-    async start(c) {
-      c.enqueue(new Uint8Array(24_000 * 2 * 0.05));
-      await sleep(150); // an underrun gap
-      c.enqueue(new Uint8Array(24_000 * 2 * 0.05));
-      c.close();
-    },
-  }));
-  let endedAt = 0;
-  const t0 = performance.now();
-  void pb.ended.then(() => { endedAt = performance.now() - t0; });
-  await sleep(120);
-  assert.equal(endedAt, 0, "still open across the gap");
-  assert.equal(await pb.ended, "completed");
-  assert.ok(endedAt >= 150, `ended after the second chunk (${Math.round(endedAt)} ms)`);
-});
 
 // ───────────── V-03 ─────────────
 

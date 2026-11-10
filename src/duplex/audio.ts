@@ -225,6 +225,18 @@ export class ChildAudioTracker {
     return s;
   }
 
+  /**
+   * Audit V-07: the ear heard words this turn but the device saw no voiced onset (a whisper with no pitched frame, frames
+   * that stopped arriving): the words' arrival is the onset, so the silence clock runs and the turn can end. Without it
+   * silenceRunMs stays null and the governor vetoes every commit for the rest of the lesson.
+   */
+  seedOnset(at: Ms): void {
+    if (this.firstOnset !== null || this.voicingNow) return;
+    this.firstOnset = at;
+    this.lastOnset = at;
+    if (!(this.lastLoudAt >= at)) this.lastLoudAt = at;
+  }
+
   /** Time since the child's last voiced frame; 0 while voicing; null before any child voice this turn. */
   silenceRunMs(): Ms | null {
     if (this.voicingNow) return 0;

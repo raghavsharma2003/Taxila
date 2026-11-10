@@ -19,9 +19,9 @@ Status: **fixed** = fixed on this branch with a test that fails before the fix a
 | V-01 | P0 | broken | voice | Streamed reply never ends when speech synthesis fails with clauses queued | `server/latency/speech-stream.js:108,138-140` | abort on a thrown error so the parked producer is released | **fixed** |
 | V-02 | P0 | broken | voice | Her voice stalls mid-line and the lesson stays on "speaking" for good | `src/lesson/ttsStream.ts:706-711` | a stall timer in the player: audio ran out and no bytes for a few seconds ends the line | **fixed** |
 | V-04 | P0 | broken | voice | A tap that silences her (pause, hear again) is never told to the hands-free engine; on D4 the mic stays shut | `src/lesson/cascadeLink.ts:1196-1208, 611-613, 719-722` | `stopReply` tells the engine she stopped | **fixed** |
-| V-05 | P0 | broken | voice | After a self-correction her reply to the corrected answer is thrown away | `src/duplex/cascadeDuplex.ts:216`, `cascadeLink.ts:566-571` | clear the drop when the merged turn is committed | open |
-| V-06 | P0 | broken | voice | When her reply never sounds, the same answer is sent again about 18 s later | `src/duplex/governor.ts:576`, `live.ts:848` | start a fresh turn at the 6 s expiry | open |
-| V-07 | P0 | broken | voice | Hands-free stays "live" but deaf when mic frames stop or carry no pitch; no fallback to the talk button | `src/duplex/cascadeDuplex.ts:266-269`, `audio.ts:229-233`, `governor.ts:370-372` | a running no-frames check that steps aside; a transcript with no device onset seeds the onset | open |
+| V-05 | P0 | broken | voice | After a self-correction her reply to the corrected answer is thrown away | `src/duplex/cascadeDuplex.ts:216`, `cascadeLink.ts:566-571` | clear the drop when the merged turn is committed | **fixed** |
+| V-06 | P0 | broken | voice | When her reply never sounds, the same answer is sent again about 18 s later | `src/duplex/governor.ts:576`, `live.ts:848` | start a fresh turn at the 6 s expiry | **fixed** |
+| V-07 | P0 | broken | voice | Hands-free stays "live" but deaf when mic frames stop or carry no pitch; no fallback to the talk button | `src/duplex/cascadeDuplex.ts:266-269`, `audio.ts:229-233`, `governor.ts:370-372` | a running no-frames check that steps aside; a transcript with no device onset seeds the onset | **fixed** |
 | V-03 | P1 | broken | voice | The transcription call can hang while it connects; the dock says "getting ready" with no talk button and no time limit | `src/lesson/cascadeLink.ts:1252,1314`, `src/lesson/handsFree.ts:39` | time-limit the token and connection requests | **fixed** |
 | V-13 | P1 | broken | voice | Every teacher line in the child app loses lip-sync and board timing | `src/lesson/uiBridge.ts:322-324` | pass the third argument through | **fixed** |
 | V-10 | P1 | broken | voice | An answer given 7-13 s after her question, equal to the previous answer, is silently dropped | `src/duplex/live.ts:923,960,999` | forget the last commit once its reply has played | open |
@@ -61,18 +61,20 @@ Counts: P0 6, P1 12, P2 12, P3 10. Broken 25, inconsistent 9, not good enough 2,
 
 ## Fix status (2026-11-10)
 
-Fixed, 14: V-01, V-02, V-03, V-04, V-11, V-12, V-13, V-14, V-15, V-16, V-24, V-28, V-32, V-35.
+Fixed, 17: V-01, V-02, V-03, V-04, V-05, V-06, V-07, V-11, V-12, V-13, V-14, V-15, V-16, V-24, V-28, V-32, V-35. Each has a test that fails before the fix and passes after.
 
-- V-04 differs from the table's one-line fix: telling the engine "stopped" is not enough (the governor ignores it and keeps her turn), so a stop by hand reports her line as ended. Checked on the engine under a fake clock: the mic gate releases and the child's next answer is committed.
+Two sessions worked on this branch. A second session pushed the six P0 fixes (commit `01c8e667`: V-01, V-02, V-04, V-05, V-06, V-07; tests in `tests/r7-audit-voice-*.test.mjs`, `p1-duplex-link`, `ship5-fix-duplex-revoke`) while this one was fixing V-01 to V-04 and the smaller items. They are merged: its versions of V-01 and V-02 are kept, and V-04 is changed as below.
+
+- V-04: telling the engine "stopped" is not enough. The governor ignores it and keeps her turn, so the mic gate opens but the child's next answer is never committed. A stop by hand now reports her line as ended. `tests/audit-voice-small.test.mjs` runs both on the real engine under a fake clock: "ended" commits the answer, "stopped" commits nothing in 6 s. The other session's link test was changed to assert "ended".
 - V-32 fixes the reason code only. The safety count compares against codes the engine never emits; it stays wrong until someone names the right codes.
-- V-02 and V-03 add two numbers: a 4 s stall limit on a reply's stream, and a 10 s limit on each of the call's two requests.
+- New numbers: a 5 s stall limit on a reply's stream (V-02), and a 10 s limit on each of the transcription call's two requests (V-03).
 
-Open, 17. Two helper sessions that were fixing the engine and the spoken forms were cut off by a usage limit before they changed anything, so these are untouched:
+Open, 14, all mine under the phase 2 rule:
 
-- Hands-free engine: V-05, V-06, V-07, V-08, V-09, V-10, V-18. V-05 and V-06 are still P0.
+- Hands-free engine: V-08, V-09, V-10, V-18.
 - Spoken forms: V-17, V-26.
 - Server: V-20, V-25.
-- Small, written and then taken back out because they had no test yet: V-23, V-30, V-31. Each is a one-line change described in its row.
+- V-23, V-30, V-31: one-line changes described in their rows; written and taken back out because they had no test yet.
 - V-19: taken back out. Under the engine the link's own prefetch calls may not run at all, so the proposed fix could stop prefetch for the rest of a lesson. It needs a trace of one hands-free turn first.
 - V-33: the earpiece label was never checked on a phone; it should be before the pattern changes.
 - V-21: comments only.

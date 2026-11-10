@@ -12,6 +12,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import { CascadeDuplex } from "../src/duplex/cascadeDuplex.ts";
+import { DuplexLive } from "../src/duplex/live.ts";
 import { handleD5Upgrade } from "../server/duplex/d5route.js";
 import { Outbox, MemoryOutboxStore } from "../src/lesson/outbox.ts";
 import { UtteranceTracker } from "../src/voice/tracker.ts";
@@ -120,4 +121,47 @@ test("V-35 resolveDuplexMode: a device key of shadow stays shadow when the serve
     resetDuplexFlagCache();
     if (saved) Object.defineProperty(globalThis, "localStorage", saved); else delete globalThis.localStorage;
   }
+});
+
+// ───────────── V-04, on the engine: why a stop by hand is reported as ENDED ─────────────
+
+/** A half-duplex (D4) engine under a fake clock: her line is cut by a tap at 2 s, then the child answers. */
+function tapStopRun(tell) {
+  let now = 1_000_000;
+  const timers = [];
+  const run = (to) => { for (;;) { timers.sort((a, b) => a.at - b.at); const x = timers[0]; if (!x || x.at > to) break; now = x.at; x.at += x.every; x.fn(); } now = to; };
+  const commits = [];
+  const port = { duck() {}, pause: () => true, resume() {}, stop() {}, commit: (t) => commits.push(t.text), sttCommit() {}, dropReply() {}, fallback() {}, state() {}, micGate() {} };
+  const live = new DuplexLive({ lessonId: "L1", port, now: () => now, setInterval: (fn, ms) => { timers.push({ at: now + ms, every: ms, fn }); return timers.length; }, clearInterval() {}, halfDuplex: true });
+  const LOUD = 10 ** (-24 / 20), QUIET = 10 ** (-60 / 20), ECHO = 10 ** (-52 / 20);
+  const pending = [];
+  let herOn = false;
+  const frame = (loud) => { while (pending.length && pending[0][0] <= now) live.stt(pending.shift()[1]); live.frame(now, loud ? LOUD : herOn ? ECHO : QUIET, loud ? 240 : null, herOn ? -22 : null); };
+  const quiet = (ms) => { const end = now + ms; while (now < end) { frame(false); run(now + 20); } };
+  const say = (text, ms) => {
+    const id = "item_1", start = now;
+    pending.push([start + 10, { type: "input_audio_buffer.speech_started", item_id: id, audio_start_ms: start - 1_000_000 }]);
+    while (now < start + ms) { frame(true); run(now + 20); }
+    pending.push([start + ms + 500, { type: "input_audio_buffer.speech_stopped", item_id: id, audio_end_ms: start + ms - 1_000_000 }]);
+    pending.push([start + ms + 600, { type: "conversation.item.input_audio_transcription.delta", item_id: id, delta: text }]);
+    pending.push([start + ms + 700, { type: "conversation.item.input_audio_transcription.completed", item_id: id, transcript: text }]);
+  };
+  live.start();
+  quiet(800);
+  live.setUi({ beat: "practice", answerForm: "number", handover: "answer" });
+  herOn = true;
+  live.herStart("Chalo batao, saat aur paanch kitne hote hain?");
+  quiet(1200);
+  herOn = false; // the tap: her audio is cut
+  tell(live);
+  quiet(3000);
+  say("बारह", 500);
+  quiet(6000);
+  live.close?.();
+  return commits;
+}
+
+test("V-04 engine: after a tap cuts her line, the child's answer is committed only when the engine hears the line ENDED", () => {
+  assert.deepEqual(tapStopRun((live) => live.herEnd()), ["बारह"], "ended: the floor is the child's and the answer is committed");
+  assert.deepEqual(tapStopRun((live) => live.herStopped()), [], "stopped alone: she keeps her turn, the answer is never committed (so the link reports a stop by hand as ended)");
 });
