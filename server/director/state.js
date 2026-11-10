@@ -18,6 +18,8 @@
 // branchesFor() runs step() on a synthetic right and wrong reply: the voice lane's "if right / if not"
 // lines are the director's own next moves, never a second guess at them.
 import { inHindiWords } from "../brain/register.js";
+import { heldBoard as studioHeldBoard } from "../stagecraft/board-first.js";
+import { unitBoardOf, firstUnitOf } from "../brain/propose.js";
 import { stopKind, signalsOf } from "../relational/signals.js";
 import * as SH from "./shapes.js";
 import { readFileSync } from "fs";
@@ -2803,6 +2805,14 @@ const isScriptCard = scriptCardOf;
  * @returns the step; `hold: true` when a module-only turn changed nothing (the last move and UI stand).
  */
 export function step(prev, input) {
+  const out = step0(prev, input);
+  // (v6.11 G2, main on director19: "Phir se dekho:" on cards never asked — a card is posed when the turn that goes out carries it,
+  // whatever path built that turn (a split's held half included); a pose her line did not say, A4's cardUnsaid, is no posing)
+  const askF = out?.ui?.ask?.itemId;
+  if (askF && out.state && (out.state.posedAt?.[askF] == null || prev?.cardUnsaid === askF)) out.state.posedAt = { ...(out.state.posedAt ?? {}), [askF]: out.state.turn };
+  return out;
+}
+function step0(prev, input) {
   // v6.1 R10 (main, director9: 0 parks across four topics; "kal maine cricket khela, sixer maara" came with no request and got
   // a cricket-fractions analogy): in a scripted lesson a turn that answers nothing and names an aside topic of theirs is a share,
   // parked and returned to (never the card's answer: a graded turn, a request or a stuck turn is left as it is)
@@ -2841,7 +2851,9 @@ export function step(prev, input) {
     const unasked = !!prev.splitHold?.activeItemId || (!!prev.lastMove?.checkinOk && !prev.lastUi?.ask);
     // (v6.10 T2, main on director18 c4 steering 6, 44, c5-t01 steering 6: "samajh nahi aaya" there is a clarify of the POINT — it is
     // re-said in other authored words; only "pata nahi" gets the card first)
-    const rq2 = rq === "dont_know" ? "dont_know" : "clarify";
+    // (v6.11 G2: "samajh nahi aaya" is a clarify whatever flag the reader set — only "pata nahi" is a don't-know)
+    const saysClarify = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|didn'?t\s+understand|don'?t\s+understand|kya\s+matlab)(?![\p{L}])/iu.test(String(input.text ?? ""));
+    const rq2 = rq === "dont_know" && !saysClarify ? "dont_know" : "clarify";
     const shape = it && isScriptCard(it) && unasked ? responseShape(rq2, "checkin_after_point") : null;
     if (shape === "card_first") {
       const { request: _rq, ...rest } = input.cls;
@@ -3314,6 +3326,9 @@ export function step(prev, input) {
   }
   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
   if (p.request) move.request = p.request;
+  // (v6.11 G2: how many times each joint kind has been said this lesson — brain/say.js rotates the authored forms by it)
+  if (p.request === "language") s.langN = (s.langN ?? 0) + 1;
+  if (["ask_again", "unheard"].includes(p.request)) s.askAgainN = (s.askAgainN ?? 0) + 1;
   // (v6.9 A5: the acknowledgement only for a reply about the aside her last turn asked — turn.js planTurn reads it)
   if (input.cls?.asideReply) move.asideAck = true;
   // r12 RCA failure 4: the board the child asked to clear (brain/turn.js retires the Studio board and unmounts a rung)
@@ -3361,7 +3376,6 @@ export function step(prev, input) {
   if (input?.event === "turn" && input.cls?.outcome === "correct" && prev?.activeItemId && String(prev.activeItemId).startsWith("script:")) s.rightCards = [...new Set([...(s.rightCards ?? []), prev.activeItemId])];
   if (ui?.ask?.itemId && (s.rightCards ?? []).includes(ui.ask.itemId) && s.posedAt?.[ui.ask.itemId] != null && s.posedAt[ui.ask.itemId] < s.turn && !s.lastMove?.request) s.rightRepose = (s.rightRepose ?? 0) + 1;
   // (v6.10: the turn each card was first posed on — a later pose of the same card is a re-pose, framed as one, whatever the history says)
-  if (ui?.ask?.itemId && s.posedAt?.[ui.ask.itemId] == null) s.posedAt = { ...(s.posedAt ?? {}), [ui.ask.itemId]: s.turn };
   s.lastUi = ui; // what a hold re-sends (chips are momentary on the client: absent would clear them)
   // the card pins (capPlan): how many teacher turns in a row (turns with no question on the card do not break the run)
   // have pinned this question
@@ -3374,7 +3388,12 @@ export function step(prev, input) {
   }
   // The move as a kernel proposal (proposal.js, W2-C #8): returned beside the move, never stored in the state.
   const proposal = directorProposal(move, { stopping: p.stopping, ui, guidance: s.guidance, purpose: s.purpose });
-  return splitLong({ state: s, move, moduleCommands, ui, end: s.phase === "done", proposal, ...describe(s, input.kit) }, input);
+  let outF = splitLong({ state: s, move, moduleCommands, ui, end: s.phase === "done", proposal, ...describe(s, input.kit) }, input);
+  // v6.11 G2 (main on director19 c4 steering 6, stuck 22, c5-t01 steering 6, 12, stuck 48, offtopic 36, c5-t02 stuck 24): "samajh nahi
+  // aaya" at a check-in is answered by the re-said teaching, ending on its check-in — the card waits for the next turn
+  // (only when the turn re-says something: with nothing left to re-say, the card itself comes)
+  if (input.cls?.request?.src === "checkin_point" && outF.ui?.ask && !outF.move?.splitTeach && !outF.end && (outF.move?.simpler || outF.move?.point || outF.move?.rendered?.length) && !prev?.lastMove?.smaller) outF = holdCardForCheckin(outF);
+  return outF;
 }
 
 /**
@@ -3386,11 +3405,37 @@ export function step(prev, input) {
  */
 export const splitOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SPLIT ?? ""));
 const wordsIn = (...xs) => xs.flat().filter(Boolean).map(String).join(" ").split(/\s+/).filter(Boolean).length;
+/** v6.11 G2: a clarify at a check-in — the turn is the re-said teaching and a check-in; its card is held for the next turn. */
+function holdCardForCheckin(out) {
+  const { state: s, move, ui } = out;
+  const teach = { ...move, splitTeach: true, checkinOk: true };
+  const held = { kind: "practice", shape: SH.splitCard(), itemId: move.itemId, skillId: move.skillId, hintLevel: move.hintLevel,
+    ...(move.cardBeat ?? move.scriptBeat ? { scriptBeat: move.cardBeat ?? move.scriptBeat } : {}), ...(move.cardBeat ? { cardBeat: move.cardBeat } : {}),
+    ...(move.probe ? { probe: move.probe } : {}), ...(move.format ? { format: move.format } : {}) };
+  s.splitHold = { move: held, ui, activeItemId: s.activeItemId ?? null, lastContent: s.lastContent ?? [], moduleCommands: [], teach: true };
+  s.activeItemId = undefined;
+  s.lastMove = teach;
+  const teachUi = { status: "your_turn", ...(ui?.later ? { later: ui.later } : {}), ...(ui?.moment ? { moment: ui.moment } : {}) };
+  s.lastUi = teachUi;
+  return { ...out, state: s, move: teach, ui: teachUi, proposal: directorProposal(teach, { ui: teachUi, guidance: s.guidance, purpose: s.purpose }) };
+}
+/** v6.11 G2: can Studio draw a switch from one board to another inside one turn (its own heldBoard, on a line long enough to hold both)? */
+function switchFits(from, to) {
+  try {
+    if (!from?.template || !to?.template || JSON.stringify(from) === JSON.stringify(to)) return true;
+    const text = `${"a ".repeat(60)}${"b ".repeat(60)}`;
+    const r = studioHeldBoard({ intent: { kind: "whiteboard", held: { board: from, unit: "from", switchTo: { board: to, unit: "to", atChar: 120 } }, style: { band: "B3", lang: "hinglish" } }, line: { text } }, {});
+    return !r || (r.screens?.length ?? 1) >= 2;
+  } catch { return true; }
+}
 export function splitLong(out, input) {
   const { state: s, move, ui } = out;
   if (!splitOn() || !scriptOn() || input.branch || input.event !== "turn" || out.end || out.hold) return out;
   // (director9: a repair after a right answer carried closures and a bridge, 128 words; only the split's own halves are exempt)
-  if (["safeguard", "wrap", "break"].includes(move.kind) || move.splitClose || move.splitTeach || move.request || move.checkin) return out;
+  // (v6.11 G2, main on director19 c4 offtopic 22, 32, c6 stuck 46, 50, c5-t02 stuck 50: "aage chalo" or a Hindi request that gives the key
+  // stacked key, new point and new card — a give-up's turn ends on its key whatever request led to it)
+  const gaveReq = !!move.gave?.answer && ["move_on", "language", "clarify", "skip"].includes(move.request);
+  if (["safeguard", "wrap", "break"].includes(move.kind) || move.splitClose || move.splitTeach || (move.request && !gaveReq) || move.checkin) return out;
   const closing = [move.gave?.answer, move.gave?.why, move.closed?.answer, move.closed?.why, move.workedDone?.answer, move.workedDone?.why, move.bridgeSaid, move.returned?.line];
   const teaching = [move.point, ...(move.rendered ?? []), ui?.ask?.text];
   if (!teaching.some(Boolean)) return out;
@@ -3405,16 +3450,33 @@ export function splitLong(out, input) {
   // 80-100 words): after a give-up the turn is the key and its why, then a check-in; the next point comes on the next turn
   // (a replay of a recorded run walks what that run walked: tests/fixtures/replay.mjs runScriptOf marks it recordedRun)
   const gaveTurn = !!move.gave?.answer && !!(move.point || move.rendered?.length) && !scriptFor(input.kit)?.script?.recordedRun;
-  if (!bridgeTurn && !gaveTurn && (!closing.some(Boolean) || process.env.TAXILA_R7_SPLIT_CLOSE !== "on")) return splitTeach(out, input, cap);
+  // v6.11 G2 (main on director19 c4 steady 62, 76: a planned board change not drawn — the next unit's point said over the closed card's
+  // board): a close and the next unit's teaching go in one turn only when Studio can draw the switch between their boards (its own
+  // heldBoard, asked here); when it cannot, the close ends the turn on a check-in and the next unit comes on the next turn
+  // (a bridge's board is the next skill's first unit's — the bridge belongs to that unit, v6.9 N2)
+  const bridgeU = bridgeTurn && move.bridgeBeat?.skillId ? firstUnitOf(input.kit, move.bridgeBeat.skillId) : null;
+  const bridgeB = bridgeU ? unitBoardOf(input.kit, bridgeU) : null;
+  const closeB = move.closeBeat?.board ?? null, nextB = (bridgeTurn ? bridgeB ?? move.bridgeBeat?.board : null) ?? (move.cardBeat ?? move.scriptBeat)?.board ?? null;
+  const hasClose = closing.some(Boolean) || (!!move.closeBeat && (!!move.verdict || ["correct", "incorrect", "partial", "misconception"].includes(input.cls?.outcome)));
+  const unfit = hasClose && !!closeB && !!nextB && !scriptFor(input.kit)?.script?.recordedRun && !switchFits(closeB, nextB);
+  if (!bridgeTurn && !gaveTurn && !unfit && (!closing.some(Boolean) || process.env.TAXILA_R7_SPLIT_CLOSE !== "on")) return splitTeach(out, input, cap);
   // (her verdict and the joins are about a dozen words beside the authored ones)
-  if (!bridgeTurn && !gaveTurn && wordsIn(closing, teaching) + 12 <= cap) return out;
-  const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, ...(move.verdict ? { verdict: move.verdict } : {}), ...(gaveTurn && !bridgeTurn ? { gaveCheck: true } : {}),
-    ...Object.fromEntries(["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", "bridgeSaid", "bridgeBeat", "methods", "prefs"].filter((k) => move[k] != null).map((k) => [k, move[k]])),
+  if (!bridgeTurn && !gaveTurn && !unfit && wordsIn(closing, teaching) + 12 <= cap) return out;
+  // (a bridge whose board cannot follow the close's in one turn waits with the next unit)
+  const bridgeWaits = bridgeTurn && unfit;
+  const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, ...(move.verdict ? { verdict: move.verdict } : {}), ...((gaveTurn && !bridgeTurn) || unfit ? { gaveCheck: true } : {}),
+    ...Object.fromEntries(["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", ...(bridgeWaits ? [] : ["bridgeSaid", "bridgeBeat"]), "methods", "prefs"].filter((k) => move[k] != null).map((k) => [k, move[k]])),
     // (v6.4 P2, main on director12 c6 stuck 54: a lone bridge drew the answered card's board, stale from the preselect: a turn that
     // closes nothing but says the bridge is on the bridge's board)
-    ...((move.gave || move.closed || move.workedDone || move.verdict || !move.bridgeBeat) && move.closeBeat ? { scriptBeat: move.closeBeat } : move.bridgeBeat ? { scriptBeat: move.bridgeBeat } : {}) };
+    ...((move.gave || move.closed || move.workedDone || move.verdict || !move.bridgeBeat || bridgeWaits) && move.closeBeat ? { scriptBeat: move.closeBeat } : move.bridgeBeat ? { scriptBeat: move.bridgeBeat } : {}) };
   const held = { ...move };
-  for (const k of ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", "bridgeSaid", "bridgeBeat", "probeAck"]) delete held[k];
+  for (const k of ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", ...(bridgeWaits ? [] : ["bridgeSaid", "bridgeBeat"]), "probeAck"]) delete held[k];
+  // (the bridge rides in sayFirst too: when it waits, it leaves the close and leads the held turn)
+  if (bridgeWaits && move.bridgeSaid) {
+    const isBridge = (x) => String(x).trim() === String(move.bridgeSaid).trim();
+    if (close.sayFirst) { close.sayFirst = close.sayFirst.filter((x) => !isBridge(x)); if (!close.sayFirst.length) delete close.sayFirst; }
+    held.sayFirst = [String(move.bridgeSaid)];
+  }
   s.splitHold = { move: held, ui, activeItemId: s.activeItemId ?? null, lastContent: s.lastContent ?? [], moduleCommands: out.moduleCommands ?? [] };
   s.activeItemId = undefined;
   s.lastMove = close;
@@ -3603,9 +3665,48 @@ function heldTurn(prev, input) {
     const meta = item?.scriptThen ?? item?.scriptCheck ?? item?.scriptAsk;
     const sm = rem?.simpler ? saidIn(rem.simpler, lang) : meta?.simpler ? saidIn(meta.simpler, lang) : null;
     const remBeatOf = rem?.simpler && rem?.board ? { scriptId: scriptIdOf(input.kit), skillId: item.skillId, beatId: remId, kind: "remediation", board: rem.board } : null;
+    // v6.11 G2 (main on director19 c4 stuck 22, c5-t01 stuck 48, steering 12: "samajh nahi aaya" after a remediation got its card) — the
+    // remediation's simpler is said and the turn ends on its check-in; the card still waits (a live run only; a replay walks its record)
+    // (once: a second "samajh nahi aaya" after the simpler gets the card, with nothing said twice)
+    if (sm && !prev.lastMove?.smaller && !scriptFor(input.kit)?.script?.recordedRun) {
+      const teach = { ...prev.lastMove, simpler: String(sm), smaller: true, splitTeach: true, checkinOk: true, ...(remBeatOf ? { simplerBeat: remBeatOf } : {}) };
+      delete teach.rendered; delete teach.point;
+      s.splitHold = h;
+      const teachUi = { status: "your_turn" };
+      s.lastMove = teach; s.moveVoiced = false; s.lastUi = teachUi; s.activeItemId = undefined;
+      return { state: s, move: teach, moduleCommands: [], ui: teachUi, end: false, proposal: directorProposal(teach, { ui: teachUi, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+    }
     const m = { ...h.move, ...(sm ? { simpler: String(sm), smaller: true, ...(remBeatOf ? { simplerBeat: remBeatOf } : {}) } : {}) };
     // (v6.3 H1′: the line is said on this card, so a later miss on it climbs past it)
     if (sm) { const hp = s.cardHelp?.id === h.activeItemId ? s.cardHelp : { id: h.activeItemId, said: [], misses: 0 }; s.cardHelp = { ...hp, said: [...hp.said, normLine(sm)] }; }
+    s.lastMove = m; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent; s.activeItemId = h.activeItemId;
+    return { state: s, move: m, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(m, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+  }
+  // v6.11 G2 (main on director19 c6 stuck 38: an aside after a split's first half dropped the held half — the worked problem was never
+  // said and the walk resumed at step 1): an aside is answered (or parked) and the held half still comes, on this turn
+  // (and "samajh nahi aaya" to a closing split's check-in — after a key — is answered by the held teaching, never by skipping it: c5-t01)
+  if (((c?.request?.type === "uptake" && !c.help) || (!h.teach && lost)) && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
+    const s = structuredClone(prev);
+    s.turn += 1;
+    s.splitHold = undefined;
+    const text = String(input.text ?? "");
+    const m = { ...h.move };
+    const topic0 = asideTopic(text, s.ctx?.interests);
+    if (ASKS_HER_TASTE.test(text)) { s.tasteAsked = { topic: String(topic0 ?? "woh"), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; m.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n }; }
+    else if (topic0 && !unsafeChildPhrase(topic0)) {
+      s.later = parkGate(s, input.kit, input, { ...parkEntry({ topic: topic0, learning: false, turn: s.turn, itemOnTable: !!h.activeItemId }), share: true });
+      // (an aside said again is returned now, once — v6.9 T1.10 — and that return ends her turn: the held half waits for the next one)
+      if (s.servedNow) {
+        const r = s.servedNow; s.servedNow = undefined;
+        s.splitHold = h;
+        const ret = { kind: "repair", shape: SH.uptake({ kind: "personal_share" }), returned: { topic: r.topic, share: !!r.share, ...(r.said ? { said: String(r.said) } : {}) } };
+        if (h.move?.scriptBeat) ret.scriptBeat = prev.lastMove?.scriptBeat ?? h.move.scriptBeat;
+        const ui0 = { status: "your_turn" };
+        s.lastMove = ret; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
+        return { state: s, move: ret, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(ret, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+      }
+      if (s.asideAgain?.turn === s.turn) m.asideAgain = { topic: s.asideAgain.topic };
+    }
     s.lastMove = m; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent; s.activeItemId = h.activeItemId;
     return { state: s, move: m, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(m, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
   }

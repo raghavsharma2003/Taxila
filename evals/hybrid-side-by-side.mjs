@@ -380,6 +380,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         const picHb = visualNow && picTake && !H.switchTo;
         try { hb = heldBoard({ ...askF, line: { ...askF.line, text: String(reply) } }, { keepRef: upRef0, keepPage: upPage0, ...(picHb ? { picture: picTake.decision } : {}) }); } catch { hb = null; }
         unpaged = hb ? 0 : 1;
+        if (process.env.HARNESS_DEBUG_HELD && H.switchTo) console.error("[held]", JSON.stringify({ sw: H.switchTo.unit, at: H.switchTo.atChar, len: String(reply).length, screens: hb?.screens?.length, kept: hb?.kept, upRef: upRef0?.slice(0, 60), picHb, board: H.board?.template, to: H.switchTo.board?.template, upW: upPage0?.board?.w, upOps: upPage0?.ops?.length }));
         if (hb?.script) { shownScript = hb.lastPage ?? hb.script; shownRef = hb.lastRef ?? null; shownKind = null; }
         next = { ...next, heldUp: heldUpOf(H) };
         // (v6.9, main on director17: the record said "held" while the take showed a new board — the row's screen and its held record

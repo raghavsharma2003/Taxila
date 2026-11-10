@@ -570,6 +570,9 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   // line with no unit part in it (an aside, an acknowledgement, an aside question that ends her turn) keeps the board up
   const noUnitLine = offs.length > 0 && !spoken.length;
   let held = spoken[0]?.held ?? (!offs.length ? (closing && close ? close : cur ?? up) : up ?? cur);
+  // (v6.11 G2, main on director19 row 8: the board went up under "Achha." / "Theek hai." — words before her first unit part are no unit's:
+  // the board up stays under them, and the first unit part is where the new board goes up)
+  if (spoken.length && spoken[0].start > 0 && up?.board && JSON.stringify(up.board) !== JSON.stringify(spoken[0].held.board)) held = up;
   if (!held?.board) held = up?.board ? up : cur?.board ? cur : null;
   if (!held) return null;
   const out = { board: held.board, unit: held.unit };
