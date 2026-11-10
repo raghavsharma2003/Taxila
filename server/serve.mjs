@@ -18,7 +18,21 @@ const TYPES = {
   ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp",
   ".woff2": "font/woff2", ".mp3": "audio/mpeg", ".wav": "audio/wav", ".glb": "model/gltf-binary", ".wasm": "application/wasm",
   ".map": "application/json", ".ico": "image/x-icon", ".txt": "text/plain",
+  // public/site/game-loop.webm went out as application/octet-stream (the app audit), which some browsers will not play
+  ".webm": "video/webm", ".mp4": "video/mp4", ".jpeg": "image/jpeg", ".gif": "image/gif", ".avif": "image/avif",
+  ".woff": "font/woff", ".ttf": "font/ttf", ".ogg": "audio/ogg", ".m4a": "audio/mp4", ".webmanifest": "application/manifest+json",
 };
+
+/**
+ * Static media outside /assets/ (public/fonts, public/site, public/brand, public/audio…) keep their names across builds,
+ * so they cannot be immutable; they went out `no-cache`, so every page view revalidated every font and picture (the app
+ * audit). A day for fonts, an hour for the rest, then revalidate: a replaced file shows within that window.
+ */
+export function staticMediaHeaders(type) {
+  if (/^font\//.test(type)) return { "cache-control": "public, max-age=86400, must-revalidate" };
+  if (/^(image|audio|video|model)\//.test(type)) return { "cache-control": "public, max-age=3600, must-revalidate" };
+  return {};
+}
 
 /**
  * The module frame, at the HTTP level too: sandboxed even if opened top-level, and framed only by the app
@@ -73,39 +87,8 @@ async function prewarmBrotli(root = ROOT) {
   return n;
 }
 
-/**
- * index.html for "/" with the landing hero preloaded straight from the art manifest (W2-A #8; smooth G6): the LCP image
- * no longer waits for the bundle and the manifest fetch. The phone crop under 600 px, the wide scene above, 1x/2x —
- * the same choice src/app/landing/Site.tsx HeroArt makes. Cached per index.html + manifest mtime.
- */
-let landingHtml = null;
-export function heroPreloadTags(manifest) {
-  const rows = Array.isArray(manifest?.entries) ? manifest.entries : Array.isArray(manifest?.assets) ? manifest.assets : Object.values(manifest ?? {}).find(Array.isArray) ?? [];
-  const e = rows.find((x) => x?.id === "bg/landing-hero" && x.url);
-  if (!e) return "";
-  const set = (a, b) => [a && `${a} 1x`, b && `${b} 2x`].filter(Boolean).join(", ");
-  const tag = (u, u2, media) => `<link rel="preload" as="image" href="${u}" imagesrcset="${set(u, u2)}" media="${media}" fetchpriority="high" />`;
-  return e.phone?.url ? tag(e.phone.url, e.phone.url2x, "(max-width: 600px)") + tag(e.url, e.url2x, "(min-width: 601px)") : tag(e.url, e.url2x, "all");
-}
-function landingIndex() {
-  const index = join(ROOT, "index.html"), man = join(ROOT, "assets/gen/manifest.json");
-  try {
-    const key = `${statSync(index).mtimeMs}:${existsSync(man) ? statSync(man).mtimeMs : 0}`;
-    if (landingHtml?.key === key) return landingHtml.buf;
-    const tags = existsSync(man) ? heroPreloadTags(JSON.parse(readFileSync(man, "utf8"))) : "";
-    const html = readFileSync(index, "utf8").replace("</head>", `${tags}</head>`);
-    landingHtml = { key, buf: Buffer.from(html), br: brotliCompressSync(Buffer.from(html)), gz: gzipSync(Buffer.from(html)) };
-    return landingHtml.buf;
-  } catch { return null; }
-}
-function sendLanding(res, req) {
-  if (!landingIndex()) return sendFile(res, join(ROOT, "index.html"), {}, req);
-  const ae = String(req?.headers["accept-encoding"] || "");
-  const enc = /\bbr\b/.test(ae) ? "br" : /\bgzip\b/.test(ae) ? "gzip" : null;
-  const buf = enc === "br" ? landingHtml.br : enc === "gzip" ? landingHtml.gz : landingHtml.buf;
-  res.writeHead(200, { "content-type": TYPES[".html"], "cache-control": "no-cache", vary: "Accept-Encoding", ...(enc ? { "content-encoding": enc } : {}), "content-length": buf.length });
-  res.end(req.method === "HEAD" ? undefined : buf);
-}
+// "/" is index.html as built. It used to carry a preload of bg/landing-hero from the art manifest; the landing page no
+// longer draws that painting (tests/r11-site-volt.test.mjs), so the preload only competed with the real first paint.
 
 function sendFile(res, file, headers, req) {
   const type = TYPES[extname(file)] || "application/octet-stream";
@@ -145,12 +128,12 @@ const server = http.createServer((req, res) => {
     return res.end("d5 relay: not here");
   }
   if (path.startsWith("/api/")) return handle(req, res);
-  if (path === "/" || path === "/index.html") return sendLanding(res, req);
+  if (path === "/" || path === "/index.html") return sendFile(res, join(ROOT, "index.html"), {}, req);
   const file = normalize(join(ROOT, path));
   const frame = join(ROOT, "modules.html");
   if (file.startsWith(ROOT) && existsSync(file) && statSync(file).isFile()) {
     // hashed build assets are immutable; html must revalidate (the default no-cache)
-    return sendFile(res, file, path.startsWith("/assets/") ? assetHeaders(path) : file === frame ? FRAME : {}, req);
+    return sendFile(res, file, path.startsWith("/assets/") ? assetHeaders(path) : file === frame ? FRAME : staticMediaHeaders(TYPES[extname(file)] ?? ""), req);
   }
   if (path === "/modules" || path.startsWith("/modules.")) return sendFile(res, frame, FRAME, req);
   // A missing static asset is a 404, never the app shell: removed files (the bake-off identities, old unversioned
