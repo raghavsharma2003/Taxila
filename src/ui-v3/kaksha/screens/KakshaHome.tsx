@@ -2,6 +2,7 @@
 // face, her name with "AI teacher", one Start. No topic, no plan card, no tiles. The plan's server state decides the
 // CTA. The safety hold, offline and signed-out states render today's Home unchanged, so their copy, the help sheet
 // and the 1098 / 14416 floor stay exactly as integrated.
+import { clock } from "../../../child/copy.ts";
 import { useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { preloadLessonRoute } from "../../../child/preload.ts";
@@ -81,7 +82,7 @@ export function KakshaHome() {
           did={plan.did[0] ? { ask: plan.did[0].ask, answer: plan.did[0].answer, withHelp: plan.did[0].withHelp } : null}
           madeFor={plan.madeFor.map((it) => ({ id: it.id, title: it.title, still: it.still, to: `/c/${cid}/notebook?made=${encodeURIComponent(it.id)}` }))}
           jarWaiting={(plan.jarWaiting ?? 0) > 0}
-          startTo={state === "homework" ? `/c/${cid}/ask?homework=1` : continueTo ?? startTo} resuming={!!continueTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} go={go}
+          startTo={state === "homework" ? `/c/${cid}/ask?homework=1` : continueTo ?? startTo} resuming={!!continueTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} lessonTime={plan.schedule?.today ? clock(plan.schedule.time) : null} go={go}
           dock={dockForPlan(kn.dock, plan)} meTo={kn.meTo} />
       </div>
     </KakshaRoot>
