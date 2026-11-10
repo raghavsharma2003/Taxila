@@ -9,6 +9,7 @@
 // to a kit sentence (an item's only from a verified item); the protein test is nowhere; no jaanch word holds a number, an
 // economy word or a word for eating, tasting or touching; tampered params are refused; a claim never decides; first levels
 // differ across children; the generator and picker are fast (CPU time); every coverage entry serves a proven level.
+import { backlogged } from "./_backlog.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -382,8 +383,7 @@ test("jaanch coverage: three entries on the topic, mapped to its kit misconcepti
   assert.equal(entryFor({ skillId: `${T}-s1` }).goal, "iodine");
   assert.equal(entryFor({ skillId: `${T}-s2` }).goal, "kaagaz");
   assert.equal(entryFor({ skillId: `${T}-s3` }).goal, "dono");
-  const backlog = readFileSync(`${ROOT}docs/design/round7/games/law-backlog.md`, "utf8");
-  assert.doesNotMatch(backlog, new RegExp(T));
+  assert.deepEqual(backlogged(T), [], `${T} is still in the law backlog`);
 });
 
 for (const e of JG()) for (const fade of [1, 2, 3]) {

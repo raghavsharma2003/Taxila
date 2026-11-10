@@ -20,7 +20,7 @@ import { playActOf } from "../server/director/play-verbs.js";
 import { GAME_WEIGHT, FAMILIES, MODES, FAMILY_ARTS, sanitizeActs } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
 import { pickLevels } from "../src/play/core/pick.ts";
-import { cpuNow } from "./_cpu-ms.mjs";
+import { counted } from "./_work.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const KIT = Object.fromEntries(["c6-science", "c7-science"].flatMap((f) => JSON.parse(readFileSync(`${ROOT}data/kits/${f}.json`, "utf8")).topics).map((t) => [t.topicId, t]));
@@ -439,13 +439,17 @@ for (const [mode, goal] of CASES) {
   });
 }
 
-test("gati: the generator and the picker are fast (CPU time, p95 ≤ 50 ms)", () => {
-  const gen = [], pick = [];
+test("gati: the generator's and the picker's work is bounded (counted, not timed)", () => {
+  // measured 2026-11-10 over every case below: at most 24 candidates and 1316 calls into the family logic per pick; bounds are 3x above that. A count is the same on every machine; a
+  // 50 ms p95 read 5 ms idle and 110 ms under the gate's load (tests/_work.mjs).
+  const gen = [], calls = [], considered = [], counter = counted(L);
   for (const [mode, goal] of CASES) for (const fade of [1, 3]) for (let seed = 1; seed <= 6; seed++) {
-    let t0 = cpuNow(); L.generate(req(mode, goal, seed * 31, { fade })); gen.push(cpuNow() - t0);
-    t0 = cpuNow(); pickLevels(L, req(mode, goal, seed * 31, { fade })); pick.push(cpuNow() - t0);
+    gen.push(L.generate(req(mode, goal, seed * 31, { fade })).length);
+    counter.reset(); const picked = pickLevels(counter.logic, req(mode, goal, seed * 31, { fade })); assert.ok(picked); calls.push(counter.calls()); considered.push(picked.considered);
   }
-  for (const [name, xs] of [["generate", gen], ["pick", pick]]) { xs.sort((a, b) => a - b); const p95 = xs[Math.floor(xs.length * 0.95)]; assert.ok(p95 <= 50, `${name} p95 ${p95.toFixed(1)} ms`); }
+  assert.ok(Math.max(...gen) <= 72, `generate made ${Math.max(...gen)} candidates`);
+  assert.ok(Math.max(...considered) <= 72, `pick considered ${Math.max(...considered)}`);
+  assert.ok(Math.max(...calls) <= 4000, `pick made ${Math.max(...calls)} calls into the family logic`);
 });
 
 test("gati: every word the view shows exists in all three languages and none is an economy word; vakya's words stay last; no clock, randomness or colour literal in the law or the view", () => {

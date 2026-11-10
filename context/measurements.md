@@ -6428,3 +6428,64 @@ jaanch play-cert, 2026-11-09 (forge3-qa, local harness, sizes p360 / p412 / l136
 - **Tests:** tests/r7-games-jaanch.test.mjs, 27 tests: an independent checker with its own reading of the kit agrees with every accepted act over random play; no result is taken before its evidence; mal-rules fold their kit ids; every food's result cited to a kit sentence (item sentences only from verified items); no protein word anywhere; no digit, economy word or eat / taste / touch word; lines fit the Studio box; variety across children; CPU-time speed bars.
 - **Browser runs** (page.touchscreen.tap on canvas targets, locator.tap on DOM buttons, never a dispatch): every goal solved at 360 x 640 on seeds 3 and 17 at looks 1 to 3 (18 runs), and at seed 9 in Hindi and Hinglish across chalk, raat, blueprint and kagaz (12 runs, audited after every act); every mal-rule state reached (6); no clipped label; smallest tap target 44 px.
 - **Shots:** docs/design/round7/games/runshots-jaanch/.
+
+
+<!-- merged from inbox/r7-audit-docs-memory.json -->
+## `ms-audit-inbox-edges-dropped-2026-11-09`
+Whole-project audit, docs and memory. 229 of 3,062 edges in merged inbox files are not in the graph. The 96 that are well-formed are carried again by this file; the 130 with a relation the graph does not have need a person to map them (`informs` 51, `implements` 13, `refines` 10, `supports` 10 are the common ones).
+
+## `ms-audit-kit-census-2026-11-09`
+830 topics, 12,597 items, 38 files under `data/kits/`. Replaces the 2026-10-02 census (565 / 7,385), which older decisions still cite. The verified share was not recounted.
+
+## `ms-audit-open-items-closed-2026-11-09`
+Whole-project audit, docs and memory (DOCS-22, 23, 29, 43). Entries in `open.md` and `architecture.md` that the code has since closed; nothing recorded the close. Each is the old claim, then the code that closes it.
+- `open.md` `ledger-game-full-weight`: `server/learner/kt/bktr.js` has `SOURCE_WEIGHT`. `w1c-late-double-count-reports`: `server/reports/check.js`. `open-lt-client-wiring-2`: `src/child/lesson/Refused.tsx` and `src/ui-v3/kaksha/screens/KakshaHome.tsx`. `open-r143-kit-kind-pose-mismatch`: no kit item carries `"deep": false` any more. `open-r7-m4-billing-assumptions`: answered in `ms-r7-m4-day1-2026-11-06`. "No client consumes pace": `src/lesson/runtime.ts`.
+- Mostly closed, left open on purpose: `open-lt-evals-plan-gate` (only `evals/cascade-latency.mjs` remains) and `w2e-open-2026-10-04` (its third bullet).
+- `architecture.md`: the school-chapter column exists (`db/migrations/025_child_school_chapter.sql`); `scripts/migrate.mjs` defaults to the test branch; the W1-B call sites are in `server/brain/turn.js`; the engine re-check is in `server/director/modules.js`; `data/kits-parts.json` exists and `server/director/classify.js` reads it; Stagecraft runs in the live turn by default (`server/stagecraft/lesson.js`); games are registered (`server/index.js`, `server/play/levels.js`); `TAXILA_STT_MODEL` is set in `scripts/deploy-azure.mjs`; the distress check fails closed (`server/director/classify.js`); `planToday()` is called from `server/routes/child.js`; lesson purpose and resume are in `src/child/lesson/LessonScreen.tsx` and `src/child/plan.ts`; the Notebook is served by `GET /api/studio/notebook`; parent memory is called from `src/parent/api.ts`; the go-deeper request type is in `server/director/requests.js`, which also reads the stop phrase; `fadedVersion` and `format_posterior` are read (`server/director/fading.js`, `server/learner/formats.js`); the agent's picture and game tools exist (`server/agent/tools.js`); route crashes are beaconed (`src/main.tsx`); `FORGE_G2_CHILD_SALT` is set in `scripts/deploy-azure.mjs`; taxila.dev serves the app (`taxila-dev-live-2026-10-04`).
+- Reversal conditions that name retired nodes (DOCS-29): `scout-synthesis-no-challenger-2026-10-04` and `model-router-v3-2026-10-04` reverse on a rule in `weekly-model-scout`, which `owner-focus-complete-product-2026-10-05` superseded; read those two reversal conditions as retired. `w2h-studio-evidence-one-event-per-item` reverses if `ledger-game-full-weight` resolves; it has, and the follow-ups (`w2hfix-grade-by-item`, `w2hfix-retire-incorrect-evidence`) now carry supersedes edges.
+- Files named in `architecture.md` that do not exist (DOCS-43): `src/child/tokens.css` (now `src/styles/tokens.css`), `scripts/teacher-stills.mjs`, and `docs/design/round3/relational-human/listening/blind.html` (only `blind.html.gz` exists).
+- Seven entries say the code safety scan misses named lines; it now catches all 13. Safety code is frozen: recorded as stale memory only.
+
+
+<!-- merged from inbox/r7-audit-games.json -->
+## coverage-belief-without-discriminating-level
+**n = 515 coverage entries, 6,426 levels served with the Director's focus set to each mapped belief, every skill the entry admits, fades 1-3, 3 seeds, both doors never mixed (garam). Method: docs/design/round7/audit/games-scripts/focus-discriminates.mjs. Result: four beliefs never appear in `proof.discriminates` on any level (c5-maths-ch02-t03 strips/equal more-pieces-more; c7-science-ch10-t01 fair-test light-only; c6-maths-ch04-t02 stambh/picto key-ignored; c6-maths-ch04-t03 stambh/bars scale-as-one), and for three of them `malActs` returns nothing, so a child holding the belief is never flagged although the coverage count (358 mapped beliefs) includes it. 27 more belief/entry pairs miss on some fade or seed only (the picker serves its best candidate). The same run found no level where a mal-rule's acts win a level that claims to discriminate it, 0 right answers rejected in 9,270 levels, and 11,528 extreme-number replays through gradeActs with no throw or slow request.**
+
+
+<!-- merged from inbox/r7-audit-seams.json -->
+## seams-audit-2026-11-10
+Method: scripts in `docs/design/round7/audit/seams-scripts/` over the working tree at int/r6 21a (no network, no DB). n: 133 registered routes, 325 environment names, 1,280 product files in the import graph, 75 foreign keys to child/guardian/lesson. Results: no client call to a missing route; every FK cascades or sets null (a child or account erase cannot fail on a reference); `UiDirectives.readAloud` is never sent; four parent controls (`extra_time`, `data_saver`, `captions_always`, `comfort_mode`) have no reader outside the parent routes; the game voice grammar reads number words 0-13, 15, 20 only. Report: `docs/design/round7/audit/seams.md`.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r7-audit-content-blind-solve` (2026-11-09): Whole-project audit, content-data: 1,802 items solved blind by Claude agents with keys withheld until answers were written (1,010 of 12,597 kit items in a seeded sample per class and subject, 264 of 2,647 diagnostics, 72 worked examples, all 456 placement items). 0 wrong keys. 14 English and Hindi items that depend on a story or poem the prompt does not carry could not be re-derived (unverified, not confirmed). Curriculum graph: 830 topics, 830 kits, no duplicate ids, no dangling, forward or circular prerequisites. Method and findings: docs/design/round7/audit/content-data.md.
+- `ms-r7-audit-content-data-deletions` (2026-11-10): Removed in the content-data audit (deletions commit; each file is in git at 55983111): server/content/minikit.js (mini-kit generator and compareAnswers); scripts/kits/w5-decide.mjs (applied its 25 rewrites once, now stops at its first one); scripts/kits/w2-merge.mjs (0 of 4,695 items left to merge). Kept: scripts/kits/w5-decisions.json (decisions.md cites it), w5-filter-numerals.mjs (tests/r7-learning-w5.test.mjs), data/curriculum/boards.json, data/curriculum/index.json (validate.mjs checks it against the files), data/kits-relevel (tests and context cite it).
+- `audit-studio-2026-11-10` (2026-11-10): Studio area audit, 2026-11-10 (docs/design/round7/audit/studio.md): 12 findings (P1 1, P2 4, P3 7); patches 003 (shade-grid fraction) and 004 (catalogue boards need the cross-check) in docs/patches/to-studio with tests
+- `m-audit-shade-grid-lint` (2026-11-10): shade-grid@1 with labels on and the fraction shown failed its own text-overlap lint for every grid of 2+ rows: 1,080 of 1,080 block calls (rows 1-6 x cols 1-10 x every block). The fraction numwork box starts ~35 units above its `at` row; at y0+H+34 it sat on the 'N rows' label. With y0+H+56: 4,616 of 4,616 pass. The claims board (claims-board.js:98) makes exactly this call
+- `m-audit-catalogue-usable` (2026-11-10): Studio catalogue at int/r6 21a: 385 topic files; games ok 368, unchecked 9, missing 4, unsafe string 1, safety-excluded 3; cross-check pass 369, fail 7, missing 9. 13 records whose check did not pass still served 102 whiteboard boards (game and explainer withheld). Explainer library: 316 of 316 entries pass truth and expand
+- `r7-audit-teacher-lanes` (2026-11-10): Teacher audit 2026-11-10 (int/r6 21a, code read, n/a model): on default flags every child is on the Director lane (agent lane only via TAXILA_TEACHER=agent or TAXILA_TEACHER_AGENT_FOR; neither is set in infra/ or deploy scripts); the script walk is on and walks 4 topics (data/lesson-scripts: c4 ch05 t01, c5 ch02 t01-t02, c6 ch06 t01); the other 826 kit topics run the kit path
+- `r7-audit-teacher-agent-clip` (2026-11-10): Agent lane prompt clips (server/agent/prompt.js): over data/kits/*.json, 1,666 of 25,194 item prompts (hi+en) exceed the 180-char offer clip and 930 the 200-char card clip; 669 of 830 topics have more than the 4 key ideas shown (audit TEACHER-06)
+
+
+<!-- merged from inbox/r7-main-35.json -->
+## `ms-r7-director17-hand-2026-11-10` (2026-11-10)
+
+director17: the held board on integration 21. 16 lessons, 1,479 calls, about $1.015, run by main. Counted by hand by 4 judges on Opus 5.5.
+
+| Line | Count |
+|---|---|
+| Beats taught | 283/283 |
+| Verdicts | 247/247 |
+| Misgrades | 0 |
+| False keys | 0 |
+| Held-cost contradictions (teaching said over a board that does not show it) | 0 |
+| Her words against the board | **8** (c4 3, c5-t01 3, c5-t02 1, c6 1) |
+| An unsaid card's board on screen | **8** (c4 4, c5-t01 3, c5-t02 1) |
+
+The judges reported 16 contradictions; main ruled them into the last two rows and says so in the write-up.
+
+Listening is 3 in all four topics. Register fell to 3 in c4. Picture requests: 11 of 16 true.
+
+The automatic counter (H5) caught 3 of 16, with over 100 false flags.
+
+Full write-up: docs/design/round7/judgements/director17-2026-11-10.md.

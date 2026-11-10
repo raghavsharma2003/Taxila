@@ -618,9 +618,10 @@ function lessonFacts(state, evidence, kit) {
 
 /**
  * The child's summary screen (V2 §6.3.5 "What you did today"), from the lesson's own record of graded turns
- * (state.did, written by the turn route from the verified-key classifier) — never from a model's account of the
- * lesson. Up to 3 cards: verified right answers first (newest first), then a teach-back; when nothing was verified,
- * what the child tried, with `tried` (the only count the screen may show). The face is verdict-neutral (ReactionGate):
+ * (state.did, written by the turn route) — a tick only for an answer graded against a verified key, never from a model's
+ * account of the lesson. Up to 3 cards: verified right answers first (newest first), then a teach-back only when its record is
+ * verified (TEACHER-03: a teach-back's verdict is a model's label, so today it never is); when nothing was verified, what the
+ * child tried, with `tried` (the only count the screen may show). The face is verdict-neutral (ReactionGate):
  * the same "warm" program whatever happened. No score, minutes or comparison is ever in it.
  * @returns {import("../../shared/contracts").LessonSummary}
  */
@@ -630,7 +631,7 @@ export function lessonSummary(state, { topic, teacher, rows = null }) {
   for (const d of did.filter((x) => x.kind === "item")) latest.set(d.itemId, d);
   const attempts = [...latest.values()].sort((a, b) => (b.turn ?? 0) - (a.turn ?? 0));
   const ticks = attempts.filter((d) => d.verdict === "correct" && d.verified);
-  const taught = [...did].reverse().find((d) => d.kind === "teachback" && d.verdict === "correct");
+  const taught = [...did].reverse().find((d) => d.kind === "teachback" && d.verdict === "correct" && d.verified === true && !d.byModel);
   const card = (d, tick) => ({ kind: d.kind, ask: d.ask ?? null, answer: d.answer, tick, withHelp: !!(tick && d.withHelp), turnSeq: d.seq ?? null });
   let cards = [...ticks.sort((a, b) => Number(a.withHelp) - Number(b.withHelp) || (b.turn ?? 0) - (a.turn ?? 0)).map((d) => card(d, true))];
   if (taught) cards.splice(Math.min(cards.length, 2), 0, card(taught, true));
@@ -897,11 +898,17 @@ async function turn(req, res, body) {
   // the take may wait for the same classify the turn adopts, so the turn never waits on it: the spec lands on `hooks` when
   // handed over (turn.js reads it only after its own classify); whatever happens it is settled (logged, aborted) at the end
   const hooks = {};
-  // r7 Voice → Studio M4 (server/duplex/childText.js): the turn's words as sent, for in-process listeners, before the turn runs
-  // (Brain: synchronous and never awaited, so it adds no serial latency; a throw in it never reaches the turn)
-  if (body?.lessonId && typeof body?.childText === "string") { try { emitChildText({ lessonId: body.lessonId, itemId: `turn:${body.turnSeq ?? ""}`, text: body.childText, final: true }); } catch { /* the turn goes on */ } }
-  const specP = !body?.typed && !body?.chipId ? takeAgentSpec(body?.lessonId, body?.childText).catch(() => null) : null;
-  specP?.then((s) => { if (s) hooks.agentSpec = s; });
+  let specP = null;
+  // (TEACHER-05, owner's audit: the words were emitted and the lesson's speculation taken BEFORE the request was authorised — anyone
+  // knowing a lesson id could drop or take its speculation): both run only once lessonTurn has loaded the lesson for the signed-in
+  // guardian's child and checked consent (brain/turn.js calls hooks.authorized), as the duplex partial route does
+  hooks.authorized = () => {
+    // r7 Voice → Studio M4 (server/duplex/childText.js): the turn's words as sent, for in-process listeners
+    // (Brain: synchronous and never awaited, so it adds no serial latency; a throw in it never reaches the turn)
+    if (body?.lessonId && typeof body?.childText === "string") { try { emitChildText({ lessonId: body.lessonId, itemId: `turn:${body.turnSeq ?? ""}`, text: body.childText, final: true }); } catch { /* the turn goes on */ } }
+    specP = !body?.typed && !body?.chipId ? takeAgentSpec(body?.lessonId, body?.childText).catch(() => null) : null;
+    specP?.then((s) => { if (s) hooks.agentSpec = s; });
+  };
   // round 7 A5: `Accept: text/event-stream` streams her guarded clauses, then the turn (brain/clauses.js); otherwise plain JSON
   try { await runTurn(req, res, (h) => lessonTurn(req, body, h), hooks); }
   finally { if (specP) settleAgentSpec(body?.lessonId, await specP); }

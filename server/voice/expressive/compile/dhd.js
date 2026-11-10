@@ -31,8 +31,18 @@ export function langRuns(escaped) {
 }
 const rateAttr = (n) => `${n >= 0 ? "+" : ""}${Math.round(n)}%`;
 const speak = (voice, body) => `<speak ${XMLNS} xml:lang="en-IN"><voice name="${escapeXml(voice)}">${body}</voice></speak>`;
-/** Remove [bracketed] and *asterisked* stage directions from spoken text (after speakable: no maths "*" is left). */
-export const stripStageDirections = (s) => String(s).replace(/\[[^\]]*\]|\*[\p{L}][^*]*\*/gu, " ").replace(/\s{2,}/g, " ").replace(/\s+([,.!?।])/g, "$1");
+/**
+ * Remove stage directions from spoken text: [bracketed] ones that are letters only ("[laughs]", "[smiles warmly]") and
+ * asterisked actions ("*smiles*", "*nods happily*"). Audit V-26: a bracket with digits or symbols is maths ("[1, 2, 3]")
+ * and stays; any other asterisked word ("*zaroori*") is emphasis in kit and opening text, said without its stars (the
+ * fallback voice said it; DragonHD deleted it).
+ */
+const STAR_ACTION = /\*(?:smiles?|smiling|laughs?|laughing|nods?|nodding|giggles?|chuckles?|sighs?|winks?|claps?|pauses?|grins?|whispers?|cheers?|gasps?)\b[^*]*\*/giu;
+export const stripStageDirections = (s) => String(s)
+  .replace(/\[[\p{L}\p{M}\s'’-]*\]/gu, " ")
+  .replace(STAR_ACTION, " ")
+  .replace(/\*([\p{L}\p{M}][^*]*)\*/gu, "$1")
+  .replace(/\s{2,}/g, " ").replace(/\s+([,.!?।])/g, "$1");
 /** A spoken run: speakable text, escaped, Devanagari wrapped. Empty when nothing speakable is left. */
 export function spokenRun(text, spoken) {
   // A bracketed or asterisked stage direction ("[laughs]", "*smiles*") is never spoken: DragonHD reads tags aloud

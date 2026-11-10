@@ -3,7 +3,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { execFileSync } from "node:child_process";
 
 const read = (p) => fs.readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 
@@ -36,13 +35,8 @@ test("Ask: hands-free listens on open only when the mic is already allowed; Tap 
   assert.match(a, /setText\(\(t0\) => \(t0\.trim\(\) \? `\$\{t0\.trim\(\)\} \$\{heard\}` : heard\)\)/, "what she heard goes into the field, never straight to Ask");
 });
 
-test("Voice's seam (to-voice/003) applies to the tree, or Voice has applied it", () => {
-  const cwd = new URL("..", import.meta.url);
-  const patch = "docs/patches/to-voice/003-app-ask-transcribe-childid.patch";
-  try {
-    execFileSync("git", ["apply", "--check", patch], { cwd, stdio: "pipe" });
-  } catch {
-    // Voice applied it (claude/r4-duplex 16c9bf2e): the patch now reverses cleanly instead
-    execFileSync("git", ["apply", "--check", "--reverse", patch], { cwd, stdio: "pipe" });
-  }
+test("Voice's seam is in the tree: a body with childId and no lessonId is the child's own clip (requireChild)", () => {
+  const v = read("server/routes/voice.js");
+  assert.match(v, /const ask = !body\?\.lessonId && body\?\.childId;/);
+  assert.match(v, /ask \? \{ lesson: null, \.\.\.\(await requireChild\(req, String\(body\.childId\)\)\) \}/);
 });

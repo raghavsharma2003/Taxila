@@ -4,7 +4,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { execFileSync } from "node:child_process";
 
 const S = await import("../server/signin/code.js");
 const read = (p) => fs.readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
@@ -92,12 +91,9 @@ test("the client words every refusal and keeps only 6 digits of a paste", async 
   assert.match(read("src/app/routes.tsx"), /\{ path: "\/signin", element: s\(<CodeSignIn \/>\) \}/);
 });
 
-test("the wiring patches apply (or are already applied)", () => {
-  for (const p of ["docs/patches/to-platform/002-signin-code-routes.patch", "docs/patches/to-learning/004-signin-code-links.patch"]) {
-    const at = new URL("..", import.meta.url).pathname;
-    let ok = false;
-    try { execFileSync("git", ["apply", "--check", p], { cwd: at, stdio: "pipe" }); ok = true; } catch { /* maybe applied */ }
-    if (!ok) { execFileSync("git", ["apply", "--check", "--reverse", p], { cwd: at, stdio: "pipe" }); ok = true; }
-    assert.ok(ok, p);
-  }
+test("the wiring is in the tree: Platform registers the routes, Learning links to the code sign-in", () => {
+  assert.match(read("server/index.js"), /import \{ routes as signin \} from "\.\/signin\/code\.js";/);
+  assert.match(read("server/index.js"), /register\(\{[^\n]*\.\.\.signin\b/);
+  assert.match(read("src/onboarding/Account.tsx"), /data-testid="signin-code"/);
+  assert.match(read("src/onboarding/Forgot.tsx"), /data-testid="forgot-code"/);
 });

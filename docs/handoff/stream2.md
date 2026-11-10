@@ -40,7 +40,7 @@ Owner directives in force: Azure-only AI; **no model / Azure calls until main sa
 | b42cc474 / fc8be3ff | freeSubjectOf refuses verbs and fillers ("bola"); a failed board records `live:… template:…`. |
 | cf25ca72 (+ f2380599 test) | isDrawing counts a rect with no text inside; template refusals are logged (run 8). |
 
-Context entries for these are in `context/inbox/merged/r5-38aad918-s2.json` (merged by main) and `context/inbox/r1442-s2.json`. Graph edges are `{src, rel, dst}`, and every node needs an md write-up.
+Context entries for these are in `context/inbox/merged/r5-38aad918-s2.json` (merged by main) and `context/inbox/merged/r1442-s2.json` (merged since). Graph edges are `{src, rel, dst}`, and every node needs an md write-up.
 
 ## Open items
 

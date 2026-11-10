@@ -95,7 +95,7 @@ export function puppetServerAllows(fetchImpl?: typeof fetch, timeoutMs?: number)
 /** The server's answer, once it has arrived on this page (null before). */
 export const faceServerKnown = (): FaceServerConfig | null => serverKnown;
 
-/** The server already said no on this page (LessonFace then renders TutorFace directly, no poster flash). */
+/** The server already said no on this page (LessonFace then mounts her rest still directly: no stage is built). */
 export const puppetServerKnownOff = (): boolean => serverKnown?.puppet2d === false && !puppetForcedOn();
 
 /** Tests only: forget the server's answer. */

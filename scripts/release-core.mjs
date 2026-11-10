@@ -12,8 +12,20 @@
 //   cohort    every env name the previous web revision carried is on the new one (cohort switches survive a deploy)
 //   worker    scripts/deploy-worker.mjs --image-tag <sha7> --jobs: worker + both Conductor jobs on the same commit
 //   record    a context/inbox entry for the release
-// Rollback (--rollback): web traffic back to `previous` (deploy-azure --rollback), then the worker and jobs back to the
-// captured image tag, together.
+// Rollback (--rollback): web traffic back to the revision `capture` recorded (deploy-azure --rollback --to <it>), then
+// the worker and jobs back to the captured image tag, together.
+// The freeze step is the release's one freeze check: the web and worker steps carry --force, so a release that crosses
+// 18:00 IST between them finishes instead of stopping with the web new and the worker old (PLAT-22).
+import { LATEST_EVIDENCE } from "./deploy-core.mjs";
+
+/**
+ * Env names a release removes from the web on purpose: settings the code no longer needs. The web step sends
+ * `--set NAME=` (deploy-azure: an empty value removes the name) and the cohort step allows the drop.
+ * TAXILA_UI_KAKSHA: the Kaksha cohort list. The client ignores it since Kaksha went to every account
+ * (src/ui-v3/kaksha/flag.ts); the server half that still reads it (server/ui/kaksha-cohort.js on /api/me and child boot)
+ * is Brain's to remove (seams audit SEAM-07).
+ */
+export const RETIRED_ENV = Object.freeze(["TAXILA_UI_KAKSHA"]);
 
 export const STEPS = ["evidence", "freeze", "capture", "images", "migrate", "web", "cohort", "worker", "record"];
 
@@ -25,10 +37,13 @@ export const STEPS = ["evidence", "freeze", "capture", "images", "migrate", "web
 export function planRelease({ sha, migrate = "neon", backup, force = false, set = [] }) {
   if (!/^[0-9a-f]{40}$/.test(String(sha))) throw new Error(`release: a full 40-hex commit sha, got ${sha}`);
   for (const kv of set) if (!/^[A-Z][A-Z0-9_]*=/.test(kv)) throw new Error(`release --set ${kv}: expected NAME=VALUE`);
-  const sets = set.flatMap((kv) => ["--set", kv]);
+  const sets = [...set, ...RETIRED_ENV.filter((n) => !set.some((kv) => kv.startsWith(n + "="))).map((n) => `${n}=`)].flatMap((kv) => ["--set", kv]);
   const s7 = sha.slice(0, 7);
+  // --migrate job (a private in-VNet database): the job's own report is the migrations evidence both deploys need (PLAT-21);
+  // its backup is the database's point-in-time restore, said on the record with --no-backup (PLAT-18)
+  const evidence = migrate === "job" ? ["--migrations-evidence", LATEST_EVIDENCE("apply")] : [];
   const mig = migrate === "skip" ? null
-    : migrate === "job" ? ["scripts/migrate.mjs", "--prod", "--job", "--sha", sha]
+    : migrate === "job" ? ["scripts/migrate.mjs", "--prod", "--job", "--no-backup", "--sha", sha]
     : ["scripts/migrate.mjs", "--prod", "--sha", sha, "--backup", backup || `pre-release-${s7}`];
   return [
     { id: "evidence", title: `gate evidence for ${s7} (CI: build + every shard, or a clean local stamp)`, kind: "fn" },
@@ -37,9 +52,9 @@ export function planRelease({ sha, migrate = "neon", backup, force = false, set 
     { id: "images", title: `ACR: taxila-web:${s7} and taxila-worker:${s7} from GitHub at ${s7}`, kind: "fn" },
     mig ? { id: "migrate", title: `production migrations of ${s7}${migrate === "job" ? " (in-VNet job)" : `, Neon backup branch first`}`, kind: "cmd", argv: mig }
       : { id: "migrate", title: "migrations: --migrate skip (the target already has every file; deploy-azure's migrations gate still checks)", kind: "fn" },
-    { id: "web", title: `web: canary revision of taxila-web:${s7}, smoke, then 100%${set.length ? `; settings ${set.join(" ")}` : ""}`, kind: "cmd", argv: ["scripts/deploy-azure.mjs", "--image-tag", s7, ...sets] },
+    { id: "web", title: `web: canary revision of taxila-web:${s7}, smoke, then 100%${set.length ? `; settings ${set.join(" ")}` : ""}`, kind: "cmd", argv: ["scripts/deploy-azure.mjs", "--image-tag", s7, "--force", ...evidence, ...sets] },
     { id: "cohort", title: `the new web revision carries every env name the previous one did${set.length ? `, and ${set.map((kv) => kv.split("=")[0]).join(", ")} took the new value` : ""}`, kind: "fn" },
-    { id: "worker", title: `worker + canary/nightly jobs on taxila-worker:${s7}`, kind: "cmd", argv: ["scripts/deploy-worker.mjs", "--image-tag", s7, "--jobs", ...(force ? ["--force"] : [])] },
+    { id: "worker", title: `worker + canary/nightly jobs on taxila-worker:${s7}`, kind: "cmd", argv: ["scripts/deploy-worker.mjs", "--image-tag", s7, "--jobs", "--force", ...evidence] },
     { id: "record", title: `context/inbox entry for the release of ${s7}`, kind: "fn" },
   ];
 }
@@ -98,8 +113,7 @@ export function needsFor(set = []) {
 export const unmet = (needs, names) => needs.filter((g) => !g.some((n) => names.includes(n)));
 
 /**
- * Env names the previous web revision had and the new one lacks (PURE). Cohort switches (TAXILA_UI_KAKSHA,
- * DUPLEX_LIVE_FOR, TRACE_FULL_FOR, TAXILA_ACK_CONTINUER_FOR, …) live only on the live template; a deploy that drops one
+ * Env names the previous web revision had and the new one lacks (PURE). Cohort switches (DUPLEX_LIVE_FOR, TRACE_FULL_FOR, TAXILA_ACK_CONTINUER_FOR, …) live only on the live template; a deploy that drops one
  * silently turns a feature off for its cohort. `dropped` names a release meant to remove.
  * @param {string[]} before @param {string[]} after @param {string[]} [dropped]
  */
@@ -120,11 +134,14 @@ export function inFreeze(d) {
  * @param {{ capture?: { workerTag?: string } }} data the `capture` step's data from the release state
  */
 export function planRollback(data) {
-  const tag = data?.capture?.workerTag;
+  const tag = data?.capture?.workerTag, rev = data?.capture?.webRevision;
   if (!tag) throw new Error("rollback: the release state has no captured worker image (the release never got past capture)");
   if (!/^[0-9a-f]{7,40}$/.test(tag)) throw new Error(`rollback: the captured worker image tag ${tag} is not a commit sha: roll the worker by hand`);
   return [
-    { id: "web", title: "web: 100% back to the `previous` revision", kind: "cmd", argv: ["scripts/deploy-azure.mjs", "--rollback"] },
-    { id: "worker", title: `worker + jobs back to taxila-worker:${tag}`, kind: "cmd", argv: ["scripts/deploy-worker.mjs", "--image-tag", tag, "--jobs", "--force"] },
+    // the captured revision, never the label alone: a failed deploy can leave no `previous` label (PLAT-03)
+    { id: "web", title: rev ? `web: 100% back to ${rev}, the revision live before the release` : "web: 100% back to the `previous` revision",
+      kind: "cmd", argv: ["scripts/deploy-azure.mjs", "--rollback", ...(rev ? ["--to", rev] : [])] },
+    // --served: the image already ran in production, so no fresh gate stamp is asked for (PLAT-28)
+    { id: "worker", title: `worker + jobs back to taxila-worker:${tag}`, kind: "cmd", argv: ["scripts/deploy-worker.mjs", "--image-tag", tag, "--jobs", "--force", "--served"] },
   ];
 }

@@ -1,7 +1,57 @@
 # Architecture
 
-(filled in from the spec phase)
+<!-- context-repair-2026-11-09: header and current map -->
+> **What this file is.** A dated log of what each build session wrote down about the system on the day it wrote it,
+> in the order merged. Entries below the map are history: many say "open", "not built" or "not applied" about things the
+> code has since done, and nothing in the log records the close (audit DOCS-23; the closing entries are in
+> `ms-audit-open-items-closed-2026-11-09`). Read the map first, trust the code over any entry, and use
+> `node scripts/context.mjs --node <id>` for what replaced what.
 
+## Current map, 2026-11-10
+
+Written from the code on `int/r6` at integration 21a (round 7). Where a path is named, it exists.
+
+**Two processes, one image.** `server/serve.mjs` serves the built client (`dist/`) and the API on one port: Azure Container
+Apps `taxila-web`. `server/worker.mjs` is `taxila-worker`, the Conductor's background host (a leader-only ticker, a dirty
+set of children, and fast and slow job lanes). `server/index.js` registers every route table (`server/routes/*.js` and feature
+folders); `api/[...route].js` is only a shim. Data is Postgres (Neon) through `server/db.js`; the schema is
+`db/migrations` (001 to 047), applied by `scripts/migrate.mjs` (the test branch unless `--prod`). All model calls go through
+`server/azure.js` (role-named deployments, `server/lanes.js` keeps background calls from starving the live ones).
+
+**A lesson turn.** `server/routes/lesson.js` starts a lesson and takes each turn. The lane is chosen once at start and pinned:
+the Director lane (default: `server/director` decides the beat, `server/brain` says it) or the Teacher agent lane
+(`server/agent`, owner cohort or `TAXILA_TEACHER=agent`; `server/agent/flags.js`). Both run behind the same safety floor
+(`server/safety`, `server/director/safety.js`: frozen). Answers are classified against verified keys in code
+(`server/director/classify.js`, `server/grading`); a model never grades. Content: `server/content` (kits in `data/kits`,
+syllabus in `data/curriculum`); `server/compiler` builds the teacher's instructions (one teacher, Asha, classes 1-9).
+
+**What the system learns about the child.** `server/learner` (knowledge tracing, affect from dialogue, formats),
+`server/comprehension` (did the child understand, checks, belief), `server/signals`, `server/voicesig` (answer pace, shadow),
+`server/relational` (what the teacher remembers; the parent can read and delete it).
+
+**What gets made while she teaches.** `server/forge` and `server/forge3` (personalised pieces), `server/studio` (the Studio
+channel and the board), `server/stagecraft` (speculative content ahead of the turn), `server/play` (game families, graded by
+replaying the child's own acts).
+
+**Voice.** `server/voice` (speech out, realtime session, prewarm), `server/duplex` (hands-free listening: on for everyone since
+round 7, kill switch `TAXILA_DUPLEX=off`), `server/latency` (acknowledgement, turn prefetch).
+
+**The child's day, the parent, the account.** `server/conductor` (plans the day; runs in the worker), `server/reports` (parent
+reports), `server/placement`, `server/homework`, `server/pair` (a child's own device), `server/signin` (emailed code),
+`server/routes/account.js` and `parent.js`. Owner view: `server/ops`, `server/cost`, `server/trace` (flight recorder).
+
+**The client** (React 19, `src/main.tsx`). `src/app` holds the routes (landing, who, sign-in, pairing); `src/child` the child's
+shell and lesson screen; `src/lesson` the live-lesson runtime (turns, audio, hands-free); `src/ui-v3/kaksha` the Kaksha screens;
+`src/face-puppet` Asha's face (the 2D puppet; `src/avatar` holds the parked 3D head and the voice ring); `src/studio-v2`,
+`src/play`, `src/modules` the boards, games and sandboxed engines; `src/parent`, `src/onboarding`; `src/duplex`, `src/voice`,
+`src/voicesig`, `src/latency`, `src/trace`, `src/stagecraft`, `src/signals`. `shared/` holds the seams between client, server
+and content (`contracts.ts`).
+
+**Around the code.** `tests/` (run by `npm run test:all`), `evals/` (measured harnesses), `scripts/` (deploys:
+`release.mjs`, `deploy-azure.mjs`; one-offs; `gpu/` is the AWS build harness, an open owner question), `context/` (this memory),
+`docs/` (research, design rounds, handoffs; `docs/design/round7/` is current).
+
+---
 
 ## Merged inbox entries (write-up from the entry text)
 - `open-real-child-audio` (2026-10-02): No real-child audio yet: ASR WER, endpointing and latency from India unmeasured
@@ -426,3 +476,20 @@ The deploy service principal is Contributor at the subscription (plus Foundry Ow
 taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory ~30% of 8 GB. The India staging app taxila-sin-staging carries a DATABASE_URL.
 - `fd-r7-m4-live-inventory-2026-11-06` (2026-11-06): Live, read-only, 2026-11-06. The deploy SP was Contributor only (notActions Microsoft.Authorization/*/Write), so it could not create locks. The owner then gave it User Access Administrator (conditioned: it cannot assign Owner, UAA or RBAC Admin) and hand-made CanNotDelete locks 'm3-credit-do-not-delete' on 11 targets. The dry run reads all 11 as present. AZURE_SPEECH_KEY_SIN belongs to taxila-ai-centralindia (matched by hash in memory, never printed). Chat deployments on Taxila-owned accounts exist only on taxila-ai-southindia: taxila-fast, taxila-brain, taxila-fast-bg (luna) and others. taxila-m3-nsg has 0 custom rules; its defaults deny internet inbound. taxila-m3-vm is running; its VM agent is Ready (2.16.0.2) with no outbound. taxilaforge and the AOAI account are public-network (no ACL).
 - `fd-r7-m4-lb-empty-pool-unknown` (2026-11-06): Microsoft's Load Balancer pricing page bills 'configured load-balancing and outbound rules'. It states that a Standard LB with no rules has no hourly charge, and says nothing about rules whose backend pool is empty (read 2026-11-06). Not measured here. Design consequence: taxila-m3-lb's pool holds taxila-m3-vm's NIC, so the answer does not matter.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `op-audit-build-gpu-aws-owner` (2026-11-10): Does the AWS GPU build harness (scripts/gpu: used by the 3D face jobs and by the voice training scripts scripts/voice/v3 and stt-v3; nothing in the product runs it) stay, or retire with the 3D head? This is the owner's question; no session may decide it. Until answered, scripts/gpu is kept.
+- `open-r7-passage-residual` (2026-11-10): 172 class 5-9 items (docs/design/round7/learning/PASSAGE-RESIDUAL.txt) refer to 'the poem' or 'the story' with no text in the kit (the chapter's own text, which kits never carried), and stay askable. Closing it means writing and storing each text as a passage, once (rejected.md kit-invented-companion-texts). Also open: 25 arena challenges are about a passage item until patch to-games/001 lands; Studio needs a passage@1 board with paging at 360 px (PASSAGE.md).
+- `op-r7-audit-face-golu-vs-sprite` (2026-11-09): Classes 1-3 teach-back: the prompt names the protege 'Golu, a pretend baby elephant' (server/compiler/characters/asha.js young.protege; shapes.js teachback and hook), the screen shows a cloud pup, a pebble or a sprout (src/ui/teacher/Protege.tsx). No elephant art exists. Needs Brain (species-free wording) or new art. docs/design/round7/audit/face.md FACE-03.
+- `op-r7-audit-face-r9-never-synced` (2026-11-09): v4-review2-r9-sync-due (2026-10-05) recorded puppet polish r9 judged 4.2 vs r8 4.1 with its sync to production due; production still ships r8 and no decision or rejection covers r9 or r10 (art/character/puppet2d/polish-r9, polish-r10, 42 MB). Decide: sync, or record why not. face.md FACE-16. Owner decision 2026-11-10: the r9 sync is deferred to the owner's look pick (r8, lamp2 or r9); r9 and r10 art and scripts are kept until then.
+- `seams-signals-layer-unwired` (2026-11-10): The signals layer (server/signals index/backstop/priors/quality/session/states, src/signals) has been built but not wired since 2026-10-04: wire per SIGNALS-SPEC §8.2 or retire
+- `open-audit-stagecraft-spec-spend` (2026-11-10): Stagecraft launches paid generated_spec builds by default (taxila-fast-bg, ~$0.0013 each, cap $0.06 per lesson-hour) that the tray gate always refuses: no code sets a judge verdict (forge3/gate.js judgeArtifact has no caller). Either wire the judge (owner cost question, gap-map 914) or stop launching the rung without one
+- `open-audit-rolldown-runtime` (2026-11-10): server/studio/fixers.js and qa/static.js import rolldown/parseAst, which reaches the production image only through vite (a devDependency); the image installs --omit=dev, so build.js and qa/gate.js fail to import there. Add rolldown 1.2.12 to dependencies before STUDIO_QA_URL is wired
+- `r7-audit-teacher-signals-unwired` (2026-11-10): server/signals step() (decision sig-layer-evidence-not-authority) is reached by no product import from server/serve.mjs; only tests/signals-server.test.mjs and evals/signals/run.mjs call it. Either wire it where the decision says or mark the decision unbuilt (audit TEACHER-07)
+- `r7-audit-teacher-teachback-tick` (2026-11-10): A teach-back tick on the child's lesson summary comes from the turn classifier's model label (brain/turn.js noteDid), never the blind grade, and corroborate() does not run for why/teach-back modes (audit TEACHER-03)
+
+
+## Merged inbox entries (write-up from the entry text)
+- `open-r7-audit-voice-holdcue-live` (2026-11-10): The thinking-pause cue is live in hands-free although r3vs-holdcue-shadow says shadow until a children's pilot (audit V-22)
+- `open-r7-audit-voice-expressive-default` (2026-11-10): w2g-expressive-layer-built (default on for DragonHD) against rj-ssml-delivery-plan-2026-10-04 (listeners preferred plain): the blind test is still pending (audit V-27)

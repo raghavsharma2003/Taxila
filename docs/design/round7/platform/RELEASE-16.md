@@ -88,10 +88,12 @@ The new routes since the last release, and what they read:
 - **Nothing new is required.** No other new route reads a new env var: placement onboarding, the map marks and the Hangar equip
   read none. The release needs no `--set`.
 - **The cohort check.** The `cohort` step compares the new revision's env names with the captured old ones and fails on any name
-  that went missing. This protects the cohort switches, e.g. `TAXILA_UI_KAKSHA`, `DUPLEX_LIVE_FOR`, `TRACE_FULL_FOR`. If a name is
+  that went missing. This protects the cohort switches, e.g. `DUPLEX_LIVE_FOR`, `TRACE_FULL_FOR`. `TAXILA_UI_KAKSHA` is retired: the release removes it
+  itself (`scripts/release-core.mjs` RETIRED_ENV; the client ignores it). If a name is
   meant to go, pass `--allow-drop NAME`.
-- **Check ACS before the release, without printing values.** The capture step lists the env names (never values). Confirm
-  `ACS_CONNECTION_STRING`, `ACS_SENDER` and `TAXILA_OPS_KEY` are among them.
+- **Check ACS before the release, without printing values.** The capture step prints only how many env names the live
+  revision has, never the names or their values. Before the release, confirm `ACS_CONNECTION_STRING`, `ACS_SENDER` and
+  `TAXILA_OPS_KEY` are among taxila-web's environment variables in the Azure portal (Container App → Containers).
 
 ## 4. After the deploy: App's live checks
 
@@ -118,8 +120,9 @@ never touches a real family. Expected results:
 
 ```
 node scripts/release.mjs <sha> --rollback --plan     # print it
-node scripts/release.mjs <sha> --rollback            # web traffic to the captured previous revision, then the worker + jobs
-                                                     # back to the captured image, together
+node scripts/release.mjs <sha> --rollback            # web traffic to the revision `capture` recorded (deploy-azure
+                                                     # --rollback --to <it>), then the worker + jobs back to the captured
+                                                     # image (--served: no fresh gate stamp asked), together
 ```
 
 - **When.** Roll back on a live-check FAIL that is this release's, or on a smoke failure that `deploy-azure` did not already undo
@@ -132,17 +135,23 @@ node scripts/release.mjs <sha> --rollback            # web traffic to the captur
 - **If the backup branch is needed** (a migration did something unexpected, which none of these should), it is
   `pre-release-<sha7>` on the production Neon project. Restoring it is an owner decision, because it loses every write since.
 - **The rollback target is recorded at `capture`** in `node_modules/.cache/release/<sha>.json`. Without that state, for example on a
-  different machine, roll the web back with `node scripts/deploy-azure.mjs --rollback` and the worker by hand to the previous tag.
+  different machine, roll the web back with `node scripts/deploy-azure.mjs --rollback --to <revision>` (without `--to` it goes to
+  the revision labelled `previous`, and refuses when none is: after a failed deploy there is none) and the worker with
+  `node scripts/deploy-worker.mjs --image-tag <previous tag> --jobs --served`.
 
 ## 6. After the India cutover only: migrations in the VNet
 
 ```
-node scripts/migrate.mjs --prod --job --sha <sha> --dry-run
+node scripts/migrate.mjs --prod --job --no-backup --sha <sha> --dry-run
 node scripts/release.mjs <sha> --migrate job
 ```
 
 This needs the `taxila-sin-dbcopy` ACA job and the target database inside the VNet. It applies the same set difference
-(`scripts/region/db-copy.mjs --apply-migrations`, ls-tree at `<sha>`, name order).
+(`scripts/region/db-copy.mjs --apply-migrations`, ls-tree at `<sha>`, name order). The job's report
+(`node_modules/.cache/india-move/db-copy-apply-latest.json`) is the migrations evidence the release passes to both the web
+and the worker deploy (`--migrations-evidence`), since neither can reach the in-VNet database. `--no-backup` says on the
+record that Azure PG's point-in-time restore is the backup. The web and worker steps carry `--force`: the release's own
+freeze step is the one evening-freeze check.
 
 ## 7. Afterwards
 

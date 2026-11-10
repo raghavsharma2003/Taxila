@@ -28,7 +28,9 @@ const state = { buf: [], seq: 0, dropped: 0, reported: 0, timer: null, flushing:
 // flushes would otherwise call the database (fetch) inside unrelated tests that stub fetch or count queries. Tests of the
 // recorder turn it on through _setTraceDeps({ off: false }); spawned route runners (no --test flag) record as production does.
 const UNDER_TEST = process.execArgv.includes("--test");
-export const traceOff = () => (state.off ?? (process.env.TAXILA_TRACE === "off" || (UNDER_TEST && process.env.TAXILA_TRACE !== "on")));
+/** PURE. Does a setting say "off"? off, 0, false and no, any case (PLAT-53: TAXILA_TRACE=0 left the recorder on). */
+export const saysOff = (v) => ["off", "0", "false", "no"].includes(String(v ?? "").trim().toLowerCase());
+export const traceOff = () => (state.off ?? (saysOff(process.env.TAXILA_TRACE) || (UNDER_TEST && process.env.TAXILA_TRACE !== "on")));
 
 /** Tests only: replace the insert (rows → Promise), turn the recorder on/off, read the counters. */
 export function _setTraceDeps({ insert, off } = {}) {
