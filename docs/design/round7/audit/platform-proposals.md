@@ -66,6 +66,20 @@ minutes and work once, so the harm is small, but they should never be stored.
 
 **Cost.** Half a day, platform only.
 
+## PLAT-40: the teacher agent shares taxila-gpt6 with Studio builds (measure first)
+
+**Now.** When a lesson runs on the teacher agent lane, its turns go to `taxila-gpt6`, which Studio's build arms also use.
+That pool is deliberately uncapped: capping it starved live Studio builds (measured, the 21st prefetch build waited 55 s).
+The audit's fix (cap background calls there) was reverted for that reason.
+
+**Measure.** Over a day with the agent lane on for the owner cohort: count `model.call` rows on taxila-gpt6 with
+status 429 or a retry, split by lane (agent turn vs Studio build), from `trace_event`. If agent turns see none, there is
+nothing to fix.
+
+**Change, only if they do.** Give the agent its own deployment (one `TAXILA_TEACHER_DEPLOY`), so neither pool is capped.
+
+**Cost.** The query is free. A new deployment is a quota request and no standing cost (pay per token).
+
 ## PLAT-50: the worker does not flush its flight recorder on shutdown
 
 **Now.** When the worker stops (a deploy, a restart), up to a second of its trace events in memory is lost. The web

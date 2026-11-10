@@ -48,7 +48,7 @@ redesign), **routed** (another stream owns the file).
 | PLAT-37 | P2 | inconsistent | platform | `taxila-fast-bg` is charged at about 19 times its price | `server/cost/prices.js:13-28, 64` | add the row | fixed 4e0904a5 |
 | PLAT-38 | P2 | not good enough | platform | The ledger never uses the cached-token price | `server/azure.js:197-200, 492-494` | pass the normalised usage | fixed 4e0904a5 |
 | PLAT-39 | P2 | broken | platform + voice + studio | Three kinds of spend have no meter | `server/voice/speech.js:504-506`; `server/trace/model.js:42`; `server/forge/g2/model.js:42` | meter each | routed |
-| PLAT-40 | P2 | inconsistent | platform | The teacher-agent deployment is not protected as a hot pool | `server/lanes.js:9, 35-41`; `server/agent/flags.js:38` | add it to `sharedHot()` | fixed 4e0904a5 |
+| PLAT-40 | P2 | inconsistent | platform | The teacher-agent deployment is not protected as a hot pool | `server/lanes.js:9, 35-41`; `server/agent/flags.js:38` | add it to `sharedHot()` | reverted (main): capping taxila-gpt6 starved Studio builds; measure first, see proposals |
 | PLAT-17 | P3 | inconsistent | brain | Migration 016 was edited in place after it was applied | `db/migrations/016_brain.sql:38-41`; `server/brain/trace.js:141` | a new migration with the two columns, then drop the probe | migration 043 written 8d9c6161 (not applied); probe removal: brain |
 | PLAT-18 | P3 | inconsistent | platform | `migrate.mjs --job` skips the `--prod` / `--backup` check | `scripts/migrate.mjs:31-37` | require them on the job path too | fixed 891d1d8c |
 | PLAT-21 | P3 | broken | platform | RELEASE-16 §6 (`--migrate job`, after the India move) cannot finish | `RELEASE-16.md:137-145`; `scripts/release-core.mjs:42`; `scripts/deploy-azure.mjs:269-270` | pass the db-copy report as migrations evidence to both deploys | fixed 891d1d8c |
@@ -261,5 +261,5 @@ and the code say 1.32.
   `server/pair/scope.js DEVICE_FIELDS`; the handlers' own check is patch to-learning/005.
 - **PLAT-20** is a proposal, not a fix: the runner's imports now reach 18 files outside its image, including the database
   module and the recorder, which do not belong in the untrusted build container.
-- **PLAT-40:** the teacher agent's deployment joins the hot pools only while some lesson can reach the agent lane
-  (TAXILA_TEACHER=agent, or a cohort and not off), so the Studio arms on taxila-gpt6 stay uncapped otherwise.
+- **PLAT-40:** fixed in 4e0904a5, then reverted on main's decision: the cap on taxila-gpt6 repeats a measured
+  rejection (`server/lanes.js` header). A measurement plan is in the proposals file.

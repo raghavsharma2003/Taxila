@@ -1,4 +1,4 @@
-// Whole-project audit 2026-11-09, platform: the cost ledger and two settings (PLAT-35 meter, 37, 38, 40, 46, 47, 48, 53).
+// Whole-project audit 2026-11-09, platform: the cost ledger and two settings (PLAT-35 meter, 37, 38, 46, 47, 48, 53; PLAT-40 reverted).
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { usdChat, usdStt, CHAT } from "../server/cost/prices.js";
@@ -56,12 +56,11 @@ test("PLAT-35 (meter half): d5Session files its event under the lesson the calle
   } finally { W._resetTrace(); }
 });
 
-test("PLAT-40: the teacher agent's deployment is a protected hot pool whenever a lesson can reach that lane", () => {
-  assert.equal(sharedHot({ TAXILA_TEACHER: "agent" }).has("taxila-gpt6"), true);
-  assert.equal(sharedHot({ TAXILA_TEACHER_AGENT_FOR: "owner@example.test" }).has("taxila-gpt6"), true);
-  assert.equal(sharedHot({ TAXILA_TEACHER: "agent", TAXILA_TEACHER_DEPLOY: "taxila-x" }).has("taxila-x"), true);
-  assert.equal(sharedHot({ TAXILA_TEACHER: "off", TAXILA_TEACHER_AGENT_FOR: "owner@example.test" }).has("taxila-gpt6"), false);
-  assert.equal(sharedHot({}).has("taxila-gpt6"), false, "no agent lane, the Studio arm stays uncapped");
+test("PLAT-40 reverted: taxila-gpt6 stays an uncapped pool even when the agent lane can run (capping it starved Studio builds)", () => {
+  // server/lanes.js header: capping background calls on a deployment no hot lane shares made the 21st prefetch build wait
+  // 55 s (W2-E fixer). The audit proposed capping the teacher agent's deployment; main rejected it on that measurement.
+  assert.equal(sharedHot({ TAXILA_TEACHER: "agent" }).has("taxila-gpt6"), false);
+  assert.equal(sharedHot({ TAXILA_TEACHER_AGENT_FOR: "owner@example.test" }).has("taxila-gpt6"), false);
 });
 
 test("PLAT-53: off, 0, false and no all switch the recorder and the boot warm-up off", () => {
