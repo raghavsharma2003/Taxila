@@ -116,7 +116,7 @@ test("K1: every skill compressed → allKnown with a record (the caller decides 
 test("K4: a wheel-spinning skill gets its prerequisite checked in the warm-up", () => {
   const brief = { prereqCheck: { skillId: A, forTopicId: TOPIC, prereqTopicId: "c8-test-ch02-t01" } };
   const r = prereqCheckOf({ brief });
-  assert.deepEqual(r.prereqCheck, { skillId: A, topicId: "c8-test-ch02-t01" });
+  assert.deepEqual(r.prereqCheck, { skillId: A, topicId: "c8-test-ch02-t01", prereqSkillId: null });
   assert.equal(r.because[0].fact.kind, "wheel_spin"); assert.match(r.because[0].source, /R5/);
   assert.deepEqual(prereqCheckOf({ brief: { prereqCheck: { skillId: A } } }), { prereqCheck: null, because: [] });
   assert.deepEqual(prereqCheckOf({ brief: null }), { prereqCheck: null, because: [] });
@@ -237,6 +237,12 @@ test("B: her open mix-up's check asked first needs its checkOrder record", () =>
   assert.throws(() => assertWalkExplained({ script, kit, events: beats(swapped) }));
   const p = planFor({ script, kit, mixups: [{ id: MIS_Y, p: 0.82, needsVerify: true }], now: NOW });
   assert.ok(assertWalkExplained({ script, kit, because: p.because, events: beats(swapped) }));
+});
+
+test("B: after the script's walk is spent, the kit's own practice is not a script choice", () => {
+  const def = defaultWalk(script, kit);
+  assert.ok(assertWalkExplained({ script, kit, events: beats([...def, `${A}|ladder:${TOPIC}-i01`]) }));
+  assert.throws(() => assertWalkExplained({ script, kit, events: beats([...def.slice(0, -1), `${A}|ladder:${TOPIC}-i01`]) }), undefined, "before the end it is still a departure");
 });
 
 test("B: a ladder card already posed first in the warm-up is not a skip", () => {

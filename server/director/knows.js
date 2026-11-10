@@ -174,6 +174,14 @@ export function firstCardOf({ script, kit, skills = {}, history = {}, brief = nu
 }
 /** The ladder a skill is walked with under a plan (the authored ladder unless K2 reordered it). */
 export const ladderFor = (plan, sk) => plan?.ladderOrder?.[sk.skillId] ?? (sk.ladder ?? []).map((r) => r.itemId);
+/**
+ * allKnown (main's ruling 2026-11-10): the lesson does not end early or change topic; after every skill's check is right it
+ * walks the last skill's ladder from its hardest rung down (kit difficulty, authored order among equals).
+ */
+export function hardestFirst(sk, kit) {
+  const diff = new Map((kit?.items ?? []).map((i) => [i.id, i.difficulty ?? 0]));
+  return (sk?.ladder ?? []).map((r, k) => ({ id: r.itemId, k })).sort((a, b) => (diff.get(b.id) ?? 0) - (diff.get(a.id) ?? 0) || a.k - b.k).map((x) => x.id);
+}
 
 // ───────────── K3: remediation by her real mix-up; her open mix-up is asked about first ─────────────
 const openIds = (mixups) => (mixups ?? []).filter((m) => m && (m.needsVerify || (m.p ?? 0) >= OPEN_MIXUP_P)).sort((a, b) => (b.p ?? 0) - (a.p ?? 0) || (a.id < b.id ? -1 : 1)).map((m) => m.id);
@@ -222,10 +230,12 @@ export function remedyNow(plan, card, cls, sk) {
 
 // ───────────── K4: prerequisite check ─────────────
 /** A skill she is spinning on gets one check of its weakest prerequisite in the warm-up (the caller resolves its items). */
-export function prereqCheckOf({ brief = null }) {
+export function prereqCheckOf({ brief = null, kit = null }) {
   const pc = brief?.prereqCheck;
   if (!pc?.prereqTopicId || !pc.skillId) return { prereqCheck: null, because: [] };
-  return { prereqCheck: { skillId: pc.skillId, topicId: pc.prereqTopicId },
+  // the prerequisite skill itself, when this kit names it (the spinning skill is in this topic); else the caller has the topic only
+  const pre = (kit?.skills ?? []).find((x) => x.id === pc.skillId)?.prereqSkillIds?.find((id) => String(id).startsWith(`${pc.prereqTopicId}-`)) ?? null;
+  return { prereqCheck: { skillId: pc.skillId, topicId: pc.prereqTopicId, prereqSkillId: pre },
     because: [rec("prereqCheck", pc.prereqTopicId, { kind: "wheel_spin", skillId: pc.skillId, forTopicId: pc.forTopicId ?? null, prereqTopicId: pc.prereqTopicId }, "brief.prereqCheck (R5: kt.wheelSpin)")] };
 }
 
@@ -278,7 +288,7 @@ export function planFor({ script, kit, skills = {}, history = {}, mixups = [], b
   // a compressed skill's ladder is not walked: K2's reorder of it is no choice at all
   for (const id of k1.compress) delete k27.ladderOrder[id];
   const k27because = k27.because.filter((b) => !(b.choice === "ladderOrder" && k1.compress.includes(b.on)));
-  const k4 = prereqCheckOf({ brief });
+  const k4 = prereqCheckOf({ brief, kit });
   const k6 = hookOf({ script, kit, interests, memory });
   // every scripted skill compresses: a lesson of a handful of turns. Exposed; the caller decides (the ladder's hardest
   // rungs, or the next topic)
@@ -362,7 +372,9 @@ export function expectedWalk(script, kit, because = []) {
     keys.push(...beats.map((b) => `${sk.skillId}|${b}`));
   });
   const last = sks.at(-1);
-  if (last && !(plan.compress.includes(last.skillId) && !has("compress_fallback", last.skillId))) keys.push(...ladderFor(plan, last).map((id) => `${last.skillId}|ladder:${id}`));
+  const lastDone = last && plan.compress.includes(last.skillId) && !has("compress_fallback", last.skillId);
+  if (last && !lastDone) keys.push(...ladderFor(plan, last).map((id) => `${last.skillId}|ladder:${id}`));
+  else if (last && because.some((b) => b.choice === "allKnown")) keys.push(...hardestFirst(last, kit).map((id) => `${last.skillId}|ladder:${id}`));
   return keys;
 }
 /**
@@ -372,6 +384,7 @@ export function expectedWalk(script, kit, because = []) {
  *   { kind: "hook", skillId, index } (the hook slot used), { kind: "first", itemId } (a card put first in the warm-up),
  *   { kind: "prereq", topicId }, { kind: "remedy", cardId, targets, authored }. Other kinds (warm-up, reposes, asides) are
  *   not script choices and are ignored. The walk may stop early (the clock, the wrap): a prefix of the expected walk passes.
+ *   Once the expected walk is spent, later cards are the kit's own practice (director/items.js selectNext) and are not checked.
  * @returns {true}
  */
 export function assertWalkExplained({ script, kit, because = [], events = [] }) {
@@ -389,6 +402,7 @@ export function assertWalkExplained({ script, kit, because = [], events = [] }) 
     if (e.kind !== "beat") return;
     const key = `${e.skillId}|${e.beat}`;
     if (seenKeys.has(key)) return; // a re-posed card
+    if (at >= expected.length) return; // the script's walk is spent: what follows is the kit's own practice, not a script choice
     // an expected card already posed in another role (the warm-up's first card) is not skipped
     while (at < expected.length && expected[at] !== key && seenItems.has(String(expected[at].split("|ladder:")[1] ?? ""))) at += 1;
     if (expected[at] !== key) fail(n, `got ${key}, the script's walk${because.length ? " (with its because records)" : ""} expects ${expected[at] ?? "nothing more"}`);
