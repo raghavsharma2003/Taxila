@@ -109,7 +109,7 @@ test("M4 never stale: the same skill reveals; a piece still up leaves with the r
 
 test("M4 replay: a recorded lesson through the production path; the guard arm serves nothing stale", async () => {
   const { replayLesson } = await import("../evals/stagecraft/replay.mjs");
-  const dir = "evals/conversation-r3/results/final6-after/lessons";
+  const dir = "tests/fixtures/eval-results/conversation-r3/results/final6-after/lessons";
   const files = fs.readdirSync(dir).sort().slice(0, 4);
   for (const f of files) {
     const rec = { ...JSON.parse(fs.readFileSync(`${dir}/${f}`, "utf8")) };
