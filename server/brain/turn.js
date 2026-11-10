@@ -49,7 +49,7 @@ import { relationalSeam } from "../relational/seam.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
 import { affirmOpenerFix, fallbackReply, floorContentOf, harmTalk, safeguardLine, safetyTalkAllowed, scrubbed, textReply, UNNUMBERED_TIERS } from "./say.js";
 import { arbitrate } from "./kernel.js";
-import { boardItemOf, proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE, altViewOfRow } from "./propose.js";
+import { boardItemOf, proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE, altViewOfRow, heldUpOf } from "./propose.js";
 import { INTERACTIVE_ASKS } from "../forge3/compose.js";
 
 /** round 3 forge: the child asked to play / see it move and an engine (not the template rung) is in the tray: keep it. */
@@ -729,6 +729,12 @@ export async function lessonTurn(req, body, hooks = {}) {
     const altView = altViewOfRow(wbFirstRow, hint) ?? hint;
     if (altView) next.lastMove = { ...next.lastMove, altView };
   }
+  // dc-r7-held-board (main's v6.8, mechanism c: "Dekho, yahi numbers ab patti par" over a view with no numbers): on a held turn her
+  // picture line is Studio's, built from the view it draws beside the held board; null — nothing drawn beside — promises no picture
+  if (r.move?.request === "visual" && next.lastMove && next.lastMove.scriptBeat && typeof studioSeam.preselectedAltLine === "function") {
+    const altLine = wbFirstRow ? seamSafe("studio.preselectedAltLine", () => studioSeam.preselectedAltLine(lesson.id), null) : null;
+    next.lastMove = { ...next.lastMove, altLine: altLine ? String(altLine) : null };
+  }
   // round 7 (C1 studio-board-pointing-truth): a thing they asked to see is pointed at once only when a certified board-first
   // page is ready BEFORE her line (it lands as she speaks); otherwise the board draws later and she describes it in words
   if (!late && r.move?.request === "visual" && pointShapeFor(next.lastMove?.shape, { boardFirst: !!wbFirstRow }) !== next.lastMove?.shape) {
@@ -1103,6 +1109,8 @@ export async function lessonTurn(req, body, hooks = {}) {
         studioSlot = { slotId: String(ack2.slotId), intentId: String(ack2.intentId), state: ack2.state ?? "planning", ...(ack2.artifact ? { artifact: ack2.artifact } : {}), ...(Number.isFinite(ack2.etaMs) && !ack2.artifact ? { etaMs: ack2.etaMs } : {}) };
         wbAcked = true;
         next.wbBeat = kernel.beat?.id;
+        // dc-r7-held-board: the board this turn ends on is the next turn's held board up (Studio keeps it when it is held again)
+        if (wbAsk.intent.held) next.heldUp = heldUpOf(wbAsk.intent.held);
         // The live board IS the explanation surface: the Director's template rung (explainer@1) is not mounted beside it
         // (the client's tray shows one thing; a mounted module would win the tray over the studio slot). Its mount / param
         // commands go, a rung already on screen is unmounted, and its facts row leaves the move's content, so the next turn
