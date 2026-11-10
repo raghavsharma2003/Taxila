@@ -105,13 +105,45 @@ export const foldOrder = (events) => [...events].sort((a, b) => (a.seq ?? Infini
  *   eta?: number, confusion?: any, cohort?: string, paraEnabled?: boolean, onTheta?: (o: any) => void, onKt?: (evId: string, skillId: string) => void }} FoldCtx
  */
 export function fold(ledger, events, ctx = {}) {
+  const f = openFold(ledger);
+  for (const ev of foldOrder(events)) f.apply(ev, ctx);
+  return f.L;
+}
+
+/**
+ * A fold opened once over a COPY of `ledger` (the input is never mutated); `apply(ev)` folds one event into `L` in
+ * place. comprehension/fuse.js folds event by event through one of these: before (audit LEARN-25) it called fold() per
+ * event, copying the whole ledger (seen grows with every event) each time, which was quadratic: 10 s at 8,000 events.
+ * Objects already copied in this fold are mutated in place, so a caller that needs an object's PRE-event state must copy
+ * the fields it reads before apply.
+ */
+export function openFold(ledger) {
   const L = { ...ledger, skills: { ...ledger.skills }, mis: { ...ledger.mis }, ability: { ...ledger.ability }, seen: { ...ledger.seen },
     session: ledger.session ? structuredClone(ledger.session) : null,
+    ...(ledger.recentSessions ? { recentSessions: structuredClone(ledger.recentSessions) } : {}),
+    ...(ledger.held ? { held: { ...ledger.held } } : {}),
     ...(ledger.placementPending ? { placementPending: structuredClone(ledger.placementPending) } : {}) };
   const owned = new Set();
   const own = (bag, k) => { const x = bag[k]; if (x && !owned.has(x)) { bag[k] = structuredClone(x); owned.add(bag[k]); } return bag[k]; };
-  for (const ev of foldOrder(events)) applyOne(L, ev, ctx, own);
-  return L;
+  return { L, apply: (ev, ctx = {}) => applyOne(L, ev, ctx, own) };
+}
+
+/** How many earlier lessons' per-lesson state the ledger keeps (LEARN-28). */
+export const RECENT_SESSIONS = 3;
+/**
+ * Make `ev`'s lesson the open session. A lesson switched away from is kept (up to RECENT_SESSIONS), so a second lesson
+ * open at the same time, or an answer that lands after another lesson began, picks its own budgets back up instead of
+ * starting them again from zero (audit LEARN-28: two open lessons reset every per-lesson evidence cap).
+ */
+function enterSession(L, ev) {
+  if (L.session?.sessionId === ev.sessionId) return;
+  const recent = { ...(L.recentSessions ?? {}) };
+  if (L.session) recent[L.session.sessionId] = L.session;
+  L.session = recent[ev.sessionId] ?? newSession(ev);
+  delete recent[ev.sessionId];
+  const ids = Object.keys(recent);
+  for (const id of ids.slice(0, Math.max(0, ids.length - RECENT_SESSIONS))) delete recent[id];
+  if (ids.length) L.recentSessions = recent; else delete L.recentSessions;
 }
 /** One event, online. Throws on an event older than the ledger's last seq (re-fold from the log instead). */
 export const foldEvidence = (ledger, ev, ctx) => fold(ledger, [ev], ctx);
@@ -154,7 +186,7 @@ function applyOne(L, ev, ctx, own) {
   // corrects, so the ledger only records it as seen (no K, θ, session or budget change); the facets apply it (fuse.js).
   if (isPlacementRow(ev)) return applyPlacement(L, ev);
   if (ev.via === "late") { L.seen[ev.id] = ev.seq ?? null; if (ev.seq != null) L.lastSeq = ev.seq; return; }
-  if (!L.session || L.session.sessionId !== ev.sessionId) L.session = newSession(ev);
+  enterSession(L, ev);
   const sess = L.session;
   const markSeen = () => { L.seen[ev.id] = ev.seq ?? null; if (ev.seq != null) L.lastSeq = ev.seq; };
 
