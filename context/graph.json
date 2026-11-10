@@ -26847,6 +26847,370 @@
    "at": "2026-10-02",
    "title": "The CE-M1 bar fails under both families (0.627 / 0.475), and CE-M4 now fails at 14 pp after the truth-leak fix. Per SIM6, thresholds were NOT tuned to the simulator.",
    "source": "open.md"
+  },
+  {
+   "id": "ms-r7-audit-content-blind-solve",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "Whole-project audit, content-data: 1,802 items solved blind by Claude agents with keys withheld until answers were written (1,010 of 12,597 kit items in a seeded sample per class and subject, 264 of 2,647 diagnostics, 72 worked examples, all 456 placement items). 0 wrong keys. 14 English and Hindi items that depend on a story or poem the prompt does not carry could not be re-derived (unverified, not confirmed). Curriculum graph: 830 topics, 830 kits, no duplicate ids, no dangling, forward or circular prerequisites. Method and findings: docs/design/round7/audit/content-data.md.",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "dc-r7-topic-done-on-askable-skills",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "A topic is finished when every skill that has a loadable kit item is learned (server/content/next-topic.js decidingStates). Before, every kit skill counted, and 8 topics (4 class 5-6 Hindi recitation skills with no item, 4 class 8-9 English skills whose items the prompt budget drops) could never be finished: such a skill is taught but can never be answered unaided, so it stays 'practising'. Reverse if: every kit skill is guaranteed an item at load (a load-time check), or 'learned' gets a route that needs no item.",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "rj-r7-audit-skill-row-missing",
+   "kind": "rejection",
+   "at": "2026-11-09",
+   "title": "Drafted and caught by the skeptic pass before it shipped (audit 2026-11-09, first fix for CD-01): counting only askable skills in the topic's skillCount, on the belief that a skill with no item never gets a skill_state row. Wrong: the explain step, the faded worked step (keyed to kit.skills[0]) and teach-back all write the row, as 'practising'. The count then passes and every(LEARNED) still fails. Instead: filter the states themselves to askable skills as well as the count.",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "dc-r7-passages-stored-once",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "A kit stores each story, poem, letter or scene once per topic (topic.passages: id, text, title?, kind?) and an item points at it (item.passageId); the question prompts are short and never carry the text. 500 items in 116 topics; 202 class 5-9 items had the text lifted out of prompt_en and prompt_hi; 8 long science, EVS and English prompts were shortened. kit.lint.itemsDropped is 0 for every kit and a test fails otherwise (it was 111, 102 of them class 8-9 English). While the lesson cannot show a passage, normalizeKit moves every item with a passageId to kit.heldItems (4%); TAXILA_PASSAGES=on puts them back. Lesson half: docs/design/round7/learning/PASSAGE.md and patch to-brain/020 (read aloud in classes 1-3, on the board from class 4, once per passage per lesson). Reverse if: the lesson shows passages and the hold-out flag is on for good, then delete the flag and heldItems.",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "open-r7-passage-residual",
+   "kind": "open",
+   "at": "2026-11-10",
+   "title": "172 class 5-9 items (docs/design/round7/learning/PASSAGE-RESIDUAL.txt) refer to 'the poem' or 'the story' with no text in the kit (the chapter's own text, which kits never carried), and stay askable. Closing it means writing and storing each text as a passage, once (rejected.md kit-invented-companion-texts). Also open: 25 arena challenges are about a passage item until patch to-games/001 lands; Studio needs a passage@1 board with paging at 360 px (PASSAGE.md).",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "dc-r7-placement-retire-not-delete",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "A placement item that duplicates another is marked retired: true and stays on file (bank.js usable() already skips it). Retired: pl-c5-maths-l02, l05, l07, pl-c3-maths-m01, pl-c8-maths-e10, pl-c4-evs-e09 (one of each exact pair: the one whose ge sits further from its raters' mean) and pl-c8-maths-l10 (class 3-4 sum anchored at class 8, only usable by adjudication). Four close-variant pairs share a pairId (pair-c4-maths-garden-boundary, pair-c7-maths-opposite-angle, pair-c6-science-wet-shirt, pair-c7-science-chewing-starch) and cat.js asks at most one per round. c8-maths now has 29 usable items (the floor test says 30 elsewhere). Reverse if: the bank is regenerated with deduplication.",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "dc-r7-minikit-removed",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "The mini-kit generator is deleted (server/content/minikit.js; getKit returns the file kit or null and ignores generate). All 830 curriculum topics have a kit file, so it could not run; a test pins that every topic loads from its file. Supersedes the ws2-director-minikit-keys policy for model-written keys. Reverse if: a topic is added to the curriculum before its kit is written (then a kit-less topic returns null, which callers treat as no kit; restore from 55983111).",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "ms-r7-audit-content-data-deletions",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "Removed in the content-data audit (deletions commit; each file is in git at 55983111): server/content/minikit.js (mini-kit generator and compareAnswers); scripts/kits/w5-decide.mjs (applied its 25 rewrites once, now stops at its first one); scripts/kits/w2-merge.mjs (0 of 4,695 items left to merge). Kept: scripts/kits/w5-decisions.json (decisions.md cites it), w5-filter-numerals.mjs (tests/r7-learning-w5.test.mjs), data/curriculum/boards.json, data/curriculum/index.json (validate.mjs checks it against the files), data/kits-relevel (tests and context cite it).",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "dc-r7-friend-devanagari-patch",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "The Hindi kits name the friend रिया as plain text (55 whole-word uses, c3-c9); the slot never reached Devanagari. Patch to-brain/019 changes friend.js (a string with more Devanagari than Latin letters gets the name in Devanagari; the child's own name in either script is skipped) together with the data change, which must not be applied alone. Not applied on this branch.",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "rj-r7-audit-face-parked-stage-holds-slot",
+   "kind": "rejection",
+   "at": "2026-11-09",
+   "title": "Tried (review v4 park/adopt + ship5 one-running-stage rule, as shipped to int/r6 21a): a face stage parked on unmount only stopped drawing and kept its place in the page's one-running-stage list until its park timer disposed it. Broke: the safety Help sheet mounts a second live face over the lesson's; when the sheet closed, the lesson's suspended stage stayed frozen for 1.5 s, or 10 s for a worker-backed stage (HANDOFF_PARK_MS, the default), over her voice. Now: PuppetStage.park() yields the slot at once and start() takes it back on adoption (tests/r7-audit-face.test.mjs FACE-01). Any new way to keep a stage alive off the page must yield the slot the same way.",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "rj-r7-audit-face-server-reads-public",
+   "kind": "rejection",
+   "at": "2026-11-09",
+   "title": "Tried (face-home-daily-greeting): server code deciding whether a shipped file exists by looking under public/. Broke: the production image copies dist/, server/, shared/, data/ and src/ only, so the check was always false there and GET /api/tutors/greeting could never return a clip. Now: the served build (dist/, or TAXILA_DIST) is checked first, then public/ (server/face-puppet/greetings.js clipDirs). tests/runtime-image-imports.test.mjs covers imports, not file reads: any server file read outside those five folders fails silently in production.",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "dc-r7-audit-face-protege-glance-not-while-listening",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "Corrects dc-r7-face-teachback-protege ('looks from the child to the protege while she listens, speaks or waits'): she glances at the protege only while she speaks or waits for the child. While the child talks she keeps her eyes on the child (src/avatar/behaviour.ts lookAt drops any look in LISTENING and THINKING, by design), so the listening glance was requested every 3.6 s and never shown. Teacher.tsx no longer requests it. Reverse only if behaviour.ts gains a deliberate listening look.",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "op-r7-audit-face-golu-vs-sprite",
+   "kind": "open",
+   "at": "2026-11-09",
+   "title": "Classes 1-3 teach-back: the prompt names the protege 'Golu, a pretend baby elephant' (server/compiler/characters/asha.js young.protege; shapes.js teachback and hook), the screen shows a cloud pup, a pebble or a sprout (src/ui/teacher/Protege.tsx). No elephant art exists. Needs Brain (species-free wording) or new art. docs/design/round7/audit/face.md FACE-03.",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "dc-r7-audit-face-lamp2-pack-is-only-copy",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "lamp2 (one of the owner's three look choices): its painted key sources lived only in a session scratch folder (scripts/character/puppet2d/lamp2/common.py L2_SCRATCH) and that folder no longer exists (the earlier Face session confirmed), so they are gone for good. public/face-puppet/lamp2 (22 files) is the only copy of the pack: keep it, never delete it as 'rebuildable'; changing lamp2 means painting and paying again. r8 can still be re-packed from tracked layers (pack.py and sync-runtime reproduce the shipped pack byte for byte, checked 2026-11-10) but not re-cut (polish-r8/work is untracked). face.md FACE-14.",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "op-r7-audit-face-r9-never-synced",
+   "kind": "open",
+   "at": "2026-11-09",
+   "title": "v4-review2-r9-sync-due (2026-10-05) recorded puppet polish r9 judged 4.2 vs r8 4.1 with its sync to production due; production still ships r8 and no decision or rejection covers r9 or r10 (art/character/puppet2d/polish-r9, polish-r10, 42 MB). Decide: sync, or record why not. face.md FACE-16. Owner decision 2026-11-10: the r9 sync is deferred to the owner's look pick (r8, lamp2 or r9); r9 and r10 art and scripts are kept until then.",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "dc-r7-audit-face-deleted-lost-looks",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Deleted as repository weight, nothing reads them (importers, package.json, CI, Dockerfiles, tests, context citations checked; r8 re-pack proved unchanged after): art/character/puppet2d/polish-r3..polish-r7 and scripts/character/puppet2d/polish-r3..polish-r7 and judge-r1..judge-r7-blind.mjs; art/character/puppet2d/V and scripts/character/puppet2d/V (the vector puppet that lost); art/character/puppet2d/P except work/mouth-ref-cfront.png, mouth-base-blank.png, mouth-mask2.png, rest.png (read by polish-r8, r9, r10 mouth scripts; scripts/character/puppet2d/P kept); scripts/character/polished; scripts/gpu/jobs/hello/runs (untracked, ignored by scripts/gpu/.gitignore). Last commit that holds all of them: 345b5f7c (git show 345b5f7c:<path>); each was last changed in ae880e84 (2026-11-06). .gitignore now lists the four kept P/work files as exceptions, so the tracked set and .gitignore agree. Kept on purpose: 3D head and Arjun, polish-r2 layers, polish-r8, r9, r10, lamp1, lamp2, route-b, prototypes/, src/face-puppet/adapter.tsx. Also removed: src/ui/teacher/useDelight.ts, unused prefetchLook/lookIds/faceRigFailed, the voiceOnly and gentle props of TutorFace/PuppetFace/LessonFace, the .tx-picker css. App's share of the dead code (getTutors, chooseTutor, SITE_TUTORS, TeacherPortrait) is docs/patches/to-app/008-face-dead-code.patch.",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "dc-r7-audit-face-greeting-day-and-lines",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Daily greeting (FACE-07): a child never gets the same line two days running (server/face-puppet/greetings.js lineIndex: per-child offset, per-child step of 1..n-1 per day); six lines that claimed history ('pick up where we left off', 'Hi again', and their Hindi and Hinglish forms) were replaced by new ids *-m4 and *-a4 (each slot still has three lines; no clips were rendered, so no file names changed meaning); the greeting's day and Kaksha Home's greeting word both turn at 04:00 through shared/day.js (learningDay, partOfDay).",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "coverage-belief-without-discriminating-level",
+   "kind": "measurement",
+   "title": "A kit misconception mapped in data/play/coverage.json can still have no level that tells it apart: 4 of the mapped beliefs in 515 coverage entries (2026-11-10)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-games.json"
+  },
+  {
+   "id": "rj-audit-brief-hardstop-on-every-plan",
+   "kind": "rejection",
+   "title": "The Conductor brief's hard stop (the slot's window end) on every lesson with a plan: a lesson started after the window wrapped on the first answer",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-learner.json"
+  },
+  {
+   "id": "learner-brief-hardstop-limits-only",
+   "kind": "decision",
+   "title": "A lesson brief has a hard stop only for a family whose day limits are on and only while the window is still open at the start; wrapAt is the start plus the planned minutes",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-learner.json"
+  },
+  {
+   "id": "rj-audit-lesson-path-never-discriminates",
+   "kind": "rejection",
+   "title": "Lesson-path evidence without `discriminates`: the ledger's misconception could be raised by a lesson answer and never lowered by one",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-learner.json"
+  },
+  {
+   "id": "rj-audit-hinted-includes-c1",
+   "kind": "rejection",
+   "title": "Counting item.open C1 (a later try, no hint) as a hinted answer in the monthly 'gave a hint N times' line",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-learner.json"
+  },
+  {
+   "id": "rj-audit-reteach-unanswered-as-failed",
+   "kind": "rejection",
+   "title": "Scoring a re-teach nobody answered after (30-day horizon, no graded answer) as failed with reward 0",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-learner.json"
+  },
+  {
+   "id": "dc-owner-model-policy-top-model-high-effort",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Recorded from CLAUDE.md (the line has no date of its own; the oldest tracked copy is the 2026-11-06 commit ae880e84): the main loop and every build and review agent run on the top model at high effort, no downgrades. Superseded 2026-11-10 by dc-owner-model-policy-2026-11-10.",
+   "source": "inbox/r7-audit-model-policy.json"
+  },
+  {
+   "id": "dc-owner-model-policy-2026-11-10",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Owner directive 2026-11-10, replacing 'top model at high effort, no downgrades': Fable 5.2 orchestrates (the main loop: decisions, triage, synthesis). Build and fix sessions run on Opus 5.5 (complex or multi-file work) or Sonnet 5.5 (well-scoped work against a spec) at medium effort, raised to high only when a task fails at medium. File search, log reading and other cheap-to-check sub-tasks run on Haiku 5.5. Source: Anthropic's model guide. Reason: 13 Fable audit sessions hit the Fable usage limit within 35 minutes on 2026-11-09 and stopped mid-work. Reverse if: the owner restores the top-model rule, or a task class fails at high effort on its assigned model (move that class up one model).",
+   "source": "inbox/r7-audit-model-policy.json"
+  },
+  {
+   "id": "rj-r7-audit-uncaught-decode-kills-replica",
+   "kind": "rejection",
+   "title": "A throw in the http request listener of server/serve.mjs is an uncaught exception: one GET /% (malformed percent-escape) exited the web process",
+   "at": "2026-11-09",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "rj-r7-audit-rollback-fallback-picks-failed-revision",
+   "kind": "rejection",
+   "title": "deploy-azure --rollback guessed the previous revision when no `previous` label existed; after a failed smoke the newest non-current revision is the one that just failed",
+   "at": "2026-11-09",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "rj-r7-audit-count-then-write-try-limit",
+   "kind": "rejection",
+   "title": "A try limit that counts, tests, then writes the attempt does not hold under parallel requests; write the attempt first, then count",
+   "at": "2026-11-09",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "op-r7-audit-worker-image-needs-src",
+   "kind": "decision",
+   "title": "The worker image copies src/: the nightly job's sweep imports routes/account.js, whose static imports reach src/modules/frame/engines/*.logic.ts; without it trace retention never ran",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "r7-audit-platform-deletions",
+   "kind": "decision",
+   "title": "Audit platform (PLAT-57/58/59): removed code nothing reads; every removed path is still in commit c3977509",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "r7-audit-platform-calendar-kept",
+   "kind": "rejection",
+   "title": "Rejected: dropping the calendar table (PLAT-56 listed it as unused). server/conductor/view.js reads it for the Conductor's day kinds; migration 050 drops the other five only",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "rj-r7-audit-cap-teacher-agent-pool",
+   "kind": "rejection",
+   "title": "Rejected twice: capping background calls on taxila-gpt6 (the teacher agent's deployment and a Studio build arm). The W2-E measurement stands: the cap starved live Studio builds and the whiteboard",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "r7-audit-games05-modules-route-table",
+   "kind": "decision",
+   "title": "Removed server/routes/modules.js (an empty route table) and its registration in server/index.js (games audit GAMES-05, main's request); last held in 764d1754",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "seams-audit-2026-11-10",
+   "kind": "measurement",
+   "title": "Seams sweep (n = 133 routes, 325 env names, 1,280 product files, 75 child/guardian/lesson foreign keys): every FK cascades or sets null; 11 seam findings, 2 at P1 (four parent controls with no reader; game voice numbers)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-seams.json"
+  },
+  {
+   "id": "seams-signals-layer-unwired",
+   "kind": "open",
+   "title": "The signals layer (server/signals index/backstop/priors/quality/session/states, src/signals) has been built but not wired since 2026-10-04: wire per SIGNALS-SPEC §8.2 or retire",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-seams.json"
+  },
+  {
+   "id": "audit-studio-2026-11-10",
+   "kind": "measurement",
+   "title": "Studio area audit, 2026-11-10 (docs/design/round7/audit/studio.md): 12 findings (P1 1, P2 4, P3 7); patches 003 (shade-grid fraction) and 004 (catalogue boards need the cross-check) in docs/patches/to-studio with tests",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-studio.json"
+  },
+  {
+   "id": "m-audit-shade-grid-lint",
+   "kind": "measurement",
+   "title": "shade-grid@1 with labels on and the fraction shown failed its own text-overlap lint for every grid of 2+ rows: 1,080 of 1,080 block calls (rows 1-6 x cols 1-10 x every block). The fraction numwork box starts ~35 units above its `at` row; at y0+H+34 it sat on the 'N rows' label. With y0+H+56: 4,616 of 4,616 pass. The claims board (claims-board.js:98) makes exactly this call",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-studio.json"
+  },
+  {
+   "id": "m-audit-catalogue-usable",
+   "kind": "measurement",
+   "title": "Studio catalogue at int/r6 21a: 385 topic files; games ok 368, unchecked 9, missing 4, unsafe string 1, safety-excluded 3; cross-check pass 369, fail 7, missing 9. 13 records whose check did not pass still served 102 whiteboard boards (game and explainer withheld). Explainer library: 316 of 316 entries pass truth and expand",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-studio.json"
+  },
+  {
+   "id": "open-audit-stagecraft-spec-spend",
+   "kind": "open",
+   "title": "Stagecraft launches paid generated_spec builds by default (taxila-fast-bg, ~$0.0013 each, cap $0.06 per lesson-hour) that the tray gate always refuses: no code sets a judge verdict (forge3/gate.js judgeArtifact has no caller). Either wire the judge (owner cost question, gap-map 914) or stop launching the rung without one",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-studio.json"
+  },
+  {
+   "id": "open-audit-rolldown-runtime",
+   "kind": "open",
+   "title": "server/studio/fixers.js and qa/static.js import rolldown/parseAst, which reaches the production image only through vite (a devDependency); the image installs --omit=dev, so build.js and qa/gate.js fail to import there. Add rolldown 1.2.12 to dependencies before STUDIO_QA_URL is wired",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-studio.json"
+  },
+  {
+   "id": "r7-audit-teacher-lanes",
+   "kind": "measurement",
+   "title": "Teacher audit 2026-11-10 (int/r6 21a, code read, n/a model): on default flags every child is on the Director lane (agent lane only via TAXILA_TEACHER=agent or TAXILA_TEACHER_AGENT_FOR; neither is set in infra/ or deploy scripts); the script walk is on and walks 4 topics (data/lesson-scripts: c4 ch05 t01, c5 ch02 t01-t02, c6 ch06 t01); the other 826 kit topics run the kit path",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-teacher.json"
+  },
+  {
+   "id": "r7-audit-teacher-signals-unwired",
+   "kind": "open",
+   "title": "server/signals step() (decision sig-layer-evidence-not-authority) is reached by no product import from server/serve.mjs; only tests/signals-server.test.mjs and evals/signals/run.mjs call it. Either wire it where the decision says or mark the decision unbuilt (audit TEACHER-07)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-teacher.json"
+  },
+  {
+   "id": "r7-audit-teacher-teachback-tick",
+   "kind": "open",
+   "title": "A teach-back tick on the child's lesson summary comes from the turn classifier's model label (brain/turn.js noteDid), never the blind grade, and corroborate() does not run for why/teach-back modes (audit TEACHER-03)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-teacher.json"
+  },
+  {
+   "id": "r7-audit-teacher-agent-clip",
+   "kind": "measurement",
+   "title": "Agent lane prompt clips (server/agent/prompt.js): over data/kits/*.json, 1,666 of 25,194 item prompts (hi+en) exceed the 180-char offer clip and 930 the 200-char card clip; 669 of 830 topics have more than the 4 key ideas shown (audit TEACHER-06)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-teacher.json"
+  },
+  {
+   "id": "dc-r7-audit-studio-fixes",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Owner's whole-project audit, Studio list (docs/design/round7/audit/studio.md on claude/r7-audit-studio; each finding verified before fixing). STUDIO-11: without a judge lane (FORGE3_QA_URL unset) Stagecraft no longer launches the generated_spec rung (lesson.js judgeRungsCfg passes every other rung; preferredRung falls to engine_default): the tray gate refuses every unjudged spec, so each launch (~$0.0013 on taxila-fast-bg) bought nothing. Reverse when a judge lane is wired. STUDIO-01: shade-grid@1's shown fraction moved to y0 + H + 56 under the rows label (audit patch 003; 0/2 → 2/2). STUDIO-02/03: catalogue boards follow the blind cross-check like the game and explainer (patch 004; 1/3 → 3/3); the 13 topics whose check failed (7) or never ran (6) stay withheld, not hand-fixed, until they are re-authored and re-checked. STUDIO-05: beat-card dots (src/studio/beatDots.ts) keep one dot 'now' from the 9th board. STUDIO-09: number-line-hop@1 refuses up front ('hops_layout') and board-ref advertises only what lays out: all hops one way, or two where the second goes back at most half the first; landings within 30; with 2+ hops each ≥ 2 and ≥ 1/8 of the spread (1/5 with a 3-character number); the equation row is centred. STUDIO-08: one Stagecraft mode default ('on', config.js stagecraftMode) for lesson.js and StagecraftHost. STUDIO-10: picture.js forgets a lesson's count, failure and finished jobs when the seam forgets the lesson, and caps jobs at 500. STUDIO-07: the Studio v2 node tests moved to tests/studio-v2.test.mjs (now run by npm test and test:all).",
+   "source": "inbox/r7-studio-34.json"
+  },
+  {
+   "id": "dc-r7-audit-studio-deletions",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Deleted after the owner's audit (STUDIO-04, STUDIO-06); the last commit that holds each is b1fc76f7d. server/routes/forge.js (POST /api/forge/requests and /api/forge/prefetch: no caller anywhere; the lesson warms fills through forgeSeam.prefetchLessonFills), with its publicFill and limit tests and shared/forge.ts ForgeRequestResponse. The five applied Studio seam patches: server/forge/seam-patches/w1b-lesson-wiring.patch, w2b-parts-repair.patch, w2b-watch-only.patch; server/studio/seam-patches/w2h-say-screen-targets.patch, w2h-turn-slot.patch (read first: every hunk is in turn.js in a later form; its facts row is superseded by factsRowForSlot / withFactsRows). context/ entries that cite them by name as the tree a measurement ran on read them at b1fc76f7d. The seven seam patches of other streams (brain, comprehension, director, relational) are not Studio's and stay.",
+   "source": "inbox/r7-studio-34.json"
+  },
+  {
+   "id": "rj-r7-audit-voice-stop-without-telling-engine",
+   "kind": "rejection",
+   "title": "Stopping her reply in the link without telling the hands-free engine: on D4 the mic stayed gated and answers were dropped as echo",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-voice.json"
+  },
+  {
+   "id": "rj-r7-audit-voice-bridge-dropped-sink",
+   "kind": "rejection",
+   "title": "UiBridge.cachingStream wrapped the speech fetch with two arguments and dropped the player's sink: no visemes, no word onsets, clause onsets without playAt in the child app",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-voice.json"
+  },
+  {
+   "id": "dc-r7-audit-voice-stream-stall-watch",
+   "kind": "decision",
+   "title": "A reply whose audio ran out and whose stream sends nothing for 5 s ends with what was heard (PcmStreamPlayer.stallMs)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-voice.json"
+  },
+  {
+   "id": "dc-r7-audit-voice-call-open-time-limit",
+   "kind": "decision",
+   "title": "The transcription call's token and connection requests are each limited to 10 s; past that the link falls back to the talk button",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-voice.json"
+  },
+  {
+   "id": "open-r7-audit-voice-holdcue-live",
+   "kind": "open",
+   "title": "The thinking-pause cue is live in hands-free although r3vs-holdcue-shadow says shadow until a children's pilot (audit V-22)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-voice.json"
+  },
+  {
+   "id": "open-r7-audit-voice-expressive-default",
+   "kind": "open",
+   "title": "w2g-expressive-layer-built (default on for DragonHD) against rj-ssml-delivery-plan-2026-10-04 (listeners preferred plain): the blind test is still pending (audit V-27)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-voice.json"
   }
  ],
  "edges": [
@@ -43064,6 +43428,86 @@
    "src": "w2a-forgot-password-acs",
    "rel": "caused_by",
    "dst": "rj-w2a-acs-conn-unquoted"
+  },
+  {
+   "src": "learner-brief-hardstop-limits-only",
+   "rel": "supersedes",
+   "dst": "rj-audit-brief-hardstop-on-every-plan"
+  },
+  {
+   "src": "dc-r14-no-clock-gates",
+   "rel": "constrains",
+   "dst": "learner-brief-hardstop-limits-only"
+  },
+  {
+   "src": "dc-owner-model-policy-2026-11-10",
+   "rel": "supersedes",
+   "dst": "dc-owner-model-policy-top-model-high-effort"
+  },
+  {
+   "src": "seams-signals-layer-unwired",
+   "rel": "constrains",
+   "dst": "sig-layer-evidence-not-authority"
+  },
+  {
+   "src": "m-audit-shade-grid-lint",
+   "rel": "part_of",
+   "dst": "audit-studio-2026-11-10"
+  },
+  {
+   "src": "m-audit-catalogue-usable",
+   "rel": "part_of",
+   "dst": "audit-studio-2026-11-10"
+  },
+  {
+   "src": "open-audit-stagecraft-spec-spend",
+   "rel": "part_of",
+   "dst": "audit-studio-2026-11-10"
+  },
+  {
+   "src": "open-audit-rolldown-runtime",
+   "rel": "part_of",
+   "dst": "audit-studio-2026-11-10"
+  },
+  {
+   "src": "dc-r7-audit-studio-fixes",
+   "rel": "constrains",
+   "dst": "stagecraft-spec-default-deployment"
+  },
+  {
+   "src": "dc-r7-audit-studio-fixes",
+   "rel": "constrains",
+   "dst": "dc-r7-number-line-jump"
+  },
+  {
+   "src": "dc-r7-audit-studio-fixes",
+   "rel": "constrains",
+   "dst": "dc-r7-beat-cards-on"
+  },
+  {
+   "src": "dc-r7-audit-studio-deletions",
+   "rel": "caused_by",
+   "dst": "w2int-seam-patches-applied"
+  },
+  {
+   "src": "dc-r7-audit-studio-deletions",
+   "rel": "constrains",
+   "dst": "forge-g1-serve-time-child-check"
+  },
+  {
+   "src": "rj-r7-audit-voice-bridge-dropped-sink",
+   "rel": "constrains",
+   "dst": "w2gfix-clause-events-on-player-clock"
+  },
+  {
+   "src": "open-r7-audit-voice-holdcue-live",
+   "rel": "constrains",
+   "dst": "r3vs-holdcue-shadow"
+  },
+  {
+   "src": "open-r7-audit-voice-expressive-default",
+   "rel": "constrains",
+   "dst": "rj-ssml-delivery-plan-2026-10-04"
   }
  ]
 }
