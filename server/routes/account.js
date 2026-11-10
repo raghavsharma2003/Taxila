@@ -321,13 +321,14 @@ export async function createChild(req, res, body) {
   // the class's teacher (Asha, every class, under the single teacher); a body teacherId only when it serves the class
   const teacher = singleTeacher() ? SINGLE_TEACHER_ID : cl <= 4 ? "asha" : "arjun";
   if (body.teacherId != null && !servesClass(body.teacherId, cl)) throw bad("teacher not offered for this class");
+  // checked before the insert: a bad spelling used to create the child and then fail, and the retry made a twin (LEARN-08)
+  const spoken = spokenNameOf(body.nameSpoken);
   const c = await one(
     `insert into child(guardian_id, first_name, class_level, board, school_medium, language_pref, birth_year, avatar, teacher_id, interests)
      values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning *`,
     [g.id, firstName.slice(0, NAME_MAX), cl, board, medium, lang, body.birthYear || null, body.avatar || null, body.teacherId || teacher, interests]);
   await q("insert into rel_state(child_id) values ($1) on conflict do nothing", [c.id]);
   // round 7 F: "Spell it how it sounds" (038), set apart so a database without the column never costs the profile
-  const spoken = spokenNameOf(body.nameSpoken);
   if (spoken) { await setSpokenName(c.id, spoken); c.name_spoken = spoken; }
   await q("insert into audit(guardian_id, action, detail) values ($1, 'child_create', $2)", [g.id, { childId: c.id }]);
   send(res, 201, { child: clientChild(c) });
