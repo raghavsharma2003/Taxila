@@ -211,3 +211,19 @@ test("CD-13: with only a pair's other variant left in the pool, nextItem stops r
   const next = nextItem({ classLevel: 4, pool: [a, b], asked: [{ item: a, y: 1 }], rnd: () => 0 });
   assert.equal(next, null);
 });
+
+// ---- CD-19: the mini-kit generator is gone; every curriculum topic has a kit in its file ----
+import { getKit } from "../server/content/index.js";
+
+test("CD-19: every curriculum topic loads from its kit file, and getKit never generates", async () => {
+  assert.equal(ALL_TOPICS.length, 830);
+  for (const id of ALL_TOPICS) {
+    const kit = await getKit(id);
+    assert.ok(kit, `${id} has no kit file`);
+    assert.equal(kit.verified, true);
+    assert.equal(kit.topicId, id);
+  }
+  assert.equal(await getKit("c1-maths-nope"), null);
+  assert.equal(await getKit("c4-maths-ch05-t01", { generate: true }).then((k) => k.topicId), "c4-maths-ch05-t01");
+  assert.ok(!readdirSync(new URL("../server/content/", import.meta.url)).includes("minikit.js"));
+});

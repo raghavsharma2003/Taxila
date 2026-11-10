@@ -19,10 +19,40 @@
    "title": "Drafted and caught by the skeptic pass before it shipped (audit 2026-11-09, first fix for CD-01): counting only askable skills in the topic's skillCount, on the belief that a skill with no item never gets a skill_state row. Wrong: the explain step, the faded worked step (keyed to kit.skills[0]) and teach-back all write the row, as 'practising'. The count then passes and every(LEARNED) still fails. Instead: filter the states themselves to askable skills as well as the count."
   },
   {
-   "id": "open-r7-kit-passage-unread",
+   "id": "dc-r7-passages-stored-once",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "A kit stores each story, poem, letter or scene once per topic (topic.passages: id, text, title?, kind?) and an item points at it (item.passageId); the question prompts are short and never carry the text. 500 items in 116 topics; 202 class 5-9 items had the text lifted out of prompt_en and prompt_hi; 8 long science, EVS and English prompts were shortened. kit.lint.itemsDropped is 0 for every kit and a test fails otherwise (it was 111, 102 of them class 8-9 English). While the lesson cannot show a passage, normalizeKit moves every item with a passageId to kit.heldItems (4%); TAXILA_PASSAGES=on puts them back. Lesson half: docs/design/round7/learning/PASSAGE.md and patch to-brain/020 (read aloud in classes 1-3, on the board from class 4, once per passage per lesson). Reverse if: the lesson shows passages and the hold-out flag is on for good, then delete the flag and heldItems."
+  },
+  {
+   "id": "open-r7-passage-residual",
    "kind": "open",
-   "at": "2026-11-09",
-   "title": "The kit field `passage` (48 topics: all of classes 1-4 English, 2 of class 3 Hindi; 677 items) is read by no code, and 107 loaded class 5-9 English reading items carry their passage only in prompt_en, so a Hinglish lesson asks the question without the text. 102 of 430 class 8-9 English items are dropped at load by the prompt budget because each carries its own passage. One fix covers all three: one passage per topic, loaded with the kit and read before the first recall item. Needs a contract field and Brain."
+   "at": "2026-11-10",
+   "title": "172 class 5-9 items (docs/design/round7/learning/PASSAGE-RESIDUAL.txt) refer to 'the poem' or 'the story' with no text in the kit (the chapter's own text, which kits never carried), and stay askable. Closing it means writing and storing each text as a passage, once (rejected.md kit-invented-companion-texts). Also open: 25 arena challenges are about a passage item until patch to-games/001 lands; Studio needs a passage@1 board with paging at 360 px (PASSAGE.md)."
+  },
+  {
+   "id": "dc-r7-placement-retire-not-delete",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "A placement item that duplicates another is marked retired: true and stays on file (bank.js usable() already skips it). Retired: pl-c5-maths-l02, l05, l07, pl-c3-maths-m01, pl-c8-maths-e10, pl-c4-evs-e09 (one of each exact pair: the one whose ge sits further from its raters' mean) and pl-c8-maths-l10 (class 3-4 sum anchored at class 8, only usable by adjudication). Four close-variant pairs share a pairId (pair-c4-maths-garden-boundary, pair-c7-maths-opposite-angle, pair-c6-science-wet-shirt, pair-c7-science-chewing-starch) and cat.js asks at most one per round. c8-maths now has 29 usable items (the floor test says 30 elsewhere). Reverse if: the bank is regenerated with deduplication."
+  },
+  {
+   "id": "dc-r7-minikit-removed",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "The mini-kit generator is deleted (server/content/minikit.js; getKit returns the file kit or null and ignores generate). All 830 curriculum topics have a kit file, so it could not run; a test pins that every topic loads from its file. Supersedes the ws2-director-minikit-keys policy for model-written keys. Reverse if: a topic is added to the curriculum before its kit is written (then a kit-less topic returns null, which callers treat as no kit; restore from 55983111)."
+  },
+  {
+   "id": "ms-r7-audit-content-data-deletions",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "Removed in the content-data audit (deletions commit; each file is in git at 55983111): server/content/minikit.js (mini-kit generator and compareAnswers); scripts/kits/w5-decide.mjs (applied its 25 rewrites once, now stops at its first one); scripts/kits/w2-merge.mjs (0 of 4,695 items left to merge). Kept: scripts/kits/w5-decisions.json (decisions.md cites it), w5-filter-numerals.mjs (tests/r7-learning-w5.test.mjs), data/curriculum/boards.json, data/curriculum/index.json (validate.mjs checks it against the files), data/kits-relevel (tests and context cite it)."
+  },
+  {
+   "id": "dc-r7-friend-devanagari-patch",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "The Hindi kits name the friend रिया as plain text (55 whole-word uses, c3-c9); the slot never reached Devanagari. Patch to-brain/019 changes friend.js (a string with more Devanagari than Latin letters gets the name in Devanagari; the child's own name in either script is skipped) together with the data change, which must not be applied alone. Not applied on this branch."
   }
  ]
 }
