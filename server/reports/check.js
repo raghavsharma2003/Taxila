@@ -30,8 +30,9 @@ const learningDate = (at, tz) => localDate(ms(at) - 4 * 3600_000, tz);
 const dateSlot = (at, tz) => { const [y, m, d] = localDate(at, tz).split("-").map(Number); return { y, m, d }; };
 const sameDate = (a, b) => a && b && a.y === b.y && a.m === b.m && a.d === b.d;
 // round 7 F (S6): hinted = an item answer that needed one or more hints; solved-after-hint = then right with them
-const hintedR = (r) => scored(r) && ((r.cls === "item.open" && ["C1", "C2", "C3", "C4"].includes(nameOf(r))) || (r.cls === "solo" && nameOf(r) === "C1"));
-const solvedR = (r) => scored(r) && ((r.cls === "item.open" && ["C1", "C2"].includes(nameOf(r))) || (r.cls === "solo" && nameOf(r) === "C1"));
+// C1 is "right on a later try, no hint"; solo has no hint ladder (audit LEARN-13)
+const hintedR = (r) => scored(r) && r.cls === "item.open" && ["C2", "C3", "C4"].includes(nameOf(r));
+const solvedR = (r) => scored(r) && r.cls === "item.open" && ["C2", "C3"].includes(nameOf(r));
 
 /**
  * @param {{ q: (text: string, params?: any[]) => Promise<any[]> }} db

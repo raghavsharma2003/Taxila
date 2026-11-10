@@ -71,7 +71,8 @@ test("lessonBriefFor on this base: a non-null plan and brief, and planPrior take
   const q = async (t) => (/child_routine/.test(t) ? [{ tz: "Asia/Kolkata" }] : /day_plan/.test(t) ? [{ version: 1, plan: day }] : []);
   const r = await lessonBriefFor("child-1", { now: new Date("2026-10-05T10:50:00Z"), q });
   assert.ok(r && r.plan && r.brief, "non-null plan and brief");
-  assert.ok(Date.parse(r.brief.wrapAt) <= Date.parse(r.brief.hardStopAt));
+  // audit LEARN-01: no hard stop unless the family's limits are on; the wrap is never past one when there is
+  assert.ok(r.brief.hardStopAt === null || Date.parse(r.brief.wrapAt) <= Date.parse(r.brief.hardStopAt));
   const p = planPrior(r.plan, {});
   assert.deepEqual([p.opener, p.successFirst, p.newSkillBudget, p.foundationShare], ["reanchor_light", true, 0, 0.5]);
   assert.equal(p.prereqCheck?.prereqTopicId, pre);
