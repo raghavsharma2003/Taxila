@@ -6635,3 +6635,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-9004a0b` (2026-11-10): Released 9004a0b with scripts/release.mjs: web taxila-web--s9004a0b-tlys (was taxila-web--se807f07-4jnx), worker + canary/nightly jobs on taxila-worker:9004a0b (was e807f07); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 9004a0b --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-kit-practice-2026-11-10` (2026-11-10): tests/knows-practice.test.mjs (deterministic, the real step(); n = 4 pilot topics, a child who knows every skill, behind her class and weak, one open mix-up, 2026-11-10): every lesson reaches the kit's queue (1-2 queue picks after the hardest-first ladder), every pick passes the extended assertWalkExplained, practiceOrder and practiceDiag fire on all 4 topics, practiceFast on all 4, and dropping any practiceFast or practiceDiag record that a pick used makes the walk fail. A no-history child's queue gets no practice record. The 41-turn seeded steady lessons (knows-seeded-dry) never reach the kit's queue: the script walk fills the lesson.
