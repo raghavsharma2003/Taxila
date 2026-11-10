@@ -17,7 +17,7 @@ import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
 // round 3 fix (experience B6): arithmetic she states, and her own closed sums, checked in code
 import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
-import { saidMust, joinable, scriptFor } from "../director/script.js";
+import { saidMust, joinable, scriptFor, jointOf } from "../director/script.js";
 import { praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection, childAsks } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
@@ -42,17 +42,23 @@ const WORKED_FRAME = { hinglish: ["Chalo, ek sawaal saath mein hal karte hain.",
 const STEP_OPENER = /^(?:ab|phir|pehle|aur|toh|first|then|next|now)\b/i;
 const stepLabel = (n, lang) => (lang === "english" ? ["First step.", "Now the second step.", "Now the third step."][n - 1] ?? "Now the next step."
   : ["Pehla kadam dekho.", "Ab doosra kadam.", "Ab teesra kadam."][n - 1] ?? "Ab agla kadam.");
-const WORKED_FRAME_PART = { hinglish: ["Pehla kadam dekho.", "Iska shuruaati hissa dekhte hain.", "Pehle yeh hissa."], english: ["First, this part.", "Here is the first step.", "Start with this part."] };
+// (v6.10 R7: no form names a step — "Pehla kadam dekho." was said on step two)
+const WORKED_FRAME_PART = { hinglish: ["Yeh hissa dekho.", "Isko dhyaan se dekho.", "Is hisse ko dekho."], english: ["Look at this part.", "Watch this part.", "See this bit."] };
 // v6 R5: the end of the first half of a split turn
 // (director9: "Chalo, aage badhein?" was asked and then ignored, whatever they said: closures end on a statement, never a question)
-const SPLIT_ASK = { hinglish: ["Ab aage chalte hain.", "Chalo, ab aage.", "Ab agla hissa."], english: ["Now let's go on.", "On to the next bit.", "Now the next part."] };
+// (v6.10 R7: SPLIT_ASK — "Ab aage chalte hain." after a closing split — is gone: nothing is appended after a bridge)
 // v6.1 R9: a teaching turn past its beat's one check-in ends on a statement
 const SPLIT_CARD = { hinglish: ["Ab isi par ek sawaal.", "Ab is par ek chhota sawaal.", "Ab ise ek sawaal se dekhte hain."], english: ["Now a question on this.", "Now a small question on this.", "Let's try a question on it."] };
 const WORKED_GO = { hinglish: ["Ab agla kadam dekhte hain.", "Chalo, aage dekhte hain.", "Ab isse aage chalte hain."], english: ["Now the next step.", "Let's go on.", "Now we go on from here."] };
 /** v6.2: a check-in after teaching that is no worked step. */
 /** v6.8 A4: code's one-line acknowledgement of their reply to her aside question (never graded, never a verdict). */
-export const ASIDE_ACK = { hinglish: ["Achha, yeh jaankar achha laga.", "Achha, samajh gayi.", "Wah, mazedaar.", "Achha, theek hai."], english: ["Nice, thanks for telling me.", "Got it.", "Oh, that's fun.", "Okay, noted."] };
-export const BEAT_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yahan tak saaf hai?", "Kuch poochna hai ab tak?"], english: ["Does that make sense so far?", "Clear so far?", "All good so far?", "Anything to ask so far?"] };
+// v6.10 A6 (main on director18: "Achha, yeh jaankar achha laga" fitted 0 times in two runs and twice replaced a teaching point): the
+// acknowledgement after an aside reply is gone. After an aside reply: one neutral joint (never a judgement of what they said), then the
+// unit's next unsaid part. A script's own `joints.asideResume` forms are used when it has them.
+export const ASIDE_RESUME = { hinglish: ["Achha.", "Theek hai.", "Hmm, achha."], english: ["Okay.", "Alright.", "Right."] };
+export const BEAT_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yahan tak saaf hai?"], english: ["Does that make sense so far?", "Clear so far?", "All good so far?"] };
+// (v6.10 T2, main on director18 c5-t02 stuck 54-56: "Kuch poochna hai ab tak?" — a "haan" to it means the child HAS a question, and she
+// posed the card; it is no longer a check-in form)
 export const WORKED_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yeh kadam saaf hai?", "Yeh kadam samajh aaya?"], english: ["Does that make sense so far?", "Clear so far?", "Is that step clear?", "Did that step make sense?"] };
 // v6 R3 (director8 c4: 5 of 7 probe answers ignored): one line that takes up how they thought, before the next beat; it never
 // grades their reason (a probe is never right or wrong)
@@ -89,7 +95,14 @@ const RETURN_Q = {
   hinglish: [(t) => `Ab tumhari ${t} wali baat: usmein tumhe sabse achha kya lagta hai?`, (t) => `${capT(t)} ke baare mein batao: tumhe usmein sabse mazedaar kya lagta hai?`, (t) => `Chalo, ab ${t} ki baat: usmein tumhara favourite kya hai?`],
   english: [(t) => `Now your ${t}: what do you like most about it?`, (t) => `Tell me about ${t}: what's the most fun part?`, (t) => `So, ${t}: what's your favourite thing about it?`],
 };
-export const returnQuestion = (topic, lang = "hinglish", state = null) => freshForm(RETURN_Q[lang === "english" ? "english" : "hinglish"], state, String(topic ?? "").trim() || (lang === "english" ? "that" : "woh"));
+// (v6.10, with Learning D13: a script's own `joints.asideReturn` forms come first — `{topic}` and `{said}`, what the child said)
+export const saidSlotOf = (said) => { const w = String(said ?? "").replace(/[?？!.।]+/g, " ").replace(/\s+/g, " ").trim().split(" ").filter(Boolean); return w.length && w.length <= 8 ? w.join(" ").toLowerCase() : null; };
+export const returnQuestion = (topic, lang = "hinglish", state = null, { said = null, kit = null } = {}) => {
+  const t = String(topic ?? "").trim() || (lang === "english" ? "that" : "woh");
+  const j = kit ? jointOf(kit, "asideReturn", lang, { topic: t, said: saidSlotOf(said) }) : null;
+  const ok = j?.filter((x) => !/\{\w+\}/.test(x));
+  return ok?.length ? freshOf(ok, state) : freshForm(RETURN_Q[lang === "english" ? "english" : "hinglish"], state, t);
+};
 /** v6.7 A3: an aside said again, already on the list: one line, no new promise. */
 const ASIDE_AGAIN = {
   hinglish: [(t) => `${capT(t)} wali baat maine likh li hai.`, (t) => `Haan, ${t} — woh mujhe yaad hai.`],
@@ -136,7 +149,9 @@ const GAVE_LINE = {
   english: [(a, w) => `The last one's answer was ${a}${w ? `, because ${w}` : ""}.`, (a, w) => `That one: the answer is ${a}${w ? `; ${w}` : ""}.`, (a, w) => `The last question: ${w ? `${w}, ` : ""}so the answer is ${a}.`],
 };
 // (v6.4 L1: every variant says the switch in words; "Hindi mein? Zaroor." read as the bare "Zaroor." main flagged)
-const LANG_ACK = { hindi: ["Theek hai, ab Hindi mein.", "Achha, ab Hindi mein baat karte hain.", "Haan, ab se Hindi mein bolti hoon."], english: ["Okay, in English now.", "Sure, in English.", "English it is."] };
+// (v6.10 T2, main on director18 c5-t02 steady 38: "Haan, ab se Hindi mein bolti hoon" promised a change the authored Hinglish could not
+// keep — the forms say what this turn does, never a promise for every turn after)
+const LANG_ACK = { hindi: ["Theek hai, Hindi mein.", "Achha, Hindi mein dekhte hain.", "Haan, Hindi mein suno."], english: ["Okay, in English now.", "Sure, in English.", "English it is."] };
 // v6.3 R2 (main, director11: "cricket: iski baat …" is the raw template, said lower-case): the topic leads a whole sentence
 const capT = (t) => { const x = String(t ?? "").trim(); return x.charAt(0).toUpperCase() + x.slice(1); };
 const PARK_ACK = { hinglish: [(t) => `${capT(t)} ki baat hum is sawaal ke baad karenge.`, (t) => `${capT(t)} yaad rahega; yeh sawaal khatam karke uspar aate hain.`, (t) => `${capT(t)} ke baare mein is sawaal ke baad baat karenge, pakka.`],
@@ -144,14 +159,25 @@ const PARK_ACK = { hinglish: [(t) => `${capT(t)} ki baat hum is sawaal ke baad k
 // (v6.9 T1, main on director17 steady 36 in three topics: "is sawaal ke baad" said with no question open — the card answered, its why
 // pending): with no open card the promise names no question
 // v6.10 P6: no second view could be drawn for this board (three forms; never "yahi numbers", never a view described)
+// v6.10 T2: the child says they answered already — ask once more, in one short line (no key, no re-teach)
+const ASK_AGAIN = { hinglish: ["Ek baar phir bata do, tumhara jawab kya hai?", "Mujhse chhoot gaya, ek baar aur bolo na, jawab kya hai?", "Phir se bolo, tumhara jawab kya tha?"],
+  english: ["Tell me once more, what's your answer?", "I missed it, say your answer again?", "One more time, what was your answer?"] };
 const NO_PICTURE = { hinglish: ["Iski doosri tasveer abhi nahi ban rahi, toh board wali tasveer hi dekhte hain.", "Is par doosri tasveer nahi ban paa rahi; jo board par hai, usi ko dekho.", "Iska alag chitra abhi nahi hai, isliye board wala hi lete hain."],
   english: ["I can't draw a second picture for this one, so let's use the one on the board.", "There isn't another picture for this one; look at the board again.", "No second picture for this one, so we'll stay with the board."] };
 const PARK_LATER = { hinglish: [(t) => `${capT(t)} ki baat hum thodi der mein karenge.`, (t) => `${capT(t)} yaad rahega; thodi der mein uspar aate hain.`, (t) => `${capT(t)} ke baare mein baad mein baat karenge, pakka.`],
   english: [(t) => `We'll talk about ${t} in a little while.`, (t) => `I'll remember ${t}; we'll come back to it soon.`, (t) => `${capT(t)}: yes, a little later.`] };
 /** The park forms for this turn: "after this question" only while a card is open (asked, not yet answered or let go). */
-export const parkAckOf = (state, lang = "hinglish") => {
+export const parkAckOf = (state, lang = "hinglish", kit = null) => {
+  // (v6.10, with Learning D13: a script's own `joints.asidePark` forms, `{topic}` filled; code's forms only when it has none)
+  const j = kit ? jointOf(kit, "asidePark", lang) : null;
+  if (j?.length) return j.map((x) => (t) => x.replace(/\{topic\}/g, String(t ?? "").trim()).replace(/^\p{Ll}/u, (c) => c.toUpperCase()));
   const id = state?.activeItemId;
-  const open = !!id && state?.pendingWhy !== id && !(state?.itemsDone ?? []).includes(id) && !(state?.skipped ?? []).includes(id);
+  // (v6.10 T2, main on director18 c4 stuck 34, offtopic 20, c5-t02 steering 24, c6 offtopic 32: a card is OPEN only when the child has
+  // already heard it — a card posed in this same turn is not "is sawaal", the child has no question in front of them yet)
+  const card = String(state?.lastUi?.ask?.text ?? "").replace(/\s+/g, " ").trim().toLowerCase().slice(0, 30);
+  const lastT = [...(state?.recent ?? [])].reverse().find((t) => t.who === "teacher");
+  const heard = !!card && String(lastT?.text ?? "").replace(/\s+/g, " ").toLowerCase().includes(card);
+  const open = !!id && heard && state?.pendingWhy !== id && !(state?.itemsDone ?? []).includes(id) && !(state?.skipped ?? []).includes(id);
   return (open || responseShape("aside", "no_card") !== "park_later" ? PARK_ACK : PARK_LATER)[lang === "english" ? "english" : "hinglish"];
 };
 /** v6.4 H2″: the instruction for an aside's return — ONE line answering what they said. */
@@ -993,6 +1019,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const next = !item && TEACHING_MOVES.has(state.lastMove?.kind) ? upcomingItem(state, kit) : null;
   const ahead = next && !statementKey(next) ? next : null;
   const lang = state.ctx.lang;
+  // v6.10 T2 (main on director18 c5-t01 offtopic 24, steady 50, stuck 60): "woh maine bata diya" after the card was posed — one short
+  // line asks for the answer once more (the script's `joints.askAgain`, else code's); the card stays live; no model call, never the key
+  if (state.lastMove?.request === "ask_again") {
+    const r0 = freshOf(jointOf(kit, "askAgain", lang) ?? ASK_AGAIN[lang === "english" ? "english" : "hinglish"], state);
+    const lp = cleanParts([{ part: "aside", text: r0 }]);
+    return { reply: r0, guard: { askAgain: true, lineParts: lp, parts: { list: lp } } };
+  }
   // A diagnostic's options are content read aloud, so they do not count against the turn length.
   // round 7 A8: "chhota bolo" (the short method) lowers the long-reply cap for the rest of the lesson
   const max = (state.methods?.includes("short") ? Math.min(25, REPLY_MAX_WORDS[state.ctx.ageBand]) : REPLY_MAX_WORDS[state.ctx.ageBand])
@@ -1266,7 +1299,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const list = [
       { part: "close", text: [verdictS, gaveS].filter(Boolean).join(" ") },
       { part: "closed", text: lm.closed?.answer ? (en ? `And the earlier question's answer was ${lm.closed.answer}${why(lm.closed.why)}.` : `Aur pehle wale sawaal ka jawab ${lm.closed.answer} tha${why(lm.closed.why)}.`) : "" },
-      { part: "aside", text: parked ? freshOf(parkAckOf(state, L).map((f) => f(parked.topic)), state) : "" },
+      { part: "aside", text: parked ? freshOf(parkAckOf(state, L, kit).map((f) => f(parked.topic)), state) : "" },
       ...(lm.simpler ? [{ part: "simpler", text: d(lm.simpler) }] : []),
       ...(lm.rendered?.length ? lm.rendered.map((x) => ({ part: "body", text: d(x) })) : lm.point && !lm.simpler ? [{ part: "body", text: d(lm.point) }] : []),
       { part: "card", text: ui?.ask?.text ? String(ui.ask.text).trim() : "" },
@@ -1787,13 +1820,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       const e = (state.later ?? []).find((p) => p.at === state.turn && p.servedAt == null);
       const key = e ? (String(e.topic).toLowerCase().match(/\p{L}{4,}/gu) ?? []).find((w) => !PARK_STOP.has(w)) : null;
       if (key && !new RegExp(`\\b${key}`, "i").test(reply)) {
-        reply = `${pickOf(parkAckOf(state, lang), state)(e.topic)} ${reply}`.trim();
+        reply = `${pickOf(parkAckOf(state, lang, kit), state)(e.topic)} ${reply}`.trim();
         guard.repaired = true;
       }
     }
     // round 7 (director2 c6 steering: "hindi mein batao" got the same line, no word that it was heard): the switch is said
     if (state.lastMove?.request === "language" && kindNow !== "safeguard" && !/\b(?:hindi|english|angrezi)\b|हिंदी|हिन्दी/i.test(reply)) {
-      reply = `${pickOf(LANG_ACK[lang === "english" ? "english" : "hindi"], state)} ${reply}`.trim(); guard.repaired = true;
+      reply = `${pickOf(jointOf(kit, "hindiSwitch", lang) ?? LANG_ACK[lang === "english" ? "english" : "hindi"], state)} ${reply}`.trim(); guard.repaired = true;
     }
     // (director3: "Riya" in 8-9 of 11 lines) her name opens a line at most once in three turns
     {
@@ -1860,7 +1893,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // opens on one gets no label)
     const opensFirst = STEP_OPENER.test(String(workedLines?.[0] ?? "").trim());
     const stepFrame = scripted && stepN && !remedy ? (opensFirst ? (stepN === 1 && /^(?:pehle|first)\b/i.test(String(workedLines?.[0] ?? "").trim()) ? (lang === "english" ? "Look." : "Dekho.") : null) : stepLabel(stepN, lang)) : null;
-    const framing = stepFrame ?? (first && !/[?？]/.test(first) && words(first) <= (remedy ? 15 : 30) && !foreignOf(first).length && !((remedy || scripted) && /\d/.test(first)) && !(scripted && RULE_SAID.test(first)) ? first.trim()
+    // (v6.10 R7, main on director18: "Pehla kadam dekho." said on step two, and two openers in one turn — a scripted step's opener names
+    // its own step number (stepLabel) or is omitted; the generic part frames are never said on a scripted step)
+    const framing = scripted && stepN && !remedy ? stepFrame : stepFrame ?? (first && !/[?？]/.test(first) && words(first) <= (remedy ? 15 : 30) && !foreignOf(first).length && !((remedy || scripted) && /\d/.test(first)) && !(scripted && RULE_SAID.test(first)) ? first.trim()
       : pickOf((remedy ? REMEDY_FRAME : whole ? WORKED_FRAME : WORKED_FRAME_PART)[lang === "english" ? "english" : "hinglish"], state));
     // (v6.1 R9: a scripted step's check-in only where state.js allowed one; else a statement)
     const ask = item && ui?.ask?.itemId === item.id ? ui.ask.text : remedy && scripted ? freshOf(SPLIT_CARD[lang === "english" ? "english" : "hinglish"], state)
@@ -2110,7 +2145,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       const park1 = parkOk.filter((x) => words(x) <= 20).slice(0, 1);
       // v6.7 A3: the promise is code's (her park line invented a fact: "Virat ke cover drives ka zikr mast hai")
       void park1;
-      if (kind === "park") aside.push(freshOf(parkAckOf(state, lang).map((f) => f(topic)), state));
+      if (kind === "park") aside.push(freshOf(parkAckOf(state, lang, kit).map((f) => f(topic)), state));
       else retMine.push(...mine.filter((x) => !/^(?:aur|and about)\s+\p{L}+\s+(?:ki baat\s*)?:/iu.test(x)));
     }
     // v6.4 H2″ (main, director12): the return is ONE line of hers that answers what they said — their question too — with one of their
@@ -2124,7 +2159,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // invented "Virat ke cover drives ka zikr mast hai"): the return is code's, and says nothing that is not in their words — the
       // honest line to a question about her taste, else one question about their thing. No model call (the retry is gone: v6.6's
       // +calls per turn)
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : returnQuestion(ret.topic, lang, state);
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
       if (ASKS_TASTE.test(said0)) guard.returnHonest = true;
       { const k = String(ret.topic ?? "").toLowerCase(); ss = ss.filter((x) => !k || !x.toLowerCase().includes(k)); }
       if (line) { aside.push(line); guard.returnSaid = true; guard.returnLine = line; } else guard.returnMissed = true;
@@ -2288,7 +2323,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const closedS = closedA && !sameAnswer(closedA, gaveA) && !sameAnswer(closedA, wdA) ? (lang === "english" ? (yesNo(closedA) ? `And the earlier question's right answer: ${closedA}${closedW}.` : `And the earlier question's answer was ${closedA}${closedW}.`)
       : yesNo(closedA) ? `Aur pehle wale sawaal ka sahi jawab: ${closedA}${closedW}.` : `Aur pehle wale sawaal ka jawab ${closedA} tha${closedW}.`) : null;
     if (closedS || closedA) ss = ss.filter((x) => !/^aur pehle wale sawaal|^and the earlier question/i.test(x));
-    let doneS = wdA ? (lang === "english" ? `So the full answer: ${wdA}${wdW ? `, because ${wdW}` : ""}.` : `Toh poora jawab: ${wdA}${wdW ? `, kyunki ${wdW}` : ""}.`) : null;
+    // (v6.10 R7, main on director18: "Toh poora jawab" after a miss read as if they had it — after a miss the close is said as the answer,
+    // never "the full answer")
+    const missed = verdict === "not_yet" || graded0?.verdict === "not_yet";
+    let doneS = wdA ? (lang === "english" ? `${missed ? "The answer here is" : "So the full answer:"} ${wdA}${wdW ? `, because ${wdW}` : ""}.`
+      : `${missed ? "Iska jawab hai" : "Toh poora jawab:"} ${wdA}${wdW ? `, kyunki ${wdW}` : ""}.`) : null;
     // v6.4 T1″ (main, director12: 9 turns "Haan, sahi hai, kyunki … Toh poora jawab: …" on the worked card answered right): one close
     // per worked card. "Toh poora jawab" with its why is the close; the verdict before it is said bare (its own praise kept). With
     // no authored why for the close, the verdict's why is the close and "Toh poora jawab" is not said.
@@ -2314,11 +2353,15 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // (v6.9 R6: after a step that opened on its own step word, no second opener — "Ab agla kadam dekhte hain" is not said)
     // (a line of this turn — her frame "Ab doosra kadam.", a step, a point — already opens on a step word: no second opener; and after an
     // explain point no "next step" at all — there is none, its card comes)
-    const stepOpened = () => (body ?? []).some((x) => STEP_OPENER.test(String(x ?? "").trim())) || STEP_OPENER.test(String(workedLines?.[0] ?? "").trim());
+    // (v6.10 R7, main on director18: "Pehla kadam dekho. … Ab agla kadam dekhte hain." — a step label said in this turn is its one opener)
+    const STEP_LABEL = /^(?:Pehla kadam dekho|Ab (?:doosra|teesra|agla) kadam|First step|Now the (?:second|third|next) step)\.?$/i;
+    const stepOpened = () => (body ?? []).some((x) => STEP_OPENER.test(String(x ?? "").trim()) || STEP_LABEL.test(String(x ?? "").trim())) || STEP_OPENER.test(String(workedLines?.[0] ?? "").trim());
     const goOn = () => (afterProblem ? null : state.lastMove?.checkinOk && !checkinLately ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state)
       : afterRem ? freshOf(SPLIT_CARD[L0], state) : stepOpened() || kindNow !== "worked_example" ? null : freshOf(WORKED_GO[L0], state));
     let tail = card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
-      : state.lastMove?.splitClose ? freshOf(SPLIT_ASK[lang === "english" ? "english" : "hinglish"], state)
+      // (v6.10 R7, main on director18: "Ab aage chalte hain." was left hanging after every bridge — nothing is appended after a bridge;
+      // after a give-up's key, a check-in)
+      : state.lastMove?.splitClose ? (state.lastMove.gaveCheck ? rotateOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state) : null)
       // (v6.3 R2, main on director11: "Ab agla kadam dekhte hain." and then the same beat's card: the teaching half of a split turn
       // is followed by ITS card, so it says a question on this comes, never a next step)
       : state.lastMove?.splitTeach ? (state.lastMove?.checkinOk ? goOn() : freshOf(SPLIT_CARD[lang === "english" ? "english" : "hinglish"], state)) : null);
@@ -2334,7 +2377,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // v6.8 A4: the reply to her aside question gets one code line (never a verdict), then the card she had not said
     // (v6.9 A5, main on director17: said only to a reply about the aside — never to "40 cm", "phir se bolo", "drawing karke samjhao" —
     // and on every such reply, a card waiting or not)
-    if (state.lastMove?.asideAck) { const a = freshOf(ASIDE_ACK[lang === "english" ? "english" : "hinglish"], state); body = card ? [a] : [a, ...body]; codeLines.push(a); guard.asideAck = true; }
+    if (state.lastMove?.asideAck) {
+      // (A6: one neutral joint unless the turn already opens on one; the body — the unit's next part — is never replaced)
+      if (!lead) { const a = freshOf(jointOf(kit, "asideResume", lang) ?? ASIDE_RESUME[lang === "english" ? "english" : "hinglish"], state); body = [a, ...body]; codeLines.push(a); }
+      guard.asideResume = true;
+    }
     else if (card && !lead && !body.length && herPrev && prevHas(card)) { body = [freshOf((state.lastMove?.request === "selftry" ? TRY_FIRST : FRAMES.again)[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(body[0]); guard.reposeFrame = true; }
     // (v6.6 F1′: asked to try first, the card is said with an invitation even the first time)
     else if (card && !lead && !body.length && state.lastMove?.request === "selftry") { body = [freshOf(TRY_FIRST[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(body[0]); guard.reposeFrame = "selftry"; }
@@ -2462,6 +2509,15 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     body = once(noQ(body));
     // v6.7 A3 (main, director15: the honest line buried by the next card in the same breath): an aside question ends her turn — it is
     // said last, and the card waits (still live, re-posed on the next turn)
+    // (v6.10 T2, main on director18 c6 offtopic 18: an aside during a worked step was answered AFTER the step — the aside comes first; on a
+    // worked step it is answered without a question back, and the step follows)
+    const stepNow = kindNow === "worked_example" && body.length > 0;
+    // (the honest reply to a question about her taste only — a parked aside's return is its question, kept whole and last)
+    if (stepNow && honestLine && asideP.length && /[?？]\s*$/.test(asideP.at(-1)) && sentences(asideP.at(-1)).some((x) => !/[?？]\s*$/.test(norm(x)))) {
+      const ss = sentences(asideP.at(-1)).map(norm).filter((x) => x && !/[?？]\s*$/.test(x));
+      asideP.splice(asideP.length - 1, 1, ...ss);
+      guard.asideFirst = true;
+    }
     const asideQ = asideP.length && /[?？]\s*$/.test(asideP.at(-1)) && !graded0?.ungraded ? true : false;
     if (asideQ) guard.asideEnd = true;
     if (asideQ && tail) { guard.cardHeld = true; tail = null; }
@@ -2508,7 +2564,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       const filler = (x) => /^(?:zaroor|bilkul|theek\s+hai|thik\s+hai|achha|acha|haan|okay|ok|sure)[\s,!.]*$/i.test(x);
       while (ss0.length > 1 && filler(ss0[0])) ss0.shift();
       const named = /\b(?:hindi|english|angrezi)\b|हिंदी|हिन्दी/i.test(ss0[0] ?? "");
-      const ack = named ? [] : [freshOf(LANG_ACK[lang === "english" ? "english" : "hindi"], state)];
+      const ack = named ? [] : [freshOf(jointOf(kit, "hindiSwitch", lang) ?? LANG_ACK[lang === "english" ? "english" : "hindi"], state)];
       const r2 = [...ack, ...ss0].join(" ").replace(/\s+/g, " ").trim();
       if (r2 !== reply) { reply = r2; guard.langAck = true; }
     }
@@ -2578,7 +2634,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (!clause.sent && ret?.topic && !guard.returnSaid && !guard.returnHeld && !guard.returnMissed) {
       const said0 = ret.said ?? "";
       // (v6.7 A3: code's line, as on an assembled turn — the honest line or one question about their thing)
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : returnQuestion(ret.topic, lang, state);
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
       if (line) { if (!String(reply).includes(line)) reply = `${line} ${reply}`.trim(); guard.returnSaid = true; guard.returnLine = line; } else guard.returnMissed = true;
     }
   }
@@ -2601,7 +2657,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const parkedNow = (state.later ?? []).find((e) => e.at === state.turn && e.servedAt == null && e.share);
     const pk = parkedNow ? String(parkedNow.topic ?? "").toLowerCase().match(/\p{L}{4,}/u)?.[0] : null;
     if (pk && guard.cannedDropped && !new RegExp(`(?<![\\p{L}])${pk}`, "iu").test(reply) && state.lastMove?.kind !== "safeguard") {
-      reply = `${freshOf(parkAckOf(state, lang).map((f) => f(parkedNow.topic)), state)} ${reply}`.trim(); guard.parkRestored = true;
+      reply = `${freshOf(parkAckOf(state, lang, kit).map((f) => f(parkedNow.topic)), state)} ${reply}`.trim(); guard.parkRestored = true;
     }
   }
   // v6.5 F2 (main's ruling, director13): on any path, a sentence of hers claiming a taste or an experience of her own, or saying she is

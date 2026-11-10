@@ -41,9 +41,11 @@ describe("r7-brain-v69.test.mjs", () => {
 
   // N2: the bridge belongs to the next card's unit — after a give-up it switches at the bridge's first spoken part
   describe("N2: a bridge after a give-up switches to the next skill's first unit where the bridge begins", () => {
-    for (const [persona, topic, n] of [["stuck", "c4", 74], ["stuck", "c5-t02", 52], ["offtopic", "c6", 40]]) test(`${persona} ${topic} ${n}`, async () => {
+    // (v6.10: c4 stuck's live walk now stays in skill 1 until the child leaves — its give-up-then-bridge is steady's, row 74)
+    for (const [persona, topic, n] of [["steady", "c4", 74], ["stuck", "c5-t02", 52], ["offtopic", "c6", 40]]) test(`${persona} ${topic} ${n}`, async () => {
       // (the walk is live: the give-up-then-bridge turn is the one nearest the director17 row)
-      const turns = await walk(persona, topic, n + 12);
+      // (v6.10: a give-up now ends on a check-in, and the live walk can reach its bridge elsewhere — the nearest bridge in the lesson)
+      const turns = await walk(persona, topic, 200);
       const t = turns.filter((x) => x.pl.state.lastMove?.bridgeBeat && (x.out.guard?.lineParts ?? []).some((p) => p.part === "bridge")).sort((a, b) => Math.abs(a.n - n) - Math.abs(b.n - n))[0];
       assert.ok(t, "a bridge turn near the row");
       const sk = t.pl.state.lastMove.bridgeBeat?.skillId;
@@ -68,7 +70,9 @@ describe("r7-brain-v69.test.mjs", () => {
       return sents(t.out.reply).filter((x) => !card.includes(x.replace(/[.!?।]+$/, "")) && before.includes(x.replace(/[.!?।]+$/, "")));
     };
     test("the table: every row names a known shape, its beat kind and the director17 rows it replays; lookups are by request × beat", () => {
-      const SHAPES = new Set(["live_fresh_else_key", "key", "card_first", "serve_request", "park_later", "return_once", "next_step", "move_on", "ack_then_card"]);
+      // (v6.10: director18's wrong and missing rows add their shapes; A5's ack_then_card is gone with the acknowledgement, A6)
+      const SHAPES = new Set(["live_fresh_else_key", "key", "card_first", "serve_request", "park_later", "return_once", "next_step", "move_on",
+        "no_promise", "aside_first", "never_spends", "resume_unit", "ask_again", "pose_card", "form_removed"]);
       for (const r of REQUEST_TABLE) { assert.ok(SHAPES.has(r.shape), r.id); assert.ok(r.request.length, r.id); }
       assert.equal(responseShape("language", "remediation"), "live_fresh_else_key");
       assert.equal(responseShape("miss", "spent_card"), "key");
@@ -80,7 +84,8 @@ describe("r7-brain-v69.test.mjs", () => {
       const { t, turns } = await at(spec);
       assert.ok(["language", "clarify"].includes(t.pl.state.lastMove.request), `a ${t.pl.state.lastMove.request} turn`);
       assert.deepEqual(repeats(t, turns), [], t.out.reply);
-      if (row.beat === "remediation" && !t.pl.state.lastMove.gave) assert.ok(t.pl.state.lastMove.simpler, "the remediation's own words re-said, never skipped");
+      // (v6.10 T2.1: c4 steering 6's "samajh nahi aaya" now re-says the point, so row 8 is no longer on a remediation in the live walk)
+      if (row.beat === "remediation" && !t.pl.state.lastMove.gave && t.pl.before.lastMove?.scriptBeat?.kind === "remediation") assert.ok(t.pl.state.lastMove.simpler, "the remediation's own words re-said, never skipped");
     });
     test("T1.5 language/clarify on a spent card (sweep, the four stuck and steering lessons): every such turn says a fresh part or gives the key", async () => {
       const bad = [];
@@ -139,14 +144,18 @@ describe("r7-brain-v69.test.mjs", () => {
       assert.doesNotMatch(t.out.reply, /cricket wali baat/i);
     });
   });
-  // A5: the acknowledgement after an aside reply only for a reply about the aside, in three or more forms
-  test("A5: never said to a number or a request; its forms are three or more (sweep of the 16 lessons)", async () => {
-    const { ASIDE_ACK } = await import("../server/brain/say.js");
-    assert.ok(ASIDE_ACK.hinglish.length >= 3 && ASIDE_ACK.english.length >= 3);
+  // A5 → v6.10 A6 (main on director18: the acknowledgement fitted 0 times in two runs): no acknowledgement of the aside reply is said at all;
+  // after it, one neutral joint at most and the unit's next part (sweep of the 16 lessons)
+  test("A6: no aside acknowledgement; after an aside reply the walk goes on with the unit (sweep of the 16 lessons)", async () => {
+    const mod = await import("../server/brain/say.js");
+    assert.equal(mod.ASIDE_ACK, undefined);
     const bad = [];
     for (const topic of Object.keys(TOPIC)) for (const p of ["steady", "stuck", "offtopic", "steering"]) {
       const turns = await walk(p, topic, 200);
-      for (const t of turns) if (t.out.guard?.asideAck && (/\d/.test(t.pl.child) || (t.pl.cls.request?.type && t.pl.cls.request.type !== "uptake"))) bad.push(`${p} ${topic} ${t.n}: "${t.pl.child}"`);
+      for (const t of turns) {
+        if (/yeh jaankar achha laga|Wah, mazedaar|thanks for telling me/i.test(t.out.reply)) bad.push(`${p} ${topic} ${t.n}: an acknowledgement | ${t.out.reply.slice(0, 80)}`);
+        if (t.out.guard?.asideResume && t.out.reply.split(/(?<=[.!?])\s+/).length < 2) bad.push(`${p} ${topic} ${t.n}: the joint alone | ${t.out.reply}`);
+      }
     }
     assert.deepEqual(bad, []);
   });

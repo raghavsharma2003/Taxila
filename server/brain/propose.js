@@ -219,7 +219,7 @@ export function cardAt(reply, card) {
 /** The clause where the card starts (cardAt → clauseAt). */
 export const cardClauseOf = (reply, card) => { const at = cardAt(reply, card); return at == null ? null : clauseAt(reply, at); };
 // the closure sentences say.js assembles (the give-up reveal, "Toh poora jawab", the missed card's close), in either language
-const CLOSURE = /(?:Pichhle sawaal ka jawab|Toh poora jawab|Aur pehle wale sawaal ka jawab|The last question's answer was|So the full answer|And the earlier question's answer was)[^.!?\u0964]*(?:[.!?\u0964]+|$)/g;
+const CLOSURE = /(?:Pichhle sawaal ka jawab|Toh poora jawab|Aur pehle wale sawaal ka jawab|The last question's answer was|So the full answer|Iska jawab hai|The answer here is|And the earlier question's answer was)[^.!?\u0964]*(?:[.!?\u0964]+|$)/g;
 const CLOSED = /(?:Aur pehle wale sawaal ka jawab|And the earlier question's answer was)[^.!?\u0964]*(?:[.!?\u0964]+|$)/;
 const norm1 = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const skipSpace = (r, i) => { while (i < r.length && r[i] === " ") i++; return i; };

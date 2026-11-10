@@ -192,6 +192,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
   // (Studio director15 S9b, c6 stuck 18: and the beat that drew it, as seam.js keeps wbPrevKind — a remediation's board up gets
   // its own second view on a picture ask; without it the preselect never saw "remediation" and the card's board was re-drawn)
   let shownKind = null;
+  let leaveWait = 0;
   for (let i = 0; i < MAX; i++) {
     let text = lines?.[i];
     let leaving = false;
@@ -202,10 +203,19 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         : live?.scriptCheck ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptCheck.targets ?? null, wrongIfMis: live.scriptCheck.wrongIfMis ?? null }
         : live?.scriptThen ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptThen.targets ?? null, wrongIfMis: live.scriptThen.wrongIfMis ?? null } : null;
       const sb = s.lastMove?.scriptBeat;
-      const out = child.reply({ turn: i, teacher: [...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "",
-        beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card, ask, boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",
+      // (v6.10 harness, main on director18: the child sim answered cards that had not been said — c5-t01 offtopic 24, steady 50, stuck
+      // 60. A card is on the table for the child only once her line has said it; and the goodbye waits for a card she said and left open)
+      const lastT = [...rows].reverse().find((r) => r.who === "teacher") ?? null;
+      const nrm = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+      const cardSaid = !lastT?.card || nrm(lastT.text).includes(nrm(lastT.card).slice(0, 30));
+      const childIn = (turn) => ({ turn, teacher: [...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "",
+        beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card: cardSaid ? card : null, ask: cardSaid ? ask : null, boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",
         // (H1.1: her probe or teach-back move is unkeyed: the child gives a reason; else the child reads her line)
         ...(["probe", "teachback"].includes(s.lastMove?.kind) ? { probe: true } : {}) });
+      let out = child.reply(childIn(i));
+      // (c6 steering 51: the goodbye came during an open card — up to 10 turns it waits; the child answers the card instead)
+      const openSaid = !!lastT?.card && cardSaid && /[?？]\s*$/.test(String(lastT.text ?? "").trim());
+      if (out.kind === "leave" && openSaid && leaveWait < 10) { leaveWait++; out = child.reply(childIn(-1)); }
       text = out.text; leaving = out.kind === "leave";
     }
     if (text == null) break;
@@ -483,6 +493,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     // max(classify, reply), on a turn the model classified; whether her draft was rewritten, or the rewrite skipped by cut 1)
     const latency = { classifyPath: lastClassify?.path ?? null, parallelBoundMs: lastClassify?.path === "model" ? Math.max(classifyMs, replyMs) : classifyMs + replyMs,
       rewrite: !!tGuard?.rewritten, rewriteSkipped: tGuard?.rewriteSkipped ?? null };
+    // (v6.10 harness, main on director18 steering 50: a break or stop menu had no held record — a turn with no unit part keeps the board
+    // up, and its record says so)
+    if (!heldRec && lane === "director" && reply && next.heldUp?.unit) heldRec = { unit: next.heldUp.unit, changed: false, kept: true, drawn: "kept", pages: [], intent: { unit: next.heldUp.unit, noUnit: true }, layout: { split: false } };
     rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
       gate: { delivered, answered, verdictGiven, contradictions, contradictionsV6, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });

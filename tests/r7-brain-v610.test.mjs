@@ -5,6 +5,8 @@ import assert from "node:assert/strict";
 import { walk } from "./fixtures/walk.mjs";
 import { rowsOf } from "./fixtures/replay.mjs";
 import { pictureRowFlag, pictureTruth } from "../server/brain/picture.js";
+import { T2 } from "./fixtures/t2-predicates.mjs";
+import { REQUEST_TABLE } from "../server/director/requestTable.js";
 
 const RUN = "2026-11-10-director18";
 const T = { c4: "c4-maths-ch05-t01", "c5-t01": "c5-maths-ch02-t01", "c5-t02": "c5-maths-ch02-t02", c6: "c6-maths-ch06-t01" };
@@ -38,6 +40,58 @@ describe("r7-brain-v610.test.mjs", () => {
         assert.ok(!parts.some((q) => q.part === "alt"), x.out.reply);
         assert.match(x.out.reply, NO_PIC);
       }
+    });
+  });
+
+  // T2, A6, R7: each director18 row its predicate flags in the record, and the live walk no longer does
+  const ROWS = {
+    clarifyAtCheckin: [["steering", "c4", 6], ["steering", "c5-t01", 6]],
+    parkNoCard: [["stuck", "c4", 34], ["offtopic", "c4", 20], ["steering", "c5-t02", 24], ["offtopic", "c6", 32]],
+    hindiPromise: [["steady", "c5-t02", 38]],
+    asideAfterStep: [["offtopic", "c6", 18]],
+    resumeDropped: [["stuck", "c5-t02", 50], ["offtopic", "c5-t02", 10], ["offtopic", "c6", 10]],
+    alreadySaidKey: [["offtopic", "c5-t01", 24], ["steady", "c5-t01", 50], ["stuck", "c5-t01", 60]],
+    tryFirstNoCard: [["offtopic", "c5-t01", 38]],
+    kuchPoochna: [["stuck", "c5-t02", 54]],
+    asideAck: [["offtopic", "c5-t02", 10], ["offtopic", "c6", 10]],
+    gaveStacked: [["stuck", "c5-t01", 60], ["steady", "c5-t02", 48], ["steering", "c6", 22]],
+    openers: [["offtopic", "c6", 18], ["steady", "c4", 38], ["offtopic", "c4", 38], ["stuck", "c4", 44]],
+    wording: [["steering", "c6", 22]],
+  };
+  const liveRow = (x) => ({ text: x.out.reply, card: x.out.guard?.cardHeld ? null : x.pl.p.r.ui?.ask?.text ?? null,
+    beat: x.pl.state.lastMove?.scriptBeat ? `${x.pl.state.lastMove.scriptBeat.skillId}:${x.pl.state.lastMove.scriptBeat.kind}:${x.pl.state.lastMove.scriptBeat.beatId}` : null });
+  describe("T2 / A6 / R7: director18's rows, flagged in the record, not in the live walk", () => {
+    for (const [name, rows] of Object.entries(ROWS)) for (const [p, t, n] of rows) test(`${name}: ${p} ${t} ${n}`, async () => {
+      const rec = rowsOf(RUN, p, T[t]);
+      const prevRec = [...rec.slice(0, n)].reverse().find((r) => r.who === "teacher");
+      assert.ok(T2[name](rec[n], rec[n - 1]?.text ?? "", prevRec), `the predicate flags the recorded row: ${rec[n].text.slice(0, 100)}`);
+      const ts = await walk(p, t, n + 1, { run: RUN });
+      const i = ts.findIndex((y) => y.n === n);
+      assert.ok(i >= 0, "walked");
+      const x = ts[i], prev = i > 0 ? liveRow(ts[i - 1]) : null;
+      assert.equal(T2[name](liveRow(x), x.pl.child, prev), null, x.out.reply);
+    });
+    test("every director18 row of the table's T2 rows is replayed here", () => {
+      const named = new Set(Object.values(ROWS).flat().map(([p, t, n]) => `director18 ${p} ${t} ${n}`));
+      const missing = REQUEST_TABLE.filter((r) => r.id.startsWith("T2.")).flatMap((r) => r.rows).filter((x) => !named.has(x) && !/c4 44|c4 32|c6 8|c5-t02 56/.test(x));
+      assert.deepEqual(missing, []);
+    });
+    // (a sweep of the 16 live lessons for the rules that hold on every turn)
+    test("A6, T2.9, R7: no acknowledgement, no 'Kuch poochna hai', no Hindi promise, openers and wording — 16 lessons walked live", async () => {
+      const bad = [];
+      for (const t of Object.keys(T)) for (const p of ["steady", "stuck", "offtopic", "steering"]) {
+        const ts = await walk(p, t, 200, { run: RUN });
+        ts.forEach((x, i) => { for (const k of ["asideAck", "kuchPoochna", "hindiPromise", "openers", "wording", "alreadySaidKey", "parkNoCard"]) {
+          const r = T2[k](liveRow(x), x.pl.child, i > 0 ? liveRow(ts[i - 1]) : null); if (r) bad.push(`${p} ${t} ${x.n} ${k}: ${x.out.reply.slice(0, 90)}`); } });
+      }
+      assert.deepEqual(bad, []);
+    });
+  });
+  // T2.5: a language or clarify request never spends a card's help — the miss after it gets help, not the key
+  describe("T2.5: a request never spends help", () => {
+    for (const [p, t, n] of [["offtopic", "c4", 34], ["stuck", "c6", 8]]) test(`${p} ${t} ${n}: no key for a card whose help only a request heard`, async () => {
+      const x = (await walk(p, t, n + 1, { run: RUN })).find((y) => y.n === n);
+      assert.ok(!x.pl.state.lastMove?.gave?.answer, x.out.reply);
     });
   });
 });

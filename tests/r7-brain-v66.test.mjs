@@ -225,8 +225,10 @@ describe("r7-brain-v66.test.mjs", () => {
     });
     test("'aage chalo' on a live card gives its key and moves on, never the stop menu (c5-t01 steady 16)", async () => {
       const { out, last } = await live("steady", "c5-t01", 16);
-      assert.equal(last.state.lastMove?.request, "move_on");
-      assert.ok(last.state.lastMove?.gave?.answer, JSON.stringify(last.state.lastMove));
+      // (v6.10 T2, main on director18: "woh wala ho gaya" right after the card was posed is asked for once more — never the key, never the
+      // stop menu; a second one moves on with the key, as before)
+      assert.equal(last.state.lastMove?.request, "ask_again");
+      assert.ok(!last.state.lastMove?.gave?.answer, JSON.stringify(last.state.lastMove));
       assert.doesNotMatch(out.reply, /Chuno: aage badhein/, out.reply);
     });
   });
