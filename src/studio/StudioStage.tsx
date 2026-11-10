@@ -214,7 +214,8 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
   // round 3 forge: the stage frames a whiteboard's drawn content (boardView.ts), never the empty slate around it
   const frame: BoardFrame | null = useMemo(() => (artifact?.kind === "whiteboard" ? boardFrame(artifact.script as never) : null), [artifact]);
   // a play piece lays its world out FOR the box it is given (play DESIGN §7): it gets the whole tray, not a fixed aspect
-  const playFill = (artifact?.kind as string) === "play" && !!avail;
+  // (a passage, round 7 PASSAGE.md: reading matter laid out in real text for the box — the whole tray, never a scaled design)
+  const playFill = ((artifact?.kind as string) === "play" || artifact?.kind === "passage") && !!avail;
   const design = useMemo(() => (playFill && avail ? { w: Math.max(1, Math.floor(avail.w - 2 * insetFor(avail.w))), h: Math.max(1, Math.floor(avail.h - 2 * insetFor(avail.w))) }
     : frame?.framed ? { w: frame.w, h: frame.h } : validStage(artifact?.stage ?? (artifact?.kind === "whiteboard" ? artifact.script.board : undefined), STAGE_DEFAULT)),
     [artifact, frame, playFill, avail]);
@@ -324,7 +325,7 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
   }
   // (a play piece carries its own controls and doors: the stage's corner control would sit on its goal rail — seen on a
   // 360 phone in play mode, round 3 forge after-run: it covered "2 cheez alag")
-  const controls = !!artifact && artifact.kind !== "whiteboard" && (artifact.kind as string) !== "play" && interactive && !!lessonId;
+  const controls = !!artifact && artifact.kind !== "whiteboard" && artifact.kind !== "passage" && (artifact.kind as string) !== "play" && interactive && !!lessonId;
   // the corner control sits outside the box when the stage has room beside it (tablet / desktop), else on its corner
   const ctrlStyle = fit ? (fit.x >= CTRL + 8 ? { left: fit.x + fit.w + 4, top: fit.y } : { left: fit.x + fit.w - CTRL - 4, top: fit.y + 4 }) : undefined;
   const menuStyle = ctrlStyle && avail ? menuPlacement(ctrlStyle, avail) : undefined;

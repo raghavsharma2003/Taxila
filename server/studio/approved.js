@@ -23,7 +23,10 @@ export const JUDGED_SIZES = Object.freeze(["p360", "p412", "l1366"]);
 export const PILOT_TARGETS = Object.freeze([
   { topicId: "c4-maths-ch05-t01", archetype: "slice-at@1", misconceptionId: "c4-maths-ch05-t01-m-unequal-parts" },
   { topicId: "c5-maths-ch02-t01", archetype: "catch-on-line@1", misconceptionId: "c5-maths-ch02-t01-m-count-marks" },
-  { topicId: "c5-maths-ch02-t02", archetype: "catch-on-line@1", misconceptionId: "c5-maths-ch02-t02-m-bigger-denominator" },
+  // (catch-on-line's pods hold ONE value — two labels in a pod must be equal: the mix-up is shown by catching unit fractions one
+  // at a time on one line, never by pairing two to compare; the first two calls paired 1/4 with 1/8 and fell back)
+  { topicId: "c5-maths-ch02-t02", archetype: "catch-on-line@1", misconceptionId: "c5-maths-ch02-t02-m-bigger-denominator",
+    how: "catch unit fractions one at a time on ONE 0 to 1 line (1/2, 1/3, 1/4, 1/6, 1/8, one fraction per item, never two different fractions in one item), so 1/8 lands nearest 0 and 1/2 farthest; a later wave may mark only the half" },
   { topicId: "c6-maths-ch06-t01", archetype: "area-claim@1", misconceptionId: "c6-maths-ch06-t01-m-area-perimeter" },
 ]);
 

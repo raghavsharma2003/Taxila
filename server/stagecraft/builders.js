@@ -40,9 +40,12 @@ export function specPrompt(c, key) {
   const slice = JSON.stringify(kitSlice(key.topicId, c.premise?.misconceptionId ?? null)).slice(0, 3500);
   const aim = c.need === "contrast_misconception" ? `aimed at the misconception ${c.premise?.misconceptionId ?? "listed"}`
     : c.need === "re_represent" ? "a different representation of the same idea" : c.need === "practice" ? "practice after an untimed success" : `need ${c.need}`;
+  // (the approval lane: a target may say HOW this engine shows the mix-up, in the engine's own terms — closed text from code,
+  // never a child's words; c5-t02's two spec calls fell back pairing unequal fractions, which catch-on-line refuses)
+  const how = typeof c.premise?.how === "string" && c.premise.how.trim() ? ` How: ${c.premise.how.trim().slice(0, 400)}` : "";
   return [
     { role: "system", content: "You plan Studio pieces for Indian students aged 9-15 (NCERT classes 4-7). Output ONE JSON object: a spec for the named engine. The engine owns physics, truth and feel; you choose items, order, pacing and short labels. Every number must come from the kit slice or be exactly computable. Labels: short, plain, no markup, no emoji, not sentences to be read aloud." },
-    { role: "user", content: `ENGINE ${a} (${d.title}, ${d.kind}).\nJSON SCHEMA:\n${schema}\nONE VALID EXAMPLE (a different lesson; do not copy its items):\n${ex}\nKIT SLICE:\n${slice}\nBAND ${key.band}; LANG ${key.lang === "hi" ? "hi" : key.lang === "en" ? "en" : "hinglish"}.\nPlan a fresh spec for topic ${key.topicId}, ${aim}. Use skills [${JSON.stringify(key.topicId)}]. Return only the JSON.` },
+    { role: "user", content: `ENGINE ${a} (${d.title}, ${d.kind}).\nJSON SCHEMA:\n${schema}\nONE VALID EXAMPLE (a different lesson; do not copy its items):\n${ex}\nKIT SLICE:\n${slice}\nBAND ${key.band}; LANG ${key.lang === "hi" ? "hi" : key.lang === "en" ? "en" : "hinglish"}.\nPlan a fresh spec for topic ${key.topicId}, ${aim}.${how} Use skills [${JSON.stringify(key.topicId)}]. Return only the JSON.` },
   ];
 }
 

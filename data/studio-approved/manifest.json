@@ -1,0 +1,103 @@
+{
+  "v": 1,
+  "runs": [
+    {
+      "at": "2026-11-10T14:41:17.327Z",
+      "capUsd": 0.25,
+      "totalUsd": 0.005864,
+      "calls": [
+        {
+          "topicId": "c4-maths-ch05-t01",
+          "attempt": 1,
+          "deployment": "taxila-fast-bg",
+          "at": "2026-11-10T14:40:38.810Z",
+          "tokens": {
+            "in": 1596,
+            "cached": 0,
+            "out": 579,
+            "reasoning": 268
+          },
+          "usd": 0.001014,
+          "ok": true,
+          "why": null
+        },
+        {
+          "topicId": "c5-maths-ch02-t01",
+          "attempt": 1,
+          "deployment": "taxila-fast-bg",
+          "at": "2026-11-10T14:40:46.581Z",
+          "tokens": {
+            "in": 1978,
+            "cached": 0,
+            "out": 784,
+            "reasoning": 266
+          },
+          "usd": 0.001336,
+          "ok": true,
+          "why": null
+        },
+        {
+          "topicId": "c5-maths-ch02-t02",
+          "attempt": 1,
+          "deployment": "taxila-fast-bg",
+          "at": "2026-11-10T14:40:55.908Z",
+          "tokens": {
+            "in": 1797,
+            "cached": 0,
+            "out": 903,
+            "reasoning": 406
+          },
+          "usd": 0.001443,
+          "ok": false,
+          "why": "fell_back"
+        },
+        {
+          "topicId": "c5-maths-ch02-t02",
+          "attempt": 2,
+          "deployment": "taxila-fast-bg",
+          "at": "2026-11-10T14:41:02.723Z",
+          "tokens": {
+            "in": 1797,
+            "cached": 1794,
+            "out": 736,
+            "reasoning": 292
+          },
+          "usd": 0.00092,
+          "ok": false,
+          "why": "fell_back"
+        },
+        {
+          "topicId": "c6-maths-ch06-t01",
+          "attempt": 1,
+          "deployment": "taxila-fast-bg",
+          "at": "2026-11-10T14:41:08.470Z",
+          "tokens": {
+            "in": 1392,
+            "cached": 0,
+            "out": 727,
+            "reasoning": 512
+          },
+          "usd": 0.001151,
+          "ok": true,
+          "why": null
+        }
+      ],
+      "approved": [],
+      "refused": [
+        {
+          "id": "gen-c4-maths-ch05-t01-343d63a3",
+          "why": "judge: unreadable, unreadable, unreadable"
+        },
+        {
+          "id": "gen-c5-maths-ch02-t01-b3dc0103",
+          "why": "judge: wrong_fact, gives_answer, language_mix"
+        },
+        {
+          "id": "gen-c6-maths-ch06-t01-0f803073",
+          "why": "judge: unreadable, register"
+        }
+      ]
+    }
+  ],
+  "totalUsd": 0.005864
+}

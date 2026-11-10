@@ -17,6 +17,7 @@ import { SkeletonRenderer } from "./skeletons.tsx";
 import { ImageRenderer } from "./ImageRenderer.tsx";
 import { StagecraftRenderer } from "../stagecraft/StagecraftRenderer.tsx";
 import { SceneRenderer } from "../modules/scene/SceneRenderer.tsx";
+import { PassageRenderer } from "./PassageRenderer.tsx";
 
 /** What a renderer may tell the stage. An answer is host-graded (LIVE-STUDIO §3.10); `correct` is never trusted. */
 export type StudioStageEvent =
@@ -53,6 +54,7 @@ export const RENDERERS: { [K in StudioArtifactKind]?: ArtifactRenderer<K> } = {
   image: ImageRenderer,         // W2-H: art only (W3-G's image lane fills it)
   stagecraft: StagecraftRenderer as unknown as ArtifactRenderer<"stagecraft">,   // STAGECRAFT P10: src/stagecraft (needs P9)
   scene: SceneRenderer,         // round 7 M5a: a code-built cinematic scene (src/modules/scene/**)
+  passage: PassageRenderer,     // round 7 (PASSAGE.md): a kit passage as reading matter, paged, real text ≥ 16 px
 };
 
 // round 3 forge: the play stream's pieces (PlayArtifact, kind "play"; docs/design/round3/play/GRAMMAR.md §7) render through
