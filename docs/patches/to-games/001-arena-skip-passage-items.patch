@@ -7,8 +7,8 @@ as "How much did Gopal pay for the well?" would be asked with no scene. 25 chall
 classes 5 to 9, where the text used to sit inside the prompt.
 
 - server/play/tools/build-arena.mjs: `challengeOf` returns { why: "needs its passage" } for an item with a `passageId`.
-- data/arena/**: rebuilt with `node server/play/tools/build-arena.mjs` (3,005 challenges become 2,980; the 212 eligible topics
-  are unchanged). vakya, kaal and coverage banks were rebuilt too and do not change.
+- data/arena/**: rebuilt with `node server/play/tools/build-arena.mjs` (2,908 challenges become 2,883; the 203 eligible topics
+  are unchanged; built on int/r6 at 2450f67e). vakya, kaal and coverage banks were rebuilt too and do not change.
 - tests/r7-audit-arena-passage.test.mjs: the builder skips the item; no arena challenge on disk is about a passage item.
 
 When the lesson can show a passage (TAXILA_PASSAGES=on), the arena can ask these again if it shows the passage beside the question.
@@ -970,7 +970,7 @@ index f6cc23d6..02b5a061 100644
   ]
  }
 diff --git a/data/arena/index.json b/data/arena/index.json
-index 3cc60c07..8426149a 100644
+index 50fb8741..5cdedbac 100644
 --- a/data/arena/index.json
 +++ b/data/arena/index.json
 @@ -48,10 +48,10 @@
@@ -986,7 +986,7 @@ index 3cc60c07..8426149a 100644
      "c1-english-ch07-t01-s2": 1
     }
    },
-@@ -512,20 +512,18 @@
+@@ -509,20 +509,18 @@
    },
    "c2-english-ch01-t01": {
     "file": "c2-english",
@@ -1011,7 +1011,7 @@ index 3cc60c07..8426149a 100644
    },
    "c2-english-ch03-t01": {
     "file": "c2-english",
-@@ -538,11 +536,9 @@
+@@ -535,11 +533,9 @@
    },
    "c2-english-ch04-t01": {
     "file": "c2-english",
@@ -1025,7 +1025,7 @@ index 3cc60c07..8426149a 100644
    },
    "c2-english-ch05-t01": {
     "file": "c2-english",
-@@ -594,18 +590,16 @@
+@@ -591,18 +587,16 @@
    },
    "c2-english-ch11-t01": {
     "file": "c2-english",
@@ -1048,7 +1048,7 @@ index 3cc60c07..8426149a 100644
      "c2-english-ch12-t01-s3": 1
     }
    },
-@@ -1053,11 +1047,9 @@
+@@ -1050,11 +1044,9 @@
    },
    "c3-english-ch02-t01": {
     "file": "c3-english",
@@ -1062,7 +1062,7 @@ index 3cc60c07..8426149a 100644
    },
    "c3-english-ch03-t01": {
     "file": "c3-english",
-@@ -1069,11 +1061,9 @@
+@@ -1066,11 +1058,9 @@
    },
    "c3-english-ch04-t01": {
     "file": "c3-english",
@@ -1076,7 +1076,7 @@ index 3cc60c07..8426149a 100644
    },
    "c3-english-ch05-t01": {
     "file": "c3-english",
-@@ -1114,10 +1104,9 @@
+@@ -1111,10 +1101,9 @@
    },
    "c3-english-ch10-t01": {
     "file": "c3-english",
@@ -1088,7 +1088,7 @@ index 3cc60c07..8426149a 100644
      "c3-english-ch10-t01-s2": 1
     }
    },
-@@ -1772,11 +1761,11 @@
+@@ -1767,11 +1756,11 @@
    },
    "c4-english-ch01-t01": {
     "file": "c4-english",
@@ -1102,7 +1102,7 @@ index 3cc60c07..8426149a 100644
     }
    },
    "c4-english-ch02-t01": {
-@@ -1814,20 +1803,16 @@
+@@ -1809,20 +1798,16 @@
    },
    "c4-english-ch06-t01": {
     "file": "c4-english",
@@ -1127,7 +1127,7 @@ index 3cc60c07..8426149a 100644
     }
    },
    "c4-english-ch08-t01": {
-@@ -3275,10 +3260,9 @@
+@@ -3270,10 +3255,9 @@
    },
    "c6-hindi-ch11-t01": {
     "file": "c6-hindi",
@@ -1139,7 +1139,7 @@ index 3cc60c07..8426149a 100644
      "c6-hindi-ch11-t01-s3": 1
     }
    },
-@@ -4035,11 +4019,10 @@
+@@ -4030,11 +4014,10 @@
    },
    "c7-english-ch01-t01": {
     "file": "c7-english",
@@ -1153,7 +1153,7 @@ index 3cc60c07..8426149a 100644
     }
    },
    "c7-english-ch02-t01": {
-@@ -4111,11 +4094,9 @@
+@@ -4106,11 +4089,9 @@
    },
    "c7-english-ch11-t01": {
     "file": "c7-english",
@@ -1166,7 +1166,7 @@ index 3cc60c07..8426149a 100644
      "c7-english-ch11-t01-s1": 1
     }
    },
-@@ -5138,11 +5119,9 @@
+@@ -5134,11 +5115,9 @@
    },
    "c8-english-ch03-t01": {
     "file": "c8-english",
@@ -1180,7 +1180,7 @@ index 3cc60c07..8426149a 100644
    },
    "c8-english-ch04-t01": {
     "file": "c8-english",
-@@ -5160,11 +5139,9 @@
+@@ -5156,11 +5135,9 @@
    },
    "c8-english-ch06-t01": {
     "file": "c8-english",
@@ -1194,7 +1194,7 @@ index 3cc60c07..8426149a 100644
    },
    "c8-english-ch07-t01": {
     "file": "c8-english",
-@@ -5180,11 +5157,9 @@
+@@ -5176,11 +5153,9 @@
    },
    "c8-english-ch09-t01": {
     "file": "c8-english",
@@ -1208,7 +1208,7 @@ index 3cc60c07..8426149a 100644
    },
    "c8-english-ch10-t01": {
     "file": "c8-english",
-@@ -6060,11 +6035,9 @@
+@@ -6054,11 +6029,9 @@
    },
    "c9-english-ch10-t01": {
     "file": "c9-english",
@@ -1222,7 +1222,7 @@ index 3cc60c07..8426149a 100644
    },
    "c9-english-ch11-t01": {
     "file": "c9-english",
-@@ -6092,11 +6065,9 @@
+@@ -6086,11 +6059,9 @@
    },
    "c9-english-ch15-t01": {
     "file": "c9-english",
@@ -1236,36 +1236,37 @@ index 3cc60c07..8426149a 100644
    },
    "c9-english-ch16-t01": {
     "file": "c9-english",
-@@ -6992,16 +6963,17 @@
+@@ -6982,17 +6953,18 @@
   "counts": {
    "topics": 830,
-   "eligible": 212,
--  "challenges": 3005,
-+  "challenges": 2980,
+   "eligible": 203,
+-  "challenges": 2908,
++  "challenges": 2883,
    "leftOut": {
--   "open or short answer (tier B)": 7622,
+-   "open or short answer (tier B)": 7624,
 -   "points at a picture": 414,
 -   "open prompt": 864,
--   "offered choices: not exactly one key": 219,
-+   "open or short answer (tier B)": 7188,
+-   "offered choices: not exactly one key": 227,
++   "open or short answer (tier B)": 7190,
 +   "points at a picture": 403,
 +   "needs its passage": 500,
 +   "open prompt": 840,
-+   "offered choices: not exactly one key": 215,
-    "estimate (a near decoy could be right)": 167,
--   "two numbers in the key": 212,
-+   "two numbers in the key": 211,
-    "acceptable values disagree": 87,
++   "offered choices: not exactly one key": 223,
+    "estimate (a near decoy could be right)": 141,
+    "number only in an accepted form, question is yes/no, why or which-one": 174,
+-   "two numbers in the key": 161,
++   "two numbers in the key": 160,
+    "acceptable values disagree": 77,
 -   "ordering (v2)": 6,
 +   "ordering (v2)": 5,
     "too few decoys": 1
    }
   }
 diff --git a/server/play/tools/build-arena.mjs b/server/play/tools/build-arena.mjs
-index 28b833e6..cf60ce5a 100644
+index f6f59595..f299b963 100644
 --- a/server/play/tools/build-arena.mjs
 +++ b/server/play/tools/build-arena.mjs
-@@ -124,6 +124,7 @@ export function offered(prompt) {
+@@ -135,6 +135,7 @@ export function offered(prompt) {
  /** one kit item → a challenge, or null with the reason */
  export function challengeOf(it, t) {
    if (it?.verified?.agrees !== true) return { why: "not verified" };
