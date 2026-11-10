@@ -68,7 +68,7 @@ export function childrenFor(topicId) {
   const firstCheck = (() => { const sk = skillOf(script, kit, 0); return sk?.checks?.length ? checkCardId(sk.skillId, sk.checks[0].id) : null; })();
   const right = () => ({ verdict: "right" });
   const meera = {
-    skills: { [s1]: { status: "mastered", delayedPassed: true, attempts: 9, correctUnaided: 7 }, ...(s2 ? { [s2]: { status: "practising", delayedPassed: false, attempts: 3, correctUnaided: 1 } } : {}) },
+    skills: { [s1]: { status: "mastered", learnedChecked: true, attempts: 9, correctUnaided: 7 }, ...(s2 ? { [s2]: { status: "practising", learnedChecked: false, attempts: 3, correctUnaided: 1 } } : {}) },
     history: { [s1]: easy }, mixups: [], brief: null, interests: ["cricket"], memory: { likes: true, lastActiveDay: day(12) },
   };
   return {
@@ -79,7 +79,7 @@ export function childrenFor(topicId) {
       meeraForgot: { input: meera, answer: (card) => ({ verdict: card.id === firstCheck ? "wrong" : "right" }) },
       kabir: {
         input: {
-          skills: { [s1]: { status: "practising", delayedPassed: false, attempts: 6, correctUnaided: 1 } },
+          skills: { [s1]: { status: "practising", learnedChecked: false, attempts: 6, correctUnaided: 1 } },
           history: {},
           mixups: lm ? [{ id: lm.misconceptionId, p: 0.82, needsVerify: true, hits: 3 }] : [],
           brief: { opener: "standard_retrieval", successFirst: true, newSkillBudget: 1, adaptTrace: ["R1"],
@@ -92,7 +92,7 @@ export function childrenFor(topicId) {
         // every row of her record came from games (kt_evidence rows with a play: source): no script card, no lesson yet
         evidence: "play",
         input: {
-          skills: { [s1]: { status: "practising", delayedPassed: false, attempts: 8, correctUnaided: 3 }, ...(s2 ? { [s2]: { status: "introduced", delayedPassed: false, attempts: 2, correctUnaided: 0 } } : {}) },
+          skills: { [s1]: { status: "practising", learnedChecked: false, attempts: 8, correctUnaided: 3 }, ...(s2 ? { [s2]: { status: "introduced", learnedChecked: false, attempts: 2, correctUnaided: 0 } } : {}) },
           history: {},
           mixups: lm ? [{ id: lm.misconceptionId, p: 0.74, needsVerify: true, hits: 2 }] : [],
           brief: { opener: "standard_retrieval", successFirst: true, newSkillBudget: 1, adaptTrace: ["R15"] },

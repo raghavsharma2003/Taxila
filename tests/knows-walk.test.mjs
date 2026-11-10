@@ -107,7 +107,7 @@ describe("round 8 D: the real walk with a plan", () => {
     }
 
     test(`${topicId}: allKnown → each skill opens at its check, she says so once, then the last ladder hardest first`, () => {
-      const skills = Object.fromEntries(C.kit.skills.map((s) => [s.id, { status: "mastered", delayedPassed: true }]));
+      const skills = Object.fromEntries(C.kit.skills.map((s) => [s.id, { status: "mastered", learnedChecked: true }]));
       const plan = planFor({ script: C.script, kit: C.kit, skills, now: NOW });
       assert.equal(plan.allKnown, true);
       const w = walkReal(topicId, { plan, answer: () => ({ verdict: "right" }) });
@@ -142,5 +142,6 @@ describe("round 8 D: the real walk with a plan", () => {
     const entry = { script: C.script, ok: new Set(C.script.skills.map((s) => s.skillId)) };
     assert.ok(knowsPlanAtStart({ entry, kit: C.kit, now: NOW, env: {} }));
     assert.equal(knowsPlanAtStart({ entry, kit: C.kit, now: NOW, env: { TAXILA_R8_KNOWS: "off" } }), null);
+    assert.equal(knowsPlanAtStart({ entry: { ...entry, script: { ...C.script, recordedRun: true } }, kit: C.kit, now: NOW, env: {} }), null, "a recorded-run replay: no knows choices");
   });
 });

@@ -44,7 +44,7 @@ import { studioSeam } from "../studio/seam.js";
 import { relationalSeam } from "../relational/seam.js";
 import { purposeSeam } from "../lesson/purpose.js";
 import { sessionStartCtx, schoolPointerStmts } from "../director/session/start.js";
-import { lessonBriefFor } from "../conductor/slot.js"; // Learning patch 006 (see the lesson start)
+import { lessonBriefFor, lessonBriefWithoutPlan } from "../conductor/slot.js"; // Learning patch 006 (see the lesson start)
 import { eligibleFormats, posteriorsFor } from "../learner/formats.js"; // Learning patch 008 (the explain format allocator)
 import { voicesigSeam } from "../voicesig/lesson.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
@@ -337,7 +337,7 @@ export async function lessonStart(req, body) {
     guardian, topicChosen: !!body.topicId || !!routed,
   });
   // round 8 (dc-r8-one-reader-with-because): what is known about her becomes the lesson's choices, each with its because
-  const knows = purpose === "lesson" ? knowsPlanAtStart({ entry: scriptFor(kit), kit, ledger, skills, mixups: misconceptionView(ledger.mis), brief: today?.brief ?? null, interests, memory: { likes: !!memory }, now }) : null;
+  const knows = purpose === "lesson" ? knowsPlanAtStart({ entry: scriptFor(kit), kit, ledger, skills, mixups: misconceptionView(ledger.mis), brief: today?.brief ?? (purpose === "lesson" ? await lessonBriefWithoutPlan(child.id, { now: new Date(now), subject: topic.subject ?? null }).catch(() => null) : null), interests, memory: { likes: !!memory }, now }) : null;
   const kw = knowsWarmup(knows, warmupItems, { kit, max: LIMITS.warmupMax,
     prereqItem: knows?.prereqCheck?.prereqSkillId ? (await warmupItemsFor([knows.prereqCheck.prereqSkillId], { ledger }).catch(() => []))[0] ?? null : null });
   const state0 = initLessonState({

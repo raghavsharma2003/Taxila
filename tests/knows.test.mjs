@@ -13,7 +13,7 @@ import { script, kit, SKILL_A as A, SKILL_B as B, MIS_X, MIS_Y, MIS_Z, TOPIC } f
 
 const NOW = Date.parse("2026-11-10T10:00:00+05:30");
 const skA = script.skills[0], skB = script.skills[1];
-const learned = (extra = {}) => ({ status: "mastered", delayedPassed: true, ...extra });
+const learned = (extra = {}) => ({ status: "mastered", learnedChecked: true, ...extra });
 
 test("card ids are the walk's own (script.js scriptCheckItem / scriptAskItem)", () => {
   assert.equal(checkCardId(A, "c1"), scriptCheckItem(A, skA.checks[0]).id);
@@ -22,21 +22,32 @@ test("card ids are the walk's own (script.js scriptCheckItem / scriptAskItem)", 
 
 test("no history: the script's default, empty because", () => {
   const p = planFor({ script, kit, now: NOW });
-  assert.deepEqual(p, { topicId: TOPIC, allKnown: false, opener: "standard_retrieval", hookSlot: null, compress: [], firstCard: null, checkOrder: {}, ladderOrder: {}, prereqCheck: null, because: [] });
+  assert.deepEqual(p, { topicId: TOPIC, allKnown: false, opener: "standard_retrieval", hookSlot: null, compress: [], compressAt: {}, firstCard: null, checkOrder: {}, ladderOrder: {}, prereqCheck: null, because: [] });
   assert.deepEqual(beatsFor(p, skA, { hook: true }), defaultBeats(skA, { hook: true }));
   assert.deepEqual(ladderFor(p, skA), [`${TOPIC}-i03`, `${TOPIC}-i01`]);
 });
 
 test("K1: learned with a passed delayed check opens at the first check; others are walked in full", () => {
-  for (const status of ["learned_today", "mastered", "durable", "due"]) assert.deepEqual(compressOf({ script, kit, skills: { [A]: { status, delayedPassed: true } } }).compress, [A], status);
-  assert.deepEqual(compressOf({ script, kit, skills: { [A]: { status: "mastered", delayedPassed: false } } }).compress, [], "no delayed pass");
-  assert.deepEqual(compressOf({ script, kit, skills: { [A]: { status: "practising", delayedPassed: true } } }).compress, [], "not learned");
+  for (const status of ["learned_today", "mastered", "durable", "due"]) assert.deepEqual(compressOf({ script, kit, skills: { [A]: { status, learnedChecked: true } } }).compress, [A], status);
+  assert.deepEqual(compressOf({ script, kit, skills: { [A]: { status: "mastered", learnedChecked: false } } }).compress, [], "no delayed pass");
+  assert.deepEqual(compressOf({ script, kit, skills: { [A]: { status: "practising", learnedChecked: true } } }).compress, [], "not learned");
   assert.deepEqual(compressOf({ script, kit, skills: { [A]: { status: "mastered" } } }).compress, [], "delayed check unknown");
   const p = planFor({ script, kit, skills: { [A]: learned() }, now: NOW });
   assert.deepEqual(beatsFor(p, skA, { hook: true }), ["check:c1"]);
   assert.deepEqual(beatsFor(p, skB), defaultBeats(skB));
   const r = p.because.find((b) => b.choice === "compress");
   assert.equal(r.on, A); assert.equal(r.fact.kind, "learned_delayed_check"); assert.equal(r.fact.firstCheck, "c1");
+});
+
+test("K1: the opening card is a check she has not answered (the delayed check needs a new item); none left → not compressed", () => {
+  const p = planFor({ script, kit, skills: { [A]: learned() }, history: { [A]: [checkCardId(A, "c1")] }, now: NOW });
+  assert.deepEqual(beatsFor(p, skA), ["check:c2"]);
+  assert.equal(p.because.find((b) => b.choice === "compress").fact.firstCheck, "c2");
+  assert.deepEqual(afterCompressCheck(p, skA, "wrong").beats, ["explain:e1", "explain:e2", "worked", "check:c1"]);
+  const all = planFor({ script, kit, skills: { [A]: learned() }, history: { [A]: [checkCardId(A, "c1"), checkCardId(A, "c2")] }, now: NOW });
+  assert.deepEqual(all.compress, []); assert.ok(!all.because.some((b) => b.choice === "compress"));
+  const ev = [`${A}|check:c2`, ...defaultWalk(script, kit).filter((k) => k.startsWith(B))].map((k) => { const [skillId, beat] = k.split("|"); return { kind: "beat", skillId, beat }; });
+  assert.ok(assertWalkExplained({ script, kit, because: p.because, events: ev }), "the predicate reads the opening check from the record");
 });
 
 test("K1: a right answer moves on; a miss returns to the full unit and the fallback is recorded", () => {

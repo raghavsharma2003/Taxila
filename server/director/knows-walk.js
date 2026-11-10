@@ -3,7 +3,7 @@
 // (s.knows undefined: a lesson started before round 8, an Ask, a practice set) every function gives the walk's own default.
 // Every choice that departs from the script's default records its because once, with the turn it fired on, in
 // s.knowsApplied; the turn route writes the new ones as decision_record rows (knowsDecisionsOf).
-import { planFor, beatsFor, afterCompressCheck, ladderFor, hardestFirst, remedyNow, checksOf, checkCardId } from "./knows.js";
+import { planFor, beatsFor, afterCompressCheck, ladderFor, hardestFirst, remedyNow, openCheckOf, checkCardId } from "./knows.js";
 
 /** Record a because the walk acted on (once per choice and target). */
 export function noteBecause(s, rec) {
@@ -24,7 +24,7 @@ export function knowsBeats(s, kit, sk, { hook = false } = {}) {
   if (plan.checkOrder?.[sk.skillId]) noteBecause(s, planned(s, "checkOrder", sk.skillId));
   const ladder = compressed ? [] : ladderFor(plan, sk);
   if (!compressed && plan.ladderOrder?.[sk.skillId]) noteBecause(s, planned(s, "ladderOrder", sk.skillId));
-  return { beats, ladder, ...(compressed ? { compress: { cardId: checkCardId(sk.skillId, checksOf(plan, sk)[0].id), done: false } } : {}) };
+  return { beats, ladder, ...(compressed ? { compress: { cardId: checkCardId(sk.skillId, openCheckOf(plan, sk).id), done: false } } : {}) };
 }
 
 /**
@@ -120,14 +120,15 @@ export function knowsDecisionsOf(prev, next, { lessonId, legalMode, stmt }) {
 export const knowsOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R8_KNOWS ?? ""));
 /**
  * The lesson start's plan. `entry` is director/script.js scriptFor(kit) ({ script, ok }); only the skills that validate are
- * planned. `ledger` is the learner ledger the route already holds: delayedPassed is its skill's flags.delayed (the learner
+ * planned. `ledger` is the learner ledger the route already holds: learnedChecked is its skill's flags.delayed (the learner
  * session is adding it to the skill snapshot; until then it is read here). null with no script or the switch off.
  */
 export function knowsPlanAtStart({ entry, kit, ledger, skills = {}, history = {}, mixups = [], brief = null, interests = [], memory = null, now, env } = {}) {
-  if (!knowsOn(env) || !entry?.script) return null;
+  // (a replay of a recorded run walks what that run walked: no knows choices, as v6.10's walk rules)
+  if (!knowsOn(env) || !entry?.script || entry.script.recordedRun) return null;
   const script = { ...entry.script, skills: (entry.script.skills ?? []).filter((sk) => entry.ok?.has(sk.skillId)) };
   if (!script.skills.length) return null;
-  const known = Object.fromEntries(Object.entries(skills).map(([id, st]) => [id, { ...st, delayedPassed: st?.delayedPassed ?? !!ledger?.skills?.[id]?.flags?.delayed }]));
+  const known = Object.fromEntries(Object.entries(skills).map(([id, st]) => [id, { ...st, learnedChecked: st?.learnedChecked ?? !!ledger?.skills?.[id]?.flags?.delayed }]));
   // items she has answered: the ledger's seen item ids per skill (the route's `history` is outcomes, not ids)
   const seen = history && Object.keys(history).length ? history : Object.fromEntries(Object.entries(ledger?.skills ?? {}).map(([id, sk]) => [id, sk?.items ?? []]));
   return planFor({ script, kit, skills: known, history: seen, mixups, brief, interests, memory, now });
