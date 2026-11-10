@@ -4,10 +4,10 @@
 // (cookie tx_child: an auth_session row plus a device_session row naming the child, migration 041). It reaches only the routes
 // server/pair/scope.js lists (the router marks them), and only for its own child; every other route treats it as
 // forbidden (403 scope.child_device). Identity stays the authenticated child id; the device holds a revocable session.
-import { scryptSync, randomBytes, timingSafeEqual, createHash } from "crypto";
+import { scryptSync, randomBytes, createHash } from "crypto";
 import { q, one } from "./db.js";
 import { HttpError, parseCookies, unauthorized, forbidden } from "./http.js";
-import { traceIdentify } from "./trace/context.js";
+import { traceIdentify, isUuid } from "./trace/context.js";
 
 const COOKIE = "tx_session";
 /** The child-scoped device session (server/pair/routes.js sets it on redeem). */
@@ -29,13 +29,6 @@ export function hashPassword(pw) {
   const salt = randomBytes(16);
   const h = scryptSync(pw, salt, KEYLEN, { N, r: R, p: P });
   return `scrypt$${N}$${R}$${P}$${salt.toString("base64")}$${h.toString("base64")}`;
-}
-export function verifyPassword(pw, stored) {
-  const [alg, n, r, p, salt, hash] = String(stored).split("$");
-  if (alg !== "scrypt") return false;
-  const want = Buffer.from(hash, "base64");
-  const got = scryptSync(pw, Buffer.from(salt, "base64"), want.length, { N: +n, r: +r, p: +p });
-  return want.length === got.length && timingSafeEqual(want, got);
 }
 const sha = (s) => createHash("sha256").update(s).digest("hex");
 
@@ -99,6 +92,8 @@ function touchDevice(hash, now = Date.now()) {
 }
 /** → { guardian, child } or throws 403 if the child is not this guardian's. */
 export async function requireChild(req, childId) {
+  // a child id is a uuid (migration 001): anything else is "not found" here, not a Postgres 22P02 and a 500 (PLAT-12)
+  if (!isUuid(childId)) throw forbidden("child not found for this account");
   const guardian = await requireGuardian(req);
   if (guardian.deviceChildId && guardian.deviceChildId !== childId) throw forbidden("child not found for this account");
   const child = await one("select * from child where id = $1 and guardian_id = $2", [childId, guardian.id]);

@@ -36,7 +36,8 @@ test("the record's still ids are look-free (teacher/<id>/<pose>); the loader map
   assert.match(rec, /const still = \(pose: string\) => `teacher\/\$\{t\.id\}\/\$\{pose\}`;/);
   assert.match(rec, /pronouns: t\.pronouns \?\? pronounsFor\(t\.look\.presentedGender\)/);
   for (const k of ["portrait", "wave", "resting", "reading", "watering", "telescope", "smile", "listening", "thinking", "curious", "proud"]) assert.match(rec, new RegExp(`${k}: still\\("${k}"\\)`));
-  const patch = readFileSync(new URL("../docs/patches/to-app/001-face-teacher-stills-ledger.patch", import.meta.url), "utf8");
-  assert.match(patch, /\/assets\/teacher\/asha-stills\/1\/index\.json/);
-  assert.match(patch, /a\.alias && a\.look === look/);
+  // (the App's ledger wiring has landed; it was a patch file at docs/patches/to-app/001, now asserted on the code)
+  const art = readFileSync(new URL("../src/child/art.tsx", import.meta.url), "utf8");
+  assert.match(art, /\/assets\/teacher\/asha-stills\/1\/index\.json/);
+  assert.match(art, /a\.alias && a\.look === look/);
 });

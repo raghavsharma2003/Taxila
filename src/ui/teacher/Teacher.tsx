@@ -1,8 +1,8 @@
-// <Teacher>: the one teacher face for every surface (PRODUCT-DESIGN-V2 §8, §13.1). It wraps the M0 3D head
-// (src/avatar/TutorFace: tier B / B-lite → the procedural head; D → the 2D plate rendered from the same look; E →
-// voice ring), staged on the lesson ground (--stage + the warm --stage-pool, or the painted bg/stage-* when that art
-// exists and the tier can afford it). The retired 2D clip-art faces (src/ui/TeacherFace's SVG, src/stage/*) now
-// route here, so every screen shows the same person as the lesson.
+// <Teacher>: the one teacher face for every surface (PRODUCT-DESIGN-V2 §8, §13.1). It wraps <LessonFace>
+// (src/face-puppet/LessonFace.tsx): Asha is the 2D puppet (live, or her rest still for form plate / still and on every
+// fallback); the voice ring when the child chose voice-and-board (tier E); src/avatar/TutorFace's 3D head or plate only
+// for a lesson still pinned to a parked tutor. Staged on the lesson ground (--stage + the warm --stage-pool, or the
+// painted bg/stage-* when that art exists and the tier can afford it), so every screen shows the same person as the lesson.
 //
 // The AI disclosure goes with her at every size (§6.3.4, §8):
 //  - label="below": "{T} · AI teacher" as plain, non-interactive text under the window (no pill, no border);
@@ -83,11 +83,14 @@ export function Teacher(p: TeacherProps) {
           affect={p.affect ?? null}
           noProbe={p.noProbe}
           lang="english"
+          name={rec.name}
           className="teacher-face-host"
         />
         {p.protege && (
           <Protege kind={p.protege.kind} mood={p.protege.mood} reducedMotion={p.reducedMotion}
-            glance={p.floor === "listening" || p.floor === "speaking" || p.floor === "your_turn"} />
+            // not while the child is talking: she listens with her eyes on the child (behaviour.ts lookAt drops a look
+            // in LISTENING and THINKING), so a glance cue then was emitted every 3.6 s and never seen (audit FACE-05)
+            glance={p.floor === "speaking" || p.floor === "your_turn"} />
         )}
         {p.aiPicto && (
           <span className="teacher-aipicto" aria-hidden="true">

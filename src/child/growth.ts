@@ -29,4 +29,5 @@ export function growthEntries(skills: GrowthSkill[], pages: GrowthPage[], made: 
 }
 
 /** PURE. "3 Nov": a day the child recognises (no year, no time). */
-export const dayOf = (ms: number): string => new Date(ms).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+export const dayOf = (at: number | string, long = false): string =>
+  new Date(at).toLocaleDateString("en-IN", { day: "numeric", month: long ? "long" : "short" }); // APP-32: the one date format (en-IN), whatever the phone's locale

@@ -144,7 +144,7 @@ test("client batch rows: src must be client, tier 2 needs the cohort, cid only f
   const base = { kind: "ui.tap", seq: 1, t: 1_700_000_000_000, sid: lesson, tier: 1, data: { label: "Done", password: "x" } };
   const r = clientRow({ ...base, cid: "attacker-chosen" }, { pid: "pid-123456", gid: "g", tier: 1, childOf, skewMs: 250 });
   assert.equal(r.cid, child, "the server's mapping, never the client's cid");
-  assert.equal(r.t, base.t - 250, "client clock corrected by the measured skew");
+  assert.equal(r.t, base.t, "the client already stamped server time (bus.ts emit); the server does not subtract the skew again (PLAT-30)");
   assert.equal(r.data.password, "[masked]");
   assert.equal(clientRow({ ...base, src: "server" }, { pid: "pid-123456", childOf }), null, "a client cannot write server events");
   assert.equal(clientRow({ ...base, tier: 2 }, { pid: "pid-123456", tier: 1, childOf }), null, "tier 2 refused outside the cohort");

@@ -16,7 +16,7 @@ import { ApiError, errText, getJson, lockBeacon, postJson, refreshMe, request } 
 import { useGate } from "../parent/Gate.tsx";
 import { isGateError } from "../parent/api.ts";
 import { kidLook, StepFrame } from "./Layout.tsx";
-import { clearDraft, useDraft } from "./draft.ts";
+import { clearDraft, draftForAdd, useDraft } from "./draft.ts";
 import { defaultsFor } from "./Setup.tsx";
 import { ChapterPicker, FeelPicker } from "../parent/SchoolPlan.tsx";
 import { feelSubjects } from "../child/feel.ts";
@@ -35,6 +35,9 @@ export function ChildStep() {
   const [sp] = useSearchParams();
   const adding = !!sp.get("add");
   const [d, set] = useDraft();
+  // "Add a child": a child id left by an earlier interrupted set-up is not this child (LEARN-09). Once, on arrival: a retry
+  // inside this step keeps the id this step itself created.
+  useEffect(() => { if (adding) set((cur) => draftForAdd(cur)); }, [adding, set]);
   const { relock } = useGate();
   const c = d.child ?? {};
   const setC = (patch: Partial<NonNullable<typeof d.child>>) => set((cur) => ({ child: { ...(cur.child ?? {}), ...patch } }));

@@ -54,7 +54,7 @@ export function PairCard({ childId, name }: { childId: string; name: string }) {
   const [devices, setDevices] = useState<PairedDevice[] | null>(null);
   const [confirm, setConfirm] = useState<string | null>(null);
   const now = useNow(!!code);
-  const left = code ? secondsLeft(code.expiresAt, now) : 0;
+  const left = code ? secondsLeft(code.expiresAt, Math.max(now, Date.now())) : 0; // APP-53: a fresh code never shows the stale tick's time
 
   const loadDevices = () => pairApi.devices(childId).then((r) => setDevices(r.devices ?? []), () => setDevices(null));
   // eslint-disable-next-line react-hooks/exhaustive-deps

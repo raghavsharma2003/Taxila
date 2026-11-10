@@ -31,8 +31,8 @@ test("scope: child routes in, every parent and pairing-admin route out (deny by 
   for (const k of ["GET /api/child/boot", "POST /api/lesson/turn", "POST /api/lesson/start", "POST /api/realtime/token", "POST /api/play/act",
     "GET /api/studio/notebook", "POST /api/voice/transcribe", "POST /api/duplex/her", "GET /api/tutors/name", "POST /api/placement/answer", "POST /api/tts"])
     assert.equal(childScoped(k), true, k);
-  for (const k of ["GET /api/parent/overview", "POST /api/parent/unlock", "POST /api/parent/controls", "GET /api/placement/note", "POST /api/placement/onboarding",
-    "POST /api/pair/code", "GET /api/pair/devices", "DELETE /api/pair/devices", "GET /api/me", "POST /api/consent", "PATCH /api/children", "DELETE /api/account",
+  for (const k of ["GET /api/parent/overview", "POST /api/parent/unlock", "POST /api/parent/controls", "GET /api/placement/note", "POST /api/children",
+    "POST /api/pair/code", "GET /api/pair/devices", "DELETE /api/pair/devices", "GET /api/me", "POST /api/consent", "DELETE /api/children", "DELETE /api/account",
     "POST /api/studio/made-for/hide", "GET /api/ops", "GET /api/whatever"])
     assert.equal(childScoped(k), false, k);
 });

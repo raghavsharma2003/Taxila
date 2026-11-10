@@ -5,6 +5,7 @@
 //   - Made for {child}: pieces made in lessons, with the plain "because" from the kit;
 // plus What {T} remembers (the same card as Data and privacy, with Delete).
 import { parentApi } from "./api.ts";
+import { becauseForParent } from "./copy.ts";
 import { Memories } from "./Pages.tsx";
 import { PageState, ParentShell, useChildren, useParentData } from "./Shell.tsx";
 
@@ -44,7 +45,7 @@ export default function Teaching() {
               <h2 id="pa-t-made" className="pa-h2">Made for {name}</h2>
               <ul className="pa-list">
                 {d.data.madeFor.map((m) => (
-                  <li key={m.id}><span>{m.title}</span>{m.because && <span className="pa-meta"> · {m.because}</span>}</li>
+                  <li key={m.id}><span>{m.title}</span>{m.because && <span className="pa-meta"> · {becauseForParent(m.because, name)}</span>}</li>
                 ))}
               </ul>
             </section>

@@ -1,17 +1,17 @@
 # Round 7: for the owner
 
-Updated by the main loop at each integration. Last update: 2026-11-06 morning UTC, at integration 9 (`int/r6` 8f461ae0b).
+Updated by the main loop at each integration. Header, row 1, row 7, section 3b (last entry) and section 6 corrected 2026-11-09 at integration 21a (`int/r6` 8bb6b188) by the docs audit, from M3.md, the director16 judgement and `data/play/coverage.json`. Everything else is as last written at integration 9 (2026-11-06).
 - **Build checks:** tsc and the build are green.
-- **Unit tests:** 4771 of 4783 pass, both in the per-file gate and single-process; 0 failures, 11 skipped, 1 known todo.
-- **Live model calls so far:** only the lesson-brain runs (director1–7), about $6 in total, on the stream's 2026-10-10 AI keys.
-- **Nothing is released:** deploying needs the full key set.
-- **Founders Hub (row 7): apply by 2026-11-07.** Corrected 2026-11-06 from your mail: business verification completed on 2026-07-15. The 180 days end on 2027-01-11, so day 1 of the 60 must fall on or before 2026-11-13; on or before 2026-11-08 if Microsoft counts from the 2026-07-10 ticket. The automation is built and merged (`scripts/m3.mjs`). It is **not running**: this environment has no Azure keys. The VM is taken as yes (your 2026-11-06 message: "rent or whatever we need"). Still needed from you: the keys, and yes/no on the PostgreSQL downsize.
+- **Unit tests:** 6293 of 6306 pass, 0 failures, single-process included (director16 judgement, on integration 20).
+- **Live model calls so far:** the lesson-brain runs director1–16, about $1 a run since director14 (director16: 1,472 calls, about $1.00).
+- **Nothing is released:** production is still 14.4.2. Release 16 is blocked on `NEON_API_KEY` and `NEON_PROJECT_ID` for production migration 041 (director16 judgement).
+- **Founders Hub (row 7): done, nothing to apply.** The automation (`scripts/m3.mjs`) has been live since 2026-11-06 08:24 UTC and the M4 hardening since about 10:55 UTC the same day. Day 1 of the 60 is 2026-11-06, counted with 8 services; the clock completes on 2027-01-04. `taxila-cin-pg` was downsized to B2s and is one of the counted services. Details: `M3.md`.
 
 ## 1. Decisions only you can make
 
 | # | What | Options / note |
 |---|---|---|
-| 1 | **Azure keys (the blocker).** Nothing has been tried live and nothing can be released without them. | Re-add the keys as environment variables, then the main loop runs `node scripts/handoff/write-env-local.mjs`. |
+| 1 | **Keys for the release.** The Azure keys were in place on 2026-11-06 (the Founders Hub automation was applied with them). What blocks release 16 is `NEON_API_KEY` and `NEON_PROJECT_ID`, needed for production migration 041. | Add the two Neon keys as environment variables, then the main loop runs `node scripts/handoff/write-env-local.mjs`. |
 | 2 | **Spend batch** (section 2) | Approve all, some tiers, or none. Nothing runs until you say yes. |
 | 3 | **Teacher face**: r8 / lamp2 / lamp2 + new jaw | Everything you need is on one page: `face/OWNER-FACE-REVIEW.md` (on claude/r7-face, PR #49). It covers the look, the greeting clips, the pose stills and the low-end-phone pass, with evidence for each. Lip timing within ±50 ms: r8 89%, lamp2 67% (its mouth barely moves), lamp2 + jaw 100%. |
 | 4 | Account for the owner test cohorts | They are keyed to an email that matches no guardian, e.g. the guardian of the test child "Kiko". |
@@ -19,7 +19,7 @@ Updated by the main loop at each integration. Last update: 2026-11-06 morning UT
 | 6 | Volt-emblem avatars; on-device speaker matching | **Avatars, built and reversible:** App's onboarding sweep (2026-11-05) found the first pick a 13-year-old makes is a painted cartoon animal. Classes 4-9 now pick from 12 line emblems instead (orbit, comet, bolt, …); classes 1-3 keep the animals, and existing picks still render. One switch reverts it (`OLDER_AVATAR_SET`); say if you want the animals back. Speaker matching: still parked. |
 | 6b | **India map outline** | Any map that draws India's outline must show the official Survey of India boundary. Code can't draw a correct one from memory, so maps today are places pinned at true lat/long on a grid with a compass, and no outline. Provide or approve an official SoI source to enable outlines (`dc-r7-maps-no-outline`). |
 | 6c | Parent term report, section S18 (the term report itself is built) | S18 would show the child's own words ("what I liked this term") and let the parent write back. The child's quote needs a show-consent step from the child; a parent free-text reply breaks the rule that every parent-facing line is structured and checked. Recommendation: leave S18 out until the test phase. |
-| 7 | **URGENT, Founders Hub $25k (Milestone 3).** Microsoft: "If you don't qualify for Milestone 3 (5+ Azure workloads over a sustained period of 60 days) within 180 days of Business Verification, the sponsorship is cancelled and the subscription is converted to pay-as-you-go." Business verification completed on **2026-07-15** (per the support desk's mail), so the 180 days end on 2027-01-11 and day 1 of the 60 must fall on or before **2026-11-13**; on or before 2026-11-08 if counted from the 2026-07-10 ticket. **Apply by 2026-11-07.** The VM counts as a yes. | Built and ready, not applied: `claude/r7-m3`, page `docs/design/round7/M3.md`. Two daily Azure jobs keep 6-7 services above $1/day, plus a daily cost check that emails the subscription Owner. ~$11-15/day including what already runs. You need to: (1) re-add the keys today; (2) send the business-verification date from the Founders Hub portal and the balance from microsoftazuresponsorships.com; (3) say yes/no to the extra VM (~$1.40/day) and to downsizing the unused `taxila-cin-pg` (saves ~$3.70/day). If you can't add the keys today, in the portal: `taxilacr` → Premium, plus one small Linux VM (D2as_v5, Central India, no public IP) in a new group `taxila-m3-rg`. Alerts go to identities assigned Owner directly on the subscription; if you hold Owner through a group, also add the env var `M3_ALERT_EMAIL`. Also: is the spending limit back on? |
+| 7 | **Founders Hub $25k / $50k (Milestones 3 and 4): running, no decision needed.** Microsoft: "If you don't qualify for Milestone 3 (5+ Azure workloads over a sustained period of 60 days) within 180 days of Business Verification, the sponsorship is cancelled and the subscription is converted to pay-as-you-go." | Live since 2026-11-06 (`M3.md`): two keepers (a Container Apps job and a small VM) hold 9 services above $1 a day, 7 are needed, and a verifier checks twice a day and alerts by email. The 60 days complete on 2027-01-04. Your only remaining step: rotate the deploy principal's secret before 2027-03-09. Still worth checking in the portal: is the spending limit back on? |
 
 ## 2. Spend batch (Azure Foundry, Direct): Azure only authors
 
@@ -152,6 +152,25 @@ in parts, start with tiers 1 and 2 (~$21).
   - Decision (`dc-r7-script-walk-v6`): fix Studio's "?" rule; put every sentence on its own board; make requests and promised returns real.
   - The 30 new topics stay held.
   - Write-up: `judgements/director8-2026-11-06.md`.
+- 2026-11-07 to 2026-11-09: director9 to director15, one write-up each in `judgements/`. Not summarised here.
+- 2026-11-09: director16 (16 lessons, about $1.00).
+  - 96% of beats taught (256 of 267) and every answer judged (263 of 263).
+  - One wrong answer was called right; no wrong answer key was spoken.
+  - Screen/speech mismatches are down to 8 (director8 had 73), but the limit was 5.
+  - Her register passes in all four topics for the first time.
+  - Reply-ready time: about 2.87 s.
+  - Decision (`dc-r7-held-board`): "every sentence on its own board" is dropped. The board now follows the card she is on and is held; it changes at most once per turn, and a picture she is asked for is drawn beside it. Brain and Studio are building this for director17.
+  - The 30 new topics stay held.
+  - Write-up: `judgements/director16-2026-11-09.md`.
+- 2026-11-10: director17 (16 lessons, about $1.02), the latest run, on the held board.
+  - Every beat taught (283 of 283) and every answer judged (247 of 247). No misgrade, no wrong answer key.
+  - The held board cost no teaching: no line was said over a board that does not show it.
+  - It still fails the gate: 8 screen/speech mismatches, plus 8 turns where the next card's board went up before she had said anything about it (break menus, goodbye menus, the return to a side question).
+  - Listening is 3 of 5 in all four topics. "Hindi mein bolo" is handled correctly about half the time.
+  - Decision (`dc-r7-script-walk-v6-9`): the held board stays. Turns that teach nothing must hold the board too. How she answers each kind of request (Hindi, repeat, picture, "pata nahi", a side question) becomes one written table with a test per row, instead of one fix at a time.
+  - The automatic mismatch counter is retired as a gate input: it caught 3 of 16. Judging by hand is the only screen.
+  - The 30 new topics stay held.
+  - Write-up: `judgements/director17-2026-11-10.md`.
 
 ## 4. Calls the main loop took that you may want to reverse
 
@@ -171,12 +190,12 @@ in parts, start with tiers 1 and 2 (~$21).
 - Face fallbacks and the light mouth on a weak phone.
 - The class 4 lesson register.
 
-## 6. Coverage today (classes 4-7, real games where the skill is the mechanic)
+## 6. Coverage on 2026-11-09 (classes 4-7, real games where the skill is the mechanic; from `data/play/coverage.json`)
 
 | Subject | Topics |
 |---|---|
-| Maths | 63 of 141, plus kila (factors and multiples) and naksha (grids) |
-| Science | 17 |
-| SST | 6 (kaal), plus naksha (latitude and longitude) |
-| English | 6 |
+| Maths | 129 |
+| Science | 40 |
+| SST | 7 |
+| English | 7 |
 | Hindi | 0 (waits for G1) |

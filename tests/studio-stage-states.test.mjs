@@ -33,6 +33,8 @@ const GOLD = JSON.parse(readFileSync(new URL("../evals/live-studio/goldens/golde
 const FIXTURE = readFileSync(new URL("./fixtures/studio-shade-fraction.html", import.meta.url), "utf8");
 const SHA = createHash("sha256").update(FIXTURE, "utf8").digest("hex");
 
+// readiness ceiling: a selector wait returns the moment the thing is there; this only bounds a page that is truly stuck
+const READY_MS = 120_000;
 let app, browser, base;
 // gate speed (main, 2026-11-05): the prebuilt dist/ from a static server (tests/support/app-server.mjs; the dev server
 // when dist/ is stale) and ONE browser context per viewport, its pages opened and closed per case
@@ -44,6 +46,11 @@ before(async () => {
   base = app.url;
   const { chromium } = await import("playwright");
   browser = await chromium.launch();
+  // Warm the app once, before any case is timed: the first lesson page load transforms/parses the whole client (the dev
+  // server when dist/ is stale) and under the gate's 4-at-a-time load it took longer than a case's wait (it was 30 s).
+  // The cases below then wait on readiness (a selector), with a ceiling that only matters if something is really stuck.
+  const warm = await lessonWith(VIEWPORTS[0], skeletonOf(SKELETON_IDS[0]));
+  await warm.close();
 });
 after(async () => {
   for (const c of contexts.values()) await c.close().catch(() => {});
@@ -103,8 +110,8 @@ async function lessonWith(viewport, slot, { calls = [], build = { sha256: SHA, f
     return json(200, {});
   });
   await page.goto(`${base}/c/${KID.id}/lesson/new?mode=text`, { waitUntil: "domcontentloaded" });
-  await page.waitForSelector('[data-testid="lesson"]', { timeout: 30_000 });
-  await page.waitForSelector('[data-testid="tray"][data-kind="studio"] [data-testid="studio-box"]', { timeout: 30_000 });
+  await page.waitForSelector('[data-testid="lesson"]', { timeout: READY_MS });
+  await page.waitForSelector('[data-testid="tray"][data-kind="studio"] [data-testid="studio-box"]', { timeout: READY_MS });
   await page.waitForFunction(() => { const b = document.querySelector('[data-testid="studio-box"]'); return !!b && b.getBoundingClientRect().width > 0; }, null, { timeout: 10_000 });
   await page.waitForTimeout(300);
   return page;

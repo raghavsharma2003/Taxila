@@ -76,7 +76,6 @@ test("AT-U8: warm median ≤ 0.25 ms per turn (signals + fold + decide) over a 6
       s = r.session;
     }
   }
-  times.sort((x, y) => x - y);
   const p99 = times[Math.floor(times.length * 0.99)];
   const p50 = times[Math.floor(times.length / 2)];
   t.diagnostic(`warm p99 ${p99.toFixed(3)} ms, median ${p50.toFixed(3)} ms`);

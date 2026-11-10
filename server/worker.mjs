@@ -215,7 +215,7 @@ function startLiveness() {
   srv.on("error", (e) => log("health server failed", { error: e.message }));
   srv.listen(HEALTH_PORT);
   srv.unref();
-  // the heartbeat the "worker liveness" alert reads (infra/eyes.mjs: no heartbeat line for 10 min → email the owner)
+  // the heartbeat the "worker liveness" alert reads (infra/eyes.mjs: no heartbeat line for 15 min → email the owner)
   setInterval(() => log("worker heartbeat", { kind: "heartbeat", leader, stalled: stalled(), inflight: inflight.size, running }), 60_000).unref();
   // the watchdog: exit on a wedged loop so ACA restarts the replica even if the probe is misconfigured
   setInterval(() => {

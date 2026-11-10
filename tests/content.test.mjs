@@ -1,7 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { normalizeKit } from "../server/content/kits.js";
-import { compareAnswers } from "../server/content/minikit.js";
 import { pickTopic, topicStatus } from "../server/content/next-topic.js";
 import { getTopic, topicSequence, topicIdByPrefix } from "../server/content/curriculum.js";
 import { RAW_KIT } from "./fixtures/kit.mjs";
@@ -24,13 +23,6 @@ test("normalizeKit returns null for a partial kit that cannot run a practice pha
   const noWorked = structuredClone(RAW_KIT);
   delete noWorked.workedExample;
   assert.equal(normalizeKit(noWorked, { topicId: raw.topicId, verified: true }).workedExample, null);
-});
-
-test("compareAnswers: only a provable numeric disagreement is 'different'", () => {
-  assert.equal(compareAnswers("1/2", ["half"], "half"), "same");
-  assert.equal(compareAnswers("1/2", [], "0.5"), "same");
-  assert.equal(compareAnswers("4", [], "5"), "different");
-  assert.equal(compareAnswers("the parts are equal", [], "equal parts"), "unclear");
 });
 
 test("curriculum: topics load in teaching order and mini-kit ids trace back to their topic", () => {

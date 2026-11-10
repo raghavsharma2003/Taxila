@@ -11,12 +11,13 @@
 //   - the 5-an-hour limit on mail to one account counts reset links and codes together (a mailbox is not a spam target);
 //   - a password reset spends every open code (reset() marks all unused rows of the guardian used).
 // A reset token's hash (64 hex) can never equal a `code:` key, so neither flow can redeem the other's row.
-// Wrong tries are audit rows (`code_attempt`), counted since the newest code: CODE_TRIES wrong tries spend the code.
+// Tries are audit rows (`code_attempt`), written before they are counted, since the newest code: CODE_TRIES tries
+// spend the code. A new code spends every older one, so only one code is ever live.
 //
 // Never says whether an email has an account: an unknown email gets the same 200 on send (and nothing is mailed) and
 // the same `code.bad` on verify. The account's own reads and writes on send run after the answer (as forgotPassword).
 import { createHash, randomInt } from "crypto";
-import { q, one, tx } from "../db.js";
+import { q as dbQ, one as dbOne, tx as dbTx } from "../db.js";
 import { HttpError, send } from "../http.js";
 import { createSession } from "../auth.js";
 import { rateLimit } from "../routes/parent.js";
@@ -27,6 +28,11 @@ export const CODE_MIN = 10;
 export const CODE_TRIES = 5;
 export const MAILS_PER_HOUR = 5;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+/** The database seam (tests swap these to replay parallel requests without a database). */
+export const deps = { q: dbQ, one: dbOne, tx: dbTx };
+const q = (...a) => deps.q(...a);
+const one = (...a) => deps.one(...a);
+const tx = (...a) => deps.tx(...a);
 
 /** PURE. The stored key of one code: scoped to the guardian, so the same six digits mean nothing for another account. */
 export const codeKey = (guardianId, code) => `code:${createHash("sha256").update(`${guardianId}:${code}`).digest("hex")}`;
@@ -91,6 +97,8 @@ export async function sendCode(req, res, body) {
   const work = async () => {
     const n = await one("select count(*)::int as n from password_reset where guardian_id = $1 and created_at > now() - interval '1 hour'", [g.id]);
     if ((n?.n ?? 0) >= MAILS_PER_HOUR) return false;
+    // one live code per account (PLAT-11): the new code's tries start at zero, so every older code is spent first
+    await q("update password_reset set used_at = now() where guardian_id = $1 and token_hash like 'code:%' and used_at is null", [g.id]);
     await q("insert into password_reset(token_hash, guardian_id, expires_at) values ($1, $2, now() + ($3 || ' minutes')::interval) on conflict (token_hash) do nothing",
       [codeKey(g.id, code), g.id, String(CODE_MIN)]);
     await q("insert into audit(guardian_id, action, detail) values ($1, 'code_sent', $2)", [g.id, { channel: p.channel }]);
@@ -116,17 +124,18 @@ export async function verifyCode(req, res, body) {
   const open = await one(`select max(created_at) as at from password_reset
       where guardian_id = $1 and token_hash like 'code:%' and used_at is null and expires_at > now()`, [g.id]);
   if (!open?.at) throw badCode();
+  // Record the try BEFORE counting (PLAT-05): every request's row is committed before it counts, so of N parallel
+  // requests the k-th to commit sees at least k rows, and at most CODE_TRIES ever reach the code compare. (Counting
+  // first let N parallel requests all read "under 5".) A right code also leaves a row; it spends every code anyway.
+  await q("insert into audit(guardian_id, action) values ($1, 'code_attempt')", [g.id]);
   const tries = await one("select count(*)::int as n from audit where guardian_id = $1 and action = 'code_attempt' and at >= $2", [g.id, open.at]);
-  if ((tries?.n ?? 0) >= CODE_TRIES) {
+  if ((tries?.n ?? 0) > CODE_TRIES) {
     await q("update password_reset set used_at = now() where guardian_id = $1 and token_hash like 'code:%' and used_at is null", [g.id]);
     throw new HttpError(429, "too many tries; ask for a new code", { field: "code", code: "code.tries" });
   }
   const hit = await one(`update password_reset set used_at = now()
       where token_hash = $1 and guardian_id = $2 and used_at is null and expires_at > now() returning guardian_id`, [codeKey(g.id, code), g.id]);
-  if (!hit) {
-    await q("insert into audit(guardian_id, action) values ($1, 'code_attempt')", [g.id]);
-    throw badCode();
-  }
+  if (!hit) throw badCode();
   await tx([
     { text: "update password_reset set used_at = now() where guardian_id = $1 and token_hash like 'code:%' and used_at is null returning guardian_id", params: [g.id] },
     { text: "insert into audit(guardian_id, action, detail) values ($1, 'login_ok', $2) returning id", params: [g.id, { via: "code" }] },

@@ -1,5 +1,6 @@
 // The one Kaksha navigation model, pure (r7 app-nav-unified; nav.tsx draws it; tests/r7-app-nav.test.mjs pins it).
 import { kt } from "./copy.ts";
+import { practiceOffered, type HomePlan } from "../../child/plan.ts";
 
 export type NavKey = "home" | "world" | "practice" | "ask" | "notebook" | "me";
 
@@ -48,3 +49,11 @@ export function backOf(pathname: string, cid: string): string | null {
   return `/c/${cid}`;
 }
 
+
+/** APP-31: the dock as the plan allows it, the same rules the classic Home's tiles use: no Practice when the plan refuses it
+ *  (offline without a pack, capped, resting, held), no Ask offline or held (it needs the network and a lesson). */
+export function dockForPlan(dock: NavItem[], plan: Pick<HomePlan, "source" | "state" | "packReady">): NavItem[] {
+  const ask = plan.state !== "offline" && plan.state !== "safety_hold";
+  const practice = practiceOffered(plan);
+  return dock.filter((d) => (d.key === "ask" ? ask : d.key === "practice" ? practice : true));
+}

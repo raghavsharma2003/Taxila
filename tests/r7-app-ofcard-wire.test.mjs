@@ -1,13 +1,10 @@
 // r7 stream E (main 2026-11-08, App 3b): Brain's `ofCard` (shared/contracts.ts BoardSegment, tests/r7-brain-v62.test.mjs
 // T46) must reach the client's script so the question card can wait while the board is not its own. Until Studio applies
-// docs/patches/to-studio/002-ofcard-to-client.patch the flag is stripped by normalizeScript: this test then checks the patch
-// applies; once it is applied it runs the whole chain on Brain's exact intent shape.
+// to-studio/002 (applied) the flag was stripped by normalizeScript: this test checks the change is in the tree and
+// runs the whole chain on Brain's exact intent shape.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
 
-const ROOT = new URL("..", import.meta.url).pathname;
-const PATCH = "docs/patches/to-studio/002-ofcard-to-client.patch";
 const { normalizeScript } = await import("../shared/whiteboard.js");
 const { boardOnTray } = await import("../src/child/lesson/boardPage.ts");
 const C = await import("../src/child/lesson/cardTiming.ts");
@@ -23,11 +20,8 @@ const raw = { v: 1, scriptId: "t46:pg", line: { lessonId: "L", teacherReplySeq: 
 
 const keeps = (() => { const n = normalizeScript(raw, { strict: false }); return typeof n.script?.ofCard === "boolean" && typeof n.script?.switches?.[0]?.ofCard === "boolean"; })();
 
-test("Studio's patch carrying ofCard applies (or is applied)", () => {
-  let ok = false;
-  try { execFileSync("git", ["apply", "--check", PATCH], { cwd: ROOT, stdio: "pipe" }); ok = true; } catch { /* maybe applied */ }
-  if (!ok) { execFileSync("git", ["apply", "--check", "--reverse", PATCH], { cwd: ROOT, stdio: "pipe" }); ok = true; }
-  assert.ok(ok);
+test("Studio's ofCard change is in the tree: normalizeScript keeps ofCard on the script and on a switch", () => {
+  assert.ok(keeps, "normalizeScript strips ofCard (to-studio/002 is not in the tree)");
 });
 
 test("the App reader on the script the patch produces: page 0 the close (not the card's), page 1 the card's own board", () => {
