@@ -143,6 +143,9 @@ function fractionBars(c, tl) {
   for (const b of bars) {
     if (!isInt(b?.parts, 1, 12) || !isInt(b?.shade, 0, b.parts)) return { error: "fraction_bars_range" };
     const label = b.label == null ? `${b.shade}/${b.parts}` : String(b.label);
+    // (Learning's D11: an UNNAMED bar — label "" — writes no name at all: a compare card "2/3 ya 3/10?" poses its bars
+    // without "?" over a fraction the prompt states and without naming them, which would shade, and so answer, the card)
+    if (label === "") continue;
     if (label !== "?" && (!fitsLabel(label) || textProblem(label))) return { error: "fraction_bars_label" };
     // (a "?" bar may be shaded: the shading is the given and its NAME the question — a shade-grid card's second view)
     if (label !== "?") { const m = /^(\d+)\s*\/\s*(\d+)$/.exec(label); if (!m || Number(m[1]) * b.parts !== b.shade * Number(m[2])) return { error: `fraction_bars_label_value:${label}` }; }
@@ -157,7 +160,7 @@ function fractionBars(c, tl) {
     tl.add({ id: `w${k}`, op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 700, { gap: k ? 500 : 0 });
     for (let i = 1; i < b.parts; i++) tl.add({ op: "line", from: [round1(x0 + i * pw), y0], to: [round1(x0 + i * pw), y0 + H], weight: 1 }, cutMs, { gap: b.parts > 6 ? 60 : 140 });
     for (let i = 0; i < b.shade; i++) tl.add({ op: "rect", at: [round1(x0 + i * pw + 3), y0 + 3], w: round1(pw - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1 }, shadeMs, { gap: b.shade > 3 ? 120 : 260 });
-    tl.add({ op: "text", at: [x0 + W + 45, y0 + H / 2 + 6], text: label, size: "m", ink: label === "?" ? "mark" : "accent" }, 500, { gap: 300 });
+    if (label !== "") tl.add({ op: "text", at: [x0 + W + 45, y0 + H / 2 + 6], text: label, size: "m", ink: label === "?" ? "mark" : "accent" }, 500, { gap: 300 });
     // (director11 S1: `ends` — the bars of a 0-1 line keep its 0 and 1, under each bar's ends)
     if (c.ends) {
       tl.add({ op: "text", at: [x0, y0 + H + 16], text: "0", size: "s", ink: "soft" }, 200, { gap: 60 });
@@ -166,7 +169,7 @@ function fractionBars(c, tl) {
     wholes.push({ parts: b.parts, shaded: b.shade, label });
   });
   // (one short fact per bar: the facts row keeps values of up to 40 characters)
-  return { counts: { wholes }, facts: { wholes: `${wholes.length} equal bars`, ...Object.fromEntries(wholes.map((w, k) => [`bar${k + 1}`, `${w.parts} equal parts, ${w.shaded} shaded = ${w.label}`])) } };
+  return { counts: { wholes }, facts: { wholes: `${wholes.length} equal bars`, ...Object.fromEntries(wholes.map((w, k) => [`bar${k + 1}`, w.label === "" ? `${w.parts} equal parts` : `${w.parts} equal parts, ${w.shaded} shaded = ${w.label}`])) } };
 }
 
 /**
