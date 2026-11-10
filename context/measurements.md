@@ -6535,3 +6535,21 @@ All 9 are one mechanism: a picture request whose line describes a second view th
 18 of 18 bridges switched at their first spoken part. `layout` is recorded on no row.
 
 Full write-up: docs/design/round7/judgements/director18-2026-11-10.md.
+
+
+<!-- merged from inbox/r7-audit-hissa.json -->
+## `ms-r7-audit-games-03-08-replay`
+
+Games audit `play-family.mjs` (branch claude/r7-audit-games), 2026-11-10.
+
+- **Method:** run over hissa, galti-pakdo, nazariya and kon with `--trials 200`, DATABASE_URL blank. Each entry plays 18 levels (fades 1-3 × garam/teekha × 3 seeds), with 200 random act lists per level drawn from the solver's own act shapes. Rates are per goal: "any win" is a win after misses; "luck" is a first-try `correct`.
+- **Before → after.** Hissa pour:
+  - fit (3600 trials): any-win 43.7 → 1.8 %, luck 24.5 → 0.9 %.
+  - part (3600): any-win 42.6 → 2.4 %, luck 29.7 → 1.3 %.
+  - deci (3600): any-win 42.6 → 0.4 %, luck 23.5 → 0.3 %.
+- **Chance-weighted goals:** rates are unchanged by design. The weight of their lucky corrects moves 0.5 → 0.25:
+  - galti pakdo: any-win 48.1 %, luck 41.4 % (3600 trials).
+  - hissa shift: 13.9 % / 13.5 % (7200).
+  - nazariya tri more: 30.2 % / 26.0 % (3600).
+  - kon zone kind: 16.4 % / 10.3 % (10800).
+- **UI:** the pour count was driven by real taps at 360 × 640 in en, hi and hinglish. 39 of 39 checks pass (targets ≥ 44 px, text ≥ 16 px, 0 clipped labels or goal lines, 0 overflow, 0 errors): docs/design/round7/games/runshots-hissa/.
