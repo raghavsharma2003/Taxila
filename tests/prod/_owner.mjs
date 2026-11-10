@@ -26,7 +26,7 @@ export const ROOT = join(HERE, "..", "..");
 const argv = process.argv.slice(2);
 export const arg = (k, d) => { const i = argv.indexOf(`--${k}`); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : d; };
 export const flag = (k) => argv.includes(`--${k}`);
-process.env.TAXILA_BASE = arg("base", process.env.TAXILA_BASE || "https://taxila.dev");
+process.env.TAXILA_BASE = arg("base", process.env.TAXILA_BASE || ""); // no default: lib.mjs refuses an empty base
 const lib = await import("./lib.mjs");
 export const { apiClient, ok, warn, done, BASE, isLocal } = lib;
 const { floorViolations } = await import("../../server/director/safety.js");
