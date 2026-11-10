@@ -74,7 +74,7 @@ test("held board, picture: the second view is drawn BESIDE the held board on one
   for (const [ref, keys, view, line] of [
     [PIZZA, ["No"], "strips", /^Pizza: 3 alag-alag tukde$/],
     [{ template: "fraction-parts@1", params: { parts: 4, shade: 0, whole: "bar" } }, ["3/4"], "round", /^Wahi poora ab gol: 4 barabar hisse$/],
-    [LINE69, ["Ravi"], "parts", /^2 barabar bar: ek 6 barabar hisson mein; ek 9 barabar hisson mein$/],
+    [LINE69, ["Ravi"], "parts", /^Do barabar pattiyaan: ek 6 barabar hisson mein; ek 9 barabar hisson mein$/],
     [RECT, ["46 cm"], "unrolled", /^Is rectangle ki 4 bhujayein seedhi karke ek line par: 14 cm, 9 cm, 14 cm, 9 cm; kul lambai kitni$/],
   ]) {
     const ask = { intent: { intentId: `split:${ref.template}`, lessonId: "split", kind: "whiteboard", style: { band: "B3" }, boardRef: ref, scriptBeat: { kind: "check", ownBoard: true, answers: keys }, held: { board: ref, unit: "u" }, request: { kind: "picture" } }, line: { text: "" }, mode: "fresh" };
@@ -107,6 +107,8 @@ test("director16 c4 steady 18 (\"screen par dikhao na\" over the pizza card): th
   assert.match(String(pic.row), /beside:/);
   assert.equal(pic.k.state, "revealed");
   assert.ok(pic.k.artifact.split);
+  assert.equal(pic.k.artifact.layout?.split, true);
+  assert.deepEqual(pic.k.artifact.layout.panels.map((x) => x.role), ["held", "view"]);
   assert.equal(pic.k.artifact.altView, "strips");
   assert.equal(pic.k.artifact.screens[0].template, "wholes@1", "the held pizza is the board, its view beside it");
   assert.equal(pic.k.artifact.screens[0].beside.altView, "strips");
@@ -175,4 +177,57 @@ test("Learning's D11 (relayed by main): fraction-bars@1 takes an UNNAMED bar (la
   const shaded = BF.altCall({ template: "fraction-bars@1", params: { bars: [{ parts: 3, shade: 2, label: "" }, { parts: 10, shade: 3, label: "" }] } }, { keys: ["2/3"] });
   assert.equal(shaded.template, "wholes@1");
   assert.ok(!JSON.stringify(shaded).includes("/"));
+});
+
+// ───────────── main's v6.9 (director17, dc-r7-script-walk-v6-9) ─────────────
+const E2_ASK = "Isi rekha ke neeche ki taraf 0 aur 1 ke beech 7 nishaan barabar doori par hain. Neeche ki taraf rekha kitne barabar gaps mein bati hai?";
+const LINE48 = { template: "fraction-line@1", params: { dens: [4, 8], from: 0, to: 1, marks: [[1, 4]] } };
+const LINE67 = { template: "fraction-line@1", params: { dens: [6, 7], from: 0, to: 1, marks: [[1, 6]] } };
+const heldPic = (ref, answers) => ({ intent: { intentId: `v69:${JSON.stringify(ref.params)}:${answers}`, lessonId: "v69", kind: "whiteboard", style: { band: "B3" }, boardRef: ref,
+  scriptBeat: { kind: "check", ownBoard: true, answers }, held: { board: ref, unit: "u" }, request: { kind: "picture" } }, line: { text: "" }, mode: "fresh" });
+
+test("v6.9 S10 (director17 c5-t01 e2, steady/stuck 18, offtopic 28): the split view is built only from the held board's own parts — the 8-gap scale the card counts is LEFT OUT, never drawn as an uncut \"1 equal parts\" bar; steering 14's sixths and sevenths (no count key) keeps both bars", () => {
+  const e2 = BF.heldBoard(heldPic(LINE48, ["8"]), {});
+  assert.ok(e2?.split);
+  assert.equal(e2.altLine, "Ek patti, 4 barabar hisson mein, 1 rangin, yaani ek-chauthai");
+  assert.deepEqual(BF.heldAltOf(heldPic(LINE48, ["8"])).call.bars, [{ parts: 4, shade: 1, label: "1/4" }]);
+  assert.doesNotMatch(e2.altLine, /\b1 barabar hisson|\bek 1\b/);
+  const right = (e2.panels[1].ops ?? []).filter((o) => o.op === "text").map((o) => o.text);
+  assert.ok(!right.includes("?"), `the view names no bar the board does not have: ${right}`);
+  const s14 = BF.heldBoard(heldPic(LINE67, ["Pehla"]), {});
+  assert.equal(s14.altLine, "Do barabar pattiyaan: ek 6 barabar hisson mein, 1 rangin, yaani ek bata chhe; ek 7 barabar hisson mein");
+  // (a held line that is only the key's scale has no view of its own parts: the held board stands alone, no invented example)
+  const only8 = BF.heldBoard(heldPic({ template: "fraction-line@1", params: { den: 8, from: 0, to: 1 } }, ["8"]), {});
+  assert.ok(only8?.script && !only8.split);
+  // (recording, v6.9: the layout as one field — the harness records it, Brain's patch 019; production puts it on the artifact)
+  assert.deepEqual(e2.layout, { split: true, panels: [{ side: "left", role: "held", template: "fraction-line@1", unit: "u" }, { side: "right", role: "view", template: "fraction-bars@1", view: "parts" }] });
+  assert.deepEqual(only8.layout, { split: false });
+});
+
+test("v6.9 S11: the picture line says \"barabar\" for equal parts and \"alag-alag\" only for unequal ones, fractions as words, no closing stop; an unnamed bar's scale stays on the line view (c5-t02 steering 14)", () => {
+  const cake = { template: "wholes@1", params: { wholes: [{ parts: 3, equal: false, title: "Pizza" }, { parts: 3, title: "Cake" }] } };
+  assert.equal(BF.heldBoard(heldPic(cake, ["Cake"]), {}).altLine, "Pizza: 3 alag-alag tukde; Cake: 3 barabar tukde");
+  const q8 = { template: "fraction-bars@1", params: { bars: [{ parts: 4, shade: 1, label: "1/4" }, { parts: 8, shade: 0, label: "?" }] } };
+  const v = BF.heldAltOf(heldPic(q8, ["1/8"]));
+  assert.deepEqual(v.call.dens, [4, 8], "the 8-part bar the card asks about is on the line");
+  assert.equal(v.line, "0 se 1 ki do sankhya rekhayein, 4 aur 8 barabar gaps, nishaan ek-chauthai par");
+  for (const l of [v.line, BF.heldBoard(heldPic(LINE48, ["8"]), {}).altLine]) { assert.doesNotMatch(l, /\(\d+\/\d+\)|\d\/\d/); assert.doesNotMatch(l, /[.?!]$/); }
+  assert.equal(BF.fracSay(3, 4), "teen-chauthai");
+  assert.equal(BF.fracSay(2, 5), "do bata paanch");
+});
+
+test("v6.9: a held turn draws only what the intent holds — a board prewarmed for the same intent (the next unit's, by lookahead) is never drawn", async () => {
+  const s = lesson("c6-maths-ch06-t01");
+  const pent = { template: "measured@1", params: { shape: "pentagon", unit: "m", sides: [8, 5, 7, 6, 3], names: ["P", "Q", "R", "S", "T"] } };
+  const L = s.L, intentId = `${L}:wb:1`;
+  seam.studioSeam.prewarmWhiteboard({ intent: { intentId, lessonId: L, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: pent, scriptBeat: { scriptId: "s", beatId: "b", kind: "check", ownBoard: true } },
+    line: { lessonId: L, teacherReplySeq: 1, text: "" }, mode: "fresh", kit: { topicId: "c6-maths-ch06-t01", content: [] } });
+  const t = await s.turn({ held: { board: RECT, unit: "s1:c1" }, text: "Theek hai, thoda ruk jaate hain. Jab tayyar ho, batana." });
+  assert.equal(t.k.state, "revealed");
+  assert.deepEqual(pagesOf(t.k), ["measured@1"]);
+  const words = t.k.artifact.script.ops.filter((o) => o.op === "text").map((o) => o.text).join(" ");
+  assert.match(words, /14 cm/, words);
+  assert.doesNotMatch(words, /\b8 m\b|\bP\b/, "the prewarmed pentagon is not drawn");
+  assert.equal(t.k.artifact.held.unit, "s1:c1");
+  assert.equal(changes(t.k), 0);
 });

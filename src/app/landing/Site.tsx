@@ -9,10 +9,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { SITE } from "../site.ts";
 import { Link, NavLink } from "react-router-dom";
-import { TUTORS, type TutorCharacter } from "../../../shared/tutors.js";
-import { Plate2D } from "../../avatar/Plate2D.tsx";
-import { puppetPoster } from "../../face-puppet/assets.ts";
-import { usePuppetLook } from "../../face-puppet/useLook.ts";
 import { Icon, useArt } from "../../ui/index.ts";
 import type { SitePromise } from "../promises.ts";
 import "../../ui-v3/tokens.css"; // Geist Mono (K's HUD face) is declared here
@@ -156,32 +152,6 @@ export function SitePage({ children, title }: { children: ReactNode; title: stri
       <main id="main" className="sv-main">{children}</main>
       <SiteFooter />
     </div>
-  );
-}
-
-/** The teacher a child actually meets: the live looks of shared/tutors.js (round 4: Asha alone; Arjun and Uma are
- *  parked, dc-r4-single-teacher-asha). The site never shows a face the product does not render (audit #4: one
- *  stable teacher). */
-export const SITE_TUTORS: TutorCharacter[] = TUTORS.filter((t) => t.status === "live");
-
-/** A teacher's face as the lesson draws it at rest: Asha's rest still from her look's pack under EVERY look (r8, lamp1,
- *  lamp2; round 7 Face: the lesson never shows the Plate2D vector for her, so the site does not either); the code-drawn
- *  plate only for a tutor the puppet is not. Nothing paints until the page's look is
- *  known (./face-puppet/look.ts), so the site never shows one face and then another. Hidden from assistive tech: the
- *  caller labels the group. */
-export function TeacherPortrait({ tutor, size }: { tutor: TutorCharacter; size: number }) {
-  const look = usePuppetLook();
-  const grown = look;
-  const still = grown !== null && tutor.id === "asha";
-  return (
-    <span className="rig-portrait" style={{ width: size, height: size }} data-tutor={tutor.id} data-look={look ?? "pending"} aria-hidden="true">
-      {still ? (
-        <img className="site-still" src={puppetPoster("close", grown ?? undefined)} alt="" width={size} height={size} decoding="async" draggable={false}
-          style={{ width: "100%", height: "auto", display: "block" }} />
-      ) : look ? (
-        <Plate2D tutor={tutor} still reducedMotion className="site-plate" />
-      ) : null}
-    </span>
   );
 }
 

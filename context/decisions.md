@@ -9486,3 +9486,65 @@ The held board stays. Turns that teach nothing hold it too, and request handling
 - listening is still below 3.5 with T1: the failing rows are re-authored with Learning per topic before any runtime change;
 - held cost is above 0: that unit gets paging back;
 - any misgrade: no paid run until the key matrix covers it.
+
+
+<!-- merged from inbox/r7-audit-app.json -->
+## r7-audit-app-deletions
+**Round-7 app audit deleted code nothing reads (checked: importers incl. dynamic, tests, scripts, Dockerfiles, CI, docs that say to run them). Every path below is still in git at 5936744c (the commit before the deletion commit); `git show 5936744c:<path>`.**
+- src/ui-v3/V3Root.tsx, Stage.tsx, TeacherFace.tsx, TurnIndicator.tsx, Toast.tsx, toast.ts, floor.ts, motion.ts, flag.ts, index.ts, v3.css, Preview.tsx, screens/**, gallery/** (the unrouted v3 design-system shell; the ui.v3 flag never changed anything)
+- src/face-puppet/adapter.tsx (its only caller was V3Root); evals/face-puppet/bundle-size.mjs now measures src/face-puppet/PuppetFace.tsx instead
+- docs/design/reset/prework/rs1/shoot.mjs (drove the deleted gallery)
+- src/app/childStubs.tsx and .child-stub in src/styles/app.css; src/styles/parent.css (imported by nothing)
+- src/app/band.ts ensureFont and FONT_URL (fetched a Google Fonts stylesheet for a font no style used)
+- src/child/day.ts: markRefused, getChildPlan, markerPlan, requestLesson, ChildPlan, RequestAnswer; src/child/api.ts: getTutors, chooseTutor (offerOf stays); src/child/band.ts defaultReading; src/child/prefs.ts: world, mirror, picture, address; src/child/dev/harness.html and harness.tsx; src/child/lesson/deskLayout.ts geometryForTray; src/child/lesson/captions.ts captionMode, readingFor, CaptionMode; src/app/landing/Site.tsx SITE_TUTORS and TeacherPortrait
+- public/landing/*.webp (3), public/fonts/mukta-{400,600,700}-latin and -latin-ext (6) and mukta-700-devanagari, 15 files in public/brand (favicon-48.png and share-1200x630.png stay)
+- tests: tests/ui-v3-lint.test.mjs lost the S-FLOOR dead-file checks, P-TOAST and the floor-map test (the near-miss helpline-digit scan stays over the remaining tree); tests/r7-face-fallback.test.mjs lost the adapter test
+- Kept on purpose: the classic child skin (APP-44), the parked 3D head and Arjun, `offerOf`, `TeacherNamer.tsx`, `stage-geometry.mjs`, ledge.ts and the helpline predicates (safety floor, frozen), `Icon.tsx`, `primitives.tsx`, `tokens.css`, `tokens.ts`, `fonts/` and `lint/rules.mjs` under src/ui-v3.
+- Not done (not proven dead in this pass): the unused copy keys (APP-45/47), the constant lesson-model fields thinkingSeconds/offlineBadge/noPack, the never-passed supportCode prop, the unused src/ui exports Card/Hi/StatusGlyph/ReauthField/Chip, Footer/TopBar in app/Shell.tsx, Trust in Public.tsx.
+
+
+<!-- merged from inbox/r7-audit-voice-fix.json -->
+## `dc-r7-audit-voice-holdcue-unsubscribed`
+
+`src/duplex/liveTap.ts` no longer subscribes `live.estimate` to `holdBus.onThinkingPause`. The cue still publishes for its counters. Main's decision on audit V-22: `r3vs-holdcue-shadow` says shadow until a children's pilot, and the recorded trial prevented 0 of 12 cut-offs and delayed one turn by 2.0 s.
+
+**Reverse when** a children's pilot shows the cue prevents cut-offs without delaying turns.
+
+## `dc-r7-audit-voice-expressive-default-off`
+
+`server/voice/voices.js expressiveOn`: DragonHD's per-clause SSML plan only with `TAXILA_VOICE_EXPRESSIVE=1` (or on / dhd / all). Before, it was on unless set to 0, against `rj-ssml-delivery-plan-2026-10-04` (2.10 vs 2.40, choppy / slow). Main's decision on audit V-27, listed for the owner in `docs/design/round7/audit/voice-proposals.md`.
+
+**Reverse if** a blind listen on children's lines prefers the planned SSML.
+
+## `dc-r7-audit-voice-deleted-compilers`
+
+Removed in the voice audit's deletion commit (RULES2: nothing live reads them; no `context/` entry cites them as evidence):
+
+- `server/voice/expressive/compile/mai.js` (the MAI voice compiler): last held at `634e125b`.
+- `server/voice/expressive/compile/omni.js` (the DragonHD Omni compiler): last held at `634e125b`.
+
+Their one test (`tests/voice-expressive-align.test.mjs`, "the other compilers") keeps its oai half. The rest of V-39 and all of V-37 stay, with the reason for each in `docs/design/round7/audit/voice-proposals.md` §3-4.
+
+**Reverse if** an MAI or Omni voice is chosen for a lane: restore from `634e125b`.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `r7-audit-topic-decided-on-askable-skills` (2026-11-10): A topic is finished or not on its askable skills only (skills with a loaded non-teach-back item), through one helper used by nextTopicFor and the parent's Progress page
+- `harness-base-url-explicit` (2026-11-10): Harnesses never default to a server: TAXILA_BASE (or --base) must be given; tests/prod/base.mjs resolveBase refuses an empty one. A default once sent a ~19-lesson eval to production.
+- `gate-no-wallclock-bars` (2026-11-10): Gate tests wait on readiness and count work (tests/_work.mjs) instead of timing milliseconds; browser suites warm the app once before the first case. A p95 bar read 5 ms idle and 110 ms under the gate's 4-way load.
+- `gate-reads-no-docs` (2026-11-10): No gate test reads docs/: fixtures live in tests/fixtures, patch files are never asserted on (the code they became is). tests/gate-reads-no-docs.test.mjs enforces it.
+- `dc-r7-held-board-v69-studio` (2026-11-10): Studio's half of main's v6.9 (director17). S10: the held board's split view is built only from the board's own parts (board-first altCall ownParts) — a bar cut into the live card's count key is left out, never drawn as an uncut '1 equal parts' bar, and no smaller example case is invented; no part left → the held board stands alone (c5-t01 e2: dens [4,8], key 8 → the quarters bar only; steering 14's sixths and sevenths keep both). S11: her picture line (altSay) says 'barabar' unless a whole is equal: false (an equal Cake had been 'alag-alag'), writes fractions as words (fracSay: ek-chauthai, ek-tihaai, 'do bata paanch'), never '(1/4)', ends with no stop (Brain ends it); a bars card's line view keeps an unnamed bar's scale (c5-t02: the 8-part '?' bar beside 1/4). A held turn draws only what the intent holds — a board prewarmed for the same intent is never drawn (pinned); reversal if director18 still shows an unsaid board: the seam refuses a board whose unit has no spoken part in the turn's line. Recording: heldBoard and artifact.layout = { split: false } | { split: true, panels: [held left, view right] }; Brain patch 019 records it as row.held.layout. forge-g2 play check: the steps that must happen (page ready, targets, advance) wait on readiness bounded by the check's deadline, not fixed 4-8 s caps. Pinned in tests/r8-held-board.test.mjs.
+
+
+<!-- merged from inbox/r7-audit-learner-2.json -->
+## r7-audit-topic-decided-on-askable-skills
+**`askableSkillIds` / `decidingStates` (server/content/next-topic.js): a skill whose items were all dropped at load, or that never had one (reading aloud, recitation), can never be 'learned', so it no longer holds its topic open. Used by nextTopicFor and routes/parent.js syllabus (audit CD-01 and its parent copy).** Reverse if: those skills get a gradable item (then they decide again automatically).
+
+## r7-audit-learner-dead-code-removed
+**Removed, each checked for importers (static and dynamic) in server/, src/, scripts/, api/, tests/, evals/, shared/, package.json, Dockerfiles and context/. The last commit that holds all of them is `24472528`.**
+- `server/learner/model.js`: `loadSkillStates`, `loadDueSkills`, `saveSkillState`, `flagMisconception`, `loadKtSkillStates`, `loadKtMisconceptions`, `ktDueCount`, and their private helpers `fromRow`, `expectRows`.
+- `server/conductor/clock.js`: `floorTo`.
+- `server/director/session/flags.js`: `sessionFirstOn`.
+- `server/routes/parent.js`: `delayedCheckMap`, `topicParentState`, `hafteSpeech`; unused imports `topicStatus`, `GRADER_WORDS`.
+- `src/onboarding/Consent.tsx`: the `TrustStep` alias (no route uses it).
+Kept on purpose: `reteachOutcomeStmt`, `armPosteriorStmt`, `actorRowStmts` (context/open.md and open-conductor-m0-deliverables cite them as open work); `consentChangedStmts`, `settingChangedStmts` (designed call sites; LEARN-23 proposes wiring them); `kt/gen.js`, `kt/index.js` (test fixture, eval); `withDue`, `loadLedger`, `MeetStep` (a test, an eval, a pending patch use them); the placement CAT (LEARN-42: content-data was told to use it); the session-first lane (LEARN-49, owner).

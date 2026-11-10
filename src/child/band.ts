@@ -31,9 +31,6 @@ export function effectiveBand(base: Band, moveUp: boolean): Band {
 
 export const familyOf = (b: Band): Family => (b === "b1" || b === "b2" ? "young" : "older");
 
-/** Reading-level defaults before measurement (§3.8): B1 R0 · B2 R1 · B3-B4 R2. */
-export const defaultReading = (b: Band): ReadingLevel => (b === "b1" ? "R0" : b === "b2" ? "R1" : "R2");
-
 /** The server's age band string for ModuleHost init and the brief. */
 export const ageBandOf = (b: Band): "6-9" | "10-15" => (familyOf(b) === "young" ? "6-9" : "10-15");
 

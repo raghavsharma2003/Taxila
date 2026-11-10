@@ -293,6 +293,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       if (t.guard?.returnMissed && next?.lastMove?.returned) next = { ...next, later: requeueMissedReturn(next, t.guard).later };
       // (v6.8 A4, as brain/turn.js: an aside question ended her turn — the unsaid card is neither pinned nor graded)
       if (t.guard?.cardHeld && next?.activeItemId) { next = { ...next, cardUnsaid: next.activeItemId }; if (ui?.ask) ui = { ...ui, ask: null, chips: [] }; }
+      if (t.guard?.asideEnd) next = { ...next, asideReplyDue: true };
       // (main's director2 judgement: a caught problem must be told apart from a fixed one) what was left after the rewrite, and
       // whether code replaced or repaired the line
       if (guard) guardAfter = { afterRewrite: t.guard.afterRewrite ?? null, replaced: !!t.guard.replaced, repaired: !!t.guard.repaired };
@@ -355,7 +356,6 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       const askF = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-seg-${++SEG_N}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: reply, ...(tGuard?.parts ? { parts: tGuard.parts } : {}) } });
       // (dc-r7-held-board: a held turn is the held board, then at most one switch — as Studio's heldBoard draws it, kept when up)
       const H = askF.intent.held ?? null;
-      heldRec = H ? { unit: H.unit, ...(H.switchTo ? { switchTo: { unit: H.switchTo.unit, atChar: H.switchTo.atChar } } : {}), ...(H.unitAfter ? { unitAfter: H.unitAfter } : {}) } : null;
       const parts = H ? [{ atChar: 0, boardRef: H.board, scriptBeat: askF.intent.scriptBeat }, ...(H.switchTo ? [{ atChar: H.switchTo.atChar, boardRef: H.switchTo.board, scriptBeat: askF.intent.scriptBeat }] : [])]
         : [{ atChar: 0, boardRef: askF.intent.boardRef, scriptBeat: askF.intent.scriptBeat }, ...(askF.intent.segments ?? [])].filter((x) => x.boardRef);
       if (H) {
@@ -364,6 +364,13 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         unpaged = hb ? 0 : 1;
         if (hb?.script) { shownScript = hb.lastPage ?? hb.script; shownRef = hb.lastRef ?? null; shownKind = null; }
         next = { ...next, heldUp: heldUpOf(H) };
+        // (v6.9, main on director17: the record said "held" while the take showed a new board — the row's screen and its held record
+        // are the TAKE's: what Studio's heldBoard drew, kept or switched, page by page)
+        heldRec = { unit: hb?.held?.unit ?? null, changed: !!hb?.held?.changed, kept: !!hb?.kept, drawn: hb ? (hb.kept ? "kept" : "held") : "refused",
+          pages: (hb?.screens ?? []).map((x) => ({ from: x.from ?? 0, template: x.template ?? null, ...(x.beside ? { beside: x.beside.template ?? null } : {}) })),
+          intent: { unit: H.unit, ...(H.switchTo ? { switchTo: { unit: H.switchTo.unit, atChar: H.switchTo.atChar } } : {}) } };
+        if (hb?.screen) screen = { kind: "whiteboard", by: "held", template: hb.template ?? hb.screen.template ?? null, boardRef: H.switchTo && hb.lastRef === refKey(H.switchTo.board) ? H.switchTo.board : H.board,
+          counts: hb.screen.counts ?? null, numbers: hb.screen.numbers ?? null, onScreen: hb.screen.onScreen ?? null, drawn: heldRec.drawn, ...(hb.altView ? { altView: hb.altView } : {}) };
       }
       // (v6.3 harness, main on director11: the screen field and the picture check read what is actually DRAWN — her final line's
       // pages as the seam pages them — never the board preselected before her line existed)

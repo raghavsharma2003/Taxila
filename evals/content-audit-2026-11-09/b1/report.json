@@ -1,0 +1,30 @@
+{
+ "solved": 174,
+ "agreed": 174,
+ "findings": [
+  {
+   "id": "c1-maths-ch03-t03-i11",
+   "verdict": "question_flawed",
+   "prompt_en": "Walk forward on a number line: 1, 2, 3... Which do you reach later, 3 or 7? So which is more?",
+   "key": "7 comes later, so 7 is more (acceptable: '7 is more','7','seven','saat','सात')",
+   "mine": "7 later, 7 more (EN); for the Hindi wording the first part is 3",
+   "why": "Languages ask opposite things. prompt_en: 'Which do you reach LATER, 3 or 7?' (7). prompt_hi: 'Pehle 3 aayega ya 7?' = 'Which comes FIRST, 3 or 7?' (3). A child answering the Hindi correctly says '3 ... 7 zyada'; the key text '7 comes later' only fits the English. Final part (which is more = 7) is the same in both. Fix: 'Baad mein kaun aayega, 3 ya 7?'"
+  }
+ ],
+ "hinglish": [
+  {
+   "id": "c3-maths-ch05-t03-i02",
+   "phrase": "Kinke kinaare sirf mude hue hain?",
+   "why": "'mude hue' means bent/folded, not curved; for 'only curved edges' a teacher would say 'gol kinaare' / 'ghumaavdaar kinaare'. Mild, but a book with a folded corner fits the literal Hindi."
+  }
+ ],
+ "level": [],
+ "other_notes": [
+  "All 174 solved blind; every key and every worked-example step/answer agrees with my solution. No key_wrong, no acceptable_wrong found.",
+  "Unfilled template placeholder '{friendF}' appears literally in prompts AND keys of c3-maths-ch08-t02-i10 (key answer '{friendF}: 5 laddoos, while Golu ate 3', acceptable ['{friendF}', ...]) and in the prompts of DIAG:c3-maths-ch01-t02-m-fifth-mark-extra. Correct only if the runtime substitutes the name in prompt, answer and acceptable alike; if the acceptable entry is not substituted, the child's correct answer (the friend's name) will not match.",
+  "c1-maths-ch01-t03-i01: acceptable includes 'spoons' alone and 'plates' alone for 'What are the two groups?' - a half answer is marked right (incomplete rather than wrong).",
+  "Faded worked examples that give away their own blank: WE:c2-maths-ch11-t02 last faded line 'So there are 3 more cars than buses (7 − 4 = ___)' states the 3 in the same line (and answers the previous blank '___ cars have no bus partner'); WE:c3-maths-ch03-t02 last faded line 'Add the jumps: 4 + 50 = ___. Check: 46 + 54 = 100.' shows 54 right after the blank.",
+  "Many class-2 keys list only word forms in acceptable (e.g. c2-maths-ch08-t02-i01 answer '3', acceptable ['three','teen']) and omit Hindi number words that class-1 keys include (e.g. 24 'chaubees', 84 'chauraasi', 27 'sattaais', 10 'das'). Not wrong answers, but spoken Hindi answers may miss unless the matcher normalises numerals.",
+  "c3-maths-ch10-t01-i01 / -i10: prompts never say the scale is in cm; key answers '4 cm' / '5 cm' (bare '4' is accepted for i01; for i10 only '5 cm' and '0 to 5')."
+ ]
+}

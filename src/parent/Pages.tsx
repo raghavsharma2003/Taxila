@@ -7,14 +7,14 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Art, Button, HoldButton, Icon, PinPad, Speaker, TileGroup } from "../ui/index.ts";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
-import { loadMe, postJson, refreshMe, type ChildRow, type Me } from "../app/api.ts";
+import { loadMe, refreshMe, type ChildRow, type Me } from "../app/api.ts";
 import { bandForClass } from "../app/band.ts";
 import { Helplines } from "../app/Shell.tsx";
 import { isRelock, parentApi, type ParentMemory } from "./api.ts";
 import { BOARD_NAME, consentEffect, isPasswordError, parentError } from "./copy.ts";
 import { PasswordAgain } from "./fields.tsx";
 import { useGate } from "./Gate.tsx";
-import { PageState, ParentShell, RowLink, useChildren } from "./Shell.tsx";
+import { PageState, ParentShell, RowLink, signOut, useChildren } from "./Shell.tsx";
 
 const teacherNameOf = (c: ChildRow) => (c as ChildRow & { teacher_name?: string | null }).teacher_name || teacherRecord(c.teacher_id, bandForClass(c.class_level)).name;
 
@@ -29,14 +29,14 @@ export function More() {
       <ul className="pa-list pa-more">
         <li><RowLink to={`/parent/notes${qs}`} sub="Today's note, the weekly letter and the monthly report">Notes</RowLink></li>
         <li><RowLink to={`/parent/teaching${qs}`} sub="What the teacher did in recent lessons, and why">How the teacher teaches</RowLink></li>
-        <li><RowLink to={`/parent/controls${qs}`} sub="Daily limit, lesson hours, language, words on screen">Controls</RowLink></li>
+        <li><RowLink to={`/parent/controls${qs}`} sub="Daily limit, lesson hours, language">Controls</RowLink></li>
         <li><RowLink to={`/parent/children${qs}`} sub="Add a child, switch child">Children</RowLink></li>
         <li><RowLink to={`/parent/data${qs}`} sub="Your choices, download, delete">Data and privacy</RowLink></li>
         <li><RowLink to={`/parent/help${qs}`} sub="Helplines, what happens if a child is worried, Forgot PIN">Help and safety</RowLink></li>
         <li><RowLink to={`/parent/pin${qs}`}>Change parent PIN</RowLink></li>
         <li><RowLink to="/trust">Our promises</RowLink></li>
       </ul>
-      <Button variant="quiet" onClick={async () => { await postJson("/api/auth/logout", {}).catch(() => {}); await refreshMe().catch(() => {}); nav("/"); }}>Sign out</Button>
+      <Button variant="quiet" onClick={() => signOut(nav)}>Sign out</Button>
     </ParentShell>
   );
 }

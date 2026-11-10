@@ -49,8 +49,6 @@ export function PromisesStep() {
     </StepFrame>
   );
 }
-/** The old name (the route table and older links). */
-export const TrustStep = PromisesStep;
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /** Contraction- and agreement-safe: "She tells … she's", "They tell … they're" (a they/them record never reads "they's"). */

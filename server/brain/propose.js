@@ -158,7 +158,8 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
   const list = line?.parts?.list ?? null;
   const cardNoAlt = !!list && list.some((p) => p.part === "card") && !list.some((p) => p.part === "alt");
   // (a replay of a recorded run pages as that run paged: tests/fixtures/replay.mjs runScriptOf marks it recordedRun)
-  const held = (next?.lastMove?.scriptBeat || next?.lastMove?.cardBeat) && !scriptFor(kit)?.script?.recordedRun ? heldOf({ move: next.lastMove, list: line?.parts?.list ?? null, line: String(line?.text ?? ""), kit, up: next?.heldUp ?? null }) : null;
+  const held = (next?.lastMove?.scriptBeat || next?.lastMove?.cardBeat) && !scriptFor(kit)?.script?.recordedRun ? heldOf({ move: next.lastMove, list: line?.parts?.list ?? null, line: String(line?.text ?? ""), kit, up: next?.heldUp ?? null,
+    graded: ["correct", "not_yet"].includes(next?.lastVerdict) }) : null;
   const request = (visualNow && !cardNoAlt ? requestOfSee(next.lastMove.see) ?? { kind: "show" } : null) ?? (next?.lastMove?.request === "example" ? { kind: "example" } : null);
   return {
     intent: {
@@ -530,21 +531,40 @@ const HELD_CLOSE = new Set(["close", "closed"]);
  * question that ends her turn, A4) keeps the board up (`up`, the held board the last turn ended on). Every spoken part is the
  * held unit's, or the switch's after it.
  */
-export function heldOf({ move, list = null, line = "", kit, up = null }) {
+export function heldOf({ move, list = null, line = "", kit, up = null, graded = false }) {
+  // (v6.9 N1, main on director17: a stop or goodbye menu, a break, a wrap, a check-in has no unit part — the board up stays, nothing
+  // new is drawn, the walk's next unit is not shown)
+  const noUnitMove = ["break", "wrap", "safeguard"].includes(move?.kind) || !!move?.checkin || ["stop", "goodbye", "break", "end"].includes(move?.request);
+  if (noUnitMove) { const h = up?.board ? { board: up.board, unit: up.unit } : null; if (h && STRICT_PAGES()) heldPredicates(h, [], String(line ?? ""), { up, noUnit: true }); return h; }
   const cardB = move?.cardBeat?.beatId ? move.cardBeat : move?.scriptBeat;
-  const curUnit = unitOf(cardB) ?? unitOf(move?.scriptBeat);
+  // (v6.9 N2: the bridge is the next card's unit — bridge + the next skill's first card — never a unit of its own)
+  const unitOfBeat = (b) => { const u = unitOf(b); return u && /:bridge$/.test(u) ? firstUnitOf(kit, b.skillId) ?? u : u; };
+  const curUnit = unitOfBeat(cardB) ?? unitOfBeat(move?.scriptBeat);
   if (!curUnit && !up) return null;
   const cur = curUnit ? { unit: curUnit, board: unitBoardOf(kit, curUnit) ?? move?.cardBeat?.board ?? move?.scriptBeat?.board ?? null } : null;
   const closeB = move?.closeBeat?.board ? move.closeBeat : null;
   const close = closeB ? { unit: unitOf(closeB) ?? up?.unit ?? null, board: closeB.board } : null;
+  // (v6.9 N1: a close is a unit part only when it closes something — a verdict graded this turn, a give-up, a worked answer, an
+  // earlier card's close; a bare acknowledgement — "Achha." to "woh toh ho gaya na" — rides on the board up, as an aside does)
+  const closing = !!(move?.gave || move?.workedDone || move?.closed) || !!graded;
   const text = String(line ?? "").replace(/\s+/g, " ").trim();
   const offs = list?.length ? offsetsOf(list).filter((p) => String(p.text ?? "").trim()) : [];
-  const unitOfPart = (p) => (HELD_CLOSE.has(p.part) ? (close ?? up ?? cur) : p.part === "aside" ? null : cur);
+  // (v6.9 N2, main on director17 c4 stuck 74, c5-t02 stuck 52, c6 offtopic 40: a give-up's close, then the bridge into the next skill:
+  // the move's beat is still the closed card's, so the bridge and what follows it are the next skill's first unit — the switch is
+  // where the bridge begins; a move already on a card of that skill keeps its own unit)
+  const bridgeSk = move?.bridgeBeat?.skillId ?? null;
+  const bridgeU = bridgeSk && String(curUnit ?? "").split(":")[0] !== bridgeSk ? (() => { const u = firstUnitOf(kit, bridgeSk); return u ? { unit: u, board: unitBoardOf(kit, u) } : null; })() : null;
+  let pastBridge = false;
+  const unitOfPart = (p) => {
+    if (HELD_CLOSE.has(p.part)) return closing ? close ?? up ?? cur : null;
+    if (p.part === "aside") return null;
+    if (p.part === "bridge") pastBridge = true;
+    return pastBridge && bridgeU?.board ? bridgeU : cur;
+  };
   const spoken = offs.map((p) => ({ ...p, held: unitOfPart(p) })).filter((p) => p.held);
-  // (no line yet — a preselect: the close's board when the move closes a card, else the unit the move is on)
-  const closing = !!(move?.gave || move?.workedDone || move?.closed) || offs.some((p) => HELD_CLOSE.has(p.part));
-  // (her first spoken part's unit; with no line yet, the close's when the move closes a card, else the move's; a line with only an
-  // aside in it keeps the board up)
+  // her first spoken unit part's unit; with no line yet (a preselect), the close's when the move closes a card, else the move's; a
+  // line with no unit part in it (an aside, an acknowledgement, an aside question that ends her turn) keeps the board up
+  const noUnitLine = offs.length > 0 && !spoken.length;
   let held = spoken[0]?.held ?? (!offs.length ? (closing && close ? close : cur ?? up) : up ?? cur);
   if (!held?.board) held = up?.board ? up : cur?.board ? cur : null;
   if (!held) return null;
@@ -556,14 +576,24 @@ export function heldOf({ move, list = null, line = "", kit, up = null }) {
     // (the same board under the next unit: no redraw — the unit is the switch's from its first part)
     out.unitAfter = { unit: next.held.unit, atChar: next.start };
   }
-  if (STRICT_PAGES()) heldPredicates(out, spoken, text);
+  if (STRICT_PAGES()) heldPredicates(out, spoken, text, { up, noUnit: noUnitLine });
   return out;
+}
+/** The first unit of a skill (its first explain beat's, else its worked example's): where a bridge into it belongs (v6.9 N2). */
+export function firstUnitOf(kit, skillId) {
+  const sk = (scriptFor(kit)?.script?.skills ?? []).find((x) => x.skillId === skillId);
+  if (!sk) return null;
+  const id = sk.explain?.[0]?.id ?? (sk.workedExample ? "worked" : sk.checks?.[0]?.id ?? null);
+  return id ? `${skillId}:${id}` : null;
 }
 /** The four held-board predicates (main), thrown under tests: ≤1 change per turn; a change only at the start of a spoken part of a
  *  new unit; every spoken part's unit is the held one, or the switch's from its char on. (The fourth — no grading of an unsaid
  *  card — is turn.js planTurn's cardUnsaid, A4.) */
-export function heldPredicates(h, spoken, text) {
+export function heldPredicates(h, spoken, text, { up = null, noUnit = false } = {}) {
   const sw = h.switchTo ?? null;
+  // (v6.9 N1: a turn with no unit part — an aside, an aside return, an acknowledgement, a break or stop menu, a goodbye — draws
+  // nothing new: the board up, no switch)
+  if (noUnit && (sw || h.unitAfter || (up?.board && JSON.stringify(up.board) !== JSON.stringify(h.board)))) throw new Error(`held: a turn with no unit part drew ${sw ? "a switch" : "a new board"} (${h.unit})`);
   if (sw) {
     const at = spoken.find((p) => p.start === sw.atChar);
     if (!at) throw new Error(`held: a change not at a spoken part (atChar ${sw.atChar})`);

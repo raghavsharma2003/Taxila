@@ -6,6 +6,7 @@
 // the seam W2-G's /api/lesson/turn-audio calls. Auth, dedupe/replay, the late-turn and outbox semantics are unchanged.
 import { alignParts } from "./lineParts.js";
 import { requeueMissedReturn, cardUnsaidNow } from "../director/state.js";
+import { responseShape } from "../director/requestTable.js";
 import { q, one, guardStmt, GUARD_FAILED } from "../db.js";
 import { need, bad, forbidden, notFound, unauthorized, HttpError } from "../http.js";
 import { sessionTokenHash } from "../auth.js";
@@ -960,6 +961,8 @@ export async function lessonTurn(req, body, hooks = {}) {
     // v6.8 A4 (main on director16 c5-t01 steady 40): an aside question ended her turn — the card she did not say is neither
     // pinned nor graded; the next reply gets code's acknowledgement, then the card aloud (planTurn reads cardUnsaid)
     if (guard?.cardHeld && next?.activeItemId) { next.cardUnsaid = next.activeItemId; if (r.ui?.ask) r = { ...r, ui: { ...r.ui, ask: null, chips: [] } }; }
+    // (v6.9 A5: her turn ended on an aside question — the next reply is read as about it, or as what it asks)
+    if (guard?.asideEnd) next.asideReplyDue = true;
     // The content filter blocked the reply call that carried the child's words: fail CLOSED. The turn is
     // re-planned as a disclosure (safeguard move, incident row) and the fixed helpline line is sent, with no
     // further model call on the same words.
@@ -1666,7 +1669,16 @@ export async function planTurn(base, cls, c) {
   // chip or an engine's machine answer are never touched.
   if (cls) cls = asPlayAct(cls, { state, childText: c.childText, chipId: c.chipId, moduleOnly, gameAct: null });
   // v6.8 A4: the reply to her aside question is never graded against the card she did not say: it is re-posed, after code's ack
-  if (cls && cardUnsaidNow(state) && !cls.flags?.distress && !cls.flags?.wantsToStop && cls.source !== "chip") cls = { ...cls, outcome: "no_evidence", confidence: 1, request: { type: "repeat", src: "card_unsaid" }, cardUnsaid: true };
+  // (v6.9 T1/A5, main on director17 c4 offtopic 26 drew nothing, c4 stuck 38, c6 offtopic 38: a request where an aside reply was
+  // expected — a picture, a repeat, try-first, Hindi — is served as that request, still never graded against the unsaid card; the
+  // acknowledgement is said only to a reply about the aside)
+  if (cls && (cardUnsaidNow(state) || state.asideReplyDue) && !cls.flags?.distress && !cls.flags?.wantsToStop && cls.source !== "chip") {
+    const own = cls.request?.type && responseShape(cls.request.type, "aside_reply") === "serve_request" ? cls.request
+      : cls.request?.type && !["uptake", "answer_q"].includes(cls.request.type) ? cls.request : null;
+    const about = !own && !/\d/.test(String(c.childText ?? "")) && !cls.flags?.dontKnow && !["correct", "incorrect", "partial", "misconception"].includes(cls.outcome);
+    if (cardUnsaidNow(state)) cls = { ...cls, outcome: "no_evidence", confidence: 1, request: own ?? { type: "repeat", src: "card_unsaid" }, cardUnsaid: true, ...(about ? { asideReply: true } : {}) };
+    else if (about) cls = { ...cls, asideReply: true };
+  }
   const affectNow = moduleOnly ? state.affect
     : nextAffect(state.affect, { read: cls?.flags ?? {}, outcome: cls?.outcome, itemId: state.activeItemId, answer: c.answer });
   const discount = gamingDiscount(affectNow);

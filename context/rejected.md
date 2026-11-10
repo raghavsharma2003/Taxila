@@ -2953,3 +2953,22 @@ The tried approach: an automatic contradiction counter as an input to the scale 
 - H5 passed its director16 fixture 8/8, then on director17 caught 3 of 16 with over 100 false flags: it reads the harness's `held` record, not the take, and predates the split view.
 
 Hand judging by four judges is the only screen. The counter stays a development aid and is never quoted as evidence.
+
+
+<!-- merged from inbox/r7-audit-tests-evals.json -->
+## lint-over-patch-files-for-affect-words
+**Tried: replace the patch-file scan in p3-voicesig-server and round3-voicesig with a scan of every file the patches touched. It failed at once: server/brain/reasons.js and turn.js legitimately carry affect words (frustration, boredom, affect). Kept: scan only voicesig-owned files; the shared files are no longer linted.**
+
+
+<!-- merged from inbox/r7-audit-voice-fix.json -->
+## `rj-r7-audit-voice-verdict-at-her-start`
+
+**Tried:** (audit V-09) nothing in the app sends the governor's `her_verdict`, so a closed-answer reply stayed revocable for its whole length and a "हाँ" four seconds in cut it. First fix: mark the verdict played when her reply starts.
+
+**What broke:** `tests/duplex-runtime.test.mjs` "G7 revoke … (fast mouth, late verdict)": her uptake sounds BEFORE the verdict word (verdictNotBefore is after her start), and a child correction in that gap must still revoke.
+
+**Instead:** revocable until `max(herStartAt, verdictNotBefore) + REVOCABLE_MS` (1.5 s), or until `her_verdict` if anything ever sends it.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-app-static-text-tests` (2026-11-10): Rejected: tests that match a source file's text to prove a UI fix (they passed while behaviour was broken: APP-01, 02, 04, 06). Where the logic can be pulled into a pure .ts module or measured in Chromium, test that

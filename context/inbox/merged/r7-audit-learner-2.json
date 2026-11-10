@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "r7-audit-topic-decided-on-askable-skills",
+   "kind": "decision",
+   "title": "A topic is finished or not on its askable skills only (skills with a loaded non-teach-back item), through one helper used by nextTopicFor and the parent's Progress page",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "r7-audit-learner-dead-code-removed",
+   "kind": "decision",
+   "title": "Removed learner dead code with no reader (audit LEARN-50, 51, 52); last commit holding it: 24472528",
+   "at": "2026-11-10"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## r7-audit-topic-decided-on-askable-skills\n**`askableSkillIds` / `decidingStates` (server/content/next-topic.js): a skill whose items were all dropped at load, or that never had one (reading aloud, recitation), can never be 'learned', so it no longer holds its topic open. Used by nextTopicFor and routes/parent.js syllabus (audit CD-01 and its parent copy).** Reverse if: those skills get a gradable item (then they decide again automatically).\n\n## r7-audit-learner-dead-code-removed\n**Removed, each checked for importers (static and dynamic) in server/, src/, scripts/, api/, tests/, evals/, shared/, package.json, Dockerfiles and context/. The last commit that holds all of them is `24472528`.**\n- `server/learner/model.js`: `loadSkillStates`, `loadDueSkills`, `saveSkillState`, `flagMisconception`, `loadKtSkillStates`, `loadKtMisconceptions`, `ktDueCount`, and their private helpers `fromRow`, `expectRows`.\n- `server/conductor/clock.js`: `floorTo`.\n- `server/director/session/flags.js`: `sessionFirstOn`.\n- `server/routes/parent.js`: `delayedCheckMap`, `topicParentState`, `hafteSpeech`; unused imports `topicStatus`, `GRADER_WORDS`.\n- `src/onboarding/Consent.tsx`: the `TrustStep` alias (no route uses it).\nKept on purpose: `reteachOutcomeStmt`, `armPosteriorStmt`, `actorRowStmts` (context/open.md and open-conductor-m0-deliverables cite them as open work); `consentChangedStmts`, `settingChangedStmts` (designed call sites; LEARN-23 proposes wiring them); `kt/gen.js`, `kt/index.js` (test fixture, eval); `withDue`, `loadLedger`, `MeetStep` (a test, an eval, a pending patch use them); the placement CAT (LEARN-42: content-data was told to use it); the session-first lane (LEARN-49, owner).\n"
+ }
+}

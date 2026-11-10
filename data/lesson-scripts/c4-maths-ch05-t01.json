@@ -393,24 +393,7 @@
      }
     }
    ],
-   "bridgeToNext": { "hi": "Ab tak ek roti ke barabar hisse kiye. Ab bahut saare laddoo lenge, aur unke barabar group banayenge. Niyam wahi hai, sab barabar.", "en": "So far we made equal parts of one roti. Next we take lots of laddoos and make equal groups. Same rule: everything equal." },
-   "bridgeBoard": {
-    "template": "compare@1",
-    "params": {
-     "left": {
-      "title": "Ek roti",
-      "items": [
-       "barabar hisse"
-      ]
-     },
-     "right": {
-      "title": "Bahut saare laddoo",
-      "items": [
-       "barabar group"
-      ]
-     }
-    }
-   }
+   "bridgeToNext": { "hi": "Ab tak ek roti ke barabar hisse kiye. Ab bahut saare laddoo lenge, aur unke barabar group banayenge. Niyam wahi hai, sab barabar.", "en": "So far we made equal parts of one roti. Next we take lots of laddoos and make equal groups. Same rule: everything equal." }
   },
   {
    "skillId": "c4-maths-ch05-t01-s2",
@@ -430,10 +413,10 @@
    "explain": [
     {
      "id": "e1",
-     "convey": "the tin's 12 laddoos, still in one heap → half = share them into 2 equal groups and count one group; check: the two groups together make the whole again",
+     "convey": "the tin's 12 laddoos, shown in 4 equal groups of 3 → half = 2 equal shares, so each of the two gets 2 of the groups; one share's count is the half; check: both shares together make all 12 again",
      "mustSay": [{"hi": "aadha", "en": "half"}, {"hi": "barabar group", "en": "equal groups"}],
-     "board": { "template": "shade-grid@1", "params": {"rows": 3, "cols": 4, "shade": 0, "labels": false, "hideResult": true} },
-     "point": { "hi": "Yeh dibbe ke 12 laddoo hain, abhi ek saath. Aadha matlab: socho inhe 2 barabar group mein baant diya, dono mein ek jitne. Tab ek group hi aadha hai. Jaanch bhi aasaan hai: jab dono group jodo, toh poore laddoo wapas.", "en": "Here are the tin's 12 laddoos, all together for now. Half means: imagine sharing them into 2 equal groups, the same in both. Then one group is the half. Checking is easy too: when you put both groups together, all the laddoos are back." },
+     "board": { "template": "equal-groups@1", "params": {"groups": 4, "each": 3} },
+     "point": { "hi": "Yeh dibbe ke 12 laddoo hain. Board par inke 4 barabar group bane, har group mein 3. Aadha matlab dono ko ek jitna. Toh tum dono ko 2-2 group milenge. Jaanch bhi aasaan hai: dono ke hisse jodo, toh 12 laddoo wapas.", "en": "Here are the tin's 12 laddoos. On the board they're in 4 equal groups, 3 in each group. Half means you both get the same. So each of you gets 2 of the groups. Checking is easy too: put both shares together and all 12 laddoos are back." },
      "ask": {
       "prompt": { "hi": "Yeh 12 laddoo tum do mein barabar bate. 12 ka aadha kitna hoga?", "en": "These 12 laddoos are shared equally between you two. What is half of 12?" },
       "key": "6",
@@ -445,47 +428,39 @@
        "6 laddoo"
       ],
       "why": { "hi": "12 laddoo 2 barabar group mein jaayein toh har group mein 6, aur 2 × 6 = 12", "en": "12 laddoos in 2 equal groups puts 6 in each, and 2 × 6 = 12" },
-      "board": { "template": "shade-grid@1", "params": {"rows": 3, "cols": 4, "shade": 0, "labels": false, "hideResult": true} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups":2,"each":6} }
+      "board": { "template": "equal-groups@1", "params": {"groups": 4, "each": 3} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups":2,"each":6} }
      },
-     "simpler": { "hi": "Socho, laddoo do plate mein ek-ek karke rakh rahe ho, ek idhar, ek udhar. Khatam hone par ek plate gin lo.", "en": "Imagine putting the laddoos on two plates one at a time, one here, one there. When they run out, count one plate." }
+     "simpler": { "hi": "Har bachche ko 2 group do. Phir ek bachche ke dono group ke laddoo jod lo.", "en": "Give each child 2 groups. Then add up the laddoos in one child's two groups." }
     },
     {
      "id": "e2",
-     "convey": "21 bananas in one heap → 1/3 of them: bottom 3 = share into 3 equal groups, top 1 = take one group; that group's count is the answer",
+     "convey": "24 mangoes shown as 1/4 (4 equal groups of 6): bottom 4 = share into 4 equal groups, top 1 = take one group; then 1/3 of the same 24: bottom 3 = 3 equal groups, one group's count is the answer",
      "mustSay": [{"hi": "neeche wala 3", "en": "the 3 at the bottom"}, {"hi": "1/3", "en": "1/3"}],
-     "board": { "template": "shade-grid@1", "params": {"rows": 3, "cols": 7, "shade": 0, "labels": false, "hideResult": true} },
-     "point": { "hi": "Ab yeh 21 kele dekho. 1/3 ka neeche wala 3 kehta hai: socho inhe 3 barabar group mein baant rahe ho. Upar ka 1 kehta hai: unme se ek group lo. Us ek group mein jitne kele, utna hi 1/3 hai.", "en": "Now look at these 21 bananas. The 3 at the bottom of 1/3 says: imagine sharing them into 3 equal groups. The 1 on top says: take one of those groups. However many bananas are in that one group, that is the 1/3." },
+     "board": { "template": "equal-groups@1", "params": {"groups": 4, "each": 6} },
+     "point": { "hi": "Ab yeh 24 aam dekho, 4 barabar group mein, har group mein 6. 1/4 ka neeche wala 4 kehta hai: 4 barabar group banao. Upar ka 1 kehta hai: ek group lo. Toh 24 ka 1/4 hai 6 aam. 1/3 mein bhi yahi hota hai, bas neeche wala 3 hai.", "en": "Now look at these 24 mangoes, in 4 equal groups, 6 in each group. The 4 at the bottom of 1/4 says: make 4 equal groups. The 1 on top says: take one group. So 1/4 of 24 is 6 mangoes. 1/3 works the same way, only the 3 at the bottom is different." },
      "ask": {
-      "prompt": { "hi": "21 kele 3 bachchon mein barabar baantne hain. 21 ka 1/3 kitna hua?", "en": "21 bananas to share equally among 3 children. What is 1/3 of 21?" },
-      "key": "7",
-      "accept": [
-       "saat",
-       "seven",
-       "7 kele"
-      ],
-      "why": { "hi": "21 kele 3 barabar group mein baanto toh har group mein 7 aate hain; 3 × 7 = 21", "en": "21 bananas in 3 equal groups gives 7 in each; 3 × 7 = 21" },
-      "board": { "template": "shade-grid@1", "params": {"rows": 3, "cols": 7, "shade": 0, "labels": false, "hideResult": true} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups":3,"each":7} }
+      "prompt": { "hi": "Yahi 24 aam 3 bachchon mein barabar baantne hain. 24 ka 1/3 kitna hua?", "en": "These same 24 mangoes are to be shared equally among 3 children. What is 1/3 of 24?" },
+      "key": "8",
+      "accept": ["aath", "eight", "8 aam", "8 mangoes"],
+      "why": { "hi": "24 aam 3 barabar group mein baanto toh har group mein 8 aate hain; 3 × 8 = 24", "en": "24 mangoes in 3 equal groups gives 8 in each; 3 × 8 = 24" },
+      "board": { "template": "equal-groups@1", "params": {"groups": 4, "each": 6} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 3, "each": 8} }
      },
-     "simpler": { "hi": "3 ka pahada yaad karo. 3 ko kis number se guna karein ki 21 bane, wahi ek group hai.", "en": "Think of the 3 times table. Whatever times 3 makes 21, that is one group." }
+     "simpler": { "hi": "3 ka pahada yaad karo. 3 ko kis number se guna karein ki 24 bane, wahi ek group hai.", "en": "Think of the 3 times table. Whatever times 3 makes 24, that is one group." }
     },
     {
      "id": "e3",
-     "convey": "32 marbles in one heap → 1/4 of them; method: bottom number → that many equal groups → the size of one group is the answer",
+     "convey": "12 marbles shown as half (2 equal groups of 6, the bottom 2 of 1/2) → method: bottom number → that many equal groups → the size of one group is the answer; then 1/4 of the same 12 → 4 equal groups",
      "mustSay": [{"hi": "neeche ka number", "en": "the bottom number"}, {"hi": "1/4", "en": "1/4"}],
-     "board": { "template": "shade-grid@1", "params": {"rows": 4, "cols": 8, "shade": 0, "labels": false, "hideResult": true} },
-     "point": { "hi": "Yeh 32 kanche hain. Tarika wahi hai: neeche ka number dekho, socho utne barabar group bana rahe ho, aur ek group gin lo. 1/4 mein neeche 4 hai.", "en": "Here are 32 marbles. Same method: look at the bottom number, imagine making that many equal groups, and count one group. In 1/4 the bottom is 4." },
+     "board": { "template": "equal-groups@1", "params": {"groups": 2, "each": 6} },
+     "point": { "hi": "Yeh 12 kanche hain, 2 barabar group mein, har group mein 6. Yeh 12 ka aadha hai, kyunki 1/2 mein neeche 2 hai. Tarika hamesha wahi hai: neeche ka number dekho, utne barabar group banao, aur ek group gino. 1/4 mein neeche 4 hai.", "en": "Here are 12 marbles, in 2 equal groups, 6 in each group. That's half of 12, because in 1/2 the bottom is 2. The method is always the same: look at the bottom number, make that many equal groups, and count one group. In 1/4 the bottom is 4." },
      "ask": {
-      "prompt": { "hi": "In 32 kanchon ka 1/4 kitna hai?", "en": "What is 1/4 of these 32 marbles?" },
-      "key": "8",
-      "accept": [
-       "aath",
-       "eight",
-       "8 kanche"
-      ],
-      "why": { "hi": "4 barabar group banao toh har group mein 8 kanche, aur 4 × 8 = 32", "en": "4 equal groups of 32 marbles hold 8 each, and 4 × 8 = 32" },
-      "board": { "template": "shade-grid@1", "params": {"rows": 4, "cols": 8, "shade": 0, "labels": false, "hideResult": true} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups":4,"each":8} }
+      "prompt": { "hi": "In 12 kanchon ka 1/4 kitna hai?", "en": "What is 1/4 of these 12 marbles?" },
+      "key": "3",
+      "accept": ["teen", "three", "3 kanche"],
+      "why": { "hi": "4 barabar group banao toh har group mein 3 kanche, aur 4 × 3 = 12", "en": "4 equal groups of the 12 marbles hold 3 each, and 4 × 3 = 12" },
+      "board": { "template": "equal-groups@1", "params": {"groups": 2, "each": 6} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 4, "each": 3} }
      },
-     "simpler": { "hi": "4 group banane hain. 4 ke pahade mein dhoondo, kaunsa number 32 tak le jaata hai.", "en": "We need 4 groups. Look in the 4 times table for what gets you to 32." }
+     "simpler": { "hi": "4 group banane hain. Dono group ko phir se 2 barabar hisson mein baanto.", "en": "We need 4 groups. Split each of the 2 groups into 2 equal parts again." }
     }
    ],
    "workedExample": {
@@ -635,8 +610,7 @@
      }
     }
    ],
-   "bridgeToNext": { "hi": "Ab tak cheezon ke barabar group banaye. Ab ek lambi patti ko barabar hisson mein kaatenge, aur dekhenge ki ek hissa kitna bada hai.", "en": "So far we made equal groups of things. Next we cut a long strip into equal parts and see how big one part is." },
-   "bridgeBoard": { "template": "compare@1", "params": {"left": {"title": "Cheezein", "items": ["barabar group"]}, "right": {"title": "Patti", "items": ["barabar hisse"]}} }
+   "bridgeToNext": { "hi": "Ab tak cheezon ke barabar group banaye. Ab ek lambi patti ko barabar hisson mein kaatenge, aur dekhenge ki ek hissa kitna bada hai.", "en": "So far we made equal groups of things. Next we cut a long strip into equal parts and see how big one part is." }
   },
   {
    "skillId": "c4-maths-ch05-t01-s3",
@@ -689,7 +663,7 @@
       ],
       "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
       "wrongIfMis": "Yes",
-      "why": { "hi": "4 hisson mein har hissa 1/4 hota hai, jo 1/2 ka bhi aadha hai", "en": "in 4 parts each part is 1/4, which is half of the 1/2" },
+      "why": { "hi": "4 hisson mein har hissa 1/4 hota hai, jo 2 hisson wale tukde ka bhi aadha hai", "en": "in 4 parts each part is 1/4, half of a piece from 2 parts" },
       "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 4, "shade": 0, "label": "?"}]} }, "answerBoard": { "template": "fraction-bars@1", "params": {"bars":[{"parts":2,"shade":1,"label":"1/2"},{"parts":4,"shade":1,"label":"1/4"}]} }
      },
      "simpler": { "hi": "Aadhe wale hisse ko beech se ek baar aur kaato. Woh aur chhota ho jaata hai, bada nahi.", "en": "Cut the half once more down the middle. It gets smaller, not bigger." }
@@ -861,7 +835,7 @@
      ],
      "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
      "wrongIfMis": "1/2, 1/3, 1/4",
-     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1}, {"parts": 4, "shade": 1}, {"parts": 3, "shade": 1}]} },
+     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 0, "label": ""}, {"parts": 4, "shade": 0, "label": ""}, {"parts": 3, "shade": 0, "label": ""}]} },
      "why": { "hi": "bar jitne zyada hisson mein kate, tukda utna chhota; isliye pehle 1/4, phir 1/3, phir 1/2", "en": "the more parts a bar is cut into, the smaller the piece, so 1/4 first, then 1/3, then 1/2" },
      "answerBoard": { "template": "fraction-bars@1", "params": {"bars":[{"parts":4,"shade":1,"label":"1/4"},{"parts":3,"shade":1,"label":"1/3"},{"parts":2,"shade":1,"label":"1/2"}]} },
      "simpler": { "hi": "Sabse chhota tukda woh, jiski bar sabse zyada hisson mein kati. Wahan se shuru karo.", "en": "The smallest piece comes from the bar cut into the most parts. Start there." }

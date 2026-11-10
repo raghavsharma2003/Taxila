@@ -11,7 +11,7 @@ for (const [k, ext] of [["own", (id) => !id.includes("src/face-puppet") && !id.s
   const out = `evals/face-puppet/out/bundle-${k}`;
   fs.rmSync(out, { recursive: true, force: true });
   await build({ configFile: false, logLevel: "silent", publicDir: false, define: { "import.meta.env.DEV": "false" },
-    build: { outDir: out, minify: true, rollupOptions: { input: "src/face-puppet/adapter.tsx", external: ext, preserveEntrySignatures: "strict", output: { format: "es", entryFileNames: "entry.js", chunkFileNames: "[name].js" } } } });
+    build: { outDir: out, minify: true, rollupOptions: { input: "src/face-puppet/PuppetFace.tsx", external: ext, preserveEntrySignatures: "strict", output: { format: "es", entryFileNames: "entry.js", chunkFileNames: "[name].js" } } } });
   const files = fs.readdirSync(out, { recursive: true }).filter((f) => f.endsWith(".js"));
   res[k] = Object.fromEntries(files.map((f) => { const b = fs.readFileSync(path.join(out, f)); return [f, { raw: b.length, gz: zlib.gzipSync(b, { level: 9 }).length }]; }));
 }

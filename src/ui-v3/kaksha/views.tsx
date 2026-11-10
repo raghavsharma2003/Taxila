@@ -2,6 +2,7 @@
 // screens/ feed them from ChildShell and the server; the dev page feeds them fixtures for shots and the lint harness.
 // Rules every view keeps: ONE plasma "your move" element per screen state (data-volt); the teacher's name always with
 // "AI teacher"; no lock glyphs, no "n of m", no points (tests/r4-kaksha-lint.test.mjs); English chrome (G-EN-1).
+import { clock } from "../../child/copy.ts";
 import { dayOf } from "../../child/growth.ts";
 import { useState, type MouseEvent, type ReactNode } from "react";
 import { Comms, Sky } from "./Shell.tsx";
@@ -70,6 +71,8 @@ export interface HomeViewProps extends NavProps {
   /** The child picker, when this account has more than one child (audit B06: Finish now lands here, so a sibling needs a way on). */
   whoTo?: string | null;
   opensAt?: string | null;
+  /** SEAM-11: today's planned lesson time, already formatted ("5:00 pm"); null/absent: none or not a lesson day. */
+  lessonTime?: string | null;
   greeting: "morning" | "day" | "evening";
   /** r5 QA D24: the Start link continues an open lesson (its own line and label; still the same CTA). */
   resuming?: boolean;
@@ -82,7 +85,7 @@ export interface HomeViewProps extends NavProps {
 export function HomeView(p: HomeViewProps) {
   const greet = kt(p.greeting === "morning" ? "greetMorning" : p.greeting === "evening" ? "greetEvening" : "greetDay", { name: p.childName });
   const sub = p.resuming && p.state === "start" ? kt("resumeSub") : p.state === "done" ? kt("doneSub") : p.state === "capped" ? kt("cappedSub")
-    : p.state === "resting" ? kt("restSub", { time: p.opensAt ?? "" }) : p.state === "homework" ? kt("homeworkSub")
+    : p.state === "resting" ? kt("restSub", { time: p.opensAt ? clock(p.opensAt) : "" }) : p.state === "homework" ? kt("homeworkSub")
       : p.state === "test" ? kt("testSub", { subject: p.testSubject || "school" }) : kt("openSub", { T: p.teacher.name });
   const cta = p.state === "start" || p.state === "done" || p.state === "homework" || p.state === "test";
   const ctaWord = p.state === "homework" ? kt("homeworkCta") : p.state === "test" ? kt("reviseCta") : p.state === "done" ? kt("anotherCta") : kt("start");
@@ -104,6 +107,7 @@ export function HomeView(p: HomeViewProps) {
         <section className="kx-home-copy" data-testid="primary-card" data-state={p.state}>
           <h1 className="kx-h1">{greet}</h1>
           <p className="kx-sub">{sub}</p>
+          {p.lessonTime && p.state === "start" && <p className="kx-tagline" data-testid="home-lesson-time">{kt("lessonTime", { time: p.lessonTime })}</p>}
           {cta && p.resuming ? (
             // r5 QA D24: the same CTA continuing an open lesson; its accessible name still names her as an AI teacher
             <A to={p.startTo} go={p.go} className="kx-cta kx-cut" testid="start-lesson" label={`${kt("continueCta")}, with ${p.teacher.name}, ${kt("aiTeacher")}`}>

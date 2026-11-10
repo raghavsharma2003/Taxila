@@ -70,6 +70,15 @@ export const dayLimitsOn = () => dayLimitsMode() === "on";
 /** Do the parent's daily limit, lesson hours and "done for today" apply to this child? */
 export const limitsOnFor = (controls) => dayLimitsMode() === "on" || (dayLimitsMode() === "child" && !!controls?.limitsOn);
 
+/**
+ * PURE. The home card's "about N min": the plan's lesson slot length while no lesson has started today (the next lesson
+ * takes that slot), else the class length. Once today's lesson slot has been used, the next start is not that slot (audit
+ * LEARN-22: the card read 25 min before the first start and 22 after it).
+ */
+export function cardMinutes(plan, classLevel, capRemaining, startedToday = false) {
+  const slot = plan?.slots?.find((x) => x.kind === "live_lesson");
+  return (slot && !startedToday && Number(slot.targetMin)) || lessonMinutes(classLevel, capRemaining);
+}
 /** Lesson length shown on the card (V2 §3.4: Young 10-20 min, Older 20-30), never more than what is left today. */
 export const lessonMinutes = (classLevel, capRemaining) => Math.max(5, Math.min(Number(classLevel) <= 4 ? 15 : 25, capRemaining ?? Infinity));
 
@@ -270,7 +279,7 @@ export async function planFor(child, guardian, now = new Date()) {
   // the window's chapters and today (round 7 F test-window revision): the home's "next" is the lesson's revision topic
   const nextT = await nextTopicOf(child, { testWindow: test ? { subject: test.subject, from: test.from_day, to: test.to_day, today: day, ...(test.chapters ? { chapters: test.chapters } : {}) } : null });
   const topic = nextT ? { id: nextT.id, title: nextT.title, shortTitle: shortTitleOf(nextT.title), chapter: nextT.chapter.title, subject: nextT.subject,
-    minutes: Number(dayPlan?.plan?.slots?.find((x) => x.kind === "live_lesson")?.targetMin) || lessonMinutes(child.class_level, capRemaining) } : null;
+    minutes: cardMinutes(dayPlan?.plan, child.class_level, capRemaining, todayRows.length > 0) } : null;
   const last = doneRows[0];
   return {
     state, homeState: legacyHome(state),

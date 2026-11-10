@@ -203,7 +203,8 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     replyDeps.chat = async () => ({ text: "Koi baat nahi, ek alag tarah se dekhte hain." });
     const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "7 cm", verdict: "not_yet", history: [], ui: L.r.ui, module: null });
     const item = findItem(L.r.state, K, L.r.move.itemId ?? L.r.state.activeItemId);
-    const ask = whiteboardIntentOf({ lessonId: "L", turn: L.r.state.turn, beat: { id: "b", type: "explain" }, next: L.r.state, kit: K, item, line: { text: out.reply, parts: out.guard.parts } });
+    // (as turn.js planTurn sets it: the miss was graded this turn — v6.9 N1 makes a close a unit part only when it closes something)
+    const ask = whiteboardIntentOf({ lessonId: "L", turn: L.r.state.turn, beat: { id: "b", type: "explain" }, next: { ...L.r.state, lastVerdict: "not_yet" }, kit: K, item, line: { text: out.reply, parts: out.guard.parts } });
     // (dc-r7-held-board, main's v6.8: one board per unit, picked from its card — the miss verdict on the answered card's board,
     // then ONE switch, where the remediation's say begins: the remediation+then-card unit on the then-card's own board)
     const H = ask.intent.held;

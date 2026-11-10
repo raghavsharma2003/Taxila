@@ -98,7 +98,7 @@ export function Hello() {
   }, [card]);
 
   const finish = async (picks: string[] = likes) => {
-    setPrefs({ hello: true, picture: avatar });
+    setPrefs({ hello: true });
     try {
       await updateChild(cid, { ...(avatar ? { avatar } : {}), ...(picks.length ? { interests: picks.map(label) } : {}) });
       // journey audit #14 (A32 vs A33): the shell's child record was the one loaded before the pick, so Home showed the

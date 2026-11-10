@@ -16,8 +16,8 @@
 //   L-NAME      didi / bhaiya appended to a custom teacher name
 //   L-ARTIFACT  overflow auto/scroll on any stage / artifact selector (DESIGN-V3 §6.2)
 //   T-MIRROR    tokens.css mirrors every tokens.ts value; T-CONTRAST every TEXT_PAIRS pair ≥ 5:1 in Night and Day
-//   S-FLOOR     AI disclosure on teacher surfaces; Childline 1098 and Tele-MANAS 14416 digit-exact where shown
-//   P-TOAST     the toast predicate passes real-world facts and drops build-state copy
+//   S-FLOOR     no near-miss helpline digits anywhere in the scanned tree (the unrouted v3 screens, Stage, toast and floor map were
+//               deleted in the round-7 app audit, APP-43: nothing mounted them)
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -40,7 +40,7 @@ function walk(dir) {
 // The predicate itself and the kit's deliberate blocked-toast demo name machinery words by design.
 const ALL_RULES = ["L-WORDS", "L-EXCLAIM", "L-EMOJI", "L-MACHINE", "L-TALK", "L-NATIVE", "L-RASTER", "L-MASCOT", "L-FONT", "L-CANDY", "L-NAME", "L-ARTIFACT"];
 // The rule definitions themselves (they must spell the banned patterns) are exempt.
-const FILE_ALLOW = { "src/ui-v3/toast.ts": ["L-MACHINE", "L-WORDS"], "src/ui-v3/lint/rules.mjs": ALL_RULES };
+const FILE_ALLOW = { "src/ui-v3/lint/rules.mjs": ALL_RULES };
 
 const files = SCAN_ROOTS.flatMap(walk);
 const rel = (f) => path.relative(ROOT, f);
@@ -119,44 +119,6 @@ test("T-CONTRAST: every text pair ≥ 5:1 in Night and Day", async () => {
   assert.deepEqual(fails, []);
 });
 
-test("S-FLOOR: AI disclosure on every teacher surface; helplines digit-exact", () => {
-  const read = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
-  for (const p of ["src/ui-v3/Stage.tsx", "src/ui-v3/screens/Onboarding.tsx", "src/ui-v3/screens/common.tsx", "src/ui-v3/screens/Home.tsx"]) {
-    assert.match(read(p), /AI teacher/, `${p} names the teacher without "AI teacher"`);
-  }
-  for (const p of ["src/ui-v3/screens/ParentCorner.tsx", "src/ui-v3/screens/LessonShell.tsx"]) {
-    const s = read(p);
-    assert.match(s, /Childline (<b[^>]*>)?1098/, `${p}: Childline 1098`);
-    assert.match(s, /Tele-MANAS (<b[^>]*>)?14416/, `${p}: Tele-MANAS 14416`);
-  }
-  // no near-miss helpline digits anywhere in the tree
+test("S-FLOOR: no near-miss helpline digits anywhere in the scanned tree", () => {
   for (const f of files) assert.doesNotMatch(fs.readFileSync(f, "utf8"), /\b(1099|1089|14414|14461|14146)\b/, rel(f));
-});
-
-test("P-TOAST: real-world facts pass, build state never renders", async () => {
-  const t = await import(path.join(ROOT, "src/ui-v3/toast.ts"));
-  const ok = ["Moved to Tue 6 Oct · 5:30 PM", "You're offline. She'll pick up where you left off.", "Mic is off. Type, or turn it on.", "Saved"];
-  const no = ["Generating your game…", "Loading lesson", "Build failed", "Something went wrong", "AI is thinking", "Making this for you", "Server error 500", "Please wait", "Retry", "Nice!!", "Done \u{1F389}", "Oops, try again later"];
-  for (const s of ok) assert.equal(t.toastAllowed(s).ok, true, s);
-  for (const s of no) assert.equal(t.toastAllowed(s).ok, false, s);
-  t._resetToastsForTests();
-  assert.equal(t.pushToast("info", "Generating your game…"), 0);
-  assert.ok(t.pushToast("saved", "Saved") > 0);
-  assert.equal(t.blockedToastCount(), 1);
-});
-
-test("floor map: no state shows machinery; volt only where the spec puts it", async () => {
-  const f = await import(path.join(ROOT, "src/ui-v3/floor.ts"));
-  for (const s of f.ALL_FLOORS) {
-    const v = f.floorView(s);
-    assert.doesNotMatch(`${v.title} ${v.sub} ${v.tag}`, MACHINE, s);
-    assert.doesNotMatch(`${v.title} ${v.sub}`, TALK, s);
-    if (v.cue) assert.ok(["handover", "yielding"].includes(s), `${s} lights the cue`);
-  }
-  assert.equal(f.floorView("child_turn").wave, "volt");
-  assert.equal(f.floorView("her_turn").ring, true);
-  assert.equal(f.floorView("overlap").ring, false, "barge-in: ring off immediately");
-  assert.equal(f.floorView("committed").tag, "Thinking");
-  assert.equal(f.floorView("idle", { watching: true }).tag, "Watching");
-  assert.match(f.floorView("her_turn", { muted: true }).title, /Mic off/);
 });

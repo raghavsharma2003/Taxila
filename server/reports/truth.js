@@ -18,7 +18,7 @@
 import { q as dbq } from "../db.js";
 import { ITEM_CLASSES, isDelayedSuccess, outcomeName } from "../learner/kt/outcomes.js";
 import { nextTopicFor } from "../content/next-topic.js";
-import { DELAY_MS } from "./config.js";
+import { DELAY_MS, OPEN_SO_FAR_MAX_MIN } from "./config.js";
 import { learningDay, weekday as weekdayOf } from "../conductor/clock.js";
 import { rankSubjects, rotationOn, rotationSubjects, timetableToday } from "../conductor/rotation.js";
 import { SUBJECT_ORDER, topicSequence } from "../content/curriculum.js";
@@ -53,7 +53,8 @@ export function lessonEndMs(l, events = [], openUntil = null) {
   if (l.endedAt) return Date.parse(l.endedAt);
   const last = events.filter((e) => e.sessionId === l.id || e.lessonId === l.id).map((e) => Date.parse(e.at)).reduce((x, y) => Math.max(x, y), -Infinity);
   if (Number.isFinite(last)) return last;
-  return openUntil ? Math.max(Date.parse(l.startedAt), Date.parse(openUntil)) : Date.parse(l.startedAt);
+  const start = Date.parse(l.startedAt);
+  return openUntil ? Math.max(start, Math.min(Date.parse(openUntil), start + OPEN_SO_FAR_MAX_MIN * 60_000)) : start;
 }
 
 /**
