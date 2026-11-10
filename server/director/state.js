@@ -37,6 +37,7 @@ import { skillSess } from "../comprehension/budget.js";
 import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
+import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst } from "./knows-walk.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -238,7 +239,7 @@ export const snapshotSkill = (st) => ({
  *   protege: { name: string, what: string }, ageBand: "6-9"|"10-15", lang: string, interests: string[],
  *   firstMeeting: boolean, hasCallback: boolean, topicTitle: string, nextTitle?: string }, seed: number, now?: number }} a
  */
-export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck = {}, warmupItems = [], activeMisconceptionIds = [], ctx: ctx0, seed, now = Date.now(), openers = [], comp, level = null }) {
+export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck = {}, warmupItems = [], activeMisconceptionIds = [], ctx: ctx0, seed, now = Date.now(), openers = [], comp, level = null, knows = null }) {
   const ctx = protegeNotChild(ctx0);
   const classLevel = ctx.classLevel ?? (ctx.ageBand === "6-9" ? 3 : 6);
   const band = bandOf(classLevel);
@@ -265,7 +266,7 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck
   const probeSess = openSession(newProbeSession({ sessionId: ctx.sessionId ?? String(seed >>> 0), band, lessonSeed: seed >>> 0,
     targets: kit.skills.map((sk) => sk.id), surface: { visual: true } }), openers);
   return {
-    v: 1, phase: practiceSet ? "practice" : asking ? "teach" : "warmup", topicId, turn: 0, minutes: 0, startedAt: now, seed: seed >>> 0, ctx,
+    v: 1, phase: practiceSet ? "practice" : asking ? "teach" : "warmup", topicId, turn: 0, ...(knows && !practiceSet && !asking ? { knows, knowsApplied: [] } : {}), minutes: 0, startedAt: now, seed: seed >>> 0, ctx,
     hintLevel: 0, itemsDone: [], skipped: ctx.homework && ctx.avoidItemId ? [String(ctx.avoidItemId)] : [], activeItemId: undefined, pendingWhy: undefined, lastMove: undefined, lastContent: [],
     warmup: practiceSet || asking ? [] : warmupItems.slice(0, LIMITS.warmupMax), warmupIdx: 0,
     novice, teachPlan: practiceSet ? [] : teachPlan, teachIdx: 0, workedPart: 0,
@@ -569,7 +570,8 @@ function walkStart(s, kit, skillId, { hook = false } = {}) {
   if (!sk) return false;
   const prev = s.walked?.length ? skillScriptOf(kit, s.walked.at(-1)) : null;
   s.walked = [...(s.walked ?? []), skillId];
-  s.walk = { skillId, beats: walkBeats(sk, { hook }), i: 0, ladder: (sk.ladder ?? []).map((r) => r.itemId), ...(prev?.bridgeToNext ? { bridge: prev.bridgeToNext, ...(prev.bridgeBoard ? { bridgeBoard: prev.bridgeBoard } : {}) } : {}) };
+  const kb = knowsBeats(s, kit, sk, { hook }); // round 8 K1/K2/K3: the plan's beats, check order and ladder (null: no plan)
+  s.walk = { skillId, beats: kb?.beats ?? walkBeats(sk, { hook }), i: 0, ladder: kb?.ladder ?? (sk.ladder ?? []).map((r) => r.itemId), ...(kb?.compress ? { compress: kb.compress } : {}), ...(prev?.bridgeToNext ? { bridge: prev.bridgeToNext, ...(prev.bridgeBoard ? { bridgeBoard: prev.bridgeBoard } : {}) } : {}) };
   // (the S3 card bridge would say it again on its first check)
   if (oneLiveOn()) s.lastCardSkill = skillId;
   return true;
