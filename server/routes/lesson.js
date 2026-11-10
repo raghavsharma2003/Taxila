@@ -25,6 +25,8 @@ import { scrubPii, scanSafety, floorViolations, helpLeadOf } from "../director/s
 import { laneFor } from "../agent/flags.js";
 import { agentTurn, eventOf, applyAgentTurn } from "../agent/agent.js";
 import { initLessonState, step, LIMITS, shortTitleOf } from "../director/state.js";
+import { knowsPlanAtStart, knowsWarmup } from "../director/knows-walk.js";
+import { scriptFor } from "../director/script.js";
 import { resolveAddress, codeSwitchAddress } from "../director/register.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
 import { teacherFor, teacherForLesson, teacherCard } from "../compiler/characters/index.js";
@@ -42,7 +44,7 @@ import { studioSeam } from "../studio/seam.js";
 import { relationalSeam } from "../relational/seam.js";
 import { purposeSeam } from "../lesson/purpose.js";
 import { sessionStartCtx, schoolPointerStmts } from "../director/session/start.js";
-import { lessonBriefFor } from "../conductor/slot.js"; // Learning patch 006 (see the lesson start)
+import { lessonBriefFor, lessonBriefWithoutPlan } from "../conductor/slot.js"; // Learning patch 006 (see the lesson start)
 import { eligibleFormats, posteriorsFor } from "../learner/formats.js"; // Learning patch 008 (the explain format allocator)
 import { voicesigSeam } from "../voicesig/lesson.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
@@ -334,8 +336,12 @@ export async function lessonStart(req, body) {
   const sessionFirst = sessionStartCtx({ purpose, child, plan: today?.plan ?? dayPlan.plan ?? null, levelPathTopic: topic.id, ledger, now,
     guardian, topicChosen: !!body.topicId || !!routed,
   });
+  // round 8 (dc-r8-one-reader-with-because): what is known about her becomes the lesson's choices, each with its because
+  const knows = purpose === "lesson" ? knowsPlanAtStart({ entry: scriptFor(kit), kit, ledger, skills, mixups: misconceptionView(ledger.mis), brief: today?.brief ?? (purpose === "lesson" ? await lessonBriefWithoutPlan(child.id, { now: new Date(now), subject: topic.subject ?? null }).catch(() => null) : null), interests, memory: { likes: !!memory }, now }) : null;
+  const kw = knowsWarmup(knows, warmupItems, { kit, max: LIMITS.warmupMax,
+    prereqItem: knows?.prereqCheck?.prereqSkillId ? (await warmupItemsFor([knows.prereqCheck.prereqSkillId], { ledger }).catch(() => []))[0] ?? null : null });
   const state0 = initLessonState({
-    topicId: topic.id, kit, skills, history, stuck, warmupItems, activeMisconceptionIds, now,
+    topicId: topic.id, kit, skills, history, stuck, warmupItems: kw.items, activeMisconceptionIds, now, knows,
     seed: Math.floor(Math.random() * 2 ** 32),
     openers: warmupItems.map((w) => w.skillId), comp: skillsMapFor(live.state, kit, skillIds, now),
     level: view ? { theta: view.theta?.value ?? null, weak: !!view.weak?.weak, minutesLeft: view.minutesLeft ?? null } : null,
@@ -370,6 +376,7 @@ export async function lessonStart(req, body) {
   });
   // Learning patch 004b: what she promised last time (the Question jar hook) rides in as Later entries; the opening serves one
   if (view?.jar?.length) state0.later = jarLaterEntries(view.jar);
+  if (state0.knows) state0.knowsApplied = kw.because.map((b) => ({ ...b, turn: 0 })); // round 8: the warm-up's because (K2, K4, K7)
   const recent = askSafety.distress ? null : await carriedP;
   const carried = recent ? { kind: recent.family ?? null, incidentId: String(recent.id) } : null;
   const first = askSafety.distress

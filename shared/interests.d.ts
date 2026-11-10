@@ -1,5 +1,5 @@
 // Types for shared/interests.js (the one interest registry, BUILD-PLAN W2-C #6).
-export interface Interest { id: string; label: string; tile: boolean; skin: string; studio: boolean; words: string[] }
+export interface Interest { id: string; label: string; tile: boolean; skin: string; studio: boolean; words: string[]; near: string[] }
 export const INTEREST_REGISTRY: readonly Interest[];
 export const INTEREST_IDS: readonly string[];
 export const TILE_IDS: readonly string[];

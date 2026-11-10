@@ -37,6 +37,7 @@ import { skillSess } from "../comprehension/budget.js";
 import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
+import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark } from "./knows-walk.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -238,7 +239,7 @@ export const snapshotSkill = (st) => ({
  *   protege: { name: string, what: string }, ageBand: "6-9"|"10-15", lang: string, interests: string[],
  *   firstMeeting: boolean, hasCallback: boolean, topicTitle: string, nextTitle?: string }, seed: number, now?: number }} a
  */
-export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck = {}, warmupItems = [], activeMisconceptionIds = [], ctx: ctx0, seed, now = Date.now(), openers = [], comp, level = null }) {
+export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck = {}, warmupItems = [], activeMisconceptionIds = [], ctx: ctx0, seed, now = Date.now(), openers = [], comp, level = null, knows = null }) {
   const ctx = protegeNotChild(ctx0);
   const classLevel = ctx.classLevel ?? (ctx.ageBand === "6-9" ? 3 : 6);
   const band = bandOf(classLevel);
@@ -265,7 +266,7 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck
   const probeSess = openSession(newProbeSession({ sessionId: ctx.sessionId ?? String(seed >>> 0), band, lessonSeed: seed >>> 0,
     targets: kit.skills.map((sk) => sk.id), surface: { visual: true } }), openers);
   return {
-    v: 1, phase: practiceSet ? "practice" : asking ? "teach" : "warmup", topicId, turn: 0, minutes: 0, startedAt: now, seed: seed >>> 0, ctx,
+    v: 1, phase: practiceSet ? "practice" : asking ? "teach" : "warmup", topicId, turn: 0, ...(knows && !practiceSet && !asking ? { knows, knowsApplied: [] } : {}), minutes: 0, startedAt: now, seed: seed >>> 0, ctx,
     hintLevel: 0, itemsDone: [], skipped: ctx.homework && ctx.avoidItemId ? [String(ctx.avoidItemId)] : [], activeItemId: undefined, pendingWhy: undefined, lastMove: undefined, lastContent: [],
     warmup: practiceSet || asking ? [] : warmupItems.slice(0, LIMITS.warmupMax), warmupIdx: 0,
     novice, teachPlan: practiceSet ? [] : teachPlan, teachIdx: 0, workedPart: 0,
@@ -570,7 +571,8 @@ function walkStart(s, kit, skillId, { hook = false } = {}) {
   if (!sk) return false;
   const prev = s.walked?.length ? skillScriptOf(kit, s.walked.at(-1)) : null;
   s.walked = [...(s.walked ?? []), skillId];
-  s.walk = { skillId, beats: walkBeats(sk, { hook }), i: 0, ladder: (sk.ladder ?? []).map((r) => r.itemId), ...(prev?.bridgeToNext ? { bridge: prev.bridgeToNext, ...(prev.bridgeBoard ? { bridgeBoard: prev.bridgeBoard } : {}) } : {}) };
+  const kb = knowsBeats(s, kit, sk, { hook }); // round 8 K1/K2/K3: the plan's beats, check order and ladder (null: no plan)
+  s.walk = { skillId, beats: kb?.beats ?? walkBeats(sk, { hook }), i: 0, ladder: kb?.ladder ?? (sk.ladder ?? []).map((r) => r.itemId), ...(kb?.compress ? { compress: kb.compress } : {}), ...(prev?.bridgeToNext ? { bridge: prev.bridgeToNext, ...(prev.bridgeBoard ? { bridgeBoard: prev.bridgeBoard } : {}) } : {}) };
   // (the S3 card bridge would say it again on its first check)
   if (oneLiveOn()) s.lastCardSkill = skillId;
   return true;
@@ -704,7 +706,8 @@ function walkNextV2(s, input, prefix, sk) {
     const sayFirst = bridge ? { sayFirst: [bridge], bridgeSaid: bridge, ...bridgeBeat } : {};
     if (kind === "hook") {
       w.i += 1;
-      const slot = hookSlot(sk, s.ctx.interests);
+      const ks = knowsHookSlot(s, sk); // round 8 K6: the plan's slot (undefined: no plan)
+      const slot = ks !== undefined ? ks : hookSlot(sk, s.ctx.interests);
       const use = saidIn(slot?.use, lang);
       return plan("hook", join(prefix, SH.scriptHook({ bridge: !!bridge })), { format: "F4", content: [...bridgeLine, `hook: ${sk.hook.convey}`, ...(use ? [`their world: ${use}`] : [])], ...ref("hook", "hook"),
         ...([bridge, use].some(Boolean) ? { sayFirst: [bridge, use].filter(Boolean) } : {}), ...(bridge ? { bridgeSaid: bridge, ...bridgeBeat } : {}) });
@@ -764,11 +767,12 @@ function walkNextV2(s, input, prefix, sk) {
     if (kind === "check") {
       const c = sk.checks.find((x) => x.id === id);
       if (!c) { w.i += 1; continue; }
-      const item = friendly(scriptCheckItem(skillId, c));
+      const item = knowsMark(s, friendly(scriptCheckItem(skillId, c))); // round 8: the ledger's recheck / probeFor marks
       if (gone(item.id)) { w.i += 1; continue; }
       s.scriptCard = item; s.phase = "practice";
       activate(s, item);
-      return plan("practice", SH.pose({ item, prefix }), { item, probe: probeFor(item), ...ref("check", c.id, c.board, item), ...gaveWorked(), ...sayFirst });
+      const ks = knowsSayFirst(s, lang); // round 8 allKnown: she says she is skipping what they know (once)
+      return plan("practice", SH.pose({ item, prefix }), { item, probe: probeFor(item), ...ref("check", c.id, c.board, item), ...gaveWorked(), ...sayFirst, ...(ks.length ? { sayFirst: [...(sayFirst.sayFirst ?? []), ...ks] } : {}) });
     }
     w.i += 1;
   }
@@ -964,8 +968,9 @@ function walkLadder(s, kit) {
 /** A wrong answer to a scripted check: that misconception's remediation (once per misconception), then its keyed follow-up. */
 function walkRemedy(s, input, item) {
   const { kit } = input;
-  const targets = item.scriptCheck?.targets ?? item.scriptAsk?.targets;
-  if (!targets || verdict(input.cls) !== "wrong" || (s.remedied ?? []).includes(targets)) return null;
+  // round 8 K3: the mix-up the classifier named on this answer when the skill remediates it, else the card's authored target
+  const targets = verdict(input.cls) === "wrong" ? knowsRemedy(s, item, input.cls, skillScriptOf(kit, item.skillId)) : null;
+  if (!targets || (s.remedied ?? []).includes(targets)) return null;
   const r = skillScriptOf(kit, item.skillId)?.remediation?.find((x) => x.targets === targets);
   if (!r) return null;
   s.remedied = [...(s.remedied ?? []), targets];
@@ -1054,7 +1059,8 @@ function warmup(s, input, item) {
     if (first) activate(s, first);
     // F4 (dc-r7-script-walk-v2): with a v2 script, the greet promises only an interest its hook's slots use
     const sk0 = scriptOn() ? skillScriptOf(input.kit, input.kit.skills[0]?.id) : null;
-    const slotInterest = sk0?.explain?.[0]?.ask ? hookSlot(sk0, s.ctx.interests)?.interest ?? null : undefined;
+    const gs = knowsGreetSlot(s, sk0); // round 8 K6: the greet promises the plan's slot
+    const slotInterest = sk0?.explain?.[0]?.ask ? (gs !== undefined ? gs : hookSlot(sk0, s.ctx.interests))?.interest ?? null : undefined;
     // Learning patch 004b: a question kept in the jar last time is the first thing she comes back to (a promise kept)
     const jar = (s.later ?? []).find((p) => p.jarId && p.servedAt == null);
     if (jar) s.later = serveLater(s.later, jar.id, s.turn);
@@ -1404,6 +1410,7 @@ function notePace(s, item, right) {
 
 function afterCorrect(s, input, item) {
   const { kit, cls } = input;
+  if (scriptOn()) knowsCompressAnswer(s, kit, skillScriptOf(kit, item.skillId), item, "right"); // round 8 K1: a known skill's check, right
   notePace(s, item, true);
   const unaided = s.hintLevel === 0;
   s.itemsDone.push(item.id); s.practiced += 1;
@@ -1459,6 +1466,8 @@ const MOVE_ON = /(?<![\p{L}])(?:aage\s+(?:chalo|badho|badhein|chalte\s+hain)|nex
 function afterMiss(s, input, item) {
   // round 7 S3: misses per card (the card stays live until two misses plus help)
   if (verdict(input.cls) === "wrong") s.misses = { ...(s.misses ?? {}), [item.id]: (s.misses?.[item.id] ?? 0) + 1 };
+  // round 8 K1: a known skill's opening check missed → its full unit (recorded), never its remediation
+  if (scriptOn() && knowsCompressAnswer(s, input.kit, skillScriptOf(input.kit, item.skillId), item, verdict(input.cls))) { s.skipped.push(item.id); return poseNext(s, input, null); }
   const { kit, cls } = input;
   // v6.4 K1: a card posed again after its remediation, missed again: let go with its key and why (the give-up close, on its
   // answerBoard), never a second remediation round

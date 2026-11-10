@@ -9,11 +9,13 @@
 //              workedExample, checks, remediation, ladder, bridgeToNext }] }
 //   kit        the topic's kit: { topicId, skills: [{ id, title }], items: [{ id, skillId, kind, difficulty, answer,
 //              diagnostic }], misconceptions: [{ id, belief }] }
-//   skills     { [skillId]: { status, delayedPassed, attempts?, correctUnaided? } }
+//   skills     { [skillId]: { status, learnedChecked, attempts?, correctUnaided? } }
 //              status: the ledger display ("unseen" | "introduced" | "practising" | "learned_today" | "mastered" | "durable")
-//              or "due" (learner/live.js legacyStatus). delayedPassed: the ledger's sk.flags.delayed (a correct delayed check
-//              >= 2 learning days after the anchor, new form, no hints). NOT in today's snapshotFromKt: the learner session adds it.
-//   history    { [skillId]: itemId[] } items she has answered (lesson.js `history`)
+//              or "due" (learner/live.js legacyStatus). learnedChecked: learner/live.js snapshotFromKt's flag (learned AND the
+//              ledger's flags.delayed: a correct delayed check >= 2 learning days after the anchor, on a new item, no hints).
+//   history    { [skillId]: itemId[] } the item ids she has answered (the ledger's sk.items, i.e. kt_evidence item_key). K1 opens
+//              on a check card NOT in this list: the delayed check only counts on a new item, and script card ids are the same
+//              in every lesson.
 //   mixups     her open mix-ups, learner/kt/misconception.js misconceptionView rows: [{ id, p, needsVerify, hits }]
 //   brief      conductor/slot.js lessonBriefOf, cut at lesson start with or without a day plan: { opener, successFirst,
 //              newSkillBudget, prereqCheck?: { skillId, forTopicId, prereqTopicId }, adaptTrace: ["R1", "R15", …] }
@@ -72,18 +74,27 @@ export function cardsOf(sk) {
 }
 
 // ───────────── K1: compress a known skill ─────────────
-/** Skills she holds as learned with a passed delayed check, and that have a check card to open on. */
-export function compressOf({ script, kit, skills = {}, checkOrder = {} }) {
-  const compress = [], because = [];
+/**
+ * Skills she holds as learned with a passed delayed check, opened on the first check card (in the plan's check order) she
+ * has NOT answered before (main's ruling 2026-11-10: a repeated card can never be the delayed check). A skill whose every
+ * check card she has answered is not compressed (the default: no record).
+ */
+export function compressOf({ script, kit, skills = {}, checkOrder = {}, history = {} }) {
+  const compress = [], compressAt = {}, because = [];
   for (const sk of scriptSkills(script, kit)) {
     const st = skills[sk.skillId];
-    if (!st || !LEARNED.has(st.status) || st.delayedPassed !== true || !sk.checks?.length) continue;
-    compress.push(sk.skillId);
-    because.push(rec("compress", sk.skillId, { kind: "learned_delayed_check", skillId: sk.skillId, status: st.status, firstCheck: checksOf({ checkOrder }, sk)[0].id },
+    if (!st || !LEARNED.has(st.status) || st.learnedChecked !== true || !sk.checks?.length) continue;
+    const answered = new Set(history?.[sk.skillId] ?? []);
+    const open = checksOf({ checkOrder }, sk).find((c) => !answered.has(checkCardId(sk.skillId, c.id)));
+    if (!open) continue;
+    compress.push(sk.skillId); compressAt[sk.skillId] = open.id;
+    because.push(rec("compress", sk.skillId, { kind: "learned_delayed_check", skillId: sk.skillId, status: st.status, firstCheck: open.id },
       "kt_skill_state.display + flags.delayed"));
   }
-  return { compress, because };
+  return { compress, compressAt, because };
 }
+/** The check a compressed skill opens on (the plan's unanswered pick, else its first check in order). */
+export const openCheckOf = (plan, sk) => checksOf(plan, sk).find((c) => c.id === plan?.compressAt?.[sk.skillId]) ?? checksOf(plan, sk)[0];
 /** A skill's checks in the order the plan asks them (K3's probe can put one first), else as authored. */
 export function checksOf(plan, sk) {
   const order = plan?.checkOrder?.[sk.skillId];
@@ -95,7 +106,7 @@ const planBeats = (plan, sk, { hook = false } = {}) =>
   [...(hook ? ["hook"] : []), ...(sk?.explain ?? []).map((b) => `explain:${b.id}`), "worked", ...checksOf(plan, sk).map((c) => `check:${c.id}`)];
 /** The beats a skill is walked with under a plan: a compressed skill opens at its first check card (no hook). */
 export function beatsFor(plan, sk, { hook = false } = {}) {
-  if (plan?.compress?.includes(sk.skillId) && sk.checks?.length) return [`check:${checksOf(plan, sk)[0].id}`];
+  if (plan?.compress?.includes(sk.skillId) && sk.checks?.length) return [`check:${openCheckOf(plan, sk).id}`];
   return planBeats(plan, sk, { hook });
 }
 /**
@@ -107,7 +118,7 @@ export function beatsFor(plan, sk, { hook = false } = {}) {
 export function afterCompressCheck(plan, sk, verdict) {
   if (!plan?.compress?.includes(sk.skillId) || !sk.checks?.length) return { done: false, beats: [], because: null };
   if (verdict === "right") return { done: true, beats: [], because: null };
-  const c0 = checksOf(plan, sk)[0];
+  const c0 = openCheckOf(plan, sk);
   const first = `check:${c0.id}`;
   // (the miss is an ordinary miss in the evidence: no special weight; the record only explains the walk)
   return { done: false, beats: planBeats(plan, sk).filter((b) => b !== first),
@@ -283,7 +294,7 @@ export function hookOf({ script, kit, interests = [], memory = null }) {
  */
 export function planFor({ script, kit, skills = {}, history = {}, mixups = [], brief = null, interests = [], memory = null, now } = {}) {
   const k3 = checkOrderOf({ script, kit, mixups });
-  const k1 = compressOf({ script, kit, skills, checkOrder: k3.checkOrder });
+  const k1 = compressOf({ script, kit, skills, checkOrder: k3.checkOrder, history });
   const k27 = firstCardOf({ script, kit, skills, history, brief, memory, now });
   // a compressed skill's ladder is not walked: K2's reorder of it is no choice at all
   for (const id of k1.compress) delete k27.ladderOrder[id];
@@ -301,6 +312,7 @@ export function planFor({ script, kit, skills = {}, history = {}, mixups = [], b
     opener: k27.opener,
     hookSlot: k6.hookSlot,
     compress: k1.compress,
+    compressAt: k1.compressAt,
     firstCard: k27.firstCard,
     checkOrder: k3.checkOrder,
     ladderOrder: k27.ladderOrder,
@@ -364,7 +376,8 @@ export function expectedWalk(script, kit, because = []) {
   const has = (choice, on) => because.some((b) => b.choice === choice && b.on === on);
   const plan = { compress: sks.filter((sk) => has("compress", sk.skillId)).map((sk) => sk.skillId),
     ladderOrder: Object.fromEntries(because.filter((b) => b.choice === "ladderOrder").map((b) => [b.on, b.fact?.order ?? []])),
-    checkOrder: Object.fromEntries(because.filter((b) => b.choice === "checkOrder").map((b) => [b.on, b.fact?.order ?? []])) };
+    checkOrder: Object.fromEntries(because.filter((b) => b.choice === "checkOrder").map((b) => [b.on, b.fact?.order ?? []])),
+    compressAt: Object.fromEntries(because.filter((b) => b.choice === "compress").map((b) => [b.on, b.fact?.firstCheck])) };
   const keys = [];
   sks.forEach((sk, k) => {
     let beats = beatsFor(plan, sk, { hook: k === 0 });

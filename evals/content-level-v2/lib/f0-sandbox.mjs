@@ -27,7 +27,9 @@ export async function loadF0Sandbox({ mergedKits = false, kitsDir } = {}) {
     if (!readFileSync(S(file), "utf8").includes(mark)) execFileSync("patch", ["-p1", "-s", "-d", root, "-i", join(PATCHES, p)]);
   }
   const shim = (rel) => writeFileSync(S(rel), `export * from ${JSON.stringify(pathToFileURL(join(REPO, rel)).href)};\n`);
-  ["server/director/register.js", "server/director/friend.js", "server/learner/kt/ability.js", "server/content/curriculum.js", "server/compiler/compile.js", "server/learner/brief.js"].forEach(shim);
+  ["server/director/register.js", "server/director/friend.js", "server/learner/kt/ability.js", "server/content/curriculum.js", "server/compiler/compile.js", "server/learner/brief.js",
+    // (round 8: next-topic.js imports knows.js topicFor for K5/K8; pure, so the real one)
+    "server/director/knows.js"].forEach(shim);
   writeFileSync(S("server/db.js"), "export const q = async (sql, args) => (globalThis.__rs6Rows ?? []);\nexport const one = async () => null;\n");
   writeFileSync(S("server/content/index.js"), `import { topicIdByPrefix } from "./curriculum.js";\nexport const topicOf = (id) => topicIdByPrefix(id);\nexport const getKit = async () => null;\n`);
   let mergedDir = null;

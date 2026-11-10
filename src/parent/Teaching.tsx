@@ -2,6 +2,7 @@
 //   - How {T} teaches: fixed copy, the same for every child;
 //   - Recent lessons: what {T} did and why, per lesson, from the trace's closed codes (server/reports/teaching.js), never
 //     model prose and never a statement about the child's mind or ability;
+//   - (round 8) under each lesson, why it was taught that way for this child: the because lines;
 //   - Made for {child}: pieces made in lessons, with the plain "because" from the kit;
 // plus What {T} remembers (the same card as Data and privacy, with Delete).
 import { parentApi } from "./api.ts";
@@ -35,6 +36,8 @@ export default function Teaching() {
                     <p className="pa-h3">{l.topic ?? "A lesson"} <span className="pa-meta">· {day(l.startedAt)}</span></p>
                     {l.why.length ? <ul className="pa-list">{l.why.map((w) => <li key={w.code}>{w.text}</li>)}</ul>
                       : <p className="pa-meta">{T} taught it the usual way: explain, a question, then practice.</p>}
+                    {/* round 8: what was chosen for this child and the fact behind it (server/director/knows-words.js) */}
+                    {(l.because ?? []).length > 0 && <ul className="pa-list" data-testid="teaching-because">{(l.because ?? []).map((t) => <li key={t}>{t}</li>)}</ul>}
                   </li>
                 ))}
               </ul>
