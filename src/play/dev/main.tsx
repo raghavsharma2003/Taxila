@@ -1,7 +1,7 @@
 // The play dev harness (never shipped in the app bundle; built only by the stream's shot/fps harness). It builds a level
 // in the browser with the same generator and picker the server runs, mounts PlayStage at the full viewport, picks the
 // teacher's micro-lines from the same authored bank with the same guards, and exposes window.__play for the harness.
-//   ?family=todo-jodo&mode=atoms&goal=atoms&art=kagaz&lang=hinglish&class=6&fade=1&seed=3&topic=…&skill=…
+//   ?family=todo-jodo&mode=atoms&goal=atoms&art=kagaz&lang=hinglish&class=6&fade=1&seed=3&topic=…&skill=…&focus=<mal-rule>
 import { createRoot } from "react-dom/client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import "../../styles/fonts.css";
@@ -44,11 +44,13 @@ const devEngine = engineFor(family, mode, goal)?.id ?? "antariksh";
 const devDelta = validateDelta(devEngine, Object.fromEntries(["theme", "wrapper", "music", "pace", "teacherMove"].filter((k) => q.get(k)).map((k) => [k, q.get(k)])));
 const devSecure = q.get("secure") === "1";
 const devSound = q.get("sound") === "1";   // harness: the music duck check needs an unmuted bus
+// GAMES-01: ?focus=<mal-rule> serves the level the picker gives when the Director's focus names that belief (dev:<mal>)
+const devFocus = q.get("focus");
 
 function makeLevel(seed: number, door?: "garam" | "teekha"): { garam: PlayLevel; teekha: PlayLevel | null } | null {
   const logic = logicFor(family, mode); if (!logic) return null;
   const misMap: Record<string, string> = Object.fromEntries(logic.malRules.map((m) => [m, `dev:${m}`]));
-  const req: GenRequest = { family, mode, topicId, skillId, classLevel, fade, goal, mis: {}, misMap, grammar, recent: [], seed, harder: harder || door === "teekha" };
+  const req: GenRequest = { family, mode, topicId, skillId, classLevel, fade, goal, mis: {}, misMap, grammar, recent: [], seed, harder: harder || door === "teekha", ...(devFocus ? { focus: `dev:${devFocus}` } : {}) };
   const r = pickLevels(logic, req);
   return r ? { garam: r.garam, teekha: r.teekha } : null;
 }
