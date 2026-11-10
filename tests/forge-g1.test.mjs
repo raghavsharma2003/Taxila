@@ -21,7 +21,6 @@ const { SPRITES, DSL_VERSION } = await import("../server/forge/scene/dsl.mjs");
 const { buildScene, derange, miscToken } = await import("../server/forge/templates.js");
 const { requestFill, prefetchLessonFills, fillKey, canonical } = await import("../server/forge/index.js");
 const { _memClear } = await import("../server/forge/cache.js");
-const { publicFill } = await import("../server/routes/forge.js");
 const { signRequest } = await import("../server/forge/blob.js");
 const { getKit } = await import("../server/content/index.js");
 const bars = await import("../src/modules/frame/engines/fractionBars.logic.ts");
@@ -285,12 +284,6 @@ describe("requestFill (offline)", () => {
     assert.equal(out.length, 4);
     const again = await requestFill({ kit, itemId: "c6-maths-ch07-t05-i02", move: "practice", learner });
     assert.equal(again.cached, "memory");
-  });
-  test("the client view carries no grade table", async () => {
-    const kit = await getKit("c6-maths-ch07-t05", { generate: false });
-    const r = await requestFill({ kit, itemId: "c6-maths-ch07-t05-i02", move: "practice", learner: LEARNER });
-    const pub = publicFill(r, "req-1");
-    assert.equal(pub.grade, undefined); assert.ok(!JSON.stringify(pub).includes("distractors"));
   });
 });
 

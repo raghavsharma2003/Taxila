@@ -29,6 +29,7 @@ import { boardFrame, type BoardFrame } from "./boardView.ts";
 import { twinScript, type TwinLike } from "./twinBoard.ts";
 import { intoStage, readPipZone } from "./pipZone.ts";
 import { applyTransform, BOARD_FLOOR_PX, BOARD_FLOOR_PX_YOUNG, fitBoard, rememberTransform, transformFor } from "./boardFit.ts";
+import { beatDots } from "./beatDots.ts";
 import { tw2h } from "../copy/en.ts";
 import "./studio.css";
 
@@ -334,7 +335,7 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
         <div className="st-cardhead" data-testid="beat-card" data-kind={card.kind} style={{ left: fit.x, top: fit.y + 2, width: fit.w, height: headPx - 6 }}>
           <span className="st-chip-kind">{tw2h(`card.${card.kind}` as "card.picture")}</span>
           <span className="st-beat" aria-label={tw2h("card.beat", { n: card.n })}>
-            {Array.from({ length: Math.min(card.n, 8) }, (_, i) => <i key={i} className={i < card.n - 1 ? "is-done" : "is-now"} aria-hidden="true" />)}
+            {beatDots(card.n).map((cls, i) => <i key={i} className={cls} aria-hidden="true" />)}
           </span>
           {card.checkpointAhead && <span className="st-chip-check">{tw2h("card.checkpoint")}</span>}
         </div>

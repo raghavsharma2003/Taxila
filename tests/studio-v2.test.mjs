@@ -1,4 +1,4 @@
-// Studio v2 node tests (RS-4 pre-work). Run: node --test src/studio-v2/tests/
+// Studio v2 node tests (RS-4 pre-work). Moved from src/studio-v2/tests/ (audit STUDIO-07: npm test / test:all read tests/ only).
 // What is pinned: the client catalogue equals the spec registry; reviewed defaults validate untouched; a seeded fuzz of
 // 300 mutated specs per engine never throws and ALWAYS yields a spec that passes the strict schema; outcome tags exist in
 // data/curriculum and data/kits; grading uses the raw act only (a forged `correct` changes nothing); shared truths
@@ -8,13 +8,13 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import * as S from "../../../shared/studio-spec.ts";
-import { mutateSpec } from "../core/mutate.ts";
-import { compileTimeline, valueAt, chunksOf } from "../core/timeline.ts";
-import { sanitizeBoard } from "../core/board.ts";
-import { ENGINES } from "../engines/index.ts";
+import * as S from "../shared/studio-spec.ts";
+import { mutateSpec } from "../src/studio-v2/core/mutate.ts";
+import { compileTimeline, valueAt, chunksOf } from "../src/studio-v2/core/timeline.ts";
+import { sanitizeBoard } from "../src/studio-v2/core/board.ts";
+import { ENGINES } from "../src/studio-v2/engines/index.ts";
 
-const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const A = S.ARCHETYPES_V2;
 
 test("catalogue: client engines == spec registry, ≥ 12 engines, the required mix", () => {

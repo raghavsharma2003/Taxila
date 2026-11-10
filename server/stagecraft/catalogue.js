@@ -135,6 +135,9 @@ export function entryFromRecord(rec, { kit = kitTopicAny(rec?.topicId), requireC
   }
   const beats = Array.isArray(rec?.whiteboard?.beats) ? rec.whiteboard.beats : [];
   e.status.boardsTotal = beats.length;
+  // (audit studio-02: the boards follow the same rule as the game and the explainer — a record whose blind cross-check
+  // failed or never ran is reported, never shown; its boards were served by board-first and board-sync regardless)
+  if (!checked) return e;
   for (const b of beats) {
     if (!b?.script) continue;
     const n = normalizeScript(b.script, { strict: true });
