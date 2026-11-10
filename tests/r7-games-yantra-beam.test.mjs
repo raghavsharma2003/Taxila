@@ -5,7 +5,6 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { beamLogic, trace, reflect } from "../src/play/families/yantra/beam.logic.ts";
 import coverage from "../data/play/coverage.json" with { type: "json" };
-import { cpuNow } from "./_cpu-ms.mjs";
 
 const req = (goal, seed, extra = {}) => ({ family: "yantra", mode: "beam", goal, topicId: "t", skillId: "t-s1", classLevel: 7, fade: 1, mis: {}, misMap: {}, grammar: {}, recent: [], seed, ...extra });
 const run = (level, acts) => { let s = beamLogic.init(level); const ms = []; acts.forEach((a, i) => { const r = beamLogic.apply(level, s, a, i + 1); s = r.state; ms.push(...r.moments); }); return { s, ms }; };
@@ -39,12 +38,12 @@ function march(p, mirrors) {
 
 for (const goal of ["route", "periscope"]) {
   test(`yantra/beam ${goal}: every level validates, its solution solves, the bare lamp never does, and the generator is fast`, () => {
-    const times = [];
+    const candCounts = []; // candidates per generate/pick: a count, not a clock (tests/_work.mjs)
     let n = 0;
     for (let seed = 1; seed <= 20; seed++) for (const fade of [1, 2]) {
-      let best = Infinity, cands = [];
-      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); cands = beamLogic.generate(req(goal, seed, { fade })); best = Math.min(best, cpuNow() - t0); }
-      times.push(best);
+      let cands = [];
+      cands = beamLogic.generate(req(goal, seed, { fade }));
+      candCounts.push(cands.length);
       for (const c of cands) {
         const lv = beamLogic.validate(c.level);
         assert.ok(lv, c.signature);
@@ -57,9 +56,8 @@ for (const goal of ["route", "periscope"]) {
         if (goal === "periscope") { const [a, b] = lv.params.sol; assert.equal(a.rot, b.rot, "periscope mirrors are parallel"); assert.ok(lv.params.walls.length > 0); }
       }
     }
-    times.sort((a, b) => a - b);
     assert.ok(n > 100, `${n} levels`);
-    assert.ok(times[Math.floor(times.length * 0.95)] < 50, `p95 ${times[Math.floor(times.length * 0.95)]} ms`);
+    assert.ok(Math.max(...candCounts) <= 72, `${Math.max(...candCounts)} candidates per call (measured 2026-11-10: 24; bound is 3x)`);
   });
 }
 

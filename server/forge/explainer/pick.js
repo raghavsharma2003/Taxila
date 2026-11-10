@@ -105,7 +105,7 @@ export function codePick({ kit, item = null, text, representation, interest }) {
   const times = /number line|jump|hop|skip/.test(lower) ? flat.match(/(\d+)\s*[×x*]\s*\(?\s*([−-])?\s*(\d+)\s*\)?/) : null;
   if (times) {
     const k = Number(times[1]), step = (times[2] ? -1 : 1) * Number(times[3]);
-    if (k >= 1 && k <= 4 && step && Math.abs(step) <= 20 && Math.abs(k * step) <= 40) return { template: "number-line-hop@1", start: 0, hops: Array(k).fill(step) };
+    if (k >= 1 && k <= 4 && step && Math.abs(step) <= 20 && Math.abs(k * step) <= 30) return { template: "number-line-hop@1", start: 0, hops: Array(k).fill(step) };
   }
   if (!times && /number line|jump|hop|skip/.test(lower) && n.length >= 2 && n[0] <= 100 && n[1] >= 1 && n[1] <= 20) {
     return { template: "number-line-hop@1", start: n[0], hops: [/back|left|minus|subtract/.test(lower) ? -n[1] : n[1]] };

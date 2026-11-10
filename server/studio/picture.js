@@ -49,7 +49,20 @@ const perLesson = new Map();      // lessonId → count
 const failed = new Map();         // lessonId → the subject whose picture was promised and did not come (told once)
 /** The subject of a picture she said was coming and that failed, once (the next turn says so). */
 export const takeFailedPicture = (lessonId) => { const s = failed.get(lessonId) ?? null; failed.delete(lessonId); return s; };
-const jobs = new Map();           // jobId → { state, subject, ... }
+const jobs = new Map();           // jobId → { state, subject, lessonId, ... } (pruned: forgetPictureLesson, and capped at JOBS_MAX)
+const JOBS_MAX = 500;
+/** STUDIO-10: record a job's state, oldest finished jobs dropped beyond JOBS_MAX (a long-running replica keeps no history). */
+function setJob(id, j) {
+  jobs.delete(id);
+  jobs.set(id, j);
+  if (jobs.size > JOBS_MAX) for (const [k, v] of jobs) { if (jobs.size <= JOBS_MAX) break; if (v.state !== "making") jobs.delete(k); }
+}
+/** STUDIO-10: the seam forgot the lesson (ended, evicted, replaced): its count, its untold failure and its finished jobs go. */
+export function forgetPictureLesson(lessonId) {
+  perLesson.delete(lessonId);
+  failed.delete(lessonId);
+  for (const [k, v] of jobs) if (v.lessonId === lessonId && v.state !== "making") jobs.delete(k);
+}
 let deps = { generate: null, moderate: null };
 /** Tests only: replace the network layer ({ generate(subject) → { b64, deployment }, moderate(b64) → maxSeverity }). */
 export const _setPictureDeps = (d) => { deps = { ...deps, ...d }; };
@@ -114,10 +127,10 @@ export function startPicture(lessonId, subject, { reveal, fail = () => {} }) {
   if (!hit && n >= PICTURES_PER_LESSON) return { ok: false, why: "no more pictures in this lesson", check: "budget" };
   if (!hit && inFlight >= MAX_IN_FLIGHT) return { ok: false, why: "pictures are busy right now", check: "busy" };
   const id = `pic:${lessonId.slice(0, 8)}:${Date.now().toString(36)}`;
-  if (hit) { jobs.set(id, { state: "ready", subject: s }); queueMicrotask(() => { try { reveal({ ...hit, subject: s, jobId: id }); } catch { /* the stream is gone */ } }); return { ok: true, cached: true, job: { id, etaMs: 0 } }; }
+  if (hit) { setJob(id, { state: "ready", subject: s, lessonId }); queueMicrotask(() => { try { reveal({ ...hit, subject: s, jobId: id }); } catch { /* the stream is gone */ } }); return { ok: true, cached: true, job: { id, etaMs: 0 } }; }
   perLesson.set(lessonId, n + 1);
   inFlight++;
-  jobs.set(id, { state: "making", subject: s, at: Date.now() });
+  setJob(id, { state: "making", subject: s, lessonId, at: Date.now() });
   (async () => {
     try {
       const g = await generate(s);
@@ -127,11 +140,11 @@ export function startPicture(lessonId, subject, { reveal, fail = () => {} }) {
       if (cache.size > 60) cache.delete(cache.keys().next().value);
       cache.set(s, pic);
       const ms = Date.now() - (jobs.get(id)?.at ?? Date.now());
-      jobs.set(id, { state: "ready", subject: s, ms });
+      setJob(id, { state: "ready", subject: s, lessonId, ms });
       console.info(`[studio] picture ready ${g.deployment} ${ms}ms`);
       reveal({ ...pic, subject: s, jobId: id });
     } catch (e) {
-      jobs.set(id, { state: "failed", subject: s, why: e?.code ?? "error" });
+      setJob(id, { state: "failed", subject: s, lessonId, why: e?.code ?? "error" });
       failed.set(lessonId, s);
       console.info(`[studio] picture failed ${e?.code ?? ""} ${String(e?.message ?? e).slice(0, 80)}`);
       try { fail(e?.code ?? "error"); } catch { /* nothing to tell */ }

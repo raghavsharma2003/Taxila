@@ -51,7 +51,7 @@ export function Orbit({ world, reducedMotion, onPick, label }: OrbitProps) {
         const r = rr(ring);
         return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r * tilt, back: Math.sin(a) < 0 };
       };
-      const k = Math.min(1, t / 1.4), grow = 1 - (1 - k) ** 3;
+      const k = reducedMotion ? 1 : Math.min(1, t / 1.4), grow = 1 - (1 - k) ** 3; // APP-18: no grow-in under reduced motion (one frame at t≈0 drew 0.3 px)
       const rings = (back: boolean) => world.rings.forEach((ring) => {
         g.beginPath();
         g.ellipse(cx, cy, rr(ring.index), rr(ring.index) * tilt, 0, back ? Math.PI : 0, back ? Math.PI * 2 : Math.PI);

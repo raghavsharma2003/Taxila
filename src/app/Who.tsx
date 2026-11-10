@@ -4,8 +4,7 @@
 import { useEffect, useState, type ReactElement } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Icon } from "../ui/index.ts";
-import { ErrorNote } from "../ui/index.ts";
-import { errText, getJson, loadMe, lockBeacon, type ChildRow } from "./api.ts";
+import { getJson, loadMe, lockBeacon, type ChildRow } from "./api.ts";
 import { bandForClass, useSurface } from "./band.ts";
 import { YOUNG_MAX_CLASS } from "../child/band.ts";
 import { Loading } from "./Shell.tsx";
@@ -30,7 +29,8 @@ export default function Who() {
   const nav = useNavigate();
   const [sp] = useSearchParams();
   const [kids, setKids] = useState<ChildRow[] | null>(null);
-  const [err, setErr] = useState<string | null>(null);
+  const [err, setErr] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
   const [pendingReset, setPendingReset] = useState<string | null>(null);
   const installOffer = useInstallOffer();
@@ -51,7 +51,7 @@ export default function Who() {
     document.title = "Who is learning? · Taxila";
     loadMe().then((me) => {
       // r5 QA D18: signed out on a phone that has had a learner here (a remembered last child) → Sign in, not a new account
-      if (!me) return nav(readStore<string | null>(LAST_CHILD_KEY, null) ? "/start/phone?login=1" : "/start/lang", { replace: true });
+      if (!me) return nav(readStore<string | null>(LAST_CHILD_KEY, null) ? "/start/phone?login=1" : "/start/class", { replace: true });
       // r7 device pairing: a paired child device opens its one child, with no picker and no other names on this device
       if (me.scope === "child" && me.children[0]) return nav(`/c/${me.children[0].id}`, { replace: true });
       if (!me.children.length) return nav("/start/child", { replace: true });
@@ -59,8 +59,8 @@ export default function Who() {
       // After a lesson finish the next tap must be a deliberate pick (§2.5.1): ?fresh=1 skips the pre-select.
       const last = sp.get("fresh") ? null : readStore<string | null>(LAST_CHILD_KEY, null);
       if (last && me.children.some((c) => c.id === last)) setPicked(last);
-    }, (e) => setErr(errText(e)));
-  }, [nav, sp]);
+    }, () => setErr(true)); // APP-08: never the error's own text ("internal error", "Failed to fetch")
+  }, [nav, sp, attempt]);
 
   const go = (c: ChildRow) => {
     writeStore(LAST_CHILD_KEY, c.id);
@@ -69,7 +69,13 @@ export default function Who() {
 
   const look = kakshaShellAttrs(null, young ? "young" : "older");
   const scope = (el: ReactElement) => (Object.keys(look).length ? <div className="tx-child kx-who-scope" data-v2="" {...look}>{el}</div> : el);
-  if (err) return scope(<main className="col center-fill"><ErrorNote>{err}</ErrorNote></main>);
+  if (err) return scope(
+    <main className="col center-fill" data-testid="who-error">
+      <p role="alert">{tr7("who.err")}</p>
+      <button type="button" className="btn btn-primary" onClick={() => { setErr(false); setKids(null); setAttempt((n) => n + 1); }} data-testid="who-retry">{tr7("who.retry")}</button>
+      <Link to="/help" className="link-quiet">{tr7("who.help")}</Link>
+    </main>,
+  );
   if (!kids) return scope(<Loading />);
   const chosen = kids.find((c) => c.id === picked) ?? null;
 

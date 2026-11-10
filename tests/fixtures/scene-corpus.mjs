@@ -1,7 +1,7 @@
 // scene@1 documents for the frame renderer's tests: every T2a template the validator ships, expanded with
 // real slots, plus a Forge G1 choice-card. Each is run through the normative validator
 // (docs/research/content/genui-scene-dsl.mjs) so the tests only ever render scenes the server would pass.
-import { expandTemplate, validate } from "../../docs/research/content/genui-scene-dsl.mjs";
+import { expandTemplate, validate } from "./genui-scene-dsl.mjs";
 import { buildScene } from "../../server/forge/templates.js";
 
 const L = (en, hi, hi_latn) => ({ en, hi, ...(hi_latn ? { hi_latn } : {}) });

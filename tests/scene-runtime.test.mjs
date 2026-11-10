@@ -4,7 +4,7 @@
 // template and refuses markup, unknown kinds and broken expressions.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import * as REF from "../docs/research/content/genui-scene-dsl.mjs";
+import * as REF from "./fixtures/genui-scene-dsl.mjs";
 import { evalExpr, parseExpr } from "../src/modules/frame/scene/expr.ts";
 import { layout } from "../src/modules/frame/scene/layout.ts";
 import { checkScene } from "../src/modules/frame/scene/structure.ts";

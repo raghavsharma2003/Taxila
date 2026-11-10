@@ -145,6 +145,8 @@ export async function resolveDuplexMode(fetcher?: typeof fetch): Promise<DuplexM
   if (srv === "off") return traced("off", "server_off", dev, srv);
   // round 7 (D2, dc-r7-handsfree-default): an unreadable switch is HANDS-FREE on D4 (the lane stays d4 without a definite
   // answer, so no D5 stream is asked for), never tap: hands-free is every child's default; a build default "off" still wins
+  // audit V-35: a device forced to shadow stays shadow whatever the server says (the device key wins)
+  if (srv === null && dev === "shadow") return traced("shadow", "device_key", dev, srv);
   if (srv === null) return traced(buildDuplex() === "off" ? "off" : "on", "server_unknown", dev, srv);
   if (dev === "shadow" || srv === "shadow") return traced("shadow", dev === "shadow" ? "device_key" : "server_shadow", dev, srv);
   return traced(srv, "server", dev, srv);
@@ -179,4 +181,5 @@ export function resetDuplexFlagCache(): void {
   serverMode = null;
   serverAnswer = undefined;
   serverLane = "d4";
+  serverPartialPost = false;
 }

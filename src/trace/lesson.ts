@@ -12,9 +12,19 @@ import { useEffect, useRef } from "react";
 import type { DeskModel } from "../child/lesson/model.ts";
 import { busy, emit, setSession } from "./bus.ts";
 
+/**
+ * The lesson is the trace session while the Desk shows it; the returned cleanup goes back to the page-load id (PLAT-44:
+ * after a lesson the client kept recording the home screen under that lesson's id).
+ */
+export function followLesson(lessonId?: string | null): (() => void) | undefined {
+  if (!lessonId) return undefined;
+  setSession(lessonId);
+  return () => setSession(null);
+}
+
 /** The Desk's model → ui.state / ui.render.card / ui.chips / ui.render.tray, each only when it changes. */
 export function useTraceDesk(m: DeskModel, lessonId?: string | null): void {
-  useEffect(() => { if (lessonId) setSession(lessonId); }, [lessonId]);
+  useEffect(() => followLesson(lessonId), [lessonId]);
   const last = useRef<Record<string, string>>({});
   const once = (k: string, v: unknown, fn: () => void) => {
     const s = JSON.stringify(v);

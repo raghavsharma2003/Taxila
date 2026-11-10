@@ -8,7 +8,8 @@
 //                                            backup branch NAME first (NEON_API_KEY + NEON_PROJECT_ID); --no-backup says
 //                                            the caller took one (scripts/release.mjs) or accepts none, on the record
 //   node scripts/migrate.mjs --sha REV ...     apply the db/migrations of commit REV (scripts/release.mjs), not the working tree
-//   node scripts/migrate.mjs --job [--prod]  a database reachable only inside the ACA VNet (Azure PG): runs the apply in a
+//   node scripts/migrate.mjs --job --prod --backup NAME | --no-backup
+//                                            a database reachable only inside the ACA VNet (Azure PG): runs the apply in a
 //                                            one-off ACA job (scripts/region/db-copy.mjs --apply-migrations); with
 //                                            --dry-run prints that job's plan only
 //
@@ -20,6 +21,7 @@ import pg from "pg";
 import { ROOT, loadEnv } from "../infra/azure.mjs";
 import { pgPoolConfig } from "../server/db.js";
 import { migrate, migrationFiles, neonBackupBranch, resolveTarget } from "./migrate-core.mjs";
+import { migrateJobRefusal } from "./deploy-core.mjs";
 
 loadEnv();
 const argv = process.argv.slice(2);
@@ -28,6 +30,8 @@ const opt = (f, d) => { const i = argv.indexOf(f); return i >= 0 ? argv[i + 1] :
 const PROD = flag("--prod"), DRY = flag("--dry-run"), JOB = flag("--job");
 
 if (JOB) {
+  const no = migrateJobRefusal({ prod: PROD, dry: DRY, backup: opt("--backup"), noBackup: flag("--no-backup") });
+  if (no) { console.error(`migrate: ${no}`); process.exit(2); }
   // the in-VNet path: the job reads schema_migrations and applies what is missing, inside the database's network
   const args = ["scripts/region/db-copy.mjs", "--apply-migrations", ...(DRY ? ["--dry-run"] : []), ...(opt("--target") ? ["--target", opt("--target")] : []), ...(opt("--sha") ? ["--sha", opt("--sha")] : [])];
   console.log(`migrate --job: node ${args.join(" ")}`);

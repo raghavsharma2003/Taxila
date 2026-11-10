@@ -54,5 +54,9 @@ cannot run in a transaction (`create index concurrently`, `vacuum`).
 -- Round 7 (2026-11-04, PIPELINE.md): Brain 031-033, Learning 034-039, Platform 040-043 (040 = the cost ledger's
 -- lesson.cost rollup). Numbering is owned by stream G (platform).
 -- Update (2026-11-04, main): Learning used all of 034-039 and also gets 044-049 (044 = the parent_report cadence check).
--- Brain stays 031-033, Platform 040-043. Applied so far: 034-040.
+-- Brain stays 031-033, Platform 040-043.
 -- Platform 041 (2026-11-08) = child device pairing (device_session, pair_code).
+-- Update (2026-11-10, platform audit): Platform 042 = child_controls.play_verb (PLAT-15), 043 = brain_trace item_id and
+-- misconception_id for a database that ran the first 016 (PLAT-17), and Platform also takes 050 = drop five unused tables
+-- (PLAT-56). Files in the repo: 001-013, 015-026, 028-031, 034-047, 050. No file: 014 and 027 (gaps for good), 032, 033, 048, 049.
+-- Which files a database has applied is its own schema_migrations table (node scripts/migrate.mjs --dry-run), not this README.

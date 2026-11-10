@@ -20,7 +20,7 @@ import { pickLevels } from "../src/play/core/pick.ts";
 import { gradeLevel } from "../src/play/core/replay.ts";
 import { engineFor } from "../src/play/engines/registry.ts";
 import { mulberry32 } from "../src/play/core/rng.ts";
-import { cpuNow } from "./_cpu-ms.mjs";
+import { counted, assertPickWork } from "./_work.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const env = (acts) => acts.map((act, i) => ({ seq: i + 1, t: i * 400, via: "touch", act }));
@@ -84,11 +84,15 @@ for (const e of NEW()) {
     }
     assert.deepEqual([...seen].sort(), Object.keys(e.misMap).sort(), "every mapped belief is shown by some level");
   });
-  test(`nazariya2 ${tag}: the picker's p95 < 50 ms and the entry serves through currentLevel at every fade`, () => {
-    const ms = [];
-    for (let seed = 1; seed <= 40; seed++) { const t0 = cpuNow(); assert.ok(pickLevels(logic, reqOf(e, seed, 1 + (seed % 3)))); ms.push(cpuNow() - t0); }
-    ms.sort((a, b) => a - b);
-    assert.ok(ms[Math.floor(ms.length * 0.95)] < 50, `p95 ${ms[Math.floor(ms.length * 0.95)].toFixed(1)} ms`);
+  test(`nazariya2 ${tag}: the picker's work is bounded (counted, not timed) and the entry serves through currentLevel at every fade`, () => {
+    // measured 2026-11-10: at most 60 candidates and 1,275 calls into the family logic per pick over all entries; bound 3x above
+    const c = counted(logic);
+    for (let seed = 1; seed <= 40; seed++) {
+      c.reset();
+      const picked = pickLevels(c.logic, reqOf(e, seed, 1 + (seed % 3)));
+      assert.ok(picked);
+      assertPickWork(`${tag} seed ${seed}`, picked, c.calls(), { maxConsidered: 180, maxCalls: 4000 });
+    }
     for (const fade of [1, 2, 3]) {
       const s = { childId: "c1", key: entryKey(e), skillId: e.skillId, lessonId: null, classLevel: e.classLevel, fade, lang: "hinglish", childArt: null, lastArt: null, mis: {}, pL: undefined, n: 0, seed: seedOf("c1", entryKey(e), 0), door: "garam", recent: [], hist: null };
       const l = currentLevel(s, e);

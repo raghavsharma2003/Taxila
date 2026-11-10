@@ -22,7 +22,9 @@ const young = {
   // round 7 (decision D3, dc-r7-age-bands): from the one band table; class 4 is no longer young (OWNER-RESET #1)
   classes: classesOf("young"),
   // Care-receiving protégé for teach-back: 6-9-year-olds explain better to someone smaller than them.
-  protege: { name: "Golu", what: "a pretend baby elephant just starting school" },
+  // (TEACHER-01, owner's audit: the young teach-back screen draws one of three creatures — a cloud pup, a pebble, a sprout,
+  // src/ui/teacher/Protege.tsx — picked on the client, so her words name no animal or kind of creature: only what is true of all three)
+  protege: { name: "Golu", what: "a pretend little friend, smaller than you, just starting school" },
   notes: [
     "an AI teacher character for young Indian children; a kind didi-teacher register",
     shared.noLife,

@@ -103,7 +103,9 @@ async function getTutors(req, res) {
   const el = eligibilityFor(child);
   const teacher = teacherFor(child);
   send(res, 200, {
-    current: child.teacher_id ?? null, chosen: !!child.tutor_chosen_at, mode: el.mode, band: el.band,
+    // null until a teacher is saved; then the teacher this child really has (teacherFor: a parked or unknown saved id
+    // resolves to the one teacher), never the raw column, which could name someone absent from `tutors` (audit FACE-09)
+    current: child.teacher_id ? teacher.id : null, chosen: !!child.tutor_chosen_at, mode: el.mode, band: el.band,
     tutors: el.tutors.map((t) => t.id), rev: CATALOGUE_REV, live: await lessonLive(child.id),
     // the name the child gave the teacher (null: the character's own), and the picker's suggestions
     name: teacher.name, characterName: teacher.characterName, custom: teacher.name !== teacher.characterName,

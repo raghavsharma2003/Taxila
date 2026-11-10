@@ -4,6 +4,20 @@ Status: **draft by the main loop**, written before the research syntheses landed
 by the design-review workflow against `docs/research/**/` and `docs/harvest/INHERITANCE-MAP.md`. Where this
 file and a later `context/decisions.md` entry disagree, the decision entry wins.
 
+> **What has changed since this draft (added 2026-11-09 by the docs audit).** This is the original design sketch. It was
+> never revised into a description of the built system, and no such page exists yet (`docs/design/round7/audit/docs-memory.md`,
+> DOCS-24). The ideas in §0, §1.3, §1.6 and §3 still hold. These parts no longer describe the code:
+> - **Lane.** The default lesson lane is the cascade: speech to text, a reply the server writes, then text to speech.
+>   The realtime voice call of §0 and §1.1 is opt-in (`mode: "voice"`, see `server/routes/lesson.js`).
+> - **Director.** It is on the critical path, not off it (§1.2): the server writes every reply. The turn runs through
+>   `server/brain/turn.js` and `server/director/`.
+> - **Host.** The server is `server/serve.mjs` on Azure Container Apps (`taxila-web`), with a worker (`server/worker.mjs`).
+>   The Vercel project is paused. The database is Neon in us-east-1, not Singapore.
+> - **Classifier.** The deployment is whatever `DEPLOY_CLASSIFY` names (`server/azure.js`), not always taxila-fast.
+> - **Routes.** §2 lists 9 of roughly 25 route tables; `server/index.js` is the registry.
+> - **Audio.** Not stored in general, with two exceptions: trace clips for the owner cohort (`server/trace/tier.js`)
+>   and the consented voice-signal pilot.
+
 ## 0. The one-paragraph system
 
 A child talks to a teacher character over a live WebRTC voice call (Azure `gpt-realtime-2.1`). The voice
@@ -25,7 +39,7 @@ structure lives in code; the language models generate language *inside* that str
           └───────────────┬────────────────────────────────────┼──────┘
                           │ /api/lesson/turn  (transcripts + events, batched)
                           ▼                                     │
-          ┌──────────────── Vercel functions (sin1) ───────────▼──────┐
+          ┌──── server (2026-10-02: Vercel; now Azure, see note) ──────▼──────┐
           │ Director  = lesson state machine (code)                    │
           │   ├─ Evidence classifier (taxila-fast, keyed to kit answers)│
           │   ├─ Learner model update (BKT + misconception flags)       │
@@ -36,7 +50,7 @@ structure lives in code; the language models generate language *inside* that str
           │ Consolidation after lesson (memory, rel-state, report)      │
           └───────────────┬────────────────────────────────────────────┘
                           ▼
-             Neon Postgres (Singapore): accounts, consent, children,
+             Neon Postgres: accounts, consent, children,
              sessions, turns, evidence, skill_state, memories, …
 ```
 
@@ -57,8 +71,9 @@ structure lives in code; the language models generate language *inside* that str
 
 ### 1.2 Director (server, per turn)
 Runs on `/api/lesson/turn`, called by the client after each child turn (with that turn's transcript, the
-teacher's last turn transcript, and debounced module events). It runs *off* the critical path: the teacher has
-already started answering from her current instructions; the Director's output shapes the next turn.
+teacher's last turn transcript, and debounced module events). In this draft it ran *off* the critical path: the teacher
+had already started answering from her current instructions and the Director's output shaped the next turn. (On the
+cascade lane, today's default, the Director's turn produces the reply itself: see the note at the top.)
 1. **Classify evidence** (taxila-fast, JSON schema): map the child's utterance onto the active item's
    `answer`/`acceptable`/misconception options — a classification against a verified key, never free grading
    (inherited law: *a model never grades*). Low ASR confidence ⇒ no evidence.
@@ -108,23 +123,23 @@ status rule (listening · thinking · speaking · your turn) inherited from Guru
 ### 1.7 Data (Neon)
 Core tables: `guardian`, `child`, `consent` (versioned, per purpose), `auth_session`, `lesson`, `turn`,
 `evidence`, `skill_state`, `misconception_state`, `format_trial`, `memory` (cited), `rel_state`,
-`rel_event`, `module_run`, `asset_cache`, `incident`, `audit`. Audio is never stored.
+`rel_event`, `module_run`, `asset_cache`, `incident`, `audit`. Audio is not stored, with the two exceptions in the
+note at the top.
 
 ### 1.8 Content (static, versioned in git)
 `data/curriculum/*.json` (syllabus graph), `data/kits/*.json` (verified items, misconceptions, hint ladders,
 expectations), teacher character sheets, engine catalogue.
 
-## 2. Request map
+## 2. Request map (the 2026-10-02 core; the full list is `server/index.js`)
 | route | does |
 |---|---|
 | `POST /api/auth/signup`, `/login`, `/logout` | guardian account (email + password, scrypt; httpOnly session cookie) |
 | `POST /api/consent` | record versioned consent per purpose |
-| `GET/POST /api/children` | child profiles under a guardian |
+| `POST/PATCH/DELETE /api/children` | child profiles under a guardian (read through `GET /api/me`) |
 | `POST /api/lesson/start` | pick next topic (TaRL placement + schedule), build lesson plan, initial instructions |
 | `POST /api/realtime/token` | mint ephemeral key with the compiled instructions + session config |
 | `POST /api/lesson/turn` | the Director step (§1.2) |
 | `POST /api/lesson/end` | close lesson: consolidation, memory, rel-state, parent note |
-| `POST /api/modules/scene` | T2 scene generation |
 | `GET /api/parent/overview` | dashboard data |
 
 ## 3. Non-negotiables inherited (see `docs/harvest/`)

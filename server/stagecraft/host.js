@@ -5,6 +5,7 @@
 //   on      outcomeAt() returns the reveal outcome the seam maps to a slot (patch P3)
 // Never throws into the turn path: every builder error becomes a `landed ok:false` input.
 import { config, initPortfolio, step } from "./conductor.js";
+import { stagecraftMode } from "./config.js";
 
 // REVIEW 2026-10-05: the conductor's quota buckets live in each lesson's portfolio, so N lessons on one process used to
 // draw N x 120 RPM from one deployment. This bucket is shared by every host in the process; a launch it refuses never
@@ -27,7 +28,7 @@ export class StagecraftHost {
    *   clock?: () => number, timerMs?: number, sink?: (row: object) => void, onEffect?: (e: object) => void }} o
    */
   constructor(o) {
-    this.mode = o.mode ?? process.env.STAGECRAFT ?? "off";
+    this.mode = o.mode ?? stagecraftMode();
     this.clock = o.clock ?? (() => Date.now());
     this.builders = o.builders;
     this.cfg = config({ ...(o.cfg ?? {}), catalog: o.catalog, instant: o.builders?.instant });

@@ -439,7 +439,8 @@ function shadeGrid(c, tl) {
   if (c.labels !== false && cols > 1) tl.add({ op: "text", at: [200, y0 - 16], text: `${cols} columns`, size: "s", ink: "soft" }, 400, { gap: 200 });
   if (c.labels !== false && rows > 1) tl.add({ op: "text", at: [200, y0 + H + 18], text: `${rows} rows`, size: "s", ink: "soft" }, 400, { gap: 120 });
   const total = rows * cols;
-  if (withFrac) tl.add({ id: "frac", op: "numwork", at: [186, y0 + H + (c.labels !== false && rows > 1 ? 34 : 14)], layout: "fraction", rows: [[String(shade)], [String(total)]], ink: "accent", weight: 2 }, 700, { gap: 300 });
+  // (audit studio-01: a fraction numwork box starts ~35 units ABOVE its `at` row: under the "N rows" label it needs 56, not 34)
+  if (withFrac) tl.add({ id: "frac", op: "numwork", at: [186, y0 + H + (c.labels !== false && rows > 1 ? 56 : 14)], layout: "fraction", rows: [[String(shade)], [String(total)]], ink: "accent", weight: 2 }, 700, { gap: 300 });
   return { counts: { rows, cols, parts: total, shaded: shade }, facts: { rows, cols, cells: c.hideResult ? "? (child works it out)" : total, shaded: shade } };
 }
 
@@ -510,6 +511,17 @@ function combineCount(c, tl) {
 function numberLineHop(c, tl) {
   const { start, hops } = c;
   if (!isInt(start, -20, 100) || !Array.isArray(hops) || hops.length < 1 || hops.length > 4 || !hops.every((h) => isInt(h, -20, 20) && h !== 0)) return { error: "hops_range" };
+  // STUDIO-09 (audit 2026-11-10): only what lays out is drawn and advertised (board-ref.js). Every hop one way, or two hops
+  // where the second goes back at most half of the first (a hop back over the whole of the last one puts both hop labels
+  // on one spot); every landing within 30 of every other; with two or more hops each at least 2 and at least 1/8 of that
+  // spread, 1/5 when a landing is a 3-character number (a 2 beside a 17 puts two landing numbers on top of each other at
+  // the board's width). Measured: tests/r7-audit-studio-number-line-hop.test.mjs (a random sample of the range)
+  const oneWay = hops.every((h) => Math.sign(h) === Math.sign(hops[0]));
+  const halfBack = hops.length === 2 && !oneWay && Math.abs(hops[1]) * 2 <= Math.abs(hops[0]);
+  const landings = hops.reduce((acc, h) => [...acc, acc[acc.length - 1] + h], [start]);
+  const spread = Math.max(...landings) - Math.min(...landings);
+  const k = landings.some((v) => String(v).length >= 3) ? 5 : 8;   // 3-character numbers ("-12", "104") need wider room
+  if (!(oneWay || halfBack) || spread > 30 || (hops.length > 1 && hops.some((h) => Math.abs(h) < 2 || Math.abs(h) * k < spread))) return { error: "hops_layout" };
   let pos = start;
   const ends = hops.map((h) => (pos += h));
   const all = [start, ...ends];
@@ -530,7 +542,8 @@ function numberLineHop(c, tl) {
     if (b1 - a1 > 40) break;
     if (room(a1, b1, [...new Set([a1, ...all, b1])].sort((p, q) => p - q))) { a = a1; b = b1; }
   }
-  if (a == null) { a = lo >= 0 ? Math.max(0, lo - 2) : lo - 2; b = Math.max(hi + 2, a + span + 2); labelEnds = false; }
+  // (unlabelled ends need no room of their own: one unit of line past each end point leaves the landings their room)
+  if (a == null) { a = lo >= 0 ? Math.max(0, lo - 1) : lo - 1; b = Math.max(hi + 1, a + span + 1); labelEnds = false; }
   if (b - a > 40) return { error: "line_too_long" };
   const xOf = (v) => x0 + 12 + ((v - a) / (b - a)) * (W - 24);
   const labels = [...new Set([...(labelEnds ? [a, b] : []), ...all])].sort((p, q) => p - q).map(String);
@@ -545,7 +558,9 @@ function numberLineHop(c, tl) {
   });
   tl.add({ op: "circle", c: [xOf(pos), y], r: 7, fill: "good", ink: "good" }, 300);
   const eq = [String(start), ...hops.flatMap((h) => [h > 0 ? "+" : "-", String(Math.abs(h))]), "=", c.hideResult ? "?" : String(pos)];
-  tl.add({ id: "eq", op: "numwork", at: [60, 250], layout: "equation", rows: [eq], weight: 2 }, 1000, { gap: 300 });
+  // (STUDIO-09: the equation row is centred on the 400-wide board, so a long one with negatives still fits)
+  const eqW = textBox(eq.join(" "), "m", [0, 0], "start").w;
+  tl.add({ id: "eq", op: "numwork", at: [Math.round(Math.max(12, Math.min(60, (400 - eqW) / 2))), 250], layout: "equation", rows: [eq], weight: 2 }, 1000, { gap: 300 });
   return { facts: { start, hops: hops.map((h) => (h > 0 ? `+${h}` : `${h}`)).join(" "), end: c.hideResult ? "? (child works it out)" : pos } };
 }
 

@@ -109,7 +109,16 @@ export async function laQuery(workspaceId, kql, timespan = "PT1H") {
  * local directory uploaded as a tarball (`dir`), which is how an unpushed tree (a probe image, a test worker) is built.
  * Returns when the run finishes; throws with the log tail on failure.
  */
-export async function acrBuild({ registry = "taxilacr", images, dockerfile, git, dir, files: only, timeoutSec = 1800, log = console.log }) {
+/**
+ * PURE. The ACR DockerBuildRequest body. `buildArgs` ({ NAME: value }) become the Dockerfile's ARGs (plain, never secrets:
+ * ACR keeps them in the run record).
+ */
+export function acrRunBody({ images, sourceLocation, dockerfile, timeoutSec = 1800, buildArgs = {} }) {
+  const args = Object.entries(buildArgs).filter(([, v]) => v != null && v !== "").map(([name, value]) => ({ name, value: String(value), isSecret: false }));
+  return { type: "DockerBuildRequest", imageNames: images, isPushEnabled: true, sourceLocation, dockerFilePath: dockerfile,
+    platform: { os: "Linux", architecture: "amd64" }, timeout: timeoutSec, ...(args.length ? { arguments: args } : {}) };
+}
+export async function acrBuild({ registry = "taxilacr", images, dockerfile, git, dir, files: only, timeoutSec = 1800, log = console.log, buildArgs = {} }) {
   let sourceLocation;
   if (git) sourceLocation = `https://github.com/${git.repo}.git#${git.branch}`;
   else {
@@ -127,9 +136,8 @@ export async function acrBuild({ registry = "taxilacr", images, dockerfile, git,
     sourceLocation = up.relativePath;
     log(`  uploaded ${files.length} files (${Math.round(readFileSync(tgz).length / 1024)} KB)`);
   }
-  const run = await arm("POST", `/providers/Microsoft.ContainerRegistry/registries/${registry}/scheduleRun?api-version=2019-06-01-preview`, {
-    type: "DockerBuildRequest", imageNames: images, isPushEnabled: true, sourceLocation, dockerFilePath: dockerfile,
-    platform: { os: "Linux", architecture: "amd64" }, timeout: timeoutSec });
+  const run = await arm("POST", `/providers/Microsoft.ContainerRegistry/registries/${registry}/scheduleRun?api-version=2019-06-01-preview`,
+    acrRunBody({ images, sourceLocation, dockerfile, timeoutSec, buildArgs }));
   const runId = run.properties.runId;
   let st;
   do {

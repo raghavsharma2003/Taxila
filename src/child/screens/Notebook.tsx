@@ -11,12 +11,11 @@
 // /api/studio/notebook/pages replays one lesson's boards in the order they were drawn). Each page opens a replay (her
 // boards redrawn one after another, in the real Studio stage) and "Continue this lesson" (a new lesson on the same topic).
 // The device's own record below is kept for the best question card and as the fallback when the server list fails.
-// WHERE THE PAGES CAME FROM before round 4 (open item for the server owner): no endpoint lists a child's lessons, so the page list is
-// the lesson ids THIS DEVICE recorded at each summary's Finish (prefs.ts artefacts). A second device, a reinstall or
-// cleared storage therefore shows fewer pages than the child has had. The empty line never claims "no lessons yet"
-// unless the server's plan says so (state "first"); otherwise it says only what is true on any device. Summaries are
-// immutable once a lesson ended, so each is fetched once and kept on the device (no N+1 on every open), at most
-// SUMMARY_CONCURRENCY at a time. Replace the source with a server list (GET /api/child/notebook) when it exists.
+// WHERE THE PAGES COME FROM: the server's list (GET /api/studio/notebook, every device) leads; the lesson ids THIS DEVICE
+// recorded at each summary's Finish (prefs.ts artefacts) fill in a page the server list lacks and give its best question card,
+// and are the whole list when the server read fails. The empty line never claims "no lessons yet" unless the server's plan
+// says so (state "first"). Summaries are immutable once a lesson ended, so each is fetched once and kept on the device
+// (no N+1 on every open), at most SUMMARY_CONCURRENCY at a time, and patched onto the pages already shown.
 import { useEffect, useState } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { MadeShelf, readMadeCards } from "./NotebookMade.tsx";
@@ -28,6 +27,7 @@ import { bestCard, getChildMap, getLessonSummary } from "../api.ts";
 import { Spot } from "../art.tsx";
 import { ChildScreen, useKx } from "../chrome.tsx";
 import { Glyph, Panel, StatePanel } from "../../ui-v3/kaksha/kit.tsx";
+import { patchSummaries } from "../madeMatch.ts";
 import { useChild } from "../ChildShell.tsx";
 import { t } from "../copy.ts";
 import { Icon } from "../pictos.tsx";
@@ -101,6 +101,7 @@ export function Notebook() {
   const [search] = useSearchParams();
   const madeId = search.get("made");
   const [page, setPage] = useState<"lessons" | "made" | "jar" | "growth">(madeId ? "made" : search.get("page") === "growth" ? "growth" : "lessons");
+  useEffect(() => { if (madeId) setPage("made"); }, [madeId]); // APP-07: follow a link to a piece after mount
   // the Question jar (Learning's GET /api/child/jar): its page shows only when the route answers
   const [jar, setJar] = useState<JarItem[] | null>(null);
   useEffect(() => {
@@ -134,7 +135,8 @@ export function Notebook() {
         if (ac.signal.aborted) return;
         missing.forEach((a, i) => { if (sums[i]) cache[a.lessonId] = sums[i]!; });
         keepSummaries(cid, cache, list.map((a) => a.lessonId));
-        setPages(list.map((a) => page(a, cache[a.lessonId] ?? null)));
+        // APP-02: patch the summaries onto the pages already shown (the server's pages, boards and Replay stay)
+        setPages((prev) => patchSummaries<LessonSummary, Page>(prev, cache));
       });
     }
     return () => ac.abort();
@@ -165,7 +167,7 @@ export function Notebook() {
               const card = p.summary ? bestCard(p.summary.cards) : null;
               return (
                 <Panel as="li" key={p.lessonId} className="kx-log-page" testid="notebook-page"
-                  eyebrow={young ? undefined : new Date(p.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}>
+                  eyebrow={young ? undefined : dayOf(p.at)}>
                   <h2 className="kx-panel-title">{p.topic}</h2>
                   {card ? (
                     <div className="kx-log-card">
@@ -222,7 +224,7 @@ export function Notebook() {
                   p.chips.length > 0 && <p className="nb-chips" data-speech="">{p.chips.slice(-3).join(" · ")}</p>
                 )}
                 {(p.boards ?? 0) > 0 && <BoardPage cid={cid} page={p} young={young} />}
-                {!young && <p className="nb-date">{new Date(p.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</p>}
+                {!young && <p className="nb-date">{dayOf(p.at)}</p>}
               </li>
             );
           })}

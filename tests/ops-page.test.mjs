@@ -27,7 +27,7 @@ test("opsSummary: live list carries an id prefix only; percentiles rounded; cost
     if (/percentile_cont/.test(text)) { assert.deepEqual(params, [24, "POST /api/lesson/turn"]); return [{ n: 10, p50: 1350.4, p90: 1709.6, errors: 1 }]; }
     if (/status'\)::int >= 500/.test(text) && /group by 1/.test(text)) return [{ route: "POST /api/lesson/turn", n: 1 }];
     if (/jsonb_each/.test(text)) return [{ meter: "stt", usd: 0.34 }, { meter: "chat", usd: 0.01 }];
-    if (/from lesson where ended_at/.test(text)) return [{ lessons: 2, usd: 0.45, minutes: 20, uncosted: 1 }];
+    if (/from lesson where ended_at/.test(text)) return [{ lessons: 2, usd: 0.45, minutes: 20, uncosted: 1, costed_minutes: 20 }];
     throw new Error("unexpected " + text.slice(0, 40));
   };
   const s = await opsSummary(q, { hours: "24" });

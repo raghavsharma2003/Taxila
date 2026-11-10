@@ -41,6 +41,10 @@ export function Ask() {
   const [voice, setVoice] = useState<"idle" | "listening" | "hearing">("idle");
   const [voiceNote, setVoiceNote] = useState<"heard" | "none" | "failed" | null>(null);
   const recRef = useRef<AskRecording | null>(null);
+  const alive = useRef(true);
+  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
+  // APP-05: submitting by typing ends any recording at once (the screen stays mounted for the lesson, so the effect cleanup never runs)
+  const cancelVoice = () => { recRef.current?.cancel(); recRef.current = null; setVoice("idle"); };
   const stopListening = async () => {
     const r = recRef.current;
     recRef.current = null;
@@ -60,6 +64,7 @@ export function Ask() {
     setVoiceNote(null);
     const r = await startAskRecording(() => void stopListening());
     if (!r) { setVoiceNote("failed"); return; }
+    if (!alive.current) { r.cancel(); return; } // APP-05: the screen went while the mic was starting
     recRef.current = r;
     setVoice("listening");
   };
@@ -81,6 +86,7 @@ export function Ask() {
   const submit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (!ready || matching) return;
+    cancelVoice();
     const q = text.trim();
     if (!homework) { setAsked({ text: q }); return; }
     // homework (Learning to-app, 2026-11-04): match, then "Is this from <topic>?" only when it names a topic
@@ -94,6 +100,7 @@ export function Ask() {
   // Yes: the topic goes as the start's topicId (and the kit question it matched); Not this: matchTopicId null
   const decide = (yes: boolean) => {
     if (!confirm) return;
+    cancelVoice();
     const m = confirm.match;
     setAsked(yes ? { text: confirm.text, topicId: m.topicId, homework: m.itemId ? { matchItemId: m.itemId } : {} }
       : { text: confirm.text, homework: { matchTopicId: null } });

@@ -297,3 +297,13 @@
   --k-rock-2: #5BC6A0;
   color-scheme: light;
 }
+
+/* APP-09: the Kaksha roots are `.v3.kx`, and `.v3` (../tokens.css) sets the shared names (--ink, --bg, --line …) to the
+   retired Night palette. Older components drawn inside a Kaksha page (the safeguarding Help sheet on Home) read those names,
+   so on the light themes they got near-white ink on white. Re-point them at the k tokens, as childshell.css does for the
+   child shell. Kaksha's own styles read the --k-* names only, so nothing else changes. */
+.v3.kx[data-ktheme] {
+  --bg: var(--k-void); --bg-1: var(--k-raise); --bg-2: var(--k-bar); --bg-3: var(--k-bar);
+  --paper: var(--k-void); --surface: var(--k-raise); --surface-2: var(--k-bar);
+  --ink: var(--k-ink); --ink-2: var(--k-ink-2); --ink-3: var(--k-ink-3); --line: var(--k-ink-3); --line-2: var(--k-line-2);
+}

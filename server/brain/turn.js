@@ -258,6 +258,9 @@ export async function lessonTurn(req, body, hooks = {}) {
     }
     throw forbidden("core_tutoring consent withdrawn");
   }
+  // (TEACHER-05: the lesson is the signed-in guardian's child's and consent holds: only now are the words emitted and the
+  // speculation taken, routes/lesson.js)
+  try { hooks?.authorized?.(); } catch { /* the turn goes on */ }
   // Round 5 truth bar (server/brain/supersede.js): an edit of the lesson's LATEST landed turn supersedes it — restored from
   // the snapshot taken when it committed, graded on the edited words; an edit after a later turn landed is too late.
   // Off until main switches it on (TAXILA_EDIT_UNDO=1, ships with the latency work or 14.5), and never without 030's table.
@@ -1626,8 +1629,11 @@ export function noteDid(next, { cls, target, activeItem, kit, childText, tapped,
     entry = { kind: "item", itemId: activeItem.id, ask: activeItem.scriptAsk || activeItem.scriptCheck || activeItem.scriptThen ? String(promptFor(activeItem, lang) ?? "").replace(/\s+/g, " ").trim() : askText(promptFor(activeItem, lang)), answer, verdict: uiVerdict(cls, target),
       withHelp: hintLevel > 0, verified: (activeItem.kitVerified ?? kit.verified) !== false && !leaked && !next.spoiled?.includes(activeItem.id), seq, turn: next.turn };
   } else if (target.mode === "teachback" && answer && cls.outcome !== "no_evidence") {
+    // (TEACHER-03, owner's audit: a model never grades — a teach-back has no key, so its verdict here is the classifier MODEL's label
+    // (no corroborate) and the blind grade is never folded back into this record: it is kept unverified, and the summary shows no
+    // tick for it, routes/lesson.js lessonSummary)
     entry = { kind: "teachback", itemId: null, ask: null, answer, verdict: cls.outcome === "correct" ? "correct" : undefined, withHelp: false,
-      verified: kit.verified !== false, seq, turn: next.turn };
+      verified: false, byModel: true, seq, turn: next.turn };
   }
   if (entry) next.did = [...(next.did ?? []), entry].slice(-DID_MAX);
 }

@@ -55,14 +55,14 @@ test("AT-F12: no face input carries the answer", () => {
 });
 
 test("AT-F12: on the real runtime, the 'correct' and 'not yet' turns think alike (the measured evidence)", () => {
-  const s = JSON.parse(src("docs/design/round7/face/react/summary.json"));
+  const s = JSON.parse(src("tests/fixtures/face-react/summary.json"));
   for (const [arm, v] of Object.entries(s.arms)) {
     if (!arm.startsWith("on-")) continue;
     assert.equal(v.thinkingShareOfGap, 1, `${arm}: thinking for the whole wait`);
     assert.equal(v.jawWhileThinking, 0, `${arm}: no mouth while thinking`);
   }
   // per turn: the script's turn 1 is answered "correct", turn 2 "not yet"; the thinking face starts alike
-  const r = JSON.parse(src("docs/design/round7/face/react/react-on-cpu1-r1.json"));
+  const r = JSON.parse(src("tests/fixtures/face-react/react-on-cpu1-r1.json"));
   const [t1, t2] = r.turns;
   assert.equal(t1.verdict, "correct");
   assert.equal(t2.verdict, "not_yet");
