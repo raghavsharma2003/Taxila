@@ -111,7 +111,7 @@ function create(api: EngineApi, spec: SieveSpec): EngineInstance {
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: ruleText(r), accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.roundR}/${g.roundN}`, T.slashed], [String(g.best), T.combo]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.slashed], [String(g.best), T.combo]] });
-    drawCoach(api, ctx, T.coach, flow.state === "play" ? g.coachA : 0, now, 600);
+    drawCoach(api, ctx, T.coach, flow.state === "play" ? g.coachA : 0, now, 606, 960);   // one line at the young floor, above nothing
   }
   function bot(): BotAction | null {
     if (flow.state !== "play") return { type: "wait", ms: 250 };

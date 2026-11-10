@@ -1,6 +1,6 @@
 // Drawing kit: glow sprites (no shadowBlur in the hot loop), text with the stage-contract minimum recorded, icons
 // for verdicts (tick = got it, magnifier = look again; never a red cross — DESIGN-V3 §3.1).
-import { C, FONT, MIN, type FontKey } from "./tokens.ts";
+import { C, FONT, MIN, MIN_YOUNG, type FontKey } from "./tokens.ts";
 import { hexA } from "./math.ts";
 
 export type Ctx = CanvasRenderingContext2D;
@@ -24,21 +24,26 @@ export interface TooSmall { str: string; size: number }
 export interface SafeHit { str: string; zone: "label" | "pip"; box: [number, number, number, number] }
 /** World-space safe zones (DESIGN-V3 §6.3): nothing labelled or interactive may sit in them. */
 const ZONES: { zone: "label" | "pip"; x0: number; y0: number; x1: number; y1: number }[] = [{ zone: "label", x0: 0, y0: 0, x1: 180, y1: 75 }, { zone: "pip", x0: 837.5, y0: 0, x1: 1000, y1: 162.5 }];
-export function makeText(tooSmall: TooSmall[], safeHits: SafeHit[] = [], worldScale: () => number = () => 1) {
-  const setFont = (ctx: Ctx, o: TextOpts) => {
-    ctx.font = `${o.weight ?? 600} ${o.size ?? MIN.label}px ${FONT[o.font ?? "ui"]}`;
+export interface MakeTextOpts { young?: () => boolean }
+/** Lines a run wraps to when it is still wider than `maxWidth` at its floor (more than this: the last line is cut). */
+const MAX_WRAP = 3;
+export function makeText(tooSmall: TooSmall[], safeHits: SafeHit[] = [], worldScale: () => number = () => 1, mo: MakeTextOpts = {}) {
+  const young = mo.young ?? (() => false);
+  const setFont = (ctx: Ctx, o: TextOpts, size: number) => {
+    ctx.font = `${o.weight ?? 600} ${size}px ${FONT[o.font ?? "ui"]}`;
     if ("letterSpacing" in ctx) (ctx as Ctx & { letterSpacing: string }).letterSpacing = (o.track ?? 0) + "px";
   };
   const reset = (ctx: Ctx) => { if ("letterSpacing" in ctx) (ctx as Ctx & { letterSpacing: string }).letterSpacing = "0px"; };
-  function text(ctx: Ctx, str: string, x: number, y: number, o: TextOpts = {}): void {
+  /** world units per unit of the CURRENT transform (an engine may draw inside its own scale, a camera zoom, a pop) */
+  const unitScale = (ctx: Ctx): number => {
+    try { const m = ctx.getTransform(), k = worldScale() || 1, s = Math.sqrt(Math.abs(m.a * m.d - m.b * m.c)) / k; return s > 0.05 && Number.isFinite(s) ? s : 1; } catch { return 1; }
+  };
+  /** The size a run is drawn at: never below the young floor (in world units, whatever the transform). */
+  const sizeOf = (ctx: Ctx, o: TextOpts): number => {
     const size = o.size ?? MIN.label;
-    if (size < MIN.label - 0.01 && !o.decor && tooSmall.length < 200) tooSmall.push({ str: String(str).slice(0, 20), size });
-    setFont(ctx, o);
-    ctx.textAlign = o.align ?? "left"; ctx.textBaseline = o.baseline ?? "alphabetic";
-    let s = String(str);
-    if (o.maxWidth && ctx.measureText(s).width > o.maxWidth) { while (s.length > 1 && ctx.measureText(s + "…").width > o.maxWidth) s = s.slice(0, -1); s += "…"; }
-    const a0 = ctx.globalAlpha;
-    if (o.alpha != null) ctx.globalAlpha = a0 * o.alpha;
+    return young() ? Math.max(size, MIN_YOUNG.label / unitScale(ctx)) : size;
+  };
+  function one(ctx: Ctx, s: string, x: number, y: number, size: number, o: TextOpts): void {
     if (o.glow) { ctx.save(); ctx.globalAlpha *= 0.55; ctx.shadowColor = o.glow; ctx.shadowBlur = size * 0.5; ctx.fillStyle = o.color ?? C.ink; ctx.fillText(s, x, y); ctx.restore(); }
     ctx.fillStyle = o.color ?? C.ink;
     ctx.fillText(s, x, y);
@@ -51,11 +56,47 @@ export function makeText(tooSmall: TooSmall[], safeHits: SafeHit[] = [], worldSc
       const bx0 = Math.min(...pts.map((p) => p[0])), bx1 = Math.max(...pts.map((p) => p[0])), by0 = Math.min(...pts.map((p) => p[1])), by1 = Math.max(...pts.map((p) => p[1]));
       for (const z of ZONES) if (bx1 > z.x0 + 1 && bx0 < z.x1 - 1 && by1 > z.y0 + 1 && by0 < z.y1 - 1) safeHits.push({ str: s.slice(0, 20), zone: z.zone, box: [Math.round(bx0), Math.round(by0), Math.round(bx1), Math.round(by1)] });
     }
+  }
+  /** Greedy word wrap at the CURRENT font (a single word wider than the width keeps its own line, whole). */
+  const wrapAt = (ctx: Ctx, s: string, maxW: number): string[] => {
+    const lines: string[] = []; let cur = "";
+    for (const w of s.split(/\s+/).filter(Boolean)) { const t = cur ? cur + " " + w : w; if (!cur || ctx.measureText(t).width <= maxW) cur = t; else { lines.push(cur); cur = w; } }
+    if (cur) lines.push(cur);
+    return lines.length ? lines : [s];
+  };
+  /**
+   * Draw one run. A run wider than `maxWidth` first shrinks toward its floor (the young floor, else the 38-unit label
+   * minimum; never below either), then wraps to at most 3 lines centred on the anchor; only a run that still does not fit
+   * in 3 lines is cut with "…" (round 7 readability: "RELE…", "start again" and cut instructions were seen at 1366).
+   */
+  function text(ctx: Ctx, str: string, x: number, y: number, o: TextOpts = {}): void {
+    let size = sizeOf(ctx, o);
+    if (size < MIN.label - 0.01 && !o.decor && tooSmall.length < 200) tooSmall.push({ str: String(str).slice(0, 20), size });
+    setFont(ctx, o, size);
+    ctx.textAlign = o.align ?? "left"; ctx.textBaseline = o.baseline ?? "alphabetic";
+    let lines = [String(str)];
+    if (o.maxWidth && o.maxWidth > 0 && ctx.measureText(lines[0]).width > o.maxWidth) {
+      const e = unitScale(ctx), floor = Math.min(size, (young() ? MIN_YOUNG.label : MIN.label) / e);
+      for (let i = 0; i < 4 && size > floor + 0.01; i++) {
+        const w = ctx.measureText(lines[0]).width; if (w <= o.maxWidth) break;
+        size = Math.max(floor, size * (o.maxWidth / w) * 0.99); setFont(ctx, o, size);
+      }
+      if (ctx.measureText(lines[0]).width > o.maxWidth) {
+        lines = wrapAt(ctx, lines[0], o.maxWidth);
+        if (lines.length > MAX_WRAP) { lines = lines.slice(0, MAX_WRAP); let l = lines[MAX_WRAP - 1]; while (l.length > 1 && ctx.measureText(l + "…").width > o.maxWidth) l = l.slice(0, -1); lines[MAX_WRAP - 1] = l + "…"; }
+      }
+    }
+    const a0 = ctx.globalAlpha;
+    if (o.alpha != null) ctx.globalAlpha = a0 * o.alpha;
+    const lh = size * 1.12;
+    lines.forEach((ln, i) => one(ctx, ln, x, y + (i - (lines.length - 1) / 2) * lh, size, o));
     ctx.globalAlpha = a0;
     reset(ctx);
   }
-  function measure(ctx: Ctx, str: string, o: TextOpts = {}): number { setFont(ctx, o); const w = ctx.measureText(String(str)).width; reset(ctx); return w; }
-  return { text, measure };
+  function measure(ctx: Ctx, str: string, o: TextOpts = {}): number { setFont(ctx, o, sizeOf(ctx, o)); const w = ctx.measureText(String(str)).width; reset(ctx); return w; }
+  /** the label floor in world units for this child (43 for classes 4-5, else 38) */
+  const minLabel = (): number => (young() ? MIN_YOUNG.label : MIN.label);
+  return { text, measure, minLabel };
 }
 export function roundRect(ctx: Ctx, x: number, y: number, w: number, h: number, r: number): void {
   r = Math.max(0, Math.min(r, w / 2, h / 2));

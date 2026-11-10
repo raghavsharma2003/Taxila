@@ -176,15 +176,18 @@ export interface WbBase {
   /** Refines the timing to a DeliveryPlan clause: startMs/endMs are then relative to that clause's onset. */
   clause?: number;
   ink?: WbInk; weight?: 1 | 2 | 3;
+  /** round 8 (board grammar): what the op means, drawn per role (shared/whiteboard.js ROLE); absent = ink. */
+  role?: WbRole;
 }
+export type WbRole = "focus" | "slot" | "answer" | "mixup" | "muted";
 export type WbOp =
-  | (WbBase & { op: "stroke"; points: WbPoint[] })                                         // freehand polyline, drawn along its length
+  | (WbBase & { op: "stroke"; points: WbPoint[]; dashed?: boolean })                                      // freehand polyline, drawn along its length
   | (WbBase & { op: "line"; from: WbPoint; to: WbPoint; dashed?: boolean })
   | (WbBase & { op: "arrow"; from: WbPoint; to: WbPoint; bend?: number; head?: "end" | "both" })
-  | (WbBase & { op: "rect"; at: WbPoint; w: number; h: number; fill?: WbInk; round?: number })
+  | (WbBase & { op: "rect"; at: WbPoint; w: number; h: number; fill?: WbInk; round?: number; dashed?: boolean })
   | (WbBase & { op: "circle"; c: WbPoint; r: number; fill?: WbInk })
   | (WbBase & { op: "ellipse"; c: WbPoint; rx: number; ry: number; fill?: WbInk })
-  | (WbBase & { op: "polygon"; points: WbPoint[]; fill?: WbInk })
+  | (WbBase & { op: "polygon"; points: WbPoint[]; fill?: WbInk; dashed?: boolean })
   /** A pie / fraction slice: degrees clockwise from 12 o'clock. */
   | (WbBase & { op: "sector"; c: WbPoint; r: number; fromDeg: number; toDeg: number; fill?: WbInk })
   | (WbBase & { op: "text"; at: WbPoint; text: string; size: "s" | "m" | "l"; align?: "start" | "middle" | "end" })
@@ -195,6 +198,9 @@ export type WbOp =
       rows: string[][]; marks?: { row: number; col: number; kind: "carry" | "borrow" | "circle" | "tick" }[]; range?: [number, number]; /** number_line: the line's own length (board units) */ w?: number })
   /** Draw attention to an earlier op (circle, underline, pulse) without redrawing it. */
   | (WbBase & { op: "highlight"; target: string; style: "circle" | "underline" | "pulse" })
+  /** round 8: a curly brace over the span from → to, apex toward `side`, naming the group; its label is written as its
+   *  own text op ("<id>.l", labelId) by normalizeScript. */
+  | (WbBase & { op: "brace"; from: WbPoint; to: WbPoint; side?: "up" | "down" | "left" | "right"; label?: string; size?: "s" | "m" | "l"; labelId?: string })
   | (WbBase & { op: "erase"; target: string })
   /** round 7: an earlier op slides by `by` over [startMs, endMs], hopping `arc` units high (a jump); never off the board. */
   | (WbBase & { op: "move"; target: string; by: WbPoint; arc?: number })

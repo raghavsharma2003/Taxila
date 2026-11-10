@@ -26,7 +26,7 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
   });
   const steppers = (): { key: "cols" | "cs" | "rows" | "rs" | "parts"; label: string; y: number; max: () => number }[] => {
     const r = rd();
-    if (r.mode === "orchard") return [{ key: "cols", label: T.cols, y: 222, max: () => 12 }, { key: "cs", label: T.shade, y: 318, max: () => g.cols }, { key: "rows", label: T.rows, y: 414, max: () => 12 }, { key: "rs", label: T.shade, y: 510, max: () => g.rows }];
+    if (r.mode === "orchard") return [{ key: "cols", label: T.cols, y: 240, max: () => 12 }, { key: "cs", label: T.shade, y: 330, max: () => g.cols }, { key: "rows", label: T.rows, y: 420, max: () => 12 }, { key: "rs", label: T.shade, y: 510, max: () => g.rows }];
     if (r.mode === "join") return [{ key: "parts", label: T.cut, y: 240, max: () => 24 }];
     return [];
   };

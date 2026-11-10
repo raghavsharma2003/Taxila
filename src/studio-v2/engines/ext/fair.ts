@@ -29,7 +29,7 @@ function create(api: EngineApi, spec: FairSpec): EngineInstance {
       const r = spec.rounds[k]; g.sel.clear(); g.day = 0; g.running = false; g.ran = false; g.verdict = ""; g.answered = false; g.pick = null; g.drops = 0; g.diff = []; g.doneT = 0;
       g.setups = r.mode === "predict" ? r.setups.map((c) => ({ ...c })) : r.mode === "design" ? r.start.map((c) => ({ ...c })) : r.mode === "conclude" ? [] : [];
       api.event("round_start", { round: k + 1, mode: r.mode, model: spec.model });
-      api.task(`${T.round} ${k + 1}`, r.mode === "predict" ? `${T.predict}: ${M.outcome}` : r.mode === "design" ? `${T.design}: ${M.vars.find((v) => v.id === (r as Extract<FtRoundT, { mode: "design" }>).vary)?.label ?? ""}` : r.mode === "conclude" ? (r.ask === "matters" ? T.conclude : T.notMatter) : T.drip);
+      api.task(`${T.round} ${k + 1}`, r.mode === "predict" ? T.predict : r.mode === "design" ? `${T.design}: ${M.vars.find((v) => v.id === (r as Extract<FtRoundT, { mode: "design" }>).vary)?.label ?? ""}` : r.mode === "conclude" ? (r.ask === "matters" ? T.conclude : T.notMatter) : T.drip);
       sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 });
     },
     onEnd(k) { api.event("round_end", { round: k + 1, verdict: g.verdict }); },
@@ -86,7 +86,7 @@ function create(api: EngineApi, spec: FairSpec): EngineInstance {
     if (flow.state === "intro" && flow.stateT < 0.05) hud.show(true);
     if (flow.state !== "play") return;
     const r = rd();
-    if (g.running) { g.day += dt * (M.days / 4.2); if (g.day >= M.days) { g.day = M.days; g.running = false; g.ran = true; g.doneT = 0; api.facts({ model: spec.model, results: g.setups.map((c) => (ftShows(M, c) ? M.outcome : "no")).join(",") }); } }
+    if (g.running) { g.day += dt * (M.days / 4.2); if (g.day >= M.days) { g.day = M.days; g.running = false; g.ran = true; g.doneT = 0; if (rd().mode === "predict") api.task(`${T.round} ${flow.round + 1}`, `${T.predict}: ${M.outcome}`); /* the outcome named only in the reveal, after the child's run */ api.facts({ model: spec.model, results: g.setups.map((c) => (ftShows(M, c) ? M.outcome : "no")).join(",") }); } }
     if (g.ran || (g.answered && (r.mode === "conclude" || r.mode === "drip"))) { g.doneT += dt; if (g.doneT > 3.0) flow.endRound(); }
     if (r.mode === "drip" && g.holding && !g.answered) { g.dripT += dt; if (g.dripT > 0.32) { g.dripT = 0; g.drops++; sfx.blip({ f: 900, dur: 0.03, type: "sine", gain: 0.06 }); api.record("drops", { n: g.drops }); } }
     hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("calls", `${g.right}/${g.n}`, { bump: true }); hud.set("day", r.mode === "drip" ? String(g.drops) : g.day.toFixed(M.days > 2 ? 0 : 1));

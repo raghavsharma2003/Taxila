@@ -38,7 +38,7 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
     g.verdicts[g.ci] = grade.verdict; g.n++; if (grade.verdict === "right") { g.right++; sfx.blip({ f: 600, f2: 900, dur: 0.12, type: "triangle", gain: 0.14 }); api.fx.burst(500, g.claimY, { n: 16, color: C.mint, speed: 300, life: 0.4, size: 8 }); } else { sfx.blip({ f: 220, f2: 140, dur: 0.2, gain: 0.14 }); api.fx.shake(3, 0.15); }
     g.ci++; g.claimY = 150; if (g.ci >= r.claims.length) { g.answered = true; g.revealT = 0; }
   }
-  const counterBtns = () => { const n = rd().cats.length, w = Math.min(180, (W - 100) / n - 14); return rd().cats.map((c, i) => ({ i, x: 60 + i * ((W - 100) / n), y: 440, w, h: 140 })); };
+  const counterBtns = () => { const n = rd().cats.length, w = Math.min(250, (W - 100) / n - 14); /* a fruit name fits its bin at the young floor */ return rd().cats.map((c, i) => ({ i, x: 60 + i * ((W - 100) / n), y: 440, w, h: 140 })); };
   const rowY = (i: number) => 196 + i * 72;
   const AX = { x0: 210, y0: 500, h: 290 }, barX = (i: number) => AX.x0 + 40 + i * Math.min(130, 560 / rd().cats.length), barW = () => Math.min(90, 560 / rd().cats.length - 30);
   const maxV = () => { const r = rd(); const m = Math.max(...r.cats.map((c) => c.count)); return Math.ceil((m * 1.15) / r.scale) * r.scale; };

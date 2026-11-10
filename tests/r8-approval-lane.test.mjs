@@ -43,10 +43,14 @@ function packetDir(byViewport) {
     render: { byViewport, fails: {} }, images, target: c.target, generation: c.generation, topic: {}, spec: c.spec }));
   return { dir, id, c };
 }
-const store = (dir, verdict) => {
-  fs.writeFileSync(path.join(dir, "verdicts.json"), JSON.stringify([{ id: fs.readdirSync(dir).find((d) => d.startsWith("gen-")), verdict, faults: verdict === "pass" ? [] : [{ item: 1, kind: "wrong_key" }] }]));
+// (main 2026-11-10: two separate judges must pass the content items; verdict2 null = only one judge was run)
+const store = (dir, verdict, verdict2 = verdict) => {
+  const id = fs.readdirSync(dir).find((d) => d.startsWith("gen-"));
+  const v = (x) => [{ id, verdict: x, faults: x === "pass" ? [] : x === "unreadable" ? [{ item: 6, kind: "unreadable" }] : [{ item: 3, kind: "gives_answer" }] }];
+  fs.writeFileSync(path.join(dir, "verdicts.json"), JSON.stringify(v(verdict)));
+  if (verdict2) fs.writeFileSync(path.join(dir, "verdicts2.json"), JSON.stringify(v(verdict2)));
   const st = path.join(dir, "store");
-  execFileSync(process.execPath, ["scripts/approve-store.mjs", "--packets", dir, "--verdicts", path.join(dir, "verdicts.json"), "--judge", "test", "--store", st], { cwd: ROOT, encoding: "utf8" });
+  execFileSync(process.execPath, ["scripts/approve-store.mjs", "--packets", dir, "--verdicts", path.join(dir, "verdicts.json"), ...(verdict2 ? ["--verdicts2", path.join(dir, "verdicts2.json")] : []), "--judge", "test", "--store", st], { cwd: ROOT, encoding: "utf8" });
   return st;
 };
 
@@ -81,6 +85,17 @@ test("approval lane: a judged pass goes into the store with what it is for; the 
     assert.equal(loadApproved({ fresh: true }).size, 0);
     assert.equal(hashOf(c.archetype, c.spec), c.hash);
   } finally { _useStore(null); }
+});
+
+test("approval lane, two judges (main 2026-11-10): a split content verdict, or one judge only, writes nothing and records both reasons; a second judge's readability-only fault does not split it", () => {
+  const a = packetDir({ p360: false, p412: true, l1366: true });
+  assert.ok(!fs.existsSync(path.join(store(a.dir, "pass", "fail"), "c5-maths-ch02-t01")), "split: judge 2 gives_answer");
+  const refused = JSON.parse(fs.readFileSync(path.join(a.dir, "refused.json"), "utf8"));
+  assert.match(refused[0].why, /split verdict/); assert.match(refused[0].judge2[0], /^gives_answer/);
+  const b = packetDir({ p360: false, p412: true, l1366: true });
+  assert.ok(!fs.existsSync(path.join(store(b.dir, "pass", null), "c5-maths-ch02-t01")), "one judge only");
+  const c = packetDir({ p360: false, p412: true, l1366: true });
+  assert.ok(fs.existsSync(path.join(store(c.dir, "pass", "unreadable"), "c5-maths-ch02-t01")), "readability stays with judge 1");
 });
 
 test("approval lane: a judge's fail, or a render legible at no size, writes nothing", () => {
@@ -136,4 +151,20 @@ test("main's catalogue ruling: a catalogue piece is shown only with a judged pas
     assert.ok(isReviewedDefault(rec.game.archetype, def));
     assert.notEqual(certifyForTray(art(def), { vp: "p412", topicId: T }).cert, "catalogue-judged", "the reviewed default is not catalogue content");
   } finally { _useStore(null); }
+});
+
+test("approval lane, generate (main 2026-11-10: c4's two attempts logged ok, no file written): every attempt ends in exactly one of a candidate or refused-with-reason; an ok result whose checks failed is refused, naming them", async () => {
+  const { attemptOutcome } = await import("../server/studio/approved.js");
+  const good = { ok: true, payload: { spec: { a: 1 } }, checks: { truth: true, stageContract: true, onTopic: true, contentSafe: true, spec: { ok: true, repairs: 0, fellBack: false } } };
+  assert.deepEqual(attemptOutcome(good), { kind: "candidate" });
+  assert.deepEqual(attemptOutcome({ ...good, checks: { ...good.checks, contentSafe: false } }), { kind: "refused", why: "ok, but its checks failed: contentSafe" });
+  assert.match(attemptOutcome({ ...good, checks: { ...good.checks, spec: { ok: false, fellBack: true } } }).why, /spec/);
+  assert.equal(attemptOutcome({ ...good, payload: {} }).kind, "refused");
+  assert.deepEqual(attemptOutcome({ ok: false, why: "schema" }), { kind: "refused", why: "schema" });
+  assert.equal(attemptOutcome(null).kind, "refused");
+  // (the script uses it for the log, the manifest, the file and the retry: one decision)
+  const src = fs.readFileSync(path.join(ROOT, "scripts/approve-generate.mjs"), "utf8");
+  assert.match(src, /const oc = attemptOutcome\(r\)/);
+  assert.match(src, /if \(oc\.kind === "candidate"\) done = /);
+  assert.match(src, /if \(oc\.kind === "refused"\) \{/);
 });

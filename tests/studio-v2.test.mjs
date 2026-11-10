@@ -230,3 +230,34 @@ test("fx.pop keeps every pop clear of the coach band (approval-lane pilot c4 sli
   for (const t of fx.T) assert.ok(t.y + t.size * 0.5 <= 575, `a pop at y ${t.y} reaches the coach band`);
   assert.equal(fx.T[0].y, 300, "a pop well above the band is where it was asked");
 });
+
+test("young floor: for classes 4-5 the shared text helper never draws below MIN_YOUNG.label (43 units = 16 px at a 412 phone's 0.376 scale), whatever the engine asks or the transform", async () => {
+  const { makeText } = await import("../src/studio-v2/core/draw.ts");
+  const { MIN, MIN_YOUNG } = await import("../src/studio-v2/core/tokens.ts");
+  assert.equal(MIN_YOUNG.label, 43);
+  assert.ok(MIN_YOUNG.label * 0.376 >= 16, "16 px at the p412 world scale");
+  const fake = (k = 1) => {
+    const calls = [];
+    let tf = { a: k, b: 0, c: 0, d: k, e: 0, f: 0 };
+    const ctx = { font: "", textAlign: "left", textBaseline: "alphabetic", globalAlpha: 1, fillStyle: "",
+      getTransform: () => tf, setTransform: (a, b, c, d, e, f) => { tf = { a, b, c, d, e, f }; },
+      measureText: (s) => ({ width: String(s).length * 0.6 * Number(/(\d+(?:\.\d+)?)px/.exec(ctx.font)?.[1] ?? 10) }),
+      fillText: (s, x, y) => calls.push({ s, x, y, px: Number(/(\d+(?:\.\d+)?)px/.exec(ctx.font)[1]) }),
+      save() {}, restore() {} };
+    return { ctx, calls };
+  };
+  const sizeOf = (young, size, k = 1) => { const { ctx, calls } = fake(k); const t = makeText([], [], () => 1, { young: () => young }); t.text(ctx, "Hi", 0, 0, { size }); return calls[0].px * k; };
+  assert.equal(sizeOf(true, 38), 43, "a 38-unit label draws at 43 for a young child");
+  assert.equal(sizeOf(true, 60), 60, "larger text is untouched");
+  assert.equal(sizeOf(false, 38), MIN.label, "classes 6+ keep the 38-unit floor");
+  assert.ok(Math.abs(sizeOf(true, 38, 0.5) - 43) < 1e-9, "inside a 0.5 scale the run is enlarged so it still renders at 43 world units");
+  // measure sees the drawn size (layout math), and a long run shrinks toward the floor, then wraps, never cut
+  const { ctx, calls } = fake();
+  const t = makeText([], [], () => 1, { young: () => true });
+  assert.equal(t.measure(ctx, "abcd", { size: 38 }), 4 * 0.6 * 43);
+  assert.equal(t.minLabel(), 43);
+  t.text(ctx, "start again now", 0, 100, { size: 60, maxWidth: 200, align: "center", baseline: "middle" });
+  assert.ok(calls.every((c) => c.px >= 43), "never below the floor");
+  assert.ok(calls.length > 1 && calls.every((c) => !c.s.includes("…")), "wrapped, not ellipsised");
+  assert.equal(calls.map((c) => c.s).join(" "), "start again now");
+});

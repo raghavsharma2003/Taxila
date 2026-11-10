@@ -13,7 +13,8 @@ import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, fmtNum, textBlock } from "./kit.ts";
 
-const MACH = { x: 330, y: 300, w: 340, h: 130 }, RUN = { x: 790, y: 470, w: 180, h: 70 }, TRAY_Y = 480;
+// (round 7 readability: the tray sits a little higher so a young child's two-line coach under it stays clear)
+const MACH = { x: 330, y: 290, w: 340, h: 130 }, RUN = { x: 790, y: 460, w: 180, h: 70 }, TRAY_Y = 468;
 function create(api: EngineApi, spec: RuleSpec): EngineInstance {
   const T = spec.strings, accent = C.ion;
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
@@ -103,12 +104,13 @@ function create(api: EngineApi, spec: RuleSpec): EngineInstance {
       machine(ctx, now); tray(ctx); runBtn(ctx);
       ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 16; ctx.beginPath(); ctx.moveTo(60, MACH.y + MACH.h / 2); ctx.lineTo(940, MACH.y + MACH.h / 2); ctx.stroke();
       r.inputs.forEach((v, i) => {
-        const y = 180 + i * 50, want = runOps(r.rule, v)!, got = g.ran ? runOps(built(), v) : null, show = g.ran && g.runT > 0.4 + i * 0.35;
+        const y = 210 + i * 44, want = runOps(r.rule, v)!, got = g.ran ? runOps(built(), v) : null, show = g.ran && g.runT > 0.4 + i * 0.35;
         api.text(ctx, fmtNum(v), 150, y, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle" });
         api.text(ctx, fmtNum(want), 760, y, { font: "display", size: 40, weight: 800, color: C.ink2, align: "center", baseline: "middle" });
         if (show) { const good = got === want; api.text(ctx, got === null ? "?" : fmtNum(got), 870, y, { font: "display", size: 40, weight: 800, color: good ? C.mint : C.amber, align: "center", baseline: "middle" }); }
       });
-      api.text(ctx, T.want, 760, 150 - 4, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle", decor: true });
+      api.text(ctx, T.want, 760, 172,   // below the task pill's second line on a laptop
+        { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle", decor: true });
     } else if (r.mode === "seq") {
       [1, 2, 3].forEach((n, i) => { const cx = 250 + i * 250; drawPattern(ctx, r.pattern, n, cx, 200); api.text(ctx, `${T.step} ${n}: ${patternCount(r.pattern, n)}`, cx, 266, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" }); });
       machine(ctx, now); tray(ctx); runBtn(ctx);
@@ -139,7 +141,7 @@ function create(api: EngineApi, spec: RuleSpec): EngineInstance {
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: g.verdict === "right", color: g.verdict === "right" ? C.mint : C.amber, stats: [[`${g.right}/${g.n}`, T.built]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.built]] });
-    drawCoach(api, ctx, T.coach, flow.state === "play" && (r.mode === "build" || r.mode === "seq" || r.mode === "inverse") ? g.coachA : 0, now, 600);
+    drawCoach(api, ctx, T.coach, flow.state === "play" && (r.mode === "build" || r.mode === "seq" || r.mode === "inverse") ? g.coachA : 0, now, 616, 980);
   }
   function bot(): BotAction | null {
     if (flow.state !== "play" || g.ran) return { type: "wait", ms: 300 };
