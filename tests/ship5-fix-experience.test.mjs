@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { leaksStage, stripStage } from "../server/director/say.js";
-import { RX } from "./prod/_owner.mjs";
+import { RX } from "./prod/_owner-rx.mjs";
 
 const ART = "Riya, 20 balls ko equal groups mein dekhiye: ●●●●● ●●●●● ●●●●● ●●●●● Yahaan 4 groups hain. Ek group mein kitne?";
 

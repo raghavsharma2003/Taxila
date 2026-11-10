@@ -1,4 +1,4 @@
-import { launch, ctxFor, goto, sleep, api } from "./lib.mjs";
+import { launch, ctxFor, goto, sleep, api, BASE } from "./lib.mjs";
 import fs from "fs";
 const b = await launch(); const out = [];
 for (const [vp, tag] of [["m", "m4"], ["d", "d6"], ["t", "t7"]]) {
@@ -6,7 +6,7 @@ for (const [vp, tag] of [["m", "m4"], ["d", "d6"], ["t", "t7"]]) {
   for (let k = 0; k < 3; k++) {
     const ctx = await ctxFor(vp); const page = await ctx.newPage();
     await goto(page, "/"); await api(page, "POST", "/api/auth/login", { email: acct.email, password: acct.pw });
-    const t0 = Date.now(); await page.goto(`https://taxila.dev/c/${acct.cid}`, { waitUntil: "commit" });
+    const t0 = Date.now(); await page.goto(`${BASE}/c/${acct.cid}`, { waitUntil: "commit" });
     let tStart = null, tSkel = null;
     while (Date.now() - t0 < 30000) {
       const st = await page.evaluate(() => ({ start: !!document.querySelector('[data-testid="start-lesson"],[data-testid="continue-lesson"]'), skel: /Getting today ready/.test(document.body?.innerText || "") })).catch(() => ({}));
