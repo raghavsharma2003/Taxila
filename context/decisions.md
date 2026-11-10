@@ -9548,3 +9548,21 @@ Their one test (`tests/voice-expressive-align.test.mjs`, "the other compilers") 
 - `server/routes/parent.js`: `delayedCheckMap`, `topicParentState`, `hafteSpeech`; unused imports `topicStatus`, `GRADER_WORDS`.
 - `src/onboarding/Consent.tsx`: the `TrustStep` alias (no route uses it).
 Kept on purpose: `reteachOutcomeStmt`, `armPosteriorStmt`, `actorRowStmts` (context/open.md and open-conductor-m0-deliverables cite them as open work); `consentChangedStmts`, `settingChangedStmts` (designed call sites; LEARN-23 proposes wiring them); `kt/gen.js`, `kt/index.js` (test fixture, eval); `withDue`, `loadLedger`, `MeetStep` (a test, an eval, a pending patch use them); the placement CAT (LEARN-42: content-data was told to use it); the session-first lane (LEARN-49, owner).
+
+
+<!-- merged from inbox/r7-main-37.json -->
+## `dc-owner-direction-is-main-loops-2026-11-10` (2026-11-10)
+
+The owner's words: "This codebase is entirely yours: what it's for and how it's built are your call, and you'll keep building on it. We are revolutionizing education and learning with this product."
+
+**What it means here:** the main loop decides product direction and architecture, records each decision with what would reverse it, and keeps building.
+
+**Still the owner's:**
+- money: ask before high Azure usage, buy nothing;
+- the owner's accounts and keys, and deleting anything on Azure;
+- anything involving real children or families;
+- choices of taste the owner has asked to make, such as Asha's look.
+
+**Direction taken under it:** a teacher that knows the child in front of her and makes what that child needs next, with every answer checked against a verified key. After director18 the main effort moves from the four pilot lessons to two gaps: closing the learner loop, so learner state changes what is taught, and wiring the approval step, so generated content can reach a child. Scripted teaching is scaled in judged batches, and round 7 is released.
+
+**Reverse if:** the owner says otherwise.

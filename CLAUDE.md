@@ -27,6 +27,13 @@ child's whole learning day and reports deeply to parents.
   usage (big batteries, bulk generation). Guidance, not a ban.
 - **Judges and evaluation use Claude (2026-10-27):** rubric scoring, sim-lab judging and blind judging are done by the
   Claude Code session itself, not by Foundry models on Azure.
+- **Direction is the main loop's (owner, 2026-11-10).** "This codebase is entirely yours: what it's for and how it's built are
+  your call, and you'll keep building on it. We are revolutionizing education and learning with this product." The main loop
+  decides product direction and architecture, records each decision in `context/` with what would reverse it, and keeps
+  building. Still the owner's: money (ask before high Azure usage; buy nothing), the owner's accounts and keys, deleting
+  anything on Azure, anything involving real children or families, and choices of taste the owner has asked to make
+  (Asha's look). What the main loop is building toward: a teacher that knows the child in front of her and makes what that
+  child needs next, with every answer checked against a verified key.
 - Start here: `docs/design/round7/OWNER.md` (what is built, what waits on the owner) and `docs/design/round7/PIPELINE.md`
   (the round-7 plan; sessions and branches in `SESSIONS.md`, path owners in `OWNERSHIP.md`). `HANDOFF.md` is the
   2026-10-27 snapshot: its directives and practical notes still hold, its state sections are dated.
