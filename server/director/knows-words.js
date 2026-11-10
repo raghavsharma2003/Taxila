@@ -20,6 +20,7 @@ const cap = (t) => (t ? t[0].toUpperCase() + t.slice(1) : t);
  * @returns {string|null}  null for a record this page does not explain
  */
 export function becauseLine(rec, ctx = {}) {
+  if (String(rec?.kind ?? "").startsWith("play.")) return playLine(rec, ctx);
   const en = String(ctx.lang ?? "").toLowerCase().startsWith("en");
   const name = String(ctx.name ?? "").trim() || (en ? "Your child" : "Aapke bachche");
   const f = rec?.fact ?? {};
@@ -165,6 +166,108 @@ export function becauseLine(rec, ctx = {}) {
   }
 }
 
+// ───────────── round 8 Play (docs/patches/to-learning/011) ─────────────
+// A play session's because records { choice, fact, source, kind: "play.*", when?, mis? } (server/play/choose.js) and a
+// level's trail (server/play/trail.js). The record's fact is the play server's own text (it may hold the kit's belief) and
+// is NOT shown: each line is built from the kind, the game's title and the mix-up's title, like every line above.
+const gameOf = (rec) => /([a-z][a-z-]*\/[a-z][a-z0-9-]*)/.exec(String(rec?.choice ?? rec?.game ?? ""))?.[1] ?? null;
+
+/** One play because record → a line, or null. ctx.games: titles by "family/mode"; ctx.mixups: titles by kit mis id. */
+export function playLine(rec, ctx = {}) {
+  const en = String(ctx.lang ?? "").toLowerCase().startsWith("en");
+  const name = String(ctx.name ?? "").trim() || (en ? "Your child" : "Aapke bachche");
+  const seed = hash(`${ctx.seed ?? 0}|${rec?.kind}|${rec?.choice}`);
+  const g = said(ctx.games?.[gameOf(rec)], en) ?? (en ? "a game" : "ek khel");
+  const m = said(ctx.mixups?.[rec?.mis], en) ?? (en ? "a mix-up seen before" : "ek purani uljhan");
+  const earlier = rec?.when === "earlier";
+  const more = /more help/.test(String(rec?.choice ?? ""));
+  switch (rec?.kind) {
+    case "play.pick_mixup": return pick(en ? [
+      `The game started with ${g}, because "${m}" came up ${earlier ? "in earlier lessons" : "in this lesson"}.`,
+      `${cap(g)} came first: its first level shows "${m}" clearly, which came up ${earlier ? "before" : "today"}.`,
+    ] : [
+      `Khel ${g} se shuru hua, kyunki "${m}" wali baat ${earlier ? "pichhli classon mein" : "isi class mein"} dikhi thi.`,
+      `Pehle ${g} khela, kyunki uska pehla level "${m}" wali baat saaf dikhata hai.`,
+    ], seed);
+    case "play.pick_novelty": return pick(en ? [
+      `${cap(g)} this time, for a change from the game ${name} had just played.`,
+      `A different game (${g}), since ${name} had just played another one.`,
+    ] : [
+      `Is baar ${g}, taaki abhi khele gaye khel se kuch alag ho.`,
+      `Alag khel (${g}), kyunki ${name} ne abhi doosra khel khela tha.`,
+    ], seed);
+    case "play.pick_fit": return pick(en ? [
+      `${cap(g)} was picked because its first level suits where ${name} is on this skill now.`,
+      `The first level of ${g} matched where ${name} is on this skill best.`,
+    ] : [
+      `${cap(g)} chuna, kyunki uska pehla level ${name} ke abhi ke star ke hisaab se theek tha.`,
+      `Is hisse mein ${name} jahan hai, ${g} ka pehla level wahin se shuru hota hai.`,
+    ], seed);
+    case "play.fade_history": return pick(en ? [
+      `The game gave ${more ? "more" : "less"} help, from how ${name} has done on this skill so far.`,
+      `${more ? "More" : "Less"} help in the game, going by ${name}'s answers on this skill.`,
+    ] : [
+      `Khel mein ${more ? "zyada" : "kam"} madad di, is hisse ke pichhle jawabon ke hisaab se.`,
+      `${name} ke ab tak ke jawab dekhkar khel mein ${more ? "zyada" : "kam"} madad rakhi.`,
+    ], seed);
+    case "play.fade_director": return pick(en ? [
+      "The lesson set how much help the game gave.",
+      "How much help the game gave was the teacher's choice in the lesson.",
+    ] : [
+      "Khel mein kitni madad ho, yeh class ne tay kiya.",
+      "Khel ki madad kitni ho, yeh teacher ne class mein tay kiya.",
+    ], seed);
+    case "play.mixup_focus": return pick(en ? [
+      `One move followed the idea "${m}", so the next level was one that shows it clearly.`,
+      `After a move that followed "${m}", the next level looked at exactly that.`,
+    ] : [
+      `Ek chaal "${m}" wali soch se aayi, isliye agla level wahi baat saaf dikhane wala tha.`,
+      `"${m}" wali chaal ke baad agla level usi baat par tha.`,
+    ], seed);
+    case "play.step_up": return pick(en ? [
+      `${name} solved a level on the first try, so the next one was a step harder.`,
+      "Solved on the first try: the next level went one step up.",
+    ] : [
+      `${name} ne ek level pehli koshish mein kiya, isliye agla thoda mushkil tha.`,
+      "Pehli baar mein hal hua, to agla level ek kadam aage tha.",
+    ], seed);
+    case "play.step_down": return pick(en ? [
+      "After a level that took more than one try, the next one was a step easier.",
+      "The next level went one step back down, after one that took a few tries.",
+    ] : [
+      "Ek level mein ek se zyada koshish lagi, isliye agla thoda aasaan rakha.",
+      "Kuch koshishon wale level ke baad agla ek kadam aasaan tha.",
+    ], seed);
+    case "play.switch": return pick(en ? [
+      `The game changed to ${g}, to look at "${m}" another way.`,
+      `${cap(g)} next: the same idea, "${m}", in a different game.`,
+    ] : [
+      `Khel badal kar ${g} kiya, taaki "${m}" wali baat doosre tareeke se dikhe.`,
+      `Wahi baat, "${m}", ab ${g} mein dekhi.`,
+    ], seed);
+    case "play.studio_gate": return pick(en ? [
+      `On a phone the bigger activity does not fit, so ${name} played ${g} instead.`,
+      `${cap(g)} was played because the bigger activity is too small to use on a phone.`,
+    ] : [
+      `Phone par bada activity theek se nahi aata, isliye ${g} khela.`,
+      `Phone ki screen chhoti thi, to bade activity ki jagah ${g}.`,
+    ], seed);
+    default: return null;
+  }
+}
+
+/** A level's trail (server/play/trail.js) → one plain line: how it went, never a verdict on the child. null when unreadable. */
+export function trailLine(t, ctx = {}) {
+  if (!t || typeof t !== "object" || typeof t.game !== "string") return null;
+  const en = String(ctx.lang ?? "").toLowerCase().startsWith("en");
+  const g = cap(said(ctx.games?.[t.game], en) ?? (en ? "A game" : "Ek khel"));
+  const extra = Number.isFinite(t.extra) && t.extra > 0 ? t.extra : 0;
+  const more = extra ? (en ? `, ${extra} move${extra === 1 ? "" : "s"} more than the shortest way` : `, sabse chhote raaste se ${extra} chaal zyada`) : "";
+  if (t.solved && t.firstTry) return en ? `${g}: solved on the first try${more}.` : `${g}: pehli koshish mein hal${more}.`;
+  if (t.solved) return en ? `${g}: solved after a few tries${more}.` : `${g}: kuch koshishon ke baad hal${more}.`;
+  return en ? `${g}: not finished this time.` : `${g}: is baar poora nahi hua.`;
+}
+
 /**
  * The lines for a lesson's because list: one per record the page explains, in order; records that say the same thing (a
  * remediation planned for several cards from one mix-up) are said once.
@@ -173,7 +276,8 @@ export function becauseLines(because = [], ctx = {}) {
   const seen = new Set(), out = [];
   for (const rec of because ?? []) {
     const f = rec?.fact ?? {};
-    const key = ["remedy", "checkOrder"].includes(rec?.choice) ? `${rec.choice}|${f.kind}|${f.misconceptionId}` : `${rec?.choice}|${rec?.on}|${f.kind}`;
+    const key = String(rec?.kind ?? "").startsWith("play.") ? `${rec.kind}|${rec.mis ?? ""}|${gameOf(rec) ?? ""}`
+      : ["remedy", "checkOrder"].includes(rec?.choice) ? `${rec.choice}|${f.kind}|${f.misconceptionId}` : `${rec?.choice}|${rec?.on}|${f.kind}`;
     if (seen.has(key)) continue;
     seen.add(key);
     const line = becauseLine(rec, ctx);

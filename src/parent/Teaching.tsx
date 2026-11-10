@@ -43,6 +43,13 @@ export default function Teaching() {
               </ul>
             )}
           </section>
+          {d.data.play && (d.data.play.because.length > 0 || d.data.play.trail.length > 0) && (
+            <section className="pa-card" aria-labelledby="pa-t-play">
+              <h2 id="pa-t-play" className="pa-h2">In games this week</h2>
+              {d.data.play.because.length > 0 && <ul className="pa-list">{d.data.play.because.map((t) => <li key={t}>{t}</li>)}</ul>}
+              {d.data.play.trail.length > 0 && <ul className="pa-list pa-meta">{d.data.play.trail.map((t, i) => <li key={`${i}-${t}`}>{t}</li>)}</ul>}
+            </section>
+          )}
           {d.data.madeFor.length > 0 && (
             <section className="pa-card" aria-labelledby="pa-t-made">
               <h2 id="pa-t-made" className="pa-h2">Made for {name}</h2>

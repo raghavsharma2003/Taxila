@@ -10,6 +10,8 @@ export interface TeachingOut {
   teacher: string; approach: string[];
   lessons: { id: string; topic: string | null; startedAt: string; why: { code: string; n: number; text: string }[]; because?: string[] }[];
   madeFor: import("../../shared/contracts.ts").MadeForItem[];
+  /** round 8 Play: why each game / level / help level was chosen this week, and how levels went (server/reports/teaching.js) */
+  play?: { because: string[]; trail: string[] };
 }
 
 export interface GateState {
