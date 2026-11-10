@@ -8,7 +8,7 @@ const METER = { "model.call": "chat", "speech.tts": "tts", "stt.session": "stt",
 const r8 = (x) => Math.round(x * 1e8) / 1e8;
 
 /**
- * PURE. rows = [{ kind, data }] (trace_event); minutes = the lesson's length (null when unknown).
+ * PURE. rows = [{ kind, src, data }] (trace_event); minutes = the lesson's length (null when unknown).
  * A model.call recorded before the ledger (no data.usd) is priced from its tokens; an event with no usd and nothing to
  * price it from counts in `unpriced`.
  * @param {{ kind: string, data: any }[]} rows @param {{ minutes?: number|null, now?: () => string }} [o]
@@ -17,9 +17,13 @@ export function lessonCost(rows, { minutes = null, now = () => new Date().toISOS
   const meters = { chat: { usd: 0, calls: 0 }, tts: { usd: 0, chars: 0 }, stt: { usd: 0, sec: 0 }, s2s: { usd: 0, sec: 0 }, image: { usd: 0, n: 0 } };
   const lanes = {};
   let unpriced = 0;
-  for (const { kind, data: d = {} } of rows ?? []) {
+  for (const { kind, src, data: d = {} } of rows ?? []) {
     const m = METER[kind];
     if (!m) continue;
+    // the client's own d5.session is its view of the socket, not spend: only the server's relay meter counts (PLAT-46)
+    if (kind === "d5.session" && src === "client") continue;
+    // a refused or failed call is not spend: an image or speech call that answered non-2xx (PLAT-47)
+    if (d.status != null && /^\d+$/.test(String(d.status)) && !(+d.status >= 200 && +d.status < 300)) continue;
     let usd = Number.isFinite(d.usd) ? d.usd : null;
     if (usd == null && kind === "model.call" && d.tokens) usd = usdChat(d.deployment, d.tokens);
     // STT runs browser ↔ Azure (D4 WebRTC): the CLIENT reports the session's seconds through the trace batch, so its
@@ -51,7 +55,7 @@ export function lessonCost(rows, { minutes = null, now = () => new Date().toISOS
 export async function rollupLesson(q, lessonId, { write = true } = {}) {
   const [l] = await q("select started_at, ended_at from lesson where id = $1", [lessonId]);
   if (!l) throw new Error(`no lesson ${lessonId}`);
-  const rows = await q("select kind, data from trace_event where sid = $1 and kind = any($2)", [lessonId, SPEND_KINDS]);
+  const rows = await q("select kind, src, data from trace_event where sid = $1 and kind = any($2)", [lessonId, SPEND_KINDS]);
   const end = l.ended_at ? Date.parse(l.ended_at) : null;
   const cost = lessonCost(rows, { minutes: end ? (end - Date.parse(l.started_at)) / 60_000 : null });
   if (write) await q("update lesson set cost = $2 where id = $1", [lessonId, JSON.stringify(cost)]);

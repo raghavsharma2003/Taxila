@@ -197,7 +197,7 @@ async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_
       tokens: usage ? { in: usage.prompt_tokens ?? usage.input_tokens, out: usage.completion_tokens ?? usage.output_tokens } : undefined }, trace);
     // release 12 flight recorder: model.call (server/trace/model.js; never throws, never awaits)
     recordModelCall({ kind, deployment, lane, quotaLane, status: status || err?.code || "error", ms: Math.round(performance.now() - t0), attempt,
-      tokens: usage ? { in: usage.prompt_tokens ?? usage.input_tokens, out: usage.completion_tokens ?? usage.output_tokens } : undefined,
+      tokens: ledgerTokens(normUsage(usage)),
       body, out: binary ? null : out, error: err ? String(err.message).slice(0, 200) : undefined, ...(err?.filterCats ? { filterCats: err.filterCats } : {}) });
     if (lane !== "OVERFLOW") try {
       settle({ quotaLane, deployment, kind, status: status || err?.code || "error",
@@ -366,6 +366,11 @@ export function usdOf(deployment, u) {
   const cached = u.cached || 0;
   return (Math.max(0, (u.in || 0) - cached) * p.in + cached * p.cached + (u.out || 0) * p.out) / 1e6;
 }
+/**
+ * PURE. The tokens the cost ledger prices ({in, cached, out}) from a normUsage shape, or undefined. PLAT-38: the
+ * recorder got {in, out} only, so every cached prompt token was priced at the uncached rate (10x for taxila-fast).
+ */
+export const ledgerTokens = (u) => (u ? { in: u.in ?? 0, cached: u.cached ?? 0, out: u.out ?? 0 } : undefined);
 /** One usage shape from either API ({in, cached, out, reasoning}). Exported for tests. */
 export function normUsage(u) {
   if (!u) return null;
@@ -491,7 +496,7 @@ export async function chatStream(deployment, messages, opts = {}) {
   const ms = Math.round(performance.now() - t0);
   log({ kind, deployment, status: status && !err ? status : err?.code || status || "error", ms, tokens: usage ? { in: usage.in, out: usage.out } : undefined }, trace);
   recordModelCall({ kind, deployment, lane, quotaLane, status: status && !err ? status : err?.code || status || "error", ms, ttftMs,
-    tokens: usage ? { in: usage.in, out: usage.out } : undefined, body, text, error: err ? String(err.message).slice(0, 200) : undefined, ...(err?.filterCats ? { filterCats: err.filterCats } : {}) });
+    tokens: ledgerTokens(usage), body, text, error: err ? String(err.message).slice(0, 200) : undefined, ...(err?.filterCats ? { filterCats: err.filterCats } : {}) });
   if (!opts.overflowLane) try { settle({ quotaLane, deployment, kind, status: err ? (err.status || err.code) : status, usage: usage ? { in: usage.in, out: usage.out } : undefined }); }
   catch (e) { console.warn("[azure] lanes.settle failed:", e?.message); }
   // round 5 (14.2): a 429 arrives before any delta, so the stream restarts whole on the deployment's overflow twin (overflowFor)

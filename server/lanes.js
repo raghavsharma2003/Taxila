@@ -15,6 +15,8 @@
 //   - settle() records what the call used and its status (a 429 feeds the pause); never throws.
 // Untagged calls are treated as hot (never delayed): only a caller that says `quotaLane: "background"` is shaped.
 
+import { agentCohort, teacherDeployment, teacherMode } from "./agent/flags.js";
+
 /** @typedef {import("../shared/brain").QuotaLane} QuotaLane */
 
 export const QUOTA_LANES = Object.freeze(["hot", "background"]);
@@ -37,8 +39,18 @@ export function sharedHot(env = process.env) {
   const raw = env.TAXILA_SHARED_HOT;
   const listed = raw ? (parseJson(raw) ?? String(raw).split(",")) : SHARED_HOT_DEFAULT;
   const hot = [...(Array.isArray(listed) ? listed : SHARED_HOT_DEFAULT), env.DEPLOY_REPLY, env.DEPLOY_CLASSIFY, env.DEPLOY_FAST, env.DEPLOY_REALTIME,
-    env.TAXILA_CLASSIFY_FALLBACK && env.TAXILA_CLASSIFY_FALLBACK !== "0" ? env.TAXILA_CLASSIFY_FALLBACK : null];
+    env.TAXILA_CLASSIFY_FALLBACK && env.TAXILA_CLASSIFY_FALLBACK !== "0" ? env.TAXILA_CLASSIFY_FALLBACK : null,
+    // the teacher agent's turn is a hot call whenever any lesson can reach that lane (PLAT-40: its deployment was not
+    // protected, so Studio builds on taxila-gpt6 could starve a live agent turn)
+    agentLaneLive(env) ? teacherDeployment(env) : null];
   return new Set(hot.map((x) => String(x ?? "").trim()).filter(Boolean));
+}
+/** Can any lesson run on the teacher agent lane (TAXILA_TEACHER=agent, or a cohort while it is not off)? */
+function agentLaneLive(env) {
+  const mode = teacherMode(env);
+  if (mode === "off") return false;
+  if (mode === "agent") return true;
+  try { return agentCohort(env).size > 0; } catch { return false; }
 }
 /** Background share of a SHARED deployment's TPM (§1.3: 30%). */
 export const BACKGROUND_SHARE = 0.3;
