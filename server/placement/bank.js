@@ -14,10 +14,16 @@ let cache = null;
  *   options?: { text: string, correct: boolean }[], topicRef?: string, demand?: string }} PlacementItem
  */
 
-export const usable = (it) => !!it && (it.verified?.agrees === true || it.adjudicated?.keyCorrect === true) && !it.anchorMismatch && !it.retired
+/** Gradable: a checked key and a well-formed item. A retired item stays gradable so a stored round that asked it still reads. */
+export const gradable = (it) => !!it && (it.verified?.agrees === true || it.adjudicated?.keyCorrect === true) && !it.anchorMismatch
   && typeof it.ge === "number" && (it.format !== "mcq" || (it.options?.length >= 3 && it.options.filter((o) => o.correct).length === 1));
+/** Usable for a new draw: gradable and not `retired: true`. */
+export const usable = (it) => gradable(it) && !it.retired;
 
-/** All usable items. `dir` (a file URL or path) is for tests. */
+/**
+ * All gradable items, retired ones included (each keeps its `retired` flag; poolFor never draws one). `dir` (a file URL or
+ * path) is for tests.
+ */
 export function loadBank(dir) {
   if (!dir && cache) return cache;
   const base = dir ? (dir instanceof URL ? dir : new URL(`file://${String(dir).replace(/\/?$/, "/")}`)) : DEFAULT_DIR;
@@ -25,7 +31,7 @@ export function loadBank(dir) {
   if (existsSync(base)) {
     for (const f of readdirSync(base).filter((x) => FILE_RE.test(x)).sort()) {
       const d = JSON.parse(readFileSync(new URL(f, base), "utf8"));
-      for (const it of d.items ?? []) if (usable(it)) items.push({ ...it, class: d.class, subject: d.subject });
+      for (const it of d.items ?? []) if (gradable(it)) items.push({ ...it, class: d.class, subject: d.subject });
     }
   }
   if (!dir) cache = items;
@@ -41,9 +47,10 @@ export function strandFor(subject, classLevel) {
 
 /**
  * The candidate pool for a child of class C in a subject: the science lineage pools EVS and science (a class-6 child can
- * back-chain into class-5 EVS, a class-5 child can skip ahead into class-6 science). GE window [C-3, C+1.5].
+ * back-chain into class-5 EVS, a class-5 child can skip ahead into class-6 science). GE window [C-3, C+1.5]. Retired items
+ * are never drawn.
  */
 export function poolFor(subject, classLevel, bank = loadBank()) {
   const lineage = subject === "maths" ? ["maths"] : ["evs", "science"];
-  return bank.filter((it) => lineage.includes(it.subject) && it.ge >= classLevel - 3 && it.ge <= classLevel + 1.5);
+  return bank.filter((it) => usable(it) && lineage.includes(it.subject) && it.ge >= classLevel - 3 && it.ge <= classLevel + 1.5);
 }
