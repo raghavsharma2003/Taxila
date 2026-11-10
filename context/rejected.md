@@ -2940,3 +2940,16 @@ The platform audit listed calendar among six tables nothing reads. The migration
 
 ## rj-r7-audit-voice-bridge-dropped-sink (2026-11-10)
 **Tried (shipped until the audit):** `UiBridge.cachingStream = async (req, signal) => fetchSpeechStream(req, signal)`. **Broke:** `SpeechStreamFetch` has a third argument, the player's `ClauseSink`. Without it clause onsets were emitted at parse time with no `playAt` and viseme and word batches were dropped, in the child app only (the dev pages build the link without the bridge, and the bridge test called it with two arguments). This silently undid `w2gfix-clause-events-on-player-clock`. **Instead:** the wrapper is typed as `SpeechStreamFetch` and passes the sink (V-13).
+
+
+<!-- merged from inbox/r7-main-35.json -->
+## `rj-r7-auto-counter-as-gate-input` (2026-11-10)
+
+The tried approach: an automatic contradiction counter as an input to the scale gate (gate.v6, then H3, H4 and H5).
+
+**What broke:** four versions over four runs, each fitted to the last run's mechanisms and blind to the next run's.
+- H3 read `closeBeat.board`, not the page drawn.
+- H4 never compared single-page turns (1 of 8 on director16).
+- H5 passed its director16 fixture 8/8, then on director17 caught 3 of 16 with over 100 false flags: it reads the harness's `held` record, not the take, and predates the split view.
+
+Hand judging by four judges is the only screen. The counter stays a development aid and is never quoted as evidence.

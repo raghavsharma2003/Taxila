@@ -138,7 +138,7 @@ Paths follow `docs/design/round7/OWNERSHIP.md`; read it for the exact split.
 
 ### 5. games (audit only; owner: games)
 
-**Paths:** `server/play`, `src/play`, `src/modules` (not `whiteboard/`), `data/play`, `shared/play.ts`, `shared/engine-catalog.js`, `shared/engine-topic-map.json`, `server/forge3/live.js`, `play-cert.js`, `certs/`, `server/forge/g2`, `server/routes/modules.js`, `modules.html`.
+**Paths:** `server/play`, `src/play`, `src/modules` (not `whiteboard/`), `data/play`, `shared/play.ts`, `shared/engine-catalog.js`, `shared/engine-topic-map.json`, `server/forge3/live.js`, `play-cert.js`, `certs/`, `server/forge/g2`, `modules.html`.
 
 **Look for:**
 - Play each family's logic against its own kit: a game that accepts a wrong answer, rejects a right one, or can be won by tapping at random.

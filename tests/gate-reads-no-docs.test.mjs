@@ -8,7 +8,9 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const TESTS = new URL("./", import.meta.url).pathname;
-const NAMES_DOCS_ON_PURPOSE = new Set(["r4-content-packaged.test.mjs", "r4-content-serving-files.test.mjs", "gate-reads-no-docs.test.mjs"]);
+// r7-audit-docs.test.mjs is the one suite whose subject IS the docs: it checks that the entry pages (HANDOFF, CLAUDE.md, the
+// round-7 pages, OWNERSHIP) agree with the repo, so it has to read them (main, integration 22).
+const NAMES_DOCS_ON_PURPOSE = new Set(["r4-content-packaged.test.mjs", "r4-content-serving-files.test.mjs", "gate-reads-no-docs.test.mjs", "r7-audit-docs.test.mjs"]);
 const DOCS_PATH = /\.\.\/docs\/|\.\.\/\.\.\/docs\/|["'`]docs\/|ROOT ?\+ ?["'`]docs|["'`]docs["'`]\s*,|\bat\(["'`]docs|\bsrc\(["'`]docs|\bread\(["'`]docs/;
 
 function walk(d, out = []) {

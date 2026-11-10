@@ -6465,3 +6465,27 @@ Method: scripts in `docs/design/round7/audit/seams-scripts/` over the working tr
 - `m-audit-catalogue-usable` (2026-11-10): Studio catalogue at int/r6 21a: 385 topic files; games ok 368, unchecked 9, missing 4, unsafe string 1, safety-excluded 3; cross-check pass 369, fail 7, missing 9. 13 records whose check did not pass still served 102 whiteboard boards (game and explainer withheld). Explainer library: 316 of 316 entries pass truth and expand
 - `r7-audit-teacher-lanes` (2026-11-10): Teacher audit 2026-11-10 (int/r6 21a, code read, n/a model): on default flags every child is on the Director lane (agent lane only via TAXILA_TEACHER=agent or TAXILA_TEACHER_AGENT_FOR; neither is set in infra/ or deploy scripts); the script walk is on and walks 4 topics (data/lesson-scripts: c4 ch05 t01, c5 ch02 t01-t02, c6 ch06 t01); the other 826 kit topics run the kit path
 - `r7-audit-teacher-agent-clip` (2026-11-10): Agent lane prompt clips (server/agent/prompt.js): over data/kits/*.json, 1,666 of 25,194 item prompts (hi+en) exceed the 180-char offer clip and 930 the 200-char card clip; 669 of 830 topics have more than the 4 key ideas shown (audit TEACHER-06)
+
+
+<!-- merged from inbox/r7-main-35.json -->
+## `ms-r7-director17-hand-2026-11-10` (2026-11-10)
+
+director17: the held board on integration 21. 16 lessons, 1,479 calls, about $1.015, run by main. Counted by hand by 4 judges on Opus 5.5.
+
+| Line | Count |
+|---|---|
+| Beats taught | 283/283 |
+| Verdicts | 247/247 |
+| Misgrades | 0 |
+| False keys | 0 |
+| Held-cost contradictions (teaching said over a board that does not show it) | 0 |
+| Her words against the board | **8** (c4 3, c5-t01 3, c5-t02 1, c6 1) |
+| An unsaid card's board on screen | **8** (c4 4, c5-t01 3, c5-t02 1) |
+
+The judges reported 16 contradictions; main ruled them into the last two rows and says so in the write-up.
+
+Listening is 3 in all four topics. Register fell to 3 in c4. Picture requests: 11 of 16 true.
+
+The automatic counter (H5) caught 3 of 16, with over 100 false flags.
+
+Full write-up: docs/design/round7/judgements/director17-2026-11-10.md.

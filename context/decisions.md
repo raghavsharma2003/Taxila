@@ -9459,3 +9459,30 @@ The owner's directive of 2026-11-10 (CLAUDE.md carries the same text). Fable 5.2
 
 ## dc-r7-audit-voice-call-open-time-limit (2026-11-10)
 `CascadeLink.open()` limits the token request and the call's connection request to `openTimeoutMs` (10 s, the same as the channel-open wait) each. A stalled request used to leave the dock on 'getting ready to listen' with no talk button, and a reconnect never gave up. Past the limit the link falls back to push-to-talk recording, which also ends the hands-free expectation in the bridge.
+
+
+<!-- merged from inbox/r7-main-35.json -->
+## `dc-r7-script-walk-v6-9` (2026-11-10)
+
+The held board stays. Turns that teach nothing hold it too, and request handling becomes one table.
+
+**Brain:**
+- **N1:** a turn with no unit part (aside, acknowledgement, break, stop or goodbye menu) sends the board that is up and does not advance the unit. The predicates throw on these paths.
+- **N2:** a bridge belongs to the next card's unit.
+- **T1:** one request table, request x beat kind -> one response shape, with a test per row from director17.
+- **A5:** the aside acknowledgement only when the reply is about the aside.
+- **R6:** authored lines are never re-inflected; one step opener per turn; the picture line is punctuated.
+
+**Studio:** S10 the split second view uses only the held board's own parts; S11 'barabar' for equal parts; the seam draws only the held intent; the harness records the split.
+
+**Learning (D12):** bridges lose their own board; no board shows the answer its next card asks for; c4's s2 points model one grouping.
+
+**Why:** held cost was 0 and about 214 of 221 board changes were right, so the held board removed the problem it was chosen for. What is left is nine turns that teach nothing and still moved the board, two bridges, and one card's split view. Listening has sat at 3 through eight single fixes because each patched one request on one beat kind.
+
+**Clauses:** 1 (held cost) not triggered; 2 (listening) taken as T1; 3 (misgrades) not triggered; 4 (the counter) taken, H5 retired as a gate input.
+
+**Reverse if, in director18:**
+- an unsaid board is on screen with N1 in place: Studio's seam refuses any board whose unit has no spoken part that turn;
+- listening is still below 3.5 with T1: the failing rows are re-authored with Learning per topic before any runtime change;
+- held cost is above 0: that unit gets paging back;
+- any misgrade: no paid run until the key matrix covers it.

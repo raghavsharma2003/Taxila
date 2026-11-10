@@ -27211,6 +27211,27 @@
    "title": "w2g-expressive-layer-built (default on for DragonHD) against rj-ssml-delivery-plan-2026-10-04 (listeners preferred plain): the blind test is still pending (audit V-27)",
    "at": "2026-11-10",
    "source": "inbox/r7-audit-voice.json"
+  },
+  {
+   "id": "ms-r7-director17-hand-2026-11-10",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "director17: the held board (Brain v6.8 + Studio seam + Learning D11) on int/r6 2450f67ec, run by main, 16 lessons, 1,479 calls ~$1.015; counted by hand by 4 Claude judges on Opus 5.5 (0-based rows): beats 283/283, verdicts 247/247, misgrades 0, false keys 0, held-cost contradictions 0 in all four topics, board changes in the right place about 214/221; the judges reported 16 contradictions, ruled by main into 8 words-against-board (c4 3, c5-t01 3, c5-t02 1, c6 1) and 8 turns with an unsaid card's board on screen (c4 4, c5-t01 3, c5-t02 1); listening 3 in all four topics, register c4 3.5 to 3, promises c4 3.5 to 3; picture requests 11/16 true. The gate's automatic counter H5 caught 3 of 16 with over 100 false flags.",
+   "source": "inbox/r7-main-35.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-9",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Script walk v6.9: the held board stays (clause 1 not triggered, held cost 0); turns that teach nothing hold it too, and request handling becomes one table. Brain: N1 a turn with no unit part (aside question or return, acknowledgement, break, stop or goodbye menu) sends the board that is up with no switchTo and does not advance the unit, predicates throw on these paths with director17's nine rows as fixtures; N2 a bridge belongs to the next card's unit and switches at its first spoken part; T1 one request table (request x beat kind -> one response shape) with a test per row from director17 (Hindi/clarify re-says the live part in different authored words, never verbatim, never a skip; a miss after a spent simpler gives the key; 'pata nahi' at a check-in poses the card first; a request arriving where an aside reply is expected is served as that request; an aside with no card open is not parked 'is sawaal ke baad'; 'haan' in a worked step is the next step); A5 the aside acknowledgement only when the reply is about the aside, 3+ forms; R6 authored lines never re-inflected, one step opener per turn, picture line punctuated. Studio: S10 the split second view is built only from the held board's own parts (c5-t01 e2 invented a 1-part bar); S11 'barabar' for equal parts, never 'alag-alag'; the seam draws only the held intent when there is no switchTo; the harness records the split. Learning D12: bridges lose bridgeBoard; c5-t02 worked board hides the yourStep answer, c2 on unnamed bars, e1 why no longer states e2's key; c4 s2 points model one grouping; validator: no board shows the answer its next card asks. Clause 2 (listening < 3.5) taken as T1; clause 4 taken: H5 retired as a gate input. Reverse in director18: an unsaid board on screen with N1 in place -> Studio's seam refuses any board whose unit has no spoken part that turn; listening still < 3.5 with T1 -> the failing rows are re-authored with Learning per topic before any runtime change; held cost above 0 -> that unit gets paging back; any misgrade -> no paid run until the key matrix covers it.",
+   "source": "inbox/r7-main-35.json"
+  },
+  {
+   "id": "rj-r7-auto-counter-as-gate-input",
+   "kind": "rejection",
+   "at": "2026-11-10",
+   "title": "An automatic contradiction counter as an input to the scale gate (gate.v6, H3, H4, H5). Four versions over four runs: H3 read closeBeat.board instead of the page drawn; H4 never compared single-page turns and read an overwritten ref (1 of 8 on director16); H5 was fixtured on director16's 8 rows and passed 8/8, then on director17 caught 3 of 16 with over 100 false flags, because it reads the harness's held record rather than the take and predates the split view. Each version was fitted to the last run's mechanisms and blind to the next run's. Hand judging by four judges is the only screen; the counter stays a development aid and is never quoted as evidence.",
+   "source": "inbox/r7-main-35.json"
   }
  ],
  "edges": [
@@ -43508,6 +43529,31 @@
    "src": "open-r7-audit-voice-expressive-default",
    "rel": "constrains",
    "dst": "rj-ssml-delivery-plan-2026-10-04"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-9",
+   "rel": "measured_by",
+   "dst": "ms-r7-director17-hand-2026-11-10"
+  },
+  {
+   "src": "dc-r7-held-board",
+   "rel": "measured_by",
+   "dst": "ms-r7-director17-hand-2026-11-10"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-9",
+   "rel": "part_of",
+   "dst": "dc-r7-held-board"
+  },
+  {
+   "src": "rj-r7-auto-counter-as-gate-input",
+   "rel": "measured_by",
+   "dst": "ms-r7-director17-hand-2026-11-10"
+  },
+  {
+   "src": "rj-r7-auto-counter-as-gate-input",
+   "rel": "constrains",
+   "dst": "dc-r7-script-walk-v6-9"
   }
  ]
 }

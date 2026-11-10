@@ -14,9 +14,5 @@ test("FACE-11: unused face files, props and exports are gone", () => {
   assert.doesNotMatch(src("src/face-puppet/PuppetFace.tsx"), /p\.gentle/);
 });
 
-test("FACE-11: the patch for app's dead code applies (or is already applied)", () => {
-  const cwd = new URL("..", import.meta.url);
-  try { execSync("git apply --check docs/patches/to-app/008-face-dead-code.patch", { cwd, stdio: "pipe" }); } // not applied yet
-  catch { execSync("git apply --check -R docs/patches/to-app/008-face-dead-code.patch", { cwd, stdio: "pipe" }); } // applied by app
-  assert.match(src("docs/patches/to-app/008-face-dead-code.patch"), /getTutors[\s\S]*SITE_TUTORS|SITE_TUTORS[\s\S]*getTutors/);
-});
+// The app-owned half of FACE-11 (getTutors, chooseTutor, TeacherPortrait, SITE_TUTORS) is deleted by the app audit with its own
+// test; a gate test does not assert on a patch file (tests/gate-reads-no-docs.test.mjs). Patch status: docs/patches/INDEX.md.
