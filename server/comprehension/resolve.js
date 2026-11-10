@@ -81,6 +81,10 @@ export function resolveAttempt(a, events, laterAttempts = [], now = Date.now()) 
   }
   const outcome = st.resolvedDelayed ? "resolved_delayed" : st.resolvedNext ? "resolved_next" : st.repairedNow ? "repaired_now" : null;
   const final = st.resolvedDelayed || now - at >= HORIZON_MS;
+  // Nothing graded on the skill after the re-teach, ever: no evidence about the method, so no reward either way (the
+  // "contaminated" shape). Scored as a failure it added a miss to that method's shared posterior for every child
+  // (audit LEARN-27).
+  if (!outcome && final && !firstLater) return { outcome: "contaminated", final: true, reward: null, stages: st };
   return { outcome: outcome ?? (final ? "failed" : null), final, reward: outcome || final ? armReward(st) : null, stages: st };
 }
 
