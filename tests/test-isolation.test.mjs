@@ -60,3 +60,76 @@ test("no suite writes process.env or globalThis at module level (npm test runs t
   assert.deepEqual(fresh, [], "new module-level writes: they leak into every other suite under `npm test` but not into the CI shards. "
     + "Set the value inside the test (before/after) or pass an env object; see the header of tests/test-isolation.test.mjs");
 });
+
+// ── Round 8, integration 28: two more leak shapes the leak check (scripts/test-leak-check.mjs) found, now caught statically ──
+//
+// (1) KILL SWITCHES. A test that ASSIGNS a Director/Brain/Studio/Loop kill switch (TAXILA_R7_*, TAXILA_R8_*, TAXILA_P5_*,
+//     STUDIO_*, TAXILA_HOME_*) changes what every later file in the same process runs, unless the file puts it back. Evidence of
+//     a restore, any one of: a `delete process.env.X` in the file, a read of `process.env.X` that is not an assignment (the save),
+//     a `{ ...process.env }` snapshot, or the name in a list that a dynamic `process.env[k] =` / `delete process.env[k]` walks.
+//     (Module-level writes are the other test above; this one is about writes inside tests and hooks.)
+//
+// (2) THE SCRIPT CACHE. server/director/script.js's scriptFor reads each topic's real lesson script ONCE per process and keeps
+//     it (keyed by topic id). A file that walks the REAL kits through the Director or the compiler (it lists data/kits/ and calls
+//     initLessonState / step / compile) fills that cache with real scripts; a later file that drives a mini-kit on the same topic
+//     id then walks the real script instead of its own items (kit-budget-c4 → learner-live, p5-interaction-director,
+//     r7-brain-methods, int/r6 integration 28). A file-level after() runs only when EVERY file is done, so the file must end
+//     with a test that calls setScriptForTest() (no arguments: clears the cache).
+const KILL_SWITCH = /^(TAXILA_(R7|R8|P5)_|STUDIO_|TAXILA_HOME_)/;
+
+/** Kill-switch names a suite assigns with no restore evidence in the same source → ["NAME", …]. PURE. */
+export function unrestoredKillSwitches(src) {
+  src = String(src);
+  const assigned = new Set();
+  for (const m of src.matchAll(/(?<![\w.])process\.env\.([A-Z][A-Z0-9_]*)\s*(?:\?\?|\|\||&&)?=(?!=)|process\.env\[(["'`])([A-Z][A-Z0-9_]*)\2\]\s*=(?!=)/g)) {
+    const n = m[1] ?? m[3];
+    if (KILL_SWITCH.test(n)) assigned.add(n);
+  }
+  if (!assigned.size) return [];
+  if (/\{\s*\.\.\.process\.env\s*\}|Object\.assign\(\s*\{\}\s*,\s*process\.env\s*\)/.test(src)) return [];
+  const dynamic = /process\.env\[\s*[A-Za-z_$][\w$]*\s*\]\s*=(?!=)|delete process\.env\[/.test(src);
+  return [...assigned].filter((n) => {
+    const deleted = new RegExp(`delete process\\.env\\.${n}\\b`).test(src);
+    const read = new RegExp(`(?<!delete\\s)process\\.env\\.${n}\\b(?!\\s*(?:\\?\\?|\\|\\||&&)?=(?!=))`).test(src);
+    const listed = dynamic && new RegExp(`["'\`]${n}["'\`]|\\b${n}\\s*:`).test(src);
+    return !(deleted || read || listed);
+  });
+}
+
+/** True when the suite (plus the one-level fixtures it imports, passed as `fixtures`) walks every real kit through the Director
+ *  or compiler and has no setScriptForTest() call to clear the script cache after. PURE. */
+export function leavesScriptCache(src, fixtures = "") {
+  const all = `${src}\n${fixtures}`;
+  const walksRealKits = /readdirSync\([^)]*kits/.test(all) && /\b(initLessonState|compileWithReport|compile)\(/.test(all);
+  return walksRealKits && !/setScriptForTest\(\s*\)/.test(all);
+}
+
+test("unrestoredKillSwitches / leavesScriptCache: the leak shapes, and the restores that are fine", () => {
+  const set = 'process.env.TAXILA_R8_KNOWS = "off";';
+  assert.deepEqual(unrestoredKillSwitches(`test("x", () => { ${set} assert.ok(1); });`), ["TAXILA_R8_KNOWS"]);
+  assert.deepEqual(unrestoredKillSwitches(`test("x", () => { process.env.STUDIO_PHONE_PLAY = "1"; });`), ["STUDIO_PHONE_PLAY"]);
+  assert.deepEqual(unrestoredKillSwitches(`${set}\nafterEach(() => { delete process.env.TAXILA_R8_KNOWS; });`), [], "a delete restores");
+  assert.deepEqual(unrestoredKillSwitches(`const s = process.env.TAXILA_R8_KNOWS; ${set}\nafter(() => { process.env.TAXILA_R8_KNOWS = s; });`), [], "a saved read restores");
+  assert.deepEqual(unrestoredKillSwitches(`const K = ["TAXILA_R7_SCRIPT"]; process.env.TAXILA_R7_SCRIPT = "off"; for (const k of K) delete process.env[k];`), [], "a list walked by a dynamic restore");
+  assert.deepEqual(unrestoredKillSwitches(`const SAVED = { ...process.env }; ${set}`), [], "a whole-env snapshot");
+  assert.deepEqual(unrestoredKillSwitches(`process.env.M3_RUNNER = "vm"; if (process.env.TAXILA_R8_KNOWS === "off") {}`), [], "other names, and comparisons, are not this rule");
+  assert.equal(leavesScriptCache('readdirSync(new URL("data/kits/", ROOT)); initLessonState({});'), true);
+  assert.equal(leavesScriptCache('readdirSync(new URL("data/kits/", ROOT)); initLessonState({}); test("c", () => { setScriptForTest(); });'), false);
+  assert.equal(leavesScriptCache('setScriptForTest("t", {}); readdirSync(new URL("data/kits/", ROOT)); initLessonState({});'), true, "setting a script is not clearing the cache");
+  assert.equal(leavesScriptCache('initLessonState({})'), false, "a mini-kit suite never lists data/kits");
+});
+
+test("no suite assigns a kill switch without restoring it; none leaves the real-script cache filled", () => {
+  const read = (p) => { try { return readFileSync(p, "utf8"); } catch { return ""; } };
+  const env = [], cache = [];
+  for (const f of readdirSync(DIR).filter((n) => n.endsWith(".test.mjs")).sort()) {
+    const src = readFileSync(DIR + f, "utf8");
+    for (const n of unrestoredKillSwitches(src)) env.push(`${f} ${n}`);
+    const fixtures = [...src.matchAll(/from\s+["']\.\/fixtures\/([\w.-]+)["']/g)].map((m) => read(`${DIR}fixtures/${m[1]}`)).join("\n");
+    if (leavesScriptCache(src, fixtures)) cache.push(f);
+  }
+  assert.deepEqual(env, [], "these suites assign a kill switch and never put it back (delete it in an afterEach/finally, or save and restore it): "
+    + "it decides which code path every later suite in the same process runs");
+  assert.deepEqual(cache, [], "these suites walk the real kits through the Director or compiler and never clear server/director/script.js's per-topic "
+    + "script cache: end the file with test(\"cleanup\", () => { setScriptForTest(); }) (see tests/director-mounts.test.mjs)");
+});
