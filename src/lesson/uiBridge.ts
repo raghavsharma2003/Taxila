@@ -20,7 +20,7 @@ import type { LinkEvent, TeacherLink } from "./link.ts";
 import { defaultLinkFactory, type LinkFactory, type RuntimeDeps } from "./runtime.ts";
 import { Store } from "./store.ts";
 import { TextLink } from "./textLink.ts";
-import { fetchSpeechStream, PCM_RATE } from "./ttsStream.ts";
+import { fetchSpeechStream, PCM_RATE, type SpeechStreamFetch } from "./ttsStream.ts";
 // ship5 p1-duplex: the hands-free duplex mode (ON by default; kill switch: ?duplex=0, TAXILA_DUPLEX=0, VITE_DUPLEX=0) and
 // the face seam it drives (FACE-BRIDGE.md).
 import { resolveDuplexMode, resolveDuplexLane, duplexExpected } from "../duplex/flags.ts";
@@ -173,7 +173,8 @@ export class UiBridge {
         void resolveDuplexMode().then((m) => { if (m !== "on" && this.link === cascade) this.store.set({ duplexExpected: false }); }, () => {});
         link = cascade;
       } else if (mode === "text") {
-        link = new TextLink({ lessonId: ctx.lessonId, levels: ctx.levels, speech: this.cachingSpeech });
+        // audit V-14: the stream too, so pause holds her voice and resume has the replay buffer
+        link = new TextLink({ lessonId: ctx.lessonId, levels: ctx.levels, speech: this.cachingSpeech, stream: this.cachingStream });
       } else {
         link = defaultLinkFactory(mode, ctx);
       }
@@ -319,9 +320,10 @@ export class UiBridge {
   };
 
   /** Cascade: pass the PCM stream through untouched and keep a WAV copy of what arrived. */
-  private cachingStream = async (req: TtsRequest, signal: AbortSignal): Promise<ReadableStream<Uint8Array>> => {
+  // audit V-13: the player's clause sink passes through (without it every line lost lip-sync and board timing)
+  private cachingStream: SpeechStreamFetch = async (req, signal, sink) => {
     await this.waitHold(signal);
-    const body = await fetchSpeechStream(req, signal);
+    const body = await fetchSpeechStream(req, signal, sink);
     const parts: Uint8Array[] = [];
     let kept = false;
     const keep = () => {

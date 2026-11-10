@@ -458,7 +458,7 @@ export class LessonRuntime {
    */
   retryNow(): Promise<boolean> {
     if (this.state.phase !== "live") return Promise.resolve(false);
-    if (this.outbox.kick()) return Promise.resolve(true);
+    if (this.outbox.kick(this.state.lessonId ?? undefined)) return Promise.resolve(true);
     return this.resendHeld();
   }
 
@@ -470,7 +470,7 @@ export class LessonRuntime {
   async fixAnswer(text: string): Promise<"edited" | "new" | "none"> {
     const t = text.trim();
     if (!t || !this.live()) return "none";
-    if (await this.outbox.edit(t)) return "edited";
+    if (await this.outbox.edit(t, this.state.lessonId ?? undefined)) return "edited";
     this.say(t);
     return "new";
   }
@@ -525,7 +525,7 @@ export class LessonRuntime {
   private onOnline = (): void => {
     if (this.state.phase !== "live") return;
     // An answer still being delivered is waiting out a retry delay: send it NOW (RC within 3 s, §4.7).
-    if (this.outbox.kick()) return;
+    if (this.outbox.kick(this.state.lessonId ?? undefined)) return;
     if (this.state.held.length || this.state.failure?.kind === "send") void this.resendHeld();
   };
 
@@ -729,7 +729,8 @@ export class LessonRuntime {
   /** ship5 fixer (B3): the merged turn after a duplex revoke (see child_final). */
   private async revokedTurn(input: ChildInput, sentText: string): Promise<void> {
     const rest = freshWords(input.childText, sentText);
-    if (await this.outbox.edit(input.childText)) {
+    if (await this.outbox.edit(input.childText, this.state.lessonId ?? undefined)) {
+      this.link?.keepNextReply?.(); // audit V-05: the one reply now answers the merged words; it is not the revoked one's
       // the revoked turn was still in flight: the merged words replace it under its turnSeq; if it landed meanwhile the
       // server replays it (editLanded) and runTurn then sends the new words alone
       this.revokeRest = rest ? { ...input, childText: rest } : null;

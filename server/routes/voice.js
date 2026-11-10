@@ -416,7 +416,15 @@ async function turnAudio(req, res, body) {
     return;
   }
   await settleSpec("turn done");
-  if (early.opened) return early.finish(out);
+  if (early.opened) {
+    // audit V-20: the turn prewarmed this reply (brain/turn.js) although it was streamed here: its speech jobs are aborted
+    // now (before, they ran to the end, a second synthesis of every streamed reply), and the streamed reply counts once in
+    // the guardian's speech rate limit like every other reply
+    const s = out?.teacherReplySeq;
+    const dup = Number.isInteger(s) ? prewarmTake(String(body.lessonId), s, tokenHash) : null;
+    if (dup) { dup.abort.abort(); allowSpeech(dup.guardianId); }
+    return early.finish(out);
+  }
   const lessonId = String(body.lessonId);
   const seq = out?.teacherReplySeq;
   let warm = Number.isInteger(seq) && !out.late ? prewarmTake(lessonId, seq, tokenHash) : null;
