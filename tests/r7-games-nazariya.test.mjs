@@ -14,7 +14,7 @@ import { solidLogic, SOLID_MAL, geoOf, visibleAt } from "../src/play/families/na
 import { coverage, entryKey, currentLevel, seedOf, hasPlay, entryFor } from "../server/play/levels.js";
 import { hiddenOf } from "../server/play/react.js";
 import { playActOf } from "../server/director/play-verbs.js";
-import { MODES } from "../shared/play.ts";
+import { CHANCE_WEIGHT, GAME_WEIGHT, MODES } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
 import { pickLevels } from "../src/play/core/pick.ts";
 import { gradeLevel } from "../src/play/core/replay.ts";
@@ -68,6 +68,8 @@ for (const e of NEW()) {
       assert.ok(v, level.levelId);
       const g = gradeLevel(logic, v, env(logic.solve(v)), { final: true });
       assert.equal(g.verdict, "solved"); assert.ok(g.clean);
+      // tri/more is one corner placed (a lucky tap lands it): its correct enters at the chance-adjusted weight (GAMES-03)
+      assert.equal(g.evidence[0].weight, e.goal === "more" ? CHANCE_WEIGHT : GAME_WEIGHT);
       assert.equal(logic.shortcut(v), null);
       for (const [mal, kit] of Object.entries(e.misMap)) {
         const acts = logic.malActs(v, mal);

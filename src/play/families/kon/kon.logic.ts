@@ -367,5 +367,7 @@ function grade(level: PlayLevel<KonParams>, acts: PlayActEnvelope<KonAct>[]): Pl
 
 export const konLogic: FamilyLogic<KonParams, KonState, KonAct> = {
   family: "kon", modes: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends"], malRules: KON_MAL,
+  // zone/kind: one turn into a wide zone wins (a lucky tap 10 to 26 %, games audit GAMES-03): its correct enters at CHANCE_WEIGHT
+  oneDecision: ["kind"],
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };

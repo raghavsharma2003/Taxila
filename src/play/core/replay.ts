@@ -7,8 +7,10 @@
 //     misconception, a discriminating correct); a decisive refusal (e.g. "done" with a composite leaf) → incorrect;
 //   - the VERDICT is the end state: solved if the goal is met at the end (a child who recovered after a slip still solved
 //     the level; the evidence still records the slip);
-//   - no acts → no evidence; the game weight is GAME_WEIGHT; mastery is never decided here.
-import { GAME_WEIGHT, type FamilyLogic, type Moment, type PlayActBody, type PlayActEnvelope, type PlayEvidence, type PlayGrade, type PlayLevel, type PlayVerdict } from "../../../shared/play.ts";
+//   - no acts → no evidence; the game weight is GAME_WEIGHT; mastery is never decided here;
+//   - a correct outcome on a one-decision goal (logic.oneDecision) enters at CHANCE_WEIGHT, the arena's chance-adjusted
+//     weight: a lucky first tap lands those 20 to 40 % of the time (games audit GAMES-03). Its misses keep GAME_WEIGHT.
+import { CHANCE_WEIGHT, GAME_WEIGHT, type FamilyLogic, type GameWeight, type Moment, type PlayActBody, type PlayActEnvelope, type PlayEvidence, type PlayGrade, type PlayLevel, type PlayVerdict } from "../../../shared/play.ts";
 
 export interface Replayed<S> { state: S; moments: Moment[]; refused: number; refusals: { seq: number; code: string }[] }
 
@@ -48,7 +50,8 @@ export function gradeLevel<P, S, A extends PlayActBody>(logic: FamilyLogic<P, S,
   const clean = !r.moments.some((m) => m.kind === "misconception_consequence");
   const verdict: PlayVerdict = acts.length === 0 ? "ungraded" : solved ? "solved" : opts.partial ? "partial" : "not_yet";
   const evidence: PlayEvidence[] = [];
-  const base = { skillId: level.skillId, via: "game" as const, weight: GAME_WEIGHT as typeof GAME_WEIGHT, levelId: level.levelId };
+  const base = { skillId: level.skillId, via: "game" as const, weight: GAME_WEIGHT as GameWeight, levelId: level.levelId };
+  const chance = !!level.goal && !!logic.oneDecision?.includes(level.goal);
   if (first) {
     if (first.kind === "misconception_consequence") {
       const kit = first.mis ? level.mal[first.mis] : undefined;
@@ -57,7 +60,7 @@ export function gradeLevel<P, S, A extends PlayActBody>(logic: FamilyLogic<P, S,
     else if (first.kind === "decisive_refusal") evidence.push({ ...base, outcome: "incorrect", actSeq: first.seq });
     else if (first.kind === "solved") {
       const d = level.proof.discriminates[0];
-      evidence.push({ ...base, outcome: "correct", ...(d ? { discriminates: d } : {}), actSeq: first.seq });
+      evidence.push({ ...base, outcome: "correct", ...(d ? { discriminates: d } : {}), ...(chance ? { weight: CHANCE_WEIGHT } : {}), actSeq: first.seq });
     }
   } else if (opts.final && acts.length > 0 && !solved) {
     evidence.push({ ...base, outcome: opts.partial ? "partial" : "incorrect", actSeq: acts[acts.length - 1].seq });
