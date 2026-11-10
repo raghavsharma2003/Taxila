@@ -1,0 +1,201 @@
+{
+  "v": 1,
+  "id": "gen-c4-maths-ch05-t01-343d63a3",
+  "source": "generated",
+  "topicId": "c4-maths-ch05-t01",
+  "archetype": "slice-at@1",
+  "hash": "343d63a32fe0e90ece3f6cbdf3624616",
+  "predicate": {
+    "ok": true,
+    "why": null
+  },
+  "render": {
+    "byViewport": {
+      "p360": true,
+      "p412": false,
+      "l1366": true
+    },
+    "fails": {
+      "p360": [],
+      "p412": [
+        "Q1.legible"
+      ],
+      "l1366": []
+    }
+  },
+  "images": [
+    {
+      "vp": "p360",
+      "file": "piece-p360.png",
+      "sha256": "e2de7c76d6952b032acb58edd6b0d66a8c17e6bb6637b0a9bee88dc7509b2e2e"
+    },
+    {
+      "vp": "p412",
+      "file": "piece-p412.png",
+      "sha256": "64b96cdbe2b1c110d398b3385f73cf8ed5d7f724388208dd55e36b2b20480efc"
+    },
+    {
+      "vp": "l1366",
+      "file": "piece-l1366.png",
+      "sha256": "b93e1710c99ec605d14ac8386d288ba696be4d00006ff4b602bc231aa615e0d3"
+    }
+  ],
+  "target": {
+    "topicId": "c4-maths-ch05-t01",
+    "archetype": "slice-at@1",
+    "misconceptionId": "c4-maths-ch05-t01-m-unequal-parts",
+    "skillId": "c4-maths-ch05-t01-s1",
+    "beat": "rem:c4-maths-ch05-t01-m-unequal-parts",
+    "when": "remediation",
+    "check": "c4-maths-ch05-t01-s1:c1"
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-10T14:40:38.810Z"
+  },
+  "topic": {
+    "mixup": {
+      "id": "c4-maths-ch05-t01-m-unequal-parts",
+      "belief": "Thinks the parts need not be equal to be called halves, thirds or quarters",
+      "signs": [
+        "Calls any 3 pieces 'thirds'",
+        "Cuts a cake into 4 uneven pieces and calls each a quarter",
+        "Counts pieces without checking size"
+      ]
+    },
+    "cards": [
+      {
+        "prompt": "A roti is cut into 4 equal pieces. What do we call one piece?",
+        "key": "One quarter, 1/4",
+        "acceptable": [
+          "1/4",
+          "quarter",
+          "one fourth",
+          "ek chauthaai"
+        ]
+      },
+      {
+        "prompt": "What is half of 10 laddoos?",
+        "key": "5",
+        "acceptable": [
+          "five",
+          "paanch"
+        ]
+      },
+      {
+        "prompt": "Share 12 bananas equally among 3 friends. What is 1/3 of 12?",
+        "key": "4",
+        "acceptable": [
+          "four",
+          "chaar"
+        ]
+      },
+      {
+        "prompt": "One cake is shared by 2 children, and another cake of the same size is shared by 3 children. Guess: who gets a bigger piece, a child in the group of 2 or in the group of 3?",
+        "key": "A child in the group of 2 (1/2 is more than 1/3)",
+        "acceptable": [
+          "group of 2",
+          "the 2 group",
+          "1/2"
+        ]
+      },
+      {
+        "prompt": "You said 1/2 is bigger than 1/4. Why, when 4 is bigger than 2?",
+        "key": "The bottom number is how many equal parts the whole is cut into; more parts means each part is smaller",
+        "acceptable": [
+          "more pieces, smaller each",
+          "cut into more parts"
+        ]
+      },
+      {
+        "prompt": "Watermelon A is cut into 3 pieces: one big and two small. Watermelon B is cut into 3 pieces of the same size. In which one is each piece one-third?",
+        "key": "Watermelon B",
+        "acceptable": [
+          "B",
+          "the equal one"
+        ]
+      }
+    ]
+  },
+  "spec": {
+    "archetype": "slice-at@1",
+    "skills": [
+      "c4-maths-ch05-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Bar ko equal kaato",
+      "wave": "Wave",
+      "cut": "Bar kaato",
+      "parts": "Barabar parts",
+      "exact": "BILKUL SAHI",
+      "close": "PAAS",
+      "offBy": "itna farq",
+      "runDone": "Run complete",
+      "accuracy": "accuracy",
+      "sliced": "sliced",
+      "chain": "chain",
+      "smaller": "chhota piece"
+    },
+    "waves": [
+      {
+        "title": "Equal thirds",
+        "sub": "Har piece ka size same rakho",
+        "items": [
+          {
+            "parts": 3
+          },
+          {
+            "cut": "1/3"
+          },
+          {
+            "cut": "2/3"
+          }
+        ],
+        "gravity": 1,
+        "gap": 3,
+        "marks": false,
+        "targets": "c4-maths-ch05-t01-m-unequal-parts"
+      },
+      {
+        "title": "Fair quarters",
+        "sub": "Sirf equal pieces ko naam do",
+        "items": [
+          {
+            "parts": 4
+          },
+          {
+            "cut": "1/4"
+          },
+          {
+            "cut": "1/2"
+          }
+        ],
+        "gravity": 1,
+        "gap": 3,
+        "marks": true,
+        "targets": "c4-maths-ch05-t01-m-unequal-parts"
+      },
+      {
+        "title": "Spot the whole",
+        "sub": "Teen equal pieces yaad rakho",
+        "items": [
+          {
+            "parts": 3
+          },
+          {
+            "cut": "1/3"
+          },
+          {
+            "parts": 4
+          }
+        ],
+        "gravity": 1,
+        "gap": 3,
+        "marks": false,
+        "targets": "c4-maths-ch05-t01-m-unequal-parts"
+      }
+    ]
+  }
+}

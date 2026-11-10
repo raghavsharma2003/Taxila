@@ -87,6 +87,24 @@ export function approvedVerdict(archetype, spec) {
 
 /** The approved pieces a round's reader may choose for a child who holds `misconceptionId` on `topicId` (with `because`). */
 export function approvedFor({ topicId, misconceptionId }) {
-  return [...loadApproved().values()].filter((r) => r.for?.topic === topicId && (!misconceptionId || r.for?.misconceptionId === misconceptionId))
+  return [...loadApproved().values()].filter((r) => r.source !== "catalogue" && r.for?.topic === topicId && (!misconceptionId || r.for?.misconceptionId === misconceptionId))
     .map((r) => ({ id: r.id, hash: r.hash, archetype: r.archetype, spec: r.spec, for: r.for, because: r.because }));
 }
+
+/**
+ * main's ruling (2026-11-10, after the 20-topic sample: 11 of 20 with a content fault, 2 wrong keys): a CATALOGUE piece reaches a
+ * child only with a judged pass in this store, exactly like a generated piece. Switch STUDIO_CATALOGUE_JUDGED (default "on";
+ * "off" serves the certified catalogue as before). An engine's own reviewed default spec is code, not catalogue content: it needs
+ * no judgement. Reverse when a fresh random sample of 50 unjudged pieces passes the rubric at 95% or better.
+ */
+export const catalogueNeedsJudge = (env = process.env) => String(env.STUDIO_CATALOGUE_JUDGED ?? "on").trim().toLowerCase() !== "off";
+let defaults = null;
+/** Is `spec` the archetype's reviewed engine default (shared/studio-spec*.ts defaultSpec)? */
+export async function _loadDefaults() {
+  if (defaults) return defaults;
+  const [{ ENGINE_SPECS }, { ENGINE_SPECS_EXT }] = await Promise.all([import("../../shared/studio-spec.ts"), import("../../shared/studio-spec-ext/index.ts")]);
+  defaults = new Set(Object.entries({ ...ENGINE_SPECS, ...ENGINE_SPECS_EXT }).filter(([, d]) => d?.defaultSpec).map(([a, d]) => specHash(a, d.defaultSpec)));
+  return defaults;
+}
+export const isReviewedDefault = (archetype, spec) => !!defaults && defaults.has(specHash(archetype, spec));
+await _loadDefaults().catch(() => null);

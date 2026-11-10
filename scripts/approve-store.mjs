@@ -25,7 +25,8 @@ const written = [], refused = [];
 for (const id of fs.readdirSync(PACKETS).filter((d) => fs.existsSync(path.join(PACKETS, d, "packet.json")))) {
   const p = JSON.parse(fs.readFileSync(path.join(PACKETS, id, "packet.json"), "utf8"));
   const v = verdicts.get(p.id);
-  const why = !p.target ? "not a generated candidate (no target)"
+  // (a catalogue packet — main's ruling: every catalogue piece needs a judged pass — has no target; it is FOR its topic)
+  const why = !p.target && p.source !== "catalogue" ? "neither a generated candidate nor a catalogue piece"
     : !p.predicate?.ok ? `predicate: ${p.predicate?.why}`
     : !JUDGED_SIZES.some((s) => p.render?.byViewport?.[s]) ? `render: legible at no size ${JSON.stringify(p.render?.byViewport)}`
     : !v ? "no verdict" : v.verdict !== "pass" ? `judge: ${(v.faults ?? []).map((f) => f.kind).join(", ") || "fail"}`
@@ -33,11 +34,13 @@ for (const id of fs.readdirSync(PACKETS).filter((d) => fs.existsSync(path.join(P
   // (the images judged are the images in the packet: their hashes now must be the hashes the render wrote)
   const imgOk = (p.images ?? []).every((im) => fs.existsSync(path.join(PACKETS, id, im.file)) && fileHash(path.join(PACKETS, id, im.file)) === im.sha256);
   if (why || !imgOk) { refused.push({ id: p.id, why: why ?? "an image changed after the render" }); continue; }
-  const t = p.target;
+  const t = p.target ?? { topicId: p.topicId, skillId: null, misconceptionId: null, beat: null, when: "catalogue" };
   const rec = {
     v: 1, id: p.id, approved: true, hash: p.hash, archetype: p.archetype, spec: p.spec,
     for: { topic: t.topicId, skill: t.skillId ?? null, misconceptionId: t.misconceptionId, beat: t.beat ?? null, when: t.when ?? "remediation" },
-    because: { mixup: p.topic?.mixup ?? { id: t.misconceptionId }, rule: "shown only to a child the learner model holds this mix-up for, at this beat; any other child gets the script's own board" },
+    because: p.source === "catalogue" ? { rule: "the topic's catalogue piece, shown where the tray gate certifies it; judged on rubric v1 (main's ruling 2026-11-10)" }
+      : { mixup: p.topic?.mixup ?? { id: t.misconceptionId }, rule: "shown only to a child the learner model holds this mix-up for, at this beat; any other child gets the script's own board" },
+    source: p.source ?? "generated",
     predicate: p.predicate, render: { byViewport: p.render.byViewport, images: p.images },
     judge: { verdict: "pass", by: JUDGE, promptSha256: promptSha, prompt: "data/studio-approved/JUDGE-PROMPT.md", faults: v.faults ?? [], readable: v.readable ?? null, notes: v.notes ?? null },
     generation: p.generation ?? null, approvedAt: new Date().toISOString(),

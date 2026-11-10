@@ -40,7 +40,7 @@ const NO_VIEW = {
   "fraction-bars@1": "three unnamed bars (no view without inventing a name), or a two-scale line view that does not lay out in the split's 320-wide panel (c5-t02 worked 1/6 and 1/3)",
   "shade-grid@1": "a grid with nothing shaded and its total hidden (\"1/3 of 15\": the grid IS the question)",
   "equal-groups@1": "unequal sizes [6, 3, 3] (no equal grid)",
-  "measured@1": "a six-sided polygon whose unrolled strip does not lay out in the split's 320-wide panel (c6 s1 c1)",
+  "measured@1": "(none today: the six-sided strip lays out since v6.11)",
 };
 
 test("P6: pictureTurn — every pilot card and worked board gets its view, with a line naming only what the view draws, or no view and no line (never a line without a view)", () => {
@@ -72,7 +72,7 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
   // equal-groups is 6/10 on D13's data, 8/10 before it; Studio to say whether those two boards should get one)
   assert.deepEqual(got, {
     "fraction-parts@1": "13/13", "wholes@1": "17/17", "shade-grid@1": "1/4", "equal-groups@1": "8/10", "compare@1": "0/3",
-    "fraction-bars@1": "16/19", "fraction-line@1": "42/65", "measured@1": "19/20", "shape@1": "0/7" }, JSON.stringify(got));
+    "fraction-bars@1": "16/19", "fraction-line@1": "42/65", "measured@1": "20/20", "shape@1": "1/7" }, JSON.stringify(got));
   void none;
 });
 
@@ -83,7 +83,7 @@ test("P6: a picture turn with a view is never \"kept\" — the board up is the s
   const up = BF.heldBoard(ask(null), {});
   const keep = { keepRef: up.lastRef, keepPage: up.lastPage };
   const pt = BF.pictureTurn(ask({ kind: "show" }), keep);
-  assert.equal(pt.line, "Wahi poora ab patti: 2 barabar hisse, 1 rangin, yaani aadha");
+  assert.equal(pt.line, "Wahi poora ab patti mein hai: 2 barabar hisse, 1 rangin, yaani aadha");
   // the take decides nothing again: the decided picture is drawn even when the take's own ask has lost its request
   const took = BF.heldBoard(ask(null), { ...keep, picture: pt });
   assert.ok(took.split && !took.kept && took.source === "held");
@@ -108,7 +108,7 @@ test("P6: production — the seam's take draws the picture its preselect decided
   assert.equal((await run(mk(1, null), "Ek roti ke 2 barabar tukde, ek rangin.")).state, "revealed");
   seam.studioSeam.preselectWhiteboard(mk(2, { kind: "show" }));
   const line = seam.studioSeam.preselectedAltLine(L);
-  assert.equal(line, "Wahi poora ab patti: 2 barabar hisse, 1 rangin, yaani aadha");
+  assert.equal(line, "Wahi poora ab patti mein hai: 2 barabar hisse, 1 rangin, yaani aadha");
   const k = await run(mk(2, null), `${line}. Toh kya rangin hissa 1/1 hua, haan ya nahi?`);
   assert.equal(k.state, "revealed");
   assert.ok(k.artifact.split, "the view her line describes is drawn");
@@ -132,4 +132,28 @@ test("v6.10 (director18 c5-t02 offtopic 10, c6 offtopic 10 and steering 28): a n
   // (no parts list, or no leading joint: as before — the held board from char 0)
   assert.equal(BF.heldBoard(ask(PENT, card, [{ part: "card", text: card }]), keep).screens.length, 1);
   assert.equal(BF.heldBoard(ask(PENT, card), keep).lastRef, BF.refKey(PENT));
+});
+
+test("v6.11 (director19 c5-t02 11 turns, c5-t01 3, c4 steady 46): the board up holds until her first unit part WHATEVER the intent says — a switchTo inside her joints moves to her first unit part; a switch with a joints-only line changes nothing", () => {
+  const RECT = { template: "measured@1", params: { shape: "rect", unit: "cm", w: 14, h: 9 } };
+  const PENT = { template: "measured@1", params: { shape: "pentagon", unit: "m", sides: [8, 5, 7, 6, 3], names: ["P", "Q", "R", "S", "T"] } };
+  const ask = (held, text, list) => ({ intent: { intentId: `j11:${text.length}:${JSON.stringify(held.switchTo?.atChar)}`, lessonId: "j11", kind: "whiteboard", style: { band: "B3" }, boardRef: held.board, scriptBeat: { kind: "check", ownBoard: true },
+    held }, line: { text, ...(list ? { parts: { list } } : {}) }, mode: "fresh" });
+  const up = BF.heldBoard(ask({ board: RECT, unit: "s1:c1" }, "Ek label 14 cm lamba aur 9 cm chauda hai."), {});
+  const keep = { keepRef: up.lastRef, keepPage: up.lastPage };
+  const ack = "Theek hai. Achha, yeh jaankar achha laga.", card = "Paanch kono wale khet PQRST mein PQ 8 m hai. Parimap kitna hai?";
+  const parts = [{ part: "aside", text: ack }, { part: "card", text: card }];
+  // (the held board is the one up, and the intent switches to the next card INSIDE her aside: the switch waits for her card)
+  for (const atChar of [0, 5]) {
+    const t = BF.heldBoard(ask({ board: RECT, unit: "s1:c1", switchTo: { board: PENT, unit: "s1:c2", atChar } }, `${ack} ${card}`, parts), keep);
+    assert.equal(t.screens.length, 2, `atChar ${atChar}`);
+    assert.equal(t.screens[1].from, ack.length + 1, `atChar ${atChar}: the switch is at her card`);
+    assert.equal(t.lastRef, BF.refKey(PENT));
+  }
+  // (a switch the intent puts after her first unit part stays where it was)
+  const late = ack.length + 1 + card.indexOf("Parimap");
+  assert.equal(BF.heldBoard(ask({ board: RECT, unit: "s1:c1", switchTo: { board: PENT, unit: "s1:c2", atChar: late } }, `${ack} ${card}`, parts), keep).screens[1].from, late);
+  // (joints only: nothing changes, whatever the switch says)
+  const only = BF.heldBoard(ask({ board: RECT, unit: "s1:c1", switchTo: { board: PENT, unit: "s1:c2", atChar: 3 } }, ack, [{ part: "aside", text: ack }]), keep);
+  assert.ok(only.kept && only.lastRef === keep.keepRef && only.screens.length === 1);
 });

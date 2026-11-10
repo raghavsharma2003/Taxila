@@ -315,7 +315,12 @@ test("seam bridge: on → a Studio v2 reveal goes through the tray gate (certifi
     assert.equal(p.want.need, "practice");
     assert.equal(revealPoint({ lessonId, turnSeq: 6, safety: false, beat: "explain", beatChanged: true, topicId: TOPIC, skillId: SKILL, band: "B2", lang: "hinglish", kitHash: "k1", lastPolicyRevealTurn: 0, at: 30_000, phase: "her_turn" }, { catalog }).want, null);
     const w2view = { statuses: [], onScreen: null, propose: { reveal: "w2-piece" } };
-    const v = bridge.augmentView(lessonId, w2view, p);
+    // (main's ruling 2026-11-10: a catalogue piece needs a judged pass — unjudged, the tray gate refuses it and the W2 view
+    // stands; the certified-at-this-class path below is the switch off)
+    const was = process.env.STUDIO_CATALOGUE_JUDGED;
+    process.env.STUDIO_CATALOGUE_JUDGED = "off";
+    let v;
+    try { v = bridge.augmentView(lessonId, w2view, p); } finally { if (was === undefined) delete process.env.STUDIO_CATALOGUE_JUDGED; else process.env.STUDIO_CATALOGUE_JUDGED = was; }
     if (mode === "shadow") assert.equal(v, w2view);
     else {
       // round 7 D8: the library piece is certified at this device's class, so it is proposed (it was refused while the
@@ -329,6 +334,14 @@ test("seam bridge: on → a Studio v2 reveal goes through the tray gate (certifi
     }
     bridge.detach(lessonId);
   }
+  // (the switch on — the default: the same unjudged catalogue piece is refused by the tray gate, and the W2 view stands)
+  const lessonId = "bridge-judged";
+  studioSeam.prefetch({ lessonId, purpose: "practice" });
+  const host = bridge.attach(lessonId, new StagecraftHost({ lessonId, mode: "on", catalog, builders, clock: () => 30_000 }));
+  host.input({ t: "state", key: key({ lessonId }), at: 0 });
+  const p = revealPoint({ lessonId, turnSeq: 6, safety: false, beat: "practice_set", beatChanged: true, topicId: TOPIC, skillId: SKILL, band: "B2", lang: "hinglish", kitHash: "k1", lastPolicyRevealTurn: 0, at: 30_000, phase: "her_turn" }, { catalog });
+  assert.equal(bridge.augmentView(lessonId, { statuses: [], onScreen: null, propose: { reveal: "w2-piece" } }, p).propose.reveal, "w2-piece", "an unjudged catalogue piece is not proposed");
+  bridge.detach(lessonId);
 });
 
 test("kernel point (P4): null without a host; with a host it builds a point whose want comes from the kernel view only", async () => {

@@ -1308,7 +1308,10 @@ export const studioSeam = {
         // (P6: a picture ask is decided ONCE, here — the view and her line from the same pictureTurn call; the take draws
         // exactly that decision, whatever its own ask carries)
         const req = ask.intent.request;
-        const pt = req && req.kind !== "example" ? boardFirst.pictureTurn(ask, { keepRef: L.wbPrevRef ?? null, keepPage: L.wbPrevPage ?? null }) : null;
+        // (v6.11: a second picture ask on the same held board gets the other caption shape, never the same words again)
+        const heldKey = boardFirst.refKey(ask.intent.held.board), nPic = (L.picAsks ??= {})[heldKey] ?? 0;
+        const pt = req && req.kind !== "example" ? boardFirst.pictureTurn(ask, { keepRef: L.wbPrevRef ?? null, keepPage: L.wbPrevPage ?? null, variant: nPic }) : null;
+        if (pt?.view) L.picAsks[heldKey] = nPic + 1;
         L.prePicture = { intentId: String(ask.intent.intentId), pt };
         const hr = boardFirst.heldBoard({ ...ask, line: { ...(ask.line ?? {}), text: "" } }, { keepRef: L.wbPrevRef ?? null, keepPage: L.wbPrevPage ?? null, picture: pt });
         L.preAltView = hr?.altView ?? null; L.preAltLine = hr?.altLine ?? null;

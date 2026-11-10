@@ -15,10 +15,14 @@ import path from "node:path";
 import os from "node:os";
 import { checkSpec, kitTopicAny } from "../server/stagecraft/catalogue.js";
 import { specHash, fileHash, JUDGED_SIZES } from "../server/studio/approved.js";
+import { boardTwinFor } from "../server/stagecraft/builders.js";
 
 const arg = (k, d = null) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
 const OUT = path.resolve(arg("--out", "approve-packets"));
 const CANDS = arg("--candidates"), SAMPLE = Number(arg("--catalogue-sample", "0")), SEED = Number(arg("--seed", "20261110"));
+// --catalogue-all: every catalogue game AND explainer (main's ruling 2026-11-10: the whole catalogue is re-judged on rubric v1);
+// --skip <dir>: leave out pieces that already have a packet there (a resumed run)
+const ALL = process.argv.includes("--catalogue-all"), SKIP = arg("--skip");
 
 /** A seeded shuffle (mulberry32): the same seed draws the same sample. */
 export function seededSample(list, n, seed) {
@@ -35,6 +39,14 @@ function pieces() {
     const c = JSON.parse(fs.readFileSync(path.join(CANDS, f), "utf8"));
     return { id: `gen-${c.target.topicId}-${c.hash.slice(0, 8)}`, topicId: c.target.topicId, archetype: c.archetype, spec: c.spec, mixup: c.target.misconceptionId, target: c.target, generation: c.generation, source: "generated" };
   });
+  if (ALL) {
+    const dir = path.resolve("data/studio-catalogue/topics");
+    const done = SKIP && fs.existsSync(SKIP) ? new Set(fs.readdirSync(SKIP)) : new Set();
+    return fs.readdirSync(dir).filter((f) => f.endsWith(".json")).sort().map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), "utf8"))).flatMap((r) =>
+      [["game", ""], ["explainer", "-explainer"]].filter(([k]) => r[k]?.archetype && r[k]?.spec)
+        .map(([k, suf]) => ({ id: `cat-${r.topicId}${suf}`, topicId: r.topicId, archetype: r[k].archetype, spec: r[k].spec, mixup: null, source: "catalogue", piece: k })))
+      .filter((p) => !done.has(p.id));
+  }
   if (SAMPLE > 0) {
     const dir = path.resolve("data/studio-catalogue/topics");
     const all = fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")))
@@ -69,11 +81,14 @@ try {
     const pred = checkSpec(p.archetype, p.spec, kit);
     const dir = path.join(OUT, p.id);
     fs.mkdirSync(dir, { recursive: true });
-    const art = { kind: "stagecraft", stage: { w: 1000, h: 625 }, stagecraft: { rung: "generated_spec", archetype: p.archetype, spec: pred.spec ?? p.spec, boardTwin: null } };
-    const r = pred.ok ? await judge.judge(art, { viewports: GATE_VIEWPORTS, shotDir: dir, shotTag: "piece" }) : { views: [] };
+    // (rendered as the child gets it: with its board twin, which the stage shows where the 1000-unit world is too small to play —
+    // every 360 px phone; main 2026-11-10: the twin-less renders judged a view no child sees)
+    const twin = (() => { try { return boardTwinFor({ archetype: p.archetype, family: p.archetype, need: "explain" }, p.topicId); } catch { return null; } })();
+    const art = { kind: "stagecraft", stage: { w: 1000, h: 625 }, stagecraft: { rung: p.source === "catalogue" ? "library" : "generated_spec", archetype: p.archetype, spec: pred.spec ?? p.spec, boardTwin: twin } };
+    const r = pred.ok ? await judge.judge(art, { viewports: GATE_VIEWPORTS, shotDir: dir, shotTag: "piece", young: (Number(/^c(\d+)-/.exec(p.topicId)?.[1]) || 9) <= 5, settleMs: 2500 }) : { views: [] };
     const byViewport = Object.fromEntries(JUDGED_SIZES.map((s) => [s, !!r.views.find((v) => v.vp === s)?.verdict?.pass]));
     const images = r.views.filter((v) => v.file).map((v) => ({ vp: v.vp, file: path.basename(v.file), sha256: fileHash(v.file) }));
-    const packet = { v: 1, id: p.id, source: p.source, topicId: p.topicId, archetype: p.archetype, hash: specHash(p.archetype, p.spec),
+    const packet = { v: 1, id: p.id, source: p.source, ...(p.piece ? { piece: p.piece } : {}), topicId: p.topicId, archetype: p.archetype, hash: specHash(p.archetype, p.spec),
       predicate: { ok: pred.ok, why: pred.why }, render: { byViewport, fails: Object.fromEntries(r.views.map((v) => [v.vp, v.verdict?.fails ?? []])) },
       images, ...(p.target ? { target: p.target } : {}), ...(p.generation ? { generation: p.generation } : {}), topic: topicFacts(p.topicId, p.mixup), spec: p.spec };
     fs.writeFileSync(path.join(dir, "packet.json"), JSON.stringify(packet, null, 2) + "\n");

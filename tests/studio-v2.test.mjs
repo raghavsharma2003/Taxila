@@ -222,3 +222,11 @@ test("failure-shaped labels never reach the stage (fuzz seed 5: \"NaN\" as a uni
     }
   }
 });
+
+test("fx.pop keeps every pop clear of the coach band (approval-lane pilot c4 slice-at, 2026-11-10: a miss pop on a bar falling out of the bottom was drawn over the coach line)", async () => {
+  const { FX } = await import("../src/studio-v2/core/fx.ts");
+  const fx = new FX(false, () => 0.5, () => {});
+  for (const y of [300, 560, 620, 700]) fx.pop("Barabar parts", 500, y, { size: 44, rise: 50 });
+  for (const t of fx.T) assert.ok(t.y + t.size * 0.5 <= 575, `a pop at y ${t.y} reaches the coach band`);
+  assert.equal(fx.T[0].y, 300, "a pop well above the band is where it was asked");
+});

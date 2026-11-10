@@ -263,7 +263,9 @@ function unrolled(c, tl) {
     tl.add({ id: `s${i}`, op: "line", from: [round1(x), y], to: [x1, y], weight: 3, ink: i % 2 ? "accent" : "chalk" }, 600, { gap: i ? 300 : 0 });
     tl.add({ op: "line", from: [x1, y - 9], to: [x1, y + 9], weight: 1 }, 160, { gap: 60 });
     // (a piece too short for its label has it below the line; the next above, so neighbours never overlap)
-    const lab = hide.has(i) ? "?" : `${num(v)} ${unit}`, mid = round1((x + x1) / 2), roomy = textBox(lab, "s").w + 6 <= x1 - x;
+    // (roomy at the next size up: a split board writes small labels one size up — director19 c6 steady 18, the hexagon's six
+    // "5 cm" labels collided beside the held board — so a label alternates below whenever the larger one would not fit)
+    const lab = hide.has(i) ? "?" : `${num(v)} ${unit}`, mid = round1((x + x1) / 2), roomy = textBox(lab, "m").w + 6 <= x1 - x;
     tl.add({ op: "text", at: [mid, roomy || i % 2 === 0 ? y - 18 : y + 30], text: lab, size: "s", ...(hide.has(i) ? { ink: "mark" } : {}) }, 400, { gap: 120 });
     x = x1; xs.push(x1);
   });
