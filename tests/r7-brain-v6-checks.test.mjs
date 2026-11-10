@@ -27,7 +27,7 @@ test("(b) a picture asked for, described as a thing the board does not draw (c4 
 
 test("(c) a close's why taken from a remediation (c6 offtopic T43 'wapas A par'); an authored why is not", () => {
   const whys = authoredWhys(SCRIPT("c6-maths-ch06-t01"));
-  assert.equal(borrowedWhy("Pichhle sawaal ka jawab 30 m tha, kyunki jod tabhi poora hota hai jab tum wapas A par pahunchte ho.", whys).length, 1);
+  assert.equal(borrowedWhy("Pichhle sawaal ka jawab 30 m tha, kyunki jod tabhi poora hota hai jab tum wapas P par pahunchte ho.", whys).length, 1);
   const own = SCRIPT("c6-maths-ch06-t01").skills[0].workedExample.why.hi;
   assert.equal(borrowedWhy(`Toh poora jawab: 28 m, kyunki ${own}.`, whys).length, 0);
   assert.equal(borrowedWhy("Pichhle sawaal ka jawab 30 m tha.", whys).length, 0);
