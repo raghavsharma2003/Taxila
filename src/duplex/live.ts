@@ -825,6 +825,10 @@ export class DuplexLive {
     if (!this.live || !this.her) return;
     const id = this.her.id;
     this.her = null;
+    // audit V-10: her reply to the last commit played to its end: that commit can no longer be revoked. Kept, a later
+    // revoke (after a dropped 7 s nudge left the floor "committed") merged the next answer with it and, when the words
+    // matched ("हाँ" … "हाँ"), nothing new was ever posted
+    this.lastCommit = null;
     this.herTailUntil = this.now() + this.tailMs();
     this.guard(() => this.host.herEvent({ kind: "end", t: this.now(), utteranceId: id }));
   }

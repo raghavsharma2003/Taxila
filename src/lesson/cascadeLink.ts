@@ -58,6 +58,8 @@ export interface CascadeLinkOptions {
   micStream?: Promise<MediaStream>;
   /** Defaults to POST /api/voice/stt-token. */
   fetchToken?: (lessonId: string) => Promise<RealtimeTokenResponse>;
+  /** The longest the token request and the call's SDP exchange may each take (default CHANNEL_OPEN_TIMEOUT_MS). */
+  openStepMs?: number;
   /** Defaults to POST /api/voice/tts-stream. */
   speech?: SpeechStreamFetch;
   /** Push-to-talk fallback upload; defaults to POST /api/voice/transcribe. */
@@ -127,6 +129,12 @@ export interface CascadeTiming {
 }
 
 const CHANNEL_OPEN_TIMEOUT_MS = 10_000;
+/** A promise that rejects after `ms` (audit V-03: an open step that hangs must not hold "getting ready" for good). */
+function withDeadline<T>(p: Promise<T>, ms: number, what: string): Promise<T> {
+  let t: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => { t = setTimeout(() => reject(new Error(`${what} timed out`)), ms); });
+  return Promise.race([p, timeout]).finally(() => clearTimeout(t));
+}
 /** ICE 'disconnected' this long is a lost call (it may never reach 'failed' on its own). */
 const DISCONNECTED_LOST_MS = 3_000;
 /** Same tail as VoiceLink: audio reaches the server ~100-250 ms after it is spoken. */
@@ -383,6 +391,7 @@ export class CascadeLink implements TeacherLink {
   private childTextNext: { itemId: string; text: string } | null = null;
   private childTextAt = 0;
   private readonly fetchToken: (lessonId: string) => Promise<RealtimeTokenResponse>;
+  private readonly openStepMs: number;
   private readonly speech: SpeechStreamFetch;
   private readonly transcribeClip: (lessonId: string, clip: Blob) => Promise<TranscribeResult>;
   private readonly localDuck: boolean;
@@ -452,6 +461,7 @@ export class CascadeLink implements TeacherLink {
     this.unEarly = registerEarlyAudio(opts.lessonId, (stream) => this.playEarly(stream));
     this.levels = opts.levels;
     this.fetchToken = opts.fetchToken ?? defaultToken;
+    this.openStepMs = opts.openStepMs ?? CHANNEL_OPEN_TIMEOUT_MS;
     this.speech = opts.speech ?? fetchSpeechStream;
     this.transcribeClip = opts.transcribe ?? defaultTranscribe;
     this.localDuck = opts.localDuck ?? true;
@@ -1257,7 +1267,7 @@ export class CascadeLink implements TeacherLink {
     }
     this.laneUsed = "d4";
     this.vtrace.sttLaneOpened("d4", this.d5Off ? "d5_unavailable" : null);
-    const tok = await this.fetchToken(this.lessonId);
+    const tok = await withDeadline(this.fetchToken(this.lessonId), this.openStepMs, "the transcription token");
     if (this.closed) throw new Error("the voice lesson was closed");
     this.audioInput = { ...obj(obj(obj(tok.session).audio).input) };
     this.vtrace.sttConfig(this.audioInput);
@@ -1323,9 +1333,10 @@ export class CascadeLink implements TeacherLink {
       method: "POST",
       body: pc.localDescription!.sdp,
       headers: { Authorization: `Bearer ${tok.token}`, "Content-Type": "application/sdp" },
+      signal: AbortSignal.timeout(this.openStepMs),
     });
     if (!res.ok) throw new Error(`transcription call refused (${res.status})`);
-    await pc.setRemoteDescription({ type: "answer", sdp: await res.text() });
+    await pc.setRemoteDescription({ type: "answer", sdp: await withDeadline(res.text(), this.openStepMs, "the transcription call") });
     await opened;
     this.abandonOpen = null;
     if (this.pc !== pc) throw new Error("the transcription call was replaced");

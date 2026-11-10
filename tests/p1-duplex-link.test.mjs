@@ -210,6 +210,18 @@ test("audit V-05: after a revoke, a merged turn that superseded it in flight kee
   } finally { link.close(); env.restore(); }
 });
 
+test("audit V-03: a token request that never answers falls back to push-to-talk after the open-step limit", { skip }, async () => {
+  const env = installBrowserFakes();
+  const transports = [];
+  const link = new CascadeLink({ lessonId: "L1", levels: levels(), speech: pcm(2), fetchToken: () => new Promise(() => {}), transcribe: async () => ({ text: "" }),
+    openStepMs: 50, onTransport: (t) => transports.push(t) });
+  try {
+    await link.connect();
+    for (const t0 = Date.now(); Date.now() - t0 < 2000 && !transports.length;) await sleep(10);
+    assert.deepEqual(transports, ["recording"]);
+  } finally { link.close(); env.restore(); }
+});
+
 test("duplex off (or absent): today's link — a final is the turn, server speech_started pauses her", { skip }, async () => {
   const { env, link, events, states, pc } = await duplexLink({ mode: "off" });
   try {
