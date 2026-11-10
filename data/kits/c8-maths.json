@@ -1607,22 +1607,22 @@
      "skillId": "c8-maths-ch01-t03-s3",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Riya wrote: 3³ + 4³ = 7³ = 343. Check her work and give the correct total.",
-     "prompt_hi": "Riya ne likha: 3³ + 4³ = 7³ = 343. Uska kaam check karo aur sahi total batao.",
+     "prompt_en": "{friendF} wrote: 3³ + 4³ = 7³ = 343. Check her work and give the correct total.",
+     "prompt_hi": "{friendF} ne likha: 3³ + 4³ = 7³ = 343. Uska kaam check karo aur sahi total batao.",
      "answer": "Wrong; 3³ + 4³ = 27 + 64 = 91, not 343. Cube each number first, then add",
      "acceptable": [
       "91",
       "Wrong, it is 91"
      ],
      "hints": [
-      "What did Riya do first, add or cube?",
+      "What did {friendF} do first, add or cube?",
       "Find 3³ and 4³ separately.",
       "27 + 64 = ___. Is that 343?",
       "3³ + 4³ = 91; adding first and then cubing gives the wrong number."
      ],
      "targetsMisconception": "c8-maths-ch01-t03-m-sum-cube-split",
      "verified": {
-      "solverAnswer": "Riya is wrong: a sum of cubes is not the cube of the sum. 3³ + 4³ = 27 + 64 = 91 (not 343).",
+      "solverAnswer": "{friendF} is wrong: a sum of cubes is not the cube of the sum. 3³ + 4³ = 27 + 64 = 91 (not 343).",
       "agrees": true,
       "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
      }
@@ -9617,15 +9617,15 @@
     },
     {
      "skillId": "c8-maths-ch06-t03-s3",
-     "problem": "Asha says (x + 1)² = x² + 1 is correct because both sides equal 1 when x = 0. Is her check a proof? Test x = 2 and decide.",
+     "problem": "Nisha says (x + 1)² = x² + 1 is correct because both sides equal 1 when x = 0. Is her check a proof? Test x = 2 and decide.",
      "givens": [
       "claim: (x + 1)² = x² + 1",
-      "Asha's test: x = 0 gives 1 on both sides"
+      "Nisha's test: x = 0 gives 1 on both sides"
      ],
      "find": "whether the claim is true, and what her check shows",
      "steps": [
       {
-       "do": "redo Asha's test, x = 0",
+       "do": "redo Nisha's test, x = 0",
        "result": "(0 + 1) × (0 + 1) = 1; 0 × 0 + 1 = 1"
       },
       {
@@ -10152,7 +10152,7 @@
     {
      "skillId": "c8-maths-ch07-t01-s3",
      "source": "Proportional Reasoning-1 — equivalent ratios: multiply or divide both terms by the same number",
-     "problem": "A recipe for khichdi uses rice and water in the ratio 2 : 3 (cups). Asha puts 6 cups of rice in a big pot. How many cups of water keep the same ratio? Her brother says 7 cups, because he added 4 to both terms. Is he right?",
+     "problem": "A recipe for khichdi uses rice and water in the ratio 2 : 3 (cups). Nisha puts 6 cups of rice in a big pot. How many cups of water keep the same ratio? Her brother says 7 cups, because he added 4 to both terms. Is he right?",
      "givens": [
       "rice : water = 2 : 3",
       "6 cups of rice"
@@ -15275,8 +15275,8 @@
      "skillId": "c8-maths-ch10-t01-s2",
      "kind": "far_transfer",
      "difficulty": 4,
-     "prompt_en": "Riya draws her school campus at a scale of 1 : 2,000. The campus is 450 m long and 520 m wide. What size is it on the map, and will it fit on a 20 cm × 30 cm sheet?",
-     "prompt_hi": "Riya apne school campus ka map 1 : 2,000 scale par banati hai. Campus 450 m lamba aur 520 m chauda hai. Map par uska size kya hoga, aur kya woh 20 cm × 30 cm sheet par fit hoga?",
+     "prompt_en": "{friendF} draws her school campus at a scale of 1 : 2,000. The campus is 450 m long and 520 m wide. What size is it on the map, and will it fit on a 20 cm × 30 cm sheet?",
+     "prompt_hi": "{friendF} apne school campus ka map 1 : 2,000 scale par banati hai. Campus 450 m lamba aur 520 m chauda hai. Map par uska size kya hoga, aur kya woh 20 cm × 30 cm sheet par fit hoga?",
      "answer": "22.5 cm by 26 cm; it does not fit, because both sides are longer than 20 cm, whichever way the sheet is turned",
      "acceptable": [
       "22.5 cm × 26 cm, no",
@@ -20629,8 +20629,8 @@
       "Does not check which side the height is perpendicular to"
      ],
      "diagnostic": {
-      "prompt_en": "A parallelogram has sides 12 cm and 8 cm. The height drawn onto the 12 cm side is 4 cm. Asha says the area is 8 × 4 = 32 cm². What is the area?",
-      "prompt_hi": "Ek parallelogram ki sides 12 cm aur 8 cm hain. 12 cm wali side par height 4 cm hai. Asha kehti hai area 8 × 4 = 32 cm² hai. Area kitna hai?",
+      "prompt_en": "A parallelogram has sides 12 cm and 8 cm. The height drawn onto the 12 cm side is 4 cm. {friendF} says the area is 8 × 4 = 32 cm². What is the area?",
+      "prompt_hi": "Ek parallelogram ki sides 12 cm aur 8 cm hain. 12 cm wali side par height 4 cm hai. {friendF} kehti hai area 8 × 4 = 32 cm² hai. Area kitna hai?",
       "options": [
        {
         "text": "48 cm², because the 4 cm height belongs with the 12 cm base",
