@@ -8,6 +8,9 @@ import type { EvidenceRow } from "./api.ts";
 const noStop = (s: string) => String(s).replace(/[.\s]+$/, "");
 /** A skill's parent label (lower-cased to sit inside "{child} can now …") as a stand-alone title: one name per skill
  *  on every surface (headline, How do we know?, Lesson card, Progress), first letter raised back up. */
+/** A "Made for" reason (madeFor.js, written to the child: "You thought …") as the parent reads it: about the child, by
+ *  name. One rule for Home and Teaching (audit LEARN-17: Teaching told the parent "You thought …"). */
+export const becauseForParent = (because: string, name: string) => because.replace(/^You thought/, `${name} thought`);
 export const labelTitle = (label: string) => (label ? label[0].toUpperCase() + label.slice(1) : label);
 
 /** The home headline. KEEP IN STEP with server/routes/parent.js HOME_COPY ("Listen to this page" says these). */

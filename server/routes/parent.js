@@ -30,7 +30,6 @@ import { learningDay, isoWeek, addDays, zonedToUtc } from "../conductor/clock.js
 import { madeForOf } from "../reports/madeFor.js";
 import { listReports, previewReport, reportById, termOf, windowOf } from "../reports/index.js";
 import { HOW, renderFixed } from "../reports/templates.js";
-import { outcomeName } from "../learner/kt/outcomes.js";
 import { shortTitleOf } from "../director/state.js";
 import { COUNTED_LESSON_SQL, loadTruth, loadLessonTally, claimRows, topicTruth, lessonFactsSummary, renderSummaryLine, summaryClaimsHold,
   supersede, engineRow, lessonEndMs, GRADER_WORDS, nextTopicOf } from "../reports/truth.js";
@@ -1032,7 +1031,9 @@ async function evidence(req, res) {
     const before = r.turnSeq != null ? turnAt.get(`${r.lessonId}:${r.turnSeq - 1}`) : null;
     const prompt = (await itemPrompt(r.itemKey, skill)) ?? (before?.speaker === "teacher" ? quote(before.text, 30) : null);
     return {
-      id: r.id, at: r.at, kind: r.kind, probe: r.cls, outcome: r.outcome, result: r.result, hintsUsed: r.hintsUsed, lessonId: r.lessonId,
+      // "right" after asking for help first is not "on their own" (audit LEARN-15): the lesson card says "with a hint"
+      id: r.id, at: r.at, kind: r.kind, probe: r.cls, outcome: r.outcome, result: r.result === "right" && r.hintsUsed > 0 ? "right_hint" : r.result,
+      hintsUsed: r.hintsUsed, lessonId: r.lessonId,
       prompt, words: own?.speaker === "child" && !String(own.text).startsWith("[") ? quote(own.text) : null,
       grader: r.grader, graderWords: r.graderWords, misconception: r.misconceptionId ? beliefs.get(r.misconceptionId) ?? null : null,
     };
@@ -1413,8 +1414,20 @@ const noVoice = (renders) => Object.fromEntries(Object.entries(renders).map(([l,
 const EV_KIND = { "item.open": "practice", "item.mcq2": "practice", "item.mcq3": "practice", "item.mcq4": "practice", solo: "practice", teach: "taught",
   "probe.why": "why", "probe.teachback": "teachback", "probe.transfer.near": "near_transfer", "probe.transfer.far": "far_transfer",
   "probe.errorspot": "error_spot", "probe.predict": "predict", para: "practice" };
-const RIGHT = new Set(["C0", "first_correct", "full", "high", "pass", "caught_fixed", "right"]);
-const PART = new Set(["C1", "C2", "partial", "mid", "caught"]);
+/**
+ * PURE. One kt_evidence row → the drawer's result and help words, read through engineRow (reports/truth.js), the one
+ * reading every other surface uses (audit LEARN-14: the drawer had its own sets and called a second-try answer "partly"
+ * where the skill sheet said "right"). The drawer's vocabulary is smaller: a right answer with hints is "right" + "hint";
+ * an answer worked through with full help, or matching a mix-up, is "not_yet" (the mix-up is flagged separately).
+ */
+export function drawerResult(e) {
+  if (e.cls === "teach") return { result: "taught", help: "none" };
+  const r = engineRow(e);
+  const result = !r?.result ? "not_yet" : r.result === "right" || r.result === "right_hint" ? "right" : r.result === "partly" ? "partly"
+    : r.result === "not_sure" ? "not_sure" : "not_yet";
+  const help = r?.preAttemptHelp ? "asked_first" : (r?.hintsUsed ?? 0) > 0 || Number(e.entry_rung) > 0 ? "hint" : "none";
+  return { result, help };
+}
 
 /**
  * GET /api/parent/report/evidence?childId=&id=&claimId=  ("Kaise pata?") → the rows behind ONE line, re-read from the
@@ -1453,10 +1466,9 @@ async function reportEvidence(req, res) {
     claim: evidenceClaimOut(c),
     window: { from: r.window_from ?? r.window?.from, to: r.window_to ?? r.window?.to },
     evidence: ev.map((e) => {
-      const name = e.cls === "teach" ? "taught" : outcomeName(e.cls, Number(e.outcome)) ?? "?";
+      const { result, help } = drawerResult(e);
       return { id: e.id, at: e.occurred_at, skill: titles.get(e.skill_ids[0]) ?? e.skill_ids[0], kind: EV_KIND[e.cls] ?? "practice",
-        result: e.cls === "teach" ? "taught" : RIGHT.has(name) ? "right" : PART.has(name) ? "partly" : name === "IDK" ? "not_sure" : "not_yet",
-        help: e.pre_attempt_help ? "asked_first" : Number(e.entry_rung) > 0 ? "hint" : "none", checkedBy: e.grader, game: e.via === "game", session: e.session_id,
+        result, help, checkedBy: e.grader, game: e.via === "game", session: e.session_id,
         matchesMixup: !!c.ref?.misconceptionId && e.misconception_id === c.ref.misconceptionId };
     }),
     lessons: lessons.map((l) => { const t = getTopic(l.topic_id); return { id: l.id, topic: t?.title ?? l.topic_id, startedAt: l.started_at,
