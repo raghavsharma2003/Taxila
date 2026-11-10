@@ -122,6 +122,16 @@ describe("round3 forge: the live play piece (buildLive)", () => {
     const none = { pieces: { "kyun-lab/fair-test": Object.fromEntries(["kagaz", "chalk", "blueprint", "raat"].map((a) => [`${a}@c7`, cell(false)])) } };
     assert.equal(await buildLive(base, { q: null, playCerts: none }), null);
   });
+  it("round 8 item I: Studio's v2 world refused at 360 px (reason \"phone\") → the play piece says why, beside any picker because", async () => {
+    const base = { ask: "game", need: "practice", lessonId: "L3", child: child(4), skillId: "c4-maths-ch05-t01-s1", topicId: "c4-maths-ch05-t01", vp: "p360" };
+    const r = await buildLive({ ...base, reason: "phone" }, { q: null, playCerts: ALL_PASS });
+    assert.ok(r);
+    const rec = { choice: `${r.artifact.play.family}/${r.artifact.play.mode} for the phone`, fact: "the Studio world is too small to play at 360 px", source: "studio_gate", kind: "play.studio_gate" };
+    assert.deepEqual(r.because.find((b) => b.source === "studio_gate"), rec);
+    assert.deepEqual(verifySession(r.artifact.play.sessionId).because.find((b) => b.source === "studio_gate"), rec, "the session carries it: /level returns it");
+    const plain = await buildLive(base, { q: null, playCerts: ALL_PASS });
+    assert.ok(!(plain.because ?? []).some((b) => b.source === "studio_gate"));
+  });
 });
 
 describe("round3 forge: the serving rule of the certificates (the device's 14 px rule)", () => {

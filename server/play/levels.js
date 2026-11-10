@@ -8,7 +8,7 @@ import { pickLevels } from "../../src/play/core/pick.ts";
 import { pickArt } from "../../shared/play.ts";
 import { registerKaalEvents } from "../../src/play/families/kaal/kaal.logic.ts";
 import { fillFriendDeep } from "../director/friend.js";
-import { adaptAfter, liftedPL, settleBecause } from "./choose.js";
+import { adaptAfter, chooseEntry, liftedPL, settleBecause } from "./choose.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let COVERAGE = null;
@@ -140,25 +140,58 @@ export function nextBody(s, entry, door) {
   const recent = [...(s.recent ?? []), played?.sig ?? played?.levelId].filter(Boolean).slice(-6);
   // the misconception the level just played confirmed (set by /api/play/act at its end) becomes the next level's focus
   const focus = s.nextFocus ?? s.focus ?? null;
-  // round 8 P2: the band step the level just played earned (set by /act at its end), and its pending because
+  // round 8 P2: the band step the level just played earned (set by /act at its end), and its pending because; follow-up D: a
+  // step down to lift 0 is the unlifted band again
   const lift = Number(s.nextLift ?? s.lift) || 0;
   const pending = s.nextBecause ?? null;
-  let body = { ...s, n, seed: seedOf(s.childId, s.key, n), door, harder: false, recent, ...(focus ? { focus } : {}) };
-  if (lift > 0) body.lift = lift;
-  delete body.nextFocus; delete body.nextLift; delete body.nextBecause;
+  // follow-up B: the family switch /act decided (at most once a session): the next level is the other entry's
+  const to = (s.nextKey && entryByKey(s.nextKey)) || entry;
+  const key = to === entry ? s.key : entryKey(to);
+  const sw = to !== entry ? s.nextSwitch ?? null : null;
+  let body = { ...s, key, n, seed: seedOf(s.childId, key, n), door, harder: false, recent, ...(focus ? { focus } : {}) };
+  if (lift > 0) body.lift = lift; else delete body.lift;
+  if (to !== entry) body.switched = { from: s.key, n };
+  delete body.nextFocus; delete body.nextLift; delete body.nextBecause; delete body.nextKey; delete body.nextSwitch;
   delete body.because;   // a because explains ONE level's choice (round 8); the next level carries its own or none
   if (door === "teekha") {
-    const r = levelsFor(body, entry);
+    const r = levelsFor(body, to);
     if (r && !r.teekha && (body.fade ?? 1) < 3) body = { ...body, fade: (body.fade ?? 1) + 1, door: "garam", up: true };
   }
-  // the step's because is kept only when the level served does what it claims (a mix-up claim needs a level showing it)
-  const b = pending ? settleBecause(pending, currentLevel(body, entry)) : null;
-  if (b) body.because = [b];
+  // the step's because is kept only when the level served does what it claims (a mix-up claim needs a level showing it);
+  // a switch's because is the switch itself (it happened)
+  const level = currentLevel(body, to);
+  const b = [sw ? settleBecause(sw, level) : null, pending ? settleBecause(pending, level) : null].filter(Boolean);
+  if (b.length) body.because = b;
   return body;
 }
+
+/** The coverage entry a session body points at (after a switch, the new one). */
+export const entryOfBody = (s, fallback = null) => entryByKey(s?.key) ?? fallback;
+
+/**
+ * Follow-up B: a later level may switch family at most once a session, only when the session focus CHANGES to a mix-up
+ * another entry admitting the skill discriminates better (chooseEntry's score, by its MARGIN; novelty is not counted).
+ * → { key, because } | null. Pure (the picker is pure).
+ */
+export function switchAfter(s, cur, focus) {
+  if (!cur || !focus || s.switched || focus === (s.focus ?? null) || !s.skillId) return null;
+  const all = entriesFor({ skillId: s.skillId });
+  if (all.length < 2 || !all.includes(cur)) return null;
+  const entries = [cur, ...all.filter((e) => e !== cur)];
+  const n = (s.n ?? 0) + 1;
+  const lift = Number(s.nextLift ?? s.lift) || 0;
+  const bodyOf = (e, f) => { const key = entryKey(e); const b = { ...s, key, n, seed: seedOf(s.childId, key, n), door: "garam", harder: false, ...(f ? { focus: f } : {}) }; if (lift > 0) b.lift = lift; else delete b.lift; return b; };
+  const levelOf = (e, f) => levelsFor(bodyOf(e, f), e)?.garam ?? null;
+  const pL = liftedPL({ ...s, lift });
+  const pick = chooseEntry({ entries, inputs: { mis: s.mis ?? {}, ...(typeof pL === "number" ? { pL } : {}), focus, focusSource: "play_grade" }, levelOf, recent: {}, keyOf: entryKey, beliefOf });
+  if (!pick || pick.entry === cur) return null;
+  if (!(levelOf(pick.entry, focus)?.proof?.discriminates ?? []).includes(focus)) return null;
+  return { key: entryKey(pick.entry), because: { choice: `switch to ${pick.entry.family}/${pick.entry.mode}`, fact: beliefOf(focus) ?? focus, source: "play_grade", kind: "play.switch", when: "now", mis: focus } };
+}
+
 /**
  * Round 8 P2: the session body after a level's acts (what /api/play/act signs). Between levels only: the CURRENT level's
- * inputs never change (nextFocus / nextLift / nextBecause are read by nextBody, never by genRequest).
+ * inputs never change (nextFocus / nextLift / nextBecause / nextKey are read by nextBody, never by genRequest).
  */
 export function afterLevelBody(s, { grade = null, level = null, history = null } = {}) {
   const s2 = { ...s, hist: history };
@@ -166,8 +199,11 @@ export function afterLevelBody(s, { grade = null, level = null, history = null }
   const seen = (grade.evidence ?? []).find((r) => r.misconceptionId)?.misconceptionId ?? null;
   if (seen) s2.nextFocus = seen;
   const step = adaptAfter({ grade, level, s, beliefOf });
-  if (step?.lift) s2.nextLift = step.lift;
+  if (typeof step?.lift === "number") s2.nextLift = step.lift;
   if (step?.because) s2.nextBecause = step.because;
+  // follow-up B: the focus changed to a mix-up another game tells apart better → that game next (once a session)
+  const sw = seen ? switchAfter({ ...s, ...(typeof s2.nextLift === "number" ? { nextLift: s2.nextLift } : {}) }, entryByKey(s.key), seen) : null;
+  if (sw) { s2.nextKey = sw.key; s2.nextSwitch = sw.because; }
   return s2;
 }
 export function artFor(s, entry) {
