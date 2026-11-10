@@ -204,20 +204,17 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "7 cm", verdict: "not_yet", history: [], ui: L.r.ui, module: null });
     const item = findItem(L.r.state, K, L.r.move.itemId ?? L.r.state.activeItemId);
     const ask = whiteboardIntentOf({ lessonId: "L", turn: L.r.state.turn, beat: { id: "b", type: "explain" }, next: L.r.state, kit: K, item, line: { text: out.reply, parts: out.guard.parts } });
-    // v5 B1: the say on the remediation board, then the card on its own board from where the card starts
-    // (v6.7 P4′, main's director15 ruling: "7 cm sahi nahi hai." names their answer, so it is said on the answered card's page first)
-    assert.deepEqual(ask.intent.boardRef, L.r.move.closeBeat.board, "the miss verdict naming their answer is on the answered card's page");
-    let seg = ask.intent.segments ?? [];
-    assert.equal(seg.length, 2, JSON.stringify(ask.intent));
-    assert.deepEqual(seg[0].boardRef, L.r.move.scriptBeat.board, "then the say's board");
-    seg = seg.slice(1);
-    assert.deepEqual(seg[0].boardRef, r0.then.board);
-    assert.equal(seg[0].scriptBeat.ownBoard, true);
-    assert.ok(seg[0].scriptBeat.answers?.includes(r0.then.key), JSON.stringify(seg[0].scriptBeat));
+    // (dc-r7-held-board, main's v6.8: one board per unit, picked from its card — the miss verdict on the answered card's board,
+    // then ONE switch, where the remediation's say begins: the remediation+then-card unit on the then-card's own board)
+    const H = ask.intent.held;
+    assert.ok(H, JSON.stringify(ask.intent));
+    assert.deepEqual(H.board, L.r.move.closeBeat.board, "the miss verdict naming their answer is on the answered card's board");
+    assert.deepEqual(H.switchTo?.board, r0.then.board, "then the remediation+then-card unit on the then-card's board");
+    assert.match(H.switchTo.unit, /:rem:c6-maths-ch06-t01-m-missing-sides$/);
+    assert.equal(ask.intent.segments, undefined, "a held turn is never paged");
     const text = out.reply.replace(/\s+/g, " ").trim();
-    assert.equal(text.slice(seg[0].atChar), card.replace(/\s+/g, " ").trim(), "the switch is exactly where the card starts");
-    const pieces = splitSentences(out.reply);
-    assert.ok(pieces.slice(seg[0].atClause).join(" ").includes(card.slice(0, 30)), `${seg[0].atClause}: ${JSON.stringify(pieces)}`);
+    assert.ok(!/sahi nahi/i.test(text.slice(H.switchTo.atChar)), "the switch is after the verdict");
+    assert.ok(text.slice(H.switchTo.atChar).endsWith(card.replace(/\s+/g, " ").trim()), "and the card is said on the switched board");
     // a turn on one board carries no segments
     assert.equal(boardPartsOf({ scriptBeat: { board: r0.board }, cardBeat: { board: r0.board } }, out.reply, card).segments, undefined);
     // a closure is spoken over the board it closes, before the switch

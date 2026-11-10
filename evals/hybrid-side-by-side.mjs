@@ -31,8 +31,8 @@ import { teacherDeployment } from "../server/agent/flags.js";
 import { __test } from "../server/routes/lesson.js";
 // round 7 S4 (main: "upgrade the harness so it runs Studio's board pick and Games' entryFor in-process and records what would be
 // on screen each turn"): the pure parts of turn.js's visual path
-import { whiteboardIntentOf, boardItemOf, altViewOfRow } from "../server/brain/propose.js";
-import { preselect, takePreselected, pagesBoard, pagesDroppedCount, refKey } from "../server/stagecraft/board-first.js";
+import { whiteboardIntentOf, boardItemOf, altViewOfRow, heldUpOf } from "../server/brain/propose.js";
+import { preselect, takePreselected, pagesBoard, pagesDroppedCount, refKey, heldBoard, heldAltOf } from "../server/stagecraft/board-first.js";
 import { gateCtxFor } from "../server/stagecraft/board-sync.js";
 import { entryFor } from "../server/play/levels.js";
 import { askTruth, VISUAL_NOT_YET, VISUAL_DRAWING } from "../server/director/shapes.js";
@@ -272,6 +272,13 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
           if (pick.row) next = { ...next, lastContent: [...(next.lastContent ?? []), pick.row] };
           // (as brain/turn.js: a picture asked with the card's board up names Studio's second view in her line)
           if (p.r.move?.request === "visual" && pick.altView) next = { ...next, lastMove: { ...next.lastMove, altView: altViewOfRow(pick.row, pick.altView) ?? pick.altView } };
+          // (dc-r7-held-board, as brain/turn.js with Studio's preselectedAltLine: a held picture turn's line is Studio's, from the
+          // view it draws beside the held board; null promises no picture)
+          if (p.r.move?.request === "visual" && ask.intent.held) {
+            let ha = null; try { ha = heldAltOf(ask); } catch { ha = null; }
+            next = { ...next, lastMove: { ...next.lastMove, altLine: ha?.line ?? null, ...(ha?.view ? { altView: ha.view } : {}) } };
+            if (ha?.view) screen = { ...screen, altView: ha.view };
+          }
         } else screen = { kind: "none", why: "no board for this ask" };
         if (visual === "animation" || visual === "simulation") shape = askTruth(shape, visual, "none");
       }
@@ -341,12 +348,23 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     // v5 harness (director7: the one-board checker saw 13 of 51): a line with several parts (a closure, the beat, the card) is
     // checked part by part, each against the board drawn while it is said (intent.segments on her FINAL line: each part's
     // board preselected and taken on that part's own words, as Studio pages it)
-    let segs = null, unpaged = 0, drawn = null, droppedPages = 0;
+    let segs = null, unpaged = 0, drawn = null, droppedPages = 0, heldRec = null;
     const visualNow = p.r.move?.request === "visual";
     if (lane === "director" && reply && (next.lastMove?.scriptBeat || next.lastMove?.cardBeat)) {
       const item = boardItemOf(next, kit, findItem);
       const askF = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-seg-${++SEG_N}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: reply, ...(tGuard?.parts ? { parts: tGuard.parts } : {}) } });
-      const parts = [{ atChar: 0, boardRef: askF.intent.boardRef, scriptBeat: askF.intent.scriptBeat }, ...(askF.intent.segments ?? [])].filter((x) => x.boardRef);
+      // (dc-r7-held-board: a held turn is the held board, then at most one switch — as Studio's heldBoard draws it, kept when up)
+      const H = askF.intent.held ?? null;
+      heldRec = H ? { unit: H.unit, ...(H.switchTo ? { switchTo: { unit: H.switchTo.unit, atChar: H.switchTo.atChar } } : {}), ...(H.unitAfter ? { unitAfter: H.unitAfter } : {}) } : null;
+      const parts = H ? [{ atChar: 0, boardRef: H.board, scriptBeat: askF.intent.scriptBeat }, ...(H.switchTo ? [{ atChar: H.switchTo.atChar, boardRef: H.switchTo.board, scriptBeat: askF.intent.scriptBeat }] : [])]
+        : [{ atChar: 0, boardRef: askF.intent.boardRef, scriptBeat: askF.intent.scriptBeat }, ...(askF.intent.segments ?? [])].filter((x) => x.boardRef);
+      if (H) {
+        let hb = null;
+        try { hb = heldBoard({ ...askF, line: { ...askF.line, text: String(reply) } }, { keepRef: shownRef, keepPage: shownScript }); } catch { hb = null; }
+        unpaged = hb ? 0 : 1;
+        if (hb?.script) { shownScript = hb.lastPage ?? hb.script; shownRef = hb.lastRef ?? null; shownKind = null; }
+        next = { ...next, heldUp: heldUpOf(H) };
+      }
       // (v6.3 harness, main on director11: the screen field and the picture check read what is actually DRAWN — her final line's
       // pages as the seam pages them — never the board preselected before her line existed)
       drawn = parts.map((pt) => ({ from: pt.atChar, board: pt.boardRef, beat: pt.scriptBeat?.beatId ?? null }));
@@ -358,8 +376,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         // the proxies report how many, per turn)
         const d0 = pagesDroppedCount();
         let pg = null;
-        try { pg = pagesBoard({ ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:pg` }, line: { ...askF.line, text: String(reply) } }, { kit, ...(shownScript ? { keep: shownScript } : {}), ...(shownRef ? { keepRef: shownRef } : {}) }); } catch { pg = null; }
-        unpaged = pg ? 0 : 1;
+        if (!H) try { pg = pagesBoard({ ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:pg` }, line: { ...askF.line, text: String(reply) } }, { kit, ...(shownScript ? { keep: shownScript } : {}), ...(shownRef ? { keepRef: shownRef } : {}) }); } catch { pg = null; }
+        if (!H) unpaged = pg ? 0 : 1;
         // (S7: a paged turn leaves its LAST page up — the next turn's second view is built from that page, as the seam does)
         if (pg?.script) { shownScript = pg.lastPage ?? pg.script; shownRef = pg.lastRef ?? null; shownKind = shownRef ? pg.lastKind ?? null : null; }
         droppedPages = Math.max(0, pagesDroppedCount() - d0);
@@ -445,7 +463,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     // max(classify, reply), on a turn the model classified; whether her draft was rewritten, or the rewrite skipped by cut 1)
     const latency = { classifyPath: lastClassify?.path ?? null, parallelBoundMs: lastClassify?.path === "model" ? Math.max(classifyMs, replyMs) : classifyMs + replyMs,
       rewrite: !!tGuard?.rewritten, rewriteSkipped: tGuard?.rewriteSkipped ?? null };
-    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(pageParts.length ? { pageParts } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
+    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
       gate: { delivered, answered, verdictGiven, contradictions, contradictionsV6, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
