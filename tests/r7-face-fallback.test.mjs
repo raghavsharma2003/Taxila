@@ -22,7 +22,7 @@ test("LessonFace: TutorFace only for a non-puppet tutor or the voice-only presen
   const lesson = src("src/face-puppet/LessonFace.tsx");
   const tf = [...lesson.matchAll(/return <TutorFace/g)];
   assert.equal(tf.length, 1, "exactly one TutorFace return");
-  assert.match(lesson, /if \(!PUPPET_TUTORS\.has\(tutor\.id\) \|\| p\.tier === "E" \|\| p\.voiceOnly\) return <TutorFace \{\.\.\.p\} \/>;/);
+  assert.match(lesson, /if \(!PUPPET_TUTORS\.has\(tutor\.id\) \|\| p\.tier === "E"\) return <TutorFace \{\.\.\.p\} \/>;/);
   assert.match(lesson, /still=\{off \|\| p\.tier === "D"\}/, "switched off or tier D: the still");
 });
 
