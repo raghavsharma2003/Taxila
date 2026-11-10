@@ -156,7 +156,11 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
   // the second view): a scripted picture turn whose line has the card and no alt part is the card on its own board — no second
   // view is asked under the card's words
   const list = line?.parts?.list ?? null;
-  const cardNoAlt = !!list && list.some((p) => p.part === "card") && !list.some((p) => p.part === "alt");
+  // (v6.10 P6, main on director18: 9 picture turns lost their request here — the final line's parts did not tag the picture line —
+  // so the take kept the board while her line described a view. A picture turn's request is decided ONCE, by its take: a view
+  // built (lastMove.altLine) keeps it whatever the parts say; a take with no view (altLine null) asks for none)
+  const promised = Object.prototype.hasOwnProperty.call(next?.lastMove ?? {}, "altLine") ? (next.lastMove.altLine ? "view" : "none") : null;
+  const cardNoAlt = promised === "view" ? false : promised === "none" ? true : !!list && list.some((p) => p.part === "card") && !list.some((p) => p.part === "alt");
   // (a replay of a recorded run pages as that run paged: tests/fixtures/replay.mjs runScriptOf marks it recordedRun)
   const held = (next?.lastMove?.scriptBeat || next?.lastMove?.cardBeat) && !scriptFor(kit)?.script?.recordedRun ? heldOf({ move: next.lastMove, list: line?.parts?.list ?? null, line: String(line?.text ?? ""), kit, up: next?.heldUp ?? null,
     graded: ["correct", "not_yet"].includes(next?.lastVerdict) }) : null;

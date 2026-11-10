@@ -32,7 +32,8 @@ import { __test } from "../server/routes/lesson.js";
 // round 7 S4 (main: "upgrade the harness so it runs Studio's board pick and Games' entryFor in-process and records what would be
 // on screen each turn"): the pure parts of turn.js's visual path
 import { whiteboardIntentOf, boardItemOf, altViewOfRow, heldUpOf } from "../server/brain/propose.js";
-import { preselect, takePreselected, pagesBoard, pagesDroppedCount, refKey, heldBoard, heldAltOf } from "../server/stagecraft/board-first.js";
+import { preselect, takePreselected, pagesBoard, pagesDroppedCount, refKey, heldBoard } from "../server/stagecraft/board-first.js";
+import { heldPicture, pictureTruth } from "../server/brain/picture.js";
 import { gateCtxFor } from "../server/stagecraft/board-sync.js";
 import { entryFor } from "../server/play/levels.js";
 import { askTruth, VISUAL_NOT_YET, VISUAL_DRAWING } from "../server/director/shapes.js";
@@ -218,7 +219,10 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       answer: text, childText: text, leaked: false, live: Promise.resolve(live), carried: [], now });
     live = { state: p.learner.after, maxSeq: live.maxSeq };
     let next = { ...p.r.state, mode: "text" };
-    let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, guardAfter = null, replyMs = 0, tGuard = null, pickAsk = null;
+    let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, guardAfter = null, replyMs = 0, tGuard = null, pickAsk = null, picTake = null;
+    // (v6.10, main on director18: a held turn's changed/kept compare against the board up BEFORE the turn, never a page preselected
+    // in the same turn)
+    const upRef0 = shownRef, upPage0 = shownScript;
     // (as brain/turn.js: the stop check-in is the Director's on both lanes)
     if (lane === "agent" && !["safeguard", "wrap"].includes(move) && !p.r.end && !c.flags?.distress && !p.r.move.checkin) {
       const card = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
@@ -275,9 +279,10 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
           // (dc-r7-held-board, as brain/turn.js with Studio's preselectedAltLine: a held picture turn's line is Studio's, from the
           // view it draws beside the held board; null promises no picture)
           if (p.r.move?.request === "visual" && ask.intent.held) {
-            let ha = null; try { ha = heldAltOf(ask); } catch { ha = null; }
-            next = { ...next, lastMove: { ...next.lastMove, altLine: ha?.line ?? null, ...(ha?.view ? { altView: ha.view } : {}) } };
-            if (ha?.view) screen = { ...screen, altView: ha.view };
+            // (v6.10 P6: ONE take — the drawing, the view and her line together; the final draw below is this take, never redrawn)
+            picTake = heldPicture(ask, { keepRef: upRef0, keepPage: upPage0 });
+            next = { ...next, lastMove: { ...next.lastMove, altLine: picTake.line, ...(picTake.view ? { altView: picTake.view } : {}) } };
+            if (picTake.view) screen = { ...screen, altView: picTake.view };
           }
         } else screen = { kind: "none", why: "no board for this ask" };
         if (visual === "animation" || visual === "simulation") shape = askTruth(shape, visual, "none");
@@ -309,7 +314,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     // (Studio, director6 #1: the board the child SAW is the preselect TAKEN on her real line, re-gated: a value she states is
     // drawn, no longer "?"; production's seam.js does the same take. The record and the contradiction count use it, falling
     // back to the preselect's masked board only when the take returns nothing)
-    if (pickAsk && screen?.kind === "whiteboard" && reply) {
+    if (pickAsk && screen?.kind === "whiteboard" && reply && !pickAsk.intent?.held) {
       const askR = { ...pickAsk, line: { ...(pickAsk.line ?? {}), text: reply } };
       let took = null;
       try { took = takePreselected(askR, gateCtxFor(askR, { kit, redact: [], prior: [] })); } catch { took = null; }
@@ -360,7 +365,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         : [{ atChar: 0, boardRef: askF.intent.boardRef, scriptBeat: askF.intent.scriptBeat }, ...(askF.intent.segments ?? [])].filter((x) => x.boardRef);
       if (H) {
         let hb = null;
-        try { hb = heldBoard({ ...askF, line: { ...askF.line, text: String(reply) } }, { keepRef: shownRef, keepPage: shownScript }); } catch { hb = null; }
+        // (v6.10 P6: a picture turn draws its one take; any other held turn its held board against the board up before the turn)
+        const picHb = visualNow && picTake?.take && !H.switchTo && picTake.take.lastRef === refKey(H.board) ? picTake.take : null;
+        try { hb = picHb ?? heldBoard({ ...askF, line: { ...askF.line, text: String(reply) } }, { keepRef: upRef0, keepPage: upPage0 }); } catch { hb = null; }
         unpaged = hb ? 0 : 1;
         if (hb?.script) { shownScript = hb.lastPage ?? hb.script; shownRef = hb.lastRef ?? null; shownKind = null; }
         next = { ...next, heldUp: heldUpOf(H) };
@@ -368,7 +375,13 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         // are the TAKE's: what Studio's heldBoard drew, kept or switched, page by page)
         heldRec = { unit: hb?.held?.unit ?? null, changed: !!hb?.held?.changed, kept: !!hb?.kept, drawn: hb ? (hb.kept ? "kept" : "held") : "refused",
           pages: (hb?.screens ?? []).map((x) => ({ from: x.from ?? 0, template: x.template ?? null, ...(x.beside ? { beside: x.beside.template ?? null } : {}) })),
-          intent: { unit: H.unit, ...(H.switchTo ? { switchTo: { unit: H.switchTo.unit, atChar: H.switchTo.atChar } } : {}) } };
+          intent: { unit: H.unit, ...(H.switchTo ? { switchTo: { unit: H.switchTo.unit, atChar: H.switchTo.atChar } } : {}) },
+          // (Studio's to-brain/019, main v6.9 recording: the layout the child saw — split or not, and which panels)
+          layout: hb?.layout ?? null,
+          ...(visualNow ? { picture: { view: picHb ? picTake.view : null, take: picHb ? "one" : "redrawn" } } : {}) };
+        // (v6.10 P6's predicate: a picture line spoken with no view drawn — counted on the row, as the gate's picture count)
+        const pf = pictureTruth(tGuard?.parts?.list ?? [], { view: heldRec.picture?.view ?? null, layout: heldRec.layout });
+        if (pf) heldRec = { ...heldRec, pictureNoView: true };
         if (hb?.screen) screen = { kind: "whiteboard", by: "held", template: hb.template ?? hb.screen.template ?? null, boardRef: H.switchTo && hb.lastRef === refKey(H.switchTo.board) ? H.switchTo.board : H.board,
           counts: hb.screen.counts ?? null, numbers: hb.screen.numbers ?? null, onScreen: hb.screen.onScreen ?? null, drawn: heldRec.drawn, ...(hb.altView ? { altView: hb.altView } : {}) };
       }

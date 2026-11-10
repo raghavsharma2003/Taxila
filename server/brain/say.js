@@ -143,6 +143,9 @@ const PARK_ACK = { hinglish: [(t) => `${capT(t)} ki baat hum is sawaal ke baad k
   english: [(t) => `We'll talk about ${t} after this question.`, (t) => `I'll remember ${t}; we'll come back to it once this question is done.`, (t) => `${capT(t)}: yes, right after this question.`] };
 // (v6.9 T1, main on director17 steady 36 in three topics: "is sawaal ke baad" said with no question open — the card answered, its why
 // pending): with no open card the promise names no question
+// v6.10 P6: no second view could be drawn for this board (three forms; never "yahi numbers", never a view described)
+const NO_PICTURE = { hinglish: ["Iski doosri tasveer abhi nahi ban rahi, toh board wali tasveer hi dekhte hain.", "Is par doosri tasveer nahi ban paa rahi; jo board par hai, usi ko dekho.", "Iska alag chitra abhi nahi hai, isliye board wala hi lete hain."],
+  english: ["I can't draw a second picture for this one, so let's use the one on the board.", "There isn't another picture for this one; look at the board again.", "No second picture for this one, so we'll stay with the board."] };
 const PARK_LATER = { hinglish: [(t) => `${capT(t)} ki baat hum thodi der mein karenge.`, (t) => `${capT(t)} yaad rahega; thodi der mein uspar aate hain.`, (t) => `${capT(t)} ke baare mein baad mein baat karenge, pakka.`],
   english: [(t) => `We'll talk about ${t} in a little while.`, (t) => `I'll remember ${t}; we'll come back to it soon.`, (t) => `${capT(t)}: yes, a little later.`] };
 /** The park forms for this turn: "after this question" only while a card is open (asked, not yet answered or let go). */
@@ -547,6 +550,8 @@ export function picLine(line, lang = "hinglish") {
   t = t.replace(/;\s*[^;]*\b(?:kitni|kitna|kitne|kya|kaun|kaunsa|kaunsi|how many|how much|what)\b[^;]*$/i, "");
   t = t.replace(/\s*\((\d+)\/(\d+)\)/g, (m, a, b) => (lang === "english" ? `, ${a} out of ${b}` : `, ${FRAC_HI[`${a}/${b}`] ?? `${b} mein se ${a}`}`));
   t = t.replace(/[\s,;:—–-]+$/, "").replace(/[?？]$/, "");
+  // (v6.10: a sentence starts with a capital — "ek: 4 barabar tukde" was said as written)
+  t = t.charAt(0).toUpperCase() + t.slice(1);
   return t && !/[.!]$/.test(t) ? `${t}.` : t;
 }
 /** v6.6 F1′: the give-up's forms (the card's key and its why), fresh like every code frame. */
@@ -2347,6 +2352,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // (Studio, director13 P3 shape: one turn of two pages — the second view under its own line, then the card's own board under
     // the card's words; brain/propose.js pages it from guard.parts.alt)
     if (alt && asked && card && !graded) { body = [asked]; guard.altOnly = true; guard.altLine = asked; }
+    // v6.10 P6 (main on director18): a picture asked and no view built — one honest sentence that a second picture is not there for
+    // this one, then the live part again on the board that is up; never a description of a view that was not drawn
+    else if (heldPic && !asked && !graded) { const np = rotateOf(NO_PICTURE[lang === "english" ? "english" : "hinglish"], state); body = [np, ...body.filter((x) => norm(x) !== norm(np))]; guard.noPictureLine = np; }
     // v5 B5: a turn is at most about 60 words, except a worked step: her own sentences go first (from the end), never the
     // verdict, a closure, authored text or the card
     const MAX_WORDS = state.ctx?.plainWords ? 45 : 60;
