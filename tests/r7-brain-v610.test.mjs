@@ -34,7 +34,7 @@ describe("r7-brain-v610.test.mjs", () => {
       assert.doesNotThrow(() => pictureTruth(parts, { view: x.pic?.view ?? null, layout: x.hb?.layout ?? null }));
       if (x.pic?.view) {
         assert.ok(x.hb?.layout?.split, `drawn beside: ${JSON.stringify(x.hb?.layout)}`);
-        assert.equal(x.hb, x.pic.take, "the draw is the one take");
+        assert.equal(x.hb?.altView ?? x.hb?.layout?.panels?.[1]?.view, x.pic.view, "the draw is the decision");
         assert.ok(x.out.reply.startsWith(x.pic.line.slice(0, 20)), x.out.reply);
       } else {
         assert.ok(!parts.some((q) => q.part === "alt"), x.out.reply);
@@ -93,5 +93,21 @@ describe("r7-brain-v610.test.mjs", () => {
       const x = (await walk(p, t, n + 1, { run: RUN })).find((y) => y.n === n);
       assert.ok(!x.pl.state.lastMove?.gave?.answer, x.out.reply);
     });
+  });
+
+  // Joints (Learning D13, 021-authored-joints): the script's own forms are said — the park, the return with what the child said, the
+  // Hindi switch (never an "ab se" promise) and the ask-again; code's fixed sentences only for a topic without a script
+  test("joints: the authored forms, slots filled, three or more each; no 'ab se' switch", async () => {
+    const { jointOf } = await import("../server/director/script.js");
+    const { returnQuestion, parkAckOf } = await import("../server/brain/say.js");
+    const { kitFromFile } = await import("../server/content/kits.js");
+    const { getTopic } = await import("../server/content/curriculum.js");
+    const kit = kitFromFile(getTopic(T.c4));
+    for (const k of ["asidePark", "asideReturn", "hindiSwitch", "askAgain"]) assert.ok((jointOf(kit, k, "hinglish", { aside: "cricket", said: "sixer maara" }) ?? []).length >= 2, k);
+    assert.ok(!(jointOf(kit, "hindiSwitch", "hinglish") ?? []).some((x) => /ab se/i.test(x)));
+    const r = returnQuestion("cricket", "hinglish", { turn: 3, seed: 1, recent: [] }, { said: "kal maine cricket khela, sixer maara", kit });
+    assert.match(r, /sixer maara/, r);
+    const park = parkAckOf({ turn: 3, recent: [] }, "hinglish", kit).map((f) => f("cricket"));
+    assert.ok(park.length >= 3 && park.every((x) => /cricket/i.test(x) && !/\{/.test(x)), JSON.stringify(park));
   });
 });

@@ -56,7 +56,8 @@ const WORKED_GO = { hinglish: ["Ab agla kadam dekhte hain.", "Chalo, aage dekhte
 // acknowledgement after an aside reply is gone. After an aside reply: one neutral joint (never a judgement of what they said), then the
 // unit's next unsaid part. A script's own `joints.asideResume` forms are used when it has them.
 export const ASIDE_RESUME = { hinglish: ["Achha.", "Theek hai.", "Hmm, achha."], english: ["Okay.", "Alright.", "Right."] };
-export const BEAT_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yahan tak saaf hai?"], english: ["Does that make sense so far?", "Clear so far?", "All good so far?"] };
+// (v6.10: "Kuch poochna hai ab tak?" is gone — a fourth form that a "haan" answers as "yes, clear" keeps the rotation wide)
+export const BEAT_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yahan tak saaf hai?", "Yeh hissa saaf hua?"], english: ["Does that make sense so far?", "Clear so far?", "All good so far?", "Is that part clear?"] };
 // (v6.10 T2, main on director18 c5-t02 stuck 54-56: "Kuch poochna hai ab tak?" — a "haan" to it means the child HAS a question, and she
 // posed the card; it is no longer a check-in form)
 export const WORKED_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yeh kadam saaf hai?", "Yeh kadam samajh aaya?"], english: ["Does that make sense so far?", "Clear so far?", "Is that step clear?", "Did that step make sense?"] };
@@ -96,10 +97,11 @@ const RETURN_Q = {
   english: [(t) => `Now your ${t}: what do you like most about it?`, (t) => `Tell me about ${t}: what's the most fun part?`, (t) => `So, ${t}: what's your favourite thing about it?`],
 };
 // (v6.10, with Learning D13: a script's own `joints.asideReturn` forms come first — `{topic}` and `{said}`, what the child said)
-export const saidSlotOf = (said) => { const w = String(said ?? "").replace(/[?？!.।]+/g, " ").replace(/\s+/g, " ").trim().split(" ").filter(Boolean); return w.length && w.length <= 8 ? w.join(" ").toLowerCase() : null; };
+// (Learning D13's contract: {aside} = the topic the child raised, {said} = their own words cut to ≤ 6)
+export const saidSlotOf = (said) => { const w = String(said ?? "").replace(/[?？!.।,]+/g, " ").replace(/\s+/g, " ").trim().split(" ").filter(Boolean); return w.length ? w.slice(-6).join(" ").toLowerCase() : null; };
 export const returnQuestion = (topic, lang = "hinglish", state = null, { said = null, kit = null } = {}) => {
   const t = String(topic ?? "").trim() || (lang === "english" ? "that" : "woh");
-  const j = kit ? jointOf(kit, "asideReturn", lang, { topic: t, said: saidSlotOf(said) }) : null;
+  const j = kit ? jointOf(kit, "asideReturn", lang, { topic: t, aside: t, said: saidSlotOf(said) }) : null;
   const ok = j?.filter((x) => !/\{\w+\}/.test(x));
   return ok?.length ? freshOf(ok, state) : freshForm(RETURN_Q[lang === "english" ? "english" : "hinglish"], state, t);
 };
@@ -170,7 +172,7 @@ const PARK_LATER = { hinglish: [(t) => `${capT(t)} ki baat hum thodi der mein ka
 export const parkAckOf = (state, lang = "hinglish", kit = null) => {
   // (v6.10, with Learning D13: a script's own `joints.asidePark` forms, `{topic}` filled; code's forms only when it has none)
   const j = kit ? jointOf(kit, "asidePark", lang) : null;
-  if (j?.length) return j.map((x) => (t) => x.replace(/\{topic\}/g, String(t ?? "").trim()).replace(/^\p{Ll}/u, (c) => c.toUpperCase()));
+  if (j?.length) return j.map((x) => (t) => x.replace(/\{(?:topic|aside)\}/g, String(t ?? "").trim()).replace(/^\p{Ll}/u, (c) => c.toUpperCase()));
   const id = state?.activeItemId;
   // (v6.10 T2, main on director18 c4 stuck 34, offtopic 20, c5-t02 steering 24, c6 offtopic 32: a card is OPEN only when the child has
   // already heard it — a card posed in this same turn is not "is sawaal", the child has no question in front of them yet)
@@ -1025,6 +1027,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const r0 = freshOf(jointOf(kit, "askAgain", lang) ?? ASK_AGAIN[lang === "english" ? "english" : "hinglish"], state);
     const lp = cleanParts([{ part: "aside", text: r0 }]);
     return { reply: r0, guard: { askAgain: true, lineParts: lp, parts: { list: lp } } };
+  }
+  // (v6.10, Learning D13: speech her ear could not read — the script's authored askAgain line, then the card as it was posed)
+  if (state.lastMove?.request === "unheard" && jointOf(kit, "askAgain", lang)) {
+    const a = freshOf(jointOf(kit, "askAgain", lang), state), c = ui?.ask?.text ? String(ui.ask.text).trim() : "";
+    const lp = cleanParts([{ part: "aside", text: a }, ...(c ? [{ part: "card", text: c }] : [])]);
+    return { reply: joinParts(lp), guard: { askAgain: "unheard", lineParts: lp, parts: { list: lp } } };
   }
   // A diagnostic's options are content read aloud, so they do not count against the turn length.
   // round 7 A8: "chhota bolo" (the short method) lowers the long-reply cap for the rest of the lesson
@@ -2379,7 +2387,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // and on every such reply, a card waiting or not)
     if (state.lastMove?.asideAck) {
       // (A6: one neutral joint unless the turn already opens on one; the body — the unit's next part — is never replaced)
-      if (!lead) { const a = freshOf(jointOf(kit, "asideResume", lang) ?? ASIDE_RESUME[lang === "english" ? "english" : "hinglish"], state); body = [a, ...body]; codeLines.push(a); }
+      if (!lead) { const a = freshOf(jointOf(kit, "asideResume", lang) ?? ASIDE_RESUME[lang === "english" ? "english" : "hinglish"], state); body = [a, ...body]; codeLines.push(a); guard.asideResumeLine = a; }
       guard.asideResume = true;
     }
     else if (card && !lead && !body.length && herPrev && prevHas(card)) { body = [freshOf((state.lastMove?.request === "selftry" ? TRY_FIRST : FRAMES.again)[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(body[0]); guard.reposeFrame = true; }
@@ -2542,7 +2550,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         { part: "closed", text: closedP.join(" ") },
         ...first.map((x) => ({ part: x === bridgeK ? "bridge" : "close", text: x })),
         ...(asideQ ? [] : [{ part: "aside", text: asideP.join(" ") }]),
-        ...body.map((x) => ({ part: guard.altOnly && x === asked ? "alt" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
+        // (main, with Studio's seam: the neutral joint after an aside reply is an aside part — the board waits for her first unit part)
+        ...body.map((x) => ({ part: guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
         { part: tail && tail === card ? "card" : "body", text: tail ?? "" },
         ...(asideQ ? [{ part: "aside", text: asideP.join(" ") }] : []),
       ]);

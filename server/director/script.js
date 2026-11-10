@@ -476,7 +476,9 @@ export function jointOf(kit, kind, lang = "hinglish", slots = {}) {
     if (!Array.isArray(forms) || !forms.length) return null;
     const out = forms.map((f) => saidIn(f, lang)).filter(Boolean)
       .map((t) => t.replace(/\{(\w+)\}/g, (m, k) => (slots[k] != null && String(slots[k]).trim() ? String(slots[k]).trim() : m)))
-      .filter((t) => !/\{\w+\}/.test(t));
+      // (v6.10 T2.3, main on director18: a switch line never promises a change for every turn after — "ab se …" forms are not said)
+      .filter((t) => kind !== "hindiSwitch" || !/(?<![\p{L}])(?:ab se|from now)(?![\p{L}])/iu.test(t))
+      .map((t) => t.replace(/^\p{Ll}/u, (c) => c.toUpperCase()));
     return out.length ? out : null;
   } catch { return null; }
 }

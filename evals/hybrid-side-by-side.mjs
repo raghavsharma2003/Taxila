@@ -376,8 +376,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       if (H) {
         let hb = null;
         // (v6.10 P6: a picture turn draws its one take; any other held turn its held board against the board up before the turn)
-        const picHb = visualNow && picTake?.take && !H.switchTo && picTake.take.lastRef === refKey(H.board) ? picTake.take : null;
-        try { hb = picHb ?? heldBoard({ ...askF, line: { ...askF.line, text: String(reply) } }, { keepRef: upRef0, keepPage: upPage0 }); } catch { hb = null; }
+        // (Studio's 021-picture-turn-once: the decision made at the preselect is passed to heldBoard, which draws exactly that)
+        const picHb = visualNow && picTake && !H.switchTo;
+        try { hb = heldBoard({ ...askF, line: { ...askF.line, text: String(reply) } }, { keepRef: upRef0, keepPage: upPage0, ...(picHb ? { picture: picTake.decision } : {}) }); } catch { hb = null; }
         unpaged = hb ? 0 : 1;
         if (hb?.script) { shownScript = hb.lastPage ?? hb.script; shownRef = hb.lastRef ?? null; shownKind = null; }
         next = { ...next, heldUp: heldUpOf(H) };
@@ -388,7 +389,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
           intent: { unit: H.unit, ...(H.switchTo ? { switchTo: { unit: H.switchTo.unit, atChar: H.switchTo.atChar } } : {}) },
           // (Studio's to-brain/019, main v6.9 recording: the layout the child saw — split or not, and which panels)
           layout: hb?.layout ?? null,
-          ...(visualNow ? { picture: { view: picHb ? picTake.view : null, take: picHb ? "one" : "redrawn" } } : {}) };
+          ...(visualNow ? { picture: { view: picHb ? picTake.view : null, decided: picHb ? "once" : "none" } } : {}) };
         // (v6.10 P6's predicate: a picture line spoken with no view drawn — counted on the row, as the gate's picture count)
         const pf = pictureTruth(tGuard?.parts?.list ?? [], { view: heldRec.picture?.view ?? null, layout: heldRec.layout });
         if (pf) heldRec = { ...heldRec, pictureNoView: true };

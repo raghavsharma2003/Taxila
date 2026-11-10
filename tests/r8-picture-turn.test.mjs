@@ -68,8 +68,10 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
   }
   // (the pilots' coverage today, so a regression shows as a count: views / boards per template)
   const got = Object.fromEntries(Object.entries(byT).map(([t, v]) => [t, `${v.view}/${v.n}`]));
+  // (Brain, merging Learning D13 60740c37 with this: c4 s2's new e3 boards — 20 marbles as 2 groups of 10 — draw no view, so
+  // equal-groups is 6/10 on D13's data, 8/10 before it; Studio to say whether those two boards should get one)
   assert.deepEqual(got, {
-    "fraction-parts@1": "13/13", "wholes@1": "17/17", "shade-grid@1": "1/4", "equal-groups@1": "8/10", "compare@1": "0/3",
+    "fraction-parts@1": "13/13", "wholes@1": "17/17", "shade-grid@1": "1/4", "equal-groups@1": "6/10", "compare@1": "0/3",
     "fraction-bars@1": "16/19", "fraction-line@1": "42/65", "measured@1": "19/20", "shape@1": "0/7" }, JSON.stringify(got));
   void none;
 });

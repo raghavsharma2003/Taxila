@@ -3,27 +3,22 @@
 // draw kept the board with no view beside it while her line still described one. Here one call to Studio's heldBoard returns the
 // drawing, the view and the line together; the line is built from the view actually returned, and with no view there is no line.
 // Production's seam (preselectWhiteboard → preselectedAltLine) and the harness both take the picture through this one take.
-import { heldBoard } from "../stagecraft/board-first.js";
+import { pictureTurn } from "../stagecraft/board-first.js";
 
 const STRICT = () => !!process.env.NODE_TEST_CONTEXT;
 
 /**
- * The picture turn's take: Studio's held board with its second view beside it, and the line said about that view.
- * `ask` is the whiteboard ask for the turn (whiteboardIntentOf); a picture turn always asks for its view ({ kind: "show" } when
- * nothing was named). → { take, board, view, line, layout }: `take` is Studio's heldBoard result (the page that is drawn, once),
- * `view`/`line` are null when no view was built (then she promises no picture), `layout` is the record's split field.
+ * The picture turn decided ONCE (Studio's pictureTurn, claude/r4-content 2df8cf702): the held board, its view and the line said
+ * about that view, together. → { decision, view, line, layout }: `decision` is passed as heldBoard's `picture` at the take, so the
+ * drawing is exactly what was decided; `view`/`line` are null when no view could be built (then she promises no picture).
  */
 export function heldPicture(ask, { keepRef = null, keepPage = null } = {}) {
-  const none = { take: null, board: null, view: null, line: null, layout: null };
   try {
-    if (!ask?.intent?.held?.board) return none;
-    const request = ask.intent.request && ask.intent.request.kind !== "example" ? ask.intent.request : { kind: "show" };
-    const a = { ...ask, intent: { ...ask.intent, request }, line: { ...(ask.line ?? {}), text: "" } };
-    const take = heldBoard(a, { keepRef, keepPage });
-    if (!take) return none;
-    const view = take.split && take.altLine ? take.altView ?? "parts" : null;
-    return { take, board: take.script ?? null, view, line: view ? String(take.altLine) : null, layout: take.layout ?? (take.split ? { split: true } : { split: false }) };
-  } catch { return none; }
+    if (!ask?.intent?.held?.board) return { decision: null, view: null, line: null, layout: null };
+    const pt = pictureTurn(ask, { keepRef, keepPage });
+    const view = pt?.view && pt.line ? pt.view.view ?? "parts" : null;
+    return { decision: pt ?? null, view, line: view ? String(pt.line) : null, layout: pt?.layout ?? null };
+  } catch { return { decision: null, view: null, line: null, layout: null }; }
 }
 
 /**

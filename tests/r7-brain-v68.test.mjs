@@ -177,6 +177,8 @@ describe("r7-brain-v68.test.mjs", () => {
       const { out, last, sc } = await at("stuck", "c4", 8);
       // (v6.9 T1: with nothing of the live part left unsaid in her last four turns, the key and its why)
       if (last.state.lastMove.gave?.answer) { assert.match(out.reply, /jawab/i); return; }
+      // (v6.10 T2.5: a request never spends help — with nothing fresh and the card's help unspent by a miss, no key: the card again)
+      if (!last.state.lastMove.simpler) { assert.doesNotMatch(out.reply, /jawab/i); assert.ok(norm(out.reply).endsWith(norm(last.p.r.ui.ask.text)), out.reply); return; }
       const e1 = sc.skills[0].explain.find((b) => b.id === "e1");
       const lastT = norm([...last.state.recent].reverse().find((t) => t.who === "teacher")?.text);
       const sim = norm(said(e1.ask?.simpler ?? e1.simpler));

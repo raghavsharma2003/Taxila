@@ -6,7 +6,7 @@ const low = (t) => norm(t).toLowerCase();
 const sentencesOf = (t) => norm(t).split(/(?<=[.!?।])\s+/).filter(Boolean);
 const minusCard = (row) => { const t = norm(row?.text), c = norm(row?.card); return c && t.includes(c) ? norm(t.replace(c, "")) : t; };
 const words = (t) => norm(t).split(" ").filter(Boolean).length;
-const CHECKIN = /(?:Yahan tak (?:theek|saaf) hai|Ab tak samajh aaya|Kuch poochna hai ab tak)\?\s*$/;
+const CHECKIN = /(?:Yahan tak (?:theek|saaf) hai|Ab tak samajh aaya|Yeh hissa saaf hua|Kuch poochna hai ab tak)\?\s*$/;
 
 export const T2 = {
   /** T2.1: "samajh nahi aaya" at the check-in after a point got the card alone, the point not re-said. */

@@ -430,7 +430,8 @@ function silentTurn(s, input, item) {
     return { ...plan("break", SH.silenceCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }] }), silent: true };
   }
   const again = unheard ? SH.unheardAgain() : SH.silenceAgain();
-  if (item) return { ...plan(moveKindFor(item), SH.pose({ item, prefix: again }), { item, probe: probeFor(item), chips: optionChips(item) }), silent: true };
+  // (v6.10, Learning D13: the unheard ask-again is the script's authored askAgain line — brain/say.js renders request "unheard")
+  if (item) return { ...plan(moveKindFor(item), SH.pose({ item, prefix: again }), { item, probe: probeFor(item), chips: optionChips(item), ...(unheard && scriptOn() ? { request: "unheard" } : {}) }), silent: true };
   const last = s.lastMove;
   if (!last?.kind) return null;
   // the intake, a teaching step, a break: what she said last, again and simpler (never the next step)

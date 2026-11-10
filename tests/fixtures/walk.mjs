@@ -13,7 +13,7 @@ import { instructionsFor } from "../../server/compiler/instructions.js";
 import { setScriptForTest } from "../../server/director/script.js";
 import { whiteboardIntentOf, heldUpOf } from "../../server/brain/propose.js";
 import { findItem } from "../../server/director/items.js";
-import { heldBoard, refKey } from "../../server/stagecraft/board-first.js";
+import { heldBoard } from "../../server/stagecraft/board-first.js";
 import { heldPicture } from "../../server/brain/picture.js";
 
 const RUN = "2026-11-10-director17";
@@ -70,7 +70,7 @@ export async function walk(persona, topic, upto, { run = RUN, onTurn = null } = 
       // (the take, as the harness draws it: a picture turn's one take, else the held board against the board up before the turn)
       let hb = null;
       if (held) {
-        hb = pic?.take && !held.switchTo && pic.take.lastRef === refKey(held.board) ? pic.take : heldBoard({ ...a, line: { ...a.line, text: String(out.reply) } }, { keepRef, keepPage });
+        hb = heldBoard({ ...a, line: { ...a.line, text: String(out.reply) } }, { keepRef, keepPage, ...(pic && !held.switchTo ? { picture: pic.decision } : {}) });
         if (hb?.script) { keepPage = hb.lastPage ?? hb.script; keepRef = hb.lastRef ?? null; }
       }
       turns.push({ n, out, pl, held, up, kit, rows, ask: a, pic, hb });
