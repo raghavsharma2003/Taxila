@@ -2,6 +2,7 @@
 // instructions string (one compile() for every lane) and guarded on the bytes by code: answer leaks, drift, floor
 // breaks, praise/verdict agreement, the screen, register, script, length and the turn's shape. Moved out of
 // server/routes/lesson.js unchanged by W2-E BR1 (BUILD-PLAN W2-E #2); the lesson start and the turn both call it.
+import { readFileSync } from "node:fs";
 import { boardWords } from "./board-words.js";
 import { inHindiWords } from "./register.js";
 import { responseShape } from "../director/requestTable.js";
@@ -225,6 +226,28 @@ export function returnLineOk(x, said, topic) {
   const all = [...new Set([...theirs, ...topicW])];
   return all.some((w) => new RegExp(`(?<![\\p{L}])${w}`, "iu").test(t));
 }
+/** v6.11 J2: the instruction for her one sentence after the child answered her return question. */
+export function replyToReturnNoteOf(said, topic, lang = "hinglish") {
+  const en = lang === "english";
+  return `You asked about ${topic} and the child answered: "${String(said).replace(/"/g, "'").slice(0, 80)}". Start your turn with ONE short sentence (at most 14 words, ${en ? "in English" : "in simple Hinglish, Roman script"}) that responds to that answer, using one of their own words. No question, no numbers, no maths, nothing about what you yourself like, no promise to talk later. Then the move.`;
+}
+/** v6.11 J2: her one sentence after the child answered her return: ≤ 14 words, no question, no taste of hers, a content word of
+ *  theirs, nothing of the lesson, no promise, never their words said back. null-safe; the neutral joint is said when it fails. */
+export function replyToReturnOk(x, said) {
+  const t = String(x ?? "").trim();
+  if (!t || /\d/.test(t) || /[?？]/.test(t)) return false;
+  const n = t.split(/\s+/).filter(Boolean).length;
+  if (n < 3 || n > 14) return false;
+  if (TASTE_CLAIM.test(t) || DENIES_AI.test(t) || LESSON_SAID.test(t) || RULE_SAID.test(t) || PROMISE_SAID.test(t)) return false;
+  if (/(?<![\p{L}])(?:baad\s+mein|thodi\s+der|later)(?![\p{L}])/iu.test(t)) return false;
+  if (/(?<![\p{L}])(?:tumne|aapne|you)\s+(?:kaha|bataya|bola|said|told)/iu.test(t) || /^(?:wah|waah|shabash|wow)\b/iu.test(t)) return false;
+  const theirs = (String(said ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? []).filter((w) => !RET_STOP.has(w) && !J2_STOP.has(w));
+  // (their words, never said back: three of them in a row is an echo)
+  const tw = String(said ?? "").toLowerCase().match(/\p{L}+/gu) ?? [];
+  for (let i = 0; i + 2 < tw.length; i++) if (t.toLowerCase().includes(`${tw[i]} ${tw[i + 1]} ${tw[i + 2]}`)) return false;
+  return theirs.some((w) => new RegExp(`(?<![\\p{L}])${w}`, "iu").test(t));
+}
+const J2_STOP = new Set(["sabse", "lagta", "lagti", "lagte", "jaati", "jaata", "maarta", "karta", "karti", "woh", "jab"]);
 /** v6.3 R2: her own promise to come back, with no topic named (said once: code's park already promises). */
 const PROMISE_SAID = /(?<![\p{L}])(?:wapas\s+aa\w*|laut\w*|baat\s+kar(?:enge|ungi|unga)|uspar\s+aa\w*|baad\s+mein\s+(?:aa|baat)\w*|come\s+back|talk\s+about\s+it)(?![\p{L}])/iu;
 /** v6.3 R7: a sentence that talks about the lesson's own things (parts, fractions, sides, the line), not a framing line. */
@@ -606,7 +629,10 @@ export const GAVE_FORMS = {
 /** v6.6 F1′ (main, director14: try-first got "Phir se dekho"): asked to try first, an invitation, then the card. */
 export const TRY_FIRST = { hinglish: ["Haan, pehle tum try karo —", "Theek hai, khud karke dekho —", "Bilkul, pehle tumhari koshish —"], english: ["Sure, you try first —", "Okay, have a go yourself —", "Go ahead, your try first —"] };
 // (v6.11 G2: English words and their Hindi twins — Learning will own this list; director19's four first)
-const TWIN_WORDS = [["line", "lines", "rekha", "rekhayein"], ["mark", "marks", "nishaan", "nishaanon"], ["square", "squares", "varg", "varg"], ["group", "groups", "samooh", "samooh"]];
+// (Learning owns the list: data/lesson-twins.json, 32 pairs; the longest English form first, so "number line" is matched before "line")
+const TWIN_WORDS = (() => { try { return JSON.parse(readFileSync(new URL("../../data/lesson-twins.json", import.meta.url), "utf8")).twins
+  .map((t) => ({ en: [...t.en].sort((a, b) => b.length - a.length), hi: [...t.hi].sort((a, b) => b.length - a.length), en0: t.en, hi0: t.hi }))
+  .sort((a, b) => b.en[0].length - a.en[0].length); } catch { return []; } })();
 const REPOSE_FRAME = /^(?:Phir se dekho|Ek baar aur dekho|Sawaal yeh hai|Dhyan se dekho|Here it is again|Once more|The question is|Look again)\s*:\s*$/i;
 export const FRAMES = {
   notRight: { hinglish: ["Nahi, yeh jawab nahi hai.", "Yeh jawab sahi nahi hai.", "Abhi yeh sahi nahi hai.", "Nahi, yeh theek nahi hai."], english: ["Not quite.", "That's not it yet.", "Not this one.", "Not yet."] },
@@ -1416,7 +1442,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
   // byte for byte (conversation/compose.js). A lead that comes back unusable falls through to the one-call path.
   // (full-run judgement #8: "story" got a fill-in-the-blank: the lead slot's word cap squeezed the story out; a story turn takes
   // the one-call path, with its own room)
-  const slot = G && p5Flag("LEADSLOT") && !!item && !englishCard && !cardRepeat && state.lastMove?.request !== "story" && leadSlotWanted({ request: state.lastMove?.request ?? null, rePose, pinned, diagnostic: !!item?.diagnostic,
+  const slot = G && p5Flag("LEADSLOT") && !!item && !englishCard && !cardRepeat && state.lastMove?.request !== "story" && !state.lastMove?.returnReply && leadSlotWanted({ request: state.lastMove?.request ?? null, rePose, pinned, diagnostic: !!item?.diagnostic,
     whyProbe, closing: CLOSING_MOVES.has(kindNow), firstPose: firstPose && !checkin });
   // round 3: a first pose with no request is a bridge into a new question (shorter lead, a right answer confirmed first)
   const bridge = firstPose && !state.lastMove?.request;
@@ -1446,7 +1472,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
   // v6.4 H2″: an aside returned to now: her ONE line answering what they said (returnLineOk holds it)
   const retSaid = state.lastMove?.returned?.said ?? null;
   const retNote = retSaid ? returnNoteOf(retSaid, state.lastMove.returned.topic, lang) : null;
-  const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote, workedNote, retNote].filter(Boolean).join(" ");
+  // v6.11 J2: the child answered her return question: her ONE sentence on their answer (replyToReturnOk holds it)
+  const rr = state.lastMove?.returnReply ?? null;
+  const rrNote = rr?.said ? replyToReturnNoteOf(rr.said, rr.topic, lang) : null;
+  const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote, workedNote, retNote, rrNote].filter(Boolean).join(" ");
   try {
     reply = slot ? (await leadCall()) : null;
     if (reply) { guardSlot.used = true; slotState.on = true; }
@@ -2052,6 +2081,16 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const isGave = (x) => !!gaveA && /^(?:pichhle sawaal|pichhla sawaal|is sawaal ka|woh wala|the last|this question|that one)/i.test(x);
     let ss = sentences(reply).map(norm).filter(Boolean)
       .filter((x) => !isGave(x) && !(card && (cardSs.includes(x) || (x.length > 3 && card.includes(x.replace(/[.!?।]+$/, ""))))));
+    // v6.11 J2: her one sentence on their answer to the return, taken before any other reading of her draft; her other sentences
+    // about the aside go (one sentence is the reply)
+    let j2Line = null;
+    if (state.lastMove?.returnReply?.said) {
+      const rr0 = state.lastMove.returnReply;
+      // (from her first draft when a drift or shape repair rewrote it: the repair keeps the card question, not the aside's reply)
+      j2Line = [...ss, ...sentences(guard.firstDraft ?? "").map(norm)].find((x) => replyToReturnOk(x, rr0.said)) ?? null;
+      const k = (String(rr0.topic ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])[0];
+      ss = ss.filter((x) => x !== j2Line && !(k && x.toLowerCase().includes(k)));
+    }
     const graded = listenOn() && answeredNow && (verdict === "not_yet" || verdict === "correct");
     let lead = graded && ss.length ? ss.shift() : null;
     // v6 R2 (main, director8: c4 stuck T33 'Yahan "Yes" galat hai … isliye khaya hissa 2/3 hai' was flagged invented, repaired
@@ -2435,7 +2474,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // and on every such reply, a card waiting or not)
     if (state.lastMove?.asideAck) {
       // (A6: one neutral joint unless the turn already opens on one; the body — the unit's next part — is never replaced)
-      if (!lead) { const a = freshOf(jointOf(kit, "asideResume", lang) ?? ASIDE_RESUME[lang === "english" ? "english" : "hinglish"], state); body = [a, ...body]; codeLines.push(a); guard.asideResumeLine = a; }
+      // (v6.11 J2: after their answer to her return, her one sentence on it when it holds, else the neutral joint)
+      // (it is the aside's reply — the one sentence of hers a scripted turn keeps, V1 — so it rides with the aside, before the teaching)
+      if (j2Line) { aside.unshift(j2Line); guard.returnReplyLine = j2Line; }
+      else if (!lead) { const a = freshOf(jointOf(kit, "asideResume", lang) ?? ASIDE_RESUME[lang === "english" ? "english" : "hinglish"], state); body = [a, ...body]; codeLines.push(a); guard.asideResumeLine = a; }
+      if (state.lastMove?.returnReply) guard.returnReply = j2Line ? "hers" : "joint";
       guard.asideResume = true;
     }
     else if (card && !lead && !body.length && ((herPrev && prevHas(card)) || posedBefore)) { body = [freshOf((state.lastMove?.request === "selftry" ? TRY_FIRST : FRAMES.again)[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(body[0]); guard.reposeFrame = true; }
@@ -2708,7 +2751,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (their own word said back is no exemption — "Virat ke cover drive … mashhoor" answered "aapko Virat pasand hai?"; the park's
       // promise is kept, and so is a line spoken to them)
       const nm = (y) => String(y ?? "").replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?]+$/, "");
-      const isRet = (!!guard.returnLine && nm(x) === nm(guard.returnLine)) || (!!guard.againLine && nm(x) === nm(guard.againLine));
+      const isRet = (!!guard.returnLine && nm(x) === nm(guard.returnLine)) || (!!guard.againLine && nm(x) === nm(guard.againLine)) || (!!guard.returnReplyLine && nm(x) === nm(guard.returnReplyLine));
       return !!w && !isRet && !PROMISE_SAID.test(x) && !/(?<![\p{L}])(?:ke\s+baad|baad\s+mein|karenge|yaad\s+rahega|later)(?![\p{L}])/iu.test(x)
         && !/(?<![\p{L}])(?:tum|tumne|tumhe|tumhari|tumhara|tumko|you|your|ai)(?![\p{L}])/iu.test(x) && !LESSON_SAID.test(x) && !/\d/.test(x); };
     const ssc = sentences(reply).map((x) => String(x).trim()).filter(Boolean);
@@ -2753,13 +2796,27 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
   { const card = String(ui?.ask?.text ?? "");
     const at = card ? reply.lastIndexOf(card) : -1;
     let head = at >= 0 ? reply.slice(0, at) : reply; const tail = at >= 0 ? reply.slice(at) : "";
-    for (const [en, enPl, hi, hiPl] of TWIN_WORDS) {
+    for (const t of TWIN_WORDS) {
       // ("question mark" is punctuation, not a mark on a line)
-      const reEn = new RegExp(`(?<![\\p{L}])(?<!question\\s)(${en}|${enPl})(?![\\p{L}])`, "giu"), reHi = new RegExp(`(?<![\\p{L}])(${hi}|${hiPl})(?![\\p{L}])`, "giu");
-      if (!(reEn.test(reply) && reHi.test(reply))) continue;
+      const alt = (xs) => xs.map((x) => x.replace(/\s+/g, "\\s+")).join("|");
+      const reEn = new RegExp(`(?<![\\p{L}])(?<!question\\s)(${alt(t.en)})(?![\\p{L}])`, "giu"), reHi = new RegExp(`(?<![\\p{L}])(${alt(t.hi)})(?![\\p{L}])`, "giu");
+      if (!(reEn.test(head + tail) && reHi.test(head + tail))) continue;
       reEn.lastIndex = 0; reHi.lastIndex = 0;
-      const cardEn = new RegExp(`(?<![\\p{L}])(?<!question\\s)(${en}|${enPl})(?![\\p{L}])`, "iu").test(card);
-      head = cardEn ? head.replace(reHi, (m) => (m.toLowerCase() === hiPl ? enPl : en)) : head.replace(reEn, (m) => (m.toLowerCase() === enPl ? hiPl : hi));
+      // (the word the teaching itself uses wins: the card's, else the authored point's — never one word of an authored sentence swapped
+      // into the other language, "upar 6, bhuja mein 4" — v6.10 R7)
+      const src = [card, point, state.lastMove?.simpler, state.lastMove?.cardPoint].filter((x) => typeof x === "string").join(" ");
+      const enIn = (x) => new RegExp(`(?<![\\p{L}])(?<!question\\s)(${alt(t.en)})(?![\\p{L}])`, "iu").test(x);
+      const hiIn = (x) => new RegExp(`(?<![\\p{L}])(${alt(t.hi)})(?![\\p{L}])`, "iu").test(x);
+      const cardEn = enIn(card) || (!hiIn(card) && enIn(src));
+      // (the plural keeps its number: the i-th form maps to the other side's i-th, else its first)
+      const to = (m, from, into) => { const k = from.findIndex((x) => x.toLowerCase() === m.toLowerCase().replace(/\s+/g, " ")); return into[Math.min(Math.max(k, 0), into.length - 1)]; };
+      // (the card's own English word wins as the card says it — "slice", not the list's first "piece" — a plural Hindi word taking
+      // its plural when the list has one)
+      const cardW = cardEn ? String(src).match(new RegExp(`(?<![\\p{L}])(?<!question\\s)(${alt(t.en)})(?![\\p{L}])`, "iu"))?.[1]?.toLowerCase() : null;
+      const enOf = (m) => { const plural = t.hi0.findIndex((x) => x.toLowerCase() === m.toLowerCase()) > 0;
+        const pl = cardW && !/s$/.test(cardW) && t.en0.includes(`${cardW}s`) ? `${cardW}s` : cardW;
+        return cardW ? (plural ? pl : cardW) : to(m, t.hi0, t.en0); };
+      head = cardEn ? head.replace(reHi, (m) => enOf(m)) : head.replace(reEn, (m) => to(m, t.en0, t.hi0));
       guard.twinsOne = true;
     }
     if (guard.twinsOne) reply = (head + tail).replace(/\s+/g, " ").trim(); }

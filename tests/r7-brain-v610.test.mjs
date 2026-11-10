@@ -2,6 +2,7 @@
 // walked live (tests/fixtures/walk.mjs: turn.js planTurn and textReply on the run's own scripts, her live lines in the history).
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { walk } from "./fixtures/walk.mjs";
 import { rowsOf } from "./fixtures/replay.mjs";
 import { pictureRowFlag, pictureTruth } from "../server/brain/picture.js";
@@ -10,6 +11,8 @@ import { REQUEST_TABLE } from "../server/director/requestTable.js";
 
 const RUN = "2026-11-10-director18";
 const T = { c4: "c4-maths-ch05-t01", "c5-t01": "c5-maths-ch02-t01", "c5-t02": "c5-maths-ch02-t02", c6: "c6-maths-ch06-t01" };
+const TWIN_LIST = JSON.parse(readFileSync(new URL("../data/lesson-twins.json", import.meta.url), "utf8")).twins;
+const twinless = (t) => TWIN_LIST.reduce((x, p, i) => x.replace(new RegExp(`(?<![\\p{L}])(?:${[...p.en, ...p.hi].sort((a, b) => b.length - a.length).join("|")})(?![\\p{L}])`, "giu"), `#${i}`), String(t));
 const NO_PIC = /doosri tasveer|alag chitra|second picture|another picture/i;
 
 describe("r7-brain-v610.test.mjs", () => {
@@ -40,7 +43,8 @@ describe("r7-brain-v610.test.mjs", () => {
       if (x.pic?.view) {
         assert.ok(x.hb?.layout?.split, `drawn beside: ${JSON.stringify(x.hb?.layout)}`);
         assert.equal(x.hb?.altView ?? x.hb?.layout?.panels?.[1]?.view, x.pic.view, "the draw is the decision");
-        assert.ok(x.out.reply.startsWith(x.pic.line.slice(0, 20)), x.out.reply);
+        // (v6.11: the turn's one word of a twin pair — data/lesson-twins.json, the card's word winning — may differ from the take's)
+        assert.ok(twinless(x.out.reply).startsWith(twinless(x.pic.line).slice(0, 20)), x.out.reply);
       } else {
         assert.ok(!parts.some((q) => q.part === "alt"), x.out.reply);
         assert.match(x.out.reply, NO_PIC);

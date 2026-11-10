@@ -5,6 +5,8 @@
 //
 // A lesson is { topicId, persona, rows } (the harness's director rows), with the topic's lesson script (`script`, for its joints).
 
+import { readFileSync } from "node:fs";
+
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const low = (t) => norm(t).toLowerCase();
 const sentencesOf = (t) => norm(t).split(/(?<=[.!?।])\s+(?=\S)/).map((x) => x.trim()).filter(Boolean);
@@ -17,9 +19,14 @@ const KEY_SAID = /(?:is sawaal ka|iska|yahan|pichhle sawaal ka|woh wala:?) (?:sa
 const GIVE_UP = /\b(?:aap batao|aap hi batao|tum batao|batao na|nahi pata,? aap|pata nahi,? aap|give up|i give up|chhodo|nahi aata)\b/i;
 const CLARIFY = /\b(?:samajh nahi aaya|samajh nahi aa raha|samjha nahi|samjhi nahi|didn'?t understand|don'?t understand|kya matlab)\b/i;
 const CHECKIN = /(?:Yahan tak (?:theek|saaf) hai|Ab tak samajh aaya|Yeh hissa saaf hua|Yeh kadam (?:saaf hai|samajh aaya)|Does that make sense so far|Clear so far|All good so far|Is that (?:part|step) clear)\?\s*$/i;
+const RET_STOP = new Set(["maine", "mujhe", "mera", "meri", "mere", "aapko", "tumhe", "hain", "kyunki", "jab", "woh", "sabse", "lagti", "lagta", "with", "that", "this", "have", "when"]);
+const TASTE = /(?<![\p{L}])(?:mujhe\s+(?:bhi\s+)?\S+(?:\s+\S+)?\s+pasand|meri\s+favourite|mera\s+favourite|mujhe\s+(?:bhi\s+)?achha\s+lagta|i\s+(?:also\s+)?(?:love|like|enjoy)|my\s+favou?rite)/iu;
 const JOINT_ONLY = /^(?:achha|theek hai|hmm,? achha|okay|alright|right|haan)[.!,]?$/i;
-/** English words and their Hindi twins (Learning will own the list; these four first, from director19). */
-export const TWINS = [["line", "rekha"], ["mark", "nishaan"], ["square", "varg"], ["group", "samooh"]];
+/** English words and their Hindi twins: Learning's one list (data/lesson-twins.json, also read by scripts/lesson-scripts/check.mjs and
+ *  by server/brain/say.js). Each side's forms longest first, so "number line" is tried before "line". */
+const twinRe = (forms) => new RegExp(`(?<![\\p{L}])(?<!question\\s)(?:${[...forms].sort((a, b) => b.length - a.length).map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+")).join("|")})(?![\\p{L}])`, "iu");
+export const TWINS = JSON.parse(readFileSync(new URL("../../data/lesson-twins.json", import.meta.url), "utf8")).twins
+  .map((t) => ({ en: t.en, hi: t.hi, enRe: twinRe(t.en), hiRe: twinRe(t.hi) }));
 
 /** Each predicate: (lesson, row, i, ctx) → reason or null. ctx = { prevT, prevChild, script, saidCards, jointUse }. */
 export const PREDICATES = {
@@ -115,9 +122,25 @@ export const PREDICATES = {
     if (m[2] === "problem") { ctx.problemSaid.add(m[1]); return null; }
     return ctx.problemSaid.has(m[1]) ? null : `a worked ${m[2]} before its problem`;
   },
+  /** J2: the turn after the child answered her return question. It opens on ONE sentence about what they said (≤ 14 words, no
+   *  question, no taste of her own, a content word of theirs) or a neutral joint, and then goes on with the lesson. */
+  returnReply(L, r, i, ctx) {
+    if (!ctx.prevT?.returnSaid || !ctx.prevChild || /^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
+    const ss = sentencesOf(r.text);
+    const s0 = ss[0] ?? "";
+    if (ss.length < 2) return `no lesson after the reply: "${s0.slice(0, 60)}"`;
+    if (JOINT_ONLY.test(s0) || /^hmm[.!]?$/i.test(s0)) return null;
+    const theirs = (low(ctx.prevChild).match(/\p{L}{4,}/gu) ?? []).filter((w) => !RET_STOP.has(w));
+    // (their answer to her return is the aside's own reply, never a new aside parked for later)
+    const park = ss.find((x) => /(?<![\p{L}])(?:karenge|karungi|baad\s+mein|thodi\s+der|yaad\s+rahega|likh\s+li|later|come\s+back)(?![\p{L}])/iu.test(x));
+    if (park) return `their answer to the return parked again: "${park.slice(0, 70)}"`;
+    const why = /[?？]/.test(s0) ? "a question" : words(s0) > 14 ? `${words(s0)} words` : TASTE.test(s0) ? "a taste of hers"
+      : !theirs.some((w) => new RegExp(`(?<![\\p{L}])${w}`, "iu").test(s0)) ? "none of their words" : null;
+    return why ? `the reply to their answer is ${why}: "${s0.slice(0, 70)}"` : null;
+  },
   /** An English word and its Hindi twin in one turn. */
   twins(L, r) {
-    for (const [en, hi] of TWINS) if (new RegExp(`(?<![\\p{L}])(?<!question\\s)${en}s?(?![\\p{L}])`, "iu").test(r.text) && new RegExp(`(?<![\\p{L}])${hi}`, "iu").test(r.text)) return `"${en}" beside "${hi}"`;
+    for (const t of TWINS) { const e = r.text.match(t.enRe), h = r.text.match(t.hiRe); if (e && h) return `"${e[0]}" beside "${h[0]}"`; }
     return null;
   },
 };
