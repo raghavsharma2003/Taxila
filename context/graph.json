@@ -27337,6 +27337,20 @@
    "at": "2026-11-10",
    "title": "Owner, 2026-11-10: 'This codebase is entirely yours: what it's for and how it's built are your call, and you'll keep building on it. We are revolutionizing education and learning with this product.' The main loop decides product direction and architecture, records each decision in context/ with its reversal condition, and keeps building. Still the owner's: money (ask before high Azure usage, buy nothing), the owner's accounts and keys, deleting anything on Azure, anything involving real children or families, and taste choices the owner has asked to make (Asha's look). Direction taken by the main loop under it: a teacher that knows the child in front of her and makes what that child needs next, every answer checked against a verified key; after director18 the main effort moves from the four pilot lessons to closing the learner loop (learner state changes what is taught) and wiring the approval step so generated content can reach a child, with scripted teaching scaled in judged batches and round 7 released. Reverse if the owner says otherwise.",
    "source": "inbox/r7-main-37.json"
+  },
+  {
+   "id": "ms-r7-director18-hand-2026-11-10",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "director18: Brain v6.9 + Studio v6.9 + Learning D12 on int/r6 2239d0005, run by main, 16 lessons, 1,513 calls ~$1.044; counted by hand by 4 Claude judges on Opus 5.5 (0-based rows): beats 284/287, verdicts 248/248, misgrades 0, false keys 0, unsaid boards 0 (director17: 8), held-cost contradictions 0, paging contradictions 0; words against board 9 (c4 1, c5-t01 3, c5-t02 3, c6 2), all nine a picture request whose line describes a second view that was not drawn (record drawn:'kept'); the other 7 of 16 picture requests drew a true split view; 18/18 bridges switched at their first spoken part; listening c4 3.5, c5-t01 3, c5-t02 3, c6 3.5; register c4 3, c5-t02 3; c6 passes every axis. layout recorded on 0 rows.",
+   "source": "inbox/r7-main-38.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-10",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Script walk v6.10: one draw, one line; the request table's wrong and missing rows; her joints authored. P6: a picture turn is one function returning the drawing and the line built from it (held board left, view right); 'kept' never applies to a picture turn with a view; no view -> no picture line, one honest sentence; a predicate throws when a picture line is spoken with no view in the record; fixtures are director18's 9 rows; production's seam and the harness use the same function and the record carries layout. T2: a test per not-followed row (clarify at a point's check-in re-says the point; an aside with no card open is not parked 'is sawaal ke baad'; 'ab se Hindi mein' with nothing live changes the language; an aside during a worked step is answered first); a language or clarify request never spends a card's simpler or remediation; after an aside reply the walk resumes at the unit's next unsaid part; an answer given before the card was posed is asked for once more, never keyed; try-first with no card open poses the card; 'Kuch poochna hai?' removed as a check-in form. A6: the aside acknowledgement is removed (fitted 0 times in two runs). R7: after a give-up the key and why, then a check-in, next point next turn; a step opener names its own step or is omitted; nothing appended after a bridge. Harness: the child sim does not answer an unsaid card; goodbye waits for an open card; changed/kept compare against the board up before the turn. Learning D13: aside park, aside return (with a slot for what the child said), Hindi switch and ask-again lines authored per topic, three forms each; c4 s2 e3 on a new heap; c5-t02 e1 why as a sentence, gap remediation one part short and true of unshaded bars, s1 c1 answer board shaded; the staged 30-topic batch is regenerated under D11-D13 and stays staged. Clause 2 of v6.9 (listening < 3.5 with T1) taken: rules not followed are fixed in the runtime, rules wrong or missing are re-authored with Learning. Plan change: the pilot loop becomes one stream of three; the main effort moves to learner state changing what is taught and generated content reaching a child. Reverse in director19: a picture line with no view drawn -> picture requests answered with the held board and one honest line until Studio's view passes a fixture per pilot board template; listening still < 3.5 in a topic -> that topic's failing request handling is authored turn by turn in the script and code stops choosing; register < 3.5 with authored joints -> every remaining code-written sentence is listed and authored or removed; any misgrade, unsaid board or held cost -> as in v6.9's clauses.",
+   "source": "inbox/r7-main-38.json"
   }
  ],
  "edges": [
@@ -43794,6 +43808,31 @@
    "src": "ms-r1443-live",
    "rel": "supersedes",
    "dst": "ms-r1442-live"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-10",
+   "rel": "measured_by",
+   "dst": "ms-r7-director18-hand-2026-11-10"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-9",
+   "rel": "measured_by",
+   "dst": "ms-r7-director18-hand-2026-11-10"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-10",
+   "rel": "part_of",
+   "dst": "dc-r7-held-board"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-10",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v6-9"
+  },
+  {
+   "src": "dc-owner-direction-is-main-loops-2026-11-10",
+   "rel": "constrains",
+   "dst": "dc-r7-script-walk-v6-10"
   }
  ]
 }

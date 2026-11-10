@@ -162,7 +162,7 @@ in parts, start with tiers 1 and 2 (~$21).
   - Decision (`dc-r7-held-board`): "every sentence on its own board" is dropped. The board now follows the card she is on and is held; it changes at most once per turn, and a picture she is asked for is drawn beside it. Brain and Studio are building this for director17.
   - The 30 new topics stay held.
   - Write-up: `judgements/director16-2026-11-09.md`.
-- 2026-11-10: director17 (16 lessons, about $1.02), the latest run, on the held board.
+- 2026-11-10: director17 (16 lessons, about $1.02), the first run on the held board.
   - Every beat taught (283 of 283) and every answer judged (247 of 247). No misgrade, no wrong answer key.
   - The held board cost no teaching: no line was said over a board that does not show it.
   - It still fails the gate: 8 screen/speech mismatches, plus 8 turns where the next card's board went up before she had said anything about it (break menus, goodbye menus, the return to a side question).
@@ -171,6 +171,16 @@ in parts, start with tiers 1 and 2 (~$21).
   - The automatic mismatch counter is retired as a gate input: it caught 3 of 16. Judging by hand is the only screen.
   - The 30 new topics stay held.
   - Write-up: `judgements/director17-2026-11-10.md`.
+- 2026-11-10: director18 (16 lessons, about $1.04), the latest run.
+  - 99% of beats taught (284 of 287) and every answer judged (248 of 248). No misgrade, no wrong answer key.
+  - No board went up before she had spoken about it (director17 had 8), and no teaching was said over the wrong picture.
+  - It still fails the gate on 9 screen/speech mismatches. All 9 are one bug: asked for a picture, she describes a second view that was not drawn. On the other 7 picture requests the view is drawn and true.
+  - Listening is 3.5 of 5 in two topics (class 4 fractions, class 6 perimeter) and 3 in the two class 5 topics. Her register is 3 in two topics: the same side-question and "ab Hindi mein" sentences are said in every lesson.
+  - Class 6 perimeter passes everything except its two picture rows.
+  - Decision (`dc-r7-script-walk-v6-10`): one function draws the picture and writes its line, so she cannot describe what was not drawn. The request table's wrong and missing rows are fixed (asking for Hindi no longer uses up a card's help). The canned "yeh jaankar achha laga" is removed. Her joining sentences (parking a side question, coming back to it, switching to Hindi) are written per topic by Learning, three forms each.
+  - The 30 new topics stay held from children. Learning regenerates them now under the current rules, still staged.
+  - From here the pilot loop is one stream of three (Brain, Studio, Learning). The main effort moves to the learner model changing what is taught, and to generated content reaching a child.
+  - Write-up: `judgements/director18-2026-11-10.md`.
 
 ## 4. Calls the main loop took that you may want to reverse
 

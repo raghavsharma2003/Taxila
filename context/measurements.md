@@ -6507,3 +6507,31 @@ Release 14.4.3 went live at 11:46 UTC: `taxila-web--sc7a4798-cx0n`, branch `hotf
 **Rollback:** `taxila-web--sac4e8e8-3x6d` (14.4.2) is kept. Roll back to it by name; the script's `--rollback` can pick a failed revision (fixed on int/r6 only).
 
 The script's `--gate` option hung with no output here; the deploy used its check of the commit's CI result.
+
+
+<!-- merged from inbox/r7-main-38.json -->
+## `ms-r7-director18-hand-2026-11-10` (2026-11-10)
+
+director18: Brain v6.9, Studio v6.9 and Learning D12 on integration 23 (`2239d0005`). 16 lessons, 1,513 calls, about $1.044, run by main. Counted by hand by 4 judges on Opus 5.5.
+
+| Line | Count |
+|---|---|
+| Beats taught | 284/287 |
+| Verdicts | 248/248 |
+| Misgrades | 0 |
+| False keys | 0 |
+| An unsaid card's board on screen | 0 (director17: 8) |
+| Held-cost and paging contradictions | 0 |
+| Her words against the board | **9** (c4 1, c5-t01 3, c5-t02 3, c6 2) |
+
+All 9 are one mechanism: a picture request whose line describes a second view that was not drawn. 7 of the 16 picture requests drew a true split view.
+
+| Axis | c4 | c5-t01 | c5-t02 | c6 |
+|---|---|---|---|---|
+| Listening | 3.5 | 3 | 3 | 3.5 |
+| Register | 3 | 3.5 | 3 | 3.5 |
+| Screen and speech | 4 | 3.5 | 3 | 3.5 |
+
+18 of 18 bridges switched at their first spoken part. `layout` is recorded on no row.
+
+Full write-up: docs/design/round7/judgements/director18-2026-11-10.md.

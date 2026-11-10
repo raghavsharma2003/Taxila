@@ -9566,3 +9566,27 @@ The owner's words: "This codebase is entirely yours: what it's for and how it's 
 **Direction taken under it:** a teacher that knows the child in front of her and makes what that child needs next, with every answer checked against a verified key. After director18 the main effort moves from the four pilot lessons to two gaps: closing the learner loop, so learner state changes what is taught, and wiring the approval step, so generated content can reach a child. Scripted teaching is scaled in judged batches, and round 7 is released.
 
 **Reverse if:** the owner says otherwise.
+
+
+<!-- merged from inbox/r7-main-38.json -->
+## `dc-r7-script-walk-v6-10` (2026-11-10)
+
+One draw, one line; the request table's wrong and missing rows; her joints authored.
+
+**Brain and Studio:**
+- **P6:** a picture turn is one function that returns the drawing and the line built from it. No view, no picture line. A predicate throws when a picture line is spoken with no view in the record. Production and the harness use the same function.
+- **T2:** a test per row that was not followed; a language or clarify request never spends a card's help; after an aside reply the walk resumes at the unit's next unsaid part; an early answer is asked for once more, never keyed; try-first with no card open poses the card.
+- **A6:** the aside acknowledgement is removed.
+- **R7:** after a give-up, the key and why, then a check-in; step openers name their own step; nothing is appended after a bridge.
+
+**Learning (D13):** the aside park, aside return, Hindi switch and ask-again lines are authored per topic, three forms each; four data fixes in c4 and c5-t02; the staged 30-topic batch is regenerated under D11 to D13 and stays staged.
+
+**Why:** paging is gone (0 unsaid boards, 0 held cost), and the 9 contradictions left are one two-call bug: `heldAltOf` writes the picture line and `heldBoard` separately decides to keep the board. The acknowledgement and the fixed aside sentences are code-written sentences said in every lesson, the same fault as the verdict frames of director13 to 15, and get the same cure.
+
+**Plan change:** the pilot loop becomes one stream of three. The main effort moves to learner state changing what is taught, and generated content reaching a child.
+
+**Reverse if, in director19:**
+- a picture line is spoken with no view drawn: picture requests are answered with the held board and one honest line until Studio's view passes a fixture for every pilot board template;
+- listening is still below 3.5 in a topic: that topic's failing request handling is authored turn by turn in the script, and code stops choosing;
+- register is below 3.5 with authored joints: every remaining code-written sentence is listed and authored or removed;
+- any misgrade, unsaid board or held cost: as in v6.9's clauses.
