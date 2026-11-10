@@ -40,6 +40,8 @@ export const TRACE_MAX_BATCH_BYTES = 256 * 1024;
 export const TRACE_FLUSH_MS = 2000;
 /** The request-id header the client sets on every /api call; the server echoes it on srv.* events. */
 export const TRACE_RID_HEADER = "x-taxila-rid";
+/** The page-load id on every /api call (server/trace/context.js pidOf; `_pid` in the query for an EventSource). */
+export const TRACE_PID_HEADER = "x-taxila-pid";
 
 // ───────────────────────────── transport ─────────────────────────────
 /** POST /api/trace/batch. Auth is the session cookie; anonymous public pages send pid only (no cid/gid: the server fills those). */

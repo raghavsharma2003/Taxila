@@ -102,11 +102,15 @@ export function noteServerDate(date: string | null): void {
   if (Number.isFinite(server)) S.skewMs = Date.now() - server;
 }
 
-function chunks(events: TraceEvent[], max: number): TraceEvent[][] {
+/** UTF-8 bytes of a string: the server's limit is bytes (Buffer.byteLength), and Hindi text is 3 bytes a character (PLAT-43). */
+const enc = typeof TextEncoder !== "undefined" ? new TextEncoder() : null;
+export const byteLen = (s: string): number => (enc ? enc.encode(s).length : s.length * 3);
+
+export function chunks(events: TraceEvent[], max: number): TraceEvent[][] {
   const out: TraceEvent[][] = [];
   let cur: TraceEvent[] = [], bytes = 200;
   for (const e of events) {
-    const b = JSON.stringify(e).length + 1;
+    const b = byteLen(JSON.stringify(e)) + 1;
     if (cur.length && bytes + b > max) { out.push(cur); cur = []; bytes = 200; }
     cur.push(e); bytes += b;
   }
@@ -125,7 +129,7 @@ export async function flush(): Promise<void> {
     for (const part of chunks(events, TRACE_MAX_BATCH_BYTES - 1024)) {
       const payload = busy(() => body(part)) ?? "";
       try {
-        const res = await S.send("/api/trace/batch", { method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: payload, keepalive: payload.length < 60_000 });
+        const res = await S.send("/api/trace/batch", { method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: payload, keepalive: byteLen(payload) < 60_000 });
         if (res.ok) {
           const j = (await res.json().catch(() => null)) as TraceBatchResponse | null;
           if (j && (j.tier === 1 || j.tier === 2)) setTier(j.tier);

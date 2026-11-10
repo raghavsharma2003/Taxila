@@ -11,7 +11,7 @@ import { TRACE_MAX_BATCH_BYTES } from "../../shared/trace.ts";
 import { fit } from "./mask.js";
 import { isUuid } from "./context.js";
 import { tierForEmail } from "./tier.js";
-import { insertTraceRows } from "./writer.js";
+import { insertTraceRows, scrubUnstorable } from "./writer.js";
 import { putTraceBlob, traceBlobPath, traceBlobConfigured } from "./blob.js";
 
 /** Largest client blob (a tier-2 rrweb chunk or an audio clip). */
@@ -50,11 +50,15 @@ export function clientRow(e, { pid, skewMs = 0, gid = null, tier = 1, childOf = 
   if (!Number.isFinite(t)) return null;
   const sid = String(e.sid || pid || "").slice(0, 80);
   if (!sid) return null;
-  const skew = Number.isFinite(Number(skewMs)) && Math.abs(Number(skewMs)) < 86_400_000 ? Number(skewMs) : 0;
-  const data = { ...fit(e.data ?? {}).data, ...(Number.isFinite(Number(e.mono)) ? { _mono: Math.round(Number(e.mono)) } : {}) };
+  // `t` is already on the server's clock: the client stamps Date.now() - skewMs (src/trace/bus.ts emit). The batch's
+  // skewMs is the client's current reading, kept for reading a row back, never subtracted again (PLAT-30: it was, so a
+  // client 300 s ahead stored every event 300 s early).
+  void skewMs;
+  // a string the client cut mid-emoji (a lone surrogate) is refused by jsonb and failed the whole batch (PLAT-32)
+  const data = scrubUnstorable({ ...fit(e.data ?? {}).data, ...(Number.isFinite(Number(e.mono)) ? { _mono: Math.round(Number(e.mono)) } : {}) });
   return { sid, pid: String(e.pid || pid || "").slice(0, 80) || null, cid: childOf.get(sid) ?? null, gid, src: "client",
-    seq: Number.isInteger(e.seq) ? e.seq : 0, t: t - skew, kind: e.kind.slice(0, 80), turn: Number.isInteger(e.turn) ? e.turn : null,
-    rid: typeof e.rid === "string" ? e.rid.slice(0, 64) : null, tier: evTier, data };
+    seq: Number.isInteger(e.seq) ? e.seq : 0, t, kind: scrubUnstorable(e.kind.slice(0, 80)), turn: Number.isInteger(e.turn) ? e.turn : null,
+    rid: typeof e.rid === "string" ? scrubUnstorable(e.rid.slice(0, 64)) : null, tier: evTier, data };
 }
 
 export async function traceBatch(req, res, body) {
