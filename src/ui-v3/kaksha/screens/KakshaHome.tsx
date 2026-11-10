@@ -17,6 +17,7 @@ import { useDailyGreeting } from "../../../face-puppet/useDailyGreeting.ts";
 import { KakshaRoot } from "../Shell.tsx";
 import { HomeView, type HomeViewProps } from "../views.tsx";
 import { kt, RING_LABEL } from "../copy.ts";
+import { tr7 } from "../../../copy/en.ts";
 
 /** A subject id in words (the World's ring names: Maths, Science, …). */
 const subjectName = (s: string | null): string | null => (s ? (RING_LABEL[s] ? kt(RING_LABEL[s]) : s) : null);
@@ -50,7 +51,7 @@ export function KakshaHome() {
           <HomeStateView kind={kind} packReady={plan.packReady} practiceTo={`/c/${cid}/practice`} signInTo={`/start/phone?login=1&next=${encodeURIComponent(`/c/${cid}`)}`}
             onRetry={reload} go={go}
             help={(close, grownUp, setGrownUp) => (
-              <HelpSheet teacherId={child.teacher_id ?? ""} band={band} childName={child.first_name} backVisible grownUp={grownUp} faceForm={faceFormOf(prefs.face).form}
+              <HelpSheet teacherId={child.teacher_id ?? ""} band={band} childName={child.first_name} backVisible backLabel={kind === "hold" ? tr7("nb.close") : undefined} grownUp={grownUp} faceForm={faceFormOf(prefs.face).form}
                 onGrownUp={() => setGrownUp(true)} onGrownUpBack={() => setGrownUp(false)} onGrownUpHere={() => { setGrownUp(false); close(); }} onBack={close} />
             )} />
         </div>
