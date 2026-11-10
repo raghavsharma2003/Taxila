@@ -6622,3 +6622,7 @@ director19: Brain v6.10 and its follow-up, Studio P6 and Learning D13 on integra
 **Main's check after judging, same tree:** the harness's dry matrix (16 lessons, model stubbed) runs in 27 seconds and shows the doubled park sentence in 7 lessons, the orphan aside return in 11, and "Phir se dekho:" 42 times across all 16. The other code-written faults were not checked dry.
 
 Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-knows-real-walk-2026-11-10` (2026-11-10): tests/knows-walk.test.mjs (deterministic, the real step(); n = 4 pilot topics × 6 children incl. allKnown, 2026-11-10): every real walk passes assertWalkExplained with its records; the no-history child walks a prefix of the script's default (>= 8 distinct beats) with no record; meera compresses skill 1 and gets the gap opener card; meeraForgot gets compress_fallback and the full unit; kabir gets firstCard, checkOrder and hookSlot; the games-only child gets firstCard and checkOrder; allKnown opens each skill at one check, says the allKnown line once, re-teaches nothing and opens the last ladder at its hardest rung. Finding on the way: once the script's walk is spent the walk goes on with the kit's own practice (items.js selectNext), which the predicate now leaves unchecked.
