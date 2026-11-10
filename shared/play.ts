@@ -780,6 +780,18 @@ export interface PlayStartResponse {
   /** round 4: the base dress when a real-game engine renders this level (the model's delta comes from /api/play/dress) */
   dress?: import("../src/play/engines/core3d/api.ts").DressedSpec | null;
 }
+/** Round 8 P3: a level's trail (server/play/trail.js buildTrail). Child-free, fixed shape, bounded. */
+export interface PlayTrail {
+  v: 1; levelId: string | null; skillId: string | null; game: string | null; fade: Fade;
+  solved: boolean; firstTry: boolean;
+  /** mal-rule signatures + near misses before the win */
+  misses: number; refused: number;
+  /** ≤ 4: the family mal-rule id and the kit misconception id it maps to */
+  mal: { rule: string | null; mis: string | null }[];
+  undos: number; hints: number;
+  /** acts to the win, the solver's minimum, and the difference (null when unsolved or unknown) */
+  acts: number; minActs: number | null; extra: number | null;
+}
 /** POST /api/play/act: the acts since the last post (the server replays ALL acts of the level each time). */
 export interface PlayActRequest { sessionId: string; levelId: string; acts: PlayActEnvelope[]; final?: boolean; impasse?: boolean;
   /** round 4: the real-game engine on the child's screen, if any (chooses which authored words describe it; never graded) */
@@ -800,6 +812,11 @@ export interface PlayActResponse {
   /** inside a lesson, with a grade: the server's evidence rows signed for this child and lesson (server/play/evidence.js).
    *  The lesson turn folds ONLY a verified token, once per level; the plain `evidence` rows above are for display. */
   evidenceToken?: string;
+  /** round 8 P3, with a grade: how the level went, from the server's own replay (server/play/trail.js); a report only */
+  trail?: PlayTrail;
+  /** round 8 P3, home play (no lesson), with a grade: the same rows as source "home" plus the trail, signed for the child
+   *  (server/play/evidence.js signHomeEvidence). Nothing folds it yet (server/play/home.js, TAXILA_HOME_PLAY_FOLD off). */
+  homeToken?: string;
   /** inside a lesson, with a seam: the seam's telegraphic facts row signed for this child and lesson (the Director's PLAY row
    *  is read only from a verified token, never from words or values the device sends) */
   seamToken?: string;
