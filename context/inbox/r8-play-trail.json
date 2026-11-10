@@ -1,0 +1,36 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r8-play-trail-signed-with-rows",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8 Play P3: each ended level gets a trail, built by the SERVER from its own replay of the raw acts (server/play/trail.js buildTrail, called by grade.js gradeActs after the grade): v, levelId, skillId, game, fade, solved, firstTry (P2's rule: solved, clean, first decisive moment a solve), misses (mal-rule signatures + near misses before the win), refused, mal [{rule, mis}] (<= 4, first seen first), undos, hints (always 0: no family has a hint act; the device's impasse flag is a claim and is not read), acts to the win, minActs (proof.minActs else logic.solve length), extra. Child-free, fixed keys, bounded (cleanTrail re-bounds on read). It is signed INSIDE the evidence token's payload (one HMAC over rows + trail; a pre-P3 token verifies with trail null) and returned from /api/play/act as `trail` when the level ends; the lesson fold carries it onto the KT event as `playTrail` (metadata only: no column, no change to outcome or weight). The trail changes no level and no grade (test: every coverage entry's gradeActs grade equals the family's own grade, with and without a mal-rule miss), so no re-certification. Reverse if: a reader starts deciding a grade, weight or mastery from the trail (it is a report; move that logic onto the replay itself), or the token outgrows the 8 KB verifySession cap."
+  },
+  {
+   "id": "dc-r8-home-play-signed-not-folded",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8 Play P3: play from the home (no lessonId) is signed for the child: /api/play/act returns `homeToken` (kind play-home, the same rows re-marked source \"home\", the trail, the signing time `at`, no lessonId; server/play/evidence.js signHomeEvidence / verifyHomeEvidence). The lesson path refuses it and the home verifier refuses lesson tokens. It is NOT folded: server/play/home.js homeKtEvents is the fold, behind TAXILA_HOME_PLAY_FOLD (off by default) with no production caller, and enforces four rules in code: (1) game weight 0.5 via \"game\", the chance weight 0.25 (controllerEasy) on the server's CHANCE_WEIGHT rows, any other weight dropped; (2) never sets unaided and (3) never is or spends the delayed check (every event is source \"game\", the ledger's guard; tested by folding home events through kt/ledger.js); (4) at most HOME_DAILY_CAP = 3 levels per skill per IST learning day, prior folds (passed in, e.g. kt_evidence rows with episode_id 'home:%') included. No migration: the token lives on the /act response and the trail on the play.outcome trace record; the token expires with the play key's 6 h TTL. Reverse if: the learner session settles a different home weight (change rule 1's constants, keep the guards), or the switch-on needs durable home tokens (then a home_play table, or fold at /act time instead of from a device-held token)."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-play-adapt-between-levels",
+   "rel": "constrains",
+   "dst": "dc-r8-play-trail-signed-with-rows"
+  },
+  {
+   "src": "in-game-success-as-mastery",
+   "rel": "constrains",
+   "dst": "dc-r8-home-play-signed-not-folded"
+  },
+  {
+   "src": "dc-r8-play-trail-signed-with-rows",
+   "rel": "constrains",
+   "dst": "dc-r8-home-play-signed-not-folded"
+  }
+ ],
+ "md": {
+  "decisions": "\n## `dc-r8-play-trail-signed-with-rows` (2026-11-10)\n\nRound 8 Play P3. Each ended level gets a trail, built by the server from its own replay (`server/play/trail.js`): misses before the win, the mal-rules they matched (rule and kit misconception id, at most 4), undos, law refusals, hints (always 0: no family has a hint act), acts to the win against the solver's minimum, first-try clean, solved.\n\n- Child-free, fixed keys, bounded; `cleanTrail` re-bounds it on read.\n- Signed inside the evidence token's payload, with the rows. A pre-P3 token verifies with `trail: null`.\n- Returned from `/api/play/act` as `trail` when the level ends. The lesson fold carries it onto the KT event as `playTrail`, metadata only.\n- It changes no level and no grade (tested over every coverage entry), so no re-certification.\n\n**Reverse if:** a reader starts deciding a grade, weight or mastery from the trail; or the token outgrows the 8 KB cap.\n\n## `dc-r8-home-play-signed-not-folded` (2026-11-10)\n\nRound 8 Play P3. Home play (no lesson) is signed for the child: `/api/play/act` returns `homeToken` (the same rows as source \"home\", the trail, no lessonId). The lesson path refuses it.\n\nIt is not folded. `server/play/home.js` `homeKtEvents` is the fold, behind `TAXILA_HOME_PLAY_FOLD` (off) with no production caller. Its four rules, in code and tested:\n\n1. game weight 0.5, chance weight 0.25 for one-decision correct rows, any other weight dropped;\n2. never sets unaided;\n3. never is or spends the delayed check (2 and 3: every event is source \"game\", the ledger's guard);\n4. at most 3 levels per skill per IST learning day, prior folds included.\n\nNo migration: the token lives on the `/act` response (6 h TTL) and the trail on the `play.outcome` trace record.\n\n**Reverse if:** the learner session settles a different home weight; or switching on needs durable home tokens (a home_play table, or fold at `/act` time).\n"
+ }
+}

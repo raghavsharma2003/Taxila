@@ -4,10 +4,21 @@
 import { logicFor } from "../../src/play/families/index.ts";
 import { replayAll } from "../../src/play/core/replay.ts";
 import { sanitizeActs, playFactsRow } from "../../shared/play.ts";
+import { buildTrail } from "./trail.js";
 
 export const MAX_ACTS = 400;
 
-/** → { grade, moments, solved, facts } for the acts so far (final = the level is being closed). */
+/** The solver's minimum acts for a level (the proof's, else the solver's own), or null. */
+export function minActsOf(level, logic = logicFor(level.family, level.mode)) {
+  if (Number.isFinite(level?.proof?.minActs) && level.proof.minActs > 0) return level.proof.minActs;
+  try { const v = logic?.validate(level); const s = v ? logic.solve(v) : null; return s?.length || null; } catch { return null; }
+}
+
+/**
+ * → { grade, moments, solved, facts, trail } for the acts so far (final = the level is being closed). Round 8 P3: when the
+ * level ends (a grade), `trail` is the server's report of how it went (server/play/trail.js), built AFTER the grade from
+ * the same replay; nothing that grades reads it.
+ */
 export function gradeActs(level, rawActs, { final = false } = {}) {
   const logic = logicFor(level.family, level.mode);
   if (!logic) return null;
@@ -17,7 +28,8 @@ export function gradeActs(level, rawActs, { final = false } = {}) {
   const r = replayAll(logic, v, acts);
   const solved = logic.goalMet(v, r.state);
   const grade = solved || final ? logic.grade(v, acts) : null;
-  return { grade, moments: r.moments, solved, acts: acts.length, facts: logic.facts(v, r.state), factsRow: playFactsRow(logic.facts(v, r.state)) };
+  const trail = grade ? buildTrail(v, acts, r, { grade, minActs: minActsOf(v, logic) }) : null;
+  return { grade, moments: r.moments, solved, acts: acts.length, facts: logic.facts(v, r.state), factsRow: playFactsRow(logic.facts(v, r.state)), trail };
 }
 
 /**

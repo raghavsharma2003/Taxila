@@ -7,6 +7,7 @@
 //   (because?: round 8, [{ choice, fact, source }] for a game / level / fade chosen from what the learner model holds; absent
 //   when the choice is the default. It also rides the signed session body, so /level and the parent page read the same.)
 //   POST /api/play/act     { sessionId, levelId, acts, final?, impasse? } → moments, reaction, grade?, doors?, seam?
+//   (round 8 P3, when the level ends: trail (server/play/trail.js), and evidenceToken (lesson) or homeToken (home play))
 //   POST /api/play/next    { sessionId, door } → session, level, art, bank
 //   POST /api/play/level   { sessionId } → session, level, art           (the Studio renderer's mount)
 //   POST /api/play/dress   { sessionId } → { dress, source, ms }  (round 4: the ONE model call on the play path; enums only,
@@ -22,7 +23,7 @@ import { startSession } from "./start.js";
 import { gradeActs, lessonEvidence } from "./grade.js";
 import { reactionFor } from "./react.js";
 import { mapStateFrom, worldFamily } from "./world.js";
-import { signEvidence, signSeam } from "./evidence.js";
+import { signEvidence, signHomeEvidence, signSeam } from "./evidence.js";
 import { playFactsRow } from "../../shared/play.ts";
 import { baseSpec, dressSpecFor, withVerb } from "./dress.js";
 import { engineFor } from "../../src/play/engines/registry.ts";
@@ -112,7 +113,12 @@ export const routes = {
     const ended = !!g.grade;
     const rows = ended ? lessonEvidence(g.grade, level) : [];
     // inside a lesson: the server's own rows, signed for this child and lesson (the turn folds only a verified token)
-    const evidenceToken = ended && s.lessonId && rows.length ? signEvidence({ childId: s.childId, lessonId: s.lessonId, levelId: level.levelId, rows }) : undefined;
+    // round 8 P3: the level's trail (the server's own replay: misses, mal-rules, undos, acts vs the solver's minimum) is
+    // signed WITH the rows. From the home (no lessonId) the same rows, as source "home", and the trail are signed for the
+    // child alone (homeToken); nothing folds a home token yet (server/play/home.js, TAXILA_HOME_PLAY_FOLD off)
+    const trail = ended ? g.trail : null;
+    const evidenceToken = ended && s.lessonId && rows.length ? signEvidence({ childId: s.childId, lessonId: s.lessonId, levelId: level.levelId, rows, ...(trail ? { trail } : {}) }) : undefined;
+    const homeToken = ended && !s.lessonId && rows.length ? signHomeEvidence({ childId: s.childId, levelId: level.levelId, rows, ...(trail ? { trail } : {}) }) : undefined;
     const seam = seamOf(g.grade, level, fresh, !!b.impasse);
     const seamToken = seam && s.lessonId ? signSeam({ childId: s.childId, lessonId: s.lessonId, kind: seam.kind, row: playFactsRow({ game: `${level.family}/${level.mode}`, ...seam.facts }) }) : undefined;
     // the belief this level's first decision showed is the next level's focus (the current level's inputs never change);
@@ -121,9 +127,9 @@ export const routes = {
     const s2 = afterLevelBody(s, { grade: ended ? g.grade : null, level, history });
     // release 12 flight recorder: every act's grade moment, and the level's outcome when it ends
     traceRecord(ended ? "play.outcome" : "play.act", { family: level.family, mode: level.mode, levelId: level.levelId, final: !!b.final, impasse: !!b.impasse,
-      moments: fresh.map((m) => m.kind), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen } : {}),
+      moments: fresh.map((m) => m.kind), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen, home: !s.lessonId, ...(trail ? { trail } : {}) } : {}),
       reaction: typeof reaction === "string" ? reaction : reaction?.text ?? null, engine: seenEngine }, { ...(typeof s.lessonId === "string" && s.lessonId.length === 36 ? { sid: s.lessonId } : {}) });
-    const out = { levelId: level.levelId, moments: fresh, reaction, ...(seamToken ? { seamToken } : {}), ...(ended ? { grade: g.grade, doors: doorsFor(s2, entry, s.lang, child?.first_name), evidence: rows, ...(evidenceToken ? { evidenceToken } : {}) } : {}),
+    const out = { levelId: level.levelId, moments: fresh, reaction, ...(seamToken ? { seamToken } : {}), ...(ended ? { grade: g.grade, doors: doorsFor(s2, entry, s.lang, child?.first_name), evidence: rows, ...(trail ? { trail } : {}), ...(evidenceToken ? { evidenceToken } : {}), ...(homeToken ? { homeToken } : {}) } : {}),
       seam, sessionId: sessionOut(s2) };
     send(res, 200, out);
   },
