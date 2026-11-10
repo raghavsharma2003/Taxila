@@ -112,6 +112,14 @@ export const FLOORS = Object.freeze({
 
 /** In-game evidence weight into the learner model (the existing `game-evidence-into-kt-not-bayesnets` decision). */
 export const GAME_WEIGHT = 0.5;
+/**
+ * The chance-adjusted weight (games audit GAMES-03): a CORRECT outcome on a one-decision goal (`FamilyLogic.oneDecision`:
+ * one pick among a few lines, kinds, places or corners, which a lucky first tap lands 20 to 40 % of the time) enters the
+ * learner model at the arena's weight, GAME_WEIGHT × the controllerEasy temper 0.5 (server/play/evidence.js, kt/bktr.js).
+ * An incorrect or partial outcome on the same goal keeps GAME_WEIGHT: a miss is not luck.
+ */
+export const CHANCE_WEIGHT = 0.25;
+export type GameWeight = typeof GAME_WEIGHT | typeof CHANCE_WEIGHT;
 
 // ───────────────────────────── levels ─────────────────────────────
 
@@ -490,6 +498,7 @@ export type HissaAct =
   | { kind: "shade"; side: number; k: number }           // shade / take k of that side's parts (grid: k tenths)
   | { kind: "base"; on: number }                         // story (rest): the second fold lies on the piece left (1) or the whole bar (2)
   | { kind: "lay"; n: number }                           // rope pieces laid / recipe shares laid
+  | { kind: "count"; n: number }                        // pour: how many full cups the jug will fill, said before the first pour
   | { kind: "pour" }                                     // one full cup from the jug (a cup it cannot fill is refused)
   | { kind: "tag"; part: number; v: number }             // the tag's top (0) or bottom (1)
   | { kind: "slide"; by: number }                        // the chart's digits one place left (+1, × 10) or right (−1)
@@ -562,7 +571,7 @@ export interface PlayEvidence {
   misconceptionId?: string;
   /** a correct act on a level built to discriminate this misconception */
   discriminates?: string;
-  via: "game"; weight: typeof GAME_WEIGHT;
+  via: "game"; weight: GameWeight;
   levelId: string; actSeq: number;
 }
 export interface PlayGrade {
@@ -628,6 +637,9 @@ export interface FamilyLogic<P = unknown, S = unknown, A extends PlayActBody = P
   board(level: PlayLevel<P>, state: S): { title: string; lines: string[] };
   /** the family's mal-rule ids (the coverage file maps them to kit misconception ids per topic) */
   malRules: readonly string[];
+  /** goals decided by ONE pick a lucky first tap can land (games audit GAMES-03): their correct evidence enters at
+   *  CHANCE_WEIGHT (gradeLevel reads this), never a second decision bolted on */
+  oneDecision?: readonly string[];
 }
 
 // ───────────────────────────── art direction (DESIGN.md §4) ─────────────────────────────

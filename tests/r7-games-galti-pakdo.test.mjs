@@ -15,7 +15,7 @@ import { coverage, entryKey, levelsFor, currentLevel, seedOf, hasPlay, entryFor 
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { hiddenOf } from "../server/play/react.js";
 import { playActOf } from "../server/director/play-verbs.js";
-import { GAME_WEIGHT, FAMILIES, MODES, FAMILY_ARTS, sanitizeActs } from "../shared/play.ts";
+import { CHANCE_WEIGHT, GAME_WEIGHT, FAMILIES, MODES, FAMILY_ARTS, sanitizeActs } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
 import { pickLevels } from "../src/play/core/pick.ts";
 import { counted } from "./_work.mjs";
@@ -222,7 +222,12 @@ for (const e of GP()) for (const fade of [1, 2, 3]) {
       const g = gradeActs(level, env(L.solve(level)), { final: true });
       assert.equal(g.grade.verdict, "solved");
       const rows = lessonEvidence(g.grade, level);
-      assert.equal(rows[0].outcome, "correct"); assert.equal(rows[0].weight, GAME_WEIGHT); assert.ok(e.skillIds.includes(rows[0].skillId));
+      // pakdo is one pick (a lucky first tap lands it): its correct enters at the chance-adjusted weight (GAMES-03)
+      assert.equal(rows[0].outcome, "correct"); assert.equal(rows[0].weight, e.goal === "pakdo" ? CHANCE_WEIGHT : GAME_WEIGHT); assert.ok(e.skillIds.includes(rows[0].skillId));
+      for (const kitId of level.proof.discriminates) {
+        const mal = Object.keys(level.mal).find((m) => level.mal[m] === kitId && L.malActs(level, m));
+        assert.equal(gradeActs(level, env(L.malActs(level, mal)), { final: true }).grade.evidence[0].weight, GAME_WEIGHT, "a miss keeps the game weight");
+      }
       const forged = gradeActs(level, [{ seq: 1, t: 0, act: { kind: "sab", solved: true, correct: true, verdict: "solved" } }], { final: true });
       assert.notEqual(forged.grade.verdict, "solved");
       for (const kitId of level.proof.discriminates) {
