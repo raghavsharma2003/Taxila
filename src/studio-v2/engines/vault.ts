@@ -181,7 +181,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${g.r + 1} / ${spec.rounds.length}`, title: round().show === "words" ? "Listen to the number" : groupDigits(round().target, spec.system), sub: round().show === "words" ? numberWords(round().target, spec.system) : round().denoms.includes(1000) ? "load it exactly, then seal" : "no thousands on the belt today", accent: C.sun });
     if (g.state === "end" && g.last) drawStatCard(api, ctx, { a: g.endA, head: g.last.verdict === "right" ? T.cracked : `${T.round} ${g.r + 1}`, color: g.last.verdict === "right" ? C.mint : C.amber, ticked: g.last.verdict === "right", stats: [[groupDigits(round().target, spec.system), T.target], [groupDigits(g.last.total, spec.system), T.loaded]], foot: g.last.detail?.includes("drop-zero") ? "a zero holds the empty place" : undefined });
     if (g.state === "final") drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.results.filter((r) => r.verdict === "right").length}/${spec.rounds.length}`, "vaults"]] });
-    drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 600);
+    drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 612, 470, 275);   // under the belt: the column counts own the bottom right
   }
   function bot(): BotAction | null {
     if (g.state !== "play" || g.fliers.length || g.merges.length) return { type: "wait", ms: 160 };

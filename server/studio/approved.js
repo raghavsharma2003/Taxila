@@ -59,6 +59,19 @@ export function beatFor(topicId, misconceptionId) {
   return null;
 }
 
+/**
+ * What one generation attempt ends in — exactly one of: a candidate, or refused with its reason (main 2026-11-10: c4 made two
+ * attempts both logged ok, and neither a candidate nor a refused file was written — an ok result whose content checks failed
+ * fell between the two). → { kind: "candidate" } | { kind: "refused", why }.
+ */
+export function attemptOutcome(r) {
+  if (!r?.ok) return { kind: "refused", why: String(r?.why ?? "refused") };
+  if (!r.payload?.spec) return { kind: "refused", why: "ok but no spec in the payload" };
+  const failed = Object.entries(r.checks ?? {}).filter(([k, v]) => v === false || (v && typeof v === "object" && v.ok === false)).map(([k]) => k);
+  if (failed.length) return { kind: "refused", why: `ok, but its checks failed: ${failed.join(", ")}` };
+  return { kind: "candidate" };
+}
+
 let memo = null, storeDir = STORE_DIR;
 /** Tests only: read the store from another folder (null: back to data/studio-approved). */
 export const _useStore = (dir) => { storeDir = dir ?? STORE_DIR; memo = null; };

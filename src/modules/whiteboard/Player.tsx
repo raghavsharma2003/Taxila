@@ -9,7 +9,7 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import type { WbOp, WhiteboardScript } from "../../../shared/studio.ts";
 import { erasers, isIdentity, isMotionOp, morphAt, motionMatrix, opGeometry, opProgress, sweepAt, visibleShare, type OpGeometry } from "../../../shared/whiteboard.js";
-import { HAND_FONT, paletteFor, isNumeric, type BoardSkin, type Ink, type Palette } from "./palette.ts";
+import { HAND_FONT, paletteFor, isNumeric, roleColor, type BoardSkin, type Ink, type Palette, type Role } from "./palette.ts";
 
 const WEIGHT: Record<number, number> = { 1: 2.4, 2: 3.4, 3: 5 };
 const nowMs = () => performance.now();
@@ -148,12 +148,16 @@ const Grid = memo(function Grid({ w, h, color }: { w: number; h: number; color: 
 });
 
 const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion, numFont = null, sweep = null, strokeScale = 1 }: { op: WbOp; g: OpGeometry; p: number; vis: number; pal: Palette; reducedMotion: boolean; numFont?: string | null; sweep?: { p: number; dir: "up" | "down" | "left" | "right" } | null; strokeScale?: number }) {
-  const color = pal.ink[(op.ink ?? "chalk") as Ink];
-  const sw = WEIGHT[op.weight ?? 2] / strokeScale;
+  // round 8: an op with a role is drawn in its role's colour (the shape is the role's own: geometry and the dash below)
+  const role = (op as { role?: Role }).role;
+  const color = role ? roleColor(pal, role) : pal.ink[(op.ink ?? "chalk") as Ink];
+  // (a focus outline is a little heavier: "a solid outline plus a tint")
+  const sw = (WEIGHT[op.weight ?? 2] * (role === "focus" ? 1.25 : 1)) / strokeScale;
   // the op's progress is spent on its paths in order, then on its texts (a label's leader, then its word)
   const parts = g.paths.length + g.texts.length;
   const share = (i: number) => (parts ? Math.max(0, Math.min(1, p * parts - i)) : p);
-  const fillInk = "fill" in op && op.fill ? pal.ink[op.fill as Ink] : null;
+  const fillInk = "fill" in op && op.fill ? (role && role !== "muted" ? roleColor(pal, role) : pal.ink[op.fill as Ink]) : null;
+  const dashedOp = "dashed" in op && op.dashed === true;
   // a swept fill is revealed by its sweep (a clip growing from one side), not faded in with the outline
   const fillP = fillInk && g.fill ? (sweep ? (sweep.p > 0 ? 1 : 0) : Math.max(0, Math.min(1, (p - 0.55) / 0.45))) : 0;
   const b = g.box, sp = sweep?.p ?? 1;
@@ -165,12 +169,17 @@ const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion, numFont
     <g opacity={vis} data-op={op.op} data-id={op.id}>
       {clip && <defs><clipPath id={clipId}><rect x={clip.x - 2} y={clip.y - 2} width={clip.w + 4} height={clip.h + 4} /></clipPath></defs>}
       {fillInk && g.fill && fillP > 0 && <path d={g.fill} fill={fillInk} fillOpacity={pal.fillAlpha * fillP} stroke="none" clipPath={clipId ? `url(#${clipId})` : undefined} />}
+      {g.slotFill && share(0) > 0 && <path d={g.slotFill} fill={color} fillOpacity={pal.fillAlpha * 0.6} stroke="none" />}
       {g.paths.map((d, i) => {
         const s = share(i);
+        // round 8: a dashed op (a mix-up line, a slot box) or a dashed path of its drawing (a slot's box round its "?")
+        const dashed = g.dashed ? g.dashed[i] : dashedOp && i === 0;
+        // (a fraction's rule keeps its own thin width)
+        const w = g.widths?.[i] != null ? (g.widths[i] as number) / strokeScale : sw;
         return s > 0 ? (
-          <path key={i} d={d} fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" pathLength={1}
-            strokeDasharray={op.op === "line" && op.dashed ? "0.02 0.018" : s < 1 ? "1 1" : undefined}
-            strokeDashoffset={op.op === "line" && op.dashed ? undefined : s < 1 ? 1 - s : undefined} opacity={op.op === "highlight" ? 0.9 : 1} />
+          <path key={i} d={d} fill="none" stroke={color} strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" pathLength={dashed ? undefined : 1}
+            strokeDasharray={dashed ? "7 6" : s < 1 ? "1 1" : undefined}
+            strokeDashoffset={dashed ? undefined : s < 1 ? 1 - s : undefined} opacity={op.op === "highlight" ? 0.9 : 1} />
         ) : null;
       })}
       {g.texts.map((tx, i) => {

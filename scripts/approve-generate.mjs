@@ -12,7 +12,7 @@
 // render, the judge, the store) runs on these files with no key: scripts/approve-check.mjs.
 import fs from "node:fs";
 import path from "node:path";
-import { PILOT_TARGETS, beatFor, specHash } from "../server/studio/approved.js";
+import { PILOT_TARGETS, beatFor, specHash, attemptOutcome } from "../server/studio/approved.js";
 import { specPrompt, createBuilders } from "../server/stagecraft/builders.js";
 import { kindOf } from "../server/stagecraft/catalogue.js";
 import { validateAny } from "../shared/studio-spec-ext/index.ts";
@@ -69,14 +69,17 @@ for (const t of targets) {
     try { r = await B.generatedSpec(cand(t), dep, undefined, key(t)); } catch (e) { r = { ok: false, usd: 0, why: `error: ${String(e?.code ?? e?.message ?? e).slice(0, 80)}` }; }
     const usd = Number(r?.usd) || 0;
     spent += usd;
-    Object.assign(calls.at(-1), { usd: Math.round(usd * 1e6) / 1e6, ok: !!r?.ok, why: r?.ok ? null : r?.why ?? "refused" });
-    console.log(`  ${t.topicId} attempt ${attempt}: ${r?.ok ? "candidate" : `refused (${r?.why})`}  $${usd.toFixed(5)}`);
-    if (!r?.ok && KEEP_REFUSED) {
-      const v = (() => { try { const x = validateAny(t.archetype, lastRaw); return { fellBack: !!x.fellBack, repairs: (x.repairs ?? []).slice(0, 60) }; } catch (e) { return { error: String(e?.message ?? e).slice(0, 200) }; } })();
-      fs.writeFileSync(path.join(OUT, `${t.topicId}.refused-${attempt}.json`), JSON.stringify({ v: 1, target: t, why: r?.why ?? "refused", validator: v, raw: lastRaw }, null, 2) + "\n");
+    // (every attempt ends in exactly one of: a candidate, or refused with its reason — attemptOutcome)
+    const oc = attemptOutcome(r);
+    Object.assign(calls.at(-1), { usd: Math.round(usd * 1e6) / 1e6, ok: oc.kind === "candidate", why: oc.kind === "candidate" ? null : oc.why });
+    console.log(`  ${t.topicId} attempt ${attempt}: ${oc.kind === "candidate" ? "candidate" : `refused (${oc.why})`}  $${usd.toFixed(5)}`);
+    // (a refused attempt ALWAYS leaves its file with the reason; --keep-refused adds the raw reply and the validator's repairs)
+    if (oc.kind === "refused") {
+      const v = !KEEP_REFUSED ? null : (() => { try { const x = validateAny(t.archetype, lastRaw); return { fellBack: !!x.fellBack, repairs: (x.repairs ?? []).slice(0, 60) }; } catch (e) { return { error: String(e?.message ?? e).slice(0, 200) }; } })();
+      fs.writeFileSync(path.join(OUT, `${t.topicId}.refused-${attempt}.json`), JSON.stringify({ v: 1, target: t, why: oc.why, checks: r?.checks ?? null, spec: r?.payload?.spec ?? null, ...(KEEP_REFUSED ? { validator: v, raw: lastRaw } : {}) }, null, 2) + "\n");
     }
     lastRaw = null;
-    if (r?.ok && r.checks?.contentSafe !== false) done = { r, attempt };
+    if (oc.kind === "candidate") done = { r, attempt };
     if (spent > CAP) throw new Error(`USD cap passed: $${spent.toFixed(4)} > $${CAP.toFixed(2)}`);
   }
   if (done) {

@@ -16,7 +16,23 @@
 
 export const LIMITS = Object.freeze({ maxOps: 120, maxPointsPerStroke: 240, maxTextChars: 24, maxDurationMs: 60_000, minBoard: 100, maxBoard: 2000,
   maxNumRows: 8, maxNumCols: 12, maxCellChars: 6, maxWordCellChars: 12 });
-export const OPS = Object.freeze(["stroke", "line", "arrow", "rect", "circle", "ellipse", "polygon", "sector", "text", "label", "numwork", "highlight", "erase", "move", "rotate", "scale", "follow", "sweep", "morph"]);
+export const OPS = Object.freeze(["stroke", "line", "arrow", "rect", "circle", "ellipse", "polygon", "sector", "text", "label", "numwork", "highlight", "brace", "erase", "move", "rotate", "scale", "follow", "sweep", "morph"]);
+/**
+ * round 8 (board grammar, C1 Studio 2026-11-10; names confirmed by design r8): what an op MEANS on the board, drawn by the
+ * renderer per role (src/modules/whiteboard/palette.ts) — a rename is one line here. No role = ink.
+ *   focus   the part asked about / the group named (the spoken step): a solid outline plus a tint
+ *   slot    the answer slot: the asked "?" in a dashed box
+ *   answer  an answer board's mark (Learning's `mark`): solid, with a tick or a ring
+ *   mixup   the easy-to-mix-up marker: always a dashed line
+ *   muted   the parts not in focus: lighter ink
+ * Shapes belong to the role, not the theme (the meaning survives greyscale: rolesByShape); a theme owns only colour.
+ */
+export const ROLE = Object.freeze({ focus: "focus", slot: "slot", answer: "answer", mixup: "mixup", muted: "muted" });
+export const ROLES = Object.freeze(Object.values(ROLE));
+/** The roles that carry a meaning (muted and ink do not): at most 3 on a board — focus; slot OR answer; mixup. */
+export const MEANING_ROLES = Object.freeze([ROLE.focus, ROLE.slot, ROLE.answer, ROLE.mixup]);
+const CLOSED = new Set(["rect", "circle", "ellipse", "polygon", "sector"]);
+const OPEN = new Set(["line", "stroke", "arrow"]);
 export const INKS = Object.freeze(["chalk", "accent", "ink", "mark", "good", "soft"]);
 export const GROUNDS = Object.freeze(["chalk", "paper", "grid"]);
 export const NUM_LAYOUTS = Object.freeze(["column_add", "column_sub", "column_mul", "long_div", "fraction", "equation", "number_line"]);
@@ -50,12 +66,113 @@ export const DIGIT_ADVANCE = 0.6;
 const NUMERAL = /^[\d\s.,/:?+\-−×÷=%°]+$/u;
 export function textBox(text, size = "m", at = [0, 0], align = "middle") {
   const fs = TEXT_SIZE[size] ?? TEXT_SIZE.m;
+  // round 8 (board grammar item 1): a text with a simple fraction in it is drawn STACKED: its box is the stack's
+  const runs = fractionRuns(text, size);
+  if (runs) {
+    const x = align === "start" ? at[0] : align === "end" ? at[0] - runs.w : at[0] - runs.w / 2;
+    return { x, y: at[1] - runs.h / 2, w: runs.w, h: runs.h };
+  }
   // (a number is drawn in monospace digits, wider than the average letter the estimate assumes: App's 360 dp shots had
   // "100200300" run together where the estimate saw room)
   const w = Math.max(fs * 0.6, [...String(text)].length * fs * (NUMERAL.test(String(text)) ? DIGIT_ADVANCE : ADVANCE));
   const h = fs * 1.2;
   const x = align === "start" ? at[0] : align === "end" ? at[0] - w : at[0] - w / 2;
   return { x, y: at[1] - h * 0.75, w, h };
+}
+
+// ───────────────────────────── stacked fractions (round 8, board grammar item 1) ─────────────────────────────
+
+/** A simple fraction a/b written in a text: a 1-2 digit numerator (or "?") over a denominator 1-12, standing alone. */
+const FRAC_RE = /(?<![\d/.,])(\d{1,2}|\?)\s*\/\s*(\d{1,2})(?![\d/.,])/g;
+/** A stacked fraction's numeral size for a text size: 0.8 of it, never below the small size (the legibility floor counts
+ *  the numeral's own px, so a stack never brings a board's smallest word below the "s" words it already has). */
+export const stackNumeral = (fs) => Math.max(TEXT_SIZE.s, round1(fs * 0.8));
+/** The rule under a stacked numerator: about 0.065 em of the numeral (design r8), never a hairline. */
+export const stackRule = (ns) => Math.max(1.6, round2(ns * 0.065));
+const pieceW = (t, fs) => [...t].length * fs * (NUMERAL.test(t) ? DIGIT_ADVANCE : ADVANCE);
+/**
+ * A text as runs when it holds a simple fraction (b ≤ 12): [{ t } | { n, d }] with each run's width, the whole run's width
+ * and height (board units, at text size `size`). null when the text has no fraction (drawn as one line, as before).
+ */
+export function fractionRuns(text, size = "m") {
+  const s = String(text ?? "");
+  if (!s.includes("/")) return null;
+  const fs = TEXT_SIZE[size] ?? TEXT_SIZE.m, ns = stackNumeral(fs);
+  const pieces = [];
+  let last = 0, any = false;
+  for (const m of s.matchAll(FRAC_RE)) {
+    const d = Number(m[2]);
+    if (!(d >= 1 && d <= 12)) continue;
+    const before = s.slice(last, m.index).trim();
+    if (before) pieces.push({ t: before, w: pieceW(before, fs) });
+    pieces.push({ n: m[1], d: m[2], w: Math.max(m[1].length, m[2].length) * ns * DIGIT_ADVANCE + ns * 0.36 });
+    last = m.index + m[0].length; any = true;
+  }
+  if (!any) return null;
+  const after = s.slice(last).trim();
+  if (after) pieces.push({ t: after, w: pieceW(after, fs) });
+  const gap = fs * 0.28;
+  const w = pieces.reduce((a, p) => a + p.w, 0) + gap * (pieces.length - 1);
+  return { pieces, fs, ns, gap, w, h: Math.max(fs * 1.2, ns * 2.44) };
+}
+/**
+ * The ONE stacked-fraction drawing (numwork's `fraction` layout and every text run use it): the numerator over a straight
+ * rule over the denominator, the rule at `barY`. → { texts, path, width }.
+ */
+export function fracStack(cx, barY, n, d, ns, halfW) {
+  const off = ns * 0.62;
+  return {
+    texts: [{ x: round1(cx), y: round1(barY - off), text: String(n), size: ns, align: "middle" }, { x: round1(cx), y: round1(barY + off), text: String(d), size: ns, align: "middle" }],
+    path: `M${f1(cx - halfW)},${f1(barY)} L${f1(cx + halfW)},${f1(barY)}`,
+    width: stackRule(ns),
+  };
+}
+/** A text's drawing: one line, or its runs with every fraction stacked, centred on at[1] (where the player writes a line). */
+function textDrawing(text, size, at, align) {
+  const fs = TEXT_SIZE[size] ?? TEXT_SIZE.m;
+  const runs = fractionRuns(text, size);
+  if (!runs) return { texts: [{ x: at[0], y: at[1], text, size: fs, align }], paths: [], widths: [] };
+  const box = textBox(text, size, at, align);
+  const texts = [], paths = [], widths = [];
+  let x = box.x;
+  for (const p of runs.pieces) {
+    const cx = x + p.w / 2;
+    if (p.t !== undefined) texts.push({ x: round1(cx), y: at[1], text: p.t, size: fs, align: "middle" });
+    else { const st = fracStack(cx, at[1], p.n, p.d, runs.ns, p.w / 2 - runs.ns * 0.1); texts.push(...st.texts); paths.push(st.path); widths.push(st.width); }
+    x += p.w + runs.gap;
+  }
+  return { texts, paths, widths, box };
+}
+
+/** Where a brace's label sits: past its apex along its side, by half the label's own extent (stacked labels are taller). */
+export function braceGeometry(op) {
+  const [x1, y1] = op.from, [x2, y2] = op.to;
+  const L = Math.hypot(x2 - x1, y2 - y1) || 1;
+  const t = [(x2 - x1) / L, (y2 - y1) / L];
+  const want = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[op.side ?? "up"] ?? [0, -1];
+  // the normal of the span on the asked side
+  let n = [-t[1], t[0]];
+  if (n[0] * want[0] + n[1] * want[1] < 0) n = [-n[0], -n[1]];
+  const h = Math.min(16, Math.max(8, L * 0.12)), q = h / 2;
+  const P = (u, v) => [x1 + u * t[0] + v * n[0], y1 + u * t[1] + v * n[1]];
+  const m = L / 2, k = Math.min(q, L / 4);
+  const pts = [[0, 0], [0, q], [k, q], [m - k, q], [m, q], [m, h], [m, q], [m + k, q], [L - k, q], [L, q], [L, 0]];
+  const W = pts.map(([u, v]) => P(u, v));
+  // quadratic corners: start → (k,q) via (0,q); straight to (m-k,q); → apex (m,h) via (m,q); back → (m+k,q) via (m,q); straight; → end via (L,q)
+  const d = `M${f1(W[0][0])},${f1(W[0][1])} Q${f1(W[1][0])},${f1(W[1][1])} ${f1(W[2][0])},${f1(W[2][1])} L${f1(W[3][0])},${f1(W[3][1])} Q${f1(W[4][0])},${f1(W[4][1])} ${f1(W[5][0])},${f1(W[5][1])} Q${f1(W[6][0])},${f1(W[6][1])} ${f1(W[7][0])},${f1(W[7][1])} L${f1(W[8][0])},${f1(W[8][1])} Q${f1(W[9][0])},${f1(W[9][1])} ${f1(W[10][0])},${f1(W[10][1])}`;
+  const apex = P(m, h);
+  const xs = W.map((p) => p[0]), ys = W.map((p) => p[1]);
+  const box = { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
+  return { d, apex, n, box };
+}
+/** The id of a brace's label text op: "<brace id>.l" (so a page that renames its ops keeps the pair). */
+export const braceLabelId = (id) => `${id}.l`.slice(-32);
+/** The centre of a brace's label (size `size`): beyond the apex by a gap plus half the label's extent along the normal. */
+export function braceLabelAt(op, text, size = "m") {
+  const { apex, n } = braceGeometry(op);
+  const b = textBox(text, size, [0, 0], "middle");
+  const ext = Math.abs(n[1]) > Math.abs(n[0]) ? b.h / 2 : b.w / 2;
+  return [round1(apex[0] + n[0] * (ext + 5)), round1(apex[1] + n[1] * (ext + 5))];
 }
 
 // ───────────────────────────── normalise ─────────────────────────────
@@ -93,6 +210,7 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
   const isTarget = (id) => seen.has(id) || prior.has(id);
   const drawnById = new Map();   // this script's own ops so far (a move targets one of them)
   const shifted = new Map();     // target id → [dx, dy] of the moves so far (moves add up: a dot hops twice)
+  const braceLabels = [];        // a brace's label, written as its own text op right after the brace
   const list = raw.ops.slice(0, LIMITS.maxOps);
   if (raw.ops.length > LIMITS.maxOps) fix(`ops_over_${LIMITS.maxOps}`);
   for (const [i, o] of list.entries()) {
@@ -114,6 +232,13 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
     }
     if (o.ink !== undefined) { if (INKS.includes(o.ink)) base.ink = o.ink; else bad("ink"); }
     if (o.weight !== undefined) { if ([1, 2, 3].includes(o.weight)) base.weight = o.weight; else bad("weight"); }
+    // round 8: what the op means (ROLE); a motion, an erase never carries one
+    if (o.role !== undefined) {
+      if (!ROLES.includes(o.role) || MOTION.has(o.op) || o.op === "erase") bad("role");
+      else if (o.role === ROLE.mixup && CLOSED.has(o.op)) bad("role_mixup_closed");      // a mix-up is a dashed LINE, never a box
+      else if (o.role === ROLE.slot && OPEN.has(o.op)) bad("role_slot_open");            // a slot is a dashed BOX
+      else base.role = o.role;
+    }
     const fill = (k = "fill") => (o[k] === undefined ? {} : INKS.includes(o[k]) ? { [k]: o[k] } : (bad(k), {}));
     let op = null;
     switch (o.op) {
@@ -123,6 +248,7 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
         if (Array.isArray(o.points) && o.points.length > LIMITS.maxPointsPerStroke) bad("too_many_points");
         if (pts.length < (o.op === "polygon" ? 3 : 2)) { bad("points"); break; }
         op = { ...base, points: pts, ...(o.op === "polygon" ? fill() : {}) };
+        if (o.dashed === true) op.dashed = true;
         break;
       }
       case "line":
@@ -144,6 +270,28 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
         if (w !== o.w || h !== o.h) bad("rect:clamped");
         if (w <= 0 || h <= 0) { bad("rect_empty"); break; }
         op = { ...base, at, w: round1(w), h: round1(h), ...fill(), ...(isNum(o.round) && o.round > 0 ? { round: Math.min(o.round, Math.min(w, h) / 2) } : {}) };
+        if (o.dashed === true) op.dashed = true;
+        break;
+      }
+      case "brace": {
+        // round 8 (board grammar item 3): a curly brace over the span from → to, its apex toward `side`, naming the group
+        // with `label`. The label is written as its OWN text op (id "<id>.l") at the apex, so every gate, mask and count
+        // that reads a board's words reads it (a label no gate sees could state a key)
+        const from = P(o.from, `${where}.from`), to = P(o.to, `${where}.to`);
+        if (!from || !to || Math.hypot(to[0] - from[0], to[1] - from[1]) < 16) { bad("brace"); break; }
+        op = { ...base, from, to, side: ["up", "down", "left", "right"].includes(o.side) ? o.side : (o.side === undefined ? "up" : (bad("brace_side"), "up")) };
+        if (typeof o.labelId === "string" && ID_RE.test(o.labelId) && o.label === undefined) op.labelId = o.labelId;
+        if (o.label !== undefined && o.label !== "") {
+          const tp = textProblem(o.label);
+          const lid = braceLabelId(o.id);
+          if (tp || seen.has(lid) || list.some((x) => x?.id === lid)) { bad(`brace_label_${tp ?? "id"}`); break; }
+          const size = ["s", "m", "l"].includes(o.size) ? o.size : "m";
+          const at = braceLabelAt(op, o.label.trim(), size);
+          const b = textBox(o.label.trim(), size, at, "middle");
+          if (b.x < 0 || b.y < 0 || b.x + b.w > bw || b.y + b.h > bh) { bad("brace_label_off_board"); break; }
+          op.labelId = lid;
+          braceLabels.push({ id: lid, op: "text", at, text: o.label.trim(), size, startMs: op.endMs, endMs: Math.min(LIMITS.maxDurationMs, op.endMs + 300), ...(op.role ? { role: op.role } : {}), ...(op.ink ? { ink: op.ink } : {}) });
+        }
         break;
       }
       case "circle":
@@ -278,6 +426,25 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
       }
     }
     if (op) { ops.push(op); seen.add(op.id); drawnById.set(op.id, op); }
+    for (const t of braceLabels.splice(0)) { ops.push(t); seen.add(t.id); drawnById.set(t.id, t); }
+  }
+  // round 8: at most 3 meaning roles on a board — focus; slot OR answer (one colour, two shapes: a board is posing or
+  // answering, never both); mixup
+  if (ops.some((o) => o.role === ROLE.slot) && ops.some((o) => o.role === ROLE.answer)) {
+    fix("roles_slot_and_answer");
+    for (const o of ops) if (o.role === ROLE.answer) delete o.role;
+  }
+  // a brace's label sits at its apex wherever the brace now is (a page scaled onto a panel moves both: the label is placed
+  // again, by its own size, so a stacked label never runs into its brace)
+  for (const o of ops) {
+    if (o.op !== "brace") continue;
+    const lab = drawnById.get(braceLabelId(o.id));
+    if (lab && lab.op === "text") { lab.at = braceLabelAt(o, lab.text, lab.size); o.labelId = lab.id; }
+  }
+  // a slot box and a mix-up line are dashed by their role, an answer never is (shapes belong to the role)
+  for (const o of ops) {
+    if ((o.role === ROLE.mixup && OPEN.has(o.op) && o.op !== "arrow") || (o.role === ROLE.slot && o.op === "rect")) o.dashed = true;
+    if (o.role === ROLE.answer && o.dashed) delete o.dashed;
   }
   if (!ops.length) errors.push("nothing_to_draw");
   const lastEnd = ops.reduce((m, o) => Math.max(m, o.endMs), 0);
@@ -537,21 +704,26 @@ export function opGeometry(op, byId = new Map()) {
       return { paths: [outline], texts: [], fill: op.fill ? outline : undefined, box: { x: cx - op.r, y: cy - op.r, w: 2 * op.r, h: 2 * op.r } };
     }
     case "text": {
-      const size = TEXT_SIZE[op.size] ?? TEXT_SIZE.m, align = op.align ?? "middle";
-      return { paths: [], texts: [{ x: op.at[0], y: op.at[1], text: op.text, size, align }], box: textBox(op.text, op.size, op.at, align) };
+      const align = op.align ?? "middle";
+      const dr = textDrawing(op.text, op.size, op.at, align);
+      return roleDressed(op, { paths: dr.paths, widths: dr.widths, texts: dr.texts, box: textBox(op.text, op.size, op.at, align) }, rnd, amp);
     }
     case "label": {
-      const size = TEXT_SIZE.s;
       const to = op.to ?? (op.target && byId.get(op.target) ? centreOf(opGeometry(byId.get(op.target), byId).box) : null);
       const box = textBox(op.text, "s", op.at, "middle");
-      const paths = [];
+      const paths = [], widths = [];
       if (to) {
         // the leader leaves the label's box edge nearest the point, and stops just short of it
         const from = [clamp(to[0], box.x, box.x + box.w), to[1] < box.y ? box.y - 2 : to[1] > box.y + box.h ? box.y + box.h + 2 : clamp(to[1], box.y, box.y + box.h)];
         const dx = to[0] - from[0], dy = to[1] - from[1], len = Math.hypot(dx, dy);
-        if (len > 8) paths.push(polyPath([from, [to[0] - (dx / len) * 4, to[1] - (dy / len) * 4]], rnd, amp * 0.6));
+        if (len > 8) { paths.push(polyPath([from, [to[0] - (dx / len) * 4, to[1] - (dy / len) * 4]], rnd, amp * 0.6)); widths.push(undefined); }
       }
-      return { paths, texts: [{ x: op.at[0], y: op.at[1], text: op.text, size, align: "middle" }], box };
+      const dr = textDrawing(op.text, "s", op.at, "middle");
+      return roleDressed(op, { paths: [...paths, ...dr.paths], widths: [...widths, ...dr.widths], texts: dr.texts, box }, rnd, amp);
+    }
+    case "brace": {
+      const g = braceGeometry(op);
+      return { paths: [g.d], texts: [], box: g.box };
     }
     case "numwork": return numworkGeometry(op, rnd, amp);
     case "highlight": {
@@ -569,6 +741,24 @@ export function opGeometry(op, byId = new Map()) {
   return { paths: [], texts: [], box: { x: 0, y: 0, w: 0, h: 0 } };
 }
 const centreOf = (b) => [b.x + b.w / 2, b.y + b.h / 2];
+/**
+ * round 8: a word's role shape, part of its own drawing (so the fit, the overlap lint and every gate see it): a slot's
+ * "?" sits in a dashed box; an answer's value gets a tick after it. Other roles change only the colour (the player).
+ */
+function roleDressed(op, g, rnd, amp) {
+  const b = g.box;
+  if (op.role === ROLE.slot) {
+    const p = 5, x = b.x - p, y = b.y - p * 0.6, w = b.w + 2 * p, h = b.h + p * 1.2;
+    const box = `M${f1(x + 4)},${f1(y)} L${f1(x + w - 4)},${f1(y)} Q${f1(x + w)},${f1(y)} ${f1(x + w)},${f1(y + 4)} L${f1(x + w)},${f1(y + h - 4)} Q${f1(x + w)},${f1(y + h)} ${f1(x + w - 4)},${f1(y + h)} L${f1(x + 4)},${f1(y + h)} Q${f1(x)},${f1(y + h)} ${f1(x)},${f1(y + h - 4)} L${f1(x)},${f1(y + 4)} Q${f1(x)},${f1(y)} ${f1(x + 4)},${f1(y)} Z`;
+    return { ...g, paths: [box, ...g.paths], widths: [undefined, ...(g.widths ?? [])], dashed: [true, ...g.paths.map(() => false)], slotFill: box, box: { x, y, w, h } };
+  }
+  if (op.role === ROLE.answer && (op.op === "text" || op.op === "label")) {
+    const s = Math.max(10, Math.min(16, b.h * 0.5)), x = b.x + b.w + 6, y = b.y + b.h / 2 + s * 0.15;
+    const tick = `M${f1(x)},${f1(y - s * 0.1)} L${f1(x + s * 0.38)},${f1(y + s * 0.35)} L${f1(x + s)},${f1(y - s * 0.55)}`;
+    return { ...g, paths: [...g.paths, tick], widths: [...(g.widths ?? []), undefined], box: { x: b.x, y: Math.min(b.y, y - s * 0.6), w: b.w + 6 + s + 2, h: Math.max(b.h, s) } };
+  }
+  return g;
+}
 
 /** Number work laid out by code: right-aligned columns, the rule above the result, carries above their column. */
 function numworkGeometry(op, rnd, amp) {
@@ -609,18 +799,18 @@ function numworkGeometry(op, rnd, amp) {
   }
   if (op.layout === "fraction") {
     // rows[0]: numerators and operators, rows[1]: denominators (blank under an operator); a bar under each fraction
-    const top = rows[0] ?? [], bot = rows[1] ?? [];
+    const top = rows[0] ?? [], bot = rows[1] ?? [], widths = [];
     const n = Math.max(top.length, bot.length);
     for (let j = 0; j < n; j++) {
       const cx = x0 + (j + 0.5) * cw * 1.6;
       const t = top[j] ?? "", b = bot[j] ?? "";
       if (b) {
-        texts.push({ x: cx, y: y0, text: t, size: fs, align: "middle" });
-        texts.push({ x: cx, y: y0 + rh, text: b, size: fs, align: "middle" });
-        paths.push(polyPath([[cx - cw * 0.6, y0 + rh * 0.3], [cx + cw * 0.6, y0 + rh * 0.3]], rnd, amp * 0.4));
-      } else if (t) texts.push({ x: cx, y: y0 + rh * 0.5, text: t, size: fs, align: "middle" });
+        // (round 8: the one stacked-fraction drawing, shared with every text run)
+        const st = fracStack(cx, y0 + rh * 0.3, t, b, fs, cw * 0.6);
+        texts.push(...st.texts); paths.push(st.path); widths.push(st.width);
+      } else if (t) texts.push({ x: cx, y: y0 + rh * 0.3, text: t, size: fs, align: "middle" });
     }
-    return { paths, texts, box: { x: x0, y: y0 - rh, w: n * cw * 1.6, h: rh * 2.4 } };
+    return { paths, widths, texts, box: { x: x0, y: y0 - rh, w: n * cw * 1.6, h: rh * 2.4 } };
   }
   if (op.layout === "number_line") {
     const [a, b] = op.range;
@@ -638,16 +828,22 @@ function numworkGeometry(op, rnd, amp) {
     return { paths, texts, box: { x: x0, y: y0 - 10, w: W, h: rh * 1.3 } };
   }
   // equation / long_div: one row per line, left-aligned tokens (long_div: rows[0] = [divisor, dividend], below = steps)
+  const widths = [];
   rows.forEach((r, i) => {
     const line = r.join(" ");
-    texts.push({ x: x0, y: y0 + i * rh, text: line, size: fs, align: "start" });
+    // (round 8: a fraction in an equation is stacked, as everywhere)
+    const dr = textDrawing(line, "m", [x0, y0 + i * rh], "start");
+    texts.push(...dr.texts); for (const [k, d] of dr.paths.entries()) { paths.push(d); widths.push(dr.widths[k]); }
   });
   if (op.layout === "long_div" && rows[0]?.length >= 2) {
     const dv = textBox(rows[0][0] + " ", "m", [x0, y0], "start");
     paths.push(polyPath([[dv.x + dv.w, y0 + 6], [dv.x + dv.w, y0 - fs], [dv.x + dv.w + Math.max(40, rows[0][1].length * fs * ADVANCE + 12), y0 - fs]], rnd, amp * 0.4));
   }
   const w = Math.max(...rows.map((r) => textBox(r.join(" "), "m", [x0, y0], "start").w), 20);
-  return { paths, texts, box: { x: x0, y: y0 - rh * 0.8, w, h: rows.length * rh } };
+  // (a row of stacked fractions is taller than a line, centred on its row: the box holds its stacks)
+  const half = rows.map((r) => (fractionRuns(r.join(" "), "m")?.h ?? 0) / 2);
+  const top = Math.min(y0 - rh * 0.8, y0 - half[0]), bottom = Math.max(y0 + (rows.length - 0.8) * rh, y0 + (rows.length - 1) * rh + half[rows.length - 1]);
+  return { paths, widths: paths.map((_, k) => widths[k]), texts, box: { x: x0, y: top, w, h: bottom - top } };
 }
 
 // ───────────────────────────── lint (the strict render-check's layout half) ─────────────────────────────
@@ -667,7 +863,8 @@ export function lintScript(script) {
     const g = opGeometry(o, byId);
     const b = g.box;
     if (b.x < -2 || b.y < -2 || b.x + b.w > BW + 2 || b.y + b.h > BH + 2) issues.push({ id: o.id, check: "inside_board", detail: b });
-    if (o.op === "text" || o.op === "label" || o.op === "numwork") textOps.push({ o, b });
+    // (round 8: a brace is placed like a word: it must not run into one)
+    if (o.op === "text" || o.op === "label" || o.op === "numwork" || o.op === "brace") textOps.push({ o, b });
     // a number line's own row labels never touch each other (App, 2026-11-07: "100200300…" at 0-1000 step 100, 360 dp)
     if (o.op === "numwork" && o.layout === "number_line") {
       const xs = g.texts.map((t) => ({ x: t.x, w: [...String(t.text)].length * t.size * DIGIT_ADVANCE })).sort((p, q) => p.x - q.x);
@@ -683,6 +880,8 @@ export function lintScript(script) {
       // only texts that are on the board at the same time (neither erased before the other appears)
       const aGone = er.get(A.o.id)?.endMs ?? Infinity, bGone = er.get(B.o.id)?.endMs ?? Infinity;
       if (aGone <= B.o.startMs || bGone <= A.o.startMs) continue;
+      // (a brace and its own label touch by design)
+      if ((A.o.op === "brace" && B.o.id === braceLabelId(A.o.id)) || (B.o.op === "brace" && A.o.id === braceLabelId(B.o.id))) continue;
       const ix = Math.min(A.b.x + A.b.w, B.b.x + B.b.w) - Math.max(A.b.x, B.b.x);
       const iy = Math.min(A.b.y + A.b.h, B.b.y + B.b.h) - Math.max(A.b.y, B.b.y);
       if (ix > 3 && iy > 3) issues.push({ id: `${A.o.id}+${B.o.id}`, check: "text_overlap", detail: { ix: Math.round(ix), iy: Math.round(iy) } });
@@ -822,4 +1021,60 @@ export function finalOp(op, ops) {
   const end = Number.MAX_SAFE_INTEGER;
   const pts = morphAt(ops, op, end, true);
   return transformOp(pts ? { ...op, points: pts.map((q) => [round1(q[0]), round1(q[1])]) } : op, motionMatrix(ops, op.id, end, true));
+}
+
+// ───────────────────────────── round 8: sizes and roles by shape ─────────────────────────────
+
+/**
+ * The font sizes (board units) of every word an op draws, its stacked numerals at their own size (the legibility floor
+ * counts a numeral's own px); a carry, written small by design, is left out. [] for an op with no words.
+ */
+export function opTextSizes(op, byId = new Map()) {
+  if (op?.op !== "text" && op?.op !== "label" && op?.op !== "numwork") return [];
+  try { return opGeometry(op, byId).texts.filter((t) => !t.small).map((t) => t.size); } catch { return [TEXT_SIZE.m]; }
+}
+
+/** An op's shape, colour ignored: what a child who cannot tell the colours apart still sees. */
+function shapeOf(op) {
+  if (op.op === "brace") return "brace";
+  if (op.op === "text" || op.op === "label" || op.op === "numwork") return op.role === ROLE.slot ? "dashed-closed" : op.role === ROLE.answer && op.op !== "numwork" ? "tick" : "words";
+  if (op.op === "highlight") return op.style === "circle" ? "ring" : "mark";
+  if (op.op === "circle" && !op.fill && !op.dashed) return "ring";
+  if (CLOSED.has(op.op)) return op.dashed ? "dashed-closed" : op.fill ? "fill-closed" : "closed";
+  if (OPEN.has(op.op)) return op.dashed ? "dashed-open" : "open";
+  return "other";
+}
+/** The shape each meaning role must have on a board (design r8: the meaning survives greyscale). */
+export const ROLE_SHAPES = Object.freeze({ focus: ["fill-closed"], slot: ["dashed-closed"], answer: ["tick", "ring"], mixup: ["dashed-open"] });
+/**
+ * Does every meaning role on this board read by SHAPE alone (colour ignored)? focus: a closed outline with a fill; slot: a
+ * dashed closed box; answer: a solid mark with a tick or a ring; mixup: a dashed open line. Fails when a role present has
+ * no op of its shape, when a role's shape op has another shape (a solid slot, a dashed mix-up box), when an op of one role
+ * — or an unmarked op — takes another present role's shape (two dashed boxes as slot and mixup), or when the board holds
+ * more than 3 meaning roles or both slot and answer. Words (texts) and a brace carry their role by colour beside a shape.
+ * PURE. → { ok, why }
+ */
+export function rolesByShape(script) {
+  const ops = settledScript(script ?? { ops: [] }).ops ?? [];
+  const drawn = ops.filter((o) => o.op !== "erase" && !MOTION.has(o.op));
+  const present = MEANING_ROLES.filter((r) => drawn.some((o) => o.role === r));
+  const why = [];
+  if (present.includes(ROLE.slot) && present.includes(ROLE.answer)) why.push("slot_and_answer");
+  if (present.length > 3) why.push("over_3_roles");
+  for (const r of present) if (!drawn.some((o) => o.role === r && ROLE_SHAPES[r].includes(shapeOf(o)))) why.push(`${r}_lacks_shape`);
+  for (const o of drawn) {
+    const sh = shapeOf(o), own = MEANING_ROLES.includes(o.role) ? o.role : null;
+    if (sh === "words" || sh === "brace") continue;
+    // a role's own SHAPE op (not its words) has the role's shape: a focus box is filled, a slot dashed, a mix-up a dashed line
+    if (own && own !== ROLE.focus && !ROLE_SHAPES[own].includes(sh) && !(own === ROLE.answer && (sh === "open" || sh === "fill-closed"))) why.push(`${o.id}:${own}_not_${ROLE_SHAPES[own][0]}`);
+    if (own === ROLE.focus && CLOSED.has(o.op) && sh !== "fill-closed") why.push(`${o.id}:focus_not_filled`);
+    for (const r of present) {
+      if (r === own || !ROLE_SHAPES[r].includes(sh)) continue;
+      // (an unmarked filled shape — a roti, a dot — is ink, not focus: only the dashed and ticked shapes are reserved)
+      if (!own && r === ROLE.focus) continue;
+      if (!own && r === ROLE.answer && sh === "ring") continue;
+      why.push(`${o.id}:${own ?? "ink"}_shares_${r}_shape`);
+    }
+  }
+  return { ok: why.length === 0, why: why.slice(0, 6).join(", ") };
 }

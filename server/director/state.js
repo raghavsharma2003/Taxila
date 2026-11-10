@@ -834,6 +834,8 @@ const ASKS_HER_TASTE = /(?:aapko|tumhe|aap|tum)\b.*\bpasand|do you like|your fav
 function parkGate(s, kit, input, e) {
   if (!scriptOn() || !scriptIdOf(kit) || scriptFor(kit)?.script?.recordedRun) return pushLater(s.later ?? [], e);
   if (ASKS_HER_TASTE.test(String(input?.text ?? ""))) { s.tasteAsked = { topic: String(e.topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; return s.later ?? []; }
+  // (v6.11 J2: their answer to her return question is not a new aside)
+  if (s.returnAnswer) return s.later ?? [];
   const k = String(e.topic ?? "").toLowerCase();
   const had = (s.later ?? []).find((x) => String(x.topic ?? "").toLowerCase() === k || (k && String(x.topic ?? "").toLowerCase().includes(k)));
   // (v6.9 T1, main on director17 c4 offtopic 30, c5-t01 offtopic 32: "likh li hai" and then silence lost two asides): an aside said
@@ -2878,6 +2880,10 @@ function step0(prev, input) {
   const s = structuredClone(prev);
   s.cardUnsaid = undefined;
   s.asideReplyDue = undefined;
+  // (v6.11 J2: her last turn ended on an aside's return question and this reply is about it: their answer is the aside's own reply —
+  // never parked as a new aside, never returned again; brain/say.js answers it with one sentence of hers, else a neutral joint)
+  s.returnAnswer = prev.returnAsked && input.cls?.asideReply ? { topic: prev.returnAsked.topic, said: String(input.text ?? "").replace(/\s+/g, " ").trim().slice(0, 80) } : undefined;
+  s.returnAsked = undefined;
   // (a safety read or a stop over a split turn: the held half is let go; the card comes back through the walk)
   if (s.splitHold) { if (s.splitHold.activeItemId && !s.activeItemId) s.activeItemId = s.splitHold.activeItemId; s.splitHold = undefined; }
   // QA 14.4.1 (brain/say.js selfPosedVerdict): was a kit item on the table when the child spoke? null: her own words were
@@ -3340,6 +3346,7 @@ function step0(prev, input) {
   if (["ask_again", "unheard"].includes(p.request)) s.askAgainN = (s.askAgainN ?? 0) + 1;
   // (v6.9 A5: the acknowledgement only for a reply about the aside her last turn asked — turn.js planTurn reads it)
   if (input.cls?.asideReply) move.asideAck = true;
+  if (input.cls?.asideReply && s.returnAnswer) move.returnReply = s.returnAnswer;
   // r12 RCA failure 4: the board the child asked to clear (brain/turn.js retires the Studio board and unmounts a rung)
   if (p.clear) move.clear = p.clear;
   // round 2 safety floor: a stop check-in ("stop") or the relational goodbye check-in ("rel") — brain/say.js guards its
@@ -3694,12 +3701,17 @@ function heldTurn(prev, input) {
   // v6.11 G2 (main on director19 c6 stuck 38: an aside after a split's first half dropped the held half — the worked problem was never
   // said and the walk resumed at step 1): an aside is answered (or parked) and the held half still comes, on this turn
   // (and "samajh nahi aaya" to a closing split's check-in — after a key — is answered by the held teaching, never by skipping it: c5-t01)
-  if (((c?.request?.type === "uptake" && !c.help) || (!h.teach && lost)) && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
+  const retAns = prev.returnAsked && c?.asideReply && !c?.help;
+  if (((c?.request?.type === "uptake" && !c.help) || (!h.teach && lost) || retAns) && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
     const s = structuredClone(prev);
     s.turn += 1;
     s.splitHold = undefined;
     const text = String(input.text ?? "");
     const m = { ...h.move };
+    // (v6.11 J2: the answer to her return question is the aside's own reply: no park, no second return; the held half comes now)
+    s.returnAnswer = retAns ? { topic: prev.returnAsked.topic, said: text.replace(/\s+/g, " ").trim().slice(0, 80) } : undefined;
+    s.returnAsked = undefined;
+    if (s.returnAnswer) { m.returnReply = s.returnAnswer; m.asideAck = true; }
     const topic0 = asideTopic(text, s.ctx?.interests);
     if (ASKS_HER_TASTE.test(text)) { s.tasteAsked = { topic: String(topic0 ?? "woh"), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; m.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n }; }
     else if (topic0 && !unsafeChildPhrase(topic0)) {

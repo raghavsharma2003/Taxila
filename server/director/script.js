@@ -323,9 +323,13 @@ export const SCRIPT_VERSIONS = Object.freeze([1, 2, 2.1, 2.2, 2.3]);
 export const WALK_VERSIONS = new Set(SCRIPT_VERSIONS);
 export const scriptOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SCRIPT ?? ""));
 const SCRIPT_DIR = new URL("../../data/lesson-scripts/", import.meta.url);
-const loaded = new Map();
+// (main, integrations 25c and 28: keyed by topic id alone, a suite walking the real c4 kit left its script for a later mini-kit
+// suite on the same topic id. A script is cached per KIT: a hashed kit by topic id and kit hash, any other kit by its own object;
+// an override bumps the generation, so nothing cached before it is served after it)
+const loaded = new Map(), byKit = new WeakMap(), overrides = new Map();
+let gen = 0;
 /** Tests: a script for a topic in place of data/lesson-scripts (null: none); no argument clears every override and the cache. */
-export function setScriptForTest(topicId, script) { if (topicId === undefined) { loaded.clear(); return; } loaded.set(`test:${topicId}`, script); loaded.delete(topicId); }
+export function setScriptForTest(topicId, script) { gen++; loaded.clear(); if (topicId === undefined) { overrides.clear(); return; } overrides.set(topicId, script); }
 /**
  * The topic's validated script: { script, ok } (ok: the skill ids the Director may walk), or null (no script, or none walkable).
  * Read once per topic per process.
@@ -346,17 +350,21 @@ export function scriptWhyNot(kit) {
 export function scriptFor(kit) {
   const id = kit?.topicId;
   if (!id || !scriptOn()) return null;
-  if (!loaded.has(id)) {
-    let sc = loaded.has(`test:${id}`) ? loaded.get(`test:${id}`) : undefined;
+  const key = kit.hash ? `${id}#${kit.hash}` : null;
+  const hit = key ? loaded.get(key) : byKit.get(kit);
+  if (hit && hit.gen === gen) return hit.v;
+  {
+    let sc = overrides.has(id) ? overrides.get(id) : undefined;
     // (loading is decided by TAXILA_R7_SCRIPT alone, never by how the process was started: a kit-path test pins it off in its
     // own hooks; a test that walks a script sets one with setScriptForTest)
     // (TAXILA_R7_SCRIPT_DIR: another folder of scripts, e.g. a run on staged v2 scripts; explicit, never inferred)
     if (sc === undefined) { try { sc = JSON.parse(readScriptFile(new URL(`${id}.json`, scriptDir()), "utf8")); } catch { sc = null; } }
     sc ??= null;
     const v = sc ? validateTopicScript(sc, kit) : null;
-    loaded.set(id, v?.ok.length && WALK_VERSIONS.has(Number(sc.version ?? 1)) ? { script: sc, ok: new Set(v.ok) } : null);
+    const out = { v: v?.ok.length && WALK_VERSIONS.has(Number(sc.version ?? 1)) ? { script: sc, ok: new Set(v.ok) } : null, gen };
+    if (key) loaded.set(key, out); else if (typeof kit === "object") byKit.set(kit, out);
+    return out.v;
   }
-  return loaded.get(id);
 }
 /** A walkable skill's script, or null. */
 export function skillScriptOf(kit, skillId) {

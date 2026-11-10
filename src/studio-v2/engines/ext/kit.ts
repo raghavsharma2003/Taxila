@@ -28,7 +28,7 @@ export function wrap(api: EngineApi, ctx: Ctx, s: string, maxW: number, o: TextO
 }
 /** Draw wrapped text centred on (x, y) (block centred vertically). Returns the block height. */
 export function textBlock(api: EngineApi, ctx: Ctx, s: string, x: number, y: number, maxW: number, o: TextOpts = {}, maxLines = 3, lh = 1.18): number {
-  const size = o.size ?? LABEL;
+  const size = Math.max(o.size ?? LABEL, api.minLabel);   // the young floor: line height from the size actually drawn
   const lines = wrap(api, ctx, s, maxW, { ...o, size }, maxLines);
   const h = lines.length * size * lh;
   lines.forEach((ln, i) => api.text(ctx, ln, x, y - h / 2 + size * lh * (i + 0.5), { baseline: "middle", align: "center", maxWidth: maxW + 4, ...o, size }));
