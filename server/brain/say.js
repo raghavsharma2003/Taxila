@@ -2163,9 +2163,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // same numbers is drawn and flagged; her words then say it is the same numbers in the new view. A board code cannot describe
     // still gets an acknowledgement: a picture ask is never ignored, and the beat and card stay)
     const visualAsk = (state.lastMove?.request === "visual" || !!state.lastMove?.visual) && state.lastMove?.visual !== "game";
-    const alt = visualAsk ? state.lastMove?.altView ?? null : null;
+    // (dc-r7-held-board, mechanism c: on a held turn the picture line is Studio's, built from the view it draws beside the held board —
+    // turn.js lastMove.altLine; null: nothing is drawn beside it, and no line of hers promises a picture)
+    const heldPic = visualAsk && state.lastMove && Object.prototype.hasOwnProperty.call(state.lastMove, "altLine");
+    const alt = visualAsk ? (heldPic ? (state.lastMove.altLine ? state.lastMove.altView ?? "held" : null) : state.lastMove?.altView ?? null) : null;
     const ALT_WORD = { parts: ["patti", "bars"], bars: ["patti", "bars"], line: ["sankhya rekha", "a number line"], groups: ["groups", "groups"], round: ["gol", "a circle"] };
     const asked = !visualAsk ? null
+      : heldPic ? (state.lastMove.altLine ? norm(state.lastMove.altLine) : null)
       : alt ? (() => { const w = ALT_WORD[alt.view ?? alt] ?? ALT_WORD.parts; const nums = [...new Set(Array.isArray(alt?.labels) && alt.labels.length ? alt.labels.map(String) : JSON.stringify(state.lastMove?.scriptBeat?.board ?? {}).match(/\d+\/\d+/g) ?? [])].filter((n) => !item?.answer || !String(item.answer).includes(n)).slice(0, 3);
         // (Studio: a bar card's second view is a number line: "0 se 1 ki sankhya rekha, 8 barabar gaps, nishaan 1/8 par")
         // (Studio wholes@1: a compare card's two wholes drawn, "whole1 3 unequal parts · whole2 3 equal parts", named by code)
@@ -2188,6 +2192,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         return lang === "english" ? `Look, ${nums.length ? `the same ${nums.join(" and ")}` : "the same numbers"}, now as ${w[1]}.` : `Dekho, ${nums.length ? `yahi ${nums.join(" aur ")}` : "yahi numbers"} ab ${w[0]} par.`; })()
       : boardWords(state.lastMove?.scriptBeat?.board, lang, item?.answer) ?? (lang === "english" ? "Let's see it in a picture." : "Chalo, ise picture mein dekhte hain.");
     if (asked) { ss = ss.filter((x) => !/(?:screen|board|dekho|yahan|look|see)/i.test(x) && !/[?？]/.test(x) && !/\d/.test(x)).slice(0, 1); guard.boardWords = true; }
+    else if (heldPic) { ss = ss.filter((x) => !/(?:screen|board|dekho|yahan|look|see|picture|tasveer|chitra)/i.test(x)); guard.noPicture = true; }
     const clean = (x) => x && !/[?？]/.test(x) && words(x) <= 14 && !foreignOf(x).length;
     const oneClause = (x) => { const c = String(x).split(/[,;:—–]|\s-\s/)[0]; return dot(words(c) >= 3 ? c : x); };
     // v6.6 V1: her sentences as they stand here — on a scripted turn none of them is said outside the aside reply

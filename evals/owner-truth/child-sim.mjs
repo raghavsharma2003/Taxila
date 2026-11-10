@@ -38,7 +38,7 @@ const ROOT = join(HERE, "..", "..");
 const argv = process.argv.slice(2);
 const arg = (k, d) => { const i = argv.indexOf(`--${k}`); return i >= 0 ? argv[i + 1] : d; };
 const flag = (k) => argv.includes(`--${k}`);
-process.env.TAXILA_BASE ||= arg("base", "https://taxila.dev");
+process.env.TAXILA_BASE ||= arg("base", ""); // no default: tests/prod/lib.mjs refuses an empty base
 const { withTestAccount, apiClient, BASE } = await import("../../tests/prod/lib.mjs");
 
 const SESSIONS = Number(arg("sessions", 12));
