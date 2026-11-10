@@ -26,12 +26,12 @@ import { beliefFor, conceptCard } from "../comprehension/index.js";
 import { CADENCES, LANGS, LANG_OF_PREF } from "../reports/config.js";
 import { speakable } from "../voice/spoken.js";
 import { ITEM_CLASSES } from "../learner/kt/outcomes.js";
+import { skillScriptOf, scriptAskItem, scriptCheckItem, scriptThenItem, fillFriend } from "../director/script.js";
 import { learningDay, isoWeek, addDays, zonedToUtc } from "../conductor/clock.js";
 import { madeForOf } from "../reports/madeFor.js";
 import { listReports, previewReport, reportById, termOf, windowOf } from "../reports/index.js";
 import { HOW, renderFixed } from "../reports/templates.js";
 import { shortTitleOf } from "../director/state.js";
-import { skillScriptOf, scriptAskItem, scriptCheckItem, scriptThenItem } from "../director/script.js";
 import { COUNTED_LESSON_SQL, loadTruth, loadLessonTally, claimRows, topicTruth, lessonFactsSummary, renderSummaryLine, summaryClaimsHold,
   supersede, engineRow, lessonEndMs, GRADER_WORDS, nextTopicOf } from "../reports/truth.js";
 
@@ -835,20 +835,24 @@ const HOME_PICTURES = { maths: ["home/roti"] };
  * "Try at home" on the home. Lane A preview of this week, never stored, no model call; null during a safety hold,
  * when the report tables are not migrated, or when the week has nothing yet.
  */
+/** PURE. The "Try at home" card from this week's preview report, or null (no report, an empty week, no home line). */
+export function tryAtHomeFrom(r, period) {
+  if (!r) return null;
+  // a week with no lesson has nothing to try at home yet (audit 2026-11-09 LEARN-31: the generic line made a card with
+  // Done / Not this week for a child who had never had a lesson)
+  if (r.claims.some((x) => x.shapeId === "header.zero")) return null;
+  const line = r.renders.en.lines.find((l) => l.section === "home" && !l.voiceOnly);
+  if (!line) return null;
+  const c = line.claimId ? r.claims.find((x) => x.id === line.claimId) : null;
+  return { text: line.text, claimId: line.claimId ?? null, skillId: c?.skillId ?? null, cadence: "weekly", period, pictures: HOME_PICTURES[c?.slots?.object] ?? [] };
+}
 async function tryAtHomeOf(child, hold) {
   if (hold) return null;
   try {
     const today = learningDay(new Date(), await tzOf(child.id));
     const period = isoWeek(today);
     const out = await previewReport(child.id, { cadence: "weekly", period }, { db: { q } });
-    const r = out.report;
-    if (!r) return null;
-    // a week with no lessons has nothing to practise at home (audit LEARN-31: the generic card showed with Done / Not this week)
-    if (r.claims.find((c) => c.section === "header")?.shapeId === "header.zero") return null;
-    const line = r.renders.en.lines.find((l) => l.section === "home" && !l.voiceOnly);
-    if (!line) return null;
-    const c = line.claimId ? r.claims.find((x) => x.id === line.claimId) : null;
-    return { text: line.text, claimId: line.claimId ?? null, skillId: c?.skillId ?? null, cadence: "weekly", period, pictures: HOME_PICTURES[c?.slots?.object] ?? [] };
+    return tryAtHomeFrom(out.report, period);
   } catch (e) {
     if (!missingTable(e)) console.warn(`[parent] try-at-home withheld: ${e.message}`);
     return null;
@@ -978,7 +982,8 @@ async function homeData(child, guardian) {
     alert,
     held: !!hold,
     week: { lessons: week.lessons, minutes: week.minutes },
-    recent: recent.map((l) => ({ id: l.id, topic: topicOut(l.topic_id), startedAt: l.started_at,
+    // (the same topic mapper as the Lessons list, so one lesson has one short name: audit 2026-11-09 LEARN-34)
+    recent: recent.map((l) => ({ id: l.id, topic: topicOf_(l.topic_id), startedAt: l.started_at,
       minutes: minutesById.get(String(l.id)) ?? (l.ended_at ? Math.max(0, Math.round((new Date(l.ended_at) - new Date(l.started_at)) / 60000)) : null) })),
     // the skill list one level down names only skills the engine has a scored row on (never a taught-only "Practising")
     skills: titled.filter((x) => x.level > 0),
@@ -990,38 +995,43 @@ async function homeData(child, guardian) {
 /** skillTruth → the LedgerState the client renders (level, key, recheck). */
 const stateOut = (t) => ({ level: t.level, key: t.key, recheck: t.recheck });
 
-/** Words for a kit item's prompt (the question as the kit poses it), by the engine row's item key. */
 /**
- * PURE. The card a script item key names (`script:<skill>:ask:<beat>`, `script:<skill>:<checkId>`,
- * `script:<skill>:then:<mix-up>`), built by the same card builders the Director uses, or null (audit LEARN-24: the
- * sheet looked only in the kit's items, so it quoted the teacher's line before the answer instead of the question).
+ * PURE (apart from the cached script read). The script-walk card behind an engine row's item key, or null. The Director
+ * stores a card as `script:<skill>:ask:<beat>` (an explain beat's question, or the worked example's own step as beat
+ * "worked"), `script:<skill>:then:<mix-up>` (a remediation's follow-up) or `script:<skill>:<checkId>` (director/script.js).
+ * Audit 2026-11-09 LEARN-24: these were looked up among the kit's items only, so the sheet never showed a card's question.
  */
-export function scriptCard(kit, itemKey, skillId) {
-  const m = /^script:([^:]+):(.+)$/.exec(String(itemKey ?? ""));
-  if (!m) return null;
-  const sk = skillScriptOf(kit, m[1] || skillId);
-  if (!sk) return null;
-  const rest = m[2];
+export function scriptCardOf(kit, itemKey, childName = "") {
+  const key = String(itemKey ?? "");
+  if (!key.startsWith("script:")) return null;
+  const sk = (kit?.skills ?? []).map((x) => x.id).filter((id) => key.startsWith(`script:${id}:`)).sort((a, b) => b.length - a.length)[0];
+  const script = sk ? skillScriptOf(kit, sk) : null;
+  if (!script) return null;
+  const rest = key.slice(`script:${sk}:`.length);
+  let card = null;
   if (rest.startsWith("ask:")) {
     const beat = rest.slice(4);
-    const a = beat === "worked" ? sk.workedExample?.yourStep : (sk.explain ?? []).find((b) => b.id === beat)?.ask;
-    return a ? scriptAskItem(sk.skillId, beat, a) : null;
+    const ask = beat === "worked" ? script.workedExample?.yourStep : script.explain?.find((x) => x.id === beat)?.ask;
+    card = ask && typeof ask === "object" ? scriptAskItem(sk, beat, ask) : null;
+  } else if (rest.startsWith("then:")) {
+    const r = script.remediation?.find((x) => x.targets === rest.slice(5));
+    card = r?.then ? scriptThenItem(sk, r) : null;
+  } else {
+    const c = script.checks?.find((x) => x.id === rest);
+    card = c ? scriptCheckItem(sk, c) : null;
   }
-  if (rest.startsWith("then:")) {
-    const r = (sk.remediation ?? []).find((x) => x.targets === rest.slice(5));
-    return r?.then ? scriptThenItem(sk.skillId, r) : null;
-  }
-  const c = (sk.checks ?? []).find((x) => x.id === rest);
-  return c ? scriptCheckItem(sk.skillId, c) : null;
+  const text = card ? card.prompt_en || card.prompt_hi : null;
+  return text ? { ...card, prompt: String(fillFriend(text, childName)) } : null;
 }
 
-async function itemPrompt(itemKey, skillId) {
+/** Words for a kit item's prompt (the question as the kit poses it), by the engine row's item key. */
+async function itemPrompt(itemKey, skillId, childName = "") {
   if (!itemKey || String(itemKey).startsWith("teach:")) return null;
   try {
     const tid = topicOf(skillId);
     const kit = tid ? kitFromFile(getTopic(tid)) : null;
-    const card = String(itemKey).startsWith("script:") ? scriptCard(kit, itemKey, skillId) : null;
-    if (card) return quote(card.prompt_en || card.prompt_hi, 30);
+    const card = scriptCardOf(kit, itemKey, childName);
+    if (card) return quote(card.prompt, 30);
     const it = kit?.items?.find((i) => i.id === itemKey) ?? kit?.misconceptions?.find((m) => m.diagnostic && `diag:${m.id}` === itemKey)?.diagnostic;
     return it ? quote(it.prompt_en || it.prompt_hi, 30) : null;
   } catch { return null; }
@@ -1061,7 +1071,7 @@ async function evidence(req, res) {
   const rows = await Promise.all(shown.map(async (r) => {
     const own = r.turnSeq != null ? turnAt.get(`${r.lessonId}:${r.turnSeq}`) : null;
     const before = r.turnSeq != null ? turnAt.get(`${r.lessonId}:${r.turnSeq - 1}`) : null;
-    const prompt = (await itemPrompt(r.itemKey, skill)) ?? (before?.speaker === "teacher" ? quote(before.text, 30) : null);
+    const prompt = (await itemPrompt(r.itemKey, skill, child.first_name)) ?? (before?.speaker === "teacher" ? quote(before.text, 30) : null);
     return {
       // "right" after asking for help first is not "on their own" (audit LEARN-15): the lesson card says "with a hint"
       id: r.id, at: r.at, kind: r.kind, probe: r.cls, outcome: r.outcome, result: r.result === "right" && r.hintsUsed > 0 ? "right_hint" : r.result,

@@ -38,7 +38,7 @@ earlier than giving no answer (LEARN-07), and a chip for English, Hindi or SST m
 
 ## Findings
 
-Status: **fixed** = fixed on this branch with a test that fails before it (`tests/r7-audit-*.test.mjs` and the suites named in each commit); **fix** = I fix it now under the phase-2 rule; **main** = waits for main's reply (redesign, model change, deletion,
+Status: **fix** = I fix it now under the phase-2 rule; **main** = waits for main's reply (redesign, model change, deletion,
 migration, or outside my paths); **report** = for the owner named.
 
 | id | sev | kind | owner | title | where | fix | status |
@@ -75,7 +75,7 @@ migration, or outside my paths); **report** = for the owner named.
 | LEARN-30 | P2 | inconsistent | learning (content) | A skill that was mastered and then clearly lost still counts as mastered for the next topic | `server/content/next-topic.js:24-26` | Test "weak" before "mastered" | report (content-data area) |
 | LEARN-31 | P2 | inconsistent | learning | A child with no lessons gets a "Try at home" card with Done / Not this week | `server/routes/parent.js:820-831` | None when the week is empty | fixed |
 | LEARN-32 | P2 | inconsistent | learning | Home says "This week: can now …" above "Lessons this week: 0" | `server/routes/parent.js:451-463` | One week window for both | fixed |
-| LEARN-33 | P2 | broken | learning | An open lesson with no ledger row keeps adding minutes to the week (5,760 by Friday) | `server/reports/truth.js:52-57` | End it at its start, as the stored letter does | fixed |
+| LEARN-33 | P2 | broken | learning | An open lesson with no ledger row keeps adding minutes to the week (5,760 by Friday) | `server/reports/truth.js:52-57` | End it at its start, as the stored letter does | fixed (open lesson with no answer counts at most 60 min "so far", in both copies of the rule) |
 | LEARN-34 | P2 | inconsistent | learning | Home's "Recent lessons" never gets the short title the Lessons list uses | `server/routes/parent.js:949` | Same topic mapper | fixed |
 | LEARN-35 | P1 | not good enough | learning | At 900 px and wider, Teaching and Sign out cannot be reached | `src/parent/Shell.tsx:76-85` | Add both to the rail | main |
 | LEARN-36 | P2 | inconsistent | learning | "Download everything" exports the old evidence table, not the one every screen shows | `server/routes/parent.js:1469,1483` | Export the ledger rows | main |
@@ -114,7 +114,41 @@ needed 6. None refuted; 15 corrected (see "Skeptic pass" below).
 | PLAT-10 | P2 | platform | The sign-in burst limiter was keyed on a cookie the caller chooses | Keyed on the ingress's address (rightmost hop) unless the caller already checked the session | fixed |
 | PLAT-52 | P3 | platform | PATCH child skipped POST's checks; account delete left `tx_in` | `childPatchOf` checks and shapes every field as POST does; both cookies cleared | fixed |
 
-Proposals for every **main** item (model changes, redesigns, deletions, owner choices): `learner-proposals.md`.
+## Fixes on this branch (phase 2)
+
+Each has a test that fails without the fix. Tests: `tests/r7-audit-learner.test.mjs` (LEARN-21, 24, 27, 31, 38, 48, 53),
+`r7-audit-reports` (11, 12, 13, 18), `r7-audit-parent-words` (14, 15, 17), `r7-audit-mixup-discriminates` (03),
+`r7-audit-placement-subjects` (06), `r7-audit-onboarding-add` (09), `r7-learning-day-plan` (01), and for 08 the account suite.
+
+| id | what changed |
+|---|---|
+| LEARN-01 | `server/conductor/slot.js`: the plan's window binds a lesson only when the family's limits are on; otherwise the lesson wraps at its planned length from the start. |
+| LEARN-03 | `server/learner/live.js`: a right answer on an item that targets a mix-up carries `discriminates`, so the ledger's mix-up can come down. |
+| LEARN-06 | `server/routes/placement.js`: a feel answer for a subject the table refuses is kept but makes no row. **Interim**: the migration widening 036's check is `docs/patches/to-platform/003-placement-subjects.patch`. |
+| LEARN-08 | `server/routes/account.js`: the spoken-name check runs before the child insert. |
+| LEARN-09 | `src/onboarding`: Add a child forgets a stale draft child id. |
+| LEARN-11, 12, 13, 18 | `server/reports`: empty month and term notes pass the gate; the weekly rest line takes a row's place; hints are counted from C2 (one pinned count in `r7-learning-reports-monthly` changed); notes are listed by window end. |
+| LEARN-14, 15, 17 | `server/routes/parent.js`, `src/parent`: the Notes drawer reads results through `engineRow`; a right answer after help is "with a hint" on the skill sheet; Teaching names the child. |
+| LEARN-21 | `server/conductor/decide.js`: only a lesson (kind `live`, or none) falls back to today's lesson slot. |
+| LEARN-24 | `server/routes/parent.js` `scriptCardOf`: a `script:` item key resolves to its authored prompt on the skill sheet. |
+| LEARN-27 | `server/comprehension/resolve.js`: no answer within the 30-day horizon closes the attempt with no outcome and no reward. `tests/comprehension-reteach.test.mjs` pinned "failed, reward 0" for this case with no recorded reason; it now expects the new result. **Main: say if the old result was intended.** |
+| LEARN-31 | `server/routes/parent.js` `tryAtHomeFrom`: no card for a week with no lesson. |
+| LEARN-34 | `server/routes/parent.js`: Home's recent lessons use the Lessons list's topic mapper. |
+| LEARN-38 | `src/parent/copy.ts` `consentEffect`: an unanswered choice shows the "without it" effect. |
+| LEARN-48 | `server/comprehension/store.js`: expired weave entries stay out of the closing update. |
+| LEARN-53 | `shared/learner.ts`: `via` gains `late` and `placement`; `Ledger.placementPending`. |
+
+| LEARN-22 | `server/routes/child.js` `cardMinutes`: the card shows the plan slot's length only while no lesson has started today. |
+| LEARN-32 | `server/routes/parent.js` `homeHeadline`: no lesson this calendar week → "No lessons this week", never a claim from last week. |
+| LEARN-33 | `server/reports/truth.js`, `claims.js` `lessonEndMs`: an open lesson with no answer counts at most `OPEN_SO_FAR_MAX_MIN` (60) in a "so far" view. |
+
+LEARN-22, 32 and 33 were fixed by the second learner session (tests in `r7-audit-parent-home`); the two sessions ran in
+parallel and their fixes were merged into one version each. More tests: `r7-audit-askable-skills`,
+`r7-audit-placement-retired-pairs`, `r7-audit-homework-sentence`, `r7-audit-account-platform` (routed findings),
+`r7-audit-weave-expired`, `r7-audit-script-card-prompt`, `r7-audit-learner-types`.
+
+Proposals for every **main** item (model changes, redesigns, deletions, owner choices): `learner-proposals.md`. Proposed
+context entries: `context/inbox/r7-audit-learner.json`.
 
 ## Evidence notes
 

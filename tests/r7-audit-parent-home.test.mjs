@@ -31,8 +31,11 @@ test("LEARN-33: an open lesson with no answer counts at most OPEN_SO_FAR_MAX_MIN
   assert.ok(t.minutes <= OPEN_SO_FAR_MAX_MIN, `week minutes ${t.minutes}`);
 });
 
-test("LEARN-31: Try at home is withheld for a week with no lessons", () => {
-  assert.match(src("server/routes/parent.js"), /if \(r\.claims\.find\(\(c\) => c\.section === "header"\)\?\.shapeId === "header\.zero"\) return null;/);
+test("LEARN-31: Try at home is withheld for a week with no lessons", async () => {
+  const { tryAtHomeFrom } = await import("../server/routes/parent.js");
+  const home = { section: "home", text: "Count spoons together.", claimId: null };
+  assert.equal(tryAtHomeFrom({ claims: [{ section: "header", shapeId: "header.zero" }], renders: { en: { lines: [home] } } }, "2026-W46"), null);
+  assert.ok(tryAtHomeFrom({ claims: [{ section: "header", shapeId: "header.weekly" }], renders: { en: { lines: [home] } } }, "2026-W46"));
 });
 
 test("LEARN-34: Home's recent lessons use the Lessons list's topic mapper (with the short title)", () => {
@@ -40,7 +43,7 @@ test("LEARN-34: Home's recent lessons use the Lessons list's topic mapper (with 
 });
 
 test("LEARN-38: an unanswered consent shows the 'no' effect", () => {
-  assert.match(src("src/parent/Pages.tsx"), /now === true \? c\.effectYes : c\.effectNo\(teacherName\)/);
+  assert.match(src("src/parent/Pages.tsx"), /consentEffect\(now, c\.effectYes, c\.effectNo\(teacherName\)\)/);
 });
 
 test("LEARN-22: the home card keeps the class length once today's lesson slot has been used", async () => {

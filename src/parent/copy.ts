@@ -112,3 +112,9 @@ export const isPasswordError = (e: unknown) => e instanceof ApiError && ((e.body
 /** A home tip without its "At home:" lead (the card is titled "Try at home"), starting with a capital: round 4 journey
  *  audit #15 ("ask Riya …" read as a fragment). */
 export const atHomeText = (t: string): string => { const s = t.replace(/^At home:\s*/, ""); return s.charAt(0).toUpperCase() + s.slice(1); };
+
+/**
+ * Which effect sentence a privacy choice shows. Only a granted choice shows the "yes" effect: an unanswered one is not
+ * granted (server/auth.js hasConsent), so it shows what happens without it (audit 2026-11-09 LEARN-38).
+ */
+export const consentEffect = (now: boolean | null, effectYes: string, effectNo: string): string => (now === true ? effectYes : effectNo);

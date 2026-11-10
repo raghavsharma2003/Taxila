@@ -59,8 +59,8 @@ export function weaveStmts(child, q) {
   const mode = gate(child);
   const open = q.filter((e) => e.status === "queued" || e.status === "hosted");
   return [
-    // an expired entry no opener slot consumed stays open in the table (it expires again and competes at the next start);
-    // closing it here dropped a callback nobody ever asked (audit LEARN-48)
+    // an entry the reducer expired but that got no opener slot this lesson (weave.js consumeExpired leaves it 'expired') keeps
+    // its row as it is, so the next lesson start offers it again (audit 2026-11-09 LEARN-48: it was closed unasked)
     { text: "update weave_queue set status='done' where child_id=$1 and status in ('queued','hosted') and not (skill_id = any($2))",
       params: [child.id, [...open, ...q.filter((e) => e.status === "expired")].map((e) => e.skillId)] },
     ...open.map((e) => ({

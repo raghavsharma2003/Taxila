@@ -5,7 +5,8 @@ import assert from "node:assert/strict";
 import { getTopic } from "../server/content/curriculum.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { skillScriptOf } from "../server/director/script.js";
-import { scriptCard } from "../server/routes/parent.js";
+import { scriptCardOf } from "../server/routes/parent.js";
+const scriptCard = (kit, key) => scriptCardOf(kit, key, "Riya");
 
 const kit = kitFromFile(getTopic("c5-maths-ch02-t01"));
 const skillId = kit.skills[0].id;

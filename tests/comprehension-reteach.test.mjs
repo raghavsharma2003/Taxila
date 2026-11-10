@@ -35,8 +35,9 @@ test("failures: a wrong re-check, another re-teach before any success, a differe
   assert.deepEqual(pick(resolveAttempt(A, [item("L1", T + 60_000, "C0", { assisted: "parent" })])), ["contaminated", true, null]);
   const lost = resolveAttempt(A, [item("L1", T + 60_000, "C0"), item("L2", T + DELAY_MS + 60_000, "C4")]);
   assert.deepEqual(pick(lost), ["repaired_now", true, 0.3], "repaired, then the next lesson's answer was wrong: final with the stage reached");
-  // audit LEARN-27: the horizon still closes it, but with no reward: nothing was answered, so nothing is known about the method
-  assert.deepEqual(pick(resolveAttempt(A, [], [], T + HORIZON_MS + 1)), ["contaminated", true, null], "the 30-day horizon closes an attempt nothing ever answered");
+  // audit 2026-11-09 LEARN-27: closed, but with no outcome and no reward (no answer says nothing about the method; "failed"
+  // with reward 0 added a failure to the arm's shared posterior for every child who simply did not come back)
+  assert.deepEqual(pick(resolveAttempt(A, [], [], T + HORIZON_MS + 1)), [null, true, null], "the 30-day horizon closes an attempt nothing ever answered");
   assert.equal(resolveAttempt(A, [item("L1", T - 60_000, "C0")], [], T + 1000).outcome, null, "evidence BEFORE the re-teach says nothing");
   assert.equal(resolveAttempt(A, [{ ...item("L1", T + 60_000, "C0"), via: "late" }], [], T + 1000).outcome, null, "a late correction is not an answer");
 });
