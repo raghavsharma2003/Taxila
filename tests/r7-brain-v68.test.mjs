@@ -120,6 +120,8 @@ describe("r7-brain-v68.test.mjs", () => {
         const { kit, rows, last } = await replay(RUN, "steady", T, 41);
         replyDeps.chat = async () => ({ text: rows[40].text });
         const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
+        // (v6.10 T2: row 39's "haan, woh maine bata diya" just after the card is asked for once more — the aside's return waits a turn)
+        if (last.state.lastMove?.request === "ask_again") { assert.match(out.reply, /phir|once more|again/i); assert.ok(out.guard.askAgain); return; }
         assert.ok(out.guard.cardHeld, `the aside question ends the turn | ${out.reply}`);
         assert.match(out.reply, /[?？]\s*$/);
         const card = last.p.r.ui?.ask?.text ?? "";
@@ -175,6 +177,8 @@ describe("r7-brain-v68.test.mjs", () => {
       const { out, last, sc } = await at("stuck", "c4", 8);
       // (v6.9 T1: with nothing of the live part left unsaid in her last four turns, the key and its why)
       if (last.state.lastMove.gave?.answer) { assert.match(out.reply, /jawab/i); return; }
+      // (v6.10 T2.5: a request never spends help — with nothing fresh and the card's help unspent by a miss, no key: the card again)
+      if (!last.state.lastMove.simpler) { assert.doesNotMatch(out.reply, /jawab/i); assert.ok(norm(out.reply).endsWith(norm(last.p.r.ui.ask.text)), out.reply); return; }
       const e1 = sc.skills[0].explain.find((b) => b.id === "e1");
       const lastT = norm([...last.state.recent].reverse().find((t) => t.who === "teacher")?.text);
       const sim = norm(said(e1.ask?.simpler ?? e1.simpler));
@@ -182,7 +186,9 @@ describe("r7-brain-v68.test.mjs", () => {
       assert.ok(norm(out.reply).includes(sim.split(" ").slice(0, 5).join(" ")), out.reply);
       assert.ok(norm(out.reply).endsWith(norm(last.p.r.ui.ask.text)));
     });
-    for (const [persona, topic, n] of [["steady", "c4", 36], ["offtopic", "c4", 34], ["offtopic", "c5-t02", 32]]) test(`${persona} ${topic} ${n}: Hindi during a worked step says that step's own line, on the worked board`, async () => {
+    // (steady c4 36 left this list in v6.10: the recorded walk diverges at row 27 — T2's never-spending Hindi request leaves the card a hint,
+    // so the miss there is hinted, not given; Hindi on a worked step is replayed live on director17 by T1.2, tests/r7-brain-v69.test.mjs)
+    for (const [persona, topic, n] of [["offtopic", "c4", 34], ["offtopic", "c5-t02", 32]]) test(`${persona} ${topic} ${n}: Hindi during a worked step says that step's own line, on the worked board`, async () => {
       const { out, last, sc } = await at(persona, topic, n);
       const bid = last.before.lastMove?.scriptBeat?.beatId;
       assert.match(String(bid), /^worked:step\d+$/);
@@ -323,7 +329,8 @@ describe("r7-brain-v68.test.mjs", () => {
               // (H5 on the walk: no card pinned unsaid; every spoken part on its held unit)
               // (the held predicates above already hold every spoken part to its unit; here: no card on screen that is not said)
               const text = out.reply.replace(/\s+/g, " ").trim();
-              const f = heldFlags({ text, card: out.guard?.cardHeld ? null : pl.p.r.ui?.ask?.text ?? null }, null); // (as turn.js: A4 drops ui.ask)
+              // (v6.10 T2: an ask-again turn keeps the card said on the turn before it, and says only its one line)
+              const f = heldFlags({ text, card: out.guard?.cardHeld || out.guard?.askAgain ? null : pl.p.r.ui?.ask?.text ?? null }, null); // (as turn.js: A4 drops ui.ask)
               if (f.length) h5.push(`${persona} ${topic} ${n}: ${f.map((x) => x.why).join("; ")}`);
             } catch (e) { errs.push(`${persona} ${topic} ${n}: ${e.message.slice(0, 160)}`); }
           }

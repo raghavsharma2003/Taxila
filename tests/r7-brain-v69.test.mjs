@@ -19,59 +19,9 @@ import { REQUEST_TABLE, responseShape } from "../server/director/requestTable.js
 import { picLine } from "../server/brain/say.js";
 
 const RUN = "2026-11-10-director17";
-const TOPIC = { c4: "c4-maths-ch05-t01", "c5-t01": "c5-maths-ch02-t01", "c5-t02": "c5-maths-ch02-t02", c6: "c6-maths-ch06-t01" };
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 
-/** Walk a director17 lesson live up to teacher row `upto` (0-based): each child row read as the run read it (classifyFast, else the
- *  run's recorded read), planned by turn.js planTurn, her line from textReply on the run's own words, and HER LIVE LINE kept in the
- *  history (never the recorded one), the held board carried as turn.js carries it (next.heldUp), A4's unsaid card as turn.js marks
- *  it. → [{ n, out, pl, held, up, kit, rows }] for every teacher row walked. */
-export async function walk(persona, topic, upto) {
-  const T = TOPIC[topic];
-  const sc = runScriptOf(RUN, T); delete sc.recordedRun;
-  setScriptForTest(T, sc);
-  const KEEP = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT;
-  const turns = [];
-  try {
-    const rows = rowsOf(RUN, persona, T);
-    const kit = kitFromFile(getTopic(T)), classLevel = Number(/^c(\d)/.exec(T)[1]);
-    const CHILD = { id: "00000000-0000-0000-0000-00000000aaaa", legal_mode: "M1", class_level: classLevel }, LESSON = { id: "11111111-1111-1111-1111-11111111aaaa", started_at: new Date(0).toISOString() };
-    const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend little friend" }, ageBand: classLevel <= 3 ? "6-9" : "10-15", lang: "hinglish",
-      interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: kit.title ?? kit.topicId, classLevel, sessionId: LESSON.id, teacher: "director" };
-    const brief = { firstName: "Riya", classLevel, ageBand: ctx.ageBand, languagePref: "hinglish", interests: ["cricket"], recentWins: [], activeMisconceptions: [], memoryCallbacks: [],
-      vibe: { pace: "medium", verbosity: "brief", humour: "medium" }, relationshipStage: "first_meeting (0 sessions together)" };
-    const r0 = step(initLessonState({ topicId: T, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
-    let s = { ...r0.state, brief, kitVerified: kit.verified, kitHash: kit.hash, mode: "text", recent: [{ who: "teacher", text: rows[0].text }] };
-    let live = { state: newLearnerState({ childId: CHILD.id, classLevel }), maxSeq: 0 };
-    let up = null;
-    for (let i = 1; i < Math.min(upto, rows.length); i += 2) {
-      const text = rows[i].text;
-      s = { ...s, seq: s.seq + 1, recent: [...s.recent, { who: "child", text }] };
-      const item = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
-      const fast = classifyFast({ target: targetFor(s, kit, item), childText: text, lang: "hinglish", classLevel, typed: true });
-      const [o, rq] = String(rows[i].read).split(" · ");
-      const c = fast.result ?? { outcome: o.trim(), confidence: 0.9, source: "replay", flags: { ...fast.flags }, ...(rq ? { request: { type: rq.trim() } } : {}) };
-      const before = s;
-      const p = await planTurn(s, c, { kit, child: CHILD, lesson: LESSON, activeItem: item, moduleOnly: false, moduleEvents: [], answer: text, childText: text, leaked: false, live: Promise.resolve(live), carried: [], now: (i + 1) * 20_000 });
-      live = { state: p.learner.after, maxSeq: 0 };
-      const state = { ...p.r.state, mode: "text" };
-      const n = i + 1;
-      replyDeps.chat = async () => ({ text: rows[n]?.text ?? "" });
-      const out = await textReply({ instructions: instructionsFor(state, kit), state, kit, childText: text, history: [], ui: p.r.ui, module: null });
-      const next = { ...state, heldUp: up };
-      const a = whiteboardIntentOf({ lessonId: "L", turn: n, beat: { id: "visual", type: "explain" }, next, kit, item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null,
-        line: { text: out.reply, ...(out.guard?.parts ? { parts: out.guard.parts } : {}) } });
-      const held = a.intent.held ?? null;
-      const pl = { row: n, child: text, cls: c, before, p, state };
-      turns.push({ n, out, pl, held, up, kit, rows });
-      if (held) up = heldUpOf(held);
-      s = { ...state, heldUp: up, recent: [...(state.recent ?? []), { who: "teacher", text: out.reply }] };
-      if (out.guard?.cardHeld && s.activeItemId) s.cardUnsaid = s.activeItemId;
-      if (out.guard?.asideEnd) s.asideReplyDue = true;
-    }
-  } finally { replyDeps.chat = chat; setScriptForTest(); if (KEEP !== undefined) process.env.TAXILA_R7_SCRIPT = KEEP; }
-  return turns;
-}
+import { walk, TOPIC } from "./fixtures/walk.mjs";
 
 describe("r7-brain-v69.test.mjs", () => {
   // N1: a turn with no unit part (an aside question or return, an acknowledgement, a break or stop menu, a goodbye) draws nothing new
@@ -91,9 +41,11 @@ describe("r7-brain-v69.test.mjs", () => {
 
   // N2: the bridge belongs to the next card's unit — after a give-up it switches at the bridge's first spoken part
   describe("N2: a bridge after a give-up switches to the next skill's first unit where the bridge begins", () => {
-    for (const [persona, topic, n] of [["stuck", "c4", 74], ["stuck", "c5-t02", 52], ["offtopic", "c6", 40]]) test(`${persona} ${topic} ${n}`, async () => {
+    // (v6.10: c4 stuck's live walk now stays in skill 1 until the child leaves — its give-up-then-bridge is steady's, row 74)
+    for (const [persona, topic, n] of [["steady", "c4", 74], ["stuck", "c5-t02", 52], ["offtopic", "c6", 40]]) test(`${persona} ${topic} ${n}`, async () => {
       // (the walk is live: the give-up-then-bridge turn is the one nearest the director17 row)
-      const turns = await walk(persona, topic, n + 12);
+      // (v6.10: a give-up now ends on a check-in, and the live walk can reach its bridge elsewhere — the nearest bridge in the lesson)
+      const turns = await walk(persona, topic, 200);
       const t = turns.filter((x) => x.pl.state.lastMove?.bridgeBeat && (x.out.guard?.lineParts ?? []).some((p) => p.part === "bridge")).sort((a, b) => Math.abs(a.n - n) - Math.abs(b.n - n))[0];
       assert.ok(t, "a bridge turn near the row");
       const sk = t.pl.state.lastMove.bridgeBeat?.skillId;
@@ -118,7 +70,9 @@ describe("r7-brain-v69.test.mjs", () => {
       return sents(t.out.reply).filter((x) => !card.includes(x.replace(/[.!?।]+$/, "")) && before.includes(x.replace(/[.!?।]+$/, "")));
     };
     test("the table: every row names a known shape, its beat kind and the director17 rows it replays; lookups are by request × beat", () => {
-      const SHAPES = new Set(["live_fresh_else_key", "key", "card_first", "serve_request", "park_later", "return_once", "next_step", "move_on", "ack_then_card"]);
+      // (v6.10: director18's wrong and missing rows add their shapes; A5's ack_then_card is gone with the acknowledgement, A6)
+      const SHAPES = new Set(["live_fresh_else_key", "key", "card_first", "serve_request", "park_later", "return_once", "next_step", "move_on",
+        "no_promise", "aside_first", "never_spends", "resume_unit", "ask_again", "pose_card", "form_removed"]);
       for (const r of REQUEST_TABLE) { assert.ok(SHAPES.has(r.shape), r.id); assert.ok(r.request.length, r.id); }
       assert.equal(responseShape("language", "remediation"), "live_fresh_else_key");
       assert.equal(responseShape("miss", "spent_card"), "key");
@@ -130,7 +84,8 @@ describe("r7-brain-v69.test.mjs", () => {
       const { t, turns } = await at(spec);
       assert.ok(["language", "clarify"].includes(t.pl.state.lastMove.request), `a ${t.pl.state.lastMove.request} turn`);
       assert.deepEqual(repeats(t, turns), [], t.out.reply);
-      if (row.beat === "remediation" && !t.pl.state.lastMove.gave) assert.ok(t.pl.state.lastMove.simpler, "the remediation's own words re-said, never skipped");
+      // (v6.10 T2.1: c4 steering 6's "samajh nahi aaya" now re-says the point, so row 8 is no longer on a remediation in the live walk)
+      if (row.beat === "remediation" && !t.pl.state.lastMove.gave && t.pl.before.lastMove?.scriptBeat?.kind === "remediation") assert.ok(t.pl.state.lastMove.simpler, "the remediation's own words re-said, never skipped");
     });
     test("T1.5 language/clarify on a spent card (sweep, the four stuck and steering lessons): every such turn says a fresh part or gives the key", async () => {
       const bad = [];
@@ -189,14 +144,18 @@ describe("r7-brain-v69.test.mjs", () => {
       assert.doesNotMatch(t.out.reply, /cricket wali baat/i);
     });
   });
-  // A5: the acknowledgement after an aside reply only for a reply about the aside, in three or more forms
-  test("A5: never said to a number or a request; its forms are three or more (sweep of the 16 lessons)", async () => {
-    const { ASIDE_ACK } = await import("../server/brain/say.js");
-    assert.ok(ASIDE_ACK.hinglish.length >= 3 && ASIDE_ACK.english.length >= 3);
+  // A5 → v6.10 A6 (main on director18: the acknowledgement fitted 0 times in two runs): no acknowledgement of the aside reply is said at all;
+  // after it, one neutral joint at most and the unit's next part (sweep of the 16 lessons)
+  test("A6: no aside acknowledgement; after an aside reply the walk goes on with the unit (sweep of the 16 lessons)", async () => {
+    const mod = await import("../server/brain/say.js");
+    assert.equal(mod.ASIDE_ACK, undefined);
     const bad = [];
     for (const topic of Object.keys(TOPIC)) for (const p of ["steady", "stuck", "offtopic", "steering"]) {
       const turns = await walk(p, topic, 200);
-      for (const t of turns) if (t.out.guard?.asideAck && (/\d/.test(t.pl.child) || (t.pl.cls.request?.type && t.pl.cls.request.type !== "uptake"))) bad.push(`${p} ${topic} ${t.n}: "${t.pl.child}"`);
+      for (const t of turns) {
+        if (/yeh jaankar achha laga|Wah, mazedaar|thanks for telling me/i.test(t.out.reply)) bad.push(`${p} ${topic} ${t.n}: an acknowledgement | ${t.out.reply.slice(0, 80)}`);
+        if (t.out.guard?.asideResume && t.out.reply.split(/(?<=[.!?])\s+/).length < 2) bad.push(`${p} ${topic} ${t.n}: the joint alone | ${t.out.reply}`);
+      }
     }
     assert.deepEqual(bad, []);
   });
