@@ -9644,3 +9644,37 @@ Kept on purpose: `reteachOutcomeStmt`, `armPosteriorStmt`, `actorRowStmts` (cont
 
 ## placement-start-below-level-only
 **Main approved 2026-11-10 (audit LEARN-07). Before it, a class-5 child on 9 Nov started at chapter 1 for "About right" and chapter 2 for "Easy", against chapter 9 by the calendar. This does not repeat `rj-topic-relative-difficulty-easiest-first`: it removes chapter-1 starts instead of adding them. Cold-start sim (n = 300, SIMULATED): for on-track children, the error at lesson 1 drops from 0.77 to 0.63; too-hard first lessons rise from 0.08 to 0.11.** Reverse if: real first lessons show "About right" children at the calendar chapter failing their first items more than the old start did.
+
+
+<!-- merged from inbox/r8-main-1.json -->
+## `dc-r8-selection-before-generation` (2026-11-10)
+
+Round 8: she knows the child first by choosing among verified things, not by generating during the lesson.
+
+| Layer | What changes per child | Checked by |
+|---|---|---|
+| 1. Selection | topic, opener, compressed units, first card, remediation, hook, joints | predicates; no model |
+| 2. Dress | an example's nouns and labels, same numbers and key | validator, for every dress |
+| 3. Library | mix-up-aimed visuals built ahead of the lesson | Claude judges in batches |
+| 4. Live | a visual built in the lesson | predicates at three sizes, for template families where that is enough |
+
+**Why:** earlier display failures all came from ungated live generation; a model never grades; judges are Claude in-session and builds are Azure-only, so judged generation happens ahead of the lesson; layers 1 and 2 cost nothing per lesson.
+
+**Reverse if:**
+- a child sees a repeated example or visual within five lessons on a topic: widen layer 4 for that family;
+- layer 4 shows 0 display faults over a judged batch of 100 across three sizes: it becomes the default for that family;
+- dress costs Learning more than half a day per topic: generate dress offline and judge it.
+
+Plan: docs/design/round8/PLAN.md.
+
+## `dc-r8-one-reader-with-because` (2026-11-10)
+
+One pure module, `server/director/knows.js` (`planFor`), turns learner state into a scripted lesson's choices and returns a `because` record for each. `state.js` keeps one call site per choice. A predicate throws in tests when the walk departs from script order with no `because`. The parent's lesson page shows the `because` lines.
+
+**Choices:** K1 compress a learned skill (a miss returns to the full unit); K2 success first; K3 remediation by her real mix-up; K4 prerequisite check; K5 no new skill before a test or in week one; K6 hook and joints by interest through the registry; K7 opener after a gap; K8 prefer a scripted topic among equals.
+
+**Why:** the learner audit found seven plan decisions computed and then dropped at seven seams (LEARN-20), and the walk reads no learner state today.
+
+**Reverse if:** a choice needs mid-turn state `planFor` cannot see without running every turn (then a per-turn reader, still one module).
+
+**Done when:** two simulated children with different histories get lessons differing in four named ways with no model call (`evals/knows-her`), and a judged run scores "taught this child" at 3.5 or above with the existing gate passing.

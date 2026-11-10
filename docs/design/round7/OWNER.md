@@ -184,6 +184,9 @@ in parts, start with tiers 1 and 2 (~$21).
 
 ## 4. Calls the main loop took that you may want to reverse
 
+- **Round 8 is planned** (`docs/design/round8/PLAN.md`). Its aim: a child's second lesson differs from her first because of what she did in the first, and every difference names the fact behind it. Today a scripted lesson is the same for every child apart from one interest line and the language.
+  She will first know a child by choosing among checked material (which parts to shorten, which card first, which fix for her mix-up). Content generated during a lesson stays limited to pictures that code can check. (`dc-r8-selection-before-generation`, `dc-r8-one-reader-with-because`)
+
 - **Khand MEASURE is not shipped.** Its 2D form was a number pad plus left/right buttons, exactly what OWNER-RESET #3 rejects.
   It is replaced by *taraazu* (a kirana pan balance with real weights, and pouring jugs) on the same four topics.
   The original is still on its branch. (`dc-r7-games-measure-to-taraazu`)

@@ -6553,3 +6553,18 @@ Games audit `play-family.mjs` (branch claude/r7-audit-games), 2026-11-10.
   - nazariya tri more: 30.2 % / 26.0 % (3600).
   - kon zone kind: 16.4 % / 10.3 % (10800).
 - **UI:** the pour count was driven by real taps at 360 × 640 in en, hi and hinglish. 39 of 39 checks pass (targets ≥ 44 px, text ≥ 16 px, 0 clipped labels or goal lines, 0 overflow, 0 errors): docs/design/round7/games/runshots-hissa/.
+
+
+<!-- merged from inbox/r8-main-1.json -->
+## `ms-r8-walk-reads-no-learner-state-2026-11-10` (2026-11-10)
+
+A read-only code trace of the integration 24 tree (one pass, by a Sonnet agent for main; no tests run).
+
+- The script walk reads no learner state: it walks every beat of every scripted skill in kit order (`server/director/state.js:1282-1290`).
+- Per-child variation in a scripted lesson: the hook's interest slot (exact label match; 4 onboarding tiles have no slot, 2 slots name tiles that do not exist), the language, and a friend name from a fixed list.
+- The lesson brief passes only `wrapAt` and `hardStopAt`, and is usually null (`TAXILA_CONDUCTOR_PLAN` is off).
+- Script cards and game levels do write `kt_evidence`, and the ledger folds them.
+- No generated visual can be shown: nothing sets a verdict, and `judgeArtifact` has no caller.
+- 4 scripts are live, 30 staged.
+
+**Not verified by the trace:** whether "simpler used" counts as assisted; whether a script give-up weighs as a kit leave; the writer's `params_version` default (kt-r2) against the ledger's kt-r3; live legal modes. These are with the learner session.
