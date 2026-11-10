@@ -276,8 +276,3 @@ function solveWide(i: DeskInput, fs: number): DeskLayout {
   const rTotal = top + right.padTop + right.card + right.gapA + right.tray + right.gapB + right.strip + right.dock + right.pad;
   return { kind: "wide", geometry, keyboard: false, phone: null, wide: wz, speechFace: 0, overflow, total: rTotal };
 }
-
-/** The phase → geometry rule (§6.3.4): from ui.tray at the phase boundary; "none" → Face, anything else → Work. */
-export function geometryForTray(tray: string | null | undefined): Geometry {
-  return tray && tray !== "none" ? "work" : "face";
-}

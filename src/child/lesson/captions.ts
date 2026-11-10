@@ -2,7 +2,6 @@
 // punctuation so a line never wraps mid-word in portrait. There are no word timestamps on either lane
 // (R5), so while she speaks the clause advances on a speech-rate estimate; once she stops, the last full
 // sentence (usually the question she handed over, up to two lines) stays up. No word highlight ships until E-8 says it may.
-import type { Band, ReadingLevel } from "../band.ts";
 
 const MAX_WORDS_PER_LINE = 9;
 /** ~2.6 spoken words per second for her Hinglish register, plus a beat per clause. */
@@ -73,13 +72,3 @@ export function clauseAt(list: string[], ms: number, speaking: boolean): number 
   }
   return list.length - 1;
 }
-
-export type CaptionMode = "icons" | "phrase";
-
-/** Defaults by reading level; captions-always overrides (§3.8 table). */
-export function captionMode(reading: ReadingLevel, always: boolean): CaptionMode {
-  if (always) return "phrase";
-  return reading === "R0" ? "icons" : "phrase";
-}
-
-export const readingFor = (band: Band): ReadingLevel => (band === "b1" ? "R0" : band === "b2" ? "R1" : "R2");

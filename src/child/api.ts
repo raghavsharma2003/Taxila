@@ -148,9 +148,6 @@ export interface TutorsResponse {
   custom?: boolean;
   suggestions?: string[];
 }
-export const getTutors = (cid: string) => getJson<TutorsResponse>(`/api/tutors?childId=${encodeURIComponent(cid)}`);
-export const chooseTutor = (cid: string, tutorId: string, source: "child" | "child_random") =>
-  postJson("/api/tutors/choose", { childId: cid, tutorId, source });
 
 /** The page's best card: a verified one first, then one with an answer. Pure. */
 export function bestCard(cards: DidCard[]): DidCard | null {
