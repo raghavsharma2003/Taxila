@@ -226,6 +226,18 @@ test("audit V-03: a token request that never answers falls back to push-to-talk 
   } finally { link.close(); env.restore(); }
 });
 
+test("audit V-19: the engine's commit ends the prefetch's turn (its same-text guard never outlives the turn)", { skip }, async () => {
+  const { env, link } = await duplexLink();
+  try {
+    if (!link.prefetcher) return; // prefetch switched off in this build: nothing to check
+    let finals = 0;
+    const orig = link.prefetcher.onFinal.bind(link.prefetcher);
+    link.prefetcher.onFinal = () => { finals++; orig(); };
+    link.duplex.live.o.port.commit({ turnId: 1, text: "हाँ", startedAt: 1, duplex: { transcriptHash: "h", safetyPending: null } });
+    assert.equal(finals, 1);
+  } finally { link.close(); env.restore(); }
+});
+
 test("duplex off (or absent): today's link — a final is the turn, server speech_started pauses her", { skip }, async () => {
   const { env, link, events, states, pc } = await duplexLink({ mode: "off" });
   try {
