@@ -1,0 +1,29 @@
+{
+ "nodes": [
+  {
+   "id": "r7-audit-lesson-window-needs-limits",
+   "kind": "decision",
+   "title": "The Conductor slot's window binds a lesson (hard stop, wrap pulled back) only when the family's daily limits are on; otherwise the lesson wraps at its planned length from its start",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "r7-audit-topic-decided-on-askable-skills",
+   "kind": "decision",
+   "title": "A topic is finished or not on its askable skills only (skills with a loaded non-teach-back item), through one helper used by nextTopicFor and the parent's Progress page",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "r7-audit-rj-reteach-horizon-as-failure",
+   "kind": "rejected",
+   "title": "Rejected: closing a re-teach nobody answered after as 'failed' (reward 0) at the 30-day horizon",
+   "at": "2026-11-10"
+  }
+ ],
+ "edges": [
+  { "src": "r7-audit-lesson-window-needs-limits", "rel": "refines", "dst": "dc-r14-no-clock-gates" }
+ ],
+ "md": {
+  "decisions": "## r7-audit-lesson-window-needs-limits\n**`server/conductor/slot.js` lessonBriefOf gave every lesson a hard stop at the plan slot's window end (20:00-21:30 by class) on default flags, so a lesson started after it wrapped on the child's first answer (audit LEARN-01, P0). Now the window binds only when `limitsOnFor` is true for the child (TAXILA_DAY_LIMITS=on, or the family's own limits_on); otherwise `hardStopAt` is null and `wrapAt` is start + the slot's target minutes.** Reverse if: the owner wants the planned window to bind every child again (then it must be a parent-visible setting, per dc-r14-no-clock-gates).\n\n## r7-audit-topic-decided-on-askable-skills\n**`askableSkillIds` / `decidingStates` (server/content/next-topic.js): a skill whose items were all dropped at load, or that never had one (reading aloud, recitation), can never be 'learned', so it no longer holds its topic open. Used by nextTopicFor and routes/parent.js syllabus (audit CD-01 and its parent copy).** Reverse if: those skills get a gradable item (then they decide again automatically).\n",
+  "rejected": "- `r7-audit-rj-reteach-horizon-as-failure` (2026-11-10): Tried: comprehension/resolve.js closed a re-teach with no graded answer after it, ever, as outcome 'failed' with reward 0 at the 30-day horizon. Broke: every unanswered re-teach added a failure to that method's shared posterior for every child (audit LEARN-27). Instead: close it as 'contaminated' with reward null (no evidence, no posterior update), the shape an assisted answer already used.\n"
+ }
+}
