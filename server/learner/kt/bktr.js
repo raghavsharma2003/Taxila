@@ -57,12 +57,15 @@ export function gatedEmission(ev, R, confusionOverrides) {
  * guessers over the pL 0.6 "does it" line (comprehension sim: not_yet accuracy 0.62 with game evidence, 0.75 without).
  */
 // studio (W2-H, LIVE-STUDIO D12 §3.10): host-graded Studio answers weigh like modules until ledger-game-full-weight resolves
-export const SOURCE_WEIGHT = Object.freeze({ game: 0.5, module: 0.75, studio: 0.75 });
+// home (round 8, home play): a game level cleared at home, outside any lesson, weighs as a game (learner-evidence.md item 7)
+export const SOURCE_WEIGHT = Object.freeze({ game: 0.5, module: 0.75, studio: 0.75, home: 0.5 });
+/** A home-play event: via "game" (kt_evidence's via check has no "home") with an id that starts "home:" (replay-stable). */
+export const isHomePlay = (ev) => ev?.via === "game" && String(ev.id ?? "").startsWith("home:");
 /**
  * The source an event's weight comes from: its via, except a late verdict's correction (via 'late',
  * comprehension/later.js lateEvent), which carries its held event's game / module source in its id (`<id>:late:<via>`).
  */
-export const sourceOf = (ev) => (ev.via === "late" ? /:late:(game|module|studio)$/.exec(String(ev.id ?? ""))?.[1] ?? "late" : ev.via);
+export const sourceOf = (ev) => (ev.via === "late" ? /:late:(game|module|studio)$/.exec(String(ev.id ?? ""))?.[1] ?? "late" : isHomePlay(ev) ? "home" : ev.via);
 /** Rule 4 tempering exponent: assisted ^0.5, gaming window ^0.25, controllerEasy ^0.5, unverified kit ^0.5, a leaked right answer ^0.5, source (game/module). */
 export function temper(ev) {
   let x = SOURCE_WEIGHT[sourceOf(ev)] ?? 1;
