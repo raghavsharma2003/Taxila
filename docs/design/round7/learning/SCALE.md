@@ -49,3 +49,32 @@
 
 **Batching:** 30 topics per batch, drawn from at most 2 classes and 4 chapters, so that one judged run's sample covers the
 batch's templates. Each batch is predicate-clean and blind-solved before it is staged.
+
+## Dress (round 8, layer 2): what it adds, and when to build it in
+**What dress is.** An example's nouns and labels come from an authored closed set per interest, filled in by code: "12
+laddoo" can become "12 cricket balls". The numbers and the key stay the same. A validator proves every line and every board
+true for every dress (round 8 PLAN, Decision 1).
+
+**What it adds per topic (estimate):**
+- **Authoring.** Mark the dressable nouns in each card's words as slots (`{thing}`, `{things}`, `{place}`). Write each
+  topic's closed set, about 4–6 interests with 2–3 nouns each, in hi and en, with their counts and genders. Roughly +30–50%
+  on top of today's authoring, about +60–100k agent tokens per topic.
+  - Most of the cost is in agreement. Hinglish nouns carry gender ("ek pakki jagah" vs "ek pakka khamba"), so each slot
+    carries its own agreement form.
+- **Validation.** Predicate only, so no judge cost: the existing gate runs once per dress. A topic with 5 dresses costs 5
+  gate passes, about 15 s of CPU each.
+- **Judging.** Sample one dress per judged lesson, not every dress. The judge's question is whether the dress reads
+  naturally for the class, which predicates cannot answer.
+- **Boards are the hard part.** A board must name the same thing: wholes@1 titles, equal-groups labels and the round-whole
+  rule. A round whole (roti, pizza) cannot be dressed as a bar or ball. So each dress set has to declare its figure (round,
+  strip, countable), and the figure rules refuse a dress whose figure differs from the card's board.
+
+**Recommendation: author the 30 with dress slots from the start; don't retrofit.**
+- **Retrofit reopens every spoken field.** The units-true-of-their-board pass (D11) and the leak and register passes
+  (D10–D13) would all have to be redone. Every noun becomes a slot, so the gate's counts and figure checks must be re-proved
+  per dress.
+- **Built in, it is one extra field per card.** Writing the slot once while the line is authored costs less than finding
+  it again later.
+- **What a start-from-scratch needs.** Format 2.4 has to exist first (`dress` sets and slot syntax in the validator), with
+  the four pilots as its models. If director19 passes and Dress starts as planned, part 2's regenerated 30 stay at 2.3. The
+  next batches would then be authored at 2.4, and the 30 retrofitted only where a judged run shows dress is wanted on them.
