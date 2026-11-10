@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parent corner · Taxila</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="../layout.css">
+<link rel="stylesheet" href="skin.css">
+<script src="../content.js" defer></script>
+</head>
+<body class="parent">
+<header class="pbar">
+  <div class="who"><b data-c="parent.child"></b><small data-c="parent.childmeta"></small></div>
+  <div class="pbar-actions">
+    <button class="btn-quiet" data-i="speaker"><span class="wide-only" data-c="parent.listen"></span><span class="sr phone-sr">Listen to this page</span></button>
+    <button class="btn-secondary" data-i="lock"><span data-c="parent.lock"></span></button>
+  </div>
+</header>
+<div class="pshell">
+<nav class="ptabs" aria-label="Parent corner">
+  <a href="#" aria-current="page" data-i="sun"><span data-c="parent.tab.1"></span></a>
+  <a href="#" data-i="progress"><span data-c="parent.tab.2"></span></a>
+  <a href="#" data-i="calendar"><span data-c="parent.tab.3"></span></a>
+  <a href="#" data-i="controls"><span data-c="parent.tab.4"></span></a>
+</nav>
+<main class="pmain">
+  <section class="week" aria-labelledby="wk">
+    <p class="eyebrow" id="wk"><span data-c="parent.week"></span> · <span data-c="parent.weekdates"></span></p>
+    <h1 class="claim" data-c="parent.claim"></h1>
+    <details class="how" open>
+      <summary data-c="parent.how"></summary>
+      <ol class="evidence">
+        <li><time data-c="parent.ev.1.date"></time><span class="how-l" data-i="check"><span data-c="parent.ev.1.how"></span></span><p data-c="parent.ev.1.words"></p></li>
+        <li><time data-c="parent.ev.2.date"></time><span class="how-l" data-i="check"><span data-c="parent.ev.2.how"></span></span><p data-c="parent.ev.2.words"></p></li>
+        <li><time data-c="parent.ev.3.date"></time><span class="how-l" data-i="hint"><span data-c="parent.ev.3.how"></span></span><p data-c="parent.ev.3.words"></p></li>
+      </ol>
+    </details>
+  </section>
+  <ul class="facts">
+    <li><b data-c="parent.facts.1"></b><span data-c="parent.facts.1l"></span></li>
+    <li><b data-c="parent.facts.2"></b><span data-c="parent.facts.2l"></span></li>
+    <li><b data-c="parent.facts.3"></b><span data-c="parent.facts.3l"></span></li>
+  </ul>
+  <section class="pcard task">
+    <p class="eyebrow" data-c="parent.task.eyebrow"></p>
+    <p class="read" data-c="parent.task"></p>
+    <div class="row"><button class="btn-primary small" data-c="parent.task.done"></button><button class="btn-secondary" data-c="parent.task.skip"></button></div>
+  </section>
+  <section class="pcard">
+    <p class="eyebrow" data-c="parent.next.eyebrow"></p>
+    <h3 data-c="parent.next"></h3>
+    <p class="meta-read" data-c="parent.next.topic"></p>
+    <div class="row"><button class="btn-secondary" data-i="calendar"><span data-c="parent.next.move"></span></button></div>
+  </section>
+</main>
+</div>
+</body>
+</html>
