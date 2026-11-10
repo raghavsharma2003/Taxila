@@ -77,7 +77,9 @@ export async function startSession(child, o = {}, q = undefined) {
     if (!memo.has(k)) memo.set(k, levelsFor(bodyFor(entry, focus, "garam"), entry)?.garam ?? null);
     return memo.get(k);
   };
-  const pick = chooseEntry({ entries, inputs, levelOf, recent: o.recent ?? {}, keyOf: entryKey, beliefOf });
+  // the first entry's level for a child with nothing known (same fade): an open mix-up that moves it gets its because too
+  const plainOf = (entry) => levelsFor({ ...bodyFor(entry, null, "garam"), mis: {}, pL: undefined, secure: false }, entry)?.garam ?? null;
+  const pick = chooseEntry({ entries, inputs, levelOf, recent: o.recent ?? {}, keyOf: entryKey, beliefOf, plainOf });
   const entry = pick.entry;
   const s = bodyFor(entry, pick.focus);
   // item I: Studio offered this game because its v2 world was refused at 360 px (buildLive reason "phone"): said beside any
