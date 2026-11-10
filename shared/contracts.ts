@@ -128,6 +128,11 @@ export interface UiDirectives {
   verdict?: "correct" | "not_yet" | "partial";
   /** A correct verdict that came after a hint rung (the tick in outline, §4.6 "With help"). */
   withHelp?: boolean;
+  /**
+   * The Question card's hint line (V2 §4.3, §4.6 "Hint"): sent on a hint move at rungs 1-3 with the kit's rung text, ≤ 120
+   * chars (server: director/state.js hintFor). Never rung 4 (the key), never a line that states the key or reads as a note.
+   */
+  hint?: { level: 1 | 2 | 3; text: string };
   /** The phase line (Older) and the geometry decision. */
   phase?: LessonPhase;
   /** What the tray holds this turn: none → Face layout (no empty box, audit #5). */

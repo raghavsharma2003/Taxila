@@ -634,7 +634,8 @@ test("turn-audio hands the held speculation to the turn and aborts it when the t
   const spec = fakeSpec("t");
   let got = null;
   Object.assign(turnAudioDeps, { style: () => ({}), synth: async function* () {}, takeAgentSpec: (id, text) => (id === "L-ta2" && text === "chaar" ? spec : null),
-    lessonTurn: async (req, body, o) => { await wait(5); got = o.agentSpec; return { teacherReply: "Achha.", teacherReplySeq: 3 }; } });
+    // (TEACHER-05: the turn takes the speculation once it has authorised the lesson — hooks.authorized, as brain/turn.js calls it)
+    lessonTurn: async (req, body, o) => { o.authorized?.(); await wait(5); got = o.agentSpec; return { teacherReply: "Achha.", teacherReplySeq: 3 }; } });
   try {
     const res = fakeRes();
     await _turnAudio(fakeReq(), res, { lessonId: "L-ta2", childText: "chaar" });
@@ -736,3 +737,18 @@ test("ack.decision: every path of the real decision yields a row of closed codes
   assert.equal(ackDecisionRow({ none: "the child said something" }).none, "other");
   assert.equal(ackDecisionRow({ ack: { kind: "mystery", phrase: "x" } }).kind, "other");
 });
+
+// TEACHER-05 (owner's audit): POST /api/lesson/turn took the lesson's speculation before authorising anything — anyone knowing a
+// lesson id could drop it with other words. Unauthorised, the turn is refused and the speculation is left for the lesson's own turn.
+test("an unauthorised /api/lesson/turn never takes or drops the lesson's held speculation", specOn(async () => {
+  __agentSpec.clear();
+  const lesson = { id: "11111111-2222-3333-4444-555555555555", state: agentState() };
+  const spec = fakeSpec("auth5");
+  await startAgentSpec(specDeps(spec), { lesson, state: agentState(), kit: {}, text: "teen", P: { clsP: Promise.resolve(plainCls()) } });
+  const { routes } = await import("../server/routes/lesson.js");
+  const res = { statusCode: 0, headersSent: false, writableEnded: false, setHeader() {}, writeHead() {}, write() { return true; }, end() { this.writableEnded = true; }, on() {}, once() {}, off() {} };
+  await assert.rejects(routes["POST /api/lesson/turn"]({ headers: {}, url: "/api/lesson/turn" }, res, { lessonId: "11111111-2222-3333-4444-555555555555", childText: "kuch aur" }));
+  // (refused before the lesson is loaded for a signed-in guardian: no session here, no database — either refusal comes first)
+  assert.equal(spec.aborted, false, "not dropped by a stranger's words");
+  assert.equal(await takeAgentSpec("11111111-2222-3333-4444-555555555555", "teen"), spec, "still there for the lesson's own turn");
+}));
