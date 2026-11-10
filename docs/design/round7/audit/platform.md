@@ -263,3 +263,16 @@ and the code say 1.32.
   module and the recorder, which do not belong in the untrusted build container.
 - **PLAT-40:** fixed in 4e0904a5, then reverted on main's decision: the cap on taxila-gpt6 repeats a measured
   rejection (`server/lanes.js` header). A measurement plan is in the proposals file.
+
+## Routed to platform by main (2026-11-10)
+
+- **STUDIO-12:** `rolldown` is in `dependencies` at the locked 1.2.12; `tests/r7-audit-platform-deps.test.mjs` checks every
+  package a server or shared file imports against `dependencies`. The browser QA tools (playwright, playwright-core, vite,
+  @vitejs/plugin-react) are named there as runner-only: they need Chromium or a bundler run that neither image has.
+- **App audit, `server/serve.mjs`:** `/` no longer preloads `bg/landing-hero` (the landing page stopped drawing it); fonts
+  and pictures outside `/assets/` are cached (a day, an hour); `.webm` and other media get their types.
+- **GAMES-05:** `server/routes/modules.js` and its registration removed.
+- **SEAM-07, platform half:** the release removes `TAXILA_UI_KAKSHA` from the web (`scripts/release-core.mjs`
+  RETIRED_ENV) and its cohort step allows that drop. **Brain's half:** `server/ui/kaksha-cohort.js` still computes the
+  cohort for `GET /api/me` and child boot (`server/routes/account.js:239`), though the client ignores it
+  (`src/ui-v3/kaksha/flag.ts`); remove that and `tests/r4-kaksha-cohort.test.mjs` together.

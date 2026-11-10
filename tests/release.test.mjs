@@ -11,7 +11,7 @@ test("planRelease: the fixed order; web and worker pinned to the same image tag;
   const p = planRelease({ sha: SHA });
   assert.deepEqual(p.map((s) => s.id), STEPS);
   const by = Object.fromEntries(p.map((s) => [s.id, s]));
-  assert.deepEqual(by.web.argv, ["scripts/deploy-azure.mjs", "--image-tag", "23d3d7e", "--force"]); // the freeze step is the one check (PLAT-22)
+  assert.deepEqual(by.web.argv, ["scripts/deploy-azure.mjs", "--image-tag", "23d3d7e", "--force", "--set", "TAXILA_UI_KAKSHA="]); // retired env removed (SEAM-07) // the freeze step is the one check (PLAT-22)
   assert.deepEqual(by.worker.argv.slice(0, 4), ["scripts/deploy-worker.mjs", "--image-tag", "23d3d7e", "--jobs"]);
   assert.deepEqual(by.migrate.argv, ["scripts/migrate.mjs", "--prod", "--sha", SHA, "--backup", "pre-release-23d3d7e"]);
   assert.ok(p.indexOf(by.migrate) < p.indexOf(by.web), "migrations before any code that needs them");
@@ -44,7 +44,7 @@ test("runSteps: stops at the first failure, runs nothing after it; a re-run resu
   assert.deepEqual([r1.ok, r1.failed], [false, "web"]);
   assert.deepEqual(a.calls, ["evidence", "freeze", "capture", "images", "migrate", "web"]);
   assert.equal(state.steps.web.done, false);
-  assert.match(state.steps.web.error, /deploy-azure.mjs --image-tag 23d3d7e --force exited 1/);
+  assert.match(state.steps.web.error, /deploy-azure.mjs --image-tag 23d3d7e --force --set TAXILA_UI_KAKSHA= exited 1/);
   const b = fakeExec();
   const r2 = await runSteps({ steps: planRelease({ sha: SHA }), state, exec: b.exec });
   assert.equal(r2.ok, true);
@@ -96,7 +96,7 @@ test("armRetryable: transient failures of idempotent calls only; a POST that sta
 
 test("--set: forwarded to the web deploy only; malformed pairs refused", () => {
   const p = planRelease({ sha: SHA, set: ["TAXILA_DUPLEX=on", "X_Y=a=b"] });
-  assert.deepEqual(p.find((s) => s.id === "web").argv, ["scripts/deploy-azure.mjs", "--image-tag", "23d3d7e", "--force", "--set", "TAXILA_DUPLEX=on", "--set", "X_Y=a=b"]);
+  assert.deepEqual(p.find((s) => s.id === "web").argv, ["scripts/deploy-azure.mjs", "--image-tag", "23d3d7e", "--force", "--set", "TAXILA_DUPLEX=on", "--set", "X_Y=a=b", "--set", "TAXILA_UI_KAKSHA="]);
   assert.ok(!p.find((s) => s.id === "worker").argv.includes("--set"));
   assert.match(p.find((s) => s.id === "cohort").title, /TAXILA_DUPLEX, X_Y took the new value/);
   assert.throws(() => planRelease({ sha: SHA, set: ["duplex=on"] }), /NAME=VALUE/);

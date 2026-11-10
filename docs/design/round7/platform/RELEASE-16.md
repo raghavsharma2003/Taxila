@@ -88,7 +88,8 @@ The new routes since the last release, and what they read:
 - **Nothing new is required.** No other new route reads a new env var: placement onboarding, the map marks and the Hangar equip
   read none. The release needs no `--set`.
 - **The cohort check.** The `cohort` step compares the new revision's env names with the captured old ones and fails on any name
-  that went missing. This protects the cohort switches, e.g. `TAXILA_UI_KAKSHA`, `DUPLEX_LIVE_FOR`, `TRACE_FULL_FOR`. If a name is
+  that went missing. This protects the cohort switches, e.g. `DUPLEX_LIVE_FOR`, `TRACE_FULL_FOR`. `TAXILA_UI_KAKSHA` is retired: the release removes it
+  itself (`scripts/release-core.mjs` RETIRED_ENV; the client ignores it). If a name is
   meant to go, pass `--allow-drop NAME`.
 - **Check ACS before the release, without printing values.** The capture step prints only how many env names the live
   revision has, never the names or their values. Before the release, confirm `ACS_CONNECTION_STRING`, `ACS_SENDER` and

@@ -143,3 +143,15 @@ test("PLAT-49: the web image is built with VITE_BUILD_SHA, which the page reads 
   for (const f of ["scripts/deploy-azure.mjs", "scripts/release.mjs"]) assert.match(readFileSync(join(ROOT, f), "utf8"), /buildArgs: \{ VITE_BUILD_SHA: /, f);
   assert.match(readFileSync(join(ROOT, "src/main.tsx"), "utf8"), /import\.meta\.env\.VITE_BUILD_SHA/);
 });
+
+test("SEAM-07: a release removes the retired TAXILA_UI_KAKSHA from the web and allows that drop", async () => {
+  const { RETIRED_ENV, envDropped } = await import("../scripts/release-core.mjs");
+  assert.ok(RETIRED_ENV.includes("TAXILA_UI_KAKSHA"));
+  const web = planRelease({ sha: SHA }).find((s) => s.id === "web").argv;
+  assert.equal(web[web.indexOf("TAXILA_UI_KAKSHA=") - 1], "--set");
+  assert.deepEqual(envDropped(["A", "TAXILA_UI_KAKSHA"], ["A"], RETIRED_ENV), []);
+  assert.match(readFileSync(join(ROOT, "scripts/release.mjs"), "utf8"), /\.\.\.RETIRED_ENV\]\)/, "the cohort step allows the drop");
+  // an explicit --set of the same name wins over the retirement
+  const keep = planRelease({ sha: SHA, set: ["TAXILA_UI_KAKSHA=x@y.z"] }).find((s) => s.id === "web").argv;
+  assert.ok(!keep.includes("TAXILA_UI_KAKSHA="));
+});

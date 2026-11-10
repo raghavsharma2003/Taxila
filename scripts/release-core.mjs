@@ -18,6 +18,15 @@
 // 18:00 IST between them finishes instead of stopping with the web new and the worker old (PLAT-22).
 import { LATEST_EVIDENCE } from "./deploy-core.mjs";
 
+/**
+ * Env names a release removes from the web on purpose: settings the code no longer needs. The web step sends
+ * `--set NAME=` (deploy-azure: an empty value removes the name) and the cohort step allows the drop.
+ * TAXILA_UI_KAKSHA: the Kaksha cohort list. The client ignores it since Kaksha went to every account
+ * (src/ui-v3/kaksha/flag.ts); the server half that still reads it (server/ui/kaksha-cohort.js on /api/me and child boot)
+ * is Brain's to remove (seams audit SEAM-07).
+ */
+export const RETIRED_ENV = Object.freeze(["TAXILA_UI_KAKSHA"]);
+
 export const STEPS = ["evidence", "freeze", "capture", "images", "migrate", "web", "cohort", "worker", "record"];
 
 /**
@@ -28,7 +37,7 @@ export const STEPS = ["evidence", "freeze", "capture", "images", "migrate", "web
 export function planRelease({ sha, migrate = "neon", backup, force = false, set = [] }) {
   if (!/^[0-9a-f]{40}$/.test(String(sha))) throw new Error(`release: a full 40-hex commit sha, got ${sha}`);
   for (const kv of set) if (!/^[A-Z][A-Z0-9_]*=/.test(kv)) throw new Error(`release --set ${kv}: expected NAME=VALUE`);
-  const sets = set.flatMap((kv) => ["--set", kv]);
+  const sets = [...set, ...RETIRED_ENV.filter((n) => !set.some((kv) => kv.startsWith(n + "="))).map((n) => `${n}=`)].flatMap((kv) => ["--set", kv]);
   const s7 = sha.slice(0, 7);
   // --migrate job (a private in-VNet database): the job's own report is the migrations evidence both deploys need (PLAT-21);
   // its backup is the database's point-in-time restore, said on the record with --no-backup (PLAT-18)
@@ -104,8 +113,7 @@ export function needsFor(set = []) {
 export const unmet = (needs, names) => needs.filter((g) => !g.some((n) => names.includes(n)));
 
 /**
- * Env names the previous web revision had and the new one lacks (PURE). Cohort switches (TAXILA_UI_KAKSHA,
- * DUPLEX_LIVE_FOR, TRACE_FULL_FOR, TAXILA_ACK_CONTINUER_FOR, …) live only on the live template; a deploy that drops one
+ * Env names the previous web revision had and the new one lacks (PURE). Cohort switches (DUPLEX_LIVE_FOR, TRACE_FULL_FOR, TAXILA_ACK_CONTINUER_FOR, …) live only on the live template; a deploy that drops one
  * silently turns a feature off for its cohort. `dropped` names a release meant to remove.
  * @param {string[]} before @param {string[]} after @param {string[]} [dropped]
  */
