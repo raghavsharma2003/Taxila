@@ -6572,3 +6572,7 @@ A read-only code trace of the integration 24 tree (one pass, by a Sonnet agent f
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-e807f07` (2026-11-10): Released e807f07 with scripts/release.mjs: web taxila-web--se807f07-4jnx (was taxila-web--sc7a4798-cx0n), worker + canary/nightly jobs on taxila-worker:e807f07 (was 3cd45e8); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs e807f07 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-knows-her-2026-11-10` (2026-11-10): evals/knows-her (deterministic, no model; n = 4 pilot topics × 5 simulated children, 2026-11-10): the no-history child gets exactly the script's default walk with an empty because on 4/4 topics; meera (skill 1 learned + delayed check, 12-day gap) vs kabir (last lesson closed badly, open ledger mix-up, wheel-spin with a cross-topic prerequisite where one exists, likes trains and drawing) differ in 5, 6, 6, 5 named ways (c4-ch05-t01, c5-ch02-t01, c5-ch02-t02, c6-ch06-t01), each traced to a learner fact; a games-only child (play: evidence) differs from the new child in 2 ways on every topic (first card, her mix-up's check first); every walk passes the because predicate and dropping any applied record makes it fail. Method limit: the walk is walk.mjs, a pure model of state.js's script walk, not the product's step(); the learner facts are fixtures in knows.js's input shape.

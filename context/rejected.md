@@ -2984,3 +2984,7 @@ The tried approach: waiting on `NEON_API_KEY` and `NEON_PROJECT_ID` to release r
 - The record was wrong: OWNER.md said the block was "production migration 041". Production was at 030, and 16 files were pending. Nobody had read production's `schema_migrations` until release day.
 
 **Lesson:** read the target's state before naming a blocker, and ask the owner for the decision (may I use the connector?) rather than for a key.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r8-k3-ledger-remediation` (2026-11-10): Tried (round 8 Loop, before merge): remediating her open ledger mix-up instead of the card's authored target when the classifier named nothing on a wrong answer. What broke (design review, no run): it answers a mix-up the wrong answer did not show, e.g. a count-the-marks card missed gets the 'fractions are not numbers' remediation. Instead: the ledger mix-up's check is asked first (dc-r8-k3-ledger-asks-classifier-remediates).
