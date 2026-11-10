@@ -11,7 +11,7 @@ import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady } from "./kit.ts";
 
-const OX = 200, OY = 182, S = 50, UNDO = { x: 830, y: 300, w: 140, h: 62 }, CHECK = { x: 830, y: 380, w: 140, h: 70 };
+const OX = 200, OY = 182, S = 50, UNDO = { x: 812, y: 300, w: 168, h: 62 }, CHECK = { x: 812, y: 380, w: 168, h: 70 };   // wide enough for CHECK at the young floor
 const px = (p: P2): [number, number] => [OX + p[0] * S, OY + p[1] * S];
 function create(api: EngineApi, spec: GeoSpec): EngineInstance {
   const T = spec.strings, accent = C.ion;
@@ -128,7 +128,7 @@ function create(api: EngineApi, spec: GeoSpec): EngineInstance {
       if (done && g.closed && simple(g.pts)) pill(api, ctx, rectilinear(g.pts) ? `${T.perimeter} ${perimeterRect(g.pts)} · ${T.area} ${area2(g.pts) / 2}` : `${T.area} ${area2(g.pts) / 2}`, 500, 528, { color: ok ? C.mint : C.amber, size: 38 });
     }
     // buttons
-    for (const [b, lab, on] of [[UNDO, T.undo, !done], [CHECK, T.check, !done]] as [typeof UNDO, string, boolean][]) { ctx.save(); ctx.fillStyle = on ? (b === CHECK ? "rgba(203,255,77,.14)" : "rgba(22,26,36,.95)") : "rgba(255,255,255,.04)"; roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = on ? (b === CHECK ? C.volt : C.line2) : C.line; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, lab, b.x + b.w / 2, b.y + b.h / 2 + 2, { font: "display", size: 38, weight: 800, color: on ? (b === CHECK ? C.volt : C.ink2) : C.ink3, align: "center", baseline: "middle" }); }
+    for (const [b, lab, on] of [[UNDO, T.undo, !done], [CHECK, T.check, !done]] as [typeof UNDO, string, boolean][]) { ctx.save(); ctx.fillStyle = on ? (b === CHECK ? "rgba(203,255,77,.14)" : "rgba(22,26,36,.95)") : "rgba(255,255,255,.04)"; roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = on ? (b === CHECK ? C.volt : C.line2) : C.line; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, lab, b.x + b.w / 2, b.y + b.h / 2 + 2, { font: "display", size: 38, weight: 800, color: on ? (b === CHECK ? C.volt : C.ink2) : C.ink3, align: "center", baseline: "middle", maxWidth: b.w - 12 }); }
     if (done) { if (ok) tick(ctx, 900, 230, C.mint, 1.1); else magnifier(ctx, 895, 230, C.amber, 1.1); if (!(g.closed && simple(g.pts))) pill(api, ctx, g.detail.slice(0, 34), 500, 556, { color: ok ? C.mint : C.amber, size: 38 }); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });

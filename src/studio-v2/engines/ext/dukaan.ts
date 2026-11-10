@@ -16,6 +16,8 @@ import { drawGlyph } from "./glyphs.ts";
 
 const NOTE_COL: Record<number, string> = { 50000: "#9AA0A6", 20000: "#F2C230", 10000: "#B9A4E0", 5000: "#5FC8E8", 2000: "#C7D85A", 1000: "#9C6B48" };
 const TILL_Y = 520, COUNTER = { x: 500, y: 168, w: 470, h: 250 }, GIVE = { x: 760, y: 432, w: 210, h: 64 };
+/** estimate mode's two answers, stacked full width on the right so "Not enough" fits whole at the young floor */
+const EST = [{ val: true, x: 540, y: 296, w: 420, h: 84 }, { val: false, x: 540, y: 396, w: 420, h: 84 }] as const;
 interface Tok { v: number; x: number; y: number; tx: number; ty: number }
 
 function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
@@ -68,7 +70,8 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
         if (p.x >= 560 && p.x <= 970 && p.y >= 170 && p.y <= 420 && g.crates.length) { const put = g.crates.pop()!; g.pile += put; api.record("crates", { remove: put }); }
       } else {
         const c = r.customers[g.k], enough = (c.budget ?? 0) >= billOf(c);
-        if (p.y >= 440 && p.y <= 520) { if (p.x >= 520 && p.x <= 740) { g.choice = true; judge(true, enough ? "right" : "wrong"); } else if (p.x >= 760 && p.x <= 980) { g.choice = false; judge(false, !enough ? "right" : "wrong"); } }
+        const b = EST.find((e) => p.x >= e.x && p.x <= e.x + e.w && p.y >= e.y && p.y <= e.y + e.h);
+        if (b) { g.choice = b.val; judge(b.val, b.val === enough ? "right" : "wrong"); }
       }
     },
   });
@@ -107,9 +110,12 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
       drawGlyph(ctx, "person", 78, 250, 110, C.ink2, hexA(C.amber, 0.18));
       ctx.save(); ctx.fillStyle = "rgba(24,22,30,.97)"; roundRect(ctx, 150, 150, 336, 300, 18); ctx.fill(); ctx.strokeStyle = hexA(C.amber, 0.7); ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
       api.text(ctx, r.mode === "estimate" ? `${T.budget} ${rupees(c.budget ?? 0)}` : T.bill, 318, 184, { font: "mono", size: 38, weight: 600, color: C.amber, align: "center", baseline: "middle", maxWidth: 320 });
-      c.items.slice(0, 3).forEach((it, i) => {
-        api.text(ctx, it.name, 170, 236 + i * 76, { size: 38, weight: 700, baseline: "middle", maxWidth: 300 });
-        api.text(ctx, `${it.qty} × ${rupees(it.price)}`, 470, 272 + i * 76, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "right", baseline: "middle" });
+      // (a name and its price line a full young label apart — 44 units: at 43-unit young text the old 36 overlapped, "Pencil box"
+      // over "1 × ₹0.50" at p412, 2026-11-10 — rows spaced to fit three in the card)
+      const items = c.items.slice(0, 3), step = items.length >= 3 ? 86 : 96;
+      items.forEach((it, i) => {
+        api.text(ctx, it.name, 170, 222 + i * step, { size: 38, weight: 700, baseline: "middle", maxWidth: 300 });
+        api.text(ctx, `${it.qty} × ${rupees(it.price)}`, 470, 266 + i * step, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "right", baseline: "middle" });
       });
       if (r.mode === "change") pill(api, ctx, `${T.pays} ${rupees(c.pays ?? 0)}`, 318, 490, { color: C.amber, size: 38 });
       // patience
@@ -149,12 +155,12 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
       if (g.answered) { const key = packKey(j), ok = g.verdict === "right"; pill(api, ctx, `${key} ${T.crates}${j.n % j.per ? ` · ${j.n % j.per} ${j.need === "all" ? T.inLast : T.left}` : ""}`, 640, 408, { color: ok ? C.mint : C.amber, size: 38 }); }
     } else {
       const c = r.customers[g.k], bill = billOf(c), enough = (c.budget ?? 0) >= bill;
-      for (const [x, lab, val] of [[520, T.enough, true], [760, T.notEnough, false]] as [number, string, boolean][]) {
-        const chosen = g.choice === val, edge = g.answered ? (val === enough ? C.mint : chosen ? C.amber : C.line2) : C.volt;
-        ctx.save(); ctx.fillStyle = "rgba(22,24,30,.95)"; roundRect(ctx, x, 440, 220, 80, 18); ctx.fill(); ctx.strokeStyle = edge; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
-        api.text(ctx, lab, x + 110, 482, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle", maxWidth: 200 });
+      for (const b of EST) {
+        const val = b.val, chosen = g.choice === val, edge = g.answered ? (val === enough ? C.mint : chosen ? C.amber : C.line2) : C.volt;
+        ctx.save(); ctx.fillStyle = "rgba(22,24,30,.95)"; roundRect(ctx, b.x, b.y, b.w, b.h, 18); ctx.fill(); ctx.strokeStyle = edge; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
+        api.text(ctx, val ? T.enough : T.notEnough, b.x + b.w / 2, b.y + b.h / 2 + 2, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle", maxWidth: b.w - 24 });
       }
-      if (g.answered) pill(api, ctx, `${T.bill} ${rupees(bill)}`, 760, 300, { color: enough ? C.mint : C.amber, size: 40 });
+      if (g.answered) pill(api, ctx, `${T.bill} ${rupees(bill)}`, 750, 226, { color: enough ? C.mint : C.amber, size: 40 });
     }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent: C.amber });
@@ -173,7 +179,8 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
     }
     if (r.mode === "pack") { const j = r.jobs[g.k], key = packKey(j); if (g.crates.length < key && g.pile > 0) return { type: "tap", at: [660, 470], after: 300 }; return { type: "tap", at: [875, 470], after: 600 }; }
     const c = r.customers[g.k], enough = (c.budget ?? 0) >= billOf(c), pick = botR() < 0.85 ? enough : !enough;
-    return { type: "tap", at: [pick ? 630 : 870, 480], after: 1500 };
+    const b = EST[pick ? 0 : 1];
+    return { type: "tap", at: [b.x + b.w / 2, b.y + b.h / 2], after: 1500 };
   }
   return {
     update, render, bot,

@@ -131,6 +131,9 @@
 .st-stage[data-young] .st-box[data-rail] .sv2-hud.on ~ .sv2-task, .st-stage[data-young] .st-box[data-rail] .sv2-hud.on ~ .sv2-task.swap { top: calc(52px - var(--rail)) !important; }
 .st-box[data-rail] .sv2-task .step { display: none !important; }
 .st-box[data-rail] .sv2-hud .box { padding: .5em .7em !important; }
+/* round 7 readability: on a phone rail a third readout ran off the band at the young floor (dukaan "PATIENCE 92%" clipped
+   at 412 px). A readout the world already draws (the customer's patience bar) and HUD meters are left out of the band. */
+.st-box[data-rail] .sv2-hud .box[data-key="pat"], .st-box[data-rail] .sv2-hud .box .meter { display: none !important; }
 /* the interim board (drawn before the engine paints) keeps the world's 16:10 at the bottom, not stretched over the band */
 .st-box[data-rail] .st-art canvas[aria-hidden="true"] { top: auto !important; bottom: 0 !important; height: auto !important; aspect-ratio: 16 / 10; }
 

@@ -5,15 +5,27 @@
 export type Ground = "chalk" | "paper" | "grid";
 export type Ink = "chalk" | "accent" | "ink" | "mark" | "good" | "soft";
 
-export interface Palette { ground: string; edge: string; grid?: string; ink: Record<Ink, string>; fillAlpha: number }
+/** round 8 (board grammar): the roles an op may carry (shared/whiteboard.js ROLE). slot and answer share one colour and
+ *  differ by SHAPE (a dashed box vs a tick / ring); focus is an outline plus a tint; mixup always a dashed line; muted is
+ *  lighter ink. A theme owns only these colours: the shapes are the role's (the meaning survives greyscale). */
+export type Role = "focus" | "slot" | "answer" | "mixup" | "muted";
+export interface Palette { ground: string; edge: string; grid?: string; ink: Record<Ink, string>; fillAlpha: number; role?: Record<Role, string> }
+/** A role's colour on a palette (one without role colours — an older skin — falls back to its nearest ink). */
+export function roleColor(pal: Palette, role: Role): string {
+  return pal.role?.[role] ?? pal.ink[role === "focus" ? "accent" : role === "mixup" ? "mark" : role === "muted" ? "soft" : "good"];
+}
 
 const CHALK: Palette = {
   ground: "#1F3B30", edge: "#8C6B4A", fillAlpha: 0.32,
   ink: { chalk: "#F5F2E8", ink: "#F5F2E8", accent: "#F2C66D", mark: "#F4A261", good: "#9ED8A6", soft: "#BFD3C6" },
+  // (design r8's night direction, on the chalk ground: focus her blue-violet, answer green, mix-up amber — never red)
+  role: { focus: "#A9B4FF", slot: "#7FE0B0", answer: "#7FE0B0", mixup: "#FFB54A", muted: "#9DB3A6" },
 };
 const PAPER: Palette = {
   ground: "#FFFBF2", edge: "#D9CDB8", fillAlpha: 0.26,
   ink: { chalk: "#2B2620", ink: "#2B2620", accent: "#1F5FBF", mark: "#C8641A", good: "#2E7D4F", soft: "#8A7F70" },
+  // (design r8's paper direction: --focus #3B47B0, --ans #1C7348, --mix #A84B22, --board-soft #6F675B)
+  role: { focus: "#3B47B0", slot: "#1C7348", answer: "#1C7348", mixup: "#A84B22", muted: "#6F675B" },
 };
 
 export function paletteFor(ground: Ground): Palette {
@@ -39,6 +51,7 @@ export function kakshaBoardSkin(read: (name: string) => string, ground: Ground):
   const palette: Palette = {
     ground: v("--k-deep"), edge: v("--k-line-2"), fillAlpha: 0.3,
     ink: { chalk: v("--k-ink"), ink: v("--k-ink"), accent: v("--k-ion"), mark: v("--k-look"), good: v("--k-secure"), soft: v("--k-ink-3") },
+    role: { focus: v("--k-ion"), slot: v("--k-secure"), answer: v("--k-secure"), mixup: v("--k-look"), muted: v("--k-ink-3") },
     ...(ground === "grid" ? { grid: v("--k-line") } : {}),
   };
   return { palette, font: v("--k-sans") || "system-ui, sans-serif", numFont: v("--k-mono") || "ui-monospace, monospace" };

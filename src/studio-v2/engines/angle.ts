@@ -21,8 +21,9 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
     hits: 0, n: 0, results: [] as { err: number; verdict: string }[], waveRes: [] as { verdict: string; err: number }[], introA: 0, coachA: 1, coachGone: false, bootT: 0, endA: 0, finalA: 0, spawnT: 0, spawned: 0, sweep: 0 };
   const botRnd = rng(api.seed * 19 + 7);
   const wave = () => spec.waves[Math.max(0, g.w)];
-  const pivot = (): XY => (wave().range === 360 ? [500, 360] : [500, 548]);
-  const R = () => (wave().range === 360 ? 230 : 380);
+  // the full turn fits between the HUD row and a two-line coach band (its 90 and 270 labels whole and clear of both)
+  const pivot = (): XY => (wave().range === 360 ? [500, 300] : [500, 500]);
+  const R = () => (wave().range === 360 ? 170 : 360);
   const hud = api.hud([{ key: "wave", label: T.wave }, { key: "hits", label: T.hits }, { key: "acc", label: T.accuracy, meter: true }]);
   const accOf = (r: { err: number }[]) => (r.length ? Math.round(100 * (r.reduce((a, b) => a + (1 - Math.min(1, b.err / 30)), 0) / r.length)) : 100);
   const at = (ang: number, r: number): XY => { const [px, py] = pivot(); return [px + Math.cos(ang * DEG) * r, py - Math.sin(ang * DEG) * r]; };
@@ -141,12 +142,13 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
       }
       // reference wedge for copy mode
       if (wave().mode === "copy" && (g.state === "aim" || g.state === "reveal")) {
-        const cx = full ? 160 : 175, cy = full ? 470 : 330, a0 = g.refRot * DEG, a1 = a0 + key() * DEG;
-        ctx.save(); ctx.fillStyle = "rgba(16,19,27,.85)"; ctx.beginPath(); ctx.roundRect(cx - 140, cy - 150, 280, 270, 20); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
+        // (the full turn's box stays left of its 180 label)
+        const cx = full ? 132 : 175, cy = full ? 420 : 330, a0 = g.refRot * DEG, a1 = a0 + key() * DEG, bw = full ? 236 : 280;
+        ctx.save(); ctx.fillStyle = "rgba(16,19,27,.85)"; ctx.beginPath(); ctx.roundRect(cx - bw / 2, cy - 150, bw, 270, 20); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
         ctx.strokeStyle = C.ion; ctx.lineWidth = 6; ctx.lineCap = "round";
         ctx.beginPath(); ctx.moveTo(cx + Math.cos(a0) * g.refLen[0], cy - Math.sin(a0) * g.refLen[0]); ctx.lineTo(cx, cy); ctx.lineTo(cx + Math.cos(a1) * g.refLen[1], cy - Math.sin(a1) * g.refLen[1]); ctx.stroke();
         ctx.strokeStyle = "rgba(139,152,255,.7)"; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(cx, cy, 30, -a0, -a1, true); ctx.stroke();
-        api.text(ctx, "THIS TURN", cx, cy + 96, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center" });
+        api.text(ctx, "THIS TURN", cx, cy + 96, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", maxWidth: bw - 20 });
         ctx.restore();
       }
       // drones (classify)
@@ -171,8 +173,10 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
       ctx.restore();
       // call card + countdown
       if (g.state === "aim" && wave().mode === "call") {
-        api.text(ctx, T.threat, 500, full ? 116 : 150, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", track: 5 });
-        api.text(ctx, `${key()}°`, 500, full ? 172 : 220, { font: "display", size: 88, weight: 800, align: "center", baseline: "middle", glow: C.ion });
+        // the call card sits clear of the 90 label: the full turn's left column; inside the half turn's arc, under its top
+        const cxc = full ? 132 : 500;
+        api.text(ctx, T.threat, cxc, full ? 230 : 272, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle", track: 5, maxWidth: full ? 236 : 600 });
+        api.text(ctx, `${key()}°`, cxc, full ? 310 : 342, { font: "display", size: 88, weight: 800, align: "center", baseline: "middle", glow: C.ion });
       }
       if (g.state === "aim" && wave().mode !== "classify") { const k = clamp(g.callT / g.limit, 0, 1); ctx.strokeStyle = k > 0.7 ? C.amber : "rgba(255,255,255,.35)"; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(px, py, 50, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - k)); ctx.stroke(); }
     }
@@ -180,7 +184,7 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
     if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.wave} ${g.w + 1} / ${spec.waves.length}`, title: wave().title, sub: wave().sub });
     if (g.state === "end") drawStatCard(api, ctx, { a: g.endA, head: `${T.wave} ${g.w + 1}`, ticked: true, stats: [[`${g.waveRes.filter((r) => r.verdict === "right").length}/${g.waveRes.length}`, T.hits], [`${accOf(g.waveRes)}%`, T.accuracy]] });
     if (g.state === "final") drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.hits}/${g.n}`, T.hits], [`${accOf(g.results)}%`, T.accuracy]] });
-    drawCoach(api, ctx, T.coach, g.state === "aim" ? g.coachA : 0, now, 600);
+    drawCoach(api, ctx, T.coach, g.state === "aim" ? g.coachA : 0, now, 606, 960);
   }
   function bot(): BotAction | null {
     if (g.state !== "aim") return { type: "wait", ms: 200 };
