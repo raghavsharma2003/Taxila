@@ -10,7 +10,7 @@ export interface ChildPrefs {
   sounds: boolean | null;
   /** Haptic tick on YOUR TURN where supported. */
   haptics: boolean;
-  /** Talk mode: tap-to-talk (default) or open mic (Older, headset only). Legacy: r7 reads `handsFree`. */
+  /** Talk mode, read only by the older headset open-mic rule (LessonScreen openMicAllowed) and the mic trace; the lesson's hands-free start reads `handsFree`, not this (APP-61). */
   talk: "tap" | "open";
   /** r7 (D2): hands-free is the default for every child (null = default on); false = tap to talk (the lesson starts with
    *  the mic switched off and the Talk button showing, the same switch as the dock's Mute). */

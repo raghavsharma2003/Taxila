@@ -27,6 +27,8 @@ export interface HomePlan {
   did: DidCard[];
   tried: number | null;
   opensAt: string | null;
+  /** SEAM-11: the parent's planned lesson time ("5:00" 24-hour, minutes, and whether today is a lesson day); a plan, never a lock. */
+  schedule?: { time: string; minutes: number | null; today: boolean } | null;
   /** The parent's lesson hours (resting names the control that refused: W1-A item 2). Null when not known. */
   window?: { from: string; to: string } | null;
   surfaces: { map: boolean; notebook: boolean; resume: boolean };
@@ -83,6 +85,14 @@ export const RESUME_BY_ID = true;
 /** The server's page-hide grace (TAXILA_PAGEHIDE_GRACE_MS, 120 s) plus a margin: when a "resume" Home re-reads its plan. */
 export const RESUME_RECHECK_MS = 125_000;
 
+/** SEAM-11: the plan answer's `schedule` ({ time, minutes, today }; server/routes/child.js scheduleOf). The contract field is
+ *  Brain's (docs/patches/to-brain/005-plan-schedule.patch), so it is read through a structural cast until that lands. */
+export function scheduleFrom(r: unknown): HomePlan["schedule"] {
+  const s = (r as { schedule?: { time?: unknown; minutes?: unknown; today?: unknown } | null } | null)?.schedule;
+  if (!s || typeof s.time !== "string" || !/^\d{1,2}:\d{2}/.test(s.time)) return null;
+  return { time: s.time, minutes: typeof s.minutes === "number" ? s.minutes : null, today: s.today !== false };
+}
+
 /** Server response → the home's plan. Pure (unit-tested). */
 export function fromServer(r: ChildPlanResponse): HomePlan {
   const summary = r.today?.summary ?? null;
@@ -95,6 +105,7 @@ export function fromServer(r: ChildPlanResponse): HomePlan {
     did: (summary?.cards ?? []).slice(0, 3),
     tried: summary?.tried ?? null,
     opensAt: r.opensAt ?? null,
+    schedule: scheduleFrom(r),
     window: r.plan?.window ?? null,
     surfaces: { ...ALL_SURFACES, ...(r.surfaces ?? {}) },
     packReady: !!r.packReady,
