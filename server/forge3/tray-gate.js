@@ -37,7 +37,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { verdictFor, certificates } from "./certify.js";
-import { approvedVerdict } from "../studio/approved.js";
+import { approvedVerdict, catalogueNeedsJudge, isReviewedDefault } from "../studio/approved.js";
 import { passageFits } from "../studio/passage.js";
 import { playCertificates, playPassed } from "./compose.js";
 import { fitBoard, minPxAt } from "../../src/studio/boardFit.ts";
@@ -225,6 +225,10 @@ export function certifyForTray(artifact, ctx = {}) {
         const row = (ctx.certs ?? certificates())?.topics?.[ctx.topicId]?.[piece];
         if (!row) return out(false, "catalogue", `no certificate for ${ctx.topicId} ${piece}`);
         if (studioV2Test) return out(true, "catalogue", "tests: Studio v2 certified");
+        // (main's ruling 2026-11-10: a catalogue piece is shown only with a judged pass in the approved store — the 20-topic
+        // sample found a content fault in 11 and a wrong key in 2; the reviewed engine default is code and needs none)
+        if (catalogueNeedsJudge() && sc.spec && !isReviewedDefault(sc.archetype, sc.spec) && !approvedVerdict(sc.archetype, sc.spec))
+          return out(false, "catalogue-judged", `${piece} for ${ctx.topicId} has no judged pass (rubric v1)`);
         // round 7 decision D8 (amends dc-r4c-studio-v2-off-child-path): served wherever it is certified AT THE DEVICE'S
         // CLASS (p412 phones, l1366 laptops), no longer only when certified at all three; where its 1000-unit world is too
         // small to play (the 360 phone) it is served as its board twin (the stage draws the twin), or not at all

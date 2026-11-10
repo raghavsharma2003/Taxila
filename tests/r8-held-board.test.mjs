@@ -72,10 +72,10 @@ test("held board, picture: the second view is drawn BESIDE the held board on one
   const kit = kitOf("c4-maths-ch05-t01");
   void kit;
   for (const [ref, keys, view, line] of [
-    [PIZZA, ["No"], "strips", /^Pizza: 3 alag-alag tukde$/],
-    [{ template: "fraction-parts@1", params: { parts: 4, shade: 0, whole: "bar" } }, ["3/4"], "round", /^Wahi poora ab gol: 4 barabar hisse$/],
-    [LINE69, ["Ravi"], "parts", /^Do barabar pattiyaan: ek 6 barabar hisson mein; ek 9 barabar hisson mein$/],
-    [RECT, ["46 cm"], "unrolled", /^Is rectangle ki 4 bhujayein seedhi karke ek line par: 14 cm, 9 cm, 14 cm, 9 cm; kul lambai kitni$/],
+    [PIZZA, ["No"], "strips", /^Dekho, Pizza ke 3 alag-alag tukde hain$/],
+    [{ template: "fraction-parts@1", params: { parts: 4, shade: 0, whole: "bar" } }, ["3/4"], "round", /^Wahi poora ab gol mein hai: 4 barabar hisse$/],
+    [LINE69, ["Ravi"], "parts", /^Dekho, yeh do barabar pattiyaan hain: ek 6 barabar hisson mein, aur ek 9 barabar hisson mein$/],
+    [RECT, ["46 cm"], "unrolled", /^Is rectangle ki 4 bhujayein seedhi karke ek line par rakhi hain: 14 cm, 9 cm, 14 cm, 9 cm; kul lambai kitni hai$/],
   ]) {
     const ask = { intent: { intentId: `split:${ref.template}`, lessonId: "split", kind: "whiteboard", style: { band: "B3" }, boardRef: ref, scriptBeat: { kind: "check", ownBoard: true, answers: keys }, held: { board: ref, unit: "u" }, request: { kind: "picture" } }, line: { text: "" }, mode: "fresh" };
     const r = BF.heldBoard(ask, {});
@@ -103,7 +103,7 @@ test("director16 c4 steady 18 (\"screen par dikhao na\" over the pizza card): th
   assert.equal((await s.turn({ held: { board: PIZZA, unit: "s1:e2" }, beat, text: `Phir se dekho: ${card}` })).k.state, "revealed");
   const pic = await s.turn({ held: { board: PIZZA, unit: "s1:e2" }, beat, request: { kind: "show" }, text: ({ altLine }) => `Dekho, ${altLine}. ${card}` });
   assert.equal(pic.altView, "strips");
-  assert.equal(pic.altLine, "Pizza: 3 alag-alag tukde");
+  assert.equal(pic.altLine, "Dekho, Pizza ke 3 alag-alag tukde hain");
   assert.match(String(pic.row), /beside:/);
   assert.equal(pic.k.state, "revealed");
   assert.ok(pic.k.artifact.split);
@@ -171,7 +171,7 @@ test("Learning's D11 (relayed by main): fraction-bars@1 takes an UNNAMED bar (la
   const r = BF.heldBoard(ask, {});
   assert.ok(r?.split);
   assert.equal(r.altView, "wholes");
-  assert.equal(r.altLine, "ek: 3 barabar tukde; ek: 10 barabar tukde");
+  assert.equal(r.altLine, "Dekho, pehle mein 3 barabar tukde hain, aur doosre mein 10 barabar tukde hain");
   assert.ok(!r.script.ops.some((o) => o.op === "text" && /\d+\s*\/\s*\d+/.test(o.text)), "no fraction named on either panel");
   // (a shaded unnamed bar's view keeps its shading and names nothing either)
   const shaded = BF.altCall({ template: "fraction-bars@1", params: { bars: [{ parts: 3, shade: 2, label: "" }, { parts: 10, shade: 3, label: "" }] } }, { keys: ["2/3"] });
@@ -189,13 +189,16 @@ const heldPic = (ref, answers) => ({ intent: { intentId: `v69:${JSON.stringify(r
 test("v6.9 S10 (director17 c5-t01 e2, steady/stuck 18, offtopic 28): the split view is built only from the held board's own parts — the 8-gap scale the card counts is LEFT OUT, never drawn as an uncut \"1 equal parts\" bar; steering 14's sixths and sevenths (no count key) keeps both bars", () => {
   const e2 = BF.heldBoard(heldPic(LINE48, ["8"]), {});
   assert.ok(e2?.split);
-  assert.equal(e2.altLine, "Ek patti, 4 barabar hisson mein, 1 rangin, yaani ek-chauthai");
-  assert.deepEqual(BF.heldAltOf(heldPic(LINE48, ["8"])).call.bars, [{ parts: 4, shade: 1, label: "1/4" }]);
+  // (main v6.11, director19 steady/stuck 18: the view DRAWS the 8-gap scale the card asks about — unnamed — and her line names
+  // it without its count, so the key is never said)
+  assert.equal(e2.altLine, "Dekho, yeh do barabar pattiyaan hain: ek 4 barabar hisson mein, 1 rangin, yaani ek-chauthai, aur ek barabar hisson mein");
+  assert.deepEqual(BF.heldAltOf(heldPic(LINE48, ["8"])).call.bars, [{ parts: 4, shade: 1, label: "1/4" }, { parts: 8, shade: 0, label: "" }]);
+  assert.ok(!BF.lineStatesKey(e2.altLine, ["8"]));
   assert.doesNotMatch(e2.altLine, /\b1 barabar hisson|\bek 1\b/);
   const right = (e2.panels[1].ops ?? []).filter((o) => o.op === "text").map((o) => o.text);
   assert.ok(!right.includes("?"), `the view names no bar the board does not have: ${right}`);
   const s14 = BF.heldBoard(heldPic(LINE67, ["Pehla"]), {});
-  assert.equal(s14.altLine, "Do barabar pattiyaan: ek 6 barabar hisson mein, 1 rangin, yaani ek bata chhe; ek 7 barabar hisson mein");
+  assert.equal(s14.altLine, "Dekho, yeh do barabar pattiyaan hain: ek 6 barabar hisson mein, 1 rangin, yaani ek bata chhe, aur ek 7 barabar hisson mein");
   // (a held line that is only the key's scale has no view of its own parts: the held board stands alone, no invented example)
   const only8 = BF.heldBoard(heldPic({ template: "fraction-line@1", params: { den: 8, from: 0, to: 1 } }, ["8"]), {});
   assert.ok(only8?.script && !only8.split);
@@ -206,11 +209,11 @@ test("v6.9 S10 (director17 c5-t01 e2, steady/stuck 18, offtopic 28): the split v
 
 test("v6.9 S11: the picture line says \"barabar\" for equal parts and \"alag-alag\" only for unequal ones, fractions as words, no closing stop; an unnamed bar's scale stays on the line view (c5-t02 steering 14)", () => {
   const cake = { template: "wholes@1", params: { wholes: [{ parts: 3, equal: false, title: "Pizza" }, { parts: 3, title: "Cake" }] } };
-  assert.equal(BF.heldBoard(heldPic(cake, ["Cake"]), {}).altLine, "Pizza: 3 alag-alag tukde; Cake: 3 barabar tukde");
+  assert.equal(BF.heldBoard(heldPic(cake, ["Cake"]), {}).altLine, "Dekho, Pizza ke 3 alag-alag tukde hain, aur Cake ke 3 barabar tukde hain");
   const q8 = { template: "fraction-bars@1", params: { bars: [{ parts: 4, shade: 1, label: "1/4" }, { parts: 8, shade: 0, label: "?" }] } };
   const v = BF.heldAltOf(heldPic(q8, ["1/8"]));
   assert.deepEqual(v.call.dens, [4, 8], "the 8-part bar the card asks about is on the line");
-  assert.equal(v.line, "0 se 1 ki do sankhya rekhayein, 4 aur 8 barabar gaps, nishaan ek-chauthai par");
+  assert.equal(v.line, "Dekho, yeh 0 se 1 ki do sankhya rekhayein hain, 4 aur 8 barabar gaps mein, nishaan ek-chauthai par");
   for (const l of [v.line, BF.heldBoard(heldPic(LINE48, ["8"]), {}).altLine]) { assert.doesNotMatch(l, /\(\d+\/\d+\)|\d\/\d/); assert.doesNotMatch(l, /[.?!]$/); }
   assert.equal(BF.fracSay(3, 4), "teen-chauthai");
   assert.equal(BF.fracSay(2, 5), "do bata paanch");
@@ -230,4 +233,21 @@ test("v6.9: a held turn draws only what the intent holds — a board prewarmed f
   assert.doesNotMatch(words, /\b8 m\b|\bP\b/, "the prewarmed pentagon is not drawn");
   assert.equal(t.k.artifact.held.unit, "s1:c1");
   assert.equal(changes(t.k), 0);
+});
+
+// ───────────── main's v6.11 (director19) ─────────────
+test("v6.11 (director19 c4 steady 18): the picture line never states the open card's key — in digits, as an equal fraction, or in words", () => {
+  assert.ok(BF.lineStatesKey("yaani 2/8", ["1/4"]), "an equal fraction is the key");
+  assert.ok(BF.lineStatesKey("1 rangin, yaani ek-chauthai", ["1/4"]), "the key in words");
+  assert.ok(BF.lineStatesKey("8 barabar gaps", ["8"]));
+  assert.ok(!BF.lineStatesKey("4 barabar hisson mein, 1 rangin", ["1/8"]));
+  assert.ok(!BF.lineStatesKey("Dekho, yeh ek patti hai", ["8"]));
+});
+
+test("v6.11 (director19): two caption shapes per view, each a full spoken sentence; the second ask of the same board gets the second", () => {
+  const ref = { template: "fraction-line@1", params: { dens: [6, 7], from: 0, to: 1, marks: [[1, 6]] } };
+  const a = BF.pictureTurn(heldPic(ref, ["Pehla"]), {});
+  const b = BF.pictureTurn(heldPic(ref, ["Pehla"]), { variant: 1 });
+  assert.ok(a?.line && b?.line && a.line !== b.line, `${a?.line} | ${b?.line}`);
+  for (const l of [a.line, b.line]) assert.match(l, /^(Dekho|Ab|Wahi|Is|Ek)\b/);
 });

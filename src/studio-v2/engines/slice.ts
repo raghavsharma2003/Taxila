@@ -85,8 +85,9 @@ function create(api: EngineApi, spec: SliceSpec): EngineInstance {
       const mid = (edges[i] + edges[i + 1]) / 2, [px, py] = toWorld(b, (mid - 0.5) * L, 0), dir = mid < 0.5 ? -1 : 1;
       g.pieces.push({ x: px, y: py, vx: b.vx * 0.5 + dir * (90 + api.rnd() * 60), vy: b.vy * 0.4 - 120 - api.rnd() * 80, rot: b.rot, vr: dir * (0.8 + api.rnd()), from: edges[i], to: edges[i + 1], t: 0, color: ok ? C.mint : grade.verdict === "partial" ? C.ion : C.amber });
     }
-    g.ghosts.push({ x: b.x, y: b.y, rot: b.rot, truth, got: [...b.cuts], ok, t: 0, life: ok ? 1.1 : 2.0, off: b.cut != null && b.cuts.length ? nearestSimple(err) : null });
-    const [hx, hy] = [b.x, b.y - 90];
+    // (a bar judged as it falls out of the bottom: its feedback and its ghost are drawn inside the play area, above the coach band)
+    const gy = Math.min(b.y, H - 175), [hx, hy] = [b.x, gy - 90];
+    g.ghosts.push({ x: b.x, y: gy, rot: b.rot, truth, got: [...b.cuts], ok, t: 0, life: ok ? 1.1 : 2.0, off: b.cut != null && b.cuts.length ? nearestSimple(err) : null });
     if (ok) {
       g.chain++; g.best = Math.max(g.best, g.chain); g.missRun = 0;
       api.fx.pop(T.exact, hx, hy, { color: C.mint, size: 50, rise: 60 }); api.fx.ring(b.x, b.y, { color: C.mint, r0: 20, r1: 200, life: 0.6, width: 8 });
@@ -187,7 +188,8 @@ function create(api: EngineApi, spec: SliceSpec): EngineInstance {
       for (const c of b.cuts) { const x = (c - 0.5) * L; ctx.strokeStyle = C.ink; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x, -BH / 2 - 6); ctx.lineTo(x, BH / 2 + 6); ctx.stroke(); }
       ctx.restore();
       const lbl = b.parts ? `${b.parts} ${T.parts.toLowerCase()}` : b.label;
-      api.text(ctx, lbl, b.x, b.y - BH / 2 - 34, { font: "display", size: 48, weight: 800, align: "center", baseline: "middle", glow: C.ion });
+      // (above the bar's HIGHEST point: a tilted bar's raised end reached the label — approval-lane pilot c4, judged at 412 and 1366)
+      api.text(ctx, lbl, b.x, b.y - (Math.abs(Math.sin(b.rot)) * L) / 2 - (Math.cos(b.rot) * BH) / 2 - 40, { font: "display", size: 48, weight: 800, align: "center", baseline: "middle", glow: C.ion });
     }
     if (trail.length > 1) {
       ctx.save(); ctx.lineCap = "round"; ctx.lineJoin = "round";

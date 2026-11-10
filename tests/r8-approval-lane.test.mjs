@@ -116,3 +116,21 @@ test("approval lane in a lesson: a scripted remediation for the mix-up the piece
     }
   } finally { _useStore(null); }
 });
+
+test("main's catalogue ruling: a catalogue piece is shown only with a judged pass (switch default on); the reviewed engine default needs none; off restores the certificate rule", async () => {
+  const { catalogueNeedsJudge, isReviewedDefault } = await import("../server/studio/approved.js");
+  const { ENGINE_SPECS } = await import("../shared/studio-spec.ts");
+  const T = "c5-maths-ch02-t01";
+  const rec = JSON.parse(fs.readFileSync(new URL(`../data/studio-catalogue/topics/${T}.json`, import.meta.url), "utf8"));
+  const art = (spec) => ({ kind: "stagecraft", stagecraft: { rung: "library", archetype: rec.game.archetype, spec, boardTwin: { board: { title: "x", lines: ["y"] } } } });
+  assert.equal(catalogueNeedsJudge({}), true);
+  assert.equal(catalogueNeedsJudge({ STUDIO_CATALOGUE_JUDGED: "off" }), false);
+  _useStore(fs.mkdtempSync(path.join(os.tmpdir(), "empty-store-")));
+  try {
+    const r = certifyForTray(art(rec.game.spec), { vp: "p412", topicId: T });
+    assert.equal(r.ok, false); assert.equal(r.cert, "catalogue-judged");
+    const def = ENGINE_SPECS[rec.game.archetype]?.defaultSpec;
+    assert.ok(isReviewedDefault(rec.game.archetype, def));
+    assert.notEqual(certifyForTray(art(def), { vp: "p412", topicId: T }).cert, "catalogue-judged", "the reviewed default is not catalogue content");
+  } finally { _useStore(null); }
+});
