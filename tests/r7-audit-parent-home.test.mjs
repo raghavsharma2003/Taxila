@@ -42,3 +42,11 @@ test("LEARN-34: Home's recent lessons use the Lessons list's topic mapper (with 
 test("LEARN-38: an unanswered consent shows the 'no' effect", () => {
   assert.match(src("src/parent/Pages.tsx"), /now === true \? c\.effectYes : c\.effectNo\(teacherName\)/);
 });
+
+test("LEARN-22: the home card keeps the class length once today's lesson slot has been used", async () => {
+  const { cardMinutes, lessonMinutes } = await import("../server/routes/child.js");
+  const plan = { slots: [{ id: "L1", kind: "live_lesson", targetMin: 22 }] };
+  assert.equal(cardMinutes(plan, 5, 60, false), 22, "the next lesson takes the slot");
+  assert.equal(cardMinutes(plan, 5, 60, true), lessonMinutes(5, 60), "after a start today: the class length, as before the plan");
+  assert.equal(cardMinutes(null, 5, 60, false), lessonMinutes(5, 60));
+});
