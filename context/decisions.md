@@ -9871,3 +9871,7 @@ Round 8 Play item I: when Studio (C1) refuses a Studio v2 world at 360 px and of
 
 ## Merged inbox entries (write-up from the entry text)
 - `dc-r8-numbers-as-digits-in-generated-titles` (2026-11-10): Generated board specs write numbers as digits in titles and labels ('3 hisse'), never as a romanised number word; the generation `how` says so and approve-check names the cause when a title fails on a number word. The content-safety check itself is not changed now (owner: existing safety code is frozen until the pre-launch safety pass). Reverse if: the pre-launch safety pass makes the check language-aware, or digits in titles read worse to children than the word in a judged sample.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-r8-j2-prompt-carries-words-not-the-sentence` (2026-11-10): The J2 reply prompt carries one or two content words picked by code from what the child said, never the child's sentence, so the model cannot echo it; the predicate is unchanged (RULE_SAID and LESSON_SAID are not loosened) and gains two clauses of its own: a man's first-person verb form, and a promise to remember. Target on the same replay: at least 16 of 20 per exchange. Reverse if: the rerun is under 16 of 20, in which case the neutral line stays and the reply sentence moves to the offline judged library (selection before generation) instead of a third prompt change.

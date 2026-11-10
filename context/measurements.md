@@ -6652,3 +6652,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r8-approve-retry4-2026-11-10` (2026-11-10): Approval lane, retry 4 of three refused board specs (main ran scripts/approve-generate.mjs --keep-refused from int/r6 3132d629a; n = 3 topics, 5 model calls, $0.0056; $0.0225 of the $0.25 cap spent across all retries): c4-maths-ch05-t01 candidate on attempt 2, c5-maths-ch02-t02 candidate on attempt 1, c5-maths-ch02-t01 refused on both attempts. All 3 refusals carry the same content finding: content_safety_2 on waves.1.title, text 'Teen hisse' (twice) and 'Teen barabar hisse' (once). Outputs on claude/r4-content-candidates 07cf76d25, data/studio-approved/candidates-retry4/. No judge has seen the candidates yet.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-j2-replay-2026-11-10` (2026-11-10): J2 replay (her one reply sentence when she returns to a parked aside), run by main on int/r6 e43790b66: 3 off-topic exchanges (c4, c5-t02, c6), each one's own prompt sent to the live reply model 20 times; n = 60 drafts, $0.053. 12 of 60 pass the replyToReturnOk predicate (4, 6 and 2 of 20). Of 48 refusals: echo 41 (the draft repeats the child's sentence), promise 4, rule 2, lesson 1. 4 drafts used a man's verb form and 1 promised to remember; both were refused only because they also echoed. Simulated child, one seed, two distinct child sentences. Results in evals/hybrid-side-by-side/results/2026-11-10-j2-replay/.

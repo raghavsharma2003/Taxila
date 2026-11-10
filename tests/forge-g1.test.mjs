@@ -253,8 +253,15 @@ describe("templates", () => {
 
 describe("requestFill (offline)", () => {
   let realFetch;
+  // the env this suite sets is put back: a fill's fire-and-forget model call outlives the test, and in the one-process run it
+  // reached the next file's fake fetch (tests/m4-break counted 5 stray chat calls, 2026-11-10)
+  const ENV0 = { ep: process.env.AZURE_OPENAI_ENDPOINT, key: process.env.AZURE_OPENAI_API_KEY };
   before(() => { realFetch = globalThis.fetch; globalThis.fetch = async () => { throw new Error("offline"); }; process.env.AZURE_OPENAI_ENDPOINT ||= "https://example.invalid/openai/v1"; process.env.AZURE_OPENAI_API_KEY ||= "x"; _memClear(); });
-  after(() => { globalThis.fetch = realFetch; });
+  after(() => {
+    globalThis.fetch = realFetch;
+    if (ENV0.ep === undefined) delete process.env.AZURE_OPENAI_ENDPOINT; else process.env.AZURE_OPENAI_ENDPOINT = ENV0.ep;
+    if (ENV0.key === undefined) delete process.env.AZURE_OPENAI_API_KEY; else process.env.AZURE_OPENAI_API_KEY = ENV0.key;
+  });
   test("model unreachable → the code pick ships; a second call is a memory hit with the same mount", async () => {
     const kit = await getKit("c6-maths-ch07-t05", { generate: false });
     const r1 = await requestFill({ kit, itemId: "c6-maths-ch07-t05-i01", move: "practice", learner: LEARNER });
