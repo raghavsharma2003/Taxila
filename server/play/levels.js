@@ -8,6 +8,7 @@ import { pickLevels } from "../../src/play/core/pick.ts";
 import { pickArt } from "../../shared/play.ts";
 import { registerKaalEvents } from "../../src/play/families/kaal/kaal.logic.ts";
 import { fillFriendDeep } from "../director/friend.js";
+import { adaptAfter, liftedPL, settleBecause } from "./choose.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let COVERAGE = null;
@@ -102,7 +103,8 @@ export function genRequest(s, entry) {
   return {
     family: entry.family, mode: entry.mode, topicId: entry.topicId, skillId: s.skillId ?? entry.skillId, classLevel: s.classLevel, fade: s.fade,
     goal: entry.goal, mis: s.mis ?? {}, misMap: entry.misMap, grammar: grammarOf(entry), recent: s.recent ?? [], seed: s.seed, harder: !!s.harder,
-    ...(typeof s.pL === "number" ? { pL: s.pL } : {}),
+    // round 8 P2: her pL plus the session's between-level lift (a clean first-try win steps the band up); no lift = s.pL
+    ...(typeof liftedPL(s) === "number" ? { pL: liftedPL(s) } : {}),
     ...(s.focus ? { focus: s.focus } : {}),
   };
 }
@@ -138,14 +140,35 @@ export function nextBody(s, entry, door) {
   const recent = [...(s.recent ?? []), played?.sig ?? played?.levelId].filter(Boolean).slice(-6);
   // the misconception the level just played confirmed (set by /api/play/act at its end) becomes the next level's focus
   const focus = s.nextFocus ?? s.focus ?? null;
-  const body = { ...s, n, seed: seedOf(s.childId, s.key, n), door, harder: false, recent, ...(focus ? { focus } : {}) };
-  delete body.nextFocus;
+  // round 8 P2: the band step the level just played earned (set by /act at its end), and its pending because
+  const lift = Number(s.nextLift ?? s.lift) || 0;
+  const pending = s.nextBecause ?? null;
+  let body = { ...s, n, seed: seedOf(s.childId, s.key, n), door, harder: false, recent, ...(focus ? { focus } : {}) };
+  if (lift > 0) body.lift = lift;
+  delete body.nextFocus; delete body.nextLift; delete body.nextBecause;
   delete body.because;   // a because explains ONE level's choice (round 8); the next level carries its own or none
   if (door === "teekha") {
     const r = levelsFor(body, entry);
-    if (r && !r.teekha && (body.fade ?? 1) < 3) return { ...body, fade: (body.fade ?? 1) + 1, door: "garam", up: true };
+    if (r && !r.teekha && (body.fade ?? 1) < 3) body = { ...body, fade: (body.fade ?? 1) + 1, door: "garam", up: true };
   }
+  // the step's because is kept only when the level served does what it claims (a mix-up claim needs a level showing it)
+  const b = pending ? settleBecause(pending, currentLevel(body, entry)) : null;
+  if (b) body.because = [b];
   return body;
+}
+/**
+ * Round 8 P2: the session body after a level's acts (what /api/play/act signs). Between levels only: the CURRENT level's
+ * inputs never change (nextFocus / nextLift / nextBecause are read by nextBody, never by genRequest).
+ */
+export function afterLevelBody(s, { grade = null, level = null, history = null } = {}) {
+  const s2 = { ...s, hist: history };
+  if (!grade || !level) return s2;
+  const seen = (grade.evidence ?? []).find((r) => r.misconceptionId)?.misconceptionId ?? null;
+  if (seen) s2.nextFocus = seen;
+  const step = adaptAfter({ grade, level, s, beliefOf });
+  if (step?.lift) s2.nextLift = step.lift;
+  if (step?.because) s2.nextBecause = step.because;
+  return s2;
 }
 export function artFor(s, entry) {
   return pickArt({ family: entry.family, subject: entry.subject === "maths" ? "maths" : "science", topicId: entry.topicId, classLevel: s.classLevel, topicArts: entry.arts, childArt: s.childArt ?? null, lastArt: s.lastArt ?? null });

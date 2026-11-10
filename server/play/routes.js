@@ -17,7 +17,7 @@
 import { readJson, send, HttpError } from "../http.js";
 import { requireChild } from "../auth.js";
 import { signSession, verifySession } from "./session.js";
-import { artFor, coverage, currentLevel, entryByKey, nextBody, play3dOff } from "./levels.js";
+import { afterLevelBody, artFor, coverage, currentLevel, entryByKey, nextBody, play3dOff } from "./levels.js";
 import { startSession } from "./start.js";
 import { gradeActs, lessonEvidence } from "./grade.js";
 import { reactionFor } from "./react.js";
@@ -38,11 +38,12 @@ function sessionOut(s) { return signSession(s); }
 export const becauseOut = (s) => (Array.isArray(s?.because) && s.because.length ? { because: s.because } : {});
 function doorsFor(s, entry, lang, name = "") {
   const hint = (d) => (lang === "en" ? (d === "garam" ? "one more like this" : "a bit harder") : lang === "hi" ? (d === "garam" ? "इसी तरह का एक और" : "थोड़ा मुश्किल") : d === "garam" ? "isi tarah ka ek aur" : "thoda mushkil");
-  const garam = currentLevel(nextBody(s, entry, "garam"), entry, name);
+  const g = nextBody(s, entry, "garam"), garam = currentLevel(g, entry, name);
   if (!garam) return [];
   const t = nextBody(s, entry, "teekha"), teekha = currentLevel(t, entry, name);
-  // a teekha that is the same level as garam is no choice (the fade could not go up): one door
-  return [{ door: "garam", level: garam, hint: hint("garam") }, ...(teekha && (teekha.levelId !== garam.levelId || teekha.fade !== garam.fade) ? [{ door: "teekha", level: { ...teekha, door: "teekha" }, hint: hint("teekha") }] : [])];
+  // a teekha that is the same level as garam is no choice (the fade could not go up): one door. Each door carries the
+  // round 8 because of the level behind it (the same record /next returns with that level)
+  return [{ door: "garam", level: garam, hint: hint("garam"), ...becauseOut(g) }, ...(teekha && (teekha.levelId !== garam.levelId || teekha.fade !== garam.fade) ? [{ door: "teekha", level: { ...teekha, door: "teekha" }, hint: hint("teekha"), ...becauseOut(t) }] : [])];
 }
 function seamOf(grade, level, moments, impasse) {
   if (impasse) return { kind: "impasse", facts: grade?.facts ?? {} };
@@ -114,9 +115,10 @@ export const routes = {
     const evidenceToken = ended && s.lessonId && rows.length ? signEvidence({ childId: s.childId, lessonId: s.lessonId, levelId: level.levelId, rows }) : undefined;
     const seam = seamOf(g.grade, level, fresh, !!b.impasse);
     const seamToken = seam && s.lessonId ? signSeam({ childId: s.childId, lessonId: s.lessonId, kind: seam.kind, row: playFactsRow({ game: `${level.family}/${level.mode}`, ...seam.facts }) }) : undefined;
-    // the belief this level's first decision showed is the next level's focus (the current level's inputs never change)
+    // the belief this level's first decision showed is the next level's focus (the current level's inputs never change);
+    // round 8 P2: a clean first-try win steps the next level's band up, and each step's because rides to the next level
     const seen = ended ? rows.find((r) => r.misconceptionId)?.misconceptionId ?? null : null;
-    const s2 = { ...s, hist: history, ...(seen ? { nextFocus: seen } : {}) };
+    const s2 = afterLevelBody(s, { grade: ended ? g.grade : null, level, history });
     // release 12 flight recorder: every act's grade moment, and the level's outcome when it ends
     traceRecord(ended ? "play.outcome" : "play.act", { family: level.family, mode: level.mode, levelId: level.levelId, final: !!b.final, impasse: !!b.impasse,
       moments: fresh.map((m) => m.kind), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen } : {}),
@@ -140,7 +142,7 @@ export const routes = {
     if (!level) return send(res, 409, { error: "no_level" });
     const art = artFor(next, entry);
     next.lastArt = art.art;
-    send(res, 200, { sessionId: sessionOut(next), level, art, bank: [], dress: baseSpec(next, level, await withVerb(child, dbq))?.spec ?? null, ...(play3dOff() ? { render: "2d" } : {}) });
+    send(res, 200, { sessionId: sessionOut(next), level, art, bank: [], dress: baseSpec(next, level, await withVerb(child, dbq))?.spec ?? null, ...becauseOut(next), ...(play3dOff() ? { render: "2d" } : {}) });
   },
 
   "POST /api/play/dress": async (req, res, body) => {

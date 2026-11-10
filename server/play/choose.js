@@ -122,3 +122,66 @@ function becauseOfPick(pick, firstR, target, inputs, recent, beliefOf) {
   return { choice: `${name} first`, fact: `P(skill) ${Number(inputs.pL).toFixed(2)}: first try ${typeof p === "number" ? p.toFixed(2) : "?"} here vs ${typeof p0 === "number" ? p0.toFixed(2) : "?"} in ${firstR ? fm(firstR.entry) : "the first game"} (aim ${BAND.garam})`, source: "kt_skill_state" };
 }
 
+
+/**
+ * P2. The scaffold fade from her ledger row for this skill (kt_skill_state). Pure mapping:
+ *   no row / no evidence yet          → the request's fade (fallback), no because
+ *   mastered / durable, or run ≥ 3    → 3 (least scaffold)
+ *   run ≥ 1 or pL ≥ 0.7, last not a miss → 2
+ *   otherwise                          → 1
+ * → { fade, because|null } (because only when the fade differs from the fallback)
+ * @param {{ pL?: number, display?: string, n?: number, run?: number, recent?: number[] } | null} hist
+ */
+export function fadeFromHistory(hist, fallback = 1) {
+  if (!hist || !(Number(hist.n) > 0)) return { fade: fallback, because: null };
+  const run = Number(hist.run) || 0, pL = Number(hist.pL);
+  const lastMiss = Array.isArray(hist.recent) && hist.recent.length > 0 && Number(hist.recent.at(-1)) === 0;
+  let fade = 1, fact;
+  if (hist.display === "mastered" || hist.display === "durable") { fade = 3; fact = `ledger: ${hist.display}`; }
+  else if (run >= 3) { fade = 3; fact = `${run} clean right in a row`; }
+  else if (!lastMiss && (run >= 1 || pL >= 0.7)) { fade = 2; fact = run >= 1 ? `last answer clean and right, P(skill) ${Number.isFinite(pL) ? pL.toFixed(2) : "?"}` : `P(skill) ${pL.toFixed(2)}`; }
+  else { fact = lastMiss ? "her last answer on this skill was a miss" : `P(skill) ${Number.isFinite(pL) ? pL.toFixed(2) : "?"}`; }
+  if (fade === fallback) return { fade, because: null };
+  return { fade, because: { choice: `fade ${fade} (${fade > fallback ? "less" : "more"} help)`, fact, source: "kt_skill_state" } };
+}
+
+/** The pL the picker is asked for: her pL (else the class default) plus the session's lift; undefined = the class default. */
+export function liftedPL(s) {
+  const lift = Number(s?.lift) || 0;
+  if (lift <= 0) return typeof s?.pL === "number" ? s.pL : undefined;
+  const base = typeof s.pL === "number" ? s.pL : DEFAULT_PL;
+  return +Math.min(LIFT_CAP, base + LIFT_STEP * lift).toFixed(3);
+}
+
+/**
+ * P2, between levels (never inside one). From the grade of the level that just ended:
+ *   the first decisive moment was a mal-rule (evidence misconceptionId) → the next level's focus is that belief, the lift
+ *     stays (same band);
+ *   solved, clean, first decisive moment = solved → lift + 1 (from HER pL), up to MAX_LIFT;
+ *   anything else → no step.
+ * → { focus?, lift?, because? } | null. `because.mis` marks a claim to settle against the served level.
+ */
+export function adaptAfter({ grade, level, s, beliefOf = (id) => id }) {
+  const ev = grade?.evidence?.[0];
+  if (!ev) return null;
+  if (ev.misconceptionId) {
+    const belief = beliefOf(ev.misconceptionId) ?? ev.misconceptionId;
+    return { focus: ev.misconceptionId, because: { choice: "next level tests that mix-up, same difficulty", fact: `missed just now with: ${belief}`, source: "play_grade", mis: ev.misconceptionId } };
+  }
+  if (grade.verdict === "solved" && grade.clean && ev.outcome === "correct") {
+    const lift = Number(s?.lift) || 0;
+    if (lift >= MAX_LIFT) return null;
+    const from = liftedPL(s), to = liftedPL({ ...s, lift: lift + 1 });
+    return { lift: lift + 1, because: { choice: "next level a step harder", fact: `solved ${level?.levelId ?? "the level"} on the first try; aiming from P(skill) ${typeof from === "number" ? from.toFixed(2) : `${DEFAULT_PL} (default)`} to ${to.toFixed(2)}`, source: "play_grade" } };
+  }
+  return null;
+}
+
+/** A pending between-level because, kept only when the level served does what it says (a mix-up claim needs a level that
+ *  discriminates it). → { choice, fact, source } | null */
+export function settleBecause(pending, level) {
+  if (!pending || !level) return null;
+  if (pending.mis && !(level.proof?.discriminates ?? []).includes(pending.mis)) return null;
+  const { choice, fact, source } = pending;
+  return { choice, fact, source };
+}

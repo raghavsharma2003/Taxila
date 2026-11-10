@@ -2,7 +2,7 @@
 // forge's compose() "play" rung into a PlayArtifact: docs/design/round3/forge/FOR-PLAY.md §2.3). No model call.
 import { signSession } from "./session.js";
 import { artFor, beliefOf, currentLevel, entriesFor, entryKey, levelsFor, seedOf } from "./levels.js";
-import { chooseEntry } from "./choose.js";
+import { chooseEntry, fadeFromHistory } from "./choose.js";
 
 /** child.language_pref is hinglish | hindi | english; play speaks hinglish | hi | en */
 export const langOf = (l) => (l === "en" || l === "english" ? "en" : l === "hi" || l === "hindi" ? "hi" : "hinglish");
@@ -17,16 +17,17 @@ export const fadeOf = (f) => ([1, 2, 3].includes(Number(f)) ? Number(f) : 1);
  *           classified to one of this entry's mapped kit misconceptions (kt_evidence), else the Director's last re-teach
  *           trigger for one (reteach_attempts, migration 023). The picker makes the next level test exactly that belief.
  *   focusSource  which table named the focus (the because record's source)
+ *   hist    her ledger row for the skill { pL, display, n, run, recent } (round 8 P2: the fade), null when none
  */
 export async function learnerInputs(childId, entry, q, lessonId = null) {
-  const out = { mis: {}, pL: undefined, secure: false, focus: null, focusSource: null };
+  const out = { mis: {}, pL: undefined, secure: false, focus: null, focusSource: null, hist: null };
   if (!q) return out;
   const ids = Object.values(entry.misMap ?? {});
   // independent reads, in parallel (each one's failure is its own default; the start path waits for the slowest only)
   const none = Promise.resolve([]);
   const [mis, skill, ev, rt] = await Promise.all([
     ids.length ? q("select misconception_id, logit from kt_misconception where child_id = $1 and misconception_id = any($2::text[]) and resolved_at is null", [childId, ids]).catch(() => []) : none,
-    q("select p_l, display from kt_skill_state where child_id = $1 and skill_id = $2", [childId, entry.skillId]).catch(() => []),
+    q("select p_l, display, n, run, recent from kt_skill_state where child_id = $1 and skill_id = $2", [childId, entry.skillId]).catch(() => []),
     lessonId && ids.length ? q("select misconception_id from kt_evidence where child_id = $1 and session_id = $2 and misconception_id = any($3::text[]) order by seq desc limit 1", [childId, String(lessonId), ids]).catch(() => []) : none,
     lessonId && ids.length ? q("select misconception_id from reteach_attempts where child_id = $1 and session_id = $2 and trigger in ('misconception_seen', 'misconception_confirmed') and misconception_id = any($3::text[]) order by at desc limit 1", [childId, String(lessonId), ids]).catch(() => []) : none,
   ]);
@@ -34,6 +35,8 @@ export async function learnerInputs(childId, entry, q, lessonId = null) {
   const r = (skill ?? [])[0];
   if (r && Number.isFinite(Number(r.p_l))) out.pL = +Number(r.p_l).toFixed(3);
   out.secure = r?.display === "mastered" || r?.display === "durable";
+  // round 8 P2: her history on this skill (the ledger row), for the fade (choose.js fadeFromHistory)
+  if (r) out.hist = { pL: out.pL, display: r.display ?? null, n: Number(r.n) || 0, run: Number(r.run) || 0, recent: Array.isArray(r.recent) ? r.recent.map(Number) : [] };
   out.focus = (ev ?? [])[0]?.misconception_id ?? (rt ?? [])[0]?.misconception_id ?? null;
   out.focusSource = (ev ?? [])[0]?.misconception_id ? "kt_evidence" : out.focus ? "reteach_attempts" : null;
   return out;
@@ -57,7 +60,9 @@ export async function startSession(child, o = {}, q = undefined) {
   // one read for every candidate: her pL on the skill asked for, her open mix-ups over every candidate's mapped beliefs
   const misMap = Object.fromEntries(entries.flatMap((e, i) => Object.entries(e.misMap ?? {}).map(([k, v]) => [`${i}:${k}`, v])));
   const inputs = o.inputs ?? await learnerInputs(child.id, { skillId: skillOf(first), misMap }, q, o.lessonId ?? null);
-  const fade = fadeOf(o.fade ?? 1);
+  // round 8 P2: the fade from her history on the skill; the request's fade only when there is none
+  const fz = fadeFromHistory(inputs.hist ?? null, fadeOf(o.fade ?? 1));
+  const fade = fz.fade;
   const bodyFor = (entry, focus, door = o.door === "teekha" ? "teekha" : "garam") => {
     const key = entryKey(entry);
     const classLevel = Number(child.class_level ?? child.classLevel ?? entry.classLevel) || entry.classLevel;
@@ -74,7 +79,7 @@ export async function startSession(child, o = {}, q = undefined) {
   const pick = chooseEntry({ entries, inputs, levelOf, recent: o.recent ?? {}, keyOf: entryKey, beliefOf });
   const entry = pick.entry;
   const s = bodyFor(entry, pick.focus);
-  const because = [pick.because].filter(Boolean);
+  const because = [pick.because, fz.because].filter(Boolean);
   if (because.length) s.because = because;
   const level = currentLevel(s, entry, child.first_name);
   if (!level) return null;
