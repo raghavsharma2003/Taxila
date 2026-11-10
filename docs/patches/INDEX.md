@@ -82,7 +82,7 @@ and `to-voice` (two 001, no 002). Always cite a patch by its full file name.
 | 002-face-onboarding-teacher-direct.patch | applied | 8/8 | `src/onboarding/Setup.tsx`, `src/onboarding/steps/Meet.tsx` |  |
 | 003-db-probe-timer-unref.patch | applied | 3/3 | `tests/comprehension-db.test.mjs`, `tests/comprehension-w1c-db.test.mjs` +1 |  |
 | 004-signin-code-links.patch | applied | 8/8 | `src/onboarding/Account.tsx`, `src/onboarding/Forgot.tsx` |  |
-| 009-r8-parent-play-because.patch | **pending** (2026-11-10) | 0/~150 | `server/director/knows-words.js`, `server/reports/teaching.js` +3 | From Games (claude/r8-play-follow): play because + trail on the Teaching page through knows-words (play vocabulary added); compatible with 008. |
+| 011-r8-parent-play-because.patch | **pending** (2026-11-10) | 0/~190 | `server/director/knows-words.js`, `server/reports/teaching.js` +3 | From Games: play because + trail on the Teaching page through knows-words (play vocabulary added). Rebased on int/r6 5f3628428 with 008 applied (both `teaching.js` hunks kept: `becauseOf` and `playLinesOf`, one static `getKit` import); applies clean there. Replaces Games' earlier 009 (that number is Loop's `009-r8-next-topic-brief-caller.patch`). |
 
 ## to-platform
 
@@ -92,6 +92,7 @@ and `to-voice` (two 001, no 002). Always cite a patch by its full file name.
 | 001-placement-routes.patch | landed | 1/2 | `server/index.js` | The file is not a valid patch (`git apply --check`: "No valid patches in input"), but its change is in `server/index.js` (the placement route table is registered). Its note says the spread in `server/routes/child.js` goes once applied; that spread is still there. |
 | 001-speech-region-2.patch | applied | 5/5 | `scripts/deploy-azure.mjs` |  |
 | 002-signin-code-routes.patch | applied | 3/3 | `server/index.js` |  |
+| 005-trace-kind-play-next.patch | **pending** (2026-11-10) | 0/1 | `shared/trace.ts` | From Games: adds `play.next` (written by `/api/play/next` since round 8 Play) to `TRACE_KINDS.server`. The type is an open string, so nothing breaks before it lands. |
 
 ## to-studio
 
