@@ -1,4 +1,4 @@
-# r7 audit TEACHER-04 (to Brain; shared/contracts.ts). ui.hint is sent (server/director/state.js:3587 hintFor) and read
+# r7 audit TEACHER-04 (to Brain; shared/contracts.ts). ui.hint is sent (server/director/state.js:3637 hintFor) and read
 # (src/child/lesson/useDesk.ts:330, which declares its own local type at :43) but UiDirectives does not name it.
 # Test: node --test tests/r7-audit-ui-hint-contract.test.mjs (fails before). npx tsc -b passes with it.
 diff --git a/shared/contracts.ts b/shared/contracts.ts
