@@ -173,7 +173,8 @@ export class UiBridge {
         void resolveDuplexMode().then((m) => { if (m !== "on" && this.link === cascade) this.store.set({ duplexExpected: false }); }, () => {});
         link = cascade;
       } else if (mode === "text") {
-        link = new TextLink({ lessonId: ctx.lessonId, levels: ctx.levels, speech: this.cachingSpeech, stream: this.cachingStream }); // audit V-14: the streamed voice honours the pause hold and fills the replay buffer
+        // audit V-14: the stream too, so pause holds her voice and resume has the replay buffer
+        link = new TextLink({ lessonId: ctx.lessonId, levels: ctx.levels, speech: this.cachingSpeech, stream: this.cachingStream });
       } else {
         link = defaultLinkFactory(mode, ctx);
       }
@@ -319,8 +320,7 @@ export class UiBridge {
   };
 
   /** Cascade: pass the PCM stream through untouched and keep a WAV copy of what arrived. */
-  // audit V-13: the player's sink (clause onsets, visemes, word onsets on ITS clock) must reach the fetch: without it the
-  // child app lost lip-sync and board timing on every line
+  // audit V-13: the player's clause sink passes through (without it every line lost lip-sync and board timing)
   private cachingStream: SpeechStreamFetch = async (req, signal, sink) => {
     await this.waitHold(signal);
     const body = await fetchSpeechStream(req, signal, sink);

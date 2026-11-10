@@ -12,7 +12,7 @@ Forty findings. The skeptic refuted none; it narrowed fourteen, and those are wr
 
 ## Findings
 
-Status: **fixed** = fixed on this branch with a test that fails before the fix and passes after (`tests/audit-voice-link.test.mjs`, `tests/audit-voice-small.test.mjs`); **open** = confirmed, mine to fix under the phase 2 rule, not fixed yet (see "Fix status"); **main** = waits for main's reply (a deletion, a redesign, a decision in project memory, or a file outside the area).
+Status: **fixed** = fixed on this branch with a test that fails before the fix and passes after (test files are named under "Fix status"); **open** = confirmed, mine to fix under the phase 2 rule, not fixed yet (see "Fix status"); **main** = waits for main's reply (a deletion, a redesign, a decision in project memory, or a file outside the area).
 
 | id | sev | kind | owner | title | where | fix | status |
 |---|---|---|---|---|---|---|---|
@@ -24,16 +24,16 @@ Status: **fixed** = fixed on this branch with a test that fails before the fix a
 | V-07 | P0 | broken | voice | Hands-free stays "live" but deaf when mic frames stop or carry no pitch; no fallback to the talk button | `src/duplex/cascadeDuplex.ts:266-269`, `audio.ts:229-233`, `governor.ts:370-372` | a running no-frames check that steps aside; a transcript with no device onset seeds the onset | **fixed** |
 | V-03 | P1 | broken | voice | The transcription call can hang while it connects; the dock says "getting ready" with no talk button and no time limit | `src/lesson/cascadeLink.ts:1252,1314`, `src/lesson/handsFree.ts:39` | time-limit the token and connection requests | **fixed** |
 | V-13 | P1 | broken | voice | Every teacher line in the child app loses lip-sync and board timing | `src/lesson/uiBridge.ts:322-324` | pass the third argument through | **fixed** |
-| V-10 | P1 | broken | voice | An answer given 7-13 s after her question, equal to the previous answer, is silently dropped | `src/duplex/live.ts:923,960,999` | forget the last commit once its reply has played | open |
+| V-10 | P1 | broken | voice | An answer given 7-13 s after her question, equal to the previous answer, is silently dropped | `src/duplex/live.ts:923,960,999` | forget the last commit once its reply has played | **fixed** |
 | V-12 | P1 | broken | voice | The D5 ear refuses a paired child device (403), so it falls back to D4 | `server/serve.mjs:162-166`, `server/duplex/d5route.js:81` | mark the upgrade request child-scoped in `handleD5Upgrade` | **fixed** |
-| V-08 | P1 | broken | voice | "kya?" over her line stops her and nothing follows (D5 and full duplex) | `src/duplex/host.ts:616`, `audio.ts:74-76`, `governor.ts:365,511` | keep the carried onset; `sil ?? t - phaseSince` | open |
-| V-09 | P1 | broken | voice | Any child sound during her reply to a number answer cuts the reply (D5 and full duplex) | `src/duplex/governor.ts:160-161,221` | send the verdict event when her reply starts | open |
+| V-08 | P1 | broken | voice | "kya?" over her line stops her and nothing follows (D5 and full duplex) | `src/duplex/host.ts:616`, `audio.ts:74-76`, `governor.ts:365,511` | keep the carried onset; `sil ?? t - phaseSince` | **fixed** |
+| V-09 | P1 | broken | voice | Any child sound during her reply to a number answer cuts the reply (D5 and full duplex) | `src/duplex/governor.ts:160-161,221` | send the verdict event when her reply starts | **fixed** |
 | V-11 | P1 | broken | voice | Her own echo ducks her voice on D5: the "not her pitch" guard is disconnected | `src/duplex/cascadeDuplex.ts:233-236` | forward the fifth argument | **fixed** |
-| V-17 | P1 | broken | voice | Maths read aloud wrong: "75000-25000" as a phone number, "by 1250" as a year, "9.30 baje" as a decimal, dates as slashes, bare `=` `+` `/` and `πr²` left as symbols | `server/voice/spoken.js:162,342,348,538,552`, `spoken-lexicon.js:208` | narrow the phone pattern and year cues; add date, dot-time, π and spaced-operator rules | open |
+| V-17 | P1 | broken | voice | Maths read aloud wrong: "75000-25000" as a phone number, "by 1250" as a year, "9.30 baje" as a decimal, dates as slashes, bare `=` `+` `/` and `πr²` left as symbols | `server/voice/spoken.js:162,342,348,538,552`, `spoken-lexicon.js:208` | narrow the phone pattern and year cues; add date, dot-time, π and spaced-operator rules | **fixed** |
 | V-14 | P1 | broken | voice | Typed lessons: pause does not hold her voice and resume has nothing to replay | `src/lesson/uiBridge.ts:176`, `textLink.ts:53,103` | give the TextLink the bridge's stream | **fixed** |
-| V-26 | P1 | broken | voice | The DragonHD path deletes bracketed maths and starred words from her line | `server/voice/expressive/compile/dhd.js:35` | strip only letters-only brackets; unwrap stars | open |
-| V-20 | P1 | not good enough | voice | Every streamed reply also synthesises itself a second time (wasted Azure speech), outside the speech rate limit | `server/routes/voice.js:414-417`, `server/voice/prewarm.js:54` | drop the prewarm when the reply was streamed; count the stream in the limiter | open |
-| V-22 | P1 | inconsistent | voice | The thinking-pause cue is live in hands-free although the decision says shadow until a children's pilot | `src/duplex/liveTap.ts:50-54`; `context/decisions.md:5481`; `context/rejected.md:2348` | unsubscribe the cue from the live engine until the pilot | main |
+| V-26 | P1 | broken | voice | The DragonHD path deletes bracketed maths and starred words from her line | `server/voice/expressive/compile/dhd.js:35` | strip only letters-only brackets; unwrap stars | **fixed** |
+| V-20 | P1 | not good enough | voice | Every streamed reply also synthesises itself a second time (wasted Azure speech), outside the speech rate limit | `server/routes/voice.js:414-417`, `server/voice/prewarm.js:54` | drop the prewarm when the reply was streamed; count the stream in the limiter | **fixed** |
+| V-22 | P1 | inconsistent | voice | The thinking-pause cue is live in hands-free although the decision says shadow until a children's pilot | `src/duplex/liveTap.ts:50-54`; `context/decisions.md:5481`; `context/rejected.md:2348` | unsubscribe the cue from the live engine until the pilot | **fixed** |
 | V-15 | P2 | broken | voice | "Fix" or "Try again" can act on an older lesson's held answer | `src/lesson/outbox.ts:342,350,363` | filter by lesson id | **fixed** |
 | V-16 | P2 | broken | voice | A fix that lands just as the server answers is reported as sent, sends nothing and leaves a ghost answer | `src/lesson/outbox.ts:405-409` | remove the record from `active` as soon as the send resolves | **fixed** |
 | V-19 | P2 | broken | voice | Hands-free turns post the same prefetch text more than once (duplicate classify and speculative replies) | `src/latency/prefetch.ts:89,104`, `duplexTurn.ts:51` | keep the same-text guard across item ids | open |
@@ -61,23 +61,24 @@ Counts: P0 6, P1 12, P2 12, P3 10. Broken 25, inconsistent 9, not good enough 2,
 
 ## Fix status (2026-11-10)
 
-Fixed, 17: V-01, V-02, V-03, V-04, V-05, V-06, V-07, V-11, V-12, V-13, V-14, V-15, V-16, V-24, V-28, V-32, V-35. Each has a test that fails before the fix and passes after.
+Fixed, 24: V-01, V-02, V-03, V-04, V-05, V-06, V-07, V-08, V-09, V-10, V-11, V-12, V-13, V-14, V-15, V-16, V-17, V-20, V-22, V-24, V-26, V-28, V-32, V-35. Each has a test that fails before the fix and passes after.
 
-Two sessions worked on this branch. A second session pushed the six P0 fixes (commit `01c8e667`: V-01, V-02, V-04, V-05, V-06, V-07; tests in `tests/r7-audit-voice-*.test.mjs`, `p1-duplex-link`, `ship5-fix-duplex-revoke`) while this one was fixing V-01 to V-04 and the smaller items. They are merged: its versions of V-01 and V-02 are kept, and V-04 is changed as below.
+Two sessions worked on this branch at the same time. A second session pushed `01c8e667` (V-01, V-02, V-04, V-05, V-06, V-07) and `4eb38f2b` (V-03, V-08 to V-14, V-17, V-20, V-22, V-26); its tests are in `tests/r7-audit-voice-client.test.mjs`, `r7-audit-voice-server.test.mjs`, `p1-duplex-link` and `ship5-fix-duplex-revoke`. This session fixed V-15, V-16, V-24, V-28, V-32, V-35 (`tests/audit-voice-small.test.mjs`) and had its own versions of V-01 to V-04 and V-11 to V-14; where both existed the pushed version is kept, except V-04.
 
-- V-04: telling the engine "stopped" is not enough. The governor ignores it and keeps her turn, so the mic gate opens but the child's next answer is never committed. A stop by hand now reports her line as ended. `tests/audit-voice-small.test.mjs` runs both on the real engine under a fake clock: "ended" commits the answer, "stopped" commits nothing in 6 s. The other session's link test was changed to assert "ended".
-- V-32 fixes the reason code only. The safety count compares against codes the engine never emits; it stays wrong until someone names the right codes.
+- V-04: telling the engine "stopped" is not enough. The governor ignores it and keeps her turn, so the mic gate opens but the child's next answer is never committed. A stop by hand now reports her line as ended. `tests/audit-voice-small.test.mjs` runs both on the real engine under a fake clock: "ended" commits the answer, "stopped" commits nothing in 6 s. The pushed link test was changed to assert "ended".
+- V-22 was listed for main's reply; the second session unsubscribed the cue, which matches the recorded decision.
+- V-32 fixes the reason code only. The safety count compares against codes the engine never emits.
 - New numbers: a 5 s stall limit on a reply's stream (V-02), and a 10 s limit on each of the transcription call's two requests (V-03).
 
-Open, 14, all mine under the phase 2 rule:
+Open, 8, in the voice area:
 
-- Hands-free engine: V-08, V-09, V-10, V-18.
-- Spoken forms: V-17, V-26.
-- Server: V-20, V-25.
-- V-23, V-30, V-31: one-line changes described in their rows; written and taken back out because they had no test yet.
-- V-19: taken back out. Under the engine the link's own prefetch calls may not run at all, so the proposed fix could stop prefetch for the rest of a lesson. It needs a trace of one hands-free turn first.
+- V-18 (device voice detector latch) and V-25 (real status on a failed streamed turn).
+- V-23, V-30, V-31: one-line changes described in their rows; no test yet.
+- V-19: under the engine the link's own prefetch calls may not run at all, so the proposed fix could stop prefetch for the rest of a lesson. It needs a trace of one hands-free turn first.
 - V-33: the earpiece label was never checked on a phone; it should be before the pattern changes.
 - V-21: comments only.
+
+Waiting for main, 8: V-27, V-29, V-34, V-36, V-37, V-38, V-39, V-40.
 
 ## Evidence notes
 

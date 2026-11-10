@@ -58,6 +58,8 @@ export interface CascadeLinkOptions {
   micStream?: Promise<MediaStream>;
   /** Defaults to POST /api/voice/stt-token. */
   fetchToken?: (lessonId: string) => Promise<RealtimeTokenResponse>;
+  /** The longest the token request and the call's SDP exchange may each take (default CHANNEL_OPEN_TIMEOUT_MS). */
+  openStepMs?: number;
   /** Defaults to POST /api/voice/tts-stream. */
   speech?: SpeechStreamFetch;
   /** Push-to-talk fallback upload; defaults to POST /api/voice/transcribe. */
@@ -75,8 +77,6 @@ export interface CascadeLinkOptions {
   /** An AudioContext created inside the user's tap (primeCascadeAudio does this); else one is made at connect. */
   audioContext?: AudioContext;
   maxReconnects?: number;
-  /** audit V-03: how long the token request and the call's connection request may each take (default CHANNEL_OPEN_TIMEOUT_MS). */
-  openTimeoutMs?: number;
   /** Told when the link falls back to push-to-talk recording (the UI must then show a talk button). */
   onTransport?: (t: CascadeTransport) => void;
   /**
@@ -129,6 +129,12 @@ export interface CascadeTiming {
 }
 
 const CHANNEL_OPEN_TIMEOUT_MS = 10_000;
+/** A promise that rejects after `ms` (audit V-03: an open step that hangs must not hold "getting ready" for good). */
+function withDeadline<T>(p: Promise<T>, ms: number, what: string): Promise<T> {
+  let t: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => { t = setTimeout(() => reject(new Error(`${what} timed out`)), ms); });
+  return Promise.race([p, timeout]).finally(() => clearTimeout(t));
+}
 /** ICE 'disconnected' this long is a lost call (it may never reach 'failed' on its own). */
 const DISCONNECTED_LOST_MS = 3_000;
 /** Same tail as VoiceLink: audio reaches the server ~100-250 ms after it is spoken. */
@@ -385,13 +391,13 @@ export class CascadeLink implements TeacherLink {
   private childTextNext: { itemId: string; text: string } | null = null;
   private childTextAt = 0;
   private readonly fetchToken: (lessonId: string) => Promise<RealtimeTokenResponse>;
+  private readonly openStepMs: number;
   private readonly speech: SpeechStreamFetch;
   private readonly transcribeClip: (lessonId: string, clip: Blob) => Promise<TranscribeResult>;
   private readonly localDuck: boolean;
   private localPause: boolean;
   private readonly output: "context" | "element";
   private readonly maxReconnects: number;
-  private readonly openTimeoutMs: number;
   private readonly onTransport?: (t: CascadeTransport) => void;
   private readonly events = new Emitter<LinkEvent>();
   private readonly protocol: TranscriptionProtocol;
@@ -455,13 +461,13 @@ export class CascadeLink implements TeacherLink {
     this.unEarly = registerEarlyAudio(opts.lessonId, (stream) => this.playEarly(stream));
     this.levels = opts.levels;
     this.fetchToken = opts.fetchToken ?? defaultToken;
+    this.openStepMs = opts.openStepMs ?? CHANNEL_OPEN_TIMEOUT_MS;
     this.speech = opts.speech ?? fetchSpeechStream;
     this.transcribeClip = opts.transcribe ?? defaultTranscribe;
     this.localDuck = opts.localDuck ?? true;
     this.localPause = opts.localPause ?? true;
     this.output = opts.output ?? "context";
     this.maxReconnects = opts.maxReconnects ?? 2;
-    this.openTimeoutMs = opts.openTimeoutMs ?? CHANNEL_OPEN_TIMEOUT_MS;
     this.onTransport = opts.onTransport;
     this.ctx = opts.audioContext ?? null;
     this.merger = opts.predictive ?? predictiveEnabled() ? new FragmentMerger() : null;
@@ -731,14 +737,13 @@ export class CascadeLink implements TeacherLink {
 
   /**
    * audit V-04: a stop that comes from outside the engine (a tap: pause, hear again, a typed or tapped answer, the talk
-   * button). stopReply clears `current` before the playback's `ended` resolves, so finishReply never runs for it and the
-   * engine was never told: it kept her "speaking" (on D4 the mic stayed gated and the child's answers were dropped as
-   * her echo). Her line is over for the floor, so the engine hears it as ended (herStopped alone keeps her turn).
+   * button) is reported to the engine as her line ENDED. "Stopped" alone is not enough: the governor ignores it and keeps
+   * her turn, so the mic gate opened but the child's next answer was never committed (tests/audit-voice-small.test.mjs).
    */
   private stopByHand(): void {
     const cur = this.current;
     const audible = !!cur && (cur.playing || !!cur.paused);
-    this.stopReply("cancelled", true, false); // the engine is told below, as ENDED (a stop alone keeps her turn)
+    this.stopReply("cancelled", true, false);
     if (audible) this.duplex?.replyEnded();
   }
 
@@ -1274,9 +1279,7 @@ export class CascadeLink implements TeacherLink {
     }
     this.laneUsed = "d4";
     this.vtrace.sttLaneOpened("d4", this.d5Off ? "d5_unavailable" : null);
-    // audit V-03: neither request below had a time limit, so a stalled network left the call "connecting" for good: the
-    // dock stayed on "getting ready to listen" with no talk button, and a reconnect never gave up
-    const tok = await timeLimited(this.fetchToken(this.lessonId), this.openTimeoutMs, "the transcription token did not arrive");
+    const tok = await withDeadline(this.fetchToken(this.lessonId), this.openStepMs, "the transcription token");
     if (this.closed) throw new Error("the voice lesson was closed");
     this.audioInput = { ...obj(obj(obj(tok.session).audio).input) };
     this.vtrace.sttConfig(this.audioInput);
@@ -1338,15 +1341,14 @@ export class CascadeLink implements TeacherLink {
       if (this.dc === dc && !this.closed) void this.lost();
     };
     await pc.setLocalDescription(await pc.createOffer());
-    const sdpAbort = typeof AbortController !== "undefined" ? new AbortController() : null;
-    const res = await timeLimited(fetch(`${tok.base.replace(/\/+$/, "")}/realtime/calls`, {
+    const res = await fetch(`${tok.base.replace(/\/+$/, "")}/realtime/calls`, {
       method: "POST",
       body: pc.localDescription!.sdp,
       headers: { Authorization: `Bearer ${tok.token}`, "Content-Type": "application/sdp" },
-      ...(sdpAbort ? { signal: sdpAbort.signal } : {}),
-    }), this.openTimeoutMs, "the transcription call did not answer", () => sdpAbort?.abort());
+      signal: AbortSignal.timeout(this.openStepMs),
+    });
     if (!res.ok) throw new Error(`transcription call refused (${res.status})`);
-    await pc.setRemoteDescription({ type: "answer", sdp: await res.text() });
+    await pc.setRemoteDescription({ type: "answer", sdp: await withDeadline(res.text(), this.openStepMs, "the transcription call") });
     await opened;
     this.abandonOpen = null;
     if (this.pc !== pc) throw new Error("the transcription call was replaced");
@@ -1755,14 +1757,6 @@ export class CascadeLink implements TeacherLink {
     const on = this.micWanted && !this.micGated;
     for (const t of this.mic?.getAudioTracks() ?? []) t.enabled = on;
   }
-}
-
-/** audit V-03: `p`, or a rejection after `ms` (onTimeout abandons the work behind it). */
-function timeLimited<T>(p: Promise<T>, ms: number, why: string, onTimeout?: () => void): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    const timer = setTimeout(() => { try { onTimeout?.(); } catch { /* gone */ } reject(new Error(why)); }, ms);
-    p.then((v) => { clearTimeout(timer); resolve(v); }, (e) => { clearTimeout(timer); reject(e); });
-  });
 }
 
 /** A factory with the runtime's LinkFactory shape for a cascade lesson, e.g. `createLink` in RuntimeDeps. */

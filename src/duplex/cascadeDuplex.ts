@@ -230,8 +230,7 @@ export class CascadeDuplex {
     });
     // the telemetry's own voicing ruler sees every frame the engine sees (the shared tap calls live.frame)
     const frame = this.live.frame.bind(this.live);
-    // audit V-11: the fifth argument (her output's own pitch, liveTap.ts) is forwarded: dropped here, the D5 pre-duck's
-    // "not her pitch" guard never ran and her own echo ducked her
+    // audit V-11: her pitch (herF0, the "not her pitch" echo guard on D5) passes through
     this.live.frame = (t: number, rms: number, f0: number | null, herOutDb: number | null, herF0: number | null = null) => {
       try { this.tel.frame(t, rms, herOutDb !== null || this.s.herSounding()); } catch { /* never breaks the floor */ }
       frame(t, rms, f0, herOutDb, herF0);
