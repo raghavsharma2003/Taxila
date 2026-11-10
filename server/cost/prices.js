@@ -17,6 +17,9 @@ export const CHAT = Object.freeze({
   "taxila-gpt6": { in: 2, cached: 0.2, out: 10 },
   "taxila-gpt6-luna": { in: 0.1, cached: 0.01, out: 0.5 },
   "taxila-fast": { in: 0.2, cached: 0.02, out: 1.2 },
+  // taxila-fast's background twin, the same model (server/stagecraft/lesson.js prices it as taxila-fast). PLAT-37: with
+  // no row it fell to the taxila-brain fallback, about 19 times its price.
+  "taxila-fast-bg": { in: 0.2, cached: 0.02, out: 1.2 },
   "taxila-kimi-code": { in: 0.95, cached: 0.95, out: 4 },
   "DeepSeek-V4-Flash": { in: 0.19, cached: 0.19, out: 0.51 },
   "DeepSeek-V4-Pro": { in: 1.74, cached: 1.74, out: 3.48 },
@@ -39,6 +42,9 @@ export const TTS_FALLBACK = "gpt-4o-mini-tts";
 export const STT = Object.freeze({
   "gpt-live-transcribe": { perHour: 1.02, meter: "a3bfb6e0" },
   "gpt-4o-transcribe": { perHour: 0.36, meter: "1d21486d $6/1M audio tokens at ~1,000 tokens/min", estimate: true },
+  // the deployment name the server uses for gpt-4o-transcribe (server/azure.js DEPLOY.transcribe). PLAT-48: it fell to the
+  // live-transcribe price, $1.02/h instead of $0.36/h.
+  "taxila-transcribe": { perHour: 0.36, meter: "as gpt-4o-transcribe (1d21486d)", estimate: true },
   "azure-speech-realtime": { perHour: 1.3, meter: "3bd267f0 S1 $1/h + 4c8e8932 Enhanced $0.30/h" },
   "mai-transcribe-2-streaming": { perHour: 0.36, meter: "placeholder: Fast Transcription e366297b (no retail MAI meter)", estimate: true },
 });

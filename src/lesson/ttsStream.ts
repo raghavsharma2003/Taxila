@@ -494,6 +494,8 @@ export class PcmStreamPlayer {
   readonly output: GainNode;
   /** Times audio ran out mid-reply (each one lengthens the next reply's start lead). */
   underruns = 0;
+  /** Audio ran out mid-reply and no bytes came for this long: the stream stalled, so the line ends (audit V-02). */
+  stallMs = 5_000;
   private readonly ctx: AudioContext;
   private current: { stop: () => void } | null = null;
   private lead = START_LEAD_S;
@@ -627,9 +629,23 @@ export class PcmStreamPlayer {
       }
       sources.clear();
     };
+    // audit V-02: a stream that stops sending (no bytes, no close, no error) once her audio has run out would keep the
+    // line "speaking" for good; past stallMs with nothing sounding and nothing arriving, the line ends with what played
+    let stallTimer: ReturnType<typeof setTimeout> | null = null;
+    const armStall = () => {
+      if (stallTimer) clearTimeout(stallTimer);
+      stallTimer = null;
+      if (finished || streamDone || paused || !didStart) return;
+      stallTimer = setTimeout(() => {
+        stallTimer = null;
+        if (finished || streamDone || paused || sources.size > 0) return;
+        finish("completed");
+      }, this.stallMs);
+    };
     const finish = (status: "completed" | "stopped" | "failed") => {
       if (finished) return;
       finished = true;
+      if (stallTimer) clearTimeout(stallTimer);
       abort.abort();
       silenceSources();
       if (vSent.size) puppetCut();
@@ -693,6 +709,7 @@ export class PcmStreamPlayer {
         sources.delete(src);
         src.disconnect();
         maybeDone();
+        if (sources.size === 0) armStall();
       };
     };
     /** The sample sounding now. */
@@ -708,6 +725,7 @@ export class PcmStreamPlayer {
           if (done || finished) break;
           append(decoder.push(value));
           pump();
+          armStall();
         }
         streamDone = true;
         maybeDone();
@@ -749,6 +767,7 @@ export class PcmStreamPlayer {
         this.duck(1);
         pump();
         maybeDone();
+        armStall();
       },
       remainingS: () => (total - (paused ? schedPos : heardPos())) / PCM_RATE,
     };

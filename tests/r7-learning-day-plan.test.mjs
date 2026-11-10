@@ -182,9 +182,15 @@ test("lessonBriefOf: the lesson slot's knobs, wrap at the planned length (never 
   assert.equal(b.segments.reduce((a, g) => a + g.minutes, 0), slot.targetMin);
   const keys = JSON.stringify(b).match(/"[A-Za-z]+":/g).join(" ");
   assert.ok(!/"(theta|eta|gap|placementGap|level|ge|sibling\w*)":/i.test(keys), `no level, gap or sibling key in a brief (V26, V30): ${keys}`);
-  // a start near the window's end wraps at the window end
-  const late = lessonBriefOf(plan, { at: ist("2026-10-05", "20:50"), tz: "Asia/Kolkata", day: "2026-10-05" });
+  // with the family's limits on, a start near the window's end wraps at the window end
+  const late = lessonBriefOf(plan, { at: ist("2026-10-05", "20:50"), tz: "Asia/Kolkata", day: "2026-10-05", limits: true });
   assert.equal(late.wrapAt, late.hardStopAt);
+  // audit LEARN-01: limits off (the default) → no hard stop; a start after the window wraps at its planned length
+  const after = ist("2026-10-05", "21:40");
+  const free = lessonBriefOf(plan, { at: after, tz: "Asia/Kolkata", day: "2026-10-05" });
+  assert.equal(free.hardStopAt, null);
+  assert.equal(free.wrapAt, new Date(after.getTime() + slot.targetMin * 60_000).toISOString());
+  assert.ok(Date.parse(free.wrapAt) > after.getTime(), "never a wrap time already past at the start");
   assert.equal(lessonBriefOf({ ...plan, slots: [] }, { at, tz: "Asia/Kolkata", day: "2026-10-05" }), null);
 });
 
@@ -196,6 +202,9 @@ test("lessonBriefFor: today's latest plan version, or null without one (or on an
   assert.equal(r.brief.planVersion, 2);
   assert.equal(r.brief.lessonId, "L-1");
   assert.equal(r.plan, plan);
+  assert.equal(r.brief.hardStopAt, null, "no limits row → no clock gate (LEARN-01)");
+  const qOn = async (t) => (/child_controls/.test(t) ? [{ limits_on: true }] : q(t));
+  assert.ok((await lessonBriefFor(CHILD, { now: ist("2026-10-05", "16:20"), q: qOn })).brief.hardStopAt, "the family's limit on → the window binds");
   assert.equal(await lessonBriefFor(CHILD, { q: async (t) => (/day_plan/.test(t) ? [] : []) }), null);
   assert.equal(await lessonBriefFor(CHILD, { q: async () => { throw new Error("down"); } }), null);
 });

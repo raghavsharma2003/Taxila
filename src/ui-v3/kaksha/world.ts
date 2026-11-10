@@ -87,6 +87,13 @@ export function structureFor(k: WorldSkill, cat: Catalog): CatalogStructure {
  * world): anything secure now and not in `before` is marked isNew (the dock / rise animation). Pass `before =
  * undefined` to mark nothing new. The function never reads a clock.
  */
+/** The secure_since stamps of a map's skills, for world()'s `since` (APP-19: the settlement keeps its order). */
+export function sinceOf(skills: ReadonlyArray<{ skillId: string; state: string; secureSince?: string | null }>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const k of skills) if (k.state === "secure" && k.secureSince) out[k.skillId] = k.secureSince;
+  return out;
+}
+
 export function world(skills: ReadonlyArray<WorldSkill>, cat: Catalog, before?: ReadonlySet<string>, since?: Readonly<Record<string, string>>): World {
   // de-duplicate by skill id (the map can list a skill under two chapters); the strongest state wins
   const strength: Record<MapStateLite, number> = { not_started: 0, practising: 1, got_it: 2, secure: 3 };
@@ -120,8 +127,10 @@ export function world(skills: ReadonlyArray<WorldSkill>, cat: Catalog, before?: 
   const order = secure.slice().sort((a, b) => {
     const sa = since?.[a.skillId], sb = since?.[b.skillId];
     if (sa && sb && sa !== sb) return sa < sb ? -1 : 1;
-    if (sa && !sb) return -1;
-    if (sb && !sa) return 1;
+    // APP-19: a skill with no stamp became secure before stamps existed, so it is the oldest: it goes first and a newly
+    // secure (stamped) one is appended after it, never inserted before it
+    if (sa && !sb) return 1;
+    if (sb && !sa) return -1;
     return seedOf(a.skillId) - seedOf(b.skillId);
   });
   const slots = spiral(GRID);

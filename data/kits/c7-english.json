@@ -139,7 +139,7 @@
      "skillId": "c7-english-ch01-t01-s1",
      "kind": "retrieval",
      "difficulty": 1,
-     "prompt_en": "Read: 'Every evening, Meenu sat by the river while her brothers did homework. \"Why can't I go to school too?\" she asked. The river seemed to whisper, \"Keep asking. Every question is a small step.\" Next morning, Meenu walked to the headmaster's door.' Where did Meenu sit every evening?",
+     "prompt_en": "Where did Meenu sit every evening?",
      "prompt_hi": "Kahani suno. Meenu har shaam kahaan baithti thi?",
      "answer": "By the river",
      "acceptable": [
@@ -160,14 +160,15 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch01-t01-p1"
     },
     {
      "id": "c7-english-ch01-t01-i02",
      "skillId": "c7-english-ch01-t01-s1",
      "kind": "why",
      "difficulty": 2,
-     "prompt_en": "Read: 'Every evening, Meenu sat by the river while her brothers did homework. \"Why can't I go to school too?\" she asked. The river seemed to whisper, \"Keep asking. Every question is a small step.\" Next morning, Meenu walked to the headmaster's door.' Why do you think Meenu asked the river her question, and not her family?",
+     "prompt_en": "Why do you think Meenu asked the river her question, and not her family?",
      "prompt_hi": "Socho — Meenu ne apna sawaal ghar walon se kyun nahi, nadi se poocha?",
      "answer": "She felt no one at home would listen or say yes, so she shared her feelings with the river, which felt like a safe friend",
      "acceptable": [
@@ -196,14 +197,15 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch01-t01-p1"
     },
     {
      "id": "c7-english-ch01-t01-i03",
      "skillId": "c7-english-ch01-t01-s1",
      "kind": "predict",
      "difficulty": 2,
-     "prompt_en": "Read: 'Every evening, Meenu sat by the river while her brothers did homework. \"Why can't I go to school too?\" she asked. The river seemed to whisper, \"Keep asking. Every question is a small step.\" Next morning, Meenu walked to the headmaster's door.' What do you think Meenu will say to the headmaster?",
+     "prompt_en": "What do you think Meenu will say to the headmaster?",
      "prompt_hi": "Agla kya hoga? Headmaster ke darwaaze par Meenu kya bolegi?",
      "answer": "She will ask if she can join the school and learn to read",
      "acceptable": [
@@ -230,7 +232,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch01-t01-p1"
     },
     {
      "id": "c7-english-ch01-t01-i04",
@@ -303,7 +306,7 @@
      "skillId": "c7-english-ch01-t01-s3",
      "kind": "contrast",
      "difficulty": 3,
-     "prompt_en": "Listen to two sentences: 'Where does the river go?' and 'Where the river goes is a mystery.' Which one is a question, and how do you know?",
+     "prompt_en": "Which one is a question, and how do you know?",
      "prompt_hi": "Do sentences hain. Kaunsa sawaal hai, aur kaise pata chala?",
      "answer": "'Where does the river go?' is the question, because 'does' comes before the subject 'the river'",
      "acceptable": [
@@ -330,7 +333,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch01-t01-p2"
     },
     {
      "id": "c7-english-ch01-t01-i07",
@@ -538,8 +542,8 @@
      "skillId": "c7-english-ch01-t01-s2",
      "kind": "near_transfer",
      "difficulty": 3,
-     "prompt_en": "Read: ‘Farah asked why their school tap ran dry each afternoon. She spoke to the caretaker, checked the water tank with a teacher, and discovered a leak. The school repaired it.’ What message about asking questions does this story suggest?",
-     "prompt_hi": "Padho: ‘Farah ne poochha ki school ka nal har dopahar sukha kyun rehta hai. Usne caretaker se baat ki, teacher ke saath tank check kiya aur leak dhoondh liya. School ne use theek karaya.’ Sawaal poochhne ke baare mein kahani kya sandesh deti hai?",
+     "prompt_en": "What message about asking questions does this story suggest?",
+     "prompt_hi": "Sawaal poochhne ke baare mein kahani kya sandesh deti hai?",
      "answer": "Asking questions can lead to investigation and solutions.",
      "acceptable": [
       "Questions help us investigate and solve problems",
@@ -564,7 +568,8 @@
       "solver": "DeepSeek-V4-Pro",
       "checker": "grok-4-20-non-reasoning",
       "date": "2026-10-04"
-     }
+     },
+     "passageId": "c7-english-ch01-t01-p3"
     },
     {
      "id": "c7-english-ch01-t01-rl-g3",
@@ -629,8 +634,8 @@
      "skillId": "c7-english-ch01-t01-s1",
      "kind": "near_transfer",
      "difficulty": 4,
-     "prompt_en": "Read: ‘Sana’s family said the riverbank was no place to study. She carried her notebook there anyway and asked the water-quality team how they tested pollution.’ Which feeling best explains Sana’s actions: curiosity, boredom, or anger?",
-     "prompt_hi": "Padho: ‘Sana ke gharwalon ne kaha ki nadi kinare padhai nahin hoti. Phir bhi woh notebook lekar gayi aur water-quality team se poochha ki pollution kaise test karte hain.’ Sana ke kaam ko kaunsi feeling samjhati hai: curiosity, boredom, ya anger?",
+     "prompt_en": "Which feeling best explains Sana’s actions: curiosity, boredom, or anger?",
+     "prompt_hi": "Sana ke kaam ko kaunsi feeling samjhati hai: curiosity, boredom, ya anger?",
      "answer": "Curiosity",
      "acceptable": [
       "curiosity",
@@ -653,7 +658,8 @@
       "how": "code",
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
-     }
+     },
+     "passageId": "c7-english-ch01-t01-p4"
     },
     {
      "id": "c7-english-ch01-t01-rl-h6",
@@ -832,6 +838,24 @@
     "a cricket coach at the local maidan",
     "Dadi's evening stories",
     "a science fair question board"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch01-t01-p1",
+     "text": "Every evening, Meenu sat by the river while her brothers did homework. \"Why can't I go to school too?\" she asked. The river seemed to whisper, \"Keep asking. Every question is a small step.\" Next morning, Meenu walked to the headmaster's door."
+    },
+    {
+     "id": "c7-english-ch01-t01-p2",
+     "text": "Where does the river go?' and 'Where the river goes is a mystery."
+    },
+    {
+     "id": "c7-english-ch01-t01-p3",
+     "text": "Farah asked why their school tap ran dry each afternoon. She spoke to the caretaker, checked the water tank with a teacher, and discovered a leak. The school repaired it."
+    },
+    {
+     "id": "c7-english-ch01-t01-p4",
+     "text": "Sana’s family said the riverbank was no place to study. She carried her notebook there anyway and asked the water-quality team how they tested pollution."
+    }
    ]
   },
   {
@@ -971,7 +995,7 @@
      "skillId": "c7-english-ch02-t01-s1",
      "kind": "practice",
      "difficulty": 1,
-     "prompt_en": "Read these lines aloud and clap on the strong beats: 'The rope was high, my arms were sore, / I fell, I rose, I tried once more.' Which words get the strongest beat at the end of each line?",
+     "prompt_en": "Which words get the strongest beat at the end of each line?",
      "prompt_hi": "Ye do lines taali ke saath padho. Har line ke aakhir mein kis word par sabse zor aata hai?",
      "answer": "sore and more",
      "acceptable": [
@@ -991,7 +1015,8 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 5.5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch02-t01-p1"
     },
     {
      "id": "c7-english-ch02-t01-i02",
@@ -1123,7 +1148,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch02-t01-p1"
     },
     {
      "id": "c7-english-ch02-t01-i06",
@@ -1159,7 +1185,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch02-t01-p1"
     },
     {
      "id": "c7-english-ch02-t01-i07",
@@ -1363,7 +1390,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch02-t01-p1"
     },
     {
      "id": "c7-english-ch02-t01-rl-h1",
@@ -1495,6 +1523,12 @@
     "a kite that keeps falling on Makar Sankranti",
     "a spelling bee",
     "learning a dance step for the annual day"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch02-t01-p1",
+     "text": "The rope was high, my arms were sore,\nI fell, I rose, I tried once more."
+    }
    ]
   },
   {
@@ -1632,7 +1666,7 @@
      "skillId": "c7-english-ch03-t01-s1",
      "kind": "retrieval",
      "difficulty": 1,
-     "prompt_en": "Read: 'If I could see for just three days, I would first look at the faces of the people I love. I would walk in a garden at sunrise and watch the colours change. At night, I would gaze at the stars and try to hold them in my memory. Those of us who can see often forget how lucky we are.' What would the writer look at first?",
+     "prompt_en": "What would the writer look at first?",
      "prompt_hi": "Passage suno. Writer sabse pehle kya dekhna chahti hai?",
      "answer": "The faces of the people she loves",
      "acceptable": [
@@ -1653,14 +1687,15 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 5.5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch03-t01-p1"
     },
     {
      "id": "c7-english-ch03-t01-i02",
      "skillId": "c7-english-ch03-t01-s1",
      "kind": "practice",
      "difficulty": 2,
-     "prompt_en": "Read: 'If I could see for just three days, I would first look at the faces of the people I love. I would walk in a garden at sunrise and watch the colours change. At night, I would gaze at the stars and try to hold them in my memory. Those of us who can see often forget how lucky we are.' Which sentence gives the main idea of the passage?",
+     "prompt_en": "Which sentence gives the main idea of the passage?",
      "prompt_hi": "Inmein se kaunsi line poore passage ka main idea batati hai?",
      "answer": "Those of us who can see often forget how lucky we are.",
      "acceptable": [
@@ -1687,7 +1722,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch03-t01-p1"
     },
     {
      "id": "c7-english-ch03-t01-i03",
@@ -2031,7 +2067,7 @@
      "skillId": "c7-english-ch03-t01-s1",
      "kind": "contrast",
      "difficulty": 3,
-     "prompt_en": "Read: 'During a cricket match, Rohan heard the crowd cheer and felt the cool breeze, but kept checking his phone. Later, he realised how much he had missed.' Which is the main idea: A) The crowd was loud or B) We often overlook what our senses let us experience?",
+     "prompt_en": "Which is the main idea: A) The crowd was loud or B) We often overlook what our senses let us experience?",
      "prompt_hi": "Passage padho: Cricket match mein Rohan ne crowd ki cheering suni aur thandi hawa mehsoos ki, par phone dekhta raha. Baad mein use laga ki usne bahut kuch miss kiya. Main idea kya hai: A) Crowd loud tha ya B) Hum aksar senses se milne wale experiences ko nazarandaaz kar dete hain?",
      "answer": "B) We often overlook what our senses let us experience",
      "acceptable": [
@@ -2055,7 +2091,8 @@
       "how": "code",
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
-     }
+     },
+     "passageId": "c7-english-ch03-t01-p2"
     },
     {
      "id": "c7-english-ch03-t01-rl-g2",
@@ -2185,6 +2222,16 @@
     "a temple fair with drums and lights",
     "watching a sunset on a Goa beach",
     "a grandparent's fading eyesight"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch03-t01-p1",
+     "text": "If I could see for just three days, I would first look at the faces of the people I love. I would walk in a garden at sunrise and watch the colours change. At night, I would gaze at the stars and try to hold them in my memory. Those of us who can see often forget how lucky we are."
+    },
+    {
+     "id": "c7-english-ch03-t01-p2",
+     "text": "During a cricket match, Rohan heard the crowd cheer and felt the cool breeze, but kept checking his phone. Later, he realised how much he had missed."
+    }
    ]
   },
   {
@@ -2316,7 +2363,7 @@
      "skillId": "c7-english-ch04-t01-s1",
      "kind": "retrieval",
      "difficulty": 1,
-     "prompt_en": "Read: 'Doctor Ramu liked animals more than people. One day his parrot Mitthu said, \"Animals talk too. A dog talks with its tail, a cow with its ears.\" Soon the doctor understood them all, and sick animals came from far away to his clinic.' Who helped Doctor Ramu understand the animals?",
+     "prompt_en": "Who helped Doctor Ramu understand the animals?",
      "prompt_hi": "Kahani suno. Doctor Ramu ko jaanwaron ki baat samajhne mein kisne madad ki?",
      "answer": "His parrot Mitthu",
      "acceptable": [
@@ -2337,14 +2384,15 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch04-t01-p1"
     },
     {
      "id": "c7-english-ch04-t01-i02",
      "skillId": "c7-english-ch04-t01-s1",
      "kind": "why",
      "difficulty": 2,
-     "prompt_en": "Read: 'Doctor Ramu liked animals more than people. One day his parrot Mitthu said, \"Animals talk too. A dog talks with its tail, a cow with its ears.\" Soon the doctor understood them all, and sick animals came from far away to his clinic.' Why did sick animals come from far away to his clinic?",
+     "prompt_en": "Why did sick animals come from far away to his clinic?",
      "prompt_hi": "Door-door se beemaar jaanwar unke clinic kyun aate the?",
      "answer": "Because he could understand them, so he could find out what was wrong and treat them",
      "acceptable": [
@@ -2371,7 +2419,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch04-t01-p1"
     },
     {
      "id": "c7-english-ch04-t01-i03",
@@ -2704,7 +2753,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch04-t01-p1"
     },
     {
      "id": "c7-english-ch04-t01-rl-g3",
@@ -2803,6 +2853,12 @@
     "a bird sanctuary trip to Bharatpur",
     "monkeys on the terrace",
     "a cow on the road during traffic"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch04-t01-p1",
+     "text": "Doctor Ramu liked animals more than people. One day his parrot Mitthu said, \"Animals talk too. A dog talks with its tail, a cow with its ears.\" Soon the doctor understood them all, and sick animals came from far away to his clinic."
+    }
    ]
   },
   {
@@ -2940,7 +2996,7 @@
      "skillId": "c7-english-ch05-t01-s1",
      "kind": "retrieval",
      "difficulty": 1,
-     "prompt_en": "Read: 'There lived a man in Ludhiana / Who wore his shoes upon his ears; / He ate his soup with a banana / And laughed so hard he cried for years.' Where did the man wear his shoes?",
+     "prompt_en": "Where did the man wear his shoes?",
      "prompt_hi": "Kavita suno. Aadmi joote kahaan pehenta tha?",
      "answer": "Upon his ears",
      "acceptable": [
@@ -2960,14 +3016,15 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 4.5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch05-t01-p1"
     },
     {
      "id": "c7-english-ch05-t01-i02",
      "skillId": "c7-english-ch05-t01-s1",
      "kind": "why",
      "difficulty": 2,
-     "prompt_en": "Read: 'There lived a man in Ludhiana / Who wore his shoes upon his ears; / He ate his soup with a banana / And laughed so hard he cried for years.' Why is it funny that he ate his soup with a banana?",
+     "prompt_en": "Why is it funny that he ate his soup with a banana?",
      "prompt_hi": "Kele se soup peena — yeh mazedaar kyun hai?",
      "answer": "Because it is impossible and silly; a banana cannot scoop soup like a spoon, so the surprise makes us laugh",
      "acceptable": [
@@ -2995,14 +3052,15 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch05-t01-p1"
     },
     {
      "id": "c7-english-ch05-t01-i03",
      "skillId": "c7-english-ch05-t01-s2",
      "kind": "practice",
      "difficulty": 2,
-     "prompt_en": "Read: 'There lived a man in Ludhiana / Who wore his shoes upon his ears; / He ate his soup with a banana / And laughed so hard he cried for years.' What is the rhyme scheme of this stanza?",
+     "prompt_en": "What is the rhyme scheme of this stanza?",
      "prompt_hi": "Har line ke aakhri word ko suno aur A, B letter do. Scheme kya bani?",
      "answer": "ABAB",
      "acceptable": [
@@ -3028,7 +3086,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "apply",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch05-t01-p1"
     },
     {
      "id": "c7-english-ch05-t01-i04",
@@ -3606,6 +3665,12 @@
     "a school talent show",
     "cartoon shows",
     "a monsoon day when everything goes wrong"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch05-t01-p1",
+     "text": "There lived a man in Ludhiana\nWho wore his shoes upon his ears;\nHe ate his soup with a banana\nAnd laughed so hard he cried for years."
+    }
    ]
   },
   {
@@ -3743,7 +3808,7 @@
      "skillId": "c7-english-ch06-t01-s1",
      "kind": "retrieval",
      "difficulty": 1,
-     "prompt_en": "Read: 'MOTHER: Raju, Mrs Sharma is coming. Be polite and say the right thing. (The bell rings.) RAJU: Hello, aunty! Mummy says you talk too much, so I'll keep it short. MOTHER: (turning red) Raju! Would you like some tea, Mrs Sharma?' What did Mother tell Raju before the guest came?",
+     "prompt_en": "What did Mother tell Raju before the guest came?",
      "prompt_hi": "Mehmaan aane se pehle Mummy ne Raju ko kya kaha?",
      "answer": "To be polite and say the right thing",
      "acceptable": [
@@ -3763,14 +3828,15 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch06-t01-p1"
     },
     {
      "id": "c7-english-ch06-t01-i02",
      "skillId": "c7-english-ch06-t01-s1",
      "kind": "why",
      "difficulty": 2,
-     "prompt_en": "Read: 'MOTHER: Raju, Mrs Sharma is coming. Be polite and say the right thing. (The bell rings.) RAJU: Hello, aunty! Mummy says you talk too much, so I'll keep it short. MOTHER: (turning red) Raju! Would you like some tea, Mrs Sharma?' Why does Mother turn red?",
+     "prompt_en": "Why does Mother turn red?",
      "prompt_hi": "Mummy laal kyun ho jaati hain?",
      "answer": "She is embarrassed because Raju repeated a rude thing she had said about the guest, in front of the guest",
      "acceptable": [
@@ -3797,14 +3863,15 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch06-t01-p1"
     },
     {
      "id": "c7-english-ch06-t01-i03",
      "skillId": "c7-english-ch06-t01-s1",
      "kind": "predict",
      "difficulty": 3,
-     "prompt_en": "Read: 'MOTHER: Raju, Mrs Sharma is coming. Be polite and say the right thing. (The bell rings.) RAJU: Hello, aunty! Mummy says you talk too much, so I'll keep it short. MOTHER: (turning red) Raju! Would you like some tea, Mrs Sharma?' What do you think happens next in the scene?",
+     "prompt_en": "What do you think happens next in the scene?",
      "prompt_hi": "Ab aage kya hoga, socho?",
      "answer": "Mrs Sharma may feel hurt or awkward, and Mother will try to cover up, apologise or change the topic",
      "acceptable": [
@@ -3831,7 +3898,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch06-t01-p1"
     },
     {
      "id": "c7-english-ch06-t01-i04",
@@ -4181,7 +4249,7 @@
      "skillId": "c7-english-ch06-t01-s1",
      "kind": "near_transfer",
      "difficulty": 4,
-     "prompt_en": "Read: 'NISHA: Tell the judge our team is ready. DEV: Our team is ready—except our robot has lost its head! NISHA: I meant the team leader, not the robot's head!' What misunderstanding changes the conversation?",
+     "prompt_en": "What misunderstanding changes the conversation?",
      "prompt_hi": "Dialogue padho: Nisha judge ko team ke ready hone ki baat kehna chahti hai, par Dev robot ke head ki baat karta hai. Galatfahmi kya hai?",
      "answer": "Dev thinks Nisha means the robot, while she means the team leader.",
      "acceptable": [
@@ -4207,7 +4275,8 @@
       "solver": "DeepSeek-V4-Pro",
       "checker": "grok-4-20-non-reasoning",
       "date": "2026-10-04"
-     }
+     },
+     "passageId": "c7-english-ch06-t01-p2"
     },
     {
      "id": "c7-english-ch06-t01-rl-h2",
@@ -4279,6 +4348,16 @@
     "a birthday party at home",
     "a shopkeeper and a customer",
     "a new family moving in next door"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch06-t01-p1",
+     "text": "MOTHER: Raju, Mrs Sharma is coming. Be polite and say the right thing. (The bell rings.) RAJU: Hello, aunty! Mummy says you talk too much, so I'll keep it short. MOTHER: (turning red) Raju! Would you like some tea, Mrs Sharma?"
+    },
+    {
+     "id": "c7-english-ch06-t01-p2",
+     "text": "NISHA: Tell the judge our team is ready. DEV: Our team is ready—except our robot has lost its head! NISHA: I meant the team leader, not the robot's head!"
+    }
    ]
   },
   {
@@ -4416,7 +4495,7 @@
      "skillId": "c7-english-ch07-t01-s1",
      "kind": "retrieval",
      "difficulty": 1,
-     "prompt_en": "Read: 'My brother Kabir was always inventing something. Last Sunday he was building a machine to fold rotis when Mummy walked in. The machine shook, coughed and threw a roti onto the fan! We all laughed, but Kabir only said, \"Now I know what to fix.\"' What was Kabir building?",
+     "prompt_en": "What was Kabir building?",
      "prompt_hi": "Kahani suno. Kabir kya bana raha tha?",
      "answer": "A machine to fold rotis",
      "acceptable": [
@@ -4436,14 +4515,15 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch07-t01-p1"
     },
     {
      "id": "c7-english-ch07-t01-i02",
      "skillId": "c7-english-ch07-t01-s2",
      "kind": "why",
      "difficulty": 2,
-     "prompt_en": "Read: 'My brother Kabir was always inventing something. Last Sunday he was building a machine to fold rotis when Mummy walked in. The machine shook, coughed and threw a roti onto the fan! We all laughed, but Kabir only said, \"Now I know what to fix.\"' Why did Kabir say, 'Now I know what to fix'?",
+     "prompt_en": "Why did Kabir say, 'Now I know what to fix'?",
      "prompt_hi": "Sab hans rahe the, phir bhi Kabir ne 'Now I know what to fix' kyun kaha?",
      "answer": "He saw the failure as a lesson; it showed him what was wrong, so he could improve the machine",
      "acceptable": [
@@ -4471,14 +4551,15 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch07-t01-p1"
     },
     {
      "id": "c7-english-ch07-t01-i03",
      "skillId": "c7-english-ch07-t01-s2",
      "kind": "predict",
      "difficulty": 2,
-     "prompt_en": "Read: 'My brother Kabir was always inventing something. Last Sunday he was building a machine to fold rotis when Mummy walked in. The machine shook, coughed and threw a roti onto the fan! We all laughed, but Kabir only said, \"Now I know what to fix.\"' What will Kabir most likely do next Sunday?",
+     "prompt_en": "What will Kabir most likely do next Sunday?",
      "prompt_hi": "Agle Sunday Kabir kya karega?",
      "answer": "He will fix the machine and try it again",
      "acceptable": [
@@ -4506,7 +4587,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch07-t01-p1"
     },
     {
      "id": "c7-english-ch07-t01-i04",
@@ -4778,7 +4860,7 @@
      "skillId": "c7-english-ch07-t01-s2",
      "kind": "why",
      "difficulty": 3,
-     "prompt_en": "Read: 'My brother Kabir was always inventing something. Last Sunday he was building a machine to fold rotis when Mummy walked in. The machine shook, coughed and threw a roti onto the fan! We all laughed, but Kabir only said, \"Now I know what to fix.\"' How does the narrator feel about Kabir's inventions? Give one clue.",
+     "prompt_en": "How does the narrator feel about Kabir's inventions? Give one clue.",
      "prompt_hi": "Kahani sunane wala apne bhai ke inventions ke baare mein kaisa feel karta hai? Ek clue do.",
      "answer": "Amused but fond and a little proud; the clue is 'We all laughed' together with calling him someone who is always inventing",
      "acceptable": [
@@ -4805,7 +4887,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch07-t01-p1"
     },
     {
      "id": "c7-english-ch07-t01-i13",
@@ -4839,7 +4922,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch07-t01-p1"
     },
     {
      "id": "c7-english-ch07-t01-rl-h2",
@@ -4936,6 +5020,12 @@
     "a kite with a new tail design",
     "fixing a bicycle chain",
     "a mango-plucking gadget for the tree"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch07-t01-p1",
+     "text": "My brother Kabir was always inventing something. Last Sunday he was building a machine to fold rotis when Mummy walked in. The machine shook, coughed and threw a roti onto the fan! We all laughed, but Kabir only said, \"Now I know what to fix.\""
+    }
    ]
   },
   {
@@ -5074,7 +5164,7 @@
      "skillId": "c7-english-ch08-t01-s1",
      "kind": "retrieval",
      "difficulty": 1,
-     "prompt_en": "Read: 'Each day I float a paper boat / Upon the stream that runs so wide; / I write my name and village on it, / And wish a friend on the other side.' What does the child write on the boat?",
+     "prompt_en": "What does the child write on the boat?",
      "prompt_hi": "Kavita suno. Bachcha naav par kya likhta hai?",
      "answer": "His name and his village",
      "acceptable": [
@@ -5094,14 +5184,15 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch08-t01-p1"
     },
     {
      "id": "c7-english-ch08-t01-i02",
      "skillId": "c7-english-ch08-t01-s1",
      "kind": "why",
      "difficulty": 2,
-     "prompt_en": "Read: 'Each day I float a paper boat / Upon the stream that runs so wide; / I write my name and village on it, / And wish a friend on the other side.' Why does he write his name and village on the boat?",
+     "prompt_en": "Why does he write his name and village on the boat?",
      "prompt_hi": "Woh naav par apna naam aur gaon kyun likhta hai?",
      "answer": "He hopes someone far away will find the boat, know who he is, and become his friend",
      "acceptable": [
@@ -5128,7 +5219,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch08-t01-p1"
     },
     {
      "id": "c7-english-ch08-t01-i03",
@@ -5532,8 +5624,8 @@
      "skillId": "c7-english-ch08-t01-s1",
      "kind": "near_transfer",
      "difficulty": 3,
-     "prompt_en": "Read: '{friendF} launches a paper boat after the rain. She knows it may sink before reaching anyone, yet she writes, “I hope someone finds this.”' Is the central idea hope despite uncertainty or certainty of success?",
-     "prompt_hi": "Padho: '{friendF} baarish ke baad kagaz ki naav chhodti hai. Use pata hai naav kisi tak pahunchne se pehle doob sakti hai, phir bhi woh likhti hai, “I hope someone finds this.”' Central idea kya hai: anishchitata ke bawajood umeed, ya safalta ka yakeen?",
+     "prompt_en": "Is the central idea hope despite uncertainty or certainty of success?",
+     "prompt_hi": "Central idea kya hai: anishchitata ke bawajood umeed, ya safalta ka yakeen?",
      "answer": "Hope despite uncertainty",
      "acceptable": [
       "hope despite uncertainty",
@@ -5556,15 +5648,16 @@
       "how": "code",
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
-     }
+     },
+     "passageId": "c7-english-ch08-t01-p2"
     },
     {
      "id": "c7-english-ch08-t01-rl-g2",
      "skillId": "c7-english-ch08-t01-s2",
      "kind": "practice",
      "difficulty": 3,
-     "prompt_en": "Read: 'On the flooded street, paper boats drifted beneath the streetlights like tiny golden lamps.' Does 'tiny golden lamps' create mainly visual imagery or sound imagery?",
-     "prompt_hi": "Padho: 'Paani se bhari sadak par kagaz ki naavein streetlights ke neeche tiny golden lamps jaisi beh rahi thi.' 'Tiny golden lamps' se mainly visual imagery banti hai ya sound imagery?",
+     "prompt_en": "Does 'tiny golden lamps' create mainly visual imagery or sound imagery?",
+     "prompt_hi": "se mainly visual imagery banti hai ya sound imagery?",
      "answer": "Visual imagery",
      "acceptable": [
       "visual imagery",
@@ -5588,7 +5681,8 @@
       "how": "code",
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
-     }
+     },
+     "passageId": "c7-english-ch08-t01-p3"
     },
     {
      "id": "c7-english-ch08-t01-rl-g3",
@@ -5626,7 +5720,7 @@
      "skillId": "c7-english-ch08-t01-s1",
      "kind": "predict",
      "difficulty": 4,
-     "prompt_en": "Read: 'Aarav folds his exam timetable into a paper boat and lets it travel down the rainwater drain. Tomorrow is still uncertain, but he smiles as it sails away.' Does the boat mainly suggest escape from exams or hope despite uncertainty?",
+     "prompt_en": "Does the boat mainly suggest escape from exams or hope despite uncertainty?",
      "prompt_hi": "Yeh padho: 'Aarav apna exam timetable modkar kagaz ki naav banata hai aur use baarish ke paani mein baha deta hai. Kal kya hoga, pata nahi, phir bhi woh muskurata hai.' Naav kya dikhati hai: exams se bachna ya anishchitata ke bawajood umeed?",
      "answer": "Hope despite uncertainty",
      "acceptable": [
@@ -5650,7 +5744,8 @@
       "how": "code",
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
-     }
+     },
+     "passageId": "c7-english-ch08-t01-p4"
     },
     {
      "id": "c7-english-ch08-t01-rl-h5",
@@ -5751,6 +5846,24 @@
     "a kite flying over the rooftops",
     "a message in a bottle at the beach",
     "floating diyas on a river at Dev Deepawali"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch08-t01-p1",
+     "text": "Each day I float a paper boat\nUpon the stream that runs so wide;\nI write my name and village on it,\nAnd wish a friend on the other side."
+    },
+    {
+     "id": "c7-english-ch08-t01-p2",
+     "text": "{friendF} launches a paper boat after the rain. She knows it may sink before reaching anyone, yet she writes, “I hope someone finds this.”"
+    },
+    {
+     "id": "c7-english-ch08-t01-p3",
+     "text": "On the flooded street, paper boats drifted beneath the streetlights like tiny golden lamps."
+    },
+    {
+     "id": "c7-english-ch08-t01-p4",
+     "text": "Aarav folds his exam timetable into a paper boat and lets it travel down the rainwater drain. Tomorrow is still uncertain, but he smiles as it sails away."
+    }
    ]
   },
   {
@@ -5883,7 +5996,7 @@
      "skillId": "c7-english-ch09-t01-s1",
      "kind": "retrieval",
      "difficulty": 1,
-     "prompt_en": "Read: 'Guwahati, 12 May. Dear Tara, Greetings from the East! We reached here by train yesterday. The Brahmaputra is so wide that it looks like a sea. Tomorrow we go to Kaziranga to see rhinos. I miss you! With love, Anu' Where is Anu writing from?",
+     "prompt_en": "Where is Anu writing from?",
      "prompt_hi": "Letter suno. Anu kahaan se likh rahi hai?",
      "answer": "Guwahati",
      "acceptable": [
@@ -5904,14 +6017,15 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 5.5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch09-t01-p1"
     },
     {
      "id": "c7-english-ch09-t01-i02",
      "skillId": "c7-english-ch09-t01-s1",
      "kind": "practice",
      "difficulty": 2,
-     "prompt_en": "Read: 'Guwahati, 12 May. Dear Tara, Greetings from the East! We reached here by train yesterday. The Brahmaputra is so wide that it looks like a sea. Tomorrow we go to Kaziranga to see rhinos. I miss you! With love, Anu' What is the main purpose of Anu's letter?",
+     "prompt_en": "What is the main purpose of Anu's letter?",
      "prompt_hi": "Anu ne yeh letter kyun likha? Main maqsad kya hai?",
      "answer": "To share her travel experiences with her friend and tell her she misses her",
      "acceptable": [
@@ -5938,14 +6052,15 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch09-t01-p1"
     },
     {
      "id": "c7-english-ch09-t01-i03",
      "skillId": "c7-english-ch09-t01-s1",
      "kind": "why",
      "difficulty": 2,
-     "prompt_en": "Read: 'Guwahati, 12 May. Dear Tara, Greetings from the East! We reached here by train yesterday. The Brahmaputra is so wide that it looks like a sea. Tomorrow we go to Kaziranga to see rhinos. I miss you! With love, Anu' How can you tell that this letter is informal and friendly? Give two clues.",
+     "prompt_en": "How can you tell that this letter is informal and friendly? Give two clues.",
      "prompt_hi": "Kaise pata chala ki yeh dost ko likha friendly letter hai? Do clue do.",
      "answer": "It starts with 'Dear Tara', uses exclamations and 'I miss you', and ends with 'With love'",
      "acceptable": [
@@ -5972,7 +6087,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch09-t01-p1"
     },
     {
      "id": "c7-english-ch09-t01-i04",
@@ -6146,7 +6262,7 @@
      "skillId": "c7-english-ch09-t01-s1",
      "kind": "predict",
      "difficulty": 2,
-     "prompt_en": "Read: 'Guwahati, 12 May. Dear Tara, Greetings from the East! We reached here by train yesterday. The Brahmaputra is so wide that it looks like a sea. Tomorrow we go to Kaziranga to see rhinos. I miss you! With love, Anu' What will Anu most likely write about in her next letter?",
+     "prompt_en": "What will Anu most likely write about in her next letter?",
      "prompt_hi": "Anu agle letter mein kis baare mein likhegi?",
      "answer": "Her visit to Kaziranga and the rhinos she saw",
      "acceptable": [
@@ -6172,7 +6288,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": true
+     "tooEasy": true,
+     "passageId": "c7-english-ch09-t01-p1"
     },
     {
      "id": "c7-english-ch09-t01-i10",
@@ -6467,6 +6584,12 @@
     "a cousin's wedding in Kolkata",
     "a Ladakh road trip",
     "a pen friend in Chennai"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch09-t01-p1",
+     "text": "Guwahati, 12 May. Dear Tara, Greetings from the East! We reached here by train yesterday. The Brahmaputra is so wide that it looks like a sea. Tomorrow we go to Kaziranga to see rhinos. I miss you! With love, Anu"
+    }
    ]
   },
   {
@@ -6604,7 +6727,7 @@
      "skillId": "c7-english-ch10-t01-s1",
      "kind": "retrieval",
      "difficulty": 1,
-     "prompt_en": "Read: 'Ravi sat near the dark mouth of the tunnel, waiting for the evening train. Far away, a whistle shrieked. Suddenly, two yellow eyes glowed inside the tunnel. A leopard! It stared at Ravi, then slipped silently into the trees just as the engine roared out.' What was Ravi waiting for?",
+     "prompt_en": "What was Ravi waiting for?",
      "prompt_hi": "Kahani suno. Ravi kiska intezaar kar raha tha?",
      "answer": "The evening train",
      "acceptable": [
@@ -6624,14 +6747,15 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch10-t01-p1"
     },
     {
      "id": "c7-english-ch10-t01-i02",
      "skillId": "c7-english-ch10-t01-s1",
      "kind": "why",
      "difficulty": 3,
-     "prompt_en": "Read: 'Ravi sat near the dark mouth of the tunnel, waiting for the evening train. Far away, a whistle shrieked. Suddenly, two yellow eyes glowed inside the tunnel. A leopard! It stared at Ravi, then slipped silently into the trees just as the engine roared out.' How does the writer make this moment exciting and scary? Give two ways.",
+     "prompt_en": "How does the writer make this moment exciting and scary? Give two ways.",
      "prompt_hi": "Lekhak ne is pal ko itna romanchak kaise banaya? Do tareeke batao.",
      "answer": "The dark tunnel, the far-away whistle, the word 'suddenly' and the glowing eyes shown before we are told it is a leopard all build suspense",
      "acceptable": [
@@ -6659,7 +6783,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch10-t01-p1"
     },
     {
      "id": "c7-english-ch10-t01-i03",
@@ -6701,7 +6826,7 @@
      "skillId": "c7-english-ch10-t01-s2",
      "kind": "practice",
      "difficulty": 2,
-     "prompt_en": "Read: 'Ravi sat near the dark mouth of the tunnel, waiting for the evening train. Far away, a whistle shrieked. Suddenly, two yellow eyes glowed inside the tunnel. A leopard! It stared at Ravi, then slipped silently into the trees just as the engine roared out.' Find two sound words the writer uses.",
+     "prompt_en": "Find two sound words the writer uses.",
      "prompt_hi": "Passage mein do awaaz wale words dhoondho.",
      "answer": "shrieked and roared",
      "acceptable": [
@@ -6728,7 +6853,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "recall",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch10-t01-p1"
     },
     {
      "id": "c7-english-ch10-t01-i05",
@@ -6900,7 +7026,7 @@
      "skillId": "c7-english-ch10-t01-s4",
      "kind": "why",
      "difficulty": 3,
-     "prompt_en": "Read: 'Ravi sat near the dark mouth of the tunnel, waiting for the evening train. Far away, a whistle shrieked. Suddenly, two yellow eyes glowed inside the tunnel. A leopard! It stared at Ravi, then slipped silently into the trees just as the engine roared out.' Why did the leopard slip away into the trees?",
+     "prompt_en": "Why did the leopard slip away into the trees?",
      "prompt_hi": "Leopard chupchaap ped ki taraf kyun chala gaya?",
      "answer": "It did not want trouble with people; the noisy train was coming, and it went back to its home in the forest",
      "acceptable": [
@@ -6929,7 +7055,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch10-t01-p1"
     },
     {
      "id": "c7-english-ch10-t01-i11",
@@ -7038,8 +7165,8 @@
      "skillId": "c7-english-ch10-t01-s1",
      "kind": "predict",
      "difficulty": 3,
-     "prompt_en": "Read: 'During the school play, Meera reached for the curtain rope. It jerked upward before she touched it.' What is more likely: someone is pulling the rope from backstage, or the play has ended?",
-     "prompt_hi": "Padho: 'School play mein Meera curtain ki rassi pakadne wali thi. Chhoone se pehle hi woh upar khinch gayi.' Kya zyada likely hai: backstage se koi rassi kheench raha hai, ya play khatam ho gaya?",
+     "prompt_en": "What is more likely: someone is pulling the rope from backstage, or the play has ended?",
+     "prompt_hi": "Kya zyada likely hai: backstage se koi rassi kheench raha hai, ya play khatam ho gaya?",
      "answer": "Someone is pulling the rope from backstage",
      "acceptable": [
       "Someone backstage is pulling it",
@@ -7061,7 +7188,8 @@
       "how": "code",
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
-     }
+     },
+     "passageId": "c7-english-ch10-t01-p2"
     },
     {
      "id": "c7-english-ch10-t01-rl-h2",
@@ -7097,8 +7225,8 @@
      "skillId": "c7-english-ch10-t01-s4",
      "kind": "why",
      "difficulty": 4,
-     "prompt_en": "Read: 'A forest guard stopped hikers from leaving food beside a hillside trail. A leopard had been seen nearby, and she wanted it to keep hunting in the forest.' Why did she stop them?",
-     "prompt_hi": "Padho: 'Forest guard ne hikers ko pahaadi trail ke paas khana chhodne se roka. Wahan leopard dekha gaya tha, aur woh chahti thi ki woh jungle mein hi shikar kare.' Usne hikers ko kyun roka?",
+     "prompt_en": "Why did she stop them?",
+     "prompt_hi": "Usne hikers ko kyun roka?",
      "answer": "To avoid attracting the leopard to people with food",
      "acceptable": [
       "So the leopard would not come near people for food",
@@ -7124,7 +7252,8 @@
       "solver": "DeepSeek-V4-Pro",
       "checker": "grok-4-20-non-reasoning",
       "date": "2026-10-04"
-     }
+     },
+     "passageId": "c7-english-ch10-t01-p3"
     }
    ],
    "workedExample": {
@@ -7163,6 +7292,20 @@
     "a railway crossing near home",
     "a night power cut in the village",
     "a wildlife documentary"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch10-t01-p1",
+     "text": "Ravi sat near the dark mouth of the tunnel, waiting for the evening train. Far away, a whistle shrieked. Suddenly, two yellow eyes glowed inside the tunnel. A leopard! It stared at Ravi, then slipped silently into the trees just as the engine roared out."
+    },
+    {
+     "id": "c7-english-ch10-t01-p2",
+     "text": "During the school play, Meera reached for the curtain rope. It jerked upward before she touched it."
+    },
+    {
+     "id": "c7-english-ch10-t01-p3",
+     "text": "A forest guard stopped hikers from leaving food beside a hillside trail. A leopard had been seen nearby, and she wanted it to keep hunting in the forest."
+    }
    ]
   },
   {
@@ -7306,7 +7449,7 @@
      "skillId": "c7-english-ch11-t01-s1",
      "kind": "retrieval",
      "difficulty": 1,
-     "prompt_en": "Read: 'Each night I hear the far train call, / Its whistle drifting through the dark; / Though friends are kind and home is warm, / I long to follow every spark.' What does the speaker hear each night?",
+     "prompt_en": "What does the speaker hear each night?",
      "prompt_hi": "Kavita suno. Speaker ko har raat kya sunaai deta hai?",
      "answer": "The call or whistle of a faraway train",
      "acceptable": [
@@ -7327,14 +7470,15 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch11-t01-p1"
     },
     {
      "id": "c7-english-ch11-t01-i02",
      "skillId": "c7-english-ch11-t01-s1",
      "kind": "why",
      "difficulty": 2,
-     "prompt_en": "Read: 'Each night I hear the far train call, / Its whistle drifting through the dark; / Though friends are kind and home is warm, / I long to follow every spark.' What does 'I long to follow every spark' tell us about the speaker?",
+     "prompt_en": "What does 'I long to follow every spark' tell us about the speaker?",
      "prompt_hi": "'I long to follow every spark' se speaker ke baare mein kya pata chalta hai?",
      "answer": "She has a strong wish to travel and see new places",
      "acceptable": [
@@ -7361,14 +7505,15 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch11-t01-p1"
     },
     {
      "id": "c7-english-ch11-t01-i03",
      "skillId": "c7-english-ch11-t01-s4",
      "kind": "contrast",
      "difficulty": 3,
-     "prompt_en": "Read: 'Each night I hear the far train call, / Its whistle drifting through the dark; / Though friends are kind and home is warm, / I long to follow every spark.' Does the speaker dislike her home and friends? How do you know?",
+     "prompt_en": "Does the speaker dislike her home and friends? How do you know?",
      "prompt_hi": "Kya speaker ko apna ghar aur dost pasand nahi? Kaise pata?",
      "answer": "No; she says friends are kind and home is warm, but 'though' shows that she still wants to travel",
      "acceptable": [
@@ -7395,7 +7540,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch11-t01-p1"
     },
     {
      "id": "c7-english-ch11-t01-i04",
@@ -7503,7 +7649,7 @@
      "skillId": "c7-english-ch11-t01-s2",
      "kind": "practice",
      "difficulty": 2,
-     "prompt_en": "Read: 'Each night I hear the far train call, / Its whistle drifting through the dark; / Though friends are kind and home is warm, / I long to follow every spark.' Which word best describes the mood: angry, longing or bored?",
+     "prompt_en": "Which word best describes the mood: angry, longing or bored?",
      "prompt_hi": "Kavita ka mood kaisa hai: angry, longing ya bored?",
      "answer": "longing",
      "acceptable": [
@@ -7529,7 +7675,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch11-t01-p1"
     },
     {
      "id": "c7-english-ch11-t01-i08",
@@ -7563,7 +7710,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch11-t01-p1"
     },
     {
      "id": "c7-english-ch11-t01-i09",
@@ -7732,7 +7880,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch11-t01-p1"
     },
     {
      "id": "c7-english-ch11-t01-rl-o1",
@@ -7859,6 +8008,12 @@
     "a bus journey to Nani's village",
     "travel vlogs on TV",
     "Bharat Darshan school map project"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch11-t01-p1",
+     "text": "Each night I hear the far train call,\nIts whistle drifting through the dark;\nThough friends are kind and home is warm,\nI long to follow every spark."
+    }
    ]
   },
   {
@@ -7996,7 +8151,7 @@
      "skillId": "c7-english-ch12-t01-s1",
      "kind": "retrieval",
      "difficulty": 1,
-     "prompt_en": "Read: 'Arunima Sinha was a volleyball player. In 2011, robbers pushed her off a moving train, and she lost a leg. In hospital, she decided to climb Mount Everest. With an artificial leg and hard training, she reached the top in May 2013.' What sport did Arunima play before 2011?",
+     "prompt_en": "What sport did Arunima play before 2011?",
      "prompt_hi": "Passage suno. 2011 se pehle Arunima kaunsa khel khelti thi?",
      "answer": "Volleyball",
      "acceptable": [
@@ -8015,7 +8170,8 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 4.5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch12-t01-p1"
     },
     {
      "id": "c7-english-ch12-t01-i02",
@@ -8055,7 +8211,7 @@
      "skillId": "c7-english-ch12-t01-s2",
      "kind": "why",
      "difficulty": 3,
-     "prompt_en": "Read: 'Arunima Sinha was a volleyball player. In 2011, robbers pushed her off a moving train, and she lost a leg. In hospital, she decided to climb Mount Everest. With an artificial leg and hard training, she reached the top in May 2013.' Why is her decision in hospital so remarkable?",
+     "prompt_en": "Why is her decision in hospital so remarkable?",
      "prompt_hi": "Hospital mein liya gaya uska faisla itna khaas kyun hai?",
      "answer": "At her lowest moment, instead of giving up, she chose a huge goal and turned her pain into determination",
      "acceptable": [
@@ -8083,7 +8239,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch12-t01-p1"
     },
     {
      "id": "c7-english-ch12-t01-i04",
@@ -8519,6 +8676,12 @@
     "a grandparent learning to walk after surgery",
     "training for a school sports day race",
     "a mountaineering club poster"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch12-t01-p1",
+     "text": "Arunima Sinha was a volleyball player. In 2011, robbers pushed her off a moving train, and she lost a leg. In hospital, she decided to climb Mount Everest. With an artificial leg and hard training, she reached the top in May 2013."
+    }
    ]
   },
   {
@@ -8656,7 +8819,7 @@
      "skillId": "c7-english-ch13-t01-s1",
      "kind": "retrieval",
      "difficulty": 1,
-     "prompt_en": "Read: 'PRIYA: Grandpa, why do we stand silent at the war memorial? GRANDPA: To pay homage to the soldiers who gave their lives for us. PRIYA: Were you a soldier too? GRANDPA: Yes. I served in the mountains for twenty years. I am proud of my comrades.' Why do people stand silent at the war memorial, according to Grandpa?",
+     "prompt_en": "Why do people stand silent at the war memorial, according to Grandpa?",
      "prompt_hi": "Dialogue suno. Grandpa ke hisaab se log memorial par chup kyun khade hote hain?",
      "answer": "To pay homage to the soldiers who gave their lives for us",
      "acceptable": [
@@ -8677,14 +8840,15 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 5.5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch13-t01-p1"
     },
     {
      "id": "c7-english-ch13-t01-i02",
      "skillId": "c7-english-ch13-t01-s1",
      "kind": "practice",
      "difficulty": 2,
-     "prompt_en": "Read: 'PRIYA: Grandpa, why do we stand silent at the war memorial? GRANDPA: To pay homage to the soldiers who gave their lives for us. PRIYA: Were you a soldier too? GRANDPA: Yes. I served in the mountains for twenty years. I am proud of my comrades.' Tell what you learnt about Grandpa in your own words, in one sentence.",
+     "prompt_en": "Tell what you learnt about Grandpa in your own words, in one sentence.",
      "prompt_hi": "Grandpa ke baare mein jo pata chala, apne shabdon mein ek sentence mein batao.",
      "answer": "Grandpa served as a soldier in the mountains for twenty years and is proud of his comrades",
      "acceptable": [
@@ -8709,7 +8873,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "apply",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch13-t01-p1"
     },
     {
      "id": "c7-english-ch13-t01-i03",
@@ -8886,7 +9051,7 @@
      "skillId": "c7-english-ch13-t01-s1",
      "kind": "why",
      "difficulty": 3,
-     "prompt_en": "Read: 'PRIYA: Grandpa, why do we stand silent at the war memorial? GRANDPA: To pay homage to the soldiers who gave their lives for us. PRIYA: Were you a soldier too? GRANDPA: Yes. I served in the mountains for twenty years. I am proud of my comrades.' Why do you think Grandpa says he is proud of his comrades, rather than proud of himself?",
+     "prompt_en": "Why do you think Grandpa says he is proud of his comrades, rather than proud of himself?",
      "prompt_hi": "Grandpa apne baare mein nahi, apne saathiyon par garv kyun karte hain?",
      "answer": "Soldiers depend on each other as a team, and he is humble; he honours those who served and gave their lives with him",
      "acceptable": [
@@ -8914,7 +9079,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch13-t01-p1"
     },
     {
      "id": "c7-english-ch13-t01-i09",
@@ -8989,7 +9155,7 @@
      "skillId": "c7-english-ch13-t01-s4",
      "kind": "predict",
      "difficulty": 2,
-     "prompt_en": "Read: 'PRIYA: Grandpa, why do we stand silent at the war memorial? GRANDPA: To pay homage to the soldiers who gave their lives for us. PRIYA: Were you a soldier too? GRANDPA: Yes. I served in the mountains for twenty years. I am proud of my comrades.' What might Priya ask Grandpa next?",
+     "prompt_en": "What might Priya ask Grandpa next?",
      "prompt_hi": "Priya Grandpa se aage kya poochh sakti hai?",
      "answer": "A question about his life as a soldier, such as what life was like in the mountains or whether he was ever afraid",
      "acceptable": [
@@ -9016,7 +9182,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": true
+     "tooEasy": true,
+     "passageId": "c7-english-ch13-t01-p1"
     },
     {
      "id": "c7-english-ch13-t01-i12",
@@ -9213,6 +9380,12 @@
     "an army band at a school function",
     "a cousin joining NCC",
     "a flood rescue by soldiers in the news"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch13-t01-p1",
+     "text": "PRIYA: Grandpa, why do we stand silent at the war memorial? GRANDPA: To pay homage to the soldiers who gave their lives for us. PRIYA: Were you a soldier too? GRANDPA: Yes. I served in the mountains for twenty years. I am proud of my comrades."
+    }
    ]
   },
   {
@@ -9351,7 +9524,7 @@
      "skillId": "c7-english-ch14-t01-s1",
      "kind": "retrieval",
      "difficulty": 1,
-     "prompt_en": "Read: 'While we lie warm in our beds at night, / You stand on snow in the cold moonlight; / Our festivals glow, our kites fly free, / Because you guard our land and sea.' Where does the soldier stand while we sleep?",
+     "prompt_en": "Where does the soldier stand while we sleep?",
      "prompt_hi": "Kavita suno. Jab hum sote hain, sainik kahaan khade hote hain?",
      "answer": "On snow in the cold moonlight",
      "acceptable": [
@@ -9372,14 +9545,15 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch14-t01-p1"
     },
     {
      "id": "c7-english-ch14-t01-i02",
      "skillId": "c7-english-ch14-t01-s2",
      "kind": "why",
      "difficulty": 3,
-     "prompt_en": "Read: 'While we lie warm in our beds at night, / You stand on snow in the cold moonlight; / Our festivals glow, our kites fly free, / Because you guard our land and sea.' Why does the poet place 'we lie warm' right next to 'you stand on snow'?",
+     "prompt_en": "Why does the poet place 'we lie warm' right next to 'you stand on snow'?",
      "prompt_hi": "Kavi ne 'we lie warm' ke saath hi 'you stand on snow' kyun likha?",
      "answer": "The contrast shows the hardship soldiers bear so that we can be comfortable and safe, which makes us feel grateful",
      "acceptable": [
@@ -9407,14 +9581,15 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch14-t01-p1"
     },
     {
      "id": "c7-english-ch14-t01-i03",
      "skillId": "c7-english-ch14-t01-s1",
      "kind": "practice",
      "difficulty": 2,
-     "prompt_en": "Read: 'While we lie warm in our beds at night, / You stand on snow in the cold moonlight; / Our festivals glow, our kites fly free, / Because you guard our land and sea.' What is the central idea of this stanza?",
+     "prompt_en": "What is the central idea of this stanza?",
      "prompt_hi": "Is stanza ka central idea kya hai?",
      "answer": "We are safe and can celebrate because soldiers guard our country, so we owe them our gratitude",
      "acceptable": [
@@ -9441,7 +9616,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch14-t01-p1"
     },
     {
      "id": "c7-english-ch14-t01-i04",
@@ -9739,7 +9915,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch14-t01-p1"
     },
     {
      "id": "c7-english-ch14-t01-i13",
@@ -9773,7 +9950,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch14-t01-p1"
     },
     {
      "id": "c7-english-ch14-t01-rl-o1",
@@ -9907,6 +10085,12 @@
     "a Kargil Vijay Diwas assembly",
     "an uncle in the Navy",
     "a festival celebrated safely at home"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch14-t01-p1",
+     "text": "While we lie warm in our beds at night,\nYou stand on snow in the cold moonlight;\nOur festivals glow, our kites fly free,\nBecause you guard our land and sea."
+    }
    ]
   },
   {
@@ -10040,7 +10224,7 @@
      "skillId": "c7-english-ch15-t01-s1",
      "kind": "retrieval",
      "difficulty": 1,
-     "prompt_en": "Read: 'In the 1500s, Rani Abbakka ruled Ullal, a small port town on the coast of Karnataka. The Portuguese demanded that she pay them tax. She refused, joined hands with nearby rulers, and fought them bravely for many years.' Where did Rani Abbakka rule?",
+     "prompt_en": "Where did Rani Abbakka rule?",
      "prompt_hi": "Passage suno. Rani Abbakka kahaan raaj karti thin?",
      "answer": "Ullal, a small port town on the coast of Karnataka",
      "acceptable": [
@@ -10060,14 +10244,15 @@
       "note": "Blind check 2026-10-02 (c7-english ESL pass). Blind-solved from prompt_en before reading the key: matches. English correct and right for class 7. prompt_hi faithful. Hints build up in order with no early leak. Passage is original, not NCERT text."
      },
      "ge": 4.75,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c7-english-ch15-t01-p1"
     },
     {
      "id": "c7-english-ch15-t01-i02",
      "skillId": "c7-english-ch15-t01-s2",
      "kind": "why",
      "difficulty": 3,
-     "prompt_en": "Read: 'In the 1500s, Rani Abbakka ruled Ullal, a small port town on the coast of Karnataka. The Portuguese demanded that she pay them tax. She refused, joined hands with nearby rulers, and fought them bravely for many years.' Why do you think Rani Abbakka refused to pay tax to the Portuguese?",
+     "prompt_en": "Why do you think Rani Abbakka refused to pay tax to the Portuguese?",
      "prompt_hi": "Rani Abbakka ne Portuguese ko tax dene se inkaar kyun kiya?",
      "answer": "She wanted her people and her land to stay free and trade freely, not be ruled by foreigners",
      "acceptable": [
@@ -10094,14 +10279,15 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch15-t01-p1"
     },
     {
      "id": "c7-english-ch15-t01-i03",
      "skillId": "c7-english-ch15-t01-s2",
      "kind": "practice",
      "difficulty": 2,
-     "prompt_en": "Read: 'In the 1500s, Rani Abbakka ruled Ullal, a small port town on the coast of Karnataka. The Portuguese demanded that she pay them tax. She refused, joined hands with nearby rulers, and fought them bravely for many years.' Name two values Rani Abbakka showed and give one event as proof.",
+     "prompt_en": "Name two values Rani Abbakka showed and give one event as proof.",
      "prompt_hi": "Rani Abbakka ki do qualities batao aur ek event se saboot do.",
      "answer": "Courage and love of freedom (also leadership and unity); she refused to pay tax and fought for many years, joining with nearby rulers",
      "acceptable": [
@@ -10130,7 +10316,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "passageId": "c7-english-ch15-t01-p1"
     },
     {
      "id": "c7-english-ch15-t01-i04",
@@ -10564,6 +10751,12 @@
     "a visit to a fort",
     "Rani Lakshmibai's story at home",
     "a class debate on standing up for what is right"
+   ],
+   "passages": [
+    {
+     "id": "c7-english-ch15-t01-p1",
+     "text": "In the 1500s, Rani Abbakka ruled Ullal, a small port town on the coast of Karnataka. The Portuguese demanded that she pay them tax. She refused, joined hands with nearby rulers, and fought them bravely for many years."
+    }
    ]
   }
  ],

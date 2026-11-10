@@ -131,7 +131,9 @@ export class ShadowTelemetry {
         this.turn.engineAt = r.t;
         this.turn.engineGap = this.voiced || this.lastVoiceEnd === null ? 0 : Math.max(0, r.t - this.lastVoiceEnd);
         this.turn.lastVoiceEndAtSpeak = this.lastVoiceEnd;
-        const why = r.detail && REASONS.has(r.detail) ? r.detail : r.reasons.find((c) => REASONS.has(c)) ?? null;
+        // audit V-32: detail is `speak:<reason>:<firstSound>` (host.ts), so the reason is its second part
+        const said = r.detail?.split(":")[1] ?? r.detail;
+        const why = said && REASONS.has(said) ? said : r.reasons.find((c) => REASONS.has(c)) ?? null;
         this.turn.reason = why;
       }
     }

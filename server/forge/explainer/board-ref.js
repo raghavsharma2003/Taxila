@@ -21,7 +21,7 @@ export const BOARD_REFS = Object.freeze({
   "fraction-parts@1": { subject: "maths", params: "parts 2-12, shade 0-parts, whole circle|bar|roti", example: { parts: 4, shade: 3, whole: "roti" } },
   "fraction-of@1": { subject: "maths", params: "a/b of c/d: a 1-b, b 2-6, c 1-d, d 2-6, hideResult?", example: { a: 2, b: 3, c: 3, d: 5 } },
   "combine-count@1": { subject: "maths", params: "a 0-10, b 0-10, op add|take_away, hideResult?", example: { a: 4, b: 3, op: "add" } },
-  "number-line-hop@1": { subject: "maths", params: "start -20..100, hops [1-4 non-zero ints -20..20], hideResult?", example: { start: -2, hops: [5] } },
+  "number-line-hop@1": { subject: "maths", params: "start -20..100, hops [1-4 ints, -20..20, not 0: all forward or all back, or two where the second goes back at most half the first; every landing within 30 of the others; with 2+ hops each at least 2 and at least 1/8 of that spread (1/5 with a 3-character number)], hideResult?", example: { start: -2, hops: [5] } },
   "number-line-scale@1": { subject: "maths", params: "from 0-99999, to ≤ 100000, step (2-10 intervals; ≤ 5 for 5-digit labels), marks [{ value, label? (\"?\" = asked) }] (≤ 3)", example: { from: 0, to: 10000, step: 1000, marks: [{ value: 4815 }] } },
   "number-line-zoom@1": { subject: "maths", params: "value: a decimal with 1-2 places, 0-10", example: { value: 2.45 } },
   "column-op@1": { subject: "maths", params: "a, b 0-99999, op add|sub (b ≤ a), hideResult?", example: { a: 478, b: 356, op: "add" } },

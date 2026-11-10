@@ -1,5 +1,9 @@
 # Startup prompt for the new Claude Code session
 
+> **Used once, on 2026-10-27. Do not reuse it.** It checks out `handoff/2026-10-27` and merges the round-4 and round-5
+> branches; work has since moved to round 7 on `int/r6`. A new session starts from the note at the top of `HANDOFF.md`.
+> Kept as the record of how the handoff was done.
+
 The owner pastes the block below as the first message of the new session (after adding the repo + this branch and
 putting the keys in the environment settings).
 

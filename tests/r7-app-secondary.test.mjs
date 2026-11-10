@@ -27,7 +27,7 @@ test("the hold, offline and signed-out Home states are Kaksha views; the hold ke
   assert.doesNotMatch(h, /ClassicHome/);
   assert.match(h, /<HelpSheet /);
   // a hold never offers a lesson, practice or Ask
-  assert.match(h, /kind === "hold" \? kn\.dock\.filter\(\(d\) => d\.key !== "ask" && d\.key !== "practice"\)/);
+  assert.match(h, /kind === "signedout" \? kn\.dock : dockForPlan\(kn\.dock, plan\)/);
   const v = read("src/ui-v3/kaksha/screens/HomeState.tsx");
   for (const k of ["home.hold.head", "home.hold.sub", "home.hold.help"]) assert.ok(v.includes(`tw2("${k}")`), k);
   assert.doesNotMatch(v.slice(v.indexOf('p.kind === "hold"'), v.indexOf('p.kind === "signedout"')), /practiceTo|lesson/);

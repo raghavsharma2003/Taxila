@@ -222,6 +222,13 @@ function systemPrompt(target, classLevel) {
   return base.join("\n");
 }
 
+/** Her last line as the labeller reads it: the END is kept (her question is her last sentence; a cut that kept the start
+ *  dropped the very question the "asked a DIFFERENT question" rule reads). PURE. */
+export function heardTail(heard, max = 500) {
+  const t = String(heard ?? "").replace(/\s+/g, " ").trim();
+  return t.length <= max ? t : `…${t.slice(t.length - max + 1).replace(/^\S*\s/, "")}`;
+}
+
 function userPrompt(target, childText, heard) {
   const lines = [];
   const misLines = target.misconceptions.map((m) => `${m.tag}: ${m.belief}${m.signs.length ? ` (signs: ${m.signs.join("; ")})` : ""}`);
@@ -238,7 +245,7 @@ function userPrompt(target, childText, heard) {
     if (target.ideas.length) lines.push("KEY IDEAS (for a reason, if one is given):", ...target.ideas.map((e) => `- ${e}`));
   }
   if (misLines.length) lines.push("MISCONCEPTIONS:", ...misLines);
-  if (heard) lines.push(`WHAT THE TEACHER LAST SAID: ${String(heard).slice(0, 500)}`);
+  if (heard) lines.push(`WHAT THE TEACHER LAST SAID: ${heardTail(heard)}`);
   lines.push(`CHILD'S REPLY: ${childText}`);
   return lines.join("\n");
 }

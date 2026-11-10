@@ -2,7 +2,7 @@
 // LessonRuntime (+ the UiBridge: replay buffer, speech hold, cascade talk state), and renders the Desk from
 // useDesk's model. Voice lessons start on the CASCADE lane (voice-lane-cascade-default) with no second start
 // gate: the audio unlock is carried from the tap that opened the lesson. The Summary renders here when the lesson
-// ends (the separate /lesson/:lid/summary route belongs to the child-routes owner; Summary.tsx is ready for it).
+// ends (there is no separate summary route: Summary.tsx, or Kaksha's Debrief, draws it in place).
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import type { LessonStartRequest } from "../../../shared/contracts.ts";
 import { ApiError } from "../../lesson/api.ts";
@@ -110,11 +110,12 @@ export function LessonScreen({ variant, topicId, firstText, homework }: LessonSc
     who: () => navigate("/who"),
     signIn: () => navigate(`/start/phone?next=${encodeURIComponent(location.pathname + location.search)}`),
     parent: () => navigate("/parent"),
-    finished: () => {
+    finished: (to) => {
       if (state.lessonId) saveArtefact(cid, { lessonId: state.lessonId, topic: state.topic?.title ?? "", chips: m.summary?.cards.map((c) => c.answer) ?? [], at: Date.now() });
       if (variant === "lesson") markLessonDone(cid, state.lessonId, bs.ended);
       // A sibling profile on this device → the picker; else the home. Kaksha (K-P2 rev 2, audit B06): Finish returns to the
       // child's own Home (her world is there); switching child stays one tap away on Home.
+      if (to) { navigate(to); return; }
       navigate(me.children.length >= 2 && !kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha) ? "/who" : `/c/${cid}`);
     },
     // round 3 fix (experience B8): the child chose to switch: the lesson they asked for starts now

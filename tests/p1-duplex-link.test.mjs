@@ -176,6 +176,54 @@ test("duplex on: the engine's pause / resume / stop drive her playback; today's 
   } finally { link.close(); env.restore(); }
 });
 
+test("audit V-04: a tap that stops her line (interrupt, pause-then-continue, hear again) tells the engine she stopped", async () => {
+  const { env, link, events } = await duplexLink();
+  try {
+    // a stop by hand is told as ENDED, not as stopped: the governor ignores "stopped" and would keep her turn, so the
+    // child's next answer was never committed (tests/audit-voice-small.test.mjs, the engine-level V-04 test)
+    let stopped = 0, ended = 0;
+    const origStopped = link.duplex.replyStopped.bind(link.duplex);
+    const origEnded = link.duplex.replyEnded.bind(link.duplex);
+    link.duplex.replyStopped = () => { stopped++; origStopped(); };
+    link.duplex.replyEnded = () => { ended++; origEnded(); };
+    link.promptTeacher({ text: "Dekho, ek roti ke chaar barabar hisse karo. Har hissa ek chauthai hai.", seq: 5 });
+    await sleep(40);
+    assert.ok(events.some((e) => e.type === "teacher_audio_start"));
+    link.interrupt();
+    assert.equal(ended, 1, "the engine heard her line is over");
+    assert.equal(link.duplex.live.her, null, "she no longer holds the floor");
+    // the engine's own stop does not tell it again
+    link.promptTeacher({ text: "Achha, aur batao.", seq: 6 });
+    await sleep(40);
+    link.duplex.live.o.port.stop();
+    assert.equal(stopped + ended, 1);
+  } finally { link.close(); env.restore(); }
+});
+
+test("audit V-05: after a revoke, a merged turn that superseded it in flight keeps its one reply (keepNextReply)", async () => {
+  const { env, link, events } = await duplexLink();
+  try {
+    link.duplex.live.o.port.dropReply(1);
+    link.keepNextReply();
+    events.length = 0;
+    link.promptTeacher({ text: "Haan, teen sahi hai.", seq: 7 });
+    await sleep(40);
+    assert.ok(events.some((e) => e.type === "teacher_audio_start"), JSON.stringify(events.map((e) => e.type)));
+  } finally { link.close(); env.restore(); }
+});
+
+test("audit V-03: a token request that never answers falls back to push-to-talk after the open-step limit", async () => {
+  const env = installBrowserFakes();
+  const transports = [];
+  const link = new CascadeLink({ lessonId: "L1", levels: levels(), speech: pcm(2), fetchToken: () => new Promise(() => {}), transcribe: async () => ({ text: "" }),
+    openStepMs: 50, onTransport: (t) => transports.push(t) });
+  try {
+    await link.connect();
+    for (const t0 = Date.now(); Date.now() - t0 < 2000 && !transports.length;) await sleep(10);
+    assert.deepEqual(transports, ["recording"]);
+  } finally { link.close(); env.restore(); }
+});
+
 test("duplex off (or absent): today's link — a final is the turn, server speech_started pauses her", async () => {
   const { env, link, events, states, pc } = await duplexLink({ mode: "off" });
   try {

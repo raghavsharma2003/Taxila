@@ -27,7 +27,7 @@ import { openStudioWire, studioApi, useEarlySlot } from "../../studio/useStudio.
 import { workTrayBox } from "./trayBox.ts";
 import { cardOnAsk, cardOnHandover, cardOnPage, cardWaiting, isPaged, lastPage, pageOfCard } from "./cardTiming.ts";
 import { boardOnTray, useBoardPage } from "./boardPage.ts";
-import { fractionQuestion, helpAskedKey } from "./answers.ts";
+import { fractionQuestion, helpAskedKey, isRequestChip } from "./answers.ts";
 import { prepareEarcons, setEarcons } from "../../ui/sound/earcons.ts";
 import { setHapticsEnabled } from "../../ui/haptics.ts";
 import { BAND_TOKENS, type Band, type Family } from "../band.ts";
@@ -84,7 +84,7 @@ export interface DeskNav {
   who(): void;
   signIn(): void;
   parent(): void;
-  finished(): void;
+  finished(to?: string): void;
   /** round 3 fix (experience B8): start a lesson on this topic (the child chose "Start <topic>" on a switch offer). */
   start?(topicId: string): void;
 }
@@ -99,6 +99,7 @@ const REQUESTS: Record<string, [string, string, string]> = {
   skip: ["Isse abhi chhod dete hain", "इसे अभी छोड़ देते हैं", "Skip this for now"],
   choices: ["Choices dikhao", "विकल्प दिखाइए", "Show me choices"],
   how: ["Kaise karte hain dikhao", "कैसे करते हैं, दिखाइए", "Show me how"],
+  rest: ["Thoda break lete hain", "थोड़ा ब्रेक लेते हैं", "A short break please"],
 };
 
 /** r7 app-lesson-steer-chips: the DEFAULT steer row, used while the server sends no ui.steer (absent; [] = no row). Brain's
@@ -117,7 +118,7 @@ export const STEER_SAID: Record<SteerKey, [string, string, string]> = {
   diagram: ["Diagram bana ke dikhao", "चित्र बनाकर दिखाइए", "Show me a diagram"],
   game: ["Game khelna hai", "खेल खेलना है", "Can we play a game"],
   another: ["Kisi aur tarah samjhao", "किसी और तरह समझाइए", "Explain it differently"],
-  else: ["Kuch aur baat karte hain", "kuch aur baat karte hain", "Can we talk about something else"],
+  else: ["Kuch aur baat karte hain", "कुछ और बात करते हैं", "Can we talk about something else"],
 };
 export type SteerKey = "diagram" | "game" | "another" | "else";
 /** Brain's UiMoment kinds → the stage's moment cards. */
@@ -306,6 +307,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
 
   // ───────── the question card: the pinned ask + the answer chip ─────────
   const [item, setItem] = useState<Item>({ ask: null, answer: null, pendingVerdict: null });
+  const requestSaid = useRef<string | null>(null); // APP-12: the words of a steer sent as text, not drawn as an answer
   const serverAsk = ui.ask?.text ? ui.ask : null;
   // r7 (3a/3b, main 2026-11-08): the tray's whiteboard and the page of it now up, on the board player's own clock
   const cardBoard = useMemo(() => boardOnTray(ui.studioSlot), [ui.studioSlot]);
@@ -369,6 +371,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
         if (asked) {
           // A help request is a chip state under the ask ("Hint asked"), never "Your answer: Can I have a hint".
           setItem((it) => (it.ask ? { ...it, ask: { ...it.ask, lines: [...it.ask.lines.filter((l) => l.kind !== "asked"), { kind: "asked", text: tw(asked) }] } } : it));
+        } else if (e.typed && (isRequestChip(e.chipId) || (e.text && e.text === requestSaid.current))) {
+          // APP-12: a steer, later, stop, break, switch or safe tap (or a steer sent as words) is a request, not "Your answer"
+          requestSaid.current = null;
         } else if (e.typed) setItem((it) => ({ ...it, answer: { text: e.text, form: e.chipId ? "tapped" : "typed", delivery: "sending" }, pendingVerdict: null }));
         else if (e.text) setItem((it) => ({ ...it, answer: { ...(it.answer ?? { form: "spoken", delivery: "sending" }), text: e.text } as AnswerChip }));
       } else if (e.type === "teacher_audio_start") {
@@ -935,7 +940,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       bridge?.stopReplay();
       if (floor === "speaking" || floor === "showing") bridge?.quietStop(); // a steer is a barge-in: she stops and turns
       if (c.id) runtime.tapChip({ id: c.id, label: c.key ? STEER_SAID[c.key][langIx] : c.label });
-      else if (c.key) runtime.say(STEER_SAID[c.key][langIx]);
+      else if (c.key) { requestSaid.current = STEER_SAID[c.key][langIx]; runtime.say(requestSaid.current); }
     },
     // r7: a tap on an open Later entry asks for it now (chipId "later:<id>", Brain's contract)
     pickLater: (l) => {
@@ -981,7 +986,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       setSheet("pause");
     },
     resume: () => {
-      const replayTurn = (sheet === "pause" || sheet === "break") && resumeTurn.current;
+      const replayTurn = (sheet === "pause" || sheet === "break" || sheet === "end") && resumeTurn.current;
       resumeTurn.current = false;
       const newer = (bridge?.speechWaiting ?? 0) > 0;
       setSheet(null);
@@ -995,10 +1000,11 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       ptt.stop();
       setBreakSince(Date.now());
       setSheet("break");
-      if (state.phase === "live") runtime.tapChip({ id: "break:rest", label: "" });
+      // APP-03: the runtime drops a turn with no words, so the break chip carries its own (the server reads the chip id first)
+      if (state.phase === "live") runtime.tapChip({ id: "break:rest", label: REQUESTS.rest[ctx.lessonLang === "hindi" ? 1 : ctx.lessonLang === "english" ? 2 : 0] });
     },
     pickStop: (c) => { bridge?.stopReplay(); runtime.tapChip(c); },
-    cancelEnd: () => setSheet(null),
+    cancelEnd: () => a.resume(), // APP-30: "Keep going" resumes like Continue, replaying the line Pause cut
     endLesson: () => {
       setSheet(null);
       ptt.stop();
@@ -1056,6 +1062,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       setFacts((f) => ({ ...f, noMicCardSeen: true }));
     },
     finish: () => nav.finished(),
+    finishTo: (to) => nav.finished(to),
     moduleEvent: (ev) => {
       // round 3 forge (patch 07): the Studio stage's "slot ended empty" (WorkTray studioToLesson) gives the tray back; it is
       // a Desk event, never sent to the lesson

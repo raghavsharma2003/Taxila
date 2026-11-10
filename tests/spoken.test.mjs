@@ -101,7 +101,8 @@ test("the safety set is the floor's HELPLINES data, not a copy", () => {
 });
 
 test("helplines: a predicate, not a heuristic: digit by digit even inside maths and next to punctuation", () => {
-  assert.equal(toSpoken("1098 + 2 = ?", EN), "one zero nine eight + two = ?", "the helpline is never the cardinal one thousand ninety-eight");
+  // audit V-17: "= ?" is now said ("equals"); the helpline digits are what this test pins
+  assert.equal(toSpoken("1098 + 2 = ?", EN), "one zero nine eight + two equals ?", "the helpline is never the cardinal one thousand ninety-eight");
   assert.equal(toSpoken("(1098)", HI), "(एक शून्य नौ आठ)");
   assert.equal(toSpoken("Childline: 1098.", HI), "Childline: एक शून्य नौ आठ.");
   assert.equal(toSpoken("चाइल्डलाइन १०९८ पर कॉल करो।", HI), "चाइल्डलाइन एक शून्य नौ आठ पर कॉल करो।", "Devanagari digits too");

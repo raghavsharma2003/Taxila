@@ -58,6 +58,8 @@ export interface CascadeLinkOptions {
   micStream?: Promise<MediaStream>;
   /** Defaults to POST /api/voice/stt-token. */
   fetchToken?: (lessonId: string) => Promise<RealtimeTokenResponse>;
+  /** The longest the token request and the call's SDP exchange may each take (default CHANNEL_OPEN_TIMEOUT_MS). */
+  openStepMs?: number;
   /** Defaults to POST /api/voice/tts-stream. */
   speech?: SpeechStreamFetch;
   /** Push-to-talk fallback upload; defaults to POST /api/voice/transcribe. */
@@ -127,6 +129,12 @@ export interface CascadeTiming {
 }
 
 const CHANNEL_OPEN_TIMEOUT_MS = 10_000;
+/** A promise that rejects after `ms` (audit V-03: an open step that hangs must not hold "getting ready" for good). */
+function withDeadline<T>(p: Promise<T>, ms: number, what: string): Promise<T> {
+  let t: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => { t = setTimeout(() => reject(new Error(`${what} timed out`)), ms); });
+  return Promise.race([p, timeout]).finally(() => clearTimeout(t));
+}
 /** ICE 'disconnected' this long is a lost call (it may never reach 'failed' on its own). */
 const DISCONNECTED_LOST_MS = 3_000;
 /** Same tail as VoiceLink: audio reaches the server ~100-250 ms after it is spoken. */
@@ -383,6 +391,7 @@ export class CascadeLink implements TeacherLink {
   private childTextNext: { itemId: string; text: string } | null = null;
   private childTextAt = 0;
   private readonly fetchToken: (lessonId: string) => Promise<RealtimeTokenResponse>;
+  private readonly openStepMs: number;
   private readonly speech: SpeechStreamFetch;
   private readonly transcribeClip: (lessonId: string, clip: Blob) => Promise<TranscribeResult>;
   private readonly localDuck: boolean;
@@ -452,6 +461,7 @@ export class CascadeLink implements TeacherLink {
     this.unEarly = registerEarlyAudio(opts.lessonId, (stream) => this.playEarly(stream));
     this.levels = opts.levels;
     this.fetchToken = opts.fetchToken ?? defaultToken;
+    this.openStepMs = opts.openStepMs ?? CHANNEL_OPEN_TIMEOUT_MS;
     this.speech = opts.speech ?? fetchSpeechStream;
     this.transcribeClip = opts.transcribe ?? defaultTranscribe;
     this.localDuck = opts.localDuck ?? true;
@@ -642,7 +652,7 @@ export class CascadeLink implements TeacherLink {
     }
     if (status === "completed") this.duplex?.replyEnded();
     else this.duplex?.replyStopped();
-    this.stopReply(status === "stopped" ? "cancelled" : status, false);
+    this.stopReply(status === "stopped" ? "cancelled" : status, false, false);
   }
 
   /**
@@ -716,9 +726,25 @@ export class CascadeLink implements TeacherLink {
     if (cur.early.ended) this.finishReply(cur, cur.early.ended);
   }
 
+  keepNextReply(): void {
+    this.duplex?.keepReply();
+  }
+
   interrupt(): void {
     this.stopAck();
-    this.stopReply("cancelled", true);
+    this.stopByHand();
+  }
+
+  /**
+   * audit V-04: a stop that comes from outside the engine (a tap: pause, hear again, a typed or tapped answer, the talk
+   * button) is reported to the engine as her line ENDED. "Stopped" alone is not enough: the governor ignores it and keeps
+   * her turn, so the mic gate opened but the child's next answer was never committed (tests/audit-voice-small.test.mjs).
+   */
+  private stopByHand(): void {
+    const cur = this.current;
+    const audible = !!cur && (cur.playing || !!cur.paused);
+    this.stopReply("cancelled", true, false);
+    if (audible) this.duplex?.replyEnded();
   }
 
   // ───────────── round 3: the acknowledgement (src/latency/ack.ts) ─────────────
@@ -836,7 +862,7 @@ export class CascadeLink implements TeacherLink {
     void this.ctx?.resume().catch(() => {});
     // A press is the child's explicit "my turn": she stops outright (no pause-and-decide).
     this.clearBargeTimers();
-    this.stopReply("cancelled", true);
+    this.stopByHand();
     // r4-latency: the press opens a new child turn for the echo and the prefetch, as child_speech_start does on hands-free
     // (onChildEvent). Without it the AckClient kept the last reply's closed turn and never asked on tap-to-talk (page-clock
     // timeline 2026-10-10: 0 turn-ack requests in 24 tap-to-talk turns; round 3: 0 in 21). Every echo rule stays the
@@ -1192,11 +1218,15 @@ export class CascadeLink implements TeacherLink {
   /**
    * End the current reply. byChild: the child cut it off before it completed — sounding, paused or still
    * loading — so the turn is marked interrupted (the server must not believe she was heard to the end).
+   * tellEngine: the hands-free engine was told she started (replyAudible), so it must be told she stopped on every path
+   * (a tap, pause, hear-again, a new line): without it the engine stays in her turn with the mic gated (audit V-04).
+   * Only finishReply (it tells the engine itself) and the engine's own stop pass false.
    */
-  private stopReply(status: "completed" | "cancelled" | "failed", byChild: boolean): void {
+  private stopReply(status: "completed" | "cancelled" | "failed", byChild: boolean, tellEngine = true): void {
     const cur = this.current;
     if (!cur) return;
     this.current = null;
+    if (tellEngine && cur.playing) this.duplex?.replyStopped();
     if (this.pauseTimer) clearTimeout(this.pauseTimer);
     this.pauseTimer = null;
     cur.playback.stop();
@@ -1249,7 +1279,7 @@ export class CascadeLink implements TeacherLink {
     }
     this.laneUsed = "d4";
     this.vtrace.sttLaneOpened("d4", this.d5Off ? "d5_unavailable" : null);
-    const tok = await this.fetchToken(this.lessonId);
+    const tok = await withDeadline(this.fetchToken(this.lessonId), this.openStepMs, "the transcription token");
     if (this.closed) throw new Error("the voice lesson was closed");
     this.audioInput = { ...obj(obj(obj(tok.session).audio).input) };
     this.vtrace.sttConfig(this.audioInput);
@@ -1315,9 +1345,10 @@ export class CascadeLink implements TeacherLink {
       method: "POST",
       body: pc.localDescription!.sdp,
       headers: { Authorization: `Bearer ${tok.token}`, "Content-Type": "application/sdp" },
+      signal: AbortSignal.timeout(this.openStepMs),
     });
     if (!res.ok) throw new Error(`transcription call refused (${res.status})`);
-    await pc.setRemoteDescription({ type: "answer", sdp: await res.text() });
+    await pc.setRemoteDescription({ type: "answer", sdp: await withDeadline(res.text(), this.openStepMs, "the transcription call") });
     await opened;
     this.abandonOpen = null;
     if (this.pc !== pc) throw new Error("the transcription call was replaced");
@@ -1520,7 +1551,7 @@ export class CascadeLink implements TeacherLink {
       resume: () => this.resumeReply(),
       stop: () => {
         this.clearBargeTimers();
-        this.stopReply("cancelled", true);
+        this.stopReply("cancelled", true, false); // the engine stopped her itself: it already knows
       },
       emitChild: (e) => {
         if (e.type === "child_final") {

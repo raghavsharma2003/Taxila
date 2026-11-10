@@ -42,7 +42,7 @@
    "kind": "decision",
    "title": "Live teacher voice = gpt-realtime-2.1 full, director-driven per turn",
    "at": "2026-10-02",
-   "status": "live"
+   "status": "superseded"
   },
   {
    "id": "meera-realtime-azure",
@@ -68,7 +68,7 @@
    "kind": "decision",
    "title": "server_vad 0.6/900 ms + auto-response; director refreshes instructions between turns",
    "at": "2026-10-02",
-   "status": "live"
+   "status": "superseded"
   },
   {
    "id": "open-real-child-audio",
@@ -81,7 +81,7 @@
    "kind": "decision",
    "title": "Vercel project taxila, one catch-all function in sin1, SSO-private until launch",
    "at": "2026-10-02",
-   "status": "live"
+   "status": "superseded"
   },
   {
    "id": "claude-on-foundry-credits",
@@ -94,14 +94,14 @@
    "kind": "decision",
    "title": "Forge coder gpt-5.3-codex, designer gpt-5.6-sol, video sora-2",
    "at": "2026-10-02",
-   "status": "live"
+   "status": "superseded"
   },
   {
    "id": "forge-infra-azure",
    "kind": "decision",
    "title": "Forge on Azure Container Apps + Blob Storage taxilaforge",
    "at": "2026-10-02",
-   "status": "provisioned"
+   "status": "superseded"
   },
   {
    "id": "azure-only-compute",
@@ -8382,7 +8382,7 @@
   {
    "id": "duplex-arch-six-loops-device-floor",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Duplex teacher = a duplex CONTROLLER around the cascade, not a native duplex model: six loops (listen, understand, think, speak, build + a floor manager) on two clocks; the floor manager is a pure reducer ON THE DEVICE (20-32 ms ticks), the server thinks; models write notes/drafts/builds, code holds the floor (docs/research/duplex/ARCHITECTURE.md). Reverse if an India phone RTT to the India app is <= 40 ms p90 and a server-side floor measures equal on false take-overs and yield latency (D6).",
    "source": "inbox/duplex-architecture.json"
@@ -8390,7 +8390,7 @@
   {
    "id": "duplex-fast-mouth-late-verdict",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Fast mouth, late verdict: after a closed answer the first ~1-1.5 s of teacher audio is verdict-free (uptake of the child's own value / neutral opener) and the commit is revocable until the first verdict-bearing word; a child self-repair inside that window yields, merges and re-grades (M-B1 21/21 hesitant first values wrong; M-C1 43% of self-repair breaks still sent). Reverse if E1 shows self-repairs after a complete value in < 2% of closed answers.",
    "source": "inbox/duplex-architecture.json"
@@ -8406,7 +8406,7 @@
   {
    "id": "duplex-no-model-in-child-turn",
    "kind": "decision",
-   "status": "proposed",
+   "status": "superseded",
    "at": "2026-10-04",
    "title": "No model decides, interrupts or grades inside the child's turn; a calibrated decision model may only SHORTEN a hold, inside [candidate silence, hold cap], never end a turn below the candidate, never trigger speech. TypeSafe Jev (typed calibrated decisions, 70-500 ms vendor) is not Direct-from-Azure and too slow for the critical path anyway; its pattern is replicated on Azure (logprob-scored classify deployment if it returns logprobs, or a Qwen2.5-0.5B head on ACA) and tested in D3 (ECE <= 0.08). Reverse if E-C5 finds an intervention class with cut-off-correct <= 2% and better next-turn learning.",
    "source": "inbox/duplex-architecture.json"
@@ -8422,7 +8422,7 @@
   {
    "id": "duplex-content-blind-nods",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Listening nods are content-blind (prosody-timed backchannel opportunities only, single continuer form, <= 1 per 3 s, never in number/choice answers or SAFETY_ATTEND); suppressing nods after a wrong step would itself leak the verdict (design-v2-face-verdict-neutral). Audio 'mm' stays off by default (E-C3). Reverse if D5 shows content-blind nods after wrong steps read as agreement by >= 60% of child raters.",
    "source": "inbox/duplex-architecture.json"
@@ -8430,7 +8430,7 @@
   {
    "id": "duplex-result-triage",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Speech track and work track are independent: results landing mid-conversation are triaged in code as INTERRUPT (safety only), WHEN_IDLE (builds/whiteboard/library mounts become a Studio reveal proposal at the next /turn, kernel decides) or SILENT (notes, hints, learner updates as quiet context); nothing new reaches the screen while the child holds the floor; partial-intent may launch prefetch only, never live codegen. Reverse if D9 shows WHEN_IDLE reveals ready at the TRP < 50% because of the wait.",
    "source": "inbox/duplex-architecture.json"
@@ -9414,7 +9414,7 @@
   {
    "id": "duplex-echo-by-audio-span",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "EchoSubtractor matches her words that were audible inside the item's audio span regardless of the text's arrival time; empty-skeleton tails join a run by surface; on word-timed sources a single token whose own time sits on her same word is echo. Reverse if recorded sessions (ET-1) show children's words deleted (> 1% of answers).",
    "source": "inbox/duplex-critique.json"
@@ -9422,7 +9422,7 @@
   {
    "id": "duplex-unreadable-script",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Transcript tokens in a script other than Devanagari/Latin (STT hallucination, 5/90 real segments) set LexicalMarkers.unreadable: never complete, never re-voiced, backstop first sound is a verdict-free prompt; the Director should ask again. Reverse if a future STT stops hallucinating scripts (0 in 500 real segments).",
    "source": "inbox/duplex-critique.json"
@@ -9430,7 +9430,7 @@
   {
    "id": "duplex-turn-pace",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Within-turn pace: the longest pause this turn after which the child resumed x TURN_PACE.k (1.3, chosen on train slow-child world: k0 12.6%/1.5% cut/missed, k1.3 10.1%/3.6%, k1.6 9.6%/6.9%) floors later backstops (cap 6 s) and the verdict delay (cap 4 s); granted holds excluded. Reverse if ET-2 shows missed replies up > 3 pt with no cut-off gain.",
    "source": "inbox/duplex-critique.json"
@@ -9480,7 +9480,7 @@
   {
    "id": "duplex-stage-a-ships-2026-10-04",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Duplex engine: stage A (rules + governor, src/duplex/engineRules.ts) is THE engine; the fast LLM semantic estimate stays behind flags.semantic (off); stage B stays behind flags.trained (off). Why: on the frozen TaxilaFDB test split (960 streams, held-out template families AND voices) stage A cut children off in 2.3% (FAST lane) / 2.6% (D4) of 732 thinking pauses vs cascade-900 31.3%, silence-640 74.2-82.8%, Smart Turn v3.2 off-the-shelf 36.9-64.2%, at a decision gap p50 370 ms (FAST) / 1,140 ms (D4), dominating the whole silence frontier (no threshold < 5% cut-offs without ~100% missed replies); the LLM did not lower cut-offs (3.6% / 4.6%, overlapping CIs) and costs ~640 ms per call; stage B failed the promotion gates (closed-loop cut-offs 13-55%). Reverse if: real-child audio (E1) shows stage A's cut-offs above silence-640 on the same audio, or a stage B trained on consented real audio beats stage A on held-out children (tick AUC beyond CI AND closed-loop cut-offs <= stage A at equal gap AND ECE <= 0.05 per context AND <= 30 ms on ACA 2 vCPU).",
    "source": "inbox/duplex-engine.json"
@@ -9488,7 +9488,7 @@
   {
    "id": "duplex-stageb-features-only-no-vouch",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Only a floor model that READS AUDIO (audioMs > 0) may vouch for unseen audio at G5 (adapter.ts TrainedEngine.latestAcoustic); a features-only model's pComplete is also capped by the rules' horizon-penalised estimate. Why: letting the features-only stage B vouch removed the lexical horizon: 32/40 verdicts on repaired values and 86.9% thinking-pause cut-offs on TaxilaFDB test (D4), vs 1/40 and 13.4% after the fix. Reverse if: a features-only model is shown to predict the unseen tail (it cannot: it sees the same stale words).",
    "source": "inbox/duplex-engine.json"
@@ -9496,7 +9496,7 @@
   {
    "id": "duplex-safety-alt-readings",
    "kind": "decision",
-   "status": "proposed",
+   "status": "superseded",
    "at": "2026-10-04",
    "title": "Duplex partial safety runs the SAME shipped predicate (scanSafety) over extra readings of every partial: her echo stripped (echo.js stripAll) and punctuation removed. Why: TaxilaFDB F10 showed her echo interleaved inside a disclosure ('मुझे खुद पानी को चोट और लगानी') breaks the predicate's phrase, and the predicate misses 'कभी कभी लगता है मैं ना रहूं।' when the STT's danda follows the last word (true without the danda). After the fix: distress detected 84/84 test streams, safeguard over a talking child 0. One predicate, more readings — not a fork. Reverse if: server/director/safety.js normalises punctuation itself (then drop the punctuation reading) or alt readings produce false safety trips (0/24 benign on test today).",
    "source": "inbox/duplex-engine.json"
@@ -9582,7 +9582,7 @@
   {
    "id": "duplex-runtime-2026-10-04",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Duplex v2 runtime shape: a device-side EngineHost (src/duplex/host.ts) builds one EngineTick per 100 ms timer AND per stream event (20 ms frames' voice edges, STT partial/final, her playback start/verdict/end/stopped, screen, Director context, async estimate) and runs engine.tick behind the ONE code governor (src/duplex/governor.ts, G1-G11); engines come from one factory (src/duplex/adapter.ts createEngine): stage A rules (engineRules.ts) today, TrainedEngine (ONNX via an injected onnxruntime, feature spec cce-features/1, <= 20 MB, falls back to stage A on any stale tick) when flags.trained AND a model are present, so stage B lands with no code change. The server slice (server/duplex/slice.js + routes.js) keeps the authorities the device must not hold: partials fan-in with the lexical horizon (fanin.js), known-text echo subtraction of her own TTS words (echo.js), sticky safety on every partial (partialSafety.js, the shipped scanSafety), speculative drafts + TTS warm-up of the code-built uptake driven by the PrepareHint stream with cancellation (speculator.js), build intents from partials (buildIntent.js; misconception values server-only). Hands-free and full-session: no press/release API anywhere in the duplex modules (test-asserted); push-to-talk survives only as the W2 recording/typed fallback. Shadow mode emits log rows only (numbers + closed codes, never child words). Reverse if: the host's per-tick cost on a low-end Android (DX-1) exceeds 5 ms p95 or the event-tick design misses a decision the timer would catch; then fold event ticks into the 100 ms timer (decisions only, perception stays continuous).",
    "source": "inbox/duplex-runtime.json"
@@ -9590,7 +9590,7 @@
   {
    "id": "duplex-verdict-delay-2s",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Fast mouth, late verdict: the verdict-bearing words of a closed-answer reply play no earlier than the child's last value end + 2.0 s (config VERDICT.delayMs; was 1.2 s in the v2 draft). The first sound (the code-built uptake of the child's own value) is not delayed: only the verdict segment, which the player holds (INTEGRATION.md §4). Evidence M-D7 (n = 96 scenarios x 10 seeds, fast word-timed lane): verdict played before the child finished / on a value the child then repaired = 13/9 of 379 at 1.2 s, 4/4 at 1.6 s, 0/0 at 2.0 s; first-audio p50 unchanged (2,027 vs 2,019 ms). Caveat: tuned on one author's scripted self-corrections (repair pauses 400-1,500 ms +-20 %), so it is a corpus bound, not a child bound. Reverse if: DX-6 on TaxilaFDB or real consented children shows repairs after a value pause > 2.0 s at a rate that matters (then raise, or key it to the child's own repair-pause p90), or that 2.0 s reads as unnatural hesitation in a blind listen against 1.2-1.6 s with 0 wrong-value verdicts.",
    "source": "inbox/duplex-runtime.json"
@@ -9598,7 +9598,7 @@
   {
    "id": "duplex-overlap-stay-ducked",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Overlap while she speaks: a burst still voicing at 250-449 ms is UNDECIDED (stay ducked at 0.2, keep listening) instead of adding +1.0 barge-in evidence (config OVERLAP.earlyVoicedZ = 0); it yields at the sustain threshold (OVERLAP.sustainedMs: 450 ms here; 600 ms after the TaxilaFDB tuning workstream), on a raised/rising onset, after her yes/no question (~200-300 ms), or when words land; a burst that ends short reads as a continuer and she un-ducks. The reflex duck at onset (~40 ms) already backs her voice off. Evidence M-D7 fast lane: the eager rule yielded on 20/30 continuers ('हम्म/अच्छा/ओके' over her) and resumed ~0.8 s later, vs 0/30 now; cost: barge-in yield p50 500 ms (fast) / 600 ms (D4, MAI) vs 300 ms (yes/no answers still yield at 300 ms). Reverse if: on real audio (DX-5) the stay-ducked rule's barge-in yield p50 exceeds 600 ms or children re-try their interruption, while the eager rule's continuer false-yields stay under 10 %.",
    "source": "inbox/duplex-runtime.json"
@@ -9606,7 +9606,7 @@
   {
    "id": "duplex-explain-sentence-cap",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Stage A without a fresh semantic read is uncertain about the end of a teach-back: in open_explanation a finished SENTENCE (verb-final, falling contour) caps pComplete at 0.8 < speakPc 0.9 (engineRules.ts EXPLAIN_SENTENCE_CAP), so only a fresh semantic estimate on the same text, an idk / complete question / repeat request, or the governor's context backstop (B3: 2.0 s at decision time, 2.5 s after the TaxilaFDB tuning change; x2.5 on an open tail) ends it. Evidence M-D7 (pre-cap dev run, 3 seeds): 'triangle के तीन sides होते हैं' + 1.6 s pause and 'जो ऊपर होता है ना' were taken over 3/3 and 3/3 (revoked before audio only because the reply was slow); after the cap 0 hard cut-offs in explanations; explanation gap p50 ~2.03 s on every lane (~2.53 s with the raised backstop) (the price, paid until the semantic call lands). Reverse when: the semantic arm (server/duplex/semantic.js, taxila-fast) is measured on TaxilaFDB F2 with thinking-pause cut-offs <= silence-640 on the same audio; then the cap applies only while the semantic estimate is stale.",
    "source": "inbox/duplex-runtime.json"
@@ -9744,7 +9744,7 @@
   {
    "id": "duplex-verdict-blind-timing",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "The engine's completeness is 'a complete answer of the asked form', never 'the right answer': the expected-answer context carries {form, slots, units, options}, never the key or misconception values, so right and wrong answers get the same reply timing (latency would otherwise leak the verdict, like correctness-keyed nods; design-v2-rejected-correctness-face) and no key material reaches the device (v1 §6.7). The owner brief's 'expected answer form/key' is honoured for form only, deliberately. Reverse only if a blind test shows children cannot detect a >= 300 ms right/wrong latency difference; the key stays off the device regardless.",
    "source": "inbox/duplex-v2.json"
@@ -9752,7 +9752,7 @@
   {
    "id": "duplex-lexical-horizon-guard",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-04",
    "title": "Words count only once they cover the audio: TranscriptView carries coverageEndMs and unseenVoicedMs (child voiced audio after the last covered word); lexical completeness is discounted and SPEAK/CUT_IN vetoed (governor G5) when unseenVoicedMs > 120 ms unless a fresh acoustic estimate vouches for the tail. Coverage comes from Nemotron token times (scale) or the MAI micro-commit probe (commit at a >= 150 ms acoustic micro-pause; the final covers all audio, 68 ms from Chennai) (pilot); D4 has no timings (713 ms lag) and cannot meet the 350 ms gap. Evidence M-D6: wrong values on stale prefixes 5/13 -> 0/11 with the guard. Reverse if the India-lane STT gives word coverage within 100 ms p90 (the guard becomes a no-op but stays).",
    "source": "inbox/duplex-v2.json"
@@ -9915,7 +9915,7 @@
   {
    "id": "rs4-v2-rung1-engine-spec",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "Studio v2 = 16 reviewed engines (8 games, 4 simulations, 4 explainers) + a model-written JSON spec per piece, mounted as rung 1 inside the W2-H host (patch 01 adds the `engine` artifact kind). The model never writes code on this rung; validateSpec repairs the spec or returns the reviewed default and never throws. Reverse if child playtests show spec-filled engines feel samey across lessons (repeat-play drop-off worse than W2-H code builds), or if the spec bench usable-after-repair rate falls below 90% for an archetype on the production planner.",
    "source": "inbox/prework-rs4.json"
@@ -9923,7 +9923,7 @@
   {
    "id": "rs4-shared-pure-grader",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "Grading is one pure function, gradeAnswer(archetype, spec, itemId, rawValue) in shared/studio-spec.ts, run by the client host and re-run by the server (patch 02, createGradeSessionV2). The frame's own `correct` field is never read. Engine and host verdicts agreed on every graded answer in the record battery. Reverse if a needed act cannot be expressed as a raw value plus the spec (then grade that act server-side from the host log only, still never from the frame).",
    "source": "inbox/prework-rs4.json"
@@ -9931,7 +9931,7 @@
   {
    "id": "rs4-host-recorded-input",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "Simulations that grade a process (phase-shift, shadow-play) send `{ $hostLog: name }` references; the host substitutes its own recorded input channel (api.record) and the grader replays it with the same fixed step. Inputs are quantised to 0.1 s sim boundaries so the replay is exact. The largest answer measured was 1768 B (phase-shift with host log), so the server bound for v2 answers is 256 KB, not W2-H's 512 B. Reverse if logs over 256 KB occur in real sessions (then checkpoint state server-side every N s).",
    "source": "inbox/prework-rs4.json"
@@ -9939,7 +9939,7 @@
   {
    "id": "rs4-safe-zone-measured",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "The stage contract is measured, not trusted. Every text draw is checked against the label safe zone (0..180 x 0..75) and the PiP safe zone (837.5..1000 x 0..162.5) via ctx.getTransform, and labels under 38 world units are counted (tooSmall). FX pops are clamped out of the zones, and pop-in overshoot counts as decoration. Reverse if the PiP or label moves (update the zones in core/tokens.ts, then re-run record.mjs).",
    "source": "inbox/prework-rs4.json"
@@ -9955,7 +9955,7 @@
   {
    "id": "rs4-junk-labels-rejected",
    "kind": "decision",
-   "status": "proposed",
+   "status": "shipped",
    "at": "2026-10-05",
    "title": "Spec strings that contain NaN, undefined, null, Infinity or '[object ' are treated like markup and fall back to the reviewed string. Found by the Playwright fuzz: seed 5 on area-claim rendered 'NaN' as a unit label. Reverse if a legitimate label in some language contains one of these tokens.",
    "source": "inbox/prework-rs4.json"
@@ -10422,7 +10422,7 @@
    "id": "vs-filler-detector-ami",
    "kind": "decision",
    "at": "2026-10-04",
-   "status": "proposed",
+   "status": "shipped",
    "reverseIf": "VS-A8 on child pilot audio: filler recall < 0.6 at <= 0.05 FP.",
    "title": "Stage-2 public-data component = per-frame filled-pause detector trained on AMI (CC BY 4.0) over the product front-end features; feeds F3 acoustic only.",
    "source": "inbox/voicesig.json"
@@ -10431,7 +10431,7 @@
    "id": "vs-z-on-server",
    "kind": "decision",
    "at": "2026-10-04",
-   "status": "proposed",
+   "status": "shipped",
    "reverseIf": "A device stage-2 head needs z inputs (K2 embedding branch).",
    "title": "Device sends raw measurements KnowledgeVoice.f; server z-scores against the voicesig baseline (deviation from SPEC 1.5 z-on-device).",
    "source": "inbox/voicesig.json"
@@ -10440,7 +10440,7 @@
    "id": "vs-voice-lr-over-text",
    "kind": "decision",
    "at": "2026-10-04",
-   "status": "proposed",
+   "status": "shipped",
    "reverseIf": "A fitted head without a text-only counterfactual; then dAUROC-matched calibration.",
    "title": "lrV = odds(h all terms)/odds(h text-only terms), gated qA x maturity, clipped to ladder cap; replaces SIGNALS A1/L4 term (replaceTimingTerm).",
    "source": "inbox/voicesig.json"
@@ -20359,7 +20359,7 @@
    "id": "r4c-dc-screen-claims-by-predicate",
    "kind": "decision",
    "at": "2026-10-11",
-   "status": "proposed",
+   "status": "shipped",
    "title": "Proposed for release 13 (main decides): a sentence that points at the screen or board is checked against what is mounted (a game needs a play piece; its content words must be words the mounted piece shows), and the screen repair drops only the pointing, never the content (r12/rca/patches/r13-fix-2-5-screen-claims.diff). Reversal: a battery shows false flags on legitimate pointing lines above a bar main sets.",
    "source": "inbox/r4-conversation.json"
   },
@@ -21790,7 +21790,7 @@
    "id": "dc-r144-ways-chips-lang",
    "kind": "decision",
    "at": "2026-10-15",
-   "status": "proposed",
+   "status": "shipped",
    "title": "r5 QA D41 (14.4): the ways-in chips (picture / story / game / back, director/state.js waysChips) go through chipLabels(lang) like the stop and check-in chips (Hinglish 'Picture dikhao / Kahani mein batao / Game khelte hain / Lesson par wapas', Hindi 'तस्वीर दिखाओ / कहानी में बताओ / गेम खेलते हैं / पाठ पर वापस'); the Director still reads the ids, and each label said aloud reads as its request (a Devanagari story ask needs its telling verb, so 'इस कहानी में राजा कौन है' is not one). The Hinglish LANGUAGE rule (compiler/compile.js) no longer follows a switch to English: her English words, even a whole English line ('Can we do the lesson now?'), keep Hinglish; only a language request (requests.js 'language', PINNED) changes it. Reversal: a Hinglish-pref child who keeps writing English and is understood worse in Hinglish (owner report or sim-lab register check).",
    "source": "inbox/r144-4a.json"
   },
@@ -21826,7 +21826,7 @@
    "id": "dc-r144-deep-marks-switch",
    "kind": "decision",
    "at": "2026-10-15",
-   "status": "proposed",
+   "status": "superseded",
    "title": "The deep-kind audit's 1,927 marks are measured before they are applied: TAXILA_KIT_DEEP_MARKS=1 (off by default) loads data/kits/deep-marks-2026-10-15.json as deep: false through the kit loader; the patch itself (main's deep-kind-fix, items.js plainEvidence) is applied on claude/r4-conversation and changes nothing while no kit carries deep: false. The sim lab's 2x2 (marks off/on x a kind-only / audit-aware decided child) decides. Reversal: on apply, write the marks into the kits (evals/kit-deep-kinds/apply.mjs --write) and remove the switch and the list; on reject, remove both and keep the patch's code inert.",
    "source": "inbox/r144-4a.json"
   },
@@ -23898,7 +23898,7 @@
    "id": "r5a-dc-understood-is-earned",
    "kind": "decision",
    "at": "2026-10-14",
-   "status": "proposed",
+   "status": "shipped",
    "title": "Agent lane: the per-skill read 'understood' is earned in code (server/agent/agent.js earnedRead): right answers on two different items, or one on a why / transfer item, and no wrong answer after the last right one; otherwise held at partly (or not), and the model is shown its unsupported claim. Motivated by 61/164 overclaims on 571b301.",
    "reversal": "the sim lab shows underclaims (understood withheld from a child who has it) outnumbering the overclaims it removes",
    "source": "inbox/r7-main-3-remerge-old.json"
@@ -26779,6 +26779,459 @@
    "at": "2026-11-09",
    "title": "Learning's D11 (relayed by main): fraction-bars@1 takes an UNNAMED bar, label \"\". It draws no name, its facts row says \"<parts> equal parts\" (no shaded count or value), and the label-value check skips it; a named bar is still checked. A compare card (\"2/3 ya 3/10?\") can now be posed honestly. Before, an unshaded bar could only say \"?\" (over a fraction the prompt states: director16 c5-t02 steady 70–92) or be named, which shades it and answers the card. The second view treats \"\" like \"?\": unnamed bars become circles (S8) and name no fraction. Under the held board an unnamed-bars card stands in the split's left panel. Pinned in tests/r8-held-board.test.mjs.",
    "source": "inbox/r7-studio-33.json"
+  },
+  {
+   "id": "rj-audit-inbox-edges-silently-skipped",
+   "kind": "rejection",
+   "at": "2026-11-09",
+   "title": "Tried: sessions wrote memory edges with relations outside the seven the graph knows (informs, implements, refines, supports …) or with from/to keys. What broke: merge-inbox printed 'skip edge' and carried on, the file moved to merged/, and context.mjs --check still passed. 229 of 3,062 inbox edges never reached the graph; 25 of the 96 well-formed ones are 'supersedes', so replaced decisions still read as current. Do not rely on an edge having merged; the merger should fail on an unknown relation and the check should compare merged-inbox edges with the graph.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "ms-audit-inbox-edges-dropped-2026-11-09",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "n": 3062,
+   "method": "script over context/inbox/merged/*.json against graph.json at int/r6 8bb6b188",
+   "title": "Edges in merged inbox files that are not in the graph: 229 of 3,062. 130 use an unknown relation, 3 lack an endpoint, 96 are well-formed with both ends present (part_of 27, supersedes 25, caused_by 22, measured_by 15, constrains 4, inherits 3). The 96 are re-proposed in this file.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "dc-audit-india-move-not-cut-over",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "Record of fact, as HANDOFF.md §6 and M3.md state it: the 2026-10-04 India move never cut over. Production is taxila-web in eastus2 on Neon (us-east-1); taxila-cin-pg holds no product data and is kept (on B2s since 2026-11-06) as one of the Founders Hub counted services. The India hot path is round 7 Platform's scripted, not-applied work. Reverse: the owner approves the cutover and scripts/region/* is applied.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "dc-audit-prod-db-neon-us-east-1",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "Record of fact: the production database is the Neon project in us-east-1 named in dc-owner-other-neon-project-not-used, not the Singapore project and Vercel sin1 functions that infra-segment describes. Reverse: a database move is applied.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "ms-audit-kit-census-2026-11-09",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "n": 38,
+   "method": "count over data/kits/c*.json at int/r6 8bb6b188",
+   "title": "Kit census: 830 topics and 12,597 items in 38 files (was 565 topics / 7,385 items on 2026-10-02). The blind-verified share was not recounted.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "ms-audit-open-items-closed-2026-11-09",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "method": "each open entry's claim checked against the code at int/r6 8bb6b188; list with file:line in docs/design/round7/audit/docs-memory.md (DOCS-22, DOCS-23)",
+   "title": "Open items the code has since closed: migrate defaults to the test branch; the W1-B module call sites and the engine re-check are in server/brain/turn.js and server/director/modules.js; data/kits-parts.json shipped; Stagecraft is wired into the turn and on by default; Home kicks planToday when TAXILA_CONDUCTOR_PLAN=on; route crashes are beaconed; the stop phrase and 'deeper' are read by code; taxila.dev is the public URL; the deploy sets TAXILA_STT_MODEL; the lesson-time client wiring (plan state, refusal screen) exists.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "dc-audit-aws-not-called-by-product",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Record of what can be checked about AWS, 2026-11-10; it decides nothing new. No product code (server/, src/, shared/, package.json) mentions Bedrock, the AWS SDK or amazonaws.com; AWS appears only in offline build and training scripts (scripts/gpu, scripts/voice/v3, scripts/voice/stt-v3, scripts/voicesig/aws-check.py). CLAUDE.md's Azure-only rule (owner, 2026-10-02) covers every paid AI and compute resource the product calls. Which owner statement ended the AWS-credit plan of owner-aws-credit-funded-india-first-2026-10-04 is not recorded anywhere, so no supersedes edge is written. Reverse: the owner records that a product path may call AWS.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "op-audit-build-gpu-aws-owner",
+   "kind": "open",
+   "at": "2026-11-10",
+   "title": "Does the AWS GPU build harness (scripts/gpu: used by the 3D face jobs and by the voice training scripts scripts/voice/v3 and stt-v3; nothing in the product runs it) stay, or retire with the 3D head? This is the owner's question; no session may decide it. Until answered, scripts/gpu is kept.",
+   "source": "inbox/r7-audit-docs-memory.json"
+  },
+  {
+   "id": "comprehension-review-open-2026-10-02",
+   "kind": "open",
+   "at": "2026-10-02",
+   "title": "The CE-M1 bar fails under both families (0.627 / 0.475), and CE-M4 now fails at 14 pp after the truth-leak fix. Per SIM6, thresholds were NOT tuned to the simulator.",
+   "source": "open.md"
+  },
+  {
+   "id": "ms-r7-audit-content-blind-solve",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "Whole-project audit, content-data: 1,802 items solved blind by Claude agents with keys withheld until answers were written (1,010 of 12,597 kit items in a seeded sample per class and subject, 264 of 2,647 diagnostics, 72 worked examples, all 456 placement items). 0 wrong keys. 14 English and Hindi items that depend on a story or poem the prompt does not carry could not be re-derived (unverified, not confirmed). Curriculum graph: 830 topics, 830 kits, no duplicate ids, no dangling, forward or circular prerequisites. Method and findings: docs/design/round7/audit/content-data.md.",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "dc-r7-topic-done-on-askable-skills",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "A topic is finished when every skill that has a loadable kit item is learned (server/content/next-topic.js decidingStates). Before, every kit skill counted, and 8 topics (4 class 5-6 Hindi recitation skills with no item, 4 class 8-9 English skills whose items the prompt budget drops) could never be finished: such a skill is taught but can never be answered unaided, so it stays 'practising'. Reverse if: every kit skill is guaranteed an item at load (a load-time check), or 'learned' gets a route that needs no item.",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "rj-r7-audit-skill-row-missing",
+   "kind": "rejection",
+   "at": "2026-11-09",
+   "title": "Drafted and caught by the skeptic pass before it shipped (audit 2026-11-09, first fix for CD-01): counting only askable skills in the topic's skillCount, on the belief that a skill with no item never gets a skill_state row. Wrong: the explain step, the faded worked step (keyed to kit.skills[0]) and teach-back all write the row, as 'practising'. The count then passes and every(LEARNED) still fails. Instead: filter the states themselves to askable skills as well as the count.",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "dc-r7-passages-stored-once",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "A kit stores each story, poem, letter or scene once per topic (topic.passages: id, text, title?, kind?) and an item points at it (item.passageId); the question prompts are short and never carry the text. 500 items in 116 topics; 202 class 5-9 items had the text lifted out of prompt_en and prompt_hi; 8 long science, EVS and English prompts were shortened. kit.lint.itemsDropped is 0 for every kit and a test fails otherwise (it was 111, 102 of them class 8-9 English). While the lesson cannot show a passage, normalizeKit moves every item with a passageId to kit.heldItems (4%); TAXILA_PASSAGES=on puts them back. Lesson half: docs/design/round7/learning/PASSAGE.md and patch to-brain/020 (read aloud in classes 1-3, on the board from class 4, once per passage per lesson). Reverse if: the lesson shows passages and the hold-out flag is on for good, then delete the flag and heldItems.",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "open-r7-passage-residual",
+   "kind": "open",
+   "at": "2026-11-10",
+   "title": "172 class 5-9 items (docs/design/round7/learning/PASSAGE-RESIDUAL.txt) refer to 'the poem' or 'the story' with no text in the kit (the chapter's own text, which kits never carried), and stay askable. Closing it means writing and storing each text as a passage, once (rejected.md kit-invented-companion-texts). Also open: 25 arena challenges are about a passage item until patch to-games/001 lands; Studio needs a passage@1 board with paging at 360 px (PASSAGE.md).",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "dc-r7-placement-retire-not-delete",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "A placement item that duplicates another is marked retired: true and stays on file (bank.js usable() already skips it). Retired: pl-c5-maths-l02, l05, l07, pl-c3-maths-m01, pl-c8-maths-e10, pl-c4-evs-e09 (one of each exact pair: the one whose ge sits further from its raters' mean) and pl-c8-maths-l10 (class 3-4 sum anchored at class 8, only usable by adjudication). Four close-variant pairs share a pairId (pair-c4-maths-garden-boundary, pair-c7-maths-opposite-angle, pair-c6-science-wet-shirt, pair-c7-science-chewing-starch) and cat.js asks at most one per round. c8-maths now has 29 usable items (the floor test says 30 elsewhere). Reverse if: the bank is regenerated with deduplication.",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "dc-r7-minikit-removed",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "The mini-kit generator is deleted (server/content/minikit.js; getKit returns the file kit or null and ignores generate). All 830 curriculum topics have a kit file, so it could not run; a test pins that every topic loads from its file. Supersedes the ws2-director-minikit-keys policy for model-written keys. Reverse if: a topic is added to the curriculum before its kit is written (then a kit-less topic returns null, which callers treat as no kit; restore from 55983111).",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "ms-r7-audit-content-data-deletions",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "Removed in the content-data audit (deletions commit; each file is in git at 55983111): server/content/minikit.js (mini-kit generator and compareAnswers); scripts/kits/w5-decide.mjs (applied its 25 rewrites once, now stops at its first one); scripts/kits/w2-merge.mjs (0 of 4,695 items left to merge). Kept: scripts/kits/w5-decisions.json (decisions.md cites it), w5-filter-numerals.mjs (tests/r7-learning-w5.test.mjs), data/curriculum/boards.json, data/curriculum/index.json (validate.mjs checks it against the files), data/kits-relevel (tests and context cite it).",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "dc-r7-friend-devanagari-patch",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "The Hindi kits name the friend रिया as plain text (55 whole-word uses, c3-c9); the slot never reached Devanagari. Patch to-brain/019 changes friend.js (a string with more Devanagari than Latin letters gets the name in Devanagari; the child's own name in either script is skipped) together with the data change, which must not be applied alone. Not applied on this branch.",
+   "source": "inbox/r7-audit-content-data.json"
+  },
+  {
+   "id": "rj-r7-audit-face-parked-stage-holds-slot",
+   "kind": "rejection",
+   "at": "2026-11-09",
+   "title": "Tried (review v4 park/adopt + ship5 one-running-stage rule, as shipped to int/r6 21a): a face stage parked on unmount only stopped drawing and kept its place in the page's one-running-stage list until its park timer disposed it. Broke: the safety Help sheet mounts a second live face over the lesson's; when the sheet closed, the lesson's suspended stage stayed frozen for 1.5 s, or 10 s for a worker-backed stage (HANDOFF_PARK_MS, the default), over her voice. Now: PuppetStage.park() yields the slot at once and start() takes it back on adoption (tests/r7-audit-face.test.mjs FACE-01). Any new way to keep a stage alive off the page must yield the slot the same way.",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "rj-r7-audit-face-server-reads-public",
+   "kind": "rejection",
+   "at": "2026-11-09",
+   "title": "Tried (face-home-daily-greeting): server code deciding whether a shipped file exists by looking under public/. Broke: the production image copies dist/, server/, shared/, data/ and src/ only, so the check was always false there and GET /api/tutors/greeting could never return a clip. Now: the served build (dist/, or TAXILA_DIST) is checked first, then public/ (server/face-puppet/greetings.js clipDirs). tests/runtime-image-imports.test.mjs covers imports, not file reads: any server file read outside those five folders fails silently in production.",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "dc-r7-audit-face-protege-glance-not-while-listening",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "Corrects dc-r7-face-teachback-protege ('looks from the child to the protege while she listens, speaks or waits'): she glances at the protege only while she speaks or waits for the child. While the child talks she keeps her eyes on the child (src/avatar/behaviour.ts lookAt drops any look in LISTENING and THINKING, by design), so the listening glance was requested every 3.6 s and never shown. Teacher.tsx no longer requests it. Reverse only if behaviour.ts gains a deliberate listening look.",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "op-r7-audit-face-golu-vs-sprite",
+   "kind": "open",
+   "at": "2026-11-09",
+   "title": "Classes 1-3 teach-back: the prompt names the protege 'Golu, a pretend baby elephant' (server/compiler/characters/asha.js young.protege; shapes.js teachback and hook), the screen shows a cloud pup, a pebble or a sprout (src/ui/teacher/Protege.tsx). No elephant art exists. Needs Brain (species-free wording) or new art. docs/design/round7/audit/face.md FACE-03.",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "dc-r7-audit-face-lamp2-pack-is-only-copy",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "lamp2 (one of the owner's three look choices): its painted key sources lived only in a session scratch folder (scripts/character/puppet2d/lamp2/common.py L2_SCRATCH) and that folder no longer exists (the earlier Face session confirmed), so they are gone for good. public/face-puppet/lamp2 (22 files) is the only copy of the pack: keep it, never delete it as 'rebuildable'; changing lamp2 means painting and paying again. r8 can still be re-packed from tracked layers (pack.py and sync-runtime reproduce the shipped pack byte for byte, checked 2026-11-10) but not re-cut (polish-r8/work is untracked). face.md FACE-14.",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "op-r7-audit-face-r9-never-synced",
+   "kind": "open",
+   "at": "2026-11-09",
+   "title": "v4-review2-r9-sync-due (2026-10-05) recorded puppet polish r9 judged 4.2 vs r8 4.1 with its sync to production due; production still ships r8 and no decision or rejection covers r9 or r10 (art/character/puppet2d/polish-r9, polish-r10, 42 MB). Decide: sync, or record why not. face.md FACE-16. Owner decision 2026-11-10: the r9 sync is deferred to the owner's look pick (r8, lamp2 or r9); r9 and r10 art and scripts are kept until then.",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "dc-r7-audit-face-deleted-lost-looks",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Deleted as repository weight, nothing reads them (importers, package.json, CI, Dockerfiles, tests, context citations checked; r8 re-pack proved unchanged after): art/character/puppet2d/polish-r3..polish-r7 and scripts/character/puppet2d/polish-r3..polish-r7 and judge-r1..judge-r7-blind.mjs; art/character/puppet2d/V and scripts/character/puppet2d/V (the vector puppet that lost); art/character/puppet2d/P except work/mouth-ref-cfront.png, mouth-base-blank.png, mouth-mask2.png, rest.png (read by polish-r8, r9, r10 mouth scripts; scripts/character/puppet2d/P kept); scripts/character/polished; scripts/gpu/jobs/hello/runs (untracked, ignored by scripts/gpu/.gitignore). Last commit that holds all of them: 345b5f7c (git show 345b5f7c:<path>); each was last changed in ae880e84 (2026-11-06). .gitignore now lists the four kept P/work files as exceptions, so the tracked set and .gitignore agree. Kept on purpose: 3D head and Arjun, polish-r2 layers, polish-r8, r9, r10, lamp1, lamp2, route-b, prototypes/, src/face-puppet/adapter.tsx. Also removed: src/ui/teacher/useDelight.ts, unused prefetchLook/lookIds/faceRigFailed, the voiceOnly and gentle props of TutorFace/PuppetFace/LessonFace, the .tx-picker css. App's share of the dead code (getTutors, chooseTutor, SITE_TUTORS, TeacherPortrait) is docs/patches/to-app/008-face-dead-code.patch.",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "dc-r7-audit-face-greeting-day-and-lines",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Daily greeting (FACE-07): a child never gets the same line two days running (server/face-puppet/greetings.js lineIndex: per-child offset, per-child step of 1..n-1 per day); six lines that claimed history ('pick up where we left off', 'Hi again', and their Hindi and Hinglish forms) were replaced by new ids *-m4 and *-a4 (each slot still has three lines; no clips were rendered, so no file names changed meaning); the greeting's day and Kaksha Home's greeting word both turn at 04:00 through shared/day.js (learningDay, partOfDay).",
+   "source": "inbox/r7-audit-face.json"
+  },
+  {
+   "id": "coverage-belief-without-discriminating-level",
+   "kind": "measurement",
+   "title": "A kit misconception mapped in data/play/coverage.json can still have no level that tells it apart: 4 of the mapped beliefs in 515 coverage entries (2026-11-10)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-games.json"
+  },
+  {
+   "id": "rj-audit-brief-hardstop-on-every-plan",
+   "kind": "rejection",
+   "title": "The Conductor brief's hard stop (the slot's window end) on every lesson with a plan: a lesson started after the window wrapped on the first answer",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-learner.json"
+  },
+  {
+   "id": "learner-brief-hardstop-limits-only",
+   "kind": "decision",
+   "title": "A lesson brief has a hard stop only for a family whose day limits are on and only while the window is still open at the start; wrapAt is the start plus the planned minutes",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-learner.json"
+  },
+  {
+   "id": "rj-audit-lesson-path-never-discriminates",
+   "kind": "rejection",
+   "title": "Lesson-path evidence without `discriminates`: the ledger's misconception could be raised by a lesson answer and never lowered by one",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-learner.json"
+  },
+  {
+   "id": "rj-audit-hinted-includes-c1",
+   "kind": "rejection",
+   "title": "Counting item.open C1 (a later try, no hint) as a hinted answer in the monthly 'gave a hint N times' line",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-learner.json"
+  },
+  {
+   "id": "rj-audit-reteach-unanswered-as-failed",
+   "kind": "rejection",
+   "title": "Scoring a re-teach nobody answered after (30-day horizon, no graded answer) as failed with reward 0",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-learner.json"
+  },
+  {
+   "id": "dc-owner-model-policy-top-model-high-effort",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Recorded from CLAUDE.md (the line has no date of its own; the oldest tracked copy is the 2026-11-06 commit ae880e84): the main loop and every build and review agent run on the top model at high effort, no downgrades. Superseded 2026-11-10 by dc-owner-model-policy-2026-11-10.",
+   "source": "inbox/r7-audit-model-policy.json"
+  },
+  {
+   "id": "dc-owner-model-policy-2026-11-10",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Owner directive 2026-11-10, replacing 'top model at high effort, no downgrades': Fable 5.2 orchestrates (the main loop: decisions, triage, synthesis). Build and fix sessions run on Opus 5.5 (complex or multi-file work) or Sonnet 5.5 (well-scoped work against a spec) at medium effort, raised to high only when a task fails at medium. File search, log reading and other cheap-to-check sub-tasks run on Haiku 5.5. Source: Anthropic's model guide. Reason: 13 Fable audit sessions hit the Fable usage limit within 35 minutes on 2026-11-09 and stopped mid-work. Reverse if: the owner restores the top-model rule, or a task class fails at high effort on its assigned model (move that class up one model).",
+   "source": "inbox/r7-audit-model-policy.json"
+  },
+  {
+   "id": "rj-r7-audit-uncaught-decode-kills-replica",
+   "kind": "rejection",
+   "title": "A throw in the http request listener of server/serve.mjs is an uncaught exception: one GET /% (malformed percent-escape) exited the web process",
+   "at": "2026-11-09",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "rj-r7-audit-rollback-fallback-picks-failed-revision",
+   "kind": "rejection",
+   "title": "deploy-azure --rollback guessed the previous revision when no `previous` label existed; after a failed smoke the newest non-current revision is the one that just failed",
+   "at": "2026-11-09",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "rj-r7-audit-count-then-write-try-limit",
+   "kind": "rejection",
+   "title": "A try limit that counts, tests, then writes the attempt does not hold under parallel requests; write the attempt first, then count",
+   "at": "2026-11-09",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "op-r7-audit-worker-image-needs-src",
+   "kind": "decision",
+   "title": "The worker image copies src/: the nightly job's sweep imports routes/account.js, whose static imports reach src/modules/frame/engines/*.logic.ts; without it trace retention never ran",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "r7-audit-platform-deletions",
+   "kind": "decision",
+   "title": "Audit platform (PLAT-57/58/59): removed code nothing reads; every removed path is still in commit c3977509",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "r7-audit-platform-calendar-kept",
+   "kind": "rejection",
+   "title": "Rejected: dropping the calendar table (PLAT-56 listed it as unused). server/conductor/view.js reads it for the Conductor's day kinds; migration 050 drops the other five only",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "rj-r7-audit-cap-teacher-agent-pool",
+   "kind": "rejection",
+   "title": "Rejected twice: capping background calls on taxila-gpt6 (the teacher agent's deployment and a Studio build arm). The W2-E measurement stands: the cap starved live Studio builds and the whiteboard",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "r7-audit-games05-modules-route-table",
+   "kind": "decision",
+   "title": "Removed server/routes/modules.js (an empty route table) and its registration in server/index.js (games audit GAMES-05, main's request); last held in 764d1754",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-platform.json"
+  },
+  {
+   "id": "seams-audit-2026-11-10",
+   "kind": "measurement",
+   "title": "Seams sweep (n = 133 routes, 325 env names, 1,280 product files, 75 child/guardian/lesson foreign keys): every FK cascades or sets null; 11 seam findings, 2 at P1 (four parent controls with no reader; game voice numbers)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-seams.json"
+  },
+  {
+   "id": "seams-signals-layer-unwired",
+   "kind": "open",
+   "title": "The signals layer (server/signals index/backstop/priors/quality/session/states, src/signals) has been built but not wired since 2026-10-04: wire per SIGNALS-SPEC §8.2 or retire",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-seams.json"
+  },
+  {
+   "id": "audit-studio-2026-11-10",
+   "kind": "measurement",
+   "title": "Studio area audit, 2026-11-10 (docs/design/round7/audit/studio.md): 12 findings (P1 1, P2 4, P3 7); patches 003 (shade-grid fraction) and 004 (catalogue boards need the cross-check) in docs/patches/to-studio with tests",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-studio.json"
+  },
+  {
+   "id": "m-audit-shade-grid-lint",
+   "kind": "measurement",
+   "title": "shade-grid@1 with labels on and the fraction shown failed its own text-overlap lint for every grid of 2+ rows: 1,080 of 1,080 block calls (rows 1-6 x cols 1-10 x every block). The fraction numwork box starts ~35 units above its `at` row; at y0+H+34 it sat on the 'N rows' label. With y0+H+56: 4,616 of 4,616 pass. The claims board (claims-board.js:98) makes exactly this call",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-studio.json"
+  },
+  {
+   "id": "m-audit-catalogue-usable",
+   "kind": "measurement",
+   "title": "Studio catalogue at int/r6 21a: 385 topic files; games ok 368, unchecked 9, missing 4, unsafe string 1, safety-excluded 3; cross-check pass 369, fail 7, missing 9. 13 records whose check did not pass still served 102 whiteboard boards (game and explainer withheld). Explainer library: 316 of 316 entries pass truth and expand",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-studio.json"
+  },
+  {
+   "id": "open-audit-stagecraft-spec-spend",
+   "kind": "open",
+   "title": "Stagecraft launches paid generated_spec builds by default (taxila-fast-bg, ~$0.0013 each, cap $0.06 per lesson-hour) that the tray gate always refuses: no code sets a judge verdict (forge3/gate.js judgeArtifact has no caller). Either wire the judge (owner cost question, gap-map 914) or stop launching the rung without one",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-studio.json"
+  },
+  {
+   "id": "open-audit-rolldown-runtime",
+   "kind": "open",
+   "title": "server/studio/fixers.js and qa/static.js import rolldown/parseAst, which reaches the production image only through vite (a devDependency); the image installs --omit=dev, so build.js and qa/gate.js fail to import there. Add rolldown 1.2.12 to dependencies before STUDIO_QA_URL is wired",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-studio.json"
+  },
+  {
+   "id": "r7-audit-teacher-lanes",
+   "kind": "measurement",
+   "title": "Teacher audit 2026-11-10 (int/r6 21a, code read, n/a model): on default flags every child is on the Director lane (agent lane only via TAXILA_TEACHER=agent or TAXILA_TEACHER_AGENT_FOR; neither is set in infra/ or deploy scripts); the script walk is on and walks 4 topics (data/lesson-scripts: c4 ch05 t01, c5 ch02 t01-t02, c6 ch06 t01); the other 826 kit topics run the kit path",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-teacher.json"
+  },
+  {
+   "id": "r7-audit-teacher-signals-unwired",
+   "kind": "open",
+   "title": "server/signals step() (decision sig-layer-evidence-not-authority) is reached by no product import from server/serve.mjs; only tests/signals-server.test.mjs and evals/signals/run.mjs call it. Either wire it where the decision says or mark the decision unbuilt (audit TEACHER-07)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-teacher.json"
+  },
+  {
+   "id": "r7-audit-teacher-teachback-tick",
+   "kind": "open",
+   "title": "A teach-back tick on the child's lesson summary comes from the turn classifier's model label (brain/turn.js noteDid), never the blind grade, and corroborate() does not run for why/teach-back modes (audit TEACHER-03)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-teacher.json"
+  },
+  {
+   "id": "r7-audit-teacher-agent-clip",
+   "kind": "measurement",
+   "title": "Agent lane prompt clips (server/agent/prompt.js): over data/kits/*.json, 1,666 of 25,194 item prompts (hi+en) exceed the 180-char offer clip and 930 the 200-char card clip; 669 of 830 topics have more than the 4 key ideas shown (audit TEACHER-06)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-teacher.json"
+  },
+  {
+   "id": "dc-r7-audit-studio-fixes",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Owner's whole-project audit, Studio list (docs/design/round7/audit/studio.md on claude/r7-audit-studio; each finding verified before fixing). STUDIO-11: without a judge lane (FORGE3_QA_URL unset) Stagecraft no longer launches the generated_spec rung (lesson.js judgeRungsCfg passes every other rung; preferredRung falls to engine_default): the tray gate refuses every unjudged spec, so each launch (~$0.0013 on taxila-fast-bg) bought nothing. Reverse when a judge lane is wired. STUDIO-01: shade-grid@1's shown fraction moved to y0 + H + 56 under the rows label (audit patch 003; 0/2 → 2/2). STUDIO-02/03: catalogue boards follow the blind cross-check like the game and explainer (patch 004; 1/3 → 3/3); the 13 topics whose check failed (7) or never ran (6) stay withheld, not hand-fixed, until they are re-authored and re-checked. STUDIO-05: beat-card dots (src/studio/beatDots.ts) keep one dot 'now' from the 9th board. STUDIO-09: number-line-hop@1 refuses up front ('hops_layout') and board-ref advertises only what lays out: all hops one way, or two where the second goes back at most half the first; landings within 30; with 2+ hops each ≥ 2 and ≥ 1/8 of the spread (1/5 with a 3-character number); the equation row is centred. STUDIO-08: one Stagecraft mode default ('on', config.js stagecraftMode) for lesson.js and StagecraftHost. STUDIO-10: picture.js forgets a lesson's count, failure and finished jobs when the seam forgets the lesson, and caps jobs at 500. STUDIO-07: the Studio v2 node tests moved to tests/studio-v2.test.mjs (now run by npm test and test:all).",
+   "source": "inbox/r7-studio-34.json"
+  },
+  {
+   "id": "dc-r7-audit-studio-deletions",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Deleted after the owner's audit (STUDIO-04, STUDIO-06); the last commit that holds each is b1fc76f7d. server/routes/forge.js (POST /api/forge/requests and /api/forge/prefetch: no caller anywhere; the lesson warms fills through forgeSeam.prefetchLessonFills), with its publicFill and limit tests and shared/forge.ts ForgeRequestResponse. The five applied Studio seam patches: server/forge/seam-patches/w1b-lesson-wiring.patch, w2b-parts-repair.patch, w2b-watch-only.patch; server/studio/seam-patches/w2h-say-screen-targets.patch, w2h-turn-slot.patch (read first: every hunk is in turn.js in a later form; its facts row is superseded by factsRowForSlot / withFactsRows). context/ entries that cite them by name as the tree a measurement ran on read them at b1fc76f7d. The seven seam patches of other streams (brain, comprehension, director, relational) are not Studio's and stay.",
+   "source": "inbox/r7-studio-34.json"
+  },
+  {
+   "id": "rj-r7-audit-voice-stop-without-telling-engine",
+   "kind": "rejection",
+   "title": "Stopping her reply in the link without telling the hands-free engine: on D4 the mic stayed gated and answers were dropped as echo",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-voice.json"
+  },
+  {
+   "id": "rj-r7-audit-voice-bridge-dropped-sink",
+   "kind": "rejection",
+   "title": "UiBridge.cachingStream wrapped the speech fetch with two arguments and dropped the player's sink: no visemes, no word onsets, clause onsets without playAt in the child app",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-voice.json"
+  },
+  {
+   "id": "dc-r7-audit-voice-stream-stall-watch",
+   "kind": "decision",
+   "title": "A reply whose audio ran out and whose stream sends nothing for 5 s ends with what was heard (PcmStreamPlayer.stallMs)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-voice.json"
+  },
+  {
+   "id": "dc-r7-audit-voice-call-open-time-limit",
+   "kind": "decision",
+   "title": "The transcription call's token and connection requests are each limited to 10 s; past that the link falls back to the talk button",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-voice.json"
+  },
+  {
+   "id": "open-r7-audit-voice-holdcue-live",
+   "kind": "open",
+   "title": "The thinking-pause cue is live in hands-free although r3vs-holdcue-shadow says shadow until a children's pilot (audit V-22)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-voice.json"
+  },
+  {
+   "id": "open-r7-audit-voice-expressive-default",
+   "kind": "open",
+   "title": "w2g-expressive-layer-built (default on for DragonHD) against rj-ssml-delivery-plan-2026-10-04 (listeners preferred plain): the blind test is still pending (audit V-27)",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-voice.json"
+  },
+  {
+   "id": "ms-r7-director17-hand-2026-11-10",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "director17: the held board (Brain v6.8 + Studio seam + Learning D11) on int/r6 2450f67ec, run by main, 16 lessons, 1,479 calls ~$1.015; counted by hand by 4 Claude judges on Opus 5.5 (0-based rows): beats 283/283, verdicts 247/247, misgrades 0, false keys 0, held-cost contradictions 0 in all four topics, board changes in the right place about 214/221; the judges reported 16 contradictions, ruled by main into 8 words-against-board (c4 3, c5-t01 3, c5-t02 1, c6 1) and 8 turns with an unsaid card's board on screen (c4 4, c5-t01 3, c5-t02 1); listening 3 in all four topics, register c4 3.5 to 3, promises c4 3.5 to 3; picture requests 11/16 true. The gate's automatic counter H5 caught 3 of 16 with over 100 false flags.",
+   "source": "inbox/r7-main-35.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-9",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Script walk v6.9: the held board stays (clause 1 not triggered, held cost 0); turns that teach nothing hold it too, and request handling becomes one table. Brain: N1 a turn with no unit part (aside question or return, acknowledgement, break, stop or goodbye menu) sends the board that is up with no switchTo and does not advance the unit, predicates throw on these paths with director17's nine rows as fixtures; N2 a bridge belongs to the next card's unit and switches at its first spoken part; T1 one request table (request x beat kind -> one response shape) with a test per row from director17 (Hindi/clarify re-says the live part in different authored words, never verbatim, never a skip; a miss after a spent simpler gives the key; 'pata nahi' at a check-in poses the card first; a request arriving where an aside reply is expected is served as that request; an aside with no card open is not parked 'is sawaal ke baad'; 'haan' in a worked step is the next step); A5 the aside acknowledgement only when the reply is about the aside, 3+ forms; R6 authored lines never re-inflected, one step opener per turn, picture line punctuated. Studio: S10 the split second view is built only from the held board's own parts (c5-t01 e2 invented a 1-part bar); S11 'barabar' for equal parts, never 'alag-alag'; the seam draws only the held intent when there is no switchTo; the harness records the split. Learning D12: bridges lose bridgeBoard; c5-t02 worked board hides the yourStep answer, c2 on unnamed bars, e1 why no longer states e2's key; c4 s2 points model one grouping; validator: no board shows the answer its next card asks. Clause 2 (listening < 3.5) taken as T1; clause 4 taken: H5 retired as a gate input. Reverse in director18: an unsaid board on screen with N1 in place -> Studio's seam refuses any board whose unit has no spoken part that turn; listening still < 3.5 with T1 -> the failing rows are re-authored with Learning per topic before any runtime change; held cost above 0 -> that unit gets paging back; any misgrade -> no paid run until the key matrix covers it.",
+   "source": "inbox/r7-main-35.json"
+  },
+  {
+   "id": "rj-r7-auto-counter-as-gate-input",
+   "kind": "rejection",
+   "at": "2026-11-10",
+   "title": "An automatic contradiction counter as an input to the scale gate (gate.v6, H3, H4, H5). Four versions over four runs: H3 read closeBeat.board instead of the page drawn; H4 never compared single-page turns and read an overwritten ref (1 of 8 on director16); H5 was fixtured on director16's 8 rows and passed 8/8, then on director17 caught 3 of 16 with over 100 false flags, because it reads the harness's held record rather than the take and predates the split view. Each version was fitted to the last run's mechanisms and blind to the next run's. Hand judging by four judges is the only screen; the counter stays a development aid and is never quoted as evidence.",
+   "source": "inbox/r7-main-35.json"
   }
  ],
  "edges": [
@@ -41936,6 +42389,1171 @@
    "src": "dc-r7-bars-unnamed",
    "rel": "part_of",
    "dst": "dc-r7-held-board"
+  },
+  {
+   "src": "ms-audit-inbox-edges-dropped-2026-11-09",
+   "rel": "caused_by",
+   "dst": "rj-audit-inbox-edges-silently-skipped"
+  },
+  {
+   "src": "dc-audit-india-move-not-cut-over",
+   "rel": "supersedes",
+   "dst": "india-move-southindia-azure-pg-2026-10-04"
+  },
+  {
+   "src": "dc-audit-prod-db-neon-us-east-1",
+   "rel": "supersedes",
+   "dst": "infra-segment"
+  },
+  {
+   "src": "dc-audit-prod-db-neon-us-east-1",
+   "rel": "inherits",
+   "dst": "dc-owner-other-neon-project-not-used"
+  },
+  {
+   "src": "dc-r4-single-teacher-asha",
+   "rel": "supersedes",
+   "dst": "avatar-tutor-selection"
+  },
+  {
+   "src": "owner-2d-ship-at-4-2026-10-05",
+   "rel": "supersedes",
+   "dst": "owner-2d-bar-4-5-2026-10-04"
+  },
+  {
+   "src": "owner-2d-ship-at-4-2026-10-05",
+   "rel": "supersedes",
+   "dst": "avatar-v1-stack"
+  },
+  {
+   "src": "ms-r1442-live",
+   "rel": "supersedes",
+   "dst": "ms-r1441-live"
+  },
+  {
+   "src": "ms-r1441-live",
+   "rel": "supersedes",
+   "dst": "ms-r144-live"
+  },
+  {
+   "src": "ms-r144-live",
+   "rel": "supersedes",
+   "dst": "ms-r1432-live"
+  },
+  {
+   "src": "ms-r1432-live",
+   "rel": "supersedes",
+   "dst": "ms-r1431-live"
+  },
+  {
+   "src": "ms-r1431-live",
+   "rel": "supersedes",
+   "dst": "ms-r143-live"
+  },
+  {
+   "src": "ms-r143-live",
+   "rel": "supersedes",
+   "dst": "ms-r142-live"
+  },
+  {
+   "src": "ms-audit-kit-census-2026-11-09",
+   "rel": "supersedes",
+   "dst": "kit-census-2026-10-02"
+  },
+  {
+   "src": "ms-r7-m4-day1-2026-11-06",
+   "rel": "supersedes",
+   "dst": "open-r7-m4-billing-assumptions"
+  },
+  {
+   "src": "rj-r145-kit-deep-marks",
+   "rel": "supersedes",
+   "dst": "open-r143-kit-kind-pose-mismatch"
+  },
+  {
+   "src": "rj-r145-kit-deep-marks",
+   "rel": "supersedes",
+   "dst": "dc-r143-kit-deep-false"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "supersedes",
+   "dst": "dc-r7-m3-credit-unlock"
+  },
+  {
+   "src": "image-default-flare-low-2026-10-04",
+   "rel": "supersedes",
+   "dst": "owner-gpt-image-2-default-2026-10-04"
+  },
+  {
+   "src": "owner-stt-cost-plan-2026-10-04",
+   "rel": "supersedes",
+   "dst": "owner-always-listen-full-session-2026-10-04"
+  },
+  {
+   "src": "stt-mai2-stream-primary-india-2026-10-04",
+   "rel": "supersedes",
+   "dst": "stt-default-live-transcribe-kw-reaffirmed"
+  },
+  {
+   "src": "taxila-dev-live-2026-10-04",
+   "rel": "supersedes",
+   "dst": "open-india-public-url"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-migrate-default-test-branch"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "w1b-open-lesson-wiring-guard"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "engines-v1-server-recheck"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-engines-v1-wiring"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "truth-open-parts-data-unshipped"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-stagecraft-patches-unapplied"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-home-calls-plan-today"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-e2e-stop-reader-gap"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "prod-live-stt-gpt4o-transcribe"
+  },
+  {
+   "src": "ms-audit-open-items-closed-2026-11-09",
+   "rel": "supersedes",
+   "dst": "open-lt-client-wiring-2"
+  },
+  {
+   "src": "duplex-verdict-anchor-last-voice",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-turn-pace",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-stageb-features-only-no-vouch",
+   "rel": "constrains",
+   "dst": "duplex-lexical-horizon-guard"
+  },
+  {
+   "src": "duplex-wait-time-ii-backstop",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "m-taxilafdb-test-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-taxilafdb"
+  },
+  {
+   "src": "m-taxilafdb-l2-live-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-taxilafdb"
+  },
+  {
+   "src": "m-taxilafdb-l2-live-2026-10-04",
+   "rel": "inherits",
+   "dst": "m-d2-duplex-live-stt-2026-10-04"
+  },
+  {
+   "src": "rj-llm-semantic-cutoff-benefit",
+   "rel": "inherits",
+   "dst": "m-d5-duplex-model-arm-2026-10-04"
+  },
+  {
+   "src": "duplex-runtime-2026-10-04",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-verdict-delay-2s",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-hold-grant-fresh-words",
+   "rel": "constrains",
+   "dst": "duplex-lexical-horizon-guard"
+  },
+  {
+   "src": "rj-duplex-fanin-single-commit-slot",
+   "rel": "constrains",
+   "dst": "duplex-lexical-horizon-guard"
+  },
+  {
+   "src": "rj-duplex-no-text-resume-1600",
+   "rel": "measured_by",
+   "dst": "m-d2-duplex-live-stt-2026-10-04"
+  },
+  {
+   "src": "forge-live-is-g1-fill",
+   "rel": "caused_by",
+   "dst": "forge-live-codegen-race"
+  },
+  {
+   "src": "foundry-w2-deployments-2026-10-04",
+   "rel": "part_of",
+   "dst": "plan-superhuman-waves"
+  },
+  {
+   "src": "open-bedrock-quota-and-enablement",
+   "rel": "inherits",
+   "dst": "scout-text-build-bedrock-still-blocked-2026-10-04"
+  },
+  {
+   "src": "owner-gpt-image-2-default-2026-10-04",
+   "rel": "part_of",
+   "dst": "owner-azure-first-aws-second-2026-10-04"
+  },
+  {
+   "src": "dc-r144-d5-unheard-not-silence",
+   "rel": "measured_by",
+   "dst": "ms-r144-d5-false-silence"
+  },
+  {
+   "src": "dc-r144-fanin-carried-burst-item",
+   "rel": "measured_by",
+   "dst": "ms-r144-d5-overlap-words-lost"
+  },
+  {
+   "src": "dc-r144-negation-surface-key",
+   "rel": "measured_by",
+   "dst": "ms-r144-negation-echo"
+  },
+  {
+   "src": "rj-r144-governor-carry-check",
+   "rel": "measured_by",
+   "dst": "ms-r144-d5-overlap-words-lost"
+  },
+  {
+   "src": "dc-r144-unheard-never-escalates",
+   "rel": "measured_by",
+   "dst": "ms-r144-unheard-three-in-a-row"
+  },
+  {
+   "src": "dec-r3fix-fitshape-optional-clauses",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-budget-500-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-server-runs-frame-normalize",
+   "rel": "caused_by",
+   "dst": "open-r3rv-measure-engine-for-mass"
+  },
+  {
+   "src": "dec-r3fix-arith-and-ui-guards",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-truth-errors-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-switch-topic",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-requests-honoured-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-young-help-on-demand",
+   "rel": "caused_by",
+   "dst": "open-r3rv-young-help-covers-activity"
+  },
+  {
+   "src": "open-r3fix-latency-not-fixed",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-silence-after-answer-2026-10-10"
+  },
+  {
+   "src": "ship5-fix-ta8-structural",
+   "rel": "supersedes",
+   "dst": "rj-ship5-filter-safeguard-no-calm-face"
+  },
+  {
+   "src": "ship5-fix-generated-keys-verified",
+   "rel": "supersedes",
+   "dst": "rj-ship5-stagecraft-model-key"
+  },
+  {
+   "src": "ship5-fix-template-board-regated",
+   "rel": "supersedes",
+   "dst": "rj-ship5-board-fallback-ungated"
+  },
+  {
+   "src": "ship5-fix-tone-guard-needs-no-words",
+   "rel": "supersedes",
+   "dst": "rj-ship5-duplex-tone-guard-distress"
+  },
+  {
+   "src": "stagecraft-no-livepath-failover",
+   "rel": "supersedes",
+   "dst": "stagecraft-spec-default-deployment"
+  },
+  {
+   "src": "stylised-3d-halt-r4-owner-decision",
+   "rel": "supersedes",
+   "dst": "stylised-3d-halt-r3-owner-decision"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-stylised-face-commissioned"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "character-built-in-house"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-human-first-gpu"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-bakeoff-verdict"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "gnm-adopted-identity-base"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-polished-verdict"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "teacher-stylised-3d-glb"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "supersedes",
+   "dst": "open-stylised-panel"
+  },
+  {
+   "src": "stylised-c-owner-directive",
+   "rel": "measured_by",
+   "dst": "stylised-concepts-2026-10-04"
+  },
+  {
+   "src": "stylised-c-two-arm-method",
+   "rel": "caused_by",
+   "dst": "stylised-c-owner-directive"
+  },
+  {
+   "src": "stylised-c-two-arm-method",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-refs-2026-10-04"
+  },
+  {
+   "src": "stylised-c-arm-a-wins",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r1"
+  },
+  {
+   "src": "stylised-c-arm-a-wins",
+   "rel": "part_of",
+   "dst": "stylised-c-two-arm-method"
+  },
+  {
+   "src": "rj-stylised-c-arm-b-sculpt-target",
+   "rel": "caused_by",
+   "dst": "meas-stylised-c-judge-r1"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r2"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r3"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r4"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-budget-2026-10-04"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "caused_by",
+   "dst": "rj-stylised-c-sdf-surface-ceiling"
+  },
+  {
+   "src": "stylised-c-3d-failing-verdict",
+   "rel": "constrains",
+   "dst": "stylised-c-owner-directive"
+  },
+  {
+   "src": "stylised-3d-halt-r4-owner-decision",
+   "rel": "caused_by",
+   "dst": "stylised-c-3d-failing-verdict"
+  },
+  {
+   "src": "meas-stylised-c-judge-r4",
+   "rel": "supersedes",
+   "dst": "meas-stylised-polish-r2-blind-replicate"
+  },
+  {
+   "src": "rj-stylised-c-sdf-surface-ceiling",
+   "rel": "caused_by",
+   "dst": "meas-stylised-c-judge-r2"
+  },
+  {
+   "src": "rj-agent-authored-stylised-face",
+   "rel": "measured_by",
+   "dst": "meas-stylised-c-judge-r2"
+  },
+  {
+   "src": "rj-stylised-c-arm-a-traps",
+   "rel": "caused_by",
+   "dst": "meas-stylised-c-gates-2026-10-04"
+  },
+  {
+   "src": "rj-stylised-c-arm-b-traps",
+   "rel": "caused_by",
+   "dst": "meas-stylised-c-spend-2026-10-04"
+  },
+  {
+   "src": "voice-blind-ab-2026-10-04",
+   "rel": "measured_by",
+   "dst": "voice-clips-off-and-numbers-normalised"
+  },
+  {
+   "src": "voice-blind-spliced-breaths-rejected",
+   "rel": "caused_by",
+   "dst": "voice-clips-off-and-numbers-normalised"
+  },
+  {
+   "src": "m-vs-frontend-cpu-2026-10-04",
+   "rel": "supersedes",
+   "dst": "rj-vs-direct-dft-logmel"
+  },
+  {
+   "src": "rj-w1c-script-child-cannot-fill-fade",
+   "rel": "supersedes",
+   "dst": "rj-w2int-three-day-c31-plus1"
+  },
+  {
+   "src": "w2f-whiteboard-no-reveal",
+   "rel": "part_of",
+   "dst": "w2f-whiteboard-archetype"
+  },
+  {
+   "src": "w2f-whiteboard-not-a-build",
+   "rel": "part_of",
+   "dst": "w2f-whiteboard-archetype"
+  },
+  {
+   "src": "w2f-whiteboard-bench-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2f-whiteboard-bench-2026-10-04"
+  },
+  {
+   "src": "w2f-acceptance-local-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2f-acceptance-local-2026-10-04"
+  },
+  {
+   "src": "w2f-chatstream-empty-stream-diagnostics",
+   "rel": "part_of",
+   "dst": "w2f-chatstream-empty-is-error"
+  },
+  {
+   "src": "w2f-router-bench-not-comparable",
+   "rel": "caused_by",
+   "dst": "rj-w2f-probe-portrait-viewport"
+  },
+  {
+   "src": "w2hfix-grade-by-item",
+   "rel": "supersedes",
+   "dst": "w2h-studio-evidence-one-event-per-item"
+  },
+  {
+   "src": "w2hfix-retire-incorrect-evidence",
+   "rel": "supersedes",
+   "dst": "w2h-studio-evidence-one-event-per-item"
+  },
+  {
+   "src": "rj-w2hfix-pointer-grader",
+   "rel": "caused_by",
+   "dst": "w2h-studio-evidence-one-event-per-item"
+  },
+  {
+   "src": "w2hfix-facts-row-from-slot",
+   "rel": "supersedes",
+   "dst": "w2h-seam-patches-turn-say"
+  },
+  {
+   "src": "rj-w2hfix-facts-row-before-arbitration",
+   "rel": "caused_by",
+   "dst": "w2h-seam-patches-turn-say"
+  },
+  {
+   "src": "w2hfix-studio-answers-reach-lesson",
+   "rel": "part_of",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2hfix-one-task-at-a-time",
+   "rel": "part_of",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2hfix-contrast-params-from-misconception",
+   "rel": "part_of",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2hfix-two-row-bars",
+   "rel": "part_of",
+   "dst": "w2h-skeleton-as-activity-first-rung"
+  },
+  {
+   "src": "w2hfix-spend-row-at-race",
+   "rel": "part_of",
+   "dst": "w2h-library-identity-gate-cache"
+  },
+  {
+   "src": "w2hfix-frame-incidents-two-lessons",
+   "rel": "part_of",
+   "dst": "w2h-library-identity-gate-cache"
+  },
+  {
+   "src": "w2hfix-local-acceptance-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2h-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "w2hfix-stage-browser-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2h-stage-browser-2026-10-04"
+  },
+  {
+   "src": "w2hfix-minor-hardening",
+   "rel": "part_of",
+   "dst": "w2h-host-assembles-frame"
+  },
+  {
+   "src": "m-w2ifix-inlesson-negatives-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2i-signals-negative-control-2026-10-04"
+  },
+  {
+   "src": "w2ifix-leave-anchoring",
+   "rel": "part_of",
+   "dst": "w2i-signals-lexical-bilingual"
+  },
+  {
+   "src": "w2ifix-third-party-ask-verb",
+   "rel": "part_of",
+   "dst": "w2i-grooming-predicate"
+  },
+  {
+   "src": "w2ifix-pleading-never-releases",
+   "rel": "part_of",
+   "dst": "w2i-stop-protocol"
+  },
+  {
+   "src": "w2ifix-harm-on-safety-turns",
+   "rel": "part_of",
+   "dst": "w2i-policy-one-entry"
+  },
+  {
+   "src": "rj-w2i-unanchored-leave-lexicon",
+   "rel": "caused_by",
+   "dst": "w2i-signals-lexical-bilingual"
+  },
+  {
+   "src": "rj-w2i-generic-report-verbs-third-party",
+   "rel": "caused_by",
+   "dst": "w2i-grooming-predicate"
+  },
+  {
+   "src": "rj-w2i-pleading-releases",
+   "rel": "caused_by",
+   "dst": "w2i-stop-protocol"
+  },
+  {
+   "src": "rj-w2i-harm-false-on-safety-turns",
+   "rel": "caused_by",
+   "dst": "w2i-policy-one-entry"
+  },
+  {
+   "src": "w2ifix-compile-note-position-deferred",
+   "rel": "part_of",
+   "dst": "w2i-seam-patches"
+  },
+  {
+   "src": "w2ifix-stop-case-warn-until-patch",
+   "rel": "part_of",
+   "dst": "w2i-seam-patches"
+  },
+  {
+   "src": "dc-audit-aws-not-called-by-product",
+   "rel": "constrains",
+   "dst": "owner-aws-credit-funded-india-first-2026-10-04"
+  },
+  {
+   "src": "op-audit-build-gpu-aws-owner",
+   "rel": "caused_by",
+   "dst": "dc-audit-aws-not-called-by-product"
+  },
+  {
+   "src": "aws-build-gpu",
+   "rel": "caused_by",
+   "dst": "aws-credits-2026-10-03"
+  },
+  {
+   "src": "psych-parent-claim-gate",
+   "rel": "caused_by",
+   "dst": "b3-parent-claim-gate"
+  },
+  {
+   "src": "dek-in-pitr-database",
+   "rel": "caused_by",
+   "dst": "b3-account-deletion"
+  },
+  {
+   "src": "safety-parent-notice-settle",
+   "rel": "caused_by",
+   "dst": "b3-alert-only-when-released"
+  },
+  {
+   "src": "safety-parent-notice-settle",
+   "rel": "caused_by",
+   "dst": "b3-erasure-waits-for-safeguarding"
+  },
+  {
+   "src": "b3-account-deletion",
+   "rel": "caused_by",
+   "dst": "b3-erasure-waits-for-safeguarding"
+  },
+  {
+   "src": "b3-parent-try-at-home-from-letter",
+   "rel": "caused_by",
+   "dst": "b3-try-at-home-one-state"
+  },
+  {
+   "src": "b3-account-deletion",
+   "rel": "caused_by",
+   "dst": "b3-open-n4-deletion-notice"
+  },
+  {
+   "src": "gpu-harness",
+   "rel": "part_of",
+   "dst": "aws-build-gpu"
+  },
+  {
+   "src": "face3d-models",
+   "rel": "caused_by",
+   "dst": "face3d-nc-deps-rejected"
+  },
+  {
+   "src": "gpu-identity-target-flag",
+   "rel": "caused_by",
+   "dst": "marigold-albedo-as-projection-source"
+  },
+  {
+   "src": "aws-quota-approved-2026-10-03",
+   "rel": "caused_by",
+   "dst": "gpu-harness-proof-2026-10-03"
+  },
+  {
+   "src": "face3d-models",
+   "rel": "caused_by",
+   "dst": "head-crop-matte-for-hunyuan-shape"
+  },
+  {
+   "src": "hv-omni-listing",
+   "rel": "part_of",
+   "dst": "dragonhdomni-not-production"
+  },
+  {
+   "src": "live-studio-spec",
+   "rel": "part_of",
+   "dst": "owner-superhuman-teacher-2026-10-04"
+  },
+  {
+   "src": "live-studio-spec",
+   "rel": "measured_by",
+   "dst": "live-studio-bench-2026-10-04"
+  },
+  {
+   "src": "live-studio-spec",
+   "rel": "measured_by",
+   "dst": "live-studio-transfer-2026-10-04"
+  },
+  {
+   "src": "rj-flux2-pro-labels-and-indian-prompts",
+   "rel": "caused_by",
+   "dst": "rj-flux2-pro-text-free-primary"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "stt-refresh-2026-10-04-synthetic"
+  },
+  {
+   "src": "stt-refresh-2026-10-04-synthetic",
+   "rel": "caused_by",
+   "dst": "stt-hinglish-v2-synthetic"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "gpt-transcribe-fabricates-nonspeech"
+  },
+  {
+   "src": "gpt-transcribe-fabricates-nonspeech",
+   "rel": "caused_by",
+   "dst": "gpt4o-transcribe-fabricates-noise"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "mai-transcribe-15-hallucinates-silence"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "gpt-realtime-whisper-no-context"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "mai-stream-refuses-context"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "live-tx-d4-ablation"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw-reaffirmed",
+   "rel": "caused_by",
+   "dst": "azure-billed-open-models"
+  },
+  {
+   "src": "voice-lane-cascade-default",
+   "rel": "caused_by",
+   "dst": "oss-tts-hindi-landscape"
+  },
+  {
+   "src": "oss-tts-hindi-landscape",
+   "rel": "caused_by",
+   "dst": "indicf5-last-in-indian-preference-study"
+  },
+  {
+   "src": "own-teacher-voice-record-once",
+   "rel": "caused_by",
+   "dst": "t4-cannot-serve-3b-codec-tts"
+  },
+  {
+   "src": "azure-billed-open-models",
+   "rel": "caused_by",
+   "dst": "own-teacher-voice-record-once"
+  },
+  {
+   "src": "dc-r141-filter-probe-child-words",
+   "rel": "part_of",
+   "dst": "dc-r141-content-filter-by-category"
+  },
+  {
+   "src": "dec-r5-lat-continuer-gate-tuned",
+   "rel": "part_of",
+   "dst": "dec-r5-lat-continuer-positive-gate"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-1-brain",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-2-brain",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6-1-brain"
+  },
+  {
+   "src": "dc-r7-stt-cost-client-reported",
+   "rel": "part_of",
+   "dst": "dc-r7-cost-ledger"
+  },
+  {
+   "src": "dc-r7-board-places-template",
+   "rel": "part_of",
+   "dst": "dc-r7-maps-no-outline"
+  },
+  {
+   "src": "dc-r7-second-view-real",
+   "rel": "part_of",
+   "dst": "dc-r7-second-view-every-template"
+  },
+  {
+   "src": "rj-aws-transcribe-live-stt",
+   "rel": "caused_by",
+   "dst": "scout-2026-10-04-transcribe-hi"
+  },
+  {
+   "src": "rj-aws-transcribe-live-stt",
+   "rel": "caused_by",
+   "dst": "stt-hinglish-v2-synthetic"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw",
+   "rel": "caused_by",
+   "dst": "stt-hinglish-v2-synthetic"
+  },
+  {
+   "src": "stt-default-live-transcribe-kw",
+   "rel": "caused_by",
+   "dst": "gpt4o-transcribe-fabricates-noise"
+  },
+  {
+   "src": "voice-lane-cascade-default",
+   "rel": "caused_by",
+   "dst": "stt-default-live-transcribe-kw"
+  },
+  {
+   "src": "stylised-3d-halt-r4-owner-decision",
+   "rel": "measured_by",
+   "dst": "meas-stylised-polish-r2-blind-replicate"
+  },
+  {
+   "src": "teacher-brain-code-kernel",
+   "rel": "part_of",
+   "dst": "owner-superhuman-teacher-2026-10-04"
+  },
+  {
+   "src": "teacher-brain-code-kernel",
+   "rel": "measured_by",
+   "dst": "teacher-brain-beat-policy-2026-10-04"
+  },
+  {
+   "src": "llm-beat-proposer-live",
+   "rel": "measured_by",
+   "dst": "teacher-brain-beat-policy-2026-10-04"
+  },
+  {
+   "src": "teacher-brain-signals-on-classify",
+   "rel": "measured_by",
+   "dst": "teacher-brain-classify-piggyback-2026-10-04"
+  },
+  {
+   "src": "teacher-brain-interest-two-day",
+   "rel": "measured_by",
+   "dst": "teacher-brain-classify-piggyback-2026-10-04"
+  },
+  {
+   "src": "teacher-brain-beat-layer",
+   "rel": "part_of",
+   "dst": "live-studio-spec"
+  },
+  {
+   "src": "teacher-brain-experiments-registry",
+   "rel": "part_of",
+   "dst": "decision-records-with-propensities"
+  },
+  {
+   "src": "teacher-polished-verdict",
+   "rel": "caused_by",
+   "dst": "rocketbox-as-premium-face"
+  },
+  {
+   "src": "teacher-polished-verdict",
+   "rel": "caused_by",
+   "dst": "vroid-sample-as-teacher"
+  },
+  {
+   "src": "ui-child-voice-on-cascade",
+   "rel": "part_of",
+   "dst": "voice-lane-cascade-default"
+  },
+  {
+   "src": "voice-blind-r3-page",
+   "rel": "caused_by",
+   "dst": "voice-blind-r2-page"
+  },
+  {
+   "src": "voice-blind-r3-page",
+   "rel": "caused_by",
+   "dst": "voice-next-situation-delivery-2026-10-04"
+  },
+  {
+   "src": "voice-blind-r3-page",
+   "rel": "caused_by",
+   "dst": "rj-loudnorm-dynamic-for-stimuli"
+  },
+  {
+   "src": "voice-blind-r3-page",
+   "rel": "caused_by",
+   "dst": "voice-blind-r3-page-check-2026-10-04"
+  },
+  {
+   "src": "voice-lane-cascade-default",
+   "rel": "caused_by",
+   "dst": "voice-v2-ai-judge-proxy"
+  },
+  {
+   "src": "voice-blind-none-human-2026-10-04",
+   "rel": "caused_by",
+   "dst": "voice-v3-screen-2026-10-04"
+  },
+  {
+   "src": "gpt-audio-not-a-judge",
+   "rel": "caused_by",
+   "dst": "rj-realtime-judge-hinglish-delivery"
+  },
+  {
+   "src": "voice-v3-screen-2026-10-04",
+   "rel": "caused_by",
+   "dst": "voice-v3-scan-render-list"
+  },
+  {
+   "src": "voice-ga-only-for-minors",
+   "rel": "constrains",
+   "dst": "voice-v3-scan-render-list"
+  },
+  {
+   "src": "voice-escalation-ladder",
+   "rel": "caused_by",
+   "dst": "voice-v3-scan-render-list"
+  },
+  {
+   "src": "voice-v3-scan-render-list",
+   "rel": "caused_by",
+   "dst": "rj-open-tts-licence-barred-2026-10"
+  },
+  {
+   "src": "voice-v3-screen-2026-10-04",
+   "rel": "caused_by",
+   "dst": "voice-v3-render-ttfb-2026-10-04"
+  },
+  {
+   "src": "t4-cannot-serve-3b-codec-tts",
+   "rel": "caused_by",
+   "dst": "voice-v3-render-ttfb-2026-10-04"
+  },
+  {
+   "src": "voice-v3-screen-2026-10-04",
+   "rel": "caused_by",
+   "dst": "voice-v3-render-nova-fidelity"
+  },
+  {
+   "src": "voice-blind-r2-page",
+   "rel": "caused_by",
+   "dst": "voice-v3-screen-2026-10-04"
+  },
+  {
+   "src": "voice-blind-r2-page",
+   "rel": "caused_by",
+   "dst": "voice-blind-none-human-2026-10-04"
+  },
+  {
+   "src": "voice-blind-r2-page",
+   "rel": "caused_by",
+   "dst": "rj-loudnorm-dynamic-for-stimuli"
+  },
+  {
+   "src": "vs-l2-bar-95ci-200",
+   "rel": "caused_by",
+   "dst": "rj-vs-l2-bar-80ci-at-pilot-scale"
+  },
+  {
+   "src": "vs-filler-detector-ami",
+   "rel": "measured_by",
+   "dst": "m-vs-filler-ami-2026-10-04"
+  },
+  {
+   "src": "vs-filler-detector-ami",
+   "rel": "caused_by",
+   "dst": "rj-vs-knowledge-head-on-public-data"
+  },
+  {
+   "src": "vs-no-paid-compute-cpu-training",
+   "rel": "measured_by",
+   "dst": "m-voicesig-train-cost-2026-10-04"
+  },
+  {
+   "src": "vs-verify-guards-2026-10-04",
+   "rel": "caused_by",
+   "dst": "rj-vs-haanji-as-filler"
+  },
+  {
+   "src": "vs-verify-guards-2026-10-04",
+   "rel": "caused_by",
+   "dst": "rj-vs-absolute-filler-lead"
+  },
+  {
+   "src": "vs-verify-guards-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-vs-verify-capture-chain-2026-10-04"
+  },
+  {
+   "src": "rj-vs-absolute-filler-lead",
+   "rel": "measured_by",
+   "dst": "m-vs-verify-fleurs-lead-2026-10-04"
+  },
+  {
+   "src": "w2a-migration-019",
+   "rel": "caused_by",
+   "dst": "rj-w2a-test-window-table"
+  },
+  {
+   "src": "w2a-forgot-password-acs",
+   "rel": "caused_by",
+   "dst": "rj-w2a-await-reset-mail"
+  },
+  {
+   "src": "w2a-forgot-password-acs",
+   "rel": "caused_by",
+   "dst": "rj-w2a-acs-conn-unquoted"
+  },
+  {
+   "src": "learner-brief-hardstop-limits-only",
+   "rel": "supersedes",
+   "dst": "rj-audit-brief-hardstop-on-every-plan"
+  },
+  {
+   "src": "dc-r14-no-clock-gates",
+   "rel": "constrains",
+   "dst": "learner-brief-hardstop-limits-only"
+  },
+  {
+   "src": "dc-owner-model-policy-2026-11-10",
+   "rel": "supersedes",
+   "dst": "dc-owner-model-policy-top-model-high-effort"
+  },
+  {
+   "src": "seams-signals-layer-unwired",
+   "rel": "constrains",
+   "dst": "sig-layer-evidence-not-authority"
+  },
+  {
+   "src": "m-audit-shade-grid-lint",
+   "rel": "part_of",
+   "dst": "audit-studio-2026-11-10"
+  },
+  {
+   "src": "m-audit-catalogue-usable",
+   "rel": "part_of",
+   "dst": "audit-studio-2026-11-10"
+  },
+  {
+   "src": "open-audit-stagecraft-spec-spend",
+   "rel": "part_of",
+   "dst": "audit-studio-2026-11-10"
+  },
+  {
+   "src": "open-audit-rolldown-runtime",
+   "rel": "part_of",
+   "dst": "audit-studio-2026-11-10"
+  },
+  {
+   "src": "dc-r7-audit-studio-fixes",
+   "rel": "constrains",
+   "dst": "stagecraft-spec-default-deployment"
+  },
+  {
+   "src": "dc-r7-audit-studio-fixes",
+   "rel": "constrains",
+   "dst": "dc-r7-number-line-jump"
+  },
+  {
+   "src": "dc-r7-audit-studio-fixes",
+   "rel": "constrains",
+   "dst": "dc-r7-beat-cards-on"
+  },
+  {
+   "src": "dc-r7-audit-studio-deletions",
+   "rel": "caused_by",
+   "dst": "w2int-seam-patches-applied"
+  },
+  {
+   "src": "dc-r7-audit-studio-deletions",
+   "rel": "constrains",
+   "dst": "forge-g1-serve-time-child-check"
+  },
+  {
+   "src": "rj-r7-audit-voice-bridge-dropped-sink",
+   "rel": "constrains",
+   "dst": "w2gfix-clause-events-on-player-clock"
+  },
+  {
+   "src": "open-r7-audit-voice-holdcue-live",
+   "rel": "constrains",
+   "dst": "r3vs-holdcue-shadow"
+  },
+  {
+   "src": "open-r7-audit-voice-expressive-default",
+   "rel": "constrains",
+   "dst": "rj-ssml-delivery-plan-2026-10-04"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-9",
+   "rel": "measured_by",
+   "dst": "ms-r7-director17-hand-2026-11-10"
+  },
+  {
+   "src": "dc-r7-held-board",
+   "rel": "measured_by",
+   "dst": "ms-r7-director17-hand-2026-11-10"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-9",
+   "rel": "part_of",
+   "dst": "dc-r7-held-board"
+  },
+  {
+   "src": "rj-r7-auto-counter-as-gate-input",
+   "rel": "measured_by",
+   "dst": "ms-r7-director17-hand-2026-11-10"
+  },
+  {
+   "src": "rj-r7-auto-counter-as-gate-input",
+   "rel": "constrains",
+   "dst": "dc-r7-script-walk-v6-9"
   }
  ]
 }

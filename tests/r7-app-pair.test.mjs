@@ -45,7 +45,7 @@ test("/pair redeems, refreshes who is signed in and opens the child's app; a QR 
   const r = read("src/app/routes.tsx");
   assert.match(r, /\{ path: "\/pair", element: s\(<Pair \/>\) \}/);
   const p = read("src/app/Pair.tsx");
-  assert.match(p, /const r = await pairApi\.redeem\(code\);\s*await refreshMe\(\);\s*nav\(`\/c\/\$\{encodeURIComponent\(r\.childId\)\}`, \{ replace: true \}\);/);
+  assert.match(p, /const r = await pairApi\.redeem\(code\);\s*(?:\/\/[^\n]*\n\s*)?try \{ await refreshMe\(\); \} catch \{[^}]*\}\s*nav\(`\/c\/\$\{encodeURIComponent\(r\.childId\)\}`, \{ replace: true \}\);/);
   assert.match(p, /if \(!auto\.current && isPairCode\(code\) && sp\.get\("code"\)\)/);
 });
 

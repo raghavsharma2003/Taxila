@@ -15,9 +15,13 @@ import { restSignals } from "./rest.js";
 
 export const F = { ev: (id) => `kt_evidence:${id}`, lesson: (id) => `lesson:${id}`, skill: (id) => `kt_skill_state:${id}`,
   jar: (id) => `question_jar:${id}`, test: (t) => `test_window:${t.subject}:${t.from}:${t.to}`, way: (id) => `decision_record:${id}` };
-/** S6: item answers that needed one or more hints (item.open C1-C4, solo C1), and of those the ones then solved (C1, C2, solo C1). */
-const HINTED = { "item.open": new Set([1, 2, 3, 4]), solo: new Set([1]) };
-const SOLVED_AFTER_HINT = { "item.open": new Set([1, 2]), solo: new Set([1]) };
+/**
+ * S6: item answers that needed one or more hints (item.open C2-C4), and of those the ones then solved with them (C2, C3).
+ * C1 is "right on a later try, no hint" and solo has no hint ladder (kt/adapter.js openOutcome): neither is a hint
+ * (audit LEARN-13: both used to be counted as hinted).
+ */
+const HINTED = { "item.open": new Set([2, 3, 4]) };
+const SOLVED_AFTER_HINT = { "item.open": new Set([2, 3]) };
 export const isHinted = (e) => isAttempt(e) && !!HINTED[e.cls]?.has(e.outcome);
 export const isSolvedAfterHint = (e) => isAttempt(e) && !!SOLVED_AFTER_HINT[e.cls]?.has(e.outcome);
 const cid = (section, shapeId, slots, factIds) => `${section}:${shapeId}:${createHash("sha1").update(JSON.stringify([slots, [...factIds].sort()])).digest("hex").slice(0, 10)}`;
@@ -168,7 +172,11 @@ export function buildClaims(facts, { k7 = CALIBRATION.k7Passed, now, preview = f
     const t = facts.testWindows[0];
     exam = admit(claim("exam", "exam.review", { subject: t.subject }, [F.test(t)], "a parent-entered test window overlaps the week (conductor_state.school.testWindows)"));
   }
-  const rowCap = Math.max(0, caps.row - (exam ? 1 : 0));
+  // S15 rest takes a row's place on the weekly card too (body ≤ 5: strength + 2 rows + tricky + home + rest was 6, and the
+  // letter failed its own cap and was never stored, audit LEARN-12). Monthly and term have room.
+  const restSig = caps.rest && facts.rest?.length ? restSignals(facts.rest, { bedtime: facts.child.bedtime, tz, to: w.to }) : null;
+  const restShows = !!(restSig?.afterBed || restSig?.longer);
+  const rowCap = Math.max(0, caps.row - (exam ? 1 : 0) - (restShows && cadence === "weekly" ? 1 : 0));
 
   // S3 rows: most-practised skills first, then skills only started
   const rows = [];
@@ -209,7 +217,7 @@ export function buildClaims(facts, { k7 = CALIBRATION.k7Passed, now, preview = f
     const scoredIn = evIn.filter(isAttempt), hinted = scoredIn.filter(isHinted);
     if (scoredIn.length >= HARD_MIN_N && hinted.length) {
       const h = admit(claim("hard", "hard.hint", { h: hinted.length, k: hinted.filter(isSolvedAfterHint).length }, hinted.map((e) => F.ev(e.id)),
-        "h = scored item answers in window that needed ≥ 1 hint (item.open C1-C4, solo C1); k = of those, solved with the hints (C1, C2, solo C1)"));
+        "h = scored item answers in window that needed ≥ 1 hint (item.open C2-C4); k = of those, solved with the hints (C2, C3)"));
       if (h) claims.push(h);
     }
   }
@@ -224,9 +232,9 @@ export function buildClaims(facts, { k7 = CALIBRATION.k7Passed, now, preview = f
       if (c) claims.push(c);
     }
   }
-  if (caps.rest && facts.rest?.length) {
+  if (restSig) {
     // S15 (MH-M12): after-bedtime starts and longer lessons, each behind an absolute floor (reports/rest.js); facts + one suggestion
-    const sig = restSignals(facts.rest, { bedtime: facts.child.bedtime, tz, to: w.to });
+    const sig = restSig;
     const c = sig.afterBed
       ? admit(claim("rest", "rest.afterbed", { k: sig.afterBed.k, d: sig.afterBed.d }, sig.afterBed.ids.map(F.lesson), "k = counted lessons of the last 14 days started after the bedtime set (or before 04:00); shown when k ≥ 3"))
       : sig.longer ? admit(claim("rest", "rest.longer", { n1: sig.longer.n1, n2: sig.longer.n2 }, sig.longer.ids.map(F.lesson),

@@ -2,7 +2,9 @@
 
 Built from the 7-pillar gap map (`gap-map.json`: 180 items, each with status, evidence, what is needed, size) by workflow wf_f8ed24e3-497, then corrected by its completeness critic and the main loop's decisions (sections at the end). **Build first: no stream does safety, compliance or test-battery work** (CLAUDE.md, dc-owner-2026-10-27-build-first). Unit tests and gates run on every code change.
 
-## What a child can do end to end today
+## What a child could do on 2026-11-04, before round 7 (superseded: for today's state see OWNER.md)
+
+Corrected 2026-11-09 by the docs audit (`audit/docs-memory.md`). This page is the round-7 plan as written on 2026-11-04. Where it has been overtaken, the line says so with a date; the plan text itself is kept. Branches and the integration branch are in SESSIONS.md.
 
 - Production is still 14.4.2 (taxila-web--sac4e8e8-3x6d, ac4e8e88). int/r6 @050897ab (14.4.3 plus the 2026-10-27 stream merges) is green on CI but not deployed. What follows is what the int/r6 code does; production behaves almost the same.
 - Parent path: Volt landing, then a 5-step email/password set-up (class, board, language with voice samples, promises, consent, child name and PIN), then handover, then Hello (greeting clip, AI card, interests, mic check), then lesson 1. The board is stored and never read. Nobody asks which chapter the school is on, and no placement round runs.
@@ -16,7 +18,7 @@ Built from the 7-pillar gap map (`gap-map.json`: 180 items, each with status, ev
 
 ## Streams
 
-### A. Teacher brain: lesson flow, explanation and conversation (branch claude/r7-brain)
+### A. Teacher brain: lesson flow, explanation and conversation (branch claude/r4-conversation, see SESSIONS.md)
 
 **Goal.** She teaches like a great human tutor. Every skill is explained in staged, board-synced steps at the child's class level and in a register suited to 9-15 year olds. Each explanation is checked with a keyed question whose answer counts. Steering and diversions are followed and shown on screen, stop requests and parent limits are handled gracefully, and one LLM-led lane runs on code-enforced protocols. This covers OWNER-RESET #1, #2, #5, #6, #7, #8 and #12.
 
@@ -41,14 +43,14 @@ Built from the 7-pillar gap map (`gap-map.json`: 180 items, each with status, ev
 9. 9. brain-stop-wrapup-break + brain-parent-limits-midlesson (M+M): a 'wrap up in 2' chip; a one-line recap on stop; a real break with a server pause state and a 'we were on X' resume. Add a per-turn conductor-guard proposer at parent rank on both lanes, covering minutes left, lesson hours and bedtime, with a heads-up, a wrap at the next boundary and a hard cap. Learning supplies the minutes-left read.
 10. 10. Director-side latency (L, joint milestone with Voice): voice-first-sound-latency parts (a) and (d), plus the classify fast path from platform-hot-path-latency-infra. Stream the Director reply with clause-by-clause guards so the first guarded clause goes to TTS while the rest is written. Decide 1-3-word answers in code. Keep note and classify under about 700 ms on the hot path.
 11. 11. voice-interrupt-awareness (server side) + voice-cut-in-moves (Director moves) + voice-edit-undo-on (M): heardUpTo marks the unsaid tail of her line and gives an 'interrupted after X' fact. Add moves and shapes for word_search_cue, question_to_her and off_task_drift (which parks via the Later list). Set TAXILA_EDIT_UNDO on by default.
-12. 12. brain-lane-decision-hybrid + brain-agent-lane-protocol-gaps (L+L): expose items 2-9 as code tools and events (answer.check, item.next(θ), later.park/due, the stop protocol, a limit event, intake, relational notes) and use them on BOTH lanes. Fix the agent's yes-on-no and its read accuracy (64% against the Director's 74%). Run a Claude-judged side-by-side with a turn-time read, then set the default lane.
+12. 12. brain-lane-decision-hybrid + brain-agent-lane-protocol-gaps (L+L): expose items 2-9 as code tools and events (answer.check, item.next(θ), later.park/due, the stop protocol, a limit event, intake, relational notes) and use them on BOTH lanes. Fix the agent's yes-on-no and its read accuracy (64% against the Director's 74%). Run a Claude-judged side-by-side with a turn-time read, then set the default lane. (Closed 2026-11-04: the Director is the default and the agent lane is frozen, `dc-r7-hybrid-director-default`.)
 13. 13. brain-lesson-planner-beats (L): planLesson and planBeat with beat exit rules, re-plan triggers and a 1-2 beat lookahead that emits StudioIntents with neededAtMs to Studio.
 14. 14. brain-ask-homework-flow (M): an Ask beat that puts their problem on the board, gives the method steps (never the answer), poses a kit-verified isomorph as the card, and writes a summary titled with their question. Learning owns the photo and extraction lane.
 15. 15. Apply incoming patches promptly: voice-talked-not-read (SPOKEN_NOTE and the uptake-question exemption, authored by Voice); studio-board-pointing-truth (the drawAsked pointing rule and the after-board check on request turns, authored by Studio); gameAct handling in turn.js and classify (authored by Games); parallel reads in /api/lesson/start (authored by Voice); session-first and placement start hooks in routes/lesson.js (authored by Learning).
 16. 16. brain-director-flag-debt (M), after the lane decision: settle the flag defaults, delete the off-paths, split state.js by phase, and cut the guards to a small set that rewrites naturally instead of stripping.
 17. 17. Later: brain-relational-memory-milestones (L), brain-experiments-longarc (L).
 
-### B. Voice: hands-free duplex, the ear and first-sound latency (branch claude/r7-voice)
+### B. Voice: hands-free duplex, the ear and first-sound latency (branch claude/r4-duplex, see SESSIONS.md)
 
 **Goal.** Every child talks hands-free from her first word, with no tap button. She really hears short Hinglish answers, her voice starts about 1.5 s after the child stops, she backchannels and yields like a person, never talks over a thinking child, and sounds talked, not read. This covers OWNER-RESET #5, #10, #13 and #16.
 
@@ -78,7 +80,7 @@ Built from the 7-pillar gap map (`gap-map.json`: 180 items, each with status, ev
 14. 14. voice-target-speaker (L): ephemeral on-device speaker matching if the owner approves X3; otherwise a TV/background-speech classifier on the D5 residual.
 15. 15. Later: voice-pace-across-sessions (M), voice-same-voice-failover (S), voice-echo-filter-residuals (M), voice-tts-transport Opus (M), voice-voicesig-acting (M), voice-realtime-lane-retire (S), voice-d4-fullduplex-aec (L), voice-trained-floor-model (XL).
 
-### C1. Studio: live board, cinematic explanation and speculative build (branch claude/r7-studio)
+### C1. Studio: live board, cinematic explanation and speculative build (branch claude/r4-content, see SESSIONS.md)
 
 **Goal.** Every lesson is visibly rich. Boards land with her words and look made, motion explains, and the Studio v2 explainers already authored reach children. Pieces appear every 1-2 minutes, chosen ahead from the lesson plan and from what the child is saying. The child never sees build state or a failure. This covers OWNER-RESET #4, #9, #12, #14 and #17.
 
@@ -128,10 +130,10 @@ Built from the 7-pillar gap map (`gap-map.json`: 180 items, each with status, ev
 2. 2. studio-khand-3d-register (M): certify Khand's 3D cells at 3 sizes for both bands, add the Khand EngineEntry to registry.ts, and verify the core3d tier fallback on low-end phones.
 3. 3. studio-play-coverage-expansion (XL): new rules in server/play/tools/rules/*.mjs and family logic for the uncovered class 4-7 maths topics (measurement, geometry, data, patterns, integers, algebra), then the science laws. Regenerate coverage.json, certify the art, and track coverage per class and subject.
 4. 4. studio-wave3-realtime-engines (XL): the first core3d@1 engine is the one the owner picks. Recommended: E6 Yantra, science puzzle-physics over the Kyun-Lab laws, because science and SST asks end in boards today. Each engine comes with its exact law, the economy lint (fast action only on secure skills), a voice grammar and certificates.
-5. 5. studio-item-arena-parked (L; if the owner revives it): apply the salvaged wip patches, rebase, finish the 3D arena on core3d, and register it. It must stay a real game.
+5. 5. studio-item-arena-parked (closed: ITEM-ARENA is back only as a last-resort net, `dc-r7-games-arena-net`; the original item read: L; if the owner revives it): apply the salvaged wip patches, rebase, finish the 3D arena on core3d, and register it. It must stay a real game.
 6. 6. studio-language-sst-interactives (XL): play families with real mechanics for English and Hindi (word building, sentence ordering, rhyme and rhythm, read-along) and SST (map placement, timeline ordering, town sim). Also serve the authored Studio v2 language/SST specs once C1's per-device rule lands.
 7. 7. studio-module-engines-gaps (L): drag in the frame kit, bridge v2, the three fading stages, the missing engine modes, a mass/volume measure tool keyed by unit in planEngine, and a predict hide for fraction-bars.
-8. 8. studio-khand-measure-parked (M): grams/kg MEASURE mode from origin/claude/r4-khand's wip patch.
+8. 8. studio-khand-measure-parked (closed: MEASURE is not shipped, taraazu replaces it, `dc-r7-games-measure-to-taraazu`; the original item read: M, grams/kg MEASURE mode from origin/claude/r4-khand's wip patch).
 9. 9. Later: studio-g2-delivery (L). Confirm studio-play-pipeline, which is built, on a mid-range Android.
 
 ### D. Teacher presence: the face (branch claude/r7-face)
@@ -195,7 +197,7 @@ Built from the 7-pillar gap map (`gap-map.json`: 180 items, each with status, ev
 
 **First milestone.** About day 5, on staging with the test clock. Over three consecutive 'days', a plain Start teaches maths, then science, then English, following the timetable the parent entered with the new custom day/time controls (no native pickers). The parent sets 'school is on chapter 6 in maths' and the next maths lesson starts there. Brain's lessons receive the child's θ.
 
-**Owns.** server/content/**; server/learner/**; server/placement/**; server/comprehension/**; server/conductor/** (incl. handlers.js; Platform's notify handler arrives by patch); server/reports/**; server/director/session/**; server/routes/parent.js; server/routes/child.js; server/routes/account.js; server/routes/placement.js (new); shared/learner.ts; shared/interests.js; data/curriculum/**; data/kits/**; data/kits-relevel/**; data/placement/**; evals/content-level-v2/**; src/parent/**; src/onboarding/**; src/ui-v3/Scheduler.tsx; src/ui-v3/schedule.ts
+**Owns.** server/content/**; server/learner/**; server/placement/**; server/comprehension/**; server/conductor/** (incl. handlers.js; Platform's notify handler arrives by patch); server/reports/**; server/director/session/**; server/routes/parent.js; server/routes/child.js; server/routes/account.js; server/routes/placement.js; shared/learner.ts (except the BANDS table: Brain); shared/interests.js; data/curriculum/**; data/kits/**; data/kits-relevel/**; data/placement/**; evals/content-level-v2/**; src/parent/**; src/onboarding/**; src/ui-v3/Scheduler.tsx; src/ui-v3/schedule.ts
 
 **Depends on.** A Brain: applies the start-route patches (session-first, placement warm-up) and consumes the learner-view exports; E App: renders the Home plan states and the Hello preferences; G Platform: Notifier infra for report delivery; migration-number reservations; Owner: spend caps for kit and generation workflows; session-first default; personalisation persistence; RBSE scope
 
@@ -224,7 +226,7 @@ Built from the 7-pillar gap map (`gap-map.json`: 180 items, each with status, ev
 
 **Goal.** Ship every 48-hour integration safely in one command to a staging app the owner can open. Know the cost per lesson-minute. Take the India-to-US round trips off the duplex and turn path. Make the server survive deploys and restarts without the child noticing (OWNER-RESET #9, #16; HANDOFF §6).
 
-**First milestone.** About day 4. The first int/r7 integration ships with one command (scripts/release.mjs: migrate, web canary and smoke, worker and jobs at the same sha, context entry). It lands on a staging URL the owner can open within an hour of each integration. The gate runs in about 10 minutes or less. The ledger shows a first real 'cost per lesson-minute by meter' row for a staging lesson.
+**First milestone.** About day 4. The first int/r6 integration ships with one command (scripts/release.mjs: migrate, web canary and smoke, worker and jobs at the same sha, context entry). It lands on a staging URL the owner can open within an hour of each integration. The gate runs in about 10 minutes or less. The ledger shows a first real 'cost per lesson-minute by meter' row for a staging lesson.
 
 **Owns.** scripts/deploy-azure.mjs; scripts/deploy-worker.mjs; scripts/migrate.mjs; scripts/release.mjs (new); scripts/cost.mjs (new); scripts/region/**; infra/** except infra/studio-qa/**; server/serve.mjs; server/worker.mjs; server/index.js (route registry; others send one-line patches); server/router.js; server/http.js; server/ws.js; server/net.js; server/boot-warm.js; server/db.js; server/azure.js; server/endpoints.js; server/lanes.js; server/auth.js; server/trace/**; server/cost/** (new); server/notify/** (new); src/trace/**; public/sw.js (new); shared/trace.ts; .github/workflows/**; tests/index.js and test sharding config
 
@@ -250,7 +252,9 @@ Built from the 7-pillar gap map (`gap-map.json`: 180 items, each with status, ev
 14. 14. platform-usage-budgets (M) and platform-cost-levers (M; persistent TTS clip cache, STT only around child windows with Voice, speculation fan-out from the ledger).
 15. 15. Later: platform-shared-state-multi-replica (L) together with voice-scale-voice-sessions (L), platform-india-cutover (L; owner), platform-capacity-admission (M), platform-offline-pwa + app-pwa-install (L), platform-android-shell (L; owner), platform-phone-signin + app-auth-phone-otp (M; owner provider), platform-child-signin (M), app-pricing-subscription (L; owner price).
 
-## Merge-first (main loop)
+## Merge-first (main loop): done 2026-11-04
+
+The salvages below are done. The sim-lab harness was not brought in (D.12: it stays on its branch).
 
 - int/r6 itself: release it to production on day 0, before the streams start. Run deploy-azure.mjs --dry-run, then deploy, then deploy-worker.mjs --jobs --from-tree at the same sha (platform-release-int-r6). Production is still 14.4.2. This puts 14.4.3 and the 2026-10-27 stream merges live, and every stream branches from what the owner sees.
 - origin/claude/r4-asha-rig2: do NOT merge. It shares no history with int/r6, its src/ is older (no look.ts/useLook.ts, no addBilabials rules) and it re-adds the deleted TutorPicker.tsx and TeacherRoute.tsx. Salvage by path checkout onto int/r6 instead: docs/design/round4/asha/rig2, scripts/character/puppet2d/lamp2, scripts/character/puppet2d/lamp3, art/character/puppet2d/lamp2/demo.html and pack-report.json, and context/inbox/r4-asha-rig2.json. Then run merge-inbox.mjs and context.mjs --check, and mark the branch superseded in HANDOFF.md. Reason: the lamp2 tooling and the 10 rig2 nodes (rj-r4-lamp2-painted-keys-premium and others) are the base for the Face stream's grown-up Asha work.
@@ -262,14 +266,14 @@ Built from the 7-pillar gap map (`gap-map.json`: 180 items, each with status, ev
 
 ## Sequencing
 
-- Day 0, main loop only. (1) Do the merge_first salvages on int/r6, then cut int/r7. (2) Release int/r6 to production. (3) Re-key every owner cohort (TAXILA_DUPLEX_LIVE_FOR, TAXILA_FACE_LOOK_FOR, TAXILA_SESSION_FIRST_FOR, TAXILA_TEACHER_AGENT_FOR, TAXILA_PICTURES_FOR, TAXILA_ACK_CONTINUER_FOR) to the guardian that owns test child 6fc3f68e, once the owner confirms the account. (4) Send the owner the batched questions; streams start without waiting for them.
-- Day 0, ownership and protocol. Write docs/design/round7/OWNERSHIP.json (the file map in streams[].files) and scripts/ownership-check.mjs, which fails any merge that touches another stream's paths. Reserve migration numbers (Brain 031-033, Learning 034-039, Platform 040-043; others request one). The main loop alone owns package.json, package-lock.json and context/ merges; streams drop context/inbox/*.json. The frozen safety files are owned by nobody.
-- Day 1: start all 8 sessions on claude/r7-<stream> from int/r7, each on the top model at high effort. Contract first: within 24 h Brain pushes the shared/contracts.ts additions everyone codes against (UiDirectives.later, ui.moment, steer request ids, TurnRequest.gameAct, heardUpTo use), and Learning pushes the learner-view θ, weak flag and minutes-left exports.
+- Day 0, main loop only. (1) Do the merge_first salvages on int/r6 (planned as int/r7; round 7 stayed on int/r6). (2) Release int/r6 to production. (3) Re-key every owner cohort (TAXILA_DUPLEX_LIVE_FOR, TAXILA_FACE_LOOK_FOR, TAXILA_SESSION_FIRST_FOR, TAXILA_TEACHER_AGENT_FOR, TAXILA_PICTURES_FOR, TAXILA_ACK_CONTINUER_FOR) to the guardian that owns test child 6fc3f68e, once the owner confirms the account. (4) Send the owner the batched questions; streams start without waiting for them.
+- Day 0, ownership and protocol. Ownership is the table in OWNERSHIP.md, checked by review at integration (the planned OWNERSHIP.json and ownership-check.mjs script were never written, so nothing fails a merge automatically). Migration numbers: Brain 031-033, Learning 034-039 and 044-049, Platform 040-043; the main loop allots further numbers, see `db/migrations/README.md`. The main loop alone owns package.json, package-lock.json and context/ merges; streams drop context/inbox/*.json. The frozen safety files are owned by nobody.
+- Day 1: start all 8 sessions on the branches in SESSIONS.md, from int/r6, each on the top model at high effort. Contract first: within 24 h Brain pushes the shared/contracts.ts additions everyone codes against (UiDirectives.later, ui.moment, steer request ids, TurnRequest.gameAct, heardUpTo use), and Learning pushes the learner-view θ, weak flag and minutes-left exports.
 - Cross-stream patches: the author commits docs/patches/to-<owner>/NNN-*.patch on its own branch and messages the owner session. The owner applies it within its next push. Hot files with one owner: shared/contracts.ts, server/brain/turn.js, server/director/state.js and server/routes/lesson.js (Brain); src/lesson/runtime.ts (Voice); src/child/lesson/useDesk.ts (App); server/studio/seam.js and server/forge3/tray-gate.js (Studio); server/index.js (Platform).
-- Integration every 48 h. The main loop merges stream heads into int/r7 producers first: Platform, Learning, Brain, Voice, Studio, Games, Face, then App. It runs tsc, vite build and npm test (sharded once platform-gate-speed lands) and deploys to staging: taxila-staging once Platform builds it, and a 0%-traffic canary revision of taxila-web until then. Every stream rebases on int/r7 after each integration.
+- Integration whenever stream heads are ready (planned every 48 h; in practice several a day). The main loop merges stream heads into int/r6 producers first: Platform, Learning, Brain, Voice, Studio, Games, Face, then App. It runs tsc, vite build and npm test (sharded once platform-gate-speed lands) and deploys to staging: taxila-staging once Platform builds it, and a 0%-traffic canary revision of taxila-web until then. Every stream merges int/r6 after each integration.
 - Weekly owner build: release.mjs to production. Each release comes with a one-page 'what to look at' listing each stream's milestone with a 2-minute screen recording. The main-loop Claude judges the milestone lessons against OWNER-RESET; no Azure judges. Outcomes are logged to context/ before the next phase.
 - Visible wins in week 1, in order: Studio no-build-state and Studio v2 per-device serving (day 1-2); Face r8 fallback (day 1-2); Brain register and per-skill arc; Voice hands-free default on staging; App nav and steer chips; Learning subject rotation, school pointer and date/time controls; Platform release pipeline and gate shards.
-- End of week 1, the lane decision point. Once Brain's kernel tools serve both the Director and the agent, run a Claude-judged side-by-side (about 12 lessons per lane on the same cards) plus a turn-time read. The owner confirms, then Brain deletes the losing paths (brain-director-flag-debt). Explanation plans and the beat planner are built lane-agnostic so they survive either outcome.
+- End of week 1, the lane decision point (closed 2026-11-04, see D.1). Once Brain's kernel tools serve both the Director and the agent, run a Claude-judged side-by-side (about 12 lessons per lane on the same cards) plus a turn-time read. The owner confirms, then Brain deletes the losing paths (brain-director-flag-debt). Explanation plans and the beat planner are built lane-agnostic so they survive either outcome.
 - Week 2 joins: Voice D5 deltas → Studio buildIntentLauncher; Brain beat lookahead → Studio feedPlan and cadence; Voice hands-free → App dock; Face raster gate → Voice start latency; Brain Later list → Learning jar persistence → App Debrief; Games sound → Voice audio bus; Learning per-skill explain fields → Brain explain beats.
 - Spend-gated workflows run only after the owner sets a cap, and the owning stream launches them as short workflows. Learning: kit Hinglish/Devanagari forms and per-skill explain plans (class 4-7 maths first), relevel classes 1-3/8-9, the language-kit re-author, placement banks. Studio: truth packs, library seeding, gate services, pictures for everyone. Platform: staging, Front Door, India relay.
 - Week 3 and later: the India D5 relay and the cutover (owner); the Studio v2 portrait relayout; wave-3 engines; the grown-up Asha rig on the owner's route; the Notifier; parent report sections. The landing is re-captured only after App's lesson shell and Voice's hands-free have landed.
@@ -360,6 +364,9 @@ Built from the 7-pillar gap map (`gap-map.json`: 180 items, each with status, ev
    protocol, parent limits, screen truth, the frozen safety floor. Build the kernel tools so both lanes use them; at the
    end of week 1 a Claude-judged side-by-side (~12 lessons per lane, same cards) picks the default lane, then Brain
    deletes the losing paths. (Owner directive 2026-10-14 AGENT.md points this way.)
+   **Decided 2026-11-04:** the Director is the default lane and the agent lane is frozen (`dc-r7-hybrid-director-default`).
+   Since 2026-11-05 the Director walks authored lesson scripts (`dc-r7-teaching-scripts`). Brain items 12 and 16 and the
+   week-1 side-by-side are closed.
 2. **Hands-free duplex is the default for every child** (no tap button; tap stays as a visible fallback). No real users
    yet, so the extra per-hour cost is test-only.
 3. **Age bands:** classes 1-3 young, 4-6 preteen, 7-9 teen. Class 4 moves to the older look (OWNER-RESET #1).
@@ -369,14 +376,17 @@ Built from the 7-pillar gap map (`gap-map.json`: 180 items, each with status, ev
    ends the lesson (not the day). At a parent limit mid-lesson she finishes the current question, then wraps.
    Parent controls that do nothing today (daily limit, lesson hours, WhatsApp channel) are wired or hidden; none stays
    inert.
-6. **Session-first start** ("what happened at school today?") becomes the default for everyone, with a Start-only Home;
+6. **Session-first start** ("what happened at school today?") becomes the default for everyone, with a Start-only Home
+   (not switched on as of 2026-11-09: the code default is still `TAXILA_SESSION_FIRST=off`, `server/director/session/flags.js`);
    daily subject = parent timetable, then the child's intake, then Conductor rotation.
 7. **Stage-first lesson shell:** content is the hero, her face a PiP, steer chips, a Later tray. This supersedes
    PRODUCT-DESIGN-V2 §6.3.4 ("the face is never a PiP over content"); App logs the supersedes entry and writes the
    360/412/1280 geometry spec, which Studio applies to `server/forge3/certs/box-contract.json`.
 8. **Studio v2 served wherever certified** (412-px phones, laptops; board twin on 360 px until the portrait relayout).
    Amends dc-r4c-studio-v2-off-child-path.
-9. **Games:** revive ITEM-ARENA and Khand MEASURE (build-first replaces the 2026-10-10 stop). First wave-3 real-time
+9. **Games:** revive ITEM-ARENA and Khand MEASURE (build-first replaces the 2026-10-10 stop). **Since decided otherwise:**
+   ITEM-ARENA is back only as a last-resort net (`dc-r7-games-arena-net`); MEASURE is not shipped, taraazu replaces it
+   (`dc-r7-games-measure-to-taraazu`). First wave-3 real-time
    engine: E6 Yantra (science physics). Timed/fast mechanics only on secure skills.
 10. **Personalisation** ("how this child learns": format/representation responsiveness, interests, pace) persists
     across lessons. Consent handling is part of the later compliance pass.
@@ -462,14 +472,14 @@ Built from the 7-pillar gap map (`gap-map.json`: 180 items, each with status, ev
 - Single-owner hot files: `shared/contracts.ts`, `server/brain/turn.js`, `server/director/state.js`,
   `shared/learner.ts`, `shared/bands.ts` → Brain; `src/lesson/runtime.ts` → Voice; `src/copy/en.ts`, `src/child/lesson/useDesk.ts` → App;
   `server/forge3/certs/box-contract.json`, `server/studio/seam.js` → Studio; `server/index.js` (route registry),
-  `db/migrations/**` numbering → Platform (reserved numbers: Brain 031-033, Learning 034-039, Platform 040-043,
-  others ask Platform).
+  `db/migrations/**` numbering → the main loop allots numbers (`db/migrations/README.md`; so far Brain 031-033,
+  Learning 034-039 and 044-049, Platform 040-043).
 - Frozen safety files: nobody edits `server/director/safety.js`, `server/compiler/floor.js`, `server/safety/**`,
   `src/lesson/safetyStrings.ts`. A change that would need them stops and goes to the main loop.
 - Tests: each stream adds tests as `tests/r7-<stream>-*.test.mjs` and may edit tests only for code it owns.
 - Contracts first: within 24 h Brain pushes the `shared/contracts.ts` additions others code against (UiDirectives.later,
   ui.moment, steer request ids, TurnRequest.gameAct, heardUpTo).
-- Integration: the main loop merges stream heads into `int/r6` every ~48 h (Platform, Learning, Brain, Voice, Studio,
+- Integration: the main loop merges stream heads into `int/r6` whenever they are ready (planned every ~48 h) (Platform, Learning, Brain, Voice, Studio,
   Games, Face, App), runs the gates, and deploys to staging once Platform's pipeline exists.
 - Context inbox (added 2026-11-04 after integration 2): never edit an inbox file after it is pushed. The main loop
   moves merged files to `context/inbox/merged/`; git treats that as a rename, so later stream edits to the same file

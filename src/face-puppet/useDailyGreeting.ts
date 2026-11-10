@@ -1,7 +1,7 @@
 // Her once-a-day home greeting, client side (round 7 face-home-daily-greeting). The server picks today's line
 // (GET /api/tutors/greeting: server/face-puppet/greetings.js); this hook plays it ONCE per child per local day:
 //   - after the child's first tap or key on the page (browsers block sound before a gesture; she never talks unasked
-//     at page load);
+//     at page load); the day counts as greeted only when she has actually been heard (or glanced, with no clip);
 //   - through an analyser meter (her lips) and the clip's viseme sidecar (clipBridge.ts), so the face lip-syncs it;
 //   - then she glances at Start once (faceCues gaze "start"), the spec's "greets, then idles; glances at Start once".
 // No clip rendered yet: no sound, only the glance. A failure is silent (the home works the same without her greeting).
@@ -16,6 +16,10 @@ export interface DailyGreeting { day: string; part: string; lang: string; id: st
 export const GREETED_KEY = (cid: string) => `tx.greeted.${cid}`;
 /** Gap between her last word and the glance (ms). */
 export const GLANCE_AFTER_MS = 350;
+/** The gestures that start her greeting. `pointerup`, not `pointerdown`: for touch a browser grants user activation (the
+ *  right to play sound) on pointerup / touchend, so a play() from the first touch's pointerdown is rejected on a page
+ *  with no earlier gesture (audit FACE-04). */
+export const GREETING_GESTURES = ["pointerup", "keydown"] as const;
 
 /** Whether today's greeting is still owed (pure: storage injected). */
 export function greetingOwed(g: DailyGreeting | null, stored: string | null): boolean {
@@ -61,9 +65,11 @@ export function useDailyGreeting(cid: string | null, opts: { enabled?: boolean; 
         const go = () => {
           for (const o of off.splice(0)) o();
           if (!alive) return;
-          mark(g.day);
           const glance = () => { glanceTimer = window.setTimeout(() => glanceAtStart(), GLANCE_AFTER_MS); };
-          if (!g.clip) { glance(); return; }
+          // the day's greeting is spent only once it has really happened: the glance when there is no clip, else the
+          // clip's first sound. A play the browser refused, a load error, or a Start tap that left the home before she
+          // spoke used to spend it silently (audit FACE-04); now she greets on the next visit to the home instead.
+          if (!g.clip) { mark(g.day); glance(); return; }
           audio = new Audio(g.clip);
           audio.preload = "auto";
           try {
@@ -82,13 +88,13 @@ export function useDailyGreeting(cid: string | null, opts: { enabled?: boolean; 
             /* no meter: the sidecar alone drives her lips */
           }
           detach = attachClipVisemes(audio, g.clip, ctx);
-          audio.addEventListener("playing", () => alive && setSpeaking(true));
+          audio.addEventListener("playing", () => { if (!alive) return; mark(g.day); setSpeaking(true); });
           audio.addEventListener("ended", () => { if (!alive) return; setSpeaking(false); glance(); });
           audio.addEventListener("error", () => alive && setSpeaking(false));
           audio.play().catch(() => alive && setSpeaking(false));
         };
         // the first gesture on the page unlocks audio; she greets then (never at page load)
-        for (const t of ["pointerdown", "keydown"] as const) {
+        for (const t of GREETING_GESTURES) {
           const h = () => go();
           window.addEventListener(t, h, { once: true, capture: true });
           off.push(() => window.removeEventListener(t, h, { capture: true }));

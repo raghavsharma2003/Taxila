@@ -43,7 +43,7 @@ For pictures, add `TAXILA_PICTURES=all`.
 move`, `classify … verdict`, `studio.board_(kept|not_kept)`, `slot failed … why:`, `she says`. Server turn numbers count chip taps,
 so they run ahead of the harness's turn numbers.
 
-**Gates** for any code commit: `npx tsc -b && npx vite build && npm test`. In the container, whole-directory `node --test tests/` failed on the
+**Gates** for any code commit (as of 2026-10-27; since round 7 the commit gate is `npm run test:all`, see `CLAUDE.md`): `npx tsc -b && npx vite build && npm test`. In the container, whole-directory `node --test tests/` failed on the
 engines-browser fixture, so run every file except engines-browser with `--test-concurrency=4` and
 `PLAYWRIGHT_BROWSERS_PATH=<scratch>/pw`, then engines-browser alone.
 

@@ -394,11 +394,16 @@ async function turnAudio(req, res, body) {
   // round 7 (B5 ↔ Brain A5): the Director's locked first clause (brain/say.js streamAsk) is spoken HERE the moment it is
   // guarded, while the rest of the reply is written: the fold opens at that clause, exactly as for the agent lane
   const hooks = { onAgentSay: early.onAgentSay, onClause: (ev) => early.onDirectorClause(ev) };
-  // round 7 (Studio M4, server/duplex/childText.js): the turn's words as sent, for in-process listeners, before the turn runs
-  if (body?.lessonId && typeof body?.childText === "string") emitChildText({ lessonId: body.lessonId, itemId: `turn:${body.turnSeq ?? ""}`, text: body.childText, final: true });
-  const specP = !body?.typed && !body?.chipId ? Promise.resolve((turnAudioDeps.takeAgentSpec ?? takeAgentSpec)(body?.lessonId, body?.childText)).catch(() => null) : null;
-  specP?.then((s) => { if (s) hooks.agentSpec = s; });
-  const settleSpec = async (why) => settleAgentSpec(body?.lessonId, await specP, why);
+  // (TEACHER-05, owner's audit: emitted and taken before the turn authorised anything): both run once lessonTurn has loaded the
+  // lesson for the signed-in guardian's child and checked consent (brain/turn.js hooks.authorized)
+  let specP = null;
+  hooks.authorized = () => {
+    // round 7 (Studio M4, server/duplex/childText.js): the turn's words as sent, for in-process listeners
+    if (body?.lessonId && typeof body?.childText === "string") { try { emitChildText({ lessonId: body.lessonId, itemId: `turn:${body.turnSeq ?? ""}`, text: body.childText, final: true }); } catch { /* the turn goes on */ } }
+    specP = !body?.typed && !body?.chipId ? Promise.resolve((turnAudioDeps.takeAgentSpec ?? takeAgentSpec)(body?.lessonId, body?.childText)).catch(() => null) : null;
+    specP?.then((s) => { if (s) hooks.agentSpec = s; });
+  };
+  const settleSpec = async (why) => { if (specP) settleAgentSpec(body?.lessonId, await specP, why); };
   let out;
   try {
     out = await lessonTurn(req, body, hooks);
@@ -411,7 +416,15 @@ async function turnAudio(req, res, body) {
     return;
   }
   await settleSpec("turn done");
-  if (early.opened) return early.finish(out);
+  if (early.opened) {
+    // audit V-20: the turn prewarmed this reply (brain/turn.js) although it was streamed here: its speech jobs are aborted
+    // now (before, they ran to the end, a second synthesis of every streamed reply), and the streamed reply counts once in
+    // the guardian's speech rate limit like every other reply
+    const s = out?.teacherReplySeq;
+    const dup = Number.isInteger(s) ? prewarmTake(String(body.lessonId), s, tokenHash) : null;
+    if (dup) { dup.abort.abort(); allowSpeech(dup.guardianId); }
+    return early.finish(out);
+  }
   const lessonId = String(body.lessonId);
   const seq = out?.teacherReplySeq;
   let warm = Number.isInteger(seq) && !out.late ? prewarmTake(lessonId, seq, tokenHash) : null;

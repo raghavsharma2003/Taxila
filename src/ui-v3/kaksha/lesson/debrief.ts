@@ -4,7 +4,7 @@
 // today's first success (got_it) never shows here: secure needs the delayed re-check. "Opened" is what those skills
 // open in the World and the Hangar (world.ts over data/kaksha/catalog.json): the same function the World draws with.
 // No clock and no randomness (tests/r4-kaksha-economy.test.mjs and tests/r4-kaksha-desk.test.mjs check).
-import { secureSet, world, type Catalog, type WorldSkill } from "../world.ts";
+import { secureSet, sinceOf, world, type Catalog, type WorldSkill } from "../world.ts";
 
 export interface MapLike {
   hidden?: boolean; skills: ReadonlyArray<WorldSkill>;
@@ -53,7 +53,7 @@ export function nowSecure(before: MapLike | null, after: MapLike | null, cat: Ca
   // never a child with nothing: unknown, so nothing is claimed (0 false "secure", BUILD-SPEC §11.4).
   if (before.skills.length === 0) return null;
   const was = secureSet(before.skills);
-  const w = world(after.skills, cat, was);
+  const w = world(after.skills, cat, was, sinceOf(after.skills));
   const out: DebriefSecure[] = [];
   const seen = new Set<string>();
   for (const k of after.skills) {

@@ -55,6 +55,8 @@ export function normaliseMap(data: unknown, mode: "garden" | "sky"): ChildMapRes
       id: String(c?.id ?? ""), number: Number(c?.number) || 0, title: String(c?.title ?? ""), sealed: c?.sealed === true, here: c?.here === true,
       // r7 F Learning (to-app/001): the chapter the parent said school is on (Progress → School, or set-up's maths question)
       school: (c as { school?: unknown } | undefined)?.school === true,
+      // APP-06: when the map first saw the chapter sealed (the World's "Sealed since" and the end screen's check read it)
+      sealedAt: typeof c?.sealedAt === "string" && c.sealedAt ? c.sealedAt : null,
       secure: Number(c?.secure) || 0, total: Number(c?.total) || 0,
       topics: (Array.isArray(c?.topics) ? c.topics : []).map((t) => ({
         id: String(t?.id ?? ""), title: String(t?.title ?? ""),

@@ -15,8 +15,8 @@ import { Glyph } from "../../ui/icons/state.tsx";
 import type { DeskActions, TrayModel } from "./model.ts";
 import { dotsFor, isWordLabel } from "./answers.ts";
 
-export function AnswerTray({ tray, floor, young, actions, slash, comma }:
-  { tray: TrayModel; floor: Floor; young: boolean; actions: DeskActions; slash?: boolean; comma?: boolean }) {
+export function AnswerTray({ tray, floor, young, actions, slash, comma, askKey }:
+  { tray: TrayModel; floor: Floor; young: boolean; actions: DeskActions; slash?: boolean; comma?: boolean; askKey?: string | null }) {
   const showing = floor === "showing";
   const overlay = tray.overlay === "help_menu" ? "help" : tray.overlay === "no_mic" ? "nomic" : null;
   // The pad keeps its digits under the overlay: closing the menu shows the same half-typed number.
@@ -29,7 +29,7 @@ export function AnswerTray({ tray, floor, young, actions, slash, comma }:
           {tray.kind === "tiles" && tray.tiles?.length ? (
             <PictureTiles tiles={tray.tiles} young={young} onPick={actions.pickTile} disabled={showing} />
           ) : tray.kind === "pad" ? (
-            <Pad young={young} slash={!!slash} comma={!!comma} onSend={actions.padSend} onWords={young ? undefined : actions.padWords} />
+            <Pad key={askKey ?? ""} young={young} slash={!!slash} comma={!!comma} onSend={actions.padSend} onWords={young ? undefined : actions.padWords} />
           ) : null}
         </div>
         {overlay === "help" && <HelpMenu young={young} onPick={actions.helpMenuPick} onClose={actions.closeHelpMenu} canClose={tray.kind === "pad" || !!tray.tiles?.length} pad={tray.kind === "pad"} />}

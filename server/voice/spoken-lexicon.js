@@ -38,6 +38,8 @@ const HI_BELOW_100 = [
 export const WORDS = {
   en: {
     below100: EN_BELOW_100,
+    // a written date d/m/yyyy is said with its month's name (audit V-17: "15/08/1947" was "Fifteen/zero eight/…")
+    months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
     scale: { hundred: "hundred", thousand: "thousand", lakh: "lakh", crore: "crore", million: "million", billion: "billion" },
     point: "point",
     minus: "minus",
@@ -86,6 +88,7 @@ export const WORDS = {
   },
   hi: {
     below100: HI_BELOW_100,
+    months: ["जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"],
     scale: { hundred: "सौ", thousand: "हज़ार", lakh: "लाख", crore: "करोड़", million: "मिलियन", billion: "बिलियन" },
     point: "दशमलव",
     minus: "ऋण",                              // NCERT ऋणात्मक; watch item: gpt-4o-mini-tts voiced ऋण unclearly 3/3 (SN §3.3)
@@ -207,6 +210,8 @@ export const DIAL_LINKS = ["on", "at", "pe", "par", "per", "पर", "पे", "
 /** A 1100-1999 number right after one of these (or before AD/BC/CE/ई.) is a year: nineteen forty-seven. */
 export const YEAR_CUES = ["in", "since", "year", "from", "till", "until", "by", "sal", "saal", "san", "सन्", "सन", "वर्ष", "साल", "ईस्वी"];
 export const YEAR_SUFFIXES = ["AD", "BC", "CE", "BCE", "ई."];
+/** h.mm right before one of these is a clock time ("9.30 baje"), not a decimal. */
+export const CLOCK_WORDS = ["baje", "bje", "बजे", "बज"];
 /** h:mm right after one of these is a ratio, not a clock time. */
 export const RATIO_CUES = ["ratio", "anupat", "अनुपात", "is to"];
 
