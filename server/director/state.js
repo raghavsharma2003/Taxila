@@ -2924,7 +2924,10 @@ export function step(prev, input) {
     // a share kept for later this turn: the note carries the promise (never only "react warmly")
     const kept = key === "personal_share" ? (s.later ?? []).find((e) => e.share && e.at === s.turn && !e.servedAt) : null;
     const must = [back, kept ? SH.mustShareKept({ promise: kept.promise }) : SH.MUST_NOTE[key], parked, ...(also ?? []).filter((x) => x !== key).map((x) => SH.ALSO_NOTE[x])].filter(Boolean);
-    if (must.length) move.must = must.join("; ").slice(0, 300);
+    // (TEACHER-11, owner's audit: joined then cut at 300 characters — "a game, in simpler words" is 332 and lost the end of its second
+    // note. Budget gates throw, they do not cut: the notes are joined whole; compile's "last" section sheds the note whole, and its
+    // token budget throws, never a cut mid-note)
+    if (must.length) move.must = must.join("; ");
   }
   // round 2 (conversation): how the child asked to be taught ("step by step", "picture first") rides on every later move
   // (compile.js renders it, droppable): before this, s.prefs was written and never read, so a method request lasted one turn

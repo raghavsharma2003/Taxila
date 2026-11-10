@@ -46,7 +46,7 @@ Status: **fixed** = fixed on this branch with a test that fails before the fix a
 | V-29 | P2 | inconsistent | voice | The voice switch and Roman-to-Devanagari step are recorded as wired; nothing calls them. "sabse bara" would become "सबसे बारह" | `server/voice/voice-switch.js:56,65`, `translit/numbers.js:27`; `context/decisions.md:5083` | wire it or correct the record; remove `bara` from twelve either way | **fixed** (record corrected; not wired) |
 | V-33 | P2 | broken | voice | The headset check matches the phone's own earpiece and any Bluetooth speaker | `src/child/lesson/headset.ts:11` | drop `earpiece` and bare `bluetooth` | **fixed** |
 | V-34 | P2 | not good enough | voice | The Opus decoder is flushed after every packet; a stale flush can fail the next decoder | `src/lesson/opus.ts:90-106` | guard the stale catch now; the flush change needs a listening check | left (main) |
-| V-40 | P2 | inconsistent | voice | The live child-text pipeline has no listener, and the emit runs before the request is authorised | `server/duplex/childText.js`, `server/routes/voice.js:398`, `server/routes/lesson.js:902` | emit after `lessonTurn` returns | **fixed** (+ patch to brain) |
+| V-40 | P2 | inconsistent | voice | The live child-text pipeline has no listener, and the emit runs before the request is authorised | `server/duplex/childText.js`, `server/routes/voice.js:398`, `server/routes/lesson.js:902` | emit after `lessonTurn` returns | **fixed** (Brain's TEACHER-05 version) |
 | V-30 | P3 | inconsistent | voice | "Hear" says the child's name differently from the streamed voice | `server/routes/tts.js:66,85` | pass `sayName` | **fixed** |
 | V-28 | P3 | inconsistent | voice | The uptake prelude keeps the lowered pitch its comment says it removes (flag off) | `server/voice/expressive/render.js:94` | strip any pitch value | **fixed** |
 | V-31 | P3 | broken | voice | The prelude warm reads a field the request never has (flag off) | `server/routes/voice.js:562,566` | read `childText` | **fixed** |
@@ -69,7 +69,8 @@ Fixed, 35: every broken and inconsistent finding in the area (and V-20), each wi
 - V-19: the engine's commit also ends the prefetch's turn, so the same-text guard never outlives a turn.
 - V-22, V-27: main's decisions. The thinking-pause cue is unsubscribed; expressive SSML is off by default on DragonHD (listed for the owner in `voice-proposals.md`).
 - V-29: the record is corrected in the context inbox; the voice switch and translit stay unwired; "bara" is no longer twelve outside a run of numbers.
-- V-21, V-40: the voice files are fixed; Brain's halves are `docs/patches/to-brain/019-voice-audit-v21-v40.patch`.
+- V-21: the voice files' comments are fixed; Brain's comment is `docs/patches/to-brain/019-voice-audit-v21-v40.patch`.
+- V-40: Brain fixed it on both routes (TEACHER-05: `hooks.authorized()`, after the turn context and consent checks); that version is kept, with both sides' tests.
 - New numbers: a 5 s stall limit on a reply's stream (V-02), a 10 s limit on each transcription open step (V-03), a 20 s ceiling on one device-VAD speaking run (V-18).
 
 Not fixed, by decision: V-34 (needs a listening check on a phone), V-36 (realtime lane: write-up only), V-37 (every module is still read by something the deletion rule keeps), V-38 (AWS scripts kept). V-39: the MAI and Omni compilers are deleted; the rest stays. Reasons and costs: `docs/design/round7/audit/voice-proposals.md`.

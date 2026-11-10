@@ -1,5 +1,6 @@
 // What {T} remembers (STUDENT-FLOW §11.4; r7 app-me-settings), on the child's Your teacher screen. Its one control is
 // Forget this on a memory item: nothing here picks, renames or changes her (dc-r4-single-teacher-asha).
+import { dayOf } from "../growth.ts";
 import { useEffect, useState } from "react";
 import { Ghost, Glyph, Panel } from "../../ui-v3/kaksha/kit.tsx";
 import { forgetChildMemory, getChildMemory, type ChildMemory } from "../api.ts";
@@ -23,7 +24,7 @@ export function Remembers({ cid, name }: { cid: string; name: string }) {
       setGone(tr7("mem.forgotten", { T: name }));
     }
   };
-  const day = (at: string) => new Date(at).toLocaleDateString(undefined, { day: "numeric", month: "long" });
+  const day = (at: string) => dayOf(at, true);
   return (
     <Panel eyebrow={tr7("mem.title", { T: name })} testid="remembers">
       {!mem.keeps ? (

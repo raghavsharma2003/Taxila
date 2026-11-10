@@ -18,11 +18,16 @@ export async function saveReport(db, r) {
   return { id: String(have.id), created: false };
 }
 
-/** One entry per (cadence, period): after a RENDER_VERSION bump an operator re-render is a new row, and the newest wins. */
+/**
+ * One entry per (cadence, period): after a RENDER_VERSION bump an operator re-render is a new row, and the newest wins.
+ * Newest first by the end of the note's window (the periods are four text formats, "2026-W45", "2026-11", "2026-T1",
+ * "2026-11-08": sorted as text the weeks and terms sat above every daily note, which fell off the list; audit LEARN-18).
+ */
 export async function listReports(db, childId, limit = 30, { since = null } = {}) {
-  return db.q(`select * from (select distinct on (cadence, period) id, cadence, period, render_version, created_at from parent_report
+  return db.q(`select id, cadence, period, render_version, created_at from (select distinct on (cadence, period) id, cadence, period, render_version,
+      created_at, window_to from parent_report
       where child_id = $1 and ($3::timestamptz is null or created_at < $3) order by cadence, period, created_at desc, id desc) r
-    order by period desc, cadence desc, created_at desc limit $2`, [childId, limit, since]);
+    order by window_to desc, created_at desc limit $2`, [childId, limit, since]);
 }
 
 /** `before`: only a report stored before this instant (the safety hold hides notes made after it began). */

@@ -95,7 +95,8 @@ test("her sheet: classes [1, 9], a register per band, notes and shapes only, a c
   assert.deepEqual(asha.classes, [1, 9]);
   const young = sheetFor(asha, 3), older = sheetFor(asha, 7);
   assert.equal(young.protege.name, "Golu");
-  assert.match(young.protege.what, /baby elephant/);
+  assert.match(young.protege.what, /little friend/);
+  assert.doesNotMatch(young.protege.what, /elephant|animal/i, "TEACHER-01: the young screen shows a cloud pup, pebble or sprout");
   assert.doesNotMatch(older.protege.what, /baby|elephant|animal/i);
   assert.match(older.protege.what, /student/);
   assert.ok(older.notes.some((n) => /^competence before warmth: diagnose what they tried/.test(n)), "Arjun's competence note carried over");

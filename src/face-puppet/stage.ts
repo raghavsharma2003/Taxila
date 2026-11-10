@@ -372,6 +372,26 @@ export class PuppetStage {
     cancelAnimationFrame(this.raf);
   }
 
+  /** Leave the page's one running slot: the newest face this stage suspended draws again. Called when this stage is
+   *  disposed, and when it is PARKED (PuppetFace park): a parked stage draws nothing, and it used to keep the slot until
+   *  its park timer disposed it, so the lesson's face stayed frozen for 1.5 s (10 s for a worker-backed stage) after the
+   *  Help sheet's live face closed over it (audit FACE-01). start() takes the slot again when the stage is adopted. */
+  private yieldSlot(): void {
+    const k = foreground.indexOf(this);
+    if (k < 0) return;
+    const wasTop = k === foreground.length - 1;
+    foreground.splice(k, 1);
+    const top = foreground[foreground.length - 1];
+    if (wasTop && top?.suspended && !top.disposed) top.start();
+  }
+
+  /** Stop drawing and wait off the page for the next mount of the same teacher (PuppetFace park / adopt). */
+  park(): void {
+    this.stop();
+    this.canvas.remove();
+    this.yieldSlot();
+  }
+
   /** One frame (public for the deterministic evals: tick(now) with a scripted clock). */
   tick(now: number, force = false): void {
     const rig = this.rig;
@@ -558,13 +578,7 @@ export class PuppetStage {
   dispose(): void {
     this.disposed = true;
     this.stop();
-    const k = foreground.indexOf(this);
-    if (k >= 0) {
-      const wasTop = k === foreground.length - 1;
-      foreground.splice(k, 1);
-      const top = foreground[foreground.length - 1];
-      if (wasTop && top?.suspended && !top.disposed) top.start();
-    }
+    this.yieldSlot();
     for (const off of this.offs) off();
     this.offs = [];
     for (const id of this.timers) window.clearTimeout(id);

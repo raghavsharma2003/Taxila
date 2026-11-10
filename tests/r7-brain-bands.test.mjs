@@ -34,7 +34,9 @@ test("a class-4 child gets the older persona sheet: a peer protégé, never the 
   const four = sheetFor(asha, 4), three = sheetFor(asha, 3);
   assert.doesNotMatch(four.protege.what, /baby|elephant|animal/i);
   assert.ok(four.notes.some((n) => /^competence before warmth/.test(n)));
-  assert.match(three.protege.what, /baby elephant/, "classes 1-3 keep the young sheet");
+  assert.match(three.protege.what, /little friend/, "classes 1-3 keep the young sheet");
+  // (TEACHER-01: the screen draws a cloud pup, a pebble or a sprout — her words name no animal)
+  assert.doesNotMatch(three.protege.what, /elephant|animal|pup|dog|baby/i);
 });
 
 test("the agent lane speaks in the same register: class 4 is a 9-12 child, class 3 young, class 8 a teenager", () => {

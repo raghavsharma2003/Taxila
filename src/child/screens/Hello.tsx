@@ -74,6 +74,7 @@ export function Hello() {
   const [likes, setLikes] = useState<string[]>(parentPicks);
   const [hi, setHi] = useState<"idle" | "listening" | "heard" | "none">("idle");
   const stopHi = useRef<() => void>(() => {});
+  const heardTimer = useRef<number | null>(null);
   useEffect(() => () => stopHi.current(), []);
   // The hand-over tap is the audio unlock (flows G14; V2 §3.3): when this page was reached by a tap (the SPA carries
   // user activation), her greeting plays at once, with no second "Tap to hear {T}" gate. A cold load keeps the button.
@@ -141,15 +142,17 @@ export function Hello() {
       setHi(r);
       // no working mic: this device's lessons start in tap-and-type (she can turn talking on in Me)
       if (r === "none") setPrefs({ quiet: true });
-      if (r === "heard") setTimeout(() => void finish(), 900);
+      if (r === "heard") heardTimer.current = window.setTimeout(() => { heardTimer.current = null; void finish(); }, 900);
     });
   };
-  const skipHi = () => { stopHi.current(); void finish(); };
+  // APP-24: Skip (or leaving) inside the 0.9 s after "heard" cancels the pending finish, so it runs once
+  const skipHi = () => { stopHi.current(); if (heardTimer.current !== null) { clearTimeout(heardTimer.current); heardTimer.current = null; } void finish(); };
+  useEffect(() => () => { if (heardTimer.current !== null) clearTimeout(heardTimer.current); }, []);
 
   const pageAvatars = AVATARS.slice((page * 6) % AVATARS.length, ((page * 6) % AVATARS.length) + 6);
   // Kaksha (K-P13, audit B02): the older line promises only what happens next (a short chat, then she teaches); "find
   // what you already know" promised an assessment that never comes. Flag off: today's line, unchanged.
-  const framing = young ? t("storyStart") : kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha) ? kt("helloOlder") : t("olderStart");
+  const framing = young ? t("storyStart") : kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha) ? kt("helloOlder", { T: rec.name }) : t("olderStart");
 
   let body;
   switch (card) {

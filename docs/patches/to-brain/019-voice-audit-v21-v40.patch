@@ -1,19 +1,15 @@
 From: Voice (claude/r7-audit-voice, whole-project audit 2026-11-09)
-Subject: [PATCH 019] voice audit V-21 and V-40: the voicesig comment in turn.js; the child-text emit after the turn is authorised
+Subject: [PATCH 019] voice audit V-21: the voicesig comment in turn.js
 
-Two findings from docs/design/round7/audit/voice.md that land in Brain's files.
+One finding (and a note) from docs/design/round7/audit/voice.md that land in Brain's files.
 
 V-21 (server/brain/turn.js): the comment above voicesigSeam.turn says a voice-signal state is shadow until the precision
 gate passes. Since the owner's 2026-10-27 decision the default mode is `internal` (server/voicesig/lesson.js seamMode): a
 computed state picks the plan's tie-breakers (followUpProbe, gentlerHint, slowerPace) in every lesson, on a placeholder
 prior. Comment only; no behaviour change. The voice files' own comments were corrected on the voice branch.
 
-V-40 (server/routes/lesson.js): POST /api/lesson/turn emitted the child's words to in-process child-text listeners
-(server/duplex/childText.js) BEFORE lessonTurn ran, i.e. before the request was authorised for that lesson. The emit now
-runs after lessonTurn returns. The voice branch made the same change in /api/lesson/turn-audio (server/routes/voice.js).
-No listener is registered in the app today (Studio's M4 consumer is not wired), so nothing a child sees changes.
-Pinned: tests/r7-audit-voice-server.test.mjs ("V-40") covers the voice route; for this route, a test that posts a turn
-for a lesson the caller does not own and asserts no onChildText event fires.
+V-40: dropped from this patch. Brain fixed it on its side (TEACHER-05, hooks.authorized in lesson.js and voice.js),
+which is on int/r6 at 15913af7; the voice branch keeps that version.
 
 diff --git a/server/brain/turn.js b/server/brain/turn.js
 index 06668455..7b573d70 100644
@@ -32,30 +28,3 @@ index 06668455..7b573d70 100644
    const vsTurn = seamSafe("voicesig.turn", () => voicesigSeam.turn({ kv: body.voiceFeatures?.kv, typed: !!body.typed || moduleOnly || !!help || laneResume,
      bargeIn: !!body.teacherInterrupted, safety: !!cls?.flags?.distress || !!pendingSafety || !!fast?.flags?.distress, childText, cls, item: activeItem,
      context: body.voiceFeatures?.context, vsb: state.vsb, classLevel: child.class_level, env: process.env }), null);
-diff --git a/server/routes/lesson.js b/server/routes/lesson.js
-index a8cd785d..8d5ed809 100644
---- a/server/routes/lesson.js
-+++ b/server/routes/lesson.js
-@@ -897,13 +897,18 @@ async function turn(req, res, body) {
-   // the take may wait for the same classify the turn adopts, so the turn never waits on it: the spec lands on `hooks` when
-   // handed over (turn.js reads it only after its own classify); whatever happens it is settled (logged, aborted) at the end
-   const hooks = {};
--  // r7 Voice → Studio M4 (server/duplex/childText.js): the turn's words as sent, for in-process listeners, before the turn runs
--  // (Brain: synchronous and never awaited, so it adds no serial latency; a throw in it never reaches the turn)
--  if (body?.lessonId && typeof body?.childText === "string") { try { emitChildText({ lessonId: body.lessonId, itemId: `turn:${body.turnSeq ?? ""}`, text: body.childText, final: true }); } catch { /* the turn goes on */ } }
-   const specP = !body?.typed && !body?.chipId ? takeAgentSpec(body?.lessonId, body?.childText).catch(() => null) : null;
-   specP?.then((s) => { if (s) hooks.agentSpec = s; });
-   // round 7 A5: `Accept: text/event-stream` streams her guarded clauses, then the turn (brain/clauses.js); otherwise plain JSON
--  try { await runTurn(req, res, (h) => lessonTurn(req, body, h), hooks); }
-+  // r7 Voice → Studio M4 (server/duplex/childText.js): the turn's words as sent, for in-process listeners. Audit V-40:
-+  // emitted only once lessonTurn returned, i.e. the request was authorised for this lesson (before, any caller's words
-+  // reached a lesson's listeners ahead of the auth check). Synchronous; a throw in it never reaches the turn.
-+  const authed = async (h) => {
-+    const out = await lessonTurn(req, body, h);
-+    if (body?.lessonId && typeof body?.childText === "string") { try { emitChildText({ lessonId: body.lessonId, itemId: `turn:${body.turnSeq ?? ""}`, text: body.childText, final: true }); } catch { /* the turn goes on */ } }
-+    return out;
-+  };
-+  try { await runTurn(req, res, authed, hooks); }
-   finally { if (specP) settleAgentSpec(body?.lessonId, await specP); }
- }
- 

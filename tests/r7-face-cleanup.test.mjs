@@ -13,11 +13,8 @@ test("the rejected bake-off candidates are not under public/ (never in dist), an
   for (const f of walk("scripts/character/candidates")) assert.doesNotMatch(readFileSync(at(f), "utf8"), /teacher-candidates/, f);
 });
 
-test("the dev avatar page no longer mounts the retired TeacherStage shim; the shim patches apply in order", () => {
+test("the dev avatar page no longer mounts the retired TeacherStage shim; the onboarding page mounts Teacher directly and the shim files are gone", () => {
   assert.doesNotMatch(readFileSync(at("src/pages/AvatarDev.tsx"), "utf8"), /import \{ TeacherStage \}|<TeacherStage\b/);
-  const l = readFileSync(at("docs/patches/to-learning/002-face-onboarding-teacher-direct.patch"), "utf8");
-  assert.match(l, /import \{ Teacher \} from "\.\.\/\.\.\/ui\/teacher\/Teacher\.tsx";/);
-  const a = readFileSync(at("docs/patches/to-app/006-face-retire-teacher-shims.patch"), "utf8");
-  assert.match(a, /deleted file mode[\s\S]*src\/ui\/TeacherFace\.tsx|src\/ui\/TeacherFace\.tsx[\s\S]*deleted file mode/);
-  assert.match(a, /src\/stage\/TeacherStage\.tsx/);
+  assert.match(readFileSync(at("src/onboarding/Setup.tsx"), "utf8"), /import \{ Teacher \} from "\.\.\/ui\/teacher\/Teacher\.tsx";/);
+  for (const gone of ["src/ui/TeacherFace.tsx", "src/stage/TeacherStage.tsx"]) assert.equal(existsSync(at(gone)), false, `${gone} is retired`);
 });

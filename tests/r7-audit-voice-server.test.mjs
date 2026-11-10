@@ -115,7 +115,7 @@ test("V-25: a turn that fails after her first clause writes its status in the en
 
 // ── V-40: the child's words reach child-text listeners only after the turn was authorised ──
 import { onChildText } from "../server/duplex/childText.js";
-test("V-40: a refused turn-audio request emits nothing to the lesson's listeners; an accepted one emits its words", async () => {
+test("V-40 (Brain's hooks.authorized version, TEACHER-05): a refused turn-audio request emits nothing; an authorised one emits its words", async () => {
   const lessonId = "00000000-0000-0000-0000-0000000000d4";
   const got = [];
   const off = onChildText(lessonId, (e) => got.push(e.text));
@@ -126,7 +126,7 @@ test("V-40: a refused turn-audio request emits nothing to the lesson's listeners
     Object.assign(turnAudioDeps, { style: () => ({}), synth: async function* () {}, lessonTurn: async () => { throw new HttpError(403, "not your lesson"); } });
     await assert.rejects(_turnAudio(req, res(), { lessonId, childText: "kisi aur ka jawab" }), (e) => e.status === 403);
     assert.deepEqual(got, []);
-    turnAudioDeps.lessonTurn = async () => ({ teacherReply: "Achha.", teacherReplySeq: 4, late: true });
+    turnAudioDeps.lessonTurn = async (req, body, hooks) => { hooks.authorized?.(); return { teacherReply: "Achha.", teacherReplySeq: 4, late: true }; };
     await _turnAudio(req, res(), { lessonId, childText: "teen" });
     assert.deepEqual(got, ["teen"]);
   } finally { off(); Object.assign(turnAudioDeps, { lessonTurn: null, style: null, synth: null }); }

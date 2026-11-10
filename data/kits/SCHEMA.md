@@ -5,7 +5,7 @@ independent blind solver. Item prompts ARE meant to be posed as written (they ar
 persona), but teacher *moves* stay shapes — never scripts.
 
 ```ts
-interface KitFile { class: number; subject: "maths"|"science"|"evs"; book: string; version: 1;
+interface KitFile { class: number; subject: "maths"|"science"|"evs"|"english"|"hindi"|"sst"; book: string; version: 1;
   topics: TopicKit[] }
 interface TopicKit {
   topicId: string;                 // matches data/curriculum topic id
@@ -28,6 +28,7 @@ interface TopicKit {
     answer: string;                // canonical answer (for open "why"/teachback: the key idea)
     acceptable: string[];          // equivalent accepted answers / forms
     hints: [string, string, string, string];   // pump → hint → prompt → assertion (shapes, short)
+    passageId?: string;            // the passage (topic.passages) the question is about; the prompts are the short question only
     targetsMisconception?: string; // misconception id this item can surface
     verified?: { solverAnswer: string; agrees: boolean; note?: string }  // filled by blind solver
   }[];                             // 10-16 items per topic, covering ≥5 kinds
@@ -38,5 +39,22 @@ interface TopicKit {
                                    // (round 7 F kit gaps; `do`/`why` are shapes; blind-verified by a separate Claude agent)
   formats: { primary: "F1"|"F2"|"F3"|"F4"|"F5"|"F6"|"F7"|"F8"; secondary: string[]; engineHints: string[] }; // engineHints: manipulative/sim kind names
   interestContexts: string[];      // contexts the item numbers/stories can be re-skinned into (cricket, kitchen, market, trains…)
+  passages?: { id: string; text: string; title?: string; kind?: "picture" }[];   // the stories, poems, letters and scenes items ask about, each stored once; text keeps poem lines as "\n"
 }
 ```
+
+Subjects: maths, science, evs, english, hindi, sst (social science, classes 6-9).
+
+Item fields added after the first version (all optional; the loader keeps `ge`, `demand` and `verified`, drops the rest):
+- `ge` (number): grade-equivalent of the item on the ability.js scale, from the re-levelling (`data/kits-relevel`) or the raters. `geSource`, `geRaters`, `tooEasy`, `relevel` ("harder"|"easier") record how it was set.
+- `demand`: "recall" | "apply" | "reason" | "transfer".
+- `display_hi`: the on-screen form of a Hindi prompt when the spoken form would leak the answer (5 items).
+- `source`, `hintsFixed`, `authored`: bookkeeping from the kit workflows; nothing reads them.
+
+Passages (docs/design/round7/learning/PASSAGE.md): a text is stored once in `topic.passages` and every item about it carries its
+`passageId`. Never put the text inside a prompt: a prompt over the budget (`checkFits`) is dropped at load, and a test fails
+unless `kit.lint.itemsDropped` is 0 for every kit. `normalizeKit` moves items with a `passageId` to `kit.heldItems` until the lesson
+can show a passage (`TAXILA_PASSAGES=on`).
+
+`skillExamples` is for the people and agents who write lesson scripts. `normalizeKit` drops it and no product code reads it.
+

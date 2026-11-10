@@ -35,6 +35,7 @@ import { createGradeSession, studioEvidenceEvent, writeStudioEvidence } from "./
 // host attached (STAGECRAFT=off, or a host that failed to start) every call below is a no-op and Wave 2 is unchanged.
 import * as stagecraft from "../stagecraft/seam-bridge.js";
 import { startStagecraft, stopStagecraft, touchStagecraft } from "../stagecraft/lesson.js";
+import { forgetPictureLesson } from "./picture.js";
 import * as boardSync from "../stagecraft/board-sync.js";
 import { sceneFor } from "../forge/animate/scenes.js";
 import { sceneMayPlay } from "../../shared/scene.js";
@@ -110,6 +111,7 @@ function lessonState(lessonId, init) {
       lessons.delete(oldest.lessonId);
       closeLesson(oldest, "evicted");
       stopStagecraft(oldest.lessonId);
+      forgetPictureLesson(oldest.lessonId);
     }
   } else if (L) touch(L);
   return L ?? null;
@@ -583,7 +585,7 @@ export const studioSeam = {
       redact: [ctx.child?.first_name, ctx.child?.name].filter((x) => typeof x === "string" && x.length > 1),
     });
     // the child's earlier lesson still in memory has ended: its open wrong items close as evidence now (no lesson-end hook)
-    if (L.childId) for (const other of [...lessons.values()]) if (other !== L && other.childId === L.childId) { lessons.delete(other.lessonId); closeLesson(other, "lesson_end"); stopStagecraft(other.lessonId); }
+    if (L.childId) for (const other of [...lessons.values()]) if (other !== L && other.childId === L.childId) { lessons.delete(other.lessonId); closeLesson(other, "lesson_end"); stopStagecraft(other.lessonId); forgetPictureLesson(other.lessonId); }
     // Stagecraft (ship5 p4-content): one host per lesson, fire-and-forget (never delays the start; off/practice → none)
     startStagecraft({ lessonId: ctx.lessonId, purpose: L.purpose, child: ctx.child ?? null, studioControl: L.studioControl }).catch(() => null);
     // Quick practice is a short item set (STUDENT-FLOW §6.1): no Studio pieces there.

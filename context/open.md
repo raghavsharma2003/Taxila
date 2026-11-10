@@ -198,3 +198,21 @@ What only live billing can settle, on the first closed day after the M4 apply (2
 3. Did managed Run Command pass the protectedParameter as an env var? The apply prints M3-RUNNER-OK, or M3-RUNNER-FAIL no env parameter.
 4. Does the ledger show runs by both aca and vm?
 5. Did 2026-11-06 count as day 1 (the report's `day1`; `status` prints the day-1 candidate line)?
+
+
+<!-- merged from inbox/r7-audit-docs-memory.json -->
+## op-audit-build-gpu-aws-owner
+Does the AWS GPU build harness (`scripts/gpu`) stay? It runs the 3D face jobs and the voice training scripts; nothing in the product runs it, and it calls a service outside the Azure-only rule. The question is the owner's. Until it is answered nothing under `scripts/gpu` is deleted or extended.
+
+
+<!-- merged from inbox/r7-audit-seams.json -->
+## seams-signals-layer-unwired
+The decision `sig-layer-evidence-not-authority` (2026-10-04) built the layer in new modules and left integration to SIGNALS-SPEC §8.2. On 2026-11-10 nothing live imports `server/signals/index.js` or `src/signals/index.ts`; `TAXILA_SIGNALS` can flip nothing. The voice-signal adapter (`server/voicesig/**`) does the job instead. Owner's call: wire or retire (keep `server/signals/text.js` and `linguistic.js`, which are live). Report: SEAM-04.
+
+
+<!-- merged from inbox/r7-audit-voice.json -->
+## open-r7-audit-voice-holdcue-live (2026-11-10)
+Audit V-22. `r3vs-holdcue-shadow` keeps the thinking-pause cue shadow until a children's pilot; `rejected.md` records 0 of 12 cut-offs prevented and one 2.0 s false delay. The cue is wired into the live engine (`src/duplex/liveTap.ts:50-54`) and went live when hands-free became every child's default. Decide: unsubscribe it, or record the decision to run it live.
+
+## open-r7-audit-voice-expressive-default (2026-11-10)
+Audit V-27. Expressive SSML is default on for DragonHD (`w2g-expressive-layer-built`); `rj-ssml-delivery-plan-2026-10-04` records listeners scoring the same shape below plain. The blind test named as the reversal condition has not run.

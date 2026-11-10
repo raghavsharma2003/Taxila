@@ -39,9 +39,10 @@ export interface PuppetFaceProps {
   /** Poster only (cards, several faces on one screen): no WebGL context. */
   still?: boolean;
   lang?: string;
+  /** The name the child gave her; default the character's own (the accessible "<name>, AI teacher"; audit FACE-06). */
+  name?: string;
   /** A Director affect window (TutorFace's `affect` prop: ReactionGate-gated upstream), armed for her next onset. */
   affect?: Emotion | null;
-  gentle?: boolean;
   className?: string;
   onEvent?: (e: PuppetStageEvent) => void;
 }
@@ -77,8 +78,7 @@ const PARK_MS = 1500;
 let parked: { stage: PuppetStage; key: string; hand: string; timer: number } | null = null;
 function park(stage: PuppetStage, key: string, hand: string): void {
   if (parked) { window.clearTimeout(parked.timer); parked.stage.dispose(); }
-  stage.stop();
-  stage.canvas.remove();
+  stage.park(); // stops, leaves the DOM and hands the running slot back to a face it suspended (stage.ts yieldSlot)
   const timer = window.setTimeout(() => { if (parked?.stage === stage) parked = null; stage.dispose(); }, canHandOff(stage) ? HANDOFF_PARK_MS : PARK_MS);
   parked = { stage, key, hand, timer };
 }
@@ -103,7 +103,7 @@ export const PUPPET_TUTORS: ReadonlySet<string> = new Set(["asha"]);
 
 export function PuppetFace(p: PuppetFaceProps) {
   const tutor = faceTutor(p.tutorId, p.band);
-  const label = `${tutor.displayName.roman}, ${copy("aiTeacher", p.lang ?? "english")}`;
+  const label = `${p.name?.trim() || tutor.displayName.roman}, ${copy("aiTeacher", p.lang ?? "english")}`;
   const host = useRef<HTMLDivElement>(null);
   const stage = useRef<PuppetStage | null>(null);
   const [look, setLook] = useState<PuppetLook | null>(() => faceLookNow());
@@ -233,8 +233,8 @@ export function PuppetFace(p: PuppetFaceProps) {
   }, [p.still, tutor.id, p.framing, sources, stageOff, look, armed]);
 
   useEffect(() => {
-    stage.current?.set({ status: p.status, reducedMotion: !!p.reducedMotion, gentle: !!p.gentle });
-  }, [p.status, p.reducedMotion, p.gentle]);
+    stage.current?.set({ status: p.status, reducedMotion: !!p.reducedMotion });
+  }, [p.status, p.reducedMotion]);
 
   useEffect(() => {
     if (p.affect) stage.current?.driver.affect(p.affect, 1, performance.now());

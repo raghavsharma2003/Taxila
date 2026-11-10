@@ -4,6 +4,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { loadMe, type Me } from "./api.ts";
+import { Loading } from "./Shell.tsx";
 import { StepFrame } from "../onboarding/Layout.tsx";
 import "../styles/onboarding.css";
 import "../onboarding/onboarding-v2.css";
@@ -11,7 +12,7 @@ import "../onboarding/onboarding-v2.css";
 export function ParentOnly({ children }: { children: ReactNode }) {
   const [me, setMe] = useState<Me | null | undefined>(undefined);
   useEffect(() => { loadMe().then(setMe, () => setMe(null)); }, []);
-  if (me === undefined) return null;
+  if (me === undefined) return <Loading />;
   if (me?.scope !== "child") return <>{children}</>;
   const name = me.children[0]?.first_name ?? "your child";
   return (

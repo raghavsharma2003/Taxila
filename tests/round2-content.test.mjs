@@ -81,7 +81,8 @@ describe("board legibility fit (catalogue boards at the phone tray)", () => {
       const texts = (s) => s.ops.filter((o) => o.op === "text").map((o) => o.size ?? "m").join();
       assert.equal(texts(f), texts(b.script), "text sizes are never changed");
     }
-    assert.ok(n >= 3000, `catalogue boards ${n}`);
+    // (audit STUDIO-02, 2026-11-10: the 102 boards of the 13 topics whose cross-check failed or never ran are withheld: 2,903)
+    assert.ok(n >= 2800, `catalogue boards ${n}`);
     assert.ok(w1Before / n > 0.9, `boards below 11 px as authored: ${w1Before}/${n}`);
     assert.ok(after / n >= 0.6 && after > before * 10, `geometry passes: before ${before}/${n}, after ${after}/${n}`);
   });

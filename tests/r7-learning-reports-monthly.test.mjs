@@ -21,7 +21,7 @@ function monthFacts(over = {}) {
     { sessionId: "S1", at: at("2026-10-05", 8), skillIds: [C], cls: "teach", outcome: -1, teach: true, itemKey: "" },
     { sessionId: "S3", at: at("2026-10-20", 1), skillIds: [A], cls: "item.open", outcome: 0 },
     { sessionId: "S3", at: at("2026-10-20", 4), skillIds: [C], cls: "item.open", outcome: 0 },
-    { sessionId: "S3", at: at("2026-10-20", 2), skillIds: [B], cls: "item.open", outcome: 1 },    // B: hinted, solved (C1); last contact 10-06
+    { sessionId: "S3", at: at("2026-10-20", 2), skillIds: [B], cls: "item.open", outcome: 1 },    // B: right on a later try, no hint (C1: not hinted, audit LEARN-13); last contact 10-06
     { sessionId: "S3", at: at("2026-10-20", 3), skillIds: [B], cls: "item.open", outcome: 4 },    // hinted, not solved (C4)
   ] });
   f.lessons = [
@@ -72,7 +72,7 @@ test("monthly report: header, up to 3 strengths, S4, S6, S7, S9, S13, one home a
   // S4: A, B (its first answer) and C on 10-20; first-try right: A and C
   assert.deepEqual(bySection(c, "hold")[0].slots, { n: 3, k: 2 });
   // S6: hinted answers in the month: the fixture's C2 (10-05), C4, C4, C3 (10-06) and C1, C4 (10-20); solved: C2 and C1
-  assert.deepEqual(bySection(c, "hard")[0].slots, { h: 6, k: 2 });
+  assert.deepEqual(bySection(c, "hard")[0].slots, { h: 5, k: 2 });   // C1 is no hint (audit LEARN-13)
   // S7: two learning questions kept, one answered; the share is not counted
   const cur = bySection(c, "curious")[0];
   assert.equal(cur.shapeId, "curious.asked");

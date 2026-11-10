@@ -16,6 +16,7 @@
 // filter and the predicate (the floor never depends on this call; a note's distress is OR-ed in, never subtracted).
 import { chat, isContentFilter } from "../azure.js";
 import { scrubPii, filterSafe } from "../director/safety.js";
+import { heardTail } from "../director/classify.js";
 
 export const INTENTS = Object.freeze([
   "answer_correct", "answer_wrong", "answer_partial", "answer_hedged", "thinking_aloud", "self_correction", "dont_know", "ask_for_answer",
@@ -89,7 +90,7 @@ export const SYSTEM = [
 export function userPrompt(ctx) {
   return [
     `CLASS ${ctx.cls ?? 5}, LESSON: ${String(ctx.topicTitle ?? "").slice(0, 80)}. MOMENT: ${ctx.phase ?? "lesson"}.`,
-    `TEACHER JUST SAID: ${String(ctx.teacherLast ?? "").slice(0, 400)}`,
+    `TEACHER JUST SAID: ${heardTail(ctx.teacherLast, 400)}`,
     ctx.ask ? `QUESTION ON THE TABLE: ${String(ctx.ask).slice(0, 300)}` : "QUESTION ON THE TABLE: none (teaching)",
     ctx.key ? `KEY: ${String(ctx.key).slice(0, 120)}` : "",
     ...(ctx.earlier ?? []).slice(-2).flatMap((e) => [`CHILD EARLIER: ${String(e.child ?? "").slice(0, 200)}`, `TEACHER EARLIER: ${String(e.teacher ?? "").slice(0, 300)}`]),

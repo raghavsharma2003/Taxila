@@ -114,7 +114,7 @@ Nothing is uncommitted.
 - Never print or commit a key or a database URL.
 - Never run `deploy-*` or `migrate.mjs` against anything but the branch DB.
 - `server/director/safety.js`, `server/compiler/floor.js` and `src/lesson/safetyStrings.ts` are FROZEN.
-- `classify.js` `BESIDE_NAME_WAIT_MS` changes need main's safety review.
+- `classify.js` beside-name wait changes need main's safety review (the constant named here on 2026-10-27 is gone; it is now `besideNameCapMs()`, env `TAXILA_BESIDE_CAP_MS`, in `server/director/classify.js`).
 - HARD RULE: nothing she says precedes the model distress read; safeguard turns never stream.
 - Azure-only AI.
 - **Current owner directive: no model, speech or Azure calls until main says otherwise (spend stop, 2026-10-24).**

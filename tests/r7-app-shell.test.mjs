@@ -45,10 +45,12 @@ test("hands-free: Voice's dock states drive the dock; mute is runtime.setMuted; 
 test("cold start: the Kaksha paths paint Volt first, and the manifest is --k-void", () => {
   const html = read("index.html");
   assert.match(html, /\/\^\\\/\(c\\\/\|who\|start\|parent\)\//);
-  assert.match(html, /\[data-boot=kx\] \.tx-skel\{background:#05060A\}/);
+  assert.match(html, /\[data-boot=kx\] \.tx-skel\{background:#08090B\}/);
   const mf = JSON.parse(read("public/manifest.webmanifest"));
-  assert.equal(mf.background_color, "#05060A");
-  assert.equal(mf.theme_color, "#05060A");
+  // APP-51: the shipped look is Volt, whose void is #08090B (the page's own theme-color); #05060A is the retired classic night
+  assert.equal(mf.background_color, "#08090B");
+  assert.equal(mf.theme_color, "#08090B");
+  assert.match(html, /<meta name="theme-color" content="#08090B"/);
   const tok = read("src/ui-v3/kaksha/tokens.css");
-  assert.match(tok, /--k-void: #05060A;/, "the manifest colour is the night void token");
+  assert.match(tok, /\.kx\[data-klook="volt"\][^{]*\{\s*--k-void: #08090B;/, "the manifest colour is the Volt night void token");
 });

@@ -27,7 +27,8 @@ export default function Pair() {
     setBusy(true);
     try {
       const r = await pairApi.redeem(code);
-      await refreshMe();
+      // APP-29: the code is spent now; a failed refresh of /api/me is not a failed pairing (the next page reads it again)
+      try { await refreshMe(); } catch { /* the child's home loads the session itself */ }
       nav(`/c/${encodeURIComponent(r.childId)}`, { replace: true });
     } catch (e2) {
       setErr(redeemErrorOf(e2, typeof navigator === "undefined" || navigator.onLine !== false));

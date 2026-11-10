@@ -24,7 +24,7 @@ import { kakshaThemeFor } from "../tokens.ts";
 import catalogJson from "../../../../data/kaksha/catalog.json";
 import { PlayBriefingContext, type PlayBriefing, type PlayCosmetics } from "../../../play/briefing.ts";
 import { Briefing } from "../play/Briefing.tsx";
-import { cosmeticsFor, emoteLook, lessonLook, type EmoteLook, type LessonLook } from "../play/cosmetics.ts";
+import { cosmeticsFor, paletteFor, emoteLook, lessonLook, type EmoteLook, type LessonLook } from "../play/cosmetics.ts";
 import { readEquipped } from "../memory.ts";
 import { syncEquipped } from "../equipSync.ts";
 import { world, type Catalog } from "../world.ts";
@@ -80,18 +80,21 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
       if (!live || !m || m.hidden) return;
       const items = world(m.skills, catalogJson as unknown as Catalog).items;
       const eq = server ?? readEquipped(cid);
-      setCosmetics(cosmeticsFor(eq, items));
+      setCosmetics(cosmeticsFor(eq, items, paletteFor(family)));
       setLook(lessonLook(eq, items));
       setEmote(emoteLook(eq, items));
     }, () => {});
     return () => { live = false; };
-  }, [before, cid]);
+  }, [before, cid, family]);
   const briefing = useMemo<PlayBriefing>(() => ({ render: (p) => <Briefing {...p} />, cosmetics }), [cosmetics]);
+  // APP-25: stable loaders (they are Debrief's effect dependencies: new functions each render re-ran the plan and map reads)
+  const loadAfter = useCallback(() => loadMap(cid), [loadMap, cid]);
+  const loadMade = useCallback(() => Promise.all([madeBefore, readMade(cid)]).then(([b, a]) => madeSince(b, a)), [madeBefore, readMade, cid]);
   const renderSummary = useCallback(
-    (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => <Debrief {...p} before={before} loadAfter={() => loadMap(cid)}
-      loadMade={() => Promise.all([madeBefore, readMade(cid)]).then(([b, a]) => madeSince(b, a))}
+    (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void; onFinishTo?: (to: string) => void }) => <Debrief {...p} before={before} loadAfter={loadAfter}
+      loadMade={loadMade}
       onReflect={(lessonId, choice) => void sendReflect(cid, lessonId, choice)} onEmote={(lessonId, e) => void sendEmote(cid, lessonId, e)} madeTo={(id) => `/c/${cid}/notebook?made=${encodeURIComponent(id)}`} emote={emote} />,
-    [before, loadMap, readMade, madeBefore, cid, emote],
+    [before, loadAfter, loadMade, cid, emote],
   );
   const renderIntake = useCallback((m: DeskModel) => (m.intake ? <IntakeCard intake={m.intake} /> : null), []);
   // r7 app-lesson-stage-first (D7): the stage-first body; ?desk=v2 on the URL keeps the V2 Desk grid for comparison

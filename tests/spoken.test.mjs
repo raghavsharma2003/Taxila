@@ -5,7 +5,7 @@
 // text byte-identical, the classes the probe did not cover, and the wiring (only the TTS input changes).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ITEMS } from "../docs/research/voice/notation-probe-2026-10-02/items.mjs";
+import { ITEMS } from "./fixtures/spoken-notation-items.mjs";
 import { toSpoken, cellFor, spokenSafetyNumbers, spokenOptsForChild, SAFETY_NUMBERS, RENDERER_VERSION } from "../server/voice/spoken.js";
 import { HELPLINES } from "../server/compiler/floor.js";
 import { speakChunk, setCacheStore, ttsInput, speechStyle } from "../server/voice/speech.js";

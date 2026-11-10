@@ -37,6 +37,10 @@ export async function childDeviceMe<T extends { children?: { id: string }[] }>()
 
 /** /api/me, or on a paired device the paired child's Me. A device that was unpaired (its session ended) reads 401. */
 export async function meOrChildDevice<T extends { children?: { id: string }[] }>(read: () => Promise<T>): Promise<T> {
+  // APP-35: a paired device with no parent sign-in marker never asks /api/me first (it always answers 403 there)
+  if (pairedChildId() && !/(?:^|;\s*)tx_in=1/.test(typeof document !== "undefined" ? document.cookie : "")) {
+    try { const m = await childDeviceMe<T>(); if (m) return m as unknown as T; } catch { /* fall through to the normal read */ }
+  }
   try {
     return await read();
   } catch (e) {

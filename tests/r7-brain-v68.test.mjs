@@ -335,4 +335,16 @@ describe("r7-brain-v68.test.mjs", () => {
       assert.deepEqual(h5, []);
     });
   });
+
+  // TEACHER-03 (owner's audit): a teach-back's verdict is the classifier model's label — the summary never shows a tick for it
+  test("TEACHER-03: the child's summary shows no tick for a teach-back the model alone called right", async () => {
+    const { lessonSummary } = await import("../server/routes/lesson.js");
+    const item = { kind: "item", itemId: "i1", ask: "2+2?", answer: "4", verdict: "correct", verified: true, seq: 3, turn: 2 };
+    const tb = { kind: "teachback", itemId: null, ask: null, answer: "neeche wala tukde ginta hai", verdict: "correct", withHelp: false, verified: false, byModel: true, seq: 9, turn: 6 };
+    const s = lessonSummary({ did: [item, tb] }, { topic: { title: "Fractions" }, teacher: "asha" });
+    assert.equal(s.cards.filter((c) => c.kind === "teachback").length, 0);
+    assert.equal(s.cards.filter((c) => c.tick).length, 1);
+    const s2 = lessonSummary({ did: [item, { ...tb, verified: true, byModel: false }] }, { topic: { title: "Fractions" }, teacher: "asha" });
+    assert.equal(s2.cards.filter((c) => c.kind === "teachback" && c.tick).length, 1, "a verified teach-back (none today) would show");
+  });
 });
