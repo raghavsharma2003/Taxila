@@ -26,6 +26,11 @@ export function loadTopic(topicId) {
 }
 export const _resetKitIndex = () => { kitIndex = null; };
 
+// kit text may carry a {friendF}/{friendM}/{friend} slot that only the play and director serve paths fill (with a name that
+// is never the child's own); a G2 module is built once from these specs and never filled, so such an item is not a G2 item
+// (audit CD-16: 13 of 880 specs carried the literal braces)
+const FRIEND_SLOT = /\{friend[A-Z]?\}/;
+const hasSlot = (...xs) => xs.some((x) => FRIEND_SLOT.test(String(x ?? "")));
 const isInt = (s) => /^\d{1,4}$/.test(String(s).trim());
 const isFrac = (s) => /^\d{1,3}\s*\/\s*\d{1,3}$/.test(String(s).trim());
 const short = (s) => typeof s === "string" && s.trim().length > 0 && s.trim().length <= LABEL_MAX;
@@ -43,6 +48,7 @@ export function itemSpec(item, topic, mode = "choice") {
   const prompt = { en: String(item.prompt_en || "").trim(), hi: String(item.prompt_hi || item.prompt_en || "").trim() };
   if (!prompt.en || prompt.en.length > PROMPT_MAX || prompt.hi.length > PROMPT_MAX) return { skip: "prompt_length" };
   if (revealsAnswer(prompt.en, item) || revealsAnswer(prompt.hi, item)) return { skip: "prompt_reveals" };
+  if (hasSlot(prompt.en, prompt.hi, item.answer, ...(item.acceptable || []))) return { skip: "friend_slot" };
   const ans = String(item.answer || "").trim();
   if (isFrac(ans)) {
     const task = fractionTask(item);
@@ -79,6 +85,7 @@ export function diagnosticSpec(m, topicId) {
   if (!d.options.every((o) => short(o.text))) return { skip: "diag_label_length" };
   const prompt = { en: String(d.prompt_en || "").trim(), hi: String(d.prompt_hi || d.prompt_en || "").trim() };
   if (!prompt.en || prompt.en.length > PROMPT_MAX || prompt.hi.length > PROMPT_MAX) return { skip: "prompt_length" };
+  if (hasSlot(prompt.en, prompt.hi, ...d.options.map((o) => o.text))) return { skip: "friend_slot" };
   // exact option text (forge-g1-case-folded-keys: in grammar items the capital or the apostrophe IS the answer)
   const texts = d.options.map((o) => o.text.trim());
   if (new Set(texts).size !== texts.length) return { skip: "diag_duplicate_options" };

@@ -9384,6 +9384,26 @@ Reverse if a child pilot shows parda placements made by trial rather than by wha
 - `dc-r7-held-board-studio` (2026-11-09): dc-r7-held-board, Studio's half (main's v6.8 on director16, reversal clause 1). Contract proposed to Brain: a script turn's whiteboard intent carries intent.held = { board, unit, switchTo?: { board, unit, atChar, atClause? } }. With it, Studio draws held.board from its ref as authored: no line-driven preselect, no gate on her words, no ladder fallback. A refusal keeps the page up. held.board equal to the board up (by ref) is KEPT, shown at its end state with no redraw, so Hindi, clarify, aside and "sawaal kya hai" turns hold the board. At most one switch, to switchTo.board from her words at atChar. A picture ask draws the held board's second view BESIDE it on one split board, 640 × 300: the held board left (still), the view right, each a 320-wide panel at 0.8 geometry. Small words are written one size up, every op stays inside its own panel, and the panels are certified one by one. If the lint refuses a panel, the held board stays alone, never the view instead of it. Her picture line comes from the drawn view: studioSeam.preselectedAltLine ("Wahi poora ab gol: 4 barabar hisse", "Pizza: 3 alag-alag tukde"), never "yahi numbers". S9b's remediation-board view does not fire under held. Reverse with the held rule (main's reversal: the teaching axes below 3.5 because a point or remediation lost its own picture).
 
 
+<!-- merged from inbox/r7-games-jaanch.json -->
+## `dc-r7-games-jaanch`
+
+**jaanch** (test, class 6 science, c6-science-ch03-t02, testing food for starch and fat) is a law family with three modes, one goal each. Nothing runs on a clock: the paper dries only by the child's own Wait. The child runs each test and says a result only once its evidence is on the bench (a few drops of iodine; or the paper dry and held to the light). The iodine is a labelled bottle (Dilute iodine) on the teacher's lab bench, its dropper drawn alone; no act eats, tastes or touches anything and no hand is drawn (the safety lines are the teacher's).
+
+- **neela / iodine** (s1): a card of foods; One drop at a time; blue-black or iodine's own brown; Shows starch / No starch shown. Sugar solution on every card.
+- **daag / kaagaz** (s2): a card of foods; Rub on paper (a drop for a liquid), Wait till dry (a water patch fades and goes, an oily one stays), Hold to light; Shows fat / No fat shown. Water or a tomato on every card.
+- **thali / dono** (s3, s1, s2): both tests per food into a result grid (foods down the side, starch and fat across); Next food only with both said. The kit's new snack (blue-black and a patch on dry paper) on every card.
+- **Mal-rules** (kit ids): m2 sugar-starch (sugar solution said to show starch after it stayed brown; the kit's carbohydrate tree), m3 wet-fat (shows fat said of water or a tomato while the patch is wet), m1 one-only (Next food after one positive test, the other not done).
+- **Not admitted:** none. **Not covered:** s2's protein half: the protein test (copper sulphate, sodium hydroxide, violet) is out of this game entirely by the owner's scope; no protein word, column or claim anywhere.
+- **Facts:** each food's result cited to a kit sentence (KIT_OF; i03, i04, i05, i07, i08, i09, i10, rl-o2, rl-h3, m3, the expectations and the worked example). Drops and drying steps are scene values shown as pips.
+- **Quiz risk:** the result buttons are binary, so a child could tap by trial after the evidence; refusals are decisive evidence in the grade, and the reversal condition watches for it.
+
+Reverse if a child pilot shows results said by trial rather than read from the dish or the paper.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-r7-bars-unnamed` (2026-11-09): Learning's D11 (relayed by main): fraction-bars@1 takes an UNNAMED bar, label "". It draws no name, its facts row says "<parts> equal parts" (no shaded count or value), and the label-value check skips it; a named bar is still checked. A compare card ("2/3 ya 3/10?") can now be posed honestly. Before, an unshaded bar could only say "?" (over a fraction the prompt states: director16 c5-t02 steady 70–92) or be named, which shades it and answers the card. The second view treats "" like "?": unnamed bars become circles (S8) and name no fraction. Under the held board an unnamed-bars card stands in the split's left panel. Pinned in tests/r8-held-board.test.mjs.
+
+
 <!-- merged from inbox/r7-audit-docs-memory.json -->
 ## `dc-audit-india-move-not-cut-over`
 The memory read as if production had moved to India. It has not: the move was decided on 2026-10-04 and never cut over. This entry records the state so that a query stops returning the move as current; it decides nothing new.
