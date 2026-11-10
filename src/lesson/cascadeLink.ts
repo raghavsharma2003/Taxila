@@ -1559,6 +1559,9 @@ export class CascadeLink implements TeacherLink {
           this.turn.finalAt = Date.now();
           // round 3: the engine's commit IS the child's final (the ack was asked on the same words at its SPEAK)
           if (rest.text) this.ack?.onFinal(rest.text);
+          // audit V-19: ...and the end of the prefetch's turn (this emit bypasses the link's own event handler, which is the
+          // only other caller): without it the same-text guard would hold for the rest of the lesson
+          this.prefetcher?.onFinal();
           this.events.emit({ ...rest, typed: false, duplex });
         } else {
           this.events.emit(e);

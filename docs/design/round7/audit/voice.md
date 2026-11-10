@@ -36,49 +36,46 @@ Status: **fixed** = fixed on this branch with a test that fails before the fix a
 | V-22 | P1 | inconsistent | voice | The thinking-pause cue is live in hands-free although the decision says shadow until a children's pilot | `src/duplex/liveTap.ts:50-54`; `context/decisions.md:5481`; `context/rejected.md:2348` | unsubscribe the cue from the live engine until the pilot | **fixed** |
 | V-15 | P2 | broken | voice | "Fix" or "Try again" can act on an older lesson's held answer | `src/lesson/outbox.ts:342,350,363` | filter by lesson id | **fixed** |
 | V-16 | P2 | broken | voice | A fix that lands just as the server answers is reported as sent, sends nothing and leaves a ghost answer | `src/lesson/outbox.ts:405-409` | remove the record from `active` as soon as the send resolves | **fixed** |
-| V-19 | P2 | broken | voice | Hands-free turns post the same prefetch text more than once (duplicate classify and speculative replies) | `src/latency/prefetch.ts:89,104`, `duplexTurn.ts:51` | keep the same-text guard across item ids | open |
-| V-18 | P2 | broken | voice | The device voice detector can latch "speaking" for the rest of the lesson | `src/lesson/vad.ts:50` | ignore all-zero frames in the floor; a ceiling on one "speaking" run | open |
-| V-23 | P2 | broken | voice | Voice-signal numbers include up to 800 ms before the child spoke | `src/voicesig/lessonFeatures.ts:145-146` | window from the measured start | open |
+| V-19 | P2 | broken | voice | Hands-free turns post the same prefetch text more than once (duplicate classify and speculative replies) | `src/latency/prefetch.ts:89,104`, `duplexTurn.ts:51` | keep the same-text guard across item ids | **fixed** |
+| V-18 | P2 | broken | voice | The device voice detector can latch "speaking" for the rest of the lesson | `src/lesson/vad.ts:50` | ignore all-zero frames in the floor; a ceiling on one "speaking" run | **fixed** |
+| V-23 | P2 | broken | voice | Voice-signal numbers include up to 800 ms before the child spoke | `src/voicesig/lessonFeatures.ts:145-146` | window from the measured start | **fixed** |
 | V-24 | P2 | broken | voice | A short "haan" with a steep pitch slope gets all its voice features rejected | `server/voice/features.js:31` | same range for both slopes | **fixed** |
-| V-25 | P2 | inconsistent | voice | A turn that fails after her first clause reaches the client as 502, not its real status | `server/routes/voice.js:407-411`, `src/lesson/ttsStream.ts:447,461` | carry the status in the end frame and reject with it | open |
-| V-21 | P2 | inconsistent | voice | Four comments say voice signals are shadow; they act by default (owner decision of 2026-10-27) on placeholder calibration | `server/voicesig/gate.js:3`, `adapter.js:1-4,41`, `server/brain/turn.js:546-547` | correct the comments in the voice files; `turn.js` comment by patch to brain | open |
-| V-27 | P2 | inconsistent | main | Project memory disagrees with itself: expressive SSML is default on for DragonHD, and a rejection entry records listeners preferring plain | `server/voice/voices.js:77-82`; `context/decisions.md:3362`; `context/rejected.md:1422` | owner call: run the pending blind test or default it off | main |
-| V-29 | P2 | inconsistent | voice | The voice switch and Roman-to-Devanagari step are recorded as wired; nothing calls them. "sabse bara" would become "सबसे बारह" | `server/voice/voice-switch.js:56,65`, `translit/numbers.js:27`; `context/decisions.md:5083` | wire it or correct the record; remove `bara` from twelve either way | main |
-| V-33 | P2 | broken | voice | The headset check matches the phone's own earpiece and any Bluetooth speaker | `src/child/lesson/headset.ts:11` | drop `earpiece` and bare `bluetooth` | open |
-| V-34 | P2 | not good enough | voice | The Opus decoder is flushed after every packet; a stale flush can fail the next decoder | `src/lesson/opus.ts:90-106` | guard the stale catch now; the flush change needs a listening check | main |
-| V-40 | P2 | inconsistent | voice | The live child-text pipeline has no listener, and the emit runs before the request is authorised | `server/duplex/childText.js`, `server/routes/voice.js:398`, `server/routes/lesson.js:902` | emit after `lessonTurn` returns | main |
-| V-30 | P3 | inconsistent | voice | "Hear" says the child's name differently from the streamed voice | `server/routes/tts.js:66,85` | pass `sayName` | open |
+| V-25 | P2 | inconsistent | voice | A turn that fails after her first clause reaches the client as 502, not its real status | `server/routes/voice.js:407-411`, `src/lesson/ttsStream.ts:447,461` | carry the status in the end frame and reject with it | **fixed** |
+| V-21 | P2 | inconsistent | voice | Four comments say voice signals are shadow; they act by default (owner decision of 2026-10-27) on placeholder calibration | `server/voicesig/gate.js:3`, `adapter.js:1-4,41`, `server/brain/turn.js:546-547` | correct the comments in the voice files; `turn.js` comment by patch to brain | **fixed** (+ patch to brain) |
+| V-27 | P2 | inconsistent | main | Project memory disagrees with itself: expressive SSML is default on for DragonHD, and a rejection entry records listeners preferring plain | `server/voice/voices.js:77-82`; `context/decisions.md:3362`; `context/rejected.md:1422` | owner call: run the pending blind test or default it off | **fixed** (default off; owner to confirm) |
+| V-29 | P2 | inconsistent | voice | The voice switch and Roman-to-Devanagari step are recorded as wired; nothing calls them. "sabse bara" would become "सबसे बारह" | `server/voice/voice-switch.js:56,65`, `translit/numbers.js:27`; `context/decisions.md:5083` | wire it or correct the record; remove `bara` from twelve either way | **fixed** (record corrected; not wired) |
+| V-33 | P2 | broken | voice | The headset check matches the phone's own earpiece and any Bluetooth speaker | `src/child/lesson/headset.ts:11` | drop `earpiece` and bare `bluetooth` | **fixed** |
+| V-34 | P2 | not good enough | voice | The Opus decoder is flushed after every packet; a stale flush can fail the next decoder | `src/lesson/opus.ts:90-106` | guard the stale catch now; the flush change needs a listening check | left (main) |
+| V-40 | P2 | inconsistent | voice | The live child-text pipeline has no listener, and the emit runs before the request is authorised | `server/duplex/childText.js`, `server/routes/voice.js:398`, `server/routes/lesson.js:902` | emit after `lessonTurn` returns | **fixed** (Brain's TEACHER-05 version) |
+| V-30 | P3 | inconsistent | voice | "Hear" says the child's name differently from the streamed voice | `server/routes/tts.js:66,85` | pass `sayName` | **fixed** |
 | V-28 | P3 | inconsistent | voice | The uptake prelude keeps the lowered pitch its comment says it removes (flag off) | `server/voice/expressive/render.js:94` | strip any pitch value | **fixed** |
-| V-31 | P3 | broken | voice | The prelude warm reads a field the request never has (flag off) | `server/routes/voice.js:562,566` | read `childText` | open |
+| V-31 | P3 | broken | voice | The prelude warm reads a field the request never has (flag off) | `server/routes/voice.js:562,566` | read `childText` | **fixed** |
 | V-32 | P3 | inconsistent | voice | Shadow telemetry's reason and safety counts can never match | `src/duplex/shadowTelemetry.ts:126,134` | compare the reason part of `detail` | **fixed** |
 | V-35 | P3 | inconsistent | voice | A device forced to shadow runs live when the server answer is unknown; stale header | `src/duplex/flags.ts:147-148,177-182` | check the device key first; reset the partial-post flag | **fixed** |
-| V-36 | P3 | no longer needed | voice | The realtime lane is dev-only but ships, and the runtime defaults to it | `src/lesson/runtime.ts:32-36,181,309` | owner decision already asked for in `gap-map.json:792`; dependency list below | main |
-| V-37 | P3 | no longer needed | voice | Fourteen `server/duplex` modules have no live importer | `server/duplex/routes.js:1` and list below | delete with their five tests and three evals | main |
-| V-38 | P3 | no longer needed | voice | Three hand-run AWS scripts from finished bake-offs | `scripts/voice/v3`, `scripts/voice/stt-v3`, `scripts/voicesig/aws-check.py` | delete (about 1.1 MB, mostly lockfiles) | main |
-| V-39 | P3 | no longer needed | voice | Dead client and server code in the area | list below | delete | main |
+| V-36 | P3 | no longer needed | voice | The realtime lane is dev-only but ships, and the runtime defaults to it | `src/lesson/runtime.ts:32-36,181,309` | owner decision already asked for in `gap-map.json:792`; dependency list below | proposal |
+| V-37 | P3 | no longer needed | voice | Fourteen `server/duplex` modules have no live importer | `server/duplex/routes.js:1` and list below | delete with their five tests and three evals | kept (proposals §3) |
+| V-38 | P3 | no longer needed | voice | Three hand-run AWS scripts from finished bake-offs | `scripts/voice/v3`, `scripts/voice/stt-v3`, `scripts/voicesig/aws-check.py` | delete (about 1.1 MB, mostly lockfiles) | kept (main) |
+| V-39 | P3 | no longer needed | voice | Dead client and server code in the area | list below | delete | **partly deleted** (proposals §4) |
 
 Counts: P0 6, P1 12, P2 12, P3 10. Broken 25, inconsistent 9, not good enough 2, no longer needed 4.
 
 ## Fix status (2026-11-10)
 
-Fixed, 24: V-01, V-02, V-03, V-04, V-05, V-06, V-07, V-08, V-09, V-10, V-11, V-12, V-13, V-14, V-15, V-16, V-17, V-20, V-22, V-24, V-26, V-28, V-32, V-35. Each has a test that fails before the fix and passes after.
+Fixed, 35: every broken and inconsistent finding in the area (and V-20), each with a test that fails before the fix and passes after. Two sessions worked on this branch at the same time and their work is merged; where both fixed a finding, one version is kept.
 
-Two sessions worked on this branch at the same time. A second session pushed `01c8e667` (V-01, V-02, V-04, V-05, V-06, V-07) and `4eb38f2b` (V-03, V-08 to V-14, V-17, V-20, V-22, V-26); its tests are in `tests/r7-audit-voice-client.test.mjs`, `r7-audit-voice-server.test.mjs`, `p1-duplex-link` and `ship5-fix-duplex-revoke`. This session fixed V-15, V-16, V-24, V-28, V-32, V-35 (`tests/audit-voice-small.test.mjs`) and had its own versions of V-01 to V-04 and V-11 to V-14; where both existed the pushed version is kept, except V-04.
+- Tests: `tests/r7-audit-voice-client.test.mjs`, `r7-audit-voice-server.test.mjs`, `audit-voice-link.test.mjs`, `audit-voice-small.test.mjs`, and added cases in `p1-duplex-link`, `ship5-fix-duplex-revoke`, `child-lesson-pure`, `spoken`, `r7-voice-child-text`.
+- V-04: a stop by hand reports her line as ended (telling the engine "stopped" alone left the governor in her turn; `audit-voice-small` runs both on the real engine).
+- V-09: first tried marking the verdict played at her start; it broke "fast mouth, late verdict" (recorded as a rejection in the inbox). Kept: revocable until her verdict word has had time to play.
+- V-19: the engine's commit also ends the prefetch's turn, so the same-text guard never outlives a turn.
+- V-22, V-27: main's decisions. The thinking-pause cue is unsubscribed; expressive SSML is off by default on DragonHD (listed for the owner in `voice-proposals.md`).
+- V-29: the record is corrected in the context inbox; the voice switch and translit stay unwired; "bara" is no longer twelve outside a run of numbers.
+- V-21: the voice files' comments are fixed; Brain's comment is `docs/patches/to-brain/019-voice-audit-v21-v40.patch`.
+- V-40: Brain fixed it on both routes (TEACHER-05: `hooks.authorized()`, after the turn context and consent checks); that version is kept, with both sides' tests.
+- New numbers: a 5 s stall limit on a reply's stream (V-02), a 10 s limit on each transcription open step (V-03), a 20 s ceiling on one device-VAD speaking run (V-18).
 
-- V-04: telling the engine "stopped" is not enough. The governor ignores it and keeps her turn, so the mic gate opens but the child's next answer is never committed. A stop by hand now reports her line as ended. `tests/audit-voice-small.test.mjs` runs both on the real engine under a fake clock: "ended" commits the answer, "stopped" commits nothing in 6 s. The pushed link test was changed to assert "ended".
-- V-22 was listed for main's reply; the second session unsubscribed the cue, which matches the recorded decision.
-- V-32 fixes the reason code only. The safety count compares against codes the engine never emits.
-- New numbers: a 5 s stall limit on a reply's stream (V-02), and a 10 s limit on each of the transcription call's two requests (V-03).
+Not fixed, by decision: V-34 (needs a listening check on a phone), V-36 (realtime lane: write-up only), V-37 (every module is still read by something the deletion rule keeps), V-38 (AWS scripts kept). V-39: the MAI and Omni compilers are deleted; the rest stays. Reasons and costs: `docs/design/round7/audit/voice-proposals.md`.
 
-Open, 8, in the voice area:
-
-- V-18 (device voice detector latch) and V-25 (real status on a failed streamed turn).
-- V-23, V-30, V-31: one-line changes described in their rows; no test yet.
-- V-19: under the engine the link's own prefetch calls may not run at all, so the proposed fix could stop prefetch for the rest of a lesson. It needs a trace of one hands-free turn first.
-- V-33: the earpiece label was never checked on a phone; it should be before the pattern changes.
-- V-21: comments only.
-
-Waiting for main, 8: V-27, V-29, V-34, V-36, V-37, V-38, V-39, V-40.
+Also fixed from the platform audit: a paired child device is admitted on the same-origin D5 socket (the upgrade sets the child-scope mark; test in `r7-audit-voice-server`).
 
 ## Evidence notes
 

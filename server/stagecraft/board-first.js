@@ -588,15 +588,28 @@ function wholesOfCompare(c) {
  *  round (a circle), example (a smaller case of the same rule: a count key's own figure would show the count). */
 const ALT_VIEWS = new Set(["parts", "line", "wholes", "strips", "unrolled", "round", "example"]);
 /** The row a second view's line is written from (and judged against before her line exists). */
+/** main v6.9 S11: a fraction in her picture line is said as words ("ek-chauthai", "teen bata paanch"), never "(1/4)". */
+const NUM_HI = ["shunya", "ek", "do", "teen", "chaar", "paanch", "chhe", "saat", "aath", "nau", "das", "gyaarah", "baarah"];
+const FRAC_HI = { "1/2": "aadha", "1/3": "ek-tihaai", "2/3": "do-tihaai", "1/4": "ek-chauthai", "2/4": "do-chauthai", "3/4": "teen-chauthai" };
+export function fracSay(a, b) {
+  const k = `${a}/${b}`;
+  return FRAC_HI[k] ?? (NUM_HI[a] && NUM_HI[b] ? `${NUM_HI[a]} bata ${NUM_HI[b]}` : `${a} bata ${b}`);
+}
+/** Her picture line for a second view, built from what the view draws (no full stop: Brain ends the line and keeps the
+ *  card's "?"). Equal / unequal is the view's own: a whole is equal unless it says equal: false (wholes@1's default) —
+ *  "barabar" for equal parts, "alag-alag" only for unequal ones (main v6.9 S11, c4 stuck 18: an equal Cake said "alag-alag"). */
 function altSay(ac0) {
   if (!ac0) return "";
   const { view, ...ac } = ac0;
-  if (view === "example") { const b = ac.bars[0]; return `Ek chhota udaharan: ek patti ${b.parts} barabar hisson mein, ${b.shade} rangin (${b.label})`; }
-  return ac.wholes ? ac.wholes.map((w) => `${w.title ?? "ek"}: ${w.parts} ${w.equal ? "barabar" : "alag-alag"} tukde${w.shade ? `, ${w.shade} rangin` : ""}`).join("; ") : ac.bars ? `${ac.bars.length} barabar bar: ${ac.bars.map((b) => `ek ${b.parts} barabar hisson mein${b.shade ? `, ${b.shade} rangin${b.label === "?" ? "" : ` (${b.label})`}` : ""}`).join("; ")}`
-    : ac.template === "fraction-parts@1" ? `Wahi poora ab ${ac.whole === "bar" ? "patti" : "gol"}: ${ac.parts} barabar hisse${ac.shade ? `, ${ac.shade} rangin${ac.hideResult ? "" : ` (${ac.shade}/${ac.parts})`}` : ""}`
+  const named = (b) => (b.label === "?" || b.label === "" || !b.shade ? "" : `, yaani ${fracSay(b.shade, b.parts)}`);
+  if (view === "example") { const b = ac.bars[0]; return `Ek chhota udaharan: ek patti ${b.parts} barabar hisson mein, ${b.shade} rangin${named(b)}`; }
+  const bar = (b) => `${b.parts} barabar hisson mein${b.shade ? `, ${b.shade} rangin${named(b)}` : ""}`;
+  return ac.wholes ? ac.wholes.map((w) => `${w.title ?? "ek"}: ${w.parts} ${w.equal === false ? "alag-alag" : "barabar"} tukde${w.shade ? `, ${w.shade} rangin` : ""}`).join("; ")
+    : ac.bars ? (ac.bars.length === 1 ? `Ek patti, ${bar(ac.bars[0])}` : `${(NUM_HI[ac.bars.length] ?? String(ac.bars.length)).replace(/^./, (c) => c.toUpperCase())} barabar pattiyaan: ${ac.bars.map((b) => `ek ${bar(b)}`).join("; ")}`)
+    : ac.template === "fraction-parts@1" ? `Wahi poora ab ${ac.whole === "bar" ? "patti" : "gol"}: ${ac.parts} barabar hisse${ac.shade ? `, ${ac.shade} rangin${ac.hideResult ? "" : `, yaani ${fracSay(ac.shade, ac.parts)}`}` : ""}`
     : ac.sides ? `${ac.figure ? `Is ${ac.figure.shape === "rect" ? (ac.figure.w === ac.figure.h ? "square" : "rectangle") : ac.figure.shape === "triangle" ? "triangle" : "aakaar"} ki ` : ""}${ac.sides.length} bhujayein seedhi karke ek line par: ${ac.sides.map((v, i) => (ac.hide?.includes(i) ? "?" : `${v} ${ac.unit}`)).join(", ")}; kul lambai ${ac.total === "?" ? "kitni" : `${ac.total} ${ac.unit}`}`
-    : Array.isArray(ac.dens) ? `0 se 1 ki do sankhya rekhayein, ${ac.dens.join(" aur ")} barabar gaps, nishaan ${ac.marks.map((m) => `${m[0]}/${m[1]}`).join(", ")} par`
-    : `0 se 1 ki sankhya rekha, ${ac.den} barabar gaps, nishaan ${ac.marks.map((m) => m.label).join(", ")} par`;
+    : Array.isArray(ac.dens) ? `0 se 1 ki do sankhya rekhayein, ${ac.dens.join(" aur ")} barabar gaps, nishaan ${ac.marks.map((m) => fracSay(m[0], m[1])).join(", ")} par`
+    : `0 se 1 ki sankhya rekha, ${ac.den} barabar gaps, nishaan ${ac.marks.map((m) => { const f = /^(\d+)\/(\d+)$/.exec(String(m.label ?? "")); return f ? fracSay(+f[1], +f[2]) : m.label; }).join(", ")} par`;
 }
 /** The ref a refKey names ({ template, params }), or null. */
 export function upRefOf(key) {
@@ -651,7 +664,7 @@ export function liveKeys(ask, line = "") {
 }
 /** The second view's call without the live card's key: a count key cuts no scale into that many parts (the scale is drawn
  *  uncut, unnamed), a fraction key names and shades no bar, a length key labels no side or total. → the call, or null. */
-function keyless(call, keys) {
+function keyless(call, keys, { ownParts = false } = {}) {
   if (!call || !keys.length) return call;
   const val = (t) => { const m = /^(\d+(?:\.\d+)?)(?:\/(\d+))?$/.exec(String(t).replace(/\s+/g, "")); return m ? Number(m[1]) / (m[2] ? Number(m[2]) : 1) : null; };
   const fracKeys = keys.filter((k) => String(k).includes("/")).map(val).filter((v) => v != null);
@@ -659,6 +672,9 @@ function keyless(call, keys) {
   const isFrac = (a, b) => b > 0 && fracKeys.some((v) => Math.abs(v - a / b) < 1e-9);
   if (call.template === "fraction-bars@1") {
     // (director11 S1: only the key's VALUE is hidden — the shading the card's own figure shows stays, its name is "?")
+    // (main v6.9 S10, c5-t01 e2: with ownParts — the held board's split — a bar cut into the key's count is LEFT OUT, never
+    // drawn as an uncut "1 equal parts" bar the board does not have; no bar left → no view)
+    if (ownParts) { const bars = call.bars.filter((b) => !numKeys.includes(b.parts)).map((b) => (isFrac(b.shade, b.parts) ? { ...b, label: "?" } : b)); return bars.length ? { ...call, bars } : null; }
     const bars = call.bars.map((b) => (numKeys.includes(b.parts) ? { parts: 1, shade: 0, label: "?" } : isFrac(b.shade, b.parts) ? { ...b, label: "?" } : b));
     return { ...call, bars };
   }
@@ -677,10 +693,13 @@ function keyless(call, keys) {
 }
 
 /** The second view's call: the card board's fractions as fraction-bars@1 bars (withheld → "?", unshaded), or null. */
-export function altCall(ref, { line = "", withheld = [], keys = [], up = null } = {}) {
+export function altCall(ref, { line = "", withheld = [], keys = [], up = null, ownParts = false } = {}) {
   try {
     const out = altCall0(ref, { line, withheld, up });
-    const k = keyless(out, keys);
+    const k = keyless(out, keys, { ownParts });
+    // (ownParts — the held board's split, main v6.9 S10: the view is built only from the board's own parts, never a smaller
+    // example case of a count it does not have)
+    if (ownParts) return k ? { ...k, ...(out?.view && !k.view ? { view: out.view } : {}) } : null;
     // (director12 S4, c5-t01 stuck T18: a count key — "kitne barabar gaps?", 8 — leaves the line's bars uncut and unnamed:
     // nothing new. The second view is then a smaller case of the same rule, its count given: never the key's own count)
     if (k?.template === "fraction-bars@1" && k.ends && out?.bars?.length && k.bars.every((b) => b.parts === 1)) {
@@ -720,6 +739,9 @@ function altCall0(ref, { line = "", withheld = [], up = null } = {}) {
         if (bs.length === 1) return { template: "fraction-parts@1", parts: bs[0].parts, shade: sh(bs[0]), whole: "circle", hideResult: true, view: "round" };
         return { template: "wholes@1", wholes: bs.map((b) => ({ parts: b.parts, equal: true, ...(sh(b) ? { shade: sh(b) } : {}) })), view: "wholes" };
       }
+      // (main v6.9 S11, c5-t02 steering 14: an unnamed bar is still a scale of the board — "?" 8 parts beside the named 1/4 is
+      // the bar the card asks about; the line drew only the quarters. Every bar's scale is on the line, only the named marked)
+      for (const b of c.bars) if (b && Number.isInteger(b.parts) && b.parts >= 2 && b.parts <= 12 && !dens.includes(b.parts)) dens.push(b.parts);
       if (dens.length > 2) return null;
       if (dens.length === 1) return { template: "fraction-line@1", den: dens[0], from: 0, to: 1, marks: [...new Map(named.map((b) => [b.shade, { num: b.shade, label: `${b.shade}/${b.parts}` }])).values()], view: "line" };
       return { template: "fraction-line@1", dens, from: 0, to: 1, marks: named.map((b) => [b.shade, b.parts]), view: "line" };
@@ -998,7 +1020,7 @@ export function heldAltOf(ask) {
   try {
     const h = ask?.intent?.held;
     if (!h?.board) return null;
-    const ac0 = altCall(h.board, { line: "", withheld: [], keys: liveKeys(ask, "") });
+    const ac0 = altCall(h.board, { line: "", withheld: [], keys: liveKeys(ask, ""), ownParts: true });
     if (!ac0) return null;
     const { view, ...call } = ac0;
     return { call, view: ALT_VIEWS.has(view) ? view : "parts", line: altSay(ac0) };
@@ -1094,7 +1116,7 @@ export function heldBoard(ask, { keepRef = null, keepPage = null } = {}) {
     const screenA = split ? screenOf({ template: pic.call.template, facts: altFacts ?? {} }, altFacts, panels[1]) : null;
     if (!sw && base.kept && !split) { heldCounts.kept++;
       // (a held board stands: shown at its end state at once, never drawn again)
-      return { ok: true, kept: true, script: still(keepPage), source: "kept", by: "script", template: base.template, facts: base.facts ?? keepPage.facts ?? null, screen: screen0, screens: [{ from: 0, ...screen0 }], lastRef: keepRef, lastPage: keepPage, held: { unit: h.unit ?? null, changed: false } }; }
+      return { ok: true, kept: true, script: still(keepPage), source: "kept", by: "script", template: base.template, facts: base.facts ?? keepPage.facts ?? null, screen: screen0, screens: [{ from: 0, ...screen0 }], lastRef: keepRef, lastPage: keepPage, layout: { split: false }, held: { unit: h.unit ?? null, changed: false } }; }
     let script = page0, screens = [{ from: 0, ...screen0, ...(screenA ? { beside: { ...screenA, altView } } : {}) }], lastRef = refKey(h.board), lastPage = page0, template = base.template;
     if (sw) {
       const nx = drawRef(sw.board, { band, lang });
@@ -1110,7 +1132,9 @@ export function heldBoard(ask, { keepRef = null, keepPage = null } = {}) {
       }
     }
     if (!base.kept) heldCounts.drawn++;
-    return { ok: true, script, source: "held", by: "script", template, facts: base.facts ?? null, ...(split ? { split: true, panels, altView, altLine, altFacts } : {}), screen: screens.at(-1), screens,
+    // (main v6.9, recording: the judges could not confirm "beside" — the layout as one field: split or not, and which panels)
+    const layout = split ? { split: true, panels: [{ side: "left", role: "held", template: base.template, unit: h.unit ?? null }, { side: "right", role: "view", template: pic.call.template, view: altView }] } : { split: false };
+    return { ok: true, script, source: "held", by: "script", template, facts: base.facts ?? null, ...(split ? { split: true, panels, altView, altLine, altFacts } : {}), layout, screen: screens.at(-1), screens,
       lastRef, lastPage, held: { unit: lastRef === refKey(h.board) ? h.unit ?? null : sw?.unit ?? null, changed: lastRef !== keepRef } };
   } catch { return null; }
 }

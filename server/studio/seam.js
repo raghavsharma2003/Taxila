@@ -1060,6 +1060,7 @@ export const studioSeam = {
       // (dc-r7-held-board: a picture's split board, and the held unit the page is)
       if (r.split) p.artifact.split = { panels: 2, panelW: boardFirst.SPLIT_BOARD.panel };
       if (r.held) p.artifact.held = r.held;
+      if (r.layout) p.artifact.layout = r.layout;
       p.facts = r.script.facts ?? null;
       if (p.under) { const under = p.under; p.under = undefined; retirePiece(L, under, "replaced"); }
       p.state = "revealed"; p.failWhy = undefined; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;

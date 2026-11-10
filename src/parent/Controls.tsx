@@ -1,6 +1,7 @@
 // Controls (PRODUCT-DESIGN-V2 §6.5.4), per child: grouped cards, each control with a label and its one-line effect.
 // Save sits INLINE at the end of each changed group; there is no floating save bar (audit #19: a floating Save plus the
 // tab bar took about 120 px of a 640 px screen). Only controls the server stores are shown (P6: only what works).
+import { controlShown } from "./controlReaders.ts";
 import { useEffect, useState, type ReactNode } from "react";
 import { Button, Icon, TileGroup } from "../ui/index.ts";
 import { getJson, postJson, refreshMe, request, type ChildRow } from "../app/api.ts";
@@ -302,7 +303,7 @@ export default function Controls() {
     if (g === "time") return !!c.limitsOn !== !!base.limitsOn || c.dailyMinutes !== base.dailyMinutes || c.hoursStart !== base.hoursStart || c.hoursEnd !== base.hoursEnd;
     if (g === "pace") return (c.extraTime ?? "normal") !== (base.extraTime ?? "normal") || !!c.dataSaver !== !!base.dataSaver;
     if (g === "voice") return c.address !== base.address || (lang ?? current.language_pref) !== current.language_pref;
-    if (g === "screen") return c.captionsAlways !== base.captionsAlways || c.comfortMode !== base.comfortMode;
+    if (g === "screen") return c.captionsAlways !== base.captionsAlways || c.comfortMode !== base.comfortMode || (c.playVerb ?? "fire") !== (base.playVerb ?? "fire");
     return c.reportChannel !== base.reportChannel;
   };
   const save = async (g: Group) => {
@@ -312,7 +313,7 @@ export default function Controls() {
     try {
       const fields: Partial<ControlsT> = g === "time" ? { limitsOn: !!c.limitsOn, dailyMinutes: c.dailyMinutes, hoursStart: c.hoursStart, hoursEnd: c.hoursEnd }
         : g === "pace" ? { extraTime: c.extraTime ?? "normal", dataSaver: !!c.dataSaver }
-        : g === "voice" ? { address: c.address } : g === "screen" ? { captionsAlways: c.captionsAlways, comfortMode: c.comfortMode } : { reportChannel: c.reportChannel };
+        : g === "voice" ? { address: c.address } : g === "screen" ? { captionsAlways: c.captionsAlways, comfortMode: c.comfortMode, ...((c.playVerb ?? "fire") !== (base?.playVerb ?? "fire") ? { playVerb: c.playVerb } : {}) } : { reportChannel: c.reportChannel };
       const out = await parentApi.setControls(current.id, fields);
       if (g === "voice" && lang && lang !== current.language_pref) {
         await request("PATCH", "/api/children", { childId: current.id, languagePref: lang });
@@ -365,20 +366,22 @@ export default function Controls() {
             )}
             {data?.dayLimitsMode === "off" && <p className="pa-effect" data-testid="limits-off">{`${name} can start a lesson at any time.`}</p>}
           </GroupCard>
+          {(controlShown("extraTime") || controlShown("dataSaver")) && (
           <GroupCard id="pace" title="Pace" {...props("pace")}>
-            <div className="pa-control">
+            {controlShown("extraTime") && (<div className="pa-control">
               <h3 className="pa-h3">Extra time to answer</h3>
               <TileGroup label="Extra time to answer" columns={3} value={c.extraTime ?? "normal"} onChange={(v) => patch({ extraTime: v as "normal" | "more" | "most" })}
                 options={[{ value: "normal", label: "Normal" }, { value: "more", label: "More" }, { value: "most", label: "Most" }]} />
               <p className="pa-effect">{c.extraTime === "most" ? `${T} waits longest before speaking again, for a child who thinks aloud slowly.` : c.extraTime === "more" ? `${T} waits a little longer for ${name} to answer.` : `${T} waits the usual time for an answer.`}</p>
-            </div>
-            <div className="pa-control">
+            </div>)}
+            {controlShown("dataSaver") && (<div className="pa-control">
               <h3 className="pa-h3">Data saver</h3>
               <TileGroup label="Data saver" columns={2} value={c.dataSaver ? "on" : "off"} onChange={(v) => patch({ dataSaver: v === "on" })}
                 options={[{ value: "off", label: "Off" }, { value: "on", label: "On" }]} />
               <p className="pa-effect">{c.dataSaver ? "Lighter sound and pictures, for slow or costly mobile data." : "Full sound and pictures."}</p>
-            </div>
+            </div>)}
           </GroupCard>
+          )}
           <GroupCard id="voice" title={`How ${T} speaks`} {...props("voice")}>
             <div className="pa-control">
               <h3 className="pa-h3">Language</h3>
@@ -403,22 +406,31 @@ export default function Controls() {
             <HomeworkToday childId={current.id} name={name} on0={!!c.homeworkToday} onRelock={relock} />
             <TestWindow childId={current.id} name={name} classLevel={current.class_level} onRelock={relock} />
           </section>
+          {(controlShown("captionsAlways") || controlShown("comfortMode") || controlShown("playVerb")) && (
           <GroupCard id="screen" title="Words and screen" {...props("screen")}>
-            <div className="pa-control">
+            {controlShown("captionsAlways") && (<div className="pa-control">
               <h3 className="pa-h3">Words on screen</h3>
               <TileGroup label="Words on screen" columns={2} value={c.captionsAlways ? "always" : "needed"} onChange={(v) => patch({ captionsAlways: v === "always" })}
                 options={[{ value: "always", label: "Always" }, { value: "needed", label: "When needed" }]} />
               <p className="pa-effect">{c.captionsAlways ? `${name} always sees what ${T} says, as words.` : `Words show when sound is off or ${name} asks for them.`}</p>
-            </div>
-            <div className="pa-control">
+            </div>)}
+            {controlShown("comfortMode") && (<div className="pa-control">
               <h3 className="pa-h3">Larger text and a calmer screen</h3>
               <TileGroup label="Larger text and a calmer screen" columns={2} value={c.comfortMode ? "on" : "off"} onChange={(v) => patch({ comfortMode: v === "on" })}
                 options={[{ value: "on", label: "On" }, { value: "off", label: "Off" }]} />
               <p className="pa-effect">Bigger words and less movement on {name}'s screens.</p>
-            </div>
+            </div>)}
+            {/* audit PLAT-15: the play wording switch (O-G4), read by the 3D games through server/play/dress.js */}
+            {controlShown("playVerb") && (<div className="pa-control">
+              <h3 className="pa-h3">Words in the 3D games</h3>
+              <TileGroup label="Words in the 3D games" columns={2} value={c.playVerb ?? "fire"} onChange={(v) => patch({ playVerb: v as "fire" | "scan" })}
+                options={[{ value: "fire", label: "Fire" }, { value: "scan", label: "Scan" }]} />
+              <p className="pa-effect">{(c.playVerb ?? "fire") === "scan" ? `${name} points and scans. The games never say "fire".` : `${name} aims and fires at objects, never at people or animals.`}</p>
+            </div>)}
           </GroupCard>
+          )}
           {/* dc-r7 D5: the channel choice shows only once a second channel really sends (Platform's Notifier) */}
-          {(data?.reportChannels?.length ?? 1) > 1 && (
+          {controlShown("reportChannel") && (data?.reportChannels?.length ?? 1) > 1 && (
           <GroupCard id="reports" title="Weekly letter" {...props("reports")}>
             <div className="pa-control">
               <h3 className="pa-h3">Where the weekly letter goes</h3>

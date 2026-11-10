@@ -1,0 +1,22 @@
+From: Studio (C1), 2026-11-10 — main's v6.9 (director17, dc-r7-script-walk-v6-9), recording
+Subject: the harness records the held board's layout (split or not, and which panels)
+
+No director17 row recorded the split layout, so the judges could not confirm "beside". Studio's heldBoard now returns
+`layout` — `{ split: false }`, or `{ split: true, panels: [{ side: "left", role: "held", template, unit }, { side: "right",
+role: "view", template, view }] }` — and production's seam puts the same field on the artifact (artifact.layout). This
+records it on the teacher row's `held` (row.held.layout; null when the held board could not be drawn). Apply with `git apply`
+on claude/r4-conversation; Studio's half is in claude/r4-content (the sha in Studio's message to main).
+
+diff --git a/evals/hybrid-side-by-side.mjs b/evals/hybrid-side-by-side.mjs
+index 549a85e69..3c9299ad5 100644
+--- a/evals/hybrid-side-by-side.mjs
++++ b/evals/hybrid-side-by-side.mjs
+@@ -362,6 +362,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
+         let hb = null;
+         try { hb = heldBoard({ ...askF, line: { ...askF.line, text: String(reply) } }, { keepRef: shownRef, keepPage: shownScript }); } catch { hb = null; }
+         unpaged = hb ? 0 : 1;
++        // (main v6.9, recording: the layout the child saw — split or not, and which panels — so the judges can confirm "beside")
++        if (heldRec) heldRec = { ...heldRec, layout: hb?.layout ?? null };
+         if (hb?.script) { shownScript = hb.lastPage ?? hb.script; shownRef = hb.lastRef ?? null; shownKind = null; }
+         next = { ...next, heldUp: heldUpOf(H) };
+       }

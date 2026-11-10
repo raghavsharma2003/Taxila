@@ -107,3 +107,19 @@ test("APP-49: the comments no longer say the opposite of the code", () => {
   assert.doesNotMatch(read("src/child/screens/Notebook.tsx"), /no endpoint lists a child's lessons/);
   assert.doesNotMatch(read("src/child/lesson/LessonScreen.tsx"), /belongs to the child-routes owner/);
 });
+
+test("SEAM-11: the plan's schedule is carried to the home; SEAM-10: the opening time is formatted like the refused screen", async () => {
+  const { scheduleFrom, fromServer } = await import("../src/child/plan.ts");
+  assert.deepEqual(scheduleFrom({ schedule: { time: "17:00", minutes: 25, today: true } }), { time: "17:00", minutes: 25, today: true });
+  assert.deepEqual(scheduleFrom({ schedule: { time: "17:00", today: false } }), { time: "17:00", minutes: null, today: false });
+  assert.equal(scheduleFrom({ schedule: { time: "soon" } }), null);
+  assert.equal(scheduleFrom({}), null);
+  const p = fromServer({ state: "start", opensAt: null, plan: { openLesson: null, window: { from: "06:30", to: "21:30" } }, schedule: { time: "17:00", minutes: 20, today: true } });
+  assert.equal(p.schedule?.time, "17:00");
+  const v = read("src/ui-v3/kaksha/views.tsx");
+  assert.match(v, /time: p\.opensAt \? clock\(p\.opensAt\) : ""/);
+  assert.match(read("src/ui-v3/kaksha/screens/KakshaHome.tsx"), /lessonTime=\{plan\.schedule\?\.today \? clock\(plan\.schedule\.time\) : null\}/);
+  assert.doesNotMatch(read("src/ui-v3/kaksha/copy.ts"), /\{time\} baje/);
+  // the contract field itself is Brain's (patch to-brain/005-plan-schedule; status in docs/patches/INDEX.md): a gate test never
+  // asserts on a patch file (tests/gate-reads-no-docs.test.mjs)
+});

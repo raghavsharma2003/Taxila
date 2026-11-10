@@ -9,6 +9,7 @@ import type { Candidate, FamilyLogic, Facts, GenRequest, Moment, PlayActEnvelope
 import { add, cmp, eq, gcd, lcm, rat, ratStr, type Rat } from "../../core/rat.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
 import { mulberry32 } from "../../core/rng.ts";
+import { focusMal } from "../../core/pick.ts";
 
 export type StripsGoal = "make" | "equal" | "compare" | "unit" | "add";
 export interface Bar { d: number; shaded: number[] }
@@ -349,6 +350,23 @@ function generate(req: GenRequest): Candidate<StripsParams>[] {
   const sh = (n: number) => range(n);
   if (goal === "make") for (const d of dens) for (let n = 1; n < d; n++) out.push(mk({ bars: [{ d: 1, shaded: [] }], goal, target: [n, d], locked: [] }, `make:${n}/${d}`));
   if (goal === "equal") for (const d of dens) for (let n = 1; n < d; n++) if (gcd(n, d) === 1 && d * 2 <= MAX_PARTS) out.push(mk({ bars: [{ d, shaded: sh(n) }, { d: 1, shaded: [] }], goal, locked: [0] }, `equal:${n}/${d}`));
+  // GAMES-01: making an equal strip never asks which of two strips is more, so "more pieces = more" (c5 kit: "thinks 2/4 is
+  // more than 1/2 because there are more pieces") cannot show there. When the Director's focus is that belief, an equal
+  // topic also offers the kit diagnostic's own shape as a judging level (skill "check whether two fractions are
+  // equivalent"): two strips with the SAME amount, one in more, smaller pieces (n/d and kn/kd from the entry's dens).
+  // Which has more? The truth is "same"; the belief picks the strip with more pieces. Played on the compare law.
+  if (goal === "equal" && focusMal(req) === "more-pieces-more") {
+    const frnd = mulberry32((req.seed ^ 0x2e9a) >>> 0), pairs: [number, number, number][] = [];
+    for (const d of dens) for (let n = 1; n < d; n++) if (gcd(n, d) === 1) for (const D of dens) if (D > d && D % d === 0 && D <= MAX_PARTS) pairs.push([n, d, D]);
+    // a seeded handful (not all of them), so different children and sessions meet different pairs
+    for (let i = pairs.length - 1; i > 0; i--) { const j = Math.floor(frnd() * (i + 1)); [pairs[i], pairs[j]] = [pairs[j], pairs[i]]; }
+    for (const [n, d, D] of pairs.slice(0, 4)) {
+      const N = (n * D) / d, swap = frnd() < 0.5;
+      const bars = swap ? [{ d: D, shaded: sh(N) }, { d, shaded: sh(n) }] : [{ d, shaded: sh(n) }, { d: D, shaded: sh(N) }];
+      const c = mk({ bars, goal: "compare", locked: [0, 1] }, `same:${bars[0].shaded.length}/${bars[0].d},${bars[1].shaded.length}/${bars[1].d}`);
+      out.push({ ...c, level: { ...c.level, goal: "compare" } });
+    }
+  }
   if (goal === "compare" || goal === "unit") {
     for (const a of dens) for (const b of dens) {
       if (a >= b || lcm(a, b) > MAX_PARTS) continue;

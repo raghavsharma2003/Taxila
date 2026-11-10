@@ -224,3 +224,125 @@ test("V-09: a child sound four seconds into her reply to a number answer does no
   assert.equal(g["pendingRevoke"], false);
   assert.ok(!ev.some((e) => e.kind === "revoke"));
 });
+
+// ── V-15 / V-16: the outbox's Fix and Try again act on the live lesson's turn, and never on an answered one ──
+import { Outbox, MemoryOutboxStore } from "../src/lesson/outbox.ts";
+test("V-15: Fix edits the live lesson's turn in flight, not another lesson's background resend that started later", async () => {
+  const ob = new Outbox({ store: new MemoryOutboxStore(true), schedule: [] });
+  const sent = [];
+  const pending = (req, signal) => { sent.push(req); return new Promise((_, rej) => signal.addEventListener("abort", () => rej(signal.reason))); };
+  const live = ob.send({ lessonId: "B", childText: "teen" }, pending).catch(() => {});
+  await new Promise((r) => setTimeout(r, 5));
+  const other = ob.send({ lessonId: "A", childText: "purana jawab" }, pending).catch(() => {});
+  await new Promise((r) => setTimeout(r, 5));
+  assert.equal(await ob.edit("chaar", "B"), true);
+  await new Promise((r) => setTimeout(r, 5));
+  const edited = sent.filter((r) => r.edited);
+  assert.deepEqual(edited.map((r) => [r.lessonId, r.childText]), [["B", "chaar"]]);
+  assert.equal(ob.kick("C"), false, "no turn of that lesson in flight");
+  void live; void other;
+});
+test("V-16: once the server answered, the turn is no longer in flight (a Fix then is a new answer, not a ghost edit)", async () => {
+  const store = new MemoryOutboxStore(true);
+  let release;
+  const del = store.delete.bind(store);
+  store.delete = (k) => new Promise((r) => { release = () => del(k).then(r); });
+  const ob = new Outbox({ store, schedule: [] });
+  let answered = false;
+  const p = ob.send({ lessonId: "L", childText: "teen" }, async () => { answered = true; return { ok: true }; });
+  for (let i = 0; i < 20 && !release; i++) await new Promise((r) => setTimeout(r, 1));
+  assert.equal(answered, true);
+  assert.equal(await ob.edit("chaar", "L"), false, "answered: nothing to edit");
+  release();
+  await p;
+});
+
+// ── V-19: the prefetch never posts the same words twice in one turn, across item ids ──
+import { TurnPrefetcher } from "../src/latency/prefetch.ts";
+test("V-19: the engine's eager prefetch and the link's partial with the same words post once", () => {
+  const posts = [];
+  const p = new TurnPrefetcher({ lessonId: "L", enabled: true, post: async (b) => { posts.push(b.text); }, setTimer: (fn) => { fn(); return 1; }, clearTimer: () => {} });
+  assert.equal(p.sendNow("duplex", "teen bata chaar"), true);
+  p.onPartial("item_7", "teen bata chaar");
+  p.onQuiet();
+  assert.equal(p.sendNow("duplex", "teen bata chaar"), false);
+  assert.deepEqual(posts, ["teen bata chaar"]);
+  p.onFinal();
+  assert.equal(p.sendNow("duplex", "teen bata chaar"), true, "a new turn may send the same words");
+});
+
+// ── V-18: the device VAD never latches "speaking" for the rest of the lesson ──
+import { EnergyVad } from "../src/lesson/vad.ts";
+test("V-18: a held mic (zeros) then a quiet room is not speech; a run past the ceiling ends with an offset", () => {
+  const room = Math.pow(10, -48 / 20);
+  const v = new EnergyVad();
+  const edges = [];
+  for (let i = 0; i < 150; i++) { const e = v.push(0, 20); if (e) edges.push(e); }
+  for (let i = 0; i < 500; i++) { const e = v.push(room, 20); if (e) edges.push(e); }
+  assert.ok(!edges.includes("onset") || edges.includes("offset"), JSON.stringify(edges));
+  const w = new EnergyVad({ maxSpeakMs: 2000 });
+  const loud = Math.pow(10, -20 / 20), e2 = [];
+  for (let i = 0; i < 200; i++) { const e = w.push(loud, 20); if (e) e2.push(e); }
+  assert.deepEqual(e2.slice(0, 3), ["onset", "sustain", "offset"]);
+});
+
+// ── V-23: the voice-signal window starts at the measured speech start ──
+import { VoicesigLessonFeatures } from "../src/voicesig/lessonFeatures.ts";
+test("V-23: the head reads from the utterance's measured start (no second pre-roll before the child spoke)", () => {
+  const u = { context: "answer", bargeIn: false, at: 10_000, features: { durationMs: 600, voicedFrac: 0.8, words: 1 } };
+  const lf = new VoicesigLessonFeatures({ inner: { onLinkEvent: () => u } });
+  let win = null;
+  lf["head"] = { commitNow: (c) => { win = c; return null; } };
+  lf.onLinkEvent({ type: "child_final", text: "haan", startedAt: 10_000, typed: false });
+  assert.equal(win.fromT, 10_000);
+});
+
+// ── V-24: a steep short "haan" keeps its features ──
+import { validateUtterance } from "../server/voice/features.js";
+test("V-24: a whole-turn pitch slope of 122 st/s is in range (the end slope's range)", () => {
+  const v = validateUtterance({ features: { durationMs: 120, voicedFrac: 0.9, words: 1, f0SlopeStPerS: 122.4 } });
+  assert.equal(v.features.f0SlopeStPerS, 122.4);
+});
+
+// ── V-25: a turn-audio response that fails after her first clause rejects with the turn's real status ──
+import { postTurnAudio } from "../src/lesson/ttsStream.ts";
+test("V-25: an error end frame before the turn frame rejects with its status (409 lesson ended), not 502", async () => {
+  const saved = globalThis.fetch;
+  globalThis.fetch = async () => new Response(new ReadableStream({ start(c) {
+    c.enqueue(frameOf(2, { v: 2, audio: "streaming" }));
+    c.enqueue(frameOf(4, { t: "end", status: "error", error: "lesson has ended", code: 409 }));
+    c.close();
+  } }), { status: 200, headers: { "content-type": FRAMES_ACCEPT } });
+  try {
+    await assert.rejects(postTurnAudio({ lessonId: "00000000-0000-0000-0000-0000000000c5", childText: "teen" }), (e) => e.status === 409 && /lesson has ended/.test(e.message));
+  } finally { globalThis.fetch = saved; }
+});
+
+// ── V-32: shadow telemetry reads the reason part of a governed row's detail ──
+import { ShadowTelemetry } from "../src/duplex/shadowTelemetry.ts";
+test("V-32: a safeguard SPEAK row (detail 'speak:safeguard:safeguard', no reason code) counts as a safety row", () => {
+  const tel = new ShadowTelemetry({ mode: "on" });
+  tel.row({ t: 1000, cause: "timer", phase: "child_turn", action: "SPEAK", proposed: "SPEAK", detail: "speak:safeguard:safeguard", reasons: ["x_engine"], pComplete: 0.9, pHoldWanted: 0, engine: "a", turnSeq: 1 });
+  assert.equal(tel.summary().safetyRows, 1);
+});
+
+// ── V-35: a device forced to shadow stays shadow when the server's answer is unknown; the cache reset is complete ──
+import { resolveDuplexMode, resetDuplexFlagCache, partialPostWanted } from "../src/duplex/flags.ts";
+test("V-35: device key 'shadow' wins over an unreadable switch; resetDuplexFlagCache clears the partial-post answer", async () => {
+  const store = new Map([["tx.flag.duplex", "shadow"]]);
+  const had = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
+  Object.defineProperty(globalThis, "localStorage", { configurable: true, value: { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) } });
+  try {
+    resetDuplexFlagCache();
+    assert.equal(await resolveDuplexMode(async () => { throw new Error("offline"); }), "shadow");
+    resetDuplexFlagCache();
+    store.clear();
+    await resolveDuplexMode(async () => ({ ok: true, json: async () => ({ duplex: "on", partialPost: true }) }));
+    assert.equal(partialPostWanted(), true);
+    resetDuplexFlagCache();
+    assert.equal(partialPostWanted(), false);
+  } finally {
+    resetDuplexFlagCache();
+    if (had) Object.defineProperty(globalThis, "localStorage", had); else delete globalThis.localStorage;
+  }
+});

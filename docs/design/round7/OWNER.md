@@ -4,7 +4,7 @@ Updated by the main loop at each integration. Header, row 1, row 7, section 3b (
 - **Build checks:** tsc and the build are green.
 - **Unit tests:** 6293 of 6306 pass, 0 failures, single-process included (director16 judgement, on integration 20).
 - **Live model calls so far:** the lesson-brain runs director1–16, about $1 a run since director14 (director16: 1,472 calls, about $1.00).
-- **Nothing is released:** production is still 14.4.2. Release 16 is blocked on `NEON_API_KEY` and `NEON_PROJECT_ID` for production migration 041 (director16 judgement).
+- **Nothing from round 7 is released:** production is 14.4.3 since 2026-11-10 (the October release 14.4.2 plus one crash fix from the audit: a malformed URL could stop the web process). Release 16 is blocked on `NEON_API_KEY` and `NEON_PROJECT_ID` for production migration 041 (director16 judgement).
 - **Founders Hub (row 7): done, nothing to apply.** The automation (`scripts/m3.mjs`) has been live since 2026-11-06 08:24 UTC and the M4 hardening since about 10:55 UTC the same day. Day 1 of the 60 is 2026-11-06, counted with 8 services; the clock completes on 2027-01-04. `taxila-cin-pg` was downsized to B2s and is one of the counted services. Details: `M3.md`.
 
 ## 1. Decisions only you can make

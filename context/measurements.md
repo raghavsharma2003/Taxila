@@ -6489,3 +6489,21 @@ Listening is 3 in all four topics. Register fell to 3 in c4. Picture requests: 1
 The automatic counter (H5) caught 3 of 16, with over 100 false flags.
 
 Full write-up: docs/design/round7/judgements/director17-2026-11-10.md.
+
+
+<!-- merged from inbox/r7-main-36.json -->
+## `ms-r1443-live` (2026-11-10)
+
+Release 14.4.3 went live at 11:46 UTC: `taxila-web--sc7a4798-cx0n`, branch `hotfix/14.4.3`. It is 14.4.2 plus one fix from the platform audit.
+
+**Before** (proven on localhost against the 14.4.2 commit): `GET /%` exits the web process, and a cookie holding a bare `%` makes signed-in routes answer 500.
+
+**The hotfix:** 3 files, no migration. Its gate: 3,618 tests pass, 0 fail; CI green.
+
+**The deploy** (web only, by main): image built, new revision at 0%, smoke 4/4, then 100%.
+
+**After, on the live site:** health ok on the new revision; `GET /%` answers 400 and the site stays healthy; the cookie case answers 401; the home page loads.
+
+**Rollback:** `taxila-web--sac4e8e8-3x6d` (14.4.2) is kept. Roll back to it by name; the script's `--rollback` can pick a failed revision (fixed on int/r6 only).
+
+The script's `--gate` option hung with no output here; the deploy used its check of the commit's CI result.

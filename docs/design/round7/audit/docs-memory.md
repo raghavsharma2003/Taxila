@@ -389,7 +389,13 @@ knowing that and built the same repairs again locally; that duplicate was not pu
   1,123 MB, that no code and no kept write-up names. A proposal; nothing removed. See "Step 0" in `docs/ARCHIVE.md`.
 - A line in `HANDOFF.md` §5 saying the merger now refuses a file it cannot place.
 
-Two things the duplicate did differently, for the main loop to weigh; neither is applied here:
+**Later on 2026-11-10, at the main loop's word:** the wider mapping below was ported into `scripts/lib/context-edges.mjs`
+(`extends`, `amends`, `about`, `explains`, `rejected_for`, `guarded_by`, `found_by`, `depends_on`, and `evidence` between two
+measurements). 16 more edges are placed, and `DROPPED.json` lists 8: 4 `related`, 3 with an end that is not a node, and 1
+whose mapped shape the graph has never used. The repair now reads the dropped list again on every run, so a wider mapping
+takes effect; a second run is still a no-op.
+
+Two things the duplicate did differently (the first is now applied, see above; the second is not):
 - It mapped more of the old relation words (`extends`, `measures`, `evidence`, `motivated-by`, `amends`, `about`, and the
   inverses `superseded_by` and `refined_by`) and so dropped 9 edges where the pushed repair drops 27.
 - Its `STATUS` table also set `dc-r4dx-continuer-classifier-option-a` to superseded (its own text says so; no edge does).

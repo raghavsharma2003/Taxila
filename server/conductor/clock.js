@@ -51,7 +51,6 @@ export const fromMin = (min) => { const m = ((min % 1440) + 1440) % 1440; return
 export const addMin = (hhmm, n) => fromMin(toMin(hhmm) + n);
 export const maxTime = (a, b) => (a >= b ? a : b);
 export const minTime = (a, b) => (a <= b ? a : b);
-export const floorTo = (hhmm, step) => fromMin(Math.floor(toMin(hhmm) / step) * step);
 
 /**
  * Minutes since the learning-day anchor (04:00 local). 'HH:MM' strings compare correctly only inside one

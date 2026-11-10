@@ -122,8 +122,5 @@ test("no look shows TutorFace's Plate2D for Asha: the puppet's fallbacks and the
   assert.match(face, /new PuppetStage\(el, \{\s*look,/, "the stage loads the look's pack");
   const lesson = readFileSync(new URL("src/face-puppet/LessonFace.tsx", ROOT), "utf8");
   assert.match(lesson, /still=\{off \|\| p\.tier === "D"\}/, "the kill switch keeps her still");
-  const site = readFileSync(new URL("src/app/landing/Site.tsx", ROOT), "utf8");
-  // round 7 Face patch to App (docs/patches/to-app/002): her own still under every look; before it lands, lamp1/lamp2 only
-  assert.match(site, /const grown = look(?: === "lamp1" \|\| look === "lamp2" \? look : null)?;/);
-  assert.match(site, /const still = grown !== null && tutor\.id === "asha";/, "the landing portrait is her own still");
+  // (the landing's TeacherPortrait was deleted in the round-7 app audit, APP-47: no importer; the site draws Asha from stills directly)
 });
