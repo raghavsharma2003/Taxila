@@ -14,6 +14,7 @@ import { KxPage } from "../kit.tsx";
 import { HomeStateView } from "./HomeState.tsx";
 import { useTeacher } from "../../../ui/teacher/useTeacher.ts";
 import { useDailyGreeting } from "../../../face-puppet/useDailyGreeting.ts";
+import { partOfDay } from "../../../../shared/day.js";
 import { KakshaRoot } from "../Shell.tsx";
 import { HomeView, type HomeViewProps } from "../views.tsx";
 import { kt, RING_LABEL } from "../copy.ts";
@@ -26,9 +27,9 @@ import { useChildNav } from "./useNav.ts";
 import { useKxGo } from "./go.ts";
 
 export function greetingFor(d = new Date()): HomeViewProps["greeting"] {
-  const h = d.getHours();
-  // r5 QA: 00:20 said "Morning, Riya"; until 04:00 (the learning day's start) it is still the evening
-  return h < 4 || h >= 17 ? "evening" : h < 12 ? "morning" : "day";
+  // r5 QA: 00:20 said "Morning, Riya"; until 04:00 (the learning day's start) it is still the evening (shared/day.js)
+  const part = partOfDay(d.getHours());
+  return part === "afternoon" ? "day" : part;
 }
 
 export function KakshaHome() {

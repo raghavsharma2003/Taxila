@@ -24,7 +24,8 @@ test("faceCues knows the protégé target; Teacher glances only while she listen
   assert.deepEqual(F.GAZE_SELECTOR.protege, ["[data-protege]"]);
   assert.ok(F.GAZE_HOLD_MS.protege > 0);
   const t = readFileSync(new URL("../src/ui/teacher/Teacher.tsx", import.meta.url), "utf8");
-  assert.match(t, /glance=\{p\.floor === "listening" \|\| p\.floor === "speaking" \|\| p\.floor === "your_turn"\}/);
+  // audit FACE-05: not while she listens (behaviour.ts lookAt drops a look then; tests/r7-audit-face.test.mjs)
+  assert.match(t, /glance=\{p\.floor === "speaking" \|\| p\.floor === "your_turn"\}/);
   const patch = readFileSync(new URL("../src/child/lesson/TeacherWindow.tsx", import.meta.url), "utf8"); // the App's wiring (was patch to-app/005)
   assert.match(patch, /protege=\{protegeStaging\(m\)\}/);
 });
