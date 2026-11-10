@@ -123,10 +123,19 @@ describe("r7-brain-v66.test.mjs", () => {
         const tag = `${persona} ${topic} row ${n}`;
         const lm = last.state.lastMove ?? {};
         if (lm.request !== "language") { bad.push(`${tag}: not a language request (${lm.request})`); continue; }
-        const lb = liveBeatSimpler(last.state, kit);
+        // (v6.8 B1‴, main on director16 c6 steady 38: a card answered right, its why pending, is never reopened — the walk goes on to
+        // the next card, posed in their language with no simpler before it)
+        if (last.before.pendingWhy && last.before.pendingWhy === last.before.activeItemId) {
+          if (last.state.activeItemId === last.before.activeItemId) bad.push(`${tag}: the closed card reopened`);
+          if (lm.simpler && norm(out.reply).includes(norm(lm.simpler).split(" ").slice(0, 5).join(" "))) bad.push(`${tag}: a simpler said before the new card was asked`);
+          continue;
+        }
+        // (v6.8 B1‴, main on director16: during a worked step the live part is that step — its own line)
+        const lb = liveBeatSimpler(last.state, kit, { prevMove: last.before.lastMove });
         if (!lb) { bad.push(`${tag}: no live beat simpler`); continue; }
         // (v6.7 B1″: a simpler said in her last turns is not said again word for word — the beat's point instead, else nothing new)
-        const recentT = (last.state.recent ?? []).filter((t) => t.who === "teacher").slice(-3).map((t) => norm(t.text).toLowerCase());
+        // (v6.8 B1‴: the live part is said again in words her LAST turn did not use — main's B1″ was "the simpler of the turn before")
+        const recentT = (last.state.recent ?? []).filter((t) => t.who === "teacher").slice(-1).map((t) => norm(t.text).toLowerCase());
         const repeated = recentT.some((t) => t.includes(norm(lb.text).toLowerCase().slice(0, 60)));
         if (repeated) { if (lm.simpler && recentT.some((t) => t.includes(norm(lm.simpler).toLowerCase().slice(0, 60)))) bad.push(`${tag}: said again word for word`); }
         else {
@@ -192,7 +201,7 @@ describe("r7-brain-v66.test.mjs", () => {
     test("the last card of a skill gives its key and why before the bridge (c5-t02 stuck 54); the '?' mark is said in words", async () => {
       const { out, last } = await live("stuck", "c5-t02", 54);
       assert.ok(last.state.lastMove?.gave?.answer, JSON.stringify(last.state.lastMove));
-      assert.match(out.reply, /jawab bada/i, out.reply);
+      assert.match(out.reply, /jawab:? bada/i, out.reply);
       assert.doesNotMatch(out.reply, /'\s*\?\s*'/, out.reply);
     });
     test("the parent card is re-posed after its then-card, even where a probe would come between (c5-t02 stuck 66)", async () => {

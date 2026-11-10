@@ -97,7 +97,13 @@ export function drawnContradictions(row, cardRow, prevChild, { answerBoard = nul
   // remediation's while the live card is that remediation's follow-up — the follow-up's words over the remediation's figure
   if (Array.isArray(row.pageParts) && row.pageParts.length) {
     const pageAt = (from) => [...pages].reverse().find((p) => (p.from ?? 0) <= from) ?? pages[0];
-    for (const pp of row.pageParts) {
+    const txt = String(row.text ?? "").replace(/\s+/g, " ").trim();
+    for (const [k, pp] of row.pageParts.entries()) {
+      const seg = txt.slice(pp.from ?? 0, row.pageParts[k + 1]?.from ?? txt.length);
+      // (a bare not-right verdict, no value, no why, no key, opens the page after it, by design; a part under 5 words is said
+      // over the page before it — brain/propose.js's short-page rule)
+      if (pp.part === "close" && !/\d|(?<![\p{L}])(?:kyunki|because|jawab\s+(?!nahi\b|sahi\s+nahi\b|theek\s+nahi\b).{1,30}?\s+(?:tha|hai)\b)/iu.test(seg) && /(?<![\p{L}])(?:nahi|not)(?![\p{L}])/iu.test(seg)) continue;
+      if (seg.split(/\s+/).filter(Boolean).length < 5) continue;
       const pg = pageAt(pp.from ?? 0);
       if (pp.beat && pg.beat && String(pp.beat).replace(/^explain:/, "") !== String(pg.beat).replace(/^explain:/, "")) { out.partOffBeat = 1; break; }
     }

@@ -149,3 +149,30 @@ test("director16 c4 steady 46 and c6 offtopic 36 (a correct verdict, then an asi
     assert.equal(reply.k.artifact.script.durationMs, 200);
   }
 });
+
+test("Learning's D11 (relayed by main): fraction-bars@1 takes an UNNAMED bar (label \"\") — no name drawn, facts \"<parts> equal parts\", no label-value check; under the held board it stands in the split's left panel and its second view (circles) names no fraction", async () => {
+  const { expand } = await import("../server/forge/explainer/templates.js");
+  const { certifyBoardRef } = await import("../server/forge/explainer/board-ref.js");
+  const ref = { template: "fraction-bars@1", params: { bars: [{ parts: 3, shade: 0, label: "" }, { parts: 10, shade: 0, label: "" }] } };
+  const x = expand({ template: "fraction-bars@1", ...ref.params });
+  assert.ok(x.ok, String(x.errors));
+  assert.deepEqual(x.facts.onScreen, { wholes: "2 equal bars", bar1: "3 equal parts", bar2: "10 equal parts" });
+  assert.deepEqual(x.script.ops.filter((o) => o.op === "text").map((o) => o.text), []);
+  assert.deepEqual(x.facts.counts.wholes.map((w) => w.label), ["", ""]);
+  // (the compare card posed honestly: its prompt states both fractions, the board names neither and answers nothing)
+  const c = await certifyBoardRef(ref, { line: "Do ek jaisi bar hain: ek ka 2/3, doosre ka 3/10. Kaunsa bada hai, 2/3 ya 3/10?", withhold: { values: ["2/3"] } });
+  assert.ok(c.ok, JSON.stringify(c.failed));
+  // (a named bar still has its value checked)
+  assert.equal(expand({ template: "fraction-bars@1", bars: [{ parts: 3, shade: 0, label: "2/3" }] }).ok, false);
+  // under the held board: the split's left panel is the unnamed bars; the view beside is circles of 3 and 10, nothing named
+  const ask = { intent: { intentId: "d11", lessonId: "d11", kind: "whiteboard", style: { band: "B3" }, boardRef: ref, scriptBeat: { kind: "check", ownBoard: true, answers: ["2/3"] }, held: { board: ref, unit: "s2:e4" }, request: { kind: "picture" } }, line: { text: "" }, mode: "fresh" };
+  const r = BF.heldBoard(ask, {});
+  assert.ok(r?.split);
+  assert.equal(r.altView, "wholes");
+  assert.equal(r.altLine, "ek: 3 barabar tukde; ek: 10 barabar tukde");
+  assert.ok(!r.script.ops.some((o) => o.op === "text" && /\d+\s*\/\s*\d+/.test(o.text)), "no fraction named on either panel");
+  // (a shaded unnamed bar's view keeps its shading and names nothing either)
+  const shaded = BF.altCall({ template: "fraction-bars@1", params: { bars: [{ parts: 3, shade: 2, label: "" }, { parts: 10, shade: 3, label: "" }] } }, { keys: ["2/3"] });
+  assert.equal(shaded.template, "wholes@1");
+  assert.ok(!JSON.stringify(shaded).includes("/"));
+});
