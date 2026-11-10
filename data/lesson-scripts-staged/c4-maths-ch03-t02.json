@@ -1,7 +1,7 @@
 {
  "topicId": "c4-maths-ch03-t02",
  "classLevel": 4,
- "version": 2.2,
+ "version": 2.3,
  "status": "draft",
  "terms": [
   {
@@ -41,6 +41,64 @@
    "en": "date"
   }
  ],
+ "joints": {
+  "asidePark": [
+   {
+    "hi": "Achha, {aside} wali baat yaad rakhti hoon. Pehle is pattern ka niyam dhoondh lete hain.",
+    "en": "Okay, I'll keep the {aside} bit in mind. First let's find this pattern's rule."
+   },
+   {
+    "hi": "Mazedaar! {aside} ki baat thodi der mein karenge, abhi yeh pattern aage badhaate hain.",
+    "en": "Fun! We'll get to {aside} soon; first let's carry this pattern on."
+   },
+   {
+    "hi": "{aside} wali baat maine sambhaal ke rakhi hai. Chalo, pehle yeh kadam gin lete hain.",
+    "en": "I've kept the {aside} bit safe. Let's work out these steps first."
+   }
+  ],
+  "asideReturn": [
+   {
+    "hi": "Pattern ho gaya, ab tumhari baat: tumne kaha tha {said}. Thoda aur batao.",
+    "en": "Pattern done, now your bit: you said {said}. Tell me a little more."
+   },
+   {
+    "hi": "Tumne {said} bola tha na? Usmein sabse achha kya laga?",
+    "en": "You said {said}, didn't you? What did you like best about it?"
+   },
+   {
+    "hi": "Chalo, ab woh {said} wali baat. Phir kya hua?",
+    "en": "Okay, now the {said} part. What happened next?"
+   }
+  ],
+  "hindiSwitch": [
+   {
+    "hi": "Theek hai, ab Hindi mein pattern dekhte hain.",
+    "en": "Sure, let's look at patterns in English now."
+   },
+   {
+    "hi": "Achha, yeh Hindi mein samjhaati hoon, niyam wahi rahega.",
+    "en": "Okay, I'll say this in English; the rule stays the same."
+   },
+   {
+    "hi": "Haan, Hindi mein hi chalte hain.",
+    "en": "Yes, English it is."
+   }
+  ],
+  "askAgain": [
+   {
+    "hi": "Mujhe theek se sunai nahi diya. Ek baar phir bologe?",
+    "en": "I didn't quite hear that. Will you say it once more?"
+   },
+   {
+    "hi": "Thoda sa chhoot gaya. Apna number phir se batao na.",
+    "en": "I missed a bit of that. Tell me your number again."
+   },
+   {
+    "hi": "Awaaz saaf nahi aayi. Aaram se ek baar aur bolo.",
+    "en": "Your voice didn't come through clearly. Say it once more, slowly."
+   }
+  ]
+ },
  "skills": [
   {
    "skillId": "c4-maths-ch03-t02-s1",
@@ -108,6 +166,17 @@
       "why": {
        "hi": "13 ke baad har baar 3 jodo: 13 + 3 = 16, phir 16 + 3 = 19",
        "en": "adding 3 each time after 13 gives 16, then 19"
+      },
+      "answerBoard": {
+       "template": "number-line-hop@1",
+       "params": {
+        "start": 4,
+        "hops": [
+         3,
+         3,
+         3
+        ]
+       }
       }
      },
      "simpler": {
@@ -158,11 +227,22 @@
       "why": {
        "hi": "har baar 5 jodne par 12 ke baad 12 + 5 = 17 aata hai",
        "en": "adding 5 each time, 12 is followed by 12 + 5 = 17"
+      },
+      "answerBoard": {
+       "template": "number-line-hop@1",
+       "params": {
+        "start": 2,
+        "hops": [
+         5,
+         5,
+         6
+        ]
+       }
       }
      },
      "simpler": {
-      "hi": "Har kadam pe 5 judna chahiye. Toh 12 ke baad wala number 12 se 5 zyada hona chahiye.",
-      "en": "Every step should add 5. So the number after 12 should be 5 more than 12."
+      "hi": "5-5 jodne wale pattern mein 12 ke baad wala number 12 se 5 zyada hona chahiye.",
+      "en": "In an add-5 pattern, the number after 12 must be 5 more than 12."
      }
     }
    ],
@@ -173,8 +253,8 @@
     },
     "givens": [
      {
-      "hi": "yeh pattern hai: 7, 12, 17, 22",
-      "en": "the pattern: 7, 12, 17, 22"
+      "hi": "Pattern 7, 12, 17, 22 hai, aur hume 22 ke baad wala number chahiye.",
+      "en": "The pattern is 7, 12, 17, 22, and we want the number after 22."
      }
     ],
     "find": {
@@ -204,12 +284,12 @@
       },
       "result": "niyam: har baar 5 jodo",
       "why": {
-       "hi": "har kadam pe wahi 5 judta hai",
-       "en": "the same 5 is added at every step"
+       "hi": "teeno kadam par wahi 5 judta hai",
+       "en": "the same 5 is added at all three steps"
       },
       "simpler": {
-       "hi": "Har kadam pe wahi 5 juda. Toh niyam hai: har baar 5 jodo.",
-       "en": "The same 5 was added at every step. So the rule is: add 5 each time."
+       "hi": "Teeno kadam par wahi 5 juda. Toh niyam hai: har baar 5 jodo.",
+       "en": "The same 5 was added at all three steps. So the rule is: add 5 each time."
       }
      }
     ],
@@ -227,6 +307,21 @@
      "simpler": {
       "hi": "Niyam hai har baar 5 jodo. Bas aakhri number 22 mein 5 jodo.",
       "en": "The rule is add 5 each time. Just add 5 to the last number, 22."
+     },
+     "why": {
+      "hi": "22 mein niyam ka 5 jodo, toh 22 + 5 = 27 aata hai",
+      "en": "adding the rule's 5 to 22 gives 22 + 5 = 27"
+     },
+     "answerBoard": {
+      "template": "number-line-hop@1",
+      "params": {
+       "start": 7,
+       "hops": [
+        5,
+        5,
+        5
+       ]
+      }
      }
     },
     "answer": {
@@ -283,12 +378,29 @@
       }
      },
      "why": {
-      "hi": "A mein har kadam 4 hai, jabki B ke kadam 4, 5, 6 badalte hain",
-      "en": "A goes up by 4 at every step, while B's steps change: 4, 5, 6"
+      "hi": "A mein har kadam 4 hai, 13 se 17 tak bhi, jabki B ke kadam 4, 5, 6 badalte hain",
+      "en": "A adds 4 at every step, but B goes 9 to 14 to 20, adding 4, 5, then 6"
      },
      "simpler": {
       "hi": "Har pattern mein ek number se agle tak kitna badha, woh gino. Jis pattern mein har kadam pe same number jude, wahi dhoondo.",
       "en": "In each pattern, count how much it goes up from one number to the next. Find the pattern where every step adds the same number."
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "A",
+        "items": [
+         "5, 9, 13, 17"
+        ]
+       },
+       "right": {
+        "title": "B",
+        "items": [
+         "5, 9, 14, 20"
+        ]
+       }
+      }
      }
     },
     {
@@ -327,12 +439,30 @@
       }
      },
      "why": {
-      "hi": "kadam 6, 6, 7, 6 hain, sirf teesra kadam, 16 se 23, 7 ka hai",
-      "en": "the steps are 6, 6, 7, 6; only the third, 16 to 23, is 7"
+      "hi": "pehla, doosra aur chautha kadam 6 ke hain, par teesra kadam, 16 se 23, 7 ka hai",
+      "en": "the first, second and fourth steps are 6, but the third, 16 to 23, is 7, and 23 to 29 is 6"
      },
      "simpler": {
-      "hi": "Har kadam ka farak nikalo: 4 se 10, 10 se 16, aur aage bhi. Jo farak baaki se alag ho, woh kadam dhoondo.",
-      "en": "Find the gap at each step: 4 to 10, 10 to 16, and onwards. Find the step whose gap is different from the rest."
+      "hi": "4 se 10, 10 se 16, aur aage ka farak nikalo. Jo farak baaki se alag ho, woh kadam dhoondo.",
+      "en": "Find the gaps 4 to 10, 10 to 16, and onwards. Find the step whose gap is different from the rest."
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Pattern",
+        "items": [
+         "4, 10, 16, 23, 29"
+        ]
+       },
+       "right": {
+        "title": "Kadam",
+        "items": [
+         "pehla, doosra",
+         "teesra, chautha"
+        ]
+       }
+      }
      }
     }
    ],
@@ -357,30 +487,19 @@
    "remediation": [
     {
      "targets": "c4-maths-ch03-t02-m-first-step-only",
-     "move": "difference row under the list: write every step, not just the first → 3, 7, 11, 16 has steps 4, 4, 5 → one step differs, so the rule 'add 4' fails; then a fresh list to check",
+     "move": "difference row under the list: write every step, not just the first → one step that differs means the rule 'add the same number' fails; then a fresh list to check",
      "say": {
-      "hi": "Har do numbers ke beech ka kadam likho, sirf pehla nahi. 3, 7, 11, 16 mein kadam hain 4, 4 aur 5, toh yeh 'har baar 4 jodo' wala pattern nahi.",
-      "en": "Write the step between every two numbers, not just the first. In 3, 7, 11, 16 the steps are 4, 4 and 5, so this is not an 'add 4 each time' pattern."
+      "hi": "Har do numbers ke beech ka kadam likho, sirf pehla nahi. Agar ek bhi kadam baaki se alag nikla, toh woh har baar same number jodne wala pattern nahi hai.",
+      "en": "Write the step between every two numbers, not just the first. If even one step comes out different, it is not an add-the-same-number pattern."
      },
      "simpler": {
-      "hi": "Har do numbers ke beech ka kadam dekho. 3, 7, 11, 16 mein kadam 4, 4 aur 5 hain, barabar nahi.",
-      "en": "Check every step, not only the first. In 3, 7, 11, 16 the steps are 4, 4 and 5, not all the same."
-     },
-     "board": {
-      "template": "number-line-hop@1",
-      "params": {
-       "start": 3,
-       "hops": [
-        4,
-        4,
-        5
-       ]
-      }
+      "hi": "Do-do numbers ke beech ka farak alag-alag likho. Ek bhi farak alag ho, toh niyam sab par nahi chalta.",
+      "en": "Write the gap between each two numbers on its own. If even one is different, the rule does not work for all."
      },
      "then": {
       "prompt": {
-       "hi": "Pattern hai 10, 16, 22, 29. Kya iska niyam 'har baar 6 jodo' hai, haan ya nahi?",
-       "en": "The pattern is 10, 16, 22, 29. Is its rule 'add 6 each time', yes or no?"
+       "hi": "Is list ko dekho: 33, 39, 45, 52. Kya iska niyam 'har baar 6 jodo' hai, haan ya nahi?",
+       "en": "Look at this list: 33, 39, 45, 52. Is its rule 'add 6 each time', yes or no?"
       },
       "key": "No",
       "accept": [
@@ -398,7 +517,7 @@
         "left": {
          "title": "Pattern",
          "items": [
-          "10, 16, 22, 29"
+          "33, 39, 45, 52"
          ]
         },
         "right": {
@@ -410,12 +529,29 @@
        }
       },
       "why": {
-       "hi": "10 se 16 aur 16 se 22 mein 6 juda, par 22 se 29 mein 7 juda",
-       "en": "6 is added from 10 to 16 and from 16 to 22, but 7 from 22 to 29"
+       "hi": "45 se 52 mein 7 juda hai, toh har baar 6 jodo wala niyam yahan sahi nahi hai",
+       "en": "it adds 6 from 33 to 39 and 39 to 45, but 7 from 45 to 52"
       },
       "simpler": {
-       "hi": "Har kadam ka farak nikalo: 10 se 16, 16 se 22, aur 22 se 29. Dekho, teeno farak 6 hain ya nahi.",
-       "en": "Find the gap at each step: 10 to 16, 16 to 22, and 22 to 29. See whether all three gaps are 6."
+       "hi": "33 se 39, 39 se 45, aur 45 se 52 ka farak nikalo. Dekho, teeno farak 6 hain ya nahi.",
+       "en": "Find the gaps 33 to 39, 39 to 45, and 45 to 52. See whether all three are 6."
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Pattern",
+         "items": [
+          "33, 39, 45, 52"
+         ]
+        },
+        "right": {
+         "title": "Niyam",
+         "items": [
+          "har baar 6 jodo"
+         ]
+        }
+       }
       }
      }
     }
@@ -423,25 +559,6 @@
    "bridgeToNext": {
     "hi": "Ab tak ke pattern har baar badhte gaye. Ab aise pattern dekhenge jo ghatte hain, dugne hote hain, ya jinka kadam badalta hai.",
     "en": "So far our patterns kept going up. Now we will see patterns that go down, double, or change their step."
-   },
-   "bridgeBoard": {
-    "template": "compare@1",
-    "params": {
-     "left": {
-      "title": "Ab tak",
-      "items": [
-       "badhte gaye"
-      ]
-     },
-     "right": {
-      "title": "Ab",
-      "items": [
-       "ghatte hain",
-       "dugne hote hain",
-       "kadam badalta hai"
-      ]
-     }
-    }
    }
   },
   {
@@ -468,52 +585,63 @@
    "explain": [
     {
      "id": "e1",
-     "convey": "38, 32, 26, 20 as backward hops of 6 → a pattern may go down; the rule is 'take away 6 each time', so the next number is smaller",
+     "convey": "45, 38, 31, 24 as backward hops of 7 → a pattern may go down; the rule is 'take away 7 each time', so the next number is smaller",
      "mustSay": [
       {
        "hi": "ghatta hai",
        "en": "goes down"
       },
       {
-       "hi": "har baar 6 ghatao",
-       "en": "take away 6 each time"
+       "hi": "har baar 7 ghatao",
+       "en": "take away 7 each time"
       }
      ],
      "board": {
       "template": "number-line-hop@1",
       "params": {
-       "start": 38,
+       "start": 45,
        "hops": [
-        -6,
-        -6,
-        -6
+        -7,
+        -7,
+        -7
        ]
       }
      },
      "point": {
-      "hi": "Yeh pattern hai 38, 32, 26, 20. Har chhalaang peeche ki taraf hai, aur har baar 6 ghatta hai. Pattern ghat bhi sakta hai. Iska niyam hai: har baar 6 ghatao.",
-      "en": "This pattern is 38, 32, 26, 20. Every jump goes backwards, and it goes down by 6 each time. A pattern can go down too. Its rule is: take away 6 each time."
+      "hi": "Yeh pattern hai 45, 38, 31, 24. Har chhalaang peeche ki taraf hai, aur har baar 7 ghatta hai. Pattern ghat bhi sakta hai. Iska niyam hai: har baar 7 ghatao.",
+      "en": "This pattern is 45, 38, 31, 24. Every jump goes backwards, and it goes down by 7 each time. A pattern can go down too. Its rule is: take away 7 each time."
      },
      "ask": {
       "prompt": {
-       "hi": "Board ke pattern 38, 32, 26, 20 mein 20 ke baad kaunsa number aayega?",
-       "en": "In the board's pattern 38, 32, 26, 20, which number comes after 20?"
+       "hi": "Board ke pattern 45, 38, 31, 24 mein 24 ke baad kaunsa number aayega?",
+       "en": "In the board's pattern 45, 38, 31, 24, which number comes after 24?"
       },
-      "key": "14",
+      "key": "17",
       "accept": [
-       "chaudah",
-       "fourteen"
+       "satrah",
+       "seventeen"
       ],
       "targets": "c4-maths-ch03-t02-m-only-increase",
-      "wrongIfMis": "26",
+      "wrongIfMis": "31",
       "why": {
-       "hi": "har baar 6 ghatta hai, toh 20 − 6 = 14",
-       "en": "it goes down by 6 each time, so 20 − 6 = 14"
+       "hi": "45, 38, 31, 24 mein har baar 7 ghatta hai, toh 24 − 7 = 17",
+       "en": "it goes down by 7 each time, so 24 − 7 = 17"
+      },
+      "answerBoard": {
+       "template": "number-line-hop@1",
+       "params": {
+        "start": 45,
+        "hops": [
+         -7,
+         -7,
+         -7
+        ]
+       }
       }
      },
      "simpler": {
-      "hi": "Is pattern mein har kadam pe 6 kam hota hai. Toh 20 mein se bhi 6 hatao.",
-      "en": "In this pattern every step goes down by 6. So take 6 away from 20 as well."
+      "hi": "Is pattern mein har kadam pe 7 kam hota hai. Toh 24 mein se bhi 7 hatao.",
+      "en": "In this pattern every step goes down by 7. So take 7 away from 24 as well."
      }
     },
     {
@@ -559,6 +687,17 @@
       "why": {
        "hi": "har number pichhle ka double hai, aur 16 ka double 32 hai",
        "en": "each number is double the one before, and double 16 is 32"
+      },
+      "answerBoard": {
+       "template": "number-line-hop@1",
+       "params": {
+        "start": 2,
+        "hops": [
+         2,
+         4,
+         8
+        ]
+       }
       }
      },
      "simpler": {
@@ -609,6 +748,17 @@
       "why": {
        "hi": "kadam 2, 3, 4 hain, toh agla kadam 5 hai: 10 + 5 = 15",
        "en": "the steps are 2, 3, 4, so the next step is 5: 10 + 5 = 15"
+      },
+      "answerBoard": {
+       "template": "number-line-hop@1",
+       "params": {
+        "start": 1,
+        "hops": [
+         2,
+         3,
+         4
+        ]
+       }
       }
      },
      "simpler": {
@@ -619,13 +769,13 @@
    ],
    "workedExample": {
     "problem": {
-     "hi": "Pattern hai 96, 48, 24, 12. Iska agla number kaunsa hai?",
-     "en": "The pattern is 96, 48, 24, 12. What is its next number?"
+     "hi": "96, 48, 24, 12 wale pattern ka agla number kaunsa hai?",
+     "en": "What is the next number in the pattern 96, 48, 24, 12?"
     },
     "givens": [
      {
-      "hi": "yeh pattern hai: 96, 48, 24, 12",
-      "en": "the pattern: 96, 48, 24, 12"
+      "hi": "Pattern 96, 48, 24, 12 hai, aur hume 12 ke baad wala number chahiye.",
+      "en": "The pattern is 96, 48, 24, 12, and we want the number after 12."
      }
     ],
     "find": {
@@ -680,6 +830,27 @@
      "simpler": {
       "hi": "Niyam hai har baar aadha karo. Toh 12 ko do barabar hisson mein baanto.",
       "en": "The rule is take half each time. So split 12 into two equal parts."
+     },
+     "why": {
+      "hi": "pattern mein har baar aadha hota hai: 96, 48, 24, 12, toh 12 ka aadha 6 hai",
+      "en": "the pattern halves each time, and half of 12 is 6"
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Pattern",
+        "items": [
+         "96, 48, 24, 12"
+        ]
+       },
+       "right": {
+        "title": "Har baar",
+        "items": [
+         "aadha"
+        ]
+       }
+      }
      }
     },
     "answer": {
@@ -700,9 +871,9 @@
        ]
       },
       "right": {
-       "title": "Kitna ghata",
+       "title": "Har baar",
        "items": [
-        "48, 24, 12"
+        "aadha"
        ]
       }
      }
@@ -712,8 +883,8 @@
     {
      "id": "c1",
      "prompt": {
-      "hi": "Pattern hai 50, 44, 38, 32. Iske baad kaunsa number aayega?",
-      "en": "The pattern is 50, 44, 38, 32. Which number comes after it?"
+      "hi": "Rocket ki ulti ginti chal rahi hai: 50, 44, 38, 32. Iske baad kaunsa number aayega?",
+      "en": "A rocket countdown goes 50, 44, 38, 32. Which number comes next?"
      },
      "key": "26",
      "accept": [
@@ -723,36 +894,57 @@
      "targets": "c4-maths-ch03-t02-m-only-increase",
      "wrongIfMis": "38",
      "board": {
-      "template": "compare@1",
+      "template": "number-line-scale@1",
       "params": {
-       "left": {
-        "title": "Pattern",
-        "items": [
-         "50, 44, 38, 32"
-        ]
-       },
-       "right": {
-        "title": "Iske baad",
-        "items": [
-         "kaunsa number"
-        ]
-       }
+       "from": 20,
+       "to": 50,
+       "step": 5,
+       "marks": [
+        {
+         "value": 44
+        },
+        {
+         "value": 38
+        },
+        {
+         "value": 32
+        }
+       ]
       }
      },
      "why": {
-      "hi": "har baar 6 ghatta hai, toh 32 − 6 = 26",
+      "hi": "50, 44, 38, 32 mein har baar 6 ghatta hai, toh 32 − 6 = 26",
       "en": "it goes down by 6 each time, so 32 − 6 = 26"
      },
      "simpler": {
       "hi": "50 se 44 tak jitna ghata, har kadam pe utna hi ghatta hai. Wahi raqam 32 mein se hatao.",
       "en": "Each step goes down by as much as 50 to 44 did. Take that same amount away from 32."
+     },
+     "answerBoard": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 20,
+       "to": 50,
+       "step": 5,
+       "marks": [
+        {
+         "value": 38
+        },
+        {
+         "value": 32
+        },
+        {
+         "value": 26
+        }
+       ]
+      }
      }
     },
     {
      "id": "c2",
      "prompt": {
-      "hi": "Pattern hai 4, 8, 16, 32. Iske baad kaunsa number aayega?",
-      "en": "The pattern is 4, 8, 16, 32. Which number comes after it?"
+      "hi": "Ek game mein coins aise badhe: 4, 8, 16, 32. Agle level par kitne coins honge?",
+      "en": "In a game the coins went 4, 8, 16, 32. How many coins will there be at the next level?"
      },
      "key": "64",
      "accept": [
@@ -762,36 +954,57 @@
      "targets": "c4-maths-ch03-t02-m-first-step-only",
      "wrongIfMis": "36",
      "board": {
-      "template": "compare@1",
+      "template": "number-line-scale@1",
       "params": {
-       "left": {
-        "title": "Pattern",
-        "items": [
-         "4, 8, 16, 32"
-        ]
-       },
-       "right": {
-        "title": "Iske baad",
-        "items": [
-         "kaunsa number"
-        ]
-       }
+       "from": 0,
+       "to": 70,
+       "step": 10,
+       "marks": [
+        {
+         "value": 8
+        },
+        {
+         "value": 16
+        },
+        {
+         "value": 32
+        }
+       ]
       }
      },
      "why": {
-      "hi": "har number pichhle ka double hai, aur 32 ka double 64 hai",
-      "en": "each number is double the one before, and double 32 is 64"
+      "hi": "4 se 8, 8 se 16, 16 se 32, sab dugne hue, toh 32 ka double 64 hai",
+      "en": "4 to 8, 8 to 16 and 16 to 32 all double, so double 32 is 64"
      },
      "simpler": {
-      "hi": "Har number pichhle number ka double hai, jaise 4 se 8. Toh 32 ka double socho.",
-      "en": "Each number is double the one before, like 4 to 8. So think of double 32."
+      "hi": "4 se 8 dekho, 8 se 16 dekho: har baar dugna hua. Toh 32 ka double socho.",
+      "en": "Look at 4 to 8 and 8 to 16: it doubles each time. So think of double 32."
+     },
+     "answerBoard": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 70,
+       "step": 10,
+       "marks": [
+        {
+         "value": 16
+        },
+        {
+         "value": 32
+        },
+        {
+         "value": 64
+        }
+       ]
+      }
      }
     },
     {
      "id": "c3",
      "prompt": {
-      "hi": "Pattern hai 4, 7, 11, 16, 22. Iske baad kaunsa number aayega?",
-      "en": "The pattern is 4, 7, 11, 16, 22. Which number comes after it?"
+      "hi": "Ek list hai: 4, 7, 11, 16, 22. Is list mein agla number kaunsa hoga?",
+      "en": "Here is a list: 4, 7, 11, 16, 22. What will the next number be?"
      },
      "key": "29",
      "accept": [
@@ -801,20 +1014,22 @@
      "targets": "c4-maths-ch03-t02-m-first-step-only",
      "wrongIfMis": "25",
      "board": {
-      "template": "compare@1",
+      "template": "number-line-scale@1",
       "params": {
-       "left": {
-        "title": "Pattern",
-        "items": [
-         "4, 7, 11, 16, 22"
-        ]
-       },
-       "right": {
-        "title": "Iske baad",
-        "items": [
-         "kaunsa number"
-        ]
-       }
+       "from": 0,
+       "to": 30,
+       "step": 5,
+       "marks": [
+        {
+         "value": 11
+        },
+        {
+         "value": 16
+        },
+        {
+         "value": 22
+        }
+       ]
       }
      },
      "why": {
@@ -824,6 +1039,25 @@
      "simpler": {
       "hi": "Yahan kadam har baar ek bada hota ja raha hai. 16 se 22 ka kadam nikalo, agla kadam usse ek zyada hoga.",
       "en": "Here the step gets one bigger each time. Find the step from 16 to 22; the next step is one more than that."
+     },
+     "answerBoard": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 30,
+       "step": 5,
+       "marks": [
+        {
+         "value": 16
+        },
+        {
+         "value": 22
+        },
+        {
+         "value": 29
+        }
+       ]
+      }
      }
     }
    ],
@@ -854,28 +1088,17 @@
      "targets": "c4-maths-ch03-t02-m-only-increase",
      "move": "number line with backward jumps: read each jump aloud as minus 5; ask which way the jumps go before choosing the next number",
      "say": {
-      "hi": "60, 55, 50, 45 mein har chhalaang peeche ki taraf hai, har baar 5 kam. Numbers chhote hote ja rahe hain, toh agla number bhi chhota hi hoga.",
-      "en": "In 60, 55, 50, 45 every jump goes backwards, 5 less each time. The numbers keep getting smaller, so the next number will be smaller too."
+      "hi": "Jab har chhalaang peeche ki taraf ho, toh har baar utna hi ghatta hai. Numbers chhote hote ja rahe hain, toh agla number bhi chhota hi hoga.",
+      "en": "When every jump goes backwards, the same amount comes off each time. The numbers are getting smaller, so the next one will be smaller too."
      },
      "simpler": {
-      "hi": "60, 55, 50, 45 mein har baar 5 kam hota hai. Numbers ghat rahe hain, toh agla bhi chhota hoga.",
-      "en": "In 60, 55, 50, 45 each number is 5 less. They keep getting smaller, so the next is smaller too."
-     },
-     "board": {
-      "template": "number-line-hop@1",
-      "params": {
-       "start": 60,
-       "hops": [
-        -5,
-        -5,
-        -5
-       ]
-      }
+      "hi": "Numbers ghat rahe hain, toh agla number aakhri number se bhi chhota hoga.",
+      "en": "The numbers are going down, so the next one is smaller than the last."
      },
      "then": {
       "prompt": {
-       "hi": "Pattern hai 70, 63, 56, 49. Iske baad kaunsa number aayega?",
-       "en": "The pattern is 70, 63, 56, 49. Which number comes after it?"
+       "hi": "Ulti ginti 70, 63, 56, 49 chal rahi hai. Agla number kaunsa hai?",
+       "en": "A countdown goes 70, 63, 56, 49. What is the next number?"
       },
       "key": "42",
       "accept": [
@@ -885,20 +1108,22 @@
       "targets": "c4-maths-ch03-t02-m-only-increase",
       "wrongIfMis": "56",
       "board": {
-       "template": "compare@1",
+       "template": "number-line-scale@1",
        "params": {
-        "left": {
-         "title": "Pattern",
-         "items": [
-          "70, 63, 56, 49"
-         ]
-        },
-        "right": {
-         "title": "Iske baad",
-         "items": [
-          "kaunsa number"
-         ]
-        }
+        "from": 40,
+        "to": 70,
+        "step": 5,
+        "marks": [
+         {
+          "value": 63
+         },
+         {
+          "value": 56
+         },
+         {
+          "value": 49
+         }
+        ]
        }
       },
       "why": {
@@ -908,6 +1133,25 @@
       "simpler": {
        "hi": "70 se 63 tak jitna ghata, har kadam pe utna hi ghatta hai. Wahi raqam 49 mein se hatao.",
        "en": "Each step goes down by as much as 70 to 63 did. Take that same amount away from 49."
+      },
+      "answerBoard": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 40,
+        "to": 70,
+        "step": 5,
+        "marks": [
+         {
+          "value": 56
+         },
+         {
+          "value": 49
+         },
+         {
+          "value": 42
+         }
+        ]
+       }
       }
      }
     },
@@ -922,53 +1166,64 @@
       "hi": "1, 3, 7, 13 mein farak 2, 4 aur 6 hain. Har farak pichhle se 2 zyada hai.",
       "en": "In 1, 3, 7, 13 the gaps are 2, 4 and 6. Each gap is 2 more than the last one."
      },
-     "board": {
-      "template": "number-line-hop@1",
-      "params": {
-       "start": 1,
-       "hops": [
-        2,
-        4,
-        6
-       ]
-      }
-     },
      "then": {
       "prompt": {
-       "hi": "Pattern hai 5, 6, 8, 11, 15. Iske baad kaunsa number aayega?",
-       "en": "The pattern is 5, 6, 8, 11, 15. Which number comes after it?"
+       "hi": "7, 8, 10, 13, 17 ke baad kaunsa number aayega?",
+       "en": "Which number comes after 7, 8, 10, 13, 17?"
       },
-      "key": "20",
+      "key": "22",
       "accept": [
-       "bees",
-       "twenty"
+       "baais",
+       "twenty-two",
+       "twenty two"
       ],
       "targets": "c4-maths-ch03-t02-m-first-step-only",
-      "wrongIfMis": "16",
+      "wrongIfMis": "18",
       "board": {
-       "template": "compare@1",
+       "template": "number-line-scale@1",
        "params": {
-        "left": {
-         "title": "Pattern",
-         "items": [
-          "5, 6, 8, 11, 15"
-         ]
-        },
-        "right": {
-         "title": "Iske baad",
-         "items": [
-          "kaunsa number"
-         ]
-        }
+        "from": 5,
+        "to": 25,
+        "step": 5,
+        "marks": [
+         {
+          "value": 10
+         },
+         {
+          "value": 13
+         },
+         {
+          "value": 17
+         }
+        ]
        }
       },
       "why": {
-       "hi": "kadam 1, 2, 3, 4 hain, toh agla kadam 5 hai: 15 + 5 = 20",
-       "en": "the steps are 1, 2, 3, 4, so the next step is 5: 15 + 5 = 20"
+       "hi": "kadam 1, 2, 3, 4 hain, toh agla kadam 5 hai: 17 + 5 = 22",
+       "en": "the steps are 1, 2, 3, 4, so after 13 and 17 the next step is 5: 17 + 5 = 22"
       },
       "simpler": {
-       "hi": "Kadam har baar ek bada hota hai. 11 se 15 ka kadam dekho, agla kadam usse ek zyada hoga, use 15 mein jodo.",
-       "en": "The step gets one bigger each time. Look at the step from 11 to 15; the next step is one more, add it to 15."
+       "hi": "Kadam har baar ek bada hota hai. 13 se 17 ka kadam dekho, agla kadam usse ek zyada hoga, use 17 mein jodo.",
+       "en": "Each step is one bigger. Look at the step from 13 to 17; the next is one more, so add it to 17."
+      },
+      "answerBoard": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 5,
+        "to": 25,
+        "step": 5,
+        "marks": [
+         {
+          "value": 13
+         },
+         {
+          "value": 17
+         },
+         {
+          "value": 22
+         }
+        ]
+       }
       }
      }
     }
@@ -976,24 +1231,6 @@
    "bridgeToNext": {
     "hi": "Ab pattern ka niyam dhoondhna aa gaya. Ab niyam ko shabdon mein bolenge, aur calendar aur shapes ke pattern mein use karenge.",
     "en": "Now we can find a pattern's rule. Next we will say the rule in words and use it in calendar and shape patterns."
-   },
-   "bridgeBoard": {
-    "template": "compare@1",
-    "params": {
-     "left": {
-      "title": "Niyam",
-      "items": [
-       "shabdon mein"
-      ]
-     },
-     "right": {
-      "title": "Pattern",
-      "items": [
-       "calendar",
-       "shapes"
-      ]
-     }
-    }
    }
   },
   {
@@ -1005,7 +1242,7 @@
       "interest": "cricket",
       "use": {
        "hi": "Tumhari cricket practice har Saturday hoti hai, aur is mahine pehli practice 6 tareekh ko hai. Baaki practice kis tareekh ko hongi, yeh calendar ka pattern batayega.",
-       "en": "Your cricket practice is every Saturday, and this month the first practice is on the 6th. On which dates are the other practices? The calendar's pattern will tell."
+       "en": "Your cricket practice is every Saturday, and this month the first practice is on the 6th. The calendar's pattern will tell us the dates of the other practices."
       }
      },
      {
@@ -1060,6 +1297,15 @@
       "why": {
        "hi": "pehle square ki 4 teeli, phir 4 naye square ki 3-3: 4 + 3 + 3 + 3 + 3 = 16",
        "en": "4 sticks for square one, then 3 each for 4 more: 4 + 3 + 3 + 3 + 3 = 16"
+      },
+      "answerBoard": {
+       "template": "shade-grid@1",
+       "params": {
+        "rows": 1,
+        "cols": 3,
+        "shade": 0,
+        "labels": false
+       }
       }
      },
      "simpler": {
@@ -1076,7 +1322,7 @@
        "en": "7 days in a week"
       },
       {
-       "hi": "column mein neeche +7",
+       "hi": "neeche +7",
        "en": "down a column, +7"
       }
      ],
@@ -1110,13 +1356,24 @@
       "targets": "c4-maths-ch03-t02-m-calendar-plus-one",
       "wrongIfMis": "13",
       "why": {
-       "hi": "column mein neeche jaane par 7 judta hai, toh 12 + 7 = 19",
+       "hi": "neeche jaane par column mein 7 judta hai, toh 12 + 7 = 19",
        "en": "going down a column adds 7, so 12 + 7 = 19"
+      },
+      "answerBoard": {
+       "template": "number-line-hop@1",
+       "params": {
+        "start": 4,
+        "hops": [
+         7,
+         7,
+         7
+        ]
+       }
       }
      },
      "simpler": {
-      "hi": "Column mein neeche jaane par 7 judta hai, jaise 11 se 18. Toh 12 mein bhi 7 jodo.",
-      "en": "Going down a column adds 7, like 11 to 18. So add 7 to 12 as well."
+      "hi": "11 se 18 ki tarah, column mein neeche jaane par 7 judta hai. Toh 12 mein bhi 7 jodo.",
+      "en": "Like 11 to 18, going down a column adds 7. So add 7 to 12 too."
      }
     }
    ],
@@ -1127,12 +1384,8 @@
     },
     "givens": [
      {
-      "hi": "2 tareekh ko Tuesday",
-      "en": "the 2nd is a Tuesday"
-     },
-     {
-      "hi": "mahine mein 31 din",
-      "en": "the month has 31 days"
+      "hi": "2 tareekh ko Tuesday hai, aur mahine mein 31 din hain.",
+      "en": "The 2nd is a Tuesday, and the month has 31 days."
      }
     ],
     "find": {
@@ -1188,6 +1441,27 @@
      "simpler": {
       "hi": "Agla Tuesday ek hafte baad hai. Toh 23 mein 7 jodo, aur dekho woh 31 din ke andar aata hai.",
       "en": "The next Tuesday is one week later. So add 7 to 23, and check that it comes within the 31 days."
+     },
+     "why": {
+      "hi": "Tuesday 2, 9, 16, 23 ke baad 23 + 7 = 30 aata hai, jo mahine ke 31 din mein hai",
+      "en": "after 2, 9, 16, 23 comes 23 + 7 = 30, and 30 is within the month's 31 days"
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Tuesday",
+        "items": [
+         "2, 9, 16, 23"
+        ]
+       },
+       "right": {
+        "title": "Mahine mein",
+        "items": [
+         "31 din"
+        ]
+       }
+      }
      }
     },
     "answer": {
@@ -1233,20 +1507,16 @@
      "targets": "c4-maths-ch03-t02-m-calendar-plus-one",
      "wrongIfMis": "9",
      "board": {
-      "template": "compare@1",
+      "template": "number-line-scale@1",
       "params": {
-       "left": {
-        "title": "Friday",
-        "items": [
-         "8 tareekh"
-        ]
-       },
-       "right": {
-        "title": "Agla Friday",
-        "items": [
-         "kis tareekh"
-        ]
-       }
+       "from": 0,
+       "to": 30,
+       "step": 5,
+       "marks": [
+        {
+         "value": 8
+        }
+       ]
       }
      },
      "why": {
@@ -1256,6 +1526,22 @@
      "simpler": {
       "hi": "Theek neeche wala din ek hafte baad aata hai. Toh 8 mein ek hafte ke din jodo.",
       "en": "The date just below comes one week later. So add a week's days to 8."
+     },
+     "answerBoard": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 30,
+       "step": 5,
+       "marks": [
+        {
+         "value": 8
+        },
+        {
+         "value": 15
+        }
+       ]
+      }
      }
     },
     {
@@ -1274,20 +1560,16 @@
      "targets": "c4-maths-ch03-t02-m-calendar-plus-one",
      "wrongIfMis": "13",
      "board": {
-      "template": "compare@1",
+      "template": "number-line-scale@1",
       "params": {
-       "left": {
-        "title": "Birthday",
-        "items": [
-         "14 tareekh, Sunday"
-        ]
-       },
-       "right": {
-        "title": "Ek hafta pehle",
-        "items": [
-         "Sunday"
-        ]
-       }
+       "from": 0,
+       "to": 30,
+       "step": 5,
+       "marks": [
+        {
+         "value": 14
+        }
+       ]
       }
      },
      "why": {
@@ -1297,6 +1579,22 @@
      "simpler": {
       "hi": "Ek hafta pehle matlab ek hafte ke din peeche jaana. Toh 14 mein se ek hafte ke din ghatao.",
       "en": "One week before means going back a week's days. So take a week's days away from 14."
+     },
+     "answerBoard": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 30,
+       "step": 5,
+       "marks": [
+        {
+         "value": 7
+        },
+        {
+         "value": 14
+        }
+       ]
+      }
      }
     },
     {
@@ -1333,12 +1631,29 @@
       }
      },
      "why": {
-      "hi": "6 se 12 mein 6 juda, par 12 se 24 mein 12 juda",
-      "en": "6 is added from 6 to 12, but 12 from 12 to 24"
+      "hi": "6 se 12 mein 6 juda, par 12 se 24 mein 12 juda hai, toh har baar 6 jodo niyam nahi hai",
+      "en": "6 is added from 6 to 12, but 12 from 12 to 24, so that is not the rule"
      },
      "simpler": {
-      "hi": "Har kadam ka farak dekho: 6 se 12, aur 12 se 24. Dono kadam pe 6 juda ya nahi, check karo.",
-      "en": "Look at the gap at each step: 6 to 12, and 12 to 24. Check whether 6 was added at both steps."
+      "hi": "6 se 12 ka farak dekho, phir 12 se 24 ka. Dono baar 6 juda ya nahi, check karo.",
+      "en": "Look at the gap from 6 to 12, then from 12 to 24. Check whether 6 was added both times."
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Pattern",
+        "items": [
+         "6, 12, 24"
+        ]
+       },
+       "right": {
+        "title": "Niyam",
+        "items": [
+         "har baar 6 jodo"
+        ]
+       }
+      }
      }
     }
    ],
@@ -1369,21 +1684,12 @@
      "targets": "c4-maths-ch03-t02-m-calendar-plus-one",
      "move": "a month calendar with one column lit: each row is one whole week → the date below is 7 days later, never the next day",
      "say": {
-      "hi": "Calendar ki har line ek poora hafta hai, yaani 7 din. Isliye kisi tareekh ke theek neeche wali tareekh 7 din baad aati hai, jaise 9 ke neeche 16.",
-      "en": "Each row of the calendar is a whole week, that is 7 days. So the date just below any date comes 7 days later, like 16 below 9."
+      "hi": "Calendar ki har line ek poora hafta hai, yaani 7 din. Isliye kisi tareekh ke theek neeche wali tareekh 7 din baad aati hai.",
+      "en": "Each line of a calendar is a whole week, that is 7 days. So the date just below any date comes 7 days later."
      },
      "simpler": {
-      "hi": "Calendar ki ek line 7 din ki hoti hai. Isliye neeche wali tareekh 7 din baad aati hai, jaise 9 ke neeche 16.",
-      "en": "One calendar row is 7 days. So the date below comes 7 days later, like 16 below 9."
-     },
-     "board": {
-      "template": "number-line-hop@1",
-      "params": {
-       "start": 9,
-       "hops": [
-        7
-       ]
-      }
+      "hi": "Calendar ki ek line 7 din ki hoti hai. Isliye neeche wali tareekh ek hafta baad aati hai.",
+      "en": "One calendar line is 7 days. So the date below comes a week later."
      },
      "then": {
       "prompt": {
@@ -1400,20 +1706,16 @@
       "targets": "c4-maths-ch03-t02-m-calendar-plus-one",
       "wrongIfMis": "21",
       "board": {
-       "template": "compare@1",
+       "template": "number-line-scale@1",
        "params": {
-        "left": {
-         "title": "Thursday",
-         "items": [
-          "20 tareekh"
-         ]
-        },
-        "right": {
-         "title": "Theek neeche",
-         "items": [
-          "kaunsi tareekh"
-         ]
-        }
+        "from": 0,
+        "to": 30,
+        "step": 5,
+        "marks": [
+         {
+          "value": 20
+         }
+        ]
        }
       },
       "why": {
@@ -1423,6 +1725,22 @@
       "simpler": {
        "hi": "Theek neeche wali tareekh ek hafte baad aati hai. Toh 20 mein ek hafte ke din jodo.",
        "en": "The date just below comes one week later. So add a week's days to 20."
+      },
+      "answerBoard": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 30,
+        "step": 5,
+        "marks": [
+         {
+          "value": 20
+         },
+         {
+          "value": 27
+         }
+        ]
+       }
       }
      }
     },
@@ -1430,35 +1748,17 @@
      "targets": "c4-maths-ch03-t02-m-first-step-only",
      "move": "test the rule on every step, not only the first: 6 → 12 is +6 but 12 → 24 is +12; each number is double the one before → a doubling list, then a fresh doubling list to continue",
      "say": {
-      "hi": "Niyam ko har kadam pe check karo. 6 se 12 tak 6 juda, par 12 se 24 tak 12 juda. Har number pichhle ka dugna hai, toh niyam 'har baar 6 jodo' nahi hai.",
-      "en": "Check the rule on every step. From 6 to 12, 6 was added, but from 12 to 24, 12 was added. Each number is double the one before, so the rule is not 'add 6 each time'."
+      "hi": "Niyam ko har kadam pe check karo. Jab har number pichhle ka dugna ho, toh har kadam bada hota jaata hai, aur niyam dugna karna hai, same number jodna nahi.",
+      "en": "Check the rule at every step. When each number is double the one before, every step gets bigger, and the rule is to double, not to add the same number."
      },
      "simpler": {
-      "hi": "6 se 12 tak 6 juda, par 12 se 24 tak 12 juda. Har number pichhle ka dugna hai, 'har baar 6 jodo' nahi.",
-      "en": "6 to 12 adds 6, but 12 to 24 adds 12. Each number is double the last, not 'add 6 each time'."
-     },
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Pattern",
-        "items": [
-         "6, 12, 24"
-        ]
-       },
-       "right": {
-        "title": "Kadam",
-        "items": [
-         "6 juda",
-         "12 juda"
-        ]
-       }
-      }
+      "hi": "Har number ko pichhle se milao. Dugna hua, toh niyam hai har baar dugna karo.",
+      "en": "Match each number with the one before. If it doubled, the rule is double each time."
      },
      "then": {
       "prompt": {
-       "hi": "Pattern hai 5, 10, 20, 40. Iske baad kaunsa number aayega?",
-       "en": "The pattern is 5, 10, 20, 40. Which number comes after it?"
+       "hi": "5, 10, 20, 40 ke baad agla number kaunsa hai?",
+       "en": "What is the next number after 5, 10, 20, 40?"
       },
       "key": "80",
       "accept": [
@@ -1468,29 +1768,50 @@
       "targets": "c4-maths-ch03-t02-m-first-step-only",
       "wrongIfMis": "45",
       "board": {
-       "template": "compare@1",
+       "template": "number-line-scale@1",
        "params": {
-        "left": {
-         "title": "Pattern",
-         "items": [
-          "5, 10, 20, 40"
-         ]
-        },
-        "right": {
-         "title": "Iske baad",
-         "items": [
-          "kaunsa number"
-         ]
-        }
+        "from": 0,
+        "to": 80,
+        "step": 10,
+        "marks": [
+         {
+          "value": 10
+         },
+         {
+          "value": 20
+         },
+         {
+          "value": 40
+         }
+        ]
        }
       },
       "why": {
-       "hi": "har number pichhle ka double hai, aur 40 ka double 80 hai",
-       "en": "each number is double the one before, and double 40 is 80"
+       "hi": "5, 10, 20, 40 mein har baar dugna hota hai, aur 40 ka double 80 hai",
+       "en": "5, 10, 20, 40 doubles each time, and double 40 is 80"
       },
       "simpler": {
        "hi": "Har number pichhle number ka double hai, jaise 5 se 10. Toh 40 ka double socho.",
        "en": "Each number is double the one before, like 5 to 10. So think of double 40."
+      },
+      "answerBoard": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 80,
+        "step": 10,
+        "marks": [
+         {
+          "value": 20
+         },
+         {
+          "value": 40
+         },
+         {
+          "value": 80
+         }
+        ]
+       }
       }
      }
     }
