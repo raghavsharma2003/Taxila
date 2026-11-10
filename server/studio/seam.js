@@ -1112,7 +1112,9 @@ export const studioSeam = {
     // dc-r7-held-board (director16): a script turn draws the unit board Brain holds — kept when it is the page up, switched at
     // most once, its second view beside it on a picture ask. Never the line-driven ladder: refused, the page up stays
     if (ask?.intent?.held) {
-      const hr = boardFirst.heldBoard(ask, { keepRef: L.wbPrevRef ?? null, keepPage: onPage ? L.wbPrevPage ?? onPage : null });
+      // (P6: the picture preselectWhiteboard decided for this intent — her line was built from its view — is the one drawn)
+      const decided = L.prePicture?.intentId === String(intentId) ? { picture: L.prePicture.pt } : {};
+      const hr = boardFirst.heldBoard(ask, { keepRef: L.wbPrevRef ?? null, keepPage: onPage ? L.wbPrevPage ?? onPage : null, ...decided });
       if (hr && drawn(hr)) { traceRecord("studio.board_held", { intentId, unit: hr.held?.unit ?? null, changed: !!hr.held?.changed, split: !!hr.split, kept: !!hr.kept }); return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact }; }
       L.pieces.delete(intentId); L.onScreen = onPrev;
       return { slotId: p.slotId, intentId, state: "failed", refused: ["held"] };
@@ -1250,7 +1252,12 @@ export const studioSeam = {
       // dc-r7-held-board (director16): a script turn's board is the unit board Brain holds — no line-driven pick. Her line is
       // written about the held board (its row); on a picture ask, about the view drawn beside it (preselectedAltLine)
       if (ask?.intent?.held) {
-        const hr = boardFirst.heldBoard({ ...ask, line: { ...(ask.line ?? {}), text: "" } }, { keepRef: L.wbPrevRef ?? null, keepPage: L.wbPrevPage ?? null });
+        // (P6: a picture ask is decided ONCE, here — the view and her line from the same pictureTurn call; the take draws
+        // exactly that decision, whatever its own ask carries)
+        const req = ask.intent.request;
+        const pt = req && req.kind !== "example" ? boardFirst.pictureTurn(ask, { keepRef: L.wbPrevRef ?? null, keepPage: L.wbPrevPage ?? null }) : null;
+        L.prePicture = { intentId: String(ask.intent.intentId), pt };
+        const hr = boardFirst.heldBoard({ ...ask, line: { ...(ask.line ?? {}), text: "" } }, { keepRef: L.wbPrevRef ?? null, keepPage: L.wbPrevPage ?? null, picture: pt });
         L.preAltView = hr?.altView ?? null; L.preAltLine = hr?.altLine ?? null;
         if (!hr) return null;
         const row = boardFirst.rowOfFacts(hr.facts ?? hr.script?.facts ?? {}, boardFirst.countsOf(hr.split ? hr.panels[0] : hr.script));
