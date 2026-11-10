@@ -238,7 +238,10 @@ const HANDLERS = {
     if (s.mode === "in_lesson" && s.lesson?.lessonId !== ev.lessonId) H.audit("lesson_overlap");
     // attribute the lesson to its slot (or today's first unstarted live slot) so a re-plan freezes it
     const p = todaysPlan(s);
-    const slot = p && (p.slots.find((x) => x.id === ev.slotId) || p.slots.find((x) => x.kind === "live_lesson" && !p.startedSlotIds.includes(x.id)));
+    // only a live lesson falls back to the lesson slot: an Ask, homework or practice start is not today's lesson and never
+    // runs its prerequisite check (audit LEARN-21: a 2-minute homework start used the slot and marked the check as run)
+    const slot = p && (p.slots.find((x) => x.id === ev.slotId)
+      || ((ev.kind ?? "live") === "live" ? p.slots.find((x) => x.kind === "live_lesson" && !p.startedSlotIds.includes(x.id)) : null));
     if (slot) { p.shownSlotIds = addId(p.shownSlotIds, slot.id); p.startedSlotIds = addId(p.startedSlotIds, slot.id); }
     s.mode = "in_lesson"; s.modeSince = t.iso;
     s.lesson = { lessonId: ev.lessonId, since: t.iso, ...(slot ? { slotId: slot.id } : {}) };
