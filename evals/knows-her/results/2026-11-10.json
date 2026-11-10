@@ -1,0 +1,1243 @@
+{
+  "eval": "knows-her",
+  "date": "2026-11-10",
+  "n": {
+    "topics": 4,
+    "childrenPerTopic": 5
+  },
+  "ok": true,
+  "failures": [],
+  "topics": [
+    {
+      "topicId": "c4-maths-ch05-t01",
+      "failures": [],
+      "newIsDefault": true,
+      "playerVsNew": [
+        {
+          "choice": "firstCard",
+          "player": [
+            {
+              "on": "c4-maths-ch05-t01-i01",
+              "fact": {
+                "kind": "first_week",
+                "itemId": "c4-maths-ch05-t01-i01",
+                "skillId": "c4-maths-ch05-t01-s1",
+                "difficulty": 1
+              },
+              "source": "brief.successFirst (R15: learner.firstWeek)"
+            }
+          ]
+        },
+        {
+          "choice": "checkOrder",
+          "player": [
+            {
+              "on": "c4-maths-ch05-t01-s1",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c4-maths-ch05-t01-m-part-part",
+                "p": 0.74,
+                "cardId": "script:c4-maths-ch05-t01-s1:c2",
+                "skillId": "c4-maths-ch05-t01-s1",
+                "order": [
+                  "c2",
+                  "c1",
+                  "c3"
+                ]
+              },
+              "source": "ledger"
+            }
+          ]
+        }
+      ],
+      "differences": [
+        {
+          "choice": "firstCard",
+          "meera": [
+            {
+              "on": "c4-maths-ch05-t01-i02",
+              "fact": {
+                "kind": "gap",
+                "days": 12,
+                "itemId": "c4-maths-ch05-t01-i02",
+                "skillId": "c4-maths-ch05-t01-s2"
+              },
+              "source": "memory.lastActiveDay"
+            }
+          ],
+          "kabir": [
+            {
+              "on": "c4-maths-ch05-t01-i01",
+              "fact": {
+                "kind": "closed_badly",
+                "itemId": "c4-maths-ch05-t01-i01",
+                "skillId": "c4-maths-ch05-t01-s1",
+                "difficulty": 1
+              },
+              "source": "brief.successFirst (R1: adapt.closes)"
+            }
+          ]
+        },
+        {
+          "choice": "compress",
+          "meera": [
+            {
+              "on": "c4-maths-ch05-t01-s1",
+              "fact": {
+                "kind": "learned_delayed_check",
+                "skillId": "c4-maths-ch05-t01-s1",
+                "status": "mastered",
+                "firstCheck": "c1"
+              },
+              "source": "kt_skill_state.display + flags.delayed"
+            }
+          ],
+          "kabir": []
+        },
+        {
+          "choice": "checkOrder",
+          "meera": [],
+          "kabir": [
+            {
+              "on": "c4-maths-ch05-t01-s1",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c4-maths-ch05-t01-m-part-part",
+                "p": 0.82,
+                "cardId": "script:c4-maths-ch05-t01-s1:c2",
+                "skillId": "c4-maths-ch05-t01-s1",
+                "order": [
+                  "c2",
+                  "c1",
+                  "c3"
+                ]
+              },
+              "source": "ledger"
+            }
+          ]
+        },
+        {
+          "choice": "hookSlot",
+          "meera": [],
+          "kabir": [
+            {
+              "on": "c4-maths-ch05-t01-s1",
+              "fact": {
+                "kind": "interest",
+                "interest": "drawing",
+                "slotInterest": "drawing",
+                "via": "exact",
+                "index": 1
+              },
+              "source": "child.interests"
+            }
+          ]
+        },
+        {
+          "choice": "remedy",
+          "meera": [],
+          "kabir": [
+            {
+              "on": "script:c4-maths-ch05-t01-s2:c1",
+              "fact": {
+                "kind": "classified_mixup",
+                "misconceptionId": "c4-maths-ch05-t01-m-unequal-parts",
+                "authored": "c4-maths-ch05-t01-m-part-part"
+              },
+              "source": "cls.misconceptionId"
+            }
+          ]
+        }
+      ],
+      "lessons": {
+        "new": {
+          "cards": 27,
+          "events": 28,
+          "applied": [],
+          "explained": true,
+          "bites": []
+        },
+        "meera": {
+          "cards": 19,
+          "events": 20,
+          "applied": [
+            "opener@c4-maths-ch05-t01-i02",
+            "compress@c4-maths-ch05-t01-s1"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "opener",
+              "on": "c4-maths-ch05-t01-i02",
+              "throws": true
+            },
+            {
+              "choice": "compress",
+              "on": "c4-maths-ch05-t01-s1",
+              "throws": true
+            }
+          ]
+        },
+        "meeraForgot": {
+          "cards": 26,
+          "events": 27,
+          "applied": [
+            "opener@c4-maths-ch05-t01-i02",
+            "compress@c4-maths-ch05-t01-s1",
+            "compress_fallback@c4-maths-ch05-t01-s1"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "opener",
+              "on": "c4-maths-ch05-t01-i02",
+              "throws": true
+            },
+            {
+              "choice": "compress",
+              "on": "c4-maths-ch05-t01-s1",
+              "throws": true
+            },
+            {
+              "choice": "compress_fallback",
+              "on": "c4-maths-ch05-t01-s1",
+              "throws": true
+            }
+          ]
+        },
+        "kabir": {
+          "cards": 27,
+          "events": 31,
+          "applied": [
+            "firstCard@c4-maths-ch05-t01-i01",
+            "checkOrder@c4-maths-ch05-t01-s1",
+            "hookSlot@c4-maths-ch05-t01-s1",
+            "remedy@script:c4-maths-ch05-t01-s2:c1"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "firstCard",
+              "on": "c4-maths-ch05-t01-i01",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c4-maths-ch05-t01-s1",
+              "throws": true
+            },
+            {
+              "choice": "hookSlot",
+              "on": "c4-maths-ch05-t01-s1",
+              "throws": true
+            },
+            {
+              "choice": "remedy",
+              "on": "script:c4-maths-ch05-t01-s2:c1",
+              "throws": true
+            }
+          ]
+        },
+        "player": {
+          "cards": 27,
+          "events": 29,
+          "applied": [
+            "firstCard@c4-maths-ch05-t01-i01",
+            "checkOrder@c4-maths-ch05-t01-s1"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "firstCard",
+              "on": "c4-maths-ch05-t01-i01",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c4-maths-ch05-t01-s1",
+              "throws": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "topicId": "c5-maths-ch02-t01",
+      "failures": [],
+      "newIsDefault": true,
+      "playerVsNew": [
+        {
+          "choice": "firstCard",
+          "player": [
+            {
+              "on": "c5-maths-ch02-t01-i01",
+              "fact": {
+                "kind": "first_week",
+                "itemId": "c5-maths-ch02-t01-i01",
+                "skillId": "c5-maths-ch02-t01-s1",
+                "difficulty": 1
+              },
+              "source": "brief.successFirst (R15: learner.firstWeek)"
+            }
+          ]
+        },
+        {
+          "choice": "checkOrder",
+          "player": [
+            {
+              "on": "c5-maths-ch02-t01-s1",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c5-maths-ch02-t01-m-whole-number-bias",
+                "p": 0.74,
+                "cardId": "script:c5-maths-ch02-t01-s1:c2",
+                "skillId": "c5-maths-ch02-t01-s1",
+                "order": [
+                  "c2",
+                  "c1",
+                  "c3"
+                ]
+              },
+              "source": "ledger"
+            },
+            {
+              "on": "c5-maths-ch02-t01-s2",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c5-maths-ch02-t01-m-whole-number-bias",
+                "p": 0.74,
+                "cardId": "script:c5-maths-ch02-t01-s2:c2",
+                "skillId": "c5-maths-ch02-t01-s2",
+                "order": [
+                  "c2",
+                  "c1",
+                  "c3"
+                ]
+              },
+              "source": "ledger"
+            },
+            {
+              "on": "c5-maths-ch02-t01-s3",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c5-maths-ch02-t01-m-whole-number-bias",
+                "p": 0.74,
+                "cardId": "script:c5-maths-ch02-t01-s3:c2",
+                "skillId": "c5-maths-ch02-t01-s3",
+                "order": [
+                  "c2",
+                  "c1",
+                  "c3"
+                ]
+              },
+              "source": "ledger"
+            }
+          ]
+        }
+      ],
+      "differences": [
+        {
+          "choice": "firstCard",
+          "meera": [
+            {
+              "on": "c5-maths-ch02-t01-i03",
+              "fact": {
+                "kind": "gap",
+                "days": 12,
+                "itemId": "c5-maths-ch02-t01-i03",
+                "skillId": "c5-maths-ch02-t01-s2"
+              },
+              "source": "memory.lastActiveDay"
+            }
+          ],
+          "kabir": [
+            {
+              "on": "c5-maths-ch02-t01-i01",
+              "fact": {
+                "kind": "closed_badly",
+                "itemId": "c5-maths-ch02-t01-i01",
+                "skillId": "c5-maths-ch02-t01-s1",
+                "difficulty": 1
+              },
+              "source": "brief.successFirst (R1: adapt.closes)"
+            }
+          ]
+        },
+        {
+          "choice": "compress",
+          "meera": [
+            {
+              "on": "c5-maths-ch02-t01-s1",
+              "fact": {
+                "kind": "learned_delayed_check",
+                "skillId": "c5-maths-ch02-t01-s1",
+                "status": "mastered",
+                "firstCheck": "c1"
+              },
+              "source": "kt_skill_state.display + flags.delayed"
+            }
+          ],
+          "kabir": []
+        },
+        {
+          "choice": "prereqCheck",
+          "meera": [],
+          "kabir": [
+            {
+              "on": "c4-maths-ch05-t01",
+              "fact": {
+                "kind": "wheel_spin",
+                "skillId": "c5-maths-ch02-t01-s1",
+                "forTopicId": "c5-maths-ch02-t01",
+                "prereqTopicId": "c4-maths-ch05-t01"
+              },
+              "source": "brief.prereqCheck (R5: kt.wheelSpin)"
+            }
+          ]
+        },
+        {
+          "choice": "checkOrder",
+          "meera": [],
+          "kabir": [
+            {
+              "on": "c5-maths-ch02-t01-s1",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c5-maths-ch02-t01-m-whole-number-bias",
+                "p": 0.82,
+                "cardId": "script:c5-maths-ch02-t01-s1:c2",
+                "skillId": "c5-maths-ch02-t01-s1",
+                "order": [
+                  "c2",
+                  "c1",
+                  "c3"
+                ]
+              },
+              "source": "ledger"
+            },
+            {
+              "on": "c5-maths-ch02-t01-s2",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c5-maths-ch02-t01-m-whole-number-bias",
+                "p": 0.82,
+                "cardId": "script:c5-maths-ch02-t01-s2:c2",
+                "skillId": "c5-maths-ch02-t01-s2",
+                "order": [
+                  "c2",
+                  "c1",
+                  "c3"
+                ]
+              },
+              "source": "ledger"
+            },
+            {
+              "on": "c5-maths-ch02-t01-s3",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c5-maths-ch02-t01-m-whole-number-bias",
+                "p": 0.82,
+                "cardId": "script:c5-maths-ch02-t01-s3:c2",
+                "skillId": "c5-maths-ch02-t01-s3",
+                "order": [
+                  "c2",
+                  "c1",
+                  "c3"
+                ]
+              },
+              "source": "ledger"
+            }
+          ]
+        },
+        {
+          "choice": "hookSlot",
+          "meera": [],
+          "kabir": [
+            {
+              "on": "c5-maths-ch02-t01-s1",
+              "fact": {
+                "kind": "interest",
+                "interest": "trains",
+                "slotInterest": "vehicles",
+                "via": "near",
+                "index": 1,
+                "path": "trains → vehicles"
+              },
+              "source": "child.interests + interest registry near"
+            }
+          ]
+        },
+        {
+          "choice": "remedy",
+          "meera": [],
+          "kabir": [
+            {
+              "on": "script:c5-maths-ch02-t01-s2:c1",
+              "fact": {
+                "kind": "classified_mixup",
+                "misconceptionId": "c5-maths-ch02-t01-m-whole-number-bias",
+                "authored": "c5-maths-ch02-t01-m-count-marks"
+              },
+              "source": "cls.misconceptionId"
+            }
+          ]
+        }
+      ],
+      "lessons": {
+        "new": {
+          "cards": 26,
+          "events": 27,
+          "applied": [],
+          "explained": true,
+          "bites": []
+        },
+        "meera": {
+          "cards": 19,
+          "events": 20,
+          "applied": [
+            "opener@c5-maths-ch02-t01-i03",
+            "compress@c5-maths-ch02-t01-s1"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "opener",
+              "on": "c5-maths-ch02-t01-i03",
+              "throws": true
+            },
+            {
+              "choice": "compress",
+              "on": "c5-maths-ch02-t01-s1",
+              "throws": true
+            }
+          ]
+        },
+        "meeraForgot": {
+          "cards": 25,
+          "events": 26,
+          "applied": [
+            "opener@c5-maths-ch02-t01-i03",
+            "compress@c5-maths-ch02-t01-s1",
+            "compress_fallback@c5-maths-ch02-t01-s1"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "opener",
+              "on": "c5-maths-ch02-t01-i03",
+              "throws": true
+            },
+            {
+              "choice": "compress",
+              "on": "c5-maths-ch02-t01-s1",
+              "throws": true
+            },
+            {
+              "choice": "compress_fallback",
+              "on": "c5-maths-ch02-t01-s1",
+              "throws": true
+            }
+          ]
+        },
+        "kabir": {
+          "cards": 26,
+          "events": 31,
+          "applied": [
+            "prereqCheck@c4-maths-ch05-t01",
+            "firstCard@c5-maths-ch02-t01-i01",
+            "checkOrder@c5-maths-ch02-t01-s1",
+            "hookSlot@c5-maths-ch02-t01-s1",
+            "checkOrder@c5-maths-ch02-t01-s2",
+            "remedy@script:c5-maths-ch02-t01-s2:c1",
+            "checkOrder@c5-maths-ch02-t01-s3"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "prereqCheck",
+              "on": "c4-maths-ch05-t01",
+              "throws": true
+            },
+            {
+              "choice": "firstCard",
+              "on": "c5-maths-ch02-t01-i01",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c5-maths-ch02-t01-s1",
+              "throws": true
+            },
+            {
+              "choice": "hookSlot",
+              "on": "c5-maths-ch02-t01-s1",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c5-maths-ch02-t01-s2",
+              "throws": true
+            },
+            {
+              "choice": "remedy",
+              "on": "script:c5-maths-ch02-t01-s2:c1",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c5-maths-ch02-t01-s3",
+              "throws": true
+            }
+          ]
+        },
+        "player": {
+          "cards": 26,
+          "events": 28,
+          "applied": [
+            "firstCard@c5-maths-ch02-t01-i01",
+            "checkOrder@c5-maths-ch02-t01-s1",
+            "checkOrder@c5-maths-ch02-t01-s2",
+            "checkOrder@c5-maths-ch02-t01-s3"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "firstCard",
+              "on": "c5-maths-ch02-t01-i01",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c5-maths-ch02-t01-s1",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c5-maths-ch02-t01-s2",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c5-maths-ch02-t01-s3",
+              "throws": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "topicId": "c5-maths-ch02-t02",
+      "failures": [],
+      "newIsDefault": true,
+      "playerVsNew": [
+        {
+          "choice": "firstCard",
+          "player": [
+            {
+              "on": "c5-maths-ch02-t02-i01",
+              "fact": {
+                "kind": "first_week",
+                "itemId": "c5-maths-ch02-t02-i01",
+                "skillId": "c5-maths-ch02-t02-s1",
+                "difficulty": 1
+              },
+              "source": "brief.successFirst (R15: learner.firstWeek)"
+            }
+          ]
+        },
+        {
+          "choice": "checkOrder",
+          "player": [
+            {
+              "on": "c5-maths-ch02-t02-s2",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c5-maths-ch02-t02-m-tops-only",
+                "p": 0.74,
+                "cardId": "script:c5-maths-ch02-t02-s2:c1",
+                "skillId": "c5-maths-ch02-t02-s2",
+                "order": [
+                  "c1",
+                  "c0",
+                  "c2"
+                ]
+              },
+              "source": "ledger"
+            }
+          ]
+        }
+      ],
+      "differences": [
+        {
+          "choice": "firstCard",
+          "meera": [
+            {
+              "on": "c5-maths-ch02-t02-i02",
+              "fact": {
+                "kind": "gap",
+                "days": 12,
+                "itemId": "c5-maths-ch02-t02-i02",
+                "skillId": "c5-maths-ch02-t02-s2"
+              },
+              "source": "memory.lastActiveDay"
+            }
+          ],
+          "kabir": [
+            {
+              "on": "c5-maths-ch02-t02-i01",
+              "fact": {
+                "kind": "closed_badly",
+                "itemId": "c5-maths-ch02-t02-i01",
+                "skillId": "c5-maths-ch02-t02-s1",
+                "difficulty": 1
+              },
+              "source": "brief.successFirst (R1: adapt.closes)"
+            }
+          ]
+        },
+        {
+          "choice": "compress",
+          "meera": [
+            {
+              "on": "c5-maths-ch02-t02-s1",
+              "fact": {
+                "kind": "learned_delayed_check",
+                "skillId": "c5-maths-ch02-t02-s1",
+                "status": "mastered",
+                "firstCheck": "c1"
+              },
+              "source": "kt_skill_state.display + flags.delayed"
+            }
+          ],
+          "kabir": []
+        },
+        {
+          "choice": "prereqCheck",
+          "meera": [],
+          "kabir": [
+            {
+              "on": "c5-maths-ch02-t01",
+              "fact": {
+                "kind": "wheel_spin",
+                "skillId": "c5-maths-ch02-t02-s1",
+                "forTopicId": "c5-maths-ch02-t02",
+                "prereqTopicId": "c5-maths-ch02-t01"
+              },
+              "source": "brief.prereqCheck (R5: kt.wheelSpin)"
+            }
+          ]
+        },
+        {
+          "choice": "hookSlot",
+          "meera": [],
+          "kabir": [
+            {
+              "on": "c5-maths-ch02-t02-s1",
+              "fact": {
+                "kind": "interest",
+                "interest": "drawing",
+                "slotInterest": "drawing",
+                "via": "exact",
+                "index": 1
+              },
+              "source": "child.interests"
+            }
+          ]
+        },
+        {
+          "choice": "checkOrder",
+          "meera": [],
+          "kabir": [
+            {
+              "on": "c5-maths-ch02-t02-s2",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c5-maths-ch02-t02-m-tops-only",
+                "p": 0.82,
+                "cardId": "script:c5-maths-ch02-t02-s2:c1",
+                "skillId": "c5-maths-ch02-t02-s2",
+                "order": [
+                  "c1",
+                  "c0",
+                  "c2"
+                ]
+              },
+              "source": "ledger"
+            }
+          ]
+        },
+        {
+          "choice": "remedy",
+          "meera": [],
+          "kabir": [
+            {
+              "on": "script:c5-maths-ch02-t02-s3:c1",
+              "fact": {
+                "kind": "classified_mixup",
+                "misconceptionId": "c5-maths-ch02-t02-m-bigger-denominator",
+                "authored": "c5-maths-ch02-t02-m-tops-only"
+              },
+              "source": "cls.misconceptionId"
+            }
+          ]
+        }
+      ],
+      "lessons": {
+        "new": {
+          "cards": 29,
+          "events": 30,
+          "applied": [],
+          "explained": true,
+          "bites": []
+        },
+        "meera": {
+          "cards": 22,
+          "events": 23,
+          "applied": [
+            "opener@c5-maths-ch02-t02-i02",
+            "compress@c5-maths-ch02-t02-s1"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "opener",
+              "on": "c5-maths-ch02-t02-i02",
+              "throws": true
+            },
+            {
+              "choice": "compress",
+              "on": "c5-maths-ch02-t02-s1",
+              "throws": true
+            }
+          ]
+        },
+        "meeraForgot": {
+          "cards": 28,
+          "events": 29,
+          "applied": [
+            "opener@c5-maths-ch02-t02-i02",
+            "compress@c5-maths-ch02-t02-s1",
+            "compress_fallback@c5-maths-ch02-t02-s1"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "opener",
+              "on": "c5-maths-ch02-t02-i02",
+              "throws": true
+            },
+            {
+              "choice": "compress",
+              "on": "c5-maths-ch02-t02-s1",
+              "throws": true
+            },
+            {
+              "choice": "compress_fallback",
+              "on": "c5-maths-ch02-t02-s1",
+              "throws": true
+            }
+          ]
+        },
+        "kabir": {
+          "cards": 29,
+          "events": 34,
+          "applied": [
+            "prereqCheck@c5-maths-ch02-t01",
+            "firstCard@c5-maths-ch02-t02-i01",
+            "hookSlot@c5-maths-ch02-t02-s1",
+            "checkOrder@c5-maths-ch02-t02-s2",
+            "remedy@script:c5-maths-ch02-t02-s3:c1"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "prereqCheck",
+              "on": "c5-maths-ch02-t01",
+              "throws": true
+            },
+            {
+              "choice": "firstCard",
+              "on": "c5-maths-ch02-t02-i01",
+              "throws": true
+            },
+            {
+              "choice": "hookSlot",
+              "on": "c5-maths-ch02-t02-s1",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c5-maths-ch02-t02-s2",
+              "throws": true
+            },
+            {
+              "choice": "remedy",
+              "on": "script:c5-maths-ch02-t02-s3:c1",
+              "throws": true
+            }
+          ]
+        },
+        "player": {
+          "cards": 29,
+          "events": 31,
+          "applied": [
+            "firstCard@c5-maths-ch02-t02-i01",
+            "checkOrder@c5-maths-ch02-t02-s2"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "firstCard",
+              "on": "c5-maths-ch02-t02-i01",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c5-maths-ch02-t02-s2",
+              "throws": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "topicId": "c6-maths-ch06-t01",
+      "failures": [],
+      "newIsDefault": true,
+      "playerVsNew": [
+        {
+          "choice": "firstCard",
+          "player": [
+            {
+              "on": "c6-maths-ch06-t01-i13",
+              "fact": {
+                "kind": "first_week",
+                "itemId": "c6-maths-ch06-t01-i13",
+                "skillId": "c6-maths-ch06-t01-s2",
+                "difficulty": 1
+              },
+              "source": "brief.successFirst (R15: learner.firstWeek)"
+            }
+          ]
+        },
+        {
+          "choice": "checkOrder",
+          "player": [
+            {
+              "on": "c6-maths-ch06-t01-s1",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c6-maths-ch06-t01-m-area-perimeter",
+                "p": 0.74,
+                "cardId": "script:c6-maths-ch06-t01-s1:c2",
+                "skillId": "c6-maths-ch06-t01-s1",
+                "order": [
+                  "c2",
+                  "c1"
+                ]
+              },
+              "source": "ledger"
+            },
+            {
+              "on": "c6-maths-ch06-t01-s2",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c6-maths-ch06-t01-m-area-perimeter",
+                "p": 0.74,
+                "cardId": "script:c6-maths-ch06-t01-s2:c2",
+                "skillId": "c6-maths-ch06-t01-s2",
+                "order": [
+                  "c2",
+                  "c1",
+                  "c3"
+                ]
+              },
+              "source": "ledger"
+            },
+            {
+              "on": "c6-maths-ch06-t01-s3",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c6-maths-ch06-t01-m-area-perimeter",
+                "p": 0.74,
+                "cardId": "script:c6-maths-ch06-t01-s3:c2",
+                "skillId": "c6-maths-ch06-t01-s3",
+                "order": [
+                  "c2",
+                  "c1",
+                  "c3"
+                ]
+              },
+              "source": "ledger"
+            }
+          ]
+        }
+      ],
+      "differences": [
+        {
+          "choice": "firstCard",
+          "meera": [
+            {
+              "on": "c6-maths-ch06-t01-i13",
+              "fact": {
+                "kind": "gap",
+                "days": 12,
+                "itemId": "c6-maths-ch06-t01-i13",
+                "skillId": "c6-maths-ch06-t01-s2"
+              },
+              "source": "memory.lastActiveDay"
+            }
+          ],
+          "kabir": [
+            {
+              "on": "c6-maths-ch06-t01-i03",
+              "fact": {
+                "kind": "closed_badly",
+                "itemId": "c6-maths-ch06-t01-i03",
+                "skillId": "c6-maths-ch06-t01-s1",
+                "difficulty": 2
+              },
+              "source": "brief.successFirst (R1: adapt.closes)"
+            }
+          ]
+        },
+        {
+          "choice": "compress",
+          "meera": [
+            {
+              "on": "c6-maths-ch06-t01-s1",
+              "fact": {
+                "kind": "learned_delayed_check",
+                "skillId": "c6-maths-ch06-t01-s1",
+                "status": "mastered",
+                "firstCheck": "c1"
+              },
+              "source": "kt_skill_state.display + flags.delayed"
+            }
+          ],
+          "kabir": []
+        },
+        {
+          "choice": "checkOrder",
+          "meera": [],
+          "kabir": [
+            {
+              "on": "c6-maths-ch06-t01-s1",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c6-maths-ch06-t01-m-area-perimeter",
+                "p": 0.82,
+                "cardId": "script:c6-maths-ch06-t01-s1:c2",
+                "skillId": "c6-maths-ch06-t01-s1",
+                "order": [
+                  "c2",
+                  "c1"
+                ]
+              },
+              "source": "ledger"
+            },
+            {
+              "on": "c6-maths-ch06-t01-s2",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c6-maths-ch06-t01-m-area-perimeter",
+                "p": 0.82,
+                "cardId": "script:c6-maths-ch06-t01-s2:c2",
+                "skillId": "c6-maths-ch06-t01-s2",
+                "order": [
+                  "c2",
+                  "c1",
+                  "c3"
+                ]
+              },
+              "source": "ledger"
+            },
+            {
+              "on": "c6-maths-ch06-t01-s3",
+              "fact": {
+                "kind": "open_mixup",
+                "misconceptionId": "c6-maths-ch06-t01-m-area-perimeter",
+                "p": 0.82,
+                "cardId": "script:c6-maths-ch06-t01-s3:c2",
+                "skillId": "c6-maths-ch06-t01-s3",
+                "order": [
+                  "c2",
+                  "c1",
+                  "c3"
+                ]
+              },
+              "source": "ledger"
+            }
+          ]
+        },
+        {
+          "choice": "hookSlot",
+          "meera": [],
+          "kabir": [
+            {
+              "on": "c6-maths-ch06-t01-s1",
+              "fact": {
+                "kind": "interest",
+                "interest": "drawing",
+                "slotInterest": "drawing",
+                "via": "exact",
+                "index": 1
+              },
+              "source": "child.interests"
+            }
+          ]
+        },
+        {
+          "choice": "remedy",
+          "meera": [],
+          "kabir": [
+            {
+              "on": "script:c6-maths-ch06-t01-s2:c1",
+              "fact": {
+                "kind": "classified_mixup",
+                "misconceptionId": "c6-maths-ch06-t01-m-area-perimeter",
+                "authored": "c6-maths-ch06-t01-m-l-plus-b"
+              },
+              "source": "cls.misconceptionId"
+            }
+          ]
+        }
+      ],
+      "lessons": {
+        "new": {
+          "cards": 24,
+          "events": 25,
+          "applied": [],
+          "explained": true,
+          "bites": []
+        },
+        "meera": {
+          "cards": 18,
+          "events": 19,
+          "applied": [
+            "opener@c6-maths-ch06-t01-i13",
+            "compress@c6-maths-ch06-t01-s1"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "opener",
+              "on": "c6-maths-ch06-t01-i13",
+              "throws": true
+            },
+            {
+              "choice": "compress",
+              "on": "c6-maths-ch06-t01-s1",
+              "throws": true
+            }
+          ]
+        },
+        "meeraForgot": {
+          "cards": 23,
+          "events": 24,
+          "applied": [
+            "opener@c6-maths-ch06-t01-i13",
+            "compress@c6-maths-ch06-t01-s1",
+            "compress_fallback@c6-maths-ch06-t01-s1"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "opener",
+              "on": "c6-maths-ch06-t01-i13",
+              "throws": true
+            },
+            {
+              "choice": "compress",
+              "on": "c6-maths-ch06-t01-s1",
+              "throws": true
+            },
+            {
+              "choice": "compress_fallback",
+              "on": "c6-maths-ch06-t01-s1",
+              "throws": true
+            }
+          ]
+        },
+        "kabir": {
+          "cards": 24,
+          "events": 28,
+          "applied": [
+            "firstCard@c6-maths-ch06-t01-i03",
+            "checkOrder@c6-maths-ch06-t01-s1",
+            "hookSlot@c6-maths-ch06-t01-s1",
+            "checkOrder@c6-maths-ch06-t01-s2",
+            "remedy@script:c6-maths-ch06-t01-s2:c1",
+            "checkOrder@c6-maths-ch06-t01-s3"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "firstCard",
+              "on": "c6-maths-ch06-t01-i03",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c6-maths-ch06-t01-s1",
+              "throws": true
+            },
+            {
+              "choice": "hookSlot",
+              "on": "c6-maths-ch06-t01-s1",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c6-maths-ch06-t01-s2",
+              "throws": true
+            },
+            {
+              "choice": "remedy",
+              "on": "script:c6-maths-ch06-t01-s2:c1",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c6-maths-ch06-t01-s3",
+              "throws": true
+            }
+          ]
+        },
+        "player": {
+          "cards": 24,
+          "events": 26,
+          "applied": [
+            "firstCard@c6-maths-ch06-t01-i13",
+            "checkOrder@c6-maths-ch06-t01-s1",
+            "checkOrder@c6-maths-ch06-t01-s2",
+            "checkOrder@c6-maths-ch06-t01-s3"
+          ],
+          "explained": true,
+          "bites": [
+            {
+              "choice": "firstCard",
+              "on": "c6-maths-ch06-t01-i13",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c6-maths-ch06-t01-s1",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c6-maths-ch06-t01-s2",
+              "throws": true
+            },
+            {
+              "choice": "checkOrder",
+              "on": "c6-maths-ch06-t01-s3",
+              "throws": true
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
