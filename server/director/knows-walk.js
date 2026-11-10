@@ -72,7 +72,7 @@ export function knowsRemedy(s, item, cls, sk) {
   const authored = item?.scriptCheck?.targets ?? item?.scriptAsk?.targets ?? null;
   if (!s.knows) return authored;
   const r = remedyNow(s.knows, item, cls, sk);
-  noteBecause(s, r.because);
+  if (r.targets && !(s.remedied ?? []).includes(r.targets)) noteBecause(s, r.because); // (a remediation said once is not said again)
   return r.targets;
 }
 

@@ -967,8 +967,9 @@ function walkLadder(s, kit) {
 /** A wrong answer to a scripted check: that misconception's remediation (once per misconception), then its keyed follow-up. */
 function walkRemedy(s, input, item) {
   const { kit } = input;
-  const targets = item.scriptCheck?.targets ?? item.scriptAsk?.targets;
-  if (!targets || verdict(input.cls) !== "wrong" || (s.remedied ?? []).includes(targets)) return null;
+  // round 8 K3: the mix-up the classifier named on this answer when the skill remediates it, else the card's authored target
+  const targets = verdict(input.cls) === "wrong" ? knowsRemedy(s, item, input.cls, skillScriptOf(kit, item.skillId)) : null;
+  if (!targets || (s.remedied ?? []).includes(targets)) return null;
   const r = skillScriptOf(kit, item.skillId)?.remediation?.find((x) => x.targets === targets);
   if (!r) return null;
   s.remedied = [...(s.remedied ?? []), targets];
