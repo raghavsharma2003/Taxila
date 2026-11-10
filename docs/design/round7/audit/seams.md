@@ -11,9 +11,9 @@ The sweeps are scripts, so they can be re-run: `docs/design/round7/audit/seams-s
 
 | id | sev | kind | owner | title | where | fix | status |
 |---|---|---|---|---|---|---|---|
-| SEAM-01 | P1 | broken | games | A child who says "solah", "chaudah", "बीस" or any number above 13 (except 15 and 20) in a game is not heard as a number | `src/play/core/voice.ts:24-29,83,91` | read number words with `spokenNumber` from `server/grading/spoken-number.js` (pure, already the one reader the lesson uses) when `NUM` has no entry | open |
+| SEAM-01 | P2 | broken | games | A child who says "solah", "chaudah", "बीस" or any number above 13 (except 15 and 20) to a game is not heard by the game | `src/play/core/voice.ts:24-29,83,91` | read number words with `spokenNumber` from `server/grading/spoken-number.js` (pure, already the one reader the lesson uses) when `NUM` has no entry | open |
 | SEAM-02 | P2 | inconsistent | brain + voice | Reading fluency is built on both ends and fed by nothing: the client waits for `ui.readAloud`, no server code ever sends it, so WCPM is never measured and `GET /api/voice/trends` has no caller | `shared/contracts.ts:96-97`; `src/lesson/runtime.ts:583,594-597,910`; `src/voice/features.ts:205`; `server/voice/features.js:3,348,369-370` | Director sets `ui.readAloud` on a read-aloud item (English reading items have the passage), or mark the field "not built" and drop the reader | open |
-| SEAM-03 | P2 | inconsistent | studio (forge) + voice + learning | Six private class-to-band tables beside `shared/bands.ts`. Forge's puts class 7 in B4 (the table: B3); speech-to-text and spoken-number reading put class 4 in "6-9" (the table: "10-15") when no lesson is open | `server/forge/strings.js:130` (live via `server/forge/planner.js:34`, `server/routes/lesson.js:457`); `server/voice/stt.js:46`; `server/voice/spoken.js:580`; `server/conductor/config.js:10`; `server/comprehension/params.js:38`; `server/forge/g2/brief.js:11`; canonical `shared/learner.ts:20-24` | each file imports `band4Of` / `contractBandOf` from `shared/bands.ts` (or `server/learner/bands.js`) | open |
+| SEAM-03 | P2 | inconsistent | studio (forge) + voice + learning | Six private class-to-band tables beside `shared/bands.ts`. Forge's puts class 7 in B4 (the table: B3); speech-to-text and spoken-number reading put class 4 in "6-9" (the table: "10-15") when no lesson is open | `server/forge/strings.js:130` (live via `server/forge/planner.js:34`, `server/routes/lesson.js:457`); `server/voice/stt.js:46`; `server/voice/spoken.js:580`; `server/conductor/config.js:10`; `server/comprehension/params.js:38`; `server/forge/g2/brief.js:11`; `server/forge3/certify-tray.js:65,95,123`; canonical `shared/learner.ts:20-24` | each file imports `band4Of` / `contractBandOf` from `shared/bands.ts` (or `server/learner/bands.js`) | open |
 | SEAM-04 | P3 | no longer needed | main | The signals layer (about 1,000 lines, server and client) was built on 2026-10-04 and never wired; `TAXILA_SIGNALS` can never flip anything | `server/signals/{index,backstop,priors,quality,session,states}.js`; `src/signals/*.ts`; `context/decisions.md:3241-3243` | owner's call: wire it per SIGNALS-SPEC §8.2 or retire it (keep `server/signals/text.js` and `linguistic.js`, which are live) | open |
 | SEAM-05 | P3 | inconsistent | brain + voice | The contract says the server "marks the unsaid tail" from `heardUpTo`; the client never sends it and no live server code reads it | `shared/contracts.ts:294-299,310`; PIPELINE A11 / Voice 8 | write "not built yet (PIPELINE Brain 11, Voice 8)" on both fields until they are | open |
 | SEAM-07 | P3 | no longer needed | brain (server/ui) + platform + app | The Kaksha cohort switch still runs end to end and decides nothing: the server hashes the guardian's email on every `/api/me` and child boot to answer `ui.kaksha`, the release carries `TAXILA_UI_KAKSHA` over, and the client ignores the answer | `server/ui/kaksha-cohort.js:1-29`; `server/routes/account.js:240`; `server/routes/child.js:185-187`; `scripts/release-core.mjs:100-102`; `src/ui-v3/kaksha/flag.ts:26-29,71-82` | drop `uiFlagsFor`, the `ui` field and the env name, or rewrite the server comment to say the switch is inert (APP-49 covers the client comments) | open |
@@ -32,7 +32,9 @@ outside the grammar" (`voice.ts:91`) and the utterance is not a game command. Ru
 `{verb:"number",n:20}`, `parseVoice("16")` → `{verb:"number",n:16}`. The lesson's reader on the same words:
 `spokenNumber("solah")` → 16, `spokenNumber("सोलह")` → 16, `spokenNumber("ग्यारह")` → 11, `spokenNumber("pachchees")` → 25.
 The Hindi speech recogniser writes number words in Devanagari, so a Hindi-medium child answering "सोलह" to a times-table
-game gets nothing back from the game. `spoken-number.js` says it exists because five graders each had their own reader
+game gets nothing back from the game. Inside a lesson the words are not lost: `PlayStage.tsx:245-253` hands a null
+intent on as an ordinary lesson answer, which the server's reader grades, so the child is answered by the teacher
+instead of by the game's control (the reason this is P2, not P1). Played outside a lesson there is no such fallback. `spoken-number.js` says it exists because five graders each had their own reader
 and each was wrong; this is a sixth.
 
 **SEAM-02.** `grep -rn readAloud server` is empty. The contract field (`contracts.ts:96-97`) says "voice features
@@ -85,11 +87,14 @@ hours, cap and limits. `captions_always` and `comfort_mode` are read nowhere out
 app's captions come from `prefs.captionsAlways` (the child's own Me screen) and its larger text from `prefs.largeText`.
 So the parent of a child who is hard of hearing picks "Words on screen: always" (set-up also writes it from the
 "hard to hear" answer, `src/onboarding/Setup.tsx:80`), reads "{name} always sees what {T} says, as words", and the
-child's device never learns of it. The learner report notes the set-up draft fields; this is the saved control.
+child's device never learns of it. The learner report notes the set-up draft fields; this is the saved control. P1
+because the child it is for (hard of hearing, or needing more time) does not get what the parent chose; the skeptic
+rated it P2 on the grounds that nothing visibly breaks.
 
 **SEAM-10.** `homeStateOf` returns `resting` only when the family's limits are on and the time is outside the hours
 (`child.js:105`); the default (limits off) never rests, so few children see it today. The copy rows put `{time}` straight
-in: `"Lessons open again at {time}"`, `"Lessons {time} baje phir khulenge"`.
+in: `"Lessons open again at {time}"`, `"Lessons {time} baje phir khulenge"`. The lesson-refused screen formats the
+same value with `clock()` (`src/child/lesson/Refused.tsx:33`), so the two screens show one time two ways.
 
 **SEAM-11.** The parent's Schedule card (`POST /api/parent/schedule`, `child_routine.anchor`) says "{name}'s lesson is
 planned for 5:00 pm on the days you chose … It is a plan, not a lock". The plan answer carries
@@ -102,6 +107,13 @@ Beyond PLAT-57's list: `GET /api/play/builds` (the child's own game builds; only
 `GET /api/play/admit` (only `tests/prod/*`), `POST /api/studio/made-for/hide` (no caller at all; the shelf on Home, the
 Debrief and the Notebook has no hide control). `GET /api/studio/timing`, `/api/ops`, `/api/ops/summary`,
 `/api/test/*` and `/api/voicesig/status` are operator or test routes and are fine without a client.
+
+## Skeptic pass
+
+One sub-agent was given the eleven findings without the reasoning and asked to refute each. It confirmed all eleven at
+the evidence level. Changes made on its report: SEAM-01 lowered from P1 to P2 (in a lesson the unread words still
+reach the lesson's grader); SEAM-03 gained a seventh copy (`server/forge3/certify-tray.js`); SEAM-10 gained the
+lesson-refused screen that formats the same value differently. It also rated SEAM-09 P2; kept at P1 (see its note).
 
 ## Coverage
 
