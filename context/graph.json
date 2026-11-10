@@ -27323,6 +27323,13 @@
    "at": "2026-11-10",
    "title": "Release 14.4.3 live 2026-11-10 11:46 UTC: taxila-web--sc7a4798-cx0n (image c7a4798, branch hotfix/14.4.3 = 14.4.2 ac4e8e88 + the platform audit's PLAT-01/02 fix in server/serve.mjs and server/http.js, 3 files, no migration). Before: proven on localhost against ac4e8e88 that GET /% exits the web process (URIError at serve.mjs:131) and a cookie 'promo=100%' makes /api/me answer 500. Hotfix branch gate: tsc, vite, npm test 3,618 pass / 0 fail, prompt budget PASS; CI green. Deploy by main with scripts/deploy-azure.mjs (web only): ACR build, canary at 0%, smoke tests/prod/w0-smoke.mjs 4/4, then 100%. After, on the live site: /api/health ok on the new revision, GET /% -> 400 and health still ok, cookie % -> 401, home 200. Previous revision taxila-web--sac4e8e8-3x6d kept for rollback by name (the script's --rollback can pick a failed revision: PLAT-03, fixed on int/r6 only). The script's --gate option hung with no output in this environment; the deploy used its GitHub Actions check instead.",
    "source": "inbox/r7-main-36.json"
+  },
+  {
+   "id": "r7-audit-learner-dead-code-removed",
+   "kind": "decision",
+   "title": "Removed learner dead code with no reader (audit LEARN-50, 51, 52); last commit holding it: 24472528",
+   "at": "2026-11-10",
+   "source": "inbox/r7-audit-learner-2.json"
   }
  ],
  "edges": [
