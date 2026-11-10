@@ -6568,3 +6568,7 @@ A read-only code trace of the integration 24 tree (one pass, by a Sonnet agent f
 - 4 scripts are live, 30 staged.
 
 **Not verified by the trace:** whether "simpler used" counts as assisted; whether a script give-up weighs as a kit leave; the writer's `params_version` default (kt-r2) against the ledger's kt-r3; live legal modes. These are with the learner session.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-e807f07` (2026-11-10): Released e807f07 with scripts/release.mjs: web taxila-web--se807f07-4jnx (was taxila-web--sc7a4798-cx0n), worker + canary/nightly jobs on taxila-worker:e807f07 (was 3cd45e8); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs e807f07 --rollback.
