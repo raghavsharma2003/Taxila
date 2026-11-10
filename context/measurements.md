@@ -6631,3 +6631,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 ## Merged inbox entries (write-up from the entry text)
 - `m-r7-catalogue-judge-agreement` (2026-11-10): Sonnet agreed with Opus on pass/fail for 15 of 20 (the bar was 19). It caught both wrong keys, but passed 5 pieces Opus failed: 2 for register, 1 wrong fact, 2 for readability only. So the bulk re-judge is Opus. Tokens for 20 pieces in one agent: Opus 17M cache-read, 0.84M cache-write, 0.10M output; Sonnet 10M, 0.92M, 0.28M.
 - `m-r7-studio-v2-recert` (2026-11-10): Strict passes at p360/p412/l1366 went from 760/432/690 to 760/409/684, and served from 760/666/690 to 760/671/684. The p360 column is the board twin for every piece, and that twin is the engine's name plus four kit key terms with no figure. On a 360 px phone no child plays a Studio v2 game. At p412, class 4-5 pieces pass the strict 16 px floor 0 of 295 times.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-9004a0b` (2026-11-10): Released 9004a0b with scripts/release.mjs: web taxila-web--s9004a0b-tlys (was taxila-web--se807f07-4jnx), worker + canary/nightly jobs on taxila-worker:9004a0b (was e807f07); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 9004a0b --rollback.
