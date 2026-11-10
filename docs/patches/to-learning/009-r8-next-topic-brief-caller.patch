@@ -1,0 +1,39 @@
+diff -ruN a/server/reports/truth.js b/server/reports/truth.js
+--- a/server/reports/truth.js
++++ b/server/reports/truth.js
+@@ -271,16 +271,20 @@
+  * subject); inside an active school test window with no timetable the lesson revises the test's subject. Each ranked
+  * subject is tried in turn until one has a next topic. `testWindow` may be passed when the caller already read it
+  * (undefined: read here; null: no window). TAXILA_ROTATION=off: the old fixed subject order.
++ * round 8 K5/K8 (content/next-topic.js knowsPick): `brief` is the lesson brief's learner-state part (newSkillBudget,
++ * adaptTrace); undefined: cut here with no day plan (conductor/slot.js lessonBriefWithoutPlan), so the home, the parent
++ * pages and the lesson start agree on the topic; null: none (K8 only).
+  */
+-export async function nextTopicForPlan(child, { testWindow, now = new Date(), q = dbq } = {}) {
++export async function nextTopicForPlan(child, { testWindow, now = new Date(), q = dbq, brief } = {}) {
+   const w = testWindow === undefined ? await testWindowOf(child, { now, q }) : testWindow;
++  const b = brief !== undefined ? brief : await import("../conductor/slot.js").then((m) => m.lessonBriefWithoutPlan(child.id, { now, q })).catch(() => null);
+   if (!rotationOn()) {
+     if (w) {
+       const review = !!w.today && (Date.parse(w.to) - Date.parse(w.today)) / 86_400_000 < 2;
+       const t = await nextTopicFor(child, { subject: w.subject, ...(w.chapters?.length ? { revise: { chapters: w.chapters, review } } : {}) }).catch(() => null);
+       if (t) return t;
+     }
+-    return nextTopicFor(child).catch(() => null);
++    return nextTopicFor(child, { brief: b }).catch(() => null);
+   }
+   const [pick, placed] = await Promise.all([subjectsToday(child, { testWindow: w, now, q }), liveResultsOf(child.id, { q_: q })]);
+   // round 7 F item 6: a finished placement round sets where a subject starts when the school's chapter is not known
+@@ -292,10 +296,10 @@
+     if (t) return t;
+   }
+   for (const subject of pick.subjects) {
+-    const t = await nextTopicFor(child, { subject, startGE }).catch(() => null);
++    const t = await nextTopicFor(child, { subject, startGE, brief: b }).catch(() => null);
+     if (t) return t;
+   }
+-  return nextTopicFor(child, { startGE }).catch(() => null);
++  return nextTopicFor(child, { startGE, brief: b }).catch(() => null);
+ }
+ 
+ /** The class's subjects that have a teaching sequence, in SUBJECT_ORDER, narrowed by TAXILA_ROTATION_SUBJECTS. */
