@@ -125,3 +125,97 @@ What the ledger does today (`server/learner/kt/ledger.js:358`, `393`):
 - **Added.** `snapshotFromKt` (`server/learner/live.js:276`) now carries `learnedChecked`: display at least learned
   today, and `flags.delayed`. It reaches the lesson through the `skills` map that `initLessonState` already receives.
 - **Test 6:** false right after learning, true after a passed delayed check on a new item.
+
+## 7. Home play: what a level won at home does to the ledger
+
+The rule (test 7, `server/learner/kt/ledger.js` `homeDay` / `homeSpend`, helper `server/learner/kt/home.js`):
+
+- **How it is told apart.** A home level result is a game event (`via: "game"`) whose id starts `home:`
+  (`home:<child>:<day>:<level>:<n>`; session `home:<child>:<day>`). `homePlayEvent` builds it from the signed result. The
+  `kt_evidence.via` check has no "home", so the id carries it, and a replay of the stored rows gives the same answer.
+- **Weight:** the game weight, ×0.5 (`SOURCE_WEIGHT.home`). A goal with one decision (a coin-flip goal) is also marked
+  `controllerEasy`: the chance weight, and never clean.
+- **Never unaided.** A home win never sets the "unaided" day, so home play alone can never make a skill learned today.
+- **Never the delayed check, and never spends it.** It is a game act; the lesson's first new card that day is still the
+  check.
+- **Capped per skill per learning day:** its log-evidence is clamped to ±log 3 (`HOME_DAY_LOG_CAP`, a 3× likelihood
+  ratio), and it takes at most one learning step a day. In the test, 40 clean wins in an afternoon move pL by at most that
+  ratio and one step.
+
+**Does the trail change the weight? No. It changes the outcome.**
+
+- The process trail is read as a lesson card's episode is (`openOutcome`):
+  - a first-try win is C0;
+  - a win after misses is a later try (C1);
+  - a win after hints is assisted (C2);
+  - a loss is a miss.
+- A named mal-rule in the trail becomes the event's `misconceptionId`, so a wrong rule she keeps using raises that mix-up,
+  the same as in a lesson.
+- Undos and step counts are ignored: they say how she played, not whether she knew.
+- Weighting by trail on top of that would count the same signal twice.
+
+## 8. The one mixed skill that moved from "learned today" to "practising"
+
+In the pilot replay (`evals/learner-pilot-replay/results/2026-11-10/`), one mixed child's skill `c5-maths-ch02-t02` s1
+was "learned today" under kt-r2 and is "practising" under kt-r3. Traced card by card:
+
+- Two of her cards ended without a right answer: e2, and C4 twice. Under kt-r2 each still added a learning step. Under
+  kt-r3 a failed card adds none (LEARN-02).
+- At her third unaided right answer (e3, turn 9), her estimate is 0.9476 under kt-r3, just under the 0.95 that "learned
+  today" needs. Under kt-r2 it was about 0.96, so she was learned there.
+- By the time her estimate passes 0.95 (turn 14 on), her answers are hint-assisted (C2). "Learned today" also needs two of
+  the last three answers unaided and right, and that fails. So she stays practising.
+
+This is the intended effect of LEARN-02, not a new fault: her unaided answers came before her estimate earned them, and the
+answers after it were helped.
+
+## 9. Two rulings for the reader's compressed opener and its mix-up probe
+
+**(a) A lesson the reader opened "compressed" at a learned skill's first check card** (test 8, `ledger.js` `RECHECK`):
+
+- **How the reader marks it:** `recheck: true` on that card. `live.js` carries it to the event as `shapeId: "recheck"`,
+  stored in `kt_evidence.shape_id`, so a replay folds it the same way.
+- **A right answer** is a re-check of the learned skill:
+  - It is the delayed check when the usual conditions hold: at least 2 learning days on, and a card she never answered
+    (item 3's trap still applies).
+  - Otherwise it is a review.
+  - It never records a second "unaided on first exposure" day, and never a second "learned".
+- **A miss** is an ordinary miss on K. Then the full unit is walked. Its effect on status, at once, from any level at or
+  above "learned today":
+  - display goes back to **practising**;
+  - `flags.delayed`, `durable7` and `durable30` are cleared;
+  - `learnedAt`, the unaided day and the generative day are reset;
+  - `refresh` is set.
+- **Why one miss is enough here** (an unmarked delayed check needs two): the reader skipped the teaching because of that
+  status, and the miss withdraws it. The walk that follows can earn "learned today" again in the same lesson; the test
+  shows it does.
+
+**(b) A probe card posed first because she holds an open mix-up (`needsVerify`)** (test 9, `live.js` `disc`):
+
+- A right, unaided answer on a card whose `targets` include that mix-up is discriminating evidence against it, as on a
+  then-card today. This holds for a check card (`scriptCheck.targets`), an explain beat's card (`scriptAsk.targets`), a
+  then-card or a kit item (`targetsMisconception`).
+- **The reader also sets `probeFor: <mix-up id>` on the card.** When `targets` lists several mix-ups, the one it was
+  posed for is the one discriminated. Without `probeFor`, the first listed is used.
+- One event carries one `discriminates`, as the column does.
+
+## 10. What the round-8 reader reads at a lesson start
+
+Each one is tested in test 10.
+
+- **`delayedPassed: boolean`** in each skill of the lesson's skills snapshot (`snapshotFromKt`): it is `sk.flags.delayed`.
+  `learnedChecked` stays; it is the same flag and display at least learned today.
+- **Mix-ups as rows:** `misconceptionRowsOf(ledger, k = 5)` in `server/learner/live.js` returns
+  `[{ id, p, needsVerify, hits }]`. Unresolved ones only, highest p first; `needsVerify` is p ≥ 0.7.
+- **The brief with no day plan:** `lessonBriefWithoutPlan(childId, { now, subject })` in `server/conductor/slot.js`
+  returns `{ opener, successFirst, newSkillBudget, prereqCheck: { skillId, forTopicId, prereqTopicId } | null,
+  adaptTrace }`. It includes `foundationShare` only when R9 fired. The pure half is `briefShapeOf(decisionsFromState(...))`.
+  - `adaptTrace` lists the rules that fired. R1 means her last lesson ended hard. R15 means her first week. The two
+    appear apart, so the reader can tell them apart.
+  - The planner's `lessonDecisions` now returns the same list as `rules`.
+- **Last active day and consent:** `startFactsOf(child)` in `server/conductor/slot.js` returns
+  `{ lastActiveDay, rememberLikes }`.
+  - `lastActiveDay` is the Conductor's counter. With no Conductor state, it is the learning day of her last lesson in her
+    time zone.
+  - `rememberLikes` is the guardian's "memory" consent for that child (`hasConsent(guardian, child, "memory")`), the flag
+    that allows remembering what she likes.

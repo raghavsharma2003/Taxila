@@ -128,3 +128,37 @@ export function decisionsFromState(st, view, { day, subject = null }) {
     testWindow, subject, learningDay: day,
   });
 }
+
+/**
+ * The lesson brief at a start with no day plan, in lessonBriefOf's shape for the learner-state part: { opener, successFirst,
+ * newSkillBudget, prereqCheck, foundationShare?, adaptTrace } (adaptTrace: the rules that fired, sorted; R1 = the last lesson
+ * ended hard, R15 = the first week). Null on a read error. The clock fields stay lessonBriefOf's (they need a plan).
+ */
+export async function lessonBriefWithoutPlan(childId, o = {}) {
+  const d = await lessonDecisionsAtStart(childId, o);
+  return d ? briefShapeOf(d) : null;
+}
+/** PURE. lessonDecisions → the brief's learner-state fields. */
+export const briefShapeOf = (d) => ({
+  opener: d.opener, successFirst: d.successFirst, newSkillBudget: d.newSkillBudget, prereqCheck: d.prereqCheck ?? null,
+  ...(d.foundationShare != null ? { foundationShare: d.foundationShare } : {}), adaptTrace: [...(d.rules ?? [])],
+});
+
+/**
+ * Two facts the round-8 reader takes at a lesson start: the child's last active learning day (the Conductor's counter, else
+ * the day of her last lesson) and whether the family lets Taxila remember what she likes (consent purpose "memory").
+ * @param {{ id: string, guardian_id: string }} child
+ * @returns {Promise<{ lastActiveDay: string|null, rememberLikes: boolean }>}
+ */
+export async function startFactsOf(child, { q, hasConsent } = {}) {
+  const query = q ?? (await import("../db.js")).q;
+  const consentOf = hasConsent ?? (await import("../auth.js")).hasConsent;
+  const [[cs], [r], [last], remember] = await Promise.all([
+    query("select state->'counters'->>'lastActiveDay' as day from conductor_state where child_id = $1", [child.id]).catch(() => []),
+    query("select tz from child_routine where child_id = $1", [child.id]).catch(() => []),
+    query("select started_at from lesson where child_id = $1 order by started_at desc limit 1", [child.id]).catch(() => []),
+    Promise.resolve(consentOf(child.guardian_id, child.id, "memory")).catch(() => false),
+  ]);
+  const lastActiveDay = cs?.day ?? (last?.started_at ? learningDay(new Date(last.started_at), r?.tz || "Asia/Kolkata") : null);
+  return { lastActiveDay, rememberLikes: !!remember };
+}

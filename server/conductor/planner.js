@@ -163,6 +163,9 @@ export function lessonDecisions({ adapt, view, testWindow = null, subject = null
     prereqCheck: pick ? { skillId: pick.skillId, forTopicId: pick.topicId, prereqTopicId: pick.prereq.topicId } : null,
     foundationShare: fshare,
     pick, firstWeek: fw,
+    // which rules fired (the brief's adaptTrace): R1 a hard last close, R15 the first week, apart (round-8 reader)
+    rules: [...new Set([opener !== "standard_retrieval" ? "R8" : null, adapt.successFirst ? "R1" : null,
+      fw?.successFirst || fw?.newSkillBudget === 0 ? "R15" : null, pick ? "R5" : null, fshare !== null ? "R9" : null].filter(Boolean))].sort(),
   };
 }
 
