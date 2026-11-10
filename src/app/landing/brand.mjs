@@ -4,7 +4,7 @@
 // on deep ink blue, flat, no letters, no lamp, no yellow, readable at 48 px). One glyph, every derived file:
 //
 //   node src/app/landing/brand.mjs        writes public/favicon.svg, public/brand/*.svg, the PNG icons, the
-//                                         splashes and public/manifest.webmanifest (PNGs rendered in headless
+//                                         splashes (PNGs rendered in headless
 //                                         Chromium: PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers)
 //
 // The colours are the brand's two fixed values (--nib light, --paper light, src/styles/tokens.css); they are not

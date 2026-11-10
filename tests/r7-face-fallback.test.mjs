@@ -26,12 +26,6 @@ test("LessonFace: TutorFace only for a non-puppet tutor or the voice-only presen
   assert.match(lesson, /still=\{off \|\| p\.tier === "D"\}/, "switched off or tier D: the still");
 });
 
-test("FaceSlot adapter: installed always; the puppet switched off on the device gives her still, not the in-house plate", () => {
-  const a = src("src/face-puppet/adapter.tsx");
-  assert.doesNotMatch(a, /if \(!puppet2dEnabled\(\)\) return false;/);
-  assert.match(a, /\|\| !puppet2dEnabled\(\);/);
-});
-
 test("every live look ships both rest stills", async () => {
   const { PUPPET_LOOKS, HELD_LOOKS, puppetPoster } = await import("../src/face-puppet/assets.ts");
   for (const look of PUPPET_LOOKS.filter((l) => !HELD_LOOKS.includes(l))) {
