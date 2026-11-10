@@ -20,6 +20,7 @@ The sweeps are scripts, so they can be re-run: `docs/design/round7/audit/seams-s
 | SEAM-08 | P3 | inconsistent | voice | The voice-signal mode has two readers with two defaults, and the client's type lacks the mode the server sends by default | `server/voicesig/lesson.js:49-52` (default `internal`); `server/voicesig/adapter.js:42-45` (`vsMode`, default `off`, no caller); `src/voicesig/flag.ts:15,63` (`internal` read as `shadow`) | delete `vsMode`; add `internal` to `VoicesigConfig.mode` | open |
 | SEAM-09 | P1 | inconsistent | learning + app + voice | Four parent controls save and do nothing: "Extra time to answer", "Data saver", "Words on screen" and "Larger text and a calmer screen". Each shows the parent a sentence promising what the child will get | `src/parent/Controls.tsx:370-379,409-417`; stored `server/routes/parent.js:559-584`; read back only by `server/routes/child.js:122,129` (into an object nothing reads); the child's lesson uses device prefs (`src/child/lesson/LessonScreen.tsx:85`, `src/child/ChildShell.tsx:123`) | hide the four until a reader exists (decision dc-r7 D5: "a control that does nothing is hidden"); then send them in the child plan and let the device prefs default from them | open |
 | SEAM-10 | P3 | not good enough | app | With limits on, a resting child reads the opening time as a 24-hour code: "Lessons 17:00 baje phir khulenge", "Lessons open again at 06:30" | `server/routes/child.js:282` (`opensAt` = `hours_start`, "HH:MM"); `src/ui-v3/kaksha/views.tsx:84`; `src/ui-v3/kaksha/copy.ts:26`; the dev page passes "5:00 pm" (`kaksha/dev/main.tsx:52`) | format on the client in the child's language ("5 pm", "shaam 5 baje", "शाम 5 बजे") | open |
+| SEAM-11 | P2 | inconsistent | app (+ brain for the contract) | The parent sets a lesson time; the server sends it for "Lesson time 5:00" on the child's Home; the client drops it, and the contract has no field for it | `server/routes/child.js:291-292,539-543` (`schedule`); `src/child/plan.ts:89-108` (`fromServer` has no `schedule`); `shared/contracts.ts:538-567` (no `schedule`); parent copy `src/parent/Controls.tsx:121` | add `schedule` to `ChildPlanResponse` and `HomePlan`, show it on Home (the strip that shows `opensAt`) | open |
 | SEAM-06 | P3 | no longer needed | games + studio | Four routes with no screen: the child's game world, the child's own builds, the play gate, and hiding a "Made for you" card | `server/play/routes.js:156,168,179`; `server/routes/studio.js:207-213,229` | build the screen or delete the route (platform's PLAT-57 lists `play/world` only) | open |
 
 ## Evidence
@@ -90,6 +91,12 @@ child's device never learns of it. The learner report notes the set-up draft fie
 (`child.js:105`); the default (limits off) never rests, so few children see it today. The copy rows put `{time}` straight
 in: `"Lessons open again at {time}"`, `"Lessons {time} baje phir khulenge"`.
 
+**SEAM-11.** The parent's Schedule card (`POST /api/parent/schedule`, `child_routine.anchor`) says "{name}'s lesson is
+planned for 5:00 pm on the days you chose … It is a plan, not a lock". The plan answer carries
+`schedule: { time, minutes, today }` with the comment "for 'Lesson time 5:00' on Home"; `fromServer` copies 15 named
+fields and not this one, and no file under `src/child` or `src/ui-v3/kaksha` reads `.schedule`. The learner report
+covers the Conductor side (LEARN-23, LEARN-39); this is the one place the time could reach the child, cut at the seam.
+
 **SEAM-06.** `seams-scripts/routes.mjs` lists every registered route that no file under `src/` or `public/` names.
 Beyond PLAT-57's list: `GET /api/play/builds` (the child's own game builds; only `tests/prod/r4-khand-loop.mjs`),
 `GET /api/play/admit` (only `tests/prod/*`), `POST /api/studio/made-for/hide` (no caller at all; the shelf on Home, the
@@ -98,7 +105,38 @@ Debrief and the Notebook has no hide control). `GET /api/studio/timing`, `/api/o
 
 ## Coverage
 
-(filled in at the end)
+**Swept by script, every file:** the route table (133 routes from `server/index.js` and `server/router.js`) against every
+`/api/…` literal in `src/`, `public/`, `server/`, `scripts/`, `tests/`, `evals/`; HTTP methods of client calls; 325
+environment names read in `server/`, `src/`, `shared/`, `scripts/`, `infra/`, `vite.config.ts` against Dockerfiles,
+`infra/**`, the deploy and release scripts, CI and `scripts/handoff/keys.json`; the import graph of 1,280 product files
+(static, dynamic, `import.meta.glob`, worker URLs, HTML entries); every field of every interface in `shared/contracts.ts`
+against server writers and client readers; foreign keys to `child` / `guardian` / `lesson` in all migrations; Hindi
+number-word tables; exported names defined in two or more product files; browser storage keys.
+
+**Read by hand:** `shared/contracts.ts` (`UiDirectives`, `TurnRequest`, `TurnResponse`, `LessonStartRequest`,
+`ChildPlanResponse`); `server/index.js`, `server/router.js`, `server/serve.mjs` (upgrade path); the client flag files
+(`src/ui-v3/kaksha/flag.ts`, `src/face-puppet/flag.ts`, `src/voicesig/flag.ts`, `src/duplex/flags.ts`); every
+default-off server switch the env sweep found (`=== "1"`, `=== "on"`, `?? "off"`); `src/play/core/voice.ts`;
+`server/grading/spoken-number.js`; the parent controls write (`server/routes/parent.js` `setControls`, schedule,
+household, school, timetable, test window) and their readers; `server/routes/child.js` `planFor` against
+`src/child/plan.ts` `fromServer`.
+
+**Checked and consistent (no finding):** every foreign key to `child`, `guardian` and `lesson` cascades or sets null, so
+a child or account erase cannot fail on a reference (`seams-scripts/fk.mjs`); no route key is defined twice except the
+placement routes PLAT-57 already lists; no client call uses a method the server does not register; the lesson's number
+grading reads Hindi and Devanagari number words through the one reader (`classifyFast` on "pachchees", "सोलह",
+"paintaalees", "ek bata chaar": all correct); placement, comprehension and Studio grading all go through
+`spoken-number.js` or the Studio gate's own grader, so there is one grader per kind of answer; `UiDirectives` has no field
+the server never sends except `readAloud` (SEAM-02) and the server sends no `ui.*` field the contract lacks except `hint`
+(app's X-5); every foreign module the web image needs from `src/` is copied (`Dockerfile:15`; the worker is PLAT-04);
+equip slots, beacon fields and the parent-controls field list agree on both sides.
+
+**Not covered:** whether production sets any switch differently from the code default (the live Container App's
+environment is not in the repo: PLAT-41); the studio, teacher, games, tests-evals and journey areas' own internals (their
+reports were not out when this was written, so a finding here may overlap theirs); runtime shapes of responses that need a
+database to produce (the `ChildPlanResponse` check was by reading code, not by running it); the twelve server number-word
+tables other than the lesson's, which feed the safety predicate, Studio QA and the duplex engine (frozen or dead code,
+and no wrong verdict was found through them).
 
 ## How to re-run
 
