@@ -4,8 +4,9 @@
 //   fold (of)     the unit sheet; − / + fold it across and down; tap the band above it to shade strips across, the band to
 //                 its left to take strips down (only the shaded part darkens twice); the tag card counts the overlap
 //   fold (times)  one rope piece (a/b m) above a metre track marked in b parts; − / + lay pieces end to end; tag the length
-//   pour          the jug, marked in cups (and litres at fade 1); "pour a cup" fills one more cup (the jug refuses a cup it
-//                 cannot fill); the last cup carries the tag's marks: on the run the rest goes into it and shows its level
+//   pour          the jug, marked in cups (and litres at fade 1); first − / + say how many full cups it will fill (the count
+//                 locks once a cup is poured, until the run answers: GAMES-08); "pour a cup" fills one more cup (the jug
+//                 refuses a cup it cannot fill); the last cup carries the tag's marks: on the run the rest goes into it
 //   grid (mul)    units of 10 × 10; tap the band above to shade tenths across, the band left for tenths down; the label below
 //                 holds the overlap's count of small squares, and ‹ / › move its decimal point
 //   grid (shift)  a place-value chart with the point fixed; the digits slide one place per push; "0" writes a zero at the end
@@ -19,7 +20,7 @@ import type { Role } from "../../core/styles.ts";
 import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
-import { CHART_HI, CHART_LO, cupOf, decStr, gridMax, jugLeft, jugOf, MAX_FOLD, MAX_LAY, MAX_TAG, q, qFloor, qLt, qStr, qSub, shiftSpan, shiftVal, shiftX, tagVal, unitsOf, want,
+import { CHART_HI, CHART_LO, cupOf, decStr, gridMax, jugLeft, jugOf, MAX_CUPS, MAX_FOLD, MAX_LAY, MAX_TAG, q, qFloor, qLt, qStr, qSub, shiftSpan, shiftVal, shiftX, tagVal, unitsOf, want,
   type HissaParams, type HissaState, type Q } from "./hissa.logic.ts";
 
 const SWEEP = 1.2;   // s a run takes on screen (cosmetic: the law has already answered)
@@ -41,7 +42,9 @@ export const makeHissaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   let boardH = 40;
   // the main object's box (sheet / track / jug / grid / chart / bars) and the side box (tag card, cups, label)
   let mx = 8, my = 60, mw = 200, mh = 200, sx = 8, sy = 300, sw = 200, sh = 120;
-  let runAt = -1;
+  // when the run started on screen (null = no run showing). Reduced motion starts it a sweep in the past; a sentinel of −1
+  // read that as "no run" whenever the clock was under 10 s, so a reduced-motion run never showed its end
+  let runAt: number | null = null;
 
   function layout(bw: number, bh: number): void {
     w = bw; h = bh; wide = w > h * 1.15;
@@ -68,22 +71,22 @@ export const makeHissaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     else if (last.kind === "pour" || last.kind === "lay") api.sfx("land");
     else if (last.kind === "fold" || last.kind === "slide" || last.kind === "point") api.sfx("tick");
     else api.sfx("tap");
-    if (!st().ended) runAt = -1;
+    if (!st().ended) runAt = null;
     api.invalidate(); deps.changed();
   }
-  const runK = () => (runAt < 0 ? 0 : clamp((api.t - runAt) / SWEEP, 0, 1));
+  const runK = () => (runAt === null ? 0 : clamp((api.t - runAt) / SWEEP, 0, 1));
   const shownEnd = () => st().ended && runK() >= 1;
   let announced = -1;
   function update(): void {
-    if (runAt >= 0 && runK() < 1) api.invalidate();
-    if (runAt >= 0 && runK() >= 1 && announced !== runAt) {
+    if (runAt !== null && runK() < 1) api.invalidate();
+    if (runAt !== null && runK() >= 1 && announced !== runAt) {
       announced = runAt;
       if (st().done) { api.sfx("good"); api.fx.burst(w / 2, h / 2, { n: 18, color: api.P.color("good"), speed: 110, life: 0.7, size: 3, kind: "spark" }); }
       else api.sfx("look");
       deps.changed();
     }
   }
-  const busy = () => runAt >= 0 && runK() < 1;
+  const busy = () => runAt !== null && runK() < 1;
 
   // ── geometry the pointer reads (set while drawing) ──
   const bands: Record<string, { x: number; y: number; w: number; h: number; n: number; across: boolean; side: number }> = {};
@@ -105,6 +108,7 @@ export const makeHissaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const [what, a1, a2] = id.split("-");
     if (what === "fold") { const side = Number(a1), n = step(s.f[side], a2 === "up" ? 1 : -1, MAX_FOLD); if (n >= 1 && n !== s.f[side]) act({ kind: "fold", side, n }); }
     else if (what === "tag") { const part = Number(a1), v = step(s.tag[part], a2 === "up" ? 1 : -1, MAX_TAG); if (v !== s.tag[part]) act({ kind: "tag", part, v }); }
+    else if (what === "count") { const n = a1 === "up" ? (s.say < 0 ? 1 : Math.min(MAX_CUPS, s.say + 1)) : Math.max(0, s.say - 1); if (n !== s.say) act({ kind: "count", n }); }
     else if (what === "lay") { const n = step(s.lay, a1 === "up" ? 1 : -1, MAX_LAY); if (n !== s.lay) act({ kind: "lay", n }); }
     else if (what === "base") act({ kind: "base", on: Number(a1) });
     else if (what === "pt") { const at = clamp(s.pt + (a1 === "l" ? 1 : -1), 0, 3); if (at !== s.pt) act({ kind: "point", at }); }
@@ -247,12 +251,25 @@ export const makeHissaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       }
     }
     if (look && left.n > 0 && s.cups < whole) P.magnifier(c, jx + jw - 16, jy + 16, 14);
-    // the right column: the cups poured (small, full) above; the last cup and its tag below
+    // the right column: the count said first (locked once the jug is pouring), the cups poured (small, full), the last cup
+    // and its tag below
     const rx = jx + jw + 12, rw = w - rx - 8;
     const cardW = 152, lastW = Math.min(56, rw - cardW - 8), lastH = 2 * BTN + 8, by = h - lastH - 12;
+    const cy = top + 4, open = s.say < 0 && !s.done;
+    P.textFit(c, W(g === "deci" ? "hissa.countglass" : "hissa.count"), rx + rw / 2, cy + 9, rw - 4, 18, { size: 16, role: open ? "ink" : "ink2", weight: 700 });
+    const cx0 = rx + rw / 2, sy0 = cy + 20, can = !s.done && !s.lock;
+    if (can) { api.target("count-dn", cx0 - 70, sy0, BTN, BTN); api.target("count-up", cx0 + 26, sy0, BTN, BTN); }
+    P.body(c, cx0 - 68, sy0 + 2, BTN - 4, BTN - 4, { role: "panel", r: 8 });
+    P.text(c, "−", cx0 - 70 + BTN / 2, sy0 + BTN / 2, { size: 22, role: can && s.say > 0 ? "ink" : "ink3", weight: 800 });
+    P.body(c, cx0 + 28, sy0 + 2, BTN - 4, BTN - 4, { role: "panel", r: 8 });
+    P.text(c, "+", cx0 + 26 + BTN / 2, sy0 + BTN / 2, { size: 22, role: can && s.say < MAX_CUPS ? "ink" : "ink3", weight: 800 });
+    P.body(c, cx0 - 22, sy0 + 2, 44, BTN - 4, { role: "panel", r: 8, state: open ? "selected" : "idle" });
+    P.text(c, s.say < 0 ? "?" : String(s.say), cx0, sy0 + BTN / 2, { size: 22, role: "ink", weight: 800, font: "mono", maxW: 40 });
+    if (look && s.say !== whole) P.magnifier(c, cx0 + 82, sy0 + 8, 14);
+    const cupTop = sy0 + BTN + 10;
     const cupW = 28, cupH = 34, per = Math.max(1, Math.floor((rw + 6) / (cupW + 6)));
     for (let i = 0; i < s.cups; i++) {
-      const x = rx + (i % per) * (cupW + 6), y = top + 8 + Math.floor(i / per) * (cupH + 6);
+      const x = rx + (i % per) * (cupW + 6), y = cupTop + Math.floor(i / per) * (cupH + 6);
       if (y + cupH > by - 30) break;
       P.body(c, x, y, cupW, cupH, { role: "panel", r: 4, seed: i });
       fillRect(c, x + 3, y + 6, cupW - 6, cupH - 9, "q2", 0.85);
@@ -447,7 +464,7 @@ export const makeHissaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       out.push({ id: "zero", label: "…0", aria: "write a zero at the end", kind: "pad", group: "act", pressed: s.zero, onPress: () => act({ kind: "zero" }) });
     }
     out.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });
-    if (pour) out.push({ id: "pour", label: W(g === "deci" ? "hissa.pourglass" : "hissa.pour"), aria: "pour one cup", kind: "secondary", group: "go", disabled: qLt(jugLeft(p, s.cups), cupOf(p)) || s.cups >= 20, onPress: () => act({ kind: "pour" }) });
+    if (pour) out.push({ id: "pour", label: W(g === "deci" ? "hissa.pourglass" : "hissa.pour"), aria: "pour one cup", kind: "secondary", group: "go", disabled: s.say < 0 || qLt(jugLeft(p, s.cups), cupOf(p)) || s.cups >= MAX_CUPS, onPress: () => act({ kind: "pour" }) });
     const ready = !s.ended;
     const runKey = g === "of" || g === "rest" ? "hissa.cut" : pour ? "hissa.serve" : g === "times" || g === "scale" ? "hissa.go" : "hissa.read";
     out.push({ id: "run", label: W(runKey), aria: "run it", kind: "primary", group: "go", you: ready, disabled: !ready, onPress: () => act({ kind: "run" }) });

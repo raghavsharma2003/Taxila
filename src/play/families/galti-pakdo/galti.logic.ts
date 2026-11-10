@@ -565,5 +565,7 @@ function grade(level: PlayLevel<GaltiParams>, acts: PlayActEnvelope<GaltiAct>[])
 
 export const galtiLogic: FamilyLogic<GaltiParams, GaltiState, GaltiAct> = {
   family: "galti-pakdo", modes: ["kaapi"], malRules: GALTI_MAL,
+  // pakdo: one line flagged (or "sab sahi") wins (a lucky tap 41 %, games audit GAMES-03): its correct enters at CHANCE_WEIGHT
+  oneDecision: ["pakdo"],
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };

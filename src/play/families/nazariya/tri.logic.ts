@@ -280,6 +280,8 @@ function board(level: PlayLevel<TriParams>, s: TriState) {
 
 export const triLogic: FamilyLogic<TriParams, TriState, NazariyaAct> = {
   family: "nazariya", modes: ["tri"], malRules: TRI_MAL,
+  // more: one corner placed above A's top line wins (a lucky tap 26 %, games audit GAMES-03): its correct enters at CHANCE_WEIGHT
+  oneDecision: ["more"],
   validate(level) {
     if (!level || level.family !== "nazariya" || level.mode !== "tri") return null;
     const p = validate(level.params);

@@ -13,7 +13,7 @@ import { RULES, ACTS } from "../server/play/tools/rules/nazariya.mjs";
 import { LOGIC } from "../src/play/families/index.ts";
 import { env } from "../src/play/core/pick.ts";
 import { fill } from "../src/play/core/react.ts";
-import { reactionProblems, GAME_WEIGHT } from "../shared/play.ts";
+import { reactionProblems, CHANCE_WEIGHT, GAME_WEIGHT } from "../shared/play.ts";
 
 const NZ = () => coverage().entries.filter((e) => e.family === "nazariya");
 const sessionOf = (entry, over = {}) => ({ childId: "c1", key: entryKey(entry), skillId: entry.skillId, classLevel: entry.classLevel, fade: 1, lang: "hinglish", mis: {}, n: 0, seed: seedOf("c1", entryKey(entry), 0), door: "garam", recent: [], ...over });
@@ -50,7 +50,8 @@ describe("r4-khand server grade", () => {
       const g = gradeActs(level, env(logic.solve(level)), { final: true });
       assert.equal(g.grade.verdict, "solved");
       const rows = lessonEvidence(g.grade, level);
-      assert.equal(rows[0].outcome, "correct"); assert.equal(rows[0].source, "game"); assert.equal(rows[0].weight, GAME_WEIGHT);
+      // tri/more is one corner placed (a lucky tap lands it): its correct enters at the chance-adjusted weight (GAMES-03)
+      assert.equal(rows[0].outcome, "correct"); assert.equal(rows[0].source, "game"); assert.equal(rows[0].weight, e.goal === "more" ? CHANCE_WEIGHT : GAME_WEIGHT);
       assert.ok(e.skillIds.includes(rows[0].skillId));
       // a device that claims a solve with junk acts
       const forged = gradeActs(level, [{ seq: 1, t: 0, act: { kind: "check", solved: true, correct: true, verdict: "solved" } }], { final: true });
