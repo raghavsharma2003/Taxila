@@ -514,7 +514,8 @@ export function preferredRung(S, want, C) {
   if (want.archetype && cat?.rs4?.[want.archetype] && C.personalNeeds && !C.personalNeeds.includes(want.need)
     && S.candidates.some((c) => c.family === want.family && c.archetype === want.archetype && c.rung === "engine_default" && c.state === "ready")) return "engine_default";
   if (want.archetype && cat?.rs4?.[want.archetype]?.noSpec) return "engine_default";
-  if (want.archetype && cat?.rs4?.[want.archetype]) return "generated_spec";
+  // (a lesson without the spec rung — no judge lane, lesson.js judgeRungsCfg — is best served by the checked engine default)
+  if (want.archetype && cat?.rs4?.[want.archetype]) return rungAllowed(C, "generated_spec") ? "generated_spec" : "engine_default";
   // a live build is the bar only while the lesson's live cap has room (≤ 3 per lesson); beyond it the board is the best there is
   if (want.archetype && (cat?.w2Topics?.[topic] ?? []).includes(want.archetype) && (S.meta.liveBuilds < (C.liveBuildsPerLesson ?? 3) || S.candidates.some((c) => c.family === want.family && c.rung === "live_codegen"))) return "live_codegen";
   return "board";
