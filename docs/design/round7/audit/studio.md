@@ -22,6 +22,8 @@ Status: **in progress** (pushed early; more findings follow).
 | STUDIO-08 | P3 | inconsistent | studio | Stagecraft's default mode is "on" in `lesson.js` and in its header, but `StagecraftHost` falls back to "off" when no mode is passed | `server/stagecraft/host.js:30` vs `server/stagecraft/lesson.js:27-30` | `o.mode ?? stagecraftMode()` (one default, one place) | open |
 | STUDIO-09 | P3 | not good enough | studio | number-line-hop@1 is advertised (and authorable) for ranges it cannot lay out: 63 of 180 calls on a grid of the advertised range are refused (an equation with negatives runs off the board; "+1" then "-1" labels overlap) | `server/forge/explainer/templates.js:507-547`, `server/forge/explainer/board-ref.js:22` | narrow the advertised range to what lays out, or wrap the equation row | open |
 | STUDIO-10 | P3 | not good enough | studio | the picture lane's per-job and per-lesson maps are never pruned, so a long-running replica keeps one entry per picture and per lesson forever | `server/studio/picture.js:47-55`, `118-120` | drop a lesson's `perLesson` / `failed` rows and its jobs when the seam forgets the lesson, or cap the maps like `cache` | open |
+| STUDIO-11 | P2 | not good enough | studio | Stagecraft pays for generated specs that can never be shown: the conductor launches the `generated_spec` rung on `taxila-fast-bg` by default, but the tray gate refuses every generated spec ("not judged at the child's sizes") because nothing ever sets a judge verdict | `server/stagecraft/conductor.js:260`, `server/stagecraft/lesson.js:99-100`, `server/forge3/tray-gate.js:205-208`; `server/forge3/gate.js:22` `judgeArtifact` has no caller | launch the spec rung only when a judge lane is configured (`FORGE3_QA_URL`), the way `seam.js:450` skips live builds without a gate: pass `rungs` without `generated_spec` to the host otherwise | open |
+| STUDIO-12 | P2 | broken | studio | the live build race and the local gate cannot load in the production image: `server/studio/fixers.js` imports `rolldown/parseAst`, but `rolldown` arrives only through `vite` (a devDependency) and the image installs with `--omit=dev`. Dormant today (no gate URL is set), so it breaks silently the day the gate is wired | `server/studio/fixers.js:14`, `server/studio/qa/static.js:4`; `Dockerfile:13`; `package.json` (no `rolldown`) | add `rolldown` 1.2.12 to `dependencies` (the version vite and the studio-qa image already use), via a platform patch | open |
 
 ## Evidence notes
 
@@ -73,6 +75,22 @@ down; nothing false is drawn, but an author or the model is offered calls that c
 
 **STUDIO-10.** `jobs.set(id, …)` on every picture and `perLesson.set(lessonId, …)` on every lesson that asks one; only
 `_resetPictures` (tests) clears them. `failed` is cleared only when the next turn of the same lesson reads it.
+
+**STUDIO-11.** `rungs` is never set (`conductor.js:94`: unset allows every rung), so with `control: "on"` the conductor
+makes `generated_spec` candidates (`conductor.js:260`). `config.js:155,162` chains `taxila-stagecraft` (absent) then
+`taxila-fast-bg`; `productionDeps()` gives the builder a real `chat` (`lesson.js:61-64`), so each launch is a paid call
+(about $0.0013; caps 300 per lesson-hour and $0.06 per lesson-hour, `config.js:125`). At reveal, `tray-gate.js:205-208`
+refuses a `generated_spec` with no `verdict.byViewport`, and `seam-bridge.js:109` passes `c?.verdict`, which nothing
+sets (`grep judgeArtifact`: only its definition). The image and live rungs do not spend today: `productionDeps()` has
+no `imageCall`, `decide`, `planBuild` or `buildRace`, so they throw "unwired". The gap map (`gap-map.json:914`) proposes
+wiring the judge (an owner cost question); until that happens the spec spend buys nothing.
+
+**STUDIO-12.** Reproduced by moving `node_modules/rolldown` aside (as `npm ci --omit=dev` leaves it):
+`import("./server/index.js")` loads, but `import("./server/studio/build.js")` and `import("./server/studio/qa/gate.js")`
+fail with `ERR_MODULE_NOT_FOUND: Cannot find package 'rolldown' imported from server/studio/fixers.js`. `seam.js:458`
+imports `build.js` lazily inside `race()`, whose caller swallows the error (`.catch(() => null)`), so every live build
+would quietly become the skeleton. `npm ls rolldown`: `vite@8.3.2 → rolldown@1.2.12`; `infra/studio-qa/package.json`
+pins `rolldown 1.2.12` for its own image, which is why the gate service itself works.
 
 ## Patches
 
