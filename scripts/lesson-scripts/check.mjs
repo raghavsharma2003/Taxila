@@ -293,7 +293,8 @@ export function figureOf(board) {
     case "area-grid@1": return `shape["${Number(p.w) === Number(p.h) ? "square" : "rectangle"}"]`;
     case "shape@1": case "measured@1": return `shape["${kind(p.shape)}"]`;
     case "fraction-parts@1": return `parts${JSON.stringify([p.parts, p.whole ?? null])}`;
-    case "wholes@1": return `wholes${JSON.stringify((p.wholes ?? []).map((w) => [w.parts, w.equal !== false]))}`;
+    case "wholes@1": return p.as === "bar" && (p.wholes ?? []).every((w) => w.equal !== false) ? `bars${JSON.stringify(sorted((p.wholes ?? []).map((w) => w.parts)))}`
+      : `wholes${JSON.stringify((p.wholes ?? []).map((w) => [w.parts, w.equal !== false]))}`;
     case "equal-groups@1": return `groups[${Array.isArray(p.sizes) ? p.sizes.reduce((a, b) => a + Number(b), 0) : Number(p.groups) * Number(p.each)}]`;
     case "shade-grid@1": return `groups[${Number(p.rows) * Number(p.cols)}]`;
     case "number-line-scale@1": return `scale${JSON.stringify([p.from, p.to, p.step])}`;
@@ -356,10 +357,11 @@ export function remediationKeyErrors(s) {
   };
   const whole = (v) => { const m = String(v ?? "").trim().match(/^(\d+)(?:\s*[\p{L}]{1,6})?$/u); return m && Number(m[1]) >= 2 ? m[1] : null; };
   const hasNum = (t, c) => new RegExp(`(^|[^\\d/.])${c.replace(/[./]/g, "\\$&")}([^\\d/]|$)`).test(` ${t} `);
-  const valuesOf = (kk, list) => list.flatMap(([id, c]) => [["key", c.key], ["distractor", c.wrongIfMis]]
+  // (director16 ruling: keys of ALL later cards stay forbidden; distractors only within the SAME skill)
+  const valuesOf = (kk, list, distractors = true) => list.flatMap(([id, c]) => [["key", c.key], ...(distractors ? [["distractor", c.wrongIfMis]] : [])]
     .map(([kind, v]) => ({ where: `${kk.skillId}/${id}`, card: c, kind, v: core(v), w: kind === "key" ? whole(v) : null })));
   s.skills.forEach((k, si) => {
-    const later = s.skills.slice(si + 1).flatMap((kk) => valuesOf(kk, cardsOf(kk)));
+    const later = s.skills.slice(si + 1).flatMap((kk) => valuesOf(kk, cardsOf(kk), false));
     (k.remediation ?? []).forEach((r, i) => {
       // (still to come: from the first card that can call this remediation — the first of the walk's asks, yourStep and checks
       // targeting its misconception — on, every then-card of the skill, and every later skill; a card already behind is not)
@@ -393,6 +395,41 @@ export function workedProblemNumberErrors(s) {
   return e;
 }
 
+/** director16 D11.1 (dc-r7-held-board): every spoken part of a unit names only the figure its unit's card board draws (a
+ * line, bars or strips, a round whole; unequal parts; group sizes): the point, mustSay, simpler, worked steps, remediation
+ * say and simpler, the bridge. The board gate (W10) checks the counts; this checks the figure. */
+export function unitFigureErrors(s) {
+  const e = [];
+  for (const u of unitsOf(s)) {
+    if (!u.board) continue;
+    for (const [field, t] of u.parts) {
+      if (field === "next.point" || typeof t === "string") continue;
+      // a card's own question (and the worked problem) follows the prompt rule (D6: a cake story may be posed on a line)
+      if (/(^|\.)(prompt|problem|find)$/.test(field)) { for (const m of promptFigureErrors(t, u.board)) e.push(`${u.id} ${field}: ${m}`); continue; }
+      // an imagined thing ("ek roti socho") is not a claim about the board
+      const imagined = /\b(socho|soch lo|maan lo|imagine|think of|suppose|jaise ki)\b/i.test(`${t.hi ?? ""} ${t.en ?? ""}`);
+      for (const m of whyFigureErrors(t, u.board)) if (!(imagined && /round whole/.test(m))) e.push(`${u.id} ${field}: ${m.replace(/^its why/, "it")} (the unit's card board)`);
+    }
+  }
+  return e;
+}
+
+/** director16 D11.2: no rhetorical question in a spoken field that is not a card. Only a card asks: a point, mustSay,
+ * simpler, worked step, remediation say, why or bridge is a statement ("Neeche ka 4? Patti ke 4 barabar tukde." was cut
+ * whole by the "?"-drop). A card's prompt and the worked problem (its question) may ask. */
+export function rhetoricalQuestionErrors(s) {
+  const e = [];
+  const ok = (path) => /\.(ask\.prompt|prompt|problem)$/.test(path) || /checks\[\d+\]\.prompt$/.test(path) || /then\.prompt$/.test(path) || /yourStep\.prompt$/.test(path);
+  const walk = (x, path) => {
+    if (Array.isArray(x)) return x.forEach((v, i) => walk(v, `${path}[${i}]`));
+    if (!x || typeof x !== "object" || x.template) return;
+    for (const lang of ["hi", "en"]) if (typeof x[lang] === "string" && /[?？]/.test(x[lang]) && !ok(path)) e.push(`${path}${lang === "en" ? " (en)" : ""}: a question outside a card ("${x[lang].match(/[^.!?]*[?？]/)[0].trim()}"); say it as a statement`);
+    for (const [k, v] of Object.entries(x)) if (k !== "hi" && k !== "en") walk(v, path ? `${path}.${k}` : k);
+  };
+  walk(s.skills, "skills");
+  return e;
+}
+
 /** director15 D10.2 (c4 steady 78: "Kya tab ek hissa is aadhe se bada hoga?" over a half labelled "?"): an ask's board
  * never puts "?" on a value its prompt states: a bar of p parts labelled "?" when the prompt names 1/p (in digits or as
  * aadha / tihaai / chauthai), or a line's "?" mark k/den when the prompt says k/den. */
@@ -407,7 +444,11 @@ export function askBoardQuestionErrors(s) {
   for (const k of s.skills) for (const [id, prompt, board] of asks(k)) {
     if (!prompt || !board) continue;
     const t = said(prompt), p = board.params ?? {};
-    if (board.template === "fraction-bars@1") for (const b of p.bars ?? []) if (b.label === "?" && states(t, 1, b.parts)) e.push(`${k.skillId}/${id}: its board labels the 1/${b.parts} bar "?" though its prompt states it`);
+    // (director16: D10 checked only the unit fraction 1/p, so "2/3 ya 3/10" over two "?" bars passed; any n/p is a statement)
+    if (board.template === "fraction-bars@1") for (const b of p.bars ?? []) {
+      const said = b.label === "?" && (states(t, 1, b.parts) || new RegExp(`(^|[^\\d/])\\d+/${b.parts}([^\\d]|$)`).test(t));
+      if (said) e.push(`${k.skillId}/${id}: its board labels a bar of ${b.parts} parts "?" though its prompt states that bar's fraction`);
+    }
     if (board.template === "fraction-line@1" && Number.isInteger(p.mark) && p.den && states(t, p.mark, p.den)) e.push(`${k.skillId}/${id}: its board marks ${p.mark}/${p.den} "?" though its prompt states it`);
   }
   return e;
@@ -586,17 +627,52 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s));
   return e;
 }
 
 /** W: Studio's whiteboard gate on every board (W6 left to turn time). → { errors, w6 } */
+/** director16 dc-r7-held-board (v6.8, D11): the board follows the card. A UNIT is a card plus the teaching that leads into
+ * it — an explain point and its ask, the worked example and its yourStep, a remediation and its then-card, a bridge and the
+ * next skill's first card — and the whole unit is spoken over ONE board, its card's: an explain beat's ask board (else the
+ * beat's board), the yourStep's board (else the worked board), the then-card's board, the next skill's first card board.
+ * A check is its own unit. → [{ id, board, parts: [[field, { hi, en } | string]], withhold }] */
+export function unitsOf(s) {
+  const out = [];
+  const firstBoard = (k) => k?.explain?.[0] ? (k.explain[0].ask?.board ?? k.explain[0].board) : null;
+  const vals = (c) => ({ values: [c?.key, ...(c?.accept ?? [])].filter(Boolean) });
+  s.skills.forEach((k, si) => {
+    for (const e of k.explain) out.push({ id: `${k.skillId}/${e.id}`, board: e.ask?.board ?? e.board, withhold: vals(e.ask),
+      parts: [["point", e.point], ...(e.mustSay ?? []).map((m, i) => [`mustSay[${i}]`, m]), ["simpler", e.simpler], ["ask.prompt", e.ask?.prompt]] });
+    const we = k.workedExample;
+    out.push({ id: `${k.skillId}/worked`, board: we.yourStep?.board ?? we.board, withhold: vals(we.yourStep),
+      parts: [["problem", we.problem], ...(we.givens ?? []).map((g, i) => [`givens[${i}]`, g]), ["find", we.find],
+        ...(we.steps ?? []).flatMap((st, i) => [[`steps[${i}].do`, st.do], [`steps[${i}].result`, st.result], [`steps[${i}].why`, st.why], [`steps[${i}].simpler`, st.simpler]]),
+        ["yourStep.prompt", we.yourStep?.prompt], ["yourStep.simpler", we.yourStep?.simpler]] });
+    const fb = [...k.explain].reverse().find((e) => e.board)?.board;
+    for (const c of k.checks) out.push({ id: `${k.skillId}/${c.id}`, board: c.board ?? fb, withhold: vals(c), parts: [["prompt", c.prompt], ["simpler", c.simpler]] });
+    k.remediation.forEach((r, i) => out.push({ id: `${k.skillId}/remediation[${i}]`, board: r.then?.board ?? r.board, withhold: vals(r.then),
+      parts: [["say", r.say], ["simpler", r.simpler], ["then.prompt", r.then?.prompt], ["then.simpler", r.then?.simpler]] }));
+    const next = s.skills[si + 1];
+    if (k.bridgeToNext && next) out.push({ id: `${k.skillId}/bridge`, board: firstBoard(next), withhold: vals(next.explain?.[0]?.ask),
+      parts: [["bridgeToNext", k.bridgeToNext], ["next.point", next.explain?.[0]?.point]] });
+  });
+  return out.map((u) => ({ ...u, parts: u.parts.filter(([, t]) => t && (typeof t === "string" ? t.trim() : t.hi || t.en)) }));
+}
+
 export async function boardErrors(s, kit) {
   const [{ resolveBoardRef }, { expand }, { gateWhiteboard }, { retimeToLine, refWholes }] = await Promise.all([
     import("../../server/forge/explainer/board-ref.js"), import("../../server/forge/explainer/templates.js"),
     import("../../server/studio/qa/whiteboard.js"), import("../../server/stagecraft/board-sync.js")]);
   const errors = [], w6 = [];
-  for (const k of s.skills) for (const b of beatsOf(k, s.version ?? 1)) {
+  // (v2.3+, the held board: every teaching line is gated with its whole unit over the unit's card board; a card's close
+  // keeps its answerBoard, said under her verdict and the card's why)
+  const said = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
+  const held = (s.version ?? 1) >= 2.3;
+  const units = held ? unitsOf(s).filter((u) => u.board).map((u) => ({ skillId: u.id.split("/")[0], b: { id: u.id.split("/").slice(1).join("/"), board: u.board, line: u.parts.map(([, t]) => said(t)).join(" "), withhold: u.withhold } })) : [];
+  const beats = held ? [...units, ...s.skills.flatMap((k) => beatsOf(k, s.version ?? 1).filter((b) => /\.answer$/.test(b.id)).map((b) => ({ skillId: k.skillId, b })))]
+    : s.skills.flatMap((k) => beatsOf(k, s.version ?? 1).map((b) => ({ skillId: k.skillId, b })));
+  for (const { skillId, b } of beats) { const k = { skillId };
     const r = resolveBoardRef(b.board, { kit });
     if (!r.ok) { errors.push(`${k.skillId}/${b.id}: ${r.why}`); continue; }
     const text = String(b.line ?? "");
