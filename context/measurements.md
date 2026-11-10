@@ -6418,3 +6418,13 @@ yantra/roshni play-cert, 2026-11-09 (forge3-qa, local harness, p360 / p412 / l13
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r7-held-board-split-360-2026-11-09` (2026-11-09): The picture split at 360 × 640 portrait, on the real child route (Playwright, the whiteboard player). The stage box is height-bound, about 202 × 180 px above the teacher's PiP, so a 400 × 300 board is drawn at 0.505–0.6 and a 400 × 600 stack at 0.34. A 640 × 300 board keeps the height-bound scale. Measured: with words kept at their size, the split's smallest word was 12 px against 16 px for the rectangle alone (the player zooms a lone board to its words). With small words one size up in the split, both the pizza and rectangle splits have every word inside the stage box and words no smaller than the board alone, with no tap target on the board. Of 8 sample card boards, 7 split; the lettered hexagon's six side labels refuse the lint and its board stays alone. The rectangle's unrolled side labels are tight but do not touch. tests/r8-held-board-browser.test.mjs pins it.
+
+
+<!-- merged from inbox/r7-games-jaanch.json -->
+## `ms-r7-games-jaanch-cert`
+
+jaanch play-cert, 2026-11-09 (forge3-qa, local harness, sizes p360 / p412 / l1366, every art direction): every jaanch sample passes at every size (24 samples; table 4320/4320).
+
+- **Tests:** tests/r7-games-jaanch.test.mjs, 27 tests: an independent checker with its own reading of the kit agrees with every accepted act over random play; no result is taken before its evidence; mal-rules fold their kit ids; every food's result cited to a kit sentence (item sentences only from verified items); no protein word anywhere; no digit, economy word or eat / taste / touch word; lines fit the Studio box; variety across children; CPU-time speed bars.
+- **Browser runs** (page.touchscreen.tap on canvas targets, locator.tap on DOM buttons, never a dispatch): every goal solved at 360 x 640 on seeds 3 and 17 at looks 1 to 3 (18 runs), and at seed 9 in Hindi and Hinglish across chalk, raat, blueprint and kagaz (12 runs, audited after every act); every mal-rule state reached (6); no clipped label; smallest tap target 44 px.
+- **Shots:** docs/design/round7/games/runshots-jaanch/.

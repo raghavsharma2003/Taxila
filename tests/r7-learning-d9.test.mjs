@@ -32,11 +32,11 @@ test("D9.2: a remediation never states a key still to come (steady 44: c5-t01's 
 test("D9.3: a follow-up card is posed with its named values unmarked (c5-t02 s1 steady 6: 1/7 and 1/9 already marked)", () => {
   const s = script("c5-maths-ch02-t02"), kit = topic("c5", "c5-maths-ch02-t02");
   assert.deepEqual(s.skills[0].remediation[0].then.board.params.marks ?? [], []);
-  s.skills[0].remediation[0].then.board.params.marks = [[1, 6], [1, 9]];
+  s.skills[0].remediation[0].then.board.params.marks = [[1, 6], [1, 12]];
   assert.ok(structureErrorsV2(s, kit).some((x) => /remediation\[0\]\.then is posed with its values already marked/.test(x)));
-  // a reference mark the prompt names (c5-t01 s1: "1/8 ka mark", asking where 1/9 goes) is fine
+  // a reference mark the prompt names (c5-t01 s1: "pehla mark 1/5", asking where 1/6 goes) is fine
   const r = script("c5-maths-ch02-t01");
-  assert.deepEqual(r.skills[0].remediation[1].then.board.params.marks, [[1, 8]]);
+  assert.deepEqual(r.skills[0].remediation[1].then.board.params.marks, [[1, 5]]);
   assert.ok(!structureErrorsV2(r, topic("c5", "c5-maths-ch02-t01")).some((x) => /already marked/.test(x)));
 });
 
