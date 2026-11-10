@@ -17,7 +17,7 @@ import { requireGuardian, requireChild, hasConsent } from "../auth.js";
 import { getTopic, topicSequence, SUBJECT_ORDER } from "../content/curriculum.js";
 import { kitFromFile } from "../content/kits.js";
 import { topicOf, skillById, misconceptionById } from "../content/index.js";
-import { topicStatus } from "../content/next-topic.js";
+import { topicStatus, decidingStates } from "../content/next-topic.js";
 import { AzureError, tts } from "../azure.js";
 import { allowSpeech, DEFAULT_VOICE, MAX_TTS_CHARS } from "./tts.js";
 import { MIN_DELAY_MS } from "../learner/bkt.js";
@@ -1192,10 +1192,12 @@ async function syllabus(req, res) {
       const t = getTopic(id);
       let ch = chapters.at(-1);
       if (!ch || ch.id !== t.chapter.id) chapters.push(ch = { id: t.chapter.id, number: t.chapter.number, title: t.chapter.title, topics: [] });
-      let skillCount = 0;
-      try { skillCount = kitFromFile(t)?.skills.length ?? 0; } catch { /* no kit file */ }
+      let kit = null;
+      try { kit = kitFromFile(t); } catch { /* no kit file */ }
       const sk = skillsOf.get(t.id) ?? [];
-      ch.topics.push({ id: t.id, title: t.title, ...topicTruth(sk, skillCount), skills: sk });
+      // decided on the skills a child can answer, as the lesson side does (CD-01: a skill with no item never finishes)
+      const d = decidingStates(sk, kit);
+      ch.topics.push({ id: t.id, title: t.title, ...topicTruth(d.states, d.skillCount), skills: sk });
     }
     subjects.push({ subject, book: getTopic(ids[0]).book, chapters });
   }
