@@ -27,7 +27,18 @@ const TF_NO = /^\s*(false|no|nahi|nahin|galat|wrong|नहीं|गलत)\s*$/
 const OPEN = /\b(any|for example|e\.g\.|name (a|one|two|three|some)|tell me|give (an|one|two)|between \d|think of|make up|your own|write a|draw|show me|which ones)\b/i;
 const ESTIMATE = /\b(about|estimate|estimated|roughly|approximately|approx|nearest|round(ed)? (it |off |to )|close to|guess)\b/i;
 const PICTURE = /\b(picture|figure|diagram|image|shown|below|above|this shape|the grid|the graph|the table|look at)\b/i;
-export const head = (a) => String(a ?? "").split(/[;:(—–]|\. | because | kyunki /i)[0].trim().replace(/[.!]$/, "");
+// a numbered list ("1. Stop and stay … 2. …") is never a number: its head is the list as written, so it parses as no key
+// (audit CD-08: the head was cut at the first ". " and "1" became the key of "Say the lost-child plan in three steps")
+const LIST_RE = /^\s*\(?1[.)]\s+\D[\s\S]*?\s\(?2[.)]\s+\D/;
+export const head = (a) => { const s = String(a ?? ""); return LIST_RE.test(s) ? s.trim() : s.split(/[;:(—–]|\. | because | kyunki /i)[0].trim().replace(/[.!]$/, ""); };
+// the question asks for a number (audit CD-15): only then may a numeric key come from an acceptable form when the answer's
+// own head is not a number ("Why is 4.8 ÷ 0.6 the same as 48 ÷ 6?" accepted "8" and showed four number tiles)
+// the question is yes/no, why or which-one: a sentence opening on an auxiliary ("Is he right?", "Does she need to?"), a why /
+// what-went-wrong / teach / explain prompt, or an "X or Y" comparison; a sentence that also asks for a number wins (ASKS_NUM)
+const NOT_NUM_Q = /(^|[.?!:'"‘“]\s*)(is|are|am|was|were|do|does|did|can|could|will|would|should|has|have)\b|\b(why|what went wrong|what is wrong|what('s| is) the mistake|what do you notice|teach|explain|list all|say the|predict:|who is right|which (is|one|of|holds|can|has)|closer to|more or less|more or fewer|bigger or|smaller or|longer or|right\?|correct\?|true\?)/i;
+// prompts that never want a number tile, whatever the key's head ("Teach Golu what each digit in 572 means." → "5 hundreds")
+const TALK_Q = /^\s*(why|teach|explain)\b|\bwhich of these\b|\bsay the type\b/i;
+const ASKS_NUM = /\b(how (many|much|long|far|old|tall|high|heavy|wide|deep|big)|what time|at what|what (is|was|will be) (it|its|their|his|her|the)\b(?! (same|mistake|rule|reason|difference between))|which (floor|quadrant|term|year|article|number)|where (should|does|do|will) [^?]{0,30}\b(sit|land|reach|go|end)|what fraction|what do you get|what will you get|(give|write|find|state|say) the (correct|right|true|next|new) |give the number|the new sum|(find|calculate|compute|work (it )?out|evaluate|simplify|solve|convert)\b|what is [a-z]\?|kitne|kitna|kitni|=\s*\?)/i;
 const norm = (s) => String(s).replace(/^[‘'“"]+|[’'”"]+$/g, "").toLowerCase().normalize("NFC").replace(/[^\p{L}\p{N}\p{M}.,/ ]/gu, "").replace(/\s+/g, " ").trim();
 
 /** → { prefix, sign, int?, frac?, value, decimals, commas, indian, unit } | null */
@@ -133,7 +144,10 @@ export function challengeOf(it, t) {
     verified: { by: "kit blind solver", agrees: true } };
   // numeric: one value, every acceptable numeric form agrees on it
   const nums = keys.map(parseNum).filter(Boolean);
-  if (nums.length) {
+  // a number only in an accepted form, for a yes/no, why or which-one question: not a numeric challenge (it may still be a
+  // yes/no or an offered choice below)
+  const numericOk = nums.length > 0 && !TALK_Q.test(pe) && (parseNum(head(it.answer)) || !NOT_NUM_Q.test(pe) || ASKS_NUM.test(pe));
+  if (numericOk) {
     if (ESTIMATE.test(pe)) return { why: "estimate (a near decoy could be right)" };
     const vals = [...new Set(nums.map((n) => +n.value.toFixed(9)))];
     if (vals.length > 1) return { why: "acceptable values disagree" };
@@ -160,6 +174,7 @@ export function challengeOf(it, t) {
     const options = o.map((x, i) => ({ id: `o${i + 1}`, text: x.letter ? `(${x.letter}) ${x.text}` : x.text }));
     return { ok: { ...base, form: "choice", options, keyText: options[o.indexOf(hits[0])].text } };
   }
+  if (nums.length) return { why: "number only in an accepted form, question is yes/no, why or which-one" };
   return { why: "open or short answer (tier B)" };
 }
 function hintOf(it, keys) {

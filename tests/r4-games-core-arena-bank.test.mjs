@@ -5,7 +5,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { offered, parseNum, numericDecoys, challengeOf, build, MIN_CHALLENGES } from "../server/play/tools/build-arena.mjs";
+import { offered, parseNum, numericDecoys, challengeOf, build, head, MIN_CHALLENGES } from "../server/play/tools/build-arena.mjs";
 
 const texts = (p) => offered(p)?.map((o) => o.text) ?? null;
 
@@ -55,6 +55,31 @@ test("arena bank: only verified items; open, picture and estimate prompts are le
   assert.equal(c.form, "numeric");
   assert.equal(c.options.filter((o) => o.text === c.keyText).length, 1);
   assert.equal(c.hint, "Think of 6 sevens.", "hints[1] states the key, so the pump is used");
+});
+
+test("arena bank: a numbered-list answer is never a number; a yes/no, why or which-one question never shows number tiles (audit CD-08, CD-15)", () => {
+  const t = { topicId: "c7-maths-ch12-t02" };
+  const it = (o) => ({ id: "x-i02", skillId: "c7-maths-ch12-t02-s1", kind: "practice", difficulty: 2, prompt_hi: "", hints: [], verified: { agrees: true }, ...o });
+  // CD-08: the head of "1. Stop … 2. …" is the list, not "1"
+  assert.equal(parseNum(head("1. Stop and stay in one place. 2. Ask a police officer. 3. Say your phone number.")), null);
+  assert.equal(challengeOf(it({ prompt_en: "Say the lost-child plan in three steps.", answer: "1. Stop and stay in one place. 2. Ask a police officer. 3. Say your phone number." }), t).ok, undefined);
+  assert.equal(head("42. That is the total"), "42", "a number followed by a full stop and prose is still the head");
+  // CD-15: a number only in an accepted form, for a why question → not numeric
+  const why = challengeOf(it({ prompt_en: "Why is 4.8 ÷ 0.6 the same as 48 ÷ 6?", answer: "Multiply both by 10; the quotient stays 8.", acceptable: ["8"] }), t);
+  assert.equal(why.ok, undefined);
+  // … for a yes/no question → a yes/no challenge, not four number tiles
+  const yn = challengeOf(it({ prompt_en: "Golu says 4 groups of 5 make 9. Is he right?", answer: "No. 4 groups of 5 make 20.", acceptable: ["no", "20"] }), t).ok;
+  assert.equal(yn?.form, "yesno");
+  assert.equal(yn.keyText, "no");
+  // … for an offered choice → a choice
+  const ch = challengeOf(it({ prompt_en: "Which is longer: 1 m or 90 cm?", answer: "1 m is longer.", acceptable: ["1 m"] }), t).ok;
+  assert.equal(ch?.form, "choice");
+  // a question that asks for a number keeps its numeric key from an accepted form
+  const num = challengeOf(it({ prompt_en: "If c + 2 = 9, what is c?", answer: "c = 7", acceptable: ["7"] }), t).ok;
+  assert.equal(num?.form, "numeric");
+  // and the bank on disk has no numeric challenge whose answer head is not a number for a why / yes-no / which question
+  const bank = build();
+  for (const f of Object.values(bank.files)) for (const c of f.challenges) if (c.form === "numeric") assert.ok(!/^\s*(why|teach|explain)\b/i.test(c.prompt.en), c.id);
 });
 
 test("arena bank: every challenge on disk has exactly one key option; topics are admitted at the minimum; the bank is fresh", () => {

@@ -20,15 +20,15 @@ test("D10.2: an ask board never labels '?' a value its prompt states (c4 steady 
   const b = s.skills[2].explain[0];
   assert.match(b.ask.prompt.hi, /aadhe/);
   (b.ask.board ?? b.board).params.bars[0].label = "?";
-  assert.ok(askBoardQuestionErrors(s).some((x) => /e1: its board labels the 1\/2 bar "\?"/.test(x)));
+  assert.ok(askBoardQuestionErrors(s).some((x) => /e1: its board labels a bar of 2 parts "\?" though its prompt states/.test(x)));
 });
 
 test("D10.4: 'no later key' covers distractors, choice cards and a then-card's own key", () => {
-  // a distractor still to come (director15: c5-t01's whole-number-bias remediation used e3's distractor 1/5)
+  // a distractor still to come (director15: c5-t01's whole-number-bias remediation used e3's distractor, now 1/8)
   const a = script("c5-maths-ch02-t01");
-  assert.equal(a.skills[0].explain[2].ask.wrongIfMis, "1/5");
-  a.skills[0].remediation[1].say.hi += " 1/5 bhi aisa hi hai.";
-  assert.ok(remediationKeyErrors(a).some((x) => /remediation\[1\]: states 1\/5, the distractor of c5-maths-ch02-t01-s1\/e3/.test(x)));
+  assert.equal(a.skills[0].explain[2].ask.wrongIfMis, "1/8");
+  a.skills[0].remediation[1].say.hi += " 1/8 bhi aisa hi hai.";
+  assert.ok(remediationKeyErrors(a).some((x) => /remediation\[1\]: states 1\/8, the distractor of c5-maths-ch02-t01-s1\/e3/.test(x)));
   // a then-card whose key a/b gives a later whole-number key b (the count-marks then-card's 1/8 m gave e2's "8 gaps")
   const b = script("c5-maths-ch02-t01");
   assert.equal(b.skills[0].explain[1].ask.key, "8");
