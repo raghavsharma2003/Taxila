@@ -26,7 +26,7 @@ test("a waiting background call keeps its process alive until it is admitted (no
   const script = `import { createLanes } from ${JSON.stringify(new URL("../server/lanes.js", import.meta.url).href)};
     let t = 0; const L = createLanes({ now: () => Date.now() + t, shared: ["d"] });
     L.settle({ quotaLane: "hot", deployment: "d", kind: "chat", status: 429 });
-    t = -9950; // the pause ends 50 ms from now
+    t = 9950; // the clock jumps ahead: the pause ends 50 ms from now
     await L.admit({ quotaLane: "background", deployment: "d", kind: "chat" });
     console.log("ADMITTED");`;
   const r = spawnSync(process.execPath, ["--input-type=module", "-e", script], { encoding: "utf8", timeout: 20_000 });
