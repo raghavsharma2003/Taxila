@@ -28,7 +28,7 @@
     <link rel="preload" href="/fonts/atkinson-hyperlegible-next-latin.woff2" as="font" type="font/woff2" crossorigin />
     <!-- The landing's LCP is the live-lesson capture (public/site/desk.webp, ~25 KB): on "/" only, fetch it with the
          document. The public pages paint their first frame in Volt night (data-site) so there is no light flash. -->
-    <script>(function(){var p=location.pathname;if(p==="/"){var l=document.createElement("link");l.rel="preload";l.as="image";l.href="/site/desk.webp";l.setAttribute("fetchpriority","high");document.head.appendChild(l)}if(/^\/(promises|privacy|help|leaving|trust)?\/?$/.test(p))document.documentElement.setAttribute("data-site","volt");try{if(/^\/(c\/|who|start|parent)/.test(p)&&localStorage.getItem("tx.flag.ui.kaksha.r11")!=="0")document.documentElement.setAttribute("data-boot","kx")}catch(e){}})();</script>
+    <script>(function(){var p=location.pathname;if(p==="/"){var l=document.createElement("link");l.rel="preload";l.as="image";l.href="/site/desk.webp";l.setAttribute("fetchpriority","high");document.head.appendChild(l)}if(/^\/(promises|privacy|help|leaving|trust|pricing|pair|signin)?\/?$/.test(p))document.documentElement.setAttribute("data-site","volt");try{if(/^\/(c\/|who|start|parent)/.test(p)&&localStorage.getItem("tx.flag.ui.kaksha.r11")!=="0")document.documentElement.setAttribute("data-boot","kx")}catch(e){}})();</script>
     <!-- W2-A #8 (smooth G5/G6): start the first API read with the document, before the bundle parses. Only when the
          readable session marker (tx_in, set at sign-in; never the token) says someone signed in on this browser, so
          the public landing never fires GET /api/me into a 401. Child home: ONE read (me + plan, /api/child/boot). The

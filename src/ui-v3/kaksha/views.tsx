@@ -82,7 +82,7 @@ export function HomeView(p: HomeViewProps) {
   const greet = kt(p.greeting === "morning" ? "greetMorning" : p.greeting === "evening" ? "greetEvening" : "greetDay", { name: p.childName });
   const sub = p.resuming && p.state === "start" ? kt("resumeSub") : p.state === "done" ? kt("doneSub") : p.state === "capped" ? kt("cappedSub")
     : p.state === "resting" ? kt("restSub", { time: p.opensAt ?? "" }) : p.state === "homework" ? kt("homeworkSub")
-      : p.state === "test" ? kt("testSub", { subject: p.testSubject || "school" }) : kt("openSub");
+      : p.state === "test" ? kt("testSub", { subject: p.testSubject || "school" }) : kt("openSub", { T: p.teacher.name });
   const cta = p.state === "start" || p.state === "done" || p.state === "homework" || p.state === "test";
   const ctaWord = p.state === "homework" ? kt("homeworkCta") : p.state === "test" ? kt("reviseCta") : p.state === "done" ? kt("anotherCta") : kt("start");
   return (

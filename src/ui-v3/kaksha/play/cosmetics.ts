@@ -3,7 +3,8 @@
 // a stale device choice can never show a part the ledger has not opened. Colour only: no item changes a level, an act,
 // a grade, the pace or anything a child can win or lose (dc-r4-gamification-b).
 import type { PlayCosmetics } from "../../../play/briefing.ts";
-import { K_NIGHT, type KPalette } from "../tokens.ts";
+import { K_LOOKS, K_THEMES, kakshaThemeFor, type KPalette } from "../tokens.ts";
+import { kakshaLook, type Family } from "../look.ts";
 import type { HangarItem } from "../world.ts";
 
 const HUE: Record<string, keyof KPalette> = {
@@ -11,11 +12,17 @@ const HUE: Record<string, keyof KPalette> = {
 };
 const hex = (s: string): number | null => (/^#[0-9a-f]{6}$/i.test(s) ? parseInt(s.slice(1), 16) : null);
 
-export function cosmeticsFor(equipped: Readonly<Record<string, string>>, items: ReadonlyArray<Pick<HangarItem, "id" | "kind" | "hue" | "open">>): PlayCosmetics | null {
+/** APP-17: the palette of the look the child is on (the Hangar draws with its CSS vars), not the retired classic Night one. */
+export function paletteFor(family: Family): KPalette {
+  const look = kakshaLook(family), theme = kakshaThemeFor(family);
+  return look === "classic" ? K_THEMES[theme] : K_LOOKS[look][theme];
+}
+
+export function cosmeticsFor(equipped: Readonly<Record<string, string>>, items: ReadonlyArray<Pick<HangarItem, "id" | "kind" | "hue" | "open">>, palette: KPalette = paletteFor("older")): PlayCosmetics | null {
   const pick = (slot: "hull" | "trail"): number | null => {
     const it = items.find((i) => i.id === equipped[slot] && i.kind === slot && i.open);
     const key = it ? HUE[it.hue] : undefined;
-    return key ? hex(String(K_NIGHT[key])) : null;
+    return key ? hex(String(palette[key])) : null;
   };
   const hull = pick("hull"), trail = pick("trail");
   return hull === null && trail === null ? null : { hull, trail };

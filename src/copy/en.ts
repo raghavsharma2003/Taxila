@@ -277,7 +277,7 @@ export const R7 = {
   "nb.growth": "Then and now",
   "growth.then": "First met on {date}",
   "growth.thenHint": "First met on {date}, with a hint",
-  "growth.now": "Pakka since {date}",
+  "growth.now": "Secure since {date}",
   "growth.helped": "This helped",
   "growth.empty": "When something becomes pakka, it shows here, next to where you started.",
   // r7 (Learning to-app/007): "Maths feels…" at Hello: a feeling, never a test (no right answer, no score)

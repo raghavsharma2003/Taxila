@@ -24,7 +24,7 @@ import { kakshaThemeFor } from "../tokens.ts";
 import catalogJson from "../../../../data/kaksha/catalog.json";
 import { PlayBriefingContext, type PlayBriefing, type PlayCosmetics } from "../../../play/briefing.ts";
 import { Briefing } from "../play/Briefing.tsx";
-import { cosmeticsFor, emoteLook, lessonLook, type EmoteLook, type LessonLook } from "../play/cosmetics.ts";
+import { cosmeticsFor, paletteFor, emoteLook, lessonLook, type EmoteLook, type LessonLook } from "../play/cosmetics.ts";
 import { readEquipped } from "../memory.ts";
 import { syncEquipped } from "../equipSync.ts";
 import { world, type Catalog } from "../world.ts";
@@ -80,12 +80,12 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
       if (!live || !m || m.hidden) return;
       const items = world(m.skills, catalogJson as unknown as Catalog).items;
       const eq = server ?? readEquipped(cid);
-      setCosmetics(cosmeticsFor(eq, items));
+      setCosmetics(cosmeticsFor(eq, items, paletteFor(family)));
       setLook(lessonLook(eq, items));
       setEmote(emoteLook(eq, items));
     }, () => {});
     return () => { live = false; };
-  }, [before, cid]);
+  }, [before, cid, family]);
   const briefing = useMemo<PlayBriefing>(() => ({ render: (p) => <Briefing {...p} />, cosmetics }), [cosmetics]);
   const renderSummary = useCallback(
     (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => <Debrief {...p} before={before} loadAfter={() => loadMap(cid)}

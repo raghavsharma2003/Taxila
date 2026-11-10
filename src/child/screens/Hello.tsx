@@ -149,7 +149,7 @@ export function Hello() {
   const pageAvatars = AVATARS.slice((page * 6) % AVATARS.length, ((page * 6) % AVATARS.length) + 6);
   // Kaksha (K-P13, audit B02): the older line promises only what happens next (a short chat, then she teaches); "find
   // what you already know" promised an assessment that never comes. Flag off: today's line, unchanged.
-  const framing = young ? t("storyStart") : kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha) ? kt("helloOlder") : t("olderStart");
+  const framing = young ? t("storyStart") : kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha) ? kt("helloOlder", { T: rec.name }) : t("olderStart");
 
   let body;
   switch (card) {
