@@ -264,7 +264,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
           <div className="dk-zone dk-zone--window" data-zone="window"><TeacherWindow m={m} media={faceMedia} floor={floor} labelBelow={false} /></div>
           <p className="dk-ailabel" data-ai-label="">{t("teacher.label", { T: m.teacher.name })}</p>
           <span />
-          <div className="dk-zone dk-zone--caption" data-zone="caption">{m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />}</div>
+          <div className="dk-zone dk-zone--caption" data-zone="caption">{m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor, m.caption.soundFailed)} lang={m.caption.lang} soundFailed={m.caption.soundFailed} />}</div>
           <span />
         </div>
         <div className="dk-col dk-col--right" style={{ gridColumn: 4, gridTemplateRows: `${right.padTop}px ${right.card}px ${right.gapA}px ${right.tray}px ${right.gapB}px ${right.strip}px ${right.dock}px ${right.pad}px` }}>
@@ -289,7 +289,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
         {topBar}
         <div className="dk-zone dk-zone--teacher" data-zone="teacher">{faceZone}</div>
         <div className="dk-zone dk-zone--caption" data-zone="caption">{L.geometry === "face" && !L.keyboard && m.captionsOn && z.caption > 0 && (
-          <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />
+          <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor, m.caption.soundFailed)} lang={m.caption.lang} soundFailed={m.caption.soundFailed} />
         )}</div>
         <div className="dk-zone dk-zone--card" data-zone="card">{card}</div>
         <div className="dk-zone dk-zone--tray" data-zone="tray">{L.keyboard ? (m.tray ? <p className="dk-traystrip">{t("tray.activity")}</p> : null) : tray}</div>
