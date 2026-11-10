@@ -11,7 +11,8 @@ let cache = null;
 /**
  * @typedef {{ id: string, class: number, subject: string, strand: string, band: string, ge: number, format: "numeric"|"mcq",
  *   prompt_en: string, prompt_hi: string, answer: string, acceptable?: string[], unit?: string,
- *   options?: { text: string, correct: boolean }[], topicRef?: string, demand?: string }} PlacementItem
+ *   options?: { text: string, correct: boolean }[], topicRef?: string, demand?: string, retired?: boolean, pairId?: string }} PlacementItem
+ * `retired` keeps the record and drops the item from the bank; `pairId` marks close variants of one question (cat.js asks at most one).
  */
 
 export const usable = (it) => !!it && (it.verified?.agrees === true || it.adjudicated?.keyCorrect === true) && !it.anchorMismatch && !it.retired

@@ -97,3 +97,117 @@ test("CD-22: the curriculum validator passes", async () => {
   const r = spawnSync(process.execPath, ["data/curriculum/validate.mjs"], { cwd: new URL("..", import.meta.url), encoding: "utf8" });
   assert.equal(r.status, 0, r.stdout + r.stderr);
 });
+
+// ---- CD-02, CD-03, CD-04: passages are stored once, carried by the loader, and nothing is dropped by the budget ----
+import { normalizeKit, passagesPresentable } from "../server/content/kits.js";
+
+const normalizedAll = () => rawKits().map((t) => ({ raw: t, kit: normalizeKit(t, { topicId: t.topicId, verified: true }) }));
+
+test("CD-04: no item is dropped by the prompt budget in any kit", () => {
+  const dropped = normalizedAll().filter(({ kit }) => kit.lint.itemsDropped).map(({ raw, kit }) => `${raw.topicId}:${kit.lint.itemsDropped}`);
+  assert.deepEqual(dropped, []);
+});
+
+test("CD-03: a passage is stored once per topic or group, never as a topic-level string, and every reference resolves", () => {
+  let refs = 0;
+  for (const { raw } of normalizedAll()) {
+    assert.equal(raw.passage, undefined, `${raw.topicId} still has the old single passage string`);
+    const ids = new Set((raw.passages ?? []).map((p) => p.id));
+    assert.equal(ids.size, (raw.passages ?? []).length, `${raw.topicId}: duplicate passage ids`);
+    assert.equal(new Set((raw.passages ?? []).map((p) => p.text)).size, ids.size, `${raw.topicId}: the same text stored twice`);
+    for (const it of raw.items) if (it.passageId) { refs++; assert.ok(ids.has(it.passageId), `${it.id} -> ${it.passageId}`); }
+    for (const p of raw.passages ?? []) {
+      assert.ok(raw.items.some((it) => it.passageId === p.id), `${p.id} has no item`);
+      assert.ok(!/ \/ |\(original/.test(p.text), `${p.id}: poem lines use a line break; no authoring header in the text`);
+    }
+  }
+  assert.ok(refs > 400, `items that depend on a passage: ${refs}`);
+});
+
+test("CD-02: classes 5-9 no longer carry the passage inside the prompt: both prompts are the short question", () => {
+  const repeats = [];
+  for (const { raw } of normalizedAll()) {
+    if (!/^c[5-9]-/.test(raw.topicId)) continue;
+    for (const it of raw.items) if (it.passageId) {
+      const p = raw.passages.find((x) => x.id === it.passageId);
+      if (it.prompt_en.includes(p.text.slice(0, 40)) || it.prompt_hi.includes(p.text.slice(0, 40))) repeats.push(it.id);
+    }
+  }
+  assert.deepEqual(repeats, []);
+  assert.equal(findItem("c8-english-ch10-t01-i01").prompt_en.includes("grandmother"), false, "the story is not in the English question");
+  assert.equal(findItem("c7-english-ch01-t01-rl-g2").prompt_hi.includes("Farah ne poochha"), false, "nor in the Hinglish copy of it");
+  assert.equal(findItem("c5-hindi-ch07-t01-i01").prompt_hi.includes("मेरा बचपन"), false, "nor in a Hindi question");
+});
+
+test("CD-03: the loader carries passages; an item that needs one is held out until the lesson can show it", () => {
+  const t = rawKits().find((x) => x.topicId === "c3-english-ch09-t01");
+  const was = process.env.TAXILA_PASSAGES;
+  try {
+    delete process.env.TAXILA_PASSAGES;
+    assert.equal(passagesPresentable(), false);
+    const k = normalizeKit(t, { topicId: t.topicId, verified: true });
+    assert.equal(k.passages.length, 1);
+    assert.match(k.passages[0].text, /Pihu had a wish/);
+    assert.ok(k.heldItems.length > 0 && k.heldItems.every((i) => i.passageId === k.passages[0].id));
+    assert.ok(k.items.every((i) => !i.passageId), "nothing askable depends on the story");
+    assert.ok(k.items.some((i) => i.id === "c3-english-ch09-t01-i05"), "a grammar item that does not need the story is still askable");
+    assert.ok(!k.items.some((i) => i.id === "c3-english-ch09-t01-i01"), "'What was Pihu's first wish?' needs the story");
+    assert.equal(k.items.length + k.heldItems.length, t.items.length);
+    process.env.TAXILA_PASSAGES = "on";
+    const on = normalizeKit(t, { topicId: t.topicId, verified: true });
+    assert.equal(on.items.length, t.items.length);
+    assert.equal(on.heldItems, undefined);
+  } finally { was === undefined ? delete process.env.TAXILA_PASSAGES : (process.env.TAXILA_PASSAGES = was); }
+});
+
+test("CD-03: every kit still loads with something askable while passages are held", () => {
+  for (const { raw, kit } of normalizedAll()) {
+    assert.ok(kit, raw.topicId);
+    assert.ok(kit.items.filter((i) => i.kind !== "teachback").length >= 1, `${raw.topicId} has nothing askable`);
+  }
+});
+
+// ---- CD-13, CD-14: placement duplicates are retired (never deleted); close variants share a pairId ----
+import { loadBank } from "../server/placement/bank.js";
+import { nextItem } from "../server/placement/cat.js";
+
+const placementWithFile = () => readdirSync(placementDir).filter((f) => /^c\d+-/.test(f))
+  .flatMap((f) => JSON.parse(readFileSync(new URL(f, placementDir), "utf8")).items.map((it) => ({ it, f })));
+
+test("CD-13/14: one of each exact-duplicate pair and the class-3 sum anchored at class 8 are retired, and still on file", () => {
+  const retired = placementWithFile().filter(({ it }) => it.retired).map(({ it }) => it.id).sort();
+  assert.deepEqual(retired, ["pl-c3-maths-m01", "pl-c4-evs-e09", "pl-c5-maths-l02", "pl-c5-maths-l05", "pl-c5-maths-l07", "pl-c8-maths-e10", "pl-c8-maths-l10"]);
+  const bank = new Set(loadBank().map((i) => i.id));
+  for (const id of retired) assert.ok(!bank.has(id), id);
+  const key = (it) => `${it.class}|${it.prompt_en.replace(/\W+/g, " ").toLowerCase()}|${it.answer}`;
+  const live = loadBank();
+  for (const [a, b] of [["pl-c5-maths-m10", "pl-c5-maths-l02"], ["pl-c5-maths-m12", "pl-c5-maths-l07"], ["pl-c5-maths-m11", "pl-c5-maths-l05"], ["pl-c3-maths-e05", "pl-c3-maths-m01"], ["pl-c8-maths-m01", "pl-c8-maths-e10"], ["pl-c4-evs-m02", "pl-c4-evs-e09"]]) {
+    assert.ok(live.some((i) => i.id === a), `${a} stays in the bank`);
+    assert.ok(!live.some((i) => i.id === b), `${b} is out`);
+  }
+  assert.equal(new Set(live.map(key)).size, live.length, "no two live items are the same question");
+});
+
+test("CD-13: each close-variant pair shares a pairId, and a round never asks both", () => {
+  const byPair = Map.groupBy(placementWithFile().filter(({ it }) => it.pairId), ({ it }) => it.pairId);
+  assert.equal(byPair.size, 4);
+  for (const [pid, rows] of byPair) assert.equal(rows.length, 2, pid);
+  for (const [pid, rows] of byPair) {
+    const [first, second] = rows.map(({ it, f }) => ({ ...it, class: Number(/^c(\d+)/.exec(f)[1]), subject: f.replace(/^c\d+-|\.json$/g, "") }));
+    const pool = loadBank().filter((i) => i.subject === first.subject && i.class === first.class);
+    const asked = [{ item: pool.find((i) => i.id === first.id), y: 1 }];
+    for (let k = 0; k < 40; k++) {
+      const next = nextItem({ classLevel: first.class, pool, asked, rnd: () => (k % 10) / 10 });
+      if (!next) break;
+      assert.notEqual(next.id, second.id, `${pid}: the variant came up after its pair`);
+      asked.push({ item: next, y: k % 2 });
+    }
+  }
+});
+
+test("CD-13: with only a pair's other variant left in the pool, nextItem stops rather than ask it", () => {
+  const mk = (id) => ({ id, ge: 3.5, band: "mid", pairId: "pair-x", format: "numeric", subject: "maths", class: 4, answer: "1", prompt_en: id, prompt_hi: id, strand: "maths:core" });
+  const a = mk("a"), b = mk("b");
+  const next = nextItem({ classLevel: 4, pool: [a, b], asked: [{ item: a, y: 1 }], rnd: () => 0 });
+  assert.equal(next, null);
+});

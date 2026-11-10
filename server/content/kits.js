@@ -16,6 +16,13 @@ const kitsDir = () => (process.env.TAXILA_KITS_DIR ? pathToFileURL(resolve(proce
 const ITEM_KINDS = new Set(["practice", "near_transfer", "far_transfer", "predict", "contrast", "why", "teachback", "retrieval", "error_spot", "translate_rep"]);
 const TOPIC_TYPES = new Set(["T1", "T2", "T3", "T4", "T5"]);
 const FORMATS = new Set(["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"]);
+/**
+ * Can the lesson show a passage to the child? Not yet (docs/design/round7/learning/PASSAGE.md): until it can, an item that
+ * depends on a passage is held out of `items` (it lands in `heldItems`) so nothing asks a question about a story the
+ * child never heard. Turn on with TAXILA_PASSAGES=on once Brain's lesson half and Studio's passage board have landed.
+ * Read per call; a kit is normalized once per file change, so a flip needs a restart.
+ */
+export const passagesPresentable = () => process.env.TAXILA_PASSAGES === "on";
 /** A kit with fewer non-teachback items than this cannot run a practice phase. */
 export const MIN_USABLE_ITEMS = 4;
 /**
@@ -79,9 +86,14 @@ export function normalizeKit(raw, { topicId, verified }) {
       };
     });
   const misIds = new Set(misconceptions.map((m) => m.id));
-  const lint = { itemsDropped: 0, diagnosticsDropped: 0, hintsReplaced: 0 };
+  // Passages are stored once per topic (or per group of items that share one); an item points at its passage by id.
+  const passages = (Array.isArray(raw.passages) ? raw.passages : [])
+    .filter((p) => str(p?.id) && str(p?.text))
+    .map((p) => ({ id: str(p.id), text: str(p.text), ...(str(p.title) ? { title: str(p.title) } : {}), ...(p.kind === "picture" ? { kind: "picture" } : {}) }));
+  const passageIds = new Set(passages.map((p) => p.id));
+  const lint = { itemsDropped: 0, diagnosticsDropped: 0, hintsReplaced: 0, itemsHeld: 0 };
 
-  const items = (Array.isArray(raw.items) ? raw.items : [])
+  const allItems = (Array.isArray(raw.items) ? raw.items : [])
     .filter((it) => str(it?.id) && skillIds.has(str(it?.skillId)) && ITEM_KINDS.has(it?.kind) && str(it?.answer)
       && (str(it?.prompt_en) || str(it?.prompt_hi)) && it?.verified?.agrees !== false)
     .map((it) => {
@@ -93,6 +105,7 @@ export function normalizeKit(raw, { topicId, verified }) {
         answer: str(it.answer),
         acceptable: [...new Set(strArr(it.acceptable))].filter((a) => a.length <= ACCEPTABLE_CHARS).slice(0, ACCEPTABLE_MAX), hints: strArr(it.hints).slice(0, 4),
         ...(misIds.has(str(it.targetsMisconception)) ? { targetsMisconception: str(it.targetsMisconception) } : {}),
+        ...(passageIds.has(str(it.passageId)) ? { passageId: str(it.passageId) } : {}),
         // RS-6 F1: the grade-equivalent (ability.js scale) and demand, when the item was re-levelled or rater-calibrated;
         // director/items.js itemGE() falls back to the difficulty proxy without them.
         ...(Number.isFinite(Number(it.ge)) && it.ge !== null && it.ge !== "" ? { ge: Number(it.ge) } : {}),
@@ -108,17 +121,23 @@ export function normalizeKit(raw, { topicId, verified }) {
       return item;
     })
     .filter((it) => checkFits(it) || !(lint.itemsDropped += 1));
-  if (items.filter((i) => i.kind !== "teachback").length < MIN_USABLE_ITEMS) return null;
+  if (allItems.filter((i) => i.kind !== "teachback").length < MIN_USABLE_ITEMS) return null;
   // A diagnostic is posed through the same pinned check as an item (its anchor needs the items above).
   for (const m of misconceptions) {
-    if (m.diagnostic && !checkFits(diagnosticItem({ items }, m))) { m.diagnostic = null; lint.diagnosticsDropped += 1; }
+    if (m.diagnostic && !checkFits(diagnosticItem({ items: allItems }, m))) { m.diagnostic = null; lint.diagnosticsDropped += 1; }
   }
+  // An item that needs a passage waits until the lesson can show one (passagesPresentable).
+  const hold = !passagesPresentable();
+  const items = hold ? allItems.filter((i) => !i.passageId) : allItems;
+  const heldItems = hold ? allItems.filter((i) => i.passageId) : [];
+  lint.itemsHeld = heldItems.length;
 
   const we = raw.workedExample;
   const formats = raw.formats || {};
   const kit = {
     topicId, topicType: TOPIC_TYPES.has(raw.topicType) ? raw.topicType : "T3",
     skills, expectations: strArr(raw.expectations), misconceptions, items,
+    ...(passages.length ? { passages } : {}), ...(heldItems.length ? { heldItems } : {}),
     workedExample: str(we?.problem) && strArr(we?.steps).length
       ? { problem: str(we.problem), steps: strArr(we.steps), fadedVersion: strArr(we.fadedVersion) }
       : null,
