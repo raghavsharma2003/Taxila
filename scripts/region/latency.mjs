@@ -2,7 +2,7 @@
 // Creates a one-off ACA job per vantage (taxila-sin-env = South India / Chennai, taxila-env = eastus2), runs
 // scripts/region/latency-job.mjs in a stock node:22 image, reads its LAT lines from each env's Log Analytics
 // workspace, deletes the jobs (their secrets hold the model keys) and writes a summary with p50/p90.
-//   NODE_USE_ENV_PROXY=1 node scripts/region/latency.mjs --staging <url> [--prod <url>] [--n 20] [--lessons 20] [--only sin|eus]
+//   NODE_USE_ENV_PROXY=1 node scripts/region/latency.mjs --staging <url> --prod <url> [--n 20] [--lessons 20] [--only sin|eus]
 // Production is only READ (GET /api/health, /api/health?db=1). Lessons run against staging only.
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { ROOT, SUB_PATH, arm, laQuery, loadEnv, until } from "../../infra/azure.mjs";
@@ -10,8 +10,9 @@ import { ROOT, SUB_PATH, arm, laQuery, loadEnv, until } from "../../infra/azure.
 loadEnv();
 const argv = process.argv.slice(2);
 const opt = (f, d) => { const i = argv.indexOf(f); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : d; };
-const STAGING = opt("--staging"), PROD = opt("--prod", "https://taxila-web.nicebay-a0d3a12f.eastus2.azurecontainerapps.io");
+const STAGING = opt("--staging"), PROD = opt("--prod", null);
 if (!STAGING) throw new Error("--staging <url>");
+if (!PROD) throw new Error("--prod <url>: there is no default production URL, name the server to read");
 const N = opt("--n", "20"), LESSONS = opt("--lessons", "20"), ONLY = opt("--only", null);
 const API = "api-version=2024-03-01";
 const SCRIPT = readFileSync(new URL("./latency-job.mjs", import.meta.url), "utf8");
