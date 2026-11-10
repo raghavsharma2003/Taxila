@@ -27626,6 +27626,40 @@
    "at": "2026-11-10",
    "title": "The kit-practice phase after the script's walk is not explained by because records (found by tests/knows-walk.test.mjs, main asked it be an open item, 2026-11-10). Once every scripted skill is walked and the last skill's ladder is spent, poseNext falls to director/items.js selectNext, which today reads: the practice queue (buildPracticeQueue / buildF0Queue: kit items by skill, ordered by expected success against theta from the learner view, the class level, the weak flag, the opener floor, a diagnostic for her active mix-up inserted second, check-reserve items held out); itemsDone / skipped / shownIds; pace.settled and pace.parkedSkills (this lesson's run); the per-skill arc (arcSkill, ARC_BLOCK); error_spot gated on the snapshot's pKnown and correctUnaided (correctUnaided over-counts script cards until to-main/001 lands); pace.fast (jump to the hardest item); 'easier'/'harder' requests. Several of these are learner state (theta, weak, active mix-up, pKnown, correctUnaided) choosing items with no because, and this is where K2's success-first ordering and the ladder order matter most. To explain it the same way: (1) buildPracticeQueue's learner-driven departures from kit order (diagnostic insertion, theta ordering, weak) would each emit a record at queue build (knows.js would own a pure 'queueFor' or wrap buildPracticeQueue's result against kit order); (2) selectNext's in-lesson pace jumps (fast → hardest; settled/parked) would record from this lesson's answers, like compress_fallback; (3) assertWalkExplained's expected walk would extend past the ladder into the queue order. Not built (main: do not build yet).",
    "source": "inbox/r8-loop-3.json"
+  },
+  {
+   "id": "m-r7-catalogue-judge-agreement",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "n": 20,
+   "method": "the same 20 seeded catalogue game packets (approve-check --catalogue-sample 20 --seed 20261110) judged on rubric v1 (data/studio-approved/JUDGE-PROMPT.md) by two separate Claude judges given the packets only, one Opus and one Sonnet; pass/fail compared per piece (data/studio-approved/runs/2026-11-10-catalogue-sample/agreement.json)",
+   "title": "Sonnet agreed with Opus on pass/fail for 15 of 20 (the bar was 19). It caught both wrong keys, but passed 5 pieces Opus failed: 2 for register, 1 wrong fact, 2 for readability only. So the bulk re-judge is Opus. Tokens for 20 pieces in one agent: Opus 17M cache-read, 0.84M cache-write, 0.10M output; Sonnet 10M, 0.92M, 0.28M.",
+   "source": "inbox/r7-studio-39.json"
+  },
+  {
+   "id": "m-r7-studio-v2-recert",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "n": 760,
+   "method": "every catalogue game and explainer rendered in the real Desk tray at p360, p412 and l1366 with its board twin (matrix.mjs, forge3-qa@2; a crashed page retried once), certificatesFromMatrix; table per engine in docs/design/round7/studio/recert-2026-11-10.md",
+   "title": "Strict passes at p360/p412/l1366 went from 760/432/690 to 760/409/684, and served from 760/666/690 to 760/671/684. The p360 column is the board twin for every piece, and that twin is the engine's name plus four kit key terms with no figure. On a 360 px phone no child plays a Studio v2 game. At p412, class 4-5 pieces pass the strict 16 px floor 0 of 295 times.",
+   "source": "inbox/r7-studio-39.json"
+  },
+  {
+   "id": "dc-r7-catalogue-judged",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "main's ruling: a catalogue piece reaches a child only with a judged pass (rubric v1) in data/studio-approved, exactly like a generated piece; no judged pass means the script's board or the engine's reviewed default. The tray gate reads it (server/forge3/tray-gate.js, cert catalogue-judged), behind the switch STUDIO_CATALOGUE_JUDGED, default on. The bulk judge is Opus (m-r7-catalogue-judge-agreement). Pieces failing on off-topic, wrong key, wrong fact or register are withheld and listed for Learning; readability faults go to the engine.",
+   "reverse": "a fresh random sample of 50 unjudged catalogue pieces passes rubric v1 at 95% or better",
+   "source": "inbox/r7-studio-39.json"
+  },
+  {
+   "id": "dc-r7-phone-play-family-first",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "PROPOSED to main (docs/design/round7/studio/ENGINES-360.md): on a phone, the lesson offers the play family where one covers the topic (186 of 382 catalogue topics, all maths and science). Studio v2 gets a portrait core mode, then portrait layouts only for the engines whose topics no play family covers: story-rail, beat-line and sort-storm (133 of the 196 uncovered topics), then town-lab, era-drop and land-lab. These are language, SST and EVS, where no play family exists, so there the two systems are not substitutes.",
+   "reverse": "main decides the twin board at 360 is the phone experience for language, SST and EVS, or the Games stream plans language/SST families",
+   "source": "inbox/r7-studio-39.json"
   }
  ],
  "edges": [
@@ -44318,6 +44352,16 @@
    "src": "op-r8-kit-practice-unexplained",
    "rel": "caused_by",
    "dst": "ms-r8-knows-real-walk-2026-11-10"
+  },
+  {
+   "src": "dc-r7-catalogue-judged",
+   "rel": "measured_by",
+   "dst": "m-r7-catalogue-judge-agreement"
+  },
+  {
+   "src": "dc-r7-phone-play-family-first",
+   "rel": "measured_by",
+   "dst": "m-r7-studio-v2-recert"
   }
  ]
 }
