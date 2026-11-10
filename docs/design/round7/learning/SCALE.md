@@ -4,7 +4,7 @@
 
 ## Where we are
 - **Coverage:** 830 kit topics; 34 have a script (4 live pilots and the 30-topic staged batch), so 796 have none. The staged
-  batch is all class 4–7 maths, being regenerated under D11–D13. Main's 826 counts the topics with no live script.
+  batch is all class 4–7 maths, regenerated to v2.3 under D11–D13: all 30 pass `check.mjs` and are blind-solved. Main's 826 counts the topics with no live script.
 - **The format is settled:** v2.3, with answer boards, units true of their card board (the held board), no `bridgeBoard`,
   authored joints, and the D9–D13 leak and figure rules.
 - **The pilot loop has done its job:** the director18 judging says so. Every rule it produced is now a predicate in

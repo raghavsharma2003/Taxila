@@ -1,7 +1,7 @@
 {
  "topicId": "c5-maths-ch01-t01",
  "classLevel": 5,
- "version": 2.2,
+ "version": 2.3,
  "status": "draft",
  "terms": [
   {
@@ -48,7 +48,7 @@
    "hi": "comma",
    "en": "comma"
   }
- ],
+ ], "joints": { "asidePark": [{"hi": "Achha, {aside} wali baat yaad rakhti hoon. Pehle yeh bada number padh lete hain.", "en": "Okay, I'll remember the {aside} bit. First let's read this big number."}, {"hi": "{aside} ki baat thodi der mein karenge. Abhi har ank ki jagah dekh lete hain.", "en": "We'll talk about {aside} in a little while. For now let's see each digit's place."}, {"hi": "Wah, {aside}! Use sambhaal ke rakhti hoon, pehle yeh number poora karte hain.", "en": "Oh, {aside}! I'll keep that safe; first let's finish this number."}], "asideReturn": [{"hi": "Ab tumhari baat: tumne kaha tha {said}. Uske baare mein thoda aur batao.", "en": "Now your thing: you said {said}. Tell me a little more about it."}, {"hi": "Tumne {said} bola tha na? Usmein sabse mazedaar kya laga?", "en": "You said {said}, didn't you? What was the most fun part?"}, {"hi": "Woh {said} wali baat adhoori thi. Phir kya hua?", "en": "That {said} bit was left halfway. What happened then?"}], "hindiSwitch": [{"hi": "Theek hai, ab Hindi mein bade number padhte hain.", "en": "Sure, let's read the big numbers in English now."}, {"hi": "Achha, ab se Hindi mein samjhaati hoon. Jagah aur ank wahi rahenge.", "en": "Okay, I'll explain in English from now. The places and digits stay the same."}, {"hi": "Haan, Hindi mein hi chalte hain.", "en": "Yes, English it is."}], "askAgain": [{"hi": "Mujhe theek se sunai nahi diya. Number ek baar phir bolo.", "en": "I didn't quite hear that. Say the number once more."}, {"hi": "Thoda sa chhoot gaya. Apna jawab phir se batao na.", "en": "I missed a bit of that. Tell me your answer again."}, {"hi": "Awaaz saaf nahi aayi. Aaram se, ank-ank karke phir bolo.", "en": "Your voice didn't come through clearly. Say it again slowly, digit by digit."}] },
  "skills": [
   {
    "skillId": "c5-maths-ch01-t01-s1",
@@ -108,10 +108,7 @@
       ],
       "targets": "c5-maths-ch01-t01-m-zero-placeholder",
       "wrongIfMis": "1,000",
-      "why": {
-       "hi": "9,999 ke saare ank 9 hain; 1 jodne par sab bhar jaate hain, das-hazaar ki jagah khulti hai: 10,000",
-       "en": "all the digits of 9,999 are 9; adding 1 fills every place and opens the ten thousands place: 10,000"
-      }
+      "why": { "hi": "jaise 99,999 + 1 = 1,00,000, waise hi 9,999 ke saare 9 bhar jaate hain aur 10,000 banta hai", "en": "just as 99,999 + 1 = 1,00,000, all the 9s of 9,999 fill up and make 10,000" }, "answerBoard": { "template": "place-value@1", "params": {"value": 99999} }
      },
      "simpler": { "hi": "99,999 mein har khaana poora bhara hai. Isme 1 jodo toh saare khaane bhar jaate hain aur aage ek naya khaana khulta hai.", "en": "In 99,999 every place is full. Add 1 and all the places fill up, and a new place opens in front." }
     },
@@ -154,7 +151,7 @@
       "why": {
        "hi": "70,080 mein 7 das-hazaar ki jagah aur 8 dahai ki jagah hai, baaki jagah 0",
        "en": "in 70,080 the 7 is in the ten thousands place and the 8 in the tens; the other places are 0"
-      }
+      }, "answerBoard": { "template": "place-value@1", "params": {"value": 10500} }
      },
      "simpler": { "hi": "10,500 mein hazaar ka khaana khaali hai, isliye wahan 0 baitha hai. Toh 1 das-hazaar ka hai, aur hum das hazaar paanch sau padhte hain.", "en": "In 10,500 the thousands place is empty, so a 0 sits there. So the 1 is ten thousand, and we read ten thousand five hundred." }
     },
@@ -207,12 +204,9 @@
        "two lakh nine thousand and fifty",
        "do lakh nau hazaar aur pachaas"
       ],
-      "why": {
-       "hi": "group 2, 09 aur 050 hain: 2 lakh, 9 hazaar aur 50",
-       "en": "the groups are 2, 09 and 050: 2 lakh, 9 thousand and 50"
-      }
+      "why": { "hi": "3 lakh, 60 hazaar, 405 ki tarah har group apna naam leta hai: 2 lakh, 9 hazaar aur baaki 50", "en": "each group takes its name, as 3 lakh, 60 thousand, 405 did: 2 lakh, 9 thousand and the rest 50" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "group", "items": ["3", "60", "405"]}, "right": {"title": "naam", "items": ["lakh", "hazaar", "baaki"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "group", "items": ["3", "60", "405"]}, "right": {"title": "naam", "items": ["lakh", "hazaar", "baaki"]}} }
      },
-     "simpler": { "hi": "3,60,405 ko teen hisson mein todo: lakh ka 3, hazaar ka 60, aur baaki 405. Har hisse ke baad uska naam bolo.", "en": "Break 3,60,405 into three parts: 3 for lakh, 60 for thousand, and the rest 405. Say each part's name after it." }
+     "simpler": { "hi": "3,60,405 ko commas par todo: lakh ka 3, hazaar ka 60, aur baaki 405. Har group ke baad uska naam bolo.", "en": "Break 3,60,405 at its commas: 3 for lakh, 60 for thousand, and the rest 405. Say each group's name after it." }
     }
    ],
    "workedExample": {
@@ -268,16 +262,13 @@
      ],
      "targets": "c5-maths-ch01-t01-m-zero-placeholder",
      "wrongIfMis": "1740",
-     "simpler": { "hi": "Lakh se ikai tak har khaane ka ank ek line mein likho. Phir Indian tareeke se commas lagao, lakh ke baad aur hazaar ke baad.", "en": "Write each place's digit in one line, from lakhs to ones. Then put commas the Indian way, after the lakhs and after the thousands." }
+     "simpler": { "hi": "Lakh se ikai tak har khaane ka ank ek line mein likho. Phir Indian tareeke se commas lagao, lakh ke baad aur hazaar ke baad.", "en": "Write each place's digit in one line, from lakhs to ones. Then put commas the Indian way, after the lakhs and after the thousands." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "lakh, hazaar", "items": ["lakh mein 1", "das-hazaar mein 0", "hazaar mein 7"]}, "right": {"title": "sau, dahai, ikai", "items": ["sau mein 0", "dahai mein 4", "ikai mein 0"]}} }, "why": { "hi": "1 lakh ke khaane mein, 0 das-hazaar mein, 7 hazaar mein aata hai, aur sau 0, dahai 4, ikai 0: 1,07,040", "en": "1 goes in lakhs, 0 in ten thousands, 7 in thousands, then 0, 4, 0, so it makes 1,07,040" }
     },
     "answer": {
      "hi": "ek lakh saat hazaar chaalees numerals mein 1,07,040 hai",
      "en": "one lakh seven thousand forty in numerals is 1,07,040"
     },
-    "why": {
-     "hi": "har khaane mein ek ank chahiye, aur jo khaana khaali hai wahan 0 baithta hai",
-     "en": "every place needs a digit, and an empty place gets a 0"
-    },
+    "why": { "hi": "1 lakh ke khaane mein, 0 das-hazaar mein, 7 hazaar mein aata hai, aur sau 0, dahai 4, ikai 0: 1,07,040", "en": "1 goes in lakhs, 0 in ten thousands, 7 in thousands, then 0, 4, 0, so it makes 1,07,040" },
     "board": {
      "template": "compare@1",
      "params": {
@@ -325,7 +316,7 @@
       "hi": "60,040 mein 6 das-hazaar ki jagah aur 4 dahai ki jagah hai",
       "en": "in 60,040 the 6 is in the ten thousands place and the 4 in the tens"
      },
-     "simpler": { "hi": "60,040 ko comma pe todo, comma ke left wala hissa hazaar hai. Phir right wale hisse mein dekho, kaunse khaane mein ank hai.", "en": "Break 60,040 at the comma; the part left of the comma is thousands. Then see which place in the right part has a digit." }
+     "simpler": { "hi": "60,040 ko comma pe todo, comma ke left wala hissa hazaar hai. Phir right wale hisse mein dekho, kaunse khaane mein ank hai.", "en": "Break 60,040 at the comma; the part left of the comma is thousands. Then see which place in the right part has a digit." }, "answerBoard": { "template": "place-value@1", "params": {"value": 60040} }
     },
     {
      "id": "c2",
@@ -358,11 +349,8 @@
        }
       }
      },
-     "why": {
-      "hi": "lakh mein 2, hazaar ka group 05, aur baaki 400, toh 2,05,400",
-      "en": "2 in the lakhs, 05 for the thousands group, and 400 for the rest, so 2,05,400"
-     },
-     "simpler": { "hi": "Pehle lakh ka ank likho. Paanch hazaar mein das-hazaar ka khaana khaali hai, wahan zero rakhna mat bhoolo.", "en": "First write the lakh digit. Five thousand leaves the ten thousands place empty, so do not forget a zero there." }
+     "why": { "hi": "2 lakh ke khaane mein aata hai, hazaar ka group 05 hai, aur baaki 400, toh 2,05,400 banta hai", "en": "2 goes in the lakhs, the thousands group is 05, and the rest is 400, so it makes 2,05,400" },
+     "simpler": { "hi": "Pehle lakh ka ank likho. Paanch hazaar mein das-hazaar ka khaana khaali hai, wahan zero rakhna mat bhoolo.", "en": "First write the lakh digit. Five thousand leaves the ten thousands place empty, so do not forget a zero there." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "lakh", "items": ["do lakh"]}, "right": {"title": "baaki", "items": ["paanch hazaar", "chaar sau"]}} }
     },
     {
      "id": "c3",
@@ -399,11 +387,8 @@
        }
       }
      },
-     "why": {
-      "hi": "lakh ka group 5, hazaar ka 06 yaani 6 hazaar, aur baaki 070 yaani 70",
-      "en": "the lakh group is 5, the thousand group 06 is 6 thousand, and the rest 070 is 70"
-     },
-     "simpler": { "hi": "Har group ko uske naam ke saath padho, pehle lakh ka 5, phir hazaar ka 06. Shuru ke zero bolte nahi, bas baaki ank bolo.", "en": "Read each group with its name, first 5 for lakh, then 06 for thousand. We do not say the zeros in front, only the other digits." }
+     "why": { "hi": "naam ke saath padho: lakh ka group 5 hai, hazaar ka 06 yaani 6 hazaar, aur baaki 070 yaani 70", "en": "with names: the lakh group is 5, the thousand group 06, that is 6 thousand, and the rest 070, that is 70" },
+     "simpler": { "hi": "Har group ko uske naam ke saath padho, pehle lakh ka 5, phir hazaar ka 06. Shuru ke zero bolte nahi, bas baaki ank bolo.", "en": "Read each group with its name, first 5 for lakh, then 06 for thousand. We do not say the zeros in front, only the other digits." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "group", "items": ["5", "06", "070"]}, "right": {"title": "naam", "items": ["lakh", "hazaar", "baaki"]}} }
     }
    ],
    "ladder": [
@@ -440,12 +425,7 @@
       "hi": "20,300 mein 2 das-hazaar ke khaane mein hai. Isliye yeh bees hazaar teen sau hai.",
       "en": "In 20,300 the 2 is in the ten thousands place. So it is twenty thousand three hundred."
      },
-     "board": {
-      "template": "place-value@1",
-      "params": {
-       "value": 20300
-      }
-     },
+     
      "then": {
       "prompt": {
        "hi": "Screen par chart mein 50,600 hai. Ise words mein kaise padhoge?",
@@ -468,31 +448,13 @@
        "hi": "50,600 mein 5 das-hazaar ki jagah aur 6 sau ki jagah hai",
        "en": "in 50,600 the 5 is in the ten thousands place and the 6 in the hundreds"
       },
-      "simpler": { "hi": "50,600 ko comma pe todo: left mein hazaar wala hissa, right mein baaki. Dono hisse unke naam ke saath padho.", "en": "Break 50,600 at the comma: the thousands part on the left, the rest on the right. Read both parts with their names." }
+      "simpler": { "hi": "50,600 ko comma pe todo: left mein hazaar wala hissa, right mein baaki. Dono hisse unke naam ke saath padho.", "en": "Break 50,600 at the comma: the thousands part on the left, the rest on the right. Read both parts with their names." }, "answerBoard": { "template": "place-value@1", "params": {"value": 50600} }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab tak commas pehle se lage hue the. Agle hisse mein hum khud commas lagayenge, Indian tareeke se, aur dekhenge ki har comma kaunsa naam deta hai.",
     "en": "So far the commas were already in place. Next we put the commas in ourselves, the Indian way, and see which name each comma gives."
-   },
-   "bridgeBoard": {
-    "template": "compare@1",
-    "params": {
-     "left": {
-      "title": "Ab tak",
-      "items": [
-       "commas lage hue"
-      ]
-     },
-     "right": {
-      "title": "Ab",
-      "items": [
-       "khud commas",
-       "Indian tareeke se"
-      ]
-     }
-    }
    }
   },
   {
@@ -551,10 +513,7 @@
       ],
       "targets": "c5-maths-ch01-t01-m-comma-anywhere",
       "wrongIfMis": "723,50",
-      "why": {
-       "hi": "right se 3 ank 350 hain, toh pehla comma unke pehle aata hai: 72,350",
-       "en": "the 3 digits from the right are 350, so the first comma goes just before them: 72,350"
-      }
+      "why": { "hi": "45,800 mein 45 hazaar aur 800 the; 72350 mein right se 3 ank 350 hain, toh 72,350", "en": "45,800 split as 45 thousand and 800; in 72350 the 3 digits from the right are 350, so 72,350" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "45,800", "items": ["45 hazaar", "800"]}, "right": {"title": "Right se", "items": ["3 ank"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "45,800", "items": ["45 hazaar", "800"]}, "right": {"title": "Right se", "items": ["3 ank"]}} }
      },
      "simpler": { "hi": "Right se 3 ank gino, yeh sau, dahai aur ikai hain. Unke theek baad pehla comma lagta hai.", "en": "Count 3 digits from the right; these are hundreds, tens and ones. The first comma goes just after them." }
     },
@@ -607,10 +566,7 @@
       ],
       "targets": "c5-maths-ch01-t01-m-comma-anywhere",
       "wrongIfMis": "615,200",
-      "why": {
-       "hi": "right se 3 ank 200, phir 2 ank 15, aur bacha hua 6 lakh: 6,15,200",
-       "en": "3 digits from the right are 200, then 2 digits 15, and the 6 left over is lakh: 6,15,200"
-      }
+      "why": { "hi": "right se 3 ank baaki 200, phir 2 ank 15 hazaar, aur bacha 6 lakh ka naam leta hai: 6,15,200", "en": "3 digits from the right are the rest, 200, then 2 digits are 15 thousand, and the 6 left is lakh: 6,15,200" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "group", "items": ["2", "45", "800"]}, "right": {"title": "naam", "items": ["lakh", "hazaar", "baaki"]}} }
      },
      "simpler": { "hi": "Right se pehle 3 ank ke baad comma lagao. Phir sirf 2 ank aur gino aur doosra comma lagao.", "en": "Put a comma after the first 3 digits from the right. Then count only 2 more digits and put the second comma." }
     },
@@ -663,10 +619,7 @@
        "four lakh fifty two thousand eighteen",
        "four lakh fifty-two thousand and eighteen"
       ],
-      "why": {
-       "hi": "group 4, 52 aur 018 hain: 4 lakh, 52 hazaar aur 18",
-       "en": "the groups are 4, 52 and 018: 4 lakh, 52 thousand and 18"
-      }
+      "why": { "hi": "7 lakh, 30 hazaar, 060 ki tarah har group apna naam leta hai: 4 lakh, 52 hazaar aur baaki 18", "en": "each group takes its name, as 7 lakh, 30 thousand, 060 did: 4 lakh, 52 thousand and the rest 18" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "group", "items": ["7", "30", "060"]}, "right": {"title": "naam", "items": ["lakh", "hazaar", "baaki"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "group", "items": ["7", "30", "060"]}, "right": {"title": "naam", "items": ["lakh", "hazaar", "baaki"]}} }
      },
      "simpler": { "hi": "7,30,060 ke teen group hain. Pehla group lakh, doosra hazaar, aur aakhri baaki, har group apne naam ke saath bolo.", "en": "7,30,060 has three groups. The first is lakh, the second thousand, and the last the rest; say each group with its name." }
     }
@@ -723,16 +676,13 @@
       "six lakh nine thousand two hundred and seventy-five",
       "six lakh nine thousand two hundred seventy five"
      ],
-     "simpler": { "hi": "Har group ke baad uska naam bolo: pehle lakh wala group, phir hazaar wala, phir baaki 275. Hazaar wale 09 mein shuru ka zero nahi bolte.", "en": "Say each group's name after it: first the lakh group, then the thousand group, then the rest 275. In the thousand group 09 we do not say the front zero." }
+     "simpler": { "hi": "Har group ke baad uska naam bolo: pehle lakh wala group, phir hazaar wala, phir baaki 275. Hazaar wale 09 mein shuru ka zero nahi bolte.", "en": "Say each group's name after it: first the lakh group, then the thousand group, then the rest 275. In the thousand group 09 we do not say the front zero." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "group", "items": ["6", "09", "275"]}, "right": {"title": "naam", "items": ["lakh", "hazaar", "baaki"]}} }, "why": { "hi": "har group naam ke saath padha jaata hai: 6 lakh, 09 yaani 9 hazaar, aur baaki 275", "en": "each group is read with its name: 6 lakh, 09 that is 9 thousand, and the rest 275" }
     },
     "answer": {
      "hi": "aabaadi 6,09,275 hai, yaani chhah lakh nau hazaar do sau pachhattar",
      "en": "the population is 6,09,275, that is six lakh nine thousand two hundred seventy-five"
     },
-    "why": {
-     "hi": "pehle 3 ank ke baad comma, phir har 2 ank ke baad, aur har comma ek naya naam deta hai",
-     "en": "a comma after the first 3 digits, then after every 2, and each comma gives a new name"
-    },
+    "why": { "hi": "har group naam ke saath padha jaata hai: 6 lakh, 09 yaani 9 hazaar, aur baaki 275", "en": "each group is read with its name: 6 lakh, 09 that is 9 thousand, and the rest 275" },
     "board": {
      "template": "compare@1",
      "params": {
@@ -785,11 +735,8 @@
        }
       }
      },
-     "why": {
-      "hi": "lakh mein 3, hazaar ka group 50, aur baaki 000, toh 3,50,000",
-      "en": "3 in the lakhs, 50 for the thousands group, and 000 for the rest, so 3,50,000"
-     },
-     "simpler": { "hi": "Pehle lakh ka ank likho, phir pachaas hazaar ke do ank. Sau, dahai aur ikai ke khaane khaali hain, wahan zero rakho.", "en": "First write the lakh digit, then the two digits of fifty thousand. The hundreds, tens and ones places are empty, so put zeros there." }
+     "why": { "hi": "lakh mein teen yaani 3 aata hai, hazaar mein pachaas yaani 50, aur baaki 000, toh 3,50,000 banta hai", "en": "3 goes in the lakhs, 50 in the thousands, and 000 for the rest, so it makes 3,50,000" },
+     "simpler": { "hi": "Pehle lakh ka ank likho, phir pachaas hazaar ke do ank. Sau, dahai aur ikai ke khaane khaali hain, wahan zero rakho.", "en": "First write the lakh digit, then the two digits of fifty thousand. The hundreds, tens and ones places are empty, so put zeros there." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "lakh", "items": ["teen"]}, "right": {"title": "hazaar", "items": ["pachaas"]}} }
     },
     {
      "id": "c2",
@@ -820,11 +767,8 @@
        }
       }
      },
-     "why": {
-      "hi": "lakh mein 4, hazaar ka group 60, aur baaki 000, toh 4,60,000",
-      "en": "4 in the lakhs, 60 for the thousands group, and 000 for the rest, so 4,60,000"
-     },
-     "simpler": { "hi": "Pehle lakh ka ank likho, phir saath hazaar ke do ank. Sau, dahai aur ikai khaali hain, wahan zero rakho aur Indian commas lagao.", "en": "First write the lakh digit, then the two digits of sixty thousand. The hundreds, tens and ones are empty, so put zeros there and add Indian commas." }
+     "why": { "hi": "lakh mein chaar yaani 4 aata hai, hazaar mein saath yaani 60, aur baaki 000, toh 4,60,000 banta hai", "en": "4 goes in the lakhs, 60 in the thousands, and 000 for the rest, so it makes 4,60,000" },
+     "simpler": { "hi": "Pehle lakh ka ank likho, phir saath hazaar ke do ank. Sau, dahai aur ikai khaali hain, wahan zero rakho aur Indian commas lagao.", "en": "First write the lakh digit, then the two digits of sixty thousand. The hundreds, tens and ones are empty, so put zeros there and add Indian commas." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "lakh", "items": ["chaar"]}, "right": {"title": "hazaar", "items": ["saath"]}} }
     },
     {
      "id": "c3",
@@ -841,32 +785,9 @@
      ],
      "targets": "c5-maths-ch01-t01-m-comma-anywhere",
      "wrongIfMis": "hazaar",
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "group",
-        "items": [
-         "8",
-         "06",
-         "125"
-        ]
-       },
-       "right": {
-        "title": "naam",
-        "items": [
-         "kaunsa",
-         "hazaar",
-         "baaki"
-        ]
-       }
-      }
-     },
-     "why": {
-      "hi": "right se pehle comma ke baad hazaar aata hai aur doosre comma ke baad lakh",
-      "en": "after the first comma from the right come the thousands, and after the second, the lakhs"
-     },
-     "simpler": { "hi": "Right se pehla comma hazaar ke liye lagta hai. Doosre comma ke left wala ank hazaar se agle bade khaane mein hai.", "en": "The first comma from the right is for thousands. The digit left of the second comma is in the next bigger place after thousands." }
+     "board": { "template": "compare@1", "params": {"left": {"title": "group", "items": ["8", "06", "125"]}, "right": {"title": "naam", "items": ["8 ka naam", "hazaar", "baaki"]}} },
+     "why": { "hi": "naam se: baaki group 125, hazaar ka 06, aur doosre comma ke left wale 8 ka naam lakh hai", "en": "by name: the rest group is 125, the thousands 06, and the 8 left of the second comma is lakh" },
+     "simpler": { "hi": "Right se pehla comma hazaar ke liye lagta hai. Doosre comma ke left wala ank hazaar se agle bade khaane mein hai.", "en": "The first comma from the right is for thousands. The digit left of the second comma is in the next bigger place after thousands." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "group", "items": ["8", "06", "125"]}, "right": {"title": "naam", "items": ["8 ka naam", "hazaar", "baaki"]}} }
     }
    ],
    "ladder": [
@@ -903,27 +824,7 @@
       "hi": "Comma wahin lagta hai jahan naya naam shuru ho. 2,60,000 mein 2 lakh aur 60 hazaar hain.",
       "en": "A comma goes only where a new name starts. 2,60,000 has 2 lakh and 60 thousand."
      },
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "group",
-        "items": [
-         "2",
-         "60",
-         "000"
-        ]
-       },
-       "right": {
-        "title": "naam",
-        "items": [
-         "lakh",
-         "hazaar",
-         "baaki"
-        ]
-       }
-      }
-     },
+     
      "then": {
       "prompt": {
        "hi": "Paanch lakh das hazaar ko numerals mein Indian commas ke saath likho.",
@@ -952,34 +853,14 @@
         }
        }
       },
-      "why": {
-       "hi": "lakh mein 5, hazaar ka group 10, aur baaki 000, toh 5,10,000",
-       "en": "5 in the lakhs, 10 for the thousands group, and 000 for the rest, so 5,10,000"
-      },
-      "simpler": { "hi": "Pehle lakh ka ank likho, phir das hazaar ke do ank. Sau, dahai aur ikai khaali hain, wahan zero rakho aur Indian commas lagao.", "en": "First write the lakh digit, then the two digits of ten thousand. The hundreds, tens and ones are empty, so put zeros there and add Indian commas." }
+      "why": { "hi": "5 lakh ka ank hai, hazaar ka group 10 hai, aur baaki 000, toh 5,10,000 banta hai", "en": "5 goes in the lakhs, the thousands group is 10, and the rest is 000, so it makes 5,10,000" },
+      "simpler": { "hi": "Pehle lakh ka ank likho, phir das hazaar ke do ank. Sau, dahai aur ikai khaali hain, wahan zero rakho aur Indian commas lagao.", "en": "First write the lakh digit, then the two digits of ten thousand. The hundreds, tens and ones are empty, so put zeros there and add Indian commas." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "lakh", "items": ["paanch"]}, "right": {"title": "hazaar", "items": ["das"]}} }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab commas se bada number padhna aata hai. Agle hisse mein do bade numbers milayenge aur dekhenge ki kaun bada hai.",
     "en": "Now you can read a big number by its commas. Next we put two big numbers side by side and see which is bigger."
-   },
-   "bridgeBoard": {
-    "template": "compare@1",
-    "params": {
-     "left": {
-      "title": "Commas se",
-      "items": [
-       "bada number padhna"
-      ]
-     },
-     "right": {
-      "title": "Do bade numbers",
-      "items": [
-       "kaun bada"
-      ]
-     }
-    }
    }
   },
   {
@@ -1034,10 +915,7 @@
        }
       }
      },
-     "point": {
-      "hi": "Screen par 96,500 aur 2,04,000 hain. 96,500 mein paanch ank hain, 2,04,000 mein chhah ank. Jismein zyada ank hon, woh bada hota hai, chahe uska pehla ank chhota ho.",
-      "en": "On the screen are 96,500 and 2,04,000. 96,500 has five digits, 2,04,000 has six digits. The one with more digits is bigger, even if its first digit is smaller."
-     },
+     "point": { "hi": "96,500 mein paanch ank hain, 2,04,000 mein chhah ank. Jismein zyada ank hon, woh bada hota hai, chahe uska pehla ank chhota ho.", "en": "96,500 has five digits, 2,04,000 has six digits. The one with more digits is bigger, even if its first digit is smaller." },
      "ask": {
       "prompt": {
        "hi": "Isi tarah ank gino. Kaun bada hai: 89,000 ya 1,10,000?",
@@ -1051,10 +929,7 @@
       ],
       "targets": "c5-maths-ch01-t01-m-first-digit-compare",
       "wrongIfMis": "89,000",
-      "why": {
-       "hi": "89,000 ke paanch ank hain aur 1,10,000 ke chhah ank",
-       "en": "89,000 has five digits and 1,10,000 has six"
-      }
+      "why": { "hi": "89,000 paanch ank ka chhota number hai, aur 1,10,000 chhah ank ka bada", "en": "89,000 has five digits and is smaller, and 1,10,000 has six and is bigger" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Paanch ank", "items": ["chhota"]}, "right": {"title": "Chhah ank", "items": ["bada"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "Paanch ank", "items": ["chhota"]}, "right": {"title": "Chhah ank", "items": ["bada"]}} }
      },
      "simpler": { "hi": "96,500 mein paanch ank hain, 2,04,000 mein chhah. Jis number mein zyada ank hon, wahi bada hota hai.", "en": "96,500 has five digits and 2,04,000 has six. The number with more digits is the bigger one." }
     },
@@ -1090,10 +965,7 @@
        }
       }
      },
-     "point": {
-      "hi": "Screen par 3,57,200 aur 3,75,100 hain, dono mein chhah ank. Left se milao: lakh mein dono ka 3. Das-hazaar mein 5 aur 7, aur 7 bada hai, toh 3,75,100 bada hai. Baaki ank dekhne ki zaroorat nahi.",
-      "en": "On the screen are 3,57,200 and 3,75,100, both with six digits. Compare from the left: in the lakhs both have 3. In the ten thousands, 5 and 7, and 7 is bigger, so 3,75,100 is bigger. No need to look at the other digits."
-     },
+     "point": { "hi": "3,57,200 aur 3,75,100, dono mein chhah ank hain. Left se milao: lakh mein dono ka 3. Das-hazaar mein 5 aur 7, aur 7 bada hai, toh 3,75,100 bada hai. Baaki ank dekhne ki zaroorat nahi.", "en": "3,57,200 and 3,75,100 both have six digits. Compare from the left: in the lakhs both have 3. In the ten thousands, 5 and 7, and 7 is bigger, so 3,75,100 is bigger. No need to look at the other digits." },
      "ask": {
       "prompt": {
        "hi": "Isi tarah left se milao. Kaun bada hai: 64,280 ya 64,820?",
@@ -1105,10 +977,7 @@
        "chausath hazaar aath sau bees",
        "sixty-four thousand eight hundred twenty"
       ],
-      "why": {
-       "hi": "dono mein 64 hazaar barabar hain, par sau mein 8, 2 se bada hai, toh 64,820 bada",
-       "en": "both have the same 64 thousand, but in the hundreds 8 is more than 2, so 64,820 is bigger"
-      }
+      "why": { "hi": "dono mein 64 hazaar barabar hain, aur pehli baar alag sau mein: 8, 2 se bada, toh 64,820 bada", "en": "both have 64 thousand, and the first place that differs is hundreds: 8 beats 2, so 64,820 is bigger" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Dono mein", "items": ["64 hazaar"]}, "right": {"title": "Pehli baar alag", "items": ["sau"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "Dono mein", "items": ["64 hazaar"]}, "right": {"title": "Pehli baar alag", "items": ["sau"]}} }
      },
      "simpler": { "hi": "Dono numbers ko left se ek-ek ank milao. Jahan pehli baar ank alag ho, wahan jiska ank bada, wahi number bada.", "en": "Match the two numbers digit by digit from the left. Where the digits first differ, the one with the bigger digit is the bigger number." }
     }
@@ -1171,16 +1040,13 @@
      ],
      "targets": "c5-maths-ch01-t01-m-first-digit-compare",
      "wrongIfMis": "C",
-     "simpler": { "hi": "Ab das-hazaar ka ank dekho, yaani lakh ke theek baad wala ank. Jis doori ka yeh ank bada ho, wahi train sabse door gayi.", "en": "Now look at the ten thousands digit, the one just after the lakhs. The distance with the bigger digit there is the train that went farthest." }
+     "simpler": { "hi": "Ab das-hazaar ka ank dekho, yaani lakh ke theek baad wala ank. Jis doori ka yeh ank bada ho, wahi train sabse door gayi.", "en": "Now look at the ten thousands digit, the one just after the lakhs. The distance with the bigger digit there is the train that went farthest." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "train", "items": ["A", "B", "C"]}, "right": {"title": "km", "items": ["248600", "284060", "98750"]}} }, "why": { "hi": "A 2,48,600 aur B 2,84,060 mein das-hazaar ka 8, 4 se bada, aur C 98,750 chhota hai", "en": "of A 2,48,600 and B 2,84,060, B's ten thousands digit 8 beats 4, and C 98,750 is smaller" }
     },
     "answer": {
      "hi": "kram hai B 2,84,060 km, A 2,48,600 km, phir C 98,750 km",
      "en": "the order is B 2,84,060 km, A 2,48,600 km, then C 98,750 km"
     },
-    "why": {
-     "hi": "C mein kam ank hain, aur A aur B mein das-hazaar ka 8, 4 se bada hai",
-     "en": "C has fewer digits, and between A and B the ten thousands digit 8 is bigger than 4"
-    },
+    "why": { "hi": "A 2,48,600 aur B 2,84,060 mein das-hazaar ka 8, 4 se bada, aur C 98,750 chhota hai", "en": "of A 2,48,600 and B 2,84,060, B's ten thousands digit 8 beats 4, and C 98,750 is smaller" },
     "board": {
      "template": "compare@1",
      "params": {
@@ -1238,11 +1104,8 @@
        }
       }
      },
-     "why": {
-      "hi": "1,12,000 ke chhah ank hain aur 89,500 ke sirf paanch",
-      "en": "1,12,000 has six digits and 89,500 only five"
-     },
-     "simpler": { "hi": "Dono numbers ke ank gino, 89,500 mein paanch ank hain. Jis number mein zyada ank hon, us shehar mein zyada log hain.", "en": "Count the digits of both numbers; 89,500 has five digits. The town whose number has more digits has more people." }
+     "why": { "hi": "doosra shehar 1,12,000 chhah ank ka hai, aur pehla shehar 89,500 sirf paanch ank ka", "en": "the second town's 1,12,000 has six digits, and the first town's 89,500 only five" },
+     "simpler": { "hi": "Dono numbers ke ank gino, 89,500 mein paanch ank hain. Jis number mein zyada ank hon, us shehar mein zyada log hain.", "en": "Count the digits of both numbers; 89,500 has five digits. The town whose number has more digits has more people." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla shehar", "items": ["89500"]}, "right": {"title": "doosra shehar", "items": ["112000"]}} }
     },
     {
      "id": "c2",
@@ -1278,11 +1141,8 @@
        }
       }
      },
-     "why": {
-      "hi": "lakh mein dono ke 4 hain, par das-hazaar mein 5, 3 se bada hai",
-      "en": "both have 4 lakh, but in the ten thousands 5 is more than 3"
-     },
-     "simpler": { "hi": "Dono numbers mein lakh ka ank barabar hai. Ab agla khaana, yaani das-hazaar ka ank milao.", "en": "Both numbers have the same lakh digit. Now match the next place, the ten thousands digit." }
+     "why": { "hi": "pehla gaana 4,35,000 aur doosra 4,53,000; lakh mein dono 4, par das-hazaar mein 5, 3 se bada hai", "en": "the first song 4,35,000 and the second 4,53,000 both have 4 lakhs, but in ten thousands 5 is bigger than 3" },
+     "simpler": { "hi": "Dono numbers mein lakh ka ank barabar hai. Ab agla khaana, yaani das-hazaar ka ank milao.", "en": "Both numbers have the same lakh digit. Now match the next place, the ten thousands digit." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla gaana", "items": ["435000"]}, "right": {"title": "doosra gaana", "items": ["453000"]}} }
     },
     {
      "id": "c3",
@@ -1318,11 +1178,8 @@
        }
       }
      },
-     "why": {
-      "hi": "96,000 ke sirf paanch ank hain, baaki dono ke chhah",
-      "en": "96,000 has only five digits, the other two have six"
-     },
-     "simpler": { "hi": "Pehle teeno dooriyon ke ank gino. Jis number mein sabse kam ank hon, wahi sabse chhota hai.", "en": "First count the digits of all three distances. The number with the fewest digits is the smallest." }
+     "why": { "hi": "truck Y ke 96,000 mein sirf paanch ank hain, aur X 1,08,000 aur Z 1,80,000 mein chhah", "en": "truck Y's 96,000 has only five digits, while X's 1,08,000 and Z's 1,80,000 have six" },
+     "simpler": { "hi": "Pehle teeno dooriyon ke ank gino. Jis number mein sabse kam ank hon, wahi sabse chhota hai.", "en": "First count the digits of all three distances. The number with the fewest digits is the smallest." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "truck", "items": ["X", "Y", "Z"]}, "right": {"title": "km", "items": ["108000", "96000", "180000"]}} }
     }
    ],
    "ladder": [
@@ -1359,23 +1216,7 @@
       "hi": "12,345 mein paanch ank hain, 9,876 mein sirf chaar. 12,345 ka das-hazaar wala khaana bhara hai, isliye 12,345 bada hai.",
       "en": "12,345 has five digits and 9,876 only four. 12,345 has a ten thousands digit, so 12,345 is bigger."
      },
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "9,876",
-        "items": [
-         "chaar ank"
-        ]
-       },
-       "right": {
-        "title": "12,345",
-        "items": [
-         "paanch ank"
-        ]
-       }
-      }
-     },
+     
      "then": {
       "prompt": {
        "hi": "Pehla mela: 87,000 log. Doosra mela: 1,02,000 log. Zyada log kis mele mein aaye: pehle ya doosre?",
@@ -1408,11 +1249,8 @@
         }
        }
       },
-      "why": {
-       "hi": "1,02,000 ke chhah ank hain aur 87,000 ke sirf paanch",
-       "en": "1,02,000 has six digits and 87,000 only five"
-      },
-      "simpler": { "hi": "87,000 mein paanch ank hain aur 1,02,000 mein chhah. Jis number mein zyada ank hon, woh bada hota hai.", "en": "87,000 has five digits and 1,02,000 has six. The number with more digits is bigger." }
+      "why": { "hi": "doosra mela 1,02,000 chhah ank ka hai, aur pehla mela 87,000 sirf paanch ank ka", "en": "the second fair's 1,02,000 has six digits, and the first fair's 87,000 only five" },
+      "simpler": { "hi": "87,000 mein paanch ank hain aur 1,02,000 mein chhah. Jis number mein zyada ank hon, woh bada hota hai.", "en": "87,000 has five digits and 1,02,000 has six. The number with more digits is bigger." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla mela", "items": ["87000"]}, "right": {"title": "doosra mela", "items": ["102000"]}} }
      }
     }
    ],

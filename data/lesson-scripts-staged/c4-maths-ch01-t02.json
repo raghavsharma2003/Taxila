@@ -1,19 +1,104 @@
 {
  "topicId": "c4-maths-ch01-t02",
  "classLevel": 4,
- "version": 2.2,
+ "version": 2.3,
  "status": "draft",
  "terms": [
-  { "hi": "right angle", "en": "right angle" },
-  { "hi": "samkon", "en": "right angle (Hindi term)" },
-  { "hi": "kona", "en": "corner" },
-  { "hi": "square corner", "en": "square corner" },
-  { "hi": "bhuja", "en": "arm (of an angle)" },
-  { "hi": "tester", "en": "folded-paper right-angle tester" },
-  { "hi": "circle", "en": "circle" },
-  { "hi": "kendra", "en": "centre" },
-  { "hi": "doori", "en": "distance" }
+  {
+   "hi": "right angle",
+   "en": "right angle"
+  },
+  {
+   "hi": "samkon",
+   "en": "right angle (Hindi term)"
+  },
+  {
+   "hi": "kona",
+   "en": "corner"
+  },
+  {
+   "hi": "square corner",
+   "en": "square corner"
+  },
+  {
+   "hi": "bhuja",
+   "en": "arm (of an angle)"
+  },
+  {
+   "hi": "tester",
+   "en": "folded-paper right-angle tester"
+  },
+  {
+   "hi": "circle",
+   "en": "circle"
+  },
+  {
+   "hi": "kendra",
+   "en": "centre"
+  },
+  {
+   "hi": "doori",
+   "en": "distance"
+  }
  ],
+ "joints": {
+  "asidePark": [
+   {
+    "hi": "Achha, {aside} wali baat yaad rakhti hoon. Pehle yeh kona tester se jaanch lete hain.",
+    "en": "Okay, I'll keep the {aside} bit in mind. First let's check this corner with the tester."
+   },
+   {
+    "hi": "Mazedaar! {aside} ki baat thodi der mein karenge, abhi yeh angle poora karte hain.",
+    "en": "Fun! We'll get to {aside} in a little while; first let's finish this angle."
+   },
+   {
+    "hi": "{aside} wali baat maine sambhaal ke rakhi hai. Chalo, pehle yeh kone dekh lete hain.",
+    "en": "I've kept the {aside} bit safe. Let's look at these corners first."
+   }
+  ],
+  "asideReturn": [
+   {
+    "hi": "Kone ho gaye, ab tumhari baat: tumne kaha tha {said}. Thoda aur batao.",
+    "en": "Corners done, now your bit: you said {said}. Tell me a little more."
+   },
+   {
+    "hi": "Tumne {said} bola tha na? Usmein sabse achha kya laga?",
+    "en": "You said {said}, didn't you? What did you like best about it?"
+   },
+   {
+    "hi": "Chalo, ab woh {said} wali baat. Phir kya hua?",
+    "en": "Okay, now the {said} part. What happened next?"
+   }
+  ],
+  "hindiSwitch": [
+   {
+    "hi": "Theek hai, ab Hindi mein kone aur angle dekhte hain.",
+    "en": "Sure, let's look at corners and angles in English now."
+   },
+   {
+    "hi": "Achha, ab se Hindi mein samjhaati hoon, tester wahi rahega.",
+    "en": "Okay, I'll explain in English from now; the tester stays the same."
+   },
+   {
+    "hi": "Haan, Hindi mein hi chalte hain.",
+    "en": "Yes, English it is."
+   }
+  ],
+  "askAgain": [
+   {
+    "hi": "Mujhe theek se sunai nahi diya. Ek baar phir bologe?",
+    "en": "I didn't quite hear that. Will you say it once more?"
+   },
+   {
+    "hi": "Thoda sa chhoot gaya. Apna jawab phir se batao na.",
+    "en": "I missed a bit of that. Tell me your answer again."
+   },
+   {
+    "hi": "Awaaz saaf nahi aayi. Aaram se ek baar aur bolo, kona ya angle jo bhi socha.",
+    "en": "Your voice didn't come through clearly. Say it once more, slowly, whatever you thought."
+   }
+  ]
+ },
  "skills": [
   {
    "skillId": "c4-maths-ch01-t02-s1",
@@ -41,63 +126,215 @@
      "id": "e1",
      "convey": "a square's corners are square corners, like a book's corner → each one is a right angle (samkon)",
      "mustSay": [
-      { "hi": "square corner", "en": "square corner" },
-      { "hi": "right angle", "en": "right angle" }
+      {
+       "hi": "square corner",
+       "en": "square corner"
+      },
+      {
+       "hi": "right angle",
+       "en": "right angle"
+      }
      ],
-     "board": { "template": "shape@1", "params": { "shape": "square", "corner": "right angle" } },
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "corner": "right angle"
+      }
+     },
      "point": {
       "hi": "Yeh ek square hai. Iska kona bilkul kitaab ke kone jaisa square corner hai. Aise kone ko right angle kehte hain, Hindi mein samkon.",
       "en": "This is a square. Its corner is a square corner, just like the corner of a book. Such a corner is called a right angle, samkon in Hindi."
      },
      "ask": {
-      "prompt": { "hi": "Is square ke saare kone ek jaise hain. Is square mein kul kitne right angle hain?", "en": "All the corners of this square are the same. How many right angles does this square have in all?" },
+      "prompt": {
+       "hi": "Is square ke saare kone ek jaise hain. Is square mein kul kitne right angle hain?",
+       "en": "All the corners of this square are the same. How many right angles does this square have in all?"
+      },
       "key": "4",
-      "accept": ["chaar", "char", "four", "4 right angle", "4 kone"],
-      "why": { "hi": "square ke 4 kone hain aur saare ek jaise square corner hain", "en": "a square has 4 corners and all of them are the same square corners" }
+      "accept": [
+       "chaar",
+       "char",
+       "four",
+       "4 right angle",
+       "4 kone"
+      ],
+      "why": {
+       "hi": "square ke 4 kone hain aur saare ek jaise square corner hain",
+       "en": "a square has 4 corners and all of them are the same square corners"
+      },
+      "answerBoard": {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "corner": "right angle"
+       }
+      }
      },
-     "simpler": { "hi": "Square ka har kona kitaab ke kone jaisa square corner hai. Aisa har kona ek right angle hai, toh bas kone gino.", "en": "Every corner of a square is a square corner, like a book's corner. Each such corner is one right angle, so just count the corners." }
+     "simpler": {
+      "hi": "Square ka har kona kitaab ke kone jaisa square corner hai. Aisa har kona ek right angle hai, toh bas kone gino.",
+      "en": "Every corner of a square is a square corner, like a book's corner. Each such corner is one right angle, so just count the corners."
+     }
     },
     {
      "id": "e2",
      "convey": "fold a paper in half, then in half again → its corner is a square corner = the tester; put it on a corner: exact fit (no space left, no overlap) → right angle",
      "mustSay": [
-      { "hi": "do baar modo", "en": "fold twice" },
-      { "hi": "bilkul fit", "en": "fits exactly" }
+      {
+       "hi": "do baar modo",
+       "en": "fold twice"
+      },
+      {
+       "hi": "bilkul fit",
+       "en": "fits exactly"
+      }
      ],
-     "board": { "template": "compare@1", "params": { "left": { "title": "Kaagaz", "items": ["do baar modo", "square corner"] }, "right": { "title": "Tester", "items": ["kone par rakho", "bilkul fit = right angle"] } } },
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Kaagaz",
+        "items": [
+         "do baar modo",
+         "square corner"
+        ]
+       },
+       "right": {
+        "title": "Tester",
+        "items": [
+         "kone par rakho",
+         "bilkul fit = right angle"
+        ]
+       }
+      }
+     },
      "point": {
       "hi": "Kaagaz ko do baar modo, toh uska kona square corner ban jaata hai. Yeh hamara tester hai. Tester ko kone par rakho. Agar woh bilkul fit ho, na khaali jagah na overlap, toh woh kona right angle hai.",
       "en": "Fold a paper twice, and its corner becomes a square corner. This is our tester. Put the tester on a corner. If it fits exactly, with no empty space and no overlap, that corner is a right angle."
      },
      "ask": {
-      "prompt": { "hi": "Tester ko table ke ek kone par rakha. Kone aur tester ke beech khaali jagah reh gayi. Kya woh kona right angle hai, haan ya nahi?", "en": "The tester is put on a corner of a table. Some empty space is left between the corner and the tester. Is that corner a right angle, yes or no?" },
+      "prompt": {
+       "hi": "Tester ko table ke ek kone par rakha. Kone aur tester ke beech khaali jagah reh gayi. Kya woh kona right angle hai, haan ya nahi?",
+       "en": "The tester is put on a corner of a table. Some empty space is left between the corner and the tester. Is that corner a right angle, yes or no?"
+      },
       "key": "No",
-      "accept": ["nahi", "nahin", "no", "nahi, fit nahi hua", "no, it does not fit"],
-      "why": { "hi": "tester aur kone ke beech khaali jagah bachi, matlab tester bilkul fit nahi hua", "en": "empty space was left between the tester and the corner, so the tester did not fit exactly" }
+      "accept": [
+       "nahi",
+       "nahin",
+       "no",
+       "nahi, fit nahi hua",
+       "no, it does not fit"
+      ],
+      "why": {
+       "hi": "tester aur kone ke beech khaali jagah bachi, toh tester bilkul fit nahi hua aur woh kona right angle nahi hai",
+       "en": "empty space was left by the tester, so it did not fit exactly and that corner is not a right angle"
+      },
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Tester",
+         "items": [
+          "bilkul fit"
+         ]
+        },
+        "right": {
+         "title": "Kona",
+         "items": [
+          "right angle"
+         ]
+        }
+       }
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Tester",
+         "items": [
+          "bilkul fit"
+         ]
+        },
+        "right": {
+         "title": "Kona",
+         "items": [
+          "right angle"
+         ]
+        }
+       }
+      }
      },
-     "simpler": { "hi": "Do baar moda kaagaz hamara tester hai. Tester kone mein bilkul fit ho aur koi khaali jagah na bache, tabhi kona right angle hai.", "en": "Paper folded twice is our tester. Only if the tester fits the corner exactly, with no empty space left, is the corner a right angle." }
+     "simpler": {
+      "hi": "Do baar moda kaagaz hamara tester hai. Tester kone mein bilkul fit ho aur koi khaali jagah na bache, tabhi kona right angle hai.",
+      "en": "Paper folded twice is our tester. Only if the tester fits the corner exactly, with no empty space left, is the corner a right angle."
+     }
     },
     {
      "id": "e3",
      "convey": "the same square, once straight and once turned → turning changes where it points, not its corners → the turned square's corners are still right angles",
      "mustSay": [
-      { "hi": "ghumaya hua", "en": "turned" },
-      { "hi": "kone nahi badle", "en": "the corners did not change" }
+      {
+       "hi": "ghumaya hua",
+       "en": "turned"
+      },
+      {
+       "hi": "kone nahi badle",
+       "en": "the corners did not change"
+      }
      ],
-     "board": { "template": "shape@1", "params": { "shape": "square", "copies": 2, "names": ["seedha", "ghumaya hua"] } },
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "square",
+        "ghumaya hua"
+       ]
+      }
+     },
      "point": {
       "hi": "Yeh do ek jaise square hain. Pehla seedha rakha hai, doosra ghumaya hua hai. Ghumane se square ki jagah badli, par uske kone nahi badle.",
       "en": "These are two identical squares. The first is placed straight, the second is turned. Turning changed where the square sits, but its corners did not change."
      },
      "ask": {
-      "prompt": { "hi": "Ghumaye hue square ke kitne kone right angle hain?", "en": "How many corners of the turned square are right angles?" },
+      "prompt": {
+       "hi": "Ghumaye hue square ke kitne kone right angle hain?",
+       "en": "How many corners of the turned square are right angles?"
+      },
       "key": "4",
-      "accept": ["chaar", "char", "four", "saare", "all", "all 4", "saare 4"],
+      "accept": [
+       "chaar",
+       "char",
+       "four",
+       "saare",
+       "all",
+       "all 4",
+       "saare 4"
+      ],
       "targets": "c4-maths-ch01-t02-m-tilted-not-right",
       "wrongIfMis": "0",
-      "why": { "hi": "ghumaane se sirf square ki jagah badli, uske 4 right angle kone nahi badle", "en": "turning changed only where the square sits, not its 4 right-angle corners" }
+      "why": {
+       "hi": "ghumaya hua square wahi square hai, toh uske 4 kone ab bhi right angle hain",
+       "en": "the turned square is the same square, so its 4 corners are still right angles"
+      },
+      "answerBoard": {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "square",
+         "ghumaya hua"
+        ],
+        "corner": "right angle"
+       }
+      }
      },
-     "simpler": { "hi": "Square ko ghumao toh sirf uski jagah badalti hai. Uske kone wahi rehte hain jo pehle the.", "en": "When you turn a square, only its position changes. Its corners stay just as they were." }
+     "simpler": {
+      "hi": "Square ko ghumao toh sirf uski jagah badalti hai. Uske kone wahi rehte hain jo pehle the.",
+      "en": "When you turn a square, only its position changes. Its corners stay just as they were."
+     }
     }
    ],
    "workedExample": {
@@ -106,33 +343,93 @@
      "en": "Is the corner of a window a right angle? Check it with a paper tester."
     },
     "givens": [
-     { "hi": "ek saada kaagaz", "en": "a plain sheet of paper" },
-     { "hi": "khidki ka ek kona", "en": "one corner of the window" }
+     {
+      "hi": "Hamare paas ek saada kaagaz hai, aur khidki ka ek kona jaanchna hai.",
+      "en": "We have a plain sheet of paper, and one corner of the window to check."
+     }
     ],
-    "find": { "hi": "khidki ka kona right angle hai ya nahi", "en": "whether the window's corner is a right angle" },
+    "find": {
+     "hi": "khidki ka kona right angle hai ya nahi",
+     "en": "whether the window's corner is a right angle"
+    },
     "steps": [
      {
-      "do": { "hi": "Kaagaz ko aadha modo, phir dobara aadha modo", "en": "Fold the paper in half, then in half again" },
+      "do": {
+       "hi": "Kaagaz ko aadha modo, phir dobara aadha modo",
+       "en": "Fold the paper in half, then in half again"
+      },
       "result": "ek square corner wala tester",
-      "why": { "hi": "do baar modne se kaagaz ka kona bilkul square corner banta hai", "en": "folding twice makes the paper's corner an exact square corner" },
-      "simpler": { "hi": "Kaagaz ko ek baar aadha modo, phir ek baar aur. Jo kona banta hai woh square corner hai, yahi tester hai.", "en": "Fold the paper in half once, then once more. The corner you get is a square corner, and that is the tester." }
+      "why": {
+       "hi": "do baar modne se kaagaz ka kona bilkul square corner banta hai",
+       "en": "folding twice makes the paper's corner an exact square corner"
+      },
+      "simpler": {
+       "hi": "Kaagaz ko ek baar aadha modo, phir ek baar aur. Jo kona banta hai woh square corner hai, yahi tester hai.",
+       "en": "Fold the paper in half once, then once more. The corner you get is a square corner, and that is the tester."
+      }
      },
      {
-      "do": { "hi": "Tester ko khidki ke kone mein rakho", "en": "Put the tester into the window's corner" },
+      "do": {
+       "hi": "Tester ko khidki ke kone mein rakho",
+       "en": "Put the tester into the window's corner"
+      },
       "result": "tester bilkul fit hota hai, na khaali jagah na overlap",
-      "why": { "hi": "tester ki dono kinaariyan khidki ki dono lines par poori baith jaati hain", "en": "both edges of the tester sit fully along both lines of the window" },
-      "simpler": { "hi": "Tester ko khidki ke kone mein rakho. Uski dono kinaariyan khidki ki lines par poori baith gayi, koi khaali jagah nahi.", "en": "Put the tester in the window's corner. Both its edges sit fully along the window's lines, with no empty space." }
+      "why": {
+       "hi": "tester ki dono kinaariyan khidki ki dono lines par poori baith jaati hain",
+       "en": "both edges of the tester sit fully along both lines of the window"
+      },
+      "simpler": {
+       "hi": "Tester ko khidki ke kone mein rakho. Uski dono kinaariyan khidki ki lines par poori baith gayi, koi khaali jagah nahi.",
+       "en": "Put the tester in the window's corner. Both its edges sit fully along the window's lines, with no empty space."
+      }
      }
     ],
     "yourStep": {
-     "prompt": { "hi": "Tester bilkul fit hua. Toh khidki ka kona kaunsa angle hai?", "en": "The tester fits exactly. So what kind of angle is the window's corner?" },
+     "prompt": {
+      "hi": "Tester bilkul fit hua. Toh khidki ka kona kaunsa angle hai?",
+      "en": "The tester fits exactly. So what kind of angle is the window's corner?"
+     },
      "key": "right angle",
-     "accept": ["right angle hai", "samkon", "square corner", "90 degree", "a right angle"],
-     "simpler": { "hi": "Jo kona tester mein bilkul fit ho, woh square ke kone jaisa hai. Yaad karo, square ke kone ko humne kya naam diya tha.", "en": "A corner that fits the tester exactly is like a square's corner. Remember the name we gave to a square's corner." }
+     "accept": [
+      "right angle hai",
+      "samkon",
+      "square corner",
+      "90 degree",
+      "a right angle"
+     ],
+     "simpler": {
+      "hi": "Jo kona tester mein bilkul fit ho, woh square ke kone jaisa hai. Yaad karo, square ke kone ko humne kya naam diya tha.",
+      "en": "A corner that fits the tester exactly is like a square's corner. Remember the name we gave to a square's corner."
+     },
+     "why": {
+      "hi": "tester khidki ke kone mein bilkul fit hua, aur aisa kona right angle hota hai",
+      "en": "the tester fit the window's corner exactly, and such a corner is a right angle"
+     },
+     "answerBoard": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "name": "khidki",
+       "corner": "right angle"
+      }
+     }
     },
-    "answer": { "hi": "khidki ka kona right angle hai", "en": "the window's corner is a right angle" },
-    "why": { "hi": "tester ka square corner khidki ke kone mein bilkul fit hua", "en": "the tester's square corner fitted the window's corner exactly" },
-    "board": { "template": "shape@1", "params": { "shape": "rectangle", "name": "khidki", "corner": "kona" } }
+    "answer": {
+     "hi": "khidki ka kona right angle hai",
+     "en": "the window's corner is a right angle"
+    },
+    "why": {
+     "hi": "tester ka square corner khidki ke kone mein bilkul fit hua",
+     "en": "the tester's square corner fitted the window's corner exactly"
+    },
+    "board": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "name": "khidki",
+      "corner": "kona"
+     }
+    }
    },
    "checks": [
     {
@@ -142,12 +439,46 @@
       "en": "A book is turned and laid slanting, so now it looks like a diamond. {friend} says its corners are no longer right angles. Is that right?"
      },
      "key": "No",
-     "accept": ["nahi", "nahin", "no", "nahi, ab bhi right angle hain", "no, they are still right angles"],
+     "accept": [
+      "nahi",
+      "nahin",
+      "no",
+      "nahi, ab bhi right angle hain",
+      "no, they are still right angles"
+     ],
      "targets": "c4-maths-ch01-t02-m-tilted-not-right",
      "wrongIfMis": "Yes",
-     "board": { "template": "shape@1", "params": { "shape": "rectangle", "copies": 2, "names": ["kitaab", "diamond jaisi"] } },
-     "why": { "hi": "ghumaakar rakhne se kitaab ke kone nahi badalte, woh ab bhi right angle hain", "en": "laying the book slanting does not change its corners; they are still right angles" },
-     "simpler": { "hi": "Kitaab ghumane se sirf uski jagah badalti hai. Ab socho, uske kone badle ya wahi rahe.", "en": "Turning the book only changes where it sits. Now think whether its corners changed or stayed the same." }
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "diamond jaisi"
+       ]
+      }
+     },
+     "why": {
+      "hi": "ghumaakar rakhne se kitaab ke kone nahi badalte, woh ab bhi right angle hain",
+      "en": "laying the book slanting does not change its corners; they are still right angles"
+     },
+     "simpler": {
+      "hi": "Kitaab ghumane se sirf uski jagah badalti hai. Ab socho, uske kone badle ya wahi rahe.",
+      "en": "Turning the book only changes where it sits. Now think whether its corners changed or stayed the same."
+     },
+     "answerBoard": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "ghumaakar"
+       ],
+       "corner": "right angle"
+      }
+     }
     },
     {
      "id": "c2",
@@ -156,12 +487,48 @@
       "en": "A square noticeboard hangs on the wall like a diamond. How many of its corners are right angles?"
      },
      "key": "4",
-     "accept": ["chaar", "char", "four", "saare", "all", "all 4", "saare 4"],
+     "accept": [
+      "chaar",
+      "char",
+      "four",
+      "saare",
+      "all",
+      "all 4",
+      "saare 4"
+     ],
      "targets": "c4-maths-ch01-t02-m-tilted-not-right",
      "wrongIfMis": "2",
-     "board": { "template": "shape@1", "params": { "shape": "square", "copies": 2, "names": ["noticeboard", "diwar par"] } },
-     "why": { "hi": "noticeboard square hai, aur latkaane ka tareeka uske 4 right angle kone nahi badalta", "en": "the noticeboard is a square, and the way it hangs does not change its 4 right-angle corners" },
-     "simpler": { "hi": "Noticeboard square hi hai, bas tircha latka hai. Square ke har kone ko ek-ek karke gino.", "en": "The noticeboard is still a square, it just hangs slanting. Count each corner of the square one by one." }
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "noticeboard",
+        "diwar par"
+       ]
+      }
+     },
+     "why": {
+      "hi": "noticeboard square hai, aur latkaane ka tareeka uske 4 right angle kone nahi badalta",
+      "en": "the noticeboard is a square, and the way it hangs does not change its 4 right-angle corners"
+     },
+     "simpler": {
+      "hi": "Noticeboard square hi hai, bas tircha latka hai. Square ke har kone ko ek-ek karke gino.",
+      "en": "The noticeboard is still a square, it just hangs slanting. Count each corner of the square one by one."
+     },
+     "answerBoard": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "square",
+        "noticeboard"
+       ],
+       "corner": "right angle"
+      }
+     }
     },
     {
      "id": "c3",
@@ -170,51 +537,135 @@
       "en": "A square kite flies in the air like a diamond. Put the tester on its top corner. Will the tester fit exactly, yes or no?"
      },
      "key": "Yes",
-     "accept": ["haan", "han", "yes", "haan, fit hoga", "yes, it fits"],
+     "accept": [
+      "haan",
+      "han",
+      "yes",
+      "haan, fit hoga",
+      "yes, it fits"
+     ],
      "targets": "c4-maths-ch01-t02-m-tilted-not-right",
      "wrongIfMis": "No",
-     "board": { "template": "shape@1", "params": { "shape": "square", "copies": 2, "names": ["patang", "hawa mein"] } },
-     "why": { "hi": "patang square hai, toh diamond jaisi udne par bhi uska har kona right angle hai", "en": "the kite is a square, so even flying like a diamond each of its corners is a right angle" },
-     "simpler": { "hi": "Patang ek square hai, bas tirchi ud rahi hai. Yaad karo, ghumane se square ke kone nahi badalte.", "en": "The kite is a square, just flying slanted. Remember, turning a square does not change its corners." }
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "patang",
+        "hawa mein"
+       ]
+      }
+     },
+     "why": {
+      "hi": "patang square hai, toh diamond jaisi udne par bhi uska har kona right angle hai",
+      "en": "the kite is a square, so even flying like a diamond each of its corners is a right angle"
+     },
+     "simpler": {
+      "hi": "Patang ek square hai, bas tirchi ud rahi hai. Yaad karo, ghumane se square ke kone nahi badalte.",
+      "en": "The kite is a square, just flying slanted. Remember, turning a square does not change its corners."
+     },
+     "answerBoard": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "square",
+        "patang"
+       ],
+       "corner": "right angle"
+      }
+     }
     }
    ],
    "ladder": [
-    { "itemId": "c4-maths-ch01-t02-i01", "why": "make the folded tester and test a book's corner → exact fit = right angle" },
-    { "itemId": "c4-maths-ch01-t02-i02", "why": "clock hands at 3 o'clock → up and across = square corner" },
-    { "itemId": "c4-maths-ch01-t02-i06", "why": "6 o'clock vs 9 o'clock → only one makes a square corner" },
-    { "itemId": "c4-maths-ch01-t02-i07", "why": "error spot: a turned book's corners → still right angles" },
-    { "itemId": "c4-maths-ch01-t02-rl-h1", "why": "harder: a tilted square noticeboard → tilting does not change the corner" }
+    {
+     "itemId": "c4-maths-ch01-t02-i01",
+     "why": "make the folded tester and test a book's corner → exact fit = right angle"
+    },
+    {
+     "itemId": "c4-maths-ch01-t02-i02",
+     "why": "clock hands at 3 o'clock → up and across = square corner"
+    },
+    {
+     "itemId": "c4-maths-ch01-t02-i06",
+     "why": "6 o'clock vs 9 o'clock → only one makes a square corner"
+    },
+    {
+     "itemId": "c4-maths-ch01-t02-i07",
+     "why": "error spot: a turned book's corners → still right angles"
+    },
+    {
+     "itemId": "c4-maths-ch01-t02-rl-h1",
+     "why": "harder: a tilted square noticeboard → tilting does not change the corner"
+    }
    ],
    "remediation": [
     {
      "targets": "c4-maths-ch01-t02-m-tilted-not-right",
      "move": "tester on a square tile; turn the tile a little at a time and test again each time → the tile's position changes, the corner does not",
      "say": {
-      "hi": "Tile ko thoda-thoda ghumao aur har baar tester lagao. Tile ki jagah badalti hai, par tester har baar bilkul fit hota hai.",
-      "en": "Turn the tile a little at a time and put the tester on it each time. The tile's position changes, but the tester fits exactly every time."
+      "hi": "Ek square tile socho. Use thoda-thoda ghumao aur har baar tester lagao. Tile ki jagah badalti hai, par tester har baar bilkul fit hota hai.",
+      "en": "Imagine a square tile. Turn it a little at a time and put the tester on it each time. The tile's position changes, but the tester fits exactly every time."
      },
      "simpler": {
-      "hi": "Tile ghumane se sirf uski jagah badalti hai. Tester phir bhi har baar bilkul fit hota hai.",
-      "en": "Turning the tile only changes where it is. The tester still fits exactly every time."
+      "hi": "Socho, tile ghumane se sirf uski jagah badalti hai. Tester phir bhi har baar bilkul fit hota hai.",
+      "en": "Imagine it: turning the tile only changes where it is. The tester still fits exactly every time."
      },
-     "board": { "template": "shape@1", "params": { "shape": "square", "copies": 2, "names": ["tile", "ghumao"] } },
      "then": {
-      "prompt": { "hi": "Ek square rumaal ko ghumakar diamond jaisa rakh diya. Kya uske kone ab bhi right angle hain?", "en": "A square handkerchief is turned and laid like a diamond. Are its corners still right angles?" },
+      "prompt": {
+       "hi": "Ek square rumaal ko ghumakar diamond jaisa rakh diya. Kya uske kone ab bhi right angle hain?",
+       "en": "A square handkerchief is turned and laid like a diamond. Are its corners still right angles?"
+      },
       "key": "Yes",
-      "accept": ["haan", "han", "yes", "haan, ab bhi right angle hain", "yes, still right angles"],
+      "accept": [
+       "haan",
+       "han",
+       "yes",
+       "haan, ab bhi right angle hain",
+       "yes, still right angles"
+      ],
       "targets": "c4-maths-ch01-t02-m-tilted-not-right",
       "wrongIfMis": "No",
-      "board": { "template": "shape@1", "params": { "shape": "square", "copies": 2, "names": ["rumaal", "ghumakar"] } },
-      "why": { "hi": "rumaal square hai, aur ghumaane se uske kone nahi badalte", "en": "the handkerchief is a square, and turning it does not change its corners" },
-      "simpler": { "hi": "Rumaal square hai, sirf ghumaya gaya hai. Ghumane se jagah badalti hai, kone nahi badalte.", "en": "The handkerchief is a square, only turned. Turning changes the position, not the corners." }
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "rumaal",
+         "ghumakar"
+        ]
+       }
+      },
+      "why": {
+       "hi": "rumaal square hai, aur ghumaane se uske kone nahi badalte",
+       "en": "the handkerchief is a square, and turning it does not change its corners"
+      },
+      "simpler": {
+       "hi": "Rumaal square hai, sirf ghumaya gaya hai. Ghumane se jagah badalti hai, kone nahi badalte.",
+       "en": "The handkerchief is a square, only turned. Turning changes the position, not the corners."
+      },
+      "answerBoard": {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "square",
+         "rumaal"
+        ],
+        "corner": "right angle"
+       }
+      }
      }
     }
    ],
    "bridgeToNext": {
-    "hi": "Ab tak tester se dekha ki kona fit hota hai ya nahi. Ab dekhenge ki jo kona fit nahi hota, woh right angle se kam khula hai ya zyada.",
-    "en": "So far we used the tester to see whether a corner fits. Next we see whether a corner that does not fit opens less or more than a right angle."
-   },
-   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Ab tak", "items": ["kona fit hota hai ya nahi"] }, "right": { "title": "Ab", "items": ["right angle se kam", "ya zyada"] } } }
+    "hi": "Ab tak tester se dekha ki kona fit hota hai ya nahi. Ab dekhenge ki jo kona fit nahi hota, jaise cake ki nok, woh right angle se kam khula hai ya zyada.",
+    "en": "So far we checked whether a corner fits the tester. Next we see whether a corner that does not fit, like a cake's tip, opens less or more than a right angle."
+   }
   },
   {
    "skillId": "c4-maths-ch01-t02-s2",
@@ -242,65 +693,290 @@
      "id": "e1",
      "convey": "tester on a corner → corner narrower than the tester = less than a right angle; exact fit = equal; corner opens wider than the tester = more than a right angle",
      "mustSay": [
-      { "hi": "right angle se kam", "en": "less than a right angle" },
-      { "hi": "right angle se zyada", "en": "more than a right angle" }
+      {
+       "hi": "right angle se kam",
+       "en": "less than a right angle"
+      },
+      {
+       "hi": "right angle se zyada",
+       "en": "more than a right angle"
+      }
      ],
-     "board": { "template": "compare@1", "params": { "left": { "title": "Tester se tang", "items": ["right angle se kam"] }, "right": { "title": "Tester se khula", "items": ["right angle se zyada"] } } },
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Tester se tang",
+        "items": [
+         "right angle se kam"
+        ]
+       },
+       "right": {
+        "title": "Tester se khula",
+        "items": [
+         "right angle se zyada"
+        ]
+       }
+      }
+     },
      "point": {
       "hi": "Tester ko kone par rakho. Agar kona tester se tang hai, toh woh right angle se kam hai. Agar kona tester se zyada khula hai, toh woh right angle se zyada hai. Bilkul fit ho, toh right angle ke barabar.",
       "en": "Put the tester on the corner. If the corner is narrower than the tester, it is less than a right angle. If the corner opens wider than the tester, it is more than a right angle. If it fits exactly, it equals a right angle."
      },
      "ask": {
-      "prompt": { "hi": "Ek cake slice ki nok tester se tang hai. Nok ka angle right angle se kam hai ya zyada?", "en": "The tip of a cake slice is narrower than the tester. Is the tip's angle less or more than a right angle?" },
+      "prompt": {
+       "hi": "Ek cake slice ki nok tester se tang hai. Nok ka angle right angle se kam hai ya zyada?",
+       "en": "The tip of a cake slice is narrower than the tester. Is the tip's angle less or more than a right angle?"
+      },
       "key": "kam",
-      "accept": ["less", "right angle se kam", "less than a right angle", "kam hai", "chhota"],
-      "why": { "hi": "nok tester se bhi tang khulti hai, aur tester khud ek right angle hai", "en": "the tip opens narrower than the tester, and the tester itself is a right angle" }
+      "accept": [
+       "less",
+       "right angle se kam",
+       "less than a right angle",
+       "kam hai",
+       "chhota"
+      ],
+      "why": {
+       "hi": "nok tester se bhi tang hai, aur tester khud ek right angle hai",
+       "en": "the tip is narrower than the tester, and the tester itself is a right angle"
+      },
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Nok",
+         "items": [
+          "tester se tang"
+         ]
+        },
+        "right": {
+         "title": "Tester",
+         "items": [
+          "right angle"
+         ]
+        }
+       }
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Nok",
+         "items": [
+          "tester se tang"
+         ]
+        },
+        "right": {
+         "title": "Tester",
+         "items": [
+          "right angle"
+         ]
+        }
+       }
+      }
      },
-     "simpler": { "hi": "Tester ko kone se milao. Kona tester se tang ho toh angle chhota hai, aur zyada khula ho toh angle bada hai.", "en": "Hold the tester against the corner. If the corner is narrower than the tester the angle is smaller, and if it opens wider the angle is bigger." }
+     "simpler": {
+      "hi": "Tester ko kone se milao. Kona tester se tang ho toh angle chhota hai, aur zyada khula ho toh angle bada hai.",
+      "en": "Hold the tester against the corner. If the corner is narrower than the tester the angle is smaller, and if it opens wider the angle is bigger."
+     }
     },
     {
      "id": "e2",
      "convey": "angle P: square corner with short arms; angle Q: square corner with long arms → the tester fits both → same angle; an angle is how wide the arms open, not how long they are",
      "mustSay": [
-      { "hi": "bhuja", "en": "arm" },
-      { "hi": "khulna", "en": "how wide it opens" }
+      {
+       "hi": "bhuja",
+       "en": "arm"
+      },
+      {
+       "hi": "khulna",
+       "en": "how wide it opens"
+      }
      ],
-     "board": { "template": "compare@1", "params": { "left": { "title": "Angle P", "items": ["chhoti bhuja", "square corner"] }, "right": { "title": "Angle Q", "items": ["lambi bhuja", "square corner"] } } },
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Angle P",
+        "items": [
+         "chhoti bhuja",
+         "square corner"
+        ]
+       },
+       "right": {
+        "title": "Angle Q",
+        "items": [
+         "lambi bhuja",
+         "square corner"
+        ]
+       }
+      }
+     },
      "point": {
-      "hi": "Angle P ki bhuja chhoti hai, Angle Q ki bhuja lambi hai. Par tester dono par bilkul fit hota hai, dono square corner hain. Angle bhuja ki lambai se nahi, uske khulne se naapte hain. Yeh khulna hi angle hai.",
-      "en": "Angle P has short arms, Angle Q has long arms. But the tester fits both exactly; each one is a square corner. An angle is measured by how wide it opens, not by the length of its arms. This opening is the angle."
+      "hi": "Angle bhuja ki lambai se nahi, uske khulne se naapte hain. Bhuja chhoti ho ya lambi, agar tester bilkul fit hota hai, toh woh square corner hai. Yeh khulna hi angle hai.",
+      "en": "An angle is measured by how wide it opens, not by the length of its arms. Short arms or long, if the tester fits exactly, it is a square corner. This opening is the angle."
      },
      "ask": {
-      "prompt": { "hi": "Ek kone ki bhuja 3 cm hai, doosre ki 12 cm, aur dono par tester bilkul fit hota hai. Kaunsa angle bada hai, ya dono barabar?", "en": "One corner has arms 3 cm long, another has arms 12 cm long, and the tester fits both exactly. Which angle is bigger, or are both equal?" },
+      "prompt": {
+       "hi": "Ek kone ki bhuja 3 cm hai, doosre ki 12 cm, aur dono par tester bilkul fit hota hai. Kaunsa angle bada hai, ya dono barabar?",
+       "en": "One corner has arms 3 cm long, another has arms 12 cm long, and the tester fits both exactly. Which angle is bigger, or are both equal?"
+      },
       "key": "dono barabar",
-      "accept": ["barabar", "both equal", "both are equal", "equal", "same", "both same", "dono same", "dono right angle"],
+      "accept": [
+       "barabar",
+       "both equal",
+       "both are equal",
+       "equal",
+       "same",
+       "both same",
+       "dono same",
+       "dono right angle"
+      ],
       "targets": "c4-maths-ch01-t02-m-arm-length",
       "wrongIfMis": "12 cm wala",
-      "why": { "hi": "tester dono par bilkul fit hota hai, aur 3 cm ya 12 cm ki bhuja khulna nahi badalti", "en": "the tester fits both exactly, and arms of 3 cm or 12 cm do not change the opening" }
+      "why": {
+       "hi": "tester dono par bilkul fit hota hai, aur 3 cm ya 12 cm ki bhuja khulna nahi badalti",
+       "en": "the tester fits both exactly, and arms of 3 cm or 12 cm do not change the opening"
+      },
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "3 cm bhuja",
+         "items": [
+          "tester bilkul fit"
+         ]
+        },
+        "right": {
+         "title": "12 cm bhuja",
+         "items": [
+          "tester bilkul fit"
+         ]
+        }
+       }
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "3 cm bhuja",
+         "items": [
+          "tester bilkul fit"
+         ]
+        },
+        "right": {
+         "title": "12 cm bhuja",
+         "items": [
+          "tester bilkul fit"
+         ]
+        }
+       }
+      }
      },
-     "simpler": { "hi": "Bhuja lambi ho ya chhoti, angle usse nahi badalta. Sirf dekho ki kona kitna khula hai.", "en": "Long arms or short arms, that does not change the angle. Just look at how wide the corner opens." }
+     "simpler": {
+      "hi": "Bhuja lambi ho ya chhoti, angle usse nahi badalta. Sirf dekho ki kona kitna khula hai.",
+      "en": "Long arms or short arms, that does not change the angle. Just look at how wide the corner opens."
+     }
     },
     {
      "id": "e3",
      "convey": "angle A: long arms, opens only a little (like scissors slightly open); angle B: short arms, a full square corner → B opens wider → B is the bigger angle",
      "mustSay": [
-      { "hi": "thoda sa khula", "en": "opens a little" },
-      { "hi": "zyada khula", "en": "opens wider" }
+      {
+       "hi": "thoda sa khula",
+       "en": "opens a little"
+      },
+      {
+       "hi": "zyada khula",
+       "en": "opens wider"
+      }
      ],
-     "board": { "template": "compare@1", "params": { "left": { "title": "Angle A", "items": ["lambi bhuja", "thoda sa khula"] }, "right": { "title": "Angle B", "items": ["chhoti bhuja", "square corner"] } } },
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Angle A",
+        "items": [
+         "lambi bhuja",
+         "thoda sa khula"
+        ]
+       },
+       "right": {
+        "title": "Angle B",
+        "items": [
+         "chhoti bhuja",
+         "square corner"
+        ]
+       }
+      }
+     },
      "point": {
-      "hi": "Angle A ki bhuja lambi hai, par woh thoda sa khula hai, jaise thodi khuli kainchi. Angle B ki bhuja chhoti hai, par woh poora square corner hai. Jo zyada khula hai, wahi bada angle hai.",
-      "en": "Angle A has long arms, but it opens only a little, like slightly open scissors. Angle B has short arms, but it is a full square corner. Whichever opens wider is the bigger angle."
+      "hi": "Ek angle ki bhuja lambi ho sakti hai, par woh thoda sa hi khula ho, jaise thodi si khuli kainchi. Doosre ki bhuja chhoti ho, par woh poora square corner ho. Jo zyada khula hai, wahi bada angle hai.",
+      "en": "One angle can have long arms but open only a little, like scissors opened slightly. Another can have short arms but be a full square corner. Whichever opens wider is the bigger angle."
      },
      "ask": {
-      "prompt": { "hi": "Ek lambi kainchi thodi si khuli hai. Ek chhoti diary ka kona square corner hai. Kaunsa angle bada hai: kainchi ka ya diary ke kone ka?", "en": "A long pair of scissors is opened slightly. The corner of a small diary is a square corner. Which angle is bigger: the scissors' or the diary corner's?" },
+      "prompt": {
+       "hi": "Ek lambi kainchi thodi si khuli hai. Ek chhoti diary ka kona square corner hai. Kaunsa angle bada hai: kainchi ka ya diary ke kone ka?",
+       "en": "A long pair of scissors is opened slightly. The corner of a small diary is a square corner. Which angle is bigger: the scissors' or the diary corner's?"
+      },
       "key": "diary ka kona",
-      "accept": ["diary", "diary ke kone ka", "diary ka", "the diary corner", "the diary's", "square corner"],
+      "accept": [
+       "diary",
+       "diary ke kone ka",
+       "diary ka",
+       "the diary corner",
+       "the diary's",
+       "square corner"
+      ],
       "targets": "c4-maths-ch01-t02-m-arm-length",
       "wrongIfMis": "kainchi ka",
-      "why": { "hi": "kainchi thodi si hi khuli hai, jabki diary ka kona poora square corner khula hai", "en": "the scissors open only slightly, while the diary corner opens a full square corner" }
+      "why": {
+       "hi": "lambi kainchi thodi si hi khuli hai, jabki chhoti diary ka kona poora square corner khula hai",
+       "en": "the long scissors are open only a little, while the small diary's corner is open a full square corner"
+      },
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Kainchi",
+         "items": [
+          "lambi",
+          "thodi si khuli"
+         ]
+        },
+        "right": {
+         "title": "Diary ka kona",
+         "items": [
+          "chhoti",
+          "square corner"
+         ]
+        }
+       }
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Kainchi",
+         "items": [
+          "lambi",
+          "thodi si khuli"
+         ]
+        },
+        "right": {
+         "title": "Diary ka kona",
+         "items": [
+          "chhoti",
+          "square corner"
+         ]
+        }
+       }
+      }
      },
-     "simpler": { "hi": "Bhuja ki lambai bhool jao. Sirf dekho kaun zyada khula hai: thodi khuli cheez ya poora square corner.", "en": "Forget the length of the arms. Just see which opens wider: something opened a little, or a full square corner." }
+     "simpler": {
+      "hi": "Bhuja ki lambai bhool jao. Sirf dekho kaun zyada khula hai: thodi khuli cheez ya poora square corner.",
+      "en": "Forget the length of the arms. Just see which opens wider: something opened a little, or a full square corner."
+     }
     }
    ],
    "workedExample": {
@@ -309,36 +985,115 @@
      "en": "Rani's rangoli has 3 corners. Corner P has arms 9 cm long and stays inside the tester, with empty space between. Corner Q has arms 4 cm long and the tester fits exactly. Corner R has arms 3 cm long and one arm goes outside the tester. Which is the biggest angle?"
     },
     "givens": [
-     { "hi": "P: bhuja 9 cm, tester ke andar, khaali jagah", "en": "P: arms 9 cm, inside the tester, empty space" },
-     { "hi": "Q: bhuja 4 cm hai, tester bilkul fit", "en": "Q: arms 4 cm, the tester fits exactly" },
-     { "hi": "R: bhuja 3 cm, ek bhuja tester ke bahar", "en": "R: arms 3 cm, one arm outside the tester" }
+     {
+      "hi": "Teeno kone tester se mile: P mein khaali jagah bachi, Q bilkul fit hua, aur R tester ke bahar gaya.",
+      "en": "All three corners met the tester: P left empty space, Q fit exactly, and R went outside the tester."
+     }
     ],
-    "find": { "hi": "teeno mein sabse bada angle kaunsa hai", "en": "which of the three is the biggest angle" },
+    "find": {
+     "hi": "teeno mein sabse bada angle kaunsa hai",
+     "en": "which of the three is the biggest angle"
+    },
     "steps": [
      {
-      "do": { "hi": "P aur Q ko tester se milao", "en": "Compare P and Q with the tester" },
+      "do": {
+       "hi": "P aur Q ko tester se milao",
+       "en": "Compare P and Q with the tester"
+      },
       "result": "P right angle se kam, Q right angle ke barabar",
-      "why": { "hi": "P tester se tang hai aur Q bilkul fit hota hai", "en": "P is narrower than the tester and Q fits exactly" },
-      "simpler": { "hi": "P tester se tang hai, toh P right angle se chhota hai. Q tester mein bilkul fit hai, toh Q right angle hai.", "en": "P is narrower than the tester, so P is smaller than a right angle. Q fits the tester exactly, so Q is a right angle." }
+      "why": {
+       "hi": "P tester se tang hai aur Q bilkul fit hota hai",
+       "en": "P is narrower than the tester and Q fits exactly"
+      },
+      "simpler": {
+       "hi": "P tester se tang hai, toh P right angle se chhota hai. Q tester mein bilkul fit hai, toh Q right angle hai.",
+       "en": "P is narrower than the tester, so P is smaller than a right angle. Q fits the tester exactly, so Q is a right angle."
+      }
      },
      {
-      "do": { "hi": "Ab R ko tester se milao", "en": "Now compare R with the tester" },
+      "do": {
+       "hi": "Ab R ko tester se milao",
+       "en": "Now compare R with the tester"
+      },
       "result": "R right angle se zyada",
-      "why": { "hi": "R ki ek bhuja tester ke bahar jaati hai, yaani R zyada khula hai", "en": "one arm of R goes outside the tester, so R opens wider" },
-      "simpler": { "hi": "R ki ek bhuja tester se bahar nikalti hai. Matlab R tester se bhi zyada khula hai, right angle se bada.", "en": "One arm of R goes outside the tester. That means R opens even wider than the tester, more than a right angle." }
+      "why": {
+       "hi": "R ki ek bhuja tester ke bahar jaati hai, yaani R zyada khula hai",
+       "en": "one arm of R goes outside the tester, so R opens wider"
+      },
+      "simpler": {
+       "hi": "R ki ek bhuja tester se bahar nikalti hai. Matlab R tester se bhi zyada khula hai, right angle se bada.",
+       "en": "One arm of R goes outside the tester. That means R opens even wider than the tester, more than a right angle."
+      }
      }
     ],
     "yourStep": {
-     "prompt": { "hi": "Ab bhuja ki lambai chhodo, sirf khulna dekho. Teeno mein sabse bada angle kaunsa hai?", "en": "Now ignore the arm lengths and look only at the opening. Which of the three is the biggest angle?" },
+     "prompt": {
+      "hi": "Ab bhuja ki lambai chhodo, sirf khulna dekho. Teeno mein sabse bada angle kaunsa hai?",
+      "en": "Now ignore the arm lengths and look only at the opening. Which of the three is the biggest angle?"
+     },
      "key": "R",
-     "accept": ["kona R", "angle R", "R wala", "corner R", "R hai"],
+     "accept": [
+      "kona R",
+      "angle R",
+      "R wala",
+      "corner R",
+      "R hai"
+     ],
      "targets": "c4-maths-ch01-t02-m-arm-length",
      "wrongIfMis": "P",
-     "simpler": { "hi": "Bhuja ki lambai mat dekho. Jo kona tester se bhi zyada khula hai, wahi sabse bada angle hai.", "en": "Do not look at the arm lengths. The corner that opens even wider than the tester is the biggest angle." }
+     "simpler": {
+      "hi": "Bhuja ki lambai mat dekho. Jo kona tester se bhi zyada khula hai, wahi sabse bada angle hai.",
+      "en": "Do not look at the arm lengths. The corner that opens even wider than the tester is the biggest angle."
+     },
+     "why": {
+      "hi": "P mein khaali jagah bachi, Q bilkul fit hua, par R tester ke bahar jaata hai, toh R sabse khula hai",
+      "en": "P left empty space and Q fit exactly, but R's arm goes outside the tester, so R opens the most"
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "P aur Q",
+        "items": [
+         "P: khaali jagah",
+         "Q: bilkul fit"
+        ]
+       },
+       "right": {
+        "title": "R",
+        "items": [
+         "tester ke bahar"
+        ]
+       }
+      }
+     }
     },
-    "answer": { "hi": "teeno mein sabse bada angle R hai", "en": "R is the biggest of the three angles" },
-    "why": { "hi": "R sabse zyada khula hai, aur P ki lambi bhuja se uska angle bada nahi hota", "en": "R opens the widest, and P's long arms do not make its angle bigger" },
-    "board": { "template": "compare@1", "params": { "left": { "title": "Bhuja", "items": ["P: 9 cm", "Q: 4 cm", "R: 3 cm"] }, "right": { "title": "Tester", "items": ["khaali jagah", "bilkul fit", "tester ke bahar"] } } }
+    "answer": {
+     "hi": "teeno mein sabse bada angle R hai",
+     "en": "R is the biggest of the three angles"
+    },
+    "why": {
+     "hi": "R sabse zyada khula hai, aur P ki lambi bhuja se uska angle bada nahi hota",
+     "en": "R opens the widest, and P's long arms do not make its angle bigger"
+    },
+    "board": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "P aur Q",
+       "items": [
+        "P: khaali jagah",
+        "Q: bilkul fit"
+       ]
+      },
+      "right": {
+       "title": "R",
+       "items": [
+        "tester ke bahar"
+       ]
+      }
+     }
+    }
    },
    "checks": [
     {
@@ -348,12 +1103,59 @@
       "en": "Angle A has arms 15 cm long and opens less than a right angle. Angle B has arms 3 cm long and opens more than a right angle. Which angle is bigger, A or B?"
      },
      "key": "B",
-     "accept": ["angle B", "B wala", "B hai"],
+     "accept": [
+      "angle B",
+      "B wala",
+      "B hai"
+     ],
      "targets": "c4-maths-ch01-t02-m-arm-length",
      "wrongIfMis": "A",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Angle A", "items": ["15 cm bhuja", "right angle se kam"] }, "right": { "title": "Angle B", "items": ["3 cm bhuja", "right angle se zyada"] } } },
-     "why": { "hi": "B right angle se zyada khulta hai aur A kam, bhuja ki lambai se farak nahi padta", "en": "B opens more than a right angle and A less; the arm lengths make no difference" },
-     "simpler": { "hi": "15 cm ki lambi bhuja se angle bada nahi hota. Sirf dekho kaun right angle se zyada khulta hai.", "en": "Long 15 cm arms do not make an angle bigger. Just see which one opens more than a right angle." }
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Angle A",
+        "items": [
+         "15 cm bhuja",
+         "right angle se kam"
+        ]
+       },
+       "right": {
+        "title": "Angle B",
+        "items": [
+         "3 cm bhuja",
+         "right angle se zyada"
+        ]
+       }
+      }
+     },
+     "why": {
+      "hi": "B right angle se zyada khulta hai aur A kam, aur 15 cm ya 3 cm ki bhuja se farak nahi padta",
+      "en": "B opens more than a right angle and A less, and arms of 15 cm or 3 cm make no difference"
+     },
+     "simpler": {
+      "hi": "15 cm ki lambi bhuja se angle bada nahi hota. Sirf dekho kaun right angle se zyada khulta hai.",
+      "en": "Long 15 cm arms do not make an angle bigger. Just see which one opens more than a right angle."
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Angle A",
+        "items": [
+         "15 cm bhuja",
+         "right angle se kam"
+        ]
+       },
+       "right": {
+        "title": "Angle B",
+        "items": [
+         "3 cm bhuja",
+         "right angle se zyada"
+        ]
+       }
+      }
+     }
     },
     {
      "id": "c2",
@@ -362,12 +1164,57 @@
       "en": "A big book and a small diary: each one's corner is a square corner. {friend} says the big book's corner is a bigger angle. Is that right?"
      },
      "key": "No",
-     "accept": ["nahi", "nahin", "no", "nahi, dono barabar hain", "no, both are equal"],
+     "accept": [
+      "nahi",
+      "nahin",
+      "no",
+      "nahi, dono barabar hain",
+      "no, both are equal"
+     ],
      "targets": "c4-maths-ch01-t02-m-arm-length",
      "wrongIfMis": "Yes",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Badi kitaab", "items": ["square corner"] }, "right": { "title": "Chhoti diary", "items": ["square corner"] } } },
-     "why": { "hi": "dono kone square corner hain, toh dono utne hi khule hain, kitaab badi ho ya chhoti", "en": "both corners are square corners, so both open the same, however big the book is" },
-     "simpler": { "hi": "Dono ke kone square corner hain, toh dono ek jitne khule hain. Kitaab ka bada size angle nahi badalta.", "en": "Both corners are square corners, so both open the same amount. The book's bigger size does not change the angle." }
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Badi kitaab",
+        "items": [
+         "square corner"
+        ]
+       },
+       "right": {
+        "title": "Chhoti diary",
+        "items": [
+         "square corner"
+        ]
+       }
+      }
+     },
+     "why": {
+      "hi": "badi kitaab aur chhoti diary dono ke kone square corner hain, toh dono utne hi khule hain",
+      "en": "the big book and the small diary both have square corners, so both open the same amount"
+     },
+     "simpler": {
+      "hi": "Dono ke kone square corner hain, toh dono ek jitne khule hain. Kitaab ka bada size angle nahi badalta.",
+      "en": "Both corners are square corners, so both open the same amount. The book's bigger size does not change the angle."
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Badi kitaab",
+        "items": [
+         "square corner"
+        ]
+       },
+       "right": {
+        "title": "Chhoti diary",
+        "items": [
+         "square corner"
+        ]
+       }
+      }
+     }
     },
     {
      "id": "c3",
@@ -376,20 +1223,79 @@
       "en": "An angle has arms 20 cm long, but the corner is narrower than the tester. Is this angle less or more than a right angle?"
      },
      "key": "kam",
-     "accept": ["less", "right angle se kam", "less than a right angle", "kam hai"],
+     "accept": [
+      "less",
+      "right angle se kam",
+      "less than a right angle",
+      "kam hai"
+     ],
      "targets": "c4-maths-ch01-t02-m-arm-length",
      "wrongIfMis": "zyada",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Bhuja", "items": ["20 cm lambi"] }, "right": { "title": "Kona", "items": ["tester se tang"] } } },
-     "why": { "hi": "kona tester se tang hai, aur 20 cm lambi bhuja use zyada nahi kholti", "en": "the corner is narrower than the tester, and 20 cm arms do not open it any wider" },
-     "simpler": { "hi": "Bhuja kitni bhi lambi ho, angle sirf khulne se naapte hain. Ab socho, tester se tang kona right angle se chhota hai ya bada.", "en": "However long the arms are, an angle is measured only by its opening. Now think whether a corner narrower than the tester is smaller or bigger than a right angle." }
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Bhuja",
+        "items": [
+         "20 cm lambi"
+        ]
+       },
+       "right": {
+        "title": "Kona",
+        "items": [
+         "tester se tang"
+        ]
+       }
+      }
+     },
+     "why": {
+      "hi": "kona tester se tang hai, aur 20 cm lambi bhuja use zyada nahi kholti",
+      "en": "the corner is narrower than the tester, and 20 cm arms do not open it any wider"
+     },
+     "simpler": {
+      "hi": "Bhuja kitni bhi lambi ho, angle sirf khulne se naapte hain. Ab socho, tester se tang kona right angle se chhota hai ya bada.",
+      "en": "However long the arms are, an angle is measured only by its opening. Now think whether a corner narrower than the tester is smaller or bigger than a right angle."
+     },
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Bhuja",
+        "items": [
+         "20 cm lambi"
+        ]
+       },
+       "right": {
+        "title": "Kona",
+        "items": [
+         "tester se tang"
+        ]
+       }
+      }
+     }
     }
    ],
    "ladder": [
-    { "itemId": "c4-maths-ch01-t02-i03", "why": "predict: square corners with 2 cm and 10 cm arms → the same angle" },
-    { "itemId": "c4-maths-ch01-t02-rl-o2", "why": "a pizza tip narrower than a napkin corner → less than a right angle" },
-    { "itemId": "c4-maths-ch01-t02-i05", "why": "long arms opened a little vs a short square corner → the square corner is bigger" },
-    { "itemId": "c4-maths-ch01-t02-i04", "why": "say why longer arms do not make a bigger angle → an angle is the opening" },
-    { "itemId": "c4-maths-ch01-t02-rl-h2", "why": "harder contrast: 12 cm arms opening less vs 2 cm arms opening more" }
+    {
+     "itemId": "c4-maths-ch01-t02-i03",
+     "why": "predict: square corners with 2 cm and 10 cm arms → the same angle"
+    },
+    {
+     "itemId": "c4-maths-ch01-t02-rl-o2",
+     "why": "a pizza tip narrower than a napkin corner → less than a right angle"
+    },
+    {
+     "itemId": "c4-maths-ch01-t02-i05",
+     "why": "long arms opened a little vs a short square corner → the square corner is bigger"
+    },
+    {
+     "itemId": "c4-maths-ch01-t02-i04",
+     "why": "say why longer arms do not make a bigger angle → an angle is the opening"
+    },
+    {
+     "itemId": "c4-maths-ch01-t02-rl-h2",
+     "why": "harder contrast: 12 cm arms opening less vs 2 cm arms opening more"
+    }
    ],
    "remediation": [
     {
@@ -403,24 +1309,72 @@
       "hi": "Bhuja lambi karo, khulna wahi rehta hai. Toh angle bhi wahi rehta hai.",
       "en": "Make the arms longer and the opening stays the same. So the angle stays the same."
      },
-     "board": { "template": "compare@1", "params": { "left": { "title": "Chhoti bhuja", "items": ["wahi khulna"] }, "right": { "title": "Lambi bhuja", "items": ["wahi khulna"] } } },
      "then": {
-      "prompt": { "hi": "Do kainchi ek jitni khuli hain. Ek ki blade 5 cm, doosri ki 15 cm. Kaunsa angle bada hai, ya dono barabar?", "en": "Two scissors open by the same amount; one has 5 cm blades, one 15 cm. Which angle is bigger, or are they equal?" },
+      "prompt": {
+       "hi": "Do kainchi ek jitni khuli hain. Ek ki blade 5 cm, doosri ki 15 cm. Kaunsa angle bada hai, ya dono barabar?",
+       "en": "Two scissors open by the same amount; one has 5 cm blades, one 15 cm. Which angle is bigger, or are they equal?"
+      },
       "key": "dono barabar",
-      "accept": ["barabar", "both equal", "both are equal", "equal", "same", "both same", "dono same"],
+      "accept": [
+       "barabar",
+       "both equal",
+       "both are equal",
+       "equal",
+       "same",
+       "both same",
+       "dono same"
+      ],
       "targets": "c4-maths-ch01-t02-m-arm-length",
       "wrongIfMis": "15 cm wali",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Ek kainchi", "items": ["5 cm blade"] }, "right": { "title": "Doosri kainchi", "items": ["15 cm blade"] } } },
-      "why": { "hi": "dono kainchi ek jitni khuli hain, aur 5 cm ya 15 cm ki blade khulna nahi badalti", "en": "both scissors are opened the same amount, and 5 cm or 15 cm blades do not change the opening" },
-      "simpler": { "hi": "Blade ki lambai angle nahi badalti. Sirf dekho ki dono kainchi kitni khuli hain.", "en": "The blade length does not change the angle. Just look at how wide the two scissors are open." }
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "5 cm blade",
+         "items": [
+          "ek jitni khuli"
+         ]
+        },
+        "right": {
+         "title": "15 cm blade",
+         "items": [
+          "ek jitni khuli"
+         ]
+        }
+       }
+      },
+      "why": {
+       "hi": "dono kainchi ek jitni khuli hain, aur 5 cm ya 15 cm ki blade khulna nahi badalti",
+       "en": "both scissors are opened the same amount, and 5 cm or 15 cm blades do not change the opening"
+      },
+      "simpler": {
+       "hi": "Blade ki lambai angle nahi badalti. Sirf dekho ki dono kainchi kitni khuli hain.",
+       "en": "The blade length does not change the angle. Just look at how wide the two scissors are open."
+      },
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "5 cm blade",
+         "items": [
+          "ek jitni khuli"
+         ]
+        },
+        "right": {
+         "title": "15 cm blade",
+         "items": [
+          "ek jitni khuli"
+         ]
+        }
+       }
+      }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab tak hum kone aur angle dekh rahe the. Ab ek aisi shape dekhenge jismein koi kona hi nahi hota: circle.",
     "en": "So far we looked at corners and angles. Next we look at a shape that has no corner at all: the circle."
-   },
-   "bridgeBoard": { "template": "shape@1", "params": { "shape": "circle", "name": "circle" } }
+   }
   },
   {
    "skillId": "c4-maths-ch01-t02-s3",
@@ -448,63 +1402,173 @@
      "id": "e1",
      "convey": "string compass: one end of the string held still at the centre, pencil at the other end, string kept tight → the pencil stays the string's length from the centre at every point",
      "mustSay": [
-      { "hi": "centre", "en": "centre" },
-      { "hi": "string tight", "en": "string tight" }
+      {
+       "hi": "centre",
+       "en": "centre"
+      },
+      {
+       "hi": "string tight",
+       "en": "string tight"
+      }
      ],
-     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre" } },
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "circle",
+       "centre": "centre"
+      }
+     },
      "point": {
       "hi": "String ka ek sira beech mein haath se dabakar rakho. Yeh point circle ka centre hai, Hindi mein kendra. Doosre sire par pencil baandho aur string tight rakhkar ghumao. Pencil har jagah centre se utni hi door rehti hai jitni string lambi hai.",
       "en": "Hold one end of the string still in the middle with your hand. This point is the circle's centre, kendra in Hindi. Tie a pencil to the other end and turn it with the string kept tight. Everywhere, the pencil stays as far from the centre as the string is long."
      },
      "ask": {
-      "prompt": { "hi": "Is circle ke kinaare ka ek point centre se 4 cm door hai. Kinaare ka koi doosra point centre se 4 cm se kam door hoga, zyada, ya barabar?", "en": "One point on the edge of this circle is 4 cm from the centre. Will another point on the edge be less than, more than, or equal to 4 cm from the centre?" },
+      "prompt": {
+       "hi": "Is circle ke kinaare ka ek point centre se 4 cm door hai. Kinaare ka koi doosra point centre se 4 cm se kam door hoga, zyada, ya barabar?",
+       "en": "One point on the edge of this circle is 4 cm from the centre. Will another point on the edge be less than, more than, or equal to 4 cm from the centre?"
+      },
       "key": "barabar",
-      "accept": ["4 cm", "utna hi", "equal", "same", "barabar door", "4 cm hi"],
-      "why": { "hi": "circle ke kinaare ka har point centre se ek jitna door hota hai, isliye doosra point bhi 4 cm door hai", "en": "every point on a circle's edge is equally far from the centre, so the other point is also 4 cm away" }
+      "accept": [
+       "4 cm",
+       "utna hi",
+       "equal",
+       "same",
+       "barabar door",
+       "4 cm hi"
+      ],
+      "why": {
+       "hi": "circle ke kinaare ka har point centre se ek jitna door hota hai, isliye doosra point bhi 4 cm door hai",
+       "en": "every point on a circle's edge is equally far from the centre, so the other point is also 4 cm away"
+      },
+      "answerBoard": {
+       "template": "shape@1",
+       "params": {
+        "shape": "circle",
+        "centre": "centre",
+        "radius": "4 cm"
+       }
+      }
      },
-     "simpler": { "hi": "String ki lambai kabhi nahi badalti. Isliye pencil har jagah centre se utni hi door rehti hai.", "en": "The string's length never changes. So the pencil stays the same distance from the centre everywhere." }
+     "simpler": {
+      "hi": "String ki lambai kabhi nahi badalti. Isliye pencil har jagah centre se utni hi door rehti hai.",
+      "en": "The string's length never changes. So the pencil stays the same distance from the centre everywhere."
+     }
     },
     {
      "id": "e2",
      "convey": "bangle: every point the same distance from its centre → a circle; egg: longer one way, the distance changes → round, but not a circle",
      "mustSay": [
-      { "hi": "barabar door", "en": "equally far" },
-      { "hi": "circle nahi", "en": "not a circle" }
+      {
+       "hi": "barabar door",
+       "en": "equally far"
+      },
+      {
+       "hi": "circle nahi",
+       "en": "not a circle"
+      }
      ],
-     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "radius": "barabar door", "name": "chudi" } },
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "circle",
+       "centre": "centre",
+       "radius": "barabar door",
+       "name": "chudi"
+      }
+     },
      "point": {
       "hi": "Chudi ke centre se uska har point barabar door hai, isliye chudi circle hai. Anda ek taraf lamba hai, centre se doori badalti rehti hai. Isliye anda gol toh hai, par circle nahi.",
       "en": "Every point of the bangle is equally far from its centre, so the bangle is a circle. An egg is longer one way; the distance from the centre keeps changing. So an egg is round, but not a circle."
      },
      "ask": {
-      "prompt": { "hi": "Ek roti ke centre se kinaara ek taraf 8 cm hai aur doosri taraf 10 cm. Kya yeh roti circle hai, haan ya nahi?", "en": "From the centre of a roti, the edge is 8 cm away on one side and 10 cm on the other. Is this roti a circle, yes or no?" },
+      "prompt": {
+       "hi": "Ek roti ke centre se kinaara ek taraf 8 cm hai aur doosri taraf 10 cm. Kya yeh roti circle hai, haan ya nahi?",
+       "en": "From the centre of a roti, the edge is 8 cm away on one side and 10 cm on the other. Is this roti a circle, yes or no?"
+      },
       "key": "No",
-      "accept": ["nahi", "nahin", "no", "nahi, doori barabar nahi", "no, the distances are not equal"],
+      "accept": [
+       "nahi",
+       "nahin",
+       "no",
+       "nahi, doori barabar nahi",
+       "no, the distances are not equal"
+      ],
       "targets": "c4-maths-ch01-t02-m-round-is-circle",
       "wrongIfMis": "Yes",
-      "why": { "hi": "roti ka kinaara centre se ek taraf 8 cm aur doosri taraf 10 cm hai, doori barabar nahi", "en": "the edge is 8 cm from the centre one way and 10 cm the other, so the distances are not equal" }
+      "why": {
+       "hi": "roti ka kinaara centre se ek taraf 8 cm aur doosri taraf 10 cm hai, toh roti circle nahi",
+       "en": "the roti's edge is 8 cm from the centre one way, 10 cm the other, so it is not a circle"
+      },
+      "answerBoard": {
+       "template": "shape@1",
+       "params": {
+        "shape": "circle",
+        "centre": "centre",
+        "radius": "8 cm",
+        "name": "roti: circle nahi"
+       }
+      }
      },
-     "simpler": { "hi": "Circle mein centre se har kinaara ek jitna door hota hai. Anda ek taraf lamba hai, isliye uski doori badalti rehti hai.", "en": "In a circle every point of the edge is the same distance from the centre. An egg is longer one way, so its distance keeps changing." }
+     "simpler": {
+      "hi": "Circle mein centre se har kinaara ek jitna door hota hai. Anda ek taraf lamba hai, isliye uski doori badalti rehti hai.",
+      "en": "In a circle every point of the edge is the same distance from the centre. An egg is longer one way, so its distance keeps changing."
+     }
     },
     {
      "id": "e3",
      "convey": "playground circle: rope 3 m tied to a peg, chalk at the other end, rope kept tight → every chalk mark is 3 m from the peg; a mark at another distance is not on this circle",
      "mustSay": [
-      { "hi": "rassi tight", "en": "rope tight" },
-      { "hi": "3 m", "en": "3 m" }
+      {
+       "hi": "rassi tight",
+       "en": "rope tight"
+      },
+      {
+       "hi": "3 m",
+       "en": "3 m"
+      }
      ],
-     "board": { "template": "measured@1", "params": { "shape": "circle", "unit": "m", "r": 3 } },
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "circle",
+       "unit": "m",
+       "r": 3
+      }
+     },
      "point": {
       "hi": "Khoonte se 3 m ki rassi baandho, doosre sire par chalk. Rassi tight rakhkar chalo, toh chalk ka har nishaan khoonte se 3 m door aata hai. Isliye yeh sahi circle banta hai.",
       "en": "Tie a 3 m rope to a peg, with chalk at the other end. Walk round keeping the rope tight, and every chalk mark comes 3 m from the peg. That is why this makes a true circle."
      },
      "ask": {
-      "prompt": { "hi": "Is circle ke paas ek nishaan khoonte se 4 m door hai. Kya woh nishaan is circle par hai, haan ya nahi?", "en": "Near this circle there is a mark 4 m from the peg. Is that mark on this circle, yes or no?" },
+      "prompt": {
+       "hi": "Is circle ke paas ek nishaan khoonte se 4 m door hai. Kya woh nishaan is circle par hai, haan ya nahi?",
+       "en": "Near this circle there is a mark 4 m from the peg. Is that mark on this circle, yes or no?"
+      },
       "key": "No",
-      "accept": ["nahi", "nahin", "no", "nahi, woh 4 m door hai", "no, it is 4 m away"],
-      "why": { "hi": "is circle ka har nishaan khoonte se 3 m door hai, par woh nishaan 4 m door hai", "en": "every mark of this circle is 3 m from the peg, but that mark is 4 m away" }
+      "accept": [
+       "nahi",
+       "nahin",
+       "no",
+       "nahi, woh 4 m door hai",
+       "no, it is 4 m away"
+      ],
+      "why": {
+       "hi": "is circle ka har nishaan khoonte se 3 m door hai, par woh nishaan 4 m door hai",
+       "en": "every mark of this circle is 3 m from the peg, but that mark is 4 m away"
+      },
+      "answerBoard": {
+       "template": "measured@1",
+       "params": {
+        "shape": "circle",
+        "unit": "m",
+        "r": 3
+       }
+      }
      },
-     "simpler": { "hi": "Rassi 3 m ki hai, toh har chalk nishaan khoonte se 3 m door aata hai. Circle par sirf wahi nishaan hain jo 3 m door hain.", "en": "The rope is 3 m long, so every chalk mark comes 3 m from the peg. Only marks that are 3 m away are on the circle." }
+     "simpler": {
+      "hi": "Rassi 3 m ki hai, toh har chalk nishaan khoonte se 3 m door aata hai. Circle par sirf wahi nishaan hain jo 3 m door hain.",
+      "en": "The rope is 3 m long, so every chalk mark comes 3 m from the peg. Only marks that are 3 m away are on the circle."
+     }
     }
    ],
    "workedExample": {
@@ -513,34 +1577,94 @@
      "en": "For a rangoli, Pooja ties chalk to one end of a 50 cm string. Holding the other end at the centre and keeping the string tight, she draws a circle. Then she draws a straight line from one edge, through the centre, to the other edge. How long is that line?"
     },
     "givens": [
-     { "hi": "string 50 cm lambi hai", "en": "the string is 50 cm long" },
-     { "hi": "string tight, ek sira centre par", "en": "the string is tight, one end at the centre" },
-     { "hi": "line kinaare se centre se hote hue doosre kinaare tak", "en": "the line goes edge → centre → other edge" }
+     {
+      "hi": "50 cm ki tight string ka ek sira centre par hai, aur line centre se hokar ek kinaare se doosre kinaare tak jaati hai.",
+      "en": "A tight 50 cm string has one end at the centre, and the line runs from one edge through the centre to the other edge."
+     }
     ],
-    "find": { "hi": "centre se hokar jaane wali line ki lambai", "en": "the length of the line through the centre" },
+    "find": {
+     "hi": "centre se hokar jaane wali line ki lambai",
+     "en": "the length of the line through the centre"
+    },
     "steps": [
      {
-      "do": { "hi": "Pehle dekho kinaara centre se kitni door hai", "en": "First see how far the edge is from the centre" },
+      "do": {
+       "hi": "Pehle dekho kinaara centre se kitni door hai",
+       "en": "First see how far the edge is from the centre"
+      },
       "result": "har point centre se 50 cm door",
-      "why": { "hi": "tight string har point ko centre se 50 cm door rakhti hai", "en": "the tight string keeps every point 50 cm from the centre" },
-      "simpler": { "hi": "String tight hai aur 50 cm lambi hai. Isliye kinaare ka har point centre se 50 cm door hai.", "en": "The string is tight and 50 cm long. So every point on the edge is 50 cm from the centre." }
+      "why": {
+       "hi": "tight string har point ko centre se 50 cm door rakhti hai",
+       "en": "the tight string keeps every point 50 cm from the centre"
+      },
+      "simpler": {
+       "hi": "String tight hai aur 50 cm lambi hai. Isliye kinaare ka har point centre se 50 cm door hai.",
+       "en": "The string is tight and 50 cm long. So every point on the edge is 50 cm from the centre."
+      }
      },
      {
-      "do": { "hi": "Ab line ke dono taraf dekho, centre ke is paar aur us paar", "en": "Now look at the line on both sides of the centre" },
+      "do": {
+       "hi": "Ab line ke dono taraf dekho, centre ke is paar aur us paar",
+       "en": "Now look at the line on both sides of the centre"
+      },
       "result": "kinaare se centre tak 50 cm, centre se doosre kinaare tak 50 cm",
-      "why": { "hi": "line centre se hokar ek kinaare se doosre kinaare tak jaati hai", "en": "the line goes through the centre from one edge to the other" },
-      "simpler": { "hi": "Line centre se hokar jaati hai. Centre ke ek taraf kinaare tak 50 cm hai, aur doosri taraf bhi 50 cm.", "en": "The line passes through the centre. On one side it is 50 cm to the edge, and on the other side also 50 cm." }
+      "why": {
+       "hi": "line centre se hokar ek kinaare se doosre kinaare tak jaati hai",
+       "en": "the line goes through the centre from one edge to the other"
+      },
+      "simpler": {
+       "hi": "Line centre se hokar jaati hai. Centre ke ek taraf kinaare tak 50 cm hai, aur doosri taraf bhi 50 cm.",
+       "en": "The line passes through the centre. On one side it is 50 cm to the edge, and on the other side also 50 cm."
+      }
      }
     ],
     "yourStep": {
-     "prompt": { "hi": "Ab dono taraf ki lambai jodo. Poori line kitni lambi hai?", "en": "Now add the lengths on both sides. How long is the whole line?" },
+     "prompt": {
+      "hi": "Ab dono taraf ki lambai jodo. Poori line kitni lambi hai?",
+      "en": "Now add the lengths on both sides. How long is the whole line?"
+     },
      "key": "100 cm",
-     "accept": ["100", "1 m", "1 metre", "sau cm", "100 centimetre", "100 centimetres"],
-     "simpler": { "hi": "Line ke do hisse hain, aur har hissa 50 cm ka hai. Bas dono hisson ko jodo.", "en": "The line has two parts, and each part is 50 cm. Just add the two parts." }
+     "accept": [
+      "100",
+      "1 m",
+      "1 metre",
+      "sau cm",
+      "100 centimetre",
+      "100 centimetres"
+     ],
+     "simpler": {
+      "hi": "Line mein centre ke dono taraf 50 cm aata hai. Bas dono lambaiyan jodo.",
+      "en": "The line has 50 cm on each side of the centre. Just add the two lengths."
+     },
+     "why": {
+      "hi": "kinaare se centre tak 50 cm aur centre se doosre kinaare tak 50 cm hai, 50 + 50 = 100",
+      "en": "the edge is 50 cm from the centre, and the other edge is 50 cm more, 50 + 50 = 100"
+     },
+     "answerBoard": {
+      "template": "shape@1",
+      "params": {
+       "shape": "circle",
+       "centre": "centre",
+       "diameter": "100 cm"
+      }
+     }
     },
-    "answer": { "hi": "poori line 100 cm lambi hai", "en": "the whole line is 100 cm long" },
-    "why": { "hi": "is line mein centre se kinaare tak ki 50 cm doori do baar aati hai, 50 + 50 = 100", "en": "the line holds the 50 cm centre-to-edge distance twice, 50 + 50 = 100" },
-    "board": { "template": "measured@1", "params": { "shape": "circle", "unit": "cm", "r": 50 } }
+    "answer": {
+     "hi": "poori line 100 cm lambi hai",
+     "en": "the whole line is 100 cm long"
+    },
+    "why": {
+     "hi": "is line mein centre se kinaare tak ki 50 cm doori do baar aati hai, 50 + 50 = 100",
+     "en": "the line holds the 50 cm centre-to-edge distance twice, 50 + 50 = 100"
+    },
+    "board": {
+     "template": "measured@1",
+     "params": {
+      "shape": "circle",
+      "unit": "cm",
+      "r": 50
+     }
+    }
    },
    "checks": [
     {
@@ -550,12 +1674,40 @@
       "en": "An egg looks round. From its centre the edge is 3 cm away on one side and 4 cm on the other. Is the egg a circle?"
      },
      "key": "No",
-     "accept": ["nahi", "nahin", "no", "nahi, doori barabar nahi", "no, the distances differ"],
+     "accept": [
+      "nahi",
+      "nahin",
+      "no",
+      "nahi, doori barabar nahi",
+      "no, the distances differ"
+     ],
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
      "wrongIfMis": "Yes",
-     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "radius": "3 cm" } },
-     "why": { "hi": "ande ka kinaara centre se ek taraf 3 cm aur doosri taraf 4 cm hai, doori barabar nahi", "en": "the egg's edge is 3 cm from the centre one way and 4 cm the other, so the distances are not equal" },
-     "simpler": { "hi": "Circle mein centre se kinaara har taraf ek jitna door hota hai. Ande mein ek taraf 3 cm hai aur doosri taraf 4 cm.", "en": "In a circle the edge is the same distance from the centre on every side. The egg has 3 cm on one side and 4 cm on the other." }
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "circle",
+       "centre": "centre",
+       "radius": "3 cm"
+      }
+     },
+     "why": {
+      "hi": "ande ka kinaara centre se ek taraf 3 cm aur doosri taraf 4 cm hai, toh anda circle nahi",
+      "en": "the egg's edge is 3 cm from the centre one way, 4 cm the other, so it is not a circle"
+     },
+     "simpler": {
+      "hi": "Ande ke kinaare ki doori dekho: ek taraf 3 cm, doosri taraf 4 cm. Circle mein yeh har taraf ek jitni hoti hai.",
+      "en": "Look at the egg's edge: 3 cm on one side, 4 cm on the other. In a circle it is the same on every side."
+     },
+     "answerBoard": {
+      "template": "shape@1",
+      "params": {
+       "shape": "circle",
+       "centre": "centre",
+       "radius": "3 cm",
+       "name": "anda: circle nahi"
+      }
+     }
     },
     {
      "id": "c2",
@@ -564,12 +1716,40 @@
       "en": "{friend} drew a round loop by hand. From its centre the edge is 5 cm away in some places and 6 cm in others. Is this loop a circle?"
      },
      "key": "No",
-     "accept": ["nahi", "nahin", "no", "nahi, doori barabar nahi", "no, the distances differ"],
+     "accept": [
+      "nahi",
+      "nahin",
+      "no",
+      "nahi, doori barabar nahi",
+      "no, the distances differ"
+     ],
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
      "wrongIfMis": "Yes",
-     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "radius": "kahin 5 cm" } },
-     "why": { "hi": "loop ka kinaara centre se kahin 5 cm aur kahin 6 cm hai, doori ek jaisi nahi", "en": "the loop's edge is 5 cm from the centre in places and 6 cm in others, so the distance changes" },
-     "simpler": { "hi": "Circle mein har taraf centre se doori ek jaisi hoti hai. Is loop mein kahin 5 cm hai aur kahin 6 cm.", "en": "In a circle the distance from the centre is the same on every side. This loop has 5 cm in some places and 6 cm in others." }
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "circle",
+       "centre": "centre",
+       "radius": "kahin 5 cm"
+      }
+     },
+     "why": {
+      "hi": "loop ka kinaara centre se kahin 5 cm aur kahin 6 cm hai, toh loop circle nahi",
+      "en": "the loop's edge is 5 cm from the centre in places and 6 cm in others, so it is not a circle"
+     },
+     "simpler": {
+      "hi": "Is loop mein kahin 5 cm hai aur kahin 6 cm. Sach ke circle mein centre se doori har jagah ek jaisi rehti hai.",
+      "en": "This loop has 5 cm in places and 6 cm in others. In a true circle the distance from the centre stays the same everywhere."
+     },
+     "answerBoard": {
+      "template": "shape@1",
+      "params": {
+       "shape": "circle",
+       "centre": "centre",
+       "radius": "kahin 5 cm",
+       "name": "loop: circle nahi"
+      }
+     }
     },
     {
      "id": "c3",
@@ -578,20 +1758,62 @@
       "en": "A bangle and an egg both look round. Which of them is a circle: the bangle or the egg?"
      },
      "key": "chudi",
-     "accept": ["bangle", "the bangle", "chudi hai", "chudi wala"],
+     "accept": [
+      "bangle",
+      "the bangle",
+      "chudi hai",
+      "chudi wala"
+     ],
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
      "wrongIfMis": "dono",
-     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "name": "circle" } },
-     "why": { "hi": "chudi ka har point centre se barabar door hai, jabki anda ek taraf lamba hai", "en": "every point of the bangle is equally far from its centre, while the egg is longer one way" },
-     "simpler": { "hi": "Circle wahi hai jiska har kinaara centre se ek jitna door ho. Anda ek taraf lamba hota hai.", "en": "A circle is the one whose edge is the same distance from the centre everywhere. An egg is longer one way." }
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "circle",
+       "centre": "centre",
+       "name": "circle"
+      }
+     },
+     "why": {
+      "hi": "chudi ka har point centre se barabar door hai, jabki anda ek taraf lamba hai",
+      "en": "every point of the bangle is equally far from its centre, while the egg is longer one way"
+     },
+     "simpler": {
+      "hi": "Circle wahi hai jiska har kinaara centre se ek jitna door ho. Anda ek taraf lamba hota hai.",
+      "en": "A circle is the one whose edge is the same distance from the centre everywhere. An egg is longer one way."
+     },
+     "answerBoard": {
+      "template": "shape@1",
+      "params": {
+       "shape": "circle",
+       "centre": "centre",
+       "radius": "barabar door",
+       "name": "chudi"
+      }
+     }
     }
    ],
    "ladder": [
-    { "itemId": "c4-maths-ch01-t02-i08", "why": "the still point of the string → the centre" },
-    { "itemId": "c4-maths-ch01-t02-i09", "why": "5 cm tight string → every point 5 cm from the pin" },
-    { "itemId": "c4-maths-ch01-t02-i10", "why": "egg vs bangle → only equal distance from the centre makes a circle" },
-    { "itemId": "c4-maths-ch01-t02-i11", "why": "why the 2 m rope must stay tight → the same distance from the peg" },
-    { "itemId": "c4-maths-ch01-t02-rl-h3", "why": "harder: 6 cm string, marks at 6, 7 and 6 cm → the 7 cm mark is off the circle" }
+    {
+     "itemId": "c4-maths-ch01-t02-i08",
+     "why": "the still point of the string → the centre"
+    },
+    {
+     "itemId": "c4-maths-ch01-t02-i09",
+     "why": "5 cm tight string → every point 5 cm from the pin"
+    },
+    {
+     "itemId": "c4-maths-ch01-t02-i10",
+     "why": "egg vs bangle → only equal distance from the centre makes a circle"
+    },
+    {
+     "itemId": "c4-maths-ch01-t02-i11",
+     "why": "why the 2 m rope must stay tight → the same distance from the peg"
+    },
+    {
+     "itemId": "c4-maths-ch01-t02-rl-h3",
+     "why": "harder: 6 cm string, marks at 6, 7 and 6 cm → the 7 cm mark is off the circle"
+    }
    ],
    "remediation": [
     {
@@ -605,16 +1827,46 @@
       "hi": "Circle mein centre se har point ki doori barabar hoti hai. Oval mein yeh doori badalti hai, isliye oval circle nahi.",
       "en": "In a circle every point is the same distance from the centre. In an oval it changes, so an oval is not a circle."
      },
-     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "radius": "barabar door", "name": "string se circle" } },
      "then": {
-      "prompt": { "hi": "Ek plate ke centre se kinaara ek taraf 9 cm aur doosri taraf 11 cm hai. Kya plate circle hai?", "en": "From the centre of a plate, the edge is 9 cm on one side and 11 cm on the other. Is the plate a circle?" },
+      "prompt": {
+       "hi": "Ek plate ke centre se kinaara ek taraf 9 cm aur doosri taraf 11 cm hai. Kya plate circle hai?",
+       "en": "From the centre of a plate, the edge is 9 cm on one side and 11 cm on the other. Is the plate a circle?"
+      },
       "key": "No",
-      "accept": ["nahi", "nahin", "no", "nahi, doori barabar nahi", "no, the distances differ"],
+      "accept": [
+       "nahi",
+       "nahin",
+       "no",
+       "nahi, doori barabar nahi",
+       "no, the distances differ"
+      ],
       "targets": "c4-maths-ch01-t02-m-round-is-circle",
       "wrongIfMis": "Yes",
-      "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "radius": "9 cm" } },
-      "why": { "hi": "plate ka kinaara centre se ek taraf 9 cm aur doosri taraf 11 cm hai, doori barabar nahi", "en": "the plate's edge is 9 cm from the centre one way and 11 cm the other, so the distances differ" },
-      "simpler": { "hi": "Circle mein centre se kinaara har taraf ek jitna door hota hai. Plate mein ek taraf 9 cm hai aur doosri taraf 11 cm.", "en": "In a circle the edge is the same distance from the centre on every side. The plate has 9 cm on one side and 11 cm on the other." }
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "circle",
+        "centre": "centre",
+        "radius": "9 cm"
+       }
+      },
+      "why": {
+       "hi": "plate ka kinaara centre se ek taraf 9 cm aur doosri taraf 11 cm hai, toh plate circle nahi",
+       "en": "the plate's edge is 9 cm from the centre one way and 11 cm the other, so it is not a circle"
+      },
+      "simpler": {
+       "hi": "Circle mein centre se kinaara har taraf ek jitna door hota hai. Plate mein ek taraf 9 cm hai aur doosri taraf 11 cm.",
+       "en": "In a circle the edge is the same distance from the centre on every side. The plate has 9 cm on one side and 11 cm on the other."
+      },
+      "answerBoard": {
+       "template": "shape@1",
+       "params": {
+        "shape": "circle",
+        "centre": "centre",
+        "radius": "9 cm",
+        "name": "plate: circle nahi"
+       }
+      }
      }
     }
    ],

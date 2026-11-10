@@ -1,7 +1,7 @@
 {
  "topicId": "c6-maths-ch05-t01",
  "classLevel": 6,
- "version": 2.2,
+ "version": 2.3,
  "status": "draft",
  "terms": [
   { "hi": "factor (gunankhand)", "en": "factor" },
@@ -13,7 +13,7 @@
   { "hi": "common multiple (saajha gunaj)", "en": "common multiple" },
   { "hi": "pehla common multiple", "en": "first (lowest) common multiple" },
   { "hi": "sabse bada common factor", "en": "highest common factor" }
- ],
+ ], "joints": { "asidePark": [{"hi": "Achha, {aside} wali baat yaad rakhti hoon. Pehle yeh jodiyan poori kar lete hain.", "en": "Okay, I'll remember the {aside} bit. First let's finish these pairs."}, {"hi": "{aside} ki baat thodi der mein karenge. Abhi yeh pahada aage badhaate hain.", "en": "We'll talk about {aside} in a little while. Right now let's carry this times table on."}, {"hi": "Wah, {aside}! Use sambhaal ke rakhti hoon. Chalo, pehle factors gin lete hain.", "en": "Oh, {aside}! I'll keep that safe. Let's count the factors first."}], "asideReturn": [{"hi": "Ab tumhari baat: tumne kaha tha {said}. Uske baare mein thoda aur batao.", "en": "Now your thing: you said {said}. Tell me a bit more about it."}, {"hi": "Factors ho gaye. Ab woh {said} wali baat sunao.", "en": "The factors are done. Now tell me about {said}."}, {"hi": "Tumne {said} bataya tha na? Usmein sabse achha kya laga?", "en": "You told me {said}, didn't you? What did you like best about it?"}], "hindiSwitch": [{"hi": "Theek hai, ab Hindi mein factors dhoondhte hain.", "en": "Sure, let's find the factors in English now."}, {"hi": "Achha, ab se Hindi mein samjhaati hoon. Numbers wahi rahenge.", "en": "Okay, I'll explain in English from now. The numbers stay the same."}, {"hi": "Haan, pahade ab Hindi mein bolte hain.", "en": "Yes, let's say the times tables in English."}], "askAgain": [{"hi": "Mujhe theek se sunai nahi diya. Kaunsa number, ek baar phir bolo.", "en": "I didn't quite hear that. Which number? Say it once more."}, {"hi": "Thoda sa chhoot gaya. Apna jawab dobara batao na.", "en": "I missed a bit of that. Tell me your answer again."}, {"hi": "Awaaz saaf nahi aayi. Aaram se number phir se bolo.", "en": "Your voice didn't come through clearly. Say the number again, slowly."}] },
  "skills": [
   {
    "skillId": "c6-maths-ch05-t01-s1",
@@ -54,7 +54,7 @@
       "prompt": { "hi": "Inhi 12 tiles ko 2 rows mein barabar lagao. Har row mein kitni tiles aayengi?", "en": "Lay these same 12 tiles in 2 equal rows. How many tiles go in each row?" },
       "key": "6",
       "accept": ["6 tiles", "six", "chhah", "chhe"],
-      "why": { "hi": "12 ÷ 2 = 6, aur ek bhi tile nahi bachti", "en": "12 ÷ 2 = 6, with not one tile left over" }
+      "why": { "hi": "12 ÷ 2 = 6, aur ek bhi tile nahi bachti", "en": "12 ÷ 2 = 6, with not one tile left over" }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 2, "each": 6, "title": "12 ÷ 2 = 6"} }
      },
      "simpler": { "hi": "12 tiles 3 rows mein 4-4 karke lag gayi, ek bhi nahi bachi. Jo number 12 ko bina kuch bachaye baant de, woh 12 ka factor hai.", "en": "The 12 tiles fit in 3 rows of 4, with none left over. A number that shares 12 with nothing left over is a factor of 12." }
     },
@@ -77,7 +77,7 @@
       "accept": ["five", "paanch", "5 factors"],
       "targets": "c6-maths-ch05-t01-m-miss-ends",
       "wrongIfMis": "3",
-      "why": { "hi": "jodiyon se 1, 2, 4, 8 aur 16, yaani 5 factors milte hain; 4 ek hi baar gina jaata hai", "en": "the pairs give 1, 2, 4, 8 and 16, so 5 factors, with the 4 counted only once" }
+      "why": { "hi": "16 ki jodiyan 1, 2, 4, 8 aur 16 deti hain, 1 aur 16 hamesha; 4 ek hi baar, yaani 5 factors", "en": "the pairs give 1, 2, 4, 8 and 16, so 5 factors, with the 4 counted only once" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "16 ki jodiyan", "items": ["1 × 16", "2 × 8", "4 × 4"]}, "right": {"title": "Hamesha factor", "items": ["1 aur 16"]}} }
      },
      "simpler": { "hi": "16 ko do numbers ke guna se banao: 1 × 16, 2 × 8, 4 × 4. Har jodi ke dono numbers factor hain, bas 4 ko ek hi baar gino.", "en": "Make 16 as two numbers multiplied: 1 × 16, 2 × 8, 4 × 4. Both numbers of each pair are factors; just count the 4 once." }
     },
@@ -100,7 +100,7 @@
       "accept": ["twenty", "bees"],
       "targets": "c6-maths-ch05-t01-m-factor-multiple",
       "wrongIfMis": "2",
-      "why": { "hi": "20 = 4 × 5, toh 20 4 ke pahade mein hai, par 2 toh 4 se bhi chhota hai", "en": "20 = 4 × 5, so 20 is in the 4 times table, but 2 is even smaller than 4" }
+      "why": { "hi": "20 = 4 × 5, toh 20 4 ke pahade mein hai, par 2 toh 4 se bhi chhota hai", "en": "20 = 4 × 5, so 20 is in the 4 times table, but 2 is even smaller than 4" }, "answerBoard": { "template": "number-line-hop@1", "params": {"start": 0, "hops": [4, 4, 4]} }
      },
      "simpler": { "hi": "4 ke multiples 4 ke pahade mein aate hain: 4, 8, 12, aur aage. Koi bhi multiple 4 se chhota nahi hota.", "en": "Multiples of 4 are the numbers in the 4 times table: 4, 8, 12 and on. No multiple is smaller than 4." }
     }
@@ -144,7 +144,7 @@
      "prompt": { "hi": "Paanchwa multiple, yaani 28 × 5, kitna hai?", "en": "The fifth multiple, that is 28 × 5, is how much?" },
      "key": "140",
      "accept": ["one hundred forty", "ek sau chaalis"],
-     "simpler": { "hi": "Pichhla multiple 112 tha. Usmein ek baar aur 28 jod do.", "en": "The last multiple was 112. Add one more 28 to it." }
+     "simpler": { "hi": "Pichhla multiple 112 tha. Usmein ek baar aur 28 jod do.", "en": "The last multiple was 112. Add one more 28 to it." }, "why": { "hi": "28 ki jodiyan 2 × 14 jaisi hain, par pahada 28, 56, 84, 112 ke baad 28 × 5 = 140 hai", "en": "the 28 times table goes 28, 56, 84, 112, and then 28 × 5 = 140" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "28 ki jodiyan", "items": ["1 × 28", "2 × 14", "4 × 7"]}, "right": {"title": "28 ke multiples", "items": ["28", "56", "84", "112"]}} }
     },
     "answer": {
      "hi": "28 ke factors 1, 2, 4, 7, 14 aur 28 hain, aur pehle paanch multiples 28, 56, 84, 112 aur 140 hain",
@@ -169,7 +169,7 @@
      "wrongIfMis": "6",
      "board": { "template": "shade-grid@1", "params": { "rows": 5, "cols": 6, "shade": 0 } },
      "why": { "hi": "30 ki jodiyan 1 × 30, 2 × 15, 3 × 10 aur 5 × 6 hain, yaani 8 factors", "en": "the pairs of 30 are 1 × 30, 2 × 15, 3 × 10 and 5 × 6, which is 8 factors" },
-     "simpler": { "hi": "30 ki jodiyan likho, jaise 5 × 6, aur sabse chhoti jodi se shuru karo. Phir saari jodiyon ke numbers gino.", "en": "Write the pairs of 30, like 5 × 6, starting with the smallest pair. Then count the numbers in all the pairs." }
+     "simpler": { "hi": "30 ki jodiyan likho, jaise 5 × 6, aur sabse chhoti jodi se shuru karo. Phir saari jodiyon ke numbers gino.", "en": "Write the pairs of 30, like 5 × 6, starting with the smallest pair. Then count the numbers in all the pairs." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 5, "each": 6, "title": "8 factors"} }
     },
     {
      "id": "c2",
@@ -182,8 +182,8 @@
      "targets": "c6-maths-ch05-t01-m-factor-multiple",
      "wrongIfMis": "factors",
      "board": { "template": "compare@1", "params": { "left": { "title": "9 ke factors", "items": ["9, 18, 27"] }, "right": { "title": "Asal mein", "items": ["factors ya multiples"] } } },
-     "why": { "hi": "9, 18 aur 27 sab 9 ke pahade mein hain, aur 18 ya 27 se 9 poora bhaag nahi hota", "en": "9, 18 and 27 are all in the 9 times table, and 18 or 27 cannot divide 9 exactly" },
-     "simpler": { "hi": "Factor 9 se bada nahi hota, woh 9 ko poora bhaag deta hai. Ab dekho 18 aur 27, 9 se bade hain ya chhote.", "en": "A factor is never bigger than 9; it divides 9 exactly. Now see whether 18 and 27 are bigger or smaller than 9." }
+     "why": { "hi": "asal mein 9, 18 aur 27 sab 9 ke pahade mein hain; 18 ya 27 se 9 poora bhaag nahi hota", "en": "9, 18 and 27 are all in the 9 times table, and 18 or 27 cannot divide 9 exactly" },
+     "simpler": { "hi": "Factor 9 se bada nahi hota, woh 9 ko poora bhaag deta hai. Ab dekho 18 aur 27, 9 se bade hain ya chhote.", "en": "A factor is never bigger than 9; it divides 9 exactly. Now see whether 18 and 27 are bigger or smaller than 9." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "9 ke factors", "items": ["9, 18, 27"]}, "right": {"title": "Asal mein", "items": ["factors ya multiples"]}} }
     },
     {
      "id": "c3",
@@ -197,7 +197,7 @@
      "wrongIfMis": "16",
      "board": { "template": "shade-grid@1", "params": { "rows": 2, "cols": 4, "shade": 0 } },
      "why": { "hi": "8 khud ko poora bhaag karta hai aur 8 × 1 = 8 hai; 1 multiple nahi, 16 factor nahi", "en": "8 divides itself exactly and 8 × 1 = 8; 1 is not a multiple, 16 is not a factor" },
-     "simpler": { "hi": "Factor is number ko poora bhaag deta hai, aur multiple iske pahade mein aata hai. Teeno options ko dono baaton par parkho.", "en": "A factor divides this number exactly, and a multiple is in its times table. Test all the options against both rules." }
+     "simpler": { "hi": "Factor is number ko poora bhaag deta hai, aur multiple iske pahade mein aata hai. Teeno options ko dono baaton par parkho.", "en": "A factor divides this number exactly, and a multiple is in its times table. Test all the options against both rules." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 2, "each": 4, "title": "8 × 1 = 8"} }
     }
    ],
    "ladder": [
@@ -211,35 +211,17 @@
     {
      "targets": "c6-maths-ch05-t01-m-factor-multiple",
      "move": "array vs times table on the same number: 12 tiles as a 3 by 4 rectangle → the sides are factors (small, inside 12); rows of 12 added on and on → 12, 24, 36 … are multiples (from 12 upward, never ending); ask which list can go on forever",
-     "say": {
-      "hi": "Factor 12 ko poora bhaag karta hai, jaise 12 tiles ki 3 rows aur 4 columns. Multiple 12 ke pahade mein aata hai: 12, 24, 36, aur aage badhta hi rehta hai.",
-      "en": "A factor divides 12 exactly, like 12 tiles in 3 rows and 4 columns. A multiple is in the 12 times table: 12, 24, 36, and it keeps on growing."
-     },
-     "simpler": { "hi": "Factor 12 ko poora bhaag karta hai, jaise 3 aur 4. Multiples 12 ke pahade mein hote hain: 12, 24, 36, aur badhte hi rehte hain.", "en": "A factor divides 12 exactly, like 3 and 4. Multiples are in the 12 times table: 12, 24, 36, and they keep growing." },
-     "board": { "template": "shade-grid@1", "params": { "rows": 3, "cols": 4, "shade": 0 } },
-     "then": {
-      "prompt": {
-       "hi": "0 se 10-10 ki chhalaang: 10, 20, 30. 5 ya 30, inmein se 10 ka factor kaunsa hai?",
-       "en": "Hops of 10 from 0: 10, 20, 30. Which of 5 or 30 is a factor of 10?"
-      },
-      "key": "5",
-      "accept": ["five", "paanch"],
-      "targets": "c6-maths-ch05-t01-m-factor-multiple",
-      "wrongIfMis": "30",
-      "board": { "template": "compare@1", "params": { "left": { "title": "10-10 ki chhalaang", "items": ["10, 20, 30"] }, "right": { "title": "10 ka factor", "items": ["kaunsa"] } } },
-      "why": { "hi": "10 ÷ 5 = 2 poora aata hai, par 30 toh 10 ka multiple hai, factor nahi", "en": "10 ÷ 5 = 2 exactly, but 30 is a multiple of 10, not a factor" },
-      "simpler": { "hi": "Factor 10 ko poora bhaag deta hai, isliye woh 10 se bada nahi ho sakta. Dekho 30, 10 se bada hai ya chhota.", "en": "A factor divides 10 exactly, so it cannot be bigger than 10. See whether 30 is bigger or smaller than 10." }
-     }
+     "say": { "hi": "Factor number ko poora bhaag karta hai, isliye woh us number se bada nahi hota. Multiple uske pahade mein aata hai, jaise yeh 6-6 ki chhalaang: 6 se shuru hokar badhti hi jaati hai.", "en": "A factor divides a number exactly, so it is never bigger than that number. A multiple is in its times table, like these hops of 6: they start at 6 and keep growing." },
+     "simpler": { "hi": "6 ka factor 6 ko poora bhaag karta hai. 6-6 ki chhalaang 6 ke multiples par utarti hai, jo badhte jaate hain.", "en": "A factor of 6 divides 6 exactly. The hops of 6 land on multiples of 6, which keep growing." },
+     
+     "then": { "prompt": {"hi": "0 se 6-6 ki chhalaang: 6, 12. 3 ya 12, inmein se 6 ka factor kaunsa hai?", "en": "Hops of 6 from 0: 6, 12. Which of 3 or 12 is a factor of 6?"}, "key": "3", "accept": ["three", "teen"], "targets": "c6-maths-ch05-t01-m-factor-multiple", "wrongIfMis": "12", "board": {"template": "number-line-hop@1", "params": {"start": 0, "hops": [6, 6]}}, "why": {"hi": "6 ÷ 3 = 2 poora aata hai, par 12 toh 6 ka multiple hai, factor nahi", "en": "6 ÷ 3 = 2 exactly, but 12 is a multiple of 6, not a factor"}, "answerBoard": {"template": "number-line-hop@1", "params": {"start": 0, "hops": [6, 6]}}, "simpler": {"hi": "Factor 6 ko poora bhaag deta hai, isliye woh 6 se bada nahi ho sakta. Dekho 12, 6 se bada hai ya chhota.", "en": "A factor divides 6 exactly, so it cannot be bigger than 6. See whether 12 is bigger or smaller than 6."} }
     },
     {
      "targets": "c6-maths-ch05-t01-m-miss-ends",
      "move": "factor pairs as a rainbow from 1: 18 = 1 × 18, 2 × 9, 3 × 6 → the first pair is 1 with the number itself, so both ends are always in the list; ask who 1's partner is",
-     "say": {
-      "hi": "Jodiyan hamesha 1 se shuru karo: 18 = 1 × 18, phir 2 × 9, phir 3 × 6. Pehli jodi mein 1 aur khud 18 hain, isliye yeh dono bhi factors ki list mein aate hain.",
-      "en": "Always start the pairs from 1: 18 = 1 × 18, then 2 × 9, then 3 × 6. The first pair is 1 and 18 itself, so both of these are in the list of factors too."
-     },
-     "simpler": { "hi": "Pehli jodi hamesha 1 × 18 hoti hai. Isliye 1 aur khud 18 bhi factors ki list mein aate hain.", "en": "The first pair is always 1 × 18. So 1 and 18 itself are also in the list of factors." },
-     "board": { "template": "compare@1", "params": { "left": { "title": "18 ki jodiyan", "items": ["1 × 18", "2 × 9", "3 × 6"] }, "right": { "title": "Pehli jodi", "items": ["1 aur 18"] } } },
+     "say": { "hi": "Jodiyan hamesha 1 se shuru karo. Pehli jodi hoti hai 1 guna khud woh number, isliye 1 aur woh number dono factors ki list mein aate hain. Har jodi ke dono numbers gino.", "en": "Always start the pairs from 1. The first pair is 1 times the number itself, so 1 and the number are both in the list of factors. Count both numbers of every pair." },
+     "simpler": { "hi": "Pehli jodi hamesha 1 guna woh number hoti hai. Isliye 1 aur khud woh number bhi factor hain.", "en": "The first pair is always 1 times the number. So 1 and the number itself are factors too." },
+     
      "then": {
       "prompt": {
        "hi": "14 ki jodiyan 1 × 14 aur 2 × 7 hain. 14 ke kul kitne factors hain?",
@@ -249,17 +231,16 @@
       "accept": ["four", "chaar", "4 factors"],
       "targets": "c6-maths-ch05-t01-m-miss-ends",
       "wrongIfMis": "2",
-      "board": { "template": "compare@1", "params": { "left": { "title": "14 ki jodiyan", "items": ["1 × 14", "2 × 7"] }, "right": { "title": "Kul factors", "items": ["kitne"] } } },
+      "board": { "template": "shade-grid@1", "params": {"rows": 2, "cols": 7, "shade": 0, "labels": false} },
       "why": { "hi": "dono jodiyon se 1, 2, 7 aur 14, yaani 4 factors milte hain", "en": "the two pairs give 1, 2, 7 and 14, so 4 factors" },
-      "simpler": { "hi": "Har jodi ke dono numbers 14 ke factor hain. Dono jodiyon ke numbers ek list mein likho aur gino.", "en": "Both numbers of each pair are factors of 14. Write the numbers from both pairs in one list and count them." }
+      "simpler": { "hi": "Har jodi ke dono numbers 14 ke factor hain. Dono jodiyon ke numbers ek list mein likho aur gino.", "en": "Both numbers of each pair are factors of 14. Write the numbers from both pairs in one list and count them." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 2, "each": 7, "title": "1, 2, 7, 14"} }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab tum ek number ke factors aur multiples nikaal sakte ho. Agle hisse mein do numbers ke factors ki listein milayenge aur dekhenge kaunse factors dono mein hain.",
     "en": "Now you can find the factors and multiples of one number. In the next part we will put the factor lists of two numbers side by side and see which factors are in both."
-   },
-   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Ek number", "items": ["factors aur multiples"] }, "right": { "title": "Do numbers", "items": ["factors dono mein"] } } }
+   }
   },
   {
    "skillId": "c6-maths-ch05-t01-s2",
@@ -302,13 +283,13 @@
       "accept": ["two", "do", "2 common factors"],
       "targets": "c6-maths-ch05-t01-m-miss-ends",
       "wrongIfMis": "1",
-      "why": { "hi": "dono liston mein sirf 1 aur 5 hain, yaani 2 common factors", "en": "only 1 and 5 are in both lists, so 2 common factors" }
+      "why": { "hi": "dono liston mein sirf 1 aur 5 hain, yaani 2 common factors", "en": "only 1 and 5 are in both lists, so 2 common factors" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "15 ke factors", "items": ["1, 3, 5, 15"]}, "right": {"title": "25 ke factors", "items": ["1, 5, 25"]}} }
      },
      "simpler": { "hi": "15 ki list aur 25 ki list saath rakho. Jo number dono mein ho, woh common factor hai, jaise 1.", "en": "Put the list for 15 next to the list for 25. A number that is in both is a common factor, like 1." }
     },
     {
      "id": "e2",
-     "convey": "sharing two things into the same packs → 12 pens in 3 equal packs of 4 → 3 divides 12; pencils in the same packs must also share equally → the number of packs has to divide both → a common factor; the child shares 15 pencils into the same 3 packs",
+     "convey": "sharing two things into the same packs → 12 pens in 3 equal packs of 4 → 3 divides 12; pencils in the same packs must also share equally → the number of packs has to divide both → a common factor; the child shares 21 pencils into the same 3 packs",
      "mustSay": [
       { "hi": "barabar packs", "en": "equal packs" },
       { "hi": "dono ko poora bhaag", "en": "divides both exactly" },
@@ -320,10 +301,10 @@
       "en": "These 12 pens are shared into 3 equal packs, 4 in each. 3 divides 12 exactly. If pencils also go equally into these same packs, the number of packs must divide both the pens and the pencils exactly, that is, it must be a common factor of both."
      },
      "ask": {
-      "prompt": { "hi": "Inhi 3 packs mein 15 pencils bhi barabar daalo. Har pack mein kitni pencils jaayengi?", "en": "Put 15 pencils equally into these same 3 packs too. How many pencils go in each pack?" },
-      "key": "5",
-      "accept": ["five", "paanch", "5 pencils"],
-      "why": { "hi": "15 ÷ 3 = 5, aur ek bhi pencil nahi bachti", "en": "15 ÷ 3 = 5, with not one pencil left over" }
+      "prompt": { "hi": "Inhi 3 packs mein 21 pencils bhi barabar daalo. Har pack mein kitni pencils jaayengi?", "en": "Put 21 pencils equally into these same 3 packs too. How many pencils go in each pack?" },
+      "key": "7",
+      "accept": ["seven", "saat", "7 pencils"],
+      "why": { "hi": "21 ÷ 3 = 7, aur ek bhi pencil nahi bachti", "en": "21 ÷ 3 = 7, with not one pencil left over" }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 3, "each": 4} }
      },
      "simpler": { "hi": "12 pens 3 packs mein 4-4 gaye, kuch nahi bacha. Pencils bhi inhi packs mein jaayein, toh packs ki ginti dono ko poora bhaag de.", "en": "The 12 pens went 4 to each of 3 packs, none left. If pencils go in the same packs, the number of packs must divide both exactly." }
     }
@@ -358,7 +339,7 @@
      "accept": ["1 2 5 10", "1, 2, 5 aur 10", "1, 2, 5 and 10"],
      "targets": "c6-maths-ch05-t01-m-miss-ends",
      "wrongIfMis": "2, 5, 10",
-     "simpler": { "hi": "20 wali list ka har number lo. Dekho woh 30 wali list mein bhi hai ya nahi.", "en": "Take each number in the list for 20. See whether it is also in the list for 30." }
+     "simpler": { "hi": "20 wali list ka har number lo. Dekho woh 30 wali list mein bhi hai ya nahi.", "en": "Take each number in the list for 20. See whether it is also in the list for 30." }, "why": { "hi": "dono jodiyan dekho: 1, 2, 5 aur 10 dono liston mein hain, yeh 20 aur 30 dono ko poora bhaag karte hain", "en": "1, 2, 5 and 10 are in both lists; they divide both 20 and 30 exactly" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "20 ki jodiyan", "items": ["1 × 20", "2 × 10", "4 × 5"]}, "right": {"title": "30 ki jodiyan", "items": ["1 × 30", "2 × 15", "3 × 10", "5 × 6"]}} }
     },
     "answer": {
      "hi": "20 aur 30 ke common factors 1, 2, 5 aur 10 hain, aur inme sabse bada 10 hai",
@@ -383,7 +364,7 @@
      "wrongIfMis": "0",
      "board": { "template": "compare@1", "params": { "left": { "title": "12", "items": ["3 × 4"] }, "right": { "title": "35", "items": ["5 × 7"] } } },
      "why": { "hi": "12 ke factors 1, 2, 3, 4, 6, 12 aur 35 ke 1, 5, 7, 35 mein sirf 1 dono mein hai", "en": "of 12's factors 1, 2, 3, 4, 6, 12 and 35's factors 1, 5, 7, 35, only 1 is in both" },
-     "simpler": { "hi": "12 ke saare factors likho, phir 35 ke. Jo number dono liston mein ho, wahi common factor hai.", "en": "Write all the factors of 12, then of 35. A number that is in both lists is a common factor." }
+     "simpler": { "hi": "12 ke saare factors likho, phir 35 ke. Jo number dono liston mein ho, wahi common factor hai.", "en": "Write all the factors of 12, then of 35. A number that is in both lists is a common factor." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "12", "items": ["3 × 4"]}, "right": {"title": "35", "items": ["5 × 7"]}} }
     },
     {
      "id": "c2",
@@ -396,8 +377,8 @@
      "targets": "c6-maths-ch05-t01-m-factor-multiple",
      "wrongIfMis": "54",
      "board": { "template": "compare@1", "params": { "left": { "title": "Laddoo", "items": ["18"] }, "right": { "title": "Barfi", "items": ["27"] } } },
-     "why": { "hi": "9 dono ko poora bhaag karta hai, 18 ÷ 9 = 2, 27 ÷ 9 = 3; isse bada common factor nahi", "en": "9 divides both exactly, 18 ÷ 9 = 2 and 27 ÷ 9 = 3, and no common factor is bigger" },
-     "simpler": { "hi": "Plates ki ginti 18 aur 27 dono ko poora bhaag de. Dono ka sabse bada common factor dhoondo.", "en": "The number of plates must divide both 18 and 27 exactly. Find the biggest common factor of the two." }
+     "why": { "hi": "9 se 18 laddoo aur 27 barfi poore bant jaate hain, har plate 2 laddoo, 3 barfi; bada common factor nahi", "en": "9 divides both: 2 laddoos and 3 barfis per plate, and no common factor of 18 and 27 is bigger" },
+     "simpler": { "hi": "Plates ki ginti 18 aur 27 dono ko poora bhaag de. Dono ka sabse bada common factor dhoondo.", "en": "The number of plates must divide both 18 and 27 exactly. Find the biggest common factor of the two." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Laddoo", "items": ["18"]}, "right": {"title": "Barfi", "items": ["27"]}} }
     }
    ],
    "ladder": [
@@ -415,7 +396,7 @@
       "en": "1 divides every number exactly, so every factor list starts at 1. The lists of two numbers always meet at least at 1. After that, match the numbers further along as well."
      },
      "simpler": { "hi": "1 har number ko poora bhaag karta hai, isliye do factor listein 1 par hamesha milti hain. Phir aage ke numbers bhi milao.", "en": "1 divides every number exactly, so two factor lists always meet at 1. Then match the numbers further along too." },
-     "board": { "template": "compare@1", "params": { "left": { "title": "Har list", "items": ["1 se shuru"] }, "right": { "title": "Do listein", "items": ["1 par milti hain"] } } },
+     
      "then": {
       "prompt": {
        "hi": "Pehla number 6 hai aur doosra number 9. Dono ke kitne common factors hain?",
@@ -426,8 +407,8 @@
       "targets": "c6-maths-ch05-t01-m-miss-ends",
       "wrongIfMis": "1",
       "board": { "template": "compare@1", "params": { "left": { "title": "Pehla number", "items": ["6"] }, "right": { "title": "Doosra number", "items": ["9"] } } },
-      "why": { "hi": "6 ke factors 1, 2, 3, 6 aur 9 ke 1, 3, 9 mein 1 aur 3 dono mein hain", "en": "of the factors 1, 2, 3, 6 of 6 and 1, 3, 9 of 9, both 1 and 3 are in both" },
-      "simpler": { "hi": "6 ke factors likho, phir 9 ke factors. Jo numbers dono liston mein hain, unhe gino.", "en": "Write the factors of 6, then the factors of 9. Count the numbers that are in both lists." }
+      "why": { "hi": "pehla number 6 aur doosra number 9 hai; dono ki factor list mein sirf 1 aur 3 hain, yaani 2", "en": "6 has factors 1, 2, 3, 6 and 9 has 1, 3, 9; 1 and 3 are in both, so 2" },
+      "simpler": { "hi": "6 ke factors likho, phir 9 ke factors. Jo numbers dono liston mein hain, unhe gino.", "en": "Write the factors of 6, then the factors of 9. Count the numbers that are in both lists." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pehla number", "items": ["6"]}, "right": {"title": "Doosra number", "items": ["9"]}} }
      }
     },
     {
@@ -438,7 +419,7 @@
       "en": "When sharing equally, the number of plates divides both things exactly, so it is a common factor. A common multiple is bigger than both, and there would not even be enough things to fill that many plates."
      },
      "simpler": { "hi": "Plates ki ginti dono cheezon ko poora bhaag karti hai, isliye woh common factor hai. Common multiple dono se bada hota hai, utni cheezein hi nahi hongi.", "en": "The number of plates divides both things exactly, so it is a common factor. A common multiple is bigger than both; there are not that many things." },
-     "board": { "template": "compare@1", "params": { "left": { "title": "Barabar baantne mein", "items": ["common factor"] }, "right": { "title": "Common multiple", "items": ["dono se bada"] } } },
+     
      "then": {
       "prompt": {
        "hi": "14 pens aur 21 pencils ke ek jaise packs banane hain, kuch na bache. Sabse zyada kitne packs?",
@@ -450,15 +431,14 @@
       "wrongIfMis": "42",
       "board": { "template": "compare@1", "params": { "left": { "title": "Pens", "items": ["14"] }, "right": { "title": "Pencils", "items": ["21"] } } },
       "why": { "hi": "7 dono ko poora bhaag karta hai, 14 ÷ 7 = 2, 21 ÷ 7 = 3; isse bada common factor nahi", "en": "7 divides both exactly, 14 ÷ 7 = 2 and 21 ÷ 7 = 3, and no common factor is bigger" },
-      "simpler": { "hi": "Packs ki ginti 14 aur 21 dono ko poora bhaag de. Dono ke common factors mein sabse bada chuno.", "en": "The number of packs must divide both 14 and 21 exactly. Pick the biggest of their common factors." }
+      "simpler": { "hi": "Packs ki ginti 14 aur 21 dono ko poora bhaag de. Dono ke common factors mein sabse bada chuno.", "en": "The number of packs must divide both 14 and 21 exactly. Pick the biggest of their common factors." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pens", "items": ["14"]}, "right": {"title": "Pencils", "items": ["21"]}} }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Common factors baantne mein kaam aate hain. Agle hisse mein multiples ki baari hai: jab do cheezein baar-baar dohraati hain, toh woh saath kab milti hain.",
     "en": "Common factors help in sharing. In the next part it is the turn of multiples: when two things keep repeating, when do they meet together."
-   },
-   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Common factors", "items": ["baantne mein"] }, "right": { "title": "Multiples", "items": ["saath kab milti hain"] } } }
+   }
   },
   {
    "skillId": "c6-maths-ch05-t01-s3",
@@ -506,7 +486,7 @@
       "prompt": { "hi": "Game aage chalta raha. 15 ke baad agla 'idli-vada' kis number par aayega?", "en": "The game goes on. After 15, at which number does the next 'idli-vada' come?" },
       "key": "30",
       "accept": ["thirty", "tees"],
-      "why": { "hi": "3 aur 5 dono ke multiples 15, 30, 45 hain, aur 15 ke baad 30 aata hai", "en": "the multiples of both 3 and 5 are 15, 30, 45, and after 15 comes 30" }
+      "why": { "hi": "3 aur 5 dono ke multiples 15, 30, 45 hain, aur 15 ke baad 30 aata hai", "en": "the multiples of both 3 and 5 are 15, 30, 45, and after 15 comes 30" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 ke multiples", "items": ["3, 6, 9, 12, 15"]}, "right": {"title": "5 ke multiples", "items": ["5, 10, 15"]}} }
      },
      "simpler": { "hi": "3 ke pahade par idli, 5 ke pahade par vada. Jo number dono pahadon mein ho, wahan idli-vada, jaise 15.", "en": "Say idli on the 3 times table and vada on the 5 times table. A number in both tables gets idli-vada, like 15." }
     },
@@ -529,7 +509,7 @@
       "accept": ["twenty-four", "twenty four", "chaubees"],
       "targets": "c6-maths-ch05-t01-m-common-product",
       "wrongIfMis": "48",
-      "why": { "hi": "6 ke multiples 6, 12, 18, 24 aur 8 ke 8, 16, 24 pehli baar 24 par milte hain", "en": "the multiples 6, 12, 18, 24 of 6 and 8, 16, 24 of 8 first meet at 24" }
+      "why": { "hi": "24 = 6 × 4 = 8 × 3 hai; 8, 16 ke baad 24 aata hai, isse chhota koi saajha nahi", "en": "24 = 6 × 4 = 8 × 3; after 8, 16 comes 24, and no smaller number is in both tables" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "6 ke multiples", "items": ["6, 12, 18"]}, "right": {"title": "8 ke multiples", "items": ["8, 16"]}} }
      },
      "simpler": { "hi": "6 aur 8 ke multiples ki listein aage likhte jao. Jahan dono mein pehli baar ek hi number aaye, wahi pehla common multiple hai.", "en": "Keep writing the lists of multiples of 6 and 8. Where the same number first shows up in both, that is the first common multiple." }
     },
@@ -552,7 +532,7 @@
       "accept": ["28 second", "28 seconds", "twenty-eight", "atthaees"],
       "targets": "c6-maths-ch05-t01-m-common-product",
       "wrongIfMis": "56",
-      "why": { "hi": "4 × 7 = 28 aur 14 × 2 = 28, aur 14 khud 4 ka multiple nahi", "en": "4 × 7 = 28 and 14 × 2 = 28, and 14 itself is not a multiple of 4" }
+      "why": { "hi": "light A har 4 second, light B har 14 second jalti hai; dono pehli baar 28 par milti hain", "en": "light A flashes every 4 seconds, light B every 14, and both come together first at 28" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Light A", "items": ["har 4 second"]}, "right": {"title": "Light B", "items": ["har 14 second"]}} }
      },
      "simpler": { "hi": "Light A 4 ke pahade par jalti hai, light B 14 ke pahade par. Dono saath tab jalengi jab second dono pahadon mein ho.", "en": "Light A flashes on the 4 times table, light B on the 14 times table. They flash together when the second is in both tables." }
     }
@@ -594,7 +574,7 @@
      "accept": ["eighteen", "athaarah", "18 din", "18 days"],
      "targets": "c6-maths-ch05-t01-m-common-product",
      "wrongIfMis": "54",
-     "simpler": { "hi": "6 wali list ka har number 9 wali list mein dhoondo. Jo sabse pehle mile, wahi chuno.", "en": "Look for each number of the 6 list in the 9 list. Pick the first one you find in both." }
+     "simpler": { "hi": "6 wali list ka har number 9 wali list mein dhoondo. Jo sabse pehle mile, wahi chuno.", "en": "Look for each number of the 6 list in the 9 list. Pick the first one you find in both." }, "why": { "hi": "tulsi ko paani har 6 din, fish bowl har 9 din; 18 dono pahadon mein aane wala pehla din hai", "en": "18 = 6 × 3 = 9 × 2 is the first number in both lists" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Tulsi ko paani", "items": ["har 6 din"]}, "right": {"title": "Fish bowl", "items": ["har 9 din"]}} }
     },
     "answer": {
      "hi": "Kavya 18 din baad phir dono kaam ek hi din karegi, aur ismein common multiples lagte hain",
@@ -618,8 +598,8 @@
      "targets": "c6-maths-ch05-t01-m-common-product",
      "wrongIfMis": "60",
      "board": { "template": "compare@1", "params": { "left": { "title": "Pehli ghanti", "items": ["har 6 minute"] }, "right": { "title": "Doosri ghanti", "items": ["har 10 minute"] } } },
-     "why": { "hi": "6 ke multiples 6, 12, 18, 24, 30 aur 10 ke 10, 20, 30 pehli baar 30 par milte hain", "en": "the multiples 6, 12, 18, 24, 30 of 6 and 10, 20, 30 of 10 first meet at 30" },
-     "simpler": { "hi": "6 ka pahada aur 10 ka pahada saath-saath likho. Jahan dono mein pehli baar ek hi number aaye, wahi jawab hai.", "en": "Write the 6 and 10 times tables side by side. Where the same number first shows up in both, that is the answer." }
+     "why": { "hi": "pehli ghanti har 6 minute, doosri ghanti har 10 minute bajti hai; dono pahade pehli baar 30 par milte hain", "en": "the 6 and 10 times tables first come together at 30" },
+     "simpler": { "hi": "6 ka pahada aur 10 ka pahada saath-saath likho. Jahan dono mein pehli baar ek hi number aaye, wahi jawab hai.", "en": "Write the 6 and 10 times tables side by side. Where the same number first shows up in both, that is the answer." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pehli ghanti", "items": ["har 6 minute"]}, "right": {"title": "Doosri ghanti", "items": ["har 10 minute"]}} }
     },
     {
      "id": "c2",
@@ -632,8 +612,8 @@
      "targets": "c6-maths-ch05-t01-m-factor-multiple",
      "wrongIfMis": "common factor",
      "board": { "template": "compare@1", "params": { "left": { "title": "Pehli bus", "items": ["har 15 minute"] }, "right": { "title": "Doosri bus", "items": ["har 20 minute"] } } },
-     "why": { "hi": "dono buses baar-baar dohraati hain, aur saath chalna dono ke pahadon mein aata hai", "en": "both buses keep repeating, and leaving together comes in both their times tables" },
-     "simpler": { "hi": "Dono buses baar-baar chalti hain, har 15 aur har 20 minute par. Socho, saath chalne ka minute dono ke pahade mein aayega ya dono ko baantega.", "en": "Both buses keep repeating, every 15 and every 20 minutes. Think whether the together-minute sits in both times tables or divides both." }
+     "why": { "hi": "pehli bus har 15 minute, doosri har 20 minute baar-baar chalti hai, aur saath chalna dono ke pahadon mein aata hai", "en": "both buses keep repeating, and leaving together comes in both their times tables" },
+     "simpler": { "hi": "Dono buses baar-baar chalti hain, har 15 aur har 20 minute par. Socho, saath chalne ka minute dono ke pahade mein aayega ya dono ko baantega.", "en": "Both buses keep repeating, every 15 and every 20 minutes. Think whether the together-minute sits in both times tables or divides both." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pehli bus", "items": ["har 15 minute"]}, "right": {"title": "Doosri bus", "items": ["har 20 minute"]}} }
     },
     {
      "id": "c3",
@@ -646,8 +626,8 @@
      "targets": "c6-maths-ch05-t01-m-common-product",
      "wrongIfMis": "108",
      "board": { "template": "compare@1", "params": { "left": { "title": "9 ke multiples", "items": ["9, 18, 27"] }, "right": { "title": "12 ke multiples", "items": ["12, 24"] } } },
-     "why": { "hi": "9 ke multiples 9, 18, 27, 36 aur 12 ke 12, 24, 36 pehli baar 36 par milte hain", "en": "the multiples 9, 18, 27, 36 of 9 and 12, 24, 36 of 12 first meet at 36" },
-     "simpler": { "hi": "9 aur 12, dono ke multiples ki listein aage badhao. Jahan pehli baar dono listein milein, wahi jawab hai.", "en": "Extend the lists of multiples of 9 and 12. Where the two lists first meet is the answer." }
+     "why": { "hi": "9 ke multiples 9, 18, 27, 36 aur 12 ke 12, 24, 36 pehli baar 36 par milte hain", "en": "9, 18, 27, 36 and 12, 24, 36 first come together at 36" },
+     "simpler": { "hi": "9 aur 12, dono ke multiples ki listein aage badhao. Jahan pehli baar dono listein milein, wahi jawab hai.", "en": "Extend the lists of multiples of 9 and 12. Where the two lists first meet is the answer." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "9 ke multiples", "items": ["9, 18, 27"]}, "right": {"title": "12 ke multiples", "items": ["12, 24"]}} }
     }
    ],
    "ladder": [
@@ -661,25 +641,10 @@
     {
      "targets": "c6-maths-ch05-t01-m-common-product",
      "move": "two frogs hopping from 0 on a number line, one in 4s and one in 6s, leaving footprints → the first shared footprint is 12, well before 4 × 6 = 24 → list and stop at the first match instead of multiplying",
-     "say": {
-      "hi": "Ek mendhak 0 se 4-4 koodta hai: 4, 8, 12. Doosra mendhak 6-6 koodta hai: 6, 12. Dono 12 par hi mil gaye, 4 × 6 = 24 se pehle. Isliye guna mat karo, listein likho aur pehla mel dhoondo.",
-      "en": "One frog hops 4 at a time from 0: 4, 8, 12. The other frog hops 6 at a time: 6, 12. They already meet at 12, before 4 × 6 = 24. So do not multiply; write the lists and find the first match."
-     },
-     "simpler": { "hi": "4-4 ki list: 4, 8, 12; 6-6 ki list: 6, 12. Dono pehli baar 12 par milte hain, 24 par nahi. Listein likho, guna mat karo.", "en": "Hops of 4: 4, 8, 12; hops of 6: 6, 12. They first meet at 12, not 24. Write the lists; do not multiply." },
-     "board": { "template": "compare@1", "params": { "left": { "title": "Pehla mendhak", "items": ["4, 8, 12"] }, "right": { "title": "Doosra mendhak", "items": ["6, 12"] } } },
-     "then": {
-      "prompt": {
-       "hi": "Mendhak A har baar 10 aage koodta hai, mendhak B har baar 15, dono 0 se. Pehli baar dono kis number par milenge?",
-       "en": "Frog A hops 10 each time, frog B hops 15 each time, both from 0. At which number do they first meet?"
-      },
-      "key": "30",
-      "accept": ["thirty", "tees"],
-      "targets": "c6-maths-ch05-t01-m-common-product",
-      "wrongIfMis": "150",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Mendhak A", "items": ["har baar 10"] }, "right": { "title": "Mendhak B", "items": ["har baar 15"] } } },
-      "why": { "hi": "10 ke multiples 10, 20, 30 aur 15 ke 15, 30 pehli baar 30 par milte hain", "en": "the multiples 10, 20, 30 of 10 and 15, 30 of 15 first meet at 30" },
-      "simpler": { "hi": "Mendhak A 10 ke pahade par utarta hai, B 15 ke pahade par. Dono listein likho aur pehla saath wala number dhoondo.", "en": "Frog A lands on the 10 times table, frog B on the 15 times table. Write both lists and find the first shared number." }
-     }
+     "say": { "hi": "Do mendhak alag-alag kood lagaate hain toh unki kood ka guna mat karo. Har mendhak ke utarne ki list likho. Dono liston mein jo number pehle aaye, wahin woh milte hain.", "en": "When two frogs hop by different amounts, do not multiply the hops. Write each frog's landings as a list. The first number in both lists is where they meet." },
+     "simpler": { "hi": "Har mendhak ke utarne ke number likho. Dono liston ka pehla saajha number hi milne ki jagah hai.", "en": "Write the landings of each frog. The first number in both lists is the meeting point." },
+     
+     "then": { "prompt": { "hi": "Mendhak A har baar 4 aage koodta hai, mendhak B har baar 10, dono 0 se. Pehli baar dono kis number par milenge?", "en": "Frog A hops 4 each time, frog B hops 10 each time, both from 0. At which number do they first meet?" }, "key": "20", "accept": ["twenty", "bees"], "targets": "c6-maths-ch05-t01-m-common-product", "wrongIfMis": "40", "board": { "template": "compare@1", "params": {"left": {"title": "Mendhak A", "items": ["har baar 4"]}, "right": {"title": "Mendhak B", "items": ["har baar 10"]}} }, "why": { "hi": "mendhak A har baar 4, B har baar 10: 4, 8, 12, 16, 20 aur 10, 20 pehli baar 20 par milte", "en": "frog A lands on 4, 8, 12, 16, 20 and frog B on 10, 20, so they first meet at 20" }, "simpler": { "hi": "Mendhak A 4 ke pahade par utarta hai, B 10 ke pahade par. Dono listein likho aur pehla saath wala number dhoondo.", "en": "Frog A lands on the 4 times table, frog B on the 10 times table. Write both lists and find the first shared number." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Mendhak A", "items": ["har baar 4"]}, "right": {"title": "Mendhak B", "items": ["har baar 10"]}} } }
     },
     {
      "targets": "c6-maths-ch05-t01-m-factor-multiple",
@@ -689,19 +654,16 @@
       "en": "When things repeat and the question is when they come together, the numbers keep growing; these are multiples. When things are shared equally, the number of baskets divides the amounts exactly; these are factors."
      },
      "simpler": { "hi": "Cheezein dohraayein aur saath kab poochha jaaye, toh multiples. Cheezein barabar baantni hon, toh tokriyon ki ginti factor hai.", "en": "When things repeat and you ask when they meet, use multiples. When things are shared equally, the number of baskets is a factor." },
-     "board": { "template": "compare@1", "params": { "left": { "title": "Saath kab", "items": ["multiples"] }, "right": { "title": "Barabar baantni", "items": ["factors"] } } },
+     
      "then": {
-      "prompt": {
-       "hi": "15 aam aur 20 kele ek jaisi tokriyon mein, kuch na bache. Sabse zyada kitni tokriyan banengi?",
-       "en": "15 mangoes and 20 bananas go into identical baskets, nothing left over. What is the most baskets?"
-      },
+      "prompt": { "hi": "15 aam aur 25 kele ek jaisi tokriyon mein, kuch na bache. Sabse zyada kitni tokriyan banengi?", "en": "15 mangoes and 25 bananas go into identical baskets, nothing left over. What is the most baskets?" },
       "key": "5",
       "accept": ["five", "paanch", "5 tokriyan", "5 baskets"],
       "targets": "c6-maths-ch05-t01-m-factor-multiple",
-      "wrongIfMis": "60",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Aam", "items": ["15"] }, "right": { "title": "Kele", "items": ["20"] } } },
-      "why": { "hi": "5 dono ko poora bhaag karta hai, 15 ÷ 5 = 3, 20 ÷ 5 = 4; isse bada common factor nahi", "en": "5 divides both exactly, 15 ÷ 5 = 3 and 20 ÷ 5 = 4, and no common factor is bigger" },
-      "simpler": { "hi": "Tokriyon ki ginti 15 aur 20 dono ko poora bhaag de. Dono ke common factors mein sabse bada chuno.", "en": "The number of baskets must divide both 15 and 20 exactly. Pick the biggest of their common factors." }
+      "wrongIfMis": "75",
+      "board": { "template": "compare@1", "params": {"left": {"title": "Aam", "items": ["15"]}, "right": {"title": "Kele", "items": ["25"]}} },
+      "why": { "hi": "5 se 15 aam aur 25 kele poore bant jaate hain, har tokri 3 aam, 5 kele; bada common factor nahi", "en": "5 divides both: 3 mangoes and 5 bananas per basket, and no common factor of 15 and 25 is bigger" },
+      "simpler": { "hi": "Tokriyon ki ginti 15 aur 25 dono ko poora bhaag de. Dono ke common factors mein sabse bada chuno.", "en": "The number of baskets must divide both 15 and 25 exactly. Pick the biggest of their common factors." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Aam", "items": ["15"]}, "right": {"title": "Kele", "items": ["25"]}} }
      }
     }
    ],
