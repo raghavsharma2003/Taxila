@@ -63,6 +63,15 @@ function doorsFor(s, entry, lang, name = "") {
   // round 8 because of the level behind it (the same record /next returns with that level)
   return [{ door: "garam", level: garam, hint: hint("garam"), ...becauseOut(g) }, ...(teekha && (teekha.levelId !== garam.levelId || teekha.fade !== garam.fade) ? [{ door: "teekha", level: { ...teekha, door: "teekha" }, hint: hint("teekha"), ...becauseOut(t) }] : [])];
 }
+/** round 8 F: the level_end row's lead pairs: verdict, the trail summary, this level's because kind, the next level's step. */
+export function seamLead(seam, trail, s, s2) {
+  const kind = (b) => (typeof b?.kind === "string" ? b.kind.replace(/^play\./, "") : null);
+  const chose = kind((s?.because ?? [])[0]);
+  const next = kind(s2?.nextSwitch ?? s2?.nextBecause);
+  return { ...(seam.facts?.verdict ? { verdict: seam.facts.verdict } : {}),
+    ...(trail ? { first_try: trail.firstTry ? 1 : 0, misses: trail.misses, ...(trail.extra !== null && trail.extra !== undefined ? { extra: trail.extra } : {}) } : {}),
+    ...(chose ? { chose } : {}), ...(next ? { next } : {}) };
+}
 function seamOf(grade, level, moments, impasse) {
   if (impasse) return { kind: "impasse", facts: grade?.facts ?? {} };
   if (grade) return { kind: "level_end", facts: { ...grade.facts, verdict: grade.verdict }, bareItem: level.fade === 3 && grade.verdict === "solved" ? { skillId: level.skillId } : null };
@@ -137,11 +146,14 @@ export const routes = {
     const homeToken = ended && !s.lessonId && rows.length ? signHomeEvidence({ childId: s.childId, levelId: level.levelId, rows, ...(trail ? { trail } : {}) }) : undefined;
     const home = homeToken ? await foldHomeLevel({ child, token: homeToken, skillOk: (id) => id === entry.skillId || (entry.skillIds ?? []).includes(id), q: dbq, write: playDeps.writeHome }) : null;
     const seam = seamOf(g.grade, level, fresh, !!b.impasse);
-    const seamToken = seam && s.lessonId ? signSeam({ childId: s.childId, lessonId: s.lessonId, kind: seam.kind, row: playFactsRow({ game: `${level.family}/${level.mode}`, ...seam.facts }) }) : undefined;
     // the belief this level's first decision showed is the next level's focus (the current level's inputs never change);
     // round 8 P2: a clean first-try win steps the next level's band up, and each step's because rides to the next level
     const seen = ended ? rows.find((r) => r.misconceptionId)?.misconceptionId ?? null : null;
     const s2 = afterLevelBody(s, { grade: ended ? g.grade : null, level, history });
+    // round 8 F (to-brain 023): a level_end row leads with the trail summary and the because kinds (this level's choice, the
+    // next level's step), telegraphic and inside the 12-pair cap; the family's own facts follow
+    const seamToken = seam && s.lessonId ? signSeam({ childId: s.childId, lessonId: s.lessonId, kind: seam.kind,
+      row: playFactsRow({ game: `${level.family}/${level.mode}`, ...(seam.kind === "level_end" ? seamLead(seam, trail, s, s2) : {}), ...seam.facts }) }) : undefined;
     // release 12 flight recorder: every act's grade moment, and the level's outcome when it ends
     traceRecord(ended ? "play.outcome" : "play.act", { family: level.family, mode: level.mode, levelId: level.levelId, final: !!b.final, impasse: !!b.impasse,
       moments: fresh.map((m) => m.kind), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen, home: !s.lessonId, ...(home ? { homeFolded: home.folded, homeCapped: home.capped } : {}), ...(trail ? { trail } : {}) } : {}),

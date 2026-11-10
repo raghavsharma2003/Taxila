@@ -9,7 +9,7 @@ import { afterLevelBody, beliefOf, currentLevel, entriesFor, entryByKey, entryFo
 import { startSession, recentFromPrev } from "../server/play/start.js";
 import { gradeActs } from "../server/play/grade.js";
 import { signSession, verifySession } from "../server/play/session.js";
-import { signEvidence } from "../server/play/evidence.js";
+import { signEvidence, verifySeam } from "../server/play/evidence.js";
 import { routes, playDeps } from "../server/play/routes.js";
 import { LOGIC } from "../src/play/families/index.ts";
 import { env } from "../src/play/core/pick.ts";
@@ -184,4 +184,30 @@ test("because records keep their kind through settle; a mix-up claim still needs
   assert.deepEqual(settleBecause(p, { proof: { discriminates: ["m"] } }), p);
   assert.deepEqual(settleBecause({ ...p, kind: "play.switch" }, { proof: { discriminates: [] } }), { ...p, kind: "play.switch" });
   assert.equal(LIFT_STEP, 0.1);
+});
+
+// ───────────── F (to-brain 023, our half): the lesson's facts row carries the trail summary and the because kinds ─────────────
+
+test("F: a lesson level_end seam row leads with verdict, first_try, misses, extra, the level's because kind and the next step", async () => {
+  const saved = { ...playDeps };
+  try {
+    playDeps.requireChild = async (_req, id) => ({ guardian: { id: "g" }, child: { id, class_level: 6, first_name: "Riya", language_pref: "hinglish" } });
+    playDeps.q = qOf({ mis: [{ misconception_id: MIS, logit: logit(0.62) }] });
+    const LES = "22222222-2222-4222-8222-222222222222";
+    const st = fakeRes(); await routes["POST /api/play/start"]({}, st, { childId: CHILD, skillId: SKILL, lessonId: LES });
+    const lv = st.body.level;
+    const a = fakeRes(); await routes["POST /api/play/act"]({}, a, { sessionId: st.body.sessionId, levelId: lv.levelId, acts: env(LOGIC[`${lv.family}/${lv.mode}`].solve(lv)), final: true });
+    const seam = verifySeam(a.body.seamToken, { childId: CHILD, lessonId: LES });
+    assert.equal(seam.kind, "level_end");
+    const pairs = Object.fromEntries(seam.row.split(" ").map((p) => p.split("=")));
+    assert.equal(pairs.game, `${lv.family}/${lv.mode}`); assert.equal(pairs.verdict, "solved");
+    assert.equal(pairs.first_try, "1"); assert.equal(pairs.misses, "0"); assert.equal(pairs.extra, "0");
+    assert.equal(pairs.chose, "pick_mixup"); assert.equal(pairs.next, "step_up");
+    assert.ok(seam.row.split(" ").length <= 12);
+    // no lesson, no seam token
+    const h = fakeRes(); await routes["POST /api/play/start"]({}, h, { childId: CHILD, skillId: SKILL });
+    playDeps.writeHome = async () => ({ written: false });
+    const ha = fakeRes(); await routes["POST /api/play/act"]({}, ha, { sessionId: h.body.sessionId, levelId: h.body.level.levelId, acts: env(LOGIC[`${h.body.level.family}/${h.body.level.mode}`].solve(h.body.level)), final: true });
+    assert.ok(!("seamToken" in ha.body));
+  } finally { Object.assign(playDeps, saved); }
 });
