@@ -6,6 +6,8 @@
 import { bannedHits, lockedHits, severeHits } from "./lexicon.js";
 import { CAPS, VOICE_CHARS, VOICE_WORDS } from "./config.js";
 import { CONNECTIVES, FIXED, HOME_OBJECT, SHAPES, SUBJECT_LABEL, WAY_LABEL, fmtDate, fmtMonth, renderFixed, renderShape } from "./templates.js";
+/** Headers that state "no lessons in this period": they carry no facts by design (audit LEARN-11: only the weekly one was exempt). */
+const ZERO_HEADERS = new Set(["header.zero", "header.zero_month", "header.zero_term"]);
 
 export class ReportGateError extends Error {
   constructor(violations) {
@@ -103,7 +105,7 @@ export function gateReport(r, { k7 = false, firstName }) {
         v.push(...lineViolations(line.text, { shapeId: c.shapeId, slots: c.slots, lang, k7, firstName }).map(tag));
         perSection[c.section] = (perSection[c.section] || 0) + 1;
         if (c.section === "tricky" && !TRICKY.has(c.shapeId)) v.push(tag({ rule: "tricky_three_parts" }));
-        if (!Array.isArray(c.factIds) || (!c.factIds.length && c.shapeId !== "header.zero")) v.push(tag({ rule: "claim_without_facts", detail: c.id }));
+        if (!Array.isArray(c.factIds) || (!c.factIds.length && !ZERO_HEADERS.has(c.shapeId))) v.push(tag({ rule: "claim_without_facts", detail: c.id }));
       } else if (line.kind === "fixed") {
         v.push(...lineViolations(line.text, { fixedId: line.fixedId, slots: line.slots, lang, firstName }).map(tag));
         if (line.section) perSection[line.section] = (perSection[line.section] || 0) + 1;
