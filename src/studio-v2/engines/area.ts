@@ -32,7 +32,10 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
     const rr = rng(api.seed * 101 + g.r * 7), dmax = Math.min(cols, rows) / 2, sec = round().seconds;
     for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { const d = Math.min(c, r, cols - 1 - c, rows - 1 - r); driftAt[r * cols + c] = spec.drift > 0 ? sec * clamp((0.14 + 0.86 * (d / dmax)) / (0.6 + 0.6 * spec.drift) + (rr() - 0.5) * 0.08, 0.08, 1.2) : 1e9; }
   }
-  const goalText = () => { const rd = round(); return rd.goal === "area" ? `Stake exactly ${rd.target} ${T.sq} ${T.units}` : rd.goal === "perimeter" ? `Perimeter exactly ${rd.target} ${T.units}` : `${T.maxArea} perimeter ${rd.target}`; };
+  // (the goal is built from the spec's own strings only — no English the spec cannot change: the approval-lane c6 pilot was
+  // judged for "Stake exactly 40 sq units" on a Hinglish piece, 2026-11-10)
+  const words = (...xs: (string | number)[]) => xs.map(String).filter((x) => x.trim()).join(" ");
+  const goalText = () => { const rd = round(); return rd.goal === "area" ? words(T.area, rd.target, T.sq, T.units) : rd.goal === "perimeter" ? words(T.perimeter, rd.target, T.units) : words(T.maxArea, T.perimeter, rd.target); };
   function startRound(i: number) {
     g.r = i; g.state = "intro"; g.stateT = 0; g.t = 0; g.introA = 0; g.attempts = 0; g.claimed = null; g.flash = null; sprouts.length = 0;
     seedDrift(); api.tw.add(g, { introA: 1 }, { dur: 0.45 });

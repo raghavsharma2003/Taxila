@@ -14,7 +14,7 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { checkSpec, kitTopicAny } from "../server/stagecraft/catalogue.js";
-import { specHash, fileHash, JUDGED_SIZES } from "../server/studio/approved.js";
+import { specHash, fileHash, JUDGED_SIZES, APPROVAL_SIZES } from "../server/studio/approved.js";
 import { boardTwinFor } from "../server/stagecraft/builders.js";
 
 const arg = (k, d = null) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -86,8 +86,10 @@ try {
     const twin = (() => { try { return boardTwinFor({ archetype: p.archetype, family: p.archetype, need: "explain" }, p.topicId); } catch { return null; } })();
     const art = { kind: "stagecraft", stage: { w: 1000, h: 625 }, stagecraft: { rung: p.source === "catalogue" ? "library" : "generated_spec", archetype: p.archetype, spec: pred.spec ?? p.spec, boardTwin: twin } };
     const r = pred.ok ? await judge.judge(art, { viewports: GATE_VIEWPORTS, shotDir: dir, shotTag: "piece", young: (Number(/^c(\d+)-/.exec(p.topicId)?.[1]) || 9) <= 5, settleMs: 2500 }) : { views: [] };
-    const byViewport = Object.fromEntries(JUDGED_SIZES.map((s) => [s, !!r.views.find((v) => v.vp === s)?.verdict?.pass]));
-    const images = r.views.filter((v) => v.file).map((v) => ({ vp: v.vp, file: path.basename(v.file), sha256: fileHash(v.file) }));
+    // (judged only where the piece is played — APPROVAL_SIZES; p360 is stored false and its image is not in the packet)
+    const byViewport = Object.fromEntries(JUDGED_SIZES.map((s) => [s, APPROVAL_SIZES.includes(s) && !!r.views.find((v) => v.vp === s)?.verdict?.pass]));
+    for (const v of r.views) if (v.file && !APPROVAL_SIZES.includes(v.vp)) fs.rmSync(v.file, { force: true });
+    const images = r.views.filter((v) => v.file && APPROVAL_SIZES.includes(v.vp)).map((v) => ({ vp: v.vp, file: path.basename(v.file), sha256: fileHash(v.file) }));
     const packet = { v: 1, id: p.id, source: p.source, ...(p.piece ? { piece: p.piece } : {}), topicId: p.topicId, archetype: p.archetype, hash: specHash(p.archetype, p.spec),
       predicate: { ok: pred.ok, why: pred.why }, render: { byViewport, fails: Object.fromEntries(r.views.map((v) => [v.vp, v.verdict?.fails ?? []])) },
       images, ...(p.target ? { target: p.target } : {}), ...(p.generation ? { generation: p.generation } : {}), topic: topicFacts(p.topicId, p.mixup), spec: p.spec };

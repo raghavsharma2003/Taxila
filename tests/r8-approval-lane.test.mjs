@@ -99,8 +99,10 @@ test("approval lane in a lesson: a scripted remediation for the mix-up the piece
     const { getTopic } = await import("../server/content/curriculum.js");
     const T = "c5-maths-ch02-t01", kit = kitFromFile(getTopic(T));
     const ref = { template: "fraction-line@1", params: { den: 4, from: 0, to: 1, marks: [{ num: 1, label: "1/4" }] } };
-    const run = (n, beatId, piece) => {
+    // (a p412 phone: main's ruling 2026-11-10 refuses every Studio v2 world at p360 — checked below)
+    const run = (n, beatId, piece, box = { w: 380, h: 519 }) => {
       const L = `appr-${n}-${Date.now()}`;
+      seam.noteViewport(L, box, false);
       seam.studioSeam.prefetch({ lessonId: L, purpose: "practice", kit, topicId: T, child: { id: `c-${L}`, class_level: 5, language_pref: "hinglish" } });
       return seam.studioSeam.requestIntent({ intent: { intentId: `${L}:wb:1`, lessonId: L, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref,
         scriptBeat: { scriptId: "s", beatId, kind: "remediation", ...(piece ? { piece: true } : {}) } }, line: { lessonId: L, text: "Marks nahi, gaps gino: 3 marks se 4 barabar gaps bante hain, toh pehla mark 1/4 hai." }, mode: "fresh", kit: { topicId: T, content: [] } });
@@ -110,6 +112,7 @@ test("approval lane in a lesson: a scripted remediation for the mix-up the piece
     assert.equal(hit.artifact.kind, "stagecraft");
     assert.equal(hit.artifact.stagecraft.rung, "generated_spec");
     assert.match(hit.artifact.stagecraft.approved, /^gen-c5-maths-ch02-t01-/);
+    assert.notEqual(run(99, "rem:c5-maths-ch02-t01-m-count-marks", true, { w: 324, h: 187 })?.artifact?.kind, "stagecraft", "at p360 the script's board stands");
     for (const [beat, piece] of [["rem:c5-maths-ch02-t01-m-not-numbers", true], ["rem:c5-maths-ch02-t01-m-count-marks", false]]) {
       const k = run(beat.length + (piece ? 1 : 0), beat, piece);
       assert.notEqual(k?.artifact?.kind, "stagecraft", `${beat} piece=${piece}`);
