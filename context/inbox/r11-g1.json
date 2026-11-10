@@ -1,0 +1,21 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r11-g1-parent-volt-calm",
+   "kind": "decision",
+   "title": "Release 11 G1: the parent corner wears Volt night 'calm' through K's own scope (.kx + data-klook=volt + data-ktheme=night + data-kcalm on the .pa and .pa-gate roots). src/parent/parent.css re-points the v2 tokens the shared components read (Button, PinPad, Sheet, StateChip, Field) at the k tokens, as childshell.css does for the child screens: var() only, no new palette, K's self-hosted fonts. Calm = no breathing glow, no loop, lime (--k-move) only on the one action a page marks [data-volt]; ion for every other primary; mono // eyebrows; corner-bracket panels; the four plain words as HUD chips; the How do we know? rows as a timeline. Presentation only: copy, claims, helplines and the AI label unchanged.",
+   "at": "2026-10-11",
+   "reversal": "if a parent test or the owner finds the night ground harder to read than the light one (contrast, small text), add a calm day variant under the same scope rather than restoring the v2 paper look"
+  },
+  {
+   "id": "ms-r11-g1-parent-battery-2026-10-11",
+   "kind": "measurement",
+   "title": "Parent Playwright battery (tests/e2e-design-b3-parent.mjs, unchanged, mocked /api, built SPA, n = 1 run each): base efc0e721 415/418, Volt calm 415/418; the same 3 failures on both (V-ONE generic activity, V-NEXT empty submit, V-NEXT wrong password: sign-in step, not parent CSS). Parent unit tests (ui-v2-claims, parent-state, reports-gate, r4-asha-ux, r4-asha-single-teacher) 52/52; UI lint suites 24/24; lint-ui 353 with 0 findings in src/parent.",
+   "at": "2026-10-11"
+  }
+ ],
+ "edges": [
+  { "src": "ms-r11-g1-parent-battery-2026-10-11", "rel": "measured_by", "dst": "dc-r11-g1-parent-volt-calm" },
+  { "src": "dc-r11-g1-parent-volt-calm", "rel": "part_of", "dst": "dc-r4-volt-everywhere" }
+ ]
+}
