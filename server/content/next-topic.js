@@ -28,6 +28,27 @@ export function topicStatus(states, skillCount = 0) {
 }
 
 /**
+ * Skill ids of a kit that have at least one item to ask. "Learned" needs an unaided correct answer to an item of the
+ * skill (learner/kt/ledger.js), so a skill with nothing to ask can be taught but never learned: counting it kept eight
+ * topics "in progress" for ever (CD-01). Reading-aloud skills have no item; some English skills lose every item at load.
+ * @param {{ skills: { id: string }[], items: { skillId: string }[] } | null} kit
+ * @returns {Set<string>}
+ */
+export function askableSkillIds(kit) {
+  const withItem = new Set((kit?.items ?? []).map((i) => i.skillId));
+  return new Set((kit?.skills ?? []).map((s) => s.id).filter((id) => withItem.has(id)));
+}
+
+/**
+ * PURE. The rows that decide a topic and how many skills it has, given the askable skill ids (askableSkillIds), or null
+ * when the kit cannot be read (then every row decides and the count is unknown).
+ * @param {{ skillId: string }[]} states @param {Set<string> | null} askable
+ */
+export function decidingStates(states, askable) {
+  return askable ? { states: states.filter((s) => askable.has(s.skillId)), count: askable.size } : { states, count: 0 };
+}
+
+/**
  * Pure placement: first not-done topic in `order` (from `start`, wrapping), then back-chain. A weak prerequisite is always taught
  * first; when the candidate itself is weak, an unseen or unfinished prerequisite is taught first too
  * (struggling at grade level is the signal to go down a level).
@@ -127,13 +148,14 @@ export async function nextTopicFor(child, { subject, chapter, startGE, date, rev
     const tid = topicOf(r.skill_id);
     if (!tid) continue;
     if (!byTopic.has(tid)) byTopic.set(tid, []);
-    byTopic.get(tid).push({ status: r.status, pKnown: r.p_known, attempts: r.attempts });
+    byTopic.get(tid).push({ skillId: r.skill_id, status: r.status, pKnown: r.p_known, attempts: r.attempts });
   }
   // in parallel (QA D22: one awaited kit read per topic made the parent's reads slow)
   const tids = [...byTopic.keys()];
-  const counts = await Promise.all(tids.map((tid) => getKit(tid, { generate: false }).then((k) => k?.skills.length ?? 0, () => 0)));
-  const skillCounts = new Map(tids.map((tid, i) => [tid, counts[i]]));
-  const statusOf = (tid) => topicStatus(byTopic.get(tid) ?? [], skillCounts.get(tid));
+  const askable = await Promise.all(tids.map((tid) => getKit(tid, { generate: false }).then(askableSkillIds, () => null)));
+  // a topic is decided only on the skills that have something to ask (CD-01); a topic with no readable kit keeps all its rows
+  const decided = new Map(tids.map((tid, i) => [tid, decidingStates(byTopic.get(tid), askable[i])]));
+  const statusOf = (tid) => { const d = decided.get(tid); return d ? topicStatus(d.states, d.count) : "unseen"; };
   // Prerequisite ids can point outside the seed; only known topics are candidates.
   const prereqsOf = (tid) => (getTopic(tid)?.prerequisites ?? []).filter((p) => getTopic(p));
   // round 7 F: inside a test window with chapters, revise only those (revisionPick); null → the usual choice below

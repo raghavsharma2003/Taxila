@@ -1,7 +1,7 @@
 # Round 7 F (director6, dc-r7-script-walk-v4): replace the kit card characters "Riya"/"Asha" with the {friendF} slot
 # (Brain fills it in findItem with a girl's name that is never the child's). Fields the runtime does not fill (worked
 # examples, passages) get the fixed name Nisha; a unit already naming Zoya/Meera/Tara/Diya renames that character first.
-# Each file keeps its own JSON format. HELD until the Games banks (data/arena, data/play) fill {friendF} too:
+# Each file keeps its own JSON format. The Games banks (data/arena, data/play) fill {friendF} too (server/play/levels.js), so run both:
 #   python3 scripts/kits/friend-slot.py && node server/play/tools/build-arena.mjs && node server/play/tools/build-vakya.mjs
 import json,glob,re,sys
 NAME=re.compile(r"(?<![A-Za-z])(Riya|Asha)(?![A-Za-z])")
