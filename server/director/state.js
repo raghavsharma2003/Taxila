@@ -37,7 +37,7 @@ import { skillSess } from "../comprehension/budget.js";
 import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
-import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst } from "./knows-walk.js";
+import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark } from "./knows-walk.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -767,7 +767,7 @@ function walkNextV2(s, input, prefix, sk) {
     if (kind === "check") {
       const c = sk.checks.find((x) => x.id === id);
       if (!c) { w.i += 1; continue; }
-      const item = friendly(scriptCheckItem(skillId, c));
+      const item = knowsMark(s, friendly(scriptCheckItem(skillId, c))); // round 8: the ledger's recheck / probeFor marks
       if (gone(item.id)) { w.i += 1; continue; }
       s.scriptCard = item; s.phase = "practice";
       activate(s, item);

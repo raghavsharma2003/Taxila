@@ -133,3 +133,16 @@ export function knowsPlanAtStart({ entry, kit, ledger, skills = {}, history = {}
   const seen = history && Object.keys(history).length ? history : Object.fromEntries(Object.entries(ledger?.skills ?? {}).map(([id, sk]) => [id, sk?.items ?? []]));
   return planFor({ script, kit, skills: known, history: seen, mixups, brief, interests, memory, now });
 }
+
+/**
+ * The ledger's two marks on a check card the plan chose (learner-evidence.md §9): `recheck: true` on a compressed skill's
+ * opening card (a right answer re-checks the learned skill; a miss withdraws "learned" at once), and `probeFor: <mix-up>`
+ * on the card her open mix-up put first (a right unaided answer discriminates that mix-up). Any other card is unchanged.
+ */
+export function knowsMark(s, item) {
+  if (!s?.knows || !item) return item;
+  const w = s.walk;
+  const recheck = w?.compress && !w.compress.done && w.compress.cardId === item.id;
+  const probe = (s.knows.because ?? []).find((b) => b.choice === "checkOrder" && b.fact?.cardId === item.id)?.fact?.misconceptionId ?? null;
+  return recheck || probe ? { ...item, ...(recheck ? { recheck: true } : {}), ...(probe ? { probeFor: probe } : {}) } : item;
+}

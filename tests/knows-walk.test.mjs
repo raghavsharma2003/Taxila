@@ -126,6 +126,20 @@ describe("round 8 D: the real walk with a plan", () => {
     });
   }
 
+  test("the ledger's marks: the compressed opener's card carries recheck, her mix-up's first check carries probeFor", () => {
+    const C = childrenFor("c5-maths-ch02-t01");
+    const meera = planFor({ script: C.script, kit: C.kit, now: NOW, ...C.children.meera.input });
+    const wm = walkReal("c5-maths-ch02-t01", { plan: meera, answer: () => ({ verdict: "right" }) });
+    const opener = wm.states.map((st) => st.scriptCard).find((c) => c?.id === `script:${C.kit.skills[0].id}:${meera.compressAt[C.kit.skills[0].id]}`);
+    assert.equal(opener?.recheck, true);
+    assert.ok(wm.states.every((st) => !st.scriptCard?.recheck || st.scriptCard.id === opener.id), "only that card");
+    const kabir = planFor({ script: C.script, kit: C.kit, now: NOW, ...C.children.kabir.input });
+    const rec = kabir.because.find((b) => b.choice === "checkOrder");
+    const wk = walkReal("c5-maths-ch02-t01", { plan: kabir, answer: () => ({ verdict: "right" }), interests: C.children.kabir.input.interests });
+    const probe = wk.states.map((st) => st.scriptCard).find((c) => c?.id === rec.fact.cardId);
+    assert.equal(probe?.probeFor, rec.fact.misconceptionId);
+  });
+
   test("the trace: a turn's because records become knows.<choice> decision rows; the start's ride the first turn", () => {
     const prev = { turn: 0, knowsApplied: [{ choice: "firstCard", on: "i1", fact: { kind: "closed_badly" }, source: "s", turn: 0 }] };
     const next = { turn: 1, knowsApplied: [...prev.knowsApplied, { choice: "compress", on: "s1", fact: { kind: "learned_delayed_check" }, source: "s", turn: 1 }] };
