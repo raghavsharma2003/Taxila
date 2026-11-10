@@ -8,6 +8,7 @@ import { pickLevels } from "../../src/play/core/pick.ts";
 import { pickArt } from "../../shared/play.ts";
 import { registerKaalEvents } from "../../src/play/families/kaal/kaal.logic.ts";
 import { fillFriendDeep } from "../director/friend.js";
+import { adaptAfter, liftedPL, settleBecause } from "./choose.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let COVERAGE = null;
@@ -39,6 +40,28 @@ export function entryFor({ skillId = null, topicId = null, family = null, goal =
   if (skillId) return cov.entries.find((x) => ok(x) && x.skillIds.includes(skillId)) ?? null;
   if (topicId) { const e = cov.entries.find((x) => ok(x) && x.topicId === topicId); if (e) return e; }
   return null;
+}
+/** Round 8 P1: EVERY coverage entry admitting the skill (across families and modes), in file order (the first is
+ *  entryFor's). A turn with no skill known keeps the topic's one entry (its evidence is on that entry's own skill). */
+export function entriesFor({ skillId = null, topicId = null, family = null, goal = null } = {}, cov = coverage()) {
+  if (playOff()) return [];
+  const ok = (e) => (!family || e.family === family) && (!goal || e.goal === goal);
+  if (skillId) return cov.entries.filter((x) => ok(x) && x.skillIds.includes(skillId));
+  const e = entryFor({ topicId, family, goal }, cov);
+  return e ? [e] : [];
+}
+/** The kit's belief text for a kit misconception id (data/kits/<class>-<subject>.json), for a `because` fact; the id when
+ *  the kit has none. Each kit file is read once, and only when a because needs its text. */
+const KIT_BELIEFS = new Map();
+export function beliefOf(misId) {
+  const m = /^(c\d-[a-z]+)-/.exec(String(misId ?? ""));
+  if (!m) return misId ?? null;
+  if (!KIT_BELIEFS.has(m[1])) {
+    const map = new Map();
+    try { for (const t of JSON.parse(readFileSync(join(ROOT, "data/kits", `${m[1]}.json`), "utf8")).topics ?? []) for (const x of t.misconceptions ?? []) if (x?.id && x.belief) map.set(x.id, String(x.belief)); } catch { /* the id stands */ }
+    KIT_BELIEFS.set(m[1], map);
+  }
+  return KIT_BELIEFS.get(m[1]).get(misId) ?? misId;
 }
 export const entryKey = (e) => `${e.topicId}|${e.family}/${e.mode}|${e.goal}`;
 export function entryByKey(key, cov = coverage()) { return cov.entries.find((e) => entryKey(e) === key) ?? null; }
@@ -80,7 +103,8 @@ export function genRequest(s, entry) {
   return {
     family: entry.family, mode: entry.mode, topicId: entry.topicId, skillId: s.skillId ?? entry.skillId, classLevel: s.classLevel, fade: s.fade,
     goal: entry.goal, mis: s.mis ?? {}, misMap: entry.misMap, grammar: grammarOf(entry), recent: s.recent ?? [], seed: s.seed, harder: !!s.harder,
-    ...(typeof s.pL === "number" ? { pL: s.pL } : {}),
+    // round 8 P2: her pL plus the session's between-level lift (a clean first-try win steps the band up); no lift = s.pL
+    ...(typeof liftedPL(s) === "number" ? { pL: liftedPL(s) } : {}),
     ...(s.focus ? { focus: s.focus } : {}),
   };
 }
@@ -116,13 +140,35 @@ export function nextBody(s, entry, door) {
   const recent = [...(s.recent ?? []), played?.sig ?? played?.levelId].filter(Boolean).slice(-6);
   // the misconception the level just played confirmed (set by /api/play/act at its end) becomes the next level's focus
   const focus = s.nextFocus ?? s.focus ?? null;
-  const body = { ...s, n, seed: seedOf(s.childId, s.key, n), door, harder: false, recent, ...(focus ? { focus } : {}) };
-  delete body.nextFocus;
+  // round 8 P2: the band step the level just played earned (set by /act at its end), and its pending because
+  const lift = Number(s.nextLift ?? s.lift) || 0;
+  const pending = s.nextBecause ?? null;
+  let body = { ...s, n, seed: seedOf(s.childId, s.key, n), door, harder: false, recent, ...(focus ? { focus } : {}) };
+  if (lift > 0) body.lift = lift;
+  delete body.nextFocus; delete body.nextLift; delete body.nextBecause;
+  delete body.because;   // a because explains ONE level's choice (round 8); the next level carries its own or none
   if (door === "teekha") {
     const r = levelsFor(body, entry);
-    if (r && !r.teekha && (body.fade ?? 1) < 3) return { ...body, fade: (body.fade ?? 1) + 1, door: "garam", up: true };
+    if (r && !r.teekha && (body.fade ?? 1) < 3) body = { ...body, fade: (body.fade ?? 1) + 1, door: "garam", up: true };
   }
+  // the step's because is kept only when the level served does what it claims (a mix-up claim needs a level showing it)
+  const b = pending ? settleBecause(pending, currentLevel(body, entry)) : null;
+  if (b) body.because = [b];
   return body;
+}
+/**
+ * Round 8 P2: the session body after a level's acts (what /api/play/act signs). Between levels only: the CURRENT level's
+ * inputs never change (nextFocus / nextLift / nextBecause are read by nextBody, never by genRequest).
+ */
+export function afterLevelBody(s, { grade = null, level = null, history = null } = {}) {
+  const s2 = { ...s, hist: history };
+  if (!grade || !level) return s2;
+  const seen = (grade.evidence ?? []).find((r) => r.misconceptionId)?.misconceptionId ?? null;
+  if (seen) s2.nextFocus = seen;
+  const step = adaptAfter({ grade, level, s, beliefOf });
+  if (step?.lift) s2.nextLift = step.lift;
+  if (step?.because) s2.nextBecause = step.because;
+  return s2;
 }
 export function artFor(s, entry) {
   return pickArt({ family: entry.family, subject: entry.subject === "maths" ? "maths" : "science", topicId: entry.topicId, classLevel: s.classLevel, topicArts: entry.arts, childArt: s.childArt ?? null, lastArt: s.lastArt ?? null });

@@ -9755,3 +9755,69 @@ The dry matrix as a gate; responses compiled, not chosen; the aside return gets 
 - listening is below 3.5 with compiled responses: the failing cells are re-authored by Learning, and the runtime is not touched;
 - the model-written aside reply fails its predicate more than one time in five, or is wrong about the child's words: back to a neutral joint, and listening to an aside becomes its own piece of work;
 - any misgrade, unsaid board or held cost: as before.
+
+
+<!-- merged from inbox/r8-play-pick.json -->
+## `dc-r8-play-pick-the-game` (2026-11-10)
+
+Round 8 Play P1. The play server chooses the game from what she holds: one pure picker, `server/play/choose.js` `chooseEntry`, over every coverage entry admitting the skill.
+
+- **Score** = 2·info + fit + novelty. info = Σ over the mix-ups the entry's garam level discriminates (own misMap) of max(0, P(mis) − 0.15), +1 for the active belief. fit = −|pFirstTry − 0.75| when her pL is known. novelty = −0.3 each for a family/mode, entry or level signature she just played.
+- The best entry is served when it beats the first entry by 0.1; otherwise the first.
+- An active belief (the lesson's focus, else a mapped P(mis) > 0.5) becomes the session focus, so the first level tests it.
+- Nothing known = the first entry, exactly as before; no level is generated for the others.
+- Every departure carries `because: {choice, fact, source}` (fact from the kit's belief text), on the signed session and returned by `/api/play/start`, `/level` and the forge live seam.
+
+**Why:** 269 of 744 admitted skills have 2-4 games and the server always served the first.
+
+**Reverse if:**
+- the fit term (pFirstTry is uncalibrated across families) moves children to a family whose measured first-try rate is outside 0.6-0.9 over 20+ levels: drop fit across families, keep info;
+- a belief-chosen family confirms or clears the belief no faster than the first-entry family over 50 sessions: serve the first entry with the belief as its focus only.
+
+## `dc-r8-play-adapt-between-levels` (2026-11-10)
+
+Round 8 Play P2. The play session adapts between levels, never inside one.
+
+- A mal-rule miss: the next level's focus is that belief, at the same band.
+- A clean first-try win: one lift step (+0.1 on her pL, else the class default; cap 0.95; at most 2 steps) for the picker's request.
+- The fade at start comes from her `kt_skill_state` row (mastered/durable or run >= 3: fade 3; run >= 1 or pL >= 0.7 with the last answer not a miss: fade 2; else 1). With no row, the request's fade.
+- Each step's `because` rides the next level's signed body only when the served level does what it claims, and is returned with the doors, `/next` and `/level`.
+
+**Why:** the session served the class band and the request's fade whatever she did.
+
+**Reverse if:**
+- lifted levels show a first-try rate below 0.55 over 30 lifted levels: shrink the step, or drop the lift after a non-clean level;
+- history fades raise the impasse rate at fade 3 above the fade-1 rate: map run >= 3 to fade 2;
+- the Director needs to set the fade: the request's fade wins when the caller marks it explicit.
+
+
+<!-- merged from inbox/r8-play-trail.json -->
+## `dc-r8-play-trail-signed-with-rows` (2026-11-10)
+
+Round 8 Play P3. Each ended level gets a trail, built by the server from its own replay (`server/play/trail.js`): misses before the win, the mal-rules they matched (rule and kit misconception id, at most 4), undos, law refusals, hints (always 0: no family has a hint act), acts to the win against the solver's minimum, first-try clean, solved.
+
+- Child-free, fixed keys, bounded; `cleanTrail` re-bounds it on read.
+- Signed inside the evidence token's payload, with the rows. A pre-P3 token verifies with `trail: null`.
+- Returned from `/api/play/act` as `trail` when the level ends. The lesson fold carries it onto the KT event as `playTrail`, metadata only.
+- It changes no level and no grade (tested over every coverage entry), so no re-certification.
+
+**Reverse if:** a reader starts deciding a grade, weight or mastery from the trail; or the token outgrows the 8 KB cap.
+
+## `dc-r8-home-play-signed-not-folded` (2026-11-10)
+
+Round 8 Play P3. Home play (no lesson) is signed for the child: `/api/play/act` returns `homeToken` (the same rows as source "home", the trail, no lessonId). The lesson path refuses it.
+
+It is not folded. `server/play/home.js` `homeKtEvents` is the fold, behind `TAXILA_HOME_PLAY_FOLD` (off) with no production caller. Its four rules, in code and tested:
+
+1. game weight 0.5, chance weight 0.25 for one-decision correct rows, any other weight dropped;
+2. never sets unaided;
+3. never is or spends the delayed check (2 and 3: every event is source "game", the ledger's guard);
+4. at most 3 levels per skill per IST learning day, prior folds included.
+
+No migration: the token lives on the `/act` response (6 h TTL) and the trail on the `play.outcome` trace record.
+
+**Reverse if:** the learner session settles a different home weight; or switching on needs durable home tokens (a home_play table, or fold at `/act` time).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-r7-passage-artifact` (2026-11-10): A kit passage is shown as reading matter, its own tray artifact (kind "passage"), never a whiteboard template: the whiteboard's anti-narration rule (24 characters, no sentences) stays (main's yes, 2026-11-10; Learning's PASSAGE.md had asked for passage@1). server/studio/passage.js pages the kit's text exactly (poems and letters between lines, prose at sentence ends, ≤ 280 characters / 8 lines at 360 px; the pages joined are the text); src/studio/PassageRenderer.tsx shows one page in real wrapped text, 16 px or more (18 Young), line height 1.6 for Devanagari matras, no sideways scroll (a page taller than a short tray scrolls down inside the box), prev / next of 44 px or more, the page the server names; the tray gate certifies it by predicate at the device's box (all 169 kit passages pass at p360, p412 and l1366, Older and Young). studioSeam.showPassage(lessonId, { passage, page, lang }) puts it on the tray, one piece per passage, a later call turning its page. Brain passes the page with the beat: to-brain/023 (on 020) adds studioPassageOf and pageFor (the page holding the text the item quotes). Reverse if a director run shows a child unable to read a passage at 360 px.

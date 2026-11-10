@@ -27562,6 +27562,42 @@
    "at": "2026-11-10",
    "title": "Proving a walk fix with a test that replays a recorded lesson up to one row and checks the next move (the form of the tests behind v6.6 to v6.10). What broke: the clarify-at-a-check-in row was reported fixed in v6.10 with a test on director18's rows c4 steering 6 and c5-t01 steering 6, and failed on those same two rows in director19, its third failing run; the paid run walks a new lesson whose earlier turns differ from the recording. And no test of that form can see faults nobody listed: a park sentence said twice in a row, a re-pose frame on a first posing, a return stacked on a card (all new in director19, all visible in a free 27-second dry run of the 16 lessons). Replays stay as regression pins; they are not evidence that the next run will pass. Evidence for a walk fix is a predicate over the whole dry matrix, seen failing before the fix.",
    "source": "inbox/r7-main-40.json"
+  },
+  {
+   "id": "dc-r7-passage-artifact",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "A kit passage is shown as reading matter, its own tray artifact (kind \"passage\"), never a whiteboard template: the whiteboard's anti-narration rule (24 characters, no sentences) stays (main's yes, 2026-11-10; Learning's PASSAGE.md had asked for passage@1). server/studio/passage.js pages the kit's text exactly (poems and letters between lines, prose at sentence ends, ≤ 280 characters / 8 lines at 360 px; the pages joined are the text); src/studio/PassageRenderer.tsx shows one page in real wrapped text, 16 px or more (18 Young), line height 1.6 for Devanagari matras, no sideways scroll (a page taller than a short tray scrolls down inside the box), prev / next of 44 px or more, the page the server names; the tray gate certifies it by predicate at the device's box (all 169 kit passages pass at p360, p412 and l1366, Older and Young). studioSeam.showPassage(lessonId, { passage, page, lang }) puts it on the tray, one piece per passage, a later call turning its page. Brain passes the page with the beat: to-brain/023 (on 020) adds studioPassageOf and pageFor (the page holding the text the item quotes). Reverse if a director run shows a child unable to read a passage at 360 px.",
+   "reverse": "a director run or a hand check shows a passage page unreadable at 360 px",
+   "source": "inbox/r7-studio-38.json"
+  },
+  {
+   "id": "dc-r8-play-pick-the-game",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8 Play P1: the play server chooses the game from what she holds. One pure picker (server/play/choose.js chooseEntry) over every coverage entry admitting the skill (across families and modes), not the first entry: score = 2·info + fit + novelty, info = Σ over the mix-ups the entry's garam level discriminates (its own misMap) of max(0, P(mis) − 0.15) (+1 for the active belief), fit = −|pFirstTry − 0.75| when her pL is known, novelty = −0.3 each for a family/mode, entry or level signature she just played; the best entry is served when it beats the first by 0.1, otherwise the first. An active belief (the lesson's focus, else a mapped P(mis) > 0.5) becomes the session focus, so the FIRST level (garam) tests it, not a door. Nothing known (no mapped mis above prior, no focus, no pL) = the first entry, exactly as before, with no level generated for the others. Every departure carries a because {choice, fact, source} (fact = the kit's belief text), stored on the signed session body and returned by /api/play/start, /level and the forge live seam; the chosen entry key stays in the session so every route regenerates the same level. The lesson's forge seam no longer pins compose's goal when a skill is known (compose's rung is the first entry, so the default is unchanged) and passes the last shown family as novelty. Why: 269 of 744 admitted skills have 2-4 games and the server always served the first, so an open mix-up only one of them can show was never tested first. Reverse if: cross-family pFirstTry (uncalibrated per family) makes the fit term move children to a family whose measured first-try rate is outside 0.6-0.9 on 20+ levels (then drop fit across families, keep info); or children's game evidence after a belief-chosen family confirms/clears the belief no faster than the first-entry family over 50 sessions (then serve the first entry and keep the belief as its focus only); or the literature lever (adaptive-sequencing-as-the-lever) is measured here as no gain and the cost matters.",
+   "source": "inbox/r8-play-pick.json"
+  },
+  {
+   "id": "dc-r8-play-adapt-between-levels",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8 Play P2: the play session adapts between levels, never inside one (server/play/choose.js adaptAfter, fadeFromHistory, liftedPL; levels.js afterLevelBody/nextBody). A level whose first decisive moment was a mal-rule (grade evidence misconceptionId) makes the next level's focus that belief at the same band (no lift change); a clean first-try win (solved, clean, first decisive moment solved) adds one lift step (+0.1 to HER pL, else the class default 0.75, cap 0.95, at most 2 steps) to the pL the picker is asked for, so both doors move harder; the fade at start comes from her kt_skill_state row (mastered/durable or run >= 3 -> 3; run >= 1 or pL >= 0.7 with the last answer not a miss -> 2; else 1; no row or n = 0 -> the request's fade). The step is staged as nextFocus/nextLift/nextBecause on /act and applied by nextBody, so the current level regenerates unchanged; each step's because {choice, fact, source} is stored on the next level's signed body only if the served level does what it claims (a mix-up claim needs a level that discriminates it) and is returned with the doors, /next and /level. Why: the session served the class band and the request's fade whatever she did. Reverse if: lifted levels show a first-try rate below 0.55 over 30 lifted levels (shrink the step or drop the lift after a non-clean level); history fades raise the impasse rate at fade 3 above the fade-1 rate (map run >= 3 to fade 2); or the lesson's Director needs to set the fade (then the request's fade wins over history when the caller marks it explicit).",
+   "source": "inbox/r8-play-pick.json"
+  },
+  {
+   "id": "dc-r8-play-trail-signed-with-rows",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8 Play P3: each ended level gets a trail, built by the SERVER from its own replay of the raw acts (server/play/trail.js buildTrail, called by grade.js gradeActs after the grade): v, levelId, skillId, game, fade, solved, firstTry (P2's rule: solved, clean, first decisive moment a solve), misses (mal-rule signatures + near misses before the win), refused, mal [{rule, mis}] (<= 4, first seen first), undos, hints (always 0: no family has a hint act; the device's impasse flag is a claim and is not read), acts to the win, minActs (proof.minActs else logic.solve length), extra. Child-free, fixed keys, bounded (cleanTrail re-bounds on read). It is signed INSIDE the evidence token's payload (one HMAC over rows + trail; a pre-P3 token verifies with trail null) and returned from /api/play/act as `trail` when the level ends; the lesson fold carries it onto the KT event as `playTrail` (metadata only: no column, no change to outcome or weight). The trail changes no level and no grade (test: every coverage entry's gradeActs grade equals the family's own grade, with and without a mal-rule miss), so no re-certification. Reverse if: a reader starts deciding a grade, weight or mastery from the trail (it is a report; move that logic onto the replay itself), or the token outgrows the 8 KB verifySession cap.",
+   "source": "inbox/r8-play-trail.json"
+  },
+  {
+   "id": "dc-r8-home-play-signed-not-folded",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8 Play P3: play from the home (no lessonId) is signed for the child: /api/play/act returns `homeToken` (kind play-home, the same rows re-marked source \"home\", the trail, the signing time `at`, no lessonId; server/play/evidence.js signHomeEvidence / verifyHomeEvidence). The lesson path refuses it and the home verifier refuses lesson tokens. It is NOT folded: server/play/home.js homeKtEvents is the fold, behind TAXILA_HOME_PLAY_FOLD (off by default) with no production caller, and enforces four rules in code: (1) game weight 0.5 via \"game\", the chance weight 0.25 (controllerEasy) on the server's CHANCE_WEIGHT rows, any other weight dropped; (2) never sets unaided and (3) never is or spends the delayed check (every event is source \"game\", the ledger's guard; tested by folding home events through kt/ledger.js); (4) at most HOME_DAILY_CAP = 3 levels per skill per IST learning day, prior folds (passed in, e.g. kt_evidence rows with episode_id 'home:%') included. No migration: the token lives on the /act response and the trail on the play.outcome trace record; the token expires with the play key's 6 h TTL. Reverse if: the learner session settles a different home weight (change rule 1's constants, keep the guards), or the switch-on needs durable home tokens (then a home_play table, or fold at /act time instead of from a device-held token).",
+   "source": "inbox/r8-play-trail.json"
   }
  ],
  "edges": [
@@ -44189,6 +44225,46 @@
    "src": "rj-r7-replay-tests-as-proof-of-walk-fixes",
    "rel": "constrains",
    "dst": "dc-r7-script-walk-v6-11"
+  },
+  {
+   "src": "dc-r7-passage-artifact",
+   "rel": "constrains",
+   "dst": "dc-r7-held-board"
+  },
+  {
+   "src": "dc-r8-one-reader-with-because",
+   "rel": "constrains",
+   "dst": "dc-r8-play-pick-the-game"
+  },
+  {
+   "src": "dc-r8-selection-before-generation",
+   "rel": "constrains",
+   "dst": "dc-r8-play-pick-the-game"
+  },
+  {
+   "src": "dc-r8-play-pick-the-game",
+   "rel": "constrains",
+   "dst": "dc-r8-play-adapt-between-levels"
+  },
+  {
+   "src": "in-game-success-as-mastery",
+   "rel": "constrains",
+   "dst": "dc-r8-play-adapt-between-levels"
+  },
+  {
+   "src": "dc-r8-play-adapt-between-levels",
+   "rel": "constrains",
+   "dst": "dc-r8-play-trail-signed-with-rows"
+  },
+  {
+   "src": "in-game-success-as-mastery",
+   "rel": "constrains",
+   "dst": "dc-r8-home-play-signed-not-folded"
+  },
+  {
+   "src": "dc-r8-play-trail-signed-with-rows",
+   "rel": "constrains",
+   "dst": "dc-r8-home-play-signed-not-folded"
   }
  ]
 }
