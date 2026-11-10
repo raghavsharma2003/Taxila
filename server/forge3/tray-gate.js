@@ -37,6 +37,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { verdictFor, certificates } from "./certify.js";
+import { approvedVerdict } from "../studio/approved.js";
 import { playCertificates, playPassed } from "./compose.js";
 import { fitBoard, minPxAt } from "../../src/studio/boardFit.ts";
 import { boardFrame } from "../../src/studio/boardView.ts";
@@ -202,6 +203,10 @@ export function certifyForTray(artifact, ctx = {}) {
       case "stagecraft": {
         const sc = artifact.stagecraft ?? {};
         if (sc.rung === "board") return out(false, "none", "a Stagecraft board rung (boards come from the whiteboard path)");
+        // (the approval lane, STUDIO-11: a generated spec approved OFFLINE — its hash in data/studio-approved, rendered here at the
+        // three sizes and passed by a separate Claude judge — is shown at the sizes its render passed; the runtime calls no judge)
+        const ap = sc.rung === "generated_spec" ? approvedVerdict(sc.archetype, sc.spec) : null;
+        if (ap) { const at = !!ap.byViewport?.[vp]; return out(at, "approved", at ? `approved ${ap.approved}, rendered at ${vp}` : `approved ${ap.approved}, but not legible at ${vp}`); }
         if (sc.rung === "generated_spec" || !ctx.topicId) {
           const v = ctx.verdict;
           if (!v || v.unavailable) return out(false, "judge", "not judged at the child's sizes");

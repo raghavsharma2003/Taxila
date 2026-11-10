@@ -36,6 +36,8 @@ import { createGradeSession, studioEvidenceEvent, writeStudioEvidence } from "./
 import * as stagecraft from "../stagecraft/seam-bridge.js";
 import { startStagecraft, stopStagecraft, touchStagecraft } from "../stagecraft/lesson.js";
 import { forgetPictureLesson } from "./picture.js";
+import { approvedFor } from "./approved.js";
+import { factsOfSpec } from "../stagecraft/builders.js";
 import * as boardSync from "../stagecraft/board-sync.js";
 import { sceneFor } from "../forge/animate/scenes.js";
 import { sceneMayPlay } from "../../shared/scene.js";
@@ -247,7 +249,8 @@ export function slotOf(p, state = p.state) {
   // round 7 M5a: a code-built scene is its own artifact
   if (p.source === "scene") return { slotId: p.slotId, intentId: p.intentId, state: state === "fallback_ready" ? "fallback_shown" : state, ...(p.artifact ? { artifact: p.artifact } : {}) };
   // round 3 forge: a play piece (server/forge3/live.js) is its PlayArtifact; the play server grades it from raw acts
-  if (p.source === "play") return { slotId: p.slotId, intentId: p.intentId, state: state === "fallback_ready" ? "fallback_shown" : state, ...(p.artifact ? { artifact: p.artifact } : {}) };
+  // (the approval lane: an approved generated piece is its own StagecraftArtifact, made and gated in requestIntent)
+  if (p.source === "play" || p.source === "approved") return { slotId: p.slotId, intentId: p.intentId, state: state === "fallback_ready" ? "fallback_shown" : state, ...(p.artifact ? { artifact: p.artifact } : {}) };
   // round 5: a picture (studio/picture.js) is its own artifact, like a board
   const art = p.artifact?.kind === "whiteboard" || p.artifact?.kind === "image" ? p.artifact : p.kind === "whiteboard" || p.kind === "image" ? undefined : artifactOf(p);
   const st = state === "fallback_ready" ? "fallback_shown" : state;
@@ -1109,10 +1112,33 @@ export const studioSeam = {
       const failing = (given ? [{ id: shownBefore(given.script, { avoid: onPage, seen: L.wbSeen }) ? "same_page" : "tray" }] : boardSync.regate(boardSync.retime(ask.script, Math.max(800, Number(ask.script.durationMs) || 0), ctx0.speechMs), ask, ctx0).gate?.checks ?? []).filter((c) => c.pass !== true).map((c) => c.id);
       return { slotId: p.slotId, intentId, state: "failed", refused: failing.slice(0, 6) };
     }
+    // the approval lane (STUDIO-11; dc-r8-selection-before-generation layer 3): a scripted remediation for a mix-up the child
+    // just showed (beat rem:<misconceptionId>) that the script marks `piece` reveals the generated piece APPROVED for that mix-up
+    // (data/studio-approved: predicate checks, a render at three sizes, a separate Claude judge) when the tray gate passes it at
+    // this device's size; else the script's own board, as before. Any other child never meets it
+    const sb0 = ask?.intent?.scriptBeat;
+    if (sb0?.kind === "remediation" && sb0.piece && /^rem:./.test(String(sb0.beatId ?? ""))) {
+      const ap = approvedFor({ topicId: ask?.kit?.topicId || L.kit?.topicId || L.topicId, misconceptionId: String(sb0.beatId).slice(4) })[0] ?? null;
+      if (ap) {
+        const art = { kind: "stagecraft", stage: { w: 1000, h: 625 }, stagecraft: { rung: "generated_spec", archetype: ap.archetype, spec: ap.spec, approved: ap.id } };
+        const tg = certifyForTray(art, gateCtx(L, p));
+        if (tg.ok) {
+          Object.assign(p, { kind: "stagecraft", archetype: ap.archetype, source: "approved", approved: ap.id, artifact: art, state: "revealed", revealedAt: Date.now(), revealedTurn: L.turn,
+            facts: { kind: "game", archetype: ap.archetype, onScreen: factsOfSpec(ap.archetype, ap.spec) } });
+          if (on && on.kind === "whiteboard" && !on.retired) retirePiece(L, on.intentId, "replaced");
+          push(L, { t: "slot", slot: slotOf(p, "revealed") });
+          traceRecord("studio.approved_piece", { intentId, approved: ap.id, misconceptionId: ap.for?.misconceptionId ?? null });
+          return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
+        }
+        noteRefusal(L, p, tg, "approved");
+      }
+    }
     // dc-r7-held-board (director16): a script turn draws the unit board Brain holds — kept when it is the page up, switched at
     // most once, its second view beside it on a picture ask. Never the line-driven ladder: refused, the page up stays
     if (ask?.intent?.held) {
-      const hr = boardFirst.heldBoard(ask, { keepRef: L.wbPrevRef ?? null, keepPage: onPage ? L.wbPrevPage ?? onPage : null });
+      // (P6: the picture preselectWhiteboard decided for this intent — her line was built from its view — is the one drawn)
+      const decided = L.prePicture?.intentId === String(intentId) ? { picture: L.prePicture.pt } : {};
+      const hr = boardFirst.heldBoard(ask, { keepRef: L.wbPrevRef ?? null, keepPage: onPage ? L.wbPrevPage ?? onPage : null, ...decided });
       if (hr && drawn(hr)) { traceRecord("studio.board_held", { intentId, unit: hr.held?.unit ?? null, changed: !!hr.held?.changed, split: !!hr.split, kept: !!hr.kept }); return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact }; }
       L.pieces.delete(intentId); L.onScreen = onPrev;
       return { slotId: p.slotId, intentId, state: "failed", refused: ["held"] };
@@ -1250,7 +1276,12 @@ export const studioSeam = {
       // dc-r7-held-board (director16): a script turn's board is the unit board Brain holds — no line-driven pick. Her line is
       // written about the held board (its row); on a picture ask, about the view drawn beside it (preselectedAltLine)
       if (ask?.intent?.held) {
-        const hr = boardFirst.heldBoard({ ...ask, line: { ...(ask.line ?? {}), text: "" } }, { keepRef: L.wbPrevRef ?? null, keepPage: L.wbPrevPage ?? null });
+        // (P6: a picture ask is decided ONCE, here — the view and her line from the same pictureTurn call; the take draws
+        // exactly that decision, whatever its own ask carries)
+        const req = ask.intent.request;
+        const pt = req && req.kind !== "example" ? boardFirst.pictureTurn(ask, { keepRef: L.wbPrevRef ?? null, keepPage: L.wbPrevPage ?? null }) : null;
+        L.prePicture = { intentId: String(ask.intent.intentId), pt };
+        const hr = boardFirst.heldBoard({ ...ask, line: { ...(ask.line ?? {}), text: "" } }, { keepRef: L.wbPrevRef ?? null, keepPage: L.wbPrevPage ?? null, picture: pt });
         L.preAltView = hr?.altView ?? null; L.preAltLine = hr?.altLine ?? null;
         if (!hr) return null;
         const row = boardFirst.rowOfFacts(hr.facts ?? hr.script?.facts ?? {}, boardFirst.countsOf(hr.split ? hr.panels[0] : hr.script));

@@ -8,7 +8,9 @@ const HINDI = [
   // (v6.9 R6, main on director17: "Tab jitne slice the" became "jitne tukda the": a slice after jitne, kitne, saare, sab, kai, a count
   // word or a number of two or more is plural)
   [/\b(jitne|kitne|saare|sare|sab|kai|do|teen|chaar|paanch|chhah|saat|aath|nau|das|[2-9]|[1-9]\d+)\s+slice\b/gi, (m, w) => `${w} tukde`],
-  [/\bslices\b/gi, "tukde"], [/\bslice\b/gi, "tukda"], [/\bperimeter\b/gi, "parimap"], [/\bsides\b/gi, "bhujayein"], [/\bside\b/gi, "bhuja"],
+  [/\bslices\b/gi, "tukde"], [/\bslice\b/gi, "tukda"], [/\bperimeter\b/gi, "parimap"], [/\bsides\b/gi, "bhujayein"],
+  // (v6.10 R7, main on director18: "upar 6, side mein 4" became "bhuja mein 4" — "side mein" is a place, not a side of a shape)
+  [/\bside\s+(mein|par|se)\b/gi, (m, w) => `bagal ${w}`], [/\bside\b/gi, "bhuja"],
   [/\btotal\b/gi, "kul"], [/\banswer\b/gi, "jawab"], [/\bsteps?\b/gi, "kadam"], [/\brectangles?\b/gi, "aayat"], [/\bsquares?\b/gi, "varg"],
   [/\btriangles?\b/gi, "tribhuj"], [/\blength\b/gi, "lambai"], [/\b(?:breadth|width)\b/gi, "chaudai"], [/\bshapes?\b/gi, "aakaar"],
   [/\bhalf\b/gi, "aadha"], [/\bcompare(?=\s+kar)/gi, "tulna"], [/\bcompare\b/gi, "tulna karo"], [/\bbigger\b/gi, "bada"], [/\bsmaller\b/gi, "chhota"], [/\bgroups?\b/gi, "samooh"],
@@ -26,7 +28,10 @@ export function inHindiWords(line, { keep = [], card = null } = {}) {
   const [head, tail] = at >= 0 ? [text.slice(0, at), text.slice(at)] : [text, ""];
   const kept = keep.map((k) => String(k ?? "").trim().toLowerCase()).filter(Boolean);
   let out = head;
-  for (const [re, to] of HINDI) out = out.replace(re, (m, ...g) => (kept.some((k) => k === m.toLowerCase() || k.includes(m.toLowerCase())) ? m : typeof to === "function" ? to(m, ...g) : keepCase(m, to)));
+  // (v6.10 R7, main on director18: "group" said beside "samooh" — a word kept as a must-say term is kept everywhere in the line, never
+  // half-swapped)
+  const keptRule = (re) => kept.some((k) => { re.lastIndex = 0; const hit = re.test(k); re.lastIndex = 0; return hit; });
+  for (const [re, to] of HINDI) { if (keptRule(re)) continue; out = out.replace(re, (m, ...g) => (kept.some((k) => k === m.toLowerCase() || k.includes(m.toLowerCase())) ? m : typeof to === "function" ? to(m, ...g) : keepCase(m, to))); }
   // v6.1 R11 (director9: "Parimap (parimap)"): an English word glossed in brackets becomes the same word twice once it is in
   // Hindi words; the bracket goes
   return agree(out.replace(/(?<![\p{L}])(\p{L}+)\s*\(\s*\1\s*\)/giu, "$1")) + tail;

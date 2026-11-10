@@ -430,7 +430,8 @@ function silentTurn(s, input, item) {
     return { ...plan("break", SH.silenceCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }] }), silent: true };
   }
   const again = unheard ? SH.unheardAgain() : SH.silenceAgain();
-  if (item) return { ...plan(moveKindFor(item), SH.pose({ item, prefix: again }), { item, probe: probeFor(item), chips: optionChips(item) }), silent: true };
+  // (v6.10, Learning D13: the unheard ask-again is the script's authored askAgain line — brain/say.js renders request "unheard")
+  if (item) return { ...plan(moveKindFor(item), SH.pose({ item, prefix: again }), { item, probe: probeFor(item), chips: optionChips(item), ...(unheard && scriptOn() ? { request: "unheard" } : {}) }), silent: true };
   const last = s.lastMove;
   if (!last?.kind) return null;
   // the intake, a teaching step, a break: what she said last, again and simpler (never the next step)
@@ -1295,7 +1296,9 @@ function poseNext(s, input, prefix, preferred) {
   const skipped = new Set(s.skipped);
   const queued = s.nextItemId && !skipped.has(s.nextItemId) ? findItem(s, kit, s.nextItemId) : null;
   const verifying = s.verify && !skipped.has(`diag:${s.verify}`) ? findItem(s, kit, `diag:${s.verify}`) : null;
-  const item = preferred ?? verifying ?? queued ?? selectNext(s, kit, { easier: s.easier });
+  // (v6.10: a script card answered right this lesson is never posed again in it)
+  const rightNow = (it) => !!it && String(it.id).startsWith("script:") && (s.rightCards ?? []).includes(it.id) ? null : it;
+  const item = rightNow(preferred) ?? verifying ?? rightNow(queued) ?? selectNext(s, kit, { easier: s.easier });
   if (verifying && queued) s.queue = [queued.id, ...s.queue.filter((id) => id !== queued.id)];
   s.nextItemId = undefined; s.easier = false; s.verify = undefined;
   if (!item) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix, kit);
@@ -1447,6 +1450,8 @@ function afterWhy(s, input, item) {
 }
 
 /** v6.5 K2: "let's go on" said to a probe or a break offer (never an answer). */
+// v6.10 T2: the child says they already answered ("woh maine bata diya", "woh wala ho gaya")
+const ALREADY_SAID = /(?<![\p{L}])(?:(?:maine|main|mai)\s+(?:toh\s+)?(?:bata|bol|de|likh|kar)\s*(?:diya|di|chuka|chuki|dia)|(?:woh|wo|yeh|ye)\s+(?:wala\s+|waala\s+)?(?:toh\s+)?(?:ho|kar)\s+(?:gaya|liya|diya)|(?:i\s+)?already\s+(?:told|answered|said|did))(?![\p{L}])/iu;
 const GO_ON = /(?<![\p{L}])(?:aage\s+(?:chalo|badho|badhein|chalte\s+hain)|next|move\s+on|go\s+on|agla\s+(?:sawaal|wala))(?![\p{L}])/iu;
 const YES_REPLY = /^(?:haan|han|ha|haa|ji|ji haan|yes|yeah|ok|okay|theek hai|thik hai|samajh gaya|samajh gayi|samajh aa gaya|hmm+|achha|acha)[\s,.!]*$/i;
 const STOP_WORD = /\b(?:ruk|ruko|rukna|band|stop|bas\s+karo|khatam|thak|break|baad\s+mein|chhutti)\b/i;
@@ -1897,7 +1902,10 @@ function requestMove(s, input, item, req, labels) {
       // simpler on a Hindi request): a closed card is never reopened — the walk goes on, in their language
       if (item && s.pendingWhy === item.id && scriptOn() && isScriptCard(item) && !scriptFor(kit)?.script?.recordedRun) return { ...afterWhy(s, { ...input, cls: { outcome: "no_evidence", confidence: 1, source: "help", flags: {} } }, item), request: "language" };
       // (v6.9 T1: nothing of the live part left unsaid — the key and its why)
-      if (item && scriptOn() && isScriptCard(item) && !scriptFor(kit)?.script?.recordedRun && freshLivePart(s, kit, s.lastMove)?.none && responseShape("language", "spent_card") === "key") return { ...leaveItem(s, input, item, SH.reposeMissed()), request: "language" };
+      if (item && scriptOn() && isScriptCard(item) && !scriptFor(kit)?.script?.recordedRun && freshLivePart(s, kit, s.lastMove)?.none && responseShape("language", "spent_card") === "key"
+        // (v6.10 T2.5, main on director18 c6 stuck 8: the key came after "samajh nahi aaya" and "hindi mein", no attempt — a request never
+        // spends help, so only a card whose help a MISS spent is closed here)
+        && !helpLeft(s, kit, item) && helpSpentOn(s, kit, item)) return { ...leaveItem(s, input, item, SH.reposeMissed()), request: "language" };
       if (item) return plan(moveKindFor(item), p5Flag("STEER") ? SH.languageAskedP5({ lang: req.lang }) : SH.pose({ item, prefix: SH.languageAsked({ lang: req.lang }) }), { item, probe: probeFor(item), chips: optionChips(item), request: "language" });
       return plan("reteach", SH.languageAsked({ lang: req.lang, teaching: true }), { skillId: currentSkillId(s, kit, item), request: "language" });
     }
@@ -2090,7 +2098,10 @@ function p5RequestMove(s, input, item, req, labels) {
   };
   switch (req.type) {
     case "clarify":
-      if (item && scriptOn() && isScriptCard(item) && !scriptFor(kit)?.script?.recordedRun && freshLivePart(s, kit, s.lastMove)?.none && responseShape("clarify", "spent_card") === "key") return { ...leaveItem(s, input, item, SH.reposeMissed()), request: "clarify" };
+      if (item && scriptOn() && isScriptCard(item) && !scriptFor(kit)?.script?.recordedRun && freshLivePart(s, kit, s.lastMove)?.none && responseShape("clarify", "spent_card") === "key"
+        // (v6.10 T2.5, main on director18 c6 stuck 8: the key came after "samajh nahi aaya" and "hindi mein", no attempt — a request never
+        // spends help, so only a card whose help a MISS spent is closed here)
+        && !helpLeft(s, kit, item) && helpSpentOn(s, kit, item)) return { ...leaveItem(s, input, item, SH.reposeMissed()), request: "clarify" };
       if (item) return plan("repair", SH.clarifyQuestion(), { item, chips: optionChips(item), request: "clarify", lead: "they asked what the question means" });
       return teachAgainPlan(s, kit, "another");
     // v5 B2 (director7: "pehle main try karun" got the answer anyway): they try the step themselves. In the worked example
@@ -2158,6 +2169,8 @@ function p5RequestMove(s, input, item, req, labels) {
     }
     // a mid-thought: no question pinned this turn (no re-ask), the item stays the active one
     case "thinking": return plan("repair", SH.waitThinking(), { request: "thinking" });
+    // v6.10 T2: the card stays live; one short line asks for their answer once more (brain/say.js ASK_AGAIN, or the script's joints)
+    case "ask_again": if (item) { s.askedAgain = item.id; return plan("repair", SH.waitThinking(), { item, request: "ask_again" }); } return null;
     // ship5 fixer (experience B4): the duplex floor's hold offer (the child said "ruko / ek second" and then stayed quiet):
     // one warm check-in, no verdict, the item stays the active one (V5.2)
     case "hold_checkin": return plan("repair", SH.holdCheckin(), { request: "hold_checkin" });
@@ -2619,7 +2632,7 @@ function decide(s, input, item) {
   if (p5Flag("STEER") && cls?.alsoPark) s.later = pushLater(s.later ?? [], parkEntry({ ...cls.alsoPark, turn: s.turn, itemOnTable: true }));
   // v6.5 K2 (main, director13 c5-t02 steady 54–56: "woh wala ho gaya, aage chalo" to a why-probe got a stop menu, then her own
   // question again): "aage chalo", "ho gaya", "bata diya" — not an answer — moves on: a pending probe is closed, a break offer resumed
-  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && MOVE_ON.test(String(input.text ?? "")) && !(cls && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome))) {
+  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && MOVE_ON.test(String(input.text ?? "")) && req?.type !== "ask_again" && !(cls && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome))) {
     if (item && s.pendingWhy === item.id) return { ...afterWhy(s, { ...input, cls: { outcome: "no_evidence", confidence: 1, source: "help", flags: {} } }, item), request: "move_on" };
     if (s.lastMove?.kind === "break") { s.stopAsked = undefined; s.sidebar = undefined; return { ...resume(s, input, item, "they said to go on: straight back in, no fuss"), request: "move_on" }; }
     // v6.6 K3 (main, director14 c5-t02 steady 58, c5-t01 steady 16: "aage chalo" on a re-posed card got the stop menu): on a live
@@ -2805,6 +2818,19 @@ export function step(prev, input) {
     const { request: _r, ...rest } = input.cls;
     input = { ...input, cls: { ...rest, flags: { ...rest.flags, wantsToStop: false } } };
   }
+  // v6.10 T2 (main on director18 c5-t01 offtopic 38: "ruko, main khud karti hoon" with no card open got "khud karke dekho" and nothing to
+  // try): a try-first is a self-try — with no card open, she poses the card
+  const liveRun = !scriptFor(input.kit)?.script?.recordedRun;
+  if (input.event === "turn" && scriptOn() && liveRun && input.cls?.request?.type === "thinking" && /(?<![\p{L}])(?:khud|myself|try\s+kar|main\s+kar(?:ti|ta|ungi|unga))(?![\p{L}])/iu.test(String(input.text ?? ""))) {
+    input = { ...input, cls: { ...input.cls, request: { type: "selftry", src: "try_first" } } };
+  }
+  // v6.10 T2 (main on director18 c5-t01 offtopic 24, steady 50, stuck 60: the child had answered before the card was posed, she posed it,
+  // they said "woh maine bata diya" — and got the key): she asks for it once more, in one short line; never the key for that
+  if (input.event === "turn" && scriptOn() && liveRun && input.cls && !input.cls.flags?.distress && prev?.activeItemId && prev.lastUi?.ask?.text
+    && ALREADY_SAID.test(String(input.text ?? "")) && !/\d/.test(String(input.text ?? "")) && prev.askedAgain !== prev.activeItemId && prev.pendingWhy !== prev.activeItemId && !STOP_WORD.test(String(input.text ?? ""))) {
+    const { request: _ra, ...restA } = input.cls;
+    input = { ...input, cls: { ...restA, outcome: "no_evidence", flags: { ...(restA.flags ?? {}), wantsToStop: false, dontKnow: false }, request: { type: "ask_again" } } };
+  }
   // v6.9 T1 (main on director17 c5-t01 steady 6, stuck 6, steering 6): "pata nahi" / "samajh nahi aaya" at the check-in after a point,
   // the point's card not yet asked — the card is posed first; its simpler comes only after a miss on it
   if (input.event === "turn" && scriptOn() && scriptIdOf(input.kit) && !scriptFor(input.kit)?.script?.recordedRun && input.cls && !input.cls.flags?.distress
@@ -2813,9 +2839,16 @@ export function step(prev, input) {
     const rq = input.cls.flags?.dontKnow ? "dont_know" : input.cls.request?.type ?? "dont_know";
     // (the card not yet asked: the point's turn held it back for its check-in — a split hold — or put no card on the table)
     const unasked = !!prev.splitHold?.activeItemId || (!!prev.lastMove?.checkinOk && !prev.lastUi?.ask);
-    if (it && isScriptCard(it) && unasked && responseShape(rq, "checkin_after_point") === "card_first") {
+    // (v6.10 T2, main on director18 c4 steering 6, 44, c5-t01 steering 6: "samajh nahi aaya" there is a clarify of the POINT — it is
+    // re-said in other authored words; only "pata nahi" gets the card first)
+    const rq2 = rq === "dont_know" ? "dont_know" : "clarify";
+    const shape = it && isScriptCard(it) && unasked ? responseShape(rq2, "checkin_after_point") : null;
+    if (shape === "card_first") {
       const { request: _rq, ...rest } = input.cls;
       input = { ...input, cls: { ...rest, outcome: "no_evidence", flags: { ...(rest.flags ?? {}), dontKnow: false }, request: { type: "repeat", src: "card_first" } } };
+    } else if (shape === "live_fresh_else_key" && liveRun) {
+      const { request: _rq, ...rest } = input.cls;
+      input = { ...input, cls: { ...rest, outcome: "no_evidence", flags: { ...(rest.flags ?? {}), dontKnow: false, confused: false }, request: { type: "clarify", src: "checkin_point" } } };
     }
   }
   // v6 R5: the second half of a split turn (splitLong) comes first
@@ -3087,14 +3120,23 @@ export function step(prev, input) {
     const rungs = (help.misses >= 2 ? [...remRungs, own, pointRung] : [own, pointRung, ...remRungs]).map((x) => ({ ...x, text: x.text ? saidIn(x.text, lang) : null })).filter((x) => x.text && String(x.text).trim());
     // (v6.7 K4, main on director15 c5-t01 stuck 12, steady 88, c6 stuck 72: "pata nahi, aap batao" and a first miss got the bare card:
     // with no new rung, the card's own simpler is said again — never the bare re-pose)
-    const sm = rungs.find((x) => !help.said.includes(normLine(x.text))) ?? (k2 ? rungs.find((x) => x.text && x.beat?.kind !== "remediation") ?? null : null);
+    // (v6.10 T2: a line heard on a language or clarify request is not spent — the miss may still use it, after any line not heard)
+    const heard = new Set(help.heard ?? []);
+    const sm = rungs.find((x) => !help.said.includes(normLine(x.text)) && !heard.has(normLine(x.text))) ?? rungs.find((x) => !help.said.includes(normLine(x.text)))
+      ?? (k2 ? rungs.find((x) => x.text && x.beat?.kind !== "remediation") ?? null : null);
     if (sm) { move.simpler = String(sm.text).trim(); if (sm.beat) move.simplerBeat = sm.beat; help.said = [...help.said, normLine(sm.text)]; help.counted = s.turn;
       if (sm.beat?.kind === "remediation") s.remSaid = [...(s.remSaid ?? []), normLine(sm.text)]; }
     s.cardHelp = help;
   }
   // (whichever path chose it — a request's smaller re-teach, a beat's simpler — a helper line already said on this live card is
   // replaced by the next rung not yet said, else left out)
-  if (scriptOn() && move.simpler && s.activeItemId && move.scriptBeat?.kind !== "remediation") {
+  // (v6.10 T2, main on director18 c4 offtopic 32→34, c6 stuck 8: a language or clarify request never spends a card's simpler or
+  // remediation — what it re-says is noted as heard, and the next miss still gets its help before the key)
+  const asksAgain = ["language", "clarify"].includes(p.request);
+  if (scriptOn() && move.simpler && s.activeItemId && move.scriptBeat?.kind !== "remediation" && asksAgain) {
+    const help = s.cardHelp?.id === s.activeItemId ? s.cardHelp : { id: s.activeItemId, said: [], misses: 0 };
+    s.cardHelp = { ...help, heard: [...new Set([...(help.heard ?? []), normLine(move.simpler)])] };
+  } else if (scriptOn() && move.simpler && s.activeItemId && move.scriptBeat?.kind !== "remediation") {
     const help = s.cardHelp?.id === s.activeItemId ? s.cardHelp : { id: s.activeItemId, said: [], misses: 0 };
     if (help.counted !== s.turn && help.said.includes(normLine(move.simpler))) {
       const live = findItem(s, input.kit, s.activeItemId);
@@ -3116,6 +3158,17 @@ export function step(prev, input) {
   }
   if (p.probeAck) move.probeAck = true;
   if (p.sayFirst?.length) move.sayFirst = p.sayFirst.map(String);
+  // v6.10 T2 (main on director18 c5-t02 stuck 50, offtopic 10, c6 offtopic 10: after the aside reply the card was posed bare and its
+  // point was never said): after an aside reply the walk resumes at the unit's next unsaid part — the card's point when no recent turn
+  // of hers said it, then the card
+  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && (input.cls?.cardUnsaid || input.cls?.asideReply) && s.activeItemId && !move.point && !move.rendered?.length) {
+    const it = findItem(s, input.kit, s.activeItemId);
+    const bid = it?.scriptAsk?.beatId;
+    const b = bid && bid !== "worked" ? skillScriptOf(input.kit, it.skillId)?.explain?.find((x) => x.id === bid) : null;
+    const pt = b ? saidIn(b.point, s.ctx?.lang ?? "hinglish") : null;
+    const recentT = (s.recent ?? []).filter((t) => t.who === "teacher").slice(-6).map((t) => normLine(t.text ?? ""));
+    if (pt && !recentT.some((y) => y.includes(normLine(pt).slice(0, 50)))) { move.sayFirst = [...(move.sayFirst ?? []), String(pt).trim()]; move.resumed = bid; }
+  }
   // v6: which of them is the skill's bridge (its own segment; brain/propose.js)
   if (p.bridgeSaid) move.bridgeSaid = String(p.bridgeSaid);
   if (p.bridgeBeat?.board) move.bridgeBeat = { ...p.bridgeBeat };
@@ -3242,7 +3295,9 @@ export function step(prev, input) {
     if (offBeat && !["language", "clarify"].includes(p.request)) lb = liveBeatSimpler(s, input.kit, { prevMove: prev?.lastMove });
     else {
       const remLive = prev?.lastMove?.scriptBeat?.kind === "remediation";
-      const f = s.activeItemId && s.activeItemId !== prev?.activeItemId && !remLive ? null : freshLivePart(s, input.kit, prev?.lastMove);
+      // (v6.10 T2.1: the card a point's check-in held back — prev.splitHold — is the same live card)
+      const prevCard = prev?.activeItemId ?? prev?.splitHold?.activeItemId ?? null;
+      const f = s.activeItemId && s.activeItemId !== prevCard && !remLive ? null : freshLivePart(s, input.kit, prev?.lastMove);
       lb = f && !f.none ? f : null;
     }
     if (lb) { move.simpler = lb.text; move.simplerBeat = lb.beat; move.smaller = true; }
@@ -3250,7 +3305,10 @@ export function step(prev, input) {
     if (lb && move.beatless && !s.activeItemId) move.scriptBeat = { ...lb.beat };
     // (v6.8 B1‴, main on director16 c6 steering 10: the then-card's simpler said for Hindi was said again on the next miss) a simpler
     // said on a live card counts as spent: the next miss climbs past it
-    if (lb && s.activeItemId) { const hp = s.cardHelp?.id === s.activeItemId ? s.cardHelp : { id: s.activeItemId, said: [], misses: 0 }; if (!hp.said.includes(normLine(lb.text))) s.cardHelp = { ...hp, said: [...hp.said, normLine(lb.text)] }; }
+    // (v6.10 T2: on a language or clarify request it is HEARD, not spent — the next miss still gets its help before the key)
+    if (lb && s.activeItemId) { const hp = s.cardHelp?.id === s.activeItemId ? s.cardHelp : { id: s.activeItemId, said: [], misses: 0 };
+      if (["language", "clarify"].includes(p.request)) s.cardHelp = { ...hp, heard: [...new Set([...(hp.heard ?? []), normLine(lb.text)])] };
+      else if (!hp.said.includes(normLine(lb.text))) s.cardHelp = { ...hp, said: [...hp.said, normLine(lb.text)] }; }
     // (off the live card's beat: the other beat's teaching is not said — the live beat's simpler is the turn, on its board)
     if (lb && offBeat) { move.scriptBeat = { ...lb.beat }; delete move.rendered; delete move.point; delete move.mustSay; }
   }
@@ -3298,6 +3356,12 @@ export function step(prev, input) {
   if (laterRows) ui.later = laterRows;
   const moment = input.event === "turn" ? momentOf(prev.later, s.later, move, { turn: s.turn }) : null;
   if (moment) ui.moment = moment;
+  // (v6.10, main's ruling with Learning's script-card evidence: a script card answered right in this lesson — with help or without — is
+  // never posed again in this lesson, whatever her belief; verifying an assisted right answer is a later lesson's delayed check)
+  if (input?.event === "turn" && input.cls?.outcome === "correct" && prev?.activeItemId && String(prev.activeItemId).startsWith("script:")) s.rightCards = [...new Set([...(s.rightCards ?? []), prev.activeItemId])];
+  if (ui?.ask?.itemId && (s.rightCards ?? []).includes(ui.ask.itemId) && s.posedAt?.[ui.ask.itemId] != null && s.posedAt[ui.ask.itemId] < s.turn && !s.lastMove?.request) s.rightRepose = (s.rightRepose ?? 0) + 1;
+  // (v6.10: the turn each card was first posed on — a later pose of the same card is a re-pose, framed as one, whatever the history says)
+  if (ui?.ask?.itemId && s.posedAt?.[ui.ask.itemId] == null) s.posedAt = { ...(s.posedAt ?? {}), [ui.ask.itemId]: s.turn };
   s.lastUi = ui; // what a hold re-sends (chips are momentary on the client: absent would clear them)
   // the card pins (capPlan): how many teacher turns in a row (turns with no question on the card do not break the run)
   // have pinned this question
@@ -3337,10 +3401,14 @@ export function splitLong(out, input) {
   // v6.2 T3 (main, director10: c6's bridge turns ran 121-132 words): a turn ends after a bridge; the new skill's first point and
   // its card come on the next turn (the closing split, whatever the split policy)
   const bridgeTurn = !!move.bridgeSaid;
-  if (!bridgeTurn && (!closing.some(Boolean) || process.env.TAXILA_R7_SPLIT_CLOSE !== "on")) return splitTeach(out, input, cap);
+  // v6.10 R7 (main on director18 c5-t01 stuck 60, c5-t02 steady 48, c6 steering 22: key, new point and new card stacked in one turn of
+  // 80-100 words): after a give-up the turn is the key and its why, then a check-in; the next point comes on the next turn
+  // (a replay of a recorded run walks what that run walked: tests/fixtures/replay.mjs runScriptOf marks it recordedRun)
+  const gaveTurn = !!move.gave?.answer && !!(move.point || move.rendered?.length) && !scriptFor(input.kit)?.script?.recordedRun;
+  if (!bridgeTurn && !gaveTurn && (!closing.some(Boolean) || process.env.TAXILA_R7_SPLIT_CLOSE !== "on")) return splitTeach(out, input, cap);
   // (her verdict and the joins are about a dozen words beside the authored ones)
-  if (!bridgeTurn && wordsIn(closing, teaching) + 12 <= cap) return out;
-  const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, ...(move.verdict ? { verdict: move.verdict } : {}),
+  if (!bridgeTurn && !gaveTurn && wordsIn(closing, teaching) + 12 <= cap) return out;
+  const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, ...(move.verdict ? { verdict: move.verdict } : {}), ...(gaveTurn && !bridgeTurn ? { gaveCheck: true } : {}),
     ...Object.fromEntries(["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", "bridgeSaid", "bridgeBeat", "methods", "prefs"].filter((k) => move[k] != null).map((k) => [k, move[k]])),
     // (v6.4 P2, main on director12 c6 stuck 54: a lone bridge drew the answered card's board, stale from the preselect: a turn that
     // closes nothing but says the bridge is on the bridge's board)

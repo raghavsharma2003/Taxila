@@ -17,7 +17,8 @@ import { q as dbq } from "../db.js";
 import { fuseEvidence, newLearnerState, beliefFor } from "../comprehension/index.js";
 import { eventFromRow } from "./model.js";
 import { fromLegacyEvidence, teachEvent } from "./kt/adapter.js";
-import { readSkill, rank, ktView, DELAY_MS } from "./kt/ledger.js";
+import { misconceptionView } from "./kt/misconception.js";
+import { readSkill, rank, ktView, DELAY_MS, RECHECK } from "./kt/ledger.js";
 
 /** One FoldCtx for the online fold AND every replay (a different ctx would make them differ). */
 export const LIVE_FOLD_CTX = Object.freeze({});
@@ -114,6 +115,8 @@ export function answerEvents(c) {
   const topicType = activeItem?.topicType ?? kit.topicType;
   const kitVerified = (activeItem?.kitVerified ?? kit.verified) !== false;
   let ep = prev.kt?.ep ?? null;
+  // script cards helped earlier this lesson (a simpler said, a miss, the key said): carried across episodes (see `cardHelp`)
+  const helped = { helped: ep?.helped ?? [], keyed: ep?.keyed ?? [] };
   if (ep?.closed && ep.itemId !== prev.activeItemId) ep = null;              // a closed episode on another item is done
   const events = [], deferred = [];
   const ctr = { k: 0 };
@@ -122,11 +125,20 @@ export function answerEvents(c) {
   // verdict that came from a module (W1-B bound mounts: source "module" / "forge_g1"), or one evidence row so tagged.
   const turnVia = c.moduleOnly || MODULE_SOURCES.has(cls?.source) ? "module" : cls?.source === "game" ? "game" : "dialogue";
   const viaOf = (ev) => (MODULE_SOURCES.has(ev?.source) ? "module" : ev?.source === "game" ? "game" : turnVia);
-  const meta = (it, ev) => ({ via: viaOf(ev), ...(it?.coincidentFor?.length ? { coincident: true } : {}) });
+  // a card the round-8 reader marked `recheck` (the first check card of a compressed opener) carries the ledger's marker
+  const meta = (it, ev) => ({ via: viaOf(ev), ...(it?.coincidentFor?.length ? { coincident: true } : {}), ...(it?.recheck ? { shapeId: RECHECK } : {}) });
   // An item that targets a mix-up discriminates it: a right answer there is evidence against the mix-up (kt/misconception.js
   // discriminating_correct). Kit items carry targetsMisconception; a script's then-card names its mix-up in scriptThen.targets.
   // Without this no lesson answer could ever clear a mix-up in the ledger (audit LEARN-03).
-  const disc = (it) => { const m = it?.targetsMisconception ?? it?.scriptThen?.targets; return typeof m === "string" && m ? { discriminates: m } : {}; };
+  // (round 8: a check card or an explain beat's card that names its mix-up is the same; `targets` may be a list. A card the
+  // reader posed first to verify an open mix-up carries `probeFor`: when its targets include that mix-up, it is the one
+  // discriminated, whatever its place in the list)
+  const disc = (it) => {
+    const m0 = it?.targetsMisconception ?? it?.scriptThen?.targets ?? it?.scriptCheck?.targets ?? it?.scriptAsk?.targets;
+    const list = (Array.isArray(m0) ? m0 : [m0]).filter((x) => typeof x === "string" && x);
+    const m = list.includes(it?.probeFor) ? it.probeFor : list[0];
+    return typeof m === "string" && m ? { discriminates: m } : {};
+  };
   for (const ev of evidence) {
     if (ev.probe === "P1") continue;                                          // one teach-back event, below
     const item = ev.itemId ? activeItem : null;
@@ -136,7 +148,7 @@ export function answerEvents(c) {
       if (e) deferred.push({ ...e, target: ev.skillId, ...meta(item, ev), ...(c.shapeId ? { shapeId: c.shapeId } : {}), ...(c.deferenceDiscount ? { deferenceDiscount: true } : {}) });
       continue;
     }
-    if (!ep || ep.itemId !== ev.itemId) ep = { itemId: ev.itemId, skillId: ev.skillId, wrong: 0, mis: null, closed: false, mcq: !!item?.options?.length };
+    if (!ep || ep.itemId !== ev.itemId) ep = { itemId: ev.itemId, skillId: ev.skillId, wrong: 0, mis: null, closed: false, mcq: !!item?.options?.length, ...helped };
     if (ep.closed) continue;
     const options = item?.options?.length ?? 0;
     const correct = ev.outcome === "correct";
@@ -149,7 +161,10 @@ export function answerEvents(c) {
     }
     if (correct) {
       const { misconceptionId: _own, ...rest } = ev;
-      const e = fromLegacyEvidence({ ...rest, ...(ep.mis ? { misconceptionId: ep.mis } : {}) }, base({ episodeId, triesBefore: ep.wrong, ...disc(item) }));
+      // a script card answered right after help on it this lesson is never unaided: its authored simpler (or a miss and its
+      // re-teach) is one rung, its key said at a give-up makes the answer worth what a kit item's leave is (C4)
+      const hintsUsed = Math.max(Number(ev.hintsUsed) || 0, cardHelp(ep, ev.itemId));
+      const e = fromLegacyEvidence({ ...rest, hintsUsed, ...(ep.mis ? { misconceptionId: ep.mis } : {}) }, base({ episodeId, triesBefore: ep.wrong, ...disc(item) }));
       if (e) events.push({ ...e, target: ev.skillId, ...meta(item, ev) });
       ep.closed = true;
     } else {
@@ -163,6 +178,7 @@ export function answerEvents(c) {
     const e = fromLegacyEvidence({ ...tb[0], skillId: skillIds[0] }, base({ episodeId: `${lessonId}:teachback` }));
     if (e) deferred.push({ ...e, skillIds, target: skillIds[0], shapeId: "C01", via: "dialogue" });
   }
+  if (!ep && (helped.helped.length || helped.keyed.length)) ep = { itemId: null, closed: true, ...helped };
   return { events, deferred, ep, k: ctr.k };
 }
 
@@ -172,6 +188,11 @@ export function answerEvents(c) {
  * @param {any} c answerEvents' input plus { next, hold } @param {{ ep: any, k: number }} a answerEvents' result
  * @returns {{ events: any[], ep: any }}
  */
+/** Rungs a script card's help this lesson is worth: its key said → 4 (as a kit item's leave), a simpler or a miss → 1. */
+export const cardHelp = (ep, itemId) => (ep?.keyed?.includes(itemId) ? 4 : ep?.helped?.includes(itemId) ? 1 : 0);
+const isScriptId = (id) => String(id ?? "").startsWith("script:");
+const add = (xs, id) => (xs?.includes(id) ? xs : [...(xs ?? []), id].slice(-40));
+
 export function closeEvents(c, a) {
   const { lessonId, next, kit, activeItem } = c;
   const ctr = { k: a.k };
@@ -183,9 +204,13 @@ export function closeEvents(c, a) {
     const ev = { skillId: ep.skillId, itemId: ep.itemId, probe: "P15", outcome: "incorrect", hintsUsed: 4, weight: 1, ...(ep.mis ? { misconceptionId: ep.mis } : {}) };
     const e = fromLegacyEvidence(ev, base({ episodeId: `${lessonId}:${ep.itemId}`, triesBefore: ep.wrong, episodeEnded: true }));
     if (e) events.push({ ...e, target: ep.skillId, via: c.moduleOnly ? "module" : "dialogue" });
-    ep = { ...ep, closed: true };
+    ep = { ...ep, closed: true, ...(isScriptId(ep.itemId) ? { helped: add(ep.helped, ep.itemId) } : {}) };
   }
   const move = next.lastMove;
+  // LEARN audit (round 8 facts): help on a script card this turn, remembered for a later answer to the same card
+  const card = activeItem?.id;
+  if (move?.gave?.answer && isScriptId(card)) ep = { ...(ep ?? { itemId: null, closed: true }), keyed: add(ep?.keyed, card) };
+  if (move?.simpler && isScriptId(next.activeItemId)) ep = { ...(ep ?? { itemId: null, closed: true }), helped: add(ep?.helped, next.activeItemId) };
   if (move && !c.hold && TEACH_MOVES.has(move.kind) && move.skillId) {
     const t = base({});
     events.push({ ...teachEvent({ id: t.id, sessionId: lessonId, sessionStartAt: t.sessionStartAt, at: t.at,
@@ -259,8 +284,20 @@ export function legacySkillState(sk, now) {
 /** The Director's slice of a skill (state.js snapshotSkill's fields), from the ledger. */
 export function snapshotFromKt(sk, now) {
   const s = legacySkillState(sk, now);
-  return { pKnown: s.pKnown, status: legacyStatus(sk, now), attempts: s.attempts, correctUnaided: s.correctUnaided, generativePass: s.generativePass };
+  return { pKnown: s.pKnown, status: legacyStatus(sk, now), attempts: s.attempts, correctUnaided: s.correctUnaided, generativePass: s.generativePass,
+    // round 8 (the Director's reader): learned AND its delayed check passed (a later session, ≥ 2 learning days, a new
+    // item, unaided): the one fact that says a skill can be skipped to its check card rather than taught again
+    learnedChecked: isLearnedChecked(sk),
+    // the ledger's own delayed-check flag, as the round-8 reader names it (legacySkillState's delayedPass carries the same)
+    delayedPassed: !!sk?.flags?.delayed };
 }
+/**
+ * The child's open mix-ups as rows, most likely first: { id, p, needsVerify (p ≥ VERIFY_P: worth a verifying probe), hits }.
+ * routes/lesson.js passes only their ids (`activeMisconceptionIds`); the round-8 reader takes these rows.
+ */
+export const misconceptionRowsOf = (ledger, k = 5) => misconceptionView(ledger?.mis ?? {}).slice(0, k);
+/** Learned (display ≥ learned_today) and the delayed check passed (flags.delayed). */
+export const isLearnedChecked = (sk) => !!sk && rank(sk.display) >= rank("learned_today") && !!sk.flags?.delayed;
 
 /**
  * Skills whose delayed check is due at session open (INTEGRATION.md §4): ktView.due() AND every learned skill
