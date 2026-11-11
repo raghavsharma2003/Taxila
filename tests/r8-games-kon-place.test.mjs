@@ -436,7 +436,7 @@ test("kon/place: the centre tolerance is a finger's (≥ 10 board px), and still
 });
 
 test("kon/place: every accessible label is in the lesson's language (all three), with no number word", () => {
-  const keys = ["kon.aria.acw", "kon.aria.cw", "kon.aria.dotAcw", "kon.aria.dotCw"];
+  const keys = ["kon.aria.acw", "kon.aria.cw", "kon.aria.dotAcw", "kon.aria.dotCw", "kon.aria.left", "kon.aria.right", "kon.aria.up", "kon.aria.down"];
   for (const k of keys) {
     const t = WORDS.words[k];
     assert.ok(t && t.hinglish && t.en && t.hi, k);
@@ -477,4 +477,46 @@ test("centre-on-arm (Learning's split of vertex-off): the centre mark on an arm'
     n++;
   }
   assert.ok(n >= 40, `${n}`);
+});
+
+test("judging round 3 (ruling 1): her number is graded only on a placed protractor: on an off placement, whatever she types, the decision and its play-out are the same", async () => {
+  const { centreOnArmPose } = await import("../src/play/families/kon/kon.place.ts");
+  let n = 0;
+  for (const level0 of levels("measure", [1, 2, 3])) {
+    const level = { ...level0, mal: { ...level0.mal, "centre-on-arm": "k-coa" } }, p = level.params;
+    for (const q of [vertexOffPose(p), centreOnArmPose(p), { x: p.vx + 30, y: p.vy + 5, rot: goodPose(p).rot }]) {
+      const head = [{ kind: "move", x: q.x, y: q.y }, { kind: "spin", deg: q.rot }, { kind: "lock" }];
+      const ap = asPlaced(p, q);
+      const reads = [p.theta, 180 - p.theta, ...(ap ? [Math.round(ap.value)] : []), 7, 123];
+      const outs = reads.map((nn) => { const m = run(level, [...head, { kind: "read", n: nn }]).ms.at(-1); return `${m.kind}|${m.misconceptionId ?? ""}|${m.facts.shown ?? ""}|${m.facts.why ?? ""}`; });
+      assert.equal(new Set(outs).size, 1, `${level.levelId} ${JSON.stringify(q)}: ${outs.join(" · ")}`);
+      assert.ok(!/solved|wrong-scale/.test(outs[0]), outs[0]);
+      n++;
+    }
+  }
+  assert.ok(n >= 60, `${n}`);
+  // the view: on an off placement no arm is drawn from her centre, and her chip takes no meaning colour (drawRunLines
+  // returns before the arm when the placement is off; the chip's role is the mix-up colour only on a placed protractor).
+  // The browser layout check (tests/r8-games-kon-layout.test.mjs) asserts the same on the drawn screens
+  const src = readFileSync(new URL("../src/play/families/kon/kon.place.view.ts", import.meta.url), "utf8");
+  assert.match(src, /if \(!pl\.ok\) return;\s*\n\s*\/\/ her number, on the scale/);
+  assert.match(src, /placement\(p, P0\.pose\)\.ok \? ROLE\.mixup : undefined/);
+});
+
+test("judging round 3 (rulings 5, 6): four one-pixel position nudges beside the turn arrows; 'kinare par'; size's end line says what she found", () => {
+  assert.equal(word("hinglish", "kon.goal.draw.mark", { a: "130°" }), "Kinare par 130° ka bindu lagao, phir jodo");
+  for (const lang of ["hinglish", "en", "hi"]) {
+    assert.match(word(lang, "kon.end.size.more", { n: "∠Q", k: 1 }), /∠Q .*: 1$/);
+    assert.match(word(lang, "kon.end.size.same", { k: 2 }), /∠P .*∠Q .*: 2$/);
+    // "jaanch" written the same way in every kon/place end line (lowercase, after the dot)
+    for (const k of ["kon.end.read", "kon.end.draw", "kon.end.size.more", "kon.end.size.same"]) assert.doesNotMatch(word(lang, k), /Jaanch|Checks/, `${lang} ${k}`);
+  }
+  // a nudge is the law's own move act by one board px, from where the protractor lies
+  const level = konLogic.validate(konLogic.generate(req("measure", 7))[0].level);
+  let s = konLogic.init(level);
+  const { x, y } = s.pl?.pose ?? { x: level.params.x0, y: level.params.y0 };
+  s = konLogic.apply(level, s, { kind: "move", x: x + 1, y }, 1).state;
+  assert.deepEqual([s.pl.pose.x, s.pl.pose.y], [x + 1, y]);
+  const src = readFileSync(new URL("../src/play/families/kon/kon.place.view.ts", import.meta.url), "utf8");
+  for (const [id, dx, dy] of [["move-left", -1, 0], ["move-up", 0, 1], ["move-down", 0, -1], ["move-right", 1, 0]]) assert.match(src, new RegExp(`nudge\\("${id}", "kon\\.aria\\.\\w+", "[←↑↓→]", ${dx}, ${dy}\\)`), id);
 });
