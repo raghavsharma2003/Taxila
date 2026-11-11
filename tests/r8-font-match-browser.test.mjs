@@ -12,6 +12,10 @@
 //      not the system sans's; Hindi still resolves to Mukta;
 //   3. the whiteboard's word face (and a 700 run of it) resolves to Atkinson Hyperlegible Next with the Devanagari faces loaded.
 // FONT_BROWSER=0 or no Chromium skips 2-3.
+// What 2-3 need: Chromium (PLAYWRIGHT_BROWSERS_PATH), the built dist/ or the dev server (tests/support/app-server.mjs), and the
+// font FILES on disk (public/fonts, dist/assets, src/**/fonts, node_modules/@fontsource) — no network: every .woff2 request is
+// answered from disk, every request off localhost is aborted, and the face loads are settled one by one, so an environment
+// that refuses a fetch cannot fail the test (main 2026-11-11: a "NetworkError" in Games' container).
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync, statSync } from "fs";
@@ -75,6 +79,19 @@ test("every self-hosted family with a Latin and a Devanagari face declares the s
 });
 
 // ── 2-3. the real app in Chromium ────────────────────────────────────────────────────────────────────────────────────────
+/** A font URL's file on disk: /fonts/x → public/fonts/x; /assets/x → dist/assets/x; /@fs/<abs> or /src/... or /node_modules/... as is. */
+function fontOnDisk(urlPath) {
+  const name = urlPath.split("/").pop();
+  const tries = [];
+  if (urlPath.startsWith("/@fs/")) tries.push(urlPath.slice(4));
+  tries.push(join(ROOT, urlPath.replace(/^\//, "")));
+  if (urlPath.startsWith("/fonts/")) tries.push(join(ROOT, "public", urlPath));
+  if (urlPath.startsWith("/assets/")) tries.push(join(ROOT, "dist", urlPath));
+  for (const f of tries) { try { if (statSync(f).isFile()) return f; } catch { /* next */ } }
+  // a hashed bundle name (atkinson-latin-AbC123.woff2) is in dist/assets only
+  try { const d = join(ROOT, "dist/assets"); if (readdirSync(d).includes(name)) return join(d, name); } catch { /* no dist */ }
+  return null;
+}
 let app, browser;
 before(async () => {
   if (SKIP) return;
@@ -88,6 +105,13 @@ async function lesson(artifact, ready) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1 });
   const ui = { status: "speaking", phase: "teach", handover: "answer", answerForm: "words", tray: "studio",
     studioSlot: { slotId: "slot1", intentId: "i1", state: "revealed", artifact } };
+  // fonts from disk, nothing off localhost (see the header)
+  await page.route((u) => !/^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?\//.test(String(u)), (route) => route.abort());
+  await page.route("**/*.woff2", async (route) => {
+    const p = decodeURIComponent(new URL(route.request().url()).pathname);
+    const file = fontOnDisk(p);
+    return file ? route.fulfill({ status: 200, contentType: "font/woff2", body: readFileSync(file) }) : route.continue();
+  });
   await page.route("**/api/**", async (route) => {
     const p = new URL(route.request().url()).pathname;
     const json = (status, body) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) });
@@ -103,7 +127,7 @@ async function lesson(artifact, ready) {
   await page.waitForFunction(() => [...document.fonts].some((f) => /Atkinson/.test(f.family) && /U\+900/i.test(f.unicodeRange)), null, { timeout: 30_000 });
   await page.evaluate(async (weights) => {
     const fams = ['"Atkinson Hyperlegible Next"', '"Bricolage Grotesque"', '"Geist Mono"', '"Board Atkinson Hyperlegible Next"'];
-    await Promise.all(fams.flatMap((f) => weights.map((w) => document.fonts.load(`${w} 40px ${f}`, "Aक"))));
+    await Promise.allSettled(fams.flatMap((f) => weights.map((w) => document.fonts.load(`${w} 40px ${f}`, "Aक"))));
     await document.fonts.ready;
   }, WEIGHTS);
   const cdp = await page.context().newCDPSession(page);
