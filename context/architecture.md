@@ -530,3 +530,7 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-content-check-scores-romanised-hindi-terms` (2026-11-11): The Azure content check scores some short romanised Hindi strings at severity 2 with nothing unsafe in them: 'Teen hisse' (three parts), 'SEEDHA KON' (straight angle), 'Bindu se samkon par' (at a right angle from the point). 6 such refusals in 2 runs (n = 48 attempts). The words involved differ, so it is not one word; it is short romanised Hindi read without context. Not measured on teacher lines or kits. The check stays as it is (frozen); specs avoid the scoring term by using digits or the Hinglish term the teacher's lines use.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-dry-matrix-blind-to-the-reply-layer` (2026-11-11): The dry matrix held 'a give-up with help spent gets the key' at zero while the live lesson said the point again on the same three rows as director19 (c4 stuck 12, c5-t01 stuck 12, c5-t02 steering 30). In the live path the reply model's text failed a guard and was repaired to a different unit part. The dry predicates check the walk's choice; they do not see what the reply layer finally says. A gate that passes while the fault it names is live is not a gate for that fault.

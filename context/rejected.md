@@ -3004,3 +3004,7 @@ Replays stay as regression pins. Evidence for a walk fix is a predicate over the
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-load-as-the-cause-of-a-test-failure` (2026-11-10): Rejected: writing a failure that 'passes alone' off as machine load. Tried twice on 2026-11-10 for m4-break; the cause was state crossing test files (fd-m4-break-stray-fetch-across-files), deterministic for the day's seed. A failure that passes alone gets its preceding files replayed in one process before it is called load. Still open and unexplained: r12-voice-trace test 14 ('speaking' vs 'thinking') under 4-way parallel runs, and r4-khand-law's wall-clock 'generator p95 <= 50 ms' (63.7 ms once, while another job loaded the machine).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-replay-pass-rate-as-proof-of-reply-quality` (2026-11-11): Rejected: reading the J2 replay's pass rate (76 of 80 clean under the predicate) as evidence that her reply after an aside is good. In director20 the same code produced 7 model sentences of which the judges found 3 odd or wrong, and most first drafts were the next card's text. The predicate measures safe and on the child's word; it cannot measure whether a sentence answers what the child said. A sentence a child hears is judged by a reader or it is authored.
