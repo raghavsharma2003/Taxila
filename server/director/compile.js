@@ -14,7 +14,8 @@ import { createHash } from "node:crypto";
 
 /** The part kinds of a unit (COMPILE.md "Parts"). */
 // (Loop's review, ask D: the hook is a part — its interest slot is the plan's hookSlot, so hook lines have a cell and a because)
-export const PART_KINDS = Object.freeze(["point", "checkin", "card", "worked_step", "your_step", "remediation", "then_card", "check", "bridge", "hook"]);
+// (dc-r8-director20 L3: the greeting is a part — a clarify or a give-up there gets the script's greetSimpler, then the hook)
+export const PART_KINDS = Object.freeze(["point", "checkin", "card", "worked_step", "your_step", "remediation", "then_card", "check", "bridge", "hook", "greet"]);
 /** What the child can do on a part: 9 requests, then 3 answer columns (cards only). */
 export const REQUESTS = Object.freeze(["clarify", "hindi", "repeat", "picture", "try_first", "give_up", "move_on", "aside", "silence"]);
 export const ANSWERS = Object.freeze(["right", "wrong", "misconception"]);
@@ -32,6 +33,8 @@ const CARDS = new Set(["card", "your_step", "then_card", "check"]);
 export function rule(kind, column, help) {
   const card = CARDS.has(kind);
   if (ANSWERS.includes(column) && !card) return null;
+  // (L3: the greeting's plainer line, then the hook — never the greeting again)
+  if (kind === "greet") return ["clarify", "give_up", "repeat", "hindi"].includes(column) ? { say: ["@greetSimpler"], then: "next", help: "keep" } : { say: [], then: "next", help: "keep" };
   // (the hook: its slot's line is said again on clarify, repeat, Hindi or silence; any other request moves on into the skill)
   if (kind === "hook") return ["clarify", "repeat", "silence", "hindi"].includes(column)
     ? { say: ["@slot.use"], ...(column === "hindi" ? { lang: "hi", joint: "hindiSwitch" } : {}), then: "next", help: "keep" }
@@ -51,24 +54,33 @@ export function rule(kind, column, help) {
       if (kind === "remediation") return help === "fresh" ? { say: ["simpler"], then: "card", help: "heard" } : help === "heard" ? { ...second, then: "card" } : { say: [], then: "card", help: "keep", thirdClarify: true };
       if (kind === "bridge") return help === "fresh" ? { say: ["simpler"], then: "next", help: "keep", fallback: "next" } : { say: [], then: "next", help: "keep" };
       // a card: its simpler once; heard or spent, the key and its why (T1.5)
-      return help === "fresh" ? { say: ["simpler", "prompt"], then: "end", help: "heard" } : { say: ["key", "why"], then: "next", help: "keep", key: true, fallback: "key_only" };
+      return help === "fresh" ? { say: ["simpler", "prompt"], reask: "question", then: "end", help: "heard" } : { say: ["key", "why"], then: "next", help: "keep", key: true, fallback: "key_only" };
     }
     // the joint, then the live part in Hindi (never an "ab se" promise: the joint is the script's)
-    case "hindi": return { say: [...(kind === "checkin" ? ["@point.point"] : [textOf(kind)])], lang: "hi", joint: "hindiSwitch", then: card ? "end" : "checkin", help: "keep" };
+    // (dc-r8-director20 L4: on a card, its own ask.simpler else its point's simpler, in Hindi, then the card's question; the switch joint only
+    // when what follows is not what she just said — jointIf)
+    case "hindi": return card ? { say: ["simpler", "prompt"], lang: "hi", joint: "hindiSwitch", jointIf: "changed", reask: "question", then: "end", help: "keep" }
+      : { say: [...(kind === "checkin" ? ["@point.point"] : [textOf(kind)])], lang: "hi", joint: "hindiSwitch", then: "checkin", help: "keep" };
     case "repeat": return { say: [kind === "checkin" ? "@point.point" : textOf(kind)], then: card ? "end" : "checkin", help: "keep" };
     // a picture: Studio's view of the part's own board (fit is a run-time check: switchFits / pictureTurn)
     // (a bridge's picture is the next unit's board — state.js unitBoardOf(firstUnitOf) — not a field of its own)
     case "picture": return kind === "bridge" ? { say: [], view: "next", then: "next", help: "keep" } : { say: [], view: "board", needs: ["board"], then: card ? "end" : "checkin", help: "keep" };
     case "try_first": return card ? { say: ["prompt"], joint: "tryFirst", then: "end", help: "keep" } : { say: [], joint: "tryFirst", then: "card", help: "keep" };
     // a give-up: help first while fresh (a request never spends it), the key and its why once spent
+    // (dc-r8-director20 L1: never a yes, never new material — after a point or a remediation, that part's simpler, then the card; on a
+    // worked step, the step's simpler and its check-in)
     case "give_up":
+      if (kind === "point" || kind === "checkin") return { say: [kind === "point" ? "simpler" : "@point.simpler"], then: "card", help: "keep" };
+      if (kind === "remediation") return { say: ["simpler"], then: "card", help: "keep" };
+      if (kind === "worked_step") return { say: ["simpler"], then: "checkin", help: "keep", fallback: "resay_show" };
       if (!card) return { say: [], then: "card", help: "keep" };
-      return help === "spent" ? { say: ["key", "why"], then: "next", help: "keep", key: true, fallback: "key_only" } : { say: ["simpler", "prompt"], then: "end", help: "spent" };
+      return help === "spent" ? { say: ["key", "why"], then: "next", help: "keep", key: true, fallback: "key_only" } : { say: ["simpler", "prompt"], reask: "question", then: "end", help: "spent" };
     case "move_on": return { say: [], joint: "neutral", then: "next", help: "keep" };
     case "aside": return { say: [], joint: "asidePark", then: card ? "end" : "card", help: "keep" };
     case "silence": return { say: [card ? "prompt" : kind === "checkin" ? "@checkin" : textOf(kind)], then: card ? "end" : "checkin", help: "keep" };
     case "right": return { say: ["why"], then: "next", help: "keep", needs: kind === "your_step" ? ["@worked.answer"] : [], ...(kind === "your_step" ? { fallback: "worked_answer" } : {}) };
-    case "wrong": return help === "spent" ? { say: ["key", "why"], then: "next", help: "keep", key: true, fallback: "key_only" } : { say: ["simpler", "prompt"], then: "end", help: "spent" };
+    // (S1: after help on a card said in her last two turns, its question alone — reask; the render reads it)
+    case "wrong": return help === "spent" ? { say: ["key", "why"], then: "next", help: "keep", key: true, fallback: "key_only" } : { say: ["simpler", "prompt"], reask: "question", then: "end", help: "spent" };
     // Loop's correction 3: keyed per mix-up — the remediation for the mix-up the classifier named, the card's own target by default
     case "misconception": return { say: [], remedy: "targets", then: "remediation", help: "spent", fallback: "as_wrong" };
   }
@@ -185,7 +197,7 @@ function orderOf(script, parts, plan) {
  * Card parts that a plan marks keep their marks (probeFor, recheck: Loop's correction 7).
  */
 export function compileScript(script, plan = null) {
-  const parts = (script?.skills ?? []).flatMap((sk, n) => partsOf(sk, n));
+  const parts = [...(script?.greetSimpler ? [{ id: `${script.topicId ?? "lesson"}:greet`, kind: "greet", path: "greetSimpler", offOrder: true }] : []), ...(script?.skills ?? []).flatMap((sk, n) => partsOf(sk, n))];
   const hookSlotOf = (p) => { const h = plan?.hookSlot; if (h == null) return 0; if (Number.isInteger(h)) return h; const v = h[p.id.split(":")[0]] ?? h; return Number.isInteger(v?.index) ? v.index : Number.isInteger(v) ? v : 0; };
   const cells = {}, holes = [], doubles = [], fallbacks = [], noBoard = [], notApplicable = [];
   const seen = new Map();
@@ -200,6 +212,7 @@ export function compileScript(script, plan = null) {
     if (f.startsWith("@worked.")) return { path: `${p.worked}.${f.slice(8)}`, v: at(script, `${p.worked}.${f.slice(8)}`) };
     if (f === "@checkin") return { path: `${p.path}.checkin`, v: at(script, `${p.path}.checkin`) ?? "joint" };
     if (f === "self") return { path: p.path, v: at(script, p.path) };
+    if (f === "@greetSimpler") return { path: "greetSimpler", v: at(script, "greetSimpler") };
     // (the hook's line: the plan's slot, else the first — Loop's ask D)
     if (f === "@slot.use") { const i = Number.isInteger(hookSlotOf(p)) ? hookSlotOf(p) : 0; return { path: `${p.path}.interestSlots[${i}].use`, v: at(script, `${p.path}.interestSlots[${i}].use`) }; }
     if (p.text && (f === "do" || f === "simpler" || f === "alts[0]")) return { path: `${p.path}.${f === "do" ? p.text : f}`, v: at(script, `${p.path}.${f === "do" ? p.text : f}`) };
@@ -264,7 +277,7 @@ export function compileScript(script, plan = null) {
           if (r.show) { const x = field(p, r.show); show = x.v && typeof x.v === "object" ? x.path : null; if (!show) noBoard.push({ part: p.id, rule: ruleId }); }
           return { miss, cell: { say, then: r.then, help: r.help, ...(r.key ? { key: true } : {}), ...(r.joint ? { joint: r.joint } : {}), ...(r.lang ? { lang: r.lang } : {}),
             ...(r.view ? { view: r.view } : {}), ...(r.show ? { show } : {}), ...(remedy ? { remedy } : {}), ...(r.secondClarify ? { secondClarify: true } : {}),
-            ...(r.thirdClarify ? { thirdClarify: true } : {}), address } };
+            ...(r.thirdClarify ? { thirdClarify: true } : {}), ...(r.jointIf ? { jointIf: r.jointIf } : {}), ...(r.reask ? { reask: r.reask } : {}), address } };
         };
         let { miss, cell } = resolve(r);
         for (const m of miss) holes.push({ part: p.id, kind: p.kind, rule: ruleId, ...m });

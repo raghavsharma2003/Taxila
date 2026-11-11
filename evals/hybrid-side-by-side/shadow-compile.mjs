@@ -39,6 +39,8 @@ export function columnOf(child) {
 
 /** The part her last turn was on, as a compiled part id: { id, kind } or null. */
 export function partOf(prevT, script) {
+  // (L3: the greeting is a part of its own)
+  if (String(prevT?.move?.kind ?? prevT?.move ?? "") === "greet" && script?.greetSimpler) return { id: `${script.topicId ?? "lesson"}:greet`, kind: "greet" };
   const m = /^s(\d+):(\w+):(.+)$/.exec(String(prevT?.beat ?? ""));
   if (!m) return null;
   const sk = script?.skills?.[Number(m[1]) - 1];
@@ -98,6 +100,7 @@ function textAt(script, path) {
   }
   if (v == null) return null;
   if (typeof v === "string") return v;
+  if (path === "greetSimpler" && v && typeof v === "object") return v.hi ?? v.en ?? null;
   if (typeof v === "object" && (v.hi || v.en)) return v.hi ?? v.en;
   if (typeof v === "object" && v.prompt) return v.prompt.hi ?? v.prompt.en ?? null;
   return null;
