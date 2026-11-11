@@ -5,12 +5,18 @@
      - B's display face is Bricolage Grotesque where the page has it, else the UI face.
      - (2026-11-11, main's review of step b) A's answer is a bluish green and its mix-up an ochre: the
        prototype's rust beside green leaned on red against green. Focus (indigo), answer (bluish green) and mix-up
-       (ochre) follow the Okabe-Ito colour-blind-safe set, and every role also has its own shape.
+       (ochre) follow the Okabe-Ito colour-blind-safe set, and every role also has its own shape. Studio's palette test
+       (tests/theme-palette.test.mjs, a deuteranopia simulation) asked answer and mix-up to sit 0.15 apart: answer moved
+       from #0B7356 to the bluer #0B736A (0.152 apart, 5.62:1 on the board).
    Rules (tests/r8-tx-tokens.test.mjs):
      - every text pair is at least 4.5:1 (5:1 for running text);
      - at most 8 type sizes, one spacing scale, 3 radii, under 30 colours per theme;
      - components read --tx-* (or the --k-* names src/ui-v3/r8/bridge.css points at them), never a literal.
    Nothing changes on screen until a root carries data-tx (the switch: src/ui-v3/r8/tx.ts). */
+
+/* the token set brings its own faces: a page that loads it without the app's tokens.css (a dev page, a lazy chunk) must
+   never fall back to a system serif (main 2026-11-11: the home greeting drew in Liberation Serif Bold) */
+@import "./fonts.css";
 
 :root, [data-tx="a"] {
   /* ground and surfaces: warm paper */
@@ -38,10 +44,10 @@
   --tx-board-soft: #6F675B;
   --tx-focus: #3B47B0;
   --tx-focus-fill: #DCE0F5;
-  --tx-ans: #0B7356;
+  --tx-ans: #0B736A;
   --tx-ans-fill: #DAEFE8;
   --tx-mix: #8A5A00;
-  --tx-ok: #0B7356;
+  --tx-ok: #0B736A;
   /* safety and destructive actions only, never a verdict */
   --tx-danger: #A3261C;
 

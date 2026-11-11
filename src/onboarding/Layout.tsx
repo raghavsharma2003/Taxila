@@ -15,12 +15,16 @@ import "../ui-v3/tokens.css";
 import "../ui-v3/kaksha/tokens.css";
 import "../ui-v3/kaksha/kaksha.css";
 import "./volt.css";
+import "../ui-v3/r8/onboarding.css";
+import { txTheme } from "../ui-v3/r8/tx.ts";
 
 /** Release 11 (dc-r4-volt-everywhere): K's Volt scope. The grown-up's screens are Volt night. */
 export const VOLT_NIGHT = { "data-klook": "volt", "data-ktheme": "night" } as const;
 /** The child's family look for a moment that faces her (her voice, her name): young (classes 1-4) Volt day, else night. */
 export const kidLook = (classLevel: number | undefined) =>
   ({ "data-klook": "volt", "data-ktheme": kakshaThemeFor(familyOf(bandForClass(classLevel ?? 5))) }) as const;
+/** Round 8 (?tx=, src/ui-v3/r8/tx.ts): the parent's set-up screens take the new theme, light in both directions. */
+const txFrame = () => { const t = txTheme(); return t ? { "data-tx": t, "data-tx-surface": "light" } : {}; };
 /** A HUD eyebrow per step (decoration: aria-hidden; the title carries the meaning). */
 const EYEBROW: Partial<Record<Step, string>> = { class: "Your child", promises: "Ground rules", phone: "Your account", consent: "Permissions", child: "Hand-off" };
 
@@ -58,7 +62,7 @@ export function StepFrame({ step, title, why, children, back = true, footer, doc
     if (text) document.title = `${text} · Taxila`;
   }, [title, docTitle]);
   return (
-    <div className="onb onb-v2 kx onb-volt" {...VOLT_NIGHT} data-step={step ?? ""}>
+    <div className="onb onb-v2 kx onb-volt" {...VOLT_NIGHT} {...txFrame()} data-step={step ?? ""}>
       <div className="onb-edge" aria-hidden="true"><Scene id="onboarding-edge" fallback={<span />} /></div>
       <div className="onb-sheet">
         <header className="topbar col onb-top">
