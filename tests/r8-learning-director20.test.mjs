@@ -48,3 +48,21 @@ test("W1: one term per idea per form; a point may gloss a new term, a card may n
   const t = read("data/lesson-scripts-staged/c6-maths-ch02-t01.json");
   assert.deepEqual(oneTermErrors(t), [], "a point's gloss 'line yaani rekha' introduces the term");
 });
+
+test("main on R1: no feeling of her own; a people/other return assumes no activity; closings vary across kinds", () => {
+  const d = read("data/lesson-aside-replies.json");
+  const a = structuredClone(d); a.sad.replies[0] = { hi: "Oh... yeh sunke mujhe bura laga.", en: "Oh... I'm sorry to hear that." };
+  assert.ok(asideReplyErrors(a).some((x) => /sad\.replies\[0\]: claims a feeling of her own/.test(x)));
+  const b = structuredClone(d); b.kinds.people.returns[1] = { hi: "{aside} ke saath pichhli baar kya khela?", en: "What did you play with {aside} last time?" };
+  assert.ok(asideReplyErrors(b).some((x) => /kinds\.people\.returns\[1\]: assumes an activity/.test(x)));
+  const closings = new Set(Object.values(d.kinds).map((v) => v.replies[0].hi.replace("{word}", "").trim()));
+  assert.ok(closings.size >= 4, "the first reply differs across kinds");
+  assert.ok(d.rules.some((r) => /'other'/.test(r)), "selection falls to other");
+});
+
+test("W1: a term is glossed once per script", async () => {
+  const { oneTermErrors } = await import("../scripts/lesson-scripts/check.mjs");
+  const s = read("data/lesson-scripts-staged/c6-maths-ch02-t01.json");
+  s.skills[1].explain[0].point.hi = "Yahan bhi line yaani rekha dono taraf chalti hai. " + s.skills[1].explain[0].point.hi;
+  assert.ok(oneTermErrors(s).some((x) => /glossed again/.test(x)));
+});
