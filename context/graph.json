@@ -27985,6 +27985,13 @@
    "at": "2026-11-11",
    "title": "Rejected as a habit: pushing an integration on 'the failing suite passes alone and the diff does not touch it'. Used three times on 2026-11-10 and 11 (integrations 32, 37, 38). Each time the cause, once found, was specific and not load: a wall-clock assertion, a test assumption broken by another stream's data, a 1-in-256 chance failure in a product gate. The pushes did no harm, but the reasoning given at the time ('load') was wrong in every case that was later explained. A failure that passes alone gets a root-cause task the same hour, and the push message says 'cause unknown' rather than naming one.",
    "source": "inbox/r8-main-11.json"
+  },
+  {
+   "id": "fd-staged-answer-marks-ungrounded",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "361 of the 439 answer marks on the staged 30 scripts' boards were not grounded in their card's key: 273 compare boards carried an 'add' mark on a guessed column and 88 angle boards marked an angle that is not the keyed one. Found by Learning's reader pass on 2026-11-11 and removed (Learning 1856620d6); 78 remain (keyed name, keyed degree, keyed item, landing, digit). The marks had passed the board build, the layout lint and the W1/W2 checks, which test that a mark fits, not that it marks the right thing. The staged scripts were never served to a child. The four live pilots' marks were judged in director20 (21 of 21 right in c5-t02; no contradiction in any topic). Release 19's note said 'answer marks on 438 boards': most of those were in held lessons and wrong.",
+   "source": "inbox/r8-main-12.json"
   }
  ],
  "edges": [
@@ -44887,6 +44894,11 @@
    "src": "rj-load-as-the-cause-of-a-test-failure",
    "rel": "constrains",
    "dst": "rj-pushing-on-passes-alone"
+  },
+  {
+   "src": "fd-staged-answer-marks-ungrounded",
+   "rel": "caused_by",
+   "dst": "fd-gated-sentences-fail-a-reader"
   }
  ]
 }
