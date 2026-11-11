@@ -70,11 +70,19 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
   const got = Object.fromEntries(Object.entries(byT).map(([t, v]) => [t, `${v.view}/${v.n}`]));
   // (Brain, merging Learning D13 60740c37 with this: c4 s2's new e3 boards — 20 marbles as 2 groups of 10 — draw no view, so
   // equal-groups is 6/10 on D13's data, 8/10 before it; Studio to say whether those two boards should get one)
+  // (Learning's reader pass over the live pilots, 2026-11-11: c4 s1 e4 moved to a two-strip bars board (fraction-parts 13 → 12,
+  // bars 17/19 → 19/21), c4 s2 c2 to an equal-groups board (shade-grid 4 → 3, equal-groups 10 → 11, no view yet), and c6 s3 e3
+  // from shape@1 to measured@1 so its 12 m and 8 m sides show (no view: its view's line would ask the 40 m total, the card's key
+  // being 38); Studio to say whether the new equal-groups and measured boards should get views. Round 2: five c6 remediations
+  // got boards of their own (measured 21 → 25, every one with a view; shape 6 → 7). Round 3: c5-t02 s3 c1 became a three-bar
+  // ordering card (bars 21 → 22, line 65 → 64; the new bars board has no view yet))
+  // (round 4: the remediation boards a general say no longer speaks were removed — D12's held-board rule — so c4, c5-t01 and c6
+  // each lose their own copies: parts 12 → 11, equal-groups 11 → 9, line 64 → 62, measured 25 → 21, shape 7 → 6)
   assert.deepEqual(got, {
-    "fraction-parts@1": "13/13", "wholes@1": "17/17", "shade-grid@1": "1/4", "equal-groups@1": "8/10", "compare@1": "1/3",
+    "fraction-parts@1": "11/11", "wholes@1": "17/17", "shade-grid@1": "1/3", "equal-groups@1": "7/9", "compare@1": "1/3",
     // (round 8 board grammar, C1: 16 → 17 and 42 → 47 — with fractions stacked, five more
     // two-scale line views and one bars view now lay out in the split's panel; every one passes the per-view checks above)
-    "fraction-bars@1": "17/19", "fraction-line@1": "47/65", "measured@1": "20/20", "shape@1": "1/7" }, JSON.stringify(got));
+    "fraction-bars@1": "19/22", "fraction-line@1": "46/62", "measured@1": "20/21", "shape@1": "1/6" }, JSON.stringify(got));
   void none;
 });
 
@@ -198,9 +206,16 @@ test("director20: lineStatesKey reads a key's value tokens wherever they stand �
 });
 
 test("director20 c5-t01 steady and stuck 18: a picture line never has a hole — the quiet 8-gap scale is named without its count, never \"aur ek ___ barabar hisson mein\"", () => {
-  const c = scriptCard("c5-maths-ch02-t01", 0, "e2");
-  assert.deepEqual(c.ref, { template: "fraction-line@1", params: { dens: [5, 8], from: 0, to: 1, marks: [[1, 5]] } }, "the row's card");
-  assert.equal(c.answers[0], "8");
+  // (Learning's reader pass, c4881b652: the live c5-t01 e2 now says 7 marks over a dens [7, 8] board, so its picture line no
+  // longer names a 5. The director20 row is pinned here as it was; the live card is checked for holes and keys just below.)
+  const c = { ref: { template: "fraction-line@1", params: { dens: [5, 8], from: 0, to: 1, marks: [[1, 5]] } }, answers: ["8", "8 gaps", "8 barabar gaps", "aath", "eight"] };
+  const live = scriptCard("c5-maths-ch02-t01", 0, "e2");
+  assert.equal(live.answers[0], "8");
+  for (const variant of [0, 1]) {
+    const pt = BF.pictureTurn(askWith(live.ref, live.answers), { variant });
+    assert.ok(pt?.view, `live v${variant}: the view stays`);
+    if (pt.line) assert.ok(!BF.lineHasBlank(pt.line) && !BF.lineStatesKey(pt.line, live.answers), `live v${variant}: "${pt.line}"`);
+  }
   const want = [
     "Dekho, yeh do barabar pattiyaan hain: ek 5 barabar hisson mein, 1 rangin, yaani ek bata paanch, aur doosri patti bhi barabar hisson mein bati hai",
     "Ab in do pattiyon ko milao: pehli 5 barabar hisson mein, 1 rangin, yaani ek bata paanch, aur doosri patti bhi barabar hisson mein bati hai",

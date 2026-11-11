@@ -78,3 +78,39 @@ test("S1: the re-ask predicates flag director20's rows", () => {
   for (const f of ["stuck-c4-ch05-t01 8 cardWholeAgain", "stuck-c5-ch02-t01 48 splitCardEmpty", "stuck-c6-ch06-t01 62 splitCardEmpty", "stuck-c5-ch02-t01 32 bareClose"])
     assert.ok(flags.includes(f), `${f} in ${flags.filter((x) => /cardWholeAgain|splitCardEmpty|bareClose/.test(x)).join(", ")}`);
 });
+
+// dc-r8-director20 item 6: c4's worked answer is "2/3"; the predicate read only its "2", which the why's "2 khaye gaye" satisfied
+test("workedFinal reads the whole final answer, a fraction whole", async () => {
+  const { PREDICATES } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const script = { skills: [{ skillId: "c4-x-s1", workedExample: { answer: { hi: "barfi ka 2/3 hissa khaya gaya" } } }] };
+  const ctx = { prevT: { check: { itemId: "script:c4-x-s1:ask:worked" } }, prevCls: "correct", script };
+  const f = (text) => PREDICATES.workedFinal({}, { who: "teacher", text }, 0, ctx);
+  assert.match(f("Haan, sahi hai, kyunki 3 barabar tukdon mein se 2 khaye gaye; bacha hua 1 tukda neeche nahi jaata.") ?? "", /2\/3/);
+  assert.equal(f("Haan, sahi hai. Toh poora jawab: barfi ka 2/3 hissa khaya gaya."), null);
+});
+
+// Main on the shadow (2026-11-11): a clarify or a give-up on a worked problem says the problem's simpler, a clarify on a step the step's
+test("workedClarify flags director20's worked-problem rows; every teacher row of a dry turn carries the walk's cell address", async () => {
+  const flags = checkRun(RUN).filter((x) => x.predicate === "workedClarify");
+  assert.ok(flags.length >= 1, "director20 had clarifies on worked parts answered with the next step");
+  const { cellAddressOf } = await import("../server/director/state.js");
+  assert.equal(cellAddressOf(null, { event: "turn" }), null);
+});
+
+// Main on integration 51 (c5-t01 steady 96): the key's why said after code's frame with "line" and "mark" swapped for "rekha" and
+// "nishaan" passed as said whole. A why and a worked close are units, said word for word anywhere in the turn; their two forms are one
+// unit (a Hindi turn holds the English form's numbers), and a run another said string of the script holds is that string's
+const WHY_SCRIPT = { skills: [{ checks: [{ id: "c3", prompt: { hi: "{friend} kehta hai 3/4 do number hain. Kitne mark lagaoge?" },
+  why: { hi: "3/4 akela ek number hai, toh line par uski sirf ek jagah hai: 0 se 3 gap chalkar, wahi ek mark", en: "3/4 is a single number, so it has just one place on the line: 3 gaps on from 0, that one mark" } },
+  { id: "c4", prompt: { hi: "Parimap kitna hai?" }, why: { hi: "P se wapas P tak paanchon bhujayein: 8 + 5 + 7 + 6 + 3 = 29 m", en: "P back to P, all five sides: 8 + 5 + 7 + 6 + 3 = 29 m" },
+  simpler: { hi: "3/4 akela ek number hai, toh ek hi jagah." } }] }] };
+test("integration 51: authoredWhole flags a why said with words swapped, after code's frame", async () => {
+  const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const said = (text) => lessonFlags({ rows: [{ who: "teacher", text }], script: WHY_SCRIPT }).filter((x) => x.predicate === "authoredWhole").map((x) => x.why);
+  assert.equal(said("Bilkul sahi, kyunki 3/4 akela ek number hai, toh rekha par uski sirf ek jagah hai: 0 se 3 gap chalkar, wahi ek nishaan. Ab aage.").length, 1);
+  assert.deepEqual(said("Bilkul sahi, kyunki 3/4 akela ek number hai, toh line par uski sirf ek jagah hai: 0 se 3 gap chalkar, wahi ek mark. Ab aage."), []);
+  // (the simpler said whole holds the run "3/4 akela ek number hai": no start of the why)
+  assert.deepEqual(said("3/4 akela ek number hai, toh ek hi jagah."), []);
+  // (the English form's numbers in a Hindi turn said whole start nothing)
+  assert.deepEqual(said("Haan, sahi hai, kyunki P se wapas P tak paanchon bhujayein: 8 + 5 + 7 + 6 + 3 = 29 m. Aage chalo."), []);
+});

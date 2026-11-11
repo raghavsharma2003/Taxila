@@ -6731,3 +6731,20 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-3c6b249` (2026-11-11): Released 3c6b249 with scripts/release.mjs: web taxila-web--s3c6b249-gr5p (was taxila-web--s377f1a3-221c), worker + canary/nightly jobs on taxila-worker:3c6b249 (was 377f1a3); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 3c6b249 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-4f33e5d` (2026-11-11): Released 4f33e5d with scripts/release.mjs: web taxila-web--s4f33e5d-dhc7 (was taxila-web--s3c6b249-gr5p), worker + canary/nightly jobs on taxila-worker:4f33e5d (was 3c6b249); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 4f33e5d --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-kon-round2-picker-cpu` (2026-11-11): kon/name picker CPU after the round-2 figure rules (tests/_cpu-ms.mjs cpuNow, pickLevels × 30 requests, say + find, fades 1-3, seeds 700-714, five repeats in one process, this container): p95 16.0-20.3 ms after the first (JIT) repeat, 29.4 ms on it; bar 50 ms; main's figure before the change about 24 ms. kon/place: p95 4.9-8.1 ms (18.9 on the first repeat).
+- `ms-r8-game-modes-judging-3-2026-11-11` (2026-11-11): Third judging of the new game modes (claude/r7-games 609dda81c; two fresh Opus judges at high effort per mode, packet plus every screenshot, with the three laws as item K): stambh/tally round 3 FAIL and FAIL; kon/name round 2 PASS and FAIL; kon/place held for a scale-number fix. n = 4 verdicts. All afternoon rulings found done on the screens and laws 1 to 3 pass on both modes. Blocking faults: tally, a row of 2 bundles and 2 lines gives the mix-up's number (10) to a child who drops her loose lines (both judges); kon/name, on the second say level reading the letters like text gives the key because two points sit at one height (one judge blocks, the other should-fix). Reports: docs/design/round8/games-judging/<mode>/judges/.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-design-minifier-has-weight` (2026-11-11): Round 8 walk (production build, 136 screens x 2 themes): the production CSS minifier wraps a selector list that holds :has() in :is() (an engine without :has() keeps the rest), and :is() takes its strongest argument's weight. tx-tokens.css's B block `[data-tx=b], :root:has(.kx[data-tx=b]:not([data-tx-surface]))` became (0,4,0) and beat the light surface (0,2,0): every B set-up and light screen rendered night in the built app only (the dev server keeps the list unwrapped). Fix: the :has() branch in :where(); tests/r8-tx-tokens.test.mjs fails on a bare :has() in a token block. Law: a dev-server screenshot does not prove the built CSS; walk the production build.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-4b9cc50` (2026-11-11): Released 4b9cc50 with scripts/release.mjs: web taxila-web--s4b9cc50-obcd (was taxila-web--s4f33e5d-dhc7), worker + canary/nightly jobs on taxila-worker:4b9cc50 (was 4f33e5d); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 4b9cc50 --rollback.

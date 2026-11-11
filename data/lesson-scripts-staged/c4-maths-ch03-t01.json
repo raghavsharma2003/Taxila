@@ -37,7 +37,7 @@
    "en": "sum, total"
   }
  ], "greetSimpler": { "hi": "Aaj hum jodiyan banakar dekhenge ki koi number odd hai ya even.", "en": "Today we make pairs to see whether a number is odd or even." },
- "joints": {"asidePark":[{"hi":"Yeh jode banana khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish making these pairs, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh jode banana khatam ho jaaye.","en":"We'll talk about {aside} too, right after making these pairs."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kya cheezein jodiyon mein aati hain?","en":"What comes in pairs in {aside}?"},{"hi":"Ab {aside} ki baat, usmein sabse mazedaar kya hai?","en":"Now {aside}: what is the most fun part of it?"},{"hi":"Chalo, {aside} ke baare mein batao, tumhe woh kyun pasand hai?","en":"Okay, tell me about {aside}: why do you like it?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}],"backTo":[{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."}]},
+ "joints": {"asidePark":[{"hi":"Yeh sam-visham wala kaam khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish this even and odd work, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh sam-visham wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, right after this even and odd work."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kya cheezein jodiyon mein aati hain?","en":"What comes in pairs in {aside}?"},{"hi":"Ab {aside} ki baat, usmein sabse mazedaar kya hai?","en":"Now {aside}: what is the most fun part of it?"},{"hi":"Chalo, {aside} ke baare mein batao, tumhe woh kyun pasand hai?","en":"Okay, tell me about {aside}: why do you like it?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}],"backTo":[{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."}]},
  "skills": [
   {
    "skillId": "c4-maths-ch03-t01-s1",
@@ -485,10 +485,7 @@
     }
    ],
    "ladder": [
-    {
-     "itemId": "c4-maths-ch03-t01-i01",
-     "why": "7 children in dance pairs → 3 pairs, 1 left → odd; warm-up pairing"
-    },
+    
     {
      "itemId": "c4-maths-ch03-t01-rl-o1",
      "why": "13 rackets packed in pairs → one left over; pairing a bigger number"
@@ -883,35 +880,15 @@
     },
     {
      "id": "c2",
-     "prompt": {
-      "hi": "Ek ghar ka number 356 hai. 356 odd hai ya even?",
-      "en": "A house number is 356. Is 356 odd or even?"
-     },
-     "key": "Even",
-     "accept": [
-      "even",
-      "sam",
-      "sam sankhya",
-      "356 even hai",
-      "356 is even"
-     ],
+     "prompt": { "hi": "Board par do ghar ke number hain: baayein 563 aur daayein 536. Inmein se even number kaunsa hai, baayein wala ya daayein wala?", "en": "The board shows two house numbers: 563 on the left and 536 on the right. Which of them is even, the left one or the right one?" },
+     "key": "daayein wala",
+     "accept": ["daayein", "daayein wala number", "right", "the right one", "the one on the right", "right wala"],
      "targets": "c4-maths-ch03-t01-m-any-odd-digit",
-     "wrongIfMis": "Odd",
-     "board": {
-      "template": "place-value@1",
-      "params": {
-       "value": 356
-      }
-     },
-     "why": {
-      "hi": "356 ka ekai ka ank 6 hai, aur 6 ki 3 jodiyan banti hain",
-      "en": "356 ends in 6, and 6 makes 3 pairs"
-     },
-     "simpler": {
-      "hi": "356 ka sirf aakhri ank dekho, baaki ank chhod do. Us ank ki jodiyan banao aur dekho koi akela bacha ya nahi.",
-      "en": "Look only at the last digit of 356 and leave the other digits. Pair up that digit and see whether any is left alone."
-     },
-     "answerBoard": { "template": "place-value@1", "params": {"value": 356, "mark": {"place": "ones"}} }
+     "wrongIfMis": "koi nahi",
+     "board": { "template": "compare@1", "params": {"left": {"title": "563", "items": ["number"]}, "right": {"title": "536", "items": ["number"]}} },
+     "why": { "hi": "536 ka ekai ka ank 6 hai aur 563 ka 3; 5 aur 3 kahin aur hon toh farak nahi padta", "en": "536 ends in 6 and 563 ends in 3; a 5 or 3 in another place makes no difference" },
+     "simpler": { "hi": "Dono numbers mein wahi ank hain, bas jagah badli hai. Har number ka sirf aakhri ank dekho.", "en": "Both numbers have the same digits, only their places differ. Look only at each number's last digit." },
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "563", "items": ["number"]}, "right": {"title": "536", "items": ["number"]}} }
     },
     {
      "id": "c3",
@@ -943,28 +920,7 @@
      "answerBoard": { "template": "place-value@1", "params": {"value": 20, "mark": {"place": "ones"}} }
     }
    ],
-   "ladder": [
-    {
-     "itemId": "c4-maths-ch03-t01-i02",
-     "why": "34 → ones digit 4 → even; the 3 in front does not decide"
-    },
-    {
-     "itemId": "c4-maths-ch03-t01-i03",
-     "why": "129 → ones digit 9 → odd; a 3-digit number"
-    },
-    {
-     "itemId": "c4-maths-ch03-t01-i06",
-     "why": "43 or 34: same digits, swapped → only the ones digit decides"
-    },
-    {
-     "itemId": "c4-maths-ch03-t01-i08",
-     "why": "error spot: 70 called odd because of the 7 → 7 tens pair fully, ones 0 → even"
-    },
-    {
-     "itemId": "c4-maths-ch03-t01-rl-h2",
-     "why": "ticket number 3,48,507 → ones digit 7 → odd; a big number, same rule"
-    }
-   ],
+   "ladder": [{"itemId": "c4-maths-ch03-t01-i13", "why": "retrieval: which ones digits make a number even → 0, 2, 4, 6, 8"}, {"itemId": "c4-maths-ch03-t01-i05", "why": "why 58 is even without pairing all 58 → the tens pair fully, only the 8 matters"}, {"itemId": "c4-maths-ch03-t01-rl-h2", "why": "ticket number 3,48,507 → ones digit 7 → odd; a big number, same rule"}],
    "remediation": [
     {
      "targets": "c4-maths-ch03-t01-m-any-odd-digit",
@@ -1021,11 +977,11 @@
       "en": "With 0 things nobody is left alone, so 0 is even. A number ending in 0, like 10, is even too."
      },
      "then": {
-      "prompt": { "hi": "Ek class mein 60 bachche hain. 60 odd hai, even hai, ya dono mein se koi nahi?", "en": "A class has 60 children. Is 60 odd, even, or neither?" },
-      "key": "Even",
-      "accept": ["even", "sam", "sam sankhya", "60 even hai", "60 is even"], "targets": "c4-maths-ch03-t01-m-zero-not-even", "wrongIfMis": "Neither",
+      "prompt": { "hi": "{friend} ka kehna hai ki 60 ke ekai mein 0 hai, aur 0 kuch nahi hota, isliye 60 na odd hai na even. Kya yeh sahi hai?", "en": "{friend} says 60 has 0 in its ones, and 0 is nothing, so 60 is neither odd nor even. Is that right?" },
+      "key": "No",
+      "accept": ["nahi", "nahin", "no", "nahi, 60 even hai", "no, 60 is even"], "targets": "c4-maths-ch03-t01-m-zero-not-even", "wrongIfMis": "Yes",
       "board": { "template": "place-value@1", "params": {"value": 60} },
-      "why": { "hi": "60 ka ekai ka ank 0 hai, aur 0 mein koi akela nahi bachta; 6 dahaai ki bhi poori jodiyan banti hain", "en": "60 has ones digit 0, and 0 leaves nobody alone; its 6 tens also make full pairs" },
+      "why": { "hi": "60 ka ekai ka ank 0 hai, aur 0 mein koi akela nahi bachta; 6 dahaai bhi poori jodiyan hain", "en": "60 has ones digit 0, which leaves nobody alone, and its 6 tens make full pairs, so 60 is even" },
       "simpler": { "hi": "60 ka sirf aakhri ank dekho. Socho, us ank ki jodi banane par koi akela bachta hai ya nahi.", "en": "Look only at the last digit of 60. Think whether pairing that digit leaves anyone alone." },
       "answerBoard": { "template": "place-value@1", "params": {"value": 60, "mark": {"place": "ones"}} }
      }
@@ -1369,10 +1325,7 @@
     }
    ],
    "ladder": [
-    {
-     "itemId": "c4-maths-ch03-t01-i04",
-     "why": "predict 3 rotis + 5 rotis → the two leftovers pair → even"
-    },
+    
     {
      "itemId": "c4-maths-ch03-t01-i07",
      "why": "odd + odd again with new numbers: 7 + 9 = 16 → even"
@@ -1399,20 +1352,11 @@
       "en": "The lone dot of 5 and the lone dot of 3 join into a pair. So 5 + 3 is even."
      },
      "then": {
-      "prompt": {
-       "hi": "Ek plate mein 7 laddoo aur 3 laddoo rakhe. Kul laddoo odd hain ya even?",
-       "en": "7 laddoos and 3 laddoos are put on a plate. Is the total odd or even?"
-      },
-      "key": "Even",
-      "accept": [
-       "even",
-       "sam",
-       "sam sankhya",
-       "10",
-       "10 even hai"
-      ],
+      "prompt": { "hi": "{friend} ka kehna hai ki 7 + 3 odd hoga, kyunki 7 aur 3 dono odd hain. Kya yeh sahi hai?", "en": "{friend} says 7 + 3 will be odd, because 7 and 3 are both odd. Is that right?" },
+      "key": "No",
+      "accept": ["nahi", "nahin", "no", "nahi, 10 even hai", "no, 10 is even"],
       "targets": "c4-maths-ch03-t01-m-odd-plus-odd-odd",
-      "wrongIfMis": "Odd",
+      "wrongIfMis": "Yes",
       "board": {
        "template": "combine-count@1",
        "params": {
@@ -1422,11 +1366,8 @@
         "hideResult": true
        }
       },
-      "why": { "hi": "7 aur 3 ke akele laddoo milkar ek jodi bante hain, isliye kul 10 even hai", "en": "7 and 3 each leave one over, and the two pair up, so 10 is even" },
-      "simpler": {
-       "hi": "7 mein ek laddoo akela hai, aur 3 mein bhi ek. Plate par dono akele laddoo saath aa jaate hain.",
-       "en": "7 has one lone laddoo, and 3 has one too. On the plate the two lone laddoos come together."
-      },
+      "why": { "hi": "7 aur 3 dono ka ek-ek akela milkar jodi ban jaata hai, isliye 7 + 3 = 10 even hai, odd nahi", "en": "the lone one of 7 and the lone one of 3 pair up, so 7 + 3 = 10 is even" },
+      "simpler": { "hi": "7 mein ek akela hai, aur 3 mein bhi ek. Socho, milne par yeh do akele kya karte hain.", "en": "7 has one alone, and 3 has one too. Think what these two lone ones do when they meet." },
       "answerBoard": {
        "template": "combine-count@1",
        "params": {

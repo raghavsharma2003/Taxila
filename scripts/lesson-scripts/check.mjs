@@ -880,7 +880,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s));
   return e;
 }
 
@@ -904,6 +904,8 @@ export function unitsOf(s) {
         ["yourStep.prompt", we.yourStep?.prompt], ["yourStep.simpler", we.yourStep?.simpler]] });
     const fb = [...k.explain].reverse().find((e) => e.board)?.board;
     for (const c of k.checks) out.push({ id: `${k.skillId}/${c.id}`, board: c.board ?? fb, withhold: vals(c), parts: [["prompt", c.prompt], ["simpler", c.simpler]] });
+    // (a remediation's say is posed with its then-card in one move, over the then-card's board — director16 D11.1: its own picture
+    // is no longer drawn; only a help re-teach after a check draws r.board — so the say is judged against the then-card's board)
     k.remediation.forEach((r, i) => out.push({ id: `${k.skillId}/remediation[${i}]`, board: r.then?.board ?? r.board, withhold: vals(r.then),
       parts: [["say", r.say], ["simpler", r.simpler], ["then.prompt", r.then?.prompt], ["then.simpler", r.then?.simpler]] }));
     const next = s.skills[si + 1];
@@ -1265,4 +1267,212 @@ export function ladderRepeatErrors(s, kit) {
     const hit = n && items.find((it) => it.n === n && (it.a === last || n.split(" ").length >= 2 && it.a === keyNum(said(we.answer))));
     if (hit) e.push(`${k.skillId}/workedExample: repeats kit ladder item ${hit.id} (numbers ${n}): the worked problem uses its own numbers`); }
   return [...new Set(e)];
+}
+
+function deSaid(x) { return (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? "")); }
+function deStop() { return new Set("the a an and or of to in on at is are was were be it its this that these those what which who how many much does do did can will would should there here than then with from for by as your you she he they we our their his her ek ka ki ke ko se me mein par hai hain tha thi the toh aur ya kya kaun kaunsa kaunsi kitna kitni kitne yeh woh is us inka unka iska uska apna apni apne batao bolo socho dekho kar karo hota hoti hote hua hui wala wali wale bhi hi nahi no yes haan sahi galat right wrong same different board par every still look take just went came only none exactly where towards small large longer shorter bigger smaller split match fits further meeting both each other again once more after before first second third last next half whole into onto over under left made make makes come comes goes going turn turned turns show shows tell says said give gives used uses using keep kept like want".split(" ")); }
+function deWords(t) { const S = deStop(); return (String(t ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? []).filter((w) => !S.has(w)); }
+/** (d) main on batch 4 and the pilots: a remediation's say never states or acts out its own then-card's key. Staying on the
+ * same object is fine when the then-card is another instance (other numbers, or the other case) whose answer the say does not
+ * give. Refused: the then-card's word key said in the say/simpler; its number key said there; or the say working the then-card's
+ * own instance (all of the then-prompt's numbers, or for a number-free yes/no card two of its object words) and concluding. */
+export function thenSayErrors(s) {
+  const e = [];
+  const prompts = []; for (const k of s.skills) { for (const b of k.explain) if (b.ask) prompts.push(b.ask); if (k.workedExample?.yourStep) prompts.push(k.workedExample.yourStep); prompts.push(...k.checks); for (const r of k.remediation) if (r.then) prompts.push(r.then); }
+  const df = new Map(); for (const c of prompts) for (const w of new Set(deWords(c.prompt?.en))) df.set(w, (df.get(w) ?? 0) + 1);
+  const terms = new Set(s.skills.flatMap((k) => k.explain.flatMap((b) => (b.mustSay ?? []).flatMap((m) => deWords(deSaid(m))))));
+  const nums = (t) => [...new Set((String(t ?? "").replace(/(\d),(?=\d{2,3}\b)/g, "$1").match(/\d+(?:[./]\d+)?/g) ?? []).filter((n) => n !== "0" && n !== "1"))];
+  const hasNum = (t, c) => new RegExp(`(^|[^\\d/.])${c.replace(/[./]/g, "\\$&")}([^\\d/]|$)`).test(` ${t} `);
+  for (const k of s.skills) (k.remediation ?? []).forEach((r, i) => {
+    if (!r.then) return;
+    const say = ` ${deSaid(r.say)} ${deSaid(r.simpler)} `, sayL = say.toLowerCase();
+    const key = String(r.then.key ?? "").trim(), kl = key.toLowerCase(), prompt = deSaid(r.then.prompt);
+    const at = `${k.skillId}/remediation[${i}]`;
+    // (a word key, said in the say and not offered by the then-card's own prompt)
+    if (/^\p{L}[\p{L} -]{2,}$/u.test(key) && !/^(yes|no|haan|han|nahi|nahin)$/i.test(key) && new RegExp(`(?<![\\p{L}])${kl.replace(/[-]/g, "[- ]")}(?![\\p{L}])`, "u").test(sayL) && !prompt.toLowerCase().includes(kl)) { e.push(`${at}: its say states "${key}", its then-card's key`); return; }
+    // (a number key said in the say, with one of the then-card's own numbers: the say worked its instance)
+    const kn = (key.replace(/(\d),(?=\d{2,3}\b)/g, "$1").match(/^(?:₹\s*)?(\d+(?:[./]\d+)?)/) ?? [])[1];
+    const pn = nums(r.then.prompt?.en ?? r.then.prompt?.hi);
+    if (kn && hasNum(say, kn) && !hasNum(prompt, kn) && (pn.length === 0 || pn.some((n) => hasNum(say, n)))) { e.push(`${at}: its say states ${kn}, its then-card's key, on the then-card's own numbers`); return; }
+    // (a yes/no card: the say works the then-card's own instance)
+    if (/^(yes|no|haan|han|nahi|nahin)$/i.test(key)) {
+      // (the then-card's givens: its numbers outside the question sentence — "Is that 2/4?" proposes, the 4 pieces and 2 eaten are the case)
+      const en = String(r.then.prompt?.en ?? r.then.prompt?.hi ?? ""), qs = en.split(/(?<=[.?!])\s+/), givenTxt = qs.filter((x) => !x.includes("?")).join(" ");
+      const gn = givenTxt ? nums(givenTxt) : pn;
+      const same = gn.length ? gn.every((n) => hasNum(say, n)) : [...new Set(deWords(r.then.prompt?.en))].filter((w) => (df.get(w) ?? 0) < 3 && !terms.has(w) && sayL.includes(w)).length >= 2;
+      if (same) e.push(`${at}: its say acts out its then-card's own case (${gn.length ? gn.join(", ") : "same objects"}), whose yes/no answer it gives: the then-card asks another instance`);
+    }
+  });
+  return e;
+}
+/** (f) main on the pilots (c4: all 12 yes/no keys "No"): yes/no keys are not all one answer in a script, and a skill never
+ * runs three yes/no cards in a row with the same key. A child who always says "nahi" fails some probes. */
+export function yesNoSpreadErrors(s) {
+  const e = [], yn = (k) => { const x = String(k ?? "").trim().toLowerCase(); return /^(yes|haan|han)$/.test(x) ? "yes" : /^(no|nahi|nahin)$/.test(x) ? "no" : null; };
+  const all = [];
+  for (const k of s.skills) {
+    const cards = [...k.explain.filter((b) => b.ask).map((b) => [b.id, b.ask]), ...(k.workedExample?.yourStep ? [["workedExample.yourStep", k.workedExample.yourStep]] : []), ...k.checks.map((c) => [c.id, c]), ...k.remediation.map((r, i) => r.then && [`remediation[${i}].then`, r.then]).filter(Boolean)];
+    const run = cards.map(([id, c]) => [id, yn(c.key)]).filter(([, v]) => v);
+    all.push(...run.map(([, v]) => v));
+    for (let i = 2; i < run.length; i++) if (run[i][1] === run[i - 1][1] && run[i][1] === run[i - 2][1]) e.push(`${k.skillId}/${run[i][0]}: the third yes/no card in a row keyed "${run[i][1]}" (${run[i - 2][0]}, ${run[i - 1][0]}): vary the answer`);
+  }
+  if (all.length >= 3 && new Set(all).size === 1) e.push(`script: all ${all.length} yes/no cards are keyed "${all[0]}": a child who always says it passes every probe`);
+  return e;
+}
+/** (e) a skill does not ask the same question frame twice: prompts with numbers and letter names masked, word/letter/yes-no keys. */
+/** (h) main 2026-11-11, from Brain's authoredWhole: every authored unit she says whole (a point, simpler, card, remediation say,
+ *  then-card, worked problem, given, step simpler, yourStep, hook use, bridge, greetSimpler) has no whole sentence of three words or
+ *  more that another unit also holds, in either form. Two units sharing a sentence make the runtime unable to tell which one was
+ *  started, and a simpler that repeats a sentence of what it simplifies gives the child the same words again. Slots ({friend}) are
+ *  read as one word, so "{friend} kehta hai … Kya woh sahi hai?" and "Rahul kehta hai … Kya woh sahi hai?" share their tail. */
+export function sharedSentenceErrors(s) {
+  const units = [];
+  const add = (where, v, parent = null) => { for (const lang of ["hi", "en"]) { const t = typeof v === "string" ? (lang === "hi" ? v : null) : v?.[lang]; if (t) units.push({ where, lang, t, parent }); } };
+  add("greetSimpler", s.greetSimpler);
+  for (const [n, sk] of (s.skills ?? []).entries()) {
+    const S = sk.skillId ?? `s${n + 1}`;
+    (sk.hook?.interestSlots ?? []).forEach((sl, i) => add(`${S}/hook.slot${i}`, sl.use));
+    for (const e of sk.explain ?? []) { add(`${S}/${e.id}.point`, e.point); add(`${S}/${e.id}.simpler`, e.simpler, `${S}/${e.id}.point`); add(`${S}/${e.id}.ask`, e.ask?.prompt); add(`${S}/${e.id}.ask.simpler`, e.ask?.simpler, `${S}/${e.id}.ask`); }
+    (sk.remediation ?? []).forEach((m, i) => { const R = `${S}/remediation[${i}]`; add(`${R}.say`, m.say); add(`${R}.simpler`, m.simpler, `${R}.say`); add(`${R}.then`, m.then?.prompt); add(`${R}.then.simpler`, m.then?.simpler, `${R}.then`); });
+    const we = sk.workedExample;
+    if (we) {
+      add(`${S}/workedExample.problem`, we.problem); add(`${S}/workedExample.simpler`, we.simpler, `${S}/workedExample.problem`);
+      (we.givens ?? []).forEach((g, k) => add(`${S}/workedExample.givens[${k}]`, g));
+      (we.steps ?? []).forEach((st, k) => add(`${S}/workedExample.steps[${k}].simpler`, st.simpler));
+      add(`${S}/workedExample.yourStep`, we.yourStep?.prompt); add(`${S}/workedExample.yourStep.simpler`, we.yourStep?.simpler, `${S}/workedExample.yourStep`);
+    }
+    for (const c of sk.checks ?? []) { add(`${S}/${c.id}`, c.prompt); add(`${S}/${c.id}.simpler`, c.simpler, `${S}/${c.id}`); }
+    add(`${S}/bridgeToNext`, sk.bridgeToNext);
+  }
+  const keyOf = (x) => String(x).toLowerCase().replace(/\{\w+\}/g, " slot ").replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+  const seen = new Map(), e = [];
+  for (const u of units) {
+    for (const sent of sentencesOf(u.t)) {
+      const k = keyOf(sent);
+      if (k.split(" ").length < 3) continue;
+      const m = `${u.lang}|${k}`, prev = seen.get(m);
+      if (!prev) { seen.set(m, u); continue; }
+      if (prev.where === u.where) continue;
+      const own = u.parent === prev.where || prev.parent === u.where;
+      // (a card's short question tag, "Kya woh sahi hai?" / "Is that right?", may close many cards: it names no unit)
+      if (!own && /[?？]\s*$/.test(sent) && k.split(" ").length <= 5) continue;
+      const kind = own ? "a simpler repeats a sentence of what it simplifies" : "two units share a whole sentence";
+      e.push(`${u.where}${u.lang === "en" ? " (en)" : ""}: ${kind} with ${prev.where}: "${sent.slice(0, 70)}" (say it in other words)`);
+    }
+  }
+  return e;
+}
+
+export function frameRepeatErrors(s, kit = null) {
+  const e = [];
+  const frame = (t) => String(t ?? "").replace(/\{[a-zA-Z]+\}/g, "@n").replace(/\b[A-Z]{1,3}\b/g, "@").replace(/\d+(?:[.,/]\d+)*/g, "#").toLowerCase().replace(/[^\p{L}#@ ]+/gu, " ").split(/\s+/).filter((w) => w && !deStop().has(w));
+  const jac = (a, b) => { const A = new Set(a), B = new Set(b); let n = 0; for (const x of A) if (B.has(x)) n++; return n / (A.size + B.size - n || 1); };
+  const kclass = (key) => { const k = String(key ?? "").trim().toLowerCase(); return /^(yes|no|haan|nahi)$/.test(k) ? "yn" : /\d/.test(k) ? null : "w:" + k.replace(/\b[a-z]{1,3}\b/g, "@"); };
+  for (const k of s.skills) {
+    const cards = [...k.explain.filter((b) => b.ask).map((b) => [b.id, b.ask]), ...(k.workedExample?.yourStep ? [["workedExample.yourStep", k.workedExample.yourStep]] : []), ...k.checks.map((c) => [c.id, c]), ...k.remediation.map((r, i) => r.then && [`remediation[${i}].then`, r.then]).filter(Boolean)];
+    for (let i = 0; i < cards.length; i++) for (let j = i + 1; j < cards.length; j++) {
+      const [ia, a] = cards[i], [ib, b] = cards[j], ka = kclass(a.key), kb = kclass(b.key);
+      if (!ka || ka !== kb) continue;
+      const J = jac(frame(a.prompt?.en), frame(b.prompt?.en));
+      if (J >= 0.6) e.push(`${k.skillId}/${ib}: asks ${k.skillId}/${ia}'s question again (same frame, ${Math.round(J * 100)}% alike, key ${b.key}): ask something new`);
+    }
+    // (e2, main on batch 5: c6-ch07-t01 c3 = ladder rl-o2, c6-ch02-t03 s2 c1 = i03) each card against its own skill's ladder
+    // items: the same frame with the same answer is a repeat of the practice
+    const items = new Map((kit?.items ?? []).map((it) => [it.id, it]));
+    const norm = (x) => String(x ?? "").toLowerCase().replace(/(\d),(?=\d{2,3}\b)/g, "$1").replace(/[^\p{L}\p{N}/.]+/gu, " ").trim();
+    for (const l of k.ladder ?? []) {
+      const it = items.get(l.itemId);
+      if (!it) continue;
+      for (const [ia, a] of cards) {
+        const ck = norm(a.key), ik = norm(it.answer);
+        if (!ck || !ik) continue;
+        const same = ik === ck || ik.startsWith(`${ck} `) || [it.answer, ...(it.acceptable ?? [])].some((v) => norm(v) === ck);
+        if (!same) continue;
+        const J = jac(frame(a.prompt?.en), frame(it.prompt_en));
+        if (J >= 0.4) e.push(`${k.skillId}/${ia}: asks its ladder item ${l.itemId.replace(/^c\d+-[a-z]+-ch\d+-t\d+-/, "")}'s question (same frame, ${Math.round(J * 100)}% alike, answer ${a.key}): ask something the practice does not, or drop that rung`);
+      }
+    }
+  }
+  return e;
+}
+
+/** (f2, main on batch 5: every "which is more" in c6-ch07-t03 s1 is "same"; every factor-or-multiple card in c6-ch05 is
+ * "multiple"): a two- or three-way word key — same/more/less, before/after, factor/multiple, … — is not one answer through a
+ * skill: never three in a row with the same word, and not all one word when a skill asks three or more. */
+export function wordKeySpreadErrors(s) {
+  const e = [];
+  const CHOICE = /^(same|barabar|equal|ek jaise|utna hi|utni hi|more|less|bigger|smaller|zyada|kam|bada|chhota|badi|chhoti|before|after|pehle|baad|baad mein|factor|multiple|factors|multiples|gunankhand|guneej|common factor|common multiple|above|below|upar|neeche|left|right|daayein|baayein|clockwise|anticlockwise|even|odd|sam|visham)$/i;
+  const canon = (k) => { const x = String(k ?? "").trim().toLowerCase(); return CHOICE.test(x) ? x.replace(/^(barabar|equal|ek jaise|utna hi|utni hi)$/, "same").replace(/^(zyada|bigger|bada|badi)$/, "more").replace(/^(kam|smaller|chhota|chhoti)$/, "less").replace(/^(pehle)$/, "before").replace(/^(baad|baad mein)$/, "after").replace(/^(factors|gunankhand)$/, "factor").replace(/^(multiples|guneej)$/, "multiple").replace(/^sam$/, "even").replace(/^visham$/, "odd") : null; };
+  for (const k of s.skills) {
+    const cards = [...k.explain.filter((b) => b.ask).map((b) => [b.id, b.ask]), ...(k.workedExample?.yourStep ? [["workedExample.yourStep", k.workedExample.yourStep]] : []), ...k.checks.map((c) => [c.id, c]), ...k.remediation.map((r, i) => r.then && [`remediation[${i}].then`, r.then]).filter(Boolean)];
+    const run = cards.map(([id, c]) => [id, canon(c.key)]).filter(([, v]) => v);
+    for (let i = 2; i < run.length; i++) if (run[i][1] === run[i - 1][1] && run[i][1] === run[i - 2][1]) e.push(`${k.skillId}/${run[i][0]}: the third card in a row keyed "${run[i][1]}" (${run[i - 2][0]}, ${run[i - 1][0]}): vary the answer`);
+    if (run.length >= 3 && new Set(run.map(([, v]) => v)).size === 1) e.push(`${k.skillId}: all ${run.length} of its choice cards are keyed "${run[0][1]}": a child who always says it passes every one`);
+  }
+  return [...new Set(e)];
+}
+
+/** (g) main on batch 3's wrong key (c4-ch04 s2 e2: "5281 ka 1 … value?" keyed 10): a place-value card's key is solved from
+ * its number — in its prompt, else on its own board — and must be one of the asked digit's values there; its wrongIfMis
+ * must not be. Card form: "<number> mein/ka <digit> … value / jagah", "the <digit> in/of <number> … worth". */
+export function placeValueKeyErrors(s) {
+  const e = [];
+  const text = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
+  const nums = (t) => (String(t ?? "").replace(/(\d),(?=\d{2,3}\b)/g, "$1").match(/\b\d{3,}\b/g) ?? []);
+  const boardNums = (b) => { const o = []; JSON.stringify(b?.params ?? {}, (k, v) => { if (typeof v === "string" || typeof v === "number") o.push(...nums(String(v))); return v; }); return o; };
+  const valOf = (v) => { const m = String(v ?? "").replace(/(\d),(?=\d{2,3}\b)/g, "$1").match(/^\s*(\d+)\s*$/); return m ? Number(m[1]) : null; };
+  for (const [where, c, board] of cardsInOrder(s)) {
+    const en = String(c.prompt?.en ?? ""), hi = String(c.prompt?.hi ?? "");
+    if (!/\b(value|worth|place|jagah|keemat|kimat)\b/i.test(`${en} ${hi}`)) continue;
+    const dm = en.match(/\bthe (\d)\b/i) ?? hi.match(/\b(?:ka|ke|mein|me)\s+(?:ank\s+)?(\d)\b/i) ?? en.match(/\bdigit (\d)\b/i);
+    const key = valOf(c.key);
+    if (!dm || key == null) continue;
+    const d = dm[1], cand = [...new Set([...nums(en), ...nums(hi)])], ns = cand.length ? cand : [...new Set(boardNums(c.board ?? board))];
+    const values = new Set(ns.flatMap((n) => [...n].map((ch, i) => (ch === d ? Number(d) * 10 ** (n.length - 1 - i) : null)).filter((v) => v != null)));
+    if (!values.size) continue;
+    if (!values.has(key)) e.push(`${where}: its key ${c.key} is not the value of the ${d} in ${ns.join(" / ")} (${[...values].join(" or ")}): solve the card`);
+    const w = valOf(c.wrongIfMis);
+    if (w != null && values.has(w) && w !== key) e.push(`${where}: its wrongIfMis ${c.wrongIfMis} is a right value of the ${d} in ${ns.join(" / ")}`);
+  }
+  return e;
+}
+
+/** main on the pilots' third read (9 says naming their own rectangle or fractions over the then-card's board): a remediation's
+ * say and simpler are spoken over its then-card's board, so every number they name is on that board or in the then-card's
+ * own prompt. (A shape the board does not draw is the whiteboard gate's W10.) */
+export function sayBoardNumberErrors(s) {
+  const e = [];
+  const txt = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
+  const nums = (t) => (String(t ?? "").replace(/(\d),(?=\d{2,3}\b)/g, "$1").match(/\d+(?:[./]\d+)?/g) ?? []);
+  for (const k of s.skills) (k.remediation ?? []).forEach((r, i) => {
+    if (!r.then?.board) return;
+    const p = r.then.board.params ?? {};
+    const onBoard = new Set([...nums(JSON.stringify(p)), ...nums(txt(r.then.prompt))]);
+    // (a fraction-line or bars board shows num/den pairs: [[1,8]] and den 8 draw 1/8 and 8)
+    JSON.stringify(p, (key, v) => { if (Array.isArray(v) && v.length === 2 && v.every((x) => typeof x === "number")) onBoard.add(`${v[0]}/${v[1]}`); return v; });
+    for (const d of [p.den, ...(p.dens ?? [])].filter(Boolean)) for (let n = 0; n <= 3 * d; n++) onBoard.add(`${n}/${d}`);
+    // (a constant the lesson teaches — in its skill's points or mustSay, or a unit fact: 12 on a clock, 90/180/360 degrees, 100 cm,
+    // 1000 m — is the method, not another instance)
+    const taught = new Set([...k.explain.flatMap((b) => nums([txt(b.point), ...(b.mustSay ?? []).map(txt)].join(" "))), "12", "60", "90", "180", "270", "360", "100", "1000"]);
+    // (the two-page turn, director7 + board-first scriptBoardSpoken: a remediation's own board is drawn under its say when the say
+    // speaks every number on it — then the say is judged against THAT board; otherwise it plays over the then-card's)
+    const sayNums = new Set(nums(`${txt(r.say)}`));
+    if (r.board) { const own = nums(JSON.stringify(r.board.params ?? {})).filter((n) => n !== "0" && n !== "1");
+      if (own.length && own.every((n) => sayNums.has(n))) { for (const n of own) onBoard.add(n); for (const n of nums(JSON.stringify(r.board.params ?? {}))) onBoard.add(n); } }
+    const missing = [...new Set(nums(`${txt(r.say)} ${txt(r.simpler)}`))].filter((n) => !onBoard.has(n) && !taught.has(n) && !(Number(n) <= 10 && !n.includes("/")));
+    if (missing.length) e.push(`${k.skillId}/remediation[${i}]: its say names ${missing.join(", ")}, not on its then-card's board (the say is spoken over it): say the method, or what that board shows`);
+  });
+  return e;
+}
+/** rule (f), main 2026-11-11: a yes/no card states a positive claim. "{friend} says it is NOT half", keyed Yes, is refused: a
+ * child who understands may answer "nahi, aadha nahi". */
+export function negatedClaimErrors(s) {
+  const e = [];
+  for (const [where, c] of cardsInOrder(s)) {
+    if (!/^(yes|haan|han)$/i.test(String(c.key ?? "").trim())) continue;
+    // (a closing "haan ya nahi?" / "yes or no?" names the options, not a negation)
+    const t = `${c.prompt?.en ?? ""} || ${c.prompt?.hi ?? ""}`.replace(/\b(haan|han|yes)\s*(ya|or)\s*(nahi|nahin|no)\b/gi, "");
+    if (/\b(says|claims|kehta|kehti|kehna|ka kehna)\b[^?|]*\b(not|isn't|aren't|doesn't|nahi|nahin)\b/i.test(t)) e.push(`${where}: a "Yes" keyed on a negated claim: state the claim positively`);
+  }
+  return e;
 }

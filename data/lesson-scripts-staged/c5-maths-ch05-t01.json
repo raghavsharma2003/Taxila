@@ -557,15 +557,15 @@
       "en": "1 km is 1000 m. Write 1000 m for every km."
      },
      "then": {
-      "prompt": { "hi": "Ek nahar 8 km lambi hai. Woh kitne metre lambi hai?", "en": "A canal is 8 km long. How many metres long is it?" },
-      "key": "8000 m",
-      "why": { "hi": "har km ke 1000 m, yaani 8 × 1000 = 8000", "en": "each km is 1000 m, so 8 × 1000 = 8000" },
-      "accept": ["8000", "aath hazaar", "eight thousand", "8000 metre"],
+      "prompt": { "hi": "Ek nahar 12 km lambi hai. Woh kitne metre lambi hai?", "en": "A canal is 12 km long. How many metres long is it?" },
+      "key": "12000 m",
+      "why": { "hi": "har km ke 1000 m, yaani 12 × 1000 = 12000", "en": "each km is 1000 m, so 12 × 1000 = 12000" },
+      "accept": ["12000", "12,000", "barah hazaar", "twelve thousand", "12000 metre"],
       "targets": "c5-maths-ch05-t01-m-km-100m",
-      "wrongIfMis": "800 m",
-      "board": { "template": "number-line-scale@1", "params": {"from": 0, "to": 8, "step": 1, "marks": [{"value": 8, "label": "nahar"}]} },
-      "simpler": { "hi": "Har km mein ek hazaar m hote hain. 8 km ke liye hazaar ko 8 baar lo.", "en": "Every km has a thousand m. For 8 km, take a thousand 8 times." },
-      "answerBoard": { "template": "number-line-scale@1", "params": {"from": 0, "to": 8, "step": 1, "marks": [{"value": 1, "label": "1000 m"}, {"value": 8, "label": "8000 m"}]} }
+      "wrongIfMis": "1200 m",
+      "board": { "template": "number-line-scale@1", "params": {"from": 0, "to": 12, "step": 2, "marks": [{"value": 12, "label": "nahar"}]} },
+      "simpler": { "hi": "Har km mein ek hazaar m hote hain. 12 km ke liye hazaar ko 12 baar lo.", "en": "Every km has a thousand m. For 12 km, take a thousand 12 times." },
+      "answerBoard": { "template": "number-line-scale@1", "params": {"from": 0, "to": 12, "step": 2, "marks": [{"value": 12, "label": "12000 m"}]} }
      }
     },
     {
@@ -695,18 +695,12 @@
       "en": "1 m is about one big stride, and walking 1 km takes about 12 minutes. So km is for distance between places, like home to the market. For the height of a thing, think: a few strides, or many minutes of walking."
      },
      "ask": {
-      "prompt": {
-       "hi": "Ek mobile tower lagbhag 40 ooncha hai, unit likhna reh gaya. 40 m hoga ya 40 km?",
-       "en": "A mobile tower is about 40 tall; the unit was left out. Is it 40 m or 40 km?"
-      },
-      "key": "m",
-      "why": {
-       "hi": "40 m bas 40 kadam hain, par 1 km mein hi 12 minute lagte hain, toh 40 km mein ghante",
-       "en": "40 m is just 40 strides, but 1 km alone takes 12 minutes, so 40 km takes hours"
-      },
-      "accept": ["m", "metre", "m mein", "metre mein", "40 m"],
+      "prompt": { "hi": "Ek mobile tower lagbhag 40 m ooncha hai. Tower ki oonchai 1 km se kam hai ya zyada?", "en": "A mobile tower is about 40 m tall. Is the tower's height less or more than 1 km?" },
+      "key": "kam",
+      "why": { "hi": "40 m bas 40 kadam hain, jabki 1 km chalne mein 12 minute lagte hain; tower 1 km se bahut kam hai", "en": "40 m is just 40 strides, while walking 1 km takes 12 minutes; the tower is far less than 1 km" },
+      "accept": ["less", "1 km se kam", "bahut kam", "much less", "kam hai"],
       "targets": "c5-maths-ch05-t01-m-km-for-big",
-      "wrongIfMis": "km",
+      "wrongIfMis": "zyada",
       "board": {"template": "compare@1", "params": {"left": {"title": "1 m", "items": ["kadam"]}, "right": {"title": "1 km", "items": ["12 minute"]}}},
       "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 m", "items": ["kadam"]}, "right": {"title": "1 km", "items": ["12 minute"]}} }
      },
@@ -777,24 +771,15 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Ek bada aam ka ped lagbhag 12 ooncha hai, par unit likhna reh gaya. Kaunsa unit sahi hai: cm, m ya km?",
-      "en": "A big mango tree is about 12 tall, but the unit was left out. Which unit is right: cm, m or km?"
-     },
-     "key": "m",
-     "why": {
-      "hi": "12 m lagbhag 12 lambe kadam hain, ped jitna; 12 nakhoon bahut chhote aur 12 km bahut bada",
-      "en": "12 m is about 12 long strides, tree-sized; 12 fingernails is far too small and 12 km far too big"
-     },
-     "accept": ["m", "metre", "m mein", "metre mein", "12 m"],
+     "prompt": { "hi": "Ek bada aam ka ped lagbhag 15 m ooncha hai. Agar woh zameen par leta ho aur tum uske saath-saath chalo, toh kuch second lagenge ya kai minute?", "en": "A big mango tree is about 15 m tall. If it lay on the ground and you walked along it, would it take a few seconds or many minutes?" },
+     "key": "kuch second",
+     "why": { "hi": "15 m bas 15 lambe kadam hain, kuch second ki chaal; kai minute toh km jitni doori mein lagte hain", "en": "15 m is just 15 long strides, a few seconds' walk; many minutes is for a km-long distance" },
+     "accept": ["a few seconds", "seconds", "kuch hi second", "second", "few seconds"],
      "targets": "c5-maths-ch05-t01-m-km-for-big",
-     "wrongIfMis": "km",
-     "board": {"template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}}},
-     "simpler": {
-      "hi": "12 lambe kadam lagbhag ek bade ped jitne oonche hote hain. 12 nakhoon bahut chhote hain, aur 12 km bahut bade.",
-      "en": "12 big strides is about as tall as a big tree. 12 fingernails is far too small, and 12 km far too big."
-     },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}} }
+     "wrongIfMis": "kai minute",
+     "board": { "template": "compare@1", "params": {"left": {"title": "1 m", "items": ["kadam"]}, "right": {"title": "1 km", "items": ["kai minute"]}} },
+     "simpler": { "hi": "Ek metre lagbhag ek lamba kadam hai. Socho, 15 kadam chalne mein kitna samay lagta hai.", "en": "A metre is about one long stride. Think how long it takes to walk 15 strides." },
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 m", "items": ["kadam"]}, "right": {"title": "1 km", "items": ["kai minute"]}} }
     },
     {
      "id": "c2",
@@ -836,16 +821,13 @@
       "en": "1 m is about one big stride. Walking 1 km takes about 12 minutes."
      },
      "then": {
-      "prompt": {
-       "hi": "Ek bijli ka khamba lagbhag 9 ooncha hai, par unit likhna reh gaya. Kaunsa unit sahi hai: cm, m ya km?",
-       "en": "An electric pole is about 9 tall, but the unit was left out. Which unit is right: cm, m or km?"
-      },
+      "prompt": { "hi": "{friend} ne likha: bijli ka khamba lagbhag 9 km ooncha hai. Kya km sahi unit hai? Agar nahi, toh kaunsa?", "en": "{friend} wrote: an electric pole is about 9 km tall. Is km the right unit? If not, which one is?" },
       "key": "m",
       "why": {
        "hi": "9 m lagbhag 9 lambe kadam hain, khambe jitna; 9 nakhoon bahut chhote aur 9 km bahut bada",
        "en": "9 m is about 9 long strides, pole-sized; 9 fingernails is far too small and 9 km far too big"
       },
-      "accept": ["m", "metre", "m mein", "metre mein", "9 m"],
+      "accept": ["m", "metre", "m mein", "metre mein", "9 m", "nahi, m", "no, m", "nahi, metre"],
       "targets": "c5-maths-ch05-t01-m-km-for-big",
       "wrongIfMis": "km",
       "board": {"template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}}},

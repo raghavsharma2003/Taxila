@@ -22,7 +22,7 @@ function block(selectorStart) {
   return out;
 }
 const A = block(':root, [data-tx="a"]');
-const B = { ...A, ...block('[data-tx="b"], :root:has') };
+const B = { ...A, ...block('[data-tx="b"], :where(:root:has') };
 const BLIGHT = { ...B, ...block('[data-tx="b"] [data-tx-surface="light"]') };
 
 const hex = (v) => { assert.match(v, /^#[0-9A-Fa-f]{6}$/, `not a 6-digit hex: ${v}`); return v; };
@@ -65,7 +65,7 @@ test("the set's shape: 8 type sizes, one spacing scale, 3 radii, under 30 colour
   const colours = (t) => new Set(Object.values(t).flatMap((v) => v.match(/#[0-9A-Fa-f]{6}\b|rgb\([^)]*\)/g) ?? []).map((c) => c.toUpperCase().replace(/\s*\/.*\)/, ")")));
   assert.ok(colours(A).size < 30, `A has ${colours(A).size} colours`);
   assert.ok(new Set([...colours(B), ...colours(BLIGHT)]).size < 30 + 1, `B (with its light surface) has too many colours`);
-  for (const k of Object.keys(block('[data-tx="b"], :root:has'))) assert.ok(k in A, `B defines --${k}, which A does not`);
+  for (const k of Object.keys(block('[data-tx="b"], :where(:root:has'))) assert.ok(k in A, `B defines --${k}, which A does not`);
 });
 
 test("the round 8 component CSS reads tokens only and carries none of the terminal chrome", () => {
@@ -84,4 +84,14 @@ test("the round 8 component CSS reads tokens only and carries none of the termin
     });
   }
   assert.deepEqual(bad, []);
+});
+
+// The round 8 walk (2026-11-11): the production minifier wrapped B's selector list (it held a bare :has()) in :is(), whose
+// weight is its strongest argument's, and B's light surface lost on every built B set-up and parent screen. A theme
+// block may hold :has() only inside :where().
+test("a token block's selector never carries a bare :has() (a minifier's :is() wrap would raise its weight)", () => {
+  const sels = [...CSS.matchAll(/([^{}]+)\{/g)].map((m) => m[1].trim()).filter((s) => s.includes(":has("));
+  const bare = sels.filter((s) => s.split(/,(?![^(]*\))/).some((part) => part.includes(":has(") && !part.trim().startsWith(":where(")));
+  assert.deepEqual(bare, []);
+  assert.ok(sels.length > 0, "the B block still reaches the root through :where(:root:has(...))");
 });

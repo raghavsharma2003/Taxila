@@ -154,17 +154,14 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Segment EF 5 cm lamba hai aur segment GH 11 cm. Dono ek hi disha mein hain, aur EF ke dono siron se GH tak doori 3 cm hai. Kya EF aur GH parallel hain, haan ya nahi?",
-      "en": "Segment EF is 5 cm long and segment GH is 11 cm. Both go in the same direction, and the gap from each end of EF to GH is 3 cm. Are EF and GH parallel, yes or no?"
-     },
-     "key": "haan",
-     "accept": ["yes", "haan, parallel hain", "parallel", "haan parallel"],
+     "prompt": { "hi": "EF 4 cm lamba hai. GH, EF ke parallel hai aur har jagah usse 3 cm door. GH kitna lamba ho sakta hai: sirf 4 cm, ya koi bhi lambai?", "en": "EF is 4 cm long. GH is parallel to EF and 3 cm from it everywhere. How long can GH be: only 4 cm, or any length?" },
+     "key": "koi bhi lambai",
+     "accept": ["any length", "koi bhi", "kitni bhi lambai", "kuch bhi", "koi bhi lambai ho sakti hai", "any"],
      "targets": "c7-maths-ch05-t02-m-same-length",
-     "wrongIfMis": "nahi",
-     "board": { "template": "compare@1", "params": { "left": { "title": "segment EF", "items": ["5 cm"] }, "right": { "title": "segment GH", "items": ["11 cm"] } } },
-     "why": { "hi": "segment EF 5 cm aur GH 11 cm hai, par disha ek hai aur doori dono siron par 3 cm", "en": "EF is 5 cm and GH 11 cm, but they share one direction and a 3 cm gap" },
-     "simpler": { "hi": "Lambai alag hone se farak nahi padta. Disha ek hai aur dono siron par doori 3 cm hai, bas yahi dekho.", "en": "Different lengths do not matter. The direction is the same and the gap is 3 cm at both ends; look only at that." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "segment EF", "items": ["5 cm"]}, "right": {"title": "segment GH", "items": ["11 cm"]}} }
+     "wrongIfMis": "sirf 4 cm",
+     "board": { "template": "compare@1", "params": {"left": {"title": "EF", "items": ["4 cm lamba"]}, "right": {"title": "GH", "items": ["EF ke parallel", "har jagah 3 cm door"]}} },
+     "why": { "hi": "GH har jagah 3 cm door hai; parallel disha aur doori se tay hota hai, toh GH kitna bhi lamba ho", "en": "GH is 3 cm away everywhere; parallel depends on direction and gap, so GH can be any length" },
+     "simpler": { "hi": "Lambai se parallel tay nahi hota. Socho ki GH ko usi disha mein badhaane par doori badalti hai ya nahi.", "en": "Length does not decide parallel. Think whether extending GH in the same direction changes the gap or not." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "EF", "items": ["4 cm lamba"]}, "right": {"title": "GH", "items": ["EF ke parallel", "har jagah 3 cm door"]}} }
     },
     {
      "id": "c2",

@@ -3262,6 +3262,10 @@
   },
   {
    "topicId": "c6-maths-ch02-t01",
+   "notes": [
+    "2026-11-11: skillExamples[0] step (d) gave the whole answer '(a) point, (b) ray, (c) line segment, (d) line' as its result. Now '(d) line', re-solved.",
+    "2026-11-11: item i13 hint 2 said 'A dot means it stops there', which is false: ray AB passes through its dot B. Now 'A dot at an end means that end stops there; an arrow means it goes on.' The prompt's fixed name Diya is now the {friendF} slot. Key unchanged (a ray has one endpoint; two dots make a segment), re-solved."
+   ],
    "topicType": "T2",
    "skills": [
     {
@@ -3825,8 +3829,8 @@
      "skillId": "c6-maths-ch02-t01-s1",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Diya drew a ray with a dot at both ends. What did she get wrong?",
-     "prompt_hi": "Diya ne ek ray banayi jiske dono sire pe dot hain. Usne kya galat kiya?",
+     "prompt_en": "{friendF} drew a ray with a dot at both ends. What did she get wrong?",
+     "prompt_hi": "{friendF} ne ek ray banayi jiske dono sire pe dot hain. Usne kya galat kiya?",
      "answer": "A ray has only one endpoint; the other side needs an arrow. With two dots it is a segment",
      "acceptable": [
       "only one endpoint",
@@ -3834,13 +3838,13 @@
      ],
      "hints": [
       "What does a dot at the end mean?",
-      "A dot means it stops there.",
+      "A dot at an end means that end stops there; an arrow means it goes on.",
       "A ray stops at ___ end only.",
       "A ray has one endpoint and an arrow on the other side; two dots make a segment."
      ],
      "targetsMisconception": "c6-maths-ch02-t01-m-ray-two-ends",
      "verified": {
-      "solverAnswer": "a ray has only one starting endpoint; other end has an arrow",
+      "solverAnswer": "A ray has only one endpoint; its other side needs an arrow. With dots at both ends it is a segment",
       "agrees": true,
       "note": ""
      },
@@ -4075,7 +4079,7 @@
       },
       {
        "do": "(d) 0 endpoints, goes on both ways",
-       "result": "(a) point, (b) ray, (c) line segment, (d) line"
+       "result": "(d) line"
       }
      ],
      "answer": "(a) point, (b) ray, (c) line segment, (d) line",
@@ -4119,6 +4123,9 @@
   },
   {
    "topicId": "c6-maths-ch02-t02",
+   "notes": [
+    "2026-11-11: misconception m-full-turn-zero's belief, 'an angle is fixed by where the arm ends up', is true of an angle as a figure; the mistake is about the turn. Now it counts only where the arm ends up, not how far it turned, so a full turn is 'no turn' and a full turn plus a quarter is just a quarter turn; signs 2-3 reworded to match. Diagnostic re-solved (key: one full turn)."
+   ],
    "topicType": "T3",
    "skills": [
     {
@@ -4250,11 +4257,11 @@
     {
      "id": "c6-maths-ch02-t02-m-full-turn-zero",
      "skillId": "c6-maths-ch02-t02-s2",
-     "belief": "Believes an angle is fixed by where the arm ends up, not by how much it turned, so a full turn that comes back to the start is 'no turn' or no angle",
+     "belief": "Counts only where the arm ends up, not how far it turned, so a full turn that comes back to the start is called 'no turn', and a full turn plus a quarter is called just a quarter turn",
      "signs": [
       "Says a fan blade that went all the way round has turned 0",
-      "Gives the same answer for a quarter turn and a quarter turn plus a full turn",
-      "Describes an angle only by the final position ('it points east') rather than the turn from the first arm"
+      "Calls a full turn plus a quarter turn just a quarter turn, because the arm ends where a quarter turn would leave it",
+      "Describes a turn only by where the arm ends up ('it points east') rather than by how far it swept from the first arm"
      ],
      "diagnostic": {
       "prompt_en": "A ceiling fan blade points at the window. It turns all the way round once and stops pointing at the window again. How much has it turned?",
@@ -5044,8 +5051,8 @@
      "id": "c6-maths-ch02-t03-m-vertex-off",
      "belief": "Lines up the bottom edge of the protractor instead of putting its centre point on the vertex",
      "signs": [
-      "Places the vertex at the corner of the protractor's edge",
-      "Gets readings a few degrees off",
+      "Places the vertex on the protractor's bottom edge, not at the small centre mark",
+      "Gets readings a few degrees off (about 6 to 8 degrees: 133 for 125)",
       "Does not look for the small centre mark"
      ],
      "diagnostic": {
@@ -5058,13 +5065,13 @@
         "correct": true
        },
        {
-        "text": "Anywhere on the arm BA",
+        "text": "The protractor's bottom edge just touching B, wherever along the edge",
         "misconceptionId": "c6-maths-ch02-t03-m-vertex-off",
         "correct": false
        },
        {
-        "text": "On point A",
-        "misconceptionId": "c6-maths-ch02-t03-m-vertex-off",
+        "text": "On point A, at the end of arm BA",
+        "misconceptionId": "c6-maths-ch02-t03-m-centre-on-arm",
         "correct": false
        }
       ]
@@ -5072,6 +5079,40 @@
      "remediation": {
       "representation": "A magnified view of the protractor centre over the vertex, with a wrong placement shown side by side",
       "moveShape": "Child moves the protractor until the centre dot covers the vertex; compare the two readings; ask which placement matches the turn"
+     }
+    },
+    {
+     "id": "c6-maths-ch02-t03-m-centre-on-arm",
+     "belief": "Puts the protractor's centre mark (or its corner) somewhere other than the vertex: on an arm, or at an arm's end point",
+     "signs": [
+      "Puts the centre mark on point A or C, the end of an arm",
+      "Sets the protractor's corner, not its centre mark, at the vertex",
+      "Reads a number tens of degrees off, or finds no reading at all"
+     ],
+     "diagnostic": {
+      "prompt_en": "To measure angle ABC, {friendF} put the protractor's centre mark on point A. Will her reading be right?",
+      "prompt_hi": "Angle ABC naapne ke liye {friendF} ne protractor ka centre mark point A par rakha. Kya uski reading sahi aayegi?",
+      "options": [
+       {
+        "text": "No: the centre mark must sit on B, the vertex",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Yes: A is on the angle too",
+        "misconceptionId": "c6-maths-ch02-t03-m-centre-on-arm",
+        "correct": false
+       },
+       {
+        "text": "Yes, if the baseline lies along BA",
+        "misconceptionId": "c6-maths-ch02-t03-m-centre-on-arm",
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "The centre mark slid along arm BA from A back to B, with the reading shown at each place",
+      "moveShape": "Child slides the centre mark from the arm's end back to the vertex and watches the reading settle; names the vertex as the middle letter of the angle's name"
      }
     },
     {
@@ -5188,7 +5229,7 @@
       "Centre on the ___, baseline along one ___.",
       "On the vertex, with the baseline lying along one arm."
      ],
-     "targetsMisconception": "c6-maths-ch02-t03-m-vertex-off",
+     "targetsMisconception": "c6-maths-ch02-t03-m-centre-on-arm",
      "verified": {
       "solverAnswer": "centre mark on the vertex, baseline along one arm",
       "agrees": true,
@@ -5851,6 +5892,9 @@
      "answer": "∠PQR = 125°",
      "why": "draw = measure in reverse: centre on vertex, baseline on first arm, count from the 0 on that arm, join the mark to the vertex"
     }
+   ],
+   "notes": [
+    "2026-11-11 (main, from Games): m-vertex-off mixed two mistakes. Its belief and 'a few degrees off' sign are the bottom-edge mistake (the centre mark sits mid-edge, so a reading is 6-8 degrees off); its sign 'vertex at the corner of the edge' and diagnostic options 'anywhere on arm BA' / 'on point A' are a different mistake, the centre mark off the vertex altogether (tens of degrees off, or no reading). Split: vertex-off keeps the bottom-edge mistake (sign now 'on the bottom edge', a bottom-edge diagnostic option); new m-centre-on-arm takes the arm and end-point placements, with its own signs, diagnostic and remediation. Item i02 (where must the centre go) now targets m-centre-on-arm; i10 (bottom edge at the vertex) stays on vertex-off."
    ]
   },
   {
@@ -18421,6 +18465,9 @@
   },
   {
    "topicId": "c6-maths-ch07-t01",
+   "notes": [
+    "2026-11-11: near-transfer rl-o2's Hindi '{friendF} 1/7 aur Kabir 1/9 route travel karta hai' has two subjects with a singular verb, and named a fixed boy, Kabir. Now '{friendF} 1/7 aur {friendM} 1/9 route travel karte hain' ({friendM} in the English too), key {friendF}, re-solved."
+   ],
    "topicType": "T3",
    "skills": [
     {
@@ -19001,8 +19048,8 @@
      "skillId": "c6-maths-ch07-t01-s2",
      "kind": "near_transfer",
      "difficulty": 3,
-     "prompt_en": "Two students travel parts of the same metro route. {friendF} travels 1/7 of it; Kabir travels 1/9 of it. Who travels farther?",
-     "prompt_hi": "Do students same metro route ka kuch hissa travel karte hain. {friendF} 1/7 aur Kabir 1/9 route travel karta hai. Kaun zyada door jaata hai?",
+     "prompt_en": "Two students travel parts of the same metro route. {friendF} travels 1/7 of it; {friendM} travels 1/9 of it. Who travels farther?",
+     "prompt_hi": "Do students same metro route ka kuch hissa travel karte hain. {friendF} 1/7 aur {friendM} 1/9 route travel karte hain. Kaun zyada door jaata hai?",
      "answer": "{friendF}",
      "acceptable": [
       "{friendF} travels farther",

@@ -174,10 +174,10 @@ async function seamFor(topicId, skillId, learner, C, kit, childId) {
     const g = W.games[0];
     assert.equal(g.target, level.skillId);
     assert.equal(g.playTrail.firstTry, false); assert.ok(g.playTrail.misses >= 1);
-    assert.deepEqual(g.playTrail.mal[0], { rule: mal, mis: level.mal[mal] });
-    // round 8 law 3: a mix-up from one pick among a few is not kept from that pick (chanceMis, no misconception on her state)
-    if (wrong.grade.evidence[0]?.chanceMis) assert.equal(g.misconceptionId, undefined, "one pick names nothing");
-    else assert.equal(g.misconceptionId, level.mal[mal], "the mal-rule's kit misconception reaches her learner state");
+    // round 8 law 3: a mix-up from one pick among a few is not kept from that pick (chanceMis, no misconception on her
+    // state), and nothing about it reaches the lesson, the trail included (evening ruling kon/name 3)
+    if (wrong.grade.evidence[0]?.chanceMis) { assert.equal(g.misconceptionId, undefined, "one pick names nothing"); assert.deepEqual(g.playTrail.mal, [], "nor does the trail"); }
+    else { assert.equal(g.misconceptionId, level.mal[mal], "the mal-rule's kit misconception reaches her learner state"); assert.deepEqual(g.playTrail.mal[0], { rule: mal, mis: level.mal[mal] }); }
     const wp = pairs(W.row);
     // (a mal-rule that commits a state the solver's acts cannot undo ends not solved: the verdict is the grade's own)
     assert.equal(wp.verdict, wrong.grade.verdict); assert.equal(wp.first_try, "0"); assert.equal(wp.misses, String(g.playTrail.misses));

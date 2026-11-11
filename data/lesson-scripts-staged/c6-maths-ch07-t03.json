@@ -60,13 +60,13 @@
       },
       "key": "8",
       "accept": ["aath", "eight", "8 tukde"],
-      "why": { "hi": "2/3 roti ke 3 barabar hisse hain; har rang wale hisse se 4 tukde, toh 2 × 4 = 8", "en": "2/3 has 3 equal parts; each shaded part becomes 4 pieces, so 2 × 4 = 8" }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 3, "shade": 2, "whole": "roti"} }
+      "why": { "hi": "3 barabar hisson mein 2 rang wale; har rang wala hissa 4 tukde bana, toh 2 × 4 = 8", "en": "2 of the 3 equal parts are shaded; each shaded part became 4 pieces, so 2 × 4 = 8" }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 3, "shade": 2, "whole": "roti"} }
      },
      "simpler": { "hi": "Roti 3 barabar hisson mein hai aur 2 rang wale hain, yaani 2/3. Har hissa 4 tukdon mein baanto, toh har rang wala hissa bhi 4 tukde ban jaata hai.", "en": "The roti is in 3 equal parts with 2 shaded, that is 2/3. Split each part into 4 pieces, and each shaded part becomes 4 pieces too." }
     },
     {
      "id": "e2",
-     "convey": "same roti now in 12 equal pieces, 8 shaded = 8/12; shaded area unchanged → 2/3 and 8/12 are one amount = equivalent fractions → transfer: 3/4 of this same roti in twelfths",
+     "convey": "same roti now in 12 equal pieces, 8 shaded = 8/12; shaded area unchanged → 2/3 and 8/12 are one amount = equivalent fractions → transfer: 5/6 of this same roti in twelfths",
      "mustSay": [
       { "hi": "8/12", "en": "8/12" },
       { "hi": "tulya bhinn", "en": "equivalent fractions" }
@@ -77,31 +77,22 @@
       "en": "Now the same roti is split into 12 equal pieces, and 8 pieces are shaded; that is 8/12. The shaded area is the same as before, so 2/3 and 8/12 are one amount. Such fractions are called equivalent fractions."
      },
      "ask": {
-      "prompt": {
-       "hi": "Isi 12 tukdon wali roti mein 3/4 roti kitne tukdon ke barabar hogi?",
-       "en": "In this same roti of 12 pieces, 3/4 of the roti equals how many pieces?"
-      },
-      "key": "9",
-      "accept": ["nau", "nine", "9 tukde"],
-      "why": { "hi": "12 tukdon ka 1/4 3 tukde hai, toh 3/4 = 3 × 3 = 9 tukde", "en": "1/4 of 12 pieces is 3 pieces, so 3/4 = 3 × 3 = 9 pieces" }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 12, "shade": 9, "whole": "roti"} }
+      "prompt": { "hi": "Isi 12 tukdon wali roti mein 5/6 roti kitne tukdon ke barabar hogi?", "en": "In this same roti of 12 pieces, 5/6 of the roti equals how many pieces?" },
+      "key": "10",
+      "accept": ["das", "ten", "10 tukde"],
+      "why": { "hi": "12 tukdon ka 1/6 2 tukde hai, toh 5/6 = 5 × 2 = 10 tukde", "en": "1/6 of 12 pieces is 2 pieces, so 5/6 = 5 × 2 = 10 pieces" }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 12, "shade": 10, "whole": "roti"} }
      },
      "simpler": { "hi": "Wahi roti ab 12 tukdon mein hai, 8 rang wale: 8/12. Rang wala hissa utna hi hai, isliye 2/3 aur 8/12 ek hi maatra hain.", "en": "The same roti is now in 12 pieces with 8 shaded: 8/12. The shaded amount is the same, so 2/3 and 8/12 are one amount." }
     },
     {
      "id": "e3",
-     "convey": "one 0-to-1 line in tenths: 2/5 and 4/10 sit on the same mark → same distance from 0 = same amount, two names → transfer: where 3/5 lands on this line",
+     "convey": "one 0-to-1 line in tenths: 1/2 and 5/10 sit on the same mark → same distance from 0 = same amount, two names → transfer: where 3/5 lands on this line",
      "mustSay": [
       { "hi": "sankhya rekha", "en": "number line" },
-      { "hi": "2/5 = 4/10", "en": "2/5 = 4/10" }
+      { "hi": "1/2 = 5/10", "en": "1/2 = 5/10" }
      ],
-     "board": {
-      "template": "fraction-line@1",
-      "params": { "den": 10, "from": 0, "to": 1, "marks": [ { "num": 4, "label": "2/5 = 4/10" } ] }
-     },
-     "point": {
-      "hi": "Yeh sankhya rekha 0 se 1 tak 10 barabar hisson mein bati hai. 2/5 aur 4/10 dono ek hi nishaan par hain, yaani 0 se ek hi doori. Toh 2/5 = 4/10: ek jagah, do naam.",
-      "en": "This number line from 0 to 1 is split into 10 equal parts. 2/5 and 4/10 are both on the same mark, the same distance from 0. So 2/5 = 4/10: one place, two names."
-     },
+     "board": { "template": "fraction-line@1", "params": {"den": 10, "from": 0, "to": 1, "marks": [{"num": 5, "label": "1/2 = 5/10"}]} },
+     "point": { "hi": "Yeh sankhya rekha 0 se 1 tak 10 barabar hisson mein bati hai. 1/2 aur 5/10 dono ek hi nishaan par hain, yaani 0 se ek hi doori. Toh 1/2 = 5/10: ek jagah, do naam.", "en": "This number line from 0 to 1 is split into 10 equal parts. 1/2 and 5/10 are both on the same mark, the same distance from 0. So 1/2 = 5/10: one place, two names." },
      "ask": {
       "prompt": {
        "hi": "Isi rekha par 3/5 kahan aayega: 0 ke baad kaunse nishaan par?",
@@ -109,9 +100,9 @@
       },
       "key": "6",
       "accept": ["6th", "chhatha", "chhathe nishaan par", "6th mark", "sixth"],
-      "why": { "hi": "har 1/5 rekha ke 2 hisson ke barabar hai, toh 3/5 = 6/10, yaani nishaan 6", "en": "each 1/5 equals 2 parts of the line, so 3/5 = 6/10, which is mark 6" }, "answerBoard": { "template": "fraction-line@1", "params": {"den": 10, "from": 0, "to": 1, "marks": [{"num": 4, "label": "2/5 = 4/10"}, {"num": 6, "label": "3/5 = 6/10"}]} }
+      "why": { "hi": "har 1/5 rekha ke 2 hisson ke barabar hai, toh 3/5 = 6/10, yaani nishaan 6", "en": "each 1/5 equals 2 parts of the line, so 3/5 = 6/10, which is mark 6" }, "answerBoard": { "template": "fraction-line@1", "params": {"den": 10, "from": 0, "to": 1, "marks": [{"num": 5, "label": "1/2 = 5/10"}, {"num": 6, "label": "3/5 = 6/10"}]} }
      },
-     "simpler": { "hi": "Rekha 10 barabar hisson mein bati hai. 2/5 aur 4/10 ek hi nishaan par hain, isliye dono barabar hain.", "en": "The line is in 10 equal parts. 2/5 and 4/10 sit on the same mark, so they are equal." }
+     "simpler": { "hi": "Rekha 10 barabar hisson mein bati hai. 1/2 aur 5/10 ek hi nishaan par hain, isliye dono barabar hain.", "en": "The line is in 10 equal parts. 1/2 and 5/10 sit on the same mark, so they are equal." }
     }
    ],
    "workedExample": {
@@ -165,24 +156,18 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Do ek jaise pizza hain. Farhan ne pehle pizza ke 5 barabar slice mein se 2 khaaye. Ritu ne doosre pizza ke 10 barabar slice mein se 4 khaaye. Zyada kisne khaaya: Farhan ne, Ritu ne, ya dono ne barabar?",
-      "en": "There are two identical pizzas. Farhan ate 2 of the 5 equal slices of the first pizza. Ritu ate 4 of the 10 equal slices of the second pizza. Who ate more: Farhan, Ritu, or did they eat the same?"
-     },
-     "key": "dono ne barabar",
-     "accept": ["barabar", "same", "equal", "dono barabar", "they ate the same"],
+     "prompt": { "hi": "Do ek jaise pizza hain. Farhan ne pehle pizza ke 5 barabar slice mein se 2 khaaye. Ritu ne doosre pizza ke 10 barabar slice mein se 3 khaaye. Zyada kisne khaaya: Farhan ne, Ritu ne, ya dono ne barabar?", "en": "There are two identical pizzas. Farhan ate 2 of the 5 equal slices of the first pizza. Ritu ate 3 of the 10 equal slices of the second pizza. Who ate more: Farhan, Ritu, or did they eat the same?" },
+     "key": "Farhan",
+     "accept": ["Farhan ne", "Farhan ne zyada khaaya", "Farhan ate more"],
      "targets": "c6-maths-ch07-t03-m-bigger-numbers-bigger",
      "wrongIfMis": "Ritu",
      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 5}, {"parts": 10}]} },
-     "why": { "hi": "2/5 ke upar aur neeche ko 2 se guna karo toh 4/10 milta hai, ek hi amount", "en": "multiply the top and bottom of 2/5 by 2 and you get 4/10, the same amount" },
-     "simpler": { "hi": "Farhan ke har slice ko 2 chhote slice mein baanto. Phir dekho uske kitne slice bante hain, aur Ritu ke 10 mein se 4 se milao.", "en": "Split each of Farhan's slices into 2 smaller slices. Then see how many he has, and compare with Ritu's 4 out of 10." }, "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 5, "shade": 2, "title": "2/5"}, {"parts": 10, "shade": 4, "title": "4/10"}]} }
+     "why": { "hi": "2/5 ke har slice ko 2 mein baanto toh 4/10 banta hai; Ritu ka 3/10 kam hai, toh Farhan ne zyada khaaya", "en": "Split each slice of 2/5 in 2 and it makes 4/10; Ritu's 3/10 is less, so Farhan ate more" },
+     "simpler": { "hi": "Pehle pizza ke har slice ko 2 chhote slice mein baanto. Phir dono ke khaaye slice 10 mein se gino aur milao.", "en": "Split each slice of the first pizza into 2 smaller slices. Then count both eaten shares out of 10 and compare." }, "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 5, "shade": 2, "title": "2/5"}, {"parts": 10, "shade": 3, "title": "3/10"}]} }
     },
     {
      "id": "c2",
-     "prompt": {
-      "hi": "Yeh sankhya rekha 0 se 1 tak 9 barabar hisson mein bati hai. 0 ke baad chhatha nishaan ringed hai. Kya yeh nishaan 2/3 ke barabar hai, haan ya nahi?",
-      "en": "This number line from 0 to 1 is split into 9 equal parts. The 6th mark after 0 is circled. Is this mark equal to 2/3, yes or no?"
-     },
+     "prompt": { "hi": "Yeh sankhya rekha 0 se 1 tak 9 barabar hisson mein bati hai. 0 ke baad chhatha nishaan chuna gaya hai. Kya yeh nishaan 2/3 ke barabar hai, haan ya nahi?", "en": "This number line from 0 to 1 is split into 9 equal parts. The 6th mark after 0 is circled. Is this mark equal to 2/3, yes or no?" },
      "key": "yes",
      "accept": ["haan", "haan, barabar", "yes, equal"],
      "targets": "c6-maths-ch07-t03-m-bigger-numbers-bigger",
@@ -202,7 +187,7 @@
     {
      "targets": "c6-maths-ch07-t03-m-bigger-numbers-bigger",
      "move": "paper roti with half shaded, refolded into 8 equal pieces → shaded pieces now 4, yet the shaded area did not grow → bigger numbers, same amount",
-     "say": { "hi": "Zyada tukde matlab zyada roti nahi. Roti ko zyada barabar tukdon mein kaato toh har tukda chhota ho jaata hai, aur rang wali jagah utni hi rehti hai. Ginti nahi, amount milao.", "en": "More pieces do not mean more roti. Cut a roti into more equal pieces and each piece gets smaller, so the shaded amount stays the same. Compare the amount, not the count." },
+     "say": { "hi": "Zyada tukde matlab zyada roti nahi. Roti ko zyada barabar tukdon mein kaato toh har tukda chhota ho jaata hai, aur roti utni hi rehti hai. Ginti nahi, amount milao.", "en": "More pieces do not mean more roti. Cut a roti into more equal pieces and each piece gets smaller, so the roti stays the same. Compare the amount, not the count." },
      "simpler": { "hi": "Tukde zyada, par har tukda chhota. Amount wahi rehta hai.", "en": "More pieces, but smaller pieces. The amount stays the same." },
      
      "then": {
@@ -215,12 +200,12 @@
       "targets": "c6-maths-ch07-t03-m-bigger-numbers-bigger",
       "wrongIfMis": "3/9",
       "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 3}, {"parts": 9}]} },
-      "why": { "hi": "1/3 ke upar aur neeche ko 3 se guna karo toh 3/9 milta hai", "en": "multiply the top and bottom of 1/3 by 3 and you get 3/9" },
-      "simpler": { "hi": "1/3 ke upar aur neeche dono ko teen se guna karo. Phir naye bhinn ko 3/9 se milao.", "en": "Multiply both the top and bottom of 1/3 by three. Then compare the new fraction with 3/9." }, "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 3, "shade": 1, "title": "1/3"}, {"parts": 9, "shade": 3, "title": "3/9"}]} }
+      "why": { "hi": "1/3 roti ke har hisse ko 3 chhote tukdon mein baanto toh 9 mein se 3 tukde bante hain, wahi amount", "en": "split each part of the roti into 3 smaller pieces and 1/3 becomes 3 of 9 pieces, the same amount" },
+      "simpler": { "hi": "1/3 wali roti ke har hisse ko chhote barabar tukdon mein baanto, taaki dono roti ke tukde ek jaise hon. Phir rang wale tukde milao.", "en": "Split each part of the 1/3 roti into smaller equal pieces so both rotis have the same pieces. Then compare the shaded pieces." }, "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 3, "shade": 1, "title": "1/3"}, {"parts": 9, "shade": 3, "title": "3/9"}]} }
      }
     }
    ],
-   "bridgeToNext": { "hi": "Ab hum khud tulya bhinn banayenge, upar aur neeche dono ko ek hi number se guna ya bhaag karke, jaise 2/3 ke dono ko 2 se guna karke 4/6.", "en": "Next we make equivalent fractions ourselves, by multiplying or dividing the top and the bottom by the same number, like multiplying both of 2/3 by 2 to get 4/6.", "simpler": {"hi": "Ab khud tulya bhinn banayenge. Board par ek patti 4 hisson mein bati hai aur doosri patti 12 hisson mein.", "en": "Now we make equivalent fractions ourselves. On the board one bar is split into 4 parts and another bar into 12 parts."} }
+   "bridgeToNext": { "hi": "Ab hum khud tulya bhinn banayenge, upar aur neeche dono ko ek hi number se guna ya bhaag karke, jaise 1/4 ke dono ko 3 se guna karke 3/12.", "en": "Next we make equivalent fractions ourselves, by multiplying or dividing the top and the bottom by the same number, like multiplying both of 1/4 by 3 to get 3/12.", "simpler": {"hi": "Ab khud tulya bhinn banayenge. Board par ek patti 4 hisson mein bati hai aur doosri patti 12 hisson mein.", "en": "Now we make equivalent fractions ourselves. On the board one bar is split into 4 parts and another bar into 12 parts."} }
   },
   {
    "skillId": "c6-maths-ch07-t03-s2",
@@ -290,22 +275,13 @@
     },
     {
      "id": "e3",
-     "convey": "the reverse way: 9/12 → divide top and bottom by the same 3 → 3/4 again, same amount → transfer: divide 15/25 by 5",
+     "convey": "the reverse way: 10/12 → divide top and bottom by the same 2 → 5/6, same amount → transfer: divide 15/25 by 5",
      "mustSay": [
       { "hi": "bhaag", "en": "divide" },
-      { "hi": "9/12", "en": "9/12" }
+      { "hi": "10/12", "en": "10/12" }
      ],
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": { "title": "9/12", "items": ["upar 9 ÷ 3 = 3", "neeche 12 ÷ 3 = 4"] },
-       "right": { "title": "3/4", "items": ["dono ko 3 se bhaag", "wahi amount"] }
-      }
-     },
-     "point": {
-      "hi": "Ulta raasta bhi hai. 9/12 ke upar aur neeche dono ko 3 se bhaag do: upar 9 ÷ 3 = 3, neeche 12 ÷ 3 = 4, aur wapas 3/4 mil gaya, wahi amount.",
-      "en": "There is a reverse way too. Divide both the top and the bottom of 9/12 by 3: top 9 ÷ 3 = 3, bottom 12 ÷ 3 = 4, and we are back at 3/4, the same amount."
-     },
+     "board": { "template": "compare@1", "params": {"left": {"title": "10/12", "items": ["upar 10 ÷ 2 = 5", "neeche 12 ÷ 2 = 6"]}, "right": {"title": "5/6", "items": ["dono ko 2 se bhaag", "wahi amount"]}} },
+     "point": { "hi": "Ulta raasta bhi hai. 10/12 ke upar aur neeche dono ko 2 se bhaag do: upar 10 ÷ 2 = 5, neeche 12 ÷ 2 = 6, aur 5/6 mil gaya, wahi amount.", "en": "There is a reverse way too. Divide both the top and the bottom of 10/12 by 2: top 10 ÷ 2 = 5, bottom 12 ÷ 2 = 6, and we get 5/6, the same amount." },
      "ask": {
       "prompt": {
        "hi": "Isi tarah 15/25 ke upar aur neeche dono ko 5 se bhaag do. Naya bhinn kya banega?",
@@ -315,40 +291,28 @@
       "accept": ["3 by 5", "teen bata paanch", "three fifths"],
       "targets": "c6-maths-ch07-t03-m-one-side",
       "wrongIfMis": "3/25",
-      "why": { "hi": "9/12 jaisa, dono ko 5 se bhaag: upar 15 ÷ 5 = 3, neeche 25 ÷ 5 = 5, wahi amount 3/5", "en": "like 9/12 to 3/4: top 15 ÷ 5 = 3 and bottom 25 ÷ 5 = 5, so 3/5" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "9/12", "items": ["upar 9 ÷ 3 = 3", "neeche 12 ÷ 3 = 4"]}, "right": {"title": "3/4", "items": ["dono ko 3 se bhaag", "wahi amount"]}} }
+      "why": { "hi": "10/12 jaisa, dono ko 5 se bhaag: upar 15 ÷ 5 = 3, neeche 25 ÷ 5 = 5, wahi amount 3/5", "en": "like 10/12 to 5/6: top 15 ÷ 5 = 3 and bottom 25 ÷ 5 = 5, so 3/5" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "10/12", "items": ["upar 10 ÷ 2 = 5", "neeche 12 ÷ 2 = 6"]}, "right": {"title": "5/6", "items": ["dono ko 2 se bhaag", "wahi amount"]}} }
      },
-     "simpler": { "hi": "9/12 ke upar aur neeche dono ko 3 se bhaag do. Upar 3, neeche 4, wahi 3/4 wapas mil gaya.", "en": "Divide both the top and bottom of 9/12 by 3. The top is 3 and the bottom 4, so we are back at 3/4." }
+     "simpler": { "hi": "10/12 ke upar aur neeche dono ko 2 se bhaag do. Upar 5, neeche 6, toh 5/6 mila.", "en": "Divide both the top and bottom of 10/12 by 2. The top is 5 and the bottom 6, so we get 5/6." }
     },
     {
      "id": "e4",
-     "convey": "adding vs multiplying side by side: 1/2 with 1 added to both → 2/3, more than half; 1/2 with both × 2 → 2/4, exactly half → only multiplying keeps the amount → transfer: make one from 2/5",
+     "convey": "adding vs multiplying side by side: 1/3 with 1 added to both → 2/4, a half, more than 1/3; 1/3 with both × 2 → 2/6, exactly 1/3 → only multiplying keeps the amount → transfer: make one from 3/8",
      "mustSay": [
       { "hi": "dono mein 1 joda", "en": "1 added to both" },
       { "hi": "dono ko 2 se guna", "en": "both multiplied by 2" }
      ],
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": { "title": "dono mein 1 joda", "items": ["1/2 se 2/3"] },
-       "right": { "title": "dono ko 2 se guna", "items": ["1/2 se 2/4"] }
-      }
-     },
-     "point": {
-      "hi": "Baayein, 1/2 ke upar aur neeche dono mein 1 joda, toh 2/3 bana. Daayein, dono ko 2 se guna kiya, toh 2/4 bana. 2/4 theek aadha hai, par 2/3 aadhe se zyada hai.",
-      "en": "On the left, 1 was added to both the top and the bottom of 1/2, making 2/3. On the right, both were multiplied by 2, making 2/4. 2/4 is exactly half, but 2/3 is more than half."
-     },
+     "board": { "template": "compare@1", "params": {"left": {"title": "dono mein 1 joda", "items": ["1/3 se 2/4"]}, "right": {"title": "dono ko 2 se guna", "items": ["1/3 se 2/6"]}} },
+     "point": { "hi": "Baayein, 1/3 ke upar aur neeche dono mein 1 joda, toh 2/4 bana. Daayein, dono ko 2 se guna kiya, toh 2/6 bana. 2/6 theek 1/3 hai, par 2/4 aadha hai, 1/3 se zyada.", "en": "On the left, 1 was added to both the top and bottom of 1/3, making 2/4. On the right, both were multiplied by 2, making 2/6. 2/6 is exactly 1/3, but 2/4 is a half, more than 1/3." },
      "ask": {
-      "prompt": {
-       "hi": "Ab 2/5 lo aur iske upar aur neeche dono ko 2 se guna karo. Kaunsa bhinn banega?",
-       "en": "Now take 2/5 and multiply both its top and its bottom by 2. Which fraction do you get?"
-      },
-      "key": "4/10",
-      "accept": ["4 by 10", "chaar bata das", "four tenths"],
+      "prompt": { "hi": "Ab 3/8 lo aur iske upar aur neeche dono ko 2 se guna karo. Kaunsa bhinn banega?", "en": "Now take 3/8 and multiply both its top and its bottom by 2. Which fraction do you get?" },
+      "key": "6/16",
+      "accept": ["6 by 16", "chhah bata solah", "six sixteenths"],
       "targets": "c6-maths-ch07-t03-m-add-same",
-      "wrongIfMis": "4/7",
-      "why": { "hi": "jaise 1/2 se 2/4 bana, dono ko 2 se guna, 2/3 wala 1 joda nahi: 2/5 = 4/10", "en": "top 2 × 2 = 4 and bottom 5 × 2 = 10, so 4/10, just as 1/2 became 2/4" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "dono mein 1 joda", "items": ["1/2 se 2/3"]}, "right": {"title": "dono ko 2 se guna", "items": ["1/2 se 2/4"]}} }
+      "wrongIfMis": "5/10",
+      "why": { "hi": "1 joda nahi, dono ko 2 se guna: 3 × 2 = 6, 8 × 2 = 16, toh 6/16", "en": "not adding 1 but multiplying both by 2: 3 × 2 = 6, 8 × 2 = 16, so 6/16" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "dono mein 1 joda", "items": ["1/3 se 2/4"]}, "right": {"title": "dono ko 2 se guna", "items": ["1/3 se 2/6"]}} }
      },
-     "simpler": { "hi": "1/2 ke upar aur neeche 1 jodne se 2/3 bana, jo aadhe se zyada hai. Dono ko 2 se guna karne se 2/4 bana, jo theek aadha hai.", "en": "Adding 1 to the top and bottom of 1/2 made 2/3, which is more than half. Multiplying both by 2 made 2/4, exactly half." }
+     "simpler": { "hi": "1/3 ke upar aur neeche 1 jodne se 2/4 bana, jo aadha hai, 1/3 se zyada. Dono ko 2 se guna karne se 2/6 bana, jo theek 1/3 hai.", "en": "Adding 1 to the top and bottom of 1/3 made 2/4, a half, more than 1/3. Multiplying both by 2 made 2/6, exactly 1/3." }
     }
    ],
    "workedExample": {
@@ -433,17 +397,14 @@
     },
     {
      "id": "c3",
-     "prompt": {
-      "hi": "{friend} ne 3/7 ke upar aur neeche dono mein 2 joda, 5/9 likha, aur kaha ki dono barabar hain. Kya yeh sahi hai, haan ya nahi?",
-      "en": "{friend} added 2 to both the top and the bottom of 3/7, wrote 5/9, and said the two are equal. Is that right, yes or no?"
-     },
-     "key": "no",
-     "accept": ["nahi", "galat", "not equal", "barabar nahi"],
+     "prompt": { "hi": "3/7 ke barabar kaunsa hai: 5/9 ya 6/14?", "en": "Which one equals 3/7: 5/9 or 6/14?" },
+     "key": "6/14",
+     "accept": ["6 by 14", "chhah bata chaudah", "six fourteenths"],
      "targets": "c6-maths-ch07-t03-m-add-same",
-     "wrongIfMis": "yes",
-     "board": { "template": "compare@1", "params": {"left": {"title": "3/7", "items": ["dono mein 2 joda"]}, "right": {"title": "5/9", "items": ["likha"]}} },
-     "why": { "hi": "3/7 aadhe se kam hai par 5/9 aadhe se zyada; dono mein 2 joda, guna nahi kiya, isliye likha galat", "en": "3/7 is less than a half but 5/9 is more than a half, and adding 2 to both is not multiplying" },
-     "simpler": { "hi": "Barabar bhinn upar aur neeche ko ek hi number se guna karke bante hain. Yahan dono mein 2 joda gaya hai, guna nahi kiya.", "en": "Equal fractions come from multiplying the top and bottom by the same number. Here 2 was added to both, not multiplied." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3/7", "items": ["dono mein 2 joda"]}, "right": {"title": "5/9", "items": ["likha"]}} }
+     "wrongIfMis": "5/9", "board": { "template": "compare@1", "params": {"left": {"title": "3 aur 7", "items": ["barabar?"]}, "right": {"title": "5 aur 9", "items": ["6 aur 14"]}} },
+     
+     "why": { "hi": "3/7 ke dono ko 2 se guna karo toh 6/14; 5/9 mein dono mein 2 joda, guna nahi kiya", "en": "Multiply both of 3/7 by 2 and you get 6/14; 5/9 has 2 added to both, not multiplied" },
+     "simpler": { "hi": "Barabar bhinn upar aur neeche ko ek hi number se guna karke bante hain. Dekho kaunsa bhinn 3/7 ke upar aur neeche ko ek hi number se guna karke banta hai.", "en": "Equal fractions come from multiplying the top and bottom by the same number. See which fraction comes from multiplying the top and bottom of 3/7 by one number." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 aur 7", "items": ["barabar?"]}, "right": {"title": "5 aur 9", "items": ["6 aur 14"]}} }
     }
    ],
    "ladder": [
@@ -461,31 +422,31 @@
      "simpler": { "hi": "Neeche ko jis number se guna kiya, upar ko bhi usi se guna karo.", "en": "Whatever the bottom is multiplied by, multiply the top by the same." },
      
      "then": {
-      "prompt": { "hi": "2/3 ke barabar ek bhinn hai jiska neeche 9 hai. Uske upar kya aayega?", "en": "A fraction equal to 2/3 has 9 at the bottom. What goes on its top?" },
-      "key": "6",
-      "accept": ["chhah", "six"],
+      "prompt": { "hi": "2/7 ke barabar ek bhinn hai jiska neeche 14 hai. Uske upar kya aayega?", "en": "A fraction equal to 2/7 has 14 at the bottom. What goes on its top?" },
+      "key": "4",
+      "accept": ["chaar", "four"],
       "targets": "c6-maths-ch07-t03-m-one-side",
       "wrongIfMis": "2",
-      "board": { "template": "compare@1", "params": {"left": {"title": "2/3", "items": ["neeche 3"]}, "right": {"title": "barabar bhinn", "items": ["neeche 9"]}} },
-      "why": { "hi": "barabar bhinn ka neeche 3 × 3 = 9, toh upar bhi 2 × 3 = 6", "en": "at the bottom 3 × 3 = 9, so on top too 2 × 3 = 6" },
-      "simpler": { "hi": "Dekho 2/3 ke neeche wale number ko kis number se guna karein ki 9 aaye. Upar wale number ko bhi usi se guna karo.", "en": "See what the bottom number of 2/3 must be multiplied by to make 9. Multiply the top number by that too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2/3", "items": ["neeche 3"]}, "right": {"title": "barabar bhinn", "items": ["neeche 9"]}} }
+      "board": { "template": "compare@1", "params": {"left": {"title": "2/7", "items": ["neeche 7"]}, "right": {"title": "barabar bhinn", "items": ["neeche 14"]}} },
+      "why": { "hi": "barabar bhinn ka neeche 7 × 2 = 14, toh upar bhi 2 × 2 = 4", "en": "at the bottom 7 × 2 = 14, so on top too 2 × 2 = 4" },
+      "simpler": { "hi": "Dekho 2/7 ke neeche wale number ko kis number se guna karein ki 14 aaye. Upar wale number ko bhi usi se guna karo.", "en": "See what the bottom number of 2/7 must be multiplied by to make 14. Multiply the top number by that too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2/7", "items": ["neeche 7"]}, "right": {"title": "barabar bhinn", "items": ["neeche 14"]}} }
      }
     },
     {
      "targets": "c6-maths-ch07-t03-m-add-same",
-     "move": "one 0-to-1 line in twelfths: 1/2 on the 6th mark, 2/3 on the 8th → adding 1 to top and bottom moved the point → amount changed; the same-multiplier rule keeps the point",
-     "say": { "hi": "1/2 ke upar aur neeche mein 1 jodne se 2/3 bana, jo aadhe se zyada hai, toh amount badal gaya. Barabar bhinn sirf upar aur neeche ko ek hi number se guna ya bhaag karke bante hain.", "en": "Adding 1 to the top and bottom of 1/2 made 2/3, which is more than half, so the amount changed. Equal fractions come only from multiplying or dividing the top and bottom by the same number." },
-     "simpler": { "hi": "Ek hi number jodne se amount badalta hai. Dono ko ek hi number se guna karo.", "en": "Adding the same number changes the amount. Multiply both by the same number instead." },
+     "move": "1/4 with 2 added to both → 3/6; put both in twelfths: 3/12 vs 6/12 → the amount changed; only the same multiplier on top and bottom keeps the amount",
+     "say": { "hi": "Upar aur neeche mein ek hi number jodna guna karna nahi hai, aur isse aam taur par amount badal jaata hai. Barabar bhinn sirf upar aur neeche ko ek hi number se guna ya bhaag karke bante hain.", "en": "Adding the same number to the top and bottom is not multiplying, and it usually changes the amount. Equal fractions come only from multiplying or dividing the top and bottom by the same number." },
+     "simpler": { "hi": "Ek hi number jodne se aam taur par amount badal jaata hai. Dono ko ek hi number se guna karo.", "en": "Adding the same number usually changes the amount. Multiply both by the same number instead." },
      
      "then": {
-      "prompt": { "hi": "2/5 ke barabar ek bhinn hai jiska neeche 20 hai. Uske upar kya aayega?", "en": "A fraction equal to 2/5 has 20 at the bottom. What goes on its top?" },
-      "key": "8",
-      "accept": ["aath", "eight"],
+      "prompt": { "hi": "{friend} ne 1/4 ke upar aur neeche dono mein 2 joda aur 3/6 likha. Kya 3/6, 1/4 ke barabar hai, haan ya nahi?", "en": "{friend} added 2 to both the top and bottom of 1/4 and wrote 3/6. Is 3/6 equal to 1/4, yes or no?" },
+      "key": "no",
+      "accept": ["nahi", "galat", "barabar nahi", "not equal"],
       "targets": "c6-maths-ch07-t03-m-add-same",
-      "wrongIfMis": "17",
-      "board": { "template": "compare@1", "params": {"left": {"title": "2/5", "items": ["neeche 5"]}, "right": {"title": "barabar bhinn", "items": ["neeche 20"]}} },
-      "why": { "hi": "barabar bhinn ka neeche 5 × 4 = 20, toh upar bhi 2 × 4 = 8", "en": "at the bottom 5 × 4 = 20, so on top too 2 × 4 = 8" },
-      "simpler": { "hi": "Dekho 2/5 ke neeche wale number ko kis number se guna karein ki 20 aaye. Upar wale number ko bhi usi se guna karo.", "en": "See what the bottom number of 2/5 must be multiplied by to make 20. Multiply the top number by that too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2/5", "items": ["neeche 5"]}, "right": {"title": "barabar bhinn", "items": ["neeche 20"]}} }
+      "wrongIfMis": "yes",
+      "board": { "template": "compare@1", "params": {"left": {"title": "1/4", "items": ["dono mein 2 joda"]}, "right": {"title": "3/6", "items": ["likha"]}} },
+      "why": { "hi": "1/4 = 3/12, par likha 3/6 = 6/12, toh amount alag hai; dono mein 2 joda, guna nahi kiya", "en": "1/4 = 3/12, but the written 3/6 = 6/12, so the amounts differ; 2 was added to both, not multiplied" },
+      "simpler": { "hi": "Barabar bhinn upar aur neeche ko ek hi number se guna karke bante hain. Dekho 1/4 se 3/6 tak upar aur neeche ke saath kya kiya gaya.", "en": "Equal fractions come from multiplying the top and bottom by the same number. See what was done to the top and bottom to go from 1/4 to 3/6." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1/4", "items": ["dono mein 2 joda"]}, "right": {"title": "3/6", "items": ["likha"]}} }
      }
     }
    ],
@@ -604,92 +565,59 @@
     }
    ],
    "workedExample": {
-    "problem": {
-     "hi": "18/24 ko lowest terms mein likho.",
-     "en": "Write 18/24 in lowest terms."
-    }, "simpler": { "hi": "18 aur 24 dono ko ek hi number se baanto. Jab tak baant sako, baantte raho.", "en": "Divide both 18 and 24 by the same number. Keep dividing as long as you can." },
+    "problem": { "hi": "24/54 ko lowest terms mein likho.", "en": "Write 24/54 in lowest terms." }, "simpler": { "hi": "24 aur 54 dono ko ek hi number se baanto. Jab tak baant sako, baantte raho.", "en": "Divide both 24 and 54 by the same number. Keep dividing as long as you can." },
     "givens": [
-     { "hi": "bhinn 18/24, upar 18 aur neeche 24", "en": "the fraction 18/24, with 18 on top and 24 at the bottom" }
+     { "hi": "bhinn 24/54, upar 24 aur neeche 54", "en": "the fraction 24/54, with 24 on top and 54 at the bottom" }
     ],
-    "find": { "hi": "18/24 ka lowest terms", "en": "18/24 in lowest terms" },
+    "find": { "hi": "24/54 ka lowest terms", "en": "24/54 in lowest terms" },
     "steps": [
      {
-      "do": { "hi": "18 aur 24 dono even hain, toh dono ko 2 se bhaag do", "en": "18 and 24 are both even, so divide both by 2" },
-      "result": "18 ÷ 2 = 9 aur 24 ÷ 2 = 12, yaani 9/12",
+      "do": { "hi": "24 aur 54 dono even hain, toh dono ko 2 se bhaag do", "en": "24 and 54 are both even, so divide both by 2" },
+      "result": "24 ÷ 2 = 12 aur 54 ÷ 2 = 27, yaani 12/27",
       "why": { "hi": "2 dono ka common factor hai", "en": "2 is a common factor of both" },
-      "simpler": { "hi": "18 aur 24 dono even hain. Dono ko 2 se bhaag do: 9 aur 12, yaani 9/12.", "en": "18 and 24 are both even. Divide both by 2: 9 and 12, that is 9/12." }
+      "simpler": { "hi": "24 aur 54 dono even hain. Dono ko 2 se bhaag do: 12 aur 27, yaani 12/27.", "en": "24 and 54 are both even. Divide both by 2: 12 and 27, that is 12/27." }
      },
      {
-      "do": { "hi": "Ab 9 aur 12 ke factor dekho", "en": "Now look at the factors of 9 and 12" },
-      "result": "9 aur 12 dono 3 ki table mein hain, toh 3 abhi bhi common factor hai",
+      "do": { "hi": "Ab 12 aur 27 ke factor dekho", "en": "Now look at the factors of 12 and 27" },
+      "result": "12 aur 27 dono 3 ki table mein hain, toh 3 abhi bhi common factor hai",
       "why": { "hi": "ek baar bhaag dene ke baad bhi common factor bach sakta hai", "en": "a common factor can still be left after dividing once" },
-      "simpler": { "hi": "9 aur 12 dono 3 ke pahade mein hain. Isliye 3 abhi bhi dono ka common factor hai.", "en": "9 and 12 are both in the 3 times table. So 3 is still a common factor of both." }
+      "simpler": { "hi": "12 aur 27 dono 3 ke pahade mein hain. Isliye 3 abhi bhi dono ka common factor hai.", "en": "12 and 27 are both in the 3 times table. So 3 is still a common factor of both." }
      }
     ],
     "yourStep": {
-     "prompt": {
-      "hi": "9/12 ke upar aur neeche dono ko 3 se bhaag do. Naya bhinn kya hoga?",
-      "en": "Divide both the top and the bottom of 9/12 by 3. What is the new fraction?"
-     },
-     "key": "3/4",
-     "accept": ["3 by 4", "teen bata chaar", "three quarters"],
+     "prompt": { "hi": "12/27 ke upar aur neeche dono ko 3 se bhaag do. Naya bhinn kya hoga?", "en": "Divide both the top and the bottom of 12/27 by 3. What is the new fraction?" },
+     "key": "4/9",
+     "accept": ["4 by 9", "chaar bata nau", "four ninths"],
      "targets": "c6-maths-ch07-t03-m-stop-early",
-     "wrongIfMis": "9/12",
-     "simpler": { "hi": "Upar ke 9 ko 3 se bhaag do. Phir neeche ke 12 ko bhi 3 se bhaag do.", "en": "Divide the top 9 by 3. Then divide the bottom 12 by 3 too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "18 aur 24", "items": ["18 ÷ 2 = 9", "24 ÷ 2 = 12"]}, "right": {"title": "9 aur 12", "items": ["dono 3 ki table"]}} }, "why": { "hi": "9 aur 12 dono 3 ki table mein: 9 ÷ 3 = 3, 12 ÷ 3 = 4, yaani 3/4", "en": "18/24 ÷ 2 gave 9/12, then 9 ÷ 3 = 3 and 12 ÷ 3 = 4, so 3/4" }
+     "wrongIfMis": "12/27",
+     "simpler": { "hi": "Upar ke 12 ko 3 se bhaag do. Phir neeche ke 27 ko bhi 3 se bhaag do.", "en": "Divide the top 12 by 3. Then divide the bottom 27 by 3 too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "24 aur 54", "items": ["24 ÷ 2 = 12", "54 ÷ 2 = 27"]}, "right": {"title": "12 aur 27", "items": ["dono 3 ki table"]}} }, "why": { "hi": "12 aur 27 dono 3 ki table mein: 12 ÷ 3 = 4, 27 ÷ 3 = 9, yaani 4/9", "en": "24/54 ÷ 2 gave 12/27, then 12 ÷ 3 = 4 and 27 ÷ 3 = 9, so 4/9" }
     },
-    "answer": { "hi": "18/24 lowest terms mein 3/4 hai", "en": "18/24 in lowest terms is 3/4" },
-    "why": {
-     "hi": "3 aur 4 ka common factor sirf 1 hai, isliye ab aur bhaag nahi ho sakta",
-     "en": "the only common factor of 3 and 4 is 1, so it cannot be divided any further"
-    },
-    "board": {
-     "template": "compare@1",
-     "params": {
-      "left": { "title": "18 aur 24", "items": ["18 ÷ 2 = 9", "24 ÷ 2 = 12"] },
-      "right": { "title": "9 aur 12", "items": ["dono 3 ki table"] }
-     }
-    }
+    "answer": { "hi": "24/54 lowest terms mein 4/9 hai", "en": "24/54 in lowest terms is 4/9" },
+    "why": { "hi": "4 aur 9 ka common factor sirf 1 hai, isliye ab aur bhaag nahi ho sakta", "en": "the only common factor of 4 and 9 is 1, so it cannot be divided any further" },
+    "board": { "template": "compare@1", "params": {"left": {"title": "24 aur 54", "items": ["24 ÷ 2 = 12", "54 ÷ 2 = 27"]}, "right": {"title": "12 aur 27", "items": ["dono 3 ki table"]}} }
    },
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Ek bhinn mein upar 24 aur neeche 40 hai. {friend} ne dono ko 2 se bhaag diya, upar 12 aur neeche 20 aaya, aur ruk gaya. Is bhinn ka sahi lowest terms kya hai?",
-      "en": "A fraction has 24 on top and 40 at the bottom. {friend} divided both by 2, got 12 on top and 20 at the bottom, and stopped. What is this fraction's correct lowest terms?"
-     },
-     "key": "3/5",
-     "accept": ["3 by 5", "teen bata paanch", "three fifths"],
+     "prompt": { "hi": "{friend} kehta hai ki 12/20 lowest terms mein hai kyunki usne 24/40 ko ek baar bhaag de diya. Kya woh sahi hai, haan ya nahi?", "en": "{friend} says 12/20 is in lowest terms because he already divided 24/40 once. Is he right, yes or no?" },
+     "key": "no",
+     "accept": ["nahi", "galat", "sahi nahi", "not right"],
      "targets": "c6-maths-ch07-t03-m-stop-early",
-     "wrongIfMis": "12/20",
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": { "title": "upar 24", "items": ["neeche 40"] },
-       "right": { "title": "2 se bhaag", "items": ["upar 12", "neeche 20"] }
-      }
-     },
-     "why": { "hi": "upar 24, neeche 40 ko 2 se bhaag diya; 12 aur 20 mein 4 abhi common hai, yaani 3/5", "en": "12 and 20 still share 4: 12 ÷ 4 = 3, 20 ÷ 4 = 5, so 3/5" },
-     "simpler": { "hi": "12 aur 20 mein ab bhi ek common factor bacha hai. Dekho dono kis bade number ke pahade mein aate hain, aur dono ko usse bhaag do.", "en": "12 and 20 still share a common factor. Find the biggest times table they are both in, and divide both by that number." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar 24", "items": ["neeche 40"]}, "right": {"title": "2 se bhaag", "items": ["upar 12", "neeche 20"]}} }
+     "wrongIfMis": "yes",
+     "board": { "template": "compare@1", "params": {"left": {"title": "24/40", "items": ["24 ÷ 2 = 12", "40 ÷ 2 = 20"]}, "right": {"title": "12/20", "items": ["lowest terms?"]}} },
+     "why": { "hi": "24/40 se 12/20 bana, par 4 abhi common hai: 12 ÷ 4 = 3, 20 ÷ 4 = 5, toh 3/5", "en": "24/40 became 12/20, but 4 is still common: 12 ÷ 4 = 3, 20 ÷ 4 = 5, so 3/5" },
+     "simpler": { "hi": "12/20 ke upar aur neeche ke factor dekho, aur dekho ki koi bada common factor abhi bacha hai ya nahi.", "en": "Look at the factors of the top and bottom of 12/20, and see whether a bigger common factor is still left." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "24/40", "items": ["24 ÷ 2 = 12", "40 ÷ 2 = 20"]}, "right": {"title": "12/20", "items": ["lowest terms?"]}} }
     },
     {
      "id": "c2",
-     "prompt": {
-      "hi": "Ek bhinn ka upar 45 aur neeche 60 hai. Ise lowest terms mein likho, jahan upar aur neeche ka common factor sirf 1 ho.",
-      "en": "A fraction has 45 on top and 60 at the bottom. Write it in lowest terms, where the only common factor of the top and bottom is 1."
-     },
-     "key": "3/4",
-     "accept": ["3 by 4", "teen bata chaar", "three quarters"],
+     "prompt": { "hi": "Ek bhinn ka upar 28 aur neeche 70 hai. Ise lowest terms mein likho, jahan upar aur neeche ka common factor sirf 1 ho.", "en": "A fraction has 28 on top and 70 at the bottom. Write it in lowest terms, where the only common factor of the top and bottom is 1." },
+     "key": "2/5",
+     "accept": ["2 by 5", "do bata paanch", "two fifths"],
      "targets": "c6-maths-ch07-t03-m-stop-early",
-     "wrongIfMis": "9/12",
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": { "title": "upar 45", "items": ["neeche 60"] },
-       "right": { "title": "lowest terms", "items": ["common factor sirf 1"] }
-      }
-     },
-     "why": { "hi": "upar 45, neeche 60: sabse bada common factor 15 se bhaag do; 3/4 mein common factor sirf 1 hai", "en": "the biggest common factor of 45 and 60 is 15: 45 ÷ 15 = 3, 60 ÷ 15 = 4, so 3/4" },
-     "simpler": { "hi": "45 aur 60 ka sabse bada common factor dhoondo. Upar aur neeche dono ko usi se bhaag do.", "en": "Find the biggest common factor of 45 and 60. Divide both the top and the bottom by it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar 45", "items": ["neeche 60"]}, "right": {"title": "lowest terms", "items": ["common factor sirf 1"]}} }
+     "wrongIfMis": "14/35",
+     "board": { "template": "compare@1", "params": {"left": {"title": "upar 28", "items": ["neeche 70"]}, "right": {"title": "lowest terms", "items": ["common factor sirf 1"]}} },
+     "why": { "hi": "upar 28 aur neeche 70 ko sabse bade common factor 14 se bhaag do: 2/5, ab common factor sirf 1", "en": "divide the top 28 and bottom 70 by their biggest common factor 14: 2/5, whose only common factor is 1" },
+     "simpler": { "hi": "28 aur 70 ka sabse bada common factor dhoondo. Upar aur neeche dono ko usi se bhaag do.", "en": "Find the biggest common factor of 28 and 70. Divide both the top and the bottom by it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar 28", "items": ["neeche 70"]}, "right": {"title": "lowest terms", "items": ["common factor sirf 1"]}} }
     }
    ],
    "ladder": [

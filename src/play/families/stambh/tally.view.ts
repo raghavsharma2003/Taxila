@@ -9,10 +9,12 @@
 // At a check a total cell gets a tick only when its row is right, marks AND total (round 2, ruling 1); a total that is
 // not the row's count gets a dashed box in the mix-up colour; a right total over wrong marks gets neither (the row's
 // play-out shows what is wrong). In a row that is not right the law's groups play out what they are worth: a count runs
-// over each closed group's strokes, one digit at a time, and its last number stays over the group; a group of five
-// standing lines has its fifth line tip across the four as the count reaches it. Never words. A read answer off the
-// tally plays out the same way on the tally itself (the count over each bundle), and her number stands on a plain line
-// with an arrow the way to go: no unit ticks, no place for the answer, no hops to count (law 2). After a check the line
+// over each closed group's strokes, one digit at a time, its last number holds a moment, and then the whole play-out
+// fades (evening ruling 2: nothing stays over the tally while a try remains); a group of five standing lines has its
+// fifth line tip across the four as the count reaches it, and stand again as it fades. Never words. A read answer off the
+// tally plays out the same way on the tally itself (the count over each bundle); her number stands on a plain line, with
+// an arrow the way to go after her FIRST miss only (evening ruling 3; later, her dot alone): no unit ticks, no place for
+// the answer, no hops to count (law 2). After a check the line
 // under the world says what to change (the tally, a total, or either) and Jaancho waits until something changes. A level
 // solved after a retry ends with pale ticks, a first-try solve with full ones. Green is only a right row's tick; the
 // picked row and cell are outlined in the focus colour; her wrong total is the mix-up colour (law 1). No live total, no
@@ -57,10 +59,10 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     } else {
       readTop = 64;
       cellW = clamp(w * 0.28, 96, 150);
-      // the tally, the answer cell (60), room for her chip over the number line (56), the line and its 0 (34)
-      readH = Math.max(72, Math.min(clamp(h * 0.4, 96, 260), h - readTop - 12 - 60 - 56 - 34));
+      // the tally, the answer cell (60), room for her chip over the number line (46), the line and its 0 (34)
+      readH = Math.max(72, Math.min(clamp(h * 0.4, 96, 260), h - readTop - 12 - 60 - 46 - 34));
       cellY = readTop + readH + 12;
-      lineY = cellY + 60 + 56;
+      lineY = cellY + 60 + 46;
       tallyX = 16; tallyW = w - 32;
     }
   }
@@ -103,9 +105,11 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (id.startsWith("row-") || (id.startsWith("tot-") && (!keep || sceneOver()))) { sel = r; api.sfx("select"); api.invalidate(); deps.changed(); return; }
     if ((id === "btn-stand" || id === "btn-across") && sel >= 0 && !sceneOver()) act({ kind: "mark", row: sel, across: id === "btn-across" });
   }
-  // the play-out's beats (seconds after the check): the count starts, one digit per stroke, the fifth line tips across
-  const COUNT0 = 0.25, STEP = 0.26, TIP = 0.35;
-  const busy = () => (api.t - movedAt < 0.5) || (checkedAt >= 0 && api.t - checkedAt < COUNT0 + 5 * STEP + TIP + 0.2);
+  // the play-out's beats (seconds after the check): the count starts, one digit per stroke, the fifth line tips across; the
+  // last numbers hold, then the whole play-out fades and the tally is hers again (evening ruling 2: nothing stays over the
+  // tally while a try remains, or the 5s over the bundles add up to the key)
+  const COUNT0 = 0.25, STEP = 0.26, TIP = 0.35, FADE0 = COUNT0 + 5 * STEP + TIP + 1.0, FADE = 0.6;
+  const busy = () => (api.t - movedAt < 0.5) || (checkedAt >= 0 && api.t - checkedAt < FADE0 + FADE + 0.1);
   const showCheck = () => checkedSnap !== null && checkedSnap === snap(st());
   /** the row's marks are a true tally of its count (read: the given row always is) */
   const marksRight = (r: number) => !keep || (st().marks[r].length === p.counts[r] && st().marks[r].every((m, i) => m === (i % 5 === 4)));
@@ -155,19 +159,31 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
    * counted the same way, to what it holds.
    */
   function drawTally(c: CanvasRenderingContext2D, marks: readonly boolean[], x: number, y: number, bw: number, bh: number, role: Role, grouped: boolean, playOut: boolean): void {
-    const P = api.P, f = tallyFlow(marks, bw, bh, grouped, keep ? clamp(rowH * 0.42, 30, 56) : 56);
-    const top = y + (bh - f.lineH * f.lines) / 2;
-    const ly = (line: number) => top + f.lineH * line + f.lineH / 2;
+    // (read: two lines keep a band between them for the count's digits over the second line)
+    const P = api.P, f = tallyFlow(marks, bw, bh, grouped, keep ? clamp(rowH * 0.42, 30, 56) : 56, keep ? 0 : 21);
+    // lineH is the pitch from one line to the next (one line: the box); the lines are centred in the box
+    const span = f.lines > 1 ? f.sh + f.lineH * (f.lines - 1) : f.lineH, top = y + (bh - span) / 2;
+    const ly = (line: number) => (f.lines > 1 ? top + f.sh / 2 + f.lineH * line : top + f.lineH / 2);
     const width = clamp(f.sp * 0.32, 1.8, 4.5);
-    const age = playOut ? (api.reduced ? 99 : api.t - checkedAt) : -1;
+    // how much of the play-out is left (1 while it runs and holds, down to 0 as it fades; reduced motion: all, then none)
+    const raw = api.t - checkedAt, left = !playOut ? 0 : api.reduced ? (raw < FADE0 + FADE ? 1 : 0) : 1 - clamp((raw - FADE0) / FADE, 0, 1);
+    if (left <= 0) playOut = false;
+    const age = playOut ? (api.reduced ? 99 : raw) : -1;
     const groups = playOut ? groupsOf(marks).filter((g) => g.kind !== "open") : [];
-    // the fifth standing line of a group of five, once the count reaches it, tips across (drawn by the play-out below)
+    // the fifth standing line of a group of five, once the count reaches it, tips across (drawn by the play-out below); as
+    // the play-out fades it stands again
     const tipping = new Set<number>();
     if (age >= COUNT0 + 4 * STEP) for (const g of groups) if (g.kind === "five") tipping.add(g.from + 4);
-    for (const s of f.stand) if (!tipping.has(s.i)) P.stroke(c, [[x + s.x, ly(s.line) - f.sh / 2], [x + s.x, ly(s.line) + f.sh / 2]], { role, width });
+    for (const s of f.stand) P.stroke(c, [[x + s.x, ly(s.line) - f.sh / 2], [x + s.x, ly(s.line) + f.sh / 2]], { role, width, ...(tipping.has(s.i) ? { alpha: 1 - left } : {}) });
     for (const a of f.across) P.stroke(c, [[x + a.x0, ly(a.line) + f.sh * 0.42], [x + a.x1, ly(a.line) - f.sh * 0.42]], { role, width: width + 0.5 });
     if (!playOut || age < COUNT0) return;
-    const digit = clamp(f.sh * 0.5, 16, 20);
+    c.save(); c.globalAlpha *= left;
+    drawCount(c, f, x, ly, width, age, groups);
+    c.restore();
+  }
+  /** the count over each closed group (and a group of five's fifth line tipping across), at `age` seconds into the play-out */
+  function drawCount(c: CanvasRenderingContext2D, f: ReturnType<typeof tallyFlow>, x: number, ly: (line: number) => number, width: number, age: number, groups: ReturnType<typeof groupsOf>): void {
+    const P = api.P, digit = clamp(f.sh * 0.5, 16, 20);
     for (const g of groups) {
       // each stroke's place: a standing line at its x, a line across at its right end (where the hand finishes it)
       const at: { x: number; line: number }[] = [];
@@ -265,14 +281,16 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     drawTally(c, s.marks[0], tallyX, readTop + 22, tallyW, readH - 22, "ink", false, checked && !s.done);
     P.text(c, "=", w / 2 - cellW / 2 - 18, cellY + 32, { size: 26, role: "ink2", weight: 700 });
     drawCell(c, 0, w / 2, cellY + 32, cellW, 60, true, checked);
-    if (checked && !s.done) numberLine(c, s.totals[0] ?? 0, p.counts[0]);
+    // her number and the way to go, after the first miss only (evening ruling 3: an arrow on every miss walks her to the key)
+    // (from the second miss her dot and nothing else: unlimited tries with an arrow are a higher-or-lower search)
+    if (checked && !s.done) numberLine(c, s.totals[0] ?? 0, p.counts[0], s.checks === 1);
   }
   /**
    * A read off the tally, played out below it (the count over each bundle runs on the tally itself). Her number is drawn
    * in the "look" colour of her dashed answer box (never the colour of a tick) on a plain line from 0, with an arrow the
    * way to go: no unit ticks, no place for the answer and no hops, so the answer is never counted off the line (law 2).
    */
-  function numberLine(c: CanvasRenderingContext2D, hers: number, truth: number): void {
+  function numberLine(c: CanvasRenderingContext2D, hers: number, truth: number, arrow: boolean): void {
     const P = api.P, x0 = 24, x1 = w - 24, y = Math.min(lineY, h - 30);
     const R = Math.max(10, Math.ceil((hers * 1.6 + 4) / 5) * 5);
     const X = (v: number) => x0 + ((x1 - x0) * v) / R;
@@ -283,7 +301,7 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     P.circle(c, X(hers), y, 7, { role: "look", fill: true });
     P.chip(c, String(hers), X(hers), y - 26, { size: 16, role: "look" });
     const age = api.t - checkedAt;
-    if (!(age >= 0.6 || api.reduced)) return;
+    if (!arrow || !(age >= 0.6 || api.reduced)) return;
     const k = api.reduced ? 1 : clamp((age - 0.6) / 0.6, 0, 1), dir = Math.sign(truth - hers);
     // the way to go from her number: an arrow of a fixed length, no ticks to count along
     const ax = X(hers) + dir * 12, bx = ax + dir * 44 * k;

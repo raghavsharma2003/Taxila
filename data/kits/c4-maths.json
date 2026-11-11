@@ -8237,7 +8237,7 @@
   },
   {
    "topicId": "c4-maths-ch05-t01",
-   "notes": ["2026-11-11: practice i08 asked '1/4 of 20 marbles', the same question as lesson script c4-maths-ch05-t01 s2 e3 (20 marbles, 2 groups of 10, then quarters), so the ladder repeated the lesson. Now 1/4 of 28 marbles (key 7), re-solved: 28 ÷ 4 = 7."],
+   "notes": ["2026-11-11: practice i08 asked '1/4 of 20 marbles', the same question as lesson script c4-maths-ch05-t01 s2 e3 (20 marbles, 2 groups of 10, then quarters), so the ladder repeated the lesson. Now 1/4 of 28 marbles (key 7), re-solved: 28 ÷ 4 = 7.", "2026-11-11: i13 hint 2 said 'Half is 2 pieces; a quarter is 4 pieces', which is false (half is 1 of 2 equal pieces); now 'Half means the pizza is cut into 2 equal pieces; a quarter, into 4.' s3 ladder had only halves, thirds and quarters, so every s3 lesson card repeated it: added i14-i16 on fifths, sixths and eighths (1/5 vs 1/8 of a roti; order 1/6, 1/5, 1/8 of a cake; why 1/6 beats 1/8 of a chocolate bar), blind-solved."],
    "topicType": "T3",
    "skills": [
     {
@@ -8750,14 +8750,15 @@
      ],
      "hints": [
       "Which cut makes bigger pieces?",
-      "Half is 2 pieces; a quarter is 4 pieces.",
+      "Half means the pizza is cut into 2 equal pieces; a quarter, into 4.",
       "Fewer pieces are ___.",
       "1/2 of the pizza is more."
      ],
      "targetsMisconception": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
      "verified": {
       "solverAnswer": "1/2 of the pizza",
-      "agrees": true
+      "agrees": true,
+      "note": "2026-11-11: hint 2 rewritten (it said 'half is 2 pieces', which is false: half is 1 of 2 equal pieces). Blind-solved from the prompt: the same pizza cut into 2 equal pieces gives bigger pieces than cut into 4, so 1/2 > 1/4; key 1/2 agrees."
      },
      "ge": 2.5,
      "geSource": "claude-v2",
@@ -8766,6 +8767,98 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "apply",
+     "tooEasy": false
+    },
+    {
+     "id": "c4-maths-ch05-t01-i14",
+     "skillId": "c4-maths-ch05-t01-s3",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "Which is bigger: 1/5 of a roti or 1/8 of the same roti?",
+     "prompt_hi": "Kaun bada hai: ek roti ka 1/5 ya usi roti ka 1/8?",
+     "answer": "1/5",
+     "acceptable": [
+      "one fifth",
+      "fifth",
+      "ek-panchvaan",
+      "1/5 of the roti"
+     ],
+     "hints": [
+      "What do the 5 and the 8 tell us about how the roti is cut?",
+      "One roti is cut into 5 equal pieces, the same roti into 8 equal pieces.",
+      "The roti cut into fewer pieces has ___ pieces.",
+      "1/5 is bigger: 5 equal pieces of a roti are bigger than 8 equal pieces of the same roti."
+     ],
+     "targetsMisconception": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+     "verified": {
+      "solverAnswer": "1/5",
+      "agrees": true,
+      "note": "2026-11-11: blind-solved from the prompt alone before writing the key: same roti, 5 equal parts vs 8 equal parts; fewer parts means each part is larger, so 1/5 > 1/8. Key 1/5 agrees."
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "demand": "apply",
+     "tooEasy": false
+    },
+    {
+     "id": "c4-maths-ch05-t01-i15",
+     "skillId": "c4-maths-ch05-t01-s3",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "Put in order, biggest piece first: 1/6, 1/5 and 1/8 of the same cake.",
+     "prompt_hi": "Ek hi cake ke 1/6, 1/5 aur 1/8 ko sabse bade tukde se shuru karke order mein lagao.",
+     "answer": "1/5, 1/6, 1/8",
+     "acceptable": [
+      "1/5 1/6 1/8",
+      "fifth, sixth, eighth"
+     ],
+     "hints": [
+      "Which of these cuts makes the fewest pieces of the cake?",
+      "Fewer equal pieces of the same cake means bigger pieces.",
+      "Biggest is 1/___, then 1/___, smallest is 1/___.",
+      "1/5, then 1/6, then 1/8."
+     ],
+     "targetsMisconception": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+     "verified": {
+      "solverAnswer": "1/5, 1/6, 1/8",
+      "agrees": true,
+      "note": "2026-11-11: blind-solved from the prompt alone before writing the key: same cake, so the piece size falls as the number of equal parts rises: 5 < 6 < 8 parts gives 1/5 > 1/6 > 1/8. Key 1/5, 1/6, 1/8 agrees."
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "demand": "apply",
+     "tooEasy": false
+    },
+    {
+     "id": "c4-maths-ch05-t01-i16",
+     "skillId": "c4-maths-ch05-t01-s3",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "Meena says 1/8 of a chocolate bar is more than 1/6 of the same bar, because 8 is bigger than 6. Is she right? Why?",
+     "prompt_hi": "Meena kehti hai ki ek chocolate bar ka 1/8, usi bar ke 1/6 se zyada hai, kyunki 8, 6 se bada hai. Kya woh sahi hai? Kyun?",
+     "answer": "No. 1/6 is more: the same bar cut into 8 equal pieces gives smaller pieces than cut into 6",
+     "acceptable": [
+      "no",
+      "1/6 is bigger",
+      "1/6 is more",
+      "more pieces, smaller each",
+      "nahi"
+     ],
+     "hints": [
+      "What does the 8 in 1/8 tell us about the chocolate bar?",
+      "Think of one bar cut into 6 equal pieces and the same bar cut into 8.",
+      "Cutting the same bar into more pieces makes each piece ___.",
+      "No: 1/6 is more, because cutting the same bar into 8 equal pieces makes each piece smaller than cutting it into 6."
+     ],
+     "targetsMisconception": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+     "verified": {
+      "solverAnswer": "No; 1/6 is bigger, since 8 equal parts of the same bar are smaller than 6 equal parts",
+      "agrees": true,
+      "note": "2026-11-11: blind-solved from the prompt alone before writing the key: same bar, 6 equal parts vs 8 equal parts; more parts means smaller parts, so 1/6 > 1/8 and Meena is wrong. Key agrees."
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "demand": "reason",
      "tooEasy": false
     },
     {

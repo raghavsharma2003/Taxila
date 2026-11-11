@@ -1689,7 +1689,10 @@ export async function planTurn(base, cls, c) {
   if (cls && (cardUnsaidNow(state) || state.asideReplyDue) && !cls.flags?.distress && !cls.flags?.wantsToStop && cls.source !== "chip") {
     const own = cls.request?.type && responseShape(cls.request.type, "aside_reply") === "serve_request" ? cls.request
       : cls.request?.type && !["uptake", "answer_q"].includes(cls.request.type) ? cls.request : null;
-    const about = !own && !/\d/.test(String(c.childText ?? "")) && !cls.flags?.dontKnow && !["correct", "incorrect", "partial", "misconception"].includes(cls.outcome);
+    // (dc-r8-director20 harness: "batting", "bowling karna" in answer to her aside question were read as a wrong answer to the card
+    // she had held back unsaid, so never as about the aside — a grade against a card not said is no reading of the reply; a number
+    // still is, a card answer remembered)
+    const about = !own && !/\d/.test(String(c.childText ?? "")) && !cls.flags?.dontKnow && (cardUnsaidNow(state) || !["correct", "incorrect", "partial", "misconception"].includes(cls.outcome));
     if (cardUnsaidNow(state)) cls = { ...cls, outcome: "no_evidence", confidence: 1, request: own ?? { type: "repeat", src: "card_unsaid" }, cardUnsaid: true, ...(about ? { asideReply: true } : {}) };
     else if (about) cls = { ...cls, asideReply: true };
   }

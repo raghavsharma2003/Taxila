@@ -17,6 +17,7 @@ import { solveDesk } from "../deskLayout.ts";
 import type { DeskActions, DeskModel, Sheet, TrayModel } from "../model.ts";
 import { useDesk } from "../useDesk.ts";
 import { scriptedApi, scriptedLinkFactory, lessonScript } from "./script.ts";
+import { cardOfFixture, type DevCard } from "./cards.ts";
 import "../../../styles/tokens.css";
 
 const silent = { value: 0, subscribe: () => () => {} };
@@ -37,24 +38,11 @@ export const FIXTURES = [
 export type FixtureName = (typeof FIXTURES)[number];
 
 const noop = () => {};
-/** A board a render check injects (window.__deskScript, set by Playwright's addInitScript); else the half ka half board. */
-const devScript = () => (typeof window !== "undefined" && (window as unknown as { __deskScript?: unknown }).__deskScript) || BEAT_SCRIPT;
+/** A board a render check injects (window.__deskScript, set by Playwright's addInitScript, with its own line and ask);
+ *  else the card's board (cards.ts: board, line and question always from one card). */
+const devScript = (card: DevCard) => (typeof window !== "undefined" && (window as unknown as { __deskScript?: unknown }).__deskScript) || ("script" in card.board ? card.board.script : null);
 /** Her line and the card's question a replay injects with the board (window.__deskLine / __deskAsk); else the fixture's. */
 const devText = (k: "__deskLine" | "__deskAsk") => (typeof window !== "undefined" ? (window as unknown as Record<string, string | undefined>)[k] : undefined);
-/** The "half ka half" board (server fraction-of@1, a/b = c/d = 1/2) with its beat card, as the server sends it (dev only). */
-const BEAT_SCRIPT = {
-  v: 1, scriptId: "dev-beat", line: { lessonId: "dev" }, anchor: "line_audio_start", board: { w: 400, h: 300, ground: "chalk" }, mode: "fresh", durationMs: 1200,
-  card: { kind: "picture", n: 2, checkpointAhead: false },
-  ops: [
-    { id: "w", op: "rect", at: [60, 46], w: 280, h: 168, weight: 2, startMs: 0, endMs: 300 },
-    { id: "c", op: "line", from: [200, 46], to: [200, 214], weight: 1, startMs: 300, endMs: 400 },
-    { id: "s", op: "rect", at: [63, 49], w: 134, h: 162, fill: "soft", ink: "accent", weight: 1, startMs: 400, endMs: 600 },
-    { id: "r", op: "line", from: [60, 130], to: [340, 130], weight: 1, ink: "soft", startMs: 600, endMs: 700 },
-    { id: "m", op: "rect", at: [65, 51], w: 130, h: 74, fill: "accent", ink: "mark", weight: 1, startMs: 700, endMs: 900 },
-    { id: "t", op: "text", at: [130, 30], text: "1/2", size: "m", ink: "accent", startMs: 900, endMs: 1000 },
-    { id: "e", op: "numwork", at: [40, 262], layout: "equation", rows: [["1/2", "×", "1/2", "=", "1/4"]], weight: 2, startMs: 1000, endMs: 1200 },
-  ],
-} as const;
 const ACTIONS: DeskActions = {
   start: noop, tapToHear: noop, talk: noop, send: noop, pickTile: noop, padSend: noop, hearQuestion: noop, hearAgain: noop, openHint: noop,
   hintPick: noop, helpMenuPick: noop, openHelpMenu: noop, wait: noop, setTyping: noop, setTypingFocus: noop, toggleCaptions: noop, pause: noop,
@@ -85,8 +73,9 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
     return "your_turn";
   };
   const floor = floorOf(name);
+  const card = cardOfFixture(name, young);
   const askModel: DeskModel["ask"] = name === "idle" || name === "locked" ? null
-    : { text: devText("__deskAsk") ?? (young ? "Which one is half?" : "How many quarters make one half?"), source: "server", lines: [] };
+    : { text: devText("__deskAsk") ?? card.ask, source: "server", lines: [] };
   if (askModel && (name === "hint-line" || name === "not_yet")) askModel.lines = [{ kind: "hint", level: 1, text: young ? "Count the two equal parts." : "Count the shaded quarters on the board." }];
   if (askModel && name === "with-help") askModel.lines = [{ kind: "hint", level: 2, text: "Two quarters fill one half." }];
   const answered = ["teachback-correct", "teachback-not_yet", "heard", "thinking", "work-heard", "work-thinking", "correct", "not_yet", "partial", "with-help", "board-correct", "board-not_yet", "T1", "T2", "T4", "RC", "thinking-4s"].includes(name);
@@ -100,18 +89,18 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   if (name === "work-pad" || name === "work-pad-help") tray = { kind: "pad", overlay: name === "work-pad-help" ? "help_menu" : null };
   else if (name === "stop-checkin") tray = { kind: "tiles", tiles: [{ id: "stop:continue", label: "Chalo, aage" }, { id: "break:rest", label: "Chhota break" }, { id: "stop:end", label: "Aaj ke liye bas" }], overlay: null };
   else if (name === "work-tiles" || name === "help-menu" || name === "no-mic") tray = { kind: "tiles", tiles, overlay: name === "help-menu" ? "help_menu" : name === "no-mic" ? "no_mic" : null };
-  else if (name === "work-beat" || name === "hf-beat") tray = { kind: "studio", studio: { slotId: "dev:beat:slot", intentId: "dev:beat", state: "revealed", artifact: { kind: "whiteboard", stage: { w: 400, h: 300 }, script: devScript() } } as unknown as TrayModel["studio"], overlay: null };
+  else if (name === "work-beat" || name === "hf-beat") tray = { kind: "studio", studio: { slotId: "dev:beat:slot", intentId: "dev:beat", state: "revealed", artifact: { kind: "whiteboard", stage: { w: 400, h: 300 }, script: devScript(card) } } as unknown as TrayModel["studio"], overlay: null };
   // r4: a skeleton activity in the tray (the shade-fraction skeleton), for the Kaksha skin shots
   else if (name === "work-skeleton") tray = { kind: "studio", studio: { slotId: "dev:sk:slot", intentId: "dev:sk", state: "revealed", artifact: { kind: "skeleton", stage: { w: 360, h: 320 }, skeleton: "fraction-parts", archetype: "shade_fraction", intentId: "dev:sk", params: { items: [{ id: "i1", n: 3, d: 4 }], picture: "pizza" }, strings: {} } } as unknown as TrayModel["studio"], overlay: null };
   else if (name === "work-studio" || play) tray = { kind: "studio", studio: { slotId: `dev:${name}:slot`, intentId: `dev:${name}`, state: "revealed" } as TrayModel["studio"], overlay: null };
-  else if (work || name.startsWith("board-") || name === "voice-board") tray = { kind: "board", board: { lines: [{ text: "1/2 = 2/4", kind: "math" }], chalked: answered ? (young ? "1/2" : "two") : null, mark: verdict === "correct" ? "tick" : verdict === "not_yet" ? "underline" : null } };
+  else if (work || name.startsWith("board-") || name === "voice-board") tray = { kind: "board", board: { lines: "lines" in card.board ? card.board.lines : [], chalked: answered ? (young ? "1/2" : "two") : null, mark: verdict === "correct" ? "tick" : verdict === "not_yet" ? "underline" : null } };
   const geometry = tray ? "work" : "face";
   const keyboard = name === "keyboard";
   const strip = (["T1", "T2", "T3", "T4", "T5", "T6", "T8", "T9", "RC", "PTT"] as const).includes(name as StripId & string) ? (name as StripId) : null;
   const stripH = strip && isStrip(strip) ? stripHeight(strip, { noPack: true, young, width: Math.min(size.w, 600) - 32 }) : 0;
   const layout = solveDesk({ width: size.w, height: size.h, family, geometry, keyboard: keyboard && !young, fontScale: size.fontScale, captionsOn: band !== "b1", strip: stripH, cardNeed: play ? 0 : size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed, play });
   const sheet: Sheet = name === "pause" ? "pause" : name === "end" ? "end" : name === "hint" ? "hint" : name === "help" ? "help" : name === "grownup" ? "grownup" : null;
-  const caption = devText("__deskLine") ?? (young ? "Do barabar tukde gino. Kaunsa aadha hai?" : "Board dekho: 1/2 barabar 2/4. Toh ek half mein kitne quarters hote hain?");
+  const caption = devText("__deskLine") ?? card.line;
   return {
     band, family, teacher: { id: rec.id, name: rec.name }, childName: young ? "Riya" : "Kabir",
     // (a dev lesson id: the Debrief's per-lesson rows, "What helped?" and the goodbye emote, need one)
