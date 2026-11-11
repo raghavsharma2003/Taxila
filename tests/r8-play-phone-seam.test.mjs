@@ -219,6 +219,24 @@ describe("round 8: Studio's phone routing → the play family, end to end (dry, 
     for (const sk of ["s2", "s3"]) assert.equal(keys[`${topicId}-${sk}`], "stambh/picto");
   });
 
+  // r8 C2 Games: the round-8 engine modes (kon/place on c6-maths-ch02-t03; kon/name on c6-maths-ch02-t02). No lesson script is
+  // live for these topics yet, so children.mjs has no seeded learners for them: a new child (nothing known) takes every kit
+  // skill through the same door, checks and evidence as the pilot topics.
+  for (const [topicId, game] of [["c6-maths-ch02-t03", "kon/place"], ["c6-maths-ch02-t02", "kon/name"]]) {
+    test(`${topicId}: every kit skill gets an admitted family at p360 (${game} among them), its because, a first screen and its evidence`, async () => {
+      const kit = kitFromFile(getTopic(topicId));
+      const C = { children: { new: { input: {} } } };
+      const keys = new Set();
+      for (const sk of kit.skills) {
+        assert.ok(admitPlay(sk.id, topicId), `${sk.id}: admitted`);
+        const row = await seamFor(topicId, sk.id, "new", C, kit, uuid());
+        keys.add(row.key);
+        assert.ok(row.evidence.length >= 1);
+      }
+      assert.ok(keys.has(game), `${game} served for one of the skills: ${[...keys]}`);
+    });
+  }
+
   test("the p360 stage gives a play piece at least MIN_BOX (or Studio shows its board twin)", () => {
     for (const band of Object.values(CONTRACT)) {
       const b = band.p360.play.box;
