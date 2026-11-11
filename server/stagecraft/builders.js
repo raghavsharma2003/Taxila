@@ -222,7 +222,10 @@ export function createBuilders(deps = {}) {
 export { stringsOfSpec } from "./catalogue.js";
 
 /** Extension engines whose keys are computed by the engine from the numbers the spec puts on screen (no authored fact). */
-export const COMPUTED_KEY_ARCHETYPES = new Set(["dukaan@1", "fraction-ops@1", "geo-forge@1", "mirror-paint@1", "pattern-lab@1",
+// (2026-11-11, regen round 2: instrument@1's key IS the target quantity the engine itself shows in another unit — pour 1.25 l
+// on an ml jug, the key 1250 ml; set 45 min after 10:50, the key 11:35 — computed from the spec's own numbers, no outside fact;
+// its three topics were refused unverified_key twice each while citing no kit item)
+export const COMPUTED_KEY_ARCHETYPES = new Set(["dukaan@1", "fraction-ops@1", "geo-forge@1", "instrument@1", "mirror-paint@1", "pattern-lab@1",
   "pictograph@1", "rule-machine@1", "sieve-storm@1", "solid-view@1", "zero-pair@1"]);
 const norm = (x) => String(x ?? "").normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
 const keysOf = (archetype, spec) => { try { return ENGINE_SPECS_EXT[archetype]?.keys?.(spec) ?? []; } catch { return null; } };

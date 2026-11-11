@@ -516,7 +516,9 @@ export function statedMark(script, ref, line) {
     // (c7 lines@1: an asked angle "?" whose value her line states — "70°", "70 degree" — is written as that angle)
     if (r.ok && r.call.template === "lines@1" && Array.isArray(script?.ops)) {
       const deg = r.call.kind === "cross" ? r.call.deg : r.call.transversal?.deg;
-      const asked = (r.call.angles ?? []).filter((a) => a?.value === "?").map((a) => ((a.at - 1) % 2 === 0 ? deg : 180 - deg));
+      // (an answer mark "deg" already writes its angle's value: that "?" is not drawn, so not asked)
+      const mk = r.call.mark && (r.call.mark.show ?? "deg") === "deg" ? r.call.mark.at : null;
+      const asked = (r.call.angles ?? []).filter((a) => a?.value === "?" && a.at !== mk).map((a) => ((a.at - 1) % 2 === 0 ? deg : 180 - deg));
       // (opposite angles are equal: "ek kon 70° hai" states the GIVEN 70°, and is no answer to the asked one. The asked angle
       // is written only when her line says its value more times than the board already writes it)
       const saidN = new Map();
