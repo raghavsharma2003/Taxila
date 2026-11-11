@@ -28198,6 +28198,34 @@
    "at": "2026-11-11",
    "title": "In all three new game modes the maths was right and the faults were in what the screen tells the child after she acts: a colour that says right over a wrong thing, the answer left on screen after a miss, and a mix-up recorded from a pick a guess produces 1 time in 5 or 1 in 2. Certs of 4472/4472 and 16/16 did not see any of them, because the certs checked keys and layouts, not the meaning of a colour or what a miss reveals.",
    "source": "inbox/r8-main-17.json"
+  },
+  {
+   "id": "ms-release-4b2c60a",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Released 4b2c60a with scripts/release.mjs: web taxila-web--s4b2c60a-6cxo (was taxila-web--sed80148-xrd9), worker + canary/nightly jobs on taxila-worker:4b2c60a (was ed80148); evidence local gate stamp 2026-11-11T15:28:01.921Z; migrations skip. Rollback: node scripts/release.mjs 4b2c60a --rollback.",
+   "source": "inbox/release-4b2c60a.json"
+  },
+  {
+   "id": "fd-tx-switch-lost-on-redirect-release-22",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "Release 22's ?tx= switch did nothing from a link. It was read only when a themed screen mounted; /who?tx=a redirects to /start/class and /parent?tx=a to the sign-in page before any themed screen exists, so the device never stored the choice (checked on production with a browser at 360 px, 4 routes: 0 of 4 kept it). The tests covered the pure decision and never a real landing URL. Fixed in integration 48: src/main.tsx reads the switch at boot, before the router renders, with a test.",
+   "source": "inbox/r8-main-18.json"
+  },
+  {
+   "id": "fd-ci-browser-job-needs-apt-mirrors",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "From about 14:40 UTC on 2026-11-11 the CI job 'test (browser 1/1)' failed or hung on every branch before any test ran: 'playwright install --with-deps' runs apt, and the GitHub runners could not resolve archive.ubuntu.com, azure.archive.ubuntu.com or security.ubuntu.com (seen on main's candidate twice, Studio's branch twice, Brain's branch three times). No commit could get CI evidence. gates.yml now falls back to installing the browser alone after 240 s; that fallback has not yet been seen to run on a runner.",
+   "source": "inbox/r8-main-18.json"
+  },
+  {
+   "id": "dc-r8-release-22-local-stamp",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "Release 22 (4b2c60a) was deployed on a gate stamp written by hand from the main loop's own gate: tsc, vite build, prompt budget, test:all (716 suites, 7148 pass, 0 fail, browser suites included) and the single-process leak check, all on the clean committed tree. CI could not give a verdict (its browser job could not install Chromium). The stamp records that it is manual and why. This is allowed only when every gate command passed locally on the exact clean commit and the CI failure is in the runner before any test ran. Reverse if: a hand-stamped release ships a fault that CI's own run would have caught; then a release waits for CI or for scripts/deploy-azure.mjs --gate, however long that takes.",
+   "source": "inbox/r8-main-18.json"
   }
  ],
  "edges": [
@@ -45225,6 +45253,21 @@
    "src": "dc-r8-game-modes-three-laws",
    "rel": "caused_by",
    "dst": "fd-game-screens-fail-after-the-act"
+  },
+  {
+   "src": "fd-tx-switch-lost-on-redirect-release-22",
+   "rel": "caused_by",
+   "dst": "ms-release-4b2c60a"
+  },
+  {
+   "src": "dc-r8-release-22-local-stamp",
+   "rel": "caused_by",
+   "dst": "fd-ci-browser-job-needs-apt-mirrors"
+  },
+  {
+   "src": "dc-r8-release-22-local-stamp",
+   "rel": "measured_by",
+   "dst": "ms-release-4b2c60a"
   }
  ]
 }

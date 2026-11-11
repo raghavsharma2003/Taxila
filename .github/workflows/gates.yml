@@ -66,7 +66,10 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - name: chromium for the browser suites
         if: matrix.group == 'browser'
-        run: npx playwright install --with-deps chromium
+        # --with-deps runs apt. On 2026-11-11 the runners could not resolve the Ubuntu mirrors for over an hour and this
+        # step failed on every branch before a test ran. The runner image ships Chrome, so Chromium's libraries are normally there:
+        # when apt cannot be reached the browser alone is installed and the suites still run (not yet seen on a runner).
+        run: timeout 240 npx playwright install --with-deps chromium || npx playwright install chromium
       - name: vite build (suites that serve dist/)
         run: npx vite build
       - name: test shard
