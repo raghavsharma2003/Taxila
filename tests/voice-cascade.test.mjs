@@ -504,17 +504,20 @@ test("CascadeLink: ICE 'disconnected' for 3 s counts as lost (reconnect), and a 
   const link = new CascadeLink({ lessonId: "L1", levels: levels(), speech: pcmStream(5), fetchToken: async () => (tokens++, TOKEN()), transcribe: async () => ({ text: "" }), onTransport: (t) => transports.push(t) });
   try {
     await link.connect();
-    await sleep(20);
-    assert.equal(link.listening, true);
+    assert.ok(await until(() => link.listening), "the call came up"); // awaited, not a fixed 20 ms sleep: the fake channel opens on its own timer
     assert.deepEqual(transports, ["webrtc"]);
+    const t0 = performance.now();
     env.pcs[0].setState("disconnected");
     await sleep(2_900);
-    assert.equal(tokens, 1, "a short blip is not a loss");
-    await sleep(700); // 3 s mark + the first reconnect backoff (500 ms)
-    assert.equal(tokens, 2, "reconnected after 'disconnected' outlasted 3 s");
+    // The earliest a token can be asked for is 3 s (the lost timer) + 500 ms (first backoff) after the drop. Only a sample
+    // taken before that instant says anything about a short blip; one that a loaded runner delayed past it is skipped.
+    if (performance.now() - t0 < 3_450) assert.equal(tokens, 1, "a short blip is not a loss");
+    // Await the reconnect rather than a fixed 700 ms: the 500 ms backoff is armed when the 3 s timer actually fires, so any
+    // delay in that timer moves the reconnect later by the same amount, and a fixed sleep has only ~100 ms of slack.
+    assert.ok(await until(() => tokens >= 2), "reconnected after 'disconnected' outlasted 3 s");
+    assert.ok(performance.now() - t0 >= 3_400, `not lost before the 3 s mark (token asked at ${(performance.now() - t0).toFixed(0)} ms)`);
     assert.equal(env.pcs[0].closed, true);
-    await sleep(20);
-    assert.equal(link.listening, true);
+    assert.ok(await until(() => link.listening), "and the call is back up after the reconnect");
   } finally {
     link.close();
     env.restore();
