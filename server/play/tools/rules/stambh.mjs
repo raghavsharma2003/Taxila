@@ -12,6 +12,12 @@ export const family = "stambh";
 const S = "stambh";
 export const RULES = [
   R("c4-maths-ch14-t01", S, "picto", "draw", { "key-ignored": "count-pictures", "half-ignored": "half-picture", "half-whole": "half-picture" }, { steps: [2, 5], half: true }),
+  // r8 tally (s1, "organise data using tally marks and a table"): keeping a tally in fives while the things pass, then
+  // writing each row's total into the table, IS organising the data with tally marks and a table; reading a row of tallies
+  // IS the other half of the same skill. Writing five as five standing lines, or reading a bundle as its four standing
+  // lines, is the kit's tally-four ("reads a full tally bundle as 4", "writes five as five standing lines").
+  R("c4-maths-ch14-t01", S, "tally", "keep", { "tally-four": "tally-four" }, {}),
+  R("c4-maths-ch14-t01", S, "tally", "read", { "tally-four": "tally-four" }, {}),
   R("c4-maths-ch14-t02", S, "bars", "draw", { "scale-as-one": "count-squares", "half-ignored": "between-marks", "half-whole": "between-marks" }, { steps: [1, 2, 5], half: true }),
   R("c5-maths-ch15-t01", S, "picto", "draw", { "key-ignored": "ignore-scale", "half-whole": "round-up-pictures" }, { steps: [2, 5, 10], half: true }),
   R("c5-maths-ch15-t02", S, "bars", "draw", { "scale-as-one": "count-gridlines" }, { steps: [2, 5, 10], half: true }),
@@ -27,7 +33,9 @@ export const RULES = [
 
 export const ACTS = {
   "c4-maths-ch14-t01|draw": ["s3", "s2"],     // make a pictograph with half pictures; one picture stands for many
-  "c4-maths-ch14-t02|draw": ["s1", "s3"],     // a bar's value is its height on the scale; scales in 2s / 5s, bars between marks
+  "c4-maths-ch14-t01|keep": ["s1"],           // r8 tally: keep a tally in fives, then the table
+  "c4-maths-ch14-t01|read": ["s1"],           // r8 tally: read a row of tallies
+  "c4-maths-ch14-t02|draw": ["s1", "s3"],    // a bar's value is its height on the scale; scales in 2s / 5s, bars between marks
   "c5-maths-ch15-t01|draw": ["s3", "s2"],     // draw a pictograph with the key; half pictures
   "c5-maths-ch15-t02|draw": ["s2", "s1"],     // draw a bar graph on an equal-step scale from 0; read heights
   "c6-maths-ch04-t02|draw": ["s3", "s2"],     // draw a pictograph with the key; half symbols

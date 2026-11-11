@@ -18,7 +18,7 @@
   { "hi": "samkon", "en": "right angle" },
   { "hi": "patla angle / chauda angle", "en": "narrow angle / wide angle" },
   { "hi": "bindu", "en": "point / dot" }
- ], "joints": {"asidePark":[{"hi":"Yeh naapna poora hote hi {aside} ki baat zaroor karenge.","en":"Once this measuring is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh naapna khatam ho jaaye.","en":"We'll talk about {aside} too, once this measuring is over."},{"hi":"{aside} ka zikr achha laga, uski baat thodi der baad karte hain.","en":"I liked hearing about {aside}, and we'll talk about it a bit later."}],"asideReturn":[{"hi":"{aside} mein tumne kabhi kuch tircha dekha hai?","en":"Have you seen something slanted in {aside}?"},{"hi":"Toh {aside} mein tumhare saath aur kaun hota hai?","en":"So who else is with you in {aside}?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"}],"hindiSwitch":[{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in English."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."}],"askAgain":[{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."}]},
+ ], "greetSimpler": { "hi": "Aaj hum protractor se angle naapna aur banana seekhenge.", "en": "Today we learn to measure and draw angles with a protractor." }, "joints": {"asidePark":[{"hi":"Yeh naapna poora hote hi {aside} ki baat zaroor karenge.","en":"Once this measuring is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh naapna khatam ho jaaye.","en":"We'll talk about {aside} too, once this measuring is over."},{"hi":"{aside} ka zikr achha laga, uski baat thodi der baad karte hain.","en":"I liked hearing about {aside}, and we'll talk about it a bit later."}],"asideReturn":[{"hi":"{aside} mein tumne kabhi kuch tircha dekha hai?","en":"Have you seen something slanted in {aside}?"},{"hi":"Toh {aside} mein tumhare saath aur kaun hota hai?","en":"So who else is with you in {aside}?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"}],"hindiSwitch":[{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."}],"askAgain":[{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."}],"backTo":[{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."},{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."}]},
  "skills": [
   {
    "skillId": "c6-maths-ch02-t03-s1",
@@ -61,7 +61,7 @@
       "why": { "hi": "angle XYZ ka beech wala letter Y hai, yaani dono arms Y se shuru hoti hain", "en": "Y is the middle letter of angle XYZ, so both arms start at Y" },
       "accept": ["point Y", "Y par", "vertex Y", "on Y"],
       "targets": "c6-maths-ch02-t03-m-vertex-off",
-      "wrongIfMis": "X", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "angle XYZ"}], "mark": {"index": 0, "show": "bigger"}} }
+      "wrongIfMis": "X", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "angle XYZ"}]} }
      },
      "simpler": { "hi": "Centre mark hamesha vertex par baithta hai, jahan se dono arms nikalti hain. Teen letter wale naam mein beech wala letter dhoondho.", "en": "The centre mark always sits on the vertex, where both arms start. Find the middle letter of the three-letter name." }
     },
@@ -83,7 +83,7 @@
       "why": { "hi": "vertex Q hi hai, aur baseline kisi bhi arm par ho, centre vertex par hi rehta hai", "en": "the vertex is still Q, and whichever arm the baseline is on, the centre stays on the vertex" },
       "accept": ["Q par", "vertex Q", "point Q", "on Q"],
       "targets": "c6-maths-ch02-t03-m-vertex-off",
-      "wrongIfMis": "P", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40, "name": "angle PQR"}], "arm": "QR", "mark": {"index": 0, "show": "bigger"}} }
+      "wrongIfMis": "P", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40, "name": "angle PQR"}], "arm": "QR"} }
      },
      "simpler": { "hi": "Protractor ghumaane se vertex nahi badalta. Centre mark vertex par hi tikta hai, baseline chahe kisi bhi arm par ho.", "en": "Turning the protractor does not change the vertex. The centre mark stays on the vertex, whichever arm the baseline lies on." }
     },
@@ -106,7 +106,7 @@
       "why": { "hi": "chhota ho ya bada protractor, angle wahi hai aur ghumaav wahi; bade protractor ke sirf nishaan lambe hain", "en": "small or big protractor, it is the same angle with the same turn; the big one only has longer markings" },
       "accept": ["utni hi", "barabar", "same reading", "35°", "35", "utni hi, 35°"],
       "targets": "c6-maths-ch02-t03-m-tool-size",
-      "wrongIfMis": "more", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 35, "name": "chhota protractor"}, {"deg": 35, "name": "bada protractor"}], "mark": {"index": 0, "show": "bigger"}} }
+      "wrongIfMis": "more", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 35, "name": "chhota protractor"}, {"deg": 35, "name": "bada protractor"}]} }
      },
      "simpler": { "hi": "Bada protractor sirf size mein bada hai. Degree angle ka ghumaav naapti hai, protractor ka size nahi.", "en": "The big protractor is only bigger in size. A degree measures the angle's turn, not the size of the protractor." }
     }
@@ -115,7 +115,7 @@
     "problem": {
      "hi": "Angle PQR naapna hai. Iska vertex Q hai aur arm QR daayein ki taraf jaati hai. Protractor rakhne par arm QP ke paas dono scale 70 aur 110 dikhate hain, aur angle patla dikhta hai. Angle PQR kitne degree ka hai?",
      "en": "Measure angle PQR. Its vertex is Q and arm QR points to the right. With the protractor in place, the two scales show 70 and 110 at arm QP, and the angle looks narrow. How many degrees is angle PQR?"
-    },
+    }, "simpler": { "hi": "Angle PQR ka vertex Q hai, aur arm QR daayein jaati hai. Protractor ke dono scale arm QP ke paas 70 aur 110 dikhate hain. Angle ka naap chahiye.", "en": "Angle PQR has its vertex at Q, and arm QR points right. The protractor's two scales show 70 and 110 at arm QP. We need the measure of the angle." },
     "givens": [{"hi": "vertex Q hai, arm QR daayein ki taraf hai, arm QP ke paas dono scale 70 aur 110 dikhate hain, aur angle patla dikhta hai", "en": "the vertex is Q, arm QR points right, at arm QP the two scales show 70 and 110, and the angle looks narrow"}],
     "find": { "hi": "angle PQR kitne degree ka hai", "en": "how many degrees angle PQR is" },
     "steps": [
@@ -142,7 +142,7 @@
      "prompt": { "hi": "Arm QP ke paas 70 aur 110 hain, aur patla angle samkon se chhota hota hai. Daayein 0 se ginne par angle PQR kitna hai, 70° ya 110°?", "en": "At arm QP there are 70 and 110, and a narrow angle is smaller than a right angle. Counting from the right-hand 0, what is angle PQR, 70° or 110°?" },
      "key": "70°",
      "accept": ["70", "70 degree", "70 degrees"],
-     "targets": "c6-maths-ch02-t03-m-wrong-scale",
+     
      "wrongIfMis": "110°",
      "simpler": { "hi": "Patla angle samkon se chhota hota hai. 70 aur 110 ko samkon se milao, aur samkon se chhota number lo.", "en": "A narrow angle is smaller than a right angle. Compare 70 and 110 with a right angle, and take the number smaller than it." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 70, "name": "angle PQR"}], "arm": "QR", "mark": {"index": 0, "show": "deg"}} }, "why": { "hi": "angle PQR patla hai, toh samkon se chhota, aur 70 aur 110 mein sirf 70° usse kam hai", "en": "angle PQR is narrow, so smaller than a right angle, and of 70 and 110 only 70° is below it" }
     },
@@ -163,7 +163,7 @@
      "targets": "c6-maths-ch02-t03-m-vertex-off",
      "wrongIfMis": "L",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60, "name": "angle LMN" }] } },
-     "simpler": { "hi": "Centre mark vertex par jaata hai. Angle LMN ke naam ka beech wala letter dekho.", "en": "The centre mark goes on the vertex. Look at the middle letter of the name LMN." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "angle LMN"}], "mark": {"index": 0, "show": "bigger"}} }
+     "simpler": { "hi": "Centre mark vertex par jaata hai. Angle LMN ke naam ka beech wala letter dekho.", "en": "The centre mark goes on the vertex. Look at the middle letter of the name LMN." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "angle LMN"}]} }
     },
     {
      "id": "c2",
@@ -174,7 +174,7 @@
      "targets": "c6-maths-ch02-t03-m-tool-size",
      "wrongIfMis": "more",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 40, "name": "ek hi angle" }] } },
-     "simpler": { "hi": "Angle utna hi khula hai, sirf protractor bada hai. Degree ghumaav naapti hai, protractor ka size nahi.", "en": "The angle is opened just as much; only the protractor is bigger. A degree measures the turn, not the protractor's size." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40, "name": "ek hi angle"}], "mark": {"index": 0, "show": "deg"}} }
+     "simpler": { "hi": "Angle utna hi khula hai, sirf protractor bada hai. Degree ghumaav naapti hai, protractor ka size nahi.", "en": "The angle is opened just as much; only the protractor is bigger. A degree measures the turn, not the protractor's size." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40, "name": "ek hi angle"}]} }
     }
    ],
    "ladder": [
@@ -205,7 +205,7 @@
       "targets": "c6-maths-ch02-t03-m-vertex-off",
       "wrongIfMis": "U",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 55, "name": "angle STU" }], "arm": "TU" } },
-      "simpler": { "hi": "Centre mark hamesha vertex par hota hai. Angle STU ke naam mein beech wala letter vertex hai.", "en": "The centre mark always goes on the vertex. In the name STU, the middle letter is the vertex." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 55, "name": "angle STU"}], "arm": "TU", "mark": {"index": 0, "show": "bigger"}} }
+      "simpler": { "hi": "Centre mark hamesha vertex par hota hai. Angle STU ke naam mein beech wala letter vertex hai.", "en": "The centre mark always goes on the vertex. In the name STU, the middle letter is the vertex." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 55, "name": "angle STU"}], "arm": "TU"} }
      }
     },
     {
@@ -222,14 +222,11 @@
       "targets": "c6-maths-ch02-t03-m-tool-size",
       "wrongIfMis": "8 cm wale ki",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 50, "name": "3 cm arms" }, { "deg": 50, "name": "8 cm arms" }] } },
-      "simpler": { "hi": "Lambi arms se angle bada nahi hota. Degree sirf yeh naapti hai ki angle kitna khula hai, arms kitni lambi hain yeh nahi.", "en": "Longer arms do not make an angle bigger. A degree measures only how wide the angle opens, not how long its arms are." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "3 cm arms"}, {"deg": 50, "name": "8 cm arms"}], "mark": {"index": 1, "show": "bigger"}} }
+      "simpler": { "hi": "Lambi arms se angle bada nahi hota. Degree sirf yeh naapti hai ki angle kitna khula hai, arms kitni lambi hain yeh nahi.", "en": "Longer arms do not make an angle bigger. A degree measures only how wide the angle opens, not how long its arms are." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "3 cm arms"}, {"deg": 50, "name": "8 cm arms"}]} }
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Protractor ab sahi jagah baith gaya: centre vertex par, baseline ek arm par. Agle hisse mein dekhenge ki uske do scale mein se kaunsa padhna hai, aur degree mein ghumaav kaise ginte hain.",
-    "en": "The protractor now sits in the right place: centre on the vertex, baseline on one arm. In the next part we see which of its two scales to read, and how turns are counted in degrees."
-   }
+   "bridgeToNext": { "hi": "Protractor ab sahi jagah baith gaya: centre vertex par, baseline ek arm par. Agle hisse mein dekhenge ki uske do scale mein se kaunsa padhna hai, aur degree mein ghumaav kaise ginte hain.", "en": "The protractor now sits in the right place: centre on the vertex, baseline on one arm. In the next part we see which of its two scales to read, and how turns are counted in degrees.", "simpler": {"hi": "Ab dekhenge ki degree mein ghumaav kaise ginte hain. Board par ek arm ghoomi hui dikh rahi hai.", "en": "Now we see how a turn is counted in degrees. On the board you can see an arm that has turned."} }
   },
   {
    "skillId": "c6-maths-ch02-t03-s2",
@@ -270,7 +267,7 @@
       "prompt": { "hi": "Board wali arm ek chauthai chakkar aur ghoome, toh shuru se kul kitne degree ghoomegi?", "en": "If the arm on the board turns one more quarter turn, how many degrees will it have turned in all from the start?" },
       "key": "180°",
       "why": { "hi": "90° + 90° = 180°, do chauthai chakkar yaani aadha chakkar", "en": "90° + 90° = 180°, two quarter turns make a half turn" },
-      "accept": ["180", "180 degree", "180 degrees", "aadha chakkar"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "chauthai chakkar"}], "mark": {"index": 0, "show": "deg"}} }
+      "accept": ["180", "180 degree", "180 degrees", "aadha chakkar"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "chauthai chakkar"}]} }
      },
      "simpler": { "hi": "Ek chauthai chakkar 90° hai. Do chauthai chakkar ke liye 90° aur 90° jodo.", "en": "One quarter turn is 90°. For two quarter turns, add 90° and 90°." }
     },
@@ -323,7 +320,7 @@
     "problem": {
      "hi": "Farhan angle XYZ naapta hai. Centre Y par hai aur baseline arm YZ par, jo daayein ki taraf jaati hai. Arm YX ke paas ek scale 145 dikhata hai aur doosra 35. Angle page ke kone se chauda dikhta hai. Angle XYZ kitna hai?",
      "en": "Farhan measures angle XYZ. The centre is on Y and the baseline on arm YZ, which points to the right. At arm YX one scale shows 145 and the other 35. The angle looks wider than the corner of a page. What is angle XYZ?"
-    },
+    }, "simpler": { "hi": "Farhan angle XYZ naapta hai. Centre Y par hai, aur baseline arm YZ par hai jo daayein jaati hai. Arm YX ke paas scale 145 aur 35 dikhate hain. Angle ka naap chahiye.", "en": "Farhan measures angle XYZ. The centre is on Y and the baseline is on arm YZ, which points right. At arm YX the scales show 145 and 35. We need the measure of the angle." },
     "givens": [{"hi": "centre Y par aur baseline daayein jaati arm YZ par hai, arm YX ke paas 145 aur 35 dikhte hain, aur angle page ke kone se chauda hai", "en": "the centre is on Y and the baseline on arm YZ, pointing right; at arm YX the scales show 145 and 35, and the angle is wider than a page corner"}],
     "find": { "hi": "angle XYZ kitne degree ka hai", "en": "the measure of angle XYZ" },
     "steps": [
@@ -408,10 +405,7 @@
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Ab angle naapna aa gaya. Agle hisse mein ulta karenge: diye hue degree ka angle khud banayenge, jaise 60° ka angle ABC, wahi protractor aur wahi 0 wala scale lekar.",
-    "en": "Now you can measure an angle. In the next part we go the other way: we draw an angle of a given size ourselves, like a 60° angle ABC, with the same protractor and the same 0 scale."
-   }
+   "bridgeToNext": { "hi": "Ab angle naapna aa gaya. Agle hisse mein ulta karenge: diye hue degree ka angle khud banayenge, jaise 60° ka angle ABC, wahi protractor aur wahi 0 wala scale lekar.", "en": "Now you can measure an angle. In the next part we go the other way: we draw an angle of a given size ourselves, like a 60° angle ABC, with the same protractor and the same 0 scale.", "simpler": {"hi": "Ab ulta karenge: diye hue degree ka angle khud banayenge, jaise angle ABC. Wahi protractor lenge.", "en": "Now we go the other way: we draw an angle of a given size ourselves, like angle ABC. We use the same protractor."} }
   },
   {
    "skillId": "c6-maths-ch02-t03-s3",
@@ -454,7 +448,7 @@
       "why": { "hi": "arm BC daayein ki taraf hai, toh ginti C wali taraf ke 0 se shuru hoti hai, yaani daayein wale scale se", "en": "arm BC points right, so the counting starts at the 0 on the C side, which is the scale on the right" },
       "accept": ["daayein", "daayein se", "daayein se shuru hone wala", "right", "the right one", "right-hand scale"],
       "targets": "c6-maths-ch02-t03-m-wrong-scale",
-      "wrongIfMis": "baayein wala", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "angle ABC"}], "vertex": "B", "arm": "BC", "mark": {"index": 0, "show": "deg"}} }
+      "wrongIfMis": "baayein wala", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "angle ABC"}], "vertex": "B", "arm": "BC"} }
      },
      "simpler": { "hi": "Ginti hamesha us 0 se shuru hoti hai jo arm BC wali taraf ho. Dekho BC kis taraf jaati hai.", "en": "Counting always starts from the 0 on the side of arm BC. See which way BC points." }
     },
@@ -471,12 +465,12 @@
       "en": "The board shows angle ABC, and arm BC was drawn first. In a three-letter name the middle letter is the vertex. Both arms of an angle leave from the vertex, and the protractor's centre was on the vertex too. So the new arm always starts at the vertex."
      },
      "ask": {
-      "prompt": { "hi": "Is angle ABC mein bindu A lag gaya hai. Nayi arm ke liye A ko kis point se jodoge, B se ya C se?", "en": "In this angle ABC, dot A has been marked. For the new arm, which point do you join A to, B or C?" },
+      "prompt": { "hi": "Is angle ABC mein bindu A lag gaya hai. Nayi arm ke liye A ko kis bindu se jodoge, B se ya C se?", "en": "In this angle ABC, dot A has been marked. For the new arm, which point do you join A to, B or C?" },
       "key": "B",
       "why": { "hi": "B angle ABC ka beech wala letter, yaani vertex hai, aur dono arms wahin se nikalti hain", "en": "B is the middle letter of angle ABC, the vertex, and both arms leave from there" },
       "accept": ["B se", "point B", "vertex B", "A ko B se", "to B"],
       "targets": "c6-maths-ch02-t03-m-join-wrong-end",
-      "wrongIfMis": "C", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "angle ABC"}], "arm": "BC", "mark": {"index": 0, "show": "bigger"}} }
+      "wrongIfMis": "C", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "angle ABC"}], "arm": "BC"} }
      },
      "simpler": { "hi": "Angle ki dono arms vertex se nikalti hain. Angle ABC ke naam ka beech wala letter vertex hai, nayi arm wahin se shuru hogi.", "en": "Both arms of an angle leave from the vertex. The middle letter of ABC is the vertex, and the new arm starts there." }
     }
@@ -485,7 +479,7 @@
     "problem": {
      "hi": "Angle PQR = 125° banana hai. Arm QR 6 cm lambi hai aur Q se daayein ki taraf jaati hai. Angle kaise banaoge?",
      "en": "Draw angle PQR = 125°. Arm QR is 6 cm long and points to the right from Q. How do you draw the angle?"
-    },
+    }, "simpler": { "hi": "Pehle Q se daayein 6 cm ki arm QR kheencho. Phir protractor ka centre Q par rakho aur 125 par ek bindu lagao.", "en": "First draw arm QR, 6 cm to the right of Q. Then put the protractor's centre on Q and mark a dot at 125." },
     "givens": [{"hi": "angle PQR 125° ka banana hai, vertex Q hai, aur arm QR 6 cm ki hai, Q se daayein ki taraf", "en": "angle PQR is to be 125°, the vertex is Q, and arm QR is 6 cm, pointing right from Q"}],
     "find": { "hi": "125° ka bana hua angle PQR", "en": "the drawn angle PQR of 125°" },
     "steps": [
@@ -509,12 +503,12 @@
      }
     ],
     "yourStep": {
-     "prompt": { "hi": "Protractor hata diya. Ab ruler se bindu P ko kis point se jodoge, Q se ya R se?", "en": "The protractor is removed. Now, with a ruler, which point do you join dot P to, Q or R?" },
+     "prompt": { "hi": "Protractor hata diya. Ab ruler se bindu P ko kis bindu se jodoge, Q se ya R se?", "en": "The protractor is removed. Now, with a ruler, which point do you join dot P to, Q or R?" },
      "key": "Q",
      "accept": ["Q se", "point Q", "vertex Q", "P ko Q se", "to Q"],
      "targets": "c6-maths-ch02-t03-m-join-wrong-end",
      "wrongIfMis": "R",
-     "simpler": { "hi": "Nayi arm hamesha vertex se nikalti hai. Angle PQR ke naam ka beech wala letter vertex hai.", "en": "The new arm always leaves from the vertex. The middle letter of the name PQR is the vertex." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 125, "name": "angle PQR"}], "arm": "QR", "mark": {"index": 0, "show": "bigger"}} }, "why": { "hi": "Q angle PQR ka beech wala letter, yaani vertex hai, aur dono arms vertex se nikalti hain", "en": "Q is the middle letter of angle PQR, the vertex, and both arms leave from the vertex" }
+     "simpler": { "hi": "Nayi arm hamesha vertex se nikalti hai. Angle PQR ke naam ka beech wala letter vertex hai.", "en": "The new arm always leaves from the vertex. The middle letter of the name PQR is the vertex." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 125, "name": "angle PQR"}], "arm": "QR"} }, "why": { "hi": "Q angle PQR ka beech wala letter, yaani vertex hai, aur dono arms vertex se nikalti hain", "en": "Q is the middle letter of angle PQR, the vertex, and both arms leave from the vertex" }
     },
     "answer": { "hi": "P ko Q se jodne par angle PQR 125° ka ban jaata hai", "en": "joining P to Q makes angle PQR of 125°" },
     "why": {
@@ -533,18 +527,18 @@
      "targets": "c6-maths-ch02-t03-m-wrong-scale",
      "wrongIfMis": "40°",
      "board": { "template": "compare@1", "params": { "left": { "title": "arm", "items": ["daayein ki taraf"] }, "right": { "title": "baayein 0 wale scale", "items": ["40"] } } },
-     "simpler": { "hi": "Baayein 0 wala scale ulti taraf se ginta hai. Dono scale milkar aadha chakkar banate hain, toh aadhe chakkar ke degree mein se 40 ghatao.", "en": "The left-hand 0 scale counts from the other end. The two scales together make a half turn, so take 40 away from a half turn's degrees." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "arm", "items": ["daayein ki taraf"]}, "right": {"title": "baayein 0 wale scale", "items": ["40"]}, "mark": {"side": "right", "add": "jawab: 140°"}} }
+     "simpler": { "hi": "Baayein 0 wala scale ulti taraf se ginta hai. Dono scale milkar aadha chakkar banate hain, toh aadhe chakkar ke degree mein se 40 ghatao.", "en": "The left-hand 0 scale counts from the other end. The two scales together make a half turn, so take 40 away from a half turn's degrees." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "arm", "items": ["daayein ki taraf"]}, "right": {"title": "baayein 0 wale scale", "items": ["40"]}} }
     },
     {
      "id": "c2",
-     "prompt": { "hi": "Angle DEF = 80° banana hai. Pehle arm EF kheenchi, centre E par rakha, 80 par bindu D lagaya. D ko kis point se jodoge, E se ya F se?", "en": "Angle DEF = 80° is to be drawn. First arm EF was drawn, the centre put on E, and dot D marked at 80. Which point do you join D to, E or F?" },
+     "prompt": { "hi": "Angle DEF = 80° banana hai. Pehle arm EF kheenchi, centre E par rakha, 80 par bindu D lagaya. D ko kis bindu se jodoge, E se ya F se?", "en": "Angle DEF = 80° is to be drawn. First arm EF was drawn, the centre put on E, and dot D marked at 80. Which point do you join D to, E or F?" },
      "key": "E",
      "why": { "hi": "arm EF pehle kheenchi aur centre E par tha; bindu D 80 par laga, toh D ko vertex E se jodo", "en": "E is the vertex, the middle letter of angle DEF, where the centre sat; dot D at 80 joins to it" },
      "accept": ["E se", "point E", "vertex E", "D ko E se", "to E"],
      "targets": "c6-maths-ch02-t03-m-join-wrong-end",
      "wrongIfMis": "F",
      "board": { "template": "compare@1", "params": { "left": { "title": "arm EF", "items": ["pehle kheenchi"] }, "right": { "title": "bindu D", "items": ["80 par"] } } },
-     "simpler": { "hi": "Nayi arm hamesha vertex se nikalti hai. Angle DEF ke naam ka beech wala letter vertex hai.", "en": "The new arm always leaves from the vertex. The middle letter of the name DEF is the vertex." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "arm EF", "items": ["pehle kheenchi"]}, "right": {"title": "bindu D", "items": ["80 par"]}, "mark": {"side": "right", "add": "jawab: E"}} }
+     "simpler": { "hi": "Nayi arm hamesha vertex se nikalti hai. Angle DEF ke naam ka beech wala letter vertex hai.", "en": "The new arm always leaves from the vertex. The middle letter of the name DEF is the vertex." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "arm EF", "items": ["pehle kheenchi"]}, "right": {"title": "bindu D", "items": ["80 par"]}} }
     }
    ],
    "ladder": [
@@ -573,7 +567,7 @@
       "targets": "c6-maths-ch02-t03-m-wrong-scale",
       "wrongIfMis": "65°",
       "board": { "template": "compare@1", "params": { "left": { "title": "arm", "items": ["daayein ki taraf"] }, "right": { "title": "baayein 0 wale scale", "items": ["65"] } } },
-      "simpler": { "hi": "Baayein 0 wala scale ulti taraf se ginta hai. Dono scale milkar aadha chakkar banate hain, toh aadhe chakkar ke degree mein se 65 ghatao.", "en": "The left-hand 0 scale counts from the other end. The two scales together make a half turn, so take 65 away from a half turn's degrees." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "arm", "items": ["daayein ki taraf"]}, "right": {"title": "baayein 0 wale scale", "items": ["65"]}, "mark": {"side": "right", "add": "jawab: 115°"}} }
+      "simpler": { "hi": "Baayein 0 wala scale ulti taraf se ginta hai. Dono scale milkar aadha chakkar banate hain, toh aadhe chakkar ke degree mein se 65 ghatao.", "en": "The left-hand 0 scale counts from the other end. The two scales together make a half turn, so take 65 away from a half turn's degrees." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "arm", "items": ["daayein ki taraf"]}, "right": {"title": "baayein 0 wale scale", "items": ["65"]}} }
      }
     },
     {
@@ -590,7 +584,7 @@
       "targets": "c6-maths-ch02-t03-m-join-wrong-end",
       "wrongIfMis": "N",
       "board": { "template": "compare@1", "params": { "left": { "title": "arm MN", "items": ["pehle kheenchi"] }, "right": { "title": "bindu L", "items": ["35 par"] } } },
-      "simpler": { "hi": "Centre jis point par rakha tha, wahi vertex hai. Angle LMN ka beech wala letter vertex hai, nayi arm wahin se nikalti hai.", "en": "The point the centre was put on is the vertex. The middle letter of LMN is the vertex, and the new arm leaves from there." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "arm MN", "items": ["pehle kheenchi"]}, "right": {"title": "bindu L", "items": ["35 par"]}, "mark": {"side": "right", "add": "jawab: M"}} }
+      "simpler": { "hi": "Centre jis point par rakha tha, wahi vertex hai. Angle LMN ka beech wala letter vertex hai, nayi arm wahin se nikalti hai.", "en": "The point the centre was put on is the vertex. The middle letter of LMN is the vertex, and the new arm leaves from there." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "arm MN", "items": ["pehle kheenchi"]}, "right": {"title": "bindu L", "items": ["35 par"]}} }
      }
     }
    ],

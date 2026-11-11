@@ -244,7 +244,14 @@ describe("r7-brain-v64.test.mjs", () => {
         const r = k === n ? { out, last } : await at(persona, topic, k);
         const item = r.last.state.activeItemId ? findItem(r.last.state, r.kit, r.last.state.activeItemId) : null;
         const keyW = [item?.answer, ...(item?.acceptable ?? [])].map((x) => String(x ?? "").toLowerCase()).join(" ");
-        const eng = (r.out.reply.match(new RegExp(ENGLISH_W.source, "giu")) ?? []).filter((w) => !keyW.includes(w.toLowerCase()));
+        // (dc-r8-director20 W1: code never swaps a word inside a sentence the script wrote — an authored sentence keeps its words in Hindi
+        // mode too, and its Hindi form is Learning's to fix at source; only her own sentences are held to this)
+        const scriptTxt = JSON.stringify(runScriptOf(RUN, TOPIC[topic])).toLowerCase().replace(/\\n/g, " ").replace(/\s+/g, " ");
+        // (a word is the script's when the words around it are: a worked step is said as "do: result, kyunki why", joined by code)
+        const scriptW = scriptTxt.replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ");
+        const eng = sentences(r.out.reply).flatMap((sn) => { const ws = sn.toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").split(/\s+/).filter(Boolean);
+          return ws.map((w, i) => ({ w, win: ws.slice(Math.max(0, i - 2), i + 3).join(" ") })); })
+          .filter((x) => new RegExp(`^${ENGLISH_W.source}$`, "iu").test(x.w) && !scriptW.includes(x.win)).map((x) => x.w).filter((w) => !keyW.includes(w.toLowerCase()));
         if (eng.length) bad.push(`${tag} (+${k - n}): English words ${eng.join(", ")} | ${r.out.reply.slice(0, 140)}`);
       }
     }

@@ -40,8 +40,8 @@
    "hi": "tareekh",
    "en": "date"
   }
- ],
- "joints": {"asidePark":[{"hi":"Yeh niyam poora hote hi {aside} ki baat zaroor karenge.","en":"Once this rule is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh niyam khatam ho jaaye.","en":"We'll talk about {aside} too, once this rule is over."},{"hi":"Achha, {aside} wali baat main yaad rakhti hoon, thodi der mein usi par aayenge.","en":"Okay, I'll keep the {aside} bit in mind, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kya koi cheez baar-baar ek jaisi hoti hai?","en":"Does anything happen again and again the same way in {aside}?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"}],"hindiSwitch":[{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in English."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."}],"askAgain":[{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."}]},
+ ], "greetSimpler": { "hi": "Aaj hum numbers ke pattern dekhkar unka niyam dhoondhenge.", "en": "Today we look at number patterns and find their rule." },
+ "joints": {"asidePark":[{"hi":"Yeh niyam poora hote hi {aside} ki baat zaroor karenge.","en":"Once this rule is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh niyam khatam ho jaaye.","en":"We'll talk about {aside} too, once this rule is over."},{"hi":"Achha, {aside} wali baat main yaad rakhti hoon, thodi der mein usi par aayenge.","en":"Okay, I'll keep the {aside} bit in mind, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kya koi cheez baar-baar ek jaisi hoti hai?","en":"Does anything happen again and again the same way in {aside}?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"}],"hindiSwitch":[{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."}],"askAgain":[{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."}],"backTo":[{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."},{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."},{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."}]},
  "skills": [
   {
    "skillId": "c4-maths-ch03-t02-s1",
@@ -193,7 +193,7 @@
     "problem": {
      "hi": "Pattern hai 7, 12, 17, 22. Iska agla number kaunsa hai?",
      "en": "The pattern is 7, 12, 17, 22. What is its next number?"
-    },
+    }, "simpler": { "hi": "7 se 12 tak kitna badha, yeh dekho. Har baar utna hi badhta hai. 22 ke baad bhi utna hi badhega.", "en": "See how much 7 grows to make 12. It grows by the same amount each time. After 22 it grows by that much again." },
     "givens": [
      {
       "hi": "Pattern 7, 12, 17, 22 hai, aur hume 22 ke baad wala number chahiye.",
@@ -373,7 +373,7 @@
       "hi": "4 se 10, 10 se 16, aur aage ka farak nikalo. Jo farak baaki se alag ho, woh kadam dhoondo.",
       "en": "Find the gaps 4 to 10, 10 to 16, and onwards. Find the step whose gap is different from the rest."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pattern", "items": ["4, 10, 16, 23, 29"]}, "right": {"title": "Kadam", "items": ["pehla, doosra", "teesra, chautha"]}, "mark": {"side": "right", "add": "jawab: teesra"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pattern", "items": ["4, 10, 16, 23, 29"]}, "right": {"title": "Kadam", "items": ["pehla, doosra", "teesra, chautha"]}} }
     }
    ],
    "ladder": [
@@ -446,14 +446,11 @@
        "hi": "33 se 39, 39 se 45, aur 45 se 52 ka farak nikalo. Dekho, teeno farak 6 hain ya nahi.",
        "en": "Find the gaps 33 to 39, 39 to 45, and 45 to 52. See whether all three are 6."
       },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pattern", "items": ["33, 39, 45, 52"]}, "right": {"title": "Niyam", "items": ["har baar 6 jodo"]}, "mark": {"side": "right", "add": "jawab: No"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pattern", "items": ["33, 39, 45, 52"]}, "right": {"title": "Niyam", "items": ["har baar 6 jodo"]}} }
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Ab tak ke pattern har baar badhte gaye. Ab aise pattern dekhenge jo ghatte hain, dugne hote hain, ya jinka kadam badalta hai.",
-    "en": "So far our patterns kept going up. Now we will see patterns that go down, double, or change their step."
-   }
+   "bridgeToNext": { "hi": "Ab tak ke pattern har baar badhte gaye. Ab aise pattern dekhenge jo ghatte hain, dugne hote hain, ya jinka kadam badalta hai.", "en": "So far our patterns kept going up. Now we will see patterns that go down, double, or change their step.", "simpler": {"hi": "Ab tak ke pattern upar chadhte gaye. Agle hisse mein aise pattern dekhenge jo neeche aate hain ya dugne hote hain.", "en": "So far our patterns went up. Next we see patterns that go down or double."} }
   },
   {
    "skillId": "c4-maths-ch03-t02-s2",
@@ -665,7 +662,7 @@
     "problem": {
      "hi": "96, 48, 24, 12 wale pattern ka agla number kaunsa hai?",
      "en": "What is the next number in the pattern 96, 48, 24, 12?"
-    },
+    }, "simpler": { "hi": "Dekho 96 se 48 kaise bana, aur 48 se 24 kaise bana. 12 ke saath bhi wahi karna hai.", "en": "See how 96 became 48, and how 48 became 24. Do the same to 12." },
     "givens": [
      {
       "hi": "Pattern 96, 48, 24, 12 hai, aur hume 12 ke baad wala number chahiye.",
@@ -729,7 +726,7 @@
       "hi": "pattern mein har baar aadha hota hai: 96, 48, 24, 12, toh 12 ka aadha 6 hai",
       "en": "the pattern halves each time, and half of 12 is 6"
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pattern", "items": ["96, 48, 24, 12"]}, "right": {"title": "Har baar", "items": ["aadha"]}, "mark": {"side": "right", "add": "jawab: 6"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pattern", "items": ["96, 48, 24, 12"]}, "right": {"title": "Har baar", "items": ["aadha"]}} }
     },
     "answer": {
      "hi": "agla number 6 hai",
@@ -1106,10 +1103,7 @@
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Ab pattern ka niyam dhoondhna aa gaya. Ab niyam ko shabdon mein bolenge, aur calendar aur shapes ke pattern mein use karenge.",
-    "en": "Now we can find a pattern's rule. Next we will say the rule in words and use it in calendar and shape patterns."
-   }
+   "bridgeToNext": { "hi": "Ab pattern ka niyam dhoondhna aa gaya. Ab niyam ko shabdon mein bolenge, aur calendar aur shapes ke pattern mein use karenge.", "en": "Now we can find a pattern's rule. Next we will say the rule in words and use it in calendar and shape patterns.", "simpler": { "hi": "Pattern ka niyam dhoondhna aa gaya. Ab niyam ko shabdon mein bolenge, jaise tiliyon ke is pattern mein.", "en": "You can find a pattern's rule now. Next we say the rule in words, like in this matchstick pattern." } }
   },
   {
    "skillId": "c4-maths-ch03-t02-s3",
@@ -1259,7 +1253,7 @@
     "problem": {
      "hi": "Ek mahine mein 31 din hain, aur 2 tareekh ko Tuesday hai. Us mahine ke saare Tuesday ki tareekhein batao.",
      "en": "A month has 31 days, and the 2nd is a Tuesday. Give the dates of all the Tuesdays in that month."
-    },
+    }, "simpler": { "hi": "2 tareekh ko Tuesday hai. Agla Tuesday 7 din baad aata hai. Aise hi 31 tak chalte jao.", "en": "The 2nd is a Tuesday. The next Tuesday comes 7 days later. Keep going like this up to 31." },
     "givens": [
      {
       "hi": "2 tareekh ko Tuesday hai, aur mahine mein 31 din hain.",
@@ -1324,7 +1318,7 @@
       "hi": "Tuesday 2, 9, 16, 23 ke baad 23 + 7 = 30 aata hai, jo mahine ke 31 din mein hai",
       "en": "after 2, 9, 16, 23 comes 23 + 7 = 30, and 30 is within the month's 31 days"
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Tuesday", "items": ["2, 9, 16, 23"]}, "right": {"title": "Mahine mein", "items": ["31 din"]}, "mark": {"side": "left", "add": "jawab: 30"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Tuesday", "items": ["2, 9, 16, 23"]}, "right": {"title": "Mahine mein", "items": ["31 din"]}} }
     },
     "answer": {
      "hi": "Tuesday ki tareekhein hain 2, 9, 16, 23 aur 30",
@@ -1500,7 +1494,7 @@
       "hi": "6 se 12 ka farak dekho, phir 12 se 24 ka. Dono baar 6 juda ya nahi, check karo.",
       "en": "Look at the gap from 6 to 12, then from 12 to 24. Check whether 6 was added both times."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pattern", "items": ["6, 12, 24"]}, "right": {"title": "Niyam", "items": ["har baar 6 jodo"]}, "mark": {"side": "right", "add": "jawab: No"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pattern", "items": ["6, 12, 24"]}, "right": {"title": "Niyam", "items": ["har baar 6 jodo"]}} }
     }
    ],
    "ladder": [

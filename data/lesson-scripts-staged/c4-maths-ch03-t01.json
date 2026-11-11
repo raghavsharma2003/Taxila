@@ -36,8 +36,8 @@
    "hi": "jod",
    "en": "sum, total"
   }
- ],
- "joints": {"asidePark":[{"hi":"Yeh jode banana poora hote hi {aside} ki baat zaroor karenge.","en":"Once making these pairs is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh jode banana khatam ho jaaye.","en":"We'll talk about {aside} too, once making these pairs is over."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kya cheezein jodiyon mein aati hain?","en":"What comes in pairs in {aside}?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in English."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}]},
+ ], "greetSimpler": { "hi": "Aaj hum jodiyan banakar dekhenge ki koi number odd hai ya even.", "en": "Today we make pairs to see whether a number is odd or even." },
+ "joints": {"asidePark":[{"hi":"Yeh jode banana poora hote hi {aside} ki baat zaroor karenge.","en":"Once making these pairs is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh jode banana khatam ho jaaye.","en":"We'll talk about {aside} too, once making these pairs is over."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kya cheezein jodiyon mein aati hain?","en":"What comes in pairs in {aside}?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}],"backTo":[{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."}]},
  "skills": [
   {
    "skillId": "c4-maths-ch03-t01-s1",
@@ -258,7 +258,7 @@
        "hi": "2 laddoo ki 1 jodi ki tarah, khaali plate ke 0 laddoo mein bhi koi akela nahi bachta",
        "en": "like 2 laddoos make 1 pair, the empty plate's 0 laddoos leave none alone"
       },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2 laddoo", "items": ["1 jodi", "koi akela nahi"]}, "right": {"title": "0 laddoo", "items": ["khaali plate"]}, "mark": {"side": "left", "add": "jawab: Even"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2 laddoo", "items": ["1 jodi", "koi akela nahi"]}, "right": {"title": "0 laddoo", "items": ["khaali plate"]}} }
      },
      "simpler": {
       "hi": "Khaali plate mein ek bhi laddoo nahi hai. Jab laddoo hi nahi hai, toh koi laddoo akela bhi nahi bachta.",
@@ -270,7 +270,7 @@
     "problem": {
      "hi": "Ek dibbe mein 11 chudiyan hain. Unki 2-2 ki jodiyan banao. Kitni jodiyan bani, kitni chudi akeli bachi, aur 11 odd hai ya even?",
      "en": "A box has 11 bangles. Put them in pairs of 2. How many pairs are made, how many bangles are left alone, and is 11 odd or even?"
-    },
+    }, "simpler": { "hi": "11 chudiyan hain. Do-do ki jodi banao. Phir dekho, koi chudi akeli bachti hai ya nahi.", "en": "There are 11 bangles. Make pairs of two. Then see whether any bangle is left alone." },
     "givens": [
      {
       "hi": "Dibbe mein 11 chudiyan hain, aur har jodi mein 2 chudiyan jaati hain.",
@@ -408,7 +408,7 @@
       "hi": "Shoe-rack mein ek bhi chappal nahi hai. Toh jodi banate waqt koi chappal akeli nahi bachti.",
       "en": "The shoe rack has not a single slipper. So when you make pairs, no slipper is left alone."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Shoe-rack", "items": ["khaali"]}, "right": {"title": "Chappal", "items": ["0 chappal"]}, "mark": {"side": "right", "add": "jawab: Even"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Shoe-rack", "items": ["khaali"]}, "right": {"title": "Chappal", "items": ["0 chappal"]}} }
     },
     {
      "id": "c2",
@@ -451,7 +451,7 @@
       "hi": "14 bachche 2-2 ki jodi banaate hain. Gino ki koi bachcha akela bachta hai ya nahi.",
       "en": "14 children make pairs of 2. Count whether any child is left alone or not."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Dance", "items": ["14 bachche"]}, "right": {"title": "Jodi", "items": ["2-2 bachche"]}, "mark": {"side": "left", "add": "jawab: Even"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Dance", "items": ["14 bachche"]}, "right": {"title": "Jodi", "items": ["2-2 bachche"]}} }
     },
     {
      "id": "c3",
@@ -495,7 +495,7 @@
       "hi": "16 chappal ko 2-2 karke jodiyon mein rakhte jao. Aakhir mein dekho, koi chappal bina saathi ke bachti hai ya nahi.",
       "en": "Keep putting the 16 slippers into pairs of 2. At the end, see whether any slipper is left without a partner."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Chappal", "items": ["16 chappal"]}, "right": {"title": "Jodiyan", "items": ["2-2 chappal"]}, "mark": {"side": "left", "add": "jawab: 0"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Chappal", "items": ["16 chappal"]}, "right": {"title": "Jodiyan", "items": ["2-2 chappal"]}} }
     }
    ],
    "ladder": [
@@ -572,7 +572,7 @@
        "hi": "Tray mein ek bhi cup nahi hai. Jab cup hi nahi hai, toh koi cup akela bhi nahi bachta.",
        "en": "The tray has not a single cup. When there is no cup at all, no cup is left alone either."
       },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Tray", "items": ["khaali"]}, "right": {"title": "Cup", "items": ["0 cup"]}, "mark": {"side": "right", "add": "jawab: Even"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Tray", "items": ["khaali"]}, "right": {"title": "Cup", "items": ["0 cup"]}} }
      }
     },
     {
@@ -620,14 +620,11 @@
        "hi": "18 laddoo ko 2-2 karke jodiyon mein rakho. Dekho, har laddoo ko saathi milta hai ya koi akela rehta hai.",
        "en": "Put the 18 laddoos into pairs of 2. See whether every laddoo gets a partner or one is left alone."
       },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Laddoo", "items": ["18 laddoo"]}, "right": {"title": "Jodi", "items": ["2-2 laddoo"]}, "mark": {"side": "left", "add": "jawab: No"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Laddoo", "items": ["18 laddoo"]}, "right": {"title": "Jodi", "items": ["2-2 laddoo"]}} }
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Chhote numbers ki jodi banana aasaan hai, par bade numbers ki saari jodiyan banana lamba kaam hai. Ab ek chhota tareeka seekhenge: sirf ekai ka ank dekhna.",
-    "en": "Pairing small numbers is easy, but pairing up a big number takes a long time. Now we learn a short way: look only at the ones digit."
-   }
+   "bridgeToNext": { "hi": "Chhote numbers ki jodi banana aasaan hai, par bade numbers ki saari jodiyan banana lamba kaam hai. Ab ek chhota tareeka seekhenge: sirf ekai ka ank dekhna.", "en": "Pairing small numbers is easy, but pairing up a big number takes a long time. Now we learn a short way: look only at the ones digit.", "simpler": { "hi": "Bade number ki jodiyan banana lamba kaam hai. Agle hisse mein ek chhota tareeka hai: sirf ekai ka ank dekho.", "en": "Pairing a big number is long work. Next is a short way: look only at the ones digit." } }
   },
   {
    "skillId": "c4-maths-ch03-t01-s2",
@@ -815,7 +812,7 @@
     "problem": {
      "hi": "247 mein 2 sau, 4 dahaai aur 7 ekai hain. 247 odd hai ya even? Saari 247 cheezon ki jodi banaye bina batao.",
      "en": "247 has 2 hundreds, 4 tens and 7 ones. Is 247 odd or even? Tell without pairing all 247 things."
-    },
+    }, "simpler": { "hi": "247 ka sirf ekai ka ank dekho, jo 7 hai. Usi se pata chalega ki 247 odd hai ya even.", "en": "Look only at the ones digit of 247, which is 7. That alone tells whether 247 is odd or even." },
     "givens": [
      {
       "hi": "247 mein 2 sau, 4 dahaai aur 7 ekai hain, aur sirf ekai ka ank faisla karta hai.",
@@ -1102,10 +1099,7 @@
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Ab ek number ko odd ya even bolna aa gaya. Ab do numbers jodenge, aur jode bina hi bataenge ki total odd hoga ya even.",
-    "en": "Now you can call one number odd or even. Next we add two numbers, and say without adding whether the total will be odd or even."
-   }
+   "bridgeToNext": { "hi": "Ab ek number ko odd ya even bolna aa gaya. Ab do numbers jodenge, aur jode bina hi bataenge ki total odd hoga ya even.", "en": "Now you can call one number odd or even. Next we add two numbers, and say without adding whether the total will be odd or even.", "simpler": { "hi": "Ek number odd hai ya even, yeh batana aa gaya. Ab do numbers ko saath milayenge.", "en": "You can tell whether one number is odd or even. Now we put two numbers together." } }
   },
   {
    "skillId": "c4-maths-ch03-t01-s3",
@@ -1271,7 +1265,7 @@
     "problem": {
      "hi": "Ek tokri mein 16 aam hain aur doosri mein 9 aam. Jode bina batao, kul aam odd honge ya even?",
      "en": "One basket has 16 mangoes and another has 9 mangoes. Without adding, say whether the total number of mangoes is odd or even."
-    },
+    }, "simpler": { "hi": "Pehle dekho ki 16 odd hai ya even, aur 9 kya hai. Phir dono ko saath socho.", "en": "First see whether 16 is odd or even, and what 9 is. Then think of the two together." },
     "givens": [
      {
       "hi": "pehli tokri mein 16 aam hain, aur doosri tokri mein 9 aam.",
@@ -1335,7 +1329,7 @@
       "hi": "pehli tokri ke 16 aam poori jodi mein hain, par doosri tokri ke 9 aam mein 1 akela hai",
       "en": "the first basket's 16 mangoes are all in pairs, but of the second basket's 9, 1 is alone"
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pehli tokri", "items": ["16 aam"]}, "right": {"title": "Doosri tokri", "items": ["9 aam"]}, "mark": {"side": "right", "add": "jawab: Odd"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pehli tokri", "items": ["16 aam"]}, "right": {"title": "Doosri tokri", "items": ["9 aam"]}} }
     },
     "answer": {
      "hi": "kul aam odd hain, aur jod ke dekho toh 16 + 9 = 25",

@@ -39,13 +39,17 @@ export const ASK_RE = /\?|\b(?:batao|bataiye|bolo|boliye|likho|likhiye|nikalo|la
 const posed = (teacher) => ASK_RE.test(String(teacher ?? ""));
 export const PERSONAS = Object.freeze(["steady", "stuck", "offtopic", "steering"]);
 export const EVENTS = Object.freeze(["dontknow", "picture", "cricket", "hindi", "selftry"]);
+/** The opt-in second-clarify events (clarify2: true; evals/hybrid-side-by-side.mjs --second-clarify). */
+export const CLARIFY2_EVENTS = Object.freeze(["clarifyPoint", "clarifyWorked"]);
 
 /** Per persona: the odds of a right answer per question kind, and the turns its events land on (a seed shifts each by 0-1;
  *  the last one is scheduled by turn 17 so every event lands inside MIN_TURNS). */
 const PROFILE = {
   steady:   { right: { card: 0.7, ask: 0.75, open: 0.8 }, learn: 0.15, events: { dontknow: [3], picture: [8], selftry: [12], cricket: [14], hindi: [16] }, leaveAfter: 40 },
   // director8: stuck and offtopic stay long enough to reach skill 2 (they never left skill 1 in 23-25 turns)
-  stuck:    { right: { card: 0.3, ask: 0.35, open: 0.4 }, learn: 0.2, events: { dontknow: [1, 5, 11], hindi: [3], picture: [7], selftry: [13], cricket: [15] }, leaveAfter: 32 },
+  // (main on C1 ruling 5: the stuck child also says "samajh nahi aaya" on a point and on a worked step, and "phir bhi samajh nahi
+  // aaya" right after her first re-explanation, so a second clarify on one part is walked)
+  stuck:    { right: { card: 0.3, ask: 0.35, open: 0.4 }, learn: 0.2, events: { dontknow: [1, 5, 11], hindi: [3], picture: [7], selftry: [13], cricket: [15] }, clarify2: { clarifyPoint: [9], clarifyWorked: [17] }, leaveAfter: 32 },
   offtopic: { right: { card: 0.55, ask: 0.55, open: 0.6 }, learn: 0.1, events: { cricket: [2, 7, 13], dontknow: [10], picture: [12], hindi: [15], selftry: [17] }, leaveAfter: 32 },
   steering: { right: { card: 0.6, ask: 0.6, open: 0.6 }, learn: 0.1, events: { hindi: [2], picture: [5], selftry: [8], cricket: [11], dontknow: [14] }, leaveAfter: 24 },
 };
@@ -92,6 +96,9 @@ const LINES = {
   repeat: ["phir se bolo"],
   // (v6.11 J2: the reply to her return question about the aside — what they like in it, in their own words)
   // (main on the J2 replay: three topics, three different answers — chosen by the topic, not the seed; a fourth for a fourth topic)
+  clarifyPoint: ["samajh nahi aaya"],
+  clarifyWorked: ["yeh step samajh nahi aaya"],
+  clarifyAgain: ["phir bhi samajh nahi aaya"],
   returned: ["sixer, jab ball seedha bahar jaati hai", "batting sabse achhi lagti hai", "jab Virat chauka maarta hai, woh", "fielding karna, catch pakadna"],
   leave: ["bas aaj ke liye itna hi", "ab main {jaata|jaati} hoon, bye", "thak {gaya|gayi}, bye"],
 };
@@ -150,12 +157,13 @@ export function wrongAnswer({ card, ask }, kit, rng) {
   return { text: nearMiss(card?.key ?? ask?.key ?? "", rng), from: null };
 }
 
-export function createReactiveChild({ persona = "steady", seed = 1, kit = null, name = "Riya" } = {}) {
+export function createReactiveChild({ persona = "steady", seed = 1, kit = null, name = "Riya", clarify2 = false } = {}) {
   if (!PROFILE[persona]) throw new Error(`reactive child: unknown persona ${persona}`);
   const P = PROFILE[persona], rng = rngOf(seed, persona), girl = isGirlName(name);
   // the event schedule, each turn shifted 0-1 by the seed (deterministic), never two events on one turn
   const at = new Map();
-  for (const [ev, turns] of Object.entries(P.events)) for (const t of turns) {
+  // (clarify2: the persona's second-clarify events too — evals/hybrid-side-by-side.mjs --second-clarify)
+  for (const [ev, turns] of Object.entries({ ...P.events, ...(clarify2 ? P.clarify2 ?? {} : {}) })) for (const t of turns) {
     let u = t + (rng() < 0.5 ? 0 : 1);
     while (at.has(u)) u++;
     at.set(u, ev);
@@ -177,11 +185,15 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
     if (ev === "cricket") return !c.howWhy && !(c.keyed && c.asks && !c.done); // an aside on a telling turn, never as the reply to "kaise mila?"
     if (ev === "hindi") return !c.howWhy;                                    // a language request, not as a reason
     if (ev === "picture") return !c.howWhy;                                  // a picture request, not as a reason
+    // a clarify on a point she just taught (an explain beat, no card asked) or on a worked step
+    if (ev === "clarifyPoint") return c.kind === "explain" && !(c.keyed && c.asks) && !c.howWhy;
+    if (ev === "clarifyWorked") return c.kind === "worked" && !(c.keyed && c.asks) && !c.howWhy;
     if (ev === "whichq" || ev === "repeat") return c.keyed && c.asks && !c.done && !c.howWhy; // on a live card she just asked
     return true;
   };
   const misses = new Map();
-  let returnN = 0;                                // v6.11 J2: the n-th answer to her return question in this lesson
+  let returnN = 0;
+  let clarifyAgain = false;                       // a clarify was said: the next reply says it again                                // v6.11 J2: the n-th answer to her return question in this lesson
   const whichAsked = new Map();                   // director9: "which question?" per card, capped so no persona loops
   const answered = new Set();                     // H1.2: cards answered right are not answered again
   let liveLeave = null;                           // v6.6: the last keyed card she posed, still open across a turn with no card id
@@ -201,6 +213,8 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
       const openCard = posed(input.teacher) && (cLeave && cLeave.key != null && String(cLeave.key).trim() ? !answered.has(cidLeave)
         : !!liveLeave && !answered.has(liveLeave));
       if (turn >= P.leaveAfter && turn >= MIN_TURNS && (!openCard || turn >= P.leaveAfter + LEAVE_WAIT)) return say({ text: pick(rng, LINES.leave), kind: "leave" });
+      // (the turn right after her re-explanation of a clarify: "phir bhi samajh nahi aaya", once)
+      if (clarifyAgain) { clarifyAgain = false; return say({ text: LINES.clarifyAgain[0], kind: "event", event: "clarifyAgain" }); }
       if (at.has(turn)) { pending.push(at.get(turn)); at.delete(turn); }
       // (v6.11 J2: her return question about the aside is answered, before any event or card: the child's reply to what she asked)
       if (input.returned) {
@@ -211,12 +225,13 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
       if (pending.length) {
         const c0 = input.card ?? input.ask ?? null;
         const cid = input.card?.itemId ?? `${input.beat?.skillId ?? ""}/${input.beat?.beatId ?? ""}`;
-        const ctx = { keyed: !!(c0 && c0.key != null && String(c0.key).trim()), asks: posed(input.teacher),
+        const ctx = { kind: input.beat?.kind ?? null, keyed: !!(c0 && c0.key != null && String(c0.key).trim()), asks: posed(input.teacher),
           howWhy: PROBE_RE.test(String(input.teacher ?? "")), done: !!c0 && answered.has(cid),
           greeting: turn === 0 || (!input.beat && !c0 && /\b(?:namaste|hi|hello)\b/i.test(String(input.teacher ?? ""))) };
         const i = pending.findIndex((e) => fits(e, ctx));
         if (i >= 0) {
           const [ev] = pending.splice(i, 1);
+          if (ev === "clarifyPoint" || ev === "clarifyWorked") clarifyAgain = true;
           return say({ text: pick(rng, LINES[ev]), kind: ev === "dontknow" ? "dontknow" : "event", event: ev });
         }
       }

@@ -15,7 +15,7 @@
   { "hi": "sheersh", "en": "vertex" },
   { "hi": "aar-paar / aamne-saamne", "en": "across / opposite" },
   { "hi": "poora chakkar (360°)", "en": "full turn (360°)" }
- ], "joints": {"asidePark":[{"hi":"Yeh kaat-ti rekhaon wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once these crossing lines is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh kaat-ti rekhaon wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once these crossing lines is over."},{"hi":"{aside} wali baat mujhe yaad rahegi, thodi der mein wahi poochhungi.","en":"I'll remember the {aside} bit, and I'll ask about it in a little while."}],"asideReturn":[{"hi":"{aside} mein kahan cheezein ek-doosre ko kaat-ti hain?","en":"Where do things cross each other in {aside}?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"},{"hi":"Toh {aside} mein tumhare saath aur kaun hota hai?","en":"So who else is with you in {aside}?"}],"hindiSwitch":[{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in English."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."}],"askAgain":[{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."}]},
+ ], "greetSimpler": { "hi": "Aaj hum do kaat-ti rekhaon ke beech bane angles dekhenge.", "en": "Today we look at the angles made where two lines cross." }, "joints": {"asidePark":[{"hi":"Yeh kaat-ti rekhaon wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once these crossing lines is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh kaat-ti rekhaon wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once these crossing lines is over."},{"hi":"{aside} wali baat mujhe yaad rahegi, thodi der mein wahi poochhungi.","en":"I'll remember the {aside} bit, and I'll ask about it in a little while."}],"asideReturn":[{"hi":"{aside} mein kahan cheezein ek-doosre ko kaat-ti hain?","en":"Where do things cross each other in {aside}?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"},{"hi":"Toh {aside} mein tumhare saath aur kaun hota hai?","en":"So who else is with you in {aside}?"}],"hindiSwitch":[{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."}],"askAgain":[{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."}],"backTo":[{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."},{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."}]},
  "skills": [
   {
    "skillId": "c7-maths-ch05-t01-s1",
@@ -58,7 +58,7 @@
       "accept": ["130", "130 degree", "130 degrees"],
       "targets": "c7-maths-ch05-t01-m-linear-90",
       "wrongIfMis": "40°",
-      "why": { "hi": "seedhi line 180° hai, aur 180° − 50° = 130°", "en": "a straight line is 180°, and 180° − 50° = 130°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi line"}, {"deg": 50}], "mark": {"index": 1, "show": "deg"}} }
+      "why": { "hi": "seedhi line 180° hai, aur 180° − 50° = 130°", "en": "a straight line is 180°, and 180° − 50° = 130°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi line"}, {"deg": 50}]} }
      },
      "simpler": { "hi": "Seedhi line poora 180° hoti hai. Ray use do bagal wale angles mein baant deti hai, aur dono milkar 180° hi banate hain.", "en": "A straight line is a full 180°. The ray splits it into two neighbouring angles, and together they still make 180°." }
     },
@@ -80,13 +80,13 @@
       "accept": ["80", "80 degree", "80 degrees"],
       "targets": "c7-maths-ch05-t01-m-all-equal",
       "wrongIfMis": "100°",
-      "why": { "hi": "70° aur 110° ka jod 180° tha; 70° badhkar 100° hua, toh bagal wala 180° − 100° = 80°", "en": "70° and 110° made 180°; 70° grew to 100°, so the neighbour is 180° − 100° = 80°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 70}, {"deg": 110}], "mark": {"index": 1, "show": "deg"}} }
+      "why": { "hi": "70° aur 110° ka jod 180° tha; 70° badhkar 100° hua, toh bagal wala 180° − 100° = 80°", "en": "70° and 110° made 180°; 70° grew to 100°, so the neighbour is 180° − 100° = 80°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 70}, {"deg": 110}]} }
      },
      "simpler": { "hi": "Linear pair mein ek angle bada ho toh doosra utna hi chhota ho jaata hai. Jaise 70° aur 110°, jod hamesha 180° rehta hai.", "en": "In a linear pair, when one angle grows the other shrinks by the same amount. Like 70° and 110°, the sum always stays 180°." }
     }
    ],
    "workedExample": {
-    "problem": { "hi": "Railway crossing par ek seedhi sadak train ki seedhi patri se milti hai, aur seedhi patri 180° ki hai. Patri ke ek taraf sadak do angle banati hai jo linear pair hain, aur ek angle doosre se 30° bada hai. Dono angle nikaalo.", "en": "At a railway crossing a straight road meets the straight train track, and a straight track is 180°. On one side of the track the road makes two angles that form a linear pair, and one angle is 30° bigger than the other. Find both angles." },
+    "problem": { "hi": "Railway crossing par ek seedhi sadak train ki seedhi patri se milti hai, aur seedhi patri 180° ki hai. Patri ke ek taraf sadak do angle banati hai jo linear pair hain, aur ek angle doosre se 30° bada hai. Dono angle nikaalo.", "en": "At a railway crossing a straight road meets the straight train track, and a straight track is 180°. On one side of the track the road makes two angles that form a linear pair, and one angle is 30° bigger than the other. Find both angles." }, "simpler": { "hi": "Patri ke ek taraf sadak do angle banati hai jo linear pair hain, aur seedhi patri 180° ki hai. Ek angle doosre se 30° bada hai. Dono angle chahiye.", "en": "On one side of the track the road makes two angles that form a linear pair, and the straight track is 180°. One angle is 30° bigger than the other. We need both angles." },
     "givens": [
      { "hi": "dono angle linear pair hain, toh unka jod 180° hai", "en": "the two angles form a linear pair, so their sum is 180°" },
      { "hi": "ek angle doosre se 30° bada hai", "en": "one angle is 30° bigger than the other" }
@@ -110,7 +110,7 @@
      "prompt": { "hi": "Chhota angle 75° hai, aur bada angle usse 30° zyada hai. Bada angle kitna hai?", "en": "The smaller angle is 75°, and the bigger angle is 30° more than it. What is the bigger angle?" },
      "key": "105°",
      "accept": ["105", "105 degree", "105 degrees"],
-     "simpler": { "hi": "Bada angle chhote se 30° zyada hai. Toh 75° mein 30° jodo.", "en": "The bigger angle is 30° more than the smaller. So add 30° to 75°." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi patri"}], "mark": {"index": 0, "show": "bigger"}} }, "why": { "hi": "seedhi patri par chhota angle 75° hai aur bada usse 30° zyada, toh 75° + 30° = 105°", "en": "the smaller angle is 75° and the bigger is 30° more, so 75° + 30° = 105°" }
+     "simpler": { "hi": "Bada angle chhote se 30° zyada hai. Toh 75° mein 30° jodo.", "en": "The bigger angle is 30° more than the smaller. So add 30° to 75°." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi patri"}]} }, "why": { "hi": "seedhi patri par chhota angle 75° hai aur bada usse 30° zyada, toh 75° + 30° = 105°", "en": "the smaller angle is 75° and the bigger is 30° more, so 75° + 30° = 105°" }
     },
     "answer": { "hi": "dono angle 75° aur 105° hain", "en": "the two angles are 75° and 105°" },
     "why": {
@@ -132,7 +132,7 @@
      "wrongIfMis": "55°",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi line" }, { "deg": 35 }] } },
      "why": { "hi": "seedhi line par linear pair milkar 180° hota hai, aur 180° − 35° = 145°", "en": "on a straight line a linear pair makes 180°, and 180° − 35° = 145°" },
-     "simpler": { "hi": "Linear pair milkar poori seedhi line bharta hai, yaani aadha chakkar. Seedhi line ke angle mein se 35° ghatao.", "en": "A linear pair fills a whole straight line, half a turn. Take 35° away from the straight-line angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi line"}, {"deg": 35}], "mark": {"index": 1, "show": "deg"}} }
+     "simpler": { "hi": "Linear pair milkar poori seedhi line bharta hai, yaani aadha chakkar. Seedhi line ke angle mein se 35° ghatao.", "en": "A linear pair fills a whole straight line, half a turn. Take 35° away from the straight-line angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi line"}, {"deg": 35}]} }
     },
     {
      "id": "c2",
@@ -146,7 +146,7 @@
      "wrongIfMis": "70°",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi sadak" }, { "deg": 70 }] } },
      "why": { "hi": "sadak seedhi hai toh dono angle milkar 180°, aur 180° − 70° = 110°", "en": "the road is straight so the two angles make 180°, and 180° − 70° = 110°" },
-     "simpler": { "hi": "Sadak seedhi hai, toh dono bagal wale angle milkar poori seedhi line banate hain. Seedhi line ke angle mein se 70° ghatao.", "en": "The road is straight, so the two neighbouring angles together make the whole straight line. Take 70° away from the straight-line angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi sadak"}, {"deg": 70}], "mark": {"index": 1, "show": "deg"}} }
+     "simpler": { "hi": "Sadak seedhi hai, toh dono bagal wale angle milkar poori seedhi line banate hain. Seedhi line ke angle mein se 70° ghatao.", "en": "The road is straight, so the two neighbouring angles together make the whole straight line. Take 70° away from the straight-line angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi sadak"}, {"deg": 70}]} }
     },
     {
      "id": "c3",
@@ -160,7 +160,7 @@
      "wrongIfMis": "45°",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi line" }] } },
      "why": { "hi": "seedhi line 180° hai aur dono angle barabar hain, toh 180° ÷ 2 = 90°", "en": "a straight line is 180° and both angles are equal, so 180° ÷ 2 = 90°" },
-     "simpler": { "hi": "Seedhi line ko do barabar hisson mein baantna hai. Toh seedhi line ke angle ka aadha karo.", "en": "The straight line has to be shared into two equal parts. So halve the straight-line angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi line"}], "mark": {"index": 0, "show": "deg"}} }
+     "simpler": { "hi": "Seedhi line ko do barabar hisson mein baantna hai. Toh seedhi line ke angle ka aadha karo.", "en": "The straight line has to be shared into two equal parts. So halve the straight-line angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi line"}]} }
     }
    ],
    "ladder": [
@@ -187,7 +187,7 @@
       "wrongIfMis": "70°",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi line" }, { "deg": 20 }] } },
       "why": { "hi": "seedhi line par linear pair milkar 180° hota hai, aur 180° − 20° = 160°", "en": "on a straight line a linear pair makes 180°, and 180° − 20° = 160°" },
-      "simpler": { "hi": "Linear pair ke dono angle milkar seedhi line ka angle banate hain. Usme se 20° ghatao.", "en": "The two angles of a linear pair together make the straight-line angle. Take 20° away from it." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi line"}, {"deg": 20}], "mark": {"index": 1, "show": "deg"}} }
+      "simpler": { "hi": "Linear pair ke dono angle milkar seedhi line ka angle banate hain. Usme se 20° ghatao.", "en": "The two angles of a linear pair together make the straight-line angle. Take 20° away from it." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi line"}, {"deg": 20}]} }
      }
     },
     {
@@ -210,14 +210,11 @@
       "wrongIfMis": "40°",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi line" }, { "deg": 40 }] } },
       "why": { "hi": "seedhi line par dono angle milkar 180°, aur 180° − 40° = 140°", "en": "on a straight line the two angles make 180°, and 180° − 40° = 140°" },
-      "simpler": { "hi": "Bagal wala angle aur 40° milkar poori seedhi line bharte hain. Seedhi line ke angle mein se 40° ghatao.", "en": "The neighbouring angle and the 40° together fill the whole straight line. Take 40° away from the straight-line angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi line"}, {"deg": 40}], "mark": {"index": 1, "show": "deg"}} }
+      "simpler": { "hi": "Bagal wala angle aur 40° milkar poori seedhi line bharte hain. Seedhi line ke angle mein se 40° ghatao.", "en": "The neighbouring angle and the 40° together fill the whole straight line. Take 40° away from the straight-line angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi line"}, {"deg": 40}]} }
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Ab ek ray ki jagah do poori seedhi lines ek-doosre ko paar karengi. Wahan chaar angle bante hain, aur har bagal wala joda ek linear pair hota hai.",
-    "en": "Next, instead of one ray, two whole straight lines will cross each other. Four angles form there, and every neighbouring pair is a linear pair."
-   }
+   "bridgeToNext": { "hi": "Ab ek ray ki jagah do poori seedhi lines ek-doosre ko paar karengi. Wahan chaar angle bante hain, aur har bagal wala joda ek linear pair hota hai.", "en": "Next, instead of one ray, two whole straight lines will cross each other. Four angles form there, and every neighbouring pair is a linear pair.", "simpler": {"hi": "Ab do poori seedhi lines ek-doosre ko paar karengi. Board par ek crossing hai, jahan chaar angle bante hain.", "en": "Now two whole straight lines will cross each other. On the board there is a crossing where four angles are made."} }
   },
   {
    "skillId": "c7-maths-ch05-t01-s2",
@@ -260,7 +257,7 @@
       "accept": ["daayein", "daayaan", "right", "the right one", "right one", "the right angle"],
       "targets": "c7-maths-ch05-t01-m-above-below",
       "wrongIfMis": "upar wala",
-      "why": { "hi": "chaar angle mein upar aur neeche ek joda hain, aur baayein wala aar-paar daayein ke theek saamne hai", "en": "of the four angles, top and bottom are one pair, and the left one sits right across from the right one" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "crossing", "items": ["chaar angle"]}, "right": {"title": "aar-paar", "items": ["upar aur neeche"]}, "mark": {"side": "right", "add": "jawab: daayein wala"}} }
+      "why": { "hi": "chaar angle mein upar aur neeche ek joda hain, aur baayein wala aar-paar daayein ke theek saamne hai", "en": "of the four angles, top and bottom are one pair, and the left one sits right across from the right one" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "crossing", "items": ["chaar angle"]}, "right": {"title": "aar-paar", "items": ["upar aur neeche"]}} }
      },
      "simpler": { "hi": "X ki crossing par chaar angle bante hain. Jo do angle crossing bindu ke aar-paar theek aamne-saamne hon, woh vertically opposite hain, jaise upar aur neeche wale.", "en": "An X crossing makes four angles. The two angles directly across the crossing point from each other are vertically opposite, like the top and bottom ones." }
     },
@@ -283,7 +280,7 @@
       "accept": ["130", "130 degree", "130 degrees"],
       "targets": "c7-maths-ch05-t01-m-all-equal",
       "wrongIfMis": "230°",
-      "why": { "hi": "daayein 115° hai, toh upar aur neeche dono 180° − 115° = 65°, aur 65° + 65° = 130°", "en": "the right one is 115°, so top and bottom are each 180° − 115° = 65°, and 65° + 65° = 130°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 115, "name": "daayein 115°"}], "mark": {"index": 0, "show": "deg"}} }
+      "why": { "hi": "daayein 115° hai, toh upar aur neeche dono 180° − 115° = 65°, aur 65° + 65° = 130°", "en": "the right one is 115°, so top and bottom are each 180° − 115° = 65°, and 65° + 65° = 130°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 115, "name": "daayein 115°"}]} }
      },
      "simpler": { "hi": "Upar wala aur neeche wala, dono hi 115° ke saath milkar 180° banate hain. Isliye dono angle barabar hote hain.", "en": "The top angle and the bottom angle each make 180° together with the 115°. That is why the two are equal." }
     },
@@ -305,7 +302,7 @@
       "accept": ["AOD", "DOA", "angle DOA", "∠AOD", "∠DOA"],
       "targets": "c7-maths-ch05-t01-m-above-below",
       "wrongIfMis": "angle BOD",
-      "why": { "hi": "OC ki ulti ray OD hai aur OB ki ulti OA, toh COB ke saamne AOD hai", "en": "the opposite ray of OC is OD and of OB is OA, so AOD is opposite COB" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "line AB", "items": ["ray OA", "ray OB"]}, "right": {"title": "line CD", "items": ["ray OC", "ray OD"]}, "mark": {"side": "right", "add": "jawab: angle AOD"}} }
+      "why": { "hi": "OC ki ulti ray OD hai aur OB ki ulti OA, toh COB ke saamne AOD hai", "en": "the opposite ray of OC is OD and of OB is OA, so AOD is opposite COB" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "line AB", "items": ["ray OA", "ray OB"]}, "right": {"title": "line CD", "items": ["ray OC", "ray OD"]}} }
      },
      "simpler": { "hi": "Vertically opposite angle ki dono bhujayein ulti rays hoti hain. OA ki ulti OB hai aur OC ki ulti OD, isliye AOC ke saamne BOD aata hai.", "en": "Both arms of a vertically opposite angle are the opposite rays. OA's opposite is OB and OC's opposite is OD, so BOD is across from AOC." }
     }
@@ -314,7 +311,7 @@
     "problem": {
      "hi": "Do seedhi lakdiyan AB aur CD, bindu O par crossing banati hain. Angle AOC 58° hai. Angle BOD nikaalo, jo crossing ke aar-paar angle AOC ke saamne hai, aur linear pair se dikhao kyun.",
      "en": "Two straight sticks AB and CD cross at the point O. Angle AOC is 58°. Find angle BOD, the angle across the crossing from angle AOC, and show why using linear pairs."
-    },
+    }, "simpler": { "hi": "Do seedhi lakdiyan AB aur CD, O par crossing banati hain. Angle AOC 58° hai. Crossing ke aar-paar wala angle BOD chahiye.", "en": "Two straight sticks AB and CD cross at O. Angle AOC is 58°. We need angle BOD, the one across the crossing." },
     "givens": [
      { "hi": "AB aur CD seedhi lines hain jo O par crossing banati hain", "en": "AB and CD are straight lines crossing at O" },
      { "hi": "angle AOC 58° hai", "en": "angle AOC is 58°" }
@@ -360,7 +357,7 @@
      "wrongIfMis": "upar wala",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 50, "name": "baayein 50°" }] } },
      "why": { "hi": "baayein wala angle crossing bindu ke aar-paar daayein wale ke theek saamne hai", "en": "the left angle is right across the crossing point from the right angle" },
-     "simpler": { "hi": "Vertically opposite angle crossing ke aar-paar, theek saamne hota hai. Baayein wale ke theek ulti taraf kaun hai, woh dekho.", "en": "A vertically opposite angle is right across the crossing. See which angle is on the exact opposite side from the left one." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "baayein 50°"}], "mark": {"index": 0, "show": "deg"}} }
+     "simpler": { "hi": "Vertically opposite angle crossing ke aar-paar, theek saamne hota hai. Baayein wale ke theek ulti taraf kaun hai, woh dekho.", "en": "A vertically opposite angle is right across the crossing. See which angle is on the exact opposite side from the left one." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "baayein 50°"}]} }
     },
     {
      "id": "c2",
@@ -374,7 +371,7 @@
      "wrongIfMis": "70°",
      "board": { "template": "compare@1", "params": {"left": {"title": "upar aur neeche", "items": ["jod 140°"]}, "right": {"title": "daayein wala", "items": ["angle"]}} },
      "why": { "hi": "upar aur neeche ka jod 140° hai, toh har ek 70°, aur daayein wala angle 180° − 70° = 110°", "en": "top and bottom add to 140°, so each is 70°, and the right angle is 180° − 70° = 110°" },
-     "simpler": { "hi": "Upar aur neeche wale angle barabar hote hain, toh 140° ka aadha ek angle hai. Daayein wala uske saath milkar seedhi line poori karta hai.", "en": "The top and bottom angles are equal, so one of them is half of 140°. The right angle completes a straight line with it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar aur neeche", "items": ["jod 140°"]}, "right": {"title": "daayein wala", "items": ["angle"]}, "mark": {"side": "right", "add": "jawab: 110°"}} }
+     "simpler": { "hi": "Upar aur neeche wale angle barabar hote hain, toh 140° ka aadha ek angle hai. Daayein wala uske saath milkar seedhi line poori karta hai.", "en": "The top and bottom angles are equal, so one of them is half of 140°. The right angle completes a straight line with it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar aur neeche", "items": ["jod 140°"]}, "right": {"title": "daayein wala", "items": ["angle"]}} }
     },
     {
      "id": "c3",
@@ -388,7 +385,7 @@
      "wrongIfMis": "angle ROQ",
      "board": { "template": "compare@1", "params": {"left": {"title": "line PQ", "items": ["ray OP", "ray OQ"]}, "right": {"title": "line RS", "items": ["ray OR", "ray OS"]}} },
      "why": { "hi": "line PQ mein ray OP ki ulti ray OQ, aur line RS mein OR ki ulti OS, toh POR ke saamne QOS", "en": "on line PQ ray OQ is opposite OP, and on line RS OS is opposite OR, so QOS faces POR" },
-     "simpler": { "hi": "Saamne wala angle woh hai jiski dono bhujayein ulti rays hon. OP ki ulti OQ hai aur OR ki ulti OS.", "en": "The opposite angle is the one whose two arms are the opposite rays. OP's opposite is OQ and OR's opposite is OS." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "line PQ", "items": ["ray OP", "ray OQ"]}, "right": {"title": "line RS", "items": ["ray OR", "ray OS"]}, "mark": {"side": "right", "add": "jawab: angle QOS"}} }
+     "simpler": { "hi": "Saamne wala angle woh hai jiski dono bhujayein ulti rays hon. OP ki ulti OQ hai aur OR ki ulti OS.", "en": "The opposite angle is the one whose two arms are the opposite rays. OP's opposite is OQ and OR's opposite is OS." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "line PQ", "items": ["ray OP", "ray OQ"]}, "right": {"title": "line RS", "items": ["ray OR", "ray OS"]}} }
     }
    ],
    "ladder": [
@@ -419,7 +416,7 @@
       "wrongIfMis": "neeche wala",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 40, "name": "daayein 40°" }] } },
       "why": { "hi": "daayein wale ke theek saamne, crossing bindu ke aar-paar, baayein wala hai", "en": "right across the crossing point from the right angle is the left one" },
-      "simpler": { "hi": "Neeche wala angle daayein ke bagal mein hai, saamne nahi. Daayein wale ke theek ulti taraf dekho.", "en": "The bottom angle is next to the right one, not across from it. Look at the exact opposite side from the right angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40, "name": "daayein 40°"}], "mark": {"index": 0, "show": "deg"}} }
+      "simpler": { "hi": "Neeche wala angle daayein ke bagal mein hai, saamne nahi. Daayein wale ke theek ulti taraf dekho.", "en": "The bottom angle is next to the right one, not across from it. Look at the exact opposite side from the right angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40, "name": "daayein 40°"}]} }
      }
     },
     {
@@ -431,13 +428,10 @@
      },
      "simpler": { "hi": "Line ghumao toh saamne wale angle saath mein badhte ya ghatte hain. Isliye sirf saamne wale angle barabar hote hain, bagal wale nahi.", "en": "Turn a line and opposite angles grow or shrink together. So only opposite angles are equal, not neighbouring ones." },
      
-     "then": { "prompt": {"hi": "Crossing par upar aur neeche wale angle ka jod 140° hai. Baayein wala angle kitna hai?", "en": "At a crossing the top and bottom angles add up to 140°. What is the left angle?"}, "key": "110°", "accept": ["110", "110 degree", "110 degrees"], "targets": "c7-maths-ch05-t01-m-all-equal", "wrongIfMis": "70°", "board": {"template": "compare@1", "params": {"left": {"title": "upar aur neeche", "items": ["jod 140°"]}, "right": {"title": "baayein wala", "items": ["angle"]}}}, "why": {"hi": "upar aur neeche ka jod 140° hai, toh har ek 70°, aur baayein wala angle 180° − 70° = 110°", "en": "top and bottom add to 140°, so each is 70°, and the left angle is 180° − 70° = 110°"}, "simpler": {"hi": "Upar aur neeche wale barabar hain, toh 140° ka aadha ek angle hai. Baayein wala uske saath milkar seedhi line poori karta hai.", "en": "The top and bottom angles are equal, so one of them is half of 140°. The left angle completes a straight line with it."}, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar aur neeche", "items": ["jod 140°"]}, "right": {"title": "baayein wala", "items": ["angle"]}, "mark": {"side": "right", "add": "jawab: 110°"}} } }
+     "then": { "prompt": {"hi": "Crossing par upar aur neeche wale angle ka jod 140° hai. Baayein wala angle kitna hai?", "en": "At a crossing the top and bottom angles add up to 140°. What is the left angle?"}, "key": "110°", "accept": ["110", "110 degree", "110 degrees"], "targets": "c7-maths-ch05-t01-m-all-equal", "wrongIfMis": "70°", "board": {"template": "compare@1", "params": {"left": {"title": "upar aur neeche", "items": ["jod 140°"]}, "right": {"title": "baayein wala", "items": ["angle"]}}}, "why": {"hi": "upar aur neeche ka jod 140° hai, toh har ek 70°, aur baayein wala angle 180° − 70° = 110°", "en": "top and bottom add to 140°, so each is 70°, and the left angle is 180° − 70° = 110°"}, "simpler": {"hi": "Upar aur neeche wale barabar hain, toh 140° ka aadha ek angle hai. Baayein wala uske saath milkar seedhi line poori karta hai.", "en": "The top and bottom angles are equal, so one of them is half of 140°. The left angle completes a straight line with it."}, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar aur neeche", "items": ["jod 140°"]}, "right": {"title": "baayein wala", "items": ["angle"]}} } }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Ab do niyam tumhare paas hain: bagal wale angle milkar 180°, aur saamne wale angle barabar. Agle hisse mein sirf ek angle se crossing ke chaaron angle nikaalenge.",
-    "en": "Now you have two rules: neighbouring angles add to 180°, and opposite angles are equal. In the next part we will find all four angles at a crossing from just one angle."
-   }
+   "bridgeToNext": { "hi": "Ab do niyam tumhare paas hain: bagal wale angle milkar 180°, aur saamne wale angle barabar. Agle hisse mein sirf ek angle se crossing ke chaaron angle nikaalenge.", "en": "Now you have two rules: neighbouring angles add to 180°, and opposite angles are equal. In the next part we will find all four angles at a crossing from just one angle.", "simpler": {"hi": "Ab ek angle se crossing ke baaki angle nikaalenge. Board par crossing ka ek angle 50° dikh raha hai.", "en": "Now we find the other angles at a crossing from one angle. On the board one angle of the crossing shows 50°."} }
   },
   {
    "skillId": "c7-maths-ch05-t01-s3",
@@ -480,7 +474,7 @@
       "accept": ["130", "130 degree", "130 degrees"],
       "targets": "c7-maths-ch05-t01-m-all-equal",
       "wrongIfMis": "50°",
-      "why": { "hi": "daayein wala upar ke 50° ke saath linear pair hai, aur 180° − 50° = 130°", "en": "the right angle makes a linear pair with the top 50°, and 180° − 50° = 130°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "upar 50°"}], "mark": {"index": 0, "show": "deg"}} }
+      "why": { "hi": "daayein wala upar ke 50° ke saath linear pair hai, aur 180° − 50° = 130°", "en": "the right angle makes a linear pair with the top 50°, and 180° − 50° = 130°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "upar 50°"}]} }
      },
      "simpler": { "hi": "Saamne wala angle barabar hota hai, toh neeche wala bhi 50° hai. Bagal wala angle 50° ke saath milkar poori seedhi line banata hai.", "en": "The opposite angle is equal, so the bottom one is also 50°. A neighbouring angle makes a whole straight line together with the 50°." }
     },
@@ -501,7 +495,7 @@
       "prompt": { "hi": "Toh is crossing ke chaaron angle ka jod kitna hai?", "en": "So what is the sum of all four angles at this crossing?" },
       "key": "360°",
       "accept": ["360", "360 degree", "360 degrees"],
-      "why": { "hi": "upar 40°, daayein 140°, neeche 40° aur baayein 140° hain: 40° + 140° + 40° + 140° = 360°", "en": "top 40°, right 140°, bottom 40° and left 140° make 40° + 140° + 40° + 140° = 360°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40, "name": "upar 40°"}, {"deg": 140, "name": "daayein 140°"}], "mark": {"index": 1, "show": "deg"}} }
+      "why": { "hi": "upar 40°, daayein 140°, neeche 40° aur baayein 140° hain: 40° + 140° + 40° + 140° = 360°", "en": "top 40°, right 140°, bottom 40° and left 140° make 40° + 140° + 40° + 140° = 360°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40, "name": "upar 40°"}, {"deg": 140, "name": "daayein 140°"}]} }
      },
      "simpler": { "hi": "Saamne wale angle barabar hote hain. Toh chaaron angle hain 40°, 140°, 40° aur 140°.", "en": "Opposite angles are equal. So the four angles are 40°, 140°, 40° and 140°." }
     }
@@ -510,7 +504,7 @@
     "problem": {
      "hi": "Do seedhi lines crossing banati hain. Ek angle 72° hai. Baaki teeno angle nikaalo.",
      "en": "Two straight lines cross. One angle is 72°. Find the other three angles."
-    },
+    }, "simpler": { "hi": "Aamne-saamne wale angle barabar hote hain. Bagal wale do angle milkar 180° bante hain.", "en": "Angles opposite each other are equal. Two angles side by side make 180° together." },
     "givens": [
      { "hi": "do seedhi lines crossing banati hain, toh chaar angle hain", "en": "two straight lines cross, so there are four angles" },
      { "hi": "ek angle 72° hai", "en": "one angle is 72°" }
@@ -536,7 +530,7 @@
      "accept": ["108", "108 degree", "108 degrees"],
      "targets": "c7-maths-ch05-t01-m-all-equal",
      "wrongIfMis": "72°",
-     "simpler": { "hi": "Chautha angle bhi 72° ke bagal mein hai. Toh woh bhi 72° ke saath seedhi line banata hai, pichhle bagal wale angle jaisa.", "en": "The fourth angle is also next to the 72°. So it too makes a straight line with the 72°, just like the other neighbour." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 72}], "mark": {"index": 0, "show": "deg"}} }, "why": { "hi": "chautha angle 72° ke saath linear pair hai, toh 180° − 72° = 108°", "en": "the fourth angle makes a linear pair with 72°, so 180° − 72° = 108°" }
+     "simpler": { "hi": "Chautha angle bhi 72° ke bagal mein hai. Toh woh bhi 72° ke saath seedhi line banata hai, pichhle bagal wale angle jaisa.", "en": "The fourth angle is also next to the 72°. So it too makes a straight line with the 72°, just like the other neighbour." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 72}]} }, "why": { "hi": "chautha angle 72° ke saath linear pair hai, toh 180° − 72° = 108°", "en": "the fourth angle makes a linear pair with 72°, so 180° − 72° = 108°" }
     },
     "answer": { "hi": "baaki teeno angle 72°, 108° aur 108° hain", "en": "the other three angles are 72°, 108° and 108°" },
     "why": {
@@ -558,7 +552,7 @@
      "wrongIfMis": "35°, 35°, 35°",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 35 }] } },
      "why": { "hi": "bagal wale 180° − 35° = 145° hain, aur saamne wala bhi 35° hai", "en": "the neighbours are 180° − 35° = 145°, and the opposite one is 35° too" },
-     "simpler": { "hi": "Bagal wala angle 35° ke saath milkar seedhi line poori karta hai. Saamne wala angle 35° ke barabar hota hai.", "en": "A neighbouring angle completes a straight line with the 35°. The opposite angle is equal to the 35°." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 35}], "mark": {"index": 0, "show": "deg"}} }
+     "simpler": { "hi": "Bagal wala angle 35° ke saath milkar seedhi line poori karta hai. Saamne wala angle 35° ke barabar hota hai.", "en": "A neighbouring angle completes a straight line with the 35°. The opposite angle is equal to the 35°." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 35}]} }
     },
     {
      "id": "c2",
@@ -572,7 +566,7 @@
      "wrongIfMis": "26°",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 64, "name": "upar 64°" }] } },
      "why": { "hi": "baayein wala upar ke saath linear pair hai, aur 180° − 64° = 116°", "en": "the left angle makes a linear pair with the top, and 180° − 64° = 116°" },
-     "simpler": { "hi": "Baayein wala angle upar wale ke bagal mein hai. Dono milkar seedhi line ka angle banate hain, toh usme se 64° ghatao.", "en": "The left angle is next to the top one. Together they make the straight-line angle, so take 64° away from it." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 64, "name": "upar 64°"}], "mark": {"index": 0, "show": "deg"}} }
+     "simpler": { "hi": "Baayein wala angle upar wale ke bagal mein hai. Dono milkar seedhi line ka angle banate hain, toh usme se 64° ghatao.", "en": "The left angle is next to the top one. Together they make the straight-line angle, so take 64° away from it." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 64, "name": "upar 64°"}]} }
     },
     {
      "id": "c3",
@@ -586,7 +580,7 @@
      "wrongIfMis": "100°",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 100, "name": "baayein 100°" }] } },
      "why": { "hi": "upar wala baayein ke saath linear pair hai, aur 180° − 100° = 80°", "en": "the top angle makes a linear pair with the left, and 180° − 100° = 80°" },
-     "simpler": { "hi": "Upar wala angle baayein wale ke bagal mein hai. Seedhi line ke angle mein se 100° ghatao.", "en": "The top angle is next to the left one. Take 100° away from the straight-line angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 100, "name": "baayein 100°"}], "mark": {"index": 0, "show": "deg"}} }
+     "simpler": { "hi": "Upar wala angle baayein wale ke bagal mein hai. Seedhi line ke angle mein se 100° ghatao.", "en": "The top angle is next to the left one. Take 100° away from the straight-line angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 100, "name": "baayein 100°"}]} }
     }
    ],
    "ladder": [
@@ -617,7 +611,7 @@
       "wrongIfMis": "25°, 25°, 25°",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 25 }] } },
       "why": { "hi": "bagal wale 180° − 25° = 155° hain, aur saamne wala bhi 25° hai", "en": "the neighbours are 180° − 25° = 155°, and the opposite one is 25° too" },
-      "simpler": { "hi": "Bagal wala angle 25° ke saath milkar seedhi line poori karta hai. Saamne wala angle 25° ke barabar hota hai.", "en": "A neighbouring angle completes a straight line with the 25°. The opposite angle is equal to the 25°." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 25}], "mark": {"index": 0, "show": "deg"}} }
+      "simpler": { "hi": "Bagal wala angle 25° ke saath milkar seedhi line poori karta hai. Saamne wala angle 25° ke barabar hota hai.", "en": "A neighbouring angle completes a straight line with the 25°. The opposite angle is equal to the 25°." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 25}]} }
      }
     },
     {
@@ -640,7 +634,7 @@
       "wrongIfMis": "60°",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 30, "name": "upar 30°" }] } },
       "why": { "hi": "daayein wala upar ke saath linear pair hai, aur 180° − 30° = 150°", "en": "the right angle makes a linear pair with the top, and 180° − 30° = 150°" },
-      "simpler": { "hi": "Daayein wala angle upar wale ke bagal mein hai. Seedhi line ke angle mein se 30° ghatao.", "en": "The right angle is next to the top one. Take 30° away from the straight-line angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 30, "name": "upar 30°"}], "mark": {"index": 0, "show": "deg"}} }
+      "simpler": { "hi": "Daayein wala angle upar wale ke bagal mein hai. Seedhi line ke angle mein se 30° ghatao.", "en": "The right angle is next to the top one. Take 30° away from the straight-line angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 30, "name": "upar 30°"}]} }
      }
     },
     {
@@ -663,7 +657,7 @@
       "wrongIfMis": "75°",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 75, "name": "daayein 75°" }] } },
       "why": { "hi": "neeche wala daayein ke saath linear pair hai, aur 180° − 75° = 105°", "en": "the bottom angle makes a linear pair with the right, and 180° − 75° = 105°" },
-      "simpler": { "hi": "Neeche wala angle daayein wale ke bagal mein hai. Seedhi line ke angle mein se 75° ghatao.", "en": "The bottom angle is next to the right one. Take 75° away from the straight-line angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 75, "name": "daayein 75°"}], "mark": {"index": 0, "show": "deg"}} }
+      "simpler": { "hi": "Neeche wala angle daayein wale ke bagal mein hai. Seedhi line ke angle mein se 75° ghatao.", "en": "The bottom angle is next to the right one. Take 75° away from the straight-line angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 75, "name": "daayein 75°"}]} }
      }
     }
    ],

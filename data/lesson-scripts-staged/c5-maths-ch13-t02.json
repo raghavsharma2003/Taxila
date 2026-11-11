@@ -11,7 +11,7 @@
   { "hi": "poora baantna", "en": "divide exactly" },
   { "hi": "bachna", "en": "left over" },
   { "hi": "rectangle / aayat", "en": "rectangle" }
- ], "joints": {"asidePark":[{"hi":"Yeh kursiyan lagaana poora hote hi {aside} ki baat zaroor karenge.","en":"Once these chairs is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh kursiyan lagaana khatam ho jaaye.","en":"We'll talk about {aside} too, once these chairs is over."},{"hi":"Wah, {aside} ki baat sambhaal ke rakhi hai, baad mein zaroor sunungi.","en":"Oh, I've kept the {aside} bit safe, and I'll surely hear it later."}],"asideReturn":[{"hi":"{aside} mein cheezein kaise kataaron mein lagti hain?","en":"How do things get set out in rows in {aside}?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"},{"hi":"{aside} wali baat batao na, tumne pehli baar kab kiya?","en":"Tell me about {aside}: when did you first do it?"}],"hindiSwitch":[{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in English."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in English."}],"askAgain":[{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."}]},
+ ], "greetSimpler": { "hi": "Aaj hum cheezon ko barabar kataaron mein lagakar ek number ke factors dhoondhenge.", "en": "Today we set things out in equal rows to find a number's factors." }, "joints": {"asidePark":[{"hi":"Yeh kursiyan lagaana poora hote hi {aside} ki baat zaroor karenge.","en":"Once these chairs is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh kursiyan lagaana khatam ho jaaye.","en":"We'll talk about {aside} too, once these chairs is over."},{"hi":"Wah, {aside} ki baat sambhaal ke rakhi hai, baad mein zaroor sunungi.","en":"Oh, I've kept the {aside} bit safe, and I'll surely hear it later."}],"asideReturn":[{"hi":"{aside} mein cheezein kaise kataaron mein lagti hain?","en":"How do things get set out in rows in {aside}?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"},{"hi":"{aside} wali baat batao na, tumne pehli baar kab kiya?","en":"Tell me about {aside}: when did you first do it?"}],"hindiSwitch":[{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."}],"askAgain":[{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."}],"backTo":[{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."},{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."},{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."}]},
  "skills": [
   {
    "skillId": "c5-maths-ch13-t02-s1",
@@ -101,7 +101,7 @@
     "problem": {
      "hi": "Ramesh ke paas 16 paudhe hain. Unhe garden mein barabar rows mein lagana hai, koi paudha na bache. Har rectangle se 16 ke factors milenge. 16 ke saare factors kya hain?",
      "en": "Ramesh has 16 saplings. He must plant them in the garden in equal rows, with none left over. Each rectangle gives factors of 16. What are all the factors of 16?"
-    },
+    }, "simpler": { "hi": "Ramesh ke paas 16 paudhe hain, jo barabar rows mein lagane hain, koi bacha nahi. Humein 16 ke saare factors dhoondhne hain.", "en": "Ramesh has 16 saplings to plant in equal rows, with none left over. We need all the factors of 16." },
     "givens": [{"hi": "16 paudhe hain, aur unhe barabar rows mein lagana hai, koi na bache", "en": "there are 16 saplings to plant in equal rows, with none left over"}],
     "find": { "hi": "16 ke saare factors", "en": "all the factors of 16" },
     "steps": [
@@ -231,7 +231,7 @@
      }
     }
    ],
-   "bridgeToNext": { "hi": "Ab tak kursiyan laga-lagakar humne factors dhoondhe. Ab ek tez tareeka dekhte hain: factors ko jodiyon mein likhna, taaki koi bhi chhoote nahi.", "en": "So far we found factors by setting out chairs. Now we see a quicker way: writing factors in pairs, so that none is missed." }
+   "bridgeToNext": { "hi": "Ab tak kursiyan laga-lagakar humne factors dhoondhe. Ab ek tez tareeka dekhte hain: factors ko jodiyon mein likhna, taaki koi bhi chhoote nahi.", "en": "So far we found factors by setting out chairs. Now we see a quicker way: writing factors in pairs, so that none is missed.", "simpler": {"hi": "Ab factors ko jodiyon mein likhna seekhenge, taaki koi chhoote nahi. Board par kursiyan rows aur columns mein lagi hain.", "en": "Now we learn to write factors in pairs so none is missed. On the board the chairs are set in rows and columns."} }
   },
   {
    "skillId": "c5-maths-ch13-t02-s2",
@@ -298,7 +298,7 @@
     }
    ],
    "workedExample": {
-    "problem": { "hi": "28 ke saare factors dhoondho: 1 se shuru karke kram se jodiyan banao, taaki koi chhoote nahi.", "en": "Find all the factors of 28: make pairs in order, starting from 1, so that none is missed." },
+    "problem": { "hi": "28 ke saare factors dhoondho: 1 se shuru karke kram se jodiyan banao, taaki koi chhoote nahi.", "en": "Find all the factors of 28: make pairs in order, starting from 1, so that none is missed." }, "simpler": { "hi": "Humein 28 ke saare factors chahiye. 1 se shuru karke kram se jodiyan banani hain.", "en": "We need all the factors of 28. Start from 1 and make pairs in order." },
     "givens": [{"hi": "number 28 hai, aur jodiyan 1 se kram se banengi", "en": "the number is 28, and the pairs go in order from 1"}],
     "find": { "hi": "28 ke saare factors", "en": "all the factors of 28" },
     "steps": [
@@ -423,7 +423,7 @@
      }
     }
    ],
-   "bridgeToNext": { "hi": "Ab hum kisi bhi number ke saare factors dhoondh sakte hain. Ab is line par 7 ki table dekho, isse factor aur multiple ka rishta samjhenge.", "en": "Now we can find all the factors of any number. Now look at the table of 7 on this line; it shows how a factor and a multiple are linked." }
+   "bridgeToNext": { "hi": "Ab hum kisi bhi number ke saare factors dhoondh sakte hain. Ab is line par 7 ki table dekho, isse factor aur multiple ka rishta samjhenge.", "en": "Now we can find all the factors of any number. Now look at the table of 7 on this line; it shows how a factor and a multiple are linked.", "simpler": {"hi": "Ab is line par 7-7 ke kadam dekhenge. Isse factor aur multiple ka rishta samjhenge.", "en": "Now we look at steps of 7 on this line. It will show how a factor and a multiple are linked."} }
   },
   {
    "skillId": "c5-maths-ch13-t02-s3",
@@ -513,7 +513,7 @@
     "problem": {
      "hi": "Do sawaal hain. Kya 6, 45 ka factor hai? Aur kya 45, 9 ka multiple hai?",
      "en": "There are two questions. Is 6 a factor of 45? And is 45 a multiple of 9?"
-    },
+    }, "simpler": { "hi": "Pehle dekho ki 45 ko 6 se poora baant sakte hain ya nahi. Phir dekho ki 45, 9 ke pahade mein aata hai ya nahi.", "en": "First see whether 45 can be shared by 6 exactly. Then see whether 45 comes in the table of 9." },
     "givens": [{"hi": "number 45 hai, aur 6 aur 9 se use jaanchna hai", "en": "the number is 45, and it is to be tested with 6 and 9"}],
     "find": { "hi": "6 se 45 poora bantta hai ya nahi, aur 9 se 45 poora bantta hai ya nahi", "en": "whether 6 divides 45 exactly, and whether 9 divides 45 exactly" },
     "steps": [

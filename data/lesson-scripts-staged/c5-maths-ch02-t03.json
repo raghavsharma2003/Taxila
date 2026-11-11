@@ -15,8 +15,8 @@
   {"hi": "guna", "en": "multiply"},
   {"hi": "poora", "en": "one whole"},
   {"hi": "sankhya rekha", "en": "number line"}
- ],
- "joints": {"asidePark":[{"hi":"Yeh patti wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once these strips is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh patti wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once these strips is over."},{"hi":"{aside} wali baat mujhe yaad rahegi, thodi der mein wahi poochhungi.","en":"I'll remember the {aside} bit, and I'll ask about it in a little while."}],"asideReturn":[{"hi":"{aside} mein tumne kabhi kuch aadha-aadha kiya hai?","en":"Have you ever split something in half in {aside}?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"},{"hi":"Toh {aside} mein tumhare saath aur kaun hota hai?","en":"So who else is with you in {aside}?"}],"hindiSwitch":[{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in English."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in English."}],"askAgain":[{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."}]},
+ ], "greetSimpler": { "hi": "Aaj hum dekhenge ki alag dikhne wale bhinn bhi barabar ho sakte hain.", "en": "Today we see that fractions that look different can be equal." },
+ "joints": {"asidePark":[{"hi":"Yeh patti wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once these strips is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh patti wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once these strips is over."},{"hi":"{aside} wali baat mujhe yaad rahegi, thodi der mein wahi poochhungi.","en":"I'll remember the {aside} bit, and I'll ask about it in a little while."}],"asideReturn":[{"hi":"{aside} mein tumne kabhi kuch aadha-aadha kiya hai?","en":"Have you ever split something in half in {aside}?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"},{"hi":"Toh {aside} mein tumhare saath aur kaun hota hai?","en":"So who else is with you in {aside}?"}],"hindiSwitch":[{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."}],"askAgain":[{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."}],"backTo":[{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."},{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."},{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."}]},
  "skills": [
   {
    "skillId": "c5-maths-ch02-t03-s1",
@@ -128,7 +128,7 @@
     "problem": {
      "hi": "Sana ek chaukor rumal ko aadha modti hai aur ek aadhe hisse mein rang bharti hai. Phir rumal ko do baar aur aadha modti hai. Kholne par kitne barabar hisse honge, aur rang wala hissa kaunsa bhinn hai?",
      "en": "Sana folds a square hanky in half and colours one half. Then she folds it in half two more times. When it is opened, how many equal parts are there, and what fraction is coloured?"
-    },
+    }, "simpler": { "hi": "Har baar aadha modne se hisse dugne ho jaate hain. Teen baar modne ke baad hisse gino, phir rang wale gino.", "en": "Each fold in half doubles the parts. Count the parts after the three folds, then count the coloured ones." },
     "givens": [
      {
       "hi": "ek chaukor rumal, pehle mod par ek aadha rang wala, phir do mod aur, har baar aadha",
@@ -173,7 +173,7 @@
       "hi": "Teesra mod har hissa phir do chhote hisson mein baantta hai, toh rumal ke 8 barabar hisse bante hain, jaise neeche wali patti. Inmein se kitne hisse rang wale honge?",
       "en": "The third fold splits every part into two smaller parts again, so the hanky has 8 equal parts, like the bottom strip. How many of them will be coloured?"
      },
-     "key": "4",
+     "key": "4", "why": { "hi": "teesre mode ke baad 8 barabar hisse hote hain, aur rang wala aadha hissa unmein se 4 hisse hota hai", "en": "after the third fold there are 8 equal parts, and the coloured half is 4 of those parts" },
      "accept": ["chaar", "four", "4 hisse", "chaar hisse"],
      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 2, "label": "2/4"}, {"parts": 8, "shade": 0, "label": ""}]}},
      "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 2, "label": "2/4"}, {"parts": 8, "shade": 4, "label": "4/8"}]}},
@@ -289,10 +289,7 @@
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Modne par 1/2 se 2/4 bana: kul hisse aur rang wale hisse, dono dugne hue, aur maatra wahi rahi. Ab bina mode, guna karke barabar bhinn banayenge.",
-    "en": "Folding turned 1/2 into 2/4: the total parts and the coloured parts both doubled, and the amount stayed the same. Next we make equivalent fractions without folding, by multiplying."
-   }
+   "bridgeToNext": { "hi": "Modne par 1/2 se 2/4 bana: kul hisse aur rang wale hisse, dono dugne hue, aur maatra wahi rahi. Ab bina mode, guna karke barabar bhinn banayenge.", "en": "Folding turned 1/2 into 2/4: the total parts and the coloured parts both doubled, and the amount stayed the same. Next we make equivalent fractions without folding, by multiplying.", "simpler": {"hi": "Modne par 1/2 se 2/4 bana, aur rang wali maatra wahi rahi. Agle hisse mein bina mode, guna karke barabar bhinn banayenge.", "en": "Folding turned 1/2 into 2/4, and the coloured amount stayed the same. Next we make equal fractions by multiplying, without folding."} }
   },
   {
    "skillId": "c5-maths-ch02-t03-s2",
@@ -408,7 +405,7 @@
     "problem": {
      "hi": "3/5 ke barabar aisa bhinn dhoondo jiska neeche wala number 10 ho.",
      "en": "Find a fraction equal to 3/5 with 10 as its bottom number."
-    },
+    }, "simpler": { "hi": "Neeche ke 5 ko 10 banana hai. Socho, 5 ko kis number se guna karein. Upar ke 3 ko bhi usi se guna karna hai.", "en": "The bottom 5 has to become 10. Think what to multiply 5 by. The top 3 is multiplied by the same number." },
     "givens": [
      {
       "hi": "diya gaya bhinn 3/5 hai, aur naye bhinn ka neeche wala number 10 hai",
@@ -447,7 +444,7 @@
       "hi": "Upar ke 3 ko bhi 2 se guna karo. Neeche 10 ho, toh 3/5 ke barabar bhinn ka upar wala number kya hoga?",
       "en": "Multiply the top 3 by 2 as well. With 10 at the bottom, what is the top number of the fraction equal to 3/5?"
      },
-     "key": "6",
+     "key": "6", "why": { "hi": "neeche ka 5, 2 se guna hokar 10 bana, isliye upar ka 3 bhi 2 se guna hoke 6 banta hai", "en": "5 became 10 by multiplying by 2, so the top 3 is multiplied by 2 as well, giving 6" },
      "accept": ["chhe", "six", "6 hoga"],
      "targets": "c5-maths-ch02-t03-m-one-part-only",
      "wrongIfMis": "3",
@@ -615,10 +612,7 @@
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Ab barabar bhinn banana aa gaya. Ab ulta kaam: do bhinn diye hon, toh kaise pata karein ki woh barabar hain ya nahi.",
-    "en": "Now we can make equivalent fractions. Next, the reverse: given two fractions, how to find out whether they are equal."
-   }
+   "bridgeToNext": { "hi": "Ab barabar bhinn banana aa gaya. Ab ulta kaam: do bhinn diye hon, toh kaise pata karein ki woh barabar hain ya nahi.", "en": "Now we can make equivalent fractions. Next, the reverse: given two fractions, how to find out whether they are equal.", "simpler": { "hi": "Ab dekhenge ki do bhinn barabar hain ya nahi.", "en": "Now we see whether two fractions are equal or not." } }
   },
   {
    "skillId": "c5-maths-ch02-t03-s3",
@@ -720,7 +714,7 @@
     "problem": {
      "hi": "Rahul ne ek chikki bar ka 3/4 khaya. Sita ne usi size ki doosri chikki bar ka 9/12 khaya. Kya dono ne barabar chikki khayi?",
      "en": "Rahul ate 3/4 of a chikki bar. Sita ate 9/12 of another chikki bar of the same size. Did they both eat the same amount?"
-    },
+    }, "simpler": { "hi": "3/4 ka neeche wala 4, 9/12 mein 12 ban gaya. Dekho, upar wala 3 bhi utne guna hua ya nahi.", "en": "The bottom 4 of 3/4 became 12 in 9/12. See whether the top 3 grew by the same times." },
     "givens": [
      {
       "hi": "Rahul ka hissa 3/4 hai aur Sita ka 9/12, dono usi size ki bar se",
@@ -753,7 +747,7 @@
       "hi": "Upar aur neeche dono ek hi number 3 se guna hue. Toh kya Rahul aur Sita ne barabar chikki khayi, haan ya nahi?",
       "en": "The top and bottom were both multiplied by the same number 3. So did Rahul and Sita eat the same amount, yes or no?"
      },
-     "key": "yes",
+     "key": "yes", "why": { "hi": "3/4 se 9/12 banane mein upar aur neeche dono ko 3 se guna kiya, isliye dono barabar hain", "en": "3/4 becomes 9/12 by multiplying the top and bottom both by 3, so the two fractions are equal" },
      "accept": ["haan", "haan, barabar", "barabar", "same"],
      "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
      "wrongIfMis": "no",

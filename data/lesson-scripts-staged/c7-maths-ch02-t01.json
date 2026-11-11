@@ -16,7 +16,7 @@
   { "hi": "se zyada", "en": "more than" },
   { "hi": "tulna karna", "en": "compare" },
   { "hi": "kahani / sthiti", "en": "story / situation" }
- ], "joints": {"asidePark":[{"hi":"Yeh guna poora hote hi {aside} ki baat zaroor karenge.","en":"Once this multiplying is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh guna khatam ho jaaye.","en":"We'll talk about {aside} too, once this multiplying is over."},{"hi":"Achha, {aside} wali baat main yaad rakhti hoon, thodi der mein usi par aayenge.","en":"Okay, I'll keep the {aside} bit in mind, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein tum kya-kya ginte ho?","en":"What do you count in {aside}?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in English."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}]},
+ ], "greetSimpler": { "hi": "Aaj hum ek kahani ke hisaab ko numbers aur nishaanon mein likhenge.", "en": "Today we write a story's sum in numbers and signs." }, "joints": {"asidePark":[{"hi":"Yeh guna poora hote hi {aside} ki baat zaroor karenge.","en":"Once this multiplying is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh guna khatam ho jaaye.","en":"We'll talk about {aside} too, once this multiplying is over."},{"hi":"Achha, {aside} wali baat main yaad rakhti hoon, thodi der mein usi par aayenge.","en":"Okay, I'll keep the {aside} bit in mind, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein tum kya-kya ginte ho?","en":"What do you count in {aside}?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}],"backTo":[{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."}]},
  "skills": [
   {
    "skillId": "c7-maths-ch02-t01-s1",
@@ -56,7 +56,7 @@
       "prompt": { "hi": "Agle din isi stall par 4 samose aur 3 chai li, daam wahi. Us din ke bill ka expression kya hoga?", "en": "The next day 4 samosas and 3 chai were bought at the same stall, same prices. What is the expression for that day's bill?" },
       "key": "4 × 15 + 3 × 10",
       "accept": ["4×15+3×10", "4 x 15 + 3 x 10", "4*15+3*10", "3 × 10 + 4 × 15", "15 × 4 + 10 × 3", "60 + 30", "90", "₹90"],
-      "why": { "hi": "4 samose ₹15 wale aur 3 chai ₹10 wali hain, aur dono daam jodne hain", "en": "it is 4 samosas at ₹15 and 3 chai at ₹10, and both costs are added" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4 samose", "items": ["₹15 wale"]}, "right": {"title": "3 chai", "items": ["₹10 wali"]}, "mark": {"side": "right", "add": "jawab: 4 × 15 + 3 × 10"}} }, "board": { "template": "compare@1", "params": {"left": {"title": "4 samose", "items": ["₹15 wale"]}, "right": {"title": "3 chai", "items": ["₹10 wali"]}} }
+      "why": { "hi": "4 samose ₹15 wale aur 3 chai ₹10 wali hain, aur dono daam jodne hain", "en": "it is 4 samosas at ₹15 and 3 chai at ₹10, and both costs are added" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4 samose", "items": ["₹15 wale"]}, "right": {"title": "3 chai", "items": ["₹10 wali"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "4 samose", "items": ["₹15 wale"]}, "right": {"title": "3 chai", "items": ["₹10 wali"]}} }
      },
      "simpler": { "hi": "3 samose ₹15 wale, toh 3 × 15. 2 chai ₹10 wali, toh 2 × 10, aur dono ko jodkar poora bill banta hai.", "en": "3 samosas at ₹15 make 3 × 15. 2 chai at ₹10 make 2 × 10, and adding the two gives the whole bill." }
     },
@@ -79,7 +79,7 @@
       "accept": ["45-9", "45 - 9", "36"],
       "targets": "c7-maths-ch02-t01-m-words-order",
       "wrongIfMis": "9 − 45",
-      "why": { "hi": "30 − 7 jaisa hi: kam 45 se hona hai, toh 45 se shuru karke 9 ghatate hain", "en": "just like 30 − 7: it is 9 less than 45, so we start at 45 and take away 9" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "30 se 7 kam", "items": ["30 − 7"]}, "right": {"title": "45 se 9 kam", "items": ["45 se shuru"]}, "mark": {"side": "right", "add": "jawab: 45 − 9"}} }, "board": { "template": "compare@1", "params": {"left": {"title": "30 se 7 kam", "items": ["30 − 7"]}, "right": {"title": "45 se 9 kam", "items": ["45 se shuru"]}} }
+      "why": { "hi": "30 − 7 jaisa hi: kam 45 se hona hai, toh 45 se shuru karke 9 ghatate hain", "en": "just like 30 − 7: it is 9 less than 45, so we start at 45 and take away 9" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "30 se 7 kam", "items": ["30 − 7"]}, "right": {"title": "45 se 9 kam", "items": ["45 se shuru"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "30 se 7 kam", "items": ["30 − 7"]}, "right": {"title": "45 se 9 kam", "items": ["45 se shuru"]}} }
      },
      "simpler": { "hi": "'30 se 7 kam' mein dekho kis number se kam hai: 30. Shuru 30 se karo aur usmein se 7 ghatao: 30 − 7.", "en": "In '7 less than 30', see what it is less than: 30. Start at 30 and take 7 away: 30 − 7." }
     },
@@ -99,7 +99,7 @@
       "prompt": { "hi": "Is expression ki value nikaalo: har dost ka hissa kitne rupaye ka hai?", "en": "Find the value of this expression: how many rupees is each friend's share?" },
       "key": "₹90",
       "accept": ["90", "90 rupaye", "Rs 90", "90 rupees"],
-      "why": { "hi": "pehle 300 + 60 = 360 jodo, phir 360 ÷ 4 = 90 hota hai", "en": "first add 300 + 60 = 360, then 360 ÷ 4 = 90" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehle jodo", "items": ["300 + 60"]}, "right": {"title": "phir ÷ 4", "items": ["(300 + 60) ÷ 4"]}, "mark": {"side": "right", "add": "jawab: ₹90"}} }, "board": { "template": "compare@1", "params": {"left": {"title": "pehle jodo", "items": ["300 + 60"]}, "right": {"title": "phir ÷ 4", "items": ["(300 + 60) ÷ 4"]}} }
+      "why": { "hi": "pehle 300 + 60 = 360 jodo, phir 360 ÷ 4 = 90 hota hai", "en": "first add 300 + 60 = 360, then 360 ÷ 4 = 90" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehle jodo", "items": ["300 + 60"]}, "right": {"title": "phir ÷ 4", "items": ["(300 + 60) ÷ 4"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "pehle jodo", "items": ["300 + 60"]}, "right": {"title": "phir ÷ 4", "items": ["(300 + 60) ÷ 4"]}} }
      },
      "simpler": { "hi": "Pehle pizza aur drink ka poora kharcha jodo, 300 + 60. Phir use 4 doston mein baanto, isliye jod bracket mein jaata hai.", "en": "First add the whole cost of pizza and drink, 300 + 60. Then share it among 4 friends, so the sum goes in brackets." }
     }
@@ -108,7 +108,7 @@
     "problem": {
      "hi": "Raju 2 kg chawal ₹55 kilo ke bhaav se aur biscuit ke 3 packet ₹20 wale khareedta hai. Woh ₹500 ka note deta hai. Use wapas milne wale paison ka expression likho aur uski value nikaalo.",
      "en": "Raju buys 2 kg of rice at ₹55 per kg and 3 packets of biscuits at ₹20 each. He pays with a ₹500 note. Write an expression for the change he gets, and find its value."
-    },
+    }, "simpler": { "hi": "Pehle chawal ke paise nikalo, phir biscuit ke. Dono jodo, aur ₹500 mein se ghatao.", "en": "First find the cost of the rice, then of the biscuits. Add them, and take the total from ₹500." },
     "givens": [
      { "hi": "2 kg chawal, ₹55 ka ek kilo", "en": "2 kg of rice at ₹55 per kg" },
      { "hi": "biscuit ke 3 packet, ₹20 wale", "en": "3 packets of biscuits at ₹20 each" },
@@ -145,7 +145,7 @@
      "prompt": { "hi": "Ab ₹500 mein se poora bill ₹170 ghatao. Raju ko kitne rupaye wapas milenge?", "en": "Now take the whole bill of ₹170 away from ₹500. How many rupees does Raju get back?" },
      "key": "₹330",
      "accept": ["330", "330 rupaye", "Rs 330", "330 rupees"],
-     "simpler": { "hi": "₹500 mein se ₹170 ghatao. Jo bacha, wahi Raju ko wapas milta hai.", "en": "Take ₹170 away from ₹500. What is left is what Raju gets back." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "bill", "items": ["110 + 60 = 170"]}, "right": {"title": "wapas", "items": ["500 − 170"]}, "mark": {"side": "right", "add": "jawab: ₹330"}} }, "why": { "hi": "bill 110 + 60 = 170 hai, aur 500 − 170 = 330 wapas milte hain", "en": "the bill is 110 + 60 = 170, and 500 − 170 = 330 comes back" }, "board": { "template": "compare@1", "params": {"left": {"title": "bill", "items": ["110 + 60 = 170"]}, "right": {"title": "wapas", "items": ["500 − 170"]}} }
+     "simpler": { "hi": "₹500 mein se ₹170 ghatao. Jo bacha, wahi Raju ko wapas milta hai.", "en": "Take ₹170 away from ₹500. What is left is what Raju gets back." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "bill", "items": ["110 + 60 = 170"]}, "right": {"title": "wapas", "items": ["500 − 170"]}} }, "why": { "hi": "bill 110 + 60 = 170 hai, aur 500 − 170 = 330 wapas milte hain", "en": "the bill is 110 + 60 = 170, and 500 − 170 = 330 comes back" }, "board": { "template": "compare@1", "params": {"left": {"title": "bill", "items": ["110 + 60 = 170"]}, "right": {"title": "wapas", "items": ["500 − 170"]}} }
     },
     "answer": { "hi": "expression 500 − (2 × 55 + 3 × 20) hai, aur Raju ko ₹330 wapas milenge", "en": "the expression is 500 − (2 × 55 + 3 × 20), and Raju gets ₹330 back" },
     "why": {
@@ -167,7 +167,7 @@
      "wrongIfMis": "14 − 90",
      "board": { "template": "compare@1", "params": {"left": {"title": "number", "items": ["90 se 14 kam"]}, "right": {"title": "shuru", "items": ["90 se"]}} },
      "why": { "hi": "number 90 se 14 kam hai, toh 90 se shuru karke 14 ghatate hain", "en": "the number is 14 less than 90, so we start at 90 and take away 14" },
-     "simpler": { "hi": "Dekho kis number se kam hai, wahi shuru mein aata hai. Phir usmein se doosra number ghatao.", "en": "See which number it is less than; that one comes first. Then take the other number away from it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "number", "items": ["90 se 14 kam"]}, "right": {"title": "shuru", "items": ["90 se"]}, "mark": {"side": "left", "add": "jawab: 90 − 14"}} }
+     "simpler": { "hi": "Dekho kis number se kam hai, wahi shuru mein aata hai. Phir usmein se doosra number ghatao.", "en": "See which number it is less than; that one comes first. Then take the other number away from it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "number", "items": ["90 se 14 kam"]}, "right": {"title": "shuru", "items": ["90 se"]}} }
     },
     {
      "id": "c2",
@@ -181,7 +181,7 @@
      "wrongIfMis": "4 × 120 − 1000",
      "board": { "template": "compare@1", "params": {"left": {"title": "paas the", "items": ["₹1000"]}, "right": {"title": "4 tickets", "items": ["₹120 wali"]}} },
      "why": { "hi": "paas ₹1000 the, aur ₹120 wali 4 tickets ka daam 4 × 120 hai, jo ₹1000 mein se jaata hai", "en": "₹1000 was there, and 4 tickets at ₹120 cost 4 × 120, which comes out of ₹1000" },
-     "simpler": { "hi": "4 tickets ka daam ek block hai, 4 × 120. Ise Sohan ke paison mein se ghatao.", "en": "The cost of 4 tickets is one block, 4 × 120. Take it away from Sohan's money." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "paas the", "items": ["₹1000"]}, "right": {"title": "4 tickets", "items": ["₹120 wali"]}, "mark": {"side": "right", "add": "jawab: 1000 − 4 × 120"}} }
+     "simpler": { "hi": "4 tickets ka daam ek block hai, 4 × 120. Ise Sohan ke paison mein se ghatao.", "en": "The cost of 4 tickets is one block, 4 × 120. Take it away from Sohan's money." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "paas the", "items": ["₹1000"]}, "right": {"title": "4 tickets", "items": ["₹120 wali"]}} }
     }
    ],
    "ladder": [
@@ -206,14 +206,11 @@
       "wrongIfMis": "8 − 75",
       "board": { "template": "compare@1", "params": {"left": {"title": "shabd", "items": ["75 se 8 kam"]}, "right": {"title": "shuru", "items": ["75 se"]}} },
       "why": { "hi": "shabd 75 se 8 kam kehte hain, toh 75 se shuru karke 8 ghatate hain", "en": "the words say 8 less than 75, so we start at 75 and take away 8" },
-      "simpler": { "hi": "Dekho kis number se kam hai, wahi shuru mein aata hai. Phir usmein se 8 ghatao.", "en": "See which number it is less than; that one comes first. Then take 8 away from it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "shabd", "items": ["75 se 8 kam"]}, "right": {"title": "shuru", "items": ["75 se"]}, "mark": {"side": "right", "add": "jawab: 75 − 8"}} }
+      "simpler": { "hi": "Dekho kis number se kam hai, wahi shuru mein aata hai. Phir usmein se 8 ghatao.", "en": "See which number it is less than; that one comes first. Then take 8 away from it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "shabd", "items": ["75 se 8 kam"]}, "right": {"title": "shuru", "items": ["75 se"]}} }
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Ab expression likhna aa gaya. Agle hisse mein do expressions ki tulna karenge, bina poora calculate kiye, sirf unke hisse dekhkar.",
-    "en": "Now you can write an expression. In the next part we will compare two expressions without working them out fully, just by looking at their parts."
-   }
+   "bridgeToNext": { "hi": "Ab expression likhna aa gaya. Agle hisse mein do expressions ki tulna karenge, bina poora calculate kiye, sirf unke hisse dekhkar.", "en": "Now you can write an expression. In the next part we will compare two expressions without working them out fully, just by looking at their parts.", "simpler": {"hi": "Ab do expressions ko poora jode bina tulna karenge. Board par do jode ke expressions saath-saath rakhe hain.", "en": "Now we compare two expressions without adding them fully. On the board two addition expressions sit side by side."} }
   },
   {
    "skillId": "c7-maths-ch02-t01-s2",
@@ -256,7 +253,7 @@
       "accept": ["equal", "same", "dono barabar", "both equal", "they are equal"],
       "targets": "c7-maths-ch02-t01-m-must-calc",
       "wrongIfMis": "jode bina pata nahi",
-      "why": { "hi": "pehla se doosra banne mein 23 se 24, 1 badha, aur 48 se 47, 1 ghata, toh jod wahi raha", "en": "from first to second, 23 became 24 and 48 became 47, so the sum stayed the same" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla", "items": ["23 + 48"]}, "right": {"title": "doosra", "items": ["24 + 47"]}, "mark": {"side": "right", "add": "jawab: barabar"}} }, "board": { "template": "compare@1", "params": {"left": {"title": "pehla", "items": ["23 + 48"]}, "right": {"title": "doosra", "items": ["24 + 47"]}} }
+      "why": { "hi": "pehla se doosra banne mein 23 se 24, 1 badha, aur 48 se 47, 1 ghata, toh jod wahi raha", "en": "from first to second, 23 became 24 and 48 became 47, so the sum stayed the same" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla", "items": ["23 + 48"]}, "right": {"title": "doosra", "items": ["24 + 47"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "pehla", "items": ["23 + 48"]}, "right": {"title": "doosra", "items": ["24 + 47"]}} }
      },
      "simpler": { "hi": "Pehla hissa 23 se 24 hua, yaani 1 badha. Doosra hissa 48 se 47 hua, yaani 1 ghata.", "en": "The first part went from 23 to 24, up by 1. The second part went from 48 to 47, down by 1." }
     },
@@ -284,7 +281,7 @@
     }
    ],
    "workedExample": {
-    "problem": { "hi": "Bina jode batao: pehla 247 + 389 hai aur doosra 250 + 386. Kaun bada hai, ya dono barabar hain?", "en": "Without adding, tell me: the first is 247 + 389 and the second is 250 + 386. Which is bigger, or are they equal?" },
+    "problem": { "hi": "Bina jode batao: pehla 247 + 389 hai aur doosra 250 + 386. Kaun bada hai, ya dono barabar hain?", "en": "Without adding, tell me: the first is 247 + 389 and the second is 250 + 386. Which is bigger, or are they equal?" }, "simpler": { "hi": "Dekho 247 se 250 banne mein kitna badha. Aur 389 se 386 banne mein kitna ghata.", "en": "See how much 247 grew to become 250. And how much 389 went down to become 386." },
     "givens": [
      { "hi": "pehla expression 247 + 389 hai", "en": "the first expression is 247 + 389" },
      { "hi": "doosra expression 250 + 386 hai", "en": "the second expression is 250 + 386" }
@@ -310,7 +307,7 @@
      "accept": ["equal", "same", "dono barabar", "both equal", "they are equal"],
      "targets": "c7-maths-ch02-t01-m-must-calc",
      "wrongIfMis": "jode bina pata nahi",
-     "simpler": { "hi": "Ek hissa 3 badha aur doosra 3 ghata. Socho, kul jod par iska kya asar hua.", "en": "One part went up by 3 and the other down by 3. Think what that does to the total." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla", "items": ["247 + 389"]}, "right": {"title": "doosra", "items": ["250 + 386"]}, "mark": {"side": "right", "add": "jawab: barabar"}} }, "why": { "hi": "pehla se doosra banne mein 247 se 250, 3 badha, aur 389 se 386, 3 ghata, toh jod wahi raha", "en": "from first to second, 247 became 250 and 389 became 386, so the sum stayed the same" }, "board": { "template": "compare@1", "params": {"left": {"title": "pehla", "items": ["247 + 389"]}, "right": {"title": "doosra", "items": ["250 + 386"]}} }
+     "simpler": { "hi": "Ek hissa 3 badha aur doosra 3 ghata. Socho, kul jod par iska kya asar hua.", "en": "One part went up by 3 and the other down by 3. Think what that does to the total." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla", "items": ["247 + 389"]}, "right": {"title": "doosra", "items": ["250 + 386"]}} }, "why": { "hi": "pehla se doosra banne mein 247 se 250, 3 badha, aur 389 se 386, 3 ghata, toh jod wahi raha", "en": "from first to second, 247 became 250 and 389 became 386, so the sum stayed the same" }, "board": { "template": "compare@1", "params": {"left": {"title": "pehla", "items": ["247 + 389"]}, "right": {"title": "doosra", "items": ["250 + 386"]}} }
     },
     "answer": { "hi": "247 + 389 aur 250 + 386 barabar hain", "en": "247 + 389 and 250 + 386 are equal" },
     "why": {
@@ -332,7 +329,7 @@
      "wrongIfMis": "jode bina pata nahi",
      "board": { "template": "compare@1", "params": {"left": {"title": "pehla", "items": ["486 + 239"]}, "right": {"title": "doosra", "items": ["485 + 240"]}} },
      "why": { "hi": "pehla se doosra banne mein 486 se 485, 1 ghata, aur 239 se 240, 1 badha, toh jod wahi raha", "en": "from first to second, 486 became 485 and 239 became 240, so the sum stayed the same" },
-     "simpler": { "hi": "486 se 485, aur 239 se 240 tak dekho. Kaunsa hissa kitna badha ya ghata, dono milao.", "en": "Look from 486 to 485, and from 239 to 240. See how much each part went up or down, and compare." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla", "items": ["486 + 239"]}, "right": {"title": "doosra", "items": ["485 + 240"]}, "mark": {"side": "right", "add": "jawab: barabar"}} }
+     "simpler": { "hi": "486 se 485, aur 239 se 240 tak dekho. Kaunsa hissa kitna badha ya ghata, dono milao.", "en": "Look from 486 to 485, and from 239 to 240. See how much each part went up or down, and compare." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla", "items": ["486 + 239"]}, "right": {"title": "doosra", "items": ["485 + 240"]}} }
     },
     {
      "id": "c2",
@@ -384,7 +381,7 @@
       "wrongIfMis": "jode bina pata nahi",
       "board": { "template": "compare@1", "params": {"left": {"title": "pehla", "items": ["68 + 17"]}, "right": {"title": "doosra", "items": ["70 + 15"]}} },
       "why": { "hi": "pehla se doosra banne mein 68 se 70, 2 badhe, aur 17 se 15, 2 ghate, toh jod wahi raha", "en": "from first to second, 68 became 70 and 17 became 15, so the sum stayed the same" },
-      "simpler": { "hi": "68 se 70 kitna badha, aur 17 se 15 kitna ghata, gino. Dono badlaav aapas mein milao.", "en": "Count how much 68 to 70 went up, and how much 17 to 15 went down. Compare the two changes." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla", "items": ["68 + 17"]}, "right": {"title": "doosra", "items": ["70 + 15"]}, "mark": {"side": "right", "add": "jawab: barabar"}} }
+      "simpler": { "hi": "68 se 70 kitna badha, aur 17 se 15 kitna ghata, gino. Dono badlaav aapas mein milao.", "en": "Count how much 68 to 70 went up, and how much 17 to 15 went down. Compare the two changes." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehla", "items": ["68 + 17"]}, "right": {"title": "doosra", "items": ["70 + 15"]}} }
      }
     },
     {
@@ -408,10 +405,7 @@
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Ab expressions ko unke hisse dekhkar compare karna aa gaya. Agle hisse mein ulta karenge: expression diya hoga, aur tum uski kahani banaoge.",
-    "en": "Now you can compare expressions by looking at their parts. In the next part we go the other way: you get an expression and make up its story."
-   }
+   "bridgeToNext": { "hi": "Ab expressions ko unke hisse dekhkar compare karna aa gaya. Agle hisse mein ulta karenge: expression diya hoga, aur tum uski kahani banaoge.", "en": "Now you can compare expressions by looking at their parts. In the next part we go the other way: you get an expression and make up its story.", "simpler": {"hi": "Ab ulta karenge: expression se kahani banayenge. Board par ek expression aur uski kahani saath-saath hain.", "en": "Now we go the other way: we make a story from an expression. On the board an expression and its story sit side by side."} }
   },
   {
    "skillId": "c7-maths-ch02-t01-s3",
@@ -435,7 +429,7 @@
     ]
    },
    "explain": [
-    { "id": "e1", "convey": "50 + 5 × 10 → the × part is one block, five ₹10 notes, named first → the story joins ₹50 and that block; not 'add 4, then 10 times'", "mustSay": [{"hi": "5 × 10 ek block", "en": "5 × 10 is one block"}, {"hi": "₹10 ke 5 note", "en": "five ₹10 notes"}], "board": {"template": "compare@1", "params": {"left": {"title": "50 + 5 × 10", "items": ["50", "5 × 10"]}, "right": {"title": "Kahani", "items": ["₹50 paas the", "₹10 ke 5 note mile"]}}}, "point": {"hi": "50 + 5 × 10 mein 5 × 10 ek block hai, yaani ₹10 ke 5 note. Toh kahani yeh hai: kisi ke paas ₹50 the, phir use ₹10 ke 5 note mile.", "en": "In 50 + 5 × 10, 5 × 10 is one block: five ₹10 notes. So the story is: someone had ₹50, then got five ₹10 notes."}, "ask": {"prompt": {"hi": "Is kahani mein aakhir mein kitne rupaye hain?", "en": "In this story, how many rupees are there at the end?"}, "key": "₹100", "accept": ["100", "100 rupaye", "Rs 100", "100 rupees"], "targets": "c7-maths-ch02-t01-m-story-left-to-right", "wrongIfMis": "₹550", "why": {"hi": "₹50 the, ₹10 ke 5 note mile: 5 × 10 = 50, aur 50 + 50 = 100", "en": "₹50 was there and five ₹10 notes came: 5 × 10 = 50, and 50 + 50 = 100"}, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "50 + 5 × 10", "items": ["₹50 the"]}, "right": {"title": "5 × 10", "items": ["₹10 ke 5 note mile"]}, "mark": {"side": "right", "add": "jawab: ₹100"}} }, "board": {"template": "compare@1", "params": {"left": {"title": "50 + 5 × 10", "items": ["₹50 the"]}, "right": {"title": "5 × 10", "items": ["₹10 ke 5 note mile"]}}}}, "simpler": {"hi": "5 × 10 ek block hai, yaani ₹10 ke paanch note. Kisi ke paas ₹50 the, phir yeh note mile.", "en": "5 × 10 is one block: five ₹10 notes. Someone had ₹50, then got these notes."} },
+    { "id": "e1", "convey": "50 + 5 × 10 → the × part is one block, five ₹10 notes, named first → the story joins ₹50 and that block; not 'add 4, then 10 times'", "mustSay": [{"hi": "5 × 10 ek block", "en": "5 × 10 is one block"}, {"hi": "₹10 ke 5 note", "en": "five ₹10 notes"}], "board": {"template": "compare@1", "params": {"left": {"title": "50 + 5 × 10", "items": ["50", "5 × 10"]}, "right": {"title": "Kahani", "items": ["₹50 paas the", "₹10 ke 5 note mile"]}}}, "point": {"hi": "50 + 5 × 10 mein 5 × 10 ek block hai, yaani ₹10 ke 5 note. Toh kahani yeh hai: kisi ke paas ₹50 the, phir use ₹10 ke 5 note mile.", "en": "In 50 + 5 × 10, 5 × 10 is one block: five ₹10 notes. So the story is: someone had ₹50, then got five ₹10 notes."}, "ask": {"prompt": {"hi": "Is kahani mein aakhir mein kitne rupaye hain?", "en": "In this story, how many rupees are there at the end?"}, "key": "₹100", "accept": ["100", "100 rupaye", "Rs 100", "100 rupees"], "targets": "c7-maths-ch02-t01-m-story-left-to-right", "wrongIfMis": "₹550", "why": {"hi": "₹50 the, ₹10 ke 5 note mile: 5 × 10 = 50, aur 50 + 50 = 100", "en": "₹50 was there and five ₹10 notes came: 5 × 10 = 50, and 50 + 50 = 100"}, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "50 + 5 × 10", "items": ["₹50 the"]}, "right": {"title": "5 × 10", "items": ["₹10 ke 5 note mile"]}} }, "board": {"template": "compare@1", "params": {"left": {"title": "50 + 5 × 10", "items": ["₹50 the"]}, "right": {"title": "5 × 10", "items": ["₹10 ke 5 note mile"]}}}}, "simpler": {"hi": "5 × 10 ek block hai, yaani ₹10 ke paanch note. Kisi ke paas ₹50 the, phir yeh note mile.", "en": "5 × 10 is one block: five ₹10 notes. Someone had ₹50, then got these notes."} },
     {
      "id": "e2",
      "convey": "200 − 4 × 30 → two stories on the board: A takes four ₹30 books away from ₹200 (the × block taken away), B spends ₹4 and then makes the money 30 times (left to right) → only A follows the grouping",
@@ -463,7 +457,7 @@
     "problem": {
      "hi": "Expression (180 − 20) ÷ 4 se match karti ek chhoti kahani banao, aur uski value nikaalo.",
      "en": "Make up a short story that matches the expression (180 − 20) ÷ 4, and find its value."
-    },
+    }, "simpler": { "hi": "Kahani teen hisson mein hogi: pehle ₹180 the, phir ₹20 kharch hue, phir baaki 4 logon mein baante.", "en": "The story has three parts: first there was ₹180, then ₹20 was spent, then the rest was shared among 4 people." },
     "givens": [
      { "hi": "expression (180 − 20) ÷ 4 hai", "en": "the expression is (180 − 20) ÷ 4" }
     ],
@@ -492,7 +486,7 @@
      "prompt": { "hi": "Is kahani mein har cousin ko kitne rupaye milenge?", "en": "In this story, how many rupees does each cousin get?" },
      "key": "₹40",
      "accept": ["40", "40 rupaye", "Rs 40", "40 rupees"],
-     "simpler": { "hi": "Bache hue 160 rupaye 4 cousins mein baanto. Socho, 4 ko kis number se guna karein ki 160 aaye.", "en": "Share the 160 rupees left among 4 cousins. Think what number times 4 makes 160." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehle", "items": ["180 − 20"]}, "right": {"title": "phir", "items": ["÷ 4"]}, "mark": {"side": "right", "add": "jawab: ₹40"}} }, "why": { "hi": "pehle 180 − 20 = 160 bache, phir 160 ÷ 4 = 40 har cousin ko mile", "en": "first 180 − 20 = 160 is left, then 160 ÷ 4 = 40 goes to each cousin" }, "board": { "template": "compare@1", "params": {"left": {"title": "pehle", "items": ["180 − 20"]}, "right": {"title": "phir", "items": ["÷ 4"]}} }
+     "simpler": { "hi": "Bache hue 160 rupaye 4 cousins mein baanto. Socho, 4 ko kis number se guna karein ki 160 aaye.", "en": "Share the 160 rupees left among 4 cousins. Think what number times 4 makes 160." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehle", "items": ["180 − 20"]}, "right": {"title": "phir", "items": ["÷ 4"]}} }, "why": { "hi": "pehle 180 − 20 = 160 bache, phir 160 ÷ 4 = 40 har cousin ko mile", "en": "first 180 − 20 = 160 is left, then 160 ÷ 4 = 40 goes to each cousin" }, "board": { "template": "compare@1", "params": {"left": {"title": "pehle", "items": ["180 − 20"]}, "right": {"title": "phir", "items": ["÷ 4"]}} }
     },
     "answer": { "hi": "Dadi ne 4 cousins ko ₹180 diye, unhone ₹20 ki patang milkar li aur baaki barabar baanta, har cousin ko ₹40 mile", "en": "Dadi gave ₹180 to 4 cousins; they bought a ₹20 kite together and shared the rest equally, so each cousin got ₹40" },
     "why": {
@@ -507,7 +501,7 @@
      "prompt": {
       "hi": "Kaunsi kahani 30 + 5 × 8 se match karti hai? Kahani A: ₹30 the, phir ₹8 wale 5 pen mile. Kahani B: ₹30 the, ₹5 aur mile, phir paise 8 guna ho gaye. A ya B?",
       "en": "Which story matches 30 + 5 × 8? Story A: there was ₹30, then 5 pens worth ₹8 each were received. Story B: there was ₹30, ₹5 more came, then the money became 8 times as much. A or B?"
-     },
+     }, "ask": { "hi": "Kaunsi kahani 30 + 5 × 8 se match karti hai, A ya B?", "en": "Which story matches 30 + 5 × 8, A or B?" },
      "key": "A",
      "accept": ["a", "kahani A", "story A", "(a)"],
      "targets": "c7-maths-ch02-t01-m-story-left-to-right",
@@ -528,7 +522,7 @@
      "wrongIfMis": "₹1740",
      "board": { "template": "compare@1", "params": {"left": {"title": "₹120 the", "items": ["120 − 4 × 15"]}, "right": {"title": "4 copy", "items": ["₹15 wali"]}} },
      "why": { "hi": "₹120 the, ₹15 wali 4 copy: 4 × 15 = 60, aur 120 − 60 = 60 bache", "en": "₹120 was there, 4 notebooks at ₹15: 4 × 15 = 60, and 120 − 60 = 60 is left" },
-     "simpler": { "hi": "Pehle 4 copy ka daam nikalo, 4 × 15. Phir use ₹120 mein se ghatao.", "en": "First find the cost of 4 notebooks, 4 × 15. Then take it away from ₹120." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "₹120 the", "items": ["120 − 4 × 15"]}, "right": {"title": "4 copy", "items": ["₹15 wali"]}, "mark": {"side": "right", "add": "jawab: ₹60"}} }
+     "simpler": { "hi": "Pehle 4 copy ka daam nikalo, 4 × 15. Phir use ₹120 mein se ghatao.", "en": "First find the cost of 4 notebooks, 4 × 15. Then take it away from ₹120." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "₹120 the", "items": ["120 − 4 × 15"]}, "right": {"title": "4 copy", "items": ["₹15 wali"]}} }
     }
    ],
    "ladder": [
@@ -551,7 +545,7 @@
       "wrongIfMis": "₹310",
       "board": { "template": "compare@1", "params": {"left": {"title": "₹25 the", "items": ["25 + 6 × 10"]}, "right": {"title": "6 note", "items": ["₹10 ke"]}} },
       "why": { "hi": "₹25 the, ₹10 ke 6 note mile: 6 × 10 = 60, aur 25 + 60 = 85", "en": "₹25 was there and six ₹10 notes came: 6 × 10 = 60, and 25 + 60 = 85" },
-      "simpler": { "hi": "Pehle 6 note ka jod nikalo, 6 × 10. Phir usmein ₹25 jodo.", "en": "First find what the 6 notes make, 6 × 10. Then add ₹25 to it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "₹25 the", "items": ["25 + 6 × 10"]}, "right": {"title": "6 note", "items": ["₹10 ke"]}, "mark": {"side": "right", "add": "jawab: ₹85"}} }
+      "simpler": { "hi": "Pehle 6 note ka jod nikalo, 6 × 10. Phir usmein ₹25 jodo.", "en": "First find what the 6 notes make, 6 × 10. Then add ₹25 to it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "₹25 the", "items": ["25 + 6 × 10"]}, "right": {"title": "6 note", "items": ["₹10 ke"]}} }
      }
     }
    ],

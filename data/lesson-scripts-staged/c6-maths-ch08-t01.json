@@ -17,7 +17,7 @@
   { "hi": "doori", "en": "distance" },
   { "hi": "khoonti", "en": "peg" },
   { "hi": "andar / circle par / bahar", "en": "inside / on the circle / outside" }
- ], "joints": {"asidePark":[{"hi":"Yeh gol wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once this round shape is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh gol wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once this round shape is over."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kaunsi cheezein gol hoti hain?","en":"What things in {aside} are round?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in English."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in English."}],"askAgain":[{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."}]},
+ ], "greetSimpler": { "hi": "Aaj hum gol shape ke centre aur uske kinaare ki baat karenge.", "en": "Today we talk about a circle's centre and its edge." }, "joints": {"asidePark":[{"hi":"Yeh gol wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once this round shape is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh gol wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once this round shape is over."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kaunsi cheezein gol hoti hain?","en":"What things in {aside} are round?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."}],"askAgain":[{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."}],"backTo":[{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."},{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."},{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."}]},
  "skills": [
   {
    "skillId": "c6-maths-ch08-t01-s1",
@@ -113,7 +113,7 @@
     "problem": {
      "hi": "Ek gol ghadi ka centre O hai. A aur B ghadi ke kinaare par hain, aur seedhi line AB, O se guzarti hai. OA 7 cm hai. Radius aur diameter ke naam batao, aur AB ki lambai nikalo.",
      "en": "A round clock has its centre at O. A and B are on the edge of the clock, and the straight line AB passes through O. OA is 7 cm. Name the radius and the diameter, and find the length of AB."
-    },
+    }, "simpler": { "hi": "Centre se kinaare tak ki line radius hoti hai. Centre se hokar ek kinaare se doosre kinaare tak ki line diameter hoti hai. Ab dekho OA aur AB kaun si hain.", "en": "A line from the centre to the edge is a radius. A line from edge to edge through the centre is a diameter. Now see which ones OA and AB are." },
     "givens": [
      { "hi": "O ghadi ka centre hai", "en": "O is the centre of the clock" },
      { "hi": "A aur B kinaare par hain", "en": "A and B are on the edge" },
@@ -243,10 +243,7 @@
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Ab centre, radius aur diameter pehchaan liye. Agle hisse mein compass se khud ek diye hue radius ka circle banayenge.",
-    "en": "Now we can recognise the centre, the radius and the diameter. In the next part we will draw a circle of a given radius ourselves with a compass."
-   }
+   "bridgeToNext": { "hi": "Ab centre, radius aur diameter pehchaan liye. Agle hisse mein compass se khud ek diye hue radius ka circle banayenge.", "en": "Now we can recognise the centre, the radius and the diameter. In the next part we will draw a circle of a given radius ourselves with a compass.", "simpler": {"hi": "Ab compass se circle banana seekhenge. Board par compass se bana ek circle hai.", "en": "Now we learn to draw a circle with a compass. On the board there is a circle drawn with a compass."} }
   },
   {
    "skillId": "c6-maths-ch08-t01-s2",
@@ -344,7 +341,7 @@
     "problem": {
      "hi": "Kaagaz par 10 cm diameter ka circle banana hai. Compass kitna khologe, aur circle kaise banaoge?",
      "en": "A circle with a diameter of 10 cm is to be drawn on paper. How wide will you open the compass, and how will you draw the circle?"
-    },
+    }, "simpler": { "hi": "Kaagaz par 10 cm diameter ka circle banana hai. Compass ka khulaav aur banane ka tareeka chahiye.", "en": "A circle of diameter 10 cm is to be drawn on paper. We need the compass opening and the way to draw it." },
     "givens": [
      { "hi": "circle ka diameter 10 cm hai", "en": "the circle's diameter is 10 cm" },
      { "hi": "compass aur scale paas mein hain", "en": "a compass and a ruler are at hand" }
@@ -406,7 +403,7 @@
      "wrongIfMis": "haan",
      "board": { "template": "compare@1", "params": {"left": {"title": "shuru mein", "items": ["5 cm"]}, "right": {"title": "aadhe ke baad", "items": ["6 cm"]}} },
      "why": { "hi": "shuru mein bane points centre se 5 cm par hain, aur aadhe ke baad wale 6 cm par", "en": "the points drawn at the start are 5 cm from the centre, and those after halfway are 6 cm" },
-     "simpler": { "hi": "Pehle aadhe mein compass 5 cm khula tha, baad mein 6 cm. Socho, dono hisson ke points centre se ek hi doori par hain ya alag.", "en": "For the first half the compass was open 5 cm, later 6 cm. Think whether points of both halves are the same distance from the centre." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "shuru mein", "items": ["5 cm"]}, "right": {"title": "aadhe ke baad", "items": ["6 cm"]}, "mark": {"side": "right", "add": "jawab: nahi"}} }
+     "simpler": { "hi": "Pehle aadhe mein compass 5 cm khula tha, baad mein 6 cm. Socho, dono hisson ke points centre se ek hi doori par hain ya alag.", "en": "For the first half the compass was open 5 cm, later 6 cm. Think whether points of both halves are the same distance from the centre." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "shuru mein", "items": ["5 cm"]}, "right": {"title": "aadhe ke baad", "items": ["6 cm"]}} }
     },
     {
      "id": "c3",
@@ -475,10 +472,7 @@
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Compass ne dikhaya ki circle ka har point centre se ek hi doori par hota hai. Agle hisse mein isi baat se pata karenge ki koi cheez circle par hai, andar hai ya bahar.",
-    "en": "The compass showed that every point of a circle is the same distance from the centre. In the next part we will use this to tell whether something is on the circle, inside it or outside it."
-   }
+   "bridgeToNext": { "hi": "Compass ne dikhaya ki circle ka har point centre se ek hi doori par hota hai. Agle hisse mein isi baat se pata karenge ki koi cheez circle par hai, andar hai ya bahar.", "en": "The compass showed that every point of a circle is the same distance from the centre. In the next part we will use this to tell whether something is on the circle, inside it or outside it.", "simpler": {"hi": "Ab dekhenge ki koi cheez circle par hai, andar hai ya bahar. Board par ek pole ke chaaron taraf ek circle bana hai.", "en": "Now we see whether something is on a circle, inside it or outside it. On the board a circle is drawn all around a pole."} }
   },
   {
    "skillId": "c6-maths-ch08-t01-s3",
@@ -549,7 +543,7 @@
     "problem": {
      "hi": "Park mein ek gol kyari hai, jiska centre O hai aur radius 4 m. Nal T, O se 4 m door hai, bench B 3 m door hai, aur gate G 5 m door hai. Kaun kyari ke kinaare par hai, kaun andar, aur kaun bahar?",
      "en": "A park has a round flower bed with centre O and radius 4 m. Tap T is 4 m from O, bench B is 3 m away, and gate G is 5 m away. Which is on the edge of the bed, which is inside, and which is outside?"
-    },
+    }, "simpler": { "hi": "Kyari ka centre O aur radius 4 m hai. Nal T, bench B aur gate G, O se 4 m, 3 m aur 5 m door hain. Har ek kinaare par, andar ya bahar hai, yeh batana hai.", "en": "The flower bed has centre O and radius 4 m. Tap T, bench B and gate G are 4 m, 3 m and 5 m from O. We name each as on the edge, inside or outside." },
     "givens": [
      { "hi": "centre O hai aur radius 4 m", "en": "centre O, radius 4 m" },
      { "hi": "nal T, O se 4 m door hai", "en": "tap T is 4 m from O" },

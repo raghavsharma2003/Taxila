@@ -10,8 +10,8 @@
   {"hi": "factor / gunankhand", "en": "factor"},
   {"hi": "skip counting / chhalaang wali ginti", "en": "skip counting"},
   {"hi": "chhalaang", "en": "jump"}
- ],
- "joints": {"asidePark":[{"hi":"Mendhak wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once the frog's jumps is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas mendhak wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once the frog's jumps is over."},{"hi":"Achha, {aside} wali baat main yaad rakhti hoon, thodi der mein usi par aayenge.","en":"Okay, I'll keep the {aside} bit in mind, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kya kuch gin-gin ke aage badhta hai?","en":"Does anything in {aside} move forward in counts?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"}],"hindiSwitch":[{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in English."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."}],"askAgain":[{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."}]},
+ ], "greetSimpler": { "hi": "Aaj hum ek number ki ginti aage badhakar uske multiples dhoondhenge.", "en": "Today we count on by a number to find its multiples." },
+ "joints": {"asidePark":[{"hi":"Mendhak wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once the frog's jumps is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas mendhak wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once the frog's jumps is over."},{"hi":"Achha, {aside} wali baat main yaad rakhti hoon, thodi der mein usi par aayenge.","en":"Okay, I'll keep the {aside} bit in mind, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kya kuch gin-gin ke aage badhta hai?","en":"Does anything in {aside} move forward in counts?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"}],"hindiSwitch":[{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."}],"askAgain":[{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."}],"backTo":[{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."},{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."}]},
  "skills": [
   {
    "skillId": "c5-maths-ch13-t01-s1",
@@ -83,7 +83,7 @@
        "en": "the multiples of 8 go 8, 16, 24, 32, and the next is 32 + 8 = 40"
       },
       "accept": ["chaalis", "chalis", "forty"],
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "8 ke factors", "items": ["1, 2, 4, 8"]}, "right": {"title": "8 ke multiples", "items": ["8, 16, 24, 32"]}, "mark": {"side": "right", "add": "jawab: 40"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "8 ke factors", "items": ["1, 2, 4, 8"]}, "right": {"title": "8 ke multiples", "items": ["8, 16, 24, 32"]}} }
      },
      "simpler": {
       "hi": "8 ke factors 8 ko poora baantte hain: 1, 2, 4, 8. 8 ke multiples 8 ki ginti se aate hain: 8, 16, 24, 32, aur badhte jaate hain.",
@@ -124,7 +124,7 @@
     "problem": {
      "hi": "Rekha ki gullak khaali hai. Woh roz usme ₹7 daalti hai. Kya kisi din gullak mein theek ₹50 honge?",
      "en": "Rekha's piggy bank is empty. Every day she puts ₹7 in it. Will there ever be exactly ₹50 in the piggy bank?"
-    },
+    }, "simpler": { "hi": "Har din ₹7 judte hain: 7, 14, 21, aise aage. Dekho yeh ginti kabhi theek 50 par aati hai ya nahi.", "en": "₹7 is added every day: 7, 14, 21, and on. See whether this count ever lands exactly on 50." },
     "givens": [
      {
       "hi": "gullak shuru mein khaali hai aur roz ₹7 judte hain",
@@ -221,7 +221,7 @@
       "hi": "3 ki ginti 3, 6, 9, 12 aise hi aage chalti rehti hai. Dekho 300 ko 3-3 ke hisson mein poora baant sakte hain ya nahi.",
       "en": "Counting by 3 goes 3, 6, 9, 12 and keeps going. See whether 300 splits exactly into 3s."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 ke multiples", "items": ["3, 6, 9, 12"]}, "right": {"title": "300", "items": ["multiple"]}, "mark": {"side": "right", "add": "jawab: Yes"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 ke multiples", "items": ["3, 6, 9, 12"]}, "right": {"title": "300", "items": ["multiple"]}} }
     },
     {
      "id": "c3",
@@ -242,7 +242,7 @@
       "hi": "Factors 10 ko baantte hain, par multiples 10 ki ginti se aate hain. 10 ki ginti mein 10 ke baad agla number socho.",
       "en": "Factors divide 10, but multiples come from counting by 10. Think of the next number after 10 when counting by 10."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "10 ke factors", "items": ["1, 2, 5, 10"]}, "right": {"title": "10 ke multiples", "items": ["10"]}, "mark": {"side": "right", "add": "jawab: 20"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "10 ke factors", "items": ["1, 2, 5, 10"]}, "right": {"title": "10 ke multiples", "items": ["10"]}} }
     }
    ],
    "ladder": [
@@ -318,10 +318,7 @@
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Ab ek ki jagah do mendhak saath koodenge, ek 2-2 ki chhalaang lagayega aur ek 3-3 ki. Dekhenge ki dono kin numbers par saath girte hain.",
-    "en": "Now two frogs will jump together instead of one, one jumping 2 at a time and one 3 at a time. We will see on which numbers both land together."
-   }
+   "bridgeToNext": { "hi": "Ab ek ki jagah do mendhak saath koodenge, ek 2-2 ki chhalaang lagayega aur ek 3-3 ki. Dekhenge ki dono kin numbers par saath girte hain.", "en": "Now two frogs will jump together instead of one, one jumping 2 at a time and one 3 at a time. We will see on which numbers both land together.", "simpler": {"hi": "Ab do mendhak saath koodenge, ek 2-2 ki chhalaang se aur ek 3-3 ki. Dekhenge ki dono kin numbers par saath girte hain.", "en": "Now two frogs jump together, one 2 at a time and one 3 at a time. We see which numbers both land on."} }
   },
   {
    "skillId": "c5-maths-ch13-t01-s2",
@@ -365,7 +362,7 @@
        "en": "after 12 the 2-jumps go 14, 16, 18 and the 3-jumps 15, 18, so 18 is where both meet"
       },
       "accept": ["athaarah", "atharah", "eighteen"],
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2 ki chhalaang", "items": ["2, 4, 6, 8", "10, 12"]}, "right": {"title": "3 ki chhalaang", "items": ["3, 6, 9, 12"]}, "mark": {"side": "left", "add": "jawab: 18"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2 ki chhalaang", "items": ["2, 4, 6, 8", "10, 12"]}, "right": {"title": "3 ki chhalaang", "items": ["3, 6, 9, 12"]}} }
      },
      "simpler": {
       "hi": "2 wala 2, 4, 6, 8, 10, 12 par girta hai, aur 3 wala 3, 6, 9, 12 par. Jo number dono liston mein hain, woh common multiples hain.",
@@ -392,7 +389,7 @@
        "en": "after the first two common multiples, counting by 4 goes from 32 to 36, and counting by 6 also reaches 36"
       },
       "accept": ["chhattees", "chhattis", "thirty-six", "thirty six"],
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4 ke multiples", "items": ["4, 8, 12", "16, 20, 24"]}, "right": {"title": "6 ke multiples", "items": ["6, 12", "18, 24"]}, "mark": {"side": "right", "add": "jawab: 36"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4 ke multiples", "items": ["4, 8, 12", "16, 20, 24"]}, "right": {"title": "6 ke multiples", "items": ["6, 12", "18, 24"]}} }
      },
      "simpler": {
       "hi": "4 ki list aur 6 ki list, dono mein 12 aur 24 aate hain. Inmein sabse pehle 12 aata hai, isliye woh pehla common multiple hai.",
@@ -404,7 +401,7 @@
     "problem": {
      "hi": "Ek mendhak 6-6 aur ek tidda 8-8 ki chhalaang lagata hai, dono 0 se. Pehli baar dono ek hi number par kahaan girenge?",
      "en": "A frog jumps 6 at a time and a grasshopper 8 at a time, both from 0. Where do they first land on the same number?"
-    },
+    }, "simpler": { "hi": "Mendhak 6, 12, 18 par girta hai, aur tidda 8, 16 par. Dono ginti aage badhao, jab tak koi number dono mein na aa jaaye.", "en": "The frog lands on 6, 12, 18, and the grasshopper on 8, 16. Keep both counts going until a number comes in both." },
     "givens": [
      {
       "hi": "mendhak 6-6 aur tidda 8-8 ki chhalaang lagata hai, dono 0 se shuru",
@@ -452,7 +449,7 @@
       "en": "Look for each number of the frog's list in the grasshopper's list. The first number found in both is the one."
      },
      "board": {"template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Tidda", "items": ["8-8 ki chhalaang"]}}},
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Tidda", "items": ["8-8 ki chhalaang"]}, "mark": {"side": "right", "add": "jawab: 24"}} },
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Tidda", "items": ["8-8 ki chhalaang"]}} },
      "why": {
       "hi": "mendhak 6-6 ki chhalaang lagata hai aur tidda 8-8 ki; dono pehli baar 24 par milte hain",
       "en": "the first number both the frog's 6-jumps and the grasshopper's 8-jumps land on is 24"
@@ -485,7 +482,7 @@
       "hi": "6 ki ginti aur 10 ki ginti, dono list likho. Jo number dono mein sabse pehle aaye, wahan dono milenge.",
       "en": "Write both lists, counting by 6 and counting by 10. The first number in both is where they meet."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Khargosh", "items": ["10-10 ki chhalaang"]}, "mark": {"side": "right", "add": "jawab: 30"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Khargosh", "items": ["10-10 ki chhalaang"]}} }
     },
     {
      "id": "c2",
@@ -506,7 +503,7 @@
       "hi": "Multiple apne number se kabhi chhota nahi hota. 4 ki list 4 se shuru hoti hai, aur 6 ki list 6 se.",
       "en": "A multiple is never smaller than its number. The list for 4 starts at 4, and the list for 6 starts at 6."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4 ke multiples", "items": ["4, 8, 12"]}, "right": {"title": "6 ke multiples", "items": ["6, 12"]}, "mark": {"side": "right", "add": "jawab: No"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4 ke multiples", "items": ["4, 8, 12"]}, "right": {"title": "6 ke multiples", "items": ["6, 12"]}} }
     },
     {
      "id": "c3",
@@ -527,7 +524,7 @@
       "hi": "6 ki ginti aur 9 ki ginti, dono list likho. Dono mein aane wala koi number chuno jo 50 se chhota ho.",
       "en": "Write both lists, counting by 6 and counting by 9. Pick a number in both that is less than 50."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "6 ke multiples", "items": ["6, 12"]}, "right": {"title": "9 ke multiples", "items": ["9"]}, "mark": {"side": "right", "add": "jawab: 18"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "6 ke multiples", "items": ["6, 12"]}, "right": {"title": "9 ke multiples", "items": ["9"]}} }
     }
    ],
    "ladder": [
@@ -561,7 +558,7 @@
       "hi": "Dono list saath likho aur pehle common number par ruk jao. Guna tak jaane ki zaroorat nahi.",
       "en": "Write both lists together and stop at the first common number. No need to go all the way to the product."
      },
-     "then": { "prompt": {"hi": "Ek mendhak 6-6 aur ek khargosh 14-14 ki chhalaang lagata hai, dono 0 se. Pehli baar dono kis number par milenge?", "en": "A frog jumps 6 at a time and a rabbit 14, both from 0. On which number do they first meet?"}, "key": "42", "why": {"hi": "mendhak ki 6-6 aur khargosh ki 14-14 ki chhalaang pehli baar 42 par milti hain", "en": "the first number both the frog's 6-jumps and the rabbit's 14-jumps land on is 42"}, "accept": ["bayaalees", "byalis", "forty-two", "forty two"], "targets": "c5-maths-ch13-t01-m-product-only", "wrongIfMis": "84", "board": {"template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Khargosh", "items": ["14-14 ki chhalaang"]}}}, "simpler": {"hi": "6 ki ginti aur 14 ki ginti, dono list likho. Dono mein sabse pehle aane wala number dhoondho.", "en": "Write both lists, counting by 6 and counting by 14. Find the first number that is in both."}, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Khargosh", "items": ["14-14 ki chhalaang"]}, "mark": {"side": "right", "add": "jawab: 42"}} } }
+     "then": { "prompt": {"hi": "Ek mendhak 6-6 aur ek khargosh 14-14 ki chhalaang lagata hai, dono 0 se. Pehli baar dono kis number par milenge?", "en": "A frog jumps 6 at a time and a rabbit 14, both from 0. On which number do they first meet?"}, "key": "42", "why": {"hi": "mendhak ki 6-6 aur khargosh ki 14-14 ki chhalaang pehli baar 42 par milti hain", "en": "the first number both the frog's 6-jumps and the rabbit's 14-jumps land on is 42"}, "accept": ["bayaalees", "byalis", "forty-two", "forty two"], "targets": "c5-maths-ch13-t01-m-product-only", "wrongIfMis": "84", "board": {"template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Khargosh", "items": ["14-14 ki chhalaang"]}}}, "simpler": {"hi": "6 ki ginti aur 14 ki ginti, dono list likho. Dono mein sabse pehle aane wala number dhoondho.", "en": "Write both lists, counting by 6 and counting by 14. Find the first number that is in both."}, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Khargosh", "items": ["14-14 ki chhalaang"]}} } }
     },
     {
      "targets": "c5-maths-ch13-t01-m-factor-multiple-confuse",
@@ -592,14 +589,11 @@
        "hi": "Multiple apne number se kabhi chhota nahi hota. 6 ki list 6 se shuru hoti hai, aur 9 ki list 9 se.",
        "en": "A multiple is never smaller than its number. The list for 6 starts at 6, and the list for 9 starts at 9."
       },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "6 ki list", "items": ["6 se shuru"]}, "right": {"title": "9 ki list", "items": ["9 se shuru"]}, "mark": {"side": "right", "add": "jawab: No"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "6 ki list", "items": ["6 se shuru"]}, "right": {"title": "9 ki list", "items": ["9 se shuru"]}} }
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Ab yahi common multiple ghantiyon ke samay mein dhoondhenge: ek ghanti har 4 minute bajti hai aur doosri har 6 minute, toh dono saath kab bajengi.",
-    "en": "Now we will find this same common multiple in the timing of bells: one bell rings every 4 minutes and another every 6 minutes, so when will both ring together."
-   }
+   "bridgeToNext": { "hi": "Ab yahi common multiple ghantiyon ke samay mein dhoondhenge: ek ghanti har 4 minute bajti hai aur doosri har 6 minute, toh dono saath kab bajengi.", "en": "Now we will find this same common multiple in the timing of bells: one bell rings every 4 minutes and another every 6 minutes, so when will both ring together.", "simpler": {"hi": "Ab yahi baat ghantiyon par dekhenge: ek ghanti har 4 minute mein bajti hai aur doosri har 6 minute mein. Dono saath kab bajengi, yeh nikalenge.", "en": "Now we use this idea on bells: one bell rings every 4 minutes and another every 6 minutes. We find when both ring together."} }
   },
   {
    "skillId": "c5-maths-ch13-t01-s3",
@@ -643,7 +637,7 @@
        "en": "bell A's list runs to 20, 24 and bell B's to 18, 24, so after 12 the next common one is 24"
       },
       "accept": ["chaubees", "chaubis", "twenty-four", "twenty four", "24 minute"],
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Ghanti A", "items": ["4, 8, 12, 16"]}, "right": {"title": "Ghanti B", "items": ["6, 12"]}, "mark": {"side": "right", "add": "jawab: 24"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Ghanti A", "items": ["4, 8, 12, 16"]}, "right": {"title": "Ghanti B", "items": ["6, 12"]}} }
      },
      "simpler": {
       "hi": "Ghanti A ke minute 4, 8, 12, 16 hain, aur ghanti B ke 6, 12. Dono mein pehle 12 aata hai, isliye dono 12 minute baad saath bajti hain.",
@@ -672,7 +666,7 @@
       "accept": ["24 minute baad", "10 baj kar 24 minute", "10: 24 am", "24 minutes later"],
       "targets": "c5-maths-ch13-t01-m-product-only",
       "wrongIfMis": "11:36",
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Bus 1", "items": ["8, 16"]}, "right": {"title": "Bus 2", "items": ["12"]}, "mark": {"side": "right", "add": "jawab: 10:24"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Bus 1", "items": ["8, 16"]}, "right": {"title": "Bus 2", "items": ["12"]}} }
      },
      "simpler": {
       "hi": "8 ki list aur 12 ki list, dono aage badhao. Jo number dono mein sabse pehle aaye wahi chahiye, 96 tak rukna zaroori nahi.",
@@ -684,7 +678,7 @@
     "problem": {
      "hi": "Vikram school garden ko har 4 din paani deta hai aur Sana har 10 din. Dono ne 1 June ko saath paani diya. Agli baar dono kis date ko saath paani denge?",
      "en": "Vikram waters the school garden every 4 days and Sana every 10 days. Both watered it on 1 June. On which date will they next water it on the same day?"
-    },
+    }, "simpler": { "hi": "1 June se Vikram ke din 4-4 aage gino, aur Sana ke din 10-10 aage. Jo tareekh dono mein aaye, wahi dhoondhni hai.", "en": "From 1 June, count Vikram's days 4 at a time, and Sana's days 10 at a time. We look for the date that comes in both." },
     "givens": [
      {
       "hi": "Vikram har 4 din aur Sana har 10 din paani dete hain, aur 1 June ko dono ne saath diya",
@@ -732,7 +726,7 @@
       "en": "We need to add 20 days to 1 June. Add 20 to the date number 1; that is the new date."
      },
      "board": {"template": "compare@1", "params": {"left": {"title": "Vikram", "items": ["4, 8, 12, 16, 20"]}, "right": {"title": "Sana", "items": ["10, 20"]}}},
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Vikram", "items": ["4, 8, 12, 16, 20"]}, "right": {"title": "Sana", "items": ["10, 20"]}, "mark": {"side": "right", "add": "jawab: 21 June"}} },
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Vikram", "items": ["4, 8, 12, 16, 20"]}, "right": {"title": "Sana", "items": ["10, 20"]}} },
      "why": {
       "hi": "Vikram aur Sana ki list mein pehla common 20 hai, aur 1 June ke 20 din baad 21 June hai",
       "en": "the first common number in Vikram's and Sana's lists is 20, and 20 days after 1 June is 21 June"
@@ -768,7 +762,7 @@
       "hi": "6 ki ginti aur 15 ki ginti, dono list likho. Jo number dono mein sabse pehle aaye, utne second baad dono saath jalengi.",
       "en": "Write both lists, counting by 6 and counting by 15. The first number in both is how many seconds until they flash together."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Light 1", "items": ["6 second"]}, "right": {"title": "Light 2", "items": ["15 second"]}, "mark": {"side": "right", "add": "jawab: 30"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Light 1", "items": ["6 second"]}, "right": {"title": "Light 2", "items": ["15 second"]}} }
     },
     {
      "id": "c2",
@@ -789,7 +783,7 @@
       "hi": "12 ki ginti aur 18 ki ginti likho, aur pehla common number dhoondho. Utne minute 8:00 mein jodo.",
       "en": "Write the counts by 12 and by 18, and find the first common number. Add that many minutes to 8:00."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Bus", "items": ["12 minute"]}, "right": {"title": "Auto", "items": ["18 minute"]}, "mark": {"side": "right", "add": "jawab: 8:36"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Bus", "items": ["12 minute"]}, "right": {"title": "Auto", "items": ["18 minute"]}} }
     },
     {
      "id": "c3",
@@ -810,7 +804,7 @@
       "hi": "5 ki ginti mein 10 bhi aata hai. Toh dekho dono ghantiyan sabse pehle kab saath bajti hain.",
       "en": "Counting by 5 also reaches 10. So see when the two bells first ring together."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Ghanti 1", "items": ["5 minute"]}, "right": {"title": "Ghanti 2", "items": ["10 minute"]}, "mark": {"side": "left", "add": "jawab: No"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Ghanti 1", "items": ["5 minute"]}, "right": {"title": "Ghanti 2", "items": ["10 minute"]}} }
     }
    ],
    "ladder": [
@@ -849,7 +843,7 @@
        "hi": "8 ki ginti aur 10 ki ginti, dono list likho. Jo number dono mein sabse pehle aaye, utne minute baad dono saath aayengi.",
        "en": "Write both lists, counting by 8 and counting by 10. The first number in both is how many minutes until they come together."
       },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Bus", "items": ["8 minute"]}, "right": {"title": "Train", "items": ["10 minute"]}, "mark": {"side": "right", "add": "jawab: 40"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Bus", "items": ["8 minute"]}, "right": {"title": "Train", "items": ["10 minute"]}} }
      }
     }
    ],

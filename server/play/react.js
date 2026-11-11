@@ -10,6 +10,7 @@ import { floorViolations, scanSafety } from "../director/safety.js";
 import { gcd, lcm } from "../../src/play/core/rat.ts";
 import { nazariyaHidden } from "../../src/play/families/nazariya/index.ts";
 import { stambhHidden } from "../../src/play/families/stambh/stambh.logic.ts";
+import { tallyHidden } from "../../src/play/families/stambh/tally.logic.ts";
 import { pendulumHidden } from "../../src/play/families/yantra/pendulum.logic.ts";
 import { roshniHidden } from "../../src/play/families/yantra/roshni.logic.ts";
 import { openingOf } from "../../src/play/families/kon/kon.logic.ts";
@@ -141,6 +142,7 @@ export function hiddenOf(level) {
     case "views": case "array": case "floor": case "powers": case "mirror": return nazariyaHidden(level);   // r4-khand
     case "tri": case "solid": return nazariyaHidden(level);   // r7 nazariya2: the cloth's area; how many faces / edges / corners
     case "bars": case "picto": return stambhHidden(level);   // round 7: the diff bar's value
+    case "tally": return level.family === "stambh" ? tallyHidden(level) : [];   // r8: every row's count (aankde/tally has none)
     // r7: answers the law computes from what the child is told (never what is on screen as given)
     case "pair": case "close": return [openingOf(p)];        // ∠COB = 180 − ∠AOC; ∠B from the angle sum / isosceles
     case "cross": return [Math.round(angle2(p))];             // r7 kon2: the reading ∠2 must show (equal to ∠1, or 180° − ∠1)
