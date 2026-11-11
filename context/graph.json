@@ -28013,6 +28013,13 @@
    "at": "2026-11-11",
    "title": "In production (releases 18 and 19) every bold Latin label on the lesson stage rendered in the system sans (Roboto on Android), and Hindi at weight 400 in the Atkinson stack rendered in the system font, not Mukta. Cause: Chromium picks a family's weight segment before it looks at unicode-range, and the Devanagari face was declared at 400-600 and 700-900 against a Latin 400-700 face, so Latin at 700 and above matched a segment with no Latin glyphs. Found by Studio with CDP's used-font report and canvas widths on the built stage and on taxila.dev in a Pixel 7 emulation; fixed by declaring the same weight ranges for both scripts in every family (Studio bcc7db378), held by tests/r8-font-match-browser.test.mjs (failed before, passes after). The design review of 2026-11-10 judged screens that carried this fault.",
    "source": "inbox/r8-main-13.json"
+  },
+  {
+   "id": "ms-release-8581b9f",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Released 8581b9f with scripts/release.mjs: web taxila-web--s8581b9f-ikzm (was taxila-web--s59ae352-2c67), worker + canary/nightly jobs on taxila-worker:8581b9f (was 59ae352); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 8581b9f --rollback.",
+   "source": "inbox/release-8581b9f.json"
   }
  ],
  "edges": [

@@ -6684,3 +6684,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r8-staged-reader-batch1-2026-11-11` (2026-11-11): Reader pass over the staged scripts, batch 1 (Learning): five scripts (c4-ch03-t01, c5-ch02-t03, c5-ch05-t01, c6-ch02-t04, c7-ch05-t01), one fresh Opus reader each, reading every spoken field against its kit and boards; 740k tokens. 886 fields read, 87 faulted (9.8%): 35 were answer marks not grounded in the key; the other 52 (5.9%) were board 17, language 19, giveaway 10, untrue 3, remediation 1, worked example 1, class level 1. Keys: 0 wrong in about 125 cards (every reader solved every card). By field: why 43, prompt 14, point 9, worked 6, joint 6, remediation 3, simpler 2, bridge 2, hook 2. Six of the 10 giveaways are a later card reusing an earlier card's numbers or question.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-8581b9f` (2026-11-11): Released 8581b9f with scripts/release.mjs: web taxila-web--s8581b9f-ikzm (was taxila-web--s59ae352-2c67), worker + canary/nightly jobs on taxila-worker:8581b9f (was 59ae352); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 8581b9f --rollback.
