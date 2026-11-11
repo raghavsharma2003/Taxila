@@ -1,0 +1,15 @@
+diff --git a/tests/r8-picture-turn.test.mjs b/tests/r8-picture-turn.test.mjs
+index cb2273d5..e5e0a95a 100644
+--- a/tests/r8-picture-turn.test.mjs
++++ b/tests/r8-picture-turn.test.mjs
+@@ -206,8 +206,8 @@ test("director20: lineStatesKey reads a key's value tokens wherever they stand 
+ });
+ 
+ test("director20 c5-t01 steady and stuck 18: a picture line never has a hole — the quiet 8-gap scale is named without its count, never \"aur ek ___ barabar hisson mein\"", () => {
+-  const c = scriptCard("c5-maths-ch02-t01", 0, "e2");
+-  assert.deepEqual(c.ref, { template: "fraction-line@1", params: { dens: [5, 8], from: 0, to: 1, marks: [[1, 5]] } }, "the row's card");
++  // (the row's card as director20 drew it: Learning's pilot rewrite, 5617a579a, moved e2 to a 7-and-8 board — the row is what is tested)
++  const c = { ref: { template: "fraction-line@1", params: { dens: [5, 8], from: 0, to: 1, marks: [[1, 5]] } }, answers: ["8"] };
+   assert.equal(c.answers[0], "8");
+   const want = [
+     "Dekho, yeh do barabar pattiyaan hain: ek 5 barabar hisson mein, 1 rangin, yaani ek bata paanch, aur doosri patti bhi barabar hisson mein bati hai",
