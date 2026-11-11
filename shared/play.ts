@@ -588,6 +588,10 @@ export interface PlayEvidence {
   misconceptionId?: string;
   /** a correct act on a level built to discriminate this misconception */
   discriminates?: string;
+  /** round 8 law 3: a mal-rule signature from ONE pick among a few (a goal in FamilyLogic.oneDecision or chancePicks): at
+   *  chance weight and NOT named (no misconceptionId); the server names it only when it repeats on a level whose surface
+   *  differs (server/play/levels.js nameOnRepeat), and a constructed act (a typed number, a placement) names it itself */
+  chanceMis?: string;
   via: "game"; weight: GameWeight;
   levelId: string; actSeq: number;
 }
@@ -657,6 +661,12 @@ export interface FamilyLogic<P = unknown, S = unknown, A extends PlayActBody = P
   /** goals decided by ONE pick a lucky first tap can land (games audit GAMES-03): their correct evidence enters at
    *  CHANCE_WEIGHT (gradeLevel reads this), never a second decision bolted on */
   oneDecision?: readonly string[];
+  /** round 8 law 3: goals (besides oneDecision) whose mal-rule signature can come from ONE pick among five or fewer
+   *  options; a mix-up seen there is reported at chance weight and not kept from one pick (gradeLevel) */
+  chancePicks?: readonly string[];
+  /** round 8 law 3: what a level shows (a second sighting of a chance-pick mix-up counts only on a level whose surface
+   *  differs); default: the level's params */
+  surfaceOf?(level: PlayLevel<P>): string;
 }
 
 // ───────────────────────────── art direction (DESIGN.md §4) ─────────────────────────────
@@ -671,7 +681,10 @@ export interface ArtTokens {
   q1: string; q2: string; q3: string; q4: string;
   good: string;                        // "goal met": always with a tick shape
   look: string;                        // "look again": always with a magnifier shape; never red, never a cross
-  you: string;                         // the reserved "your move" hue (one element per state)
+  you: string;                         // the reserved "your move" hue (one element per state): the DOM action button only
+  /** round 8 law 1 (dc-r8-game-modes-three-laws): the picked thing (a selected row, box, card, her unchecked mark) is outlined
+   *  in the focus colour, a blue-violet that is never green; the canvas never paints "you" (Painter maps it here) */
+  focus: string;
   shadow: string;
   /** stroke character: 0 = machine-clean, 1 = chalk / hand */
   jitter: number;

@@ -1,23 +1,25 @@
 # Judge packet: `kon/place`, placing the protractor (class 6 maths, "Measuring and drawing angles")
 
-This packet is meant to be read on its own: everything a judge needs is in this file and the 50 screenshots beside it. Code: branch `claude/r8-kon-round2` (the fixes after judging round 2, `RULINGS-2026-11-11.md`); every screenshot was retaken on it. **Not yet checked on a real phone, or with a child.**
+This packet is meant to be read on its own: everything a judge needs is in this file and the 54 screenshots beside it. Code: branch `claude/r8-kon-round2` (the fixes after judging round 2, `RULINGS-2026-11-11.md`); every screenshot was retaken on it. **Not yet checked on a real phone, or with a child.**
 
 **Topic:** c6-maths-ch02-t03, "Measuring and drawing angles". Class 6, age band 10–12. Three goals: `measure` (skill s2, also s1), `draw` (s3, s2, s1) and `size` (s2).
 
 **What is new.** The older game for this topic drew the protractor already sitting on the angle, so only one of the kit's mix-ups could ever show. Here the protractor lies loose and the child puts it on the angle herself. The game grades the placement, and then grades the number she types or the mark she makes against what the protractor *as she placed it* shows.
 
 **The three laws this packet is built to** (main's rulings, for every game):
-1. Green means right and only right. What she has selected but not yet committed is blue (the focus colour). Her own wrong value is brown (the mix-up colour). The green-yellow action button keeps its colour.
+1. Green means right and only right. What she has selected but not yet committed is blue-violet (the focus colour). Her own wrong value is brown (the mix-up colour). The green-yellow action button keeps its colour.
 2. After a miss the screen never holds the key while a try remains: not the key, not a line she can trace, not readings that settle the next pick.
-3. A mix-up is named only by an act a guess rarely produces (a typed number, a placement, a mark). A pick among a few buttons is reported as a *sign* at chance weight and is not kept on her record.
+3. A mix-up is named only by an act a guess rarely produces (a typed number, a placement, a mark). A mix-up from a pick among a few buttons is graded at chance weight and is not kept on her record; it is named when it repeats on a level whose surface differs.
 
 **The mix-ups it plays out** (kit ids `c6-maths-ch02-t03-m-*`):
 
-| Goal | Named (kept on her record) | Reported only as a sign (not kept) |
+| Goal | Named (kept on her record) | At chance weight, named only on a repeat |
 |---|---|---|
-| measure | wrong-scale, vertex-off | — |
-| draw | wrong-scale, vertex-off | join-wrong-end (one of two join buttons) |
+| measure | wrong-scale, vertex-off, centre-on-arm (*) | — |
+| draw | wrong-scale, vertex-off, centre-on-arm (*) | join-wrong-end (one of two join buttons) |
 | size | none (the kit's `tool-size` is not claimed: Goal 3) | — |
+
+(*) `centre-on-arm` is Learning's new kit entry (the old `vertex-off` split in two on 2026-11-11: `vertex-off` is now only the bottom edge on O). The game names it already; the coverage rule maps it to the kit id when that id reaches the integration branch (integration 49). Until then a centre-on-arm placement is an ordinary refusal with no mix-up recorded.
 
 ## The rule the game enforces (never stated on screen)
 
@@ -34,20 +36,20 @@ Everything after that is graded on what the protractor shows *as placed*:
 
 ## Goal 1: `measure` (read the angle)
 
-**What she sees.** Two black arms from a dot O, with letters A and B at the arm ends and O near the dot. A loose, see-through half-disc protractor rests below the figure, slightly tilted. It has a printed outer scale and a printed inner scale. Numbers are printed every 20° at fade 1 (as in the shots), every 30° at fade 2, and only 0, 90 and 180 at fade 3; small ticks are every 5°, longer every 10°. A round blue handle with two turning arrows sits on the protractor's body. The instruction under the board reads "Protractor se ∠AOB naapo". There are two small arrow buttons (↺ ↻), "Wapas" and "Rakh do". Shots: `measure-initial-*`, `measure-placed-*`.
+**What she sees.** Two black arms from a dot O, with letters A and B at the arm ends and O near the dot. A loose, see-through half-disc protractor rests below the figure, slightly tilted. It has a printed outer scale and a printed inner scale. Numbers are printed every 20° at fade 1 (as in the shots), every 30° at fade 2, and only 0, 90 and 180 at fade 3; small ticks are every 5°, longer every 10°. A round blue-violet handle with two turning arrows sits on the protractor's body. The instruction under the board reads "Protractor se ∠AOB naapo". There are two small arrow buttons (↺ ↻), "Wapas" and "Rakh do". Shots: `measure-initial-*`, `measure-placed-*`.
 
 **What she does, in order.**
 1. She drags the protractor by its body to move it.
-2. She drags the blue handle to turn it about its own centre, in 1° steps. ↺ and ↻ turn it by exactly 1° each press.
+2. She drags the blue-violet handle to turn it about its own centre, in 1° steps. ↺ and ↻ turn it by exactly 1° each press.
 3. She presses "Rakh do". The protractor is now frozen. The instruction changes to **"Scale padho aur ∠AOB ka number likho"** and a **number pad** appears: 1 … 9, 0 and ⌫ (delete), with "Phir se rakho", "Wapas" and "Yahi hai" under it. Shot: `measure-locked-*`.
-4. **She types the number she reads.** Nothing on the board prints a value: tapping the protractor does nothing after the lock. Her number appears in a blue chip under the board as she types (e.g. "150°"). The pad refuses a number over 180. Shot: `measure-typed-*`.
+4. **She types the number she reads.** Nothing on the board prints a value: tapping the protractor does nothing after the lock. Her number appears in a blue-violet chip under the board as she types (e.g. "150°"). The pad refuses a number over 180. Shot: `measure-typed-*`.
 5. She presses "Yahi hai" (off until she has typed a digit).
 6. After the lock she has two ways back: "Wapas" takes back one step (the lock itself, or, after a miss, her last "Yahi hai"), and "Phir se rakho" unfreezes the protractor and clears what she typed.
 
 **This level's givens and key** (as in the shots, level `kon-place:measure:150:180m`). OA runs flat to the **left**; OB goes up and to the right, so the angle opens clockwise from OA. Placed with its centre on O and its base along OA, the protractor's **outer** scale has its 0 at the far (right) end, away from A, and the **inner** scale has its 0 on OA. **The key is 150°**, read on the inner scale. 150 is not a printed number at fade 1 (every 20° is printed): she counts the ticks past 140. Reading the outer scale gives 30: that is `wrong-scale`. Levels like this one, where the outer scale is the wrong one, are half of all levels. Shot: `measure-end-*`.
 
 ### Mal-rule `vertex-off`
-- **Kit belief:** "Lines up the bottom edge of the protractor instead of putting its centre point on the vertex". Signs: "Places the vertex at the corner of the protractor's edge", "Gets readings a few degrees off", "Does not look for the small centre mark".
+- **Kit belief:** "Lines up the bottom edge of the protractor instead of putting its centre point on the vertex". Signs (as split by Learning): "Places the vertex on the protractor's bottom edge, not at the small centre mark", "Gets readings a few degrees off (about 6 to 8 degrees: 133 for 125)", "Does not look for the small centre mark".
 - **What a child holding it does.** She slides the protractor so its flat bottom edge lies along OA with O on that edge (O at the middle of the edge). This leaves the centre dot 24 board-units above O. She turns it flat, locks it, and types the number the protractor *as it sits* shows (here 161). Shots: `measure-vertex-off-typed-*`, `measure-vertex-off-played-*`.
 - **What the screen then shows when she presses "Yahi hai"** (no words):
   - a brown ring on O, with a thin dashed brown line from O to the protractor's centre dot;
@@ -55,6 +57,13 @@ Everything after that is graded on what the protractor shows *as placed*:
   - her "161°" chip turns brown.
   - The ring and the dashed join appear only in the play-out of a committed decision whose placement is the bottom edge on O. Never before her first "Yahi hai", never for any other off placement.
 - **How it is graded.** Not right. It is named `vertex-off` because her number is right for the protractor as placed but the placement is off. The generator only serves a level when this reading differs from the true angle by at least 3°.
+
+### Mal-rule `centre-on-arm` (*)
+- **Kit belief:** "Puts the protractor's centre mark (or its corner) somewhere other than the vertex: on an arm, or at an arm's end point". Signs: "Puts the centre mark on point A or C, the end of an arm", "Sets the protractor's corner, not its centre mark, at the vertex", "Reads a number tens of degrees off, or finds no reading at all".
+- **What the game takes as this placement** (each a placement a guess rarely makes, law 3): the centre mark within 11 units of an arm's end point (A, or B in `measure`) with the base along that arm (±3°); or the protractor's bottom corner within 11 units of O with the base along an arm.
+- **What a child holding it does** (shot `measure-centre-on-arm-played-*`): she puts the centre mark on A with the base along OA, locks it, and types what she thinks she reads (150). Part of the protractor then runs past the board's edge: it is her own placement.
+- **What the screen then shows:** the brown ring on O and the dashed brown join from O to where her centre is (here along OA, to A); the arm her number means, dashed brown, from *her* centre; her "150°" chip in brown. In `draw` (shot `draw-centre-on-arm-played-*`): the ring and join, her arm from O through the dot she marked on the misplaced protractor, its arc and "∠O 52°".
+- **How it is graded.** Never right (an off placement never solves). Named `centre-on-arm` only on a level that maps it; the ring and the join are shown only where it is named (an unnamed off placement never shows where the centre belongs).
 
 ### Mal-rule `wrong-scale`
 - **Kit belief:** "Reads the wrong scale on the protractor, e.g. gets 130° for a 50° angle". Signs: "Gives a reading over 90° for an obviously narrow angle", "Always reads the outer scale", "Two readings for the same angle add to 180°".
@@ -69,7 +78,7 @@ Everything after that is graded on what the protractor shows *as placed*:
 
 **What she does, in order.**
 1. She drags, turns and presses "Rakh do" exactly as in `measure`. The instruction changes to **"Rim par 130° ka bindu lagao, phir jodo"**. Shots: `draw-placed-*`, `draw-locked-*`.
-2. She taps the rim of the protractor to put a blue dot. Tapping the rim again moves it, and **↺ ↻ move the dot 1° along the rim** (1° is under 2 px on a phone, too fine for a finger). The arrows say which way it moves round the rim, not "−1"/"+1", because a number would name one of the two scales. Shot: `draw-dot-*`.
+2. She taps the rim of the protractor to put a blue-violet dot. Tapping the rim again moves it, and **↺ ↻ move the dot 1° along the rim** (1° is under 2 px on a phone, too fine for a finger). The arrows say which way it moves round the rim, not "−1"/"+1", because a number would name one of the two scales. Shot: `draw-dot-*`.
 3. She presses "O se jodo" or "A se jodo" to join the dot to O or to A with the ruler. Both are off until a dot is placed. **The two buttons' order changes from level to level** (here "A se jodo" comes first).
 4. "Phir se rakho" unfreezes the protractor and clears the dot; "Wapas" undoes her last step. After a miss, a new dot ends the play-out of the old one: nothing is measured until she joins again.
 
@@ -86,11 +95,11 @@ Everything after that is graded on what the protractor shows *as placed*:
 - **What the screen then shows:** her brown arm, a brown arc at O and "∠O 50°".
 - As in `measure`, it is told apart only on levels where the outer scale is the wrong one (OA points left, as here).
 
-### Sign `join-wrong-end` (not named)
+### Mal-rule `join-wrong-end` (at chance weight)
 - **Kit belief:** "Believes the degree mark can be joined to either end of the first arm, so joins it to the far end instead of to the vertex where the protractor's centre was".
 - **What a child holding it does.** Places the protractor correctly, puts the dot at the right mark (130), then presses "A se jodo". Shot: `draw-join-wrong-end-played-*`.
 - **What the screen then shows:** her brown line from A (the far end of OA) through the dot; a small brown arc at A; a chip "∠A 22°" (the angle that line makes at A).
-- **How it is graded.** Not right, an ordinary miss. Because the join is one of two buttons, a guess makes it half the time, so the mix-up is **not** named and nothing goes on her record: the teacher receives `sign=join-wrong-end` (only when the dot itself was at the right mark). Naming it on a repeat on a different level is proposed to main (it needs memory across levels that the play server does not keep yet).
+- **How it is graded.** Not right. It is the `join-wrong-end` signature only when the dot itself was at the right mark. Because the join is one of two buttons, a guess makes it half the time, so one join puts **nothing on her record**: the grade keeps it at chance weight (`chanceMis`), and the play server names it only if she makes it again on a level whose surface differs (the shared law-3 rule). The teacher also sees `sign=join-wrong-end`.
 
 ## Goal 3: `size` (which angle is more?)
 
@@ -158,24 +167,24 @@ Rulings: `docs/design/round8/games-judging/RULINGS-2026-11-11.md` (kon/place 1�
 | 1. Measure: she types the number | After "Rakh do" a number pad (0–9, ⌫); no tap prints a value (the band tap is gone); the typed number decides the scale (±2 of the scale whose 0 is on the placed arm is right, ±2 of 180 minus it is `wrong-scale`). | `measure-locked`, `measure-typed`, `*-typed`, `*-played` |
 | 2. Draw: only her arm and "∠O x°" after a miss; nudges | The asked arm is never drawn; her arm (brown), its arc and chip only. ↺ ↻ move the dot 1° along the rim (arrows, so no scale is named). | `draw-*-played`, `draw-dot` |
 | 3. Size: all three answers offered; no readings on a miss; tick clear of labels; any key; same numbers | New instruction "∠P, ∠Q, ya dono barabar?"; a miss shows only her pick in brown; "Barabar" solved shows "∠P = ∠Q" between the figures with the tick beside it; the generator makes each of the three the key a third of the time (the "bigger tool's angle is never the answer" rule is gone); both protractors print every 30° (fades 1–2). | `size-*` |
-| 4. Scale evidence only where the outer scale is wrong; join-wrong-end at chance; button order | `wrong-scale` is discriminated (and listed first, so a first-try solve says "chose the right scale") only on levels where the outer scale is wrong; the two orientations are served equally (was 45/55). `join-wrong-end` is a sign (`sign=join-wrong-end`), never on her record from one join. The join buttons' order varies by level. | `draw-join-wrong-end-played` |
-| 5. Mix-up colour; B label; instruction after "Rakh do"; checks at the end | Her wrong number or arm is brown, her selection blue, green only when right; the finished arm carries B; the instruction changes after the lock; end lines count checks, and a solve after a miss has a pale tick. | `*-end`, `*-end-after-miss`, `*-locked` |
-| 6. Tolerance; vertex-off kit wording | Unchanged (11 units; the kit split is with Learning, accepted open by both judges). | — |
-| Law 1 (every family) | The handle and her dot/number are blue (focus), not green; brown for her wrong value. | all |
+| 4. Scale evidence only where the outer scale is wrong; join-wrong-end at chance; button order | `wrong-scale` is discriminated (and listed first, so a first-try solve says "chose the right scale") only on levels where the outer scale is wrong; the two orientations are served equally (was 45/55). `join-wrong-end` is graded at chance weight (`chanceMis`, not on her record from one join; named on a repeat on another level, by the shared law-3 rule). The join buttons' order varies by level. | `draw-join-wrong-end-played` |
+| 5. Mix-up colour; B label; instruction after "Rakh do"; checks at the end | Her wrong number or arm is brown, her selection blue-violet, green only when right; the finished arm carries B; the instruction changes after the lock; end lines count checks, and a solve after a miss has a pale tick. | `*-end`, `*-end-after-miss`, `*-locked` |
+| 6. Tolerance; vertex-off kit wording | Tolerance unchanged (11 units). Learning split the kit entry: `vertex-off` is the bottom edge only (as the game already played it), and the new `centre-on-arm` (centre on an arm's end, or the corner on O) is named by the law, with the same ring-and-join play-out; the rule maps it with integration 49. | `*-centre-on-arm-played` |
+| Law 1 (every family) | The handle and her dot/number are blue-violet (focus), not green; brown for her wrong value. The views name these by role (answer, focus, mix-up): the painter's `LAW_ROLES`, with the new blue-violet focus token. | all |
 
 Also fixed while retaking: the vertex-off protractor's top numbers could be cut at the board's top edge on some mirrored levels (the generator now keeps the numbers' full height on the board), and the letter O stands a little further from the vertex so the vertex-off ring never touches it.
 
 ## Known issues still open
 
-1. **`vertex-off` wording vs play-out** (kept, with Learning). The kit's first sign says the vertex goes at "the corner of the protractor's edge"; the game puts O at the *middle* of the bottom edge (the kit's belief and second sign). A bottom-corner placement is not named.
+1. **`centre-on-arm` mapping** goes live with integration 49 (the kit id is on Learning's branch, not yet on the integration branch). The game names it already where a level maps it; the shots show it with that mapping.
 2. **The board is smaller while she reads** (new): the number pad takes a third row of buttons on a phone, so after the lock the protractor is about 185 px wide at 360 instead of about 215. The numbers stay at the 14 px floor. Reverse if children cannot read the 5° ticks at that size.
-3. **Naming a sign on a repeat** (law 3) needs memory across levels; proposed to main, not built.
+3. `kon/ends` (same family, not in this packet) was fixed to the laws too: its open-end light is green only when solved, the asked figure is no longer drawn after a miss, and `ray-two-ends` is at chance weight.
 
-## Screenshots (50)
+## Screenshots (54)
 
 `<goal>-<step>-{360x640,1366x768}.png`:
-- measure: `initial`, `placed`, `locked`, `typed`, `vertex-off-typed`, `vertex-off-played`, `wrong-scale-typed`, `wrong-scale-played`, `end`, `end-after-miss`
-- draw: `initial`, `placed`, `locked`, `dot`, `vertex-off-played`, `wrong-scale-played`, `join-wrong-end-played`, `end`, `end-after-miss`
+- measure: `initial`, `placed`, `locked`, `typed`, `vertex-off-typed`, `vertex-off-played`, `centre-on-arm-played`, `wrong-scale-typed`, `wrong-scale-played`, `end`, `end-after-miss`
+- draw: `initial`, `placed`, `locked`, `dot`, `vertex-off-played`, `centre-on-arm-played`, `wrong-scale-played`, `join-wrong-end-played`, `end`, `end-after-miss`
 - size: `initial`, `wrong-pick-played`, `end` (level 1, key "Barabar"); `other-initial`, `other-same-played`, `other-end-after-miss` (level 2, key ∠Q)
 
 Steps: `initial` is the first screen; `placed` the protractor in its right place, not yet locked; `locked` just after "Rakh do"; `typed` / `*-typed` a number typed, before "Yahi hai"; `dot` the dot on the rim; `*-played` just after the decision; `end` solved first try; `end-after-miss` solved at the second check (measure: after typing the other scale's 30; draw: after the wrong-scale arm; size: after a "Barabar" pick).

@@ -10,6 +10,9 @@
 //   - no acts → no evidence; the game weight is GAME_WEIGHT; mastery is never decided here;
 //   - a correct outcome on a one-decision goal (logic.oneDecision) enters at CHANCE_WEIGHT, the arena's chance-adjusted
 //     weight: a lucky first tap lands those 20 to 40 % of the time (games audit GAMES-03). Its misses keep GAME_WEIGHT.
+//   - round 8 law 3 (dc-r8-game-modes-three-laws): a mix-up is named only by an act a guess rarely produces. A mal-rule
+//     signature on a goal decided by one pick among a few (oneDecision, chancePicks) enters at CHANCE_WEIGHT as
+//     `chanceMis`, never as misconceptionId: the server names it when it repeats on a level whose surface differs.
 import { CHANCE_WEIGHT, GAME_WEIGHT, type FamilyLogic, type GameWeight, type Moment, type PlayActBody, type PlayActEnvelope, type PlayEvidence, type PlayGrade, type PlayLevel, type PlayVerdict } from "../../../shared/play.ts";
 
 export interface Replayed<S> { state: S; moments: Moment[]; refused: number; refusals: { seq: number; code: string }[] }
@@ -52,10 +55,12 @@ export function gradeLevel<P, S, A extends PlayActBody>(logic: FamilyLogic<P, S,
   const evidence: PlayEvidence[] = [];
   const base = { skillId: level.skillId, via: "game" as const, weight: GAME_WEIGHT as GameWeight, levelId: level.levelId };
   const chance = !!level.goal && !!logic.oneDecision?.includes(level.goal);
+  const pick = (mis?: string) => chance || (!!level.goal && (!!logic.chancePicks?.includes(level.goal) || (!!mis && !!logic.chancePicks?.includes(`${level.goal}:${mis}`))));
   if (first) {
     if (first.kind === "misconception_consequence") {
       const kit = first.mis ? level.mal[first.mis] : undefined;
-      evidence.push({ ...base, outcome: "incorrect", ...(kit ? { misconceptionId: kit } : {}), actSeq: first.seq });
+      if (pick(first.mis)) evidence.push({ ...base, outcome: "incorrect", weight: CHANCE_WEIGHT, ...(kit ? { chanceMis: kit } : {}), actSeq: first.seq });
+      else evidence.push({ ...base, outcome: "incorrect", ...(kit ? { misconceptionId: kit } : {}), actSeq: first.seq });
     } else if (first.kind === "near_miss") evidence.push({ ...base, outcome: "partial", actSeq: first.seq });
     else if (first.kind === "decisive_refusal") evidence.push({ ...base, outcome: "incorrect", actSeq: first.seq });
     else if (first.kind === "solved") {

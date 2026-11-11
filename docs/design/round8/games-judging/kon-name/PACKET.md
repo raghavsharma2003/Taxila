@@ -5,13 +5,13 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 **Topic:** c6-maths-ch02-t02, skill s1 (naming an angle). Class 6, age band 10–12. Two goals: `say` (name a lit angle) and `find` (find the angle a name means).
 
 **The three laws this packet is built to** (main's rulings, for every game):
-1. Green means right and only right. What she has tapped but not yet committed is blue (the focus colour); her own wrong value is brown (the mix-up colour); green appears only on a solve. The green-yellow action button keeps its colour.
+1. Green means right and only right. What she has tapped but not yet committed is blue-violet (the focus colour); her own wrong value is brown (the mix-up colour); green appears only on a solve. The green-yellow action button keeps its colour.
 2. After a miss the screen never holds the key while a try remains.
-3. A mix-up is named only by an act a guess rarely produces. `say` (a three-letter name she builds) names it; `find` (one tap among five arcs) never does: there it is reported as a *sign* at chance weight and is not kept on her record.
+3. A mix-up is named only by an act a guess rarely produces. `say` (a three-letter name she builds) names it; `find` (one tap among five arcs) does not: there it is graded at chance weight, not kept on her record, and named only when it repeats on a level with other letters.
 
 **The mix-up it plays out:** `vertex-name` (kit id `c6-maths-ch02-t02-m-vertex-name`). The kit's belief: "Thinks the letters of an angle can be written in any order, so the vertex need not be the middle letter". Its signs: names the angle at B as angle BAC; puts the arc at the first letter; says angle ABC and angle BAC are the same.
 
-| Goal | Named (kept on her record) | Reported only as a sign (not kept) |
+| Goal | Named (kept on her record) | At chance weight, named only on a repeat |
 |---|---|---|
 | say | vertex-name | — |
 | find | — | vertex-name (a first- or last-letter arc) |
@@ -30,9 +30,9 @@ Whatever three letters she gives (`say`), the game lights the angle those letter
 
 ## Goal 1: `say` (name the lit angle)
 
-**What she sees.** The figure, with **one angle lit** as a blue-filled sector with a blue arc. The instruction reads "Akshar chhookar chamakte kon ka naam likho". Buttons: "Mita do", "Wapas" and "Yahi naam" (off). Shot: `say-initial-*`.
+**What she sees.** The figure, with **one angle lit** as a blue-filled sector with a blue-violet arc. The instruction reads "Akshar chhookar chamakte kon ka naam likho". Buttons: "Mita do", "Wapas" and "Yahi naam" (off). Shot: `say-initial-*`.
 
-**What she does.** She taps three letters/dots in turn. Each tapped point turns **blue** and grows; the name so far builds in a blue chip (e.g. "∠EO_") in the quietest corner of the board. "Yahi naam" turns on at three letters. "Wapas" takes back her last letter; "Mita do" clears all. Shot: `say-mid-*`.
+**What she does.** She taps three letters/dots in turn. Each tapped point turns **blue-violet** and grows; the name so far builds in a blue-violet chip (e.g. "∠EO_") in the quietest corner of the board. "Yahi naam" turns on at three letters. "Wapas" takes back her last letter; "Mita do" clears all. Shot: `say-mid-*`.
 
 **This level's givens and key** (level `kon-name:say:110:80:65:0:1`, her first level, so the vertex is O). Letters O, S, E, R: rays OS, OE, OR; S and E are joined. The lit angle is at O between OE and OR. **The key is "EOR" or "ROE".** Shot: `say-end-*` (green tick beside O; the line under the board: "Tumne ∠EOR likha · jaanch: 1").
 
@@ -59,7 +59,7 @@ Whatever three letters she gives (`say`), the game lights the angle those letter
   - in place of the asked name, one row: **"∠OAD ≠ ∠DOA = ∠AOD"**. The asked name stays in its plain ink chip; "≠" and a brown chip with *her arc's own two names* follow it.
   - Nothing marks the arc at A.
 - **Why this form.** Showing only her arc's name ("∠DOA") is not enough, because to a child with this belief "∠DOA" and "∠OAD" are the same name. The row sets the same three letters in another order against the asked name as **a different angle** ("≠"), and shows the one reordering that *is* the same angle (the reverse, "=") on her arc. That contradicts "the same letters are the same angle" without stating the middle-letter rule, and without showing where the asked angle is. Any wrong arc shows the same form (with its own names).
-- **How it is graded.** An ordinary miss. One tap among five lands on this arc by chance a fifth of the time, so **no mix-up is named and nothing goes on her record**; the teacher receives `sign=vertex-name` when her arc is the angle at the shown name's first (or, when that is not drawn, last) letter. Naming it on a second first-letter pick on a level with different letters, or when a `say` miss agrees, needs memory across levels that the play server does not keep yet: proposed to main, not built.
+- **How it is graded.** Not right. One tap among five lands on this arc by chance a fifth of the time, so **nothing goes on her record from it**: the grade keeps `vertex-name` at chance weight (`chanceMis`; the teacher also sees `sign=vertex-name`) when her arc is the angle at the shown name's first (or, when that is not drawn, last) letter. The play server names it when she does it again on a level **with other letters** (the shared law-3 rule; kon's surface for `find` is its letters). A `say` miss names it on its own (a built name).
 - **A solve after wrong taps** ends with a **pale** tick and "Jaanch: 2"; only her first tap is evidence. Shot: `find-end-after-miss-*`.
 
 ## Things the judges should know
@@ -94,8 +94,8 @@ Rulings: `docs/design/round8/games-judging/RULINGS-2026-11-11.md` (kon/name 1–
 
 | Ruling | What changed | Screens |
 |---|---|---|
-| 1. Find's wrong pick is never green | Her wrong arc is brown; green only on the solve. Tapped letters and the building name in `say` are blue (focus), not green. | `find-first-letter-played`, `say-mid` |
-| 2. Find names nothing from one tap | `find` emits no misconception; a first/last-letter arc is `sign=vertex-name` (no misconceptionId, nothing on her record); its rule maps no mix-up. | `find-first-letter-played` |
+| 1. Find's wrong pick is never green | Her wrong arc is brown; green only on the solve. Tapped letters and the building name in `say` are blue-violet (focus), not green. | `find-first-letter-played`, `say-mid` |
+| 2. Find names nothing from one tap | The grade keeps a first/last-letter arc at chance weight (`chanceMis`, no misconception on her record); the server names it on a second such pick on a level with other letters. | `find-first-letter-played` |
 | 3. Contradict "same letters, same angle" | "∠OAD ≠ ∠DOA = ∠AOD": the asked name against her arc's two names (above). Built. | `find-first-letter-played` |
 | 4. Solve after wrong taps | Pale tick; the end line counts checks ("Jaanch: 2"). Also for `say`. | `*-end-after-miss`, `*-end` |
 | 5. Say unchanged | One vertex-first name still names `vertex-name`. | `say-mal-vertex-name` |
@@ -105,8 +105,7 @@ Rulings: `docs/design/round8/games-judging/RULINGS-2026-11-11.md` (kon/name 1–
 
 ## Known issues still open
 
-1. **Naming a sign on a repeat** (law 3): needs memory across levels; proposed to main, not built.
-2. `find` has no `mid` screen: there is nothing between the first look and the tap.
+1. `find` has no `mid` screen: there is nothing between the first look and the tap.
 
 ## Screenshots (22)
 

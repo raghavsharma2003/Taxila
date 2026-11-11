@@ -108,13 +108,15 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
       page.on("pageerror", (e) => errors.push(String(e.message)));
       await page.goto(served.base);
       await page.waitForFunction(() => window.__forge3?.ready === true);
-      for (const level of levels) {
+      for (let level of levels) {
         const logic = LOGIC[`${level.family}/${level.mode}`], sol = logic.solve(level);
         // the screens: first; mid-play (the solver's acts but the decision); each mal-rule played out; the end
         let midBox = null;
         // (judging round 2: the signs a pick makes at chance weight, no longer mapped, still play out: draw's join to A, find's
         // first-letter arc; and a solve after a miss, whose end tick is pale)
         const signs = level.params.goal === "draw" ? ["join-wrong-end"] : level.params.goal === "find" ? ["vertex-name"] : [];
+        // centre-on-arm (Learning's split, mapped by the rule with integration 49): played here with the mapping it will carry
+        if ((level.params.goal === "measure" || level.params.goal === "draw") && !level.mal["centre-on-arm"]) level = { ...level, mal: { ...level.mal, "centre-on-arm": "c6-maths-ch02-t03-m-centre-on-arm" } };
         const plays = [["first", []], ["mid", sol.slice(0, -1)], ...[...Object.keys(level.mal), ...signs].map((m) => [`mal-${m}`, logic.malActs(level, m)]).filter(([, a]) => a),
           ...signs.map((m) => [`late-${m}`, [...(logic.malActs(level, m) ?? []), ...(level.params.goal === "find" ? sol : sol.slice(-2))]]).filter(([, a]) => a.length > sol.length),
           // size: every pick (a miss plays out both readings; the solved tick sits with the pick, or between the figures for "same")
@@ -136,7 +138,9 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
             };
           });
           screens++;
-          for (const f of screenFaults(probe)) faults.push(`${size.tag} ${level.levelId} ${name}: ${f}`);
+          // (centre-on-arm: her protractor centred on A runs past the board's edge, so its own scale numbers there are cut, and its 0 sits by O under the ring: her
+          // placement, not the layout; every other fault still counts)
+          for (const f of screenFaults(probe)) if (!(name === "mal-centre-on-arm" && /^(cut|ring×text) "\d+"$/.test(f))) faults.push(`${size.tag} ${level.levelId} ${name}: ${f}`);
           // the vertex-off ring is a consequence of a committed decision: never on the first screen or before the decision
           if ((name === "first" || name === "mid") && probe.marks.some((m) => m.kind === "ring")) faults.push(`${size.tag} ${level.levelId} ${name}: centre ring before a decision`);
           // the board does not move when the game is solved (the controls keep their rows)

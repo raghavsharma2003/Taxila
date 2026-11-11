@@ -739,5 +739,8 @@ function grade(level: PlayLevel<BadlaavParams>, acts: PlayActEnvelope<BadlaavAct
 
 export const badlaavLogic: FamilyLogic<BadlaavParams, BadState, BadlaavAct> = {
   family: "badlaav", modes: BADLAAV_MODES, malRules: BADLAAV_MAL,
+  // round 8 law 3 (dc-r8-game-modes-three-laws): mix-ups these goals see from ONE pick among five or fewer (a tool, a
+  // bin, a lane, a claim; server/forge3/qa/laws.mjs found each): reported at chance weight, named only on a repeat
+  chancePicks: ["jang:just-dirt", "ghol:gone", "ulta:undo-all"],
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };

@@ -22,8 +22,8 @@ import { cpuNow } from "./_cpu-ms.mjs";
 
 const MIS = {
   measure: { "wrong-scale": "k-ws", "vertex-off": "k-vo" },
-  // join-wrong-end is a sign, not a named mix-up (judging round 2, law 3: a pick between two buttons)
-  draw: { "wrong-scale": "k-ws", "vertex-off": "k-vo" },
+  // join-wrong-end is graded at chance weight (judging round 2, law 3: a pick between two buttons): konLogic.chancePicks
+  draw: { "wrong-scale": "k-ws", "vertex-off": "k-vo", "join-wrong-end": "k-je" },
   // size names no mix-up (main 2026-11-11): the kit's tool-size belief is about one angle's READING under two tools
   size: {},
 };
@@ -121,7 +121,9 @@ for (const goal of ["measure", "draw", "size"]) {
         assert.equal(named[0].facts.shown, SHOWN[mal], `${mal} signature`);
         (sigs[mal] ??= new Set()).add(named[0].facts.shown);
         const g = konLogic.grade(level, env(acts), { final: true });
-        assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, MIS[goal][mal]);
+        // (join-wrong-end: one of two buttons, kept at chance weight as chanceMis, not on her record: law 3)
+        assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, mal === "join-wrong-end" ? undefined : MIS[goal][mal]);
+        if (mal === "join-wrong-end") assert.equal(g.evidence[0].chanceMis, MIS[goal][mal]);
         if (goal !== "size") {
           const last = lastState(level, acts);
           assert.equal(indepPlaced(level.params, last.pose), mal !== "vertex-off", `${mal}: the checker's placement`);
@@ -300,7 +302,7 @@ test("kon/place: every coverage entry serves a level as the play server would, w
   const mine = coverage.entries.filter((e) => e.family === "kon" && e.mode === "place");
   assert.deepEqual(mine.map((e) => e.goal).sort(), ["draw", "measure", "size"]);
   assert.equal(coverage.entries.some((e) => e.family === "kon" && e.mode === "set"), false, "kon/set's entry is replaced");
-  const want = { draw: ["vertex-off", "wrong-scale"], measure: ["vertex-off", "wrong-scale"], size: [] };
+  const want = { draw: ["vertex-off", "wrong-scale", "join-wrong-end"], measure: ["vertex-off", "wrong-scale"], size: [] };
   for (const entry of mine) {
     assert.equal(entry.topicId, "c6-maths-ch02-t03");
     assert.deepEqual(Object.keys(entry.misMap).sort(), want[entry.goal].sort());
@@ -373,9 +375,10 @@ test("judging round 2 (law 3): join-wrong-end is a sign at chance weight, never 
     if (acts) {
       joins++;
       const r = run({ ...level, mal: { ...level.mal, "join-wrong-end": "k-je" } }, acts), m = r.ms.at(-1);
-      assert.equal(m.kind, "law_refused"); assert.equal(m.misconceptionId, undefined); assert.equal(m.facts.sign, "join-wrong-end"); assert.equal(m.facts.shown, "far_end");
+      assert.equal(m.kind, "misconception_consequence"); assert.equal(m.misconceptionId, "join-wrong-end"); assert.equal(m.facts.sign, "join-wrong-end"); assert.equal(m.facts.shown, "far_end");
       const g = konLogic.grade({ ...level, mal: { ...level.mal, "join-wrong-end": "k-je" } }, env(acts), { final: true });
       assert.equal(g.evidence[0].misconceptionId, undefined, "nothing on her record from one join");
+      assert.equal(g.evidence[0].chanceMis, "k-je"); assert.equal(g.evidence[0].weight, CHANCE_WEIGHT);
       // a wrong dot joined to A is no sign
       const p = level.params, g0 = goodPose(p), off = run(level, [...acts.slice(0, 3), { kind: "mark", r: markFor(p, g0, (p.theta + 30) % 180) }, { kind: "join", end: "e" }]).ms.at(-1);
       assert.equal(off.facts.sign, undefined);
@@ -447,4 +450,31 @@ test("kon/place: every accessible label is in the lesson's language (all three),
   // and the view reads them from the words (no English literal left in its controls)
   const src = readFileSync(new URL("../src/play/families/kon/kon.place.view.ts", import.meta.url), "utf8");
   assert.doesNotMatch(src, /aria: "/, "an aria label written as a literal");
+});
+
+test("centre-on-arm (Learning's split of vertex-off): the centre mark on an arm's end, or the corner on O, is named only where the level maps it; vertex-off keeps the bottom edge", async () => {
+  const { isCentreOnArm, centreOnArmPose, isVertexOff } = await import("../src/play/families/kon/kon.place.ts");
+  let n = 0;
+  for (const goal of ["measure", "draw"]) for (const level0 of levels(goal, [1, 2, 3])) {
+    const level = { ...level0, mal: { ...level0.mal, "centre-on-arm": "k-coa" } }, p = level.params;
+    const acts = konLogic.malActs(level, "centre-on-arm");
+    assert.ok(acts, `${level.levelId}: centre-on-arm acts`);
+    const q = centreOnArmPose(p);
+    assert.ok(isCentreOnArm(p, q) && !isVertexOff(p, q) && !placement(p, q).ok);
+    assert.ok(!isCentreOnArm(p, goodPose(p)) && !isCentreOnArm(p, vertexOffPose(p)), "the two placements stay apart");
+    const r = run(level, acts), m = r.ms.at(-1);
+    assert.equal(m.kind, "misconception_consequence"); assert.equal(m.misconceptionId, "centre-on-arm"); assert.equal(m.facts.shown, "centre_on_arm");
+    assert.equal(konLogic.grade(level, env(acts), { final: true }).evidence[0].misconceptionId, "k-coa");
+    // the play-out shows where her centre is (the ring on O and the join to her centre) only where the level names it
+    assert.equal(centreRingShown(p, r.s, true, level.mal), true);
+    assert.equal(centreRingShown(p, run(level0, acts).s, true, level0.mal), false);
+    // unmapped (the rule today): an ordinary refusal, nothing on her record
+    assert.equal(run(level0, acts).ms.at(-1).misconceptionId, undefined);
+    // the corner on O with the base along OA is the same belief (the kit's second sign)
+    const g = goodPose(p), b = [Math.cos((g.rot * Math.PI) / 180), Math.sin((g.rot * Math.PI) / 180)], nn = [-b[1], b[0]];
+    const corner = { x: p.vx - PR * b[0] + PD * nn[0], y: p.vy - PR * b[1] + PD * nn[1], rot: g.rot };
+    assert.ok(isCentreOnArm(p, corner), `${level.levelId}: corner on O`);
+    n++;
+  }
+  assert.ok(n >= 40, `${n}`);
 });

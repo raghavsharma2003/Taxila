@@ -434,5 +434,10 @@ export const konLogic: FamilyLogic<KonParams, KonState, KonAct> = {
   // r8 place/size: one pick among three (P, Q, the same)
   // r8 name/find: one tap among five arcs
   oneDecision: ["kind", "turn", "corr", "alt", "size", "find"],   // zone kind, turn, and cross (corr, alt): one dial or one pick (main 2026-11-10: turn and cross join the chance weight)
+  // round 8 law 3: place/draw's join to A is one of two buttons (judging round 2, kon/place 4); ends' ray-two-ends is one stop
+  // among a few (LAWS-AUDIT): both at chance weight, named on a repeat on another surface
+  chancePicks: ["draw:join-wrong-end", "ends:ray-two-ends"],
+  // name: a second first-letter pick counts on a level with other letters; the rest: the level's params
+  surfaceOf: (l: PlayLevel<KonParams>) => (isNameGoal(l.params.goal) ? `${l.params.goal}:${l.params.lets}` : JSON.stringify(l.params)),
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };

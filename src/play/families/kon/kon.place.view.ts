@@ -24,14 +24,12 @@ import { say } from "../../copy.ts";
 import { word } from "../../engines/words.ts";
 import type { KonParams, KonState } from "./kon.logic.ts";
 import { ARM, BH, BW, KNOB_AT, PD, PR, PRINT_EVERY, SIZE_PRINT_EVERY, arms, centreRingShown, dir, farEnd, initPlace, joinAFirst, madeAngle, norm, placement, rimAngleOf, rimPoint, sizeFigs, type Pose } from "./kon.place.ts";
-import { around, freeSpot } from "./kon.spot.ts";
+import { ROLE, around, freeSpot } from "./kon.spot.ts";
 
 type Pt = [number, number];
 const RUN_END = 1.4;
 /** the turning handle sits on the body, this far up from the centre (board px), at the scale's 90 */
 const KNOB = KNOB_AT * PR;
-/** the focus colour (her selection), the mix-up colour (her wrong value); green ("good") only for what is right */
-const FOCUS = "q2", MIX = "look";
 
 export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   const deps = depsIn as unknown as ViewDeps<KonParams, KonState, KonAct>;
@@ -163,9 +161,9 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     if (o.knob) {
       // the turning handle on the body: a ring the arms show through
       const [kx, ky] = S(...knobAt(q));
-      P.circle(c, kx, ky, 16, { role: FOCUS, width: 3 });
+      P.circle(c, kx, ky, 16, { role: ROLE.focus, width: 3 });
       // two turning arrows on the handle
-      c.save(); c.strokeStyle = P.color(FOCUS); c.lineWidth = 2.5; c.beginPath(); c.arc(kx, ky, 8, 0.3, 2.5); c.stroke(); c.beginPath(); c.arc(kx, ky, 8, 3.4, 5.6); c.stroke(); c.restore();
+      c.save(); c.strokeStyle = P.color(ROLE.focus); c.lineWidth = 2.5; c.beginPath(); c.arc(kx, ky, 8, 0.3, 2.5); c.stroke(); c.beginPath(); c.arc(kx, ky, 8, 3.4, 5.6); c.stroke(); c.restore();
       api.target("turn", kx - knobR(), ky - knobR(), knobR() * 2, knobR() * 2);
     }
   }
@@ -204,12 +202,12 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     if (goal === "measure" && P0.locked) {
       const run = truthAt >= 0 && S0.commits > 0 && !typed;
       const n = typed ? typed : P0.read !== null && (run || S0.done) ? String(P0.read) : "";
-      if (n) P.chip(c, `${n}°`, ...readChipAt(q), { size: 16, role: typed ? FOCUS : S0.done ? "good" : MIX });
+      if (n) P.chip(c, `${n}°`, ...readChipAt(q), { size: 16, role: typed ? ROLE.focus : S0.done ? ROLE.answer : ROLE.mixup });
     }
     // draw: the dot, and the arm she joined (focus colour; green when right, the mix-up colour while a miss plays out)
     if (goal === "draw" && P0.mark !== null && P0.locked) {
       const D = rimPoint(q, P0.mark), run = truthAt >= 0 && S0.commits > 0;
-      const role = S0.done ? "good" : run && P0.joined ? MIX : FOCUS;
+      const role = S0.done ? ROLE.answer : run && P0.joined ? ROLE.mixup : ROLE.focus;
       if (P0.joined && (run || S0.done)) {
         const from: Pt = P0.joined === "v" ? V : farEnd(p), h = (Math.atan2(D[1] - from[1], D[0] - from[0]) * 180) / Math.PI;
         const len = Math.max(ARM, Math.hypot(D[0] - from[0], D[1] - from[1]) + 30);
@@ -242,19 +240,19 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     }
     // vertex-off (her committed placement is the bottom edge on O, and only then): a ring on O and a dashed join to the
     // centre. Any other off placement shows only what her number or arm means on the protractor as it sits (below).
-    if (centreRingShown(p, st(), true)) {
+    if (centreRingShown(p, st(), true, level.mal)) {
       const [ox2, oy2] = S(...V), rr = 7 * k + 1;
-      P.circle(c, ox2, oy2, rr, { role: "look", width: 2 });
+      P.circle(c, ox2, oy2, rr, { role: ROLE.mixup, width: 2 });
       P.note("ring", ox2 - rr, oy2 - rr, 2 * rr, 2 * rr);
-      P.stroke(c, [S(...V), S(q.x, q.y)], { role: "look", width: 2, dash: [4, 3] });
+      P.stroke(c, [S(...V), S(q.x, q.y)], { role: ROLE.mixup, width: 2, dash: [4, 3] });
     }
     if (goal === "measure") {
       if (P0.read === null || typed) return;
       // her number, on the scale whose 0 is on the placed arm: the arm it means, from the protractor's OWN centre. Placed
       // off (vertex-off), it starts off the corner and runs beside OB, never on it
       const r = pl.zeroOnArm ? P0.read : 180 - P0.read, h = norm(q.rot + r);
-      line(c, ray([q.x, q.y], h, ARM * k), { role: "look", width: 3, dash: [7, 5] });
-      if (pl.ok && k >= 1) arcAt(c, [q.x, q.y], PR * 0.42 * s, hs[1 - pl.arm], h, "look", 3, [5, 4]);
+      line(c, ray([q.x, q.y], h, ARM * k), { role: ROLE.mixup, width: 3, dash: [7, 5] });
+      if (pl.ok && k >= 1) arcAt(c, [q.x, q.y], PR * 0.42 * s, hs[1 - pl.arm], h, ROLE.mixup, 3, [5, 4]);
       return;
     }
     // draw: the angle she made, at the end she joined, with its number; never the asked arm (law 2: no line to trace)
@@ -262,11 +260,11 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     const at: Pt = P0.joined === "v" ? V : farEnd(p), D = rimPoint(q, P0.mark), hD = norm((Math.atan2(D[1] - at[1], D[0] - at[0]) * 180) / Math.PI);
     const base = P0.joined === "v" ? hs[0] : norm(hs[0] + 180), made = madeAngle(p, q, P0.mark, P0.joined);
     // (a narrow angle gets a wider arc, so it runs at least 24 board px: the ∠A arc of a join to A is often 20°)
-    arcAt(c, at, Math.min(72, Math.max(30, 24 / ((Math.max(made, 1) * Math.PI) / 180))) * s, base, hD, MIX, 3);
+    arcAt(c, at, Math.min(72, Math.max(30, 24 / ((Math.max(made, 1) * Math.PI) / 180))) * s, base, hD, ROLE.mixup, 3);
     if (api.t - truthAt > 0.4) {
       // the angle it makes, named by its corner, where the protractor is not (under it when it sits high, over it when low)
       const [hx, hy] = S(BW / 2, q.y > BH / 2 - 30 ? 22 : BH - 16);
-      P.chip(c, `∠${P0.joined === "v" ? "O" : "A"} ${Math.round(made)}°`, hx, hy, { size: 15, role: MIX });
+      P.chip(c, `∠${P0.joined === "v" ? "O" : "A"} ${Math.round(made)}°`, hx, hy, { size: 15, role: ROLE.mixup });
     }
   }
   /** the end tick: full on a first-try solve, pale after a miss (the end screen tells the two apart, without words) */
@@ -297,7 +295,7 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
       // the angle's name below its vertex, outside the strip
       const [X, Y] = S(f.v[0], f.v[1] - PD * (f.rad / PR) - 12);
       labels.push([X, Y]);
-      if (missed && pick === (i === 0 ? "a" : "b")) P.chip(c, `∠${names[i]}`, X, Y + 4 * s, { size: 16, role: MIX });   // (a little lower: clear of the strip)
+      if (missed && pick === (i === 0 ? "a" : "b")) P.chip(c, `∠${names[i]}`, X, Y + 4 * s, { size: 16, role: ROLE.mixup });   // (a little lower: clear of the strip)
       else P.text(c, `∠${names[i]}`, X, Y, { size: 16, weight: 700, role: "ink2" });
     });
     // "Barabar" (the same): between the two figures, as a statement of both
@@ -309,7 +307,7 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
       const cands: Pt[] = [0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5].map((j) => [lx + j * 26 * s, y]);
       return freeSpot(cands, w, 30, { segs, boxes }, { x: 0, y: 0, w: api.w, h: api.h }) ?? cands[0];
     };
-    if (missed && pick === "same") { const [X, Y] = between(); P.chip(c, "∠P = ∠Q", X, Y, { size: 15, role: MIX }); }
+    if (missed && pick === "same") { const [X, Y] = between(); P.chip(c, "∠P = ∠Q", X, Y, { size: 15, role: ROLE.mixup }); }
     if (run && S0.done) {
       // the tick sits with her answer: beside the angle she picked, or, for "Barabar", beside "∠P = ∠Q" between the two
       // figures (a statement of both, tied to neither name)

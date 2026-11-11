@@ -8,8 +8,9 @@
 // between the rays to the outer two (solid when it is one of the figure's five angles, dashed when not).
 // Mal-rule vertex-name: the vertex is not put in the middle (say: the right three letters with the vertex first or last; find:
 // the angle at the name's first or last letter is taken). The child sees a different corner light up than the one she meant.
-// Judging round 2 (dc-r8-game-modes-three-laws): find is one tap among five arcs, so a first-letter pick is a SIGN (`sign` in
-// the facts, chance weight, nothing on her record); only say (a three-letter name she builds) names vertex-name. Figures: the
+// Judging round 2 (dc-r8-game-modes-three-laws): find is one tap among five arcs, so its first-letter pick is graded at chance
+// weight as chanceMis (the central law-3 rule: find is a oneDecision goal), never on her record from one tap; only say (a
+// three-letter name she builds) names vertex-name from one act. Figures: the
 // two arcs at the vertex between neighbouring rays sit at different radii (a gap where they meet), the joined pair never
 // crosses a ray, O and Q are never in one figure, and at fade 1 the vertex is O in the first level only.
 // Shortcut-free: a say level whose letters, read left to right or top to bottom, put the vertex in the middle is never served
@@ -135,9 +136,11 @@ function commitFind(p: NameParamsLike, s: NameState, mal: Record<string, string>
   const k = s.picked as number, want = p.ask ?? 0, c = corners(p)[k], w = asked(p);
   const f: Facts = { name: spell(p, nameOf(w, p.ord ?? 0)), picked: spell(p, nameOf(c)), vertex_ok: yn(c.v === w.v), arms_ok: yn(new Set([c.a, c.b, w.a, w.b]).size === 2) };
   if (k === want) return { nm: s, commit: { kind: "solved", done: true, facts: f } };
-  // one tap among five: never a named mix-up (law 3); the first-letter pick is reported as a sign, at chance weight
-  void mal;
-  return { nm: s, commit: { kind: "law_refused", facts: { ...f, why: "other_angle", shown: "her_arc", ...(k === vertexNamePick(p) ? { sign: "vertex-name" } : {}) } } };
+  // one tap among five (law 3): the first-letter pick plays out its signature, and the grade (find is a oneDecision goal)
+  // keeps it at chance weight as chanceMis, never on her record from one tap; the server names it on a repeat on a level
+  // with other letters (server/play/levels.js nameOnRepeat, kon surfaceOf)
+  if ("vertex-name" in mal && k === vertexNamePick(p)) return { nm: s, commit: { kind: "misconception_consequence", mis: "vertex-name", facts: { ...f, shown: "her_arc", sign: "vertex-name" } } };
+  return { nm: s, commit: { kind: "law_refused", facts: { ...f, why: "other_angle", shown: "her_arc" } } };
 }
 
 export function solveName(p: NameParamsLike): NameAct[] {

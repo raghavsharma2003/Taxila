@@ -1,6 +1,6 @@
 # Judge packet: `stambh/tally`, tally marks (class 4 maths, "Tables and pictographs")
 
-This packet is meant to be read on its own: everything a judge needs is in this file and the 22 screenshots beside it. Round 2: the code is on branch `claude/r8-tally-fixes` (the commit that carries this packet). What changed after round 1 is listed at the end.
+This packet is meant to be read on its own: everything a judge needs is in this file and the 22 screenshots beside it. Round 3: the code is on branch `claude/r8-laws-tally` (the commit that carries this packet). What changed after rounds 1 and 2 is listed at the end.
 
 **Topic:** c4-maths-ch14-t01, skill s1, "Organise data using tally marks and a table". Class 4, age band 6–9.
 
@@ -21,11 +21,11 @@ The law refuses any other givens, and the tests check the condition on every gen
 
 ## Goal 1: `keep` (keep a tally, then fill the table)
 
-**What she sees.** A strip at the top where things pass one at a time, for example bangles at a stall. Below it is one card per category: an icon, a name and an empty tally area, with a total box at the right under the heading "Kul". The card she has picked has a thick outline. There are two large stroke buttons, "|" (one standing line) and "╱" (one line across); they are faint until a row is picked. The line under the world says what she does: "Jo guzre, uski row chhuo, phir ek nishaan lagao" (tap the row of each thing that goes by, then make a mark). Shots: `keep-initial-*` (nothing picked yet), `keep-mid-*` (half the scene kept, the Kaanch row picked).
+**What she sees.** A strip at the top where things pass one at a time, for example bangles at a stall. Below it is one card per category: an icon, a name and an empty tally area, with a total box at the right under the heading "Kul". The card she has picked has a thick blue-violet outline (the focus colour; never green). Each kind has one colour wherever it appears: Kaanch orange, Kada blue, Moti red-brown, in the strip, on its card and in `read`. Only the thing passing now stands in the strip; nothing waits faint beside it. There are two large stroke buttons, "|" (one standing line) and "╱" (one line across); they are faint until a row is picked. The line under the world says what she does: "Jo guzre, uski row chhuo, phir ek nishaan lagao" (tap the row of each thing that goes by, then make a mark). Shots: `keep-initial-*` (nothing picked yet), `keep-mid-*` (half the scene kept, the Kaanch row picked).
 
 **What she does.**
 1. For each thing that passes, she taps its row and then a stroke button. The next thing comes only after she has made a stroke, so nothing is timed.
-2. When the scene has passed, the strip folds away, the line changes to "Har row ka kul likho, phir jaancho" (write each row's total, then check), and a number pad appears. She taps a row or its total box and types its total.
+2. When the scene has passed, the strip folds away, the line changes to "Har row ka kul likho, phir jaancho" (write each row's total, then check), and a number pad appears. She taps a row or its total box and types its total. The digit keys never go dim: a digit typed into a full box (two digits) starts it again.
 3. She presses "Jaancho".
 4. "Wapas" undoes her last step. Once the scene has passed, "Phir se rakho" (keep again) lets the whole scene pass again from the start: her strokes and totals clear, and "Wapas" brings them back. This is how she repairs her marks after the strip has folded away (`keep-again-360x640`).
 
@@ -42,22 +42,28 @@ The key is right only when each row's marks are correctly bundled *and* each tot
 Shot: `keep-end-*`, where all three ticks are green and the line under the world reads "Tumne 17 cheezon ki tally rakhi · jaanch: 1" (you kept a tally of 17 things · checks: 1).
 
 **What the screen shows at a check (every check, mix-up or not):**
-- Each total box gets a tick if her number is the row's count, or a dashed amber box if it is not.
+- A total box gets a green tick only when its whole row is right: the marks bundled as tallies are AND the total is the row's count. Green is used for nothing else.
+- A total that is not the row's count gets a dashed box in amber, the mix-up colour.
+- A right total over wrong marks gets neither: no tick and no dashed box. Its row shows what is wrong.
 - In each row that is not right (its marks are not bundled, or its total is off), every closed group plays out what it is worth. A count runs over the group's strokes, one amber digit at a time: 1, 2, 3, 4 on the standing lines, then 5 on the line across. For five standing lines, the 5 lands on the fifth line, and that line tips across the four before it. The group's last number stays over it. A group closed early (a line across after two lines) is counted to what it holds (3).
 - There are no words, no rings and no ✗.
-- The line under the world changes to "Koi kul badlo, ya tally phir se rakho" (change a total, or keep the tally again).
+- The line under the world says what to change, and nothing else:
+  - marks wrong, totals right: "Tally phir se rakho" (keep the tally again). "Phir se rakho" is then the lit button.
+  - totals wrong, marks right: "Koi kul badlo" (change a total).
+  - both: "Koi kul badlo, ya tally phir se rakho".
+- "Jaancho" stays off after a check until she changes something (a total, or the tally kept again).
 
 **What a tally-four child does, and what the screen shows.** The game names the mix-up in two forms, both from the kit's signs.
 - **The main form: she counts the standing lines** (`keep-mal-*`).
   - **What she does.** She draws the bundles correctly but counts only their standing lines, so she types Kaanch 10.
-  - **What the screen shows.** Kaanch's box is dashed. Over each of Kaanch's bundles the count runs 1–4 and lands 5 on the line across, and a 5 stays over each bundle. Kada and Moti keep their ticks. "Phir se rakho" and the pad are on screen.
-  - **When the game names it.** It is named when one stroke was made per thing in every row, and every total is the row's count less its bundles. That means each wrong total is short by exactly its row's bundles, whether she drew the crosses or not.
+  - **What the screen shows.** Kaanch's box is dashed. Over each of Kaanch's bundles the count runs 1–4 and lands 5 on the line across, and a 5 stays over each bundle. Kada and Moti are right (marks and totals) and keep their ticks. The line reads "Koi kul badlo"; the pad is on screen and "Jaancho" waits for a change.
+  - **When the game names it.** It is named when one stroke was made per thing in every row, at least one line across is drawn, and every total is the row's count less its bundles. That means each wrong total is short by exactly its row's bundles.
 - **The second form: she writes five as five standing lines** (`keep-mal-five-360x640`).
   - **What she does.** She never draws a line across but counts her lines right: Kaanch 12.
-  - **What the screen shows.** Every box gets a tick, because her numbers are right. The level is not solved. Over each group of five standing lines the count runs to 5, the fifth line tips across the four (amber), and a 5 stays over the group.
-  - **When the game names it.** It is named when one stroke was made per thing in every row, there is no line across anywhere, and every total is right.
+  - **What the screen shows.** No box gets a tick, because no row with a group of five is right, and no box is dashed, because her numbers are right. The level is not solved. Over each group of five standing lines the count runs to 5, the fifth line tips across the four (amber), and a 5 stays over the group. The line reads "Tally phir se rakho", "Phir se rakho" is the lit button, and "Jaancho" is off until something changes.
+  - **When the game names it.** It is named when one stroke was made per thing in every row and there is no line across anywhere, whatever the totals are.
 
-The child who draws five standing lines *and* counts each group as 4 matches the first form, so she is named too.
+The child who draws five standing lines *and* counts each group as 4 also has no line across, so she is named in this second form ("five").
 
 **Any other wrong answer is an ordinary miss:** a one-off total, a bundle skipped or counted twice, a single missing cross (the slip of a hand), or strokes in the wrong row. Over 2000+ random acts, the tests check that a check names tally-four exactly when the signature holds. The test writes that signature from the kit's signs, not from the game's code.
 
@@ -72,22 +78,21 @@ The child who draws five standing lines *and* counts each group as 4 matches the
 **What a tally-four child does, and what the screen shows.**
 - **First check** (`read-mal-*`):
   - **What she does.** She types 17, counting 4 per bundle.
-  - **What the screen shows.** Her box gets a dashed amber outline, and a number line appears below:
-    - **her number** is an amber dot with an amber "17" label, the same colour as her dashed box;
-    - **the true value** is a plain dark triangle with no number;
-    - **the gap** is drawn as one dark hop per unit, 4 hops, one for each bundle she read as 4.
-- **A later check** (`read-retry-360x640`): she types 19, still off.
-  - The line has no unit ticks, no triangle and no hops.
-  - It shows only her amber "19" and an arrow pointing the way to go.
-  - So the answer can't be counted off the line on a retry.
+  - **What the screen shows.**
+    - **On the tally**, as in `keep`: over each bundle the count runs 1, 2, 3, 4 on the standing lines and lands 5 on the line across. A 5 stays over each of the four bundles, in amber.
+    - **Her box** gets a dashed amber outline.
+    - **Below, a plain line from 0** carries her number, an amber dot with an amber "17" label, and an arrow pointing the way to go.
+    - The line has no unit ticks, no place for the answer and no hops, so the answer cannot be counted off it.
+- **A later check** (`read-retry-360x640`): she types 19, still off. The screen is the same: the count over each bundle, her amber "19" and the arrow.
 - **Solved after a retry** (`read-end-retry-360x640`): the tick is pale, not full green, and the line reads "Tumne 21 likha · jaanch: 2". The evidence records the first check as incorrect and `first_try` = 0.
 
 ## Things the judges should know
 
 - **Can a child pass by trial?**
   - In `keep`, no: a row passes only when its marks are bundled, so typing numbers can't make a row of plain standing lines right.
-  - In `read`, she may check again after a miss, as in every Taxila game. Only a correct *first* check counts as first-try evidence. The mix-up is recorded only from her *first* check, and only the first check's number line shows the hops.
-- **What the teacher receives.** The game reports to the lesson `bundles`, the mix-up if named, and in `keep` which sign it was (`sign=counted` or `sign=five`). It also reports `crossesMissing` (keep) and her `answer`. The game never speaks.
+  - In `read`, she may check again after a miss, as in every Taxila game. Only a correct *first* check counts as first-try evidence. The mix-up is recorded only from her *first* check. No check's screen shows the answer: it shows what each bundle is worth and which way her number is off.
+- **What the teacher receives.** The game reports to the lesson `bundles`, the mix-up if named, and in `keep` which sign it was (`sign=five` when no line across was drawn anywhere; `sign=counted` when lines across were drawn and each total is short by its row's bundles). It also reports `crossesMissing` (keep) and her `answer`. The game never speaks.
+- **Why the mix-up may be named from one check.** Every form is a constructed act, not a pick among a few: a typed number (any of 0–99), or a whole tally kept with no line across. A guess rarely produces either.
 - **Sizes.**
   - In `keep`, a row holds up to 14 strokes (two bundles and four), and on a 360 px phone it lies on **one line** in both phases.
   - In `read`, a row holds up to 49 (nine bundles and four). At 360 the largest read row takes two lines of five groups, and no group is split across lines.
@@ -105,7 +110,9 @@ The lesson is in Hinglish (shown), Hindi or English; the game shows only the les
 | game name (header) | Stambh | स्तंभ | Graphs |
 | instruction, keep (scene) | Jo guzre, uski row chhuo, phir ek nishaan lagao | जो गुज़रे, उसकी पंक्ति छुओ, फिर एक निशान लगाओ | Tap the row of each thing that goes by, then make a mark |
 | instruction, keep (table) | Har row ka kul likho, phir jaancho | हर पंक्ति का कुल लिखो, फिर जाँचो | Write each row's total, then check |
-| instruction, keep (after a miss) | Koi kul badlo, ya tally phir se rakho | कोई कुल बदलो, या टैली फिर से रखो | Change a total, or keep the tally again |
+| instruction, keep (after a miss: marks and totals off) | Koi kul badlo, ya tally phir se rakho | कोई कुल बदलो, या टैली फिर से रखो | Change a total, or keep the tally again |
+| instruction, keep (after a miss: marks off, totals right) | Tally phir se rakho | टैली फिर से रखो | Keep the tally again |
+| instruction, keep (after a miss: totals off, marks right) | Koi kul badlo | कोई कुल बदलो | Change a total |
 | instruction, read | Yeh tally kitne dikhati hai? | यह टैली कितने दिखाती है? | How many does this tally show? |
 | end line, keep | Tumne {n} cheezon ki tally rakhi · jaanch: {k} | तुमने {n} चीज़ों की टैली रखी · जाँच: {k} | You kept a tally of {n} things · checks: {k} |
 | end line, read | Tumne {n} likha · jaanch: {k} | तुमने {n} लिखा · जाँच: {k} | You wrote {n} · checks: {k} |
@@ -123,10 +130,10 @@ The lesson is in Hinglish (shown), Hindi or English; the game shows only the les
 `{n}` and `{k}` are digits: what she counted or wrote, and how many checks she made. Numbers are always digits.
 
 The game shows no feedback words: no "right", no "wrong", no hint text, no praise. Feedback is only:
-- ticks (pale after a retry);
-- dashed boxes;
-- the count digits and the tipping line over her groups;
-- the number line.
+- green ticks on right rows (pale after a retry);
+- amber dashed boxes on totals that are off;
+- the amber count digits and the tipping line over her groups (both goals);
+- in `read`, her amber number on a plain line with an arrow.
 
 No string states the answer, where a stroke goes, or the rule; a test checks every string for digits and for "five", "across", "khadi", "tirchi" and "bundle". The round "T" at the top is the teacher's avatar from the lesson shell, not part of the game.
 
@@ -142,14 +149,14 @@ At 360×640 only (6):
 
 | Shot | What it shows |
 |---|---|
-| `keep-mal-five` | the second form: five standing lines, totals right |
+| `keep-mal-five` | the second form: five standing lines, totals right; no ticks, "Tally phir se rakho", Jaancho off |
 | `keep-again` | after "Phir se rakho": the strip is back, the rows are cleared |
 | `keep-largest` | 28 things, Car 14 on one line, the pad open |
-| `read-retry` | a second wrong check: her number and an arrow only |
+| `read-retry` | a second wrong check: the count over each bundle, her number and an arrow |
 | `read-end-retry` | solved on the second check: a pale tick, "jaanch: 2" |
 | `read-largest` | 49, the pad open |
 
-The 360×640 shots are at 2× pixel density. The 1366×768 shots were scaled to 1× for size; colours are unchanged.
+The 360×640 shots are at 2× pixel density. The 1366×768 shots were scaled to 1× for size; colours are unchanged (RGB, no palette).
 
 ## Changes after judging round 1
 
@@ -163,3 +170,14 @@ The 360×640 shots are at 2× pixel density. The 1366×768 shots were scaled to 
 | 6 | no visible selected row; instruction did not say rows are tapped; no repair path | Rows are cards while the scene passes, and the picked one is outlined. The instruction says to tap the row, then make a mark. The table phase and after-a-miss phase have their own lines. "Phir se rakho" keeps the scene again (Wapas undoes it), and the after-a-miss line names that path. |
 | 7 | Auto (7) wrapped at 360 though the packet claimed ten bundles fit | The tally layout keeps a row on one line while strokes stay at least 8 px apart and 22 px tall. Keep rows of up to 14 now lie on one line at 360, and the claims above are restated. The unit test covers keep rows of 5–14 at the 360 box and the 49 read row (no group split). The browser test and screenshots cover the largest keep (28 things, a row of 14) and read (49) cases with the pad open. |
 | 8 | the instruction stayed after the task; end said nothing | At the end the instruction is replaced by a neutral factual line in the lesson's language, in digits: what she counted or wrote and how many checks. No praise and no rule. |
+
+## Changes after judging round 2
+
+| # | Ruling (RULINGS-2026-11-11.md, stambh/tally) | What changed |
+|---|---|---|
+| 1 | The "five" state must point only at "Phir se rakho"; "Jaancho" off until something changes; a tick only when marks and total are both right | A tick now needs the row's marks bundled **and** its total right. A right total over wrong marks gets no tick and no dashed box. After a check the line says what to change: "Tally phir se rakho" (marks off, totals right: the five state), "Koi kul badlo" (totals off, marks right), or both. In the five state "Phir se rakho" is the lit button. "Jaancho" stays off after any check until a total changes or the tally is kept again. Shot: `keep-mal-five-360x640`. |
+| 2 | Selection outlines take the focus colour | The picked row and the picked total box are outlined in the focus colour, a blue-violet, in every art direction. No green is used for a selection, for her wrong value or for anything but a right row's tick. The action button "Jaancho" keeps the action colour. Shots: `keep-mid-*`, `keep-mal-*`. |
+| 3 | Read, first miss: count over each bundle as keep does; no triangle and no unit ticks | On every miss in `read` the count runs over each bundle on the tally itself (1…4, then 5 on the line across; a 5 stays). The number line keeps only her amber number and an arrow. The triangle, the unit ticks **and the hops** are gone: with her number known, hops let the answer be counted off (law 2). Shots: `read-mal-*`, `read-retry-360x640`. |
+| 4 | A tally with no cross is `sign=five` whatever its totals; `sign=counted` needs crosses drawn and totals short by exactly the bundles | The law names "five" whenever every thing has its stroke and no line across is drawn anywhere, whatever the totals. It names "counted" only when lines across are drawn and every total is short by its row's bundles. The test signature, written from the kit's signs, is changed to match and is still checked over 2000+ random acts per goal. |
+| 5 | Kada one colour in both goals; a digit into a full box replaces it; the faded strip item is clearly next or removed | Each kind's colour is its place in its scene, so Kada is blue in `keep` and `read`. A digit typed into a full box starts it again, so the keys never look off. The faded item is removed: only the thing passing now stands in the strip. Shots: `read-*`, `keep-initial-*`, `keep-mid-*`. |
+| Laws | Green means right and only right; no key on screen after a miss while a try remains; a mix-up named only by an act a guess rarely produces | Checked by code on every served level in the play cert and in `tests/r8-play-laws.test.mjs`; stambh/tally has no break. Law 1: green only on right rows' ticks; selection in focus; her wrong totals in amber. Law 2: no answer value, unit tick, place or hop after a miss. The 5 over each bundle stays, as ruling 3 asks. Law 3: both forms are constructed acts (typed numbers, a whole tally), never one pick among a few. |

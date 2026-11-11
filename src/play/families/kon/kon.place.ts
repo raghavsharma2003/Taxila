@@ -15,10 +15,15 @@
 //   vertex-off      the bottom edge on the vertex: the centre sits the base-to-centre depth PD off it, along the normal. The
 //                   law draws the arm the protractor measures FROM ITS CENTRE: it starts PD away from the corner and runs
 //                   beside the true arm, never on it ("centre_off")
+//   centre-on-arm   (Learning's kit split, 2026-11-11: vertex-off is now ONLY the bottom edge on O) the centre mark on an arm's
+//                   end point (A, or B in measure) with the base along that arm, or the protractor's corner at O with the base
+//                   along an arm: a placement a guess rarely makes (law 3). The same play-out as vertex-off: a ring on O and
+//                   the dashed join from O to where her centre is, and what her number or arm means as placed
+//                   ("centre_on_arm"). The rule maps it once the kit id reaches int/r6 (integration 49)
 //   wrong-scale     the other scale's number: 180 − θ ("other_scale")
 //   join-wrong-end  draw: the dot at the right mark, joined to A (the far end of OA): the law shows the angle made at A
 //                   ("far_end"). Judging round 2 (law 3): the join is a pick between two buttons, so a guess makes it half
-//                   the time: it is a SIGN (`sign` in the facts, no misconception on her record), never named from one join
+//                   the time: graded at chance weight as chanceMis (konLogic.chancePicks), never named from one join
 // size names no mix-up (main 2026-11-11): the kit's tool-size belief is about the READING one angle gives under two tools, and
 // this goal asks which of two angles is more, never for a reading. Judging round 2 (law 2): a miss shows only her own pick,
 // never the readings (they would settle the next pick); any of the three answers can be the key.
@@ -30,7 +35,7 @@ import type { Facts, Moment } from "../../../../shared/play.ts";
 
 export type PlaceGoal = "measure" | "draw" | "size";
 export const PLACE_GOALS: readonly PlaceGoal[] = ["measure", "draw", "size"];
-export const PLACE_MAL = ["vertex-off", "join-wrong-end"] as const;
+export const PLACE_MAL = ["vertex-off", "centre-on-arm", "join-wrong-end"] as const;
 export const isPlaceGoal = (g: string | undefined): g is PlaceGoal => PLACE_GOALS.includes(g as PlaceGoal);
 
 /** the board (board px; at a 360 px phone the play canvas is about 324-360 × 350-420 px, so 1 board px ≥ 1 CSS px there and
@@ -171,15 +176,35 @@ export function isVertexOff(p: PlaceParamsLike, pose: Pose): boolean {
   const [nx, ny] = inward(pose), [vx, vy] = V(p);
   return Math.hypot(pose.x - (vx + PD * nx), pose.y - (vy + PD * ny)) <= (p.tolPx ?? TOL_PX);
 }
+/** centre-on-arm: the centre mark on an arm's end point (A; B too in measure) with the base along that arm, or the protractor's
+ *  bottom corner on O with the base along an arm (each within the centre tolerance and ±3°) */
+export function isCentreOnArm(p: PlaceParamsLike, pose: Pose): boolean {
+  const tol = p.tolPx ?? TOL_PX, [vx, vy] = V(p), hs = arms(p), [bx, by] = dir(pose.rot), [nx, ny] = inward(pose);
+  for (const h of hs) {
+    if (Math.min(diff(pose.rot, h), diff(pose.rot + 180, h)) > BASE_TOL) continue;
+    const [c, sn] = dir(h);
+    if (Math.hypot(pose.x - (vx + ARM * c), pose.y - (vy + ARM * sn)) <= tol) return true;
+    for (const side of [-1, 1]) if (Math.hypot(pose.x + side * PR * bx - PD * nx - vx, pose.y + side * PR * by - PD * ny - vy) <= tol) return true;
+  }
+  return false;
+}
+/** centre-on-arm's pose: the centre mark on A (the end of OA), the base along OA, opening as the right placement does. Part of
+ *  the protractor then lies off the board (A is near the board's edge, and the whole tool cannot sit there): it is her own
+ *  placement, and what it reads still shows (the ring on O, the join to her centre, the arm her number or mark means) */
+export function centreOnArmPose(p: PlaceParamsLike): Pose {
+  const [ax, ay] = farEnd(p);
+  return { x: r1(ax), y: r1(ay), rot: goodPose(p).rot };
+}
 /**
  * The ring on O and the dashed join to the protractor's centre (the vertex-off signature) are drawn only in the play-out of a
  * COMMITTED decision (`truthOn`: the view's play-out is running, after at least one commit), and only when that placement is
  * the bottom edge on O. Never before her first commit, never for any other off placement (it would show where the centre goes).
  */
-export function centreRingShown(p: PlaceParamsLike, s: { commits: number; pl?: PlaceState }, truthOn: boolean): boolean {
+export function centreRingShown(p: PlaceParamsLike, s: { commits: number; pl?: PlaceState }, truthOn: boolean, mal: Record<string, string> = {}): boolean {
   if (!truthOn || s.commits < 1 || !s.pl?.locked || p.goal === "size") return false;
   if (s.pl.read === null && s.pl.joined === null) return false;
-  return !placement(p, s.pl.pose).ok && isVertexOff(p, s.pl.pose);
+  // (centre-on-arm only where the level names it: an unnamed off placement never shows where the centre belongs)
+  return !placement(p, s.pl.pose).ok && (isVertexOff(p, s.pl.pose) || ("centre-on-arm" in mal && isCentreOnArm(p, s.pl.pose)));
 }
 /** the level's join-button order (judging round 2): "A se jodo" first on about half the levels, fixed per level */
 export const joinAFirst = (seed: number) => ((Math.imul(seed | 0, 2654435761) >>> 16) & 1) === 1;
@@ -265,6 +290,7 @@ function commitMeasure(p: PlaceParamsLike, s: PlaceState, mal: Record<string, st
       const ap = asPlaced(p, s.pose, pl);
       return { pl: next, commit: { kind: "misconception_consequence", mis: "vertex-off", facts: { ...f, shown: "centre_off", ...(ap ? { scale: Math.round(ap.value) } : {}) } } };
     }
+    if ("centre-on-arm" in mal && isCentreOnArm(p, s.pose)) return { pl: next, commit: { kind: "misconception_consequence", mis: "centre-on-arm", facts: { ...f, shown: "centre_on_arm" } } };
     return { pl: next, commit: { kind: "law_refused", facts: { ...f, why: "placed_off" } } };
   }
   const ap = asPlaced(p, s.pose, pl);
@@ -282,13 +308,17 @@ function commitDraw(p: PlaceParamsLike, s: PlaceState, mal: Record<string, strin
   const th = p.theta ?? 0, mv = scaleValue(pl, mark);
   if (!pl.ok) {
     if ("vertex-off" in mal && isVertexOff(p, s.pose)) return { pl: next, commit: { kind: "misconception_consequence", mis: "vertex-off", facts: { ...f, shown: "centre_off" } } };
+    if ("centre-on-arm" in mal && isCentreOnArm(p, s.pose)) return { pl: next, commit: { kind: "misconception_consequence", mis: "centre-on-arm", facts: { ...f, shown: "centre_on_arm" } } };
     return { pl: next, commit: { kind: "law_refused", facts: { ...f, why: "placed_off" } } };
   }
   // placed: the mark is graded on the protractor as placed (the scale whose 0 is on OA), and the arm must start at O
   if (end === "v" && Math.abs(mv - th) <= READ_TOL) return { pl: next, commit: { kind: "solved", done: true, facts: f } };
   if (end === "e") {
-    // the right mark joined to A: a sign of join-wrong-end at chance weight (one of two buttons), never named from one join
-    if (Math.abs(mv - th) <= READ_TOL) return { pl: next, commit: { kind: "law_refused", facts: { ...f, why: "far_end", shown: "far_end", sign: "join-wrong-end" } } };
+    // the right mark joined to A: join-wrong-end's signature; one of two join buttons, so the grade keeps it at chance weight
+    // as chanceMis (konLogic.chancePicks "draw:join-wrong-end"), never on her record from one join
+    if (Math.abs(mv - th) <= READ_TOL) return { pl: next, commit: "join-wrong-end" in mal
+      ? { kind: "misconception_consequence", mis: "join-wrong-end", facts: { ...f, shown: "far_end", sign: "join-wrong-end" } }
+      : { kind: "law_refused", facts: { ...f, why: "far_end", shown: "far_end", sign: "join-wrong-end" } } };
     return { pl: next, commit: { kind: "law_refused", facts: { ...f, why: "far_end", shown: "far_end" } } };
   }
   if ("wrong-scale" in mal && Math.abs(mv - (180 - th)) <= READ_TOL && Math.abs(180 - 2 * th) > 2 * READ_TOL)
@@ -321,6 +351,13 @@ export function malPlace(p: PlaceParamsLike, mal: string): PlaceAct[] | null {
       const ap = asPlaced(p, q);
       return ap ? [...at(q), { kind: "read", n: Math.round(ap.value) }] : null;
     }
+    return [...at(q), { kind: "mark", r: markFor(p, q, th) }, { kind: "join", end: "v" }];
+  }
+  if (mal === "centre-on-arm") {
+    // the centre mark on A, the base along OA; she reads whatever it shows there (or, when OB never crosses it, the size she
+    // expects), or marks the asked size on it and joins to O
+    const q = centreOnArmPose(p);
+    if (p.goal === "measure") { const ap = asPlaced(p, q); return [...at(q), { kind: "read", n: ap ? Math.round(ap.value) : th }]; }
     return [...at(q), { kind: "mark", r: markFor(p, q, th) }, { kind: "join", end: "v" }];
   }
   // wrong-scale is discriminated only where the outer scale is the wrong one (the angle opens clockwise): elsewhere the

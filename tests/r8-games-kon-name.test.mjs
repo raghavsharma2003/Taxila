@@ -75,13 +75,14 @@ for (const goal of ["say", "find"]) {
       const mr = run(level, m);
       assert.ok(!mr.s.done);
       if (goal === "find") {
-        // judging round 2 (law 3): one tap among five names nothing; the first-letter pick is a sign at chance weight
-        assert.equal(mr.ms.filter((x) => x.kind === "misconception_consequence").length, 0);
+        // judging round 2 (law 3): the first-letter pick plays out its signature, but one tap among five names nothing: the
+        // grade keeps it at chance weight as chanceMis (find is a oneDecision goal), nothing on her record
         const last = mr.ms.at(-1);
-        assert.equal(last.kind, "law_refused"); assert.equal(last.facts.sign, "vertex-name"); assert.equal(last.facts.vertex_ok, "no");
+        assert.equal(last.kind, "misconception_consequence"); assert.equal(last.misconceptionId, "vertex-name"); assert.equal(last.facts.sign, "vertex-name"); assert.equal(last.facts.vertex_ok, "no");
         const shown = nameOf(want, p.ord), picked = corners(p)[m[0].at];
         assert.ok(picked.v === shown[0] || picked.v === shown[2]);
-        assert.equal(konLogic.grade(level, env(m), { final: true }).evidence[0].misconceptionId, undefined, "nothing on her record from one tap");
+        const ev = konLogic.grade(level, env(m), { final: true }).evidence[0];
+        assert.equal(ev.misconceptionId, undefined, "nothing on her record from one tap"); assert.equal(ev.chanceMis, "k-vn"); assert.equal(ev.weight, CHANCE_WEIGHT);
         // any other wrong arc is no sign
         const other = [0, 1, 2, 3, 4].find((k) => k !== p.ask && k !== m[0].at);
         assert.equal(run(level, [{ kind: "arc", at: other }]).ms.at(-1).facts.sign, undefined);
@@ -98,7 +99,9 @@ for (const goal of ["say", "find"]) {
         assert.equal(named[0].facts.arms_ok, "no");
       }
       const g = konLogic.grade(level, env(m), { final: true });
-      assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, "k-vn");
+      // round 8 law 3 (ruling kon/name 2): in find one tap among the corners names nothing (kept at chance weight as chanceMis); a
+      // three-tap name in say names it
+      assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, goal === "say" ? "k-vn" : undefined); assert.equal(g.evidence[0].chanceMis, goal === "say" ? undefined : "k-vn");
     }
     assert.ok(n >= 20, `only ${n} levels`);
     assert.ok(mals >= n / 2, `vertex-name applied on ${mals} of ${n}`);
@@ -204,13 +207,13 @@ test("kon/name/say: one-letter undo takes back her last letter (beside Mita do, 
   assert.deepEqual(r2.s.nm.taps, []);
 });
 
-test("kon/name: every coverage entry serves a level as the play server would; say maps vertex-name, find maps none (one tap)", async () => {
+test("kon/name: every coverage entry serves a level as the play server would, with vertex-name mapped (find's at chance weight)", async () => {
   const { currentLevel, entryKey, seedOf } = await import("../server/play/levels.js");
   const mine = coverage.entries.filter((e) => e.family === "kon" && e.mode === "name");
   assert.deepEqual(mine.map((e) => e.goal).sort(), ["find", "say"]);
   for (const entry of mine) {
     assert.equal(entry.topicId, "c6-maths-ch02-t02");
-    assert.deepEqual(entry.misMap, entry.goal === "say" ? { "vertex-name": "c6-maths-ch02-t02-m-vertex-name" } : {});
+    assert.deepEqual(entry.misMap, { "vertex-name": "c6-maths-ch02-t02-m-vertex-name" });
     for (let n = 0; n < 4; n++) {
       const key = entryKey(entry);
       const s = { childId: `t-${n}`, key, skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
@@ -218,8 +221,7 @@ test("kon/name: every coverage entry serves a level as the play server would; sa
       const lv = currentLevel(s, entry);
       assert.ok(lv, `${entry.goal} served nothing`);
       assert.equal(lv.params.goal, entry.goal);
-      if (entry.goal === "say") assert.ok(lv.proof.discriminates.includes("c6-maths-ch02-t02-m-vertex-name"));
-      else assert.deepEqual(lv.proof.discriminates, []);
+      assert.ok(lv.proof.discriminates.includes("c6-maths-ch02-t02-m-vertex-name"));
     }
   }
 });
@@ -267,4 +269,15 @@ test("judging round 2: at fade 1 the vertex is O in her first level only; later 
   // fade 2 and up: any letter, never O with Q
   let r = 5; const rnd = () => ((r = (r * 1103515245 + 12345) >>> 0) / 2 ** 32);
   assert.ok(generateName("say", rnd, 2, false).some((x) => x.params.lets[0] !== "O"));
+});
+
+test("law 3 (central): a find first-letter pick is named only when it repeats on a level with other letters", async () => {
+  const { nameOnRepeat, surfaceOf } = await import("../server/play/levels.js");
+  const ls = levels("find").filter((l) => konLogic.malActs(l, "vertex-name"));
+  const a = ls[0], b = ls.find((l) => l.params.lets !== a.params.lets), same = { ...a, params: { ...a.params, ask: a.params.ask } };
+  assert.ok(b);
+  const rows = (l) => konLogic.grade(l, env(konLogic.malActs(l, "vertex-name")), { final: true }).evidence;
+  const s = { chance: [{ mis: "k-vn", surface: surfaceOf(a) }] };
+  assert.equal(nameOnRepeat(rows(b), s, b)[0].misconceptionId, "k-vn", "other letters: named");
+  assert.equal(nameOnRepeat(rows(same), s, same)[0].misconceptionId, undefined, "the same letters: not named");
 });

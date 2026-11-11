@@ -15,7 +15,7 @@ import { clamp, type ControlSpec, type FamilyView, type Readout, type ViewDeps }
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
 import type { KonParams, KonState } from "./kon.logic.ts";
-import { PAGE, angle1, canalRay, crossSign, crossing, endsTarget, ldiff, lineMeets, lineTarget, norm, roadRay, type Stops } from "./kon.lines.ts";
+import { PAGE, angle1, canalRay, crossSign, crossing, ldiff, lineMeets, lineTarget, norm, roadRay, type Stops } from "./kon.lines.ts";
 
 type Pt = [number, number];
 const rad = (d: number) => (d * Math.PI) / 180;
@@ -292,11 +292,12 @@ export function makeLinesView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     // the run: a light along every open end, off the board; a ring at every stop
     const k = (api.t - truthAt) % 1.2 / 1.2, done = s.done;
     for (const [side, v] of [[-1, sp.lo], [1, sp.hi]] as const) {
-      if (v === -1) { const q = T.pos(side * (T.half + (T.edge - T.half) * k)); Pa.circle(c, q[0], q[1], 6, { role: "good", fill: true, alpha: 1 - k }); }
+      // (law 1: the light is green only on a solved figure; after a miss it is ink)
+      if (v === -1) { const q = T.pos(side * (T.half + (T.edge - T.half) * k)); Pa.circle(c, q[0], q[1], 6, { role: done ? "good" : "ink2", fill: true, alpha: 1 - k }); }
       else Pa.circle(c, ...T.pos(T.sOf(v)), 12 + 6 * k, { role: done ? "good" : "ink2", width: 2, alpha: 1 - k });
     }
+    // (law 2, round 8: after a miss the asked figure is never drawn: it was the key, dashed under hers)
     if (done) Pa.tick(c, cx, cy + 46, 18, clamp((api.t - truthAt - 0.3) / 0.3, 0, 1));
-    else if (api.t - truthAt > 0.6) figure(c, endsTarget(p), "ink2", 44, [7, 6]);
   }
 
   function draw(c: CanvasRenderingContext2D): void {

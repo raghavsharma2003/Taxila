@@ -265,7 +265,7 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (sp.story === "train") { const sx = X(xw("seat", tau)); P.body(c, sx - 8, trackY - 22, 16, 10, { role: "q4", r: 2 }); seated("passenger", trackY); person("man", platY + 14); }
     if (sp.story === "bus") {
       seated("rider", trackY - 2); seated("boy", trackY - 2, "q1");
-      const tx = X(xw("tree", tau)); P.stroke(c, [[tx, trackY + 14], [tx, trackY - 30]], { role: "ink2", width: 4 }); P.circle(c, tx, trackY - 40, 14, { role: "good", fill: true, alpha: 0.6 });
+      const tx = X(xw("tree", tau)); P.stroke(c, [[tx, trackY + 14], [tx, trackY - 30]], { role: "ink2", width: 4 }); P.fillPath(c, (g) => g.arc(tx, trackY - 40, 14, 0, Math.PI * 2), "leaf", { alpha: 0.6, outline: null });   // scenery: never the "right" green
       const bx = X(xw("stop", tau)); P.stroke(c, [[bx, trackY + 14], [bx, trackY - 46]], { role: "ink", width: 3 }); P.body(c, bx - 9, trackY - 58, 18, 14, { role: "q4", r: 3 });
       person("aman", trackY + 16);
     }
@@ -517,8 +517,8 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       // the run: the distance each covered in the first interval, side by side
       if (s.ended && runAt >= 0) {
         const k = runK(), d1 = posOf(m, 1);
-        P.body(c, x0, ty - 34, (X(d1) - x0) * k, 6, { role: i === fasterOf(ap) && end ? "good" : "q3", r: 3 });
-        if (end && !s.done && i === fasterOf(ap)) P.magnifier(c, X(d1) + 14, ty - 36, 14);
+        // round 8 laws 1 and 2: the faster one turns green only once she has it; while a try remains nothing points at it
+        P.body(c, x0, ty - 34, (X(d1) - x0) * k, 6, { role: i === fasterOf(ap) && end && s.done ? "good" : "q3", r: 3 });
       }
     });
     if (s.ended && runAt >= 0) P.textFit(c, W("gati.first", { u: u.t }), w / 2, laneY + 2 * laneH + 14, w - 32, 22, { size: 16, role: "ink2", weight: 700 });

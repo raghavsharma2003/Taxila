@@ -1,27 +1,32 @@
 // Stambh · tally, the 2D view (round 8). Nothing here runs on a clock: the scene moves on only when the child marks.
-//   keep  the scene strip on top: the thing passing now stands in the middle (the next one waits faint behind it), and the
+//   keep  the scene strip on top: the thing passing now stands in the middle (alone: nothing waits beside it), and the
 //         two big buttons sit at the strip's right: "|" a standing line, "╱" the line across. Below, one row per kind (a
 //         card: the picked one outlined): its picture and name, its tally, its total cell. Tap a row to pick it, then a
 //         button: one stroke there for the thing passing, which then moves on. When the scene has passed, the buttons go;
 //         tap a row or its total cell and write the number on the pad. "Phir se rakho" lets the scene pass again (her
 //         strokes clear; "Wapas" brings them back). Strokes lie as she makes them (a gap only after her own line across).
 //   read  one row of tallies, big; the answer cell under it; the pad.
-// At a check every total cell gets a tick (her number is the row's count) or a dashed box. In a row that is not right the
-// law's groups play out what they are worth: a count runs over each closed group's strokes, one digit at a time, and its
-// last number stays over the group; a group of five standing lines has its fifth line tip across the four as the count
-// reaches it. Never words. A read answer off the tally plays out on a number line: on the first check her number, then
-// the tally's own place (unmarked by any number) and one hop per unit between; on later checks only her number and the
-// way to go, no unit ticks. A level solved after a retry ends with pale ticks, a first-try solve with full ones. No live
-// total, no count of strokes before a check: what a row holds is hers to count.
+// At a check a total cell gets a tick only when its row is right, marks AND total (round 2, ruling 1); a total that is
+// not the row's count gets a dashed box in the mix-up colour; a right total over wrong marks gets neither (the row's
+// play-out shows what is wrong). In a row that is not right the law's groups play out what they are worth: a count runs
+// over each closed group's strokes, one digit at a time, and its last number stays over the group; a group of five
+// standing lines has its fifth line tip across the four as the count reaches it. Never words. A read answer off the
+// tally plays out the same way on the tally itself (the count over each bundle), and her number stands on a plain line
+// with an arrow the way to go: no unit ticks, no place for the answer, no hops to count (law 2). After a check the line
+// under the world says what to change (the tally, a total, or either) and Jaancho waits until something changes. A level
+// solved after a retry ends with pale ticks, a first-try solve with full ones. Green is only a right row's tick; the
+// picked row and cell are outlined in the focus colour; her wrong total is the mix-up colour (law 1). No live total, no
+// count of strokes before a check: what a row holds is hers to count.
 import type { Moment, StambhAct } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import type { Role } from "../../core/styles.ts";
 import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
-import { groupsOf, tallyFlow, type TallyParams, type TallyState } from "./tally.logic.ts";
+import { groupsOf, tallyFlow, TALLY_CONTEXTS, type TallyParams, type TallyState } from "./tally.logic.ts";
 
-const ROLES: Role[] = ["q1", "q2", "q3"];
+/** each kind's hue is its place in its scene (Kada is the same colour in keep and read; round 2, ruling 5) */
+const ROLES: Role[] = ["q1", "q2", "q3", "q4"];
 
 export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<TallyParams, TallyState, StambhAct>;
@@ -29,6 +34,7 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const p = level.params, keep = p.goal === "keep", n = p.cats.length;
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const catName = (r: number) => W(`stambh.cat.${p.cats[r]}`);
+  const roleOf = (cat: string): Role => ROLES[Math.max(0, (TALLY_CONTEXTS[p.ctx] ?? []).indexOf(cat))] ?? "q1";
   let w = 300, h = 440;
   // geometry
   let stripY = 34, stripH = 96, btn = 64, btnX = 0, sceneW = 160, headY = 140, rowsY = 160, rowH = 80, gut = 90, cellW = 64, tallyX = 100, tallyW = 120;
@@ -101,6 +107,8 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const COUNT0 = 0.25, STEP = 0.26, TIP = 0.35;
   const busy = () => (api.t - movedAt < 0.5) || (checkedAt >= 0 && api.t - checkedAt < COUNT0 + 5 * STEP + TIP + 0.2);
   const showCheck = () => checkedSnap !== null && checkedSnap === snap(st());
+  /** the row's marks are a true tally of its count (read: the given row always is) */
+  const marksRight = (r: number) => !keep || (st().marks[r].length === p.counts[r] && st().marks[r].every((m, i) => m === (i % 5 === 4)));
 
   // ── the things that pass: one simple shape per kind, in the row's hue ──
   function thing(c: CanvasRenderingContext2D, cat: string, cx: number, cy: number, s: number, role: Role, alpha = 1): void {
@@ -186,8 +194,8 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       P.text(c, String(k), cx, ly(line) - f.sh / 2 - digit * 0.7, { size: digit, role: "look", font: "mono", weight: 700 });
     }
   }
-  /** a total cell: her number (or empty); picked = the pad writes here */
-  function drawCell(c: CanvasRenderingContext2D, r: number, cx: number, cy: number, cw: number, ch: number, open: boolean, checked: boolean): void {
+  /** a total cell: her number (or empty); picked = the pad writes here; marksOk = the row's marks are right */
+  function drawCell(c: CanvasRenderingContext2D, r: number, cx: number, cy: number, cw: number, ch: number, open: boolean, checked: boolean, marksOk = true): void {
     const P = api.P, s = st(), v = s.totals[r];
     api.target(`tot-${r}`, cx - cw / 2, cy - ch / 2, cw, ch);
     const picked = open && !s.done && !checked && r === sel;
@@ -195,13 +203,14 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (picked) P.stroke(c, [[cx - cw / 2 - 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy + ch / 2 + 3], [cx - cw / 2 - 3, cy + ch / 2 + 3]], { role: "you", width: 3, closed: true });
     if (v !== null) P.text(c, String(v), cx, cy + 1, { size: keep ? 22 : 30, role: "ink", font: "mono", weight: 700 });
     if (checked) {
-      // a tick says her number is the row's count (a row's strokes play out on the row itself); a solve after a retry
-      // ends with pale ticks, a first-try solve with full ones (the end screen tells the two apart truthfully, no words)
-      const ok = v === p.counts[r];
+      // a tick says the row is right, its marks AND its total (a right total over wrong marks gets no tick: its strokes
+      // play out on the row itself); a solve after a retry ends with pale ticks, a first-try solve with full ones (the
+      // end screen tells the two apart truthfully, no words); a total that is not the row's count gets the dashed box
+      const ok = v === p.counts[r] && marksOk;
       const k = clamp((api.t - checkedAt) / 0.4, 0, 1);
       if (ok && s.done && s.checks > 1) { c.save(); c.globalAlpha *= 0.42; P.tick(c, cx + cw / 2 - 2, cy - ch / 2 - 2, 18, k); c.restore(); }
       else if (ok) P.tick(c, cx + cw / 2 - 2, cy - ch / 2 - 2, 18, k);
-      else P.stroke(c, [[cx - cw / 2 - 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy + ch / 2 + 3], [cx - cw / 2 - 3, cy + ch / 2 + 3]], { role: "look", width: 2.5, dash: [5, 4], closed: true });
+      else if (v !== p.counts[r]) P.stroke(c, [[cx - cw / 2 - 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy + ch / 2 + 3], [cx - cw / 2 - 3, cy + ch / 2 + 3]], { role: "look", width: 2.5, dash: [5, 4], closed: true });
     }
   }
 
@@ -215,10 +224,10 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (!over) {
       P.stroke(c, [[10, groundY], [sceneW, groundY]], { role: "ink3", width: 2 });
       if (p.ctx === "traffic") P.stroke(c, [[16, groundY - stripH * 0.42], [sceneW - 6, groundY - stripH * 0.42]], { role: "ink3", width: 1.5, dash: [10, 8], alpha: 0.5 });
-      if (s.at > 0 && k < 1) { const r = p.seq[s.at - 1]; thing(c, p.cats[r], mid + (sceneW * 0.5) * k, cy, size, ROLES[r], 1 - k); }
+      // the one passing now (the last one slides out); nothing waits beside it, so nothing reads as passed and unmarked
+      if (s.at > 0 && k < 1) { const r = p.seq[s.at - 1]; thing(c, p.cats[r], mid + (sceneW * 0.5) * k, cy, size, roleOf(p.cats[r]), 1 - k); }
       const r = p.seq[s.at];
-      thing(c, p.cats[r], mid - size * 1.4 * (1 - k), cy, size, ROLES[r], 0.3 + 0.7 * k);
-      if (s.at + 1 < p.seq.length) { const r2 = p.seq[s.at + 1]; thing(c, p.cats[r2], Math.max(size * 0.45, mid - size * 1.4), cy + size * 0.12, size * 0.7, ROLES[r2], 0.25 * k); }
+      thing(c, p.cats[r], mid - size * 1.4 * (1 - k), cy, size, roleOf(p.cats[r]), 0.3 + 0.7 * k);
       // the two buttons: a standing line, the line across
       const by = stripY + (stripH - btn) / 2 - 4, on = sel >= 0 && !s.done;
       for (const [id, x] of [["btn-stand", btnX], ["btn-across", btnX + btn + 10]] as const) {
@@ -239,39 +248,36 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       if (!s.done && (!over || r === sel)) P.body(c, 4, y0 + 4, w - cellW - 28, rowH - 8, { role: "panel", r: 12, state: r === sel ? "selected" : "idle" });
       // its picture and its name side by side, as the scene shows it
       const is = w < 600 ? 28 : clamp(rowH * 0.36, 28, 44);
-      thing(c, p.cats[r], 14 + is / 2, cy2, is, ROLES[r]);
+      thing(c, p.cats[r], 14 + is / 2, cy2, is, roleOf(p.cats[r]));
       P.textFit(c, catName(r), (14 + is + 6 + gut) / 2, cy2, gut - is - 22, 22, { size: 17, role: "ink", weight: 700 });
-      const rowOk = s.marks[r].length === p.counts[r] && s.marks[r].every((m, i) => m === (i % 5 === 4)) && s.totals[r] === p.counts[r];
+      const marksOk = marksRight(r), rowOk = marksOk && s.totals[r] === p.counts[r];
       drawTally(c, s.marks[r], tallyX, y0 + 6, tallyW, rowH - 12, "ink", checked, checked && !rowOk);
-      drawCell(c, r, w - 12 - cellW / 2, cy2, cellW, clamp(rowH - 22, 34, 56), over, checked);
+      drawCell(c, r, w - 12 - cellW / 2, cy2, cellW, clamp(rowH - 22, 34, 56), over, checked, marksOk);
     }
   }
   function drawRead(c: CanvasRenderingContext2D): void {
     const P = api.P, s = st(), checked = showCheck();
     const is = 30;
-    thing(c, p.cats[0], 16 + is / 2, 46, is, "q1");
+    thing(c, p.cats[0], 16 + is / 2, 46, is, roleOf(p.cats[0]));
     P.text(c, catName(0), 16 + is + 10, 46, { size: 18, role: "ink", weight: 700, align: "left", maxW: w - is - 48 });
-    drawTally(c, s.marks[0], tallyX, readTop, tallyW, readH, "ink", false, false);
+    // a miss plays out on the tally itself, as keep does: the count over each bundle (round 2, ruling 3)
+    // (the top 22 px of the box are kept for the count's digits, clear of the kind's name and picture)
+    drawTally(c, s.marks[0], tallyX, readTop + 22, tallyW, readH - 22, "ink", false, checked && !s.done);
     P.text(c, "=", w / 2 - cellW / 2 - 18, cellY + 32, { size: 26, role: "ink2", weight: 700 });
     drawCell(c, 0, w / 2, cellY + 32, cellW, 60, true, checked);
-    if (checked && !s.done) numberLine(c, s.totals[0] ?? 0, p.counts[0], s.checks <= 1);
+    if (checked && !s.done) numberLine(c, s.totals[0] ?? 0, p.counts[0]);
   }
   /**
-   * A read off the tally, played out. Her number is drawn in the "look" colour of her dashed answer box (never the colour
-   * of a tick). First check: her number on a line with unit ticks, then the tally's own place (a plain triangle, no
-   * number) and one hop per unit between. Later checks: no unit ticks, no place, no hops: only her number and an arrow
-   * the way to go, so the answer is never read off the line on a retry.
+   * A read off the tally, played out below it (the count over each bundle runs on the tally itself). Her number is drawn
+   * in the "look" colour of her dashed answer box (never the colour of a tick) on a plain line from 0, with an arrow the
+   * way to go: no unit ticks, no place for the answer and no hops, so the answer is never counted off the line (law 2).
    */
-  function numberLine(c: CanvasRenderingContext2D, hers: number, truth: number, first: boolean): void {
+  function numberLine(c: CanvasRenderingContext2D, hers: number, truth: number): void {
     const P = api.P, x0 = 24, x1 = w - 24, y = Math.min(lineY, h - 30);
-    const R = first ? Math.ceil((Math.max(hers, truth) + 3) / 5) * 5 : Math.max(10, Math.ceil((hers * 1.6 + 4) / 5) * 5);
+    const R = Math.max(10, Math.ceil((hers * 1.6 + 4) / 5) * 5);
     const X = (v: number) => x0 + ((x1 - x0) * v) / R;
     P.stroke(c, [[x0, y], [x1, y]], { role: "ink2", width: 2 });
-    if (first) for (let v = 0; v <= R; v++) {
-      const big = v % 5 === 0;
-      if (big || (x1 - x0) / R >= 5) P.stroke(c, [[X(v), y - (big ? 8 : 4)], [X(v), y + (big ? 8 : 4)]], { role: "ink3", width: big ? 2 : 1 });
-    }
-    else P.stroke(c, [[X(0), y - 8], [X(0), y + 8]], { role: "ink3", width: 2 });
+    P.stroke(c, [[X(0), y - 8], [X(0), y + 8]], { role: "ink3", width: 2 });
     P.text(c, "0", X(0), y + 20, { size: 16, role: "ink2", font: "mono" });
     // her number first
     P.circle(c, X(hers), y, 7, { role: "look", fill: true });
@@ -279,20 +285,9 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const age = api.t - checkedAt;
     if (!(age >= 0.6 || api.reduced)) return;
     const k = api.reduced ? 1 : clamp((age - 0.6) / 0.6, 0, 1), dir = Math.sign(truth - hers);
-    if (!first) {
-      // the way to go from her number: an arrow of a fixed length, no ticks to count along
-      const ax = X(hers) + dir * 12, bx = ax + dir * 44 * k;
-      if (dir) { P.stroke(c, [[ax, y + 18], [bx, y + 18]], { role: "ink2", width: 3 }); P.stroke(c, [[bx - dir * 8, y + 11], [bx, y + 18], [bx - dir * 8, y + 25]], { role: "ink2", width: 3 }); }
-      return;
-    }
-    // the tally's own place, and the hops between
-    P.stroke(c, [[X(truth), y + 6], [X(truth) - 7, y + 18], [X(truth) + 7, y + 18]], { role: "ink", width: 3, closed: true });
-    const hops = Math.abs(truth - hers);
-    if (hops > 0 && hops <= 15) for (let i = 0; i < hops * k; i++) {
-      const a = X(hers + dir * i), b = X(hers + dir * (i + 1)), m = (a + b) / 2, hh = Math.min(14, Math.abs(b - a) * 0.8 + 4);
-      P.stroke(c, [[a, y - 2], [m - (b - a) * 0.25, y - hh], [m + (b - a) * 0.25, y - hh], [b, y - 2]], { role: "ink2", width: 2 });
-    }
-    else if (hops > 15) P.stroke(c, [[X(hers), y - 3], [(X(hers) + X(truth)) / 2, y - 22], [X(truth), y - 3]], { role: "ink2", width: 2, alpha: k });
+    // the way to go from her number: an arrow of a fixed length, no ticks to count along
+    const ax = X(hers) + dir * 12, bx = ax + dir * 44 * k;
+    if (dir) { P.stroke(c, [[ax, y + 18], [bx, y + 18]], { role: "ink2", width: 3 }); P.stroke(c, [[bx - dir * 8, y + 11], [bx, y + 18], [bx - dir * 8, y + 25]], { role: "ink2", width: 3 }); }
   }
   function draw(c: CanvasRenderingContext2D): void {
     api.P.textFit(c, W(`stambh.ctx.${p.ctx}`), w / 2, 16, w - 24, 24, { size: 16, role: "ink2", weight: 700 });
@@ -307,7 +302,14 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (s.done) return keep ? W("stambh.end.keep", { n: p.seq.length, k: s.checks }) : W("stambh.end.read", { n: s.totals[0] ?? 0, k: s.checks });
     if (!keep) return W("stambh.goal.read");
     if (!sceneOver()) return W("stambh.goal.keep");
-    return W(s.checks > 0 ? "stambh.goal.fix" : "stambh.goal.table");
+    // after a check, while nothing has changed: what to change. Marks wrong, totals right (the "five" state among them):
+    // keep the tally again, the only way to mend marks once the strip has folded; totals wrong, marks right: a total;
+    // both: either (round 2, ruling 1)
+    if (showCheck()) {
+      const marksOff = p.cats.some((_, r) => !marksRight(r)), totalsOff = p.counts.some((c, r) => s.totals[r] !== c);
+      return W(marksOff && !totalsOff ? "stambh.goal.again" : !marksOff && totalsOff ? "stambh.goal.totals" : "stambh.goal.fix");
+    }
+    return W("stambh.goal.table");
   };
   // no live readout: a running count of a row IS the answer the tally is there to give
   const readouts = (): Readout[] => [];
@@ -317,14 +319,20 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const writing = !keep || sceneOver();
     if (writing && sel >= 0) {
       const cur = s.totals[sel], txt = cur === null ? "" : String(cur);
-      for (const d of ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]) out.push({ id: `k${d}`, label: d, kind: "pad", group: "pad", disabled: txt.length >= 2 || (txt === "0"), onPress: () => act({ kind: "total", row: sel, n: Number(txt + d) }) });
+      // a digit typed into a full box (two digits, or a lone 0) starts it again: the keys never look off while the line
+      // asks her to change a total (round 2, ruling 5)
+      const full = txt.length >= 2 || txt === "0";
+      for (const d of ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]) out.push({ id: `k${d}`, label: d, kind: "pad", group: "pad", onPress: () => act({ kind: "total", row: sel, n: Number(full ? d : txt + d) }) });
       out.push({ id: "kdel", label: "⌫", aria: "delete", kind: "pad", group: "pad", disabled: !txt, onPress: () => act({ kind: "total", row: sel, n: txt.length > 1 ? Number(txt.slice(0, -1)) : null }) });
     }
-    const ready = writing && s.totals.every((t) => t !== null);
+    // Jaancho waits after a check until something changes (a second check of the same tally tells her nothing new)
+    const ready = writing && s.totals.every((t) => t !== null) && !showCheck();
     out.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", disabled: s.acts === 0, onPress: () => act({ kind: "undo" }) });
-    // keep: the strip has folded away, so the tally is repaired by keeping the scene again (undo brings the old one back)
-    if (keep && sceneOver()) out.push({ id: "again", label: W("stambh.again"), kind: "secondary", group: "go", onPress: () => act({ kind: "again" }) });
-    out.push({ id: "done", label: W("stambh.check"), kind: "primary", group: "go", you: ready, disabled: !ready, onPress: () => act({ kind: "check" }) });
+    // keep: the strip has folded away, so the tally is repaired by keeping the scene again (undo brings the old one back);
+    // after a check that found marks to mend it is her move
+    const mend = keep && showCheck() && p.cats.some((_, r) => !marksRight(r));
+    if (keep && sceneOver()) out.push({ id: "again", label: W("stambh.again"), kind: "secondary", group: "go", you: mend, onPress: () => act({ kind: "again" }) });
+    out.push({ id: "done", label: W("stambh.check"), kind: "primary", group: "go", you: ready && !mend, disabled: !ready, onPress: () => act({ kind: "check" }) });
     return out;
   }
   const view: FamilyView = { layout, update, draw, pointer, busy, goal, readouts, controls, react };

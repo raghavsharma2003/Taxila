@@ -16,10 +16,10 @@
 // Mal-rule (deterministic malActs), named only where its answer differs from every one-bundle slip (one bundle skipped,
 // one bundle counted twice, one single line off): the generator serves only such levels and the law re-checks it.
 //   tally-four  read: a bundle read as its four standing lines (answer 4 × bundles + singles, short by the bundles);
-//               keep, from the totals ("counted"): one stroke per thing, and every total her rows' count less its
-//               groups of five, crosses drawn or not (each wrong total short by exactly its row's bundles);
-//               keep, from the marks ("five"): one stroke per thing, no line across anywhere, every total right (five
-//               written as five standing lines, the kit's second sign)
+//               keep, from the marks ("five"): one stroke per thing and no line across anywhere, whatever the totals
+//               (five written as five standing lines, the kit's second sign; judges round 2, ruling 4);
+//               keep, from the totals ("counted"): one stroke per thing, lines across drawn, and every total the row's
+//               count less its bundles (each wrong total short by exactly its row's bundles)
 import type { Candidate, FamilyLogic, Facts, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel, StambhAct } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
 import { mulberry32 } from "../../core/rng.ts";
@@ -47,7 +47,8 @@ export interface TallyState extends Undoable<TallyState> {
   checks: number; done: boolean; acts: number;
   /** the mal-rule the first check showed (a fact for the teacher), or null */
   mal: string | null;
-  /** which of the kit's signs the first check showed: "counted" (totals four per bundle), "five" (five standing lines) */
+  /** which of the kit's signs the first check showed: "counted" (lines across drawn, totals four per bundle), "five" (no
+   *  line across anywhere: five written as five standing lines) */
   sign?: TallySign | null;
 }
 export type TallySign = "counted" | "five";
@@ -199,16 +200,17 @@ const totalRight = (p: TallyParams, s: TallyState, r: number) => s.totals[r] ===
 /**
  * The tally-four signature on this state, or null. Only on givens where the mix-up differs from every one-bundle slip.
  *   read: the bundles read as four (4 × bundles + singles);
- *   keep "counted": one stroke per thing in every row, and every total the row's count less its bundles (crosses drawn
- *        or not): each wrong total short by exactly its row's bundles, the rest right;
- *   keep "five": one stroke per thing in every row, no line across anywhere, every total right.
+ *   keep "five": one stroke per thing in every row and no line across anywhere, whatever the totals (judges round 2,
+ *        ruling 4: a tally kept with no line across is the kit's second sign however she then counts it);
+ *   keep "counted": one stroke per thing in every row, lines across drawn, and every total the row's count less its
+ *        bundles (each wrong total short by exactly its row's bundles, the rest right).
  */
 export function tallyFourSign(p: TallyParams, s: Pick<TallyState, "marks" | "totals">): TallySign | null {
   if (!tellsApart(p.counts)) return null;
   if (p.goal === "read") return s.totals[0] === four(p.counts[0]) ? "counted" : null;
   if (!p.cats.every((_, r) => s.marks[r].length === p.counts[r])) return null;
+  if (s.marks.every((m) => m.every((x) => !x))) return "five";
   if (p.counts.every((c, r) => s.totals[r] === four(c))) return "counted";
-  if (p.counts.every((c, r) => s.totals[r] === c) && s.marks.every((m) => m.every((x) => !x))) return "five";
   return null;
 }
 
@@ -289,7 +291,8 @@ function solve(level: PlayLevel<TallyParams>): StambhAct[] {
  * The tally-four child's acts, in each of its forms: "counted" (keep: the bundles drawn as tallies are drawn, each row's
  * total counted off its standing lines; read: 4 × bundles + singles), "five" (keep: five written as five standing lines,
  * no line across anywhere, the totals counted right), "plain" (keep: five standing lines AND each group of them read as
- * four). Null where the givens cannot tell the mix-up from a one-bundle slip.
+ * four: named "five", as every tally with no line across is). Null where the givens cannot tell the mix-up from a
+ * one-bundle slip.
  */
 export function tallyFourActs(p: TallyParams, form: "counted" | "five" | "plain"): StambhAct[] | null {
   if (!tellsApart(p.counts)) return null;

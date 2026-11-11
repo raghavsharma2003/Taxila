@@ -522,5 +522,8 @@ function grade(level: PlayLevel<RangParams>, acts: PlayActEnvelope<RangAct>[]): 
 
 export const rangLogic: FamilyLogic<RangParams, RangState, RangAct> = {
   family: "rang", modes: RANG_MODES, malRules: RANG_MAL,
+  // round 8 law 3 (dc-r8-game-modes-three-laws): mix-ups these goals see from ONE pick among five or fewer (a tool, a
+  // bin, a lane, a claim; server/forge3/qa/laws.mjs found each): reported at chance weight, named only on a repeat
+  chancePicks: ["boond:harm-mix", "ilaaj:harm-mix", "desi:made-red"],
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };

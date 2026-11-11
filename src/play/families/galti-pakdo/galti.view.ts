@@ -221,7 +221,7 @@ export const makeGaltiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       c.save(); c.globalAlpha *= alpha;
       P.text(c, texts[j], xs + (leftN - eqAt[j]) * chW, cy, { size: fs, role: textRole, weight: j === 0 ? 800 : 700, font: "mono", align: "left", maxW: x0 + cw - 56 - (xs + (leftN - eqAt[j]) * chW) });
       c.restore();
-      if (note) P.chip(c, note, Math.min(blockEnd + 10 + noteW / 2, x0 + cw - 56 - noteW / 2), cy, { size: 15, role: tried ? "good" : "ink2" });
+      if (note) P.chip(c, note, Math.min(blockEnd + 10 + noteW / 2, x0 + cw - 56 - noteW / 2), cy, { size: 15, role: tried ? "look" : "ink2" });   // round 8 law 1: her wrong pick takes the mix-up colour
       // the check button
       const bx = x0 + cw - 50, by = y + (rh - 44) / 2;
       if (!s.done) api.target(`chk-${j}`, bx, by, 50, 44);
