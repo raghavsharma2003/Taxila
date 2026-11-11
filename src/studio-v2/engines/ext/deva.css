@@ -6,10 +6,12 @@
    descriptor) before it reads unicode-range, so a Devanagari face may only use a weight range a Latin face of the same
    family also declares, and the reverse. A Devanagari-only 700-900 Atkinson segment made every bold Latin run on the stage
    fall back to system-ui; a Latin-only 400-700 segment sent 400 Hindi to the system font. Each range below is copied from
-   the Latin faces: Atkinson 400 600 | 700 (src/styles/fonts.css, src/ui-v3/tokens.css, ../../gallery/gallery.css),
+   the Latin faces: Atkinson 400 500 | 600 | 700 (2026-11-11: Mukta 400 for Hindi body text at 400-500, a true regular) (src/styles/fonts.css, src/ui-v3/tokens.css, ../../gallery/gallery.css),
    Bricolage 200 800 (../../core/fonts.css, gallery.css) | 500 800 (src/ui-v3/tokens.css), Geist Mono 100 900 (core, gallery)
    | 500 600 (src/ui-v3/tokens.css). tests/r8-font-match-browser.test.mjs checks every @font-face in src/ for this. */
-@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("./fonts/mukta-600-devanagari.woff2") format("woff2"); font-weight: 400 600; font-display: block;
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("./fonts/mukta-400-devanagari.woff2") format("woff2"); font-weight: 400 500; font-display: block;
+  unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FF; }
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("./fonts/mukta-600-devanagari.woff2") format("woff2"); font-weight: 600; font-display: block;
   unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FF; }
 @font-face { font-family: "Atkinson Hyperlegible Next"; src: url("./fonts/mukta-700-devanagari.woff2") format("woff2"); font-weight: 700; font-display: block;
   unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FF; }
