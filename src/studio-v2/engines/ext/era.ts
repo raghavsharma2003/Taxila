@@ -10,7 +10,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady, dust, fmtNum, textBlock } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, dust, fmtNum, textBlock, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
 
 const X0 = 90, X1 = 910, LINE_Y = 470, POD_W = 360, POD_H = 112, TOP = 150, LAND = LINE_Y - 64;
@@ -79,6 +79,7 @@ function create(api: EngineApi, spec: EraSpec): EngineInstance {
     flow.tick(dt, 1.8);
     if (flow.state === "intro" && flow.stateT < 0.05) hud.show(true);
     g.dock += (g.dockT - g.dock) * Math.min(1, dt * 16);
+    if (flow.round >= 0 && flow.state !== "play") { hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("landed", tally(g.roundR, units()), { bump: true }); }   // the round's readouts from its intro on, never a stale or "0/0" count
     if (flow.state !== "play") return;
     if (!g.reveal) {
       for (const p of g.pods) { p.t += dt; p.y = TOP + (LAND - TOP) * ease.inQuad(clamp(p.t / g.fall, 0, 1)); }
@@ -92,7 +93,7 @@ function create(api: EngineApi, spec: EraSpec): EngineInstance {
       if (g.reveal.t > (g.reveal.verdict === "right" ? 1.6 : 2.6)) { if (g.k + 1 < units()) { g.k++; spawn(); } else flow.endRound(); }
     }
     const prec = g.errs.length ? Math.round(100 * (1 - Math.min(1, g.errs.reduce((a, b) => a + b, 0) / g.errs.length / Math.max(1, span / 6)))) : null;
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("landed", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("landed", tally(g.roundR, units()), { bump: true });
     hud.set("prec", prec == null ? "—" : `${prec}%`, { meter: prec == null ? 0 : prec / 100, tone: prec != null && prec >= 85 ? "mint" : null });
   }
   function paintBg(c: Ctx) { backdrop(c, accent, 17, 60); }

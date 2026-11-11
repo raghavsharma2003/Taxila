@@ -11,7 +11,7 @@ import { bloom, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { taskPill, RoundFlow, backdrop, devaReady } from "./kit.ts";
+import { taskPill, RoundFlow, backdrop, devaReady, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
 
 const COLS = [250, 380, 510, 640, 770], R = 46, VAULT = 556, TOP = 168;
@@ -26,6 +26,9 @@ function create(api: EngineApi, spec: SieveSpec): EngineInstance {
   const task = taskPill(api);
   const hud = api.hud([{ key: "round", label: T.round }, { key: "calls", label: T.slashed }, { key: "combo", label: T.combo }]);
   const rd = (): SvRoundT => spec.rounds[Math.max(0, flow.round)];
+  /** where a crystal enters: its top vertex below the stage chrome (task pill, HUD row) wherever that sits (judges, 2026-11-11:
+   *  at l1366 the rule pill covered the top of a falling hexagon) */
+  const top = () => Math.max(TOP, api.chromeBottom() + R + 10);
   const ruleText = (r: SvRoundT) => r.rule === "multiple" ? `${T.multipleOf} ${r.a}` : r.rule === "common" ? `${T.commonOf} ${r.a} ${T.and} ${r.b}` : r.rule === "factor" ? `${T.factorOf} ${r.a}` : r.rule === "cfactor" ? `${T.cfactorOf} ${r.a} ${T.and} ${r.b}` : r.rule === "divisible" ? `${T.divisibleBy} ${r.a}` : r.rule === "coprime" ? `${T.coprimeWith} ${r.a}` : (T as Record<string, string>)[r.rule] ?? r.rule;
   const flow = new RoundFlow(api, spec.rounds.length, {
     onRound(k) { const r = spec.rounds[k]; g.stream = sieveStream(r); g.next = 0; g.spawnT = 0.4; g.crs = []; g.speedK = r.speed; g.roundR = 0; g.roundN = 0; api.event("round_start", { round: k + 1, rule: r.rule, a: r.a ?? null, b: r.b ?? null }); sfx.blip({ f: 220, f2: 440, dur: 0.3, type: "triangle", gain: 0.12 }); },
@@ -70,13 +73,14 @@ function create(api: EngineApi, spec: SieveSpec): EngineInstance {
     for (const p of g.pieces) { p.t += dt; p.vy += 900 * dt; p.x += p.vx * dt; p.y += p.vy * dt; }
     g.pieces = g.pieces.filter((p) => p.t < 1.4);
     g.trail = g.trail.filter((t) => api.now() - t.t < 0.25);
+    if (flow.round >= 0 && flow.state !== "play") { hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("calls", tally(g.roundR, g.stream.length), { bump: true }); }   // the round's readouts from its intro on, never a stale or "0/0" count
     if (flow.state !== "play") return;
     task(`${T.round} ${flow.round + 1}`, ruleText(rd()));
     g.spawnT -= dt;
     if (g.next < g.stream.length && g.spawnT <= 0) {
-      const r = rd(), free = COLS.filter((cx) => !g.crs.some((c) => c.state === "fall" && c.x === cx && c.y < TOP + R * 3.2));
+      const r = rd(), free = COLS.filter((cx) => !g.crs.some((c) => c.state === "fall" && c.x === cx && c.y < top() + R * 3.2));
       const pickFrom = free.length ? free : COLS, col = pickFrom[Math.floor(rng(r.seed + g.next * 13)() * pickFrom.length)];
-      g.crs.push({ i: g.next, n: g.stream[g.next], x: col, y: TOP, v: 70, state: "fall", t: 0 });
+      g.crs.push({ i: g.next, n: g.stream[g.next], x: col, y: top(), v: 70, state: "fall", t: 0 });
       g.next++; g.spawnT = 1.25 / g.speedK;
     }
     for (const c of g.crs) {
@@ -85,7 +89,7 @@ function create(api: EngineApi, spec: SieveSpec): EngineInstance {
     }
     g.crs = g.crs.filter((c) => c.state === "fall" || c.t < 1.4);
     if (g.next >= g.stream.length && g.crs.every((c) => c.state !== "fall") && g.crs.length === 0) flow.endRound();
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("calls", `${g.right}/${g.n}`, { bump: true }); hud.set("combo", String(g.combo), { tone: g.combo >= 5 ? "mint" : null });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("calls", tally(g.roundR, g.stream.length), { bump: true }); hud.set("combo", String(g.combo), { tone: g.combo >= 5 ? "mint" : null });
   }
   function hex(ctx: Ctx, x: number, y: number, r: number) { ctx.beginPath(); for (let k = 0; k < 6; k++) { const a = Math.PI / 6 + (k * Math.PI) / 3; ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); } ctx.closePath(); }
   function paintBg(c: Ctx) { backdrop(c, accent, 61, 70); c.fillStyle = "rgba(139,152,255,.06)"; c.fillRect(0, VAULT, W, H - VAULT); c.strokeStyle = hexA(C.ion, 0.5); c.lineWidth = 3; c.beginPath(); c.moveTo(150, VAULT); c.lineTo(870, VAULT); c.stroke(); }

@@ -9,7 +9,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
 
 const OX = 200, OY = 182, S = 50, UNDO = { x: 812, y: 300, w: 168, h: 62 }, CHECK = { x: 812, y: 380, w: 168, h: 70 };   // wide enough for CHECK at the young floor
@@ -22,8 +22,9 @@ function create(api: EngineApi, spec: GeoSpec): EngineInstance {
   const hud = api.hud([{ key: "round", label: T.round }, { key: "built", label: T.built }, { key: "clock", label: T.time, meter: true }]);
   const rd = (): GfRoundT => spec.rounds[Math.max(0, flow.round)];
   const ch = (): GeoCh => rd().challenges[g.ci];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) { g.ci = 0; api.event("round_start", { round: k + 1, challenges: spec.rounds[k].challenges.map((c) => c.kind) }); sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 }); start(); },
+    onRound(k) { r0 = g.right; g.ci = 0; api.event("round_start", { round: k + 1, challenges: spec.rounds[k].challenges.map((c) => c.kind) }); sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 }); start(); },
     onEnd(k) { api.event("round_end", { round: k + 1 }); },
     onFinal() { api.task("", T.runDone, "done"); api.done({ right: g.right, of: g.n }); },
   });
@@ -75,10 +76,11 @@ function create(api: EngineApi, spec: GeoSpec): EngineInstance {
     if (!fontOk) return;
     flow.tick(dt, 1.8);
     if (flow.state === "intro" && flow.stateT < 0.05) hud.show(true);
+    if (flow.round >= 0 && flow.state !== "play") { hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("built", tally(g.right - r0, rd().challenges.length), { bump: true }); }   // the round's readouts from its intro on, never a stale or "0/0" count
     if (flow.state !== "play") return;
     if (!g.answered) { g.clock -= dt; if (g.clock <= 0) check(); }
     else { g.revealT += dt; if (g.revealT > (g.verdict === "right" ? 2.2 : 3.4)) { if (g.ci + 1 < rd().challenges.length) { g.ci++; start(); } else flow.endRound(); } }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("built", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("built", tally(g.right - r0, rd().challenges.length), { bump: true });
     hud.set("clock", `${Math.max(0, Math.ceil(g.clock))}s`, { meter: clamp(g.clock / rd().time, 0, 1), tone: g.clock < 8 ? "amber" : null });
   }
   function paintBg(c: Ctx) { backdrop(c, accent, 81, 0); }
@@ -133,7 +135,7 @@ function create(api: EngineApi, spec: GeoSpec): EngineInstance {
     if (done) { if (ok) tick(ctx, 900, 230, C.mint, 1.1); else magnifier(ctx, 895, 230, C.amber, 1.1); if (!(g.closed && simple(g.pts))) pill(api, ctx, g.detail.slice(0, 34), 500, 556, { color: ok ? C.mint : C.amber, size: 38 }); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
-    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.built]] });
+    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[tally(g.right - r0, rd().challenges.length), T.built]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.built]] });
     drawCoach(api, ctx, T.coach, flow.state === "play" && ["polygon", "perimeter", "area", "triangle", "quad"].includes(c.kind) ? g.coachA : 0, now, 600);
   }

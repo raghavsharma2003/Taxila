@@ -27922,6 +27922,34 @@
    "at": "2026-11-11",
    "title": "A second clarify on a point, worked step or remediation does not require a second authored wording. Its cell is: hold or show that part's board (its picture view where one exists), say the same authored line once more, then the check-in; help stays 'heard'. alts[0] becomes optional content, used when a script has it. This removes 799 of the 1,112 missing fields without writing 799 new sentences that no judge has read. The other 313 (worked problem's simpler, remediations for 128 mix-ups, bridge simplers, 15 whys) are real content and Learning authors them, the four live pilots first (41), each under its own gates. Until a field is authored its cells compile to a named fallback and the report lists it: no hole is silent. Reverse if: director20's or the seeded run's judges mark more than 1 in 5 second-clarify rows as repeating without helping; then Learning authors alts[0] for the part kinds flagged.",
    "source": "inbox/r8-main-7.json"
+  },
+  {
+   "id": "ms-director20-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "director20: 16 lessons (4 pilot topics x steady, stuck, offtopic, steering), Director only, reactive rule-based child, int/r6 52b3ff1cc (integration 36); 1,541 model calls, about $1.06; four Opus judges at high effort, one per topic, counting by hand. Verdicts 256 of 256; 0 contradictions, 0 unsaid boards, 0 misgrades, 0 false keys in all four topics (contradictions 9, 1, 0 over the last three runs). Axes (listening, worked example, class level, screen and speech, register, promises): c4 3, 4, 4, 4, 3.5, 3.5; c5-t01 3, 4, 3.5, 4, 3, 2.5; c5-t02 3, 4, 3.5, 4.5, 3.5, 3; c6 3.5, 4, 3.5, 4.5, 3.5, 3.5. c6 passes every line of the scale gate, the first topic to do so. Of director19's ten faults nine are gone or reduced; 'a give-up with help spent gets no key' is still there on the same three rows. J2: 7 model-written reply sentences, 3 odd or wrong, 2 more replies fell to a neutral joint; 3 of 10 parks never returned to. Not exercised: a second clarify, a child with history, generated games, the third skill. Results in evals/hybrid-side-by-side/results/2026-11-11-director20/.",
+   "source": "inbox/r8-main-8.json"
+  },
+  {
+   "id": "fd-dry-matrix-blind-to-the-reply-layer",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "The dry matrix held 'a give-up with help spent gets the key' at zero while the live lesson said the point again on the same three rows as director19 (c4 stuck 12, c5-t01 stuck 12, c5-t02 steering 30). In the live path the reply model's text failed a guard and was repaired to a different unit part. The dry predicates check the walk's choice; they do not see what the reply layer finally says. A gate that passes while the fault it names is live is not a gate for that fault.",
+   "source": "inbox/r8-main-8.json"
+  },
+  {
+   "id": "rj-replay-pass-rate-as-proof-of-reply-quality",
+   "kind": "rejection",
+   "at": "2026-11-11",
+   "title": "Rejected: reading the J2 replay's pass rate (76 of 80 clean under the predicate) as evidence that her reply after an aside is good. In director20 the same code produced 7 model sentences of which the judges found 3 odd or wrong, and most first drafts were the next card's text. The predicate measures safe and on the child's word; it cannot measure whether a sentence answers what the child said. A sentence a child hears is judged by a reader or it is authored.",
+   "source": "inbox/r8-main-8.json"
+  },
+  {
+   "id": "dc-r8-director20",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "After director20: (R1) her reply after an aside is authored, not model-written: per kind of aside, three return questions and three reply forms with one slot for a word of the child's, judged by a reader before use; the model path and its predicate leave lessons (the pre-set clause fired: 3 of 7 odd). (G3) The dry predicates also run over every live run's rows, and a live run with a predicate above zero is not sent to judges; authored cells (key and why, point, simpler, remediation, joint) are said as written by code and a repair may never swap one unit part for another. (P1) Every park is queued and returned to before the goodbye, in a turn of its own; she asks no question whose answer her next turn ignores. (L1 to L4) New cells: a give-up at a check-in gets the simpler then the card; a clarify after a key gets the why reworded; a clarify at the greeting gets one plain line then the hook; a Hindi request says the part's simpler in Hindi. (S1) After a hint she re-asks only the card's question; an older card gets an authored lead-in. (W1) Code no longer swaps words inside authored sentences; one term per idea per language form is fixed in the script. The staged 30 stay held. Reverse if: the judged library reads worse than director20's model replies (then the model writes with the library as examples); or code-said cells make register fall in two or more topics (then the model may join parts under a word-for-word predicate); or question-only re-asks prove unclear (then the givens return after a second miss).",
+   "source": "inbox/r8-main-8.json"
   }
  ],
  "edges": [
@@ -44759,6 +44787,36 @@
    "src": "dc-r7-script-walk-v6-11",
    "rel": "constrains",
    "dst": "dc-r8-second-clarify-shows-not-rewords"
+  },
+  {
+   "src": "dc-r8-director20",
+   "rel": "measured_by",
+   "dst": "ms-director20-2026-11-11"
+  },
+  {
+   "src": "dc-r8-director20",
+   "rel": "caused_by",
+   "dst": "fd-dry-matrix-blind-to-the-reply-layer"
+  },
+  {
+   "src": "fd-dry-matrix-blind-to-the-reply-layer",
+   "rel": "measured_by",
+   "dst": "ms-director20-2026-11-11"
+  },
+  {
+   "src": "rj-replay-pass-rate-as-proof-of-reply-quality",
+   "rel": "measured_by",
+   "dst": "ms-director20-2026-11-11"
+  },
+  {
+   "src": "dc-r8-director20",
+   "rel": "supersedes",
+   "dst": "dc-r8-j2-prompt-carries-words-not-the-sentence"
+  },
+  {
+   "src": "dc-r8-selection-before-generation",
+   "rel": "constrains",
+   "dst": "dc-r8-director20"
   }
  ]
 }

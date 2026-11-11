@@ -11,7 +11,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady, fmtNum } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, fmtNum, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
 
@@ -26,8 +26,9 @@ function create(api: EngineApi, spec: MapSpec): EngineInstance {
   const g = { prog: [] as string[], flying: false, flyT: 0, path: [] as [number, number][], blocked: false, tape: null as null | { a: [number, number]; b: [number, number] }, dragging: false, dial: 0, dialDrag: false, k: 0, pin: null as null | { lon: number; lat: number }, answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0, coachA: 1, coachGone: false, trace: [] as [number, number][], tracing: false, straightT: 0 };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }]);
   const rd = (): MrRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) { g.k = 0; reset(); api.event("round_start", { round: k + 1, mode: spec.rounds[k].mode }); sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 }); },
+    onRound(k) { r0 = g.right; g.k = 0; reset(); api.event("round_start", { round: k + 1, mode: spec.rounds[k].mode }); sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 }); },
     onEnd(k) { api.event("round_end", { round: k + 1 }); },
     onFinal() { api.task("", T.runDone, "done"); api.done({ right: g.right, of: g.n }); },
   });
@@ -74,12 +75,13 @@ function create(api: EngineApi, spec: MapSpec): EngineInstance {
     if (!fontOk) return;
     flow.tick(dt, 1.8);
     if (flow.state === "intro" && flow.stateT < 0.05) hud.show(true);
+    if (flow.round >= 0 && flow.state !== "play") { hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, units()), { bump: true }); }   // the round's readouts from its intro on, never a stale or "0/0" count
     if (flow.state !== "play") return;
     const r = rd();
     if (g.flying && r.mode === "route") { g.flyT += dt; if (g.flyT > (g.path.length - 1) * 0.28 + (g.blocked ? 0.35 : 0) + 0.2) { g.flying = false; const goal = r.places[r.goal].at, end = g.path[g.path.length - 1], ok = !g.blocked && end[0] === goal[0] && end[1] === goal[1] && g.path.length - 1 <= r.maxSteps; if (g.blocked) api.fx.shake(5, 0.25); judge([...g.prog], ok ? "right" : "wrong"); } }
     if (g.answered) g.straightT += dt;
     if (g.answered) { g.revealT += dt; if (g.revealT > 2.6) { if (g.k + 1 < units()) { g.k++; reset(); } else flow.endRound(); } }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, units()), { bump: true });
   }
   function paintBg(c: Ctx) { backdrop(c, accent, 131, 0); }
   function paintWorld(c: Ctx) {
@@ -141,7 +143,7 @@ function create(api: EngineApi, spec: MapSpec): EngineInstance {
     if (done) { const tx = r.mode === "route" || r.mode === "scale" ? 762 : 960; if (ok) tick(ctx, tx, 200, C.mint, 1); else magnifier(ctx, tx - 5, 200, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
-    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.done]] });
+    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[tally(g.right - r0, units()), T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
     drawCoach(api, ctx, "", 0, now, 600);
   }

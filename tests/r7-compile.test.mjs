@@ -55,7 +55,8 @@ test("no hole is silent: every missing field's cells compile to a named fallback
     for (const cs of Object.values(c.cells)) for (const hs of Object.values(cs)) for (const cell of Object.values(hs)) assert.ok(!cell.hole, cell.address);
     assert.equal(c.fallbacks.length > 0, c.missing.length > 0, s.topicId);
   }
-  // the worked problem without its simpler: its clarify re-says it and shows its board (resay_show), and the field is listed for Learning
+  // a worked problem with no simpler: its clarify re-says it and shows its board (resay_show), and the field is listed for Learning.
+  // Checked on a copy with the field removed: Learning has since authored workedExample.simpler in every script (integration 37).
   const s = structuredClone(live[0]), sk = s.skills[0];
   delete sk.workedExample.simpler;
   const cell = compileScript(s).cells[`${sk.skillId}:worked:problem`].clarify.fresh;

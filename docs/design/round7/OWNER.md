@@ -181,7 +181,7 @@ in parts, start with tiers 1 and 2 (~$21).
   - The 30 new topics stay held from children. Learning regenerates them now under the current rules, still staged.
   - From here the pilot loop is one stream of three (Brain, Studio, Learning). The main effort moves to the learner model changing what is taught, and to generated content reaching a child.
   - Write-up: `judgements/director18-2026-11-10.md`.
-- 2026-11-10: director19 (16 lessons, about $1.07), the latest run.
+- 2026-11-10: director19 (16 lessons, about $1.07).
   - Every beat taught but one (289 of 290) and every answer judged (262 of 262). No misgrade, no wrong answer key, no board up before she spoke about it.
   - Screen/speech mismatches: 9 → 1. The picture fault is fixed: 15 of 16 picture requests drew their second view, and for the one board that has none she said so.
   - It still fails the gate, on how she sounds. Register is 3 of 5 in all four topics and listening is 3 in three of them.
@@ -192,6 +192,14 @@ in parts, start with tiers 1 and 2 (~$21).
   - Decision (`dc-r7-script-walk-v6-11`): that dry run becomes a gate; how she answers each kind of request is compiled from the script ahead of time instead of chosen while the lesson runs; coming back to the child's story gets its own turn, with one model-written sentence (behind a check) reacting to what the child said.
   - The small fixes go to production first as release 17. The 30 regenerated topics stay held from children.
   - Write-up: `judgements/director19-2026-11-10.md`.
+- 2026-11-11: director20 (16 lessons, about $1.06), the latest run.
+  - One topic (class 6 perimeter) passes every line of the gate, the first to do so. The other three pass every counted line and fail on the judges' axes.
+  - No screen/speech mismatch in any of the 16 lessons (9, then 1, now 0). Every beat but a handful taught, every answer judged (256 of 256), no misgrade, no wrong answer key.
+  - Nine of director19's ten faults are gone or nearly gone. One is not: a child who gives up after the help is used still gets the point again and no answer, on the same rows as last time. The free dry run said this was fixed; in the live lesson the reply model's text was thrown out and replaced by the wrong part. The dry run checks what the lesson chooses, not what is finally said.
+  - New faults: 3 of 10 parked asides are never returned to; her model-written reply after an aside was odd or wrong 3 times in 7 and fell to "Achha." or "Theek hai." twice; "pata nahi" at a check-in is taken as a yes; she says "Hindi mein bolti hoon" and repeats the same card; after every hint she re-says the whole question card word for word.
+  - Decision (`dc-r8-director20`): her reply after an aside is no longer written by the model: it comes from a small authored and judged set. Every parked aside must be returned to before the lesson ends. Authored lines are said as written without passing through the model, and the dry run's checks are also run over every live run's rows. The missing responses become entries in the compiled table. After a hint she re-asks only the question.
+  - The 30 new topics stay held from children: all four judges said no.
+  - Write-up: `judgements/director20-2026-11-11.md`.
 
 ## 4. Calls the main loop took that you may want to reverse
 

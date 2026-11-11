@@ -14,7 +14,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady, taskPill } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, taskPill, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
 
 const SL = { x0: 800, x1: 960, y: 560 };
@@ -44,8 +44,9 @@ function create(api: EngineApi, spec: LifeSpec): EngineInstance {
   };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }]);
   const rd = (): LlRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) {
+    onRound(k) { r0 = g.right;
       const r = spec.rounds[k];
       Object.assign(g, { t: 0, running: false, open: 0, opens: [], acc: 0, slide: false, pull: 0, drag: false, inBreath: false, depth: 0, breaths: [], o2: O2_START, vol: 0, drops: [], splash: [], parts: [], answered: false, verdict: "", detail: "", revealT: 0 });
       if (r.mode === "leaf") { g.leaf = { water: r.water0, sugar: 0, wilt: 0 }; g.botBest = leafBest(r); }
@@ -105,7 +106,7 @@ function create(api: EngineApi, spec: LifeSpec): EngineInstance {
     g.parts = g.parts.filter((q) => q.life > 0).slice(-160);
     for (const s of g.splash) s.t += dt;
     if (g.answered) { g.revealT += dt; if (g.revealT > 3) flow.endRound(); }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true });
   }
   function paintBg(c: Ctx) { backdrop(c, accent, 163, 0); }
   function bar(ctx: Ctx, label: string, value: string, f: number, x: number, y: number, color: string, mark?: number) {
@@ -176,7 +177,7 @@ function create(api: EngineApi, spec: LifeSpec): EngineInstance {
     if (done) { if (r.mode === "leaf") pill(api, ctx, g.detail, 380, 250, { color: ok ? C.mint : C.amber, size: 38 }); else if (r.mode === "breath") pill(api, ctx, g.detail, 400, 600, { color: ok ? C.mint : C.amber, size: 38 }); if (ok) tick(ctx, 960, 200, C.mint, 1); else magnifier(ctx, 955, 200, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
-    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.done]] });
+    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[tally(g.right - r0, 1), T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
   }
   function bot(): BotAction | null {

@@ -11,7 +11,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady, taskPill, textBlock } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, taskPill, textBlock, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
 
@@ -28,8 +28,9 @@ function create(api: EngineApi, spec: FieldSpec): EngineInstance {
   const g = { slotL: "" as Slot, slotR: "" as Slot, running: false, runT: 0, carX: 445, carV: 0, probe: [180, 520] as [number, number], dragProbe: false, probes: [] as string[], react: "", reactT: 0, mag: [0, 0] as [number, number], dragMag: false, needle: 0, needleV: 0, away: false, answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0, slip: false };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }]);
   const rd = (): FlRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) {
+    onRound(k) { r0 = g.right;
       const r = spec.rounds[k];
       Object.assign(g, { slotL: "", slotR: "", running: false, runT: 0, carX: 445, carV: 0, probe: [180, 540], dragProbe: false, probes: [], react: "", reactT: 0, mag: [MAP.x + 70, MAP.y - 55], dragMag: false, needle: 0, needleV: 0, away: r.mode === "compass" ? !r.disturb : false, answered: false, verdict: "", detail: "", revealT: 0, slip: botR() < 0.12 });
       if (r.mode === "compass" && !r.disturb) g.mag = [-999, -999];
@@ -91,7 +92,7 @@ function create(api: EngineApi, spec: FieldSpec): EngineInstance {
       const err = ((target - g.needle + 540) % 360) - 180; g.needleV += (err * 40 - g.needleV * 6) * dt; g.needle += g.needleV * dt;
     }
     if (g.answered) { g.revealT += dt; if (g.revealT > 3) flow.endRound(); }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true });
   }
   function paintBg(c: Ctx) { backdrop(c, accent, 199, 0); }
   function barMagnet(ctx: Ctx, x: number, y: number, w: number, h: number, poles: string, label = true) {
@@ -129,7 +130,7 @@ function create(api: EngineApi, spec: FieldSpec): EngineInstance {
     if (done) { if (ok) tick(ctx, 885, 450, C.mint, 1); else magnifier(ctx, 880, 450, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
-    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.done]] });
+    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[tally(g.right - r0, 1), T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
   }
   function bot(): BotAction | null {

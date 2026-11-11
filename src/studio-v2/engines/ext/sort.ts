@@ -11,7 +11,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, SUBJECT_ACCENT, backdrop, devaReady, shuffled, textBlock } from "./kit.ts";
+import { RoundFlow, SUBJECT_ACCENT, backdrop, devaReady, shuffled, textBlock, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
 
@@ -94,13 +94,14 @@ function create(api: EngineApi, spec: SortSpec): EngineInstance {
     if (g.tool) g.tool.t += dt;
     for (const f of g.flying) { f.t += dt; if (f.t > 0 && f.to) { const k = ease.inOutCubic(clamp(f.t / 0.55, 0, 1)); f.x = lerp(PAD_X, f.to.x, k); f.y = lerp(PAD_Y, f.to.y, k) - Math.sin(k * Math.PI) * 120; if (f.t > 0.9) f.state = "gone"; } }
     g.flying = g.flying.filter((f) => f.state !== "gone");
+    if (flow.round >= 0 && flow.state !== "play") { hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("sorted", tally(g.roundR, g.order.length), { bump: true, tone: g.streak >= 4 ? "mint" : null }); }   // the round's readouts from its intro on, never a stale or "0/0" count
     if (flow.state !== "play") return;
     const c = g.cur;
     if (c) {
       if (c.state === "in") { c.x = lerp(c.x, PAD_X, Math.min(1, dt * 5)); if (Math.abs(c.x - PAD_X) < 2) { c.x = PAD_X; c.state = "pad"; } }
       if (c.state === "pad" || c.state === "drag") { g.padT += dt; if (g.padT > g.belt && c.state === "pad") drop(null); }
     }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("sorted", `${g.right}/${g.n}`, { bump: true, tone: g.streak >= 4 ? "mint" : null }); hud.set("tests", String(g.tests));
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("sorted", tally(g.roundR, g.order.length), { bump: true, tone: g.streak >= 4 ? "mint" : null }); hud.set("tests", String(g.tests));
   }
   function drawItem(ctx: Ctx, l: Live, a = 1, tone?: string) {
     const it = itemOf(l.id); if (!it) return;

@@ -58,7 +58,9 @@ describe("r7-brain-v610.test.mjs", () => {
     parkNoCard: [["stuck", "c4", 34], ["offtopic", "c4", 20], ["steering", "c5-t02", 24], ["offtopic", "c6", 32]],
     hindiPromise: [["steady", "c5-t02", 38]],
     asideAfterStep: [["offtopic", "c6", 18]],
-    resumeDropped: [["stuck", "c5-t02", 50], ["offtopic", "c5-t02", 10], ["offtopic", "c6", 10]],
+    // (stuck c5-t02 50 retired, dc-r8-director20 G3: from row 30 the walk gives a spent card's key on the give-up, so the recorded child
+    // lines answer other cards by row 50 — a replay is a pin, not proof)
+    resumeDropped: [["offtopic", "c5-t02", 10], ["offtopic", "c6", 10]],
     alreadySaidKey: [["offtopic", "c5-t01", 24], ["steady", "c5-t01", 50], ["stuck", "c5-t01", 60]],
     tryFirstNoCard: [["offtopic", "c5-t01", 38]],
     kuchPoochna: [["stuck", "c5-t02", 54]],
@@ -82,7 +84,7 @@ describe("r7-brain-v610.test.mjs", () => {
     });
     test("every director18 row of the table's T2 rows is replayed here", () => {
       const named = new Set(Object.values(ROWS).flat().map(([p, t, n]) => `director18 ${p} ${t} ${n}`));
-      const missing = REQUEST_TABLE.filter((r) => r.id.startsWith("T2.")).flatMap((r) => r.rows).filter((x) => !named.has(x) && !/c4 44|c4 32|c6 8|c5-t02 56/.test(x));
+      const missing = REQUEST_TABLE.filter((r) => r.id.startsWith("T2.")).flatMap((r) => r.rows).filter((x) => !named.has(x) && !/c4 44|c4 32|c6 8|c5-t02 56|stuck c5-t02 50/.test(x));
       assert.deepEqual(missing, []);
     });
     // (a sweep of the 16 live lessons for the rules that hold on every turn)

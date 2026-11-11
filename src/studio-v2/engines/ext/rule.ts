@@ -11,7 +11,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady, fmtNum, textBlock } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, fmtNum, textBlock, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
 
 // (round 7 readability: the tray sits a little higher so a young child's two-line coach under it stays clear)
@@ -23,8 +23,9 @@ function create(api: EngineApi, spec: RuleSpec): EngineInstance {
   const g = { slots: [null, null, null] as (string | null)[], ran: false, runT: 0, verdict: "", br: [] as number[], start: 0, chain: [] as number[], right: 0, n: 0, coachA: 1, coachGone: false, doneT: 0 };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "built", label: T.built }]);
   const rd = (): RmRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) { g.slots = [null, null, null]; g.ran = false; g.runT = 0; g.verdict = ""; g.br = []; g.chain = []; g.doneT = 0; const r = spec.rounds[k]; if (r.mode === "explore") g.start = r.lo; api.event("round_start", { round: k + 1, mode: r.mode }); api.task(`${T.round} ${k + 1}`, r.sub || r.title); sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 }); },
+    onRound(k) { r0 = g.right; g.slots = [null, null, null]; g.ran = false; g.runT = 0; g.verdict = ""; g.br = []; g.chain = []; g.doneT = 0; const r = spec.rounds[k]; if (r.mode === "explore") g.start = r.lo; api.event("round_start", { round: k + 1, mode: r.mode }); api.task(`${T.round} ${k + 1}`, r.sub || r.title); sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 }); },
     onEnd(k) { api.event("round_end", { round: k + 1, verdict: g.verdict }); },
     onFinal() { api.task("", T.runDone, "done"); api.done({ right: g.right, of: g.n }); },
   });
@@ -68,9 +69,10 @@ function create(api: EngineApi, spec: RuleSpec): EngineInstance {
     if (!fontOk) return;
     flow.tick(dt, 1.8);
     if (flow.state === "intro" && flow.stateT < 0.05) hud.show(true);
+    if (flow.round >= 0 && flow.state !== "play") { hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("built", tally(g.right - r0, 1), { bump: true }); }   // the round's readouts from its intro on, never a stale or "0/0" count
     if (flow.state !== "play") return;
     if (g.ran) { g.runT += dt; if (g.runT > 2.4 && g.verdict) { g.doneT += dt; if (g.doneT > 1.6) flow.endRound(); } }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("built", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("built", tally(g.right - r0, 1), { bump: true });
   }
   function machine(ctx: Ctx, now: number, label = "") {
     ctx.save(); bloom(ctx, accent, MACH.x + MACH.w / 2, MACH.y + MACH.h / 2, MACH.w * 0.7, g.ran ? 0.35 : 0.18);
@@ -104,13 +106,14 @@ function create(api: EngineApi, spec: RuleSpec): EngineInstance {
     if (r.mode === "build") {
       machine(ctx, now); tray(ctx); runBtn(ctx);
       ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 16; ctx.beginPath(); ctx.moveTo(60, MACH.y + MACH.h / 2); ctx.lineTo(940, MACH.y + MACH.h / 2); ctx.stroke();
+      const wantY = Math.max(172, api.chromeBottom() + 28);   // below the task pill, one or two lines (l1366 2026-11-11: a two-line goal covered "chahiye")
       r.inputs.forEach((v, i) => {
-        const y = 210 + i * 44, want = runOps(r.rule, v)!, got = g.ran ? runOps(built(), v) : null, show = g.ran && g.runT > 0.4 + i * 0.35;
+        const y = wantY + 38 + i * 44, want = runOps(r.rule, v)!, got = g.ran ? runOps(built(), v) : null, show = g.ran && g.runT > 0.4 + i * 0.35;
         api.text(ctx, fmtNum(v), 150, y, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle" });
         api.text(ctx, fmtNum(want), 760, y, { font: "display", size: 40, weight: 800, color: C.ink2, align: "center", baseline: "middle" });
         if (show) { const good = got === want; api.text(ctx, got === null ? "?" : fmtNum(got), 870, y, { font: "display", size: 40, weight: 800, color: good ? C.mint : C.amber, align: "center", baseline: "middle" }); }
       });
-      api.text(ctx, T.want, 760, 172,   // below the task pill's second line on a laptop
+      api.text(ctx, T.want, 760, wantY,
         { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle", decor: true });
     } else if (r.mode === "seq") {
       [1, 2, 3].forEach((n, i) => { const cx = 250 + i * 250; drawPattern(ctx, r.pattern, n, cx, 200); api.text(ctx, `${T.step} ${n}: ${patternCount(r.pattern, n)}`, cx, 266, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" }); });
@@ -140,7 +143,7 @@ function create(api: EngineApi, spec: RuleSpec): EngineInstance {
     if (g.ran && g.runT > 0.9) { if (ok) tick(ctx, 960, 200, C.mint, 1); else magnifier(ctx, 955, 200, C.amber, 1); if (r.mode === "build" || r.mode === "seq") pill(api, ctx, ok ? T.works : T.fix, r.mode === "build" ? 500 : 830, r.mode === "build" ? MACH.y - 34 : MACH.y + MACH.h / 2, { color: ok ? C.mint : C.amber, size: 38 }); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
-    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: g.verdict === "right", color: g.verdict === "right" ? C.mint : C.amber, stats: [[`${g.right}/${g.n}`, T.built]] });
+    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: g.verdict === "right", color: g.verdict === "right" ? C.mint : C.amber, stats: [[tally(g.right - r0, 1), T.built]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.built]] });
     drawCoach(api, ctx, T.coach, flow.state === "play" && (r.mode === "build" || r.mode === "seq" || r.mode === "inverse") ? g.coachA : 0, now, 616, 980);
   }
