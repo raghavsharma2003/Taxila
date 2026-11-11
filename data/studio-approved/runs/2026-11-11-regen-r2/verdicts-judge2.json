@@ -1,0 +1,86 @@
+[
+  {
+    "id": "gen-c4-maths-ch03-t01-02f16ea5",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "spec.strings.palindrome",
+        "detail": "\"Palindrom\" is misspelt (should be \"Palindrome\"). It is a label string in the spec, although this round does not show it."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "The mix-up is zero not being even. The round draws 10 numbers from 0-30 (lo 0, hi 30, seed 271, hitRate 0.5), but the packet does not show whether 0 (or 10/20) is actually among them, so I cannot tell whether a child with that belief meets the case where it goes wrong. The round title and sub-title are generic and do not point at zero. The counter shows \"Kat gaya 0/4\" while count is 10 with hitRate 0.5; how the engine reaches 4 targets cannot be checked from the packet."
+  },
+  {
+    "id": "gen-c4-maths-ch03-t02-0c1f1c81",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": ""
+  },
+  {
+    "id": "gen-c5-maths-ch02-t02-a1bc53b3",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Wave 1 uses ticks 8 for 1/8, 1/4, 1/2 and wave 2 uses ticks 6 for 1/6, 1/3, so every item lands on a tick. Placing 1/8 nearest 0, with 1/4 and 1/2 further along, shows where the 'bigger bottom number = bigger fraction' belief goes wrong. The subs ('Har item ko pakdo', 'Ek ek item pakdo') only say what to do. In both screenshots the catcher starts near the first 1/8 tick but not on it (pointer at about x=208 against the tick at about x=197 at p412). From one still frame I cannot tell whether this is the engine's default start position or a hint, so I have not counted it."
+  },
+  {
+    "id": "gen-c5-maths-ch13-t01-2eaa2cbb",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Round is rule 'multiple', a=6, lo 1..hi 48, count 18, hitRate 0.5; the screen shows 'CHUNA GAYA 0/9' (9 targets) while 1-48 holds only 8 distinct multiples of 6 (6..48), so the engine must repeat a value; from the packet alone I cannot tell whether that is intended or whether distractors include the factors of 6 (1, 2, 3) that would surface the factor/multiple mix-up. Neither counted as a fault."
+  },
+  {
+    "id": "gen-c6-maths-ch07-t01-e1a86604",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "The engine's grading of how close a cut must be (\"Kaafi paas\" against \"Bilkul sahi\") is not in the packet, so I could not check from the packet whether a cut into clearly unequal parts gets enough feedback to correct the unequal-parts mix-up. Every wave has marks false, and each title and sub-title agrees with its items (3, 4, and a mix of 3 and 4 parts). The pieces are strips (patti), not round things. No rule or answer is stated."
+  },
+  {
+    "id": "gen-c6-maths-ch07-t05-3b481c3f",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Screen counter reads 'HO GAYA 0/1' beside 'DAURA 1/2'; the packet does not say what the '1' counts (per-round task or whole run), so not counted. Rounds 1/2+1/3 and 1/4+1/4 directly test the add-across mix-up (2/5, 2/8); no title or sub names the method or the answer."
+  },
+  {
+    "id": "gen-c7-maths-ch02-t01-92068f8b",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Round 1 '20 se 5 kam' rule -5: 20,30,50,80 -> 15,25,45,75 correct, with -20 tile as the word-order trap. Round 2 'Har din 3 rupaye kam' rule -3 is correct but has no 'X se Y kam' phrase, so it only weakly probes the word-order mix-up; round 1 carries it. The conveyor bar passes behind '80' and '75' but they stay legible."
+  }
+]
