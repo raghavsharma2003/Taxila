@@ -225,3 +225,9 @@ test("predicate (2026-11-11, c5-t01 retry 5 split on 'Run complete'): a Hinglish
   assert.equal(untranslatedStrings("catch-on-line@1", spec({ runDone: "Daud poori" })).ok, true);
   assert.equal(untranslatedStrings("catch-on-line@1", spec({ runDone: "Run complete" }, "en")).ok, true, "an English piece keeps its English");
 });
+
+test("the approval lane's scripts parse (2026-11-11: approve-check shipped with a duplicate declaration no test loaded)", async () => {
+  const { execFileSync } = await import("node:child_process");
+  for (const f of fs.readdirSync(path.join(ROOT, "scripts")).filter((x) => /^approve-.*\.mjs$/.test(x)))
+    execFileSync(process.execPath, ["--check", path.join(ROOT, "scripts", f)], { stdio: "pipe" });
+});

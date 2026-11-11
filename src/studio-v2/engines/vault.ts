@@ -203,4 +203,4 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     board: () => { const tg = round().target, s = String(tg); return { title: groupDigits(tg, spec.system), lines: [numberWords(tg, spec.system), s.split("").map((ch, i) => `${ch} ${PLACE[10 ** (s.length - 1 - i)] ?? ""}`).join("  ·  ")], figure: { kind: "none" }, accent: C.sun }; },
   };
 }
-export const vault: EngineDef<VaultSpec> = { archetype: "vault-heist@1", label: "Game · Vault Heist", accent: C.sun, create };
+export const vault: EngineDef<VaultSpec> = { archetype: "vault-heist@1", label: "Game · Number Vault", accent: C.sun, create };

@@ -728,7 +728,7 @@ function gradeArea(spec: AreaSpec, itemId: string, value: unknown): Graded {
 }
 
 // ═════════════════════════════ 7. vault-heist@1 — Place-value heist ═════════════════════════════
-const VH_STRINGS = { coach: "Tap blocks on the belt to load the vault", round: "Vault", target: "TARGET", loaded: "loaded", over: "over by", under: "short by", cracked: "VAULT OPEN", regroup: "REGROUPED", runDone: "Heist complete", words: "say it", time: "laser" };
+const VH_STRINGS = { coach: "Tap blocks on the belt to load the vault", round: "Vault", target: "TARGET", loaded: "loaded", over: "over by", under: "short by", cracked: "VAULT OPEN", regroup: "REGROUPED", runDone: "Vault full", words: "say it", time: "laser" };
 const VH_MISC = ["c4-maths-ch04-t01-m-concat", "c4-maths-ch04-t01-m-drop-zero", "c4-maths-ch04-t01-m-face-value", "c7-maths-ch01-t01-m-zero-placeholder", "c7-maths-ch01-t01-m-intl-commas"];
 const DENOMS = [1, 10, 100, 1000, 10000, 100000] as const;
 const VaultSchema = z.object({
@@ -786,7 +786,9 @@ function gradeVault(spec: VaultSpec, itemId: string, value: unknown): Graded {
 }
 
 // ═════════════════════════════ 8. angle-cannon@1 — Turret (angles as turns) ═════════════════════════════
-const AN_STRINGS = { coach: "Drag to turn the turret · release to fire", wave: "Wave", threat: "THREAT AT", copy: "COPY THIS TURN", only: "HIT ONLY", hit: "DIRECT HIT", close: "CLOSE", offBy: "off by", runDone: "Sector clear", accuracy: "accuracy", hits: "hits", acute: "ACUTE", right: "RIGHT", obtuse: "OBTUSE", reflex: "REFLEX" };
+// (main 2026-11-11: no weapon words in any string a child reads — the content check scored "turret ... fire" as violence;
+// the engine aims a lighthouse's beam of light at a mark instead. Keys stay, so specs keep validating.)
+const AN_STRINGS = { coach: "Drag to turn the beam · let go to light it", wave: "Wave", threat: "LIGHT AT", copy: "COPY THIS TURN", only: "LIGHT ONLY", hit: "SPOT ON", close: "CLOSE", offBy: "off by", runDone: "All lit up", accuracy: "accuracy", hits: "hits", acute: "ACUTE", right: "RIGHT", obtuse: "OBTUSE", reflex: "REFLEX" };
 const AN_MISC = ["c5-maths-ch03-t01-m-angle-is-length", "c5-maths-ch03-t01-m-half-is-quarter", "c6-maths-ch02-t03-m-wrong-scale", "c6-maths-ch02-t03-m-tool-size", "c5-maths-ch03-t01-m-cw-confuse"];
 const AngleSchema = z.object({
   archetype: z.literal("angle-cannon@1"), ...Envelope,
@@ -1497,9 +1499,9 @@ export const ENGINE_SPECS: Record<string, EngineSpecDef<unknown>> = {
     outcomes: { classes: [6, 7], topics: ["c6-maths-ch10-t02", "c7-maths-ch03-t03", "c4-maths-ch04-t02"], misconceptions: LR_MISC } }),
   "area-claim@1": def<AreaSpec>({ archetype: "area-claim@1", title: "Plot", kind: "game", subject: "maths", schema: AreaSchema, defaultSpec: areaDefault, repair: repairArea, grade: gradeArea,
     outcomes: { classes: [5, 6], topics: ["c5-maths-ch11-t01", "c5-maths-ch11-t02", "c5-maths-ch11-t03", "c6-maths-ch06-t01", "c6-maths-ch06-t02"], misconceptions: AC_MISC } }),
-  "vault-heist@1": def<VaultSpec>({ archetype: "vault-heist@1", title: "Vault Heist", kind: "game", subject: "maths", schema: VaultSchema, defaultSpec: vaultDefault, repair: repairVault, grade: gradeVault,
+  "vault-heist@1": def<VaultSpec>({ archetype: "vault-heist@1", title: "Number Vault", kind: "game", subject: "maths", schema: VaultSchema, defaultSpec: vaultDefault, repair: repairVault, grade: gradeVault,
     outcomes: { classes: [4, 5, 7], topics: ["c4-maths-ch04-t01", "c5-maths-ch01-t01", "c7-maths-ch01-t01"], misconceptions: VH_MISC } }),
-  "angle-cannon@1": def<AngleSpec>({ archetype: "angle-cannon@1", title: "Turret", kind: "game", subject: "maths", schema: AngleSchema, defaultSpec: angleDefault, repair: repairAngle, grade: gradeAngle,
+  "angle-cannon@1": def<AngleSpec>({ archetype: "angle-cannon@1", title: "Lighthouse", kind: "game", subject: "maths", schema: AngleSchema, defaultSpec: angleDefault, repair: repairAngle, grade: gradeAngle,
     outcomes: { classes: [5, 6], topics: ["c5-maths-ch03-t01", "c5-maths-ch03-t02", "c6-maths-ch02-t02", "c6-maths-ch02-t03", "c6-maths-ch02-t04"], misconceptions: AN_MISC } }),
   "food-web@1": def<FoodSpec>({ archetype: "food-web@1", title: "Balance the Forest", kind: "simulation", subject: "science", schema: FoodSchema, defaultSpec: foodDefault, repair: repairFood, grade: gradeFood,
     outcomes: { classes: [4, 6], topics: ["c4-evs-ch03-t02", "c6-science-ch02-t03"], misconceptions: FW_MISC } }),

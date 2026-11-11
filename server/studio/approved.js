@@ -44,6 +44,7 @@ export const PILOT_TARGETS = Object.freeze([
 export const ENGINE_HOW = Object.freeze({
   "catch-on-line@1": "ticks is the number of EQUAL GAPS from 0 to 1; set each wave's ticks (and scaffoldTicks) to a common multiple of every denominator on that line so each item lands on a tick; one fraction per item; no title or sub names where an item goes",
   "slice-at@1": "marks false on every wave (marks draw the cut points: the child judges equal size herself); every wave's sub agrees with its own items; no sub states the rule",
+  "angle-cannon@1": "the beam is a lighthouse's light aimed at a mark: no weapon words in any string (never fire, shoot, turret, nishana, hit, threat, attack); say 'roshni', 'kiran', 'mod do'; angle names as the teacher says them (right angle, 90°)",
   "area-claim@1": "every string plain Roman Hinglish: no stake, claim, plot, sq or units in English; sq varg, units ikai (area 40 varg ikai)",
 });
 /**
