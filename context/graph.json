@@ -27971,6 +27971,20 @@
    "at": "2026-11-11",
    "title": "Correction of fd-dry-matrix-blind-to-the-reply-layer. 'A give-up with help spent gets no key' survived director20 because its dry predicate was too narrow (it knew only 'aap batao' and 'pata nahi, aap', and required a re-said sentence), not because the fault lives only in the reply layer. With the predicate widened (any bare 'pata nahi' / 'nahi pata' / 'aap batao' / 'nahi aata'; help spent once the card had a miss or was said twice; the turn must say the key) the dry walk fails on the same three rows as the live run plus c5-t02 offtopic 24: the walk itself drops the key before any model text exists. The repair seen on c5-t02 steering 30 (guard mustsay,leak) is a separate reply-layer fault. Found by Brain with check-run.mjs over director20's rows. Lesson: a predicate at zero means nothing until it has been run over rows known to hold the fault.",
    "source": "inbox/r8-main-10.json"
+  },
+  {
+   "id": "fd-g2-key-position-check-fails-by-chance",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "The G2 browser gate's leak.key_position check (server/forge/g2/qa.js) failed a correct game by chance. The kit re-shuffles options with crypto randomness on every mount, and one play failed if the key sat at the same option index on all items; on a topic with 4,4,4,4,2 options that happens about once in 256 plays with nothing wrong. In tests/forge-g2-browser it surfaced as 'the scripted builder ran out of responses' (once in integration 38's test:all); in production it would send the builder back to the model for a paid round. Reproduced by an agent: 1 failure in about 365 gate runs, no effect of CPU load (0 in 18 runs under 4 to 16 busy loops alone); forcing a constant position reproduces the exact error. Fixed: the gate plays twice already, and now fails only when the key is constant within each of the two plays (about 1 in 65,536 by chance), whether or not the two plays agree on the index, so a mechanic that pins the key to one slot per mount is still caught. Not proven: that the one failure seen in test:all was this check (the output did not record which check failed). Also noted, not seen firing: a 50 ms wall-clock Budget.slow_call in the kit runtime.",
+   "source": "inbox/r8-main-11.json"
+  },
+  {
+   "id": "rj-pushing-on-passes-alone",
+   "kind": "rejection",
+   "at": "2026-11-11",
+   "title": "Rejected as a habit: pushing an integration on 'the failing suite passes alone and the diff does not touch it'. Used three times on 2026-11-10 and 11 (integrations 32, 37, 38). Each time the cause, once found, was specific and not load: a wall-clock assertion, a test assumption broken by another stream's data, a 1-in-256 chance failure in a product gate. The pushes did no harm, but the reasoning given at the time ('load') was wrong in every case that was later explained. A failure that passes alone gets a root-cause task the same hour, and the push message says 'cause unknown' rather than naming one.",
+   "source": "inbox/r8-main-11.json"
   }
  ],
  "edges": [
@@ -44863,6 +44877,16 @@
    "src": "dc-r8-director20",
    "rel": "caused_by",
    "dst": "fd-give-up-predicate-too-narrow"
+  },
+  {
+   "src": "rj-pushing-on-passes-alone",
+   "rel": "caused_by",
+   "dst": "fd-g2-key-position-check-fails-by-chance"
+  },
+  {
+   "src": "rj-load-as-the-cause-of-a-test-failure",
+   "rel": "constrains",
+   "dst": "rj-pushing-on-passes-alone"
   }
  ]
 }

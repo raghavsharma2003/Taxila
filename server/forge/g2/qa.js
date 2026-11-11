@@ -224,7 +224,8 @@ async function playOnce(browser, { html, levels, init, wrongPaths = true, captur
     if (capture) frames.goal = await page.screenshot({ type: "png" });
     checks.push({ id: "Q6.geometry", status: geometry.length ? "fail" : "pass", detail: geometry.slice(0, 6).join("; ") });
     checks.push({ id: "Q6.text_layout", status: textIssues.size ? "fail" : "pass", detail: [...textIssues].slice(0, 6).join("; ") });
-    if (keyPositions.length >= 3 && new Set(keyPositions).size === 1) checks.push({ id: "leak.key_position", status: "fail", detail: `key always at option ${keyPositions[0]}` });
+    // (key_position is judged in browserGate over BOTH plays: the kit re-shuffles on every mount, so a constant position
+    // is ~1/256 by chance on a 4,4,4,4,2-option topic in ONE play and ~1/65536 in two independent plays; a leaky kit repeats)
     // a mark only the key carries, on EVERY choice item (a crypto shuffle makes a positional coincidence ~ (1/n)^items)
     const keyOnly = keyMarks.length >= 3 ? [...keyMarks[0]].filter((mk) => keyMarks.every((set) => set.has(mk))) : [];
     if (keyOnly.length) checks.push({ id: "leak.key_styled", status: "fail", detail: `the key option alone carries "${keyOnly[0].slice(0, 60)}" on ${keyMarks.length}/${keyMarks.length} items` });
@@ -235,11 +236,11 @@ async function playOnce(browser, { html, levels, init, wrongPaths = true, captur
     const violations = (await seam(() => window.__forgeSeam.violations())).filter((v) => !/forge-probe/.test(v.uri));
     const events = await page.evaluate(() => window.__hostEvents.map(({ at, ...e }) => e));
     const finalState = await st();
-    return { events, external: external.filter((u) => !/forge-probe/.test(u)), consoleErrors: consoleErrors.filter((c) => !/forge-probe|Content Security Policy|Failed to fetch/.test(c)), pageErrors, seamFindings, violations, checks, frames, ms: Date.now() - t0, finalState };
+    return { keyPositions, events, external: external.filter((u) => !/forge-probe/.test(u)), consoleErrors: consoleErrors.filter((c) => !/forge-probe|Content Security Policy|Failed to fetch/.test(c)), pageErrors, seamFindings, violations, checks, frames, ms: Date.now() - t0, finalState };
   } catch (e) {
     checks.push({ id: "Q2.harness", status: "fail", detail: String(e.message).split("\n")[0].slice(0, 200) });
     const events = await page.evaluate(() => (window.__hostEvents || []).map(({ at, ...e }) => e)).catch(() => []);
-    return { events, external, consoleErrors, pageErrors, seamFindings: [], violations: [], checks, frames, ms: Date.now() - t0, finalState: null };
+    return { keyPositions: [], events, external, consoleErrors, pageErrors, seamFindings: [], violations: [], checks, frames, ms: Date.now() - t0, finalState: null };
   } finally {
     await context.close();
   }
@@ -259,6 +260,10 @@ export async function browserGate(o) {
     const a = await playOnce(browser, { html: o.html, levels: o.levels, init, capture: !!o.capture });
     const b = await playOnce(browser, { html: o.html, levels: o.levels, init });
     const gates = [...a.checks];
+    const constAt = (p) => p.length >= 3 && new Set(p).size === 1;
+    // constant within EACH play is the leak a child can use (after two items they know where the key sits), whether or not the two
+    // plays agree on the index: a mechanic that pins the key to one slot per mount is as leaky as one that pins it to slot 1
+    if (constAt(a.keyPositions) && constAt(b.keyPositions)) gates.push({ id: "leak.key_position", status: "fail", detail: `key at one option throughout each of two plays (options ${a.keyPositions[0]} and ${b.keyPositions[0]})` });
     gates.push({ id: "Q2.console", status: a.consoleErrors.length + a.pageErrors.length ? "fail" : "pass", detail: [...a.pageErrors, ...a.consoleErrors].slice(0, 4).join(" | ") });
     gates.push({ id: "Q2.network", status: a.external.length ? "fail" : "pass", detail: a.external.slice(0, 4).join(" ") });
     gates.push({ id: "Q2.csp_violations", status: a.violations.length ? "fail" : "pass", detail: a.violations.slice(0, 3).map((v) => `${v.dir} ${v.uri}`).join("; ") });
