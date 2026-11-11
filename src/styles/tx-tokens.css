@@ -77,7 +77,11 @@
   --tx-scheme: light;
 }
 
-[data-tx="b"], :root:has(.kx[data-tx="b"]:not([data-tx-surface])) {
+/* The :has() branch sits in :where(). A production minifier wraps a selector list that holds :has() in :is() (so an
+   engine without :has() keeps the rest), and :is() takes its strongest argument's weight: (0,4,0) here, which beat the
+   light surface below on every B set-up and parent screen in the built app (found by the round 8 walk, 2026-11-11).
+   :where() weighs nothing, so the block stays (0,1,0) both ways (tests/r8-tx-tokens.test.mjs). */
+[data-tx="b"], :where(:root:has(.kx[data-tx="b"]:not([data-tx-surface]))) {
   /* the dark kept and calmed: one blue-grey family, no pure black */
   --tx-bg: #0F1218;
   --tx-surface: #171B24;

@@ -71,6 +71,8 @@
 /* the question card: the second strongest thing, in the display face */
 .kx-lesson[data-tx] .ks-rail { margin-top: var(--tx-s-2); border: 0; border-radius: var(--tx-r-2); background: var(--tx-surface); box-shadow: var(--tx-shadow-1); outline: 1px solid var(--tx-line); outline-offset: -1px; overflow: hidden; }
 .kx-lesson[data-tx] .ks-talk + .ks-rail { margin-top: 0; }
+/* no question yet (before her first turn): no empty card, the space stays (the layout is measured) */
+.kx-lesson[data-tx] .ks-rail:has(> .dk-card--empty:only-child) { background: transparent; box-shadow: none; outline: 0; }
 .kx-lesson[data-tx][data-tx][data-tx][data-tx] .dk[data-skin="kaksha"] [data-zone="card"] > .dk-card { box-shadow: none; background: transparent; border: 0; border-radius: 0; padding: var(--tx-s-2) var(--tx-s-2) var(--tx-s-2) var(--tx-s-4); }
 .kx-lesson[data-tx] .ks-rail .dk-ask { font-family: var(--tx-font-display); font-weight: var(--tx-display-weight); font-size: var(--tx-t-4); line-height: 1.25; letter-spacing: -.01em; color: var(--tx-ink); }
 .kx-lesson[data-tx] .ks[data-kind="wide"] .ks-rail .dk-ask { font-size: var(--tx-t-5); }
