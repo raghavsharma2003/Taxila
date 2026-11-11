@@ -155,4 +155,4 @@ function create(api: EngineApi, spec: SolidSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds.map((x) => x.sub || x.title).slice(0, 3), figure: { kind: "none" }, accent }),
   };
 }
-export const solid: EngineDef<SolidSpec> = { archetype: "solid-view@1", label: "Game · Solid Studio", accent: C.ion, create };
+export const solid: EngineDef<SolidSpec> = { archetype: "solid-view@1", label: "Game · Solid Studio", get accent() { return C.ion; }, create };

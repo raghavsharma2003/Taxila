@@ -16,7 +16,7 @@ import { withAlpha } from "../../theme/palette.ts";
 
 const INIT: Record<string, number> = { "title.a": 0, "triangle.a": 0, "sum.a": 0, "tear": 0, "align": 0, "morph": 0, "cam.zoom": 1, "cam.x": 500, "cam.y": 360, "lbl.straight": 0 };
 const CFG: TimelineConfig = { init: INIT, showable: ["title", "triangle", "sum"], labels: ["straight"], verbs: { tear: { prop: "tear", key: "to", min: 0, max: 1 }, align: { prop: "align", key: "to", min: 0, max: 1 }, morph: { prop: "morph", key: "to", min: 0, max: 1, ease: "inOutSine" } } };
-const COLS = [C.ion, C.sci, C.sun], P: XY = [500, 530], WR = 74;
+const COLS = (): string[] => [C.ion, C.sci, C.sun], P: XY = [500, 530], WR = 74;
 const ang = (a: XY, b: XY) => Math.atan2(-(b[1] - a[1]), b[0] - a[0]) / DEG;   // math angle (y up), degrees
 const n360 = (a: number) => ((a % 360) + 360) % 360;
 
@@ -59,7 +59,7 @@ function create(api: EngineApi, spec: AngleSumSpec): EngineInstance {
       cs.forEach((cw, i) => {
         const out: XY = [cw.v[0] + (cw.v[0] - cen[0]) * 0.18 * tear, cw.v[1] + (cw.v[1] - cen[1]) * 0.18 * tear];
         const e = ease.inOutCubic(al), pos: XY = [lerp(out[0], P[0], e), lerp(out[1], P[1], e)], d = lerp(cw.d, cw.d + (n360(targ[i] - cw.d + 180) - 180), e);
-        ctx.save(); ctx.globalAlpha = tA; wedge(ctx, pos, d, cw.s, COLS[i], WR, mo > 0.02 || V("sum.a") > 0.01 ? `${Math.round(cw.s)}°` : undefined); ctx.restore();
+        ctx.save(); ctx.globalAlpha = tA; wedge(ctx, pos, d, cw.s, COLS()[i], WR, mo > 0.02 || V("sum.a") > 0.01 ? `${Math.round(cw.s)}°` : undefined); ctx.restore();
       });
       if (al > 0.5) { ctx.save(); ctx.globalAlpha = (al - 0.5) * 2 * tA; ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(P[0] - 260, P[1]); ctx.lineTo(P[0] + 260, P[1]); ctx.stroke(); ctx.restore(); }
     }
@@ -74,10 +74,10 @@ function create(api: EngineApi, spec: AngleSumSpec): EngineInstance {
   function drawInteractive(ctx: Ctx, now: number) {
     const a = spec.task[0], b = spec.task[1], key = 180 - a - b;
     ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(P[0] - 300, P[1]); ctx.lineTo(P[0] + 300, P[1]); ctx.stroke();
-    wedge(ctx, P, 0, b, COLS[1], WR + 30, `${b}°`);
-    wedge(ctx, P, 180 - a, a, COLS[0], WR + 30, `${a}°`);
+    wedge(ctx, P, 0, b, COLS()[1], WR + 30, `${b}°`);
+    wedge(ctx, P, 180 - a, a, COLS()[0], WR + 30, `${a}°`);
     const th = clamp(live.theta, b + 2, 178), cAng = th - b;
-    wedge(ctx, P, b, cAng, COLS[2], WR + 30);
+    wedge(ctx, P, b, cAng, COLS()[2], WR + 30);
     const ex: XY = [P[0] + Math.cos(th * DEG) * 250, P[1] - Math.sin(th * DEG) * 250];
     ctx.strokeStyle = live.answered ? (live.answered.verdict === "right" ? C.mint : C.amber) : C.volt; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(P[0], P[1]); ctx.lineTo(ex[0], ex[1]); ctx.stroke();
     if (!live.answered) { ctx.save(); ctx.strokeStyle = C.volt; ctx.lineWidth = 4; ctx.globalAlpha = live.dragging ? 1 : 0.6 + 0.4 * Math.sin(now * 4); ctx.beginPath(); ctx.arc(ex[0], ex[1], 30, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); }
@@ -126,4 +126,4 @@ function create(api: EngineApi, spec: AngleSumSpec): EngineInstance {
     dispose: () => sh.dispose(),
   };
 }
-export const anglesum: EngineDef<AngleSumSpec> = { archetype: "angle-sum@1", label: "Animation · Triangles", accent: C.ion, create };
+export const anglesum: EngineDef<AngleSumSpec> = { archetype: "angle-sum@1", label: "Animation · Triangles", get accent() { return C.ion; }, create };

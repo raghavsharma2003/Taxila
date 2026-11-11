@@ -19,8 +19,8 @@ const PALETTE_FILE = "src/theme/palette.ts";
 const SCOPE = ["src/studio-v2", "src/modules/whiteboard", "server/forge/explainer", "shared/whiteboard.js"];
 // (the probe and trace tools draw nothing a child sees: their fake canvas defaults are not palette colours)
 const EXEMPT = new Set(["src/studio-v2/tools/layout-probe.mjs"]);
-// Files still holding literals, with the count each may hold at most. Convert a file, lower or remove its line.
-const NOT_YET = JSON.parse(fs.readFileSync(path.join(ROOT, "tests/fixtures/theme-literals-left.json"), "utf8")).files;
+// (the conversion is done, 2026-11-11: 976 literals in 48 files moved into the palette; no file may hold one now)
+const NOT_YET = {};
 
 /** Colour literals inside string or template literals ("#1F3B30", 'rgba(…)', `hsl(${h} …)`). */
 export function colourLiterals(src) {
@@ -37,13 +37,13 @@ function filesIn(rel) {
   return fs.readdirSync(abs, { withFileTypes: true }).flatMap((d) => (d.isDirectory() ? filesIn(path.join(rel, d.name)) : /\.(m?[jt]sx?|css)$/.test(d.name) ? [path.join(rel, d.name)] : []));
 }
 
-test("no colour literal outside src/theme/palette.ts in the board and engine paths (the not-yet list only shrinks)", () => {
+test("no colour literal outside src/theme/palette.ts in the board and engine paths", () => {
   const found = {};
   for (const f of SCOPE.flatMap(filesIn)) { if (f === PALETTE_FILE || EXEMPT.has(f)) continue; const n = colourLiterals(fs.readFileSync(path.join(ROOT, f), "utf8")).length; if (n) found[f] = n; }
   const over = Object.entries(found).filter(([f, n]) => n > (NOT_YET[f] ?? 0)).map(([f, n]) => `${f}: ${n} (allowed ${NOT_YET[f] ?? 0})`);
   const stale = Object.entries(NOT_YET).filter(([f, n]) => (found[f] ?? 0) < n).map(([f, n]) => `${f}: ${found[f] ?? 0} now, listed ${n}`);
   assert.deepEqual(over, [], "a colour literal outside the palette file: name it in src/theme/palette.ts and read it by role");
-  assert.deepEqual(stale, [], "converted (well done): lower or remove these lines in tests/fixtures/theme-literals-left.json");
+  assert.deepEqual(stale, []);
   assert.ok(colourLiterals(`a "#1F3B30" b 'rgba(1,2,3,.5)' c \`hsl(\${h} 50% 50%)\` d "#${"$"}{n}" e "#abc"`).length === 4, "the counter sees hex, rgb and hsl in every quote");
 });
 
@@ -129,6 +129,11 @@ test("a lesson's theme reaches the board and the engines by data-board-theme on 
   const { useStudioTheme, C } = await import("../src/studio-v2/core/tokens.ts");
   const { PAPER, NIGHT } = await import("../src/theme/palette.ts");
   useStudioTheme("paper"); assert.equal(C.bg, PAPER.studio.bg);
+  // (nothing copies a colour at load: an engine's accent and the subject accents follow the theme)
+  const { ACC } = await import("../src/studio-v2/engines/ext/kit.ts");
+  const { ENGINES } = await import("../src/studio-v2/engines/index.ts");
+  assert.equal(ACC.ion, PAPER.studio.ion);
+  assert.ok(Object.values(ENGINES).every((d) => !d.accent || Object.values(PAPER.studio).includes(d.accent) || Object.values(C).includes(d.accent)), "an engine accent read under paper is a paper colour");
   useStudioTheme("night"); assert.equal(C.bg, NIGHT.studio.bg);
 });
 

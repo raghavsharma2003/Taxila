@@ -166,7 +166,7 @@ function create(api: EngineApi, spec: LandfallSpec): EngineInstance {
     c.fillStyle = sky; c.fillRect(0, 0, W, LINE_Y);
     const hg = c.createRadialGradient(500, LINE_Y, 10, 500, LINE_Y, 520); hg.addColorStop(0, withAlpha(C.ion, .22)); hg.addColorStop(1, withAlpha(C.ion, 0));
     c.fillStyle = hg; c.fillRect(-20, -20, W + 40, LINE_Y + 20);
-    c.fillStyle = C.landGround; c.fillRect(-20, LINE_Y, W + 40, H - LINE_Y + 20);
+    c.fillStyle = C.landfallGround; c.fillRect(-20, LINE_Y, W + 40, H - LINE_Y + 20);
     c.strokeStyle = withAlpha(C.ion, .10); c.lineWidth = 1.5;
     const vpY = LINE_Y - 150;
     for (let i = -10; i <= 10; i++) { const xb = 500 + i * 70; c.beginPath(); c.moveTo(lerp(500, xb, (LINE_Y - vpY) / (H + 40 - vpY)), LINE_Y); c.lineTo(xb, H + 40); c.stroke(); }

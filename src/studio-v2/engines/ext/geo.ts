@@ -188,4 +188,4 @@ function create(api: EngineApi, spec: GeoSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds[0].challenges.slice(0, 3).map(prompt), figure: { kind: "grid", w: 6, h: 3 }, accent }),
   };
 }
-export const geo: EngineDef<GeoSpec> = { archetype: "geo-forge@1", label: "Game · Geo Forge", accent: C.ion, create };
+export const geo: EngineDef<GeoSpec> = { archetype: "geo-forge@1", label: "Game · Geo Forge", get accent() { return C.ion; }, create };

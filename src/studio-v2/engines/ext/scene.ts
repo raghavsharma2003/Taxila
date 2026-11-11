@@ -614,4 +614,4 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
     dispose: () => sh.dispose(),
   };
 }
-export const scene: EngineDef<SceneSpec> = { archetype: "scene-explainer@1", label: "Animation · Explainer", accent: C.sci, create };
+export const scene: EngineDef<SceneSpec> = { archetype: "scene-explainer@1", label: "Animation · Explainer", get accent() { return C.sci; }, create };

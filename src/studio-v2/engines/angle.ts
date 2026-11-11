@@ -21,7 +21,7 @@ interface Boat { i: number; ang: number; r: number; v: number; alive: boolean; l
 /** One "light it": the beam flares along the angle it was let go at, then fades. */
 interface Flash { ang: number; r: number; hit: boolean; t: number }
 /** The beam's colour: warm lamplight (the palette's sun token). */
-const LAMP = C.sun;
+const LAMP = (): string => C.sun;   // (read at draw time: C follows the theme)
 /** Least gap (world units) between two neighbouring scale labels. */
 const LABEL_GAP = 10;
 /**
@@ -192,11 +192,11 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
   /** A small boat (hull, mast, sail) centred on (x, y): dark at sea, lamp-lit once the beam finds it. */
   function boat(ctx: Ctx, x: number, y: number, edge: string, lit: number) {
     ctx.save(); ctx.lineJoin = "round"; ctx.lineCap = "round";
-    if (lit > 0) bloom(ctx, LAMP, x, y, 64, 0.55 * lit);
+    if (lit > 0) bloom(ctx, LAMP(), x, y, 64, 0.55 * lit);
     ctx.fillStyle = C.angleTower; ctx.strokeStyle = edge; ctx.lineWidth = 4;
     ctx.beginPath(); ctx.moveTo(x - 28, y + 4); ctx.lineTo(x + 28, y + 4); ctx.lineTo(x + 18, y + 17); ctx.lineTo(x - 18, y + 17); ctx.closePath(); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x - 2, y + 4); ctx.lineTo(x - 2, y - 26); ctx.stroke();
-    ctx.fillStyle = lit > 0 ? hexA(LAMP, 0.35 + 0.6 * lit) : C.angleLampOff;
+    ctx.fillStyle = lit > 0 ? hexA(LAMP(), 0.35 + 0.6 * lit) : C.angleLampOff;
     ctx.beginPath(); ctx.moveTo(x + 2, y - 24); ctx.lineTo(x + 22, y); ctx.lineTo(x + 2, y); ctx.closePath(); ctx.fill(); ctx.stroke();
     ctx.restore();
   }
@@ -204,7 +204,7 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
   function beam(ctx: Ctx, ang: number, len: number, half: number, a: number) {
     if (a <= 0.01) return;
     const [px, py] = pivot(), [ex, ey] = at(ang, len);
-    const gr = ctx.createLinearGradient(px, py, ex, ey); gr.addColorStop(0, hexA(LAMP, 0.5 * a)); gr.addColorStop(0.7, hexA(LAMP, 0.16 * a)); gr.addColorStop(1, hexA(LAMP, 0));
+    const gr = ctx.createLinearGradient(px, py, ex, ey); gr.addColorStop(0, hexA(LAMP(), 0.5 * a)); gr.addColorStop(0.7, hexA(LAMP(), 0.16 * a)); gr.addColorStop(1, hexA(LAMP(), 0));
     ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(px, py); ctx.arc(px, py, len, -(ang + half) * DEG, -(ang - half) * DEG); ctx.closePath(); ctx.fill();
   }
   /** The top of the coach block (one line, or two at the young floor; drawCoach grows it upward from y 606). */
@@ -223,8 +223,8 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
     for (const f of hgt > 40 ? [0.38, 0.72] : [0.45]) { const y0 = py + 16 + (hgt - 16) * f, y1 = y0 + (hgt - 16) * 0.16, w0 = t + (b - t) * f, w1 = t + (b - t) * (f + 0.16); ctx.beginPath(); ctx.moveTo(px - w0, y0); ctx.lineTo(px + w0, y0); ctx.lineTo(px + w1, y1); ctx.lineTo(px - w1, y1); ctx.closePath(); ctx.fill(); }
     // gallery rail and the lamp room (glazed, lit), its roof
     ctx.fillStyle = C.angleDeck; ctx.fillRect(px - 21, py + 12, 42, 6);
-    bloom(ctx, LAMP, px, py, hot ? 84 : 72, hot ? 0.7 : 0.55);
-    ctx.fillStyle = hexA(LAMP, 0.95); ctx.beginPath(); ctx.roundRect(px - 12, py - 12, 24, 24, 5); ctx.fill();
+    bloom(ctx, LAMP(), px, py, hot ? 84 : 72, hot ? 0.7 : 0.55);
+    ctx.fillStyle = hexA(LAMP(), 0.95); ctx.beginPath(); ctx.roundRect(px - 12, py - 12, 24, 24, 5); ctx.fill();
     ctx.strokeStyle = hot ? C.volt : C.angleDeck; ctx.lineWidth = 3; ctx.stroke();
     ctx.fillStyle = C.angleDeck; ctx.beginPath(); ctx.moveTo(px - 15, py - 12); ctx.lineTo(px, py - 26); ctx.lineTo(px + 15, py - 12); ctx.closePath(); ctx.fill();
     ctx.restore();
@@ -280,7 +280,7 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
       lighthouse(ctx, px, py, full, g.dragging);
       for (const f of g.flashes) { const k = 1 - f.t / 1.2; beam(ctx, f.ang, 40 + (f.r - 40) * Math.min(1, f.t / 0.15), 6, k); }
       beam(ctx, g.ang, r + 10, 4, g.state === "aim" ? 0.9 : 0.6);
-      { const [x0, y0] = at(g.ang, 18), [x1, y1] = at(g.ang, r + 10); ctx.save(); ctx.strokeStyle = g.dragging ? C.volt : hexA(LAMP, 0.95); ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); ctx.restore(); }
+      { const [x0, y0] = at(g.ang, 18), [x1, y1] = at(g.ang, r + 10); ctx.save(); ctx.strokeStyle = g.dragging ? C.volt : hexA(LAMP(), 0.95); ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); ctx.restore(); }
       // boats coming in along their bearings (classify); a lit boat glows for a moment, then sails off
       for (const d of g.boats) {
         if (!d.alive && !(d.lit && d.litT < 1)) continue;
@@ -351,4 +351,4 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
     board: () => ({ title: `${g.w >= 0 && wave().mode !== "classify" ? key() : 120}° is a turn`, lines: ["Start at the zero arm and turn anticlockwise.", "Longer arms don't make a bigger angle."], figure: { kind: "angle", deg: g.w >= 0 && wave().mode !== "classify" ? key() : 120 }, accent: C.ion }),
   };
 }
-export const angle: EngineDef<AngleSpec> = { archetype: "angle-cannon@1", label: "Game · Lighthouse", accent: C.ion, create };
+export const angle: EngineDef<AngleSpec> = { archetype: "angle-cannon@1", label: "Game · Lighthouse", get accent() { return C.ion; }, create };

@@ -166,4 +166,4 @@ function create(api: EngineApi, spec: ShadowSpec): EngineInstance {
     board: () => ({ title: "Closer light, bigger shadow", lines: ["Light travels in straight lines past the edges.", "A red card still makes a dark shadow."], figure: { kind: "none" }, accent: C.sun }),
   };
 }
-export const shadow: EngineDef<ShadowSpec> = { archetype: "shadow-play@1", label: "Sim · Light", accent: C.sun, create };
+export const shadow: EngineDef<ShadowSpec> = { archetype: "shadow-play@1", label: "Sim · Light", get accent() { return C.sun; }, create };

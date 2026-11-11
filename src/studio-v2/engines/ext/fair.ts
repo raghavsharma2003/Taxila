@@ -266,4 +266,4 @@ function create(api: EngineApi, spec: FairSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: [`${M.outcome}: ${M.matters.map((m) => M.vars.find((v) => v.id === m)?.label ?? m).join(" + ")}`, `${T.hint}`], figure: { kind: "none" }, accent }),
   };
 }
-export const fair: EngineDef<FairSpec> = { archetype: "fair-test@1", label: "Simulation · Fair Test Lab", accent: C.sci, create };
+export const fair: EngineDef<FairSpec> = { archetype: "fair-test@1", label: "Simulation · Fair Test Lab", get accent() { return C.sci; }, create };

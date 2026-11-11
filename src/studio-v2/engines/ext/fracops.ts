@@ -143,4 +143,4 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
     board: () => { const r0 = spec.rounds[0]; return { title: spec.title, lines: [r0.mode === "orchard" ? `${fstr(r0.a)} of ${fstr(r0.b)} = ${fstr(fmul(r0.a, r0.b))}` : r0.mode === "scoop" ? `${fstr(r0.whole)} ÷ ${fstr(r0.part)} = ${fdiv(r0.whole, r0.part)}` : `${fstr(r0.a)} ${r0.op} ${fstr(r0.b)} = ${fstr(fadd(r0.a, r0.b, r0.op === "+" ? 1 : -1))}`], figure: { kind: "none" }, accent }; },
   };
 }
-export const fracops: EngineDef<FracOpsSpec> = { archetype: "fraction-ops@1", label: "Game · Fraction Works", accent: C.amber, create };
+export const fracops: EngineDef<FracOpsSpec> = { archetype: "fraction-ops@1", label: "Game · Fraction Works", get accent() { return C.amber; }, create };

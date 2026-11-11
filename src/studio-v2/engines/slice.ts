@@ -244,4 +244,4 @@ function create(api: EngineApi, spec: SliceSpec): EngineInstance {
     },
   };
 }
-export const slice: EngineDef<SliceSpec> = { archetype: "slice-at@1", label: "Game · Fraction Slice", accent: C.ion, create };
+export const slice: EngineDef<SliceSpec> = { archetype: "slice-at@1", label: "Game · Fraction Slice", get accent() { return C.ion; }, create };

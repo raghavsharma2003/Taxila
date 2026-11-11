@@ -193,4 +193,4 @@ function create(api: EngineApi, spec: MotionSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds.map((x) => x.sub || x.title).slice(0, 3), figure: { kind: "none" }, accent }),
   };
 }
-export const motion: EngineDef<MotionSpec> = { archetype: "motion-lab@1", label: "Simulation · Motion Lab", accent: C.sci, create };
+export const motion: EngineDef<MotionSpec> = { archetype: "motion-lab@1", label: "Simulation · Motion Lab", get accent() { return C.sci; }, create };

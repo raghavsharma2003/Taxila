@@ -19,7 +19,7 @@ import { dots } from "../../core/dots.ts";
 import { withAlpha } from "../../../theme/palette.ts";
 
 const LOCO_X = 520, FRONT = 130, MAIN_Y = 500, CARD_W = 410, CARD_H = 108, BOARD_X = 640, BOARD_W = 340, BOARD_H = 116;
-const LANE_COL = [C.ion, C.sci, C.amber];
+const LANE_COL = (k: number): string => [C.ion, C.sci, C.amber][k];   // (read at draw time: C follows the theme)
 const LANES: Record<number, number[]> = { 2: [350, MAIN_Y], 3: [300, 400, MAIN_Y] };
 const BOARD_Y: Record<number, number[]> = { 2: [214, 356], 3: [168, 294, 420] };
 const T_READ = 6.2, COUPLE = 300, MERGE0 = 470, MERGE1 = 690, NEXT = 720;
@@ -142,7 +142,7 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
     ctx.strokeStyle = edge; ctx.lineWidth = o.edge ? 4 : 3; ctx.stroke();
     ctx.restore();
     let lx = x;
-    if (o.num !== undefined) { ctx.save(); ctx.globalAlpha *= a; ctx.fillStyle = LANE_COL[o.num]; roundRect(ctx, x + 8, y + 8, 40, h - 16, 10); ctx.fill(); ctx.restore(); api.text(ctx, String(o.num + 1), x + 28, y + h / 2 + 2, { font: "display", size: 38, weight: 800, color: C.bg, align: "center", baseline: "middle", alpha: a }); lx = x + 48; }
+    if (o.num !== undefined) { ctx.save(); ctx.globalAlpha *= a; ctx.fillStyle = LANE_COL(o.num); roundRect(ctx, x + 8, y + 8, 40, h - 16, 10); ctx.fill(); ctx.restore(); api.text(ctx, String(o.num + 1), x + 28, y + h / 2 + 2, { font: "display", size: 38, weight: 800, color: C.bg, align: "center", baseline: "middle", alpha: a }); lx = x + 48; }
     const gl = o.num === undefined ? it.glyph : undefined, iw = gl ? 58 : 0;
     if (gl) drawGlyph(ctx, gl, lx + 36, y + h / 2, 50, C.ink, hexA(accent, 0.3), a);
     const tx = lx + iw + (x + w - lx - iw) / 2, tw = x + w - lx - iw - 22, to = { size: it.station ? 44 : 38, weight: 700, alpha: a, font: (it.station ? "display" : "ui") as "display" | "ui" };
@@ -178,12 +178,12 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
     if (st && flow.state !== "boot") {
       const ys = LANES[n];
       ys.forEach((y, li) => {
-        const sel = st.choice === li, col = sel ? hexA(C.volt, 0.85) : hexA(LANE_COL[li], 0.55);
+        const sel = st.choice === li, col = sel ? hexA(C.volt, 0.85) : hexA(LANE_COL(li), 0.55);
         if (y !== MAIN_Y) rails(ctx, (u) => [lerp(sx(st.sw), sx(st.sw + 220), u), lerp(MAIN_Y, y, ease.inOutSine(u))], col, 12);
         rails(ctx, (u) => [lerp(sx(st.sw + (y === MAIN_Y ? 0 : 220)), sx(st.sw + MERGE0), u), y], y === MAIN_Y && !sel ? undefined : col, 24);
         if (y !== MAIN_Y) rails(ctx, (u) => [lerp(sx(st.sw + MERGE0), sx(st.sw + MERGE1), u), lerp(y, MAIN_Y, ease.inOutSine(u))], col, 12);
         const bx = sx(st.sw + COUPLE);
-        if (!(st.coupledAt >= 0 && li === st.choice)) boxcar(ctx, bx, y, LANE_COL[li], st.coupledAt >= 0 ? clamp(1 - (api.now() - st.coupledAt), 0.3, 1) : 1);
+        if (!(st.coupledAt >= 0 && li === st.choice)) boxcar(ctx, bx, y, LANE_COL(li), st.coupledAt >= 0 ? clamp(1 - (api.now() - st.coupledAt), 0.3, 1) : 1);
       });
       // points lever + countdown at the switch
       const lx = sx(st.sw);
@@ -194,7 +194,7 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
         const k = clamp(st.locked ? 1 - outK : inK, 0, 1);
         BOARD_Y[n].forEach((y, li) => {
           const id = st.lanes[li], it = g.items.get(id), x = BOARD_X + (1 - k) * 360;
-          const edge = st.choice === li ? C.volt : hexA(LANE_COL[li], 0.85);
+          const edge = st.choice === li ? C.volt : hexA(LANE_COL(li), 0.85);
           card(ctx, x, y, BOARD_W, BOARD_H, it, { edge, a: k, glow: st.choice === li ? 0.7 : 0, num: li });
           if (!st.locked) { if (st.choice === li) voltBox(ctx, x, y, BOARD_W, BOARD_H, now, 16); }
         });

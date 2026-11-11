@@ -235,4 +235,4 @@ function create(api: EngineApi, spec: SortSpec): EngineInstance {
     board: () => { const r0 = spec.rounds[0]; return { title: spec.title, lines: r0.bins.slice(0, 3).map((b) => `${b.label}: ${r0.items.filter((i) => i.bin === b.id).slice(0, 3).map((i) => i.text).join(", ")}`), figure: { kind: "none" }, accent }; },
   };
 }
-export const sort: EngineDef<SortSpec> = { archetype: "sort-storm@1", label: "Game · Test Bench", accent: C.sci, create };
+export const sort: EngineDef<SortSpec> = { archetype: "sort-storm@1", label: "Game · Test Bench", get accent() { return C.sci; }, create };

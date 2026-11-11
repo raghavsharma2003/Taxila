@@ -201,7 +201,7 @@ export const ENGINE_1 = {
     fieldNorth: "#FF5A6E", fieldSouth: "#5FA8FF", fieldNeutral: "#7A8094", fieldLabelDark: "#0B0E14",
     fieldTrack: "#2A3142", fieldMap: "#1E3324", fieldCompass: "#E8ECF5",
     // landfall
-    landCardLow: "#141829", landSkyTop: "#090B11", landSkyMid: "#0E1220", landSkyLow: "#151A33", landGround: "#0B0D15",
+    landCardLow: "#141829", landSkyTop: "#090B11", landSkyMid: "#0E1220", landSkyLow: "#151A33", landfallGround: "#0B0D15",
     landCardTop: "#232A45",
     // picto
     pictoShelf: "#121621", pictoPink: "#FF8FB1",
@@ -290,7 +290,7 @@ export const ENGINE_1 = {
     fieldNorth: "#FF5A6E", fieldSouth: "#5FA8FF", fieldNeutral: "#7A8094", fieldLabelDark: "#1C1A16",
     fieldTrack: "#CBD0DE", fieldMap: "#D4E5D9", fieldCompass: "#E8ECF5",
     // landfall
-    landCardLow: "#DADDEB", landSkyTop: "#E8EAF2", landSkyMid: "#E0E3EE", landSkyLow: "#D6D9E9", landGround: "#E5E8F1",
+    landCardLow: "#DADDEB", landSkyTop: "#E8EAF2", landSkyMid: "#E0E3EE", landSkyLow: "#D6D9E9", landfallGround: "#E5E8F1",
     landCardTop: "#C9CEE2",
     // picto
     pictoShelf: "#DEE2ED", pictoPink: "#FF8FB1",

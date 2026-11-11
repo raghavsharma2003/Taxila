@@ -403,4 +403,4 @@ function create(api: EngineApi, spec: CircuitSpec): EngineInstance {
     board: () => ({ title: "A circuit needs a closed loop", lines: ["Cell → wire → bulb → wire → back to the cell.", "Open the loop anywhere and the current stops everywhere."], figure: { kind: "chain", items: ["cell +", "wire", "bulb", "wire", "cell −"] }, accent: C.sci }),
   };
 }
-export const circuit: EngineDef<CircuitSpec> = { archetype: "circuit-bench@1", label: "Sim · Circuits", accent: C.sci, create };
+export const circuit: EngineDef<CircuitSpec> = { archetype: "circuit-bench@1", label: "Sim · Circuits", get accent() { return C.sci; }, create };

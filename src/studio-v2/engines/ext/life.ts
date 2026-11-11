@@ -197,4 +197,4 @@ function create(api: EngineApi, spec: LifeSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds.map((x) => x.sub || x.title).slice(0, 3), figure: { kind: "none" }, accent }),
   };
 }
-export const life: EngineDef<LifeSpec> = { archetype: "life-lab@1", label: "Simulation · Life Lab", accent: C.mint, create };
+export const life: EngineDef<LifeSpec> = { archetype: "life-lab@1", label: "Simulation · Life Lab", get accent() { return C.mint; }, create };

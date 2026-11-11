@@ -230,4 +230,4 @@ function create(api: EngineApi, spec: InstrumentSpec): EngineInstance {
     board: () => { const r0 = spec.rounds[0]; return { title: spec.title, lines: r0.items.slice(0, 3).map((i) => `${showQty(r0.mode, i.target, i.show, i.start)} = ${showQty(r0.mode, i.target, r0.mode === "pour" ? "ml" : r0.mode === "weigh" ? "g" : r0.mode === "cut" ? "cm" : "12h")}`), figure: { kind: "none" }, accent }; },
   };
 }
-export const instrument: EngineDef<InstrumentSpec> = { archetype: "instrument@1", label: "Game · Instrument Bench", accent: C.ion, create };
+export const instrument: EngineDef<InstrumentSpec> = { archetype: "instrument@1", label: "Game · Instrument Bench", get accent() { return C.ion; }, create };

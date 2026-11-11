@@ -175,4 +175,4 @@ function create(api: EngineApi, spec: RuleSpec): EngineInstance {
     board: () => { const r0 = spec.rounds[0]; return { title: spec.title, lines: r0.mode === "build" ? r0.inputs.slice(0, 3).map((v) => `${v} → ${runOps(r0.rule, v)}`) : r0.mode === "seq" ? [1, 2, 3].map((n) => `${T.step} ${n}: ${patternCount(r0.pattern, n)}`) : [r0.sub || r0.title], figure: { kind: "none" }, accent }; },
   };
 }
-export const rule: EngineDef<RuleSpec> = { archetype: "rule-machine@1", label: "Game · Machine Factory", accent: C.ion, create };
+export const rule: EngineDef<RuleSpec> = { archetype: "rule-machine@1", label: "Game · Machine Factory", get accent() { return C.ion; }, create };

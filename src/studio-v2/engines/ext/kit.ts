@@ -10,7 +10,8 @@ import type { EngineApi } from "../../core/types.ts";
 import type { Accent } from "../../../../shared/studio-spec-ext/scene.ts";
 import { withAlpha } from "../../../theme/palette.ts";
 
-export const ACC: Record<Accent, string> = { ion: C.ion, sci: C.sci, mint: C.mint, amber: C.amber, sun: C.sun, volt: C.volt };
+// (getters: C follows the theme, so an accent is read when it is drawn, never copied at load)
+export const ACC: Record<Accent, string> = { get ion() { return C.ion; }, get sci() { return C.sci; }, get mint() { return C.mint; }, get amber() { return C.amber; }, get sun() { return C.sun; }, get volt() { return C.volt; } };
 // (getters: C changes with the theme, so each read takes the active theme's colour)
 export const SUBJECT_ACCENT: Record<string, string> = { get maths() { return C.ion; }, get science() { return C.sci; }, get evs() { return C.mint; }, get english() { return C.kitEnglish; }, get hindi() { return C.amber; }, get sst() { return C.kitSst; } };
 export const LABEL = 38;
