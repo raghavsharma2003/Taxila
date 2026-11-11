@@ -14,7 +14,7 @@
   {"hi": "badalna", "en": "to convert"},
   {"hi": "lagbhag", "en": "about (roughly)"}
  ], "greetSimpler": { "hi": "Aaj hum lambi dooriyan km, m aur cm mein naapna seekhenge.", "en": "Today we learn to measure long distances in km, m and cm." },
- "joints": {"asidePark":[{"hi":"Yeh metre-kilometre wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once these metres and kilometres is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh metre-kilometre wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once these metres and kilometres is over."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} ke liye tum kitni door jaate ho?","en":"How far do you go for {aside}?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."}],"askAgain":[{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."}],"backTo":[{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."},{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."}]},
+ "joints": {"asidePark":[{"hi":"Yeh metre-kilometre wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once we finish these metres and kilometres, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh metre-kilometre wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, right after these metres and kilometres."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} ke liye tum kitni door jaate ho?","en":"How far do you go for {aside}?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."}],"askAgain":[{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."}],"backTo":[{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."},{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."}]},
  "skills": [
   {
    "skillId": "c5-maths-ch05-t01-s1",
@@ -317,7 +317,7 @@
      }
     }
    ],
-   "bridgeToNext": { "hi": "Ab hum km, m aur cm ke beech badalna seekhenge, jab ek doori do unit mein likhi ho.", "en": "Next we learn to convert between km, m and cm, when one distance is written in two units.", "simpler": { "hi": "Ab km ko m mein badalna seekhenge.", "en": "Now we learn to change km into m." } }
+   "bridgeToNext": { "hi": "Ab hum km, m aur cm ke beech badalna seekhenge, jab ek doori do unit mein likhi ho.", "en": "Next we learn to convert between km, m and cm, when one distance is written in two units.", "simpler": { "hi": "Ab seekhenge ki 2 km 50 m jaisi doori ko sirf metre mein kaise likhte hain.", "en": "Next we learn to write a distance like 2 km 50 m in metres only." } }
   },
   {
    "skillId": "c5-maths-ch05-t01-s2",
@@ -373,13 +373,10 @@
     },
     {
      "id": "e2",
-     "convey": "mixed units: 2 km 50 m → km first, 2 km = 2000 m → add 50 → 2050 m; on the place-value chart the empty hundreds place holds 0, so never 250",
+     "convey": "mixed units: 2 km 50 m → km first, 2 km = 2000 m → add 50 → 2050 m; in 2050 the hundreds place holds 0, so never 250; on the line the whole km come first, then the metres left over",
      "mustSay": [{"hi": "pehle km ko metre banao", "en": "change the km to metres first"}, {"hi": "2050 m", "en": "2050 m"}],
      "board": {"template": "number-line-scale@1", "params": {"from": 0, "to": 3000, "step": 1000, "marks": [{"value": 2000, "label": "2 km"}]}},
-     "point": {
-      "hi": "2 km 50 m mein pehle km ko metre banao: 2 km = 2000 m. Phir 50 m jodo: 2000 + 50 = 2050 m. Dekho, sau ke khaane mein 0 baitha hai, isliye yeh 250 nahi hai. Rekha par km wala hissa pehle aata hai.",
-      "en": "In 2 km 50 m, first change the km to metres: 2 km = 2000 m. Then add 50 m: 2000 + 50 = 2050 m. See, a 0 sits in the hundreds place, so this is not 250. On the line the km part comes first."
-     },
+     "point": { "hi": "2 km 50 m mein pehle km ko metre banao: 2 km = 2000 m. Phir 50 m jodo: 2000 + 50 = 2050 m. 2050 mein sau ki jagah 0 aata hai, isliye yeh 250 nahi hai. Rekha par poore km pehle aate hain, phir bache metre.", "en": "In 2 km 50 m, first change the km to metres: 2 km = 2000 m. Then add 50 m: 2000 + 50 = 2050 m. In 2050 a 0 goes in the hundreds place, so it is not 250. On the line the whole km come first, then the metres left over." },
      "ask": {
       "prompt": {
        "hi": "Ek cycle race 3 km 40 m ki hai. Isi tarah socho: race kitne metre ki hai?",
@@ -393,10 +390,7 @@
       "board": {"template": "number-line-scale@1", "params": {"from": 0, "to": 4000, "step": 1000, "marks": [{"value": 3000, "label": "3 km"}]}},
       "answerBoard": {"template": "number-line-scale@1", "params": {"from": 0, "to": 4000, "step": 1000, "marks": [{"value": 3040, "label": "3040 m"}]}}
      },
-     "simpler": {
-      "hi": "Pehle 2 km ko 2000 m banao, phir 50 m jodo, toh 2050 m. Sau ke khaane mein 0 hai, isliye yeh 250 nahi.",
-      "en": "First make 2 km into 2000 m, then add 50 m to get 2050 m. The hundreds place holds 0, so it is not 250."
-     }
+     "simpler": { "hi": "Pehle 2 km ko 2000 m banao, phir 50 m jodo, toh 2050 m. 2050 mein sau ki jagah 0 aata hai, isliye yeh 250 nahi.", "en": "First make 2 km into 2000 m, then add 50 m to get 2050 m. In 2050 the hundreds place holds 0, so it is not 250." }
     },
     {
      "id": "e3",
@@ -739,14 +733,8 @@
      {
       "do": {"hi": "School bag ki lambai ke liye unit chuno", "en": "Choose the unit for the length of the school bag"},
       "result": "cm",
-      "why": {
-       "hi": "bag 1 m se chhota hai, lagbhag 40 cm, aur scale par naap sakte hain",
-       "en": "the bag is shorter than 1 m, about 40 cm, and fits along a ruler"
-      },
-      "simpler": {
-       "hi": "School bag ek lambe kadam se chhota hai, aur scale par naap sakte hain. Isliye uske liye cm theek hai.",
-       "en": "A school bag is shorter than one big stride and fits along a ruler. So cm is right for it."
-      }
+      "why": { "hi": "bag 1 m se chhota hai, lagbhag 40 cm, ek lambe kadam se bhi kam", "en": "the bag is shorter than 1 m, about 40 cm, less than one big stride" },
+      "simpler": { "hi": "School bag ek lambe kadam se bhi chhota hai. Isliye uske liye cm theek hai.", "en": "A school bag is shorter than even one big stride. So cm is right for it." }
      },
      {
       "do": {

@@ -300,7 +300,10 @@ export function figureOf(board) {
     case "number-line-scale@1": return `scale${JSON.stringify([p.from, p.to, p.step])}`;
     // (to-studio 006, D14.7a: an answer mark on these four is a highlight on the same figure)
     case "compare@1": case "angle@1": case "number-line-hop@1": case "place-value@1": { const { mark, ...rest } = p; return `${board.template}${JSON.stringify(rest)}`; }
-    default: return `${board.template}${JSON.stringify(p)}`;
+    // (a crossing is the same figure whatever its angles are labelled: the posing board asks "?", the answer board names it)
+    case "lines@1": return p.kind === "cross" ? `cross[${p.deg}]` : `lines${JSON.stringify({ ...p, angles: undefined })}`;
+    // (hideResult only hides the answer cell: a posing board with it and its answer board without it draw the same figure)
+    default: { const { hideResult, ...rest } = p; return `${board.template}${JSON.stringify(rest)}`; }
   }
 }
 /** state.js scriptWhyOf drops a why longer than this. */
@@ -876,7 +879,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s));
   return e;
 }
 
@@ -1079,5 +1082,65 @@ export function oneTermErrors(s) {
     for (const [k, v] of Object.entries(x)) if (k !== "hi" && k !== "en") walk(v, path ? `${path}.${k}` : k);
   };
   walk(s.skills, "skills");
+  return e;
+}
+
+/** The keyed cards of a script in walk order: [where, card, posing board]. */
+function cardsInOrder(s) { return s.skills.flatMap((k) => [...k.explain.filter((b) => b.ask).map((b) => [`${k.skillId}/${b.id}`, b.ask, b.ask.board ?? b.board, "ask"]),
+  ...(k.workedExample?.yourStep ? [[`${k.skillId}/workedExample.yourStep`, k.workedExample.yourStep, k.workedExample.yourStep.board ?? k.workedExample.board, "yourStep"]] : []),
+  ...k.checks.map((c) => [`${k.skillId}/${c.id}`, c, c.board, "check"]), ...k.remediation.map((r, i) => r.then && [`${k.skillId}/remediation[${i}].then`, r.then, r.then.board, "then"]).filter(Boolean)]); }
+
+/** main on the staged reader pass, batch 1 (c5-ch02-t03 s2 e2 repeats s1 e2; s2 c3 "3/4 = ?/8" answered in s1 e3's why; c7 s2
+ * c1 = s2 e1; a then-card reusing check c2's exact numbers): the same question is never asked twice in a script — two cards
+ * with the same prompt numbers and the same key — and a then-card never reuses a check's exact prompt numbers. */
+export function repeatErrors(s) {
+  const e = [], said = (x) => [x?.hi, x?.en].filter(Boolean).join(" ");
+  const nums = (t) => (String(t ?? "").replace(/,(?=\d{3}\b)/g, "").match(/\d+(?:[./]\d+)?/g) ?? []).sort().join(" ");
+  const keyOf = (c) => String(c.key ?? "").toLowerCase().replace(/[^\p{L}\p{N}/.]+/gu, " ").trim();
+  const seen = new Map(), checkNums = new Map();
+  for (const [where, c, , kind] of cardsInOrder(s)) {
+    const n = nums(c.prompt?.hi ?? c.prompt?.en);
+    if (!n) continue;
+    const sig = `${n}|${keyOf(c)}`;
+    if (seen.has(sig)) e.push(`${where}: asks the same as ${seen.get(sig)} (numbers ${n}, key ${c.key}): one question once per script`);
+    else seen.set(sig, where);
+    if (kind === "check") checkNums.set(n, where);
+    if (kind === "then" && checkNums.has(n) && (n.split(" ").length >= 2 || n.split(" ").some((x) => Number(x) > 10))) e.push(`${where}: reuses ${checkNums.get(n)}'s exact numbers (${n}): a then-card asks something new`);
+  }
+  return [...new Set(e)];
+}
+
+/** main on batch 1 (c6/c7: "bagal wala kona", "theek saamne wala" said over separate angles): a card about crossing lines is
+ * posed on a board that draws the crossing (lines@1 kind cross), never on angle@1, which draws separate angles. */
+function crossingRe() { return /\b(crossing|kaat(?:-|\s)?t[ie]|kaatti|kat(?:-|\s)?ti|saamne wal[aie]|bagal wal[aie]|vertically opposite|shirshabhimukh|linear pair|rekhik yugm)\b/i; }
+export function crossingBoardErrors(s) {
+  const e = [], said = (x) => [x?.hi, x?.en].filter(Boolean).join(" ");
+  for (const k of s.skills) {
+    for (const b of k.explain) if (b.ask) { const board = b.ask.board ?? b.board;
+      if (board?.template === "angle@1" && crossingRe().test(`${said(b.point)} ${said(b.ask.prompt)} ${said(b.ask.why)}`)) e.push(`${k.skillId}/${b.id}: speaks of crossing lines over angle@1 (separate angles): pose it on lines@1 { kind: "cross" }`); }
+    for (const [where, c, board] of cardsInOrder({ skills: [{ ...k, explain: [] }] }))
+      if (board?.template === "angle@1" && crossingRe().test(`${said(c.prompt)} ${said(c.why)}`)) e.push(`${where}: speaks of crossing lines over angle@1 (separate angles): pose it on lines@1 { kind: "cross" }`);
+  }
+  return e;
+}
+
+/** main on the 361 ungrounded marks: an answer board's mark is derived only from the card's key — a keyed angle (by name or by
+ * its drawn degrees), a keyed column title or item, a keyed hop landing, a keyed place or digit value — never from a guess
+ * about which side or which angle. A compare `add` is refused (its column is a guess). */
+export function markGroundErrors(s) {
+  const e = [], num = (x) => { const m = String(x ?? "").replace(/,/g, "").match(/-?\d+(?:\.\d+)?/); return m ? Number(m[0]) : null; };
+  const norm = (x) => String(x ?? "").toLowerCase().replace(/[₹°,]/g, "").replace(/\b(angle|kon|wala|wali|ka|ki|ke)\b/g, " ").replace(/\s+/g, " ").trim();
+  for (const [where, c] of cardsInOrder(s)) {
+    const ab = c.answerBoard, m = ab?.params?.mark;
+    if (!m || !["angle@1", "compare@1", "number-line-hop@1", "place-value@1"].includes(ab.template)) continue;
+    const forms = [c.key, ...(c.accept ?? [])].map(norm).filter(Boolean), p = ab.params;
+    let ok = true;
+    if (ab.template === "angle@1") { const a = p.angles?.[m.index]; ok = !!a && (forms.some((f) => a.name && norm(a.name).endsWith(f)) || num(c.key) === a.deg); }
+    if (ab.template === "compare@1") { const col = p[m.side];
+      ok = !m.add && !!col && (m.item === undefined ? forms.some((f) => norm(col.title) === f || norm(col.title).includes(f)) : forms.some((f) => norm(col.items?.[m.item]) === f)); }
+    if (ab.template === "number-line-hop@1") { let at = Number(p.start ?? 0); const lands = (p.hops ?? []).map((h) => (at += Number(h)));
+      ok = m.land ? lands.at(-1) === num(c.key) : lands[m.hop] === num(c.key); }
+    if (!ok) e.push(`${where}.answerBoard.mark: not named by the card's key (${c.key}): a mark is derived from the key only`);
+  }
   return e;
 }

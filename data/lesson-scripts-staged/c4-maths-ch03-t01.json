@@ -37,7 +37,7 @@
    "en": "sum, total"
   }
  ], "greetSimpler": { "hi": "Aaj hum jodiyan banakar dekhenge ki koi number odd hai ya even.", "en": "Today we make pairs to see whether a number is odd or even." },
- "joints": {"asidePark":[{"hi":"Yeh jode banana poora hote hi {aside} ki baat zaroor karenge.","en":"Once making these pairs is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh jode banana khatam ho jaaye.","en":"We'll talk about {aside} too, once making these pairs is over."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kya cheezein jodiyon mein aati hain?","en":"What comes in pairs in {aside}?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}],"backTo":[{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."}]},
+ "joints": {"asidePark":[{"hi":"Yeh jode banana poora hote hi {aside} ki baat zaroor karenge.","en":"Once we finish making these pairs, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh jode banana khatam ho jaaye.","en":"We'll talk about {aside} too, right after making these pairs."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kya cheezein jodiyon mein aati hain?","en":"What comes in pairs in {aside}?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}],"backTo":[{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."}]},
  "skills": [
   {
    "skillId": "c4-maths-ch03-t01-s1",
@@ -87,7 +87,7 @@
      },
      "point": {
       "hi": "Dekho, 8 bachche hain aur har jodi mein 2 bachche. 4 jodiyan ban gayi, aur koi akela nahi bacha. Jab koi akela nahi bachta, toh woh number even hai, yaani sam sankhya.",
-      "en": "Look, there are 8 children and 2 children in each pair. 4 pairs are made, and nobody is left alone. When nobody is left alone, that number is even, that is an even number."
+      "en": "Look, there are 8 children and 2 children in each pair. 4 pairs are made, and nobody is left alone. When nobody is left alone, that number is even, called 'sam sankhya' in Hindi."
      },
      "ask": {
       "prompt": {
@@ -105,14 +105,8 @@
       "why": {
        "hi": "4 jodiyon mein 8 bachche hain, 1 aur aaya toh 9 hue, aur naya bachcha akela reh gaya",
        "en": "the 4 pairs hold 8 children; one more makes 9, and the new child is left without a partner"
-      },
-      "answerBoard": {
-       "template": "equal-groups@1",
-       "params": {
-        "groups": 4,
-        "each": 2
-       }
-      }
+      }, "board": { "template": "equal-groups@1", "params": {"sizes": [2, 2, 2, 2, 1]} },
+      "answerBoard": { "template": "equal-groups@1", "params": {"sizes": [2, 2, 2, 2, 1]} }
      },
      "simpler": {
       "hi": "Har jodi mein 2 bachche hain, aur 4 jodiyan poori bhari hain. Naya bachcha aaya, toh dekho uska saathi kaun banega.",
@@ -159,7 +153,7 @@
      },
      "point": {
       "hi": "8 bachche hain, unki 4 jodiyan bani, koi akela nahi, toh 8 even hai. 7 bachche hain, unki 3 jodiyan bani aur 1 akela reh gaya. Jab 1 akela bachta hai, toh woh number odd hai, yaani visham sankhya.",
-      "en": "8 children made 4 pairs with nobody alone, so 8 is even. 7 children made 3 pairs and 1 was left alone. When 1 is left alone, that number is odd, that is an odd number."
+      "en": "8 children made 4 pairs with nobody alone, so 8 is even. 7 children made 3 pairs and 1 was left alone. When 1 is left alone, that number is odd, called 'visham sankhya' in Hindi."
      },
      "ask": {
       "prompt": {
@@ -356,15 +350,7 @@
      "hi": "even mein saari cheezein jodi mein lag jaati hain, aur odd mein theek 1 akela bachta hai",
      "en": "in an even number everything goes into pairs, and in an odd number exactly 1 is left alone"
     },
-    "board": {
-     "template": "equal-groups@1",
-     "params": {
-      "sizes": [
-       10,
-       1
-      ]
-     }
-    }
+    "board": { "template": "equal-groups@1", "params": {"sizes": [2, 2, 2, 2, 2, 1]} }
    },
    "checks": [
     {
@@ -533,53 +519,22 @@
       "en": "Make pairs of 2. Nobody left alone means even; exactly 1 left alone means odd."
      },
      "then": {
-      "prompt": {
-       "hi": "Ek tray khaali hai, usme 0 cup hain. 0 odd hai, even hai, ya dono mein se koi nahi?",
-       "en": "A tray is empty, it has 0 cups. Is 0 odd, even, or neither?"
-      },
-      "key": "Even",
-      "accept": [
-       "even",
-       "sam",
-       "sam sankhya",
-       "0 even hai",
-       "0 is even"
-      ],
+      "prompt": { "hi": "Tray ke saare 6 cup utha liye, ab 0 bache. {friend} ka kehna hai ki 0 na odd hai na even. Kya yeh sahi hai?", "en": "All 6 cups were taken off the tray, so 0 are left. {friend} says 0 is neither odd nor even. Is that right?" },
+      "key": "No",
+      "accept": ["nahi", "nahin", "no", "nahi, 0 even hai", "no, 0 is even"],
       "targets": "c4-maths-ch03-t01-m-zero-not-even",
-      "wrongIfMis": "Neither",
-      "board": {
-       "template": "compare@1",
-       "params": {
-        "left": {
-         "title": "Tray",
-         "items": [
-          "khaali"
-         ]
-        },
-        "right": {
-         "title": "Cup",
-         "items": [
-          "0 cup"
-         ]
-        }
-       }
-      },
-      "why": {
-       "hi": "khaali tray mein 0 cup hain, aur 0 cup ki jodi banane par koi cup akela nahi bachta",
-       "en": "the empty tray has 0 cups, and pairing 0 cups leaves no cup alone"
-      },
-      "simpler": {
-       "hi": "Tray mein ek bhi cup nahi hai. Jab cup hi nahi hai, toh koi cup akela bhi nahi bachta.",
-       "en": "The tray has not a single cup. When there is no cup at all, no cup is left alone either."
-      },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Tray", "items": ["khaali"]}, "right": {"title": "Cup", "items": ["0 cup"]}} }
+      "wrongIfMis": "Yes",
+      "board": { "template": "compare@1", "params": {"left": {"title": "Tray", "items": ["6 cup utha liye"]}, "right": {"title": "Ab", "items": ["0 cup"]}} },
+      "why": { "hi": "6 cup utha liye toh tray ke 0 cup mein koi akela nahi bachta, isliye 0 even hai, {friend} sahi nahi", "en": "with the 6 cups taken off, the tray's 0 cups leave none alone, so 0 is even and {friend} is not right" },
+      "simpler": { "hi": "Tray mein ek bhi cup nahi hai, toh koi cup akela bhi nahi bachta. Ab socho, jab koi akela nahi bachta toh number kaisa hota hai.", "en": "The tray has not a single cup, so no cup is left alone either. Now think what a number is when nobody is left alone." },
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Tray", "items": ["6 cup utha liye"]}, "right": {"title": "Ab", "items": ["0 cup"]}} }
      }
     },
     {
      "targets": "c4-maths-ch03-t01-m-any-odd-digit",
-     "move": "14 as 10 and 4: pair the 10 first (5 pairs, nothing left), then the 4 (2 pairs) → the 1 in 14 is one ten, which always pairs fully",
-     "say": { "hi": "16 mein 10 aur 6 hain. 10 ki 5 jodiyan aur 6 ki 3 jodiyan banti hain, koi akela nahi bachta, isliye 16 even hai.", "en": "16 is 10 and 6. 10 makes 5 pairs and 6 makes 3 pairs, nobody is left alone, so 16 is even." },
-     "simpler": { "hi": "16 matlab 10 aur 6. Dono ki poori jodiyan banti hain, koi akela nahi, isliye 16 even hai.", "en": "16 is 10 and 6. Both make full pairs with nobody left, so 16 is even." },
+     "move": "12 as 10 and 2: pair the 10 first (5 pairs, nothing left), then the 2 (1 pair) → the 1 in 12 is one ten, which always pairs fully",
+     "say": { "hi": "12 mein 10 aur 2 hain. 10 ki 5 jodiyan aur 2 ki 1 jodi banti hai, koi akela nahi bachta, isliye 12 even hai.", "en": "12 is 10 and 2. 10 makes 5 pairs and 2 makes 1 pair, nobody is left alone, so 12 is even." },
+     "simpler": { "hi": "12 matlab 10 aur 2. Dono ki poori jodiyan banti hain, koi akela nahi, isliye 12 even hai.", "en": "12 is 10 and 2. Both make full pairs with nobody left, so 12 is even." },
      "then": {
       "prompt": {
        "hi": "18 laddoo ki 2-2 ki jodi banao. Kya koi laddoo akela bachega, haan ya nahi?",
@@ -799,8 +754,8 @@
       "why": {
        "hi": "90 ka ekai ka ank 0 hai, aur 9 dahaai ki poori jodiyan banti hain",
        "en": "90 has ones digit 0, and its 9 tens all make full pairs"
-      },
-      "answerBoard": { "template": "place-value@1", "params": {"value": 70, "mark": {"place": "ones"}} }
+      }, "board": { "template": "place-value@1", "params": {"value": 90} },
+      "answerBoard": { "template": "place-value@1", "params": {"value": 90, "mark": {"place": "ones"}} }
      },
      "simpler": {
       "hi": "90 mein 9 dahaai hain, aur har dahaai poori jodiyan banata hai. Ab ekai ka ank dekho, woh 0 hai.",
@@ -984,10 +939,7 @@
       "hi": "20 ka ekai ka ank 0 hai, aur 20 ki poori 10 jodiyan banti hain",
       "en": "the ones digit of 20 is 0, and 20 makes exactly 10 pairs"
      },
-     "simpler": {
-      "hi": "20 seats ko jodiyon mein bithao. Dekho, koi seat bina saathi ke bachti hai ya nahi.",
-      "en": "Put the 20 seats into pairs. See whether any seat is left without a partner."
-     },
+     "simpler": { "hi": "20 seats ki jodiyan banao, har jodi mein do seat. Dekho, koi seat bina saathi ke bachti hai ya nahi.", "en": "Put the 20 seats into pairs, two seats in each. See whether any seat is left without a partner." },
      "answerBoard": { "template": "place-value@1", "params": {"value": 20, "mark": {"place": "ones"}} }
     }
    ],
@@ -1069,33 +1021,13 @@
       "en": "With 0 things nobody is left alone, so 0 is even. A number ending in 0, like 10, is even too."
      },
      "then": {
-      "prompt": {
-       "hi": "Ek class mein 74 bachche hain. 74 odd hai ya even?",
-       "en": "A class has 74 children. Is 74 odd or even?"
-      },
+      "prompt": { "hi": "Ek class mein 60 bachche hain. 60 odd hai, even hai, ya dono mein se koi nahi?", "en": "A class has 60 children. Is 60 odd, even, or neither?" },
       "key": "Even",
-      "accept": [
-       "even",
-       "sam",
-       "sam sankhya",
-       "74 even hai",
-       "74 is even"
-      ],
-      "board": {
-       "template": "place-value@1",
-       "params": {
-        "value": 74
-       }
-      },
-      "why": {
-       "hi": "74 ka ekai ka ank 4 hai, aur 4 ki 2 jodiyan banti hain",
-       "en": "74 ends in 4, and 4 makes 2 pairs"
-      },
-      "simpler": {
-       "hi": "74 ka sirf aakhri ank dekho. Us ank ki jodiyan banao aur dekho koi akela bacha ya nahi.",
-       "en": "Look only at the last digit of 74. Pair up that digit and see whether any is left alone."
-      },
-      "answerBoard": { "template": "place-value@1", "params": {"value": 74, "mark": {"place": "ones"}} }
+      "accept": ["even", "sam", "sam sankhya", "60 even hai", "60 is even"], "targets": "c4-maths-ch03-t01-m-zero-not-even", "wrongIfMis": "Neither",
+      "board": { "template": "place-value@1", "params": {"value": 60} },
+      "why": { "hi": "60 ka ekai ka ank 0 hai, aur 0 mein koi akela nahi bachta; 6 dahaai ki bhi poori jodiyan banti hain", "en": "60 has ones digit 0, and 0 leaves nobody alone; its 6 tens also make full pairs" },
+      "simpler": { "hi": "60 ka sirf aakhri ank dekho. Socho, us ank ki jodi banane par koi akela bachta hai ya nahi.", "en": "Look only at the last digit of 60. Think whether pairing that digit leaves anyone alone." },
+      "answerBoard": { "template": "place-value@1", "params": {"value": 60, "mark": {"place": "ones"}} }
      }
     }
    ],
@@ -1153,11 +1085,8 @@
       "en": "3 is odd: it has 1 pair and 1 lone dot. 5 is odd too: 2 pairs and 1 lone dot. Now we put both together on the board."
      },
      "ask": {
-      "prompt": {
-       "hi": "Board pe 3 aur 5 ke saare dots saath aa gaye, dono akele dots bhi. Kya ab koi dot akela bacha? Toh total 8 odd hai ya even?",
-       "en": "On the board, all the dots of 3 and 5 have come together, both lone dots too. Is any dot still alone? So is the total 8 odd or even?"
-      },
-      "key": "Even",
+      "prompt": { "hi": "Board pe 3 aur 5 ke saare dots saath aa gaye, dono akele dots bhi. Kya ab koi dot akela bacha? Toh total odd hai ya even?", "en": "On the board, all the dots of 3 and 5 have come together, both lone dots too. Is any dot still alone? So is the total odd or even?" },
+      "key": "Even", "board": { "template": "combine-count@1", "params": {"a": 3, "b": 5, "op": "add", "hideResult": true} },
       "accept": [
        "even",
        "sam",
@@ -1383,10 +1312,7 @@
        "hideResult": true
       }
      },
-     "why": {
-      "hi": "5 aur 9 dono ka akela run milkar ek jodi banta hai, total 14",
-      "en": "the lone runs of 5 and 9 make one pair, so the total 14 is even"
-     },
+     "why": { "hi": "5 aur 9 dono ke akele run milkar ek jodi banate hain, isliye total 14 even hai", "en": "the lone runs of 5 and 9 make one pair, so the total 14 is even" },
      "simpler": {
       "hi": "5 mein ek run akela bachta hai, aur 9 mein bhi ek. Dekho, yeh dono akele run milkar jodi banate hain ya nahi.",
       "en": "5 leaves one run alone, and 9 leaves one too. See whether these two lone runs make a pair together."
@@ -1426,10 +1352,7 @@
        "hideResult": true
       }
      },
-     "why": {
-      "hi": "dono 7 ka 1-1 akela laddoo milkar jodi ban jaata hai, kul 14",
-      "en": "each 7 has one laddoo left over, and those two make a pair, so 14 is even"
-     },
+     "why": { "hi": "dono 7 ke 1-1 akele laddoo milkar jodi ban jaate hain, isliye kul 14 even hai", "en": "each 7 has one laddoo left over, and those two make a pair, so 14 is even" },
      "simpler": {
       "hi": "Har 7 mein ek laddoo akela bachta hai. Plate par yeh dono akele laddoo saath aa gaye, ab unhe milao.",
       "en": "Each 7 leaves one laddoo alone. On the plate these two lone laddoos come together, so put them side by side."
@@ -1499,10 +1422,7 @@
         "hideResult": true
        }
       },
-      "why": {
-       "hi": "7 aur 3 ke akele laddoo milkar ek jodi bante hain, kul 10",
-       "en": "7 and 3 each leave one over, and the two pair up, so 10 is even"
-      },
+      "why": { "hi": "7 aur 3 ke akele laddoo milkar ek jodi bante hain, isliye kul 10 even hai", "en": "7 and 3 each leave one over, and the two pair up, so 10 is even" },
       "simpler": {
        "hi": "7 mein ek laddoo akela hai, aur 3 mein bhi ek. Plate par dono akele laddoo saath aa jaate hain.",
        "en": "7 has one lone laddoo, and 3 has one too. On the plate the two lone laddoos come together."

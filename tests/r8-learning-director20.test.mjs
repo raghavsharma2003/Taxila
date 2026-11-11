@@ -66,3 +66,22 @@ test("W1: a term is glossed once per script", async () => {
   s.skills[1].explain[0].point.hi = "Yahan bhi line yaani rekha dono taraf chalti hai. " + s.skills[1].explain[0].point.hi;
   assert.ok(oneTermErrors(s).some((x) => /glossed again/.test(x)));
 });
+
+test("reader pass rules: one question once per script; crossing cards on a crossing board; a mark is named by its key", async () => {
+  const { repeatErrors, crossingBoardErrors, markGroundErrors, figureOf } = await import("../scripts/lesson-scripts/check.mjs");
+  const card = (id, hi, key, extra = {}) => ({ id, prompt: { hi, en: hi }, key, ...extra });
+  const s = { skills: [{ skillId: "t-s1", explain: [{ id: "e1", point: { hi: "p" }, ask: card("e1", "3/4 = ?/8, upar kya aayega?", "6") }], workedExample: null,
+    checks: [card("c1", "Ab 3/4 = ?/8 batao.", "6"), card("c2", "Upar aur neeche ka jod 140° hai. Baayein kitna?", "110°")],
+    remediation: [{ targets: "x", say: { hi: "s" }, then: card("t", "Jod 140° hai, toh baayein?", "110°") }] }] };
+  const r = repeatErrors(s);
+  assert.ok(r.some((x) => /t-s1\/c1: asks the same as t-s1\/e1/.test(x)) && r.some((x) => /remediation\[0\]\.then: reuses t-s1\/c2's exact numbers/.test(x)));
+  const x = { skills: [{ skillId: "t-s1", explain: [{ id: "e1", point: { hi: "Is crossing par bagal wala kona dekho." }, ask: { ...card("e1", "Bagal wala kona kitna?", "130°"), board: { template: "angle@1", params: { angles: [{ deg: 50 }] } } } }], checks: [], remediation: [] }] };
+  assert.ok(crossingBoardErrors(x).some((m) => /e1: speaks of crossing lines over angle@1/.test(m)));
+  x.skills[0].explain[0].ask.board = { template: "lines@1", params: { kind: "cross", deg: 50, angles: [{ at: 1, value: 50 }, { at: 2, value: "?" }] } };
+  assert.deepEqual(crossingBoardErrors(x), []);
+  assert.equal(figureOf({ template: "lines@1", params: { kind: "cross", deg: 50, angles: [{ at: 2, value: 130 }] } }), figureOf(x.skills[0].explain[0].ask.board), "a labelled answer is the same crossing");
+  const m = { skills: [{ skillId: "t-s1", explain: [], checks: [card("c1", "Kaunsa bada, A ya B?", "angle B", { answerBoard: { template: "angle@1", params: { angles: [{ deg: 35, name: "angle A" }, { deg: 110, name: "angle B" }], mark: { index: 0, show: "deg" } } } })], remediation: [] }] };
+  assert.ok(markGroundErrors(m).some((e) => /c1\.answerBoard\.mark: not named by the card's key/.test(e)));
+  m.skills[0].checks[0].answerBoard.params.mark = { index: 1, show: "bigger" };
+  assert.deepEqual(markGroundErrors(m), []);
+});
