@@ -8,6 +8,7 @@ import { ENGINES } from "../engines/index.ts";
 import { mountStudio, type StudioHandle } from "../core/host.ts";
 import { mutateSpec } from "../core/mutate.ts";
 import { drawBoard, sanitizeBoard } from "../core/board.ts";
+import { C } from "../core/tokens.ts";
 import { audioFor } from "./audio.ts";
 import measuredRaw from "./measured.json";
 import postersRaw from "./posters.json";
@@ -78,7 +79,7 @@ function catalogue() {
   const topics = new Set(specs.flatMap((s) => s.outcomes.topics)), miscs = new Set(specs.flatMap((s) => s.outcomes.misconceptions));
   const wrap = document.createElement("div"); wrap.className = "wrap";
   wrap.innerHTML = `
-    <div class="top"><div class="brand"><svg viewBox="0 0 26 26" fill="none"><path d="M4 22V11a9 9 0 0 1 18 0v11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 22v-9a4 4 0 0 1 8 0v9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="13" cy="5" r="2" fill="#CBFF4D"/></svg>Taxila · Studio v2</div>
+    <div class="top"><div class="brand"><svg viewBox="0 0 26 26" fill="none"><path d="M4 22V11a9 9 0 0 1 18 0v11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 22v-9a4 4 0 0 1 8 0v9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="13" cy="5" r="2" fill="${C.volt}"/></svg>Taxila · Studio v2</div>
     <button class="theme" type="button">Theme</button></div>
     <h1>Games and explainers that teach the act itself.</h1>
     <p class="lede">Every piece below is a hand-built engine driven by a small validated spec. The model chooses items, order and words; the engine owns physics, truth and feel. Bad specs play plainer, never broken; a crashing engine hands over to the board version of the same idea. Every answer is graded by the host from the spec, never by the frame.</p>

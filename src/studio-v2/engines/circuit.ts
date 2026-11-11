@@ -9,6 +9,7 @@ import { clamp, lerp, mix } from "../core/math.ts";
 import { glow, roundRect, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
+import { withAlpha } from "../../theme/palette.ts";
 
 const { COLS, ROWS, MATERIALS, TOOLS } = CIRCUIT;
 const NC = CIRCUIT_NC, N = CIRCUIT_N;
@@ -195,10 +196,10 @@ function create(api: EngineApi, spec: CircuitSpec): EngineInstance {
   // ── render
   const PANEL = { x: 222, y: 168, w: 762, h: 430 };
   function paintBg(g: Ctx) {
-    const bgG = g.createRadialGradient(600, 380, 50, 600, 380, 700); bgG.addColorStop(0, "#121725"); bgG.addColorStop(1, "#0A0C12");
+    const bgG = g.createRadialGradient(600, 380, 50, 600, 380, 700); bgG.addColorStop(0, C.circuitBgCentre); bgG.addColorStop(1, C.bg);
     g.fillStyle = bgG; g.fillRect(0, 0, W, H);
-    g.fillStyle = "#121621"; roundRect(g, PANEL.x, PANEL.y, PANEL.w, PANEL.h, 26); g.fill(); g.strokeStyle = C.line2; g.lineWidth = 2; g.stroke();
-    g.fillStyle = "rgba(255,255,255,.05)";
+    g.fillStyle = C.circuitPanel; roundRect(g, PANEL.x, PANEL.y, PANEL.w, PANEL.h, 26); g.fill(); g.strokeStyle = C.line2; g.lineWidth = 2; g.stroke();
+    g.fillStyle = withAlpha(C.hi, .05);
     for (let x = PANEL.x + 26; x < PANEL.x + PANEL.w - 10; x += 31) for (let y = PANEL.y + 26; y < PANEL.y + PANEL.h - 10; y += 31) g.fillRect(x - 1.5, y - 1.5, 3, 3);
   }
   function render(ctx: Ctx, now: number) {
@@ -206,7 +207,7 @@ function create(api: EngineApi, spec: CircuitSpec): EngineInstance {
     const fx = api.fx, s = step();
     ctx.save(); ctx.translate(fx.ox, fx.oy);
     ctx.save(); ctx.globalCompositeOperation = "lighter";
-    for (const e of bulbs()) { const g = e.comp!.glow; if (g < 0.02) continue; const r = 120 + 190 * Math.sqrt(Math.min(g, 2)); ctx.globalAlpha = Math.min(0.55, 0.3 * g); ctx.drawImage(glow("#FFD58A", 128, 0.05), e.mx - r, e.my - r, r * 2, r * 2); }
+    for (const e of bulbs()) { const g = e.comp!.glow; if (g < 0.02) continue; const r = 120 + 190 * Math.sqrt(Math.min(g, 2)); ctx.globalAlpha = Math.min(0.55, 0.3 * g); ctx.drawImage(glow(C.circuitBulbGlow, 128, 0.05), e.mx - r, e.my - r, r * 2, r * 2); }
     ctx.restore();
     if (s && s.cueE && !lab.done && (!s.cueE.comp || (s.cueE.comp.type === "tester" && !s.cueE.comp.material)) && !lab.drag) {
       const e = s.cueE, a = 0.5 + 0.5 * Math.sin(lab.cuePulse * 4);
@@ -219,7 +220,7 @@ function create(api: EngineApi, spec: CircuitSpec): EngineInstance {
       if (e.horiz) roundRect(ctx, e.ax + 18, e.my - 38, e.len - 36, 76, 22); else roundRect(ctx, e.mx - 38, e.ay + 18, 76, e.len - 36, 22);
       ctx.stroke(); ctx.restore();
     }
-    ctx.strokeStyle = "rgba(255,255,255,.06)"; ctx.lineWidth = 3; ctx.setLineDash([4, 10]);
+    ctx.strokeStyle = withAlpha(C.hi, .06); ctx.lineWidth = 3; ctx.setLineDash([4, 10]);
     for (const e of edges) if (!e.comp) { ctx.beginPath(); ctx.moveTo(e.ax, e.ay); ctx.lineTo(e.bx, e.by); ctx.stroke(); }
     ctx.setLineDash([]);
     for (const e of edges) if (e.comp) drawComp(ctx, e, e.comp, now);
@@ -238,7 +239,7 @@ function create(api: EngineApi, spec: CircuitSpec): EngineInstance {
       }
     }
     ctx.restore();
-    for (let i = 0; i < N; i++) { const q = npos(i); ctx.fillStyle = "#2A3142"; ctx.beginPath(); ctx.arc(q.x, q.y, 11, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#566079"; ctx.beginPath(); ctx.arc(q.x - 2, q.y - 2, 5, 0, Math.PI * 2); ctx.fill(); }
+    for (let i = 0; i < N; i++) { const q = npos(i); ctx.fillStyle = C.circuitNode; ctx.beginPath(); ctx.arc(q.x, q.y, 11, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = C.circuitNodeHi; ctx.beginPath(); ctx.arc(q.x - 2, q.y - 2, 5, 0, Math.PI * 2); ctx.fill(); }
     for (const e of edges) if (e.meter) drawMeter(ctx, e);
     fx.drawWorld(ctx);
     ctx.restore();
@@ -251,8 +252,8 @@ function create(api: EngineApi, spec: CircuitSpec): EngineInstance {
   function wireLine(ctx: Ctx, x0: number, x1: number, I: number) {
     const k = Math.min(1, Math.abs(I) / 0.3);
     ctx.lineCap = "round";
-    ctx.strokeStyle = "#1B2030"; ctx.lineWidth = 15; ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x1, 0); ctx.stroke();
-    ctx.strokeStyle = mix("#7A5B3E", "#FFC27A", k); ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x1, 0); ctx.stroke();
+    ctx.strokeStyle = C.circuitWireCase; ctx.lineWidth = 15; ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x1, 0); ctx.stroke();
+    ctx.strokeStyle = mix(C.circuitWireCold, C.circuitWireHot, k); ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x1, 0); ctx.stroke();
   }
   type EdgeLike = Pick<Edge, "a" | "b" | "mx" | "my" | "ax" | "ay" | "bx" | "by" | "len" | "horiz" | "I">;
   function drawComp(ctx: Ctx, e: EdgeLike, c: Comp, now: number, icon = false) {
@@ -264,35 +265,35 @@ function create(api: EngineApi, spec: CircuitSpec): EngineInstance {
     else if (c.type === "bulb") {
       wireLine(ctx, -L, -40, e.I); wireLine(ctx, 40, L, e.I); ctx.scale(sc, sc);
       const g = c.glow;
-      if (g > 0.01) { ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = Math.min(1, 0.25 + 0.5 * g); const r = 60 + 50 * Math.sqrt(Math.min(g, 2)); ctx.drawImage(glow("#FFE2A0", 96, 0.12), -r, -r, r * 2, r * 2); ctx.restore(); }
-      ctx.fillStyle = "#59617A"; roundRect(ctx, -46, -13, 16, 26, 4); ctx.fill(); roundRect(ctx, 30, -13, 16, 26, 4); ctx.fill();
+      if (g > 0.01) { ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = Math.min(1, 0.25 + 0.5 * g); const r = 60 + 50 * Math.sqrt(Math.min(g, 2)); ctx.drawImage(glow(C.circuitBulbHalo, 96, 0.12), -r, -r, r * 2, r * 2); ctx.restore(); }
+      ctx.fillStyle = C.circuitBulbCap; roundRect(ctx, -46, -13, 16, 26, 4); ctx.fill(); roundRect(ctx, 30, -13, 16, 26, 4); ctx.fill();
       const gl = ctx.createRadialGradient(-10, -12, 4, 0, 0, 40);
-      gl.addColorStop(0, g > 0.05 ? `rgba(255,248,225,${0.35 + 0.5 * Math.min(1, g)})` : "rgba(220,230,255,.28)"); gl.addColorStop(1, g > 0.05 ? `rgba(255,200,110,${0.18 + 0.3 * Math.min(1, g)})` : "rgba(140,160,210,.10)");
-      ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(0, 0, 36, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "rgba(220,230,255,.55)"; ctx.lineWidth = 3; ctx.stroke();
-      ctx.strokeStyle = g > 0.05 ? mix("#C9763A", "#FFF6DA", Math.min(1, g)) : "#7C6A55"; ctx.lineWidth = g > 0.05 ? 4 : 3; ctx.lineJoin = "round";
+      gl.addColorStop(0, g > 0.05 ? withAlpha(C.circuitBulbLitCore, 0.35 + 0.5 * Math.min(1, g)) : withAlpha(C.circuitGlass, .28)); gl.addColorStop(1, g > 0.05 ? withAlpha(C.circuitBulbLitEdge, 0.18 + 0.3 * Math.min(1, g)) : withAlpha(C.circuitGlassEdge, .10));
+      ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(0, 0, 36, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = withAlpha(C.circuitGlass, .55); ctx.lineWidth = 3; ctx.stroke();
+      ctx.strokeStyle = g > 0.05 ? mix(C.circuitFilamentWarm, C.circuitFilamentLit, Math.min(1, g)) : C.circuitFilamentOff; ctx.lineWidth = g > 0.05 ? 4 : 3; ctx.lineJoin = "round";
       ctx.beginPath(); ctx.moveTo(-30, 0); ctx.lineTo(-16, 0); for (let i = 0; i < 6; i++) ctx.lineTo(-14 + i * 5.6, i % 2 ? 9 : -9); ctx.lineTo(16, 0); ctx.lineTo(30, 0); ctx.stroke();
-      ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.beginPath(); ctx.ellipse(-13, -17, 9, 5, -0.6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = withAlpha(C.hi, .55); ctx.beginPath(); ctx.ellipse(-13, -17, 9, 5, -0.6, 0, Math.PI * 2); ctx.fill();
     } else if (c.type === "switch") {
       wireLine(ctx, -L, -34, e.I); wireLine(ctx, 34, L, e.I); ctx.scale(sc, sc);
-      ctx.fillStyle = "#2A3142"; roundRect(ctx, -46, -20, 92, 40, 12); ctx.fill();
-      ctx.fillStyle = "#8C95AE"; ctx.beginPath(); ctx.arc(-30, 0, 8, 0, Math.PI * 2); ctx.arc(30, 0, 8, 0, Math.PI * 2); ctx.fill();
-      ctx.save(); ctx.translate(-30, 0); ctx.rotate(-c.ang * 0.62); ctx.strokeStyle = c.closed ? "#D9DEEA" : "#A9B0C0"; ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(62, 0); ctx.stroke(); ctx.fillStyle = C.ink2; ctx.beginPath(); ctx.arc(66, 0, 7, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      ctx.fillStyle = C.circuitNode; roundRect(ctx, -46, -20, 92, 40, 12); ctx.fill();
+      ctx.fillStyle = C.circuitTerminal; ctx.beginPath(); ctx.arc(-30, 0, 8, 0, Math.PI * 2); ctx.arc(30, 0, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.save(); ctx.translate(-30, 0); ctx.rotate(-c.ang * 0.62); ctx.strokeStyle = c.closed ? C.circuitLeverOn : C.ink2; ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(62, 0); ctx.stroke(); ctx.fillStyle = C.ink2; ctx.beginPath(); ctx.arc(66, 0, 7, 0, Math.PI * 2); ctx.fill(); ctx.restore();
     } else if (c.type === "cell") {
       const dir = c.plus === e.b ? 1 : -1, hot = Math.abs(e.I) > 1.6 ? lab.short : 0;
       wireLine(ctx, -L, -56, e.I); wireLine(ctx, 56, L, e.I); ctx.scale(sc, sc);
       if (c.flip < 1) ctx.scale(Math.cos(c.flip * Math.PI) || 0.001, 1);
       if (hot > 0.01) { ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = hot * (0.6 + 0.4 * Math.sin(now * 18)); ctx.drawImage(glow(C.amber, 80, 0.1), -90, -60, 180, 120); ctx.restore(); }
       ctx.save(); ctx.scale(dir, 1);
-      const body = ctx.createLinearGradient(0, -22, 0, 22); body.addColorStop(0, "#2B3550"); body.addColorStop(0.5, "#3B4870"); body.addColorStop(1, "#1C2337");
+      const body = ctx.createLinearGradient(0, -22, 0, 22); body.addColorStop(0, C.circuitCellTop); body.addColorStop(0.5, C.circuitCellMid); body.addColorStop(1, C.circuitCellBottom);
       ctx.fillStyle = body; roundRect(ctx, -50, -22, 96, 44, 8); ctx.fill();
-      ctx.fillStyle = C.sci; ctx.fillRect(10, -22, 22, 44); ctx.fillStyle = "#B9C1D6"; roundRect(ctx, 46, -9, 10, 18, 3); ctx.fill(); ctx.fillStyle = "#8C95AE"; ctx.fillRect(-56, -16, 6, 32);
+      ctx.fillStyle = C.sci; ctx.fillRect(10, -22, 22, 44); ctx.fillStyle = C.circuitCellCap; roundRect(ctx, 46, -9, 10, 18, 3); ctx.fill(); ctx.fillStyle = C.circuitTerminal; ctx.fillRect(-56, -16, 6, 32);
       ctx.restore();
     } else if (c.type === "tester") {
       wireLine(ctx, -L, -38, e.I); wireLine(ctx, 38, L, e.I);
-      ctx.fillStyle = "#6E7891";
+      ctx.fillStyle = C.circuitClip;
       for (const s of [-1, 1]) { ctx.save(); ctx.translate(s * 40, 0); ctx.scale(s, 1); ctx.beginPath(); ctx.moveTo(-6, -12); ctx.lineTo(10, -8); ctx.lineTo(10, 8); ctx.lineTo(-6, 12); ctx.closePath(); ctx.fill(); ctx.restore(); }
       if (c.material) drawMaterial(ctx, c.material, c.matA);
-      else { ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.setLineDash([5, 7]); ctx.lineWidth = 3; roundRect(ctx, -32, -26, 64, 52, 10); ctx.stroke(); ctx.setLineDash([]); }
+      else { ctx.strokeStyle = withAlpha(C.hi, .18); ctx.setLineDash([5, 7]); ctx.lineWidth = 3; roundRect(ctx, -32, -26, 64, 52, 10); ctx.stroke(); ctx.setLineDash([]); }
     }
     ctx.restore();
     if (c.type === "cell" && !icon) {
@@ -304,23 +305,23 @@ function create(api: EngineApi, spec: CircuitSpec): EngineInstance {
   }
   function drawMaterial(ctx: Ctx, id: string, a: number) {
     ctx.save(); ctx.scale(a || 0.001, a || 0.001);
-    if (id === "coin") { const g = ctx.createRadialGradient(-8, -8, 4, 0, 0, 30); g.addColorStop(0, "#F3B37A"); g.addColorStop(1, "#A8602F"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, 30, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "rgba(255,230,200,.55)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, 0, 22, 0, Math.PI * 2); ctx.stroke(); }
-    else if (id === "nail") { ctx.fillStyle = "#AEB6C6"; roundRect(ctx, -46, -6, 86, 12, 4); ctx.fill(); ctx.fillStyle = "#D2D8E4"; roundRect(ctx, -52, -14, 10, 28, 3); ctx.fill(); ctx.beginPath(); ctx.moveTo(40, -6); ctx.lineTo(52, 0); ctx.lineTo(40, 6); ctx.closePath(); ctx.fill(); }
-    else if (id === "pencil") { ctx.fillStyle = "#3E434F"; roundRect(ctx, -52, -4, 104, 8, 3); ctx.fill(); ctx.fillStyle = "#C98A3E"; ctx.beginPath(); ctx.moveTo(-36, -12); ctx.lineTo(36, -12); ctx.lineTo(44, 0); ctx.lineTo(36, 12); ctx.lineTo(-36, 12); ctx.lineTo(-44, 0); ctx.closePath(); ctx.fill(); ctx.fillStyle = "#E3B072"; ctx.fillRect(-36, -12, 72, 6); ctx.fillStyle = "#3E434F"; ctx.fillRect(-46, -3, 6, 6); ctx.fillRect(40, -3, 6, 6); }
-    else if (id === "ruler") { ctx.fillStyle = "rgba(120,170,255,.45)"; roundRect(ctx, -54, -16, 108, 32, 5); ctx.fill(); ctx.strokeStyle = "rgba(200,220,255,.7)"; ctx.lineWidth = 2; ctx.stroke(); for (let i = -48; i <= 48; i += 8) { ctx.beginPath(); ctx.moveTo(i, -16); ctx.lineTo(i, i % 16 === 0 ? -6 : -10); ctx.stroke(); } }
-    else if (id === "eraser") { ctx.fillStyle = "#E9ECF4"; roundRect(ctx, -40, -18, 80, 36, 8); ctx.fill(); ctx.fillStyle = "#4A7BD8"; roundRect(ctx, -40, -18, 30, 36, 8); ctx.fill(); ctx.fillRect(-20, -18, 10, 36); }
-    else if (id === "glass") { const g = ctx.createLinearGradient(0, -12, 0, 12); g.addColorStop(0, "rgba(200,245,255,.75)"); g.addColorStop(1, "rgba(120,200,220,.35)"); ctx.fillStyle = g; roundRect(ctx, -54, -11, 108, 22, 11); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,.7)"; ctx.fillRect(-46, -7, 70, 3); }
+    if (id === "coin") { const g = ctx.createRadialGradient(-8, -8, 4, 0, 0, 30); g.addColorStop(0, C.circuitCoinHi); g.addColorStop(1, C.circuitCoin); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, 30, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = withAlpha(C.circuitCoinRim, .55); ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, 0, 22, 0, Math.PI * 2); ctx.stroke(); }
+    else if (id === "nail") { ctx.fillStyle = C.circuitNail; roundRect(ctx, -46, -6, 86, 12, 4); ctx.fill(); ctx.fillStyle = C.circuitNailHead; roundRect(ctx, -52, -14, 10, 28, 3); ctx.fill(); ctx.beginPath(); ctx.moveTo(40, -6); ctx.lineTo(52, 0); ctx.lineTo(40, 6); ctx.closePath(); ctx.fill(); }
+    else if (id === "pencil") { ctx.fillStyle = C.circuitGraphite; roundRect(ctx, -52, -4, 104, 8, 3); ctx.fill(); ctx.fillStyle = C.circuitPencilWood; ctx.beginPath(); ctx.moveTo(-36, -12); ctx.lineTo(36, -12); ctx.lineTo(44, 0); ctx.lineTo(36, 12); ctx.lineTo(-36, 12); ctx.lineTo(-44, 0); ctx.closePath(); ctx.fill(); ctx.fillStyle = C.circuitPencilShave; ctx.fillRect(-36, -12, 72, 6); ctx.fillStyle = C.circuitGraphite; ctx.fillRect(-46, -3, 6, 6); ctx.fillRect(40, -3, 6, 6); }
+    else if (id === "ruler") { ctx.fillStyle = withAlpha(C.circuitPlastic, .45); roundRect(ctx, -54, -16, 108, 32, 5); ctx.fill(); ctx.strokeStyle = withAlpha(C.circuitPlasticEdge, .7); ctx.lineWidth = 2; ctx.stroke(); for (let i = -48; i <= 48; i += 8) { ctx.beginPath(); ctx.moveTo(i, -16); ctx.lineTo(i, i % 16 === 0 ? -6 : -10); ctx.stroke(); } }
+    else if (id === "eraser") { ctx.fillStyle = C.circuitEraser; roundRect(ctx, -40, -18, 80, 36, 8); ctx.fill(); ctx.fillStyle = C.circuitEraserBand; roundRect(ctx, -40, -18, 30, 36, 8); ctx.fill(); ctx.fillRect(-20, -18, 10, 36); }
+    else if (id === "glass") { const g = ctx.createLinearGradient(0, -12, 0, 12); g.addColorStop(0, withAlpha(C.circuitGlassRodHi, .75)); g.addColorStop(1, withAlpha(C.circuitGlassRod, .35)); ctx.fillStyle = g; roundRect(ctx, -54, -11, 108, 22, 11); ctx.fill(); ctx.fillStyle = withAlpha(C.hi, .7); ctx.fillRect(-46, -7, 70, 3); }
     ctx.restore();
   }
   function drawMeter(ctx: Ctx, e: Edge) {
     const reading = Math.round(Math.abs(e.I) * 100), w = 196, h = 64, x = e.horiz ? e.mx - w / 2 : e.mx + 34, y = e.horiz ? e.my - h - 30 : e.my - h / 2;
-    ctx.save(); ctx.fillStyle = "rgba(16,19,27,.92)"; roundRect(ctx, x, y, w, h, 16); ctx.fill(); ctx.strokeStyle = "rgba(47,211,199,.6)"; ctx.lineWidth = 2; ctx.stroke();
+    ctx.save(); ctx.fillStyle = withAlpha(C.bg1, .92); roundRect(ctx, x, y, w, h, 16); ctx.fill(); ctx.strokeStyle = withAlpha(C.sci, .6); ctx.lineWidth = 2; ctx.stroke();
     const cx = x + 36, cy = y + 44, r = 22, k = Math.min(1, reading / 60);
     ctx.strokeStyle = C.line2; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 2 * Math.PI); ctx.stroke();
     ctx.strokeStyle = C.sci; ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, Math.PI + Math.PI * k); ctx.stroke();
     const an = Math.PI + Math.PI * k; ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(an) * (r - 4), cy + Math.sin(an) * (r - 4)); ctx.stroke();
     api.text(ctx, `${reading}`, x + 128, y + h / 2 + 2, { font: "mono", size: 40, weight: 600, align: "center", baseline: "middle" });
-    ctx.strokeStyle = "rgba(47,211,199,.5)"; ctx.lineWidth = 2; ctx.setLineDash([3, 5]);
+    ctx.strokeStyle = withAlpha(C.sci, .5); ctx.lineWidth = 2; ctx.setLineDash([3, 5]);
     ctx.beginPath(); if (e.horiz) { ctx.moveTo(e.mx, y + h); ctx.lineTo(e.mx, e.my - 10); } else { ctx.moveTo(x, e.my); ctx.lineTo(e.mx + 10, e.my); } ctx.stroke();
     ctx.restore();
   }
@@ -328,15 +329,15 @@ function create(api: EngineApi, spec: CircuitSpec): EngineInstance {
     for (const t of lab.tray) {
       ctx.save(); ctx.globalAlpha = t.a; ctx.translate(t.off, 0);
       const mat = MATERIALS[t.id], tested = mat ? lab.tested[t.id] : null;
-      ctx.fillStyle = "rgba(22,26,36,.92)"; roundRect(ctx, t.x, t.y, t.w, t.h, 18); ctx.fill();
-      ctx.strokeStyle = tested === "conducts" ? "rgba(61,220,151,.6)" : C.line2; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = withAlpha(C.bg2, .92); roundRect(ctx, t.x, t.y, t.w, t.h, 18); ctx.fill();
+      ctx.strokeStyle = tested === "conducts" ? withAlpha(C.mint, .6) : C.line2; ctx.lineWidth = 2; ctx.stroke();
       const cy = t.y + t.h / 2;
       if (mat) {
         ctx.save(); ctx.translate(t.x + 36, cy); ctx.scale(0.4, 0.4); drawMaterial(ctx, t.id, 1); ctx.restore();
         api.text(ctx, mat.name, t.x + 66, cy + 2, { font: "display", size: 38, weight: 600, color: tested ? C.ink2 : C.ink, baseline: "middle" });
         if (tested) {
           const bx = t.x + 50, by = cy + 18;
-          ctx.fillStyle = "#161A24"; ctx.beginPath(); ctx.arc(bx, by, 13, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = C.bg2; ctx.beginPath(); ctx.arc(bx, by, 13, 0, Math.PI * 2); ctx.fill();
           if (tested === "conducts") { ctx.strokeStyle = C.mint; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.beginPath(); ctx.moveTo(bx - 6, by); ctx.lineTo(bx - 1.5, by + 5); ctx.lineTo(bx + 7, by - 5); ctx.stroke(); }
           else { ctx.strokeStyle = C.ink3; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.arc(bx, by, 7, 0, Math.PI * 2); ctx.stroke(); }
         }
@@ -364,9 +365,9 @@ function create(api: EngineApi, spec: CircuitSpec): EngineInstance {
     ctx.restore();
   }
   function drawFinal(ctx: Ctx, f: NonNullable<typeof lab.finalCard>) {
-    ctx.save(); ctx.globalAlpha = f.a; ctx.fillStyle = "rgba(10,12,18,.6)"; ctx.fillRect(0, 0, W, H);
+    ctx.save(); ctx.globalAlpha = f.a; ctx.fillStyle = withAlpha(C.bg, .6); ctx.fillRect(0, 0, W, H);
     const x = 190, y = 150, w = 640, h = 340;
-    ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, x, y + (1 - f.a) * 16, w, h, 28); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = withAlpha(C.bg2, .95); roundRect(ctx, x, y + (1 - f.a) * 16, w, h, 28); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
     api.text(ctx, T.labDone.toUpperCase(), 500, y + 66, { font: "mono", size: 38, weight: 600, color: C.mint, align: "center", track: 4 });
     api.text(ctx, `${T.conducts}:`, x + 50, y + 150, { font: "mono", size: 38, weight: 500, color: C.ink3 });
     api.text(ctx, f.conducts.join(", ") || "—", x + 50, y + 200, { font: "ui", size: 40, weight: 600, maxWidth: 560 });

@@ -11,6 +11,7 @@ import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, fmtNum, taskPill, textBlock, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 
 const SL = { x0: 170, x1: 690, y: 572 };
 const BTN = { swing: { x: 800, y: 250, w: 170, h: 70 }, lock: { x: 800, y: 510, w: 170, h: 70 }, run: { x: 800, y: 510, w: 170, h: 70 }, pedal: { x: 790, y: 330, w: 180, h: 240 } };
@@ -95,7 +96,7 @@ function create(api: EngineApi, spec: MotionSpec): EngineInstance {
   function rms(r: Extract<MlRoundT, { mode: "drive" }>) { const end = r.pts[r.pts.length - 1][0], n = Math.round(end / DRIVE_DT); let s = 0; for (let i = 1; i <= n; i++) { const e = (g.trace[i] ?? g.x) - targetAt(r.pts, i * DRIVE_DT); s += e * e; } return Math.sqrt(s / n); }
   function paintBg(c: Ctx) { backdrop(c, accent, 157, 0); }
   function button(ctx: Ctx, b: { x: number; y: number; w: number; h: number }, label: string, on: boolean, now: number) {
-    ctx.save(); ctx.fillStyle = on ? "rgba(203,255,77,.14)" : "rgba(22,26,36,.95)"; roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = on ? hexA(C.volt, 0.7 + 0.3 * Math.sin(now * 4)) : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.fillStyle = on ? withAlpha(C.volt, .14) : withAlpha(C.bg2, .95); roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = on ? hexA(C.volt, 0.7 + 0.3 * Math.sin(now * 4)) : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
     api.text(ctx, label, b.x + b.w / 2, b.y + b.h / 2 + 2, { font: "display", size: 38, weight: 800, color: on ? C.volt : C.ink3, align: "center", baseline: "middle", maxWidth: b.w - 16 });
   }
   function slider(ctx: Ctx, x: number, label: string, active: boolean) {
@@ -114,12 +115,12 @@ function create(api: EngineApi, spec: MotionSpec): EngineInstance {
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     if (r.mode === "pendulum") {
       const px = 360, py = 170, len = 40 + g.L * 1.1, bx = px + Math.sin(g.th) * len, by = py + Math.cos(g.th) * len, br = 14 + g.mass * 7;
-      ctx.save(); ctx.fillStyle = "#3A4256"; ctx.fillRect(px - 120, py - 14, 240, 14); ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.setLineDash([6, 8]); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py + 360); ctx.stroke(); ctx.setLineDash([]);
+      ctx.save(); ctx.fillStyle = C.motionBeam; ctx.fillRect(px - 120, py - 14, 240, 14); ctx.strokeStyle = withAlpha(C.hi, .12); ctx.setLineDash([6, 8]); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py + 360); ctx.stroke(); ctx.setLineDash([]);
       ctx.strokeStyle = C.ink2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(bx, by); ctx.stroke(); ctx.restore();
-      bloom(ctx, accent, bx, by, br * 2.2, 0.4); ctx.save(); const gr = ctx.createRadialGradient(bx - br / 3, by - br / 3, 2, bx, by, br); gr.addColorStop(0, "#F5F7FF"); gr.addColorStop(1, "#8A93AE"); ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(bx, by, br, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      bloom(ctx, accent, bx, by, br * 2.2, 0.4); ctx.save(); const gr = ctx.createRadialGradient(bx - br / 3, by - br / 3, 2, bx, by, br); gr.addColorStop(0, C.motionBallHi); gr.addColorStop(1, C.motionBall); ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(bx, by, br, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       slider(ctx, xOfL(g.L), `${T.length} ${g.L} cm`, g.slider);
       button(ctx, BTN.swing, g.swinging ? T.stop : T.release, !done, now);
-      if (r.massKnob) { api.text(ctx, T.mass, 890, 360, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" }); MASSES.forEach((_, i) => { ctx.save(); ctx.fillStyle = i === g.mass ? hexA(accent, 0.5) : "rgba(22,26,36,.95)"; ctx.beginPath(); ctx.arc(830 + i * 60, 410, 12 + i * 6, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = i === g.mass ? accent : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); }); }
+      if (r.massKnob) { api.text(ctx, T.mass, 890, 360, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" }); MASSES.forEach((_, i) => { ctx.save(); ctx.fillStyle = i === g.mass ? hexA(accent, 0.5) : withAlpha(C.bg2, .95); ctx.beginPath(); ctx.arc(830 + i * 60, 410, 12 + i * 6, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = i === g.mass ? accent : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); }); }
       readout(ctx, g.measured ? T.period : T.timer, g.measured ? `${g.measured.toFixed(2)} s` : g.swinging ? `${g.swT.toFixed(1)} s` : "?", 640, 230, g.measured ? C.ion : C.ink2);
       button(ctx, BTN.lock, T.lock, !done && g.measured > 0, now);
       if (done) pill(api, ctx, `${periodOf(g.L).toFixed(2)} s`, 640, 400, { color: ok ? C.mint : C.amber, size: 40 });
@@ -127,14 +128,14 @@ function create(api: EngineApi, spec: MotionSpec): EngineInstance {
       const key = raceKey(r), trainV = r.d / r.t;
       const trackD = r.ask === "distance" ? Math.max(r.d, g.dial) * 1.1 : r.d, X0 = 130, X1 = 700, xd = (d: number) => X0 + (d / trackD) * (X1 - X0);
       const simT = (g.runT / 3.6) * r.t; // the run is shown in 3.6 s of screen time
-      for (const [y, lab] of [[250, T.train], [380, T.you]] as [number, string][]) { ctx.save(); ctx.fillStyle = "rgba(255,255,255,.05)"; ctx.fillRect(X0 - 10, y - 40, X1 - X0 + 20, 80); ctx.restore(); api.text(ctx, lab, X0, y - 64, { font: "mono", size: 38, weight: 600, color: C.ink2, baseline: "middle" }); }
+      for (const [y, lab] of [[250, T.train], [380, T.you]] as [number, string][]) { ctx.save(); ctx.fillStyle = withAlpha(C.hi, .05); ctx.fillRect(X0 - 10, y - 40, X1 - X0 + 20, 80); ctx.restore(); api.text(ctx, lab, X0, y - 64, { font: "mono", size: 38, weight: 600, color: C.ink2, baseline: "middle" }); }
       ctx.save(); ctx.strokeStyle = C.sun; ctx.lineWidth = 4; ctx.setLineDash([10, 8]); ctx.beginPath(); ctx.moveTo(xd(r.d), 200); ctx.lineTo(xd(r.d), 430); ctx.stroke(); ctx.restore();
       if (r.ask === "distance" && g.dial > 0) { ctx.save(); ctx.strokeStyle = C.volt; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(xd(g.dial), 340); ctx.lineTo(xd(g.dial), 430); ctx.stroke(); ctx.fillStyle = C.volt; ctx.beginPath(); ctx.moveTo(xd(g.dial), 340); ctx.lineTo(xd(g.dial) + 26, 352); ctx.lineTo(xd(g.dial), 364); ctx.fill(); ctx.restore(); }
       const tr = g.running || done ? Math.min(r.d, trainV * simT) : 0, you = !(g.running || done) ? 0 : r.ask === "speed" ? Math.min(r.d, g.dial * simT) : r.ask === "time" ? Math.min(r.d, trainV * simT) : trainV * Math.min(simT, r.t);
       // train
-      ctx.save(); ctx.fillStyle = "#5FA8FF"; roundRect(ctx, xd(tr) - 90, 226, 90, 46, 10); ctx.fill(); ctx.fillStyle = "#CFE3FF"; for (let i = 0; i < 3; i++) ctx.fillRect(xd(tr) - 82 + i * 26, 234, 18, 14); ctx.restore();
+      ctx.save(); ctx.fillStyle = C.motionTrain; roundRect(ctx, xd(tr) - 90, 226, 90, 46, 10); ctx.fill(); ctx.fillStyle = C.motionWindow; for (let i = 0; i < 3; i++) ctx.fillRect(xd(tr) - 82 + i * 26, 234, 18, 14); ctx.restore();
       // your cart
-      const ycx = xd(Math.min(you, trackD)); ctx.save(); bloom(ctx, C.volt, ycx - 30, 380, 40, g.running ? 0.4 : 0.15); ctx.fillStyle = C.volt; roundRect(ctx, ycx - 64, 360, 64, 34, 10); ctx.fill(); ctx.fillStyle = "#0B0E14"; ctx.beginPath(); ctx.arc(ycx - 50, 398, 9, 0, Math.PI * 2); ctx.arc(ycx - 14, 398, 9, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      const ycx = xd(Math.min(you, trackD)); ctx.save(); bloom(ctx, C.volt, ycx - 30, 380, 40, g.running ? 0.4 : 0.15); ctx.fillStyle = C.volt; roundRect(ctx, ycx - 64, 360, 64, 34, 10); ctx.fill(); ctx.fillStyle = C.motionOnBright; ctx.beginPath(); ctx.arc(ycx - 50, 398, 9, 0, Math.PI * 2); ctx.arc(ycx - 14, 398, 9, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       if (r.ask === "time" && g.dial > 0 && (g.running || done) && simT >= g.dial) pill(api, ctx, "⏰", ycx - 30, 320, { color: C.volt, size: 38 });
       // givens
       const uv = `${r.unitD}/${r.unitT}`, given: [string, string][] = r.ask === "speed" ? [[T.distance, `${fmtNum(r.d)} ${r.unitD}`], [T.time, `${fmtNum(r.t)} ${r.unitT}`]] : r.ask === "time" ? [[T.distance, `${fmtNum(r.d)} ${r.unitD}`], [T.speed, `${+trainV.toFixed(2)} ${uv}`]] : [[T.speed, `${+trainV.toFixed(2)} ${uv}`], [T.time, `${fmtNum(r.t)} ${r.unitT}`]];
@@ -145,15 +146,15 @@ function create(api: EngineApi, spec: MotionSpec): EngineInstance {
       if (done) { const e = (g.dial - key) / key; pill(api, ctx, ok ? T.together : `${+key.toFixed(2)} ${unit}`, 415, 448, { color: ok ? C.mint : C.amber, size: 40 }); if (!ok) pill(api, ctx, (r.ask === "time" ? e < 0 : e > 0) ? T.early : T.late, 880, 470, { color: C.amber, size: 38 }); }
     } else {
       const end = r.pts[r.pts.length - 1][0], dMax = Math.max(...r.pts.map((p) => p[1])) * 1.25 || 10, gx = (t: number) => GR.x + (t / end) * GR.w, gy = (d: number) => GR.y + GR.h - (d / dMax) * GR.h;
-      ctx.save(); ctx.fillStyle = "rgba(10,14,22,.7)"; ctx.fillRect(GR.x, GR.y, GR.w, GR.h); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(GR.x, GR.y); ctx.lineTo(GR.x, GR.y + GR.h); ctx.lineTo(GR.x + GR.w, GR.y + GR.h); ctx.stroke();
-      ctx.strokeStyle = "rgba(255,255,255,.06)"; ctx.lineWidth = 1; for (let t = 1; t <= end; t++) { ctx.beginPath(); ctx.moveTo(gx(t), GR.y); ctx.lineTo(gx(t), GR.y + GR.h); ctx.stroke(); }
+      ctx.save(); ctx.fillStyle = withAlpha(C.motionGraph, .7); ctx.fillRect(GR.x, GR.y, GR.w, GR.h); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(GR.x, GR.y); ctx.lineTo(GR.x, GR.y + GR.h); ctx.lineTo(GR.x + GR.w, GR.y + GR.h); ctx.stroke();
+      ctx.strokeStyle = withAlpha(C.hi, .06); ctx.lineWidth = 1; for (let t = 1; t <= end; t++) { ctx.beginPath(); ctx.moveTo(gx(t), GR.y); ctx.lineTo(gx(t), GR.y + GR.h); ctx.stroke(); }
       ctx.strokeStyle = hexA(C.ion, 0.8); ctx.lineWidth = 10; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.globalAlpha = 0.45; ctx.beginPath(); r.pts.forEach(([t, d], i) => (i ? ctx.lineTo(gx(t), gy(d)) : ctx.moveTo(gx(t), gy(d)))); ctx.stroke(); ctx.globalAlpha = 1;
       ctx.strokeStyle = C.volt; ctx.lineWidth = 4; ctx.beginPath(); g.trace.forEach((d, i) => (i ? ctx.lineTo(gx(i * DRIVE_DT), gy(d)) : ctx.moveTo(gx(0), gy(d)))); if (g.driving) ctx.lineTo(gx(g.dT), gy(g.x)); ctx.stroke(); ctx.restore();
       api.text(ctx, T.distance, GR.x - 8, GR.y - 26, { font: "mono", size: 38, weight: 600, color: C.ink2, baseline: "middle" });
       api.text(ctx, `${T.time} →`, GR.x + GR.w, GR.y + GR.h + 30, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "right", baseline: "middle" });
       // the car on its road
-      const cx = 140 + (g.x / dMax) * 520; ctx.save(); ctx.fillStyle = "rgba(255,255,255,.06)"; ctx.fillRect(120, 560, 560, 40); ctx.fillStyle = C.volt; roundRect(ctx, cx - 26, 564, 52, 26, 8); ctx.fill(); ctx.restore();
-      ctx.save(); ctx.fillStyle = g.pedal ? "rgba(203,255,77,.22)" : "rgba(22,26,36,.95)"; roundRect(ctx, BTN.pedal.x, BTN.pedal.y, BTN.pedal.w, BTN.pedal.h, 22); ctx.fill(); ctx.strokeStyle = done ? C.line2 : C.volt; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
+      const cx = 140 + (g.x / dMax) * 520; ctx.save(); ctx.fillStyle = withAlpha(C.hi, .06); ctx.fillRect(120, 560, 560, 40); ctx.fillStyle = C.volt; roundRect(ctx, cx - 26, 564, 52, 26, 8); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.fillStyle = g.pedal ? withAlpha(C.volt, .22) : withAlpha(C.bg2, .95); roundRect(ctx, BTN.pedal.x, BTN.pedal.y, BTN.pedal.w, BTN.pedal.h, 22); ctx.fill(); ctx.strokeStyle = done ? C.line2 : C.volt; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
       textBlock(api, ctx, T.hold, BTN.pedal.x + BTN.pedal.w / 2, BTN.pedal.y + BTN.pedal.h / 2, BTN.pedal.w - 24, { font: "display", size: 38, weight: 800, color: done ? C.ink3 : C.volt }, 3);
       readout(ctx, T.speed, `${g.v.toFixed(1)} m/s`, 880, 220);
       if (done) pill(api, ctx, g.detail, 410, 150 + 380, { color: ok ? C.mint : C.amber, size: 38 });

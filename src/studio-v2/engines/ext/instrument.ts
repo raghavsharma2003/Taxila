@@ -12,6 +12,7 @@ import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, fmtNum, textBlock, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 
 const CARD = { x: 610, y: 168, w: 360, h: 130 }, BTN = { x: 700, y: 470, w: 230, h: 70 };
 /** Where the reveal's pills go per mode: left limit, and the first row (null: stacked under the target card; cut and clock:
@@ -119,14 +120,14 @@ function create(api: EngineApi, spec: InstrumentSpec): EngineInstance {
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     // the asked target (never the scale's own unit), below the host's HUD row / task pill when a two-line pill reaches it
     const cardY = Math.max(CARD.y, api.chromeBottom() + 10);
-    ctx.save(); ctx.fillStyle = "rgba(20,24,36,.96)"; roundRect(ctx, CARD.x, cardY, CARD.w, CARD.h, 20); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.7); ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.fillStyle = withAlpha(C.instrumentCard, .96); roundRect(ctx, CARD.x, cardY, CARD.w, CARD.h, 20); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.7); ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
     textBlock(api, ctx, showQty(r.mode, x.target, x.show, x.start), CARD.x + CARD.w / 2, cardY + CARD.h / 2, CARD.w - 30, { font: "display", size: 52, weight: 800 }, 2);
     if (r.mode === "pour") {
       // tap + stream
-      ctx.fillStyle = "#3A4256"; roundRect(ctx, JUG.x + 40, 120, 120, 26, 8); ctx.fill(); ctx.fillRect(JUG.x + 120, 146, 18, 24);
-      if (g.pouring) { ctx.fillStyle = "rgba(110,170,255,.8)"; ctx.fillRect(JUG.x + 123, 170, 12 * Math.min(1.6, 0.6 + g.holdT * 0.5), jugY(g.show) - 170); }
-      ctx.save(); ctx.beginPath(); ctx.rect(JUG.x, JUG.y, JUG.w, JUG.h); ctx.clip(); const ly = jugY(g.show); const gr = ctx.createLinearGradient(0, ly, 0, JUG.y + JUG.h); gr.addColorStop(0, "rgba(110,170,255,.75)"); gr.addColorStop(1, "rgba(40,90,190,.85)"); ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(JUG.x, ly + Math.sin(now * 6) * (g.pouring ? 4 : 1)); ctx.lineTo(JUG.x + JUG.w, ly - Math.sin(now * 6) * (g.pouring ? 4 : 1)); ctx.lineTo(JUG.x + JUG.w, JUG.y + JUG.h); ctx.lineTo(JUG.x, JUG.y + JUG.h); ctx.closePath(); ctx.fill(); ctx.restore();
-      ctx.strokeStyle = "rgba(220,230,255,.75)"; ctx.lineWidth = 4; ctx.strokeRect(JUG.x, JUG.y, JUG.w, JUG.h);
+      ctx.fillStyle = C.instrumentSpout; roundRect(ctx, JUG.x + 40, 120, 120, 26, 8); ctx.fill(); ctx.fillRect(JUG.x + 120, 146, 18, 24);
+      if (g.pouring) { ctx.fillStyle = withAlpha(C.instrumentWater, .8); ctx.fillRect(JUG.x + 123, 170, 12 * Math.min(1.6, 0.6 + g.holdT * 0.5), jugY(g.show) - 170); }
+      ctx.save(); ctx.beginPath(); ctx.rect(JUG.x, JUG.y, JUG.w, JUG.h); ctx.clip(); const ly = jugY(g.show); const gr = ctx.createLinearGradient(0, ly, 0, JUG.y + JUG.h); gr.addColorStop(0, withAlpha(C.instrumentWater, .75)); gr.addColorStop(1, withAlpha(C.instrumentWaterDeep, .85)); ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(JUG.x, ly + Math.sin(now * 6) * (g.pouring ? 4 : 1)); ctx.lineTo(JUG.x + JUG.w, ly - Math.sin(now * 6) * (g.pouring ? 4 : 1)); ctx.lineTo(JUG.x + JUG.w, JUG.y + JUG.h); ctx.lineTo(JUG.x, JUG.y + JUG.h); ctx.closePath(); ctx.fill(); ctx.restore();
+      ctx.strokeStyle = withAlpha(C.instrumentGlass, .75); ctx.lineWidth = 4; ctx.strokeRect(JUG.x, JUG.y, JUG.w, JUG.h);
       const major = r.minor * (r.scaleMax / r.minor > 20 ? 5 : 2);
       let top = 0;
       // numbers on every k-th major mark so neighbours never stack at the child's floor (as the ruler and thermometer;
@@ -137,48 +138,48 @@ function create(api: EngineApi, spec: InstrumentSpec): EngineInstance {
       api.text(ctx, "ml", JUG.x + JUG.w + 22 + api.measure(ctx, String(Math.round(top)), { font: "mono", size: 38, weight: 600 }), jugY(top), { font: "mono", size: 38, weight: 600, color: C.ink3, baseline: "middle" });
       if (!g.answered) api.text(ctx, T.hold, 790, 380, { font: "mono", size: 38, weight: 600, color: g.pouring ? C.volt : C.ink2, align: "center", baseline: "middle" });
       const can = g.level > 0 && !g.answered;
-      ctx.save(); ctx.fillStyle = can ? "rgba(203,255,77,.14)" : "rgba(255,255,255,.04)"; roundRect(ctx, BTN.x, BTN.y, BTN.w, BTN.h, 16); ctx.fill(); ctx.strokeStyle = can ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = can ? withAlpha(C.volt, .14) : withAlpha(C.hi, .04); roundRect(ctx, BTN.x, BTN.y, BTN.w, BTN.h, 16); ctx.fill(); ctx.strokeStyle = can ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
       api.text(ctx, T.set, BTN.x + BTN.w / 2, BTN.y + BTN.h / 2 + 2, { font: "display", size: 40, weight: 800, color: can ? C.volt : C.ink3, align: "center", baseline: "middle" });
     } else if (r.mode === "weigh") {
       const { cx, cy, L } = BAL, a = g.tilt;
-      ctx.save(); ctx.strokeStyle = C.ink2; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, 470); ctx.stroke(); ctx.fillStyle = "#2A3142"; roundRect(ctx, cx - 70, 470, 140, 20, 6); ctx.fill();
+      ctx.save(); ctx.strokeStyle = C.ink2; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, 470); ctx.stroke(); ctx.fillStyle = C.instrumentBase; roundRect(ctx, cx - 70, 470, 140, 20, 6); ctx.fill();
       ctx.translate(cx, cy); ctx.rotate(-a); ctx.strokeStyle = C.ink; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-L, 0); ctx.lineTo(L, 0); ctx.stroke(); ctx.restore();
       if (!g.released) { ctx.save(); ctx.fillStyle = C.amber; roundRect(ctx, cx - 14, cy - 34, 28, 22, 4); ctx.fill(); ctx.restore(); }
       const lx = cx - Math.cos(a) * L, ly = cy + Math.sin(a) * L, rx = cx + Math.cos(a) * L, ry = cy - Math.sin(a) * L;
-      for (const [px, py] of [[lx, ly], [rx, ry]] as [number, number][]) { ctx.strokeStyle = C.ink3; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px - 60, py + 90); ctx.moveTo(px, py); ctx.lineTo(px + 60, py + 90); ctx.stroke(); ctx.fillStyle = "#2A3142"; ctx.beginPath(); ctx.ellipse(px, py + 92, 74, 14, 0, 0, Math.PI * 2); ctx.fill(); }
-      ctx.save(); ctx.fillStyle = "#8A6A44"; roundRect(ctx, lx - 52, ly + 22, 104, 66, 8); ctx.fill(); ctx.strokeStyle = "#C9A46A"; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
-      g.pan.forEach((w, i) => { const s = w >= 500 ? 1 : w >= 100 ? 0.8 : 0.62, bx = rx - 50 + (i % 4) * 30, by = ry + 78 - Math.floor(i / 4) * 30; ctx.fillStyle = "#9AA3B5"; roundRect(ctx, bx - 14 * s, by - 26 * s, 28 * s, 26 * s, 4); ctx.fill(); });
-      for (const b of weightBox()) { ctx.save(); ctx.fillStyle = "rgba(24,28,38,.95)"; roundRect(ctx, b.x, b.y, TILE, 80, 12); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); api.text(ctx, b.w >= 1000 ? `${b.w / 1000}kg` : String(b.w), b.x + TILE / 2, b.y + 40, { font: "mono", size: 38, weight: 600, align: "center", baseline: "middle", maxWidth: TILE - 6 }); }
+      for (const [px, py] of [[lx, ly], [rx, ry]] as [number, number][]) { ctx.strokeStyle = C.ink3; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px - 60, py + 90); ctx.moveTo(px, py); ctx.lineTo(px + 60, py + 90); ctx.stroke(); ctx.fillStyle = C.instrumentBase; ctx.beginPath(); ctx.ellipse(px, py + 92, 74, 14, 0, 0, Math.PI * 2); ctx.fill(); }
+      ctx.save(); ctx.fillStyle = C.instrumentPan; roundRect(ctx, lx - 52, ly + 22, 104, 66, 8); ctx.fill(); ctx.strokeStyle = C.instrumentPanRim; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+      g.pan.forEach((w, i) => { const s = w >= 500 ? 1 : w >= 100 ? 0.8 : 0.62, bx = rx - 50 + (i % 4) * 30, by = ry + 78 - Math.floor(i / 4) * 30; ctx.fillStyle = C.instrumentWeight; roundRect(ctx, bx - 14 * s, by - 26 * s, 28 * s, 26 * s, 4); ctx.fill(); });
+      for (const b of weightBox()) { ctx.save(); ctx.fillStyle = withAlpha(C.instrumentTile, .95); roundRect(ctx, b.x, b.y, TILE, 80, 12); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); api.text(ctx, b.w >= 1000 ? `${b.w / 1000}kg` : String(b.w), b.x + TILE / 2, b.y + 40, { font: "mono", size: 38, weight: 600, align: "center", baseline: "middle", maxWidth: TILE - 6 }); }
       const can = g.pan.length > 0 && !g.answered;
       if (!g.answered) {   // spent once released: the reveal takes its place
-        ctx.save(); ctx.fillStyle = can ? "rgba(203,255,77,.14)" : "rgba(255,255,255,.04)"; roundRect(ctx, BTN.x, BTN.y - 160, BTN.w, BTN.h, 16); ctx.fill(); ctx.strokeStyle = can ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.fillStyle = can ? withAlpha(C.volt, .14) : withAlpha(C.hi, .04); roundRect(ctx, BTN.x, BTN.y - 160, BTN.w, BTN.h, 16); ctx.fill(); ctx.strokeStyle = can ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
         api.text(ctx, T.release, BTN.x + BTN.w / 2, BTN.y - 160 + BTN.h / 2 + 2, { font: "display", size: 40, weight: 800, color: can ? C.volt : C.ink3, align: "center", baseline: "middle" });
       }
     } else if (r.mode === "cut") {
-      ctx.fillStyle = "rgba(240,230,200,.95)"; roundRect(ctx, RUL.x0 - 10, RUL.y, RUL.x1 - RUL.x0 + 20, 70, 6); ctx.fill();
+      ctx.fillStyle = withAlpha(C.instrumentRuler, .95); roundRect(ctx, RUL.x0 - 10, RUL.y, RUL.x1 - RUL.x0 + 20, 70, 6); ctx.fill();
       const major = r.minor * (r.scaleMax / r.minor > 30 ? 10 : 5);
       // numbers on every k-th major tick so neighbours never touch at the child's floor, and kept on the ruler's face
       const lab = (v: number) => String(Math.round(v / (r.scaleMax >= 5000 ? 1000 : 10))), lo = { font: "mono", size: 38, weight: 600 } as const;
       const every = Math.max(1, Math.ceil((api.measure(ctx, lab(r.scaleMax), lo) + 18) / (rulX(major) - rulX(0))));
-      for (let v = 0; v <= r.scaleMax + 1e-6; v += r.minor) { const xx = rulX(v), big = Math.abs(v / major - Math.round(v / major)) < 1e-6; ctx.strokeStyle = "#1A1A1A"; ctx.lineWidth = big ? 3 : 1.5; ctx.beginPath(); ctx.moveTo(xx, RUL.y); ctx.lineTo(xx, RUL.y + (big ? 30 : 14)); ctx.stroke(); if (big && Math.round(v / major) % every === 0) { const hw = api.measure(ctx, lab(v), lo) / 2; api.text(ctx, lab(v), clamp(xx, RUL.x0 - 6 + hw, RUL.x1 + 6 - hw), RUL.y + 52, { ...lo, color: "#1A1A1A", align: "center", baseline: "middle" }); } }
+      for (let v = 0; v <= r.scaleMax + 1e-6; v += r.minor) { const xx = rulX(v), big = Math.abs(v / major - Math.round(v / major)) < 1e-6; ctx.strokeStyle = C.instrumentRulerInk; ctx.lineWidth = big ? 3 : 1.5; ctx.beginPath(); ctx.moveTo(xx, RUL.y); ctx.lineTo(xx, RUL.y + (big ? 30 : 14)); ctx.stroke(); if (big && Math.round(v / major) % every === 0) { const hw = api.measure(ctx, lab(v), lo) / 2; api.text(ctx, lab(v), clamp(xx, RUL.x0 - 6 + hw, RUL.x1 + 6 - hw), RUL.y + 52, { ...lo, color: C.instrumentRulerInk, align: "center", baseline: "middle" }); } }
       api.text(ctx, r.scaleMax >= 5000 ? "m" : "cm", RUL.x1 + 6, RUL.y - 24, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "right", baseline: "middle" });
       const len = g.cutAt >= 0 ? g.cutAt : g.ribbon, rx2 = rulX(len);
-      ctx.fillStyle = "#E0457B"; ctx.fillRect(RUL.x0, RUL.y - 34, rx2 - RUL.x0, 26); if (g.cutAt < 0) { ctx.fillStyle = "#3A4256"; ctx.beginPath(); ctx.arc(rx2 + 26, RUL.y - 21, 26, 0, Math.PI * 2); ctx.fill(); }
+      ctx.fillStyle = C.instrumentRibbon; ctx.fillRect(RUL.x0, RUL.y - 34, rx2 - RUL.x0, 26); if (g.cutAt < 0) { ctx.fillStyle = C.instrumentSpout; ctx.beginPath(); ctx.arc(rx2 + 26, RUL.y - 21, 26, 0, Math.PI * 2); ctx.fill(); }
       if (!g.answered) api.text(ctx, T.cut, 320, 300, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
     } else if (r.mode === "clock") {
-      ctx.save(); bloom(ctx, accent, CLK.x, CLK.y, CLK.r * 1.3, 0.2); ctx.fillStyle = "rgba(20,24,36,.98)"; ctx.beginPath(); ctx.arc(CLK.x, CLK.y, CLK.r, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.stroke(); ctx.restore();
+      ctx.save(); bloom(ctx, accent, CLK.x, CLK.y, CLK.r * 1.3, 0.2); ctx.fillStyle = withAlpha(C.instrumentCard, .98); ctx.beginPath(); ctx.arc(CLK.x, CLK.y, CLK.r, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.stroke(); ctx.restore();
       for (let i = 0; i < 60; i++) { const a = (i / 60) * Math.PI * 2 - Math.PI / 2, big = i % 5 === 0; ctx.strokeStyle = big ? C.ink : C.ink3; ctx.lineWidth = big ? 4 : 2; ctx.beginPath(); ctx.moveTo(CLK.x + Math.cos(a) * (CLK.r - (big ? 18 : 9)), CLK.y + Math.sin(a) * (CLK.r - (big ? 18 : 9))); ctx.lineTo(CLK.x + Math.cos(a) * (CLK.r - 3), CLK.y + Math.sin(a) * (CLK.r - 3)); ctx.stroke(); if (big) api.text(ctx, String(i / 5 || 12), CLK.x + Math.cos(a) * (CLK.r - 46), CLK.y + Math.sin(a) * (CLK.r - 46), { font: "display", size: 38, weight: 700, align: "center", baseline: "middle" }); }
       const mins = g.minutes, ma = ((mins % 60) / 60) * Math.PI * 2 - Math.PI / 2, ha = (((mins / 60) % 12) / 12) * Math.PI * 2 - Math.PI / 2;
       ctx.lineCap = "round"; ctx.strokeStyle = C.ink; ctx.lineWidth = 9; ctx.beginPath(); ctx.moveTo(CLK.x, CLK.y); ctx.lineTo(CLK.x + Math.cos(ha) * 80, CLK.y + Math.sin(ha) * 80); ctx.stroke();
       ctx.strokeStyle = g.dragging ? C.volt : accent; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(CLK.x, CLK.y); ctx.lineTo(CLK.x + Math.cos(ma) * 128, CLK.y + Math.sin(ma) * 128); ctx.stroke();
       ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(CLK.x, CLK.y, 9, 0, Math.PI * 2); ctx.fill();
-      for (const [bx, lab, on] of [[640, T.am, mins < 720], [800, T.pm, mins >= 720]] as [number, string, boolean][]) { ctx.save(); ctx.fillStyle = on ? hexA(accent, 0.2) : "rgba(22,26,36,.95)"; roundRect(ctx, bx, 340, 140, 70, 16); ctx.fill(); ctx.strokeStyle = on ? accent : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, lab, bx + 70, 377, { font: "display", size: 40, weight: 800, color: on ? C.ink : C.ink3, align: "center", baseline: "middle" }); }
+      for (const [bx, lab, on] of [[640, T.am, mins < 720], [800, T.pm, mins >= 720]] as [number, string, boolean][]) { ctx.save(); ctx.fillStyle = on ? hexA(accent, 0.2) : withAlpha(C.bg2, .95); roundRect(ctx, bx, 340, 140, 70, 16); ctx.fill(); ctx.strokeStyle = on ? accent : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, lab, bx + 70, 377, { font: "display", size: 40, weight: 800, color: on ? C.ink : C.ink3, align: "center", baseline: "middle" }); }
       if (!g.answered) {   // spent once answered: the reveal takes its place
-        ctx.save(); ctx.fillStyle = "rgba(203,255,77,.14)"; roundRect(ctx, BTN.x, BTN.y, BTN.w, BTN.h, 16); ctx.fill(); ctx.strokeStyle = C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.fillStyle = withAlpha(C.volt, .14); roundRect(ctx, BTN.x, BTN.y, BTN.w, BTN.h, 16); ctx.fill(); ctx.strokeStyle = C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
         api.text(ctx, T.set, BTN.x + BTN.w / 2, BTN.y + BTN.h / 2 + 2, { font: "display", size: 40, weight: 800, color: C.volt, align: "center", baseline: "middle" });
       }
     } else {
-      ctx.save(); ctx.fillStyle = "rgba(230,235,245,.12)"; roundRect(ctx, TH.x - 22, TH.y1 - 20, 44, TH.y0 - TH.y1 + 40, 22); ctx.fill(); ctx.strokeStyle = "rgba(230,235,245,.6)"; ctx.lineWidth = 3; ctx.stroke(); ctx.fillStyle = "#D9413B"; ctx.beginPath(); ctx.arc(TH.x, TH.y0 + 40, 32, 0, Math.PI * 2); ctx.fill(); ctx.fillRect(TH.x - 9, thY(g.temp), 18, TH.y0 + 20 - thY(g.temp)); ctx.restore();
+      ctx.save(); ctx.fillStyle = withAlpha(C.instrumentTube, .12); roundRect(ctx, TH.x - 22, TH.y1 - 20, 44, TH.y0 - TH.y1 + 40, 22); ctx.fill(); ctx.strokeStyle = withAlpha(C.instrumentTube, .6); ctx.lineWidth = 3; ctx.stroke(); ctx.fillStyle = C.instrumentMercury; ctx.beginPath(); ctx.arc(TH.x, TH.y0 + 40, 32, 0, Math.PI * 2); ctx.fill(); ctx.fillRect(TH.x - 9, thY(g.temp), 18, TH.y0 + 20 - thY(g.temp)); ctx.restore();
       const mn = tMin(), mx = tMax(), minor = r.minor, major = minor * 5;
       // numbers on every k-th major tick so neighbours never stack at the child's floor (as the ruler)
       const every = Math.max(1, Math.ceil((Math.max(38, api.minLabel) * 1.15) / Math.abs(thY(major) - thY(0))));

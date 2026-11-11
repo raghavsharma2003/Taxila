@@ -12,6 +12,7 @@ import { ExplainerShell } from "../core/explainer.ts";
 import type { TimelineConfig } from "../core/timeline.ts";
 import type { EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
 import { pill } from "../core/ui.ts";
+import { withAlpha } from "../../theme/palette.ts";
 
 const INIT: Record<string, number> = { "title.a": 0, "triangle.a": 0, "sum.a": 0, "tear": 0, "align": 0, "morph": 0, "cam.zoom": 1, "cam.x": 500, "cam.y": 360, "lbl.straight": 0 };
 const CFG: TimelineConfig = { init: INIT, showable: ["title", "triangle", "sum"], labels: ["straight"], verbs: { tear: { prop: "tear", key: "to", min: 0, max: 1 }, align: { prop: "align", key: "to", min: 0, max: 1 }, morph: { prop: "morph", key: "to", min: 0, max: 1, ease: "inOutSine" } } };
@@ -36,13 +37,13 @@ function create(api: EngineApi, spec: AngleSumSpec): EngineInstance {
   function wedge(ctx: Ctx, v: XY, d: number, s: number, col: string, r = WR, label?: string) {
     ctx.save(); ctx.fillStyle = col; ctx.globalAlpha *= 0.85;
     ctx.beginPath(); ctx.moveTo(v[0], v[1]); ctx.arc(v[0], v[1], r, -d * DEG, -(d + s) * DEG, true); ctx.closePath(); ctx.fill();
-    ctx.globalAlpha /= 0.85; ctx.strokeStyle = "rgba(255,255,255,.7)"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.globalAlpha /= 0.85; ctx.strokeStyle = withAlpha(C.hi, .7); ctx.lineWidth = 3; ctx.stroke();
     if (label) { const m = (d + s / 2) * DEG; api.text(ctx, label, v[0] + Math.cos(m) * (r + 34), v[1] - Math.sin(m) * (r + 34), { font: "mono", size: 38, weight: 700, color: col, align: "center", baseline: "middle" }); }
     ctx.restore();
   }
   function render(ctx: Ctx, now: number) {
-    ctx.fillStyle = "#0B0D14"; ctx.fillRect(0, 0, W, H);
-    ctx.strokeStyle = "rgba(255,255,255,.035)"; ctx.lineWidth = 1; for (let x = 40; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); } for (let y = 40; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    ctx.fillStyle = C.anglesumGround; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = withAlpha(C.hi, .035); ctx.lineWidth = 1; for (let x = 40; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); } for (let y = 40; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
     if (sh.interactive) { drawInteractive(ctx, now); return; }
     const z = V("cam.zoom"), tA = V("triangle.a"), tear = V("tear"), al = V("align"), mo = V("morph");
     const k = Math.sin(mo * Math.PI), a = lerp(spec.triangle[0], 28, k), b = lerp(spec.triangle[1], 74, k);
@@ -50,7 +51,7 @@ function create(api: EngineApi, spec: AngleSumSpec): EngineInstance {
     ctx.save(); ctx.translate(500, 360); ctx.scale(z, z); ctx.translate(-500, -360);
     if (tA > 0.01) {
       ctx.save(); ctx.globalAlpha = tA * (1 - 0.65 * Math.max(tear, al));
-      ctx.fillStyle = "rgba(139,152,255,.08)"; ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.lineJoin = "round";
+      ctx.fillStyle = withAlpha(C.ion, .08); ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.lineJoin = "round";
       ctx.beginPath(); ctx.moveTo(...pts[0]); ctx.lineTo(...pts[1]); ctx.lineTo(...pts[2]); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
       const cs = corners(pts), cen: XY = [(pts[0][0] + pts[1][0] + pts[2][0]) / 3, (pts[0][1] + pts[1][1] + pts[2][1]) / 3];
       // aligned targets on the straight line through P: B-wedge [0, b], C-wedge [b, b + c], A-wedge [b + c, 180]

@@ -10,6 +10,7 @@ import { sfx } from "../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
 import { dots } from "../core/dots.ts";
+import { withAlpha } from "../../theme/palette.ts";
 
 const L = 380, BH = 58, G0 = 520;
 interface Bar { wave: number; idx: number; cut?: number; parts?: number; label: string; x: number; y: number; vx: number; vy: number; rot: number; vr: number; cuts: number[]; done: boolean; t: number; a: number }
@@ -147,34 +148,34 @@ function create(api: EngineApi, spec: SliceSpec): EngineInstance {
     api.done({ sliced: g.results.length, right: g.results.filter((r) => r.verdict === "right").length, accuracy: accOf(g.results), best: g.best, toughest: worst?.label });
   }
   function paintBg(c: Ctx) {
-    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#0B0D16"); gr.addColorStop(1, "#141026");
+    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, C.sliceSkyTop); gr.addColorStop(1, C.sliceSkyBottom);
     c.fillStyle = gr; c.fillRect(0, 0, W, H);
-    const v = c.createRadialGradient(500, 260, 40, 500, 260, 640); v.addColorStop(0, "rgba(139,152,255,.13)"); v.addColorStop(1, "rgba(139,152,255,0)");
+    const v = c.createRadialGradient(500, 260, 40, 500, 260, 640); v.addColorStop(0, withAlpha(C.ion, .13)); v.addColorStop(1, withAlpha(C.ion, 0));
     c.fillStyle = v; c.fillRect(0, 0, W, H);
-    c.strokeStyle = "rgba(255,255,255,.035)"; c.lineWidth = 1;
+    c.strokeStyle = withAlpha(C.hi, .035); c.lineWidth = 1;
     for (let i = 0; i < 26; i++) { const y = 80 + i * 22; c.beginPath(); c.moveTo(0, y + Math.sin(i) * 4); c.bezierCurveTo(300, y - 10, 700, y + 14, W, y - 4); c.stroke(); }
   }
   function drawBarBody(ctx: Ctx, from: number, to: number, alpha: number, marks: number, color: string = C.ion) {
     const x0 = (from - 0.5) * L, x1 = (to - 0.5) * L;
     ctx.save(); ctx.globalAlpha *= alpha;
     bloom(ctx, color, (x0 + x1) / 2, 0, Math.max(60, (x1 - x0) * 0.7), 0.35);
-    const gr = ctx.createLinearGradient(0, -BH / 2, 0, BH / 2); gr.addColorStop(0, "rgba(190,200,255,.95)"); gr.addColorStop(0.45, "rgba(120,135,240,.85)"); gr.addColorStop(1, "rgba(60,70,170,.9)");
+    const gr = ctx.createLinearGradient(0, -BH / 2, 0, BH / 2); gr.addColorStop(0, withAlpha(C.sliceBarHi, .95)); gr.addColorStop(0.45, withAlpha(C.sliceBar, .85)); gr.addColorStop(1, withAlpha(C.sliceBarDeep, .9));
     ctx.fillStyle = gr; roundRect(ctx, x0, -BH / 2, x1 - x0, BH, from === 0 || to === 1 ? 14 : 3); ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,.55)"; ctx.lineWidth = 3; ctx.stroke();
-    ctx.fillStyle = "rgba(255,255,255,.35)"; ctx.fillRect(x0 + 6, -BH / 2 + 6, Math.max(0, x1 - x0 - 12), 5);
+    ctx.strokeStyle = withAlpha(C.hi, .55); ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = withAlpha(C.hi, .35); ctx.fillRect(x0 + 6, -BH / 2 + 6, Math.max(0, x1 - x0 - 12), 5);
     if (from === 0) { ctx.fillStyle = C.volt; roundRect(ctx, x0 - 2, -BH / 2 - 6, 10, BH + 12, 4); ctx.fill(); }     // the lit end: fractions count from here
-    if (marks > 1) { ctx.strokeStyle = "rgba(10,12,30,.55)"; ctx.lineWidth = 4; for (let k = 1; k < marks; k++) { const x = (k / marks - 0.5) * L; if (x <= x0 || x >= x1) continue; ctx.beginPath(); ctx.moveTo(x, -BH / 2 + 8); ctx.lineTo(x, BH / 2 - 8); ctx.stroke(); } }
+    if (marks > 1) { ctx.strokeStyle = withAlpha(C.sliceMark, .55); ctx.lineWidth = 4; for (let k = 1; k < marks; k++) { const x = (k / marks - 0.5) * L; if (x <= x0 || x >= x1) continue; ctx.beginPath(); ctx.moveTo(x, -BH / 2 + 8); ctx.lineTo(x, BH / 2 - 8); ctx.stroke(); } }
     ctx.restore();
   }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
-    if (g.focus > 0.02) { ctx.save(); ctx.globalAlpha = 0.35 * g.focus; ctx.fillStyle = "#05060C"; ctx.fillRect(0, 0, W, H); ctx.restore(); }
+    if (g.focus > 0.02) { ctx.save(); ctx.globalAlpha = 0.35 * g.focus; ctx.fillStyle = C.sliceFocus; ctx.fillRect(0, 0, W, H); ctx.restore(); }
     const fx = api.fx;
     ctx.save(); ctx.translate(fx.ox, fx.oy);
     for (const gh of g.ghosts) {
       const k = gh.t / gh.life, a = k < 0.1 ? k / 0.1 : k > 0.7 ? 1 - (k - 0.7) / 0.3 : 1;
       ctx.save(); ctx.translate(gh.x, gh.y); ctx.rotate(gh.rot); ctx.globalAlpha = a;
-      ctx.strokeStyle = "rgba(255,255,255,.22)"; ctx.setLineDash([8, 8]); ctx.lineWidth = 3; roundRect(ctx, -L / 2, -BH / 2, L, BH, 14); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = withAlpha(C.hi, .22); ctx.setLineDash([8, 8]); ctx.lineWidth = 3; roundRect(ctx, -L / 2, -BH / 2, L, BH, 14); ctx.stroke(); ctx.setLineDash([]);
       for (const t of gh.truth) { const x = (t - 0.5) * L; ctx.strokeStyle = gh.ok ? C.mint : C.ion; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(x, -BH / 2 - 22); ctx.lineTo(x, BH / 2 + 22); ctx.stroke(); }
       if (!gh.ok) for (const c of gh.got) { const x = (c - 0.5) * L; ctx.strokeStyle = C.amber; ctx.lineWidth = 4; ctx.setLineDash([6, 6]); ctx.beginPath(); ctx.moveTo(x, -BH / 2 - 14); ctx.lineTo(x, BH / 2 + 14); ctx.stroke(); ctx.setLineDash([]); }
       if (!gh.ok && gh.truth.length === 1 && gh.got.length) { const xt = (gh.truth[0] - 0.5) * L, xg = (gh.got[0] - 0.5) * L; ctx.strokeStyle = C.amber; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(xg, BH / 2 + 30); ctx.lineTo(xt, BH / 2 + 30); ctx.stroke(); magnifier(ctx, xt + (xt > xg ? 30 : -30), -BH / 2 - 40); }
@@ -194,7 +195,7 @@ function create(api: EngineApi, spec: SliceSpec): EngineInstance {
     }
     if (trail.length > 1) {
       ctx.save(); ctx.lineCap = "round"; ctx.lineJoin = "round";
-      for (let i = 1; i < trail.length; i++) { const k = 1 - trail[i].t / 0.16; ctx.strokeStyle = `rgba(203,255,77,${0.85 * k})`; ctx.lineWidth = 3 + 9 * k; ctx.beginPath(); ctx.moveTo(trail[i - 1].x, trail[i - 1].y); ctx.lineTo(trail[i].x, trail[i].y); ctx.stroke(); }
+      for (let i = 1; i < trail.length; i++) { const k = 1 - trail[i].t / 0.16; ctx.strokeStyle = withAlpha(C.volt, 0.85 * k); ctx.lineWidth = 3 + 9 * k; ctx.beginPath(); ctx.moveTo(trail[i - 1].x, trail[i - 1].y); ctx.lineTo(trail[i].x, trail[i].y); ctx.stroke(); }
       ctx.restore();
     }
     fx.drawWorld(ctx);
@@ -207,13 +208,13 @@ function create(api: EngineApi, spec: SliceSpec): EngineInstance {
     fx.drawScreen(ctx);
   }
   function drawCompare(ctx: Ctx, c: { a: number; labels: string[] }) {
-    ctx.save(); ctx.globalAlpha = c.a; ctx.fillStyle = "rgba(10,12,18,.72)"; ctx.fillRect(0, 0, W, H);
+    ctx.save(); ctx.globalAlpha = c.a; ctx.fillStyle = withAlpha(C.bg, .72); ctx.fillRect(0, 0, W, H);
     api.text(ctx, T.smaller.toUpperCase(), 500, 150, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", track: 5 });
     c.labels.forEach((lb, i) => {
       const f = parseFrac(lb); if (!f) return;
       const v = fracValue(f), y = 240 + i * 105, x0 = 300, w = 520 * v * ease.outCubic(clamp(c.a * 1.4 - i * 0.15, 0, 1));
       api.text(ctx, lb, 250, y + 4, { font: "display", size: 52, weight: 800, align: "right", baseline: "middle" });
-      ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.setLineDash([6, 8]); ctx.lineWidth = 2; roundRect(ctx, x0, y - 26, 520, 52, 10); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = withAlpha(C.hi, .18); ctx.setLineDash([6, 8]); ctx.lineWidth = 2; roundRect(ctx, x0, y - 26, 520, 52, 10); ctx.stroke(); ctx.setLineDash([]);
       ctx.fillStyle = C.ion; roundRect(ctx, x0, y - 26, Math.max(4, w), 52, 10); ctx.fill();
     });
     ctx.restore();

@@ -14,12 +14,13 @@ import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core
 import { RoundFlow, backdrop, devaReady, taskPill, textBlock, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
+import { rgbaOf, withAlpha } from "../../../theme/palette.ts";
 
 const BTN = { x: 800, y: 520, w: 170, h: 66 };
 const PX = { x0: 120, x1: 760, base: 540, top: 250 };
 const chip = (i: number) => ({ x: 775, y: 178 + i * 110, w: 210, h: 100 });
 function create(api: EngineApi, spec: LandSpec): EngineInstance {
-  const T = spec.strings, accent = "#7FD3A6";
+  const T = spec.strings, accent = C.landAccent;
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
   const botR = rng(api.seed * 181 + 19), setTask = taskPill(api);
   const g = { placed: [] as (number | null)[], drag: -1, dragXY: [0, 0] as [number, number], running: false, runT: 0, cells: [] as [number, number][], site: 0.5, trees: false, slide: false, judged: 0, answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0, results: [] as string[] };
@@ -89,7 +90,7 @@ function create(api: EngineApi, spec: LandSpec): EngineInstance {
   function finish() { g.running = true; g.answered = true; g.revealT = 0; const allRight = g.results.every((v) => v === "right"); g.verdict = allRight ? "right" : g.results.some((v) => v === "right") ? "partial" : "wrong"; if (allRight) api.fx.flash(C.mint, 0.1); }
   function paintBg(c: Ctx) { backdrop(c, accent, 181, 0); }
   function button(ctx: Ctx, b: { x: number; y: number; w: number; h: number }, label: string, on: boolean, now: number, col: string = C.volt) {
-    ctx.save(); ctx.fillStyle = on ? hexA(col, 0.14) : "rgba(22,26,36,.95)"; roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = on ? hexA(col, 0.7 + 0.3 * Math.sin(now * 4)) : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.fillStyle = on ? hexA(col, 0.14) : withAlpha(C.bg2, .95); roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = on ? hexA(col, 0.7 + 0.3 * Math.sin(now * 4)) : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
     textBlock(api, ctx, label, b.x + b.w / 2, b.y + b.h / 2 + 2, b.w - 16, { size: 38, weight: 700, color: on ? col : C.ink3 }, 2, 1.05);
   }
   function render(ctx: Ctx, now: number) {
@@ -98,19 +99,19 @@ function create(api: EngineApi, spec: LandSpec): EngineInstance {
     const r = rd(); if (!r) return; const done = g.answered, ok = g.verdict === "right";
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     if (r.mode === "rain") {
-      ctx.save(); ctx.fillStyle = "#1F5D8C"; ctx.fillRect(PX.x0, PX.base - 4, xOf(r.coast) - PX.x0, 64); ctx.fillStyle = "#5C7A46"; ctx.beginPath(); ctx.moveTo(xOf(r.coast), PX.base + 60); for (let i = 0; i <= 160; i++) { const f = r.coast + (i / 160) * (1 - r.coast); ctx.lineTo(xOf(f), rainY(r, f)); } ctx.lineTo(PX.x1, PX.base + 60); ctx.fill(); ctx.restore();
-      api.text(ctx, T.sea, (PX.x0 + xOf(r.coast)) / 2, PX.base + 30, { size: 38, weight: 700, color: "#CFE3FF", align: "center", baseline: "middle", maxWidth: xOf(r.coast) - PX.x0 });
+      ctx.save(); ctx.fillStyle = C.landSea; ctx.fillRect(PX.x0, PX.base - 4, xOf(r.coast) - PX.x0, 64); ctx.fillStyle = C.landGround; ctx.beginPath(); ctx.moveTo(xOf(r.coast), PX.base + 60); for (let i = 0; i <= 160; i++) { const f = r.coast + (i / 160) * (1 - r.coast); ctx.lineTo(xOf(f), rainY(r, f)); } ctx.lineTo(PX.x1, PX.base + 60); ctx.fill(); ctx.restore();
+      api.text(ctx, T.sea, (PX.x0 + xOf(r.coast)) / 2, PX.base + 30, { size: 38, weight: 700, color: C.landSeaLabel, align: "center", baseline: "middle", maxWidth: xOf(r.coast) - PX.x0 });
       ctx.save(); ctx.strokeStyle = C.ink2; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(140, 200); ctx.lineTo(250, 200); ctx.stroke(); ctx.fillStyle = C.ink2; ctx.beginPath(); ctx.moveTo(262, 200); ctx.lineTo(244, 190); ctx.lineTo(244, 210); ctx.fill(); ctx.restore();
       api.text(ctx, T.wind, 196, 236, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
       if (g.running || done) { // clouds march in and rain by the model
         const prof = rainProfile(r), front = clamp(g.runT / 2.4, 0, 1);
-        for (let i = 0; i < RAIN_N; i += 2) { const f = i / (RAIN_N - 1); if (f > front || f < r.coast) continue; const lvl = rainAt(r, f); if (lvl < 0.06) continue; const x = xOf(f), gy = rainY(r, f); ctx.save(); ctx.strokeStyle = `rgba(150,200,255,${0.25 + lvl * 0.7})`; ctx.lineWidth = 2; for (let k = 0; k < Math.round(lvl * 5); k++) { const yy = 200 + ((now * 260 + k * 47 + i * 13) % Math.max(20, gy - 200)); ctx.beginPath(); ctx.moveTo(x, yy); ctx.lineTo(x - 3, yy + 12); ctx.stroke(); } ctx.restore(); }
-        const cx = xOf(Math.min(front, 0.98)); ctx.save(); ctx.fillStyle = "rgba(220,228,240,.85)"; for (const [dx, dy, rr] of [[-30, 0, 26], [0, -12, 32], [30, 0, 26]]) { ctx.beginPath(); ctx.arc(cx + dx, 192 + dy, rr * (0.6 + 0.4 * (prof[Math.round(front * (RAIN_N - 1))] ? 1 : 0.6)), 0, Math.PI * 2); ctx.fill(); } ctx.restore();
+        for (let i = 0; i < RAIN_N; i += 2) { const f = i / (RAIN_N - 1); if (f > front || f < r.coast) continue; const lvl = rainAt(r, f); if (lvl < 0.06) continue; const x = xOf(f), gy = rainY(r, f); ctx.save(); ctx.strokeStyle = withAlpha(C.landRain, 0.25 + lvl * 0.7); ctx.lineWidth = 2; for (let k = 0; k < Math.round(lvl * 5); k++) { const yy = 200 + ((now * 260 + k * 47 + i * 13) % Math.max(20, gy - 200)); ctx.beginPath(); ctx.moveTo(x, yy); ctx.lineTo(x - 3, yy + 12); ctx.stroke(); } ctx.restore(); }
+        const cx = xOf(Math.min(front, 0.98)); ctx.save(); ctx.fillStyle = withAlpha(C.landCloud, .85); for (const [dx, dy, rr] of [[-30, 0, 26], [0, -12, 32], [30, 0, 26]]) { ctx.beginPath(); ctx.arc(cx + dx, 192 + dy, rr * (0.6 + 0.4 * (prof[Math.round(front * (RAIN_N - 1))] ? 1 : 0.6)), 0, Math.PI * 2); ctx.fill(); } ctx.restore();
       }
       r.asks.forEach((a, i) => {
         const c = chip(i), px = g.placed[i]; const dragging = g.drag === i;
-        ctx.save(); ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, c.x, c.y, c.w, c.h, 14); ctx.fill(); ctx.strokeStyle = a.need === "wet" ? "#6FB8FF" : C.sun; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
-        drawGlyph(ctx, a.glyph, c.x + 30, c.y + 34, 40, C.ink, hexA(accent, 0.3)); drawGlyph(ctx, a.need === "wet" ? "rain" : "sun", c.x + 30, c.y + 74, 30, a.need === "wet" ? "#6FB8FF" : C.sun, "rgba(0,0,0,0)");
+        ctx.save(); ctx.fillStyle = withAlpha(C.bg2, .95); roundRect(ctx, c.x, c.y, c.w, c.h, 14); ctx.fill(); ctx.strokeStyle = a.need === "wet" ? C.landWet : C.sun; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+        drawGlyph(ctx, a.glyph, c.x + 30, c.y + 34, 40, C.ink, hexA(accent, 0.3)); drawGlyph(ctx, a.need === "wet" ? "rain" : "sun", c.x + 30, c.y + 74, 30, a.need === "wet" ? C.landWet : C.sun, withAlpha(C.lo, 0));
         textBlock(api, ctx, a.label, c.x + 132, c.y + c.h / 2, 140, { size: 38, weight: 700, color: C.ink }, 2, 1.05);
         const at: [number, number] | null = dragging ? g.dragXY : px !== null ? [xOf(px), rainY(r, px) - 30] : null;
         if (at) { const res = done ? g.results[i] : ""; bloom(ctx, res === "right" ? C.mint : res ? C.amber : accent, at[0], at[1], 40, 0.5); drawGlyph(ctx, a.glyph, at[0], at[1], 52, C.ink, hexA(res === "right" ? C.mint : res ? C.amber : accent, 0.5)); }
@@ -118,28 +119,28 @@ function create(api: EngineApi, spec: LandSpec): EngineInstance {
       button(ctx, BTN, T.lock, !done && !g.running && g.placed.every((x) => x !== null), now);
     } else if (r.mode === "river") {
       const G = rgrid(r); let hmax = -1e9, hmin = 1e9; for (let y = 0; y < r.h; y++) for (let x = 0; x < r.w; x++) { const hh = heightAt(r, x, y); hmax = Math.max(hmax, hh); hmin = Math.min(hmin, hh); }
-      for (let y = 0; y < r.h; y++) for (let x = 0; x < r.w; x++) { const f = (heightAt(r, x, y) - hmin) / (hmax - hmin || 1); ctx.fillStyle = y === r.h - 1 ? "#1F5D8C" : f < 0.33 ? `rgb(${Math.round(lerp(70, 120, f * 3))},${Math.round(lerp(120, 140, f * 3))},70)` : f < 0.7 ? `rgb(${Math.round(lerp(140, 150, (f - 0.33) * 2.7))},${Math.round(lerp(130, 105, (f - 0.33) * 2.7))},${Math.round(lerp(75, 70, f))})` : `rgb(${Math.round(lerp(160, 235, (f - 0.7) * 3.3))},${Math.round(lerp(140, 230, (f - 0.7) * 3.3))},${Math.round(lerp(120, 225, (f - 0.7) * 3.3))})`; ctx.fillRect(G.x0 + x * G.cell, G.y0 + y * G.cell, G.cell + 0.5, G.cell + 0.5); }
-      api.text(ctx, T.sea, G.x0 + (r.w * G.cell) / 2, G.y0 + (r.h - 0.5) * G.cell, { size: 38, weight: 700, color: "#CFE3FF", align: "center", baseline: "middle" });
+      for (let y = 0; y < r.h; y++) for (let x = 0; x < r.w; x++) { const f = (heightAt(r, x, y) - hmin) / (hmax - hmin || 1); ctx.fillStyle = y === r.h - 1 ? C.landSea : f < 0.33 ? rgbaOf(Math.round(lerp(70, 120, f * 3)), Math.round(lerp(120, 140, f * 3)), 70) : f < 0.7 ? rgbaOf(Math.round(lerp(140, 150, (f - 0.33) * 2.7)), Math.round(lerp(130, 105, (f - 0.33) * 2.7)), Math.round(lerp(75, 70, f))) : rgbaOf(Math.round(lerp(160, 235, (f - 0.7) * 3.3)), Math.round(lerp(140, 230, (f - 0.7) * 3.3)), Math.round(lerp(120, 225, (f - 0.7) * 3.3))); ctx.fillRect(G.x0 + x * G.cell, G.y0 + y * G.cell, G.cell + 0.5, G.cell + 0.5); }
+      api.text(ctx, T.sea, G.x0 + (r.w * G.cell) / 2, G.y0 + (r.h - 0.5) * G.cell, { size: 38, weight: 700, color: C.landSeaLabel, align: "center", baseline: "middle" });
       ctx.save(); ctx.strokeStyle = C.volt; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.setLineDash([2, 12]); ctx.beginPath(); g.cells.forEach(([x, y], i) => { const px = G.x0 + (x + 0.5) * G.cell, py = G.y0 + (y + 0.5) * G.cell; if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); }); ctx.stroke(); ctx.restore();
-      if (g.running || done) { const path = riverPath(r) ?? [], n = Math.min(path.length, Math.floor(g.runT / 0.25) + 1); ctx.save(); ctx.strokeStyle = "#5FB8FF"; ctx.lineWidth = 12; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.globalAlpha = 0.85; ctx.beginPath(); path.slice(0, n).forEach(([x, y], i) => { const px = G.x0 + (x + 0.5) * G.cell, py = G.y0 + (y + 0.5) * G.cell; if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); }); ctx.stroke(); ctx.restore(); }
-      const [sx, sy] = r.spring; bloom(ctx, "#5FB8FF", G.x0 + (sx + 0.5) * G.cell, G.y0 + (sy + 0.5) * G.cell, 30, 0.7); drawGlyph(ctx, "drop", G.x0 + (sx + 0.5) * G.cell, G.y0 + (sy + 0.5) * G.cell, G.cell * 0.6, C.ink, "rgba(95,184,255,.6)");
-      api.text(ctx, T.high, 885, 230, { size: 38, weight: 700, color: "#E8E2D8", align: "center", baseline: "middle" }); ctx.save(); const lg = ctx.createLinearGradient(0, 260, 0, 400); lg.addColorStop(0, "#EBE6E1"); lg.addColorStop(0.4, "#968746"); lg.addColorStop(1, "#467846"); ctx.fillStyle = lg; ctx.fillRect(865, 260, 40, 140); ctx.restore(); api.text(ctx, T.low, 885, 430, { size: 38, weight: 700, color: "#7FB07F", align: "center", baseline: "middle" });
+      if (g.running || done) { const path = riverPath(r) ?? [], n = Math.min(path.length, Math.floor(g.runT / 0.25) + 1); ctx.save(); ctx.strokeStyle = C.landRiver; ctx.lineWidth = 12; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.globalAlpha = 0.85; ctx.beginPath(); path.slice(0, n).forEach(([x, y], i) => { const px = G.x0 + (x + 0.5) * G.cell, py = G.y0 + (y + 0.5) * G.cell; if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); }); ctx.stroke(); ctx.restore(); }
+      const [sx, sy] = r.spring; bloom(ctx, C.landRiver, G.x0 + (sx + 0.5) * G.cell, G.y0 + (sy + 0.5) * G.cell, 30, 0.7); drawGlyph(ctx, "drop", G.x0 + (sx + 0.5) * G.cell, G.y0 + (sy + 0.5) * G.cell, G.cell * 0.6, C.ink, withAlpha(C.landRiver, .6));
+      api.text(ctx, T.high, 885, 230, { size: 38, weight: 700, color: C.landHighLabel, align: "center", baseline: "middle" }); ctx.save(); const lg = ctx.createLinearGradient(0, 260, 0, 400); lg.addColorStop(0, C.landPeak); lg.addColorStop(0.4, C.landSlope); lg.addColorStop(1, C.landLowland); ctx.fillStyle = lg; ctx.fillRect(865, 260, 40, 140); ctx.restore(); api.text(ctx, T.low, 885, 430, { size: 38, weight: 700, color: C.landLowLabel, align: "center", baseline: "middle" });
       if (done) pill(api, ctx, g.detail, 440, 600, { color: ok ? C.mint : C.amber, size: 38 });
-      button(ctx, BTN, T.rain, !done && !g.running && g.cells.length > 1, now, "#5FB8FF");
+      button(ctx, BTN, T.rain, !done && !g.running && g.cells.length > 1, now, C.landRiver);
     } else {
       const n = r.profile.length - 1, sx = (i: number) => PX.x0 + (i / n) * (PX.x1 - PX.x0);
       const lvl = floodLevel(r, g.trees), shown = g.running || done ? Math.min(lvl, Math.min(...r.profile) + (lvl - Math.min(...r.profile)) * clamp(g.runT / 2.4, 0, 1)) : Math.min(...r.profile) + 0.3;
-      ctx.save(); ctx.fillStyle = "rgba(80,150,230,.55)"; ctx.fillRect(PX.x0, fy(shown), PX.x1 - PX.x0, PX.base - fy(shown) + 20); ctx.restore();
-      ctx.save(); ctx.fillStyle = "#6D5A3A"; ctx.beginPath(); ctx.moveTo(PX.x0, PX.base + 40); r.profile.forEach((m, i) => ctx.lineTo(sx(i), fy(m))); ctx.lineTo(PX.x1, PX.base + 40); ctx.fill(); ctx.restore();
-      if (g.trees) for (let i = 0; i <= n; i++) if (r.profile[i] > Math.min(...r.profile) + 1.5) drawGlyph(ctx, "tree", sx(i), fy(r.profile[i]) - 20, 40, "#2F5D2F", "rgba(80,160,80,.85)");
-      for (const m of [0, 4, 8, 12]) api.text(ctx, `${m} m`, PX.x0 - 8, fy(m), { font: "mono", size: 38, weight: 600, color: "rgba(255,255,255,.4)", align: "right", baseline: "middle", decor: true });
+      ctx.save(); ctx.fillStyle = withAlpha(C.landFlood, .55); ctx.fillRect(PX.x0, fy(shown), PX.x1 - PX.x0, PX.base - fy(shown) + 20); ctx.restore();
+      ctx.save(); ctx.fillStyle = C.landSoil; ctx.beginPath(); ctx.moveTo(PX.x0, PX.base + 40); r.profile.forEach((m, i) => ctx.lineTo(sx(i), fy(m))); ctx.lineTo(PX.x1, PX.base + 40); ctx.fill(); ctx.restore();
+      if (g.trees) for (let i = 0; i <= n; i++) if (r.profile[i] > Math.min(...r.profile) + 1.5) drawGlyph(ctx, "tree", sx(i), fy(r.profile[i]) - 20, 40, C.landTreeInk, withAlpha(C.landTree, .85));
+      for (const m of [0, 4, 8, 12]) api.text(ctx, `${m} m`, PX.x0 - 8, fy(m), { font: "mono", size: 38, weight: 600, color: withAlpha(C.hi, .4), align: "right", baseline: "middle", decor: true });
       const bx = xOf(g.site), by = fy(siteHeight(r, g.site)); bloom(ctx, done ? (ok ? C.mint : C.amber) : C.volt, bx, by - 30, 50, 0.4); drawGlyph(ctx, r.glyph, bx, by - 30, 58, C.ink, hexA(done ? (ok ? C.mint : C.amber) : C.volt, 0.5));
       api.text(ctx, r.label, clamp(bx, 200, 680), by - 86, { size: 38, weight: 700, color: C.ink, align: "center", baseline: "middle", maxWidth: 240 });
-      api.text(ctx, `${r.rain}`, 885, 230, { font: "display", size: 52, weight: 800, color: "#9FD0FF", align: "center", baseline: "middle" });
+      api.text(ctx, `${r.rain}`, 885, 230, { font: "display", size: 52, weight: 800, color: C.landRainNumber, align: "center", baseline: "middle" });
       textBlock(api, ctx, T.mm, 885, 292, 200, { size: 38, weight: 600, color: C.ink2 }, 2, 1.05);
       button(ctx, { x: 775, y: 390, w: 210, h: 90 }, `${g.trees ? "✓ " : ""}${T.trees}`, !done && !g.running, now, C.mint);
       if (done) pill(api, ctx, ok ? T.safe : T.flooded, 440, 200, { color: ok ? C.mint : C.amber, size: 40 });
-      button(ctx, BTN, T.storm, !done && !g.running, now, "#5FB8FF");
+      button(ctx, BTN, T.storm, !done && !g.running, now, C.landRiver);
     }
     if (done) { const [tx, ty] = r.mode === "rain" ? [720, 200] : r.mode === "river" ? [885, 480] : [885, 300]; if (ok) tick(ctx, tx, ty, C.mint, 1); else magnifier(ctx, tx - 5, ty, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
@@ -171,4 +172,4 @@ function create(api: EngineApi, spec: LandSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds.map((x) => x.sub || x.title).slice(0, 3), figure: { kind: "none" }, accent }),
   };
 }
-export const land: EngineDef<LandSpec> = { archetype: "land-lab@1", label: "Simulation · Land & Water Lab", accent: "#7FD3A6", create };
+export const land: EngineDef<LandSpec> = { archetype: "land-lab@1", label: "Simulation · Land & Water Lab", get accent() { return C.landAccent; }, create };
