@@ -223,8 +223,9 @@ test("c7 lines@1 under the S1 rule: the asked angle is '?' until her line states
 
 test("director9: the confirming VERDICT segment on the answered card's own board reveals the mark — ops, counts.marks and labels (offtopic-c5-ch02-t01 turn 13)", () => {
   const T = "c5-maths-ch02-t01", kit = kitOf(T);
-  const sc = JSON.parse(fs.readFileSync(`data/lesson-scripts/${T}.json`, "utf8"));
-  const rem = sc.skills[0].remediation.find((r) => r.targets.endsWith("m-not-numbers"));
+  // (the director9 turn's own card, pinned: the live then-card was re-authored by the reader pass on 2026-11-11 — it now asks
+  // whether {friend} is right that the first mark has no number — so this regression keeps the card the turn was played on)
+  const rem = { then: { key: "1/7 km", accept: ["1/7", "ek bata saat km", "one seventh km"], prompt: { hi: "Ab wahi 0 se 1 km ki sadak 7 barabar hisson mein hai. Khilona un 7 mein se pehle ke end par ruka. Kis number par hai?" } } };
   const answers = [rem.then.key, ...(rem.then.accept ?? [])].map(String);
   const card = { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, mark: 1 } };
   const cb = { scriptId: "s", beatId: "then:c5-maths-ch02-t01-m-not-numbers", kind: "check", ownBoard: true, answers };
@@ -296,8 +297,9 @@ test("director9 S3′ on the run path: every picture request of the run, with th
 
 test("director9 (Brain's replay of c5-t01 steady T21): a later page whose own take fails is dropped, not the whole turn — the verdict page's revealed 1/8 still reaches the screen", () => {
   const T = "c5-maths-ch02-t01", kit = kitOf(T);
-  const sc = JSON.parse(fs.readFileSync(`data/lesson-scripts/${T}.json`, "utf8"));
-  const rem = sc.skills[0].remediation.find((r) => r.targets.endsWith("m-not-numbers"));
+  // (the director9 turn's own card, pinned: the live then-card was re-authored by the reader pass on 2026-11-11 — it now asks
+  // whether {friend} is right that the first mark has no number — so this regression keeps the card the turn was played on)
+  const rem = { then: { key: "1/7 km", accept: ["1/7", "ek bata saat km", "one seventh km"], prompt: { hi: "Ab wahi 0 se 1 km ki sadak 7 barabar hisson mein hai. Khilona un 7 mein se pehle ke end par ruka. Kis number par hai?" } } };
   const answers = [rem.then.key, ...(rem.then.accept ?? [])].map(String);
   const card = { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, mark: 1 } };
   const e1 = { template: "fraction-line@1", params: { den: 2, from: 0, to: 1, marks: [{ num: 1, label: "1/2" }] } };

@@ -557,15 +557,15 @@
       "en": "1 km is 1000 m. Write 1000 m for every km."
      },
      "then": {
-      "prompt": { "hi": "Ek nahar 8 km lambi hai. Woh kitne metre lambi hai?", "en": "A canal is 8 km long. How many metres long is it?" },
-      "key": "8000 m",
-      "why": { "hi": "har km ke 1000 m, yaani 8 × 1000 = 8000", "en": "each km is 1000 m, so 8 × 1000 = 8000" },
-      "accept": ["8000", "aath hazaar", "eight thousand", "8000 metre"],
+      "prompt": { "hi": "Ek nahar 12 km lambi hai. Woh kitne metre lambi hai?", "en": "A canal is 12 km long. How many metres long is it?" },
+      "key": "12000 m",
+      "why": { "hi": "har km ke 1000 m, yaani 12 × 1000 = 12000", "en": "each km is 1000 m, so 12 × 1000 = 12000" },
+      "accept": ["12000", "12,000", "barah hazaar", "twelve thousand", "12000 metre"],
       "targets": "c5-maths-ch05-t01-m-km-100m",
-      "wrongIfMis": "800 m",
-      "board": { "template": "number-line-scale@1", "params": {"from": 0, "to": 8, "step": 1, "marks": [{"value": 8, "label": "nahar"}]} },
-      "simpler": { "hi": "Har km mein ek hazaar m hote hain. 8 km ke liye hazaar ko 8 baar lo.", "en": "Every km has a thousand m. For 8 km, take a thousand 8 times." },
-      "answerBoard": { "template": "number-line-scale@1", "params": {"from": 0, "to": 8, "step": 1, "marks": [{"value": 1, "label": "1000 m"}, {"value": 8, "label": "8000 m"}]} }
+      "wrongIfMis": "1200 m",
+      "board": { "template": "number-line-scale@1", "params": {"from": 0, "to": 12, "step": 2, "marks": [{"value": 12, "label": "nahar"}]} },
+      "simpler": { "hi": "Har km mein ek hazaar m hote hain. 12 km ke liye hazaar ko 12 baar lo.", "en": "Every km has a thousand m. For 12 km, take a thousand 12 times." },
+      "answerBoard": { "template": "number-line-scale@1", "params": {"from": 0, "to": 12, "step": 2, "marks": [{"value": 12, "label": "12000 m"}]} }
      }
     },
     {
@@ -836,16 +836,13 @@
       "en": "1 m is about one big stride. Walking 1 km takes about 12 minutes."
      },
      "then": {
-      "prompt": {
-       "hi": "Ek bijli ka khamba lagbhag 9 ooncha hai, par unit likhna reh gaya. Kaunsa unit sahi hai: cm, m ya km?",
-       "en": "An electric pole is about 9 tall, but the unit was left out. Which unit is right: cm, m or km?"
-      },
+      "prompt": { "hi": "{friend} ne likha: bijli ka khamba lagbhag 9 km ooncha hai. Kya km sahi unit hai? Agar nahi, toh kaunsa?", "en": "{friend} wrote: an electric pole is about 9 km tall. Is km the right unit? If not, which one is?" },
       "key": "m",
       "why": {
        "hi": "9 m lagbhag 9 lambe kadam hain, khambe jitna; 9 nakhoon bahut chhote aur 9 km bahut bada",
        "en": "9 m is about 9 long strides, pole-sized; 9 fingernails is far too small and 9 km far too big"
       },
-      "accept": ["m", "metre", "m mein", "metre mein", "9 m"],
+      "accept": ["m", "metre", "m mein", "metre mein", "9 m", "nahi, m", "no, m", "nahi, metre"],
       "targets": "c5-maths-ch05-t01-m-km-for-big",
       "wrongIfMis": "km",
       "board": {"template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}}},

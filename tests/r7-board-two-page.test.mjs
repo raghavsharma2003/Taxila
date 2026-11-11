@@ -13,8 +13,12 @@ import { onLineClock } from "../src/modules/whiteboard/lineClock.ts";
 
 const T = "c5-maths-ch02-t01";
 const kit = kitFromFile(getTopic(T));
-const sc = JSON.parse(fs.readFileSync(`data/lesson-scripts/${T}.json`, "utf8"));
-const rem = sc.skills[0].remediation[1];
+// (the director7 turn's own remediation, pinned: the live c5-t01 s1 whole-number-bias remediation was re-authored by Learning's
+// reader pass of 2026-11-11 — its say is now the general rule, so its own board is no longer drawn — and this test is about the
+// two-page turn itself, so it keeps the say and boards the turn was played on)
+const rem = { targets: "c5-maths-ch02-t01-m-whole-number-bias", board: { template: "fraction-line@1", params: { dens: [5, 6], from: 0, to: 1, marks: [[5, 5]] } },
+  say: { hi: "Ek hi line, 0 se 1. Upar 5 barabar tukde, neeche 6, aur dono milkar wahi ek poora. 6 bada number hai, par wahi poora zyada tukdon mein bata, toh neeche ka har tukda thoda chhota hai." },
+  then: { prompt: { hi: "Upar pehla mark 1/5 hai, neeche line 6 barabar tukdon mein. 1/6 kahaan aayega: 0 aur 1/5 ke beech, ya 1/5 ke baad?" }, board: { template: "fraction-line@1", params: { dens: [5, 6], from: 0, to: 1, marks: [[1, 5]] } }, key: "between 0 and 1/5" } };
 const say = rem.say.hi, then = rem.then.prompt.hi, line = `${say} ${then}`;
 const ask = (id, extra = {}) => ({ intent: { intentId: `${id}:wb:7`, lessonId: id, kind: "whiteboard", beat: "explain", style: { band: "B3" }, need: "explain",
   boardRef: rem.board, scriptBeat: { scriptId: "s", beatId: "rem:whole-number-bias", kind: "remediation" },

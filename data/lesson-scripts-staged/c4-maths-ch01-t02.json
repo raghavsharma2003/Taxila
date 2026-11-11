@@ -336,20 +336,11 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Ek kitaab ko ghumakar tircha rakha, ab woh diamond jaisi dikhti hai. {friend} ka kehna hai ki ab uske kone right angle nahi rahe. Kya yeh sahi hai?",
-      "en": "A book is turned and laid slanting, so now it looks like a diamond. {friend} says its corners are no longer right angles. Is that right?"
-     },
-     "key": "No",
-     "accept": [
-      "nahi",
-      "nahin",
-      "no",
-      "nahi, ab bhi right angle hain",
-      "no, they are still right angles"
-     ],
+     "prompt": { "hi": "Ek kitaab ko ghumakar tircha rakha, ab woh diamond jaisi dikhti hai. {friend} ka kehna hai ki uske kone ab bhi right angle hain. Kya yeh sahi hai?", "en": "A book is turned and laid slanting, so now it looks like a diamond. {friend} says its corners are still right angles. Is that right?" },
+     "key": "Yes",
+     "accept": ["haan", "han", "yes", "haan, ab bhi right angle hain", "yes, they are still right angles"],
      "targets": "c4-maths-ch01-t02-m-tilted-not-right",
-     "wrongIfMis": "Yes",
+     "wrongIfMis": "No",
      "board": {
       "template": "shape@1",
       "params": {
@@ -361,10 +352,7 @@
        ]
       }
      },
-     "why": {
-      "hi": "ghumaakar rakhne se kitaab ke kone nahi badalte, woh ab bhi right angle hain",
-      "en": "laying the book slanting does not change its corners; they are still right angles"
-     },
+     "why": { "hi": "ghumaakar rakhne se kitaab ke kone nahi badalte, woh ab bhi right angle hain, toh {friend} sahi hai", "en": "laying the book slanting does not change its corners; they are still right angles, so {friend} is right" },
      "simpler": { "hi": "Kitaab ghumane se sirf uski disha badalti hai. Ab socho, uske kone badle ya wahi rahe.", "en": "Turning the book only changes which way it faces. Now think whether its corners changed or stayed the same." },
      "answerBoard": {
       "template": "shape@1",
@@ -1087,22 +1075,10 @@
       "en": "Tie a 3 m rope to a peg, with chalk at the other end. Walk round keeping the rope tight, and every chalk mark comes 3 m from the peg. That is why this makes a true circle."
      },
      "ask": {
-      "prompt": {
-       "hi": "Is circle ke paas ek nishaan khoonte se 4 m door hai. Kya woh nishaan is circle par hai, haan ya nahi?",
-       "en": "Near this circle there is a mark 4 m from the peg. Is that mark on this circle, yes or no?"
-      },
-      "key": "No",
-      "accept": [
-       "nahi",
-       "nahin",
-       "no",
-       "nahi, woh 4 m door hai",
-       "no, it is 4 m away"
-      ],
-      "why": {
-       "hi": "is circle ka har nishaan khoonte se 3 m door hai, par woh nishaan 4 m door hai",
-       "en": "every mark of this circle is 3 m from the peg, but that mark is 4 m away"
-      },
+      "prompt": { "hi": "Zameen par ek nishaan khoonte se theek rassi ki lambai jitna door hai. Kya woh nishaan is circle par hai, haan ya nahi?", "en": "A mark on the ground is exactly one rope-length from the peg. Is that mark on this circle, yes or no?" },
+      "key": "Yes",
+      "accept": ["haan", "han", "yes", "haan, circle par hai", "yes, it is on the circle"],
+      "why": { "hi": "is circle ka har nishaan khoonte se rassi jitna, yaani 3 m, door hai; woh nishaan bhi utna hi door hai", "en": "every mark of this circle is one rope-length, 3 m, from the peg, and that mark is just as far" },
       "answerBoard": {
        "template": "measured@1",
        "params": {
@@ -1213,10 +1189,7 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Ek anda gol dikhta hai. Uske centre se kinaara ek taraf 3 cm aur doosri taraf 4 cm door hai. Kya anda circle hai?",
-      "en": "An egg looks round. From its centre the edge is 3 cm away on one side and 4 cm on the other. Is the egg a circle?"
-     },
+     "prompt": { "hi": "Ek ande ke centre se uske nukeele sire tak 4 cm hai, aur bagal ke kinaare tak 3 cm. Kya anda circle hai?", "en": "From an egg's centre to its pointed end is 4 cm, and to its side edge is 3 cm. Is the egg a circle?" },
      "key": "No",
      "accept": [
       "nahi",
@@ -1240,14 +1213,14 @@
     },
     {
      "id": "c2",
-     "prompt": { "hi": "{friend} ne haath se ek gol loop banaya aur centre se kinaare tak chaar baar naapa: 5 cm, 5 cm, 5 cm aur 6 cm. {friend} ka kehna hai ki teen naap 5 cm hain, toh loop circle hai. Kya yeh sahi hai?", "en": "{friend} drew a round loop by hand and measured from its centre to the edge four times: 5 cm, 5 cm, 5 cm and 6 cm. {friend} says three are 5 cm, so the loop is a circle. Is that right?" },
-     "key": "No",
-     "accept": ["nahi", "nahin", "no", "nahi, ek jagah 6 cm hai", "no, one place is 6 cm"],
+     "prompt": { "hi": "{friend} ka kehna hai ki circle mein centre se kinaare tak har naap ek jaisa hona chahiye, sirf zyaadatar naap nahi. Kya yeh sahi hai?", "en": "{friend} says that in a circle every measurement from the centre to the edge must be the same, not just most of them. Is that right?" },
+     "key": "Yes",
+     "accept": ["haan", "han", "yes", "haan, har naap ek jaisa", "yes, every one must be the same"],
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
-     "wrongIfMis": "Yes",
+     "wrongIfMis": "No",
      "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "circle"} },
-     "why": { "hi": "teen naap 5 cm par ek naap 6 cm; circle mein doori har taraf barabar hoti hai, toh loop circle nahi", "en": "three are 5 cm but one is 6 cm; a circle is equal everywhere, so the loop is not a circle" },
-     "simpler": { "hi": "Circle mein centre se doori har jagah ek jaisi rehti hai, sirf zyaadatar jagah nahi. Chaaron naap dhyaan se dekho.", "en": "In a circle the distance from the centre is the same everywhere, not just in most places. Look carefully at all four measurements." },
+     "why": { "hi": "circle ka har point centre se barabar door hota hai; ek naap bhi alag ho, toh woh circle nahi", "en": "every point of a circle is equally far from the centre; if even one measurement differs, it is not a circle" },
+     "simpler": { "hi": "Jis loop ka ek naap baaki naapon se alag ho, woh circle nahi hota. Ab {friend} ki baat se milao.", "en": "A loop where one measurement differs from the rest is not a circle. Now match that with what {friend} says." },
      "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "circle"} }
     },
     {
