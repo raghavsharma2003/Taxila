@@ -149,7 +149,7 @@
       "prompt": {
        "hi": "Ab isi sawaal mein neeche ka number badal do: 2567 + 1382. Kya ab ikai se dahai mein carry jaayega, haan ya nahi?",
        "en": "Now change the bottom number in this same sum: 2567 + 1382. Will a carry go from the ones to the tens now, yes or no?"
-      },
+      }, "board": { "template": "column-op@1", "params": { "a": 2567, "b": 1382, "op": "add", "hideResult": true } },
       "key": "No",
       "accept": [
        "nahi",
@@ -162,7 +162,7 @@
       "why": {
        "hi": "ikai mein 7 + 2 = 9 hai, jo 10 se kam hai",
        "en": "in the ones 7 + 2 = 9, which is less than 10"
-      }, "answerBoard": { "template": "column-op@1", "params": {"a": 2567, "b": 1385, "op": "add"} }
+      }, "answerBoard": { "template": "column-op@1", "params": {"a": 2567, "b": 1382, "op": "add"} }
      },
      "simpler": {
       "hi": "Sirf ikai ke ank jodo: 7 aur 2. Jod 10 ya usse zyada ho, tabhi carry aage jaata hai.",
@@ -222,7 +222,7 @@
     "problem": {
      "hi": "Ek school library mein 3568 kitaabein thi. Library ko 795 nayi kitaabein mili. Ab library mein kitni kitaabein hain?",
      "en": "A school library had 3568 books. It received 795 new books. How many books does the library have now?"
-    }, "simpler": { "hi": "3568 aur 795 ko jodna hai. Ekai se shuru karo.", "en": "We add 3568 and 795. Start with the ones." },
+    }, "simpler": { "hi": "3568 aur 795 ko jodna hai. Ikai se shuru karo.", "en": "We add 3568 and 795. Start with the ones." },
     "givens": [
      {
       "hi": "pehle 3568 kitaabein thi",
@@ -460,26 +460,14 @@
       "en": "In the ones, 2 is on top and 8 below. We always take the bottom from the top, and 8 cannot come out of 2. So borrow 1 ten: 4 tens become 3 and the ones become 12. 12 − 8 = 4, tens 3 − 1 = 2, hundreds 6 − 3 = 3. The answer is 324."
      },
      "ask": {
-      "prompt": {
-       "hi": "Isi tarah column mein 752 − 236 karo. Kitna bacha?",
-       "en": "In the same way, do 752 − 236 in columns. What is left?"
-      },
-      "key": "516",
-      "accept": [
-       "paanch sau solah",
-       "five hundred sixteen"
-      ],
+      "prompt": { "hi": "Isi tarah column mein 862 − 345 karo. Kitna bacha?", "en": "In the same way, do 862 − 345 in columns. What is left?" }, "board": { "template": "column-op@1", "params": { "a": 862, "b": 345, "op": "sub", "hideResult": true } },
+      "key": "517",
+      "accept": ["paanch sau satrah", "five hundred seventeen"],
       "targets": "c4-maths-ch07-t01-m-smaller-from-larger",
-      "wrongIfMis": "524",
-      "why": {
-       "hi": "ikai 12 − 6 = 6, dahai 4 − 3 = 1, sau 7 − 2 = 5: 516",
-       "en": "ones 12 − 6 = 6, tens 4 − 3 = 1, hundreds 7 − 2 = 5: 516"
-      }, "answerBoard": { "template": "column-op@1", "params": {"a": 642, "b": 318, "op": "sub"} }
+      "wrongIfMis": "523",
+      "why": { "hi": "ikai 12 − 5 = 7, dahai 5 − 4 = 1, sau 8 − 3 = 5: 517", "en": "ones 12 − 5 = 7, tens 5 − 4 = 1, hundreds 8 − 3 = 5: 517" }, "answerBoard": { "template": "column-op@1", "params": { "a": 862, "b": 345, "op": "sub" } }
      },
-     "simpler": {
-      "hi": "Ikai mein 2 mein se 6 nahi nikalta, toh dahai se 1 udhaar lo. Phir har ghar mein upar mein se neeche wala ghatao.",
-      "en": "In the ones, 6 cannot come out of 2, so borrow 1 from the tens. Then in each place take the bottom from the top."
-     }
+     "simpler": { "hi": "Ikai mein upar ka ank neeche wale se chhota hai, toh dahai se 1 udhaar lo. Phir har ghar mein upar mein se neeche wala ghatao.", "en": "In the ones, the top digit is smaller than the bottom one, so borrow 1 from the tens. Then in each place take the bottom from the top." }
     },
     {
      "id": "e2",
@@ -510,7 +498,7 @@
       "prompt": {
        "hi": "Isi tarah column mein 305 − 128 karo. Kitna bacha?",
        "en": "In the same way, do 305 − 128 in columns. What is left?"
-      },
+      }, "board": { "template": "column-op@1", "params": { "a": 305, "b": 128, "op": "sub", "hideResult": true } },
       "key": "177",
       "accept": [
        "ek sau sattattar",
@@ -521,7 +509,7 @@
       "why": {
        "hi": "ikai 15 − 8 = 7, dahai 9 − 2 = 7, sau 2 − 1 = 1: 177",
        "en": "ones 15 − 8 = 7, tens 9 − 2 = 7, hundreds 2 − 1 = 1: 177"
-      }, "answerBoard": { "template": "column-op@1", "params": {"a": 402, "b": 167, "op": "sub"} }
+      }, "answerBoard": { "template": "column-op@1", "params": {"a": 305, "b": 128, "op": "sub"} }
      },
      "simpler": {
       "hi": "Ikai mein upar wala 5 chhota hai, aur dahai 0 hai. Toh sau se udhaar lo: beech ka 0 9 ban jaata hai, aur ikai ko 10 milte hain.",
@@ -580,7 +568,7 @@
     "problem": {
      "hi": "Video game mein 5000 coins the. 1834 coins ka ek level liya. Kitne coins bache?",
      "en": "There were 5000 coins in a video game. A level costing 1834 coins was taken. How many coins are left?"
-    }, "simpler": { "hi": "5000 mein se 1834 ghatana hai. Ekai mein 0 hai, isliye udhaar lena padega.", "en": "We take 1834 from 5000. The ones digit is 0, so we will need to borrow." },
+    }, "simpler": { "hi": "5000 mein se 1834 ghatana hai. Ikai mein 0 hai, isliye udhaar lena padega.", "en": "We take 1834 from 5000. The ones digit is 0, so we will need to borrow." },
     "givens": [
      {
       "hi": "pehle 5000 coins the",
@@ -665,10 +653,7 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Isha ke paas ₹826 the. ₹459 ki kitaab kharidi gayi. Kitne rupaye bache?",
-      "en": "Isha had ₹826. A book costing ₹459 was bought. How many rupees are left?"
-     },
+     "prompt": { "hi": "Isha ke paas ₹826 the. Usne ₹459 ki kitaab kharidi. Kitne rupaye bache?", "en": "Isha had ₹826. She bought a book for ₹459. How many rupees are left?" },
      "key": "367",
      "accept": [
       "₹367",
@@ -702,10 +687,7 @@
     },
     {
      "id": "c2",
-     "prompt": {
-      "hi": "School mein 700 kursiyan thi. 264 kursiyan doosre hall mein bhej di. Kitni kursiyan bachi?",
-      "en": "A school had 700 chairs. 264 chairs were sent to another hall. How many chairs are left?"
-     },
+     "prompt": { "hi": "School mein 700 kursiyan thi. 264 kursiyan doosre hall mein bhej di gayin. Kitni kursiyan bachi?", "en": "A school had 700 chairs. 264 chairs were sent to another hall. How many chairs are left?" },
      "key": "436",
      "accept": [
       "436 kursiyan",
@@ -858,10 +840,7 @@
      },
      
      "then": {
-      "prompt": {
-       "hi": "Column mein 600 − 245 karo. Udhaar dene ke baad beech ka 0, 9 banta hai. Kitna bacha?",
-       "en": "Do 600 − 245 in columns. After lending, the middle 0 becomes 9. What is left?"
-      },
+      "prompt": { "hi": "Column mein 600 − 245 karo. Kitna bacha?", "en": "Do 600 − 245 in columns. What is left?" },
       "key": "355",
       "accept": [
        "teen sau pachpan",
@@ -871,10 +850,7 @@
       "wrongIfMis": "365",
       "board": { "template": "compare@1", "params": {"left": {"title": "600", "items": ["upar"]}, "right": {"title": "245", "items": ["neeche"]}} },
       "why": { "hi": "upar 600 aur neeche 245 hai; beech ka 0, 9 banta hai, toh 600 − 245 = 355", "en": "600 is on top and 245 below; the middle 0 becomes 9, so 600 − 245 = 355" },
-      "simpler": {
-       "hi": "Udhaar sau ke ghar se aata hai, aur beech ka 0 9 ban jaata hai. Ab har ghar mein upar mein se neeche wala ghatao.",
-       "en": "The borrow comes from the hundreds, and the middle 0 becomes 9. Now in each place take the bottom from the top."
-      }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "600", "items": ["upar"]}, "right": {"title": "245", "items": ["neeche"]}} }
+      "simpler": { "hi": "Udhaar sau ke ghar se aata hai, aur beech ka khaali dahai ka ghar bhi badalta hai. Ab har ghar mein upar mein se neeche wala ghatao.", "en": "The borrow comes from the hundreds, and the empty tens place in the middle changes too. Now in each place take the bottom from the top." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "600", "items": ["upar"]}, "right": {"title": "245", "items": ["neeche"]}} }
      }
     }
    ],
@@ -930,15 +906,9 @@
        }
       }
      },
-     "point": {
-      "hi": "Beech mein poora hai: ₹1200 ki cycle. Ek hissa ₹750 jama hai. Doosra hissa khaali hai, wahi humein nahi pata. Toh yahan poora pata hai aur ek hissa gayab hai.",
-      "en": "In the middle is the whole: a cycle for ₹1200. One part, ₹750, is saved. The other part is empty; that is what we do not know. So here the whole is known and one part is missing."
-     },
+     "point": { "hi": "Board par ek taraf poora hai: ₹1200 ki cycle. Doosri taraf hisse hain: ₹750 jama, aur ek khaali hissa, jo humein nahi pata. Toh yahan poora pata hai aur ek hissa gayab hai.", "en": "On the board, one side is the whole: a cycle for ₹1200. The other side has the parts: ₹750 saved, and an empty part we do not know. So here the whole is known and one part is missing." },
      "ask": {
-      "prompt": {
-       "hi": "Cycle ₹1200 ki hai aur ₹750 jama hain. Khaali hissa nikalne ke liye 1200 aur 750 ko jodoge ya ghatoge?",
-       "en": "The cycle costs ₹1200 and ₹750 is saved. To find the empty part, will you add or subtract 1200 and 750?"
-      },
+      "prompt": { "hi": "Cycle ₹1200 ki hai aur ₹750 jama hain. Khaali hissa nikalne ke liye 1200 aur 750 ko jodoge ya ghataoge?", "en": "The cycle costs ₹1200 and ₹750 is saved. To find the empty part, will you add or subtract 1200 and 750?" },
       "key": "ghatana",
       "accept": [
        "ghatao",
@@ -1025,29 +995,16 @@
       }
      ],
      "board": { "template": "compare@1", "params": {"left": {"title": "Poora", "items": ["₹1400 kit"]}, "right": {"title": "Hissa", "items": ["₹850 hain", "gayab hissa"]}} },
-     "point": {
-      "hi": "Cricket kit ka poora daam ₹1400 hai, aur tumhare paas ₹850 hain. Sawaal mein aur kitne aaya, par shabd se faisla nahi hota. Poora pata hai, ek hissa gayab hai, toh poora − hissa karna hai.",
-      "en": "The full price of the cricket kit is ₹1400, and you have ₹850. The question says how much more, but the word does not decide. The whole is known and a part is missing, so we do whole − part."
-     },
+     "point": { "hi": "Sawaal mein aur kitne aaye, toh bhi shabd se faisla nahi hota. Pehle dekho kya pata hai: agar poora pata hai aur ek hissa gayab hai, toh poora − hissa karna hai.", "en": "Even when the question says how much more, the word does not decide. First see what is known: if the whole is known and a part is missing, we do whole − part." },
      "ask": {
-      "prompt": {
-       "hi": "Cricket kit ₹1400 ki hai aur tumhare paas ₹850 hain. Aur kitne rupaye chahiye?",
-       "en": "The cricket kit costs ₹1400 and you have ₹850. How many more rupees do you need?"
-      },
-      "key": "550",
-      "accept": [
-       "₹550",
-       "550 rupaye",
-       "550 rupees"
-      ],
+      "prompt": { "hi": "Football ₹920 ka hai aur tumhare paas ₹645 hain. Aur kitne rupaye chahiye?", "en": "A football costs ₹920 and you have ₹645. How many more rupees do you need?" }, "board": { "template": "compare@1", "params": {"left": {"title": "Poora", "items": ["₹920 football"]}, "right": {"title": "Hissa", "items": ["₹645 hain", "gayab hissa"]}} },
+      "key": "275",
+      "accept": ["₹275", "275 rupaye", "275 rupees", "do sau pachattar", "two hundred seventy-five"],
       "targets": "c4-maths-ch07-t01-m-keyword-more-add",
-      "wrongIfMis": "2250",
-      "why": { "hi": "kit ka poora ₹1400 hai aur ₹850 hain, toh gayab hissa 1400 − 850 = 550", "en": "the kit's whole is ₹1400 and ₹850 is there, so the missing part is 1400 − 850 = 550" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Poora", "items": ["₹1400 kit"]}, "right": {"title": "Hissa", "items": ["₹850 hain", "gayab hissa"]}} }
+      "wrongIfMis": "1565",
+      "why": { "hi": "football ka poora daam ₹920 hai aur ₹645 hain, toh gayab hissa 920 − 645 = 275", "en": "the football's whole price is ₹920 and ₹645 is there, so the missing part is 920 − 645 = 275" }, "answerBoard": { "template": "compare@1", "params": { "left": {"title": "Poora", "items": ["₹920 football"]}, "right": {"title": "Hissa", "items": ["₹645 hain", "gayab hissa"]} } }
      },
-     "simpler": {
-      "hi": "Poora daam 1400 hai, aur tumhare paas ek hissa 850. Gayab hissa nikaalne ke liye 1400 mein se 850 ghatao.",
-      "en": "The whole price is 1400, and you have one part, 850. To find the missing part, take 850 away from 1400."
-     }
+     "simpler": { "hi": "Poora daam 920 hai, aur tumhare paas ek hissa 645. Gayab hissa nikaalne ke liye 920 mein se 645 ghatao.", "en": "The whole price is 920, and you have one part, 645. To find the missing part, take 645 away from 920." }
     }
    ],
    "workedExample": {
@@ -1181,7 +1138,7 @@
     },
     {
      "id": "c2",
-     "prompt": { "hi": "Library mein kul milakar 2400 kitaabein hain. Unme 1680 Hindi ki hain, baaki English ki. English ki kitni kitaabein hain?", "en": "A library has 2400 books altogether. 1680 of them are Hindi books, the rest are English. How many English books are there?" },
+     "prompt": { "hi": "Library mein kul milakar 2400 kitaabein hain. Unmein 1680 Hindi ki hain, baaki English ki. English ki kitni kitaabein hain?", "en": "A library has 2400 books altogether. 1680 of them are Hindi books, the rest are English. How many English books are there?" },
      "key": "720",
      "accept": ["720 kitaabein", "720 books"],
      "targets": "c4-maths-ch07-t01-m-keyword-more-add",

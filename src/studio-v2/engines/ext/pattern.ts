@@ -15,7 +15,6 @@ import { RoundFlow, backdrop, devaReady, taskPill, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
 
 const CHECK = { x: 800, y: 530, w: 170, h: 62 };
-const GRID = { x: 180, y: 190, c: 100 };
 const tray = (i: number) => ({ x: 790 + (i % 3) * 64, y: 190 + Math.floor(i / 3) * 70, w: 58, h: 58 });
 const PT = { x: 400, y: 390, L: 110 };
 const D2R = Math.PI / 180;
@@ -23,7 +22,9 @@ function create(api: EngineApi, spec: PatternSpec): EngineInstance {
   const T = spec.strings, accent = "#FFB547";
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
   const botR = rng(api.seed * 197 + 31), setTask = taskPill(api);
-  const g = { grid: [] as (number | null)[], pool: [] as (number | null)[], drag: -1, dragXY: [0, 0] as [number, number], cur: "", found: [] as string[], flash: "", flashT: 0, map: {} as Record<string, number>, shapes: [] as number[], answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0, plan: [] as number[], sol: null as number[] | null, slip: false };
+  // the magic grid steps down (≤ 32) below a two-line task pill (l1366y: the top row's cells sat under it)
+  const GRID = { x: 180, c: 100, get y() { return Math.max(190, Math.min(222, api.chromeBottom() + 6)); } };
+  const g = { grid: Array(9).fill(null) as (number | null)[], pool: [] as (number | null)[], drag: -1, dragXY: [0, 0] as [number, number], cur: "", found: [] as string[], flash: "", flashT: 0, map: {} as Record<string, number>, shapes: [] as number[], answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0, plan: [] as number[], sol: null as number[] | null, slip: false };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }]);
   const rd = (): PlRoundT => spec.rounds[Math.max(0, flow.round)];
   let r0 = 0;   // right answers before this round: the HUD counts the round in play
@@ -117,19 +118,19 @@ function create(api: EngineApi, spec: PatternSpec): EngineInstance {
       const lab = (v: number | null, x: number, y: number) => api.text(ctx, v === null ? "·" : String(v), x, y, { font: "mono", size: 38, weight: 700, color: v === S ? C.mint : v === null ? C.ink3 : C.ink2, align: "center", baseline: "middle" });
       LINES3.slice(0, 3).forEach((l, i) => lab(lineSum(l), GRID.x + 3 * GRID.c + 44, GRID.y + i * GRID.c + GRID.c / 2));
       LINES3.slice(3).forEach((l, i) => lab(lineSum(l), GRID.x + i * GRID.c + GRID.c / 2, GRID.y + 3 * GRID.c + 34));
-      if (r.diagonals) { lab(lineSum(DIAG3[0]), GRID.x + 3 * GRID.c + 44, GRID.y + 3 * GRID.c + 34); lab(lineSum(DIAG3[1]), GRID.x + 3 * GRID.c + 44, GRID.y - 26); }
+      if (r.diagonals) { lab(lineSum(DIAG3[0]), GRID.x + 3 * GRID.c + 44, GRID.y + 3 * GRID.c + 34); lab(lineSum(DIAG3[1]), GRID.x - 44, GRID.y + 3 * GRID.c + 34); }   // the anti-diagonal's other end (bottom-left): its top-right end sat under the task pill at l1366
       api.text(ctx, `${T.magic} ${S}`, 400, 590, { size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle", maxWidth: 560 });
       g.pool.forEach((v, i) => { if (v === null || i === g.drag) return; const b = tray(i); ctx.save(); ctx.fillStyle = "rgba(255,181,71,.16)"; roundRect(ctx, b.x, b.y, b.w, b.h, 10); ctx.fill(); ctx.strokeStyle = accent; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); api.text(ctx, String(v), b.x + b.w / 2, b.y + b.h / 2 + 2, { font: "display", size: 40, weight: 800, color: C.ink, align: "center", baseline: "middle" }); });
       if (g.drag >= 0) { const [x, y] = g.dragXY; bloom(ctx, accent, x, y, 40, 0.5); api.text(ctx, String(g.pool[g.drag]), x, y, { font: "display", size: 52, weight: 800, color: C.volt, align: "center", baseline: "middle" }); }
       btn(ctx, CHECK, T.check, !done && g.grid.every((v) => v !== null), now);
     } else if (r.mode === "rhythm") {
-      const unit = Math.min(64, 520 / r.beats), used = [...g.cur].reduce((a, c) => a + (c === "S" ? 1 : 2), 0);
-      ctx.save(); ctx.strokeStyle = C.line2; ctx.setLineDash([6, 6]); ctx.strokeRect(140, 190, r.beats * unit, 70); ctx.restore();
-      let x = 140; for (const c of g.cur) { const w = (c === "S" ? 1 : 2) * unit; ctx.save(); ctx.fillStyle = c === "S" ? "#5FA8FF" : accent; roundRect(ctx, x + 3, 194, w - 6, 62, 10); ctx.fill(); ctx.restore(); api.text(ctx, c === "S" ? "।" : "ऽ", x + w / 2, 226, { font: "display", size: 40, weight: 800, color: "#0B0E14", align: "center", baseline: "middle", decor: true }); x += w; }
-      api.text(ctx, `${used} / ${r.beats} ${T.beats}`, 140 + r.beats * unit + 20, 226, { font: "mono", size: 38, weight: 600, color: used === r.beats ? C.mint : C.ink2, baseline: "middle" });
-      g.found.forEach((s, i) => { const col = i % 4, row = Math.floor(i / 4), u = 16, bx = 140 + col * 160, by = 290 + row * 32; let xx = bx; for (const c of s) { const w = (c === "S" ? 1 : 2) * u; ctx.fillStyle = c === "S" ? "#5FA8FF" : accent; ctx.fillRect(xx + 1, by, w - 2, 22); xx += w; } });
+      const unit = Math.min(64, 520 / r.beats), used = [...g.cur].reduce((a, c) => a + (c === "S" ? 1 : 2), 0), dy = Math.min(60, Math.max(0, api.chromeBottom() + 8 - 190));   // the bar row and the found list step down below the task pill
+      ctx.save(); ctx.strokeStyle = C.line2; ctx.setLineDash([6, 6]); ctx.strokeRect(140, 190 + dy, r.beats * unit, 70); ctx.restore();
+      let x = 140; for (const c of g.cur) { const w = (c === "S" ? 1 : 2) * unit; ctx.save(); ctx.fillStyle = c === "S" ? "#5FA8FF" : accent; roundRect(ctx, x + 3, 194 + dy, w - 6, 62, 10); ctx.fill(); ctx.restore(); api.text(ctx, c === "S" ? "।" : "ऽ", x + w / 2, 226 + dy, { font: "display", size: 40, weight: 800, color: "#0B0E14", align: "center", baseline: "middle", decor: true }); x += w; }
+      api.text(ctx, `${used} / ${r.beats} ${T.beats}`, 140 + r.beats * unit + 20, 226 + dy, { font: "mono", size: 38, weight: 600, color: used === r.beats ? C.mint : C.ink2, baseline: "middle" });
+      g.found.forEach((s, i) => { const col = i % 4, row = Math.floor(i / 4), u = 16, bx = 140 + col * 160, by = 290 + dy + row * 32; let xx = bx; for (const c of s) { const w = (c === "S" ? 1 : 2) * u; ctx.fillStyle = c === "S" ? "#5FA8FF" : accent; ctx.fillRect(xx + 1, by, w - 2, 22); xx += w; } });
       btn(ctx, RB.S, `। ${T.short}`, !done && used + 1 <= r.beats, now, "#5FA8FF"); btn(ctx, RB.L, `ऽ ${T.long}`, !done && used + 2 <= r.beats, now, accent); btn(ctx, RB.X, T.clear, !done && g.cur.length > 0, now, C.ink2); btn(ctx, RB.A, T.add, !done && rhythmOk(r.beats, g.cur), now, C.mint);
-      api.text(ctx, `${g.found.length}`, 885, 260, { font: "display", size: 60, weight: 800, color: C.volt, align: "center", baseline: "middle" }); api.text(ctx, T.found, 885, 316, { size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
+      api.text(ctx, `${g.found.length}`, 885, 260 + dy, { font: "display", size: 60, weight: 800, color: C.volt, align: "center", baseline: "middle" }); api.text(ctx, T.found, 885, 316 + dy, { size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
       if (g.flashT > 0) pill(api, ctx, g.flash, 400, 570, { color: C.amber, size: 38 });
       btn(ctx, CHECK, T.check, !done && g.found.length > 0, now);
     } else if (r.mode === "cipher") {
@@ -142,12 +143,14 @@ function create(api: EngineApi, spec: PatternSpec): EngineInstance {
       let th = 0; g.shapes.forEach((n) => { polyAt(ctx, n, th, POLY_COL[n] ?? accent); th += interior(n); });
       const t = tileOk(r, g.shapes), over = t.sum > 360 + 1e-6;
       ctx.save(); ctx.strokeStyle = over ? C.amber : Math.abs(t.sum - 360) < 1e-6 ? C.mint : C.volt; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(PT.x, PT.y, 34, 0, -Math.min(360, t.sum) * D2R, true); ctx.stroke(); ctx.restore(); bloom(ctx, C.ink, PT.x, PT.y, 20, 0.5);
-      api.text(ctx, `${Math.round(t.sum)}° / 360°`, 400, 190, { font: "mono", size: 38, weight: 700, color: over ? C.amber : C.ink, align: "center", baseline: "middle" });
+      api.text(ctx, `${Math.round(t.sum)}° / 360°`, 400, Math.max(190, api.chromeBottom() + 8 + Math.max(38, api.minLabel) * 0.6), { font: "mono", size: 38, weight: 700, color: over ? C.amber : C.ink, align: "center", baseline: "middle" });
       (r.allowed as number[]).forEach((n, i) => { const b = palette(i); ctx.save(); ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, b.x, b.y, b.w, b.h, 12); ctx.fill(); ctx.strokeStyle = hexA(POLY_COL[n] ?? accent, 0.8); ctx.lineWidth = 2; ctx.stroke(); const cx = b.x + b.w / 2, cy = b.y + 40, R = 24; ctx.beginPath(); for (let k = 0; k < n; k++) { const a = -Math.PI / 2 + (k / n) * Math.PI * 2; if (k) ctx.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a)); else ctx.moveTo(cx + R * Math.cos(a), cy + R * Math.sin(a)); } ctx.closePath(); ctx.fillStyle = hexA(POLY_COL[n] ?? accent, 0.6); ctx.fill(); ctx.restore(); api.text(ctx, `${Math.round(interior(n))}°`, cx, b.y + 80, { size: 38, weight: 700, color: C.ink2, align: "center", baseline: "middle", maxWidth: b.w - 4 }); });
       btn(ctx, { x: 120, y: 560, w: 160, h: 50 }, "UNDO", !done && g.shapes.length > 0, now, C.ink2);
       btn(ctx, CHECK, T.check, !done && g.shapes.length >= 3, now);
     }
-    if (done) { pill(api, ctx, g.detail, 400, 160 + 0, { color: ok ? C.mint : C.amber, size: 38 }); if (ok) tick(ctx, 720, 590, C.mint, 1); else magnifier(ctx, 715, 590, C.amber, 1); }
+    // the result sits in the bench's free space, clear of the task pill (l1366) and the figure's own numbers: right of the
+    // grid / list / sum (the tray is empty once a check is allowed), or between UNDO and CHECK under the tiling
+    if (done) { const at = r.mode === "tile" ? [500, 585] : r.mode === "rhythm" ? [775, 400] : [775, 330]; pill(api, ctx, g.detail, at[0], at[1], { color: ok ? C.mint : C.amber, size: 38 }); if (ok) tick(ctx, 720, 590, C.mint, 1); else magnifier(ctx, 715, 590, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[tally(g.right - r0, 1), T.done]] });

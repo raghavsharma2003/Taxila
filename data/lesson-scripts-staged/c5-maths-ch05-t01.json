@@ -557,21 +557,15 @@
       "en": "1 km is 1000 m. Write 1000 m for every km."
      },
      "then": {
-      "prompt": {
-       "hi": "Ek nahar 6 km lambi hai. Woh kitne metre lambi hai?",
-       "en": "A canal is 6 km long. How many metres long is it?"
-      },
-      "key": "6000 m",
-      "why": {"hi": "har km ke 1000 m, yaani 6 × 1000 = 6000", "en": "each km is 1000 m, so 6 × 1000 = 6000"},
-      "accept": ["6000", "chhe hazaar", "six thousand", "6000 metre"],
+      "prompt": { "hi": "Ek nahar 8 km lambi hai. Woh kitne metre lambi hai?", "en": "A canal is 8 km long. How many metres long is it?" },
+      "key": "8000 m",
+      "why": { "hi": "har km ke 1000 m, yaani 8 × 1000 = 8000", "en": "each km is 1000 m, so 8 × 1000 = 8000" },
+      "accept": ["8000", "aath hazaar", "eight thousand", "8000 metre"],
       "targets": "c5-maths-ch05-t01-m-km-100m",
-      "wrongIfMis": "600 m",
-      "board": {"template": "number-line-scale@1", "params": {"from": 0, "to": 6, "step": 1, "marks": [{"value": 6, "label": "nahar"}]}},
-      "simpler": {
-       "hi": "Har km mein ek hazaar m hote hain. 6 km ke liye hazaar ko 6 baar lo.",
-       "en": "Every km has a thousand m. For 6 km, take a thousand 6 times."
-      },
-      "answerBoard": {"template": "number-line-scale@1", "params": {"from": 0, "to": 6, "step": 1, "marks": [{"value": 1, "label": "1000 m"}, {"value": 6, "label": "6000 m"}]}}
+      "wrongIfMis": "800 m",
+      "board": { "template": "number-line-scale@1", "params": {"from": 0, "to": 8, "step": 1, "marks": [{"value": 8, "label": "nahar"}]} },
+      "simpler": { "hi": "Har km mein ek hazaar m hote hain. 8 km ke liye hazaar ko 8 baar lo.", "en": "Every km has a thousand m. For 8 km, take a thousand 8 times." },
+      "answerBoard": { "template": "number-line-scale@1", "params": {"from": 0, "to": 8, "step": 1, "marks": [{"value": 1, "label": "1000 m"}, {"value": 8, "label": "8000 m"}]} }
      }
     },
     {
