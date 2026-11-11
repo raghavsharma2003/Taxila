@@ -96,3 +96,21 @@ test("workedClarify flags director20's worked-problem rows; every teacher row of
   const { cellAddressOf } = await import("../server/director/state.js");
   assert.equal(cellAddressOf(null, { event: "turn" }), null);
 });
+
+// Main on integration 51 (c5-t01 steady 96): the key's why said after code's frame with "line" and "mark" swapped for "rekha" and
+// "nishaan" passed as said whole. A why and a worked close are units, said word for word anywhere in the turn; their two forms are one
+// unit (a Hindi turn holds the English form's numbers), and a run another said string of the script holds is that string's
+const WHY_SCRIPT = { skills: [{ checks: [{ id: "c3", prompt: { hi: "{friend} kehta hai 3/4 do number hain. Kitne mark lagaoge?" },
+  why: { hi: "3/4 akela ek number hai, toh line par uski sirf ek jagah hai: 0 se 3 gap chalkar, wahi ek mark", en: "3/4 is a single number, so it has just one place on the line: 3 gaps on from 0, that one mark" } },
+  { id: "c4", prompt: { hi: "Parimap kitna hai?" }, why: { hi: "P se wapas P tak paanchon bhujayein: 8 + 5 + 7 + 6 + 3 = 29 m", en: "P back to P, all five sides: 8 + 5 + 7 + 6 + 3 = 29 m" },
+  simpler: { hi: "3/4 akela ek number hai, toh ek hi jagah." } }] }] };
+test("integration 51: authoredWhole flags a why said with words swapped, after code's frame", async () => {
+  const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const said = (text) => lessonFlags({ rows: [{ who: "teacher", text }], script: WHY_SCRIPT }).filter((x) => x.predicate === "authoredWhole").map((x) => x.why);
+  assert.equal(said("Bilkul sahi, kyunki 3/4 akela ek number hai, toh rekha par uski sirf ek jagah hai: 0 se 3 gap chalkar, wahi ek nishaan. Ab aage.").length, 1);
+  assert.deepEqual(said("Bilkul sahi, kyunki 3/4 akela ek number hai, toh line par uski sirf ek jagah hai: 0 se 3 gap chalkar, wahi ek mark. Ab aage."), []);
+  // (the simpler said whole holds the run "3/4 akela ek number hai": no start of the why)
+  assert.deepEqual(said("3/4 akela ek number hai, toh ek hi jagah."), []);
+  // (the English form's numbers in a Hindi turn said whole start nothing)
+  assert.deepEqual(said("Haan, sahi hai, kyunki P se wapas P tak paanchon bhujayein: 8 + 5 + 7 + 6 + 3 = 29 m. Aage chalo."), []);
+});

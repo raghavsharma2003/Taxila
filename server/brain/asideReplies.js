@@ -82,6 +82,11 @@ export function asideReplyLine({ said = "", topic = "", lang = "hinglish", n = 0
   return { line: p ? formOf(p, lang) : null, form: "plain" };
 }
 
+/** Every return question form, both languages, slots as written ("{aside}"): authored text code's word passes leave alone. */
+export function asideReturnForms() {
+  return Object.values(KINDS).flatMap((k) => (k.returns ?? []).flatMap((f) => [f?.hi, f?.en])).filter((x) => typeof x === "string" && x.trim());
+}
+
 /** Every form a reply may take, for the dry predicate: { word: [RegExp with a (word) group], plain: [string], sad: [string] }. */
 export function asideReplyForms() {
   const all = Object.values(KINDS);

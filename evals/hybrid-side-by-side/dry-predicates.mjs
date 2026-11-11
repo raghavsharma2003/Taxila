@@ -190,6 +190,26 @@ export const PREDICATES = {
     const recentT = [ctx.prevT, ctx.prevPrevT].filter(Boolean).map((t) => ` ${key(t.text)} `);
     for (const u of units) {
       if (T.includes(` ${u.whole} `)) continue;
+      if (u.inline) {
+        // (a run of five of its words or more in the turn, in its order — not numbers alone — and no form said whole: it was started
+        // and changed)
+        if (u.forms.some((f) => T.includes(` ${f} `))) continue;
+        // (a run another unit holds, said whole in this turn — a simpler, a card, another why — is that unit's)
+        // (any spoken string of the script counts, a slotted one by what filled its slot: "{friend} galat hai" said as "Zoya galat hai")
+        const own = new Set(u.forms);
+        const saidOther = [...units.filter((v) => v !== u).flatMap((v) => v.forms ?? [v.whole]).filter((f) => T.includes(` ${f} `)).map((f) => ` ${f} `),
+          ...scriptSaidIn(ctx, T).filter((f) => !own.has(f.trim()))];
+        let best = 0, of = 0;
+        for (const f of u.forms) {
+          const w = f.split(" ");
+          for (let a = 0; a < w.length; a++) for (let b = w.length; b - a > best && b - a >= 5; b--) {
+            const run = w.slice(a, b);
+            if (run.filter((x) => /\p{L}{2,}/u.test(x)).length >= 3 && T.includes(` ${run.join(" ")} `) && !saidOther.some((o) => o.includes(` ${run.join(" ")} `))) { best = b - a; of = w.length; break; }
+          }
+        }
+        if (best < 5) continue;
+        return `${u.where} not said word for word (${best} of ${of} words in one run)`;
+      }
       if (/ card$/.test(u.where) && recentT.some((t) => t.includes(` ${u.whole} `)) && u.sents.filter(said).every((x) => x === u.sents.at(-1))) continue;
       const hit = u.sents.filter(said);
       // (a sentence two units share, "Barfi ka kitna hissa khaya gaya?", proves neither was started; nor does a short generic one —
@@ -377,10 +397,40 @@ export function authoredUnits(script) {
     }
     for (const c of sk.checks ?? []) { add(`${S} ${c.id} card`, c.prompt); add(`${S} ${c.id} simpler`, c.simpler); }
     add(`${S} bridge`, sk.bridgeToNext);
+    // (main on integration 51, c5-t01 steady 96: the key's why said with "line" and "mark" swapped passed as said whole — a why and a
+    // worked close are units too, said after code's frame "Bilkul sahi, kyunki …", so word for word anywhere in the turn)
+    // (one unit for both its forms: a Hindi turn holds the English form's numbers, "8 5 7 6 3 29 m", and that is no start)
+    const close = (where, v) => { const n0 = out.length; add(where, v); const us = out.splice(n0); if (us.length) out.push({ ...us[0], inline: true, forms: us.map((u) => u.whole) }); };
+    for (const e of sk.explain ?? []) close(`${S} ${e.id} why`, e.ask?.why);
+    for (const m of sk.remediation ?? []) close(`${S} then ${m.targets} why`, m.then?.why);
+    if (we) { close(`${S} worked why`, we.why); close(`${S} worked close`, typeof we.answer === "object" ? we.answer : null); close(`${S} yourStep why`, we.yourStep?.why); }
+    for (const c of sk.checks ?? []) close(`${S} ${c.id} why`, c.why);
   }
   return out;
 }
 
+/** The script's spoken strings said in a turn's key text T (" … "), each as the stretch of T it covers (" … "): plain strings whole or
+ *  sentence by sentence, a slotted one ("{friend} kehta hai …") with its slot filled by one to three words. */
+function scriptSaidIn(ctx, T) {
+  const all = (ctx.scriptStrs ??= (() => {
+    const SKIP = new Set(["id", "itemId", "skillId", "beatId", "template", "params", "board", "answerBoard", "accept", "targets", "wrongIfMis", "key", "topicId", "scriptId", "ladder", "notes", "source", "version", "recordedRun", "match"]);
+    const out = new Set();
+    const walk = (o) => { if (typeof o === "string") { out.add(o); return; } if (Array.isArray(o)) { o.forEach(walk); return; } if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) if (!SKIP.has(k)) walk(v); };
+    walk(ctx.script ?? {});
+    return [...new Set([...out].flatMap((f) => [f, ...sentencesOf(f)]))].map((f) => {
+      const parts = f.split(/\{\w+\}/).map(key).filter(Boolean);
+      return parts.join(" ").split(" ").length >= 3 ? parts : null;
+    }).filter(Boolean);
+  })());
+  const out = [];
+  for (const parts of all) {
+    if (parts.length === 1) { if (T.includes(` ${parts[0]} `)) out.push(` ${parts[0]} `); continue; }
+    const re = new RegExp(` ${parts.map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("(?: \\S+){1,3} ")} `, "u");
+    const m = T.match(re);
+    if (m) out.push(m[0]);
+  }
+  return out;
+}
 /** The first twin pair in a turn, not a gloss ("line yaani rekha", "rekha, yaani line"): { e, h } or null. */
 function twinHit(text) {
   const t0 = String(text ?? "");
