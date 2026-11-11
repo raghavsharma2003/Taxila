@@ -50,7 +50,9 @@ const WORKED_FRAME_PART = { hinglish: ["Yeh hissa dekho.", "Isko dhyaan se dekho
 // (director9: "Chalo, aage badhein?" was asked and then ignored, whatever they said: closures end on a statement, never a question)
 // (v6.10 R7: SPLIT_ASK — "Ab aage chalte hain." after a closing split — is gone: nothing is appended after a bridge)
 // v6.1 R9: a teaching turn past its beat's one check-in ends on a statement
-const SPLIT_CARD = { hinglish: ["Ab isi par ek sawaal.", "Ab is par ek chhota sawaal.", "Ab ise ek sawaal se dekhte hain."], english: ["Now a question on this.", "Now a small question on this.", "Let's try a question on it."] };
+// (dc-r8-director20 S1: "Ab isi par ek sawaal." is said only with the card after it in the same turn — a turn whose card waits ends on
+// a check-in instead, BEAT_ASK: c5-t01 stuck 48, offtopic 8, steering 12, c6 stuck 62 said it and then nothing)
+
 const WORKED_GO = { hinglish: ["Ab agla kadam dekhte hain.", "Chalo, aage dekhte hain.", "Ab isse aage chalte hain."], english: ["Now the next step.", "Let's go on.", "Now we go on from here."] };
 /** v6.2: a check-in after teaching that is no worked step. */
 /** v6.8 A4: code's one-line acknowledgement of their reply to her aside question (never graded, never a verdict). */
@@ -1932,7 +1934,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       }
     }
     // round 7 (director2 c6 steering: "hindi mein batao" got the same line, no word that it was heard): the switch is said
-    if (state.lastMove?.request === "language" && kindNow !== "safeguard" && !/\b(?:hindi|english|angrezi)\b|हिंदी|हिन्दी/i.test(reply)) {
+    if (state.lastMove?.request === "language" && kindNow !== "safeguard" && !state.lastMove?.noLangAck && !/\b(?:hindi|english|angrezi)\b|हिंदी|हिन्दी/i.test(reply)) {
       reply = `${freshOf(jointsAt(kit, "hindiSwitch", lang, state) ?? LANG_ACK[lang === "english" ? "english" : "hindi"], state)} ${reply}`.trim(); guard.repaired = true;
     }
     // (director3: "Riya" in 8-9 of 11 lines) her name opens a line at most once in three turns
@@ -2005,7 +2007,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const framing = scripted && stepN && !remedy ? stepFrame : stepFrame ?? (first && !/[?？]/.test(first) && words(first) <= (remedy ? 15 : 30) && !foreignOf(first).length && !((remedy || scripted) && /\d/.test(first)) && !(scripted && RULE_SAID.test(first)) ? first.trim()
       : pickOf((remedy ? REMEDY_FRAME : whole ? WORKED_FRAME : WORKED_FRAME_PART)[lang === "english" ? "english" : "hinglish"], state));
     // (v6.1 R9: a scripted step's check-in only where state.js allowed one; else a statement)
-    const ask = item && ui?.ask?.itemId === item.id ? ui.ask.text : remedy && scripted ? freshOf(SPLIT_CARD[lang === "english" ? "english" : "hinglish"], state)
+    const ask = item && ui?.ask?.itemId === item.id ? ui.ask.text : remedy && scripted ? freshOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state)
       // (v6.9 R6: one step opener a turn — a step said under its label, or opening on its own step word, gets no "Ab agla kadam")
       : scripted && !state.lastMove?.checkinOk ? (stepFrame || opensFirst ? null : pickOf(WORKED_GO[lang === "english" ? "english" : "hinglish"], state)) : rotateOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state);
     // v3 K2: a remediation follows a graded wrong answer, and its board goes up on this turn, so the verdict is said first:
@@ -2483,20 +2485,20 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const STEP_LABEL = /^(?:Pehla kadam dekho|Ab (?:doosra|teesra|agla) kadam|First step|Now the (?:second|third|next) step)\.?$/i;
     const stepOpened = () => (body ?? []).some((x) => STEP_OPENER.test(String(x ?? "").trim()) || STEP_LABEL.test(String(x ?? "").trim())) || STEP_OPENER.test(String(workedLines?.[0] ?? "").trim());
     const goOn = () => (afterProblem ? null : state.lastMove?.checkinOk && !checkinLately ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state)
-      : afterRem ? freshOf(SPLIT_CARD[L0], state) : stepOpened() || kindNow !== "worked_example" ? null : freshOf(WORKED_GO[L0], state));
+      : afterRem ? freshOf(BEAT_ASK[L0], state) : stepOpened() || kindNow !== "worked_example" ? null : freshOf(WORKED_GO[L0], state));
     let tail = card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
       // (v6.10 R7, main on director18: "Ab aage chalte hain." was left hanging after every bridge — nothing is appended after a bridge;
       // after a give-up's key, a check-in)
       : state.lastMove?.splitClose ? (state.lastMove.gaveCheck ? rotateOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state) : null)
       // (v6.3 R2, main on director11: "Ab agla kadam dekhte hain." and then the same beat's card: the teaching half of a split turn
       // is followed by ITS card, so it says a question on this comes, never a next step)
-      : state.lastMove?.splitTeach ? (state.lastMove?.checkinOk ? goOn() : freshOf(SPLIT_CARD[lang === "english" ? "english" : "hinglish"], state)) : null);
+      : state.lastMove?.splitTeach ? (state.lastMove?.checkinOk ? goOn() : freshOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state)) : null);
     // (v6 R5: the first half of a split turn says the closures only: none of her own teaching)
     if (state.lastMove?.splitClose) body = [];
     // v6.4 Q1 (main, director12: "mujhe khud try karne do", "sawaal kya hai?", "phir se bolo", an unclear reply each got a recital
     // before the card): a turn that answered nothing re-poses ONLY the card — no teaching, no recap, none of her lines
     const NON_ANSWER = new Set(["selftry", "repeat", "unclear", "off_format", "which"]);
-    if (card && NON_ANSWER.has(String(state.lastMove?.request ?? "")) && !graded) { if (body.length) guard.reposeOnly = body.length; body = []; }
+    if (card && NON_ANSWER.has(String(state.lastMove?.request ?? "")) && !graded && !state.lastMove?.smaller) { if (body.length) guard.reposeOnly = body.length; body = []; }
     // v6.4 R3: a card said again word for word gets a frame ("Phir se dekho:"), never the same words with nothing new
     const prevHas = (c) => { const k = norm(c).toLowerCase(); return herPrev.includes(k) || (state.ctx?.lang === "hindi" && inHindiWords(herPrev).toLowerCase().includes(k)); };
     const codeLines = [];
@@ -2587,7 +2589,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     {
       const usedWhy = [];
       const keyW = (w) => String(w ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
-      const prevW = keyW(herPrev);
+      // (dc-r8-director20 L2: asked again after a key — "samajh nahi aaya", "pata nahi" — the why is the answer, said again by design)
+      const prevW = state.lastMove?.gaveCheck && state.lastMove?.smaller ? "" : keyW(herPrev);
       const once1 = (x) => {
         if (!x) return x;
         const m = /,\s*(?:kyunki|because)\s+([^.!?\u0964]+)([.!?\u0964]?)\s*$/iu.exec(x);
@@ -2666,6 +2669,23 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     if (asideQ && guard.reposeFrame) { body = body.filter((x) => !REPOSE_FRAME.test(x)); guard.reposeFrame = false; }
     if (asideQ) guard.asideEnd = true;
     if (asideQ && tail) { guard.cardHeld = true; tail = null; }
+    // S1 (dc-r8-director20, fault 7: the whole card said again after every hint — 23 times in c5-t01): with help said this turn (a
+    // simpler, a hint, a picture line, a miss's close) on a card said whole in one of her last two turns, she asks only its question —
+    // the card's own ask where Learning marked one, else its last sentence
+    if (tail && tail === card && kindNow !== "safeguard") {
+      const NON_ANSWER = new Set(["selftry", "repeat", "unclear", "off_format", "which"]);
+      const cardSs = sentences(card).map(norm).filter(Boolean);
+      const last2 = [...(state.recent ?? [])].filter((t) => t.who === "teacher").slice(-2).map((t) => norm(t.text).toLowerCase());
+      // (help: an authored simpler or hint, or a wrong answer's verdict — never a frame, a non-answer's re-pose or a picture turn, whose
+      // card keeps its own page, v6.5 P3)
+      const helped = (!!state.lastMove?.simpler || (graded && verdict === "not_yet")) && !guard.altOnly && !NON_ANSWER.has(String(state.lastMove?.request ?? "")) && state.lastMove?.request !== "visual";
+      const askMark = item?.scriptCheck?.ask ?? item?.scriptThen?.ask ?? item?.scriptAsk?.askLine ?? null;
+      const q = askMark ? norm(typeof askMark === "string" ? askMark : (lang === "english" ? askMark.en : askMark.hi) ?? "") : cardSs.at(-1);
+      if (cardSs.length >= 2 && q && helped && last2.some((t) => t.includes(norm(card).toLowerCase()))) {
+        tail = q; guard.cardQuestionOnly = true;
+        body = body.filter((x) => !REPOSE_FRAME.test(x));
+      }
+    }
     // P1 (dc-r8-director20: c4 offtopic 30, c5-t02 steady 50 — a return said with the next point or a worked step): a return is a turn
     // of its own. The close of the card just answered stays; the lesson's authored parts wait, and the walk says them first next turn
     // (guard.bodyHeld → the state's bodyUnsaid → that move's sayFirst)
@@ -2703,7 +2723,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         // (main, with Studio's seam: the neutral joint after an aside reply is an aside part — the board waits for her first unit part)
         ...body.map((x) => ({ part: guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
         // (v6.11 G2: a closing split's check-in is no unit part — the board up stays under it)
-        { part: tail && tail === card ? "card" : state.lastMove?.splitClose ? "aside" : "body", text: tail ?? "" },
+        { part: tail && (tail === card || guard.cardQuestionOnly) ? "card" : state.lastMove?.splitClose ? "aside" : "body", text: tail ?? "" },
         ...(asideQ ? [{ part: "aside", text: asideP.join(" ") }] : []),
       ]);
       if (joinParts(guard.lineParts) !== norm(reply)) guard.lineParts = alignParts(guard.lineParts, reply);
@@ -2721,7 +2741,12 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // v6.4 L1 (main, director12: c6 0/4, c5-t01 "Zaroor." and the same Hinglish): on a scripted turn the assembly is built from her
     // sentences, so code's switch acknowledgement (the repair above) never reached it — c4's 4/4 were her own words. A language
     // request's turn opens with code's acknowledgement in place of a bare filler of hers ("Zaroor.", "Theek hai.")
-    if (state.lastMove?.request === "language" && kindNow !== "safeguard") {
+    // (dc-r8-director20 L4: no promise of a change she cannot make — when what follows is the simpler she just said, no switch line)
+    if (state.lastMove?.request === "language" && kindNow !== "safeguard" && state.lastMove?.noLangAck) {
+      const ss0 = sentences(reply).map(norm).filter(Boolean);
+      const kept = ss0.filter((x) => !/(?<![\p{L}])(?:hindi|english|angrezi)\s+mein\s+(?:bol|samjha|keh)/iu.test(x) && !/^(?:zaroor|bilkul|theek\s+hai|achha|haan)[\s,!.]*$/i.test(x));
+      if (kept.length && kept.length < ss0.length) { reply = kept.join(" "); guard.langAckDropped = true; }
+    } else if (state.lastMove?.request === "language" && kindNow !== "safeguard") {
       const ss0 = sentences(reply).map(norm).filter(Boolean);
       const filler = (x) => /^(?:zaroor|bilkul|theek\s+hai|thik\s+hai|achha|acha|haan|okay|ok|sure)[\s,!.]*$/i.test(x);
       while (ss0.length > 1 && filler(ss0[0])) ss0.shift();

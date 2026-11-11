@@ -18,7 +18,7 @@ describe("r11: the public site in Volt night", () => {
   it("every public page is in K's own scope (.kx + Volt + night), not a palette of its own", () => {
     assert.match(site, /VOLT_NIGHT = \{ className: "kx sv", "data-klook": "volt", "data-ktheme": "night" \}/);
     assert.match(landing, /<div \{\.\.\.VOLT_NIGHT\}/, "the landing root");
-    assert.match(site, /export function SitePage[\s\S]*?<div \{\.\.\.VOLT_NIGHT\}>/, "every Public.tsx page goes through SitePage");
+    assert.match(site, /export function SitePage[\s\S]*?<div \{\.\.\.VOLT_NIGHT\}( \{\.\.\.siteTx\(\)\})?>/, "every Public.tsx page goes through SitePage");
     for (const f of ["../../ui-v3/kaksha/tokens.css", "../../ui-v3/kaksha/futurist.css", "../../ui-v3/kaksha/kaksha.css"]) assert.ok(site.includes(`import "${f}"`), f);
   });
   it("landing.css holds no colour literal and no font host: K's tokens or a color-mix of one", () => {

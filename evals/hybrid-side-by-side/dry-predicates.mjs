@@ -13,10 +13,12 @@ const low = (t) => norm(t).toLowerCase();
 const sentencesOf = (t) => norm(t).split(/(?<=[.!?।])\s+(?=\S)/).map((x) => x.trim()).filter(Boolean);
 const key = (t) => low(t).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
 const words = (t) => norm(t).split(" ").filter(Boolean).length;
-const cardIn = (r) => !!r?.card && low(r.text).includes(low(r.card).slice(0, 30));
+// (S1: a card re-asked by its question alone — its last sentence — is said too)
+const cardQ = (c) => sentencesOf(c).at(-1) ?? "";
+const cardIn = (r) => !!r?.card && (low(r.text).includes(low(r.card).slice(0, 30)) || (sentencesOf(r.card).length > 1 && low(r.text).endsWith(low(cardQ(r.card)))));
 
 const REPOSE = /^(?:Phir se dekho|Ek baar aur dekho|Ek baar phir dekho|Look again|One more look)\s*:/i;
-const KEY_SAID = /(?:is sawaal ka|iska|yahan|pichhle sawaal ka|woh wala:?) (?:sahi )?jawab|sahi jawab:|the answer (?:here )?(?:is|was)|iska jawab hai/i;
+const KEY_SAID = /(?:is sawaal ka|iska|yahan|pichhle sawaal ka|woh wala:?) (?:sahi )?jawab|sahi jawab:|the answer (?:here )?(?:is|was)|iska jawab hai|poora jawab:?|the full answer/i;
 const GIVE_UP = /\b(?:aap batao|aap hi batao|tum batao|batao na|nahi pata,? aap|pata nahi,? aap|give up|i give up|chhodo|nahi aata)\b/i;
 /** Any give-up: "pata nahi" bare, "mujhe nahi pata", "aap batao", "nahi aata"… (a request for the answer, or not knowing it). */
 const GIVE_UP_ANY = /(?<![\p{L}])(?:pata\s+nahi|nahi\s+pata|aap\s+(?:hi\s+)?batao|tum\s+batao|i\s+(?:don'?t|do\s+not)\s+know|give\s+up|chhodo|nahi\s+aata)(?![\p{L}])/iu;
@@ -24,6 +26,7 @@ const CLARIFY = /\b(?:samajh nahi aaya|samajh nahi aa raha|samjha nahi|samjhi na
 const CHECKIN = /(?:Yahan tak (?:theek|saaf) hai|Ab tak samajh aaya|Yeh hissa saaf hua|Yeh kadam (?:saaf hai|samajh aaya)|Does that make sense so far|Clear so far|All good so far|Is that (?:part|step) clear)\?\s*$/i;
 const RET_STOP = new Set(["maine", "mujhe", "mera", "meri", "mere", "aapko", "tumhe", "hain", "kyunki", "jab", "woh", "sabse", "lagti", "lagta", "with", "that", "this", "have", "when"]);
 const TASTE = /(?<![\p{L}])(?:mujhe\s+(?:bhi\s+)?\S+(?:\s+\S+)?\s+pasand|meri\s+favourite|mera\s+favourite|mujhe\s+(?:bhi\s+)?achha\s+lagta|i\s+(?:also\s+)?(?:love|like|enjoy)|my\s+favou?rite)/iu;
+const SPLIT_CARD_RE = /(?:Ab isi par ek sawaal|Ab is par ek chhota sawaal|Ab ise ek sawaal se dekhte hain|Now a question on this|Now a small question on this|Let's try a question on it)[.!]?/i;
 const JOINT_ONLY = /^(?:achha|theek hai|hmm,? achha|okay|alright|right|haan)[.!,]?$/i;
 /** English words and their Hindi twins: Learning's one list (data/lesson-twins.json, also read by scripts/lesson-scripts/check.mjs and
  *  by server/brain/say.js). Each side's forms longest first, so "number line" is tried before "line". */
@@ -116,6 +119,8 @@ export const PREDICATES = {
     const atCheckin = CHECKIN.test(norm(ctx.prevT.text)) || (KEY_SAID.test(ctx.prevT.text) && !cardIn(ctx.prevT)) || (!cardIn(ctx.prevT) && /rem:|then:/.test(String(ctx.prevT.beat ?? "")));
     // (main on director19: re-saying and then posing the card in the same turn is still answering the clarify with the card — the turn
     // re-says, ends on its check-in, and the card waits)
+    // (dc-r8-second-clarify-shows-not-rewords: the key and its why said twice after the first — a third ask may move on)
+    if (KEY_SAID.test(ctx.prevT.text) && ctx.prevPrevT && KEY_SAID.test(ctx.prevPrevT.text) && !cardIn(ctx.prevPrevT)) return null;
     return atCheckin && cardIn(r) ? "clarify at a check-in answered with a card" : null;
   },
   /** A planned in-turn board change the record does not draw; a board change under a joint word. */
@@ -176,8 +181,11 @@ export const PREDICATES = {
     const T = ` ${key(r.text)} `;
     const TS = sentencesOf(r.text).map(key);
     const said = (k) => TS.some((t) => t === k || t.endsWith(` ${k}`));
+    // (S1: a card said whole in one of her last two turns may be re-asked by its question alone)
+    const recentT = [ctx.prevT, ctx.prevPrevT].filter(Boolean).map((t) => ` ${key(t.text)} `);
     for (const u of units) {
       if (T.includes(` ${u.whole} `)) continue;
+      if (/ card$/.test(u.where) && recentT.some((t) => t.includes(` ${u.whole} `)) && u.sents.filter(said).every((x) => x === u.sents.at(-1))) continue;
       const hit = u.sents.filter(said);
       // (a sentence two units share, "Barfi ka kitna hissa khaya gaya?", proves neither was started)
       if (!hit.some((h) => !units.some((v) => v.whole !== u.whole && v.whole.includes(h)))) continue;
@@ -232,6 +240,66 @@ export const PREDICATES = {
     if (!q || r.j2 || /·/.test(ctx.prevRead ?? "") || /^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
     const first = (r.pageParts ?? [])[0]?.part;
     return !first || UNIT_PART.has(first) || first === "card" ? `her question after the AI line, "${sentencesOf(ctx.prevT.text).at(-1).slice(0, 50)}", not answered` : null;
+  },
+  /** L1 (dc-r8-director20): a give-up ("pata nahi", "aap batao") at a check-in is never read as yes and never moves to new material.
+   *  After a point or a remediation it gets that part's simpler and then the card; after a key, the why again and the check-in. */
+  giveUpCheckin(L, r, i, ctx) {
+    const p = ctx.prevT;
+    if (!p || !GIVE_UP_ANY.test(ctx.prevChild) || CLARIFY.test(ctx.prevChild) || cardIn(p) || !CHECKIN.test(norm(p.text))) return null;
+    if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
+    // (a second give-up after the key and its why were said again may move on)
+    if (KEY_SAID.test(p.text) && ctx.prevPrevT && KEY_SAID.test(ctx.prevPrevT.text) && !cardIn(ctx.prevPrevT)) return null;
+    if (/worked:step/.test(String(p.beat ?? ""))) {
+      if (ctx.prevPrevT && /worked:step/.test(String(ctx.prevPrevT.beat ?? "")) && ctx.prevPrevT.beat === p.beat) return null;
+      return (r.pageParts ?? []).some((x) => x.part === "simpler" || x.part === "body") && r.beat === p.beat ? null : "a give-up at a worked step's check-in moved on";
+    }
+    if (KEY_SAID.test(p.text)) {
+      if (cardIn(r)) return "a give-up after a key answered with a card";
+      return CHECKIN.test(norm(r.text)) ? null : "a give-up after a key not answered with its why and the check-in";
+    }
+    const simpler = (r.pageParts ?? []).some((x) => x.part === "simpler");
+    return simpler && cardIn(r) ? null : `a give-up at a check-in answered with ${simpler ? "no card" : cardIn(r) ? "the card and no simpler" : "neither the simpler nor the card"}`;
+  },
+  /** L3 (dc-r8-director20): a clarify or a give-up at the greeting gets the script's greetSimpler, then the hook. */
+  greetSimpler(L, r, i, ctx) {
+    if (!ctx.prevT || String(ctx.prevT.move?.kind ?? ctx.prevT.move ?? "") !== "greet" || !(CLARIFY.test(ctx.prevChild) || GIVE_UP_ANY.test(ctx.prevChild))) return null;
+    const g = [ctx.script?.greetSimpler?.hi, ctx.script?.greetSimpler?.en].filter(Boolean).map(key);
+    if (!g.length) return null;
+    return g.some((x) => key(r.text).startsWith(x)) ? null : "a clarify at the greeting not answered with greetSimpler first";
+  },
+  /** L4 (dc-r8-director20): a Hindi request on an explain card gets that point's simpler (the card's own ask.simpler where it has one)
+   *  and then the card's question; she says "Hindi mein bolti hoon" only when what follows is not what she just said. */
+  hindiCard(L, r, i, ctx) {
+    const p = ctx.prevT;
+    if (!p || !/·\s*language/.test(ctx.prevRead ?? "") || !cardIn(p) || !/:ask:e\d+$/.test(String(p.check?.itemId ?? ""))) return null;
+    if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
+    const simpler = (r.pageParts ?? []).some((x) => x.part === "simpler");
+    const q = sentencesOf(p.card ?? "").at(-1) ?? "";
+    if (!simpler) return "a Hindi request on a card answered with no simpler";
+    if (!low(r.text).includes(low(q).slice(0, 25))) return "a Hindi request on a card: the simpler, then no question";
+    const ack = sentencesOf(r.text).find((x) => /hindi mein/i.test(x));
+    const rest = low(r.text.replace(ack ?? "", "")).replace(low(p.card ?? ""), "");
+    return ack && low(p.text).includes(rest.trim().slice(0, 40)) ? `"${ack}" with nothing changed` : null;
+  },
+  /** S1 (dc-r8-director20): after a hint on a card said whole in one of her last two turns, she asks only its question (its last
+   *  sentence, or the card's ask) — the whole card said again is fault 7 (23 times in c5-t01). */
+  cardWholeAgain(L, r, i, ctx) {
+    // (a picture turn keeps its card whole on its own page, v6.5 P3: a hint is a simpler or a miss's close)
+    if (!cardIn(r) || (r.pageParts ?? []).some((x) => x.part === "alt") || !(r.pageParts ?? []).some((x) => x.part === "simpler" || x.part === "close")) return null;
+    const c = low(r.card ?? "");
+    if (sentencesOf(r.card ?? "").length < 2) return null;
+    const said = [ctx.prevT, ctx.prevPrevT].some((t) => t && low(t.text).includes(c));
+    return said && low(r.text).includes(c) ? "the whole card said again after a hint, said whole in her last two turns" : null;
+  },
+  /** S1: "Ab isi par ek sawaal." only when the card follows in the same turn. */
+  splitCardEmpty(L, r) {
+    return SPLIT_CARD_RE.test(r.text) && !cardIn(r) ? `"${norm(r.text).match(SPLIT_CARD_RE)[0]}" with no card after it` : null;
+  },
+  /** S1: no turn ends on a close with nothing for the child — a close is followed by the next part, a card or a check-in. */
+  bareClose(L, r) {
+    if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? "")) || cardIn(r) || /[?？]\s*$/.test(norm(r.text))) return null;
+    const last = (r.pageParts ?? []).at(-1)?.part;
+    return last === "close" || last === "closed" ? `the turn ends on a close: "${sentencesOf(r.text).at(-1)?.slice(0, 60)}"` : null;
   },
   /** A second clarify on one part (dc-r8-second-clarify-shows-not-rewords): the same authored line with the board shown, then the
    *  check-in — never the card, never the key. PENDING: reported, not gated, until the clarify column switch (C1 step 3). */
@@ -324,6 +392,7 @@ export function lessonFlags({ rows, script }) {
     for (const [name, f] of Object.entries(PREDICATES)) { const why = f({ rows }, r, i, ctx); if (why) out.push({ row: i, predicate: name, why, text: norm(r.text).slice(0, 140) }); }
     if (cardIn(r)) ctx.saidCards.add(low(r.card).slice(0, 40));
     if (r.check?.itemId) ctx.cardTurns[r.check.itemId] = (ctx.cardTurns[r.check.itemId] ?? 0) + 1;
+    ctx.prevPrevT = ctx.prevT;
     ctx.prevT = r;
   });
   return out;

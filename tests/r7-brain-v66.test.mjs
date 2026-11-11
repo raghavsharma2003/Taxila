@@ -140,7 +140,9 @@ describe("r7-brain-v66.test.mjs", () => {
         // (v6.8 B1‴: the live part is said again in words her LAST turn did not use — main's B1″ was "the simpler of the turn before")
         const recentT = (last.state.recent ?? []).filter((t) => t.who === "teacher").slice(-1).map((t) => norm(t.text).toLowerCase());
         const repeated = recentT.some((t) => t.includes(norm(lb.text).toLowerCase().slice(0, 60)));
-        if (repeated) { if (lm.simpler && recentT.some((t) => t.includes(norm(lm.simpler).toLowerCase().slice(0, 60)))) bad.push(`${tag}: said again word for word`); }
+        // (2026-11-11, dc-r8-director20 L4 reverses B1″ here: on a Hindi request over an open card the simpler is said even when her last
+        // turn said it — what may not come with it is the "Hindi mein bolti hoon" promise)
+        if (repeated) { if (lm.simpler && recentT.some((t) => t.includes(norm(lm.simpler).toLowerCase().slice(0, 60))) && /hindi mein/i.test(out.reply)) bad.push(`${tag}: said again word for word, under a promise of a change`); }
         else {
           if (lm.simpler !== lb.text) bad.push(`${tag}: the simpler is not the live beat's`);
           const head = norm(lb.text).split(" ").slice(0, 4).join(" ");

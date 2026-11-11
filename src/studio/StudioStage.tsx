@@ -25,7 +25,7 @@ import { rendererFor, type StudioStageEvent } from "./renderers.ts";
 import { StageMomentContext, type StageMoment } from "./stageContext.ts";
 import { lessonOfIntent, studioApi, useStudioSlot } from "./useStudio.ts";
 import { traceStage } from "../trace/lesson.ts";
-import { boardFrame, type BoardFrame } from "./boardView.ts";
+import { boardFrame, keepHeadClear, type BoardFrame } from "./boardView.ts";
 import { twinScript, type TwinLike } from "./twinBoard.ts";
 import { intoStage, readPipZone } from "./pipZone.ts";
 import { applyTransform, BOARD_FLOOR_PX, BOARD_FLOOR_PX_YOUNG, fitBoard, rememberTransform, transformFor } from "./boardFit.ts";
@@ -54,6 +54,9 @@ export const DEVICE_MIN_LABEL_PX = 14, DEVICE_MIN_TARGET_PX = 44;
 export const RAIL_PX = 112, RAIL_PX_YOUNG = 124;
 /** round 4 content: the beat card header (one row of 14 px chips; 16 px for classes 1-5, shared/play.ts FLOORS). */
 export const CARD_HEAD_PX = 34, CARD_HEAD_PX_YOUNG = 38;
+/** patch 008 (round 8 card, under a [data-tx] root): the head sits over the box's top-left corner; this is the corner
+ *  the drawing keeps clear (the chip and the beat dots, with room). */
+export const CARD_HEAD_W = 150, CARD_HEAD_W_YOUNG = 172;
 const SV2 = { world: 1000, label: 38, target: 130 };
 /** The corner control (44 px: the touch minimum at every band). */
 const CTRL = 44;
@@ -171,7 +174,20 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
   // round 4 content, the beat-by-beat board: a card header above a board that carries one (its height comes off the box)
   const card = ((given0?.kind === "whiteboard" ? (given0 as Extract<StudioArtifact, { kind: "whiteboard" }>).script : null) as { card?: BeatCard } | null)?.card ?? null;
   const headPx = card ? (young ? CARD_HEAD_PX_YOUNG : CARD_HEAD_PX) : 0;
-  const avail = useMemo(() => (area && headPx ? { w: area.w, h: Math.max(1, area.h - headPx) } : area), [area, headPx]);
+  // patch 008: under a round 8 root ([data-tx]) the head folds into the box's top-left corner and the box takes the whole
+  // slot; elsewhere it sits above the box, as before
+  const [r8, setR8] = useState(false);
+  useEffect(() => { setR8(!!ref.current?.closest("[data-tx]")); }, []);
+  const fold = r8 && !!card;
+  const headW = young ? CARD_HEAD_W_YOUNG : CARD_HEAD_W;
+  const avail = useMemo(() => (area && headPx && !fold ? { w: area.w, h: Math.max(1, area.h - headPx) } : area), [area, headPx, fold]);
+  /** The frame a board is shown through: its content (any gain under a round 8 card), kept clear of a folded head. */
+  const frameFor = useCallback((sc: unknown, box: { w: number; h: number } | null): BoardFrame => {
+    const f0 = boardFrame(sc as never, { minGain: fold ? 1 : 1.08 });
+    if (!fold || !box) return f0;
+    const b = boxFor(box, { w: f0.w, h: f0.h }, 0, null);
+    return keepHeadClear(sc as never, f0, b.w, headW, headPx);
+  }, [fold, headW, headPx]);
   useEffect(() => {
     if (!twinFor || !avail) return;
     const at = twinArea.current;
@@ -199,7 +215,7 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
         const t = transformFor(sc);
         if (t) out = { ...shown0, stage: { w: t.w, h: t.h }, script: applyTransform(sc, t) };
       } else {
-        const fr = boardFrame(sc as never);
+        const fr = frameFor(sc, avail);
         const inset = insetFor(avail.w);
         const r = fitBoard(sc, { w: avail.w - 2 * inset, h: avail.h - 2 * inset }, fr.framed ? { w: fr.w, h: fr.h } : sc.board, young ? BOARD_FLOOR_PX_YOUNG : BOARD_FLOOR_PX);
         rememberTransform(sc, r.t);
@@ -208,11 +224,11 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
     } catch { out = shown0; }
     fitted.current = { src: shown0, out, area: { w: avail.w, h: avail.h } };
     return out;
-  }, [shown0, avail, young]);
+  }, [shown0, avail, young, frameFor]);
   // a board is drawn only once its layout for this box is decided (no first frame at the wrong size)
   const boardPending = shown0?.kind === "whiteboard" && !avail;
   // round 3 forge: the stage frames a whiteboard's drawn content (boardView.ts), never the empty slate around it
-  const frame: BoardFrame | null = useMemo(() => (artifact?.kind === "whiteboard" ? boardFrame(artifact.script as never) : null), [artifact]);
+  const frame: BoardFrame | null = useMemo(() => (artifact?.kind === "whiteboard" ? frameFor(artifact.script, avail) : null), [artifact, frameFor, avail]);
   // a play piece lays its world out FOR the box it is given (play DESIGN §7): it gets the whole tray, not a fixed aspect
   // (a passage, round 7 PASSAGE.md: reading matter laid out in real text for the box — the whole tray, never a scaled design)
   const playFill = ((artifact?.kind as string) === "play" || artifact?.kind === "passage") && !!avail;
@@ -333,7 +349,8 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
     <div ref={ref} className={`st-stage${reducedMotion ? " is-still" : ""}`} data-testid="studio-stage" data-state={state} data-phase={phase} data-kind={artifact?.kind}
       data-legible={twin ? "twin" : undefined} data-framed={frame?.framed ? "1" : undefined} data-young={young ? "1" : undefined}>
       {card && fit && (
-        <div className="st-cardhead" data-testid="beat-card" data-kind={card.kind} style={{ left: fit.x, top: fit.y + 2, width: fit.w, height: headPx - 6 }}>
+        <div className={`st-cardhead${fold ? " is-folded" : ""}`} data-testid="beat-card" data-kind={card.kind}
+          style={fold ? { left: fit.x + 6, top: fit.y + 6, maxWidth: Math.min(fit.w - 12, headW), height: headPx - 8 } : { left: fit.x, top: fit.y + 2, width: fit.w, height: headPx - 6 }}>
           <span className="st-chip-kind">{tw2h(`card.${card.kind}` as "card.picture")}</span>
           <span className="st-beat" aria-label={tw2h("card.beat", { n: card.n })}>
             {beatDots(card.n).map((cls, i) => <i key={i} className={cls} aria-hidden="true" />)}
@@ -343,7 +360,7 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
       )}
       <div className={`st-box st-${phase}`} data-testid="studio-box" data-rail={railPx > 0 ? "1" : undefined}
         data-pip-keep={pipKeep ? "bottom-right" : undefined}
-        style={fit ? { width: fit.w, height: fit.h, left: fit.x, top: fit.y + headPx, ...(railPx > 0 ? { ["--rail" as string]: `${railPx}px` } : {}),
+        style={fit ? { width: fit.w, height: fit.h, left: fit.x, top: fit.y + (fold ? 0 : headPx), ...(railPx > 0 ? { ["--rail" as string]: `${railPx}px` } : {}),
           ...(pipKeep ? { ["--pip-keep-w" as string]: `${pipKeep.w}px`, ["--pip-keep-h" as string]: `${pipKeep.h}px` } : {}) } : { visibility: "hidden" }}>
         <StageMomentContext.Provider value={moment}>
           <div className="st-art">{body}</div>

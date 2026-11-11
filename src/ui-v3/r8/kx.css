@@ -37,6 +37,7 @@
 .kx[data-tx][data-tx][data-tx] .kx-h1 { font-size: var(--tx-t-6); line-height: 1.08; }
 .kx[data-tx][data-tx][data-tx] .kx-h1::after { content: none; }
 .kx[data-tx][data-tx][data-tx] .kx-sub { color: var(--tx-ink-2); font-size: var(--tx-t-3); }
+.kx[data-tx][data-tx][data-tx] .kx-home-copy .kx-sub { text-wrap: balance; }
 
 /* the one primary action: a solid accent rectangle, no sweep, no chevron, no breathing */
 .kx[data-tx][data-tx][data-tx] .kx-cta { border-radius: var(--tx-r-2); background: var(--tx-accent); color: var(--tx-on-accent); box-shadow: var(--tx-shadow-1);
@@ -80,3 +81,22 @@
 .kx[data-tx][data-tx][data-tx] .kx-state[data-tone="rose"] .kx-state-ring { color: var(--tx-danger); background: var(--tx-surface-2); }
 .kx[data-tx][data-tx][data-tx] .kx-state-title { font: var(--tx-display-weight) var(--tx-t-5)/1.2 var(--tx-font-display); letter-spacing: -.01em; color: var(--tx-ink); }
 .kx[data-tx][data-tx][data-tx] .kx-state-line { font-size: var(--tx-t-3); color: var(--tx-ink-2); }
+
+/* round 8 step i: World and Hangar */
+.kx[data-tx][data-tx][data-tx] .kx-label::before { content: none; }
+.kx[data-tx][data-tx][data-tx] .kx-seg { border: 1.5px solid var(--tx-line); border-radius: var(--tx-r-3); background: var(--tx-surface); padding: var(--tx-s-1); overflow: visible; }
+.kx[data-tx][data-tx][data-tx] .kx-seg button { min-height: 40px; border-radius: var(--tx-r-3); color: var(--tx-ink-2); font: 600 var(--tx-t-2)/1 var(--tx-font-ui); background: transparent; box-shadow: none; }
+.kx[data-tx][data-tx][data-tx] .kx-seg button[aria-checked="true"] { background: var(--tx-tutor-soft); color: var(--tx-tutor); }
+.kx[data-tx][data-tx][data-tx] :is(.kx-orbit, .kx-settle) { clip-path: none; border: 1px solid var(--tx-line); border-radius: var(--tx-r-2); background: var(--tx-surface); box-shadow: var(--tx-shadow-1); }
+/* the planet: her colour lit on the soft side of it (Orbit.tsx paints --k-ion to --k-deep) */
+.kx[data-tx][data-tx][data-tx] .kx-orbit { --k-deep: var(--tx-tutor-soft); }
+.kx[data-tx][data-tx][data-tx] :is(.kx-legend i, .kx-station i) { box-shadow: none; filter: none; }
+.kx[data-tx][data-tx][data-tx] .kx-legend { color: var(--tx-ink-2); font-size: var(--tx-t-2); }
+.kx[data-tx][data-tx][data-tx] .kx-station.is-new { border-color: var(--tx-ok); }
+.kx[data-tx][data-tx][data-tx] .kx-new { border-radius: var(--tx-r-3); font: 700 var(--tx-t-1)/1 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-surface); background: var(--tx-ok); padding: var(--tx-s-1) var(--tx-s-2); animation: none; }
+.kx[data-tx][data-tx][data-tx] .kx-loadout { clip-path: none; border: 1px solid var(--tx-line); border-radius: var(--tx-r-2); background: var(--tx-surface); box-shadow: var(--tx-shadow-1); }
+.kx[data-tx][data-tx][data-tx] .kx-slot { border-radius: var(--tx-r-1); border: 1.5px dashed var(--tx-line-2); }
+.kx[data-tx][data-tx][data-tx] .kx-slot.is-on { border-style: solid; border-color: var(--tx-line-2); background: var(--tx-bg); }
+.kx[data-tx][data-tx][data-tx] .kx-slot b { font: 700 var(--tx-t-2)/1.2 var(--tx-font-ui); }
+.kx[data-tx][data-tx][data-tx] .kx-slot span { font: 600 var(--tx-t-1)/1.2 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-ink-3); }
+.kx[data-tx][data-tx][data-tx] .kx-tile { border-radius: var(--tx-r-2); }
