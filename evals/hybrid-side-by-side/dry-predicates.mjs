@@ -6,6 +6,7 @@
 // A lesson is { topicId, persona, rows } (the harness's director rows), with the topic's lesson script (`script`, for its joints).
 
 import { readFileSync } from "node:fs";
+import { asideReplyForms } from "../../server/brain/asideReplies.js";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const low = (t) => norm(t).toLowerCase();
@@ -144,21 +145,27 @@ export const PREDICATES = {
     if (m[2] === "problem") { ctx.problemSaid.add(m[1]); return null; }
     return ctx.problemSaid.has(m[1]) ? null : `a worked ${m[2]} before its problem`;
   },
-  /** J2: the turn after the child answered her return question. It opens on ONE sentence about what they said (≤ 14 words, no
-   *  question, no taste of her own, a content word of theirs) or a neutral joint, and then goes on with the lesson. */
+  /** R1 (dc-r8-director20, was J2): the turn after the child answered her return question (or her question after the AI line) opens
+   *  on one of Learning's reply forms — a form with a word the child said in its slot, a plain form, or the sad set — and then goes on
+   *  with the lesson. Never a park again, never a model-written sentence. */
   returnReply(L, r, i, ctx) {
     if (!ctx.prevT?.returnSaid || !ctx.prevChild || /^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
-    const ss = sentencesOf(r.text);
-    const s0 = ss[0] ?? "";
-    if (ss.length < 2) return `no lesson after the reply: "${s0.slice(0, 60)}"`;
-    if (JOINT_ONLY.test(s0) || /^hmm[.!]?$/i.test(s0)) return null;
-    const theirs = (low(ctx.prevChild).match(/\p{L}{4,}/gu) ?? []).filter((w) => !RET_STOP.has(w));
-    // (their answer to her return is the aside's own reply, never a new aside parked for later)
+    const t = norm(r.text);
+    const ss = sentencesOf(t);
     const park = ss.find((x) => /(?<![\p{L}])(?:karenge|karungi|baad\s+mein|thodi\s+der|yaad\s+rahega|likh\s+li|later|come\s+back)(?![\p{L}])/iu.test(x));
     if (park) return `their answer to the return parked again: "${park.slice(0, 70)}"`;
-    const why = /[?？]/.test(s0) ? "a question" : words(s0) > 14 ? `${words(s0)} words` : TASTE.test(s0) ? "a taste of hers"
-      : !theirs.some((w) => new RegExp(`(?<![\\p{L}])${w}`, "iu").test(s0)) ? "none of their words" : null;
-    return why ? `the reply to their answer is ${why}: "${s0.slice(0, 70)}"` : null;
+    const F = (ctx.replyForms ??= asideReplyForms());
+    const fixed = [...F.plain, ...F.sad].map(norm).find((f) => low(t).startsWith(low(f)));
+    let used = fixed ?? null;
+    if (!used) for (const re of F.word) {
+      for (let n = 1; n <= Math.min(ss.length, 2) && !used; n++) {
+        const head = ss.slice(0, n).join(" "), m = head.match(re);
+        if (m && new RegExp(`(?<![\\p{L}])${m[1].replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\p{L}])`, "iu").test(ctx.prevChild)) used = head;
+      }
+      if (used) break;
+    }
+    if (!used) return `the reply to their answer is no form of Learning's: "${ss[0]?.slice(0, 70) ?? ""}"`;
+    return norm(t.slice(used.length)) ? null : `no lesson after the reply: "${used.slice(0, 60)}"`;
   },
   /** Main's order 1 (dc-r8-director20 G3 b, c): every authored part she starts is said whole — a point, a simpler, a card, a remediation,
    *  a worked problem or given, a hook, a bridge, greetSimpler. A turn that says one sentence of an authored unit (one no other unit

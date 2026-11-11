@@ -144,6 +144,7 @@ import { readMethod, keepMethod, METHOD_NOTE } from "../conversation/methods.js"
 import { freeSubjectOf, genericSubject } from "./requests.js";
 import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
+import { isSadAside } from "../brain/asideReplies.js";
 import { alsoReading, alsoQuestion, questionShaped, bareAck, readIntent } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
@@ -832,9 +833,13 @@ const ASKS_HER_TASTE = /(?:aapko|tumhe|aap|tum)\b.*\bpasand|do you like|your fav
  */
 function parkGate(s, kit, input, e) {
   if (!scriptOn() || !scriptIdOf(kit) || scriptFor(kit)?.script?.recordedRun) return pushLater(s.later ?? [], e);
-  if (ASKS_HER_TASTE.test(String(input?.text ?? ""))) { s.tasteAsked = { topic: String(e.topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; return s.later ?? []; }
-  // (v6.11 J2: their answer to her return question is not a new aside)
+  // (v6.11 J2: their answer to her return question is not a new aside — nor, asking her back, a taste question: R1 rule 4, a plain
+  // reply form, then the lesson)
   if (s.returnAnswer) return s.later ?? [];
+  if (ASKS_HER_TASTE.test(String(input?.text ?? ""))) { s.tasteAsked = { topic: String(e.topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; return s.later ?? []; }
+  // (dc-r8-director20 R1 rule 3: a sad aside is not parked for a return that assumes liking or fun — brain/say.js says one sad line
+  // now, and the lesson goes on)
+  if (isSadAside(input?.text)) { s.sadAside = { turn: s.turn }; return s.later ?? []; }
   const k = String(e.topic ?? "").toLowerCase();
   const had = (s.later ?? []).find((x) => String(x.topic ?? "").toLowerCase() === k || (k && String(x.topic ?? "").toLowerCase().includes(k)));
   // (v6.9 T1, main on director17 c4 offtopic 30, c5-t01 offtopic 32: "likh li hai" and then silence lost two asides): an aside said
@@ -3327,6 +3332,7 @@ function step0(prev, input) {
   }
   // v6.6 A2: the child asked her taste this turn: brain/say.js answers it now (the n-th time this lesson: a short form after the first)
   if (s.tasteAsked?.turn === s.turn && move.kind !== "safeguard") move.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n };
+  if (s.sadAside?.turn === s.turn && move.kind !== "safeguard" && !move.tasteAsked) move.sadAside = true;
   if (s.asideAgain?.turn === s.turn && move.kind !== "safeguard" && !move.tasteAsked) move.asideAgain = { topic: s.asideAgain.topic, ...(s.asideAgain.returned ? { returned: true } : {}) };
   if (s.servedNow?.topic) {
     const lang = s.ctx.lang ?? "hinglish";
@@ -3801,6 +3807,7 @@ function heldTurn(prev, input) {
         s.lastMove = ret; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
         return { state: s, move: ret, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(ret, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
       }
+      if (s.sadAside?.turn === s.turn) m.sadAside = true;
       if (s.asideAgain?.turn === s.turn) m.asideAgain = { topic: s.asideAgain.topic, ...(s.asideAgain.returned ? { returned: true } : {}) };
     }
     s.lastMove = m; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent; s.activeItemId = h.activeItemId;
