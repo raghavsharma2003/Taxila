@@ -2,7 +2,7 @@
 // coach-mark (leaves on first input or after 2.6 s, DESIGN-V3 §6.5), and the "your move" volt ring.
 import { C, W, H } from "./tokens.ts";
 import { ease } from "./math.ts";
-import { card, tick, type Ctx } from "./draw.ts";
+import { card, tick, type Ctx, type TextOpts } from "./draw.ts";
 import type { EngineApi } from "./types.ts";
 
 export function drawIntro(api: EngineApi, ctx: Ctx, o: { a: number; t: number; kicker: string; title: string; sub?: string; accent?: string }): void {
@@ -39,10 +39,24 @@ export function drawStatCard(api: EngineApi, ctx: Ctx, o: { a: number; head: str
   }
   ctx.restore();
 }
-/** Coach-mark text near the bottom; caller fades `a` to 0 on first input. */
-export function drawCoach(api: EngineApi, ctx: Ctx, text: string, a: number, now: number, y = 600): void {
-  if (a <= 0.01) return;
-  api.text(ctx, text, 500, y, { font: "mono", size: 38, weight: 500, color: C.ink2, align: "center", alpha: a * (0.65 + 0.35 * Math.sin(now * 4)), maxWidth: y < 180 ? 620 : 900 });   // near the top: clear of both safe zones
+/** Greedy word wrap with the host's measure (so it sees the young floor); a word wider than the width keeps its line. */
+export function wrapLines(api: EngineApi, ctx: Ctx, text: string, maxW: number, o: TextOpts): string[] {
+  const lines: string[] = []; let cur = "";
+  for (const w of String(text).split(/\s+/).filter(Boolean)) { const t = cur ? cur + " " + w : w; if (!cur || api.measure(ctx, t, o) <= maxW) cur = t; else { lines.push(cur); cur = w; } }
+  if (cur) lines.push(cur);
+  return lines;
+}
+/** Coach-mark text near the bottom; caller fades `a` to 0 on first input. A long line wraps (never cut): near the bottom
+ *  the block grows UPWARD from `y`, near the top it grows downward and starts below the host's DOM chrome (the task pill
+ *  and HUD row over the world: round 7, the pill covered area-claim's coach line at y 140 on a laptop). */
+export function drawCoach(api: EngineApi, ctx: Ctx, text: string, a: number, now: number, y = 600, maxW?: number, x = 500): void {
+  if (a <= 0.01 || !text) return;
+  const top = y < 180, o: TextOpts = { font: "mono", size: 38, weight: 500 }, size = Math.max(38, api.minLabel), lh = size * 1.15;
+  const lines = wrapLines(api, ctx, text, maxW ?? (top ? 620 : 900), o).slice(0, 3);
+  let y0 = top ? Math.max(y, api.chromeBottom() + 10 + size * 0.8) : y - (lines.length - 1) * lh;
+  if (!top) y0 = Math.max(y0, 180);
+  const alpha = a * (0.65 + 0.35 * Math.sin(now * 4));
+  lines.forEach((ln, i) => api.text(ctx, ln, x, y0 + i * lh, { ...o, color: C.ink2, align: "center", alpha }));   // near the top: clear of both safe zones
 }
 /** The single volt "your move" ring (one volt element per state). */
 export function voltRing(ctx: Ctx, x: number, y: number, r: number, now: number, active = false): void {

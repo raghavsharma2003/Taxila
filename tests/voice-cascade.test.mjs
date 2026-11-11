@@ -457,7 +457,8 @@ test("runtime + CascadeLink: a spoken final becomes one Director turn with its A
     assert.equal(turns[0].typed, undefined, "a spoken turn is not marked typed");
     assert.equal(turns[0].teacherInterrupted, true, "the cut-off opening is reported");
     assert.deepEqual(reqs, [1, 3]);
-    assert.equal(rt.state.status, "speaking");
+    // "speaking" starts at the reply's FIRST AUDIO (pcmStream's own 2 ms timer), not when the turn call returns: wait for it, do not sample an instant.
+    assert.ok(await until(() => rt.state.status === "speaking"), `status ${rt.state.status}`);
     const caps = rt.state.captions.map((c) => [c.who, c.text, !!c.interrupted]);
     assert.deepEqual(caps, [["teacher", "Namaste!", true], ["child", "teen chauthai", false], ["teacher", "Achha, kyun?", false]]);
   } finally {

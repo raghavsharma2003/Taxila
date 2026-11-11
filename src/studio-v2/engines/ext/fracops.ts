@@ -10,6 +10,7 @@ import { sfx } from "../../core/sfx.ts";
 import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
 
 const GO = { x: 760, y: 556, w: 210, h: 62 }, FIELD = { x: 110, y: 190, w: 420, h: 300 };
 function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
@@ -26,7 +27,7 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
   });
   const steppers = (): { key: "cols" | "cs" | "rows" | "rs" | "parts"; label: string; y: number; max: () => number }[] => {
     const r = rd();
-    if (r.mode === "orchard") return [{ key: "cols", label: T.cols, y: 222, max: () => 12 }, { key: "cs", label: T.shade, y: 318, max: () => g.cols }, { key: "rows", label: T.rows, y: 414, max: () => 12 }, { key: "rs", label: T.shade, y: 510, max: () => g.rows }];
+    if (r.mode === "orchard") return [{ key: "cols", label: T.cols, y: 240, max: () => 12 }, { key: "cs", label: T.shade, y: 330, max: () => g.cols }, { key: "rows", label: T.rows, y: 420, max: () => 12 }, { key: "rs", label: T.shade, y: 510, max: () => g.rows }];
     if (r.mode === "join") return [{ key: "parts", label: T.cut, y: 240, max: () => 24 }];
     return [];
   };
@@ -113,7 +114,7 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
     api.text(ctx, lab, GO.x + GO.w / 2, GO.y + GO.h / 2 + 2, { font: "display", size: 38, weight: 800, color: !done ? C.volt : C.ink3, align: "center", baseline: "middle", maxWidth: GO.w - 10 });
     if (done) { if (ok) tick(ctx, 960, 200, C.mint, 1); else magnifier(ctx, 955, 200, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: g.verdict === "right", color: g.verdict === "right" ? C.mint : C.amber, stats: [[`${g.right}/${g.n}`, T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
     void now;

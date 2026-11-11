@@ -35,7 +35,7 @@ test("P1 pure: an active belief serves the family whose garam level discriminate
   const { levelOf } = stubLevels((e, focus) => (e === kila && focus === "m-fm" ? lv("k1", ["m-fm"]) : e === kila ? lv("k0", []) : lv(`${e.family}0`, [])));
   const r = chooseEntry({ entries: [arena, kon, kila], inputs: { mis: { "m-fm": 0.62 } }, levelOf, beliefOf: (id) => (id === "m-fm" ? "Confuses factors with multiples" : id) });
   assert.equal(r.entry, kila); assert.equal(r.focus, "m-fm");
-  assert.deepEqual(r.because, { choice: "kila/lcm first", fact: "open mix-up: Confuses factors with multiples, 0.62", source: "kt_misconception" });
+  assert.deepEqual(r.because, { choice: "kila/lcm first", fact: "open mix-up: Confuses factors with multiples, 0.62", source: "kt_misconception", kind: "play.pick_mixup", when: "earlier", mis: "m-fm" });
   // the lesson's own focus (no posterior needed) names its table
   const f = chooseEntry({ entries: [arena, kila], inputs: { focus: "m-fm", focusSource: "reteach_attempts" }, levelOf, beliefOf: () => "Confuses factors with multiples" });
   assert.equal(f.entry, kila); assert.equal(f.because.source, "reteach_attempts"); assert.match(f.because.fact, /^seen in this lesson: Confuses/);
@@ -66,7 +66,7 @@ test("P1 pure: novelty moves off the family she just played when an equally good
   const a = E("aa", "x"), b = E("bb", "y");
   const { levelOf } = stubLevels((e) => lv(e.family, [], 0.75));
   const r = chooseEntry({ entries: [a, b], inputs: { pL: 0.7 }, levelOf, recent: { families: ["aa/x"] } });
-  assert.equal(r.entry, b); assert.deepEqual(r.because, { choice: "bb/y first", fact: "just played aa/x", source: "lesson_shown" });
+  assert.equal(r.entry, b); assert.deepEqual(r.because, { choice: "bb/y first", fact: "just played aa/x", source: "lesson_shown", kind: "play.pick_novelty" });
   assert.equal(chooseEntry({ entries: [a, b], inputs: {}, levelOf, recent: { families: ["aa/x"] } }).entry, a);
   // a level signature she just played counts too
   const s = chooseEntry({ entries: [a, b], inputs: { pL: 0.7 }, levelOf, recent: { sigs: ["aa"] } });
@@ -84,7 +84,7 @@ test("P1 real coverage: an open factor/multiple mix-up serves kila/lcm first (th
   assert.equal(r.entry.family, "kila");
   assert.ok(r.level.proof.discriminates.includes(MIS), "the FIRST level (garam) tells the belief apart");
   assert.equal(r.session.focus, MIS);
-  assert.deepEqual(r.because, [{ choice: "kila/lcm first", fact: `open mix-up: ${beliefOf(MIS)}, 0.62`, source: "kt_misconception" }]);
+  assert.deepEqual(r.because, [{ choice: "kila/lcm first", fact: `open mix-up: ${beliefOf(MIS)}, 0.62`, source: "kt_misconception", kind: "play.pick_mixup", when: "earlier", mis: MIS }]);
   assert.equal(beliefOf(MIS), "Confuses factors with multiples");
   // reproducible: the signed body regenerates the very level
   const back = verifySession(r.sessionId);
@@ -136,4 +136,19 @@ test("P1 routes: /start returns the because, /level returns it from the token, t
     await routes["POST /api/play/start"]({}, d, { childId: CHILD, skillId: SKILL });
     assert.equal(d.body.level.family, "todo-jodo"); assert.ok(!("because" in d.body));
   } finally { Object.assign(playDeps, saved); }
+});
+
+test("P1 pure (C2 phone seam): with plainOf, her mix-up or pL moving the FIRST entry's level is a departure with its because", () => {
+  const a = E("aa", "x", { m: "m-a" });
+  // the level picker reads her posteriors: the first entry's garam level already tells the belief apart, with or without focus
+  const levelOf = () => lv("a-mis", ["m-a"]);
+  const plainOf = () => lv("a-plain", []);
+  assert.equal(chooseEntry({ entries: [a], inputs: { mis: { "m-a": 0.8 } }, levelOf }).because, null, "without plainOf: today's behaviour");
+  const r = chooseEntry({ entries: [a], inputs: { mis: { "m-a": 0.8 } }, levelOf, plainOf, beliefOf: () => "B" });
+  assert.deepEqual(r.because, { choice: "aa/x first", fact: "open mix-up: B, 0.80", source: "kt_misconception", kind: "play.pick_mixup", when: "earlier", mis: "m-a" });
+  // pL alone (one entry, no belief): a fit because naming her P(skill) against the class default's level
+  const f = chooseEntry({ entries: [a], inputs: { pL: 0.4 }, levelOf: () => lv("a-fit", [], 0.7), plainOf: () => lv("a-plain", [], 0.5) });
+  assert.deepEqual(f.because, { choice: "aa/x at her level", fact: "P(skill) 0.40: first try 0.70 here vs 0.50 at the class default (aim 0.75)", source: "kt_skill_state", kind: "play.pick_fit" });
+  // the same level as the class default's: no because
+  assert.equal(chooseEntry({ entries: [a], inputs: { pL: 0.4 }, levelOf: () => lv("same", []), plainOf: () => lv("same", []) }).because, null);
 });

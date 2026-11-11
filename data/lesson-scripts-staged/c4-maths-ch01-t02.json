@@ -41,7 +41,7 @@
    "en": "distance"
   }
  ],
- "joints": {"asidePark":[{"hi":"Achha, {aside} wali baat main yaad rakhti hoon, thodi der mein usi par aayenge.","en":"Okay, I'll keep the {aside} bit in mind, and we'll come back to it soon."},{"hi":"Yeh jaanch poora hote hi {aside} ki baat zaroor karenge.","en":"Once this check is done, we will surely talk about {aside}."},{"hi":"Wah, {aside} ki baat sambhaal ke rakhi hai, baad mein zaroor sunungi.","en":"Oh, I've kept the {aside} bit safe, and I'll surely hear it later."}],"asideReturn":[{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"},{"hi":"{aside} mein tumhe sabse mazedaar kya laga?","en":"What did you find the most fun in {aside}?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."}]},
+ "joints": {"asidePark":[{"hi":"Yeh jaanch poora hote hi {aside} ki baat zaroor karenge.","en":"Once this check is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh jaanch khatam ho jaaye.","en":"We'll talk about {aside} too, once this check is over."},{"hi":"{aside} ka zikr achha laga, uski baat thodi der baad karte hain.","en":"I liked hearing about {aside}, and we'll talk about it a bit later."}],"asideReturn":[{"hi":"{aside} mein tumhe sabse mazedaar kya laga?","en":"What did you find the most fun in {aside}?"},{"hi":"Toh {aside} mein tumhare saath aur kaun hota hai?","en":"So who else is with you in {aside}?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"}],"hindiSwitch":[{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in English."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in English."}],"askAgain":[{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."}]},
  "skills": [
   {
    "skillId": "c4-maths-ch01-t02-s1",
@@ -189,23 +189,7 @@
         }
        }
       },
-      "answerBoard": {
-       "template": "compare@1",
-       "params": {
-        "left": {
-         "title": "Tester",
-         "items": [
-          "bilkul fit"
-         ]
-        },
-        "right": {
-         "title": "Kona",
-         "items": [
-          "right angle"
-         ]
-        }
-       }
-      }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Tester", "items": ["bilkul fit"]}, "right": {"title": "Kona", "items": ["right angle"]}, "mark": {"side": "right", "add": "jawab: No"}} }
      },
      "simpler": {
       "hi": "Do baar moda kaagaz hamara tester hai. Tester kone mein bilkul fit ho aur koi khaali jagah na bache, tabhi kona right angle hai.",
@@ -700,23 +684,7 @@
         }
        }
       },
-      "answerBoard": {
-       "template": "compare@1",
-       "params": {
-        "left": {
-         "title": "Nok",
-         "items": [
-          "tester se tang"
-         ]
-        },
-        "right": {
-         "title": "Tester",
-         "items": [
-          "right angle"
-         ]
-        }
-       }
-      }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Nok", "items": ["tester se tang"]}, "right": {"title": "Tester", "items": ["right angle"]}, "mark": {"side": "right", "add": "jawab: kam"}} }
      },
      "simpler": {
       "hi": "Tester ko kone se milao. Kona tester se tang ho toh angle chhota hai, aur zyada khula ho toh angle bada hai.",
@@ -798,23 +766,7 @@
         }
        }
       },
-      "answerBoard": {
-       "template": "compare@1",
-       "params": {
-        "left": {
-         "title": "3 cm bhuja",
-         "items": [
-          "tester bilkul fit"
-         ]
-        },
-        "right": {
-         "title": "12 cm bhuja",
-         "items": [
-          "tester bilkul fit"
-         ]
-        }
-       }
-      }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 cm bhuja", "items": ["tester bilkul fit"]}, "right": {"title": "12 cm bhuja", "items": ["tester bilkul fit"]}, "mark": {"side": "right", "add": "jawab: dono barabar"}} }
      },
      "simpler": {
       "hi": "Bhuja lambi ho ya chhoti, angle usse nahi badalta. Sirf dekho ki kona kitna khula hai.",
@@ -896,25 +848,7 @@
         }
        }
       },
-      "answerBoard": {
-       "template": "compare@1",
-       "params": {
-        "left": {
-         "title": "Kainchi",
-         "items": [
-          "lambi",
-          "thodi si khuli"
-         ]
-        },
-        "right": {
-         "title": "Diary ka kona",
-         "items": [
-          "chhoti",
-          "square corner"
-         ]
-        }
-       }
-      }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Kainchi", "items": ["lambi", "thodi si khuli"]}, "right": {"title": "Diary ka kona", "items": ["chhoti", "square corner"]}, "mark": {"side": "right"}} }
      },
      "simpler": {
       "hi": "Bhuja ki lambai bhool jao. Sirf dekho kaun zyada khula hai: thodi khuli cheez ya poora square corner.",
@@ -992,24 +926,7 @@
       "hi": "P mein khaali jagah bachi, Q bilkul fit hua, par R tester ke bahar jaata hai, toh R sabse khula hai",
       "en": "P left empty space and Q fit exactly, but R's arm goes outside the tester, so R opens the most"
      },
-     "answerBoard": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "P aur Q",
-        "items": [
-         "P: khaali jagah",
-         "Q: bilkul fit"
-        ]
-       },
-       "right": {
-        "title": "R",
-        "items": [
-         "tester ke bahar"
-        ]
-       }
-      }
-     }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "P aur Q", "items": ["P: khaali jagah", "Q: bilkul fit"]}, "right": {"title": "R", "items": ["tester ke bahar"]}, "mark": {"side": "right"}} }
     },
     "answer": {
      "hi": "teeno mein sabse bada angle R hai",
@@ -1080,25 +997,7 @@
       "hi": "15 cm ki lambi bhuja se angle bada nahi hota. Sirf dekho kaun right angle se zyada khulta hai.",
       "en": "Long 15 cm arms do not make an angle bigger. Just see which one opens more than a right angle."
      },
-     "answerBoard": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Angle A",
-        "items": [
-         "15 cm bhuja",
-         "right angle se kam"
-        ]
-       },
-       "right": {
-        "title": "Angle B",
-        "items": [
-         "3 cm bhuja",
-         "right angle se zyada"
-        ]
-       }
-      }
-     }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Angle A", "items": ["15 cm bhuja", "right angle se kam"]}, "right": {"title": "Angle B", "items": ["3 cm bhuja", "right angle se zyada"]}, "mark": {"side": "right"}} }
     },
     {
      "id": "c2",
@@ -1141,23 +1040,7 @@
       "hi": "Dono ke kone square corner hain, toh dono ek jitne khule hain. Kitaab ka bada size angle nahi badalta.",
       "en": "Both corners are square corners, so both open the same amount. The book's bigger size does not change the angle."
      },
-     "answerBoard": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Badi kitaab",
-        "items": [
-         "square corner"
-        ]
-       },
-       "right": {
-        "title": "Chhoti diary",
-        "items": [
-         "square corner"
-        ]
-       }
-      }
-     }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Badi kitaab", "items": ["square corner"]}, "right": {"title": "Chhoti diary", "items": ["square corner"]}, "mark": {"side": "left", "add": "jawab: No"}} }
     },
     {
      "id": "c3",
@@ -1199,23 +1082,7 @@
       "hi": "Bhuja kitni bhi lambi ho, angle sirf khulne se naapte hain. Ab socho, tester se tang kona right angle se chhota hai ya bada.",
       "en": "However long the arms are, an angle is measured only by its opening. Now think whether a corner narrower than the tester is smaller or bigger than a right angle."
      },
-     "answerBoard": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Bhuja",
-        "items": [
-         "20 cm lambi"
-        ]
-       },
-       "right": {
-        "title": "Kona",
-        "items": [
-         "tester se tang"
-        ]
-       }
-      }
-     }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Bhuja", "items": ["20 cm lambi"]}, "right": {"title": "Kona", "items": ["tester se tang"]}, "mark": {"side": "right", "add": "jawab: kam"}} }
     }
    ],
    "ladder": [
@@ -1294,23 +1161,7 @@
        "hi": "Blade ki lambai angle nahi badalti. Sirf dekho ki dono kainchi kitni khuli hain.",
        "en": "The blade length does not change the angle. Just look at how wide the two scissors are open."
       },
-      "answerBoard": {
-       "template": "compare@1",
-       "params": {
-        "left": {
-         "title": "5 cm blade",
-         "items": [
-          "ek jitni khuli"
-         ]
-        },
-        "right": {
-         "title": "15 cm blade",
-         "items": [
-          "ek jitni khuli"
-         ]
-        }
-       }
-      }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "5 cm blade", "items": ["ek jitni khuli"]}, "right": {"title": "15 cm blade", "items": ["ek jitni khuli"]}, "mark": {"side": "left", "add": "jawab: dono barabar"}} }
      }
     }
    ],

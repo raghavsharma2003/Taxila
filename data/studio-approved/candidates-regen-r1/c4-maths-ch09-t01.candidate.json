@@ -1,0 +1,96 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c4-maths-ch09-t01",
+    "archetype": "sieve-storm@1",
+    "misconceptionId": "c4-maths-ch09-t01-m-times-as-add",
+    "skillId": "c4-maths-ch09-t01-s1",
+    "beat": "rem:c4-maths-ch09-t01-m-times-as-add",
+    "when": "remediation",
+    "check": "c4-maths-ch09-t01-s1:c1"
+  },
+  "archetype": "sieve-storm@1",
+  "spec": {
+    "archetype": "sieve-storm@1",
+    "skills": [
+      "c4-maths-ch09-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Round",
+      "slashed": "sahi calls",
+      "combo": "combo",
+      "coach": "Swipe karke cards chuno",
+      "runDone": "Storm khatam",
+      "prime": "sirf 1 aur khud se",
+      "composite": "alag groups wale",
+      "even": "jodi sankhya",
+      "odd": "bina jodi wali",
+      "multipleOf": "ke guna",
+      "commonOf": "dono ke guna",
+      "factorOf": "ke hisse",
+      "cfactorOf": "dono ke saanjhe hisse",
+      "divisibleBy": "poora baantne wala",
+      "coprimeWith": "saath mein 1 wala",
+      "square": "varg sankhya",
+      "palindrome": "ulta seedha ek jaisa",
+      "slipped": "chook gaya",
+      "wrongCut": "yeh nahi",
+      "and": "aur"
+    },
+    "title": "Gunaon Ka Storm",
+    "rounds": [
+      {
+        "rule": "multiple",
+        "a": 6,
+        "title": "Cards ko dekho",
+        "sub": "Har card par sochkar swipe karo",
+        "lo": 0,
+        "hi": 56,
+        "count": 6,
+        "hitRate": 0.5,
+        "seed": 6,
+        "speed": 0.8
+      },
+      {
+        "rule": "multiple",
+        "a": 8,
+        "title": "Groups ka game",
+        "sub": "Jaldi nahi, dhyan se chuno",
+        "lo": 0,
+        "hi": 56,
+        "count": 6,
+        "hitRate": 0.5,
+        "seed": 8,
+        "speed": 1,
+        "targets": "c4-maths-ch09-t01-m-times-as-add"
+      }
+    ]
+  },
+  "hash": "d595d575ebddd57fb142b428fc81912c",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": true,
+    "spec": {
+      "ok": true,
+      "repairs": 0,
+      "fellBack": false
+    }
+  },
+  "facts": {
+    "kind": "game",
+    "archetype": "sieve-storm@1",
+    "onScreen": {
+      "title": "Gunaon Ka Storm",
+      "rounds": 2,
+      "first": "Cards ko dekho: Har card par sochkar swipe karo"
+    }
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T06:22:57.210Z"
+  }
+}

@@ -10,6 +10,7 @@ import { bloom, roundRect, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
 const BELT_Y = 500, BELT_X0 = 30, BELT_X1 = 520, COL_X0 = 560, COL_X1 = 950, COL_TOP = 250, COL_BOT = 560;
 const DCOL: Record<number, string> = { 1: "#8B98FF", 10: "#2FD3C7", 100: "#C69BFF", 1000: "#FFD27A", 10000: "#7FD6FF", 100000: "#F2F4F8" };
@@ -32,7 +33,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     g.r = i; g.state = "intro"; g.stateT = 0; g.t = 0; g.belt = []; g.fliers = []; g.counts = {}; g.spawnT = 0; g.spawnN = 0; g.introA = 0; g.last = null;
     for (const d of denoms()) g.counts[d] = 0;
     api.tw.add(g, { introA: 1 }, { dur: 0.45 });
-    api.task(`${T.round} ${i + 1}/${spec.rounds.length}`, round().show === "words" ? numberWords(round().target, spec.system) : `${T.target} ${groupDigits(round().target, spec.system)}`);
+    api.task(`${T.round} ${dots(i, spec.rounds.length)}`, round().show === "words" ? numberWords(round().target, spec.system) : `${T.target} ${groupDigits(round().target, spec.system)}`);
     sfx.blip({ f: 220, f2: 440, dur: 0.35, type: "triangle", gain: 0.12 });
     api.event("round_start", { round: i + 1, target: round().target, show: round().show, targets: round().targets ?? null });
   }
@@ -109,7 +110,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     if (g.state === "end" && g.stateT > 3) { if (g.r + 1 < spec.rounds.length) startRound(g.r + 1); else { g.state = "final"; g.finalA = 0; api.tw.add(g, { finalA: 1 }, { dur: 0.6 }); api.task("", T.runDone, "done"); api.done({ vaults: g.results.filter((x) => x.verdict === "right").length, rounds: spec.rounds.length }); } }
     if (g.r >= 0 && g.state !== "final") {
       const tot = total(), tg = round().target;
-      hud.set("vault", `${g.r + 1}/${spec.rounds.length}`);
+      hud.set("vault", `${dots(g.r, spec.rounds.length)}`);
       hud.set("loaded", groupDigits(tot, spec.system), { tone: tot === tg ? "mint" : tot > tg ? "amber" : null, bump: true });
       hud.set("time", `${Math.max(0, Math.ceil(round().seconds - g.t))}s`, { meter: 1 - g.t / round().seconds, tone: round().seconds - g.t < 8 ? "amber" : null });
     }
@@ -178,10 +179,10 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     }
     fx.drawWorld(ctx);
     ctx.restore();
-    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${g.r + 1} / ${spec.rounds.length}`, title: round().show === "words" ? "Listen to the number" : groupDigits(round().target, spec.system), sub: round().show === "words" ? numberWords(round().target, spec.system) : round().denoms.includes(1000) ? "load it exactly, then seal" : "no thousands on the belt today", accent: C.sun });
+    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${dots(g.r, spec.rounds.length)}`, title: round().show === "words" ? "Listen to the number" : groupDigits(round().target, spec.system), sub: round().show === "words" ? numberWords(round().target, spec.system) : round().denoms.includes(1000) ? "load it exactly, then seal" : "no thousands on the belt today", accent: C.sun });
     if (g.state === "end" && g.last) drawStatCard(api, ctx, { a: g.endA, head: g.last.verdict === "right" ? T.cracked : `${T.round} ${g.r + 1}`, color: g.last.verdict === "right" ? C.mint : C.amber, ticked: g.last.verdict === "right", stats: [[groupDigits(round().target, spec.system), T.target], [groupDigits(g.last.total, spec.system), T.loaded]], foot: g.last.detail?.includes("drop-zero") ? "a zero holds the empty place" : undefined });
     if (g.state === "final") drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.results.filter((r) => r.verdict === "right").length}/${spec.rounds.length}`, "vaults"]] });
-    drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 600);
+    drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 612, 470, 275);   // under the belt: the column counts own the bottom right
   }
   function bot(): BotAction | null {
     if (g.state !== "play" || g.fliers.length || g.merges.length) return { type: "wait", ms: 160 };
@@ -202,4 +203,4 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     board: () => { const tg = round().target, s = String(tg); return { title: groupDigits(tg, spec.system), lines: [numberWords(tg, spec.system), s.split("").map((ch, i) => `${ch} ${PLACE[10 ** (s.length - 1 - i)] ?? ""}`).join("  ·  ")], figure: { kind: "none" }, accent: C.sun }; },
   };
 }
-export const vault: EngineDef<VaultSpec> = { archetype: "vault-heist@1", label: "Game · Vault Heist", accent: C.sun, create };
+export const vault: EngineDef<VaultSpec> = { archetype: "vault-heist@1", label: "Game · Number Vault", accent: C.sun, create };

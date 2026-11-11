@@ -71,6 +71,8 @@ and `to-voice` (two 001, no 002). Always cite a patch by its full file name.
 | 016-harness-page-up.patch | landed | 11/13 | `evals/hybrid-side-by-side.mjs` | 11 of 13 added lines are in the tree; later edits changed the rest. |
 | 017-harness-card-page.patch | **partly; the rest is likely overtaken** | 5/10 | `evals/hybrid-side-by-side.mjs` | Its S9b half (`shownKind`, `avoidKind`) is in the harness through patch 018. Of its S9 half, "the picture request on the first page only" is in the harness (Brain, v6.6); the `ofCard` / `cardPage` pass-through is not. The held board (`dc-r7-held-board`) drops line-driven paging, so this is probably no longer needed: Brain confirms. |
 | 018-harness-page-up-kind.patch | applied | 6/6 | `evals/hybrid-side-by-side.mjs` |  |
+| 023-play-facts-row-trail.patch | **pending** (2026-11-10) | 0/2 | `server/brain/turn.js` | From Games (claude/r8-play-follow): keep the whole verified play facts row (200 -> 240 chars); the level_end row now leads with the trail summary and the because kinds. |
+| 024-play-why-voice.md | written ask | — | — | From Games: have the teacher say the play why-line (`taxila:play-say`) when the floor is free; play shows it, has no voice. |
 
 ## to-learning
 
@@ -80,6 +82,7 @@ and `to-voice` (two 001, no 002). Always cite a patch by its full file name.
 | 002-face-onboarding-teacher-direct.patch | applied | 8/8 | `src/onboarding/Setup.tsx`, `src/onboarding/steps/Meet.tsx` |  |
 | 003-db-probe-timer-unref.patch | applied | 3/3 | `tests/comprehension-db.test.mjs`, `tests/comprehension-w1c-db.test.mjs` +1 |  |
 | 004-signin-code-links.patch | applied | 8/8 | `src/onboarding/Account.tsx`, `src/onboarding/Forgot.tsx` |  |
+| 011-r8-parent-play-because.patch | **pending** (2026-11-10) | 0/~190 | `server/director/knows-words.js`, `server/reports/teaching.js` +3 | From Games: play because + trail on the Teaching page through knows-words (play vocabulary added). Rebased on int/r6 5f3628428 with 008 applied (both `teaching.js` hunks kept: `becauseOf` and `playLinesOf`, one static `getKit` import); applies clean there. Replaces Games' earlier 009 (that number is Loop's `009-r8-next-topic-brief-caller.patch`). |
 
 ## to-platform
 
@@ -89,6 +92,7 @@ and `to-voice` (two 001, no 002). Always cite a patch by its full file name.
 | 001-placement-routes.patch | landed | 1/2 | `server/index.js` | The file is not a valid patch (`git apply --check`: "No valid patches in input"), but its change is in `server/index.js` (the placement route table is registered). Its note says the spread in `server/routes/child.js` goes once applied; that spread is still there. |
 | 001-speech-region-2.patch | applied | 5/5 | `scripts/deploy-azure.mjs` |  |
 | 002-signin-code-routes.patch | applied | 3/3 | `server/index.js` |  |
+| 005-trace-kind-play-next.patch | **pending** (2026-11-10) | 0/1 | `shared/trace.ts` | From Games: adds `play.next` (written by `/api/play/next` since round 8 Play) to `TRACE_KINDS.server`. The type is an open string, so nothing breaks before it lands. |
 
 ## to-studio
 
@@ -96,6 +100,7 @@ and `to-voice` (two 001, no 002). Always cite a patch by its full file name.
 |---|---|---|---|---|
 | 001-box-contract-stage-first.patch | applied | 40/40 | `server/forge3/certs/box-contract.json` | Applies both ways because it only adds a block; the block (`stageFirst`) is in `server/forge3/certs/box-contract.json`. Do not apply it again. |
 | 002-ofcard-to-client.patch | applied | 14/14 | `server/stagecraft/board-first.js`, `server/studio/seam.js` +1 |  |
+| 007-phone-play-because-to-row.patch | open | 0/13 | `server/studio/seam.js` | C2 Games, 2026-11-10 (claude/r8-play-seam): the phone play piece's because (Studio's string and the play side's records) never reaches the facts row (rowOf prints only onScreen); adds `becauseRecords` and `chose` to the row. Found by tests/r8-play-phone-seam.test.mjs. |
 
 ## to-voice
 

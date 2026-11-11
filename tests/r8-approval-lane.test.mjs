@@ -43,10 +43,14 @@ function packetDir(byViewport) {
     render: { byViewport, fails: {} }, images, target: c.target, generation: c.generation, topic: {}, spec: c.spec }));
   return { dir, id, c };
 }
-const store = (dir, verdict) => {
-  fs.writeFileSync(path.join(dir, "verdicts.json"), JSON.stringify([{ id: fs.readdirSync(dir).find((d) => d.startsWith("gen-")), verdict, faults: verdict === "pass" ? [] : [{ item: 1, kind: "wrong_key" }] }]));
+// (main 2026-11-10: two separate judges must pass the content items; verdict2 null = only one judge was run)
+const store = (dir, verdict, verdict2 = verdict) => {
+  const id = fs.readdirSync(dir).find((d) => d.startsWith("gen-"));
+  const v = (x) => [{ id, verdict: x, faults: x === "pass" ? [] : x === "unreadable" ? [{ item: 6, kind: "unreadable" }] : [{ item: 3, kind: "gives_answer" }] }];
+  fs.writeFileSync(path.join(dir, "verdicts.json"), JSON.stringify(v(verdict)));
+  if (verdict2) fs.writeFileSync(path.join(dir, "verdicts2.json"), JSON.stringify(v(verdict2)));
   const st = path.join(dir, "store");
-  execFileSync(process.execPath, ["scripts/approve-store.mjs", "--packets", dir, "--verdicts", path.join(dir, "verdicts.json"), "--judge", "test", "--store", st], { cwd: ROOT, encoding: "utf8" });
+  execFileSync(process.execPath, ["scripts/approve-store.mjs", "--packets", dir, "--verdicts", path.join(dir, "verdicts.json"), ...(verdict2 ? ["--verdicts2", path.join(dir, "verdicts2.json")] : []), "--judge", "test", "--store", st], { cwd: ROOT, encoding: "utf8" });
   return st;
 };
 
@@ -83,6 +87,17 @@ test("approval lane: a judged pass goes into the store with what it is for; the 
   } finally { _useStore(null); }
 });
 
+test("approval lane, two judges (main 2026-11-10): a split content verdict, or one judge only, writes nothing and records both reasons; a second judge's readability-only fault does not split it", () => {
+  const a = packetDir({ p360: false, p412: true, l1366: true });
+  assert.ok(!fs.existsSync(path.join(store(a.dir, "pass", "fail"), "c5-maths-ch02-t01")), "split: judge 2 gives_answer");
+  const refused = JSON.parse(fs.readFileSync(path.join(a.dir, "refused.json"), "utf8"));
+  assert.match(refused[0].why, /split verdict/); assert.match(refused[0].judge2[0], /^gives_answer/);
+  const b = packetDir({ p360: false, p412: true, l1366: true });
+  assert.ok(!fs.existsSync(path.join(store(b.dir, "pass", null), "c5-maths-ch02-t01")), "one judge only");
+  const c = packetDir({ p360: false, p412: true, l1366: true });
+  assert.ok(fs.existsSync(path.join(store(c.dir, "pass", "unreadable"), "c5-maths-ch02-t01")), "readability stays with judge 1");
+});
+
 test("approval lane: a judge's fail, or a render legible at no size, writes nothing", () => {
   const a = packetDir({ p360: true, p412: true, l1366: true });
   assert.ok(!fs.existsSync(path.join(store(a.dir, "fail"), "c5-maths-ch02-t01")));
@@ -99,8 +114,10 @@ test("approval lane in a lesson: a scripted remediation for the mix-up the piece
     const { getTopic } = await import("../server/content/curriculum.js");
     const T = "c5-maths-ch02-t01", kit = kitFromFile(getTopic(T));
     const ref = { template: "fraction-line@1", params: { den: 4, from: 0, to: 1, marks: [{ num: 1, label: "1/4" }] } };
-    const run = (n, beatId, piece) => {
+    // (a p412 phone: main's ruling 2026-11-10 refuses every Studio v2 world at p360 — checked below)
+    const run = (n, beatId, piece, box = { w: 380, h: 519 }) => {
       const L = `appr-${n}-${Date.now()}`;
+      seam.noteViewport(L, box, false);
       seam.studioSeam.prefetch({ lessonId: L, purpose: "practice", kit, topicId: T, child: { id: `c-${L}`, class_level: 5, language_pref: "hinglish" } });
       return seam.studioSeam.requestIntent({ intent: { intentId: `${L}:wb:1`, lessonId: L, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref,
         scriptBeat: { scriptId: "s", beatId, kind: "remediation", ...(piece ? { piece: true } : {}) } }, line: { lessonId: L, text: "Marks nahi, gaps gino: 3 marks se 4 barabar gaps bante hain, toh pehla mark 1/4 hai." }, mode: "fresh", kit: { topicId: T, content: [] } });
@@ -110,6 +127,7 @@ test("approval lane in a lesson: a scripted remediation for the mix-up the piece
     assert.equal(hit.artifact.kind, "stagecraft");
     assert.equal(hit.artifact.stagecraft.rung, "generated_spec");
     assert.match(hit.artifact.stagecraft.approved, /^gen-c5-maths-ch02-t01-/);
+    assert.notEqual(run(99, "rem:c5-maths-ch02-t01-m-count-marks", true, { w: 324, h: 187 })?.artifact?.kind, "stagecraft", "at p360 the script's board stands");
     for (const [beat, piece] of [["rem:c5-maths-ch02-t01-m-not-numbers", true], ["rem:c5-maths-ch02-t01-m-count-marks", false]]) {
       const k = run(beat.length + (piece ? 1 : 0), beat, piece);
       assert.notEqual(k?.artifact?.kind, "stagecraft", `${beat} piece=${piece}`);
@@ -133,4 +151,83 @@ test("main's catalogue ruling: a catalogue piece is shown only with a judged pas
     assert.ok(isReviewedDefault(rec.game.archetype, def));
     assert.notEqual(certifyForTray(art(def), { vp: "p412", topicId: T }).cert, "catalogue-judged", "the reviewed default is not catalogue content");
   } finally { _useStore(null); }
+});
+
+test("approval lane, generate (main 2026-11-10: c4's two attempts logged ok, no file written): every attempt ends in exactly one of a candidate or refused-with-reason; an ok result whose checks failed is refused, naming them", async () => {
+  const { attemptOutcome } = await import("../server/studio/approved.js");
+  const good = { ok: true, payload: { spec: { a: 1 } }, checks: { truth: true, stageContract: true, onTopic: true, contentSafe: true, spec: { ok: true, repairs: 0, fellBack: false } } };
+  assert.deepEqual(attemptOutcome(good), { kind: "candidate" });
+  assert.deepEqual(attemptOutcome({ ...good, checks: { ...good.checks, contentSafe: false } }), { kind: "refused", why: "ok, but its checks failed: contentSafe" });
+  assert.match(attemptOutcome({ ...good, checks: { ...good.checks, spec: { ok: false, fellBack: true } } }).why, /spec/);
+  assert.equal(attemptOutcome({ ...good, payload: {} }).kind, "refused");
+  assert.deepEqual(attemptOutcome({ ok: false, why: "schema" }), { kind: "refused", why: "schema" });
+  assert.equal(attemptOutcome(null).kind, "refused");
+  // (the script uses it for the log, the manifest, the file and the retry: one decision)
+  const src = fs.readFileSync(path.join(ROOT, "scripts/approve-generate.mjs"), "utf8");
+  assert.match(src, /const oc = attemptOutcome\(r\)/);
+  assert.match(src, /if \(oc\.kind === "candidate"\) done = /);
+  assert.match(src, /if \(oc\.kind === "refused"\) \{/);
+});
+
+test("approval lane: a content refusal on a romanised number word says so in plain words (main 2026-11-10: 'Teen hisse' read as English, three times)", async () => {
+  const { numberWords, attemptOutcome } = await import("../server/studio/approved.js");
+  assert.deepEqual(numberWords("Teen barabar hisse"), ["teen"]);
+  assert.deepEqual(numberWords("Teenon hisse barabar"), [], "a word that only begins with one is not one");
+  assert.deepEqual(numberWords("3 hisse"), []);
+  const why = attemptOutcome({ ok: true, payload: { spec: {} }, checks: { contentSafe: false, contentFindings: [{ key: "waves.1.title", code: "content_safety_2", text: "Teen hisse" }] } }).why;
+  // (main 2026-11-10: the cause is likely, not proven — the message says so)
+  assert.match(why, /the content check scored "Teen hisse" \(waves\.1\.title\) 2; number words such as 'teen' are the likely cause: write digits/);
+  // (and the spec prompt asks for digits — the rule last, where rules that must fire go)
+  const { specPrompt } = await import("../server/stagecraft/builders.js");
+  const m = specPrompt({ id: "x", archetype: "slice-at@1", kind: "game", need: "contrast_misconception", premise: { misconceptionId: "c4-maths-ch05-t01-m-unequal-parts" } }, { topicId: "c4-maths-ch05-t01", band: "B3", lang: "hinglish", misconceptionId: "c4-maths-ch05-t01-m-unequal-parts" });
+  assert.match(m.at(-1).content, /as digits \(3 hisse\), never as words \(teen, chaar\)\. Return only the JSON\.$/);
+});
+
+test("approval lane, predicate (main 2026-11-10, c5-t02 withdrawn): every value a line piece asks the child to place lands exactly on a tick of its line", async () => {
+  const { valuesOnTicks } = await import("../server/studio/approved.js");
+  const wave = (ticks, scaffoldTicks, items) => ({ title: "w", sub: "s", line: [0, 1], ticks, scaffoldTicks, speed: 90, gap: 2, items });
+  assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(8, 8, [["1/2"], ["1/4"], ["1/8"], ["3/8"]])] }).ok, true);
+  const off = valuesOnTicks("catch-on-line@1", { waves: [wave(8, 8, [["1/3"], ["1/6"]])] });
+  assert.equal(off.ok, false); assert.match(off.why, /1\/3 is not on a tick of a line with ticks 8/);
+  assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(0, 0, [["1/3"]])] }).ok, true, "an unmarked line holds any value");
+  assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(0, 4, [["1/3"]])] }).ok, false, "a scaffold that is drawn must hold it too");
+  assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(6, 6, [["1/2", "3/6"], ["1 1/3"]])] }).ok, true, "a mixed number, and both labels of a pod");
+  // (the store: the two withdrawn pilots are gone, c6 stays)
+  assert.ok(!fs.existsSync(path.join(ROOT, "data/studio-approved/c5-maths-ch02-t02")) && !fs.existsSync(path.join(ROOT, "data/studio-approved/c4-maths-ch05-t01")));
+  assert.ok(fs.existsSync(path.join(ROOT, "data/studio-approved/c6-maths-ch06-t01")));
+});
+
+test("never served (main 2026-11-11): a piece the predicates or judges refused is refused by the tray gate even with STUDIO_CATALOGUE_JUDGED off; the store, not the catalogue, decides what a child sees", async () => {
+  const { certifyForTray } = await import("../server/forge3/tray-gate.js");
+  const { neverServe, _resetNever } = await import("../server/studio/approved.js");
+  _resetNever();
+  const T = "c4-maths-ch03-t01";
+  const cat = JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-catalogue/topics", `${T}.json`), "utf8")).game;
+  assert.equal(neverServe(cat.archetype, cat.spec), true, "batch 1 refused it");
+  const art = { kind: "stagecraft", stagecraft: { rung: "library", archetype: cat.archetype, spec: cat.spec } };
+  const certs = { topics: { [T]: { game: { serveByViewport: { p360: true, p412: true, l1366: true } } } } };
+  const was = process.env.STUDIO_CATALOGUE_JUDGED;
+  process.env.STUDIO_CATALOGUE_JUDGED = "off";
+  try {
+    const r = certifyForTray(art, { vp: "p412", topicId: T, certs, factsKind: "game" });
+    assert.equal(r.ok, false); assert.equal(r.cert, "never");
+  } finally { if (was === undefined) delete process.env.STUDIO_CATALOGUE_JUDGED; else process.env.STUDIO_CATALOGUE_JUDGED = was; }
+  // (switch on — the default: an unjudged piece is refused by the store rule too)
+  const other = JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-catalogue/topics", "c6-maths-ch02-t01.json"), "utf8")).game;
+  const r2 = certifyForTray({ kind: "stagecraft", stagecraft: { rung: "library", archetype: other.archetype, spec: other.spec } }, { vp: "p412", topicId: "c6-maths-ch02-t01", certs: { topics: { "c6-maths-ch02-t01": { game: { serveByViewport: { p360: true, p412: true, l1366: true } } } } }, factsKind: "game" });
+  assert.equal(r2.ok, false); assert.equal(r2.cert, "catalogue-judged");
+});
+
+test("predicate (2026-11-11, c5-t01 retry 5 split on 'Run complete'): a Hinglish spec that leaves an engine's English string of 2+ words untranslated fails before any judge", async () => {
+  const { untranslatedStrings } = await import("../server/studio/approved.js");
+  const spec = (strings, lang = "hinglish") => ({ lang, strings });
+  assert.deepEqual(untranslatedStrings("catch-on-line@1", spec({ runDone: "Run complete", wave: "Wave" })).keys, ["runDone"], "a shared single word passes");
+  assert.equal(untranslatedStrings("catch-on-line@1", spec({ runDone: "Daud poori" })).ok, true);
+  assert.equal(untranslatedStrings("catch-on-line@1", spec({ runDone: "Run complete" }, "en")).ok, true, "an English piece keeps its English");
+});
+
+test("the approval lane's scripts parse (2026-11-11: approve-check shipped with a duplicate declaration no test loaded)", async () => {
+  const { execFileSync } = await import("node:child_process");
+  for (const f of fs.readdirSync(path.join(ROOT, "scripts")).filter((x) => /^approve-.*\.mjs$/.test(x)))
+    execFileSync(process.execPath, ["--check", path.join(ROOT, "scripts", f)], { stdio: "pipe" });
 });

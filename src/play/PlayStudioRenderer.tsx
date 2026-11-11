@@ -11,7 +11,7 @@
 // Committed child utterances arrive as a window event (PLAY_HEARD) the lesson runtime dispatches: the closed voice grammar
 // maps commands to presses, synchronously, and the listener acks a taken command on the event detail (gameAct).
 import { useEffect, useMemo, useState } from "react";
-import type { ArtId, PlayArtifact, PlayDressResponse, PlayLevel } from "../../shared/play.ts";
+import type { ArtId, PlayArtifact, PlayDressResponse, PlayLevel, PlayWhy } from "../../shared/play.ts";
 import type { ArtifactRendererProps } from "../studio/renderers.ts";
 import { PlaySession } from "./PlaySession.tsx";
 import { playApi } from "./client.ts";
@@ -36,7 +36,7 @@ const certForce = (): CertForce | null => {
 
 export default function PlayStudioRenderer(props: ArtifactRendererProps) {
   const art = (props.artifact as unknown as PlayArtifact).play;
-  const [state, setState] = useState<{ sid: string; level: PlayLevel; art: ArtId; dress: DressedSpec | null; render2d: boolean } | null>(null);
+  const [state, setState] = useState<{ sid: string; level: PlayLevel; art: ArtId; dress: DressedSpec | null; render2d: boolean; why: PlayWhy | null } | null>(null);
   const small = props.px.w < MIN_BOX.w || props.px.h < MIN_BOX.h;
   // r4 K-P3: a shell's Briefing in front of a real-game engine (src/play/briefing.ts). The model's dress is fetched while
   // the card is up and handed to PlaySession (no second fetch at mount), so the look the card names is the look that plays.
@@ -53,7 +53,7 @@ export default function PlayStudioRenderer(props: ArtifactRendererProps) {
     playApi.level({ sessionId: art.sessionId }, ac.signal).then((r) => {
       if (!r) { props.onEvent({ type: "error", reason: "unavailable", message: "play level" }); return; }
       // the server's 3D kill switch (TAXILA_PLAY_3D=off) sends render: "2d": the round-3 view plays, no engine is loaded
-      setState({ sid: r.sessionId, level: r.level, art: r.art.art, dress: r.dress ?? null, render2d: r.render === "2d" });
+      setState({ sid: r.sessionId, level: r.level, art: r.art.art, dress: r.dress ?? null, render2d: r.render === "2d", why: r.why ?? null });
       if (briefing && r.dress && r.render !== "2d") {
         const reply = playApi.dress({ sessionId: r.sessionId, music: musicPref() ?? undefined }, ac.signal).catch(() => null);
         setPre({ reply, model: null, final: false });
@@ -94,7 +94,7 @@ export default function PlayStudioRenderer(props: ArtifactRendererProps) {
         level: state.level, engine: engineId, dress: shownDress, dressFinal: !!pre?.final, young: !!props.young, reducedMotion: !!props.reducedMotion,
         px: props.px, launched: phase === "warp", launch: () => setPhase("warp"), done: () => setPhase("play"),
       })}
-      {(!briefed || phase === "warp") && <PlaySession sessionId={state.sid} level={state.level} art={state.art} dress={forcedDress ?? state.dress} dressReply={pre?.reply} cosmetics={briefing?.cosmetics ?? null} engine={force?.render ?? (state.render2d ? "2d" : undefined)} preserveDrawing={!!force} lang={lang} classLevel={props.young ? 4 : 6} reducedMotion={props.reducedMotion} embedded
+      {(!briefed || phase === "warp") && <PlaySession sessionId={state.sid} level={state.level} art={state.art} why={state.why} dress={forcedDress ?? state.dress} dressReply={pre?.reply} cosmetics={briefing?.cosmetics ?? null} engine={force?.render ?? (state.render2d ? "2d" : undefined)} preserveDrawing={!!force} lang={lang} classLevel={props.young ? 4 : 6} reducedMotion={props.reducedMotion} embedded
         onActivity={(name, data) => props.onEvent({ type: "interaction", name, data })}
         onToken={(kind, token, seamKind) => props.onEvent({ type: "interaction", name: kind === "evidence" ? "play_evidence" : "play_seam", data: { token, ...(seamKind ? { seam: seamKind } : {}) } })}
         onLevelEnd={(r) => { props.onEvent({ type: "interaction", name: "play_level_end", data: { verdict: r.grade?.verdict ?? null, levelId: r.levelId } }); props.onEvent({ type: "done" }); }}

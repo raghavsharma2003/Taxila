@@ -37,7 +37,7 @@ test("P2 pure: adaptAfter — mal-rule miss → focus, same band; clean first tr
   const level = { levelId: "L1" };
   const miss = adaptAfter({ grade: { verdict: "not_yet", clean: false, evidence: [{ outcome: "incorrect", misconceptionId: "m-x" }] }, level, s: { pL: 0.6 }, beliefOf: () => "Thinks X" });
   assert.equal(miss.focus, "m-x"); assert.equal(miss.lift, undefined);
-  assert.deepEqual(miss.because, { choice: "next level tests that mix-up, same difficulty", fact: "missed just now with: Thinks X", source: "play_grade", mis: "m-x" });
+  assert.deepEqual(miss.because, { choice: "next level tests that mix-up, same difficulty", fact: "missed just now with: Thinks X", source: "play_grade", kind: "play.mixup_focus", when: "now", mis: "m-x" });
   const win = adaptAfter({ grade: { verdict: "solved", clean: true, evidence: [{ outcome: "correct" }] }, level, s: { pL: 0.6 } });
   assert.equal(win.lift, 1); assert.equal(win.because.source, "play_grade"); assert.match(win.because.fact, /P\(skill\) 0\.60 to 0\.70/);
   assert.equal(adaptAfter({ grade: { verdict: "solved", clean: true, evidence: [{ outcome: "correct" }] }, level, s: { pL: 0.6, lift: MAX_LIFT } }), null);
@@ -49,7 +49,7 @@ test("P2 pure: adaptAfter — mal-rule miss → focus, same band; clean first tr
   assert.equal(liftedPL({ pL: 0.6 }), 0.6); assert.equal(liftedPL({}), undefined);
   // a mix-up claim stays only when the level served tells it apart
   assert.equal(settleBecause(miss.because, { proof: { discriminates: [] } }), null);
-  assert.deepEqual(settleBecause(miss.because, { proof: { discriminates: ["m-x"] } }), { choice: miss.because.choice, fact: miss.because.fact, source: "play_grade" });
+  assert.deepEqual(settleBecause(miss.because, { proof: { discriminates: ["m-x"] } }), { choice: miss.because.choice, fact: miss.because.fact, source: "play_grade", kind: "play.mixup_focus", when: "now", mis: "m-x" });
 });
 
 test("P2 pure: fades from her ledger row; the request's fade only when there is no history", () => {
@@ -60,7 +60,7 @@ test("P2 pure: fades from her ledger row; the request's fade only when there is 
   assert.equal(fadeFromHistory({ pL: 0.72, run: 0, n: 4, recent: [1, 1] }, 1).fade, 2);
   assert.equal(fadeFromHistory({ pL: 0.5, run: 1, n: 4, recent: [0, 1] }, 1).fade, 2);
   const back = fadeFromHistory({ pL: 0.8, run: 0, n: 4, recent: [1, 0] }, 3);
-  assert.equal(back.fade, 1); assert.deepEqual(back.because, { choice: "fade 1 (more help)", fact: "her last answer on this skill was a miss", source: "kt_skill_state" });
+  assert.equal(back.fade, 1); assert.deepEqual(back.because, { choice: "fade 1 (more help)", fact: "her last answer on this skill was a miss", source: "kt_skill_state", kind: "play.fade_history" });
   assert.equal(fadeFromHistory({ pL: 0.4, run: 0, n: 2, recent: [0] }, 1).because, null, "same as the fallback = no because");
 });
 
@@ -74,7 +74,7 @@ test("P2: a mal-rule miss → the next level tests that belief at the same band,
   assert.equal(next.focus, c.kit);
   assert.equal(genRequest(next, entry).pL, genRequest(c.s, entry).pL, "same band");
   assert.ok(lv.proof.discriminates.includes(c.kit), `the next level tells ${c.kit} apart (${lv.proof.discriminates})`);
-  assert.deepEqual(next.because, [{ choice: "next level tests that mix-up, same difficulty", fact: `missed just now with: ${beliefOf(c.kit)}`, source: "play_grade" }]);
+  assert.deepEqual(next.because, [{ choice: "next level tests that mix-up, same difficulty", fact: `missed just now with: ${beliefOf(c.kit)}`, source: "play_grade", kind: "play.mixup_focus", when: "now", mis: c.kit }]);
   // no claim survives on a level that cannot show the belief (settleBecause)
   const blind = nextBody({ ...s2, nextBecause: { ...s2.nextBecause, mis: "not-a-real-belief" } }, entry, "garam");
   assert.ok(!("because" in blind));
@@ -105,7 +105,7 @@ test("P2: startSession takes the fade from her ledger row (kt_skill_state) and s
   const q = (row) => async (sql) => (/from kt_skill_state/.test(sql) ? [row] : []);
   const r = await startSession({ id: "c1", class_level: 5 }, { skillId: SKILL, fade: 1 }, q({ p_l: 0.9, display: "mastered", n: 8, run: 3, recent: [1, 1, 1] }));
   assert.equal(r.session.fade, 3); assert.equal(r.level.fade, 3);
-  assert.deepEqual(r.because, [{ choice: "fade 3 (less help)", fact: "ledger: mastered", source: "kt_skill_state" }]);
+  assert.deepEqual(r.because, [{ choice: "fade 3 (less help)", fact: "ledger: mastered", source: "kt_skill_state", kind: "play.fade_history" }]);
   const none = await startSession({ id: "c1", class_level: 5 }, { skillId: SKILL, fade: 2 }, q(undefined));
   assert.equal(none.session.fade, 2); assert.deepEqual(none.because, []);
 });

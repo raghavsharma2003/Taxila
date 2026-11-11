@@ -8,7 +8,7 @@ import { childrenFor, loadTopic, NOW } from "./children.mjs";
 
 export const SEEDED = Object.freeze(["meera", "meeraForgot", "kabir", "player"]);
 
-/** @returns {{ name, plan, warmup: any[], applied: object[], interests: string[] }} */
+/** @returns {{ name, plan, warmup: any[], applied: object[], interests: string[], level: object|null, activeMisconceptionIds: string[] }} */
 export function seedLearner(topicId, name) {
   const C = childrenFor(topicId);
   const ch = C.children[name];
@@ -21,5 +21,6 @@ export function seedLearner(topicId, name) {
   const prereqItem = preKit ? preKit.items.filter((i) => i.skillId === pre && ["practice", "retrieval", "near_transfer"].includes(i.kind) && !i.diagnostic && i.answer != null)
     .sort((a, b) => (a.difficulty ?? 9) - (b.difficulty ?? 9))[0] ?? null : null;
   const kw = knowsWarmup(plan, [], { kit: C.kit, max: 4, prereqItem: prereqItem ? { ...prereqItem, kind: "retrieval", topicId: plan.prereqCheck.topicId } : null });
-  return { name, plan, warmup: kw.items, applied: kw.because.map((b) => ({ ...b, turn: 0 })), interests: ch.input.interests ?? [] };
+  return { name, plan, warmup: kw.items, applied: kw.because.map((b) => ({ ...b, turn: 0 })), interests: ch.input.interests ?? [],
+    level: ch.input.level ?? null, activeMisconceptionIds: (ch.input.mixups ?? []).map((m) => m.id) };
 }

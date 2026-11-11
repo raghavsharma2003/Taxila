@@ -6,7 +6,12 @@
 //   chooseEntry     P1: one picker over every coverage entry that admits the skill (across families and modes)
 //   fadeFromHistory P2: the scaffold fade from her ledger row for the skill (the request's fade is the fallback)
 //   adaptAfter      P2: between levels: a mal-rule miss → the next level tests that belief, same band; a clean first-try
-//                   win → one band step up from HER pL
+//                   win → one band step up from HER pL; (follow-up D) a non-clean level after a lift → one step back down
+//
+// Every because also carries `kind` (play.pick_mixup | play.pick_novelty | play.pick_fit | play.fade_history |
+// play.fade_director | play.mixup_focus | play.step_up | play.step_down | play.switch) and, for a mix-up, `when` ("earlier":
+// an open mix-up from an earlier session; "now": this lesson or the level just played) and `mis` (the kit id). The child's
+// line (server/play/why.js) and the parent's page read those, never the free-text fact.
 //   liftedPL        the pL the picker is asked for after those steps (her pL, else the class default, plus the lift)
 //   settleBecause   a pending between-level because is kept only when the level served really does what it claims
 import { MIS_PRIOR } from "../learner/kt/misconception.js";
@@ -75,15 +80,18 @@ function scoreOf(entry, key, level, inputs, target, recent) {
  * max(0, P(mis) − prior) (+1 for the active belief), fit = −|pFirstTry − 0.75| when her pL is known, novelty = −0.3 for a
  * family/mode, an entry or a level signature she just played. The best entry is served when it beats the first entry by
  * MARGIN; otherwise the first entry (today's). With an active belief the session focus is that belief (so the garam level,
- * not a door, tests it). The because is set exactly when the served level differs from today's (entry or level).
+ * not a door, tests it). The because is set exactly when the served level differs from today's (entry or level), or
+ * (plainOf given: entry → the level a child with nothing known gets) when her active belief or her pL moved the first
+ * entry's level (a mix-up because when the level tells the belief apart, else a fit because naming her P(skill)).
  */
-export function chooseEntry({ entries, inputs = {}, levelOf, recent = {}, keyOf = (e) => `${e.topicId}|${fm(e)}|${e.goal}`, beliefOf = (id) => id }) {
+export function chooseEntry({ entries, inputs = {}, levelOf, recent = {}, keyOf = (e) => `${e.topicId}|${fm(e)}|${e.goal}`, beliefOf = (id) => id, plainOf = null }) {
   if (!entries?.length) return null;
   const first = entries[0];
   const def = { entry: first, key: keyOf(first), focus: inputs.focus ?? null, because: null, ranked: [] };
   if (!knowsAnything(inputs, entries)) return def;
   const target = activeBelief(inputs, entries);
-  if (entries.length === 1 && !target) return def;
+  const plainOn = typeof plainOf === "function";
+  if (entries.length === 1 && !target && !(plainOn && typeof inputs.pL === "number")) return def;
   const ranked = [];
   for (const e of entries) {
     const key = keyOf(e);
@@ -100,26 +108,36 @@ export function chooseEntry({ entries, inputs = {}, levelOf, recent = {}, keyOf 
   // today's level: the first entry, with the focus the lesson gave (no injected belief)
   const base = pick === firstR && focus === (inputs.focus ?? null) ? pick.level : levelOf(first, inputs.focus ?? null);
   const departs = pick.entry !== first || !base || base.levelId !== pick.level.levelId;
+  // round 8 seam (C2, 2026-11-10): the level picker itself reads her posteriors and her pL, so what is known about her can
+  // move the FIRST entry's level with no entry or focus change (base above already carries it). With plainOf (the first
+  // entry's level for a child with nothing known, same fade) that move is a departure too: its because names the belief
+  // the level tells apart, else her P(skill).
+  const plain = !departs && plainOn ? plainOf(first) : null;
+  const moved = !!plain && plain.levelId !== pick.level.levelId && ((!!target && pick.hits) || typeof inputs.pL === "number");
   const out = { entry: pick.entry, key: pick.key, focus, because: null, ranked: ranked.map(({ key, info, fit, nov, score }) => ({ key, info: r2(info), fit: r2(fit), nov: r2(nov), score: r2(score) })) };
-  if (!departs) return out;
-  out.because = becauseOfPick(pick, firstR, target, inputs, recent, beliefOf);
+  if (!departs && !moved) return out;
+  out.because = becauseOfPick(pick, firstR, target, inputs, recent, beliefOf, moved ? plain : null);
   return out;
 }
 
-function becauseOfPick(pick, firstR, target, inputs, recent, beliefOf) {
+function becauseOfPick(pick, firstR, target, inputs, recent, beliefOf, plain = null) {
   const name = fm(pick.entry);
   const d = firstR ? { info: pick.info - firstR.info, fit: pick.fit - firstR.fit, nov: pick.nov - firstR.nov } : { info: pick.info, fit: pick.fit, nov: pick.nov };
   if (target && pick.hits && (W.info * d.info >= Math.max(W.fit * d.fit, d.nov) || pick.entry === firstR?.entry)) {
     const belief = beliefOf(target.id) ?? target.id;
     const fact = target.lesson ? `seen in this lesson: ${belief}` : `open mix-up: ${belief}, ${target.p.toFixed(2)}`;
-    return { choice: `${name} first`, fact, source: target.source };
+    return { choice: `${name} first`, fact, source: target.source, kind: "play.pick_mixup", when: target.lesson ? "now" : "earlier", mis: target.id };
   }
   if (d.nov >= W.fit * d.fit && d.nov > 0) {
     const was = (recent.families ?? []).at(-1) ?? (firstR ? fm(firstR.entry) : "");
-    return { choice: `${name} first`, fact: `just played ${was}`, source: "lesson_shown" };
+    return { choice: `${name} first`, fact: `just played ${was}`, source: recent.source ?? "lesson_shown", kind: "play.pick_novelty" };
   }
   const p = pick.level.proof?.pFirstTry, p0 = firstR?.level.proof?.pFirstTry;
-  return { choice: `${name} first`, fact: `P(skill) ${Number(inputs.pL).toFixed(2)}: first try ${typeof p === "number" ? p.toFixed(2) : "?"} here vs ${typeof p0 === "number" ? p0.toFixed(2) : "?"} in ${firstR ? fm(firstR.entry) : "the first game"} (aim ${BAND.garam})`, source: "kt_skill_state" };
+  if (plain) {
+    const q0 = plain.proof?.pFirstTry, f = (x) => (typeof x === "number" ? x.toFixed(2) : "?");
+    return { choice: `${name} at her level`, fact: `P(skill) ${Number(inputs.pL).toFixed(2)}: first try ${f(p)} here vs ${f(q0)} at the class default (aim ${BAND.garam})`, source: "kt_skill_state", kind: "play.pick_fit" };
+  }
+  return { choice: `${name} first`, fact: `P(skill) ${Number(inputs.pL).toFixed(2)}: first try ${typeof p === "number" ? p.toFixed(2) : "?"} here vs ${typeof p0 === "number" ? p0.toFixed(2) : "?"} in ${firstR ? fm(firstR.entry) : "the first game"} (aim ${BAND.garam})`, source: "kt_skill_state", kind: "play.pick_fit" };
 }
 
 
@@ -142,7 +160,18 @@ export function fadeFromHistory(hist, fallback = 1) {
   else if (!lastMiss && (run >= 1 || pL >= 0.7)) { fade = 2; fact = run >= 1 ? `last answer clean and right, P(skill) ${Number.isFinite(pL) ? pL.toFixed(2) : "?"}` : `P(skill) ${pL.toFixed(2)}`; }
   else { fact = lastMiss ? "her last answer on this skill was a miss" : `P(skill) ${Number.isFinite(pL) ? pL.toFixed(2) : "?"}`; }
   if (fade === fallback) return { fade, because: null };
-  return { fade, because: { choice: `fade ${fade} (${fade > fallback ? "less" : "more"} help)`, fact, source: "kt_skill_state" } };
+  return { fade, because: { choice: `fade ${fade} (${fade > fallback ? "less" : "more"} help)`, fact, source: "kt_skill_state", kind: "play.fade_history" } };
+}
+
+/**
+ * Follow-up C: a DELIBERATE fade from the Director (the request marks it `fadeFrom: "director"`) beats the history fade.
+ * → { fade, because|null }; the because says the lesson asked, and is set only when her history would have said otherwise.
+ */
+export function fadeFor(hist, asked, fadeFrom = null) {
+  const fromHistory = fadeFromHistory(hist, asked);
+  if (fadeFrom !== "director") return fromHistory;
+  if (fromHistory.fade === asked) return { fade: asked, because: null };
+  return { fade: asked, because: { choice: `fade ${asked}`, fact: `the lesson asked for fade ${asked}`, source: "director", kind: "play.fade_director" } };
 }
 
 /** The pL the picker is asked for: her pL (else the class default) plus the session's lift; undefined = the class default. */
@@ -156,23 +185,34 @@ export function liftedPL(s) {
 /**
  * P2, between levels (never inside one). From the grade of the level that just ended:
  *   the first decisive moment was a mal-rule (evidence misconceptionId) → the next level's focus is that belief, the lift
- *     stays (same band);
+ *     stays (same band), or steps down one when the session is lifted (follow-up D);
  *   solved, clean, first decisive moment = solved → lift + 1 (from HER pL), up to MAX_LIFT;
+ *   (follow-up D) any other graded level while the session is lifted → lift − 1 (symmetric with the lift; never below the
+ *     unlifted band, lift 0);
  *   anything else → no step.
  * → { focus?, lift?, because? } | null. `because.mis` marks a claim to settle against the served level.
  */
 export function adaptAfter({ grade, level, s, beliefOf = (id) => id }) {
   const ev = grade?.evidence?.[0];
   if (!ev) return null;
+  const lift = Number(s?.lift) || 0;
+  const clean = grade.verdict === "solved" && !!grade.clean && ev.outcome === "correct";
+  const down = !clean && lift > 0 ? lift - 1 : null;
+  const pl = (x) => (typeof x === "number" ? x.toFixed(2) : `${DEFAULT_PL} (default)`);
   if (ev.misconceptionId) {
     const belief = beliefOf(ev.misconceptionId) ?? ev.misconceptionId;
-    return { focus: ev.misconceptionId, because: { choice: "next level tests that mix-up, same difficulty", fact: `missed just now with: ${belief}`, source: "play_grade", mis: ev.misconceptionId } };
+    return { focus: ev.misconceptionId, ...(down !== null ? { lift: down } : {}),
+      because: { choice: down !== null ? "next level tests that mix-up, a step easier" : "next level tests that mix-up, same difficulty", fact: `missed just now with: ${belief}`, source: "play_grade",
+        kind: "play.mixup_focus", when: "now", mis: ev.misconceptionId } };
   }
-  if (grade.verdict === "solved" && grade.clean && ev.outcome === "correct") {
-    const lift = Number(s?.lift) || 0;
+  if (clean) {
     if (lift >= MAX_LIFT) return null;
     const from = liftedPL(s), to = liftedPL({ ...s, lift: lift + 1 });
-    return { lift: lift + 1, because: { choice: "next level a step harder", fact: `solved ${level?.levelId ?? "the level"} on the first try; aiming from P(skill) ${typeof from === "number" ? from.toFixed(2) : `${DEFAULT_PL} (default)`} to ${to.toFixed(2)}`, source: "play_grade" } };
+    return { lift: lift + 1, because: { choice: "next level a step harder", fact: `solved ${level?.levelId ?? "the level"} on the first try; aiming from P(skill) ${pl(from)} to ${to.toFixed(2)}`, source: "play_grade", kind: "play.step_up", when: "now" } };
+  }
+  if (down !== null) {
+    const from = liftedPL(s), to = liftedPL({ ...s, lift: down });
+    return { lift: down, because: { choice: "next level a step easier", fact: `${grade.verdict === "solved" ? "solved, not on the first try" : "not solved"}: ${level?.levelId ?? "the level"}; aiming from P(skill) ${pl(from)} back to ${pl(to)}`, source: "play_grade", kind: "play.step_down", when: "now" } };
   }
   return null;
 }
@@ -181,7 +221,7 @@ export function adaptAfter({ grade, level, s, beliefOf = (id) => id }) {
  *  discriminates it). → { choice, fact, source } | null */
 export function settleBecause(pending, level) {
   if (!pending || !level) return null;
-  if (pending.mis && !(level.proof?.discriminates ?? []).includes(pending.mis)) return null;
-  const { choice, fact, source } = pending;
-  return { choice, fact, source };
+  if (pending.mis && pending.kind !== "play.switch" && !(level.proof?.discriminates ?? []).includes(pending.mis)) return null;
+  const { choice, fact, source, kind, when, mis } = pending;
+  return { choice, fact, source, ...(kind ? { kind } : {}), ...(when ? { when } : {}), ...(mis ? { mis } : {}) };
 }

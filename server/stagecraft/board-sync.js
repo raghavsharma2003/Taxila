@@ -23,6 +23,7 @@ import { gateWhiteboard, withheldValues, numbersIn, partitionCounts } from "../s
 import { isMotionOp } from "../../shared/whiteboard.js";
 import { speechMsOf, redactLine, WB_BOARD, sectorsForCutCircles } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
+import { BOARD_WORDS } from "../forge/explainer/templates.js";
 import { catalogueEntry } from "./catalogue.js";
 import { fitLegible } from "./board-legible.js";
 import { takePreselected } from "./board-first.js";
@@ -194,7 +195,8 @@ function withoutLabels(w, ref, { authored = false } = {}) {
   } catch { return w; }
 }
 /** director11 S3: the words a template itself writes in Hindi mode ("2 barabar hisse", "parimap") — the board's own. */
-const TEMPLATE_WORDS = ["barabar", "hisse", "parimap"];
+// (round 8: + the words a template writes of its own: legend rows — templates.js BOARD_WORDS)
+const TEMPLATE_WORDS = ["barabar", "hisse", "parimap", ...BOARD_WORDS];
 /** The words a script board ref authors (every string in its params: titles, items, labels …), lower case. */
 function refWords(ref) {
   const out = new Set();

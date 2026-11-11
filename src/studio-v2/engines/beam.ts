@@ -10,6 +10,7 @@ import { bloom, roundRect, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
 const PIV: XY = [500, 380], PEG = 76, TRAY_Y = 560;
 type Side = "left" | "right";
@@ -36,7 +37,7 @@ function create(api: EngineApi, spec: BeamSpec): EngineInstance {
     if (rd.mode === "sameBoth") for (const it of g.items) if (!it.unknown) it.fixed = false;      // the ones may be lifted off; crates stay
     layoutTray(); stackAll(true);
     api.tw.add(g, { introA: 1 }, { dur: 0.45 });
-    api.task(`${T.round} ${i + 1}/${spec.rounds.length}`, rd.mode === "sameBoth" ? T.sameBoth : rd.mode === "unknown" ? "Balance it to find the crate" : rd.mode === "pans" ? "Balance one kilogram with grams" : "Make the beam level");
+    api.task(`${T.round} ${dots(i, spec.rounds.length)}`, rd.mode === "sameBoth" ? T.sameBoth : rd.mode === "unknown" ? "Balance it to find the crate" : rd.mode === "pans" ? "Balance one kilogram with grams" : "Make the beam level");
     sfx.blip({ f: 220, f2: 440, dur: 0.35, type: "triangle", gain: 0.12 });
     api.event("round_start", { round: i + 1, mode: rd.mode, targets: rd.targets ?? null });
   }
@@ -121,7 +122,7 @@ function create(api: EngineApi, spec: BeamSpec): EngineInstance {
     if (g.state === "end" && g.stateT > 2.8) { if (g.r + 1 < spec.rounds.length) startRound(g.r + 1); else { g.state = "final"; g.finalA = 0; api.tw.add(g, { finalA: 1 }, { dur: 0.6 }); api.task("", T.runDone, "done"); api.done({ rounds: spec.rounds.length, level: g.results.filter((x) => x.verdict === "right").length }); } }
     if (g.state !== "final" && g.r >= 0) {
       const lsum = L.reduce((a, p) => a + p.w * p.d, 0), rsum = R.reduce((a, p) => a + p.w * p.d, 0), hide = g.items.some((i) => i.unknown && i.side) && g.state === "play";
-      hud.set("round", `${g.r + 1}/${spec.rounds.length}`); hud.set("left", hide ? "?" : pans() ? `${L.reduce((a, p) => a + p.w, 0)} ${unit()}` : `${lsum}`, { tone: tq === 0 ? "mint" : null }); hud.set("right", pans() ? `${R.reduce((a, p) => a + p.w, 0)} ${unit()}` : `${rsum}`, { tone: tq === 0 ? "mint" : null });
+      hud.set("round", `${dots(g.r, spec.rounds.length)}`); hud.set("left", hide ? "?" : pans() ? `${L.reduce((a, p) => a + p.w, 0)} ${unit()}` : `${lsum}`, { tone: tq === 0 ? "mint" : null }); hud.set("right", pans() ? `${R.reduce((a, p) => a + p.w, 0)} ${unit()}` : `${rsum}`, { tone: tq === 0 ? "mint" : null });
     }
   }
   function win() {
@@ -186,7 +187,7 @@ function create(api: EngineApi, spec: BeamSpec): EngineInstance {
       ctx.save(); ctx.globalAlpha = g.reveal; pill(api, ctx, eq, 500, 150, { color: C.mint }); ctx.restore();
     }
     fx.drawWorld(ctx); ctx.restore();
-    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${g.r + 1} / ${spec.rounds.length}`, title: round().title, sub: round().sub, accent: C.sun });
+    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${dots(g.r, spec.rounds.length)}`, title: round().title, sub: round().sub, accent: C.sun });
     if (g.state === "end") drawStatCard(api, ctx, { a: g.endA, head: `${T.round} ${g.r + 1} · ${T.balanced}`, ticked: true, stats: [[round().unknown ? `${round().unknown!.w} ${unit()}` : "level", round().unknown ? T.reveal : "beam"]] });
     if (g.state === "final") drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.results.length}/${spec.rounds.length}`, "level"]] });
     drawCoach(api, ctx, round()?.mode === "sameBoth" ? T.sameBoth : T.coach, g.state === "play" ? g.coachA : 0, now, 612);

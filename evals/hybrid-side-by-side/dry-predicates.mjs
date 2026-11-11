@@ -138,12 +138,23 @@ export const PREDICATES = {
       : !theirs.some((w) => new RegExp(`(?<![\\p{L}])${w}`, "iu").test(s0)) ? "none of their words" : null;
     return why ? `the reply to their answer is ${why}: "${s0.slice(0, 70)}"` : null;
   },
+  /** A second clarify on one part (dc-r8-second-clarify-shows-not-rewords): the same authored line with the board shown, then the
+   *  check-in — never the card, never the key. PENDING: reported, not gated, until the clarify column switch (C1 step 3). */
+  secondClarify(L, r) {
+    if (r.clarifyN !== 2) return null;
+    if (cardIn(r)) return "a second clarify answered with the card";
+    if (KEY_SAID.test(r.text)) return "a second clarify answered with the key";
+    return CHECKIN.test(norm(r.text)) ? null : "a second clarify that does not end on its check-in";
+  },
   /** An English word and its Hindi twin in one turn. */
   twins(L, r) {
     for (const t of TWINS) { const e = r.text.match(t.enRe), h = r.text.match(t.hiRe); if (e && h) return `"${e[0]}" beside "${h[0]}"`; }
     return null;
   },
 };
+
+/** Predicates that report and do not gate yet (the gate test leaves them out): each names the step that makes it pass. */
+export const PENDING = new Set(["secondClarify"]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {

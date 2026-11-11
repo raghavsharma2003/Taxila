@@ -14,6 +14,7 @@ import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, SUBJECT_ACCENT, devaReady, shuffled, textBlock } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
 
 const GATE_X = 250, LANE_Y = 330, CATCH_Y = 548;
 interface WordT { w: string; t: number; beat: number }
@@ -268,7 +269,7 @@ function create(api: EngineApi, spec: BeatSpec): EngineInstance {
       for (const f of g.flashes) { const k = api.now() - f.t; if (k < 0.8) api.text(ctx, f.s, f.x, LANE_Y - 100 - k * 30, { font: "ui", size: 48, weight: 700, color: f.c, align: "center", baseline: "middle", alpha: 1 - k / 0.8 }); }
     }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.roundR}/${g.roundN}`, T.onBeat], [String(g.best), T.combo]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.onBeat], [String(g.best), T.combo]] });
     drawCoach(api, ctx, r.mode === "beat" ? T.tap : r.mode === "rhyme" ? T.catch : T.mark, flow.state === "play" ? g.coachA : 0, now, r.mode === "matra" ? 120 : 600);

@@ -5,6 +5,10 @@
 //
 //   node --env-file=.env.local evals/hybrid-side-by-side.mjs [--matrix] [--topic <id>] [--class 6] [--scenario steady,offtopic,stuck] [--cap 150] [--usd 2] [--out <dir>]
 //   node evals/hybrid-side-by-side.mjs --dry      plumbing check: no network, stubbed model lines, nothing to judge
+//   --learners meera,meeraForgot,kabir,player     round 8 (integration 26, "taught this child"): each lesson starts from a seeded
+//                                                 learner (evals/knows-her/seed.mjs: the knows.js plan, warm-up and interests);
+//                                                 with --matrix, every topic × every learner on --scenario (default steady).
+//                                                 Each teacher row carries `because`: the records the walk acted on that turn.
 //
 // No database: the route's own planTurn (routes/lesson.js __test) plans each turn on an in-memory learner state, as
 // tests/learner-live.test.mjs does. The child is scripted (a fixed line per turn, whatever she said), so both lanes hear
@@ -37,6 +41,7 @@ import { heldPicture, pictureTruth } from "../server/brain/picture.js";
 import { gateCtxFor } from "../server/stagecraft/board-sync.js";
 import { entryFor } from "../server/play/levels.js";
 import { askTruth, VISUAL_NOT_YET, VISUAL_DRAWING } from "../server/director/shapes.js";
+import { seedLearner } from "./knows-her/seed.mjs";
 
 const { planTurn } = __test;
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
@@ -205,12 +210,17 @@ async function classOf(state, kit, text, classLevel) {
 }
 
 /** One lesson on one lane: the opening, then every scripted line. */
-async function lesson(lane, kit, classLevel, lines, persona = null) {
+async function lesson(lane, kit, classLevel, lines, persona = null, learner = null) {
+  // round 8: a seeded learner (her plan, warm-up, start records and interests); none = the no-history child as before
+  const seeded = learner ? seedLearner(kit.topicId, learner) : null;
   // H1 (director5): a reactive scripted child answers what is on the table, by persona; else the fixed lines
-  const child = persona ? createReactiveChild({ persona, seed: 7, kit, name: "Riya" }) : null;
+  // (--second-clarify: the stuck child also asks "samajh nahi aaya" twice on one point and one worked step — main's C1 ruling 5)
+  const child = persona ? createReactiveChild({ persona, seed: 7, kit, name: "Riya", clarify2: process.argv.includes("--second-clarify") }) : null;
   const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend baby elephant" }, ageBand: classLevel <= 3 ? "6-9" : "10-15", lang: "hinglish",
-    interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: kit.title ?? kit.topicId, classLevel, sessionId: LESSON.id, teacher: lane };
-  let r = step(initLessonState({ topicId: kit.topicId, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
+    interests: seeded ? seeded.interests : ["cricket"], firstMeeting: !seeded, hasCallback: false, topicTitle: kit.title ?? kit.topicId, classLevel, sessionId: LESSON.id, teacher: lane };
+  const s0 = initLessonState({ topicId: kit.topicId, kit, ctx, seed: 7, now: 0, ...(seeded ? { knows: seeded.plan, warmupItems: seeded.warmup } : {}) });
+  if (seeded && s0.knows) s0.knowsApplied = seeded.applied;
+  let r = step(s0, { event: "start", kit, now: 0 });
   const brief = { firstName: "Riya", classLevel, ageBand: ctx.ageBand, languagePref: "hinglish", interests: ["cricket"], recentWins: [], activeMisconceptions: [],
     memoryCallbacks: [], vibe: { pace: "medium", verbosity: "brief", humour: "medium" }, relationshipStage: "first_meeting (0 sessions together)" };
   let s = { ...r.state, brief, mode: "text", kitVerified: kit.verified, kitHash: kit.hash };
@@ -230,7 +240,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     else openFell = out?.error ?? "no line";
   }
   opening ??= (await textReply({ instructions: instructionsFor(s, kit), state: s, kit, childText: "", ui: r.ui, module: null })).reply;
-  rows.push({ who: "teacher", text: opening, move: openMove, card: say(r), ...(openFell ? { fellBack: openFell } : {}) });
+  rows.push({ who: "teacher", text: opening, move: openMove, card: say(r), ...(openFell ? { fellBack: openFell } : {}), ...(r.state.knowsApplied?.length ? { because: r.state.knowsApplied } : {}) });
   s.recent = [...(s.recent ?? []), { who: "teacher", text: opening }];
   let live = { state: newLearnerState({ childId: CHILD(classLevel).id, classLevel }), maxSeq: 0 };
   // (H1.1: the persona sets its own budget, Learning maxTurnsFor: steady leaves at 40, so skills 2-3 are reached)
@@ -283,6 +293,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     rows.push({ who: "child", text, read: c.outcome + (c.request?.type ? ` · ${c.request.type}` : ""), classifyMs, classifyPath: c.path ?? null });
     lastClassify = { ms: classifyMs, path: c.path ?? null };
     const activeItem = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
+    const knowsBefore = (s.knowsApplied ?? []).length;
     const p = await planTurn(s, c, { kit, child: CHILD(classLevel), lesson: LESSON, activeItem, moduleOnly: false, moduleEvents: [],
       answer: text, childText: text, leaked: false, live: Promise.resolve(live), carried: [], now });
     live = { state: p.learner.after, maxSeq: live.maxSeq };
@@ -559,7 +570,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     if (!heldRec && lane === "director" && reply && next.heldUp?.unit) heldRec = { unit: next.heldUp.unit, changed: false, kept: true, drawn: "kept", pages: [], intent: { unit: next.heldUp.unit, noUnit: true }, layout: { split: false } };
     rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), ...(next?.lastMove?.clarifyN ? { clarifyN: next.lastMove.clarifyN } : {}), ...(tGuard?.j2 ? { j2: { line: tGuard.j2.line ?? null, refused: tGuard.j2.refused ?? [] } } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
       gate: { delivered, answered, verdictGiven, contradictions, contradictionsV6, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),
-      ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
+      ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}),
+      // round 8: the because records this turn acted on (what the judge reads to see why a choice was made)
+      ...((next.knowsApplied ?? []).length > knowsBefore ? { because: next.knowsApplied.slice(knowsBefore) } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
     lastBoardUp = boardUp;
     if (screen?.kind === "whiteboard") lastScreenKey = screenKeyOf(screen);
@@ -571,14 +584,18 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
 
 const md = (name, topic, A, B) => {
   const side = (rows) => rows.map((r) => r.who === "child" ? `**child:** ${r.text}  _(${r.read})_`
-    : `**Asha** [${r.move}${r.beat ? ` · beat ${r.beat}` : ""}${r.check ? ` · check ${r.check.itemId}${r.check.misses ? ` (${r.check.misses} miss)` : ""}${r.check.gave ? " gave" : ""}` : ""}${r.boardUp ? " · board up" : ""}${r.replyReadyMs != null ? ` · ready ${r.replyReadyMs} ms` : ""}${r.fellBack ? ` · fell back: ${r.fellBack}` : ""}${r.guard ? ` · guard ${r.guard.join(",")}` : ""}]: ${r.text}${r.card ? `\n  > card: ${r.card}` : ""}${r.screen ? `\n  > screen: ${r.screen.kind === "game" ? `game ${r.screen.game}` : r.screen.kind === "whiteboard" ? `board ${r.screen.template ?? r.screen.by ?? ""} ${JSON.stringify(r.screen.onScreen ?? {})}${r.screen.boardRef ? ` · ref ${JSON.stringify(r.screen.boardRef)}` : ""}` : `nothing (${r.screen.why})`}` : ""}`).join("\n\n");
+    : `**Asha** [${r.move}${r.beat ? ` · beat ${r.beat}` : ""}${r.check ? ` · check ${r.check.itemId}${r.check.misses ? ` (${r.check.misses} miss)` : ""}${r.check.gave ? " gave" : ""}` : ""}${r.boardUp ? " · board up" : ""}${r.replyReadyMs != null ? ` · ready ${r.replyReadyMs} ms` : ""}${r.fellBack ? ` · fell back: ${r.fellBack}` : ""}${r.guard ? ` · guard ${r.guard.join(",")}` : ""}]: ${r.text}${r.card ? `\n  > card: ${r.card}` : ""}${r.because ? `\n  > because: ${r.because.map((b) => `${b.choice} on ${b.on} ← ${b.fact?.kind}${b.fact?.misconceptionId ? ` ${b.fact.misconceptionId}` : ""}${b.fact?.path ? ` (${b.fact.path})` : ""} [${b.source}]`).join("; ")}` : ""}${r.screen ? `\n  > screen: ${r.screen.kind === "game" ? `game ${r.screen.game}` : r.screen.kind === "whiteboard" ? `board ${r.screen.template ?? r.screen.by ?? ""} ${JSON.stringify(r.screen.onScreen ?? {})}${r.screen.boardRef ? ` · ref ${JSON.stringify(r.screen.boardRef)}` : ""}` : `nothing (${r.screen.why})`}` : ""}`).join("\n\n");
   return `# ${name} · ${topic}${DRY ? " (DRY: stubbed lines, nothing to judge)" : ""}\n\n## Director\n\n${side(A)}\n\n## Agent\n\n${side(B)}\n`;
 };
 
 const MATRIX = process.argv.includes("--matrix");
+const LEARNERS = arg("learners", "").split(",").map((x) => x.trim()).filter(Boolean);
 // H1 (director5): --reactive plays the reactive child (evals/child-sim/reactive.mjs), persona = the scenario name
 const REACTIVE = process.argv.includes("--reactive");
-const runs = MATRIX
+const runs = LEARNERS.length
+  ? (MATRIX ? (arg("topics", "") ? arg("topics", "").split(",").map((t) => [t.trim(), Number(/^c(\d+)-/.exec(t.trim())?.[1] ?? 6)]) : [...MATRIX_TOPICS, ["c5-maths-ch02-t02", 5]])
+    : [[arg("topic", "c6-maths-ch06-t01"), Number(arg("class", "6"))]]).flatMap(([topicId, classLevel]) => LEARNERS.map((learner) => ({ topicId, classLevel, name: arg("scenario", "steady"), learner })))
+  : MATRIX
   ? (arg("topics", "") ? arg("topics", "").split(",").map((t) => [t.trim(), Number(/^c(\d+)-/.exec(t.trim())?.[1] ?? 6)]) : MATRIX_TOPICS).flatMap(([topicId, classLevel]) => (arg("scenario", "") ? arg("scenario", "").split(",").map((x) => x.trim()) : ["steady", "offtopic", "stuck", "steering"]).map((name) => ({ topicId, classLevel, name })))
   : arg("scenario", "steady,offtopic,stuck").split(",").filter((n) => SCENARIOS[n]).map((name) => ({ topicId: arg("topic", "c6-maths-ch06-t01"), classLevel: Number(arg("class", "6")), name }));
 // (a run finished in parts: --skip leaves out lessons already written, by output name)
@@ -591,20 +608,20 @@ if (process.env.TAXILA_R7_SCRIPT && scriptOn()) {
 }
 const dir = OUT;
 mkdirSync(dir, { recursive: true });
-for (const { topicId, classLevel, name: scenario } of runs) {
+for (const { topicId, classLevel, name: scenario, learner = null } of runs) {
   const kit = kitFromFile(getTopic(topicId));
   // (two topics of one class in one run, director5's c5 t01 and t02: named by topic)
-  const name = MATRIX ? (arg("topics", "") ? `${scenario}-${topicId.replace(/-maths-/, "-")}` : `${scenario}-c${classLevel}`) : scenario;
+  const name = learner ? `${learner}-${scenario}-${topicId.replace(/-maths-/, "-")}` : MATRIX ? (arg("topics", "") ? `${scenario}-${topicId.replace(/-maths-/, "-")}` : `${scenario}-c${classLevel}`) : scenario;
   if (SKIP.has(name)) continue;
   // one lane after the other, so neither lane's latency is measured while the other is calling
   // --agent-only: the agent lane alone (main 2026-11-04: the agent half rerun with its production invariants)
   const AGENT_ONLY = process.argv.includes("--agent-only");
-  const A = AGENT_ONLY ? [] : await lesson("director", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null);
+  const A = AGENT_ONLY ? [] : await lesson("director", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null, learner);
   // --director-only: the Director lane alone (main 2026-11-04: the Director-half rerun after block 2; the agent lane is frozen)
   const DIRECTOR_ONLY = process.argv.includes("--director-only");
-  const B = DIRECTOR_ONLY ? [] : await lesson("agent", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null);
+  const B = DIRECTOR_ONLY ? [] : await lesson("agent", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null, learner);
   const deployments = { reply: DEPLOY.reply, classify: DEPLOY.classify, agent: teacherDeployment() };
-  writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario, dry: DRY, deployments, director: A, agent: B }, null, 1) + "\n");
+  writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario, ...(learner ? { learner, knows: seedLearner(topicId, learner).plan } : {}), dry: DRY, deployments, director: A, agent: B }, null, 1) + "\n");
   // (a script run whose lesson walked no script beat is a broken run, never a result: it stops loudly)
   if (process.env.TAXILA_R7_SCRIPT && scriptOn() && A?.length && !A.some((r) => r.beat)) {
     console.error(`NO SCRIPT BEATS: ${name} walked no script beat (${topicId}); stopping`); stopWith(6, "no script beats");

@@ -19,7 +19,7 @@
 // A "continue" board draws on the board before it (src/modules/whiteboard/StudioWhiteboard.tsx priorFor matches boards by
 // size), so a lesson's transform is decided once per (lesson, board size) by its fresh board and REUSED for every
 // continue board on it (rememberTransform / transformFor below), or the two would not line up.
-import { lintScript, opGeometry, TEXT_SIZE } from "../../shared/whiteboard.js";
+import { lintScript, opGeometry, opTextSizes, TEXT_SIZE } from "../../shared/whiteboard.js";
 import type { WhiteboardScript } from "../../shared/studio.ts";
 import { FLOORS } from "../../shared/play.ts";
 
@@ -44,8 +44,9 @@ export function textUnits(script: { ops: Op[] }): number[] {
   const byId = new Map(script.ops.map((o) => [o.id, o]));
   const out: number[] = [];
   for (const o of script.ops) {
-    if (o.op === "text") out.push(TEXT_SIZE[(o.size as "s" | "m" | "l") ?? "m"] ?? TEXT_SIZE.m);
-    else if (o.op === "label") out.push(TEXT_SIZE.s);
+    // (round 8: a text with a stacked fraction counts its numerals' own size: the smaller of the line and its stack)
+    if (o.op === "text") out.push(Math.min(TEXT_SIZE[(o.size as "s" | "m" | "l") ?? "m"] ?? TEXT_SIZE.m, ...opTextSizes(o as never, byId as never)));
+    else if (o.op === "label") out.push(Math.min(TEXT_SIZE.s, ...opTextSizes(o as never, byId as never)));
     else if (o.op === "numwork") {
       try {
         for (const t of opGeometry(o as never, byId as never).texts) if (!t.small) out.push(t.size);

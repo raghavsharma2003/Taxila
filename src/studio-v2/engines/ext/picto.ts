@@ -11,6 +11,7 @@ import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, textBlock } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
+import { dots } from "../../core/dots.ts";
 
 const CHECK = { x: 830, y: 500, w: 140, h: 66 }, COLS = [C.ion, C.sci, C.amber, "#FF8FB1", C.mint];
 function create(api: EngineApi, spec: PictoSpec): EngineInstance {
@@ -38,7 +39,7 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
     g.verdicts[g.ci] = grade.verdict; g.n++; if (grade.verdict === "right") { g.right++; sfx.blip({ f: 600, f2: 900, dur: 0.12, type: "triangle", gain: 0.14 }); api.fx.burst(500, g.claimY, { n: 16, color: C.mint, speed: 300, life: 0.4, size: 8 }); } else { sfx.blip({ f: 220, f2: 140, dur: 0.2, gain: 0.14 }); api.fx.shake(3, 0.15); }
     g.ci++; g.claimY = 150; if (g.ci >= r.claims.length) { g.answered = true; g.revealT = 0; }
   }
-  const counterBtns = () => { const n = rd().cats.length, w = Math.min(180, (W - 100) / n - 14); return rd().cats.map((c, i) => ({ i, x: 60 + i * ((W - 100) / n), y: 440, w, h: 140 })); };
+  const counterBtns = () => { const n = rd().cats.length, w = Math.min(250, (W - 100) / n - 14); /* a fruit name fits its bin at the young floor */ return rd().cats.map((c, i) => ({ i, x: 60 + i * ((W - 100) / n), y: 440, w, h: 140 })); };
   const rowY = (i: number) => 196 + i * 72;
   const AX = { x0: 210, y0: 500, h: 290 }, barX = (i: number) => AX.x0 + 40 + i * Math.min(130, 560 / rd().cats.length), barW = () => Math.min(90, 560 / rd().cats.length - 30);
   const maxV = () => { const r = rd(); const m = Math.max(...r.cats.map((c) => c.count)); return Math.ceil((m * 1.15) / r.scale) * r.scale; };
@@ -120,7 +121,7 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
     }
     if (r.mode === "picto" || r.mode === "bars") { const on = !done; ctx.save(); ctx.fillStyle = on ? "rgba(203,255,77,.14)" : "rgba(255,255,255,.04)"; roundRect(ctx, CHECK.x, CHECK.y, CHECK.w, CHECK.h, 16); ctx.fill(); ctx.strokeStyle = on ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, T.check, CHECK.x + CHECK.w / 2, CHECK.y + CHECK.h / 2 + 2, { font: "display", size: 38, weight: 800, color: on ? C.volt : C.ink3, align: "center", baseline: "middle" }); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.verdicts.filter((v) => v === "right").length}/${g.verdicts.length}`, T.right]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.right]] });
     drawCoach(api, ctx, T.coach, flow.state === "play" && r.mode === "tally" ? g.coachA : 0, now, 150);

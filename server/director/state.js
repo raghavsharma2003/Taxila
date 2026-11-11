@@ -39,7 +39,7 @@ import { skillSess } from "../comprehension/budget.js";
 import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
-import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark } from "./knows-walk.js";
+import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -1308,7 +1308,7 @@ function poseNext(s, input, prefix, preferred) {
   const verifying = s.verify && !skipped.has(`diag:${s.verify}`) ? findItem(s, kit, `diag:${s.verify}`) : null;
   // (v6.10: a script card answered right this lesson is never posed again in it)
   const rightNow = (it) => !!it && String(it.id).startsWith("script:") && (s.rightCards ?? []).includes(it.id) ? null : it;
-  const item = rightNow(preferred) ?? verifying ?? rightNow(queued) ?? selectNext(s, kit, { easier: s.easier });
+  const item = knowsPick(s, kit, rightNow(preferred) ?? verifying ?? rightNow(queued) ?? selectNext(s, kit, { easier: s.easier }), { preferred, verifying, queued, easier: s.easier }); // round 8: the kit-practice pick, logged and explained
   if (verifying && queued) s.queue = [queued.id, ...s.queue.filter((id) => id !== queued.id)];
   s.nextItemId = undefined; s.easier = false; s.verify = undefined;
   if (!item) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix, kit);
@@ -2815,8 +2815,35 @@ const isScriptCard = scriptCardOf;
  *   "module": a module-only turn; `cls` is set only for a machine-truth module answer on the active item.
  * @returns the step; `hold: true` when a module-only turn changed nothing (the last move and UI stand).
  */
+/** Her last line said a key and posed no card (a give-up's or a close's check-in): what she said, not which path built it. */
+function keySaidNoCard(prev) {
+  const lastT = String([...(prev?.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").replace(/\s+/g, " ");
+  const card = String(prev?.lastUi?.ask?.text ?? "").replace(/\s+/g, " ").slice(0, 30);
+  return /(?:sahi jawab|jawab hai|jawab:|poora jawab|the answer (?:is|was))/i.test(lastT) && !(card && lastT.includes(card));
+}
+/** The part a move is about: its live card and its beat. */
+const partOf = (st, mv) => { const b = mv?.scriptBeat; return `${st?.activeItemId ?? st?.splitHold?.activeItemId ?? ""}|${b ? `${b.skillId}:${b.beatId}` : ""}`; };
+/** "Samajh nahi aaya" and its kin: a clarify, whatever request the reader named. */
+const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|didn'?t\s+understand|don'?t\s+understand|kya\s+matlab)(?![\p{L}])/iu;
 export function step(prev, input) {
+  // (main on C1 ruling 5, the stuck child's "samajh nahi aaya" after a key's check-in: read as "another", it moved to the next point
+  // and posed its card — clarifyCard. The child's words say clarify: so does the request)
+  if (input?.event === "turn" && input.cls?.request?.type === "another" && SAYS_CLARIFY.test(String(input.text ?? "")) && !input.cls.flags?.distress
+    && keySaidNoCard(prev))
+    input = { ...input, cls: { ...input.cls, request: { ...input.cls.request, type: "clarify", src: "says_clarify" } } };
   const out = step0(prev, input);
+  // (dc-r8-second-clarify-shows-not-rewords, main's reversal clause: the judges count second-clarify rows. A clarify on the same live
+  // part as the clarify before it is the n-th, recorded on the move, on every path (a held half included); any other turn ends the run)
+  if (out?.state && input?.event === "turn") {
+    // (the same part: the one her last re-explanation was about is the one they still do not get)
+    const partKey = partOf(prev, prev?.lastMove);
+    const clar = out.move?.request === "clarify" || input.cls?.request?.type === "clarify" || SAYS_CLARIFY.test(String(input.text ?? ""));
+    if (clar) {
+      const n = prev?.clarifyRun?.key === partKey ? prev.clarifyRun.n + 1 : 1;
+      out.state.clarifyRun = { key: partOf(out.state, out.state.lastMove), n };
+      if (out.state.lastMove) out.state.lastMove = { ...out.state.lastMove, clarifyN: n };
+    } else out.state.clarifyRun = undefined;
+  }
   // (v6.11 G2, main on director19: "Phir se dekho:" on cards never asked — a card is posed when the turn that goes out carries it,
   // whatever path built that turn (a split's held half included); a pose her line did not say, A4's cardUnsaid, is no posing)
   const askF = out?.ui?.ask?.itemId;
@@ -3341,11 +3368,6 @@ function step0(prev, input) {
   }
   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
   if (p.request) move.request = p.request;
-  // (dc-r8-second-clarify-shows-not-rewords, main's reversal clause: the judges count second-clarify rows — a clarify on the same live
-  // part as the clarify before it is the n-th, recorded on the move; any other turn ends the run)
-  { const partKey = `${s.activeItemId ?? ""}|${prev?.lastMove?.scriptBeat ? `${prev.lastMove.scriptBeat.skillId}:${prev.lastMove.scriptBeat.beatId}` : ""}`;
-    if (p.request === "clarify") { const n = prev?.clarifyRun?.key === partKey ? prev.clarifyRun.n + 1 : 1; s.clarifyRun = { key: partKey, n }; move.clarifyN = n; }
-    else s.clarifyRun = undefined; }
   // (v6.11 G2: how many times each joint kind has been said this lesson — brain/say.js rotates the authored forms by it)
   if (p.request === "language") s.langN = (s.langN ?? 0) + 1;
   if (["ask_again", "unheard"].includes(p.request)) s.askAgainN = (s.askAgainN ?? 0) + 1;

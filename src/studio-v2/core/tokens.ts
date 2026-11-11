@@ -6,6 +6,10 @@ export const SAFE = {
   pip: { x: W - 162.5, y: 0, w: 162.5, h: 162.5 },   // top-right square, 26% of the short side: the teacher
 };
 export const MIN = { label: 38, value: 48, stroke: 4, target: 130 };
+/** Classes 4-5 (the stage's `young` flag): the play floor is 16 px, and a 412 px phone gives the world about 0.376 px per
+ *  unit, so no text a young child sees is drawn below 43 units (16 / 0.376). Applied once, in the shared text helper
+ *  (draw.ts makeText), never per engine; engines read it as `api.minLabel` for their layout math. */
+export const MIN_YOUNG = { label: 43 } as const;
 export const C = {
   bg: "#0A0C12", bg1: "#10131B", bg2: "#161A24", bg3: "#1F2431", stage: "#0D1017", board: "#0E1118",
   ink: "#F2F4F8", ink2: "#A9B0C0", ink3: "#848CA0",

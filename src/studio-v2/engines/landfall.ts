@@ -7,7 +7,9 @@ import { C, W, H } from "../core/tokens.ts";
 import { clamp, ease, lerp, rng } from "../core/math.ts";
 import { bloom, card, glow, magnifier, roundRect, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
+import { drawCoach } from "../core/ui.ts";
 import type { EngineApi, EngineDef, EngineInstance, Knob } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
 const LINE_Y = 505, X0 = 120, X1 = 880, LOCK_Y = 352, SPAWN_Y = 150, BASE_HALF = 50;
 const TOL = { exact: 12, close: 28 };
@@ -150,7 +152,7 @@ function create(api: EngineApi, spec: LandfallSpec): EngineInstance {
   }
   function syncHud() {
     if (g.waveIdx < 0) return;
-    hud.set("wave", `${g.waveIdx + 1}/${waves.length}`);
+    hud.set("wave", `${dots(g.waveIdx, waves.length)}`);
     hud.set("chain", `×${g.chain}`, { tone: g.chain >= 5 ? "ion" : null, bump: true });
     const p = g.results.length ? precisionOf(g.results) : null;
     hud.set("prec", p == null ? "—" : `${p}%`, { meter: p == null ? 0 : p / 100, tone: p != null && p >= 90 ? "mint" : null });
@@ -190,7 +192,8 @@ function create(api: EngineApi, spec: LandfallSpec): EngineInstance {
     if (g.state === "intro" || g.introA > 0.01) drawIntro(ctx);
     if (g.endCard && g.endCard.a > 0.01) drawEnd(ctx, g.endCard);
     if (g.finalCard) drawFinal(ctx, g.finalCard);
-    if (g.coachA > 0.01 && g.state !== "boot") api.text(ctx, T.coach, 500, 600, { font: "mono", size: 38, weight: 500, color: C.ink2, align: "center", alpha: g.coachA * (0.65 + 0.35 * Math.sin(now * 4)) });
+    // below the number line's labels (they end at y 573) and between its ends; wraps rather than run into them
+    if (g.state !== "boot") drawCoach(api, ctx, T.coach, g.coachA, now, 612, 760);
     fx.drawScreen(ctx);
   }
   function drawLine(ctx: Ctx) {

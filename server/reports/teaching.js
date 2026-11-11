@@ -14,7 +14,7 @@ import { COUNTED_LESSON_SQL } from "./truth.js";
 import { madeForOf } from "./madeFor.js";
 import { WAY_LABEL } from "./templates.js";
 import { getKit } from "../content/index.js";
-import { becauseLines } from "../director/knows-words.js";
+import { becauseLines, trailLine } from "../director/knows-words.js";
 
 const n2 = (n) => (n === 1 ? "once" : n === 2 ? "twice" : `${n} times`);
 /** " twice" / " 3 times"; nothing for once (a single move needs no count). */
@@ -88,6 +88,30 @@ export function becauseOf(rows, { name, lang, kit = null, seed = 0 }) {
   return becauseLines(recs, { lang, name, seed, skills, mixups, topics });
 }
 
+/**
+ * PURE. round 8 Play (docs/patches/to-learning/011): the last week's play from the flight recorder (trace_event: play.mount
+ * and play.next carry the level's `because`, play.outcome its `trail`) → the parent's lines through knows-words. Titles:
+ * the game by its family name; a mix-up by the kit's belief (as the lesson lines do).
+ * @param {{ kind: string, data: any }[]} rows newest first
+ */
+export function playLinesOf(rows, { name, lang, seed = 0, mixups = {} } = {}) {
+  const because = [], trails = [];
+  for (const r of rows ?? []) {
+    let d = r?.data ?? {};
+    if (typeof d === "string") { try { d = JSON.parse(d); } catch { d = {}; } }
+    if ((r.kind === "play.mount" || r.kind === "play.next") && Array.isArray(d.because)) because.push(...d.because.filter((b) => String(b?.kind ?? "").startsWith("play.")));
+    if (r.kind === "play.outcome" && d.trail && typeof d.trail === "object") trails.push(d.trail);
+  }
+  const games = {};
+  for (const x of [...because.map((b) => /([a-z][a-z-]*\/[a-z][a-z0-9-]*)/.exec(String(b.choice ?? ""))?.[1]), ...trails.map((t) => t.game)]) {
+    if (typeof x === "string" && x) { const f = x.split("/")[0]; games[x] = f.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join("-"); }
+  }
+  return {
+    because: becauseLines(because, { name, lang, seed, games, mixups }).slice(0, 6),
+    trail: trails.slice(0, 5).map((t) => trailLine(t, { lang, games })).filter(Boolean),
+  };
+}
+
 /** Fixed copy: how the teacher works, the same for every child (no claim about the child). */
 export const APPROACH = Object.freeze([
   "Starts each lesson with a few questions from earlier topics, so they stay fresh.",
@@ -113,6 +137,19 @@ export async function teachingOf(child, { T, q = dbq } = {}) {
   const knows = ids.length ? await q("select lesson_id, point_id, options from decision_record where lesson_id = any($1::uuid[]) and point_id like 'knows.%' order by id",
     [ids]).catch(() => []) : [];
   const kits = new Map(await Promise.all([...new Set(lessons.map((l) => l.topic_id))].map(async (t) => [t, await getKit(t, { generate: false }).catch(() => null)])));
+  // round 8 Play: the last week's games (the play routes' flight-recorder rows for this child)
+  const playRows = await q("select kind, data from trace_event where cid = $1 and kind in ('play.mount', 'play.next', 'play.outcome') and t > now() - interval '7 days' order by t desc limit 60",
+    [child.id]).catch(() => []);
+  const mixIds = [...new Set(playRows.flatMap((r) => (Array.isArray(r?.data?.because) ? r.data.because.map((b) => b?.mis) : [])).filter((x) => typeof x === "string"))];
+  const kitsByTopic = new Map();
+  const mixups = {};
+  for (const id of mixIds) {
+    const topic = /^(c\d-[a-z]+-ch\d+-t\d+)-/.exec(id)?.[1];
+    if (!topic) continue;
+    if (!kitsByTopic.has(topic)) kitsByTopic.set(topic, await getKit(topic, { generate: false }).catch(() => null));
+    const b = kitsByTopic.get(topic)?.misconceptions?.find((x) => x.id === id)?.belief;
+    if (b) mixups[id] = { en: b };
+  }
   return {
     approach: APPROACH,
     lessons: lessons.map((l) => ({
@@ -122,5 +159,6 @@ export async function teachingOf(child, { T, q = dbq } = {}) {
       because: becauseOf(knows.filter((r) => String(r.lesson_id) === String(l.id)), { name: child.first_name, lang: child.language_pref, kit: kits.get(l.topic_id), seed: String(l.id) }),
     })),
     madeFor,
+    play: playLinesOf(playRows, { name: child.first_name, lang: child.language_pref, seed: String(child.id), mixups }),
   };
 }

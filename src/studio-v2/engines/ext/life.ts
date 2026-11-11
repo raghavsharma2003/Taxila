@@ -15,6 +15,7 @@ import { sfx } from "../../core/sfx.ts";
 import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, taskPill } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
 
 const SL = { x0: 800, x1: 960, y: 560 };
 const JUICE_COL: Record<string, string> = { saliva: "#9FE7FF", gastric: "#FF8F6B", bile: "#C6E85C", pancreatic: "#FFD36B" };
@@ -174,7 +175,7 @@ function create(api: EngineApi, spec: LifeSpec): EngineInstance {
     }
     if (done) { if (r.mode === "leaf") pill(api, ctx, g.detail, 380, 250, { color: ok ? C.mint : C.amber, size: 38 }); else if (r.mode === "breath") pill(api, ctx, g.detail, 400, 600, { color: ok ? C.mint : C.amber, size: 38 }); if (ok) tick(ctx, 960, 200, C.mint, 1); else magnifier(ctx, 955, 200, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
   }

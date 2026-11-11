@@ -71,8 +71,10 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
   // (Brain, merging Learning D13 60740c37 with this: c4 s2's new e3 boards — 20 marbles as 2 groups of 10 — draw no view, so
   // equal-groups is 6/10 on D13's data, 8/10 before it; Studio to say whether those two boards should get one)
   assert.deepEqual(got, {
-    "fraction-parts@1": "13/13", "wholes@1": "17/17", "shade-grid@1": "1/4", "equal-groups@1": "8/10", "compare@1": "0/3",
-    "fraction-bars@1": "16/19", "fraction-line@1": "42/65", "measured@1": "20/20", "shape@1": "1/7" }, JSON.stringify(got));
+    "fraction-parts@1": "13/13", "wholes@1": "17/17", "shade-grid@1": "1/4", "equal-groups@1": "8/10", "compare@1": "1/3",
+    // (round 8 board grammar, C1: 16 → 17 and 42 → 47 — with fractions stacked, five more
+    // two-scale line views and one bars view now lay out in the split's panel; every one passes the per-view checks above)
+    "fraction-bars@1": "17/19", "fraction-line@1": "47/65", "measured@1": "20/20", "shape@1": "1/7" }, JSON.stringify(got));
   void none;
 });
 

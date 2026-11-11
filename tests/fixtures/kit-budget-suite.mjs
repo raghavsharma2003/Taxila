@@ -12,6 +12,7 @@ import { CHARACTERS, sheetFor } from "../../server/compiler/characters/index.js"
 import { initLessonState, branchesFor } from "../../server/director/state.js";
 import { buildPracticeQueue, findItem, promptFor, revealsAnswer } from "../../server/director/items.js";
 import * as SH from "../../server/director/shapes.js";
+import { setScriptForTest } from "../../server/director/script.js";
 
 const DIR = new URL("../../data/kits/", import.meta.url);
 /** One test file per class (tests/kit-budget-c<N>.test.mjs), so shards run them in parallel; kit-budget-lint covers all. */
@@ -130,4 +131,10 @@ test(`${band}: every queued item and diagnostic compiles on both lanes, every la
   }
   console.log(`# compiled ${n} lesson states without a BudgetError`);
 });
+
+// initLessonState / compile over the REAL kits load each topic's real lesson script into server/director/script.js's per-topic
+// cache (scriptFor reads once per topic per process). Under --experimental-test-isolation=none that cache outlives this file, and a
+// later suite that drives a mini-kit on the same topicId (learner-live, p5-interaction, r7-brain-methods use c4-maths-ch05-t01)
+// walks the real script instead of its own items. A file-level after() runs only when every file is done: clear it as the last test.
+test(`${band}: cleanup: the script cache this file filled is cleared for the next suite`, () => { setScriptForTest(); });
 }

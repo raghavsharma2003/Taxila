@@ -10,6 +10,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
 import { pill } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
 const NODE: Record<SpeciesId, XY> = { grass: [500, 548], insects: [330, 428], deer: [670, 428], frog: [330, 300], snake: [330, 176], tiger: [670, 300] };
 /** labels sit beside nodes (left column to the left, right column to the right) so they never cover another node */
@@ -31,9 +32,9 @@ function create(api: EngineApi, spec: FoodSpec): EngineInstance {
     api.resetLog("eco");
     g.si = i; g.stepT = 0; g.verdicts = {}; g.pick = null; g.truth = null; g.removed = null; g.actions = []; g.lost = new Set(); g.day = 0; g.dayF = 0; g.run = []; g.cool = {};
     const s = spec.steps[i];
-    if (s.kind === "arrows") { g.phase = "draw"; g.arrows = []; api.task(`${T.step} ${i + 1}/${spec.steps.length}`, T.arrows); }
-    else if (s.kind === "predict-remove") { g.phase = "predict"; api.task(`${T.step} ${i + 1}/${spec.steps.length}`, `${T.remove} the ${SPECIES[s.remove].name.toLowerCase()}. ${SPECIES[s.watch].name}?`); }
-    else { g.phase = "manage"; g.run = ecoRun(species, 0); api.task(`${T.step} ${i + 1}/${spec.steps.length}`, `Keep every species alive for ${s.days} days`); }
+    if (s.kind === "arrows") { g.phase = "draw"; g.arrows = []; api.task(`${T.step} ${dots(i, spec.steps.length)}`, T.arrows); }
+    else if (s.kind === "predict-remove") { g.phase = "predict"; api.task(`${T.step} ${dots(i, spec.steps.length)}`, `${T.remove} the ${SPECIES[s.remove].name.toLowerCase()}. ${SPECIES[s.watch].name}?`); }
+    else { g.phase = "manage"; g.run = ecoRun(species, 0); api.task(`${T.step} ${dots(i, spec.steps.length)}`, `Keep every species alive for ${s.days} days`); }
     api.event("step_start", { step: i + 1, kind: s.kind, targets: s.targets ?? null });
   }
   const nodeAt = (x: number, y: number): SpeciesId | null => { for (const id of species) { const [nx, ny] = NODE[id]; if (Math.hypot(x - nx, y - ny) < NR + 14) return id; } return null; };
@@ -78,8 +79,8 @@ function create(api: EngineApi, spec: FoodSpec): EngineInstance {
     for (const a of g.arrows) g.verdicts[a] = truthLinks.includes(a) ? "ok" : truthLinks.includes(a.split(">").reverse().join(">")) ? "rev" : "bad";
     for (const l of truthLinks) if (!g.arrows.includes(l) && !g.arrows.includes(l.split(">").reverse().join(">"))) g.verdicts[l] = "missing";
     g.phase = "checked"; g.stepT = 0; g.results.push(grade.verdict);
-    if (grade.verdict === "right") { api.fx.flash(C.mint, 0.1); sfx.blip({ f: 523, f2: 1046, dur: 0.2, type: "triangle", gain: 0.18 }); api.task(`${T.step} ${g.si + 1}/${spec.steps.length}`, "Energy flows from the food to the eater", "done"); }
-    else api.task(`${T.step} ${g.si + 1}/${spec.steps.length}`, "Arrows point from the food to the eater", "warn");
+    if (grade.verdict === "right") { api.fx.flash(C.mint, 0.1); sfx.blip({ f: 523, f2: 1046, dur: 0.2, type: "triangle", gain: 0.18 }); api.task(`${T.step} ${dots(g.si, spec.steps.length)}`, "Energy flows from the food to the eater", "done"); }
+    else api.task(`${T.step} ${dots(g.si, spec.steps.length)}`, "Arrows point from the food to the eater", "warn");
     api.facts({ step: "arrows", verdict: grade.verdict, ...(grade.detail ? { detail: grade.detail } : {}) });
   }
   function startRemoval(s: Extract<Step, { kind: "predict-remove" }>) {
@@ -116,7 +117,7 @@ function create(api: EngineApi, spec: FoodSpec): EngineInstance {
       if (g.day >= s.days) {
         const grade = api.answer(`s${g.si + 1}`, { $hostLog: "eco" }, g.lost.size === 0 ? "right" : "wrong");
         g.results.push(grade.verdict); g.phase = "done"; g.stepT = 0;
-        api.task(`${T.step} ${g.si + 1}/${spec.steps.length}`, grade.verdict === "right" ? T.done : `${T.lost}: ${[...g.lost].map((x) => SPECIES[x].name).join(", ")}`, grade.verdict === "right" ? "done" : "warn");
+        api.task(`${T.step} ${dots(g.si, spec.steps.length)}`, grade.verdict === "right" ? T.done : `${T.lost}: ${[...g.lost].map((x) => SPECIES[x].name).join(", ")}`, grade.verdict === "right" ? "done" : "warn");
         if (grade.verdict === "right") { api.fx.flash(C.mint, 0.12); sfx.blip({ f: 392, f2: 784, dur: 0.3, type: "triangle", gain: 0.18 }); }
         api.facts({ step: "keep-alive", lost: [...g.lost].join(",") || "none", verdict: grade.verdict, actions: g.actions.length });
       }

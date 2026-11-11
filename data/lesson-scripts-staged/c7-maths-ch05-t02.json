@@ -14,7 +14,7 @@
   { "hi": "tirchhi", "en": "slanting / tilted" },
   { "hi": "set-square", "en": "set-square" },
   { "hi": "mod / crease", "en": "fold / crease" }
- ], "joints": {"asidePark":[{"hi":"Achha, {aside} wali baat main yaad rakhti hoon, thodi der mein usi par aayenge.","en":"Okay, I'll keep the {aside} bit in mind, and we'll come back to it soon."},{"hi":"Yeh rekhaon wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once these lines is done, we will surely talk about {aside}."},{"hi":"Wah, {aside} ki baat sambhaal ke rakhi hai, baad mein zaroor sunungi.","en":"Oh, I've kept the {aside} bit safe, and I'll surely hear it later."}],"asideReturn":[{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"},{"hi":"{aside} mein kya kuch seedhi rekhaon jaisa dikhta hai?","en":"Does anything in {aside} look like straight lines?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."}]},
+ ], "joints": {"asidePark":[{"hi":"Yeh rekhaon wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once these lines is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh rekhaon wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once these lines is over."},{"hi":"Mazedaar, {aside} ki baat hum zaroor karenge, bas thodi der mein.","en":"Fun, we will surely talk about {aside}, just in a little while."}],"asideReturn":[{"hi":"{aside} mein kya kuch seedhi rekhaon jaisa dikhta hai?","en":"Does anything in {aside} look like straight lines?"},{"hi":"{aside} wali baat batao na, tumne pehli baar kab kiya?","en":"Tell me about {aside}: when did you first do it?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"}],"hindiSwitch":[{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in English."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."}],"askAgain":[{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."}]},
  "skills": [
   {
    "skillId": "c7-maths-ch05-t02-s1",
@@ -62,7 +62,7 @@
       "prompt": { "hi": "AB aur CD ke beech doori 3 cm hai. CD ke neeche ek teesri line EF kheenchi, jo CD ke parallel hai aur CD se 2 cm door hai. AB aur EF ke beech doori kitni hai?", "en": "The gap between AB and CD is 3 cm. Below CD a third line EF is drawn, parallel to CD and 2 cm away from it. What is the gap between AB and EF?" },
       "key": "5 cm",
       "accept": ["5", "5 centimetre", "5 centimetres"],
-      "why": { "hi": "AB se CD 3 cm hai aur CD se EF 2 cm, aur 3 + 2 = 5", "en": "AB to CD is 3 cm and CD to EF is 2 cm, and 3 + 2 = 5" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "AB se CD", "items": ["3 cm"]}, "right": {"title": "CD se EF", "items": ["2 cm"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "AB se CD", "items": ["3 cm"]}, "right": {"title": "CD se EF", "items": ["2 cm"]}} }
+      "why": { "hi": "AB se CD 3 cm hai aur CD se EF 2 cm, aur 3 + 2 = 5", "en": "AB to CD is 3 cm and CD to EF is 2 cm, and 3 + 2 = 5" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "AB se CD", "items": ["3 cm"]}, "right": {"title": "CD se EF", "items": ["2 cm"]}, "mark": {"side": "left", "add": "jawab: 5 cm"}} }, "board": { "template": "compare@1", "params": {"left": {"title": "AB se CD", "items": ["3 cm"]}, "right": {"title": "CD se EF", "items": ["2 cm"]}} }
      },
      "simpler": { "hi": "Parallel lines ke beech doori har jagah ek jaisi rehti hai, jaise yahan dono kinaaron par 3 cm. Isliye woh kabhi nahi milti.", "en": "The gap between parallel lines stays the same everywhere, like 3 cm at both edges here. That is why they never meet." }
     },
@@ -85,7 +85,7 @@
       "accept": ["yes", "haan, parallel hain", "parallel", "haan parallel"],
       "targets": "c7-maths-ch05-t02-m-same-length",
       "wrongIfMis": "nahi",
-      "why": { "hi": "segment PQ ki lambai 2 cm aur RS ki 7 cm, par disha ek hai aur doori dono jagah 4 cm", "en": "PQ is 2 cm and RS 7 cm, but they share one direction and a 4 cm gap" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "segment PQ", "items": ["lambai 2 cm"]}, "right": {"title": "segment RS", "items": ["lambai 7 cm"]}} }
+      "why": { "hi": "segment PQ ki lambai 2 cm aur RS ki 7 cm, par disha ek hai aur doori dono jagah 4 cm", "en": "PQ is 2 cm and RS 7 cm, but they share one direction and a 4 cm gap" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "segment PQ", "items": ["lambai 2 cm"]}, "right": {"title": "segment RS", "items": ["lambai 7 cm"]}, "mark": {"side": "right", "add": "jawab: haan"}} }
      },
      "simpler": { "hi": "Chhote segment ko bhi aage badhaya ja sakta hai. Parallel ke liye lambai nahi, sirf disha aur doori dekhte hain.", "en": "Even a short segment can be extended. For parallel, we look only at direction and gap, not length." }
     },
@@ -107,7 +107,7 @@
       "accept": ["40", "40 centimetre", "40 centimetres"],
       "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
       "wrongIfMis": "kabhi nahi",
-      "why": { "hi": "daayein kinaare par doori 4 cm hai, aur har 10 cm mein 1 cm ghatti hai: 4 × 10 = 40", "en": "the gap at the right edge is 4 cm, and it shrinks 1 cm every 10 cm: 4 × 10 = 40" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "daayein kinaare", "items": ["doori 4 cm"]}, "right": {"title": "1 cm ghatti", "items": ["har 10 cm"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "daayein kinaare", "items": ["doori 4 cm"]}, "right": {"title": "1 cm ghatti", "items": ["har 10 cm"]}} }
+      "why": { "hi": "daayein kinaare par doori 4 cm hai, aur har 10 cm mein 1 cm ghatti hai: 4 × 10 = 40", "en": "the gap at the right edge is 4 cm, and it shrinks 1 cm every 10 cm: 4 × 10 = 40" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "daayein kinaare", "items": ["doori 4 cm"]}, "right": {"title": "1 cm ghatti", "items": ["har 10 cm"]}, "mark": {"side": "left", "add": "jawab: 40 cm"}} }, "board": { "template": "compare@1", "params": {"left": {"title": "daayein kinaare", "items": ["doori 4 cm"]}, "right": {"title": "1 cm ghatti", "items": ["har 10 cm"]}} }
      },
      "simpler": { "hi": "Yahan doori 6 cm se ghat kar 4 cm ho gayi. Ghatti doori matlab lines paas aa rahi hain, aage jaakar zaroor milengi.", "en": "Here the gap shrinks from 6 cm to 4 cm. A shrinking gap means the lines are coming closer, and further on they will surely meet." }
     }
@@ -142,7 +142,7 @@
      "accept": ["yes", "haan, parallel hain", "parallel", "haan parallel"],
      "targets": "c7-maths-ch05-t02-m-same-length",
      "wrongIfMis": "nahi",
-     "simpler": { "hi": "Parallel ke liye lambai nahi, sirf doori dekhte hain. Yahan doori har jagah 25 cm hi hai.", "en": "For parallel we look at the gap, not the length. Here the gap is 25 cm everywhere." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar wali shelf", "items": ["90 cm", "doori 25 cm"]}, "right": {"title": "neeche wali shelf", "items": ["60 cm", "doori 25 cm"]}} }, "why": { "hi": "upar wali shelf 90 cm aur neeche wali 60 cm hai, par doori har jagah 25 cm", "en": "the top shelf is 90 cm and the bottom one 60 cm, but the gap is 25 cm everywhere" }
+     "simpler": { "hi": "Parallel ke liye lambai nahi, sirf doori dekhte hain. Yahan doori har jagah 25 cm hi hai.", "en": "For parallel we look at the gap, not the length. Here the gap is 25 cm everywhere." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar wali shelf", "items": ["90 cm", "doori 25 cm"]}, "right": {"title": "neeche wali shelf", "items": ["60 cm", "doori 25 cm"]}, "mark": {"side": "right", "add": "jawab: haan"}} }, "why": { "hi": "upar wali shelf 90 cm aur neeche wali 60 cm hai, par doori har jagah 25 cm", "en": "the top shelf is 90 cm and the bottom one 60 cm, but the gap is 25 cm everywhere" }
     },
     "answer": { "hi": "haan, dono shelves parallel hain", "en": "yes, the two shelves are parallel" },
     "why": {
@@ -164,7 +164,7 @@
      "wrongIfMis": "nahi",
      "board": { "template": "compare@1", "params": { "left": { "title": "segment EF", "items": ["5 cm"] }, "right": { "title": "segment GH", "items": ["11 cm"] } } },
      "why": { "hi": "segment EF 5 cm aur GH 11 cm hai, par disha ek hai aur doori dono siron par 3 cm", "en": "EF is 5 cm and GH 11 cm, but they share one direction and a 3 cm gap" },
-     "simpler": { "hi": "Lambai alag hone se farak nahi padta. Disha ek hai aur dono siron par doori 3 cm hai, bas yahi dekho.", "en": "Different lengths do not matter. The direction is the same and the gap is 3 cm at both ends; look only at that." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "segment EF", "items": ["5 cm"]}, "right": {"title": "segment GH", "items": ["11 cm"]}} }
+     "simpler": { "hi": "Lambai alag hone se farak nahi padta. Disha ek hai aur dono siron par doori 3 cm hai, bas yahi dekho.", "en": "Different lengths do not matter. The direction is the same and the gap is 3 cm at both ends; look only at that." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "segment EF", "items": ["5 cm"]}, "right": {"title": "segment GH", "items": ["11 cm"]}, "mark": {"side": "right", "add": "jawab: haan"}} }
     },
     {
      "id": "c2",
@@ -178,7 +178,7 @@
      "wrongIfMis": "dono",
      "board": { "template": "compare@1", "params": { "left": { "title": "joda A", "items": ["baayein 5 cm", "daayein 5 cm"] }, "right": { "title": "joda B", "items": ["baayein 5 cm", "daayein 4 cm"] } } },
      "why": { "hi": "joda A ki doori baayein 5 cm aur daayein 5 cm hai, par joda B ki daayein 4 cm", "en": "pair A's gap is 5 cm left and 5 cm right, but pair B's right gap is 4 cm" },
-     "simpler": { "hi": "Jis jode ki doori baayein aur daayein ek jaisi ho, wahi parallel hai. Dono jodon ke number milao.", "en": "The pair whose gap is the same on the left and the right is the parallel one. Compare the numbers for both pairs." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "joda A", "items": ["baayein 5 cm", "daayein 5 cm"]}, "right": {"title": "joda B", "items": ["baayein 5 cm", "daayein 4 cm"]}} }
+     "simpler": { "hi": "Jis jode ki doori baayein aur daayein ek jaisi ho, wahi parallel hai. Dono jodon ke number milao.", "en": "The pair whose gap is the same on the left and the right is the parallel one. Compare the numbers for both pairs." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "joda A", "items": ["baayein 5 cm", "daayein 5 cm"]}, "right": {"title": "joda B", "items": ["baayein 5 cm", "daayein 4 cm"]}, "mark": {"side": "left"}} }
     }
    ],
    "ladder": [
@@ -206,7 +206,7 @@
       "wrongIfMis": "CD",
       "board": { "template": "compare@1", "params": {"left": {"title": "AB se CD", "items": ["2 cm se 1 cm"]}, "right": {"title": "AB se EF", "items": ["har jagah 2 cm"]}} },
       "why": { "hi": "AB se EF doori har jagah 2 cm hai, par AB se CD 2 cm se 1 cm ho jaati hai", "en": "AB to EF is 2 cm everywhere, but AB to CD goes from 2 cm to 1 cm" },
-      "simpler": { "hi": "Parallel line tak doori har jagah same rehti hai. Dono lines ke liye dekho, kiski doori badalti nahi.", "en": "The gap to a parallel line stays the same everywhere. Check both lines and see whose gap does not change." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "AB se CD", "items": ["2 cm se 1 cm"]}, "right": {"title": "AB se EF", "items": ["har jagah 2 cm"]}} }
+      "simpler": { "hi": "Parallel line tak doori har jagah same rehti hai. Dono lines ke liye dekho, kiski doori badalti nahi.", "en": "The gap to a parallel line stays the same everywhere. Check both lines and see whose gap does not change." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "AB se CD", "items": ["2 cm se 1 cm"]}, "right": {"title": "AB se EF", "items": ["har jagah 2 cm"]}, "mark": {"side": "right", "add": "jawab: EF"}} }
      }
     },
     {
@@ -226,7 +226,7 @@
       "wrongIfMis": "kabhi nahi",
       "board": { "template": "compare@1", "params": {"left": {"title": "7 cm wali jagah", "items": ["7 cm"]}, "right": {"title": "1 cm ghatti", "items": ["har 10 cm"]}} },
       "why": { "hi": "7 cm wali jagah se doori har 10 cm mein 1 cm ghatti hai: 7 × 10 = 70", "en": "from the 7 cm spot the gap shrinks 1 cm every 10 cm: 7 × 10 = 70" },
-      "simpler": { "hi": "Har 10 cm par doori 8 se 7, yaani ek cm ghatti hai. Bachi 7 cm doori khatam hone mein aise kitne 10 cm lagenge, woh gino.", "en": "Every 10 cm the gap drops from 8 to 7, that is by one cm. Count how many such 10 cm steps it takes to use up the remaining 7 cm." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "7 cm wali jagah", "items": ["7 cm"]}, "right": {"title": "1 cm ghatti", "items": ["har 10 cm"]}} }
+      "simpler": { "hi": "Har 10 cm par doori 8 se 7, yaani ek cm ghatti hai. Bachi 7 cm doori khatam hone mein aise kitne 10 cm lagenge, woh gino.", "en": "Every 10 cm the gap drops from 8 to 7, that is by one cm. Count how many such 10 cm steps it takes to use up the remaining 7 cm." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "7 cm wali jagah", "items": ["7 cm"]}, "right": {"title": "1 cm ghatti", "items": ["har 10 cm"]}, "mark": {"side": "left", "add": "jawab: 70 cm"}} }
      }
     }
    ],
@@ -274,7 +274,7 @@
       "prompt": { "hi": "In dono lines ko milne wale bindu ke aar-paar aage badhao, toh ek crossing banegi. Crossing par bane angles mein se kitne angle 90° ke honge?", "en": "Extend both lines through the meeting point and a crossing forms. How many of the angles at the crossing will be 90°?" },
       "key": "4",
       "accept": ["chaar", "chaaron", "four", "all four", "sab", "4 angle", "chaaron angle"],
-      "why": { "hi": "aar-paar badhane par 4 angle bante hain, aur har ek 180° − 90° = 90° hai", "en": "extending through gives 4 angles, and each is 180° − 90° = 90°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90}]} }
+      "why": { "hi": "aar-paar badhane par 4 angle bante hain, aur har ek 180° − 90° = 90° hai", "en": "extending through gives 4 angles, and each is 180° − 90° = 90°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90}], "mark": {"index": 0, "show": "deg"}} }
      },
      "simpler": { "hi": "Jab do lines milkar kona bilkul 90° ka banati hain, tab woh perpendicular kehlati hain. Kone par bana chhota nishaan isi samkon ko dikhata hai.", "en": "When two lines meet and make a corner of exactly 90°, they are called perpendicular. The small mark at the corner shows this right angle." }
     },
@@ -316,7 +316,7 @@
       "prompt": { "hi": "Ek line ko ghuma kar angle thoda aur kholna hai, taaki yeh lines perpendicular ban jaayein. Angle ko kitne degree aur kholna hoga?", "en": "One line is to be turned to open the angle a little more, so that these lines become perpendicular. By how many more degrees must the angle open?" },
       "key": "2°",
       "accept": ["2", "2 degree", "2 degrees", "do degree"],
-      "why": { "hi": "perpendicular ke liye 90° chahiye, aur 90° − 88° = 2°", "en": "perpendicular needs 90°, and 90° − 88° = 2°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 88}]} }
+      "why": { "hi": "perpendicular ke liye 90° chahiye, aur 90° − 88° = 2°", "en": "perpendicular needs 90°, and 90° − 88° = 2°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 88}], "mark": {"index": 0, "show": "deg"}} }
      },
      "simpler": { "hi": "88° bas paas hai, theek 90° nahi. Perpendicular ke liye angle poora 90° hona chahiye.", "en": "88° is only close, not exactly 90°. For perpendicular lines the angle must be a full 90°." }
     }
@@ -350,7 +350,7 @@
      "prompt": { "hi": "4:00 par sooiyan 12 aur 4 par hain. Har hissa 30° ka hai. Sooiyon ke beech angle kitna hai?", "en": "At 4:00 the hands are on 12 and 4. Each part is 30°. What is the angle between the hands?" },
      "key": "120°",
      "accept": ["120", "120 degree", "120 degrees"],
-     "simpler": { "hi": "4:00 par sooiyon ke beech 4 hisse hain. Har hissa 30° ka hai, toh 4 baar 30° karo.", "en": "At 4:00 there are 4 parts between the hands. Each part is 30°, so take 30° four times." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "3 baje"}]} }, "why": { "hi": "3 baje 90° tha; 4:00 par sooiyan 4 hisse door hain, toh 4 × 30° = 120°", "en": "at 3 o'clock it was 90°; at 4:00 the hands are 4 parts apart, so 4 × 30° = 120°" }
+     "simpler": { "hi": "4:00 par sooiyon ke beech 4 hisse hain. Har hissa 30° ka hai, toh 4 baar 30° karo.", "en": "At 4:00 there are 4 parts between the hands. Each part is 30°, so take 30° four times." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "3 baje"}], "mark": {"index": 0, "show": "deg"}} }, "why": { "hi": "3 baje 90° tha; 4:00 par sooiyan 4 hisse door hain, toh 4 × 30° = 120°", "en": "at 3 o'clock it was 90°; at 4:00 the hands are 4 parts apart, so 4 × 30° = 120°" }
     },
     "answer": {
      "hi": "3:00 par angle 90° hai, isliye sooiyan perpendicular hain, aur 4:00 par angle 120° hai, isliye nahi",
@@ -375,7 +375,7 @@
      "wrongIfMis": "nahi",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90 }] } },
      "why": { "hi": "milne ka angle 90° hai, aur segments ki lambai se farak nahi padta", "en": "the meeting angle is 90°, and the segments' lengths make no difference" },
-     "simpler": { "hi": "Lambai se farak nahi padta, perpendicular ke liye sirf milne ka angle dekho. Angle 90° hai ya nahi, yahi jaancho.", "en": "Length does not matter; for perpendicular look only at the angle where they meet. Check whether that angle is 90°." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90}]} }
+     "simpler": { "hi": "Lambai se farak nahi padta, perpendicular ke liye sirf milne ka angle dekho. Angle 90° hai ya nahi, yahi jaancho.", "en": "Length does not matter; for perpendicular look only at the angle where they meet. Check whether that angle is 90°." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90}], "mark": {"index": 0, "show": "deg"}} }
     },
     {
      "id": "c2",
@@ -389,7 +389,7 @@
      "wrongIfMis": "nahi",
      "board": { "template": "compare@1", "params": {"left": {"title": "plus", "items": ["90°"]}, "right": {"title": "X", "items": ["ghumaane se"]}} },
      "why": { "hi": "plus ko ghumaane se X banta hai, par lines ke beech ka angle 90° hi rehta hai", "en": "turning the plus makes an X, but the angle between the lines stays 90°" },
-     "simpler": { "hi": "Ghumaane se lines ke beech ka angle nahi badalta. Plus ke nishaan mein angle kaisa tha, woh yaad karo.", "en": "Turning does not change the angle between the lines. Remember what the angle was in the plus sign." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "plus", "items": ["90°"]}, "right": {"title": "X", "items": ["ghumaane se"]}} }
+     "simpler": { "hi": "Ghumaane se lines ke beech ka angle nahi badalta. Plus ke nishaan mein angle kaisa tha, woh yaad karo.", "en": "Turning does not change the angle between the lines. Remember what the angle was in the plus sign." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "plus", "items": ["90°"]}, "right": {"title": "X", "items": ["ghumaane se"]}, "mark": {"side": "right", "add": "jawab: haan"}} }
     },
     {
      "id": "c3",
@@ -431,7 +431,7 @@
       "wrongIfMis": "crossing A",
       "board": { "template": "compare@1", "params": { "left": { "title": "crossing A", "items": ["khadi aur leti", "angle 85°"] }, "right": { "title": "crossing B", "items": ["dono tirchhi", "angle 90°"] } } },
       "why": { "hi": "crossing B ka angle theek 90° hai, chahe dono tirchhi hon, aur khadi aur leti A ka 85°", "en": "crossing B's angle is exactly 90° though both are tilted, and A's upright and flat lines make 85°" },
-      "simpler": { "hi": "Khadi ya leti line dekhne se kuch tay nahi hota. Sirf angle dekho, perpendicular ke liye angle theek 90° chahiye.", "en": "Whether a line stands or lies flat decides nothing. Look only at the angle; perpendicular needs exactly 90°." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "crossing A", "items": ["khadi aur leti", "angle 85°"]}, "right": {"title": "crossing B", "items": ["dono tirchhi", "angle 90°"]}} }
+      "simpler": { "hi": "Khadi ya leti line dekhne se kuch tay nahi hota. Sirf angle dekho, perpendicular ke liye angle theek 90° chahiye.", "en": "Whether a line stands or lies flat decides nothing. Look only at the angle; perpendicular needs exactly 90°." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "crossing A", "items": ["khadi aur leti", "angle 85°"]}, "right": {"title": "crossing B", "items": ["dono tirchhi", "angle 90°"]}, "mark": {"side": "right"}} }
      }
     },
     {
@@ -451,7 +451,7 @@
       "wrongIfMis": "joda P",
       "board": { "template": "compare@1", "params": { "left": { "title": "joda P", "items": ["5 cm aur 5 cm", "80°"] }, "right": { "title": "joda Q", "items": ["2 cm aur 9 cm", "90°"] } } },
       "why": { "hi": "joda Q ke 2 cm aur 9 cm segment 90° par milte hain, par joda P ke 5 cm wale 80° par", "en": "pair Q's 2 cm and 9 cm segments meet at 90°, but pair P's 5 cm segments meet at 80°" },
-      "simpler": { "hi": "Segment ki lambai se farak nahi padta. Bas dekho kis jode ka angle theek 90° hai.", "en": "Segment length does not matter. Just see which pair's angle is exactly 90°." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "joda P", "items": ["5 cm aur 5 cm", "80°"]}, "right": {"title": "joda Q", "items": ["2 cm aur 9 cm", "90°"]}} }
+      "simpler": { "hi": "Segment ki lambai se farak nahi padta. Bas dekho kis jode ka angle theek 90° hai.", "en": "Segment length does not matter. Just see which pair's angle is exactly 90°." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "joda P", "items": ["5 cm aur 5 cm", "80°"]}, "right": {"title": "joda Q", "items": ["2 cm aur 9 cm", "90°"]}, "mark": {"side": "right"}} }
      }
     }
    ],
@@ -498,7 +498,7 @@
       "prompt": { "hi": "Pehli crease ek seedhi line hai, yaani 180°. Doosre mod ne use do barabar hisson mein baant diya. Creases ke milne par har angle kitne degree ka hai?", "en": "The first crease is a straight line, that is 180°. The second fold shared it into two equal halves. How many degrees is each angle where the creases meet?" },
       "key": "90°",
       "accept": ["90", "90 degree", "90 degrees", "samkon"],
-      "why": { "hi": "ek baar modo toh seedhi crease, 180°; dobara usi ke upar modo toh aadha: 180° ÷ 2 = 90°", "en": "fold once for a straight crease, 180°; fold again onto itself and it halves: 180° ÷ 2 = 90°" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ek baar modo", "items": ["seedhi crease"]}, "right": {"title": "dobara modo", "items": ["usi ke upar"]}} }
+      "why": { "hi": "ek baar modo toh seedhi crease, 180°; dobara usi ke upar modo toh aadha: 180° ÷ 2 = 90°", "en": "fold once for a straight crease, 180°; fold again onto itself and it halves: 180° ÷ 2 = 90°" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ek baar modo", "items": ["seedhi crease"]}, "right": {"title": "dobara modo", "items": ["usi ke upar"]}, "mark": {"side": "left", "add": "jawab: 90°"}} }
      },
      "simpler": { "hi": "Kaagaz do baar modne se do creases ek bindu par milti hain. Pehli seedhi crease 180° ki thi, doosre mod ne use do barabar hisson mein baanta.", "en": "Folding the paper twice gives two creases meeting at a point. The first straight crease was 180°, and the second fold shared it into two equal halves." }
     },
@@ -518,7 +518,7 @@
       "prompt": { "hi": "Set-square ka kona ek crossing par rakha. Ek line ek bhuja par theek baithi, par doosri line doosri bhuja se 5° aur bahar khuli hai. Crossing ka angle kitna hai?", "en": "A set-square's corner is put on a crossing. One line sits exactly on one edge, but the other line opens 5° further out than the other edge. What is the angle at the crossing?" },
       "key": "95°",
       "accept": ["95", "95 degree", "95 degrees"],
-      "why": { "hi": "set-square ka kona 90° hai aur line 5° aur bahar khuli hai, 90° + 5° = 95°", "en": "the set-square corner is 90° and the line opens 5° further out, 90° + 5° = 95°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "set-square ka kona"}]} }
+      "why": { "hi": "set-square ka kona 90° hai aur line 5° aur bahar khuli hai, 90° + 5° = 95°", "en": "the set-square corner is 90° and the line opens 5° further out, 90° + 5° = 95°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "set-square ka kona"}], "mark": {"index": 0, "show": "deg"}} }
      },
      "simpler": { "hi": "Set-square ka kona samkon hota hai. Kona crossing par rakho, ek line ek bhuja par, aur dekho doosri line doosri bhuja par baithti hai ya nahi.", "en": "A set-square's corner is a right angle. Put the corner on the crossing, one line along one edge, and see if the other line sits along the other edge." }
     },
@@ -538,7 +538,7 @@
       "prompt": { "hi": "Isi tarah set-square khiska kar teen parallel lines kheenchi, har agli line pichhli se 2 cm neeche. Pehli aur teesri line ke beech doori kitni hai?", "en": "Sliding the set-square this way, three parallel lines are drawn, each one 2 cm below the one before. What is the gap between the first and the third line?" },
       "key": "4 cm",
       "accept": ["4", "4 centimetre", "4 centimetres"],
-      "why": { "hi": "pehli se doosri 2 cm aur doosri se teesri 2 cm, aur 2 + 2 = 4", "en": "first to second is 2 cm and second to third is 2 cm, and 2 + 2 = 4" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehli se doosri", "items": ["2 cm"]}, "right": {"title": "doosri se teesri", "items": ["2 cm"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "pehli se doosri", "items": ["2 cm"]}, "right": {"title": "doosri se teesri", "items": ["2 cm"]}} }
+      "why": { "hi": "pehli se doosri 2 cm aur doosri se teesri 2 cm, aur 2 + 2 = 4", "en": "first to second is 2 cm and second to third is 2 cm, and 2 + 2 = 4" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "pehli se doosri", "items": ["2 cm"]}, "right": {"title": "doosri se teesri", "items": ["2 cm"]}, "mark": {"side": "left", "add": "jawab: 4 cm"}} }, "board": { "template": "compare@1", "params": {"left": {"title": "pehli se doosri", "items": ["2 cm"]}, "right": {"title": "doosri se teesri", "items": ["2 cm"]}} }
      },
      "simpler": { "hi": "Set-square ko ruler ke saath sirf khiskao, ghumao mat. Disha same rehti hai, toh har nayi line pichhli line ke parallel banti hai.", "en": "Only slide the set-square along the ruler; do not turn it. The direction stays the same, so each new line is parallel to the last." }
     }
@@ -580,7 +580,7 @@
      "accept": ["6", "6 centimetre", "6 centimetres", "6 cm dono jagah"],
      "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
      "wrongIfMis": "alag-alag",
-     "simpler": { "hi": "Parallel lines mein doori har jagah ek jaisi rehti hai. Socho, P line l se kitna upar tha.", "en": "Parallel lines keep the same gap everywhere. Think how far above line l the point P was." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "bindu P", "items": ["l ke upar"]}, "right": {"title": "line m", "items": ["P se hokar"]}} }, "why": { "hi": "bindu P l ke upar 6 cm par hai, line m P se hokar parallel hai, toh doori 6 cm", "en": "point P is 6 cm above l, and m goes through P parallel to l, so the gap is 6 cm" }, "board": { "template": "compare@1", "params": {"left": {"title": "bindu P", "items": ["l ke upar"]}, "right": {"title": "line m", "items": ["P se hokar"]}} }
+     "simpler": { "hi": "Parallel lines mein doori har jagah ek jaisi rehti hai. Socho, P line l se kitna upar tha.", "en": "Parallel lines keep the same gap everywhere. Think how far above line l the point P was." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "bindu P", "items": ["l ke upar"]}, "right": {"title": "line m", "items": ["P se hokar"]}, "mark": {"side": "left", "add": "jawab: 6 cm"}} }, "why": { "hi": "bindu P l ke upar 6 cm par hai, line m P se hokar parallel hai, toh doori 6 cm", "en": "point P is 6 cm above l, and m goes through P parallel to l, so the gap is 6 cm" }, "board": { "template": "compare@1", "params": {"left": {"title": "bindu P", "items": ["l ke upar"]}, "right": {"title": "line m", "items": ["P se hokar"]}} }
     },
     "answer": {
      "hi": "line m, P se hokar l ke parallel hai, aur dono jagah doori 6 cm aati hai",
@@ -605,7 +605,7 @@
      "wrongIfMis": "nahi",
      "board": { "template": "compare@1", "params": { "left": { "title": "seedha set-square", "items": ["fit nahi"] }, "right": { "title": "ghumaya set-square", "items": ["theek fit"] } } },
      "why": { "hi": "seedha set-square fit nahi hua, par ghumaya set-square theek fit hua, toh angle 90° hai", "en": "the straight set-square did not fit, but the turned set-square fitted exactly, so the angle is 90°" },
-     "simpler": { "hi": "Set-square ko ghuma kar jaanchna bilkul theek hai. Kona theek fit ho gaya, iska matlab angle kaisa hai, yeh socho.", "en": "Turning the set-square to check is perfectly fine. Think what it means for the angle that the corner fitted exactly." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "seedha set-square", "items": ["fit nahi"]}, "right": {"title": "ghumaya set-square", "items": ["theek fit"]}} }
+     "simpler": { "hi": "Set-square ko ghuma kar jaanchna bilkul theek hai. Kona theek fit ho gaya, iska matlab angle kaisa hai, yeh socho.", "en": "Turning the set-square to check is perfectly fine. Think what it means for the angle that the corner fitted exactly." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "seedha set-square", "items": ["fit nahi"]}, "right": {"title": "ghumaya set-square", "items": ["theek fit"]}, "mark": {"side": "left", "add": "jawab: haan"}} }
     },
     {
      "id": "c2",
@@ -619,7 +619,7 @@
      "wrongIfMis": "haan",
      "board": { "template": "compare@1", "params": { "left": { "title": "ek jagah", "items": ["doori 5 cm"] }, "right": { "title": "doosri jagah", "items": ["doori 5.5 cm"] } } },
      "why": { "hi": "doori ek jagah 5 cm aur doosri jagah 5.5 cm hai, barabar nahi", "en": "the gap is 5 cm at one place and 5.5 cm at another, not equal" },
-     "simpler": { "hi": "Parallel lines mein doori har jagah ek jaisi rehti hai. Dono jagah ki doori milao, 5 cm aur 5.5 cm.", "en": "Parallel lines keep the same gap everywhere. Compare the two gaps, 5 cm and 5.5 cm." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ek jagah", "items": ["doori 5 cm"]}, "right": {"title": "doosri jagah", "items": ["doori 5.5 cm"]}} }
+     "simpler": { "hi": "Parallel lines mein doori har jagah ek jaisi rehti hai. Dono jagah ki doori milao, 5 cm aur 5.5 cm.", "en": "Parallel lines keep the same gap everywhere. Compare the two gaps, 5 cm and 5.5 cm." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "ek jagah", "items": ["doori 5 cm"]}, "right": {"title": "doosri jagah", "items": ["doori 5.5 cm"]}, "mark": {"side": "right", "add": "jawab: nahi"}} }
     }
    ],
    "ladder": [
@@ -643,7 +643,7 @@
       "accept": ["87", "87 degree", "87 degrees"],
       "board": { "template": "compare@1", "params": { "left": { "title": "tirchhi crossing", "items": ["kaagaz ka kona"] }, "right": { "title": "doosri line", "items": ["3° andar"] } } },
       "why": { "hi": "tirchhi crossing par kaagaz ka kona 90° hai, aur doosri line 3° andar hai: 90° − 3° = 87°", "en": "on the tilted crossing the paper corner is 90°, and the other line is 3° inside: 90° − 3° = 87°" },
-      "simpler": { "hi": "Kaagaz ka kona samkon hota hai. Doosri line 3° andar hai, toh samkon mein se 3° kam karo.", "en": "A paper corner is a right angle. The other line is 3° inside, so take 3° away from a right angle." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "tirchhi crossing", "items": ["kaagaz ka kona"]}, "right": {"title": "doosri line", "items": ["3° andar"]}} }
+      "simpler": { "hi": "Kaagaz ka kona samkon hota hai. Doosri line 3° andar hai, toh samkon mein se 3° kam karo.", "en": "A paper corner is a right angle. The other line is 3° inside, so take 3° away from a right angle." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "tirchhi crossing", "items": ["kaagaz ka kona"]}, "right": {"title": "doosri line", "items": ["3° andar"]}, "mark": {"side": "right", "add": "jawab: 87°"}} }
      }
     },
     {
@@ -663,7 +663,7 @@
       "wrongIfMis": "kuch nahi",
       "board": { "template": "compare@1", "params": { "left": { "title": "baayein", "items": ["doori 7 cm"] }, "right": { "title": "daayein", "items": ["doori 6.8 cm"] } } },
       "why": { "hi": "baayein doori 7 cm aur daayein doori 6.8 cm hai, toh 7 − 6.8 = 0.2 cm", "en": "the left gap is 7 cm and the right gap 6.8 cm, so 7 − 6.8 = 0.2 cm" },
-      "simpler": { "hi": "Parallel ke liye daayein doori bhi 7 cm honi chahiye. 7 cm mein se 6.8 cm ghatao.", "en": "For parallel, the right gap must also be 7 cm. Subtract 6.8 cm from 7 cm." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "baayein", "items": ["doori 7 cm"]}, "right": {"title": "daayein", "items": ["doori 6.8 cm"]}} }
+      "simpler": { "hi": "Parallel ke liye daayein doori bhi 7 cm honi chahiye. 7 cm mein se 6.8 cm ghatao.", "en": "For parallel, the right gap must also be 7 cm. Subtract 6.8 cm from 7 cm." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "baayein", "items": ["doori 7 cm"]}, "right": {"title": "daayein", "items": ["doori 6.8 cm"]}, "mark": {"side": "right", "add": "jawab: 0.2 cm"}} }
      }
     }
    ],

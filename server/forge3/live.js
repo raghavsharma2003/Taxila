@@ -82,7 +82,7 @@ function twinOfLevel(logic, level) {
  * The live piece for an interactive ask, or null.
  * @param {{ ask?: string, need?: string, lessonId: string, child: { id: string, class_level?: number, language_pref?: string },
  *   skillId?: string|null, topicId?: string|null, vp?: string|null, moduleInTray?: boolean, safety?: boolean,
- *   lesson?: { shown?: object[], lastArt?: string|null }, childArt?: string|null }} m
+ *   lesson?: { shown?: object[], lastArt?: string|null }, childArt?: string|null, fade?: 1|2|3, reason?: "phone" }} m  (fade: the Director's deliberate scaffold fade)
  * @param {{ q?: Function, coverage?: any, certs?: any, playCerts?: any, now?: () => number }} [deps]
  * @returns {Promise<null | { rung: object, artifact: object, facts: object, boardTwin: object|null, level: object, artPick: object|null, lesson: object, why: string[], ms: number }>}
  */
@@ -108,7 +108,11 @@ export async function buildLive(m, deps = {}) {
   // round 8 P1: with a skill known the play server CHOOSES among every game admitting it (compose's rung is the first
   // entry, the default when nothing is known), so the goal is not pinned; a topic-only ask keeps the rung's goal. What
   // the lesson just showed is the picker's novelty input.
+  // round 8 follow-up C: a fade the Director chose (m.fade) is marked deliberate, so it beats her history's fade
   const o = { skillId: m.skillId ?? null, topicId: m.topicId ?? null, goal: m.skillId ? null : rung.goal ?? null, lessonId: m.lessonId, art: m.childArt ?? null, lastArt: m.lesson?.lastArt ?? null,
+    ...([1, 2, 3].includes(Number(m.fade)) ? { fade: Number(m.fade), fadeFrom: "director" } : {}),
+    // item I: Studio's v2 world was refused at 360 px and this play family is offered instead (a because says so)
+    ...(m.reason === "phone" ? { reason: "phone" } : {}),
     recent: { families: (m.lesson?.shown ?? []).slice(-1).filter((x) => x?.family && x?.mode).map((x) => `${x.family}/${x.mode}`) } };
   try {
     let r = await withTimeout(P.startSession(m.child, o, q), LEARNER_READ_MS);

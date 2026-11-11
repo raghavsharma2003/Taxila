@@ -279,7 +279,7 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
     if (card0 && (ownAlt || remAlt)) {
       const ac0 = ownAlt ? altCall(ask.intent.boardRef, { line: predicted, withheld: ctx.withhold?.values ?? [], keys: liveKeys(ask, ""), up: cardUp ? upRefOf(avoidRef) : null }) : remAlt;
       const { view, ...ac } = ac0 ?? {};
-      const ax = ac0 ? expand(ac, { band, lang: ask?.intent?.style?.lang ?? null }) : null;
+      const ax = ac0 ? expand({ ...ac, legend: false }, { band, lang: ask?.intent?.style?.lang ?? null }) : null;
       // (judged against a line that says the bars — her line is written from this row: "2 barabar bar: ek 6 barabar hisson mein …")
       const say = altSay(ac0);
       if (ax?.ok) cands.unshift({ by: "script", template: ac.template, script: ax.script, facts: ax.script.facts, altView: ALT_VIEWS.has(view) ? view : "parts", say, call: ac });
@@ -588,38 +588,10 @@ function wholesOfCompare(c) {
  *  round (a circle), example (a smaller case of the same rule: a count key's own figure would show the count). */
 const ALT_VIEWS = new Set(["parts", "line", "wholes", "strips", "unrolled", "round", "example", "grid"]);
 /** The row a second view's line is written from (and judged against before her line exists). */
-/** main v6.9 S11: a fraction in her picture line is said as words ("ek-chauthai", "teen bata paanch"), never "(1/4)". */
-const NUM_HI = ["shunya", "ek", "do", "teen", "chaar", "paanch", "chhe", "saat", "aath", "nau", "das", "gyaarah", "baarah"];
-const FRAC_HI = { "1/2": "aadha", "1/3": "ek-tihaai", "2/3": "do-tihaai", "1/4": "ek-chauthai", "2/4": "do-chauthai", "3/4": "teen-chauthai" };
-export function fracSay(a, b) {
-  const k = `${a}/${b}`;
-  return FRAC_HI[k] ?? (NUM_HI[a] && NUM_HI[b] ? `${NUM_HI[a]} bata ${NUM_HI[b]}` : `${a} bata ${b}`);
-}
-/**
- * main v6.11 (director19 c4 steady 18: "1 rangin, yaani aadha" said while the open card's key was 1/2): does `line` state one
- * of the live card's keys — in digits or in words, a fraction in any form of the same value (1/2, 2/4, "aadha", "do bata
- * chaar"), a whole number as digits or its Hinglish word? PURE.
- */
-export function lineStatesKey(line, keys) {
-  const L = ` ${String(line ?? "").toLowerCase()} `;
-  for (const k0 of keys ?? []) {
-    const k = String(k0).trim().toLowerCase();
-    const fr = /^(\d+)\s*\/\s*(\d+)$/.exec(k);
-    if (fr) {
-      const v = Number(fr[1]) / Number(fr[2]);
-      for (let b = 1; b <= 12; b++) for (let a = 0; a <= b; a++) {
-        if (Math.abs(a / b - v) > 1e-9) continue;
-        if (new RegExp(`(^|[^\\d/])${a}\\s*/\\s*${b}(?![\\d/])`).test(L) || L.includes(` ${fracSay(a, b)}`)) return true;
-      }
-      continue;
-    }
-    if (/^\d+$/.test(k)) {
-      const n = Number(k);
-      if (new RegExp(`(^|[^\\d/])${n}(?![\\d/])`).test(L) || (NUM_HI[n] && new RegExp(`\\b${NUM_HI[n]}\\b`).test(L))) return true;
-    }
-  }
-  return false;
-}
+// (round 8: NUM_HI, fracSay and lineStatesKey moved to server/forge/explainer/states-key.js — the templates use the key
+// predicate and this file imports templates.js; re-exported here so every caller is unchanged)
+import { NUM_HI, fracSay, lineStatesKey } from "../forge/explainer/states-key.js";
+export { fracSay, lineStatesKey };
 /** Her picture line for a second view, built from what the view draws (no full stop: Brain ends the line and keeps the
  *  card's "?"). Equal / unequal is the view's own: a whole is equal unless it says equal: false (wholes@1's default) —
  *  "barabar" for equal parts, "alag-alag" only for unequal ones (main v6.9 S11, c4 stuck 18: an equal Cake said "alag-alag"). */
@@ -1082,11 +1054,12 @@ export function pageOnBoard(script, board) {
  *  board's words have today; at 360 × 800 and wider the scale only grows. */
 export const SPLIT_BOARD = Object.freeze({ w: 640, h: 300, panel: 320 });
 /** A board ref drawn as authored (no line, no gate): → { script, template, facts } or null. */
-function drawRef(ref, { band = "B3", lang = null } = {}) {
+// (panel: the board is drawn as one half of a split — never with a legend: a legend is for a full board only, main 2026-11-10)
+function drawRef(ref, { band = "B3", lang = null, panel = false } = {}) {
   try {
     const rr = resolveBoardRef(ref, {});
     if (!rr.ok) return null;
-    const x = expand(rr.call, { band, lang });
+    const x = expand(panel ? { ...rr.call, legend: false } : rr.call, { band, lang });
     return x?.ok ? { script: fitLegible(x.script), template: rr.call.template, facts: x.script.facts ?? x.facts } : null;
   } catch { return null; }
 }
@@ -1131,11 +1104,13 @@ export function pictureTurn(ask, { keepRef = null, keepPage = null, variant = 0 
     const none = { board, view: null, line: null, script: null, layout: { split: false } };
     const v = heldViewCall(ask, variant);
     if (!v) return none;
-    const ax = expand(v.call, { band, lang });
+    const ax = expand({ ...v.call, legend: false }, { band, lang });
     if (!ax?.ok) return none;
     const right = fitLegible(ax.script);
     const upSame = !!keepRef && refKey(h.board) === keepRef && !!keepPage?.ops?.length;
-    const script = splitBoard(board.script, right, { leftStill: upSame });
+    // (the held board as a split's left panel is drawn without its legend: a legend is for a full board)
+    const panel = drawRef(h.board, { band, lang, panel: true }) ?? board;
+    const script = splitBoard(panel.script, right, { leftStill: upSame });
     if (!script) { heldCounts.splitRefused++; return none; }
     // (v6.11: her picture line never states the open card's key, in digits or in words — a naming clause that would is dropped;
     // a line that still states it has no view at all)

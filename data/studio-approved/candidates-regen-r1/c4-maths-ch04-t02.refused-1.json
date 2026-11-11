@@ -1,0 +1,100 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c4-maths-ch04-t02",
+    "archetype": "line-runner@1",
+    "misconceptionId": "c4-maths-ch04-t02-m-right-to-left",
+    "skillId": "c4-maths-ch04-t02-s1",
+    "beat": "rem:c4-maths-ch04-t02-m-right-to-left",
+    "when": "remediation",
+    "check": "c4-maths-ch04-t02-s1:c1"
+  },
+  "why": "fell_back",
+  "checks": null,
+  "spec": null,
+  "validator": {
+    "fellBack": true,
+    "repairs": [
+      "round-range",
+      "round-range",
+      "round-range",
+      "fallback-default"
+    ]
+  },
+  "raw": {
+    "archetype": "line-runner@1",
+    "skills": [
+      "c4-maths-ch04-t02"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Tap ya space dabao",
+      "round": "Round",
+      "jumpAt": "JUMP AT",
+      "through": "THROUGH",
+      "close": "CLOSE",
+      "offBy": "itna fark",
+      "runDone": "Run complete",
+      "gates": "gates",
+      "accuracy": "accuracy",
+      "chain": "chain"
+    },
+    "rounds": [
+      {
+        "title": "Compare karo",
+        "sub": "4-digit numbers · 4 gates",
+        "range": [
+          3000,
+          7000
+        ],
+        "step": 1,
+        "labels": "ends",
+        "calls": [
+          "4520",
+          "3980",
+          "6305",
+          "6350"
+        ],
+        "speed": 0.8,
+        "dir": 1,
+        "targets": "c4-maths-ch04-t02-m-right-to-left"
+      },
+      {
+        "title": "Near numbers",
+        "sub": "1999 se 2001 tak · 2 gates",
+        "range": [
+          1900,
+          2100
+        ],
+        "step": 1,
+        "labels": "ends",
+        "calls": [
+          "1999",
+          "2001"
+        ],
+        "speed": 0.9,
+        "dir": 1,
+        "targets": "c4-maths-ch04-t02-m-right-to-left"
+      },
+      {
+        "title": "Order run",
+        "sub": "4 numbers · 4 gates",
+        "range": [
+          3012,
+          3210
+        ],
+        "step": 1,
+        "labels": "ends",
+        "calls": [
+          "3210",
+          "3120",
+          "3201",
+          "3012"
+        ],
+        "speed": 0.85,
+        "dir": 1,
+        "targets": "c4-maths-ch04-t02-m-right-to-left"
+      }
+    ]
+  }
+}

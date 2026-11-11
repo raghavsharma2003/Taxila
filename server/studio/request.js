@@ -6,6 +6,7 @@
 // request; the line planner is told the request and draws it. PURE: no model, no I/O.
 
 import { canonKey } from "../safety/normalize.js";
+import { textBox } from "../../shared/whiteboard.js";
 
 /** Words that are never the subject itself ("plant ki life cycle" → plant, life, cycle). */
 const GLUE = new Set(["ka", "ki", "ke", "ko", "aur", "and", "of", "the", "a", "an", "se", "me", "mein", "par", "pe", "wala", "wali", "wale",
@@ -282,7 +283,9 @@ export function numberLineBoard(request, { scriptId = "nl", lessonId = "", spanM
   frame.forEach((v, i) => ops.push({ id: `e${i}`, op: "text", at: [xOf(v), y + 36], text: String(v), size: "m", align: "middle", ...T(3 + i * 0.3) }));
   vals.forEach((x, i) => {
     ops.push({ id: `p${i}`, op: "circle", c: [xOf(x.r.v), y], r: 7, fill: "accent", ink: "accent", ...T(4 + i) });
-    ops.push({ id: `l${i}`, op: "text", at: [xOf(x.r.v), i % 2 ? y + 36 : y - 22], text: x.s, size: "m", align: "middle", ink: "accent", ...T(4.4 + i) });
+    // (round 8: a fraction is written stacked, ~2x a line's height: it is placed by its own half-height, clear of the ticks)
+    const hh = Math.max(14, textBox(x.s, "m").h / 2);
+    ops.push({ id: `l${i}`, op: "text", at: [xOf(x.r.v), i % 2 ? Math.max(y + 36, y + 12 + hh) : Math.min(y - 22, y - 12 - hh)], text: x.s, size: "m", align: "middle", ink: "accent", ...T(4.4 + i) });
   });
   const durationMs = Math.max(...ops.map((o) => o.endMs)) + 200;
   return { v: 1, scriptId, line: { lessonId }, anchor: "line_audio_start", board: { ...board, ground: "chalk" }, mode: "fresh", durationMs, ops };

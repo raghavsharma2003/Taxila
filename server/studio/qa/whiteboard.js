@@ -28,7 +28,8 @@
 //   (W10-W13: server/studio/qa/semantics.js, round 3 forge, from the taxila.dev audit of 2026-10-09)
 //
 // gateWhiteboard(raw, ctx) → { pass, checks, script, facts }.  The script returned is the normalised one (draw this).
-import { normalizeScript, lintScript, opGeometry, textBox, TEXT_SIZE, scriptFacts, settledScript, isMotionOp, finalOp } from "../../../shared/whiteboard.js";
+import { normalizeScript, lintScript, opGeometry, textBox, TEXT_SIZE, scriptFacts, settledScript, isMotionOp, finalOp, opTextSizes } from "../../../shared/whiteboard.js";
+import { statesKeyAnyLang } from "../../forge/explainer/states-key.js";
 import { kitVocabulary, unknownWords, stem } from "../../forge/explainer/truth.js";
 import { SEVERE, MILD, PII } from "../../forge/g2/safety.js";
 import { PHONE_TRAY } from "../archetypes/index.js";
@@ -185,7 +186,9 @@ function opNumbers(o, allowed) {
   const tokensOf = (t) => String(t).match(/\d+(?:,\d{2,3}(?!\d))*(?:\.\d+)?(?:\/\d+)?/g) ?? [];
   if (o.op === "text" || o.op === "label") {
     const t = String(o.text);
-    for (const tok of tokensOf(t)) nums.push(canon(tok.replace(/,(?=\d{3}\b)/g, "")));
+    // (Learning 2026-11-10: Indian grouping "2,05,400" read as invented — a group comma before 2 OR 3 digits, as numbersIn
+    // reads her line: Indian and international grouping of the same value are the same number)
+    for (const tok of tokensOf(t)) nums.push(canon(tok.replace(/,(?=\d{2,3}\b)/g, "")));
     if (t.includes("=")) {
       const [l, r] = t.split("=");
       const a = evalSide(eqTokens(l)), b = evalSide(eqTokens(r));
@@ -468,11 +471,17 @@ const escRe = (w) => String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
  * matches 5/8), a number-line tick labelled with it (an evenly spaced axis is not a target), a dot or an arrow head at its
  * position on a number line, or the current item's word answer written. → string[] (op id: what)
  */
-export function revealsOf(ops, per, byId, texts, withhold) {
+export function revealsOf(ops, per, byId, texts, withhold, { answerBoard = false } = {}) {
   const values = (Array.isArray(withhold) ? withhold : withhold?.values ?? []).map((t) => ({ t: String(t), r: rat(t) })).filter((x) => x.r);
   const words = Array.isArray(withhold) ? [] : (withhold?.words ?? []).map(String).filter(Boolean);
   if (!values.length && !words.length) return [];
   const out = [];
+  // round 8 (Learning's to-studio 006, W9 note): an authored ANSWER board's `mark` (ops in the answer role) shows the answer
+  // by construction — W9 allows the number that mark shows. Only for a card's own authored board (ctx.authoredRef): a
+  // planner's script cannot buy a reveal by naming a role. Every other op is judged as before.
+  const isMark = (o) => answerBoard && o?.role === "answer";
+  // (round 8, board grammar item 5: a mix-up marker's words never state a withheld key, in digits or in words — "aadha")
+  for (const o of ops) if (o.role === "mixup" && (o.op === "text" || o.op === "label") && statesKeyAnyLang(o.text, values.map((v) => v.t))) out.push(`${o.id}: mix-up states the answer`);
   const hit = (tok) => { const r = rat(tok); return r ? values.find((x) => rEq(x.r, r)) : null; };
   // round 7 (main, M3): a digit written INSIDE a box (a place-value box, a grid cell) is that box's digit, never an origin
   // or a column's label: a hidden 0 or 1 in a place-value box is judged like any other digit
@@ -485,7 +494,7 @@ export function revealsOf(ops, per, byId, texts, withhold) {
     // result; "5 − 5 = 0" or "3/4 + 1/4 = 1" still is (bench 2026-10-05: an origin labelled 0 was refused)
     const bare = (o.op === "text" || o.op === "label") && /^\s*[01]\s*$/.test(String(o.text)) && !inBox(o);
     for (const tok of [...per[k].nums, ...per[k].derived]) {
-      if (bare) continue;
+      if (bare || isMark(o)) continue;
       if (axis && (o.rows?.[0] ?? []).some((c) => canon(c) === tok)) continue;
       const h = hit(tok); if (h) out.push(`${o.id}: ${tok} = answer ${h.t}`);
     }
@@ -494,7 +503,7 @@ export function revealsOf(ops, per, byId, texts, withhold) {
   // board writes a withheld DIGIT in a cell of its own (a place-value box, a column), every number on the board that
   // CONTAINS that digit gives it away too and is a reveal (the whole number is masked "?"); a board that never splits a
   // number into digits is unchanged ("15 cm" beside an answer of 5 is no reveal)
-  const digitHits = new Set(ops.filter((o) => (o.op === "text" || o.op === "label") && /^\s*\d\s*$/.test(String(o.text)) && hit(String(o.text).trim())
+  const digitHits = new Set(ops.filter((o) => !isMark(o) && (o.op === "text" || o.op === "label") && /^\s*\d\s*$/.test(String(o.text)) && hit(String(o.text).trim())
     && (!/^\s*[01]\s*$/.test(String(o.text)) || inBox(o)))
     .map((o) => String(o.text).trim()));
   if (digitHits.size) {
@@ -516,7 +525,7 @@ export function revealsOf(ops, per, byId, texts, withhold) {
       if (v <= a + 1e-9 || v >= b - 1e-9) continue;
       const x = xOf(v);
       const near = (p) => Array.isArray(p) && Math.abs(p[0] - x) <= 6 && Math.abs(p[1] - y0) <= 22;
-      const marks = ops.filter((o) => (o.op === "circle" && o.r <= 12 && near(o.c)) || (o.op === "arrow" && near(o.to)) || (o.op === "label" && near(o.to)));
+      const marks = ops.filter((o) => !isMark(o) && ((o.op === "circle" && o.r <= 12 && near(o.c)) || (o.op === "arrow" && near(o.to)) || (o.op === "label" && near(o.to))));
       for (const m of marks) out.push(`${m.id}: marks ${t} on ${nl.id}`);
     }
   }
@@ -549,7 +558,8 @@ export function gateWhiteboard(raw, ctx) {
   const aspect = BW / BH;
   const scale = Math.min(PHONE_TRAY.w / BW, PHONE_TRAY.h / BH);
   const sizes = ops.filter((o) => o.op === "text" || o.op === "label" || o.op === "numwork")
-    .map((o) => (o.op === "text" ? TEXT_SIZE[o.size] ?? TEXT_SIZE.m : o.op === "label" ? TEXT_SIZE.s : TEXT_SIZE.m * (o.marks?.some((m) => m.kind === "carry") ? 0.62 : 1)));
+    // (round 8: a text with a stacked fraction counts its numerals' own size)
+    .map((o) => (o.op === "text" || o.op === "label" ? Math.min(...opTextSizes(o, byId), o.op === "label" ? TEXT_SIZE.s : TEXT_SIZE[o.size] ?? TEXT_SIZE.m) : TEXT_SIZE.m * (o.marks?.some((m) => m.kind === "carry") ? 0.62 : 1)));
   const minPx = sizes.length ? Math.min(...sizes) * scale : Infinity;
   const lint = lintScript(script);
   const outside = lint.filter((i) => i.check === "inside_board");
@@ -652,7 +662,7 @@ export function gateWhiteboard(raw, ctx) {
   const crossed = textsCrossed(ops, byId);
   add("W2.text_clear_of_lines", crossed.length === 0, crossed.slice(0, 3));
   // W9 no reveal: nothing on the board equals a withheld answer (ctx.withhold = withheldValues(kit, {itemId, line}))
-  const reveals = revealsOf(ops, per, byId, texts, ctx.withhold);
+  const reveals = revealsOf(ops, per, byId, texts, ctx.withhold, { answerBoard: !!ctx.authoredRef });
   // round 3 forge: the current item's word answer of ANY length (≥ 4 content words) written on the board (semantics.js)
   const longWords = Array.isArray(ctx.withhold) ? [] : (ctx.withhold?.phrases ?? []);
   reveals.push(...longAnswerWritten(longWords, ops, ctx.reply));

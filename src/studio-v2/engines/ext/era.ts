@@ -11,6 +11,7 @@ import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, dust, fmtNum, textBlock } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
 
 const X0 = 90, X1 = 910, LINE_Y = 470, POD_W = 360, POD_H = 112, TOP = 150, LAND = LINE_Y - 64;
 interface Pod { idx: number; x: number; y: number; landed: boolean; t: number }
@@ -146,7 +147,7 @@ function create(api: EngineApi, spec: EraSpec): EngineInstance {
       } else if (rv.verdict === "right") pill(api, ctx, T.exact, clamp(tx, 190, 810), 236, { color: C.mint, size: 38 });
     }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.roundR}/${g.roundN}`, T.landed]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.landed]] });
     drawCoach(api, ctx, r.mode === "order" ? T.first : T.coach, flow.state === "play" ? g.coachA : 0, now, 600);

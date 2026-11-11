@@ -13,7 +13,8 @@
 import { createHash } from "node:crypto";
 
 /** The part kinds of a unit (COMPILE.md "Parts"). */
-export const PART_KINDS = Object.freeze(["point", "checkin", "card", "worked_step", "your_step", "remediation", "then_card", "check", "bridge"]);
+// (Loop's review, ask D: the hook is a part — its interest slot is the plan's hookSlot, so hook lines have a cell and a because)
+export const PART_KINDS = Object.freeze(["point", "checkin", "card", "worked_step", "your_step", "remediation", "then_card", "check", "bridge", "hook"]);
 /** What the child can do on a part: 9 requests, then 3 answer columns (cards only). */
 export const REQUESTS = Object.freeze(["clarify", "hindi", "repeat", "picture", "try_first", "give_up", "move_on", "aside", "silence"]);
 export const ANSWERS = Object.freeze(["right", "wrong", "misconception"]);
@@ -31,6 +32,10 @@ const CARDS = new Set(["card", "your_step", "then_card", "check"]);
 export function rule(kind, column, help) {
   const card = CARDS.has(kind);
   if (ANSWERS.includes(column) && !card) return null;
+  // (the hook: its slot's line is said again on clarify, repeat, Hindi or silence; any other request moves on into the skill)
+  if (kind === "hook") return ["clarify", "repeat", "silence", "hindi"].includes(column)
+    ? { say: ["@slot.use"], ...(column === "hindi" ? { lang: "hi", joint: "hindiSwitch" } : {}), then: "next", help: "keep" }
+    : column === "aside" ? { say: [], joint: "asidePark", then: "next", help: "keep" } : { say: [], then: "next", help: "keep" };
   switch (column) {
     // T1.1–T1.5, T2.1: the live part re-said in other authored words; with nothing left, the key and its why. Never spends help.
     case "clarify": {
@@ -109,6 +114,7 @@ function at(obj, path) {
 /** The parts of one skill, in walk order, with their script paths. Off-order parts (remediations, their then-cards) follow. */
 function partsOf(sk, n) {
   const P = [], base = `skills[${n}]`;
+  if (sk.hook?.interestSlots?.length) P.push({ id: `${sk.skillId}:hook`, kind: "hook", path: `${base}.hook` });
   (sk.explain ?? []).forEach((b, i) => {
     const p = `${base}.explain[${i}]`;
     P.push({ id: `${sk.skillId}:${b.id}:point`, kind: "point", path: p });
@@ -137,21 +143,39 @@ function partsOf(sk, n) {
  */
 function orderOf(script, parts, plan) {
   const order = [];
-  (script.skills ?? []).forEach((sk) => {
+  const skills = script.skills ?? [];
+  // (Loop's ask F: compressAt holds a bare check id; a card id such as "script:S:c1" is not taken as a part id)
+  const atOf = (sk, checkIds) => {
+    const v = plan?.compressAt?.[sk.skillId];
+    if (v != null) return String(v).includes(":") ? null : `${sk.skillId}:check:${v}`;
+    return plan?.compress?.includes?.(sk.skillId) ? checkIds[0] ?? null : null;
+  };
+  const compressedIds = skills.filter((sk) => { const c = parts.filter((p) => p.id.startsWith(`${sk.skillId}:`) && p.kind === "check").map((p) => p.id); return !!atOf(sk, c); }).map((sk) => sk.skillId);
+  skills.forEach((sk) => {
     const mine = parts.filter((p) => p.id.startsWith(`${sk.skillId}:`) && !p.offOrder);
     const checks = mine.filter((p) => p.kind === "check");
     const byPlan = plan?.checkOrder?.[sk.skillId];
-    const checkIds = Array.isArray(byPlan) ? [...byPlan.map((c) => `${sk.skillId}:check:${c}`).filter((id) => checks.some((p) => p.id === id)), ...checks.map((p) => p.id).filter((id) => !byPlan.map((c) => `${sk.skillId}:check:${c}`).includes(id))] : checks.map((p) => p.id);
-    const ladder = (plan?.ladderOrder?.[sk.skillId] ?? sk.ladder?.map((l) => l.itemId) ?? []).map((itemId) => ({ ladder: itemId }));
-    const full = [...mine.filter((p) => p.kind !== "check" && p.kind !== "bridge").map((p) => p.id), ...checkIds, ...ladder, ...mine.filter((p) => p.kind === "bridge").map((p) => p.id)];
-    const at0 = plan?.compressAt?.[sk.skillId] ?? (plan?.compress?.includes?.(sk.skillId) ? checkIds[0] ?? null : null);
-    if (at0) {
-      const open = String(at0).includes(":") ? String(at0) : `${sk.skillId}:check:${at0}`;
-      const because = { kind: "compress", skillId: sk.skillId, ...(plan?.because ? { from: "planFor" } : {}) };
-      order.push({ unit: open, recheck: true, onRight: "skip", onMiss: full.filter((x) => x !== open), because: [because, { kind: "compress_fallback", skillId: sk.skillId, on: "miss" }],
-        ...(plan?.allKnown && !order.some((u) => u.sayFirst) ? { sayFirst: "allKnown" } : {}) });
-      if (plan?.allKnown) order.push({ ladder: "hardestFirst", skillId: sk.skillId });
-    } else order.push(...full.map((x) => (typeof x === "string" ? { unit: x } : x)));
+    const planned = Array.isArray(byPlan) ? byPlan.map((c) => `${sk.skillId}:check:${c}`).filter((id) => checks.some((p) => p.id === id)) : [];
+    const checkIds = [...planned, ...checks.map((p) => p.id).filter((id) => !planned.includes(id))];
+    // (Loop's ask E: a because is planFor's record key, { choice, on }, and nothing else)
+    const checkUnits = checkIds.map((id, i) => ({ unit: id, ...(i === 0 && planned.length ? { because: [{ choice: "checkOrder", on: sk.skillId }] } : {}) }));
+    const ladderIds = plan?.ladderOrder?.[sk.skillId] ?? sk.ladder?.map((l) => l.itemId) ?? [];
+    const ladder = ladderIds.map((itemId, i) => ({ ladder: itemId, ...(i === 0 && plan?.ladderOrder?.[sk.skillId] ? { because: [{ choice: "ladderOrder", on: sk.skillId }] } : {}) }));
+    const hook = mine.filter((p) => p.kind === "hook").map((p) => ({ unit: p.id, ...(plan?.hookSlot ? { because: [{ choice: "hookSlot", on: sk.skillId }] } : {}) }));
+    const body = mine.filter((p) => !["check", "bridge", "hook"].includes(p.kind)).map((p) => ({ unit: p.id }));
+    const bridge = mine.filter((p) => p.kind === "bridge").map((p) => ({ unit: p.id }));
+    const open = atOf(sk, checkIds.map((x) => x));
+    if (open) {
+      // a compressed skill: no hook; ONE check that branches — right skips the rest, a miss puts back the full unit (its body, the
+      // other checks, its ladder); the bridge is said after the branch either way (Loop's ask C)
+      const onMiss = [...body, ...checkUnits.filter((u) => u.unit !== open), ...ladder];
+      const first = !order.some((u) => u.sayFirst);
+      order.push({ unit: open, recheck: true, onRight: "skip", onMiss, because: [{ choice: "compress", on: sk.skillId }, { choice: "compress_fallback", on: sk.skillId }],
+        ...(plan?.allKnown && first ? { sayFirst: "allKnown", joint: "allKnown", becauseSayFirst: [{ choice: "allKnown", on: script.topicId ?? null }] } : {}) });
+      // (Loop's ask B: the hardest-first ladder only after the LAST compressed skill; its rung order is resolved at run time)
+      if (plan?.allKnown && sk.skillId === compressedIds.at(-1)) order.push({ ladder: "hardestFirst", skillId: sk.skillId, because: [{ choice: "allKnown", on: script.topicId ?? null }] });
+      order.push(...bridge);
+    } else order.push(...hook, ...body, ...checkUnits, ...ladder, ...bridge);
   });
   return order;
 }
@@ -162,6 +186,7 @@ function orderOf(script, parts, plan) {
  */
 export function compileScript(script, plan = null) {
   const parts = (script?.skills ?? []).flatMap((sk, n) => partsOf(sk, n));
+  const hookSlotOf = (p) => { const h = plan?.hookSlot; if (h == null) return 0; if (Number.isInteger(h)) return h; const v = h[p.id.split(":")[0]] ?? h; return Number.isInteger(v?.index) ? v.index : Number.isInteger(v) ? v : 0; };
   const cells = {}, holes = [], doubles = [], fallbacks = [], noBoard = [], notApplicable = [];
   const seen = new Map();
   for (const p of parts) { if (seen.has(p.id)) doubles.push({ part: p.id, why: "two parts with one id" }); seen.set(p.id, p); }
@@ -175,6 +200,8 @@ export function compileScript(script, plan = null) {
     if (f.startsWith("@worked.")) return { path: `${p.worked}.${f.slice(8)}`, v: at(script, `${p.worked}.${f.slice(8)}`) };
     if (f === "@checkin") return { path: `${p.path}.checkin`, v: at(script, `${p.path}.checkin`) ?? "joint" };
     if (f === "self") return { path: p.path, v: at(script, p.path) };
+    // (the hook's line: the plan's slot, else the first — Loop's ask D)
+    if (f === "@slot.use") { const i = Number.isInteger(hookSlotOf(p)) ? hookSlotOf(p) : 0; return { path: `${p.path}.interestSlots[${i}].use`, v: at(script, `${p.path}.interestSlots[${i}].use`) }; }
     if (p.text && (f === "do" || f === "simpler" || f === "alts[0]")) return { path: `${p.path}.${f === "do" ? p.text : f}`, v: at(script, `${p.path}.${f === "do" ? p.text : f}`) };
     const own = { path: `${p.path}.${f}`, v: at(script, `${p.path}.${f}`) };
     if (own.v != null) return own;
@@ -227,7 +254,9 @@ export function compileScript(script, plan = null) {
             const sk = script.skills.find((s) => p.id.startsWith(`${s.skillId}:`));
             const target = at(script, `${p.path}.targets`) ?? p.targets;
             const i = (sk?.remediation ?? []).findIndex((x) => x.targets === target);
-            remedy = { default: i >= 0 ? `${p.id.split(":")[0]}:rem:${i}` : null, byMixup: "misconception:<id>" };
+            // (Loop's review 3: the per-turn pick is a lookup — every mix-up this skill has a remediation for, to its part)
+          const byMixup = Object.fromEntries((sk?.remediation ?? []).map((x, j) => [x.targets, `${p.id.split(":")[0]}:rem:${j}`]).filter(([t]) => t));
+          remedy = { default: i >= 0 ? `${p.id.split(":")[0]}:rem:${i}` : null, byMixup };
             if (i < 0) miss.push({ field: "remediation", path: `remediation[targets=${target}]` });
           }
           // (a second clarify shows the part's board: one with no board to show is repetition alone — counted, not a hole)
@@ -250,6 +279,13 @@ export function compileScript(script, plan = null) {
     }
   }
   const order = orderOf(script ?? {}, parts, plan);
+  // (Loop's ask A: under a plan, the compressed check's wrong, misconception and give-up cells say nothing and take the unit's onMiss —
+  // no help, no second try, no remediation, as the walk does; right stays its why, and the unit's onRight skips the rest)
+  for (const u of order.filter((x) => x.recheck)) for (const c of ["wrong", "misconception", "give_up"]) for (const h of HELP) {
+    if (!cells[u.unit]?.[c]) continue;
+    const skillId = u.unit.split(":")[0];
+    cells[u.unit][c][h] = { say: [], then: "onMiss", help: "keep", because: [{ choice: "compress_fallback", on: skillId }], address: `${u.unit}/${c}/${h}` };
+  }
   // (the authoring cost: each missing field once per part, with the rules that name it)
   const byField = new Map();
   for (const h of holes) { const k = h.path.startsWith("remediation[") ? `${h.part}|${h.path}` : h.path; const e = byField.get(k) ?? { part: h.part, kind: h.kind, field: h.field, path: h.path, rules: [] }; e.rules.push(h.rule); byField.set(k, e); }
@@ -260,8 +296,10 @@ export function compileScript(script, plan = null) {
 const cache = new Map();
 /** compileScript, cached by the kit's hash (else the script's own) and the plan's. */
 export function compiledFor(script, { kitHash = null, plan = null } = {}) {
-  const k = `${kitHash ?? hashOf(script)}#${hashOf(plan)}`;
-  if (!cache.has(k)) cache.set(k, compileScript(script, plan));
+  // (Loop's ask G: a plan with no because is no plan — one child, one map)
+  const p = plan && Array.isArray(plan.because) && plan.because.length ? plan : null;
+  const k = `${kitHash ?? hashOf(script)}#${hashOf(p)}`;
+  if (!cache.has(k)) cache.set(k, compileScript(script, p));
   return cache.get(k);
 }
 /** Tests: forget every compiled map. */

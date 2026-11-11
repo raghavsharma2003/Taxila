@@ -12,7 +12,7 @@
 // render, the judge, the store) runs on these files with no key: scripts/approve-check.mjs.
 import fs from "node:fs";
 import path from "node:path";
-import { PILOT_TARGETS, beatFor, specHash } from "../server/studio/approved.js";
+import { PILOT_TARGETS, beatFor, specHash, attemptOutcome, deriveTarget } from "../server/studio/approved.js";
 import { specPrompt, createBuilders } from "../server/stagecraft/builders.js";
 import { kindOf } from "../server/stagecraft/catalogue.js";
 import { validateAny } from "../shared/studio-spec-ext/index.ts";
@@ -28,10 +28,14 @@ const MAX_ATTEMPTS = 2;
 /** A spec call's worst case before it is made (6000 output tokens on taxila-fast pricing is far below this); the cap is checked
  *  against spent + this, so the cap holds even if one call costs its worst. */
 const WORST_CALL_USD = 0.02;
-const topics = String(arg("--topics", PILOT_TARGETS.map((t) => t.topicId).join(","))).split(",").map((s) => s.trim()).filter(Boolean);
+// --topics-file <path>: one topic id per line (# comments allowed) — main 2026-11-11: one game per scripted topic; a topic not
+// in PILOT_TARGETS gets deriveTarget's (its catalogue engine, its script's first remediation, the engine's own `how`)
+const TOPICS_FILE = arg("--topics-file");
+const topics = (TOPICS_FILE ? fs.readFileSync(TOPICS_FILE, "utf8").split("\n").map((l) => l.replace(/#.*/, "").trim()).filter(Boolean)
+  : String(arg("--topics", PILOT_TARGETS.map((t) => t.topicId).join(","))).split(",")).map((s) => s.trim()).filter(Boolean);
 const targets = topics.map((t) => {
-  const x = PILOT_TARGETS.find((p) => p.topicId === t);
-  if (!x) throw new Error(`no approval target for ${t} (server/studio/approved.js PILOT_TARGETS)`);
+  const x = deriveTarget(t);
+  if (!x) throw new Error(`no approval target for ${t} (no script, no catalogue game, or no targeted check)`);
   return { ...x, ...(beatFor(x.topicId, x.misconceptionId) ?? {}) };
 });
 if (!Number.isFinite(CAP) || CAP <= 0) throw new Error("--usd must be a positive number");
@@ -69,14 +73,17 @@ for (const t of targets) {
     try { r = await B.generatedSpec(cand(t), dep, undefined, key(t)); } catch (e) { r = { ok: false, usd: 0, why: `error: ${String(e?.code ?? e?.message ?? e).slice(0, 80)}` }; }
     const usd = Number(r?.usd) || 0;
     spent += usd;
-    Object.assign(calls.at(-1), { usd: Math.round(usd * 1e6) / 1e6, ok: !!r?.ok, why: r?.ok ? null : r?.why ?? "refused" });
-    console.log(`  ${t.topicId} attempt ${attempt}: ${r?.ok ? "candidate" : `refused (${r?.why})`}  $${usd.toFixed(5)}`);
-    if (!r?.ok && KEEP_REFUSED) {
-      const v = (() => { try { const x = validateAny(t.archetype, lastRaw); return { fellBack: !!x.fellBack, repairs: (x.repairs ?? []).slice(0, 60) }; } catch (e) { return { error: String(e?.message ?? e).slice(0, 200) }; } })();
-      fs.writeFileSync(path.join(OUT, `${t.topicId}.refused-${attempt}.json`), JSON.stringify({ v: 1, target: t, why: r?.why ?? "refused", validator: v, raw: lastRaw }, null, 2) + "\n");
+    // (every attempt ends in exactly one of: a candidate, or refused with its reason — attemptOutcome)
+    const oc = attemptOutcome(r);
+    Object.assign(calls.at(-1), { usd: Math.round(usd * 1e6) / 1e6, ok: oc.kind === "candidate", why: oc.kind === "candidate" ? null : oc.why });
+    console.log(`  ${t.topicId} attempt ${attempt}: ${oc.kind === "candidate" ? "candidate" : `refused (${oc.why})`}  $${usd.toFixed(5)}`);
+    // (a refused attempt ALWAYS leaves its file with the reason; --keep-refused adds the raw reply and the validator's repairs)
+    if (oc.kind === "refused") {
+      const v = !KEEP_REFUSED ? null : (() => { try { const x = validateAny(t.archetype, lastRaw); return { fellBack: !!x.fellBack, repairs: (x.repairs ?? []).slice(0, 60) }; } catch (e) { return { error: String(e?.message ?? e).slice(0, 200) }; } })();
+      fs.writeFileSync(path.join(OUT, `${t.topicId}.refused-${attempt}.json`), JSON.stringify({ v: 1, target: t, why: oc.why, checks: r?.checks ?? null, spec: r?.payload?.spec ?? null, ...(KEEP_REFUSED ? { validator: v, raw: lastRaw } : {}) }, null, 2) + "\n");
     }
     lastRaw = null;
-    if (r?.ok && r.checks?.contentSafe !== false) done = { r, attempt };
+    if (oc.kind === "candidate") done = { r, attempt };
     if (spent > CAP) throw new Error(`USD cap passed: $${spent.toFixed(4)} > $${CAP.toFixed(2)}`);
   }
   if (done) {

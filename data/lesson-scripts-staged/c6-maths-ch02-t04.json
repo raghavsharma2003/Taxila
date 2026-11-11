@@ -19,7 +19,7 @@
   { "hi": "ulti disha", "en": "opposite direction" },
   { "hi": "chauraaha", "en": "crossing (of two roads)" },
   { "hi": "khaana (ghadi ka)", "en": "hour-space (on a clock)" }
- ], "joints": {"asidePark":[{"hi":"Achha, {aside} wali baat main yaad rakhti hoon, thodi der mein usi par aayenge.","en":"Okay, I'll keep the {aside} bit in mind, and we'll come back to it soon."},{"hi":"Yeh kon pehchaanna poora hote hi {aside} ki baat zaroor karenge.","en":"Once naming these angles is done, we will surely talk about {aside}."},{"hi":"Wah, {aside} ki baat sambhaal ke rakhi hai, baad mein zaroor sunungi.","en":"Oh, I've kept the {aside} bit safe, and I'll surely hear it later."}],"asideReturn":[{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"},{"hi":"{aside} mein tumhe sabse nukila kya dikhta hai?","en":"What looks the sharpest to you in {aside}?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."}]},
+ ], "joints": {"asidePark":[{"hi":"Yeh kon pehchaanna poora hote hi {aside} ki baat zaroor karenge.","en":"Once naming these angles is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh kon pehchaanna khatam ho jaaye.","en":"We'll talk about {aside} too, once naming these angles is over."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein tumhe sabse nukila kya dikhta hai?","en":"What looks the sharpest to you in {aside}?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in English."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."}],"askAgain":[{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."}]},
  "skills": [
   {
    "skillId": "c6-maths-ch02-t04-s1",
@@ -60,7 +60,7 @@
       "prompt": { "hi": "Yeh 40° wala angle kis type ka hai: acute ya right angle?", "en": "What type is the 40° angle on the board: acute or right angle?" },
       "key": "acute",
       "why": { "hi": "40° right angle ke 90° se kam khula hai", "en": "40° opens less than the 90° of a right angle" },
-      "accept": ["acute angle", "nyun kon", "acute hai"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90}, {"deg": 40}]} }
+      "accept": ["acute angle", "nyun kon", "acute hai"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90}, {"deg": 40}], "mark": {"index": 1, "show": "deg"}} }
      },
      "simpler": { "hi": "Page ka kona 90° ka hota hai, woh right angle hai. Ab 40° ko 90° se milao, aur dekho woh kone se kam khula hai ya zyada.", "en": "A page corner is 90°, a right angle. Now compare 40° with 90° and see if it opens less or more than the corner." }
     },
@@ -81,7 +81,7 @@
       "prompt": { "hi": "Aur yeh 130° wala angle kis type ka hai: acute ya obtuse?", "en": "And what type is the 130° angle on the board: acute or obtuse?" },
       "key": "obtuse",
       "why": { "hi": "130° 90° se zyada aur 180° se kam hai", "en": "130° is more than 90° and less than 180°" },
-      "accept": ["obtuse angle", "adhik kon", "obtuse hai"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90}, {"deg": 130}]} }
+      "accept": ["obtuse angle", "adhik kon", "obtuse hai"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90}, {"deg": 130}], "mark": {"index": 1, "show": "deg"}} }
      },
      "simpler": { "hi": "90° page ka kona hai, aur 180° ek seedhi line. 130° in dono ke beech aata hai, toh beech wale angle ka naam yaad karo.", "en": "90° is a page corner and 180° is a straight line. 130° sits between the two, so recall the name for an angle in between." }
     },
@@ -133,7 +133,7 @@
      "prompt": { "hi": "Ab 145° ko dekho. Yeh 90° se zyada hai aur 180° se kam. Yeh kis type ka hai: acute, right ya obtuse?", "en": "Now look at 145°. It is more than 90° and less than 180°. What type is it: acute, right or obtuse?" },
      "key": "obtuse",
      "accept": ["obtuse angle", "adhik kon", "obtuse hai"],
-     "simpler": { "hi": "145° page ke kone 90° se zyada khula hai, par 180° ki seedhi line nahi bana. Is beech wale angle ka naam yaad karo.", "en": "145° opens more than the 90° page corner but has not become the 180° straight line. Recall the name for this in-between angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 25}, {"deg": 90}, {"deg": 145}]} }, "why": { "hi": "25° aur 90° ke baad bacha 145°, jo 90° se zyada aur 180° se kam hai", "en": "after 25° and 90° comes 145°, which is more than 90° and less than 180°" }
+     "simpler": { "hi": "145° page ke kone 90° se zyada khula hai, par 180° ki seedhi line nahi bana. Is beech wale angle ka naam yaad karo.", "en": "145° opens more than the 90° page corner but has not become the 180° straight line. Recall the name for this in-between angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 25}, {"deg": 90}, {"deg": 145}], "mark": {"index": 2, "show": "deg"}} }, "why": { "hi": "25° aur 90° ke baad bacha 145°, jo 90° se zyada aur 180° se kam hai", "en": "after 25° and 90° comes 145°, which is more than 90° and less than 180°" }
     },
     "answer": { "hi": "25° acute hai, 90° right angle hai aur 145° obtuse hai", "en": "25° is acute, 90° is a right angle and 145° is obtuse" },
     "why": {
@@ -247,7 +247,7 @@
       "why": { "hi": "dono cover ulti disha mein hain, yaani aadha chakkar, 180°, jo obtuse se zyada hai", "en": "the covers point opposite ways, half a turn, 180°, which is more than obtuse" },
       "accept": ["straight", "rjukon", "180°", "180"],
       "targets": "c6-maths-ch02-t04-m-straight-not-angle",
-      "wrongIfMis": "koi angle nahi", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "aadha chakkar"}]} }
+      "wrongIfMis": "koi angle nahi", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "aadha chakkar"}], "mark": {"index": 0, "show": "deg"}} }
      },
      "simpler": { "hi": "Khuli kitaab ke dono cover ulti disha mein hain, bilkul ek seedhi line jaise. Aisa aadha chakkar 180° hota hai, aur iska apna naam hai.", "en": "The open book's two covers point opposite ways, like one straight line. That half turn is 180°, and it has its own name." }
     },
@@ -269,7 +269,7 @@
       "why": { "hi": "andar aur bahar wala angle milkar 360° hain, aur 360° − 100° = 260°", "en": "the inside and outside angles make 360° together, and 360° − 100° = 260°" },
       "accept": ["260", "260 degree", "260 degrees"],
       "targets": "c6-maths-ch02-t04-m-reflex-missing",
-      "wrongIfMis": "100°", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 100}]} }
+      "wrongIfMis": "100°", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 100}], "mark": {"index": 0, "show": "deg"}} }
      },
      "simpler": { "hi": "Andar aur bahar ke angle milkar poora chakkar, 360°, banate hain. Toh andar ka 100° 360° mein se hatao.", "en": "Together, the inside and outside angles make a full turn, 360°. So take the inside 100° away from 360°." }
     },
@@ -292,7 +292,7 @@
       "why": { "hi": "andar 120° hai, toh bahar 240°, jo 180° se zyada aur 360° se kam hai", "en": "the inside is 120°, so the outside is 240°, which is more than 180° and less than 360°" },
       "accept": ["reflex angle", "prativarti kon", "reflex hai"],
       "targets": "c6-maths-ch02-t04-m-reflex-missing",
-      "wrongIfMis": "obtuse", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 120}]} }
+      "wrongIfMis": "obtuse", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 120}], "mark": {"index": 0, "show": "deg"}} }
      },
      "simpler": { "hi": "240° seedhi line ke 180° se bada hai, par poore chakkar 360° se chhota. Is range wale angle ka naam abhi seekha.", "en": "240° is more than the 180° of a straight line but less than a full 360° turn. You just learned the name for angles in this range." }
     }
@@ -330,7 +330,7 @@
      "accept": ["reflex angle", "prativarti kon", "reflex hai"],
      "targets": "c6-maths-ch02-t04-m-reflex-missing",
      "wrongIfMis": "obtuse",
-     "simpler": { "hi": "310° seedhi line ke 180° se bada hai aur poore chakkar 360° se chhota. Aise angle ka naam yaad karo.", "en": "310° is more than the 180° of a straight line and less than a full 360° turn. Recall the name of such an angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "angle AOB"}, {"deg": 180, "name": "angle AOC"}]} }, "why": { "hi": "angle AOB ka bahar wala 310° hai, jo angle AOC ke 180° se zyada aur 360° se kam hai", "en": "the outside of angle AOB is 310°, more than the 180° of angle AOC and less than 360°" }
+     "simpler": { "hi": "310° seedhi line ke 180° se bada hai aur poore chakkar 360° se chhota. Aise angle ka naam yaad karo.", "en": "310° is more than the 180° of a straight line and less than a full 360° turn. Recall the name of such an angle." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "angle AOB"}, {"deg": 180, "name": "angle AOC"}], "mark": {"index": 1, "show": "deg"}} }, "why": { "hi": "angle AOB ka bahar wala 310° hai, jo angle AOC ke 180° se zyada aur 360° se kam hai", "en": "the outside of angle AOB is 310°, more than the 180° of angle AOC and less than 360°" }
     },
     "answer": {
      "hi": "angle AOC = 180° straight angle hai, angle BOC = 130° obtuse hai, aur AOB ka bahar wala angle 310° reflex hai",
@@ -352,7 +352,7 @@
      "targets": "c6-maths-ch02-t04-m-straight-not-angle",
      "wrongIfMis": "koi angle nahi",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "6 baje" }] } },
-     "simpler": { "hi": "6 baje ek sui upar aur ek neeche hoti hai, dono milkar ek seedhi line banati hain. Seedhi line ka angle yaad karo.", "en": "At 6 o'clock one hand points up and one down, making one straight line. Recall the angle of a straight line." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "6 baje"}]} }
+     "simpler": { "hi": "6 baje ek sui upar aur ek neeche hoti hai, dono milkar ek seedhi line banati hain. Seedhi line ka angle yaad karo.", "en": "At 6 o'clock one hand points up and one down, making one straight line. Recall the angle of a straight line." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "6 baje"}], "mark": {"index": 0, "show": "deg"}} }
     },
     {
      "id": "c2",
@@ -366,7 +366,7 @@
      "targets": "c6-maths-ch02-t04-m-reflex-missing",
      "wrongIfMis": "70°",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 70 }] } },
-     "simpler": { "hi": "Andar plus bahar poora chakkar hota hai. Toh poore chakkar ke degree mein se 70° hatao.", "en": "Inside plus outside is a full turn. So take 70° away from a full turn's degrees." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 70}]} }
+     "simpler": { "hi": "Andar plus bahar poora chakkar hota hai. Toh poore chakkar ke degree mein se 70° hatao.", "en": "Inside plus outside is a full turn. So take 70° away from a full turn's degrees." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 70}], "mark": {"index": 0, "show": "deg"}} }
     },
     {
      "id": "c3",
@@ -380,7 +380,7 @@
      "targets": "c6-maths-ch02-t04-m-reflex-missing",
      "wrongIfMis": "obtuse",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 125 }] } },
-     "simpler": { "hi": "235° ko seedhi line se milao, jo aadha chakkar hai. Jo angle seedhi line se bada ho par poore chakkar se chhota, uska naam yaad karo.", "en": "Compare 235° with a straight line, which is half a turn. Recall the name of an angle bigger than a straight line but smaller than a full turn." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 125}]} }
+     "simpler": { "hi": "235° ko seedhi line se milao, jo aadha chakkar hai. Jo angle seedhi line se bada ho par poore chakkar se chhota, uska naam yaad karo.", "en": "Compare 235° with a straight line, which is half a turn. Recall the name of an angle bigger than a straight line but smaller than a full turn." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 125}], "mark": {"index": 0, "show": "deg"}} }
     }
    ],
    "ladder": [
@@ -408,7 +408,7 @@
       "targets": "c6-maths-ch02-t04-m-straight-not-angle",
       "wrongIfMis": "0°",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "blade" }] } },
-      "simpler": { "hi": "Blade ulti disha mein ruka, yaani aadha chakkar ghooma. Aadhe chakkar ke degree yaad karo, jo seedhi line ke hote hain.", "en": "The blade stopped facing the opposite way, so it turned half a turn. Recall the degrees in half a turn, the same as a straight line." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "blade"}]} }
+      "simpler": { "hi": "Blade ulti disha mein ruka, yaani aadha chakkar ghooma. Aadhe chakkar ke degree yaad karo, jo seedhi line ke hote hain.", "en": "The blade stopped facing the opposite way, so it turned half a turn. Recall the degrees in half a turn, the same as a straight line." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "blade"}], "mark": {"index": 0, "show": "deg"}} }
      }
     },
     {
@@ -428,7 +428,7 @@
       "targets": "c6-maths-ch02-t04-m-reflex-missing",
       "wrongIfMis": "120°",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 120, "name": "4 baje" }] } },
-      "simpler": { "hi": "Chhota aur bada angle milkar poora chakkar banate hain. Toh poore chakkar ke degree mein se 120° ghatao.", "en": "The small and big angles together make a full turn. So take 120° away from a full turn's degrees." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 120, "name": "4 baje"}]} }
+      "simpler": { "hi": "Chhota aur bada angle milkar poora chakkar banate hain. Toh poore chakkar ke degree mein se 120° ghatao.", "en": "The small and big angles together make a full turn. So take 120° away from a full turn's degrees." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 120, "name": "4 baje"}], "mark": {"index": 0, "show": "deg"}} }
      }
     }
    ],
@@ -475,7 +475,7 @@
       "prompt": { "hi": "Board par 5 baje wala chhota angle kitne degree ka hai?", "en": "How many degrees is the smaller 5 o'clock angle on the board?" },
       "key": "150°",
       "why": { "hi": "3 baje 90° tha; 5 baje sui 12 se 5 tak paanch ghante ghoomi, aur 5 × 30° = 150°", "en": "at 3 o'clock it was 90°; at 5 o'clock the hand turned five hours from 12, and 5 × 30° = 150°" },
-      "accept": ["150", "150 degree", "150 degrees"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "3 baje"}, {"deg": 150, "name": "5 baje"}]} }
+      "accept": ["150", "150 degree", "150 degrees"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "3 baje"}, {"deg": 150, "name": "5 baje"}], "mark": {"index": 1, "show": "deg"}} }
      },
      "simpler": { "hi": "Ghadi mein har ghanta 30° ka hai. 5 baje sui 12 se 5 tak paanch ghante ghoomi, toh 30° ko 5 baar jodo.", "en": "On a clock each hour is 30°. At 5 o'clock the hand turned five hours from 12 to 5, so add 30° five times." }
     },
@@ -497,7 +497,7 @@
       "why": { "hi": "dono kone seedhi sadak ke 180° ko baantte hain, aur 180° − 60° = 120°", "en": "the two corners share the straight road's 180°, and 180° − 60° = 120°" },
       "accept": ["120", "120 degree", "120 degrees"],
       "targets": "c6-maths-ch02-t04-m-crossing-all-equal",
-      "wrongIfMis": "60°", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi sadak"}, {"deg": 60}]} }
+      "wrongIfMis": "60°", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "seedhi sadak"}, {"deg": 60}], "mark": {"index": 1, "show": "deg"}} }
      },
      "simpler": { "hi": "Seedhi sadak ke ek taraf 180° hai, jo do kono mein bata hai. Ek kona 60° hai, toh 180° mein se 60° ghatao.", "en": "One side of a straight road is 180°, shared by two corners. One corner is 60°, so take 60° from 180°." }
     },
@@ -519,7 +519,7 @@
       "why": { "hi": "saamne wala kona 115° ke barabar hai, jo 90° se zyada aur 180° se kam hai", "en": "the opposite corner equals 115°, which is more than 90° and less than 180°" },
       "accept": ["obtuse angle", "adhik kon", "obtuse hai"],
       "targets": "c6-maths-ch02-t04-m-crossing-all-equal",
-      "wrongIfMis": "acute", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 65}, {"deg": 115}]} }
+      "wrongIfMis": "acute", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 65}, {"deg": 115}], "mark": {"index": 1, "show": "deg"}} }
      },
      "simpler": { "hi": "Aamne-saamne ke kone barabar hote hain, toh saamne wala kona bhi 115° ka hai. Ab dekho 115° page ke kone se kam khula hai ya zyada.", "en": "Opposite corners are equal, so the opposite corner is also 115°. Now see if 115° opens less or more than a page corner." }
     }
@@ -554,7 +554,7 @@
      "accept": ["300", "300 degree", "300 degrees"],
      "targets": "c6-maths-ch02-t04-m-reflex-missing",
      "wrongIfMis": "60°",
-     "simpler": { "hi": "Chhota aur bada angle milkar poora chakkar 360° banate hain. Toh 360° mein se chhota 60° hata do.", "en": "Together the small and large angles make a full 360° turn. So take the small 60° away from 360°." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "10 baje"}]} }, "why": { "hi": "10 baje chhota angle 60° hai, aur dono milkar 360° hain, toh 360° − 60° = 300°", "en": "at 10 o'clock the small angle is 60°, and the two make 360°, so 360° − 60° = 300°" }
+     "simpler": { "hi": "Chhota aur bada angle milkar poora chakkar 360° banate hain. Toh 360° mein se chhota 60° hata do.", "en": "Together the small and large angles make a full 360° turn. So take the small 60° away from 360°." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "10 baje"}], "mark": {"index": 0, "show": "deg"}} }, "why": { "hi": "10 baje chhota angle 60° hai, aur dono milkar 360° hain, toh 360° − 60° = 300°", "en": "at 10 o'clock the small angle is 60°, and the two make 360°, so 360° − 60° = 300°" }
     },
     "answer": { "hi": "chhota angle 60° acute hai aur bada angle 300° reflex hai", "en": "the smaller angle is 60°, acute, and the larger angle is 300°, reflex" },
     "why": { "hi": "ghadi ka har ghanta 30° hai, dono angle milkar 360° banate hain, aur 180° se bada angle reflex hota hai", "en": "each clock hour is 30°, the smaller and larger angles add to 360°, and the larger one, more than 180°, is reflex" },
@@ -573,7 +573,7 @@
      "targets": "c6-maths-ch02-t04-m-crossing-all-equal",
      "wrongIfMis": "40°",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 40 }] } },
-     "simpler": { "hi": "Bagal wale do kone sadak ke ek taraf milkar seedhi line banate hain. Seedhi line ke degree mein se 40° ghatao.", "en": "The two neighbouring corners on one side of the road together make a straight line. Take 40° away from a straight line's degrees." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40}]} }
+     "simpler": { "hi": "Bagal wale do kone sadak ke ek taraf milkar seedhi line banate hain. Seedhi line ke degree mein se 40° ghatao.", "en": "The two neighbouring corners on one side of the road together make a straight line. Take 40° away from a straight line's degrees." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40}], "mark": {"index": 0, "show": "deg"}} }
     },
     {
      "id": "c2",
@@ -584,7 +584,7 @@
      "targets": "c6-maths-ch02-t04-m-reflex-missing",
      "wrongIfMis": "30°",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 30, "name": "1 baje" }] } },
-     "simpler": { "hi": "Dono angle milkar poora chakkar banate hain. Poore chakkar ke degree mein se 30° hatao.", "en": "Both angles together make a full turn. Take 30° away from a full turn's degrees." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 30, "name": "1 baje"}]} }
+     "simpler": { "hi": "Dono angle milkar poora chakkar banate hain. Poore chakkar ke degree mein se 30° hatao.", "en": "Both angles together make a full turn. Take 30° away from a full turn's degrees." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 30, "name": "1 baje"}], "mark": {"index": 0, "show": "deg"}} }
     }
    ],
    "ladder": [
@@ -610,7 +610,7 @@
       "targets": "c6-maths-ch02-t04-m-crossing-all-equal",
       "wrongIfMis": "75°",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 75 }] } },
-      "simpler": { "hi": "Bagal wale kone milkar ek seedhi line banate hain. Seedhi line ke degree mein se 75° ghatao.", "en": "Neighbouring corners together make a straight line. Take 75° away from a straight line's degrees." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 75}]} }
+      "simpler": { "hi": "Bagal wale kone milkar ek seedhi line banate hain. Seedhi line ke degree mein se 75° ghatao.", "en": "Neighbouring corners together make a straight line. Take 75° away from a straight line's degrees." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 75}], "mark": {"index": 0, "show": "deg"}} }
      }
     },
     {
@@ -630,7 +630,7 @@
       "targets": "c6-maths-ch02-t04-m-reflex-missing",
       "wrongIfMis": "150°",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 150, "name": "5 baje" }] } },
-      "simpler": { "hi": "Chhota aur bada angle milkar poora chakkar banate hain. Poore chakkar ke degree mein se 150° ghatao.", "en": "The small and large angles together make a full turn. Take 150° away from a full turn's degrees." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 150, "name": "5 baje"}]} }
+      "simpler": { "hi": "Chhota aur bada angle milkar poora chakkar banate hain. Poore chakkar ke degree mein se 150° ghatao.", "en": "The small and large angles together make a full turn. Take 150° away from a full turn's degrees." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 150, "name": "5 baje"}], "mark": {"index": 0, "show": "deg"}} }
      }
     }
    ],

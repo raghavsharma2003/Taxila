@@ -222,3 +222,9 @@ Audit V-27. Expressive SSML is default on for DragonHD (`w2g-expressive-layer-bu
 ## `fd-r7-audit-voice-switch-translit-not-wired`
 
 Record correction (audit V-29). `rs7-voice-switch` and `rs7-translit-roman-to-devanagari` read as shipped steps; neither is called by any live path (`voice-switch.js` styleFor / synthesize, `translit/index.js` toDevanagari are reached only from tests and evals). Main decided not to wire them now. One data fix landed: `bara` is no longer a hand entry for twelve (`sabse bara` would have become `सबसे बारह`); NUMBER_AMBIG still reads it as twelve in a run of numbers.
+
+
+<!-- merged from inbox/r8-play-follow.json -->
+## open-play-difficulty-not-calibrated (2026-11-10)
+
+OPEN: play difficulty is not calibrated across families. Each level's proof.pFirstTry is the family generator's own estimate (solver-derived), so 'band garam 0.75' in kila and in todo-jodo are not the same difficulty, and the P1 fit term and the P2 lift/step-down compare uncalibrated numbers when they cross families (most visibly at a family switch). A calibration needs measured first-try outcomes per family x band: for a +-0.1 95% CI on a first-try rate near p = 0.7, n = z^2 p(1-p) / h^2 = 1.96^2 x 0.21 / 0.01 = 81 first-try outcomes per family x band; with children contributing several levels each (cluster m ~ 5, intra-child correlation rho ~ 0.2) the design effect 1 + (m-1) rho = 1.8 makes it ~146 per cell, i.e. ~30 families x 3 bands x 146 = ~13k levels. Re-fit: a 1PL (Rasch) model P(first try) = sigmoid(theta_child - b_level) with b_level = b_family,mode + beta_fade x fade + beta . level features (the generator's own difficulty knobs), child ability as a random effect (seeded from the ledger pL); then replace proof.pFirstTry by the fitted probability at the median child of the band and re-check the picker's BAND targets. Until then no cross-family difficulty claim is made to a parent.

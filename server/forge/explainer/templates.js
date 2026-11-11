@@ -12,8 +12,9 @@
 // expand(call, { band, lessonId, scriptId }) → { ok, script, facts, errors }: the script is normalised STRICTLY and
 // linted (shared/whiteboard.js lintScript: inside the board, no overlapping text), so a template that cannot lay out
 // its data fails here, before a child sees it, and the ladder steps down.
-import { normalizeScript, lintScript, textBox, textProblem, settledScript } from "../../../shared/whiteboard.js";
+import { normalizeScript, lintScript, textBox, textProblem, settledScript, opGeometry, braceLabelAt, ROLE, MEANING_ROLES } from "../../../shared/whiteboard.js";
 import { placeNamed } from "./places.js";
+import { statesKeyAnyLang } from "./states-key.js";
 
 const round1 = (v) => Math.round(v * 10) / 10;
 
@@ -71,10 +72,10 @@ function sizeFor(text, maxW) {
  * Write a label centred at (x, y) within `maxW`: one line at m or s, else split at the space nearest the middle into two
  * lines at s. Returns the op ids, or null when it cannot fit (the template then fails rather than overflow).
  */
-function writeFit(tl, text, x, y, maxW, opts = {}, { id, ms = 500, gap = 40, ink, size } = {}) {
+function writeFit(tl, text, x, y, maxW, opts = {}, { id, ms = 500, gap = 40, ink, size, role } = {}) {
   // `size: "s"` keeps a group of labels at one size (a column of a table never mixes sizes)
-  const one = size === "s" ? (textBox(text, "s").w <= maxW ? "s" : null) : sizeFor(text, maxW);
-  if (one) return [tl.add({ ...(id ? { id } : {}), op: "text", at: [x, y], text, size: one, ...(ink ? { ink } : {}) }, ms, { gap, ...opts })];
+  const one = [...text].length > 24 ? null : size === "s" ? (textBox(text, "s").w <= maxW ? "s" : null) : sizeFor(text, maxW);
+  if (one) return [tl.add({ ...(id ? { id } : {}), op: "text", at: [x, y], text, size: one, ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms, { gap, ...opts })];
   const words = text.split(/\s+/);
   if (words.length < 2) return null;
   let best = null;
@@ -84,10 +85,120 @@ function writeFit(tl, text, x, y, maxW, opts = {}, { id, ms = 500, gap = 40, ink
     if (w <= maxW && (!best || w < best.w)) best = { a, b, w };
   }
   if (!best) return null;
+  // (a line with a stacked fraction is taller: the two lines move apart to hold it)
+  const half = Math.max(12, ...[best.a, best.b].map((t) => textBox(t, "s").h / 2 + 1));
   return [
-    tl.add({ ...(id ? { id } : {}), op: "text", at: [x, y - 12], text: best.a, size: "s", ...(ink ? { ink } : {}) }, ms * 0.6, { gap, ...opts }),
-    tl.add({ op: "text", at: [x, y + 12], text: best.b, size: "s", ...(ink ? { ink } : {}) }, ms * 0.6, { gap: 0 }),
+    tl.add({ ...(id ? { id } : {}), op: "text", at: [x, y - half], text: best.a, size: "s", ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms * 0.6, { gap, ...opts }),
+    tl.add({ op: "text", at: [x, y + half], text: best.b, size: "s", ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms * 0.6, { gap: 0 }),
   ];
+}
+
+// ───────────────────────────── round 8: the board grammar (roles, brace, mix-up, relation, legend) ─────────────────────────────
+
+/** The lowest point drawn so far (board units) — and, given a span [xa, xb], only of what lies over it. */
+function bottomOf(ops, xa = -Infinity, xb = Infinity) {
+  const byId = new Map(ops.map((o) => [o.id, o]));
+  let y = 0;
+  for (const o of ops) {
+    if (o.op === "erase" || o.op === "highlight" || ["move", "rotate", "scale", "follow", "sweep", "morph"].includes(o.op)) continue;
+    let b; try { b = opGeometry(o, byId).box; } catch { continue; }
+    if (o.op === "brace" && o.label) { const lb = textBox(o.label, o.size ?? "m", braceLabelAt(o, o.label, o.size ?? "m")); b = { x: Math.min(b.x, lb.x), y: Math.min(b.y, lb.y), w: Math.max(b.x + b.w, lb.x + lb.w) - Math.min(b.x, lb.x), h: Math.max(b.y + b.h, lb.y + lb.h) - Math.min(b.y, lb.y) }; }
+    if (b.x > xb || b.x + b.w < xa) continue;
+    y = Math.max(y, b.y + b.h);
+  }
+  return y;
+}
+const RAT = (t) => { const m = /^\s*(\d+)\s*(?:\/\s*(\d+))?\s*$/.exec(String(t ?? "")); return m && (m[2] == null || Number(m[2]) > 0) ? Number(m[1]) / Number(m[2] ?? 1) : null; };
+const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+/** A value as the key a gate compares (a whole number, or a fraction in lowest terms). */
+const keyOf = (num, den = 1) => { const g = gcd(num, den) || 1; return den / g === 1 ? String(num / g) : `${num / g}/${den / g}`; };
+
+/** The words a template writes of its own (legend rows): the live gate's W5 takes them as template words. */
+const LEGEND = {
+  en: { focus: "this part", slot: "your answer", answer: "the answer", mixup: "easy to mix up" },
+  hi: { focus: "yeh hissa", slot: "tumhara jawab", answer: "jawab", mixup: "yahan galti hoti hai" },
+};
+/** A template's own focus row (a shaded part). */
+const FOCUS_ROW = { en: "shaded part", hi: "rangin hissa" };
+export const BOARD_WORDS = Object.freeze([...new Set([...Object.values(LEGEND).flatMap((l) => Object.values(l)), ...Object.values(FOCUS_ROW)].flatMap((t) => t.split(/\s+/)))]);
+/** The board's language: "hi" and "hinglish" write Hinglish (as every template's own words do), anything else English. */
+const langOf = (c) => (c.lang === "hi" || c.lang === "hinglish" ? "hi" : "en");
+
+/**
+ * round 8 (board grammar item 5): a `mixup` marker — the beat's easy-to-mix-up, in ≤ 32 characters — as a dashed bracket
+ * under the span [xa, xb] at y, its words under it, both in the mixup role. Its words never state the open card's key
+ * (statesKeyAnyLang over the template's own asked values and the caller's keys). → { bottom } or { error }.
+ */
+function mixupMarker(tl, c, xa, xb, y, keys) {
+  const t = String(c.mixup ?? "").trim();
+  if (!t || [...t].length > 32 || !fitsLabel(t) || (textProblem(t) && textProblem(t) !== "too_long") || /\?/.test(t)) return { error: "mixup" };
+  if (statesKeyAnyLang(t, [...keys, ...(Array.isArray(c._keys) ? c._keys : [])])) return { error: "mixup_states_key" };
+  tl.add({ id: "mix", op: "stroke", points: [[round1(xa), round1(y)], [round1(xa), round1(y + 9)], [round1(xb), round1(y + 9)], [round1(xb), round1(y)]], role: ROLE.mixup, weight: 2 }, 400, { gap: 300 });
+  const ids = writeFit(tl, t, round1(Math.min(400 - 60, Math.max(60, (xa + xb) / 2))), round1(y + 34), 380, {}, { id: "mixw", role: ROLE.mixup, size: "s", gap: 60 });
+  if (!ids) return { error: "mixup_too_wide" };
+  return { bottom: bottomOf(tl.ops) };
+}
+
+/**
+ * round 8 (board grammar item 6): a `relation` { lhs, op, rhs } between the board's OWN fractions, written under the
+ * figure with the asked term as a slot: op "×" | "+" writes "lhs = ? op rhs" (how many rhs make lhs: the "?" is that
+ * count / that part); op "=" | "<" | ">" writes "lhs op rhs" with lhs or rhs "?" (the slot). Every number must be one the
+ * board shows (`shown`, as values), and the relation must be TRUE. `focus`: the value the board names, written in focus.
+ * → { bottom, keys } or { error }.
+ */
+function relationLine(tl, c, shown, y, focus = null) {
+  const r = c.relation;
+  if (!r || typeof r !== "object") return { error: "relation" };
+  const op = { x: "×", "*": "×", "×": "×", "+": "+", "=": "=", "<": "<", ">": ">" }[String(r.op ?? "").trim()];
+  const L = String(r.lhs ?? "").trim(), R = String(r.rhs ?? "").trim();
+  if (!op || !L || !R) return { error: "relation" };
+  const lv = L === "?" ? null : RAT(L), rv = R === "?" ? null : RAT(R);
+  if ((L !== "?" && lv == null) || (R !== "?" && rv == null)) return { error: "relation_value" };
+  const near = (v) => [...shown].some((s) => Math.abs(s - v) < 1e-9);
+  if ((lv != null && !near(lv)) || (rv != null && !near(rv))) return { error: "relation_not_board" };
+  let pieces, key;
+  if (op === "×" || op === "+") {
+    if (lv == null || rv == null) return { error: "relation_slot" };
+    if (op === "×") { const k = lv / rv; if (!(Number.isInteger(Math.round(k * 1e9) / 1e9) && k >= 1 && k <= 12)) return { error: "relation_false" }; key = String(Math.round(k)); }
+    else { const k = lv - rv; if (!(k > 1e-9)) return { error: "relation_false" }; const fr = (t) => (/\//.test(t) ? t.split("/").map(Number) : [Number(t), 1]); const [a, b] = fr(L), [p, q] = fr(R); key = keyOf(a * q - p * b, b * q); }
+    pieces = [[L, lv], ["=", null], ["?", null], [op, null], [R, rv]];
+  } else {
+    // (exactly one side asked: the relation is the board's question, its slot the asked term)
+    if ((lv == null) === (rv == null)) return { error: "relation_slot" };
+    key = lv == null ? (op === "=" ? R : null) : rv == null ? (op === "=" ? L : null) : null;
+    pieces = [[L, lv], [op, null], [R, rv]];
+  }
+  const gap = 12, ws = pieces.map(([t]) => textBox(t, "m").w + (t === "?" ? 10 : 0));
+  const total = ws.reduce((a, b) => a + b, 0) + gap * (pieces.length - 1);
+  if (total > 380) return { error: "relation_too_wide" };
+  const h = Math.max(...pieces.map(([t]) => textBox(t, "m").h)) / 2;
+  const yc = round1(y + h + 6);
+  let x = 200 - total / 2;
+  pieces.forEach(([t, v], i) => {
+    const role = t === "?" ? ROLE.slot : v != null && focus != null && Math.abs(v - focus) < 1e-9 ? ROLE.focus : undefined;
+    tl.add({ ...(i === 0 ? { id: "rel" } : {}), op: "text", at: [round1(x + ws[i] / 2), yc], text: t, size: "m", ...(role ? { role } : {}) }, 260, { gap: i ? 60 : 300 });
+    x += ws[i] + gap;
+  });
+  return { bottom: bottomOf(tl.ops), keys: key ? [key] : [] };
+}
+
+/** The board's mix-up marker and relation, under the figure (y from the lowest point drawn), and their asked values. */
+function grammarBelow(tl, c, { span = [40, 360], shown = new Set(), focus = null, keys = [] } = {}) {
+  const out = { keys: [...keys] };
+  // the relation's own asked value is a key the mix-up must not state, so the relation is checked first
+  let rel = null;
+  if (c.relation != null) {
+    const probe = timeline(1);
+    rel = relationLine(probe, c, shown, 0, focus);
+    if (rel.error) return rel;
+    out.keys.push(...rel.keys);
+  }
+  if (c.mixup != null) {
+    const m = mixupMarker(tl, c, span[0], span[1], bottomOf(tl.ops, span[0], span[1]) + 10, out.keys);
+    if (m.error) return m;
+  }
+  if (rel) { const r = relationLine(tl, c, shown, bottomOf(tl.ops) + 4, focus); if (r.error) return r; }
+  return out;
 }
 
 // ───────────────────────────── maths ─────────────────────────────
@@ -97,14 +208,22 @@ function fractionParts(c, tl) {
   if (!isInt(parts, 2, 12) || !isInt(shade, 0, parts)) return { error: "fraction_range" };
   const whole = c.whole === "bar" ? "bar" : c.whole === "roti" ? "roti" : "circle";
   const facts = { whole, parts, shaded: shade, fraction: `${shade}/${parts}` };
+  // round 8 (board grammar): the shaded parts are the focus (an outline plus a tint), the cuts between unshaded parts muted
+  const named = shade > 0 && !c.hideResult;
+  let span;
   if (whole === "bar") {
-    const x0 = 40, y0 = 70, W = 320, H = 70, pw = W / parts;
+    // (round 8: the shaded group is NAMED by a brace over it, its fraction stacked at the apex — room above the bar for it)
+    const x0 = 40, y0 = named ? 92 : 70, W = 320, H = 70, pw = W / parts;
     tl.add({ op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 900);
-    for (let i = 1; i < parts; i++) tl.add({ op: "line", from: [x0 + i * pw, y0], to: [x0 + i * pw, y0 + H], weight: 1 }, 260, { gap: 60 });
-    for (let i = 0; i < shade; i++) tl.add({ id: `s${i}`, op: "rect", at: [x0 + i * pw + 3, y0 + 3], w: pw - 6, h: H - 6, fill: "accent", ink: "accent", weight: 1 }, 380, { gap: 120 });
+    for (let i = 1; i < parts; i++) tl.add({ op: "line", from: [round1(x0 + i * pw), y0], to: [round1(x0 + i * pw), y0 + H], weight: 1, ...(i > shade ? { role: ROLE.muted } : {}) }, 260, { gap: 60 });
+    for (let i = 0; i < shade; i++) tl.add({ id: `s${i}`, op: "rect", at: [round1(x0 + i * pw + 3), y0 + 3], w: round1(pw - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1, role: ROLE.focus }, 380, { gap: 120 });
     // the parts count under the bar, then the fraction
     // (director11 S3: the board's own words follow the lesson's Hindi mode — "2 equal parts" stayed English over Hindi lines)
-    tl.add({ op: "text", at: [200, 175], text: c.lang === "hi" ? `${parts} barabar hisse` : `${parts} equal parts`, size: "s", ink: "soft" }, 500);
+    tl.add({ op: "text", at: [200, y0 + H + 30], text: c.lang === "hi" ? `${parts} barabar hisse` : `${parts} equal parts`, size: "s", ink: "soft", role: ROLE.muted }, 500);
+    // round 4 content: nothing shaded writes no fraction ("0/5" is a number her line never said: W4)
+    // (director11 S2: hideResult — a second view of a card that asks this fraction — writes none: the shading is the given)
+    if (named) tl.add({ id: "frac", op: "brace", from: [x0 + 3, y0 - 6], to: [round1(x0 + shade * pw - 3), y0 - 6], side: "up", label: `${shade}/${parts}`, size: "m", role: ROLE.focus, weight: 2 }, 800, { gap: 300 });
+    span = [x0, x0 + W];
   } else {
     const cx = 130, cy = 150, r = 95;
     tl.add({ op: "circle", c: [cx, cy], r, weight: 2, ...(whole === "roti" ? { fill: "soft" } : {}) }, 900);
@@ -112,16 +231,17 @@ function fractionParts(c, tl) {
       const a = (i * 360) / parts;
       tl.add({ op: "line", from: [cx, cy], to: [cx + r * Math.sin((a * Math.PI) / 180), cy - r * Math.cos((a * Math.PI) / 180)], weight: 1 }, 220, { gap: 50 });
     }
-    for (let i = 0; i < shade; i++) tl.add({ id: `s${i}`, op: "sector", c: [cx, cy], r: r - 2, fromDeg: (i * 360) / parts, toDeg: ((i + 1) * 360) / parts, fill: "accent", ink: "accent", weight: 1 }, 380, { gap: 120 });
+    for (let i = 0; i < shade; i++) tl.add({ id: `s${i}`, op: "sector", c: [cx, cy], r: r - 2, fromDeg: (i * 360) / parts, toDeg: ((i + 1) * 360) / parts, fill: "accent", ink: "accent", weight: 1, role: ROLE.focus }, 380, { gap: 120 });
+    if (named) tl.add({ id: "frac", op: "numwork", at: [296, 120], layout: "fraction", rows: [[String(shade)], [String(parts)]], ink: "accent", weight: 2, role: ROLE.focus }, 800, { gap: 300 });
+    if (named) tl.add({ op: "highlight", target: "frac", style: "circle", ink: "mark" }, 600, { gap: 300 });
+    span = [cx - r, cx + r];
   }
-  const fx = whole === "bar" ? 200 : 310, fy = whole === "bar" ? 225 : 120;
-  // round 4 content: nothing shaded writes no fraction ("0/5" is a number her line never said: W4)
-  // (director11 S2: hideResult — a second view of a card that asks this fraction — writes none: the shading is the given)
-  if (shade > 0 && !c.hideResult) tl.add({ id: "frac", op: "numwork", at: [fx - 14, fy], layout: "fraction", rows: [[String(shade)], [String(parts)]], ink: "accent", weight: 2 }, 800, { gap: 300 });
-  if (shade > 0 && !c.hideResult) tl.add({ op: "highlight", target: "frac", style: "circle", ink: "mark" }, 600, { gap: 300 });
   // (director12 S4: nor does its facts row — "fraction 0/4" under an unshaded bar is a number no board writes)
   if (c.hideResult || shade === 0) delete facts.fraction;
-  return { facts, counts: { parts, shaded: shade } };
+  // round 8: the asked value (a hidden fraction) is a key the mix-up never states; the relation uses the board's own parts
+  const g = grammarBelow(tl, c, { span, shown: new Set([1, 1 / parts, shade / parts].filter((v) => v > 0)), focus: named ? shade / parts : null, keys: c.hideResult && shade > 0 ? [keyOf(shade, parts)] : [] });
+  if (g.error) return g;
+  return { facts: { ...facts, ...(c.mixup ? { mixup: String(c.mixup).slice(0, 40) } : {}) }, counts: { parts, shaded: shade }, legend: { focus: FOCUS_ROW[langOf(c)] } };
 }
 
 /**
@@ -150,7 +270,9 @@ function fractionBars(c, tl) {
     // (a "?" bar may be shaded: the shading is the given and its NAME the question — a shade-grid card's second view)
     if (label !== "?") { const m = /^(\d+)\s*\/\s*(\d+)$/.exec(label); if (!m || Number(m[1]) * b.parts !== b.shade * Number(m[2])) return { error: `fraction_bars_label_value:${label}` }; }
   }
-  const x0 = 30, W = 270, H = 46, gapY = 30, top = Math.round((BOARD.h - (bars.length * H + (bars.length - 1) * gapY)) / 2);
+  // (round 8: a mix-up or a relation under the bars moves them up so the figure and its grammar share the board)
+  const extra = c.mixup != null || c.relation != null;
+  const x0 = 30, W = 270, H = 46, gapY = 30, top = extra ? 34 : Math.round((BOARD.h - (bars.length * H + (bars.length - 1) * gapY)) / 2);
   const wholes = [];
   bars.forEach((b, k) => {
     const y0 = top + k * (H + gapY), pw = W / b.parts, label = b.label == null ? `${b.shade}/${b.parts}` : String(b.label);
@@ -159,8 +281,9 @@ function fractionBars(c, tl) {
     const cutMs = b.parts > 6 ? 160 : 260, shadeMs = b.shade > 3 ? 260 : 420;
     tl.add({ id: `w${k}`, op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 700, { gap: k ? 500 : 0 });
     for (let i = 1; i < b.parts; i++) tl.add({ op: "line", from: [round1(x0 + i * pw), y0], to: [round1(x0 + i * pw), y0 + H], weight: 1 }, cutMs, { gap: b.parts > 6 ? 60 : 140 });
-    for (let i = 0; i < b.shade; i++) tl.add({ op: "rect", at: [round1(x0 + i * pw + 3), y0 + 3], w: round1(pw - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1 }, shadeMs, { gap: b.shade > 3 ? 120 : 260 });
-    if (label !== "") tl.add({ op: "text", at: [x0 + W + 45, y0 + H / 2 + 6], text: label, size: "m", ink: label === "?" ? "mark" : "accent" }, 500, { gap: 300 });
+    // round 8: the shaded parts are the focus; the bar's "?" is the answer slot (a dashed box), its named fraction (stacked) the focus
+    for (let i = 0; i < b.shade; i++) tl.add({ op: "rect", at: [round1(x0 + i * pw + 3), y0 + 3], w: round1(pw - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1, role: ROLE.focus }, shadeMs, { gap: b.shade > 3 ? 120 : 260 });
+    if (label !== "") tl.add({ op: "text", at: [x0 + W + 45, y0 + H / 2], text: label, size: "m", ink: label === "?" ? "mark" : "accent", ...(label === "?" ? { role: ROLE.slot } : b.shade > 0 ? { role: ROLE.focus } : {}) }, 500, { gap: 300 });
     // (director11 S1: `ends` — the bars of a 0-1 line keep its 0 and 1, under each bar's ends)
     if (c.ends) {
       tl.add({ op: "text", at: [x0, y0 + H + 16], text: "0", size: "s", ink: "soft" }, 200, { gap: 60 });
@@ -168,8 +291,14 @@ function fractionBars(c, tl) {
     }
     wholes.push({ parts: b.parts, shaded: b.shade, label });
   });
+  // round 8: a "?" bar's own value (when shaded) is the key the mix-up never states; the relation's fractions are the bars'
+  const shown = new Set([1, ...bars.flatMap((b) => [1 / b.parts, ...(b.shade ? [b.shade / b.parts] : [])])]);
+  const named = bars.filter((b) => b.shade > 0 && b.label !== "?" && b.label !== "");
+  const g = grammarBelow(tl, c, { span: [x0, x0 + W], shown, focus: named.length === 1 ? named[0].shade / named[0].parts : null,
+    keys: bars.filter((b) => b.label === "?" && b.shade > 0).map((b) => keyOf(b.shade, b.parts)) });
+  if (g.error) return g;
   // (one short fact per bar: the facts row keeps values of up to 40 characters)
-  return { counts: { wholes }, facts: { wholes: `${wholes.length} equal bars`, ...Object.fromEntries(wholes.map((w, k) => [`bar${k + 1}`, w.label === "" ? `${w.parts} equal parts` : `${w.parts} equal parts, ${w.shaded} shaded = ${w.label}`])) } };
+  return { legend: { focus: FOCUS_ROW[langOf(c)] }, counts: { wholes }, facts: { ...(c.mixup ? { mixup: String(c.mixup).slice(0, 40) } : {}), wholes: `${wholes.length} equal bars`, ...Object.fromEntries(wholes.map((w, k) => [`bar${k + 1}`, w.label === "" ? `${w.parts} equal parts` : `${w.parts} equal parts, ${w.shaded} shaded = ${w.label}`])) } };
 }
 
 /**
@@ -194,7 +323,7 @@ function wholes(c, tl) {
     tl.add({ id: `w${k}`, op: "circle", c: [cx, cy], r, weight: 2 }, 800, { gap: k ? 300 : 0 });
     for (const a of cuts) tl.add({ op: "line", from: [cx, cy], to: [round1(cx + r * Math.sin(rad(a))), round1(cy - r * Math.cos(rad(a)))], weight: 1 }, 220, { gap: 60 });
     const edges = [...cuts, 360];
-    for (let i = 0; i < shade; i++) tl.add({ op: "sector", c: [cx, cy], r: r - 2, fromDeg: edges[i], toDeg: edges[i + 1], fill: "accent", ink: "accent", weight: 1 }, 380, { gap: 120 });
+    for (let i = 0; i < shade; i++) tl.add({ op: "sector", c: [cx, cy], r: r - 2, fromDeg: edges[i], toDeg: edges[i + 1], fill: "accent", ink: "accent", weight: 1, role: ROLE.focus }, 380, { gap: 120 });
     const title = w.title !== undefined ? String(w.title) : "";
     if (title) writeFit(tl, title, cx, cy + r + 34, colW - 12, {}, { id: `t${k}`, ink: "accent", gap: 160, size: "s" });
     counts.push({ parts: w.parts, shaded: shade, label: title });
@@ -218,7 +347,7 @@ function wholesAsBars(list, tl) {
     tl.add({ id: `w${k}`, op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 900, { gap: k ? 900 : 0 });
     for (const f of cuts) tl.add({ op: "line", from: [round1(x0 + f * W), y0], to: [round1(x0 + f * W), y0 + H], weight: 1 }, 260, { gap: 140 });
     const edges = [0, ...cuts, 1];
-    for (let i = 0; i < shade; i++) tl.add({ op: "rect", at: [round1(x0 + edges[i] * W + 3), y0 + 3], w: round1((edges[i + 1] - edges[i]) * W - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1 }, 420, { gap: 260 });
+    for (let i = 0; i < shade; i++) tl.add({ op: "rect", at: [round1(x0 + edges[i] * W + 3), y0 + 3], w: round1((edges[i + 1] - edges[i]) * W - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1, role: ROLE.focus }, 420, { gap: 260 });
     const title = w.title !== undefined ? String(w.title) : "";
     if (title) writeFit(tl, title, x0 + W + 60, y0 + H / 2 + 6, 110, {}, { id: `t${k}`, ink: "accent", gap: 300, size: "s" });
     counts.push({ parts: w.parts, shaded: shade, label: title });
@@ -265,7 +394,9 @@ function unrolled(c, tl) {
     // (a piece too short for its label has it below the line; the next above, so neighbours never overlap)
     // (roomy at the next size up: a split board writes small labels one size up — director19 c6 steady 18, the hexagon's six
     // "5 cm" labels collided beside the held board — so a label alternates below whenever the larger one would not fit)
-    const lab = hide.has(i) ? "?" : `${num(v)} ${unit}`, mid = round1((x + x1) / 2), roomy = textBox(lab, "m").w + 6 <= x1 - x;
+    // (round 8 item 7: … at the split panel's own scale — server/stagecraft/board-first.js SPLIT_BOARD: a 320 panel from this
+    // 400 board, 0.8 of its geometry, words kept — so a measured "5 cm" that fits its piece here still alternates there)
+    const lab = hide.has(i) ? "?" : `${num(v)} ${unit}`, mid = round1((x + x1) / 2), roomy = textBox(lab, "m").w + 6 <= (x1 - x) * 0.8;
     tl.add({ op: "text", at: [mid, roomy || i % 2 === 0 ? y - 18 : y + 30], text: lab, size: "s", ...(hide.has(i) ? { ink: "mark" } : {}) }, 400, { gap: 120 });
     x = x1; xs.push(x1);
   });
@@ -314,10 +445,14 @@ function fractionLine(c, tl) {
   }
   const hop = c.hop == null ? null : isInt(c.hop?.num, 1, N) ? c.hop.num : -1;
   if (hop === -1) return { error: "fraction_line_hop" };
-  const x0 = 30, W = 340, y = 170;
+  // (round 8: labels are stacked fractions, about twice as tall: the line sits lower and the label rows are 50 apart)
+  const x0 = 30, W = 340, y = 190;
   const X = (u) => round1(x0 + 12 + (u / w) * (W - 24));
   // (paced for her explanation: the line, then the gaps one by one, ~4-5 s before the point, so a ~12 s line keeps up — W6)
   tl.add({ id: "line", op: "numwork", at: [x0, y], layout: "number_line", rows: [Array.from({ length: w + 1 }, (_, i) => String(i))], range: [0, w], w: W, weight: 2 }, 1200);
+  // round 8: the counted span (0 to the point the dot hops to) is the focus — a tinted band under the line, the prototype's
+  const focusTo = c.show && tgt != null ? tgt : hop != null && hop > 0 ? hop : null;
+  if (focusTo != null) tl.add({ id: "band", op: "rect", at: [X(0), y - 9], w: round1(X(focusTo / den) - X(0)), h: 18, fill: "accent", ink: "accent", weight: 1, role: ROLE.focus }, 400, { gap: 120 });
   const tick = Math.max(90, Math.min(320, Math.round(2400 / N)));
   for (let i = 1; i < N; i++) if (i % den) tl.add({ op: "line", from: [X(i / den), y - 7], to: [X(i / den), y + 7], weight: 1 }, tick, { gap: Math.round(tick / 2) });
   const facts = { line: `0 to ${w}`, gaps: `${den} equal gaps in each whole`, each: `1/${den}` };
@@ -326,6 +461,10 @@ function fractionLine(c, tl) {
   // (director8 prep: the hops the dot DRAWS are counted too — "0 se 6 hop" over a line it hops 6 times, Brain's dry-run flags)
   const counts = (pts, hops = null) => ({ lines: [lineCount], ...(pts.length ? { marks: pts } : {}), ...(hops != null ? { hops } : {}) });
   const claims = [];
+  // round 8 (board grammar item 5): the mix-up marker "on the gaps" — a dashed bracket under the first whole's gaps, under
+  // the whole-number labels, its words below. `asked` = the keys this board withholds
+  const mixFact = c.mixup ? { mixup: String(c.mixup).slice(0, 40) } : {};
+  const lineGrammar = (asked = []) => (c.mixup == null ? {} : mixupMarker(tl, c, X(0), X(1), bottomOf(tl.ops, X(0), X(1)) + 10, asked));
   const hopTo = (n) => {
     const dot = tl.add({ op: "circle", c: [X(0), y], r: 7, fill: "accent", ink: "accent" }, 300, { gap: 200 });
     for (let k = 1; k <= n; k++) {
@@ -338,7 +477,8 @@ function fractionLine(c, tl) {
   if (marks.length || hop != null) {
     if (hop != null) hopTo(hop);
     // labels above the line in up to three rows: a label moves up a row when it would touch its left neighbour's
-    const rows = [y - 44, y - 70, y - 96], rightEdge = [-Infinity, -Infinity, -Infinity];
+    // (round 8: a stacked label is ~44 tall: the rows are 50 apart)
+    const rows = [y - 50, y - 100, y - 150], rightEdge = [-Infinity, -Infinity, -Infinity];
     const placed = [...marks].sort((p, q) => p.num - q.num).map((m) => {
       const label = String(m.label ?? `${m.num}/${den}`), x = X(m.num / den), half = textBox(label, "s").w / 2;
       const r = rightEdge.findIndex((e) => x - half >= e + 6);
@@ -352,31 +492,43 @@ function fractionLine(c, tl) {
       // (a tall tick in mark ink, as on the two-denominator line: three dots read as a count of 3 against "1/8, 1/4, 1/2"
       // — W8 — and the script's board lost to the code's one-mark line, director5 c5-t01 whole-number bias)
       if (hop == null || p.m.num !== hop) tl.add({ op: "line", from: [p.x, y - 14], to: [p.x, y + 14], weight: 3, ink: "mark" }, 300, { gap: 300 });
-      tl.add({ op: "line", from: [p.x, y - 12], to: [p.x, rows[p.r] + 6], weight: 1, ink: "soft" }, 200, { gap: 60 });
-      tl.add({ op: "text", at: [round1(lx), rows[p.r]], text: p.label, size: "s", ink: "mark" }, 400, { gap: 60 });
+      const lh = textBox(p.label, "s").h / 2;
+      tl.add({ op: "line", from: [p.x, y - 12], to: [p.x, round1(rows[p.r] + lh + 2)], weight: 1, ink: "soft" }, 200, { gap: 60 });
+      tl.add({ op: "text", at: [round1(lx), rows[p.r]], text: p.label, size: "s", ink: "mark", ...(hop != null && p.m.num === hop ? { role: ROLE.focus } : {}) }, 400, { gap: 60 });
     }
     const pts = [...placed.map((p) => ({ at: `${p.m.num}/${den}`, label: p.label })), ...(hop != null && !marks.some((m) => m.num === hop) ? [{ at: `${hop}/${den}`, label: "" }] : [])];
-    return { claims, counts: counts(pts, hop), facts: { ...facts, ...(marks.length ? { marks: placed.map((p) => p.label).join(", ") } : {}), ...(hop != null ? { hop: `${hop}/${den}`, counted: `${hop} gaps from 0` } : {}) } };
+    const g = lineGrammar();
+    if (g.error) return g;
+    return { claims, counts: counts(pts, hop), facts: { ...facts, ...mixFact, ...(marks.length ? { marks: placed.map((p) => p.label).join(", ") } : {}), ...(hop != null ? { hop: `${hop}/${den}`, counted: `${hop} gaps from 0` } : {}) } };
   }
   if (c.show) {
     // the counting IS the method: one hop per gap from 0, the dot riding along; the last mark is the fraction
     hopTo(tgt);
-    tl.add({ op: "text", at: [X(tgt / den), y - 44], text: `${tgt}/${den}`, size: "m", ink: "mark" }, 500, { gap: 300 });
-    return { claims, counts: counts([{ at: `${tgt}/${den}`, label: `${tgt}/${den}` }], tgt), facts: { ...facts, point: `${tgt}/${den}`, counted: `${tgt} gaps from 0` } };
+    tl.add({ op: "text", at: [X(tgt / den), y - 50], text: `${tgt}/${den}`, size: "m", ink: "mark", role: ROLE.focus }, 500, { gap: 300 });
+    const g = lineGrammar();
+    if (g.error) return g;
+    return { claims, counts: counts([{ at: `${tgt}/${den}`, label: `${tgt}/${den}` }], tgt), facts: { ...facts, ...mixFact, point: `${tgt}/${den}`, counted: `${tgt} gaps from 0` } };
   }
   if (mark != null) {
     // (the mark the item NAMES is its given: a tall tick in mark ink and a "?" over it; never a dot on it, which is how a
     // board answers "where is it" — W9 reads a dot there as the answer)
     tl.add({ op: "line", from: [X(mark / den), y - 14], to: [X(mark / den), y + 14], weight: 3, ink: "mark" }, 500, { gap: 700 });
-    tl.add({ op: "text", at: [X(mark / den), y - 30], text: "?", size: "l", ink: "mark" }, 400, { gap: 300 });
+    // (round 8: the "?" is the answer slot, in its dashed box, clear above the tick)
+    tl.add({ op: "text", at: [X(mark / den), y - 48], text: "?", size: "l", ink: "mark", role: ROLE.slot }, 400, { gap: 300 });
     // (no "each 1/den" here: for the first mark it IS the answer)
-    return { claims, counts: counts([{ at: `mark ${mark}`, label: "?" }]), facts: { line: facts.line, gaps: facts.gaps, asked: `mark number ${mark} from 0`, fraction: "? (child works it out)" } };
+    const g = lineGrammar([keyOf(mark, den)]);
+    if (g.error) return g;
+    return { claims, counts: counts([{ at: `mark ${mark}`, label: "?" }]), facts: { line: facts.line, gaps: facts.gaps, asked: `mark number ${mark} from 0`, fraction: "? (child works it out)", ...mixFact } };
   }
   if (tgt != null) {
     tl.add({ op: "text", at: [200, 70], text: `${tgt}/${den}`, size: "l", ink: "mark" }, 600, { gap: 900 });
-    return { claims, counts: counts([]), facts: { ...facts, find: `${tgt}/${den}`, where: "? (child works it out)" } };
+    const g = lineGrammar();
+    if (g.error) return g;
+    return { claims, counts: counts([]), facts: { ...facts, ...mixFact, find: `${tgt}/${den}`, where: "? (child works it out)" } };
   }
-  return { claims, counts: counts([]), facts };
+  const g = lineGrammar();
+  if (g.error) return g;
+  return { claims, counts: counts([]), facts: { ...facts, ...mixFact } };
 }
 
 /**
@@ -406,9 +558,10 @@ function fractionLine2(c, tl) {
     // (a tall tick in mark ink on its own side: two dots would read as a count of 2 — W8)
     tl.add({ op: "line", from: [X(a / d), y], to: [X(a / d), y + dy * 22], weight: 3, ink: "mark" }, 300, { gap: 300 });
     // (below the line the whole numbers are written: the lower den's labels sit under them)
-    tl.add({ op: "text", at: [X(a / d), y + dy * (side === 0 ? 34 : 66)], text: `${a}/${d}`, size: "m", ink: "mark" }, 400, { gap: 60 });
+    // (round 8: the stacked label clears its tick: above, its centre 50 over the line; below, under the whole numbers)
+    tl.add({ op: "text", at: [X(a / d), y + dy * (side === 0 ? 50 : 70)], text: `${a}/${d}`, size: "m", ink: "mark" }, 400, { gap: 60 });
   }
-  if (asks.length) tl.add({ op: "text", at: [200, 60], text: asks.map(([a, d]) => `${a}/${d}`).join("  vs  "), size: "l", ink: "mark" }, 600, { gap: 900 });
+  if (asks.length) tl.add({ op: "text", at: [200, 46], text: asks.map(([a, d]) => `${a}/${d}`).join("  vs  "), size: "l", ink: "mark" }, 600, { gap: 900 });
   const counts = { lines: dens.map((d) => ({ gaps: d * w, ...(w > 1 ? { gapsPerWhole: d } : {}), ticks: d * w + 1, innerTicks: d * w - 1 })),
     ...(pts.length ? { marks: pts.map(([a, d]) => ({ at: `${a}/${d}`, label: `${a}/${d}` })) } : {}) };
   return { claims: [], counts, facts: { ...facts, ...(pts.length ? { points: pts.map(([a, d]) => `${a}/${d}`).join(", ") } : {}), ...(asks.length ? { compare: asks.map(([a, d]) => `${a}/${d}`).join(" vs "), which: "? (child works it out)" } : {}) } };
@@ -435,7 +588,7 @@ function shadeGrid(c, tl) {
   for (let r = 0; r < rows; r++) for (let q = 0; q < cols; q++) {
     const on = block ? r < block[0] && q < block[1] : k++ < shade;
     tl.add({ id: `g${r}_${q}`, op: "rect", at: [x0 + q * cell + 2, y0 + r * cell + 2], w: cell - 4, h: cell - 4, weight: 1,
-      ...(on ? { fill: "accent", ink: "accent" } : { ink: "soft" }) }, on ? 200 : 90, { gap: on ? 60 : 20 });
+      ...(on ? { fill: "accent", ink: "accent", role: ROLE.focus } : { ink: "soft", role: ROLE.muted }) }, on ? 200 : 90, { gap: on ? 60 : 20 });
   }
   // the labels only when her line named the columns and rows (a grid laid out for "15 equal parts" invents neither)
   if (c.labels !== false && cols > 1) tl.add({ op: "text", at: [200, y0 - 16], text: `${cols} columns`, size: "s", ink: "soft" }, 400, { gap: 200 });
@@ -455,16 +608,17 @@ function shadeGrid(c, tl) {
 function fractionOf(c, tl) {
   const { a, b, c: cn, d } = c;
   if (!isInt(b, 2, 6) || !isInt(a, 1, b) || !isInt(d, 2, 6) || !isInt(cn, 1, d)) return { error: "fraction_of_range" };
-  const x0 = 60, y0 = 46, W = 280, H = 168, cw = W / d, rh = H / b;
+  // (round 8: the inner fraction is written stacked over the whole: the whole sits lower to hold it)
+  const x0 = 60, y0 = 62, W = 280, H = 160, cw = W / d, rh = H / b;
   tl.add({ id: "whole", op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 800);
   // step 1: the inner fraction c/d, column by column
   for (let i = 1; i < d; i++) tl.add({ op: "line", from: [x0 + i * cw, y0], to: [x0 + i * cw, y0 + H], weight: 1 }, 220, { gap: 50 });
   for (let i = 0; i < cn; i++) { tl.add({ id: `c${i}`, op: "rect", at: [x0 + i * cw + 3, y0 + 3], w: cw - 6, h: H - 6, fill: "soft", ink: "accent", weight: 1 }, 200, { gap: 100 }); tl.add({ op: "sweep", target: `c${i}`, dir: "down" }, 480, { gap: 0 }); }
-  tl.add({ id: "inner", op: "text", at: [x0 + (cn * cw) / 2, y0 - 16], text: `${cn}/${d}`, size: "m", ink: "accent" }, 380, { gap: 160 });
+  tl.add({ id: "inner", op: "text", at: [x0 + (cn * cw) / 2, y0 - 29], text: `${cn}/${d}`, size: "m", ink: "accent" }, 380, { gap: 160 });
   // step 2: the outer fraction a/b of that part, row by row inside the shaded columns
   tl.pause(400);
   for (let j = 1; j < b; j++) tl.add({ op: "line", from: [x0, y0 + j * rh], to: [x0 + W, y0 + j * rh], weight: 1, ink: "soft" }, 220, { gap: 50 });
-  for (let j = 0; j < a; j++) { tl.add({ id: `r${j}`, op: "rect", at: [x0 + 5, y0 + j * rh + 5], w: cn * cw - 10, h: rh - 10, fill: "accent", ink: "mark", weight: 1 }, 220, { gap: 140 }); tl.add({ op: "sweep", target: `r${j}`, dir: "right" }, 520, { gap: 0 }); }
+  for (let j = 0; j < a; j++) { tl.add({ id: `r${j}`, op: "rect", at: [x0 + 5, y0 + j * rh + 5], w: cn * cw - 10, h: rh - 10, fill: "accent", ink: "mark", weight: 1, role: ROLE.focus }, 220, { gap: 140 }); tl.add({ op: "sweep", target: `r${j}`, dir: "right" }, 520, { gap: 0 }); }
   tl.add({ id: "outer", op: "text", at: [x0 + W + 12, y0 + (a * rh) / 2], text: `${a}/${b}`, size: "m", ink: "mark", align: "start" }, 380, { gap: 160 });
   // step 3: count the small parts: a × c of b × d
   const res = c.hideResult ? "?" : `${a * cn}/${b * d}`;
@@ -559,11 +713,24 @@ function numberLineHop(c, tl) {
     tl.add({ op: "text", at: [(from + to) / 2, y - 22 - Math.min(60, Math.abs(to - from) * 0.3), ], text: `${hops[i] > 0 ? "+" : "-"}${Math.abs(hops[i])}`, size: "s", ink: "accent" }, 300, { with: true });
   });
   tl.add({ op: "circle", c: [xOf(pos), y], r: 7, fill: "good", ink: "good" }, 300);
+  // round 8 (Learning's to-studio 006): an ANSWER board's `mark` — { land: true } rings the final landing point and writes its
+  // value under the line; { hop: i } thickens hop i and rings its landing, with its value. Answer role (a ring, a tick).
+  let marked = null;
+  if (c.mark != null) {
+    const m = c.mark;
+    const k = m?.land === true ? hops.length - 1 : Number.isInteger(m?.hop) && m.hop >= 0 && m.hop < hops.length ? m.hop : -1;
+    if (k < 0 || c.hideResult) return { error: "mark" };
+    const v = all[k + 1], x = round1(xOf(v));
+    if (m.land !== true) tl.add({ op: "arrow", from: [round1(xOf(all[k])), y - 10], to: [x, y - 10], bend: hops[k] > 0 ? -0.6 : 0.6, weight: 3, role: ROLE.answer }, 500, { gap: 300 });
+    tl.add({ op: "circle", c: [x, y], r: 13, weight: 2, role: ROLE.answer }, 400, { gap: 200 });
+    tl.add({ id: "mark", op: "text", at: [x, y + 58], text: String(v), size: "m", role: ROLE.answer }, 400, { gap: 120 });
+    marked = m.land === true ? `lands on ${v}` : `hop ${k + 1} lands on ${v}`;
+  }
   const eq = [String(start), ...hops.flatMap((h) => [h > 0 ? "+" : "-", String(Math.abs(h))]), "=", c.hideResult ? "?" : String(pos)];
   // (STUDIO-09: the equation row is centred on the 400-wide board, so a long one with negatives still fits)
   const eqW = textBox(eq.join(" "), "m", [0, 0], "start").w;
-  tl.add({ id: "eq", op: "numwork", at: [Math.round(Math.max(12, Math.min(60, (400 - eqW) / 2))), 250], layout: "equation", rows: [eq], weight: 2 }, 1000, { gap: 300 });
-  return { facts: { start, hops: hops.map((h) => (h > 0 ? `+${h}` : `${h}`)).join(" "), end: c.hideResult ? "? (child works it out)" : pos } };
+  tl.add({ id: "eq", op: "numwork", at: [Math.round(Math.max(12, Math.min(60, (400 - eqW) / 2))), marked ? 276 : 250], layout: "equation", rows: [eq], weight: 2 }, 1000, { gap: 300 });
+  return { facts: { start, hops: hops.map((h) => (h > 0 ? `+${h}` : `${h}`)).join(" "), end: c.hideResult ? "? (child works it out)" : pos, ...(marked ? { marked } : {}) } };
 }
 
 function columnOp(c, tl) {
@@ -608,6 +775,8 @@ function columnOp(c, tl) {
 }
 
 const PLACES = ["O", "T", "H", "Th", "TTh", "L", "TL"];
+/** The places a place-value `mark` names (to-studio 006), ones first, as PLACES. */
+const MARK_PLACES = ["ones", "tens", "hundreds", "thousands", "ten-thousands", "lakhs", "ten-lakhs"];
 function placeValue(c, tl) {
   const { value } = c;
   if (!isInt(value, 1, 9999999)) return { error: "value_range" };
@@ -629,7 +798,22 @@ function placeValue(c, tl) {
   }
   const indian = value.toLocaleString("en-IN");
   tl.add({ id: "num", op: "text", at: [200, 262], text: indian, size: "l" }, 900, { gap: 300 });
-  return { facts: { number: indian, digits: n, places: PLACES.slice(0, n).reverse().join(" ") }, claims };
+  // round 8 (Learning's to-studio 006): an ANSWER board's `mark` { place, value? } — that place's digit ringed (where it lands
+  // in its box); with value: true its value written over the boxes ("8 → 800"), in the answer role
+  let marked = null;
+  if (c.mark != null) {
+    const p = MARK_PLACES.indexOf(c.mark?.place);
+    if (p < 0 || p >= n) return { error: "mark_place" };
+    const i = n - 1 - p, cx = round1(x0 + i * cw + (cw - 4) / 2);
+    tl.add({ op: "circle", c: [cx, y0 + 62], r: round1(Math.min(22, (cw - 4) / 2 - 1)), weight: 2, role: ROLE.answer }, 500, { gap: 300 });
+    const digit = digits[i], worth = String(Number(digit) * 10 ** p);
+    if (c.mark.value === true) {
+      const t = `${digit} → ${worth}`;
+      tl.add({ id: "mark", op: "text", at: [cx, 52], text: t, size: "m", role: ROLE.answer, ...(textBox(t, "m").w / 2 > Math.min(cx, 400 - cx) - 22 ? { align: cx < 200 ? "start" : "end", at: [cx < 200 ? 6 : 372, 52] } : {}) }, 500, { gap: 160 });
+    }
+    marked = `${c.mark.place}: ${digit}${c.mark.value === true ? ` = ${worth}` : ""}`;
+  }
+  return { facts: { number: indian, digits: n, places: PLACES.slice(0, n).reverse().join(" "), ...(marked ? { marked } : {}) }, claims };
 }
 
 /** Learning (c4 s2 e1, 2026-11-08): an optional short `title` over a groups board — "8 ka 1/2 = 4", the fraction the board
@@ -804,7 +988,7 @@ function flow(c, tl) {
 function cycle(c, tl) {
   const stages = c.stages;
   if (!Array.isArray(stages) || stages.length < 3 || stages.length > 6 || !stages.every(fitsLabel)) return { error: "stages" };
-  const n = stages.length, cx = 200, cy = 152, rx = n <= 4 ? 130 : 128, ry = 100, legs = [];
+  const n = stages.length, cx = 200, cy = 152, rx = n <= 4 ? 130 : 128, ry = 100, legs = [], placed = [];
   const at = (i) => { const a = -Math.PI / 2 + (2 * Math.PI * i) / n; return [cx + rx * Math.cos(a), cy + ry * Math.sin(a)]; };
   for (let i = 0; i < n; i++) {
     const maxW = n <= 4 ? 160 : 140;
@@ -814,6 +998,7 @@ function cycle(c, tl) {
     // keep the word on the board: its centre moves in from the edge by half its width
     const x = Math.min(400 - fw / 2 - 4, Math.max(fw / 2 + 4, x0));
     writeFit(tl, stages[i], x, y, maxW, {}, { id: `t${i}`, ms: 550, gap: 120, ink: i === 0 ? "accent" : undefined });
+    placed.push({ x, y, w: fw });
     const [nx0, ny] = at((i + 1) % n);
     const nxt = stages[(i + 1) % n], nh = (fitWidth(nxt, n <= 4 ? 160 : 140) ?? 0) / 2 + 4;
     const nx = Math.min(400 - nh, Math.max(nh, nx0));
@@ -823,7 +1008,11 @@ function cycle(c, tl) {
     legs.push(bentLeg([sx, sy], [ex, ey], -0.25));
   }
   if (c.centre && fitsLabel(c.centre)) {
-    const size = sizeFor(c.centre, 150);
+    // (round 8 item 7: the centre word fits BETWEEN the stage words on its row, not only within 150: with the measured faces
+    // "water cycle" fits 150 at m and ran into "collection" at the left)
+    const row = placed.filter((p) => Math.abs(p.y - cy) < 40);
+    const room = Math.min(cx - Math.max(cx - 77, ...row.filter((p) => p.x < cx).map((p) => p.x + p.w / 2)), Math.min(cx + 77, ...row.filter((p) => p.x > cx).map((p) => p.x - p.w / 2)) - cx);
+    const size = sizeFor(c.centre, 2 * room - 4);
     if (size) tl.add({ op: "text", at: [cx, cy], text: c.centre, size, ink: "soft" }, 500, { gap: 200 });
   }
   tl.add({ op: "highlight", target: "t0", style: "circle", ink: "mark" }, 600, { gap: 300 });
@@ -848,11 +1037,35 @@ function compare(c, tl) {
   }
   tl.add({ op: "line", from: [200, 30], to: [200, 280], weight: 1, ink: "soft" }, 500);
   const rows = Math.max(left.items.length, right.items.length);
+  // (Learning 007, c6-ch07-t05: a stacked mixed fraction — "2 1/2 litre" — is taller than a line of words, and the added
+  // answer line ran into it at the fixed 52 pitch: the rows are spaced by the tallest cell's real height)
+  const cells = [...left.items, ...right.items, ...(c.mark?.add != null ? [String(c.mark.add)] : [])];
+  const pitch = Math.max(52, ...cells.map((t) => textBox(String(t), itemSize, [0, 0], "middle").h + 14));
   for (let r = 0; r < rows; r++) {
     for (const [i, side] of [left, right].entries()) {
       const t = side.items[r];
       if (!t) continue;
-      if (!writeFit(tl, t, 20 + i * 190 + colW / 2, 100 + r * 52, colW - 8, {}, { id: `c${i}${r}`, ms: 480, gap: i ? 60 : 220, size: itemSize })) return { error: `item_too_wide:${i}.${r}` };
+      if (!writeFit(tl, t, 20 + i * 190 + colW / 2, 100 + r * pitch, colW - 8, {}, { id: `c${i}${r}`, ms: 480, gap: i ? 60 : 220, size: itemSize })) return { error: `item_too_wide:${i}.${r}` };
+    }
+  }
+  // round 8 (Learning's to-studio 006): an ANSWER board's `mark` — the chosen column (or one item in it) ringed and ticked,
+  // or one value added to that column (`add`, written in the answer role: its own tick). A posing board never carries one.
+  let marked = null;
+  if (c.mark != null) {
+    const m = c.mark;
+    const i = m?.side === "left" ? 0 : m?.side === "right" ? 1 : -1;
+    if (i < 0) return { error: "mark_side" };
+    const side = [left, right][i], x = 20 + i * 190 + colW / 2;
+    if (m.item != null && !(Number.isInteger(m.item) && m.item >= 0 && m.item < side.items.length)) return { error: "mark_item" };
+    if (m.add != null) {
+      const t = String(m.add).trim();
+      if (!t || t.includes("?") || [...t].length > 24 || !fitsLabel(t) || textProblem(t) || side.items.length >= 4) return { error: "mark_add" };
+      if (!writeFit(tl, t, x, 100 + side.items.length * pitch, colW - 36, {}, { id: "mark", ms: 480, gap: 300, size: itemSize, role: ROLE.answer })) return { error: "mark_add_too_wide" };
+      marked = `${side.title}: ${t}`;
+    } else {
+      const target = m.item != null ? `c${i}${m.item}` : `h${i}`;
+      tl.add({ id: "mark", op: "highlight", target, style: "circle", role: ROLE.answer }, 600, { gap: 300 });
+      marked = m.item != null ? `${side.title}: ${side.items[m.item]}` : side.title;
     }
   }
   // each column as its title and its items (sim lab 4ae682b3 p29: keys "left1" / "left2" on the facts row were spoken to the
@@ -866,7 +1079,7 @@ function compare(c, tl) {
     if (cur && k < 2) out[`${side}${k ? "More" : "Items"}`] = cur;
     return out;
   };
-  return { facts: { left: left.title, right: right.title, rows, ...lists("left", left.items), ...lists("right", right.items) } };
+  return { facts: { left: left.title, right: right.title, rows, ...lists("left", left.items), ...lists("right", right.items), ...(marked ? { marked: marked.slice(0, 40) } : {}) } };
 }
 
 function parts(c, tl) {
@@ -1057,7 +1270,7 @@ function angle(c, tl) {
   const list = Array.isArray(c.angles) ? c.angles : [];
   if (list.length < 1 || list.length > 3 || !list.every((a) => a && isInt(a.deg, 10, 180) && (a.name === undefined || fitsLabel(a.name)) && (a.len === undefined || a.len === "short" || a.len === "long"))) return { error: "angles" };
   const n = list.length, colW = 400 / n, Lbase = n === 1 ? 150 : n === 2 ? 110 : 82;
-  const facts = { angles: n }, claims = [];
+  const facts = { angles: n }, claims = [], geo = [];
   list.forEach((a, i) => {
     const th = rad(a.deg);
     // the arms are as long as the column allows for this opening (an obtuse angle spans more than its arm)
@@ -1082,7 +1295,25 @@ function angle(c, tl) {
     // one angle: its parts named in the kit's own words (arm, corner / vertex), leaders to the drawing
     if (n === 1 && c.arm && fitsLabel(c.arm)) tl.add({ op: "label", at: [vx + L * 0.72, vy + 34], text: c.arm, to: [vx + L * 0.72, vy + 4], ink: "soft" }, 520, { gap: 200 });
     if (n === 1 && c.vertex && fitsLabel(c.vertex)) tl.add({ op: "label", at: [Math.max(textBox(c.vertex, "s").w / 2 + 6, vx - 46), vy + 40], text: c.vertex, to: [vx - 3, vy + 3], ink: "soft" }, 520, { gap: 160 });
+    geo.push({ vx, vy, L, th, deg: a.deg, name });
   });
+  // round 8 (Learning's to-studio 006): an ANSWER board's `mark` { index, show? } — "deg": angle i's measured arc, larger,
+  // with its degrees written in the answer role (its tick); "bigger" (or none): angle i's arc thickened and its name ringed
+  if (c.mark != null) {
+    const i = c.mark?.index, show = c.mark?.show ?? "bigger";
+    if (!Number.isInteger(i) || i < 0 || i >= n || !["deg", "bigger"].includes(show)) return { error: "mark" };
+    const { vx, vy, L, deg } = geo[i];
+    const R = Math.min(L * 0.62, n === 1 ? 52 : 40);
+    if (deg === 90) tl.add({ op: "stroke", points: [[vx + R * 0.6, vy], [vx + R * 0.6, vy - R * 0.6], [vx, vy - R * 0.6]], weight: 3, role: ROLE.answer }, 500, { gap: 300 });
+    else tl.add({ op: "stroke", points: arcPts(vx, vy, show === "deg" ? R : n === 1 ? 34 : 26, deg), weight: 3, role: ROLE.answer }, 500, { gap: 300 });
+    if (show === "deg") {
+      // the degrees on the bisector, outside the arc (a narrow angle's out along its opening, never across an arm)
+      const half = rad(deg / 2), d = Math.min(L - 8, Math.max(R + 26, 30 / Math.sin(Math.max(half, rad(6)))));
+      const t = `${deg}°`, at = [round1(vx + d * Math.cos(half)), round1(vy - d * Math.sin(half))];
+      tl.add({ id: "mark", op: "text", at, text: t, size: "s", role: ROLE.answer }, 400, { gap: 120 });
+    } else tl.add({ id: "mark", op: "highlight", target: `n${i}`, style: "circle", role: ROLE.answer }, 500, { gap: 200 });
+    facts.marked = show === "deg" ? `angle ${i + 1}: ${deg}°` : `angle ${i + 1} is bigger`;
+  }
   return { facts, claims };
 }
 
@@ -1694,7 +1925,18 @@ function closes(sides, walk) {
   for (let i = 0; i < sides.length; i++) { const d = sides[i], w = walk[i]; if (w === "R") x += d; else if (w === "L") x -= d; else if (w === "D") y += d; else if (w === "U") y -= d; else return false; }
   return Math.abs(x) < 1e-9 && Math.abs(y) < 1e-9;
 }
+/** round 8 (board grammar item 5): measured@1 with an optional `mixup` marker on the boundary — a dashed bracket under the
+ *  shape's bottom edge (its whole width), its words under it. */
 function measuredBoard(c, tl) {
+  const r = measuredFigure(c, tl);
+  if (r.error || c.mixup == null) return r;
+  const shape = tl.ops.find((o) => o.id === "shape");
+  let b; try { b = opGeometry(shape).box; } catch { return { error: "mixup" }; }
+  const m = mixupMarker(tl, c, round1(b.x), round1(b.x + b.w), bottomOf(tl.ops, b.x, b.x + b.w) + 10, []);
+  if (m.error) return m;
+  return { ...r, facts: { ...r.facts, mixup: String(c.mixup).slice(0, 40) } };
+}
+function measuredFigure(c, tl) {
   const unit = c.unit === "m" ? "m" : c.unit === "cm" ? "cm" : null;
   if (!unit) return { error: "unit" };
   const num = (v) => (Number.isInteger(v) ? String(v) : String(Math.round(v * 10) / 10));
@@ -1880,18 +2122,67 @@ function derivedCounts(call, facts = {}) {
   }
 }
 
-export function expand(call0, { band = "B3", lessonId = "", scriptId, lang = null } = {}) {
+/**
+ * round 8 (board grammar item 4): a legend built from the meaning roles the board uses — one swatch per role, drawn in the
+ * role's own SHAPE (a tinted box, a dashed box, a ring, a dashed line), and its label (≤ 24 characters, the board's
+ * language) — laid out below the figure in at most 3 rows. Drawn when the call asks (`legend: true`), or when a board that
+ * uses the new grammar (a mix-up marker or a relation line) carries two or more meaning roles; never with `legend: false`.
+ * Since 2026-11-10 the default on every full board with two or more meaning roles; never in a split panel.
+ */
+function legendRows(tl, c, labels = {}) {
+  const used = MEANING_ROLES.filter((r) => tl.ops.some((o) => o.role === r));
+  // (main 2026-11-10: the legend is the default on every FULL board with 2+ meaning roles — Learning's checker takes BOARD_WORDS;
+  // a split panel or a picture view passes legend: false, server/stagecraft/board-first.js)
+  if (c.legend === false || !used.length || (c.legend !== true && used.length < 2)) return {};
+  const words = { ...LEGEND[langOf(c)], ...labels };
+  const items = used.map((r) => ({ r, t: String(words[r] ?? r) }));
+  if (items.some((i) => [...i.t].length > 24 || textProblem(i.t))) return { error: "legend_label" };
+  const SW = 22, GAP = 8, SEP = 22, RH = 28;
+  const rows = [];
+  for (const it of items) {
+    it.w = SW + GAP + textBox(it.t, "s").w;
+    const row = rows.at(-1);
+    if (row && row.w + SEP + it.w <= 380) { row.items.push(it); row.w += SEP + it.w; } else rows.push({ items: [it], w: it.w });
+  }
+  if (rows.length > 3) return { error: "legend_rows" };
+  let y = bottomOf(tl.ops) + 22;
+  tl.pause(200);
+  rows.forEach((row, k) => {
+    let x = 200 - row.w / 2;
+    for (const it of row.items) {
+      const cy = round1(y), x0 = round1(x);
+      const sw = it.r === ROLE.focus ? { op: "rect", at: [x0, round1(cy - 7)], w: SW, h: 14, fill: "accent", weight: 2 }
+        : it.r === ROLE.slot ? { op: "rect", at: [x0 + 2, round1(cy - 8)], w: SW - 4, h: 16, weight: 2 }
+        : it.r === ROLE.answer ? { op: "circle", c: [x0 + SW / 2, cy], r: 8, weight: 2 }
+        : { op: "line", from: [x0, cy], to: [x0 + SW, cy], weight: 2 };
+      tl.add({ ...sw, ...(k || x0 !== round1(200 - row.w / 2) ? {} : { id: "legend" }), role: it.r }, 200, { with: true });
+      tl.add({ op: "text", at: [round1(x0 + SW + GAP), cy], text: it.t, size: "s", align: "start", ink: "soft" }, 200, { with: true });
+      x += it.w + SEP;
+    }
+    y += RH;
+  });
+  return { legend: items.map((i) => i.t).join(", ") };
+}
+
+export function expand(call0, { band = "B3", lessonId = "", scriptId, lang = null, keys = null } = {}) {
   // (director11 S3: the lesson's language — the whiteboard intent's style.lang, "hi" in Hindi mode — for the words a template writes)
-  const call = lang && call0 && call0.lang == null ? { ...call0, lang } : call0;
+  // (round 8: `keys` — the open card's keys — a template's own words, the mix-up marker, must never state one)
+  const call = call0 && ((lang && call0.lang == null) || Array.isArray(keys)) ? { ...call0, ...(lang && call0.lang == null ? { lang } : {}), ...(Array.isArray(keys) ? { _keys: keys.map(String) } : {}) } : call0;
   const build = BUILD[call?.template];
   if (!build) return { ok: false, script: null, facts: null, errors: [`unknown_template:${call?.template}`] };
   const tl = timeline(PACE[band] ?? 1);
   let r;
   try { r = build(call, tl); } catch (e) { return { ok: false, script: null, facts: null, errors: [`build:${String(e?.message ?? e).slice(0, 60)}`] }; }
   if (r.error) return { ok: false, script: null, facts: null, errors: [r.error] };
+  // round 8: the legend of the roles the board uses, below the figure; a board that grew (a mix-up, a relation, a legend
+  // under the figure) is a taller board, never a cut one
+  const lg = legendRows(tl, call, r.legend ?? {});
+  if (lg.error) return { ok: false, script: null, facts: null, errors: [lg.error] };
   const counts = r.counts ?? derivedCounts(call, r.facts);
-  const facts = { kind: KIND_OF[call.template] ?? "animation", archetype: call.template, onScreen: r.facts, ...(counts ? { counts } : {}) };
+  const facts = { kind: KIND_OF[call.template] ?? "animation", archetype: call.template, onScreen: { ...r.facts, ...(lg.legend ? { key: lg.legend.slice(0, 40) } : {}) }, ...(counts ? { counts } : {}) };
   const raw = script(call, tl.ops, tl.t, facts, { lessonId, scriptId, ground: r.ground ?? "chalk" });
+  const tall = Math.ceil(bottomOf(tl.ops) + 12);
+  if (tall > raw.board.h) raw.board = { ...raw.board, h: Math.min(600, tall) };
   const n = normalizeScript(raw, { strict: true });
   if (!n.ok) return { ok: false, script: null, facts: null, errors: n.errors.slice(0, 6) };
   // round 7 (M2, "the motion's end is the explained state"): every motion a template adds claims where its op ENDS — the

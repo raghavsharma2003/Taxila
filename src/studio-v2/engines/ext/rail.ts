@@ -15,6 +15,7 @@ import { drawCoach, drawIntro, drawStatCard } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { taskPill, RoundFlow, SUBJECT_ACCENT, devaReady, shuffled, textBlock, voltBox, wrap } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
+import { dots } from "../../core/dots.ts";
 
 const LOCO_X = 520, FRONT = 130, MAIN_Y = 500, CARD_W = 410, CARD_H = 108, BOARD_X = 640, BOARD_W = 340, BOARD_H = 116;
 const LANE_COL = [C.ion, C.sci, C.amber];
@@ -221,7 +222,7 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
       loco(ctx, LOCO_X, g.locoY);
     }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: rd().title, sub: rd().sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: rd().title, sub: rd().sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.roundRes.filter((v) => v === "right").length}/${g.roundRes.length}`, T.picked], [String(g.best), T.streak]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.picked], [String(g.best), T.streak]] });
     drawCoach(api, ctx, T.coach, flow.state === "play" ? g.coachA : 0, now, 600);

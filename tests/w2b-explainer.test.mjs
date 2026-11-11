@@ -18,6 +18,7 @@ import { labelScriptProblem, sentenceShaped } from "../server/forge/explainer/tr
 import { screenContradiction, partsSaid, openItemOf, stripStrayParts } from "../server/director/modules.js";
 import { getKit } from "../server/content/index.js";
 import { initLessonState, step } from "../server/director/state.js";
+import { setScriptForTest } from "../server/director/script.js";
 import { interestSet, interestIdOf, HOOKS, DECOR, INTEREST_IDS } from "../server/forge/strings.js";
 
 const ROOT = new URL("..", import.meta.url);
@@ -362,3 +363,8 @@ describe("W2-B fixer", () => {
     assert.equal(normalizeScript(cont, { strict: true, priorIds: ["frac"] }).ok, true);
   });
 });
+
+// This file walks real kits through the Director, which loads each topic's real lesson script into server/director/script.js's
+// per-topic cache (read once per topic per process). Under --experimental-test-isolation=none that cache outlives this file and a
+// later suite driving a mini-kit on the same topicId would walk the real script. Clear it as the last test (an after() runs too late).
+test("cleanup: the script cache this file filled is cleared for the next suite", () => { setScriptForTest(); });

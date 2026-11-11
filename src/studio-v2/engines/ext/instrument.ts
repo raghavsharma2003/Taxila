@@ -11,6 +11,7 @@ import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, fmtNum, textBlock } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
 
 const CARD = { x: 610, y: 168, w: 360, h: 130 }, BTN = { x: 700, y: 470, w: 230, h: 70 };
 function create(api: EngineApi, spec: InstrumentSpec): EngineInstance {
@@ -140,11 +141,14 @@ function create(api: EngineApi, spec: InstrumentSpec): EngineInstance {
     } else if (r.mode === "cut") {
       ctx.fillStyle = "rgba(240,230,200,.95)"; roundRect(ctx, RUL.x0 - 10, RUL.y, RUL.x1 - RUL.x0 + 20, 70, 6); ctx.fill();
       const major = r.minor * (r.scaleMax / r.minor > 30 ? 10 : 5);
-      for (let v = 0; v <= r.scaleMax + 1e-6; v += r.minor) { const xx = rulX(v), big = Math.abs(v / major - Math.round(v / major)) < 1e-6; ctx.strokeStyle = "#1A1A1A"; ctx.lineWidth = big ? 3 : 1.5; ctx.beginPath(); ctx.moveTo(xx, RUL.y); ctx.lineTo(xx, RUL.y + (big ? 30 : 14)); ctx.stroke(); if (big) api.text(ctx, String(Math.round(v / (r.scaleMax >= 5000 ? 1000 : 10))), xx, RUL.y + 52, { font: "mono", size: 38, weight: 600, color: "#1A1A1A", align: "center", baseline: "middle" }); }
+      // numbers on every k-th major tick so neighbours never touch at the child's floor, and kept on the ruler's face
+      const lab = (v: number) => String(Math.round(v / (r.scaleMax >= 5000 ? 1000 : 10))), lo = { font: "mono", size: 38, weight: 600 } as const;
+      const every = Math.max(1, Math.ceil((api.measure(ctx, lab(r.scaleMax), lo) + 18) / (rulX(major) - rulX(0))));
+      for (let v = 0; v <= r.scaleMax + 1e-6; v += r.minor) { const xx = rulX(v), big = Math.abs(v / major - Math.round(v / major)) < 1e-6; ctx.strokeStyle = "#1A1A1A"; ctx.lineWidth = big ? 3 : 1.5; ctx.beginPath(); ctx.moveTo(xx, RUL.y); ctx.lineTo(xx, RUL.y + (big ? 30 : 14)); ctx.stroke(); if (big && Math.round(v / major) % every === 0) { const hw = api.measure(ctx, lab(v), lo) / 2; api.text(ctx, lab(v), clamp(xx, RUL.x0 - 6 + hw, RUL.x1 + 6 - hw), RUL.y + 52, { ...lo, color: "#1A1A1A", align: "center", baseline: "middle" }); } }
       api.text(ctx, r.scaleMax >= 5000 ? "m" : "cm", RUL.x1 + 6, RUL.y - 24, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "right", baseline: "middle" });
       const len = g.cutAt >= 0 ? g.cutAt : g.ribbon, rx2 = rulX(len);
       ctx.fillStyle = "#E0457B"; ctx.fillRect(RUL.x0, RUL.y - 34, rx2 - RUL.x0, 26); if (g.cutAt < 0) { ctx.fillStyle = "#3A4256"; ctx.beginPath(); ctx.arc(rx2 + 26, RUL.y - 21, 26, 0, Math.PI * 2); ctx.fill(); }
-      if (!g.answered) api.text(ctx, T.cut, 500, 300, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
+      if (!g.answered) api.text(ctx, T.cut, 320, 300, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
     } else if (r.mode === "clock") {
       ctx.save(); bloom(ctx, accent, CLK.x, CLK.y, CLK.r * 1.3, 0.2); ctx.fillStyle = "rgba(20,24,36,.98)"; ctx.beginPath(); ctx.arc(CLK.x, CLK.y, CLK.r, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.stroke(); ctx.restore();
       for (let i = 0; i < 60; i++) { const a = (i / 60) * Math.PI * 2 - Math.PI / 2, big = i % 5 === 0; ctx.strokeStyle = big ? C.ink : C.ink3; ctx.lineWidth = big ? 4 : 2; ctx.beginPath(); ctx.moveTo(CLK.x + Math.cos(a) * (CLK.r - (big ? 18 : 9)), CLK.y + Math.sin(a) * (CLK.r - (big ? 18 : 9))); ctx.lineTo(CLK.x + Math.cos(a) * (CLK.r - 3), CLK.y + Math.sin(a) * (CLK.r - 3)); ctx.stroke(); if (big) api.text(ctx, String(i / 5 || 12), CLK.x + Math.cos(a) * (CLK.r - 46), CLK.y + Math.sin(a) * (CLK.r - 46), { font: "display", size: 38, weight: 700, align: "center", baseline: "middle" }); }
@@ -170,7 +174,7 @@ function create(api: EngineApi, spec: InstrumentSpec): EngineInstance {
       if (ok) tick(ctx, CARD.x + CARD.w - 20, CARD.y + 18, C.mint, 0.9); else magnifier(ctx, CARD.x + CARD.w - 24, CARD.y + 22, C.amber, 0.9);
     }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.measured]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.measured]] });
     drawCoach(api, ctx, "", 0, now, 600);

@@ -9,6 +9,7 @@ import { bloom, roundRect, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
 const AREA = { x: 60, y: 168, w: 880, h: 420 };
 interface Rect { c: number; r: number; w: number; h: number }
@@ -32,11 +33,14 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
     const rr = rng(api.seed * 101 + g.r * 7), dmax = Math.min(cols, rows) / 2, sec = round().seconds;
     for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { const d = Math.min(c, r, cols - 1 - c, rows - 1 - r); driftAt[r * cols + c] = spec.drift > 0 ? sec * clamp((0.14 + 0.86 * (d / dmax)) / (0.6 + 0.6 * spec.drift) + (rr() - 0.5) * 0.08, 0.08, 1.2) : 1e9; }
   }
-  const goalText = () => { const rd = round(); return rd.goal === "area" ? `Stake exactly ${rd.target} ${T.sq} ${T.units}` : rd.goal === "perimeter" ? `Perimeter exactly ${rd.target} ${T.units}` : `${T.maxArea} perimeter ${rd.target}`; };
+  // (the goal is built from the spec's own strings only — no English the spec cannot change: the approval-lane c6 pilot was
+  // judged for "Stake exactly 40 sq units" on a Hinglish piece, 2026-11-10)
+  const words = (...xs: (string | number)[]) => xs.map(String).filter((x) => x.trim()).join(" ");
+  const goalText = () => { const rd = round(); return rd.goal === "area" ? words(T.area, rd.target, T.sq, T.units) : rd.goal === "perimeter" ? words(T.perimeter, rd.target, T.units) : words(T.maxArea, T.perimeter, rd.target); };
   function startRound(i: number) {
     g.r = i; g.state = "intro"; g.stateT = 0; g.t = 0; g.introA = 0; g.attempts = 0; g.claimed = null; g.flash = null; sprouts.length = 0;
     seedDrift(); api.tw.add(g, { introA: 1 }, { dur: 0.45 });
-    api.task(`${T.round} ${i + 1}/${spec.rounds.length}`, goalText() + (round().different ? ` · ${T.newShape}` : ""));
+    api.task(`${T.round} ${dots(i, spec.rounds.length)}`, goalText() + (round().different ? ` · ${T.newShape}` : ""));
     sfx.blip({ f: 220, f2: 440, dur: 0.35, type: "triangle", gain: 0.12 });
     api.event("round_start", { round: i + 1, goal: round().goal, target: round().target, targets: round().targets ?? null });
   }
@@ -88,7 +92,7 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
     const q = g.drag ? rectOf(g.drag.a, g.drag.b) : g.claimed;
     hud.set("area", q ? `${q.w * q.h}` : "—", { tone: q && round().goal === "area" && q.w * q.h === round().target ? "mint" : null });
     hud.set("per", q ? `${2 * (q.w + q.h)}` : "—", { tone: q && round().goal !== "area" && 2 * (q.w + q.h) === round().target ? "mint" : null });
-    if (g.r >= 0) hud.set("plot", `${g.r + 1}/${spec.rounds.length}`);
+    if (g.r >= 0) hud.set("plot", `${dots(g.r, spec.rounds.length)}`);
   }
   function paintBg(c: Ctx) {
     const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#0A0D12"); gr.addColorStop(1, "#0F1511"); c.fillStyle = gr; c.fillRect(0, 0, W, H);
@@ -144,10 +148,12 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
     fx.drawWorld(ctx);
     ctx.restore();
     if (g.compare && g.state === "end") drawCompare(ctx, g.compare, g.endA);
-    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${g.r + 1} / ${spec.rounds.length}`, title: round().goal === "maxArea" ? "Most area" : round().goal === "area" ? `Area ${round().target}` : `Perimeter ${round().target}`, sub: round().different ? T.newShape : goalText(), accent: C.mint });
+    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${dots(g.r, spec.rounds.length)}`, title: round().goal === "maxArea" ? "Most area" : round().goal === "area" ? `Area ${round().target}` : `Perimeter ${round().target}`, sub: round().different ? T.newShape : goalText(), accent: C.mint });
     if (g.state === "end" && !g.compare) { const res = g.results[g.results.length - 1]; drawStatCard(api, ctx, { a: g.endA, head: res?.verdict === "right" ? `${T.round} ${g.r + 1} · ${T.claim}` : T.timeUp, color: res?.verdict === "right" ? C.mint : C.amber, ticked: res?.verdict === "right", stats: [[res && res.w ? `${res.w}×${res.h}` : "—", "shape"], [res && res.w ? `${res.w * res.h}` : "—", T.area], [`${res?.attempts ?? 0}`, "tries"]] }); }
     if (g.state === "final") drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.results.filter((r) => r.verdict === "right").length}/${spec.rounds.length}`, "plots"], [`${g.results.reduce((a, b) => a + b.attempts, 0)}`, "tries"]] });
-    drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 140);
+    // (the coach line only where it fits above the grid: the grid fills the play area, and on a laptop the task pill and HUD reach
+    // its top row — judged unreadable on the c6 pilot, 2026-11-10; the task pill already says what to do)
+    if (api.chromeBottom() + 10 + Math.max(38, api.minLabel) * 1.6 < gy - 14) drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 140);
   }
   function drawCompare(ctx: Ctx, c: { shapes: { w: number; h: number }[]; per: number }, a: number) {
     ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = "rgba(10,12,18,.8)"; ctx.fillRect(0, 0, W, H);

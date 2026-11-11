@@ -20,6 +20,12 @@ const STORE = path.resolve(arg("--store", STORE_DIR));
 const PROMPT = path.join(STORE_DIR, "JUDGE-PROMPT.md");
 
 const verdicts = new Map(JSON.parse(fs.readFileSync(VERDICTS, "utf8")).map((v) => [v.id, v]));
+// main 2026-11-10 (c5-t02: a second judge failed what the first passed): a stored approval needs TWO separate judges to pass the
+// CONTENT items (truth, topic, key, no answer given away, register, language — every fault kind but "unreadable"); a split
+// verdict is a fail, recorded with both reasons. Readability stays with the first judge. --verdicts2 <the second judge's file>.
+const V2 = arg("--verdicts2"), JUDGE2 = arg("--judge2", "a second separate Claude judge");
+const verdicts2 = V2 ? new Map(JSON.parse(fs.readFileSync(path.resolve(V2), "utf8")).map((v) => [v.id, v])) : null;
+export const contentFaults = (v) => (v?.faults ?? []).filter((f) => f.kind !== "unreadable");
 const promptSha = fileHash(PROMPT);
 const written = [], refused = [];
 for (const id of fs.readdirSync(PACKETS).filter((d) => fs.existsSync(path.join(PACKETS, d, "packet.json")))) {
@@ -30,10 +36,13 @@ for (const id of fs.readdirSync(PACKETS).filter((d) => fs.existsSync(path.join(P
     : !p.predicate?.ok ? `predicate: ${p.predicate?.why}`
     : !JUDGED_SIZES.some((s) => p.render?.byViewport?.[s]) ? `render: legible at no size ${JSON.stringify(p.render?.byViewport)}`
     : !v ? "no verdict" : v.verdict !== "pass" ? `judge: ${(v.faults ?? []).map((f) => f.kind).join(", ") || "fail"}`
+    : !verdicts2 ? "one judge only: a stored approval needs a second judge's content verdict (--verdicts2)"
+    : !verdicts2.get(p.id) ? "no second verdict"
+    : contentFaults(verdicts2.get(p.id)).length ? `split verdict: judge 1 pass, judge 2 ${contentFaults(verdicts2.get(p.id)).map((f) => f.kind).join(", ")}`
     : specHash(p.archetype, p.spec) !== p.hash ? "hash does not match the spec" : null;
   // (the images judged are the images in the packet: their hashes now must be the hashes the render wrote)
   const imgOk = (p.images ?? []).every((im) => fs.existsSync(path.join(PACKETS, id, im.file)) && fileHash(path.join(PACKETS, id, im.file)) === im.sha256);
-  if (why || !imgOk) { refused.push({ id: p.id, why: why ?? "an image changed after the render" }); continue; }
+  if (why || !imgOk) { refused.push({ id: p.id, why: why ?? "an image changed after the render", ...(verdicts2?.get(p.id) ? { judge1: (v?.faults ?? []).map((f) => `${f.kind}: ${String(f.detail ?? "").slice(0, 120)}`), judge2: (verdicts2.get(p.id).faults ?? []).map((f) => `${f.kind}: ${String(f.detail ?? "").slice(0, 120)}`) } : {}) }); continue; }
   const t = p.target ?? { topicId: p.topicId, skillId: null, misconceptionId: null, beat: null, when: "catalogue" };
   const rec = {
     v: 1, id: p.id, approved: true, hash: p.hash, archetype: p.archetype, spec: p.spec,
@@ -43,6 +52,7 @@ for (const id of fs.readdirSync(PACKETS).filter((d) => fs.existsSync(path.join(P
     source: p.source ?? "generated",
     predicate: p.predicate, render: { byViewport: p.render.byViewport, images: p.images },
     judge: { verdict: "pass", by: JUDGE, promptSha256: promptSha, prompt: "data/studio-approved/JUDGE-PROMPT.md", faults: v.faults ?? [], readable: v.readable ?? null, notes: v.notes ?? null },
+    judge2: { verdict: verdicts2.get(p.id).verdict, by: JUDGE2, content: "pass", faults: verdicts2.get(p.id).faults ?? [], notes: verdicts2.get(p.id).notes ?? null },
     generation: p.generation ?? null, approvedAt: new Date().toISOString(),
   };
   fs.mkdirSync(path.join(STORE, t.topicId), { recursive: true });
@@ -61,3 +71,4 @@ if (CANDS && fs.existsSync(path.join(CANDS, "manifest.json"))) {
 }
 console.log(`approved ${written.length}: ${written.join(", ") || "-"}`);
 for (const r of refused) console.log(`not approved ${r.id}: ${r.why}`);
+if (refused.length) fs.writeFileSync(path.join(PACKETS, "refused.json"), JSON.stringify(refused, null, 2) + "\n");

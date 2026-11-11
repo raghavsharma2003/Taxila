@@ -10,7 +10,7 @@
 // When Stagecraft is on for a lesson it OWNS the stage proposal: Wave 2's own clock-and-beat proposal is replaced by
 // the reveal policy's outcome (a hold removes it). In shadow mode the outcome is computed and logged, and the W2 view
 // is returned untouched. Off (no host attached) = byte-identical W2 behaviour.
-import { _lesson } from "../studio/seam.js";
+import { _lesson, phonePlayInstead } from "../studio/seam.js";
 import { restIsDue } from "./policy.js";
 import { REST_CFG } from "./adapters.js";
 import { createStageGradeSession } from "./grade.js";
@@ -113,6 +113,9 @@ function merge(lessonId, host, view0, point, outcome) {
     console.info(`[stagecraft] tray gate refused ${outcome.rung} ${sc0.archetype ?? "-"} at ${cert.vp}: ${String(cert.why).slice(0, 100)}`);
     traceRecord("studio.slot.refused", { gate: "tray", where: "stagecraft", rung: outcome.rung ?? null, archetype: sc0.archetype ?? null, vp: cert.vp ?? null,
       cert: cert.cert ?? null, why: String(cert.why ?? "").slice(0, 300), candidateId: outcome.candidateId ?? null }, { sid: lessonId });
+    // (main 2026-11-10: on a phone too small to play the world, the play family that covers the skill takes the game's place)
+    if (cert.cert === "studio-v2-small") phonePlayInstead(lessonId, { kind: facts.kind, need: want?.need ?? null, skillId: point.current?.skillId ?? null,
+      topicId: L.topicId ?? point.current?.topicId ?? null, archetype: sc0.archetype ?? null, intentId: id });
     return keepW2();
   }
   // a seam piece for it, so slotFor / factsRowForSlot / onReveal run their existing paths (one piece, one door)

@@ -15,7 +15,7 @@
   { "hi": "chhota arc / nishaan", "en": "arc mark" },
   { "hi": "ek ke upar ek rakhna", "en": "placing one on the other (superposing)" },
   { "hi": "khulapan", "en": "opening (of an angle)" }
- ], "joints": {"asidePark":[{"hi":"Achha, {aside} wali baat main yaad rakhti hoon, thodi der mein usi par aayenge.","en":"Okay, I'll keep the {aside} bit in mind, and we'll come back to it soon."},{"hi":"Yeh kon wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once this angle is done, we will surely talk about {aside}."},{"hi":"Wah, {aside} ki baat sambhaal ke rakhi hai, baad mein zaroor sunungi.","en":"Oh, I've kept the {aside} bit safe, and I'll surely hear it later."}],"asideReturn":[{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"},{"hi":"{aside} mein kaunsi cheez khulti aur band hoti hai?","en":"What opens and closes in {aside}?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."}]},
+ ], "joints": {"asidePark":[{"hi":"Yeh kon wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once this angle is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh kon wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once this angle is over."},{"hi":"Mazedaar, {aside} ki baat hum zaroor karenge, bas thodi der mein.","en":"Fun, we will surely talk about {aside}, just in a little while."}],"asideReturn":[{"hi":"{aside} mein kaunsi cheez khulti aur band hoti hai?","en":"What opens and closes in {aside}?"},{"hi":"{aside} wali baat batao na, tumne pehli baar kab kiya?","en":"Tell me about {aside}: when did you first do it?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"}],"hindiSwitch":[{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in English."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."}],"askAgain":[{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."}]},
  "skills": [
   {
    "skillId": "c6-maths-ch02-t02-s1",
@@ -56,7 +56,7 @@
       "prompt": { "hi": "Upar wali arm par ek point B hai. Us arm ka naam kya hoga: ray OB ya ray BO?", "en": "There is a point B on the upper arm. What is that arm's name: ray OB or ray BO?" },
       "key": "ray OB",
       "why": { "hi": "yeh arm vertex O se B ki taraf jaati hai, aur ray ke naam mein shuru wala point pehle aata hai", "en": "this arm starts at the vertex O and goes towards B, and a ray's name begins with its starting point" },
-      "accept": ["OB", "ray OB", "kiran OB"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 55, "name": "angle"}], "vertex": "O", "arm": "OA"} }
+      "accept": ["OB", "ray OB", "kiran OB"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 55, "name": "angle"}], "vertex": "O", "arm": "OA", "mark": {"index": 0, "show": "bigger"}} }
      },
      "simpler": { "hi": "Angle mein do rays ek hi point se shuru hoti hain, woh point vertex hai, yahan O. Ray ke naam mein pehle vertex aata hai, jaise ray OA.", "en": "In an angle two rays start from the same point, the vertex, here O. A ray's name starts with the vertex, like ray OA." }
     },
@@ -78,7 +78,7 @@
       "why": { "hi": "D upar wali arm par hai aur C neeche wali par, aur vertex B beech mein aata hai", "en": "D is on the upper arm and C on the lower one, with the vertex B in the middle" },
       "accept": ["DBC", "CBD", "angle CBD", "∠DBC", "∠CBD"],
       "targets": "c6-maths-ch02-t02-m-vertex-name",
-      "wrongIfMis": "angle BDC", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 65, "name": "angle ABC"}], "vertex": "B", "arm": "BC"} }
+      "wrongIfMis": "angle BDC", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 65, "name": "angle ABC"}], "vertex": "B", "arm": "BC", "mark": {"index": 0, "show": "bigger"}} }
      },
      "simpler": { "hi": "Teen letters ke naam mein vertex B hamesha beech mein aata hai. Pehle ek arm ka point, phir B, phir doosri arm ka point, jaise angle ABC.", "en": "In a three-letter name the vertex B always sits in the middle. First a point on one arm, then B, then a point on the other arm, like angle ABC." }
     }
@@ -116,7 +116,7 @@
      "accept": ["STR", "∠STR", "angle S T R"],
      "targets": "c6-maths-ch02-t02-m-vertex-name",
      "wrongIfMis": "angle TSR",
-     "simpler": { "hi": "T beech mein hi rahega. Bas R aur S ki jagah aapas mein badal do.", "en": "Keep T in the middle. Just swap the places of R and S." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "rassiyan"}], "vertex": "T", "arm": "TR"} }, "why": { "hi": "rassiyan T se nikalti hain, toh T beech mein rehta hai aur sirf R aur S ki jagah badalti hai", "en": "the ropes start at T, so T stays in the middle and only R and S swap places" }
+     "simpler": { "hi": "T beech mein hi rahega. Bas R aur S ki jagah aapas mein badal do.", "en": "Keep T in the middle. Just swap the places of R and S." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "rassiyan"}], "vertex": "T", "arm": "TR", "mark": {"index": 0, "show": "bigger"}} }, "why": { "hi": "rassiyan T se nikalti hain, toh T beech mein rehta hai aur sirf R aur S ki jagah badalti hai", "en": "the ropes start at T, so T stays in the middle and only R and S swap places" }
     },
     "answer": { "hi": "vertex T hai, arms ray TR aur ray TS hain, aur angle ke naam angle RTS aur angle STR hain", "en": "the vertex is T, the arms are ray TR and ray TS, and the angle is named angle RTS or angle STR" },
     "why": {
@@ -135,7 +135,7 @@
      "targets": "c6-maths-ch02-t02-m-vertex-name",
      "wrongIfMis": "P",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60, "name": "angle PQR" }] } },
-     "simpler": { "hi": "Teen letters wale angle ke naam mein vertex hamesha beech wala letter hota hai. Angle PQR ka beech wala letter dekho.", "en": "In a three-letter angle name the vertex is always the middle letter. Look at the middle letter of angle PQR." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "angle PQR"}]} }
+     "simpler": { "hi": "Teen letters wale angle ke naam mein vertex hamesha beech wala letter hota hai. Angle PQR ka beech wala letter dekho.", "en": "In a three-letter angle name the vertex is always the middle letter. Look at the middle letter of angle PQR." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "angle PQR"}], "mark": {"index": 0, "show": "bigger"}} }
     },
     {
      "id": "c2",
@@ -146,7 +146,7 @@
      "targets": "c6-maths-ch02-t02-m-vertex-name",
      "wrongIfMis": "angle BAC",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 70, "name": "angle" }], "vertex": "B" } },
-     "simpler": { "hi": "B vertex hai, toh naam mein B beech mein aana chahiye. Dono naamon mein dekho B kahan baitha hai.", "en": "B is the vertex, so B must be in the middle of the name. See where B sits in each name." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 70, "name": "angle"}], "vertex": "B"} }
+     "simpler": { "hi": "B vertex hai, toh naam mein B beech mein aana chahiye. Dono naamon mein dekho B kahan baitha hai.", "en": "B is the vertex, so B must be in the middle of the name. See where B sits in each name." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 70, "name": "angle"}], "vertex": "B", "mark": {"index": 0, "show": "bigger"}} }
     },
     {
      "id": "c3",
@@ -157,7 +157,7 @@
      "targets": "c6-maths-ch02-t02-m-vertex-name",
      "wrongIfMis": "angle OHM",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60, "name": "suiyan" }], "vertex": "O" } },
-     "simpler": { "hi": "Dono suiyan O se nikalti hain, toh O vertex hai. Naam mein vertex hamesha beech mein aata hai.", "en": "Both hands start at O, so O is the vertex. The vertex always goes in the middle of the name." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "suiyan"}], "vertex": "O"} }
+     "simpler": { "hi": "Dono suiyan O se nikalti hain, toh O vertex hai. Naam mein vertex hamesha beech mein aata hai.", "en": "Both hands start at O, so O is the vertex. The vertex always goes in the middle of the name." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "suiyan"}], "vertex": "O", "mark": {"index": 0, "show": "bigger"}} }
     }
    ],
    "ladder": [
@@ -182,7 +182,7 @@
       "targets": "c6-maths-ch02-t02-m-vertex-name",
       "wrongIfMis": "angle NMP",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 45, "name": "angle" }], "vertex": "N" } },
-      "simpler": { "hi": "N vertex hai, toh naam mein N beech mein aana chahiye. Dono naamon mein dekho N kahan baitha hai.", "en": "N is the vertex, so N must sit in the middle of the name. See where N is in each name." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 45, "name": "angle"}], "vertex": "N"} }
+      "simpler": { "hi": "N vertex hai, toh naam mein N beech mein aana chahiye. Dono naamon mein dekho N kahan baitha hai.", "en": "N is the vertex, so N must sit in the middle of the name. See where N is in each name." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 45, "name": "angle"}], "vertex": "N", "mark": {"index": 0, "show": "bigger"}} }
      }
     }
    ],
@@ -229,7 +229,7 @@
       "prompt": { "hi": "Board par kis angle ki doosri arm zyada ghoomi hai, toh kaunsa angle bada hai: A ya B?", "en": "On the board, whose second arm has turned more, so which angle is bigger: A or B?" },
       "key": "angle B",
       "why": { "hi": "board par angle B ki doosri arm angle A ki doosri arm se kahin zyada ghoomkar khuli hai", "en": "on the board angle B's second arm has turned open much further than angle A's" },
-      "accept": ["B", "B bada", "angle B bada hai"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 35, "name": "angle A"}, {"deg": 110, "name": "angle B"}]} }
+      "accept": ["B", "B bada", "angle B bada hai"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 35, "name": "angle A"}, {"deg": 110, "name": "angle B"}], "mark": {"index": 1, "show": "bigger"}} }
      },
      "simpler": { "hi": "Angle ek ghumaav hai, jaise darwaza kabze par ghoomkar khulta hai. Arm jitni zyada ghoomi, angle utna bada.", "en": "An angle is a turn, like a door turning open on its hinge. The more the arm turns, the bigger the angle." }
     },
@@ -250,7 +250,7 @@
       "prompt": { "hi": "12 se 6 tak ka aadha chakkar kitne quarter turn ke barabar hai?", "en": "The half turn from 12 to 6 equals how many quarter turns?" },
       "key": "2",
       "why": { "hi": "12 se 3 ek quarter turn hai aur 3 se 6 doosra, yaani 2 quarter turn", "en": "12 to 3 is one quarter turn and 3 to 6 is another, so 2 quarter turns" },
-      "accept": ["do", "2 quarter turn", "2 quarter turns", "do quarter turn"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "3 baje"}, {"deg": 180, "name": "6 baje"}]} }
+      "accept": ["do", "2 quarter turn", "2 quarter turns", "do quarter turn"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "3 baje"}, {"deg": 180, "name": "6 baje"}], "mark": {"index": 1, "show": "bigger"}} }
      },
      "simpler": { "hi": "Sui 12 se 3 tak ghoome toh quarter turn, yaani chakkar ka chautha hissa. 12 se 6 tak aadha chakkar, aur wapas 12 tak poora chakkar.", "en": "A hand turning from 12 to 3 makes a quarter turn, a fourth of the way round. 12 to 6 is a half turn, and back to 12 is a full turn." }
     },
@@ -305,7 +305,7 @@
      "prompt": { "hi": "Ab dono ghumaav milao. Kis samay suiyon ke beech ka angle bada hai: 2 baje ya 4 baje?", "en": "Now compare the two turns. At which time is the angle between the hands bigger: 2 o'clock or 4 o'clock?" },
      "key": "4 baje",
      "accept": ["4 o'clock", "chaar baje", "char baje", "4 baje wala"],
-     "simpler": { "hi": "Jis samay sui 12 se zyada door tak ghoomi, us samay angle bada hai. Dono samay ka ghumaav milaao.", "en": "At the time the hand turned further from 12, the angle is bigger. Compare the turns at the two times." }, "why": { "hi": "4 baje sui 12 se 4 tak ghoomi, 2 baje sirf 2 tak, toh 4 baje ka ghumaav zyada hai", "en": "at 4 o'clock the hand turned from 12 to 4, at 2 only to 2, so the turn at 4 is bigger" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "2 baje"}, {"deg": 120, "name": "4 baje"}]} }
+     "simpler": { "hi": "Jis samay sui 12 se zyada door tak ghoomi, us samay angle bada hai. Dono samay ka ghumaav milaao.", "en": "At the time the hand turned further from 12, the angle is bigger. Compare the turns at the two times." }, "why": { "hi": "4 baje sui 12 se 4 tak ghoomi, 2 baje sirf 2 tak, toh 4 baje ka ghumaav zyada hai", "en": "at 4 o'clock the hand turned from 12 to 4, at 2 only to 2, so the turn at 4 is bigger" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "2 baje"}, {"deg": 120, "name": "4 baje"}], "mark": {"index": 1, "show": "bigger"}} }
     },
     "answer": { "hi": "4 baje suiyon ke beech ka angle bada hai", "en": "the angle between the hands is bigger at 4 o'clock" },
     "why": { "hi": "dono angle 12 wali arm se shuru hote hain, aur 4 baje sui 4 tak ghoomi, 2 baje sirf 2 tak", "en": "both angles start from the arm on 12; the hand reached 4 at 4 o'clock, only 2 at 2 o'clock" },
@@ -332,7 +332,7 @@
      "targets": "c6-maths-ch02-t02-m-full-turn-zero",
      "wrongIfMis": "haan",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "12 se 3" }] } },
-     "simpler": { "hi": "X sirf 12 se 3 tak ghoomi. Y pehle poora chakkar ghoomi aur phir 3 tak gayi, toh Y ka ghumaav alag se dekho.", "en": "X turned only from 12 to 3. Y first turned a full turn and then went on to 3, so look at Y's turning separately." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "12 se 3"}]} }
+     "simpler": { "hi": "X sirf 12 se 3 tak ghoomi. Y pehle poora chakkar ghoomi aur phir 3 tak gayi, toh Y ka ghumaav alag se dekho.", "en": "X turned only from 12 to 3. Y first turned a full turn and then went on to 3, so look at Y's turning separately." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "12 se 3"}], "mark": {"index": 0, "show": "bigger"}} }
     }
    ],
    "ladder": [
@@ -355,7 +355,7 @@
       "targets": "c6-maths-ch02-t02-m-full-turn-zero",
       "wrongIfMis": "1",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "phir 12 se 3" }] } },
-      "simpler": { "hi": "Poora chakkar chaar quarter turn hai. 12 se 3 tak ek quarter turn aur hai, dono jodo.", "en": "A full turn is four quarter turns. 12 to 3 is one more quarter turn; add them." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "phir 12 se 3"}]} }
+      "simpler": { "hi": "Poora chakkar chaar quarter turn hai. 12 se 3 tak ek quarter turn aur hai, dono jodo.", "en": "A full turn is four quarter turns. 12 to 3 is one more quarter turn; add them." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "phir 12 se 3"}], "mark": {"index": 0, "show": "bigger"}} }
      }
     }
    ],
@@ -403,7 +403,7 @@
       "prompt": { "hi": "Angle P ki copy angle Q par aise hi rakho. Kiski doosri arm bahar rahegi, yaani kaunsa angle bada hai: P ya Q?", "en": "Place a copy of angle P on angle Q this way. Whose second arm stays outside, that is, which angle is bigger: P or Q?" },
       "key": "angle Q",
       "why": { "hi": "Q ki doosri arm P ki doosri arm se zyada ghoomi hai, toh copy rakhne par Q ki arm bahar rehti hai", "en": "angle Q's second arm has turned further than angle P's, so with the copy laid on, Q's arm stays outside" },
-      "accept": ["Q", "Q bada", "angle Q bada hai"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 45, "name": "angle P"}, {"deg": 80, "name": "angle Q"}]} }
+      "accept": ["Q", "Q bada", "angle Q bada hai"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 45, "name": "angle P"}, {"deg": 80, "name": "angle Q"}], "mark": {"index": 1, "show": "bigger"}} }
      },
      "simpler": { "hi": "Ek angle ki copy doosre par rakho: vertex par vertex, aur ek arm par ek arm. Jiski doosri arm bahar ki taraf rahe, woh angle bada hai.", "en": "Put a copy of one angle on the other: vertex on vertex, and one arm on one arm. The angle whose second arm lies outside is bigger." }
     },
@@ -425,7 +425,7 @@
       "why": { "hi": "arms badhane se sirf lakeerein lambi hui, B ka ghumaav utna hi raha jitna A ka", "en": "extending the arms only made the lines longer; B's turn stayed the same as A's" },
       "accept": ["barabar hai", "dono barabar", "equal", "same"],
       "targets": "c6-maths-ch02-t02-m-longer-arms",
-      "wrongIfMis": "bada", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "angle A"}, {"deg": 60, "name": "angle B"}]} }
+      "wrongIfMis": "bada", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "angle A"}, {"deg": 60, "name": "angle B"}], "mark": {"index": 1, "show": "bigger"}} }
      },
      "simpler": { "hi": "Arm ek ray hai jo aage chalti rehti hai, kaagaz par uska sirf ek hissa banta hai. Isliye arms lambi karne se angle nahi badalta, sirf ghumaav se badalta hai.", "en": "An arm is a ray that goes on and on; on paper we draw only a piece. So longer arms do not change an angle; only the turn does." }
     },
@@ -447,7 +447,7 @@
       "why": { "hi": "arc ka size arms ko nahi hilata, aur N ki arms M ki arms se zyada khuli hain", "en": "the size of an arc does not move the arms, and N's arms are open wider than M's" },
       "accept": ["N", "N bada", "angle N bada hai"],
       "targets": "c6-maths-ch02-t02-m-arc-size",
-      "wrongIfMis": "angle M", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "angle M"}, {"deg": 85, "name": "angle N"}]} }
+      "wrongIfMis": "angle M", "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "angle M"}, {"deg": 85, "name": "angle N"}], "mark": {"index": 1, "show": "bigger"}} }
      },
      "simpler": { "hi": "Vertex ke paas ka arc sirf ek nishaan hai, jaise naam ka label. Arc chhota ho ya bada, arms wahin rehti hain, toh angle nahi badalta.", "en": "The arc near the vertex is only a mark, like a name label. Small arc or big, the arms stay put, so the angle does not change." }
     }
@@ -485,7 +485,7 @@
      "accept": ["PQR", "∠PQR", "angle PQR bada hai", "RQP", "angle RQP"],
      "targets": "c6-maths-ch02-t02-m-longer-arms",
      "wrongIfMis": "angle ABC",
-     "simpler": { "hi": "Arms 4 cm hon ya 9 cm, isse angle nahi badalta. Dekho kiski doosri arm zyada ghoomi hai, wahi angle bada hai.", "en": "Whether the arms are 4 cm or 9 cm does not change the angle. See whose second arm turned more; that angle is bigger." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "angle ABC"}, {"deg": 75, "name": "angle PQR"}]} }, "why": { "hi": "QR, angle ABC ki arm BC ke bahar tak ghoomi, toh angle PQR bada hai; arms ki lambai se fark nahi", "en": "QR turned beyond BC, an arm of angle ABC, so angle PQR is bigger; arm length makes no difference" }
+     "simpler": { "hi": "Arms 4 cm hon ya 9 cm, isse angle nahi badalta. Dekho kiski doosri arm zyada ghoomi hai, wahi angle bada hai.", "en": "Whether the arms are 4 cm or 9 cm does not change the angle. See whose second arm turned more; that angle is bigger." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "angle ABC"}, {"deg": 75, "name": "angle PQR"}], "mark": {"index": 1, "show": "bigger"}} }, "why": { "hi": "QR, angle ABC ki arm BC ke bahar tak ghoomi, toh angle PQR bada hai; arms ki lambai se fark nahi", "en": "QR turned beyond BC, an arm of angle ABC, so angle PQR is bigger; arm length makes no difference" }
     },
     "answer": { "hi": "angle PQR bada hai, jabki uski arms chhoti hain", "en": "angle PQR is bigger, even though its arms are shorter" },
     "why": {
@@ -504,7 +504,7 @@
      "targets": "c6-maths-ch02-t02-m-longer-arms",
      "wrongIfMis": "angle Y",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 55, "name": "angle X" }, { "deg": 55, "name": "angle Y" }] } },
-     "simpler": { "hi": "X aur Y ke vertex aur dono arms ek doosre par mil jaate hain. Arms 8 cm tak lambi karne se ghumaav nahi badalta.", "en": "X and Y match at the vertex and both arms. Making the arms 8 cm long does not change the turn." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 55, "name": "angle X"}, {"deg": 55, "name": "angle Y"}]} }
+     "simpler": { "hi": "X aur Y ke vertex aur dono arms ek doosre par mil jaate hain. Arms 8 cm tak lambi karne se ghumaav nahi badalta.", "en": "X and Y match at the vertex and both arms. Making the arms 8 cm long does not change the turn." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 55, "name": "angle X"}, {"deg": 55, "name": "angle Y"}], "mark": {"index": 1, "show": "bigger"}} }
     },
     {
      "id": "c2",
@@ -515,7 +515,7 @@
      "targets": "c6-maths-ch02-t02-m-arc-size",
      "wrongIfMis": "angle K",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 40, "name": "angle K" }, { "deg": 100, "name": "angle L" }] } },
-     "simpler": { "hi": "Arc sirf nishaan hai, uske size se angle nahi badalta. Board par dekho kiski arms zyada khuli hain.", "en": "An arc is only a mark; its size does not change the angle. Look on the board at whose arms are open wider." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40, "name": "angle K"}, {"deg": 100, "name": "angle L"}]} }
+     "simpler": { "hi": "Arc sirf nishaan hai, uske size se angle nahi badalta. Board par dekho kiski arms zyada khuli hain.", "en": "An arc is only a mark; its size does not change the angle. Look on the board at whose arms are open wider." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40, "name": "angle K"}, {"deg": 100, "name": "angle L"}], "mark": {"index": 1, "show": "bigger"}} }
     },
     {
      "id": "c3",
@@ -526,7 +526,7 @@
      "targets": "c6-maths-ch02-t02-m-longer-arms",
      "wrongIfMis": "angle S",
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 45, "name": "angle S" }, { "deg": 80, "name": "angle T" }] } },
-     "simpler": { "hi": "Arms lambi karne se ghumaav nahi badalta. Copy rakhkar dekho kiski doosri arm zyada ghoomi hai.", "en": "Longer arms do not change the turn. Lay the copy down and see whose second arm has turned more." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 45, "name": "angle S"}, {"deg": 80, "name": "angle T"}]} }
+     "simpler": { "hi": "Arms lambi karne se ghumaav nahi badalta. Copy rakhkar dekho kiski doosri arm zyada ghoomi hai.", "en": "Longer arms do not change the turn. Lay the copy down and see whose second arm has turned more." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 45, "name": "angle S"}, {"deg": 80, "name": "angle T"}], "mark": {"index": 1, "show": "bigger"}} }
     }
    ],
    "ladder": [
@@ -556,7 +556,7 @@
       "targets": "c6-maths-ch02-t02-m-longer-arms",
       "wrongIfMis": "angle F",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "angle E" }, { "deg": 90, "name": "angle F" }] } },
-      "simpler": { "hi": "Dono angle quarter turn khule hain. Arms 10 cm tak lambi karne se ghumaav nahi badalta.", "en": "Both angles are open a quarter turn. Making the arms 10 cm long does not change the turn." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "angle E"}, {"deg": 90, "name": "angle F"}]} }
+      "simpler": { "hi": "Dono angle quarter turn khule hain. Arms 10 cm tak lambi karne se ghumaav nahi badalta.", "en": "Both angles are open a quarter turn. Making the arms 10 cm long does not change the turn." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "angle E"}, {"deg": 90, "name": "angle F"}], "mark": {"index": 1, "show": "bigger"}} }
      }
     },
     {
@@ -579,7 +579,7 @@
       "targets": "c6-maths-ch02-t02-m-arc-size",
       "wrongIfMis": "angle H",
       "board": { "template": "angle@1", "params": { "angles": [{ "deg": 65, "name": "angle G" }, { "deg": 65, "name": "angle H" }] } },
-      "simpler": { "hi": "G aur H ek doosre par bilkul milte hain. Bada arc sirf nishaan hai, usse ghumaav nahi badalta.", "en": "G and H match exactly one on the other. A big arc is only a mark; it does not change the turn." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 65, "name": "angle G"}, {"deg": 65, "name": "angle H"}]} }
+      "simpler": { "hi": "G aur H ek doosre par bilkul milte hain. Bada arc sirf nishaan hai, usse ghumaav nahi badalta.", "en": "G and H match exactly one on the other. A big arc is only a mark; it does not change the turn." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 65, "name": "angle G"}, {"deg": 65, "name": "angle H"}], "mark": {"index": 1, "show": "bigger"}} }
      }
     }
    ],

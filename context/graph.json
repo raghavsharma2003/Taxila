@@ -27660,6 +27660,268 @@
    "title": "PROPOSED to main (docs/design/round7/studio/ENGINES-360.md): on a phone, the lesson offers the play family where one covers the topic (186 of 382 catalogue topics, all maths and science). Studio v2 gets a portrait core mode, then portrait layouts only for the engines whose topics no play family covers: story-rail, beat-line and sort-storm (133 of the 196 uncovered topics), then town-lab, era-drop and land-lab. These are language, SST and EVS, where no play family exists, so there the two systems are not substitutes.",
    "reverse": "main decides the twin board at 360 is the phone experience for language, SST and EVS, or the Games stream plans language/SST families",
    "source": "inbox/r7-studio-39.json"
+  },
+  {
+   "id": "ms-release-9004a0b",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "Released 9004a0b with scripts/release.mjs: web taxila-web--s9004a0b-tlys (was taxila-web--se807f07-4jnx), worker + canary/nightly jobs on taxila-worker:9004a0b (was e807f07); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 9004a0b --rollback.",
+   "source": "inbox/release-9004a0b.json"
+  },
+  {
+   "id": "dc-r7-studio-v2-refused-at-360",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "main's ruling: where a Studio v2 world is too small to play (the 360 px phone), the tray gate refuses it at every rung (cert studio-v2-small) and the child keeps the script's held board. Its board twin was the engine's codename and four kit key terms with no figure, and two separate judges failed it 24 of 24. Switch STUDIO_V2_TWIN_AT_SMALL (default off). Approval is judged at p412 and l1366 only (APPROVAL_SIZES), and a record stores p360 false.",
+   "reverse": "the twin carries the piece's own figure and a separate judge passes it at p360",
+   "source": "inbox/r7-studio-40.json"
+  },
+  {
+   "id": "dc-r7-phone-play-family",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "main's ruling: on a phone, a refused Studio v2 game's place goes to the play family that covers the skill. Coverage comes from data/play/coverage.json. The Games picker chooses the family and level (buildLive → startSession → chooseEntry), given the skill and the device's size. The piece carries because 'phone: <family> covers this skill'. It applies once per skill per lesson, only in a game's place; switch STUDIO_PHONE_PLAY. For maths and science 186 of 382 catalogue topics are covered.",
+   "reverse": "a director run on a 360 phone shows the play family's level is off the skill the lesson is teaching",
+   "source": "inbox/r7-studio-40.json"
+  },
+  {
+   "id": "dc-r7-regenerate-not-rescue",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "main's ruling: no bulk re-judge of the old catalogue (about 650M tokens for 760 pieces whose sample passes at 20% and whose engines are changing). The catalogue stays withheld under dc-r7-catalogue-judged. Pieces are judged on demand, in batches of 10, and only those that can be shown soon: the 4 pilot topics and the 30 staged maths topics, classes 4-7, at p412 and l1366, after the l1366 engine fixes. When a topic gets a script, its pieces are regenerated through the approval lane with a `how` in the engine's terms, not rescued from the old catalogue. Sonnet is not used as a judge.",
+   "reverse": "a judged sample of 50 old pieces for scripted topics passing at 80% or better (rescuing would then be cheaper than regenerating)",
+   "source": "inbox/r7-studio-40.json"
+  },
+  {
+   "id": "dc-r8-kit-practice-explained",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "The kit-practice phase (after the script's walk) carries because records like the walk (main's ruling after integration 26). At the start, knows.js practicePlanOf compares her practice queue (items.js buildPracticeQueue with her level and mix-ups) to a no-history child's: a diagnostic picked for her open mix-up is practiceDiag; an order within a skill set by her level (theta, weak) is practiceOrder, carrying her queue. At each pick, knows-walk.js knowsPick (one call line in state.js poseNext) logs which branch chose the item (ladder, verify, queued, queue) and records an in-lesson reason when the queue's pick leaves its skill's queue order: practiceFast (pace.fast: answered fast and unaided, so the hardest item) or practiceEasier (two misses in a row, or she asked). assertWalkExplained takes the no-history queue and checks every queue pick against its skill's order (hers when a practiceOrder record carries it); cross-skill interleaving is the queue's own rule and is not checked. Not covered: the verify diagnostic and the queued isomorph (in-lesson responses to an answer; logged, not checked), error_spot gating by pKnown (would show as an unexplained pick if it reorders). Reverse if Brain's compileScript moves the practice phase into the compiled script: the records then come from the compile's inputs.",
+   "source": "inbox/r8-loop-4.json"
+  },
+  {
+   "id": "ms-r8-kit-practice-2026-11-10",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "tests/knows-practice.test.mjs (deterministic, the real step(); n = 4 pilot topics, a child who knows every skill, behind her class and weak, one open mix-up, 2026-11-10): every lesson reaches the kit's queue (1-2 queue picks after the hardest-first ladder), every pick passes the extended assertWalkExplained, practiceOrder and practiceDiag fire on all 4 topics, practiceFast on all 4, and dropping any practiceFast or practiceDiag record that a pick used makes the walk fail. A no-history child's queue gets no practice record. The 41-turn seeded steady lessons (knows-seeded-dry) never reach the kit's queue: the script walk fills the lesson.",
+   "source": "inbox/r8-loop-4.json"
+  },
+  {
+   "id": "oi-r7-studio-v2-portrait",
+   "kind": "open",
+   "at": "2026-11-10",
+   "title": "OPEN, not approved (main 2026-11-10): a portrait mode in the Studio v2 core (about 2 days), then portrait layouts for story-rail, beat-line and sort-storm (about 5 days) and town-lab, era-drop and land-lab (about 6 days). That is about 13 days for the 163 language, SST and EVS topics no play family covers. It waits because no topic in those subjects has a teaching script yet, and a phone-native game without a lesson around it teaches nothing.",
+   "reverse": "Learning scripts language, SST or EVS topics",
+   "source": "inbox/r7-studio-40.json"
+  },
+  {
+   "id": "ms-release-d71c2ca",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "Released d71c2ca with scripts/release.mjs: web taxila-web--sd71c2ca-yt3l (was taxila-web--s9004a0b-tlys), worker + canary/nightly jobs on taxila-worker:d71c2ca (was 9004a0b); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs d71c2ca --rollback.",
+   "source": "inbox/release-d71c2ca.json"
+  },
+  {
+   "id": "dc-r8-home-play-fold-live",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8 Play follow-up A: home play folds LIVE. When a level ends with no lessonId, /api/play/act signs the homeToken and, in the same request, folds it: server/play/home.js homeKtEvents verifies the token (this child's, a home token, row weight GAME or CHANCE only) and builds ONE event per level and skill with the learner's own mapping (server/learner/kt/home.js homePlayEvent: trail.solved -> won, trail.misses, trail.hints (0), trail.mal kit ids -> misconception, chance from the signed row weight, IST learning day, ids 'home:<child>:<day>:<level>:<n>'). The write is the out-of-turn writers' contract (fuseEvidence + writer.ledgerStmts + projection + facet rows in one transaction under the child lock, legal-mode guard and seq guard; idempotent by event id). No home table and no migration: the levels already folded that day are read back from kt_evidence by the home session id. TAXILA_HOME_PLAY_FOLD is ON unless set off/0/false/no. Cap choice: HOME_DAILY_CAP 3 -> 24 and it is a row-volume bound only; the knowledge rule is the ledger's HOME_DAY_LOG_CAP (+-ln 3 per skill per day, one learning step, never unaided, never the delayed check). At 3 the play cap bound first (two clean wins already saturate +ln 3; chance-weight wins take ~5) and kept a later miss from reaching the ledger's running clamp, which changed the ledger's rule. Test: 30 clean first-try home levels of one skill in one IST day never make it learned/mastered/unaided. Reverse if: the learner session changes HOME_DAY_LOG_CAP or the home weight (re-check the volume bound against the new saturation), a durable home record is wanted (then a migration, not kt_evidence read-back), or the /act write's latency shows on the play path (move the write after the response).",
+   "source": "inbox/r8-play-follow.json"
+  },
+  {
+   "id": "dc-r8-play-family-switch-once",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8 Play follow-up B: a later level may switch FAMILY at most once a session, only when the session focus changes (the level just played showed a mal-rule mapped to a different kit misconception) to a mix-up another coverage entry admitting the skill tells apart better: the same chooseEntry score with novelty off, by its MARGIN 0.1, and the new entry's garam level must discriminate the focus (server/play/levels.js switchAfter, called from afterLevelBody; nextBody applies it and records `switched: { from, n }` in the signed body). The level carries a because { choice 'switch to <family>/<mode>', fact = the kit's belief text, source 'play_grade', kind 'play.switch' }. /api/play/next returns the new family's world and `switched`; the client (PlaySession) swaps the world, drops the old engine's story wrapper, and PlayStage remounts instead of re-levelling a different 3D engine (stageEngineRef). Real case today: kila/lcm 'product' (common-product) -> todo-jodo/atoms, for the seeds where kila's next level does not tell it apart. Reverse if: children switching mid-session lose the thread (watch abandon after a switch), or more than one switch a session is wanted (lift the once rule with a cooldown).",
+   "source": "inbox/r8-play-follow.json"
+  },
+  {
+   "id": "dc-r8-play-director-fade-wins",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8 Play follow-up C: a DELIBERATE Director fade beats the history fade. The request marks it `fadeFrom: \"director\"` (server/play/choose.js fadeFor); the because then says so { choice 'fade N', fact 'the lesson asked for fade N', source 'director', kind 'play.fade_director' } whenever her history would have said otherwise. /api/play/start honours fadeFrom only inside a lesson (from the home it would be a device claim); server/forge3/live.js buildLive marks m.fade as the Director's. No caller passes m.fade yet (Studio's seam calls buildLive without one): until then every lesson fade is the history's. Reverse if: the Director's fades prove worse than the history's for the same child (compare first-try rates by fade source).",
+   "source": "inbox/r8-play-follow.json"
+  },
+  {
+   "id": "dc-r8-play-step-down",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8 Play follow-up D: a non-clean level (not solved clean on the first decisive move) after a lift steps the lifted band back DOWN one step (lift - 1, never below 0, the unlifted band = her own pL), symmetric with the step up, with a because { choice 'next level a step easier', kind 'play.step_down', source 'play_grade' }. A mal-rule miss after a lift does both: that belief next AND one step easier ('next level tests that mix-up, a step easier'). An ungraded level steps nothing. Reverse if: the up/down oscillation shows (alternating win/miss bouncing the band each level: add hysteresis, e.g. two non-clean levels to step down).",
+   "source": "inbox/r8-play-follow.json"
+  },
+  {
+   "id": "dc-r8-play-why-line",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8 Play H: the child's 'why this game' line. Display text only, never a grade, no model: server/play/why.js whyLine(because, ctx) picks a shape by seed for the level's because when it is a mix-up focus (play.pick_mixup / play.mixup_focus), a step up, a step down or a family switch (never a fade, novelty, fit or studio_gate choice). {look} is a neutral noun phrase (data/play/engine-words.json look.<family>.<malRule>, else look.<family>), from the topic, never the belief. 'Last time' forms only when the because is from an earlier session (kind pick_mixup with when 'earlier': an open kt_misconception); this lesson or the level just played use forms with no time word. Spoken once per session per reason (session body whySaid; the client also never speaks while the lesson's teacher speaks: taxila:teacher-speaking). Grammar: hi/hinglish {look} is followed at once by a postposition; en {look} follows a preposition and look phrases carry their own article or are plural. Reverse if: children read it as a verdict (watch for 'galti' talk back), or the second line in the 360 px rail costs the world too much height (move it to the caption slot).",
+   "source": "inbox/r8-play-follow.json"
+  },
+  {
+   "id": "dc-r8-play-studio-phone-because",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8 Play item I: when Studio (C1) refuses a Studio v2 world at 360 px and offers the play family instead (buildLive reason 'phone'), the play session's because list carries { choice '<family>/<mode> for the phone', fact 'the Studio world is too small to play at 360 px', source 'studio_gate', kind 'play.studio_gate' } beside any picker because; it is not a child why-line kind. Reverse if: Studio's v2 worlds fit 360 px (the record would then never be true).",
+   "source": "inbox/r8-play-follow.json"
+  },
+  {
+   "id": "open-play-difficulty-not-calibrated",
+   "kind": "open",
+   "at": "2026-11-10",
+   "title": "OPEN: play difficulty is not calibrated across families. Each level's proof.pFirstTry is the family generator's own estimate (solver-derived), so 'band garam 0.75' in kila and in todo-jodo are not the same difficulty, and the P1 fit term and the P2 lift/step-down compare uncalibrated numbers when they cross families (most visibly at a family switch). A calibration needs measured first-try outcomes per family x band: for a +-0.1 95% CI on a first-try rate near p = 0.7, n = z^2 p(1-p) / h^2 = 1.96^2 x 0.21 / 0.01 = 81 first-try outcomes per family x band; with children contributing several levels each (cluster m ~ 5, intra-child correlation rho ~ 0.2) the design effect 1 + (m-1) rho = 1.8 makes it ~146 per cell, i.e. ~30 families x 3 bands x 146 = ~13k levels. Re-fit: a 1PL (Rasch) model P(first try) = sigmoid(theta_child - b_level) with b_level = b_family,mode + beta_fade x fade + beta . level features (the generator's own difficulty knobs), child ability as a random effect (seeded from the ledger pL); then replace proof.pFirstTry by the fitted probability at the median child of the band and re-check the picker's BAND targets. Until then no cross-family difficulty claim is made to a parent.",
+   "source": "inbox/r8-play-follow.json"
+  },
+  {
+   "id": "m-r8-board-faces-measured",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "n": 299,
+   "method": "the self-hosted woff2 files (@fontsource 5.3.0: STIX Two Text 400, Atkinson Hyperlegible Next 600, Mukta 600) loaded in headless Chromium, canvas measureText at 1000 px, drawn as the board draws text; samples are the text of 299 boards (the four pilot scripts plus the BOARD_REFS examples): 815 number strings and 253 word strings. docs/design/round8/font-measure-2026-11-10.json",
+   "title": "Measured advances as a fraction of the font size (the old constant in brackets): digit in the numeral face 0.495 (0.60, Geist Mono; all ten digits the same width); letters in the word face 0.565, frequency-weighted (0.58); a digit inside a word 0.632; space 0.235 numeral / 0.303 word; + − × ÷ = 0.712; ? . / 0.37; Devanagari 0.384 per character (0.58). For numbers the prediction is exact at the median. For words the median is 9% under and the 95th percentile 20% under: short labels like 'cm' are dominated by the wide 'm', and a per-letter table would fix that.",
+   "source": "inbox/r7-studio-41.json"
+  },
+  {
+   "id": "m-r8-board-faces-fit",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "n": 1816,
+   "method": "every board and answerBoard in the 34 lesson and staged scripts plus 29 BOARD_REFS examples, judged by boardAt at the p360, p412 and l1366 contract boxes, young and older, before and after the face change",
+   "title": "0 boards changed their fit verdict at any size, in either direction; all 1,816 build and pass. The smallest word went up on 202 to 383 boards per size (the narrower faces fit tighter). One board went down: staged c6-maths-ch02-t02 skills[1].explain[2] shape@1, 18.8 to 16.9 px at p412, still above the 14 px floor. unrolled@1 and cycle@1 needed spacing fixes to keep their layouts.",
+   "source": "inbox/r7-studio-41.json"
+  },
+  {
+   "id": "dc-r8-board-faces",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Board text faces by role (Design r8, the same in both directions; main's go): numerals, fractions and numwork cells in STIX Two Text; words in Atkinson Hyperlegible Next 600; Devanagari in Mukta 600. All are OFL and self-hosted woff2 bundled by Vite (no font CDN). They are named 'Board …' so the board draws exactly the measured files. The handwriting face is gone, because a hand face reads as a toy. One mapping: shared/whiteboard.js TEXT_FACES and textFace().",
+   "reverse": "the owner's chosen direction asks for different faces, or a director run shows a class 4-5 child misreading the serif numerals",
+   "source": "inbox/r7-studio-41.json"
+  },
+  {
+   "id": "dc-r8-two-judge-approval",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "main's ruling: a stored approval needs TWO separate Claude judges to pass the content items (every fault kind except unreadable); readability stays with one judge. A split verdict is a fail, recorded with both reasons (approve-store --verdicts2, refused.json). Generation: every attempt ends in exactly one of a candidate file or a refused file with its reason (attemptOutcome), and a contentSafe refusal names the string and its code. First results: c6 stored; c4 (judge 1: the guide marks give the cuts away; judge 2: a reservation about the same marks), c5-t01 and c5-t02 (both judges: titles name where an item goes) refused.",
+   "reverse": "a run of 20 pieces where the two judges never split would let one judge suffice",
+   "source": "inbox/r7-studio-41.json"
+  },
+  {
+   "id": "ms-r8-approve-retry4-2026-11-10",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "Approval lane, retry 4 of three refused board specs (main ran scripts/approve-generate.mjs --keep-refused from int/r6 3132d629a; n = 3 topics, 5 model calls, $0.0056; $0.0225 of the $0.25 cap spent across all retries): c4-maths-ch05-t01 candidate on attempt 2, c5-maths-ch02-t02 candidate on attempt 1, c5-maths-ch02-t01 refused on both attempts. All 3 refusals carry the same content finding: content_safety_2 on waves.1.title, text 'Teen hisse' (twice) and 'Teen barabar hisse' (once). Outputs on claude/r4-content-candidates 07cf76d25, data/studio-approved/candidates-retry4/. No judge has seen the candidates yet.",
+   "source": "inbox/r8-main-3.json"
+  },
+  {
+   "id": "fd-content-check-reads-hindi-teen-as-english",
+   "kind": "finding",
+   "at": "2026-11-10",
+   "title": "The content-safety check on generated board specs flags the romanised Hindi number word 'teen' (three) as the English word: 3 of 3 refusals in retry 4 were this and nothing else. It is a false positive that blocks any title with 'teen' in it (thirds are a class 4-5 topic). Seen only on spec titles; whether it also fires on lesson text or kits was not measured.",
+   "source": "inbox/r8-main-3.json"
+  },
+  {
+   "id": "dc-r8-numbers-as-digits-in-generated-titles",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Generated board specs write numbers as digits in titles and labels ('3 hisse'), never as a romanised number word; the generation `how` says so and approve-check names the cause when a title fails on a number word. The content-safety check itself is not changed now (owner: existing safety code is frozen until the pre-launch safety pass). Reverse if: the pre-launch safety pass makes the check language-aware, or digits in titles read worse to children than the word in a judged sample.",
+   "source": "inbox/r8-main-3.json"
+  },
+  {
+   "id": "op-safety-pass-hindi-number-words",
+   "kind": "open",
+   "at": "2026-11-10",
+   "title": "For the pre-launch safety pass: make the content check language-aware so romanised Hindi number words ('teen', and check 'das', 'char', 'saat', 'nau', 'sau') are not read as English, and measure how often it fires on kits, scripts and teacher lines. Not to be done before that pass (safety code frozen).",
+   "source": "inbox/r8-main-3.json"
+  },
+  {
+   "id": "fd-content-check-scores-teen-titles-2",
+   "kind": "finding",
+   "at": "2026-11-10",
+   "title": "Correction of fd-content-check-reads-hindi-teen-as-english. The refusal code content_safety_2 is the severity returned by Azure AI Content Safety on the title text (server/studio/plan.js), not a word list. Observed, n = 4 titles: 'Teen hisse' scored 2 twice and 'Teen barabar hisse' scored 2 once, but 'Teen barabar tukde' passed. So the romanised number word 'teen' being read as English is the likely cause and is not proven; the classifier's score depends on the whole title. Writing digits in titles removes the word and is kept as the workaround.",
+   "source": "inbox/r8-main-4.json"
+  },
+  {
+   "id": "ms-r8-j2-replay-2026-11-10",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "J2 replay (her one reply sentence when she returns to a parked aside), run by main on int/r6 e43790b66: 3 off-topic exchanges (c4, c5-t02, c6), each one's own prompt sent to the live reply model 20 times; n = 60 drafts, $0.053. 12 of 60 pass the replyToReturnOk predicate (4, 6 and 2 of 20). Of 48 refusals: echo 41 (the draft repeats the child's sentence), promise 4, rule 2, lesson 1. 4 drafts used a man's verb form and 1 promised to remember; both were refused only because they also echoed. Simulated child, one seed, two distinct child sentences. Results in evals/hybrid-side-by-side/results/2026-11-10-j2-replay/.",
+   "source": "inbox/r8-main-4.json"
+  },
+  {
+   "id": "dc-r8-j2-prompt-carries-words-not-the-sentence",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "The J2 reply prompt carries one or two content words picked by code from what the child said, never the child's sentence, so the model cannot echo it; the predicate is unchanged (RULE_SAID and LESSON_SAID are not loosened) and gains two clauses of its own: a man's first-person verb form, and a promise to remember. Target on the same replay: at least 16 of 20 per exchange. Reverse if: the rerun is under 16 of 20, in which case the neutral line stays and the reply sentence moves to the offline judged library (selection before generation) instead of a third prompt change.",
+   "source": "inbox/r8-main-4.json"
+  },
+  {
+   "id": "fd-m4-break-stray-fetch-across-files",
+   "kind": "finding",
+   "at": "2026-11-10",
+   "title": "The m4-break test 'eastus2 is down all day' failed twice in the one-process leak check (seed 20261110) and was first put down to load. Root cause, reproduced every time with the 22 files that precede it in that process: tests/forge-g1.test.mjs set AZURE_OPENAI_ENDPOINT to example.invalid and never restored it, a fill's fire-and-forget model call (server/azure.js flavourPick) outlived its file, and the M3 fake (tests/fixtures/m3-fake-azure.mjs) counted any */chat/completions request as a keeper call: 5 stray calls, 'nothing spent' assertion 5 !== 0. Real elapsed time was not involved; infra/m3 is unchanged. Fixed in tests only: the fake counts only *.openai.azure.com hosts, and forge-g1 restores the env it sets. Verified: the same 23-file process passes 289 of 289.",
+   "source": "inbox/r8-main-4.json"
+  },
+  {
+   "id": "rj-load-as-the-cause-of-a-test-failure",
+   "kind": "rejection",
+   "at": "2026-11-10",
+   "title": "Rejected: writing a failure that 'passes alone' off as machine load. Tried twice on 2026-11-10 for m4-break; the cause was state crossing test files (fd-m4-break-stray-fetch-across-files), deterministic for the day's seed. A failure that passes alone gets its preceding files replayed in one process before it is called load. Still open and unexplained: r12-voice-trace test 14 ('speaking' vs 'thinking') under 4-way parallel runs, and r4-khand-law's wall-clock 'generator p95 <= 50 ms' (63.7 ms once, while another job loaded the machine).",
+   "source": "inbox/r8-main-4.json"
+  },
+  {
+   "id": "dc-r8-play-because-in-entry-level",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Round 8 C2 phone seam: a level that what is known about her moved INSIDE the first game carries a because. The play level picker reads her posteriors and pL, so an open mix-up or her P(skill) can change the first entry's garam level with no entry or focus change, and chooseEntry (which compared against a 'today's' level that already carried her inputs) wrote no because: on the pilot topics at p360, Kabir/Player got a different todo-jodo/strips or nazariya/floor level from a new child's, and Meera a different arena challenge, with only the studio_gate record. Now startSession passes plainOf (the first entry's level for a child with nothing known, same fade) and chooseEntry treats a move off it as a departure: play.pick_mixup when the level tells her active belief apart, else play.pick_fit 'at her level' naming her P(skill) vs the class default's first-try. Predicate over the dry matrix (tests/r8-play-phone-seam.test.mjs, 4 topics x every scripted skill x new/meera/kabir/player): a game or level that differs from a new child's always carries a kt_misconception or kt_skill_state because; it failed before the change. Reverse if: the why-line for pick_mixup on an in-entry move proves noisy for children (then keep the record for the parent/teacher only), or the level picker stops reading mis/pL (then plainOf is the same level and the extra branch is dead).",
+   "source": "inbox/r8-play-seam.json"
+  },
+  {
+   "id": "ms-release-59ae352",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Released 59ae352 with scripts/release.mjs: web taxila-web--s59ae352-2c67 (was taxila-web--sd71c2ca-yt3l), worker + canary/nightly jobs on taxila-worker:59ae352 (was d71c2ca); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 59ae352 --rollback.",
+   "source": "inbox/release-59ae352.json"
+  },
+  {
+   "id": "ms-r8-j2-replay-3-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "J2 replays 2 and 3 (her reply sentence on returning to an aside), run by main. Replay 2 on Brain 16b0f0fcc (the note carries the child's words, not their sentence): 50 of 60 pass the predicate, but 13 of c5's passes repeat the child's real sentence (it still reached the model through the turn's history, and the replay read echo against the chosen words), so 37 of 60 clean; c6 12 of 20 with 5 refused on the word 'har' and 3 on a bare 'hota hai'. Replay 3 on Brain 4c87cafeb (the child's line cut from the reply call; lesson and rule clauses narrowed for this sentence only): 4 exchanges x 20 = 80 drafts, 76 clean (18, 20, 20, 18), no echo, $0.071. Simulated child, one seed, three child sentences. The replay shows safe and on-topic, not well-written: no judge has read the sentences.",
+   "source": "inbox/r8-main-5.json"
+  },
+  {
+   "id": "dc-r8-stop-judging-old-catalogue",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "Judging of the old games catalogue stops after batch 1 (1 of 10 stored by two Opus judges under rubric v2: 6 give the answer away, 4 state a wrong fact; 3 more of the 66 fail the tick predicate; the earlier sample was 4 of 20). The scripted topics' games are regenerated through the approval lane instead (digits rule, tick predicate, per-topic how), one per scripted topic, generated by main under a $0.25 cap and judged by two judges with predicates run first. Reverse if: regenerated pieces pass at no better a rate than the old ones over the first 10.",
+   "source": "inbox/r8-main-5.json"
+  },
+  {
+   "id": "ms-r8-regen-round1-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Approval lane, regeneration round 1 (one game per staged scripted topic, each aimed at its script's first remediation), run by main on Studio 9e108c2bc: 30 topics, 43 model calls, $0.0560 (lane total $0.0835). 19 topics produced a candidate; 11 were refused on both attempts. 24 refused attempts by reason: contentSafe 12 (9 brain_violence on a turret game's coach string containing 'fire', all on the four class 6 angle topics; 3 content_safety_2 on romanised Hindi geometry terms 'SEEDHA KON', 'Bindu se samkon par', 'Bindu se rekha par'), unverified_key 7, fell_back 3, onTopic 2. No judge has seen the candidates. Outputs on claude/r4-content-candidates 300b166d8, data/studio-approved/candidates-regen-r1/.",
+   "source": "inbox/r8-main-6.json"
+  },
+  {
+   "id": "fd-content-check-scores-romanised-hindi-terms",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "The Azure content check scores some short romanised Hindi strings at severity 2 with nothing unsafe in them: 'Teen hisse' (three parts), 'SEEDHA KON' (straight angle), 'Bindu se samkon par' (at a right angle from the point). 6 such refusals in 2 runs (n = 48 attempts). The words involved differ, so it is not one word; it is short romanised Hindi read without context. Not measured on teacher lines or kits. The check stays as it is (frozen); specs avoid the scoring term by using digits or the Hinglish term the teacher's lines use.",
+   "source": "inbox/r8-main-6.json"
+  },
+  {
+   "id": "ms-r8-compile-holes-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Compile step 1 hole report (Brain cabfb6c59, server/director/compile.js, docs/design/round7/brain/COMPILE-HOLES.md, generated by scripts/lesson-scripts/compile-report.mjs): the type table has 324 cells (9 part kinds x 12 columns x 3 help states), 279 apply. Over 34 scripts (4 live, 30 staged): 1,112 missing fields, 2,967 rule holes, 0 doubles. Missing fields: second other wording alts[0] 799 (worked_step 338, point 287, remediation 174); worked problem's own simpler 102; explain-card mix-ups with no remediation 93; bridge simpler 68; worked example's own card with no remediation 35 and no why 15. The four live pilots hold 41 of the 313 non-alts fields. Counted by code; nothing reads the compiled map yet.",
+   "source": "inbox/r8-main-7.json"
+  },
+  {
+   "id": "dc-r8-second-clarify-shows-not-rewords",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "A second clarify on a point, worked step or remediation does not require a second authored wording. Its cell is: hold or show that part's board (its picture view where one exists), say the same authored line once more, then the check-in; help stays 'heard'. alts[0] becomes optional content, used when a script has it. This removes 799 of the 1,112 missing fields without writing 799 new sentences that no judge has read. The other 313 (worked problem's simpler, remediations for 128 mix-ups, bridge simplers, 15 whys) are real content and Learning authors them, the four live pilots first (41), each under its own gates. Until a field is authored its cells compile to a named fallback and the report lists it: no hole is silent. Reverse if: director20's or the seeded run's judges mark more than 1 in 5 second-clarify rows as repeating without helping; then Learning authors alts[0] for the part kinds flagged.",
+   "source": "inbox/r8-main-7.json"
   }
  ],
  "edges": [
@@ -44362,6 +44624,141 @@
    "src": "dc-r7-phone-play-family-first",
    "rel": "measured_by",
    "dst": "m-r7-studio-v2-recert"
+  },
+  {
+   "src": "dc-r7-studio-v2-refused-at-360",
+   "rel": "constrains",
+   "dst": "dc-r7-catalogue-judged"
+  },
+  {
+   "src": "dc-r7-phone-play-family",
+   "rel": "supersedes",
+   "dst": "dc-r7-phone-play-family-first"
+  },
+  {
+   "src": "dc-r7-regenerate-not-rescue",
+   "rel": "constrains",
+   "dst": "dc-r7-catalogue-judged"
+  },
+  {
+   "src": "dc-r8-kit-practice-explained",
+   "rel": "supersedes",
+   "dst": "op-r8-kit-practice-unexplained"
+  },
+  {
+   "src": "dc-r8-kit-practice-explained",
+   "rel": "part_of",
+   "dst": "dc-r8-one-reader-with-because"
+  },
+  {
+   "src": "dc-r8-kit-practice-explained",
+   "rel": "measured_by",
+   "dst": "ms-r8-kit-practice-2026-11-10"
+  },
+  {
+   "src": "dc-r8-home-play-fold-live",
+   "rel": "supersedes",
+   "dst": "dc-r8-home-play-signed-not-folded"
+  },
+  {
+   "src": "dc-r8-play-family-switch-once",
+   "rel": "constrains",
+   "dst": "dc-r8-play-why-line"
+  },
+  {
+   "src": "dc-r8-play-step-down",
+   "rel": "constrains",
+   "dst": "dc-r8-play-why-line"
+  },
+  {
+   "src": "open-play-difficulty-not-calibrated",
+   "rel": "constrains",
+   "dst": "dc-r8-play-step-down"
+  },
+  {
+   "src": "dc-r8-board-faces",
+   "rel": "measured_by",
+   "dst": "m-r8-board-faces-measured"
+  },
+  {
+   "src": "dc-r8-board-faces",
+   "rel": "measured_by",
+   "dst": "m-r8-board-faces-fit"
+  },
+  {
+   "src": "fd-content-check-reads-hindi-teen-as-english",
+   "rel": "measured_by",
+   "dst": "ms-r8-approve-retry4-2026-11-10"
+  },
+  {
+   "src": "dc-r8-numbers-as-digits-in-generated-titles",
+   "rel": "caused_by",
+   "dst": "fd-content-check-reads-hindi-teen-as-english"
+  },
+  {
+   "src": "dc-r8-numbers-as-digits-in-generated-titles",
+   "rel": "measured_by",
+   "dst": "ms-r8-approve-retry4-2026-11-10"
+  },
+  {
+   "src": "op-safety-pass-hindi-number-words",
+   "rel": "caused_by",
+   "dst": "fd-content-check-reads-hindi-teen-as-english"
+  },
+  {
+   "src": "fd-content-check-scores-teen-titles-2",
+   "rel": "supersedes",
+   "dst": "fd-content-check-reads-hindi-teen-as-english"
+  },
+  {
+   "src": "fd-content-check-scores-teen-titles-2",
+   "rel": "measured_by",
+   "dst": "ms-r8-approve-retry4-2026-11-10"
+  },
+  {
+   "src": "dc-r8-j2-prompt-carries-words-not-the-sentence",
+   "rel": "measured_by",
+   "dst": "ms-r8-j2-replay-2026-11-10"
+  },
+  {
+   "src": "rj-load-as-the-cause-of-a-test-failure",
+   "rel": "caused_by",
+   "dst": "fd-m4-break-stray-fetch-across-files"
+  },
+  {
+   "src": "dc-r8-j2-prompt-carries-words-not-the-sentence",
+   "rel": "measured_by",
+   "dst": "ms-r8-j2-replay-3-2026-11-11"
+  },
+  {
+   "src": "fd-content-check-scores-romanised-hindi-terms",
+   "rel": "measured_by",
+   "dst": "ms-r8-regen-round1-2026-11-11"
+  },
+  {
+   "src": "fd-content-check-scores-romanised-hindi-terms",
+   "rel": "supersedes",
+   "dst": "fd-content-check-scores-teen-titles-2"
+  },
+  {
+   "src": "op-safety-pass-hindi-number-words",
+   "rel": "caused_by",
+   "dst": "fd-content-check-scores-romanised-hindi-terms"
+  },
+  {
+   "src": "dc-r8-stop-judging-old-catalogue",
+   "rel": "measured_by",
+   "dst": "ms-r8-regen-round1-2026-11-11"
+  },
+  {
+   "src": "dc-r8-second-clarify-shows-not-rewords",
+   "rel": "measured_by",
+   "dst": "ms-r8-compile-holes-2026-11-11"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-11",
+   "rel": "constrains",
+   "dst": "dc-r8-second-clarify-shows-not-rewords"
   }
  ]
 }
