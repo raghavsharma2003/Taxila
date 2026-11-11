@@ -21,7 +21,8 @@ export const MIN_CHALLENGES = 6;
 
 // ── the key
 const NUM_RE = /^\s*(₹\s*)?([-−]?)\s*(\d[\d,]*(?:\.\d+)?)(?:\s*\/\s*(\d+))?\s*(%|°|[a-zA-Zµ²³]{1,9}(?:\s*[a-zA-Z²³]{1,3})?)?\s*$/;
-const MIXED_RE = /^\s*(\d+)\s+(\d+)\s*\/\s*(\d+)\s*$/;
+// a mixed number, with the unit a word problem gives it ("1 1/2 m", "2 3/4 litre"): the unit rides on every decoy too
+const MIXED_RE = /^\s*(\d+)\s+(\d+)\s*\/\s*(\d+)\s*(%|°|[a-zA-Zµ²³]{1,9}(?:\s*[a-zA-Z²³]{1,3})?)?\s*$/;
 const TF_YES = /^\s*(true|yes|haan|han|sahi|correct|right|हाँ|हां|सही)\s*$/i;
 const TF_NO = /^\s*(false|no|nahi|nahin|galat|wrong|नहीं|गलत)\s*$/i;
 const OPEN = /\b(any|for example|e\.g\.|name (a|one|two|three|some)|tell me|give (an|one|two)|between \d|think of|make up|your own|write a|draw|show me|which ones)\b/i;
@@ -45,7 +46,7 @@ const norm = (s) => String(s).replace(/^[‘'“"]+|[’'”"]+$/g, "").toLowerC
 export function parseNum(s) {
   const t = String(s).trim();
   const mx = t.match(MIXED_RE);
-  if (mx) { const [w, n, d] = [Number(mx[1]), Number(mx[2]), Number(mx[3])]; return d ? { kind: "mixed", w, n, d, value: w + n / d, prefix: "", unit: "" } : null; }
+  if (mx) { const [w, n, d] = [Number(mx[1]), Number(mx[2]), Number(mx[3])]; return d ? { kind: "mixed", w, n, d, value: w + n / d, prefix: "", unit: mx[4] ?? "" } : null; }
   const m = t.match(NUM_RE);
   if (!m) return null;
   const [, rupee, sign, body, den, unit] = m;
@@ -62,6 +63,8 @@ function fmtNum(v, like) {
   if (like.commas) { const [i, f] = s.split("."); s = Number(i).toLocaleString(like.indian ? "en-IN" : "en-US") + (f ? "." + f : ""); }
   return `${like.prefix}${neg ? (like.minus === "−" ? "−" : "-") : ""}${s}${like.unit ? (/^[%°]$/.test(like.unit) ? like.unit : " " + like.unit) : ""}`;
 }
+// the key and its decoys in ONE shape (unit included): an option without the unit the others carry is the odd one out
+const fmtMixed = (w, n, d, like) => `${w} ${n}/${d}${like.unit ? " " + like.unit : ""}`;
 const fmtFrac = (n, d, like) => `${like.prefix}${n < 0 ? "−" : ""}${Math.abs(n)}/${d}${like.unit ? " " + like.unit : ""}`;
 function rng(seedStr) { let h = 2166136261; for (const c of seedStr) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return () => ((h = Math.imul(h ^ (h >>> 15), 2246822507) ^ Math.imul(h ^ (h >>> 13), 3266489909)) >>> 0) / 2 ** 32; }
 
@@ -76,7 +79,11 @@ export function numericDecoys(key, okValues, seed) {
     for (const [a, b] of c) if (b > 0 && a !== 0) push(fmtFrac(a, b, key), a / b);
   } else if (key.kind === "mixed") {
     const { w, n, d } = key;
-    for (const [a, b, c] of [[w + 1, n, d], [w, d - n > 0 ? d - n : n + 1, d], [w > 0 ? w - 1 : w + 2, n, d], [n, w || 1, d]]) push(`${a} ${b}/${c}`, a + b / c);
+    // proper mixed numbers only (0 < part < whole): an improper "1 7/2" beside "7 1/2" gives itself away
+    const cand = [[w + 1, n, d], [w, d - n, d], [w - 1, n, d], [w, n + 1, d], [w, n - 1, d], [w + 2, n, d], [w - 1, d - n, d], [w + 1, d - n, d], [w + 3, n, d], [w, n, d + 1], [w + 1, n, d + 1]];
+    // ... and in lowest terms when the key's part is ("1 2/4" beside "1 1/4" is the odd one out)
+    const g = (x, y) => (y ? g(y, x % y) : x), lowest = g(n, d) === 1;
+    for (const [a, b, c] of cand) if (a >= 1 && b >= 1 && b < c && (!lowest || g(b, c) === 1)) push(fmtMixed(a, b, c, key), a + b / c);
   } else {
     const v = key.value, step = key.decimals ? 10 ** -key.decimals : 1, a = Math.abs(v);
     const digits = String(Math.round(a / step));
@@ -154,7 +161,7 @@ export function challengeOf(it, t) {
     if (vals.length > 1) return { why: "acceptable values disagree" };
     if ((head(it.answer).match(/\d+(?:[.,/]\d+)*/g) ?? []).length > 1 && !parseNum(head(it.answer))) return { why: "two numbers in the key" };
     const key = parseNum(head(it.answer)) ?? nums[0];
-    const keyText = key.kind === "frac" ? fmtFrac(key.n, key.d, key) : key.kind === "mixed" ? `${key.w} ${key.n}/${key.d}` : fmtNum(key.value, key);
+    const keyText = key.kind === "frac" ? fmtFrac(key.n, key.d, key) : key.kind === "mixed" ? fmtMixed(key.w, key.n, key.d, key) : fmtNum(key.value, key);
     const decoys = numericDecoys(key, vals, it.id);
     if (decoys.length < 3) return { why: "too few decoys" };
     return { ok: { ...base, form: "numeric", options: shuffle([keyText, ...decoys], it.id).map((text, i) => ({ id: `o${i + 1}`, text })), keyText } };
