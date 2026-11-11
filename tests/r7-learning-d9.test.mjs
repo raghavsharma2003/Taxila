@@ -12,7 +12,10 @@ const PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "
 test("D9.1: a quoted symbol in a spoken field is refused; the pilots say 'question mark' in words", () => {
   const s = script("c5-maths-ch02-t02");
   assert.deepEqual(spokenSymbolErrors(s), []);
-  assert.match(s.skills[0].checks[2].prompt.hi, /question mark wala nishaan/);
+  // (main's one-term round, 19:02: "question mark" beside "nishaan" was a twin pair; the card now names the unlabelled mark in words,
+  // with no symbol and no "mark")
+  assert.match(s.skills[0].checks[2].prompt.hi, /pehle nishaan par koi number nahi likha/);
+  assert.ok(!/['"]\?['"]|question mark/.test(s.skills[0].checks[2].prompt.hi));
   s.skills[0].checks[2].prompt.hi = "Woh '?' wala nishaan 1/8 se bada hai ya chhota?";
   assert.equal(spokenSymbolErrors(s).length, 1);
   // a board's own "?" label is not spoken (the reader pass of 2026-11-11 dropped the pilot's "?" bar labels on cards that ask a
