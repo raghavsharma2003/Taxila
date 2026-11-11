@@ -72,26 +72,31 @@ describe("r7-brain-v69.test.mjs", () => {
     test("the table: every row names a known shape, its beat kind and the director17 rows it replays; lookups are by request × beat", () => {
       // (v6.10: director18's wrong and missing rows add their shapes; A5's ack_then_card is gone with the acknowledgement, A6)
       const SHAPES = new Set(["live_fresh_else_key", "key", "card_first", "serve_request", "park_later", "return_once", "next_step", "move_on",
-        "no_promise", "aside_first", "never_spends", "resume_unit", "ask_again", "pose_card", "form_removed"]);
+        "no_promise", "aside_first", "never_spends", "resume_unit", "ask_again", "pose_card", "form_removed", "simpler_then_card"]);
       for (const r of REQUEST_TABLE) { assert.ok(SHAPES.has(r.shape), r.id); assert.ok(r.request.length, r.id); }
       assert.equal(responseShape("language", "remediation"), "live_fresh_else_key");
       assert.equal(responseShape("miss", "spent_card"), "key");
-      assert.equal(responseShape("dont_know", "checkin_after_point"), "card_first");
+      // (dc-r8-director20 L1 reverses T1.7: the point's simpler, then the card)
+      assert.equal(responseShape("dont_know", "checkin_after_point"), "simpler_then_card");
       assert.equal(responseShape("visual", "aside_reply"), "serve_request");
       assert.equal(responseShape("nothing", "point"), null);
     });
     for (const row of REQUEST_TABLE.filter((r) => ["T1.1", "T1.2", "T1.3", "T1.4"].includes(r.id))) for (const spec of row.rows) test(`${row.id} ${row.request.join("/")} on ${row.beat} (${spec}): the live part in fresh authored words, never a sentence of her last four turns; else the key`, async () => {
       const { t, turns } = await at(spec);
       assert.ok(["language", "clarify"].includes(t.pl.state.lastMove.request), `a ${t.pl.state.lastMove.request} turn`);
-      assert.deepEqual(repeats(t, turns), [], t.out.reply);
+      // (2026-11-11, dc-r8-director20 L4: a Hindi request on an open card says the card's simpler even if said before, with no promise)
+      if (!l4(t)) assert.deepEqual(repeats(t, turns), [], t.out.reply);
+      else assert.doesNotMatch(t.out.reply, /hindi mein (?:bol|samjha|keh)/i, t.out.reply);
       // (v6.10 T2.1: c4 steering 6's "samajh nahi aaya" now re-says the point, so row 8 is no longer on a remediation in the live walk)
       if (row.beat === "remediation" && !t.pl.state.lastMove.gave && t.pl.before.lastMove?.scriptBeat?.kind === "remediation") assert.ok(t.pl.state.lastMove.simpler, "the remediation's own words re-said, never skipped");
     });
+    /** L4's turn: a language request over the card on the table, its simpler said. */
+    const l4 = (t) => t.pl.state.lastMove?.request === "language" && !!t.pl.state.lastMove?.smaller && t.pl.before.lastUi?.ask?.itemId === t.pl.state.activeItemId;
     test("T1.5 language/clarify on a spent card (sweep, the four stuck and steering lessons): every such turn says a fresh part or gives the key", async () => {
       const bad = [];
       for (const p of ["stuck", "steering"]) for (const topic of Object.keys(TOPIC)) {
         const turns = await walk(p, topic, 200);
-        for (const t of turns) if (["language", "clarify"].includes(t.pl.state.lastMove?.request) && repeats(t, turns).length) bad.push(`${p} ${topic} ${t.n}: ${repeats(t, turns)[0]}`);
+        for (const t of turns) if (["language", "clarify"].includes(t.pl.state.lastMove?.request) && !l4(t) && repeats(t, turns).length) bad.push(`${p} ${topic} ${t.n}: ${repeats(t, turns)[0]}`);
       }
       assert.deepEqual(bad, []);
     });
@@ -103,10 +108,11 @@ describe("r7-brain-v69.test.mjs", () => {
       }
       assert.deepEqual(bad, []);
     });
-    for (const spec of REQUEST_TABLE.find((r) => r.id === "T1.7").rows) test(`T1.7 "pata nahi" at the check-in after a point (${spec}): the card first, no simpler, no verdict`, async () => {
+    // (2026-11-11, dc-r8-director20 L1 reverses T1.7: a give-up at the check-in after a point gets the point's simpler, then the card)
+    for (const spec of REQUEST_TABLE.find((r) => r.id === "T1.7").rows) test(`T1.7 (L1) "pata nahi" at the check-in after a point (${spec}): the point's simpler, then the card, no verdict`, async () => {
       const { t } = await at(spec);
       const m = t.pl.state.lastMove;
-      assert.ok(!m.simpler, `no simpler: ${t.out.reply}`);
+      assert.ok(m.simpler && norm(t.out.reply).includes(norm(m.simpler).slice(0, 30)), `the simpler: ${t.out.reply}`);
       assert.ok(t.pl.p.r.ui?.ask?.text && norm(t.out.reply).includes(norm(t.pl.p.r.ui.ask.text).slice(-40)), `the card is said: ${t.out.reply}`);
       assert.doesNotMatch(t.out.reply, /sahi nahi|galat|jawab nahi/i);
     });
@@ -126,11 +132,18 @@ describe("r7-brain-v69.test.mjs", () => {
     });
     for (const spec of REQUEST_TABLE.find((r) => r.id === "T1.9").rows) test(`T1.9 an aside with no card open (${spec}): no "is sawaal ke baad"`, async () => {
       const { t } = await at(spec);
+      // (2026-11-11, S1/P1: a script card answered right has no why-probe now, so on these rows a card is open — the pin's premise, no
+      // card open, holds only where it still does)
+      if (t.pl.before.activeItemId) return;
       assert.doesNotMatch(t.out.reply, /sawaal ke baad|sawaal khatam karke|after this question/i, t.out.reply);
     });
     for (const spec of REQUEST_TABLE.find((r) => r.id === "T1.10").rows) test(`T1.10 an aside said again is returned to now, once (${spec})`, async () => {
       const { t } = await at(spec);
-      assert.ok(t.pl.state.lastMove.returned, t.out.reply);
+      // (2026-11-11, P1 on director20 c4 offtopic 37: an aside said again AFTER its return gets one plain line — a second return was a
+      // return with no park; one said again before its return is returned now, once)
+      const was = (t.pl.before.later ?? []).find((e) => /cricket/i.test(String(e.topic)));
+      if (was?.servedAt != null) assert.ok(!t.pl.state.lastMove.returned, t.out.reply);
+      else assert.ok(t.pl.state.lastMove.returned, t.out.reply);
       assert.doesNotMatch(t.out.reply, /likh li hai/);
     });
     test("T1.11 \"haan\" to her check-in during a worked step (stuck c4 54): the next step, never a stop menu", async () => {

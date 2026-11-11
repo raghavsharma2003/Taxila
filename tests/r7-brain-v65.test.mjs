@@ -249,10 +249,15 @@ describe("r7-brain-v65.test.mjs", () => {
       // (the card itself ends her turn — an authored card can end on "batao.")
       // (v6.11 G2, main on director19: a turn with an aside's return ends on the return, and the card waits — never both)
       if (out.guard?.returnLine) { assert.ok(out.guard.cardHeld, out.reply); continue; }
-      assert.ok(String(out.reply).replace(/\s+/g, " ").trim().endsWith(String(last.p.r.ui.ask.text).replace(/\s+/g, " ").trim()), out.reply);
+      // (2026-11-11, dc-r8-director20 S1: after a simpler on a card said in her last two turns, only its question — its last sentence)
+      const cardT = String(last.p.r.ui.ask.text).replace(/\s+/g, " ").trim();
+      const end = out.guard?.cardQuestionOnly ? cardT.split(/(?<=[.!?।])\s+/).at(-1) : cardT;
+      assert.ok(String(out.reply).replace(/\s+/g, " ").trim().endsWith(end), out.reply);
     }
   });
-  test("K2 predicate: 'woh wala ho gaya, aage chalo' to a why-probe moves on, never a stop menu (c5-t02 steady 54)", async () => {
+  // (retired 2026-11-11, S1 on director20: a script card answered right has no why-probe — all 42 of director20's ended on the close with
+  // nothing for the child — so this row's probe no longer exists)
+  test.skip("K2 predicate: 'woh wala ho gaya, aage chalo' to a why-probe moves on, never a stop menu (c5-t02 steady 54)", async () => {
     const { out, last } = await atLive("steady", "c5-t02", 54);
     assert.equal(last.state.lastMove?.request, "move_on");
     assert.notEqual(last.state.lastMove?.kind, "break");

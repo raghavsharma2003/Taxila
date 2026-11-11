@@ -19,8 +19,8 @@ const PALETTE_FILE = "src/theme/palette.ts";
 const SCOPE = ["src/studio-v2", "src/modules/whiteboard", "server/forge/explainer", "shared/whiteboard.js"];
 // (the probe and trace tools draw nothing a child sees: their fake canvas defaults are not palette colours)
 const EXEMPT = new Set(["src/studio-v2/tools/layout-probe.mjs"]);
-// Files still holding literals, with the count each may hold at most. Convert a file, lower or remove its line.
-const NOT_YET = JSON.parse(fs.readFileSync(path.join(ROOT, "tests/fixtures/theme-literals-left.json"), "utf8")).files;
+// (the conversion is done, 2026-11-11: 976 literals in 48 files moved into the palette; no file may hold one now)
+const NOT_YET = {};
 
 /** Colour literals inside string or template literals ("#1F3B30", 'rgba(…)', `hsl(${h} …)`). */
 export function colourLiterals(src) {
@@ -37,20 +37,22 @@ function filesIn(rel) {
   return fs.readdirSync(abs, { withFileTypes: true }).flatMap((d) => (d.isDirectory() ? filesIn(path.join(rel, d.name)) : /\.(m?[jt]sx?|css)$/.test(d.name) ? [path.join(rel, d.name)] : []));
 }
 
-test("no colour literal outside src/theme/palette.ts in the board and engine paths (the not-yet list only shrinks)", () => {
+test("no colour literal outside src/theme/palette.ts in the board and engine paths", () => {
   const found = {};
   for (const f of SCOPE.flatMap(filesIn)) { if (f === PALETTE_FILE || EXEMPT.has(f)) continue; const n = colourLiterals(fs.readFileSync(path.join(ROOT, f), "utf8")).length; if (n) found[f] = n; }
   const over = Object.entries(found).filter(([f, n]) => n > (NOT_YET[f] ?? 0)).map(([f, n]) => `${f}: ${n} (allowed ${NOT_YET[f] ?? 0})`);
   const stale = Object.entries(NOT_YET).filter(([f, n]) => (found[f] ?? 0) < n).map(([f, n]) => `${f}: ${found[f] ?? 0} now, listed ${n}`);
   assert.deepEqual(over, [], "a colour literal outside the palette file: name it in src/theme/palette.ts and read it by role");
-  assert.deepEqual(stale, [], "converted (well done): lower or remove these lines in tests/fixtures/theme-literals-left.json");
+  assert.deepEqual(stale, []);
   assert.ok(colourLiterals(`a "#1F3B30" b 'rgba(1,2,3,.5)' c \`hsl(\${h} 50% 50%)\` d "#${"$"}{n}" e "#abc"`).length === 4, "the counter sees hex, rgb and hsl in every quote");
 });
 
 test("night is today's look: the board palettes equal the tables they replaced", async () => {
   const { paletteFor } = await import("../src/modules/whiteboard/palette.ts");
   const chalk = { ground: "#1F3B30", edge: "#8C6B4A", fillAlpha: 0.32, ink: { chalk: "#F5F2E8", ink: "#F5F2E8", accent: "#F2C66D", mark: "#F4A261", good: "#9ED8A6", soft: "#BFD3C6" }, role: { focus: "#A9B4FF", slot: "#7FE0B0", answer: "#7FE0B0", mixup: "#FFB54A", muted: "#9DB3A6" } };
-  const paper = { ground: "#FFFBF2", edge: "#D9CDB8", fillAlpha: 0.26, ink: { chalk: "#2B2620", ink: "#2B2620", accent: "#1F5FBF", mark: "#C8641A", good: "#2E7D4F", soft: "#8A7F70" }, role: { focus: "#3B47B0", slot: "#1C7348", answer: "#1C7348", mixup: "#A84B22", muted: "#6F675B" } };
+  // (night's paper ground changed ON PURPOSE on 2026-11-11, main's ruling: soft #8A7F70 → #6F675B, answer #1C7348 → #0B736A,
+  // mix-up #A84B22 → #8A5A00; everything else is the table it replaced)
+  const paper = { ground: "#FFFBF2", edge: "#D9CDB8", fillAlpha: 0.26, ink: { chalk: "#2B2620", ink: "#2B2620", accent: "#1F5FBF", mark: "#C8641A", good: "#2E7D4F", soft: "#6F675B" }, role: { focus: "#3B47B0", slot: "#0B736A", answer: "#0B736A", mixup: "#8A5A00", muted: "#6F675B" } };
   assert.deepEqual(paletteFor("chalk"), chalk);
   assert.deepEqual(paletteFor("paper"), paper);
   assert.deepEqual(paletteFor("grid"), { ...paper, grid: "#E6DCCB" });
@@ -87,10 +89,7 @@ function deutan(hex) {
 // Live night values that fail (found by this test, 2026-11-11): night must not change in this work, so they are listed,
 // reported to main, and may not grow. The board's meaning survives them by SHAPE (a mix-up is always dashed, an answer a
 // tick or a box: shared/whiteboard.js ROLE, and the greyscale predicate), not by colour.
-const NIGHT_KNOWN = new Set([
-  "night board paper soft: #8A7F70 on #FFFBF2", "night board grid soft: #8A7F70 on #FFFBF2",
-  "night board paper: answer #1C7348 and mixup #A84B22", "night board grid: answer #1C7348 and mixup #A84B22",
-]);
+const NIGHT_KNOWN = new Set([]);   // (the 4 found on 2026-11-11 were fixed on purpose: soft ink, and answer / mix-up on night's paper ground)
 const known = (msg) => [...NIGHT_KNOWN].some((k) => msg.startsWith(k));
 const apart = (a, b) => { const [p, q] = [deutan(a), deutan(b)]; return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]); };
 
@@ -110,12 +109,15 @@ test("contrast on both themes: text 4.5:1, marks and lines 3:1, and focus / answ
       need(t.name, `board ${gname} ink`, b.ink.ink, b.ground, 4.5);
       need(t.name, `board ${gname} soft`, b.ink.soft, b.ground, 4.5);
       for (const [rk, rv] of Object.entries(b.role)) need(t.name, `board ${gname} role ${rk}`, rv, b.ground, 3);
+      // designed fill tints (patch 008): numbers and words drawn inside a focus area or an answer box stay legible
+      if (b.fills) { need(t.name, `board ${gname} ink on focus fill`, b.ink.ink, b.fills.focus, 4.5); need(t.name, `board ${gname} ink on answer fill`, b.ink.ink, b.fills.answer, 4.5);
+        need(t.name, `board ${gname} answer on its fill`, b.role.answer, b.fills.answer, 4.5); need(t.name, `board ${gname} focus on its fill`, b.role.focus, b.fills.focus, 4.5); }
       for (const [x, y] of [["focus", "answer"], ["focus", "mixup"], ["answer", "mixup"]]) if (apart(b.role[x], b.role[y]) < 0.15) fails.push(`${t.name} board ${gname}: ${x} ${b.role[x]} and ${y} ${b.role[y]} merge for a red-green-blind child`);
     }
     for (const [x, y] of [["focus", "answer"], ["focus", "mixup"], ["answer", "mixup"]]) if (apart(R[x], R[y]) < 0.15) fails.push(`${t.name}: ${x} ${R[x]} and ${y} ${R[y]} merge for a red-green-blind child`);
   }
   assert.deepEqual(fails.filter((f) => !known(f)), []);
-  assert.equal(fails.filter(known).length, NIGHT_KNOWN.size, "a listed night failure no longer fails: take it off NIGHT_KNOWN");
+  assert.equal(fails.filter(known).length, NIGHT_KNOWN.size);
 });
 
 test("a lesson's theme reaches the board and the engines by data-board-theme on an ancestor; none, or an unknown one, is night", async () => {
@@ -129,5 +131,35 @@ test("a lesson's theme reaches the board and the engines by data-board-theme on 
   const { useStudioTheme, C } = await import("../src/studio-v2/core/tokens.ts");
   const { PAPER, NIGHT } = await import("../src/theme/palette.ts");
   useStudioTheme("paper"); assert.equal(C.bg, PAPER.studio.bg);
+  // (nothing copies a colour at load: an engine's accent and the subject accents follow the theme)
+  const { ACC } = await import("../src/studio-v2/engines/ext/kit.ts");
+  const { ENGINES } = await import("../src/studio-v2/engines/index.ts");
+  assert.equal(ACC.ion, PAPER.studio.ion);
+  assert.ok(Object.values(ENGINES).every((d) => !d.accent || Object.values(PAPER.studio).includes(d.accent) || Object.values(C).includes(d.accent)), "an engine accent read under paper is a paper colour");
   useStudioTheme("night"); assert.equal(C.bg, NIGHT.studio.bg);
+});
+
+test("every engine colour has a night value and a paper value, and no key is named twice", async () => {
+  const { ENGINE_1, ENGINE_2, NIGHT } = await import("../src/theme/palette.ts");
+  for (const [n, b] of [["ENGINE_1", ENGINE_1], ["ENGINE_2", ENGINE_2]]) assert.deepEqual(Object.keys(b.paper).sort(), Object.keys(b.night).sort(), `${n}: night and paper name the same keys`);
+  const all = [...Object.keys(NIGHT.studio), ...Object.keys(ENGINE_1.night), ...Object.keys(ENGINE_2.night)];
+  assert.deepEqual(all.filter((k, i) => all.indexOf(k) !== i), [], "a key named in two tables");
+});
+
+test("patch 008: a folded card head keeps its corner clear — a drawing that reaches it moves its frame down by the head; one that does not keeps its frame", async () => {
+  const { boardFrame, keepHeadClear } = await import("../src/studio/boardView.ts");
+  const mk = (ops) => ({ mode: "fresh", board: { w: 400, h: 300 }, ops });
+  // the dev fixture's "half ka half": a "1/2" label in the top-left
+  const hit = mk([{ id: "w", op: "rect", at: [60, 46], w: 280, h: 168 }, { id: "t", op: "text", at: [130, 30], text: "1/2", size: "m" }]);
+  const f0 = boardFrame(hit, { minGain: 1 });
+  const f1 = keepHeadClear(hit, f0, 340, 150, 34);
+  assert.ok(f1.y < f0.y && f1.h > f0.h && f1.framed, "the frame grows upward by the head");
+  const s = 340 / f1.w;
+  assert.ok(Math.abs((f0.y - f1.y) * s - 34) < 6, "by about the head's height in px");
+  // a drawing whose top-left corner is empty keeps its frame
+  const clear = mk([{ id: "w", op: "rect", at: [200, 120], w: 150, h: 120 }, { id: "a", op: "rect", at: [40, 200], w: 60, h: 60 }]);
+  const g0 = boardFrame(clear, { minGain: 1 });
+  assert.deepEqual(keepHeadClear(clear, g0, 340, 150, 34), g0);
+  // any gain frames under the round 8 card; the old 8 % threshold elsewhere
+  assert.equal(boardFrame(hit).framed, boardFrame(hit, { minGain: 1.08 }).framed);
 });

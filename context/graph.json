@@ -28240,6 +28240,136 @@
    "at": "2026-11-11",
    "title": "Released 377f1a3 with scripts/release.mjs: web taxila-web--s377f1a3-221c (was taxila-web--s4b2c60a-6cxo), worker + canary/nightly jobs on taxila-worker:377f1a3 (was 4b2c60a); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 377f1a3 --rollback.",
    "source": "inbox/release-377f1a3.json"
+  },
+  {
+   "id": "dc-r8-kon-place-size-no-toolsize",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/place size names no mix-up (main's ruling (ii), the small honest option): the kit's tool-size belief is about the READING one angle gives under a bigger protractor, and size asks which of two angles is more, never for a reading. tool-size left PLACE_MAL, malPlace, commitSize and the rule's misMap; a wrong pick is a law_refused that still plays out both readings (shown=both_readings). The generator still never makes the bigger tool's angle the answer (a shortcut). Reverse if: size gets a reading act (the child gives both readings of one angle under two tools), which would follow the kit's diagnostic and could name tool-size again.",
+   "source": "inbox/r8-kon-fixes.json"
+  },
+  {
+   "id": "dc-r8-kon-place-printed-keys",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/place: the scale prints numbers every 20° at fade 1 ('10'), every 30° at fade 2, only 0/90/180 at fade 3 (every 10° touches at 360 px), so each setting looks different; no measure/draw key and no size angle is ever a printed value (a key on a printed number is read off the number, not the ticks: main's ruling (i)). Pinned by the proof suite over every generated level. The generator's tries went 200 → 800 (signature collisions, not the filter, ate the tries). Reverse if: a pilot shows fade 1 children cannot read 5° ticks between 20° numbers.",
+   "source": "inbox/r8-kon-fixes.json"
+  },
+  {
+   "id": "dc-r8-kon-place-finger-tolerance",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/place centre tolerance is 11 board px (about 11 CSS px from the vertex at a 360 px phone, where the 360 × 349 play box gives 1 board px ≈ 1.03 CSS px; about 25 at 1366), up from 8, for a finger's drop; the base-to-bottom-edge depth PD went 20 → 24 so vertex-off (PD off) stays outside the tolerance (tolPx < PD / 2 is validated). Reverse if: the pilot's placement misses with no belief named exceed ~30% (still too tight) or vertex-off is named for children who were aiming at the centre.",
+   "source": "inbox/r8-kon-fixes.json"
+  },
+  {
+   "id": "dc-r8-kon-place-ring-only-vertex-off",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/place: the ring on O and the dashed join to the protractor's centre (vertex-off's signature) are drawn only in the play-out of a committed decision whose placement is the bottom edge on O (kon.place.ts centreRingShown). Any other off placement shows only what her number (measure: the arm it means, from the protractor's own centre) or arm (draw: her arm, the angle it makes, the asked arm) means as placed, with no pointer to where the centre belongs. A new dot after a miss ends the play-out (no live reading of an uncommitted mark). Reverse if: judges or a pilot find plain off placements leave a child with no visible consequence.",
+   "source": "inbox/r8-kon-fixes.json"
+  },
+  {
+   "id": "dc-r8-kon-name-arc-band-hit",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/name find: the five small handle rings are gone; a tap within 44 board px of an arc is on the NEAREST arc (kon.name.ts arcHit), so tap regions never overlap, and each arc must hold a touch disc ≥ 48 board px across wholly in its own region (arcTargets; the generator refuses figures without one; corner arcs drawn at radius 24, not 30, so they keep room beside the wide arc's end). Geometry could not give non-overlapping 48 px squares around ring handles (0 of 18,936 sampled figures). Reverse if: children tap the wrong arc of a close pair (wrong-arc taps that are no reading of the name).",
+   "source": "inbox/r8-kon-fixes.json"
+  },
+  {
+   "id": "ms-r8-kon-fixes-layout",
+   "kind": "measurement",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "tests/r8-games-kon-layout.test.mjs (local Chromium, every served kon/place and kon/name level, 360x640 and 1366x768, first/mid/each mal/each size pick/end): 0 faults after the r8 fixes, with the new checks (tick or ring over a letter or label, chip across an arm or ray or over a point, overlapping touch targets of one kind, the vertex-off ring before a decision, an English aria label in a Hinglish lesson, the board moving on solving). Each of the judge packets' screen defects (size tick by ∠Q, measure tick on B, size chips on ∠Q's arm, say chip on C and the name twice, find rings overlapping, figure moving at the end) is one of these refusals.",
+   "source": "inbox/r8-kon-fixes.json"
+  },
+  {
+   "id": "dc-r8-no-probe-without-authored-question",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "A script card answered right no longer gets a why-probe turn. All 42 probe turns in director20 ended on the card's close with nothing for the child, because no probe line is authored; the walk now goes on to the next part (Brain 1765faf1). Probes return only as authored questions on the card: Learning proposes, after the staged batches are read, where a probe earns its place (cards where a right answer can come from a wrong reason; the kit's mix-ups say which). Reverse if: the next judged run or a child session shows right-for-the-wrong-reason answers passing unnoticed on scripted cards; then authored probes are written for those cards first.",
+   "source": "inbox/r8-main-20.json"
+  },
+  {
+   "id": "ms-pilot-scripts-fix-rounds-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "The four live pilot scripts, read sentence by sentence and fixed (Learning c4881b652): first read 79 faults in 782 fields; fix rounds 1, 2 and 3 were each re-read by readers who had not written them, and 29, 12 and 4 of their rewrites failed; the last 4 (all low) fixed by hand; 0 wrong keys at every read. c4's yes/no cards went from 12 'No' to 3 'Yes' of 8. Over all fix rounds on pilots and staged batches: 926 rewrites judged, 119 failed (12.9%), 62 new faults found nearby, 1 wrong key introduced and caught. 10 remediation boards removed where the say became a general rule. Changes per card: docs/design/round7/learning/PILOT-CHANGES-2026-11-11.md; cost: FIX-ROUND-COST-2026-11.md.",
+   "source": "inbox/r8-main-20.json"
+  },
+  {
+   "id": "ms-staged-batch-5-read-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Staged batch 5 (c6-ch02-t03, c6-ch05-t01, c6-ch07-t01, c6-ch07-t03, c6-ch07-t04) read in full: 919 fields, 102 faulted (11.1%), about 9 untrue, about 56 giveaways, 0 wrong keys. Two shapes the predicates missed: a card repeating a kit ladder item's frame, and one answer word across a whole skill where the key is not yes/no (every 'which is more' keyed 'same'; every factor-or-multiple keyed 'multiple'). Predicates (e2) and (f2) approved to cover them.",
+   "source": "inbox/r8-main-20.json"
+  },
+  {
+   "id": "ms-brain-predicates-on-director20-rows",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "New dry predicates run over director20's 16 live lessons before their fixes (Brain 70b2fc457, 1765faf1, 9ba271158): authoredWhole 115 (65 on the dry matrix); parkReturned 3, returnNoPark 1, returnAlone 2, parkGoesOn 5, aiAskAnswered 8; returnReply (her reply must be one of Learning's forms) 9. All read 0 on the dry matrix after the fixes. Causes of authoredWhole: Hindi word swaps inside authored cards in state.js, the canned-aside filter dropping an authored hook sentence, the Hindi word pass inside re-posed cards, and withoutClosedKeys cutting a simpler in half.",
+   "source": "inbox/r8-main-20.json"
+  },
+  {
+   "id": "dc-r8-stambh-tally-keep-mal-v2",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "stambh/tally keep names tally-four in two forms from the kit's signs: 'counted' (one stroke per thing, every total the count less its bundles, crosses or not) and 'five' (no line across anywhere, totals right); supersedes dc-r8-stambh-tally-keep-mal",
+   "source": "inbox/r8-stambh-tally-fixes.json"
+  },
+  {
+   "id": "dc-r8-stambh-tally-tells-apart",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "stambh/tally serves only givens where tally-four's answer differs from every one-bundle slip (skipped, counted twice, one single off): read never bundles only, never 1 or 5 bundles; keep at least two bundles; the law refuses the rest",
+   "source": "inbox/r8-stambh-tally-fixes.json"
+  },
+  {
+   "id": "dc-r8-stambh-tally-playout-count",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "stambh/tally check play-out: a count 1..5 over each closed group's strokes in a row that is not right, the fifth standing line tipping across; read's number line shows hops only on the first check; a retry solve ends with pale ticks; keep repairs by 'Phir se rakho' (the scene again, undoable)",
+   "source": "inbox/r8-stambh-tally-fixes.json"
+  },
+  {
+   "id": "rj-r8-stambh-tally-ring-cross",
+   "kind": "rejection",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "A dashed ring + ✗ on five standing lines at the check (two judges, round 1: it reads as 'five is too many', which feeds tally-four)",
+   "source": "inbox/r8-stambh-tally-fixes.json"
+  },
+  {
+   "id": "rj-r8-stambh-tally-both-halves",
+   "kind": "rejection",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "Naming keep's tally-four only when no cross AND short totals both show (two judges, round 1: missed the main form, bundles drawn right and counted by their standing lines)",
+   "source": "inbox/r8-stambh-tally-fixes.json"
+  },
+  {
+   "id": "ms-release-3c6b249",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Released 3c6b249 with scripts/release.mjs: web taxila-web--s3c6b249-gr5p (was taxila-web--s377f1a3-221c), worker + canary/nightly jobs on taxila-worker:3c6b249 (was 377f1a3); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 3c6b249 --rollback.",
+   "source": "inbox/release-3c6b249.json"
+  },
+  {
+   "id": "ms-release-4f33e5d",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Released 4f33e5d with scripts/release.mjs: web taxila-web--s4f33e5d-dhc7 (was taxila-web--s3c6b249-gr5p), worker + canary/nightly jobs on taxila-worker:4f33e5d (was 3c6b249); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 4f33e5d --rollback.",
+   "source": "inbox/release-4f33e5d.json"
   }
  ],
  "edges": [
@@ -45287,6 +45417,51 @@
    "src": "fd-tx-switch-lost-on-redirect-release-22",
    "rel": "measured_by",
    "dst": "ms-tx-switch-on-production-release-23"
+  },
+  {
+   "src": "dc-r8-director20",
+   "rel": "constrains",
+   "dst": "dc-r8-no-probe-without-authored-question"
+  },
+  {
+   "src": "dc-r8-director20",
+   "rel": "measured_by",
+   "dst": "ms-brain-predicates-on-director20-rows"
+  },
+  {
+   "src": "dc-r8-staged-scripts-read-in-full",
+   "rel": "measured_by",
+   "dst": "ms-pilot-scripts-fix-rounds-2026-11-11"
+  },
+  {
+   "src": "dc-r8-staged-scripts-read-in-full",
+   "rel": "measured_by",
+   "dst": "ms-staged-batch-5-read-2026-11-11"
+  },
+  {
+   "src": "dc-r8-stambh-tally-keep-mal-v2",
+   "rel": "supersedes",
+   "dst": "dc-r8-stambh-tally-keep-mal"
+  },
+  {
+   "src": "dc-r8-stambh-tally-tells-apart",
+   "rel": "part_of",
+   "dst": "dc-r8-stambh-tally-mode"
+  },
+  {
+   "src": "dc-r8-stambh-tally-playout-count",
+   "rel": "supersedes",
+   "dst": "dc-r8-stambh-tally-every-stroke-legal"
+  },
+  {
+   "src": "rj-r8-stambh-tally-ring-cross",
+   "rel": "part_of",
+   "dst": "dc-r8-stambh-tally-mode"
+  },
+  {
+   "src": "rj-r8-stambh-tally-both-halves",
+   "rel": "part_of",
+   "dst": "dc-r8-stambh-tally-mode"
   }
  ]
 }

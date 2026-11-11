@@ -10,7 +10,7 @@ export type Ink = "chalk" | "accent" | "ink" | "mark" | "good" | "soft";
  *  differ by SHAPE (a dashed box vs a tick / ring); focus is an outline plus a tint; mixup always a dashed line; muted is
  *  lighter ink. A theme owns only these colours: the shapes are the role's (the meaning survives greyscale). */
 export type Role = "focus" | "slot" | "answer" | "mixup" | "muted";
-export interface Palette { ground: string; edge: string; grid?: string; ink: Record<Ink, string>; fillAlpha: number; role?: Record<Role, string> }
+export interface Palette { ground: string; edge: string; grid?: string; ink: Record<Ink, string>; fillAlpha: number; role?: Record<Role, string>; fills?: { focus: string; answer: string } }
 /** A role's colour on a palette (one without role colours — an older skin — falls back to its nearest ink). */
 export function roleColor(pal: Palette, role: Role): string {
   return pal.role?.[role] ?? pal.ink[role === "focus" ? "accent" : role === "mixup" ? "mark" : role === "muted" ? "soft" : "good"];
@@ -20,7 +20,12 @@ export function roleColor(pal: Palette, role: Role): string {
  *  look: chalk is the green chalkboard, paper and grid the warm paper). */
 export function paletteFor(ground: Ground, theme: ThemeName | string = DEFAULT_THEME): Palette {
   const b = themeOf(theme).board[ground] ?? themeOf(theme).board.paper;
-  return { ground: b.ground, edge: b.edge, fillAlpha: b.fillAlpha, ink: { ...b.ink }, role: { ...b.role }, ...(b.grid ? { grid: b.grid } : {}) };
+  return { ground: b.ground, edge: b.edge, fillAlpha: b.fillAlpha, ink: { ...b.ink }, role: { ...b.role }, ...(b.grid ? { grid: b.grid } : {}), ...(b.fills ? { fills: { ...b.fills } } : {}) };
+}
+/** A role's designed fill tint on a palette that has them (focus; slot and answer share the answer tint), else null. */
+export function roleFill(pal: Palette, role: Role | undefined): string | null {
+  if (!pal.fills || !role) return null;
+  return role === "focus" ? pal.fills.focus : role === "slot" || role === "answer" ? pal.fills.answer : null;
 }
 /** The board's faces are no longer a system handwriting face: round 8 (board grammar item 7) draws a numeral face and a word
  *  face, self-hosted (faces.css; shared/whiteboard.js TEXT_FACES, the same table the fit measures with). */

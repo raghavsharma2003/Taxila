@@ -14,13 +14,14 @@ import { sfx } from "../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill, wrapLines } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
 import { dots, tally } from "../core/dots.ts";
+import { withAlpha } from "../../theme/palette.ts";
 
 /** A boat coming in along its bearing (classify mode). `litT` counts up once the beam has lit it. */
 interface Boat { i: number; ang: number; r: number; v: number; alive: boolean; lit: boolean; litT: number; t: number }
 /** One "light it": the beam flares along the angle it was let go at, then fades. */
 interface Flash { ang: number; r: number; hit: boolean; t: number }
 /** The beam's colour: warm lamplight (the palette's sun token). */
-const LAMP = C.sun;
+const LAMP = (): string => C.sun;   // (read at draw time: C follows the theme)
 /** Least gap (world units) between two neighbouring scale labels. */
 const LABEL_GAP = 10;
 /**
@@ -176,26 +177,26 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
   /** Night sky over a dark sea. The half turn's zero arm is the shoreline (the sea below it); the full turn's lighthouse
    *  stands on a rock in open water (the sea all round). */
   function paintBg(c: Ctx, full: boolean, shore: number) {
-    const gr = c.createRadialGradient(500, full ? 300 : 520, 40, 500, 420, 760); gr.addColorStop(0, full ? "#101C30" : "#14182A"); gr.addColorStop(1, "#07080D");
+    const gr = c.createRadialGradient(500, full ? 300 : 520, 40, 500, 420, 760); gr.addColorStop(0, full ? C.angleSkyOpen : C.angleSky); gr.addColorStop(1, C.angleSkyEdge);
     c.fillStyle = gr; c.fillRect(0, 0, W, H);
     const r2 = rng(3);
     if (!full) {
-      for (let i = 0; i < 120; i++) { c.globalAlpha = 0.2 + r2() * 0.5; c.fillStyle = "#C9D2F2"; c.fillRect(r2() * W, r2() * (shore - 30), 1.5, 1.5); }
-      c.globalAlpha = 1; const sea = c.createLinearGradient(0, shore, 0, H); sea.addColorStop(0, "#0E1A2E"); sea.addColorStop(1, "#080C16");
+      for (let i = 0; i < 120; i++) { c.globalAlpha = 0.2 + r2() * 0.5; c.fillStyle = C.angleStar; c.fillRect(r2() * W, r2() * (shore - 30), 1.5, 1.5); }
+      c.globalAlpha = 1; const sea = c.createLinearGradient(0, shore, 0, H); sea.addColorStop(0, C.angleSeaTop); sea.addColorStop(1, C.angleSeaBottom);
       c.fillStyle = sea; c.fillRect(0, shore, W, H - shore);
     }
     // wave glints
-    c.strokeStyle = "rgba(139,152,255,.16)"; c.lineWidth = 2; c.lineCap = "round";
+    c.strokeStyle = withAlpha(C.ion, .16); c.lineWidth = 2; c.lineCap = "round";
     for (let i = 0; i < (full ? 46 : 18); i++) { const x = r2() * W, y = full ? r2() * H : shore + 20 + r2() * (H - shore - 30), w = 14 + r2() * 26; c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo(x + w / 2, y - 5, x + w, y); c.stroke(); }
   }
   /** A small boat (hull, mast, sail) centred on (x, y): dark at sea, lamp-lit once the beam finds it. */
   function boat(ctx: Ctx, x: number, y: number, edge: string, lit: number) {
     ctx.save(); ctx.lineJoin = "round"; ctx.lineCap = "round";
-    if (lit > 0) bloom(ctx, LAMP, x, y, 64, 0.55 * lit);
-    ctx.fillStyle = "#1A2036"; ctx.strokeStyle = edge; ctx.lineWidth = 4;
+    if (lit > 0) bloom(ctx, LAMP(), x, y, 64, 0.55 * lit);
+    ctx.fillStyle = C.angleTower; ctx.strokeStyle = edge; ctx.lineWidth = 4;
     ctx.beginPath(); ctx.moveTo(x - 28, y + 4); ctx.lineTo(x + 28, y + 4); ctx.lineTo(x + 18, y + 17); ctx.lineTo(x - 18, y + 17); ctx.closePath(); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x - 2, y + 4); ctx.lineTo(x - 2, y - 26); ctx.stroke();
-    ctx.fillStyle = lit > 0 ? hexA(LAMP, 0.35 + 0.6 * lit) : "#232A44";
+    ctx.fillStyle = lit > 0 ? hexA(LAMP(), 0.35 + 0.6 * lit) : C.angleLampOff;
     ctx.beginPath(); ctx.moveTo(x + 2, y - 24); ctx.lineTo(x + 22, y); ctx.lineTo(x + 2, y); ctx.closePath(); ctx.fill(); ctx.stroke();
     ctx.restore();
   }
@@ -203,7 +204,7 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
   function beam(ctx: Ctx, ang: number, len: number, half: number, a: number) {
     if (a <= 0.01) return;
     const [px, py] = pivot(), [ex, ey] = at(ang, len);
-    const gr = ctx.createLinearGradient(px, py, ex, ey); gr.addColorStop(0, hexA(LAMP, 0.5 * a)); gr.addColorStop(0.7, hexA(LAMP, 0.16 * a)); gr.addColorStop(1, hexA(LAMP, 0));
+    const gr = ctx.createLinearGradient(px, py, ex, ey); gr.addColorStop(0, hexA(LAMP(), 0.5 * a)); gr.addColorStop(0.7, hexA(LAMP(), 0.16 * a)); gr.addColorStop(1, hexA(LAMP(), 0));
     ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(px, py); ctx.arc(px, py, len, -(ang + half) * DEG, -(ang - half) * DEG); ctx.closePath(); ctx.fill();
   }
   /** The top of the coach block (one line, or two at the young floor; drawCoach grows it upward from y 606). */
@@ -215,17 +216,17 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
   function lighthouse(ctx: Ctx, px: number, py: number, full: boolean, hot: boolean) {
     const hgt = full ? 52 : clamp(g.coachTop - 8 - py, 24, 70), t = 15, b = t + (full ? 9 : 13) * (hgt - 16) / 54;
     ctx.save(); ctx.lineJoin = "round";
-    if (full) { ctx.fillStyle = "#1B2233"; ctx.beginPath(); ctx.ellipse(px, py + hgt + 6, 46, 13, 0, 0, Math.PI * 2); ctx.fill(); }
+    if (full) { ctx.fillStyle = C.angleShipShadow; ctx.beginPath(); ctx.ellipse(px, py + hgt + 6, 46, 13, 0, 0, Math.PI * 2); ctx.fill(); }
     // tower (tapered), warm bands (one on a short tower)
-    ctx.fillStyle = "#D9DEEA"; ctx.beginPath(); ctx.moveTo(px - t, py + 16); ctx.lineTo(px + t, py + 16); ctx.lineTo(px + b, py + hgt); ctx.lineTo(px - b, py + hgt); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = C.angleHull; ctx.beginPath(); ctx.moveTo(px - t, py + 16); ctx.lineTo(px + t, py + 16); ctx.lineTo(px + b, py + hgt); ctx.lineTo(px - b, py + hgt); ctx.closePath(); ctx.fill();
     ctx.fillStyle = hexA(C.amber, 0.85);
     for (const f of hgt > 40 ? [0.38, 0.72] : [0.45]) { const y0 = py + 16 + (hgt - 16) * f, y1 = y0 + (hgt - 16) * 0.16, w0 = t + (b - t) * f, w1 = t + (b - t) * (f + 0.16); ctx.beginPath(); ctx.moveTo(px - w0, y0); ctx.lineTo(px + w0, y0); ctx.lineTo(px + w1, y1); ctx.lineTo(px - w1, y1); ctx.closePath(); ctx.fill(); }
     // gallery rail and the lamp room (glazed, lit), its roof
-    ctx.fillStyle = "#2A3146"; ctx.fillRect(px - 21, py + 12, 42, 6);
-    bloom(ctx, LAMP, px, py, hot ? 84 : 72, hot ? 0.7 : 0.55);
-    ctx.fillStyle = hexA(LAMP, 0.95); ctx.beginPath(); ctx.roundRect(px - 12, py - 12, 24, 24, 5); ctx.fill();
-    ctx.strokeStyle = hot ? C.volt : "#2A3146"; ctx.lineWidth = 3; ctx.stroke();
-    ctx.fillStyle = "#2A3146"; ctx.beginPath(); ctx.moveTo(px - 15, py - 12); ctx.lineTo(px, py - 26); ctx.lineTo(px + 15, py - 12); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = C.angleDeck; ctx.fillRect(px - 21, py + 12, 42, 6);
+    bloom(ctx, LAMP(), px, py, hot ? 84 : 72, hot ? 0.7 : 0.55);
+    ctx.fillStyle = hexA(LAMP(), 0.95); ctx.beginPath(); ctx.roundRect(px - 12, py - 12, 24, 24, 5); ctx.fill();
+    ctx.strokeStyle = hot ? C.volt : C.angleDeck; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = C.angleDeck; ctx.beginPath(); ctx.moveTo(px - 15, py - 12); ctx.lineTo(px, py - 26); ctx.lineTo(px + 15, py - 12); ctx.closePath(); ctx.fill();
     ctx.restore();
   }
   function render(ctx: Ctx, now: number) {
@@ -236,12 +237,12 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     if (g.w >= 0) {
       const [px, py] = pivot(), r = R(), full = wave().range === 360;
-      ctx.strokeStyle = "rgba(139,152,255,.14)"; ctx.lineWidth = 2;
+      ctx.strokeStyle = withAlpha(C.ion, .14); ctx.lineWidth = 2;
       for (const rr of [r * 0.4, r * 0.7, r]) { ctx.beginPath(); if (full) ctx.arc(px, py, rr, 0, Math.PI * 2); else ctx.arc(px, py, rr, Math.PI, 0); ctx.stroke(); }
       // zero arm (the base ray)
       ctx.strokeStyle = C.ink; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + r + 20, py); ctx.stroke();
       api.text(ctx, "0°", px + r + 34, py + 14, { font: "mono", size: 38, weight: 600, color: C.ink2 });
-      if (!full) { ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.lineWidth = 3; ctx.setLineDash([6, 10]); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px - r - 20, py); ctx.stroke(); ctx.setLineDash([]); }
+      if (!full) { ctx.strokeStyle = withAlpha(C.hi, .25); ctx.lineWidth = 3; ctx.setLineDash([6, 10]); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px - r - 20, py); ctx.stroke(); ctx.setLineDash([]); }
       const sc = wave().scaffold;
       /** boxes the reveal's label must not cover: the protractor's labels, "0°", the lighthouse, the reference card */
       const keepOut: [number, number, number, number][] = [[px + r + 30, py - 22, px + r + 90, py + 22], [px - 34, py - 30, px + 34, py + 72]];
@@ -251,7 +252,7 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
       const cc = { x: full ? 132 : key() > 90 ? 825 : 175, y: full ? 420 : 330, w: full ? 236 : 280 };
       const ccBox: [number, number, number, number] = [cc.x - cc.w / 2, cc.y - 150, cc.x + cc.w / 2, cc.y + 120];
       if (sc !== "none") {
-        ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 3;
+        ctx.strokeStyle = withAlpha(C.hi, .35); ctx.lineWidth = 3;
         for (let a = 10; a < (full ? 360 : 180); a += 10) { const big = a % 90 === 0, [x0, y0] = at(a, r - (big ? 26 : 14)), [x1, y1] = at(a, r); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); }
         const lo = { font: "mono" as const, size: 38, weight: 600 }, hh = Math.max(38, api.minLabel) * 0.5;
         const box = (a: number): [number, number, number, number] => { const [lx, ly] = at(a, r + 30), hw = api.measure(ctx, `${a}`, lo) / 2; return [lx - hw, ly - hh, lx + hw, ly + hh]; };
@@ -267,10 +268,10 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
       if (copyOn) {
         const cx = cc.x, cy = cc.y, a0 = g.refRot * DEG, a1 = a0 + key() * DEG, bw = cc.w;
         keepOut.push(ccBox);
-        ctx.save(); ctx.fillStyle = "rgba(16,19,27,.85)"; ctx.beginPath(); ctx.roundRect(cx - bw / 2, cy - 150, bw, 270, 20); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
+        ctx.save(); ctx.fillStyle = withAlpha(C.bg1, .85); ctx.beginPath(); ctx.roundRect(cx - bw / 2, cy - 150, bw, 270, 20); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
         ctx.strokeStyle = C.ion; ctx.lineWidth = 6; ctx.lineCap = "round";
         ctx.beginPath(); ctx.moveTo(cx + Math.cos(a0) * g.refLen[0], cy - Math.sin(a0) * g.refLen[0]); ctx.lineTo(cx, cy); ctx.lineTo(cx + Math.cos(a1) * g.refLen[1], cy - Math.sin(a1) * g.refLen[1]); ctx.stroke();
-        ctx.strokeStyle = "rgba(139,152,255,.7)"; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(cx, cy, 30, -a0, -a1, true); ctx.stroke();
+        ctx.strokeStyle = withAlpha(C.ion, .7); ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(cx, cy, 30, -a0, -a1, true); ctx.stroke();
         api.text(ctx, "THIS TURN", cx, cy + 96, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", maxWidth: bw - 20 });
         ctx.restore();
       }
@@ -279,13 +280,13 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
       lighthouse(ctx, px, py, full, g.dragging);
       for (const f of g.flashes) { const k = 1 - f.t / 1.2; beam(ctx, f.ang, 40 + (f.r - 40) * Math.min(1, f.t / 0.15), 6, k); }
       beam(ctx, g.ang, r + 10, 4, g.state === "aim" ? 0.9 : 0.6);
-      { const [x0, y0] = at(g.ang, 18), [x1, y1] = at(g.ang, r + 10); ctx.save(); ctx.strokeStyle = g.dragging ? C.volt : hexA(LAMP, 0.95); ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); ctx.restore(); }
+      { const [x0, y0] = at(g.ang, 18), [x1, y1] = at(g.ang, r + 10); ctx.save(); ctx.strokeStyle = g.dragging ? C.volt : hexA(LAMP(), 0.95); ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); ctx.restore(); }
       // boats coming in along their bearings (classify); a lit boat glows for a moment, then sails off
       for (const d of g.boats) {
         if (!d.alive && !(d.lit && d.litT < 1)) continue;
         const [x, y] = at(d.ang, d.r), good = angleKind(d.ang) === wave().kind;
         ctx.save(); ctx.globalAlpha = d.lit ? 1 - d.litT : Math.min(1, d.t * 3);
-        if (!d.lit) { ctx.strokeStyle = "rgba(255,255,255,.14)"; ctx.lineWidth = 2; ctx.setLineDash([4, 10]); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(x, y); ctx.stroke(); ctx.setLineDash([]); }
+        if (!d.lit) { ctx.strokeStyle = withAlpha(C.hi, .14); ctx.lineWidth = 2; ctx.setLineDash([4, 10]); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(x, y); ctx.stroke(); ctx.setLineDash([]); }
         boat(ctx, x, y, d.lit ? (good ? C.mint : C.amber) : C.ion, d.lit ? 1 : 0);
         ctx.restore();
       }
@@ -322,7 +323,7 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
         lines.forEach((ln, i) => api.text(ctx, ln, cxc, y0 + i * lh, { ...lo, color: C.ink3, align: "center", baseline: "middle", track, maxWidth: cw }));
         api.text(ctx, `${key()}°`, cxc, Math.max(full ? 318 : 342, yl + 84), { font: "display", size: 88, weight: 800, align: "center", baseline: "middle", glow: C.ion });
       }
-      if (g.state === "aim" && wave().mode !== "classify") { const k = clamp(g.callT / g.limit, 0, 1); ctx.strokeStyle = k > 0.7 ? C.amber : "rgba(255,255,255,.35)"; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(px, py, 50, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - k)); ctx.stroke(); }
+      if (g.state === "aim" && wave().mode !== "classify") { const k = clamp(g.callT / g.limit, 0, 1); ctx.strokeStyle = k > 0.7 ? C.amber : withAlpha(C.hi, .35); ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(px, py, 50, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - k)); ctx.stroke(); }
     }
     fx.drawWorld(ctx); ctx.restore();
     if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.wave} ${dots(g.w, spec.waves.length)}`, title: wave().title, sub: wave().sub });
@@ -350,4 +351,4 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
     board: () => ({ title: `${g.w >= 0 && wave().mode !== "classify" ? key() : 120}° is a turn`, lines: ["Start at the zero arm and turn anticlockwise.", "Longer arms don't make a bigger angle."], figure: { kind: "angle", deg: g.w >= 0 && wave().mode !== "classify" ? key() : 120 }, accent: C.ion }),
   };
 }
-export const angle: EngineDef<AngleSpec> = { archetype: "angle-cannon@1", label: "Game · Lighthouse", accent: C.ion, create };
+export const angle: EngineDef<AngleSpec> = { archetype: "angle-cannon@1", label: "Game · Lighthouse", get accent() { return C.ion; }, create };

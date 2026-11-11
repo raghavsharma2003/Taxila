@@ -5,6 +5,7 @@
 //   keep-alive    a drought hits; relocate or bring in animals to keep every species above the danger line
 import { ECO_DANGER, ECO_EQ, ecoRun, ecoTrend, foodLinks, SPECIES, type EcoAction, type EcoState, type FoodSpec, type SpeciesId } from "../../../shared/studio-spec.ts";
 import { C, W, H } from "../core/tokens.ts";
+import { withAlpha } from "../../theme/palette.ts";
 import { clamp } from "../core/math.ts";
 import { bloom, magnifier, roundRect, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
@@ -149,12 +150,12 @@ function create(api: EngineApi, spec: FoodSpec): EngineInstance {
     ctx.restore();
   }
   function paintBg(c: Ctx) {
-    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#0A0D10"); gr.addColorStop(0.7, "#0D1410"); gr.addColorStop(1, "#0C120E"); c.fillStyle = gr; c.fillRect(0, 0, W, H);
-    c.fillStyle = "rgba(123,211,137,.05)"; c.beginPath(); c.moveTo(0, 470); c.bezierCurveTo(250, 430, 520, 500, 1000, 450); c.lineTo(1000, 625); c.lineTo(0, 625); c.closePath(); c.fill();
+    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, C.fwBgTop); gr.addColorStop(0.7, C.fwBgMid); gr.addColorStop(1, C.fwBg); c.fillStyle = gr; c.fillRect(0, 0, W, H);
+    c.fillStyle = withAlpha(C.fwGrass, .05); c.beginPath(); c.moveTo(0, 470); c.bezierCurveTo(250, 430, 520, 500, 1000, 450); c.lineTo(1000, 625); c.lineTo(0, 625); c.closePath(); c.fill();
   }
   function drawWeb(ctx: Ctx, now: number) {
     const s = step(), showTruth = s && s.kind !== "arrows";
-    if (showTruth) for (const l of truthLinks) { const [f, e] = l.split(">") as SpeciesId[]; if (f === g.removed || e === g.removed) continue; arrow(ctx, NODE[f], NODE[e], "rgba(169,176,192,.35)", false, 4); }
+    if (showTruth) for (const l of truthLinks) { const [f, e] = l.split(">") as SpeciesId[]; if (f === g.removed || e === g.removed) continue; arrow(ctx, NODE[f], NODE[e], withAlpha(C.ink2, .35), false, 4); }
     if (s && s.kind === "arrows") {
       for (const a of g.arrows) { const [f, e] = a.split(">") as SpeciesId[]; const v = g.verdicts[a]; arrow(ctx, NODE[f], NODE[e], v === "ok" ? C.mint : v === "rev" || v === "bad" ? C.amber : C.ink2, false); if (v === "rev") { const m: XY = [(NODE[f][0] + NODE[e][0]) / 2, (NODE[f][1] + NODE[e][1]) / 2]; magnifier(ctx, m[0] + 18, m[1] - 18); } }
       for (const [l, v] of Object.entries(g.verdicts)) if (v === "missing") { const [f, e] = l.split(">") as SpeciesId[]; arrow(ctx, NODE[f], NODE[e], C.ion, true); }
@@ -166,7 +167,7 @@ function create(api: EngineApi, spec: FoodSpec): EngineInstance {
       const r = NR * (s && (s.kind === "predict-remove") && g.phase !== "predict" ? clamp(0.65 + 0.35 * Math.sqrt(rel), 0.5, 1.5) : 1);
       ctx.save(); ctx.globalAlpha = Math.max(0.12, k);
       bloom(ctx, SPECIES[id].color, x, y, r * 1.7, 0.18);
-      ctx.fillStyle = "rgba(16,19,27,.92)"; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = withAlpha(C.bg1, .92); ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = s && s.kind === "predict-remove" && id === s.watch ? C.ion : SPECIES[id].color; ctx.lineWidth = s && s.kind === "predict-remove" && id === s.watch ? 5 : 3; ctx.stroke();
       icon(ctx, id, x, y - 8, 1.1);
       const side = LABEL_SIDE[id];
@@ -177,9 +178,9 @@ function create(api: EngineApi, spec: FoodSpec): EngineInstance {
     }
   }
   function drawGraph(ctx: Ctx, x0: number, y0: number, w: number, h: number, upto: number, highlight?: SpeciesId) {
-    ctx.save(); ctx.fillStyle = "rgba(16,19,27,.9)"; roundRect(ctx, x0, y0, w, h, 16); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
+    ctx.save(); ctx.fillStyle = withAlpha(C.bg1, .9); roundRect(ctx, x0, y0, w, h, 16); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
     const days = Math.max(1, g.run.length - 1), maxRel = 3;
-    ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.setLineDash([6, 8]); const yEq = y0 + h - (1 / maxRel) * (h - 20) - 10; ctx.beginPath(); ctx.moveTo(x0 + 10, yEq); ctx.lineTo(x0 + w - 10, yEq); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = withAlpha(C.hi, .08); ctx.setLineDash([6, 8]); const yEq = y0 + h - (1 / maxRel) * (h - 20) - 10; ctx.beginPath(); ctx.moveTo(x0 + 10, yEq); ctx.lineTo(x0 + w - 10, yEq); ctx.stroke(); ctx.setLineDash([]);
     for (const id of species) {
       ctx.strokeStyle = SPECIES[id].color; ctx.globalAlpha = highlight && id !== highlight ? 0.3 : 1; ctx.lineWidth = highlight === id ? 5 : 3;
       ctx.beginPath();
@@ -193,9 +194,9 @@ function create(api: EngineApi, spec: FoodSpec): EngineInstance {
     const fx = api.fx, s = step();
     ctx.save(); ctx.translate(fx.ox, fx.oy);
     if (s && s.kind !== "keep-alive") drawWeb(ctx, now);
-    if (s && s.kind === "arrows" && g.phase === "draw" && g.arrows.length) { ctx.save(); ctx.fillStyle = "rgba(203,255,77,.14)"; roundRect(ctx, CHECK.x - CHECK.w / 2, CHECK.y - CHECK.h / 2, CHECK.w, CHECK.h, 16); ctx.fill(); ctx.strokeStyle = C.volt; ctx.lineWidth = 3; ctx.stroke(); api.text(ctx, "Check", CHECK.x, CHECK.y + 2, { font: "display", size: 40, weight: 700, color: C.volt, align: "center", baseline: "middle" }); ctx.restore(); }
+    if (s && s.kind === "arrows" && g.phase === "draw" && g.arrows.length) { ctx.save(); ctx.fillStyle = withAlpha(C.volt, .14); roundRect(ctx, CHECK.x - CHECK.w / 2, CHECK.y - CHECK.h / 2, CHECK.w, CHECK.h, 16); ctx.fill(); ctx.strokeStyle = C.volt; ctx.lineWidth = 3; ctx.stroke(); api.text(ctx, "Check", CHECK.x, CHECK.y + 2, { font: "display", size: 40, weight: 700, color: C.volt, align: "center", baseline: "middle" }); ctx.restore(); }
     if (s && s.kind === "predict-remove") {
-      if (g.phase === "predict") for (const c of CHIPS()) { ctx.save(); ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, c.x - c.w / 2, c.y - c.h / 2, c.w, c.h, 18); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); api.text(ctx, c.label, c.x, c.y + 2, { font: "display", size: 40, weight: 700, align: "center", baseline: "middle" }); ctx.restore(); }
+      if (g.phase === "predict") for (const c of CHIPS()) { ctx.save(); ctx.fillStyle = withAlpha(C.bg2, .95); roundRect(ctx, c.x - c.w / 2, c.y - c.h / 2, c.w, c.h, 18); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); api.text(ctx, c.label, c.x, c.y + 2, { font: "display", size: 40, weight: 700, align: "center", baseline: "middle" }); ctx.restore(); }
       if (g.phase === "run" || g.phase === "result") {
         drawGraph(ctx, 640, 486, 320, 118, g.day, s.watch);
         api.text(ctx, `you: ${g.pick === "up" ? T.up : g.pick === "down" ? T.down : T.same}`.toLowerCase(), 656, 522, { font: "mono", size: 38, weight: 600, color: C.ink2, maxWidth: 290 });
@@ -205,20 +206,20 @@ function create(api: EngineApi, spec: FoodSpec): EngineInstance {
     if (s && s.kind === "keep-alive") {
       drawGraph(ctx, 40, 150, 920, 200, g.day);
       const dr = g.day >= s.droughtFrom && g.day < s.droughtFrom + s.droughtDays;
-      if (dr) { ctx.save(); ctx.fillStyle = "rgba(255,181,71,.10)"; ctx.fillRect(40 + (920 * s.droughtFrom) / s.days, 150, (920 * s.droughtDays) / s.days, 200); ctx.restore(); pill(api, ctx, T.drought, 500, 175, { color: C.amber, size: 38 }); }
+      if (dr) { ctx.save(); ctx.fillStyle = withAlpha(C.amber, .10); ctx.fillRect(40 + (920 * s.droughtFrom) / s.days, 150, (920 * s.droughtDays) / s.days, 200); ctx.restore(); pill(api, ctx, T.drought, 500, 175, { color: C.amber, size: 38 }); }
       species.filter((x) => x !== "grass").forEach((id, i) => {
         const b = TILE(i), rel = popOf(id) / ECO_EQ[id], lost = g.lost.has(id), cool = (g.cool[id] ?? 0) > 0;
-        ctx.save(); ctx.fillStyle = lost ? "rgba(40,30,22,.9)" : "rgba(22,26,36,.95)"; roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = lost ? C.amber : g.flash[id] > 0 ? C.volt : C.line2; ctx.lineWidth = 2; ctx.stroke();
+        ctx.save(); ctx.fillStyle = lost ? withAlpha(C.fwLostCard, .9) : withAlpha(C.bg2, .95); roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = lost ? C.amber : g.flash[id] > 0 ? C.volt : C.line2; ctx.lineWidth = 2; ctx.stroke();
         icon(ctx, id, b.x + 34, b.y + 34, 0.9);
         api.text(ctx, `${Math.round(popOf(id))}`, b.x + 70, b.y + 44, { font: "display", size: 40, weight: 800, color: lost ? C.amber : C.ink });
-        const barW = b.w - 30, fill = clamp(rel / 2, 0, 1); ctx.fillStyle = "rgba(255,255,255,.08)"; ctx.fillRect(b.x + 15, b.y + 70, barW, 8); ctx.fillStyle = rel < ECO_DANGER * 2 ? C.amber : SPECIES[id].color; ctx.fillRect(b.x + 15, b.y + 70, barW * fill, 8);
+        const barW = b.w - 30, fill = clamp(rel / 2, 0, 1); ctx.fillStyle = withAlpha(C.hi, .08); ctx.fillRect(b.x + 15, b.y + 70, barW, 8); ctx.fillStyle = rel < ECO_DANGER * 2 ? C.amber : SPECIES[id].color; ctx.fillRect(b.x + 15, b.y + 70, barW * fill, 8);
         ctx.fillStyle = C.amber; ctx.fillRect(b.x + 15 + barW * (ECO_DANGER / 2) - 1, b.y + 64, 3, 20);
         ctx.globalAlpha = cool ? 0.4 : 1; api.text(ctx, "−", b.x + b.w * 0.62, b.y + 44, { font: "display", size: 48, weight: 800, color: C.ink2, align: "center" }); api.text(ctx, "+", b.x + b.w * 0.86, b.y + 44, { font: "display", size: 48, weight: 800, color: C.ink2, align: "center" });
         ctx.restore();
       });
     }
     fx.drawWorld(ctx); ctx.restore();
-    if (g.phase === "final") { ctx.save(); ctx.globalAlpha = g.finalA * 0.9; ctx.fillStyle = "rgba(10,12,18,.6)"; ctx.fillRect(0, 0, W, H); ctx.restore(); pill(api, ctx, `${g.results.filter((r) => r === "right").length}/${spec.steps.length} · ${T.done}`, 500, 320, { color: C.mint, size: 48 }); }
+    if (g.phase === "final") { ctx.save(); ctx.globalAlpha = g.finalA * 0.9; ctx.fillStyle = withAlpha(C.bg, .6); ctx.fillRect(0, 0, W, H); ctx.restore(); pill(api, ctx, `${g.results.filter((r) => r === "right").length}/${spec.steps.length} · ${T.done}`, 500, 320, { color: C.mint, size: 48 }); }
   }
   function bot(): BotAction | null {
     const s = step();
@@ -246,7 +247,7 @@ function create(api: EngineApi, spec: FoodSpec): EngineInstance {
     update, render, bot,
     seam: () => ({ step: step()?.kind ?? null, phase: g.phase, day: g.day, arrows: g.arrows, lost: [...g.lost] }),
     knob(k) { if (k === "again") { g.results = []; startStep(0); return true; } return false; },
-    board: () => ({ title: "Who eats whom", lines: ["Arrows go from the food to the eater.", "Remove one link and the whole web shifts."], figure: { kind: "chain", items: ["grass", "insects", "frogs", "snakes"] }, accent: "#7BD389" }),
+    board: () => ({ title: "Who eats whom", lines: ["Arrows go from the food to the eater.", "Remove one link and the whole web shifts."], figure: { kind: "chain", items: ["grass", "insects", "frogs", "snakes"] }, accent: C.fwGrass }),
   };
 }
-export const foodweb: EngineDef<FoodSpec> = { archetype: "food-web@1", label: "Sim · Forest", accent: C.sci, create };
+export const foodweb: EngineDef<FoodSpec> = { archetype: "food-web@1", label: "Sim · Forest", get accent() { return C.sci; }, create };

@@ -28,6 +28,9 @@ function wrongActs(level, logic) {
   // kon turn and cross (main 2026-11-10): the dial a quarter turn off the answer
   if (["turn", "corr", "alt"].includes(level.goal)) { const d = logic.solve(level).find((a) => a.kind === "turn")?.deg ?? 0; return [{ kind: "turn", deg: (d + 90) % 360 }, { kind: "commit" }]; }
   if (level.goal === "more") return [{ kind: "apex", x: p.tri.x0, z: p.tri.zb - 1 }, { kind: "check" }];
+  // kon/place size (one pick among P, Q, the same): any other pick. Since the judge round, size claims no mal-rule (tool-size was
+  // dropped from this goal), so a level whose key is "the same" has no mal acts and needs a plain wrong pick here
+  if (level.goal === "size") { const right = logic.solve(level).find((a) => a.kind === "pick")?.which; return [{ kind: "pick", which: ["a", "b", "same"].find((w) => w !== right) }]; }
   return null;
 }
 

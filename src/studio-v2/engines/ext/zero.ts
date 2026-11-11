@@ -5,6 +5,7 @@
 // (and the moves) to the host.
 import { zpKey, type ZeroSpec, type ZpRoundT } from "../../../../shared/studio-spec-ext/zero.ts";
 import { C, W, H } from "../../core/tokens.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 import { rng } from "../../core/math.ts";
 import { magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
@@ -13,7 +14,7 @@ import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core
 import { RoundFlow, backdrop, devaReady, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
 
-const LOCK = { x: 830, y: 510, w: 140, h: 66 }, TRAY = { x: 150, y: 300, w: 640, h: 200 }, POS = "#FFB547", NEG = "#5FA8FF";
+const LOCK = { x: 830, y: 510, w: 140, h: 66 }, TRAY = { x: 150, y: 300, w: 640, h: 200 };
 interface Tok { s: 1 | -1; x: number; y: number; group: number }
 function create(api: EngineApi, spec: ZeroSpec): EngineInstance {
   const T = spec.strings, accent = C.ion;
@@ -89,27 +90,27 @@ function create(api: EngineApi, spec: ZeroSpec): EngineInstance {
     const { pos, neg } = counts();
     hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true }); hud.set("val", `${pos - neg >= 0 ? "+" : "−"}${Math.abs(pos - neg)}`);
   }
-  function token(ctx: Ctx, s: 1 | -1, x: number, y: number, dim = false, sel = false) { ctx.save(); ctx.globalAlpha *= dim ? 0.45 : 1; ctx.fillStyle = s > 0 ? POS : NEG; ctx.beginPath(); ctx.arc(x, y, 19, 0, Math.PI * 2); ctx.fill(); if (sel) { ctx.strokeStyle = C.volt; ctx.lineWidth = 4; ctx.stroke(); } ctx.strokeStyle = "#0A0C12"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x - 9, y); ctx.lineTo(x + 9, y); if (s > 0) { ctx.moveTo(x, y - 9); ctx.lineTo(x, y + 9); } ctx.stroke(); ctx.restore(); }
+  function token(ctx: Ctx, s: 1 | -1, x: number, y: number, dim = false, sel = false) { ctx.save(); ctx.globalAlpha *= dim ? 0.45 : 1; ctx.fillStyle = s > 0 ? C.amber : C.zeroNeg; ctx.beginPath(); ctx.arc(x, y, 19, 0, Math.PI * 2); ctx.fill(); if (sel) { ctx.strokeStyle = C.volt; ctx.lineWidth = 4; ctx.stroke(); } ctx.strokeStyle = C.bg; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x - 9, y); ctx.lineTo(x + 9, y); if (s > 0) { ctx.moveTo(x, y - 9); ctx.lineTo(x, y + 9); } ctx.stroke(); ctx.restore(); }
   function paintBg(c: Ctx) { backdrop(c, accent, 121, 0); }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
     if (!fontOk) return;
     const r = rd(); if (!r) return; const ok = g.verdict === "right", done = g.answered;
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
-    if (r.mode === "make") { ctx.fillStyle = "#121621"; ctx.fillRect(0, 254, W, 12); for (const t of g.belt) token(ctx, t.s, t.x, 230); pill(api, ctx, `${r.target >= 0 ? "+" : "−"}${Math.abs(r.target)}`, 900, 400, { color: accent, size: 48 }); }
+    if (r.mode === "make") { ctx.fillStyle = C.zeroBelt; ctx.fillRect(0, 254, W, 12); for (const t of g.belt) token(ctx, t.s, t.x, 230); pill(api, ctx, `${r.target >= 0 ? "+" : "−"}${Math.abs(r.target)}`, 900, 400, { color: accent, size: 48 }); }
     if (r.mode !== "groups") {
-      ctx.save(); ctx.fillStyle = "rgba(14,16,24,.85)"; roundRect(ctx, TRAY.x, TRAY.y, TRAY.w, TRAY.h, 20); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = withAlpha(C.zeroTray, .85); roundRect(ctx, TRAY.x, TRAY.y, TRAY.w, TRAY.h, 20); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
       const pos = g.tray.filter((t) => t.s === 1), neg = g.tray.filter((t) => t.s === -1), pairs = Math.min(pos.length, neg.length);
-      for (let i = 0; i < pairs; i++) { ctx.save(); ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(pos[i].x, pos[i].y); ctx.lineTo(neg[i].x, neg[i].y); ctx.stroke(); ctx.restore(); }
+      for (let i = 0; i < pairs; i++) { ctx.save(); ctx.strokeStyle = withAlpha(C.hi, .25); ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(pos[i].x, pos[i].y); ctx.lineTo(neg[i].x, neg[i].y); ctx.stroke(); ctx.restore(); }
       pos.forEach((t, i) => token(ctx, 1, t.x, t.y, i < pairs)); neg.forEach((t, i) => token(ctx, -1, t.x, t.y, i < pairs));
-      if (r.mode === "subtract") { ctx.save(); ctx.fillStyle = done ? "rgba(255,255,255,.04)" : "rgba(22,26,36,.95)"; roundRect(ctx, 830, 330, 140, 70, 14); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); token(ctx, 1, 870, 365); token(ctx, -1, 930, 365); api.text(ctx, `${T.take} ${r.take > 0 ? "+" : "−"}${Math.abs(r.take)}`, 470, 240, { font: "display", size: 48, weight: 800, align: "center", baseline: "middle" }); }
+      if (r.mode === "subtract") { ctx.save(); ctx.fillStyle = done ? withAlpha(C.hi, .04) : withAlpha(C.bg2, .95); roundRect(ctx, 830, 330, 140, 70, 14); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); token(ctx, 1, 870, 365); token(ctx, -1, 930, 365); api.text(ctx, `${T.take} ${r.take > 0 ? "+" : "−"}${Math.abs(r.take)}`, 470, 240, { font: "display", size: 48, weight: 800, align: "center", baseline: "middle" }); }
     } else {
-      groupBoxes().forEach((b) => { ctx.save(); ctx.fillStyle = "rgba(14,16,24,.85)"; roundRect(ctx, b.x, b.y, b.w, b.h, 18); ctx.fill(); ctx.strokeStyle = !r.share && g.selGroup === b.i ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); const v = g.tray.filter((t) => t.group === b.i).reduce((a, t) => a + t.s, 0); api.text(ctx, `${v >= 0 ? "+" : "−"}${Math.abs(v)}`, b.x + b.w / 2, b.y + b.h + 28, { font: "mono", size: 38, weight: 600, color: done ? (v === r.m ? C.mint : C.amber) : C.ink2, align: "center", baseline: "middle" }); });
+      groupBoxes().forEach((b) => { ctx.save(); ctx.fillStyle = withAlpha(C.zeroTray, .85); roundRect(ctx, b.x, b.y, b.w, b.h, 18); ctx.fill(); ctx.strokeStyle = !r.share && g.selGroup === b.i ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); const v = g.tray.filter((t) => t.group === b.i).reduce((a, t) => a + t.s, 0); api.text(ctx, `${v >= 0 ? "+" : "−"}${Math.abs(v)}`, b.x + b.w / 2, b.y + b.h + 28, { font: "mono", size: 38, weight: 600, color: done ? (v === r.m ? C.mint : C.amber) : C.ink2, align: "center", baseline: "middle" }); });
       g.tray.forEach((t, i) => token(ctx, t.s, t.x, t.y, false, i === g.sel));
       if (!r.share) { token(ctx, 1, 860, 360); token(ctx, -1, 930, 360); }
       api.text(ctx, r.share ? `${T.share} ${r.k}` : `${r.k} ${T.groups} ${r.m >= 0 ? "+" : "−"}${Math.abs(r.m)}`, 470, 210, { font: "display", size: 44, weight: 800, align: "center", baseline: "middle" });
     }
-    ctx.save(); ctx.fillStyle = !done ? "rgba(203,255,77,.14)" : "rgba(255,255,255,.04)"; roundRect(ctx, LOCK.x, LOCK.y, LOCK.w, LOCK.h, 16); ctx.fill(); ctx.strokeStyle = !done ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.fillStyle = !done ? withAlpha(C.volt, .14) : withAlpha(C.hi, .04); roundRect(ctx, LOCK.x, LOCK.y, LOCK.w, LOCK.h, 16); ctx.fill(); ctx.strokeStyle = !done ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
     api.text(ctx, T.lock, LOCK.x + LOCK.w / 2, LOCK.y + LOCK.h / 2 + 2, { font: "display", size: 38, weight: 800, color: !done ? C.volt : C.ink3, align: "center", baseline: "middle" });
     if (done) { if (ok) tick(ctx, 960, 200, C.mint, 1); else magnifier(ctx, 955, 200, C.amber, 1); pill(api, ctx, `= ${zpKey(r) >= 0 ? "+" : "−"}${Math.abs(zpKey(r))}`, 470, 588, { color: ok ? C.mint : C.amber, size: 40 }); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
@@ -135,4 +136,4 @@ function create(api: EngineApi, spec: ZeroSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds.map((x) => `${x.title} = ${zpKey(x)}`).slice(0, 3), figure: { kind: "numberline", min: -6, max: 6, marks: [{ v: zpKey(spec.rounds[0]), label: String(zpKey(spec.rounds[0])) }] }, accent }),
   };
 }
-export const zero: EngineDef<ZeroSpec> = { archetype: "zero-pair@1", label: "Game · Zero Pair Lab", accent: C.ion, create };
+export const zero: EngineDef<ZeroSpec> = { archetype: "zero-pair@1", label: "Game · Zero Pair Lab", get accent() { return C.ion; }, create };

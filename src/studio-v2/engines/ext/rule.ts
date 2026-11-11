@@ -13,6 +13,7 @@ import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, fmtNum, textBlock, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 
 // (round 7 readability: the tray sits a little higher so a young child's two-line coach under it stays clear)
 const MACH = { x: 330, y: 290, w: 340, h: 130 }, RUN = { x: 790, y: 460, w: 180, h: 70 }, TRAY_Y = 468;
@@ -76,14 +77,14 @@ function create(api: EngineApi, spec: RuleSpec): EngineInstance {
   }
   function machine(ctx: Ctx, now: number, label = "") {
     ctx.save(); bloom(ctx, accent, MACH.x + MACH.w / 2, MACH.y + MACH.h / 2, MACH.w * 0.7, g.ran ? 0.35 : 0.18);
-    ctx.fillStyle = "#1B2033"; roundRect(ctx, MACH.x, MACH.y, MACH.w, MACH.h, 22); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.9); ctx.lineWidth = 4; ctx.stroke();
-    for (let i = 0; i < 6; i++) { ctx.fillStyle = (g.ran && Math.floor(now * 8 + i) % 2) ? C.volt : "#2C3350"; ctx.beginPath(); ctx.arc(MACH.x + 30 + i * 56, MACH.y + 16, 5, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = C.ruleMachine; roundRect(ctx, MACH.x, MACH.y, MACH.w, MACH.h, 22); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.9); ctx.lineWidth = 4; ctx.stroke();
+    for (let i = 0; i < 6; i++) { ctx.fillStyle = (g.ran && Math.floor(now * 8 + i) % 2) ? C.volt : C.ruleLampOff; ctx.beginPath(); ctx.arc(MACH.x + 30 + i * 56, MACH.y + 16, 5, 0, Math.PI * 2); ctx.fill(); }
     ctx.restore();
-    for (let i = 0; i < 3; i++) { const q = slotRect(i), op = g.slots[i]; ctx.save(); ctx.fillStyle = op ? hexA(accent, 0.22) : "rgba(0,0,0,.35)"; roundRect(ctx, q.x, q.y, q.w, q.h, 14); ctx.fill(); ctx.strokeStyle = op ? accent : C.line2; ctx.lineWidth = 3; ctx.setLineDash(op ? [] : [8, 6]); ctx.stroke(); ctx.restore(); if (op) api.text(ctx, op, q.x + q.w / 2, q.y + q.h / 2 + 2, { font: "display", size: 44, weight: 800, align: "center", baseline: "middle" }); }
+    for (let i = 0; i < 3; i++) { const q = slotRect(i), op = g.slots[i]; ctx.save(); ctx.fillStyle = op ? hexA(accent, 0.22) : withAlpha(C.lo, .35); roundRect(ctx, q.x, q.y, q.w, q.h, 14); ctx.fill(); ctx.strokeStyle = op ? accent : C.line2; ctx.lineWidth = 3; ctx.setLineDash(op ? [] : [8, 6]); ctx.stroke(); ctx.restore(); if (op) api.text(ctx, op, q.x + q.w / 2, q.y + q.h / 2 + 2, { font: "display", size: 44, weight: 800, align: "center", baseline: "middle" }); }
     if (label) api.text(ctx, label, MACH.x + MACH.w / 2, MACH.y + MACH.h + 30, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle" });
   }
-  function tray(ctx: Ctx) { const ts = tiles(); ts.forEach((t, i) => { const q = tileRect(i, ts.length); ctx.save(); ctx.fillStyle = "rgba(22,26,40,.96)"; roundRect(ctx, q.x, q.y, q.w, q.h, 14); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.6); ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, t, q.x + q.w / 2, q.y + q.h / 2 + 2, { font: "display", size: 44, weight: 800, align: "center", baseline: "middle" }); }); }
-  function runBtn(ctx: Ctx, label = T.run) { const can = !g.ran; ctx.save(); ctx.fillStyle = can ? "rgba(203,255,77,.14)" : "rgba(255,255,255,.04)"; roundRect(ctx, RUN.x, RUN.y, RUN.w, RUN.h, 16); ctx.fill(); ctx.strokeStyle = can ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, label, RUN.x + RUN.w / 2, RUN.y + RUN.h / 2 + 2, { font: "display", size: 40, weight: 800, color: can ? C.volt : C.ink3, align: "center", baseline: "middle" }); }
+  function tray(ctx: Ctx) { const ts = tiles(); ts.forEach((t, i) => { const q = tileRect(i, ts.length); ctx.save(); ctx.fillStyle = withAlpha(C.ruleTile, .96); roundRect(ctx, q.x, q.y, q.w, q.h, 14); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.6); ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, t, q.x + q.w / 2, q.y + q.h / 2 + 2, { font: "display", size: 44, weight: 800, align: "center", baseline: "middle" }); }); }
+  function runBtn(ctx: Ctx, label = T.run) { const can = !g.ran; ctx.save(); ctx.fillStyle = can ? withAlpha(C.volt, .14) : withAlpha(C.hi, .04); roundRect(ctx, RUN.x, RUN.y, RUN.w, RUN.h, 16); ctx.fill(); ctx.strokeStyle = can ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, label, RUN.x + RUN.w / 2, RUN.y + RUN.h / 2 + 2, { font: "display", size: 40, weight: 800, color: can ? C.volt : C.ink3, align: "center", baseline: "middle" }); }
   function drawPattern(ctx: Ctx, p: Extract<RmRoundT, { mode: "seq" }>["pattern"], n: number, cx: number, cy: number) {
     ctx.save(); ctx.strokeStyle = C.sun; ctx.fillStyle = C.sun; ctx.lineWidth = 5; ctx.lineCap = "round";
     const s = 34;
@@ -105,7 +106,7 @@ function create(api: EngineApi, spec: RuleSpec): EngineInstance {
     const ok = g.verdict === "right";
     if (r.mode === "build") {
       machine(ctx, now); tray(ctx); runBtn(ctx);
-      ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 16; ctx.beginPath(); ctx.moveTo(60, MACH.y + MACH.h / 2); ctx.lineTo(940, MACH.y + MACH.h / 2); ctx.stroke();
+      ctx.strokeStyle = withAlpha(C.hi, .08); ctx.lineWidth = 16; ctx.beginPath(); ctx.moveTo(60, MACH.y + MACH.h / 2); ctx.lineTo(940, MACH.y + MACH.h / 2); ctx.stroke();
       const wantY = Math.max(172, api.chromeBottom() + 28);   // below the task pill, one or two lines (l1366 2026-11-11: a two-line goal covered "chahiye")
       r.inputs.forEach((v, i) => {
         const y = wantY + 38 + i * 44, want = runOps(r.rule, v)!, got = g.ran ? runOps(built(), v) : null, show = g.ran && g.runT > 0.4 + i * 0.35;
@@ -136,7 +137,7 @@ function create(api: EngineApi, spec: RuleSpec): EngineInstance {
       runBtn(ctx);
     } else {
       api.text(ctx, String(g.start), 500, 330, { font: "display", size: 110, weight: 800, align: "center", baseline: "middle", glow: accent });
-      for (const [x, s] of [[300, "−"], [700, "+"]] as [number, string][]) { ctx.save(); ctx.fillStyle = "rgba(22,26,40,.96)"; roundRect(ctx, x - 60, 290, 120, 90, 18); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.7); ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, s, x, 336, { font: "display", size: 64, weight: 800, align: "center", baseline: "middle" }); }
+      for (const [x, s] of [[300, "−"], [700, "+"]] as [number, string][]) { ctx.save(); ctx.fillStyle = withAlpha(C.ruleTile, .96); roundRect(ctx, x - 60, 290, 120, 90, 18); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.7); ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, s, x, 336, { font: "display", size: 64, weight: 800, align: "center", baseline: "middle" }); }
       pill(api, ctx, `≥ ${r.minSteps} ${T.steps}`, 500, 205, { color: accent, size: 40 });
       if (g.ran) { const k = Math.min(g.chain.length, Math.floor(g.runT * 8)); const show = g.chain.slice(Math.max(0, k - 7), k); show.forEach((v, i) => api.text(ctx, fmtNum(v), 120 + i * 110, 450, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle", maxWidth: 104 })); pill(api, ctx, `${g.chain.length - 1} ${T.steps}`, 500, 520, { color: ok ? C.mint : C.amber, size: 40 }); }
       runBtn(ctx);
@@ -174,4 +175,4 @@ function create(api: EngineApi, spec: RuleSpec): EngineInstance {
     board: () => { const r0 = spec.rounds[0]; return { title: spec.title, lines: r0.mode === "build" ? r0.inputs.slice(0, 3).map((v) => `${v} → ${runOps(r0.rule, v)}`) : r0.mode === "seq" ? [1, 2, 3].map((n) => `${T.step} ${n}: ${patternCount(r0.pattern, n)}`) : [r0.sub || r0.title], figure: { kind: "none" }, accent }; },
   };
 }
-export const rule: EngineDef<RuleSpec> = { archetype: "rule-machine@1", label: "Game · Machine Factory", accent: C.ion, create };
+export const rule: EngineDef<RuleSpec> = { archetype: "rule-machine@1", label: "Game · Machine Factory", get accent() { return C.ion; }, create };
