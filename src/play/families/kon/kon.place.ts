@@ -13,13 +13,15 @@
 // protractor that is off can never solve, whatever is read off it.
 // Mal-rules (each with its own visible signature, `shown` in the moment's facts):
 //   vertex-off      the bottom edge on the vertex: the centre sits the base-to-centre depth PD off it, along the normal. The
-//                   law draws the arm the protractor measures FROM ITS CENTRE: it starts PD away from the corner and runs
-//                   beside the true arm, never on it ("centre_off")
+//                   play-out is a ring on O and the dashed join to the protractor's centre ("centre_off")
 //   centre-on-arm   (Learning's kit split, 2026-11-11: vertex-off is now ONLY the bottom edge on O) the centre mark on an arm's
 //                   end point (A, or B in measure) with the base along that arm, or the protractor's corner at O with the base
 //                   along an arm: a placement a guess rarely makes (law 3). The same play-out as vertex-off: a ring on O and
-//                   the dashed join from O to where her centre is, and what her number or arm means as placed
-//                   ("centre_on_arm"). The rule maps it once the kit id reaches int/r6 (integration 49)
+//                   the dashed join from O to where her centre is ("centre_on_arm"). The rule maps it once the kit id
+//                   reaches int/r6 (integration 49)
+// Judging round 3 (ruling 1): her number is graded only on a placed protractor. An off placement is named by the placement
+// alone (never by the number she typed), and its play-out shows the placement only: no arm from her misplaced centre, her
+// number's chip neutral (the arm ran beside OB and told her a right 150 was right)
 //   wrong-scale     the other scale's number: 180 − θ ("other_scale")
 //   join-wrong-end  draw: the dot at the right mark, joined to A (the far end of OA): the law shows the angle made at A
 //                   ("far_end"). Judging round 2 (law 3): the join is a pick between two buttons, so a guess makes it half

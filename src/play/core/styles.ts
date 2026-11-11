@@ -79,12 +79,14 @@ export const roleColor = (a: ArtTokens, r: Role): string => (r === "panel" ? a.p
 
 // ───────────────────────────── the audit (read by the shot harness) ─────────────────────────────
 
-export interface AuditText { s: string; px: number; x: number; y: number; w: number; align: CanvasTextAlign }
+/** `halo`: drawn over a ground-coloured halo (it stays readable where a line runs under it); `seq`: the draw order within
+ *  the frame, shared with AuditSeg (a line noted before a text lies under it) */
+export interface AuditText { s: string; px: number; x: number; y: number; w: number; align: CanvasTextAlign; halo?: boolean; seq?: number }
 export interface AuditTarget { id: string; x: number; y: number; w: number; h: number }
 /** a drawn mark's box (a tick, a chip, a ring, a point's dot): the layout checks hold marks clear of letters and lines */
 export interface AuditMark { kind: string; x: number; y: number; w: number; h: number }
 /** a drawn line a view declares (an arm, a ray): chips must not sit across it */
-export interface AuditSeg { kind: string; x0: number; y0: number; x1: number; y1: number }
+export interface AuditSeg { kind: string; x0: number; y0: number; x1: number; y1: number; seq?: number }
 /** round 8 laws: every colour role a frame painted, by the painter op that painted it (the law checks read what green and
  *  focus were used for: server/forge3/qa/laws.mjs). `role` is the role asked for ("you" is painted as focus). */
 export interface AuditUse { op: string; role: string; /** a text's first characters */ s?: string }
@@ -102,6 +104,8 @@ function hash(n: number): number { let x = (n | 0) * 374761393; x = (x ^ (x >>> 
 export class Painter {
   art: ArtTokens; audit: Audit; young: boolean;
   constructor(art: ArtTokens, audit: Audit, young: boolean) { this.art = art; this.audit = audit; this.young = young; }
+  /** the draw order of audited texts and noted lines (AuditText.seq, AuditSeg.seq) */
+  private seq = 0;
   get minText(): number { return this.young ? FLOORS.textYoung : FLOORS.text; }
   color(r: Role): string { this.use("color", r); return roleColor(this.art, r); }
   /** record a colour role painted this frame (round 8 laws; the audit's `uses`) */
@@ -264,8 +268,10 @@ export class Painter {
   /** The label colour with the most contrast on a body of `role` (text drawn ON a block, a bag, a pod). */
   labelOn(role: Role): string { return labelOn(this.art, role); }
   /** Text, never below the floor; recorded in the audit with its rendered size and box. Returns the width.
-   *  `on`: the role of the body the text sits on (the label colour is then chosen for contrast, overriding `role`). */
-  text(c: CanvasRenderingContext2D, s: string, x: number, y: number, o: { size: number; role?: Role; on?: Role; weight?: number; font?: "display" | "ui" | "mono"; align?: CanvasTextAlign; baseline?: CanvasTextBaseline; maxW?: number; alpha?: number }): number {
+   *  `on`: the role of the body the text sits on (the label colour is then chosen for contrast, overriding `role`).
+   *  `halo`: a ground-coloured halo under the glyphs, so a line drawn before the text never hides it (kon/place's scale
+   *  numbers over the arms, judging round 3). */
+  text(c: CanvasRenderingContext2D, s: string, x: number, y: number, o: { size: number; role?: Role; on?: Role; weight?: number; font?: "display" | "ui" | "mono"; align?: CanvasTextAlign; baseline?: CanvasTextBaseline; maxW?: number; alpha?: number; halo?: boolean }): number {
     const px = Math.max(o.size, this.minText);
     const fam = /[ऀ-ॿ]/.test(s) ? this.art.font.deva : this.art.font[o.font ?? "ui"];
     c.save();
@@ -276,9 +282,13 @@ export class Painter {
     let fit = px;
     if (o.maxW && w > o.maxW) { fit = Math.max(this.minText, Math.floor((px * o.maxW) / w)); c.font = `${o.weight ?? 600} ${fit}px ${fam}`; w = c.measureText(s).width; }
     if (this.art.id === "raat" && (o.role === "q1" || o.role === "q2" || o.role === "good")) { c.globalAlpha = (o.alpha ?? 1) * 0.35; c.fillText(s, x, y + 1); c.globalAlpha = o.alpha ?? 1; }
+    if (o.halo) {
+      c.save(); c.lineJoin = "round"; c.lineWidth = Math.max(3, fit * 0.32); c.strokeStyle = this.art.ground; c.globalAlpha = (o.alpha ?? 1) * 0.94;
+      c.strokeText(s, x, y); c.restore();
+    }
     c.fillText(s, x, y);
     c.restore();
-    if ((o.alpha ?? 1) > 0.4) this.audit.texts.push({ s: s.slice(0, 24), px: fit, x, y, w, align: o.align ?? "center" });
+    if ((o.alpha ?? 1) > 0.4) this.audit.texts.push({ s: s.slice(0, 24), px: fit, x, y, w, align: o.align ?? "center", ...(o.halo ? { halo: true } : {}), seq: this.seq++ });
     return w;
   }
   /**
@@ -326,7 +336,7 @@ export class Painter {
   }
   /** Record a drawn mark's box, or a drawn line, for the layout checks (draws nothing). */
   note(kind: string, x: number, y: number, w: number, h: number): void { this.audit.marks?.push({ kind, x, y, w, h }); }
-  noteSeg(kind: string, a: [number, number], b: [number, number]): void { this.audit.segs?.push({ kind, x0: a[0], y0: a[1], x1: b[0], y1: b[1] }); }
+  noteSeg(kind: string, a: [number, number], b: [number, number]): void { this.audit.segs?.push({ kind, x0: a[0], y0: a[1], x1: b[0], y1: b[1], seq: this.seq++ }); }
   /** A tick (goal met): the only "right" mark there is, and it sits on the work. */
   tick(c: CanvasRenderingContext2D, x: number, y: number, s: number, k = 1): void {
     if (k > 0) this.audit.marks?.push({ kind: "tick", x: x - s * 0.4 - 2, y: y - s * 0.35 - 2, w: s * 0.85 + 4, h: s * 0.65 + 4 });

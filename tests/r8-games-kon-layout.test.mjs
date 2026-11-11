@@ -20,8 +20,8 @@ import { existsSync, readdirSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
-import { BW, BH, PR, PRINT_EVERY, SIZE_PRINT_EVERY, TOL_PX, initPlace, goodPose, vertexOffPose, centreOnArmPose, sizeFigs } from "../src/play/families/kon/kon.place.ts";
-import { SCALE_GAP, INK_H, monoMeasure, scaleLabels, scaleOmit } from "../src/play/families/kon/kon.scale.ts";
+import { BW, BH, PR, PD, ARM, PRINT_EVERY, SIZE_PRINT_EVERY, TOL_PX, initPlace, goodPose, vertexOffPose, centreOnArmPose, sizeFigs, arms, farEnd, norm } from "../src/play/families/kon/kon.place.ts";
+import { SCALE_GAP, INK_H, LETTER_PX, monoMeasure, scaleLabels, scaleOmit, scaleOmitFor, protractorLines, letterSpot, numberBox } from "../src/play/families/kon/kon.scale.ts";
 
 const browsersDir = process.env.PLAYWRIGHT_BROWSERS_PATH || "/opt/pw-browsers";
 const haveChromium = existsSync(browsersDir) && readdirSync(browsersDir).some((d) => d.startsWith("chromium"));
@@ -84,7 +84,7 @@ export function screenFaults(probe, minTarget = 64) {
     if (m.kind !== "chip") continue;
     const own = (t) => Math.abs(t.x0 + t.w / 2 - (m.x + m.w / 2)) < 2 && Math.abs(t.y0 + t.h / 2 - (m.y + m.h / 2)) < 3;
     for (const t of T) if (!own(t) && meetBox(m, tbox(t), 1)) out.push(`chip×text "${t.s}"`);
-    for (const g of S) if (segCrossesBox([g.x0, g.y0], [g.x1, g.y1], m)) out.push(`chip×${g.kind} at ${Math.round(m.x)},${Math.round(m.y)}`);
+    for (const g of S) if (g.kind !== "prot" && segCrossesBox([g.x0, g.y0], [g.x1, g.y1], m)) out.push(`chip×${g.kind} at ${Math.round(m.x)},${Math.round(m.y)}`);
     for (const d of M) if (d.kind === "dot" && meetBox(m, d, 1)) out.push("chip×point");
   }
   for (const a of probe.aria ?? []) if (/\b(the|one|turn|less|more|undo)\b/i.test(a) && probe.lang !== "en") out.push(`English aria "${a}"`);
@@ -158,6 +158,88 @@ it("kon/place scale numbers: no two closer than SCALE_GAP px, every generated le
   assert.deepEqual(faults.slice(0, 40), [], `${faults.length} faults over ${checked} protractors`);
 });
 
+/** judging round 3 (ruling 3): a number is never left out of one scale alone. Outer a prints "a", inner a prints "180 − a",
+ *  so with both numbers at a tick going together every printed value v (but 90) is matched by as many 180 − v */
+export function oneScaleAlone(strings) {
+  const n = new Map();
+  for (const s of strings) n.set(s, (n.get(s) ?? 0) + 1);
+  return [...n.keys()].filter((v) => v !== "90" && (n.get(v) ?? 0) !== (n.get(String(180 - Number(v))) ?? 0));
+}
+
+it("kon/place scale numbers (judging round 3, ruling 3): never left out of one scale alone; what moves or goes depends only on size and turn", () => {
+  const faults = [];
+  let n = 0;
+  for (const [tag, sizes] of Object.entries(WORLD)) for (const goal of ["measure", "draw", "size"]) {
+    const box = sizes[goal], s = Math.min(box.w / BW, box.h / BH);
+    const everys = goal === "size" ? new Set(Object.values(SIZE_PRINT_EVERY)) : new Set(Object.values(PRINT_EVERY));
+    for (const every of everys) for (let rot = 0; rot < (goal === "size" ? 1 : 360); rot++) {
+      const radii = goal === "size" ? sizeFigs({ bigA: true }).map((f) => ({ R: f.rad * s, rad0: f.rad })) : [{ R: PR * s, rad0: PR }];
+      const os = scaleOmitFor(radii, every, 14, monoMeasure, rot);
+      os.forEach((o, i) => {
+        n++;
+        // the ticks left out are the same on both scales, and never an end
+        if (o.inner.join() !== o.outer.join()) faults.push(`${tag} ${goal} every ${every} turn ${rot}: left out inner [${o.inner}] outer [${o.outer}]`);
+        if (o.inner.some((a) => a === 0 || a === 90 || a === 180)) faults.push(`${tag} ${goal} every ${every} turn ${rot}: an end left out`);
+        const L = scaleLabels({ rot, R: radii[i].R, rad0: radii[i].rad0, every, fs: 14, measure: monoMeasure, omit: o });
+        const lone = oneScaleAlone(L.map((l) => l.s));
+        if (lone.length) faults.push(`${tag} ${goal} every ${every} turn ${rot}: one scale alone at ${lone}`);
+        // a number that moves slides along its own tick only (inner inward, outer outward), a few px
+        for (const l of L) if (l.slide < 0 || l.slide > (l.ring === "inner" ? 22 : 4)) faults.push(`${tag} ${goal} turn ${rot}: ${l.ring} ${l.s} slides ${l.slide}`);
+      });
+    }
+  }
+  // the same at a different key: the lettering's inputs are the size, the turn and the scale setting only
+  const a = scaleOmit([{ R: PR * 0.844, rad0: PR }], 20, 14, monoMeasure, 0), b = scaleOmit([{ R: PR * 0.844, rad0: PR }], 20, 14, monoMeasure, 360);
+  assert.deepEqual(a, b);
+  assert.ok(n > 2000, `${n}`);
+  assert.deepEqual(faults.slice(0, 30), [], `${faults.length} faults`);
+  // the round-2 case: the inner 100 alone left out at 360 flat would print the outer 100 and 80 with no inner 100
+  assert.deepEqual(oneScaleAlone(["0", "180", "20", "160", "80", "100", "100", "80", "90"]), []);
+  assert.deepEqual(oneScaleAlone(["0", "180", "80", "100", "80", "90"]).sort(), ["100", "80"]);
+});
+
+/** the letters' world, headless, as the view lays it out: the arms, the protractor's lines and numbers, the dots */
+function letterWorld(p, q, s, box) {
+  const S = (x, y) => [x * s + (box.w - BW * s) / 2, (BH - y) * s + (box.h - BH * s) / 2];
+  const V = [p.vx, p.vy], hs = arms(p), segs = [], boxes = [];
+  for (const h of hs) segs.push([S(...V), S(V[0] + ARM * Math.cos((h * Math.PI) / 180), V[1] + ARM * Math.sin((h * Math.PI) / 180))]);
+  const [cx, cy] = S(q.x, q.y), R = PR * s;
+  const prot = protractorLines(cx, cy, R, PD * s, q.rot, PR).map((L) => [L.a, L.b]);
+  const nums = scaleLabels({ rot: q.rot, R, rad0: PR, every: PRINT_EVERY[p.scale], fs: 14, measure: monoMeasure, omit: scaleOmit([{ R, rad0: PR }], PRINT_EVERY[p.scale], 14, monoMeasure, q.rot) }, cx, cy);
+  const dot = (o, r) => ({ x: o[0] - r, y: o[1] - r, w: 2 * r, h: 2 * r });
+  boxes.push(dot(S(...V), 4.5), dot([cx, cy], 3.5), ...nums.map(numberBox));
+  return { S, V, hs, segs, prot, boxes };
+}
+
+it("kon/place letter O (judging round 3, ruling 2): visible beside the vertex in every pose, never on a line of the protractor (headless, every generated level, 360 and 1366)", () => {
+  const faults = [];
+  let n = 0;
+  for (const goal of ["measure", "draw"]) for (const fade of [1, 2, 3]) for (const seed of [1, 7, 42, 99]) {
+    for (const c of konLogic.generate(placeReq(goal, seed, fade))) {
+      const p = konLogic.validate(c.level).params;
+      for (const [tag, sizes] of Object.entries(WORLD)) {
+        const box = sizes[goal], s = Math.min(box.w / BW, box.h / BH);
+        const poses = { rest: initPlace(p).pose, placed: goodPose(p), "vertex-off": vertexOffPose(p), "centre-on-arm": centreOnArmPose(p) };
+        // the opening's far side (the asked angle's bisector, turned round)
+        const a2 = norm(p.start + (p.mirror ? -1 : 1) * p.theta), half = norm(a2 - p.start) > 180 ? (norm(a2 - p.start) - 360) / 2 : norm(a2 - p.start) / 2;
+        const away = -(((p.start + half + 180) * Math.PI) / 180);
+        for (const [k, q] of Object.entries(poses)) {
+          n++;
+          const W = letterWorld(p, q, s, box), w = monoMeasure("O", LETTER_PX), h = LETTER_PX * INK_H;
+          const spot = letterSpot(W.S(...W.V), away, [24, 32, 40, 50, 62].map((r) => r * s), w, h, { segs: [...W.segs, ...W.prot], boxes: W.boxes }, { x: 2, y: 2, w: box.w - 4, h: box.h - 4 });
+          if (!spot) { faults.push(`${tag} ${c.level.levelId} ${k}: no clear spot for O`); continue; }
+          const ink = { x: spot[0] - w / 2, y: spot[1] - h / 2, w, h };
+          for (const [a, b] of W.prot) if (segCrossesBox(a, b, { x: ink.x - 1, y: ink.y - 1, w: ink.w + 2, h: ink.h + 2 }, 0)) { faults.push(`${tag} ${c.level.levelId} ${k}: O on a protractor line`); break; }
+          // beside its vertex: within 62 board px
+          if (Math.hypot(spot[0] - W.S(...W.V)[0], spot[1] - W.S(...W.V)[1]) > 63 * s) faults.push(`${tag} ${c.level.levelId} ${k}: O far from its vertex`);
+        }
+      }
+    }
+  }
+  assert.ok(n > 300, `${n}`);
+  assert.deepEqual(faults.slice(0, 30), [], `${faults.length} faults`);
+});
+
 it("numberClashes: two numbers 3 px apart side by side clash, 6 px apart do not; diagonal neighbours by both axes", () => {
   const n = (s, x, y, w = 16.8, h = 14 * INK_H) => ({ s, x, y, w, h });
   assert.equal(numberClashes([n("80", 0, 0), n("100", 16.8 / 2 + 25.2 / 2 + 3, 0, 25.2)]).length, 1);
@@ -220,8 +302,9 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
           const probe = await page.evaluate(() => {
             const c = document.querySelector("canvas.pl-canvas").getBoundingClientRect(), a = window.__play.audit;
             return {
-              nums: a.texts.filter((t) => /^\d{1,3}$/.test(t.s)).map((t) => ({ s: t.s, x: t.x, y: t.y, w: t.w, px: t.px })),
-              letters: a.texts.filter((t) => /^[A-Z]$/.test(t.s)).map((t) => ({ s: t.s, x: t.x, y: t.y, w: t.w, px: t.px })),
+              nums: a.texts.filter((t) => /^\d{1,3}$/.test(t.s)).map((t) => ({ s: t.s, x: t.x, y: t.y, w: t.w, px: t.px, halo: !!t.halo, seq: t.seq })),
+              letters: a.texts.filter((t) => /^[A-Z]$/.test(t.s)).map((t) => ({ s: t.s, x: t.x, y: t.y, w: t.w, px: t.px, seq: t.seq })),
+              uses: a.uses,
               canvas: { w: c.width, h: c.height },
               texts: a.texts.map((t) => ({ s: t.s, w: t.w, h: t.px * 1.2, x0: t.align === "left" ? t.x : t.align === "right" ? t.x - t.w : t.x - t.w / 2, y0: t.y - t.px * 0.6 })),
               targets: a.targets, clipped: a.clipped, marks: a.marks, segs: a.segs, lang: "hinglish",
@@ -250,6 +333,32 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
             // the world box is the one the headless check lays the numbers out in
             const want = WORLD[size.tag][level.params.goal];
             if (Math.abs(want.w - probe.canvas.w) > 0.5 || Math.abs(want.h - probe.canvas.h) > 0.5) faults.push(`${size.tag} ${level.levelId} ${name}: world box ${probe.canvas.w}x${probe.canvas.h}, WORLD says ${want.w}x${want.h}`);
+            // judging round 3, ruling 3: no number left out of one scale alone (as drawn)
+            const lone = oneScaleAlone(probe.nums.map((t) => t.s));
+            if (lone.length) faults.push(`${size.tag} ${level.levelId} ${name}: one scale alone at ${lone}`);
+            // ruling 4: every scale number on a ground halo, drawn after every arm and line of hers
+            const firstNum = Math.min(...probe.nums.map((t) => t.seq ?? -1));
+            if (probe.nums.some((t) => !t.halo)) faults.push(`${size.tag} ${level.levelId} ${name}: a scale number without its halo`);
+            for (const g of probe.segs) if (g.kind === "arm" && !(g.seq < firstNum)) faults.push(`${size.tag} ${level.levelId} ${name}: an arm drawn over the scale numbers`);
+            if (level.params.goal !== "size") {
+              // ruling 2: O on every screen, its ink never on a line of the protractor
+              const O = probe.letters.find((l) => l.s === "O");
+              if (!O) faults.push(`${size.tag} ${level.levelId} ${name}: no letter O`);
+              else {
+                const ink = { x: O.x - O.w / 2, y: O.y - (O.px * INK_H) / 2, w: O.w, h: O.px * INK_H };
+                if (probe.segs.some((g) => g.kind === "prot" && segCrossesBox([g.x0, g.y0], [g.x1, g.y1], ink, 0))) faults.push(`${size.tag} ${level.levelId} ${name}: O on a protractor line`);
+              }
+              if (!probe.segs.some((g) => g.kind === "prot")) faults.push(`${size.tag} ${level.levelId} ${name}: no protractor lines declared`);
+            }
+            // ruling 1: measure on an off placement (vertex-off, centre-on-arm) plays out the placement only: no arm from her
+            // misplaced centre (only OA and OB are drawn) and her number's chip in no meaning colour
+            if (level.params.goal === "measure" && /^mal-(vertex-off|centre-on-arm)$/.test(name)) {
+              const armsDrawn = probe.segs.filter((g) => g.kind === "arm").length;
+              if (armsDrawn !== 2) faults.push(`${size.tag} ${level.levelId} ${name}: ${armsDrawn} arms drawn (an arm from her misplaced centre?)`);
+              const chipRoles = (probe.uses ?? []).filter((u) => u.op === "chip").map((u) => u.role);
+              if (chipRoles.length) faults.push(`${size.tag} ${level.levelId} ${name}: her number's chip in ${chipRoles}`);
+              if (!probe.marks.some((m) => m.kind === "chip")) faults.push(`${size.tag} ${level.levelId} ${name}: her number's chip missing`);
+            }
             drawn.push({ name, box: probe.box, prot: probe.marks.filter((m) => m.kind === "protractor").map((m) => `${m.w.toFixed(1)}x${m.h.toFixed(1)}`).join(" ") });
           }
           if (process.env.KON_SHOTS) { mkdirSync(process.env.KON_SHOTS, { recursive: true }); await page.screenshot({ path: join(process.env.KON_SHOTS, `${level.mode}-${level.goal}-${size.tag}-${level.levelId.replace(/[^a-z0-9]/gi, "_")}-${name}.png`) }); }
