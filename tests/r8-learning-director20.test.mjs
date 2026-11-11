@@ -175,3 +175,21 @@ test("batch 5: (e2) a card that asks its own skill's ladder item; (f2) one word 
   w.skills[0].checks[1].key = "more";
   assert.deepEqual(wordKeySpreadErrors(w), []);
 });
+
+test("(h) main 17:45: no two authored units share a whole sentence, and a simpler never repeats one of what it simplifies", async () => {
+  const { sharedSentenceErrors } = await import("../scripts/lesson-scripts/check.mjs");
+  const s = { greetSimpler: { hi: "Aaj hum bhinn dekhenge.", en: "Today we look at fractions." }, skills: [{ skillId: "x-s1",
+    explain: [{ id: "e1", point: { hi: "Meena aur Raju ke cake ek jaise hain. Meena ne 5/8 khaya.", en: "Two cakes. Meena ate 5/8." },
+      simpler: { hi: "Meena aur Raju ke cake ek jaise hain. Dekho kisne kam khaya.", en: "Same cakes. Who ate less?" },
+      ask: { prompt: { hi: "{friend} kehta hai 5/8 bada hai. Kya woh sahi hai?", en: "{friend} says 5/8 is bigger. Is that right?" } } }],
+    checks: [{ id: "c1", prompt: { hi: "Rahul kehta hai 3/8 bada hai. Kya woh sahi hai?", en: "Rahul says 3/8 is bigger. Is that right?" } }],
+    remediation: [{ say: { hi: "Socho, dono mein se ek-ek hissa hata do.", en: "Take one part from each." }, then: { prompt: { hi: "Kaunsa bada, 7/8 ya 9/10?", en: "Which is bigger?" } } }],
+    workedExample: { problem: { hi: "Ek patti ke 8 hisse. Socho, dono mein se ek-ek hissa hata do.", en: "A strip in 8 parts." } } }] };
+  const e = sharedSentenceErrors(s);
+  assert.ok(e.some((x) => /e1\.simpler: a simpler repeats a sentence of what it simplifies with .*e1\.point/.test(x)), e.join("\n"));
+  assert.ok(e.some((x) => /workedExample\.problem: two units share a whole sentence with .*remediation\[0\]\.say/.test(x)), e.join("\n"));
+  assert.ok(!e.some((x) => /sahi hai|Is that right/.test(x)), "a short question tag closing two cards is allowed");
+  assert.equal(e.length, 2, e.join("\n"));
+  for (const t of ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01"])
+    assert.deepEqual(sharedSentenceErrors(read(`data/lesson-scripts/${t}.json`)), [], t);
+});

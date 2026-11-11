@@ -11,7 +11,7 @@ import { loadMe, refreshMe, type ChildRow, type Me } from "../app/api.ts";
 import { bandForClass } from "../app/band.ts";
 import { Helplines } from "../app/Shell.tsx";
 import { isRelock, parentApi, type ParentMemory } from "./api.ts";
-import { BOARD_NAME, consentEffect, isPasswordError, parentError } from "./copy.ts";
+import { BOARD_NAME, consentEffect, isPasswordError, labelTitle, parentError, TEACHER_FALLBACK } from "./copy.ts";
 import { PasswordAgain } from "./fields.tsx";
 import { useGate } from "./Gate.tsx";
 import { PageState, ParentShell, RowLink, signOut, useChildren } from "./Shell.tsx";
@@ -118,7 +118,7 @@ const CHOICES: { purpose: Purpose; title: string; yes: string; no: string; effec
     effectNo: () => "Each lesson starts fresh. The Garden or Sky map and the Notebook stay hidden." },
   { purpose: "memory", title: "Remember what your child likes", yes: "Yes", no: "No",
     effectYes: "Interests your child mentions (cricket, a pet's name) are used in examples, and a good moment from an earlier lesson may open the next one. You can see and delete each memory below.",
-    effectNo: (t) => `${t} won't use your child's interests in examples.` },
+    effectNo: (t) => `${labelTitle(t)} won't use your child's interests in examples.` },
   // ship5 p3-voicesig. KEEP IN STEP with server/routes/parent.js CONSENT_SPEECH.voice_pace_memory (the spoken version).
   { purpose: "voice_pace_memory", title: "Remember your child's usual answering pace", yes: "Yes, remember", no: "Only this lesson",
     effectYes: "Only numbers about how long your child usually takes to start an answer are kept on Taxila's own database, never recordings or words. We are still testing what they can tell the teacher; for now they change nothing in lessons.",
@@ -343,7 +343,7 @@ export function Data() {
     const t = window.setTimeout(() => document.getElementById(loc.hash.slice(1))?.scrollIntoView({ block: "start" }), 50);
     return () => window.clearTimeout(t);
   }, [loc.hash, me]);
-  const teacherName = current ? teacherNameOf(current) : "Your child's teacher";
+  const teacherName = current ? teacherNameOf(current) : TEACHER_FALLBACK;
   return (
     <ParentShell title="Data and privacy" child={current} kids={kids}>
       <h1 className="pa-h1">Data and privacy</h1>
@@ -387,7 +387,7 @@ export function Help() {
   const { lockNow } = useGate();
   const { kids, current } = useChildren();
   const name = current?.first_name ?? "your child";
-  const T = current ? teacherNameOf(current) : "The teacher";
+  const T = current ? teacherNameOf(current) : TEACHER_FALLBACK;
   return (
     <ParentShell title="Help and safety" child={current} kids={kids}>
       <h1 className="pa-h1">Help and safety</h1>
@@ -403,16 +403,16 @@ export function Help() {
         <section className="pa-card" aria-labelledby="pa-worry-h" id="alert">
           <h2 id="pa-worry-h" className="pa-h2">When a child says something worrying</h2>
           <ul className="pa-steps">
-            <li>{T} stops the lesson at once and shows {name} the helplines and "Talk to a grown-up you trust".</li>
-            <li>{T} never asks {name} to explain, and never keeps it a secret from you.</li>
+            <li>{labelTitle(T)} stops the lesson at once and shows {name} the helplines and "Talk to a grown-up you trust".</li>
+            <li>{labelTitle(T)} never asks {name} to explain, and never keeps it a secret from you.</li>
             <li>Taxila's safeguarding team is told, and a person looks at what happened. If they need to reach you, they will.</li>
             <li>Lessons may pause while they look. {name} sees a calm screen with the helplines, never a warning.</li>
           </ul>
           <p className="pa-effect">What to do: find a quiet moment, ask {name} how they are, and listen. If {name} might be in danger, call Childline 1098.</p>
         </section>
         <section className="pa-card" aria-labelledby="pa-ai-h">
-          <h2 id="pa-ai-h" className="pa-h2">{T} is an AI</h2>
-          <p>{T} is a computer program, not a person, and says so to {name}. You see what {name} learns here.</p>
+          <h2 id="pa-ai-h" className="pa-h2">{labelTitle(T)} is an AI</h2>
+          <p>{labelTitle(T)} is a computer program, not a person, and says so to {name}. You see what {name} learns here.</p>
           <RowLink to="/trust">Our promises</RowLink>
         </section>
         <section className="pa-card" aria-labelledby="pa-forgot-h">

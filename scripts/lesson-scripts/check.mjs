@@ -880,7 +880,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s));
   return e;
 }
 
@@ -1320,6 +1320,49 @@ export function yesNoSpreadErrors(s) {
   return e;
 }
 /** (e) a skill does not ask the same question frame twice: prompts with numbers and letter names masked, word/letter/yes-no keys. */
+/** (h) main 2026-11-11, from Brain's authoredWhole: every authored unit she says whole (a point, simpler, card, remediation say,
+ *  then-card, worked problem, given, step simpler, yourStep, hook use, bridge, greetSimpler) has no whole sentence of three words or
+ *  more that another unit also holds, in either form. Two units sharing a sentence make the runtime unable to tell which one was
+ *  started, and a simpler that repeats a sentence of what it simplifies gives the child the same words again. Slots ({friend}) are
+ *  read as one word, so "{friend} kehta hai … Kya woh sahi hai?" and "Rahul kehta hai … Kya woh sahi hai?" share their tail. */
+export function sharedSentenceErrors(s) {
+  const units = [];
+  const add = (where, v, parent = null) => { for (const lang of ["hi", "en"]) { const t = typeof v === "string" ? (lang === "hi" ? v : null) : v?.[lang]; if (t) units.push({ where, lang, t, parent }); } };
+  add("greetSimpler", s.greetSimpler);
+  for (const [n, sk] of (s.skills ?? []).entries()) {
+    const S = sk.skillId ?? `s${n + 1}`;
+    (sk.hook?.interestSlots ?? []).forEach((sl, i) => add(`${S}/hook.slot${i}`, sl.use));
+    for (const e of sk.explain ?? []) { add(`${S}/${e.id}.point`, e.point); add(`${S}/${e.id}.simpler`, e.simpler, `${S}/${e.id}.point`); add(`${S}/${e.id}.ask`, e.ask?.prompt); add(`${S}/${e.id}.ask.simpler`, e.ask?.simpler, `${S}/${e.id}.ask`); }
+    (sk.remediation ?? []).forEach((m, i) => { const R = `${S}/remediation[${i}]`; add(`${R}.say`, m.say); add(`${R}.simpler`, m.simpler, `${R}.say`); add(`${R}.then`, m.then?.prompt); add(`${R}.then.simpler`, m.then?.simpler, `${R}.then`); });
+    const we = sk.workedExample;
+    if (we) {
+      add(`${S}/workedExample.problem`, we.problem); add(`${S}/workedExample.simpler`, we.simpler, `${S}/workedExample.problem`);
+      (we.givens ?? []).forEach((g, k) => add(`${S}/workedExample.givens[${k}]`, g));
+      (we.steps ?? []).forEach((st, k) => add(`${S}/workedExample.steps[${k}].simpler`, st.simpler));
+      add(`${S}/workedExample.yourStep`, we.yourStep?.prompt); add(`${S}/workedExample.yourStep.simpler`, we.yourStep?.simpler, `${S}/workedExample.yourStep`);
+    }
+    for (const c of sk.checks ?? []) { add(`${S}/${c.id}`, c.prompt); add(`${S}/${c.id}.simpler`, c.simpler, `${S}/${c.id}`); }
+    add(`${S}/bridgeToNext`, sk.bridgeToNext);
+  }
+  const keyOf = (x) => String(x).toLowerCase().replace(/\{\w+\}/g, " slot ").replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+  const seen = new Map(), e = [];
+  for (const u of units) {
+    for (const sent of sentencesOf(u.t)) {
+      const k = keyOf(sent);
+      if (k.split(" ").length < 3) continue;
+      const m = `${u.lang}|${k}`, prev = seen.get(m);
+      if (!prev) { seen.set(m, u); continue; }
+      if (prev.where === u.where) continue;
+      const own = u.parent === prev.where || prev.parent === u.where;
+      // (a card's short question tag, "Kya woh sahi hai?" / "Is that right?", may close many cards: it names no unit)
+      if (!own && /[?？]\s*$/.test(sent) && k.split(" ").length <= 5) continue;
+      const kind = own ? "a simpler repeats a sentence of what it simplifies" : "two units share a whole sentence";
+      e.push(`${u.where}${u.lang === "en" ? " (en)" : ""}: ${kind} with ${prev.where}: "${sent.slice(0, 70)}" (say it in other words)`);
+    }
+  }
+  return e;
+}
+
 export function frameRepeatErrors(s, kit = null) {
   const e = [];
   const frame = (t) => String(t ?? "").replace(/\{[a-zA-Z]+\}/g, "@n").replace(/\b[A-Z]{1,3}\b/g, "@").replace(/\d+(?:[.,/]\d+)*/g, "#").toLowerCase().replace(/[^\p{L}#@ ]+/gu, " ").split(/\s+/).filter((w) => w && !deStop().has(w));

@@ -87,6 +87,8 @@ test("D14 (director19): no {said}; a park is one sentence promising the return; 
   s.joints.askAgain[0] = { hi: "Mujhe theek se sunai nahi diya. Ek baar phir bologe?", en: "I didn't quite hear that. Will you say it once more?" };
   assert.ok(at(s, /askAgain\[0\]: never a question/) && at(s, /askAgain\[0\]: never claims she did not hear/));
   s = base();
+  // (c5-t01 says "line" throughout since main's 17:45 one-term round, so the test gives it a "rekha" of its own)
+  s.greetSimpler = { hi: "Aaj hum bhinn ko ek seedhi rekha par jagah denge.", en: "Today we give fractions their place on a straight line." };
   s.joints.hindiSwitch[1] = { hi: "Achha, yeh line Hindi mein bolti hoon.", en: "Okay, I'll say this line in English." };
   assert.ok(at(s, /hindiSwitch\[1\]: "line" while this script says "rekha"/));
   // and every live and staged script is clean of all of it
