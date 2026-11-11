@@ -7,7 +7,7 @@
 // {f} fraction part, {a}/{c} times-table operands, {r} the right operand, {h}/{m} hour/minute, {u} a unit.
 // Bump RENDERER_VERSION on any change that alters an output: the TTS cache is keyed by the rendered text, and
 // the version is the provenance field of a SpokenSet (`rendererVersion`).
-export const RENDERER_VERSION = "sp2-2026-10-05";
+export const RENDERER_VERSION = "sp3-2026-11-11";
 
 // ── number words ────────────────────────────────────────────────────────────────────────────────────────────
 
