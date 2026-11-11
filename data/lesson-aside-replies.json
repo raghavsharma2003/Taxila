@@ -36,8 +36,8 @@
       ],
       "replies": [
         {
-          "hi": "Achha, {word}! Batane ke liye shukriya.",
-          "en": "Oh, {word}! Thanks for telling me."
+          "hi": "Achha, {word}! Theek hai.",
+          "en": "Oh, {word}! Okay."
         },
         {
           "hi": "Oh, {word}. Achha.",
@@ -50,8 +50,8 @@
       ],
       "plain": [
         {
-          "hi": "Achha, batane ke liye shukriya.",
-          "en": "Okay, thanks for telling me."
+          "hi": "Achha, theek hai.",
+          "en": "Okay, alright."
         },
         {
           "hi": "Achha, samajh gayi.",
@@ -106,12 +106,12 @@
       ],
       "plain": [
         {
-          "hi": "Achha, batane ke liye shukriya.",
-          "en": "Okay, thanks for telling me."
+          "hi": "Achha, yeh batane ke liye shukriya.",
+          "en": "Okay, thanks for telling me that."
         },
         {
-          "hi": "Achha, samajh gayi.",
-          "en": "Okay, got it."
+          "hi": "Hmm, achha.",
+          "en": "Hmm, okay."
         }
       ]
     },
@@ -154,8 +154,8 @@
       ],
       "replies": [
         {
-          "hi": "Achha, {word}! Batane ke liye shukriya.",
-          "en": "Oh, {word}! Thanks for telling me."
+          "hi": "{word}! Achha, samajh gayi.",
+          "en": "{word}! Okay, I see."
         },
         {
           "hi": "Oh, {word}. Achha.",
@@ -168,12 +168,12 @@
       ],
       "plain": [
         {
-          "hi": "Achha, batane ke liye shukriya.",
-          "en": "Okay, thanks for telling me."
+          "hi": "Achha, theek hai.",
+          "en": "Okay, alright."
         },
         {
-          "hi": "Achha, samajh gayi.",
-          "en": "Okay, got it."
+          "hi": "Hmm, samajh gayi.",
+          "en": "Hmm, I see."
         }
       ]
     },
@@ -215,8 +215,8 @@
       ],
       "replies": [
         {
-          "hi": "Achha, {word}! Batane ke liye shukriya.",
-          "en": "Oh, {word}! Thanks for telling me."
+          "hi": "Achha, {word}. Theek hai.",
+          "en": "Oh, {word}. Alright."
         },
         {
           "hi": "{word}... achha, samajh gayi.",
@@ -229,12 +229,12 @@
       ],
       "plain": [
         {
-          "hi": "Achha, batane ke liye shukriya.",
-          "en": "Okay, thanks for telling me."
-        },
-        {
           "hi": "Achha, samajh gayi.",
           "en": "Okay, got it."
+        },
+        {
+          "hi": "Hmm, theek hai.",
+          "en": "Hmm, alright."
         }
       ]
     },
@@ -274,8 +274,8 @@
       ],
       "replies": [
         {
-          "hi": "Achha, {word}! Batane ke liye shukriya.",
-          "en": "Oh, {word}! Thanks for telling me."
+          "hi": "Oh, {word}! Achha, theek hai.",
+          "en": "Oh, {word}! Okay, alright."
         },
         {
           "hi": "Oh, {word}. Achha.",
@@ -288,12 +288,12 @@
       ],
       "plain": [
         {
-          "hi": "Achha, batane ke liye shukriya.",
-          "en": "Okay, thanks for telling me."
-        },
-        {
           "hi": "Achha, samajh gayi.",
           "en": "Okay, got it."
+        },
+        {
+          "hi": "Oh, achha.",
+          "en": "Oh, okay."
         }
       ]
     },
@@ -315,8 +315,8 @@
       ],
       "replies": [
         {
-          "hi": "Achha, {word}! Batane ke liye shukriya.",
-          "en": "Oh, {word}! Thanks for telling me."
+          "hi": "Achha, {word}. Batane ke liye shukriya.",
+          "en": "Oh, {word}. Thanks for telling me."
         },
         {
           "hi": "{word}... achha, samajh gayi.",
@@ -333,8 +333,8 @@
           "en": "Okay, thanks for telling me."
         },
         {
-          "hi": "Achha, samajh gayi.",
-          "en": "Okay, got it."
+          "hi": "Hmm, achha, theek hai.",
+          "en": "Hmm, okay, alright."
         }
       ]
     }
@@ -385,8 +385,8 @@
     ],
     "replies": [
       {
-        "hi": "Oh... yeh sunke bura laga.",
-        "en": "Oh... I'm sorry to hear that."
+        "hi": "Oh... yeh toh achha nahi hua.",
+        "en": "Oh... that didn't go well."
       },
       {
         "hi": "Oh... yeh toh mushkil hai.",
@@ -403,6 +403,8 @@
     "{word}: only a noun the child said (sixer, Nobita, chutney, ludo, boat); never haan, nahi, pata nahi, kuch nahi, sab, a time word (kal, aaj) or an outcome (jeet gaya, haar gaya). If none fits, use plain.",
     "{aside} in her line is in her voice and agrees: 'mera bhai' becomes 'tumhara bhai', 'meri didi' becomes 'tumhari didi', 'mere dost' becomes 'tumhare dost'; before mein / ke saath / ki / ka it takes the oblique form ('tumhare bhai ke saath', 'khane mein'); names (Maggi, Doraemon, Minecraft) do not change. Use the show's or game's own name, not 'TV' or 'youtube'.",
     "A sad aside or reply (sad.match, by sad.rule) gets a sad reply and no return question.",
-    "If the child asks her back ('aapko kaun pasand hai?'), she states no taste of her own: a plain form, then the lesson."
+    "If the child asks her back ('aapko kaun pasand hai?'), she states no taste of her own: a plain form, then the lesson.",
+    "Kind selection: a kind is chosen only when one of its match words is in the aside; when none matches, the kind is 'other' (it has no match list on purpose), never the first kind in the file.",
+    "She claims no feeling of her own (no 'mujhe … laga', 'bura laga', 'khushi hui'): she is an AI and says so."
   ]
 }

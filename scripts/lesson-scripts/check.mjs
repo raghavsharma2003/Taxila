@@ -876,7 +876,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s));
   return e;
 }
 
@@ -1031,6 +1031,8 @@ export function asideReplyErrors(d) {
       if (slot ? slots.length !== 1 || slots[0] !== slot : slots.length) e.push(`${w}: ${slot ? `exactly one ${slot}` : "no slot"}`);
       if (question ? !/[?？]$/.test(t) || (t.match(/[?？]/g) ?? []).length !== 1 : /[?？]/.test(t)) e.push(`${w}: ${question ? "one question, nothing after it" : "asks nothing"}`);
       if (words(t) > 16) e.push(`${w}: ${words(t)} words > 16`);
+      // (main on director20: she claims no feeling of her own, she is an AI)
+      if (/\bmujhe\b[^.]*\b(laga|lagi|lagta|lagti)\b|\bbura laga\b|\bkhushi hui\b|\bachha laga\b|\bI(?:'m| am) (?:sorry|glad|happy|sad)\b|\bI (?:feel|felt|love|like)\b/i.test(t)) e.push(`${w}: claims a feeling of her own`);
     }
   };
   for (const k of KINDS) { const v = d?.kinds?.[k];
@@ -1039,10 +1041,43 @@ export function asideReplyErrors(d) {
     if ((v.replies ?? []).length !== 3) e.push(`kinds.${k}.replies: 3 forms`);
     if ((v.plain ?? []).length !== 2) e.push(`kinds.${k}.plain: 2 forms`);
     (v.returns ?? []).forEach((f, i) => form(`kinds.${k}.returns[${i}]`, f, { slot: "{aside}", question: true }));
+    // (main on director20: a return never assumes an activity the kind does not guarantee: a person or an 'other' aside was
+    // not played or eaten)
+    if (k === "people" || k === "other") (v.returns ?? []).forEach((f, i) => { if (/\b(khela|kheli|khele|khelte|khaya|khayi|khaye|khaate|dekha|dekhi|padha|banaya|played|ate|watched|eaten)\b/i.test(`${f?.hi} ${f?.en}`)) e.push(`kinds.${k}.returns[${i}]: assumes an activity (played, ate, watched) the kind does not guarantee`); });
     (v.replies ?? []).forEach((f, i) => form(`kinds.${k}.replies[${i}]`, f, { slot: "{word}", question: false }));
     (v.plain ?? []).forEach((f, i) => form(`kinds.${k}.plain[${i}]`, f, { slot: null, question: false }));
   }
   if ((d?.sad?.replies ?? []).length !== 3) e.push("sad.replies: 3 forms");
   (d?.sad?.replies ?? []).forEach((f, i) => form(`sad.replies[${i}]`, f, { slot: null, question: false }));
+  return e;
+}
+
+/** director20 W1 (dc-r8-director20; "line… rekha", "Square… varg", "group… samooh" in one turn): one term per idea per spoken
+ * form. No { hi } form holds both words of a twin pair (data/lesson-twins.json). Allowed: the `terms` glossary, and a gloss
+ * that introduces a term in a point or its mustSay ("line yaani rekha", "acute angle, yaani nyun kon", "obtuse angle, adhik
+ * kon"). "question mark" is not the twin of nishaan. */
+export function oneTermErrors(s) {
+  const glossed = new Map();
+  const e = [], wre = (w) => `(?<![\\p{L}])${w.replace(/\s+/g, "\\s+")}(?![\\p{L}])`;
+  const walk = (x, path) => {
+    if (Array.isArray(x)) return x.forEach((v, i) => walk(v, `${path}[${i}]`));
+    if (!x || typeof x !== "object" || x.template) return;
+    if (typeof x.hi === "string") {
+      const t = x.hi.replace(/question\s+mark/gi, "");
+      for (const p of TWINS) {
+        const en = p.en.find((w) => new RegExp(wre(w), "iu").test(t)), hi = p.hi.find((w) => new RegExp(wre(w), "iu").test(t));
+        if (!en || !hi) continue;
+        const m = /\.(point|mustSay\[\d+\])$/.test(path) ? [[en, hi], [hi, en]].map(([a, b]) => t.match(new RegExp(`(\\p{L}+\\s+)?${wre(a)}(\\s+\\p{L}+)?\\s*,?\\s*(yaani\\s+)?(\\p{L}+\\s+)?${wre(b)}`, "iu"))).find(Boolean) : null;
+        if (!m) { e.push(`${path}: "${en}" and "${hi}" in one form: one term per idea (twins.json)`); continue; }
+        // (a gloss introduces one term once per script: keyed by the glossed phrase; a point and its own mustSay are one beat)
+        // (the word before a gloss names the term only when it is not a function word: "acute angle" vs "obtuse angle")
+        const term = m[0].toLowerCase().replace(/\s+/g, " ").replace(/^(bhi|par|ki|ka|ke|yeh|ye|woh|wo|toh|aur|use|is|us|ek|jo|hai|hain|the|a|an|this|that|and|its) /, ""), beat = path.replace(/\.(point|mustSay\[\d+\])$/, "");
+        if (glossed.has(term) && glossed.get(term) !== beat) e.push(`${path}: "${m[0]}" glossed again: a term is glossed once per script`);
+        else glossed.set(term, beat);
+      }
+    }
+    for (const [k, v] of Object.entries(x)) if (k !== "hi" && k !== "en") walk(v, path ? `${path}.${k}` : k);
+  };
+  walk(s.skills, "skills");
   return e;
 }
