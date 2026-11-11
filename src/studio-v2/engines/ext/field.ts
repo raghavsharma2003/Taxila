@@ -6,6 +6,7 @@
 //             tap the place in the asked direction
 import { carForce, compassKey, polesOk, type FieldSpec, type FlRoundT, type Slot } from "../../../../shared/studio-spec-ext/field.ts";
 import { C, W, H } from "../../core/tokens.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 import { clamp, hexA, rng } from "../../core/math.ts";
 import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
@@ -19,10 +20,9 @@ const BTN = { x: 800, y: 520, w: 170, h: 66 };
 const SLOTL = { x: 130, y: 380, w: 170, h: 60 }, SLOTR = { x: 590, y: 380, w: 170, h: 60 };
 const MYS = { x: 300, y: 330, w: 300, h: 70 };
 const MAP = { x: 430, y: 395, s: 62 };
-const NCOL = "#FF5A6E", SCOL = "#5FA8FF";
 const D2R = Math.PI / 180;
 function create(api: EngineApi, spec: FieldSpec): EngineInstance {
-  const T = spec.strings, accent = NCOL;
+  const T = spec.strings, accent = C.fieldNorth;
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
   const botR = rng(api.seed * 199 + 37), setTask = taskPill(api);
   const g = { slotL: "" as Slot, slotR: "" as Slot, running: false, runT: 0, carX: 445, carV: 0, probe: [180, 520] as [number, number], dragProbe: false, probes: [] as string[], react: "", reactT: 0, mag: [0, 0] as [number, number], dragMag: false, needle: 0, needleV: 0, away: false, answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0, slip: false };
@@ -96,8 +96,8 @@ function create(api: EngineApi, spec: FieldSpec): EngineInstance {
   }
   function paintBg(c: Ctx) { backdrop(c, accent, 199, 0); }
   function barMagnet(ctx: Ctx, x: number, y: number, w: number, h: number, poles: string, label = true) {
-    ctx.save(); ctx.fillStyle = poles[0] === "N" ? NCOL : poles[0] === "S" ? SCOL : "#7A8094"; roundRect(ctx, x, y, w / 2, h, 10); ctx.fill(); ctx.fillStyle = poles[1] === "N" ? NCOL : poles[1] === "S" ? SCOL : "#7A8094"; roundRect(ctx, x + w / 2, y, w / 2, h, 10); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,.4)"; ctx.lineWidth = 2; roundRect(ctx, x, y, w, h, 10); ctx.stroke(); ctx.restore();
-    if (label) { api.text(ctx, poles[0], x + w / 4, y + h / 2 + 2, { font: "display", size: 38, weight: 800, color: "#0B0E14", align: "center", baseline: "middle" }); api.text(ctx, poles[1], x + (3 * w) / 4, y + h / 2 + 2, { font: "display", size: 38, weight: 800, color: "#0B0E14", align: "center", baseline: "middle" }); }
+    ctx.save(); ctx.fillStyle = poles[0] === "N" ? C.fieldNorth : poles[0] === "S" ? C.fieldSouth : C.fieldNeutral; roundRect(ctx, x, y, w / 2, h, 10); ctx.fill(); ctx.fillStyle = poles[1] === "N" ? C.fieldNorth : poles[1] === "S" ? C.fieldSouth : C.fieldNeutral; roundRect(ctx, x + w / 2, y, w / 2, h, 10); ctx.fill(); ctx.strokeStyle = withAlpha(C.lo, .4); ctx.lineWidth = 2; roundRect(ctx, x, y, w, h, 10); ctx.stroke(); ctx.restore();
+    if (label) { api.text(ctx, poles[0], x + w / 4, y + h / 2 + 2, { font: "display", size: 38, weight: 800, color: C.fieldLabelDark, align: "center", baseline: "middle" }); api.text(ctx, poles[1], x + (3 * w) / 4, y + h / 2 + 2, { font: "display", size: 38, weight: 800, color: C.fieldLabelDark, align: "center", baseline: "middle" }); }
   }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
@@ -105,24 +105,24 @@ function create(api: EngineApi, spec: FieldSpec): EngineInstance {
     const r = rd(); if (!r) return; const done = g.answered, ok = g.verdict === "right";
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     if (r.mode === "poles") {
-      ctx.save(); ctx.fillStyle = "#2A3142"; ctx.fillRect(120, 470, 660, 16); ctx.restore();
+      ctx.save(); ctx.fillStyle = C.fieldTrack; ctx.fillRect(120, 470, 660, 16); ctx.restore();
       for (const [b, s, lab] of [[SLOTL, g.slotL, T.left], [SLOTR, g.slotR, T.right]] as [typeof SLOTL, Slot, string][]) { if (s) barMagnet(ctx, b.x, b.y, b.w, b.h, s); else { ctx.save(); ctx.strokeStyle = hexA(C.volt, 0.6 + 0.3 * Math.sin(now * 4)); ctx.setLineDash([8, 6]); ctx.lineWidth = 3; roundRect(ctx, b.x, b.y, b.w, b.h, 10); ctx.stroke(); ctx.restore(); api.text(ctx, T.empty, b.x + b.w / 2, b.y + b.h / 2 + 2, { size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle" }); } api.text(ctx, lab, b.x + b.w / 2, b.y - 30, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" }); }
-      barMagnet(ctx, g.carX - 80, 400, 160, 56, r.car); ctx.save(); ctx.fillStyle = "#0B0E14"; for (const dx of [-50, 50]) { ctx.beginPath(); ctx.arc(g.carX + dx, 466, 12, 0, Math.PI * 2); ctx.fill(); } ctx.restore();
+      barMagnet(ctx, g.carX - 80, 400, 160, 56, r.car); ctx.save(); ctx.fillStyle = C.fieldLabelDark; for (const dx of [-50, 50]) { ctx.beginPath(); ctx.arc(g.carX + dx, 466, 12, 0, Math.PI * 2); ctx.fill(); } ctx.restore();
       if (g.running) { const f = carForce(r.car, g.slotL, g.slotR); for (const [v, x] of [[f.l, SLOTL.x + SLOTL.w + 20], [f.r, SLOTR.x - 20]] as [number, number][]) if (v) { pill(api, ctx, (x < g.carX ? v === 1 : v === -1) ? T.push : T.pull, x + (x < g.carX ? 40 : -40), 330, { color: (x < g.carX ? v === 1 : v === -1) ? C.amber : C.ion, size: 38 }); } }
       if (done) pill(api, ctx, g.detail, 450, 560, { color: ok ? C.mint : C.amber, size: 38 });
-      ctx.save(); ctx.fillStyle = !done && !g.running && (g.slotL || g.slotR) ? "rgba(203,255,77,.14)" : "rgba(22,26,36,.95)"; roundRect(ctx, BTN.x, BTN.y, BTN.w, BTN.h, 16); ctx.fill(); ctx.strokeStyle = !done && (g.slotL || g.slotR) ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, T.run, BTN.x + BTN.w / 2, BTN.y + BTN.h / 2 + 2, { size: 38, weight: 800, color: !done && (g.slotL || g.slotR) ? C.volt : C.ink3, align: "center", baseline: "middle", maxWidth: BTN.w - 12 });
+      ctx.save(); ctx.fillStyle = !done && !g.running && (g.slotL || g.slotR) ? withAlpha(C.volt, .14) : withAlpha(C.bg2, .95); roundRect(ctx, BTN.x, BTN.y, BTN.w, BTN.h, 16); ctx.fill(); ctx.strokeStyle = !done && (g.slotL || g.slotR) ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, T.run, BTN.x + BTN.w / 2, BTN.y + BTN.h / 2 + 2, { size: 38, weight: 800, color: !done && (g.slotL || g.slotR) ? C.volt : C.ink3, align: "center", baseline: "middle", maxWidth: BTN.w - 12 });
     } else if (r.mode === "label") {
       const shake = g.reactT > 0 ? Math.sin(now * 50) * 4 * g.reactT : 0;
       barMagnet(ctx, MYS.x + shake, MYS.y, MYS.w, MYS.h, done ? r.hidden : "??", true);
       if (!done && g.probes.length) textBlock(api, ctx, T.tapN, 450, 250, 520, { size: 38, weight: 600, color: C.ink2 }, 1);
-      const faceRight = g.probe[0] < MYS.x + MYS.w / 2; ctx.save(); ctx.translate(g.probe[0], g.probe[1]); barMagnet(ctx, -70, -26, 140, 52, faceRight ? "SN" : "NS"); ctx.restore(); bloom(ctx, NCOL, g.probe[0] + (faceRight ? 35 : -35), g.probe[1], 40, g.dragProbe ? 0.4 : 0.15);
+      const faceRight = g.probe[0] < MYS.x + MYS.w / 2; ctx.save(); ctx.translate(g.probe[0], g.probe[1]); barMagnet(ctx, -70, -26, 140, 52, faceRight ? "SN" : "NS"); ctx.restore(); bloom(ctx, C.fieldNorth, g.probe[0] + (faceRight ? 35 : -35), g.probe[1], 40, g.dragProbe ? 0.4 : 0.15);
       if (g.reactT > 0) pill(api, ctx, g.react, 450, 470, { color: g.react === T.push ? C.amber : C.ion, size: 40 });
       api.text(ctx, `${g.probes.length}`, 885, 260, { font: "display", size: 56, weight: 800, color: C.ink, align: "center", baseline: "middle" }); api.text(ctx, T.tests, 885, 312, { size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
       if (done) pill(api, ctx, ok ? "N ✓" : "N ✗", 450, 470, { color: ok ? C.mint : C.amber, size: 40 });
     } else {
-      ctx.save(); ctx.fillStyle = "#1E3324"; ctx.beginPath(); ctx.arc(MAP.x, MAP.y, 215, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = C.fieldMap; ctx.beginPath(); ctx.arc(MAP.x, MAP.y, 215, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
       r.places.forEach((pl, i) => { const [x, y] = placeXY(r, i), hot = done && i === compassKey(r); bloom(ctx, hot ? C.mint : accent, x, y, 40, hot ? 0.5 : 0.15); drawGlyph(ctx, pl.glyph, x, y - 6, 44, C.ink, hexA(accent, 0.3)); api.text(ctx, pl.label, clamp(x, 220, 640), y + 34, { size: 38, weight: 700, color: C.ink, align: "center", baseline: "middle", maxWidth: 200 }); });
-      ctx.save(); ctx.fillStyle = "#E8ECF5"; ctx.beginPath(); ctx.arc(MAP.x, MAP.y, 38, 0, Math.PI * 2); ctx.fill(); ctx.translate(MAP.x, MAP.y); ctx.rotate((g.needle + 90) * D2R); ctx.fillStyle = NCOL; ctx.beginPath(); ctx.moveTo(0, -32); ctx.lineTo(8, 0); ctx.lineTo(-8, 0); ctx.fill(); ctx.fillStyle = SCOL; ctx.beginPath(); ctx.moveTo(0, 32); ctx.lineTo(8, 0); ctx.lineTo(-8, 0); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.fillStyle = C.fieldCompass; ctx.beginPath(); ctx.arc(MAP.x, MAP.y, 38, 0, Math.PI * 2); ctx.fill(); ctx.translate(MAP.x, MAP.y); ctx.rotate((g.needle + 90) * D2R); ctx.fillStyle = C.fieldNorth; ctx.beginPath(); ctx.moveTo(0, -32); ctx.lineTo(8, 0); ctx.lineTo(-8, 0); ctx.fill(); ctx.fillStyle = C.fieldSouth; ctx.beginPath(); ctx.moveTo(0, 32); ctx.lineTo(8, 0); ctx.lineTo(-8, 0); ctx.fill(); ctx.restore();
       if (g.mag[0] > 0) { ctx.save(); ctx.translate(g.mag[0], g.mag[1]); barMagnet(ctx, -60, -22, 120, 44, "NS"); ctx.restore(); if (!g.away) textBlock(api, ctx, T.moveAway, 885, 300, 200, { size: 38, weight: 600, color: C.amber }, 4); }
       api.text(ctx, T.needle, MAP.x, MAP.y + 64, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle", decor: true });
       if (done) { const nx = MAP.x + Math.cos(((-90 + r.turn) * Math.PI) / 180) * 250, ny = MAP.y + Math.sin(((-90 + r.turn) * Math.PI) / 180) * 250; pill(api, ctx, `N`, clamp(nx, 140, 740), clamp(ny, 190, 590), { color: C.mint, size: 38 }); }
@@ -156,4 +156,4 @@ function create(api: EngineApi, spec: FieldSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds.map((x) => x.sub || x.title).slice(0, 3), figure: { kind: "none" }, accent }),
   };
 }
-export const field: EngineDef<FieldSpec> = { archetype: "field-lab@1", label: "Simulation · Magnet Field Lab", accent: "#FF5A6E", create };
+export const field: EngineDef<FieldSpec> = { archetype: "field-lab@1", label: "Simulation · Magnet Field Lab", get accent() { return C.fieldNorth; }, create };

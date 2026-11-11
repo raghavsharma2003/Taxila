@@ -6,6 +6,7 @@
 import { fits, proof, sieveStream, type SieveSpec, type SvRoundT } from "../../../../shared/studio-spec-ext/sieve.ts";
 import { factorsOf } from "../../../../shared/studio-spec-ext/common.ts";
 import { C, W, H } from "../../core/tokens.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 import { clamp, hexA, rng } from "../../core/math.ts";
 import { bloom, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
@@ -94,17 +95,17 @@ function create(api: EngineApi, spec: SieveSpec): EngineInstance {
     hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("calls", tally(g.roundHit, g.hitTotal), { bump: true }); hud.set("combo", String(g.combo), { tone: g.combo >= 5 ? "mint" : null });
   }
   function hex(ctx: Ctx, x: number, y: number, r: number) { ctx.beginPath(); for (let k = 0; k < 6; k++) { const a = Math.PI / 6 + (k * Math.PI) / 3; ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); } ctx.closePath(); }
-  function paintBg(c: Ctx) { backdrop(c, accent, 61, 70); c.fillStyle = "rgba(139,152,255,.06)"; c.fillRect(0, VAULT, W, H - VAULT); c.strokeStyle = hexA(C.ion, 0.5); c.lineWidth = 3; c.beginPath(); c.moveTo(150, VAULT); c.lineTo(870, VAULT); c.stroke(); }
+  function paintBg(c: Ctx) { backdrop(c, accent, 61, 70); c.fillStyle = withAlpha(C.ion, .06); c.fillRect(0, VAULT, W, H - VAULT); c.strokeStyle = hexA(C.ion, 0.5); c.lineWidth = 3; c.beginPath(); c.moveTo(150, VAULT); c.lineTo(870, VAULT); c.stroke(); }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
     if (!fontOk) return;
     const r = rd(); if (!r) return;
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
-    for (const col of COLS) { ctx.strokeStyle = "rgba(255,255,255,.035)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(col, TOP); ctx.lineTo(col, VAULT); ctx.stroke(); }
+    for (const col of COLS) { ctx.strokeStyle = withAlpha(C.hi, .035); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(col, TOP); ctx.lineTo(col, VAULT); ctx.stroke(); }
     for (const c of g.crs) {
       if (c.state === "fall") {
         bloom(ctx, accent, c.x, c.y, R * 1.6, 0.25);
-        ctx.save(); hex(ctx, c.x, c.y, R); ctx.fillStyle = "rgba(24,28,46,.96)"; ctx.fill(); ctx.strokeStyle = hexA(accent, 0.9); ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
+        ctx.save(); hex(ctx, c.x, c.y, R); ctx.fillStyle = withAlpha(C.sieveCell, .96); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.9); ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
         api.text(ctx, String(c.n), c.x, c.y + 2, { font: "display", size: c.n >= 1000 ? 38 : 44, weight: 800, align: "center", baseline: "middle" });
       } else {
         const k = clamp(c.t / 1.2, 0, 1), col = c.ok ? C.mint : C.amber;
@@ -141,4 +142,4 @@ function create(api: EngineApi, spec: SieveSpec): EngineInstance {
     board: () => { const r0 = spec.rounds[0], st = sieveStream(r0); return { title: spec.title, lines: [ruleText(r0), st.filter((n) => fits(r0, n)).slice(0, 8).join(", ")], figure: { kind: "none" }, accent }; },
   };
 }
-export const sieve: EngineDef<SieveSpec> = { archetype: "sieve-storm@1", label: "Game · Sieve Storm", accent: C.ion, create };
+export const sieve: EngineDef<SieveSpec> = { archetype: "sieve-storm@1", label: "Game · Sieve Storm", get accent() { return C.ion; }, create };

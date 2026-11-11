@@ -128,8 +128,182 @@ export const themeOf = (name: string | null | undefined): Theme => THEMES[(name 
 // read them as C.<key> (src/studio-v2/core/tokens.ts merges these tables into C for the active theme).
 export const ENGINE_1 = {
   night: {
+    // moon
+    moonDarkSide: "#1A2030", moonDarkSideEclipse: "#1C222F", moonDarkSideBlood: "#3A1A12", moonLitEclipse: "#F2F0EA",
+    moonBlood: "#D0673C", moonLit: "#F4F2EC", moonLitEdgeEclipse: "#B9BCC6", moonBloodEdge: "#7A2E18",
+    moonLitEdge: "#B5B9C4", moonCrater: "#3A4050", moonPhaseDark: "#151A26", moonPhaseEdge: "#A9AEBA",
+    moonPhaseBloodEdge: "#6A2A16", moonPhaseCrater: "#2E3443", moonEarthSea: "#3F8BF0", moonEarthSeaDeep: "#13408F",
+    moonEarthLand: "#5CAA6E", moonEarthIce: "#F0F6FF", moonEarthNight: "#040712", moonEarthAir: "#82BEFF",
+    moonDuskTop: "#070A1C", moonDuskMid: "#1A1D46", moonDuskLow: "#4A2E58", moonDuskGlow: "#C0705A",
+    moonStar: "#E8ECFF", moonSkyline: "#06070D", moonWindowLight: "#FFCE82", moonSpaceCore: "#0D1120",
+    moonSpace: "#05060B", moonStarFar: "#C9D2F2", moonSunGlow: "#FFB24A", moonSunCore: "#FFF4D6", moonSunRim: "#FFA94A",
+    moonVoid: "#07080E", moonShine: "#DDE6FF", moonOrbit: "#AAB4D2", moonSunArc: "#FFC86B", moonSunLabel: "#3A2208",
+    moonShadowLabel: "#9AA6C8", moonEclipseLabel: "#E8956A", moonPaneSkyTop: "#0A1030", moonPaneSkyMid: "#1B2353",
+    moonPaneSkyLow: "#3B2A55", moonPaneStar: "#E6EAFF", moonBloodWash: "#963C1E",
+    // heat
+    heatStones: "#8E96A8", heatRice: "#F2EEDC", heatFlour: "#EDE6D3", heatHusk: "#C9A26B", heatSand: "#D9B36C",
+    heatSugar: "#FFF4D6", heatIron: "#5A6070", heatSawdust: "#B88B5A", heatChalk: "#F4F4F4", heatFinBlack: "#15171C",
+    heatFinDark: "#3E4A5C", heatFinShiny: "#C8D0DC", heatAccent: "#FF8F6B", heatVessel: "#2A3142", heatWet: "#5AA0FF",
+    heatRod: "#3A4256", heatWax: "#F3E7C4", heatRodEdge: "#C9D2E8", heatLabelDark: "#0B0E14", heatPale: "#E8ECF5",
+    heatDaySky: "#78AAE6", heatNightSky: "#141E3C", heatDark: "#151A28", heatSea: "#1F5D8C", heatLand: "#6D5A3A",
+    heatSeaLabel: "#CFE3FF", heatLandLabel: "#F3E1C0", heatSeaTemp: "#9FD0FF", heatLandTemp: "#FFD49A",
+    heatCool: "#BFE4FF", heatWarm: "#FFB0A0", heatNeutral: "#E0E6F0", heatRadiator: "#4A3A2E", heatSalt: "#FFFFFF",
+    heatFinWhite: "#F2F4F8",
+    // sky
+    skyAccent: "#9FB7FF", skySunCore: "#FFF6D0", skyMoonDark: "#1E222C", skyMoonLit: "#F2F0E6", skyEarthSea: "#1C4E7A",
+    skyEarthLand: "#4E7A4A", skyNightSide: "#03060E", skyEarthLit: "#5FA8FF", skyEarthDark: "#0D2440",
+    skyEarth: "#3D7BD9", skyMoonShade: "#2A2E38", skyMoon: "#E8ECF5", skyMoonGrey: "#D8DCE6", skyCard: "#0A0D14",
+    skyBloodMoon: "#A0281E", skyDomeTop: "#0F1B3A", skyDome: "#070B18", skyTrack: "#A0BEFF", skyStar: "#C8D2FF",
+    skyStarBright: "#F2F5FF",
+    // phase
+    phaseBurner: "#151924", phaseHeatGlow: "#FF8A4C", phaseCool: "#7FD6FF", phaseGlass: "#DCE6FF", phaseDrop: "#9FD8F0",
+    phaseIceBond: "#BEEBFF", phaseIce: "#CFF2FF", phaseWaterCold: "#5F7BFF", phaseWaterHot: "#9AA7FF",
+    phaseHeat: "#FF9A5C", phaseKnob: "#1F2536",
+    // dukaan
+    dkNoteUnknown: "#999999", dkNote500: "#9AA0A6", dkNote200: "#F2C230", dkNote100: "#B9A4E0", dkNote50: "#5FC8E8",
+    dkNote20: "#C7D85A", dkNote10: "#9C6B48", dkCoinSmall: "#B7BCC4", dkCoin: "#C9CED6", dkCoinGold: "#C9B26A",
+    dkCounter: "#3C2818", dkLamp: "#FFC878", dkCard: "#18161E", dkTray: "#0E1016", dkTill: "#12100E",
+    dkCrate: "#3C2D19", dkCrateFill: "#966E3C", dkButton: "#16181E",
+    // watercycle
+    wcInset: "#121726", wcSkyTop: "#08122A", wcSkyMid: "#1A2C55", wcSkyLow: "#3E5482", wcStar: "#DDE6FF",
+    wcLand: "#1E2B25", wcHills: "#2D3650", wcSnow: "#E6ECF5", wcSunGlow: "#FFC46B", wcSun: "#FFE7A8", wcSoil: "#2A2118",
+    wcGroundWater: "#5096FF", wcGrain: "#6B5642", wcSeep: "#A0CDFF", wcSea: "#1E5594", wcSeaDeep: "#0B2142",
+    wcSeaLine: "#C8E1FF", wcRiver: "#6EAAFF", wcCloud: "#EBF0FA", wcCloudShade: "#AAB4C8", wcInsetHill: "#4A5168",
+    wcVapourLabel: "#BFD4FF", wcRainLabel: "#9CC4FF", wcVapour: "#DCEBFF", wcRain: "#96C3FF", wcMist: "#F0F4FA",
+    // solarscale
+    solarSpaceCore: "#151A2E", solarSpace: "#05060B", solarStar: "#C9D2F2", solarSunGlow: "#FFC46B",
+    solarSun: "#FFE3A0", solarRing: "#E6D29A", solarFarSunGlow: "#FFF3C8", solarFarSun: "#FFF8E0",
+    solarEarthGlow: "#4F8FEA", solarEarth: "#6FA3F0", solarOrbit: "#FFE2A0", solarLabel: "#9CC4FF",
+    // vault
+    vaultTileShade: "#141828", vaultTray: "#151925", vaultDigit100: "#C69BFF", vaultDigit10000: "#7FD6FF",
+    vaultBgTop: "#0A0B11", vaultBg: "#11131C", vaultBelt: "#1A1F2C", vaultBeltEdge: "#0D0F17", vaultLaser: "#FF9678",
+    vaultLaserGlow: "#FF9A78",
+    // beam
+    beamCrateLow: "#141829", beamBgTop: "#0B0C13", beamBg: "#13141D", beamFloor: "#171A25", beamPan: "#9AA3B8",
+    beamLabelDark: "#0B0D14", beamKilo: "#C9D0E6", beamMysteryTop: "#3A2E14", beamCrateTop: "#232A45",
+    beamMysteryLow: "#211A0B", beamFulcrum: "#262C3D", beamBarHi: "#C9CFE0", beamBarLo: "#6B7390", beamPeg: "#1A1F2C",
+    beamHook: "#2F3547", beamHanger: "#3A4157",
+    // data
+    dataRoad: "#151924", dataCar: "#9AA7FF", dataBus: "#C9D0E6", dataAuto: "#CBD58A", dataTruck: "#B7A79A",
+    dataGlass: "#0A0C14", dataDarkPart: "#1F2536", dataLamp: "#FFF2C0", dataLight: "#3A4256",
+    // area
+    areaPlot: "#101712", areaBgTop: "#0A0D12", areaBg: "#0F1511", areaSoil: "#16211A", areaSoilAlt: "#18241C",
+    areaSprout: "#7BE3A9", areaPaved: "#343C52",
+    // pattern
+    patPoly3: "#FF8FB1", patBlue: "#5FA8FF", patPoly5: "#C9A7FF", patPoly6: "#7FD3A6", patPoly12: "#9FE7FF",
+    patLabelDark: "#0B0E14",
+    // beat
+    beatRightCard: "#142820", beatChip: "#181428", beatAccent: "#FF8FB1", beatGlow: "#1C1530", beatBgMid: "#0F0D1C",
+    beatBg: "#06060B", beatCue: "#12101E", beatWrongCard: "#281E10",
+    // foodweb
+    fwBgTop: "#0A0D10", fwBgMid: "#0D1410", fwBg: "#0C120E", fwGrass: "#7BD389", fwLostCard: "#281E16",
+    // field
+    fieldNorth: "#FF5A6E", fieldSouth: "#5FA8FF", fieldNeutral: "#7A8094", fieldLabelDark: "#0B0E14",
+    fieldTrack: "#2A3142", fieldMap: "#1E3324", fieldCompass: "#E8ECF5",
+    // landfall
+    landCardLow: "#141829", landSkyTop: "#090B11", landSkyMid: "#0E1220", landSkyLow: "#151A33", landGround: "#0B0D15",
+    landCardTop: "#232A45",
+    // picto
+    pictoShelf: "#121621", pictoPink: "#FF8FB1",
+    // zero
+    zeroBelt: "#121621", zeroNeg: "#5FA8FF", zeroTray: "#0E1018",
+    // runner
+    runSkyMid: "#121732", runSkyTop: "#090B12", runSkyLow: "#0A0C14", runCity: "#0C0F1D", runGround: "#0B0D16",
+    // era
+    eraPod: "#181426", eraAccent: "#C9A7FF", eraDust: "#D9C8FF",
+    // mirror
+    mirrorAccent: "#FF8FB1", mirrorBoard: "#12141E",
+    // sieve
+    sieveCell: "#181C2E",
   },
   paper: {
+    // moon
+    moonDarkSide: "#D5DAE8", moonDarkSideEclipse: "#D6DBE7", moonDarkSideBlood: "#3A1A12", moonLitEclipse: "#F2F0EA",
+    moonBlood: "#D0673C", moonLit: "#F4F2EC", moonLitEdgeEclipse: "#B9BCC6", moonBloodEdge: "#7A2E18",
+    moonLitEdge: "#B5B9C4", moonCrater: "#C3C8D4", moonPhaseDark: "#DBE0EB", moonPhaseEdge: "#A9AEBA",
+    moonPhaseBloodEdge: "#6A2A16", moonPhaseCrater: "#CBCFDB", moonEarthSea: "#3F8BF0", moonEarthSeaDeep: "#13408F",
+    moonEarthLand: "#5CAA6E", moonEarthIce: "#F0F6FF", moonEarthNight: "#040712", moonEarthAir: "#82BEFF",
+    moonDuskTop: "#E4E6F1", moonDuskMid: "#CCCEE4", moonDuskLow: "#D2BDDC", moonDuskGlow: "#C0705A",
+    moonStar: "#E8ECFF", moonSkyline: "#2B2620", moonWindowLight: "#FFCE82", moonSpaceCore: "#E0E3EE",
+    moonSpace: "#EBEDF5", moonStarFar: "#C9D2F2", moonSunGlow: "#FFB24A", moonSunCore: "#FFF4D6", moonSunRim: "#FFA94A",
+    moonVoid: "#EAEBF3", moonShine: "#DDE6FF", moonOrbit: "#AAB4D2", moonSunArc: "#FFC86B", moonSunLabel: "#35220D",
+    moonShadowLabel: "#3A466A", moonEclipseLabel: "#834221", moonPaneSkyTop: "#DBDEEC", moonPaneSkyMid: "#C7CBE1",
+    moonPaneSkyLow: "#CCC0DD", moonPaneStar: "#E6EAFF", moonBloodWash: "#963C1E",
+    // heat
+    heatStones: "#8E96A8", heatRice: "#F2EEDC", heatFlour: "#EDE6D3", heatHusk: "#C9A26B", heatSand: "#D9B36C",
+    heatSugar: "#FFF4D6", heatIron: "#5A6070", heatSawdust: "#B88B5A", heatChalk: "#F4F4F4", heatFinBlack: "#15171C",
+    heatFinDark: "#3E4A5C", heatFinShiny: "#C8D0DC", heatAccent: "#FF8F6B", heatVessel: "#CBD0DE", heatWet: "#5AA0FF",
+    heatRod: "#BFC5D4", heatWax: "#F3E7C4", heatRodEdge: "#C9D2E8", heatLabelDark: "#1C1A16", heatPale: "#E8ECF5",
+    heatDaySky: "#78AAE6", heatNightSky: "#D3D8E7", heatDark: "#DADEEB", heatSea: "#1F5D8C", heatLand: "#6D5A3A",
+    heatSeaLabel: "#214983", heatLandLabel: "#836021", heatSeaTemp: "#215383", heatLandTemp: "#835921",
+    heatCool: "#BFE4FF", heatWarm: "#FFB0A0", heatNeutral: "#E0E6F0", heatRadiator: "#4A3A2E", heatSalt: "#FFFFFF",
+    heatFinWhite: "#F2F4F8",
+    // sky
+    skyAccent: "#9FB7FF", skySunCore: "#FFF6D0", skyMoonDark: "#D8DCE5", skyMoonLit: "#F2F0E6", skyEarthSea: "#B7C9D8",
+    skyEarthLand: "#4E7A4A", skyNightSide: "#03060E", skyEarthLit: "#5FA8FF", skyEarthDark: "#D4DDE8",
+    skyEarth: "#3D7BD9", skyMoonShade: "#D2D5DD", skyMoon: "#E8ECF5", skyMoonGrey: "#D8DCE6", skyCard: "#E6E9F2",
+    skyBloodMoon: "#A0281E", skyDomeTop: "#D5DBE9", skyDome: "#E6E8F1", skyTrack: "#A0BEFF", skyStar: "#C8D2FF",
+    skyStarBright: "#F2F5FF",
+    // phase
+    phaseBurner: "#DDE0EB", phaseHeatGlow: "#FF8A4C", phaseCool: "#7FD6FF", phaseGlass: "#DCE6FF", phaseDrop: "#9FD8F0",
+    phaseIceBond: "#BEEBFF", phaseIce: "#CFF2FF", phaseWaterCold: "#5F7BFF", phaseWaterHot: "#9AA7FF",
+    phaseHeat: "#FF9A5C", phaseKnob: "#D2D7E5",
+    // dukaan
+    dkNoteUnknown: "#999999", dkNote500: "#9AA0A6", dkNote200: "#F2C230", dkNote100: "#B9A4E0", dkNote50: "#5FC8E8",
+    dkNote20: "#C7D85A", dkNote10: "#9C6B48", dkCoinSmall: "#B7BCC4", dkCoin: "#C9CED6", dkCoinGold: "#C9B26A",
+    dkCounter: "#E6DAD1", dkLamp: "#FFC878", dkCard: "#E3E1E9", dkTray: "#E5E8EF", dkTill: "#EEEBE9",
+    dkCrate: "#E6DDD1", dkCrateFill: "#966E3C", dkButton: "#E1E3E9",
+    // watercycle
+    wcInset: "#DCE0EC", wcSkyTop: "#DEE3ED", wcSkyMid: "#C6CEE1", wcSkyLow: "#3E5482", wcStar: "#DDE6FF",
+    wcLand: "#D9E5DF", wcHills: "#C2C9DD", wcSnow: "#E6ECF5", wcSunGlow: "#FFC46B", wcSun: "#FFE7A8", wcSoil: "#E9E1D9",
+    wcGroundWater: "#5096FF", wcGrain: "#6B5642", wcSeep: "#A0CDFF", wcSea: "#1E5594", wcSeaDeep: "#D4DCE8",
+    wcSeaLine: "#C8E1FF", wcRiver: "#6EAAFF", wcCloud: "#EBF0FA", wcCloudShade: "#AAB4C8", wcInsetHill: "#4A5168",
+    wcVapourLabel: "#214183", wcRainLabel: "#214883", wcVapour: "#DCEBFF", wcRain: "#96C3FF", wcMist: "#F0F4FA",
+    // solarscale
+    solarSpaceCore: "#D8DBEA", solarSpace: "#EBEDF5", solarStar: "#C9D2F2", solarSunGlow: "#FFC46B",
+    solarSun: "#FFE3A0", solarRing: "#E6D29A", solarFarSunGlow: "#FFF3C8", solarFarSun: "#FFF8E0",
+    solarEarthGlow: "#4F8FEA", solarEarth: "#6FA3F0", solarOrbit: "#FFE2A0", solarLabel: "#214883",
+    // vault
+    vaultTileShade: "#DADEEB", vaultTray: "#DCE0EB", vaultDigit100: "#C69BFF", vaultDigit10000: "#7FD6FF",
+    vaultBgTop: "#E8E9F1", vaultBg: "#E2E4ED", vaultBelt: "#D8DCE8", vaultBeltEdge: "#E4E7F0", vaultLaser: "#FF9678",
+    vaultLaserGlow: "#FF9A78",
+    // beam
+    beamCrateLow: "#DADDEB", beamBgTop: "#E7E8F1", beamBg: "#E1E2EC", beamFloor: "#DCDFE9", beamPan: "#9AA3B8",
+    beamLabelDark: "#1C1A16", beamKilo: "#C9D0E6", beamMysteryTop: "#E7E1D3", beamCrateTop: "#C9CEE2",
+    beamMysteryLow: "#EFEAE1", beamFulcrum: "#CED3E0", beamBarHi: "#C9CFE0", beamBarLo: "#6B7390", beamPeg: "#D8DCE8",
+    beamHook: "#C8CDDB", beamHanger: "#BFC4D4",
+    // data
+    dataRoad: "#DDE0EB", dataCar: "#9AA7FF", dataBus: "#C9D0E6", dataAuto: "#CBD58A", dataTruck: "#B7A79A",
+    dataGlass: "#E6E8F2", dataDarkPart: "#D2D7E5", dataLamp: "#FFF2C0", dataLight: "#BFC5D4",
+    // area
+    areaPlot: "#E5EDE7", areaBgTop: "#E7EBF2", areaBg: "#E6EEE9", areaSoil: "#DFEAE3", areaSoilAlt: "#DDE8E1",
+    areaSprout: "#7BE3A9", areaPaved: "#C1C7D8",
+    // pattern
+    patPoly3: "#FF8FB1", patBlue: "#5FA8FF", patPoly5: "#C9A7FF", patPoly6: "#7FD3A6", patPoly12: "#9FE7FF",
+    patLabelDark: "#1C1A16",
+    // beat
+    beatRightCard: "#DAEBE4", beatChip: "#DEDAEB", beatAccent: "#FF8FB1", beatGlow: "#DCD7E9", beatBgMid: "#E4E2EF",
+    beatBg: "#EBEBF4", beatCue: "#E2E0EE", beatWrongCard: "#ECE5DC",
+    // foodweb
+    fwBgTop: "#E9EDF1", fwBgMid: "#E7EFEA", fwBg: "#E8F0EB", fwGrass: "#7BD389", fwLostCard: "#EBE1DA",
+    // field
+    fieldNorth: "#FF5A6E", fieldSouth: "#5FA8FF", fieldNeutral: "#7A8094", fieldLabelDark: "#1C1A16",
+    fieldTrack: "#CBD0DE", fieldMap: "#D4E5D9", fieldCompass: "#E8ECF5",
+    // landfall
+    landCardLow: "#DADDEB", landSkyTop: "#E8EAF2", landSkyMid: "#E0E3EE", landSkyLow: "#D6D9E9", landGround: "#E5E8F1",
+    landCardTop: "#C9CEE2",
+    // picto
+    pictoShelf: "#DEE2ED", pictoPink: "#FF8FB1",
+    // zero
+    zeroBelt: "#DEE2ED", zeroNeg: "#5FA8FF", zeroTray: "#E4E6EF",
+    // runner
+    runSkyMid: "#D7DAEA", runSkyTop: "#E7EAF2", runSkyLow: "#E6E8F2", runCity: "#E2E4EF", runGround: "#E5E7F1",
+    // era
+    eraPod: "#DFDBEC", eraAccent: "#C9A7FF", eraDust: "#D9C8FF",
+    // mirror
+    mirrorAccent: "#FF8FB1", mirrorBoard: "#E0E2ED",
+    // sieve
+    sieveCell: "#D6DAE9",
   },
 } satisfies Record<ThemeName, Record<string, string>>;
 

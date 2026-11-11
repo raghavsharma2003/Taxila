@@ -10,6 +10,7 @@
 //              bowl to keep; repeat until only the target is left (dry)
 import { FLAME_C, MACHINES, MELT_C, PIN_AT, PROPS, ROD_N, ROD_T, ROOM_C, bestFinish, breezeAt, fallTimes, isPure, landC, machine, rodStep, seaC, separatePlan, tankC, type Comp, type HeatSpec, type HlRoundT, type Machine, type Stream } from "../../../../shared/studio-spec-ext/heat.ts";
 import { C, W, H } from "../../core/tokens.ts";
+import { rgbaOf, withAlpha } from "../../../theme/palette.ts";
 import { clamp, hexA, lerp, rng } from "../../core/math.ts";
 import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
@@ -21,13 +22,13 @@ import { dots } from "../../core/dots.ts";
 const BTN = { x: 800, y: 520, w: 170, h: 66 }, RESET = { x: 770, y: 572, w: 220, h: 44 };
 const ROD = { x0: 230, x1: 660 };
 const rodY = (i: number, n: number) => 250 + i * (n > 3 ? 82 : 100);
-const COMP_COL: Record<Comp, string> = { stones: "#8E96A8", rice: "#F2EEDC", flour: "#EDE6D3", husk: "#C9A26B", sand: "#D9B36C", salt: "#FFFFFF", sugar: "#FFF4D6", iron: "#5A6070", sawdust: "#B88B5A", chalk: "#F4F4F4" };
+const COMP_COL = (): Record<Comp, string> => ({ stones: C.heatStones, rice: C.heatRice, flour: C.heatFlour, husk: C.heatHusk, sand: C.heatSand, salt: C.heatSalt, sugar: C.heatSugar, iron: C.heatIron, sawdust: C.heatSawdust, chalk: C.heatChalk });
 const MCH = (i: number) => ({ x: 770, y: 178 + i * 56, w: 220, h: 48 });
 const BOWL = { main: [360, 330] as [number, number], caught: [250, 500] as [number, number], passed: [520, 500] as [number, number] };
-const FIN_COL: Record<string, string> = { black: "#15171C", dark: "#3E4A5C", white: "#F2F4F8", shiny: "#C8D0DC" };
-const heatCol = (t: number) => { const f = clamp((t - ROOM_C) / (FLAME_C - ROOM_C), 0, 1); return `rgb(${Math.round(lerp(90, 255, Math.min(1, f * 2)))},${Math.round(lerp(100, 120, f) * (1 - f * 0.4))},${Math.round(lerp(120, 40, f))})`; };
+const FIN_COL = (): Record<string, string> => ({ black: C.heatFinBlack, dark: C.heatFinDark, white: C.heatFinWhite, shiny: C.heatFinShiny });
+const heatCol = (t: number) => { const f = clamp((t - ROOM_C) / (FLAME_C - ROOM_C), 0, 1); return rgbaOf(Math.round(lerp(90, 255, Math.min(1, f * 2))), Math.round(lerp(100, 120, f) * (1 - f * 0.4)), Math.round(lerp(120, 40, f))); };
 function create(api: EngineApi, spec: HeatSpec): EngineInstance {
-  const T = spec.strings, accent = "#FF8F6B";
+  const T = spec.strings, accent = C.heatAccent;
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
   const botR = rng(api.seed * 167 + 11), setTask = taskPill(api);
   const g = {
@@ -116,17 +117,17 @@ function create(api: EngineApi, spec: HeatSpec): EngineInstance {
   }
   function paintBg(c: Ctx) { backdrop(c, accent, 167, 0); }
   function button(ctx: Ctx, b: { x: number; y: number; w: number; h: number }, label: string, on: boolean, now: number, col: string = C.volt) {
-    ctx.save(); ctx.fillStyle = on ? hexA(col, 0.14) : "rgba(22,26,36,.95)"; roundRect(ctx, b.x, b.y, b.w, b.h, 14); ctx.fill(); ctx.strokeStyle = on ? hexA(col, 0.7 + 0.3 * Math.sin(now * 4)) : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.fillStyle = on ? hexA(col, 0.14) : withAlpha(C.bg2, .95); roundRect(ctx, b.x, b.y, b.w, b.h, 14); ctx.fill(); ctx.strokeStyle = on ? hexA(col, 0.7 + 0.3 * Math.sin(now * 4)) : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
     api.text(ctx, label, b.x + b.w / 2, b.y + b.h / 2 + 2, { size: 38, weight: 700, color: on ? col : C.ink3, align: "center", baseline: "middle", maxWidth: b.w - 14 });
   }
   function bowl(ctx: Ctx, s: Stream, x: number, y: number, scale: number, seed: number, hot = false) {
     ctx.save(); ctx.translate(x, y); ctx.scale(scale, scale);
     if (hot) bloom(ctx, C.volt, 0, -10, 110, 0.25);
-    ctx.fillStyle = "rgba(255,255,255,.07)"; ctx.beginPath(); ctx.ellipse(0, 0, 100, 26, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(-100, 0); ctx.quadraticCurveTo(-90, 80, 0, 82); ctx.quadraticCurveTo(90, 80, 100, 0); ctx.fillStyle = "#2A3142"; ctx.fill(); ctx.strokeStyle = hot ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke();
-    if (s.wet) { ctx.fillStyle = "rgba(90,160,255,.45)"; ctx.beginPath(); ctx.ellipse(0, 8, 92, 22, 0, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = withAlpha(C.hi, .07); ctx.beginPath(); ctx.ellipse(0, 0, 100, 26, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-100, 0); ctx.quadraticCurveTo(-90, 80, 0, 82); ctx.quadraticCurveTo(90, 80, 100, 0); ctx.fillStyle = C.heatVessel; ctx.fill(); ctx.strokeStyle = hot ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke();
+    if (s.wet) { ctx.fillStyle = withAlpha(C.heatWet, .45); ctx.beginPath(); ctx.ellipse(0, 8, 92, 22, 0, 0, Math.PI * 2); ctx.fill(); }
     const rr = rng(seed);
-    s.items.forEach((c, ci) => { const pr = PROPS[c]; for (let i = 0; i < (pr.big ? 6 : 16); i++) { const px = (rr() - 0.5) * 160, py = (rr() - 0.4) * 34 + (pr.light ? -8 : 4); ctx.globalAlpha = s.wet && pr.soluble ? 0.25 : 1; ctx.fillStyle = COMP_COL[c]; if (c === "salt" || c === "sugar") ctx.fillRect(px - 3, py - 3, 6, 6); else if (c === "iron") { ctx.fillRect(px - 5, py - 1, 10, 2.5); } else { ctx.beginPath(); ctx.ellipse(px, py, pr.big ? 9 : pr.light ? 6 : 3.5, pr.big ? 6 : pr.light ? 2.5 : 3.5, ci, 0, Math.PI * 2); ctx.fill(); } } });
+    s.items.forEach((c, ci) => { const pr = PROPS[c]; for (let i = 0; i < (pr.big ? 6 : 16); i++) { const px = (rr() - 0.5) * 160, py = (rr() - 0.4) * 34 + (pr.light ? -8 : 4); ctx.globalAlpha = s.wet && pr.soluble ? 0.25 : 1; ctx.fillStyle = COMP_COL()[c]; if (c === "salt" || c === "sugar") ctx.fillRect(px - 3, py - 3, 6, 6); else if (c === "iron") { ctx.fillRect(px - 5, py - 1, 10, 2.5); } else { ctx.beginPath(); ctx.ellipse(px, py, pr.big ? 9 : pr.light ? 6 : 3.5, pr.big ? 6 : pr.light ? 2.5 : 3.5, ci, 0, Math.PI * 2); ctx.fill(); } } });
     ctx.globalAlpha = 1; ctx.restore();
   }
   function render(ctx: Ctx, now: number) {
@@ -136,44 +137,44 @@ function create(api: EngineApi, spec: HeatSpec): EngineInstance {
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     if (r.mode === "conduct") {
       const n = r.rods.length;
-      ctx.save(); ctx.fillStyle = "#3A4256"; ctx.fillRect(ROD.x0 - 26, rodY(0, n) - 50, 26, rodY(n - 1, n) - rodY(0, n) + 100); ctx.restore();
+      ctx.save(); ctx.fillStyle = C.heatRod; ctx.fillRect(ROD.x0 - 26, rodY(0, n) - 50, 26, rodY(n - 1, n) - rodY(0, n) + 100); ctx.restore();
       r.rods.forEach((m, i) => {
         const y = rodY(i, n), t = g.temps[i] ?? [];
         for (let c = 0; c < ROD_N; c++) { ctx.fillStyle = heatCol(t[c] ?? ROOM_C); ctx.fillRect(ROD.x0 + (c * (ROD.x1 - ROD.x0)) / ROD_N, y - 9, (ROD.x1 - ROD.x0) / ROD_N + 1, 18); }
         const px = ROD.x0 + ((PIN_AT + 0.5) * (ROD.x1 - ROD.x0)) / ROD_N, py = y + 12 + g.pinY[i];
-        ctx.save(); ctx.fillStyle = "#F3E7C4"; ctx.beginPath(); ctx.ellipse(px, y + 14, 9, 6, 0, 0, Math.PI * 2); ctx.globalAlpha = g.fell[i] >= 0 ? 0.3 : 1; ctx.fill(); ctx.globalAlpha = 1; ctx.strokeStyle = "#C9D2E8"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py + 30); ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.fillStyle = C.heatWax; ctx.beginPath(); ctx.ellipse(px, y + 14, 9, 6, 0, 0, Math.PI * 2); ctx.globalAlpha = g.fell[i] >= 0 ? 0.3 : 1; ctx.fill(); ctx.globalAlpha = 1; ctx.strokeStyle = C.heatRodEdge; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py + 30); ctx.stroke(); ctx.restore();
         api.text(ctx, T[m], ROD.x0, y - 34, { size: 38, weight: 700, color: C.ink2, baseline: "middle" });
-        const rank = g.order.indexOf(i); if (rank >= 0) { ctx.save(); ctx.fillStyle = C.volt; ctx.beginPath(); ctx.arc(ROD.x1 + 46, y, 24, 0, Math.PI * 2); ctx.fill(); ctx.restore(); api.text(ctx, String(rank + 1), ROD.x1 + 46, y + 2, { font: "display", size: 38, weight: 800, color: "#0B0E14", align: "center", baseline: "middle" }); }
+        const rank = g.order.indexOf(i); if (rank >= 0) { ctx.save(); ctx.fillStyle = C.volt; ctx.beginPath(); ctx.arc(ROD.x1 + 46, y, 24, 0, Math.PI * 2); ctx.fill(); ctx.restore(); api.text(ctx, String(rank + 1), ROD.x1 + 46, y + 2, { font: "display", size: 38, weight: 800, color: C.heatLabelDark, align: "center", baseline: "middle" }); }
         if (g.fell[i] >= 0) api.text(ctx, `${g.fell[i].toFixed(1)} s`, px, y - 34, { font: "mono", size: 38, weight: 600, color: C.sun, align: "center", baseline: "middle", decor: true });
       });
-      const fy = rodY(n - 1, n) + 70, fl = 1 + Math.sin(now * 20) * 0.1; if (g.heating) { bloom(ctx, C.sun, ROD.x0 - 13, fy - 20, 60, 0.6); ctx.save(); ctx.fillStyle = "#FFB547"; ctx.beginPath(); ctx.ellipse(ROD.x0 - 13, fy - 20 * fl, 14, 30 * fl, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
-      ctx.save(); ctx.fillStyle = "#E8ECF5"; ctx.fillRect(ROD.x0 - 25, fy, 24, 40); ctx.restore();
+      const fy = rodY(n - 1, n) + 70, fl = 1 + Math.sin(now * 20) * 0.1; if (g.heating) { bloom(ctx, C.sun, ROD.x0 - 13, fy - 20, 60, 0.6); ctx.save(); ctx.fillStyle = C.amber; ctx.beginPath(); ctx.ellipse(ROD.x0 - 13, fy - 20 * fl, 14, 30 * fl, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+      ctx.save(); ctx.fillStyle = C.heatPale; ctx.fillRect(ROD.x0 - 25, fy, 24, 40); ctx.restore();
       if (g.heating) api.text(ctx, `${g.ht.toFixed(1)} s`, 880, 300, { font: "display", size: 44, weight: 800, color: C.ink, align: "center", baseline: "middle" });
       button(ctx, BTN, T.heat, !done && !g.heating && g.order.length === n, now, C.sun);
     } else if (r.mode === "breeze") {
       const h = r.asks[g.k], day = h >= 6 && h < 18, a = ((h - 6) / 12) * Math.PI, sx = 430 - Math.cos(a) * 300, sy = 330 - Math.sin(a) * 140;
-      ctx.save(); ctx.fillStyle = day ? "rgba(120,170,230,.12)" : "rgba(20,30,60,.4)"; ctx.fillRect(100, 170, 660, 200); ctx.restore();
-      if (day) { bloom(ctx, C.sun, sx, sy, 60, 0.7); ctx.save(); ctx.fillStyle = C.sun; ctx.beginPath(); ctx.arc(sx, sy, 22, 0, Math.PI * 2); ctx.fill(); ctx.restore(); } else { ctx.save(); ctx.fillStyle = "#E8ECF5"; ctx.beginPath(); ctx.arc(640, 210, 18, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#151A28"; ctx.beginPath(); ctx.arc(650, 204, 16, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
-      ctx.save(); ctx.fillStyle = "#1F5D8C"; ctx.fillRect(100, 400, 330, 130); ctx.fillStyle = "#6D5A3A"; ctx.beginPath(); ctx.moveTo(430, 400); ctx.lineTo(760, 380); ctx.lineTo(760, 530); ctx.lineTo(430, 530); ctx.fill(); ctx.restore();
-      api.text(ctx, T.sea, 265, 470, { size: 38, weight: 700, color: "#CFE3FF", align: "center", baseline: "middle" });
-      api.text(ctx, T.land, 600, 470, { size: 38, weight: 700, color: "#F3E1C0", align: "center", baseline: "middle" });
-      if (g.probe.sea) pill(api, ctx, `${seaC(h).toFixed(0)} °C`, 265, 560, { color: "#9FD0FF", size: 38 });
-      if (g.probe.land) pill(api, ctx, `${landC(h).toFixed(0)} °C`, 600, 560, { color: "#FFD49A", size: 38 });
+      ctx.save(); ctx.fillStyle = day ? withAlpha(C.heatDaySky, .12) : withAlpha(C.heatNightSky, .4); ctx.fillRect(100, 170, 660, 200); ctx.restore();
+      if (day) { bloom(ctx, C.sun, sx, sy, 60, 0.7); ctx.save(); ctx.fillStyle = C.sun; ctx.beginPath(); ctx.arc(sx, sy, 22, 0, Math.PI * 2); ctx.fill(); ctx.restore(); } else { ctx.save(); ctx.fillStyle = C.heatPale; ctx.beginPath(); ctx.arc(640, 210, 18, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = C.heatDark; ctx.beginPath(); ctx.arc(650, 204, 16, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+      ctx.save(); ctx.fillStyle = C.heatSea; ctx.fillRect(100, 400, 330, 130); ctx.fillStyle = C.heatLand; ctx.beginPath(); ctx.moveTo(430, 400); ctx.lineTo(760, 380); ctx.lineTo(760, 530); ctx.lineTo(430, 530); ctx.fill(); ctx.restore();
+      api.text(ctx, T.sea, 265, 470, { size: 38, weight: 700, color: C.heatSeaLabel, align: "center", baseline: "middle" });
+      api.text(ctx, T.land, 600, 470, { size: 38, weight: 700, color: C.heatLandLabel, align: "center", baseline: "middle" });
+      if (g.probe.sea) pill(api, ctx, `${seaC(h).toFixed(0)} °C`, 265, 560, { color: C.heatSeaTemp, size: 38 });
+      if (g.probe.land) pill(api, ctx, `${landC(h).toFixed(0)} °C`, 600, 560, { color: C.heatLandTemp, size: 38 });
       api.text(ctx, hourText(h), 430, 200, { font: "display", size: 44, weight: 800, color: C.ink, align: "center", baseline: "middle" });
       if (done) { // the true convection loop
         const toLand = breezeAt(h) === "sea", warmX = toLand ? 600 : 265, coolX = toLand ? 265 : 600;
-        ctx.save(); ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.lineWidth = 3; ctx.setLineDash([8, 8]); ctx.strokeRect(Math.min(coolX, warmX), 250, Math.abs(warmX - coolX), 135); ctx.setLineDash([]); ctx.fillStyle = "#BFE4FF"; const ax = (coolX + warmX) / 2, dir = Math.sign(warmX - coolX); ctx.beginPath(); ctx.moveTo(ax + dir * 16, 385); ctx.lineTo(ax - dir * 10, 373); ctx.lineTo(ax - dir * 10, 397); ctx.fill(); ctx.restore();
-        for (let i = 0; i < 18; i++) { const f = ((g.loopT * 0.35 + i / 18) % 1), pts: [number, number][] = [[coolX, 385], [warmX, 385], [warmX, 250], [coolX, 250], [coolX, 385]]; const seg = Math.floor(f * 4), k = f * 4 - seg, [x0, y0] = pts[seg], [x1, y1] = pts[seg + 1]; ctx.save(); ctx.fillStyle = seg === 0 ? "#BFE4FF" : seg === 1 ? "#FFB0A0" : "#E0E6F0"; ctx.globalAlpha = 0.85; ctx.beginPath(); ctx.arc(lerp(x0, x1, k), lerp(y0, y1, k), 6, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+        ctx.save(); ctx.strokeStyle = withAlpha(C.hi, .18); ctx.lineWidth = 3; ctx.setLineDash([8, 8]); ctx.strokeRect(Math.min(coolX, warmX), 250, Math.abs(warmX - coolX), 135); ctx.setLineDash([]); ctx.fillStyle = C.heatCool; const ax = (coolX + warmX) / 2, dir = Math.sign(warmX - coolX); ctx.beginPath(); ctx.moveTo(ax + dir * 16, 385); ctx.lineTo(ax - dir * 10, 373); ctx.lineTo(ax - dir * 10, 397); ctx.fill(); ctx.restore();
+        for (let i = 0; i < 18; i++) { const f = ((g.loopT * 0.35 + i / 18) % 1), pts: [number, number][] = [[coolX, 385], [warmX, 385], [warmX, 250], [coolX, 250], [coolX, 385]]; const seg = Math.floor(f * 4), k = f * 4 - seg, [x0, y0] = pts[seg], [x1, y1] = pts[seg + 1]; ctx.save(); ctx.fillStyle = seg === 0 ? C.heatCool : seg === 1 ? C.heatWarm : C.heatNeutral; ctx.globalAlpha = 0.85; ctx.beginPath(); ctx.arc(lerp(x0, x1, k), lerp(y0, y1, k), 6, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
       }
       button(ctx, { x: 780, y: 300, w: 200, h: 80 }, T.seaBreeze, !done, now, C.ion);
       button(ctx, { x: 780, y: 410, w: 200, h: 80 }, T.landBreeze, !done, now, C.sun);
     } else if (r.mode === "radiate") {
-      ctx.save(); ctx.fillStyle = "#4A3A2E"; ctx.beginPath(); ctx.moveTo(110, 470); ctx.lineTo(430, 420); ctx.lineTo(750, 470); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.fillStyle = C.heatRadiator; ctx.beginPath(); ctx.moveTo(110, 470); ctx.lineTo(430, 420); ctx.lineTo(750, 470); ctx.fill(); ctx.restore();
       bloom(ctx, C.sun, 680, 200, 70, 0.7); ctx.save(); ctx.fillStyle = C.sun; ctx.beginPath(); ctx.arc(680, 200, 26, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       tanks().forEach((t, i) => {
         const minutes = g.run || done ? Math.min(60, (g.rt / 4) * 60) : 0, temp = tankC(t.f, minutes), sel = i === g.pick;
         if (sel) bloom(ctx, C.volt, t.x, t.y, 90, 0.3);
-        ctx.save(); ctx.fillStyle = FIN_COL[t.f]; roundRect(ctx, t.x - 50, t.y - 60, 100, 120, 14); ctx.fill(); if (t.f === "shiny") { ctx.fillStyle = "rgba(255,255,255,.6)"; ctx.fillRect(t.x - 36, t.y - 50, 10, 100); } ctx.strokeStyle = sel ? C.volt : C.line2; ctx.lineWidth = sel ? 5 : 2; roundRect(ctx, t.x - 50, t.y - 60, 100, 120, 14); ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.fillStyle = FIN_COL()[t.f]; roundRect(ctx, t.x - 50, t.y - 60, 100, 120, 14); ctx.fill(); if (t.f === "shiny") { ctx.fillStyle = withAlpha(C.hi, .6); ctx.fillRect(t.x - 36, t.y - 50, 10, 100); } ctx.strokeStyle = sel ? C.volt : C.line2; ctx.lineWidth = sel ? 5 : 2; roundRect(ctx, t.x - 50, t.y - 60, 100, 120, 14); ctx.stroke(); ctx.restore();
         api.text(ctx, T[t.f], t.x, t.y + 92, { size: 38, weight: 700, color: sel ? C.volt : C.ink2, align: "center", baseline: "middle", maxWidth: 140 });
         if (g.run || done) api.text(ctx, `${temp.toFixed(1)}°`, t.x, t.y - 92, { font: "display", size: 40, weight: 800, color: temp > 40 ? C.amber : C.ion, align: "center", baseline: "middle" });
       });
@@ -181,7 +182,7 @@ function create(api: EngineApi, spec: HeatSpec): EngineInstance {
     } else {
       const showSplit = g.split && g.anim <= 0;
       bowl(ctx, g.stream, BOWL.main[0], BOWL.main[1] - (g.anim > 0 ? (1.1 - g.anim) * 20 : 0), 1.2, flow.round * 31 + g.steps.length, !g.split);
-      if (g.stream.wet) api.text(ctx, T.wet, BOWL.main[0], BOWL.main[1] - 70, { font: "mono", size: 38, weight: 600, color: "#9FD0FF", align: "center", baseline: "middle", decor: true });
+      if (g.stream.wet) api.text(ctx, T.wet, BOWL.main[0], BOWL.main[1] - 70, { font: "mono", size: 38, weight: 600, color: C.heatSeaTemp, align: "center", baseline: "middle", decor: true });
       if (g.anim > 0) { const k = 1 - g.anim / 1.1; api.fx.burst(BOWL.main[0], BOWL.main[1], { n: 1, color: C.ink2, speed: 120, life: 0.3, size: 4 }); ctx.save(); ctx.globalAlpha = Math.sin(k * Math.PI); api.text(ctx, T[g.lastM as Machine], BOWL.main[0], BOWL.main[1] + 140, { font: "display", size: 44, weight: 800, color: C.sun, align: "center", baseline: "middle" }); ctx.restore(); }
       if (showSplit && g.split) { for (const [k, at] of [[0, BOWL.caught], [1, BOWL.passed]] as const) { bowl(ctx, g.split[k], at[0], at[1], 0.85, 91 + k, true); api.text(ctx, k ? T.passed : T.caught, at[0], at[1] + 96, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle", decor: true }); } pill(api, ctx, T.keep, 385, 420, { color: C.volt, size: 38 }); }
       MACHINES.forEach((m, i) => { const can = !done && !g.split && !!machine(m, g.stream); button(ctx, MCH(i), T[m], can, now, C.sci); });
@@ -218,4 +219,4 @@ function create(api: EngineApi, spec: HeatSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds.map((x) => x.sub || x.title).slice(0, 3), figure: { kind: "none" }, accent }),
   };
 }
-export const heat: EngineDef<HeatSpec> = { archetype: "heat-lab@1", label: "Simulation · Heat & Matter Lab", accent: "#FF8F6B", create };
+export const heat: EngineDef<HeatSpec> = { archetype: "heat-lab@1", label: "Simulation · Heat & Matter Lab", get accent() { return C.heatAccent; }, create };

@@ -6,6 +6,7 @@
 import { LAND } from "../../../../shared/studio-spec-ext/land-data.ts";
 import { ASK_H, DELHI, ECL_TOL, SEASON_DAY, SHAPES, STARS, dayHours, PHASE_E, eclipseOk, elongation, joinScore, localHour, noonSun, rotFor, seasonVerdict, startRot, stillStar, sunDistance, type SkRoundT, type SkySpec } from "../../../../shared/studio-spec-ext/sky.ts";
 import { C, W, H } from "../../core/tokens.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 import { clamp, hexA, rng } from "../../core/math.ts";
 import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
@@ -28,7 +29,7 @@ const wrap180 = (a: number) => ((((a + 180) % 360) + 360) % 360) - 180;
 const sunDir = (s: number) => (Math.atan2(0.62 * Math.sin(s * D2R), Math.cos(s * D2R)) / D2R + 360) % 360;
 const sunParam = (d: number) => (Math.atan2(Math.sin(d * D2R) / 0.62, Math.cos(d * D2R)) / D2R + 360) % 360;
 function create(api: EngineApi, spec: SkySpec): EngineInstance {
-  const T = spec.strings, accent = "#9FB7FF";
+  const T = spec.strings, accent = C.skyAccent;
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
   const botR = rng(api.seed * 173 + 13), setTask = taskPill(api);
   const months = T.months.split(",");
@@ -111,15 +112,15 @@ function create(api: EngineApi, spec: SkySpec): EngineInstance {
     api.text(ctx, value, 885, y + 44, { font: "display", size: 42, weight: 800, color, align: "center", baseline: "middle", maxWidth: 220 });
   }
   function lockBtn(ctx: Ctx, now: number, on: boolean) {
-    ctx.save(); ctx.fillStyle = on ? "rgba(203,255,77,.14)" : "rgba(22,26,36,.95)"; roundRect(ctx, LOCK.x, LOCK.y, LOCK.w, LOCK.h, 16); ctx.fill(); ctx.strokeStyle = on ? hexA(C.volt, 0.7 + 0.3 * Math.sin(now * 4)) : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.fillStyle = on ? withAlpha(C.volt, .14) : withAlpha(C.bg2, .95); roundRect(ctx, LOCK.x, LOCK.y, LOCK.w, LOCK.h, 16); ctx.fill(); ctx.strokeStyle = on ? hexA(C.volt, 0.7 + 0.3 * Math.sin(now * 4)) : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
     api.text(ctx, T.lock, LOCK.x + LOCK.w / 2, LOCK.y + LOCK.h / 2 + 2, { font: "display", size: 38, weight: 800, color: on ? C.volt : C.ink3, align: "center", baseline: "middle" });
   }
-  function sunBall(ctx: Ctx, x: number, y: number, r: number) { bloom(ctx, C.sun, x, y, r * 2.4, 0.8); const gr = ctx.createRadialGradient(x, y, 2, x, y, r); gr.addColorStop(0, "#FFF6D0"); gr.addColorStop(1, "#FFB547"); ctx.save(); ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+  function sunBall(ctx: Ctx, x: number, y: number, r: number) { bloom(ctx, C.sun, x, y, r * 2.4, 0.8); const gr = ctx.createRadialGradient(x, y, 2, x, y, r); gr.addColorStop(0, C.skySunCore); gr.addColorStop(1, C.amber); ctx.save(); ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
   function drawPhase(ctx: Ctx, x: number, y: number, R: number, e: number) {
     const waxing = e > 0 && e < 180, c = Math.cos((e * Math.PI) / 180);
-    ctx.save(); ctx.fillStyle = "#1E222C"; ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#F2F0E6"; ctx.beginPath(); if (waxing) ctx.arc(x, y, R, -Math.PI / 2, Math.PI / 2); else ctx.arc(x, y, R, Math.PI / 2, Math.PI * 1.5); ctx.fill();
-    ctx.fillStyle = c > 0 ? "#1E222C" : "#F2F0E6"; ctx.beginPath(); ctx.ellipse(x, y, Math.abs(c) * R + 0.5, R + 0.5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.save(); ctx.fillStyle = C.skyMoonDark; ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skyMoonLit; ctx.beginPath(); if (waxing) ctx.arc(x, y, R, -Math.PI / 2, Math.PI / 2); else ctx.arc(x, y, R, Math.PI / 2, Math.PI * 1.5); ctx.fill();
+    ctx.fillStyle = c > 0 ? C.skyMoonDark : C.skyMoonLit; ctx.beginPath(); ctx.ellipse(x, y, Math.abs(c) * R + 0.5, R + 0.5, 0, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
   }
   function render(ctx: Ctx, now: number) {
@@ -130,24 +131,24 @@ function create(api: EngineApi, spec: SkySpec): EngineInstance {
     if (r.mode === "daynight") {
       sunBall(ctx, 760, E.y, 40); ctx.save(); ctx.strokeStyle = hexA(C.sun, 0.25); ctx.lineWidth = 2; for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.moveTo(712, E.y + i * 40); ctx.lineTo(E.x + E.r + 10, E.y + i * 40); ctx.stroke(); } ctx.restore();
       api.text(ctx, T.sun, 760, E.y + 70, { size: 38, weight: 700, color: C.sun, align: "center", baseline: "middle" });
-      ctx.save(); ctx.beginPath(); ctx.arc(E.x, E.y, E.r, 0, Math.PI * 2); ctx.fillStyle = "#1C4E7A"; ctx.fill(); ctx.clip();
-      ctx.fillStyle = "#4E7A4A"; for (const poly of LAND) { let south = false; for (let i = 1; i < poly.length; i += 2) if (poly[i] < -55) south = true; if (south) continue; ctx.beginPath(); let started = false; for (let i = 0; i < poly.length; i += 2) { const lon = poly[i], lat = Math.max(-12, poly[i + 1]); const a = (g.rot + lon) * D2R, rr = (E.r * (90 - lat)) / 102; const x = E.x + rr * Math.cos(a), y = E.y - rr * Math.sin(a); if (started) ctx.lineTo(x, y); else { ctx.moveTo(x, y); started = true; } } ctx.closePath(); ctx.fill(); }
-      const sh = ctx.createLinearGradient(E.x - 20, 0, E.x + 20, 0); sh.addColorStop(0, "rgba(3,6,14,.72)"); sh.addColorStop(1, "rgba(3,6,14,0)"); ctx.fillStyle = sh; ctx.fillRect(E.x - E.r, E.y - E.r, E.r + 20, 2 * E.r); ctx.restore();
+      ctx.save(); ctx.beginPath(); ctx.arc(E.x, E.y, E.r, 0, Math.PI * 2); ctx.fillStyle = C.skyEarthSea; ctx.fill(); ctx.clip();
+      ctx.fillStyle = C.skyEarthLand; for (const poly of LAND) { let south = false; for (let i = 1; i < poly.length; i += 2) if (poly[i] < -55) south = true; if (south) continue; ctx.beginPath(); let started = false; for (let i = 0; i < poly.length; i += 2) { const lon = poly[i], lat = Math.max(-12, poly[i + 1]); const a = (g.rot + lon) * D2R, rr = (E.r * (90 - lat)) / 102; const x = E.x + rr * Math.cos(a), y = E.y - rr * Math.sin(a); if (started) ctx.lineTo(x, y); else { ctx.moveTo(x, y); started = true; } } ctx.closePath(); ctx.fill(); }
+      const sh = ctx.createLinearGradient(E.x - 20, 0, E.x + 20, 0); sh.addColorStop(0, withAlpha(C.skyNightSide, .72)); sh.addColorStop(1, withAlpha(C.skyNightSide, 0)); ctx.fillStyle = sh; ctx.fillRect(E.x - E.r, E.y - E.r, E.r + 20, 2 * E.r); ctx.restore();
       ctx.save(); ctx.strokeStyle = C.line2; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(E.x, E.y, E.r, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
       const ca = (g.rot + r.lon) * D2R, cr = (E.r * (90 - 28)) / 102, cx = E.x + cr * Math.cos(ca), cy = E.y - cr * Math.sin(ca);
       bloom(ctx, C.volt, cx, cy, 26, 0.7); ctx.save(); ctx.fillStyle = C.volt; ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       pill(api, ctx, r.city, clamp(cx + (cx < E.x ? -70 : 70), 150, 680), clamp(cy - 40, 200, 570), { color: C.volt, size: 38 });
       ctx.save(); ctx.strokeStyle = hexA(C.ink, 0.5); ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(E.x, E.y, E.r + 26, -0.3, -1.2, true); ctx.stroke(); const ax = E.x + (E.r + 26) * Math.cos(-1.2), ay = E.y + (E.r + 26) * Math.sin(-1.2); ctx.fillStyle = hexA(C.ink, 0.5); ctx.beginPath(); ctx.arc(ax, ay, 6, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-      api.text(ctx, "N", E.x, E.y, { font: "display", size: 38, weight: 800, color: "rgba(255,255,255,.8)", align: "center", baseline: "middle", decor: true });
+      api.text(ctx, "N", E.x, E.y, { font: "display", size: 38, weight: 800, color: withAlpha(C.hi, .8), align: "center", baseline: "middle", decor: true });
       if (done) { const h = localHour(g.rot, r.lon), hh = Math.floor(h), mm = Math.round((h - hh) * 60) % 60; readout(ctx, r.city, `${((hh + 11) % 12) + 1}:${String(mm).padStart(2, "0")} ${hh < 12 ? "a.m." : "p.m."}`, 300, ok ? C.mint : C.amber); if (g.net <= 0) pill(api, ctx, T.wrongWay, 420, 590, { color: C.amber, size: 38 }); }
       else api.text(ctx, T.spin, 400, 600, { size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle", maxWidth: 560 });
     } else if (r.mode === "season") {
-      ctx.save(); ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.lineWidth = 2; ctx.setLineDash([6, 8]); ctx.beginPath(); ctx.ellipse(ORB.x, ORB.y, ORB.rx, ORB.ry, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
-      for (const [d, lab] of [[172, months[5]], [355, months[11]], [80, months[2]], [266, months[8]]] as [number, string][]) { const [x, y] = earthPos(d); api.text(ctx, lab, x, y + (y > ORB.y ? 46 : y < ORB.y - 10 ? -46 : 0) + (Math.abs(y - ORB.y) < 10 ? 50 : 0), { font: "mono", size: 38, weight: 600, color: "rgba(255,255,255,.4)", align: "center", baseline: "middle", decor: true }); }
+      ctx.save(); ctx.strokeStyle = withAlpha(C.hi, .18); ctx.lineWidth = 2; ctx.setLineDash([6, 8]); ctx.beginPath(); ctx.ellipse(ORB.x, ORB.y, ORB.rx, ORB.ry, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+      for (const [d, lab] of [[172, months[5]], [355, months[11]], [80, months[2]], [266, months[8]]] as [number, string][]) { const [x, y] = earthPos(d); api.text(ctx, lab, x, y + (y > ORB.y ? 46 : y < ORB.y - 10 ? -46 : 0) + (Math.abs(y - ORB.y) < 10 ? 50 : 0), { font: "mono", size: 38, weight: 600, color: withAlpha(C.hi, .4), align: "center", baseline: "middle", decor: true }); }
       sunBall(ctx, ORB.x, ORB.y, 44);
       const [ex, ey] = earthPos(g.day), er = 30, tilt = 23.44 * D2R;
-      ctx.save(); ctx.translate(ex, ey); const lit = ctx.createLinearGradient(Math.sign(ORB.x - ex) * er, 0, -Math.sign(ORB.x - ex) * er, 0); lit.addColorStop(0, "#5FA8FF"); lit.addColorStop(1, "#0D2440"); ctx.fillStyle = lit; ctx.beginPath(); ctx.arc(0, 0, er, 0, Math.PI * 2); ctx.fill();
-      ctx.rotate(tilt); ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0, -er - 18); ctx.lineTo(0, er + 18); ctx.stroke(); ctx.fillStyle = C.volt; ctx.beginPath(); ctx.arc(0, -er - 18, 5, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-er, 0); ctx.lineTo(er, 0); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.translate(ex, ey); const lit = ctx.createLinearGradient(Math.sign(ORB.x - ex) * er, 0, -Math.sign(ORB.x - ex) * er, 0); lit.addColorStop(0, C.skyEarthLit); lit.addColorStop(1, C.skyEarthDark); ctx.fillStyle = lit; ctx.beginPath(); ctx.arc(0, 0, er, 0, Math.PI * 2); ctx.fill();
+      ctx.rotate(tilt); ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0, -er - 18); ctx.lineTo(0, er + 18); ctx.stroke(); ctx.fillStyle = C.volt; ctx.beginPath(); ctx.arc(0, -er - 18, 5, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = withAlpha(C.hi, .35); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-er, 0); ctx.lineTo(er, 0); ctx.stroke(); ctx.restore();
       bloom(ctx, C.volt, ex, ey, 50, g.dragWhat ? 0.4 : 0.15);
       const dd = new Date(Date.UTC(2026, 0, 1) + g.day * 86400000);
       readout(ctx, T.date, `${dd.getUTCDate()} ${months[dd.getUTCMonth()]}`, 190);
@@ -157,39 +158,39 @@ function create(api: EngineApi, spec: SkySpec): EngineInstance {
     } else if (r.mode === "phase") {
       const [sx, sy] = sunPos(180), [mx, my] = moonPos(g.moon);
       sunBall(ctx, sx, sy, 38); ctx.save(); ctx.strokeStyle = hexA(C.sun, 0.18); ctx.lineWidth = 2; for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.moveTo(sx + 50, EC.y + i * 50); ctx.lineTo(EC.x + EC.mr + 40, EC.y + i * 50); ctx.stroke(); } ctx.restore();
-      ctx.save(); ctx.strokeStyle = "rgba(255,255,255,.2)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(EC.x, EC.y, EC.mr, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
-      ctx.save(); ctx.fillStyle = "#3D7BD9"; ctx.beginPath(); ctx.arc(EC.x, EC.y, 34, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "rgba(3,6,14,.6)"; ctx.beginPath(); ctx.arc(EC.x, EC.y, 34, -Math.PI / 2, Math.PI / 2); ctx.fill(); ctx.restore();
-      ctx.save(); ctx.fillStyle = "#2A2E38"; ctx.beginPath(); ctx.arc(mx, my, 18, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#E8ECF5"; ctx.beginPath(); ctx.arc(mx, my, 18, Math.PI / 2, Math.PI * 1.5); ctx.fill(); ctx.restore(); bloom(ctx, C.ink, mx, my, 36, g.dragWhat === "moon" ? 0.35 : 0.12);
+      ctx.save(); ctx.strokeStyle = withAlpha(C.hi, .2); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(EC.x, EC.y, EC.mr, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = C.skyEarth; ctx.beginPath(); ctx.arc(EC.x, EC.y, 34, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = withAlpha(C.skyNightSide, .6); ctx.beginPath(); ctx.arc(EC.x, EC.y, 34, -Math.PI / 2, Math.PI / 2); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.fillStyle = C.skyMoonShade; ctx.beginPath(); ctx.arc(mx, my, 18, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = C.skyMoon; ctx.beginPath(); ctx.arc(mx, my, 18, Math.PI / 2, Math.PI * 1.5); ctx.fill(); ctx.restore(); bloom(ctx, C.ink, mx, my, 36, g.dragWhat === "moon" ? 0.35 : 0.12);
       api.text(ctx, T.moon, mx, my - 40, { size: 38, weight: 700, color: C.ink2, align: "center", baseline: "middle", decor: true });
       if (done) { drawPhase(ctx, 885, 360, 62, elongation(g.moon)); textBlock(api, ctx, T.fromEarth, 885, 230, 200, { size: 38, weight: 600, color: C.ink2 }, 2); pill(api, ctx, g.detail, 470, 600, { color: ok ? C.mint : C.amber, size: 38 }); }
       else textBlock(api, ctx, T.place, 885, 330, 200, { size: 38, weight: 600, color: C.ink2 }, 4);
     } else if (r.mode === "eclipse") {
       const sun = r.nodes ? sunDir(g.sun) : 180, [sx, sy] = sunPos(r.nodes ? g.sun : 180), [mx, my] = moonPos(g.moon);
-      if (r.nodes) { ctx.save(); ctx.strokeStyle = "rgba(255,181,71,.18)"; ctx.lineWidth = 2; ctx.setLineDash([4, 10]); ctx.beginPath(); ctx.ellipse(EC.x, EC.y, EC.sr, EC.sr * 0.62, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); }
+      if (r.nodes) { ctx.save(); ctx.strokeStyle = withAlpha(C.amber, .18); ctx.lineWidth = 2; ctx.setLineDash([4, 10]); ctx.beginPath(); ctx.ellipse(EC.x, EC.y, EC.sr, EC.sr * 0.62, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); }
       sunBall(ctx, sx, sy, 38);
-      ctx.save(); ctx.strokeStyle = "rgba(255,255,255,.2)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(EC.x, EC.y, EC.mr, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.strokeStyle = withAlpha(C.hi, .2); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(EC.x, EC.y, EC.mr, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
       if (r.nodes) { ctx.save(); ctx.strokeStyle = hexA(C.ion, 0.6); ctx.lineWidth = 2; ctx.setLineDash([10, 8]); const nx = Math.cos(r.node * D2R) * (EC.mr + 30), ny = -Math.sin(r.node * D2R) * (EC.mr + 30); ctx.beginPath(); ctx.moveTo(EC.x - nx, EC.y - ny); ctx.lineTo(EC.x + nx, EC.y + ny); ctx.stroke(); ctx.restore(); for (const s of [1, -1]) { ctx.save(); ctx.fillStyle = C.ion; ctx.beginPath(); ctx.arc(EC.x + s * Math.cos(r.node * D2R) * EC.mr, EC.y - s * Math.sin(r.node * D2R) * EC.mr, 7, 0, Math.PI * 2); ctx.fill(); ctx.restore(); } }
       // shadows (cones away from the Sun)
       const toE = Math.atan2(EC.y - sy, EC.x - sx), toM = Math.atan2(my - sy, mx - sx);
-      for (const [x, y, rr, a, len] of [[EC.x, EC.y, 34, toE, 260], [mx, my, 14, toM, 180]] as [number, number, number, number, number][]) { ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.fillStyle = "rgba(0,0,0,.45)"; ctx.beginPath(); ctx.moveTo(0, -rr); ctx.lineTo(len, -rr * 0.25); ctx.lineTo(len, rr * 0.25); ctx.lineTo(0, rr); ctx.fill(); ctx.restore(); }
-      ctx.save(); ctx.fillStyle = "#3D7BD9"; ctx.beginPath(); ctx.arc(EC.x, EC.y, 34, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#4E7A4A"; ctx.beginPath(); ctx.arc(EC.x - 8, EC.y - 6, 14, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      for (const [x, y, rr, a, len] of [[EC.x, EC.y, 34, toE, 260], [mx, my, 14, toM, 180]] as [number, number, number, number, number][]) { ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.fillStyle = withAlpha(C.lo, .45); ctx.beginPath(); ctx.moveTo(0, -rr); ctx.lineTo(len, -rr * 0.25); ctx.lineTo(len, rr * 0.25); ctx.lineTo(0, rr); ctx.fill(); ctx.restore(); }
+      ctx.save(); ctx.fillStyle = C.skyEarth; ctx.beginPath(); ctx.arc(EC.x, EC.y, 34, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = C.skyEarthLand; ctx.beginPath(); ctx.arc(EC.x - 8, EC.y - 6, 14, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       const hgt = r.nodes ? Math.sin((g.moon - r.node) * D2R) : 0;
-      ctx.save(); ctx.fillStyle = "#D8DCE6"; ctx.beginPath(); ctx.arc(mx, my, 15, 0, Math.PI * 2); ctx.fill(); ctx.restore(); bloom(ctx, C.ink, mx, my, 34, g.dragWhat === "moon" ? 0.4 : 0.15);
+      ctx.save(); ctx.fillStyle = C.skyMoonGrey; ctx.beginPath(); ctx.arc(mx, my, 15, 0, Math.PI * 2); ctx.fill(); ctx.restore(); bloom(ctx, C.ink, mx, my, 34, g.dragWhat === "moon" ? 0.4 : 0.15);
       api.text(ctx, T.moon, mx, my - 36, { size: 38, weight: 700, color: C.ink2, align: "center", baseline: "middle", decor: true });
       if (r.nodes) { // side view: is the Moon on the Sun's line?
-        ctx.save(); ctx.fillStyle = "rgba(10,13,20,.85)"; roundRect(ctx, 780, 200, 200, 150, 14); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.strokeStyle = hexA(C.sun, 0.6); ctx.beginPath(); ctx.moveTo(795, 275); ctx.lineTo(965, 275); ctx.stroke(); ctx.fillStyle = "#D8DCE6"; ctx.beginPath(); ctx.arc(880, 275 - hgt * 60, 10, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+        ctx.save(); ctx.fillStyle = withAlpha(C.skyCard, .85); roundRect(ctx, 780, 200, 200, 150, 14); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.strokeStyle = hexA(C.sun, 0.6); ctx.beginPath(); ctx.moveTo(795, 275); ctx.lineTo(965, 275); ctx.stroke(); ctx.fillStyle = C.skyMoonGrey; ctx.beginPath(); ctx.arc(880, 275 - hgt * 60, 10, 0, Math.PI * 2); ctx.fill(); ctx.restore();
         api.text(ctx, Math.abs(hgt) <= Math.sin(ECL_TOL * D2R) ? "✓" : hgt > 0 ? "↑" : "↓", 950, 222, { font: "display", size: 38, weight: 800, color: Math.abs(hgt) <= Math.sin(ECL_TOL * D2R) ? C.mint : C.amber, align: "center", baseline: "middle" });
       }
-      if (done) { const e = eclipseOk(r, g.moon, sun); if (e.aligned && e.onNode) { ctx.save(); ctx.fillStyle = r.ask === "solar" ? "rgba(0,0,0,.6)" : "rgba(160,40,30,.5)"; ctx.beginPath(); ctx.arc(r.ask === "solar" ? EC.x : mx, r.ask === "solar" ? EC.y : my, r.ask === "solar" ? 12 : 15, 0, Math.PI * 2); ctx.fill(); ctx.restore(); } pill(api, ctx, g.detail, 470, 590, { color: ok ? C.mint : C.amber, size: 38 }); }
+      if (done) { const e = eclipseOk(r, g.moon, sun); if (e.aligned && e.onNode) { ctx.save(); ctx.fillStyle = r.ask === "solar" ? withAlpha(C.lo, .6) : withAlpha(C.skyBloodMoon, .5); ctx.beginPath(); ctx.arc(r.ask === "solar" ? EC.x : mx, r.ask === "solar" ? EC.y : my, r.ask === "solar" ? 12 : 15, 0, Math.PI * 2); ctx.fill(); ctx.restore(); } pill(api, ctx, g.detail, 470, 590, { color: ok ? C.mint : C.amber, size: 38 }); }
     } else {
-      ctx.save(); const sg = ctx.createRadialGradient(SKY.x, SKY.y, 10, SKY.x, SKY.y, SKY.r); sg.addColorStop(0, "#0F1B3A"); sg.addColorStop(1, "#070B18"); ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(SKY.x, SKY.y, SKY.r, 0, Math.PI * 2); ctx.fill(); ctx.clip();
+      ctx.save(); const sg = ctx.createRadialGradient(SKY.x, SKY.y, 10, SKY.x, SKY.y, SKY.r); sg.addColorStop(0, C.skyDomeTop); sg.addColorStop(1, C.skyDome); ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(SKY.x, SKY.y, SKY.r, 0, Math.PI * 2); ctx.fill(); ctx.clip();
       const scrub = g.lst - g.lst0;
-      if (r.task !== "pointer" && scrub > 0.05) { ctx.strokeStyle = "rgba(160,190,255,.22)"; ctx.lineWidth = 2; for (const [ra, dec] of [...Object.values(STARS), ...field.map((f) => [f[0], f[1]] as [number, number])]) { const rr = (90 - dec) * 5, a0 = (90 - (ra - g.lst0) * 15) * D2R, a1 = (90 - (ra - g.lst) * 15) * D2R; ctx.beginPath(); ctx.arc(SKY.x, SKY.y, rr, -a0, -a1, true); ctx.stroke(); } }
-      for (const [ra, dec, m] of field) { const [x, y] = starXY(ra, dec); ctx.fillStyle = "rgba(200,210,255,.5)"; ctx.beginPath(); ctx.arc(x, y, Math.max(0.8, 4 - m * 0.7), 0, Math.PI * 2); ctx.fill(); }
+      if (r.task !== "pointer" && scrub > 0.05) { ctx.strokeStyle = withAlpha(C.skyTrack, .22); ctx.lineWidth = 2; for (const [ra, dec] of [...Object.values(STARS), ...field.map((f) => [f[0], f[1]] as [number, number])]) { const rr = (90 - dec) * 5, a0 = (90 - (ra - g.lst0) * 15) * D2R, a1 = (90 - (ra - g.lst) * 15) * D2R; ctx.beginPath(); ctx.arc(SKY.x, SKY.y, rr, -a0, -a1, true); ctx.stroke(); } }
+      for (const [ra, dec, m] of field) { const [x, y] = starXY(ra, dec); ctx.fillStyle = withAlpha(C.skyStar, .5); ctx.beginPath(); ctx.arc(x, y, Math.max(0.8, 4 - m * 0.7), 0, Math.PI * 2); ctx.fill(); }
       for (const [a, b] of g.edges) { const [x1, y1] = starXY(...STARS[a]), [x2, y2] = starXY(...STARS[b]); ctx.strokeStyle = C.volt; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
       if (done && r.task === "join") for (const [a, b] of SHAPES[r.shape]) { const [x1, y1] = starXY(...STARS[a]), [x2, y2] = starXY(...STARS[b]); ctx.strokeStyle = hexA(C.mint, 0.6); ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
       if (g.pointer) { const [ax, ay] = g.pointer.a, [bx, by] = g.pointer.b; ctx.strokeStyle = hexA(C.sun, 0.8); ctx.lineWidth = 3; ctx.setLineDash([10, 8]); ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax + (bx - ax) * 6, ay + (by - ay) * 6); ctx.stroke(); ctx.setLineDash([]); }
-      for (const [id, [ra, dec]] of Object.entries(STARS)) { const [x, y] = starXY(ra, dec), s = Math.max(2.2, 7 - MAG[id] * 1.5), hot = id === g.sel || id === g.picked; if (hot) bloom(ctx, C.volt, x, y, 26, 0.7); ctx.fillStyle = hot ? C.volt : "#F2F5FF"; ctx.beginPath(); ctx.arc(x, y, s, 0, Math.PI * 2); ctx.fill(); }
+      for (const [id, [ra, dec]] of Object.entries(STARS)) { const [x, y] = starXY(ra, dec), s = Math.max(2.2, 7 - MAG[id] * 1.5), hot = id === g.sel || id === g.picked; if (hot) bloom(ctx, C.volt, x, y, 26, 0.7); ctx.fillStyle = hot ? C.volt : C.skyStarBright; ctx.beginPath(); ctx.arc(x, y, s, 0, Math.PI * 2); ctx.fill(); }
       ctx.restore();
       ctx.save(); ctx.strokeStyle = C.line2; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(SKY.x, SKY.y, SKY.r, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
       if (done && r.task !== "join") { const [px, py] = starXY(...STARS[stillStar()]); pill(api, ctx, T.polaris, px, py - 46, { color: ok ? C.mint : C.amber, size: 38 }); }
@@ -231,4 +232,4 @@ function create(api: EngineApi, spec: SkySpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds.map((x) => x.sub || x.title).slice(0, 3), figure: { kind: "none" }, accent }),
   };
 }
-export const sky: EngineDef<SkySpec> = { archetype: "sky-lab@1", label: "Simulation · Sky Lab", accent: "#9FB7FF", create };
+export const sky: EngineDef<SkySpec> = { archetype: "sky-lab@1", label: "Simulation · Sky Lab", get accent() { return C.skyAccent; }, create };
