@@ -273,6 +273,7 @@ export type StambhAct =
   | { kind: "check" }                                   // the law compares every bar with the data
   | { kind: "mark"; row: number; across?: boolean }     // tally keep: one stroke (standing, or the line across) for the thing passing, on row `row`
   | { kind: "total"; row: number; n: number | null }    // tally: the number written in row `row`'s total cell (null clears it)
+  | { kind: "again" }                                   // tally keep: the scene passes again from the start (her strokes and totals clear)
   | { kind: "undo" };
 // Yantra (round 7 E6, science puzzle-physics). Parts sit on a board; the child places and turns them, wires terminals or sets
 // knobs, then RUNs: the law (never a physics engine) decides what happens, and the view animates it.
