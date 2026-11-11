@@ -8,10 +8,19 @@ import { C, W, H } from "../core/tokens.ts";
 import { clamp, ease, lerp } from "../core/math.ts";
 import { bloom, roundRect, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
-import { drawCoach, drawIntro, drawStatCard, pill } from "../core/ui.ts";
+import { drawCoach, drawIntro, drawStatCard, pill, wrapLines } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../core/types.ts";
 import { dots } from "../core/dots.ts";
 
+/** The vault card's loaded row runs from x 70 to ROW_X1 (the card's right edge less its padding). */
+export const ROW_X1 = 500;
+/** The loaded row's label lines and the count's x: the label on one line when label, gap and count fit the row, else
+ *  wrapped (whole words) to the width the count leaves it. `measure` and `wrap` are the label's at its drawn size. */
+export function loadedRow(label: string, countW: number, measure: (s: string) => number, wrap: (s: string, w: number) => string[]): { lines: string[]; x: number } {
+  const room = ROW_X1 - 70 - 24 - countW;
+  const lines = measure(label) <= room ? [label] : wrap(label, Math.max(1, room));
+  return { lines, x: Math.max(250, 70 + Math.max(...lines.map(measure)) + 24) };
+}
 // (columns 540-970: five place headers "TTH TH H T O" a young label apart at p412 — at 560-950 "TTH" ran into "TH", 2026-11-11)
 // the belt strip ends a gap short of the column panel (COL_X0 - 16): at l1366 its hatching ran into the "T" column (2026-11-11)
 const BELT_Y = 500, BELT_X0 = 30, BELT_X1 = 480, BELT_END = BELT_X1 + 16, COL_X0 = 540, COL_X1 = 970, COL_TOP = 250, COL_BOT = 560;
@@ -83,7 +92,10 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
   /** the vault card sits below the DOM task pill wherever it lands (judges, 2026-11-11: at l1366 a two-line pill
    *  "Tijori ●○○○ Lakshya 10,500" covered the card's top edge); capped so the card still clears the belt */
   const cardDy = () => clamp(api.chromeBottom() + 12 - 170, 0, 24);
-  const SEAL = { x: 452, y: 296, r: 44 };   // inside the vault panel: never in the PiP or label safe zones; its label clears the panel's bottom edge (judges, 2026-11-11: "SEAL" sat on the Nishana card border at p412 and l1366)
+  // inside the vault panel, top right: never in the PiP or label safe zones; its label clears the panel's bottom edge (judges,
+  // 2026-11-11: "SEAL" sat on the Nishana card border at p412 and l1366). It sits beside the target rows, above the loaded
+  // row, so that row has the card's full width (judges, regeneration round 2: the dial at y 296 covered "Number taiyaar 0")
+  const SEAL = { x: 452, y: 222, r: 44 };
   api.onPointer({
     down(p) {
       if (g.state !== "play") return;
@@ -167,12 +179,16 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
       const dy = cardDy();
       ctx.save(); ctx.translate(0, dy);
       ctx.fillStyle = "rgba(16,19,27,.92)"; roundRect(ctx, 40, 170, 480, 230, 20); ctx.fill(); ctx.strokeStyle = "rgba(139,152,255,.35)"; ctx.lineWidth = 2; ctx.stroke();
-      api.text(ctx, T.target, 70, 214, { font: "mono", size: 38, weight: 600, color: C.ink3 });
+      api.text(ctx, T.target, 70, 214, { font: "mono", size: 38, weight: 600, color: C.ink3, maxWidth: SEAL.x - SEAL.r - 16 - 70 });
       const isWords = round().show === "words" && g.state !== "sealed" && g.state !== "end";
       api.text(ctx, shownTarget, 70, isWords ? 268 : 280, { font: isWords ? "ui" : "display", size: isWords ? 40 : 76, weight: 800, maxWidth: 320 });   // clear of the seal dial
-      api.text(ctx, T.loaded, 70, 340, { font: "mono", size: 38, weight: 600, color: C.ink3 });
-      const lx = Math.max(250, 70 + api.measure(ctx, T.loaded, { font: "mono", size: 38, weight: 600 }) + 24);   // after its label, however long ("jama hua" ran under the 0)
-      api.text(ctx, groupDigits(tot, spec.system), lx, 344, { font: "display", size: 52, weight: 800, color: tot === tg ? C.mint : tot > tg ? C.amber : C.ink, maxWidth: Math.max(80, SEAL.x - SEAL.r - 16 - lx) });
+      // the loaded row: label, then the count after it ("jama hua" ran under the 0); a label too long to leave the count
+      // its room wraps to whole lines about the row (never under the dial: the row runs the card's full width)
+      const lo = { font: "mono" as const, size: 38, weight: 600 }, totS = groupDigits(tot, spec.system), cnt = { font: "display" as const, size: 52, weight: 800 };
+      const { lines: ll, x: lx } = loadedRow(T.loaded, api.measure(ctx, totS, cnt), (s) => api.measure(ctx, s, lo), (s, w) => wrapLines(api, ctx, s, w, lo));
+      const llh = Math.max(38, api.minLabel) * 1.12;
+      ll.forEach((ln, i) => api.text(ctx, ln, 70, 356 + (i - (ll.length - 1) / 2) * llh, { ...lo, color: C.ink3 }));
+      api.text(ctx, totS, lx, 360, { ...cnt, color: tot === tg ? C.mint : tot > tg ? C.amber : C.ink, maxWidth: Math.max(80, ROW_X1 - lx) });
       if (g.state === "play") {
         const k = clamp(g.t / round().seconds, 0, 1), ly = 175 + k * 220;
         ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.strokeStyle = "rgba(255,150,120,.8)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(44, ly); ctx.lineTo(516, ly); ctx.stroke(); bloom(ctx, "#FF9A78", 280, ly, 120, 0.25); ctx.restore();

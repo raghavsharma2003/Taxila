@@ -46,6 +46,21 @@ const KIND_BOUNDS: Record<string, number[]> = { acute: [90], right: [90], obtuse
 export function aboutOf(w: { mode: string; items: readonly number[]; kind?: string }): number[] {
   return w.mode === "classify" ? (KIND_BOUNDS[w.kind ?? ""] ?? []) : [...w.items];
 }
+/** The call card's label as whole-word lines, never cut (judges, regeneration round 2, 2026-11-11: "Naya mod saamne hai"
+ *  was drawn "Naya mod saamne…" at p412 and l1366 — the tracked run at the young floor wrapped one word per line, 4 > 3,
+ *  and the shared helper cut the last). Tracked when that fits in two lines, else untracked; whatever is left wraps
+ *  greedily and every line is drawn. `measure(s, track)` is the run's width at the label size. */
+export function callLines(text: string, maxW: number, measure: (s: string, track: number) => number): { lines: string[]; track: number } {
+  const words = String(text).split(/\s+/).filter(Boolean);
+  const wrap = (track: number): string[] => {
+    const lines: string[] = []; let cur = "";
+    for (const w of words) { const t = cur ? cur + " " + w : w; if (!cur || measure(t, track) <= maxW) cur = t; else { lines.push(cur); cur = w; } }
+    if (cur) lines.push(cur);
+    return lines;
+  };
+  const tracked = wrap(5);
+  return tracked.length <= 2 ? { lines: tracked, track: 5 } : { lines: wrap(0), track: 0 };
+}
 
 function create(api: EngineApi, spec: AngleSpec): EngineInstance {
   const T = spec.strings;
@@ -288,9 +303,13 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
       // call card + countdown
       if (g.state === "aim" && wave().mode === "call") {
         // the call card sits clear of the 90 label: the full turn's left column; inside the half turn's arc, under its top
-        const cxc = full ? 132 : 500;
-        api.text(ctx, T.threat, cxc, full ? 214 : 272, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle", track: 5, maxWidth: full ? 236 : 600 });
-        api.text(ctx, `${key()}°`, cxc, full ? 318 : 342, { font: "display", size: 88, weight: 800, align: "center", baseline: "middle", glow: C.ion });
+        // (the full turn's column runs from the stage edge to just short of the 150 label: 262 wide holds "saamne hai" whole
+        // at the young floor; the label wraps to whole lines and the number moves down under however many there are)
+        const cxc = full ? 138 : 500, cw = full ? 262 : 600, lo = { font: "mono" as const, size: 38, weight: 600 };
+        const { lines, track } = callLines(T.threat, cw, (s, tr) => api.measure(ctx, s, { ...lo, track: tr }));
+        const lh = Math.max(38, api.minLabel) * 1.12, y0 = (full ? 214 : 272) - (lines.length - 1) * lh / 2, yl = y0 + (lines.length - 1) * lh;
+        lines.forEach((ln, i) => api.text(ctx, ln, cxc, y0 + i * lh, { ...lo, color: C.ink3, align: "center", baseline: "middle", track, maxWidth: cw }));
+        api.text(ctx, `${key()}°`, cxc, Math.max(full ? 318 : 342, yl + 84), { font: "display", size: 88, weight: 800, align: "center", baseline: "middle", glow: C.ion });
       }
       if (g.state === "aim" && wave().mode !== "classify") { const k = clamp(g.callT / g.limit, 0, 1); ctx.strokeStyle = k > 0.7 ? C.amber : "rgba(255,255,255,.35)"; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(px, py, 50, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - k)); ctx.stroke(); }
     }
