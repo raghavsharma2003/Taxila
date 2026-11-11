@@ -8,6 +8,10 @@
 // between the rays to the outer two (solid when it is one of the figure's five angles, dashed when not).
 // Mal-rule vertex-name: the vertex is not put in the middle (say: the right three letters with the vertex first or last; find:
 // the angle at the name's first or last letter is taken). The child sees a different corner light up than the one she meant.
+// Judging round 2 (dc-r8-game-modes-three-laws): find is one tap among five arcs, so a first-letter pick is a SIGN (`sign` in
+// the facts, chance weight, nothing on her record); only say (a three-letter name she builds) names vertex-name. Figures: the
+// two arcs at the vertex between neighbouring rays sit at different radii (a gap where they meet), the joined pair never
+// crosses a ray, O and Q are never in one figure, and at fade 1 the vertex is O in the first level only.
 // Shortcut-free: a say level whose letters, read left to right or top to bottom, put the vertex in the middle is never served
 // (reading across the screen would pass it); a find level whose answer is the widest arc is never served. The letters are
 // drawn at random, so the vertex is not always "O".
@@ -26,6 +30,12 @@ export const LETTERS = "ABCDEOPQRS";
 export const HIT = 32;
 /** each angle's arc (and its handle) radius: the two at the vertex between neighbouring rays, the wide one, the two corners */
 export const ARC_R = [50, 50, 84, 24, 24];
+/** where each arc is DRAWN (board px): the two at the vertex between neighbouring rays at different radii, so where they meet
+ *  on the shared ray there is a gap and they never read as one curve (judging round 2). The tap model stays ARC_R: a tap is
+ *  taken by sector and band, and each drawn arc lies inside its own arc's band (|DRAW_R − ARC_R| ≤ 8 ≪ BAND) */
+export const DRAW_R = [42, 58, 84, 24, 24];
+/** the letters that look alike at 360 px: never served in one figure */
+export const LOOKALIKE = ["OQ"];
 
 export interface NameFields {
   /** four letters: the vertex, then the ends of rays 1, 2, 3 */
@@ -125,8 +135,9 @@ function commitFind(p: NameParamsLike, s: NameState, mal: Record<string, string>
   const k = s.picked as number, want = p.ask ?? 0, c = corners(p)[k], w = asked(p);
   const f: Facts = { name: spell(p, nameOf(w, p.ord ?? 0)), picked: spell(p, nameOf(c)), vertex_ok: yn(c.v === w.v), arms_ok: yn(new Set([c.a, c.b, w.a, w.b]).size === 2) };
   if (k === want) return { nm: s, commit: { kind: "solved", done: true, facts: f } };
-  if ("vertex-name" in mal && k === vertexNamePick(p)) return { nm: s, commit: { kind: "misconception_consequence", mis: "vertex-name", facts: { ...f, shown: "figure" } } };
-  return { nm: s, commit: { kind: "law_refused", facts: { ...f, why: "other_angle" } } };
+  // one tap among five: never a named mix-up (law 3); the first-letter pick is reported as a sign, at chance weight
+  void mal;
+  return { nm: s, commit: { kind: "law_refused", facts: { ...f, why: "other_angle", shown: "her_arc", ...(k === vertexNamePick(p) ? { sign: "vertex-name" } : {}) } } };
 }
 
 export function solveName(p: NameParamsLike): NameAct[] {
@@ -277,17 +288,47 @@ export function validateName<P extends NameParamsLike>(q: Partial<P>): P | null 
   return out;
 }
 
-export function generateName(goal: NameGoal, rnd: () => number, fade: number): { params: NameParamsLike; sig: string }[] {
+/** does segment a-b cross segment c-d away from their end points? */
+function crosses(a: [number, number], b: [number, number], c: [number, number], d: [number, number]): boolean {
+  const o = (p: [number, number], q: [number, number], r: [number, number]) => (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]);
+  const d1 = o(c, d, a), d2 = o(c, d, b), d3 = o(a, b, c), d4 = o(a, b, d), e = 1e-6;
+  return ((d1 > e && d2 < -e) || (d1 < -e && d2 > e)) && ((d3 > e && d4 < -e) || (d3 < -e && d4 > e));
+}
+/** the figure's joined pair crosses none of its rays (a crossing would make a corner the figure does not name) */
+export function noCrossing(p: NameParamsLike): boolean {
+  const P = points(p), [i, j] = TRI_PAIRS[p.tri ?? 0];
+  return [1, 2, 3].every((r) => r === i || r === j || !crosses(P[i], P[j], P[0], P[r]));
+}
+/** say: the angle a vertex-first name (the mix-up) denotes, when it is not one of the figure's: its size (its dashed arc must
+ *  be long enough to see at 360) */
+export function sayMalSize(p: NameParamsLike): number | null {
+  const c = asked(p), t = [c.v, c.a, c.b];
+  return denotes(p, t) >= 0 ? null : sizeOf(p, t);
+}
+/** the radius of the dashed play-out arc of an angle of `deg` degrees: ≥ 30 board px and long enough to run ≥ 24 board px
+ *  (≥ 20 CSS px at 360, where 1 board px ≥ 1 CSS px) */
+export const dashR = (deg: number) => Math.min(72, Math.max(30, 24 / ((Math.max(deg, 1) * Math.PI) / 180)));
+/** the first level a child meets at fade 1 has vertex O (as the book first does); every later one does not, so "O in the
+ *  middle" cannot pass the fade */
+export function generateName(goal: NameGoal, rnd: () => number, fade: number, first = true): { params: NameParamsLike; sig: string }[] {
   const out: { params: NameParamsLike; sig: string }[] = [], seen = new Set<string>();
   for (let k = 0; k < 160 && out.length < 20; k++) {
     const base = 5 * Math.floor(rnd() * 72), g1 = 50 + 5 * Math.floor(rnd() * 7), g2 = 50 + 5 * Math.floor(rnd() * 7);
     const hs = [base, norm(base + g1), norm(base + g1 + g2)];
     const ls = [0, 1, 2].map(() => 105 + 5 * Math.floor(rnd() * 5));
-    // the letters: four of LETTERS at random (fade 1 keeps the vertex "O", as the book first does)
-    const pool = [...LETTERS].filter((ch) => fade > 1 || ch !== "O");
-    const pick: string[] = fade === 1 ? ["O"] : [];
-    while (pick.length < 4) { const ch = pool[Math.floor(rnd() * pool.length)]; if (!pick.includes(ch)) pick.push(ch); }
-    const tri = Math.floor(rnd() * 3), ask = Math.floor(rnd() * 5), ord = rnd() < 0.5 ? 0 : 1;
+    // the letters: four of LETTERS at random, never two that look alike (O and Q); fade 1: the vertex is "O" in her first
+    // level only, never after (any other point may be O then)
+    const oFirst = fade === 1 && first, pick: string[] = oFirst ? ["O"] : [];
+    const notO = fade === 1 && !first;
+    for (let g = 0; pick.length < 4 && g < 64; g++) {
+      const ch = LETTERS[Math.floor(rnd() * LETTERS.length)];
+      if (pick.includes(ch) || (notO && pick.length === 0 && ch === "O")) continue;
+      if (LOOKALIKE.some((pair) => pair.includes(ch) && pick.some((x) => x !== ch && pair.includes(x)))) continue;
+      pick.push(ch);
+    }
+    if (pick.length < 4) continue;
+    // the joined pair: two NEIGHBOURING ray ends (1-2 or 2-3); joining 1-3 would cross ray 2
+    const tri = Math.floor(rnd() * 2), ask = Math.floor(rnd() * 5), ord = rnd() < 0.5 ? 0 : 1;
     // the figure centred on the board
     const ends = [[0, 0], ...hs.map((h, i) => [ls[i] * Math.cos(R(h)), ls[i] * Math.sin(R(h))])];
     const xs = ends.map((e) => e[0]), ys = ends.map((e) => e[1]);
@@ -301,7 +342,10 @@ export function generateName(goal: NameGoal, rnd: () => number, fade: number): {
     const apart = (Q: [number, number][], d: number) => Q.every((a, i) => Q.every((b, j) => j <= i || Math.hypot(a[0] - b[0], a[1] - b[1]) >= d));
     if (!apart(P, 2 * HIT + 4)) continue;
     if (corners(params).some((c) => (sizeOf(params, nameOf(c)) ?? 0) < 20)) continue;
+    if (!noCrossing(params)) continue;
     if (shortcutName(params)) continue;
+    // say: the vertex-first name's dashed angle (when it is not one of the five) is ≥ 20°, so its arc can be seen
+    if (goal === "say") { const m = sayMalSize(params); if (m !== null && m < 20) continue; }
     // find: only names whose first- or last-letter reading is one of the figure's angles (the belief shows somewhere real)
     if (goal === "find" && vertexNamePick(params) < 0) continue;
     // find: every arc has a touch square of its own (≥ 48 board px, wholly in its own tap band)

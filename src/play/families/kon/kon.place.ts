@@ -17,9 +17,15 @@
 //                   beside the true arm, never on it ("centre_off")
 //   wrong-scale     the other scale's number: 180 − θ ("other_scale")
 //   join-wrong-end  draw: the dot at the right mark, joined to A (the far end of OA): the law shows the angle made at A
-//                   ("far_end")
+//                   ("far_end"). Judging round 2 (law 3): the join is a pick between two buttons, so a guess makes it half
+//                   the time: it is a SIGN (`sign` in the facts, no misconception on her record), never named from one join
 // size names no mix-up (main 2026-11-11): the kit's tool-size belief is about the READING one angle gives under two tools, and
-// this goal asks which of two angles is more, never for a reading; a miss plays out both readings, side by side.
+// this goal asks which of two angles is more, never for a reading. Judging round 2 (law 2): a miss shows only her own pick,
+// never the readings (they would settle the next pick); any of the three answers can be the key.
+// Judging round 2 (law 3, the scale): a first-try solve is evidence about the scale only where the outer scale is the WRONG
+// one at the placement the level is built for (the angle opens clockwise: `mirror`), so wrong-scale is discriminated there
+// only, and listed first; the two orientations are served equally. measure: she TYPES the reading (the view prints no value);
+// the number she types decides the scale (θ on the scale whose 0 is on the placed arm, or 180 − θ).
 import type { Facts, Moment } from "../../../../shared/play.ts";
 
 export type PlaceGoal = "measure" | "draw" | "size";
@@ -48,6 +54,10 @@ export const FIG_LO = 156;
  *  (main 2026-11-11) */
 export const PRINT_EVERY: Record<PlaceParamsLike["scale"], number> = { "10": 20, "30": 30, landmarks: 90 };
 export const printed = (scale: PlaceParamsLike["scale"], v: number) => v % PRINT_EVERY[scale] === 0;
+/** size: both protractors print the SAME numbers (judging round 2: fewer numbers on the small tool could feed the tool-size
+ *  belief), every 30° at fades 1 and 2 (every 20° would touch on the small one at 360), landmarks at fade 3 */
+export const SIZE_PRINT_EVERY: Record<PlaceParamsLike["scale"], number> = { "10": 30, "30": 30, landmarks: 90 };
+export const sizePrinted = (scale: PlaceParamsLike["scale"], v: number) => v % SIZE_PRINT_EVERY[scale] === 0;
 /** the turning handle: on the protractor's body, half way up from the centre, at the scale's 90 */
 export const KNOB_AT = 0.5;
 
@@ -171,6 +181,9 @@ export function centreRingShown(p: PlaceParamsLike, s: { commits: number; pl?: P
   if (s.pl.read === null && s.pl.joined === null) return false;
   return !placement(p, s.pl.pose).ok && isVertexOff(p, s.pl.pose);
 }
+/** the level's join-button order (judging round 2): "A se jodo" first on about half the levels, fixed per level */
+export const joinAFirst = (seed: number) => ((Math.imul(seed | 0, 2654435761) >>> 16) & 1) === 1;
+
 /** size: the right answer: "a" (P is more), "b" (Q is more) or "same"; and the bigger tool's angle */
 export const sizeAnswer = (p: PlaceFields) => (p.thA === p.thB ? "same" : (p.thA ?? 0) > (p.thB ?? 0) ? "a" : "b");
 export const bigOne = (p: PlaceFields) => (p.bigA ? "a" : "b");
@@ -274,8 +287,9 @@ function commitDraw(p: PlaceParamsLike, s: PlaceState, mal: Record<string, strin
   // placed: the mark is graded on the protractor as placed (the scale whose 0 is on OA), and the arm must start at O
   if (end === "v" && Math.abs(mv - th) <= READ_TOL) return { pl: next, commit: { kind: "solved", done: true, facts: f } };
   if (end === "e") {
-    if ("join-wrong-end" in mal && Math.abs(mv - th) <= READ_TOL) return { pl: next, commit: { kind: "misconception_consequence", mis: "join-wrong-end", facts: { ...f, shown: "far_end" } } };
-    return { pl: next, commit: { kind: "law_refused", facts: { ...f, why: "far_end" } } };
+    // the right mark joined to A: a sign of join-wrong-end at chance weight (one of two buttons), never named from one join
+    if (Math.abs(mv - th) <= READ_TOL) return { pl: next, commit: { kind: "law_refused", facts: { ...f, why: "far_end", shown: "far_end", sign: "join-wrong-end" } } };
+    return { pl: next, commit: { kind: "law_refused", facts: { ...f, why: "far_end", shown: "far_end" } } };
   }
   if ("wrong-scale" in mal && Math.abs(mv - (180 - th)) <= READ_TOL && Math.abs(180 - 2 * th) > 2 * READ_TOL)
     return { pl: next, commit: { kind: "misconception_consequence", mis: "wrong-scale", facts: { ...f, shown: "other_scale" } } };
@@ -286,7 +300,7 @@ function commitSize(p: PlaceParamsLike, s: PlaceState, mal: Record<string, strin
   const f: Facts = { pick: s.pick as string };
   if (s.pick === sizeAnswer(p)) return { pl: s, commit: { kind: "solved", done: true, facts: f } };
   void mal;
-  return { pl: s, commit: { kind: "law_refused", facts: { ...f, why: "other_angle", shown: "both_readings" } } };
+  return { pl: s, commit: { kind: "law_refused", facts: { ...f, why: "other_angle", shown: "her_pick" } } };
 }
 
 /** the solver's acts */
@@ -309,7 +323,9 @@ export function malPlace(p: PlaceParamsLike, mal: string): PlaceAct[] | null {
     }
     return [...at(q), { kind: "mark", r: markFor(p, q, th) }, { kind: "join", end: "v" }];
   }
-  if (mal === "wrong-scale" && Math.abs(180 - 2 * th) > 2 * READ_TOL) return p.goal === "measure" ? [...at(g), { kind: "read", n: 180 - th }] : [...at(g), { kind: "mark", r: markFor(p, g, 180 - th) }, { kind: "join", end: "v" }];
+  // wrong-scale is discriminated only where the outer scale is the wrong one (the angle opens clockwise): elsewhere the
+  // "always the outer scale" reader solves, and her first-try solve says nothing about the scale
+  if (mal === "wrong-scale" && p.mirror && Math.abs(180 - 2 * th) > 2 * READ_TOL) return p.goal === "measure" ? [...at(g), { kind: "read", n: 180 - th }] : [...at(g), { kind: "mark", r: markFor(p, g, 180 - th) }, { kind: "join", end: "v" }];
   if (mal === "join-wrong-end" && p.goal === "draw") return [...at(g), { kind: "mark", r: markFor(p, g, th) }, { kind: "join", end: "e" }];
   return null;
 }
@@ -318,7 +334,9 @@ export function malPlace(p: PlaceParamsLike, mal: string): PlaceAct[] | null {
  * (size) take the angle under the bigger tool. A level any of these passes is never served.
  */
 export function shortcutPlace(p: PlaceParamsLike, mal: Record<string, string>): PlaceAct[] | null {
-  if (p.goal === "size") return bigOne(p) === sizeAnswer(p) ? [{ kind: "pick", which: bigOne(p) }] : null;
+  // size: one pick among three, any of which can be the key (judging round 2): a fixed habit (the bigger tool, the smaller,
+  // "the same") wins a third of the levels, which is chance, and the pick enters at the chance weight
+  if (p.goal === "size") return null;
   const th = p.theta ?? 0;
   if ([0, 90, 180].some((l) => Math.abs(th - l) <= Math.max(10, 2 * p.tol))) {
     const l = [0, 90, 180].find((x) => Math.abs(th - x) <= Math.max(10, 2 * p.tol)) as number, g = goodPose(p);
@@ -375,7 +393,7 @@ export function validatePlace<P extends PlaceParamsLike>(q: Partial<P>): P | nul
 /** every point a placed protractor (rim, labels, strip) covers, for the board fit */
 function poseFits(pose: Pose, rad = PR): boolean {
   const pts: [number, number][] = [];
-  for (let r = 0; r <= 180; r += 10) pts.push(rimPoint(pose, r, rad + 18));
+  for (let r = 0; r <= 180; r += 10) pts.push(rimPoint(pose, r, rad + 23));   // (the numbers stand 13 px out and are ~17 px tall)
   // the outer 0 and 180 sit off the base line, and their numbers run wider than the rim
   pts.push(rimPoint(pose, 5, rad + 28), rimPoint(pose, 175, rad + 28));
   const [nx, ny] = inward(pose), [bx, by] = dir(pose.rot);
@@ -392,13 +410,14 @@ export function generatePlace(goal: PlaceGoal, g: { tol?: number; tolPx?: number
   const tol = g.tol ?? 3, tolPx = g.tolPx ?? TOL_PX;
   if (goal === "size") {
     for (let k = 0; k < 200 && out.length < 16; k++) {
-      const equal = rnd() < 0.5, small = 30 + 5 * Math.floor(rnd() * 25);   // 30 … 150
-      const big = equal ? small : small - (15 + 5 * Math.floor(rnd() * 6));
-      if (big < 20 || [small, big].some((t) => Math.abs(t - 90) < 10)) continue;
+      // the key is any of the three, equally (judging round 2): P more, Q more, the same; and either tool can hold the bigger
+      const key = Math.floor(rnd() * 3), one = 30 + 5 * Math.floor(rnd() * 25);   // 30 … 150
+      const other = key === 2 ? one : one - (15 + 5 * Math.floor(rnd() * 6));
+      if (other < 20 || [one, other].some((t) => Math.abs(t - 90) < 10)) continue;
       // neither angle sits on a printed number (fades 1 and 2): reading them is the skill
-      if (fade < 3 && [small, big].some((t) => printed(scale, t))) continue;
+      if (fade < 3 && [one, other].some((t) => sizePrinted(scale, t))) continue;
       const bigA = rnd() < 0.5, mirA = rnd() < 0.4, mirB = rnd() < 0.4;
-      const params: PlaceParamsLike = { goal, start: 0, tol, scale, thA: bigA ? big : small, thB: bigA ? small : big, bigA, mirA, mirB };
+      const params: PlaceParamsLike = { goal, start: 0, tol, scale, thA: key === 1 ? other : one, thB: key === 1 ? one : other, bigA, mirA, mirB };
       const sig = `size:${params.thA}:${params.thB}:${bigA ? "A" : "B"}${mirA ? "m" : ""}${mirB ? "m" : ""}`;
       if (seen.has(sig)) continue;
       seen.add(sig); out.push({ params, sig });
@@ -412,7 +431,7 @@ export function generatePlace(goal: PlaceGoal, g: { tol?: number; tolPx?: number
     if (printed(scale, theta)) continue;
     // the angle opens upward (its bisector 40° … 140°; the protractor rests below it). fade 1: the first arm lies flat or near
     // it; then any tilt (turning the protractor is part of the skill). mirror: the angle opens clockwise from OA
-    const mirror = rnd() < 0.45;
+    const mirror = rnd() < 0.5;   // the two orientations equally (judging round 2: the outer scale is wrong on half)
     const tilt = fade === 1 ? (rnd() < 0.5 ? 0 : 5 * Math.floor(rnd() * 5) - 10) : 5 * Math.floor(rnd() * 21) - 50;
     const a1 = norm(5 * Math.round(((mirror ? 180 : 0) + tilt) / 5));
     // the figure (O and the ends of both arms: draw's OA and the arm the solver draws) centred across the board, as low as

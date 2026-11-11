@@ -122,6 +122,9 @@
 /* r7 vakya: the goal is the kit's own prompt (a sentence with blanks the child completes), so it must read whole: up to
    four lines on a phone, the world above takes the rest */
 .pl-root[data-family="vakya"]:not([data-layout="wide"]) .pl-goal { -webkit-line-clamp: 4; }
+/* r8 kon place / name (judging round 2): the line under the board changes with the state (after "Rakh do", and the end line
+   with its checks), so on a phone it always keeps room for two lines: the board never moves when the line does */
+.pl-root[data-family="kon"][data-mode="place"]:not([data-layout="wide"]) .pl-goal, .pl-root[data-family="kon"][data-mode="name"]:not([data-layout="wide"]) .pl-goal { min-height: 2.5em; }
 .pl-root[data-family="arena"] .pl-goal { display: block; -webkit-line-clamp: unset; overflow: visible; font-size: 17px; }
 .pl-row--options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .pl-row--options .pl-btn { white-space: normal; line-height: 1.25; min-height: 56px; padding: 8px 12px; text-align: left; font-size: 17px; }

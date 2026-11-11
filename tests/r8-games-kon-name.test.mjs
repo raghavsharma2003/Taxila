@@ -8,7 +8,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
-import { points, corners, nameOf, nameEvidence, segments, arcHit, arcTargets } from "../src/play/families/kon/kon.name.ts";
+import { points, corners, nameOf, nameEvidence, segments, arcHit, arcTargets, ARC_R, DRAW_R, dashR, sayMalSize, noCrossing, generateName } from "../src/play/families/kon/kon.name.ts";
 import { pickLevels, env } from "../src/play/core/pick.ts";
 import { CHANCE_WEIGHT, GAME_WEIGHT } from "../shared/play.ts";
 import { gradeActs } from "../server/play/grade.js";
@@ -17,7 +17,7 @@ import WORDS from "../data/play/engine-words.json" with { type: "json" };
 import { cpuNow } from "./_cpu-ms.mjs";
 
 const MIS = { "vertex-name": "k-vn" };
-const req = (goal, seed, fade = 1) => ({ family: "kon", mode: "name", goal, topicId: "t", skillId: "t-s1", classLevel: 6, fade, mis: {}, misMap: MIS, grammar: {}, recent: [], seed });
+const req = (goal, seed, fade = 1, recent = []) => ({ family: "kon", mode: "name", goal, topicId: "t", skillId: "t-s1", classLevel: 6, fade, mis: {}, misMap: MIS, grammar: {}, recent, seed });
 const levels = (goal, fades = [1, 2, 3], seeds = [1, 7, 42, 99]) => fades.flatMap((f) => seeds.flatMap((sd) => konLogic.generate(req(goal, sd, f)).map((c) => konLogic.validate(c.level))));
 const run = (level, acts) => { let s = konLogic.init(level); const ms = []; acts.forEach((a, i) => { const r = konLogic.apply(level, s, a, i + 1); s = r.state; ms.push(...r.moments); }); return { s, ms }; };
 const say = (t) => [...t.map((at) => ({ kind: "letter", at })), { kind: "commit" }];
@@ -74,6 +74,19 @@ for (const goal of ["say", "find"]) {
       mals++;
       const mr = run(level, m);
       assert.ok(!mr.s.done);
+      if (goal === "find") {
+        // judging round 2 (law 3): one tap among five names nothing; the first-letter pick is a sign at chance weight
+        assert.equal(mr.ms.filter((x) => x.kind === "misconception_consequence").length, 0);
+        const last = mr.ms.at(-1);
+        assert.equal(last.kind, "law_refused"); assert.equal(last.facts.sign, "vertex-name"); assert.equal(last.facts.vertex_ok, "no");
+        const shown = nameOf(want, p.ord), picked = corners(p)[m[0].at];
+        assert.ok(picked.v === shown[0] || picked.v === shown[2]);
+        assert.equal(konLogic.grade(level, env(m), { final: true }).evidence[0].misconceptionId, undefined, "nothing on her record from one tap");
+        // any other wrong arc is no sign
+        const other = [0, 1, 2, 3, 4].find((k) => k !== p.ask && k !== m[0].at);
+        assert.equal(run(level, [{ kind: "arc", at: other }]).ms.at(-1).facts.sign, undefined);
+        continue;
+      }
       const named = mr.ms.filter((x) => x.kind === "misconception_consequence");
       assert.equal(named.length, 1); assert.equal(named[0].misconceptionId, "vertex-name");
       assert.equal(named[0].facts.vertex_ok, "no");
@@ -83,10 +96,6 @@ for (const goal of ["say", "find"]) {
         assert.equal(named[0].facts.shown, isDrawn ? "figure" : "dashed");
         if (!isDrawn) dashed++;
         assert.equal(named[0].facts.arms_ok, "no");
-      } else {
-        // her pick is the angle at the shown name's first or last letter, a drawn one
-        const shown = nameOf(want, p.ord), picked = corners(p)[m[0].at];
-        assert.ok(picked.v === shown[0] || picked.v === shown[2]);
       }
       const g = konLogic.grade(level, env(m), { final: true });
       assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, "k-vn");
@@ -195,13 +204,13 @@ test("kon/name/say: one-letter undo takes back her last letter (beside Mita do, 
   assert.deepEqual(r2.s.nm.taps, []);
 });
 
-test("kon/name: every coverage entry serves a level as the play server would, with vertex-name mapped", async () => {
+test("kon/name: every coverage entry serves a level as the play server would; say maps vertex-name, find maps none (one tap)", async () => {
   const { currentLevel, entryKey, seedOf } = await import("../server/play/levels.js");
   const mine = coverage.entries.filter((e) => e.family === "kon" && e.mode === "name");
   assert.deepEqual(mine.map((e) => e.goal).sort(), ["find", "say"]);
   for (const entry of mine) {
     assert.equal(entry.topicId, "c6-maths-ch02-t02");
-    assert.deepEqual(entry.misMap, { "vertex-name": "c6-maths-ch02-t02-m-vertex-name" });
+    assert.deepEqual(entry.misMap, entry.goal === "say" ? { "vertex-name": "c6-maths-ch02-t02-m-vertex-name" } : {});
     for (let n = 0; n < 4; n++) {
       const key = entryKey(entry);
       const s = { childId: `t-${n}`, key, skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
@@ -209,7 +218,8 @@ test("kon/name: every coverage entry serves a level as the play server would, wi
       const lv = currentLevel(s, entry);
       assert.ok(lv, `${entry.goal} served nothing`);
       assert.equal(lv.params.goal, entry.goal);
-      assert.ok(lv.proof.discriminates.includes("c6-maths-ch02-t02-m-vertex-name"));
+      if (entry.goal === "say") assert.ok(lv.proof.discriminates.includes("c6-maths-ch02-t02-m-vertex-name"));
+      else assert.deepEqual(lv.proof.discriminates, []);
     }
   }
 });
@@ -223,4 +233,38 @@ test("kon/name: the picker's work per level is within its bar (p95 ≤ 50 ms of 
   }
   cpu.sort((a, b) => a - b);
   assert.ok(cpu[Math.floor(cpu.length * 0.95)] <= 50, `p95 ${cpu[Math.floor(cpu.length * 0.95)].toFixed(1)} ms CPU`);
+});
+
+test("judging round 2: the figure (arcs at the vertex at different radii, no line across a ray, never O with Q, a long enough dashed arc)", () => {
+  // the two arcs at the vertex between neighbouring rays are drawn at different radii, and each drawn arc lies in its own
+  // tap band (a tap on what she sees is a tap on that arc)
+  assert.notEqual(DRAW_R[0], DRAW_R[1]);
+  assert.ok(Math.abs(DRAW_R[0] - DRAW_R[1]) >= 12, "a visible gap where they meet");
+  let n = 0, dashedSay = 0;
+  for (const goal of ["say", "find"]) for (const level of levels(goal)) {
+    const p = level.params, P = points(p);
+    assert.ok(noCrossing(p), `${level.levelId}: the joined pair crosses a ray`);
+    assert.ok(!(p.lets.includes("O") && p.lets.includes("Q")), `${level.levelId}: O and Q together (${p.lets})`);
+    if (goal === "find") corners(p).forEach((c, k) => {
+      const v = P[c.v], ha = Math.atan2(P[c.a][1] - v[1], P[c.a][0] - v[0]), hb = Math.atan2(P[c.b][1] - v[1], P[c.b][0] - v[0]);
+      let d = hb - ha; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+      for (let f = 0.08; f <= 0.92; f += 0.04) { const a = ha + d * f; assert.equal(arcHit(p, v[0] + DRAW_R[k] * Math.cos(a), v[1] + DRAW_R[k] * Math.sin(a)), k, `${level.levelId}: drawn arc ${k} at ${f.toFixed(2)}`); }
+    });
+    if (goal === "say") { const m = sayMalSize(p); if (m !== null) { dashedSay++; assert.ok(m >= 20, `${level.levelId}: dashed ${m}°`); assert.ok((dashR(m) * m * Math.PI) / 180 >= 23.9, `${level.levelId}: dashed arc too short`); } }
+    n++;
+  }
+  assert.ok(n >= 40 && dashedSay > 0, `${n} / ${dashedSay}`);
+  assert.deepEqual(ARC_R.slice(3), [24, 24]);
+});
+
+test("judging round 2: at fade 1 the vertex is O in her first level only; later levels at fade 1 never put O at the vertex", () => {
+  for (const goal of ["say", "find"]) for (const seed of [1, 7, 42, 99, 123]) {
+    const first = konLogic.generate(req(goal, seed, 1)), later = konLogic.generate(req(goal, seed, 1, ["name:say:0:50:50:0:0"]));
+    assert.ok(first.length && later.length);
+    assert.ok(first.every((c) => c.level.params.lets[0] === "O"), `${goal} ${seed}: first level vertex`);
+    assert.ok(later.every((c) => c.level.params.lets[0] !== "O"), `${goal} ${seed}: a later level's vertex is O`);
+  }
+  // fade 2 and up: any letter, never O with Q
+  let r = 5; const rnd = () => ((r = (r * 1103515245 + 12345) >>> 0) / 2 ** 32);
+  assert.ok(generateName("say", rnd, 2, false).some((x) => x.params.lets[0] !== "O"));
 });

@@ -10,8 +10,11 @@ export const RULES = [
   // loose one (centre on the corner, base on an arm) and then reads it (measure) or marks and joins (draw); a reading off a
   // misplaced protractor is the placement mix-up, never right. size: the same angle under a big and a small protractor.
   // (replaces the kon/set entry, which only ever showed wrong-scale on a protractor already in place)
-  R("c6-maths-ch02-t03", "kon", "place", "draw", { "vertex-off": "vertex-off", "wrong-scale": "wrong-scale", "join-wrong-end": "join-wrong-end" }, { tol: 3, tolPx: 11 }),
-  R("c6-maths-ch02-t03", "kon", "place", "measure", { "vertex-off": "vertex-off", "wrong-scale": "wrong-scale" }, { tol: 3, tolPx: 11 }),
+  // Judging round 2 (dc-r8-game-modes-three-laws, law 3): wrong-scale first, so a first-try solve on a level where the outer
+  // scale is the wrong one says "chose the right scale" (elsewhere it is not discriminated); join-wrong-end is not mapped: it
+  // comes from a pick between two buttons, so the law reports it as a sign (chance weight), never on her record from one join
+  R("c6-maths-ch02-t03", "kon", "place", "draw", { "wrong-scale": "wrong-scale", "vertex-off": "vertex-off" }, { tol: 3, tolPx: 11 }),
+  R("c6-maths-ch02-t03", "kon", "place", "measure", { "wrong-scale": "wrong-scale", "vertex-off": "vertex-off" }, { tol: 3, tolPx: 11 }),
   R("c6-maths-ch02-t03", "kon", "place", "size", {}, { tol: 3 }),   // no mix-up named: tool-size is about one angle's READING under two tools (main 2026-11-11)
   // r7 (studio-play-coverage-expansion): the kind of an angle is how far the arm opens from a base that may tilt and may
   // open either way (a tilted square corner is still a right angle); arm length and arc size never change an angle; a linear
@@ -24,7 +27,8 @@ export const RULES = [
   // r8 (docs/design/round8/games-engine-needs.md §2): an angle's name is its vertex in the middle and a point on each arm
   // either side; the law lights whatever angle the three letters really name, so a vertex-first name lights another corner
   R("c6-maths-ch02-t02", "kon", "name", "say", { "vertex-name": "vertex-name" }, {}),
-  R("c6-maths-ch02-t02", "kon", "name", "find", { "vertex-name": "vertex-name" }, {}),
+  // find names no mix-up (judging round 2, law 3): one tap among five arcs is chance; a first-letter pick is a sign only
+  R("c6-maths-ch02-t02", "kon", "name", "find", {}, {}),
   R("c7-maths-ch05-t01", "kon", "pair", "linear", { "linear-90": "linear-90" }, { tol: 3 }),
   R("c7-maths-ch07-t03", "kon", "close", "tri", {}, { tol: 3 }),
   R("c7-maths-ch09-t03", "kon", "close", "iso", { "wrong-pair": "wrong-pair" }, { tol: 3 }),

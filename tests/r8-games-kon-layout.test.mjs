@@ -112,7 +112,11 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
         const logic = LOGIC[`${level.family}/${level.mode}`], sol = logic.solve(level);
         // the screens: first; mid-play (the solver's acts but the decision); each mal-rule played out; the end
         let midBox = null;
-        const plays = [["first", []], ["mid", sol.slice(0, -1)], ...Object.keys(level.mal).map((m) => [`mal-${m}`, logic.malActs(level, m)]).filter(([, a]) => a),
+        // (judging round 2: the signs a pick makes at chance weight, no longer mapped, still play out: draw's join to A, find's
+        // first-letter arc; and a solve after a miss, whose end tick is pale)
+        const signs = level.params.goal === "draw" ? ["join-wrong-end"] : level.params.goal === "find" ? ["vertex-name"] : [];
+        const plays = [["first", []], ["mid", sol.slice(0, -1)], ...[...Object.keys(level.mal), ...signs].map((m) => [`mal-${m}`, logic.malActs(level, m)]).filter(([, a]) => a),
+          ...signs.map((m) => [`late-${m}`, [...(logic.malActs(level, m) ?? []), ...(level.params.goal === "find" ? sol : sol.slice(-2))]]).filter(([, a]) => a.length > sol.length),
           // size: every pick (a miss plays out both readings; the solved tick sits with the pick, or between the figures for "same")
           ...(level.params.goal === "size" ? ["a", "b", "same"].map((w) => [`pick-${w}`, [{ kind: "pick", which: w }]]) : []), ["end", sol]];
         for (const [name, acts] of plays) {
