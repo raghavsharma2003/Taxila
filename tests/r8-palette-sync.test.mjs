@@ -27,7 +27,7 @@ function block(selectorStart) {
   return out;
 }
 const A = block(':root, [data-tx="a"]');
-const B = { ...A, ...block('[data-tx="b"], :where(:root:has') };
+const B = { ...A, ...block('[data-tx="b"], :root:where(:has') };
 
 // Studio's role name → the token that carries it
 const BOARD_ROLE = { focus: "tx-focus", slot: "tx-ans", answer: "tx-ans", mixup: "tx-mix", muted: "tx-board-soft" };
