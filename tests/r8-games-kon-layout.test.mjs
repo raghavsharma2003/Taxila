@@ -194,6 +194,7 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
       page.on("pageerror", (e) => errors.push(String(e.message)));
       await page.goto(served.base);
       await page.waitForFunction(() => window.__forge3?.ready === true);
+      let mono = null;
       for (let level of levels) {
         const logic = LOGIC[`${level.family}/${level.mode}`], sol = logic.solve(level);
         // the screens: first; mid-play (the solver's acts but the decision); each mal-rule played out; the end
@@ -214,6 +215,13 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
         for (const [name, acts, keys = []] of plays) {
           await page.evaluate((j) => window.__forge3.show(j), { play: { level, art: "kagaz", lang: "hinglish", classLevel: 6, debug: true }, tray: { w: size.w, h: size.h }, id: `${level.levelId}-${name}` });
           await page.waitForFunction(() => !!window.__play?.dispatch && !!document.querySelector("canvas.pl-canvas"));
+          // the scale numbers are laid out in Geist Mono (0.6 em): once the play chunk (and its @font-face) is on the page, the
+          // face loads before the boards are measured, or the check says why not (CI 2026-11-11 measured 8 px a figure at 14 px)
+          if (mono === null) {
+            mono = await page.evaluate(async () => { try { const l = await document.fonts.load('700 14px "Geist Mono"'); return l.map((f) => f.status).join(",") || "no face"; } catch (e) { return `error ${e?.message ?? e}`; } });
+            if (!/loaded/.test(mono)) faults.push(`${size.tag}: Geist Mono did not load (${mono})`);
+            await page.waitForTimeout(100);
+          }
           for (const a of acts) await page.evaluate((x) => window.__play.dispatch(x), a);
           for (const k of keys) await page.evaluate((id) => window.__play.press(id), k);
           await page.waitForTimeout(acts.length ? 1700 : 300);
