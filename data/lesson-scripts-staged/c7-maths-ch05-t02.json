@@ -154,17 +154,14 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Segment EF 5 cm lamba hai aur segment GH 11 cm. Dono ek hi disha mein hain, aur EF ke dono siron se GH tak doori 3 cm hai. Kya EF aur GH parallel hain, haan ya nahi?",
-      "en": "Segment EF is 5 cm long and segment GH is 11 cm. Both go in the same direction, and the gap from each end of EF to GH is 3 cm. Are EF and GH parallel, yes or no?"
-     },
-     "key": "haan",
-     "accept": ["yes", "haan, parallel hain", "parallel", "haan parallel"],
+     "prompt": { "hi": "Segment EF aur GH dono 6 cm lambe hain. EF ke ek sire se GH tak doori 3 cm hai aur doosre sire se 1 cm. {friend} ka kehna hai ki dono ek jitne lambe hain, isliye parallel hain. Kya yeh sahi hai?", "en": "Segments EF and GH are both 6 cm long. The gap from one end of EF to GH is 3 cm, and from the other end 1 cm. {friend} says they are equally long, so they are parallel. Is that right?" },
+     "key": "nahi",
+     "accept": ["no", "nahin", "galat", "nahi, parallel nahi", "no, not parallel"],
      "targets": "c7-maths-ch05-t02-m-same-length",
-     "wrongIfMis": "nahi",
-     "board": { "template": "compare@1", "params": { "left": { "title": "segment EF", "items": ["5 cm"] }, "right": { "title": "segment GH", "items": ["11 cm"] } } },
-     "why": { "hi": "segment EF 5 cm aur GH 11 cm hai, par disha ek hai aur doori dono siron par 3 cm", "en": "EF is 5 cm and GH 11 cm, but they share one direction and a 3 cm gap" },
-     "simpler": { "hi": "Lambai alag hone se farak nahi padta. Disha ek hai aur dono siron par doori 3 cm hai, bas yahi dekho.", "en": "Different lengths do not matter. The direction is the same and the gap is 3 cm at both ends; look only at that." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "segment EF", "items": ["5 cm"]}, "right": {"title": "segment GH", "items": ["11 cm"]}} }
+     "wrongIfMis": "haan",
+     "board": { "template": "compare@1", "params": {"left": {"title": "6 cm lambe", "items": ["EF", "GH"]}, "right": {"title": "doori", "items": ["3 cm", "1 cm"]}} },
+     "why": { "hi": "dono 6 cm lambe hain, par doori 3 cm se 1 cm ho jaati hai, toh parallel nahi", "en": "both are 6 cm long, but the gap goes from 3 cm to 1 cm, so they are not parallel" },
+     "simpler": { "hi": "Lambai se faisla nahi hota. Sirf dono siron par doori milao.", "en": "Length does not decide it. Compare only the gaps at the two ends." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "6 cm lambe", "items": ["EF", "GH"]}, "right": {"title": "doori", "items": ["3 cm", "1 cm"]}} }
     },
     {
      "id": "c2",

@@ -114,3 +114,63 @@ test("reader pass batch 3: a key heard in its own spoken prompt; a key said earl
   assert.ok(ladderRepeatErrors(sk([card("c1", "In 20 kanchon ka 1/4 kitna hai?", "5")]), kit).some((x) => /repeats kit ladder item i08/.test(x)));
   assert.deepEqual(ladderRepeatErrors(sk([card("c1", "In 28 kanchon ka 1/4 kitna hai?", "7")]), kit), []);
 });
+
+test("reader pass batch 4 and pilots: a say that gives its then-card's key; one question frame twice; yes/no keys all one answer", async () => {
+  const { thenSayErrors, frameRepeatErrors, yesNoSpreadErrors } = await import("../scripts/lesson-scripts/check.mjs");
+  const card = (id, en, key, extra = {}) => ({ id, prompt: { hi: en, en }, key, ...extra });
+  const sk = (more) => ({ skills: [{ skillId: "t-s1", explain: [], workedExample: null, checks: [], remediation: [], ...more }] });
+  // the say works the then-card's own 4-piece bar and says "do chauthaai": refused; another instance on the same object: fine
+  const bad = sk({ remediation: [{ targets: "x", say: { en: "A bar of 4 equal pieces, 2 eaten: that is two quarters." }, then: card("t", "A bar has 4 equal pieces and 2 are eaten. Is that 2/4?", "Yes") }] });
+  assert.ok(thenSayErrors(bad).some((x) => /acts out its then-card's own case/.test(x)));
+  const ok = sk({ remediation: [{ targets: "x", say: { en: "A bar of 4 equal pieces, 2 eaten: that is two quarters." }, then: card("t", "A bar has 6 equal pieces and 5 are eaten. Is that 5/6?", "Yes") }] });
+  assert.deepEqual(thenSayErrors(ok), []);
+  const word = sk({ remediation: [{ targets: "x", say: { en: "A tilted square's corner is still a right angle." }, then: card("t", "What kind of angle is the tilted book's corner?", "right angle") }] });
+  assert.ok(thenSayErrors(word).some((x) => /states "right angle"/.test(x)));
+  // ray KL then ray GH, both "how many endpoints?": one question
+  const fr = sk({ checks: [card("c1", "How many endpoints does ray KL have?", "one"), card("c2", "How many endpoints does ray GH have?", "one")] });
+  assert.ok(frameRepeatErrors(fr).some((x) => /c2: asks t-s1\/c1's question again/.test(x)));
+  // all "No"
+  const yn = sk({ checks: [card("c1", "Is 1/3 bigger?", "No"), card("c2", "Is the big piece a third?", "No"), card("c3", "Are these quarters?", "No")] });
+  const y = yesNoSpreadErrors(yn);
+  assert.ok(y.some((x) => /all 3 yes\/no cards are keyed "no"/.test(x)) && y.some((x) => /c3: the third yes\/no card in a row/.test(x)));
+  yn.skills[0].checks[1].key = "Yes";
+  assert.deepEqual(yesNoSpreadErrors(yn), []);
+});
+
+test("(g) a place-value card's key is solved from its number (batch 3's wrong key: '5281 ka 1' keyed 10)", async () => {
+  const { placeValueKeyErrors } = await import("../scripts/lesson-scripts/check.mjs");
+  const sk = (c) => ({ skills: [{ skillId: "t-s1", explain: [], workedExample: null, checks: [{ id: "c1", ...c }], remediation: [] }] });
+  const bad = placeValueKeyErrors(sk({ prompt: { hi: "Ab 5281 ka 1 dekho. Woh kis jagah par hai, aur uski value kitni hai?", en: "Now look at the 1 of 5281. What is it worth?" }, key: "10", wrongIfMis: "1" }));
+  assert.ok(bad.some((x) => /key 10 is not the value of the 1 in 5281/.test(x)) && bad.some((x) => /wrongIfMis 1 is a right value/.test(x)));
+  assert.deepEqual(placeValueKeyErrors(sk({ prompt: { hi: "Board par daayein wale number ka 2 dekho. Uski value kitni hai?", en: "Look at the 2 in the number on the right. What is it worth?" }, key: "20", wrongIfMis: "2",
+    board: { template: "compare@1", params: { left: { title: "5281", items: ["x"] }, right: { title: "8125", items: ["y"] } } } })), []);
+});
+
+test("pilots' third read: a say names only what its then-card's board shows; a Yes card states a positive claim", async () => {
+  const { sayBoardNumberErrors, negatedClaimErrors } = await import("../scripts/lesson-scripts/check.mjs");
+  const sk = (more) => ({ skills: [{ skillId: "t-s1", explain: [], workedExample: null, checks: [], remediation: [], ...more }] });
+  const rem = (say) => sk({ remediation: [{ targets: "x", say: { en: say }, then: { prompt: { en: "A field is 19 m by 8 m. How far round?" }, key: "54 m",
+    board: { template: "measured@1", params: { shape: "rectangle", l: 19, b: 8, unit: "m" } } } }] });
+  assert.ok(sayBoardNumberErrors(rem("This garden is 13 m by 7 m: add them and double.")).some((x) => /names 13/.test(x)));
+  assert.deepEqual(sayBoardNumberErrors(rem("Add the length and the breadth, then double: every side is walked once.")), []);
+  const yes = (en) => sk({ checks: [{ id: "c1", prompt: { en, hi: en }, key: "Yes" }] });
+  assert.ok(negatedClaimErrors(yes("{friend} says the small piece is not half. Is that right?")).length === 1);
+  assert.deepEqual(negatedClaimErrors(yes("{friend} says the bigger piece is more than half. Is that right, haan ya nahi?")), []);
+});
+
+test("batch 5: (e2) a card that asks its own skill's ladder item; (f2) one word answer through a skill", async () => {
+  const { frameRepeatErrors, wordKeySpreadErrors } = await import("../scripts/lesson-scripts/check.mjs");
+  const card = (id, en, key) => ({ id, prompt: { hi: en, en }, key });
+  const s = { skills: [{ skillId: "t-s1", explain: [], workedExample: null, remediation: [], ladder: [{ itemId: "c6-maths-ch02-t03-i03" }],
+    checks: [card("c1", "A narrow angle sits on a protractor. The two scales show 40 and 140. Which is the angle?", "40°")] }] };
+  const kit = { items: [{ id: "c6-maths-ch02-t03-i03", prompt_en: "An angle looks narrow. Where its arm crosses the protractor, the two scales show 40 and 140. Which is right?", answer: "40°, because a narrow angle is small", acceptable: ["40"] }] };
+  assert.ok(frameRepeatErrors(s, kit).some((x) => /c1: asks its ladder item i03's question/.test(x)));
+  s.skills[0].checks[0].key = "140°";
+  assert.ok(!frameRepeatErrors(s, kit).some((x) => /ladder item/.test(x)), "another answer is another question");
+  const w = { skills: [{ skillId: "t-s1", explain: [], workedExample: null, remediation: [],
+    checks: [card("c1", "Which is more, 2/3 or 4/6?", "same"), card("c2", "Which is more, 1/2 or 3/6?", "barabar"), card("c3", "Which is more, 3/4 or 6/8?", "Same")] }] };
+  const f = wordKeySpreadErrors(w);
+  assert.ok(f.some((x) => /c3: the third card in a row keyed "same"/.test(x)) && f.some((x) => /all 3 of its choice cards are keyed "same"/.test(x)));
+  w.skills[0].checks[1].key = "more";
+  assert.deepEqual(wordKeySpreadErrors(w), []);
+});

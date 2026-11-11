@@ -37,7 +37,7 @@
    "en": "sum, total"
   }
  ], "greetSimpler": { "hi": "Aaj hum jodiyan banakar dekhenge ki koi number odd hai ya even.", "en": "Today we make pairs to see whether a number is odd or even." },
- "joints": {"asidePark":[{"hi":"Yeh jode banana khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish making these pairs, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh jode banana khatam ho jaaye.","en":"We'll talk about {aside} too, right after making these pairs."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kya cheezein jodiyon mein aati hain?","en":"What comes in pairs in {aside}?"},{"hi":"Ab {aside} ki baat, usmein sabse mazedaar kya hai?","en":"Now {aside}: what is the most fun part of it?"},{"hi":"Chalo, {aside} ke baare mein batao, tumhe woh kyun pasand hai?","en":"Okay, tell me about {aside}: why do you like it?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}],"backTo":[{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."}]},
+ "joints": {"asidePark":[{"hi":"Yeh sam-visham wala kaam khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish this even and odd work, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh sam-visham wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, right after this even and odd work."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kya cheezein jodiyon mein aati hain?","en":"What comes in pairs in {aside}?"},{"hi":"Ab {aside} ki baat, usmein sabse mazedaar kya hai?","en":"Now {aside}: what is the most fun part of it?"},{"hi":"Chalo, {aside} ke baare mein batao, tumhe woh kyun pasand hai?","en":"Okay, tell me about {aside}: why do you like it?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}],"backTo":[{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."}]},
  "skills": [
   {
    "skillId": "c4-maths-ch03-t01-s1",
@@ -1021,7 +1021,7 @@
       "en": "With 0 things nobody is left alone, so 0 is even. A number ending in 0, like 10, is even too."
      },
      "then": {
-      "prompt": { "hi": "Ek class mein 60 bachche hain. 60 odd hai, even hai, ya dono mein se koi nahi?", "en": "A class has 60 children. Is 60 odd, even, or neither?" },
+      "prompt": { "hi": "Ek class ke 60 bachche do-do ki line mein khade hote hain. 60 odd hai, even hai, ya dono mein se koi nahi?", "en": "The 60 children of a class stand in lines of two. Is 60 odd, even, or neither?" },
       "key": "Even",
       "accept": ["even", "sam", "sam sankhya", "60 even hai", "60 is even"], "targets": "c4-maths-ch03-t01-m-zero-not-even", "wrongIfMis": "Neither",
       "board": { "template": "place-value@1", "params": {"value": 60} },
@@ -1399,10 +1399,7 @@
       "en": "The lone dot of 5 and the lone dot of 3 join into a pair. So 5 + 3 is even."
      },
      "then": {
-      "prompt": {
-       "hi": "Ek plate mein 7 laddoo aur 3 laddoo rakhe. Kul laddoo odd hain ya even?",
-       "en": "7 laddoos and 3 laddoos are put on a plate. Is the total odd or even?"
-      },
+      "prompt": { "hi": "{friend} ke paas 7 pencil hain, aur use 3 pencil aur mil gayi. Ab uski pencil odd hain ya even?", "en": "{friend} has 7 pencils and gets 3 more pencils. Is the number of pencils now odd or even?" },
       "key": "Even",
       "accept": [
        "even",
@@ -1422,11 +1419,8 @@
         "hideResult": true
        }
       },
-      "why": { "hi": "7 aur 3 ke akele laddoo milkar ek jodi bante hain, isliye kul 10 even hai", "en": "7 and 3 each leave one over, and the two pair up, so 10 is even" },
-      "simpler": {
-       "hi": "7 mein ek laddoo akela hai, aur 3 mein bhi ek. Plate par dono akele laddoo saath aa jaate hain.",
-       "en": "7 has one lone laddoo, and 3 has one too. On the plate the two lone laddoos come together."
-      },
+      "why": { "hi": "7 aur 3 dono mein ek-ek pencil bachti hai, aur woh do milkar jodi banti hain, isliye 10 even hai", "en": "7 and 3 each leave one pencil over, and the two pair up, so 10 is even" },
+      "simpler": { "hi": "7 mein ek pencil akeli hai, aur 3 mein bhi ek. Milne par dono akeli pencil saath aa jaati hain.", "en": "7 has one lone pencil, and 3 has one too. When they come together, the two lone pencils meet." },
       "answerBoard": {
        "template": "combine-count@1",
        "params": {

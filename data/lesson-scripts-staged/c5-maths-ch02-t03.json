@@ -723,24 +723,15 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Pehla bhinn 4/10 hai aur doosra bhinn 2/5. Kya yeh dono barabar bhinn hain, haan ya nahi?",
-      "en": "The first fraction is 4/10 and the second fraction is 2/5. Are these two equal fractions, yes or no?"
-     },
-     "key": "yes",
-     "why": {
-      "hi": "2 × 2 = 4 aur 5 × 2 = 10, upar aur neeche dono × 2",
-      "en": "2 × 2 = 4 and 5 × 2 = 10, top and bottom both × 2"
-     },
-     "accept": ["haan", "haan, barabar hain", "barabar", "equal"],
-     "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
-     "wrongIfMis": "no",
-     "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 10, "shade": 0, "label": ""}, {"parts": 5, "shade": 0, "label": ""}]}},
-     "simpler": {
-      "hi": "2/5 ke upar aur neeche ko ek hi number se guna karke dekho. Phir dekho 4/10 banta hai ya nahi.",
-      "en": "Multiply the top and bottom of 2/5 by one same number. Then see whether you get 4/10."
-     },
-     "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 10, "shade": 4, "label": "4/10"}, {"parts": 5, "shade": 2, "label": "2/5"}]}}
+     "prompt": { "hi": "Pehla bhinn 2/5 hai aur doosra bhinn 4/7. Kya yeh dono barabar bhinn hain, haan ya nahi?", "en": "The first fraction is 2/5 and the second fraction is 4/7. Are these two equal fractions, yes or no?" },
+     "key": "no",
+     "why": { "hi": "upar 2 × 2 = 4, par neeche 5 × 2 = 10 hota, 7 nahi", "en": "the top is 2 × 2 = 4, but the bottom 5 × 2 would be 10, not 7" },
+     "accept": ["nahi", "barabar nahi", "not equal", "galat"],
+     "targets": "c5-maths-ch02-t03-m-add-same",
+     "wrongIfMis": "yes",
+     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 0, "label": ""}, {"parts": 7, "shade": 0, "label": ""}]} },
+     "simpler": { "hi": "2/5 ke upar aur neeche ko ek hi number se guna karke dekho ki 4/7 banta hai ya nahi.", "en": "Multiply the top and bottom of 2/5 by one same number, and see whether you get 4/7." },
+     "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 2, "label": "2/5"}, {"parts": 7, "shade": 4, "label": "4/7"}]} }
     },
     {
      "id": "c2",
@@ -803,16 +794,10 @@
       "en": "Every pair of parts below is as long as one part on top. So fractions with different numbers can still be equal."
      },
      "then": {
-      "prompt": {
-       "hi": "Kya 5/6 aur 10/12 barabar bhinn hain, haan ya nahi?",
-       "en": "Are 5/6 and 10/12 equal fractions, yes or no?"
-      },
+      "prompt": { "hi": "Do ek jitni chocolate bar hain. Ek ka 5/6 khaaya, doosri ka 10/12. Kya dono se utna hi khaaya, haan ya nahi?", "en": "Two chocolate bars are the same size. 5/6 of one is eaten, 10/12 of the other. Was the same amount eaten, yes or no?" },
       "key": "yes",
-      "why": {
-       "hi": "5 × 2 = 10 aur 6 × 2 = 12, upar aur neeche dono × 2",
-       "en": "5 × 2 = 10 and 6 × 2 = 12, top and bottom both × 2"
-      },
-      "accept": ["haan", "haan, barabar", "barabar", "equal"],
+      "why": { "hi": "5/6 ke upar aur neeche dono × 2 karke 10/12 banta hai, toh dono bar se utna hi khaaya", "en": "5/6 with top and bottom both × 2 is 10/12, so the same amount was eaten from both bars" },
+      "accept": ["haan", "haan, utna hi", "barabar", "same"],
       "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
       "wrongIfMis": "no",
       "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 6, "shade": 0, "label": ""}, {"parts": 12, "shade": 0, "label": ""}]}},
