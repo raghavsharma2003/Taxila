@@ -170,8 +170,8 @@
     }
    ],
    "ladder": [
-    { "itemId": "c6-maths-ch02-t04-i01", "why": "first straight use: 35° against 90° → acute" },
-    { "itemId": "c6-maths-ch02-t04-i02", "why": "120° between 90° and 180° → obtuse" },
+    
+    
     { "itemId": "c6-maths-ch02-t04-rl-o1", "why": "a cricket bat's 65° turn, the same rule in a real swing" },
     { "itemId": "c6-maths-ch02-t04-i08", "why": "error-spot at the 90° border: 89° and 91° swapped" },
     { "itemId": "c6-maths-ch02-t04-rl-h1", "why": "two steps: 80° widened by 25° → 105° → obtuse" }
@@ -180,7 +180,7 @@
     {
      "targets": "c6-maths-ch02-t04-m-orientation",
      "move": "paper-folded right-angle tester: fold a sheet twice to make a square corner, lay it on corners in many positions (straight, tilted); a corner the tester fits exactly is 90° however it is turned; ask what stayed the same as the page turned",
-     "say": { "hi": "Kaagaz ko do baar modkar ek square-corner tester banao. Ise seedha ya tirchha, kisi bhi kone par rakho. Tester kone par poora baith jaaye toh kona utna hi khula hai jitna tester, chahe kaise bhi ghooma ho.", "en": "Fold a sheet of paper twice to make a square-corner tester. Put it on any corner, straight or tilted. If the tester fits the corner exactly, the corner opens just as much as the tester, however it is turned." },
+     "say": { "hi": "Kaagaz ko do baar modkar ek tester banao. Ise seedha ya tirchha, kisi bhi kone par rakho. Tester kone par poora baith jaaye toh kona utna hi khula hai jitna tester, chahe kaise bhi ghooma ho.", "en": "Fold a sheet of paper twice to make a tester. Put it on any corner, straight or tilted. If the tester fits the corner exactly, the corner opens just as much as the tester, however it is turned." },
      "simpler": { "hi": "Kaagaz do baar modo, tester ban jaata hai. Tester kone par poora baith jaaye toh kona tester jitna hi khula hai, chahe tirchha ho.", "en": "Fold paper twice to make a tester. If it fits a corner exactly, the corner opens as much as the tester, even when tilted." },
      
      "then": {
@@ -364,21 +364,19 @@
     },
     {
      "id": "c3",
-     "prompt": { "hi": "5 baje suiyon ke beech chhota angle 150° hai, aur bada 210°. Bada angle obtuse, straight ya reflex hai?", "en": "At 5 o'clock the small angle between the hands is 150°; the big one is 210°. Is the big one obtuse, straight or reflex?" },
+     "prompt": { "hi": "Ghadi ki suiyon ke beech do angle bante hain, ek chhota aur ek bada. Agar chhota angle obtuse ho, toh bada angle kis type ka hoga: acute, obtuse ya reflex?", "en": "A clock's hands make two angles, a small one and a big one. If the small angle is obtuse, what type is the big angle: acute, obtuse or reflex?" },
      "key": "reflex",
-     "why": { "hi": "chhota angle 150° hai aur bada 210°, jo 180° se zyada aur 360° se kam hai", "en": "the small angle is 150° and the big one 210°, which is more than 180° and less than 360°" },
+     "why": { "hi": "chhota obtuse angle 90° aur 180° ke beech hai, toh 360° mein se bacha bada angle 180° se zyada hai: reflex", "en": "the small obtuse angle lies between 90° and 180°, so the big angle left from 360° is more than 180°: reflex" },
      "accept": ["reflex angle", "prativarti kon", "reflex hai"],
      "targets": "c6-maths-ch02-t04-m-reflex-missing",
      "wrongIfMis": "obtuse",
-     "board": { "template": "angle@1", "params": {"angles": [{"deg": 150}]} },
-     "simpler": { "hi": "210° ko seedhi line se milao, jo aadha chakkar hai. Jo angle seedhi line se bada ho par poore chakkar se chhota, uska naam yaad karo.", "en": "Compare 210° with a straight line, which is half a turn. Recall the name of an angle bigger than a straight line but smaller than a full turn." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 150}]} }
+     "board": { "template": "compare@1", "params": {"left": {"title": "chhota angle", "items": ["obtuse"]}, "right": {"title": "bada angle", "items": ["?"]}} },
+     "simpler": { "hi": "Chhota aur bada angle milkar poora chakkar banate hain. Chhota angle seedhi line se kam hai, toh socho bada seedhi line se kam hoga ya zyada.", "en": "The small and big angles together make a full turn. The small one is less than a straight line, so think whether the big one is less or more than a straight line." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "chhota angle", "items": ["obtuse"]}, "right": {"title": "bada angle", "items": ["?"]}} }
     }
    ],
    "ladder": [
     { "itemId": "c6-maths-ch02-t04-i03", "why": "name exactly 180°: straight angle" },
     { "itemId": "c6-maths-ch02-t04-i04", "why": "a book opened flat → there is an angle, 180°" },
-    { "itemId": "c6-maths-ch02-t04-i07", "why": "3 o'clock the long way round: 360° − 90° = 270°, reflex" },
-    { "itemId": "c6-maths-ch02-t04-rl-o2", "why": "a game arrow turning 210° → reflex, not straight" },
     { "itemId": "c6-maths-ch02-t04-rl-h2", "why": "metro interchange: 360° − 135° = 225°, reflex" }
    ],
    "remediation": [

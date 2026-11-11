@@ -712,14 +712,14 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": { "hi": "Minute ki sui 5 se 2 tak clockwise jaati hai. Woh kitne right angle ghoomi?", "en": "The minute hand goes clockwise from 5 to 2. How many right angles has it turned?" },
-     "key": "3",
-     "why": { "hi": "5 se 8, 8 se 11, aur 11 se 2: har ek ek right angle, yaani 3 right angle, 3/4 chakkar", "en": "5 to 8, 8 to 11, 11 to 2: one right angle each, so 3 right angles, 3/4 of a turn" },
-     "accept": ["3 right angle", "3 right angles", "teen", "three"],
-     "targets": "c5-maths-ch03-t01-m-half-is-quarter",
-     "wrongIfMis": "1",
+     "prompt": { "hi": "Minute ki sui 5 se clockwise 2 tak jaati hai. {friend} ka kehna hai ki yeh sirf ek right angle hai, kyunki 5 se 2 bas teen number hain. Kya yeh sahi hai?", "en": "The minute hand goes clockwise from 5 to 2. {friend} says that is just one right angle, because 5 to 2 is only three numbers. Is that right?" },
+     "key": "No",
+     "why": { "hi": "clockwise 5 se 8, 8 se 11, 11 se 2: yaani 3 right angle, 3/4 chakkar; ek right angle anticlockwise hota", "en": "clockwise, 5 to 8, 8 to 11, 11 to 2 is 3 right angles, 3/4 of a turn; one is anticlockwise" },
+     "accept": ["nahi", "nahin", "no", "nahi, 3 right angle", "no, 3 right angles"],
+     "targets": "c5-maths-ch03-t01-m-cw-confuse",
+     "wrongIfMis": "Yes",
      "board": {"template": "fraction-parts@1", "params": {"parts": 4, "shade": 0, "whole": "circle"}},
-     "simpler": { "hi": "Ek right angle matlab ek quarter turn. 5 se clockwise chalo aur gino kitne quarter mein sui 2 par pahunchti hai.", "en": "One right angle is one quarter turn. Go clockwise from 5 and count how many quarters bring the hand to 2." },
+     "simpler": { "hi": "Clockwise matlab number badhne ki taraf. Is taraf 2 tak kitne quarter lagte hain, woh gino.", "en": "Clockwise means the way the numbers go up. Count how many quarters it takes that way to reach 2." },
      "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 4, "shade": 3, "whole": "circle"} }
     },
     {
@@ -745,10 +745,7 @@
     }
    ],
    "ladder": [
-    {
-     "itemId": "c5-maths-ch03-t01-i03",
-     "why": "12 to 6 → the opposite side → a half turn (e1's transfer, now on its own)"
-    },
+    
     {
      "itemId": "c5-maths-ch03-t01-i07",
      "why": "why 12 to 3 is a quarter turn: 3 of the 12 numbers = one quarter of the way round"
@@ -783,7 +780,7 @@
     {
      "targets": "c5-maths-ch03-t01-m-cw-confuse",
      "move": "a real clock face, the finger tracing the hand's own path 12 → 1 → 2 → 3 = clockwise; the other way 12 → 11 → 10 → 9 = anticlockwise; then a right angle each way from 12 lands on 3 or on 9",
-     "say": { "hi": "Ungli ghadi par sui ke raaste chalao: 12 se 1, 2, 3. Yeh clockwise hai. Ulti taraf, 12 se 11, 10 ki taraf chalna anticlockwise hai.", "en": "Move a finger on the clock along the hand's path: 12 to 1, 2, 3. That is clockwise. Going the other way, from 12 towards 11, 10, is anticlockwise." },
+     "say": { "hi": "Ungli ghadi par sui ke raaste chalao: 1 se 2, 3, 4. Yeh clockwise hai: number badhte hain, aur 12 ke baad phir 1. Ulti taraf, 3 se 2, 1 ki taraf chalna anticlockwise hai.", "en": "Move a finger on the clock along the hand's path: 1 to 2, 3, 4. That is clockwise: the numbers go up, and after 12 comes 1 again. Going the other way, from 3 towards 2, 1, is anticlockwise." },
      "simpler": { "hi": "Suiyon ki tarah 1, 2, 3 ki taraf aage chalna clockwise hai, 12 ke baad phir 1. Ulta, 3, 2, 1 ki taraf chalna anticlockwise hai.", "en": "Moving on like the hands, towards 1, 2, 3, is clockwise, with 1 again after 12. Moving back, towards 3, 2, 1, is anticlockwise." },
      "then": {
       "prompt": {

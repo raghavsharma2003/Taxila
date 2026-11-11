@@ -1411,6 +1411,11 @@ export function sayBoardNumberErrors(s) {
     // (a constant the lesson teaches — in its skill's points or mustSay, or a unit fact: 12 on a clock, 90/180/360 degrees, 100 cm,
     // 1000 m — is the method, not another instance)
     const taught = new Set([...k.explain.flatMap((b) => nums([txt(b.point), ...(b.mustSay ?? []).map(txt)].join(" "))), "12", "60", "90", "180", "270", "360", "100", "1000"]);
+    // (the two-page turn, director7 + board-first scriptBoardSpoken: a remediation's own board is drawn under its say when the say
+    // speaks every number on it — then the say is judged against THAT board; otherwise it plays over the then-card's)
+    const sayNums = new Set(nums(`${txt(r.say)}`));
+    if (r.board) { const own = nums(JSON.stringify(r.board.params ?? {})).filter((n) => n !== "0" && n !== "1");
+      if (own.length && own.every((n) => sayNums.has(n))) { for (const n of own) onBoard.add(n); for (const n of nums(JSON.stringify(r.board.params ?? {}))) onBoard.add(n); } }
     const missing = [...new Set(nums(`${txt(r.say)} ${txt(r.simpler)}`))].filter((n) => !onBoard.has(n) && !taught.has(n) && !(Number(n) <= 10 && !n.includes("/")));
     if (missing.length) e.push(`${k.skillId}/remediation[${i}]: its say names ${missing.join(", ")}, not on its then-card's board (the say is spoken over it): say the method, or what that board shows`);
   });

@@ -521,14 +521,8 @@
     {
      "targets": "c4-maths-ch04-t01-m-concat",
      "move": "place-value chart with exactly 4 boxes, one digit per box; build five thousand three hundred sixty-one box by box → 5361; the spoken parts never sit side by side",
-     "say": {
-      "hi": "Number ke sirf 4 khaane hote hain: hazaar, sau, dahai, ikai, aur har khaane mein ek hi ank. Five thousand three hundred sixty-one mein 5, 3, 6 aur 1 jaate hain, toh number 5361 hai.",
-      "en": "A number has just 4 boxes: thousands, hundreds, tens, ones, and each box holds one digit. In five thousand three hundred sixty-one, 5, 3, 6 and 1 go in, so the number is 5361."
-     },
-     "simpler": {
-      "hi": "Har khaane mein sirf ek ank jaata hai. 5, 3, 6 aur 1 ko 4 khaanon mein rakho, toh 5361 banta hai.",
-      "en": "Each box takes just one digit. Put 5, 3, 6 and 1 in the 4 boxes and you get 5361."
-     },
+     "say": { "hi": "Number ke sirf 4 khaane hote hain: hazaar, sau, dahai, ikai, aur har khaane mein ek hi ank. Bole gaye hisse saath-saath chipkaakar nahi likhte: har hissa apne khaane mein ek ank deta hai.", "en": "A number has just 4 boxes: thousands, hundreds, tens, ones, and each box holds one digit. The spoken parts are not stuck side by side: each part gives one digit in its own box." },
+     "simpler": { "hi": "Har khaane mein sirf ek ank jaata hai. Har bola gaya hissa apne khaane ka ek ank hai.", "en": "Each box takes just one digit. Each spoken part is one digit in its own box." },
      "then": {
       "prompt": {
        "hi": "Seven thousand two hundred eighty-four ko numbers mein likho, har khaane mein ek ank.",
@@ -573,14 +567,8 @@
     {
      "targets": "c4-maths-ch04-t01-m-teen-ty",
      "move": "tens | ones mat: seventeen built as 1 ten-rod + 7 cubes beside seventy as 7 ten-rods + 0 cubes → a teen word gives 1 ten, a ty word gives many tens",
-     "say": {
-      "hi": "Seventeen mein 1 dahai aur 7 ikai hain, yaani 17. Seventy mein 7 dahai aur 0 ikai hain, yaani 70. Isliye seventeen ko 17 likhte hain, 70 nahi.",
-      "en": "Seventeen has 1 ten and 7 ones, that is 17. Seventy has 7 tens and 0 ones, that is 70. So seventeen is written 17, not 70."
-     },
-     "simpler": {
-      "hi": "Seventeen matlab 1 dahai aur 7 ikai, yaani 17. Seventy matlab 7 dahai, yaani 70.",
-      "en": "Seventeen is 1 ten and 7 ones, so 17. Seventy is 7 tens, so 70."
-     },
+     "say": { "hi": "Seventeen mein 1 dahai aur 7 ikai hain. Seventy mein 7 dahai aur 0 ikai hain. Teen wala shabd sirf 1 dahai deta hai, ty wala shabd kai dahai.", "en": "Seventeen has 1 ten and 7 ones. Seventy has 7 tens and 0 ones. A teen word gives just 1 ten; a ty word gives many tens." },
+     "simpler": { "hi": "Seventeen matlab 1 dahai aur 7 ikai. Seventy matlab 7 dahai. Teen wala shabd sirf 1 dahai deta hai.", "en": "Seventeen is 1 ten and 7 ones. Seventy is 7 tens. A teen word gives just 1 ten." },
      "then": {
       "prompt": {
        "hi": "Three thousand one hundred nineteen ko numbers mein likho. Nineteen mein kitni dahai hai, yeh socho.",
@@ -687,7 +675,7 @@
     },
     {
      "id": "e2",
-     "convey": "same digit 5 in two numbers: 5281 → thousands place → 5000; 8125 → ones place → 5; same digit, different place, different value; asked on the same board: the 2 of 8125, in the tens → 20",
+     "convey": "same digit 5 in two numbers: 5281 → thousands place → 5000; 8125 → ones place → 5; same digit, different place, different value; asked on the same board: whose 2 is worth more → 5281's (hundreds, 200) over 8125's (tens, 20)",
      "mustSay": [
       {
        "hi": "ank wahi, jagah alag",
@@ -722,15 +710,15 @@
       "en": "Both numbers have a 5. In 5281 the 5 is in the thousands place, so it is worth 5000. In 8125 the same 5 is in the ones place, so it is worth just 5. Same digit, different place, different value."
      },
      "ask": {
-      "prompt": { "hi": "Ab board par daayein wale number ka 2 dekho. Woh kis jagah par hai, aur uski value kitni hai?", "en": "Now look at the 2 in the number on the right of the board. Which place is it in, and what is it worth?" }, 
-      "key": "20",
-      "accept": ["2 dahai", "bees", "twenty", "dahai, 20", "tens, 20", "2 dahaai", "dahaai, 20"],
+      "prompt": { "hi": "Board ke dono numbers mein ek 2 bhi hai. Kiska 2 zyada value rakhta hai: baayein wale number ka ya daayein wale ka?", "en": "Both numbers on the board have a 2 as well. Whose 2 is worth more: the left number's or the right number's?" }, 
+      "key": "baayein wale ka",
+      "accept": ["baayein", "baayein wale number ka", "left", "the left one", "the left number's", "5281 ka", "5281 wala"],
       "targets": "c4-maths-ch04-t01-m-face-value",
-      "wrongIfMis": "2",
-      "why": { "hi": "8125 mein 2 dahai ki jagah, value 20; 5281 mein 5 hazaar par 5000, 8125 mein ikai par 5", "en": "In 8125 the 2 is in tens, worth 20; in 5281 the 5 is 5000, in 8125 just 5" },
+      "wrongIfMis": "dono barabar",
+      "why": { "hi": "5281 mein 2 sau ki jagah, value 200; 8125 mein dahai ki jagah, value 20. 5 hazaar par 5000, ikai par 5", "en": "In 5281 the 2 is in hundreds, worth 200; in 8125 it is in tens, worth 20, like 5000 and 5" },
       "answerBoard": { "template": "compare@1", "params": {"left": {"title": "5281", "items": ["5 hazaar ki jagah", "value 5000"]}, "right": {"title": "8125", "items": ["5 ikai ki jagah", "value 5"]}} }
      },
-     "simpler": { "hi": "Daayein wale number ke ank daayen se gino: pehle ikai, phir dahai. 2 kis jagah par hai, woh dekho, phir socho 2 dahai kitne hote hain.", "en": "Count the digits of the number on the right from the right: first ones, then tens. See which place the 2 is in, then think how much 2 tens make." }
+     "simpler": { "hi": "Dono numbers mein 2 ki jagah dhoondo, ank daayen se gino: ikai, dahai, sau. Jo 2 badi jagah par hai, uski value zyada hai.", "en": "Find the place of the 2 in both numbers, counting digits from the right: ones, tens, hundreds. The 2 in the bigger place is worth more." }
     },
     {
      "id": "e3",
@@ -959,14 +947,8 @@
     {
      "targets": "c4-maths-ch04-t01-m-drop-zero",
      "move": "abacus with 4 spikes: 5 beads, an empty spike, 2, 7 → every spike gets a digit, the empty one a 0 → 5027, never 527",
-     "say": {
-      "hi": "Abacus par 4 teeliyan hain: hazaar, sau, dahai, ikai. Hazaar par 5 mani, sau par koi nahi, dahai par 2, ikai par 7. Khaali teeli ke liye 0 likhte hain, toh number 5027 hai, 527 nahi.",
-      "en": "The abacus has 4 spikes: thousands, hundreds, tens, ones. 5 beads on thousands, none on hundreds, 2 on tens, 7 on ones. For the empty spike we write 0, so the number is 5027, not 527."
-     },
-     "simpler": {
-      "hi": "Khaali teeli ke liye 0 likho. Hazaar 5, sau 0, dahai 2, ikai 7, toh number 5027 hai.",
-      "en": "Write 0 for the empty spike. Thousands 5, hundreds 0, tens 2, ones 7, so the number is 5027."
-     },
+     "say": { "hi": "Abacus par 4 teeliyan hain: hazaar, sau, dahai, ikai. Har teeli ka ek ank likhte hain. Jis teeli par koi mani nahi, uske liye 0 likhte hain, use chhodte nahi, toh number mein 4 ank aate hain.", "en": "The abacus has 4 spikes: thousands, hundreds, tens, ones. We write one digit for each spike. For a spike with no beads we write 0 and never skip it, so the number has 4 digits." },
+     "simpler": { "hi": "Khaali teeli ke liye 0 likho, use chhodo mat. 4 teeliyan hain, toh 4 ank.", "en": "Write 0 for an empty spike; do not skip it. 4 spikes, so 4 digits." },
      "then": {
       "prompt": {
        "hi": "Abacus 4 teeliyon wala hai: hazaar mein 8 mani, sau mein 3, dahai mein koi nahi, ikai mein 4. Number kya hai?",
@@ -1410,14 +1392,8 @@
     {
      "targets": "c4-maths-ch04-t01-m-drop-zero",
      "move": "abacus with 4 spikes: do hazaar aath built as 2 beads, empty, empty, 8 → both empty spikes get a 0 → 2008; beside it the zeros dropped → 28",
-     "say": {
-      "hi": "Do hazaar aath mein hazaar par 2, sau aur dahai khaali, ikai par 8. Dono khaali jagah par 0 likhte hain, toh 2008. Zero chhoda toh 28 ban jaata hai, jo sirf atthaees hai.",
-      "en": "In two thousand eight, thousands has 2, hundreds and tens are empty, ones has 8. Both empty places get a 0, so 2008. Leave the zeros out and it becomes 28, which is just twenty-eight."
-     },
-     "simpler": {
-      "hi": "Khaali sau aur dahai mein 0 likho: hazaar 2, phir 0, 0, aur ikai 8. Toh 2008 banta hai, 28 nahi.",
-      "en": "Put 0 in the empty hundreds and tens: thousands 2, then 0, 0, then ones 8. So it is 2008, not 28."
-     },
+     "say": { "hi": "Hazaar wale number mein 4 jagah hoti hain: hazaar, sau, dahai, ikai. Jo jagah khaali hai, wahan 0 likhte hain. Zero chhoda toh baaki ank galat jagah khisak jaate hain, aur number bahut chhota ban jaata hai.", "en": "A number in the thousands has 4 places: thousands, hundreds, tens, ones. An empty place gets a 0. Leave the zero out and the other digits slide into the wrong places, and the number becomes far too small." },
+     "simpler": { "hi": "Har khaali jagah par 0 likho. 0 chhodne se ank galat jagah chale jaate hain.", "en": "Write 0 in every empty place. Leaving out a 0 moves the digits to the wrong places." },
      "then": {
       "prompt": {
        "hi": "Aath hazaar teen ko ankon mein likho. Har khaali jagah par 0 aayega.",
@@ -1461,14 +1437,8 @@
     {
      "targets": "c4-maths-ch04-t01-m-concat",
      "move": "4-box chart again: two thousand thirty → 2 | 0 | 3 | 0 → 2030; 2000 and 30 stuck side by side → 200030, too many digits for a number under ten thousand",
-     "say": {
-      "hi": "Hazaar wale number ke sirf 4 khaane hote hain. Two thousand thirty mein hazaar 2, sau 0, dahai 3, ikai 0, toh 2030. 2000 ke aage 30 chipkaakar 200030 likhna galat hai.",
-      "en": "A number in the thousands has just 4 boxes. In two thousand thirty: thousands 2, hundreds 0, tens 3, ones 0, so 2030. Writing 200030, with 30 stuck after 2000, is wrong."
-     },
-     "simpler": {
-      "hi": "Sirf 4 khaane bharo: hazaar 2, sau 0, dahai 3, ikai 0. Toh two thousand thirty 2030 hai.",
-      "en": "Fill just 4 boxes: thousands 2, hundreds 0, tens 3, ones 0. So two thousand thirty is 2030."
-     },
+     "say": { "hi": "Hazaar wale number ke sirf 4 khaane hote hain: hazaar, sau, dahai, ikai. Bole gaye hisse ek ke baad ek chipkaate nahi; har hissa apne khaane mein ank deta hai, aur khaali khaane mein 0 aata hai.", "en": "A number in the thousands has just 4 boxes: thousands, hundreds, tens, ones. The spoken parts are not stuck one after another; each part puts its digit in its own box, and an empty box gets 0." },
+     "simpler": { "hi": "Sirf 4 khaane bharo, har khaane mein ek ank, aur khaali khaane mein 0.", "en": "Fill just 4 boxes, one digit in each, and 0 in an empty box." },
      "then": {
       "prompt": {
        "hi": "Five thousand seventy ko numbers mein likho, sirf 4 khaanon mein.",

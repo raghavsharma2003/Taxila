@@ -43,7 +43,8 @@ test("W1: one term per idea per form; a point may gloss a new term, a card may n
   for (const id of PILOTS) assert.deepEqual(oneTermErrors(read(`data/lesson-scripts/${id}.json`)), [], id);
   const s = read("data/lesson-scripts-staged/c6-maths-ch02-t03.json");
   assert.deepEqual(oneTermErrors(s), []);
-  s.skills[2].checks[1].prompt.hi = s.skills[2].checks[1].prompt.hi.replace("kis bindu se", "kis point se");
+  // (its own mixed prompt: the staged card's wording changes with the reader pass)
+  s.skills[2].checks[1].prompt.hi = "Ab D ko kis bindu se jodoge, ya kis point se?";
   assert.ok(oneTermErrors(s).some((x) => /checks\[1\]\.prompt: "point" and "bindu" in one form/.test(x)));
   const t = read("data/lesson-scripts-staged/c6-maths-ch02-t01.json");
   assert.deepEqual(oneTermErrors(t), [], "a point's gloss 'line yaani rekha' introduces the term");
