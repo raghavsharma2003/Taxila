@@ -16,7 +16,7 @@
   {"hi": "poora", "en": "one whole"},
   {"hi": "sankhya rekha", "en": "number line"}
  ], "greetSimpler": { "hi": "Aaj hum dekhenge ki alag dikhne wale bhinn bhi barabar ho sakte hain.", "en": "Today we see that fractions that look different can be equal." },
- "joints": {"asidePark":[{"hi":"Yeh patti wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once these strips is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh patti wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once these strips is over."},{"hi":"{aside} wali baat mujhe yaad rahegi, thodi der mein wahi poochhungi.","en":"I'll remember the {aside} bit, and I'll ask about it in a little while."}],"asideReturn":[{"hi":"{aside} mein tumne kabhi kuch aadha-aadha kiya hai?","en":"Have you ever split something in half in {aside}?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"},{"hi":"Toh {aside} mein tumhare saath aur kaun hota hai?","en":"So who else is with you in {aside}?"}],"hindiSwitch":[{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."}],"askAgain":[{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."}],"backTo":[{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."},{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."},{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."}]},
+ "joints": {"asidePark":[{"hi":"Yeh patti wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once we finish these strips, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh patti wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, right after these strips."},{"hi":"{aside} wali baat mujhe yaad rahegi, thodi der mein wahi poochhungi.","en":"I'll remember the {aside} bit, and I'll ask about it in a little while."}],"asideReturn":[{"hi":"{aside} mein tumne kabhi kuch aadha-aadha kiya hai?","en":"Have you ever split something in half in {aside}?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"},{"hi":"Toh {aside} ki sabse achhi baat kya hai?","en":"So what is the best thing about {aside}?"}],"hindiSwitch":[{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."}],"askAgain":[{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."}],"backTo":[{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."},{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."},{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."}]},
  "skills": [
   {
    "skillId": "c5-maths-ch02-t03-s1",
@@ -42,7 +42,7 @@
    "explain": [
     {
      "id": "e1",
-     "convey": "one paper strip folded once → 2 equal parts; 1 coloured = 1/2 → the same strip folded three times below, 8 equal parts → how many of them the coloured half covers",
+     "convey": "one paper strip folded once → 2 equal parts; 1 coloured = 1/2 → the same strip cut into 10 equal parts below → how many of them the coloured half covers",
      "mustSay": [{"hi": "1/2", "en": "1/2"}, {"hi": "2 barabar hisse", "en": "2 equal parts"}],
      "board": {"template": "fraction-parts@1", "params": {"parts": 2, "shade": 1, "whole": "bar"}},
      "point": {
@@ -50,18 +50,12 @@
       "en": "The paper strip on top is folded down the middle, so it has 2 equal parts. One part is shaded; that is 1/2, half the strip."
      },
      "ask": {
-      "prompt": {
-       "hi": "Neeche wahi patti teen baar beech se modi gayi, toh 8 barabar hisse bane. Upar ka rang wala aadha, inmein se kitne hisson jitna hai?",
-       "en": "Below, the same strip is folded down the middle three times, so it has 8 equal parts. The shaded half on top, how many of these parts is it?"
-      },
-      "key": "4",
-      "why": {
-       "hi": "upar ki aadhi patti neeche ki aadhi patti jitni hai, aur 8 ka aadha 4 hota hai",
-       "en": "half the top strip is as long as half the bottom strip, and half of 8 is 4"
-      },
-      "accept": ["chaar", "four", "4 hisse", "chaar hisse"],
-      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 8, "shade": 0, "label": ""}]}},
-      "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 8, "shade": 4, "label": "4/8"}]}}
+      "prompt": { "hi": "Neeche wahi patti 10 barabar hisson mein kaati gayi. Upar ka rang wala aadha, inmein se kitne hisson jitna hai?", "en": "Below, the same strip is cut into 10 equal parts. The shaded half on top, how many of these parts is it?" },
+      "key": "5",
+      "why": { "hi": "upar ki aadhi patti neeche ki aadhi patti jitni hai, aur 10 ka aadha 5 hota hai", "en": "half the top strip is as long as half the bottom strip, and half of 10 is 5" },
+      "accept": ["paanch", "five", "5 hisse", "paanch hisse"],
+      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 10, "shade": 0, "label": ""}]} },
+      "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 10, "shade": 5, "label": "5/10"}]} }
      },
      "simpler": {
       "hi": "Neeche ki patti ka aadha hissa dekho. Usmein jitne chhote hisse hain, utne hi upar ke aadhe mein samaate hain.",
@@ -111,10 +105,7 @@
        "en": "On this same line, you go from 0 to 3/4. How many 1/8 parts does that take?"
       },
       "key": "6",
-      "why": {
-       "hi": "3/4 ke upar aur neeche dono ko 2 se guna karo toh upar 6 aur neeche 8 aata hai, yaani 6/8",
-       "en": "multiplying the top and bottom of 3/4 by 2 gives top 6 and bottom 8, that is 6/8"
-      },
+      "why": { "hi": "rekha par har chauthai mein 2 chhote aathve hisse hain, toh 3 chauthai tak 3 × 2 = 6 hisse, yaani 6/8", "en": "each quarter of the line holds 2 eighths, so 3 quarters is 3 × 2 = 6 eighths, that is 6/8" },
       "accept": ["6/8", "chhe", "six", "6 hisse"],
       "answerBoard": {"template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "marks": [{"num": 4, "label": "1/2"}, {"num": 6, "label": "3/4 = 6/8"}]}}
      },
@@ -153,10 +144,7 @@
       }
      },
      {
-      "do": {
-       "hi": "Doosre mod ke baad hisse dekho, jaise upar wali patti mein",
-       "en": "Look at the parts after the second fold, as on the top strip"
-      },
+      "do": { "hi": "Doosre mod ke baad hisse dekho", "en": "Look at the parts after the second fold" },
       "result": "4 barabar hisse, 2 rang wale, yaani 2/4",
       "why": {
        "hi": "har hissa do chhote hisson mein banta hai, toh kul hisse bhi dugne aur rang wale bhi dugne",
@@ -173,7 +161,7 @@
       "hi": "Teesra mod har hissa phir do chhote hisson mein baantta hai, toh rumal ke 8 barabar hisse bante hain, jaise neeche wali patti. Inmein se kitne hisse rang wale honge?",
       "en": "The third fold splits every part into two smaller parts again, so the hanky has 8 equal parts, like the bottom strip. How many of them will be coloured?"
      },
-     "key": "4", "why": { "hi": "teesre mode ke baad 8 barabar hisse hote hain, aur rang wala aadha hissa unmein se 4 hisse hota hai", "en": "after the third fold there are 8 equal parts, and the coloured half is 4 of those parts" },
+     "key": "4", "why": { "hi": "teesre mod ke baad 8 barabar hisse hote hain, aur rang wala aadha hissa unmein se 4 hisse hota hai", "en": "after the third fold there are 8 equal parts, and the coloured half is 4 of those parts" },
      "accept": ["chaar", "four", "4 hisse", "chaar hisse"],
      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 2, "label": "2/4"}, {"parts": 8, "shade": 0, "label": ""}]}},
      "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 2, "label": "2/4"}, {"parts": 8, "shade": 4, "label": "4/8"}]}},
@@ -216,21 +204,15 @@
     },
     {
      "id": "c2",
-     "prompt": {
-      "hi": "Yeh sankhya rekha 0 se 1 tak 8 barabar hisson mein bati hai. 0 ke baad chautha nishaan ringed hai. Woh nishaan 1/2 se bada hai, chhota hai, ya barabar?",
-      "en": "This number line from 0 to 1 is split into 8 equal parts. The 4th mark after 0 is circled. Is that mark bigger than 1/2, smaller, or equal?"
-     },
-     "key": "equal",
-     "why": {"hi": "0 ke baad chautha nishaan 4/8 hai, aur 4/8 = 1/2", "en": "the 4th mark after 0 is 4/8, and 4/8 = 1/2"},
-     "accept": ["barabar", "barabar hai", "the same", "same", "equal to 1/2"],
+     "prompt": { "hi": "Yeh sankhya rekha 0 se 1 tak 12 barabar hisson mein bati hai. 0 ke baad paanchve nishaan par gol ghera hai. Woh nishaan 1/2 se bada hai, chhota hai, ya barabar?", "en": "This number line from 0 to 1 is split into 12 equal parts. The 5th mark after 0 is circled. Is that mark bigger than 1/2, smaller, or equal?" },
+     "key": "smaller",
+     "why": { "hi": "0 ke baad paanchva nishaan 5/12 hai, aur 1/2 = 6/12 chhatthe nishaan par hai, toh 5/12 chhota hai", "en": "the 5th mark after 0 is 5/12, and 1/2 = 6/12 sits at the 6th mark, so 5/12 is smaller" },
+     "accept": ["chhota", "chhota hai", "kam", "smaller", "less"],
      "targets": "c5-maths-ch02-t03-m-more-pieces-more",
      "wrongIfMis": "bigger",
-     "board": {"template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "mark": 4}},
-     "simpler": {
-      "hi": "Rekha ke 8 barabar hisse hain, aur 1/2 theek beech mein hota hai. Dekho chautha nishaan beech mein hai ya nahi.",
-      "en": "The line has 8 equal parts, and 1/2 sits right in the middle. See whether the 4th mark is in the middle."
-     },
-     "answerBoard": {"template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "marks": [{"num": 4, "label": "4/8 = 1/2"}]}}
+     "board": { "template": "fraction-line@1", "params": {"den": 12, "from": 0, "to": 1, "mark": 5} },
+     "simpler": { "hi": "Rekha ke 12 barabar hisse hain, aur 1/2 theek beech mein hota hai. Dekho paanchva nishaan beech se pehle hai, beech mein, ya baad mein.", "en": "The line has 12 equal parts, and 1/2 sits right in the middle. See whether the 5th mark is before the middle, at it, or after it." },
+     "answerBoard": { "template": "fraction-line@1", "params": {"den": 12, "from": 0, "to": 1, "marks": [{"num": 5, "label": "5/12"}, {"num": 6, "label": "6/12 = 1/2"}]} }
     }
    ],
    "ladder": [
@@ -268,10 +250,7 @@
       "en": "The pieces below are thin, the ones on top chunky. More thin pieces can be as much as fewer chunky ones."
      },
      "then": {
-      "prompt": {
-       "hi": "Do ek jaisi chocolate: Farhan ne ek ka 1/3 khaya, {friend} ne doosri ke 6 tukdon mein se 2. Zyada kisne, ya barabar?",
-       "en": "Two same chocolate bars: Farhan ate 1/3 of one, {friend} ate 2 of the other's 6 equal pieces. Who ate more, or the same?"
-      },
+      "prompt": { "hi": "Farhan ne ek chocolate ka 1/3 khaya, {friend} ne waisi hi doosri ke 6 barabar tukdon mein se 2. Zyada kisne, ya barabar?", "en": "Farhan ate 1/3 of a chocolate bar; {friend} ate 2 of 6 equal pieces of an identical bar. Who ate more, or the same?" },
       "key": "the same",
       "why": {
        "hi": "6 barabar tukdon mein se 2 tukde 2/6 hain, aur 2/6 = 1/3",
@@ -343,30 +322,21 @@
     },
     {
      "id": "e2",
-     "convey": "2/5 = 4/10: top 2 × 2, bottom 5 × 2 → both by the same number → transfer: a 2/4 bar with every part split into 3, count the shaded small parts",
-     "mustSay": [{"hi": "upar aur neeche dono ek hi number se guna", "en": "top and bottom multiplied by the same number"}, {"hi": "2/4", "en": "2/4"}],
+     "convey": "2/5 = 4/10: top 2 × 2, bottom 5 × 2 → both by the same number → transfer: a 2/3 bar with every part split into 4, count the shaded small parts",
+     "mustSay": [{"hi": "upar aur neeche dono ek hi number se guna", "en": "top and bottom multiplied by the same number"}, {"hi": "2/3", "en": "2/3"}],
      "board": {"template": "fraction-parts@1", "params": {"parts": 10, "shade": 4, "whole": "bar"}},
-     "point": { "hi": "Abhi dekha, barabar bhinn banane ke liye upar aur neeche dono ko ek hi number se guna karte hain. Ab upar ki patti dekho: 4 barabar hisse, 2 rang wale, yaani 2/4.", "en": "We just saw that to make an equal fraction, we multiply the top and the bottom by the same number. Now look at the top bar: 4 equal parts, 2 shaded, that is 2/4." },
+     "point": { "hi": "Abhi dekha, barabar bhinn banane ke liye upar aur neeche dono ko ek hi number se guna karte hain. Ab upar ki patti dekho: 3 barabar hisse, 2 rang wale, yaani 2/3.", "en": "We just saw that to make an equal fraction, we multiply the top and the bottom by the same number. Now look at the top bar: 3 equal parts, 2 shaded, that is 2/3." },
      "ask": {
-      "prompt": {
-       "hi": "Ab neeche ki patti ka har hissa 3 chhote hisson mein bata hai, toh 12 hisse. Neeche kitne chhote hisse rang wale honge?",
-       "en": "Now every part of the bottom bar is split into 3 smaller parts, so 12 parts. How many small parts below will be shaded?"
-      },
+      "prompt": { "hi": "Ab neeche ki patti ka har hissa 3 chhote hisson mein bata hai, toh 9 hisse. Neeche kitne chhote hisse rang wale honge?", "en": "Now every part of the bottom bar is split into 3 smaller parts, so 9 parts. How many small parts below will be shaded?" },
       "key": "6",
-      "why": {
-       "hi": "2 rang wale hisson mein se har ek 3 chhote hisse ban gaya, aur 2 × 3 = 6",
-       "en": "each of the 2 shaded parts became 3 small parts, and 2 × 3 = 6"
-      },
-      "accept": ["chhe", "six", "6 hisse", "chhe hisse"],
+      "why": { "hi": "2 rang wale hisson mein se har ek 3 chhote hisse ban gaya, aur 2 × 3 = 6", "en": "each of the 2 shaded parts became 3 small parts, and 2 × 3 = 6" },
+      "accept": ["chhah", "six", "6 hisse", "chhah hisse"],
       "targets": "c5-maths-ch02-t03-m-one-part-only",
       "wrongIfMis": "2",
-      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 2, "label": "2/4"}, {"parts": 12, "shade": 0, "label": ""}]}},
-      "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 2, "label": "2/4"}, {"parts": 12, "shade": 6, "label": "6/12"}]}}
+      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 3, "shade": 2, "label": "2/3"}, {"parts": 9, "shade": 0, "label": ""}]} },
+      "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 3, "shade": 2, "label": "2/3"}, {"parts": 9, "shade": 6, "label": "6/9"}]} }
      },
-     "simpler": {
-      "hi": "Upar ke har hisse ke neeche 3 chhote hisse hain. Rang wale har hisse ke neeche wale chhote hisse gino.",
-      "en": "Under each part on top sit 3 small parts. Count the small parts under every shaded part."
-     }
+     "simpler": { "hi": "Upar ke har hisse ke neeche 3 chhote hisse hain. Rang wale har hisse ke neeche wale chhote hisse gino.", "en": "Under each part on top sit 3 small parts. Count the small parts under every shaded part." }
     },
     {
      "id": "e3",
@@ -428,7 +398,7 @@
      },
      {
       "do": {"hi": "Patti mein socho", "en": "Picture it on a bar"},
-      "result": "har paanchwa hissa 2 chhote hisson mein bantega, rang wale hisse bhi",
+      "result": "patti ka har hissa 2 chhote hisson mein bantega, rang wale hisse bhi",
       "why": {
        "hi": "neeche ko 2 se guna karna matlab har hissa do mein baantna, aur rang wale hisse bhi usi tarah bant-te hain",
        "en": "multiplying the bottom by 2 means splitting every part in two, and the shaded parts split the same way"
@@ -510,24 +480,15 @@
     },
     {
      "id": "c3",
-     "prompt": {
-      "hi": "3/4 ke barabar ek naya bhinn banana hai jiska neeche 8 ho. Is naye bhinn ka upar kya aayega?",
-      "en": "Make a new fraction equal to 3/4 with 8 at the bottom. What goes at the top of this new fraction?"
-     },
-     "key": "6",
-     "why": {
-      "hi": "neeche 4 × 2 = 8 hua, toh upar bhi 3 × 2 = 6, kuch joda nahi gaya",
-      "en": "the bottom went 4 × 2 = 8, so the top is 3 × 2 = 6, nothing is added"
-     },
-     "accept": ["chhe", "six", "6 aayega"],
+     "prompt": { "hi": "1/4 ke barabar ek naya bhinn banana hai jiska neeche 12 ho. Is naye bhinn ka upar kya aayega?", "en": "Make a new fraction equal to 1/4 with 12 at the bottom. What goes at the top of this new fraction?" },
+     "key": "3",
+     "why": { "hi": "neeche 4 × 3 = 12 hua, toh upar bhi 1 × 3 = 3, kuch joda nahi gaya", "en": "the bottom went 4 × 3 = 12, so the top is 1 × 3 = 3, nothing is added" },
+     "accept": ["teen", "three", "3 aayega"],
      "targets": "c5-maths-ch02-t03-m-add-same",
-     "wrongIfMis": "7",
-     "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 3, "label": "3/4"}, {"parts": 8, "shade": 0, "label": ""}]}},
-     "simpler": {
-      "hi": "Neeche ka number guna se 8 bana, kuch jodne se nahi. Upar wale ko bhi wahi guna karo.",
-      "en": "The bottom number became 8 by multiplying, not by adding. Do the same multiplying to the top."
-     },
-     "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 3, "label": "3/4"}, {"parts": 8, "shade": 6, "label": "6/8"}]}}
+     "wrongIfMis": "9",
+     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 1, "label": "1/4"}, {"parts": 12, "shade": 0, "label": ""}]} },
+     "simpler": { "hi": "Neeche ka number guna se 12 bana, kuch jodne se nahi. Upar wale ko bhi wahi guna karo.", "en": "The bottom number became 12 by multiplying, not by adding. Do the same multiplying to the top." },
+     "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 1, "label": "1/4"}, {"parts": 12, "shade": 3, "label": "3/12"}]} }
     }
    ],
    "ladder": [
@@ -667,25 +628,19 @@
     },
     {
      "id": "e2",
-     "convey": "the check without a picture: does one number multiply BOTH top and bottom → 2/3 and 6/9: 2 × 3 = 6, 3 × 3 = 9 → same multiplier → equal → transfer: find the one multiplier for 1/3 and 4/12, drawn as a bar of 3 above a bar of 12",
-     "mustSay": [{"hi": "ek hi number se guna", "en": "multiplied by the same number"}, {"hi": "1/3", "en": "1/3"}],
+     "convey": "the check without a picture: does one number multiply BOTH top and bottom → 2/3 and 6/9: 2 × 3 = 6, 3 × 3 = 9 → same multiplier → equal → transfer: find the one multiplier for 1/6 and 2/12, drawn as a bar of 6 above a bar of 12",
+     "mustSay": [{"hi": "ek hi number se guna", "en": "multiplied by the same number"}, { "hi": "1/6", "en": "1/6" }],
      "board": {"template": "compare@1", "params": {"left": {"title": "2/3", "items": ["upar 2 × 3 = 6", "neeche 3 × 3 = 9"]}, "right": {"title": "6/9", "items": ["dono × 3", "barabar"]}}},
-     "point": { "hi": "Check karne ka tareeka: dekho kya upar aur neeche dono ek hi number se guna hue. Dono ek hi number se guna hue hon, toh bhinn barabar hain. Ab upar ki patti dekho: 3 hisse, ek rang wala, yaani 1/3.", "en": "The way to check: see whether the top and bottom were both multiplied by the same number. If both were multiplied by the same number, the fractions are equal. Now look at the top bar: 3 parts, one shaded, that is 1/3." },
+     "point": { "hi": "Check karne ka tareeka: dekho kya upar aur neeche dono ek hi number se guna hue. Dono ek hi number se guna hue hon, toh bhinn barabar hain. Ab upar ki patti dekho: 6 hisse, ek rang wala, yaani 1/6.", "en": "The way to check: see whether the top and bottom were both multiplied by the same number. If both were multiplied by the same number, the fractions are equal. Now look at the top bar: 6 parts, one shaded, that is 1/6." },
      "ask": {
-      "prompt": {
-       "hi": "12 hisson wali neeche ki patti bhi wahi hai, aur 1/3 = 4/12 hai. Upar aur neeche dono kis ek number se guna hue hain?",
-       "en": "The bar below, in 12 parts, is the same one, and 1/3 = 4/12. By which one number were the top and bottom both multiplied?"
-      },
-      "key": "4",
-      "why": {"hi": "upar 1 × 4 = 4 hua aur neeche 3 × 4 = 12", "en": "the top went 1 × 4 = 4 and the bottom 3 × 4 = 12"},
-      "accept": ["chaar", "four", "4 se", "chaar se"],
-      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 3, "shade": 1, "label": "1/3"}, {"parts": 12, "shade": 0, "label": ""}]}},
-      "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 3, "shade": 1, "label": "1/3"}, {"parts": 12, "shade": 4, "label": "4/12"}]}}
+      "prompt": { "hi": "12 hisson wali neeche ki patti bhi utni hi lambi hai, aur 1/6 = 2/12 hai. Upar aur neeche dono kis ek number se guna hue hain?", "en": "The bar below, in 12 parts, is just as long, and 1/6 = 2/12. By which one number were the top and bottom both multiplied?" },
+      "key": "2",
+      "why": { "hi": "upar 1 × 2 = 2 hua aur neeche 6 × 2 = 12", "en": "the top went 1 × 2 = 2 and the bottom 6 × 2 = 12" },
+      "accept": ["do", "two", "2 se", "do se"],
+      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 6, "shade": 1, "label": "1/6"}, {"parts": 12, "shade": 0, "label": ""}]} },
+      "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 6, "shade": 1, "label": "1/6"}, {"parts": 12, "shade": 2, "label": "2/12"}]} }
      },
-     "simpler": {
-      "hi": "Pehle neeche dekho: 3 kis number se guna hokar 12 bana. Phir dekho upar wala number bhi usi se guna hua ya nahi.",
-      "en": "First look at the bottom: 3 times what made 12. Then see whether the top number was multiplied by that same one."
-     }
+     "simpler": { "hi": "Pehle neeche dekho: 6 kis number se guna hokar 12 bana. Phir dekho upar wala number bhi usi se guna hua ya nahi.", "en": "First look at the bottom: 6 times what made 12. Then see whether the top number was multiplied by that same one." }
     },
     {
      "id": "e3",
@@ -789,10 +744,7 @@
     },
     {
      "id": "c2",
-     "prompt": {
-      "hi": "Yeh sankhya rekha 0 se 1 tak 6 barabar hisson mein bati hai. 0 ke baad chautha nishaan ringed hai. Kya woh nishaan 2/3 ke barabar hai, haan ya nahi?",
-      "en": "This number line from 0 to 1 is split into 6 equal parts. The 4th mark after 0 is circled. Is that mark equal to 2/3, yes or no?"
-     },
+     "prompt": { "hi": "Yeh sankhya rekha 0 se 1 tak 6 barabar hisson mein bati hai. 0 ke baad chauthe nishaan par gol ghera hai. Kya woh nishaan 2/3 ke barabar hai, haan ya nahi?", "en": "This number line from 0 to 1 is split into 6 equal parts. The 4th mark after 0 is circled. Is that mark equal to 2/3, yes or no?" },
      "key": "yes",
      "why": {
       "hi": "0 ke baad chautha nishaan 4/6 hai, aur 2/3 ke upar-neeche × 2 karke 4/6 banta hai",
@@ -874,10 +826,7 @@
     {
      "targets": "c5-maths-ch02-t03-m-add-same",
      "move": "1/2 and 2/3 each have a bottom one more than the top, yet 2/3 is past a half → a fixed gap between top and bottom does not keep the amount → only one multiplier for both does",
-     "say": {
-      "hi": "1/2 mein neeche ka number upar se 1 zyada hai, aur 2/3 mein bhi, par 2/3 aadhe se aage hai. Toh upar aur neeche ka farak dekhkar barabar nahi kehte. In do patti par guna se hi faisla hoga.",
-      "en": "In 1/2 the bottom number is 1 more than the top, and in 2/3 too, but 2/3 goes past a half. So we never call fractions equal from the gap between top and bottom. On these two bars, only multiplying decides."
-     },
+     "say": { "hi": "1/2 mein neeche ka number upar se 1 zyada hai, aur 2/3 mein bhi, par 2/3 aadhe se aage hai. Toh farak dekhkar barabar nahi kehte. Yeh do patti 3 aur 5 hisson ki hain: inka faisla bhi guna se hoga.", "en": "In 1/2 the bottom is 1 more than the top, and in 2/3 too, but 2/3 goes past a half. So a gap never makes fractions equal. These bars are in 3 and 5 parts: they too are decided only by multiplying." },
      "simpler": {
       "hi": "Upar aur neeche kuch jodne se maatra badal jaati hai. Barabar dekhne ke liye guna dekho.",
       "en": "Adding something to the top and bottom changes the amount. To see equal, look at the multiplying."

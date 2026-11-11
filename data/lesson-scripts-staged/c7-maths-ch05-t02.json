@@ -14,7 +14,7 @@
   { "hi": "tirchhi", "en": "slanting / tilted" },
   { "hi": "set-square", "en": "set-square" },
   { "hi": "mod / crease", "en": "fold / crease" }
- ], "greetSimpler": { "hi": "Aaj hum aisi rekhaon ki baat karenge jo kabhi nahi milti, aur jo seedhe kone par milti hain.", "en": "Today we talk about lines that never meet, and lines that meet at a square corner." }, "joints": {"asidePark":[{"hi":"Yeh rekhaon wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once these lines is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh rekhaon wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once these lines is over."},{"hi":"Mazedaar, {aside} ki baat hum zaroor karenge, bas thodi der mein.","en":"Fun, we will surely talk about {aside}, just in a little while."}],"asideReturn":[{"hi":"{aside} mein kya kuch seedhi rekhaon jaisa dikhta hai?","en":"Does anything in {aside} look like straight lines?"},{"hi":"{aside} wali baat batao na, tumne pehli baar kab kiya?","en":"Tell me about {aside}: when did you first do it?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"}],"hindiSwitch":[{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."}],"askAgain":[{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."}],"backTo":[{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."},{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."}]},
+ ], "greetSimpler": { "hi": "Aaj hum aisi rekhaon ki baat karenge jo kabhi nahi milti, aur jo seedhe kone par milti hain.", "en": "Today we talk about lines that never meet, and lines that meet at a square corner." }, "joints": {"asidePark":[{"hi":"Yeh rekhaon wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once we finish these lines, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh rekhaon wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, right after these lines."},{"hi":"Mazedaar, {aside} ki baat hum zaroor karenge, bas thodi der mein.","en":"Fun, we will surely talk about {aside}, just in a little while."}],"asideReturn":[{"hi":"{aside} mein kya kuch seedhi rekhaon jaisa dikhta hai?","en":"Does anything in {aside} look like straight lines?"},{"hi":"{aside} wali baat batao na, usmein kya hua tha?","en":"Tell me about {aside}: what happened?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"}],"hindiSwitch":[{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."}],"askAgain":[{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."}],"backTo":[{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."},{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."}]},
  "skills": [
   {
    "skillId": "c7-maths-ch05-t02-s1",
@@ -256,22 +256,19 @@
    "explain": [
     {
      "id": "e1",
-     "convey": "perpendicular = two lines meeting at 90° (samkon); the small square mark shows it; extend both lines through the meeting point → the child works out how many of the four angles at the crossing are 90° (linear pairs: 180 − 90 = 90 each)",
+     "convey": "perpendicular = two lines meeting at 90° (samkon); the small square mark shows it; board: the two lines crossing with one corner marked 90° → the child works out how many of the four angles at the crossing are 90° (linear pairs: 180 − 90 = 90 each)",
      "mustSay": [
       { "hi": "perpendicular", "en": "perpendicular" },
       { "hi": "samkon", "en": "right angle" },
       { "hi": "90°", "en": "90°" }
      ],
-     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90 }] } },
-     "point": {
-      "hi": "Yeh do lines ek bindu par milti hain, aur unke beech ka angle 90° hai, yaani samkon. Kone par yeh chhota nishaan samkon dikhata hai. Jo do lines 90° par milti hain, unhe perpendicular lines kehte hain.",
-      "en": "These two lines meet at a point, and the angle between them is 90°, that is, a right angle. The small mark at the corner shows the right angle. Two lines that meet at 90° are called perpendicular lines."
-     },
+     "board": { "template": "lines@1", "params": {"kind": "cross", "deg": 90, "angles": [{"at": 1, "value": 90}]} },
+     "point": { "hi": "Yeh do lines ek bindu par ek-doosre ko kaat-ti hain, aur ek kone par unke beech ka angle 90° hai, yaani samkon. Kone par yeh chhota nishaan samkon dikhata hai. Jo do lines 90° par milti hain, unhe perpendicular lines kehte hain.", "en": "These two lines cross each other at a point, and at one corner the angle between them is 90°, that is, a right angle. The small mark at the corner shows the right angle. Two lines that meet at 90° are called perpendicular lines." },
      "ask": {
-      "prompt": { "hi": "In dono lines ko milne wale bindu ke aar-paar aage badhao, toh ek crossing banegi. Crossing par bane angles mein se kitne angle 90° ke honge?", "en": "Extend both lines through the meeting point and a crossing forms. How many of the angles at the crossing will be 90°?" },
+      "prompt": { "hi": "Is crossing par bane angles mein se kitne angle 90° ke hain?", "en": "How many of the angles at this crossing are 90°?" },
       "key": "4",
       "accept": ["chaar", "chaaron", "four", "all four", "sab", "4 angle", "chaaron angle"],
-      "why": { "hi": "aar-paar badhane par 4 angle bante hain, aur har ek 180° − 90° = 90° hai", "en": "extending through gives 4 angles, and each is 180° − 90° = 90°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90}]} }
+      "why": { "hi": "crossing par 4 angle hain; 90° ke bagal wale 180° − 90° = 90° hain, aur saamne wala bhi 90°", "en": "a crossing has 4 angles; the neighbours of 90° are 180° − 90° = 90°, and the opposite one is 90° too" }, "answerBoard": { "template": "lines@1", "params": {"kind": "cross", "deg": 90, "angles": [{"at": 1, "value": 90}, {"at": 2, "value": 90}, {"at": 3, "value": 90}, {"at": 4, "value": 90}]} }
      },
      "simpler": { "hi": "Jab do lines milkar kona bilkul 90° ka banati hain, tab woh perpendicular kehlati hain. Kone par bana chhota nishaan isi samkon ko dikhata hai.", "en": "When two lines meet and make a corner of exactly 90°, they are called perpendicular. The small mark at the corner shows this right angle." }
     },
@@ -503,16 +500,13 @@
       { "hi": "set-square ka kona", "en": "the set-square's corner" },
       { "hi": "bhuja", "en": "edge" }
      ],
-     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "set-square ka kona" }] } },
-     "point": {
-      "hi": "Set-square ke ek kone par uski do bhujayein samkon banati hain. Jaanchne ke liye yeh kona crossing bindu par rakho aur ek bhuja ko ek line par bithao. Doosri line doosri bhuja ke saath-saath chale toh angle samkon hai, warna nahi.",
-      "en": "At one corner of a set-square its two edges make a right angle. To check, put this corner on the meeting point and lay one edge along one line. If the other line runs along the other edge, the angle is a right angle; if not, it isn't."
-     },
+     "board": { "template": "lines@1", "params": {"kind": "cross", "deg": 95, "angles": [{"at": 1, "value": "?"}]} },
+     "point": { "hi": "Board par do lines ek crossing banati hain. Set-square ke ek kone par uski do bhujayein samkon banati hain. Jaanchne ke liye yeh kona crossing bindu par rakho aur ek bhuja ko ek line par bithao. Doosri line doosri bhuja ke saath-saath chale toh angle samkon hai, warna nahi.", "en": "On the board two lines make a crossing. At one corner of a set-square its two edges make a right angle. To check, put this corner on the crossing point and lay one edge along one line. If the other line runs along the other edge, the angle is a right angle; if not, it isn't." },
      "ask": {
       "prompt": { "hi": "Set-square ka kona ek crossing par rakha. Ek line ek bhuja par theek baithi, par doosri line doosri bhuja se 5° aur bahar khuli hai. Crossing ka angle kitna hai?", "en": "A set-square's corner is put on a crossing. One line sits exactly on one edge, but the other line opens 5° further out than the other edge. What is the angle at the crossing?" },
       "key": "95°",
       "accept": ["95", "95 degree", "95 degrees"],
-      "why": { "hi": "set-square ka kona 90° hai aur line 5° aur bahar khuli hai, 90° + 5° = 95°", "en": "the set-square corner is 90° and the line opens 5° further out, 90° + 5° = 95°" }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "set-square ka kona"}]} }
+      "why": { "hi": "set-square ka kona 90° hai aur line 5° aur bahar khuli hai, 90° + 5° = 95°", "en": "the set-square corner is 90° and the line opens 5° further out, 90° + 5° = 95°" }, "answerBoard": { "template": "lines@1", "params": {"kind": "cross", "deg": 95, "angles": [{"at": 1, "value": 95}]} }
      },
      "simpler": { "hi": "Set-square ka kona samkon hota hai. Kona crossing par rakho, ek line ek bhuja par, aur dekho doosri line doosri bhuja par baithti hai ya nahi.", "en": "A set-square's corner is a right angle. Put the corner on the crossing, one line along one edge, and see if the other line sits along the other edge." }
     },
