@@ -31,7 +31,7 @@ const id = (x, max = 64) => (typeof x === "string" && x.length > 0 ? x.slice(0, 
  * @param {any} level @param {{ seq: number, act: { kind: string } }[]} acts @param {{ moments: any[] }} replay
  * @param {{ grade: any, minActs?: number | null }} o
  */
-export function buildTrail(level, acts, replay, { grade, minActs = null } = {}) {
+export function buildTrail(level, acts, replay, { grade, minActs = null, isPick = null } = {}) {
   const moments = Array.isArray(replay?.moments) ? replay.moments : [];
   const list = Array.isArray(acts) ? acts : [];
   const solved = grade?.verdict === "solved";
@@ -41,6 +41,9 @@ export function buildTrail(level, acts, replay, { grade, minActs = null } = {}) 
   const mal = [];
   for (const m of pre) {
     if (m.kind !== "misconception_consequence" || !m.misconceptionId || mal.some((x) => x.rule === m.misconceptionId)) continue;
+    // round 8 law 3: a mix-up from one pick among a few is not reported (isPick: server/play/grade.js chancePick); the
+    // play server names it when it repeats on another surface
+    if (typeof isPick === "function" && isPick(m.misconceptionId)) continue;
     if (mal.length >= TRAIL_MAX_MAL) break;
     mal.push({ rule: id(m.misconceptionId), mis: id(level?.mal?.[m.misconceptionId]) });
   }
