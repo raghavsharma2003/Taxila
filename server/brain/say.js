@@ -230,6 +230,15 @@ export function returnLineOk(x, said, topic) {
   const all = [...new Set([...theirs, ...topicW])];
   return all.some((w) => new RegExp(`(?<![\\p{L}])${w}`, "iu").test(t));
 }
+/** dc-r8-director20 W1: whether a sentence of the turn is one a person wrote (the move's point, simpler, rendered steps, say-first lines,
+ *  key, close and why, bridge, card) — code never swaps a word inside one. */
+function authoredSentence(state, card) {
+  const lm = state?.lastMove ?? {};
+  const txt = (x) => (typeof x === "string" ? x : x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" \n ") : "");
+  const all = [lm.point, lm.simpler, lm.cardPoint, ...(lm.rendered ?? []), ...(lm.sayFirst ?? []), lm.gave?.answer, lm.gave?.why, lm.closed?.answer, lm.closed?.why,
+    lm.workedDone?.answer, lm.workedDone?.why, lm.bridgeSaid, card].map(txt).filter(Boolean).map((x) => x.replace(/\s+/g, " ").toLowerCase()).join(" \n ");
+  return (x) => { const k = String(x ?? "").replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?।:]+$/, ""); return k.length > 8 && all.includes(k); };
+}
 /** v6.11 J2: the instruction for her one sentence after the child answered her return question. */
 /** v6.11 J2 (main on the J2 replay, 12 of 60 drafts passed and 41 of 48 refusals were the child's sentence said back): the model is
  *  never shown what the child said, only one or two of their content words, chosen here — the last noun-like word first (not a stop
@@ -2704,7 +2713,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const hindiOn = state.ctx?.lang === "hindi" && !!state.ctx?.langPinned;
     const keepW = (state.lastMove?.mustSay ?? []).flatMap((m) => (typeof m === "object" && m ? [m.hi, m.en] : [m]));
     const hw = (x) => (hindiOn && x ? inHindiWords(x, { keep: keepW, card }) : x);
-    if (hindiOn) { const h = hw(reply); if (h !== reply) { reply = h; guard.hindiWords = true; } }
+    // (dc-r8-director20 W1: an authored sentence keeps its words in Hindi mode too — its Hindi form is the script's own; only her
+    // own sentences are turned into Hindi words)
+    if (hindiOn) { const auth = authoredSentence(state, card); const h = reply.split(/(?<=[.!?।])\s+/).map((x) => (auth(x) ? x : hw(x))).join(" "); if (h !== reply) { reply = h; guard.hindiWords = true; } }
     // v6.5 F1 (director13 c4 steady 52: "Sahi—, kyunki"): a dash left before a comma goes
     { const r0 = reply.replace(/\s*[—–]\s*,/g, ",").replace(/\s*[—–]\s*(?=[.!?])/g, ""); if (r0 !== reply) { reply = r0; guard.dashFixed = true; } }
     // (v6.9 R6, main on director17: authored lines are never re-inflected — v6.8's "1, jitna tukda … liya" rewrite is gone)
@@ -2844,6 +2855,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
   { const card = String(ui?.ask?.text ?? "");
     const at = card ? reply.lastIndexOf(card) : -1;
     let head = at >= 0 ? reply.slice(0, at) : reply; const tail = at >= 0 ? reply.slice(at) : "";
+    // (dc-r8-director20 W1: "4 barabar tukdon the", "sankhya line", "varg ki chaaron" — code never swaps a word inside a sentence a
+    // person wrote. Only her own sentences are rewritten; an authored sentence keeps its words, and Learning keeps one term per idea)
+    const isAuthored = authoredSentence(state, card);
+    const headSs = head.split(/(?<=[.!?।])\s+/);
+    const mine = headSs.map((x) => !isAuthored(x));
     for (const t of TWIN_WORDS) {
       // ("question mark" is punctuation, not a mark on a line)
       const alt = (xs) => xs.map((x) => x.replace(/\s+/g, "\\s+")).join("|");
@@ -2864,10 +2880,17 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const enOf = (m) => { const plural = t.hi0.findIndex((x) => x.toLowerCase() === m.toLowerCase()) > 0;
         const pl = cardW && !/s$/.test(cardW) && t.en0.includes(`${cardW}s`) ? `${cardW}s` : cardW;
         return cardW ? (plural ? pl : cardW) : to(m, t.hi0, t.en0); };
-      head = cardEn ? head.replace(reHi, (m) => enOf(m)) : head.replace(reEn, (m) => to(m, t.en0, t.hi0));
-      guard.twinsOne = true;
+      let changed = false;
+      for (let k = 0; k < headSs.length; k++) {
+        if (!mine[k]) continue;
+        const x0 = headSs[k];
+        headSs[k] = cardEn ? x0.replace(reHi, (m) => enOf(m)) : x0.replace(reEn, (m) => to(m, t.en0, t.hi0));
+        reEn.lastIndex = 0; reHi.lastIndex = 0;
+        if (headSs[k] !== x0) changed = true;
+      }
+      if (changed) guard.twinsOne = true;
     }
-    if (guard.twinsOne) reply = (head + tail).replace(/\s+/g, " ").trim(); }
+    if (guard.twinsOne) { head = headSs.join(" "); reply = (head + " " + tail).replace(/\s+/g, " ").trim(); } }
   // v6.6 P4: the parts follow every edit above, word by word; the page plan reads them (guard.parts.list)
   if (guard.lineParts) { guard.lineParts = alignParts(guard.lineParts, reply); if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts }; }
   // The final words, checked once more (debug and the evals read it): what reached the child.

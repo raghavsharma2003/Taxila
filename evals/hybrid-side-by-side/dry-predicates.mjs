@@ -153,14 +153,42 @@ export const PREDICATES = {
     return CHECKIN.test(norm(r.text)) ? null : "a second clarify that does not end on its check-in";
   },
   /** An English word and its Hindi twin in one turn. */
-  twins(L, r) {
-    for (const t of TWINS) { const e = r.text.match(t.enRe), h = r.text.match(t.hiRe); if (e && h) return `"${e[0]}" beside "${h[0]}"`; }
-    return null;
+  // (dc-r8-director20 W1: code never swaps a word inside an authored sentence, so a pair BOTH of whose words the script itself uses is
+  // the script's to fix — twinsData, reported to Learning — and twins flags only a word code brought in. A gloss that introduces a term,
+  // "line yaani rekha", is no twin fault, as Learning's rule allows)
+  twins(L, r, i, ctx) {
+    const t = twinHit(r.text);
+    return t && !(scriptUses(ctx, t.e) && scriptUses(ctx, t.h)) ? `"${t.e}" beside "${t.h}"` : null;
+  },
+  /** An English word and its Hindi twin in one turn, both from the script's own sentences. PENDING: Learning's at-source fix
+   *  (one term per idea per script, d1acefe95). */
+  twinsData(L, r, i, ctx) {
+    const t = twinHit(r.text);
+    return t && scriptUses(ctx, t.e) && scriptUses(ctx, t.h) ? `"${t.e}" beside "${t.h}" (both in the script)` : null;
   },
 };
 
+/** The first twin pair in a turn, not a gloss ("line yaani rekha", "rekha, yaani line"): { e, h } or null. */
+function twinHit(text) {
+  const t0 = String(text ?? "");
+  for (const t of TWINS) {
+    const e = t0.match(t.enRe), h = t0.match(t.hiRe);
+    if (!e || !h) continue;
+    const gloss = new RegExp(`(?:${e[0]}|${h[0]})[,\\s]+(?:yaani|matlab|ya(?:ni)?|or|i\\.e\\.)\\s+(?:${e[0]}|${h[0]})`, "iu");
+    if (gloss.test(t0)) continue;
+    return { e: e[0], h: h[0] };
+  }
+  return null;
+}
+/** Whether the lesson's script uses a word anywhere in its own text (its spoken Hindi or English). */
+function scriptUses(ctx, w) {
+  if (!ctx) return false;
+  ctx.scriptText ??= JSON.stringify(ctx.script ?? {}).toLowerCase();
+  return new RegExp(`(?<![\\p{L}])${String(w).toLowerCase().replace(/\s+/g, "\\s+")}(?![\\p{L}])`, "u").test(ctx.scriptText);
+}
+
 /** Predicates that report and do not gate yet (the gate test leaves them out): each names the step that makes it pass. */
-export const PENDING = new Set(["secondClarify"]);
+export const PENDING = new Set(["secondClarify", "twinsData"]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
