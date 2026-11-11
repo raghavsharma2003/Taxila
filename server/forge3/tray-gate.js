@@ -37,7 +37,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { verdictFor, certificates } from "./certify.js";
-import { approvedVerdict, catalogueNeedsJudge, isReviewedDefault } from "../studio/approved.js";
+import { approvedVerdict, catalogueNeedsJudge, isReviewedDefault, neverServe } from "../studio/approved.js";
 import { passageFits } from "../studio/passage.js";
 import { playCertificates, playPassed } from "./compose.js";
 import { fitBoard, minPxAt } from "../../src/studio/boardFit.ts";
@@ -218,6 +218,8 @@ export function certifyForTray(artifact, ctx = {}) {
       case "stagecraft": {
         const sc = artifact.stagecraft ?? {};
         if (sc.rung === "board") return out(false, "none", "a Stagecraft board rung (boards come from the whiteboard path)");
+        // (main 2026-11-11: a piece the predicates or judges refused is never served — before every switch and the store)
+        if (sc.spec && neverServe(sc.archetype, sc.spec)) return out(false, "never", `${sc.archetype} refused by the approval lane (data/studio-approved/never.json)`);
         // (main 2026-11-10: a world too small to play is refused at any rung — the twin is a word card, not a lesson visual)
         if (!studioV2Test && !studioV2PlayableAt(vp, { young }) && !twinAtSmall()) return out(false, "studio-v2-small", `a Studio v2 world is too small to play at ${vp}: refused, the script's board stands (its twin is a word card)`);
         // (the approval lane, STUDIO-11: a generated spec approved OFFLINE — its hash in data/studio-approved, rendered here at the

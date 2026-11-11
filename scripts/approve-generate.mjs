@@ -12,7 +12,7 @@
 // render, the judge, the store) runs on these files with no key: scripts/approve-check.mjs.
 import fs from "node:fs";
 import path from "node:path";
-import { PILOT_TARGETS, beatFor, specHash, attemptOutcome } from "../server/studio/approved.js";
+import { PILOT_TARGETS, beatFor, specHash, attemptOutcome, deriveTarget } from "../server/studio/approved.js";
 import { specPrompt, createBuilders } from "../server/stagecraft/builders.js";
 import { kindOf } from "../server/stagecraft/catalogue.js";
 import { validateAny } from "../shared/studio-spec-ext/index.ts";
@@ -28,10 +28,14 @@ const MAX_ATTEMPTS = 2;
 /** A spec call's worst case before it is made (6000 output tokens on taxila-fast pricing is far below this); the cap is checked
  *  against spent + this, so the cap holds even if one call costs its worst. */
 const WORST_CALL_USD = 0.02;
-const topics = String(arg("--topics", PILOT_TARGETS.map((t) => t.topicId).join(","))).split(",").map((s) => s.trim()).filter(Boolean);
+// --topics-file <path>: one topic id per line (# comments allowed) — main 2026-11-11: one game per scripted topic; a topic not
+// in PILOT_TARGETS gets deriveTarget's (its catalogue engine, its script's first remediation, the engine's own `how`)
+const TOPICS_FILE = arg("--topics-file");
+const topics = (TOPICS_FILE ? fs.readFileSync(TOPICS_FILE, "utf8").split("\n").map((l) => l.replace(/#.*/, "").trim()).filter(Boolean)
+  : String(arg("--topics", PILOT_TARGETS.map((t) => t.topicId).join(","))).split(",")).map((s) => s.trim()).filter(Boolean);
 const targets = topics.map((t) => {
-  const x = PILOT_TARGETS.find((p) => p.topicId === t);
-  if (!x) throw new Error(`no approval target for ${t} (server/studio/approved.js PILOT_TARGETS)`);
+  const x = deriveTarget(t);
+  if (!x) throw new Error(`no approval target for ${t} (no script, no catalogue game, or no targeted check)`);
   return { ...x, ...(beatFor(x.topicId, x.misconceptionId) ?? {}) };
 });
 if (!Number.isFinite(CAP) || CAP <= 0) throw new Error("--usd must be a positive number");

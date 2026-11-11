@@ -1037,11 +1037,15 @@ function compare(c, tl) {
   }
   tl.add({ op: "line", from: [200, 30], to: [200, 280], weight: 1, ink: "soft" }, 500);
   const rows = Math.max(left.items.length, right.items.length);
+  // (Learning 007, c6-ch07-t05: a stacked mixed fraction — "2 1/2 litre" — is taller than a line of words, and the added
+  // answer line ran into it at the fixed 52 pitch: the rows are spaced by the tallest cell's real height)
+  const cells = [...left.items, ...right.items, ...(c.mark?.add != null ? [String(c.mark.add)] : [])];
+  const pitch = Math.max(52, ...cells.map((t) => textBox(String(t), itemSize, [0, 0], "middle").h + 14));
   for (let r = 0; r < rows; r++) {
     for (const [i, side] of [left, right].entries()) {
       const t = side.items[r];
       if (!t) continue;
-      if (!writeFit(tl, t, 20 + i * 190 + colW / 2, 100 + r * 52, colW - 8, {}, { id: `c${i}${r}`, ms: 480, gap: i ? 60 : 220, size: itemSize })) return { error: `item_too_wide:${i}.${r}` };
+      if (!writeFit(tl, t, 20 + i * 190 + colW / 2, 100 + r * pitch, colW - 8, {}, { id: `c${i}${r}`, ms: 480, gap: i ? 60 : 220, size: itemSize })) return { error: `item_too_wide:${i}.${r}` };
     }
   }
   // round 8 (Learning's to-studio 006): an ANSWER board's `mark` — the chosen column (or one item in it) ringed and ticked,
@@ -1056,7 +1060,7 @@ function compare(c, tl) {
     if (m.add != null) {
       const t = String(m.add).trim();
       if (!t || t.includes("?") || [...t].length > 24 || !fitsLabel(t) || textProblem(t) || side.items.length >= 4) return { error: "mark_add" };
-      if (!writeFit(tl, t, x, 100 + side.items.length * 52, colW - 36, {}, { id: "mark", ms: 480, gap: 300, size: itemSize, role: ROLE.answer })) return { error: "mark_add_too_wide" };
+      if (!writeFit(tl, t, x, 100 + side.items.length * pitch, colW - 36, {}, { id: "mark", ms: 480, gap: 300, size: itemSize, role: ROLE.answer })) return { error: "mark_add_too_wide" };
       marked = `${side.title}: ${t}`;
     } else {
       const target = m.item != null ? `c${i}${m.item}` : `h${i}`;

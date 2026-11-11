@@ -323,3 +323,13 @@ describe("the four pilot topics' boards (board, boardRef, answerBoard)", () => {
     assert.deepEqual(bad, []);
   });
 });
+
+describe("Learning 007 (c6-ch07-t05 s3 rem2.then): a compare answer mark under a stacked mixed fraction", () => {
+  it("rows are spaced by the tallest cell, so the added answer line never overlaps the stacked fraction above it", () => {
+    const s = ok({ template: "compare@1", left: { title: "Pehla", items: ["1 1/4 litre"] }, right: { title: "Doosra", items: ["2 1/2 litre"] }, mark: { side: "right", add: "jawab: 3 3/4 litre" } });
+    assert.equal(lintScript(s).filter((i) => i.check === "text_overlap").length, 0);
+    const plain = ok({ template: "compare@1", left: { title: "Living", items: ["grow", "breathe"] }, right: { title: "Non-living", items: ["do not grow"] } });
+    const ys = plain.ops.filter((o) => o.op === "text" && /^c0/.test(o.id)).map((o) => o.at[1]);
+    assert.equal(ys[1] - ys[0], 52, "plain words keep the old pitch");
+  });
+});
