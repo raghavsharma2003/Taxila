@@ -876,7 +876,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s));
   return e;
 }
 
@@ -1044,5 +1044,29 @@ export function asideReplyErrors(d) {
   }
   if ((d?.sad?.replies ?? []).length !== 3) e.push("sad.replies: 3 forms");
   (d?.sad?.replies ?? []).forEach((f, i) => form(`sad.replies[${i}]`, f, { slot: null, question: false }));
+  return e;
+}
+
+/** director20 W1 (dc-r8-director20; "line… rekha", "Square… varg", "group… samooh" in one turn): one term per idea per spoken
+ * form. No { hi } form holds both words of a twin pair (data/lesson-twins.json). Allowed: the `terms` glossary, and a gloss
+ * that introduces a term in a point or its mustSay ("line yaani rekha", "acute angle, yaani nyun kon", "obtuse angle, adhik
+ * kon"). "question mark" is not the twin of nishaan. */
+export function oneTermErrors(s) {
+  const e = [], wre = (w) => `(?<![\\p{L}])${w.replace(/\s+/g, "\\s+")}(?![\\p{L}])`;
+  const walk = (x, path) => {
+    if (Array.isArray(x)) return x.forEach((v, i) => walk(v, `${path}[${i}]`));
+    if (!x || typeof x !== "object" || x.template) return;
+    if (typeof x.hi === "string") {
+      const t = x.hi.replace(/question\s+mark/gi, "");
+      for (const p of TWINS) {
+        const en = p.en.find((w) => new RegExp(wre(w), "iu").test(t)), hi = p.hi.find((w) => new RegExp(wre(w), "iu").test(t));
+        if (!en || !hi) continue;
+        const gloss = /\.(point|mustSay\[\d+\])$/.test(path) && [[en, hi], [hi, en]].some(([a, b]) => new RegExp(`${wre(a)}(\\s+\\p{L}+)?\\s*,?\\s*(yaani\\s+)?(\\p{L}+\\s+)?${wre(b)}`, "iu").test(t));
+        if (!gloss) e.push(`${path}: "${en}" and "${hi}" in one form: one term per idea (twins.json)`);
+      }
+    }
+    for (const [k, v] of Object.entries(x)) if (k !== "hi" && k !== "en") walk(v, path ? `${path}.${k}` : k);
+  };
+  walk(s.skills, "skills");
   return e;
 }

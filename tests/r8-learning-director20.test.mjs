@@ -37,3 +37,14 @@ test("S1: a card's ask is its question alone", () => {
   c.ask = { hi: "Kahani A ya B. Batao.", en: "Story A or B. Tell me." };
   assert.ok(structureErrors(s, kitTopic(s.topicId)).some((x) => /checks\[0\]\.ask: the card's question alone/.test(x) || /\.ask: the card's question alone/.test(x)));
 });
+
+test("W1: one term per idea per form; a point may gloss a new term, a card may not mix", async () => {
+  const { oneTermErrors } = await import("../scripts/lesson-scripts/check.mjs");
+  for (const id of PILOTS) assert.deepEqual(oneTermErrors(read(`data/lesson-scripts/${id}.json`)), [], id);
+  const s = read("data/lesson-scripts-staged/c6-maths-ch02-t03.json");
+  assert.deepEqual(oneTermErrors(s), []);
+  s.skills[2].checks[1].prompt.hi = s.skills[2].checks[1].prompt.hi.replace("kis bindu se", "kis point se");
+  assert.ok(oneTermErrors(s).some((x) => /checks\[1\]\.prompt: "point" and "bindu" in one form/.test(x)));
+  const t = read("data/lesson-scripts-staged/c6-maths-ch02-t01.json");
+  assert.deepEqual(oneTermErrors(t), [], "a point's gloss 'line yaani rekha' introduces the term");
+});
