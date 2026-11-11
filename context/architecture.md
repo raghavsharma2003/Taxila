@@ -538,3 +538,7 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-gated-sentences-fail-a-reader` (2026-11-11): Sentences that pass the script gates fail a reader about half the time: 73 of 156 agent-written simplers and whys (47%) failed an independent read, 3 of them untrue. The gates check form (length, slots, numbers on the board), not whether a sentence is simpler or true. So 'nothing a child hears that nobody read' is a measured need, and a rewrite needs its own read (9 of 73 rewrites failed again).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-give-up-predicate-too-narrow` (2026-11-11): Correction of fd-dry-matrix-blind-to-the-reply-layer. 'A give-up with help spent gets no key' survived director20 because its dry predicate was too narrow (it knew only 'aap batao' and 'pata nahi, aap', and required a re-said sentence), not because the fault lives only in the reply layer. With the predicate widened (any bare 'pata nahi' / 'nahi pata' / 'aap batao' / 'nahi aata'; help spent once the card had a miss or was said twice; the turn must say the key) the dry walk fails on the same three rows as the live run plus c5-t02 offtopic 24: the walk itself drops the key before any model text exists. The repair seen on c5-t02 steering 30 (guard mustsay,leak) is a separate reply-layer fault. Found by Brain with check-run.mjs over director20's rows. Lesson: a predicate at zero means nothing until it has been run over rows known to hold the fault.
