@@ -28048,6 +28048,30 @@
    "title": "stambh/tally cert: 16 of 16 2D samples (4 arts × 2 goals × 2 seeds, c4 band) pass at p360, p412 and l1366; merged additively into certs/play.json",
    "at": "2026-11-11",
    "source": "inbox/r8-stambh-tally.json"
+  },
+  {
+   "id": "dc-r8-kon-place-law",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/place replaces kon/set for c6-maths-ch02-t03: the child places a LOOSE protractor (drag the body; turn it by a handle on its body about its own centre, 1° snap in the law; 'Rakh do' locks it) and then measures ∠AOB (taps a number on the outer or inner band, ±1), draws ∠AOB = θ on OA (a dot on the rim, joined to O or to A), or (size) says which of two angles under a big and a small protractor is more. Placement passes when the centre is within tolPx = 8 board px of O and the base line is within ±3° of an arm (for measure, with the other arm crossing the half-disc). The reading (and draw's mark) is graded on the protractor AS PLACED (the scale whose 0 sits on the placed arm), and a placement that is off never solves: a misplaced protractor read correctly is vertex-off (the bottom edge on O: the centre PD = 20 board px off O along the normal), else a refusal. Mal-rules vertex-off, wrong-scale, join-wrong-end, tool-size, each with its own signature in the moment ('shown'): the arm the misplaced protractor measures drawn from its centre beside OB; her number's arm on the 0-on-the-arm scale; the angle made at A with its number; both readings side by side. Evidence: grade.facts placed (the FIRST decision's placement) / centre_px / base_deg / read, and the lesson's facts row leads with placed=ok|off (server/play/routes.js seamLead). Coverage: draw [s3, s2, s1], measure [s2, s1], size [s2] (s1 IS placing the protractor, so it is admitted here although the design note named s3, s2). Reverse if: a child pilot shows children cannot drag the protractor to within 8 px on a phone (placement misses with no belief named above ~30%), or judges call the scale tap a pick from a list.",
+   "source": "inbox/r8-kon-place-name.json"
+  },
+  {
+   "id": "dc-r8-kon-place-board",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/place draws on a fixed 320 × 340 board (y up) the view scales into its box; acts carry board coordinates, so the server replays a placement on any device. At a 360 px phone the play canvas is about 360 × 350 (harness play mode) and the protractor (radius 105) is 216 px wide; the turning handle sits ON the body (half way up, at the scale's 90), because a handle hanging below the base fell off the canvas at rest; a small protractor (size, radius 78) numbers its inner scale every 60° (every 30° the numbers touched: Q3.apart at p360 in the first cert run). Controls keep two rows in every state so the board never rescales between placing and reading. Reverse if: the stage contract's p360 box shrinks below 330 px of canvas height (the protractor then falls under 200 px), or a phone pilot shows the on-body handle is grabbed when the child means to move the protractor.",
+   "source": "inbox/r8-kon-place-name.json"
+  },
+  {
+   "id": "dc-r8-kon-name-law",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/name for c6-maths-ch02-t02 (s1): three lettered rays from a vertex, two ray ends joined, so the figure has five angles (three at the vertex, two triangle corners). say: the lit angle is named by tapping three letters ('Yahi naam'); find: a shown name's arc is tapped (one tap among five: chance weight). The law: right when the middle letter is the vertex and the outer two lie on its arms, either order (ABC = CBA); whatever is given, the law lights the angle the three letters actually denote at the middle letter, solid when it is one of the five, dashed (with its two rays) when not. Mal-rule vertex-name: say, the right three letters with the vertex first or last; find, the angle at the shown name's first or last letter (only names whose such reading is a drawn angle are served). Shortcut-free: a say level whose three letters read left to right or top to bottom put the vertex in the middle is never served, a find level whose answer is the widest arc is never served, and letters are drawn at random from ABCDEOPQRS (fade 1 keeps the vertex 'O', as the book first does). Evidence: said / picked name, vertex_ok, arms_ok in the grade facts; mal in the trail. Built as its own law file on kon (kon.name.ts, not inside kon.lines.ts) so every earlier kon goal keeps its pinned generator output. Reverse if: a pilot shows children pass say by tapping the lit arc's nearest letters in some fixed order the shortcut check does not cover, or the triangle corners confuse class 6 more than they test the name rule (then serve vertex-only figures and drop 'find' corners).",
+   "source": "inbox/r8-kon-place-name.json"
   }
  ],
  "edges": [
@@ -44985,6 +45009,21 @@
    "src": "ms-r8-stambh-tally-cert",
    "rel": "part_of",
    "dst": "dc-r8-stambh-tally-mode"
+  },
+  {
+   "src": "dc-r8-kon-place-law",
+   "rel": "inherits",
+   "dst": "dc-r4g1-kon-angles-law"
+  },
+  {
+   "src": "dc-r8-kon-place-board",
+   "rel": "part_of",
+   "dst": "dc-r8-kon-place-law"
+  },
+  {
+   "src": "dc-r8-kon-name-law",
+   "rel": "inherits",
+   "dst": "dc-r4g1-kon-angles-law"
   }
  ]
 }
