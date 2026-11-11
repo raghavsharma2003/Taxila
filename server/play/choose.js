@@ -80,15 +80,18 @@ function scoreOf(entry, key, level, inputs, target, recent) {
  * max(0, P(mis) − prior) (+1 for the active belief), fit = −|pFirstTry − 0.75| when her pL is known, novelty = −0.3 for a
  * family/mode, an entry or a level signature she just played. The best entry is served when it beats the first entry by
  * MARGIN; otherwise the first entry (today's). With an active belief the session focus is that belief (so the garam level,
- * not a door, tests it). The because is set exactly when the served level differs from today's (entry or level).
+ * not a door, tests it). The because is set exactly when the served level differs from today's (entry or level), or
+ * (plainOf given: entry → the level a child with nothing known gets) when her active belief or her pL moved the first
+ * entry's level (a mix-up because when the level tells the belief apart, else a fit because naming her P(skill)).
  */
-export function chooseEntry({ entries, inputs = {}, levelOf, recent = {}, keyOf = (e) => `${e.topicId}|${fm(e)}|${e.goal}`, beliefOf = (id) => id }) {
+export function chooseEntry({ entries, inputs = {}, levelOf, recent = {}, keyOf = (e) => `${e.topicId}|${fm(e)}|${e.goal}`, beliefOf = (id) => id, plainOf = null }) {
   if (!entries?.length) return null;
   const first = entries[0];
   const def = { entry: first, key: keyOf(first), focus: inputs.focus ?? null, because: null, ranked: [] };
   if (!knowsAnything(inputs, entries)) return def;
   const target = activeBelief(inputs, entries);
-  if (entries.length === 1 && !target) return def;
+  const plainOn = typeof plainOf === "function";
+  if (entries.length === 1 && !target && !(plainOn && typeof inputs.pL === "number")) return def;
   const ranked = [];
   for (const e of entries) {
     const key = keyOf(e);
@@ -105,13 +108,19 @@ export function chooseEntry({ entries, inputs = {}, levelOf, recent = {}, keyOf 
   // today's level: the first entry, with the focus the lesson gave (no injected belief)
   const base = pick === firstR && focus === (inputs.focus ?? null) ? pick.level : levelOf(first, inputs.focus ?? null);
   const departs = pick.entry !== first || !base || base.levelId !== pick.level.levelId;
+  // round 8 seam (C2, 2026-11-10): the level picker itself reads her posteriors and her pL, so what is known about her can
+  // move the FIRST entry's level with no entry or focus change (base above already carries it). With plainOf (the first
+  // entry's level for a child with nothing known, same fade) that move is a departure too: its because names the belief
+  // the level tells apart, else her P(skill).
+  const plain = !departs && plainOn ? plainOf(first) : null;
+  const moved = !!plain && plain.levelId !== pick.level.levelId && ((!!target && pick.hits) || typeof inputs.pL === "number");
   const out = { entry: pick.entry, key: pick.key, focus, because: null, ranked: ranked.map(({ key, info, fit, nov, score }) => ({ key, info: r2(info), fit: r2(fit), nov: r2(nov), score: r2(score) })) };
-  if (!departs) return out;
-  out.because = becauseOfPick(pick, firstR, target, inputs, recent, beliefOf);
+  if (!departs && !moved) return out;
+  out.because = becauseOfPick(pick, firstR, target, inputs, recent, beliefOf, moved ? plain : null);
   return out;
 }
 
-function becauseOfPick(pick, firstR, target, inputs, recent, beliefOf) {
+function becauseOfPick(pick, firstR, target, inputs, recent, beliefOf, plain = null) {
   const name = fm(pick.entry);
   const d = firstR ? { info: pick.info - firstR.info, fit: pick.fit - firstR.fit, nov: pick.nov - firstR.nov } : { info: pick.info, fit: pick.fit, nov: pick.nov };
   if (target && pick.hits && (W.info * d.info >= Math.max(W.fit * d.fit, d.nov) || pick.entry === firstR?.entry)) {
@@ -124,6 +133,10 @@ function becauseOfPick(pick, firstR, target, inputs, recent, beliefOf) {
     return { choice: `${name} first`, fact: `just played ${was}`, source: recent.source ?? "lesson_shown", kind: "play.pick_novelty" };
   }
   const p = pick.level.proof?.pFirstTry, p0 = firstR?.level.proof?.pFirstTry;
+  if (plain) {
+    const q0 = plain.proof?.pFirstTry, f = (x) => (typeof x === "number" ? x.toFixed(2) : "?");
+    return { choice: `${name} at her level`, fact: `P(skill) ${Number(inputs.pL).toFixed(2)}: first try ${f(p)} here vs ${f(q0)} at the class default (aim ${BAND.garam})`, source: "kt_skill_state", kind: "play.pick_fit" };
+  }
   return { choice: `${name} first`, fact: `P(skill) ${Number(inputs.pL).toFixed(2)}: first try ${typeof p === "number" ? p.toFixed(2) : "?"} here vs ${typeof p0 === "number" ? p0.toFixed(2) : "?"} in ${firstR ? fm(firstR.entry) : "the first game"} (aim ${BAND.garam})`, source: "kt_skill_state", kind: "play.pick_fit" };
 }
 

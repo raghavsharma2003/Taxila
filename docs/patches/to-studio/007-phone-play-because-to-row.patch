@@ -1,0 +1,61 @@
+to-studio 007 (C2 Games, 2026-11-10, branch claude/r8-play-seam): the phone play piece's because never reaches the reply.
+
+Found by tests/r8-play-phone-seam.test.mjs (Studio's phone door → buildLive → /api/play/level → /act → the lesson turn, four
+pilot topics × seeded learners at p360).
+
+What is wrong (server/studio/seam.js phonePlayFor):
+1. The piece's facts get a top-level `because` string ("phone: <family> covers this skill"). The facts row the reply reads is
+   factsRowForSlot → rowOf, and rowOf prints only `archetype` and `onScreen`: the string never reaches the teacher, though the
+   docstring says it goes "into the facts row".
+2. buildLive returns `r.because`: the picker's own records (e.g. kind play.pick_mixup "open mix-up: Confuses perimeter with
+   area ..., 0.82" for a seeded learner, play.pick_fit, play.fade_history) and the play side's studio_gate record. Studio
+   drops them: the comment "theirs wins where both are present" is not implemented. The records do ride the signed session
+   (/api/play/level and the seam row's `chose=` at level end), so the lesson only learns WHY this game after it ends.
+
+The change: keep `piece.because` (the stagecraft test matches it), add `piece.becauseRecords` (the play side's records), and
+put the lead record's kind (the first non-gate record, else studio_gate) into onScreen as `chose`, right after `game`, so the
+row reads e.g. "… play@1 · game nazariya/floor · chose pick_mixup · …" (values only, no prose, inside ROW_MAX). No child
+why-line: `chose` is a kind word, and the play side never makes a line from studio_gate (server/play/why.js WHY_REASON).
+`git apply --check` passes on claude/r8-play-seam (b3b076a18 + this branch). Not applied by C2 (Studio's file).
+
+--- a/server/studio/seam.js
++++ b/server/studio/seam.js
+@@ -316,7 +316,8 @@
+  * main's ruling (2026-11-10, ENGINES-360.md): on a phone too small to play a Studio v2 world, the lesson offers in its place the
+  * PLAY FAMILY that covers the skill (data/play/coverage.json): the Games picker chooses the family and level (forge3/live.js →
+  * server/play/start.js startSession → choose.js chooseEntry) from the skill and the device's size; the piece carries its
+- * because ("phone: <family> covers this skill") into the facts row. Only a game's place (an explainer's keeps the script's
++ * because records (the play side's: the picker's own, then the studio_gate one) and the lead record's kind as the facts
++ * row's `chose` value (rowOf prints only onScreen). Only a game's place (an explainer's keeps the script's
+  * board); once per skill per lesson; asynchronous — the play piece goes up as an asked-for one does (pendingPlay, early slot).
+  * Switch STUDIO_PHONE_PLAY ("off": the script's board only).
+  */
+@@ -334,8 +335,8 @@
+     L.phonePlayAsked.add(key);
+     phonePlayStats.asked++;
+     const lessonId = L.lessonId, vp = viewportOf(lessonId).vp;
+-    // (C2 Games, 2026-11-10: buildLive is the door; `reason: "phone"` makes the play side write its own because record — ours
+-    // stays until theirs lands, theirs wins where both are present; `need` is the beat's own goal, for a truthful trace)
++    // (C2 Games, 2026-11-10: buildLive is the door; `reason: "phone"` makes the play side write its own because record, which
++    // is in r.because with the picker's; `need` is the beat's own goal, for a truthful trace)
+     buildLive({ ask: "game", need: p.need ?? "practice", reason: "phone", lessonId, child: { id: child.id, class_level: child.class_level, language_pref: child.language_pref }, skillId, topicId, vp, lesson: L.forge3 ?? null },
+       { q: deps.q ?? undefined }).then((r) => {
+       if (!r?.artifact?.play || L.safety || lessons.get(lessonId) !== L) return;
+@@ -343,8 +344,15 @@
+       const fam = r.artifact.play.family, n = [...L.pieces.values()].filter((x) => x.source === "play").length + 1;
+       const intentId = `${lessonId}:play:${n}`;
+       const because = `phone: ${fam} covers this skill`;
+-      const piece = { intentId, slotId: `${intentId}:slot`, kind: "game", archetype: `play:${fam}/${r.artifact.play.mode}`, source: "play", phone: true, because,
+-        artifact: r.artifact, facts: { ...(r.facts ?? {}), because }, skillId: r.artifact.play.skillId ?? skillId, need: "practice", requested: false, state: "ready", retired: false, createdAt: Date.now(), composeMs: r.ms, instead: p.intentId };
++      // the play side's because records win (the picker's own first, then studio_gate); the lead record's kind rides the
++      // facts row as `chose` (rowOf prints only onScreen: a top-level facts.because never reached the reply)
++      const records = Array.isArray(r.because) ? r.because.filter((b) => b && typeof b.kind === "string") : [];
++      const lead = records.find((b) => b.source !== "studio_gate") ?? records[0] ?? null;
++      const chose = lead ? lead.kind.replace(/^play\./, "") : "studio_gate";
++      const onScreen = { ...(r.facts?.onScreen ?? {}) };
++      const piece = { intentId, slotId: `${intentId}:slot`, kind: "game", archetype: `play:${fam}/${r.artifact.play.mode}`, source: "play", phone: true, because, becauseRecords: records,
++        artifact: r.artifact, facts: { ...(r.facts ?? {}), because, onScreen: { ...(onScreen.game ? { game: onScreen.game } : {}), chose, ...onScreen } },
++        skillId: r.artifact.play.skillId ?? skillId, need: "practice", requested: false, state: "ready", retired: false, createdAt: Date.now(), composeMs: r.ms, instead: p.intentId };
+       L.pieces.set(intentId, piece);
+       L.pendingPlay = { intentId, turn: L.turn };
+       traceRecord("studio.phone_play", { family: fam, skillId: piece.skillId, vp, instead: p.archetype ?? null });

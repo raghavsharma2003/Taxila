@@ -137,3 +137,18 @@ test("P1 routes: /start returns the because, /level returns it from the token, t
     assert.equal(d.body.level.family, "todo-jodo"); assert.ok(!("because" in d.body));
   } finally { Object.assign(playDeps, saved); }
 });
+
+test("P1 pure (C2 phone seam): with plainOf, her mix-up or pL moving the FIRST entry's level is a departure with its because", () => {
+  const a = E("aa", "x", { m: "m-a" });
+  // the level picker reads her posteriors: the first entry's garam level already tells the belief apart, with or without focus
+  const levelOf = () => lv("a-mis", ["m-a"]);
+  const plainOf = () => lv("a-plain", []);
+  assert.equal(chooseEntry({ entries: [a], inputs: { mis: { "m-a": 0.8 } }, levelOf }).because, null, "without plainOf: today's behaviour");
+  const r = chooseEntry({ entries: [a], inputs: { mis: { "m-a": 0.8 } }, levelOf, plainOf, beliefOf: () => "B" });
+  assert.deepEqual(r.because, { choice: "aa/x first", fact: "open mix-up: B, 0.80", source: "kt_misconception", kind: "play.pick_mixup", when: "earlier", mis: "m-a" });
+  // pL alone (one entry, no belief): a fit because naming her P(skill) against the class default's level
+  const f = chooseEntry({ entries: [a], inputs: { pL: 0.4 }, levelOf: () => lv("a-fit", [], 0.7), plainOf: () => lv("a-plain", [], 0.5) });
+  assert.deepEqual(f.because, { choice: "aa/x at her level", fact: "P(skill) 0.40: first try 0.70 here vs 0.50 at the class default (aim 0.75)", source: "kt_skill_state", kind: "play.pick_fit" });
+  // the same level as the class default's: no because
+  assert.equal(chooseEntry({ entries: [a], inputs: { pL: 0.4 }, levelOf: () => lv("same", []), plainOf: () => lv("same", []) }).because, null);
+});

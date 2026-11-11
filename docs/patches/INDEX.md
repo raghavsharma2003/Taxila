@@ -100,6 +100,7 @@ and `to-voice` (two 001, no 002). Always cite a patch by its full file name.
 |---|---|---|---|---|
 | 001-box-contract-stage-first.patch | applied | 40/40 | `server/forge3/certs/box-contract.json` | Applies both ways because it only adds a block; the block (`stageFirst`) is in `server/forge3/certs/box-contract.json`. Do not apply it again. |
 | 002-ofcard-to-client.patch | applied | 14/14 | `server/stagecraft/board-first.js`, `server/studio/seam.js` +1 |  |
+| 007-phone-play-because-to-row.patch | open | 0/13 | `server/studio/seam.js` | C2 Games, 2026-11-10 (claude/r8-play-seam): the phone play piece's because (Studio's string and the play side's records) never reaches the facts row (rowOf prints only onScreen); adds `becauseRecords` and `chose` to the row. Found by tests/r8-play-phone-seam.test.mjs. |
 
 ## to-voice
 
