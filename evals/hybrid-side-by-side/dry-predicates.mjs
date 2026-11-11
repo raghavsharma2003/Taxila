@@ -277,6 +277,8 @@ export const PREDICATES = {
     if (KEY_SAID.test(p.text) && ctx.prevPrevT && KEY_SAID.test(ctx.prevPrevT.text) && !cardIn(ctx.prevPrevT)) return null;
     // (after a second clarify on any part its help is spent: the cell's third level moves on — C1, main on director21)
     if (p.clarifyN === 2) return null;
+    // (O4: the requests after a key stay on the closed card; once its key is said and no card has come since, a give-up may move on)
+    if (ctx.keyOpenBefore && !KEY_SAID.test(p.text)) return null;
     if (/worked:(?:step|problem)/.test(String(p.beat ?? ""))) {
       if (ctx.prevPrevT && /worked:(?:step|problem)/.test(String(ctx.prevPrevT.beat ?? "")) && ctx.prevPrevT.beat === p.beat) return null;
       return (r.pageParts ?? []).some((x) => x.part === "simpler" || x.part === "body") && r.beat === p.beat ? null : "a give-up at a worked step's check-in moved on";
@@ -336,7 +338,8 @@ export const PREDICATES = {
   workedClarify(L, r, i, ctx) {
     const p = ctx.prevT;
     const m = /^s(\d+):worked:worked:(problem|step(\d+))$/.exec(String(p?.beat ?? ""));
-    if (!m || r.clarifyN === 2) return null;
+    // (a second clarify, and anything after one, has had the part's help: C1's cell says the part's own line, then moves on)
+    if (!m || r.clarifyN === 2 || p.clarifyN === 2) return null;
     const clar = CLARIFY.test(ctx.prevChild) || /·\s*(?:another|clarify|confused)/.test(ctx.prevRead ?? "");
     const giveUp = !clar && GIVE_UP_ANY.test(ctx.prevChild);
     if (!clar && !(giveUp && m[2] === "problem")) return null;
@@ -587,7 +590,7 @@ export const ORDER_LAWS = {
 Object.assign(PREDICATES, ORDER_LAWS);
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation"].includes(k))]);
+export const PENDING = new Set(["twinsData", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
@@ -602,8 +605,10 @@ export function lessonFlags({ rows, script }) {
   rows.forEach((r, i) => {
     if (r.who !== "teacher") { ctx.prevChild = r.text ?? ""; ctx.prevRead = String(r.read ?? ""); ctx.prevCls = ctx.prevRead.split(" ")[0]; return; }
     ctx.returnDue = !!r.returnSaid;
+    ctx.keyOpenBefore = ctx.keyOpen;
     for (const [name, f] of Object.entries(PREDICATES)) { const why = f({ rows }, r, i, ctx); if (why) out.push({ row: i, predicate: name, why, text: norm(r.text).slice(0, 140) }); }
     if (cardIn(r)) ctx.saidCards.add(low(r.card).slice(0, 40));
+    ctx.keyOpen = cardIn(r) ? false : KEY_SAID.test(String(r.text ?? "")) || !!ctx.keyOpen;
     if (r.check?.itemId) ctx.cardTurns[r.check.itemId] = (ctx.cardTurns[r.check.itemId] ?? 0) + 1;
     ctx.prevPrevT = ctx.prevT;
     ctx.prevT = r;

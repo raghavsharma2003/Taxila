@@ -1945,6 +1945,13 @@ function requestMove(s, input, item, req, labels) {
         // spends help, so only a card whose help a MISS spent is closed here)
         && !helpLeft(s, kit, item) && helpSpentOn(s, kit, item)) return { ...leaveItem(s, input, item, SH.reposeMissed()), request: "language" };
       if (item) return plan(moveKindFor(item), p5Flag("STEER") ? SH.languageAskedP5({ lang: req.lang }) : SH.pose({ item, prefix: SH.languageAsked({ lang: req.lang }) }), { item, probe: probeFor(item), chips: optionChips(item), request: "language" });
+      // (O4, main on director21: Hindi asked at a key's check-in moved on to the next beat's simpler — it stays on the card just closed:
+      // that card's compiled hindi cell, its simpler, on its board, and the check-in; the next part waits)
+      if (!item && scriptOn() && s.lastMove?.gave && s.lastMove?.closeBeat?.board && !scriptFor(kit)?.script?.recordedRun) {
+        const cl = cellLines(s, input, "hindi");
+        const line = cl?.lines?.[0] ?? null;
+        if (line) return plan("reteach", SH.languageAsked({ lang: req.lang, teaching: true }), { skillId: currentSkillId(s, kit, item), request: "language", simpler: line, smaller: true, scriptBeat: { ...s.lastMove.closeBeat }, stayCheckin: true });
+      }
       return plan("reteach", SH.languageAsked({ lang: req.lang, teaching: true }), { skillId: currentSkillId(s, kit, item), request: "language" });
     }
     case "another": case "example": case "story": case "slower": {
@@ -2947,14 +2954,32 @@ function stepCells(prev, input) {
     s.turn += 1;
     // (main on director21: after a key close the second clarify said only its check-in, once the close was no longer carried over. Its
     // words are the compiled cell's — the part's own line, on its board (point/clarify/heard: the point) — never the why a third time)
-    const cl = prev.lastMove.gave && !prev.lastMove.point && !prev.lastMove.rendered?.length ? cellLines(prev, input, "clarify") : null;
-    const again = { ...carried(prev.lastMove), secondClarify: true, clarifyN: 2, checkinOk: true,
+    // (C1, main on director21: "a second clarify only repeats", 8 of 8 — the cell's line for a second ask, the part's own words — alts[0]
+    // when Learning writes one — on its board, in place of the same simpler again)
+    const cl = cellLines(prev, input, "clarify");
+    const base = { ...carried(prev.lastMove) };
+    if (cl?.lines?.length) { delete base.point; delete base.rendered; delete base.simpler; delete base.simplerBeat; }
+    const again = { ...base, secondClarify: true, clarifyN: 2, checkinOk: true,
       ...(cl?.lines?.length ? { simpler: cl.lines.join(" "), smaller: true, ...(prev.lastMove.scriptBeat ? { simplerBeat: { ...prev.lastMove.scriptBeat, ...(cl.show ? { board: cl.show } : {}) } } : {}) } : {}) };
     const ui0 = { status: "your_turn", ...(prev.lastUi?.whiteboard ? { whiteboard: prev.lastUi.whiteboard } : {}) };
     s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0;
     s.clarifyRun = { key: prev.clarifyRun.key, n: 2 };
     // (the card waits: held for the turn after, as a split's teaching half holds it)
     return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+  }
+  // (O4, main on director21 c4 stuck 18→20: "samajh nahi aaya" after a picture that stayed on the card just closed moved the lesson on —
+  // it stays there too: the compiled clarify cell's lines for that part, on its board, then a check-in; the next part still waits)
+  if (clar0 && input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && prev?.stayOn?.turn === prev?.turn && prev?.splitHold && prev.stayOn.beat?.board) {
+    const cl = cellLines(prev, input, "clarify");
+    if (cl?.lines?.length) {
+      const s = structuredClone(prev);
+      s.turn += 1;
+      const move = { kind: "reteach", shape: prev.lastMove?.shape, scriptBeat: { ...prev.stayOn.beat }, simpler: cl.lines.join(" "), smaller: true, checkinOk: true, request: "clarify", clarifyN: 1, stayCheckin: true };
+      const ui0 = { status: "your_turn", ...(prev.lastUi?.whiteboard ? { whiteboard: prev.lastUi.whiteboard } : {}) };
+      s.lastMove = move; s.moveVoiced = false; s.lastUi = ui0; s.stayOn = { beat: { ...prev.stayOn.beat }, turn: s.turn };
+      s.clarifyRun = { key: partOf(prev, prev.lastMove), n: 1 };
+      return { state: s, move, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(move, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+    }
   }
   // (main on the shadow, 2026-11-11: a clarify on a worked problem moved on to step 1 and a clarify on a step re-said the step. The cell:
   // a clarify — or a give-up — on the worked problem says the problem's simpler, a clarify on a step says that step's simpler, then the
@@ -3065,7 +3090,11 @@ function step0(prev, input) {
   // (a safety read or a stop over a split turn: the held half is let go; the card comes back through the walk)
   // (dc-r8-director20, c5-t02 offtopic 24-32: "drawing karke samjhao" at a key's check-in let the held worked problem go, and the worked
   // example began at step 1 — the picture is answered as a picture (P6), and a held worked problem stays held for the next turn)
-  const keepWorked = s.splitHold?.move?.kind === "worked_example" && !s.splitHold.teach && prev.lastMove?.splitClose && input.cls?.request?.type === "visual" && !input.cls?.flags?.distress;
+  // (O4, main on director21 c4 stuck 18, offtopic 26, c5-t02 offtopic 28: a picture asked at a key's check-in let the held next part go
+  // and showed ITS board — a picture, a Hindi or a repeat request stays on the card just closed; the next part stays held)
+  const stayRq = ["visual", "language", "repeat", "which"].includes(input.cls?.request?.type);
+  const keepWorked = !!s.splitHold && !s.splitHold.teach && prev.lastMove?.splitClose && stayRq && !input.cls?.flags?.distress;
+  if (keepWorked && prev.lastMove?.closeBeat) s.stayOn = { beat: { ...prev.lastMove.closeBeat }, turn: s.turn + 1 };
   if (s.splitHold && !keepWorked) { if (s.splitHold.activeItemId && !s.activeItemId) s.activeItemId = s.splitHold.activeItemId; s.splitHold = undefined; }
   // QA 14.4.1 (brain/say.js selfPosedVerdict): was a kit item on the table when the child spoke? null: her own words were
   // (a worked step, an explain), so a sum she asked there is checked in code even when this move poses the next card
@@ -3242,7 +3271,8 @@ function step0(prev, input) {
     // with no board sends none, and Studio picks for the live item)
     const live = s.activeItemId ? findItem(s, input.kit, s.activeItemId) ?? s.scriptCard ?? null : null;
     const card = live && (live.scriptAsk || live.scriptCheck || live.scriptThen) ? cardBeatRef(s, input.kit, live) : null;
-    if (card) move.scriptBeat = card;
+    if (s.stayOn?.turn === s.turn && s.stayOn.beat?.board) move.scriptBeat = { ...s.stayOn.beat };
+    else if (card) move.scriptBeat = card;
     else if (!move.scriptBeat && s.walk) { const cur = currentBeatRef(s, input.kit); if (cur?.board) move.scriptBeat = cur; }
   }
   // v4: a move that re-poses a live script card with no beat of its own (a hint, a repair) shows that card's own board (a
@@ -3258,6 +3288,7 @@ function step0(prev, input) {
   if (p.smaller) move.smaller = true;
   // v6.1 R7/R8: the beat's or card's AUTHORED simpler (format 2.3), said instead of anything model-written
   if (p.simpler) move.simpler = String(p.simpler);
+  if (p.stayCheckin) { move.checkinOk = true; move.stayCheckin = true; }
   // v6.1 R9: a worked step's own turn (new teaching, no card) may end on a check-in, once per beat
   if (scriptOn() && move.kind === "worked_example" && move.rendered?.length && !item && /^worked:step\d+$/.test(String(move.scriptBeat?.beatId ?? "")) && checkinFor(s, move)) move.checkinOk = true;
   // v6.1 R8 (main, director9: "samajh nahi aaya" / "pata nahi" got a real smaller re-explanation 16 times in 58): on a live
@@ -3541,7 +3572,7 @@ function step0(prev, input) {
   // understand" on a live card whose move teaches another beat gets the live beat's simpler too)
   const liveCardBeat = s.activeItemId ? (() => { const it = findItem(s, input.kit, s.activeItemId); return it && isScriptCard(it) ? cardBeatRef(s, input.kit, it) : null; })() : null;
   const offBeat = p.request === "another" && liveCardBeat && move.scriptBeat?.beatId && String(move.scriptBeat.beatId).replace(/^explain:/, "") !== String(liveCardBeat.beatId);
-  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && (["language", "clarify"].includes(p.request) || offBeat)) {
+  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && (["language", "clarify"].includes(p.request) || offBeat) && !p.stayCheckin) {
     // (v6.9 T1, main's request table on director17: Hindi or clarify re-says the LIVE part — the remediation just said, else the live
     // beat — in authored words none of her last four turns used; a card posed on this very turn is not the live part, unless a
     // remediation leads into it; with nothing fresh left, requestMove gave the key)
