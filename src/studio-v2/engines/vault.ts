@@ -37,6 +37,9 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
   const hud = api.hud([{ key: "vault", label: T.round }, { key: "loaded", label: T.loaded }, { key: "time", label: T.time, meter: true }]);
   const total = () => denoms().reduce((a, d) => a + d * (g.counts[d] ?? 0), 0);
   const colW = () => (COL_X1 - COL_X0) / denoms().length;
+  /** The k-th block of a column holding n: a tall stack packs tighter so its top block stays inside the column (a 6th
+   *  thousands-block sat on the "TH" header: layout probe, c4-ch04-t01, 2026-11-11). */
+  const stackY = (d: number, k: number, n: number) => { const m = Math.min(n, 12), y0 = COL_BOT - 14 - blockH(d) / 2; return y0 - Math.min(k, 11) * Math.min(blockH(d) + 4, (y0 - (COL_TOP + 8 + (blockH(d) * 0.9) / 2)) / Math.max(1, m - 1)); };
   const colX = (d: number) => { const ds = [...denoms()].sort((a, b) => b - a), i = ds.indexOf(d); return COL_X0 + colW() * (i + 0.5); };
   const blockSize = (d: number) => (d >= 1000 ? 56 : d >= 100 ? 50 : d >= 10 ? 44 : 30);
   const blockH = (d: number) => (d >= 1000 ? 56 : d >= 100 ? 16 : d >= 10 ? 14 : 30);
@@ -58,7 +61,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
   }
   function sendToColumn(b: Block) {
     const col = colX(b.d), n = g.counts[b.d] ?? 0;
-    b.fly = { x0: b.x, y0: b.y, x1: col, y1: COL_BOT - 14 - n * (blockH(b.d) + 4) - blockH(b.d) / 2, t: 0, col: b.d };
+    b.fly = { x0: b.x, y0: b.y, x1: col, y1: stackY(b.d, n, n + 1), t: 0, col: b.d };
     g.fliers.push(b);
     sfx.blip({ f: 500 + Math.log10(b.d) * 120, f2: 900 + Math.log10(b.d) * 160, dur: 0.1, type: "triangle", gain: 0.12 });
   }
@@ -166,7 +169,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
         ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.lineWidth = 2; roundRect(ctx, x + 6, COL_TOP, cw - 12, COL_BOT - COL_TOP, 12); ctx.stroke();
         api.text(ctx, spec.system === "indian" || d < 10000 ? PLACE[d] : PLACE[d], cx, COL_TOP - 14, { font: "mono", size: 38, weight: 600, color: DCOL[d], align: "center" });
         const n = g.counts[d] ?? 0;
-        for (let k = 0; k < Math.min(n, 12); k++) drawBlock(ctx, d, cx, COL_BOT - 14 - k * (blockH(d) + 4) - blockH(d) / 2, 0.9);
+        for (let k = 0; k < Math.min(n, 12); k++) drawBlock(ctx, d, cx, stackY(d, k, n), 0.9);
         api.text(ctx, String(n), cx, COL_BOT + 44, { font: "display", size: 48, weight: 800, align: "center", color: n >= 10 ? C.amber : C.ink });
       });
     }

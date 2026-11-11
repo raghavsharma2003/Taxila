@@ -75,7 +75,8 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
   const pivot = (): XY => (wave().range === 360 ? [500, 300] : [500, clamp(g.coachTop - 52, 460, 500)]);
   // (the half turn's radius gives way to the host's task pill where it sits over the world, so the protractor's top labels
   // stay clear of it: at l1366 "60 … 120" lay under "COPY THIS TURN" — layout probe, 2026-11-11)
-  const R = () => (wave().range === 360 ? 170 : clamp(pivot()[1] - 53 - api.chromeBottom(), 290, 360));
+  // (floor 250, not 290: under a two-line young task pill the 90 label still clears it — layout probe, l1366 young)
+  const R = () => (wave().range === 360 ? 170 : clamp(pivot()[1] - 53 - api.chromeBottom(), 250, 360));
   const hud = api.hud([{ key: "wave", label: T.wave }, { key: "hits", label: T.hits }, { key: "acc", label: T.accuracy, meter: true }]);
   const accOf = (r: { err: number }[]) => (r.length ? Math.round(100 * (r.reduce((a, b) => a + (1 - Math.min(1, b.err / 30)), 0) / r.length)) : 100);
   const at = (ang: number, r: number): XY => { const [px, py] = pivot(); return [px + Math.cos(ang * DEG) * r, py - Math.sin(ang * DEG) * r]; };
@@ -244,21 +245,28 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
       const sc = wave().scaffold;
       /** boxes the reveal's label must not cover: the protractor's labels, "0°", the lighthouse, the reference card */
       const keepOut: [number, number, number, number][] = [[px + r + 30, py - 22, px + r + 90, py + 22], [px - 34, py - 30, px + 34, py + 72]];
+      // the copy wave's reference card (the full turn's box stays left of its 180 label; the half turn's box sits on the side
+      // the called angle is NOT on, so the boat and its label at the reveal never land on it)
+      const copyOn = wave().mode === "copy" && (g.state === "aim" || g.state === "reveal");
+      const cc = { x: full ? 132 : key() > 90 ? 825 : 175, y: full ? 420 : 330, w: full ? 236 : 280 };
+      const ccBox: [number, number, number, number] = [cc.x - cc.w / 2, cc.y - 150, cc.x + cc.w / 2, cc.y + 120];
       if (sc !== "none") {
         ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 3;
         for (let a = 10; a < (full ? 360 : 180); a += 10) { const big = a % 90 === 0, [x0, y0] = at(a, r - (big ? 26 : 14)), [x1, y1] = at(a, r); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); }
         const lo = { font: "mono" as const, size: 38, weight: 600 }, hh = Math.max(38, api.minLabel) * 0.5;
         const box = (a: number): [number, number, number, number] => { const [lx, ly] = at(a, r + 30), hw = api.measure(ctx, `${a}`, lo) / 2; return [lx - hw, ly - hh, lx + hw, ly + hh]; };
+        // (a number the reference card would cover is not printed while the card is up — its tick stays; the card sat on
+        // "120" and "150" of a labelled copy wave: layout probe, c5-ch03-t01, 2026-11-11)
+        const under = (b: [number, number, number, number]) => copyOn && b[0] < ccBox[2] + 6 && b[2] > ccBox[0] - 6 && b[1] < ccBox[3] + 6 && b[3] > ccBox[1] - 6;
         for (const a of scaleLabels(sc, full ? 360 : 180, aboutOf(wave()), box)) {
+          if (under(box(a))) continue;
           const [lx, ly] = at(a, r + 30); api.text(ctx, `${a}`, lx, ly, { ...lo, color: C.ink3, align: "center", baseline: "middle" }); keepOut.push([lx - 40, ly - 22, lx + 40, ly + 22]);
         }
       }
       // reference wedge for copy mode
-      if (wave().mode === "copy" && (g.state === "aim" || g.state === "reveal")) {
-        // (the full turn's box stays left of its 180 label; the half turn's box sits on the side the called angle is NOT on,
-        // so the boat and its label at the reveal never land on it)
-        const cx = full ? 132 : key() > 90 ? 825 : 175, cy = full ? 420 : 330, a0 = g.refRot * DEG, a1 = a0 + key() * DEG, bw = full ? 236 : 280;
-        keepOut.push([cx - bw / 2, cy - 150, cx + bw / 2, cy + 120]);
+      if (copyOn) {
+        const cx = cc.x, cy = cc.y, a0 = g.refRot * DEG, a1 = a0 + key() * DEG, bw = cc.w;
+        keepOut.push(ccBox);
         ctx.save(); ctx.fillStyle = "rgba(16,19,27,.85)"; ctx.beginPath(); ctx.roundRect(cx - bw / 2, cy - 150, bw, 270, 20); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
         ctx.strokeStyle = C.ion; ctx.lineWidth = 6; ctx.lineCap = "round";
         ctx.beginPath(); ctx.moveTo(cx + Math.cos(a0) * g.refLen[0], cy - Math.sin(a0) * g.refLen[0]); ctx.lineTo(cx, cy); ctx.lineTo(cx + Math.cos(a1) * g.refLen[1], cy - Math.sin(a1) * g.refLen[1]); ctx.stroke();
@@ -294,7 +302,10 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
         // else on the lamp's side of it — layout probe, 2026-11-11: "270°" sat on the 270 label, "45° · off by 5°" on 20 and 30)
         const lab = !rv.hit && rv.off >= 0 ? `${rv.truth}° · ${T.offBy} ${rv.off}°` : `${rv.truth}°`, lw = api.measure(ctx, lab, { font: "mono", size: 40, weight: 600 }) / 2 + 26;
         const [ix, iy] = at(rv.truth, Math.max(70, rv.r - 96));
-        const spots: XY[] = [[tx, ty + 56], [tx, ty - 78], [ix, iy], ...(full ? [] : [[px, py - 100] as XY]), [tx + lw + 40, ty], [tx - lw - 40, ty]].map(([x, y]) => [clamp(x, lw, W - lw), clamp(y, 200, 590)] as XY);
+        // (then inside the half turn, nudged away from the reference card: "45° · off by 5°" found no free spot and fell back
+        // onto the 30 label — layout probe, c5-ch03-t01, 2026-11-11)
+        const away = copyOn && !full ? (cc.x < px ? 1 : -1) : 0;
+        const spots: XY[] = [[tx, ty + 56], [tx, ty - 78], [ix, iy], ...(full ? [] : [100, 72, 140, 170].flatMap((dy) => [0, 70, 140].map((dx) => [px + away * dx, py - dy] as XY))), [tx + lw + 40, ty], [tx - lw - 40, ty]].map(([x, y]) => [clamp(x, lw, W - lw), clamp(y, 200, 590)] as XY);
         const hits = ([x, y]: XY) => keepOut.some((b) => x - lw < b[2] && x + lw > b[0] && y - 31 < b[3] && y + 31 > b[1]);
         const [sx, sy] = spots.find((p) => !hits(p)) ?? spots[0];
         pill(api, ctx, lab, sx, sy, { color: rv.hit ? C.mint : !rv.hit && rv.off >= 0 ? C.amber : C.ion });
