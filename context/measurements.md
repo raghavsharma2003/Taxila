@@ -6760,3 +6760,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r8-kon-name-picker-cpu-r3` (2026-11-11): kon/name picker CPU after the read-like-text refusal (tests/_cpu-ms.mjs cpuNow, pickLevels x 60 requests, say + find, fades 1-3, seeds 700-729, this container): p50 15.3 ms, p95 19.0 ms, max 19.3 ms; bar 50 ms (round 2: p95 16-20 ms). With 1600 find tries it was p95 36 ms, so 1000 was kept.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-game-modes-judging-4-2026-11-11` (2026-11-11): Fourth judging of the three game modes (claude/r7-games e26cc539d; 111 screens; two fresh Opus judges at high effort per mode): stambh/tally round 4 FAIL and FAIL; kon/name round 3 FAIL and FAIL; kon/place round 3 PASS and FAIL. n = 6 verdicts (20 across the day). Every ruling from the round before found done on the screens in all three; 0 wrong keys or scales; laws 1 and 2 pass in all three. Four of the five failing verdicts block on what the game records, not on what the child sees: tally, two slips together or a neighbouring pad key reach the mix-up's number (49 typed as 40); kon/name, the key sits on a small corner arc two times in three; kon/place, sign=join-wrong-end reaches the teacher from one press of one of two buttons. One blocks on the screen: kon/name's row says two angles are unequal that are equal in size (isosceles figure). Reports: docs/design/round8/games-judging/<mode>/judges/.
