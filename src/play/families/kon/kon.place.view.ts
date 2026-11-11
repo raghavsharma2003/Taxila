@@ -24,7 +24,8 @@ import { say } from "../../copy.ts";
 import { word } from "../../engines/words.ts";
 import type { KonParams, KonState } from "./kon.logic.ts";
 import { ARM, BH, BW, KNOB_AT, PD, PR, PRINT_EVERY, SIZE_PRINT_EVERY, arms, centreRingShown, dir, farEnd, initPlace, joinAFirst, madeAngle, norm, placement, rimAngleOf, rimPoint, sizeFigs, type Pose } from "./kon.place.ts";
-import { ROLE, around, freeSpot } from "./kon.spot.ts";
+import { ROLE, around, clearAt, freeSpot } from "./kon.spot.ts";
+import { INK_H, SCALE_GAP, longTick, scaleLabels, scaleOmit, type Measure } from "./kon.scale.ts";
 
 type Pt = [number, number];
 const RUN_END = 1.4;
@@ -124,10 +125,18 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     c.arc(x, y, r, -rad(a0), -rad(a0 + d), d > 0); c.stroke(); c.restore();
   }
   const ray = (o: Pt, h: number, len: number): Pt[] => { const [c, n] = dir(h); return [S(...o), S(o[0] + c * len, o[1] + n * len)]; };
-  /** a letter just beyond a point, away from the vertex */
+  /** a letter just beyond a point, away from the vertex; never within SCALE_GAP px of a scale number drawn so far (the hold
+   *  of 2026-11-11: the resting protractor's top 80 beside O read as "80O" at 360). Where its own spot is that close, it
+   *  takes the nearest clear spot round the point (clear of the arms too), a little further out if it must */
   function letter(c: CanvasRenderingContext2D, t: string, at: Pt, away: number, off = 14): void {
-    const [cx, cy] = dir(away), [X, Y] = S(at[0] + cx * off, at[1] + cy * off);
-    api.P.text(c, t, X, Y, { size: 16, weight: 700, role: "ink2" });
+    const P = api.P, [dx, dy] = dir(away), def = S(at[0] + dx * off, at[1] + dy * off), o = S(...at), bounds = { x: 0, y: 0, w: api.w, h: api.h };
+    const nums = P.audit.texts.filter((x) => /^\d{1,3}$/.test(x.s)).map((x) => ({ x: x.x - x.w / 2, y: x.y - (x.px * INK_H) / 2, w: x.w, h: x.px * INK_H }));
+    let spot = def;
+    if (!clearAt(def, 12, 12, { boxes: nums }, bounds, SCALE_GAP)) {
+      const segs = P.audit.segs.map((g): [Pt, Pt] => [[g.x0, g.y0], [g.x1, g.y1]]);
+      spot = freeSpot(around(o, [off * s, (off + 8) * s, (off + 16) * s], Math.atan2(def[1] - o[1], def[0] - o[0]), 24), 12, 12, { segs, boxes: nums }, bounds, SCALE_GAP) ?? def;
+    }
+    P.text(c, t, spot[0], spot[1], { size: 16, weight: 700, role: "ink2" });
   }
   function protractor(c: CanvasRenderingContext2D, q: Pose, rad0 = PR, o: { knob?: boolean; locked?: boolean } = {}): void {
     const P = api.P, [cx, cy] = S(q.x, q.y), R = rad0 * s, [nx, ny] = dir(q.rot - 90), [bx, by] = dir(q.rot);
@@ -144,20 +153,23 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     P.stroke(c, [[cx - bx * R, cy + by * R], [cx + bx * R, cy - by * R]], { role: "ink3", width: 1.5 });
     P.circle(c, cx, cy, 3.5, { role: "ink", fill: true });
     P.stroke(c, [[cx, cy], [cx - nx * 9, cy + ny * 9]], { role: "ink", width: 1.5 });
-    // ticks every 5°, longer every 10°; both scales numbered (outer from this end, inner from the other)
-    const every = goal === "size" ? SIZE_PRINT_EVERY[p.scale] : PRINT_EVERY[p.scale];
+    // ticks every 5°, longer every 10°
     for (let a = 0; a <= 180; a += 5) {
-      const [tc, tn] = dir(q.rot + a), len = (a % 10 === 0 ? 10 : 5) * Math.min(1, rad0 / PR + 0.2);
+      const [tc, tn] = dir(q.rot + a), len = a % 10 === 0 ? longTick(rad0) : longTick(rad0) / 2;
       P.stroke(c, [[cx + tc * R, cy - tn * R], [cx + tc * (R - len), cy - tn * (R - len)]], { role: "ink3", width: a % 30 === 0 ? 1.8 : 1 });
-      if (a % every === 0) {
-        const lo = R + 13, li = R - 24, nudge = a === 0 ? 6 : a === 180 ? -6 : 0, [ic, iN] = dir(q.rot + a + nudge * (rad0 === PR ? 1 : 1.4));
-        // the outer 0 and 180 sit a little inside the half-disc, off the base line (an arm runs along it)
-        const [oc, oN] = dir(q.rot + a + (a === 0 ? 5 : a === 180 ? -5 : 0) * (rad0 === PR ? 1 : 1.4));
-        P.text(c, String(a), cx + oc * lo, cy - oN * lo, { size: fs(), weight: 700, font: "mono", role: "ink2" });
-        // both scales numbered alike on every protractor (size: the big and the small one print the same numbers)
-        if (a !== 90) P.text(c, String(180 - a), cx + ic * li, cy - iN * li, { size: fs(), weight: 600, font: "mono", role: "ink3" });
-      }
     }
+    // both scales numbered (outer from this end, inner from the other), where kon.scale.ts puts them: no two numbers closer
+    // than SCALE_GAP px at this size and turn (the hold of 2026-11-11: the inner "80100" at 360); size: the big and the small
+    // protractor print the same numbers
+    const every = goal === "size" ? SIZE_PRINT_EVERY[p.scale] : PRINT_EVERY[p.scale];
+    const meas: Measure = (t, px) => { c.save(); c.font = `700 ${px}px ${api.art.font.mono}`; const w = c.measureText(t).width; c.restore(); return w; };
+    const radii = goal === "size" ? sizeFigs(p).map((f) => ({ R: f.rad * s, rad0: f.rad })) : [{ R, rad0 }];
+    const omit = scaleOmit(radii, every, fs(), meas, q.rot);
+    for (const L of scaleLabels({ rot: q.rot, R, rad0, every, fs: fs(), measure: meas, omit }, cx, cy)) {
+      P.text(c, L.s, L.x, L.y, { size: fs(), weight: L.ring === "outer" ? 700 : 600, font: "mono", role: L.ring === "outer" ? "ink2" : "ink3" });
+    }
+    // the drawn size of the protractor, for the layout check (its size never changes while she reads)
+    P.note("protractor", cx - R, cy - R, 2 * R, R + depth);
     if (o.knob) {
       // the turning handle on the body: a ring the arms show through
       const [kx, ky] = S(...knobAt(q));
@@ -183,12 +195,12 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     P.circle(c, ...S(...V), 4.5, { role: "ink", fill: true });
     const bis = hs.length === 2 ? hs[0] + (norm(hs[1] - hs[0]) > 180 ? (norm(hs[1] - hs[0]) - 360) / 2 : norm(hs[1] - hs[0]) / 2) : hs[0] + 90;
     const oAway = bis + 180;
-    // the arm letters stand well past the arm ends, clear of the protractor's numbers
-    letter(c, "A", farEnd(p), hs[0], 24);
-    if (hs.length === 2) { const [bc, bn] = dir(hs[1]); letter(c, "B", [V[0] + ARM * bc, V[1] + ARM * bn], hs[1], 24); }
     // the protractor
     protractor(c, q, PR, { knob: !P0.locked && !S0.done, locked: P0.locked });
-    // O on top of the see-through protractor, so it stays readable where the centre sits
+    // the letters on top of the see-through protractor, so they stay readable where it lies: the arm letters well past the
+    // arm ends, O past the vertex; each clear of the protractor's numbers (letter())
+    letter(c, "A", farEnd(p), hs[0], 24);
+    if (hs.length === 2) { const [bc, bn] = dir(hs[1]); letter(c, "B", [V[0] + ARM * bc, V[1] + ARM * bn], hs[1], 24); }
     letter(c, "O", V, oAway, 24);
     if (!P0.locked) {
       // its body is the drag target (the bounding box of the half-disc)
@@ -277,7 +289,7 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     const A = api.P.audit;
     return {
       segs: A.segs.map((g): [Pt, Pt] => [[g.x0, g.y0], [g.x1, g.y1]]),
-      boxes: [...A.texts.map((t) => ({ x: t.x - t.w / 2, y: t.y - t.px * 0.6, w: t.w, h: t.px * 1.2 })), ...A.marks.filter((m) => m.kind !== "dot")],
+      boxes: [...A.texts.map((t) => ({ x: t.x - t.w / 2, y: t.y - t.px * 0.6, w: t.w, h: t.px * 1.2 })), ...A.marks.filter((m) => m.kind !== "dot" && m.kind !== "protractor")],
     };
   }
   function drawSize(c: CanvasRenderingContext2D): void {
