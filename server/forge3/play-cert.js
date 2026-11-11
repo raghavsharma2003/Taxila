@@ -20,6 +20,7 @@ import { fileURLToPath } from "node:url";
 import { serveHarness, openJudge, launchLocal } from "./qa/render.js";
 import { PLAY_VIEWPORTS } from "./qa/viewports.js";
 import { QA_VERSION, judgePiece } from "./qa/checks.js";
+import { lawsFor } from "./qa/laws.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const PLAY_CERT_FILE = path.join(here, "certs", "play.json");
@@ -37,29 +38,9 @@ export function levelFor(logic, family, mode, { seed = 1, classLevel = 6, gramma
   return null;
 }
 
-/**
- * Served levels for a coverage entry, as the play server would serve them to a fresh child of the entry's class: the
- * same session body startSession builds (server/play/start.js), seeds n = 0..k-1, the picker's garam door.
- */
-export async function coverageLevels(entry, k = 2, opts = {}) {
-  const { currentLevel, entryKey, seedOf } = await import("../play/levels.js");
-  const out = [];
-  for (let n = 0; n < k; n++) {
-    const key = entryKey(entry);
-    const s = { childId: `qa-${n}`, key, skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
-      mis: {}, pL: undefined, n: 0, seed: seedOf(`qa-${n}`, key, 0), door: "garam", recent: [], hist: null };
-    try { const lv = currentLevel(s, entry); if (lv && !out.some((x) => x.levelId === lv.levelId)) out.push(lv); } catch { /* a generator that throws serves nothing */ }
-  }
-  // GAMES-01: the level served after the lesson saw a mapped misconception (the Director's focus) can be a different shape
-  // (a judging strip pair, a no-CO2 leaf pair, a small key or scale); one per belief, when it differs from the above
-  if (opts.focus) for (const kit of Object.values(entry.misMap ?? {})) {
-    const key = entryKey(entry);
-    const s = { childId: "qa-0", key, skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
-      mis: { [kit]: 0.7 }, focus: kit, pL: undefined, n: 0, seed: seedOf("qa-0", key, 0), door: "garam", recent: [], hist: null };
-    try { const lv = currentLevel(s, entry); if (lv && !out.some((x) => x.levelId === lv.levelId)) out.push(lv); } catch { /* serves nothing */ }
-  }
-  return out;
-}
+/** Served levels for a coverage entry (server/forge3/qa/cert-levels.mjs; the law checks read the same levels). */
+export { coverageLevels } from "./qa/cert-levels.mjs";
+import { coverageLevels } from "./qa/cert-levels.mjs";
 
 /**
  * Add each cell's SERVING verdict (certify.js servesView: a classes 4-5 level whose only failure is the 16 px young floor,
@@ -146,6 +127,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
     return { views, piece: judgePiece(views), probes };
   };
+  const lawCache = new Map();
+  const lawsOf = async (level, young) => {
+    if (!lawCache.has(level.levelId)) lawCache.set(level.levelId, await lawsFor(level, { young }));
+    return lawCache.get(level.levelId);
+  };
   for (const entry of entries) {
     const key = `${entry.family}/${entry.mode}`;
     if (done.has(`${entry.topicId}|${key}|${entry.goal}`)) continue;
@@ -166,7 +152,15 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       const cell = ((table.pieces[key] ??= {})[`${art}@c${band}`] ??= { byViewport: Object.fromEntries(PLAY_VIEWPORTS.map((v) => [v.vp, true])), n: 0, fails: [] });
       cell.n++;
       for (const v of r.views) if (!v.verdict.pass) { cell.byViewport[v.vp] = false; for (const f of v.verdict.fails) if (cell.fails.length < 12 && !cell.fails.includes(`${v.vp}:${f}`)) cell.fails.push(`${v.vp}:${f}`); }
-      table.samples.push({ topicId: entry.topicId, key, goal: entry.goal, levelId: level.levelId, art, classLevel: entry.classLevel, byViewport: r.piece.byViewport,
+      // round 8: the three laws (server/forge3/qa/laws.mjs), judged once per level on the family's own view: a break fails
+      // the cell at every size (the laws are what the screen tells her, at any size)
+      const laws = await lawsOf(level, entry.classLevel <= 5);
+      if (laws.breaks.length) {
+        for (const vp of Object.keys(cell.byViewport)) cell.byViewport[vp] = false;
+        for (const b of laws.breaks) { const f = `laws:L${b.law}:${b.state}`; if (cell.fails.length < 12 && !cell.fails.includes(f)) cell.fails.push(f); }
+        for (const vp of Object.keys(r.piece.byViewport)) r.piece.byViewport[vp] = false;
+      }
+      table.samples.push({ topicId: entry.topicId, key, goal: entry.goal, levelId: level.levelId, art, classLevel: entry.classLevel, laws: { breaks: laws.breaks.length, checked: laws.checked }, byViewport: r.piece.byViewport,
         fails: r.piece.fails.slice(0, 6), minPx: Object.fromEntries(r.views.map((v) => [v.vp, v.verdict.stats.minPx])), fill: Object.fromEntries(r.views.map((v) => [v.vp, v.verdict.stats.fill])), box: Object.fromEntries(Object.entries(r.probes).map(([vp, p]) => [vp, p.box])), game: Object.fromEntries(Object.entries(r.probes).map(([vp, p]) => [vp, p.game])) });
       console.log(`${entry.topicId} ${key} ${art} c${entry.classLevel}: ${JSON.stringify(r.piece.byViewport)} ${r.piece.fails.slice(0, 3).join(" ")}`);
     }

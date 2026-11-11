@@ -58,7 +58,7 @@ describe("r4-khand server grade", () => {
       for (const kitId of level.proof.discriminates) {
         const mal = Object.keys(level.mal).find((m) => level.mal[m] === kitId);
         const mg = gradeActs(level, env(logic.malActs(level, mal)), { final: true });
-        assert.equal(lessonEvidence(mg.grade, level)[0].misconceptionId, kitId);
+        assert.equal((lessonEvidence(mg.grade, level)[0].misconceptionId ?? lessonEvidence(mg.grade, level)[0].chanceMis), kitId);
       }
     });
   }

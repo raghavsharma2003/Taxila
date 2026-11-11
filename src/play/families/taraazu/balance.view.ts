@@ -127,7 +127,7 @@ export const makeBalanceView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     // the level needle and its arc (status by shape: centred = level)
     const nx = pivot.x + Math.sin(-ang) * 0 , ny = pivot.y - 34;
     P.stroke(c, [[pivot.x - 26, pivot.y - 30], [pivot.x, pivot.y - 38], [pivot.x + 26, pivot.y - 30]], { role: "ink3", width: 2, alpha: 0.7 });
-    P.stroke(c, [[pivot.x, pivot.y], [pivot.x + Math.sin(ang) * 40, pivot.y - Math.cos(ang) * 40]], { role: Math.abs(ang) < 0.01 ? "good" : "look", width: 3 });
+    P.stroke(c, [[pivot.x, pivot.y], [pivot.x + Math.sin(ang) * 40, pivot.y - Math.cos(ang) * 40]], { role: Math.abs(ang) < 0.01 ? (st().acts > 0 ? "good" : "ink2") : "look", width: 3 });   // round 8 law 1: a given balance is not her right
     void nx; void ny;
     // the pans: strings, plates, items
     for (const side of [-1, 1] as const) {
@@ -179,7 +179,7 @@ export const makeBalanceView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   }
 
   function goal(): string { return say(lang, fill ? "balance.goal.fill" : "balance.goal"); }
-  function readouts(): Readout[] { return [{ k: "", v: say(lang, tiltNow() === 0 ? "balance.level" : "balance.tipped"), role: tiltNow() === 0 ? "good" : "look" }]; }
+  function readouts(): Readout[] { return [{ k: "", v: say(lang, tiltNow() === 0 ? "balance.level" : "balance.tipped"), role: tiltNow() === 0 ? (st().acts > 0 ? "good" : "ink2") : "look" }]; }
   function controls(): ControlSpec[] {
     const s = st(); if (s.done) return [];
     const out: ControlSpec[] = [];

@@ -266,6 +266,9 @@ function grade(level: PlayLevel<LabParams>, acts: PlayActEnvelope<LabAct>[]): Pl
 
 export const labLogic: FamilyLogic<LabParams, LabState, LabAct> = {
   family: "kyun-lab", modes: ["fair-test"], malRules: LAB_MAL,
+  // round 8 law 3 (dc-r8-game-modes-three-laws): mix-ups these goals see from ONE pick among five or fewer (a tool, a
+  // bin, a lane, a claim; server/forge3/qa/laws.mjs found each): reported at chance weight, named only on a repeat
+  chancePicks: ["predict"],
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };
 export const labHelpers = { diffsOf, winner, predictOf, outcomeOf };

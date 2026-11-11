@@ -598,6 +598,9 @@ function grade(level: PlayLevel<ChumbakParams>, acts: PlayActEnvelope<ChumbakAct
 
 export const chumbakLogic: FamilyLogic<ChumbakParams, ChumbakState, ChumbakAct> = {
   family: "kyun-lab", modes: CHUMBAK_MODES, malRules: CHUMBAK_MAL,
+  // round 8 law 3 (dc-r8-game-modes-three-laws): mix-ups these goals see from ONE pick among five or fewer (a tool, a
+  // bin, a lane, a claim; server/forge3/qa/laws.mjs found each): reported at chance weight, named only on a repeat
+  chancePicks: ["taakat:big-stronger"],
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };
 export const chumbakHelpers = { q4, turns, run };
