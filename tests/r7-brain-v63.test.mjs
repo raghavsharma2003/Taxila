@@ -190,8 +190,8 @@ describe("r7-brain-v63.test.mjs", () => {
       const ps = pagesOf(last, out, kit);
       const lm = last.state.lastMove;
       const sm0 = String(lm.simpler ?? "").split(/(?<=[.!?])\s/)[0];
-      // (v6.4 L1: in the Hindi mode her words, the simpler's too, are said in Hindi words)
-      const sm = last.state.ctx?.lang === "hindi" && last.state.ctx?.langPinned ? inHindiWords(sm0) : sm0;
+      // (dc-r8-director20 W1: an authored simpler is said as written, in the Hindi mode too — v6.4 L1's rewrite applies to her own words only)
+      const sm = sm0;
       const onRem = ps.find((p) => sm && p.text.includes(sm.slice(0, 30)));
       const rem = (kit && last.state.lastMove?.simplerBeat?.board) ?? null;
       if (!onRem || !String(onRem.scriptBeat?.beatId ?? "").startsWith("rem:")) bad.push(`${persona} ${topic} T${t}: remediation words on ${onRem?.scriptBeat?.beatId} | ${onRem?.text?.slice(0, 80)}`);
