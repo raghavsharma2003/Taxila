@@ -453,7 +453,139 @@ function scriptUses(ctx, w) {
 /** Predicates that report and do not gate yet (the gate test leaves them out): each names the step that makes it pass. */
 // (secondClarify gates from 2026-11-11: the stuck child says "phir bhi samajh nahi aaya" right after her first re-explanation, and the
 // walk's second-clarify cell — the same line, then the check-in — holds it at 0)
-export const PENDING = new Set(["twinsData"]);
+// ───────────── dc-r8-director21 O: the order laws, over live and dry rows ─────────────
+// Each reads the turn's page parts (each part's own beat: "e2", "worked:problem", "worked:step1", "worked" — the child's step —,
+// "rem:<mix-up>", "then:<mix-up>", "c3", "bridge") and the skill the turn is in (held.unit, else the walk's beat).
+const TEACH = new Set(["body", "simpler", "alt"]);
+const beatOfPart = (p) => String(p?.beat ?? "").replace(/^explain:/, "");
+const skillOfRow = (r, ctx) => {
+  const u = /^(.+?-s\d+):/.exec(String(r.held?.unit ?? ""))?.[1];
+  if (u) return (ctx.o.skill = u);
+  const n = /^s(\d+):/.exec(String(r.beat ?? ""))?.[1];
+  if (n && ctx.script?.skills?.[+n - 1]) return (ctx.o.skill = ctx.script.skills[+n - 1].skillId);
+  return ctx.o.skill ?? null;
+};
+const skillById = (ctx, id) => (ctx.script?.skills ?? []).find((s) => s.skillId === id) ?? null;
+/** The walk's beat at the end of a turn as a part beat ("s1:explain:e3" → e3, "s1:worked:worked:problem" → worked:problem). */
+const liveBeatOf = (r) => { const b = String(r.beat ?? ""); const m = /^s\d+:(?:explain:(e\d+)|worked:(worked:(?:problem|step\d+))|remediation:(rem:.+))$/.exec(b); return m ? m[1] ?? m[2] ?? m[3] : null; };
+const SAYS_CLARIFY_C = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|didn'?t\s+understand|don'?t\s+understand|kya\s+matlab)(?![\p{L}])/iu;
+const FIGURE = /(?<![\p{L}])(?:square|rectangle|triangle|circle|hexagon|varg|aayat|tribhuj|vritt|patti|pattiyaan|rekha|line|bar|pizza|roti|cake|board|chitra|shape|aakaar|kinaara|bhuja|bhujayein|dekho|look)(?![\p{L}])/iu;
+const remAll = (ctx) => (ctx.o.remAll ??= (ctx.script?.skills ?? []).flatMap((sk) => (sk.remediation ?? []).flatMap((m) => [m.say, m.simpler]
+  .flatMap((v) => (typeof v === "string" ? [v] : [v?.hi, v?.en])).filter(Boolean).flatMap(sentencesOf).map(key).filter((k) => k.split(" ").length >= 5)
+  .map((k) => ({ k, skill: sk.skillId, targets: m.targets })))));
+const remSentences = (ctx) => (ctx.o.rem ??= remAll(ctx).filter((x) => !nonRemText(ctx).includes(` ${x.k} `)));
+const nonRemText = (ctx) => (ctx.o.nonRemT ??= ` ${[...nonRemKeys(ctx)].join(" | ")} `);
+/** Every sentence key of the script's other spoken text (points, simplers, cards, whys, worked): a sentence a remediation shares with
+ *  one is no sign of the remediation. */
+const nonRemKeys = (ctx) => (ctx.o.nonRem ??= (() => {
+  const out = new Set();
+  const walk = (o, inRem) => { if (typeof o === "string") { if (!inRem) for (const x of sentencesOf(o)) out.add(key(x)); return; }
+    if (Array.isArray(o)) return o.forEach((x) => walk(x, inRem));
+    if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) walk(v, inRem || k === "remediation"); };
+  walk(ctx.script ?? {}, false);
+  return out;
+})());
+
+export const ORDER_LAWS = {
+  /** O1: a unit's parts are said in order and none is skipped — a card never before its point, a step never before its problem (or the
+   *  step before it), the child's own step never before the problem, a then-card never before its remediation, a point never after a
+   *  later point of its skill when it was not said. */
+  orderParts(L, r, i, ctx) {
+    const sk = skillOfRow(r, ctx);
+    if (!sk) return null;
+    const said = ctx.o.said, has = (b) => said.has(`${sk}|${b}`) || ctx.o.reported.has(`${sk}|${b}`);
+    const ex = (skillById(ctx, sk)?.explain ?? []).map((e) => e.id);
+    let why = null;
+    const mine = new Set();
+    for (const p of r.pageParts ?? []) {
+      const b = beatOfPart(p), seen = (x) => has(x) || mine.has(x);
+      if (!why && p.part === "card" && /^e\d+$/.test(b) && !seen(b)) why = `the card of ${b} before its point`;
+      if (!why && p.part !== "close" && /^worked:step(\d+)$/.test(b)) { const n = +b.slice(11); if (!seen("worked:problem")) why = `${b} before the worked problem`; else if (n > 1 && !seen(`worked:step${n - 1}`)) why = `${b} before worked:step${n - 1}`; }
+      if (!why && p.part === "card" && b === "worked" && !seen("worked:problem")) why = "the child's own step before the worked problem";
+      if (!why && p.part === "card" && /^then:/.test(b) && !seen(`rem:${b.slice(5)}`)) why = `the then-card of ${b.slice(5)} before its remediation`;
+      if (!why && TEACH.has(p.part) && /^e\d+$/.test(b)) { const k = ex.indexOf(b); const skipped = ex.slice(0, Math.max(0, k)).find((x) => !seen(x)); if (skipped) why = `${skipped} skipped: ${b} said with ${skipped} never said`; }
+      if (TEACH.has(p.part) || (p.part === "body" && b)) mine.add(b);
+    }
+    for (const b of mine) said.add(`${sk}|${b}`);
+    // (each missing part once: the skipped part counts as reported, the turns after it are not flagged for it again)
+    if (why) { const m = /^(?:the card of (e\d+)|(worked:step\d+) before (?:the worked problem|(worked:step\d+))|the child's own step|the then-card of (.+) before|(e\d+) skipped)/.exec(why);
+      const miss = !m ? null : m[1] ?? (m[2] ? (m[3] ?? "worked:problem") : null) ?? (m[4] ? `rem:${m[4]}` : null) ?? m[5] ?? (/child's own step/.test(why) ? "worked:problem" : null);
+      if (miss) ctx.o.reported.add(`${sk}|${miss}`); }
+    return why;
+  },
+  /** O2: a return, an AI line or a request reply never takes a part's place — the part the walk is on at the end of that turn, unsaid in
+   *  it, is said in the next turn of hers. */
+  orderDisplaced(L, r, i, ctx) {
+    const sk = skillOfRow(r, ctx);
+    let why = null;
+    const pend = ctx.o.pend;
+    if (pend) {
+      const said = (r.pageParts ?? []).some((p) => TEACH.has(p.part) && beatOfPart(p) === pend.beat);
+      if (!said && !ctx.o.said.has(`${pend.sk}|${pend.beat}`)) why = `${pend.beat} displaced at row ${pend.row} by ${pend.by}, not said here`;
+      ctx.o.pend = null;
+    }
+    const live = liveBeatOf(r);
+    if (live && sk && !ctx.o.said.has(`${sk}|${live}`) && !(r.pageParts ?? []).some((p) => TEACH.has(p.part) && beatOfPart(p) === live)) {
+      const by = returnOf(r, ctx) ? "a return" : AI_LINE.test(String(r.text ?? "")) ? "the AI line" : /·/.test(ctx.prevRead ?? "") ? `a request reply (${String(ctx.prevRead).split("·")[1].trim()})` : null;
+      if (by) ctx.o.pend = { beat: live, sk, row: i, by };
+    }
+    return why;
+  },
+  /** O3: a remediation is said only after the wrong answer that shows its misconception (or as the live part, re-said), on its own
+   *  then-card's board — never as help after a give-up, a clarify or a plain miss. */
+  orderRemediation(L, r, i, ctx) {
+    const T = ` ${key(r.text)} `;
+    const hit = remSentences(ctx).find((x) => T.includes(` ${x.k} `));
+    // (the remediation is the live part when her turn before said any of it: its simpler on a clarify of it is the cell's)
+    const prevHad = hit && ctx.prevT && remAll(ctx).some((x) => x.targets === hit.targets && ` ${key(ctx.prevT.text)} `.includes(` ${x.k} `));
+    const out = hit && !ctx.prevCls?.startsWith("misconception") && !prevHad ? `a remediation (${hit.targets}) said after "${ctx.prevRead}", not its misconception` : null;
+    if (out) return out;
+    if (hit && !prevHad) {
+      const card = (r.pageParts ?? []).find((p) => p.part === "card");
+      if (card && beatOfPart(card) !== `then:${hit.targets}`) return `a remediation (${hit.targets}) said over another card (${beatOfPart(card)})`;
+    }
+    return null;
+  },
+  /** O4: a picture, Hindi, repeat or clarify request stays on the part it was asked about (the parts of her turn before it): none moves
+   *  the lesson on, none changes the unit. */
+  orderStays(L, r, i, ctx) {
+    const rq = /·\s*(visual|language|repeat|another|clarify|confused|which)/.exec(ctx.prevRead ?? "")?.[1] ?? (SAYS_CLARIFY_C.test(ctx.prevChild ?? "") ? "clarify" : null);
+    if (!rq || !ctx.prevT) return null;
+    // (one unit: a remediation and its then-card; the worked problem, its steps and the child's own step)
+    const unitOf = (b) => (/^worked/.test(b) ? "worked" : /^(?:rem|then):/.test(b) ? `rem:${b.replace(/^(?:rem|then):/, "")}` : b);
+    const asked = new Set([...(ctx.prevT.pageParts ?? []).map(beatOfPart), liveBeatOf(ctx.prevT)].filter(Boolean).map(unitOf));
+    const moved = (r.pageParts ?? []).find((p) => p.part !== "close" && p.part !== "bridge" && beatOfPart(p) && !asked.has(unitOf(beatOfPart(p))));
+    return moved ? `a ${rq} request moved from ${[...asked].join("/") || "?"} to ${unitOf(beatOfPart(moved))}` : null;
+  },
+  /** O5: a turn with no unit (the teach-back, the wrap, the goodbye, the break) says nothing about a figure, and no board of another unit
+   *  is up while it does. */
+  orderNoUnit(L, r) {
+    const noUnit = !!r.held?.intent?.noUnit || (r.beat == null && /^(?:teachback|wrap|break)$/.test(String(r.move ?? "")));
+    if (!noUnit) return null;
+    // (the break's offer to go on leaves the lesson's board where it was; its words still name no figure)
+    const up = String(r.move) !== "break" && (r.boardUp === true || (!!r.held?.unit && r.held?.drawn === "kept" && r.held?.kept));
+    const fig = FIGURE.exec(String(r.text ?? ""))?.[0];
+    return up || fig ? `${r.move} turn${up ? ` over ${r.held?.unit ?? "another unit"}'s board` : ""}${fig ? ` names a figure ("${fig}")` : ""}` : null;
+  },
+  /** O6: the first miss on a card — a wrong answer or a give-up — never gets the key (a clarify spends no help). */
+  orderFirstMiss(L, r, i, ctx) {
+    const c = ctx.prevT?.card ? low(ctx.prevT.card).slice(0, 60) : null;
+    const miss = ["incorrect", "partial", "misconception"].includes(ctx.prevCls) || (ctx.prevCls === "no_evidence" && !/·/.test(ctx.prevRead ?? "") && GIVE_UP_ANY.test(ctx.prevChild ?? ""));
+    if (!c || !miss) return null;
+    const n = (ctx.o.misses[c] = (ctx.o.misses[c] ?? 0) + 1);
+    return n === 1 && KEY_SAID.test(String(r.text ?? "")) ? `the key on the first miss ("${ctx.prevChild}")` : null;
+  },
+  /** O7: her answer to the child's question about her comes first in its turn (the AI line before any teaching). */
+  orderAnswerFirst(L, r) {
+    const t = String(r.text ?? ""), at = t.search(AI_LINE);
+    if (at <= 0) return null;
+    const before = sentencesOf(t.slice(0, at)).length;
+    return before ? `the AI line after ${before} sentence${before > 1 ? "s" : ""} of hers` : null;
+  },
+};
+Object.assign(PREDICATES, ORDER_LAWS);
+
+export const PENDING = new Set(["twinsData", ...Object.keys(ORDER_LAWS)]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
@@ -462,7 +594,7 @@ export function lessonFlags({ rows, script }) {
   for (const [kind, forms] of Object.entries(script?.joints ?? {})) heads[kind] = (forms ?? []).map((f) => String(f?.hi ?? f ?? "").split(/\{\w+\}/).map((x) => low(x).replace(/^[\s,.:;!?]+|[\s,.:;!?]+$/g, "")).sort((a, b) => b.length - a.length)[0]?.slice(0, 32) ?? "").map((h) => (h.length >= 8 ? h : null));
   const workedBy = new Map((script?.skills ?? []).map((sk, n) => [`s${n + 1}`, sk.workedExample ?? null]));
   const forms = (k) => (script?.joints?.[k] ?? []).flatMap((f) => [f?.hi ?? f, f?.en]).filter((x) => typeof x === "string" && x.includes("{aside}")).map(formRe);
-  const ctx = { script, parkRes: forms("asidePark"), retRes: forms("asideReturn"), prevT: null, prevChild: "", prevCls: null, saidCards: new Set(), jointUse: {}, jointHeads: heads, problemSaid: new Set(), returnDue: false, cardTurns: {},
+  const ctx = { o: { said: new Set(), reported: new Set(), pend: null, misses: {}, skill: null }, script, parkRes: forms("asidePark"), retRes: forms("asideReturn"), prevT: null, prevChild: "", prevCls: null, saidCards: new Set(), jointUse: {}, jointHeads: heads, problemSaid: new Set(), returnDue: false, cardTurns: {},
     workedOf: (r) => workedBy.get(String(r.beat ?? "").split(":")[0]) ?? null };
   const out = [];
   rows.forEach((r, i) => {

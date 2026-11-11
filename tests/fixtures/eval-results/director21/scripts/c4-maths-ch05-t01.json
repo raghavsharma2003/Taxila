@@ -1,0 +1,720 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "version": 2.3,
+ "status": "draft",
+ "terms": [
+  {
+   "hi": "bhinn",
+   "en": "fraction"
+  },
+  {
+   "hi": "barabar hisse",
+   "en": "equal parts"
+  },
+  {
+   "hi": "aadha",
+   "en": "half"
+  },
+  {
+   "hi": "ek-tihaai",
+   "en": "one-third"
+  },
+  {
+   "hi": "ek-chauthaai",
+   "en": "one-quarter"
+  },
+  {
+   "hi": "ansh",
+   "en": "numerator (top number)"
+  },
+  {
+   "hi": "har",
+   "en": "denominator (bottom number)"
+  },
+  {
+   "hi": "samooh",
+   "en": "group"
+  },
+  {
+   "hi": "baantna",
+   "en": "to share"
+  }
+ ], "greetSimpler": { "hi": "Aaj hum ek cheez ko barabar hisson mein baantna seekhenge, aur un hisson ke naam.", "en": "Today we learn to share one thing into equal parts, and the names of those parts." }, "joints": {"asidePark":[{"hi":"Yeh baantna khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish this sharing, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh baantna khatam ho jaaye.","en":"We'll talk about {aside} too, right after this sharing."},{"hi":"Achha, {aside} wali baat main yaad rakhti hoon, thodi der mein usi par aayenge.","en":"Okay, I'll keep the {aside} bit in mind, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein tumne kabhi kuch barabar baanta hai?","en":"Have you ever shared something equally in {aside}?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"},{"hi":"Ab {aside} ki baari, uske baare mein thoda aur batao na?","en":"Now it's {aside}'s turn: will you tell me a bit more about it?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}],"backTo":[{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."}]},
+ "skills": [
+  {
+   "skillId": "c4-maths-ch05-t01-s1",
+   "hook": {
+    "convey": "one whole (a roti, a drawn circle) cut and shared → fair only if the pieces are the same size; equal pieces of one whole get the names half, third, quarter; the number of pieces alone does not decide the name",
+    "interestSlots": [
+     {
+      "interest": "cooking",
+      "use": { "hi": "Socho, Maa ne kitchen mein ek garam roti banayi, aur tum do bhai-behen ho. Roti ke 2 tukde honge. Dono ka hissa sach mein barabar kab hota hai, aaj wahi pakadna hai.", "en": "Picture it: Mum just made a hot roti in the kitchen, and there are two of you. The roti becomes 2 pieces. Today we catch exactly when both shares are really equal." }
+     },
+     {
+      "interest": "drawing",
+      "use": { "hi": "Drawing book kholo aur ek gol circle banao. Usko barabar hisson mein baantenge, phir ek hissa colour karenge. Us rangin hisse ka bhi ek naam hota hai, woh dhoondhenge.", "en": "Open your drawing book and draw a round circle. We'll split it into equal parts and colour one part. That coloured part has a name too, and we'll find it." }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "roti cut into 2 same-size pieces → each piece = half = 1/2; bottom 2 = equal pieces in the whole, top 1 = pieces taken",
+     "mustSay": [
+      {
+       "hi": "barabar tukde",
+       "en": "equal pieces"
+      },
+      {
+       "hi": "aadha",
+       "en": "half"
+      },
+      {
+       "hi": "1/2",
+       "en": "1/2"
+      }
+     ],
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 2,
+       "shade": 1,
+       "whole": "roti"
+      }
+     },
+     "point": { "hi": "Yeh roti dekho. 2 barabar tukde, aur ek tukde mein rang hai. Woh tukda roti ka aadha hai, likhte hain 1/2. Neeche ka 2, roti ke kul barabar tukde. Upar ka 1, jitne tukde humne liye.", "en": "Look at this roti. 2 equal pieces, and one piece is coloured. That piece is half the roti, and we write it 1/2. The 2 at the bottom: all the roti's equal pieces. The 1 on top: the pieces we took." },
+     "ask": {
+      "prompt": { "hi": "Ek tukda rangin hai, ek bina rang ka. Toh kya rangin hissa 1/1 hua, haan ya nahi?", "en": "One piece is coloured, one is not. So is the coloured part 1/1, yes or no?" },
+      "key": "No",
+      "accept": [
+       "nahi",
+       "nahin",
+       "no",
+       "nahi, 1/2 hai",
+       "no, it is 1/2",
+       "nahi, aadha hai",
+       "no, it is half"
+      ],
+      "targets": "c4-maths-ch05-t01-m-part-part",
+      "wrongIfMis": "Yes",
+      "why": { "hi": "rangin tukda roti ke 2 barabar tukdon mein se 1 hai, toh neeche 2 aata hai, 1 nahi", "en": "the coloured piece is 1 of the roti's 2 equal pieces, so 2 goes at the bottom, not 1" },
+      "answerBoard": { "template": "fraction-parts@1", "params": {"parts":2,"shade":1,"whole":"roti"} }
+     },
+     "simpler": { "hi": "Neeche wala number saare tukde ginta hai, rangin bhi aur saade bhi, yahan kul 2. Upar sirf rangin wale.", "en": "The bottom number counts every piece, coloured and plain, here 2 in all. The top counts only the coloured ones." }
+    },
+    {
+     "id": "e2",
+     "convey": "a pizza and a cake, 3 pieces each, but only same-size pieces get the name third: the cake's equal pieces are each 1/3; the pizza has one big and two small pieces → asked: is a small one a third",
+     "mustSay": [
+      {
+       "hi": "barabar",
+       "en": "equal"
+      },
+      {
+       "hi": "ek-tihaai",
+       "en": "one-third"
+      }
+     ],
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 3, "equal": false, "title": "Pizza"}, {"parts": 3, "title": "Cake"}]} },
+     "point": { "hi": "Yeh pizza aur yeh cake, dono ke 3-3 tukde. Cake ke teeno tukde barabar hain, toh wahan har tukda ek-tihaai hai, 1/3. Pizza mein ek tukda bada hai aur do chhote.", "en": "Here's a pizza and a cake, 3 pieces each. The cake's three pieces are equal, so there each piece is one-third, 1/3. The pizza has one big piece and two small ones." },
+     "ask": {
+      "prompt": { "hi": "Pizza ka ek chhota tukda lo. Kya woh pizza ka ek-tihaai hai, haan ya nahi?", "en": "Take a small piece of the pizza. Is it one-third of the pizza, yes or no?" },
+      "key": "No",
+      "accept": [
+       "nahi",
+       "nahin",
+       "no",
+       "nahi, tukde barabar nahi hain",
+       "no, the pieces are not equal"
+      ],
+      "targets": "c4-maths-ch05-t01-m-unequal-parts",
+      "wrongIfMis": "Yes",
+      "why": { "hi": "pizza ke tukde chhote-bade hain, aur ek-tihaai tabhi banta hai jab 3 tukde barabar hon", "en": "the pizza's pieces are big and small, and a third needs 3 equal pieces" },
+      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 3, "equal": false, "title": "Pizza"}, {"parts": 3, "title": "Cake"}]} }, "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 3, "equal": false, "title": "Pizza"}, {"parts": 3, "title": "Cake"}]} }
+     },
+     "simpler": { "hi": "Ek chhota tukda bade tukde ke paas rakho, dono ek size ke nahi. Aise tukdon ko ek-tihaai nahi kehte.", "en": "Put a small piece beside the big one, and they are not the same size. Pieces like that are not called thirds." }
+    },
+    {
+     "id": "e3",
+     "convey": "drawn circle in 3 equal parts → one part = one-third = 1/3; bottom 3 = all the equal parts of the whole",
+     "mustSay": [
+      {
+       "hi": "ek-tihaai",
+       "en": "one-third"
+      },
+      {
+       "hi": "1/3",
+       "en": "1/3"
+      }
+     ],
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 3,
+       "shade": 1,
+       "whole": "circle"
+      }
+     },
+     "point": { "hi": "Is circle ke 3 barabar hisse hain, ek mein rang. Yeh rangin hissa ek-tihaai hai, 1/3. Neeche 3 isliye, kyunki poore circle ke 3 barabar hisse hain.", "en": "This circle has 3 equal parts, one coloured. That coloured part is one-third, 1/3. The 3 goes at the bottom because the whole circle has 3 equal parts." },
+     "ask": {
+      "prompt": { "hi": "Ek aur hissa rang do. Ab circle ka kitna hissa rangin hai, fraction mein batao.", "en": "Colour one more part. Now what fraction of the circle is coloured?" },
+      "key": "2/3",
+      "accept": [
+       "do-tihaai",
+       "do tihaai",
+       "two thirds",
+       "two-thirds",
+       "2 by 3"
+      ],
+      "targets": "c4-maths-ch05-t01-m-part-part",
+      "wrongIfMis": "2/1",
+      "why": { "hi": "circle ke 3 barabar hisse hain aur ab 2 mein rang hai, yaani 2/3", "en": "the circle has 3 equal parts and 2 are coloured now, so 2/3" },
+      "answerBoard": {
+       "template": "fraction-parts@1",
+       "params": {
+        "parts": 3,
+        "shade": 2,
+        "whole": "circle"
+       }
+      }
+     },
+     "simpler": { "hi": "Circle wahi hai, toh neeche 3 hi rahega. Bas upar ki ginti badlegi: jitne hisson mein rang, utna upar.", "en": "It is the same circle, so 3 stays at the bottom. Only the top changes: as many parts as are coloured." }
+    },
+    {
+     "id": "e4",
+     "convey": "strip in 8 equal parts, 1 shaded → one-eighth = 1/8; bottom = all 8 parts of the whole, never the 7 unshaded parts left → not 1/7; then asked on a second strip (a bar of 6 equal pieces, 1 eaten, 5 left) → 1/6, not 1/5",
+     "mustSay": [{"hi": "saare hisse", "en": "all the parts"}, {"hi": "1/8", "en": "1/8"}],
+     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 8, "shade": 1, "label": "1/8"}, {"parts": 6, "shade": 1, "label": "?"}]} },
+     "point": { "hi": "Is baar upar wali patti ke 8 barabar hisse hain. Ek mein rang, saat khaali. Rangin hissa 1/8 hai. Dhyaan do, neeche 8 aata hai, saare hisse. Bache hue 7 nahi.", "en": "This time the top strip has 8 equal parts. One coloured, seven empty. The coloured part is 1/8. Notice: 8 goes at the bottom, all the parts. Not the 7 left over." },
+     "ask": {
+      "prompt": { "hi": "Neeche wali patti ek chocolate bar hai, 6 barabar tukde. 1 tukda kha liya, 5 bache. Bar ka kitna hissa khaya gaya, fraction mein?", "en": "The bottom strip is a chocolate bar, 6 equal pieces. 1 piece got eaten, 5 are left. How much of the bar got eaten, as a fraction?" },
+      "key": "1/6",
+      "accept": ["ek-chhatha", "ek chhatha", "one sixth", "one-sixth", "1 by 6"],
+      "targets": "c4-maths-ch05-t01-m-part-part",
+      "wrongIfMis": "1/5",
+      "why": { "hi": "upar patti 1/8; neeche bar ke 6 barabar tukdon mein se 1 khaya, toh 1/6; bache hue 5 neeche nahi jaate", "en": "top strip: 1/8; the bar had 6 equal pieces, 1 eaten, so 1/6; the 5 left never go at the bottom" }, "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 8, "shade": 1, "label": "1/8"}, {"parts": 6, "shade": 1, "label": "?"}]} },
+      "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 8, "shade": 1, "label": "1/8"}, {"parts": 6, "shade": 1, "label": "1/6"}]} }
+     },
+     "simpler": { "hi": "Pehle poori patti socho, khaane se pehle. Tab jitne tukde the, wahi neeche jaate hain; bache hue nahi.", "en": "First picture the whole strip, before anyone ate. However many pieces it had, that goes at the bottom; not the ones left." }
+    }
+   ],
+   "workedExample": {
+    "problem": { "hi": "Ek lambi barfi ke 5 barabar tukde kiye, aur 3 tukde kha liye. Barfi ka kitna hissa khaya gaya?", "en": "A long barfi is cut into 5 equal pieces, and 3 pieces get eaten. What fraction of the barfi was eaten?" }, "simpler": { "hi": "Ek barfi ke 5 barabar tukde hain, aur unmein se 3 kha liye. Socho, kitne mein se kitne khaye gaye.", "en": "One barfi is in 5 equal pieces, and 3 of them were eaten. Think how many out of how many were eaten." },
+    "givens": [{"hi": "Hamare paas do cheezein hain: poori barfi ke tukde, aur khaye hue tukde.", "en": "We know two things: the pieces of the whole barfi, and the pieces eaten."}],
+    "find": { "hi": "khaya hua hissa, fraction mein", "en": "the eaten part, as a fraction" },
+    "steps": [
+     {
+      "do": { "hi": "Pehle neeche ka number", "en": "First, the bottom number" },
+      "result": "5",
+      "why": { "hi": "woh poori barfi ke saare barabar tukde ginta hai", "en": "it counts all the equal pieces of the whole barfi" },
+      "simpler": { "hi": "Barfi kaatne ke baad, khaane se pehle, kitne tukde the, woh gino. Wahi ginti neeche jaati hai, yahan 5.", "en": "Count the pieces right after cutting, before anyone eats. That count goes at the bottom, here 5." }
+     },
+     {
+      "do": { "hi": "Ab upar ka number", "en": "Now the top number" },
+      "result": "3",
+      "why": { "hi": "woh sirf khaye hue tukde ginta hai", "en": "it counts only the pieces that were eaten" },
+      "simpler": { "hi": "Ab sirf khaye hue tukde gino, bache hue chhod do. Woh 3 hain, toh upar 3.", "en": "Now count only the eaten pieces and skip the rest. That's 3, so 3 on top." }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Dono numbers ko ek saath likho, beech mein line. Toh khaya hua hissa kitna hai?", "en": "Write the two numbers together with a line between them. So what is the eaten part?" },
+     "key": "3/5", "why": { "hi": "5 barabar tukdon mein se 3 khaye gaye, isliye neeche 5 aur upar 3 aata hai", "en": "3 of the 5 equal pieces were eaten, so 5 goes below and 3 on top" },
+     "accept": ["teen-paanchvaan", "teen paanchvaan", "three fifths", "three-fifths", "3 by 5"],
+     "targets": "c4-maths-ch05-t01-m-part-part",
+     "wrongIfMis": "3/2",
+     "simpler": { "hi": "Humne dekha, neeche 5 aata hai aur upar 3. Bas dono ko ek fraction mein likh do.", "en": "We saw that 5 goes below and 3 on top. Just put them into one fraction." },
+     "board": { "template": "fraction-parts@1", "params": {"parts": 5, "shade": 3, "whole": "bar", "hideResult": true} }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 5, "shade": 3, "whole": "bar"} }
+    },
+    "answer": { "hi": "barfi ka 3/5 hissa khaya gaya", "en": "3/5 of the barfi was eaten" },
+    "why": { "hi": "5 barabar tukdon mein se 3 khaye gaye; bache hue 2 tukde neeche nahi jaate", "en": "3 of the 5 equal pieces were eaten; the 2 pieces left over do not go at the bottom" },
+    "board": { "template": "shade-grid@1", "params": {"rows": 1, "cols": 5, "shade": 3, "labels": false, "hideResult": true} }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": { "hi": "Laddoo toota aur 3 tukde ho gaye, ek bada aur do chhote. Board par dekho: bada tukda laddoo ka kitna hissa hai?", "en": "A laddoo broke into 3 pieces, one big and two small. Look at the board: what fraction of the laddoo is the big piece?" },
+     "key": "1/2",
+     "accept": ["aadha", "half", "one half", "ek-bata-do"],
+     "targets": "c4-maths-ch05-t01-m-unequal-parts",
+     "wrongIfMis": "1/3",
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 3, "equal": false, "title": "Laddoo"}]} },
+     "why": { "hi": "laddoo ke 3 tukdon mein bada tukda theek aadha hai, yaani 1/2; dono chhote milkar baaki aadha", "en": "of the laddoo's 3 pieces, the big one is exactly half, 1/2; the two small ones make the other half" },
+     "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 3, "equal": false, "title": "Bada tukda 1/2"}]} },
+     "simpler": { "hi": "Dono chhote tukde jodo aur bade tukde se milao. Dono taraf barabar ho, toh bada tukda aadha hai.", "en": "Put the two small pieces together and match them with the big one. If both sides are equal, the big piece is a half." }
+    },
+    {
+     "id": "c2",
+     "prompt": { "hi": "Tumhari chocolate ke 3 barabar tukde hue, aur tumne 1 kha liya. Chocolate ka kitna hissa khaya, fraction mein batao.", "en": "Your chocolate splits into 3 equal pieces, and you eat 1. What fraction of the chocolate did you eat?" },
+     "key": "1/3",
+     "accept": [
+      "ek-tihaai",
+      "ek tihaai",
+      "one-third",
+      "one third"
+     ],
+     "targets": "c4-maths-ch05-t01-m-part-part",
+     "wrongIfMis": "1/2",
+     "board": { "template": "fraction-parts@1", "params": {"parts": 3, "shade": 0, "whole": "bar"} },
+     "why": { "hi": "chocolate ke 3 barabar tukdon mein se 1 khaya, yaani 1/3", "en": "you ate 1 of the chocolate's 3 equal pieces, so 1/3" },
+     "answerBoard": { "template": "fraction-parts@1", "params": {"parts":3,"shade":1,"whole":"bar"} },
+     "simpler": { "hi": "Poori chocolate ke tukde neeche, jo khaya woh upar. Bas itna gino.", "en": "All the chocolate's pieces at the bottom, what you ate on top. Just count those." }
+    },
+    {
+     "id": "c3",
+     "prompt": { "hi": "Cake ke 4 tukde hue: 1 bada aur 3 chhote. {friend} kehta hai ek chhota tukda cake ke 1/4 se bhi chhota hai. Kya woh sahi hai?", "en": "A cake is cut into 4 pieces: 1 big and 3 small. {friend} says one small piece is even smaller than 1/4 of the cake. Is that right?" },
+     "key": "Yes",
+     "accept": ["haan", "han", "yes", "haan, 1/4 se chhota hai", "yes, it is smaller than 1/4"],
+     "targets": "c4-maths-ch05-t01-m-unequal-parts",
+     "wrongIfMis": "No",
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 4, "equal": false, "title": "Cake: 1 bada, 3 chhote"}]} },
+     "why": { "hi": "bada tukda aadha cake hai; teeno chhote milkar baaki aadha, toh har chhota tukda 1/4 se chhota hai", "en": "the big piece is half; the three small ones together make the other half, so each is less than 1/4" },
+     "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 4, "equal": false, "title": "Cake"}, {"parts": 4, "shade": 1, "title": "1/4"}]} },
+     "simpler": { "hi": "Teeno chhote tukde milkar bade tukde jitne hain, yaani aadha cake. Aur 1/4 toh aadhe ka bhi aadha hota hai.", "en": "The three small pieces together match the big one: half the cake. And 1/4 is half of a half." }
+    }
+   ],
+   "ladder": [{"itemId": "c4-maths-ch05-t01-i09", "why": "more than one part taken → 3 of 4 equal parts = 3/4; top number beyond 1"}, {"itemId": "c4-maths-ch05-t01-i07", "why": "error spot: parts left used as bottom → bottom = whole's equal parts"}, {"itemId": "c4-maths-ch05-t01-rl-h1", "why": "harder contrast with quarters on flags → equality decides, count alone does not"}],
+   "remediation": [
+    {
+     "targets": "c4-maths-ch05-t01-m-unequal-parts",
+     "move": "fair-sharing story, imagined: a rope cut into 1 long piece + some short ones → not a fair split → counting the pieces does not name them as fractions; then a sheet of paper folded down the middle into 2 same-size parts → only then is each part a half → first check the parts are the same size; then the torn roti on the board, asked as a direct claim (a friend says the bigger piece is more than half: right?)",
+     "say": { "hi": "Ek rassi socho, jo ek lambe aur kuch chhote tukdon mein kati. Yeh baant barabar nahi, isliye tukde gin kar unka fraction naam nahi rakh sakte. Ab ek kaagaz ko theek beech se modo: dono hisse ek jaise hain, tabhi har hissa aadha hai.", "en": "Picture a rope cut into one long piece and a few short ones. That split is unfair, so counting the pieces cannot name them as fractions. Now fold a paper exactly down the middle: both parts match, and only then is each part a half." },
+     "simpler": { "hi": "Chhote-bade tukde gin kar naam nahi rakhte; pehle dekho, tukde ek size ke hain ya nahi, jaise kaagaz ke do aadhe.", "en": "You can't name big-and-small pieces by counting them; first check whether the pieces are the same size, like the paper's two halves." },
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 2, "equal": false, "title": "Roti"}]} },
+     "then": {
+      "prompt": { "hi": "Roti ke 2 tukde hue: ek bada, ek chhota. {friend} kehta hai bada tukda roti ke aadhe se zyada hai. Kya woh sahi hai?", "en": "A roti tears into 2 pieces, one bigger, one smaller. {friend} says the bigger one is more than half. Is that right?" },
+      "key": "Yes",
+      "accept": ["haan", "han", "yes", "haan, aadhe se zyada hai", "yes, it is more than half"],
+      "targets": "c4-maths-ch05-t01-m-unequal-parts",
+      "wrongIfMis": "No",
+      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 2, "equal": false, "title": "Roti"}]} },
+      "why": { "hi": "do tukde barabar hon tabhi har ek aadha hota; yahan bada tukda chhote se bada hai, toh aadhe se zyada", "en": "two pieces are halves only when equal; here the bigger one is more than the smaller, so it is more than half" },
+      "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 2, "equal": false, "title": "Roti"}, {"parts": 2, "title": "Barabar"}]} },
+      "simpler": { "hi": "Socho, do barabar tukde hote toh har ek aadha hota. Yahan ek tukda doosre se bada hai.", "en": "Think: with two equal pieces, each would be a half. Here one piece is bigger than the other." }
+     }
+    },
+    {
+     "targets": "c4-maths-ch05-t01-m-part-part",
+     "move": "name the piece first, on its own bar of 8 equal pieces: each piece is one-eighth, eaten or left, because the whole bar is 8 such pieces → the bottom number names the piece, the top only counts how many such pieces were taken; pieces left never rename it; then the then-card's own 4-piece bar",
+     "say": { "hi": "Is chocolate bar ke saare tukde barabar hain. Tukde ka naam is se aata hai ki poori bar aise kitne tukdon se bani hai. Khaya ho ya bacha, naam wahi. Neeche ka number tukde ka naam hai; upar bas ginti, kitne tukde liye.", "en": "All the pieces of this chocolate bar are equal. A piece is named by how many such pieces make the whole bar. Eaten or left, the name stays. The bottom number names the piece; the top just counts how many were taken." },
+     "simpler": { "hi": "Har tukda poori bar ka ek barabar hissa hai. Bas khaye hue tukde gino, bache hue nahi.", "en": "Each piece is one equal share of the whole bar. Count only the eaten pieces, not the ones left." },
+     
+     "then": {
+      "prompt": { "hi": "Chocolate bar ke 4 barabar tukde the, aur 2 kha liye. Bar ka kitna hissa khaya, fraction mein?", "en": "A chocolate bar had 4 equal pieces, and 2 got eaten. What fraction of the bar was eaten?" },
+      "key": "2/4",
+      "accept": ["do-chauthaai", "do chauthaai", "two quarters", "1/2", "aadha"],
+      "targets": "c4-maths-ch05-t01-m-part-part",
+      "wrongIfMis": "2/2",
+      "board": { "template": "fraction-parts@1", "params": {"parts": 4, "shade": 0, "whole": "bar"} },
+      "why": { "hi": "bar ke 4 barabar tukdon mein se 2 khaye gaye, yaani 2/4", "en": "2 of the bar’s 4 equal pieces were eaten, so 2/4" },
+      "answerBoard": { "template": "fraction-parts@1", "params": {"parts":4,"shade":2,"whole":"bar"} },
+      "simpler": { "hi": "Bar kaatne par 4 tukde bane, woh neeche. Upar ke liye sirf khaye hue tukde gino.", "en": "Cutting the bar made 4 pieces; that goes at the bottom. For the top, count only the eaten pieces." }
+     }
+    }
+   ],
+   "bridgeToNext": { "hi": "Ab tak ek roti ke barabar hisse kiye. Ab bahut saare laddoo lenge, aur unke barabar group banayenge. Niyam wahi hai, sab barabar.", "en": "So far we made equal parts of one roti. Next we take lots of laddoos and make equal groups. Same rule: everything equal.", "simpler": {"hi": "Pehle ek roti ke barabar hisse kiye. Ab bahut saare laddoo ke barabar group banayenge.", "en": "First we made equal parts of one roti. Now we make equal groups of lots of laddoos."} }
+  },
+  {
+   "skillId": "c4-maths-ch05-t01-s2",
+   "hook": {
+    "convey": "12 laddoos (or 12 biscuits), 2 sharers, fair share → each share = half of the set; a fraction can be of a whole set, the set being the one whole",
+    "interestSlots": [
+     {
+      "interest": "cooking",
+      "use": { "hi": "Kitchen ke dibbe mein 12 laddoo rakhe hain, aur khaane wale tum do. Kisi ko kam nahi milna chahiye. 12 laddoo ka aadha kitna hota hai, aaj yahi nikalenge.", "en": "There are 12 laddoos in the kitchen tin, and two of you to eat them. Nobody should get fewer. Today we work out what half of 12 laddoos is." }
+     },
+     {
+      "interest": "animals",
+      "use": { "hi": "12 biscuit hain aur 2 bhookhe puppy. Dono ko ek jitne biscuit dene hain, warna jhagda hoga. Ek puppy ko 12 ka aadha milega.", "en": "There are 12 biscuits and 2 hungry puppies. Both must get the same number, or there'll be a fight. Each puppy gets half of the 12." }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "the tin's 12 laddoos, shown in 4 equal groups of 3 → half = 2 equal shares, so each of the two gets 2 of the groups; one share's count is the half; check: both shares together make all 12 again",
+     "mustSay": [{"hi": "aadha", "en": "half"}, {"hi": "barabar group", "en": "equal groups"}],
+     "board": { "template": "equal-groups@1", "params": {"groups": 4, "each": 3} },
+     "point": { "hi": "Yeh dibbe ke 12 laddoo hain. Board par inke 4 barabar group bane, har group mein 3. Aadha matlab dono ko ek jitna. Toh tum dono ko 2-2 group milenge. Jaanch bhi aasaan hai: dono ke hisse jodo, toh 12 laddoo wapas.", "en": "Here are the tin's 12 laddoos. On the board they're in 4 equal groups, 3 in each group. Half means you both get the same. So each of you gets 2 of the groups. Checking is easy too: put both shares together and all 12 laddoos are back." },
+     "ask": {
+      "prompt": { "hi": "Yeh 12 laddoo tum do mein barabar bate. 12 ka aadha kitna hoga?", "en": "These 12 laddoos are shared equally between you two. What is half of 12?" },
+      "key": "6",
+      "accept": [
+       "chhe",
+       "chheh",
+       "chha",
+       "six",
+       "6 laddoo"
+      ],
+      "why": { "hi": "12 laddoo 2 barabar group mein jaayein toh har group mein 6, aur 2 × 6 = 12", "en": "12 laddoos in 2 equal groups puts 6 in each, and 2 × 6 = 12" },
+      "board": { "template": "equal-groups@1", "params": {"groups": 4, "each": 3} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups":2,"each":6} }
+     },
+     "simpler": { "hi": "Har bachche ko 2 group do. Phir ek bachche ke dono group ke laddoo jod lo.", "en": "Give each child 2 groups. Then add up the laddoos in one child's two groups." }
+    },
+    {
+     "id": "e2",
+     "convey": "24 mangoes shown as 1/6 (6 equal groups of 4): bottom 6 = share into 6 equal groups, top 1 = take one group; then 1/3 of the same 24: bottom 3 = 3 equal groups, one group's count is the answer",
+     "mustSay": [{"hi": "neeche wala 3", "en": "the 3 at the bottom"}, {"hi": "1/3", "en": "1/3"}],
+     "board": { "template": "equal-groups@1", "params": {"groups": 6, "each": 4} },
+     "point": { "hi": "Ab yeh 24 aam dekho, 6 barabar group mein, har group mein 4. 1/6 ka neeche wala 6 kehta hai: 6 barabar group banao. Upar ka 1 kehta hai: ek group lo. Toh 24 ka 1/6 hai 4 aam. 1/3 mein bhi yahi hota hai, bas neeche wala 3 hai.", "en": "Now look at these 24 mangoes, in 6 equal groups, 4 in each group. The 6 at the bottom of 1/6 says: make 6 equal groups. The 1 on top says: take one group. So 1/6 of 24 is 4 mangoes. 1/3 works the same way, only the 3 at the bottom is different." },
+     "ask": {
+      "prompt": { "hi": "Yahi 24 aam 3 bachchon mein barabar baantne hain. 24 ka 1/3 kitna hua?", "en": "These same 24 mangoes are to be shared equally among 3 children. What is 1/3 of 24?" },
+      "key": "8",
+      "accept": ["aath", "eight", "8 aam", "8 mangoes"],
+      "why": { "hi": "24 aam 3 barabar group mein baanto toh har group mein 8 aate hain; 3 × 8 = 24", "en": "24 mangoes in 3 equal groups gives 8 in each; 3 × 8 = 24" },
+      "board": { "template": "equal-groups@1", "params": {"groups": 6, "each": 4} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 3, "each": 8} }
+     },
+     "simpler": { "hi": "3 ka pahada yaad karo. 3 ko kis number se guna karein ki 24 bane, wahi ek group hai.", "en": "Think of the 3 times table. Whatever times 3 makes 24, that is one group." }
+    },
+    {
+     "id": "e3",
+     "convey": "20 marbles shown as half (2 equal groups of 10, the bottom 2 of 1/2) → method: bottom number → that many equal groups → the size of one group is the answer; then 1/4 of the same 20 → 4 equal groups",
+     "mustSay": [{"hi": "neeche ka number", "en": "the bottom number"}, {"hi": "1/4", "en": "1/4"}],
+     "board": { "template": "equal-groups@1", "params": {"sizes": [10, 10]} },
+     "point": { "hi": "Yeh 20 kanche hain, 2 barabar group mein, har group mein 10. Yeh 20 ka aadha hai, kyunki 1/2 mein neeche 2 hai. Tarika hamesha wahi hai: neeche ka number dekho, utne barabar group banao, aur ek group gino. 1/4 mein neeche 4 hai.", "en": "Here are 20 marbles, in 2 equal groups, 10 in each group. That is half of 20, because 1/2 has 2 at the bottom. The way is always the same: look at the bottom number, make that many equal groups, and count one group. 1/4 has 4 at the bottom." },
+     "ask": {
+      "prompt": { "hi": "In 20 kanchon ka 1/4 kitna hai?", "en": "What is 1/4 of these 20 marbles?" },
+      "key": "5",
+      "accept": ["paanch", "five", "5 kanche", "5 marbles"],
+      "why": { "hi": "4 barabar group banao toh har group mein 5 kanche aate hain, aur 4 × 5 = 20", "en": "make 4 equal groups and each group gets 5 marbles, and 4 × 5 = 20" },
+      "board": { "template": "equal-groups@1", "params": {"sizes": [10, 10]} }, "answerBoard": { "template": "equal-groups@1", "params": { "groups": 4, "each": 5 } }
+     },
+     "simpler": { "hi": "4 group banane hain. Dono group ko phir se 2 barabar hisson mein baanto.", "en": "You need 4 groups. Split each of the two groups into 2 equal parts again." }
+    }
+   ],
+   "workedExample": {
+    "problem": { "hi": "15 pencil ka 1/3 kitni pencil hoti hain?", "en": "How many pencils is 1/3 of 15 pencils?" }, "simpler": { "hi": "Kul 15 pencil hain, aur unhe 3 barabar group mein baantna hai. Ek group mein kitni aayengi, yahi dhoondhna hai.", "en": "There are 15 pencils in all, to be shared into 3 equal groups. We need how many go in one group." },
+    "givens": [{"hi": "Kul ginti pata hai, fraction bhi pata hai; bas ek group ka size chahiye.", "en": "We know the total and the fraction; we just need the size of one group."}],
+    "find": { "hi": "1/3 wale hisse mein kitni pencil", "en": "how many pencils are in the 1/3 share" },
+    "steps": [
+     {
+      "do": { "hi": "Pehle socho 1/3 kya kehta hai", "en": "First think what 1/3 is telling us" },
+      "result": "3 barabar group, unme se 1 group lena",
+      "why": { "hi": "neeche ka 3 group ki ginti hai, aur upar ka 1 batata hai kitne group lene hain", "en": "the bottom 3 is the number of groups, and the top 1 says how many to take" },
+      "simpler": { "hi": "Socho 3 dost hain aur pencil sabko barabar milni hain. Ek dost ka hissa hi 1/3 hai.", "en": "Picture 3 friends who must get equal pencils. One friend's share is the 1/3." }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Chalo, socho 15 pencil 3 barabar group mein baant rahe ho. 3 ka pahada kaam aayega. Ek group mein kitni pencil?", "en": "Go on, imagine sharing the 15 pencils into 3 equal groups. The 3 times table helps. How many pencils in one group?" },
+     "key": "5", "why": { "hi": "3 group mein 5-5 pencil rakhne se poori 15 ho jaati hain, 3 × 5 = 15", "en": "5 pencils in each of 3 groups makes all 15, since 3 × 5 = 15" },
+     "accept": [
+      "paanch",
+      "five",
+      "5 pencil",
+      "5 pencils"
+     ],
+     "simpler": { "hi": "Pencil ek-ek karke 3 dheriyon mein rakho, baari-baari. Saari khatam, toh ek dheri gin lo.", "en": "Put the pencils one at a time into 3 piles, taking turns. When they are gone, count one pile." },
+     "board": { "template": "shade-grid@1", "params": {"rows": 5, "cols": 3, "shade": 0, "labels": false, "hideResult": true} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups":3,"each":5} }
+    },
+    "answer": { "hi": "15 pencil ka 1/3 = 5 pencil", "en": "1/3 of 15 pencils is 5 pencils" },
+    "why": { "hi": "3 group mein 5-5 pencil rakho toh poori 15 ho jaati hain, 3 × 5 = 15", "en": "5 pencils in each of 3 groups makes all 15, 3 × 5 = 15" },
+    "board": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "15 pencil",
+       "items": [
+        "3 barabar group",
+        "1 group lena"
+       ]
+      },
+      "right": {
+       "title": "15 ka 1/3",
+       "items": [
+        "1 group"
+       ]
+      }
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": { "hi": "18 laddoo 3 plate mein barabar rakhe gaye. Ravi ne 1 plate utha li. Saare laddoo ka kitna hissa Ravi ke paas gaya, fraction mein?", "en": "18 laddoos are set out equally on 3 plates. Ravi picks up 1 plate. What fraction of all the laddoos does Ravi have?" },
+     "key": "1/3",
+     "accept": [
+      "ek-tihaai",
+      "ek tihaai",
+      "one-third",
+      "one third"
+     ],
+     "targets": "c4-maths-ch05-t01-m-part-part",
+     "wrongIfMis": "1/2",
+     "board": { "template": "shade-grid@1", "params": {"rows": 3, "cols": 6, "shade": 0, "labels": false, "hideResult": true} },
+     "why": { "hi": "18 laddoo 3 barabar plate mein the, har plate mein 6; Ravi ne 1 plate li, yaani 1/3", "en": "the 18 laddoos were on 3 equal plates, 6 on each; Ravi took 1 plate, so 1/3" },
+     "answerBoard": { "template": "equal-groups@1", "params": {"groups":3,"each":6} },
+     "simpler": { "hi": "Laddoo mat gino, plate gino. Kul plate neeche, Ravi ki plate upar.", "en": "Don't count laddoos, count plates. All the plates at the bottom, Ravi's plate on top." }
+    },
+    {
+     "id": "c2",
+     "prompt": { "hi": "16 kanche 4 group mein bate: 7, 3, 3 aur 3. Rani kehti hai 7 wala group saare kanchon ke ek-chauthaai se bada hai. Kya Rani sahi hai?", "en": "16 marbles went into 4 groups: 7, 3, 3 and 3. Rani says the group of 7 is more than one-quarter of all the marbles. Is Rani right?" },
+     "key": "Yes",
+     "accept": ["haan", "han", "yes", "haan, 7 zyada hai", "yes, 7 is more than a quarter"],
+     "targets": "c4-maths-ch05-t01-m-unequal-parts",
+     "wrongIfMis": "No",
+     "board": { "template": "equal-groups@1", "params": {"sizes": [7, 3, 3, 3]} },
+     "why": { "hi": "16 ka ek-chauthaai 4 hota hai, jab charon group barabar hon; 7 usse zyada hai, toh Rani sahi hai", "en": "a quarter of 16 is 4, when all four groups are equal; 7 is more than that, so Rani is right" },
+     "answerBoard": { "template": "equal-groups@1", "params": {"sizes": [7, 3, 3, 3], "equalTo": {"groups": 4, "each": 4}} },
+     "simpler": { "hi": "Socho, 16 kanche 4 barabar group mein hote toh har group kitna bada hota. Phir use 7 se milao.", "en": "Think how big each group would be if the 16 marbles were in 4 equal groups. Then compare that with 7." }
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c4-maths-ch05-t01-i03",
+     "why": "thirds of a set as sharing among 3 friends → 3 equal groups"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-rl-o2",
+     "why": "one-third in a word problem without the sharing story spelled out"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-i08",
+     "why": "quarters of a bigger set → 4 equal groups"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-rl-h2",
+     "why": "name the fraction of the set and find the amount, both"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-i10",
+     "why": "two fractions of the same set in one problem → half and quarter"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c4-maths-ch05-t01-m-part-part",
+     "move": "on its own picture, 35 bananas in 5 equal bags of 7: count bags, not bananas; each bag is one equal share of the whole set; the bottom counts all the set's bags, never the bags left over; then the then-card's 30 bananas in 6 bags",
+     "say": { "hi": "Kelon ko mat gino, thailon ko gino. Har thaila poore kelon ka ek barabar hissa hai. Neeche ka number saare thaile ginta hai, sirf bache hue nahi.", "en": "Don't count the bananas, count the bags. Each bag is one equal share of all the bananas. The bottom number counts all the bags, not just the ones left over." },
+     "simpler": { "hi": "Kisi ko kuch dene se pehle saare thaile ek line mein rakho aur gino. Wahi ginti neeche jaati hai.", "en": "Before anything is given away, line up all the bags and count them. That count goes at the bottom." },
+     
+     "then": {
+      "prompt": { "hi": "30 kele 6 thailon mein barabar bhare. 1 thaila kisi ko de diya. Saare kelon ka kitna hissa diya?", "en": "30 bananas are packed equally into 6 bags. 1 bag is given away. What fraction of all the bananas was given?" },
+      "key": "1/6",
+      "accept": ["ek-chhatha", "ek chhatha", "one sixth", "one-sixth", "1 by 6"],
+      "targets": "c4-maths-ch05-t01-m-part-part",
+      "wrongIfMis": "1/5",
+      "board": { "template": "equal-groups@1", "params": {"groups": 6, "each": 5, "hideResult": true} },
+      "why": { "hi": "30 kele 6 barabar thailon mein the, har thaile mein 5; unme se 1 diya, yaani 1/6", "en": "the 30 bananas were in 6 equal bags, 5 in each; 1 bag went, so 1/6" },
+      "answerBoard": { "template": "equal-groups@1", "params": {"groups": 6, "each": 5} },
+      "simpler": { "hi": "Jo thaila kisi ko gaya, woh upar jaata hai. Neeche saare thaile aate hain, bache hue bhi aur diya hua bhi.", "en": "The bag that went away goes on top. At the bottom go all the bags, the ones left and the one given." }
+     }
+    },
+    {
+     "targets": "c4-maths-ch05-t01-m-unequal-parts",
+     "move": "the dealing test as a general method, spoken over the then-card's own board (12 pencils in groups of 6, 3, 3) and naming none of its numbers: deal all the pencils one at a time into 3 piles, taking turns; one pile's size is one-third; a group not that size is not a third; the child then judges the 6-group",
+     "say": { "hi": "Pakka tarika yeh hai: saari pencilein ek-ek karke, baari-baari 3 dheriyon mein daalo, jab tak sab khatam na ho jaayein. Ek dheri mein jitni aayein, ek-tihaai utna hi hota hai. Jo group us size ka nahi, woh ek-tihaai nahi.", "en": "Here is the sure way: deal all the pencils one at a time into 3 piles, taking turns, until they are all gone. However many land in one pile, that is one-third. A group that is not that size is not a third." },
+     "simpler": { "hi": "Pehle saari pencilein 3 barabar group mein baanto. Phir dekho, yeh group utna hi bada hai ya nahi.", "en": "First share all the pencils into 3 equal groups. Then see whether this group is that big or not." },
+     
+     "then": {
+      "prompt": { "hi": "12 pencil 6, 3 aur 3 ke group mein hain. Kya 6 wala group saari 12 pencilon ka ek-tihaai hai?", "en": "12 pencils lie in groups of 6, 3 and 3. Is the group of 6 one-third of all 12 pencils?" },
+      "key": "No",
+      "accept": [
+       "nahi",
+       "nahin",
+       "no",
+       "nahi, group barabar nahi hain"
+      ],
+      "targets": "c4-maths-ch05-t01-m-unequal-parts",
+      "wrongIfMis": "Yes",
+      "board": { "template": "equal-groups@1", "params": {"sizes": [6, 3, 3]} },
+      "why": { "hi": "group 6, 3, 3 ek jaise nahi; 6 wala group baaki do se bada hai, toh woh barabar hissa nahi", "en": "groups 6, 3, 3 don't match; the 6 group is bigger than the other two, so it is not an equal share" },
+      "answerBoard": { "template": "equal-groups@1", "params": {"sizes": [6, 3, 3], "title": "6, 3, 3: barabar nahi"} },
+      "simpler": { "hi": "6 wale group ko baaki do group ke paas rakho, woh unse bada hai. Ek-tihaai mein teeno group ek size ke hote.", "en": "Put the 6 group beside the other two, and it is bigger than them. In thirds, all three groups are the same size." }
+     }
+    }
+   ],
+   "bridgeToNext": { "hi": "Ab tak cheezon ke barabar group banaye. Ab ek lambi patti ko barabar hisson mein kaatenge, aur dekhenge ki ek hissa kitna bada hai.", "en": "So far we made equal groups of things. Next we cut a long strip into equal parts and see how big one part is.", "simpler": {"hi": "Pehle cheezon ke barabar group banaye. Ab ek patti ko barabar hisson mein kaatenge.", "en": "First we made equal groups of things. Now we cut one strip into equal parts."} }
+  },
+  {
+   "skillId": "c4-maths-ch05-t01-s3",
+   "hook": {
+    "convey": "one cake (or one drawn strip) shared into 2 vs the same-size one into 4 → which single piece is bigger; more equal parts of the same whole → smaller piece",
+    "interestSlots": [
+     {
+      "interest": "cooking",
+      "use": { "hi": "Ek birthday cake 2 dost baant rahe hain, aur bilkul waisa hi doosra cake 4 dost. Aaj pata karenge ki kis taraf har dost ko bada tukda milta hai.", "en": "Two friends share a birthday cake, and four friends share another one exactly like it. Today we find out on which side each friend gets the bigger piece." }
+     },
+     {
+      "interest": "drawing",
+      "use": { "hi": "Do patti draw karo, dono ek jitni lambi. Ek ko 2 barabar hisson mein baanto, doosri ko 4 mein. Dono mein ek-ek hissa colour karo. Kaunsa rangin hissa bada hai, aaj dekhenge.", "en": "Draw two strips of the same length. Split one into 2 equal parts and the other into 4. Colour one part in each. We'll see which coloured part is bigger." }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "bar cut into 2 equal parts → one part = 1/2; shaded part reaches the middle of the bar; predict: same bar in 4 parts → is one part bigger than the half? no",
+     "mustSay": [
+      {
+       "hi": "aadha",
+       "en": "half"
+      },
+      {
+       "hi": "1/2",
+       "en": "1/2"
+      }
+     ],
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 2,
+       "shade": 1,
+       "whole": "bar"
+      }
+     },
+     "point": { "hi": "Yeh patti 2 barabar hisson mein bati hai. Rangin hissa iska aadha hai, 1/2. Dekho, rang theek beech tak jaata hai.", "en": "This bar is split into 2 equal parts. The coloured part is half of it, 1/2. See, the colour goes exactly to the middle." },
+     "ask": {
+      "prompt": { "hi": "Isi patti ko ab 4 barabar hisson mein kaato. Kya tab ek hissa is aadhe se bada hoga?", "en": "Now cut this same bar into 4 equal parts. Will one part then be bigger than this half?" },
+      "key": "No",
+      "accept": [
+       "nahi",
+       "nahin",
+       "no",
+       "nahi, chhota hoga",
+       "chhota",
+       "no, smaller"
+      ],
+      "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+      "wrongIfMis": "Yes",
+      "why": { "hi": "4 barabar hisson ka har hissa, 2 hisson wale tukde ka aadha hota hai", "en": "each of 4 equal parts is half of a piece from 2 parts" },
+      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 4, "shade": 0, "label": "?"}]} }, "answerBoard": { "template": "fraction-bars@1", "params": {"bars":[{"parts":2,"shade":1,"label":"1/2"},{"parts":4,"shade":1,"label":"1/4"}]} }
+     },
+     "simpler": { "hi": "Aadhe wale hisse ko beech se ek baar aur kaato. Woh aur chhota ho jaata hai, bada nahi.", "en": "Cut the half once more down the middle. It gets smaller, not bigger." }
+    },
+    {
+     "id": "e2",
+     "convey": "two identical pizzas: one cut into 6 equal slices → each slice 1/6; the other only into 4 → asked which slice is bigger and what it is called",
+     "mustSay": [{"hi": "barabar slice", "en": "equal slices"}, {"hi": "1/6", "en": "1/6"}],
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 6}, {"parts": 4}]} },
+     "point": { "hi": "Ab yeh do ek jaise pizza dekho. Pehla 6 barabar slice mein kata hai, toh uska har slice 1/6 hai. Doosra pizza utna hi bada hai, par sirf 4 barabar slice mein kata.", "en": "Now look at these two identical pizzas. The first is cut into 6 equal slices, so each of its slices is 1/6. The second pizza is just as big, but cut into only 4 equal slices." },
+     "ask": {
+      "prompt": { "hi": "In dono pizza mein bada slice kaunsa fraction hai?", "en": "Of these two pizzas, what fraction is the bigger slice?" },
+      "key": "1/4",
+      "accept": ["ek-chauthaai", "ek chauthaai", "one quarter", "one-quarter", "one fourth"],
+      "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+      "wrongIfMis": "1/6",
+      "why": { "hi": "4 slice wale pizza ka har slice 1/4 hai, aur woh 6 slice wale ke 1/6 se bada hai", "en": "each slice of the 4-slice pizza is 1/4, and that is bigger than the 1/6 slice of the 6-slice pizza" },
+      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 6}, {"parts": 4}]} }, "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 6, "title": "1/6"}, {"parts": 4, "title": "1/4"}]} }
+     },
+     "simpler": { "hi": "Pizza jitne kam logon mein bantta hai, utna bada slice milta hai. 4 log ya 6 log, socho kisko zyada milega.", "en": "The fewer people share a pizza, the bigger the slice. 4 people or 6 people: think who gets more." }
+    },
+    {
+     "id": "e3",
+     "convey": "bigger bottom number → same whole cut into more parts → each part smaller; 5 > 2 as whole numbers does not make 1/5 bigger; only true for the same whole → {friend}'s claim that 1/5 of the strip is bigger than 1/2 because 5 > 2 is judged",
+     "mustSay": [
+      {
+       "hi": "wahi patti",
+       "en": "the same bar"
+      },
+      {
+       "hi": "zyada hisse, chhota tukda",
+       "en": "more parts, smaller piece"
+      }
+     ],
+     "board": { "template": "wholes@1", "params": {"as": "bar", "wholes": [{"parts": 2, "shade": 0}, {"parts": 5, "shade": 0}]} },
+     "point": { "hi": "Yeh do patti ek jitni lambi hain. Upar wali 2 barabar hisson mein kati, aur neeche wahi patti 5 barabar hisson mein. Neeche ka number batata hai patti kitne barabar hisson mein kati. Seedhi baat: zyada hisse, chhota tukda.", "en": "These two strips are the same length. The top one is cut into 2 equal parts, and below, the same strip into 5 equal parts. The bottom number tells how many equal parts the strip is cut into. Simply put: more parts, smaller piece." },
+     "ask": {
+      "prompt": { "hi": "5 toh 2 se bada number hai. {friend} kehta hai isliye ek hi patti ka 1/5, uske 1/2 se bada tukda hai. Kya woh sahi hai?", "en": "5 is a bigger number than 2. {friend} says that is why 1/5 of one strip is a bigger piece than 1/2 of it. Is that right?" },
+      "key": "No",
+      "accept": ["nahi", "nahin", "no", "galat", "nahi, 1/5 chhota hai", "no, 1/5 is smaller", "{friend} galat hai"],
+      "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+      "wrongIfMis": "Yes",
+      "why": { "hi": "wahi patti 5 hisson mein kati toh har hissa 2 hisson wale se chhota; 1/5 chhota tukda, {friend} galat hai", "en": "cut into 5, the same strip gives parts smaller than cut into 2; 1/5 is the smaller piece, so {friend} is wrong" },
+      "board": { "template": "wholes@1", "params": {"as": "bar", "wholes": [{"parts": 2, "shade": 0}, {"parts": 5, "shade": 0}]} }, "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 5, "shade": 1, "label": "1/5"}]} }
+     },
+     "simpler": { "hi": "5 batata hai ki patti kitne barabar hisson mein kati. Jitne zyada hisse, har tukda utna patla.", "en": "The 5 tells how many equal parts the strip is cut into. The more parts, the thinner each piece." }
+    }
+   ],
+   "workedExample": {
+    "problem": { "hi": "Ek hi chocolate bar ke do tukde: ek 1/3 hai, doosra 1/6. 1/3 wale tukde ko dhakne ke liye 1/6 wale kitne tukde lagenge?", "en": "Two pieces of the same chocolate bar: one is 1/3, the other 1/6. How many 1/6 pieces does it take to cover the 1/3 piece?" }, "simpler": { "hi": "Ek hi bar ko ek baar 3 barabar hisson mein kaato, ek baar 6 mein. Phir dekho, 3 wale ek hisse par 6 wale kitne hisse aate hain.", "en": "Cut the same bar once into 3 equal parts, once into 6. Then see how many of the 6-part pieces fit on one 3-part piece." },
+    "givens": [{"hi": "Dono hisse ek hi bar ke hain, bar ka size nahi badalta.", "en": "Both shares come from one bar; the bar's size does not change."}],
+    "find": { "hi": "1/3 wale tukde par 1/6 wale kitne tukde aate hain", "en": "how many 1/6 pieces fit on the 1/3 piece" },
+    "steps": [
+     {
+      "do": { "hi": "Pehle 1/3 ko socho", "en": "First picture 1/3" },
+      "result": "bar ke 3 barabar hisse, unme se 1 hissa",
+      "why": { "hi": "bar ke kitne barabar hisse hue, yeh neeche ka 3 batata hai", "en": "the bottom 3 says how many equal parts the bar is in" },
+      "simpler": { "hi": "Bar ko 3 dost baant rahe hain. Ek dost ka tukda, wahi 1/3 hai.", "en": "3 friends share the bar. One friend's piece is the 1/3." }
+     },
+     { "do": {"hi": "Phir 1/6 ko socho", "en": "Then picture 1/6"}, "result": "wahi bar ke 6 barabar hisse, unme se 1 hissa", "why": {"hi": "wahi bar ab 6 mein bat rahi hai, toh har hissa chhota padta hai", "en": "the same bar is now shared by 6, so each share comes out smaller"}, "simpler": {"hi": "Ab wahi bar 6 dost baant rahe hain. Dost zyada, toh sabka tukda chhota.", "en": "Now 6 friends share the same bar. More friends, so everyone's piece is smaller."} }
+    ],
+    "yourStep": { "prompt": {"hi": "Dono patti saath rakh kar dekho. 1/3 wale ek tukde ke neeche 1/6 wale kitne tukde aate hain?", "en": "Put the two strips side by side. How many 1/6 pieces fit under one 1/3 piece?"}, "key": "2", "why": {"hi": "6 hisson mein kaatne par 3 wala har tukda do mein bat jaata hai, isliye 1/3 par 1/6 ke 2 tukde", "en": "cut into 6, each piece from 3 parts splits in two, so 2 of the 1/6 pieces fit on 1/3"}, "accept": ["do", "two", "2 tukde", "2 pieces", "do tukde"], "simpler": {"hi": "Upar wali patti ka ek tukda dekho, aur uske theek neeche wale chhote tukde ek-ek karke gino.", "en": "Look at one piece of the top strip, and count the small pieces right under it one by one."}, "board": {"template": "wholes@1", "params": {"as": "bar", "wholes": [{"parts": 3, "shade": 0}, {"parts": 6, "shade": 0}]}}, "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 3, "shade": 1, "label": "1/3"}, {"parts": 6, "shade": 2, "label": "2/6"}]}} },
+    "answer": { "hi": "1/3 wala tukda bada hai: us par 1/6 wale 2 tukde aate hain", "en": "the 1/3 piece is bigger: 2 of the 1/6 pieces fit on it" },
+    "why": { "hi": "wahi bar 6 mein kati toh 3 wala har hissa do mein bat gaya; 6 bada number hai, par 1/6 chhota tukda", "en": "cut into 6, each third splits in two; 6 is the bigger number, but 1/6 is the smaller piece" },
+    "board": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Bar ke 3 hisse",
+       "items": [
+        "3 barabar hisse",
+        "1 hissa"
+       ]
+      },
+      "right": { "title": "Wahi bar, 6 hisse", "items": ["6 barabar hisse", "1 hissa"] }
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": { "hi": "Meena ek roti 2 barabar tukdon mein kaatti hai. Sonu waisi hi roti 9 barabar tukdon mein kaatta hai. Dono apna ek-ek tukda lete hain. Kiska tukda roti ke 1/3 se chhota hai, Meena ka ya Sonu ka?", "en": "Meena cuts a roti into 2 equal pieces. Sonu cuts the same kind of roti into 9 equal pieces. Each takes one piece. Whose piece is smaller than 1/3 of the roti, Meena's or Sonu's?" },
+     "key": "Sonu",
+     "accept": ["sonu", "sonu ka", "sonu ka tukda", "sonu's"],
+     "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+     "wrongIfMis": "Meena",
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 2, "title": "Meena"}, {"parts": 9, "title": "Sonu"}]} },
+     "why": { "hi": "Meena ka tukda 1/2, jo 1/3 se bada; Sonu ki roti 9 hisson mein kati, toh uska 1/9 tukda 1/3 se chhota", "en": "Meena's piece is 1/2, bigger than 1/3; Sonu's roti is in 9 parts, so his 1/9 is smaller than 1/3" },
+     "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 2, "shade": 1, "title": "1/2"}, {"parts": 9, "shade": 1, "title": "1/9"}]} },
+     "simpler": { "hi": "Jo roti jitne zyada tukdon mein kati, uske tukde utne patle. 2 tukde aur 9 tukde, dono ko 1/3 wale tukde se milao.", "en": "The more pieces a roti is cut into, the thinner each piece. Compare 2 pieces and 9 pieces with a 1/3 piece." }
+    },
+    {
+     "id": "c2",
+     "prompt": { "hi": "Ek chocolate bar 8 bachchon mein barabar bati, aur utni hi badi doosri bar 2 bachchon mein. Farhan 8 waalon mein hai, Gita 2 waalon mein. Farhan kehta hai use zyada mila, kyunki 8 bada hai. Kise zyada mila, Farhan ko ya Gita ko?", "en": "One chocolate bar is shared equally by 8 children, and a bar the same size by 2. Farhan is with the 8, Gita with the 2. Farhan says he got more, because 8 is bigger. Who got more, Farhan or Gita?" },
+     "key": "Gita",
+     "accept": ["gita", "gita ko", "gita ko zyada mila", "gita got more"],
+     "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+     "wrongIfMis": "Farhan",
+     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 8, "shade": 0, "label": "?"}, {"parts": 2, "shade": 0, "label": "?"}]} },
+     "why": { "hi": "8 mein bati bar ka hissa 1/8 hai, 2 mein bati ka 1/2; 1/2 bada hai, toh Gita ko zyada mila", "en": "shared by 8, a share is 1/8; shared by 2, it is 1/2; 1/2 is bigger, so Gita got more" },
+     "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 8, "shade": 1, "label": "1/8"}, {"parts": 2, "shade": 1, "label": "1/2"}]} },
+     "simpler": { "hi": "Ek hi bar ko jitne zyada bachche baantein, har bachche ka hissa utna patla. Farhan ki taraf 8 bachche hain.", "en": "The more children share the same bar, the thinner each share. Farhan's side has 8 children." }
+    },
+    {
+     "id": "c3",
+     "prompt": { "hi": "Ek hi chocolate bar ke teen tukde: 1/4, 1/10 aur 1/7. Inhe sabse chhote se sabse bade tak lagao.", "en": "Three pieces of the same chocolate bar: 1/4, 1/10 and 1/7. Put them in order from smallest to biggest." },
+     "key": "1/10, 1/7, 1/4",
+     "accept": ["1/10 1/7 1/4", "tenth, seventh, quarter", "ek-dasvaan, ek-saatvaan, ek-chauthaai"],
+     "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+     "wrongIfMis": "1/4, 1/7, 1/10",
+     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 0, "label": ""}, {"parts": 10, "shade": 0, "label": ""}, {"parts": 7, "shade": 0, "label": ""}]} },
+     "why": { "hi": "bar jitne zyada hisson mein kate, tukda utna chhota; isliye pehle 1/10, phir 1/7, phir 1/4", "en": "the more parts a bar is cut into, the smaller the piece, so 1/10 first, then 1/7, then 1/4" },
+     "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 10, "shade": 1, "label": "1/10"}, {"parts": 7, "shade": 1, "label": "1/7"}, {"parts": 4, "shade": 1, "label": "1/4"}]} },
+     "simpler": { "hi": "Sabse chhota tukda woh, jiski bar sabse zyada hisson mein kati. Wahan se shuru karo.", "en": "The smallest piece comes from the bar cut into the most parts. Start there." }
+    }
+   ],
+   "ladder": [{"itemId": "c4-maths-ch05-t01-i05", "why": "say why 1/2 beats 1/4 when 4 > 2 → the rule in words, a frame no card asks"}, {"itemId": "c4-maths-ch05-t01-i14", "why": "1/5 vs 1/8 of one roti as a quick compare → the rule on two new denominators, after the lesson used 6, 4, 2, 9"}, {"itemId": "c4-maths-ch05-t01-rl-h3", "why": "link back to collections → 1/3 and 1/4 of 12 slices as amounts, then the difference"}],
+   "remediation": [
+    {
+     "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+     "move": "on the then-card's own board (two same cakes, 9 and 7 equal pieces), naming none of its numbers: a bigger bottom number does not mean a bigger piece; it says how many equal parts the whole was cut into, and more equal parts of the same whole → thinner pieces → then the child judges the cakes (Rahul says the 7-piece cake's piece is bigger: right?)",
+     "say": { "hi": "Yeh dono cake ek jitne bade hain. Bada number matlab bada tukda nahi: tukdon ki ginti batati hai ki cake kitne barabar hisson mein kata. Jitne zyada barabar hisse, utna patla har tukda.", "en": "These two cakes are the same size. A bigger number is not a bigger piece: the number of pieces tells how many equal parts the cake was cut into. The more equal parts, the thinner each piece." },
+     "simpler": { "hi": "Socho, ek hi cake pehle kam tukdon mein kata, phir zyada mein. Cake utna hi rehta hai, toh zyada tukde matlab patle tukde.", "en": "Think of one cake cut first into a few pieces, then into many. The cake stays the same size, so more pieces means thinner pieces." },
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 9, "title": "Cake"}, {"parts": 7, "title": "Cake"}]} },
+     "then": {
+      "prompt": { "hi": "Do ek jaise cake: ek ke 9 barabar tukde, ek ke 7. Rahul kehta hai 7 wale cake ka tukda bada hai. Kya Rahul sahi hai?", "en": "Two same cakes: one in 9 equal pieces, one in 7. Rahul says a piece of the 7-piece cake is bigger. Is he right?" },
+      "key": "Yes",
+      "accept": ["haan", "han", "yes", "haan, 7 wale ka tukda bada hai", "yes, the 7-piece cake's piece is bigger"],
+      "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+      "wrongIfMis": "No",
+      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 9, "title": "Cake"}, {"parts": 7, "title": "Cake"}]} },
+      "why": { "hi": "7 tukdon wala cake kam barabar hisson mein kata, toh uska har tukda 9 wale se bada; Rahul sahi hai", "en": "the 7-piece cake is cut into fewer equal parts, so each piece is bigger than the 9-piece cake's; Rahul is right" },
+      "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 9, "title": "1/9"}, {"parts": 7, "title": "1/7"}]} },
+      "simpler": { "hi": "9 aur 7 batate hain cake kitne barabar hisson mein kata; zyada hisse, chhote tukde.", "en": "9 and 7 say how many equal parts each cake was cut into; more parts, smaller pieces." }
+     }
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ]
+}
