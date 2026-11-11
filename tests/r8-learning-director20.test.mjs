@@ -157,3 +157,20 @@ test("pilots' third read: a say names only what its then-card's board shows; a Y
   assert.ok(negatedClaimErrors(yes("{friend} says the small piece is not half. Is that right?")).length === 1);
   assert.deepEqual(negatedClaimErrors(yes("{friend} says the bigger piece is more than half. Is that right, haan ya nahi?")), []);
 });
+
+test("batch 5: (e2) a card that asks its own skill's ladder item; (f2) one word answer through a skill", async () => {
+  const { frameRepeatErrors, wordKeySpreadErrors } = await import("../scripts/lesson-scripts/check.mjs");
+  const card = (id, en, key) => ({ id, prompt: { hi: en, en }, key });
+  const s = { skills: [{ skillId: "t-s1", explain: [], workedExample: null, remediation: [], ladder: [{ itemId: "c6-maths-ch02-t03-i03" }],
+    checks: [card("c1", "A narrow angle sits on a protractor. The two scales show 40 and 140. Which is the angle?", "40°")] }] };
+  const kit = { items: [{ id: "c6-maths-ch02-t03-i03", prompt_en: "An angle looks narrow. Where its arm crosses the protractor, the two scales show 40 and 140. Which is right?", answer: "40°, because a narrow angle is small", acceptable: ["40"] }] };
+  assert.ok(frameRepeatErrors(s, kit).some((x) => /c1: asks its ladder item i03's question/.test(x)));
+  s.skills[0].checks[0].key = "140°";
+  assert.ok(!frameRepeatErrors(s, kit).some((x) => /ladder item/.test(x)), "another answer is another question");
+  const w = { skills: [{ skillId: "t-s1", explain: [], workedExample: null, remediation: [],
+    checks: [card("c1", "Which is more, 2/3 or 4/6?", "same"), card("c2", "Which is more, 1/2 or 3/6?", "barabar"), card("c3", "Which is more, 3/4 or 6/8?", "Same")] }] };
+  const f = wordKeySpreadErrors(w);
+  assert.ok(f.some((x) => /c3: the third card in a row keyed "same"/.test(x)) && f.some((x) => /all 3 of its choice cards are keyed "same"/.test(x)));
+  w.skills[0].checks[1].key = "more";
+  assert.deepEqual(wordKeySpreadErrors(w), []);
+});

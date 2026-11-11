@@ -880,7 +880,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s));
   return e;
 }
 
@@ -1320,7 +1320,7 @@ export function yesNoSpreadErrors(s) {
   return e;
 }
 /** (e) a skill does not ask the same question frame twice: prompts with numbers and letter names masked, word/letter/yes-no keys. */
-export function frameRepeatErrors(s) {
+export function frameRepeatErrors(s, kit = null) {
   const e = [];
   const frame = (t) => String(t ?? "").replace(/\{[a-zA-Z]+\}/g, "@n").replace(/\b[A-Z]{1,3}\b/g, "@").replace(/\d+(?:[.,/]\d+)*/g, "#").toLowerCase().replace(/[^\p{L}#@ ]+/gu, " ").split(/\s+/).filter((w) => w && !deStop().has(w));
   const jac = (a, b) => { const A = new Set(a), B = new Set(b); let n = 0; for (const x of A) if (B.has(x)) n++; return n / (A.size + B.size - n || 1); };
@@ -1333,8 +1333,40 @@ export function frameRepeatErrors(s) {
       const J = jac(frame(a.prompt?.en), frame(b.prompt?.en));
       if (J >= 0.6) e.push(`${k.skillId}/${ib}: asks ${k.skillId}/${ia}'s question again (same frame, ${Math.round(J * 100)}% alike, key ${b.key}): ask something new`);
     }
+    // (e2, main on batch 5: c6-ch07-t01 c3 = ladder rl-o2, c6-ch02-t03 s2 c1 = i03) each card against its own skill's ladder
+    // items: the same frame with the same answer is a repeat of the practice
+    const items = new Map((kit?.items ?? []).map((it) => [it.id, it]));
+    const norm = (x) => String(x ?? "").toLowerCase().replace(/(\d),(?=\d{2,3}\b)/g, "$1").replace(/[^\p{L}\p{N}/.]+/gu, " ").trim();
+    for (const l of k.ladder ?? []) {
+      const it = items.get(l.itemId);
+      if (!it) continue;
+      for (const [ia, a] of cards) {
+        const ck = norm(a.key), ik = norm(it.answer);
+        if (!ck || !ik) continue;
+        const same = ik === ck || ik.startsWith(`${ck} `) || [it.answer, ...(it.acceptable ?? [])].some((v) => norm(v) === ck);
+        if (!same) continue;
+        const J = jac(frame(a.prompt?.en), frame(it.prompt_en));
+        if (J >= 0.4) e.push(`${k.skillId}/${ia}: asks its ladder item ${l.itemId.replace(/^c\d+-[a-z]+-ch\d+-t\d+-/, "")}'s question (same frame, ${Math.round(J * 100)}% alike, answer ${a.key}): ask something the practice does not, or drop that rung`);
+      }
+    }
   }
   return e;
+}
+
+/** (f2, main on batch 5: every "which is more" in c6-ch07-t03 s1 is "same"; every factor-or-multiple card in c6-ch05 is
+ * "multiple"): a two- or three-way word key — same/more/less, before/after, factor/multiple, … — is not one answer through a
+ * skill: never three in a row with the same word, and not all one word when a skill asks three or more. */
+export function wordKeySpreadErrors(s) {
+  const e = [];
+  const CHOICE = /^(same|barabar|equal|ek jaise|utna hi|utni hi|more|less|bigger|smaller|zyada|kam|bada|chhota|badi|chhoti|before|after|pehle|baad|baad mein|factor|multiple|factors|multiples|gunankhand|guneej|common factor|common multiple|above|below|upar|neeche|left|right|daayein|baayein|clockwise|anticlockwise|even|odd|sam|visham)$/i;
+  const canon = (k) => { const x = String(k ?? "").trim().toLowerCase(); return CHOICE.test(x) ? x.replace(/^(barabar|equal|ek jaise|utna hi|utni hi)$/, "same").replace(/^(zyada|bigger|bada|badi)$/, "more").replace(/^(kam|smaller|chhota|chhoti)$/, "less").replace(/^(pehle)$/, "before").replace(/^(baad|baad mein)$/, "after").replace(/^(factors|gunankhand)$/, "factor").replace(/^(multiples|guneej)$/, "multiple").replace(/^sam$/, "even").replace(/^visham$/, "odd") : null; };
+  for (const k of s.skills) {
+    const cards = [...k.explain.filter((b) => b.ask).map((b) => [b.id, b.ask]), ...(k.workedExample?.yourStep ? [["workedExample.yourStep", k.workedExample.yourStep]] : []), ...k.checks.map((c) => [c.id, c]), ...k.remediation.map((r, i) => r.then && [`remediation[${i}].then`, r.then]).filter(Boolean)];
+    const run = cards.map(([id, c]) => [id, canon(c.key)]).filter(([, v]) => v);
+    for (let i = 2; i < run.length; i++) if (run[i][1] === run[i - 1][1] && run[i][1] === run[i - 2][1]) e.push(`${k.skillId}/${run[i][0]}: the third card in a row keyed "${run[i][1]}" (${run[i - 2][0]}, ${run[i - 1][0]}): vary the answer`);
+    if (run.length >= 3 && new Set(run.map(([, v]) => v)).size === 1) e.push(`${k.skillId}: all ${run.length} of its choice cards are keyed "${run[0][1]}": a child who always says it passes every one`);
+  }
+  return [...new Set(e)];
 }
 
 /** (g) main on batch 3's wrong key (c4-ch04 s2 e2: "5281 ka 1 … value?" keyed 10): a place-value card's key is solved from
