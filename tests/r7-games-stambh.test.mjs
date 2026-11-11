@@ -188,7 +188,8 @@ for (const [mode, goal, grammar] of MODES.slice(0, 3)) {
 
 // the play server: every stambh coverage entry serves a proven level at every fade; the solver's acts grade solved
 // through the server; a mal-rule the level discriminates folds its kit id into the evidence
-const ST = () => coverage().entries.filter((e) => e.family === "stambh");
+// (r8 stambh/tally has its own logic and its own suite: tests/r8-games-stambh-tally.test.mjs)
+const ST = () => coverage().entries.filter((e) => e.family === "stambh" && e.mode !== "tally");
 const sessionOf = (entry, over = {}) => ({ childId: "c1", key: entryKey(entry), skillId: entry.skillId, classLevel: entry.classLevel, fade: 1, lang: "hinglish", mis: {}, n: 0, seed: seedOf("c1", entryKey(entry), 0), door: "garam", recent: [], ...over });
 
 test("stambh coverage: the seven authored entries, mapped to real kit misconceptions, admitted by skill", () => {

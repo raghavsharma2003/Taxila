@@ -11,6 +11,7 @@ import { makeLabView } from "./kyun-lab/lab.view.ts";
 import { makeChumbakView } from "./kyun-lab/chumbak.view.ts";   // r7 chumbak
 import { makeKonView } from "./kon/kon.view.ts";
 import { makeStambhView } from "./stambh/stambh.view.ts";
+import { makeTallyView } from "./stambh/tally.view.ts";   // r8 stambh/tally
 import { makeBeamView } from "./yantra/beam.view.ts";
 import { makePendulumView } from "./yantra/pendulum.view.ts";
 import { makePlotView } from "./nazariya/plot.view.ts";   // r4-khand: the 2D board twin of the Khand engine
@@ -76,6 +77,7 @@ export const VIEWS: Record<string, MakeView> = {
   "arena/pick": makeArenaView,
   "stambh/bars": makeStambhView,
   "stambh/picto": makeStambhView,
+  "stambh/tally": makeTallyView,
   "yantra/beam": makeBeamView,
   "yantra/pendulum": makePendulumView,
   "yantra/circuit": makeCircuitView,
