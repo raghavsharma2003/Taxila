@@ -1037,11 +1037,15 @@ function compare(c, tl) {
   }
   tl.add({ op: "line", from: [200, 30], to: [200, 280], weight: 1, ink: "soft" }, 500);
   const rows = Math.max(left.items.length, right.items.length);
+  // (Learning 007, c6-ch07-t05: a stacked mixed fraction — "2 1/2 litre" — is taller than a line of words, and the added
+  // answer line ran into it at the fixed 52 pitch: the rows are spaced by the tallest cell's real height)
+  const cells = [...left.items, ...right.items, ...(c.mark?.add != null ? [String(c.mark.add)] : [])];
+  const pitch = Math.max(52, ...cells.map((t) => textBox(String(t), itemSize, [0, 0], "middle").h + 14));
   for (let r = 0; r < rows; r++) {
     for (const [i, side] of [left, right].entries()) {
       const t = side.items[r];
       if (!t) continue;
-      if (!writeFit(tl, t, 20 + i * 190 + colW / 2, 100 + r * 52, colW - 8, {}, { id: `c${i}${r}`, ms: 480, gap: i ? 60 : 220, size: itemSize })) return { error: `item_too_wide:${i}.${r}` };
+      if (!writeFit(tl, t, 20 + i * 190 + colW / 2, 100 + r * pitch, colW - 8, {}, { id: `c${i}${r}`, ms: 480, gap: i ? 60 : 220, size: itemSize })) return { error: `item_too_wide:${i}.${r}` };
     }
   }
   // round 8 (Learning's to-studio 006): an ANSWER board's `mark` — the chosen column (or one item in it) ringed and ticked,
@@ -1056,7 +1060,7 @@ function compare(c, tl) {
     if (m.add != null) {
       const t = String(m.add).trim();
       if (!t || t.includes("?") || [...t].length > 24 || !fitsLabel(t) || textProblem(t) || side.items.length >= 4) return { error: "mark_add" };
-      if (!writeFit(tl, t, x, 100 + side.items.length * 52, colW - 36, {}, { id: "mark", ms: 480, gap: 300, size: itemSize, role: ROLE.answer })) return { error: "mark_add_too_wide" };
+      if (!writeFit(tl, t, x, 100 + side.items.length * pitch, colW - 36, {}, { id: "mark", ms: 480, gap: 300, size: itemSize, role: ROLE.answer })) return { error: "mark_add_too_wide" };
       marked = `${side.title}: ${t}`;
     } else {
       const target = m.item != null ? `c${i}${m.item}` : `h${i}`;
@@ -2123,13 +2127,13 @@ function derivedCounts(call, facts = {}) {
  * role's own SHAPE (a tinted box, a dashed box, a ring, a dashed line), and its label (≤ 24 characters, the board's
  * language) — laid out below the figure in at most 3 rows. Drawn when the call asks (`legend: true`), or when a board that
  * uses the new grammar (a mix-up marker or a relation line) carries two or more meaning roles; never with `legend: false`.
- * (Not by default on every board with two roles: a legend writes words her line does not say — W5 — and the authored
- * boards of the four pilots were certified without them. Reverse once Learning's checker takes BOARD_WORDS as template words.)
+ * Since 2026-11-10 the default on every full board with two or more meaning roles; never in a split panel.
  */
 function legendRows(tl, c, labels = {}) {
   const used = MEANING_ROLES.filter((r) => tl.ops.some((o) => o.role === r));
-  const grammar = c.mixup != null || c.relation != null;
-  if (c.legend === false || !used.length || (c.legend !== true && !(grammar && used.length >= 2))) return {};
+  // (main 2026-11-10: the legend is the default on every FULL board with 2+ meaning roles — Learning's checker takes BOARD_WORDS;
+  // a split panel or a picture view passes legend: false, server/stagecraft/board-first.js)
+  if (c.legend === false || !used.length || (c.legend !== true && used.length < 2)) return {};
   const words = { ...LEGEND[langOf(c)], ...labels };
   const items = used.map((r) => ({ r, t: String(words[r] ?? r) }));
   if (items.some((i) => [...i.t].length > 24 || textProblem(i.t))) return { error: "legend_label" };

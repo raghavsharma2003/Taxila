@@ -13,6 +13,7 @@ import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
+import { dots } from "../../core/dots.ts";
 
 const NOTE_COL: Record<number, string> = { 50000: "#9AA0A6", 20000: "#F2C230", 10000: "#B9A4E0", 5000: "#5FC8E8", 2000: "#C7D85A", 1000: "#9C6B48" };
 const TILL_Y = 520, COUNTER = { x: 500, y: 168, w: 470, h: 250 }, GIVE = { x: 760, y: 432, w: 210, h: 64 };
@@ -163,7 +164,7 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
       if (g.answered) pill(api, ctx, `${T.bill} ${rupees(bill)}`, 750, 226, { color: enough ? C.mint : C.amber, size: 40 });
     }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent: C.amber });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent: C.amber });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.roundR}/${g.roundN}`, T.served]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.served]] });
     drawCoach(api, ctx, r.mode === "pay" || r.mode === "change" ? T.coach : "", flow.state === "play" ? g.coachA : 0, now, 120);

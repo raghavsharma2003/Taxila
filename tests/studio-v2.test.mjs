@@ -261,3 +261,13 @@ test("young floor: for classes 4-5 the shared text helper never draws below MIN_
   assert.ok(calls.length > 1 && calls.every((c) => !c.s.includes("…")), "wrapped, not ellipsised");
   assert.equal(calls.map((c) => c.s).join(" "), "start again now");
 });
+
+test("progress is dots, never numerals (main 2026-11-10: 'WAVE 1/3' reads as a fraction on a maths screen)", async () => {
+  const { dots } = await import("../src/studio-v2/core/dots.ts");
+  assert.equal(dots(0, 3), "●○○"); assert.equal(dots(2, 3), "●●●"); assert.equal(dots(5, 3), "●●●");
+  // (no engine writes a "<n+1>/<length>" counter)
+  for (const f of fs.readdirSync(path.join(repo, "src/studio-v2/engines"), { recursive: true }).filter((x) => String(x).endsWith(".ts"))) {
+    const s = fs.readFileSync(path.join(repo, "src/studio-v2/engines", String(f)), "utf8");
+    assert.doesNotMatch(s, /\$\{[^{}]+? \+ ?1\} ?\/ ?\$\{[^{}]+?\.length\}/, `${f} writes a numeral counter`);
+  }
+});

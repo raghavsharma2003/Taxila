@@ -1,0 +1,171 @@
+[
+  {
+    "id": "cat-c4-maths-ch01-t02",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "rounds[1].title",
+        "detail": "Title \"Draw a true circle\" disagrees with its own round: the challenge is kind \"equidistant\" (\"Place a pin the same distance from each dot\") with points [3,3],[7,3],[5,1]; the child places one pin (the centre, [5,3]) and draws no circle."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screenshot, round banner over the pin board",
+        "detail": "The banner \"Round 1  Through the dot, at right angles\" sits on the board's top row of pins: its bottom border runs through the top row of dots, so those pins are partly covered."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": false },
+    "notes": ""
+  },
+  {
+    "id": "cat-c4-maths-ch01-t02-explainer",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "task.prompt with scene s2",
+        "detail": "Task asks \"Which statement is correct about these two square corners?\" but scene s2 draws only one angle (\"square\", deg 90, rot 35); there are no two square corners with long and short arms, only the labels \"Long arms\" and \"Short arms\"."
+      },
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "scene s2 labels long/short/same",
+        "detail": "The answer option \"Same angle\" is coloured \"mint\" while the two wrong options \"Long arms\" and \"Short arms\" are both \"sun\", so the colour marks the answer (task.answer \"same\")."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": ""
+  },
+  {
+    "id": "cat-c4-maths-ch03-t01",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "rounds[1].sub, rounds[2].title, rounds[3].sub",
+        "detail": "\"Look at the ones place\", \"Read the last digit\" and \"Check each ones digit quickly\" state the rule the child is meant to find (the topic card \"How do you know without pairing all 58 things?\" has the key \"only the ones digit matters\")."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screenshot",
+        "detail": "The falling number tile \"2\" overlaps the round banner \"Round 1  even\": numbers drop in from under the banner and are partly covered by it."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": false },
+    "notes": ""
+  },
+  {
+    "id": "cat-c4-maths-ch03-t01-explainer",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "scene s4 nodes n43, n34",
+        "detail": "The task \"Tap the number that is even.\" has options n43 with sub \"odd\" and n34 with sub \"even\" (and different colours, amber and mint), so the labels state the answer."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": ""
+  },
+  {
+    "id": "cat-c4-maths-ch03-t02",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screenshot",
+        "detail": "The round banner \"Round 1  make every number fit\" covers the start of the \"order\" column heading (only \"rder\" is clear), and the coach line \"Tap tiles to fill the machine, then RUN\" overlaps the bottom of the tiles \"-10 +10 -5 ×2\"."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": false },
+    "notes": ""
+  },
+  {
+    "id": "cat-c4-maths-ch03-t02-explainer",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "text.L4 and scene s3 node n27, before task",
+        "detail": "L4 says \"So the rule is add 5. Apply it to 22: the next number is 27.\" and shows node \"27\" \"next\"; the task then asks \"Which number comes next in 7, 12, 17, 22?\" with answer opt27, which the piece has already stated."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": ""
+  },
+  {
+    "id": "cat-c4-maths-ch04-t01",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "strings.runDone and the game's theme",
+        "detail": "\"Heist complete\" uses \"heist\", a word too adult for a class 4 child (and it means a robbery)."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "p412 and l1366 screenshots, target box",
+        "detail": "The \"SEAL\" label under the dial overlaps the bottom border of the target box (\"TARGET 2,345 / loaded 0\") at both sizes."
+      }
+    ],
+    "readable": { "p360": false, "p412": false, "l1366": false },
+    "notes": ""
+  },
+  {
+    "id": "cat-c4-maths-ch04-t01-explainer",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "text.L5, before task",
+        "detail": "L5 says \"so four thousand fifty is 4050\"; the task then asks \"Tap the number that shows four thousand fifty.\" with answer opt4050."
+      },
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "scene s4 options",
+        "detail": "The wrong options are labelled as wrong: opt450 sub \"missing place\", opt40050 sub \"extra place\" (both colour \"sun\"), while opt4050 has no such label and is \"mint\"."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "scene s1 label \"places\"",
+        "detail": "The label \"Four places\" writes a number as a word; it should be \"4 places\"."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": "Scene s3 bar \"6042\" has parts 4, shaded 1; I cannot tell from the packet what the shaded part stands for."
+  },
+  {
+    "id": "cat-c4-maths-ch04-t02-explainer",
+    "verdict": "pass",
+    "faults": [],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": "The myth element \"Start comparing from the right\" in scene s1 and the whole of scene s4 (ordering 3012, 3120, 3201, 3210 with subs \"1st\"-\"4th\") are never cued by any beat, so I cannot tell if they are ever shown."
+  },
+  {
+    "id": "cat-c4-maths-ch05-t01",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "waves[0] \"marks\": true; p412 and l1366 screenshots",
+        "detail": "In the wave \"Halves and quarters\" the bar labelled \"1/2\" shows a guide mark drawn exactly at its middle, the cut point the child is asked to find."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": ""
+  }
+]

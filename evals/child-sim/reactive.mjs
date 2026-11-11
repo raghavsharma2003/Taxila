@@ -91,7 +91,8 @@ const LINES = {
   whichq: ["sawaal kya hai?"],
   repeat: ["phir se bolo"],
   // (v6.11 J2: the reply to her return question about the aside — what they like in it, in their own words)
-  returned: ["sixer, jab ball seedha bahar jaati hai", "batting sabse achhi lagti hai", "jab Virat chauka maarta hai, woh"],
+  // (main on the J2 replay: three topics, three different answers — chosen by the topic, not the seed; a fourth for a fourth topic)
+  returned: ["sixer, jab ball seedha bahar jaati hai", "batting sabse achhi lagti hai", "jab Virat chauka maarta hai, woh", "fielding karna, catch pakadna"],
   leave: ["bas aaj ke liye itna hi", "ab main {jaata|jaati} hoon, bye", "thak {gaya|gayi}, bye"],
 };
 
@@ -180,6 +181,7 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
     return true;
   };
   const misses = new Map();
+  let returnN = 0;                                // v6.11 J2: the n-th answer to her return question in this lesson
   const whichAsked = new Map();                   // director9: "which question?" per card, capped so no persona loops
   const answered = new Set();                     // H1.2: cards answered right are not answered again
   let liveLeave = null;                           // v6.6: the last keyed card she posed, still open across a turn with no card id
@@ -201,7 +203,11 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
       if (turn >= P.leaveAfter && turn >= MIN_TURNS && (!openCard || turn >= P.leaveAfter + LEAVE_WAIT)) return say({ text: pick(rng, LINES.leave), kind: "leave" });
       if (at.has(turn)) { pending.push(at.get(turn)); at.delete(turn); }
       // (v6.11 J2: her return question about the aside is answered, before any event or card: the child's reply to what she asked)
-      if (input.returned) return say({ text: pick(rng, LINES.returned), kind: "event", event: "returned" });
+      if (input.returned) {
+        const h = [...String(kit?.topicId ?? "")].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+        const k = (h + returnN++) % LINES.returned.length;
+        return say({ text: LINES.returned[k], kind: "event", event: "returned" });
+      }
       if (pending.length) {
         const c0 = input.card ?? input.ask ?? null;
         const cid = input.card?.itemId ?? `${input.beat?.skillId ?? ""}/${input.beat?.beatId ?? ""}`;

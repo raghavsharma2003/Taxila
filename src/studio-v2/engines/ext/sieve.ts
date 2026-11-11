@@ -12,6 +12,7 @@ import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { taskPill, RoundFlow, backdrop, devaReady } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
 
 const COLS = [250, 380, 510, 640, 770], R = 46, VAULT = 556, TOP = 168;
 interface Cr { i: number; n: number; x: number; y: number; v: number; state: "fall" | "cut" | "vault"; t: number; ok?: boolean; proof?: string }
@@ -108,7 +109,7 @@ function create(api: EngineApi, spec: SieveSpec): EngineInstance {
     for (const p of g.pieces) { const a = 1 - p.t / 1.4; ctx.save(); ctx.globalAlpha = a; hex(ctx, p.x, p.y, 30); ctx.fillStyle = hexA(p.col, 0.25); ctx.fill(); ctx.strokeStyle = p.col; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, p.s, p.x, p.y + 2, { font: "display", size: 38, weight: 800, color: p.col, align: "center", baseline: "middle", alpha: a, decor: true }); }
     if (g.trail.length > 1) { ctx.save(); ctx.strokeStyle = C.volt; ctx.lineCap = "round"; for (let i = 1; i < g.trail.length; i++) { const a = 1 - (api.now() - g.trail[i].t) / 0.25; ctx.globalAlpha = clamp(a, 0, 1); ctx.lineWidth = 6 * a; ctx.beginPath(); ctx.moveTo(g.trail[i - 1].x, g.trail[i - 1].y); ctx.lineTo(g.trail[i].x, g.trail[i].y); ctx.stroke(); } ctx.restore(); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: ruleText(r), accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: ruleText(r), accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.roundR}/${g.roundN}`, T.slashed], [String(g.best), T.combo]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.slashed], [String(g.best), T.combo]] });
     drawCoach(api, ctx, T.coach, flow.state === "play" ? g.coachA : 0, now, 606, 960);   // one line at the young floor, above nothing

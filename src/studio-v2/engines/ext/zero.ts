@@ -11,6 +11,7 @@ import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
 
 const LOCK = { x: 830, y: 510, w: 140, h: 66 }, TRAY = { x: 150, y: 300, w: 640, h: 200 }, POS = "#FFB547", NEG = "#5FA8FF";
 interface Tok { s: 1 | -1; x: number; y: number; group: number }
@@ -110,7 +111,7 @@ function create(api: EngineApi, spec: ZeroSpec): EngineInstance {
     api.text(ctx, T.lock, LOCK.x + LOCK.w / 2, LOCK.y + LOCK.h / 2 + 2, { font: "display", size: 38, weight: 800, color: !done ? C.volt : C.ink3, align: "center", baseline: "middle" });
     if (done) { if (ok) tick(ctx, 960, 200, C.mint, 1); else magnifier(ctx, 955, 200, C.amber, 1); pill(api, ctx, `= ${zpKey(r) >= 0 ? "+" : "−"}${Math.abs(zpKey(r))}`, 470, 548, { color: ok ? C.mint : C.amber, size: 40 }); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: g.verdict === "right", color: g.verdict === "right" ? C.mint : C.amber, stats: [[`${g.right}/${g.n}`, T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
     drawCoach(api, ctx, T.coach, flow.state === "play" && r.mode === "make" ? g.coachA : 0, now, 150);

@@ -6648,3 +6648,27 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 ## Merged inbox entries (write-up from the entry text)
 - `m-r8-board-faces-measured` (2026-11-10): Measured advances as a fraction of the font size (the old constant in brackets): digit in the numeral face 0.495 (0.60, Geist Mono; all ten digits the same width); letters in the word face 0.565, frequency-weighted (0.58); a digit inside a word 0.632; space 0.235 numeral / 0.303 word; + − × ÷ = 0.712; ? . / 0.37; Devanagari 0.384 per character (0.58). For numbers the prediction is exact at the median. For words the median is 9% under and the 95th percentile 20% under: short labels like 'cm' are dominated by the wide 'm', and a per-letter table would fix that.
 - `m-r8-board-faces-fit` (2026-11-10): 0 boards changed their fit verdict at any size, in either direction; all 1,816 build and pass. The smallest word went up on 202 to 383 boards per size (the narrower faces fit tighter). One board went down: staged c6-maths-ch02-t02 skills[1].explain[2] shape@1, 18.8 to 16.9 px at p412, still above the 14 px floor. unrolled@1 and cycle@1 needed spacing fixes to keep their layouts.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-approve-retry4-2026-11-10` (2026-11-10): Approval lane, retry 4 of three refused board specs (main ran scripts/approve-generate.mjs --keep-refused from int/r6 3132d629a; n = 3 topics, 5 model calls, $0.0056; $0.0225 of the $0.25 cap spent across all retries): c4-maths-ch05-t01 candidate on attempt 2, c5-maths-ch02-t02 candidate on attempt 1, c5-maths-ch02-t01 refused on both attempts. All 3 refusals carry the same content finding: content_safety_2 on waves.1.title, text 'Teen hisse' (twice) and 'Teen barabar hisse' (once). Outputs on claude/r4-content-candidates 07cf76d25, data/studio-approved/candidates-retry4/. No judge has seen the candidates yet.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-j2-replay-2026-11-10` (2026-11-10): J2 replay (her one reply sentence when she returns to a parked aside), run by main on int/r6 e43790b66: 3 off-topic exchanges (c4, c5-t02, c6), each one's own prompt sent to the live reply model 20 times; n = 60 drafts, $0.053. 12 of 60 pass the replyToReturnOk predicate (4, 6 and 2 of 20). Of 48 refusals: echo 41 (the draft repeats the child's sentence), promise 4, rule 2, lesson 1. 4 drafts used a man's verb form and 1 promised to remember; both were refused only because they also echoed. Simulated child, one seed, two distinct child sentences. Results in evals/hybrid-side-by-side/results/2026-11-10-j2-replay/.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-59ae352` (2026-11-11): Released 59ae352 with scripts/release.mjs: web taxila-web--s59ae352-2c67 (was taxila-web--sd71c2ca-yt3l), worker + canary/nightly jobs on taxila-worker:59ae352 (was d71c2ca); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 59ae352 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-j2-replay-3-2026-11-11` (2026-11-11): J2 replays 2 and 3 (her reply sentence on returning to an aside), run by main. Replay 2 on Brain 16b0f0fcc (the note carries the child's words, not their sentence): 50 of 60 pass the predicate, but 13 of c5's passes repeat the child's real sentence (it still reached the model through the turn's history, and the replay read echo against the chosen words), so 37 of 60 clean; c6 12 of 20 with 5 refused on the word 'har' and 3 on a bare 'hota hai'. Replay 3 on Brain 4c87cafeb (the child's line cut from the reply call; lesson and rule clauses narrowed for this sentence only): 4 exchanges x 20 = 80 drafts, 76 clean (18, 20, 20, 18), no echo, $0.071. Simulated child, one seed, three child sentences. The replay shows safe and on-topic, not well-written: no judge has read the sentences.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-regen-round1-2026-11-11` (2026-11-11): Approval lane, regeneration round 1 (one game per staged scripted topic, each aimed at its script's first remediation), run by main on Studio 9e108c2bc: 30 topics, 43 model calls, $0.0560 (lane total $0.0835). 19 topics produced a candidate; 11 were refused on both attempts. 24 refused attempts by reason: contentSafe 12 (9 brain_violence on a turret game's coach string containing 'fire', all on the four class 6 angle topics; 3 content_safety_2 on romanised Hindi geometry terms 'SEEDHA KON', 'Bindu se samkon par', 'Bindu se rekha par'), unverified_key 7, fell_back 3, onTopic 2. No judge has seen the candidates. Outputs on claude/r4-content-candidates 300b166d8, data/studio-approved/candidates-regen-r1/.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-compile-holes-2026-11-11` (2026-11-11): Compile step 1 hole report (Brain cabfb6c59, server/director/compile.js, docs/design/round7/brain/COMPILE-HOLES.md, generated by scripts/lesson-scripts/compile-report.mjs): the type table has 324 cells (9 part kinds x 12 columns x 3 help states), 279 apply. Over 34 scripts (4 live, 30 staged): 1,112 missing fields, 2,967 rule holes, 0 doubles. Missing fields: second other wording alts[0] 799 (worked_step 338, point 287, remediation 174); worked problem's own simpler 102; explain-card mix-ups with no remediation 93; bridge simpler 68; worked example's own card with no remediation 35 and no why 15. The four live pilots hold 41 of the 313 non-alts fields. Counted by code; nothing reads the compiled map yet.

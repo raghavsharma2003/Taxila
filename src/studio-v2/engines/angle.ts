@@ -10,6 +10,7 @@ import { bloom, magnifier, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
 interface Drone { i: number; ang: number; r: number; v: number; alive: boolean; shot: boolean; t: number }
 interface Shot { ang: number; r: number; hit: boolean; t: number; truth: number | null; off: number }
@@ -111,7 +112,7 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
     if (g.state === "reveal" && g.stateT > (g.reveal?.hit ? 1.3 : 2.1)) { g.i++; if (g.i < wave().items.length) nextCall(); else endWave(); }
     if (g.state === "end" && g.stateT > 3.1) { if (g.w + 1 < spec.waves.length) startWave(g.w + 1); else { g.state = "final"; g.finalA = 0; api.tw.add(g, { finalA: 1 }, { dur: 0.6 }); api.task("", T.runDone, "done"); api.done({ hits: g.hits, shots: g.n, accuracy: accOf(g.results) }); } }
     if (g.w >= 0 && g.state !== "final") {
-      hud.set("wave", `${g.w + 1}/${spec.waves.length}`); hud.set("hits", `${g.hits}/${g.n}`, { bump: true });
+      hud.set("wave", `${dots(g.w, spec.waves.length)}`); hud.set("hits", `${g.hits}/${g.n}`, { bump: true });
       const a = g.results.length ? accOf(g.results) : null; hud.set("acc", a == null ? "—" : `${a}%`, { meter: a == null ? 0 : a / 100, tone: a != null && a >= 85 ? "mint" : null });
     }
   }
@@ -181,7 +182,7 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
       if (g.state === "aim" && wave().mode !== "classify") { const k = clamp(g.callT / g.limit, 0, 1); ctx.strokeStyle = k > 0.7 ? C.amber : "rgba(255,255,255,.35)"; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(px, py, 50, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - k)); ctx.stroke(); }
     }
     fx.drawWorld(ctx); ctx.restore();
-    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.wave} ${g.w + 1} / ${spec.waves.length}`, title: wave().title, sub: wave().sub });
+    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.wave} ${dots(g.w, spec.waves.length)}`, title: wave().title, sub: wave().sub });
     if (g.state === "end") drawStatCard(api, ctx, { a: g.endA, head: `${T.wave} ${g.w + 1}`, ticked: true, stats: [[`${g.waveRes.filter((r) => r.verdict === "right").length}/${g.waveRes.length}`, T.hits], [`${accOf(g.waveRes)}%`, T.accuracy]] });
     if (g.state === "final") drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.hits}/${g.n}`, T.hits], [`${accOf(g.results)}%`, T.accuracy]] });
     drawCoach(api, ctx, T.coach, g.state === "aim" ? g.coachA : 0, now, 606, 960);

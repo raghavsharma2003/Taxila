@@ -186,7 +186,9 @@ function opNumbers(o, allowed) {
   const tokensOf = (t) => String(t).match(/\d+(?:,\d{2,3}(?!\d))*(?:\.\d+)?(?:\/\d+)?/g) ?? [];
   if (o.op === "text" || o.op === "label") {
     const t = String(o.text);
-    for (const tok of tokensOf(t)) nums.push(canon(tok.replace(/,(?=\d{3}\b)/g, "")));
+    // (Learning 2026-11-10: Indian grouping "2,05,400" read as invented — a group comma before 2 OR 3 digits, as numbersIn
+    // reads her line: Indian and international grouping of the same value are the same number)
+    for (const tok of tokensOf(t)) nums.push(canon(tok.replace(/,(?=\d{2,3}\b)/g, "")));
     if (t.includes("=")) {
       const [l, r] = t.split("=");
       const a = evalSide(eqTokens(l)), b = evalSide(eqTokens(r));

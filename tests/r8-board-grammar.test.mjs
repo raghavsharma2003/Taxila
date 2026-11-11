@@ -144,9 +144,10 @@ describe("item 4: the legend", () => {
     assert.ok(BOARD_WORDS.includes("answer") && BOARD_WORDS.includes("jawab"), "its words are template words for the live gate");
     assert.equal(words(ok({ ...call, legend: false })).length, 0);
     assert.equal(words(ok({ template: "fraction-parts@1", parts: 4, shade: 1, whole: "bar", mixup: "4 parts make the whole", legend: false })).length, 0);
-    // (by default only on a board that uses the new grammar — a mix-up or a relation — with 2+ roles: an authored board's
-    // words stay the ones it was certified with)
-    assert.equal(words(ok(plain)).length, 0);
+    // (main 2026-11-10: the default on every full board with 2+ meaning roles — Learning's checker takes BOARD_WORDS; a split
+    // panel or picture view passes legend: false, tests/r8-held-board and r8-picture-turn)
+    assert.deepEqual(words(ok(plain)), ["shaded part", "your answer"]);
+    assert.equal(words(ok({ template: "fraction-bars@1", bars: [{ parts: 2, shade: 1, label: "1/2" }] })).length, 0, "one meaning role: no legend");
     assert.deepEqual(words(ok({ ...plain, mixup: "same size, more parts" })), ["shaded part", "your answer", "easy to mix up"]);
   });
   it("swatches draw each role's shape (the legend survives greyscale too)", () => {
@@ -320,5 +321,15 @@ describe("the four pilot topics' boards (board, boardRef, answerBoard)", () => {
       for (const vp of ["p360", "p412", "l1366"]) { const c = certifyForTray({ kind: "whiteboard", script: x.script }, { vp, box: contractBox(vp) }); if (!c.ok) bad.push(`${p} ${vp} ${JSON.stringify(ref)}: ${c.why}`); }
     }
     assert.deepEqual(bad, []);
+  });
+});
+
+describe("Learning 007 (c6-ch07-t05 s3 rem2.then): a compare answer mark under a stacked mixed fraction", () => {
+  it("rows are spaced by the tallest cell, so the added answer line never overlaps the stacked fraction above it", () => {
+    const s = ok({ template: "compare@1", left: { title: "Pehla", items: ["1 1/4 litre"] }, right: { title: "Doosra", items: ["2 1/2 litre"] }, mark: { side: "right", add: "jawab: 3 3/4 litre" } });
+    assert.equal(lintScript(s).filter((i) => i.check === "text_overlap").length, 0);
+    const plain = ok({ template: "compare@1", left: { title: "Living", items: ["grow", "breathe"] }, right: { title: "Non-living", items: ["do not grow"] } });
+    const ys = plain.ops.filter((o) => o.op === "text" && /^c0/.test(o.id)).map((o) => o.at[1]);
+    assert.equal(ys[1] - ys[0], 52, "plain words keep the old pitch");
   });
 });

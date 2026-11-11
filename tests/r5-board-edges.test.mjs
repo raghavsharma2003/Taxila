@@ -501,3 +501,15 @@ test("D42 on 08f86dc5 (QA 9ce1e62e): a number the talk about this board already 
   studioSeam.keepBoardSlot(id, t2, []);
   assert.deepEqual(L.pieces.get("wb-1").lines, [t1, t2]);
 });
+
+test("W4 (Learning 2026-11-10): Indian and international grouping of the same value are the same number — '2,05,400' on the board with '205,400' or '2,05,400' in her line is not invented", async () => {
+  const { gateWhiteboard } = await import("../server/studio/qa/whiteboard.js");
+  const script = { v: 1, scriptId: "g", board: { w: 400, h: 300, ground: "chalk" }, durationMs: 4000, ops: [{ id: "t1", op: "text", at: [200, 150], text: "2,05,400", size: "m", startMs: 0, endMs: 600 }] };
+  for (const reply of ["Gaon ki aabaadi 2,05,400 hai.", "Gaon ki aabaadi 205,400 hai.", "Gaon ki aabaadi 205400 hai."]) {
+    const g = gateWhiteboard({ ...script, line: { lessonId: "L" } }, { reply, speechMs: 4000 });
+    const w4 = g.checks.find((c) => c.id === "W4.numbers_from_truth");
+    assert.ok(w4?.pass, `${reply}: ${JSON.stringify(w4?.detail)}`);
+  }
+  const off = gateWhiteboard({ ...script, line: { lessonId: "L" } }, { reply: "Gaon ki aabaadi 2,05,500 hai.", speechMs: 4000 });
+  assert.equal(off.checks.find((c) => c.id === "W4.numbers_from_truth").pass, false, "a different value is still invented");
+});

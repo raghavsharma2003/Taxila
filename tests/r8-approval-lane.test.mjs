@@ -168,3 +168,60 @@ test("approval lane, generate (main 2026-11-10: c4's two attempts logged ok, no 
   assert.match(src, /if \(oc\.kind === "candidate"\) done = /);
   assert.match(src, /if \(oc\.kind === "refused"\) \{/);
 });
+
+test("approval lane: a content refusal on a romanised number word says so in plain words (main 2026-11-10: 'Teen hisse' read as English, three times)", async () => {
+  const { numberWords, attemptOutcome } = await import("../server/studio/approved.js");
+  assert.deepEqual(numberWords("Teen barabar hisse"), ["teen"]);
+  assert.deepEqual(numberWords("Teenon hisse barabar"), [], "a word that only begins with one is not one");
+  assert.deepEqual(numberWords("3 hisse"), []);
+  const why = attemptOutcome({ ok: true, payload: { spec: {} }, checks: { contentSafe: false, contentFindings: [{ key: "waves.1.title", code: "content_safety_2", text: "Teen hisse" }] } }).why;
+  // (main 2026-11-10: the cause is likely, not proven — the message says so)
+  assert.match(why, /the content check scored "Teen hisse" \(waves\.1\.title\) 2; number words such as 'teen' are the likely cause: write digits/);
+  // (and the spec prompt asks for digits — the rule last, where rules that must fire go)
+  const { specPrompt } = await import("../server/stagecraft/builders.js");
+  const m = specPrompt({ id: "x", archetype: "slice-at@1", kind: "game", need: "contrast_misconception", premise: { misconceptionId: "c4-maths-ch05-t01-m-unequal-parts" } }, { topicId: "c4-maths-ch05-t01", band: "B3", lang: "hinglish", misconceptionId: "c4-maths-ch05-t01-m-unequal-parts" });
+  assert.match(m.at(-1).content, /as digits \(3 hisse\), never as words \(teen, chaar\)\. Return only the JSON\.$/);
+});
+
+test("approval lane, predicate (main 2026-11-10, c5-t02 withdrawn): every value a line piece asks the child to place lands exactly on a tick of its line", async () => {
+  const { valuesOnTicks } = await import("../server/studio/approved.js");
+  const wave = (ticks, scaffoldTicks, items) => ({ title: "w", sub: "s", line: [0, 1], ticks, scaffoldTicks, speed: 90, gap: 2, items });
+  assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(8, 8, [["1/2"], ["1/4"], ["1/8"], ["3/8"]])] }).ok, true);
+  const off = valuesOnTicks("catch-on-line@1", { waves: [wave(8, 8, [["1/3"], ["1/6"]])] });
+  assert.equal(off.ok, false); assert.match(off.why, /1\/3 is not on a tick of a line with ticks 8/);
+  assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(0, 0, [["1/3"]])] }).ok, true, "an unmarked line holds any value");
+  assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(0, 4, [["1/3"]])] }).ok, false, "a scaffold that is drawn must hold it too");
+  assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(6, 6, [["1/2", "3/6"], ["1 1/3"]])] }).ok, true, "a mixed number, and both labels of a pod");
+  // (the store: the two withdrawn pilots are gone, c6 stays)
+  assert.ok(!fs.existsSync(path.join(ROOT, "data/studio-approved/c5-maths-ch02-t02")) && !fs.existsSync(path.join(ROOT, "data/studio-approved/c4-maths-ch05-t01")));
+  assert.ok(fs.existsSync(path.join(ROOT, "data/studio-approved/c6-maths-ch06-t01")));
+});
+
+test("never served (main 2026-11-11): a piece the predicates or judges refused is refused by the tray gate even with STUDIO_CATALOGUE_JUDGED off; the store, not the catalogue, decides what a child sees", async () => {
+  const { certifyForTray } = await import("../server/forge3/tray-gate.js");
+  const { neverServe, _resetNever } = await import("../server/studio/approved.js");
+  _resetNever();
+  const T = "c4-maths-ch03-t01";
+  const cat = JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-catalogue/topics", `${T}.json`), "utf8")).game;
+  assert.equal(neverServe(cat.archetype, cat.spec), true, "batch 1 refused it");
+  const art = { kind: "stagecraft", stagecraft: { rung: "library", archetype: cat.archetype, spec: cat.spec } };
+  const certs = { topics: { [T]: { game: { serveByViewport: { p360: true, p412: true, l1366: true } } } } };
+  const was = process.env.STUDIO_CATALOGUE_JUDGED;
+  process.env.STUDIO_CATALOGUE_JUDGED = "off";
+  try {
+    const r = certifyForTray(art, { vp: "p412", topicId: T, certs, factsKind: "game" });
+    assert.equal(r.ok, false); assert.equal(r.cert, "never");
+  } finally { if (was === undefined) delete process.env.STUDIO_CATALOGUE_JUDGED; else process.env.STUDIO_CATALOGUE_JUDGED = was; }
+  // (switch on — the default: an unjudged piece is refused by the store rule too)
+  const other = JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-catalogue/topics", "c6-maths-ch02-t01.json"), "utf8")).game;
+  const r2 = certifyForTray({ kind: "stagecraft", stagecraft: { rung: "library", archetype: other.archetype, spec: other.spec } }, { vp: "p412", topicId: "c6-maths-ch02-t01", certs: { topics: { "c6-maths-ch02-t01": { game: { serveByViewport: { p360: true, p412: true, l1366: true } } } } }, factsKind: "game" });
+  assert.equal(r2.ok, false); assert.equal(r2.cert, "catalogue-judged");
+});
+
+test("predicate (2026-11-11, c5-t01 retry 5 split on 'Run complete'): a Hinglish spec that leaves an engine's English string of 2+ words untranslated fails before any judge", async () => {
+  const { untranslatedStrings } = await import("../server/studio/approved.js");
+  const spec = (strings, lang = "hinglish") => ({ lang, strings });
+  assert.deepEqual(untranslatedStrings("catch-on-line@1", spec({ runDone: "Run complete", wave: "Wave" })).keys, ["runDone"], "a shared single word passes");
+  assert.equal(untranslatedStrings("catch-on-line@1", spec({ runDone: "Daud poori" })).ok, true);
+  assert.equal(untranslatedStrings("catch-on-line@1", spec({ runDone: "Run complete" }, "en")).ok, true, "an English piece keeps its English");
+});

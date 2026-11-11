@@ -1,6 +1,9 @@
 // E-ST0 unit tests for Stagecraft (server/stagecraft/**; docs/design/stagecraft/STAGECRAFT.md). $0, no network.
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import os from "node:os";
 import { ENGINE_SPECS } from "../shared/studio-spec.ts";
 import { config, initPortfolio, step, preferredRung } from "../server/stagecraft/conductor.js";
 import { buildCatalog, admissible, liveArchetypes } from "../server/stagecraft/catalog.js";
@@ -300,6 +303,11 @@ test("telemetry fold: readiness, waste, swaps excluded; rows never carry words",
 // round 7 D8 (amends round 4's "off the child path unless certified at all three sizes"): a Studio v2 piece certified at
 // the device's class is proposed through the tray gate. The slot shape is still checked.
 test("seam bridge: on → a Studio v2 reveal goes through the tray gate (certified at this class: proposed); shadow → the W2 view is untouched; slot is never loading", async () => {
+  // (an empty approval store: this topic's catalogue game is on data/studio-approved/never.json since 2026-11-11 — the path
+  // under test is the unjudged catalogue one, with the judged rule switched off)
+  const AP = await import("../server/studio/approved.js");
+  AP._useStore(fs.mkdtempSync(path.join(os.tmpdir(), "no-store-")));
+  try {
   const { studioSeam } = await import("../server/studio/seam.js");
   const bridge = await import("../server/stagecraft/seam-bridge.js");
   const { revealPoint } = await import("../server/stagecraft/adapters.js");
@@ -345,6 +353,7 @@ test("seam bridge: on → a Studio v2 reveal goes through the tray gate (certifi
   const p = revealPoint({ lessonId, turnSeq: 6, safety: false, beat: "practice_set", beatChanged: true, topicId: TOPIC, skillId: SKILL, band: "B2", lang: "hinglish", kitHash: "k1", lastPolicyRevealTurn: 0, at: 30_000, phase: "her_turn" }, { catalog });
   assert.equal(bridge.augmentView(lessonId, { statuses: [], onScreen: null, propose: { reveal: "w2-piece" } }, p).propose.reveal, "w2-piece", "an unjudged catalogue piece is not proposed");
   bridge.detach(lessonId);
+  } finally { AP._useStore(null); }
 });
 
 test("kernel point (P4): null without a host; with a host it builds a point whose want comes from the kernel view only", async () => {
@@ -361,6 +370,11 @@ test("kernel point (P4): null without a host; with a host it builds a point whos
 });
 
 test("phone play (main 2026-11-10): at p360 a refused Studio v2 game's place goes to the play family the Games picker chooses for the skill, with a phone because; the switch off keeps the script's board", async () => {
+  // (an empty approval store: this topic's catalogue game is on data/studio-approved/never.json since 2026-11-11 — the path
+  // under test is the unjudged catalogue one, with the judged rule switched off)
+  const AP = await import("../server/studio/approved.js");
+  AP._useStore(fs.mkdtempSync(path.join(os.tmpdir(), "no-store-")));
+  try {
   const { studioSeam, noteViewport, _lesson, phonePlayStats } = await import("../server/studio/seam.js");
   const bridge = await import("../server/stagecraft/seam-bridge.js");
   const { revealPoint } = await import("../server/stagecraft/adapters.js");
@@ -393,4 +407,5 @@ test("phone play (main 2026-11-10): at p360 a refused Studio v2 game's place goe
       } finally { if (swWas === undefined) delete process.env.STUDIO_PHONE_PLAY; else process.env.STUDIO_PHONE_PLAY = swWas; }
     }
   } finally { if (was === undefined) delete process.env.STUDIO_CATALOGUE_JUDGED; else process.env.STUDIO_CATALOGUE_JUDGED = was; }
+  } finally { AP._useStore(null); }
 });
