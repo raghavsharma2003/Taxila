@@ -18,28 +18,36 @@
 //   wrong-scale     the other scale's number: 180 − θ ("other_scale")
 //   join-wrong-end  draw: the dot at the right mark, joined to A (the far end of OA): the law shows the angle made at A
 //                   ("far_end")
-//   tool-size       size: the angle under the bigger protractor picked as the bigger angle: both readings side by side
-//                   ("both_readings")
+// size names no mix-up (main 2026-11-11): the kit's tool-size belief is about the READING one angle gives under two tools, and
+// this goal asks which of two angles is more, never for a reading; a miss plays out both readings, side by side.
 import type { Facts, Moment } from "../../../../shared/play.ts";
 
 export type PlaceGoal = "measure" | "draw" | "size";
 export const PLACE_GOALS: readonly PlaceGoal[] = ["measure", "draw", "size"];
-export const PLACE_MAL = ["vertex-off", "join-wrong-end", "tool-size"] as const;
+export const PLACE_MAL = ["vertex-off", "join-wrong-end"] as const;
 export const isPlaceGoal = (g: string | undefined): g is PlaceGoal => PLACE_GOALS.includes(g as PlaceGoal);
 
 /** the board (board px; at a 360 px phone the play canvas is about 324-360 × 350-420 px, so 1 board px ≥ 1 CSS px there and
  *  the protractor is ≥ 200 px wide) */
 export const BW = 320, BH = 340;
 /** protractor radius, the base-to-centre depth (the strip under the base line down to the bottom edge), arm length */
-export const PR = 105, PD = 20, ARM = 130;
+export const PR = 105, PD = 24, ARM = 130;
+/** the centre tolerance (board px): a finger's drop: about 11 CSS px from the vertex at 360 (1 board px ≈ 1.03 CSS px in its 360 × 349 play box), about 25 at 1366. It stays
+ *  under PD / 2, so the bottom-edge placement (PD off) is never a placement */
+export const TOL_PX = 11;
 /** size: the two protractors' radii */
 export const R_BIG = 108, R_SMALL = 78;
 /** base within ±BASE_TOL° of an arm; a reading within READ_TOL of what the scale shows */
 export const BASE_TOL = 3, READ_TOL = 2;
 /** where the loose protractor rests at the start: low on the board, under the angle (its centre's y) */
-export const REST_Y = PD + 8;
+export const REST_Y = PD + 4;
 /** the angle's figure stays above this line (the resting protractor, with its numbers, stays under it) */
 export const FIG_LO = 156;
+/** the numbers the protractor prints at each scale setting: "10" every 20° (every 10° would touch at 360), "30" every 30°,
+ *  "landmarks" only 0, 90 and 180. A key on a printed number could be read off the number without the ticks: never served
+ *  (main 2026-11-11) */
+export const PRINT_EVERY: Record<PlaceParamsLike["scale"], number> = { "10": 20, "30": 30, landmarks: 90 };
+export const printed = (scale: PlaceParamsLike["scale"], v: number) => v % PRINT_EVERY[scale] === 0;
 /** the turning handle: on the protractor's body, half way up from the centre, at the scale's 90 */
 export const KNOB_AT = 0.5;
 
@@ -101,7 +109,7 @@ export function placement(p: PlaceParamsLike, pose: Pose): Placed {
     if (!best || (inside && !best.inside) || (inside === best.inside && e < best.e)) best = { e, arm: k, zero: e0 <= e180, inside };
   });
   const b = best as unknown as { e: number; arm: number; zero: boolean; inside: boolean };
-  const tolPx = p.tolPx ?? 8;
+  const tolPx = p.tolPx ?? TOL_PX;
   return { centreErrPx, baseErrDeg: r1(b.e), ok: centreErrPx <= tolPx && b.e <= BASE_TOL && b.inside, arm: b.arm, zeroOnArm: b.zero };
 }
 /** the number on the scale whose 0 sits on the placed arm, at rim angle r */
@@ -151,7 +159,17 @@ export function isVertexOff(p: PlaceParamsLike, pose: Pose): boolean {
   if (pl.baseErrDeg > BASE_TOL) return false;
   if (p.goal === "measure") { const hs = arms(p), rel = norm(hs[1 - pl.arm] - pose.rot); if (rel < 2 || rel > 178) return false; }
   const [nx, ny] = inward(pose), [vx, vy] = V(p);
-  return Math.hypot(pose.x - (vx + PD * nx), pose.y - (vy + PD * ny)) <= (p.tolPx ?? 8);
+  return Math.hypot(pose.x - (vx + PD * nx), pose.y - (vy + PD * ny)) <= (p.tolPx ?? TOL_PX);
+}
+/**
+ * The ring on O and the dashed join to the protractor's centre (the vertex-off signature) are drawn only in the play-out of a
+ * COMMITTED decision (`truthOn`: the view's play-out is running, after at least one commit), and only when that placement is
+ * the bottom edge on O. Never before her first commit, never for any other off placement (it would show where the centre goes).
+ */
+export function centreRingShown(p: PlaceParamsLike, s: { commits: number; pl?: PlaceState }, truthOn: boolean): boolean {
+  if (!truthOn || s.commits < 1 || !s.pl?.locked || p.goal === "size") return false;
+  if (s.pl.read === null && s.pl.joined === null) return false;
+  return !placement(p, s.pl.pose).ok && isVertexOff(p, s.pl.pose);
 }
 /** size: the right answer: "a" (P is more), "b" (Q is more) or "same"; and the bigger tool's angle */
 export const sizeAnswer = (p: PlaceFields) => (p.thA === p.thB ? "same" : (p.thA ?? 0) > (p.thB ?? 0) ? "a" : "b");
@@ -267,8 +285,8 @@ function commitDraw(p: PlaceParamsLike, s: PlaceState, mal: Record<string, strin
 function commitSize(p: PlaceParamsLike, s: PlaceState, mal: Record<string, string>): StepOut {
   const f: Facts = { pick: s.pick as string };
   if (s.pick === sizeAnswer(p)) return { pl: s, commit: { kind: "solved", done: true, facts: f } };
-  if ("tool-size" in mal && s.pick === bigOne(p)) return { pl: s, commit: { kind: "misconception_consequence", mis: "tool-size", facts: { ...f, shown: "both_readings" } } };
-  return { pl: s, commit: { kind: "law_refused", facts: { ...f, why: "other_angle" } } };
+  void mal;
+  return { pl: s, commit: { kind: "law_refused", facts: { ...f, why: "other_angle", shown: "both_readings" } } };
 }
 
 /** the solver's acts */
@@ -280,7 +298,7 @@ export function solvePlace(p: PlaceParamsLike): PlaceAct[] {
 /** a mal-rule's acts (null when the belief makes no different move here) */
 export function malPlace(p: PlaceParamsLike, mal: string): PlaceAct[] | null {
   const th = p.theta ?? 0;
-  if (p.goal === "size") return mal === "tool-size" && bigOne(p) !== sizeAnswer(p) ? [{ kind: "pick", which: bigOne(p) }] : null;
+  if (p.goal === "size") return null;
   const g = goodPose(p), at = (q: Pose): PlaceAct[] => [{ kind: "move", x: q.x, y: q.y }, { kind: "spin", deg: q.rot }, { kind: "lock" }];
   if (mal === "vertex-off") {
     const q = vertexOffPose(p);
@@ -346,9 +364,8 @@ export function validatePlace<P extends PlaceParamsLike>(q: Partial<P>): P | nul
     if (thA === null || thB === null || !Number.isInteger(thA) || !Number.isInteger(thB)) return null;
     return { goal: "size", start: 0, tol, scale, thA, thB, bigA: !!q.bigA, mirA: !!q.mirA, mirB: !!q.mirB } as unknown as P;
   }
-  const theta = Number(q.theta), vx = fin(q.vx, 0, BW), vy = fin(q.vy, 0, BH), tolPx = fin(q.tolPx ?? 8, 3, 15);
-  const x0 = fin(q.x0, 0, BW), y0 = fin(q.y0, 0, BH), r0 = Number(q.r0), start = Number(q.start);
-  if (!Number.isInteger(theta) || theta < 10 || theta > 170 || vx === null || vy === null || tolPx === null || x0 === null || y0 === null) return null;
+  const theta = Number(q.theta), vx = fin(q.vx, 0, BW), vy = fin(q.vy, 0, BH), tolPx = fin(q.tolPx ?? TOL_PX, 3, 15);
+  const x0 = fin(q.x0, 0, BW), y0 = fin(q.y0, 0, BH), r0 = Number(q.r0), start = Number(q.start);  if (!Number.isInteger(theta) || theta < 10 || theta > 170 || vx === null || vy === null || tolPx === null || x0 === null || y0 === null) return null;
   if (!Number.isFinite(r0) || !Number.isFinite(start)) return null;
   // the base-to-centre depth must stay outside the centre tolerance, or vertex-off would be a placement
   if (tolPx >= PD / 2) return null;
@@ -372,12 +389,14 @@ const inBoard = ([x, y]: [number, number], lo = FIG_LO) => x >= 32 && x <= BW - 
 export function generatePlace(goal: PlaceGoal, g: { tol?: number; tolPx?: number }, rnd: () => number, fade: number): { params: PlaceParamsLike; sig: string }[] {
   const out: { params: PlaceParamsLike; sig: string }[] = [], seen = new Set<string>();
   const scale: PlaceParamsLike["scale"] = fade === 1 ? "10" : fade === 2 ? "30" : "landmarks";
-  const tol = g.tol ?? 3, tolPx = g.tolPx ?? 8;
+  const tol = g.tol ?? 3, tolPx = g.tolPx ?? TOL_PX;
   if (goal === "size") {
-    for (let k = 0; k < 40 && out.length < 16; k++) {
+    for (let k = 0; k < 200 && out.length < 16; k++) {
       const equal = rnd() < 0.5, small = 30 + 5 * Math.floor(rnd() * 25);   // 30 … 150
       const big = equal ? small : small - (15 + 5 * Math.floor(rnd() * 6));
       if (big < 20 || [small, big].some((t) => Math.abs(t - 90) < 10)) continue;
+      // neither angle sits on a printed number (fades 1 and 2): reading them is the skill
+      if (fade < 3 && [small, big].some((t) => printed(scale, t))) continue;
       const bigA = rnd() < 0.5, mirA = rnd() < 0.4, mirB = rnd() < 0.4;
       const params: PlaceParamsLike = { goal, start: 0, tol, scale, thA: bigA ? big : small, thB: bigA ? small : big, bigA, mirA, mirB };
       const sig = `size:${params.thA}:${params.thB}:${bigA ? "A" : "B"}${mirA ? "m" : ""}${mirB ? "m" : ""}`;
@@ -386,9 +405,11 @@ export function generatePlace(goal: PlaceGoal, g: { tol?: number; tolPx?: number
     }
     return out;
   }
-  for (let k = 0; k < 200 && out.length < 24; k++) {
+  for (let k = 0; k < 800 && out.length < 24; k++) {
     const theta = 20 + 5 * Math.floor(rnd() * 29);                          // 20° … 160°
     if ([0, 90, 180].some((l) => Math.abs(theta - l) <= Math.max(10, 2 * tol))) continue;
+    // the key is never a printed number (on either scale: 180 − a printed number is printed too)
+    if (printed(scale, theta)) continue;
     // the angle opens upward (its bisector 40° … 140°; the protractor rests below it). fade 1: the first arm lies flat or near
     // it; then any tilt (turning the protractor is part of the skill). mirror: the angle opens clockwise from OA
     const mirror = rnd() < 0.45;

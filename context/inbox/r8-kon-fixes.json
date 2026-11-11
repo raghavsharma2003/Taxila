@@ -1,0 +1,47 @@
+{
+  "source": "C2 Games r8 fixes (branch claude/r8-kon-fixes): docs/design/round8/games-judging/kon-place/PACKET.md and kon-name/PACKET.md ('Fixed since the first packet'); src/play/families/kon/kon.place.ts, kon.place.view.ts, kon.name.ts, kon.name.view.ts, kon.spot.ts; tests/r8-games-kon-place.test.mjs, r8-games-kon-name.test.mjs, r8-games-kon-layout.test.mjs",
+  "nodes": [
+    {
+      "id": "dc-r8-kon-place-size-no-toolsize",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-11-11",
+      "title": "kon/place size names no mix-up (main's ruling (ii), the small honest option): the kit's tool-size belief is about the READING one angle gives under a bigger protractor, and size asks which of two angles is more, never for a reading. tool-size left PLACE_MAL, malPlace, commitSize and the rule's misMap; a wrong pick is a law_refused that still plays out both readings (shown=both_readings). The generator still never makes the bigger tool's angle the answer (a shortcut). Reverse if: size gets a reading act (the child gives both readings of one angle under two tools), which would follow the kit's diagnostic and could name tool-size again."
+    },
+    {
+      "id": "dc-r8-kon-place-printed-keys",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-11-11",
+      "title": "kon/place: the scale prints numbers every 20° at fade 1 ('10'), every 30° at fade 2, only 0/90/180 at fade 3 (every 10° touches at 360 px), so each setting looks different; no measure/draw key and no size angle is ever a printed value (a key on a printed number is read off the number, not the ticks: main's ruling (i)). Pinned by the proof suite over every generated level. The generator's tries went 200 → 800 (signature collisions, not the filter, ate the tries). Reverse if: a pilot shows fade 1 children cannot read 5° ticks between 20° numbers."
+    },
+    {
+      "id": "dc-r8-kon-place-finger-tolerance",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-11-11",
+      "title": "kon/place centre tolerance is 11 board px (about 11 CSS px from the vertex at a 360 px phone, where the 360 × 349 play box gives 1 board px ≈ 1.03 CSS px; about 25 at 1366), up from 8, for a finger's drop; the base-to-bottom-edge depth PD went 20 → 24 so vertex-off (PD off) stays outside the tolerance (tolPx < PD / 2 is validated). Reverse if: the pilot's placement misses with no belief named exceed ~30% (still too tight) or vertex-off is named for children who were aiming at the centre."
+    },
+    {
+      "id": "dc-r8-kon-place-ring-only-vertex-off",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-11-11",
+      "title": "kon/place: the ring on O and the dashed join to the protractor's centre (vertex-off's signature) are drawn only in the play-out of a committed decision whose placement is the bottom edge on O (kon.place.ts centreRingShown). Any other off placement shows only what her number (measure: the arm it means, from the protractor's own centre) or arm (draw: her arm, the angle it makes, the asked arm) means as placed, with no pointer to where the centre belongs. A new dot after a miss ends the play-out (no live reading of an uncommitted mark). Reverse if: judges or a pilot find plain off placements leave a child with no visible consequence."
+    },
+    {
+      "id": "dc-r8-kon-name-arc-band-hit",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-11-11",
+      "title": "kon/name find: the five small handle rings are gone; a tap within 44 board px of an arc is on the NEAREST arc (kon.name.ts arcHit), so tap regions never overlap, and each arc must hold a touch disc ≥ 48 board px across wholly in its own region (arcTargets; the generator refuses figures without one; corner arcs drawn at radius 24, not 30, so they keep room beside the wide arc's end). Geometry could not give non-overlapping 48 px squares around ring handles (0 of 18,936 sampled figures). Reverse if: children tap the wrong arc of a close pair (wrong-arc taps that are no reading of the name)."
+    },
+    {
+      "id": "ms-r8-kon-fixes-layout",
+      "kind": "measurement",
+      "status": "proposed",
+      "at": "2026-11-11",
+      "title": "tests/r8-games-kon-layout.test.mjs (local Chromium, every served kon/place and kon/name level, 360x640 and 1366x768, first/mid/each mal/each size pick/end): 0 faults after the r8 fixes, with the new checks (tick or ring over a letter or label, chip across an arm or ray or over a point, overlapping touch targets of one kind, the vertex-off ring before a decision, an English aria label in a Hinglish lesson, the board moving on solving). Each of the judge packets' screen defects (size tick by ∠Q, measure tick on B, size chips on ∠Q's arm, say chip on C and the name twice, find rings overlapping, figure moving at the end) is one of these refusals."
+    }
+  ]
+}

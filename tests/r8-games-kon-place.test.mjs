@@ -6,9 +6,10 @@
 // never right) is pinned; random acts never solve a level the checker refuses; evidence and the facts row carry the
 // placement; the coverage entries serve; the generator's speed bar is CPU time (tests/_cpu-ms.mjs), never the wall clock.
 import { test } from "node:test";
+import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
-import { BW, BH, PR, PD, ARM, asPlaced, placeEvidence, vertexOffPose, goodPose, placement, sizeFigs } from "../src/play/families/kon/kon.place.ts";
+import { BW, BH, PR, PD, ARM, TOL_PX, PRINT_EVERY, asPlaced, centreRingShown, placeEvidence, vertexOffPose, goodPose, placement, sizeFigs } from "../src/play/families/kon/kon.place.ts";
 import { pickLevels, env } from "../src/play/core/pick.ts";
 import { CHANCE_WEIGHT, GAME_WEIGHT, playFactsRow } from "../shared/play.ts";
 import { gradeActs } from "../server/play/grade.js";
@@ -22,10 +23,11 @@ import { cpuNow } from "./_cpu-ms.mjs";
 const MIS = {
   measure: { "vertex-off": "k-vo", "wrong-scale": "k-ws" },
   draw: { "vertex-off": "k-vo", "wrong-scale": "k-ws", "join-wrong-end": "k-je" },
-  size: { "tool-size": "k-ts" },
+  // size names no mix-up (main 2026-11-11): the kit's tool-size belief is about one angle's READING under two tools
+  size: {},
 };
-const SHOWN = { "vertex-off": "centre_off", "wrong-scale": "other_scale", "join-wrong-end": "far_end", "tool-size": "both_readings" };
-const req = (goal, seed, fade = 1, misMap = MIS[goal]) => ({ family: "kon", mode: "place", goal, topicId: "t", skillId: "t-s1", classLevel: 6, fade, mis: {}, misMap, grammar: { tol: 3, tolPx: 8 }, recent: [], seed });
+const SHOWN = { "vertex-off": "centre_off", "wrong-scale": "other_scale", "join-wrong-end": "far_end" };
+const req = (goal, seed, fade = 1, misMap = MIS[goal]) => ({ family: "kon", mode: "place", goal, topicId: "t", skillId: "t-s1", classLevel: 6, fade, mis: {}, misMap, grammar: { tol: 3, tolPx: TOL_PX }, recent: [], seed });
 const run = (level, acts) => { let s = konLogic.init(level); const ms = []; const refused = []; acts.forEach((a, i) => { const r = konLogic.apply(level, s, a, i + 1); s = r.state; ms.push(...r.moments); if (r.refused) refused.push(r.refused); }); return { s, ms, refused }; };
 const levels = (goal, fades = [1, 2, 3], seeds = [1, 7, 42, 99]) => fades.flatMap((f) => seeds.flatMap((sd) => konLogic.generate(req(goal, sd, f)).map((c) => konLogic.validate(c.level))));
 
@@ -294,7 +296,7 @@ test("kon/place: every coverage entry serves a level as the play server would, w
   const mine = coverage.entries.filter((e) => e.family === "kon" && e.mode === "place");
   assert.deepEqual(mine.map((e) => e.goal).sort(), ["draw", "measure", "size"]);
   assert.equal(coverage.entries.some((e) => e.family === "kon" && e.mode === "set"), false, "kon/set's entry is replaced");
-  const want = { draw: ["vertex-off", "wrong-scale", "join-wrong-end"], measure: ["vertex-off", "wrong-scale"], size: ["tool-size"] };
+  const want = { draw: ["vertex-off", "wrong-scale", "join-wrong-end"], measure: ["vertex-off", "wrong-scale"], size: [] };
   for (const entry of mine) {
     assert.equal(entry.topicId, "c6-maths-ch02-t03");
     assert.deepEqual(Object.keys(entry.misMap).sort(), want[entry.goal].sort());
@@ -306,7 +308,7 @@ test("kon/place: every coverage entry serves a level as the play server would, w
       const lv = currentLevel(s, entry);
       assert.ok(lv, `${entry.goal} served nothing`);
       assert.equal(lv.mode, "place"); assert.equal(lv.params.goal, entry.goal);
-      assert.ok(lv.proof.discriminates.length >= 1, `${lv.levelId} tells a belief apart`);
+      if (entry.goal !== "size") assert.ok(lv.proof.discriminates.length >= 1, `${lv.levelId} tells a belief apart`);
     }
   }
 });
@@ -329,4 +331,72 @@ test("kon/place board: the protractor is ≥ 200 px wide at a 360 px phone's pla
   assert.ok(2 * PR >= 200);
   assert.ok(BW <= 320, `board ${BW} wide`);
   assert.ok(ARM > PR + PD, "the arms reach past the rim so a reading can be taken");
+});
+
+test("kon/place (main 2026-11-11): no key sits on a printed number at fades 1 and 2, and the scale settings print differently", () => {
+  // what each fade prints: "10" every 20°, "30" every 30°, "landmarks" 0 / 90 / 180 (both scales: 180 − a printed value is printed)
+  assert.deepEqual(PRINT_EVERY, { "10": 20, "30": 30, landmarks: 90 });
+  assert.equal(new Set(Object.values(PRINT_EVERY)).size, 3, "every scale setting looks different on screen");
+  let n = 0;
+  for (const goal of ["measure", "draw", "size"]) for (const level of levels(goal, [1, 2, 3], [1, 7, 42, 99, 123])) {
+    const p = level.params, every = PRINT_EVERY[p.scale];
+    assert.equal(p.scale, level.fade === 1 ? "10" : level.fade === 2 ? "30" : "landmarks");
+    const keys = goal === "size" ? [p.thA, p.thB] : [p.theta];
+    for (const k of keys) { assert.notEqual(k % every, 0, `${level.levelId}: key ${k}° is printed (every ${every}°)`); assert.notEqual((180 - k) % every, 0); }
+    n++;
+  }
+  assert.ok(n >= 60, `${n} levels`);
+});
+
+test("kon/place: tool-size is not claimed by size; a wrong pick plays out both readings with no belief named", () => {
+  for (const level of levels("size", [1, 2], [1, 7])) {
+    assert.equal(konLogic.malActs({ ...level, mal: { "tool-size": "k-ts" } }, "tool-size"), null);
+    const wrong = ["a", "b", "same"].find((w) => !run(level, [{ kind: "pick", which: w }]).s.done);
+    const m = run({ ...level, mal: { "tool-size": "k-ts" } }, [{ kind: "pick", which: wrong }]).ms.at(-1);
+    assert.equal(m.kind, "law_refused"); assert.equal(m.facts.shown, "both_readings"); assert.equal(m.misconceptionId, undefined);
+  }
+});
+
+test("kon/place: the centre ring (vertex-off's signature) never shows before her first decision, nor for any other off placement", () => {
+  let vo = 0, other = 0;
+  for (const goal of ["measure", "draw"]) for (const level of levels(goal, [1, 2], [1, 7]).slice(0, 12)) {
+    const p = level.params, q = vertexOffPose(p), g = goodPose(p);
+    const head = (pose) => [{ kind: "move", x: pose.x, y: pose.y }, { kind: "spin", deg: pose.rot }, { kind: "lock" }];
+    const decide = goal === "measure" ? [{ kind: "read", n: Math.round(asPlaced(p, q).value) }] : [{ kind: "mark", r: 60 }, { kind: "join", end: "v" }];
+    // locked off the bottom-edge way, before any decision: no ring, whatever the view's play-out flag says
+    const pre = run(level, head(q)).s;
+    assert.equal(centreRingShown(p, pre, true), false, `${level.levelId}: ring before a decision`);
+    if (goal === "draw") assert.equal(centreRingShown(p, run(level, [...head(q), { kind: "mark", r: 60 }]).s, true), false);
+    // committed: the ring, only while the play-out runs
+    const post = run(level, [...head(q), ...decide]).s;
+    assert.equal(centreRingShown(p, post, true), true, `${level.levelId}: vertex-off committed`); vo++;
+    assert.equal(centreRingShown(p, post, false), false);
+    // another off placement (the centre 16 px along the arm, not the bottom edge) committed: no ring
+    const [c, s] = [Math.cos((g.rot * Math.PI) / 180), Math.sin((g.rot * Math.PI) / 180)], off = { x: g.x + 16 * c, y: g.y + 16 * s, rot: g.rot };
+    const o = run(level, [...head(off), ...(goal === "measure" ? [{ kind: "read", n: 50 }] : [{ kind: "mark", r: 60 }, { kind: "join", end: "v" }])]).s;
+    assert.equal(placement(p, o.pl.pose).ok, false);
+    assert.equal(centreRingShown(p, o, true), false, `${level.levelId}: ring for a plain off placement`); other++;
+    // and a good placement never rings
+    assert.equal(centreRingShown(p, run(level, [...head(g), ...decide]).s, true), false);
+  }
+  assert.ok(vo >= 10 && other >= 10);
+});
+
+test("kon/place: the centre tolerance is a finger's (≥ 10 board px), and still keeps the bottom-edge placement out", () => {
+  assert.ok(TOL_PX >= 10, `${TOL_PX}`);
+  assert.ok(TOL_PX < PD / 2, "vertex-off (PD off) is never a placement, and the two zones never touch");
+});
+
+test("kon/place: every accessible label is in the lesson's language (all three), with no number word", () => {
+  const keys = ["kon.aria.acw", "kon.aria.cw", "kon.aria.less", "kon.aria.more"];
+  for (const k of keys) {
+    const t = WORDS.words[k];
+    assert.ok(t && t.hinglish && t.en && t.hi, k);
+    assert.match(t.hi, /[ऀ-ॿ]/, `${k} hi`);
+    assert.notEqual(t.hinglish, t.en, `${k}: the Hinglish label is not the English one`);
+    for (const l of [t.hinglish, t.en, t.hi]) assert.doesNotMatch(l, /\d|\b(one|two|ek|do|teen)\b|एक|दो/i, `${k}: ${l}`);
+  }
+  // and the view reads them from the words (no English literal left in its controls)
+  const src = readFileSync(new URL("../src/play/families/kon/kon.place.view.ts", import.meta.url), "utf8");
+  assert.doesNotMatch(src, /aria: "/, "an aria label written as a literal");
 });

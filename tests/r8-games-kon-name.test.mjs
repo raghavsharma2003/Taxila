@@ -8,7 +8,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
-import { points, corners, nameOf, nameEvidence, segments } from "../src/play/families/kon/kon.name.ts";
+import { points, corners, nameOf, nameEvidence, segments, arcHit, arcTargets } from "../src/play/families/kon/kon.name.ts";
 import { pickLevels, env } from "../src/play/core/pick.ts";
 import { CHANCE_WEIGHT, GAME_WEIGHT } from "../shared/play.ts";
 import { gradeActs } from "../server/play/grade.js";
@@ -161,8 +161,38 @@ test("kon/name: no goal line or button states the answer or the rule (where the 
     const l = WORDS.words[key]?.[lang];
     assert.ok(l, `${key} ${lang}`);
     assert.doesNotMatch(l, /middle|beech|बीच|vertex|shirsh|शीर्ष|order|kram|क्रम/i, `${key} ${lang}: ${l}`);
+    // no number word either: how many letters a name has is part of the rule (judge packet, "teen aksharon")
+    assert.doesNotMatch(l, /\b(one|two|three|ek|teen|tin)\b|एक|तीन/i, `${key} ${lang}: ${l}`);
     if (lang === "hi") assert.match(l, /[ऀ-ॿ]/);
   }
+});
+
+test("kon/name/find: a tap is on the nearest arc; every arc has its own touch disc ≥ 48 board px across, and no two overlap", () => {
+  let n = 0;
+  for (const level of levels("find")) {
+    const p = level.params, T = arcTargets(p);
+    T.forEach((t, k) => {
+      assert.ok(t && t.side >= 48, `${level.levelId}: arc ${k} has no 48 px disc`);
+      // the whole disc is on arc k (its rim sampled finely)
+      for (let i = 0; i < 48; i++) for (const f of [1, 0.6, 0.25]) {
+        const a = (2 * Math.PI * i) / 48;
+        assert.equal(arcHit(p, t.x + (f * t.side * Math.cos(a)) / 2, t.y + (f * t.side * Math.sin(a)) / 2), k, `${level.levelId}: disc ${k}`);
+      }
+    });
+    for (let i = 0; i < 5; i++) for (let j = i + 1; j < 5; j++) assert.ok(Math.hypot(T[i].x - T[j].x, T[i].y - T[j].y) >= (T[i].side + T[j].side) / 2, `${level.levelId}: discs ${i} and ${j} overlap`);
+    // the tap on each arc's own middle is that arc; the solver's arc is the asked one
+    assert.equal(run(level, [{ kind: "arc", at: p.ask }]).s.done, true);
+    n++;
+  }
+  assert.ok(n >= 20, `${n} find levels`);
+});
+
+test("kon/name/say: one-letter undo takes back her last letter (beside Mita do, which clears all three)", () => {
+  const level = levels("say", [1], [7])[0];
+  const r = run(level, [{ kind: "letter", at: 1 }, { kind: "letter", at: 0 }, { kind: "letter", at: 2 }, { kind: "undo" }]);
+  assert.deepEqual(r.s.nm.taps, [1, 0]);
+  const r2 = run(level, [{ kind: "letter", at: 1 }, { kind: "undo" }, { kind: "undo" }]);
+  assert.deepEqual(r2.s.nm.taps, []);
 });
 
 test("kon/name: every coverage entry serves a level as the play server would, with vertex-name mapped", async () => {

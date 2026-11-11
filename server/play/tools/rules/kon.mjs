@@ -10,9 +10,9 @@ export const RULES = [
   // loose one (centre on the corner, base on an arm) and then reads it (measure) or marks and joins (draw); a reading off a
   // misplaced protractor is the placement mix-up, never right. size: the same angle under a big and a small protractor.
   // (replaces the kon/set entry, which only ever showed wrong-scale on a protractor already in place)
-  R("c6-maths-ch02-t03", "kon", "place", "draw", { "vertex-off": "vertex-off", "wrong-scale": "wrong-scale", "join-wrong-end": "join-wrong-end" }, { tol: 3, tolPx: 8 }),
-  R("c6-maths-ch02-t03", "kon", "place", "measure", { "vertex-off": "vertex-off", "wrong-scale": "wrong-scale" }, { tol: 3, tolPx: 8 }),
-  R("c6-maths-ch02-t03", "kon", "place", "size", { "tool-size": "tool-size" }, { tol: 3 }),
+  R("c6-maths-ch02-t03", "kon", "place", "draw", { "vertex-off": "vertex-off", "wrong-scale": "wrong-scale", "join-wrong-end": "join-wrong-end" }, { tol: 3, tolPx: 11 }),
+  R("c6-maths-ch02-t03", "kon", "place", "measure", { "vertex-off": "vertex-off", "wrong-scale": "wrong-scale" }, { tol: 3, tolPx: 11 }),
+  R("c6-maths-ch02-t03", "kon", "place", "size", {}, { tol: 3 }),   // no mix-up named: tool-size is about one angle's READING under two tools (main 2026-11-11)
   // r7 (studio-play-coverage-expansion): the kind of an angle is how far the arm opens from a base that may tilt and may
   // open either way (a tilted square corner is still a right angle); arm length and arc size never change an angle; a linear
   // pair is read off the other side of the line; a triangle closes only when its angles make 180°

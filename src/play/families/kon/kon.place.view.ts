@@ -11,14 +11,15 @@
 //                OB (a ring joins the centre to O)
 //   wrong-scale  the arm her number means on the scale whose 0 is on the arm, far from OB
 //   join-wrong-end  the arm from A, and the angle it makes at A, with its number
-//   tool-size    both readings, side by side
+//   size (a miss) both readings, each in place of its angle's name
 import type { KonAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import { clamp, type ControlSpec, type FamilyView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word } from "../../engines/words.ts";
 import type { KonParams, KonState } from "./kon.logic.ts";
-import { ARM, BH, BW, KNOB_AT, PD, PR, arms, asPlaced, dir, farEnd, initPlace, isVertexOff, madeAngle, norm, placement, rimAngleOf, rimPoint, sizeFigs, type Pose } from "./kon.place.ts";
+import { ARM, BH, BW, KNOB_AT, PD, PR, PRINT_EVERY, arms, centreRingShown, dir, farEnd, initPlace, madeAngle, norm, placement, rimAngleOf, rimPoint, sizeFigs, type Pose } from "./kon.place.ts";
+import { freeSpot } from "./kon.spot.ts";
 
 type Pt = [number, number];
 const RUN_END = 1.4;
@@ -61,6 +62,8 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
       if (m.kind === "misconception_consequence" || m.kind === "law_refused" || m.kind === "near_miss") setTimeout(() => api.sfx("look"), 200);
     }
     if (last?.kind === "undo" || last?.kind === "free") { truthAt = -1; sel = null; }
+    // any other step after a decision ends its play-out (a new dot is not graded until she joins it: no live reading)
+    else if (last && !decisive && !refused) truthAt = -1;
     api.invalidate(); deps.changed();
   }
   /** inside the protractor's body (the half-disc and the strip under its base)? */
@@ -138,7 +141,7 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     P.circle(c, cx, cy, 3.5, { role: "ink", fill: true });
     P.stroke(c, [[cx, cy], [cx - nx * 9, cy + ny * 9]], { role: "ink", width: 1.5 });
     // ticks every 5°, longer every 10°; both scales numbered (outer from this end, inner from the other)
-    const every = p.scale === "landmarks" ? 90 : 30;
+    const every = PRINT_EVERY[p.scale];
     for (let a = 0; a <= 180; a += 5) {
       const [tc, tn] = dir(q.rot + a), len = (a % 10 === 0 ? 10 : 5) * Math.min(1, rad0 / PR + 0.2);
       P.stroke(c, [[cx + tc * R, cy - tn * R], [cx + tc * (R - len), cy - tn * (R - len)]], { role: "ink3", width: a % 30 === 0 ? 1.8 : 1 });
@@ -161,11 +164,18 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     }
   }
 
+  /** an arm or ray, drawn and declared to the layout audit (chips must not sit across it) */
+  function line(c: CanvasRenderingContext2D, pts: Pt[], o: { role: string; width?: number; dash?: number[] }): void {
+    api.P.stroke(c, pts, o as never);
+    api.P.noteSeg("arm", pts[0], pts[pts.length - 1]);
+  }
+  /** measure: where her reading's chip sits (the protractor is not there): under it when it sits high, over it when low */
+  const readChipAt = (q: Pose): Pt => S(BW / 2, q.y > BH / 2 - 30 ? 22 : BH - 16);
   function draw(c: CanvasRenderingContext2D): void {
     if (goal === "size") return drawSize(c);
     const P = api.P, S0 = st(), P0 = ps(), q = pose(), V: Pt = [p.vx ?? 0, p.vy ?? 0], hs = arms(p);
     // the angle: OA (and OB)
-    for (const h of hs) P.stroke(c, ray(V, h, ARM), { role: "ink", width: 3.5 });
+    for (const h of hs) line(c, ray(V, h, ARM), { role: "ink", width: 3.5 });
     P.circle(c, ...S(...V), 4.5, { role: "ink", fill: true });
     const bis = hs.length === 2 ? hs[0] + (norm(hs[1] - hs[0]) > 180 ? (norm(hs[1] - hs[0]) - 360) / 2 : norm(hs[1] - hs[0]) / 2) : hs[0] + 90;
     const oAway = bis + 180;
@@ -175,7 +185,7 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     // the protractor
     protractor(c, q, PR, { knob: !P0.locked && !S0.done, locked: P0.locked });
     // O on top of the see-through protractor, so it stays readable where the centre sits
-    letter(c, "O", V, oAway);
+    letter(c, "O", V, oAway, 20);
     if (!P0.locked) {
       // its body is the drag target (the bounding box of the half-disc)
       const [cx, cy] = S(q.x, q.y), R = PR * s;
@@ -184,20 +194,21 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
       const [cx, cy] = S(q.x, q.y), R = (PR + 32) * s;
       api.target("scale", cx - R, cy - R, R * 2, R * 2);
     }
-    // measure: the number she has chosen, marked on its band
-    if (goal === "measure" && sel && P0.locked) {
-      const rr = (sel.outer ? PR + 2 : PR - 30), [a, b] = S(...rimPoint(q, sel.r, rr)), [a2, b2] = S(...rimPoint(q, sel.r, sel.outer ? PR - 10 : PR - 18));
-      P.stroke(c, [[a, b], [a2, b2]], { role: "you", width: 4 });
-      // her reading, where the protractor is not: under it when it sits high, over it when it sits low
-      const [hx, hy] = S(BW / 2, q.y > BH / 2 - 30 ? 22 : BH - 16);
-      P.chip(c, `${sel.n}°`, hx, hy, { size: 16, role: "you" });
+    // measure: the number she has chosen, marked on its band; her reading (chosen, or the one she gave) in a chip
+    if (goal === "measure" && P0.locked) {
+      if (sel) {
+        const rr = (sel.outer ? PR + 2 : PR - 30), [a, b] = S(...rimPoint(q, sel.r, rr)), [a2, b2] = S(...rimPoint(q, sel.r, sel.outer ? PR - 10 : PR - 18));
+        P.stroke(c, [[a, b], [a2, b2]], { role: "you", width: 4 });
+      }
+      const n = sel ? sel.n : P0.read;
+      if (n !== null) P.chip(c, `${n}°`, ...readChipAt(q), { size: 16, role: "you" });
     }
     // draw: the dot, and the arm she joined
     if (goal === "draw" && P0.mark !== null && P0.locked) {
       const D = rimPoint(q, P0.mark);
       if (P0.joined) {
         const from: Pt = P0.joined === "v" ? V : farEnd(p), h = (Math.atan2(D[1] - from[1], D[0] - from[0]) * 180) / Math.PI;
-        P.stroke(c, ray(from, h, Math.max(ARM, Math.hypot(D[0] - from[0], D[1] - from[1]) + 30)), { role: "you", width: 3.5 });
+        line(c, ray(from, h, Math.max(ARM, Math.hypot(D[0] - from[0], D[1] - from[1]) + 30)), { role: "you", width: 3.5 });
       }
       P.circle(c, ...S(...D), 6, { role: "you", fill: true });
     }
@@ -206,29 +217,35 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   /** the law's play-out after a decision (its beats all land before RUN_END) */
   function drawRun(c: CanvasRenderingContext2D, q: Pose, V: Pt, hs: number[]): void {
     const P = api.P, S0 = st(), P0 = ps(), k = clamp((api.t - truthAt) / 0.5, 0, 1);
-    const pl = placement(p, q), offV = !pl.ok && isVertexOff(p, q);
+    const pl = placement(p, q);
     if (S0.done) {
-      const [tc, tn] = dir(goal === "measure" ? hs[hs.length - 1] : (P0.mark !== null ? norm(q.rot + P0.mark) : hs[0]));
-      P.tick(c, ...S(V[0] + (ARM + 18) * tc, V[1] + (ARM + 18) * tn), 18, clamp((api.t - truthAt - 0.3) / 0.3, 0, 1));
+      const kt = clamp((api.t - truthAt - 0.3) / 0.3, 0, 1);
+      if (goal === "measure" && P0.read !== null) {
+        // the tick sits with her answer: beside her reading's chip
+        const [hx, hy] = readChipAt(q), w = P.chipSize(c, `${P0.read}°`, { size: 16 }).w;
+        P.tick(c, hx + w / 2 + 18, hy, 18, kt);
+        return;
+      }
+      // draw: at the end of the arm she drew
+      const [tc, tn] = dir(P0.mark !== null ? norm(q.rot + P0.mark) : hs[0]);
+      P.tick(c, ...S(V[0] + (ARM + 18) * tc, V[1] + (ARM + 18) * tn), 18, kt);
       return;
     }
-    // the centre against the corner: a ring on O and a dashed join to the centre
-    if (!pl.ok) {
-      P.circle(c, ...S(...V), 11 * k + 1, { role: "look", width: 2 });
+    // vertex-off (her committed placement is the bottom edge on O, and only then): a ring on O and a dashed join to the
+    // centre. Any other off placement shows only what her number or arm means on the protractor as it sits (below).
+    if (centreRingShown(p, st(), true)) {
+      const [ox2, oy2] = S(...V), rr = 7 * k + 1;
+      P.circle(c, ox2, oy2, rr, { role: "look", width: 2 });
+      P.note("ring", ox2 - rr, oy2 - rr, 2 * rr, 2 * rr);
       P.stroke(c, [S(...V), S(q.x, q.y)], { role: "look", width: 2, dash: [4, 3] });
     }
     if (goal === "measure") {
-      const ap = asPlaced(p, q, pl);
-      if (offV && ap) {
-        // vertex-off: the arm this protractor measures runs from ITS centre through the rim, beside OB
-        const h = norm(q.rot + ap.r);
-        P.stroke(c, ray([q.x, q.y], h, ARM * k), { role: "look", width: 3, dash: [7, 5] });
-      } else if (pl.ok && P0.read !== null) {
-        // her number, on the scale whose 0 is on the arm: the arm it means
-        const r = pl.zeroOnArm ? P0.read : 180 - P0.read, h = norm(q.rot + r);
-        P.stroke(c, ray([q.x, q.y], h, ARM * k), { role: "look", width: 3, dash: [7, 5] });
-        if (k >= 1) arcAt(c, [q.x, q.y], PR * 0.42 * s, hs[1 - pl.arm], h, "look", 3, [5, 4]);
-      }
+      if (P0.read === null) return;
+      // her number, on the scale whose 0 is on the placed arm: the arm it means, from the protractor's OWN centre. Placed
+      // off (vertex-off), it starts off the corner and runs beside OB, never on it
+      const r = pl.zeroOnArm ? P0.read : 180 - P0.read, h = norm(q.rot + r);
+      line(c, ray([q.x, q.y], h, ARM * k), { role: "look", width: 3, dash: [7, 5] });
+      if (pl.ok && k >= 1) arcAt(c, [q.x, q.y], PR * 0.42 * s, hs[1 - pl.arm], h, "look", 3, [5, 4]);
       return;
     }
     // draw: the angle she made, at the end she joined, with its number; and ∠AOB as asked, dashed
@@ -243,29 +260,36 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     }
     // the asked angle at O on the side she marked
     const side = norm(hD - hs[0]) < 180 || P0.joined === "e" ? 1 : -1, want = norm(hs[0] + side * (p.theta ?? 0));
-    P.stroke(c, ray(V, want, ARM * k), { role: "ink2", width: 2.5, dash: [8, 6] });
+    line(c, ray(V, want, ARM * k), { role: "ink2", width: 2.5, dash: [8, 6] });
   }
   function drawSize(c: CanvasRenderingContext2D): void {
     const P = api.P, S0 = st(), figs = sizeFigs(p), names = ["P", "Q"];
+    const run = truthAt >= 0 && S0.commits > 0, k = clamp((api.t - truthAt - 0.2) / 0.4, 0, 1);
+    // the play-out after a miss: each angle's reading in place of its name (under its own figure, clear of every arm)
+    const readings = run && !S0.done && k > 0;
+    const labels: Pt[] = [];
     figs.forEach((f, i) => {
       const a0 = f.mirror ? 180 : 0, a1 = norm(a0 + (f.mirror ? -1 : 1) * f.th), len = f.rad + 30;
-      for (const h of [a0, a1]) P.stroke(c, ray(f.v, h, len), { role: "ink", width: 3.5 });
+      for (const h of [a0, a1]) line(c, ray(f.v, h, len), { role: "ink", width: 3.5 });
       P.circle(c, ...S(...f.v), 4.5, { role: "ink", fill: true });
       // always upright: a mirrored angle opens from the left arm, so its reading is on the inner scale (0 on the left)
       protractor(c, { x: f.v[0], y: f.v[1], rot: 0 }, f.rad, { locked: true });
       // the angle's name below its vertex, outside the strip
       const [X, Y] = S(f.v[0], f.v[1] - PD * (f.rad / PR) - 12);
-      P.text(c, `∠${names[i]}`, X, Y, { size: 16, weight: 700, role: "ink2" });
+      labels.push([X, Y]);
+      if (readings) P.chip(c, `∠${names[i]} ${i === 0 ? p.thA : p.thB}°`, X, Y + 4 * s, { size: 15, role: "look" });   // (a little lower: clear of the strip)
+      else P.text(c, `∠${names[i]}`, X, Y, { size: 16, weight: 700, role: "ink2" });
     });
-    if (truthAt >= 0 && S0.commits > 0) {
-      const k = clamp((api.t - truthAt - 0.2) / 0.4, 0, 1);
-      if (S0.done) { const [X, Y] = S(BW - 30, BH / 2 - 10); P.tick(c, X, Y, 18, k); return; }
-      // both readings side by side, between the two figures
-      const [X, Y] = S(BW / 2, (figs[0].v[1] - PD * (figs[0].rad / PR) + figs[1].v[1] + figs[1].rad) / 2 + 8);
-      if (k > 0) {
-        P.chip(c, `∠P ${p.thA}°`, X - 62, Y, { size: 15, role: "look" });
-        P.chip(c, `∠Q ${p.thB}°`, X + 62, Y, { size: 15, role: "look" });
-      }
+    if (run && S0.done) {
+      // the tick sits with her answer: beside the angle she picked, or, for "Barabar", between the two figures (neutral)
+      const pick = ps().pick;
+      if (pick === "a" || pick === "b") { const [X, Y] = labels[pick === "a" ? 0 : 1]; P.tick(c, X + 34, Y, 18, k); return; }
+      const top = S(BW / 2, figs[1].v[1] + figs[1].rad + 16)[1], [lx, ly] = labels[0];
+      const y = (top + ly) / 2, segs = api.P.audit.segs.map((g): [Pt, Pt] => [[g.x0, g.y0], [g.x1, g.y1]]);
+      const boxes = api.P.audit.texts.map((t) => ({ x: t.x - t.w / 2, y: t.y - t.px * 0.6, w: t.w, h: t.px * 1.2 }));
+      const cands: Pt[] = [0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5].map((j) => [lx + j * 26 * s, y]);
+      const at = freeSpot(cands, 22, 18, { segs, boxes }, { x: 0, y: 0, w: api.w, h: api.h }) ?? cands[0];
+      P.tick(c, at[0], at[1], 18, k);
     }
   }
 
@@ -277,8 +301,12 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   // no live reading of the angle: reading the protractor IS the skill
   const readouts = (): Readout[] => [];
   function controls(): ControlSpec[] {
-    const S0 = st(), P0 = ps();
-    if (S0.done) return [];
+    // solved: the same controls, all off, so the controls keep their rows and the board does not move (judge packet)
+    if (st().done) return liveControls().map((c) => ({ ...c, disabled: true, you: false }));
+    return liveControls();
+  }
+  function liveControls(): ControlSpec[] {
+    const P0 = ps();
     const undo: ControlSpec = { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) };
     if (goal === "size") {
       return [
@@ -289,16 +317,17 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     }
     const rot = P0.pose.rot;
     if (!P0.locked) return [
-      { id: "nudge-left", label: "↺", aria: "turn the protractor anticlockwise by 1°", kind: "pad", group: "nudge", onPress: () => act({ kind: "spin", deg: norm(rot + 1) }) },
-      { id: "nudge-right", label: "↻", aria: "turn the protractor clockwise by 1°", kind: "pad", group: "nudge", onPress: () => act({ kind: "spin", deg: norm(rot - 1) }) },
+      { id: "nudge-left", label: "↺", aria: word(lang, "kon.aria.acw"), kind: "pad", group: "nudge", onPress: () => act({ kind: "spin", deg: norm(rot + 1) }) },
+      { id: "nudge-right", label: "↻", aria: word(lang, "kon.aria.cw"), kind: "pad", group: "nudge", onPress: () => act({ kind: "spin", deg: norm(rot - 1) }) },
       undo,
       { id: "lock", label: word(lang, "kon.lock"), kind: "primary", group: "go", you: true, onPress: () => act({ kind: "lock" }) },
     ];
     const free: ControlSpec = { id: "free", label: word(lang, "kon.free"), kind: "secondary", group: "go", onPress: () => act({ kind: "free" }) };
     if (goal === "measure") return [
-      { id: "less", label: "−1", aria: "one less", kind: "pad", group: "nudge", disabled: !sel || sel.n <= 0, onPress: () => { if (sel) { sel = { ...sel, n: sel.n - 1, r: sel.outer ? sel.r - 1 : sel.r + 1 }; api.invalidate(); deps.changed(); } } },
-      { id: "more", label: "+1", aria: "one more", kind: "pad", group: "nudge", disabled: !sel || sel.n >= 180, onPress: () => { if (sel) { sel = { ...sel, n: sel.n + 1, r: sel.outer ? sel.r + 1 : sel.r - 1 }; api.invalidate(); deps.changed(); } } },
-      free,
+      { id: "less", label: "−1", aria: word(lang, "kon.aria.less"), kind: "pad", group: "nudge", disabled: !sel || sel.n <= 0, onPress: () => { if (sel) { sel = { ...sel, n: sel.n - 1, r: sel.outer ? sel.r - 1 : sel.r + 1 }; api.invalidate(); deps.changed(); } } },
+      { id: "more", label: "+1", aria: word(lang, "kon.aria.more"), kind: "pad", group: "nudge", disabled: !sel || sel.n >= 180, onPress: () => { if (sel) { sel = { ...sel, n: sel.n + 1, r: sel.outer ? sel.r + 1 : sel.r - 1 }; api.invalidate(); deps.changed(); } } },
+      // "Wapas" after the lock too: one step back (the lock, or her last decision)
+      free, undo,
       { id: "commit", label: word(lang, "kon.this"), kind: "primary", group: "go", you: !!sel, disabled: !sel, onPress: () => sel && act({ kind: "read", n: sel.n }) },
     ];
     const m = P0.mark;
