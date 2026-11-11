@@ -121,3 +121,34 @@ export const PAPER: Theme = {
 
 export const THEMES: Readonly<Record<ThemeName, Theme>> = { night: NIGHT, paper: PAPER };
 export const themeOf = (name: string | null | undefined): Theme => THEMES[(name as ThemeName)] ?? THEMES[DEFAULT_THEME];
+
+// ── engine colours by meaning, batch 1 ────────────────────────────────────────────────────────────────────────────────
+// Colours an engine draws with that are not a surface above (a note's paper, a card wash, a planet). Each key names what
+// it is FOR; night is the exact value the engine drew before (the colour trace proves it), paper is a draft. Engines
+// read them as C.<key> (src/studio-v2/core/tokens.ts merges these tables into C for the active theme).
+export const ENGINE_1 = {
+  night: {
+  },
+  paper: {
+  },
+} satisfies Record<ThemeName, Record<string, string>>;
+
+/** A colour string from channels (an engine that computes a colour builds it here, so no engine holds a colour literal). */
+export const rgbaOf = (r: number, g: number, b: number, a = 1): string => (a >= 1 ? `rgb(${r},${g},${b})` : `rgba(${r},${g},${b},${a})`);
+/** hsl / hsla from channels (hue in degrees; saturation and lightness in %). */
+export const hslaOf = (h: number, s: number, l: number, a = 1): string => (a >= 1 ? `hsl(${h},${s}%,${l}%)` : `hsla(${h},${s}%,${l}%,${a})`);
+/** A palette colour (hex #rgb / #rrggbb, or an rgb() string) at an alpha. */
+export function withAlpha(colour: string, a: number): string {
+  if (colour.startsWith("rgb")) return colour;
+  const h = colour.replace("#", "");
+  const n = parseInt(h.length === 3 ? h.split("").map((x) => x + x).join("") : h, 16);
+  return rgbaOf((n >> 16) & 255, (n >> 8) & 255, n & 255, a);
+}
+
+// ── engine colours by meaning, batch 2 ────────────────────────────────────────────────────────────────────────────────
+export const ENGINE_2 = {
+  night: {
+  },
+  paper: {
+  },
+} satisfies Record<ThemeName, Record<string, string>>;

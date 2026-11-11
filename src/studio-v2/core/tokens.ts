@@ -10,14 +10,14 @@ export const MIN = { label: 38, value: 48, stroke: 4, target: 130 };
  *  unit, so no text a young child sees is drawn below 43 units (16 / 0.376). Applied once, in the shared text helper
  *  (draw.ts makeText), never per engine; engines read it as `api.minLabel` for their layout math. */
 export const MIN_YOUNG = { label: 43 } as const;
-import { NIGHT, themeOf, type StudioColours, type ThemeName } from "../../theme/palette.ts";
+import { ENGINE_1, ENGINE_2, NIGHT, themeOf, type StudioColours, type ThemeName } from "../../theme/palette.ts";
 /** The active theme's engine colours (src/theme/palette.ts: the one colour file). Engines read `C.x` when they draw, so
  *  `useStudioTheme` before an engine is created switches everything it paints; night (today's look) is the default. */
-export const C: StudioColours = { ...NIGHT.studio };
+export const C: StudioColours & typeof ENGINE_1.night & typeof ENGINE_2.night = { ...NIGHT.studio, ...ENGINE_1.night, ...ENGINE_2.night };
 let activeTheme: ThemeName = "night";
 export function useStudioTheme(name: ThemeName | string | null | undefined): ThemeName {
   const t = themeOf(name);
-  Object.assign(C, t.studio); activeTheme = t.name;
+  Object.assign(C, t.studio, ENGINE_1[t.name], ENGINE_2[t.name]); activeTheme = t.name;
   return activeTheme;
 }
 export const studioTheme = (): ThemeName => activeTheme;

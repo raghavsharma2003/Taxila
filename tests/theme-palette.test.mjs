@@ -131,3 +131,10 @@ test("a lesson's theme reaches the board and the engines by data-board-theme on 
   useStudioTheme("paper"); assert.equal(C.bg, PAPER.studio.bg);
   useStudioTheme("night"); assert.equal(C.bg, NIGHT.studio.bg);
 });
+
+test("every engine colour has a night value and a paper value, and no key is named twice", async () => {
+  const { ENGINE_1, ENGINE_2, NIGHT } = await import("../src/theme/palette.ts");
+  for (const [n, b] of [["ENGINE_1", ENGINE_1], ["ENGINE_2", ENGINE_2]]) assert.deepEqual(Object.keys(b.paper).sort(), Object.keys(b.night).sort(), `${n}: night and paper name the same keys`);
+  const all = [...Object.keys(NIGHT.studio), ...Object.keys(ENGINE_1.night), ...Object.keys(ENGINE_2.night)];
+  assert.deepEqual(all.filter((k, i) => all.indexOf(k) !== i), [], "a key named in two tables");
+});
