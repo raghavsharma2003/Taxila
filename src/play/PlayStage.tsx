@@ -284,7 +284,7 @@ export function PlayStage(props: PlayStageProps) {
   const solved = ctlRef.current?.solved ?? false;
 
   return (
-    <div ref={rootRef} className="pl-root" data-embedded={props.embedded ? "1" : undefined} data-art={art} data-dark={a.dark ? "1" : undefined} data-layout={layout} data-young={young ? "1" : undefined} data-testid="play-stage" data-family={level.family} data-mode={level.mode} data-render={render.kind} data-engine={render.kind === "3d" ? entry?.id : undefined}
+    <div ref={rootRef} className="pl-root" data-embedded={props.embedded ? "1" : undefined} data-art={art} data-dark={a.dark ? "1" : undefined} data-layout={layout} data-young={young ? "1" : undefined} data-testid="play-stage" data-family={level.family} data-mode={level.mode} data-goal={typeof (level.params as { goal?: unknown } | null)?.goal === "string" ? (level.params as { goal: string }).goal : undefined} data-render={render.kind} data-engine={render.kind === "3d" ? entry?.id : undefined}
       data-doors={solved && !doorsInWorld && props.doors && props.doors.length > 0 ? "1" : undefined}
       data-keep={keep ? "bottom-right" : undefined} style={keep ? ({ "--pl-keep-w": `${keep.w}px`, "--pl-keep-h": `${keep.h}px` } as CSSProperties) : undefined}>
       <header className="pl-top">
