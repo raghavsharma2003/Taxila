@@ -51,7 +51,10 @@ export interface StudioColours {
 /** The board's inks per ground (src/modules/whiteboard/palette.ts reads these). */
 export interface BoardInks { chalk: string; accent: string; ink: string; mark: string; good: string; soft: string }
 export interface BoardRoleInks { focus: string; slot: string; answer: string; mixup: string; muted: string }
-export interface BoardPaletteValues { ground: string; edge: string; grid?: string; fillAlpha: number; ink: BoardInks; role: BoardRoleInks }
+/** Designed fill tints (Design, patch 008): a focus area and an answer / slot box are filled with these, at full strength,
+ *  instead of the stroke colour at fillAlpha (indigo at 0.3 on paper read lilac-grey and muddy). Absent: stroke × fillAlpha. */
+export interface BoardFills { focus: string; answer: string }
+export interface BoardPaletteValues { ground: string; edge: string; grid?: string; fillAlpha: number; ink: BoardInks; role: BoardRoleInks; fills?: BoardFills }
 
 export interface Theme {
   name: ThemeName;
@@ -77,9 +80,11 @@ const NIGHT_CHALK: BoardPaletteValues = {
 };
 const NIGHT_PAPER: BoardPaletteValues = {
   ground: "#FFFBF2", edge: "#D9CDB8", fillAlpha: 0.26,
-  ink: { chalk: "#2B2620", ink: "#2B2620", accent: "#1F5FBF", mark: "#C8641A", good: "#2E7D4F", soft: "#8A7F70" },
-  // (design r8's paper direction: --focus #3B47B0, --ans #1C7348, --mix #A84B22, --board-soft #6F675B)
-  role: { focus: "#3B47B0", slot: "#1C7348", answer: "#1C7348", mixup: "#A84B22", muted: "#6F675B" },
+  // (main 2026-11-11, the night faults the role palette found, fixed on purpose: soft #8A7F70 was 3.80 : 1 on this
+  // ground, now #6F675B at 5.4 : 1; answer #1C7348 and mix-up #A84B22 merged for a red-green-blind child, now Design's
+  // #0B736A / #8A5A00. Under night only the symmetry template's grid boards draw on this ground)
+  ink: { chalk: "#2B2620", ink: "#2B2620", accent: "#1F5FBF", mark: "#C8641A", good: "#2E7D4F", soft: "#6F675B" },
+  role: { focus: "#3B47B0", slot: "#0B736A", answer: "#0B736A", mixup: "#8A5A00", muted: "#6F675B" },
 };
 export const NIGHT: Theme = {
   name: "night",
@@ -97,16 +102,18 @@ const PAPER_STUDIO: StudioColours = {
   ink: "#1C1A16", ink2: "#4B453C", ink3: "#655E53",
   // her indigo for the part in focus; the child's move is marigold's text-safe dark (--move-text); green for right,
   // rust for "look again"; the science teal and the sun deepened to carry on paper
-  // (answer #185850 and mix-up #B6581E, not the prototype's #1C7348 / #A84B22: those two merge for a red-green-blind
-  // child (tests/theme-palette.test.mjs); these differ in lightness, 8.1 against 4.7 : 1 on paper, and both carry text)
-  ion: "#3B47B0", ionDeep: "#2A3490", volt: "#7E4C00", mint: "#185850", amber: "#B6581E",
+  // (Design's A values, 2026-11-11: answer #0B736A and mix-up #8A5A00, 0.152 apart for a red-green-blind child and 5.62 /
+  // 5.83 : 1 on paper. The prototype's #1C7348 / #A84B22, and Design's first #0B7356, merged under the deuteranopia check)
+  ion: "#3B47B0", ionDeep: "#2A3490", volt: "#7E4C00", mint: "#0B736A", amber: "#8A5A00",
   sci: "#0E6B66", sun: "#8A5A00", line: "rgba(28,26,22,.10)", line2: "rgba(28,26,22,.22)",
   hi: "#1C1A16", lo: "#000000", onBright: "#1C1A16",
 };
 const PAPER_BOARD: BoardPaletteValues = {
   ground: "#FFFDF8", edge: "#E0D7C7", fillAlpha: 0.26,
-  ink: { chalk: "#1C1A16", ink: "#1C1A16", accent: "#3B47B0", mark: "#B6581E", good: "#185850", soft: "#6F675B" },
-  role: { focus: "#3B47B0", slot: "#185850", answer: "#185850", mixup: "#B6581E", muted: "#6F675B" },
+  ink: { chalk: "#1C1A16", ink: "#1C1A16", accent: "#3B47B0", mark: "#8A5A00", good: "#0B736A", soft: "#6F675B" },
+  role: { focus: "#3B47B0", slot: "#0B736A", answer: "#0B736A", mixup: "#8A5A00", muted: "#6F675B" },
+  // (Design's --tx-focus-fill / --tx-ans-fill for A)
+  fills: { focus: "#DCE0F5", answer: "#DAEFE8" },
 };
 export const PAPER: Theme = {
   name: "paper",

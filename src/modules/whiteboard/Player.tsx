@@ -10,7 +10,7 @@ import type { ThemeName } from "../../theme/palette.ts";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import type { WbOp, WhiteboardScript } from "../../../shared/studio.ts";
 import { erasers, isIdentity, isMotionOp, morphAt, motionMatrix, opGeometry, opProgress, sweepAt, textFace, visibleShare, TEXT_FACES, type OpGeometry } from "../../../shared/whiteboard.js";
-import { paletteFor, roleColor, type BoardSkin, type Ink, type Palette, type Role } from "./palette.ts";
+import { paletteFor, roleColor, roleFill, type BoardSkin, type Ink, type Palette, type Role } from "./palette.ts";
 // round 8 (board grammar item 7): the board's faces, self-hosted (Vite bundles the woff2 files)
 import "./faces.css";
 
@@ -174,8 +174,9 @@ const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion, sweep =
   return (
     <g opacity={vis} data-op={op.op} data-id={op.id}>
       {clip && <defs><clipPath id={clipId}><rect x={clip.x - 2} y={clip.y - 2} width={clip.w + 4} height={clip.h + 4} /></clipPath></defs>}
-      {fillInk && g.fill && fillP > 0 && <path d={g.fill} fill={fillInk} fillOpacity={pal.fillAlpha * fillP} stroke="none" clipPath={clipId ? `url(#${clipId})` : undefined} />}
-      {g.slotFill && share(0) > 0 && <path d={g.slotFill} fill={color} fillOpacity={pal.fillAlpha * 0.6} stroke="none" />}
+      {/* (a palette with designed tints fills focus and answer with them at full strength: patch 008) */}
+      {fillInk && g.fill && fillP > 0 && <path d={g.fill} fill={roleFill(pal, role) ?? fillInk} fillOpacity={(roleFill(pal, role) ? 1 : pal.fillAlpha) * fillP} stroke="none" clipPath={clipId ? `url(#${clipId})` : undefined} />}
+      {g.slotFill && share(0) > 0 && <path d={g.slotFill} fill={roleFill(pal, role ?? "slot") ?? color} fillOpacity={roleFill(pal, role ?? "slot") ? 1 : pal.fillAlpha * 0.6} stroke="none" />}
       {g.paths.map((d, i) => {
         const s = share(i);
         // round 8: a dashed op (a mix-up line, a slot box) or a dashed path of its drawing (a slot's box round its "?")
