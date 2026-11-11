@@ -1,4 +1,29 @@
-# Authored why-probes: where they earn their place (proposal, Learning, 2026-11-11)
+# Authored why-probes: a pilot on the four live scripts (Learning, 2026-11-11)
+
+## Main's ruling (18:50 UTC): approved as a pilot, on these terms
+
+1. **Scope.** Probes are authored for the four pilots only, about 3 per script, after the staged round's second reads are in.
+   Nothing goes into the staged 30 until the pilot has been judged.
+2. **The field** is as proposed below, with two additions:
+   - Each probe lists the kit misconception ids its reasons point at (`misconceptions: [...]`).
+   - Each probe has at least one `sound` reason with cues, so a right reason is recognised, not only wrong ones.
+3. **Classification** uses the authored cues only, never a model; that is the standing law. `unknown` changes nothing, and it
+   is counted.
+4. **The record.** The child is never told the reason, and no remediation is triggered in the same lesson. The record is
+   "right, reason matched misconception X", its own kind of evidence, weaker than a wrong answer. Loop decides the weight;
+   Loop's owner is told, through main, once the contract is drafted.
+5. **Order.** Brain builds the contract and the turn after director21 is judged. The first measurement is the run after that.
+
+**Reversal.** Any one of these ends or narrows the pilot:
+- more than 60% of probe answers are `unknown` on the first measured run;
+- judges hear the probe as doubting the child in more than 1 lesson in 4;
+- a probe a judge finds gives away the next card's answer is removed.
+
+The original proposal follows. Where it differs from the terms above, the terms govern: in particular, under "What it changes"
+below, a misconception reason now schedules no remediation in the same lesson.
+
+---
+
 
 Main asked for this after batch 6: where a right answer can come from a wrong reason, and what field a probe would use. This is a
 proposal only. Nothing is authored, and nothing changes in the schema, the runtime or the scripts until main rules on it.
@@ -61,6 +86,7 @@ On a card (explain `ask`, `checks[i]`, `remediation[i].then`):
 
 ```jsonc
 "whyProbe": {
+  "misconceptions": ["<kit misconception id>"],   // (main's term 2) every misconception id its reasons point at
   "prompt": { "hi": "Tumne kaise socha?", "en": "How did you work it out?" },   // one short question, never a second card
   "reasons": [
     { "kind": "sound",                       // the reason the card teaches
