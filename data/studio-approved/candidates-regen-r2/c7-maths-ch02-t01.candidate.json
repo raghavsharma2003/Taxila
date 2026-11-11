@@ -1,0 +1,109 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c7-maths-ch02-t01",
+    "archetype": "rule-machine@1",
+    "misconceptionId": "c7-maths-ch02-t01-m-words-order",
+    "how": "a story only when its rule IS the chain applied to the input, in the order the child computes it (₹500 − 4 × 45 is not ×4 then −45: give no story there); a word-order mix-up round's sub gives the worded phrase ('20 se 5 kam') and its rule is the right order",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "beat": "rem:c7-maths-ch02-t01-m-words-order",
+    "when": "remediation",
+    "check": "c7-maths-ch02-t01-s1:c1"
+  },
+  "archetype": "rule-machine@1",
+  "spec": {
+    "archetype": "rule-machine@1",
+    "skills": [
+      "c7-maths-ch02-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Round",
+      "built": "Machine ready",
+      "run": "Chalao",
+      "want": "Kya chahiye?",
+      "got": "Kya mila?",
+      "coach": "Socho aur check karo",
+      "runDone": "Run complete",
+      "step": "Step",
+      "predict": "Pehle andaza",
+      "inverse": "Ulta socho",
+      "target": "Lakshya",
+      "steps": "Steps",
+      "pick": "Tile chuno",
+      "works": "Sahi kaam karta hai",
+      "fix": "Dobara sudharo"
+    },
+    "title": "Baat se Machine",
+    "rounds": [
+      {
+        "mode": "build",
+        "title": "Kam wala vakya",
+        "sub": "20 se 5 kam",
+        "rule": [
+          "-5"
+        ],
+        "inputs": [
+          20,
+          30,
+          50,
+          80
+        ],
+        "tiles": [
+          "-5",
+          "+5",
+          "-20",
+          "×5"
+        ],
+        "targets": "c7-maths-ch02-t01-m-words-order"
+      },
+      {
+        "mode": "build",
+        "title": "Roz ka hisaab",
+        "sub": "Har din 3 rupaye kam",
+        "rule": [
+          "-3"
+        ],
+        "inputs": [
+          18,
+          25,
+          40,
+          60
+        ],
+        "tiles": [
+          "-3",
+          "+3",
+          "-18",
+          "×3"
+        ],
+        "targets": "c7-maths-ch02-t01-m-words-order"
+      }
+    ]
+  },
+  "hash": "92068f8b5ef06033f8963c9ad9c9fcb8",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": true,
+    "spec": {
+      "ok": true,
+      "repairs": 1,
+      "fellBack": false
+    }
+  },
+  "facts": {
+    "kind": "game",
+    "archetype": "rule-machine@1",
+    "onScreen": {
+      "title": "Baat se Machine",
+      "rounds": 2,
+      "first": "Kam wala vakya: 20 se 5 kam"
+    }
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T09:47:50.407Z"
+  }
+}
