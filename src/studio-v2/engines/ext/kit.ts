@@ -140,3 +140,4 @@ export function taskPill(api: EngineApi): (step: string, goal: string, mode?: "d
   return (step, goal, mode) => { const k = `${step}|${goal}|${mode ?? ""}`; if (k === last) return; last = k; api.task(step, goal, mode); };
 }
 export const clampX = (x: number, w = 0) => clamp(x, 70 + w / 2, W - 70 - w / 2);
+export { tally } from "../../core/dots.ts";

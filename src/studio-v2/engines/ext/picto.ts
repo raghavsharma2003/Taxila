@@ -9,7 +9,7 @@ import { magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady, textBlock } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, textBlock, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
 
@@ -21,8 +21,9 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
   const g = { stream: [] as number[], si: 0, items: [] as { cat: number; x: number }[], spawnT: 0, tally: [] as number[], sym: [] as number[], bars: [] as number[], drag: -1, ci: 0, claimY: 0, answered: false, verdicts: [] as string[], revealT: 0, right: 0, n: 0, coachA: 1, coachGone: false };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "right", label: T.right }]);
   const rd = (): PdRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) { const r = spec.rounds[k]; g.stream = tallyStream(r); g.si = 0; g.items = []; g.spawnT = 0.5; g.tally = r.cats.map(() => 0); g.sym = r.cats.map(() => 0); g.bars = r.cats.map(() => r.axisStart); g.ci = 0; g.claimY = 150; g.answered = false; g.verdicts = []; g.revealT = 0; api.task(`${T.round} ${k + 1}`, r.sub || r.title); api.event("round_start", { round: k + 1, mode: r.mode }); sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 }); },
+    onRound(k) { r0 = g.right; const r = spec.rounds[k]; g.stream = tallyStream(r); g.si = 0; g.items = []; g.spawnT = 0.5; g.tally = r.cats.map(() => 0); g.sym = r.cats.map(() => 0); g.bars = r.cats.map(() => r.axisStart); g.ci = 0; g.claimY = claimTop(); AX.y0 = r.mode === "claims" ? 410 : 500; AX.h = r.mode === "claims" ? 220 : 290; g.answered = false; g.verdicts = []; g.revealT = 0; api.task(`${T.round} ${k + 1}`, r.sub || r.title); api.event("round_start", { round: k + 1, mode: r.mode }); sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 }); },
     onEnd(k) { api.event("round_end", { round: k + 1 }); },
     onFinal() { api.task("", T.runDone, "done"); api.done({ right: g.right, of: g.n }); },
   });
@@ -37,10 +38,14 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
     const r = rd(); if (g.ci >= r.claims.length) return;
     const t = claimTruth(r, r.claims[g.ci]), grade = api.answer(`r${flow.round + 1}:${g.ci}`, v, v === t ? "right" : "wrong");
     g.verdicts[g.ci] = grade.verdict; g.n++; if (grade.verdict === "right") { g.right++; sfx.blip({ f: 600, f2: 900, dur: 0.12, type: "triangle", gain: 0.14 }); api.fx.burst(500, g.claimY, { n: 16, color: C.mint, speed: 300, life: 0.4, size: 8 }); } else { sfx.blip({ f: 220, f2: 140, dur: 0.2, gain: 0.14 }); api.fx.shake(3, 0.15); }
-    g.ci++; g.claimY = 150; if (g.ci >= r.claims.length) { g.answered = true; g.revealT = 0; }
+    g.ci++; g.claimY = claimTop(); if (g.ci >= r.claims.length) { g.answered = true; g.revealT = 0; }
   }
   const counterBtns = () => { const n = rd().cats.length, w = Math.min(250, (W - 100) / n - 14); /* a fruit name fits its bin at the young floor */ return rd().cats.map((c, i) => ({ i, x: 60 + i * ((W - 100) / n), y: 440, w, h: 140 })); };
   const rowY = (i: number) => 196 + i * 72;
+  // claims mode lifts the chart so its category labels clear the SAHI / GALAT buttons, and a claim card enters below the
+  // stage chrome (judges' renders 2026-11-11: the buttons covered "Books Stars Balls" and the axis 0; the first claim sat
+  // under the task pill at l1366)
+  const claimTop = () => Math.max(150, api.chromeBottom() + 52);
   const AX = { x0: 210, y0: 500, h: 290 }, barX = (i: number) => AX.x0 + 40 + i * Math.min(130, 560 / rd().cats.length), barW = () => Math.min(90, 560 / rd().cats.length - 30);
   const maxV = () => { const r = rd(); const m = Math.max(...r.cats.map((c) => c.count)); return Math.ceil((m * 1.15) / r.scale) * r.scale; };
   const yOf = (v: number) => { const r = rd(); return AX.y0 - ((v - r.axisStart) / Math.max(1, maxV() - r.axisStart)) * AX.h; };
@@ -66,6 +71,7 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
     if (!fontOk) return;
     flow.tick(dt, 1.8);
     if (flow.state === "intro" && flow.stateT < 0.05) hud.show(true);
+    if (flow.round >= 0 && flow.state !== "play") { hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("right", tally(g.right - r0, (rd().mode === "claims" ? rd().claims.length : rd().cats.length)), { bump: true }); }   // the round's readouts from its intro on, never a stale or "0/0" count
     if (flow.state !== "play") return;
     const r = rd();
     if (r.mode === "tally" && !g.answered) {
@@ -76,7 +82,7 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
     }
     if (r.mode === "claims" && !g.answered) { g.claimY += 44 * r.speed * dt; if (g.claimY > 430) call(!claimTruth(r, r.claims[g.ci])); }
     if (g.answered) { g.revealT += dt; if (g.revealT > 3.2) flow.endRound(); }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("right", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("right", tally(g.right - r0, (rd().mode === "claims" ? rd().claims.length : rd().cats.length)), { bump: true });
   }
   function marks(ctx: Ctx, n: number, x: number, y: number) { for (let k = 0; k < n; k++) { const grp = Math.floor(k / 5), i = k % 5, gx = x + grp * 46; ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); if (i < 4) { ctx.moveTo(gx + i * 8, y - 16); ctx.lineTo(gx + i * 8, y + 16); } else { ctx.moveTo(gx - 4, y + 12); ctx.lineTo(gx + 30, y - 12); } ctx.stroke(); } }
   function paintBg(c: Ctx) { backdrop(c, accent, 101, 0); }
@@ -104,7 +110,7 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
       const mx = maxV();
       ctx.save(); ctx.strokeStyle = C.ink2; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(AX.x0, AX.y0 - AX.h - 10); ctx.lineTo(AX.x0, AX.y0); ctx.lineTo(AX.x0 + 600, AX.y0); ctx.stroke(); ctx.restore();
       if (r.axisStart > 0) { ctx.save(); ctx.strokeStyle = C.amber; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(AX.x0 - 12, AX.y0 - 10); ctx.lineTo(AX.x0 + 12, AX.y0 - 18); ctx.moveTo(AX.x0 - 12, AX.y0 - 2); ctx.lineTo(AX.x0 + 12, AX.y0 - 10); ctx.stroke(); ctx.restore(); }
-      const step = Math.max(r.scale, Math.ceil((mx - r.axisStart) / 6 / r.scale) * r.scale);
+      const step = Math.max(r.scale, Math.ceil((mx - r.axisStart) / (r.mode === "claims" ? 4 : 6) / r.scale) * r.scale);   // gridline labels a young label apart
       for (let v = r.axisStart; v <= mx + 1e-6; v += step) { const y = yOf(v); ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(AX.x0, y); ctx.lineTo(AX.x0 + 600, y); ctx.stroke(); api.text(ctx, String(v), AX.x0 - 14, y, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "right", baseline: "middle" }); }
       r.cats.forEach((c, i) => {
         const x = barX(i), bw = barW(), v = r.mode === "claims" ? c.count : g.bars[i], y = yOf(v), col = COLS[i % 5], vd = g.verdicts[i];

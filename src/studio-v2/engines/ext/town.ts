@@ -13,7 +13,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady, fmtNum, taskPill, textBlock, wrap } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, fmtNum, taskPill, textBlock, wrap, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
 
@@ -32,8 +32,9 @@ function create(api: EngineApi, spec: TownSpec): EngineInstance {
   };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }]);
   const rd = (): TlRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) {
+    onRound(k) { r0 = g.right;
       const r = spec.rounds[k];
       Object.assign(g, { hold: r.mode === "barter" ? r.start : "", moves: [], shake: -1, shakeT: 0, flyT: 1, price: r.mode === "market" ? r.cost * 2 : 0, slide: false, open: false, t: 0, ci: -1, prices: [], outcome: [], profit: 0, sold: 0, monthly: 0, running: false, runT: 0, pick: [], answered: false, verdict: "", detail: "", revealT: 0 });
       if (r.mode === "barter") g.plan = barterPlan(r) ?? [];
@@ -90,7 +91,7 @@ function create(api: EngineApi, spec: TownSpec): EngineInstance {
     }
     if (r.mode === "savings" && g.running && !g.answered) { g.runT += dt; if (g.runT > r.years * 2 + 0.6) judge({ monthly: g.monthly }, savingsAfter(r, g.monthly) >= r.goal && g.monthly <= minMonthly(r) * 1.1 ? "right" : "wrong"); }
     if (g.answered) { g.revealT += dt; if (g.revealT > 3.2) flow.endRound(); }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true });
   }
   function paintBg(c: Ctx) { backdrop(c, accent, 191, 0); }
   function button(ctx: Ctx, b: { x: number; y: number; w: number; h: number }, label: string, on: boolean, now: number, col: string = C.volt) {
@@ -157,7 +158,7 @@ function create(api: EngineApi, spec: TownSpec): EngineInstance {
     if (done) { pill(api, ctx, g.detail, 440, 150 + 460, { color: ok ? C.mint : C.amber, size: 38 }); if (ok) tick(ctx, 965, 470, C.mint, 1); else magnifier(ctx, 960, 470, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
-    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.done]] });
+    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[tally(g.right - r0, 1), T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
   }
   function bot(): BotAction | null {

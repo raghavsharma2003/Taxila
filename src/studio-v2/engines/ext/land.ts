@@ -11,7 +11,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady, taskPill, textBlock } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, taskPill, textBlock, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
 
@@ -25,8 +25,9 @@ function create(api: EngineApi, spec: LandSpec): EngineInstance {
   const g = { placed: [] as (number | null)[], drag: -1, dragXY: [0, 0] as [number, number], running: false, runT: 0, cells: [] as [number, number][], site: 0.5, trees: false, slide: false, judged: 0, answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0, results: [] as string[] };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }]);
   const rd = (): LdRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) {
+    onRound(k) { r0 = g.right;
       const r = spec.rounds[k];
       Object.assign(g, { placed: r.mode === "rain" ? r.asks.map(() => null) : [], drag: -1, running: false, runT: 0, cells: r.mode === "river" ? [r.spring] : [], site: 0.5, trees: false, slide: false, judged: 0, answered: false, verdict: "", detail: "", revealT: 0, results: [] });
       setTask(`${T.round} ${k + 1}`, r.mode === "river" ? T.trace : r.sub || r.title); api.event("round_start", { round: k + 1, mode: r.mode }); sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 });
@@ -83,7 +84,7 @@ function create(api: EngineApi, spec: LandSpec): EngineInstance {
       if (r.mode === "flood" && g.runT > 3) { const gr = judge(`r${flow.round + 1}`, { x: +g.site.toFixed(3), trees: g.trees }, siteHeight(r, g.site) > floodLevel(r, g.trees) ? "right" : "wrong"); g.detail = gr.detail ?? ""; finish(); }
     }
     if (g.answered) { g.revealT += dt; if (g.revealT > 3.2) flow.endRound(); }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, ((r) => (r.mode === "rain" ? r.asks.length : 1))(rd())), { bump: true });
   }
   function finish() { g.running = true; g.answered = true; g.revealT = 0; const allRight = g.results.every((v) => v === "right"); g.verdict = allRight ? "right" : g.results.some((v) => v === "right") ? "partial" : "wrong"; if (allRight) api.fx.flash(C.mint, 0.1); }
   function paintBg(c: Ctx) { backdrop(c, accent, 181, 0); }
@@ -143,7 +144,7 @@ function create(api: EngineApi, spec: LandSpec): EngineInstance {
     if (done) { const [tx, ty] = r.mode === "rain" ? [720, 200] : r.mode === "river" ? [885, 480] : [885, 300]; if (ok) tick(ctx, tx, ty, C.mint, 1); else magnifier(ctx, tx - 5, ty, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
-    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.done]] });
+    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[tally(g.right - r0, ((r) => (r.mode === "rain" ? r.asks.length : 1))(rd())), T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
   }
   function bot(): BotAction | null {

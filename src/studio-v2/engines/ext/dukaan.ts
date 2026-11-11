@@ -11,7 +11,7 @@ import { magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
 
@@ -81,6 +81,7 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
     flow.tick(dt, 1.8);
     if (flow.state === "intro" && flow.stateT < 0.05) hud.show(true);
     for (const t of g.toks) { t.x = lerp(t.x, t.tx, Math.min(1, dt * 14)); t.y = lerp(t.y, t.ty, Math.min(1, dt * 14)); }
+    if (flow.round >= 0 && flow.state !== "play") { hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("served", tally(g.roundR, units()), { bump: true }); }   // the round's readouts from its intro on, never a stale or "0/0" count
     if (flow.state !== "play") return;
     const r = rd();
     if (!g.answered) {
@@ -92,7 +93,7 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
         else judge(g.toks.map((t) => t.v), "wrong");
       }
     } else { g.revealT += dt; if (g.revealT > (g.verdict === "right" ? 2.0 : 3.2)) { if (g.k + 1 < units()) { g.k++; start(); } else flow.endRound(); } }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("served", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("served", tally(g.roundR, units()), { bump: true });
     hud.set("pat", `${Math.round(g.patience * 100)}%`, { meter: g.patience, tone: g.patience < 0.25 ? "amber" : null });
   }
   function note(ctx: Ctx, v: number, x: number, y: number, s = 1) {
@@ -118,7 +119,7 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
         api.text(ctx, it.name, 170, 222 + i * step, { size: 38, weight: 700, baseline: "middle", maxWidth: 300 });
         api.text(ctx, `${it.qty} × ${rupees(it.price)}`, 470, 266 + i * step, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "right", baseline: "middle" });
       });
-      if (r.mode === "change") pill(api, ctx, `${T.pays} ${rupees(c.pays ?? 0)}`, 318, 490, { color: C.amber, size: 38 });
+      if (r.mode === "change") pill(api, ctx, `${T.pays} ${rupees(c.pays ?? 0)}`, 318, 482, { color: C.amber, size: 38 });   // between the bill card (ends 450) and the till (starts 514)
       // patience
       ctx.save(); ctx.fillStyle = "rgba(255,255,255,.08)"; roundRect(ctx, 26, 330, 104, 10, 5); ctx.fill(); ctx.fillStyle = g.patience < 0.25 ? C.amber : C.mint; roundRect(ctx, 26, 330, 104 * g.patience, 10, 5); ctx.fill(); ctx.restore();
     }
@@ -167,7 +168,9 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent: C.amber });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.roundR}/${g.roundN}`, T.served]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.served]] });
-    drawCoach(api, ctx, r.mode === "pay" || r.mode === "change" ? T.coach : "", flow.state === "play" ? g.coachA : 0, now, 120);
+    // the coach sits inside the empty counter it points at, never over the bill card (judges, 2026-11-11: "Notes aur sikke counter
+    // par rakho" over the Bill card at p412 and l1366); it fades on the first tap, before any note lands there
+    drawCoach(api, ctx, r.mode === "pay" || r.mode === "change" ? T.coach : "", flow.state === "play" ? g.coachA : 0, now, COUNTER.y + COUNTER.h - 40, COUNTER.w - 40, COUNTER.x + COUNTER.w / 2);
   }
   function bot(): BotAction | null {
     if (flow.state !== "play" || g.answered) return { type: "wait", ms: 300 };
