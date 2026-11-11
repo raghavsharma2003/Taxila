@@ -17,7 +17,6 @@
 // The route classifies, updates the learner model, then calls step with the updated skill snapshot.
 // branchesFor() runs step() on a synthetic right and wrong reply: the voice lane's "if right / if not"
 // lines are the director's own next moves, never a second guess at them.
-import { inHindiWords } from "../brain/register.js";
 import { heldBoard as studioHeldBoard } from "../stagecraft/board-first.js";
 import { unitBoardOf, firstUnitOf } from "../brain/propose.js";
 import { stopKind, signalsOf } from "../relational/signals.js";
@@ -145,6 +144,7 @@ import { readMethod, keepMethod, METHOD_NOTE } from "../conversation/methods.js"
 import { freeSubjectOf, genericSubject } from "./requests.js";
 import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
+import { isSadAside } from "../brain/asideReplies.js";
 import { alsoReading, alsoQuestion, questionShaped, bareAck, readIntent } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
@@ -833,19 +833,25 @@ const ASKS_HER_TASTE = /(?:aapko|tumhe|aap|tum)\b.*\bpasand|do you like|your fav
  */
 function parkGate(s, kit, input, e) {
   if (!scriptOn() || !scriptIdOf(kit) || scriptFor(kit)?.script?.recordedRun) return pushLater(s.later ?? [], e);
-  if (ASKS_HER_TASTE.test(String(input?.text ?? ""))) { s.tasteAsked = { topic: String(e.topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; return s.later ?? []; }
-  // (v6.11 J2: their answer to her return question is not a new aside)
+  // (v6.11 J2: their answer to her return question is not a new aside — nor, asking her back, a taste question: R1 rule 4, a plain
+  // reply form, then the lesson)
   if (s.returnAnswer) return s.later ?? [];
+  if (ASKS_HER_TASTE.test(String(input?.text ?? ""))) { s.tasteAsked = { topic: String(e.topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; return s.later ?? []; }
+  // (dc-r8-director20 R1 rule 3: a sad aside is not parked for a return that assumes liking or fun — brain/say.js says one sad line
+  // now, and the lesson goes on)
+  if (isSadAside(input?.text)) { s.sadAside = { turn: s.turn }; return s.later ?? []; }
   const k = String(e.topic ?? "").toLowerCase();
   const had = (s.later ?? []).find((x) => String(x.topic ?? "").toLowerCase() === k || (k && String(x.topic ?? "").toLowerCase().includes(k)));
   // (v6.9 T1, main on director17 c4 offtopic 30, c5-t01 offtopic 32: "likh li hai" and then silence lost two asides): an aside said
   // again before it was returned is returned NOW, once — her one line on what they said; one already returned gets the short line
-  if (had && had.id != null && (!had.servedAt || !had.again) && responseShape("aside_again", "*") === "return_once") {
+  // (P1, dc-r8-director20 c4 offtopic 37: an aside said again AFTER its return got a second return with no park before it — it gets the
+  // short line instead; only one said again before its return is returned now)
+  if (had && had.id != null && !had.servedAt && responseShape("aside_again", "*") === "return_once") {
     // (said again after it was returned: one more return, on what they said now — then the short line from here on)
     s.servedNow = { topic: String(had.topic), share: !!had.share, said: String(input?.text ?? "") || had.said || null };
     return (s.later ?? []).map((x) => (x.id === had.id ? { ...x, servedAt: s.turn, ...(had.servedAt ? { again: true } : {}) } : x));
   }
-  if (had) { s.asideAgain = { topic: String(had.topic), turn: s.turn }; return s.later ?? []; }
+  if (had) { s.asideAgain = { topic: String(had.topic), turn: s.turn, ...(had.servedAt != null ? { returned: true } : {}) }; return s.later ?? []; }
   return pushLater(s.later ?? [], e);
 }
 function parkAside(s, kit, input, item) {
@@ -886,7 +892,7 @@ export function scriptKeyOf(kit, id) {
   if (m[4]) { const r = sk.remediation?.find((x) => x.targets === m[5]); return r?.then && typeof r.then === "object" ? r.then.key ?? null : r?.thenKey ?? null; }
   return sk.checks?.find((c) => c.id === m[6])?.key ?? null;
 }
-/** v6.3 T1′: `text` without its sentences that state the numeric key of a script card already closed (not `live`), or null. */
+/** v6.3 T1′: `text` when none of its sentences states the numeric key of a script card already closed (not `live`), else null. */
 function withoutClosedKeys(text, s, kit, live) {
   if (!text) return text ?? null;
   const keys = [...new Set([...(s.itemsDone ?? []), ...(s.skipped ?? [])].filter((id) => String(id).startsWith("script:") && id !== live?.id)
@@ -895,8 +901,8 @@ function withoutClosedKeys(text, s, kit, live) {
   const esc = (k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const hit = (x) => keys.some((k) => new RegExp(`(?<![\\d/])${esc(k)}(?![\\d/])`).test(x));
   const ss = String(text).match(/[^.!?\u0964]+[.!?\u0964]*/g)?.map((x) => x.trim()).filter(Boolean) ?? [];
-  const kept = ss.filter((x) => !hit(x));
-  return kept.length === ss.length ? text : kept.length ? kept.join(" ") : null;
+  // (main's order 1, G3: an authored line is said whole or not at all — never cut to the sentences without a closed key)
+  return ss.some(hit) ? null : text;
 }
 /** v4 W1: a live script card's authored reminder line in the lesson's language, or null. */
 function cardPointOf(s, kit, item) {
@@ -1433,7 +1439,11 @@ function afterCorrect(s, input, item) {
   // v6.6 K3 (main, director14 c5-t02 stuck 66: a then-card answered right got a why-probe, the parent card it stood in for was never
   // re-posed): a then-card whose parent waits to be re-posed gets no probe — the parent comes next
   const parentWaits = scriptOn() && !scriptFor(kit)?.script?.recordedRun && (s.reposeQ ?? []).some((r) => r.after === item.id);
-  const probePlan = unaided && !parentWaits ? probePlanFor(s, item, kit, input.voice) : null;
+  // (S1 and P1, dc-r8-director20: in a scripted lesson a why-probe has no authored line, so all 42 probe turns of director20 ended on
+  // the close with nothing for the child — and an aside on the next turn got a park with no lesson after it. A script card answered
+  // right goes on to the next part, its close first)
+  const scriptedCard = scriptOn() && !!scriptIdOf(kit) && String(item.id ?? "").startsWith("script:") && !scriptFor(kit)?.script?.recordedRun;
+  const probePlan = unaided && !parentWaits && !scriptedCard ? probePlanFor(s, item, kit, input.voice) : null;
   if (probePlan) {
     s.pendingWhy = item.id;
     s.pendingProbe = probePlan;
@@ -2923,6 +2933,7 @@ function step0(prev, input) {
   if (heldOut) return heldOut;
   const s = structuredClone(prev);
   s.cardUnsaid = undefined;
+  s.bodyUnsaid = undefined;
   s.asideReplyDue = undefined;
   // (v6.11 J2: her last turn ended on an aside's return question and this reply is about it: their answer is the aside's own reply —
   // never parked as a new aside, never returned again; brain/say.js answers it with one sentence of hers, else a neutral joint)
@@ -3232,6 +3243,8 @@ function step0(prev, input) {
   }
   if (p.probeAck) move.probeAck = true;
   if (p.sayFirst?.length) move.sayFirst = p.sayFirst.map(String);
+  // P1 (dc-r8-director20): the authored parts a return's turn held back (brain/say.js guard.bodyHeld) are said first now
+  if (prev?.bodyUnsaid?.length && !["safeguard", "wrap", "break"].includes(move.kind)) { move.sayFirst = [...prev.bodyUnsaid.map(String), ...(move.sayFirst ?? [])]; move.heldSaid = prev.bodyUnsaid.map(String); }
   // v6.10 T2 (main on director18 c5-t02 stuck 50, offtopic 10, c6 offtopic 10: after the aside reply the card was posed bare and its
   // point was never said): after an aside reply the walk resumes at the unit's next unsaid part — the card's point when no recent turn
   // of hers said it, then the card
@@ -3241,7 +3254,7 @@ function step0(prev, input) {
     const b = bid && bid !== "worked" ? skillScriptOf(input.kit, it.skillId)?.explain?.find((x) => x.id === bid) : null;
     const pt = b ? saidIn(b.point, s.ctx?.lang ?? "hinglish") : null;
     const recentT = (s.recent ?? []).filter((t) => t.who === "teacher").slice(-6).map((t) => normLine(t.text ?? ""));
-    if (pt && !recentT.some((y) => y.includes(normLine(pt).slice(0, 50)))) { move.sayFirst = [...(move.sayFirst ?? []), String(pt).trim()]; move.resumed = bid; }
+    if (pt && !recentT.some((y) => y.includes(normLine(pt).slice(0, 50))) && !(move.sayFirst ?? []).some((y) => normLine(y).includes(normLine(pt).slice(0, 50)))) { move.sayFirst = [...(move.sayFirst ?? []), String(pt).trim()]; move.resumed = bid; }
   }
   // v6: which of them is the skill's bridge (its own segment; brain/propose.js)
   if (p.bridgeSaid) move.bridgeSaid = String(p.bridgeSaid);
@@ -3256,7 +3269,9 @@ function step0(prev, input) {
     // 1/4." on e3's card, e2's answer said again): a reminder or a simpler said on a card never restates a closed card's answer
     // (v6.4 P2: a remediation's words are said whole — never cut to a fragment; a sentence that would restate a closed card's key
     // only leaves a recap or a beat's simpler, whole sentences at a time)
-    if (move.simpler && live && move.simplerBeat?.kind !== "remediation") { const sm = withoutClosedKeys(move.simpler, s, input.kit, live); if (sm) move.simpler = sm; else { delete move.simpler; delete move.simplerBeat; } }
+    // (main's order 1, dc-r8-director20 G3: an authored part is said whole — a simpler is the card's own help, written by Learning for
+    // this card, and is never cut to its sentences without a closed key: c5-t01 e3's simpler lost "8 gaps hue toh pehla mark 1/8 ekdum
+    // 0 ke paas aa gaya." to e2's key 1/8 and was said half)
     // director7 cause 2 (main: option a): a turn whose board is not the live card's own board (a remediation's say on its board,
     // then its then-card on then.board) switches to the card's board where the card starts (brain/propose.js: intent.cardBoard,
     // the clause index; Studio stages the change there)
@@ -3293,6 +3308,10 @@ function step0(prev, input) {
         e.onItem = prev.activeItemId ?? s.activeItemId ?? null;
         e.parkSaid = move.kind !== "safeguard";
         e.said ??= String(input.text ?? "").replace(/\s+/g, " ").trim().slice(0, 80);
+      } else if (e.onItem === undefined && e.at < s.turn) {
+        // (P1, dc-r8-director20: c5-t02 stuck 34 / offtopic 28 — a park on a turn whose path skips this block, a worked example's
+        // split, was never stamped and so never came due: it is stamped on the next turn that reaches here)
+        e.onItem = s.activeItemId ?? null; e.parkSaid = true;
       } else if (e.onItem === null && e.at < s.turn && s.activeItemId) e.onItem = s.activeItemId;
     }
   }
@@ -3313,7 +3332,8 @@ function step0(prev, input) {
   }
   // v6.6 A2: the child asked her taste this turn: brain/say.js answers it now (the n-th time this lesson: a short form after the first)
   if (s.tasteAsked?.turn === s.turn && move.kind !== "safeguard") move.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n };
-  if (s.asideAgain?.turn === s.turn && move.kind !== "safeguard" && !move.tasteAsked) move.asideAgain = { topic: s.asideAgain.topic };
+  if (s.sadAside?.turn === s.turn && move.kind !== "safeguard" && !move.tasteAsked) move.sadAside = true;
+  if (s.asideAgain?.turn === s.turn && move.kind !== "safeguard" && !move.tasteAsked) move.asideAgain = { topic: s.asideAgain.topic, ...(s.asideAgain.returned ? { returned: true } : {}) };
   if (s.servedNow?.topic) {
     const lang = s.ctx.lang ?? "hinglish";
     const said = s.servedNow.said ?? (s.later ?? []).find((e) => e.servedAt === s.turn && e.topic === s.servedNow.topic)?.said ?? null;
@@ -3787,7 +3807,8 @@ function heldTurn(prev, input) {
         s.lastMove = ret; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
         return { state: s, move: ret, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(ret, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
       }
-      if (s.asideAgain?.turn === s.turn) m.asideAgain = { topic: s.asideAgain.topic };
+      if (s.sadAside?.turn === s.turn) m.sadAside = true;
+      if (s.asideAgain?.turn === s.turn) m.asideAgain = { topic: s.asideAgain.topic, ...(s.asideAgain.returned ? { returned: true } : {}) };
     }
     s.lastMove = m; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent; s.activeItemId = h.activeItemId;
     return { state: s, move: m, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(m, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
@@ -3807,6 +3828,19 @@ function heldTurn(prev, input) {
   }
   const s = structuredClone(prev);
   s.turn += 1;
+  // P1 (dc-r8-director20, c4 offtopic: a park on a card that ended in a key was never returned while the key's split held the next
+  // part): the held half is a boundary too — an aside due now is returned on a turn of its own, and the held half waits for the next
+  if (scriptOn() && scriptIdOf(input.kit) && !scriptFor(input.kit)?.script?.recordedRun && !/^worked:step/.test(String(h.move?.scriptBeat?.beatId ?? ""))) {
+    const due = (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at && h.activeItemId !== e.onItem);
+    if (due) {
+      s.later = serveLater(s.later, due.id, s.turn);
+      const ret = { kind: "repair", shape: SH.uptake({ kind: "personal_share" }), returned: { topic: due.topic, share: !!due.share, ...(due.said ? { said: String(due.said) } : {}) } };
+      if (prev.lastMove?.scriptBeat) ret.scriptBeat = prev.lastMove.scriptBeat;
+      const ui0 = { status: "your_turn" };
+      s.lastMove = ret; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
+      return { state: s, move: ret, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(ret, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+    }
+  }
   s.splitHold = undefined;
   s.lastMove = h.move; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent;
   if (h.activeItemId) s.activeItemId = h.activeItemId;
@@ -3942,9 +3976,10 @@ function uiFor(s, p, move, item, kit) {
     // 10/10 then-cards and the child never heard their setup; v2.2 caps them at 120 characters at the source)
     const full = String(promptFor(item, s.ctx.lang) ?? "").replace(/\s+/g, " ").trim();
     const text0 = isScriptCard(item) ? full : askText(full);
-    // v6.1 R10 (main, director9: Hindi asked for, the card still said "fraction mein batao", c6 0/4): in the Hindi mode a scripted
-    // card is shown and read in Hindi words too (brain/register.js; its numbers, and its key's and accept forms' words, as they are)
-    const text = s.ctx.lang === "hindi" && s.ctx.langPinned && isScriptCard(item) ? inHindiWords(text0, { keep: [item.answer, ...(item.acceptable ?? [])].map(String) }) : text0;
+    // (dc-r8-director20 W1 and G3, retiring v6.1 R10: a scripted card is an authored sentence and is shown and said as written, in the
+    // Hindi mode too — code swapped "line" for "rekha" inside the card, which the authoredWhole predicate flagged on 65 dry turns. The
+    // one-term-per-idea rule is met in the script's data, not by code)
+    const text = text0;
     if (!isObjective(text, kit, topic)) ui.ask = { text, itemId: item.id };
   }
   // Choices on screen always take the tray: a choice item is never left with its options only in speech behind an

@@ -68,67 +68,16 @@ export const MATRIX_TOPICS = [["c6-maths-ch06-t01", 6], ["c5-maths-ch02-t01", 5]
 const CHILD = (cls) => ({ id: "00000000-0000-0000-0000-00000000aaaa", legal_mode: "M1", class_level: cls });
 const LESSON = { id: "11111111-1111-1111-1111-11111111aaaa", started_at: new Date(0).toISOString() };
 
-// (the child's line on the turn being answered: --j2-live reads the echo clause against it, not against the note's words)
-let childSaidNow = "";
 if (DRY) {
   // stubbed lines: the agent's call fails (it falls back, as on a live error) and her line is a fixed sentence
   // the dry meter counts the calls a live run would make (her line, and the classifier when code cannot decide), to size caps
-  // (v6.11 J2: the dry stand-in for her one sentence on the child's answer to her return question — a sentence with one of their
-  // words, so the matrix runs the J2 path and its predicate without a model)
   const STUB = "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?";
-  const dryText = (msgs) => {
-    const note = [...(msgs ?? [])].reverse().find((m) => m.role === "system")?.content ?? "";
-    // (the J2 note carries the child's words, never their sentence: "their own word(s) for it: "a", "b"")
-    const w = /their own words? for it: "([^"]+)"/.exec(String(note))?.[1]?.toLowerCase() ?? null;
-    return w ? `${w[0].toUpperCase()}${w.slice(1)} wala pal sach mein zabardast lagta hoga. ${STUB}` : STUB;
-  };
-  // (main, live offtopic after release 18: J2's sentence was the joint 2 times in 3. --j2-live N, with --dry: the lesson stays dry, and
-  // each turn that answers a child's reply to her return sends ITS OWN prompt to the live reply model N times; every draft's sentences
-  // are read by replyToReturnWhy (the clause that refuses each) and written to <out>/j2-replay.json. Spend is estimated before each
-  // exchange (request characters / 4 in, 300 out); an exchange that would pass --j2-usd (default 0.10) is not sent, and the run stops.
-  // Needs the reply model's endpoint: node --env-file=.env.local … --dry --j2-live 20)
-  const J2_LIVE = Number(arg("j2-live", "0"));
-  if (J2_LIVE > 0) {
-    if (!process.env.AZURE_OPENAI_ENDPOINT) { console.error("--j2-live needs the reply model: run with node --env-file=.env.local"); process.exit(2); }
-    const { usdOf } = await import("../server/azure.js");
-    const { replyToReturnWhy } = await import("../server/brain/say.js");
-    const J2_USD = Number(arg("j2-usd", "0.10"));
-    const live = replyDeps.chat;
-    const report = { n: J2_LIVE, usdCap: J2_USD, usd: 0, exchanges: [] };
-    const save = () => { mkdirSync(OUT, { recursive: true }); writeFileSync(`${OUT}/j2-replay.json`, JSON.stringify(report, null, 1) + "\n"); };
-    const sents = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?।])\s+(?=\S)/).filter(Boolean);
-    const j2Chat = async (d, msgs, opts) => {
-      const note = [...(msgs ?? [])].reverse().find((m) => m.role === "system")?.content ?? "";
-      // (the note gives the model the child's words, not their sentence: the clauses read against those words)
-      // (main on the rerun: the clauses read against the child's REAL sentence — code has it — whatever the note carries; the prompt
-      // itself must not carry it: the replay checks that too)
-      const words = /their own words? for it: ((?:"[^"]+"(?:, )?)+)/.exec(String(note))?.[1]?.replace(/"/g, "").replace(/,/g, " ");
-      if (!words) { dryCall("reply"); return { text: dryText(msgs) }; }
-      const said = childSaidNow || words;
-      const leaked = !!childSaidNow && JSON.stringify(msgs).toLowerCase().includes(childSaidNow.toLowerCase());
-      const est = usdOf(d, { in: Math.round(JSON.stringify(msgs).length / 4), cached: 0, out: 300, reasoning: 0 }) * J2_LIVE;
-      if (report.usd + est > J2_USD) { report.stopped = `the next exchange (~$${est.toFixed(4)}) would pass $${J2_USD} (spent ~$${report.usd.toFixed(4)})`; save(); console.error(`STOP: ${report.stopped}`); process.exit(4); }
-      const x = { said, words, sentenceInPrompt: leaked, samples: [] };
-      for (let k = 0; k < J2_LIVE; k++) {
-        const r = await live(d, msgs, { ...(opts ?? {}), maxTokens: 220, effort: "none", timeoutMs: 15000 });
-        const ss = sents(r?.text).map((y) => ({ s: y, why: replyToReturnWhy(y, said) }));
-        x.samples.push({ text: r?.text ?? "", pass: ss.some((y) => y.why === null), sentences: ss });
-      }
-      report.usd += est;
-      const refused = {};
-      for (const sm of x.samples.filter((y) => !y.pass)) { const w = sm.sentences[0]?.why ?? "none"; refused[w] = (refused[w] ?? 0) + 1; }
-      x.passRate = x.samples.filter((y) => y.pass).length / J2_LIVE;
-      x.firstSentenceRefusedBy = refused;
-      report.exchanges.push(x); save();
-      dryCall("reply");
-      return { text: dryText(msgs) };
-    };
-    replyDeps.chat = j2Chat;
-    replyDeps.chatStream = async (d, msgs, opts) => j2Chat(d, msgs, opts);
-  } else {
-    replyDeps.chat = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
-    replyDeps.chatStream = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
-  }
+  // (dc-r8-director20 R1: her reply after an aside is authored and chosen by code, so the dry stub needs no stand-in for it)
+  const dryText = () => STUB;
+  // (dc-r8-director20 R1: --j2-live measured the model's reply sentence, which is gone — the reply is Learning's, chosen by code)
+  replyDeps.chat = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
+  replyDeps.chatStream = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
+
 } else if (!process.env.AZURE_OPENAI_ENDPOINT) {
   console.error("no AZURE_OPENAI_ENDPOINT: run with node --env-file=.env.local, or --dry for the plumbing check");
   process.exit(2);
@@ -273,18 +222,22 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       // 60. A card is on the table for the child only once her line has said it; and the goodbye waits for a card she said and left open)
       const lastT = [...rows].reverse().find((r) => r.who === "teacher") ?? null;
       const nrm = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
-      const cardSaid = !lastT?.card || nrm(lastT.text).includes(nrm(lastT.card).slice(0, 30));
+      // (dc-r8-director20 harness: a card held by her aside question — no card on her row — was still answered, c6 offtopic 21 "126 cm"
+      // after the AI line: a live card her last line did not say is not on the table)
+      const liveP = live ? nrm(s.ctx?.lang === "english" ? live.prompt_en ?? live.prompt_hi : live.prompt_hi ?? live.prompt_en) : "";
+      const cardSaid = lastT?.card ? nrm(lastT.text).includes(nrm(lastT.card).slice(0, 30)) : !lastT || !live || (!!liveP && nrm(lastT.text).includes(liveP.slice(0, 30)));
       const childIn = (turn) => ({ turn, teacher: [...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "",
         beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card: cardSaid ? card : null, ask: cardSaid ? ask : null, boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",
         // (H1.1: her probe or teach-back move is unkeyed: the child gives a reason; else the child reads her line)
         ...(["probe", "teachback"].includes(s.lastMove?.kind) ? { probe: true } : {}),
         // (v6.11 J2: her last turn was an aside's return question: the child answers it, about the aside)
-        ...(lastT?.returnSaid ? { returned: true } : {}) });
+        // (P1: and her question after the "Main AI teacher hoon …" line is answered the same way, about their thing)
+        ...(lastT?.returnSaid || (/Main AI teacher hoon|Main AI hoon|I'm an AI|No favourites for me/i.test(String(lastT?.text ?? "")) && /[?？]\s*$/.test(String(lastT?.text ?? ""))) ? { returned: true } : {}) });
       let out = child.reply(childIn(i));
       // (c6 steering 51: the goodbye came during an open card — up to 10 turns it waits; the child answers the card instead)
       const openSaid = !!lastT?.card && cardSaid && /[?？]\s*$/.test(String(lastT.text ?? "").trim());
       if (out.kind === "leave" && openSaid && leaveWait < 10) { leaveWait++; out = child.reply(childIn(-1)); }
-      text = out.text; leaving = out.kind === "leave"; childSaidNow = String(text ?? "").replace(/\s+/g, " ").trim();
+      text = out.text; leaving = out.kind === "leave";
     }
     if (text == null) break;
     const now = (i + 1) * 20_000;
@@ -377,8 +330,12 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       if (t.guard?.returnMissed && next?.lastMove?.returned) next = { ...next, later: requeueMissedReturn(next, t.guard).later };
       // (v6.8 A4, as brain/turn.js: an aside question ended her turn — the unsaid card is neither pinned nor graded)
       if (t.guard?.cardHeld && next?.activeItemId) { next = { ...next, cardUnsaid: next.activeItemId }; if (ui?.ask) ui = { ...ui, ask: null, chips: [] }; }
+      // (P1, as brain/turn.js: a return's turn held the lesson's authored parts; the next turn says them first)
+      if (t.guard?.bodyHeld?.length && next) next = { ...next, bodyUnsaid: t.guard.bodyHeld };
       if (t.guard?.asideEnd) next = { ...next, asideReplyDue: true };
       if (next) next = { ...next, returnAsked: t.guard?.asideEnd && t.guard?.returnSaid && next.lastMove?.returned?.topic ? { topic: next.lastMove.returned.topic } : undefined };
+      // (P1, as brain/turn.js: the AI line's question to them is answered on the next turn, as a return's is)
+      if (next && !next.returnAsked && t.guard?.asideEnd && t.guard?.honestNow && next.lastMove?.tasteAsked?.topic) next = { ...next, returnAsked: { topic: next.lastMove.tasteAsked.topic } };
       // (main's director2 judgement: a caught problem must be told apart from a fixed one) what was left after the rewrite, and
       // whether code replaced or repaired the line
       if (guard) guardAfter = { afterRewrite: t.guard.afterRewrite ?? null, replaced: !!t.guard.replaced, repaired: !!t.guard.repaired };

@@ -61,7 +61,8 @@ describe("r7-brain-v62.test.mjs", () => {
 
   test("H4 replays director10 c4: no doubled sentence after Hindi words, no 'Now try.', no 'Bilkul, no sahi hai'", async () => {
     const a = (await at("steady", "c4-maths-ch05-t01", 41)).out.reply;
-    assert.equal((a.match(/Ab in dono numbers se bhinn likho\./g) ?? []).length, 1, a);
+    // (dc-r8-director20 W1/G3, 2026-11-11: the card is said as written in the Hindi mode, so it reads "fraction" — the pin is the one copy)
+    assert.equal((a.match(/Ab in dono numbers se (?:bhinn|fraction) likho\./g) ?? []).length, 1, a);
     const b = (await at("offtopic", "c4-maths-ch05-t01", 33)).out.reply;
     assert.doesNotMatch(b, /Now try/, b);
     const c = (await at("offtopic", "c4-maths-ch05-t01", 23)).out.reply;
