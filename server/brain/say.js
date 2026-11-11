@@ -262,8 +262,8 @@ export function replyToReturnWhy(x, said) {
   if (n < 3) return "short";
   if (n > 14) return "long";
   if (TASTE_CLAIM.test(t) || DENIES_AI.test(t)) return "taste";
-  if (LESSON_SAID.test(t)) return "lesson";
-  if (RULE_SAID.test(t)) return "rule";
+  if (J2_LESSON.test(t)) return "lesson";
+  if (J2_RULE.test(t)) return "rule";
   if (PROMISE_SAID.test(t) || /(?<![\p{L}])(?:baad\s+mein|thodi\s+der|later)(?![\p{L}])/iu.test(t)) return "promise";
   // (main on the J2 replay: 4 drafts spoke as a man, "samajh gaya"; one promised to remember, "yeh baat yaad rakhungi")
   if (J2_MASCULINE.test(t)) return "masculine";
@@ -278,6 +278,11 @@ export function replyToReturnWhy(x, said) {
 /** v6.11 J2: her one sentence after the child answered her return: ≤ 14 words, no question, no taste of hers, a content word of
  *  theirs, nothing of the lesson, no promise, never their words said back (replyToReturnWhy names the clause that refuses). */
 export const replyToReturnOk = (x, said) => replyToReturnWhy(x, said) === null;
+/** (main on the J2 replay rerun: c6 lost 5 drafts on the everyday "har" and 3 on a bare "hota hai", none about the lesson.) For the J2
+ *  sentence only: LESSON_SAID without its function words (dropped: har, upar, neeche, total, kul, khaya, khaye, khayi), and RULE_SAID's
+ *  reason words without the bare "hota hai / hoti hai / hote hain". Both are unchanged everywhere else. */
+const J2_LESSON = /(?<![\p{L}])(?:fraction\w*|bhinn\w*|tukd\w*|hiss\w*|barabar|equal|parts?|pieces?|line|rekha|gap\w*|mark\w*|nishaan\w*|bhuja\w*|sides?|parimap|perimeter|denominator|numerator|ansh|jod\w*|guna\w*)(?![\p{L}])/iu;
+const J2_RULE = /(?<![\p{L}])(?:kyunki|kyonki|isliye|matlab|yaani|hamesha|because|means|therefore|always)(?![\p{L}])|(?<![\p{L}])(?:aata|aati|aate|banta|banti|bante|guzarta|guzarti|guzarte|milta|milti|milte)\s+(?:hai|hain)(?![\p{L}])/iu;
 /** Her own first-person verb in a masculine form (she is a woman): "samajh gaya", "main dekh raha hoon", "main karta hoon". */
 const J2_MASCULINE = /(?<![\p{L}])(?:samajh\s+gaya|(?:main|mai|maine)\s+(?:\p{L}+\s+){0,3}(?:gaya|raha|karta|chahta|sakta|dekhta|sunta|sochta|janta|jaanta)(?![\p{L}])|(?:gaya|raha|karta|chahta|sakta|dekhta|sunta|sochta|janta|jaanta)\s+(?:hoon|hun|tha)(?![\p{L}]))/iu;
 /** A promise to remember, or to come back to it next time. */
@@ -1365,8 +1370,13 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // draft word for word, and the reply made the safeguarding call on it turns after the Director had made its own ("turant
     // batayiye… akele mat rahiye"; once "aap marne ki baat keh rahi hain", which the next turn's read took for the child's).
     // Until a full script has happened it reaches the reply model as what it means. The turn being answered is never changed.
-    ...history.map((t) => ({ role: t.who === "teacher" ? "assistant" : "user", content: t.who !== "teacher" && !talkOk && idiomMeaning(t.text) || forModel(t.text) })),
-    { role: "user", content: childText ? forModel(childText) : "(the child has joined the lesson and is listening)" },
+    ...history.filter((t) => !(state.lastMove?.returnReply?.said && t.who !== "teacher" && String(t.text ?? "").replace(/\s+/g, " ").trim().slice(0, 80) === state.lastMove.returnReply.said))
+      .map((t) => ({ role: t.who === "teacher" ? "assistant" : "user", content: t.who !== "teacher" && !talkOk && idiomMeaning(t.text) || forModel(t.text) })),
+    // (main on the J2 replay rerun: 13 of 19 c5 passes said the child's sentence back — it reached the model as this turn's message.
+    // On the turn that answers the child's reply to her return, their sentence is not sent at all: the J2 note carries their words.
+    // The move's own text is the script's, so nothing else on this turn reads it; no extra call, no added latency)
+    { role: "user", content: state.lastMove?.returnReply?.said ? `(the child answered your question about ${String(state.lastMove.returnReply.topic ?? "it")})`
+      : childText ? forModel(childText) : "(the child has joined the lesson and is listening)" },
   ];
   const replyT0 = performance.now();
   // Replies take ~1-2 s (measured in evals/director-sim.mjs); a stuck call is cut at 6 s and retried once.
