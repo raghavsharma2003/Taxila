@@ -1,0 +1,42 @@
+/* Direction A, "Paper and ink": surfaces, shadows and the one built transition (the board drawing itself in). */
+
+.hero, .q, .lesson-card h2, .levelend h2, .onb h1, .offline h1 { font-weight: 600; letter-spacing: -.02em; }
+.brand { font-family: var(--font-ui); }
+
+/* paper surfaces with real shadows; no borders where a shadow does the job */
+.lesson-card, .qbar, .levelend, .pcard, .saved a { box-shadow: var(--shadow-1); }
+.stage { background: var(--board-bg); box-shadow: var(--shadow-2); }
+.lesson .stage { border: 1px solid var(--line); }
+.lesson-card-board { background: var(--board-bg); border-bottom: 1px solid var(--line); }
+.lesson-card { box-shadow: var(--shadow-2); }
+.lbar { background: var(--bg); }
+.dock { background: var(--surface-2); }
+.chip { box-shadow: none; }
+.btn-primary { box-shadow: var(--shadow-1); }
+.btn-primary:active { transform: translateY(1px); }
+.btn-secondary { box-shadow: var(--shadow-1); border-color: var(--line); }
+.tabs { background: var(--surface); box-shadow: 0 -1px 0 var(--line); border-top: 0; }
+.play .stage { box-shadow: var(--shadow-2); border: 0; }
+.qbar { background: var(--surface); }
+.is-turn .qbar { box-shadow: inset 0 0 0 2.5px var(--move), var(--shadow-2); }
+.facts b { color: var(--ink); }
+.parent .pbar, .onboarding .obar { background: var(--bg); }
+.offline .off-mark { background: var(--surface); box-shadow: var(--shadow-1); }
+
+/* the voice ring breathes while she talks */
+@media (prefers-reduced-motion: no-preference) {
+  .tutor.is-talking .tutor-face::after { animation: ring 1.6s var(--ease-out) infinite; }
+  @keyframes ring { 0% { transform: scale(1); opacity: .9; } 70% { transform: scale(1.1); opacity: 0; } 100% { opacity: 0; } }
+  .is-turn .dock .wave i { animation: lvl 900ms ease-in-out infinite alternate; }
+  .is-turn .dock .wave i:nth-child(2n) { animation-delay: -300ms; } .is-turn .dock .wave i:nth-child(3n) { animation-delay: -600ms; }
+  @keyframes lvl { from { transform: scaleY(.45); } to { transform: scaleY(1); } }
+
+  /* THE transition of direction A: a board appearing. Strokes draw in the order she talks about them (ink frame,
+     the half line, the quarter line, the focus outline, the brace), each 700 ms ease-out, 140 ms apart; fills and
+     labels fade up 6 px in 320 ms as their stroke finishes. Total about 1.8 s, matched to her first clause. */
+  [data-motion="board"] .bd .dr { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw var(--dur-3) var(--ease-out) calc(var(--i) * 140ms + 200ms) forwards; }
+  [data-motion="board"] .bd .fade { opacity: 0; animation: fadeup var(--dur-2) var(--ease-out) calc(var(--i) * 140ms + 420ms) forwards; }
+  [data-motion="board"] .bd .bd-eq { animation-delay: 1250ms; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes fadeup { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}

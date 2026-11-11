@@ -18,10 +18,12 @@ import { kakshaThemeFor } from "./tokens.ts";
 import { kt } from "./copy.ts";
 import { lookAttr } from "./look.ts";
 import type { TapSource } from "../../avatar/tap.ts";
+import { txTheme } from "../r8/tx.ts";
+import "../r8/kx.css";
 
 export function KakshaRoot({ family, reducedMotion, screen, children }: { family: "young" | "older"; reducedMotion: boolean; screen: string; children: ReactNode }) {
   return (
-    <div className="v3 kx" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen={screen}>
+    <div className="v3 kx" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen={screen} data-tx={txTheme() ?? undefined}>
       {children}
     </div>
   );

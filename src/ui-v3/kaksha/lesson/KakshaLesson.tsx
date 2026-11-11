@@ -20,6 +20,9 @@ import "../../tokens.css";
 import "../tokens.css";
 import "../kaksha.css";
 import "./desk.kaksha.css";
+import "../../r8/bridge.css";
+import "../../r8/lesson.css";
+import { txTheme } from "../../r8/tx.ts";
 import { kakshaThemeFor } from "../tokens.ts";
 import catalogJson from "../../../../data/kaksha/catalog.json";
 import { PlayBriefingContext, type PlayBriefing, type PlayCosmetics } from "../../../play/briefing.ts";
@@ -98,9 +101,11 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
   );
   const renderIntake = useCallback((m: DeskModel) => (m.intake ? <IntakeCard intake={m.intake} /> : null), []);
   // r7 app-lesson-stage-first (D7): the stage-first body; ?desk=v2 on the URL keeps the V2 Desk grid for comparison
-  const renderBody = useMemo(() => (stageFirst() ? (p: DeskBodyParts) => <StageBody {...p} /> : undefined), []);
+  // round 8 (the ?tx= switch, src/ui-v3/r8/tx.ts): the new theme on this lesson, and the teacher as a presence
+  const [tx] = useState(() => txTheme());
+  const renderBody = useMemo(() => (stageFirst() ? (p: DeskBodyParts) => <StageBody {...p} presence={!!tx} /> : undefined), [tx]);
   return (
-    <div className="v3 kx kx-lesson" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen="lesson"
+    <div className="v3 kx kx-lesson" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen="lesson" data-tx={tx ?? undefined} data-board-theme={tx === "a" ? "paper" : tx === "b" ? "night" : undefined}
       data-kboard={look.board ?? undefined} data-krim={look.rim ?? undefined}
       style={{ ...(look.board ? { ["--kboard" as string]: `var(--k-hue-${look.board})` } : {}), ...(look.rim ? { ["--krim" as string]: `var(--k-hue-${look.rim})` } : {}) }}>
       <PlayBriefingContext.Provider value={briefing}>{children({ skin: "kaksha", renderSummary, renderIntake, renderBody })}</PlayBriefingContext.Provider>

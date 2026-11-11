@@ -1,10 +1,7 @@
 {
  "note": "Known Studio v2 layout faults (tests/studio-v2-layout.test.mjs). Each is a real overlap or cut-off the probe found and nobody has fixed yet; the test fails on any fault NOT listed here and on any listed fault that no longer happens (remove it: node src/studio-v2/tools/layout-probe.mjs --catalogue 1 --write-known). Keys: kind|a|b, numbers as #.",
  "reasons": {
-  "angle-sum@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the triangle's angle labels sit under the sum card (\"#° + #° + #° = #°\") at the reveal",
-  "balance-beam@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): weights stacked on one peg overlap each other; the equation card sits under the task pill at l1366",
   "beat-line@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): word cards scroll past the stage edges and collide at the hit line",
-  "data-rush@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): a tally number sits on the coach line",
   "era-drop@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the dropped event card covers the timeline's year labels; the event card and year chips sit under the task pill at l1366",
   "fair-test@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the FAIR TEST stamp lands on the variable cards",
   "field-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): compass letters (N, S) sit on the well card",
@@ -14,106 +11,16 @@
   "life-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): organ cards (mouth, large intestine) under the task pill at l1366; a rate card cut at the edge",
   "map-route@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): place cards under the task pill at l1366; the DELIVERED / ARRIVED card lands on place cards",
   "motion-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the distance label sits under the task pill at l1366",
-  "pattern-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): results (\"# lines make #\", \"# solutions\") under the task pill at l1366 and over the figure's numbers",
   "phase-shift@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the plateau caption card covers the HEAT label and sits under the task pill at l1366",
   "ray-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): result cards (HIT, i = r, image size) are cut at the stage edge",
   "scale-cinematic@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): planet names overlap each other and the planet discs at the scale stops; one caption runs off the edge",
   "scene-explainer@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): scene cards overlap each other (MYTH / NOT TRUE; the catalogue explainer's word cards)",
   "shadow-play@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): material names sit on the count cards; a card under the task pill at l1366; labels cut at the edge",
   "sky-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the city card drawn twice on itself; the % lit card cut at the edge (catalogue)",
-  "solid-view@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the count cards (# of # faces / edges / corners) sit under the task pill at l1366",
   "story-rail@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the lane cards overlap each other and the wagon number badges while they slide; the coach line crosses the bottom lane card",
-  "town-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the trades / profit cards at the bottom are cut by the stage edge; the park card meets a count card",
-  "zero-pair@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the running total card covers a counter label"
+  "town-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the trades / profit cards at the bottom are cut by the stage edge; the park card meets a count card"
  },
  "faults": {
-  "angle-sum@1|default|p412": [
-   "covered|#°|card[#° + #° + #° = #°]",
-   "text×card|#°|card[#° + #° + #° = #°]",
-   "text×text|#°|#° + #° + #° = #°"
-  ],
-  "angle-sum@1|default|l1366": [
-   "covered|#°|card[#° + #° + #° = #°]",
-   "text×card|#°|card[#° + #° + #° = #°]",
-   "text×text|#°|#° + #° + #° = #°"
-  ],
-  "angle-sum@1|default|l1366y": [
-   "covered|#°|card[#° + #° + #° = #°]",
-   "text×card|#°|card[#° + #° + #° = #°]",
-   "text×text|#°|#° + #° + #° = #°"
-  ],
-  "balance-beam@1|default|p412": [
-   "card×card|card[#]|card[#]",
-   "card×card|card[#]|card[x]",
-   "card×card|card[x]|card[#]",
-   "card×card|card[x]|card[x]",
-   "text×card|#|card[#]",
-   "text×card|#|card[x]",
-   "text×card|x|card[#]"
-  ],
-  "balance-beam@1|default|l1366": [
-   "card×card|card[#]|card[#]",
-   "card×card|card[#]|card[x]",
-   "card×card|card[x]|card[#]",
-   "card×card|card[x]|card[x]",
-   "chrome|#|task",
-   "chrome|#×# = #×#|task",
-   "chrome|card[#]|task",
-   "chrome|card[#×# = #×#]|task",
-   "chrome|card[x × # = #×# + #×# → x = ]|task",
-   "chrome|card[x]|task",
-   "chrome|x × # = #×# + #×# → x = |task",
-   "chrome|x|task",
-   "text×card|#|card[#]",
-   "text×card|#|card[x]",
-   "text×card|x|card[#]"
-  ],
-  "balance-beam@1|default|l1366y": [
-   "card×card|card[#]|card[#]",
-   "card×card|card[#]|card[x]",
-   "card×card|card[x]|card[#]",
-   "card×card|card[x]|card[x]",
-   "chrome|#|task",
-   "chrome|#×# = #×#|task",
-   "chrome|card[#]|task",
-   "chrome|card[#×# = #×#]|task",
-   "chrome|card[x × # = #×# + #×# → x = ]|task",
-   "chrome|card[x]|task",
-   "chrome|x × # = #×# + #×# → x = |task",
-   "chrome|x|task",
-   "text×card|#|card[#]",
-   "text×card|#|card[x]",
-   "text×card|x|card[#]"
-  ],
-  "balance-beam@1|c7-maths-ch15-t01:game|p412": [
-   "card×card|card[#]|card[#]",
-   "card×card|card[#]|card[x]",
-   "card×card|card[x]|card[x]",
-   "text×card|#|card[#]",
-   "text×card|x|card[#]"
-  ],
-  "balance-beam@1|c7-maths-ch15-t01:game|l1366": [
-   "card×card|card[#]|card[#]",
-   "card×card|card[#]|card[x]",
-   "card×card|card[x]|card[x]",
-   "chrome|#×# = #×# + #×#|task",
-   "chrome|card[#×# = #×# + #×#]|task",
-   "chrome|card[x × # = #×# + #×# → x = ]|task",
-   "chrome|x × # = #×# + #×# → x = |task",
-   "text×card|#|card[#]",
-   "text×card|x|card[#]"
-  ],
-  "balance-beam@1|c7-maths-ch15-t01:game|l1366y": [
-   "card×card|card[#]|card[#]",
-   "card×card|card[#]|card[x]",
-   "card×card|card[x]|card[x]",
-   "chrome|#×# = #×# + #×#|task",
-   "chrome|card[#×# = #×# + #×#]|task",
-   "chrome|card[x × # = #×# + #×# → x = ]|task",
-   "chrome|x × # = #×# + #×# → x = |task",
-   "text×card|#|card[#]",
-   "text×card|x|card[#]"
-  ],
   "beat-line@1|default|p412": [
    "cut|back|frame",
    "cut|card[back]|frame",
@@ -146,15 +53,6 @@
    "cut|card[to]|frame",
    "text×card|ten|card[two]",
    "text×card|two|card[ten]"
-  ],
-  "data-rush@1|default|p412": [
-   "text×text|#|Tap every car as it pass"
-  ],
-  "data-rush@1|default|l1366": [
-   "text×text|#|Tap every car as it pass"
-  ],
-  "data-rush@1|default|l1366y": [
-   "text×text|#|Tap every car as it pass"
   ],
   "era-drop@1|default|p412": [
    "covered|# BCE|card[Alexander]",
@@ -542,84 +440,6 @@
    "chrome|distance|task",
    "text×card|time →|card[gap #.# m]"
   ],
-  "pattern-lab@1|default|p412": [
-   "covered|#|card[# lines make #]",
-   "covered|#° / #°|card[#°]",
-   "covered|undefined|shape",
-   "text×card|#° / #°|card[#°]",
-   "text×text|#|# lines make #",
-   "text×text|undefined|NaN",
-   "text×text|undefined|undefined"
-  ],
-  "pattern-lab@1|default|l1366": [
-   "chrome|# lines make #|task",
-   "chrome|# of #|task",
-   "chrome|# solutions|task",
-   "chrome|#|task",
-   "chrome|#°|task",
-   "chrome|card[# lines make #]|task",
-   "chrome|card[# of #]|task",
-   "chrome|card[# solutions]|task",
-   "chrome|card[#°]|task",
-   "chrome|·|task",
-   "covered|#|card[# lines make #]",
-   "covered|#° / #°|card[#°]",
-   "covered|undefined|shape",
-   "text×card|#° / #°|card[#°]",
-   "text×text|#|# lines make #",
-   "text×text|undefined|NaN",
-   "text×text|undefined|undefined"
-  ],
-  "pattern-lab@1|default|l1366y": [
-   "chrome|# lines make #|task",
-   "chrome|# of #|task",
-   "chrome|# solutions|task",
-   "chrome|#|task",
-   "chrome|#° / #°|task",
-   "chrome|#°|task",
-   "chrome|card[# lines make #]|task",
-   "chrome|card[# of #]|task",
-   "chrome|card[# solutions]|task",
-   "chrome|card[#°]|task",
-   "chrome|·|task",
-   "covered|#|card[# lines make #]",
-   "covered|#° / #°|card[#°]",
-   "covered|undefined|shape",
-   "text×card|#° / #°|card[#°]",
-   "text×text|#|# lines make #",
-   "text×text|undefined|NaN",
-   "text×text|undefined|undefined"
-  ],
-  "pattern-lab@1|c7-maths-ch06-t02:game|p412": [
-   "covered|#|card[# lines make #]",
-   "covered|undefined|shape",
-   "text×text|#|# lines make #",
-   "text×text|undefined|NaN",
-   "text×text|undefined|undefined"
-  ],
-  "pattern-lab@1|c7-maths-ch06-t02:game|l1366": [
-   "chrome|# lines make #|task",
-   "chrome|#|task",
-   "chrome|card[# lines make #]|task",
-   "chrome|·|task",
-   "covered|#|card[# lines make #]",
-   "covered|undefined|shape",
-   "text×text|#|# lines make #",
-   "text×text|undefined|NaN",
-   "text×text|undefined|undefined"
-  ],
-  "pattern-lab@1|c7-maths-ch06-t02:game|l1366y": [
-   "chrome|# lines make #|task",
-   "chrome|#|task",
-   "chrome|card[# lines make #]|task",
-   "chrome|card[#]|task",
-   "chrome|·|task",
-   "covered|#|card[# lines make #]",
-   "covered|undefined|shape",
-   "text×text|#|# lines make #",
-   "text×text|undefined|NaN",
-   "text×text|undefined|undefined"
-  ],
   "phase-shift@1|default|p412": [
    "text×card|LID|card[COLD]",
    "text×text|HEAT|# °C holds: heat is ma",
@@ -865,26 +685,6 @@
   "sky-lab@1|c4-evs-ch10-t02:game|l1366y": [
    "cut|card[#% lit]|frame"
   ],
-  "solid-view@1|default|l1366": [
-   "chrome|card[# of # corners]|task",
-   "chrome|card[# of # edges]|task",
-   "chrome|card[#/# views]|task"
-  ],
-  "solid-view@1|default|l1366y": [
-   "chrome|card[# of # corners]|task",
-   "chrome|card[# of # edges]|task",
-   "chrome|card[#/# views]|task"
-  ],
-  "solid-view@1|c4-maths-ch01-t01:game|l1366": [
-   "chrome|card[# of # corners]|task",
-   "chrome|card[# of # edges]|task",
-   "chrome|card[# of # faces]|task"
-  ],
-  "solid-view@1|c4-maths-ch01-t01:game|l1366y": [
-   "chrome|card[# of # corners]|task",
-   "chrome|card[# of # edges]|task",
-   "chrome|card[# of # faces]|task"
-  ],
   "story-rail@1|default|p412": [
    "text×card|Tap a wagon before the t|card[#]"
   ],
@@ -995,18 +795,6 @@
    "text×text|Sweeper|has",
    "text×text|cleaning|wants water",
    "text×text|vegetables|wants"
-  ],
-  "zero-pair@1|default|p412": [
-   "covered|−#|card[= −#]",
-   "text×card|−#|card[= −#]"
-  ],
-  "zero-pair@1|default|l1366": [
-   "covered|−#|card[= −#]",
-   "text×card|−#|card[= −#]"
-  ],
-  "zero-pair@1|default|l1366y": [
-   "covered|−#|card[= −#]",
-   "text×card|−#|card[= −#]"
   ]
  }
 }

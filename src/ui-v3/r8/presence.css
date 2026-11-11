@@ -1,0 +1,34 @@
+/* Round 8: her presence (Presence.tsx), a circle with her initial and a voice ring. Tokens only. */
+/* ── her presence: a circle with her initial and a voice ring; name and "AI teacher" always printed ── */
+.tx-presence { display: flex; align-items: center; gap: var(--tx-s-3); min-width: 0; color: var(--tx-ink); }
+.tx-presence-face { position: relative; flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--tx-tutor-soft); color: var(--tx-tutor); font: var(--tx-display-weight) var(--tx-t-3)/1 var(--tx-font-display); }
+.tx-presence-ring { position: absolute; inset: -5px; border-radius: 50%; border: 2.5px solid var(--tx-tutor); opacity: 0; }
+.tx-presence[data-state="talking"] .tx-presence-ring { opacity: 1; }
+.tx-presence[data-state="listening"] .tx-presence-ring { opacity: .35; }
+.tx-presence[data-state="thinking"] .tx-presence-ring { opacity: .6; border-style: dotted; }
+.tx-presence-meta { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.tx-presence-meta b { font-weight: 700; font-size: var(--tx-t-2); }
+.tx-presence-meta small { font-size: var(--tx-t-1); color: var(--tx-ink-2); }
+/* the talk row on a phone: the circle with "AI teacher" under it (the disclosure stays printed) */
+.tx-presence--row { flex-direction: column; gap: var(--tx-s-1); width: 64px; flex: none; }
+.tx-presence--row .tx-presence-face { width: 36px; height: 36px; font-size: var(--tx-t-2); }
+.tx-presence--row .tx-presence-meta { align-items: center; text-align: center; }
+.tx-presence--row .tx-presence-meta b { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.tx-presence--row .tx-presence-meta small { font-size: var(--tx-t-1); white-space: nowrap; }
+.tx-presence--row .tx-presence-state { display: none; }
+/* the tile on wide screens: one row at the top of the side column */
+.ks-face--tile .tx-presence--tile { height: 100%; padding: 0 var(--tx-s-2); }
+.tx-presence--tile .tx-presence-face { width: 52px; height: 52px; font-size: var(--tx-t-4); }
+/* nothing on the stage: she holds it, a larger circle, centred */
+.tx-presence--hero { flex-direction: column; justify-content: center; height: 100%; gap: var(--tx-s-4); text-align: center; }
+.tx-presence--hero .tx-presence-face { width: 96px; height: 96px; font-size: var(--tx-t-7); }
+.tx-presence--hero .tx-presence-ring { inset: -8px; border-width: 3px; }
+.tx-presence--hero .tx-presence-meta { align-items: center; }
+.tx-presence--hero .tx-presence-meta b { font-size: var(--tx-t-3); }
+
+/* the voice ring breathes while she talks; still under reduced motion (either signal) */
+@media (prefers-reduced-motion: no-preference) {
+  [data-tx]:not([data-motion="reduced"]) .tx-presence[data-state="talking"] .tx-presence-ring { animation: tx-ring 1.6s var(--tx-ease) infinite; }
+  @keyframes tx-ring { 0% { transform: scale(1); opacity: .9; } 70% { transform: scale(1.1); opacity: 0; } 100% { opacity: 0; } }
+}

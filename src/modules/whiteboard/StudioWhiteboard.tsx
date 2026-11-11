@@ -15,6 +15,8 @@ import type { ArtifactRendererProps } from "../../studio/renderers.ts";
 import { awaitLineAnchor, type AnchorTiming } from "./clock.ts";
 import { WhiteboardPlayer } from "./Player.tsx";
 import { boardSkinFromDocument, watchSkin } from "./palette.ts";
+import { DEFAULT_THEME, type ThemeName } from "../../theme/palette.ts";
+import { themeAt } from "../../theme/theme-attr.ts";
 import { traceBoardDrawn, traceBoardPage } from "../../trace/lesson.ts";
 import { onTtsEvent } from "../../lesson/ttsStream.ts";
 import { switchOnsets, type WordOnset } from "./lineClock.ts";
@@ -171,11 +173,14 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
   const [skinRev, setSkinRev] = useState(0);
   useEffect(() => watchSkin(() => setSkinRev((n) => n + 1)), []);
   const skin = useMemo(() => boardSkinFromDocument(ground), [ground, skinRev]);
+  // the lesson's theme: the nearest data-board-theme above the board (src/theme/theme-attr.ts); night when none
+  const [theme, setTheme] = useState<ThemeName>(DEFAULT_THEME);
+  useEffect(() => { setTheme(themeAt(host.current)); }, [skinRev]);
   if (!script) return null;
   // display:contents: the recorder's handle on the drawn SVG, with no box of its own (layout and look unchanged)
   return (
     <span ref={host} style={{ display: "contents" }} data-script={script.scriptId} data-same={same ? "1" : undefined}>
-      <WhiteboardPlayer script={script} prior={prior} startAt={startAt} frozenAt={same ? script.durationMs : undefined} reducedMotion={reducedMotion} width={px.w} height={px.h} skin={skin} clauseOnsets={onsets} switchAt={switchAt}
+      <WhiteboardPlayer script={script} prior={prior} startAt={startAt} frozenAt={same ? script.durationMs : undefined} reducedMotion={reducedMotion} width={px.w} height={px.h} skin={skin} theme={theme} clauseOnsets={onsets} switchAt={switchAt}
         className="wb-svg" onDone={() => {
           if (emitted.current) return;
           emitted.current = true;

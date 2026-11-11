@@ -20,6 +20,7 @@ import { Teacher } from "../../../ui/teacher/Teacher.tsx";
 import { protegeStaging } from "../../../ui/teacher/Protege.tsx";
 import { solveStage, type Rect } from "./stageLayout.ts";
 import { LaterPill, MomentCard, stopChoicesOf } from "./Moments.tsx";
+import { Presence } from "../../r8/Presence.tsx";
 import "./stage.css";
 
 const px = (r: Rect | null | undefined): CSSProperties | undefined => (r ? { left: r.x, top: r.y, width: r.w, height: r.h } : undefined);
@@ -49,9 +50,12 @@ export interface StageBodyProps extends DeskBodyParts {
   chips?: ReactNode;
   /** Overlays above the slot (the Later pill, a moment card). */
   overlay?: ReactNode;
+  /** Round 8 (src/ui-v3/r8, the ?tx= switch): the teacher is a presence (a circle with a voice ring), never a face. There is
+   *  no PiP. On a phone her circle and the caption take a talk row between the piece and the question. */
+  presence?: boolean;
 }
 
-export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray, isAnswerTray, floor, chips: chipsIn, overlay }: StageBodyProps) {
+export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray, isAnswerTray, floor, chips: chipsIn, overlay, presence = false }: StageBodyProps) {
   // (the steer chips step back while the stop check-in asks its question)
   const checkIn = !!(m.stopChoices ?? stopChoicesOf(m.tray)) || m.moment?.kind === "stop";
   const chips = chipsIn ?? (m.steer?.length && a.steer && !checkIn ? <SteerChips m={m} a={a} /> : null);
@@ -95,12 +99,13 @@ export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray, 
     width: size.w, height: size.h, family: m.family, keyboard: kb,
     answerNeed: answerUp && tray ? answerNeedOf(tray, young) : 0,
     railNeed: card ? railNeed : 0, chips: !!chips, artifact: !!work, play,
-    strip: strip ? 72 : 0,
+    strip: strip ? 72 : 0, presence,
   });
 
   // her face: the stage (nothing up), the PiP (a piece up, phones), the tile (wide); a keyboard tucks it into the bar
   // (wide with nothing up: she takes the stage and the side column's caption grows into her tile's place)
   const faceAt: "stage" | "pip" | "tile" | "none" = !work ? "stage" : L.tile ? "tile" : L.pip ? "pip" : "none";
+  const talkCap = presence && !!L.talk && m.captionsOn;
   const capRect = L.caption && L.tile && faceAt === "stage" ? { ...L.caption, y: L.tile.y, h: L.caption.h + L.tile.h + 8 } : L.caption;
   const faceRect = faceAt === "tile" ? L.tile : faceAt === "pip" ? L.pip : faceAt === "stage" ? heroRect(L.slot) : null;
   const capOn = m.captionsOn && captionVisible(floor, m.caption.soundFailed);
@@ -120,15 +125,25 @@ export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray, 
             ["--pip-zone-right" as string]: `${pipZone.right}px`, ["--pip-zone-bottom" as string]: `${pipZone.bottom}px` } : {}) }}>
           {work && <div className="ks-piece" key={pieceKey(work)}>{renderTray(work)}</div>}
           {!work && capOn && !L.caption && <div className="ks-hero-cap">{<Caption text={m.caption.text} speaking={m.caption.speaking} visible lang={m.caption.lang} soundFailed={m.caption.soundFailed} />}</div>}
-          {work && faceAt !== "tile" && capOn && (
+          {work && faceAt !== "tile" && capOn && !presence && (
             <div className="ks-subtitle" data-testid="subtitle"><Caption text={m.caption.text} speaking={m.caption.speaking} visible lang={m.caption.lang} soundFailed={m.caption.soundFailed} /></div>
           )}
         </div>
+        {L.talk && (
+          <div className="ks-talk" style={{ height: L.talk.h }} data-testid="talk-row">
+            <Presence name={m.teacher.name} floor={floor} size="row" />
+            <div className="ks-talk-cap">
+              {talkCap && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor, m.caption.soundFailed)} lang={m.caption.lang} soundFailed={m.caption.soundFailed} />}
+            </div>
+          </div>
+        )}
         <div className="ks-rail" style={{ height: L.rail.h }} ref={railBody} data-zone="card">{card}</div>
       </section>
       {faceRect && (
         <div className={`ks-face ks-face--${faceAt}`} style={px(faceRect)} data-testid="stage-face" data-speaking={floor === "speaking" || floor === "showing" ? "" : undefined}>
-          {m.faceHidden ? (
+          {presence ? (
+            <Presence name={m.teacher.name} floor={floor} size={faceAt === "tile" ? "tile" : "hero"} />
+          ) : m.faceHidden ? (
             // Me → "Voice only": no face; her name and "AI teacher" stay (the disclosure survives every setting)
             <div className="ks-voice" data-testid="voice-only"><span className="ks-voice-orb" aria-hidden="true" /><span className="ks-voice-name"><b>{m.teacher.name}</b> · AI teacher</span></div>
           ) : (

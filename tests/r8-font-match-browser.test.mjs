@@ -11,6 +11,9 @@
 //      family at 400-900 gives the self-hosted face; the canvas measures the same widths as that DOM run (same FontSelector),
 //      not the system sans's; Hindi still resolves to Mukta;
 //   3. the whiteboard's word face (and a 700 run of it) resolves to Atkinson Hyperlegible Next with the Devanagari faces loaded.
+//   4. round 8 (?tx=a and ?tx=b, src/styles/tx-tokens.css): the question card's display face, and a run of every r8 text face
+//      (display at its theme weight, reading, UI at 400 / 600 / 700) inside the themed lesson root, is the self-hosted face, never
+//      a system serif or sans (main 2026-11-11: the home greeting drew in Liberation Serif Bold on a page without fonts.css).
 // FONT_BROWSER=0 or no Chromium skips 2-3.
 // What 2-3 need: Chromium (PLAYWRIGHT_BROWSERS_PATH), the built dist/ or the dev server (tests/support/app-server.mjs), and the
 // font FILES on disk (public/fonts, dist/assets, src/**/fonts, node_modules/@fontsource) — no network: every .woff2 request is
@@ -101,7 +104,7 @@ before(async () => {
 });
 after(async () => { await browser?.close(); await app?.close(); });
 
-async function lesson(artifact, ready) {
+async function lesson(artifact, ready, qs = "") {
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1 });
   const ui = { status: "speaking", phase: "teach", handover: "answer", answerForm: "words", tray: "studio",
     studioSlot: { slotId: "slot1", intentId: "i1", state: "revealed", artifact } };
@@ -121,7 +124,7 @@ async function lesson(artifact, ready) {
     if (p.startsWith("/api/tts") || p.startsWith("/api/voice")) return route.fulfill({ status: 503, body: "" });
     return json(200, {});
   });
-  await page.goto(`${app.url}/c/${KID.id}/lesson/new?mode=text`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${app.url}/c/${KID.id}/lesson/new?mode=text${qs}`, { waitUntil: "domcontentloaded" });
   await page.waitForSelector(ready, { timeout: 30_000 });
   // the Devanagari faces (ext/deva.css, in the ext engine chunk the stage warms on idle) are declared and loaded
   await page.waitForFunction(() => [...document.fonts].some((f) => /Atkinson/.test(f.family) && /U\+900/i.test(f.unicodeRange)), null, { timeout: 30_000 });
@@ -219,3 +222,40 @@ test("whiteboard: the word face and a 700 run of it resolve to Atkinson Hyperleg
     assert.deepEqual(bad, []);
   } finally { await page.close(); }
 });
+
+for (const theme of ["a", "b"]) {
+  test(`round 8 theme ${theme}: the question card and every r8 text face resolve to the self-hosted faces`, { skip: SKIP, timeout: 120_000 }, async () => {
+    const script = { v: 1, scriptId: "font-r8", line: { lessonId: "L-font" }, anchor: "line_audio_start", board: { w: 800, h: 500, ground: "chalk" }, mode: "fresh", durationMs: 400,
+      ops: [{ id: "t1", op: "text", at: [400, 250], text: "Half of eight", size: "m", startMs: 0, endMs: 200 }] };
+    const { page, used } = await lesson({ kind: "whiteboard", stage: { w: 800, h: 500 }, script }, ".kx-lesson[data-tx]", `&tx=${theme}`);
+    try {
+      await page.evaluate(async () => {
+        const root = document.querySelector(".kx-lesson[data-tx]");
+        const cs = getComputedStyle(root);
+        const v = (n) => cs.getPropertyValue(n).trim();
+        const host = document.createElement("div"); host.style.cssText = "position:absolute;left:0;top:0;opacity:0;pointer-events:none;white-space:nowrap";
+        root.appendChild(host);
+        const runs = [["display", v("--tx-display-weight"), v("--tx-font-display")], ["read", "400", v("--tx-font-read")], ["read6", "600", v("--tx-font-read")],
+          ["ui4", "400", v("--tx-font-ui")], ["ui6", "600", v("--tx-font-ui")], ["ui7", "700", v("--tx-font-ui")]];
+        for (const [id, w, fam] of runs) { const s = document.createElement("span"); s.id = `r8-${id}`; s.textContent = "Evening, Riya. How many quarters 1/2"; s.style.font = `${w} 40px ${fam}`; host.appendChild(s); }
+        await Promise.allSettled(runs.map(([, w, fam]) => document.fonts.load(`${w} 40px ${fam}`, "Evening")));
+        await document.fonts.ready;
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      });
+      const want = theme === "a" ? { display: "Literata" } : { display: "Atkinson Hyperlegible Next" };   // (B's Bricolage is not self-hosted on the lesson page: its stack falls to Atkinson, a self-hosted face)
+      const expect = { display: want.display, read: "Literata", read6: "Literata", ui4: "Atkinson Hyperlegible Next", ui6: "Atkinson Hyperlegible Next", ui7: "Atkinson Hyperlegible Next" };
+      const bad = [];
+      for (const [id, fam] of Object.entries(expect)) {
+        let f = await used(`#r8-${id}`);
+        for (let i = 0; i < 15 && !f?.length; i++) { await page.waitForTimeout(200); f = await used(`#r8-${id}`); }
+        if (!(f?.length > 0 && f.every((x) => x.isCustomFont && (x.familyName.startsWith(fam) || (id === "display" && theme === "b" && x.familyName.startsWith("Bricolage")))))) bad.push(`${id}: ${show(f)}`);
+      }
+      // the question card itself, when the lesson shows one
+      if (await page.evaluate(() => !!document.querySelector(".ks-rail .dk-ask")?.textContent?.trim())) {
+        const f = await used(".ks-rail .dk-ask");
+        if (!(f?.length > 0 && f.every((x) => x.isCustomFont))) bad.push(`question card: ${show(f)}`);
+      }
+      assert.deepEqual(bad, []);
+    } finally { await page.close(); }
+  });
+}
