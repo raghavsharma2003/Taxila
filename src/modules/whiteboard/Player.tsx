@@ -6,6 +6,7 @@
 //
 // Used by the Studio stage's `whiteboard` renderer (StudioWhiteboard.tsx) and by the frame's explainer@1 engine (the
 // template rungs). Reduced motion: every op appears complete at its startMs, nothing is animated along a path.
+import type { ThemeName } from "../../theme/palette.ts";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import type { WbOp, WhiteboardScript } from "../../../shared/studio.ts";
 import { erasers, isIdentity, isMotionOp, morphAt, motionMatrix, opGeometry, opProgress, sweepAt, textFace, visibleShare, TEXT_FACES, type OpGeometry } from "../../../shared/whiteboard.js";
@@ -48,6 +49,8 @@ export interface WhiteboardPlayerProps {
   /** r4: the skin's board (its palette, palette.ts kakshaBoardSkin); absent = today's board. The faces are the board's own
    *  under every skin (round 8 item 7: the fit measures them; shared/whiteboard.js TEXT_FACES). */
   skin?: BoardSkin | null;
+  /** the lesson's theme (src/theme/palette.ts); night when absent. A skin (Kaksha's tokens) still wins when given. */
+  theme?: ThemeName;
 }
 
 export { onLineClock } from "./lineClock.ts";
@@ -78,10 +81,10 @@ function useTimeline(startAt: number | null, endMs: number, frozenAt: number | u
   return t;
 }
 
-export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion = false, width = "100%", height = "100%", className, pulse, onDone, frozenAt, clauseOnsets, switchAt, onTapText, skin }: WhiteboardPlayerProps) {
+export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion = false, width = "100%", height = "100%", className, pulse, onDone, frozenAt, clauseOnsets, switchAt, onTapText, skin, theme }: WhiteboardPlayerProps) {
   const script = useMemo(() => onLineClock(given, clauseOnsets, switchAt), [given, clauseOnsets, switchAt]);
   // r4: under a skin (Kaksha) the board takes the skin's palette; without one, exactly as before
-  const pal = skin?.palette ?? paletteFor(script.board.ground);
+  const pal = skin?.palette ?? paletteFor(script.board.ground, theme);
   const { w: BW, h: BH } = script.board;
   const all = useMemo(() => [...(prior ?? []), ...script.ops], [prior, script]);
   const byId = useMemo(() => new Map(all.map((o) => [o.id, o])), [all]);
