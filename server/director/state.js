@@ -2856,6 +2856,11 @@ export function step(prev, input) {
   if (input?.event === "turn" && input.cls?.request?.type === "another" && SAYS_CLARIFY.test(String(input.text ?? "")) && !input.cls.flags?.distress
     && keySaidNoCard(prev))
     input = { ...input, cls: { ...input.cls, request: { ...input.cls.request, type: "clarify", src: "says_clarify" } } };
+  // (dc-r8-director20 L1: "pata nahi, aap batao" at a worked step's check-in is never a yes to it — the step is re-said in its simpler
+  // words, as a clarify is, and the check-in comes again)
+  if (input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && GIVE_UP_WORDS.test(String(input.text ?? "")) && !SAYS_CLARIFY.test(String(input.text ?? ""))
+    && !input.cls?.flags?.distress && /^worked:step/.test(String(prev?.lastMove?.scriptBeat?.beatId ?? "")) && !prev?.lastUi?.ask && !prev?.lastMove?.smaller)
+    input = { ...input, cls: { ...(input.cls ?? {}), outcome: "no_evidence", flags: { ...(input.cls?.flags ?? {}), dontKnow: false }, request: { type: "another", src: "giveup_step" } } };
   const out = step0(prev, input);
   // (dc-r8-second-clarify-shows-not-rewords, main's reversal clause: the judges count second-clarify rows. A clarify on the same live
   // part as the clarify before it is the n-th, recorded on the move, on every path (a held half included); any other turn ends the run)
@@ -2909,9 +2914,9 @@ function step0(prev, input) {
   // v6.9 T1 (main on director17 c5-t01 steady 6, stuck 6, steering 6): "pata nahi" / "samajh nahi aaya" at the check-in after a point,
   // the point's card not yet asked — the card is posed first; its simpler comes only after a miss on it
   if (input.event === "turn" && scriptOn() && scriptIdOf(input.kit) && !scriptFor(input.kit)?.script?.recordedRun && input.cls && !input.cls.flags?.distress
-    && (prev?.lastMove?.kind === "explain" || prev?.lastMove?.splitTeach) && (prev.activeItemId || prev.splitHold?.activeItemId) && (input.cls.flags?.dontKnow || ["another", "clarify", "confused"].includes(input.cls.request?.type) || readIntent(String(input.text ?? ""))?.type === "confused")) {
+    && (prev?.lastMove?.kind === "explain" || prev?.lastMove?.splitTeach) && (prev.activeItemId || prev.splitHold?.activeItemId) && (input.cls.flags?.dontKnow || GIVE_UP_WORDS.test(String(input.text ?? "")) || ["another", "clarify", "confused"].includes(input.cls.request?.type) || readIntent(String(input.text ?? ""))?.type === "confused")) {
     const it = findItem(prev, input.kit, prev.activeItemId ?? prev.splitHold.activeItemId);
-    const rq = input.cls.flags?.dontKnow ? "dont_know" : input.cls.request?.type ?? "dont_know";
+    const rq = input.cls.flags?.dontKnow || GIVE_UP_WORDS.test(String(input.text ?? "")) ? "dont_know" : input.cls.request?.type ?? "dont_know";
     // (the card not yet asked: the point's turn held it back for its check-in — a split hold — or put no card on the table)
     const unasked = !!prev.splitHold?.activeItemId || (!!prev.lastMove?.checkinOk && !prev.lastUi?.ask);
     // (v6.10 T2, main on director18 c4 steering 6, 44, c5-t01 steering 6: "samajh nahi aaya" there is a clarify of the POINT — it is
@@ -2920,9 +2925,9 @@ function step0(prev, input) {
     const saysClarify = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|didn'?t\s+understand|don'?t\s+understand|kya\s+matlab)(?![\p{L}])/iu.test(String(input.text ?? ""));
     const rq2 = rq === "dont_know" && !saysClarify ? "dont_know" : "clarify";
     const shape = it && isScriptCard(it) && unasked ? responseShape(rq2, "checkin_after_point") : null;
-    if (shape === "card_first") {
+    if (shape === "card_first" || shape === "simpler_then_card") {
       const { request: _rq, ...rest } = input.cls;
-      input = { ...input, cls: { ...rest, outcome: "no_evidence", flags: { ...(rest.flags ?? {}), dontKnow: false }, request: { type: "repeat", src: "card_first" } } };
+      input = { ...input, cls: { ...rest, outcome: "no_evidence", flags: { ...(rest.flags ?? {}), dontKnow: false }, request: { type: "repeat", src: shape } } };
     } else if (shape === "live_fresh_else_key" && liveRun) {
       const { request: _rq, ...rest } = input.cls;
       input = { ...input, cls: { ...rest, outcome: "no_evidence", flags: { ...(rest.flags ?? {}), dontKnow: false, confused: false }, request: { type: "clarify", src: "checkin_point" } } };
@@ -3243,6 +3248,30 @@ function step0(prev, input) {
   }
   if (p.probeAck) move.probeAck = true;
   if (p.sayFirst?.length) move.sayFirst = p.sayFirst.map(String);
+  // (dc-r8-director20 L3: "samajh nahi aaya" or "pata nahi" to the greeting — the script's greetSimpler says what today is about in
+  // plainer words, then the hook)
+  if (prev?.lastMove?.kind === "greet" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && move.kind === "hook"
+    && (SAYS_CLARIFY.test(String(input.text ?? "")) || GIVE_UP_WORDS.test(String(input.text ?? "")) || ["clarify", "another", "confused"].includes(input.cls?.request?.type))) {
+    const g = scriptFor(input.kit)?.script?.greetSimpler;
+    const gs = g ? saidIn(g, s.ctx?.lang ?? "hinglish") : null;
+    if (gs && String(gs).trim()) move.sayFirst = [String(gs).trim(), ...(move.sayFirst ?? [])];
+  }
+  // (dc-r8-director20 L4: a Hindi request on an explain card — the card's own ask.simpler where Learning wrote one, else the point's
+  // simpler, then the card. Said whole even when said before; then she makes no "Hindi mein bolti hoon" promise)
+  if (input.cls?.request?.type === "language" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && s.activeItemId && prev?.lastUi?.ask?.itemId === s.activeItemId && !["safeguard", "wrap", "break"].includes(move.kind)) {
+    const it = findItem(s, input.kit, s.activeItemId);
+    const bid = it?.scriptAsk?.beatId;
+    const b = bid && bid !== "worked" ? skillScriptOf(input.kit, it.skillId)?.explain?.find((x) => x.id === bid) : null;
+    const sm0 = b ? (b.ask?.simpler ?? b.simpler) : null;
+    const sm = sm0 ? saidIn(sm0, s.ctx?.lang ?? "hinglish") : null;
+    if (sm && String(sm).trim()) {
+      move.simpler = String(sm).trim(); move.smaller = true; delete move.simplerBeat;
+      const lastT = normLine([...(prev?.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "");
+      if (lastT.includes(normLine(sm).slice(0, 40))) move.noLangAck = true;
+    }
+  }
+  // (dc-r8-director20 L1: a give-up at the check-in after a point — the point's authored simpler, then the card it held)
+  if (input.cls?.request?.src === "simpler_then_card" && !move.simpler) { const sm = simplerOfBeat(s, input.kit, prev?.lastMove); if (sm) { move.simpler = sm; move.smaller = true; } }
   // P1 (dc-r8-director20): the authored parts a return's turn held back (brain/say.js guard.bodyHeld) are said first now
   if (prev?.bodyUnsaid?.length && !["safeguard", "wrap", "break"].includes(move.kind)) { move.sayFirst = [...prev.bodyUnsaid.map(String), ...(move.sayFirst ?? [])]; move.heldSaid = prev.bodyUnsaid.map(String); }
   // v6.10 T2 (main on director18 c5-t02 stuck 50, offtopic 10, c6 offtopic 10: after the aside reply the card was posed bare and its
@@ -3738,7 +3767,9 @@ function heldTurn(prev, input) {
   // (Learning, director10 item 1; steering c5-t01 T13: "samajh nahi aaya" after a remediation's say, split from its card, let the
   // card go and the walk moved on to the next beat): still lost after a remediation's say, the held follow-up card comes now,
   // with the remediation's own simpler (else the card's) said first
-  const lost = c?.flags?.dontKnow || ["confused", "another", "clarify"].includes(c?.request?.type) || readIntent(String(input.text ?? ""))?.type === "confused";
+  // (dc-r8-director20 L1: "pata nahi, aap batao" is a give-up whatever the reader flagged — the child's words decide)
+  const giveUp = scriptOn() && GIVE_UP_WORDS.test(String(input.text ?? "")) && !SAYS_CLARIFY.test(String(input.text ?? ""));
+  const lost = c?.flags?.dontKnow || giveUp || ["confused", "another", "clarify"].includes(c?.request?.type) || readIntent(String(input.text ?? ""))?.type === "confused";
   const remId = String(prev.lastMove?.scriptBeat?.beatId ?? "");
   if (h.teach && lost && remId.startsWith("rem:") && h.activeItemId) {
     const s = structuredClone(prev);
@@ -3753,7 +3784,8 @@ function heldTurn(prev, input) {
     // v6.11 G2 (main on director19 c4 stuck 22, c5-t01 stuck 48, steering 12: "samajh nahi aaya" after a remediation got its card) — the
     // remediation's simpler is said and the turn ends on its check-in; the card still waits (a live run only; a replay walks its record)
     // (once: a second "samajh nahi aaya" after the simpler gets the card, with nothing said twice)
-    if (sm && !prev.lastMove?.smaller && !scriptFor(input.kit)?.script?.recordedRun) {
+    // (L1: a give-up there gets the remediation's simpler and then its card, in one turn — the teaching alone is for "samajh nahi aaya")
+    if (sm && !prev.lastMove?.smaller && !giveUp && !scriptFor(input.kit)?.script?.recordedRun) {
       const teach = { ...prev.lastMove, simpler: String(sm), smaller: true, splitTeach: true, checkinOk: true, ...(remBeatOf ? { simplerBeat: remBeatOf } : {}) };
       delete teach.rendered; delete teach.point;
       s.splitHold = h;
@@ -3773,11 +3805,12 @@ function heldTurn(prev, input) {
   // dc-r8-director20 L2 (c5-t01 offtopic 44, and the key turns G3 now splits): a clarify after a key is answered by its why again and
   // the check-in; it does not move on. Once: a second clarify gets the held half. (Its simpler wording is Learning's to author; until
   // then the authored why is said again.)
-  if (!h.teach && prev.lastMove?.gave?.answer && prev.lastMove?.splitClose && !prev.lastMove?.smaller && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun
-    && (c?.request?.type === "clarify" || SAYS_CLARIFY.test(String(input.text ?? "")))) {
+  // (dc-r8-second-clarify-shows-not-rewords: asked a second time, the same line again and the check-in — a third ask gets the held half)
+  if (!h.teach && prev.lastMove?.gave?.answer && prev.lastMove?.splitClose && (!prev.lastMove?.smaller || !prev.lastMove?.keyTwice) && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun
+    && (c?.request?.type === "clarify" || SAYS_CLARIFY.test(String(input.text ?? "")) || giveUp)) {
     const s = structuredClone(prev);
     s.turn += 1;
-    const again = { ...prev.lastMove, smaller: true, gaveCheck: true };
+    const again = { ...prev.lastMove, smaller: true, gaveCheck: true, ...(prev.lastMove?.smaller ? { keyTwice: true } : {}) };
     const ui0 = { status: "your_turn" };
     s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
     return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };

@@ -53,3 +53,20 @@ test("P1: a return is a turn of its own, after a park; a close may lead it", asy
   assert.deepEqual(of([T("Cricket ki baat bhi hogi, bas yeh kaam khatam ho jaaye."), C("haan")]), ["0 parkGoesOn"]);
   assert.deepEqual(of([C("x"), T("Cricket wali baat batao na?", { returnSaid: true, pageParts: [{ part: "body" }] })]), ["1 returnNoPark", "1 returnAlone"]);
 });
+
+// L1 to L4 (dc-r8-director20): each listening cell's predicate fails on director20's rows — a give-up at a check-in moving on
+// (c4 stuck 46, c5-t01 stuck 6, c5-t02 stuck 66) and a Hindi request answered with the same card and a promise (c4 stuck 10, c6 stuck 8)
+test("L1, L4: the listening predicates flag director20's rows", () => {
+  const flags = checkRun(RUN).map((x) => `${x.lesson} ${x.row} ${x.predicate}`);
+  for (const f of ["stuck-c4-ch05-t01 46 giveUpCheckin", "stuck-c5-ch02-t01 6 giveUpCheckin", "stuck-c5-ch02-t02 66 giveUpCheckin", "stuck-c4-ch05-t01 10 hindiCard", "stuck-c6-ch06-t01 8 hindiCard"])
+    assert.ok(flags.includes(f), `${f} in ${flags.filter((x) => /giveUpCheckin|hindiCard/.test(x)).join(", ")}`);
+});
+
+test("L3: a clarify at the greeting is answered with greetSimpler, then the hook", async () => {
+  const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const script = { greetSimpler: { hi: "Aaj hum barabar hisse seekhenge." }, skills: [] };
+  const rows = (t) => [{ who: "teacher", text: "Namaste! Aaj kuch naya.", move: "greet" }, { who: "child", text: "samajh nahi aaya", read: "no_evidence · another" }, { who: "teacher", text: t, move: "hook" }];
+  const of = (t) => lessonFlags({ rows: rows(t), script }).filter((x) => x.predicate === "greetSimpler").length;
+  assert.equal(of("Aaj hum barabar hisse seekhenge. Socho, ek roti."), 0);
+  assert.equal(of("Socho, ek roti."), 1);
+});

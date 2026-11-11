@@ -1932,7 +1932,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       }
     }
     // round 7 (director2 c6 steering: "hindi mein batao" got the same line, no word that it was heard): the switch is said
-    if (state.lastMove?.request === "language" && kindNow !== "safeguard" && !/\b(?:hindi|english|angrezi)\b|हिंदी|हिन्दी/i.test(reply)) {
+    if (state.lastMove?.request === "language" && kindNow !== "safeguard" && !state.lastMove?.noLangAck && !/\b(?:hindi|english|angrezi)\b|हिंदी|हिन्दी/i.test(reply)) {
       reply = `${freshOf(jointsAt(kit, "hindiSwitch", lang, state) ?? LANG_ACK[lang === "english" ? "english" : "hindi"], state)} ${reply}`.trim(); guard.repaired = true;
     }
     // (director3: "Riya" in 8-9 of 11 lines) her name opens a line at most once in three turns
@@ -2496,7 +2496,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // v6.4 Q1 (main, director12: "mujhe khud try karne do", "sawaal kya hai?", "phir se bolo", an unclear reply each got a recital
     // before the card): a turn that answered nothing re-poses ONLY the card — no teaching, no recap, none of her lines
     const NON_ANSWER = new Set(["selftry", "repeat", "unclear", "off_format", "which"]);
-    if (card && NON_ANSWER.has(String(state.lastMove?.request ?? "")) && !graded) { if (body.length) guard.reposeOnly = body.length; body = []; }
+    if (card && NON_ANSWER.has(String(state.lastMove?.request ?? "")) && !graded && !state.lastMove?.smaller) { if (body.length) guard.reposeOnly = body.length; body = []; }
     // v6.4 R3: a card said again word for word gets a frame ("Phir se dekho:"), never the same words with nothing new
     const prevHas = (c) => { const k = norm(c).toLowerCase(); return herPrev.includes(k) || (state.ctx?.lang === "hindi" && inHindiWords(herPrev).toLowerCase().includes(k)); };
     const codeLines = [];
@@ -2587,7 +2587,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     {
       const usedWhy = [];
       const keyW = (w) => String(w ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
-      const prevW = keyW(herPrev);
+      // (dc-r8-director20 L2: asked again after a key — "samajh nahi aaya", "pata nahi" — the why is the answer, said again by design)
+      const prevW = state.lastMove?.gaveCheck && state.lastMove?.smaller ? "" : keyW(herPrev);
       const once1 = (x) => {
         if (!x) return x;
         const m = /,\s*(?:kyunki|because)\s+([^.!?\u0964]+)([.!?\u0964]?)\s*$/iu.exec(x);
@@ -2721,7 +2722,12 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // v6.4 L1 (main, director12: c6 0/4, c5-t01 "Zaroor." and the same Hinglish): on a scripted turn the assembly is built from her
     // sentences, so code's switch acknowledgement (the repair above) never reached it — c4's 4/4 were her own words. A language
     // request's turn opens with code's acknowledgement in place of a bare filler of hers ("Zaroor.", "Theek hai.")
-    if (state.lastMove?.request === "language" && kindNow !== "safeguard") {
+    // (dc-r8-director20 L4: no promise of a change she cannot make — when what follows is the simpler she just said, no switch line)
+    if (state.lastMove?.request === "language" && kindNow !== "safeguard" && state.lastMove?.noLangAck) {
+      const ss0 = sentences(reply).map(norm).filter(Boolean);
+      const kept = ss0.filter((x) => !/(?<![\p{L}])(?:hindi|english|angrezi)\s+mein\s+(?:bol|samjha|keh)/iu.test(x) && !/^(?:zaroor|bilkul|theek\s+hai|achha|haan)[\s,!.]*$/i.test(x));
+      if (kept.length && kept.length < ss0.length) { reply = kept.join(" "); guard.langAckDropped = true; }
+    } else if (state.lastMove?.request === "language" && kindNow !== "safeguard") {
       const ss0 = sentences(reply).map(norm).filter(Boolean);
       const filler = (x) => /^(?:zaroor|bilkul|theek\s+hai|thik\s+hai|achha|acha|haan|okay|ok|sure)[\s,!.]*$/i.test(x);
       while (ss0.length > 1 && filler(ss0[0])) ss0.shift();
