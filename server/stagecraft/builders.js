@@ -45,7 +45,7 @@ export function specPrompt(c, key) {
   const how = typeof c.premise?.how === "string" && c.premise.how.trim() ? ` How: ${c.premise.how.trim().slice(0, 400)}` : "";
   return [
     { role: "system", content: "You plan Studio pieces for Indian students aged 9-15 (NCERT classes 4-7). Output ONE JSON object: a spec for the named engine. The engine owns physics, truth and feel; you choose items, order, pacing and short labels. Every number must come from the kit slice or be exactly computable. Labels: short, plain, no markup, no emoji, not sentences to be read aloud." },
-    { role: "user", content: `ENGINE ${a} (${d.title}, ${d.kind}).\nJSON SCHEMA:\n${schema}\nONE VALID EXAMPLE (a different lesson; do not copy its items):\n${ex}\nKIT SLICE:\n${slice}\nBAND ${key.band}; LANG ${key.lang === "hi" ? "hi" : key.lang === "en" ? "en" : "hinglish"}.\nPlan a fresh spec for topic ${key.topicId}, ${aim}.${how} Use skills [${JSON.stringify(key.topicId)}]. Numbers in titles, subs and labels as digits (3 hisse), never as words (teen, chaar). Return only the JSON.` },
+    { role: "user", content: `ENGINE ${a} (${d.title}, ${d.kind}).\nJSON SCHEMA:\n${schema}\nONE VALID EXAMPLE (a different lesson; do not copy its items):\n${ex}\nKIT SLICE:\n${slice}\nBAND ${key.band}; LANG ${key.lang === "hi" ? "hi" : key.lang === "en" ? "en" : "hinglish"}.\nPlan a fresh spec for topic ${key.topicId}, ${aim}.${how} Use skills [${JSON.stringify(key.topicId)}]. Every string in strings in the lesson's language, none left as the example's English. No title, sub or label states an answer, where an item goes, or the rule the child is to find. Numbers in titles, subs and labels as digits (3 hisse), never as words (teen, chaar). Return only the JSON.` },
   ];
 }
 

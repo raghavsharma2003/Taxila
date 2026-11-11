@@ -196,3 +196,32 @@ test("approval lane, predicate (main 2026-11-10, c5-t02 withdrawn): every value 
   assert.ok(!fs.existsSync(path.join(ROOT, "data/studio-approved/c5-maths-ch02-t02")) && !fs.existsSync(path.join(ROOT, "data/studio-approved/c4-maths-ch05-t01")));
   assert.ok(fs.existsSync(path.join(ROOT, "data/studio-approved/c6-maths-ch06-t01")));
 });
+
+test("never served (main 2026-11-11): a piece the predicates or judges refused is refused by the tray gate even with STUDIO_CATALOGUE_JUDGED off; the store, not the catalogue, decides what a child sees", async () => {
+  const { certifyForTray } = await import("../server/forge3/tray-gate.js");
+  const { neverServe, _resetNever } = await import("../server/studio/approved.js");
+  _resetNever();
+  const T = "c4-maths-ch03-t01";
+  const cat = JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-catalogue/topics", `${T}.json`), "utf8")).game;
+  assert.equal(neverServe(cat.archetype, cat.spec), true, "batch 1 refused it");
+  const art = { kind: "stagecraft", stagecraft: { rung: "library", archetype: cat.archetype, spec: cat.spec } };
+  const certs = { topics: { [T]: { game: { serveByViewport: { p360: true, p412: true, l1366: true } } } } };
+  const was = process.env.STUDIO_CATALOGUE_JUDGED;
+  process.env.STUDIO_CATALOGUE_JUDGED = "off";
+  try {
+    const r = certifyForTray(art, { vp: "p412", topicId: T, certs, factsKind: "game" });
+    assert.equal(r.ok, false); assert.equal(r.cert, "never");
+  } finally { if (was === undefined) delete process.env.STUDIO_CATALOGUE_JUDGED; else process.env.STUDIO_CATALOGUE_JUDGED = was; }
+  // (switch on — the default: an unjudged piece is refused by the store rule too)
+  const other = JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-catalogue/topics", "c6-maths-ch02-t01.json"), "utf8")).game;
+  const r2 = certifyForTray({ kind: "stagecraft", stagecraft: { rung: "library", archetype: other.archetype, spec: other.spec } }, { vp: "p412", topicId: "c6-maths-ch02-t01", certs: { topics: { "c6-maths-ch02-t01": { game: { serveByViewport: { p360: true, p412: true, l1366: true } } } } }, factsKind: "game" });
+  assert.equal(r2.ok, false); assert.equal(r2.cert, "catalogue-judged");
+});
+
+test("predicate (2026-11-11, c5-t01 retry 5 split on 'Run complete'): a Hinglish spec that leaves an engine's English string of 2+ words untranslated fails before any judge", async () => {
+  const { untranslatedStrings } = await import("../server/studio/approved.js");
+  const spec = (strings, lang = "hinglish") => ({ lang, strings });
+  assert.deepEqual(untranslatedStrings("catch-on-line@1", spec({ runDone: "Run complete", wave: "Wave" })).keys, ["runDone"], "a shared single word passes");
+  assert.equal(untranslatedStrings("catch-on-line@1", spec({ runDone: "Daud poori" })).ok, true);
+  assert.equal(untranslatedStrings("catch-on-line@1", spec({ runDone: "Run complete" }, "en")).ok, true, "an English piece keeps its English");
+});

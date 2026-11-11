@@ -14,7 +14,7 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { checkSpec, kitTopicAny } from "../server/stagecraft/catalogue.js";
-import { specHash, fileHash, JUDGED_SIZES, APPROVAL_SIZES, numberWords, valuesOnTicks } from "../server/studio/approved.js";
+import { specHash, fileHash, JUDGED_SIZES, APPROVAL_SIZES, numberWords, valuesOnTicks, untranslatedStrings } from "../server/studio/approved.js";
 import { boardTwinFor } from "../server/stagecraft/builders.js";
 
 const arg = (k, d = null) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -86,7 +86,9 @@ try {
     if (words.length) console.log(`${p.id}: WARNING number words in ${words.slice(0, 6).join(", ")} — a likely cause of a content-check score; write numbers in digits`);
     // (main 2026-11-10: the board must be able to show its own answer — every placed value on a tick)
     const pred0 = checkSpec(p.archetype, p.spec, kit), ticks = valuesOnTicks(p.archetype, pred0.spec ?? p.spec);
-    const pred = pred0.ok && !ticks.ok ? { ...pred0, ok: false, why: `values off the ticks: ${ticks.why}` } : pred0;
+    const words = untranslatedStrings(p.archetype, pred0.spec ?? p.spec);
+    const pred = pred0.ok && !ticks.ok ? { ...pred0, ok: false, why: `values off the ticks: ${ticks.why}` }
+      : pred0.ok && !words.ok ? { ...pred0, ok: false, why: words.why } : pred0;
     const dir = path.join(OUT, p.id);
     fs.mkdirSync(dir, { recursive: true });
     // (rendered as the child gets it: with its board twin, which the stage shows where the 1000-unit world is too small to play —
