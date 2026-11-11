@@ -27803,6 +27803,69 @@
    "title": "main's ruling: a stored approval needs TWO separate Claude judges to pass the content items (every fault kind except unreadable); readability stays with one judge. A split verdict is a fail, recorded with both reasons (approve-store --verdicts2, refused.json). Generation: every attempt ends in exactly one of a candidate file or a refused file with its reason (attemptOutcome), and a contentSafe refusal names the string and its code. First results: c6 stored; c4 (judge 1: the guide marks give the cuts away; judge 2: a reservation about the same marks), c5-t01 and c5-t02 (both judges: titles name where an item goes) refused.",
    "reverse": "a run of 20 pieces where the two judges never split would let one judge suffice",
    "source": "inbox/r7-studio-41.json"
+  },
+  {
+   "id": "ms-r8-approve-retry4-2026-11-10",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "Approval lane, retry 4 of three refused board specs (main ran scripts/approve-generate.mjs --keep-refused from int/r6 3132d629a; n = 3 topics, 5 model calls, $0.0056; $0.0225 of the $0.25 cap spent across all retries): c4-maths-ch05-t01 candidate on attempt 2, c5-maths-ch02-t02 candidate on attempt 1, c5-maths-ch02-t01 refused on both attempts. All 3 refusals carry the same content finding: content_safety_2 on waves.1.title, text 'Teen hisse' (twice) and 'Teen barabar hisse' (once). Outputs on claude/r4-content-candidates 07cf76d25, data/studio-approved/candidates-retry4/. No judge has seen the candidates yet.",
+   "source": "inbox/r8-main-3.json"
+  },
+  {
+   "id": "fd-content-check-reads-hindi-teen-as-english",
+   "kind": "finding",
+   "at": "2026-11-10",
+   "title": "The content-safety check on generated board specs flags the romanised Hindi number word 'teen' (three) as the English word: 3 of 3 refusals in retry 4 were this and nothing else. It is a false positive that blocks any title with 'teen' in it (thirds are a class 4-5 topic). Seen only on spec titles; whether it also fires on lesson text or kits was not measured.",
+   "source": "inbox/r8-main-3.json"
+  },
+  {
+   "id": "dc-r8-numbers-as-digits-in-generated-titles",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Generated board specs write numbers as digits in titles and labels ('3 hisse'), never as a romanised number word; the generation `how` says so and approve-check names the cause when a title fails on a number word. The content-safety check itself is not changed now (owner: existing safety code is frozen until the pre-launch safety pass). Reverse if: the pre-launch safety pass makes the check language-aware, or digits in titles read worse to children than the word in a judged sample.",
+   "source": "inbox/r8-main-3.json"
+  },
+  {
+   "id": "op-safety-pass-hindi-number-words",
+   "kind": "open",
+   "at": "2026-11-10",
+   "title": "For the pre-launch safety pass: make the content check language-aware so romanised Hindi number words ('teen', and check 'das', 'char', 'saat', 'nau', 'sau') are not read as English, and measure how often it fires on kits, scripts and teacher lines. Not to be done before that pass (safety code frozen).",
+   "source": "inbox/r8-main-3.json"
+  },
+  {
+   "id": "fd-content-check-scores-teen-titles-2",
+   "kind": "finding",
+   "at": "2026-11-10",
+   "title": "Correction of fd-content-check-reads-hindi-teen-as-english. The refusal code content_safety_2 is the severity returned by Azure AI Content Safety on the title text (server/studio/plan.js), not a word list. Observed, n = 4 titles: 'Teen hisse' scored 2 twice and 'Teen barabar hisse' scored 2 once, but 'Teen barabar tukde' passed. So the romanised number word 'teen' being read as English is the likely cause and is not proven; the classifier's score depends on the whole title. Writing digits in titles removes the word and is kept as the workaround.",
+   "source": "inbox/r8-main-4.json"
+  },
+  {
+   "id": "ms-r8-j2-replay-2026-11-10",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "J2 replay (her one reply sentence when she returns to a parked aside), run by main on int/r6 e43790b66: 3 off-topic exchanges (c4, c5-t02, c6), each one's own prompt sent to the live reply model 20 times; n = 60 drafts, $0.053. 12 of 60 pass the replyToReturnOk predicate (4, 6 and 2 of 20). Of 48 refusals: echo 41 (the draft repeats the child's sentence), promise 4, rule 2, lesson 1. 4 drafts used a man's verb form and 1 promised to remember; both were refused only because they also echoed. Simulated child, one seed, two distinct child sentences. Results in evals/hybrid-side-by-side/results/2026-11-10-j2-replay/.",
+   "source": "inbox/r8-main-4.json"
+  },
+  {
+   "id": "dc-r8-j2-prompt-carries-words-not-the-sentence",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "The J2 reply prompt carries one or two content words picked by code from what the child said, never the child's sentence, so the model cannot echo it; the predicate is unchanged (RULE_SAID and LESSON_SAID are not loosened) and gains two clauses of its own: a man's first-person verb form, and a promise to remember. Target on the same replay: at least 16 of 20 per exchange. Reverse if: the rerun is under 16 of 20, in which case the neutral line stays and the reply sentence moves to the offline judged library (selection before generation) instead of a third prompt change.",
+   "source": "inbox/r8-main-4.json"
+  },
+  {
+   "id": "fd-m4-break-stray-fetch-across-files",
+   "kind": "finding",
+   "at": "2026-11-10",
+   "title": "The m4-break test 'eastus2 is down all day' failed twice in the one-process leak check (seed 20261110) and was first put down to load. Root cause, reproduced every time with the 22 files that precede it in that process: tests/forge-g1.test.mjs set AZURE_OPENAI_ENDPOINT to example.invalid and never restored it, a fill's fire-and-forget model call (server/azure.js flavourPick) outlived its file, and the M3 fake (tests/fixtures/m3-fake-azure.mjs) counted any */chat/completions request as a keeper call: 5 stray calls, 'nothing spent' assertion 5 !== 0. Real elapsed time was not involved; infra/m3 is unchanged. Fixed in tests only: the fake counts only *.openai.azure.com hosts, and forge-g1 restores the env it sets. Verified: the same 23-file process passes 289 of 289.",
+   "source": "inbox/r8-main-4.json"
+  },
+  {
+   "id": "rj-load-as-the-cause-of-a-test-failure",
+   "kind": "rejection",
+   "at": "2026-11-10",
+   "title": "Rejected: writing a failure that 'passes alone' off as machine load. Tried twice on 2026-11-10 for m4-break; the cause was state crossing test files (fd-m4-break-stray-fetch-across-files), deterministic for the day's seed. A failure that passes alone gets its preceding files replayed in one process before it is called load. Still open and unexplained: r12-voice-trace test 14 ('speaking' vs 'thinking') under 4-way parallel runs, and r4-khand-law's wall-clock 'generator p95 <= 50 ms' (63.7 ms once, while another job loaded the machine).",
+   "source": "inbox/r8-main-4.json"
   }
  ],
  "edges": [
@@ -44565,6 +44628,46 @@
    "src": "dc-r8-board-faces",
    "rel": "measured_by",
    "dst": "m-r8-board-faces-fit"
+  },
+  {
+   "src": "fd-content-check-reads-hindi-teen-as-english",
+   "rel": "measured_by",
+   "dst": "ms-r8-approve-retry4-2026-11-10"
+  },
+  {
+   "src": "dc-r8-numbers-as-digits-in-generated-titles",
+   "rel": "caused_by",
+   "dst": "fd-content-check-reads-hindi-teen-as-english"
+  },
+  {
+   "src": "dc-r8-numbers-as-digits-in-generated-titles",
+   "rel": "measured_by",
+   "dst": "ms-r8-approve-retry4-2026-11-10"
+  },
+  {
+   "src": "op-safety-pass-hindi-number-words",
+   "rel": "caused_by",
+   "dst": "fd-content-check-reads-hindi-teen-as-english"
+  },
+  {
+   "src": "fd-content-check-scores-teen-titles-2",
+   "rel": "supersedes",
+   "dst": "fd-content-check-reads-hindi-teen-as-english"
+  },
+  {
+   "src": "fd-content-check-scores-teen-titles-2",
+   "rel": "measured_by",
+   "dst": "ms-r8-approve-retry4-2026-11-10"
+  },
+  {
+   "src": "dc-r8-j2-prompt-carries-words-not-the-sentence",
+   "rel": "measured_by",
+   "dst": "ms-r8-j2-replay-2026-11-10"
+  },
+  {
+   "src": "rj-load-as-the-cause-of-a-test-failure",
+   "rel": "caused_by",
+   "dst": "fd-m4-break-stray-fetch-across-files"
   }
  ]
 }

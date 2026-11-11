@@ -102,9 +102,13 @@ const RETURN_Q = {
 export const saidSlotOf = (said) => { const w = String(said ?? "").replace(/[?？!.।,]+/g, " ").replace(/\s+/g, " ").trim().split(" ").filter(Boolean); return w.length ? w.slice(-6).join(" ").toLowerCase() : null; };
 /** v6.11 G2 (main on director19: only the first of three authored forms was ever said — freshOf looks back four turns and a joint is
  *  said once in many): a joint's forms rotate across the lesson, by how many times its kind has been said (state counters). */
-export const jointCount = (state, kind) => kind === "asidePark" ? Math.max(0, (state?.later ?? []).length - 1)
+// (main, live offtopic run after release 18: the same park and return, word for word, in all four topics — every script authors
+// the same form 1 and every lesson started its rotation there. Each lesson starts each kind at its own place, from the lesson seed)
+const jointStart = (state, kind) => { const k = [...String(kind)].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0, 2166136261);
+  return Number.isFinite(state?.seed) ? (Math.imul((state.seed >>> 0) ^ k, 2654435761) >>> 0) % 997 : 0; };
+export const jointCount = (state, kind) => jointStart(state, kind) + (kind === "asidePark" ? Math.max(0, (state?.later ?? []).length - 1)
   : kind === "asideReturn" ? Math.max(0, (state?.later ?? []).filter((e) => e.servedAt != null).length - 1)
-  : kind === "hindiSwitch" ? Math.max(0, (state?.langN ?? 1) - 1) : kind === "askAgain" ? Math.max(0, (state?.askAgainN ?? 1) - 1) : 0;
+  : kind === "hindiSwitch" ? Math.max(0, (state?.langN ?? 1) - 1) : kind === "askAgain" ? Math.max(0, (state?.askAgainN ?? 1) - 1) : 0);
 export const rotated = (xs, n) => (Array.isArray(xs) && xs.length ? [...xs.slice(n % xs.length), ...xs.slice(0, n % xs.length)] : xs);
 export const jointsAt = (kit, kind, lang, state, slots = {}) => rotated(jointOf(kit, kind, lang, slots), jointCount(state, kind));
 export const returnQuestion = (topic, lang = "hinglish", state = null, { said = null, kit = null } = {}) => {
@@ -229,24 +233,34 @@ export function returnLineOk(x, said, topic) {
 /** v6.11 J2: the instruction for her one sentence after the child answered her return question. */
 export function replyToReturnNoteOf(said, topic, lang = "hinglish") {
   const en = lang === "english";
-  return `You asked about ${topic} and the child answered: "${String(said).replace(/"/g, "'").slice(0, 80)}". Start your turn with ONE short sentence (at most 14 words, ${en ? "in English" : "in simple Hinglish, Roman script"}) that responds to that answer, using one of their own words. No question, no numbers, no maths, nothing about what you yourself like, no promise to talk later. Then the move.`;
+  // (main, live offtopic after release 18: the joint 2 times in 3 — the note names every clause replyToReturnWhy holds it to, in that
+  // order; a shape, never a line to recite)
+  return `You asked about ${topic} and the child answered: "${String(said).replace(/"/g, "'").slice(0, 80)}". Start your turn with ONE short sentence (${en ? "in English" : "in simple Hinglish, Roman script"}) that reacts to that answer. It is checked, and dropped if it breaks any of these: 3 to 14 words; contains one of the child's own words for their thing; no question; no number; no word of the lesson (parts, fractions, lines, sides, shapes, sums); not a general rule or reason (no "${en ? "because / always / means" : "hota hai / kyunki / matlab / hamesha"}"); nothing about what you yourself like, feel or do; does not open with praise ("wah", "shabash"); never three of their words in a row; no promise to talk later. Then the move.`;
 }
 /** v6.11 J2: her one sentence after the child answered her return: ≤ 14 words, no question, no taste of hers, a content word of
  *  theirs, nothing of the lesson, no promise, never their words said back. null-safe; the neutral joint is said when it fails. */
-export function replyToReturnOk(x, said) {
+export function replyToReturnWhy(x, said) {
   const t = String(x ?? "").trim();
-  if (!t || /\d/.test(t) || /[?？]/.test(t)) return false;
+  if (!t) return "empty";
+  if (/\d/.test(t)) return "number";
+  if (/[?？]/.test(t)) return "question";
   const n = t.split(/\s+/).filter(Boolean).length;
-  if (n < 3 || n > 14) return false;
-  if (TASTE_CLAIM.test(t) || DENIES_AI.test(t) || LESSON_SAID.test(t) || RULE_SAID.test(t) || PROMISE_SAID.test(t)) return false;
-  if (/(?<![\p{L}])(?:baad\s+mein|thodi\s+der|later)(?![\p{L}])/iu.test(t)) return false;
-  if (/(?<![\p{L}])(?:tumne|aapne|you)\s+(?:kaha|bataya|bola|said|told)/iu.test(t) || /^(?:wah|waah|shabash|wow)\b/iu.test(t)) return false;
-  const theirs = (String(said ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? []).filter((w) => !RET_STOP.has(w) && !J2_STOP.has(w));
+  if (n < 3) return "short";
+  if (n > 14) return "long";
+  if (TASTE_CLAIM.test(t) || DENIES_AI.test(t)) return "taste";
+  if (LESSON_SAID.test(t)) return "lesson";
+  if (RULE_SAID.test(t)) return "rule";
+  if (PROMISE_SAID.test(t) || /(?<![\p{L}])(?:baad\s+mein|thodi\s+der|later)(?![\p{L}])/iu.test(t)) return "promise";
+  if (/(?<![\p{L}])(?:tumne|aapne|you)\s+(?:kaha|bataya|bola|said|told)/iu.test(t) || /^(?:wah|waah|shabash|wow)\b/iu.test(t)) return "echo";
   // (their words, never said back: three of them in a row is an echo)
   const tw = String(said ?? "").toLowerCase().match(/\p{L}+/gu) ?? [];
-  for (let i = 0; i + 2 < tw.length; i++) if (t.toLowerCase().includes(`${tw[i]} ${tw[i + 1]} ${tw[i + 2]}`)) return false;
-  return theirs.some((w) => new RegExp(`(?<![\\p{L}])${w}`, "iu").test(t));
+  for (let i = 0; i + 2 < tw.length; i++) if (t.toLowerCase().includes(`${tw[i]} ${tw[i + 1]} ${tw[i + 2]}`)) return "echo";
+  const theirs = (String(said ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? []).filter((w) => !RET_STOP.has(w) && !J2_STOP.has(w));
+  return theirs.some((w) => new RegExp(`(?<![\\p{L}])${w}`, "iu").test(t)) ? null : "theirs";
 }
+/** v6.11 J2: her one sentence after the child answered her return: ≤ 14 words, no question, no taste of hers, a content word of
+ *  theirs, nothing of the lesson, no promise, never their words said back (replyToReturnWhy names the clause that refuses). */
+export const replyToReturnOk = (x, said) => replyToReturnWhy(x, said) === null;
 const J2_STOP = new Set(["sabse", "lagta", "lagti", "lagte", "jaati", "jaata", "maarta", "karta", "karti", "woh", "jab"]);
 /** v6.3 R2: her own promise to come back, with no topic named (said once: code's park already promises). */
 const PROMISE_SAID = /(?<![\p{L}])(?:wapas\s+aa\w*|laut\w*|baat\s+kar(?:enge|ungi|unga)|uspar\s+aa\w*|baad\s+mein\s+(?:aa|baat)\w*|come\s+back|talk\s+about\s+it)(?![\p{L}])/iu;
@@ -2087,7 +2101,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     if (state.lastMove?.returnReply?.said) {
       const rr0 = state.lastMove.returnReply;
       // (from her first draft when a drift or shape repair rewrote it: the repair keeps the card question, not the aside's reply)
-      j2Line = [...ss, ...sentences(guard.firstDraft ?? "").map(norm)].find((x) => replyToReturnOk(x, rr0.said)) ?? null;
+      const cands = [...new Set([...ss, ...sentences(guard.firstDraft ?? "").map(norm)].filter(Boolean))];
+      j2Line = cands.find((x) => replyToReturnOk(x, rr0.said)) ?? null;
+      // (main, live offtopic after release 18: the joint 2 times in 3 — the trace says what she drafted and which clause refused it)
+      guard.j2 = { tried: true, said: rr0.said, line: j2Line, refused: cands.filter((x) => x !== j2Line).map((x) => ({ s: x.slice(0, 120), why: replyToReturnWhy(x, rr0.said) })).slice(0, 6) };
       const k = (String(rr0.topic ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])[0];
       ss = ss.filter((x) => x !== j2Line && !(k && x.toLowerCase().includes(k)));
     }

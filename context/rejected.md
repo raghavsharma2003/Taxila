@@ -3000,3 +3000,7 @@ The tried approach: proving a walk fix with a test that replays a recorded lesso
 - No test of that form can see a fault nobody listed: a park sentence said twice in a row, a re-pose frame on a first posing, a return stacked on a card. All three were new in director19 and all three are visible in a free 27-second dry run.
 
 Replays stay as regression pins. Evidence for a walk fix is a predicate over the whole dry matrix, seen failing before the fix.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-load-as-the-cause-of-a-test-failure` (2026-11-10): Rejected: writing a failure that 'passes alone' off as machine load. Tried twice on 2026-11-10 for m4-break; the cause was state crossing test files (fd-m4-break-stray-fetch-across-files), deterministic for the day's seed. A failure that passes alone gets its preceding files replayed in one process before it is called load. Still open and unexplained: r12-voice-trace test 14 ('speaking' vs 'thinking') under 4-way parallel runs, and r4-khand-law's wall-clock 'generator p95 <= 50 ms' (63.7 ms once, while another job loaded the machine).

@@ -67,7 +67,11 @@ export function fakeAzure({ failGet = () => false, failPut = () => false, chat =
       blobs.set(name, { body: Buffer.from(init.body).toString(), etag, lease: cur?.lease || null });
       return new Response("", { status: 201, headers: { etag } });
     }
-    if (u.pathname.endsWith("/chat/completions")) {
+    // only the keeper's own Azure OpenAI hosts are the fake's: while a keeper run has globalThis.fetch swapped, a fire-and-forget
+    // call left running by ANOTHER file in the same process (server/azure.js flavourPick from forge-g1's offline suite, host
+    // example.invalid) would otherwise be counted as a keeper chat call and fail "nothing spent" assertions; it falls through
+    // to the "unexpected fetch" throw below, which that caller already treats as a network error (as in its own file)
+    if (u.pathname.endsWith("/chat/completions") && u.hostname.endsWith(".openai.azure.com")) {
       calls.chat++;
       const body = JSON.parse(init.body);
       assert.ok(["aoai-secret", "fb2-secret"].includes(h["api-key"]));

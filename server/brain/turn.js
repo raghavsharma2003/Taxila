@@ -1548,7 +1548,10 @@ export async function lessonTurn(req, body, hooks = {}) {
       studio: { slot: studioSlot ? { slotId: studioSlot.slotId, state: studioSlot.state, artifact: studioSlot.artifact?.kind ?? null } : null, turnStudio: turnStudio ?? null,
         reasons: studioReasons, tray: r.ui?.tray ?? null, moduleCommands: (r.moduleCommands ?? []).map((c) => ({ op: c.op, moduleId: c.moduleId, engine: c.engine ?? null })) },
       guard: guard ? { caught: guard.caught ?? [], rewritten: !!guard.rewritten, replaced: !!guard.replaced, ...(guard.afterRewrite?.length ? { afterRewrite: guard.afterRewrite } : {}),
-        ...(guard.emptied ? { emptied: true } : {}) } : null,
+        ...(guard.emptied ? { emptied: true } : {}),
+        // (v6.11 J2: her sentence after the child answered her return — whether it was tried, the line said, each refused draft and the
+        // clause that refused it; the child's words stay out of the trace)
+        ...(guard.j2 ? { j2: { tried: true, line: guard.j2.line ?? null, refused: guard.j2.refused ?? [] } } : {}) } : null,
       teacherReply: teacherReply ?? null, teacherReplySeq: teacherReplySeq ?? null, ms }, { turn: next.turn });
     if (rungInfo) record("studio.rung_replaced", rungInfo, { turn: next.turn });
     if (speculation && !speculation.hit) record("turn.speculation_miss", { tried: speculation.tried, differs: speculation.differs ?? null }, { turn: next.turn });
