@@ -10,6 +10,7 @@ import { labLogic } from "./kyun-lab/lab.logic.ts";
 import { chumbakLogic } from "./kyun-lab/chumbak.logic.ts";   // r7 chumbak
 import { konLogic } from "./kon/kon.logic.ts";
 import { stambhLogic } from "./stambh/stambh.logic.ts";
+import { tallyLogic } from "./stambh/tally.logic.ts";   // r8 stambh/tally
 import { beamLogic } from "./yantra/beam.logic.ts";
 import { pendulumLogic } from "./yantra/pendulum.logic.ts";
 import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic, triLogic, solidLogic } from "./nazariya/index.ts";   // r4-khand
@@ -80,6 +81,7 @@ export const LOGIC: Record<string, AnyLogic> = {
   // round 7: Stambh, bar graphs and pictographs
   "stambh/bars": asAny(stambhLogic),
   "stambh/picto": asAny(stambhLogic),
+  "stambh/tally": asAny(tallyLogic),   // r8: tallies kept in fives (keep) and read (read)
   // round 7 E6: Yantra
   "yantra/beam": asAny(beamLogic),
   "yantra/pendulum": asAny(pendulumLogic),

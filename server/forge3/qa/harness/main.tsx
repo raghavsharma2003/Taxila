@@ -49,7 +49,8 @@ export interface HarnessJob {
   /** the level a PlayArtifact on the Studio stage fetches (answered locally) */
   playLevel?: { level: unknown; art: unknown };
   /** a play level judged in play mode: PlayStage fills the world box (the tray size given) */
-  play?: { level: unknown; art: string; lang?: string; classLevel?: number };
+  /** (`debug`: window.__play is exposed, so a layout test can drive the level's acts; r8 stambh/tally) */
+  play?: { level: unknown; art: string; lang?: string; classLevel?: number; debug?: boolean };
   artifact: StudioArtifact;
   tray: { w: number; h: number };
   young?: boolean;
@@ -79,7 +80,7 @@ function App() {
         <section className="dk-tray" data-kind="play" data-testid="tray" style={{ width: job.tray.w, height: job.tray.h }}>
           <div data-testid="studio-box" style={{ position: "absolute", inset: 0 }}>
             <Suspense fallback={null}>
-              {createElement(PlayStageLazy, { level: job.play.level, art: job.play.art, lang: job.play.lang ?? "en", classLevel: job.play.classLevel ?? 6, reducedMotion: true, sound: false,
+              {createElement(PlayStageLazy, { level: job.play.level, art: job.play.art, lang: job.play.lang ?? "en", classLevel: job.play.classLevel ?? 6, reducedMotion: true, sound: false, debug: !!job.play.debug,
                 onEvent: (e: { type: string; why?: string }) => events.push({ type: e.type === "fail" ? "error" : e.type, at: performance.now(), ...(e.why ? { message: e.why } : {}) }) })}
             </Suspense>
           </div>
