@@ -26,6 +26,8 @@ const LIMIT = Number(arg("limit", "0")) || Infinity;
 const CONC = Math.max(1, Number(arg("conc", "4")) || 4);
 const SHOTS = Number(arg("shots", "2"));
 const HARNESS = arg("harness", "");
+// --only <file>: a JSON list of job ids to render (e.g. the rows a crashed run left with an error)
+const ONLY = arg("only", "") ? new Set(JSON.parse(fs.readFileSync(arg("only", ""), "utf8"))) : null;
 const here = path.dirname(fileURLToPath(import.meta.url));
 // classes 4-5 are judged at the young floor (shared/play.ts FLOORS.textYoung) and rendered with the stage's young flag, as the
 // Desk does for them; a library game carries the board twin the live conductor gives it (server/stagecraft/builders.js), so
@@ -72,6 +74,7 @@ for (const f of topics) {
     jobs.push({ id: `${k}:${t.topicId}`, source: src, group: g, topic: t.topicId, artifact: { kind: "stagecraft", stage: { w: 1000, h: 625 }, stagecraft: { rung: "library", archetype: t[k].archetype, spec: t[k].spec, boardTwin: twinOf(t[k].archetype, t.topicId) } }, shot: wantShot(g) });
   }
 }
+if (ONLY) jobs.splice(0, jobs.length, ...jobs.filter((j) => ONLY.has(j.id)));
 console.log(`matrix: ${jobs.length} artifacts x ${DESK_VIEWPORTS.length} views (${SOURCES.join(",")})`);
 
 const harnessDir = HARNESS || await buildHarness(path.join(OUT, "_harness"));
@@ -81,11 +84,19 @@ const rows = [];
 let i = 0;
 const t0 = Date.now();
 async function worker(w) {
-  const j = await openJudge({ browser, base });
+  let j = await openJudge({ browser, base });
   while (i < jobs.length) {
     const job = jobs[i++];
     try {
-      const r = await j.judge(job.artifact, { young: youngOf(job.topic), shotDir: job.shot ? path.join(OUT, "shots", job.group.replace(/[^a-z0-9@.-]+/gi, "_")) : undefined, shotTag: job.id.replace(/[^a-z0-9@.-]+/gi, "_"), settleMs: job.artifact.kind === "stagecraft" ? 2500 : undefined });
+      // (a crashed page takes every later job of this worker with it — 2026-11-10: 268 of 760 rows "Target crashed": a fresh
+      // page and one retry)
+      const judgeOnce = () => j.judge(job.artifact, { young: youngOf(job.topic), shotDir: job.shot ? path.join(OUT, "shots", job.group.replace(/[^a-z0-9@.-]+/gi, "_")) : undefined, shotTag: job.id.replace(/[^a-z0-9@.-]+/gi, "_"), settleMs: job.artifact.kind === "stagecraft" ? 2500 : undefined });
+      const r = await judgeOnce().catch(async (e) => {
+        if (!/crash|closed/i.test(String(e?.message ?? e))) throw e;
+        try { await j.close(); } catch { /* gone */ }
+        j = await openJudge({ browser, base });
+        return judgeOnce();
+      });
       rows.push({ id: job.id, source: job.source, group: job.group, topic: job.topic, young: youngOf(job.topic), line: job.line ?? null, pass: r.piece.pass, byViewport: r.piece.byViewport, fails: r.piece.fails,
         views: r.views.map((v) => ({ vp: v.vp, shown: v.metrics?.legible === "twin" ? "twin" : v.metrics?.kind ?? null, framed: !!v.metrics?.framed, pass: v.verdict.pass, fails: v.verdict.fails, softFails: v.verdict.softFails, stats: v.verdict.stats, file: v.file ? path.relative(OUT, v.file) : null,
           detail: Object.fromEntries(v.verdict.hard.filter((c) => !c.pass).map((c) => [c.id, c.detail ?? ""])), ms: v.ms })) });

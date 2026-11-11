@@ -13,9 +13,30 @@ child's whole learning day and reports deeply to parents.
   Storage, Container Registry). No Anthropic/Claude-on-Foundry or other Marketplace models, no third-party AI
   APIs (ElevenLabs, Sarvam, Simli, HeyGen, Suno, …) — research may cite them, builds may not call them.
   Neon Postgres is allowed (owner's separate Neon grant). Hosting moves from Vercel to Azure Container Apps.
-- **Model policy:** main loop and every build/review agent on the top model at high effort; no downgrades.
-- **Compliance is deprioritised** for now — but the child-safety floor (never deny being an AI, Childline 1098 /
-  Tele-MANAS 14416, no romance/companion register, safeguarding hand-off) is product, not compliance, and stays.
+- **Model policy (owner, 2026-11-10):** Fable 5.2 orchestrates (the main loop: decisions, triage, synthesis). Build and fix
+  sessions run on Opus 5.5 (complex or multi-file work) or Sonnet 5.5 (well-scoped work against a spec) at medium effort,
+  raised to high only when a task fails at medium. File search, log reading and other cheap-to-check sub-tasks run on
+  Haiku 5.5. Source: Anthropic's model guide. (Replaces "top model at high effort for every agent, no downgrades": 13 Fable
+  audit sessions hit the Fable usage limit within 35 minutes on 2026-11-09 and stopped mid-work.)
+- **Build first; test, safety and compliance later (owner, 2026-10-27).** The product (architecture, stack, UI/UX,
+  backend) is not final, so do not spend effort on safety batteries, compliance or large test runs now. Order: build
+  the full product with all features → test it ourselves and iterate on internal feedback until it fully works → only
+  before real users, do security / safety / compliance. Existing safety code stays as it is (don't remove it, don't
+  extend or measure it). Unit tests and the build gates still run on code changes.
+- **Azure usage (2026-10-27):** keep it from being unnecessarily high; ask the owner before anything that needs high
+  usage (big batteries, bulk generation). Guidance, not a ban.
+- **Judges and evaluation use Claude (2026-10-27):** rubric scoring, sim-lab judging and blind judging are done by the
+  Claude Code session itself, not by Foundry models on Azure.
+- **Direction is the main loop's (owner, 2026-11-10).** "This codebase is entirely yours: what it's for and how it's built are
+  your call, and you'll keep building on it. We are revolutionizing education and learning with this product." The main loop
+  decides product direction and architecture, records each decision in `context/` with what would reverse it, and keeps
+  building. Still the owner's: money (ask before high Azure usage; buy nothing), the owner's accounts and keys, deleting
+  anything on Azure, anything involving real children or families, and choices of taste the owner has asked to make
+  (Asha's look). What the main loop is building toward: a teacher that knows the child in front of her and makes what that
+  child needs next, with every answer checked against a verified key.
+- Start here: `docs/design/round7/OWNER.md` (what is built, what waits on the owner) and `docs/design/round7/PIPELINE.md`
+  (the round-7 plan; sessions and branches in `SESSIONS.md`, path owners in `OWNERSHIP.md`). `HANDOFF.md` is the
+  2026-10-27 snapshot: its directives and practical notes still hold, its state sections are dated.
 
 ## Read before changing anything
 `context/` is the project memory: `graph.json` (index), `decisions.md` (with reversal conditions),
@@ -29,17 +50,23 @@ silent → budget gates throw; one `compile()` for every lane; safety by predica
 grades — classify against verified keys; identity is an authenticated child id, never a device.
 
 ## Layout
-- `server/` plain JS ESM API (one router; `routes/*.js` export route tables), `api/[...route].js` Vercel shim
+- `server/` plain JS ESM API (one router; route tables live in `routes/*.js` and in feature folders such as `play/`,
+  `pair/`, `trace/`, `duplex/`; `server/index.js` is the registry), `api/[...route].js` Vercel shim
 - `src/` React 19 + TS client; `src/lesson/` live-lesson runtime; `src/modules/` sandboxed engines
 - `shared/contracts.ts` — the seams between client, server and content
 - `data/curriculum/` NCERT syllabus graph; `data/kits/` verified teaching kits (blind-solved answer keys)
 - `docs/research/**` research; `docs/harvest/**` what was inherited from earlier products
-- `db/migrations/` (apply with `node scripts/migrate.mjs`), `evals/` measured harnesses
+- `db/migrations/` (apply with `node scripts/migrate.mjs`: the test branch by default, `--prod` for production), `evals/` measured harnesses
 
 ## Deploy
-`git push` first (ACR builds from GitHub), then `node scripts/deploy-azure.mjs` → Azure Container Apps `taxila-web`.
+`git push` first (ACR builds from GitHub), then `node scripts/release.mjs <rev>` (round 7: migrations, the web app
+`taxila-web`, the worker and its jobs at the same commit; `--plan` prints the steps). `node scripts/deploy-azure.mjs` is
+the web-only step → Azure Container Apps `taxila-web`; it refuses a commit with no passing gate (`--gate`, or CI).
 The Vercel project `taxila` is paused (Azure-only directive); `api/[...route].js` is kept only as a shim.
 
 ## Gates
-`npx tsc -b && npx vite build && npm test` must pass before any commit that touches code. Secrets live only in
-gitignored `.env.local` (and the hosting provider's secret store) — never commit or print them.
+`npx tsc -b && npx vite build && npm run test:all && node scripts/check-prompt-budget.mjs` must pass before any commit
+that touches code (`test:all` runs every suite in its own process, one per core: ~9 min instead of ~32; `tests/test-isolation.test.mjs` keeps module-level env and
+global writes out of tests). The main loop's integration additionally runs single-process `DATABASE_URL= npm test`, which
+is what catches state leaking between files; the deploy gate (`infra/gate.mjs`) and CI run the prompt-budget check too. Secrets live only in gitignored `.env.local` (and the hosting provider's
+secret store) — never commit or print them.

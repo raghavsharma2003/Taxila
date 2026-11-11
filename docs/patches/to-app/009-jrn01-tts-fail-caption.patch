@@ -1,0 +1,213 @@
+From: Voice (claude/r7-audit-voice), for App
+Subject: [PATCH] JRN-01: when her speech fails, her words show as text and the "is thinking" announcement clears
+
+Journey audit JRN-01 (routed to voice by main): with every speech route failing (a 503), none of the teacher's words
+reached the screen and "Asha is thinking" stayed. Reproduced in Chromium (360x640, text mode, mocked APIs). Not a voice
+hang (the text link reports the failure and the floor returns to "your_turn" correctly); two display rules in App's files:
+
+1. The caption shows only while the floor is "speaking"/"showing" (TeacherWindow.tsx captionVisible, and the Kaksha
+   skin's StageBody.tsx). When her sound fails the floor never reaches "speaking", so the caption stayed hidden although
+   captions are forced on for that turn (T5). Now: visible whenever her sound failed (DeskModel.caption.soundFailed =
+   facts.tts), and Caption steps through her clauses at reading pace as if she spoke (it showed only the last clause).
+2. Her finished line goes to the polite live region only when the floor LEAVES "speaking" (useDesk.ts). On a failed line
+   the floor goes thinking → your_turn, so "Asha is thinking" stayed in the region (that is the text the journey run
+   read) and her words were never announced. Now: a failed line's words are announced when the floor returns.
+
+Test: tests/jrn01-tts-fail-browser.test.mjs (in this patch; it fails without the change: the caption never shows the
+opening, the live region keeps "Asha is thinking"). Needs `vite build` first, like the other browser suites.
+Not done: the journey's other suggestion (put her reply on the card when sound failed) is a design call for App.
+
+diff --git a/src/child/lesson/Caption.tsx b/src/child/lesson/Caption.tsx
+index f4dcd968..6da9498f 100644
+--- a/src/child/lesson/Caption.tsx
++++ b/src/child/lesson/Caption.tsx
+@@ -11,7 +11,10 @@ import { clauseAt, clauses } from "./captions.ts";
+ // its first clause (QA pass 14, lessons 414955cb / a20930e5: the slot failed, the tray went, the caption restarted at "Kabir,")
+ let speakingLine: { text: string; t0: number } | null = null;
+ 
+-export function Caption({ text, speaking, visible, lang }: { text: string; speaking: boolean; visible: boolean; lang?: string }) {
++export function Caption({ text, speaking: voiced, visible, lang, soundFailed = false }: { text: string; speaking: boolean; visible: boolean; lang?: string; soundFailed?: boolean }) {
++  // JRN-01: her sound failed, so the caption is the only place her words are: it steps through her clauses at reading
++  // pace, exactly as if she were speaking, and stays on the last (before, it showed only the last clause)
++  const speaking = voiced || (soundFailed && visible);
+   const list = clauses(text);
+   const [ms, setMs] = useState(0);
+   const t0 = useRef(0);
+diff --git a/src/child/lesson/Desk.tsx b/src/child/lesson/Desk.tsx
+index 9658309c..2309cd80 100644
+--- a/src/child/lesson/Desk.tsx
++++ b/src/child/lesson/Desk.tsx
+@@ -264,7 +264,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
+           <div className="dk-zone dk-zone--window" data-zone="window"><TeacherWindow m={m} media={faceMedia} floor={floor} labelBelow={false} /></div>
+           <p className="dk-ailabel" data-ai-label="">{t("teacher.label", { T: m.teacher.name })}</p>
+           <span />
+-          <div className="dk-zone dk-zone--caption" data-zone="caption">{m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />}</div>
++          <div className="dk-zone dk-zone--caption" data-zone="caption">{m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor, m.caption.soundFailed)} lang={m.caption.lang} soundFailed={m.caption.soundFailed} />}</div>
+           <span />
+         </div>
+         <div className="dk-col dk-col--right" style={{ gridColumn: 4, gridTemplateRows: `${right.padTop}px ${right.card}px ${right.gapA}px ${right.tray}px ${right.gapB}px ${right.strip}px ${right.dock}px ${right.pad}px` }}>
+@@ -289,7 +289,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
+         {topBar}
+         <div className="dk-zone dk-zone--teacher" data-zone="teacher">{faceZone}</div>
+         <div className="dk-zone dk-zone--caption" data-zone="caption">{L.geometry === "face" && !L.keyboard && m.captionsOn && z.caption > 0 && (
+-          <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />
++          <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor, m.caption.soundFailed)} lang={m.caption.lang} soundFailed={m.caption.soundFailed} />
+         )}</div>
+         <div className="dk-zone dk-zone--card" data-zone="card">{card}</div>
+         <div className="dk-zone dk-zone--tray" data-zone="tray">{L.keyboard ? (m.tray ? <p className="dk-traystrip">{t("tray.activity")}</p> : null) : tray}</div>
+diff --git a/src/child/lesson/TeacherWindow.tsx b/src/child/lesson/TeacherWindow.tsx
+index eef40728..126281e1 100644
+--- a/src/child/lesson/TeacherWindow.tsx
++++ b/src/child/lesson/TeacherWindow.tsx
+@@ -27,10 +27,12 @@ export function SpeechRow({ m, media, floor, size }: { m: DeskModel; media: Face
+         <Teacher teacherId={m.teacher.id} band={m.band} floor={floor} form={m.faceForm} meters={media.meters} mic={media.mic}
+           reducedMotion={m.reducedMotion} label="tag" ground={false} framing="close" lights={m.lights} affect={m.affect ?? null} />
+       </div>
+-      {m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />}
++      {m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor, m.caption.soundFailed)} lang={m.caption.lang} soundFailed={m.caption.soundFailed} />}
+     </div>
+   );
+ }
+ 
+ /** At the hand-over the caption fades to empty (yielding/your_turn): the question lives on the card. */
+-export const captionVisible = (floor: Floor) => floor === "speaking" || floor === "showing";
++/** Her caption shows while she speaks, and (JRN-01) whenever her sound failed for the line: then it is the only place her
++ *  words are, and the floor never reaches "speaking". */
++export const captionVisible = (floor: Floor, soundFailed = false) => soundFailed || floor === "speaking" || floor === "showing";
+diff --git a/src/child/lesson/model.ts b/src/child/lesson/model.ts
+index b3069aba..9a726e96 100644
+--- a/src/child/lesson/model.ts
++++ b/src/child/lesson/model.ts
+@@ -98,7 +98,7 @@ export interface DeskModel {
+   answer: AnswerChip | null;
+   /** r7 (3b): the board on screen is not this open question's board: the card waits, quietly ("your question is waiting"). */
+   askWaiting?: boolean;
+-  caption: { text: string; speaking: boolean; mode: "phrase" | "icons"; lang?: string };
++  caption: { text: string; speaking: boolean; mode: "phrase" | "icons"; lang?: string; soundFailed?: boolean };
+   tray: TrayModel | null;
+   answerForm: AnswerForm;
+   phase: DeskPhase | null;
+diff --git a/src/child/lesson/useDesk.ts b/src/child/lesson/useDesk.ts
+index 1104338f..21b09a49 100644
+--- a/src/child/lesson/useDesk.ts
++++ b/src/child/lesson/useDesk.ts
+@@ -627,9 +627,12 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
+     const was = prevFloor.current;
+     prevFloor.current = floor;
+     if ((was === "speaking" || was === "showing") && floor !== "speaking" && floor !== "showing" && teacherCap?.final) setPolite(teacherCap.text);
++    // JRN-01: her sound failed, so the floor went from thinking straight back to the child: her words are what she "said"
++    // (before, "Asha is thinking" stayed in the live region and her line was never announced)
++    else if (facts.tts && (was === "thinking" || was === "heard") && (floor === "your_turn" || floor === "idle") && teacherCap?.final) setPolite(teacherCap.text);
+     else if (floor === "thinking") setPolite(t("sr.thinking", { T: ctx.teacherName }));
+     else if (floor === "listening") setPolite(t("sr.listening"));
+-  }, [floor, teacherCap, ctx.teacherName]);
++  }, [floor, teacherCap, ctx.teacherName, facts.tts]);
+ 
+   // ───────── starting: no second start gate ─────────
+   const [gate, setGate] = useState<null | "starting" | "locked">(null);
+@@ -826,7 +829,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
+     // r7 (3b): Brain's ofCard flag on the page now up; absent → never waits (today's behaviour)
+     askWaiting: cardWaiting({ hasAsk: !!item.ask, hasAnswer: !!answer, ofCard: geometryOut === "work" && tray?.kind === "studio" ? pageOfCard(cardBoard, boardPage) : undefined,
+       handedOver: floor === "your_turn" || floor === "yielding" }),
+-    caption: { text: teacherCap?.text ?? "", speaking: floor === "speaking" || floor === "showing", mode: captionsOn ? "phrase" : "icons", lang: langAttr(ctx.lessonLang) },
++    caption: { text: teacherCap?.text ?? "", speaking: floor === "speaking" || floor === "showing", mode: captionsOn ? "phrase" : "icons", lang: langAttr(ctx.lessonLang), soundFailed: facts.tts },
+     tray: tray && geometryOut === "work" ? { ...tray } : null,
+     answerForm,
+     phase,
+diff --git a/src/ui-v3/kaksha/lesson/StageBody.tsx b/src/ui-v3/kaksha/lesson/StageBody.tsx
+index c3b784fc..cbea6696 100644
+--- a/src/ui-v3/kaksha/lesson/StageBody.tsx
++++ b/src/ui-v3/kaksha/lesson/StageBody.tsx
+@@ -103,7 +103,7 @@ export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray,
+   const faceAt: "stage" | "pip" | "tile" | "none" = !work ? "stage" : L.tile ? "tile" : L.pip ? "pip" : "none";
+   const capRect = L.caption && L.tile && faceAt === "stage" ? { ...L.caption, y: L.tile.y, h: L.caption.h + L.tile.h + 8 } : L.caption;
+   const faceRect = faceAt === "tile" ? L.tile : faceAt === "pip" ? L.pip : faceAt === "stage" ? heroRect(L.slot) : null;
+-  const capOn = m.captionsOn && captionVisible(floor);
++  const capOn = m.captionsOn && captionVisible(floor, m.caption.soundFailed);
+   // the PiP's box relative to the slot (only while she is the PiP): the stage's truth for pieces that must keep it clear
+   const pipZone = faceAt === "pip" && L.pip
+     ? { w: L.pip.w, h: L.pip.h, right: L.slot.x + L.slot.w - (L.pip.x + L.pip.w), bottom: L.slot.y + L.slot.h - (L.pip.y + L.pip.h) }
+@@ -119,9 +119,9 @@ export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray,
+           style={{ height: L.slot.h, ...(pipZone ? { ["--pip-zone-w" as string]: `${pipZone.w}px`, ["--pip-zone-h" as string]: `${pipZone.h}px`,
+             ["--pip-zone-right" as string]: `${pipZone.right}px`, ["--pip-zone-bottom" as string]: `${pipZone.bottom}px` } : {}) }}>
+           {work && <div className="ks-piece" key={pieceKey(work)}>{renderTray(work)}</div>}
+-          {!work && capOn && !L.caption && <div className="ks-hero-cap">{<Caption text={m.caption.text} speaking={m.caption.speaking} visible lang={m.caption.lang} />}</div>}
++          {!work && capOn && !L.caption && <div className="ks-hero-cap">{<Caption text={m.caption.text} speaking={m.caption.speaking} visible lang={m.caption.lang} soundFailed={m.caption.soundFailed} />}</div>}
+           {work && faceAt !== "tile" && capOn && (
+-            <div className="ks-subtitle" data-testid="subtitle"><Caption text={m.caption.text} speaking={m.caption.speaking} visible lang={m.caption.lang} /></div>
++            <div className="ks-subtitle" data-testid="subtitle"><Caption text={m.caption.text} speaking={m.caption.speaking} visible lang={m.caption.lang} soundFailed={m.caption.soundFailed} /></div>
+           )}
+         </div>
+         <div className="ks-rail" style={{ height: L.rail.h }} ref={railBody} data-zone="card">{card}</div>
+@@ -149,7 +149,7 @@ export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray,
+       </div>
+       {capRect && capRect.h > 40 && (
+         <div className="ks-caption" style={px(capRect)} data-zone="caption">
+-          {m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />}
++          {m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor, m.caption.soundFailed)} lang={m.caption.lang} soundFailed={m.caption.soundFailed} />}
+         </div>
+       )}
+       {answerUp && tray && L.answer && <div className="ks-answer" style={px(L.answer)} data-zone="tray">{renderTray(tray)}</div>}
+diff --git a/tests/jrn01-tts-fail-browser.test.mjs b/tests/jrn01-tts-fail-browser.test.mjs
+new file mode 100644
+index 00000000..75c35907
+--- /dev/null
++++ b/tests/jrn01-tts-fail-browser.test.mjs
+@@ -0,0 +1,57 @@
++// JRN-01 (journey audit 2026-11-09, routed to voice by main): when her speech cannot be fetched (every speech route 503),
++// her words still reach the screen as text within a couple of seconds and the lesson moves on: the caption steps through
++// her line (the floor never reaches "speaking", which used to hide it), and the live region announces her line instead of
++// keeping "Asha is thinking". Drives the real app (dist/) in Chromium with mocked APIs, like the other *-browser suites.
++import { test, before, after } from "node:test";
++import assert from "node:assert/strict";
++import { existsSync, readdirSync } from "fs";
++
++const browsersDir = process.env.PLAYWRIGHT_BROWSERS_PATH;
++const haveChromium = !!browsersDir && existsSync(browsersDir) && readdirSync(browsersDir).some((d) => d.startsWith("chromium"));
++const SKIP = !haveChromium ? "no Chromium under PLAYWRIGHT_BROWSERS_PATH" : false;
++const KID = { id: "kid-jrn01", first_name: "Kabir", class_level: 5, language_pref: "hinglish", teacher_id: "asha" };
++const LESSON = "aaaaaaaa-1111-4222-8333-4444444444a1";
++const OPENING = "Chalo, aaj angles dekhte hain. Ready ho?";
++const REPLY = "Bahut badhiya. Ek angle do lines se banta hai.";
++
++let app, browser;
++before(async () => {
++  if (SKIP) return;
++  const { appServer } = await import("./support/app-server.mjs");
++  app = await appServer();
++  const { chromium } = await import("playwright");
++  browser = await chromium.launch();
++});
++after(async () => { await browser?.close(); await app?.close(); });
++
++test("JRN-01: speech fails (503) → her words show as text within seconds, the turn ends, no stale 'is thinking'", { skip: SKIP, timeout: 240_000 }, async () => {
++  const page = await (await browser.newContext({ viewport: { width: 360, height: 640 }, isMobile: true, hasTouch: true })).newPage();
++  const ui = { status: "speaking", phase: "teach", handover: "answer", answerForm: "words" };
++  await page.route("**/api/**", async (route) => {
++    const p = new URL(route.request().url()).pathname;
++    const json = (s, b) => route.fulfill({ status: s, contentType: "application/json", body: JSON.stringify(b) });
++    if (p === "/api/me") return json(200, { guardian: { id: "g1", email: "g@test.invalid", name: "G" }, children: [KID] });
++    if (p === "/api/lesson/start") return json(200, { lessonId: LESSON, topic: { id: "c5-maths-ch05-t01", title: "Angles", chapter: "Angles" },
++      teacher: { id: "asha", name: "Asha", voice: "v", addressedAs: "", role: "AI teacher" }, moduleCommands: [], ui, teacherOpening: OPENING, teacherOpeningSeq: 1 });
++    if (p === "/api/lesson/turn" || p === "/api/lesson/turn-audio") return json(200, { move: { kind: "explain", shape: "x" }, moduleCommands: [], ui, teacherReply: REPLY, teacherReplySeq: 2 });
++    if (p.startsWith("/api/tts") || p.startsWith("/api/voice")) return route.fulfill({ status: 503, body: "" });
++    return json(200, {});
++  });
++  await page.goto(`${app.url}/c/${KID.id}/lesson/new?mode=text`, { waitUntil: "domcontentloaded" });
++  await page.waitForSelector('[data-testid="lesson"]', { timeout: 120_000 });
++  const captions = () => page.evaluate(() => [...document.querySelectorAll('[data-testid="caption"]')].map((e) => e.textContent).join(" "));
++  const live = () => page.evaluate(() => document.querySelector('[data-testid="spoken"]')?.textContent ?? "");
++  // the opening: its first sentence is on screen within a few seconds of the failed speech
++  await page.waitForFunction(() => [...document.querySelectorAll('[data-testid="caption"]')].some((e) => /aaj angles/.test(e.textContent)), null, { timeout: 15_000 });
++  // a typed answer: her reply shows and is announced within a few seconds; nothing says she is still thinking
++  await page.fill('[data-testid="child-input"]', "yes");
++  await page.press('[data-testid="child-input"]', "Enter");
++  const t0 = Date.now();
++  await page.waitForFunction(() => [...document.querySelectorAll('[data-testid="caption"]')].some((e) => /do lines se|Bahut badhiya/.test(e.textContent)), null, { timeout: 5_000 });
++  assert.ok(Date.now() - t0 < 5_000);
++  await page.waitForFunction((r) => (document.querySelector('[data-testid="spoken"]')?.textContent ?? "") === r, REPLY, { timeout: 5_000 });
++  assert.doesNotMatch(await live(), /is thinking/);
++  assert.equal(await page.evaluate(() => document.querySelector("[data-floor]")?.getAttribute("data-floor")), "your_turn", "the lesson moved on: the child's turn");
++  assert.match(await captions(), /do lines se|Bahut badhiya/);
++  await page.close();
++});

@@ -5,14 +5,27 @@
 // place-value misconceptions. The column counts are the act; the host totals and grades them.
 import { groupDigits, numberWords, type VaultSpec } from "../../../shared/studio-spec.ts";
 import { C, W, H } from "../core/tokens.ts";
+import { withAlpha } from "../../theme/palette.ts";
 import { clamp, ease, lerp } from "../core/math.ts";
 import { bloom, roundRect, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
-import { drawCoach, drawIntro, drawStatCard, pill } from "../core/ui.ts";
+import { drawCoach, drawIntro, drawStatCard, pill, wrapLines } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
-const BELT_Y = 500, BELT_X0 = 30, BELT_X1 = 520, COL_X0 = 560, COL_X1 = 950, COL_TOP = 250, COL_BOT = 560;
-const DCOL: Record<number, string> = { 1: "#8B98FF", 10: "#2FD3C7", 100: "#C69BFF", 1000: "#FFD27A", 10000: "#7FD6FF", 100000: "#F2F4F8" };
+/** The vault card's loaded row runs from x 70 to ROW_X1 (the card's right edge less its padding). */
+export const ROW_X1 = 500;
+/** The loaded row's label lines and the count's x: the label on one line when label, gap and count fit the row, else
+ *  wrapped (whole words) to the width the count leaves it. `measure` and `wrap` are the label's at its drawn size. */
+export function loadedRow(label: string, countW: number, measure: (s: string) => number, wrap: (s: string, w: number) => string[]): { lines: string[]; x: number } {
+  const room = ROW_X1 - 70 - 24 - countW;
+  const lines = measure(label) <= room ? [label] : wrap(label, Math.max(1, room));
+  return { lines, x: Math.max(250, 70 + Math.max(...lines.map(measure)) + 24) };
+}
+// (columns 540-970: five place headers "TTH TH H T O" a young label apart at p412 — at 560-950 "TTH" ran into "TH", 2026-11-11)
+// the belt strip ends a gap short of the column panel (COL_X0 - 16): at l1366 its hatching ran into the "T" column (2026-11-11)
+const BELT_Y = 500, BELT_X0 = 30, BELT_X1 = 480, BELT_END = BELT_X1 + 16, COL_X0 = 540, COL_X1 = 970, COL_TOP = 250, COL_BOT = 560;
+const DCOL = (): Record<number, string> => ({ 1: C.ion, 10: C.sci, 100: C.vaultDigit100, 1000: C.sun, 10000: C.vaultDigit10000, 100000: C.ink });
 const PLACE: Record<number, string> = { 1: "O", 10: "T", 100: "H", 1000: "TH", 10000: "TTH", 100000: "L" };
 interface Block { d: number; x: number; y: number; id: number; fly?: { x0: number; y0: number; x1: number; y1: number; t: number; col: number } }
 
@@ -25,6 +38,9 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
   const hud = api.hud([{ key: "vault", label: T.round }, { key: "loaded", label: T.loaded }, { key: "time", label: T.time, meter: true }]);
   const total = () => denoms().reduce((a, d) => a + d * (g.counts[d] ?? 0), 0);
   const colW = () => (COL_X1 - COL_X0) / denoms().length;
+  /** The k-th block of a column holding n: a tall stack packs tighter so its top block stays inside the column (a 6th
+   *  thousands-block sat on the "TH" header: layout probe, c4-ch04-t01, 2026-11-11). */
+  const stackY = (d: number, k: number, n: number) => { const m = Math.min(n, 12), y0 = COL_BOT - 14 - blockH(d) / 2; return y0 - Math.min(k, 11) * Math.min(blockH(d) + 4, (y0 - (COL_TOP + 8 + (blockH(d) * 0.9) / 2)) / Math.max(1, m - 1)); };
   const colX = (d: number) => { const ds = [...denoms()].sort((a, b) => b - a), i = ds.indexOf(d); return COL_X0 + colW() * (i + 0.5); };
   const blockSize = (d: number) => (d >= 1000 ? 56 : d >= 100 ? 50 : d >= 10 ? 44 : 30);
   const blockH = (d: number) => (d >= 1000 ? 56 : d >= 100 ? 16 : d >= 10 ? 14 : 30);
@@ -32,7 +48,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     g.r = i; g.state = "intro"; g.stateT = 0; g.t = 0; g.belt = []; g.fliers = []; g.counts = {}; g.spawnT = 0; g.spawnN = 0; g.introA = 0; g.last = null;
     for (const d of denoms()) g.counts[d] = 0;
     api.tw.add(g, { introA: 1 }, { dur: 0.45 });
-    api.task(`${T.round} ${i + 1}/${spec.rounds.length}`, round().show === "words" ? numberWords(round().target, spec.system) : `${T.target} ${groupDigits(round().target, spec.system)}`);
+    api.task(`${T.round} ${dots(i, spec.rounds.length)}`, round().show === "words" ? numberWords(round().target, spec.system) : `${T.target} ${groupDigits(round().target, spec.system)}`);
     sfx.blip({ f: 220, f2: 440, dur: 0.35, type: "triangle", gain: 0.12 });
     api.event("round_start", { round: i + 1, target: round().target, show: round().show, targets: round().targets ?? null });
   }
@@ -42,17 +58,17 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     // over half the belt is what the target still needs (biased to the biggest place), the rest is noise to resist;
     // every 4th block is the largest still-needed denomination, so the target is always reachable in time
     const d = g.spawnN % 4 === 3 && needed.length ? needed[needed.length - 1] : api.rnd() < 0.55 && needed.length ? needed[Math.min(needed.length - 1, Math.floor(Math.pow(api.rnd(), 0.6) * needed.length))] : ds[Math.floor(api.rnd() * ds.length)];
-    g.belt.push({ d, x: BELT_X0 - 40, y: BELT_Y - 8 - blockH(d) / 2, id: g.nextId++ }); g.spawnN++;
+    g.belt.push({ d, x: BELT_X0 + blockSize(d) / 2 - 8, y: BELT_Y - 8 - blockH(d) / 2, id: g.nextId++ }); g.spawnN++;
   }
   function sendToColumn(b: Block) {
     const col = colX(b.d), n = g.counts[b.d] ?? 0;
-    b.fly = { x0: b.x, y0: b.y, x1: col, y1: COL_BOT - 14 - n * (blockH(b.d) + 4) - blockH(b.d) / 2, t: 0, col: b.d };
+    b.fly = { x0: b.x, y0: b.y, x1: col, y1: stackY(b.d, n, n + 1), t: 0, col: b.d };
     g.fliers.push(b);
     sfx.blip({ f: 500 + Math.log10(b.d) * 120, f2: 900 + Math.log10(b.d) * 160, dur: 0.1, type: "triangle", gain: 0.12 });
   }
   function land(b: Block) {
     g.counts[b.d] = (g.counts[b.d] ?? 0) + 1;
-    api.fx.burst(b.fly!.x1, b.fly!.y1, { n: 8, color: DCOL[b.d], speed: 160, life: 0.35, size: 8 });
+    api.fx.burst(b.fly!.x1, b.fly!.y1, { n: 8, color: DCOL()[b.d], speed: 160, life: 0.35, size: 8 });
     const next = b.d * 10;
     if (g.counts[b.d] >= 10 && denoms().includes(next)) {
       g.counts[b.d] -= 10;
@@ -77,18 +93,24 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     api.event("sealed", { auto, total: tot, target: round().target });
     api.facts({ round: g.r + 1, target: round().target, loaded: tot, verdict: grade.verdict, ...(grade.detail ? { detail: grade.detail } : {}) });
   }
-  const SEAL = { x: 455, y: 338, r: 44 };   // inside the vault panel: never in the PiP or label safe zones
+  /** the vault card sits below the DOM task pill wherever it lands (judges, 2026-11-11: at l1366 a two-line pill
+   *  "Tijori ●○○○ Lakshya 10,500" covered the card's top edge); capped so the card still clears the belt */
+  const cardDy = () => clamp(api.chromeBottom() + 12 - 170, 0, 24);
+  // inside the vault panel, top right: never in the PiP or label safe zones; its label clears the panel's bottom edge (judges,
+  // 2026-11-11: "SEAL" sat on the Nishana card border at p412 and l1366). It sits beside the target rows, above the loaded
+  // row, so that row has the card's full width (judges, regeneration round 2: the dial at y 296 covered "Number taiyaar 0")
+  const SEAL = { x: 452, y: 222, r: 44 };
   api.onPointer({
     down(p) {
       if (g.state !== "play") return;
       if (!g.coachGone) { g.coachGone = true; api.tw.add(g, { coachA: 0 }, { dur: 0.35 }); }
-      if (Math.hypot(p.x - SEAL.x, p.y - SEAL.y) < SEAL.r + 16) { seal(false); return; }
+      if (Math.hypot(p.x - SEAL.x, p.y - SEAL.y - cardDy()) < SEAL.r + 16) { seal(false); return; }
       let best: Block | null = null, bd = 48;
       for (const b of g.belt) { const d = Math.hypot(p.x - b.x, p.y - b.y); if (d < bd) { bd = d; best = b; } }
       if (best) { g.belt.splice(g.belt.indexOf(best), 1); sendToColumn(best); return; }
       if (p.x > COL_X0 && p.x < COL_X1 && p.y > COL_TOP - 20 && p.y < COL_BOT + 30) {      // tap a column: toss one back
         const ds = [...denoms()].sort((a, b) => b - a), d = ds[clamp(Math.floor((p.x - COL_X0) / colW()), 0, ds.length - 1)];
-        if ((g.counts[d] ?? 0) > 0) { g.counts[d]--; g.belt.push({ d, x: BELT_X1 - 30, y: BELT_Y - 8 - blockH(d) / 2, id: g.nextId++ }); sfx.blip({ f: 400, f2: 250, dur: 0.08, type: "square", gain: 0.06 }); }
+        if ((g.counts[d] ?? 0) > 0) { g.counts[d]--; g.belt.push({ d, x: BELT_X1 - 40, y: BELT_Y - 8 - blockH(d) / 2, id: g.nextId++ }); sfx.blip({ f: 400, f2: 250, dur: 0.08, type: "square", gain: 0.06 }); }
       }
     },
   });
@@ -100,7 +122,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
       g.t += dt; g.spawnT -= dt;
       if (g.spawnT <= 0) { spawn(); g.spawnT = 0.5 / spec.belt; }
       const v = 120 * spec.belt;
-      for (let i = g.belt.length - 1; i >= 0; i--) { const b = g.belt[i]; b.x += v * dt; if (b.x > BELT_X1 + 30) { b.y += 300 * dt; if (b.y > H + 40) g.belt.splice(i, 1); } }
+      for (let i = g.belt.length - 1; i >= 0; i--) { const b = g.belt[i]; b.x += v * dt; if (b.x > BELT_X1) { b.y += 300 * dt; if (b.y > H + 40) g.belt.splice(i, 1); } }
       if (g.t >= round().seconds) seal(true);
     }
     for (let i = g.fliers.length - 1; i >= 0; i--) { const f = g.fliers[i]; f.fly!.t += dt / 0.38; if (f.fly!.t >= 1) { g.fliers.splice(i, 1); land(f); } }
@@ -109,46 +131,46 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     if (g.state === "end" && g.stateT > 3) { if (g.r + 1 < spec.rounds.length) startRound(g.r + 1); else { g.state = "final"; g.finalA = 0; api.tw.add(g, { finalA: 1 }, { dur: 0.6 }); api.task("", T.runDone, "done"); api.done({ vaults: g.results.filter((x) => x.verdict === "right").length, rounds: spec.rounds.length }); } }
     if (g.r >= 0 && g.state !== "final") {
       const tot = total(), tg = round().target;
-      hud.set("vault", `${g.r + 1}/${spec.rounds.length}`);
+      hud.set("vault", `${dots(g.r, spec.rounds.length)}`);
       hud.set("loaded", groupDigits(tot, spec.system), { tone: tot === tg ? "mint" : tot > tg ? "amber" : null, bump: true });
       hud.set("time", `${Math.max(0, Math.ceil(round().seconds - g.t))}s`, { meter: 1 - g.t / round().seconds, tone: round().seconds - g.t < 8 ? "amber" : null });
     }
   }
   function drawBlock(ctx: Ctx, d: number, x: number, y: number, sc = 1) {
-    const w = blockSize(d) * sc, h = blockH(d) * sc, col = DCOL[d] ?? C.ink;
+    const w = blockSize(d) * sc, h = blockH(d) * sc, col = DCOL()[d] ?? C.ink;
     ctx.save(); ctx.translate(x, y);
     bloom(ctx, col, 0, 0, w * 0.9, 0.25);
     const dep = Math.min(10, w * 0.18);
-    ctx.fillStyle = "rgba(0,0,0,.35)"; roundRect(ctx, -w / 2 + dep, -h / 2 + dep * 0.6, w, h, 5); ctx.fill();
-    const gr = ctx.createLinearGradient(0, -h / 2, 0, h / 2); gr.addColorStop(0, col); gr.addColorStop(1, "rgba(20,24,40,.9)");
+    ctx.fillStyle = withAlpha(C.lo, .35); roundRect(ctx, -w / 2 + dep, -h / 2 + dep * 0.6, w, h, 5); ctx.fill();
+    const gr = ctx.createLinearGradient(0, -h / 2, 0, h / 2); gr.addColorStop(0, col); gr.addColorStop(1, withAlpha(C.vaultTileShade, .9));
     ctx.fillStyle = gr; roundRect(ctx, -w / 2, -h / 2, w, h, 5); ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,.55)"; ctx.lineWidth = 2; ctx.stroke();
-    ctx.strokeStyle = "rgba(10,12,18,.35)"; ctx.lineWidth = 1.5;
+    ctx.strokeStyle = withAlpha(C.hi, .55); ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = withAlpha(C.bg, .35); ctx.lineWidth = 1.5;
     if (d === 10 || d === 10000) for (let k = 1; k < 10; k++) { const xx = -w / 2 + (w * k) / 10; ctx.beginPath(); ctx.moveTo(xx, -h / 2 + 2); ctx.lineTo(xx, h / 2 - 2); ctx.stroke(); }
     if (d === 1000 || d === 100000) for (let k = 1; k < 4; k++) { ctx.beginPath(); ctx.moveTo(-w / 2 + (w * k) / 4, -h / 2 + 3); ctx.lineTo(-w / 2 + (w * k) / 4, h / 2 - 3); ctx.moveTo(-w / 2 + 3, -h / 2 + (h * k) / 4); ctx.lineTo(w / 2 - 3, -h / 2 + (h * k) / 4); ctx.stroke(); }
     ctx.restore();
   }
   function paintBg(c: Ctx) {
-    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#0A0B11"); gr.addColorStop(1, "#11131C"); c.fillStyle = gr; c.fillRect(0, 0, W, H);
-    c.fillStyle = "#151925"; roundRect(c, COL_X0 - 16, COL_TOP - 40, COL_X1 - COL_X0 + 32, COL_BOT - COL_TOP + 90, 20); c.fill(); c.strokeStyle = "rgba(255,255,255,.08)"; c.lineWidth = 2; c.stroke();
-    c.fillStyle = "#1A1F2C"; c.fillRect(BELT_X0 - 20, BELT_Y, BELT_X1 - BELT_X0 + 60, 22);
-    c.fillStyle = "#0D0F17"; c.fillRect(BELT_X0 - 20, BELT_Y + 22, BELT_X1 - BELT_X0 + 60, 40);
+    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, C.vaultBgTop); gr.addColorStop(1, C.vaultBg); c.fillStyle = gr; c.fillRect(0, 0, W, H);
+    c.fillStyle = C.vaultTray; roundRect(c, COL_X0 - 16, COL_TOP - 40, COL_X1 - COL_X0 + 32, COL_BOT - COL_TOP + 90, 20); c.fill(); c.strokeStyle = withAlpha(C.hi, .08); c.lineWidth = 2; c.stroke();
+    c.fillStyle = C.vaultBelt; c.fillRect(BELT_X0 - 20, BELT_Y, BELT_END - BELT_X0 + 20, 22);
+    c.fillStyle = C.vaultBeltEdge; c.fillRect(BELT_X0 - 20, BELT_Y + 22, BELT_END - BELT_X0 + 20, 40);
   }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("vault", paintBg), 0, 0, W, H);
     const fx = api.fx;
     ctx.save(); ctx.translate(fx.ox, fx.oy);
     // belt treads
-    ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.lineWidth = 3; const off = api.reducedMotion ? 0 : (g.t * 120 * spec.belt) % 28;
-    for (let x = BELT_X0 - 20 + off; x < BELT_X1 + 40; x += 28) { ctx.beginPath(); ctx.moveTo(x, BELT_Y + 3); ctx.lineTo(x - 8, BELT_Y + 19); ctx.stroke(); }
+    ctx.strokeStyle = withAlpha(C.hi, .12); ctx.lineWidth = 3; const off = api.reducedMotion ? 0 : (g.t * 120 * spec.belt) % 28;
+    for (let x = BELT_X0 - 12 + off; x < BELT_END; x += 28) { ctx.beginPath(); ctx.moveTo(x, BELT_Y + 3); ctx.lineTo(x - 8, BELT_Y + 19); ctx.stroke(); }
     if (g.r >= 0) {
       const ds = [...denoms()].sort((a, b) => b - a), cw = colW();
       ds.forEach((d, i) => {
         const x = COL_X0 + cw * i, cx = x + cw / 2;
-        ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.lineWidth = 2; roundRect(ctx, x + 6, COL_TOP, cw - 12, COL_BOT - COL_TOP, 12); ctx.stroke();
-        api.text(ctx, spec.system === "indian" || d < 10000 ? PLACE[d] : PLACE[d], cx, COL_TOP - 14, { font: "mono", size: 38, weight: 600, color: DCOL[d], align: "center" });
+        ctx.strokeStyle = withAlpha(C.hi, .12); ctx.lineWidth = 2; roundRect(ctx, x + 6, COL_TOP, cw - 12, COL_BOT - COL_TOP, 12); ctx.stroke();
+        api.text(ctx, spec.system === "indian" || d < 10000 ? PLACE[d] : PLACE[d], cx, COL_TOP - 14, { font: "mono", size: 38, weight: 600, color: DCOL()[d], align: "center" });
         const n = g.counts[d] ?? 0;
-        for (let k = 0; k < Math.min(n, 12); k++) drawBlock(ctx, d, cx, COL_BOT - 14 - k * (blockH(d) + 4) - blockH(d) / 2, 0.9);
+        for (let k = 0; k < Math.min(n, 12); k++) drawBlock(ctx, d, cx, stackY(d, k, n), 0.9);
         api.text(ctx, String(n), cx, COL_BOT + 44, { font: "display", size: 48, weight: 800, align: "center", color: n >= 10 ? C.amber : C.ink });
       });
     }
@@ -158,35 +180,54 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     // vault display + seal button + laser
     if (g.r >= 0) {
       const tg = round().target, tot = total(), shownTarget = round().show === "words" && g.state !== "sealed" && g.state !== "end" ? numberWords(tg, spec.system) : groupDigits(tg, spec.system);
-      ctx.fillStyle = "rgba(16,19,27,.92)"; roundRect(ctx, 40, 170, 480, 230, 20); ctx.fill(); ctx.strokeStyle = "rgba(139,152,255,.35)"; ctx.lineWidth = 2; ctx.stroke();
-      api.text(ctx, T.target, 70, 214, { font: "mono", size: 38, weight: 600, color: C.ink3 });
+      const dy = cardDy();
+      ctx.save(); ctx.translate(0, dy);
+      ctx.fillStyle = withAlpha(C.bg1, .92); roundRect(ctx, 40, 170, 480, 230, 20); ctx.fill(); ctx.strokeStyle = withAlpha(C.ion, .35); ctx.lineWidth = 2; ctx.stroke();
+      api.text(ctx, T.target, 70, 214, { font: "mono", size: 38, weight: 600, color: C.ink3, maxWidth: SEAL.x - SEAL.r - 16 - 70 });
       const isWords = round().show === "words" && g.state !== "sealed" && g.state !== "end";
-      api.text(ctx, shownTarget, 70, isWords ? 268 : 280, { font: isWords ? "ui" : "display", size: isWords ? 40 : 76, weight: 800, maxWidth: 340 });
-      api.text(ctx, T.loaded, 70, 340, { font: "mono", size: 38, weight: 600, color: C.ink3 });
-      api.text(ctx, groupDigits(tot, spec.system), 250, 344, { font: "display", size: 52, weight: 800, color: tot === tg ? C.mint : tot > tg ? C.amber : C.ink });
+      if (!isWords) api.text(ctx, shownTarget, 70, 280, { font: "display", size: 76, weight: 800, maxWidth: 320 });   // clear of the seal dial
+      else {
+        // (regen r3, c5-ch01-t01: "ten thousand five hundred" wrapped about its one-line spot and its top line sat on the
+        // "Lakshya" label. The lines run DOWN from under the label: the first clear of the seal dial, the second may take the
+        // card's width; a target that needs a third line steps the size down)
+        const wo = (size: number) => ({ font: "ui" as const, size, weight: 800 });
+        const fit = (size: number) => { const first = wrapLines(api, ctx, shownTarget, 320, wo(size)); if (first.length <= 1) return first; const rest = wrapLines(api, ctx, first.slice(1).join(" "), ROW_X1 - 70, wo(size)); return [first[0], ...rest]; };
+        let size = Math.max(40, api.minLabel), lines = fit(size);
+        if (lines.length > 2) { size = Math.max(32, api.minLabel); lines = fit(size); }
+        const lh = size * 1.1;
+        lines.forEach((ln, i) => api.text(ctx, ln, 70, 262 + i * lh, { ...wo(size), maxWidth: i === 0 ? 320 : ROW_X1 - 70 }));
+      }
+      // the loaded row: label, then the count after it ("jama hua" ran under the 0); a label too long to leave the count
+      // its room wraps to whole lines about the row (never under the dial: the row runs the card's full width)
+      const lo = { font: "mono" as const, size: 38, weight: 600 }, totS = groupDigits(tot, spec.system), cnt = { font: "display" as const, size: 52, weight: 800 };
+      const { lines: ll, x: lx } = loadedRow(T.loaded, api.measure(ctx, totS, cnt), (s) => api.measure(ctx, s, lo), (s, w) => wrapLines(api, ctx, s, w, lo));
+      const llh = Math.max(38, api.minLabel) * 1.12;
+      ll.forEach((ln, i) => api.text(ctx, ln, 70, 356 + (i - (ll.length - 1) / 2) * llh, { ...lo, color: C.ink3 }));
+      api.text(ctx, totS, lx, 360, { ...cnt, color: tot === tg ? C.mint : tot > tg ? C.amber : C.ink, maxWidth: Math.max(80, ROW_X1 - lx) });
       if (g.state === "play") {
         const k = clamp(g.t / round().seconds, 0, 1), ly = 175 + k * 220;
-        ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.strokeStyle = "rgba(255,150,120,.8)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(44, ly); ctx.lineTo(516, ly); ctx.stroke(); bloom(ctx, "#FF9A78", 280, ly, 120, 0.25); ctx.restore();
+        ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.strokeStyle = withAlpha(C.vaultLaser, .8); ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(44, ly); ctx.lineTo(516, ly); ctx.stroke(); bloom(ctx, C.vaultLaserGlow, 280, ly, 120, 0.25); ctx.restore();
         const ready = tot === tg;
-        ctx.save(); ctx.fillStyle = ready ? "rgba(61,220,151,.18)" : "rgba(22,26,36,.95)"; ctx.beginPath(); ctx.arc(SEAL.x, SEAL.y, SEAL.r, 0, Math.PI * 2); ctx.fill();
+        ctx.save(); ctx.fillStyle = ready ? withAlpha(C.mint, .18) : withAlpha(C.bg2, .95); ctx.beginPath(); ctx.arc(SEAL.x, SEAL.y, SEAL.r, 0, Math.PI * 2); ctx.fill();
         ctx.strokeStyle = ready ? C.mint : C.line2; ctx.lineWidth = 4; ctx.stroke();
         ctx.strokeStyle = ready ? C.mint : C.ink2; ctx.lineWidth = 5; for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2 + now * (ready ? 1.2 : 0.2); ctx.beginPath(); ctx.moveTo(SEAL.x + Math.cos(a) * 18, SEAL.y + Math.sin(a) * 18); ctx.lineTo(SEAL.x + Math.cos(a) * 36, SEAL.y + Math.sin(a) * 36); ctx.stroke(); }
         ctx.restore();
-        api.text(ctx, "SEAL", SEAL.x, SEAL.y + SEAL.r + 38, { font: "mono", size: 38, weight: 600, color: ready ? C.mint : C.ink3, align: "center" });
+        api.text(ctx, "SEAL", SEAL.x, SEAL.y + SEAL.r + 36, { font: "mono", size: 38, weight: 600, color: ready ? C.mint : C.ink3, align: "center" });
       }
-      if ((g.state === "sealed" || g.state === "end") && g.last) pill(api, ctx, g.last.verdict === "right" ? T.cracked : g.last.total > tg ? `${T.over} ${groupDigits(g.last.total - tg, spec.system)}` : `${T.under} ${groupDigits(tg - g.last.total, spec.system)}`, 280, 440, { color: g.last.verdict === "right" ? C.mint : C.amber });
+      ctx.restore();
+      if ((g.state === "sealed" || g.state === "end") && g.last) pill(api, ctx, g.last.verdict === "right" ? T.cracked : g.last.total > tg ? `${T.over} ${groupDigits(g.last.total - tg, spec.system)}` : `${T.under} ${groupDigits(tg - g.last.total, spec.system)}`, 280, 440 + dy, { color: g.last.verdict === "right" ? C.mint : C.amber });
     }
     fx.drawWorld(ctx);
     ctx.restore();
-    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${g.r + 1} / ${spec.rounds.length}`, title: round().show === "words" ? "Listen to the number" : groupDigits(round().target, spec.system), sub: round().show === "words" ? numberWords(round().target, spec.system) : round().denoms.includes(1000) ? "load it exactly, then seal" : "no thousands on the belt today", accent: C.sun });
+    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${dots(g.r, spec.rounds.length)}`, title: round().show === "words" ? "Listen to the number" : groupDigits(round().target, spec.system), sub: round().show === "words" ? numberWords(round().target, spec.system) : round().denoms.includes(1000) ? "load it exactly, then seal" : "no thousands on the belt today", accent: C.sun });
     if (g.state === "end" && g.last) drawStatCard(api, ctx, { a: g.endA, head: g.last.verdict === "right" ? T.cracked : `${T.round} ${g.r + 1}`, color: g.last.verdict === "right" ? C.mint : C.amber, ticked: g.last.verdict === "right", stats: [[groupDigits(round().target, spec.system), T.target], [groupDigits(g.last.total, spec.system), T.loaded]], foot: g.last.detail?.includes("drop-zero") ? "a zero holds the empty place" : undefined });
     if (g.state === "final") drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.results.filter((r) => r.verdict === "right").length}/${spec.rounds.length}`, "vaults"]] });
-    drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 600);
+    drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 612, 496, 264);   // under the belt, two lines at most at the young floor: the column counts own the bottom right
   }
   function bot(): BotAction | null {
     if (g.state !== "play" || g.fliers.length || g.merges.length) return { type: "wait", ms: 160 };
     const tg = round().target, tot = total();
-    if (tot === tg) return { type: "tap", at: [SEAL.x, SEAL.y], after: 400 };
+    if (tot === tg) return { type: "tap", at: [SEAL.x, SEAL.y + cardDy()], after: 400 };
     if (tot > tg) { const ds = [...denoms()].sort((a, b) => a - b); for (const d of ds) if ((g.counts[d] ?? 0) > 0 && tot - d >= 0) { const cw = colW(), i = [...denoms()].sort((a, b) => b - a).indexOf(d); return { type: "tap", at: [COL_X0 + cw * (i + 0.5), COL_BOT - 60], after: 200 }; } }
     const rest = tg - tot, want = [...denoms()].sort((a, b) => b - a).filter((d) => d <= rest);
     for (const d of want) {
@@ -202,4 +243,4 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     board: () => { const tg = round().target, s = String(tg); return { title: groupDigits(tg, spec.system), lines: [numberWords(tg, spec.system), s.split("").map((ch, i) => `${ch} ${PLACE[10 ** (s.length - 1 - i)] ?? ""}`).join("  ·  ")], figure: { kind: "none" }, accent: C.sun }; },
   };
 }
-export const vault: EngineDef<VaultSpec> = { archetype: "vault-heist@1", label: "Game · Vault Heist", accent: C.sun, create };
+export const vault: EngineDef<VaultSpec> = { archetype: "vault-heist@1", label: "Game · Number Vault", get accent() { return C.sun; }, create };

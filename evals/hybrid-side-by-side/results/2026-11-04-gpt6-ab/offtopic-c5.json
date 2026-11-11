@@ -1,0 +1,205 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-gpt6",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj cricket ke overs se fractions ko number line par dekhenge. Cricket mein tumhe kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 1009
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, cricket pitch ko number line (sankhya rekha) maan lo. Dono ends ke beech aadhi doori ka point tum kahan lagaogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 2952,
+   "replyReadyMs": 3961,
+   "guard": [
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "leak"
+    ],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 958
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, fractions thodi der ruk sakte hain. Tum kis baare mein baat karna chahti ho? Phir lesson par laut lenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1451,
+   "replyReadyMs": 2409
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1091
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 0 se 1 tak ki doori ko paanch barabar hisson mein baanto. Pehle hisse ke baad ka point kaunsa fraction hoga?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2592,
+   "replyReadyMs": 3683,
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 766
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, pata na hona theek hai: pehla point one-fifth hai. Ab 2/5 mark karna hai. 0 aur 1 ke beech paanch barabar gaps bante hain; kyun?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1712,
+   "replyReadyMs": 2478
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 775
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, game khelte hain: socho 0 se 1 tak paanch barabar steps hain. 2/5 ke liye kitne steps chalogi?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2528,
+   "replyReadyMs": 3303,
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "no_evidence",
+   "classifyMs": 932
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 3 steps wali chaal game check karega; number line par agla move try karo.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1407,
+   "replyReadyMs": 2339
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 761
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ye part boring lag raha hai. Tareeka badalte hain: 2/5 ko picture, story ya game se dekhenge. Tum kya chunogi?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2468,
+   "replyReadyMs": 3229,
+   "guard": [
+    "screen",
+    "twoq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 956
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, kaunsa tareeka chahiye: Picture dikhao, Kahani mein batao, ya Game khelte hain?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1549,
+   "replyReadyMs": 2505
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "no_evidence",
+   "classifyMs": 849
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ek din Meera ne 0 se 1 tak paanch barabar kadam banaye. 2/5 par pahunchne ke liye woh kitne kadam chalegi?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1348,
+   "replyReadyMs": 2197
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1247
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum abhi rukna chahti ho, theek hai. Aage chalein, chhota break lein, ya aaj ke liye band karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2175,
+   "replyReadyMs": 3422,
+   "guard": [
+    "wrap",
+    "nochoice",
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

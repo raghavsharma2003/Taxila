@@ -1,0 +1,134 @@
+{
+  "v": 1,
+  "id": "gen-c6-maths-ch07-t05-3b481c3f",
+  "approved": true,
+  "hash": "3b481c3fea6051d64df1d50654bb4999",
+  "archetype": "fraction-ops@1",
+  "spec": {
+    "archetype": "fraction-ops@1",
+    "skills": [
+      "c6-maths-ch07-t05"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Daura",
+      "done": "Ho gaya",
+      "cols": "kaalam",
+      "rows": "pankti",
+      "shade": "Rang bharo",
+      "harvest": "Jama karo",
+      "scoop": "Hissa lo",
+      "full": "Pura",
+      "cut": "Kaatna",
+      "pour": "Dalo",
+      "runDone": "Daura poora",
+      "of": "ka",
+      "the": "yeh",
+      "scoops": "hisse",
+      "plus": "jod",
+      "minus": "ghatao"
+    },
+    "title": "Bhinno ka khel",
+    "rounds": [
+      {
+        "mode": "join",
+        "title": "Nimbu ke tukde",
+        "sub": "Socho aur chuno",
+        "a": [
+          1,
+          2
+        ],
+        "b": [
+          1,
+          3
+        ],
+        "op": "+",
+        "targets": "c6-maths-ch07-t05-m-add-across"
+      },
+      {
+        "mode": "join",
+        "title": "Roti ke tukde",
+        "sub": "Dhyan se dekho",
+        "a": [
+          1,
+          4
+        ],
+        "b": [
+          1,
+          4
+        ],
+        "op": "+",
+        "targets": "c6-maths-ch07-t05-m-add-across"
+      }
+    ]
+  },
+  "for": {
+    "topic": "c6-maths-ch07-t05",
+    "skill": "c6-maths-ch07-t05-s1",
+    "misconceptionId": "c6-maths-ch07-t05-m-add-across",
+    "beat": "rem:c6-maths-ch07-t05-m-add-across",
+    "when": "remediation"
+  },
+  "because": {
+    "mixup": {
+      "id": "c6-maths-ch07-t05-m-add-across",
+      "belief": "Adds numerators and denominators separately (1/2 + 1/3 = 2/5)",
+      "signs": [
+        "Writes 1/2 + 1/3 = 2/5",
+        "Writes 1/4 + 1/4 = 2/8",
+        "Gets sums smaller than one of the parts"
+      ]
+    },
+    "rule": "shown only to a child the learner model holds this mix-up for, at this beat; any other child gets the script's own board"
+  },
+  "source": "generated",
+  "predicate": {
+    "ok": true,
+    "why": null
+  },
+  "render": {
+    "byViewport": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "images": [
+      {
+        "vp": "p412",
+        "file": "piece-p412.png",
+        "sha256": "e972be9e136548093119ab56ddc813163524e5964a03b7de3a874adb6b0d1473"
+      },
+      {
+        "vp": "l1366",
+        "file": "piece-l1366.png",
+        "sha256": "3c19fe8a967b8b9b980a891fb57354d9a3a5bf72f3e511b211246d7d81eadbc3"
+      }
+    ]
+  },
+  "judge": {
+    "verdict": "pass",
+    "by": "two separate Claude Opus judges (lean, 4 reads), rubric v2, 2026-11-11, renders at da0e71b93",
+    "promptSha256": "6533992ad0d93b49abda38b305ae4177f65441f620b5d47e6317c70cd0630ba7",
+    "prompt": "data/studio-approved/JUDGE-PROMPT.md",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "The screen shows 'HO GAYA 0/1' next to 'DAURA 1/2'. The packet does not show whether 'Ho gaya' counts tasks in this round or rounds overall, so it is not counted as a fault. The round titles 'Nimbu ke tukde' and 'Roti ke tukde' do not appear on the first screen. The bar drawing does not match them, but the packet cannot show whether the engine ever displays them, so they are not counted."
+  },
+  "judge2": {
+    "verdict": "pass",
+    "by": "Claude Opus judge B, 2026-11-11",
+    "content": "pass",
+    "faults": [],
+    "notes": "Screen counter reads 'HO GAYA 0/1' beside 'DAURA 1/2'; the packet does not say what the '1' counts (per-round task or whole run), so not counted. Rounds 1/2+1/3 and 1/4+1/4 directly test the add-across mix-up (2/5, 2/8); no title or sub names the method or the answer."
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T09:47:30.536Z"
+  },
+  "approvedAt": "2026-11-11T10:00:47.069Z"
+}

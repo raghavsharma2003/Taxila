@@ -443,7 +443,7 @@ test("talk-share gate for a persona/model change: < 3 lessons is a FAIL (never a
   assert.equal(decide([0.24, 0.24, 0.18], [0.3]).ok, false, "not decided → red");
   assert.equal(decide([0.24, 0.24, 0.18], [0.2, 0.25, 0.22]).ok, true);
   assert.equal(decide([0.24, 0.24, 0.18], [0.1, 0.12, 0.2]).ok, false, "a > 10% drop of the median blocks");
-  const base = JSON.parse(readFileSync(new URL("../evals/results/talk-baseline.json", import.meta.url), "utf8"));
+  const base = JSON.parse(readFileSync(new URL("./fixtures/eval-results/results/talk-baseline.json", import.meta.url), "utf8"));
   assert.ok(base.childTalkShare.filter(Number.isFinite).length >= 3, "baseline n ≥ 3");
 });
 

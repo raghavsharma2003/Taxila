@@ -1,0 +1,298 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj fractions ko number line par cricket score ki tarah dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 940
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya. Cricket chhodo—start se finish tak ek run ko 0 se 1 tak ka path socho; aadhe raste par kya number hoga?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1435,
+   "replyReadyMs": 2375,
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 1014
+  },
+  {
+   "who": "teacher",
+   "text": "Ek chocolate ko 5 barabar tukdon mein baanto; har tukda poori chocolate ka kaunsa fraction hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2374,
+   "replyReadyMs": 3388,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "guard": [
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 680
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, dheere chalenge. 0 se 1 tak ki line ko 5 barabar gaps mein baanto. Har gap 1/5 hai. Pehla gap ka naam?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1470,
+   "replyReadyMs": 2150,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 825
+  },
+  {
+   "who": "teacher",
+   "text": "Hindi mein? Zaroor. Riya, 0 se 1 tak ki rekha ko 5 barabar hisson mein baanto. Har hissa ek-paanchvaan hai. Do hisson par kaunsa bhinn hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1522,
+   "replyReadyMs": 2347,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "no_evidence",
+   "classifyMs": 1293
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 5 kaha—shayad tum kul barabar hisson ki baat kar rahi ho. Do hisson ka naam kaise likhenge?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2642,
+   "replyReadyMs": 3935,
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 2,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/2"
+      }
+     ]
+    }
+   },
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "none",
+    "why": "no board for this ask"
+   },
+   "guard": [
+    "negates"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1014
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Do hisson ka bhinn 2/5 hota hai: upar liye hisson ki ginti, neeche kul barabar hisse. Pehle number ko bolo.",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1745,
+   "replyReadyMs": 2759,
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "none",
+    "why": "no board for this ask"
+   }
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1026
+  },
+  {
+   "who": "teacher",
+   "text": "Dekho screen par: 0 se 1 tak 5 barabar hisse hain; doosre hisse par 2/5 likha hai. Upar ka number kya batata hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1607,
+   "replyReadyMs": 2633,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "catalogue",
+    "template": "catalogue:L1",
+    "onScreen": {
+     "labels": "0 | 1 | fraction",
+     "numbers": "0 1"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1324
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, “haan” se pata chalta hai tumne dekha. Upar ka 2, liye gaye hisson ki ginti batata hai. Neeche ka 5?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1849,
+   "replyReadyMs": 3173,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "no_evidence",
+   "classifyMs": 1162
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 7 kaha—kya tum screen par dikh rahe 0 aur 1 ke beech kul hisson ki ginti bata rahi ho?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2836,
+   "replyReadyMs": 3998,
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 8,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/8"
+      },
+      {
+       "num": 4,
+       "label": "1/2"
+      }
+     ]
+    }
+   },
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "none",
+    "why": "no board for this ask"
+   },
+   "guard": [
+    "negates"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1143
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—tum aaj ke liye rukna chahti ho. Abhi aage badhein, thoda viraam lein, ya aaj yahin samaapt karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1505,
+   "replyReadyMs": 2648,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  }
+ ],
+ "agent": []
+}

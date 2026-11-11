@@ -17,21 +17,40 @@ import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../../
 import type { BoardSpec } from "../../core/board.ts";
 import { ACC, backdrop, devaReady, dust, fmtNum, hasDeva, textBlock, wrap } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 
 interface Box { x: number; y: number; w: number; h: number }
-interface Pos { x: number; y: number; box?: Box; lab?: "above" | "below" }
+interface Pos { x: number; y: number; box?: Box; lab?: "above" | "below"; side?: boolean }
 const R0 = { x0: 70, x1: 930, y0: 182, y1: 505 };
+/** the lowest a diagram band may reach when items above push it down (the lesson stage shows no in-world captions) */
+const DIAG_FLOOR = 580;
 const ITEM = new Set(["node", "glyph"]);
 const DIAG = new Set(["title", "label", "axis", "bar", "bars", "grid", "angle", "poly", "counter", "quote", "meter", "myth", "particles"]);
+/** wrap widths of a node's words: under its glyph, in its box, and beside its glyph (a crowded split column) */
+const WRAP = { glyph: 210, sub: 240, box: 250, side: 238 };
 
-/** Line count of a label at the 38-unit floor, by a font-independent estimate (≈ 20 units per character). */
-export function estLines(text: string, maxW: number): number {
+/** Line count of a label by a font-independent estimate (≈ 20 units per character at the 38-unit floor; `k` scales it
+ *  for a larger floor: the young 43). */
+export function estLines(text: string, maxW: number, k = 1, max = 2): number {
   let lines = 1, cur = 0;
-  for (const w of text.split(/\s+/).filter(Boolean)) { const ww = w.length * 20; if (cur && cur + 10 + ww > maxW) { lines++; cur = ww; } else cur += (cur ? 10 : 0) + ww; }
-  return Math.min(2, lines);
+  for (const w of text.split(/\s+/).filter(Boolean)) { const ww = w.length * 20 * k; if (cur && cur + 10 + ww > maxW) { lines++; cur = ww; } else cur += (cur ? 10 : 0) + ww; }
+  return Math.min(max, lines);
 }
-/** Deterministic layout for one scene: item slots + diagram sub-rectangles (world units, clear of the safe zones). */
-export function layoutScene(sc: SceneT): Map<string, Pos> {
+/** line height of a node's 38-unit words at floor scale k */
+const nodeLh = (k: number) => Math.max(44, 38 * k * 1.14);
+/** How far an item reaches above and below its centre (estimated; the painter uses the same wraps and line heights). */
+export function itemExtent(e: SceneEl, k = 1, side = false): { up: number; down: number } {
+  if (e.type === "glyph") { const h = (e.size ?? 160) / 2; return { up: h, down: h }; }
+  if (e.type !== "node") return { up: 50, down: 50 };
+  const lh = nodeLh(k), subN = e.sub ? estLines(e.sub, side ? WRAP.side : e.glyph ? WRAP.sub : 280, k) : 0;
+  if (e.glyph && side) { const th = (estLines(e.text, WRAP.side, k) + subN) * lh; return { up: Math.max(54, th / 2), down: Math.max(54, th / 2) }; }
+  if (e.glyph) return { up: 54, down: 46 + 12 + (estLines(e.text, WRAP.glyph, k) + subN) * lh };
+  const h = estLines(e.text, WRAP.box, k) * 46 * Math.max(1, k * 0.95) + 26;
+  return { up: h / 2, down: h / 2 + (subN ? 8 + subN * lh : 0) };
+}
+/** Deterministic layout for one scene: item slots + diagram sub-rectangles (world units, clear of the safe zones).
+ *  `k` = the child's label floor / 38 (1.13 for classes 4-5): words take more room, so the layout gives them more. */
+export function layoutScene(sc: SceneT, k = 1): Map<string, Pos> {
   const pos = new Map<string, Pos>();
   const free = sc.layout === "free";
   const items = sc.els.filter((e) => ITEM.has(e.type) && !(free && "x" in e && e.x !== undefined && "y" in e && e.y !== undefined));
@@ -49,10 +68,21 @@ export function layoutScene(sc: SceneT): Map<string, Pos> {
     if (mode === "row" && n > 4) mode = "grid";
     if (mode === "column" && n * 96 > itemR.h + 40 && sc.layout !== "split") mode = "grid";
     if (mode === "free") mode = n > 4 ? "grid" : "row";
-    items.forEach((e, i) => {
+    if (mode === "column") {
+      // stacked by each item's real reach (its words wrap at the child's floor); a column that cannot hold its items under
+      // their glyphs puts the words BESIDE the glyphs (round 7: "first arm" drawn over "Ray" in a split column)
+      const stackH = (side: boolean) => items.reduce((a, e) => { const x = itemExtent(e, k, side); return a + x.up + x.down; }, 0);
+      const side = stackH(false) > itemR.h + 10 && items.some((e) => e.type === "node" && e.glyph);
+      const tot = stackH(side), gap = Math.max(0, (itemR.h - tot) / n);
+      let cy = itemR.y + gap / 2 - (tot > itemR.h ? (tot - itemR.h) / 2 : 0);
+      for (const e of items) {
+        const isSide = side && e.type === "node" && !!e.glyph, x = itemExtent(e, k, isSide);
+        pos.set(e.id, { x: isSide ? itemR.x + 50 : itemR.x + itemR.w / 2, y: cy + x.up, ...(isSide ? { side: true } : {}) });
+        cy += x.up + x.down + gap;
+      }
+    } else items.forEach((e, i) => {
       let x = 0, y = 0;
       if (mode === "row") { x = itemR!.x + ((i + 0.5) * itemR!.w) / n; y = itemR!.y + itemR!.h * (diagR ? 0.36 : 0.42); }
-      else if (mode === "column") { x = itemR!.x + itemR!.w / 2; y = itemR!.y + ((i + 0.5) * itemR!.h) / n - 18; }
       else if (mode === "cycle") {
         // closed loops read clockwise; labels sit OUTSIDE the loop so arrows never cross them
         const cx = itemR!.x + itemR!.w / 2, top = itemR!.y + 80, bot = itemR!.y + itemR!.h - 80, cyy = (top + bot) / 2;
@@ -64,12 +94,17 @@ export function layoutScene(sc: SceneT): Map<string, Pos> {
       pos.set(e.id, { x, y });
     });
   }
+  let itemBottom = 0;
   for (const e of items) {
     const p = pos.get(e.id); if (!p || p.lab === "above") continue;
-    const txt = e.type === "node" ? e.text : "", sub = e.type === "node" && e.sub ? 46 : 0;
-    const lines = e.type === "node" ? estLines(txt, e.glyph ? 210 : 250) : 0;
-    const bottom = e.type === "node" ? (e.glyph ? p.y + 46 + 12 + lines * 44 + sub : p.y + (lines * 46 + 26) / 2 + sub) : p.y + ((e as { size?: number }).size ?? 160) / 2;
-    if (bottom > 518) p.y -= bottom - 518;
+    const bottom = p.y + itemExtent(e, k, !!p.side).down;
+    if (bottom > 518 && !p.side) p.y -= bottom - 518;
+    itemBottom = Math.max(itemBottom, p.y + itemExtent(e, k, !!p.side).down);
+  }
+  // a diagram band under a row of items starts below the items' words (round 7: "Equal groups" drawn over "4 × 7")
+  if (diagR && itemR && sc.layout !== "split" && itemBottom + 14 > diagR.y) {
+    const y0 = Math.min(itemBottom + 14, DIAG_FLOOR - 100), y1 = Math.min(DIAG_FLOOR, Math.max(diagR.y + diagR.h, y0 + 130));
+    diagR = { ...diagR, y: y0, h: y1 - y0 };
   }
   if (diagR && diags.length) {
     // stack diagrams vertically; small ones (label, counter) get less height
@@ -85,7 +120,7 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
   const T = spec.strings, accent = ACC[spec.accent];
   const els = new Map<string, { el: SceneEl; scene: number }>();
   spec.scenes.forEach((s, i) => s.els.forEach((e) => els.set(e.id, { el: e, scene: i })));
-  const lays = spec.scenes.map((s) => layoutScene(s));
+  const lays = spec.scenes.map((s) => layoutScene(s, api.minLabel / 38));
   const P = (id: string) => lays[els.get(id)!.scene].get(id);
   // ── translate scene cues to the shared timeline grammar (show / hide / set / camera / interactive)
   const init: Record<string, number> = { "cam.x": 500, "cam.y": 312, "cam.zoom": 1, dim: 0 };
@@ -161,34 +196,47 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
       if (hl > 0.01) ring(ctx, x, y, size * 0.62, hl, now, col);
       return;
     }
-    const label = e.text;
+    const label = e.text, lh = nodeLh(api.minLabel / 38);
     if (e.glyph) {
       const r = 46 * s;
       bloom(ctx, col, x, y, r * 2.4, 0.28 * a * (1 + hl));
       ctx.save(); ctx.globalAlpha *= a;
-      ctx.fillStyle = "rgba(18,22,32,.96)"; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = withAlpha(C.sceneNode, .96); ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = hexA(col, 0.14); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.stroke();
       ctx.restore();
       drawGlyph(ctx, e.glyph, x, y, 62 * s, C.ink, hexA(col, 0.35), a);
-      const above = P(e.id)?.lab === "above";
-      const lines = wrap(api, ctx, label, 210, { size: 38, weight: 600 }, 2), lh = 44, bh = lines.length * lh + (e.sub ? 46 : 0);
-      const ly0 = above ? y - r - 14 - bh : y + r + 12;
-      lines.forEach((ln, li) => api.text(ctx, ln, x, ly0 + lh * (li + 0.5), { size: 38, weight: 600, color: C.ink, align: "center", baseline: "middle", alpha: a, maxWidth: 236 }));
-      if (e.sub) api.text(ctx, e.sub, x, ly0 + lines.length * lh + 22, { size: 38, color: C.ink3, align: "center", baseline: "middle", alpha: a, maxWidth: 240 });
-      const top = Math.min(y - r - 8, ly0), bottom = Math.max(y + r + 8, ly0 + bh);
-      hits.set(e.id, { x: x - 112, y: top, w: 224, h: bottom - top });
+      const pp = P(e.id), side = !!pp?.side, above = pp?.lab === "above";
+      // every line is laid out here (label, then sub) at the drawn size, so a wrapped sub never climbs into the label
+      const lines = wrap(api, ctx, label, side ? WRAP.side : WRAP.glyph, { size: 38, weight: 600 }, 2);
+      const subs = e.sub ? wrap(api, ctx, e.sub, side ? WRAP.side : WRAP.sub, { size: 38 }, 2) : [];
+      const bh = (lines.length + subs.length) * lh;
+      if (side) {
+        const tx = x + r + 16, ty0 = y - bh / 2;
+        lines.forEach((ln, li) => api.text(ctx, ln, tx, ty0 + lh * (li + 0.5), { size: 38, weight: 600, color: C.ink, baseline: "middle", alpha: a }));
+        subs.forEach((ln, li) => api.text(ctx, ln, tx, ty0 + lh * (lines.length + li + 0.5), { size: 38, color: C.ink3, baseline: "middle", alpha: a }));
+        const tw = Math.max(0, ...[...lines.map((l) => api.measure(ctx, l, { size: 38, weight: 600 })), ...subs.map((l) => api.measure(ctx, l, { size: 38 }))]);
+        const top = Math.min(y - r - 8, ty0), bottom = Math.max(y + r + 8, ty0 + bh);
+        hits.set(e.id, { x: x - r - 8, y: top, w: r + 24 + tw, h: bottom - top });
+      } else {
+        const ly0 = above ? y - r - 14 - bh : y + r + 12;
+        lines.forEach((ln, li) => api.text(ctx, ln, x, ly0 + lh * (li + 0.5), { size: 38, weight: 600, color: C.ink, align: "center", baseline: "middle", alpha: a }));
+        subs.forEach((ln, li) => api.text(ctx, ln, x, ly0 + lh * (lines.length + li + 0.5), { size: 38, color: C.ink3, align: "center", baseline: "middle", alpha: a }));
+        const top = Math.min(y - r - 8, ly0), bottom = Math.max(y + r + 8, ly0 + bh);
+        hits.set(e.id, { x: x - 112, y: top, w: 224, h: bottom - top });
+      }
       if (hl > 0.01) ring(ctx, x, y, r + 12, hl, now, col);
     } else {
-      const lines = wrap(api, ctx, label, 250, { size: 40, weight: 700 }, 2);
-      const w = Math.min(290, Math.max(...lines.map((l) => api.measure(ctx, l, { size: 40, weight: 700 }))) + 48) * s, h = (lines.length * 46 + 26) * s;
+      const lines = wrap(api, ctx, label, WRAP.box, { size: 40, weight: 700 }, 2), blh = 46 * Math.max(1, api.minLabel / 40);
+      const w = Math.min(290, Math.max(...lines.map((l) => api.measure(ctx, l, { size: 40, weight: 700 }))) + 48) * s, h = (lines.length * blh + 26) * s;
       ctx.save(); ctx.globalAlpha *= a;
       if (hl > 0.01) bloom(ctx, col, x, y, w, 0.3 * hl);
-      ctx.fillStyle = "rgba(20,24,34,.96)"; roundRect(ctx, x - w / 2, y - h / 2, w, h, 20); ctx.fill();
+      ctx.fillStyle = withAlpha(C.sceneCard, .96); roundRect(ctx, x - w / 2, y - h / 2, w, h, 20); ctx.fill();
       ctx.fillStyle = hexA(col, 0.12); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.stroke();
       ctx.restore();
-      lines.forEach((l, i) => api.text(ctx, l, x, y - (lines.length - 1) * 23 + i * 46, { size: 40 * Math.max(1, s * 0.95), weight: 700, align: "center", baseline: "middle", alpha: a, maxWidth: 280 }));
-      if (e.sub) api.text(ctx, e.sub, x, y + h / 2 + 30, { size: 38, color: C.ink3, align: "center", baseline: "middle", alpha: a, maxWidth: 280 });
-      hits.set(e.id, { x: x - w / 2, y: y - h / 2, w, h: h + (e.sub ? 50 : 0) });
+      lines.forEach((l, i) => api.text(ctx, l, x, y - ((lines.length - 1) * blh) / 2 + i * blh, { size: 40 * Math.max(1, s * 0.95), weight: 700, align: "center", baseline: "middle", alpha: a, maxWidth: 280 }));
+      const subs = e.sub ? wrap(api, ctx, e.sub, 280, { size: 38 }, 2) : [];
+      subs.forEach((l, i) => api.text(ctx, l, x, y + h / 2 + 8 + lh * (i + 0.5), { size: 38, color: C.ink3, align: "center", baseline: "middle", alpha: a }));
+      hits.set(e.id, { x: x - w / 2, y: y - h / 2, w, h: h + (subs.length ? 8 + subs.length * lh : 0) });
       if (hl > 0.01) ringBox(ctx, x - w / 2, y - h / 2, w, h, hl, now, col);
     }
   }
@@ -226,7 +274,7 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
       ctx.fillStyle = C.ink; ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ex - Math.cos(ang - 0.45) * 20, ey - Math.sin(ang - 0.45) * 20); ctx.lineTo(ex - Math.cos(ang + 0.45) * 20, ey - Math.sin(ang + 0.45) * 20); ctx.closePath(); ctx.fill();
     }
     if (f > 0.01 && k > 0.9) {
-      for (let i = 0; i < 6; i++) { const u = ((now * 0.45 * (0.6 + f) + i / 6) % 1); const [px, py] = pt(u); bloom(ctx, accent, px, py, 16, 0.9 * f); ctx.fillStyle = "#fff"; ctx.globalAlpha = 0.9 * f; ctx.beginPath(); ctx.arc(px, py, 3.5, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
+      for (let i = 0; i < 6; i++) { const u = ((now * 0.45 * (0.6 + f) + i / 6) % 1); const [px, py] = pt(u); bloom(ctx, accent, px, py, 16, 0.9 * f); ctx.fillStyle = C.hi; ctx.globalAlpha = 0.9 * f; ctx.beginPath(); ctx.arc(px, py, 3.5, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
     }
     ctx.restore();
     if (e.text && k > 0.85) {
@@ -244,7 +292,7 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
       }
       tx = clamp(tx, 80 + wpx / 2, 920 - wpx / 2);
       const al = (k - 0.85) / 0.15;
-      ctx.save(); ctx.globalAlpha *= al; ctx.fillStyle = "rgba(10,12,18,.86)"; roundRect(ctx, tx - wpx / 2, ty - hpx / 2, wpx, hpx, 12); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.globalAlpha *= al; ctx.fillStyle = withAlpha(C.bg, .86); roundRect(ctx, tx - wpx / 2, ty - hpx / 2, wpx, hpx, 12); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
       api.text(ctx, e.text, tx, ty + 1, { ...o, color: C.ink2, align: "center", baseline: "middle", alpha: al });
     }
   }
@@ -254,8 +302,11 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
       case "title": {
         // ship5 p4-content: the title wraps to ITS box (a split layout gives it the 470-unit left column); it used to wrap
         // at 820 whatever the box, so a long title centred in the left column ran off the stage's left edge
-        const tw = Math.min(820, box.w - 20), size = tw < 600 ? 54 : 72, lh = size * 1.17;
-        const lines = wrap(api, ctx, e.text, tw, { font: "display", size, weight: 800 }, tw < 600 ? 3 : 2);
+        const tw = Math.min(820, box.w - 20), maxL = tw < 600 ? 3 : 2;
+        // the largest title size whose wrapped lines fit the box's height (a band pushed down by items above is short)
+        let size = tw < 600 ? 54 : 72, lines = wrap(api, ctx, e.text, tw, { font: "display", size, weight: 800 }, maxL);
+        for (const sz of [60, 54, 48]) { if (lines.length * size * 1.17 <= box.h + 8 || sz >= size) continue; size = sz; lines = wrap(api, ctx, e.text, tw, { font: "display", size, weight: 800 }, maxL); }
+        const lh = size * 1.17;
         lines.forEach((l, i) => { const k = clamp(a * 1.4 - i * 0.25, 0, 1); api.text(ctx, l, cx, cy - ((lines.length - 1) * lh) / 2 + i * lh + (1 - ease.outCubic(k)) * 24, { font: "display", size, weight: 800, align: "center", baseline: "middle", alpha: k, maxWidth: tw, track: -2 }); });
         ctx.save(); ctx.strokeStyle = accent; ctx.lineWidth = 5; ctx.globalAlpha *= a; const lw = Math.min(240, tw * 0.5) * ease.outCubic(a); ctx.beginPath(); ctx.moveTo(cx - lw / 2, cy + (lines.length * lh) / 2 + 14); ctx.lineTo(cx + lw / 2, cy + (lines.length * lh) / 2 + 14); ctx.stroke(); ctx.restore();
         break;
@@ -265,12 +316,12 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
         const bust = V(`${e.id}.bust`), w = Math.min(700, box.w), h = Math.min(190, box.h), sh = bust > 0 && bust < 0.35 ? Math.sin(now * 60) * 6 * (1 - bust / 0.35) : 0;
         if (bust > 0.5 && !bustFired.has(e.id) && !api.reducedMotion && sh === 0) { bustFired.add(e.id); api.fx.burst(cx, cy, { n: 26, color: C.amber, speed: 360, life: 0.8, size: 12, shard: true, gravity: 500 }); sfx.blip({ f: 260, f2: 120, dur: 0.25, gain: 0.16 }); api.fx.shake(4, 0.2); }
         ctx.save(); ctx.globalAlpha *= a * (bust > 0.6 ? 1 - (bust - 0.6) * 0.9 : 1); ctx.translate(cx + sh, cy); ctx.rotate(bust > 0.6 ? (bust - 0.6) * -0.08 : 0);
-        ctx.fillStyle = "rgba(30,24,18,.95)"; roundRect(ctx, -w / 2, -h / 2, w, h, 22); ctx.fill(); ctx.strokeStyle = hexA(C.amber, 0.8); ctx.lineWidth = 3; ctx.setLineDash([14, 10]); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = withAlpha(C.sceneBust, .95); roundRect(ctx, -w / 2, -h / 2, w, h, 22); ctx.fill(); ctx.strokeStyle = hexA(C.amber, 0.8); ctx.lineWidth = 3; ctx.setLineDash([14, 10]); ctx.stroke(); ctx.setLineDash([]);
         api.text(ctx, T.myth, 0, -h / 2 + 40, { font: "mono", size: 38, weight: 600, color: C.amber, align: "center", baseline: "middle", track: 6 });
         textBlock(api, ctx, e.text, 0, 22, w - 60, { size: 40, weight: 600, color: C.ink }, 2);
         if (bust > 0.3) { ctx.strokeStyle = C.amber; ctx.lineWidth = 6; ctx.lineCap = "round"; const k = clamp((bust - 0.3) / 0.3, 0, 1); ctx.beginPath(); ctx.moveTo(-w / 2 + 30, 18); ctx.lineTo(-w / 2 + 30 + (w - 60) * k, 30); ctx.stroke(); }
         ctx.restore();
-        if (bust > 0.62) { const k = ease.outBack(clamp((bust - 0.62) / 0.25, 0, 1)); ctx.save(); ctx.translate(cx + w * 0.28, cy - h * 0.42); ctx.rotate(-0.12); ctx.scale(k, k); const tw = api.measure(ctx, T.busted, { font: "mono", size: 40, weight: 600 }) + 40; ctx.fillStyle = "rgba(10,12,18,.9)"; roundRect(ctx, -tw / 2, -32, tw, 64, 14); ctx.fill(); ctx.strokeStyle = C.amber; ctx.lineWidth = 4; ctx.stroke(); api.text(ctx, T.busted, 0, 2, { font: "mono", size: 40, weight: 600, color: C.amber, align: "center", baseline: "middle", track: 3 }); ctx.restore(); magnifier(ctx, cx - w / 2 + 34, cy - h / 2 + 30, C.amber, 0.9); }
+        if (bust > 0.62) { const k = ease.outBack(clamp((bust - 0.62) / 0.25, 0, 1)); ctx.save(); ctx.translate(cx + w * 0.28, cy - h * 0.42); ctx.rotate(-0.12); ctx.scale(k, k); const tw = api.measure(ctx, T.busted, { font: "mono", size: 40, weight: 600 }) + 40; ctx.fillStyle = withAlpha(C.bg, .9); roundRect(ctx, -tw / 2, -32, tw, 64, 14); ctx.fill(); ctx.strokeStyle = C.amber; ctx.lineWidth = 4; ctx.stroke(); api.text(ctx, T.busted, 0, 2, { font: "mono", size: 40, weight: 600, color: C.amber, align: "center", baseline: "middle", track: 3 }); ctx.restore(); magnifier(ctx, cx - w / 2 + 34, cy - h / 2 + 30, C.amber, 0.9); }
         hits.set(e.id, { x: cx - w / 2, y: cy - h / 2, w, h });
         break;
       }
@@ -296,7 +347,7 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
         const w = Math.min(e.w ?? 620, box.w - 40) * ease.outCubic(clamp(a, 0, 1)), h = Math.min(96, box.h * 0.55), x0 = cx - Math.min(e.w ?? 620, box.w - 40) / 2, y0 = cy - h / 2 - (e.text ? 22 : 0);
         const shv = V(`${e.id}.sh`), pw = Math.min(e.w ?? 620, box.w - 40) / e.parts;
         ctx.save(); ctx.globalAlpha *= Math.min(1, a * 2);
-        ctx.fillStyle = "rgba(18,22,32,.95)"; roundRect(ctx, x0, y0, w, h, 12); ctx.fill();
+        ctx.fillStyle = withAlpha(C.sceneNode, .95); roundRect(ctx, x0, y0, w, h, 12); ctx.fill();
         for (let i = 0; i < e.parts; i++) { const s = clamp(shv - i, 0, 1); if (s > 0 && x0 + pw * i < x0 + w) { ctx.fillStyle = hexA(accent, 0.75); ctx.fillRect(x0 + pw * i + 3, y0 + 3, Math.min(pw - 6, w - pw * i - 6) * s, h - 6); } }
         ctx.strokeStyle = C.ink; ctx.lineWidth = 4; roundRect(ctx, x0, y0, w, h, 12); ctx.stroke();
         ctx.strokeStyle = C.ink2; ctx.lineWidth = 3; for (let i = 1; i < e.parts; i++) { const x = x0 + pw * i; if (x < x0 + w) { ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y0 + h); ctx.stroke(); } }
@@ -319,7 +370,7 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
       case "grid": {
         const cell = Math.min(46, (box.w - 60) / e.cols, (box.h - 30) / e.rows), gw = cell * e.cols, gh = cell * e.rows, x0 = cx - gw / 2, y0 = cy - gh / 2, shv = V(`${e.id}.sh`);
         ctx.save(); ctx.globalAlpha *= Math.min(1, a * 1.5);
-        for (let i = 0; i < e.cols * e.rows; i++) { const s = clamp(shv - i, 0, 1), gx = x0 + (i % e.cols) * cell, gy = y0 + Math.floor(i / e.cols) * cell; ctx.fillStyle = s > 0 ? hexA(accent, 0.25 + 0.5 * s) : "rgba(255,255,255,.03)"; ctx.fillRect(gx + 2, gy + 2, cell - 4, cell - 4); }
+        for (let i = 0; i < e.cols * e.rows; i++) { const s = clamp(shv - i, 0, 1), gx = x0 + (i % e.cols) * cell, gy = y0 + Math.floor(i / e.cols) * cell; ctx.fillStyle = s > 0 ? hexA(accent, 0.25 + 0.5 * s) : withAlpha(C.hi, .03); ctx.fillRect(gx + 2, gy + 2, cell - 4, cell - 4); }
         ctx.strokeStyle = C.ink2; ctx.lineWidth = 2; for (let i = 0; i <= e.cols; i++) { ctx.beginPath(); ctx.moveTo(x0 + i * cell, y0); ctx.lineTo(x0 + i * cell, y0 + gh * clamp(a, 0, 1)); ctx.stroke(); } for (let j = 0; j <= e.rows; j++) { ctx.beginPath(); ctx.moveTo(x0, y0 + j * cell); ctx.lineTo(x0 + gw * clamp(a, 0, 1), y0 + j * cell); ctx.stroke(); }
         ctx.strokeStyle = C.ink; ctx.lineWidth = 4; ctx.strokeRect(x0, y0, gw, gh); ctx.restore();
         hits.set(e.id, { x: x0, y: y0, w: gw, h: gh });
@@ -382,7 +433,7 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
         syl.forEach((s, i) => {
           const k = clamp(a * (n + 3) - i, 0, 1); if (k <= 0) return; total += s.w;
           const x = x0 + i * bw + bw / 2;
-          ctx.save(); ctx.globalAlpha *= k; ctx.fillStyle = s.w === 2 ? hexA(accent, 0.22) : "rgba(255,255,255,.05)"; roundRect(ctx, x - bw / 2 + 3, cy - 56, bw - 6, 80, 10); ctx.fill(); ctx.restore();
+          ctx.save(); ctx.globalAlpha *= k; ctx.fillStyle = s.w === 2 ? hexA(accent, 0.22) : withAlpha(C.hi, .05); roundRect(ctx, x - bw / 2 + 3, cy - 56, bw - 6, 80, 10); ctx.fill(); ctx.restore();
           api.text(ctx, s.syl, x, cy - 16, { font: "ui", size: Math.min(44, bw * 0.75 + 8), weight: 600, align: "center", baseline: "middle", alpha: k, decor: bw * 0.75 + 8 < 38 });
           api.text(ctx, s.w === 2 ? "ऽ" : "।", x, cy + 52, { font: "ui", size: 40, weight: 700, color: s.w === 2 ? accent : C.ink2, align: "center", baseline: "middle", alpha: k });
         });
@@ -418,7 +469,7 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
   function paintBg(g: Ctx) { backdrop(g, accent, 5, 50); }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
-    dust(ctx, now, 30, "#C9D2F2", 13);
+    dust(ctx, now, 30, C.sceneDust, 13);
     if (!fontOk) return;
     hits.clear();
     const z = V("cam.zoom"), camx = V("cam.x"), camy = V("cam.y"), dim = V("dim");
@@ -476,7 +527,7 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
         if (k < 0 && !live.answered) { const p = 0.5 + 0.5 * Math.sin(now * 4 + id.length); ctx.save(); ctx.strokeStyle = C.volt; ctx.lineWidth = 3; ctx.globalAlpha = 0.35 + 0.4 * p; roundRect(ctx, b.x - 8, b.y - 8, b.w + 16, b.h + 16, 22); ctx.stroke(); ctx.restore(); }
         if (k >= 0) {
           const ok = live.answered ? task.items[k] === id : null, col = ok === null ? C.volt : ok ? C.mint : C.amber;
-          ctx.save(); ctx.fillStyle = "rgba(10,12,18,.95)"; ctx.beginPath(); ctx.arc(b.x + 4, b.y + 4, 30, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
+          ctx.save(); ctx.fillStyle = withAlpha(C.bg, .95); ctx.beginPath(); ctx.arc(b.x + 4, b.y + 4, 30, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
           api.text(ctx, String(k + 1), b.x + 4, b.y + 6, { font: "display", size: 40, weight: 800, color: col, align: "center", baseline: "middle" });
         }
         if (live.answered && live.verdict !== "right") { const want = task.items.indexOf(id); api.text(ctx, `→ ${want + 1}`, b.x + b.w - 6, b.y + 6, { font: "mono", size: 38, weight: 600, color: C.ion, align: "right", baseline: "middle", alpha: clamp(live.revealT * 2, 0, 1) }); }
@@ -485,7 +536,7 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
       const g = axisGeom(task.axis); if (!g || live.marker == null) return;
       const x = g.X(live.marker), col = live.answered ? (live.verdict === "right" ? C.mint : C.amber) : live.dragging ? C.volt : C.ink;
       ctx.save(); bloom(ctx, col, x, g.y, 60, 0.5); ctx.strokeStyle = col; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x, g.y - 70); ctx.lineTo(x, g.y + 26); ctx.stroke();
-      ctx.fillStyle = "rgba(14,17,25,.96)"; ctx.beginPath(); ctx.arc(x, g.y - 92, 26, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore();
+      ctx.fillStyle = withAlpha(C.sceneHead, .96); ctx.beginPath(); ctx.arc(x, g.y - 92, 26, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore();
       if (!live.answered) { const p = 0.5 + 0.5 * Math.sin(now * 4); ctx.save(); ctx.strokeStyle = C.volt; ctx.globalAlpha = 0.4 + 0.4 * p; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, g.y - 92, 36 + 4 * p, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); }
       if (live.answered) {
         const tx = g.X(task.answer), k = clamp(live.revealT * 2, 0, 1);
@@ -563,4 +614,4 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
     dispose: () => sh.dispose(),
   };
 }
-export const scene: EngineDef<SceneSpec> = { archetype: "scene-explainer@1", label: "Animation · Explainer", accent: C.sci, create };
+export const scene: EngineDef<SceneSpec> = { archetype: "scene-explainer@1", label: "Animation · Explainer", get accent() { return C.sci; }, create };

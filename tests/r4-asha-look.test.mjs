@@ -114,17 +114,13 @@ test("client: the kill switch and the look come from ONE config request", async 
   assert.equal(F.puppetServerKnownOff(), true);
 });
 
-test("under lamp1 no path shows TutorFace's Plate2D for Asha: the puppet's fallbacks and the kill switch hold her still", () => {
+test("no look shows TutorFace's Plate2D for Asha: the puppet's fallbacks and the kill switch hold her own still (r7)", () => {
   const face = readFileSync(new URL("src/face-puppet/PuppetFace.tsx", ROOT), "utf8");
-  assert.match(face, /export const holdsOwnStill = \(look: PuppetLook \| null\): boolean => look === "lamp1" \|\| look === "lamp2";/);
-  assert.match(face, /setPhase\(revealed\.current \|\| holdsOwnStill\(look\) \? "held" : "fallback"\)/, "a pre-reveal failure holds the still");
-  assert.match(face, /if \(phase === "fallback" && !p\.still && !holdsOwnStill\(look\)\)/, "TutorFace only for a look that has no own still");
-  assert.match(face, /failedThisPage \? \(holdsOwnStill\(faceLookNow\(\)\) \? "held" : "fallback"\)/, "a page that saw a failure starts on the still");
+  assert.doesNotMatch(face, /<TutorFace/, "PuppetFace never renders TutorFace");
+  assert.match(face, /setPhase\("held"\);/, "any failure holds the still");
+  assert.match(face, /failedThisPage \? "held" : "poster"/, "a page that saw a failure starts on the still");
   assert.match(face, /new PuppetStage\(el, \{\s*look,/, "the stage loads the look's pack");
   const lesson = readFileSync(new URL("src/face-puppet/LessonFace.tsx", ROOT), "utf8");
-  assert.match(lesson, /if \(off && !holdsOwnStill\(faceLookNow\(\)\)\) return <TutorFace/, "the kill switch keeps her still under lamp1");
-  assert.match(lesson, /still=\{off \|\| p\.tier === "D"\}/);
-  const site = readFileSync(new URL("src/app/landing/Site.tsx", ROOT), "utf8");
-  assert.match(site, /const grown = look === "lamp1" \|\| look === "lamp2" \? look : null;/);
-  assert.match(site, /const still = grown !== null && tutor\.id === "asha";/, "the landing portrait is her own still under lamp1 or lamp2");
+  assert.match(lesson, /still=\{off \|\| p\.tier === "D"\}/, "the kill switch keeps her still");
+  // (the landing's TeacherPortrait was deleted in the round-7 app audit, APP-47: no importer; the site draws Asha from stills directly)
 });

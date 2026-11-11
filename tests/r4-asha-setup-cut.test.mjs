@@ -20,7 +20,8 @@ test("five set-up steps, in the approved order; adding a child is two", () => {
   // the language is asked on step 1, with her samples
   const cls = code(src("src/onboarding/steps/Class.tsx"));
   assert.match(cls, /LangTile/);
-  assert.match(cls, /ready = !!c\.classLevel && !!c\.board && !!speak/);
+  assert.match(cls, /ready = !!c\.classLevel && !!speak/);   // audit LEARN-45: the board defaults to CBSE
+  assert.match(cls, /const board = c\.board \?\? "cbse";/);
 });
 
 test("the AI-honesty promise and the 2-s hold are unchanged", () => {
@@ -39,12 +40,16 @@ test("Hello's AI disclosure is unchanged and comes before anything she chooses",
   assert.match(hello, /useState<Card>\("greet"\)/, "Hello opens on the greeting");
   assert.match(hello, /if \(card === "greet" && clip\.played\) setCard\("ai"\)/, "the greeting moves to the AI card");
   // the only ways out of the greeting go to the AI card; only "Got it" leaves the AI card
-  assert.equal((hello.match(/setCard\("picture"\)/g) ?? []).length, 1);
+  // r7: one Got it per look (classic and the Kaksha boot sequence), and nothing else goes to the picture card
+  assert.equal((hello.match(/setCard\("picture"\)/g) ?? []).length, 2);
   assert.match(hello, /onClick={\(\) => setCard\("picture"\)} data-testid="hello-gotit">{t\("gotIt"\)}/);
+  assert.match(hello, /<Cta onClick={\(\) => setCard\("picture"\)} testid="hello-gotit">{t\("gotIt"\)}<\/Cta>/);
   assert.doesNotMatch(hello.slice(hello.indexOf('case "greet"'), hello.indexOf('case "ai"')), /finish\(|setCard\("(picture|likes|change|hi)"\)/);
   // she picks what she likes when the parent chose none; then "say hi" (Skip always there); then the lesson
   assert.match(hello, /afterPicture = \(\) => setCard\(parentPicks\.length \? "likes" : "change"\)/);
-  assert.match(hello, /afterLikes = \(picks: string\[\]\) => { setLikes\(picks\); setCard\("hi"\); }/);
+  // r7 (Learning to-app/007): then "how school feels" (three faces, never a test), then "say hi"
+  assert.match(hello, /afterLikes = \(picks: string\[\]\) => { setLikes\(picks\); setCard\("feel"\); }/);
+  assert.match(hello, /const afterFeel = \(\) => {[\s\S]*?setCard\("hi"\);\s*};/);
   const hi = hello.slice(hello.indexOf('case "hi"'));
   assert.match(hi, /data-testid="hello-skip"/);
   assert.match(hello, /if \(r === "none"\) setPrefs\({ quiet: true }\)/, "no mic: this device starts in tap-and-type");

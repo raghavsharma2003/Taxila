@@ -1,0 +1,25 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r7-director7",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "director7 (script walk v4, v2.2 scripts, H1.2 child; 16 lessons, 448 teacher turns; run tree int/r6 8f461ae0b + Brain 32492218), code counts:\n- 1,161 calls, about $0.794 (dry 968);\n- verdicts 229/230;\n- 0 right answers called wrong;\n- 0 wrong answers called right;\n- 13 contradiction flags in 11 turns, all real, from two runtime causes;\n- reply-ready p50 2.68 s, against 3.00 s in director6;\n- cut 1 skipped the rewrite on 40 turns."
+  },
+  {
+   "id": "dc-r7-script-versions-one-list",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "One script version list (SCRIPT_VERSIONS in server/director/script.js): the validator rejects any other version and WALK_VERSIONS is built from it; tests/r7-brain-live-scripts.test.mjs runs the preflight over every live script, so a data version bump fails CI on the bumping branch."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r7-brain-script-walk-v4", "rel": "measured_by", "dst": "ms-r7-director7" },
+  { "src": "dc-r7-script-versions-one-list", "rel": "caused_by", "dst": "ms-r7-director7" }
+ ],
+ "md": {
+  "measurements": "## `ms-r7-director7` (2026-11-05, stream A Brain)\n\nWhat was run:\n- **Method:** evals/hybrid-side-by-side.mjs `--matrix --director-only --reactive`. The lessons were 4 topics (c4 ch05-t01, c5 ch02-t01, c5 ch02-t02, c6 ch06-t01) × 4 personas.\n- **Run tree:** int/r6 8f461ae0b plus Brain 32492218, using the live v2.2 scripts.\n- **n:** 16 lessons, 448 teacher turns, 230 keyed answers.\n- **Cost:** 1,161 calls, about $0.794, against a cap of 1,300 / $0.85. The dry count was 968, so live was 1.20 × dry.\n- **Source:** evals/hybrid-side-by-side/results/2026-11-05-director7/README.md.\n\nCode counts (the hand judgement is main's):\n- Delivered: 82/82.\n- Verdicts: 229/230. The one miss had two earlier cards' give-up reveals spoken before the verdict.\n- Right called wrong: 0. Wrong called right: 0.\n- Contradictions against the drawn board: 13 flags in 11 turns. Read by hand against each board, they are real and come from two causes:\n  1. A \"Yaad karo\" recap (the card's W1 `cardPoint`) describing a different board than the card's own: 5 turns.\n  2. The remediation say and its then-card in one turn, with only the say's board drawn: 5 turns.\n  - One more turn is borderline: an ask about an imagined line.\n\nLatency, sequential classify + reply:\n- p50 2,990 → 2,681 ms; p90 4,763 → 4,392 ms.\n- Cut 1 skipped the rewrite on 40 turns, with a p50 of 1,770 ms; rewritten turns had a p50 of 3,816 ms.\n- The fast path took 289 turns, against 124 in director6.\n- The harness parallel bound is not the production figure. A turn.js replay is next.",
+  "decisions": "## `dc-r7-script-versions-one-list` (2026-11-05, stream A Brain)\n\nScript versions now come from one exported list, SCRIPT_VERSIONS.\n- validateTopicScript rejects any version outside SCRIPT_VERSIONS.\n- WALK_VERSIONS is built from SCRIPT_VERSIONS.\n- tests/r7-brain-live-scripts.test.mjs runs scriptWhyNot over every file in data/lesson-scripts.\n\n**Why:** director6 and director7 both reached their run start on a script version the Director did not walk.\n\n**Effect:** a new data version must add its SCRIPT_VERSIONS entry and its validator rules in the same change, or CI fails on that branch.\n\n**Reverse this if** scripts ever need a version the Director validates but deliberately does not walk. That would need a second, named list with its own test.",
+  "rejected": ""
+ }
+}

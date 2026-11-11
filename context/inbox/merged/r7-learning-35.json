@@ -1,0 +1,21 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-kit-depth-pilot-topics-no-new-misconceptions",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "Round 7 F: kit-depth adds on a topic that has a pilot lesson script (data/lesson-scripts/: c4-maths-ch05-t01, c5-maths-ch02-t01/t02, c6-maths-ch06-t01) add no new misconception, because check.mjs requires every kit misconception of a scripted topic to be checked by the script and the pilots already hold their 2-3 checks per skill. A skill there that lacks a misconception gets an existing item tagged with a misconception the script already checks (c5-t01-i03 → m-count-marks, c4-t01-rl-h2 → m-part-part). Reverse if: a pilot script is re-authored with room for a new check; then add the misconception with its check."
+  },
+  {
+   "id": "m-r7-c4-c7-kit-depth-agreement",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "Round 7 F: class 4-7 maths kit depth (topics outside the next-30): blind-solve agreement by a separate in-session Claude agent, hand-read against the keys. c4 C4A 30/30, C4B 35/35, quality fixes re-solved 5/5; c5 C5A 29/29, C5B 28/28, 19 reworded items re-solved 19/19; c6 C6A 40/40, C6B 30/30; c7 C7A 33/33, C7B 30/30, C7C 23/23 plus 1 unanswered, the 5 fixes plus that 1 re-solved 6/6."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## `dc-r7-kit-depth-pilot-topics-no-new-misconceptions` (2026-11-09, F Learning)\nThe pilot lesson scripts (c4 equal shares, c5 number line t01/t02, c6 perimeter) carry 2-3 checks per skill, and `check.mjs` fails a script when a kit misconception of its topic is never checked. A class 4-7 depth add that brings a new misconception to such a topic would break the pilot. So on a scripted topic the depth pass adds no misconception; a skill that needs one gets an existing item that honestly sets the trap tagged with a misconception the script already checks (c5-maths-ch02-t01-i03 'which mark is 3/5?' → m-count-marks; c4-maths-ch05-t01-rl-h2 'one crate of four, what fraction?' → m-part-part). Two authored misconceptions were dropped this way (c5 m-count-from-zero-mark, c4 m-denominator-as-count).\n\n**Reverse if:** a pilot script is re-authored with room for a new check; then add the misconception together with its check.\n",
+  "measurements": "## `m-r7-c4-c7-kit-depth-agreement` (2026-11-09, F Learning)\nn = 260 packet entries (worked examples, items, misconception diagnostics) across 9 batches; method: a separate in-session Claude agent blind-solved the packet without keys; the main loop hand-read every answer against its key, fixed flagged wording, and re-solved every changed entry.\n\n| class | batches | agreement | re-solve of changed |\n|---|---|---|---|\n| 4 | C4A, C4B | 30/30, 35/35 | 5/5 |\n| 5 | C5A, C5B | 29/29, 28/28 | 19/19 |\n| 6 | C6A, C6B | 40/40, 30/30 | none changed |\n| 7 | C7A, C7B, C7C | 33/33, 30/30, 23/23 (+1 unanswered) | 6/6 |\n\nFixes from the hand-read in class 7: a decimal-subtraction trade step (20.00 has no ones, so a ten is traded first), option reasons that cued a diagnostic's answer were cut to bare options (2 diagnostics), a construction's crossing points named, and an equation changed so its true solution is whole (7x − 9 = 40).\n"
+ }
+}

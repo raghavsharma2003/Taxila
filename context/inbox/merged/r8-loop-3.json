@@ -1,0 +1,14 @@
+{
+  "nodes": [
+    {
+      "id": "op-r8-kit-practice-unexplained",
+      "kind": "open",
+      "at": "2026-11-10",
+      "title": "The kit-practice phase after the script's walk is not explained by because records (found by tests/knows-walk.test.mjs, main asked it be an open item, 2026-11-10). Once every scripted skill is walked and the last skill's ladder is spent, poseNext falls to director/items.js selectNext, which today reads: the practice queue (buildPracticeQueue / buildF0Queue: kit items by skill, ordered by expected success against theta from the learner view, the class level, the weak flag, the opener floor, a diagnostic for her active mix-up inserted second, check-reserve items held out); itemsDone / skipped / shownIds; pace.settled and pace.parkedSkills (this lesson's run); the per-skill arc (arcSkill, ARC_BLOCK); error_spot gated on the snapshot's pKnown and correctUnaided (correctUnaided over-counts script cards until to-main/001 lands); pace.fast (jump to the hardest item); 'easier'/'harder' requests. Several of these are learner state (theta, weak, active mix-up, pKnown, correctUnaided) choosing items with no because, and this is where K2's success-first ordering and the ladder order matter most. To explain it the same way: (1) buildPracticeQueue's learner-driven departures from kit order (diagnostic insertion, theta ordering, weak) would each emit a record at queue build (knows.js would own a pure 'queueFor' or wrap buildPracticeQueue's result against kit order); (2) selectNext's in-lesson pace jumps (fast → hardest; settled/parked) would record from this lesson's answers, like compress_fallback; (3) assertWalkExplained's expected walk would extend past the ladder into the queue order. Not built (main: do not build yet)."
+    }
+  ],
+  "edges": [
+    { "src": "op-r8-kit-practice-unexplained", "rel": "part_of", "dst": "dc-r8-one-reader-with-because" },
+    { "src": "op-r8-kit-practice-unexplained", "rel": "caused_by", "dst": "ms-r8-knows-real-walk-2026-11-10" }
+  ]
+}

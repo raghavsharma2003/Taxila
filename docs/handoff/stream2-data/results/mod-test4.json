@@ -1,0 +1,5937 @@
+{
+ "v": 1,
+ "qa": "forge3-qa@2",
+ "at": "2026-10-10T08:45:27.868Z",
+ "viewports": [
+  "p360",
+  "p412",
+  "l1366"
+ ],
+ "boxes": "docs/design/round4/build/box-contract.json tray boxes (b3 older, b2 young)",
+ "source": "shared/engine-catalog.js planEngine over every kit item (show, predict), lang hinglish",
+ "engines": {
+  "collections@1": {
+   "modes": {
+    "*": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    }
+   }
+  },
+  "place-value@1": {
+   "modes": {
+    "*": {
+     "young": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q1.legible",
+       "p412:Q1.legible",
+       "l1366:Q1.legible"
+      ]
+     },
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    },
+    "compare": {
+     "young": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q1.legible",
+       "p412:Q1.legible",
+       "l1366:Q1.legible"
+      ]
+     },
+     "older": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q1.legible",
+       "p412:Q1.legible",
+       "l1366:Q1.legible"
+      ]
+     }
+    },
+    "read": {
+     "young": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q1.legible",
+       "p412:Q1.legible",
+       "l1366:Q1.legible"
+      ]
+     }
+    },
+    "build": {
+     "young": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q1.legible",
+       "p360:Q3.apart",
+       "p412:Q1.legible",
+       "p412:Q3.apart",
+       "l1366:Q1.legible"
+      ]
+     },
+     "older": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q3.apart",
+       "p412:Q3.apart"
+      ]
+     }
+    }
+   }
+  },
+  "measure@1": {
+   "modes": {
+    "*": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    },
+    "set": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    }
+   }
+  },
+  "number-line@1": {
+   "modes": {
+    "jump": {
+     "young": {
+      "byViewport": {
+       "p360": false,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q3.apart"
+      ]
+     },
+     "older": {
+      "byViewport": {
+       "p360": false,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q3.apart"
+      ]
+     }
+    },
+    "*": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    },
+    "place": {
+     "young": {
+      "byViewport": {
+       "p360": false,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q3.apart"
+      ]
+     },
+     "older": {
+      "byViewport": {
+       "p360": false,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q3.apart"
+      ]
+     }
+    },
+    "read": {
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    }
+   }
+  },
+  "multiply-divide@1": {
+   "modes": {
+    "*": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    },
+    "array": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    },
+    "share": {
+     "young": {
+      "byViewport": {
+       "p360": false,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q3.apart"
+      ]
+     },
+     "older": {
+      "byViewport": {
+       "p360": false,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q3.apart"
+      ]
+     }
+    },
+    "factors": {
+     "older": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q3.apart",
+       "p412:Q3.apart"
+      ]
+     }
+    }
+   }
+  },
+  "data-graphs@1": {
+   "modes": {
+    "read": {
+     "young": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q1.legible",
+       "p412:Q1.legible",
+       "l1366:Q1.legible"
+      ]
+     },
+     "older": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q1.legible",
+       "p412:Q1.legible",
+       "l1366:Q1.legible"
+      ]
+     }
+    }
+   }
+  },
+  "geoboard@1": {
+   "modes": {
+    "*": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    },
+    "measure": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    }
+   }
+  },
+  "water-cycle@1": {
+   "modes": {
+    "*": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": false,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": false,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": [
+       "p412:Q3.apart"
+      ]
+     }
+    }
+   }
+  },
+  "fractions@1": {
+   "modes": {
+    "of": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    },
+    "name": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    },
+    "compare": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    },
+    "*": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    },
+    "equivalent": {
+     "older": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q3.apart",
+       "p412:Q3.apart"
+      ]
+     }
+    },
+    "make": {
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    },
+    "add": {
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    }
+   }
+  },
+  "motion-lab@1": {
+   "modes": {
+    "*": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": [
+       "p360:Q3.apart",
+       "p412:Q3.apart"
+      ]
+     }
+    }
+   }
+  },
+  "sky@1": {
+   "modes": {
+    "*": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    }
+   }
+  },
+  "patterns@1": {
+   "modes": {
+    "grow": {
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    }
+   }
+  },
+  "fraction-bars@1": {
+   "modes": {
+    "*": {
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    },
+    "compare": {
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 2,
+      "fails": []
+     }
+    }
+   }
+  }
+ },
+ "samples": [
+  {
+   "engine": "collections@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c1-maths-ch01-t02",
+   "params": {
+    "topicId": "c1-maths-ch01-t02",
+    "skillId": "c1-maths-ch01-t02-s2",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     3,
+     1
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "collections@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c4-maths-ch03-t01",
+   "params": {
+    "topicId": "c4-maths-ch03-t01",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     247
+    ],
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "place-value@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c1-maths-ch04-t02",
+   "params": {
+    "topicId": "c1-maths-ch04-t02",
+    "skillId": "c1-maths-ch04-t02-s1",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     10,
+     2
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": true,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 4 runs < 16 px, e.g. \"Dahai\" 14 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": true,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 4 runs < 16 px, e.g. \"Dahai\" 14 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": true,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 4 runs < 16 px, e.g. \"Dahai\" 14 px"
+     ],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "place-value@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c4-maths-ch07-t01",
+   "params": {
+    "topicId": "c4-maths-ch07-t01",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     5000,
+     1834
+    ],
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "place-value@1",
+   "mode": "compare",
+   "band": "young",
+   "topicId": "c1-maths-ch04-t02",
+   "params": {
+    "topicId": "c1-maths-ch04-t02",
+    "skillId": "c1-maths-ch04-t02-s1",
+    "lang": "hinglish",
+    "mode": "compare",
+    "a": 10,
+    "b": 4,
+    "question": "bigger"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": true,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 4 runs < 16 px, e.g. \"Dahai\" 14 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": true,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 4 runs < 16 px, e.g. \"Dahai\" 14 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": true,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 4 runs < 16 px, e.g. \"Dahai\" 14 px"
+     ],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "place-value@1",
+   "mode": "compare",
+   "band": "young",
+   "topicId": "c4-maths-ch04-t02",
+   "params": {
+    "topicId": "c4-maths-ch04-t02",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     6482,
+     6428
+    ],
+    "mode": "compare",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "place-value@1",
+   "mode": "read",
+   "band": "young",
+   "topicId": "c1-maths-ch04-t02",
+   "params": {
+    "topicId": "c1-maths-ch04-t02",
+    "skillId": "c1-maths-ch04-t02-s1",
+    "lang": "hinglish",
+    "mode": "read",
+    "counts": [
+     1,
+     1
+    ],
+    "itemId": "c1-maths-ch04-t02-i14"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": true,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 2 runs < 16 px, e.g. \"Dahai\" 14 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": true,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 2 runs < 16 px, e.g. \"Dahai\" 14 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": true,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 2 runs < 16 px, e.g. \"Dahai\" 14 px"
+     ],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "place-value@1",
+   "mode": "read",
+   "band": "young",
+   "topicId": "c4-maths-ch04-t01",
+   "params": {
+    "topicId": "c4-maths-ch04-t01",
+    "skillId": "c4-maths-ch04-t01-s2",
+    "lang": "hinglish",
+    "mode": "read",
+    "counts": [
+     0,
+     6,
+     0,
+     2
+    ],
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 10,
+     "detail": [
+      "Q1.legible 6 runs < 16 px, e.g. \"Hazaar\" 14 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 10,
+     "detail": [
+      "Q1.legible 6 runs < 16 px, e.g. \"Hazaar\" 14 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 10,
+     "detail": [
+      "Q1.legible 6 runs < 16 px, e.g. \"Hazaar\" 14 px"
+     ],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "measure@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c1-maths-ch07-t02",
+   "params": {
+    "topicId": "c1-maths-ch07-t02",
+    "skillId": "c1-maths-ch07-t02-s1",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     3
+    ],
+    "tool": "ruler"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "measure@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c4-maths-ch08-t02",
+   "params": {
+    "topicId": "c4-maths-ch08-t02",
+    "skillId": "c4-maths-ch08-t02-s3",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     250,
+     1
+    ],
+    "tool": "jug",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "number-line@1",
+   "mode": "jump",
+   "band": "young",
+   "topicId": "c1-maths-ch08-t01",
+   "params": {
+    "topicId": "c1-maths-ch08-t01",
+    "skillId": "c1-maths-ch08-t01-s4",
+    "lang": "hinglish",
+    "mode": "jump",
+    "start": "30",
+    "target": "40",
+    "jumps": [
+     "1",
+     "10"
+    ],
+    "min": "5",
+    "max": "45",
+    "question": "10, 20, 30, …",
+    "itemId": "c1-maths-ch08-t01-i05"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 16,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Line par karke dekho\" × \"10, 20, 30, …\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.1,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 17.2,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "number-line@1",
+   "mode": "jump",
+   "band": "young",
+   "topicId": "c4-maths-ch10-t01",
+   "params": {
+    "topicId": "c4-maths-ch10-t01",
+    "skillId": "c4-maths-ch10-t01-s1",
+    "lang": "hinglish",
+    "mode": "jump",
+    "start": "46",
+    "target": "71",
+    "jumps": [
+     "20",
+     "5"
+    ],
+    "min": "40",
+    "max": "80",
+    "question": "46 + 25",
+    "predict": true,
+    "itemId": "c4-maths-ch10-t01-i09"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.1,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 17.2,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "multiply-divide@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c1-maths-ch11-t01",
+   "params": {
+    "topicId": "c1-maths-ch11-t01",
+    "skillId": "c1-maths-ch11-t01-s1",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     2,
+     2,
+     2
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "multiply-divide@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c4-maths-ch13-t02",
+   "params": {
+    "topicId": "c4-maths-ch13-t02",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     96,
+     4
+    ],
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "multiply-divide@1",
+   "mode": "array",
+   "band": "young",
+   "topicId": "c1-maths-ch11-t01",
+   "params": {
+    "topicId": "c1-maths-ch11-t01",
+    "skillId": "c1-maths-ch11-t01-s2",
+    "lang": "hinglish",
+    "mode": "array",
+    "a": 2,
+    "b": 2,
+    "ask": "product",
+    "showExpr": false,
+    "itemId": "c1-maths-ch11-t01-i02"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "multiply-divide@1",
+   "mode": "array",
+   "band": "young",
+   "topicId": "c4-maths-ch09-t01",
+   "params": {
+    "topicId": "c4-maths-ch09-t01",
+    "skillId": "c4-maths-ch09-t01-s3",
+    "lang": "hinglish",
+    "mode": "array",
+    "a": 7,
+    "b": 6,
+    "ask": "product",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "number-line@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c1-maths-ch11-t02",
+   "params": {
+    "topicId": "c1-maths-ch11-t02",
+    "skillId": "c1-maths-ch11-t02-s1",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     4
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.1,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 17.2,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "number-line@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c4-maths-ch07-t02",
+   "params": {
+    "topicId": "c4-maths-ch07-t02",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     500,
+     185,
+     122,
+     89
+    ],
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.1,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 17.2,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "data-graphs@1",
+   "mode": "read",
+   "band": "young",
+   "topicId": "c1-maths-ch13-t02",
+   "params": {
+    "topicId": "c1-maths-ch13-t02",
+    "skillId": "c1-maths-ch13-t02-s3",
+    "lang": "hinglish",
+    "mode": "read",
+    "view": "bar",
+    "data": [
+     {
+      "label": "days",
+      "value": 5
+     },
+     {
+      "label": "days",
+      "value": 2
+     }
+    ],
+    "question": "difference",
+    "ask": "days",
+    "askB": "days"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 12,
+     "detail": [
+      "Q1.legible 8 runs < 16 px, e.g. \"0\" 12 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 12,
+     "detail": [
+      "Q1.legible 8 runs < 16 px, e.g. \"0\" 12 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 12,
+     "detail": [
+      "Q1.legible 8 runs < 16 px, e.g. \"0\" 12 px"
+     ],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "data-graphs@1",
+   "mode": "read",
+   "band": "young",
+   "topicId": "c4-maths-ch14-t02",
+   "params": {
+    "topicId": "c4-maths-ch14-t02",
+    "skillId": "c4-maths-ch14-t02-s3",
+    "lang": "hinglish",
+    "mode": "read",
+    "view": "bar",
+    "data": [
+     {
+      "label": "is",
+      "value": 0
+     },
+     {
+      "label": "between",
+      "value": 30
+     },
+     {
+      "label": "and",
+      "value": 40
+     },
+     {
+      "label": "reaches",
+      "value": 50
+     }
+    ],
+    "question": "difference",
+    "ask": "is",
+    "askB": "between",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 12,
+     "detail": [
+      "Q1.legible 15 runs < 16 px, e.g. \"0\" 12 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 12,
+     "detail": [
+      "Q1.legible 15 runs < 16 px, e.g. \"0\" 12 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 12,
+     "detail": [
+      "Q1.legible 15 runs < 16 px, e.g. \"0\" 12 px"
+     ],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "geoboard@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c2-maths-ch04-t02",
+   "params": {
+    "topicId": "c2-maths-ch04-t02",
+    "skillId": "c2-maths-ch04-t02-s3",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     3
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "geoboard@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c4-maths-ch06-t02",
+   "params": {
+    "topicId": "c4-maths-ch06-t02",
+    "skillId": "c4-maths-ch06-t02-s2",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     4,
+     2
+    ],
+    "ask": "perimeter",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "multiply-divide@1",
+   "mode": "share",
+   "band": "young",
+   "topicId": "c2-maths-ch08-t02",
+   "params": {
+    "topicId": "c2-maths-ch08-t02",
+    "skillId": "c2-maths-ch08-t02-s1",
+    "lang": "hinglish",
+    "mode": "share",
+    "n": 6,
+    "k": 2
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 16,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Barabar baanto. Jo b\" × \"6\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "multiply-divide@1",
+   "mode": "share",
+   "band": "young",
+   "topicId": "c4-maths-ch13-t02",
+   "params": {
+    "topicId": "c4-maths-ch13-t02",
+    "skillId": "c4-maths-ch13-t02-s1",
+    "lang": "hinglish",
+    "mode": "share",
+    "n": 68,
+    "k": 4,
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 16,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Barabar baanto. Jo b\" × \"68\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "water-cycle@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c3-evs-ch07-t01",
+   "params": {
+    "topicId": "c3-evs-ch07-t01",
+    "skillId": "c3-evs-ch07-t01-s1",
+    "lang": "hinglish"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "water-cycle@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c3-evs-ch07-t02",
+   "params": {
+    "topicId": "c3-evs-ch07-t02",
+    "skillId": null,
+    "lang": "hinglish",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "geoboard@1",
+   "mode": "measure",
+   "band": "young",
+   "topicId": "c3-maths-ch05-t02",
+   "params": {
+    "topicId": "c3-maths-ch05-t02",
+    "skillId": "c3-maths-ch05-t02-s3",
+    "lang": "hinglish",
+    "mode": "measure",
+    "shape": "rect:2x3",
+    "ask": "area",
+    "w": 3,
+    "h": 3
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "geoboard@1",
+   "mode": "measure",
+   "band": "young",
+   "topicId": "c4-maths-ch06-t02",
+   "params": {
+    "topicId": "c4-maths-ch06-t02",
+    "skillId": "c4-maths-ch06-t02-s3",
+    "lang": "hinglish",
+    "ask": "perimeter",
+    "mode": "measure",
+    "shape": "rect:5x4",
+    "w": 5,
+    "h": 4,
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "of",
+   "band": "young",
+   "topicId": "c3-maths-ch08-t02",
+   "params": {
+    "topicId": "c3-maths-ch08-t02",
+    "skillId": "c3-maths-ch08-t02-s1",
+    "lang": "hinglish",
+    "mode": "of",
+    "target": "1/2",
+    "count": 8,
+    "itemId": "c3-maths-ch08-t02-i01"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "of",
+   "band": "young",
+   "topicId": "c4-maths-ch05-t01",
+   "params": {
+    "topicId": "c4-maths-ch05-t01",
+    "skillId": "c4-maths-ch05-t01-s2",
+    "lang": "hinglish",
+    "mode": "of",
+    "target": "1/4",
+    "count": 20,
+    "predict": true,
+    "itemId": "c4-maths-ch05-t01-i08"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "motion-lab@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c4-evs-ch07-t02",
+   "params": {
+    "topicId": "c4-evs-ch07-t02",
+    "skillId": "c4-evs-ch07-t02-s1",
+    "lang": "hinglish",
+    "scene": "friction"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "motion-lab@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c4-evs-ch07-t02",
+   "params": {
+    "topicId": "c4-evs-ch07-t02",
+    "skillId": null,
+    "lang": "hinglish",
+    "scene": "friction",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "sky@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c4-evs-ch10-t01",
+   "params": {
+    "topicId": "c4-evs-ch10-t01",
+    "skillId": "c4-evs-ch10-t01-s1",
+    "lang": "hinglish",
+    "scene": "shadow"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "sky@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c4-evs-ch10-t02",
+   "params": {
+    "topicId": "c4-evs-ch10-t02",
+    "skillId": null,
+    "lang": "hinglish",
+    "scene": "phases",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "place-value@1",
+   "mode": "build",
+   "band": "young",
+   "topicId": "c4-maths-ch04-t01",
+   "params": {
+    "topicId": "c4-maths-ch04-t01",
+    "skillId": "c4-maths-ch04-t01-s1",
+    "lang": "hinglish",
+    "mode": "build",
+    "value": 2345,
+    "name": "two thousand three hundred forty-five",
+    "itemId": "c4-maths-ch04-t01-i01"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible",
+      "Q3.apart"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 4 runs < 16 px, e.g. \"Hazaar\" 14 px",
+      "Q3.apart 1 overlaps, e.g. \"Yeh number banao\" × \"two thousand three h\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible",
+      "Q3.apart"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 4 runs < 16 px, e.g. \"Hazaar\" 14 px",
+      "Q3.apart 1 overlaps, e.g. \"Yeh number banao\" × \"two thousand three h\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": true,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 4 runs < 16 px, e.g. \"Hazaar\" 14 px"
+     ],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "place-value@1",
+   "mode": "build",
+   "band": "young",
+   "topicId": "c4-maths-ch04-t01",
+   "params": {
+    "topicId": "c4-maths-ch04-t01",
+    "skillId": "c4-maths-ch04-t01-s3",
+    "lang": "hinglish",
+    "mode": "build",
+    "value": 4050,
+    "name": "four thousand fifty",
+    "predict": true,
+    "itemId": "c4-maths-ch04-t01-i02"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible",
+      "Q3.apart"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 4 runs < 16 px, e.g. \"Hazaar\" 14 px",
+      "Q3.apart 1 overlaps, e.g. \"Yeh number banao\" × \"four thousand fifty\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible",
+      "Q3.apart"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 4 runs < 16 px, e.g. \"Hazaar\" 14 px",
+      "Q3.apart 1 overlaps, e.g. \"Yeh number banao\" × \"four thousand fifty\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": true,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q1.legible 4 runs < 16 px, e.g. \"Hazaar\" 14 px"
+     ],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "number-line@1",
+   "mode": "place",
+   "band": "young",
+   "topicId": "c4-maths-ch04-t03",
+   "params": {
+    "topicId": "c4-maths-ch04-t03",
+    "skillId": "c4-maths-ch04-t03-s1",
+    "lang": "hinglish",
+    "mode": "place",
+    "point": "47",
+    "round": 10,
+    "itemId": "c4-maths-ch04-t03-i01"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 16,
+     "detail": [
+      "Q3.apart 2 overlaps, e.g. \"Marker ko sabse paas\" × \"10\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.1,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 17.2,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "number-line@1",
+   "mode": "place",
+   "band": "young",
+   "topicId": "c4-maths-ch04-t03",
+   "params": {
+    "topicId": "c4-maths-ch04-t03",
+    "skillId": "c4-maths-ch04-t03-s1",
+    "lang": "hinglish",
+    "mode": "place",
+    "point": "83",
+    "round": 10,
+    "predict": true,
+    "itemId": "c4-maths-ch04-t03-rl-o1"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 16,
+     "detail": [
+      "Q3.apart 2 overlaps, e.g. \"Marker ko sabse paas\" × \"10\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.1,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 17.2,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "name",
+   "band": "young",
+   "topicId": "c4-maths-ch05-t01",
+   "params": {
+    "topicId": "c4-maths-ch05-t01",
+    "skillId": "c4-maths-ch05-t01-s1",
+    "lang": "hinglish",
+    "mode": "name",
+    "target": "1/4",
+    "parts": 4,
+    "shaded": 1,
+    "model": "circle",
+    "itemId": "c4-maths-ch05-t01-i01"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "name",
+   "band": "young",
+   "topicId": "c4-maths-ch05-t01",
+   "params": {
+    "topicId": "c4-maths-ch05-t01",
+    "skillId": "c4-maths-ch05-t01-s1",
+    "lang": "hinglish",
+    "mode": "name",
+    "target": "2/4",
+    "parts": 4,
+    "shaded": 2,
+    "predict": true,
+    "itemId": "c4-maths-ch05-t01-rl-o1"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "compare",
+   "band": "young",
+   "topicId": "c4-maths-ch05-t01",
+   "params": {
+    "topicId": "c4-maths-ch05-t01",
+    "skillId": "c4-maths-ch05-t01-s3",
+    "lang": "hinglish",
+    "mode": "compare",
+    "fractions": [
+     "1/2",
+     "1/4"
+    ],
+    "question": "bigger"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "compare",
+   "band": "young",
+   "topicId": "c4-maths-ch05-t01",
+   "params": {
+    "topicId": "c4-maths-ch05-t01",
+    "skillId": "c4-maths-ch05-t01-s3",
+    "lang": "hinglish",
+    "mode": "compare",
+    "fractions": [
+     "1/3",
+     "1/4"
+    ],
+    "question": "bigger",
+    "model": "circle",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c4-maths-ch05-t01",
+   "params": {
+    "topicId": "c4-maths-ch05-t01",
+    "skillId": "c4-maths-ch05-t01-s1",
+    "lang": "hinglish",
+    "fractions": [
+     [
+      1,
+      3
+     ]
+    ],
+    "numbers": [
+     4,
+     1,
+     3
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c4-maths-ch05-t01",
+   "params": {
+    "topicId": "c4-maths-ch05-t01",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [
+     [
+      1,
+      3
+     ]
+    ],
+    "numbers": [
+     15
+    ],
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "measure@1",
+   "mode": "set",
+   "band": "young",
+   "topicId": "c4-maths-ch05-t02",
+   "params": {
+    "topicId": "c4-maths-ch05-t02",
+    "skillId": "c4-maths-ch05-t02-s1",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     250,
+     400
+    ],
+    "tool": "jug",
+    "mode": "set"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "measure@1",
+   "mode": "set",
+   "band": "young",
+   "topicId": "c4-maths-ch05-t02",
+   "params": {
+    "topicId": "c4-maths-ch05-t02",
+    "skillId": "c4-maths-ch05-t02-s1",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     250,
+     400
+    ],
+    "tool": "jug",
+    "mode": "set",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "water-cycle@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c5-evs-ch01-t01",
+   "params": {
+    "topicId": "c5-evs-ch01-t01",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "lang": "hinglish",
+    "scene": "states"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 14.1,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Itna garam karo ki y\" × \"ubal raha\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "water-cycle@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c9-science-ch13-t03",
+   "params": {
+    "topicId": "c9-science-ch13-t03",
+    "skillId": null,
+    "lang": "hinglish",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "motion-lab@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c5-evs-ch04-t02",
+   "params": {
+    "topicId": "c5-evs-ch04-t02",
+    "skillId": "c5-evs-ch04-t02-s1",
+    "lang": "hinglish",
+    "scene": "friction"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "motion-lab@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c9-science-ch07-t04",
+   "params": {
+    "topicId": "c9-science-ch07-t04",
+    "skillId": null,
+    "lang": "hinglish",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Speed aisi rakho ki \" × \"20\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Speed aisi rakho ki \" × \"20\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.6,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "sky@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c5-evs-ch09-t01",
+   "params": {
+    "topicId": "c5-evs-ch09-t01",
+    "skillId": "c5-evs-ch09-t01-s1",
+    "lang": "hinglish",
+    "scene": "daynight"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.1,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "sky@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c9-science-ch13-t01",
+   "params": {
+    "topicId": "c9-science-ch13-t01",
+    "skillId": null,
+    "lang": "hinglish",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "place-value@1",
+   "mode": "build",
+   "band": "older",
+   "topicId": "c5-maths-ch01-t01",
+   "params": {
+    "topicId": "c5-maths-ch01-t01",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "lang": "hinglish",
+    "mode": "build",
+    "value": 24360,
+    "name": "twenty-four thousand three hundred sixty",
+    "itemId": "c5-maths-ch01-t01-i01"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Yeh number banao\" × \"twenty-four thousand\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Yeh number banao\" × \"twenty-four thousand\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "place-value@1",
+   "mode": "build",
+   "band": "older",
+   "topicId": "c5-maths-ch01-t01",
+   "params": {
+    "topicId": "c5-maths-ch01-t01",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "lang": "hinglish",
+    "mode": "build",
+    "value": 40006,
+    "name": "forty thousand and six",
+    "predict": true,
+    "itemId": "c5-maths-ch01-t01-i04"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Yeh number banao\" × \"forty thousand and s\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Yeh number banao\" × \"forty thousand and s\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "place-value@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c5-maths-ch01-t01",
+   "params": {
+    "topicId": "c5-maths-ch01-t01",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     10500
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "place-value@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c8-maths-ch05-t02",
+   "params": {
+    "topicId": "c8-maths-ch05-t02",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     0
+    ],
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "place-value@1",
+   "mode": "compare",
+   "band": "older",
+   "topicId": "c5-maths-ch01-t01",
+   "params": {
+    "topicId": "c5-maths-ch01-t01",
+    "skillId": "c5-maths-ch01-t01-s3",
+    "lang": "hinglish",
+    "mode": "compare",
+    "a": 98765,
+    "b": 102345,
+    "question": "bigger",
+    "itemId": "c5-maths-ch01-t01-i06"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 10,
+     "detail": [
+      "Q1.legible 20 runs < 14 px, e.g. \"10K\" 10 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 10,
+     "detail": [
+      "Q1.legible 20 runs < 14 px, e.g. \"10K\" 10 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 10,
+     "detail": [
+      "Q1.legible 20 runs < 14 px, e.g. \"10K\" 10 px"
+     ],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "place-value@1",
+   "mode": "compare",
+   "band": "older",
+   "topicId": "c7-maths-ch12-t01",
+   "params": {
+    "topicId": "c7-maths-ch12-t01",
+    "skillId": "c7-maths-ch12-t01-s3",
+    "lang": "hinglish",
+    "mode": "compare",
+    "a": 60,
+    "b": 60,
+    "question": "bigger",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "number-line@1",
+   "mode": "place",
+   "band": "older",
+   "topicId": "c5-maths-ch01-t02",
+   "params": {
+    "topicId": "c5-maths-ch01-t02",
+    "skillId": "c5-maths-ch01-t02-s1",
+    "lang": "hinglish",
+    "mode": "place",
+    "point": "23650",
+    "round": 1000,
+    "itemId": "c5-maths-ch01-t02-i02"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q3.apart 2 overlaps, e.g. \"Marker ko sabse paas\" × \"1000\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.4,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "number-line@1",
+   "mode": "place",
+   "band": "older",
+   "topicId": "c9-maths-ch03-t03",
+   "params": {
+    "topicId": "c9-maths-ch03-t03",
+    "skillId": "c9-maths-ch03-t03-s3",
+    "lang": "hinglish",
+    "mode": "place",
+    "target": "2",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.4,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "number-line@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c5-maths-ch01-t02",
+   "params": {
+    "topicId": "c5-maths-ch01-t02",
+    "skillId": "c5-maths-ch01-t02-s3",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     3,
+     412,
+     389,
+     506
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.4,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "number-line@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c9-maths-ch03-t04",
+   "params": {
+    "topicId": "c9-maths-ch03-t04",
+    "skillId": "c9-maths-ch03-t04-s3",
+    "lang": "hinglish",
+    "fractions": [
+     [
+      1,
+      7
+     ],
+     [
+      2,
+      7
+     ]
+    ],
+    "numbers": [
+     0.142857142857
+    ],
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.4,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "number-line@1",
+   "mode": "read",
+   "band": "older",
+   "topicId": "c5-maths-ch02-t01",
+   "params": {
+    "topicId": "c5-maths-ch02-t01",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "lang": "hinglish",
+    "mode": "read",
+    "target": "1/2",
+    "min": "0",
+    "max": "1",
+    "partition": 2,
+    "labels": "ends",
+    "numberKind": "fraction",
+    "itemId": "c5-maths-ch02-t01-i01"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "number-line@1",
+   "mode": "read",
+   "band": "older",
+   "topicId": "c5-maths-ch02-t01",
+   "params": {
+    "topicId": "c5-maths-ch02-t01",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "lang": "hinglish",
+    "mode": "read",
+    "target": "1/2",
+    "min": "0",
+    "max": "1",
+    "partition": 4,
+    "labels": "ends",
+    "numberKind": "fraction",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "compare",
+   "band": "older",
+   "topicId": "c5-maths-ch02-t02",
+   "params": {
+    "topicId": "c5-maths-ch02-t02",
+    "skillId": "c5-maths-ch02-t02-s1",
+    "lang": "hinglish",
+    "mode": "compare",
+    "fractions": [
+     "1/4",
+     "1/8"
+    ],
+    "question": "bigger",
+    "model": "circle",
+    "itemId": "c5-maths-ch02-t02-i01"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "compare",
+   "band": "older",
+   "topicId": "c5-maths-ch02-t03",
+   "params": {
+    "topicId": "c5-maths-ch02-t03",
+    "skillId": "c5-maths-ch02-t03-s1",
+    "lang": "hinglish",
+    "mode": "compare",
+    "fractions": [
+     "4/8",
+     "1/2"
+    ],
+    "question": "bigger",
+    "model": "circle",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c5-maths-ch02-t02",
+   "params": {
+    "topicId": "c5-maths-ch02-t02",
+    "skillId": "c5-maths-ch02-t02-s1",
+    "lang": "hinglish",
+    "fractions": [
+     [
+      1,
+      2
+     ],
+     [
+      1,
+      10
+     ],
+     [
+      1,
+      5
+     ]
+    ],
+    "numbers": []
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c7-maths-ch08-t02",
+   "params": {
+    "topicId": "c7-maths-ch08-t02",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [
+     [
+      3,
+      4
+     ],
+     [
+      3,
+      8
+     ]
+    ],
+    "numbers": [],
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "equivalent",
+   "band": "older",
+   "topicId": "c5-maths-ch02-t03",
+   "params": {
+    "topicId": "c5-maths-ch02-t03",
+    "skillId": "c5-maths-ch02-t03-s2",
+    "lang": "hinglish",
+    "mode": "equivalent",
+    "target": "1/3",
+    "parts": 6,
+    "itemId": "c5-maths-ch02-t03-i02"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 18,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Doosre ko alag tukdo\" × \"1/3\" (0.96)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 18,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Doosre ko alag tukdo\" × \"1/3\" (0.96)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "equivalent",
+   "band": "older",
+   "topicId": "c6-maths-ch07-t03",
+   "params": {
+    "topicId": "c6-maths-ch07-t03",
+    "skillId": "c6-maths-ch07-t03-s2",
+    "lang": "hinglish",
+    "mode": "equivalent",
+    "target": "3/5",
+    "parts": 20,
+    "predict": true,
+    "itemId": "c6-maths-ch07-t03-rl-o2"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 18,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Doosre ko alag tukdo\" × \"3/5\" (0.96)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 18,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Doosre ko alag tukdo\" × \"3/5\" (0.96)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "make",
+   "band": "older",
+   "topicId": "c5-maths-ch02-t03",
+   "params": {
+    "topicId": "c5-maths-ch02-t03",
+    "skillId": "c5-maths-ch02-t03-s1",
+    "lang": "hinglish",
+    "mode": "make",
+    "target": "1/2"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "make",
+   "band": "older",
+   "topicId": "c7-maths-ch08-t02",
+   "params": {
+    "topicId": "c7-maths-ch08-t02",
+    "skillId": "c7-maths-ch08-t02-s1",
+    "lang": "hinglish",
+    "mode": "make",
+    "target": "1/3",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "geoboard@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c5-maths-ch03-t02",
+   "params": {
+    "topicId": "c5-maths-ch03-t02",
+    "skillId": "c5-maths-ch03-t02-s2",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     3,
+     4
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "geoboard@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c9-maths-ch06-t04",
+   "params": {
+    "topicId": "c9-maths-ch06-t04",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     24,
+     10,
+     2,
+     6,
+     6
+    ],
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "measure@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c5-maths-ch05-t01",
+   "params": {
+    "topicId": "c5-maths-ch05-t01",
+    "skillId": "c5-maths-ch05-t01-s2",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     3,
+     25
+    ],
+    "tool": "ruler"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "measure@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c9-science-ch01-t02",
+   "params": {
+    "topicId": "c9-science-ch01-t02",
+    "skillId": "c9-science-ch01-t02-s1",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     12,
+     12
+    ],
+    "tool": "ruler",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "multiply-divide@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c5-maths-ch06-t01",
+   "params": {
+    "topicId": "c5-maths-ch06-t01",
+    "skillId": "c5-maths-ch06-t01-s1",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     40,
+     23
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "multiply-divide@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c8-maths-ch10-t04",
+   "params": {
+    "topicId": "c8-maths-ch10-t04",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     12,
+     10,
+     8
+    ],
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "multiply-divide@1",
+   "mode": "share",
+   "band": "older",
+   "topicId": "c5-maths-ch06-t01",
+   "params": {
+    "topicId": "c5-maths-ch06-t01",
+    "skillId": "c5-maths-ch06-t01-s2",
+    "lang": "hinglish",
+    "mode": "share",
+    "n": 14,
+    "k": 10
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 16.5,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Barabar baanto. Jo b\" × \"14\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "multiply-divide@1",
+   "mode": "share",
+   "band": "older",
+   "topicId": "c5-maths-ch09-t02",
+   "params": {
+    "topicId": "c5-maths-ch09-t02",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     52,
+     5
+    ],
+    "mode": "share",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 16.5,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Barabar baanto. Jo b\" × \"52\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "patterns@1",
+   "mode": "grow",
+   "band": "older",
+   "topicId": "c5-maths-ch07-t02",
+   "params": {
+    "topicId": "c5-maths-ch07-t02",
+    "skillId": "c5-maths-ch07-t02-s1",
+    "lang": "hinglish",
+    "mode": "grow",
+    "sequence": [
+     3,
+     6,
+     9,
+     12
+    ],
+    "blanks": 1,
+    "itemId": "c5-maths-ch07-t02-i01"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "patterns@1",
+   "mode": "grow",
+   "band": "older",
+   "topicId": "c9-maths-ch08-t03",
+   "params": {
+    "topicId": "c9-maths-ch08-t03",
+    "skillId": "c9-maths-ch08-t03-s1",
+    "lang": "hinglish",
+    "mode": "grow",
+    "sequence": [
+     4,
+     20,
+     100
+    ],
+    "blanks": 1,
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "geoboard@1",
+   "mode": "measure",
+   "band": "older",
+   "topicId": "c5-maths-ch11-t01",
+   "params": {
+    "topicId": "c5-maths-ch11-t01",
+    "skillId": "c5-maths-ch11-t01-s1",
+    "lang": "hinglish",
+    "mode": "measure",
+    "shape": "rect:4x3",
+    "ask": "area",
+    "w": 4,
+    "h": 3,
+    "itemId": "c5-maths-ch11-t01-i01"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "geoboard@1",
+   "mode": "measure",
+   "band": "older",
+   "topicId": "c9-maths-ch06-t04",
+   "params": {
+    "topicId": "c9-maths-ch06-t04",
+    "skillId": "c9-maths-ch06-t04-s1",
+    "lang": "hinglish",
+    "mode": "measure",
+    "shape": "rect:5x3",
+    "ask": "area",
+    "w": 5,
+    "h": 3,
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "multiply-divide@1",
+   "mode": "array",
+   "band": "older",
+   "topicId": "c5-maths-ch11-t01",
+   "params": {
+    "topicId": "c5-maths-ch11-t01",
+    "skillId": "c5-maths-ch11-t01-s1",
+    "lang": "hinglish",
+    "mode": "array",
+    "a": 8,
+    "b": 9,
+    "ask": "product",
+    "showExpr": false,
+    "itemId": "c5-maths-ch11-t01-i09"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "multiply-divide@1",
+   "mode": "array",
+   "band": "older",
+   "topicId": "c7-maths-ch08-t01",
+   "params": {
+    "topicId": "c7-maths-ch08-t01",
+    "skillId": "c7-maths-ch08-t01-s3",
+    "lang": "hinglish",
+    "mode": "array",
+    "a": 10,
+    "b": 1,
+    "ask": "product",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "number-line@1",
+   "mode": "jump",
+   "band": "older",
+   "topicId": "c5-maths-ch13-t01",
+   "params": {
+    "topicId": "c5-maths-ch13-t01",
+    "skillId": "c5-maths-ch13-t01-s1",
+    "lang": "hinglish",
+    "mode": "jump",
+    "start": "9",
+    "target": "12",
+    "jumps": [
+     "1",
+     "3"
+    ],
+    "min": "0",
+    "max": "15",
+    "question": "3, 6, 9, …"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 14,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Line par karke dekho\" × \"3, 6, 9, …\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.4,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "number-line@1",
+   "mode": "jump",
+   "band": "older",
+   "topicId": "c7-maths-ch15-t02",
+   "params": {
+    "topicId": "c7-maths-ch15-t02",
+    "skillId": "c7-maths-ch15-t02-s2",
+    "lang": "hinglish",
+    "numberKind": "integer",
+    "mode": "jump",
+    "start": "4",
+    "target": "-5",
+    "jumps": [
+     "1"
+    ],
+    "min": "-6",
+    "max": "6",
+    "question": "4 − 9",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.4,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "multiply-divide@1",
+   "mode": "factors",
+   "band": "older",
+   "topicId": "c5-maths-ch13-t02",
+   "params": {
+    "topicId": "c5-maths-ch13-t02",
+    "skillId": "c5-maths-ch13-t02-s2",
+    "lang": "hinglish",
+    "mode": "factors",
+    "n": 18
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 16,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Saare rectangle dhoo\" × \"18\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 16,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Saare rectangle dhoo\" × \"18\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "multiply-divide@1",
+   "mode": "factors",
+   "band": "older",
+   "topicId": "c8-maths-ch01-t03",
+   "params": {
+    "topicId": "c8-maths-ch01-t03",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     1728
+    ],
+    "mode": "factors",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 16,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Saare rectangle dhoo\" × \"100\" (0.95)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q3.apart"
+     ],
+     "minPx": 16,
+     "detail": [
+      "Q3.apart 1 overlaps, e.g. \"Saare rectangle dhoo\" × \"100\" (1)"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "data-graphs@1",
+   "mode": "read",
+   "band": "older",
+   "topicId": "c5-maths-ch15-t01",
+   "params": {
+    "topicId": "c5-maths-ch15-t01",
+    "skillId": "c5-maths-ch15-t01-s1",
+    "lang": "hinglish",
+    "mode": "read",
+    "view": "pictograph",
+    "scale": 2,
+    "data": [
+     {
+      "label": "?",
+      "value": 6
+     }
+    ],
+    "question": "value",
+    "ask": "?"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "data-graphs@1",
+   "mode": "read",
+   "band": "older",
+   "topicId": "c7-maths-ch13-t01",
+   "params": {
+    "topicId": "c7-maths-ch13-t01",
+    "skillId": "c7-maths-ch13-t01-s1",
+    "lang": "hinglish",
+    "view": "bar",
+    "mode": "read",
+    "data": [
+     {
+      "label": "June",
+      "value": 140
+     },
+     {
+      "label": "July",
+      "value": 250
+     },
+     {
+      "label": "August",
+      "value": 230
+     },
+     {
+      "label": "September",
+      "value": 120
+     }
+    ],
+    "question": "least",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 12,
+     "detail": [
+      "Q1.legible 11 runs < 14 px, e.g. \"0\" 12 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 12,
+     "detail": [
+      "Q1.legible 11 runs < 14 px, e.g. \"0\" 12 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 12,
+     "detail": [
+      "Q1.legible 11 runs < 14 px, e.g. \"0\" 12 px"
+     ],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "collections@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c6-maths-ch03-t04",
+   "params": {
+    "topicId": "c6-maths-ch03-t04",
+    "skillId": "c6-maths-ch03-t04-s1",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     487
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.5,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "collections@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c7-maths-ch06-t01",
+   "params": {
+    "topicId": "c7-maths-ch06-t01",
+    "skillId": null,
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     7,
+     100
+    ],
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.8,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "name",
+   "band": "older",
+   "topicId": "c6-maths-ch07-t01",
+   "params": {
+    "topicId": "c6-maths-ch07-t01",
+    "skillId": "c6-maths-ch07-t01-s1",
+    "lang": "hinglish",
+    "mode": "name",
+    "target": "1/4",
+    "parts": 4,
+    "shaded": 1,
+    "model": "circle",
+    "itemId": "c6-maths-ch07-t01-i01"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.5,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "name",
+   "band": "older",
+   "topicId": "c6-maths-ch07-t01",
+   "params": {
+    "topicId": "c6-maths-ch07-t01",
+    "skillId": "c6-maths-ch07-t01-s1",
+    "lang": "hinglish",
+    "mode": "name",
+    "target": "1/6",
+    "parts": 6,
+    "shaded": 1,
+    "predict": true,
+    "itemId": "c6-maths-ch07-t01-i12"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.1,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.2,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fraction-bars@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c6-maths-ch07-t01",
+   "params": {
+    "topicId": "c6-maths-ch07-t01",
+    "skillId": "c6-maths-ch07-t01-s1",
+    "lang": "hinglish",
+    "denominators": [
+     3
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 26,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 26,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 26,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fraction-bars@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c7-maths-ch08-t03",
+   "params": {
+    "topicId": "c7-maths-ch08-t03",
+    "skillId": null,
+    "lang": "hinglish",
+    "denominators": [
+     3,
+     4
+    ],
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 26,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 26,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 24.3,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fraction-bars@1",
+   "mode": "compare",
+   "band": "older",
+   "topicId": "c6-maths-ch07-t01",
+   "params": {
+    "topicId": "c6-maths-ch07-t01",
+    "skillId": "c6-maths-ch07-t01-s2",
+    "lang": "hinglish",
+    "mode": "compare",
+    "denominators": [
+     8,
+     6
+    ],
+    "numerators": [
+     1,
+     1
+    ],
+    "question": "bigger"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.2,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fraction-bars@1",
+   "mode": "compare",
+   "band": "older",
+   "topicId": "c7-maths-ch08-t03",
+   "params": {
+    "topicId": "c7-maths-ch08-t03",
+    "skillId": "c7-maths-ch08-t03-s1",
+    "lang": "hinglish",
+    "mode": "compare",
+    "denominators": [
+     4,
+     4
+    ],
+    "numerators": [
+     3,
+     3
+    ],
+    "question": "bigger",
+    "predict": true
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.2,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "add",
+   "band": "older",
+   "topicId": "c6-maths-ch07-t05",
+   "params": {
+    "topicId": "c6-maths-ch07-t05",
+    "skillId": "c6-maths-ch07-t05-s1",
+    "lang": "hinglish",
+    "mode": "add",
+    "fractions": [
+     "2/7",
+     "3/7"
+    ],
+    "itemId": "c6-maths-ch07-t05-i01"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.9,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "add",
+   "band": "older",
+   "topicId": "c6-maths-ch07-t05",
+   "params": {
+    "topicId": "c6-maths-ch07-t05",
+    "skillId": "c6-maths-ch07-t05-s1",
+    "lang": "hinglish",
+    "mode": "add",
+    "fractions": [
+     "1/5",
+     "2/5"
+    ],
+    "predict": true,
+    "itemId": "c6-maths-ch07-t05-i14"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16.9,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "of",
+   "band": "older",
+   "topicId": "c7-maths-ch08-t01",
+   "params": {
+    "topicId": "c7-maths-ch08-t01",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "lang": "hinglish",
+    "mode": "of",
+    "target": "1/4",
+    "count": 20,
+    "itemId": "c7-maths-ch08-t01-i01"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "fractions@1",
+   "mode": "of",
+   "band": "older",
+   "topicId": "c7-maths-ch08-t03",
+   "params": {
+    "topicId": "c7-maths-ch08-t03",
+    "skillId": "c7-maths-ch08-t03-s2",
+    "lang": "hinglish",
+    "mode": "of",
+    "target": "3/4",
+    "count": 40,
+    "predict": true,
+    "itemId": "c7-maths-ch08-t03-i13"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.7,
+     "detail": [],
+     "err": null
+    }
+   ]
+  }
+ ]
+}

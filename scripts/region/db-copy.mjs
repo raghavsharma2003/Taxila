@@ -11,6 +11,10 @@
 //     --verify-only          no restore: compare source and target per table (meaningful once writes are frozen)
 //     --check-migrations     target only: schema_migrations vs db/migrations of --sha; the report is the evidence
 //                            scripts/deploy-azure.mjs --migrations-evidence accepts for a private database
+//     --apply-migrations     target only (scripts/migrate.mjs --job): apply every db/migrations file of --sha the target's
+//                            schema_migrations lacks, in name order, each file + its schema_migrations row in ONE
+//                            transaction (psql -1), then check nothing is missing. A Neon target is refused: Neon is
+//                            reachable over HTTP, so scripts/migrate.mjs applies there directly
 //   flags:
 //     --dry-run              resolve everything, check the ACA env exists, print the plan; create and start nothing
 //     --target VAR|URL       target database (default AZURE_PG_SIN_URL from .env.local). A Neon host is refused unless
@@ -39,7 +43,7 @@ loadEnv();
 const argv = process.argv.slice(2);
 const flag = (f) => argv.includes(f);
 const opt = (f, d) => { const i = argv.indexOf(f); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : d; };
-const MODE = flag("--check-migrations") ? "migrations" : flag("--verify-only") ? "verify" : "copy";
+const MODE = flag("--apply-migrations") ? "apply" : flag("--check-migrations") ? "migrations" : flag("--verify-only") ? "verify" : "copy";
 const DRY = flag("--dry-run");
 const RG = opt("--rg", "taxila-sin"), ENV = opt("--env", "taxila-sin-env"), JOB = opt("--job", "taxila-sin-dbcopy");
 const IMAGE = opt("--image", "docker.io/library/postgres:17");
@@ -66,12 +70,14 @@ const targetArg = opt("--target", "AZURE_PG_SIN_URL");
 const TARGET = fromEnvOrUrl(targetArg);
 if (!TARGET) throw new Error(`target: ${targetArg} is not set (the PostgreSQL server is not provisioned yet? scripts/region/provision.mjs writes AZURE_PG_SIN_URL)`);
 const sourceVar = opt("--source", process.env.DATABASE_URL_DIRECT ? "DATABASE_URL_DIRECT" : "DATABASE_URL");
-const SOURCE = MODE === "migrations" ? null : process.env[sourceVar];
-if (MODE !== "migrations" && !SOURCE) throw new Error(`source: ${sourceVar} is not set`);
+const TARGET_ONLY = MODE === "migrations" || MODE === "apply";
+const SOURCE = TARGET_ONLY ? null : process.env[sourceVar];
+if (!TARGET_ONLY && !SOURCE) throw new Error(`source: ${sourceVar} is not set`);
 
 const tHost = hostOf(TARGET), sHost = SOURCE ? hostOf(SOURCE) : "";
 const prodHosts = [process.env.DATABASE_URL, process.env.DATABASE_URL_DIRECT].filter(Boolean).map((u) => hostOf(forLibpq(u, { direct: true })));
 if (MODE === "copy" && prodHosts.includes(hostOf(forLibpq(TARGET, { direct: true })))) throw new Error(`target ${tHost} is the Neon PROD database: this script never writes to it`);
+if (MODE === "apply" && /neon\.tech$/.test(tHost)) throw new Error(`target ${tHost} is a Neon host: run scripts/migrate.mjs (no job needed; Neon is reachable over HTTP)`);
 if (MODE === "copy" && /neon\.tech$/.test(tHost) && !flag("--allow-neon-target")) throw new Error(`target ${tHost} is a Neon host: pass --allow-neon-target for a throwaway rehearsal database`);
 if (SOURCE && hostOf(forLibpq(SOURCE, { direct: true })) === hostOf(forLibpq(TARGET, { direct: true })) && new URL(SOURCE).pathname === new URL(TARGET).pathname) throw new Error("source and target are the same database");
 if (MODE === "copy" && /neon\.tech$/.test(tHost) && flag("--replace") && prodHosts.includes(hostOf(forLibpq(TARGET, { direct: true })))) throw new Error("refusing --replace on Neon prod");
@@ -79,6 +85,8 @@ if (MODE === "copy" && /neon\.tech$/.test(tHost) && flag("--replace") && prodHos
 const sha = execSync(`git rev-parse ${opt("--sha", "HEAD")}`, { cwd: ROOT }).toString().trim();
 const EXPECTED = execSync(`git ls-tree --name-only ${sha} db/migrations/`, { cwd: ROOT }).toString().split("\n")
   .map((f) => f.split("/").pop()).filter((f) => f.endsWith(".sql")).sort();
+/** apply mode: the migrations of exactly --sha (not the working tree), as the job's MIGRATIONS_TGZ env (~35 KB base64). */
+const MIGRATIONS_TGZ = MODE === "apply" ? execSync(`git archive --format=tar.gz ${sha} db/migrations`, { cwd: ROOT, maxBuffer: 1 << 26 }).toString("base64") : "";
 
 /** The CA roots Neon (Let's Encrypt → ISRG) and Azure PG (DigiCert G2 / Microsoft 2017) chain to, from Node's store. */
 const ROOTS_PEM = rootCertificates.filter((pem) => {
@@ -102,7 +110,7 @@ async function main() {
   const ws = envRes.properties.appLogsConfiguration?.logAnalyticsConfiguration?.customerId;
   if (!ws) throw new Error(`${ENV} sends no logs to Log Analytics: the job's result could not be read back`);
   console.log(`plan: ${MODE} ${report.sourceHost ?? "-"} → ${report.targetHost} via job ${JOB} in ${RG}/${ENV} (subnet ${vnet.split("/").pop()}), image ${IMAGE}, tls ${TLS_MODE}`);
-  console.log(`      expect ${EXPECTED.length} migrations of ${sha.slice(0, 7)}${flag("--replace") ? "; --replace: target schema public is dropped first" : ""}; script ${SCRIPT.length} chars, ${ROOTS_PEM.split("BEGIN CERTIFICATE").length - 1} CA roots`);
+  console.log(`      expect ${EXPECTED.length} migrations of ${sha.slice(0, 7)}${flag("--replace") ? "; --replace: target schema public is dropped first" : ""}; script ${SCRIPT.length} chars, ${ROOTS_PEM.split("BEGIN CERTIFICATE").length - 1} CA roots${MODE === "apply" ? `, migrations archive ${MIGRATIONS_TGZ.length} chars (applies what the target lacks)` : ""}`);
   if (DRY) { console.log(`dry run: nothing created (${((Date.now() - t0) / 1000).toFixed(1)} s)`); return 0; }
 
   const env = (name, value) => ({ name, value });
@@ -111,7 +119,8 @@ async function main() {
       secrets: [{ name: "dst-url", value: forLibpq(TARGET, { direct: true }) }, ...(SOURCE ? [{ name: "src-url", value: forLibpq(SOURCE, { direct: true }) }] : [])] },
     template: { containers: [{ name: "dbcopy", image: IMAGE, command: ["bash", "-c"], args: [SCRIPT], resources: { cpu: 1, memory: "2Gi" },
       env: [{ name: "DST_URL", secretRef: "dst-url" }, ...(SOURCE ? [{ name: "SRC_URL", secretRef: "src-url" }] : [env("SRC_URL", "")]),
-        env("MODE", MODE), env("EXPECTED", EXPECTED.join(",")), env("REPLACE", flag("--replace") ? "1" : "0"), env("TLS_MODE", TLS_MODE), env("ROOTS_PEM", ROOTS_PEM)] }] } } });
+        env("MODE", MODE), env("EXPECTED", EXPECTED.join(",")), env("REPLACE", flag("--replace") ? "1" : "0"), env("TLS_MODE", TLS_MODE), env("ROOTS_PEM", ROOTS_PEM),
+        ...(MODE === "apply" ? [env("MIGRATIONS_TGZ", MIGRATIONS_TGZ)] : [])] }] } } });
   await until(async () => { const j = await arm("GET", `${JOB_PATH}?${API}`); if (j.properties.provisioningState === "Failed") throw new Error("job provisioning failed"); return j.properties.provisioningState === "Succeeded"; },
     { everyMs: 4000, maxMs: 300_000, what: `${JOB} provisioned` });
   const ex = await arm("POST", `${JOB_PATH}/start?${API}`, {});
@@ -135,6 +144,7 @@ async function main() {
   report.start = parse("START")[0];
   report.step = parse("STEP")[0];
   report.tables = parse("TABLE");
+  report.applied = parse("APPLIED");
   report.result = parse("RESULT")[0] ?? null;
   report.otherLines = lines.filter((l) => !l.startsWith("DBCOPY_")).slice(-30).map((l) => l.slice(0, 300));
   const r = report.result;
@@ -160,11 +170,15 @@ if (!DRY) {
   mkdirSync(OUT, { recursive: true });
   const file = `${OUT}db-copy-${MODE}-${report.at.replace(/[:.]/g, "-")}.json`;
   writeFileSync(file, JSON.stringify(report, null, 2));
+  // the newest report of this mode at a fixed path: scripts/release.mjs --migrate job passes it to both deploys as the
+  // migrations evidence (scripts/deploy-core.mjs LATEST_EVIDENCE; audit PLAT-21)
+  writeFileSync(`${OUT}db-copy-${MODE}-latest.json`, JSON.stringify(report, null, 2));
   const r = report.result;
   if (r) {
     console.log(`result: ${r.ok ? "OK" : "FAILED"}${r.stage ? ` at ${r.stage}: ${r.error}` : ""}`);
     if (report.step) console.log(`  dump ${(report.step.dumpBytes / 1e6).toFixed(1)} MB in ${report.step.dumpS} s, restore ${report.step.restoreS} s`);
-    if (r.tables !== undefined && MODE !== "migrations") console.log(`  tables ${r.tables}, mismatched [${r.mismatched || ""}], sequences ${r.sequencesMatch ? "match" : "DIFFER"}, migrations source=target ${r.sourceMigrations === r.targetMigrations}`);
+    if (MODE === "apply") console.log(`  applied [${r.appliedMigrations || ""}]`);
+    if (r.tables !== undefined && !TARGET_ONLY) console.log(`  tables ${r.tables}, mismatched [${r.mismatched || ""}], sequences ${r.sequencesMatch ? "match" : "DIFFER"}, migrations source=target ${r.sourceMigrations === r.targetMigrations}`);
     console.log(`  target migrations: ${report.targetMigrations?.length ?? 0}; missing vs ${sha.slice(0, 7)}: [${r.missingMigrations || ""}]`);
   }
   console.log(`report: ${file}`);

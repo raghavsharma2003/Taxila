@@ -1,0 +1,34 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-staged-batch-30",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F (dc-r7-script-walk-v4): the next-30 ranked topics are authored in script format v2.2 into data/lesson-scripts-staged/ (not live). Each one passes check.mjs (structure, boards, runtime) and a blind solve: a Claude solver that sees only each ask's prompt and the line said just before answers every keyed question, flags leaks, ambiguity and missing givens, and its answers are compared with the separately kept keys. All 30 matched every key; every flag was fixed before commit. Two kit items were added where a ladder lacked 3 practice rungs (c5-ch05-t01 i19, c4-ch14-t01 i19). Held until director8 passes. Reverse if: director8 shows a staged-script defect class the blind solve cannot see (board/speech timing, child requests); add that check before promotion."
+  },
+  {
+   "id": "dc-r7-friend-pool-names",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F: a v2.2 script never writes a name the {friend} slot can fill (server/director/friend.js: Zoya, Kabir, Meera, Arjun, Ishaan, Tara, Diya, Aman), keys and accepts included. When the slot filled with the same name, two characters shared it ('Tara painted 3/5 … {friend} painted …; who painted more? Tara'). check.mjs poolNameErrors enforces it, and a test keeps its list in step with friend.js. 2 live and 10 staged scripts were renamed (same gender). Reverse if: friend.js learns to skip names already in the card text, so a fixed character can share the pool."
+  },
+  {
+   "id": "dc-r7-kit-friendf",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F (director6): kit card characters Riya/Asha become the {friendF} slot (237 units in 35 kits). A unit already naming Zoya/Meera/Tara/Diya renames that character first (7 units). Fields the runtime does not fill (worked examples, passages) say Nisha (13). Pushed only once Games' serve-time fill (cefab3548) was in base, so the slot never reaches a child unfilled; data/arena, vakya and coverage regenerated in the same commit. Reverse if: a served surface shows '{friendF}' raw; fill it there rather than revert the kits."
+  },
+  {
+   "id": "dc-r7-child-events-in-context",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F (director7, dc-r7-script-walk-v5): the H1.2 reactive child plays a scheduled event only on a turn where it fits. A self-try ('pehle main try karun?') only while a question she just asked is open, never after a why-probe or once answered; a pata-nahi only to an open question; a picture request never in place of a reason. An event that does not fit waits for the first turn that does. Reverse if: events then cluster at lesson ends and the walk loses coverage of a request kind inside MIN_TURNS."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## `dc-r7-staged-batch-30` (2026-11-06, F Learning)\n\nThe 30 highest-ranked next topics (next-topics.mjs) are written in v2.2 and staged, not live. Gate per script: `check.mjs` ok, then a blind solve — a solver sees only each keyed question and the line said just before it, answers it, and flags LEAK / AMBIGUOUS / MISSING; its answers are compared with keys kept in a separate folder. All 30 matched every key. The flags were mostly a point that stated the rule the ask only had to repeat, and \"the fourth mark from 0\" read two ways; all were fixed, and the lessons went into SPEC-AUTHOR's wave notes. Two kit items were added for 3-rung ladders. **Reverse if:** director8 shows a defect class the blind solve cannot see; add that check before promotion.\n\n## `dc-r7-friend-pool-names` (2026-11-06, F Learning)\n\nA script character named Tara and a `{friend}` slot that filled with Tara gave one lesson two Taras, and a \"who has more\" key that names one of them. `check.mjs` now rejects the slot's names anywhere in a v2.2 script (keys too); a test fails if its list drifts from `server/director/friend.js`. **Reverse if:** the slot learns to skip names already on the card.\n\n## `dc-r7-kit-friendf` (2026-11-06, F Learning)\n\nKit card characters Riya/Asha → `{friendF}` (237 units, 35 kits); pool names already on a unit renamed first (7); unfilled fields → Nisha (13). Pushed only after Games' serve-time fill was in base; the Games banks were regenerated in the same commit. **Reverse if:** a served surface shows the raw slot — fill it there.\n\n## `dc-r7-child-events-in-context` (2026-11-06, F Learning)\n\nDirector7 found the reactive child firing events out of context (\"pehle main try karun?\" right after a why-probe; \"let me try\" after the answer was given). Events now wait for a turn that fits. **Reverse if:** events cluster late and a request kind drops out of MIN_TURNS.\n",
+  "measurements": "",
+  "rejected": ""
+ }
+}

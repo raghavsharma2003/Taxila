@@ -6,8 +6,11 @@ import { describe, test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 
-process.env.FORGE_DB_CACHE = "off";
-process.env.FORGE_BLOB = "off";
+// npm test runs every file in one process: the env this file needs is set for its tests only, and put back after
+const ENV0 = { FORGE_DB_CACHE: process.env.FORGE_DB_CACHE, FORGE_BLOB: process.env.FORGE_BLOB };
+const restoreEnv = (saved) => { for (const [k, v] of Object.entries(saved)) { if (v === undefined) delete process.env[k]; else process.env[k] = v; } };
+before(() => { process.env.FORGE_DB_CACHE = "off"; process.env.FORGE_BLOB = "off"; });
+after(() => restoreEnv(ENV0));
 
 const K = await import("../server/forge/kitmath.js");
 const { activitiesFor, barsActivity, choiceActivity, orderActivity, scrambleActivity, diagnosticItems } = await import("../server/forge/derive.js");
@@ -18,7 +21,6 @@ const { SPRITES, DSL_VERSION } = await import("../server/forge/scene/dsl.mjs");
 const { buildScene, derange, miscToken } = await import("../server/forge/templates.js");
 const { requestFill, prefetchLessonFills, fillKey, canonical } = await import("../server/forge/index.js");
 const { _memClear } = await import("../server/forge/cache.js");
-const { publicFill } = await import("../server/routes/forge.js");
 const { signRequest } = await import("../server/forge/blob.js");
 const { getKit } = await import("../server/content/index.js");
 const bars = await import("../src/modules/frame/engines/fractionBars.logic.ts");
@@ -251,8 +253,15 @@ describe("templates", () => {
 
 describe("requestFill (offline)", () => {
   let realFetch;
+  // the env this suite sets is put back: a fill's fire-and-forget model call outlives the test, and in the one-process run it
+  // reached the next file's fake fetch (tests/m4-break counted 5 stray chat calls, 2026-11-10)
+  const ENV0 = { ep: process.env.AZURE_OPENAI_ENDPOINT, key: process.env.AZURE_OPENAI_API_KEY };
   before(() => { realFetch = globalThis.fetch; globalThis.fetch = async () => { throw new Error("offline"); }; process.env.AZURE_OPENAI_ENDPOINT ||= "https://example.invalid/openai/v1"; process.env.AZURE_OPENAI_API_KEY ||= "x"; _memClear(); });
-  after(() => { globalThis.fetch = realFetch; });
+  after(() => {
+    globalThis.fetch = realFetch;
+    if (ENV0.ep === undefined) delete process.env.AZURE_OPENAI_ENDPOINT; else process.env.AZURE_OPENAI_ENDPOINT = ENV0.ep;
+    if (ENV0.key === undefined) delete process.env.AZURE_OPENAI_API_KEY; else process.env.AZURE_OPENAI_API_KEY = ENV0.key;
+  });
   test("model unreachable → the code pick ships; a second call is a memory hit with the same mount", async () => {
     const kit = await getKit("c6-maths-ch07-t05", { generate: false });
     const r1 = await requestFill({ kit, itemId: "c6-maths-ch07-t05-i01", move: "practice", learner: LEARNER });
@@ -282,12 +291,6 @@ describe("requestFill (offline)", () => {
     assert.equal(out.length, 4);
     const again = await requestFill({ kit, itemId: "c6-maths-ch07-t05-i02", move: "practice", learner });
     assert.equal(again.cached, "memory");
-  });
-  test("the client view carries no grade table", async () => {
-    const kit = await getKit("c6-maths-ch07-t05", { generate: false });
-    const r = await requestFill({ kit, itemId: "c6-maths-ch07-t05-i02", move: "practice", learner: LEARNER });
-    const pub = publicFill(r, "req-1");
-    assert.equal(pub.grade, undefined); assert.ok(!JSON.stringify(pub).includes("distractors"));
   });
 });
 

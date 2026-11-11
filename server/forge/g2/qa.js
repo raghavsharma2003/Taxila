@@ -108,9 +108,12 @@ async function playOnce(browser, { html, levels, init, wrongPaths = true, captur
     await page.goto(HOST, { waitUntil: "load", timeout: left() });
     const frameHandle = await page.waitForSelector("#f", { timeout: left() });
     const frame = await frameHandle.contentFrame();
-    await page.waitForFunction(() => window.__pageReady === 1, null, { timeout: Math.min(8000, left()) });
+    // (tests audit, main v6.9: the steps that MUST happen wait on their readiness, bounded only by the check's own deadline —
+    // fixed 4-8 s caps were the forge-g2 browser flake under the gate's parallel load. A tap's answer may legitimately not
+    // come, so waitAnswer, whose miss is ignored, keeps its short cap)
+    await page.waitForFunction(() => window.__pageReady === 1, null, { timeout: left() });
     checks.push({ id: "Q2.ready", status: "pass", detail: `${Date.now() - t0} ms` });
-    await frame.waitForFunction(() => window.__forgeSeam && (window.__forgeSeam.targets().length > 0 || window.__forgeSeam.state().failed), null, { timeout: Math.min(8000, left()) });
+    await frame.waitForFunction(() => window.__forgeSeam && (window.__forgeSeam.targets().length > 0 || window.__forgeSeam.state().failed), null, { timeout: left() });
     const seam = (fn, arg) => frame.evaluate(fn, arg);
     const box = await frameHandle.boundingBox();
     const answersSeen = () => page.evaluate(() => window.__hostEvents.filter((e) => e.type === "answer" || e.type === "error").length);
@@ -214,14 +217,15 @@ async function playOnce(browser, { html, levels, init, wrongPaths = true, captur
         const n1 = await answersSeen(); await tap(k); await waitAnswer(n1).catch(() => {});
       }
       // advance (kit waits 700 ms after a correct commit)
-      await frame.waitForFunction((prev) => { const x = window.__forgeSeam.state(); return x.won || x.failed || x.li !== prev.li || x.ii !== prev.ii; }, { li: s.li, ii: s.ii }, { timeout: Math.min(4000, left()) })
+      await frame.waitForFunction((prev) => { const x = window.__forgeSeam.state(); return x.won || x.failed || x.li !== prev.li || x.ii !== prev.ii; }, { li: s.li, ii: s.ii }, { timeout: left() })
         .catch(() => checks.push({ id: "Q4.advance", status: "fail", detail: `${spec.id}: no advance after the key` }));
       if (checks.some((c) => c.status === "fail" && c.id.startsWith("Q4"))) break;
     }
     if (capture) frames.goal = await page.screenshot({ type: "png" });
     checks.push({ id: "Q6.geometry", status: geometry.length ? "fail" : "pass", detail: geometry.slice(0, 6).join("; ") });
     checks.push({ id: "Q6.text_layout", status: textIssues.size ? "fail" : "pass", detail: [...textIssues].slice(0, 6).join("; ") });
-    if (keyPositions.length >= 3 && new Set(keyPositions).size === 1) checks.push({ id: "leak.key_position", status: "fail", detail: `key always at option ${keyPositions[0]}` });
+    // (key_position is judged in browserGate over BOTH plays: the kit re-shuffles on every mount, so a constant position
+    // is ~1/256 by chance on a 4,4,4,4,2-option topic in ONE play and ~1/65536 in two independent plays; a leaky kit repeats)
     // a mark only the key carries, on EVERY choice item (a crypto shuffle makes a positional coincidence ~ (1/n)^items)
     const keyOnly = keyMarks.length >= 3 ? [...keyMarks[0]].filter((mk) => keyMarks.every((set) => set.has(mk))) : [];
     if (keyOnly.length) checks.push({ id: "leak.key_styled", status: "fail", detail: `the key option alone carries "${keyOnly[0].slice(0, 60)}" on ${keyMarks.length}/${keyMarks.length} items` });
@@ -232,14 +236,37 @@ async function playOnce(browser, { html, levels, init, wrongPaths = true, captur
     const violations = (await seam(() => window.__forgeSeam.violations())).filter((v) => !/forge-probe/.test(v.uri));
     const events = await page.evaluate(() => window.__hostEvents.map(({ at, ...e }) => e));
     const finalState = await st();
-    return { events, external: external.filter((u) => !/forge-probe/.test(u)), consoleErrors: consoleErrors.filter((c) => !/forge-probe|Content Security Policy|Failed to fetch/.test(c)), pageErrors, seamFindings, violations, checks, frames, ms: Date.now() - t0, finalState };
+    return { keyPositions, events, external: external.filter((u) => !/forge-probe/.test(u)), consoleErrors: consoleErrors.filter((c) => !/forge-probe|Content Security Policy|Failed to fetch/.test(c)), pageErrors, seamFindings, violations, checks, frames, ms: Date.now() - t0, finalState };
   } catch (e) {
     checks.push({ id: "Q2.harness", status: "fail", detail: String(e.message).split("\n")[0].slice(0, 200) });
     const events = await page.evaluate(() => (window.__hostEvents || []).map(({ at, ...e }) => e)).catch(() => []);
-    return { events, external, consoleErrors, pageErrors, seamFindings: [], violations: [], checks, frames, ms: Date.now() - t0, finalState: null };
+    return { keyPositions: [], events, external, consoleErrors, pageErrors, seamFindings: [], violations: [], checks, frames, ms: Date.now() - t0, finalState: null };
   } finally {
     await context.close();
   }
+}
+
+/** A play needs at least this many graded items before a constant key position counts as a leak (see browserGate). */
+export const KEY_POSITION_MIN_ITEMS = 3;
+
+/** The mechanic call a Budget.slow_call finding names ("<name> <ms>ms" → "<name>"). */
+const slowName = (f) => String(f.detail ?? "").replace(/\s+\d+ms$/, "");
+
+/**
+ * PURE. Q3.binding's findings over the gate's two plays. Contract refusals and throws block from either play. A slow call is
+ * wall clock on a page the OS can preempt, so one over-budget call is a note; it blocks only when the SAME mechanic call is
+ * over budget in BOTH plays (a slow mechanic is slow every time; a preempted page is not).
+ * @param {{code: string, detail?: string}[]} a @param {{code: string, detail?: string}[]} b
+ */
+export function bindingFindings(a = [], b = []) {
+  const bind = (f) => /^(ForgeContract|Agent|Budget)\./.test(f.code);
+  const slowB = new Set(b.filter((f) => f.code === "Budget.slow_call").map(slowName));
+  const blockers = [], notes = [];
+  for (const f of a.filter(bind)) {
+    if (f.code !== "Budget.slow_call") blockers.push(f);
+    else (slowB.has(slowName(f)) ? blockers : notes).push(f);
+  }
+  return { blockers, notes };
 }
 
 /**
@@ -256,11 +283,17 @@ export async function browserGate(o) {
     const a = await playOnce(browser, { html: o.html, levels: o.levels, init, capture: !!o.capture });
     const b = await playOnce(browser, { html: o.html, levels: o.levels, init });
     const gates = [...a.checks];
+    // KEY_POSITION_MIN_ITEMS: a play with fewer graded items never trips the check. With 1 or 2 items a constant position is
+    // what any honest shuffle shows most of the time (2 items on 4 options: 1 in 4), so it says nothing about a leak.
+    const constAt = (p) => p.length >= KEY_POSITION_MIN_ITEMS && new Set(p).size === 1;
+    // constant within EACH play is the leak a child can use (after two items they know where the key sits), whether or not the two
+    // plays agree on the index: a mechanic that pins the key to one slot per mount is as leaky as one that pins it to slot 1
+    if (constAt(a.keyPositions) && constAt(b.keyPositions)) gates.push({ id: "leak.key_position", status: "fail", detail: `key at one option throughout each of two plays (options ${a.keyPositions[0]} and ${b.keyPositions[0]})` });
     gates.push({ id: "Q2.console", status: a.consoleErrors.length + a.pageErrors.length ? "fail" : "pass", detail: [...a.pageErrors, ...a.consoleErrors].slice(0, 4).join(" | ") });
     gates.push({ id: "Q2.network", status: a.external.length ? "fail" : "pass", detail: a.external.slice(0, 4).join(" ") });
     gates.push({ id: "Q2.csp_violations", status: a.violations.length ? "fail" : "pass", detail: a.violations.slice(0, 3).map((v) => `${v.dir} ${v.uri}`).join("; ") });
     gates.push({ id: "Q2.protocol", status: a.events.some((e) => e.type === "protocol_violation") ? "fail" : "pass", detail: "" });
-    const blockers = a.seamFindings.filter((f) => /^(ForgeContract|Agent|Budget)\./.test(f.code));
+    const { blockers, notes } = bindingFindings(a.seamFindings, b.seamFindings);
     gates.push({ id: "Q3.binding", status: blockers.length ? "fail" : "pass", detail: blockers.slice(0, 4).map((f) => `${f.code} ${f.detail}`).join("; ") });
     const errs = a.events.filter((e) => e.type === "error");
     gates.push({ id: "Q3.no_error_events", status: errs.length ? "fail" : "pass", detail: errs.slice(0, 3).map((e) => e.message).join("; ") });
@@ -292,7 +325,7 @@ export async function browserGate(o) {
       if (!ok && (p.misc || null) !== (kitMisc || null)) truthFails.push(`${p.item}: misc ${p.misc} ≠ kit ${kitMisc}`);
     }
     gates.push({ id: "Q5.answer_key", status: answers.length && !truthFails.length ? "pass" : "fail", detail: truthFails.slice(0, 4).join("; ") || `${answers.length} answers re-graded against the kit` });
-    const metrics = { playMs: a.ms, events: a.events.length, answers: answers.length, items: expected, findings: a.seamFindings.length };
+    const metrics = { playMs: a.ms, events: a.events.length, answers: answers.length, items: expected, findings: a.seamFindings.length, notes: notes.map((f) => `${f.code} ${f.detail}`) };
     return { gates, metrics, frames: a.frames, trace: a.events };
   } finally {
     if (own) await browser.close();

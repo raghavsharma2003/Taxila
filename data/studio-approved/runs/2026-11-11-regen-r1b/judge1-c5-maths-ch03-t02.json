@@ -1,0 +1,20 @@
+[
+  {
+    "id": "gen-c5-maths-ch03-t02-5481a1b6",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "spec.waves[0] (\"Kone dekho\", scaffold \"tens\", items [45, 90, 135]); screen 'Mark yahan hai 45°'",
+        "detail": "The 'tens' board draws ticks every 10° (visible on both screenshots: ticks at 10°, 20°, ... 90°), but the child is asked to aim at 45° and 135°, which fall between ticks. The drawn board cannot show these values exactly; the tick spacing must divide every angle in play (e.g. 5° or 15°/45°)."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Wave 3 (classify, kind 'right') and wave 2 sub 'Ek arm ke saath doosra arm bhi dekho' target the both-arms mix-up; could not see later waves rendered, so the protractor scaffold's tick spacing for 45/135 in waves 2-3 could not be checked from the packet."
+  }
+]

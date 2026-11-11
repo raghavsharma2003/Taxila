@@ -1,0 +1,119 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c4-maths-ch03-t01",
+    "archetype": "sieve-storm@1",
+    "misconceptionId": "c4-maths-ch03-t01-m-zero-not-even",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "beat": "rem:c4-maths-ch03-t01-m-zero-not-even",
+    "when": "remediation",
+    "check": "c4-maths-ch03-t01-s1:c1"
+  },
+  "archetype": "sieve-storm@1",
+  "spec": {
+    "archetype": "sieve-storm@1",
+    "skills": [
+      "c4-maths-ch03-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Daura",
+      "slashed": "sahi chune",
+      "combo": "combo",
+      "coach": "Dhyan se sankhya chuno",
+      "runDone": "Aandhi khatam",
+      "prime": "abhajya",
+      "composite": "sanyukt",
+      "even": "sam",
+      "odd": "visham",
+      "multipleOf": "ke gunaj",
+      "commonOf": "ke samanya gunaj",
+      "factorOf": "ke gunank",
+      "cfactorOf": "ke samanya gunank",
+      "divisibleBy": "se vibhajya",
+      "coprimeWith": "sah-abhajya",
+      "square": "varg sankhyaen",
+      "palindrome": "palindrome sankhyaen",
+      "slipped": "chook gaya",
+      "wrongCut": "ise na chuno",
+      "and": "aur"
+    },
+    "title": "Sankhya Aandhi",
+    "rounds": [
+      {
+        "rule": "even",
+        "title": "Pehla daura",
+        "sub": "Har sankhya ko gaur se dekho",
+        "lo": 0,
+        "hi": 70,
+        "count": 6,
+        "hitRate": 0.5,
+        "seed": 7,
+        "speed": 0.7,
+        "targets": "c4-maths-ch03-t01-m-zero-not-even"
+      },
+      {
+        "rule": "odd",
+        "title": "Nazar tez karo",
+        "sub": "Chhoti aur badi sankhyaen dekho",
+        "lo": 0,
+        "hi": 70,
+        "count": 8,
+        "hitRate": 0.5,
+        "seed": 9,
+        "speed": 0.85,
+        "targets": "c4-maths-ch03-t01-m-zero-not-even"
+      },
+      {
+        "rule": "even",
+        "title": "Beech ka daura",
+        "sub": "Jaldi mat karo, dobara dekho",
+        "lo": 0,
+        "hi": 70,
+        "count": 10,
+        "hitRate": 0.45,
+        "seed": 16,
+        "speed": 1.05,
+        "targets": "c4-maths-ch03-t01-m-zero-not-even"
+      },
+      {
+        "rule": "even",
+        "title": "Aakhri aandhi",
+        "sub": "Ab apni nazar par bharosa karo",
+        "lo": 0,
+        "hi": 70,
+        "count": 12,
+        "hitRate": 0.5,
+        "seed": 34,
+        "speed": 1.25,
+        "targets": "c4-maths-ch03-t01-m-zero-not-even"
+      }
+    ]
+  },
+  "hash": "d49a3386183f6efe0bec787b933dc2af",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": true,
+    "spec": {
+      "ok": true,
+      "repairs": 0,
+      "fellBack": false
+    }
+  },
+  "facts": {
+    "kind": "game",
+    "archetype": "sieve-storm@1",
+    "onScreen": {
+      "title": "Sankhya Aandhi",
+      "rounds": 4,
+      "first": "Pehla daura: Har sankhya ko gaur se dekho"
+    }
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T06:21:41.651Z"
+  }
+}

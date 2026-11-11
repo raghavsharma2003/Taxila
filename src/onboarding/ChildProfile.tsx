@@ -12,12 +12,17 @@ import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, ErrorNote, Field, Icon, PinPad } from "../ui/index.ts";
 import { defaultTutorFor } from "../../shared/tutors.js";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
-import { ApiError, errText, getJson, lockBeacon, postJson, refreshMe, request } from "../app/api.ts";
+import { ApiError, getJson, lockBeacon, postJson, refreshMe, request } from "../app/api.ts";
+import { feelChipsFor, parentViewToSend, setupError } from "./setupRules.ts";
 import { useGate } from "../parent/Gate.tsx";
 import { isGateError } from "../parent/api.ts";
 import { kidLook, StepFrame } from "./Layout.tsx";
-import { clearDraft, useDraft } from "./draft.ts";
+import { clearDraft, draftForAdd, useDraft } from "./draft.ts";
 import { defaultsFor } from "./Setup.tsx";
+import { ChapterPicker, FeelPicker } from "../parent/SchoolPlan.tsx";
+import { NamePreview } from "./NamePreview.tsx";
+import { parentApi, type ChapterRef } from "../parent/api.ts";
+import { teacherBandFor } from "./teacherBand.ts";
 
 /** The defaults the cut no longer asks for (owner-approved 2026-10-10). */
 export const childDefaults = (classLevel: number, languagePref: string) => ({
@@ -30,6 +35,9 @@ export function ChildStep() {
   const [sp] = useSearchParams();
   const adding = !!sp.get("add");
   const [d, set] = useDraft();
+  // "Add a child": a child id left by an earlier interrupted set-up is not this child (LEARN-09). Once, on arrival: a retry
+  // inside this step keeps the id this step itself created.
+  useEffect(() => { if (adding) set((cur) => draftForAdd(cur)); }, [adding, set]);
   const { relock } = useGate();
   const c = d.child ?? {};
   const setC = (patch: Partial<NonNullable<typeof d.child>>) => set((cur) => ({ child: { ...(cur.child ?? {}), ...patch } }));
@@ -42,18 +50,36 @@ export function ChildStep() {
   const [pinOk, setPinOk] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const cl = c.classLevel;
-  const rec = teacherRecord(defaultTutorFor({ class_level: cl ?? 5 }), (cl ?? 5) <= 4 ? "b2" : "b3");
+  const rec = teacherRecord(defaultTutorFor({ class_level: cl ?? 5 }), teacherBandFor(cl));
   const first = c.firstName?.trim() ?? "";
-
+  // round 7 F item 2: "which maths chapter is school on?" (optional; the next maths lesson starts there)
+  const [mathsChapters, setMathsChapters] = useState<ChapterRef[] | null>(null);
+  // the subjects the class's book has (LEARN-44: classes 1-2 have no EVS book, so no EVS chip); null until read
+  const [bookSubjects, setBookSubjects] = useState<string[] | null>(null);
+  const [clearedFeel, setClearedFeel] = useState<string[]>([]);
   useEffect(() => {
+    if (!cl) return;
+    parentApi.chapters(cl).then((r) => {
+      setMathsChapters(r.chapters.maths ?? []);
+      setBookSubjects(Object.entries(r.chapters).filter(([, v]) => (v as unknown[])?.length).map(([k]) => k));
+    }, () => setMathsChapters([]));
+  }, [cl]);
+
+  // LEARN-43: a failed PIN read offers "Try again" (it sat on "One moment" for ever)
+  const [pinTry, setPinTry] = useState(0);
+  const [pinReadFailed, setPinReadFailed] = useState(false);
+  useEffect(() => {
+    setPinReadFailed(false);
     getJson<{ hasPin: boolean; firstSetNeedsPassword?: boolean }>("/api/parent/pin").then((g) => {
       setHasPin(g.hasPin);
       setNeedPw(!g.hasPin && !!g.firstSetNeedsPassword);
+      setErr(null);
     }, (e) => {
       if (e instanceof ApiError && e.status === 401) return nav("/start/phone?next=/start/child");
-      setErr(errText(e));
+      setPinReadFailed(true);
+      setErr(setupError(e));
     });
-  }, [nav]);
+  }, [nav, pinTry]);
 
   const onPin = (p: string) => {
     if (!pin1) { setPin1(p); setResetKey((k) => k + 1); return; }
@@ -75,7 +101,8 @@ export function ChildStep() {
     let pinSaved = !!hasPin;
     let stage: "child" | "pin" | "controls" = "child";
     try {
-      const body = { firstName: first, classLevel: cl, board: c.board ?? "cbse", schoolMedium: c.schoolMedium ?? def.schoolMedium, languagePref, interests: c.interests ?? [] };
+      const body = { firstName: first, classLevel: cl, board: c.board ?? "cbse", schoolMedium: c.schoolMedium ?? def.schoolMedium, languagePref, interests: c.interests ?? [],
+        nameSpoken: c.nameSpoken?.trim() || null };
       // Coming back to this step edits the profile made a moment ago instead of creating a second one.
       // Only a "not your child" refusal (deleted since) falls back to creating; a gate refusal must not make a twin.
       let child: { id: string } | null = null;
@@ -91,8 +118,17 @@ export function ChildStep() {
       stage = "controls";
       await postJson("/api/parent/controls", {
         childId: child.id, ...defaultsFor(cl), address: c.address ?? def.address, comfortMode: !!c.comfort, captionsAlways: !!c.hardToHear,
-        reportChannel: d.reportChannel ?? "whatsapp",
+        reportChannel: d.reportChannel ?? "app",
       });
+      // the school's position goes before the PIN (the corner locks once the PIN is set); a miss never stops set-up
+      for (const [subject, chapter] of Object.entries(d.schoolChapter ?? {})) {
+        await parentApi.setSchoolChapter(child.id, subject, chapter).catch((e3) => { if (isGateError(e3)) throw e3; });
+      }
+      // r7 (Learning to-app/007): how each main subject feels to the parent, for cold-start placement; a miss never stops set-up
+      const views = parentViewToSend(d.parentView, clearedFeel);
+      if (Object.keys(views).length) {
+        await parentApi.setParentView(child.id, views).catch((e3) => { if (isGateError(e3)) throw e3; });
+      }
       if (!pinSaved && pin1) { stage = "pin"; await postJson("/api/parent/pin", { pin: pin1 }); pinSaved = true; setHasPin(true); }
       await refreshMe();
       // the hand-over: the tap is her audio unlock; the corner is locked behind her. "Later": the Parent corner.
@@ -103,7 +139,7 @@ export function ChildStep() {
       if (e2 instanceof ApiError && e2.status === 401) return nav("/start/phone?next=/start/child");
       if (isGateError(e2)) { if (pinSaved) setErr("The Parent corner locked. Enter the PIN to continue."); relock(); return; }
       if (e2 instanceof ApiError && (e2.body as { gate?: string } | null)?.gate === "password") setNeedPw(true);
-      setErr(errText(e2));
+      setErr(setupError(e2));
       if (stage === "pin") resetPinUi();
     } finally {
       setBusy(false);
@@ -125,7 +161,34 @@ export function ChildStep() {
           <p className="onb-kid-tag" aria-hidden="true">{`What ${rec.name} calls them`}</p>
           <Field label="Child's first name" hint="Just the name they are called at home is fine." autoComplete="off" maxLength={40}
             value={c.firstName ?? ""} onChange={(e) => setC({ firstName: e.target.value })} required />
+          <NamePreview name={first} classLevel={cl} teacherName={rec.name} spoken={c.nameSpoken ?? null} onSpoken={(v) => setC({ nameSpoken: v })} />
         </section>
+        {mathsChapters && mathsChapters.length > 0 && (
+          <section className="card card-flat stack-sm" aria-labelledby="onb-school-h">
+            <h2 id="onb-school-h" className="t-h3" style={{ fontFamily: "var(--font-text)" }}>Which maths chapter is school on?</h2>
+            <ChapterPicker subject="maths" chapters={mathsChapters} value={d.schoolChapter?.maths ?? null}
+              onChange={(n) => set((cur) => {
+                const sc = { ...(cur.schoolChapter ?? {}) };
+                if (n == null) delete sc.maths; else sc.maths = n;
+                return { schoolChapter: sc };
+              })} />
+            <p className="t-note">Optional. Other subjects and the school timetable are in the Parent corner, under Progress.</p>
+          </section>
+        )}
+        {cl && (
+          <section className="card card-flat stack-sm" aria-labelledby="onb-feel-h" data-testid="onb-feel">
+            <h2 id="onb-feel-h" className="t-h3" style={{ fontFamily: "var(--font-text)" }}>{`How does school feel for ${first || "your child"} right now?`}</h2>
+            {feelChipsFor(cl, bookSubjects).map((s) => (
+              <FeelPicker key={s} subject={s} name={first || "your child"} value={d.parentView?.[s] ?? null}
+                onChange={(v) => { if (v === "unsure") setClearedFeel((cs) => (cs.includes(s) ? cs : [...cs, s])); set((cur) => {
+                  const pv = { ...(cur.parentView ?? {}) };
+                  if (v === "unsure") delete pv[s]; else pv[s] = v;
+                  return { parentView: pv };
+                }); }} />
+            ))}
+            <p className="t-note">Optional. One tap each. It only sets where the first lessons begin; the lessons adjust from there.</p>
+          </section>
+        )}
         {hasPin === false && (
           <section className="card card-flat stack-sm" aria-label="Parent PIN">
             <h2 className="t-h3 row" style={{ fontFamily: "var(--font-text)" }}><Icon name="lock" /> Parent PIN</h2>
@@ -141,6 +204,7 @@ export function ChildStep() {
         {/* round 5: no class-time window by default, so no hours are promised here (limits live in the Parent corner) */}
         <p className="t-note">{`Lessons open any time. You can set a daily limit in the Parent corner.`}</p>
         <ErrorNote>{err}</ErrorNote>
+        {pinReadFailed && <Button variant="secondary" small onClick={() => setPinTry((n) => n + 1)}>Try again</Button>}
         <div className="onb-go">
           {!ready && <span className="t-note" id="child-why">{why}</span>}
           <Button type="submit" block disabled={!ready || busy} aria-describedby={ready ? undefined : "child-why"} icon={<Icon name="chevron" />}>{busy ? "Saving" : go}</Button>

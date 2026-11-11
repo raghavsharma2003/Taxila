@@ -1,0 +1,2076 @@
+{
+ "console": [
+  "warning: [.WebGL-0x30fc00108400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x30fc00108400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x30fc00108400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x30fc00108400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+  "warning: cascade: transcription call unavailable, falling back to push-to-talk Error: transcription channel did not open\n    at http://127.0.0.1:8090/assets/LessonScreen-YgDxOG2M.js:2:33840"
+ ],
+ "pageerror": [],
+ "failed": [
+  "GET /api/child/map?childId=bf926003-2dba-403f-ac2b-3288d7feeda9 net::ERR_ABORTED",
+  "GET /api/child/plan?childId=bf926003-2dba-403f-ac2b-3288d7feeda9 net::ERR_ABORTED",
+  "POST /api/lesson/end net::ERR_ABORTED",
+  "GET /api/studio/stream?lessonId=454eca50-03b2-4894-b1da-40e069f582f7&_rid=99a7479f-6 net::ERR_ABORTED",
+  "GET /assets/geist-mono-latin-XN7g48iV.woff2 net::ERR_ABORTED",
+  "GET /assets/geist-mono-latin-pyAoGB9p.woff2 net::ERR_ABORTED",
+  "GET /face-puppet/r8/rest-close.webp net::ERR_ABORTED"
+ ],
+ "http": [],
+ "trace": [
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 1,
+   "t": 1792013223443,
+   "mono": 75,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/c/bf926003-2dba-403f-ac2b-3288d7feeda9/lesson/new",
+    "how": "load",
+    "title": "Taxila · a personal AI teacher"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 2,
+   "t": 1792013223444,
+   "mono": 77,
+   "kind": "dev.info",
+   "tier": 1,
+   "data": {
+    "ua": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
+    "lang": "en-IN",
+    "viewport": {
+     "w": 393,
+     "h": 876
+    },
+    "dpr": 2.75,
+    "screen": {
+     "w": 393,
+     "h": 876
+    },
+    "touch": 1,
+    "memoryGB": 8,
+    "cores": 4,
+    "connection": {
+     "type": "4g",
+     "down": 1.5,
+     "rtt": 100,
+     "saveData": false
+    },
+    "reducedMotion": false,
+    "standalone": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 3,
+   "t": 1792013223466,
+   "mono": 99,
+   "kind": "net.req",
+   "rid": "99a7479f-1",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 4,
+   "t": 1792013223540,
+   "mono": 172,
+   "kind": "net.req",
+   "rid": "99a7479f-2",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/duplex/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 5,
+   "t": 1792013223008,
+   "mono": 191,
+   "kind": "net.res",
+   "rid": "99a7479f-2",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/duplex/config",
+    "status": 200,
+    "ms": 10,
+    "bytes": 19,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "duplex": "shadow"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 6,
+   "t": 1792013223007,
+   "mono": 201,
+   "kind": "net.res",
+   "rid": "99a7479f-1",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "status": 200,
+    "ms": 95,
+    "bytes": 11,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 7,
+   "t": 1792013223060,
+   "mono": 254,
+   "kind": "net.req",
+   "rid": "99a7479f-3",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/child/map?childId=bf926003-2dba-403f-ac2b-3288d7feeda9"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 8,
+   "t": 1792013223294,
+   "mono": 488,
+   "kind": "net.req",
+   "rid": "99a7479f-4",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/face/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 9,
+   "t": 1792013223296,
+   "mono": 490,
+   "kind": "mic.mode",
+   "tier": 1,
+   "data": {
+    "mode": "tap",
+    "reasons": [
+     "talk_pref_tap",
+     "no_headset_detected",
+     "echo_probe_not_built",
+     "duplex_not_resolved_yet"
+    ],
+    "older": true,
+    "wanted": "tap",
+    "headset": false,
+    "echoDemoted": false,
+    "duplexLive": false,
+    "duplexFallback": null,
+    "transport": null,
+    "pushToTalk": true,
+    "ui": "child-desk",
+    "duplexSource": null,
+    "sttLane": null
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 10,
+   "t": 1792013223363,
+   "mono": 557,
+   "kind": "net.req",
+   "rid": "99a7479f-5",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/lesson/start",
+    "body": {
+     "childId": "bf926003-2dba-403f-ac2b-3288d7feeda9",
+     "mode": "cascade",
+     "purpose": "lesson"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 11,
+   "t": 1792013223365,
+   "mono": 558,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": null,
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 12,
+   "t": 1792013223365,
+   "mono": 558,
+   "kind": "ui.render.card",
+   "tier": 1,
+   "data": {
+    "empty": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 13,
+   "t": 1792013223365,
+   "mono": 558,
+   "kind": "ui.render.tray",
+   "tier": 1,
+   "data": {
+    "empty": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 14,
+   "t": 1792013223369,
+   "mono": 563,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": null,
+    "sheet": null,
+    "strip": null,
+    "gate": "starting",
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 15,
+   "t": 1792013223009,
+   "mono": 575,
+   "kind": "net.res",
+   "rid": "99a7479f-4",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/face/config",
+    "status": 200,
+    "ms": 78,
+    "bytes": 55,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "puppet2d": true,
+     "visemes": true,
+     "rev": "r8",
+     "look": "r8"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 16,
+   "t": 1792013223041,
+   "mono": 607,
+   "kind": "ui.media",
+   "tier": 1,
+   "data": {
+    "phase": "mount",
+    "tag": "iframe",
+    "w": 2,
+    "h": 2,
+    "src": "/modules.html"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 17,
+   "t": 1792013223053,
+   "mono": 619,
+   "kind": "ui.media",
+   "tier": 1,
+   "data": {
+    "phase": "mount",
+    "tag": "canvas",
+    "w": 359,
+    "h": 408,
+    "zone": "teacher",
+    "testid": "teacher-window"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 18,
+   "t": 1792013224086,
+   "mono": 3435,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 2134,
+    "at": 1210
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 19,
+   "t": 1792013224178,
+   "mono": 3527,
+   "kind": "net.res",
+   "rid": "99a7479f-3",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/child/map?childId=bf926003-2dba-403f-ac2b-3288d7feeda9",
+    "status": 200,
+    "ms": 3095,
+    "bytes": 176784,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "bytes": 169466
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 20,
+   "t": 1792013227216,
+   "mono": 4365,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "tap",
+    "pushToTalk": true,
+    "transport": "webrtc",
+    "lane": "cascade"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 21,
+   "t": 1792013227222,
+   "mono": 4370,
+   "kind": "net.sse",
+   "rid": "99a7479f-6",
+   "tier": 1,
+   "data": {
+    "path": "/api/studio/stream",
+    "phase": "open-request"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 22,
+   "t": 1792013227222,
+   "mono": 4371,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/c/bf926003-2dba-403f-ac2b-3288d7feeda9/lesson/454eca50-03b2-4894-b1da-40e069f582f7",
+    "how": "replace",
+    "title": "Lesson · Taxila"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 23,
+   "t": 1792013227222,
+   "mono": 4371,
+   "kind": "trace.session",
+   "tier": 1,
+   "data": {
+    "from": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+    "to": "454eca50-03b2-4894-b1da-40e069f582f7",
+    "lesson": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 24,
+   "t": 1792013227225,
+   "mono": 4374,
+   "kind": "mic.duplex",
+   "tier": 1,
+   "data": {
+    "mode": "shadow",
+    "source": "server_shadow",
+    "device": null,
+    "server": "shadow",
+    "build": "on",
+    "asks": [
+     {
+      "status": 200,
+      "ms": 19,
+      "duplex": "shadow",
+      "retry": false,
+      "cohort": null,
+      "lane": null
+     }
+    ]
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 25,
+   "t": 1792013227225,
+   "mono": 4374,
+   "kind": "mic.mode",
+   "tier": 1,
+   "data": {
+    "mode": "tap",
+    "reasons": [
+     "talk_pref_tap",
+     "no_headset_detected",
+     "echo_probe_not_built",
+     "duplex_shadow_only"
+    ],
+    "older": true,
+    "wanted": "tap",
+    "headset": false,
+    "echoDemoted": false,
+    "duplexLive": false,
+    "duplexFallback": null,
+    "transport": null,
+    "pushToTalk": true,
+    "ui": "child-desk",
+    "duplex": "shadow",
+    "duplexSource": "server_shadow",
+    "sttLane": null
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 26,
+   "t": 1792013227225,
+   "mono": 4374,
+   "kind": "mic.lane",
+   "tier": 1,
+   "data": {
+    "lane": "d4",
+    "serverLane": "d4",
+    "device": null
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 27,
+   "t": 1792013227226,
+   "mono": 4374,
+   "kind": "net.res",
+   "rid": "99a7479f-5",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/lesson/start",
+    "status": 201,
+    "ms": 3592,
+    "bytes": 1429,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "lessonId": "454eca50-03b2-4894-b1da-40e069f582f7",
+     "topic": {
+      "id": "c5-maths-ch08-t01",
+      "title": "Converting kg and g",
+      "chapter": "Weight and Capacity"
+     },
+     "teacher": {
+      "id": "asha",
+      "name": "Asha",
+      "characterName": "Asha",
+      "addressedAs": "Asha didi",
+      "pronouns": {
+       "subject": "she",
+       "object": "her",
+       "possessive": "her"
+      },
+      "voice": "marin",
+      "role": "AI teacher",
+      "lookRev": 1,
+      "signatureColor": "#3E7C74"
+     },
+     "moduleCommands": [],
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Converting kg and g",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "What do you like better: apples or bananas?"
+      }
+     },
+     "address": null,
+     "moment": {
+      "move": "greet",
+      "verdict": "ungraded",
+      "engagement": "warming",
+      "teacherAffect": {
+       "display": "neutral_warm",
+       "intensity": 1,
+       "cause": "none",
+       "turn": 0
+      },
+      "bondStage": "meeting",
+      "safety": false,
+      "childLaughed": false,
+      "thinkAloud": false,
+      "band": "B3",
+      "lang": "en"
+     },
+     "teacherOpening": "Hi Zoya, I’m Asha, your AI teacher. Today we’ll convert kg and g. What do you like better: apples or bananas?",
+     "teacherOpeningSeq": 1,
+     "debug": {
+      "move": {
+       "kind": "greet",
+       "shape": "greet Zoya by name, warm and unhurried; first meeting: name yourself — Asha, their AI teacher; one line on today's topic (Converting kg and g); then one easy question about them"
+      },
+      "kitVerified": true,
+      "timings": [
+       {
+        "kind": "chat",
+        "deployment": "taxila-fast",
+        "status": 200,
+        "ms": 1194,
+        "attempt": 0,
+        "tokens": "[masked]"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 28,
+   "t": 1792013227387,
+   "mono": 4536,
+   "kind": "net.sse",
+   "rid": "99a7479f-6",
+   "tier": 1,
+   "data": {
+    "path": "/api/studio/stream",
+    "phase": "open"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 29,
+   "t": 1792013227456,
+   "mono": 4605,
+   "kind": "net.req",
+   "rid": "99a7479f-7",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "body": {
+     "lessonId": "454eca50-03b2-4894-b1da-40e069f582f7",
+     "box": {
+      "w": 361,
+      "h": 492
+     },
+     "young": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 30,
+   "t": 1792013228131,
+   "mono": 4804,
+   "kind": "net.res",
+   "rid": "99a7479f-7",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "status": 200,
+    "ms": 69,
+    "bytes": 27,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "vp": "p360",
+     "tight": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 31,
+   "t": 1792013228195,
+   "mono": 4869,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "open",
+    "lane": "cascade",
+    "label": "Fake Default Audio Input",
+    "echoCancellation": true,
+    "noiseSuppression": true,
+    "autoGainControl": true,
+    "sampleRate": 48000,
+    "ctxRate": 44100
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 32,
+   "t": 1792013228200,
+   "mono": 4873,
+   "kind": "mic.lane",
+   "tier": 1,
+   "data": {
+    "lane": "d4",
+    "why": null,
+    "opened": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 33,
+   "t": 1792013228200,
+   "mono": 4873,
+   "kind": "mic.mode",
+   "tier": 1,
+   "data": {
+    "mode": "tap",
+    "reasons": [
+     "talk_pref_tap",
+     "no_headset_detected",
+     "echo_probe_not_built",
+     "duplex_shadow_only"
+    ],
+    "older": true,
+    "wanted": "tap",
+    "headset": false,
+    "echoDemoted": false,
+    "duplexLive": false,
+    "duplexFallback": null,
+    "transport": null,
+    "pushToTalk": true,
+    "ui": "child-desk",
+    "duplex": "shadow",
+    "duplexSource": "server_shadow",
+    "sttLane": "d4"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 34,
+   "t": 1792013228200,
+   "mono": 4874,
+   "kind": "net.req",
+   "rid": "99a7479f-8",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/stt-token",
+    "body": {
+     "lessonId": "454eca50-03b2-4894-b1da-40e069f582f7"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 35,
+   "t": 1792013228203,
+   "mono": 4877,
+   "kind": "tts.request",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-1",
+    "seq": 1,
+    "text": "Hi Zoya, I’m Asha, your AI teacher. Today we’ll convert kg and g. What do you like better: apples or bananas?",
+    "chars": 109,
+    "lane": "cascade",
+    "voice": null,
+    "voiceNote": "chosen server-side (see srv tts events)"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 36,
+   "t": 1792013228209,
+   "mono": 4882,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": "starting",
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 37,
+   "t": 1792013228209,
+   "mono": 4882,
+   "kind": "ui.render.card",
+   "tier": 1,
+   "data": {
+    "text": "What do you like better: apples or bananas?",
+    "source": "server",
+    "lines": []
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 38,
+   "t": 1792013228211,
+   "mono": 4884,
+   "kind": "net.req",
+   "rid": "99a7479f-9",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/tts-stream",
+    "body": {
+     "lessonId": "454eca50-03b2-4894-b1da-40e069f582f7",
+     "seq": 1
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 39,
+   "t": 1792013228290,
+   "mono": 4964,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 40,
+   "t": 1792013228074,
+   "mono": 5116,
+   "kind": "tts.start",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-1",
+    "seq": 1,
+    "msFromRequest": 299
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 41,
+   "t": 1792013228078,
+   "mono": 5120,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "speaking",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 42,
+   "t": 1792013228157,
+   "mono": 5373,
+   "kind": "asr.config",
+   "tier": 1,
+   "data": {
+    "lane": "cascade",
+    "model": "taxila-live-transcribe",
+    "language": null,
+    "promptChars": 183,
+    "turnDetection": "server_vad"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 43,
+   "t": 1792013228163,
+   "mono": 5379,
+   "kind": "net.res",
+   "rid": "99a7479f-8",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/stt-token",
+    "status": 200,
+    "ms": 342,
+    "bytes": 647,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "token": "[masked]",
+     "expiresAt": 1792013348,
+     "base": "https://raghavsharma1729-compan-resource.openai.azure.com/openai/v1",
+     "session": {
+      "type": "transcription",
+      "include": [
+       "item.input_audio_transcription.logprobs"
+      ],
+      "audio": {
+       "input": {
+        "noise_reduction": {
+         "type": "near_field"
+        },
+        "transcription": {
+         "model": "taxila-live-transcribe",
+         "prompt": "A child aged 10 to 15 in India answers a teacher aloud in Hindi, English, or a Hindi-English mix. Write Hindi words in Devanagari and English words in Latin script, exactly as spoken."
+        },
+        "turn_detection": {
+         "type": "server_vad",
+         "threshold": 0.6,
+         "prefix_padding_ms": 300,
+         "silence_duration_ms": 900
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 44,
+   "t": 1792013228164,
+   "mono": 5379,
+   "kind": "net.req",
+   "rid": "99a7479f-a",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/voicesig/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 45,
+   "t": 1792013228161,
+   "mono": 5631,
+   "kind": "net.res",
+   "rid": "99a7479f-a",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/voicesig/config",
+    "status": 200,
+    "ms": 90,
+    "bytes": 67,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "mode": "shadow",
+     "frontend": true,
+     "detector": true,
+     "ver": "vs-seam/1"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 46,
+   "t": 1792013228692,
+   "mono": 6161,
+   "kind": "perf.lcp",
+   "tier": 1,
+   "data": {
+    "t": 624,
+    "el": "img.teacher-ground-art",
+    "url": "/assets/art/bg/[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 47,
+   "t": 1792013228800,
+   "mono": 6269,
+   "kind": "net.res",
+   "rid": "99a7479f-9",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/tts-stream",
+    "status": 200,
+    "ms": 157,
+    "bytes": 470654,
+    "type": "application/x-taxila-pcm-frames;v=2",
+    "body": {
+     "bytes": 470654
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 48,
+   "t": 1792013237659,
+   "mono": 15129,
+   "kind": "tts.end",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-1",
+    "seq": 1,
+    "status": "completed",
+    "playedFully": true,
+    "msUnplayed": 0,
+    "msFromStart": 9953
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 49,
+   "t": 1792013237664,
+   "mono": 15133,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "your_turn",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 50,
+   "t": 1792013237984,
+   "mono": 15454,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "transport",
+    "transport": "recording",
+    "why": "transcription channel did not open",
+    "lane": "cascade"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 51,
+   "t": 1792013237987,
+   "mono": 15457,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "tap",
+    "pushToTalk": true,
+    "transport": "recording",
+    "lane": "cascade"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 52,
+   "t": 1792013237988,
+   "mono": 15458,
+   "kind": "mic.mode",
+   "tier": 1,
+   "data": {
+    "mode": "tap",
+    "reasons": [
+     "transcription_call_unavailable",
+     "talk_pref_tap",
+     "no_headset_detected",
+     "echo_probe_not_built",
+     "duplex_shadow_only"
+    ],
+    "older": true,
+    "wanted": "tap",
+    "headset": false,
+    "echoDemoted": false,
+    "duplexLive": false,
+    "duplexFallback": null,
+    "transport": "recording",
+    "pushToTalk": true,
+    "ui": "child-desk",
+    "duplex": "shadow",
+    "duplexSource": "server_shadow",
+    "sttLane": "d4"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 53,
+   "t": 1792013238498,
+   "mono": 15968,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Type",
+    "testid": "type",
+    "zone": "dock",
+    "xy": {
+     "x": 328,
+     "y": 774,
+     "vw": 393,
+     "vh": 876
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 54,
+   "t": 1792013238504,
+   "mono": 15974,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "your_turn",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": true,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 55,
+   "t": 1792013239716,
+   "mono": 17186,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Send",
+    "testid": "send",
+    "zone": "dock"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 56,
+   "t": 1792013239722,
+   "mono": 17191,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "heard",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 57,
+   "t": 1792013239722,
+   "mono": 17191,
+   "kind": "ui.answer",
+   "tier": 1,
+   "data": {
+    "text": "yes",
+    "form": "typed",
+    "delivery": "sending",
+    "verdict": null,
+    "withHelp": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 58,
+   "t": 1792013239747,
+   "mono": 17216,
+   "kind": "net.req",
+   "rid": "99a7479f-b",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/lesson/turn",
+    "body": {
+     "lessonId": "454eca50-03b2-4894-b1da-40e069f582f7",
+     "childText": "yes",
+     "typed": true,
+     "turnSeq": 1
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 59,
+   "t": 1792013239880,
+   "mono": 17350,
+   "kind": "net.req",
+   "rid": "99a7479f-c",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "body": {
+     "lessonId": "454eca50-03b2-4894-b1da-40e069f582f7",
+     "box": {
+      "w": 361,
+      "h": 488
+     },
+     "young": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 60,
+   "t": 1792013240002,
+   "mono": 17401,
+   "kind": "net.res",
+   "rid": "99a7479f-c",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "status": 200,
+    "ms": 50,
+    "bytes": 27,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "vp": "p360",
+     "tight": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 61,
+   "t": 1792013240328,
+   "mono": 17728,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "thinking",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 62,
+   "t": 1792013242167,
+   "mono": 19102,
+   "kind": "net.res",
+   "rid": "99a7479f-b",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/lesson/turn",
+    "status": 200,
+    "ms": 1719,
+    "bytes": 2994,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "move": {
+      "kind": "hook",
+      "shape": "open with one concrete everyday situation — kit contexts: post office parcels, sabzi mandi shopping, flour and rice in the kitchen; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class)",
+      "format": "F4"
+     },
+     "moduleCommands": [],
+     "ui": {
+      "status": "your_turn",
+      "phase": "teach",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Converting kg and g",
+      "beat": {
+       "beatId": "b2-hook",
+       "type": "hook",
+       "index": 2
+      },
+      "ask": {
+       "text": "Would you choose 2050 g or 250 g to write its weight?"
+      }
+     },
+     "teacherReply": "At the sabzi mandi, a bag has 2 kg and 50 g. Would you choose 2050 g or 250 g to write its weight?",
+     "teacherReplySeq": 3,
+     "moment": {
+      "move": "hook",
+      "verdict": "ungraded",
+      "engagement": "warming",
+      "teacherAffect": {
+       "display": "neutral_warm",
+       "intensity": 1,
+       "cause": "none",
+       "turn": 1
+      },
+      "bondStage": "meeting",
+      "safety": false,
+      "childLaughed": false,
+      "thinkAloud": false,
+      "band": "B3",
+      "lang": "en"
+     },
+     "pace": {
+      "waitNudgeSec": 4,
+      "endpointSilenceMs": 700
+     },
+     "debug": {
+      "phase": "teach",
+      "turn": 1,
+      "teachIdx": 1,
+      "hintLevel": 0,
+      "unclear": 0,
+      "moduleOnly": false,
+      "hold": false,
+      "classification": {
+       "outcome": "no_evidence",
+       "confidence": 1,
+       "source": "model",
+       "flags": {
+        "dontKnow": false,
+        "asksForAnswer": false,
+        "minimal": true,
+        "offTopic": true,
+        "distress": false,
+        "distressKind": null,
+        "wantsToStop": false
+       }
+      },
+      "evidence": [],
+      "kt": [],
+      "probe": null,
+      "vibe": {
+       "waitNudgeSec": 4,
+       "endpointSilenceMs": 700,
+       "turnWords": [
+        14,
+        25
+       ],
+       "humour": "light",
+       "register": "warm",
+       "address": {
+        "childCallsTeacher": "teacher",
+        "teacherCallsChild": "name"
+       },
+       "exampleDomain": null,
+       "challenge": "standard",
+       "energy": "warm",
+       "probeSkin": "new_classmate",
+       "languageMix": 0.2,
+       "suppressed": false
+      },
+      "held": [],
+      "carried": [],
+      "skills": {},
+      "flagged": {},
+      "guard": {
+       "caught": [],
+       "rewritten": false,
+       "replaced": false
+      },
+      "verdict": "ungraded",
+      "spoiled": [],
+      "speculation": {
+       "tried": 1,
+       "hit": true
+      },
+      "ttsPrewarmed": true,
+      "prefetch": {
+       "adopted": false,
+       "miss": "none"
+      },
+      "note": {
+       "nonAnswer": true,
+       "intent": "backchannel",
+       "waitedMs": 675,
+       "parallel": null
+      },
+      "item": null,
+      "kitVerified": true,
+      "ms": 1675,
+      "timings": [
+       {
+        "kind": "@ctx",
+        "ms": 43
+       },
+       {
+        "kind": "@kit",
+        "ms": 43
+       },
+       {
+        "kind": "chat",
+        "deployment": "grok-4-1-fast-non-reasoning",
+        "status": 200,
+        "ms": 645,
+        "attempt": 0,
+        "tokens": "[masked]"
+       },
+       {
+        "kind": "@classified",
+        "ms": 732
+       },
+       {
+        "kind": "chat",
+        "deployment": "taxila-gpt6",
+        "status": 200,
+        "ms": 1323,
+        "attempt": 0,
+        "tokens": "[masked]"
+       },
+       {
+        "kind": "@noted",
+        "ms": 1407
+       },
+       {
+        "kind": "@planned",
+        "ms": 1412
+       },
+       {
+        "kind": "@kernel",
+        "ms": 1413
+       },
+       {
+        "kind": "chat",
+        "deployment": "taxila-fast",
+        "status": 200,
+        "ms": 1487,
+        "attempt": 0,
+        "tokens": "[masked]",
+        "speculative": true
+       },
+       {
+        "kind": "@replied",
+        "ms": 1619
+       },
+       {
+        "kind": "@stored",
+        "ms": 1675
+       }
+      ],
+      "stage": {
+       "accepted": [
+        "move",
+        "knobs"
+       ],
+       "rejected": [],
+       "wb": null,
+       "studioPropose": null,
+       "point": {
+        "want": null,
+        "request": null
+       },
+       "slot": null,
+       "tray": "none"
+      }
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 63,
+   "t": 1792013242319,
+   "mono": 19255,
+   "kind": "tts.request",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-2",
+    "seq": 3,
+    "text": "At the sabzi mandi, a bag has 2 kg and 50 g. Would you choose 2050 g or 250 g to write its weight?",
+    "chars": 98,
+    "lane": "cascade",
+    "voice": null,
+    "voiceNote": "chosen server-side (see srv tts events)"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 64,
+   "t": 1792013242322,
+   "mono": 19258,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "thinking",
+    "phase": "teach",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 65,
+   "t": 1792013242322,
+   "mono": 19258,
+   "kind": "ui.render.card",
+   "tier": 1,
+   "data": {
+    "text": "Would you choose 2050 g or 250 g to write its weight?",
+    "source": "server",
+    "lines": []
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 66,
+   "t": 1792013242323,
+   "mono": 19259,
+   "kind": "net.req",
+   "rid": "99a7479f-d",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/tts-stream",
+    "body": {
+     "lessonId": "454eca50-03b2-4894-b1da-40e069f582f7",
+     "seq": 3
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 67,
+   "t": 1792013242078,
+   "mono": 19419,
+   "kind": "tts.start",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-2",
+    "seq": 3,
+    "msFromRequest": 264
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 68,
+   "t": 1792013242081,
+   "mono": 19422,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "speaking",
+    "phase": "teach",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 69,
+   "t": 1792013242167,
+   "mono": 19508,
+   "kind": "net.req",
+   "rid": "99a7479f-e",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "body": {
+     "lessonId": "454eca50-03b2-4894-b1da-40e069f582f7",
+     "box": {
+      "w": 361,
+      "h": 492
+     },
+     "young": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 70,
+   "t": 1792013242167,
+   "mono": 19768,
+   "kind": "net.res",
+   "rid": "99a7479f-e",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "status": 200,
+    "ms": 94,
+    "bytes": 27,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "vp": "p360",
+     "tight": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "454eca50-03b2-4894-b1da-40e069f582f7",
+   "pid": "99a7479f-7c87-43e9-b9d7-9d18ededb4fc",
+   "src": "client",
+   "seq": 71,
+   "t": 1792013242698,
+   "mono": 20300,
+   "kind": "net.res",
+   "rid": "99a7479f-d",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/tts-stream",
+    "status": 200,
+    "ms": 82,
+    "bytes": 520365,
+    "type": "application/x-taxila-pcm-frames;v=2",
+    "body": {
+     "bytes": 520365
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "pid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "src": "client",
+   "seq": 1,
+   "t": 1792013254107,
+   "mono": 153,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/c/bf926003-2dba-403f-ac2b-3288d7feeda9/",
+    "how": "load",
+    "title": "Taxila · a personal AI teacher"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "pid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "src": "client",
+   "seq": 2,
+   "t": 1792013254109,
+   "mono": 155,
+   "kind": "dev.info",
+   "tier": 1,
+   "data": {
+    "ua": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
+    "lang": "en-IN",
+    "viewport": {
+     "w": 393,
+     "h": 876
+    },
+    "dpr": 2.75,
+    "screen": {
+     "w": 393,
+     "h": 876
+    },
+    "touch": 1,
+    "memoryGB": 8,
+    "cores": 4,
+    "connection": {
+     "type": "4g",
+     "down": 1.5,
+     "rtt": 100,
+     "saveData": false
+    },
+    "reducedMotion": false,
+    "standalone": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "pid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "src": "client",
+   "seq": 3,
+   "t": 1792013254136,
+   "mono": 182,
+   "kind": "net.req",
+   "rid": "a006021b-1",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "pid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "src": "client",
+   "seq": 4,
+   "t": 1792013254001,
+   "mono": 275,
+   "kind": "net.res",
+   "rid": "a006021b-1",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "status": 200,
+    "ms": 92,
+    "bytes": 11,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "pid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "src": "client",
+   "seq": 5,
+   "t": 1792013254469,
+   "mono": 743,
+   "kind": "net.req",
+   "rid": "a006021b-2",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/duplex/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "pid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "src": "client",
+   "seq": 6,
+   "t": 1792013254005,
+   "mono": 761,
+   "kind": "net.res",
+   "rid": "a006021b-2",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/duplex/config",
+    "status": 200,
+    "ms": 13,
+    "bytes": 19,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "duplex": "shadow"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "pid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "src": "client",
+   "seq": 7,
+   "t": 1792013254296,
+   "mono": 1052,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/c/bf926003-2dba-403f-ac2b-3288d7feeda9/hello",
+    "how": "replace",
+    "title": "Taxila · a personal AI teacher"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "pid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "src": "client",
+   "seq": 8,
+   "t": 1792013254334,
+   "mono": 1090,
+   "kind": "net.req",
+   "rid": "a006021b-3",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/face/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "pid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "src": "client",
+   "seq": 9,
+   "t": 1792013223019,
+   "mono": 1117,
+   "kind": "ui.media",
+   "tier": 1,
+   "data": {
+    "phase": "mount",
+    "tag": "canvas",
+    "w": 361,
+    "h": 334,
+    "testid": "hello"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "pid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "src": "client",
+   "seq": 10,
+   "t": 1792013223019,
+   "mono": 1117,
+   "kind": "net.res",
+   "rid": "a006021b-3",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/face/config",
+    "status": 200,
+    "ms": 8,
+    "bytes": 55,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "puppet2d": true,
+     "visemes": true,
+     "rev": "r8",
+     "look": "r8"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "pid": "a006021b-d0a4-40b2-b549-d9b71f36e8bc",
+   "src": "client",
+   "seq": 11,
+   "t": 1792013225581,
+   "mono": 3679,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 2005,
+    "at": 1588
+   }
+  }
+ ]
+}

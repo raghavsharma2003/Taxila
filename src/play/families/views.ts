@@ -5,10 +5,45 @@ import { makeAtomsView } from "./todo-jodo/atoms.view.ts";
 import { makeStripsView } from "./todo-jodo/strips.view.ts";
 import { makeBundlesView } from "./todo-jodo/bundles.view.ts";
 import { makeBalanceView } from "./taraazu/balance.view.ts";
+import { makeWeighView } from "./taraazu/weigh.view.ts";
 import { makeLineView } from "./nishana/line.view.ts";
 import { makeLabView } from "./kyun-lab/lab.view.ts";
+import { makeChumbakView } from "./kyun-lab/chumbak.view.ts";   // r7 chumbak
 import { makeKonView } from "./kon/kon.view.ts";
+import { makeStambhView } from "./stambh/stambh.view.ts";
+import { makeTallyView } from "./stambh/tally.view.ts";   // r8 stambh/tally
+import { makeBeamView } from "./yantra/beam.view.ts";
+import { makePendulumView } from "./yantra/pendulum.view.ts";
 import { makePlotView } from "./nazariya/plot.view.ts";   // r4-khand: the 2D board twin of the Khand engine
+import { makeTriView } from "./nazariya/tri.view.ts";     // r7 nazariya2
+import { makeSolidView } from "./nazariya/solid.view.ts"; // r7 nazariya2
+import { makeArenaView } from "./arena/arena.view.ts";
+import { makeCircuitView } from "./yantra/circuit.view.ts";
+import { makeRoshniView } from "./yantra/roshni.view.ts";
+import { makeKaalView } from "./kaal/kaal.view.ts";
+import { makeVakyaView } from "./vakya/vakya.view.ts";
+import { makeKilaView } from "./kila/kila.view.ts";
+import { makeGhadiView } from "./ghadi/ghadi.view.ts";
+import { makeNakshaView } from "./naksha/naksha.view.ts";
+import { makeGunaView } from "./guna/guna.view.ts";
+import { makeKramView } from "./kram/kram.view.ts";
+import { makeHissaView } from "./hissa/hissa.view.ts";
+import { makeKoshtakView } from "./koshtak/koshtak.view.ts";
+import { makeParkarView } from "./parkar/parkar.view.ts";
+import { makeAankdeView } from "./aankde/aankde.view.ts";
+import { makePaheliView } from "./paheli/paheli.view.ts";
+import { makeGaltiView } from "./galti-pakdo/galti.view.ts";
+import { makeChhaanoView } from "./chhaano/chhaano.view.ts";
+import { makeGatiView } from "./gati/gati.view.ts";
+import { makeBhaapView } from "./bhaap/bhaap.view.ts";
+import { makeAakashView } from "./aakash/aakash.view.ts";
+import { makeRangView } from "./rang/rang.view.ts";
+import { makeBadlaavView } from "./badlaav/badlaav.view.ts";
+import { makeJaanchView } from "./jaanch/jaanch.view.ts";
+import { makeDarpanView } from "./darpan/darpan.view.ts";
+import { makeTileView } from "./darpan/tile.view.ts";   // r7 tilings2
+import { makeFeetaView } from "./feeta/feeta.view.ts";
+import { makeNaapView } from "./feeta/naap.view.ts";   // r7 naap
 
 export const VIEWS: Record<string, MakeView> = {
   "todo-jodo/atoms": makeAtomsView,
@@ -16,15 +51,106 @@ export const VIEWS: Record<string, MakeView> = {
   "todo-jodo/bundles": makeBundlesView,
   "taraazu/equation": makeBalanceView,
   "taraazu/equality": makeBalanceView,
+  "taraazu/weigh": makeWeighView,
+  "taraazu/fill": makeWeighView,
   "nishana/place": makeLineView,
   "nishana/compare": makeLineView,
+  "nishana/hop": makeLineView,
   "kyun-lab/fair-test": makeLabView,
+  "kyun-lab/dhruv": makeChumbakView,
+  "kyun-lab/disha": makeChumbakView,
   "kon/turn": makeKonView,
   "kon/set": makeKonView,
+  "kon/zone": makeKonView,
+  "kon/pair": makeKonView,
+  "kon/close": makeKonView,
+  "kon/lines": makeKonView,
+  "kon/cross": makeKonView,
+  "kon/ends": makeKonView,
   "nazariya/views": makePlotView,
   "nazariya/array": makePlotView,
   "nazariya/floor": makePlotView,
   "nazariya/powers": makePlotView,
   "nazariya/mirror": makePlotView,
+  "nazariya/tri": makeTriView,
+  "nazariya/solid": makeSolidView,
+  "arena/pick": makeArenaView,
+  "stambh/bars": makeStambhView,
+  "stambh/picto": makeStambhView,
+  "stambh/tally": makeTallyView,
+  "yantra/beam": makeBeamView,
+  "yantra/pendulum": makePendulumView,
+  "yantra/circuit": makeCircuitView,
+  "yantra/roshni": makeRoshniView,
+  "kaal/place": makeKaalView,
+  "kaal/order": makeKaalView,
+  "vakya/rail": makeVakyaView,
+  "kila/multiples": makeKilaView,
+  "kila/factors": makeKilaView,
+  "kila/lcm": makeKilaView,
+  "kila/divisibility": makeKilaView,
+  "naksha/locate": makeNakshaView,
+  "naksha/route": makeNakshaView,
+  "naksha/scale": makeNakshaView,
+  "naksha/shape": makeNakshaView,
+  "ghadi/set": makeGhadiView,
+  "ghadi/run": makeGhadiView,
+  "ghadi/race": makeGhadiView,
+  "ghadi/calendar": makeGhadiView,
+  "darpan/mirror": makeDarpanView,
+  "darpan/turn": makeDarpanView,
+  "darpan/tile": makeTileView,
+  "feeta/measure": makeFeetaView,
+  "feeta/fence": makeFeetaView,
+  "feeta/trip": makeFeetaView,
+  "feeta/compare": makeFeetaView,
+  "feeta/thread": makeNaapView,
+  "feeta/thermo": makeNaapView,
+  "feeta/scale": makeNaapView,
+  "feeta/touch": makeNaapView,
+  "guna/field": makeGunaView,
+  "guna/pack": makeGunaView,
+  "guna/story": makeGunaView,
+  "guna/yard": makeGunaView,
+  "kram/grow": makeKramView,
+  "kram/machine": makeKramView,
+  "kram/beats": makeKramView,
+  "kram/nest": makeKramView,
+  "hissa/fold": makeHissaView,
+  "hissa/pour": makeHissaView,
+  "hissa/grid": makeHissaView,
+  "hissa/story": makeHissaView,
+  "koshtak/tray": makeKoshtakView,
+  "koshtak/bin": makeKoshtakView,
+  "parkar/build": makeParkarView,
+  "parkar/bisect": makeParkarView,
+  "parkar/drop": makeParkarView,
+  "aankde/tally": makeAankdeView,
+  "aankde/stack": makeAankdeView,
+  "aankde/line": makeAankdeView,
+  "paheli/pairs": makePaheliView,
+  "paheli/magic": makePaheliView,
+  "paheli/cipher": makePaheliView,
+  "paheli/mirror": makePaheliView,
+  "galti-pakdo/kaapi": makeGaltiView,
+  "chhaano/sukha": makeChhaanoView,
+  "chhaano/geela": makeChhaanoView,
+  "gati/drishti": makeGatiView,
+  "gati/raftaar": makeGatiView,
+  "gati/nishaan": makeGatiView,
+  "bhaap/avastha": makeBhaapView,
+  "bhaap/bhaapan": makeBhaapView,
+  "bhaap/hawa": makeBhaapView,
+  "bhaap/chakra": makeBhaapView,
+  "aakash/chakkar": makeAakashView,
+  "aakash/ritu": makeAakashView,
+  "aakash/grahan": makeAakashView,
+  "rang/pehchaan": makeRangView,
+  "rang/milao": makeRangView,
+  "badlaav/palat": makeBadlaavView,
+  "badlaav/aag": makeBadlaavView,
+  "jaanch/neela": makeJaanchView,
+  "jaanch/daag": makeJaanchView,
+  "jaanch/thali": makeJaanchView,
 };
 export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }

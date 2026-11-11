@@ -2,7 +2,8 @@
 // (requireChild), so a cross-family id is a 404, never data. A failed read gives the screen's designed empty or
 // fallback state, never an error string aimed at the child (§4.7 "raw API strings are never shown").
 import { takeEarlyMe } from "../app/boot.ts";
-import type { ChildMapResponse, ChildMapSkill, DidCard, LessonSummary, MapState } from "../../shared/contracts.ts";
+import { meOrChildDevice } from "../app/device.ts";
+import type { ChildMapResponse, ChildMapSkill, ChildMemoryDeleteRequest, ChildMemoryResponse, DidCard, HomeworkMatch, HomeworkMatchRequest, HomeworkMatchResponse, LessonSummary, MapState } from "../../shared/contracts.ts";
 import { tutorById } from "../../shared/tutors.js";
 import { ApiError, getJson, postJson } from "../lesson/api.ts";
 
@@ -22,14 +23,18 @@ export interface ChildRow {
   timing_multiplier?: number | null;
 }
 export interface MeResponse {
-  guardian: { id: string; email: string; name: string };
+  /** r7 device pairing: "child" on a paired child device (no guardian there). */
+  scope?: "parent" | "child";
+  guardian: { id: string; email: string; name: string } | null;
   children: ChildRow[];
 }
 
 /** /api/me for the child shell: the boot read index.html started (one hop with the plan), else a normal read. */
 export const getMe = () => {
   const early = takeEarlyMe<MeResponse>();
-  return early ? early.catch(() => getJson<MeResponse>("/api/me")) : getJson<MeResponse>("/api/me");
+  // r7 device pairing: on a paired child device /api/me is refused (scope.child_device): the child's own Me instead
+  const read = () => meOrChildDevice<MeResponse>(() => getJson<MeResponse>("/api/me"));
+  return early ? early.catch(read) : read();
 };
 
 export type { ChildMapResponse, ChildMapSkill, MapState };
@@ -48,6 +53,10 @@ export function normaliseMap(data: unknown, mode: "garden" | "sky"): ChildMapRes
     subject: String(s?.subject ?? ""), book: String(s?.book ?? ""),
     chapters: (Array.isArray(s?.chapters) ? s.chapters : []).map((c) => ({
       id: String(c?.id ?? ""), number: Number(c?.number) || 0, title: String(c?.title ?? ""), sealed: c?.sealed === true, here: c?.here === true,
+      // r7 F Learning (to-app/001): the chapter the parent said school is on (Progress → School, or set-up's maths question)
+      school: (c as { school?: unknown } | undefined)?.school === true,
+      // APP-06: when the map first saw the chapter sealed (the World's "Sealed since" and the end screen's check read it)
+      sealedAt: typeof c?.sealedAt === "string" && c.sealedAt ? c.sealedAt : null,
       secure: Number(c?.secure) || 0, total: Number(c?.total) || 0,
       topics: (Array.isArray(c?.topics) ? c.topics : []).map((t) => ({
         id: String(t?.id ?? ""), title: String(t?.title ?? ""),
@@ -55,6 +64,9 @@ export function normaliseMap(data: unknown, mode: "garden" | "sky"): ChildMapRes
       })),
     })).filter((c) => c.id),
   })).filter((s) => s.chapters.length);
+  // "Your class is here" marks the school's chapter when the parent has told us one; until then, the plan's chapter (`here`)
+  const anySchool = subjects.some((s) => s.chapters.some((c) => c.school));
+  for (const s of subjects) for (const c of s.chapters) (c as { classHere?: boolean }).classHere = anySchool ? c.school : c.here;
   const skills = subjects.flatMap((s) => s.chapters.flatMap((c) => c.topics.flatMap((t) => t.skills)));
   const touched = skills.some((k) => k.state !== "not_started");
   return { mode: r.mode === "garden" || r.mode === "sky" ? r.mode : mode, hidden: false, subjects, skills, empty: r.empty === true || !touched };
@@ -108,6 +120,10 @@ export async function getLessonSummary(lessonId: string, signal?: AbortSignal): 
 export const updateChild = (childId: string, patch: { avatar?: string; interests?: string[] }) =>
   postPatch("/api/children", { childId, ...patch });
 
+/** r7 (Learning to-app/007): her one-tap "Maths feels…" picks at Hello, for cold-start placement. Never blocks Hello. */
+export const postFeelPicks = (body: { childId: string; childPicks: Record<string, "easy" | "okay" | "tricky"> }) =>
+  postJson<{ note?: unknown }>("/api/placement/onboarding", body);
+
 async function postPatch(path: string, body: unknown): Promise<unknown> {
   const res = await fetch(path, {
     method: "PATCH",
@@ -132,9 +148,6 @@ export interface TutorsResponse {
   custom?: boolean;
   suggestions?: string[];
 }
-export const getTutors = (cid: string) => getJson<TutorsResponse>(`/api/tutors?childId=${encodeURIComponent(cid)}`);
-export const chooseTutor = (cid: string, tutorId: string, source: "child" | "child_random") =>
-  postJson("/api/tutors/choose", { childId: cid, tutorId, source });
 
 /** The page's best card: a verified one first, then one with an answer. Pure. */
 export function bestCard(cards: DidCard[]): DidCard | null {
@@ -147,3 +160,58 @@ export function offerOf(r: TutorsResponse | null): string[] {
 }
 
 export { ApiError, postJson };
+
+/** r7: the chapter that carries "Your class is here" (the school's chapter, else the plan's; normaliseMap decides). */
+export const classHereOf = (c: { here?: boolean; classHere?: boolean }): boolean => (c.classHere ?? c.here) === true;
+
+/** r7: the school's chapters as "Subject · Chapter" lines for the Kaksha World (empty when the parent set none). */
+export function schoolChaptersOf(map: { subjects?: Array<{ subject: string; chapters: Array<{ title: string; school?: boolean }> }> } | null): Array<{ subject: string; title: string }> {
+  return (map?.subjects ?? []).flatMap((s) => s.chapters.filter((c) => c.school).map((c) => ({ subject: s.subject, title: c.title })));
+}
+
+/** r7 app-me-settings: What {T} remembers (GET/DELETE /api/child/memory, Brain to-brain/008). null: the route is not
+ *  there yet or the read failed (the section is then not shown at all, never an empty promise). */
+export type ChildMemory = ChildMemoryResponse;
+export async function getChildMemory(cid: string, signal?: AbortSignal): Promise<ChildMemory | null> {
+  try {
+    const r = await getJson<ChildMemory>(`/api/child/memory?childId=${encodeURIComponent(cid)}`, signal);
+    return r && typeof r.keeps === "boolean" && Array.isArray(r.items) ? r : null;
+  } catch {
+    return null;
+  }
+}
+/** Forget one item (a hard delete on the server). true when it is gone. */
+export async function forgetChildMemory(cid: string, id: string): Promise<boolean> {
+  try {
+    const res = await fetch("/api/child/memory", { method: "DELETE", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ childId: cid, id } satisfies ChildMemoryDeleteRequest) });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+/** r7 homework help: Learning's match ladder (POST /api/homework/match). Waits at most `ms`; a timeout, a refusal or no
+ *  match is null, and the lesson starts anyway with no topic (never a wait the child can see). */
+export async function homeworkMatch(cid: string, text: string, ms = 1500): Promise<HomeworkMatch | null> {
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), ms);
+  try {
+    const r = await postJson<HomeworkMatchResponse>("/api/homework/match", { childId: cid, text: text.slice(0, 500) } satisfies HomeworkMatchRequest, ac.signal);
+    return r?.match ?? null;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+/** The chip is asked only when the match names a topic (rungs kit_item and topic); "subject" or none starts at once. */
+export const homeworkAsks = (m: HomeworkMatch | null): m is HomeworkMatch & { topicId: string } =>
+  !!m && (m.rung === "kit_item" || m.rung === "topic") && !!m.topicId;
+
+/** r7 app-world-hangar-depth: the chapters the ledger has sealed (every skill Got it or Secure; server/routes/child.js
+ *  buildMap decides `sealed`, never the app). */
+export function sealedChaptersOf(map: { subjects?: Array<{ subject: string; chapters: Array<{ id: string; title: string; sealed?: boolean; sealedAt?: string | null }> }> } | null):
+  Array<{ id: string; subject: string; title: string; sealedAt?: string | null }> {
+  // sealedAt (Learning, migration 046): the first time the map saw it sealed; null = sealed before the stamp existed
+  return (map?.subjects ?? []).flatMap((s) => s.chapters.filter((c) => c.sealed).map((c) => ({ id: c.id, subject: s.subject, title: c.title, ...(c.sealedAt ? { sealedAt: c.sealedAt } : {}) })));
+}

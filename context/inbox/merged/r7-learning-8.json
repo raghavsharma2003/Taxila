@@ -1,0 +1,16 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-report-monthly-r1",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (learning-parent-report-sections, batch R1): parents get a monthly report (cadence monthly, period YYYY-MM; Conductor job parent.monthly enqueued on the night fold of a month's last learning day; Notes tab 'This month'; migration 044 widens parent_report.cadence). Its sections are code-counted L0/L1 lines through the existing claim gate, each with an independent re-derivation in reports/check.js: S4 holding up (answers whose previous contact on the skill was ≥ 7 days earlier, ≥ 3 for the count line, else 'still learning how it holds up'), S6 when it gets hard (hints Taxila gave before any answer and how many were then solved, ≥ 5 scored answers), S7 curiosity (the child's own questions kept in the question jar and how many Taxila came back to), S9 routine (lesson days of the month and the median lesson length; no streaks or missed days), S13 what's next (the earliest re-check still ahead, else fixed copy), S16 the cross-context note; up to 3 strengths and 3 growth edges. The weekly report inside a parent-entered test window carries an S17 line that avoids every pressure word (the lexicon bans test, exam, परीक्षा). The monthly spoken script stays one TTS request (≤ 1200 chars; optional sections dropped first), main 2026-11-04. RENDER_VERSION pr-3. Reverse if: a parent-facing review finds a monthly line misread as a judgement of the child, or the checker disagrees with the generator on any staged monthly report."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-report-monthly-r1\nNot in R1: S5 (waits on the population format allocator, learning-how-this-child-learns), S8 and S10 (gated, later), S14 and S18 and the term cadence (batch R2), S15 the wellbeing card, the term PDF and the 5-minute voice story. Thresholds are in server/reports/config.js (HOLD_GAP_DAYS 7, HOLD_MIN_N 3, HARD_MIN_N 5, ROUTINE_MIN_LESSONS 2), all [U].",
+  "measurements": "",
+  "rejected": ""
+ }
+}

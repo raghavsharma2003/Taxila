@@ -1,7 +1,7 @@
 // ship5 p4-content unit tests: the catalogue rung, the production catalog, the host grade session, the rest rule and
 // the 3-minute floor, the seam-bridge merge (Stagecraft + Wave 2 on one stage), board sync, the lesson lifecycle and the
 // stage's busy share. Pure: no network, no DB, no model (every model call is a fake).
-import { test } from "node:test";
+import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { entryFromRecord, checkSpec, unknownKitIds, loadCatalogue, catalogueEntry, catalogueTopicsByArchetype, kitTopicAny, EXPLAINER } from "../server/stagecraft/catalogue.js";
 import { createBuilders, boardTwinFor, stringsOfSpec } from "../server/stagecraft/builders.js";
@@ -23,7 +23,10 @@ import { ENGINE_SPECS } from "../shared/studio-spec.ts";
 const T = "c6-maths-ch05-t02";        // a catalogue topic with a checked game (sieve-storm@1) and a checked explainer
 const { kitFromFile } = await import("../server/content/kits.js");
 const { getTopic } = await import("../server/content/curriculum.js");
-globalThis.__kits = Object.fromEntries(["c5-maths-ch02-t01"].map((t) => [t, kitFromFile(getTopic(t))]));
+// npm test runs every file in one process: the kits this file injects are set for its tests only, and put back after
+const KITS0 = globalThis.__kits;
+before(() => { globalThis.__kits = Object.fromEntries(["c5-maths-ch02-t01"].map((t) => [t, kitFromFile(getTopic(t))])); });
+after(() => { if (KITS0 === undefined) delete globalThis.__kits; else globalThis.__kits = KITS0; });
 const kit = kitTopicAny(T);
 const clone = (x) => structuredClone(x);
 
@@ -120,6 +123,13 @@ test("builders: a generated spec citing an unknown kit id is unusable; a valid o
   assert.deepEqual(Object.values(q8Saw), ["Prime hunt in the bazaar"], "Q8 sees exactly the strings the model wrote");
   const blocked = await createBuilders({ chat: async () => ({ json: clone(fresh), usage: {} }), q8: async () => ({ ok: false }) }).generatedSpec({ archetype: "sieve-storm@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, key);
   assert.equal(blocked.checks.contentSafe, false, "a Q8 finding makes the spec unshowable (allChecks)");
+  // (main 2026-11-10: a refusal names the string and why — c4's attempt 1 said only "contentSafe")
+  const named = await createBuilders({ chat: async () => ({ json: clone(fresh), usage: {} }), q8: async (strings) => ({ ok: false, findings: [{ key: Object.keys(strings)[0], code: "brain_violence" }] }) })
+    .generatedSpec({ archetype: "sieve-storm@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, key);
+  assert.deepEqual(named.checks.contentFindings.map((f) => [f.code, f.text]), [["brain_violence", "Prime hunt in the bazaar"]]);
+  const threw = await createBuilders({ chat: async () => ({ json: clone(fresh), usage: {} }), q8: async () => { throw Object.assign(new Error("x"), { code: "timeout" }); } })
+    .generatedSpec({ archetype: "sieve-storm@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, key);
+  assert.match(threw.checks.contentFindings[0].code, /^q8_threw: timeout/, "a check that could not run says so (fail closed, but not mistaken for unsafe text)");
 });
 
 // ───────────── host grading ─────────────
@@ -271,8 +281,12 @@ test("board sync: the line plan wins inside the deadline; a slow line plan yield
   await withSyncMs(300, async () => {
     const ask = askFor("bs-3", "Teen boxes.");
     boardSync.prepare(ask, { kit, planWhiteboard: async () => (await delay(30), { ok: true, script: okScript(), usd: 0 }) });
-    const r2 = await boardSync.plan(ask, { kit, planWhiteboard: async () => (await delay(2000), { ok: true, script: okScript(), usd: 0 }) });
-    assert.equal(r2.source, "spec"); assert.ok(r2.syncMs < 900, `synced at ${r2.syncMs} ms`);
+    // order, not wall-clock: the spec board answers before the slow line plan has landed (a "< 900 ms" bound failed under
+    // the single-process npm test load, where the event loop itself lags)
+    let lineLanded = false;
+    const r2 = await boardSync.plan(ask, { kit, planWhiteboard: async () => { await delay(2000); lineLanded = true; return { ok: true, script: okScript(), usd: 0 }; } });
+    assert.equal(r2.source, "spec");
+    assert.equal(lineLanded, false, `the spec board answered (at ${r2.syncMs} ms) without waiting for the 2 s line plan`);
   });
 });
 test("board sync: nothing by the deadline and no code board → the line plan whenever it lands (the pre-ship5 path)", async () => {

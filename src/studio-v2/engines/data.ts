@@ -5,6 +5,7 @@
 // why the mean need not be a data value. Tallies and the mean estimate are the acts; the host grades both.
 import { DATA_THEMES, dataMean, dataStream, type DataSpec, type Vehicle } from "../../../shared/studio-spec.ts";
 import { C, W, H } from "../core/tokens.ts";
+import { withAlpha } from "../../theme/palette.ts";
 import { clamp, lerp, rng } from "../core/math.ts";
 import { bloom, roundRect, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
@@ -12,7 +13,7 @@ import { drawCoach, drawIntro, drawStatCard, pill } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../core/types.ts";
 
 const MIN_S = 7, ROAD_Y = 230, LANES = [205, 268], CH = { x0: 150, x1: 860, base: 575, top: 345 };
-const SHAPE: Record<string, { w: number; h: number; col: string }> = { car: { w: 74, h: 36, col: "#9AA7FF" }, bus: { w: 150, h: 42, col: "#C9D0E6" }, bike: { w: 46, h: 18, col: "#A9B0C0" }, auto: { w: 60, h: 34, col: "#CBD58A" }, truck: { w: 130, h: 44, col: "#B7A79A" } };
+const SHAPE: Record<string, { w: number; h: number; col: string }> = { car: { w: 74, h: 36, get col() { return C.dataCar; } }, bus: { w: 150, h: 42, get col() { return C.dataBus; } }, bike: { w: 46, h: 18, get col() { return C.ink2; } }, auto: { w: 60, h: 34, get col() { return C.dataAuto; } }, truck: { w: 130, h: 44, get col() { return C.dataTruck; } } };
 interface Car { v: Vehicle; idx: number; x: number; tapped: boolean; flash: number; gone: boolean }
 
 function create(api: EngineApi, spec: DataSpec): EngineInstance {
@@ -82,39 +83,39 @@ function create(api: EngineApi, spec: DataSpec): EngineInstance {
     const sh = SHAPE[kind] ?? SHAPE.car;
     ctx.save(); ctx.translate(x, y);
     if (flash > 0) bloom(ctx, kind === theme.target ? C.ion : C.amber, 0, 0, sh.w, flash * 0.6);
-    ctx.fillStyle = "rgba(0,0,0,.35)"; roundRect(ctx, -sh.w / 2 + 4, -sh.h / 2 + 6, sh.w, sh.h, 10); ctx.fill();
+    ctx.fillStyle = withAlpha(C.lo, .35); roundRect(ctx, -sh.w / 2 + 4, -sh.h / 2 + 6, sh.w, sh.h, 10); ctx.fill();
     ctx.fillStyle = sh.col; roundRect(ctx, -sh.w / 2, -sh.h / 2, sh.w, sh.h, kind === "bike" ? 9 : 10); ctx.fill();
-    ctx.fillStyle = "rgba(10,12,20,.55)";
+    ctx.fillStyle = withAlpha(C.dataGlass, .55);
     if (kind === "car") { roundRect(ctx, -sh.w / 2 + 14, -sh.h / 2 + 5, 18, sh.h - 10, 4); ctx.fill(); roundRect(ctx, sh.w / 2 - 26, -sh.h / 2 + 5, 14, sh.h - 10, 4); ctx.fill(); }
     else if (kind === "bus") { for (let i = 0; i < 6; i++) { roundRect(ctx, -sh.w / 2 + 12 + i * 22, -sh.h / 2 + 6, 14, sh.h - 12, 3); ctx.fill(); } }
-    else if (kind === "truck") { roundRect(ctx, sh.w / 2 - 34, -sh.h / 2 + 4, 28, sh.h - 8, 5); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,.18)"; ctx.fillRect(-sh.w / 2 + 6, -sh.h / 2 + 6, sh.w - 48, sh.h - 12); }
-    else if (kind === "auto") { ctx.fillStyle = "#1F2536"; roundRect(ctx, -sh.w / 2 + 6, -sh.h / 2 + 4, sh.w - 22, sh.h - 8, 8); ctx.fill(); }
-    else if (kind === "bike") { ctx.fillStyle = "#1F2536"; ctx.fillRect(-6, -sh.h / 2 + 3, 12, sh.h - 6); }
-    ctx.fillStyle = "#FFF2C0"; ctx.fillRect(sh.w / 2 - 4, -sh.h / 2 + 4, 4, 6); ctx.fillRect(sh.w / 2 - 4, sh.h / 2 - 10, 4, 6);
+    else if (kind === "truck") { roundRect(ctx, sh.w / 2 - 34, -sh.h / 2 + 4, 28, sh.h - 8, 5); ctx.fill(); ctx.fillStyle = withAlpha(C.hi, .18); ctx.fillRect(-sh.w / 2 + 6, -sh.h / 2 + 6, sh.w - 48, sh.h - 12); }
+    else if (kind === "auto") { ctx.fillStyle = C.dataDarkPart; roundRect(ctx, -sh.w / 2 + 6, -sh.h / 2 + 4, sh.w - 22, sh.h - 8, 8); ctx.fill(); }
+    else if (kind === "bike") { ctx.fillStyle = C.dataDarkPart; ctx.fillRect(-6, -sh.h / 2 + 3, 12, sh.h - 6); }
+    ctx.fillStyle = C.dataLamp; ctx.fillRect(sh.w / 2 - 4, -sh.h / 2 + 4, 4, 6); ctx.fillRect(sh.w / 2 - 4, sh.h / 2 - 10, 4, 6);
     ctx.restore();
     if (tapped && kind === theme.target) tick(ctx, x, y - sh.h / 2 - 16, C.ion, 0.8);
   }
   function paintBg(c: Ctx) {
-    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#0A0C12"); gr.addColorStop(1, "#0E1118"); c.fillStyle = gr; c.fillRect(0, 0, W, H);
-    c.fillStyle = "#151924"; c.fillRect(0, ROAD_Y - 64, W, 128);
-    c.strokeStyle = "rgba(255,255,255,.25)"; c.lineWidth = 3; c.setLineDash([26, 20]); c.beginPath(); c.moveTo(0, ROAD_Y + 5); c.lineTo(W, ROAD_Y + 5); c.stroke(); c.setLineDash([]);
-    c.strokeStyle = "rgba(255,255,255,.12)"; c.lineWidth = 2; c.beginPath(); c.moveTo(0, ROAD_Y - 64); c.lineTo(W, ROAD_Y - 64); c.moveTo(0, ROAD_Y + 64); c.lineTo(W, ROAD_Y + 64); c.stroke();
+    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, C.bg); gr.addColorStop(1, C.board); c.fillStyle = gr; c.fillRect(0, 0, W, H);
+    c.fillStyle = C.dataRoad; c.fillRect(0, ROAD_Y - 64, W, 128);
+    c.strokeStyle = withAlpha(C.hi, .25); c.lineWidth = 3; c.setLineDash([26, 20]); c.beginPath(); c.moveTo(0, ROAD_Y + 5); c.lineTo(W, ROAD_Y + 5); c.stroke(); c.setLineDash([]);
+    c.strokeStyle = withAlpha(C.hi, .12); c.lineWidth = 2; c.beginPath(); c.moveTo(0, ROAD_Y - 64); c.lineTo(W, ROAD_Y - 64); c.moveTo(0, ROAD_Y + 64); c.lineTo(W, ROAD_Y + 64); c.stroke();
   }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     // census camera on the roadside
-    ctx.fillStyle = "#1F2536"; roundRect(ctx, 880, ROAD_Y - 110, 70, 34, 8); ctx.fill(); ctx.fillStyle = g.state === "census" ? C.mint : "#3A4256"; ctx.beginPath(); ctx.arc(915, ROAD_Y - 93, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.dataDarkPart; roundRect(ctx, 880, ROAD_Y - 110, 70, 34, 8); ctx.fill(); ctx.fillStyle = g.state === "census" ? C.mint : C.dataLight; ctx.beginPath(); ctx.arc(915, ROAD_Y - 93, 8, 0, Math.PI * 2); ctx.fill();
     for (const c of g.cars) if (!c.gone) drawVehicle(ctx, c.v.kind, c.x, LANES[c.v.lane], c.flash, c.tapped);
     // chart
-    ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 2;
+    ctx.strokeStyle = withAlpha(C.hi, .08); ctx.lineWidth = 2;
     const every = (CH.base - CH.top) / (gridMax / step) < 44 ? 2 : 1;
     for (let v = 0, k = 0; v <= gridMax; v += step, k++) { const y = yOf(v); ctx.beginPath(); ctx.moveTo(CH.x0, y); ctx.lineTo(CH.x1, y); ctx.stroke(); if (k % every === 0) api.text(ctx, String(v), CH.x0 - 16, y + 2, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "right", baseline: "middle" }); }
     const level = g.state === "level" || g.state === "final" ? g.levelK : 0;
     for (let m = 0; m < M; m++) {
       if (m > g.minute && !(g.state === "mean" || g.state === "level" || g.state === "final")) continue;
       const v = lerp(g.shown[m], mean, level), x = CH.x0 + bw * m + bw * 0.18, w = bw * 0.64, y = yOf(v);
-      ctx.fillStyle = g.official[m] ? (g.tallies[m] === spec.counts[m] ? "rgba(139,152,255,.85)" : "rgba(139,152,255,.7)") : "rgba(139,152,255,.45)";
+      ctx.fillStyle = g.official[m] ? (g.tallies[m] === spec.counts[m] ? withAlpha(C.ion, .85) : withAlpha(C.ion, .7)) : withAlpha(C.ion, .45);
       roundRect(ctx, x, y, w, CH.base - y, 8); ctx.fill();
       if (m === g.minute && g.state === "count") { ctx.strokeStyle = C.ion; ctx.lineWidth = 3; ctx.stroke(); }
       if (g.official[m] && g.tallies[m] !== spec.counts[m] && level < 0.05) pill(api, ctx, `${T.missed} ${spec.counts[m] - g.tallies[m]}`, x + w / 2, Math.max(CH.top + 20, y - 34), { color: C.amber, size: 38 });
@@ -133,7 +134,7 @@ function create(api: EngineApi, spec: DataSpec): EngineInstance {
     if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${M} minutes · ${theme.unit}`, title: "Count the cars", sub: `${T.scale} ${step}` });
     if (g.state === "census") pill(api, ctx, T.census, 500, 330, { color: C.mint });
     if (g.state === "final") drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.tallyRight}/${M}`, "exact tallies"], [`${Math.round(mean * 100) / 100}`, "mean"], [`${g.meanAnswer?.v ?? "—"}`, "your line"]], foot: g.meanAnswer && !spec.counts.some((c) => Math.abs(c - mean) < 0.01) ? "the mean need not be one of the counts" : undefined, footColor: C.ink2 });
-    drawCoach(api, ctx, T.coach, g.state === "count" ? g.coachA : 0, now, 600);
+    drawCoach(api, ctx, T.coach, g.state === "count" ? g.coachA : 0, now, 330);   // in the gap between the road and the chart: at the bottom it sat on the minute numbers
   }
   function bot(): BotAction | null {
     if (g.state === "count") {
@@ -152,4 +153,4 @@ function create(api: EngineApi, spec: DataSpec): EngineInstance {
     board: () => ({ title: `Mean = ${Math.round(mean * 100) / 100}`, lines: [`${spec.counts.join(" + ")} = ${spec.counts.reduce((a, b) => a + b, 0)}`, `shared equally over ${M} minutes`], figure: { kind: "bars", values: spec.counts, labels: spec.counts.map((_, i) => `${i + 1}`), line: mean }, accent: C.ion }),
   };
 }
-export const data: EngineDef<DataSpec> = { archetype: "data-rush@1", label: "Game · Traffic Census", accent: C.ion, create };
+export const data: EngineDef<DataSpec> = { archetype: "data-rush@1", label: "Game · Traffic Census", get accent() { return C.ion; }, create };

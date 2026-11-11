@@ -1,0 +1,28 @@
+From: Games (C2), 2026-11-10 — round 8 Play follow-up F (main's decision): the lesson's facts row carries the play because and the trail summary
+Subject: keep the whole verified play facts row in the turn's activity summary (200 -> 240 characters) and name its round-8 keys
+
+What: since claude/r8-play-follow (server/play/routes.js seamLead), a level_end seam row leads with
+`verdict first_try misses extra chose next` (the trail summary and the because kinds, telegraphic) before the family's own
+facts. The play server signs at most 240 characters / 12 pairs (server/play/evidence.js signSeam / verifySeam); the turn
+cut the row at 200, so the family's last facts could fall off. Why: the Director then sees how the level went (first try or
+not, misses, extra moves) and why it was chosen, without any sentence in the row (recitation law).
+Brain-owned file only. Made with `git diff origin/int/r6`. Applies with `git apply`.
+
+diff --git a/server/brain/turn.js b/server/brain/turn.js
+index a8d6b757b..9b1327501 100644
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -146,8 +146,12 @@ export function activitySummary(events, dropped) {
+   const milestones = ms.map((e) =>
+     e.type === "answer" ? `answer${valueOf(e.data)}` : `${e.type} ${String(e.name ?? "").slice(0, 40)}`.trim());
+   // round 3 play: a seam's PLAY facts row (set by the turn from a VERIFIED token only, never from the device: playEventsOf)
++  // round 8 Play (docs/patches/to-brain/023): a level_end row also carries the level's trail summary and its because kinds,
++  // telegraphic: first_try=0|1 misses=N extra=N chose=<pick_mixup|pick_fit|pick_novelty|fade_history|fade_director|
++  // mixup_focus|step_up|step_down|switch|studio_gate> next=<mixup_focus|step_up|step_down|switch> (the next level's step).
++  // The whole verified row is kept (the play server signs at most 240 characters and 12 pairs: server/play/evidence.js).
+   const plays = events.filter((e) => typeof e?.playRow === "string" && e.playRow);
+-  const play = plays.map((e) => `play ${e.playRow.slice(0, 200)}`);
++  const play = plays.map((e) => `play ${e.playRow.slice(0, 240)}`);
+   const other = events.filter((e) => !ms.includes(e) && !plays.includes(e)).length + dropped;
+   return [...milestones, ...play, ...(other ? [`${other} other event${other === 1 ? "" : "s"}`] : [])].join("; ");
+ }

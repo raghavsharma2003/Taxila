@@ -1,11 +1,12 @@
 // Production smoke over HTTP against a deployed base URL (costs a few cents of Azure AI):
-//   NODE_USE_ENV_PROXY=1 node scripts/prod-smoke.mjs [base-url] [mode=text|cascade]
+//   NODE_USE_ENV_PROXY=1 node scripts/prod-smoke.mjs <base-url> [mode=text|cascade]
 // signup → consent → child (class 5, Hinglish) → lesson start → 3 child turns → end → parent overview,
 // with wall-clock per step. Deletes its child at the end, pass or fail. Exits non-zero on any FAIL.
 // Every teacher line that comes back is also run through the never-rules predicate (director/safety.js
 // floorViolations) and a hit is printed as WARN for review (see floorOk for why it is not a failure).
 import { floorViolations } from "../server/director/safety.js";
-const BASE = process.argv[2] || "https://taxila-web.nicebay-a0d3a12f.eastus2.azurecontainerapps.io";
+import { resolveBaseOrExit } from "../tests/prod/base.mjs";
+const BASE = resolveBaseOrExit(process.argv[2] || process.env.TAXILA_BASE, "usage: node scripts/prod-smoke.mjs <base-url> [mode=text|cascade]");
 const MODE = process.argv[3] || "text";
 let cookie = "";
 async function A(method, path, body, expect = [200, 201]) {

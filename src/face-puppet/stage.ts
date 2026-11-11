@@ -4,8 +4,12 @@
 // Frame loop: rAF, 60 fps target. Each frame = tap read → PuppetDriver (lip, floor, acting) → rig deform + draw.
 // Governor (low CPU on cheap phones): the frame's JS work (driver + rig) is tracked over a rolling 2 s window; if its p95
 // exceeds the budget the stage steps down, in order: DPR → 1.5 → 1, then a 30 fps cap; if a 30 fps / DPR 1 frame still
-// cannot fit, the stage reports `fallback: slow` and the host shows the fallback face. It never steps back up within a
-// page (no oscillation). Hidden tab: rAF stops, nothing runs.
+// cannot fit, the stage reports `fallback: slow` and the host holds her still (with the light mouth). It never steps back
+// up within a page (no oscillation). Hidden tab: rAF stops, nothing runs.
+// Raster-aware (round 7 face-puppet-raster-cost-main-thread): the JS work misses the cost that matters on a weak GPU or a
+// software rasteriser, where the draw itself (rasterising the layers) holds the main thread and the compositor. So a window
+// is ALSO over budget when the page's own frame clock is late (rAF interval p95 over RASTER_LATE_MS) or long tasks pile up
+// (≥ RASTER_LONG_TASKS tasks over 50 ms in the window) while the stage runs; at the floor, a still-late clock falls back.
 // Failures → `fallback` events (the host decides the face): no WebGL2, asset load error, load timeout (8 s), a second
 // context loss, the governor floor. A first context loss shows the poster and rebuilds once on restore.
 // Loading (ship5 p2-face): loader.ts decodes the layers off the main thread and runs the warm-up in <= 8 ms slices (the
@@ -18,6 +22,8 @@ import { Puppet2DRig } from "./runtime/rig.js";
 import { KeyRig } from "./rig-keys/keyrig.ts";
 import { KEY_LEAD_MS } from "./rig-keys/schedule.ts";
 import { PuppetDriver } from "./driver.ts";
+// round 7: the rig off the main thread (an OffscreenCanvas worker) where the browser can draw it there
+import { RemoteRig, startWorkerRig, workerRigSupported } from "./worker/remoteRig.ts";
 import { loadRigChunked } from "./loader.ts";
 import { clearPageSafety, pageInSafety } from "./latch.ts";
 import { puppetBus } from "./bus.ts";
@@ -55,6 +61,13 @@ export interface PuppetStageOptions {
   loadTimeoutMs?: number;
   /** "chunked" (default, loader.ts) or "judged" (Puppet2DRig.load + warm() in one task: the parity eval). */
   loader?: "chunked" | "judged";
+  /** Route (b): the key rig's 2.5D jaw layer (rig-keys/keyrig.ts). */
+  jaw?: boolean;
+  /** Round 7 face-reacts: the thinking breath (driver.ts THINK_INHALE; flag.ts faceReactEnabled). */
+  react?: boolean;
+  /** Draw the rig in an OffscreenCanvas worker where supported (round 7; the product's default, PuppetFace). The evals'
+   *  scripted clock (tick(now, force)) needs the synchronous main-thread path, so the stage's own default is off. */
+  worker?: boolean;
   /** The clock the bus events are judged against (default performance.now; the evals pass their scripted clock). */
   now?: () => number;
   onEvent?: (e: PuppetStageEvent) => void;
@@ -62,6 +75,10 @@ export interface PuppetStageOptions {
 
 /** A drawn-frame gap above this is a visible freeze (5+ frames at 30 fps), reported as a `stall` event. */
 export const STALL_MS = 180;
+/** rAF interval p95 (ms) above which the page's frame clock is late: under 15 fps, whatever the JS work says. */
+export const RASTER_LATE_MS = 66;
+/** Long tasks (> 50 ms) in one governor window that count the window as over budget. */
+export const RASTER_LONG_TASKS = 3;
 
 /**
  * Turn first (open-r4lat-puppet-delays-turn-post): when the child's turn is committed, the face draws nothing for this
@@ -84,11 +101,12 @@ const foreground: PuppetStage[] = [];
 const pct = (a: number[], q: number) => { if (!a.length) return 0; const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
 
 export class PuppetStage {
-  readonly canvas: HTMLCanvasElement;
+  canvas: HTMLCanvasElement;
   readonly driver: PuppetDriver;
   private host: HTMLElement;
   private o: PuppetStageOptions;
-  private rig: Puppet2DRig | KeyRig | null = null;
+  private rig: Puppet2DRig | KeyRig | RemoteRig | null = null;
+  private sizeObs: ResizeObserver | null = null;
   private tap: TeacherTap;
   private raf = 0;
   private running = false;
@@ -110,6 +128,11 @@ export class PuppetStage {
   private work: number[] = [];
   private rigMs: number[] = [];
   private intervals: number[] = [];
+  /** Every rAF callback's gap (drawn or skipped): the page's own frame clock, which a slow raster makes late. */
+  private rafGaps: number[] = [];
+  private lastRaf = 0;
+  private longTasks = 0;
+  private longObs: PerformanceObserver | null = null;
   private frames = 0;
   private stalls = 0;
   private revealed = false;
@@ -124,20 +147,14 @@ export class PuppetStage {
     this.host = host;
     this.o = o;
     this.dpr = Math.min(2, typeof devicePixelRatio === "number" ? devicePixelRatio : 1);
-    this.driver = new PuppetDriver({ band: o.band, seed: o.seed, reducedMotion: o.reducedMotion, gentle: o.gentle });
-    // a key rig switches painted mouths a beat after a continuous mouth would open: its own lead (rig-keys/schedule.ts)
-    // and seals every single b / m / p (the extended rule, owner-cohort lamp2 only; r8 keeps the base rule)
-    if (lookPack(o.look).rig === "keys") { this.driver.visemes.lead += KEY_LEAD_MS; this.driver.visemes.extendedBilabials = true; }
+    this.driver = new PuppetDriver({ band: o.band, seed: o.seed, reducedMotion: o.reducedMotion, gentle: o.gentle, react: o.react });
+    // a key rig switches painted mouths a beat after a continuous mouth would open: its own lead (rig-keys/schedule.ts).
+    // (Every look seals every single b / m / p: the scheduler's extended rule, track.ts.)
+    if (lookPack(o.look).rig === "keys") this.driver.visemes.lead += KEY_LEAD_MS;
     // a face mounted during a safety turn (the TroubleScreen's) is neutral from its first frame (latch.ts)
     if (pageInSafety()) { this.driver.safetyTurn(performance.now()); this.wasSafe = true; }
     this.tap = new TeacherTap(o.sources);
-    const c = document.createElement("canvas");
-    c.className = "fp-canvas";
-    c.setAttribute("aria-hidden", "true");
-    c.style.cssText = "position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 220ms ease-out;display:block";
-    this.canvas = c;
-    c.addEventListener("webglcontextlost", this.onLost, false);
-    c.addEventListener("webglcontextrestored", this.onRestored, false);
+    this.canvas = this.makeCanvas();
     // Review v4 (2026-10-05): listen from construction, not after the pack loads. The driver needs no rig, and init()
     // awaits the chunk + pack + GL warm (seconds on a cold phone): a part-0 viseme batch, a Director affect or a look that
     // arrived in that window was silently dropped, so the greeting (the first line of every lesson) lost its visemes.
@@ -163,6 +180,16 @@ export class PuppetStage {
     }
   }
 
+  private makeCanvas(): HTMLCanvasElement {
+    const c = document.createElement("canvas");
+    c.className = "fp-canvas";
+    c.setAttribute("aria-hidden", "true");
+    c.style.cssText = "position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 220ms ease-out;display:block";
+    c.addEventListener("webglcontextlost", this.onLost, false);
+    c.addEventListener("webglcontextrestored", this.onRestored, false);
+    return c;
+  }
+
   /** Load the pack and the rig; resolves when the first frame can draw. Rejects → the host falls back. */
   async init(): Promise<void> {
     const t0 = performance.now();
@@ -172,11 +199,44 @@ export class PuppetStage {
     const view = [...pack.view[this.o.framing ?? "medium"]] as [number, number, number];
     const ropts = { ext: "webp", dpr: this.dpr, view, clear: [...pack.clear] as [number, number, number], reducedMotion: this.o.reducedMotion };
     const base = this.o.base ?? pack.base;
+    // round 7: the rig in a worker (OffscreenCanvas), so a rig frame never holds the page's main thread. Where the browser
+    // cannot (no OffscreenCanvas / transfer / WebGL2 in a worker) or the worker fails to load, a fresh canvas takes the
+    // main-thread path below; the still holds the slot meanwhile, so nothing visible changes.
+    const kind = pack.rig === "keys" ? "keys" : "mesh";
+    if (this.o.worker && workerRigSupported(kind)) {
+      try {
+        const box: [number, number] = [this.canvas.clientWidth || this.host.clientWidth || 1, this.canvas.clientHeight || this.host.clientHeight || 1];
+        const res = await startWorkerRig(this.canvas, kind, base, { ...ropts, jaw: this.o.jaw }, box, (m) => {
+          if (this.disposed) return;
+          // round 7: a context loss in the worker is handled like one on the main thread (onLost / onRestored): the
+          // first is rebuilt in the worker and she comes back live; a second, or no restore within 3 s, holds her still
+          if (m.t === "lost") this.lost("worker");
+          else if (m.t === "restored") this.restoredInWorker();
+          else this.emit({ type: "fallback", reason: `worker rig: ${m.message}` });
+        }, this.o.loadTimeoutMs ?? 8000);
+        if (this.disposed) { res.rig.dispose(); return; }
+        this.rig = res.rig;
+        if (typeof ResizeObserver === "function") {
+          this.sizeObs = new ResizeObserver(() => { if (this.rig instanceof RemoteRig) this.rig.size(this.canvas.clientWidth || 1, this.canvas.clientHeight || 1); });
+          this.sizeObs.observe(this.canvas);
+        }
+        this.emit({ type: "loaded", ms: Math.round(performance.now() - t0), path: res.path, slices: 0, longestSliceMs: 0, warmFrameMs: Math.round(res.warmFrameMs * 10) / 10 });
+        this.startTier(res.warmFrameMs);
+        return;
+      } catch (e) {
+        if (this.disposed) return;
+        // the transferred canvas can never get a main-thread context: replace it
+        const old = this.canvas;
+        this.canvas = this.makeCanvas();
+        old.replaceWith(this.canvas);
+        this.log.push({ type: "fallback", reason: `worker rig unavailable, main thread: ${String((e as Error)?.message ?? e).slice(0, 120)}`, at: Math.round(performance.now()) } as never);
+      }
+    }
     // ship5 p2-face: the chunked loader (loader.ts) by default: bitmaps decoded off-thread, warm-up in <= 8 ms slices.
     // The judged single-task path (load + warm) stays available for the parity eval and as the loader's own fallback.
     const abort = { aborted: false };
     const load: Promise<{ rig: Puppet2DRig | KeyRig; path: string; slices: number; longestSliceMs: number; warmFrameMs: number }> = pack.rig === "keys"
-      ? KeyRig.load(this.canvas, base, { dpr: this.dpr, view, clear: ropts.clear, reducedMotion: this.o.reducedMotion }).then((rig) => { rig.warm(); return { rig, path: "keys", slices: 1, longestSliceMs: NaN, warmFrameMs: NaN }; })
+      ? KeyRig.load(this.canvas, base, { dpr: this.dpr, view, clear: ropts.clear, reducedMotion: this.o.reducedMotion, jaw: this.o.jaw }).then((rig) => { rig.warm(); return { rig, path: "keys", slices: 1, longestSliceMs: NaN, warmFrameMs: NaN }; })
       : this.o.loader === "judged"
       ? Puppet2DRig.load(this.canvas, base, ropts).then((rig) => { rig.warm(); return { rig, path: "judged", slices: 1, longestSliceMs: NaN, warmFrameMs: NaN }; })
       : loadRigChunked(this.canvas, base, ropts, { signal: abort });
@@ -253,6 +313,20 @@ export class PuppetStage {
     return this.revealed && !this.disposed;
   }
 
+  /** Whether the rig draws in a worker (round 7: a frame costs the page's main thread almost nothing). */
+  get offThread(): boolean {
+    return this.rig instanceof RemoteRig;
+  }
+
+  /** Point her lips at other meters (round 7 face-prewarm, the warm hand-off: the home's live stage becomes the lesson's
+   *  face, and the lesson's meters are not the home's). The driver, the rig and its warm worker are kept. */
+  retarget(sources: TapSource[]): void {
+    if (this.disposed) return;
+    this.tap.dispose();
+    this.tap = new TeacherTap(sources);
+    this.o = { ...this.o, sources };
+  }
+
   set(p: { status?: FloorStatus | null; reducedMotion?: boolean; gentle?: boolean; childLevel?: number }): void {
     if (p.status !== undefined) this.status = p.status;
     if (p.childLevel !== undefined) this.childLevel = p.childLevel;
@@ -271,11 +345,25 @@ export class PuppetStage {
     for (const other of foreground) if (other !== this && other.running) { other.stop(); other.suspended = true; }
     this.running = true;
     this.lastNow = 0; // a stop/start (park, context restore) is not a stall
+    this.lastRaf = 0;
     const loop = (now: number) => {
       if (!this.running) return;
       this.raf = requestAnimationFrame(loop);
+      if (this.lastRaf && (typeof document === "undefined" || document.visibilityState !== "hidden")) {
+        this.rafGaps.push(now - this.lastRaf);
+        if (this.rafGaps.length > 120) this.rafGaps.shift();
+      }
+      this.lastRaf = now;
       this.tick(now);
     };
+    if (!this.longObs && typeof PerformanceObserver !== "undefined") {
+      try {
+        this.longObs = new PerformanceObserver((l) => { if (this.running) this.longTasks += l.getEntries().length; });
+        this.longObs.observe({ type: "longtask" });
+      } catch {
+        this.longObs = null; // no longtask entry type (Safari): the rAF clock alone
+      }
+    }
     this.raf = requestAnimationFrame(loop);
   }
 
@@ -284,12 +372,33 @@ export class PuppetStage {
     cancelAnimationFrame(this.raf);
   }
 
+  /** Leave the page's one running slot: the newest face this stage suspended draws again. Called when this stage is
+   *  disposed, and when it is PARKED (PuppetFace park): a parked stage draws nothing, and it used to keep the slot until
+   *  its park timer disposed it, so the lesson's face stayed frozen for 1.5 s (10 s for a worker-backed stage) after the
+   *  Help sheet's live face closed over it (audit FACE-01). start() takes the slot again when the stage is adopted. */
+  private yieldSlot(): void {
+    const k = foreground.indexOf(this);
+    if (k < 0) return;
+    const wasTop = k === foreground.length - 1;
+    foreground.splice(k, 1);
+    const top = foreground[foreground.length - 1];
+    if (wasTop && top?.suspended && !top.disposed) top.start();
+  }
+
+  /** Stop drawing and wait off the page for the next mount of the same teacher (PuppetFace park / adopt). */
+  park(): void {
+    this.stop();
+    this.canvas.remove();
+    this.yieldSlot();
+  }
+
   /** One frame (public for the deterministic evals: tick(now) with a scripted clock). */
   tick(now: number, force = false): void {
     const rig = this.rig;
     if (!rig || this.disposed) return;
     // turn first: the child's turn is on its way to the server; the main thread is its until then
-    if (!force && now < this.holdUntil && this.status !== "speaking") return;
+    // (the hold matters only when the rig draws ON the main thread: a worker frame costs the page almost nothing)
+    if (!force && now < this.holdUntil && this.status !== "speaking" && !(rig instanceof RemoteRig)) return;
     if (this.holdUntil) { this.holdUntil = 0; this.lastNow = 0; } // a held gap is not a stall
     // adaptive rate (low CPU): 60 fps while she speaks or the face is changing (a state change, an expression ramp, a nod,
     // a look); 30 fps in the slow holds (listening, thinking, idle: breath, drift and blinks, whose shaper already runs on
@@ -306,7 +415,7 @@ export class PuppetStage {
     const tap = this.tap.read();
     rig.R.dpr = this.dpr;
     // a key rig shows the calm neutral mouth (never the smile) and neutral brows in a safety turn (KeyRig.calm)
-    if (rig instanceof KeyRig) rig.calm = this.driver.inSafety;
+    if (rig instanceof KeyRig || (rig instanceof RemoteRig && rig.kind === "keys")) rig.calm = this.driver.inSafety;
     const r0 = performance.now();
     const f = this.driver.frame({ nowMs: now, tap, status: this.status, childLevel: this.childLevel }, rig);
     const rigMs = performance.now() - r0 - f.workMs;
@@ -337,7 +446,7 @@ export class PuppetStage {
     // The rule, exactly (ship5 p2-face: the earlier write-up said "only during her silence", which was never true): the
     // FIRST of (a) she is not speaking, (b) she is speaking and her live mouth is near-closed, (c) 800 ms of frames. The
     // event names which one fired; (c) is the only case where the fade can start on an open mouth.
-    if (!this.revealed && this.frames > 2) {
+    if (!this.revealed && this.frames > 2 && (!(rig instanceof RemoteRig) || rig.rigMs.length >= 2)) {
       const why = f.state !== "speaking" ? "silence" : closedMouth ? "closed" : now - this.t0 > 800 ? "bound" : null;
       if (why) {
         this.revealed = true;
@@ -376,36 +485,71 @@ export class PuppetStage {
     const budget = this.o.budgetMs ?? 8;
     const p95 = pct(this.work, 0.95);
     const limit = this.fpsCap >= 60 ? budget : this.fpsCap >= 30 ? budget * 2.5 : budget * 3.75;
-    if (p95 <= limit) { this.strikes = 0; return; }
-    if (++this.strikes < 2) { this.work.length = 0; this.rigMs.length = 0; return; }
+    const rafP95 = pct(this.rafGaps, 0.95);
+    const longs = this.longTasks;
+    this.longTasks = 0;
+    const raster = rafP95 > RASTER_LATE_MS || longs >= RASTER_LONG_TASKS;
+    if (p95 <= limit && !raster) { this.strikes = 0; return; }
+    if (++this.strikes < 2) { this.work.length = 0; this.rigMs.length = 0; this.rafGaps.length = 0; return; }
     this.strikes = 0;
     this.lastStep = now;
     this.work.length = 0;
     this.rigMs.length = 0;
+    this.rafGaps.length = 0;
     let step: string;
     if (this.dpr > 1.5) { this.dpr = 1.5; step = "dpr 1.5"; }
     else if (this.dpr > 1) { this.dpr = 1; step = "dpr 1"; }
     else if (this.fpsCap > 30) { this.fpsCap = 30; step = "30 fps"; }
     else if (this.fpsCap > 20) { this.fpsCap = 20; step = "20 fps"; }
-    else if (p95 > budget * 5.6) { step = "floor"; this.emit({ type: "governor", step, workP95: p95 }); this.emit({ type: "fallback", reason: `slow: work p95 ${p95.toFixed(1)} ms at 20 fps, dpr 1` }); this.stop(); return; }
+    else if (p95 > budget * 5.6 || raster) {
+      step = "floor";
+      this.emit({ type: "governor", step, workP95: p95 });
+      this.emit({ type: "fallback", reason: raster ? `slow raster: rAF p95 ${rafP95.toFixed(0)} ms, ${longs} long tasks at 20 fps, dpr 1` : `slow: work p95 ${p95.toFixed(1)} ms at 20 fps, dpr 1` });
+      this.stop();
+      return;
+    }
     else return; // at the 20 fps / dpr 1 floor and still inside a 20 fps frame: hold
     this.emit({ type: "governor", step, workP95: p95 });
   }
 
   private onLost = (e: Event) => {
     e.preventDefault();
+    this.lost("main");
+  };
+
+  /** A lost GL context (the canvas's, or the worker's OffscreenCanvas's): hide the canvas (the rest still under it
+   *  shows), then wait for the restore once; a second loss, or no restore within 3 s, falls back to her still. */
+  private lost(where: "main" | "worker"): void {
+    if (this.disposed) return;
     this.losses++;
     this.stop();
     this.canvas.style.opacity = "0";
     this.revealed = false;
     this.emit({ type: "contextlost" });
-    if (this.losses > 1) this.emit({ type: "fallback", reason: "webgl context lost twice" });
+    if (this.losses > 1) this.emit({ type: "fallback", reason: `webgl context lost twice (${where})` });
     else {
       // the restore may never come (the GPU process died): give it 3 s, then fall back
-      const id = window.setTimeout(() => { this.timers.delete(id); if (!this.running && !this.disposed) this.emit({ type: "fallback", reason: "webgl context not restored" }); }, 3000);
+      const id = window.setTimeout(() => { this.timers.delete(id); if (!this.running && !this.disposed) this.emit({ type: "fallback", reason: `webgl context not restored (${where})` }); }, 3000);
       this.timers.add(id);
     }
-  };
+  }
+
+  /** The worker rebuilt the rig on its restored context: draw again; she re-reveals by the usual rule. */
+  private restoredInWorker(): void {
+    if (this.disposed || this.losses > 1 || !(this.rig instanceof RemoteRig)) return;
+    this.t0 = performance.now();
+    this.frames = 0;
+    this.start();
+  }
+
+  /** Evals only: lose the GL context now (worker or main thread) and restore it after `restoreAfterMs`. */
+  debugLoseContext(restoreAfterMs = 300): void {
+    if (this.rig instanceof RemoteRig) { this.rig.debugLoseContext(restoreAfterMs); return; }
+    const gl = this.canvas.getContext("webgl2") as WebGL2RenderingContext | null;
+    const ext = gl?.getExtension("WEBGL_lose_context");
+    ext?.loseContext();
+    window.setTimeout(() => ext?.restoreContext(), restoreAfterMs);
+  }
 
   private onRestored = () => {
     if (this.disposed || this.losses > 1) return;
@@ -421,8 +565,8 @@ export class PuppetStage {
 
   /** The live rig's mouth state (evals: the rendered lip gap in rest-space px, p.g). */
   mouthProbe(): { gap: number; name: string; lip: string; state: string; revealed: boolean } | null {
-    const r = this.rig as unknown as { solver?: { p?: { g?: number } }; mouth?: { name: string } } | null;
-    return r ? { gap: r.solver?.p?.g ?? 0, name: r.mouth?.name ?? "", lip: this.lipSource, state: this.driver.policy.faceState, revealed: this.revealed } : null;
+    const r = this.rig as unknown as { solver?: { p?: { g?: number } }; mouth?: { name: string; p?: { g: number } } } | null;
+    return r ? { gap: r.solver?.p?.g ?? r.mouth?.p?.g ?? 0, name: r.mouth?.name ?? "", lip: this.lipSource, state: this.driver.policy.faceState, revealed: this.revealed } : null;
   }
 
   /** Stats for the evals and the owner's ?facerig read-out. */
@@ -434,18 +578,16 @@ export class PuppetStage {
   dispose(): void {
     this.disposed = true;
     this.stop();
-    const k = foreground.indexOf(this);
-    if (k >= 0) {
-      const wasTop = k === foreground.length - 1;
-      foreground.splice(k, 1);
-      const top = foreground[foreground.length - 1];
-      if (wasTop && top?.suspended && !top.disposed) top.start();
-    }
+    this.yieldSlot();
     for (const off of this.offs) off();
     this.offs = [];
     for (const id of this.timers) window.clearTimeout(id);
     this.timers.clear();
     this.tap.dispose();
+    this.longObs?.disconnect();
+    this.longObs = null;
+    this.sizeObs?.disconnect();
+    this.sizeObs = null;
     this.canvas.removeEventListener("webglcontextlost", this.onLost);
     this.canvas.removeEventListener("webglcontextrestored", this.onRestored);
     this.rig?.dispose();

@@ -1,0 +1,116 @@
+[
+  {
+    "id": "gen-c4-maths-ch06-t01-a40fb64a",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_key",
+        "where": "screen target chip and readout vs spec items",
+        "detail": "Spec items are \"target\": 6, \"show\": \"cm\" on a ruler with \"scaleMax\": 10, but both screens show the target as \"0.6 cm\" and the readout \"0.6 cm\". The graded value on screen disagrees with the spec value 6 cm."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "ruler labels at p412 and l1366",
+        "detail": "The ruler is labelled \"0\", \"1\" (at the middle) and \"1\" (at the end). A 10-tick ruler with scaleMax 10 should read 0, 5, 10 (or 0 to 10); the middle \"1\" and end \"1\" are wrong numbers for the marks drawn, and contradict a 0.6 cm target sitting near the first tick."
+      },
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "rounds[0]: \"Marks ko dekho\" / \"Dono marks ko gaur se dekho\", items target 6 and 6",
+        "detail": "The mix-up is starting from the ruler edge or from 1 instead of 0, or reading only the end number. The bar starts at 0 and both items are the same plain target 6; nothing places an object starting off 0 (e.g. 3 to 9), so a child holding the belief would not go wrong here."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "rounds[0].sub: \"Dono marks ko gaur se dekho\"",
+        "detail": "The sub-title speaks of \"dono marks\" (two marks) but the screen shows no two distinguished marks (start and end) to compare; words disagree with the picture."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "ruler end label at p412 and l1366",
+        "detail": "The end label reads \"1\" at the right edge, apparently a clipped \"10\"; the label is cut off at both sizes."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": false,
+      "l1366": false
+    },
+    "notes": ""
+  },
+  {
+    "id": "gen-c5-maths-ch05-t01-3cae53e3",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "rounds[0].title vs rounds[0].items[].show and screen",
+        "detail": "Title says \"1 km ka case\" but every item is a capacity in millilitres (\"target\": 1000, \"show\": \"ml\"; screen shows \"1000 ml\" and a jug scaled \"4000 ml\"). The words disagree with the round: there is no km or m anywhere on the board."
+      },
+      {
+        "item": 2,
+        "kind": "off_topic",
+        "where": "rounds[0] mode \"pour\", items 1000/3000/2050 \"ml\"",
+        "detail": "The topic is length conversion (km to m; cards: \"How many metres make 1 km?\", \"Write 3 km in metres.\", \"2 km 50 m = ___ m\"). The piece practises pouring 1000 ml, 3000 ml, 2050 ml into a measuring jug, which is capacity, not length."
+      },
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "rounds[0].items, targets \"c5-maths-ch05-t01-m-km-100m\"",
+        "detail": "The mix-up is \"Believes 1 km = 100 m\". The child is only asked to pour a stated amount (\"1000 ml\") to the matching jug mark; no km is ever converted, so a child holding the 1 km = 100 m belief would pour correctly and the belief would never show."
+      },
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "screen target chip \"1000 ml\" and jug label \"1000\"",
+        "detail": "The value to place is stated as \"1000 ml\" and the jug has a labelled \"1000\" mark, so the task is just matching the same number; the conversion the round's title (\"1 km ka case\") implies is stated rather than asked."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": ""
+  },
+  {
+    "id": "gen-c7-maths-ch03-t01-3cf7abc9",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "rounds[0]: mode \"pour\", items [{\"target\": 36, \"show\": \"ml\"}], scaleMax 100",
+        "detail": "The only task is to pour 36 ml into a 0-100 ml container (screen: \"36 ml\"). No decimal (e.g. 0.36) and no fraction (36/100) appears anywhere, so a child who believes 0.5 = 1/5 or 0.36 is 'a separate whole number 36' never meets the point where that belief goes wrong. Pouring a whole number of ml does not test the decimal-fraction link."
+      },
+      {
+        "item": 2,
+        "kind": "off_topic",
+        "where": "spec.title \"Dashamlav ko jodo\"; rounds[0].title \"Hisson ka naap\"",
+        "detail": "The topic is decimals as tenths/hundredths linked to fractions (cards: 0.1 m, 7/10 = 0.7, 0.36 = 36/100). The piece practises reading a whole-number ml scale, which is not this topic's idea."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "spec.title \"Dashamlav ko jodo\" vs rounds[0] items \"36 ml\"",
+        "detail": "The title says 'connect the decimals' but the round contains no decimal at all; the words disagree with the round's own content."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "rounds[0].sub \"Har case ko dhyan se dekho\"",
+        "detail": "The sub-title refers to every case ('har case') but the round has a single item (36 ml); the words disagree with their own round."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "The large box showing \"36 ml\" on the first screen with an empty container is presumably the target readout, not a live reading; from the packet I cannot tell whether it updates while pouring, so not counted."
+  }
+]

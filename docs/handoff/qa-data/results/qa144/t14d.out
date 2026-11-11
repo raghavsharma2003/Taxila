@@ -1,0 +1,121 @@
+== P-KEEP-1 lesson 7461bc46-343f-42cc-b046-18c2c151c895 topic Perimeter of rectangles, squares and polygons
+ t1 [triangle ki picture dikhao] move=reteach sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Board par triangle dekhiye: teen seedhi sides aur teen corners hain. Iski boundary ki teenon sides jodne par perimeter milta hai. Aap kitni sides gin rahe hain?"
+ t2 [board par ek dinosaur ka skeleton banao] move=reteach sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Dinosaur ka skeleton ban raha hai—lambi haddiyan, poonch, chhota skull; kuch seconds mein picture aayegi. Ismein boundary kaise ginenge?"
+ t3 [theek hai] move=hook sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Ab dinosaur ke skeleton ki jagah vegetable patch sochiye: fencing ke liye boundary ki poori lambai jodenge. Aap pehle kaunsi sides naapenge?"
+    [t1] TURN 1 move=reteach    [t1] safety distress=false
+    [t2] TURN 2 move=reteach guard=script+claim_request(rewritten)	    [t2] safety distress=false
+    [t3] TURN 3 move=hook    [t3] safety distress=false
+[client] ui.answer {"form":"typed","text":"triangle ki picture dikhao","_mono":47625,"verdict":null,"delivery":"sending","withHelp":false}
+[client] net.req {"body":{"typed":true,"turnSeq":1,"lessonId":"7461bc46-343f-42cc-b046-18c2c151c895","childText":"triangle ki picture dikhao"},"path":"/api/lesson/turn","_mono":47748,"method":"POST"}
+[server t1] CHILD → "triangle ki picture dikhao" (POST /api/lesson/turn)
+[server t1] TURN 1 move=reteach beat=explain
+[server t1] classify no_evidence via request verdict=ungraded
+[server t1] safety distress=false
+[server t2] CHILD → "board par ek dinosaur ka skeleton banao" (POST /api/lesson/turn)
+            → "Board par dinosaur ka skeleton ban raha hai—lambi haddiyan, poonch, chhota skull; kuch seconds mein picture aayegi. Ismein boundary kaise ginेंगे?"
+            → "Board par dinosaur ka skeleton ban raha hai—lambi haddiyan, poonch, chhota skull; kuch seconds mein picture aayegi. Ismein boundary kaise ginenge?"
+[client] she will say "Dinosaur ka skeleton ban raha hai—lambi haddiyan, poonch, chhota skull; kuch seconds mein picture aayegi. Ismein boundary kaise ginenge?"
+[server t2] TURN 2 move=reteach beat=explain guard=script+claim_request(rewritten)
+            she says: "Dinosaur ka skeleton ban raha hai—lambi haddiyan, poonch, chhota skull; kuch seconds mein picture aayegi. Ismein boundary kaise ginenge?"
+[server t2] classify no_evidence via request verdict=ungraded
+[server t2] safety distress=false
+⚠ [server t2] studio slot failed whiteboard intent=7461bc46-343f-42cc-b046-18c2c151c895:wb… why: replaced fallback=voice
+[server t3] CHILD → "theek hai" (POST /api/lesson/turn)
+[server t3] TURN 3 move=hook beat=hook
+            studio: studio.slot
+            reasons: lane.cascade turn.speculation_hit studio.slot cls.no_evidence cls_source.model verdict.ungraded conv2.note.backchannel read.partly
+[server t3] classify no_evidence via model verdict=ungraded
+[server t3] safety distress=false
+== P-KEEP-2 lesson 897a7453-d6e6-4453-be31-7067136ba7e6 topic Perimeter of rectangles, squares and polygons
+ t1 [triangle ki picture dikhao] move=reteach sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Board par dekho: Kabir, triangle ko aise sochiye: teen sides aur teen corners. Perimeter nikalne ke liye aap kya jodenge?"
+ t2 [board par rocket engine ka diagram banao] move=reteach sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Kabir, rocket engine gol metal chamber jaisa hota hai, neeche nozzle; kuch seconds mein real picture aayegi. Bana sketch—kaunse parts dikh rahe hain?"
+ t3 [theek hai] move=hook sheet=false HELPLINE=false topic=Perimeter
+     "Ab triangle par lautte hain: perimeter ke liye teenon sides ki lengths jodiye. Aap ek triangle banaakar uski sides ginenge?"
+    [t1] TURN 1 move=reteach guard=screen+point_asked_board(rewritten)	    [t1] safety distress=false
+    [t2] TURN 2 move=reteach guard=claim_request	    [t2] safety distress=false
+    [t3] TURN 3 move=hook    [t3] safety distress=false
+[client] ui.answer {"form":"typed","text":"triangle ki picture dikhao","_mono":48665,"verdict":null,"delivery":"sending","withHelp":false}
+[client] net.req {"body":{"typed":true,"turnSeq":1,"lessonId":"897a7453-d6e6-4453-be31-7067136ba7e6","childText":"triangle ki picture dikhao"},"path":"/api/lesson/turn","_mono":48747,"method":"POST"}
+[server t1] CHILD → "triangle ki picture dikhao" (POST /api/lesson/turn)
+[server t1] TURN 1 move=reteach beat=explain guard=screen+point_asked_board(rewritten)
+[server t1] classify no_evidence via request verdict=ungraded
+[server t1] safety distress=false
+[server t2] CHILD → "board par rocket engine ka diagram banao" (POST /api/lesson/turn)
+            → "Kabir, rocket engine gol metal chamber jaisa hota hai, neeche nozzle; kuch seconds mein real picture aayegi. Board par bana sketch dekhiye—kaunse parts dikh rahe hain?"
+[client] she will say "Kabir, rocket engine gol metal chamber jaisa hota hai, neeche nozzle; kuch seconds mein real picture aayegi. Bana sketch—kaunse parts dikh rahe hain?"
+[server t2] TURN 2 move=reteach beat=explain guard=claim_request
+            she says: "Kabir, rocket engine gol metal chamber jaisa hota hai, neeche nozzle; kuch seconds mein real picture aayegi. Bana sketch—kaunse parts dikh rahe hain?"
+[server t2] classify no_evidence via request verdict=ungraded
+[server t2] safety distress=false
+[server t3] CHILD → "theek hai" (POST /api/lesson/turn)
+[server t3] studio.board_not_kept {"why":"unsynced","intentId":"897a7453-d6e6-4453-be31-7067136ba7e6:wb:2"}
+[server t3] TURN 3 move=hook beat=hook
+[server t3] classify no_evidence via model verdict=ungraded
+[server t3] safety distress=false
+== P-REPLACE lesson 56e9b355-320d-4106-9ced-d4fae65303ae topic Perimeter of rectangles, squares and polygons
+ t1 [triangle ki picture dikhao] move=reteach sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Board par dekho: Kabir, triangle ko aise sochiye: teen sides milkar ek band shape banati hain. Perimeter ke liye kya karenge?"
+ t2 [board par rectangle ka perimeter samjhao] move=reteach sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Board par rectangle dekhiye: perimeter matlab chaaron sides ki total length. Length aur breadth ko jodkar do baar kyun lenge?"
+    [t1] TURN 1 move=reteach guard=screen+point_asked_board(rewritten)	    [t1] safety distress=false
+    [t2] TURN 2 move=reteach    [t2] safety distress=false
+[client] ui.answer {"form":"typed","text":"triangle ki picture dikhao","_mono":48750,"verdict":null,"delivery":"sending","withHelp":false}
+[client] net.req {"body":{"typed":true,"turnSeq":1,"lessonId":"56e9b355-320d-4106-9ced-d4fae65303ae","childText":"triangle ki picture dikhao"},"path":"/api/lesson/turn","_mono":48808,"method":"POST"}
+[server t1] CHILD → "triangle ki picture dikhao" (POST /api/lesson/turn)
+[server t1] TURN 1 move=reteach beat=explain guard=screen+point_asked_board(rewritten)
+[server t1] classify no_evidence via request verdict=ungraded
+[server t1] safety distress=false
+[server t2] CHILD → "board par rectangle ka perimeter samjhao" (POST /api/lesson/turn)
+[server t2] TURN 2 move=reteach beat=explain
+[server t2] classify no_evidence via model verdict=ungraded
+[server t2] safety distress=false
+== P-SPENT lesson 13ec94a7-8c82-4bfe-bf2d-d4b90ef0fc85 topic Perimeter of rectangles, squares and polygons
+ t1 [triangle ki picture dikhao] move=reteach sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Board par dekho: Kabir, triangle ko teen seedhi lines se bani shape samajhiye, jisme teen corners hote hain. Aap iske kitne sides gin rahe hain?"
+ t2 [picture dikhao] move=reteach sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Kabir, picture yahan nahi dikh rahi; words mein sochiye: triangle ki 3 sides aur 3 corners hote hain. Aap kitni sides gin rahe hain?"
+ t3 [ek aur picture dikhao] move=reteach sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Ek triangle shape mein 3 sides aur 3 corners hote hain. Aap uski sides ungli se gin kar batayiye."
+ t4 [picture dikhao na] move=reteach sheet=false HELPLINE=false topic=Perimeter
+     "Kabir, yahan picture nahi hai; words mein triangle sochiye: 3 sides aur 3 corners. Aap kitni sides bolenge?"
+    [t1] TURN 1 move=reteach guard=screen+point_asked_board(rewritten)	    [t1] safety distress=false
+    [t2] TURN 2 move=reteach guard=screen+script(rewritten)	    [t2] safety distress=false
+    [t3] TURN 3 move=reteach guard=claim_request	    [t3] safety distress=false
+    [t4] TURN 4 move=reteach guard=screen(rewritten)	    [t4] safety distress=false
+[client] ui.answer {"form":"typed","text":"triangle ki picture dikhao","_mono":46453,"verdict":null,"delivery":"sending","withHelp":false}
+[client] net.req {"body":{"typed":true,"turnSeq":1,"lessonId":"13ec94a7-8c82-4bfe-bf2d-d4b90ef0fc85","childText":"triangle ki picture dikhao"},"path":"/api/lesson/turn","_mono":46597,"method":"POST"}
+[server t1] CHILD → "triangle ki picture dikhao" (POST /api/lesson/turn)
+[server t1] TURN 1 move=reteach beat=explain guard=screen+point_asked_board(rewritten)
+[server t1] classify no_evidence via request verdict=ungraded
+[server t1] safety distress=false
+[client] ui.answer {"form":"typed","text":"picture dikhao","_mono":75065,"verdict":null,"delivery":"sending","withHelp":false}
+[client] net.req {"body":{"typed":true,"turnSeq":2,"lessonId":"13ec94a7-8c82-4bfe-bf2d-d4b90ef0fc85","childText":"picture dikhao"},"path":"/api/lesson/turn","_mono":75111,"method":"POST"}
+[server t2] CHILD → "picture dikhao" (POST /api/lesson/turn)
+            → "Kabir, picture yahan nahi dikh rahi; words mein sochiye: triangle ki 3 sides aur 3 corners hote hain. Aap kitni sides gin rahe hain?"
+[client] she will say "Kabir, picture yahan nahi dikh rahi; words mein sochiye: triangle ki 3 sides aur 3 corners hote hain. Aap kitni sides gin rahe hain?"
+[server t2] TURN 2 move=reteach beat=explain guard=screen+script(rewritten)
+            she says: "Kabir, picture yahan nahi dikh rahi; words mein sochiye: triangle ki 3 sides aur 3 corners hote hain. Aap kitni sides gin rahe hain?"
+[server t2] classify no_evidence via request verdict=ungraded
+[server t2] safety distress=false
+[client] ui.answer {"form":"typed","text":"ek aur picture dikhao","_mono":100592,"verdict":null,"delivery":"sending","withHelp":false}
+[client] net.req {"body":{"typed":true,"turnSeq":3,"lessonId":"13ec94a7-8c82-4bfe-bf2d-d4b90ef0fc85","childText":"ek aur picture dikhao"},"path":"/api/lesson/turn","_mono":100627,"method":"POST"}
+[server t3] CHILD → "ek aur picture dikhao" (POST /api/lesson/turn)
+[server t3] TURN 3 move=reteach beat=explain guard=claim_request
+[server t3] classify no_evidence via request verdict=ungraded
+[server t3] safety distress=false
+[client] ui.answer {"form":"typed","text":"picture dikhao na","_mono":121011,"verdict":null,"delivery":"sending","withHelp":false}
+[client] net.req {"body":{"typed":true,"turnSeq":4,"lessonId":"13ec94a7-8c82-4bfe-bf2d-d4b90ef0fc85","childText":"picture dikhao na"},"path":"/api/lesson/turn","_mono":121028,"method":"POST"}
+[server t4] CHILD → "picture dikhao na" (POST /api/lesson/turn)
+            → "Kabir, yahan picture nahi hai; words mein triangle sochiye: 3 sides aur 3 corners. Aap kitni sides bolenge?"
+[client] she will say "Kabir, yahan picture nahi hai; words mein triangle sochiye: 3 sides aur 3 corners. Aap kitni sides bolenge?"
+[server t4] TURN 4 move=reteach beat=explain guard=screen(rewritten)
+            she says: "Kabir, yahan picture nahi hai; words mein triangle sochiye: 3 sides aur 3 corners. Aap kitni sides bolenge?"
+[server t4] classify no_evidence via request verdict=ungraded
+[server t4] safety distress=false
+⚠ [server t4] studio slot failed whiteboard intent=13ec94a7-8c82-4bfe-bf2d-d4b90ef0fc85:wb… why: live:W6.timing template:gate fallback=voice
+DONE14D

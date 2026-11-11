@@ -4,23 +4,26 @@
 // matches; turn and flip a piece to fit its twin. The host grades the raw act from the cell set.
 import { AXES, reflect, rot90, rotOrder, sameSet, norm, twinTarget, symmetryAxes, type Axis, type Cell, type MirrorSpec, type MpRoundT } from "../../../../shared/studio-spec-ext/mirror.ts";
 import { C, W, H } from "../../core/tokens.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 import { clamp, ease, hexA, rng } from "../../core/math.ts";
 import { magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, tally } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
 
 const CHECK = { x: 830, y: 450, w: 140, h: 70 };
 function create(api: EngineApi, spec: MirrorSpec): EngineInstance {
-  const T = spec.strings, accent = "#FF8FB1";
+  const T = spec.strings, accent = C.mirrorAccent;
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
   const botR = rng(api.seed * 131 + 5);
   const g = { painted: [] as Cell[], axes: [] as Axis[], foldA: null as Axis | null, foldT: 0, rot: 0, rotAnim: 0, flip: false, order: 0, clock: 0, answered: false, verdict: "", revealT: 0, right: 0, n: 0, coachA: 1, coachGone: false };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }]);
   const rd = (): MpRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) { g.painted = []; g.axes = []; g.foldA = null; g.rot = 0; g.rotAnim = 0; g.flip = false; g.order = 0; g.clock = spec.rounds[k].time; g.answered = false; g.verdict = ""; g.revealT = 0; const r = spec.rounds[k]; api.task(`${T.round} ${k + 1}`, r.mode === "complete" ? T.coach : r.mode === "lines" ? T.lines : r.mode === "turn" ? T.turn : T.twin); api.event("round_start", { round: k + 1, mode: r.mode }); sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 }); },
+    onRound(k) { r0 = g.right; g.painted = []; g.axes = []; g.foldA = null; g.rot = 0; g.rotAnim = 0; g.flip = false; g.order = 0; g.clock = spec.rounds[k].time; g.answered = false; g.verdict = ""; g.revealT = 0; const r = spec.rounds[k]; api.task(`${T.round} ${k + 1}`, r.mode === "complete" ? T.coach : r.mode === "lines" ? T.lines : r.mode === "turn" ? T.turn : T.twin); api.event("round_start", { round: k + 1, mode: r.mode }); sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 }); },
     onEnd(k) { api.event("round_end", { round: k + 1, verdict: g.verdict }); },
     onFinal() { api.task("", T.runDone, "done"); api.done({ right: g.right, of: g.n }); },
   });
@@ -71,19 +74,20 @@ function create(api: EngineApi, spec: MirrorSpec): EngineInstance {
     flow.tick(dt, 1.8);
     if (flow.state === "intro" && flow.stateT < 0.05) hud.show(true);
     g.foldT += dt; g.rotAnim = Math.max(0, g.rotAnim - dt * 3);
+    if (flow.round >= 0 && flow.state !== "play") { hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true }); }   // the round's readouts from its intro on, never a stale or "0/0" count
     if (flow.state !== "play") return;
     if (!g.answered) { g.clock -= dt; if (g.clock <= 0) check(); }
     else { g.revealT += dt; if (g.revealT > 3.0) flow.endRound(); }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true });
   }
   function grid(ctx: Ctx, r: MpRoundT, G: ReturnType<typeof geom>, cells: Cell[], col: string, alpha = 1, rotA = 0) {
     ctx.save(); const cx = G.x0 + G.sz / 2, cy = G.y0 + G.sz / 2; ctx.translate(cx, cy); ctx.rotate(rotA); ctx.translate(-cx, -cy); ctx.globalAlpha *= alpha;
     for (const [x, y] of cells) { ctx.fillStyle = col; roundRect(ctx, G.x0 + x * G.cell + 2, G.y0 + y * G.cell + 2, G.cell - 4, G.cell - 4, 5); ctx.fill(); }
     ctx.restore(); void r;
   }
-  function board(ctx: Ctx, G: ReturnType<typeof geom>, n: number) { ctx.save(); ctx.fillStyle = "rgba(18,20,30,.9)"; ctx.fillRect(G.x0, G.y0, G.sz, G.sz); ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 1; for (let i = 0; i <= n; i++) { ctx.beginPath(); ctx.moveTo(G.x0 + i * G.cell, G.y0); ctx.lineTo(G.x0 + i * G.cell, G.y0 + G.sz); ctx.stroke(); ctx.beginPath(); ctx.moveTo(G.x0, G.y0 + i * G.cell); ctx.lineTo(G.x0 + G.sz, G.y0 + i * G.cell); ctx.stroke(); } ctx.strokeStyle = C.line2; ctx.lineWidth = 3; ctx.strokeRect(G.x0, G.y0, G.sz, G.sz); ctx.restore(); }
+  function board(ctx: Ctx, G: ReturnType<typeof geom>, n: number) { ctx.save(); ctx.fillStyle = withAlpha(C.mirrorBoard, .9); ctx.fillRect(G.x0, G.y0, G.sz, G.sz); ctx.strokeStyle = withAlpha(C.hi, .08); ctx.lineWidth = 1; for (let i = 0; i <= n; i++) { ctx.beginPath(); ctx.moveTo(G.x0 + i * G.cell, G.y0); ctx.lineTo(G.x0 + i * G.cell, G.y0 + G.sz); ctx.stroke(); ctx.beginPath(); ctx.moveTo(G.x0, G.y0 + i * G.cell); ctx.lineTo(G.x0 + G.sz, G.y0 + i * G.cell); ctx.stroke(); } ctx.strokeStyle = C.line2; ctx.lineWidth = 3; ctx.strokeRect(G.x0, G.y0, G.sz, G.sz); ctx.restore(); }
   function axisLine(ctx: Ctx, G: ReturnType<typeof geom>, a: Axis, col: string, w = 5) { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.setLineDash([12, 8]); ctx.beginPath(); const { x0, y0, sz } = G; if (a === "v") { ctx.moveTo(x0 + sz / 2, y0 - 14); ctx.lineTo(x0 + sz / 2, y0 + sz + 14); } else if (a === "h") { ctx.moveTo(x0 - 14, y0 + sz / 2); ctx.lineTo(x0 + sz + 14, y0 + sz / 2); } else if (a === "d1") { ctx.moveTo(x0 - 10, y0 - 10); ctx.lineTo(x0 + sz + 10, y0 + sz + 10); } else { ctx.moveTo(x0 + sz + 10, y0 - 10); ctx.lineTo(x0 - 10, y0 + sz + 10); } ctx.stroke(); ctx.restore(); }
-  function btn(ctx: Ctx, b: { x: number; y: number; w: number; h: number }, label: string, on: boolean, sel = false) { ctx.save(); ctx.fillStyle = sel ? hexA(accent, 0.25) : on ? "rgba(22,26,36,.95)" : "rgba(255,255,255,.04)"; roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = sel ? accent : on ? C.line2 : C.line; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, label, b.x + b.w / 2, b.y + b.h / 2 + 2, { font: "display", size: 40, weight: 800, color: on ? C.ink : C.ink3, align: "center", baseline: "middle", maxWidth: b.w - 8 }); }
+  function btn(ctx: Ctx, b: { x: number; y: number; w: number; h: number }, label: string, on: boolean, sel = false) { ctx.save(); ctx.fillStyle = sel ? hexA(accent, 0.25) : on ? withAlpha(C.bg2, .95) : withAlpha(C.hi, .04); roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = sel ? accent : on ? C.line2 : C.line; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, label, b.x + b.w / 2, b.y + b.h / 2 + 2, { font: "display", size: 40, weight: 800, color: on ? C.ink : C.ink3, align: "center", baseline: "middle", maxWidth: b.w - 8 }); }
   function paintBg(c: Ctx) { backdrop(c, accent, 91, 0); }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
@@ -102,7 +106,7 @@ function create(api: EngineApi, spec: MirrorSpec): EngineInstance {
       if (done) for (const a of symmetryAxes(r.cells, r.size)) axisLine(ctx, G, a, C.mint, 3);
       axisBtns().forEach((b) => { btn(ctx, b, "", !done, g.axes.includes(b.a)); const cx = b.x + b.w / 2, cy = b.y + b.h / 2; ctx.save(); ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.lineCap = "round"; ctx.beginPath(); if (b.a === "v") { ctx.moveTo(cx, cy - 26); ctx.lineTo(cx, cy + 26); } else if (b.a === "h") { ctx.moveTo(cx - 26, cy); ctx.lineTo(cx + 26, cy); } else if (b.a === "d1") { ctx.moveTo(cx - 20, cy - 20); ctx.lineTo(cx + 20, cy + 20); } else { ctx.moveTo(cx + 20, cy - 20); ctx.lineTo(cx - 20, cy + 20); } ctx.stroke(); ctx.restore(); });
     } else if (r.mode === "turn") {
-      board(ctx, G, r.size); grid(ctx, r, G, r.cells, "rgba(255,255,255,.12)");
+      board(ctx, G, r.size); grid(ctx, r, G, r.cells, withAlpha(C.hi, .12));
       grid(ctx, r, G, cur(r), hexA(accent, 0.85), 1, -g.rotAnim * Math.PI / 2);
       if (g.rot > 0 && g.rotAnim < 0.05 && sameSet(cur(r), r.cells)) pill(api, ctx, `${T.same} · ${g.rot % 4 || 4}/4`, 400, 545, { color: C.mint, size: 38 });
       btn(ctx, toolBtns()[0], T.rotate, !done);
@@ -117,8 +121,8 @@ function create(api: EngineApi, spec: MirrorSpec): EngineInstance {
     if (r.mode !== "turn") btn(ctx, CHECK, T.check, !done);
     if (done) { if (ok) tick(ctx, 900, 400, C.mint, 1.1); else magnifier(ctx, 895, 400, C.amber, 1.1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
-    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: g.verdict === "right", color: g.verdict === "right" ? C.mint : C.amber, stats: [[`${g.right}/${g.n}`, T.done]] });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: g.verdict === "right", color: g.verdict === "right" ? C.mint : C.amber, stats: [[tally(g.right - r0, 1), T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
     drawCoach(api, ctx, "", 0, now, 600);
   }
@@ -143,4 +147,4 @@ function create(api: EngineApi, spec: MirrorSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds.map((x) => x.sub || x.title).slice(0, 3), figure: { kind: "grid", w: 6, h: 6 }, accent }),
   };
 }
-export const mirror: EngineDef<MirrorSpec> = { archetype: "mirror-paint@1", label: "Game · Mirror Studio", accent: "#FF8FB1", create };
+export const mirror: EngineDef<MirrorSpec> = { archetype: "mirror-paint@1", label: "Game · Mirror Studio", get accent() { return C.mirrorAccent; }, create };

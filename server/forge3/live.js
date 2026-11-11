@@ -82,7 +82,7 @@ function twinOfLevel(logic, level) {
  * The live piece for an interactive ask, or null.
  * @param {{ ask?: string, need?: string, lessonId: string, child: { id: string, class_level?: number, language_pref?: string },
  *   skillId?: string|null, topicId?: string|null, vp?: string|null, moduleInTray?: boolean, safety?: boolean,
- *   lesson?: { shown?: object[], lastArt?: string|null }, childArt?: string|null }} m
+ *   lesson?: { shown?: object[], lastArt?: string|null }, childArt?: string|null, fade?: 1|2|3, reason?: "phone" }} m  (fade: the Director's deliberate scaffold fade)
  * @param {{ q?: Function, coverage?: any, certs?: any, playCerts?: any, now?: () => number }} [deps]
  * @returns {Promise<null | { rung: object, artifact: object, facts: object, boardTwin: object|null, level: object, artPick: object|null, lesson: object, why: string[], ms: number }>}
  */
@@ -104,9 +104,17 @@ export async function buildLive(m, deps = {}) {
   let q = deps.q;
   if (q === undefined) { try { q = (await import("../db.js")).q; } catch { q = undefined; } }
   let s = null;
+  // the learner inputs (open misconceptions, P(skill)) steer the picker; a slow read falls back to the class defaults
+  // round 8 P1: with a skill known the play server CHOOSES among every game admitting it (compose's rung is the first
+  // entry, the default when nothing is known), so the goal is not pinned; a topic-only ask keeps the rung's goal. What
+  // the lesson just showed is the picker's novelty input.
+  // round 8 follow-up C: a fade the Director chose (m.fade) is marked deliberate, so it beats her history's fade
+  const o = { skillId: m.skillId ?? null, topicId: m.topicId ?? null, goal: m.skillId ? null : rung.goal ?? null, lessonId: m.lessonId, art: m.childArt ?? null, lastArt: m.lesson?.lastArt ?? null,
+    ...([1, 2, 3].includes(Number(m.fade)) ? { fade: Number(m.fade), fadeFrom: "director" } : {}),
+    // item I: Studio's v2 world was refused at 360 px and this play family is offered instead (a because says so)
+    ...(m.reason === "phone" ? { reason: "phone" } : {}),
+    recent: { families: (m.lesson?.shown ?? []).slice(-1).filter((x) => x?.family && x?.mode).map((x) => `${x.family}/${x.mode}`) } };
   try {
-    // the learner inputs (open misconceptions, P(skill)) steer the picker; a slow read falls back to the class defaults
-    const o = { skillId: m.skillId ?? null, topicId: m.topicId ?? null, goal: rung.goal ?? null, lessonId: m.lessonId, art: m.childArt ?? null, lastArt: m.lesson?.lastArt ?? null };
     let r = await withTimeout(P.startSession(m.child, o, q), LEARNER_READ_MS);
     if (r === "timeout") r = await P.startSession(m.child, o, undefined);
     s = r;
@@ -126,7 +134,7 @@ export async function buildLive(m, deps = {}) {
   if (s.art?.art && okArt(s.art.art) !== true) {
     const alt = Object.keys(table?.pieces?.[`${s.level.family}/${s.level.mode}`] ?? {}).map((k) => k.split("@")[0]).find((a) => a !== s.art.art && okArt(a) === true);
     if (!alt) { plan.why.push(`play ${s.level.family}/${s.level.mode}: no art passed the visual QA at ${vpEff}`); return null; }
-    try { const r2 = await P.startSession(m.child, { skillId: m.skillId ?? null, topicId: m.topicId ?? null, goal: rung.goal ?? null, lessonId: m.lessonId, art: alt, lastArt: m.lesson?.lastArt ?? null }, undefined); if (r2?.level) s = r2; } catch { /* keep s */ }
+    try { const r2 = await P.startSession(m.child, { ...o, art: alt, ...(s.inputs ? { inputs: s.inputs } : {}) }, undefined); if (r2?.level) s = r2; } catch { /* keep s */ }
     if (s.art?.art !== alt) return null;
     plan.why.push(`play art ${alt}: the picked art failed the visual QA`);
   }
@@ -144,5 +152,9 @@ export async function buildLive(m, deps = {}) {
   if (!gate.ok) { plan.why.push(`tray gate: ${gate.why}`); return null; }
   const facts = { kind: "game", archetype: "play@1", onScreen: { game: `${s.level.family}/${s.level.mode}`, ...factsOfLevel(logic, s.level), ...(await screenWordsOf(s.level, m.child.language_pref)) } };
   // (level and artPick stay on the server: the client fetches the level by its session; the QA harness judges it)
-  return { rung: { ...rung, art }, artifact, facts, boardTwin, level: s.level, artPick: s.art ?? null, lesson: noteShown(m.lesson ?? {}, { ...rung, art }), why: plan.why, ms: Date.now() - t0 };
+  // the rung names the game actually served (P1 may have chosen another family than compose's first entry), and the
+  // choice's because rides out with it (the session body carries the same records)
+  const served = { ...rung, art, family: s.level.family, mode: s.level.mode, goal: s.level.goal ?? rung.goal ?? null };
+  const because = Array.isArray(s.because) && s.because.length ? s.because : null;
+  return { rung: served, artifact, facts, boardTwin, level: s.level, artPick: s.art ?? null, lesson: noteShown(m.lesson ?? {}, served), why: plan.why, ...(because ? { because } : {}), ms: Date.now() - t0 };
 }

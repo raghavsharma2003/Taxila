@@ -20,7 +20,7 @@ export const WAKE_REASONS = ["day_start", "night", "replan", "debounce_flush", "
   "care_note_expiry", "safety_settle", "safety_escalate", "resume_window_end", "pause_end", "dormancy_check", "household", "reassign"];
 const SafetyCategory = z.enum(["self_harm", "abuse", "neglect", "violence_at_home", "sexual_content", "bullying", "medical", "other"]);
 /** Parent settings the Conductor folds at M0 (parent_setting / child_controls is the source of truth). */
-export const SETTING_KEYS = ["dailyMinutes", "hoursStart", "hoursEnd", "restDays", "bedtime", "schoolStart", "schoolEnd", "wakeTime", "tz"];
+export const SETTING_KEYS = ["dailyMinutes", "hoursStart", "hoursEnd", "restDays", "bedtime", "schoolStart", "schoolEnd", "wakeTime", "tz", "sharedPhone", "anchor", "lessonMin"];
 
 /** An IANA zone the runtime knows ('Asia/Kolkata'); Intl throws a RangeError on anything else. */
 const Tz = z.string().regex(/^[A-Za-z][A-Za-z0-9_+\-]*(\/[A-Za-z0-9_+\-]+){0,2}$/, "tz: IANA zone").max(64).refine((tz) => {
@@ -35,6 +35,10 @@ export const SETTING_VALUE = {
   hoursStart: HHMM, hoursEnd: HHMM, bedtime: HHMM, schoolStart: HHMM, schoolEnd: HHMM, wakeTime: HHMM,
   restDays: z.array(z.number().int().min(0).max(6)).max(7),
   tz: Tz,
+  // round 7 F (household v1): the parent says these children share one phone for lessons (conductor/household.js)
+  sharedPhone: z.boolean(),
+  // round 7 F (app-parent-schedule): the lesson start time and length the parent chose
+  anchor: HHMM, lessonMin: z.number().int().min(10).max(60),
 };
 
 const OutcomeDigest = z.strictObject({
@@ -66,6 +70,10 @@ export const StudentEvent = z.discriminatedUnion("type", [
     skillsTouched: z.array(Id).max(40).optional(), outcomeDigest: OutcomeDigest.optional() }),
   ev("skill.milestone", { skillId: Id, to: z.enum(["learned_today", "mastered", "due", "wheel_spin"]), evidenceSeq: z.number().int().min(0) }),
   ev("teacher.promise", { promiseId: Id, what: z.strictObject({ kind: z.enum(["game", "topic", "revisit"]), ref: Id }), by: Id }),
+  // round 7 F item 8: a promise she kept (a Question-jar revisit answered in a later lesson) leaves the plan
+  ev("teacher.promise_kept", { promiseId: Id, lessonId: Id }),
+  // round 7 F (App's "What helped?"): the child's one tap after a lesson; a CHOICE, never a claim (learner/reflect.js)
+  ev("child.reflect", { lessonId: Id, choice: z.string().regex(/^(made:[A-Za-z0-9_.:@\-]{1,90}|board|explain|self|unsure)$/, "choice: made:<id>|board|explain|self|unsure") }),
   // parent (settings row + event in ONE transaction, orch §6)
   ev("parent.setting_changed", { key: z.enum(SETTING_KEYS), value: z.unknown(), by: z.literal("owner"), settingsVersion: z.number().int().min(0) })
     .superRefine((e, ctx) => {
@@ -76,8 +84,14 @@ export const StudentEvent = z.discriminatedUnion("type", [
   ev("parent.resume"),
   ev("parent.consent_changed", { purpose: Purpose, granted: z.boolean(), consentVersion: z.union([z.number().int(), Id]) }),
   // school
-  ev("school.test_announced", { subject: Id, on: Day, chapters: z.array(Id).max(20), via: z.enum(["parent", "child"]) }),
+  ev("school.test_announced", { subject: Id, on: Day, chapters: z.array(Id).max(20), via: z.enum(["parent", "child"]),
+    from: Day.optional() }),   // round 7 F: the parent's own first day (else on − 4)
+  // round 7 F: the parent removed the test window (Controls → Clear)
+  ev("school.test_cleared", { subject: Id, via: z.enum(["parent", "child"]) }),
   ev("school.day_override", { date: Day, kind: z.enum(["off", "holiday", "school_day"]) }),
+  // round 7 F: where the school is in a subject (child.school_chapter), and the school timetable for a weekday (034)
+  ev("school.pointer_set", { subject: Id, chapter: z.number().int().min(1).max(40), on: Day, via: z.enum(["parent", "child", "intake"]) }),
+  ev("school.timetable_set", { weekday: z.number().int().min(0).max(6), subjects: z.array(Id).max(8), rev: z.number().int().min(0), via: z.enum(["parent", "intake"]) }),
   // clock
   ev("clock.wakeup", { reason: z.enum(WAKE_REASONS), wakeupId: Id }),
   // agents
@@ -96,8 +110,8 @@ export const EVENT_TYPES = StudentEvent.options.map((o) => o.shape.type.value);
 
 /** Which producers may emit which event families (an event's source is set by the server, never the body). */
 export const SOURCE_OF = (type) =>
-  type.startsWith("app.") || type.startsWith("slot.") ? "device"
-  : type.startsWith("lesson.") || type === "skill.milestone" || type === "teacher.promise" ? "director"
+  type.startsWith("app.") || type.startsWith("slot.") || type.startsWith("child.") ? "device"
+  : type.startsWith("lesson.") || type === "skill.milestone" || type === "teacher.promise" || type === "teacher.promise_kept" ? "director"
   : type.startsWith("parent.") ? "parent"
   : type.startsWith("school.") ? "school"
   : type === "clock.wakeup" ? "clock"
@@ -129,11 +143,16 @@ export function idemKeyFor(e) {
     case "lesson.ended": return `lesson.ended:${e.lessonId}`;
     case "skill.milestone": return `milestone:${e.skillId}:${e.to}:${e.evidenceSeq}`;
     case "teacher.promise": return `promise:${e.promiseId}`;
+    case "teacher.promise_kept": return `promise_kept:${e.promiseId}`;
+    case "child.reflect": return `reflect:${e.lessonId}`;           // first tap per lesson wins
     case "parent.setting_changed": return `setting:${e.key}:${e.settingsVersion}`;
     case "parent.pause": return `pause:${e.until}`;
     case "parent.consent_changed": return `consent:${e.purpose}:${e.consentVersion}:${e.granted ? 1 : 0}`;
-    case "school.test_announced": return `test:${e.subject}:${e.on}`;
+    case "school.test_announced": return `test:${e.subject}:${e.on}:${e.from ?? ""}:${[...e.chapters].sort().join(",")}`;
+    case "school.test_cleared": return null;   // no unique fact; clearing twice is harmless
     case "school.day_override": return `dayoverride:${e.date}:${e.kind}`;
+    case "school.pointer_set": return `pointer:${e.subject}:${e.chapter}:${e.on}:${e.via}`;
+    case "school.timetable_set": return `timetable:${e.via}:${e.weekday}:${e.rev}`;
     case "safety.incident": return `safety.incident:${e.incidentId}`;
     case "safety.incident_updated": return `safety.updated:${e.incidentId}:${e.familyImplicated}:${e.category}`;
     case "safety.cleared": return `safety.cleared:${e.incidentId}`;

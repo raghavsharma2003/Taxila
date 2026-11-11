@@ -1,0 +1,13 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r7-face-r8-lead-sweep-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "r8 in-app lip-sync lead sweep (24 Diya lines, 21 with a CTC reference, 2 runs per arm): baseline median \u221230 ms, within \u00b150 ms 15/21 and 19/21; lead \u221220 ms 18/21 and 14/21; lead \u221230 ms 14/21. Run-to-run noise exceeds the trim effect; no lead change ships (r8 is inside the E-P8 bar)."
+  }
+ ],
+ "md": {
+  "measurements": "## ms-r7-face-r8-lead-sweep-2026-11-04 (2026-11-04)\nThe r8 lip-sync polish (main loop: inside the r8 rig only, lamp2/jaw untouched). Before tuning, the scheduler lead was swept on the in-app harness: evals/face-puppet/run.mjs lipsync with LEAD=<ms> \u2192 lipsync-inapp.mjs; 24 Diya lines, realtime, real AudioContext, headless SwiftShader; 21 lines carry a CTC reference.\n- **Baseline** (lead +0), two runs: median \u221230 / \u221230 ms, IQR \u221240..0 / \u221245..\u221210, within \u00b150 ms 15/21 and 19/21.\n- **Lead \u221220 ms**, two runs: median \u221230 / \u221220 ms, within \u00b150 ms 18/21 and 14/21.\n- **Lead \u221230 ms**, one run: median \u221220 ms, within \u00b150 ms 14/21.\n- **Noise:** the run-to-run spread (15 vs 19 of 21 at the same setting; single lines swinging \u00b1100-200 ms when the envelope estimator locks onto a neighbouring syllable) is larger than any trim effect.\n- **Decision:** no lead change ships. r8's median is already inside the E-P8 bar (\u2212125..+45 ms).\n\n**Reverse if** a lower-variance estimator (bilabial-closure E2 timing, or more repeats per arm) shows a consistent offset. The sweep stays available: the harness takes ?lead=, and run.mjs takes LEAD=.\n"
+ }
+}

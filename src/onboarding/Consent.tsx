@@ -7,10 +7,12 @@ import { Button, ErrorNote, HoldButton, Icon, Speaker, TileGroup } from "../ui/i
 import { defaultTutorFor } from "../../shared/tutors.js";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { Spot } from "../child/art.tsx";
-import { ApiError, errText, postJson } from "../app/api.ts";
+import { ApiError, postJson } from "../app/api.ts";
+import { setupError } from "./setupRules.ts";
 import { PROMISES } from "../app/promises.ts";
 import { StepFrame } from "./Layout.tsx";
 import { useDraft } from "./draft.ts";
+import { teacherBandFor } from "./teacherBand.ts";
 
 /**
  * Step 3 "Our promises, before you sign up" (PRODUCT-DESIGN-V2 §3.2, §6.2; audit #24: the promises came AFTER the
@@ -22,7 +24,7 @@ export function PromisesStep() {
   const nav = useNavigate();
   const [d] = useDraft();
   const cl = d.child?.classLevel ?? 5;
-  const rec = teacherRecord(defaultTutorFor({ class_level: cl }), cl <= 4 ? "b2" : "b3");
+  const rec = teacherRecord(defaultTutorFor({ class_level: cl }), teacherBandFor(cl));
   const they = rec.pronouns.subject;
   const rows = [
     { art: "promises/ai-honest", title: `${rec.name} is an AI and says so`, body: aiHonestLine(they) },
@@ -48,8 +50,6 @@ export function PromisesStep() {
     </StepFrame>
   );
 }
-/** The old name (the route table and older links). */
-export const TrustStep = PromisesStep;
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /** Contraction- and agreement-safe: "She tells … she's", "They tell … they're" (a they/them record never reads "they's"). */
@@ -80,7 +80,8 @@ export function ConsentStep() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const across = d.learningAcrossDays ?? null;
-  const left = [across !== null, typeof d.likes === "boolean", !!d.reportChannel].filter((x) => !x).length;
+  // round 7 (dc-r7 D5): reports go only to the app until a second channel really sends, so there is no channel to choose
+  const left = [across !== null, typeof d.likes === "boolean"].filter((x) => !x).length;
   const ready = left === 0;
 
   const save = async () => {
@@ -92,7 +93,7 @@ export function ConsentStep() {
       nav("/start/child");
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) return nav("/start/phone?next=/start/consent");
-      setErr(errText(e));
+      setErr(setupError(e));
     } finally {
       setBusy(false);
     }
@@ -121,8 +122,7 @@ export function ConsentStep() {
         <p className="row"><Icon name="cross" /> <strong>Off</strong></p>
       </Row>
       <Row speak="reports" title="Where reports go" body="One short weekly report with what your child can now do and one thing to try at home.">
-        <TileGroup label="Where reports go" columns={2} value={d.reportChannel ?? null} onChange={(v) => set({ reportChannel: v })}
-          options={[{ value: "whatsapp", label: "WhatsApp" }, { value: "app", label: "Only in the app" }]} />
+        <p className="row"><Icon name="tick" /> <strong>In the Parent corner</strong></p>
       </Row>
       <ErrorNote>{err}</ErrorNote>
     </StepFrame>

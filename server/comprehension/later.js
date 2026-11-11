@@ -35,9 +35,20 @@ function sweep(now = realNow()) {
 
 /** The correction's `via` (kt_evidence.via, 012_pending_grade.sql): the ledger skips its K step, the facets apply it. */
 export const LATE_VIA = "late";
+/** graderVersion prefix of an event folded without its blind verdict: no K step until the late correction (LEARN-05). */
+export const HELD_PREFIX = "held:";
 const LESSON_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** The lesson an event id belongs to (`${lessonId}:${seq}:${k}`), or null. */
 export const lessonOfEvent = (evId) => { const l = String(evId ?? "").split(":")[0]; return LESSON_ID.test(l) ? l : null; };
+/** The child turn row an event came from (`<lessonId>:<childSeq>:<k>`, learner/live.js), else null. */
+export const turnSeqOfEvent = (evId) => { const n = Number(String(evId ?? "").split(":")[1]); return lessonOfEvent(evId) && Number.isInteger(n) ? n : null; };
+
+/** A verdict about words the child's own edit superseded is dropped: logged, and the lesson's latest trace row says so. */
+async function traceDropped(q, lessonId, evId) {
+  console.info(`[later] verdict for ${evId} dropped: its turn was superseded by the child's edit`);
+  await q(`update brain_trace set reasons = reasons || '{turn.verdict_dropped}'::text[]
+      where lesson_id = $1 and turn = (select (state->>'turn')::int from lesson where id = $1)`, [lessonId]).catch(() => {});
+}
 
 // ───────────── persistence (injectable for tests; the default is the app's database) ─────────────
 
@@ -50,11 +61,18 @@ async function dbStore() {
   return {
     /** The verdict landed: write it; returns { fallback: bool } (the turn already folded without it). M0: nothing. */
     async persist(evId, lessonId, results) {
+      // round 5 (server/brain/supersede.js): never for an event of a turn the child's own edit superseded
+      const seq = turnSeqOfEvent(evId);
       const rows = await q(`insert into pending_grade (event_id, lesson_id, results, settled_at)
           select $1, l.id, $3::jsonb, now() from lesson l join child c on c.id = l.child_id
           where l.id = $2 and coalesce(c.legal_mode, 'M1') <> 'M0'
+            and not exists (select 1 from turn t where t.lesson_id = l.id and t.seq = $4::int and t.meta ? 'superseded')
         on conflict (event_id) do update set results = excluded.results, settled_at = excluded.settled_at
-        returning fallback_at is not null as fallback, corrected_at is not null as corrected`, [evId, lessonId, JSON.stringify(results)]);
+        returning fallback_at is not null as fallback, corrected_at is not null as corrected`, [evId, lessonId, JSON.stringify(results), seq]);
+      if (!rows.length && seq != null && (await q("select 1 from turn where lesson_id = $1 and seq = $2 and meta ? 'superseded'", [lessonId, seq])).length) {
+        await traceDropped(q, lessonId, evId);
+        return { fallback: false, written: false, dropped: true };
+      }
       return { fallback: !!rows[0]?.fallback && !rows[0]?.corrected, written: rows.length > 0 };
     },
     /** The turn folds these without a verdict: claim the fallback; returns the verdicts that landed meanwhile. */
@@ -303,7 +321,11 @@ const RANK = { present: 4, partial: 3, contradicted: 2, absent: 1, NA: 0 };
  * @returns {{ event: any, results: any[], graded: boolean }}  graded: the blind verdict decided the event
  */
 export function finalEvent(ev, results) {
-  const fallback = { event: { ...ev, spanOk: false }, results: results ?? [], graded: false };
+  // A why or teach-back with no blind verdict is HELD on K (graderVersion "held:…", kt/ledger.js isHeld): the classifier's
+  // guess moves no mastery; the late verdict, if one lands, carries the full K step (audit LEARN-05, params kt-r3). Its
+  // U/T reading (facets) still folds now, as before.
+  const held = ev.cls === "probe.why" || ev.cls === "probe.teachback";
+  const fallback = { event: { ...ev, spanOk: false, ...(held ? { graderVersion: `${HELD_PREFIX}${ev.graderVersion ?? ""}` } : {}) }, results: results ?? [], graded: false };
   if (!results?.length) return fallback;
   const real = results.filter((r) => r.label && r.label !== "NA");
   if (!real.length) return fallback;
@@ -349,22 +371,41 @@ export function lateEvent(ev, results) {
 async function writeCorrection(ev, results, q) {
   const corr = lateEvent(ev, results);
   if (!corr) return false;
-  const [{ tx }, { loadLive, commitLive, LIVE_FOLD_CTX }, { fuseEvidence, beliefFor }, W, { canWrite }, { facetStmts }] = await Promise.all([
+  const [{ tx, GUARD_FAILED }, { loadLive, commitLive, LIVE_FOLD_CTX, legacySkillState }, { fuseEvidence, beliefFor }, W, { canWrite }, { facetStmts }] = await Promise.all([
     import("../db.js"), import("../learner/live.js"), import("./index.js"), import("../learner/writer.js"), import("../learner/mode.js"), import("./store.js")]);
   const lessonId = lessonOfEvent(ev.id) ?? ev.sessionId;
   const child = (await q("select c.* from lesson l join child c on c.id = l.child_id where l.id = $1", [lessonId]))[0];
   if (!child || !canWrite(child, "kt")) return false;
+  // fold, then commit only if nothing was written since the fold read (seq guard after the lock); else read and fold again
+  // (audit LEARN-26: this writer folded before taking the lock)
+  for (let attempt = 1; ; attempt++) {
+    try { return await writeCorrectionOnce(ev, corr, child, lessonId, q, { tx, loadLive, commitLive, LIVE_FOLD_CTX, fuseEvidence, beliefFor, W, facetStmts, legacySkillState }); } catch (e) {
+      if (e?.code === GUARD_FAILED && attempt < W.FOLD_RETRIES) continue;
+      throw e;
+    }
+  }
+}
+
+async function writeCorrectionOnce(ev, corr, child, lessonId, q, { tx, loadLive, commitLive, LIVE_FOLD_CTX, fuseEvidence, beliefFor, W, facetStmts, legacySkillState }) {
   const live = await loadLive(child);
   if (live.state.ledger.seen[corr.id] !== undefined || live.state.comp.seen[corr.id]) return false;
+  // round 5 (server/brain/supersede.js): the event this verdict corrects was superseded by the child's own edit (its row
+  // moved to kt_evidence_superseded, its turn row labelled): the verdict is about words that no longer count — dropped, traced
+  const seq = turnSeqOfEvent(ev.id);
+  if (lessonId && seq != null && (await q("select 1 from turn where lesson_id = $1 and seq = $2 and meta ? 'superseded'", [lessonId, seq])).length) {
+    await traceDropped(q, lessonId, ev.id);
+    return false;
+  }
   const after = fuseEvidence(live.state, [corr], LIVE_FOLD_CTX);
   const now = Date.now();
   const stmts = W.ledgerStmts(child, live.state.ledger, after.ledger, [corr]);
   const moved = Object.keys(after.comp.skills).filter((id) => JSON.stringify(live.state.comp.skills[id]) !== JSON.stringify(after.comp.skills[id])).sort();
   const facet = facetStmts(child, moved.map((id) => beliefFor(id, { ...after, now })));
   const mark = { text: "update pending_grade set corrected_at = now() where event_id = $1 and corrected_at is null", params: [ev.id] };
-  const all = [W.lockStmt(child.id), W.modeGuardStmt(child.id, child.legal_mode), ...stmts, ...facet, mark];
+  const all = [W.lockStmt(child.id), W.modeGuardStmt(child.id, child.legal_mode), W.seqGuardStmt(child.id, live.maxSeq), ...stmts,
+    ...W.projectionStmts(child, live.state.ledger, after.ledger, now, legacySkillState), ...facet, mark];
   const out = await tx(all.map(({ layer: _l, rows: _r, ...x }) => x));
-  const seqs = stmts.map((st, i) => (/^with ins as \(insert into kt_evidence/.test(st.text) ? out[i + 2]?.[0]?.seq ?? null : undefined)).filter((x) => x !== undefined);
+  const seqs = stmts.map((st, i) => (/^with ins as \(insert into kt_evidence/.test(st.text) ? out[i + 3]?.[0]?.seq ?? null : undefined)).filter((x) => x !== undefined);
   commitLive(child, live.maxSeq, after, seqs);
   return true;
 }

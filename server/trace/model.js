@@ -7,8 +7,19 @@ import { createHash } from "node:crypto";
 import { record } from "./writer.js";
 import { traceCtx } from "./context.js";
 import { putTraceBlob, traceBlobPath, traceBlobConfigured } from "./blob.js";
+import { usdChat, usdTts } from "../cost/prices.js";
 
 let blobSeq = 0;
+const PROC = Math.floor(Math.random() * 36 ** 2);
+/**
+ * PURE. A blob's seq inside the 12 characters traceBlobPath keeps (PLAT-31: `${Date.now()}${n}` lost the counter and
+ * the last millisecond digit to the cut, so two calls within 10 ms overwrote each other's blob). The path is already
+ * under its day, so: time of day in ms (6, base 36) + this process (2) + the counter (4, wraps at 1.68 M).
+ */
+export function blobSeqOf(now, n, proc = PROC) {
+  const b36 = (v, w) => Math.floor(v).toString(36).padStart(w, "0").slice(-w);
+  return b36(now % 86_400_000, 6) + b36(proc % 36 ** 2, 2) + b36(n % 36 ** 4, 4);
+}
 const sha = (s) => createHash("sha256").update(s).digest("hex").slice(0, 16);
 
 /** The prompt messages of a request body (chat completions, responses, or a plain `messages` list). */
@@ -38,7 +49,13 @@ export function outputTextOf(out) {
  */
 export function recordModelCall(m) {
   try {
-    if (m.kind === "tts" || m.kind === "realtime_secret") return; // speech and key minting are not model calls (T-voice records TTS)
+    if (m.kind === "realtime_secret") return; // key minting is not a model call
+    if (m.kind === "tts") {
+      // round 7 cost ledger: speech is billed per character, so it is its own event (speech.tts), never a model.call
+      const chars = typeof m.body?.input === "string" ? m.body.input.length : 0;
+      record("speech.tts", { engine: m.deployment, chars, usd: usdTts(m.deployment, chars), status: m.status, ms: m.ms, ...(m.error ? { error: m.error } : {}) });
+      return;
+    }
     const msgs = promptOf(m.body);
     const json = msgs ? JSON.stringify(msgs) : "";
     const text = m.text ?? outputTextOf(m.out);
@@ -46,12 +63,12 @@ export function recordModelCall(m) {
       // 14.3 (stream 3's prod query): the ACCOUNT lane when it is not the default CHAT one, so a call the 429 overflow moved
       // reads `endpoint = 'OVERFLOW'` directly instead of being inferred (lane above is the quota lane: "hot" either way)
       ...(m.lane && m.lane !== "CHAT" ? { endpoint: m.lane } : {}),
-      ...(m.attempt ? { attempt: m.attempt } : {}), ...(m.tokens ? { tokens: m.tokens } : {}), ...(m.ttftMs != null ? { ttftMs: m.ttftMs } : {}),
+      ...(m.attempt ? { attempt: m.attempt } : {}), ...(m.tokens ? { tokens: m.tokens, usd: usdChat(m.deployment, m.tokens) } : {}), ...(m.ttftMs != null ? { ttftMs: m.ttftMs } : {}),
       promptId: promptId(msgs), promptSha: json ? sha(json) : null, promptMsgs: Array.isArray(msgs) ? msgs.length : null,
       output: text ?? null, ...(m.error ? { error: m.error } : {}), ...(Array.isArray(m.filterCats) ? { filterCats: m.filterCats } : {}) };
     const c = traceCtx();
     if ((c?.tier ?? 1) >= 2 && traceBlobConfigured() && m.body) {
-      const path = traceBlobPath({ sid: c?.sid ?? "server", src: "server", seq: `${Date.now()}${++blobSeq}`, ext: "json" });
+      const path = traceBlobPath({ sid: c?.sid ?? "server", src: "server", seq: blobSeqOf(Date.now(), ++blobSeq), ext: "json" });
       const payload = JSON.stringify({ request: m.body, response: m.out ?? (text != null ? { text } : null) });
       data.blob = { ref: path, bytes: Buffer.byteLength(payload), type: "application/json" };
       putTraceBlob(path, payload, "application/json").catch((e) => record("model.call.blob_failed", { ref: path, error: String(e?.message ?? e).slice(0, 160) }));

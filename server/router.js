@@ -14,6 +14,9 @@ import { realNow, runRequestClock } from "./comprehension/testclock.js";
 // release 12 flight recorder (server/trace): one trace store per request, srv.req / srv.res at the end of it.
 import { runTrace, ridOf, pidOf, isUuid } from "./trace/context.js";
 import { record, traceStats } from "./trace/writer.js";
+import { isDraining } from "./shutdown.js";
+import { childScoped, deviceFieldsRefused } from "./pair/scope.js";
+import { deviceOnly, scopeRefused } from "./auth.js";
 
 const REVISION = process.env.CONTAINER_APP_REVISION || null;
 /** The operator key (a Container App secret, deploy-azure.mjs SECRET_ENV): fresh health numbers, the forced 500. */
@@ -61,6 +64,10 @@ async function health(req, res) {
   const url = new URL(req.url || "/", "http://x");
   const out = { ok: true, at: new Date().toISOString(), driver: process.env.DB_DRIVER || "neon-http", revision: REVISION, sha: process.env.GIT_SHA || null };
   if (url.searchParams.get("ready") === "1") {
+    // a replica draining for shutdown (server/shutdown.js) is alive but must not be routed new work
+    if (isDraining()) return send(res, 503, { ...out, ok: false, draining: true });
+    // the India D5 relay (TAXILA_ROLE=d5relay) has no database: it verifies signed tickets (server/relay-ticket.js)
+    if (process.env.TAXILA_ROLE === "d5relay") return send(res, 200, { ...out, role: "d5relay" });
     const r = await dbReady();
     out.db = r.ok ? "ok" : "down";
     if (!r.ok) return send(res, 503, { ...out, ok: false });
@@ -226,10 +233,14 @@ export async function handle(req, res) {
 async function dispatch(req, res, key, fn, ctx, store) {
   try {
     if (!fn) return send(res, 404, { error: `no route ${key}` });
+    // child device pairing (server/auth.js): a paired device's session answers only on the routes scope.js lists
+    if (req && typeof req === "object") req[Symbol.for("taxila.childScope")] = childScoped(key);
     // the trace blob route reads its own raw body (bytes, not JSON)
     const raw = key === "POST /api/trace/blob";
     const body = !raw && ["POST", "PATCH", "PUT", "DELETE"].includes(req.method) ? await readJson(req) : {};
     ctx.body = body;
+    // a paired device sends only the child's own fields on a route the parent shares (PLAT-07), checked before the handler
+    if (deviceOnly(req) && deviceFieldsRefused(key, body).length) throw scopeRefused();
     const lessonId = body?.lessonId ?? (() => { try { return new URL(req.url || "/", "http://x").searchParams.get("lessonId"); } catch { return null; } })();
     if (isUuid(lessonId)) store.sid = lessonId;
     await runRequestClock(req, () => fn(req, res, body));

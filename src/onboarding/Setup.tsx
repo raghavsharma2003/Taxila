@@ -2,14 +2,18 @@
 // edge screens: /start/student, /start/summary, /start/verify (VPC is off at launch: it forwards).
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { Button, ButtonLink, ErrorNote, Field, Icon, PinPad, TeacherFace } from "../ui/index.ts";
+import { Button, ButtonLink, ErrorNote, Field, Icon, PinPad } from "../ui/index.ts";
+import { Teacher } from "../ui/teacher/Teacher.tsx";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { Spot } from "../child/art.tsx";
-import { ApiError, errText, getJson, loadMe, lockBeacon, postJson, type ChildRow } from "../app/api.ts";
+import { ApiError, getJson, loadMe, lockBeacon, postJson, type ChildRow } from "../app/api.ts";
+import { setupError } from "./setupRules.ts";
 import { useGate } from "../parent/Gate.tsx";
 import { isGateError } from "../parent/api.ts";
 import { StepFrame } from "./Layout.tsx";
 import { clearDraft, useDraft } from "./draft.ts";
+import { HoursPicker } from "../ui-v3/Scheduler.tsx";
+import { teacherBandFor } from "./teacherBand.ts";
 
 interface Controls { dailyMinutes: number; hoursStart: string; hoursEnd: string }
 export const defaultsFor = (cl: number): Controls => ({ dailyMinutes: cl <= 2 ? 20 : cl <= 5 ? 30 : 45, hoursStart: "06:30", hoursEnd: "21:30" });
@@ -24,13 +28,9 @@ export function MinutesStepper({ value, onChange, min = 10, max = 120 }: { value
   );
 }
 
+/** Lesson hours: the custom From / Until rails (round 7 F item 3, OWNER-RESET #11: no native time picker). */
 export function HoursFields({ start, end, onChange }: { start: string; end: string; onChange: (s: string, e: string) => void }) {
-  return (
-    <div className="hours">
-      <div className="field"><label htmlFor="hs">From</label><input id="hs" type="time" className="input" value={start} onChange={(e) => onChange(e.target.value, end)} /></div>
-      <div className="field"><label htmlFor="he">Until</label><input id="he" type="time" className="input" value={end} onChange={(e) => onChange(start, e.target.value)} /></div>
-    </div>
-  );
+  return <HoursPicker start={start} end={end} onChange={onChange} />;
 }
 
 export function ControlsStep() {
@@ -60,7 +60,7 @@ export function ControlsStep() {
       const g = await getJson<{ hasPin: boolean; firstSetNeedsPassword?: boolean }>("/api/parent/pin");
       setHasPin(g.hasPin);
       setNeedPw(!g.hasPin && !!g.firstSetNeedsPassword);
-    })().catch((e) => setErr(errText(e)));
+    })().catch((e) => setErr(setupError(e)));
   }, [d.childId, nav]);
 
   const onPin = (p: string) => {
@@ -79,7 +79,7 @@ export function ControlsStep() {
     // setup, so they are never lost to a gate refusal on P6.
     const p6 = d.child && d.childId === child.id ? {
       address: d.child.address ?? (child.class_level >= 5 ? "aap" : "tum"), comfortMode: !!d.child.comfort, captionsAlways: !!d.child.hardToHear,
-      reportChannel: d.reportChannel ?? "whatsapp",
+      reportChannel: d.reportChannel ?? "app",
     } : {};
     let pinSaved = !!hasPin;
     let stage: "pin" | "controls" = "controls";
@@ -96,7 +96,7 @@ export function ControlsStep() {
     } catch (e) {
       if (pinSaved && isGateError(e)) { setErr("The Parent corner locked. Enter the PIN to continue."); relock(); return; }
       if (e instanceof ApiError && (e.body as { gate?: string } | null)?.gate === "password") setNeedPw(true);
-      setErr(errText(e));
+      setErr(setupError(e));
       // Only a refused PIN clears the PIN pad; a failed controls write keeps it (the PIN may already be saved).
       if (stage === "pin") resetPinUi();
     } finally {
@@ -107,7 +107,7 @@ export function ControlsStep() {
 
   if (!child || !c || hasPin === null) return <StepFrame step="controls" title="Set a parent PIN">{err ? <ErrorNote>{err}</ErrorNote> : <div className="spinner" />}</StepFrame>;
   const needPin = !hasPin && (!pinOk || (needPw && !password));
-  const tname = teacherRecord(child.teacher_id, child.class_level <= 4 ? "b2" : "b3").name;
+  const tname = teacherRecord(child.teacher_id, teacherBandFor(child.class_level)).name;
 
   return (
     <StepFrame step="controls" title={hasPin ? "Daily limit" : "Set a parent PIN"} why={hasPin ? `For ${child.first_name}, Class ${child.class_level}. You can change this any time.` : "Only grown-ups should know it."}
@@ -160,11 +160,11 @@ export function HandoverStep() {
   }, [d.childId, nav]);
   if (!child) return <StepFrame step="handover" title="Ready"><div className="spinner" /></StepFrame>;
   const done = (to: string) => { lockBeacon(); clearDraft(); nav(to); };
-  const band = child.class_level <= 4 ? "b2" : "b3";
+  const band = teacherBandFor(child.class_level);
   const rec = teacherRecord(child.teacher_id, band);
   return (
     <StepFrame step="handover" title={`Ready for ${child.first_name}?`} back={false}>
-      <div className="meet"><TeacherFace size={180} teacherId={rec.id} band={band} /></div>
+      <div className="meet"><Teacher teacherId={rec.id} band={band} form="plate" floor="idle" label="below" lights="down" style={{ width: 180, height: 208 }} /></div>
       <div className="tiles tiles-2 onb-hand">
         <button type="button" className="tile handover-tile" onClick={() => done(`/c/${child.id}/hello`)} data-testid="handover-now">
           <Spot id="onboarding/handover-now" size={96} fallback={<Icon name="phone" size={40} />} />
@@ -184,7 +184,7 @@ export function HandoverStep() {
 export function StudentStep() {
   return (
     <StepFrame step={null} title="Hi. A parent sets this up first">
-      <div className="meet"><TeacherFace size={140} /></div>
+      <div className="meet"><Teacher teacherId={null} band="b3" form="plate" floor="idle" label="below" lights="down" style={{ width: 140, height: 168 }} /></div>
       <p className="t-lead">Taxila needs a parent or guardian to create the account and say yes to how it works. Show them this screen, or send them the link to this page.</p>
       <ButtonLink to="/" variant="secondary">What is Taxila</ButtonLink>
     </StepFrame>

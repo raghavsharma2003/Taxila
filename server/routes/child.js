@@ -29,6 +29,10 @@ import { resolveAddress } from "../director/register.js";
 import { HttpError } from "../http.js";
 import { lessonSummary } from "./lesson.js";
 import { shortTitleOf } from "../director/state.js";
+import { routes as placementRoutes } from "./placement.js";
+import { openJar, jarSummary, jarNotebook } from "../learner/jar.js";
+import { syncMarks } from "../learner/marks.js";
+import { validateEquip } from "../learner/equip.js";
 
 /** An open lesson older than this is an abandoned tab, not "Continue your lesson" (V2 §3.13 "App killed mid-lesson"). */
 export const RESUME_HOURS = 6;
@@ -54,9 +58,27 @@ export const countsAsDone = (state) => !state?.abandoned && !state?.stoppedEarly
   && (state?.ctx?.purpose ?? "lesson") === "lesson"
   && ((Array.isArray(state?.did) && state.did.length > 0) || Number(state?.minutes) >= DONE_MIN_MINUTES);
 
-/** The parent's lesson hours, daily cap and "done for today" gate lessons only when TAXILA_DAY_LIMITS=on (round 5: off). */
-export const dayLimitsOn = () => process.env.TAXILA_DAY_LIMITS === "on";
+/**
+ * Whose day limits apply (round 7 F, dc-r7 D5, superseding dc-r14's global off): TAXILA_DAY_LIMITS=on forces every child's
+ * on, =off forces every child's off, and unset (the default) leaves it to each family (child_controls.limits_on, migration
+ * 035, off by default: a lesson is always open until the parent turns the daily limit on).
+ */
+export const dayLimitsMode = () => { const v = process.env.TAXILA_DAY_LIMITS; return v === "on" || v === "off" ? v : "child"; };
+/** Every child's limits forced on (TAXILA_DAY_LIMITS=on): lesson.js startRefusal's default. A start passes the child's own
+ *  flag instead (planFor's plan.limits = limitsOnFor(controls)); see docs/patches/to-brain/002-start-refusal-limits.md. */
+export const dayLimitsOn = () => dayLimitsMode() === "on";
+/** Do the parent's daily limit, lesson hours and "done for today" apply to this child? */
+export const limitsOnFor = (controls) => dayLimitsMode() === "on" || (dayLimitsMode() === "child" && !!controls?.limitsOn);
 
+/**
+ * PURE. The home card's "about N min": the plan's lesson slot length while no lesson has started today (the next lesson
+ * takes that slot), else the class length. Once today's lesson slot has been used, the next start is not that slot (audit
+ * LEARN-22: the card read 25 min before the first start and 22 after it).
+ */
+export function cardMinutes(plan, classLevel, capRemaining, startedToday = false) {
+  const slot = plan?.slots?.find((x) => x.kind === "live_lesson");
+  return (slot && !startedToday && Number(slot.targetMin)) || lessonMinutes(classLevel, capRemaining);
+}
 /** Lesson length shown on the card (V2 §3.4: Young 10-20 min, Older 20-30), never more than what is left today. */
 export const lessonMinutes = (classLevel, capRemaining) => Math.max(5, Math.min(Number(classLevel) <= 4 ? 15 : 25, capRemaining ?? Infinity));
 
@@ -70,7 +92,7 @@ export const lessonMinutes = (classLevel, capRemaining) => Math.max(5, Math.min(
  *   openNow?: boolean, safetyHold?: boolean, homework?: boolean, testWindow?: boolean }} a
  * @returns {import("../../shared/contracts").ChildHomeState}
  */
-export function homeStateOf({ resumable, usedMin, capMin, doneToday, now, from, to, anyLesson, openNow = false, safetyHold = false, homework = false, testWindow = false, limits = dayLimitsOn() }) {
+export function homeStateOf({ resumable, usedMin, capMin, doneToday, now, from, to, anyLesson, openNow = false, safetyHold = false, homework = false, testWindow = false, limits = limitsOnFor(null) }) {
   if (safetyHold) return "safety_hold";
   // round 5 (owner, 2026-10-14: "remove the time frame for the class ... I am not even able to test after the time"):
   // with the day limits off (the default) a lesson is always available: no lesson hours, no daily cap, no "done for today".
@@ -99,21 +121,50 @@ export function homeStateOf({ resumable, usedMin, capMin, doneToday, now, from, 
 export const legacyHome = (state) => (state === "done" || state === "capped" ? "done" : state === "resting" || state === "safety_hold" ? "resting" : "default");
 
 async function controlsOf(child) {
-  const [row, open, w2a] = await Promise.all([
+  const [row, open, w2a, r7] = await Promise.all([
     one("select daily_minutes, hours_start, hours_end from child_controls where child_id = $1", [child.id]).catch(() => null),
     // A separate read: before migration 015 the column does not exist, and that must never cost the saved controls.
     one("select open_until from child_controls where child_id = $1 and open_until > now()", [child.id]).catch(() => null),
     // 019 columns, read apart for the same reason (a missing column never costs the saved controls)
     one("select homework_until, text_only from child_controls where child_id = $1", [child.id]).catch(() => null),
+    // 035 columns (round 7), apart for the same reason
+    one("select limits_on, extra_time, data_saver from child_controls where child_id = $1", [child.id]).catch(() => null),
   ]);
   const d = defaultControls(child.class_level);
   return {
     openUntil: open?.open_until ? new Date(open.open_until).toISOString() : null,
     homeworkUntil: w2a?.homework_until && new Date(w2a.homework_until) > new Date() ? new Date(w2a.homework_until).toISOString() : null,
     textOnly: !!w2a?.text_only,
+    limitsOn: !!r7?.limits_on, extraTime: r7?.extra_time ?? "normal", dataSaver: !!r7?.data_saver,
     capMin: Number(row?.daily_minutes) || d.dailyMinutes,
     from: HHMM.test(row?.hours_start ?? "") ? row.hours_start : d.hoursStart,
     to: HHMM.test(row?.hours_end ?? "") ? row.hours_end : d.hoursEnd,
+  };
+}
+
+/**
+ * The limit inputs of learner/view.js minutesLeft for a child right now (Brain's mid-lesson wrap, D5): the parent's
+ * controls, today's used minutes (conductor_usage, else the day's ended lessons), the hours end in the child's tz and
+ * today's planned live-lesson slot. Defensive: every read that fails falls back to the defaults.
+ * @returns {Promise<{ limitsOn: boolean, capMin: number, usedMin: number, to: string, localNow: string, openUntil: string|null, slotTargetMin: number|null }>}
+ */
+export async function limitsFor(child, now = new Date()) {
+  const routine = await one("select tz from child_routine where child_id = $1", [child.id]).catch(() => null);
+  const tz = routine?.tz || DEFAULT_TZ;
+  const day = learningDay(now, tz);
+  const dayStart = zonedToUtc(day, "04:00", tz).toISOString();
+  const [controls, usage, rows, dayPlan] = await Promise.all([
+    controlsOf(child),
+    one("select used_min from conductor_usage where child_id = $1 and learning_day = $2", [child.id, day]).catch(() => null),
+    q("select state from lesson where child_id = $1 and ended_at >= $2", [child.id, dayStart]).catch(() => []),
+    one("select plan from day_plan where child_id = $1 and day = $2 order by version desc limit 1", [child.id, day]).catch(() => null),
+  ]);
+  const loggedMin = rows.reduce((a, r) => a + (Number(r.state?.minutes) || 0), 0);
+  const slot = dayPlan?.plan?.slots?.find((x) => x.kind === "live_lesson");
+  return {
+    limitsOn: limitsOnFor(controls), capMin: Number(dayPlan?.plan?.capMin) || controls.capMin,
+    usedMin: Math.max(Number(usage?.used_min) || 0, loggedMin), to: controls.to, localNow: localTime(now, tz),
+    openUntil: controls.openUntil, slotTargetMin: Number(slot?.targetMin) || null,
   };
 }
 
@@ -124,10 +175,25 @@ async function controlsOf(child) {
 async function boot(req, res) {
   const { guardian, child } = await requireChild(req, childIdOf(query(req).get("childId")));
   const { meData } = await import("./account.js");
-  const [me, p] = await Promise.all([meData(guardian), planFor(child, guardian)]);
   // release 12 flight recorder: the same trace tier GET /api/me carries (the child app boots from here)
   const { traceMeFor } = await import("../trace/tier.js");
+  if (guardian.deviceChildId) {
+    // a paired child device (migration 041): this child only. No guardian row (email, name), no sibling, no consents.
+    const p = await planFor(child, guardian);
+    return send(res, 200, { me: { ...(await deviceMe(guardian, child)), trace: traceMeFor(guardian) }, plan: p });
+  }
+  const [me, p] = await Promise.all([meData(guardian), planFor(child, guardian)]);
   send(res, 200, { me: { ...me, trace: traceMeFor(guardian) }, plan: p });
+}
+
+/** The fields GET /api/me sends for each child (account.js meData), and nothing else of the child row. */
+export const ME_CHILD_FIELDS = ["id", "first_name", "class_level", "board", "school_medium", "language_pref", "teacher_id", "teacher_name", "avatar", "interests", "name_spoken"];
+/** A paired device's `me`: App's shape (docs/design/round7/app/PAIRING.md), the ui flags derived from the account, no PII. */
+export async function deviceMe(guardian, child) {
+  const { clientChild } = await import("./account.js");
+  const { uiFlagsFor } = await import("../ui/kaksha-cohort.js");
+  const own = Object.fromEntries(ME_CHILD_FIELDS.map((k) => [k, child[k] ?? null]));
+  return { scope: "child", guardian: null, children: [clientChild(own)], consents: [], ui: uiFlagsFor(guardian) };
 }
 
 /** GET /api/child/plan */
@@ -136,15 +202,42 @@ async function plan(req, res) {
   send(res, 200, await planFor(child, guardian));
 }
 
+/**
+ * Round 7 F (learning-conductor-day-plan): the child home starts the Conductor's planToday IN THE BACKGROUND, so day_plan
+ * (and its slot.subject from the rotation) exists after the first visit of a learning day. It never adds latency and
+ * never fails the home: at most once per child per PLAN_KICK_MS on this replica, errors only logged. OPT-IN until checked
+ * live on staging (TAXILA_CONDUCTOR_PLAN=on): the DB-backed suites drive the plan route against a test database, and a
+ * background Conductor step there is unverified. Off, the home reads whatever day_plan exists, as before.
+ */
+export const PLAN_KICK_MS = 10 * 60_000;
+const planKicks = new Map();
+/** PURE. Should this replica start planToday for the child now? */
+export function shouldKickPlan(childId, now, kicks = planKicks, env = process.env) {
+  if (env.TAXILA_CONDUCTOR_PLAN !== "on" || !env.DATABASE_URL) return false;
+  if (kicks.has(childId) && now - kicks.get(childId) < PLAN_KICK_MS) return false;
+  kicks.set(childId, now);
+  if (kicks.size > 5000) for (const [k, t] of kicks) if (now - t > PLAN_KICK_MS) kicks.delete(k);
+  return true;
+}
+function kickPlanToday(childId, now) {
+  if (!shouldKickPlan(childId, now.getTime())) return;
+  import("../conductor/index.js")
+    .then((m) => m.planToday(childId, { device: "web", now }))
+    .catch((e) => console.warn(`[child] planToday ${String(childId).slice(0, 8)}: ${String(e?.message ?? e).slice(0, 160)}`));
+}
+
 /** @returns {Promise<import("../../shared/contracts").ChildPlanResponse>} */
 export async function planFor(child, guardian, now = new Date()) {
-  const routine = await one("select tz from child_routine where child_id = $1", [child.id]).catch(() => null);
+  kickPlanToday(child.id, now);
+  // select *: 045's lesson_days / lesson_min may not exist yet (then the schedule is the start time alone)
+  const routine = await one("select * from child_routine where child_id = $1", [child.id]).catch(() => null);
   const tz = routine?.tz || DEFAULT_TZ;
   const day = learningDay(now, tz);
   const dayStart = zonedToUtc(day, "04:00", tz).toISOString();
-  const [controls, profile, open, todayRows, anyRow, usage, dayPlan, , hold, test, madeFor] = await Promise.all([
+  const profile0 = hasConsent(guardian.id, child.id, "learning_profile");
+  const [controls, profile, open, todayRows, anyRow, usage, dayPlan, , hold, test, madeFor, jarItems] = await Promise.all([
     controlsOf(child),
-    hasConsent(guardian.id, child.id, "learning_profile"),
+    profile0,
     one(`select l.id, l.topic_id, l.started_at, l.state->'lastUi'->'ask'->>'text' as ask,
             coalesce(jsonb_typeof(l.state->'safeguard'), 'null') <> 'null' as safeguard_open,
             (select count(*)::int from turn t where t.lesson_id = l.id and t.speaker = 'child') as child_turns,
@@ -160,10 +253,12 @@ export async function planFor(child, guardian, now = new Date()) {
     // a school test the parent entered, covering today (019 child_controls.test_window)
     one("select test_window from child_controls where child_id = $1", [child.id]).then((r) => {
       const w = activeWindow(r?.test_window, day);
-      return w ? { subject: w.subject, from_day: w.from, to_day: w.to } : null;
+      return w ? { subject: w.subject, from_day: w.from, to_day: w.to, chapters: w.chapters ?? null } : null;
     }).catch(() => null),
     // today's revealed Studio pieces (the mini-shelf; [] until W2-H's feed has rows)
     madeForOf(child.id, { since: dayStart, limit: 3 }),
+    // round 7 F item 8: the Question jar (037): what she promised to come back to
+    profile0.then((p) => (p ? openJar(child.id, { limit: 10 }) : [])).catch(() => []),
   ]);
   const loggedMin = todayRows.reduce((a, r) => a + (Number(r.state?.minutes) || 0), 0);
   const usedMin = Math.round(Math.max(Number(usage?.used_min) || 0, loggedMin) * 10) / 10;
@@ -177,17 +272,18 @@ export async function planFor(child, guardian, now = new Date()) {
   const doneRows = todayRows.filter((r) => countsAsDone(r.state));
   const state = homeStateOf({ resumable, usedMin, capMin, doneToday: doneRows.length > 0, now: localTime(now, tz),
     from: controls.from, to: controls.to, anyLesson: !!anyRow?.any, openNow: !!controls.openUntil,
-    safetyHold: hold?.mode === "safety_hold", homework: !!controls.homeworkUntil, testWindow: !!test });
+    safetyHold: hold?.mode === "safety_hold", homework: !!controls.homeworkUntil, testWindow: !!test, limits: limitsOnFor(controls) });
   const teacher = teacherFor(child);
   // the ONE next-topic answer (truth.js nextTopicForPlan): inside an active test window it revises the test's subject,
   // on every surface (home topic, "Next time", parent next lesson, Progress, the lesson-end summary)
-  const nextT = await nextTopicOf(child, { testWindow: test ? { subject: test.subject, from: test.from_day, to: test.to_day } : null });
+  // the window's chapters and today (round 7 F test-window revision): the home's "next" is the lesson's revision topic
+  const nextT = await nextTopicOf(child, { testWindow: test ? { subject: test.subject, from: test.from_day, to: test.to_day, today: day, ...(test.chapters ? { chapters: test.chapters } : {}) } : null });
   const topic = nextT ? { id: nextT.id, title: nextT.title, shortTitle: shortTitleOf(nextT.title), chapter: nextT.chapter.title, subject: nextT.subject,
-    minutes: Number(dayPlan?.plan?.slots?.find((x) => x.kind === "live_lesson")?.targetMin) || lessonMinutes(child.class_level, capRemaining) } : null;
+    minutes: cardMinutes(dayPlan?.plan, child.class_level, capRemaining, todayRows.length > 0) } : null;
   const last = doneRows[0];
   return {
     state, homeState: legacyHome(state),
-    plan: { openLesson: state === "resume" ? open.id : null, window: { from: controls.from, to: controls.to }, openUntil: controls.openUntil, limits: dayLimitsOn() },
+    plan: { openLesson: state === "resume" ? open.id : null, window: { from: controls.from, to: controls.to }, openUntil: controls.openUntil, limits: limitsOnFor(controls) },
     topic: state === "resume" ? null : topic,
     resume: state === "resume" ? { lessonId: open.id, ask: open.ask ?? null, topicTitle: getTopic(open.topic_id)?.title ?? "" } : null,
     // "Next time" on today's card is the plan's own next topic (the ONE next-topic function), never the sequence's next
@@ -197,10 +293,12 @@ export async function planFor(child, guardian, now = new Date()) {
     surfaces: { map: !!profile, notebook: !!profile, resume: !!profile },
     source: { dayPlan: dayPlan?.version ?? null },
     madeFor: profile && state !== "safety_hold" ? madeFor : [],
-    jar: null,
+    jar: state === "safety_hold" ? null : jarSummary(jarItems),
     testWindow: test ? { subject: test.subject, from: test.from_day, to: test.to_day } : null,
     homework: controls.homeworkUntil ? { until: controls.homeworkUntil } : null,
     textOnly: controls.textOnly,
+    // round 7 F (app-parent-schedule): the family's lesson time, for "Lesson time 5:00" on Home; a plan, never a lock
+    schedule: scheduleOf(routine, day),
   };
 }
 
@@ -236,7 +334,7 @@ export const mapStateOf = (row, dc) => MAP_STATE[parentState(row, dc).key];
  *   kitOf: (topic: any) => any }} a
  * @returns {Omit<import("../../shared/contracts").ChildMapResponse, "hidden">}
  */
-export function buildMap({ classLevel, rows, delayed, rechecks, hereTopicId = null, kitOf, stateOf = null }) {
+export function buildMap({ classLevel, rows, delayed, rechecks, hereTopicId = null, kitOf, stateOf = null, schoolChapter = null }) {
   const subjects = [];
   const flat = [];
   const hereChapter = hereTopicId ? getTopic(hereTopicId)?.chapter.id : null;
@@ -247,7 +345,9 @@ export function buildMap({ classLevel, rows, delayed, rechecks, hereTopicId = nu
     for (const id of ids) {
       const t = getTopic(id);
       let ch = chapters.at(-1);
-      if (!ch || ch.id !== t.chapter.id) chapters.push(ch = { id: t.chapter.id, number: t.chapter.number, title: t.chapter.title, sealed: false, here: t.chapter.id === hereChapter, secure: 0, total: 0, topics: [] });
+      if (!ch || ch.id !== t.chapter.id) chapters.push(ch = { id: t.chapter.id, number: t.chapter.number, title: t.chapter.title, sealed: false, here: t.chapter.id === hereChapter,
+        // round 7 F item 2: "your class is here" = the chapter the parent (or the intake) said school is on
+        school: Number(schoolChapter?.[subject]) === t.chapter.number, secure: 0, total: 0, topics: [] });
       let kit = null;
       try { kit = kitOf(t); } catch { kit = null; }
       const skills = (kit?.skills ?? []).map((sk) => {
@@ -288,9 +388,10 @@ async function map(req, res) {
   ]);
   const out = buildMap({
     classLevel: child.class_level, rows: truth.projection, delayed: new Map(), rechecks: new Set(weave.map((r) => r.skill_id)),
-    hereTopicId: next?.id ?? null, kitOf: kitFromFile, stateOf: (id) => truth.state(id),
+    hereTopicId: next?.id ?? null, kitOf: kitFromFile, stateOf: (id) => truth.state(id), schoolChapter: child.school_chapter ?? null,
   });
-  send(res, 200, { ...out, hidden: false });
+  // round 7 F (app-world-hangar-depth): sealedAt / secureSince = when the map FIRST saw it (046 child_map_mark; null = not yet or unknown)
+  send(res, 200, { ...(await syncMarks(child.id, out)), hidden: false });
 }
 
 // ───────────────────────────── her line on a plant / star (flows G16) ─────────────────────────────
@@ -373,6 +474,45 @@ async function skillLineAudio(req, res) {
   res.end(audio);
 }
 
+// ───────────────────────────── name preview (round 7 F; PRODUCT-DESIGN-V2 §6.2 step 6) ─────────────────────────────
+
+/** PURE. The fixed line her preview speaks: the spoken spelling when given, else the name as written. Never free text. */
+export const nameLineOf = (name) => `Namaste, ${name}!`;
+
+/**
+ * GET /api/child/name-audio?childId=&spoken=  |  ?classLevel=&name=&spoken=  → audio/mpeg: "Hear how {T} says it".
+ * The child's teacher (or, before the child exists, the class's) says one fixed greeting with the name; `spoken` is the
+ * parent's "Spell it how it sounds" (account.js spokenNameOf rules), so a spelling can be heard before it is saved.
+ */
+async function nameAudio(req, res) {
+  const sp = query(req);
+  const { spokenNameOf } = await import("./account.js");
+  let guardian, who;
+  if (sp.get("childId")) {
+    const r = await requireChild(req, childIdOf(sp.get("childId")));
+    guardian = r.guardian; who = r.child;
+  } else {
+    const { requireGuardian } = await import("../auth.js");
+    guardian = await requireGuardian(req);
+    const cl = Number(sp.get("classLevel"));
+    if (!(cl >= 1 && cl <= 9)) throw bad("childId or classLevel (1-9) is required");
+    who = { id: `class-${cl}`, class_level: cl, teacher_id: null, first_name: spokenNameOf(sp.get("name")) };
+  }
+  const name = spokenNameOf(sp.get("spoken")) ?? who.name_spoken ?? spokenNameOf(who.first_name);
+  if (!name) throw bad("a name is required");
+  if (!allowSpeech(guardian.id)) throw new HttpError(429, "too many speech requests");
+  let audio;
+  try { audio = await tts(nameLineOf(name), teacherFor(who).voice); } catch (e) {
+    if (e instanceof AzureError) throw new HttpError(502, "speech service unavailable");
+    throw e;
+  }
+  res.statusCode = 200;
+  res.setHeader("content-type", "audio/mpeg");
+  res.setHeader("content-length", String(audio.length));
+  res.setHeader("cache-control", "private, max-age=600");
+  res.end(audio);
+}
+
 // ───────────────────────────── teacher ─────────────────────────────
 
 /** GET /api/child/teacher?childId= | ?classLevel= */
@@ -401,6 +541,85 @@ async function request(req, res, body) {
   send(res, 200, { granted: false, state: p.state });
 }
 
+/**
+ * PURE. The child Home's view of the parent's schedule (round 7 F, app-parent-schedule): { time, minutes, today } or null.
+ * `today`: today is one of the lesson days (all days when none are stored).
+ */
+export function scheduleOf(routine, day) {
+  if (!routine?.anchor) return null;
+  const days = Array.isArray(routine.lesson_days) ? routine.lesson_days.map(Number) : null;
+  return { time: routine.anchor, minutes: routine.lesson_min ?? null, today: !days || days.includes(new Date(`${day}T00:00:00Z`).getUTCDay()) };
+}
+
+/**
+ * POST /api/homework/match { childId, text } → { match } (round 7 F, learning-homework-help; agreed with App 2026-11-04):
+ * where the child's homework question sits in their own class book (server/homework/match.js: kit_item | topic | subject),
+ * or null. In memory over the class's kits, no model call (App waits ≤ 1.5 s). The text is not stored.
+ */
+async function homeworkMatch(req, res, body) {
+  const { child } = await requireChild(req, need(body, "childId").childId);
+  const text = typeof body.text === "string" ? body.text.trim().slice(0, 500) : "";
+  if (!text) throw bad("text required");
+  const { matchHomework } = await import("../homework/match.js");
+  send(res, 200, { match: matchHomework(text, child) });
+}
+
+/**
+ * GET /api/child/jar?childId= → { items } (round 7 F, App's app-notebook-log: the Notebook's "Questions in the jar").
+ * The child's own kept questions and shares: waiting ones oldest first, then up to 10 answered ones newest first, with
+ * the date each was answered. No counts. On the Conductor's safety hold the page is empty. Read-only (no child delete).
+ */
+async function jar(req, res) {
+  const { child } = await requireChild(req, childIdOf(query(req).get("childId")));
+  const hold = await one("select mode from conductor_state where child_id = $1", [child.id]).catch(() => null);
+  if (hold?.mode === "safety_hold") return send(res, 200, { items: [] });
+  send(res, 200, { items: await jarNotebook(child.id) });
+}
+
+/**
+ * GET /api/child/equip?childId= → { equipped } · PUT /api/child/equip { childId, equipped: { hull?, trail?, board?, rim?, emote? } }
+ * → { equipped } (round 7 F, App's app-world-hangar-depth). The Hangar's equipped cosmetics, synced across devices; a PUT
+ * replaces the whole set (null or a missing slot = nothing equipped there). Catalog ids are checked (learner/equip.js).
+ */
+async function equipGet(req, res) {
+  const { child } = await requireChild(req, childIdOf(query(req).get("childId")));
+  const row = await one("select equipped from child_equip where child_id = $1", [child.id]).catch(() => null);
+  send(res, 200, { equipped: row?.equipped ?? {} });
+}
+async function equipPut(req, res, body) {
+  const { child } = await requireChild(req, childIdOf(need(body, "childId").childId));
+  const v = validateEquip(body.equipped);
+  if (v.error) throw bad(v.error);
+  await q(`insert into child_equip (child_id, equipped, updated_at) values ($1, $2, now())
+      on conflict (child_id) do update set equipped = excluded.equipped, updated_at = now()`, [child.id, v.equipped]);
+  send(res, 200, { equipped: v.equipped });
+}
+
+/**
+ * POST /api/child/reflect { childId, lessonId, choice } → 204 (round 7 F, App's app-debrief-made-later "What helped?").
+ * choice: "made:<madeForId>" (a piece revealed in THAT lesson) | board | explain | self | unsure. Emits child.reflect;
+ * the first tap per lesson wins (a second is a 204 no-op). A lesson that is not this child's own → 404; an unknown
+ * choice or a made-for piece not from that lesson → 400. A choice, never a claim: no parent surface reads it.
+ */
+async function reflect(req, res, body) {
+  const { child } = await requireChild(req, need(body, "childId").childId);
+  const { lessonId } = need(body, "lessonId");
+  const { parseChoice } = await import("../learner/reflect.js");
+  const c = parseChoice(body.choice);
+  if (!c || !/^[A-Za-z0-9_.:@\-]{1,96}$/.test(String(lessonId))) throw bad("choice must be made:<id>, board, explain, self or unsure");
+  const lesson = await one("select id from lesson where id::text = $1 and child_id = $2", [String(lessonId), child.id]).catch(() => null);
+  if (!lesson) throw new HttpError(404, "lesson not found");
+  if (c.kind === "made") {
+    // the shelf's own rule (reports/madeFor.js): a revealed, not hidden, non-whiteboard mount of THIS lesson
+    const made = await one(`select 1 as ok from studio_mount m where m.lesson_id = $1 and m.revealed_at is not null and not m.hidden
+        and m.source <> 'whiteboard' and coalesce(m.intent_id::text, m.build_sha) = $2 limit 1`, [lesson.id, c.id]).catch(() => null);
+    if (!made) throw bad("that piece was not made in this lesson");
+  }
+  const { emit } = await import("../conductor/index.js");
+  await emit(child.id, { type: "child.reflect", lessonId: String(lesson.id), choice: body.choice });
+  send(res, 204);
+}
+
 export const routes = {
   "GET /api/child/plan": plan,
   "GET /api/child/boot": boot,
@@ -409,4 +628,12 @@ export const routes = {
   "POST /api/lesson/request": request,
   "GET /api/child/skill-line": skillLine,
   "GET /api/child/skill-line/audio": skillLineAudio,
+  "GET /api/child/name-audio": nameAudio,
+  "POST /api/homework/match": homeworkMatch,
+  "POST /api/child/reflect": reflect,
+  "GET /api/child/jar": jar,
+  "GET /api/child/equip": equipGet,
+  "PUT /api/child/equip": equipPut,
+  // round 7 F item 6: the placement round (server/routes/placement.js), registered here so the route registry is untouched
+  ...placementRoutes,
 };

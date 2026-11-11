@@ -93,10 +93,3 @@ export interface G1FillResult {
   renderable?: boolean; blobUrl?: string | null;
 }
 
-/** POST /api/forge/requests response (the client-safe view: no grade). Consumer: dev pages only today. */
-export interface ForgeRequestResponse {
-  requestId: string; status: G1FillResult["status"]; tier: G1FillResult["tier"] | null;
-  renderer: G1Renderer | null; template: G1Template | null;
-  command: G1FillResult["command"] | null; ui: { caption?: string };
-  plan: G1FillResult["plan"] | null; cached: G1FillResult["cached"]; timings?: Record<string, number>;
-}

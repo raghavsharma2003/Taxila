@@ -37,7 +37,9 @@ export function fadeItemOf(itemId, topicId) {
   const parts = String(faded).split(/_{2,}/);
   const blank = parts.length === 2 && step.startsWith(parts[0]) && step.endsWith(parts[1])
     ? step.slice(parts[0].length, step.length - parts[1].length).trim().replace(/[.,;:!।]+$/u, "").trim() : "";
-  return { id: itemId, kind: "practice", fade: true, answer: blank || step, topicId };
+  // a child who can do it says the number, not the sentence the step goes on with ("5. Write 5" → "5")
+  const num = /^([-−]?\d[\d,]*(?:\.\d+)?)[.!?।]\s+\S/u.exec(blank);
+  return { id: itemId, kind: "practice", fade: true, answer: (num ? num[1] : blank) || step, topicId };
 }
 /** The kit topic, or null. */
 export function kitTopic(topicId) { index(); return byTopic.get(topicId) ?? null; }

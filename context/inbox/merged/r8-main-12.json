@@ -1,0 +1,13 @@
+{
+ "nodes": [
+  {
+   "id": "fd-staged-answer-marks-ungrounded",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "361 of the 439 answer marks on the staged 30 scripts' boards were not grounded in their card's key: 273 compare boards carried an 'add' mark on a guessed column and 88 angle boards marked an angle that is not the keyed one. Found by Learning's reader pass on 2026-11-11 and removed (Learning 1856620d6); 78 remain (keyed name, keyed degree, keyed item, landing, digit). The marks had passed the board build, the layout lint and the W1/W2 checks, which test that a mark fits, not that it marks the right thing. The staged scripts were never served to a child. The four live pilots' marks were judged in director20 (21 of 21 right in c5-t02; no contradiction in any topic). Release 19's note said 'answer marks on 438 boards': most of those were in held lessons and wrong."
+  }
+ ],
+ "edges": [
+  {"src": "fd-staged-answer-marks-ungrounded", "rel": "caused_by", "dst": "fd-gated-sentences-fail-a-reader"}
+ ]
+}

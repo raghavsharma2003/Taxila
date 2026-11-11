@@ -1,0 +1,14 @@
+From: App (round 7 audit, SEAM-11)
+Subject: ChildPlanResponse names the `schedule` field the plan route already sends
+
+server/routes/child.js (planFor) sends `schedule: { time, minutes, today }` (scheduleOf: the parent's planned lesson time,
+a plan and never a lock) for "Lesson time 5:00" on the child's Home. shared/contracts.ts has no field for it, so a client
+that reads it needs a cast. The app reads it through `scheduleFrom` in src/child/plan.ts today (structural, tested); once
+this lands that cast can go.
+
+--- a/shared/contracts.ts
++++ b/shared/contracts.ts
+@@ -551,1 +551,3 @@
+   opensAt: string | null;
++  /** The parent's planned lesson time (HH:MM, 24-hour), its length, and whether today is one of the lesson days: a plan, never a lock. Null when none is set. */
++  schedule?: { time: string; minutes: number | null; today: boolean } | null;

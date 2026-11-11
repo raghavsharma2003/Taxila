@@ -1,0 +1,123 @@
+diff -ruN a/server/reports/teaching.js b/server/reports/teaching.js
+--- a/server/reports/teaching.js
++++ b/server/reports/teaching.js
+@@ -6,11 +6,15 @@
+ //   whyLines(rows, { name, T })     PURE. One lesson's trace rows → ≤ 4 lines in a fixed priority
+ //   APPROACH                        fixed copy: the method, the same for every child
+ //   teachingOf(child, { q })        the page's data: approach, the last 5 counted lessons with their lines, made-for pieces
++//   becauseOf(rows, ctx)            PURE. round 8: a lesson's knows.<choice> decision rows → the parent's "because" lines
++//                                   (server/director/knows-words.js: what was chosen and the fact behind it, never blame)
+ import { q as dbq } from "../db.js";
+ import { getTopic } from "../content/curriculum.js";
+ import { COUNTED_LESSON_SQL } from "./truth.js";
+ import { madeForOf } from "./madeFor.js";
+ import { WAY_LABEL } from "./templates.js";
++import { getKit } from "../content/index.js";
++import { becauseLines } from "../director/knows-words.js";
+ 
+ const n2 = (n) => (n === 1 ? "once" : n === 2 ? "twice" : `${n} times`);
+ /** " twice" / " 3 times"; nothing for once (a single move needs no count). */
+@@ -67,6 +71,23 @@
+   return out.slice(0, MAX_LINES);
+ }
+ 
++/**
++ * PURE. round 8 (dc-r8-one-reader-with-because): a lesson's decision_record rows with point_id knows.<choice> → plain lines
++ * in the parent's language. Titles come from the lesson's kit (skills, misconceptions) and the curriculum (topics).
++ * @param {{ point_id: string, options: { on?: string, fact?: object, source?: string } }[]} rows
++ */
++export function becauseOf(rows, { name, lang, kit = null, seed = 0 }) {
++  const recs = (rows ?? []).filter((r) => String(r.point_id ?? "").startsWith("knows.")).map((r) => {
++    const o = typeof r.options === "string" ? JSON.parse(r.options) : r.options ?? {};
++    return { choice: String(r.point_id).slice(6), on: o.on ?? null, fact: o.fact ?? {}, source: o.source ?? null };
++  });
++  const skills = Object.fromEntries((kit?.skills ?? []).map((s) => [s.id, s.title]));
++  const mixups = Object.fromEntries((kit?.misconceptions ?? []).map((m) => [m.id, { en: m.belief }]));
++  const topics = {};
++  for (const r of recs) for (const id of [r.on, r.fact?.prereqTopicId, r.fact?.insteadOf]) { const t = id ? getTopic(id) : null; if (t) topics[id] = t.title; }
++  return becauseLines(recs, { lang, name, seed, skills, mixups, topics });
++}
++
+ /** Fixed copy: how the teacher works, the same for every child (no claim about the child). */
+ export const APPROACH = Object.freeze([
+   "Starts each lesson with a few questions from earlier topics, so they stay fresh.",
+@@ -88,12 +109,17 @@
+   const ways = ids.length ? await q("select lesson_id, chosen from decision_record where lesson_id = any($1::uuid[]) and point_id = 'explain_format' order by id",
+     [ids]).catch(() => []) : [];
+   const madeFor = await madeForOf(child.id, { limit: 6, q }).catch(() => []);
++  // round 8: what she chose for this child and why (decision_record knows.<choice>, written by brain/turn.js)
++  const knows = ids.length ? await q("select lesson_id, point_id, options from decision_record where lesson_id = any($1::uuid[]) and point_id like 'knows.%' order by id",
++    [ids]).catch(() => []) : [];
++  const kits = new Map(await Promise.all([...new Set(lessons.map((l) => l.topic_id))].map(async (t) => [t, await getKit(t, { generate: false }).catch(() => null)])));
+   return {
+     approach: APPROACH,
+     lessons: lessons.map((l) => ({
+       id: String(l.id), topic: getTopic(l.topic_id)?.title ?? null, startedAt: new Date(l.started_at).toISOString(),
+       why: whyLines(trace.filter((r) => String(r.lesson_id) === String(l.id)), { name: child.first_name, T,
+         ways: ways.filter((w) => String(w.lesson_id) === String(l.id)).map((w) => w.chosen) }),
++      because: becauseOf(knows.filter((r) => String(r.lesson_id) === String(l.id)), { name: child.first_name, lang: child.language_pref, kit: kits.get(l.topic_id), seed: String(l.id) }),
+     })),
+     madeFor,
+   };
+diff -ruN a/src/parent/Teaching.tsx b/src/parent/Teaching.tsx
+--- a/src/parent/Teaching.tsx
++++ b/src/parent/Teaching.tsx
+@@ -2,6 +2,7 @@
+ //   - How {T} teaches: fixed copy, the same for every child;
+ //   - Recent lessons: what {T} did and why, per lesson, from the trace's closed codes (server/reports/teaching.js), never
+ //     model prose and never a statement about the child's mind or ability;
++//   - (round 8) under each lesson, why it was taught that way for this child: the because lines;
+ //   - Made for {child}: pieces made in lessons, with the plain "because" from the kit;
+ // plus What {T} remembers (the same card as Data and privacy, with Delete).
+ import { parentApi } from "./api.ts";
+@@ -35,6 +36,8 @@
+                     <p className="pa-h3">{l.topic ?? "A lesson"} <span className="pa-meta">· {day(l.startedAt)}</span></p>
+                     {l.why.length ? <ul className="pa-list">{l.why.map((w) => <li key={w.code}>{w.text}</li>)}</ul>
+                       : <p className="pa-meta">{T} taught it the usual way: explain, a question, then practice.</p>}
++                    {/* round 8: what was chosen for this child and the fact behind it (server/director/knows-words.js) */}
++                    {(l.because ?? []).length > 0 && <ul className="pa-list" data-testid="teaching-because">{(l.because ?? []).map((t) => <li key={t}>{t}</li>)}</ul>}
+                   </li>
+                 ))}
+               </ul>
+diff -ruN a/src/parent/api.ts b/src/parent/api.ts
+--- a/src/parent/api.ts
++++ b/src/parent/api.ts
+@@ -8,7 +8,7 @@
+ /** GET /api/parent/teaching (round 7 F): how the teacher works, and what she did in the last lessons and why (closed codes). */
+ export interface TeachingOut {
+   teacher: string; approach: string[];
+-  lessons: { id: string; topic: string | null; startedAt: string; why: { code: string; n: number; text: string }[] }[];
++  lessons: { id: string; topic: string | null; startedAt: string; why: { code: string; n: number; text: string }[]; because?: string[] }[];
+   madeFor: import("../../shared/contracts.ts").MadeForItem[];
+ }
+ 
+diff -ruN a/tests/teaching-because.test.mjs b/tests/teaching-because.test.mjs
+--- a/tests/teaching-because.test.mjs
++++ b/tests/teaching-because.test.mjs
+@@ -0,0 +1,26 @@
++// round 8 (docs/patches/to-learning, r8-loop): the parent's teaching page turns a lesson's knows.<choice> decision rows
++// into plain "because" lines in the child's language, titled from the kit, with no ids and nothing for unknown rows.
++import test from "node:test";
++import assert from "node:assert/strict";
++import { becauseOf } from "../server/reports/teaching.js";
++
++const kit = { skills: [{ id: "c5-maths-ch02-t01-s1", title: "Mark unit fractions on a number line" }], misconceptions: [{ id: "c5-maths-ch02-t01-m-count-marks", belief: "count the marks, not the gaps" }] };
++const rows = [
++  { point_id: "knows.compress", options: { on: "c5-maths-ch02-t01-s1", fact: { kind: "learned_delayed_check", skillId: "c5-maths-ch02-t01-s1" }, source: "x" } },
++  { point_id: "knows.checkOrder", options: JSON.stringify({ on: "c5-maths-ch02-t01-s1", fact: { kind: "open_mixup", misconceptionId: "c5-maths-ch02-t01-m-count-marks", skillId: "c5-maths-ch02-t01-s1" } }) },
++  { point_id: "knows.prereqCheck", options: { on: "c4-maths-ch05-t01", fact: { kind: "wheel_spin", skillId: "c5-maths-ch02-t01-s1", prereqTopicId: "c4-maths-ch05-t01" } } },
++  { point_id: "explain_format", options: {} },
++  { point_id: "knows.nope", options: { on: "x", fact: { kind: "x" } } },
++];
++
++test("knows rows become the parent's lines, titled, in the child's language", () => {
++  const en = becauseOf(rows, { name: "Riya", lang: "english", kit, seed: "L1" });
++  assert.equal(en.length, 3);
++  assert.match(en[0], /Mark unit fractions on a number line/);
++  assert.match(en[1], /count the marks, not the gaps/);
++  for (const t of en) assert.doesNotMatch(t, /c\d-maths|script:|-m-|undefined/);
++  const hi = becauseOf(rows, { name: "Riya", lang: "hinglish", kit, seed: "L1" });
++  assert.equal(hi.length, 3);
++  assert.notDeepEqual(hi, en);
++  assert.deepEqual(becauseOf([], { name: "Riya", lang: "english", kit }), []);
++});

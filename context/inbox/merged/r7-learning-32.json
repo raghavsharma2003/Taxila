@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-report-s15-rest",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "Round 7 F: PARENT-REPORT S15 (routine and rest, MH-M12) is built for weekly and monthly reports. One line fires behind an absolute floor: either ≥ 3 lessons started after the parent's bedtime (or before 04:00) in the last 14 days, or longer lessons (each 14-day half with ≥ 4 closed lessons, median up ≥ 10 min and ≥ 1.5×). It states the fact plus one Parent-corner suggestion. Reverse if: replay on real families shows either rule firing for more than ~5% of children a month (the false-alarm budget)."
+  },
+  {
+   "id": "o-r7-report-s8-s10-need-signals",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "Round 7 F: PARENT-REPORT S8 (How sure) and S10 (style lines) stay unbuilt. Nothing captures the child's 'pakka / shayad / andaaza' bet, and no gated interaction-signature (ISP) dimension is computed. Both need upstream signals before a report line can be true. S18 is deferred by the owner. Reverse if: a lesson starts collecting how-sure bets (S8), or ISP dimensions with their TV gates exist (S10)."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## `dc-r7-report-s15-rest` (2026-11-07, F Learning)\nS15 \"A note about routine and rest\" (PARENT-REPORT §5; RESEARCH-PROGRAM MH-M12). The pure rule lives in server/reports/rest.js; claims.js reads it from the facts and check.js re-derives it from its own lesson query.\n\n**When a line appears.** Weekly and monthly reports only (CAPS.rest 1; daily and term 0). Each line has an absolute floor and a minimum count, never an own-percentile rule (MH R9: ~46% false alarms a year).\n- `rest.afterbed`: k ≥ 3 counted lessons in the last 14 days started after the bedtime set in Parent corner (child_routine.bedtime), or after midnight and before 04:00.\n- `rest.longer`: each 14-day half has ≥ 4 closed lessons, and the recent median length is ≥ 10 min AND ≥ 1.5× the earlier one.\n\n**What a line says.** The fact plus one Parent-corner suggestion (change the bedtime; set a lesson length). The spec's \"Taxila has gone back to a shorter plan\" is NOT said, because no conductor rule does it yet. There are no alarm words (the lexicon bans sleep*, neend, late night*, addict*, screen time), and distress never appears here (that is the safeguarding route).\n\n**Reverse if:** replay on real families shows either rule firing for more than ~5% of children a month.\n\n## `o-r7-report-s8-s10-need-signals` (2026-11-07, F Learning)\nPARENT-REPORT S8 (How sure, B2+) and S10 (How learning with Taxila goes best lately) stay unbuilt. Their data does not exist yet:\n- **S8** needs the child's per-item \"how sure\" bet (pakka / shayad / andaaza), which no lesson asks or stores, and a calibration gate.\n- **S10** needs gated ISP dimensions (warm-up turns before free answers, pace, words) with consistent/changing status, and its section kill-switch studies (R-VIBE, R-VIGNETTE).\n\nS18 is deferred by the owner. All other sections (S1-S7, S9, S11-S17) exist.\n\n**Reverse if:** a lesson starts capturing how-sure bets (then build S8 on them), or ISP dimensions with their TV gates exist (then build S10)."
+ }
+}

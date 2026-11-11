@@ -104,7 +104,7 @@ Unit prices are $ per 1M tokens unless the row says otherwise. Cost per call = t
 
 | use case | model · deployment · region | fallback | why (evidence, n) | latency p50 / p90 (where) | unit price (meter) | cost per call |
 |---|---|---|---|---|---|---|
-| Lesson-end record (summary, parentNote, ≤ 3 cited memories; `routes/lesson.js` lesson end) | **Prod today: `taxila-fast`.** Routed: **`taxila-gpt6`** (gpt-6-sol), its own `DEPLOY_WRITE` role, after the A1 regex fix | `taxila-brain` | W2 hard sheet (n=10 per model per judge, out-of-family judges): gpt-6-sol vs brain +0.40 [0.20, 0.60], fast vs brain -0.35 [-0.50, -0.20]. 0/10 internal-note leaks | gen **5981 ms** gpt-6-sol, 4545 ms fast (US, W2 p50) | 6-sol $2 / $10 | **$0.008** gpt-6-sol (W2 measured $7.99/1k). fast $0.0009 |
+| Lesson-end record (summary, parentNote, ≤ 3 cited memories; `routes/lesson.js` lesson end) | **Prod today: `taxila-fast`.** Routed (decided 2026-10-04, never built: `server/azure.js` has no write role as of 2026-11-09): **`taxila-gpt6`** (gpt-6-sol), its own write role, after the A1 regex fix | `taxila-brain` | W2 hard sheet (n=10 per model per judge, out-of-family judges): gpt-6-sol vs brain +0.40 [0.20, 0.60], fast vs brain -0.35 [-0.50, -0.20]. 0/10 internal-note leaks | gen **5981 ms** gpt-6-sol, 4545 ms fast (US, W2 p50) | 6-sol $2 / $10 | **$0.008** gpt-6-sol (W2 measured $7.99/1k). fast $0.0009 |
 | Memory consolidation | inside the lesson-end call (the `memory.consolidate` job only re-checks consent) | — | `server/conductor/handlers.js` | — | — | in the call above |
 | Late settles / held verdicts | closed grader (§1.2) | brain | `w1c-settle-beside-classifier` | ≤ 2.5 s cap | as grader | as grader |
 

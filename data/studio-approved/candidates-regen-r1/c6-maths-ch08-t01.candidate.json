@@ -1,0 +1,204 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c6-maths-ch08-t01",
+    "archetype": "geo-forge@1",
+    "misconceptionId": "c6-maths-ch08-t01-m-diameter-radius",
+    "skillId": "c6-maths-ch08-t01-s1",
+    "beat": "rem:c6-maths-ch08-t01-m-diameter-radius",
+    "when": "remediation",
+    "check": "c6-maths-ch08-t01-s1:c1"
+  },
+  "archetype": "geo-forge@1",
+  "spec": {
+    "archetype": "geo-forge@1",
+    "skills": [
+      "c6-maths-ch08-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Daura",
+      "built": "ban gaya",
+      "check": "Jaanch",
+      "undo": "Wapas",
+      "coach": "Compass ki opening dhyan se rakho",
+      "runDone": "Blueprints poore",
+      "perimeter": "parimap",
+      "area": "kshetrafal",
+      "units": "units",
+      "sq": "varg units",
+      "polygon": "bhujayein",
+      "sticks": "Teen sticks chuno",
+      "rigid": "Brace lagao: hilna nahi chahiye",
+      "parallel": "Dot se line ke samantar",
+      "perpendicular": "Dot se samkon par",
+      "equidistant": "Har dot se barabar door pin rakho",
+      "angle": "Kon banao",
+      "right": "samkon triangle",
+      "isosceles": "samakoni triangle",
+      "scalene": "visham triangle",
+      "obtuse": "adhik kon triangle",
+      "acute": "nyun kon triangle",
+      "square": "varg",
+      "rectangle": "aayat",
+      "parallelogram": "samantar chaturbhuj",
+      "rhombus": "samchaturbhuj",
+      "trapezium": "samalamb chaturbhuj",
+      "kite": "patang aakar",
+      "any": "koi bhi aakar",
+      "triangle": "triangle",
+      "make": "Banao",
+      "withArea": "kshetrafal ke saath",
+      "withPerim": "parimap ke saath",
+      "noTriangle": "Aise sticks chuno jo band na hon",
+      "wobbles": "HILTA HAI",
+      "holds": "MAZBOOT HAI",
+      "closes": "BAND HOTA HAI",
+      "gap": "KHAALI JAGAH",
+      "time": "samay"
+    },
+    "title": "Compass Ka Khel",
+    "rounds": [
+      {
+        "title": "Pin ki jagah",
+        "sub": "dots ke saath compass path banao",
+        "time": 45,
+        "challenges": [
+          {
+            "kind": "equidistant",
+            "points": [
+              [
+                2,
+                2
+              ],
+              [
+                8,
+                2
+              ]
+            ]
+          },
+          {
+            "kind": "equidistant",
+            "points": [
+              [
+                3,
+                1
+              ],
+              [
+                9,
+                1
+              ]
+            ]
+          }
+        ],
+        "targets": "c6-maths-ch08-t01-m-diameter-radius"
+      },
+      {
+        "title": "Rangoli path",
+        "sub": "teen dots ko dekhkar pin rakho",
+        "time": 60,
+        "challenges": [
+          {
+            "kind": "equidistant",
+            "points": [
+              [
+                2,
+                2
+              ],
+              [
+                8,
+                2
+              ],
+              [
+                2,
+                6
+              ]
+            ]
+          },
+          {
+            "kind": "equidistant",
+            "points": [
+              [
+                3,
+                1
+              ],
+              [
+                9,
+                1
+              ],
+              [
+                3,
+                5
+              ]
+            ]
+          }
+        ],
+        "targets": "c6-maths-ch08-t01-m-radius-changes"
+      },
+      {
+        "title": "Compass check",
+        "sub": "peg se pencil tak ka gap milao",
+        "time": 60,
+        "challenges": [
+          {
+            "kind": "perpendicular",
+            "line": [
+              [
+                2,
+                2
+              ],
+              [
+                8,
+                2
+              ]
+            ],
+            "through": [
+              5,
+              4
+            ]
+          },
+          {
+            "kind": "equidistant",
+            "points": [
+              [
+                2,
+                2
+              ],
+              [
+                8,
+                2
+              ]
+            ]
+          }
+        ],
+        "targets": "c6-maths-ch08-t01-m-diameter-radius"
+      }
+    ]
+  },
+  "hash": "8c46a1e04f852dbfa18e57c0469fc166",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": true,
+    "spec": {
+      "ok": true,
+      "repairs": 0,
+      "fellBack": false
+    }
+  },
+  "facts": {
+    "kind": "game",
+    "archetype": "geo-forge@1",
+    "onScreen": {
+      "title": "Compass Ka Khel",
+      "rounds": 3,
+      "first": "Pin ki jagah: dots ke saath compass path banao"
+    }
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 2,
+    "at": "2026-11-11T06:27:01.942Z"
+  }
+}

@@ -1,0 +1,10 @@
+import { neon } from "/home/user/Taxila/node_modules/@neondatabase/serverless/index.mjs";
+const sql = neon(process.env.TEST_DATABASE_URL);
+const L = "38aad918-8130-44b3-a1a8-87e60303deab";
+const turns = await sql.query("select seq, speaker, text, meta from turn where lesson_id=$1 order by seq", [L]);
+for (const t of turns) console.log(t.seq, t.speaker, t.text.slice(0, 220), t.speaker === "teacher" ? JSON.stringify({ st: t.meta?.studio ?? t.meta?.slot ?? null, mv: t.meta?.move?.kind ?? t.meta?.kind ?? null, req: t.meta?.move?.request ?? null }).slice(0, 300) : "");
+const ev = await sql.query("select t, kind, turn, data from trace_event where (data->>'lessonId'=$1 or sid in (select sid from trace_event where data->>'lessonId'=$1 limit 1)) and (kind like 'studio%' or kind like 'board%' or kind like 'wb%' or kind like 'slot%') order by t", [L]);
+console.log("trace rows", ev.length);
+for (const e of ev) console.log(e.turn, e.kind, JSON.stringify(e.data).slice(0, 260));
+const bt = await sql.query("select * from brain_trace where lesson_id=$1 order by 1 limit 20", [L]).catch((e) => { console.log("brain_trace err", e.message); return []; });
+console.log("brain_trace rows", bt.length); for (const b of bt) console.log(JSON.stringify(b).slice(0, 600));

@@ -16,6 +16,7 @@ export default {
     "praise: names the exact step or method, never ability; no comparisons with other children",
     "mistakes: say plainly which step broke, with no softening, then the next nudge",
     "humour: dry and light, about the problem or everyday life; never about the child; none while they struggle",
+    "when the child jokes: play along one beat (echo, push the picture further), then the fact, still smiling",
     "address: the child's first name; no nicknames",
     "pace: brisk but patient; waits for a full answer",
   ],

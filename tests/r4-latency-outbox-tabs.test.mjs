@@ -33,7 +33,7 @@ before(async () => {
 after(async () => { await browser?.close(); server?.close(); });
 
 /** In each page: an Outbox over the REAL IndexedDB store; send `n` turns, each acknowledged, recording the wire turnSeq. */
-const PAGE_RUN = async ({ n, lessonId, legacy, tag }) => {
+const PAGE_RUN = async ({ n, lessonId, tag }) => {
   const { Outbox, IdbOutboxStore } = await import("/outbox.ts");
   const store = new IdbOutboxStore(indexedDB);
   await store.ready();
@@ -42,9 +42,38 @@ const PAGE_RUN = async ({ n, lessonId, legacy, tag }) => {
   for (let i = 0; i < n; i++) {
     const req = { lessonId, childText: `${tag} ${i}`, typed: true };
     const post = async (r) => { wire.push(r.turnSeq); await new Promise((ok) => setTimeout(ok, Math.random() * 8)); return {}; };
-    if (legacy) await ob.send(req, post, { turnSeq: await ob.reserve(lessonId) });
-    else await ob.send(req, post);
+    await ob.send(req, post);
   }
+  return wire;
+};
+
+/** In each page: per round, reserve() → wait until the other page has reserved this round too → send (put, acknowledged). */
+const LEGACY_RACE = async ({ rounds, lessonId, tag }) => {
+  const { Outbox, IdbOutboxStore } = await import("/outbox.ts");
+  const store = new IdbOutboxStore(indexedDB);
+  await store.ready();
+  const ob = new Outbox({ store, schedule: [] });
+  const ch = new BroadcastChannel("outbox-barrier");
+  const seen = new Set();
+  const waiters = new Map();
+  ch.onmessage = (e) => { if (e.data.tag !== tag) { seen.add(e.data.round); waiters.get(e.data.round)?.(); } };
+  // re-announce until the other page has said the same round (a page that opened its channel late missed the first post)
+  const meet = async (round) => {
+    ch.postMessage({ tag, round });
+    const again = setInterval(() => ch.postMessage({ tag, round }), 50);
+    if (!seen.has(round)) await new Promise((ok) => waiters.set(round, ok));
+    clearInterval(again);
+    ch.postMessage({ tag, round }); // once more: the other page may still be waiting on this round
+  };
+  const wire = [];
+  for (let i = 0; i < rounds; i++) {
+    const turnSeq = await ob.reserve(lessonId);
+    await meet(`r${i}`);
+    await ob.send({ lessonId, childText: `${tag} ${i}`, typed: true }, async (r) => { wire.push(r.turnSeq); return {}; }, { turnSeq });
+    await meet(`s${i}`); // both acknowledged (records deleted) before the next reserve
+  }
+  await new Promise((ok) => setTimeout(ok, 150)); // let the last re-announce reach a page still waiting
+  ch.close();
   return wire;
 };
 
@@ -95,7 +124,10 @@ test("negative control: the reserve()-then-put path on the same two pages hands 
   try {
     const [a, b] = await Promise.all([ctx.newPage(), ctx.newPage()]);
     await Promise.all([a.goto(base), b.goto(base)]);
-    const [wa, wb] = await Promise.all([a.evaluate(PAGE_RUN, { n: 25, lessonId: "L-legacy", legacy: true, tag: "a" }), b.evaluate(PAGE_RUN, { n: 25, lessonId: "L-legacy", legacy: true, tag: "b" })]);
-    assert.ok(new Set([...wa, ...wb]).size < 50, "the old path collides (this is the bug the claim prevents)");
+    // deterministic (main 2026-11-05: it relied on real timing to collide and flaked): each round, both pages reserve()
+    // BEFORE either puts, held at a BroadcastChannel barrier, so the interleaving that collides is forced, not hoped for
+    const [wa, wb] = await Promise.all([a.evaluate(LEGACY_RACE, { rounds: 3, lessonId: "L-legacy", tag: "a" }), b.evaluate(LEGACY_RACE, { rounds: 3, lessonId: "L-legacy", tag: "b" })]);
+    assert.deepEqual(wa, wb, `the old path hands both pages the same turnSeqs (this is the bug the claim prevents): a ${wa} | b ${wb}`);
+    assert.equal(new Set([...wa, ...wb]).size, 3);
   } finally { await ctx.close(); }
 });

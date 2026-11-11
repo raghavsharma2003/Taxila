@@ -1,6 +1,7 @@
 // src/signals on synthetic audio through the REAL dsp.ts FrameAnalyzer: A2 leading filled segment, A16 syllable nuclei,
 // A14 speaker shift, the laugh candidate (off), A13 echo risk and the q terms.
 import { test } from "node:test";
+import { growth } from "./_work.mjs";
 import assert from "node:assert/strict";
 import { RATE, FrameAnalyzer } from "../src/voice/dsp.ts";
 import { leadingFilledMs, onsetContentMs, nucleiPerSec, speakerShift, echoRisk, durQ, levelQ, bedQ, laughCandidate, LAUGH_DETECTOR_ENABLED, signalExtras } from "../src/signals/index.ts";
@@ -89,12 +90,13 @@ test("signalExtras: numbers only, every key inside EXTRA_RANGES", async () => {
   assert.ok(ex.onsetContentMs > 1200);
 });
 
-test("perf: extras for a 6 s utterance stay well under 1 ms-per-utterance scale (≤ 5 ms in Node)", () => {
-  const fr = frames(synth([...lead, { ms: 6000, f0: 230, f1: 300, am: 4 }, { ms: 300 }]));
-  const t0 = performance.now();
-  for (let i = 0; i < 50; i++) signalExtras(fr, { onsetMs: 1000, durationMs: 6000, rmsMeanDb: -22, rmsP90Db: -14 });
-  const per = (performance.now() - t0) / 50;
-  assert.ok(per < 5, `${per.toFixed(2)} ms`);
+test("perf: extras grow linearly with the utterance (a 4x longer one costs about 4x the CPU, never quadratic)", () => {
+  // a ratio of CPU medians from the same run, not a millisecond limit (a loaded machine slows both sides alike)
+  const short = frames(synth([...lead, { ms: 1500, f0: 230, f1: 300, am: 4 }, { ms: 300 }]));
+  const long = frames(synth([...lead, { ms: 6000, f0: 230, f1: 300, am: 4 }, { ms: 300 }]));
+  const { ratio } = growth(() => signalExtras(short, { onsetMs: 1000, durationMs: 1500, rmsMeanDb: -22, rmsP90Db: -14 }),
+    () => signalExtras(long, { onsetMs: 1000, durationMs: 6000, rmsMeanDb: -22, rmsP90Db: -14 }), { reps: 30, batch: 5 });
+  assert.ok(ratio < 14, `4x the audio cost ${ratio.toFixed(1)}x the CPU (linear is about 4)`);
 });
 
 test("qBed: speech in the room before the teacher stopped (a TV) drops the onset read; a quiet room does not", () => {

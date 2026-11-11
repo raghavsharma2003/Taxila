@@ -51,7 +51,6 @@ export const fromMin = (min) => { const m = ((min % 1440) + 1440) % 1440; return
 export const addMin = (hhmm, n) => fromMin(toMin(hhmm) + n);
 export const maxTime = (a, b) => (a >= b ? a : b);
 export const minTime = (a, b) => (a <= b ? a : b);
-export const floorTo = (hhmm, step) => fromMin(Math.floor(toMin(hhmm) / step) * step);
 
 /**
  * Minutes since the learning-day anchor (04:00 local). 'HH:MM' strings compare correctly only inside one
@@ -80,7 +79,7 @@ export function zonedToUtc(day, hhmm, tz) {
 export const jitterSec = (childId, salt, windowSec) => (windowSec > 0 ? fnv1a(`${childId}|${salt}`) % windowSec : 0);
 
 /**
- * @typedef {{ tz: string, wakeTime: string, schoolStart: string, schoolEnd: string, recoveryMin: number, bedtime: string, anchor?: string }} RoutineFacts
+ * @typedef {{ tz: string, wakeTime: string, schoolStart: string, schoolEnd: string, recoveryMin: number, bedtime: string, anchor?: string, lessonMin?: number }} RoutineFacts
  * @typedef {{ allowedFrom: string, allowedTo: string, dailyMinutes: number, restDays?: number[] }} ParentLimits
  * @typedef {{ kind: (day: string) => 'school_day' | 'holiday' | 'off' }} DayKindLookup
  * @typedef {'morning'|'at_school'|'recovery'|'learning_window'|'wind_down'|'night'|'free_day'} ClockPhase

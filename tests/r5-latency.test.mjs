@@ -12,10 +12,11 @@ test("hedged: a fast first call wins alone (no twin); a slow one gets a twin at 
   assert.equal(await hedged(async () => { calls++; await wait(5); return "a"; }, 50), "a");
   assert.equal(calls, 1, "no hedge when the first answers in time");
   const aborted = [];
-  const t0 = performance.now();
-  const v = await hedged(async (signal, i) => { signal.addEventListener("abort", () => aborted.push(i)); await wait(i === 0 ? 500 : 20, signal); return `arm${i}`; }, 40);
-  assert.equal(v, "arm1");
-  assert.ok(performance.now() - t0 < 200, "the twin answered, not the hung first call");
+  // event-driven, not timed: the first call NEVER answers (only its abort ends it), so getting "arm1" back at all proves the
+  // twin answered and nothing waited for the hung call
+  const hang = (signal) => new Promise((_, rej) => signal.addEventListener("abort", () => rej(Object.assign(new Error("aborted"), { code: "cancelled" })), { once: true }));
+  const v = await hedged(async (signal, i) => { signal.addEventListener("abort", () => aborted.push(i)); if (i === 0) await hang(signal); else await wait(20, signal); return `arm${i}`; }, 40);
+  assert.equal(v, "arm1", "the twin answered, not the hung first call");
   await wait(5);
   assert.deepEqual(aborted, [0], "the slow first call is aborted");
 });
@@ -45,9 +46,9 @@ test("boot warm: the stagecraft table is built once and kept (the first lesson s
   const w = await warmSync();
   assert.equal(typeof w.stagecraftCatalog, "number", JSON.stringify(w));
   assert.equal(typeof w.reportLexicon, "number", "the parent report's lexicon regexes are compiled at boot (QA D22)");
-  const t = performance.now();
+  const t = cpuNow(); // CPU time (a memoised call is pure work; the wall clock would time the runner)
   productionCatalog();
-  assert.ok(performance.now() - t < 5, "memoised");
+  assert.ok(cpuNow() - t < 5, "memoised");
 });
 
 test("the lesson route's chunk is preloaded from the home (one shared promise with the route's lazy())", () => {
@@ -413,7 +414,7 @@ test("start-audio route: registered beside turn-audio and built on the start rou
 });
 
 // ── QA D30: a TTS call that hangs before its headers is tried once more (server/voice/speech.js speechStream) ──
-test("speechStream: no headers within the deadline → one immediate retry that plays; a caller's abort or an HTTP error is never retried", async () => {
+test("speechStream: no headers within the deadline → one immediate retry that plays; a caller's abort or an HTTP error is never retried", { timeout: 10_000 }, async () => {
   const realFetch = globalThis.fetch;
   const env = { ...process.env };
   process.env.AZURE_OPENAI_ENDPOINT ||= "https://example.invalid/openai/v1"; process.env.AZURE_OPENAI_API_KEY ||= "test-key";
@@ -422,11 +423,11 @@ test("speechStream: no headers within the deadline → one immediate retry that 
   let calls = 0;
   try {
     globalThis.fetch = (url, init) => { calls++; if (calls === 1) return new Promise((_, rej) => init.signal.addEventListener("abort", () => rej(Object.assign(new Error("aborted"), { name: "AbortError" })))); return Promise.resolve(new Response(new Uint8Array([1, 2, 3, 4]), { status: 200 })); };
-    const t0 = performance.now();
+    // the first call never answers until aborted: the retry comes from the 60 ms headers deadline. Waiting for the 15 s
+    // call timeout instead would overrun this test's own timeout (the liveness bound, not a wall-clock budget)
     const { chunks } = await speechStream("Namaste!", { voice: "v" });
     let n = 0; for await (const c of chunks) n += c.length;
-    assert.equal(n, 4); assert.equal(calls, 2);
-    assert.ok(performance.now() - t0 < 1000, "retried at the headers deadline, not after the 15 s timeout");
+    assert.equal(n, 4); assert.equal(calls, 2, "retried at the headers deadline");
     calls = 0;
     globalThis.fetch = async () => { calls++; return new Response("bad", { status: 400 }); };
     await assert.rejects(speechStream("x", { voice: "v" })); assert.equal(calls, 1, "an HTTP error is not retried");
@@ -633,7 +634,8 @@ test("turn-audio hands the held speculation to the turn and aborts it when the t
   const spec = fakeSpec("t");
   let got = null;
   Object.assign(turnAudioDeps, { style: () => ({}), synth: async function* () {}, takeAgentSpec: (id, text) => (id === "L-ta2" && text === "chaar" ? spec : null),
-    lessonTurn: async (req, body, o) => { await wait(5); got = o.agentSpec; return { teacherReply: "Achha.", teacherReplySeq: 3 }; } });
+    // (TEACHER-05: the turn takes the speculation once it has authorised the lesson — hooks.authorized, as brain/turn.js calls it)
+    lessonTurn: async (req, body, o) => { o.authorized?.(); await wait(5); got = o.agentSpec; return { teacherReply: "Achha.", teacherReplySeq: 3 }; } });
   try {
     const res = fakeRes();
     await _turnAudio(fakeReq(), res, { lessonId: "L-ta2", childText: "chaar" });
@@ -659,9 +661,8 @@ test("agent speculation: a turn that arrives while its own words' classify is st
   assert.equal(await taking, spec);
   // other words never wait
   startAgentSpec(specDeps(fakeSpec("x")), { lesson, state: agentState(), kit: {}, text: "chhe", P: { clsP: new Promise(() => {}) } });
-  const t0 = Date.now();
+  // event-driven: that classify NEVER settles, so an answer at all means the take did not wait on it
   assert.equal(await takeAgentSpec("L-spec3", "saat"), null);
-  assert.ok(Date.now() - t0 < 200);
   __agentSpec.clear();
 }));
 
@@ -700,6 +701,7 @@ test("the device records what became of each decided clip: played (with its dela
 
 // ── 14.3.1 (main): the `ack.decision` trace row, codes only, closed sets, one per path ──
 import { ackDecisionRow, ACK_KINDS, ACK_NONE_REASONS } from "../server/latency/routes.js";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 test("ack.decision: every path of the real decision yields a row of closed codes, and never the child's words, the phrase or the token", async () => {
   __ack.clear();
@@ -735,3 +737,18 @@ test("ack.decision: every path of the real decision yields a row of closed codes
   assert.equal(ackDecisionRow({ none: "the child said something" }).none, "other");
   assert.equal(ackDecisionRow({ ack: { kind: "mystery", phrase: "x" } }).kind, "other");
 });
+
+// TEACHER-05 (owner's audit): POST /api/lesson/turn took the lesson's speculation before authorising anything — anyone knowing a
+// lesson id could drop it with other words. Unauthorised, the turn is refused and the speculation is left for the lesson's own turn.
+test("an unauthorised /api/lesson/turn never takes or drops the lesson's held speculation", specOn(async () => {
+  __agentSpec.clear();
+  const lesson = { id: "11111111-2222-3333-4444-555555555555", state: agentState() };
+  const spec = fakeSpec("auth5");
+  await startAgentSpec(specDeps(spec), { lesson, state: agentState(), kit: {}, text: "teen", P: { clsP: Promise.resolve(plainCls()) } });
+  const { routes } = await import("../server/routes/lesson.js");
+  const res = { statusCode: 0, headersSent: false, writableEnded: false, setHeader() {}, writeHead() {}, write() { return true; }, end() { this.writableEnded = true; }, on() {}, once() {}, off() {} };
+  await assert.rejects(routes["POST /api/lesson/turn"]({ headers: {}, url: "/api/lesson/turn" }, res, { lessonId: "11111111-2222-3333-4444-555555555555", childText: "kuch aur" }));
+  // (refused before the lesson is loaded for a signed-in guardian: no session here, no database — either refusal comes first)
+  assert.equal(spec.aborted, false, "not dropped by a stranger's words");
+  assert.equal(await takeAgentSpec("11111111-2222-3333-4444-555555555555", "teen"), spec, "still there for the lesson's own turn");
+}));

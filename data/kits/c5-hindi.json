@@ -28,7 +28,8 @@
     {
      "id": "c5-hindi-ch01-t01-s4",
      "title": "Uses वचन correctly for poem nouns (किरन→किरनें, बूँद→बूँदें, कली→कलियाँ) and spells किरन with short ि",
-     "prereqSkillIds": []
+     "prereqSkillIds": [],
+     "kind": "grammar"
     },
     {
      "id": "c5-hindi-ch01-t01-s5",
@@ -153,7 +154,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "Listen to the poem. Where did the sunbeam come first?",
-     "prompt_hi": "सुनो — ‘सुबह-सुबह इक किरन सुनहरी, आई मेरे द्वार। बोली — उठो, चलो अब खेलें, जागा सब संसार। कलियों को छूकर वह बोली — खिलो, हुआ उजियारा। ओस की बूँदें चमक उठीं, जैसे मोती प्यारा।’ बताओ, किरन सबसे पहले कहाँ आई?",
+     "prompt_hi": "बताओ, किरन सबसे पहले कहाँ आई?",
      "answer": "मेरे द्वार पर (दरवाज़े पर)",
      "acceptable": [
       "द्वार पर",
@@ -174,7 +175,16 @@
       "solverAnswer": "मेरे द्वार पर (दरवाज़े पर)",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch01-t01-p1"
     },
     {
      "id": "c5-hindi-ch01-t01-i02",
@@ -231,7 +241,15 @@
       "solverAnswer": "प्यारा / सारा / तारा / न्यारा",
       "agrees": true,
       "note": "Agrees. Fixed: hint 1 no longer a riddle for तारा; it now points to the -आरा ending."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": true
     },
     {
      "id": "c5-hindi-ch01-t01-i04",
@@ -260,7 +278,15 @@
       "solverAnswer": "अँधियारा / अँधेरा",
       "agrees": true,
       "note": "Agrees (अँधियारा also accepted). Fixed: hint 1 now starts from the 'opposite of light' idea instead of naming अँधेरा."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": true
     },
     {
      "id": "c5-hindi-ch01-t01-i05",
@@ -289,7 +315,15 @@
       "solverAnswer": "दरवाज़ा",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch01-t01-i06",
@@ -319,7 +353,15 @@
       "solverAnswer": "सुबह हो गई, रोशनी आ गई — अब खिलने/जागने का समय है",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch01-t01-i07",
@@ -346,7 +388,15 @@
       "solverAnswer": "किरन (मानक रूप किरण)",
       "agrees": true,
       "note": "Agrees; the contrast is short ि vs long ी. Note the standard written form is किरण; किरन is the poetic/spoken form. Key accepts किरण, and hint 4 mentions it, so this is fine."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": true
     },
     {
      "id": "c5-hindi-ch01-t01-i08",
@@ -373,7 +423,15 @@
       "solverAnswer": "‘किरन’ को ‘किरनें’ करना होगा",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch01-t01-i09",
@@ -402,7 +460,15 @@
       "solverAnswer": "(खुला) फूल, चिड़ियाँ, पेड़ या सोते बच्चे",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch01-t01-i10",
@@ -429,7 +495,15 @@
       "solverAnswer": "4 (उ-जि-या-रा)",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 2,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 2.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": true
     },
     {
      "id": "c5-hindi-ch01-t01-i11",
@@ -455,7 +529,15 @@
       "solverAnswer": "कलियाँ",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": true
     },
     {
      "id": "c5-hindi-ch01-t01-i12",
@@ -479,7 +561,15 @@
       "solverAnswer": "(खुला) दो पंक्तियाँ जिनके अंतिम शब्द तुक मिलाएँ",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch01-t01-i13",
@@ -508,7 +598,15 @@
       "solverAnswer": "(खुला) सुबह की किरन सबको जगाती है; खुशी और नई शुरुआत का भाव",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch01-t01-rl-h2",
@@ -570,6 +668,121 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c5-hindi-ch01-t01-x01",
+     "skillId": "c5-hindi-ch01-t01-s3",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "A new poem says: 'साँझ हुई, किरनें लौटीं, कलियाँ मुँद गईं चुपचाप।' How is its feeling different from the feeling of the poem 'किरन'?",
+     "prompt_hi": "एक नई कविता में है: 'साँझ हुई, किरनें लौटीं, कलियाँ मुँद गईं चुपचाप।' इसका भाव कविता 'किरन' के भाव से कैसे अलग है?",
+     "answer": "'किरन' में सुबह की रोशनी सबको जगाती है और नई, ख़ुशी भरी शुरुआत का भाव है; यहाँ शाम का शांत, चुपचाप सब कुछ सो जाने/आराम का भाव है।",
+     "acceptable": [
+      "किरन में जागना और ख़ुशी, यहाँ शांति और सोना",
+      "किरन में सुबह की नई शुरुआत, इसमें शाम को सब शांत होकर सो जाता है",
+      "kiran mein subah ki khushi aur jaagna, yahan shaam ki shaanti",
+      "किरन में कलियाँ खिलती हैं, यहाँ बंद हो जाती हैं — ख़ुशी भरी शुरुआत बनाम शांत अंत"
+     ],
+     "hints": [
+      "In 'किरन', what do the buds do, and in this poem?",
+      "Compare morning and evening: what starts, and what ends?",
+      "किरन: सब ___ जाता है; नई कविता: सब ___ हो जाता है।",
+      "किरन में जागने की ख़ुशी, यहाँ शाम की शांति: कलियाँ खिलीं बनाम मुँदीं।"
+     ],
+     "targetsMisconception": "c5-hindi-ch01-t01-mc-literal-only",
+     "verified": {
+      "solverAnswer": "'किरन' में सुबह का उत्साह और जागना है; नई कविता में साँझ की शांति और विश्राम है।",
+      "agrees": true,
+      "how": "claude-check",
+      "solver": "claude-solver",
+      "date": "2026-11-04"
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-G1": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "authored": "r7-gap-items"
+    },
+    {
+     "id": "c5-hindi-ch01-t01-x02",
+     "skillId": "c5-hindi-ch01-t01-s4",
+     "kind": "error_spot",
+     "difficulty": 5,
+     "prompt_en": "Someone wrote: 'सुबह कई कीरन आई, पत्तों पर ओस की बूँद चमकी और सारी कली खिल गई।' There are spelling and वचन mistakes. Say the whole sentence correctly.",
+     "prompt_hi": "किसी ने लिखा: 'सुबह कई कीरन आई, पत्तों पर ओस की बूँद चमकी और सारी कली खिल गई।' इसमें वर्तनी और वचन की ग़लतियाँ हैं। पूरा वाक्य सही बोलो।",
+     "answer": "सुबह कई किरनें आईं, पत्तों पर ओस की बूँदें चमकीं और सारी कलियाँ खिल गईं।",
+     "acceptable": [
+      "सुबह कई किरणें आईं, पत्तों पर ओस की बूँदें चमकीं और सारी कलियाँ खिल गईं।",
+      "subah kai kirnen aayin, patton par os ki boonden chamkin aur saari kaliyan khil gayin",
+      "सुबह कई किरनें आईं, ओस की बूँदें चमकीं, सारी कलियाँ खिल गईं"
+     ],
+     "hints": [
+      "'कई' and 'सारी' mean many: which nouns must change?",
+      "Fix कीरन's matra, make 3 nouns plural, then match the verbs.",
+      "कई कि___ आईं, ओस की बूँ___ चमकीं, सारी कलि___ खिल गईं।",
+      "किरनें, बूँदें, कलियाँ, and verbs आईं, चमकीं, खिल गईं for many."
+     ],
+     "targetsMisconception": "c5-hindi-ch01-t01-mc-plural",
+     "verified": {
+      "solverAnswer": "सुबह कई किरनें आईं, पत्तों पर ओस की बूँदें चमकीं और सारी कलियाँ खिल गईं।",
+      "agrees": true,
+      "how": "claude-check",
+      "solver": "claude-solver",
+      "date": "2026-11-04",
+      "note": "किरणें also correct spelling; poem uses किरनें."
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-G1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false,
+     "authored": "r7-gap-items"
+    },
+    {
+     "id": "c5-hindi-ch01-t01-x03",
+     "skillId": "c5-hindi-ch01-t01-s2",
+     "kind": "far_transfer",
+     "difficulty": 4,
+     "prompt_en": "In the poem, द्वार means a door. A school wall says: 'पढ़ाई सफलता का द्वार है।' What does द्वार mean in this sentence?",
+     "prompt_hi": "कविता में द्वार का अर्थ दरवाज़ा है। स्कूल की दीवार पर लिखा है: 'पढ़ाई सफलता का द्वार है।' इस वाक्य में द्वार का क्या अर्थ है?",
+     "answer": "रास्ता या शुरुआत — पढ़ाई से होकर ही सफलता तक पहुँचते हैं।",
+     "acceptable": [
+      "रास्ता",
+      "शुरुआत",
+      "सफलता तक पहुँचने का रास्ता",
+      "raasta",
+      "pravesh ka raasta",
+      "जहाँ से सफलता में प्रवेश होता है"
+     ],
+     "hints": [
+      "Is there a real door made of wood here?",
+      "A door is how you get into a place.",
+      "पढ़ाई से होकर ___ तक पहुँचते हैं, इसलिए वह द्वार है।",
+      "द्वार = रास्ता: जैसे दरवाज़े से अंदर जाते हैं, पढ़ाई से सफलता तक।"
+     ],
+     "verified": {
+      "solverAnswer": "रास्ता / माध्यम (सफलता तक पहुँचने का रास्ता)",
+      "agrees": true,
+      "how": "claude-check",
+      "solver": "claude-solver",
+      "date": "2026-11-04"
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-G1": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false,
+     "authored": "r7-gap-items"
     }
    ],
    "workedExample": {
@@ -607,6 +820,12 @@
     "garden and flowers",
     "rooftop sunrise",
     "village fields at dawn"
+   ],
+   "passages": [
+    {
+     "id": "c5-hindi-ch01-t01-p1",
+     "text": "सुबह-सुबह इक किरन सुनहरी, आई मेरे द्वार। बोली — उठो, चलो अब खेलें, जागा सब संसार। कलियों को छूकर वह बोली — खिलो, हुआ उजियारा। ओस की बूँदें चमक उठीं, जैसे मोती प्यारा।"
+    }
    ]
   },
   {
@@ -757,7 +976,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "Listen to the story. What were Hariya and Bhola fighting about?",
-     "prompt_hi": "सुनो — ‘गाँव की चौपाल पर एक पुरानी कुर्सी रखी थी। लोग कहते थे, उस पर बैठने वाला सच्चा न्याय करता है। एक दिन हरिया और भोला एक बकरी को लेकर लड़ते हुए आए। हरिया बोला, “यह मेरी बकरी है!” भोला चिल्लाया, “नहीं, मेरी है!”’ हरिया और भोला किस बात पर लड़ रहे थे?",
+     "prompt_hi": "हरिया और भोला किस बात पर लड़ रहे थे?",
      "answer": "एक बकरी पर — दोनों कहते थे कि बकरी उनकी है",
      "acceptable": [
       "बकरी",
@@ -776,7 +995,16 @@
       "solverAnswer": "एक बकरी पर — दोनों उसे अपनी बता रहे थे",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch02-t01-p1"
     },
     {
      "id": "c5-hindi-ch02-t01-i02",
@@ -784,7 +1012,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "Who sat on the chair of justice?",
-     "prompt_hi": "सुनो — ‘कुर्सी पर बैठी समझदार दादी ने कहा, “इसकी रस्सी खोल दो।” बकरी उछलती हुई सीधी हरिया के आँगन में अपने मेमने के पास जा पहुँची।’ न्याय की कुर्सी पर कौन बैठा था?",
+     "prompt_hi": "न्याय की कुर्सी पर कौन बैठा था?",
      "answer": "समझदार दादी",
      "acceptable": [
       "दादी",
@@ -803,7 +1031,16 @@
       "solverAnswer": "समझदार दादी",
       "agrees": true,
       "note": "Agrees; easy literal retrieval (answer is in the passage by design, difficulty 1). Fixed: hint 1 no longer refers to smiling, which no passage contains."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch02-t01-p2"
     },
     {
      "id": "c5-hindi-ch02-t01-i03",
@@ -831,7 +1068,15 @@
       "solverAnswer": "खुली बकरी अपने असली घर/मेमने के पास जाएगी, इससे सच पता चलेगा",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch02-t01-i04",
@@ -856,7 +1101,15 @@
       "solverAnswer": "बकरी भोला की है",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch02-t01-i05",
@@ -884,7 +1137,15 @@
       "solverAnswer": "सच और झूठ को अलग करके ठीक न्याय करना",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch02-t01-i06",
@@ -909,7 +1170,15 @@
       "solverAnswer": "(खुला) मुहावरे वाला खेल-संबंधी वाक्य",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch02-t01-i07",
@@ -934,7 +1203,15 @@
       "solverAnswer": "हरिया",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch02-t01-i08",
@@ -960,7 +1237,15 @@
       "solverAnswer": "दादी, कुर्सी, फ़ैसला",
       "agrees": true,
       "note": "Agrees; फ़ैसला is a noun too, and the key includes it."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch02-t01-i09",
@@ -988,7 +1273,15 @@
       "solverAnswer": "‘कुर्सि’ गलत; ‘कुर्सी’ — अंत में बड़ी ई",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch02-t01-i10",
@@ -1013,7 +1306,15 @@
       "solverAnswer": "ख, ग, क, घ",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch02-t01-i11",
@@ -1042,7 +1343,15 @@
       "solverAnswer": "(खुला) निष्पक्ष सबूत वाली जाँच, जैसे अंदर रखी चीज़ें/नाम पूछना",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch02-t01-i12",
@@ -1069,7 +1378,15 @@
       "solverAnswer": "(खुला) दोनों की बात सुनता है, सबूत देखता है, पक्षपात नहीं करता",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch02-t01-i13",
@@ -1107,8 +1424,8 @@
      "skillId": "c5-hindi-ch02-t01-s1",
      "kind": "practice",
      "difficulty": 3,
-     "prompt_en": "Read: ‘नील ने पूछा, “क्या फैसला हो गया?” रिया बोली, “हाँ, दोनों की बात सुनी गई!”’ Which reading is correct: pause after ‘पूछा’ and raise your voice at the question, or pause after ‘क्या’ and raise your voice at ‘हाँ’?",
-     "prompt_hi": "पढ़ो— ‘नील ने पूछा, “क्या फैसला हो गया?” रिया बोली, “हाँ, दोनों की बात सुनी गई!”’ कौन-सा पढ़ने का ढंग सही है: ‘पूछा’ के बाद ठहरकर सवाल पर आवाज़ उठाना, या ‘क्या’ के बाद ठहरकर ‘हाँ’ पर आवाज़ उठाना?",
+     "prompt_en": "Read: ‘नील ने पूछा, “क्या फैसला हो गया?” {friendF} बोली, “हाँ, दोनों की बात सुनी गई!”’ Which reading is correct: pause after ‘पूछा’ and raise your voice at the question, or pause after ‘क्या’ and raise your voice at ‘हाँ’?",
+     "prompt_hi": "पढ़ो— ‘नील ने पूछा, “क्या फैसला हो गया?” {friendF} बोली, “हाँ, दोनों की बात सुनी गई!”’ कौन-सा पढ़ने का ढंग सही है: ‘पूछा’ के बाद ठहरकर सवाल पर आवाज़ उठाना, या ‘क्या’ के बाद ठहरकर ‘हाँ’ पर आवाज़ उठाना?",
      "answer": "‘पूछा’ के बाद ठहरकर सवाल पर आवाज़ उठाना",
      "acceptable": [
       "पहला ढंग",
@@ -1232,6 +1549,16 @@
     "village panchayat",
     "lost-and-found box",
     "sharing toys with siblings"
+   ],
+   "passages": [
+    {
+     "id": "c5-hindi-ch02-t01-p1",
+     "text": "गाँव की चौपाल पर एक पुरानी कुर्सी रखी थी। लोग कहते थे, उस पर बैठने वाला सच्चा न्याय करता है। एक दिन हरिया और भोला एक बकरी को लेकर लड़ते हुए आए। हरिया बोला, “यह मेरी बकरी है!” भोला चिल्लाया, “नहीं, मेरी है!”"
+    },
+    {
+     "id": "c5-hindi-ch02-t01-p2",
+     "text": "कुर्सी पर बैठी समझदार दादी ने कहा, “इसकी रस्सी खोल दो।” बकरी उछलती हुई सीधी हरिया के आँगन में अपने मेमने के पास जा पहुँची।"
+    }
    ]
   },
   {
@@ -1258,7 +1585,8 @@
     {
      "id": "c5-hindi-ch03-t01-s4",
      "title": "Writes चाँद/माँ with chandrabindu and uses पुल्लिंग verb forms for चंदा मामा (बोला, आया)",
-     "prereqSkillIds": []
+     "prereqSkillIds": [],
+     "kind": "grammar"
     },
     {
      "id": "c5-hindi-ch03-t01-s5",
@@ -1377,7 +1705,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "Listen to the poem. What did the moon ask his mother for?",
-     "prompt_hi": "सुनो — ‘चंदा मामा ज़िद पर आया, माँ के आगे शोर मचाया — माँ, मुझको इक कुरता ला दो, ठंडी रातों से बचा दो। माँ हँसकर बोलीं — सुन बेटा, कल था पतला, आज है मोटा, रोज़ नया-सा रूप तुम्हारा, कैसे बने कुरता प्यारा?’ चंदा मामा ने माँ से क्या माँगा?",
+     "prompt_hi": "चंदा मामा ने माँ से क्या माँगा?",
      "answer": "कुरता",
      "acceptable": [
       "कुर्ता",
@@ -1395,7 +1723,16 @@
       "solverAnswer": "एक कुरता",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch03-t01-p1"
     },
     {
      "id": "c5-hindi-ch03-t01-i02",
@@ -1423,7 +1760,15 @@
       "solverAnswer": "ठंडी रातों से बचने के लिए",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch03-t01-i03",
@@ -1452,7 +1797,15 @@
       "solverAnswer": "चाँद का रूप रोज़ बदलता है (कल पतला, आज मोटा), इसलिए नाप तय नहीं",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch03-t01-i04",
@@ -1508,7 +1861,15 @@
       "solverAnswer": "छोटा / लोटा / सोटा",
       "agrees": true,
       "note": "Agrees. Fixed: hint 1 now leads with the -ओटा ending instead of 'opposite of बड़ा'; added सोटा."
-     }
+     },
+     "ge": 2,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 2.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": true
     },
     {
      "id": "c5-hindi-ch03-t01-i06",
@@ -1535,7 +1896,15 @@
       "solverAnswer": "चाँद",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 2,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 2.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": true
     },
     {
      "id": "c5-hindi-ch03-t01-i07",
@@ -1564,7 +1933,15 @@
       "solverAnswer": "चंद्रमा, शशि (चंदा, इंदु, सोम भी)",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch03-t01-i08",
@@ -1592,7 +1969,15 @@
       "solverAnswer": "पूरा गोल",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch03-t01-i09",
@@ -1619,7 +2004,15 @@
       "solverAnswer": "‘बोली’ गलत; चंदा मामा पुल्लिंग है — ‘बोला’",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch03-t01-i10",
@@ -1648,7 +2041,15 @@
       "solverAnswer": "नहीं; चाँद उतना ही रहता है, सूरज से रोशन हिस्सा जितना हमें दिखता है वह घटता-बढ़ता है",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch03-t01-i11",
@@ -1673,7 +2074,15 @@
       "solverAnswer": "पतली लकीर, आधा चाँद, पूरा गोल",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch03-t01-i12",
@@ -1699,7 +2108,15 @@
       "solverAnswer": "(खुला) चंदा ने ठंड से बचने को कुरता माँगा; माँ ने कहा तुम्हारा रूप रोज़ बदलता है",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch03-t01-i13",
@@ -1728,7 +2145,15 @@
       "solverAnswer": "(खुला) जैसे खिंचने वाला/ढीला कपड़ा, शॉल या कंबल",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch03-t01-rl-o2",
@@ -1862,6 +2287,12 @@
     "winter clothes",
     "festival nights like Karva Chauth and Eid moon",
     "growing out of school uniform"
+   ],
+   "passages": [
+    {
+     "id": "c5-hindi-ch03-t01-p1",
+     "text": "चंदा मामा ज़िद पर आया, माँ के आगे शोर मचाया — माँ, मुझको इक कुरता ला दो, ठंडी रातों से बचा दो। माँ हँसकर बोलीं — सुन बेटा, कल था पतला, आज है मोटा, रोज़ नया-सा रूप तुम्हारा, कैसे बने कुरता प्यारा?"
+    }
    ]
   },
   {
@@ -1895,7 +2326,8 @@
     {
      "id": "c5-hindi-ch04-t01-s5",
      "title": "Uses वचन and लिंग correctly in festival sentences (बच्चा→बच्चे without a nasal dot; त्योहार is पुल्लिंग)",
-     "prereqSkillIds": []
+     "prereqSkillIds": [],
+     "kind": "grammar"
     }
    ],
    "expectations": [
@@ -2012,7 +2444,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "Listen. In which state is Sangken celebrated?",
-     "prompt_hi": "सुनो — ‘अप्रैल के बीच में अरुणाचल प्रदेश के नामसाई ज़िले में साङ्केन का त्योहार आता है। यह खाम्ती लोगों का नया साल है।’ साङ्केन किस राज्य का त्योहार है?",
+     "prompt_hi": "साङ्केन किस राज्य का त्योहार है?",
      "answer": "अरुणाचल प्रदेश",
      "acceptable": [
       "अरुणाचल",
@@ -2029,7 +2461,16 @@
       "solverAnswer": "अरुणाचल प्रदेश",
       "agrees": true,
       "note": "Agrees. Fixed kit-wide: साङकेन → साङ्केन (halant on ङ) in skills, prompts, diagnostic, remediation and items, so it is the conjunct the skill describes."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch04-t01-p1"
     },
     {
      "id": "c5-hindi-ch04-t01-i02",
@@ -2037,7 +2478,7 @@
      "kind": "retrieval",
      "difficulty": 2,
      "prompt_en": "What do people do on the first day?",
-     "prompt_hi": "सुनो — ‘पहले दिन लोग बुद्ध की मूर्तियों को मंदिर से बाहर लाकर साफ़ पानी से नहलाते हैं। फिर बच्चे और बड़े एक-दूसरे पर पानी डालते हैं। तीन दिन तक गीत, नाच और पकवान चलते हैं।’ पहले दिन लोग क्या करते हैं?",
+     "prompt_hi": "पहले दिन लोग क्या करते हैं?",
      "answer": "बुद्ध की मूर्तियों को बाहर लाकर साफ़ पानी से नहलाते हैं",
      "acceptable": [
       "मूर्ति नहलाते हैं",
@@ -2055,7 +2496,16 @@
       "solverAnswer": "बुद्ध की मूर्तियाँ मंदिर से बाहर लाकर साफ़ पानी से नहलाते हैं",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch04-t01-p2"
     },
     {
      "id": "c5-hindi-ch04-t01-i03",
@@ -2083,7 +2533,15 @@
       "solverAnswer": "माना जाता है कि पानी पुराने साल की बुराइयाँ/थकान धो देता है — नई, साफ़ शुरुआत",
       "agrees": true,
       "note": "Agrees. The reason is not in any passage; it relies on the child inferring or the teacher supplying it, which suits a 'why' item."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch04-t01-i04",
@@ -2141,7 +2599,15 @@
       "solverAnswer": "नहीं; ङ नाक से बोला जाने वाला अलग अक्षर है, ड़ अलग",
       "agrees": true,
       "note": "Blind answer matches the key. Spelling updated to साङ्केन."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch04-t01-i06",
@@ -2167,7 +2633,16 @@
       "solverAnswer": "बहुत सारे बच्चे पानी डालते हैं।",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.25,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "claude-B": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch04-t01-i07",
@@ -2194,7 +2669,16 @@
       "solverAnswer": "‘बच्चें’ गलत; ‘सारे बच्चे खुश थे।’",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.25,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3.5,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch04-t01-i08",
@@ -2221,7 +2705,16 @@
       "solverAnswer": "उत्सव / पर्व",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch04-t01-i09",
@@ -2249,7 +2742,16 @@
       "solverAnswer": "सब साथ मिलकर (एक-दूसरे के साथ)",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.25,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "claude-B": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch04-t01-i10",
@@ -2274,7 +2776,16 @@
       "solverAnswer": "ख, ग, क",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "claude-B": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch04-t01-i11",
@@ -2301,7 +2812,16 @@
       "solverAnswer": "(खुला) मिलती: दोनों में एक-दूसरे पर कुछ डालते हैं, खुशी; अलग: पानी बनाम रंग / नया साल",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "claude-B": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch04-t01-i12",
@@ -2326,7 +2846,16 @@
       "solverAnswer": "अच्छा त्योहार",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch04-t01-i13",
@@ -2352,7 +2881,16 @@
       "solverAnswer": "(खुला) अरुणाचल, अप्रैल, मूर्ति नहलाना व पानी डालना, नई शुरुआत",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "claude-B": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch04-t01-rl-o1",
@@ -2450,6 +2988,16 @@
     "new year at home",
     "school cultural fair",
     "summer water games"
+   ],
+   "passages": [
+    {
+     "id": "c5-hindi-ch04-t01-p1",
+     "text": "अप्रैल के बीच में अरुणाचल प्रदेश के नामसाई ज़िले में साङ्केन का त्योहार आता है। यह खाम्ती लोगों का नया साल है।"
+    },
+    {
+     "id": "c5-hindi-ch04-t01-p2",
+     "text": "पहले दिन लोग बुद्ध की मूर्तियों को मंदिर से बाहर लाकर साफ़ पानी से नहलाते हैं। फिर बच्चे और बड़े एक-दूसरे पर पानी डालते हैं। तीन दिन तक गीत, नाच और पकवान चलते हैं।"
+    }
    ]
   },
   {
@@ -2483,7 +3031,8 @@
     {
      "id": "c5-hindi-ch05-t01-s5",
      "title": "Uses सर्वनाम (वह, उसे, उसकी) and makes possessives agree with the thing owned (उसकी बछिया), and tells श from स",
-     "prereqSkillIds": []
+     "prereqSkillIds": [],
+     "kind": "grammar"
     }
    ],
    "expectations": [
@@ -2590,7 +3139,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "Listen. Who was Sundariya?",
-     "prompt_hi": "सुनो — ‘सुंदरिया हमारी भूरी बछिया थी। उसके माथे पर सफ़ेद चाँद-सा निशान था। सुबह होते ही वह रँभाकर मुझे बुलाती। मैं स्कूल जाने से पहले और हर शाम उसे हरी घास खिलाता।’ सुंदरिया कौन थी?",
+     "prompt_hi": "सुंदरिया कौन थी?",
      "answer": "घर की भूरी बछिया (गाय की बच्ची)",
      "acceptable": [
       "बछिया",
@@ -2609,7 +3158,17 @@
       "solverAnswer": "लेखक के घर की भूरी बछिया",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "claude-B": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": true,
+     "passageId": "c5-hindi-ch05-t01-p2"
     },
     {
      "id": "c5-hindi-ch05-t01-i02",
@@ -2617,7 +3176,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "What mark did she have on her forehead?",
-     "prompt_hi": "सुनो — ‘सुंदरिया हमारी भूरी बछिया थी। उसके माथे पर सफ़ेद चाँद-सा निशान था।’ सुंदरिया के माथे पर कैसा निशान था?",
+     "prompt_hi": "सुंदरिया के माथे पर कैसा निशान था?",
      "answer": "सफ़ेद चाँद-सा निशान",
      "acceptable": [
       "सफ़ेद",
@@ -2636,7 +3195,17 @@
       "solverAnswer": "सफ़ेद चाँद जैसा निशान",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3.5,
+      "claude-B": 2.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": true,
+     "passageId": "c5-hindi-ch05-t01-p3"
     },
     {
      "id": "c5-hindi-ch05-t01-i03",
@@ -2644,7 +3213,7 @@
      "kind": "why",
      "difficulty": 3,
      "prompt_en": "\"मेरा मन किसी काम में नहीं लगा\" — what does this tell us about the narrator?",
-     "prompt_hi": "सुनो — ‘एक दिन सुंदरिया ने खाना छोड़ दिया और चुपचाप बैठी रही। मेरा मन किसी काम में नहीं लगा।’ इससे लेखक के बारे में क्या पता चलता है?",
+     "prompt_hi": "इससे लेखक के बारे में क्या पता चलता है?",
      "answer": "वह सुंदरिया से बहुत प्यार करता था और उसकी बीमारी से दुखी और चिंतित था",
      "acceptable": [
       "प्यार करता था",
@@ -2664,7 +3233,17 @@
       "solverAnswer": "लेखक सुंदरिया से बहुत प्यार करता था, उसे चिंता हो रही थी",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch05-t01-p1"
     },
     {
      "id": "c5-hindi-ch05-t01-i04",
@@ -2719,7 +3298,16 @@
       "solverAnswer": "वह",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 2.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3.5,
+      "claude-B": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": true
     },
     {
      "id": "c5-hindi-ch05-t01-i06",
@@ -2746,7 +3334,16 @@
       "solverAnswer": "उसकी बछिया",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3.5,
+      "claude-B": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch05-t01-i07",
@@ -2773,7 +3370,16 @@
       "solverAnswer": "‘दीदी ने अपनी किताब मुझे दी।’",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch05-t01-i08",
@@ -2802,7 +3408,16 @@
       "solverAnswer": "बहुत प्यारा/लाड़ला होना",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "claude-B": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch05-t01-i09",
@@ -2827,7 +3442,16 @@
       "solverAnswer": "(खुला) मुहावरे वाला वाक्य",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "claude-B": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch05-t01-i10",
@@ -2853,7 +3477,16 @@
       "solverAnswer": "सुंदरिया और ज़्यादा बीमार हो सकती थी",
       "agrees": true,
       "note": "Agrees; the key avoids death talk ('शायद ठीक न होती'), which is age-appropriate."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch05-t01-i11",
@@ -2879,7 +3512,16 @@
       "solverAnswer": "शाम",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 2.25,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3,
+      "claude-B": 2.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": true
     },
     {
      "id": "c5-hindi-ch05-t01-i12",
@@ -2904,7 +3546,16 @@
       "solverAnswer": "घ, क, ख, ग",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch05-t01-i13",
@@ -2932,7 +3583,16 @@
       "solverAnswer": "(खुला) खाना-पानी, साफ़ जगह, बीमार हो तो डॉक्टर, प्यार",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 2.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3.5,
+      "claude-B": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": true
     },
     {
      "id": "c5-hindi-ch05-t01-i14",
@@ -2940,7 +3600,7 @@
      "kind": "teachback",
      "difficulty": 4,
      "prompt_en": "Listen: during her illness Maa, Baba and I took turns sitting by her; the day she jumped about again, the house felt like a festival. Explain why, at the end, the narrator felt Sundariya was a family member.",
-     "prompt_hi": "सुनो — ‘बीमारी के दिनों में माँ, बाबा और मैं बारी-बारी से उसके पास बैठे। जिस दिन वह फिर उछलने लगी, उस दिन घर में त्योहार जैसा लगा।’ समझाओ — कहानी के अंत में लेखक को सुंदरिया ‘घर की सदस्य’ क्यों लगी?",
+     "prompt_hi": "क्यों लगी?",
      "answer": "उसकी बीमारी में पूरे घर ने परिवार के सदस्य जैसी सेवा की और लेखक को उससे गहरा लगाव था — प्यार से पाला जानवर परिवार का हिस्सा बन जाता है",
      "acceptable": [
       "पूरे घर ने सेवा की",
@@ -2959,7 +3619,17 @@
       "solverAnswer": "सबने बारी-बारी उसकी देखभाल की और ठीक होने पर घर में त्योहार-सी खुशी हुई — जैसे परिवार के किसी सदस्य के लिए होती है",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "claude-B": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch05-t01-p1"
     },
     {
      "id": "c5-hindi-ch05-t01-rl-o2",
@@ -2997,8 +3667,8 @@
      "skillId": "c5-hindi-ch05-t01-s4",
      "kind": "why",
      "difficulty": 4,
-     "prompt_en": "Read: “Every evening, Arjun fed the injured street dog and changed its bandage. When it recovered, it waited outside his gate. Arjun’s family made a place for it at home.” Why might Arjun call it a family member?",
-     "prompt_hi": "पढ़ो: ‘अर्जुन रोज़ शाम घायल सड़क के कुत्ते को खाना देता और पट्टी बदलता। ठीक होने पर वह उसके घर के बाहर इंतज़ार करता। अर्जुन के परिवार ने उसे घर में जगह दी।’ अर्जुन उसे परिवार का सदस्य क्यों मान सकता है?",
+     "prompt_en": "Why might Arjun call it a family member?",
+     "prompt_hi": "अर्जुन उसे परिवार का सदस्य क्यों मान सकता है?",
      "answer": "क्योंकि देखभाल से उनके बीच लगाव बना और परिवार ने उसे अपना लिया।",
      "acceptable": [
       "देखभाल और साथ रहने से लगाव हो गया",
@@ -3023,7 +3693,8 @@
       "solver": "DeepSeek-V4-Pro",
       "checker": "grok-4-20-non-reasoning",
       "date": "2026-10-04"
-     }
+     },
+     "passageId": "c5-hindi-ch05-t01-p1"
     },
     {
      "id": "c5-hindi-ch05-t01-rl-h3",
@@ -3090,6 +3761,20 @@
     "visit to the vet",
     "caring for a sick sibling",
     "street dogs and birds in the colony"
+   ],
+   "passages": [
+    {
+     "id": "c5-hindi-ch05-t01-p1",
+     "text": "Every evening, Arjun fed the injured street dog and changed its bandage. When it recovered, it waited outside his gate. Arjun’s family made a place for it at home."
+    },
+    {
+     "id": "c5-hindi-ch05-t01-p2",
+     "text": "सुंदरिया हमारी भूरी बछिया थी। उसके माथे पर सफ़ेद चाँद-सा निशान था। सुबह होते ही वह रँभाकर मुझे बुलाती। मैं स्कूल जाने से पहले और हर शाम उसे हरी घास खिलाता।"
+    },
+    {
+     "id": "c5-hindi-ch05-t01-p3",
+     "text": "सुंदरिया हमारी भूरी बछिया थी। उसके माथे पर सफ़ेद चाँद-सा निशान था।"
+    }
    ]
   },
   {
@@ -3116,7 +3801,8 @@
     {
      "id": "c5-hindi-ch06-t01-s4",
      "title": "Forms the feminine of animal nouns (शेर→शेरनी, मोर→मोरनी) and writes the conjunct त्र correctly",
-     "prereqSkillIds": []
+     "prereqSkillIds": [],
+     "kind": "grammar"
     },
     {
      "id": "c5-hindi-ch06-t01-s5",
@@ -3240,7 +3926,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "Listen. Where was the painter sitting?",
-     "prompt_hi": "सुनो — ‘जंगल में बैठा चित्रकार, रंग भरता था बार-बार। तभी दहाड़ा शेर बड़ा, आकर उसके पास खड़ा। “मेरी भी तस्वीर बनाओ, वरना अपनी ख़ैर मनाओ!” चित्रकार बोला मुस्काकर, “पहले पीठ दिखाओ, सरकार!”’ चित्रकार कहाँ बैठा था?",
+     "prompt_hi": "चित्रकार कहाँ बैठा था?",
      "answer": "जंगल में",
      "acceptable": [
       "जंगल",
@@ -3258,7 +3944,17 @@
       "solverAnswer": "जंगल में",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "claude-B": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": true,
+     "passageId": "c5-hindi-ch06-t01-p1"
     },
     {
      "id": "c5-hindi-ch06-t01-i02",
@@ -3286,7 +3982,16 @@
       "solverAnswer": "उसकी (शेर की) तस्वीर बनाने को",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch06-t01-i03",
@@ -3313,7 +4018,16 @@
       "solverAnswer": "भाग जाएगा",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch06-t01-i04",
@@ -3340,7 +4054,16 @@
       "solverAnswer": "ताकि शेर पीठ घुमाए और वह मौका पाकर भाग सके",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "claude-B": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch06-t01-i05",
@@ -3400,7 +4123,16 @@
       "solverAnswer": "चित्रकार ने जान बचाने को चतुराई की, किसी का नुकसान नहीं किया; धोखे से टॉफ़ी छीनना दोस्त का नुकसान है, ग़लत है",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "claude-B": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch06-t01-i07",
@@ -3424,7 +4156,16 @@
       "solverAnswer": "शेरनी",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 2.25,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3,
+      "claude-B": 2.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": true
     },
     {
      "id": "c5-hindi-ch06-t01-i08",
@@ -3451,7 +4192,16 @@
       "solverAnswer": "मोरनी, ऊँटनी",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 2.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3.5,
+      "claude-B": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": true
     },
     {
      "id": "c5-hindi-ch06-t01-i09",
@@ -3477,7 +4227,16 @@
       "solverAnswer": "‘त्र’ संयुक्त अक्षर है; सही ‘चित्रकार’",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.25,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "claude-B": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch06-t01-i10",
@@ -3501,7 +4260,16 @@
       "solverAnswer": "कहानीकार",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "claude-B": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch06-t01-i11",
@@ -3526,7 +4294,16 @@
       "solverAnswer": "ख, क, घ, ग",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch06-t01-i12",
@@ -3554,7 +4331,16 @@
       "solverAnswer": "(खुला) घबराऊँ नहीं, वहीं रुकूँ, पुलिस/दुकानदार/माँ वाले परिवार से मदद माँगूँ, घर का नंबर बताऊँ; अजनबी के साथ न जाऊँ",
       "agrees": true,
       "note": "Agrees; the safety plan (stay put, ask police or a shopkeeper, give a parent's number) is sound. Could add 'don't go anywhere with a stranger'."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "claude-B": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch06-t01-i13",
@@ -3581,7 +4367,16 @@
       "solverAnswer": "मुसीबत में घबराओ नहीं, शांत रहकर दिमाग़ से काम लो",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "claude-B": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch06-t01-rl-o2",
@@ -3680,8 +4475,8 @@
      "skillId": "c5-hindi-ch06-t01-s5",
      "kind": "far_transfer",
      "difficulty": 4,
-     "prompt_en": "Riya loses sight of her family at a busy metro station. Which plan shows presence of mind: A—stay near the help desk, tell staff her family’s phone number, then wait there; or B—board the next train and search every coach?",
-     "prompt_hi": "भीड़भाड़ वाले मेट्रो स्टेशन पर रिया को अपना परिवार दिखाई नहीं देता। कौन-सी योजना सूझबूझ दिखाती है: A—सहायता काउंटर के पास रहकर कर्मचारी को परिवार का फ़ोन नंबर बताए, फिर वहीं रुके; या B—अगली ट्रेन में चढ़कर हर डिब्बे में ढूँढ़े?",
+     "prompt_en": "{friendF} loses sight of her family at a busy metro station. Which plan shows presence of mind: A—stay near the help desk, tell staff her family’s phone number, then wait there; or B—board the next train and search every coach?",
+     "prompt_hi": "भीड़भाड़ वाले मेट्रो स्टेशन पर {friendF} को अपना परिवार दिखाई नहीं देता। कौन-सी योजना सूझबूझ दिखाती है: A—सहायता काउंटर के पास रहकर कर्मचारी को परिवार का फ़ोन नंबर बताए, फिर वहीं रुके; या B—अगली ट्रेन में चढ़कर हर डिब्बे में ढूँढ़े?",
      "answer": "A",
      "acceptable": [
       "ए",
@@ -3689,7 +4484,7 @@
       "सहायता काउंटर के पास रहकर कर्मचारी से मदद लेना"
      ],
      "hints": [
-      "किस योजना में रिया को ढूँढ़ना आसान रहेगा?",
+      "किस योजना में {friendF} को ढूँढ़ना आसान रहेगा?",
       "सुरक्षित जगह और स्टेशन कर्मचारी की मदद पर ध्यान दो।",
       "पहले सहायता काउंटर, फिर कर्मचारी को ___ बताना है।",
       "A—वहीं रुकने और कर्मचारी से मदद लेने पर परिवार उसे ढूँढ़ सकेगा।"
@@ -3744,6 +4539,12 @@
     "getting lost at a fair",
     "comic strips",
     "Panchatantra animal tales"
+   ],
+   "passages": [
+    {
+     "id": "c5-hindi-ch06-t01-p1",
+     "text": "जंगल में बैठा चित्रकार, रंग भरता था बार-बार। तभी दहाड़ा शेर बड़ा, आकर उसके पास खड़ा। “मेरी भी तस्वीर बनाओ, वरना अपनी ख़ैर मनाओ!” चित्रकार बोला मुस्काकर, “पहले पीठ दिखाओ, सरकार!”"
+    }
    ]
   },
   {
@@ -3770,7 +4571,8 @@
     {
      "id": "c5-hindi-ch07-t01-s4",
      "title": "Uses भूतकाल with लिंग agreement (मैं खेलता था / मैं खेलती थी)",
-     "prereqSkillIds": []
+     "prereqSkillIds": [],
+     "kind": "grammar"
     },
     {
      "id": "c5-hindi-ch07-t01-s5",
@@ -3890,7 +4692,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "Listen. Where did the writer spend his childhood?",
-     "prompt_hi": "सुनो — ‘मेरा बचपन एक छोटे-से गाँव में बीता। घर के पीछे आमों का बड़ा बाग़ था। गर्मी की दोपहर में हम दोस्त पेड़ों पर चढ़ते और कच्चे आम तोड़ते। जब माली काका लाठी लेकर आते, तो हम नौ दो ग्यारह हो जाते।’ लेखक का बचपन कहाँ बीता?",
+     "prompt_hi": "लेखक का बचपन कहाँ बीता?",
      "answer": "एक छोटे-से गाँव में",
      "acceptable": [
       "गाँव में",
@@ -3908,7 +4710,17 @@
       "solverAnswer": "एक छोटे-से गाँव में",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "claude-B": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": true,
+     "passageId": "c5-hindi-ch07-t01-p1"
     },
     {
      "id": "c5-hindi-ch07-t01-i02",
@@ -3916,7 +4728,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "What game did they play in the evening?",
-     "prompt_hi": "सुनो — ‘शाम को गुल्ली-डंडा खेलते और खेत से ताज़ा गन्ना चूसते। पाठशाला में पढ़ाई से ज़्यादा मेरा मन खेलों में लगता था। आज सोचता हूँ, वे दिन कितने बेफ़िक्र थे!’ शाम को वे कौन-सा खेल खेलते थे?",
+     "prompt_hi": "शाम को वे कौन-सा खेल खेलते थे?",
      "answer": "गुल्ली-डंडा",
      "acceptable": [
       "गिल्ली-डंडा",
@@ -3934,7 +4746,17 @@
       "solverAnswer": "गुल्ली-डंडा",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "claude-B": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": true,
+     "passageId": "c5-hindi-ch07-t01-p2"
     },
     {
      "id": "c5-hindi-ch07-t01-i03",
@@ -3989,7 +4811,16 @@
       "solverAnswer": "(खुला) मुहावरे वाला वाक्य",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "claude-B": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch07-t01-i05",
@@ -4018,7 +4849,16 @@
       "solverAnswer": "बिना चिंता के",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "claude-B": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch07-t01-i06",
@@ -4026,7 +4866,7 @@
      "kind": "why",
      "difficulty": 3,
      "prompt_en": "Listen: \"आज सोचता हूँ, वे दिन कितने बेफ़िक्र थे!\" Why does the writer say \"आज सोचता हूँ\"? When did he write this?",
-     "prompt_hi": "सुनो — ‘आज सोचता हूँ, वे दिन कितने बेफ़िक्र थे!’ लेखक ‘आज सोचता हूँ’ क्यों कहता है? ये बातें उसने कब लिखीं?",
+     "prompt_hi": "क्यों कहता है? ये बातें उसने कब लिखीं?",
      "answer": "बड़े होने के बाद — वह अपने बचपन को याद कर रहा है, यह संस्मरण है",
      "acceptable": [
       "बड़े होकर",
@@ -4046,7 +4886,17 @@
       "solverAnswer": "वह बड़ा होकर बचपन याद कर रहा है; ये बातें बड़े होने पर लिखीं",
       "agrees": true,
       "note": "Agrees. Fixed: the line 'आज सोचता हूँ, वे दिन कितने बेफ़िक्र थे!' is now in the i02 passage and quoted in this prompt, so the child can locate it (it also grounds i05's बेफ़िक्र)."
-     }
+     },
+     "ge": 4.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "claude-B": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch07-t01-p1"
     },
     {
      "id": "c5-hindi-ch07-t01-i07",
@@ -4072,7 +4922,17 @@
       "solverAnswer": "(खुला)",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 3.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch07-t01-p1"
     },
     {
      "id": "c5-hindi-ch07-t01-i08",
@@ -4097,7 +4957,16 @@
       "solverAnswer": "खेलती",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 2.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3.5,
+      "claude-B": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": true
     },
     {
      "id": "c5-hindi-ch07-t01-i09",
@@ -4123,7 +4992,15 @@
       "solverAnswer": "‘बचपन में मैं पेड़ पर चढ़ता था।’",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch07-t01-i10",
@@ -4149,7 +5026,15 @@
       "solverAnswer": "बच्चों को कच्चे आम तोड़ने से रोकने / बाग की रखवाली के लिए",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch07-t01-i11",
@@ -4175,7 +5060,15 @@
       "solverAnswer": "स्कूल / विद्यालय",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch07-t01-i12",
@@ -4200,7 +5093,15 @@
       "solverAnswer": "(खुला) तीन भूतकाल वाक्य",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch07-t01-i13",
@@ -4228,15 +5129,23 @@
       "solverAnswer": "संस्मरण लेखक की अपनी सच्ची यादें हैं; कहानी कल्पना से भी बन सकती है",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch07-t01-rl-g1",
      "skillId": "c5-hindi-ch07-t01-s1",
      "kind": "contrast",
      "difficulty": 3,
-     "prompt_en": "Read: “When I was in Class Two, I walked to school with my sister. I can still picture that dusty road.” Is this a memoir or a report? Choose one.",
-     "prompt_hi": "पढ़ो—‘जब मैं दूसरी कक्षा में था, बहन के साथ पैदल पाठशाला जाता था। वह धूल भरी सड़क आज भी मेरी आँखों के सामने है।’ यह संस्मरण है या रिपोर्ट? एक चुनो।",
+     "prompt_en": "Is this a memoir or a report? Choose one.",
+     "prompt_hi": "यह संस्मरण है या रिपोर्ट? एक चुनो।",
      "answer": "संस्मरण",
      "acceptable": [
       "संस्मरण है",
@@ -4258,7 +5167,8 @@
       "how": "code",
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
-     }
+     },
+     "passageId": "c5-hindi-ch07-t01-p1"
     },
     {
      "id": "c5-hindi-ch07-t01-rl-h2",
@@ -4326,6 +5236,16 @@
     "mango season",
     "old games vs new games",
     "first day of school"
+   ],
+   "passages": [
+    {
+     "id": "c5-hindi-ch07-t01-p1",
+     "text": "When I was in Class Two, I walked to school with my sister. I can still picture that dusty road."
+    },
+    {
+     "id": "c5-hindi-ch07-t01-p2",
+     "text": "शाम को गुल्ली-डंडा खेलते और खेत से ताज़ा गन्ना चूसते। पाठशाला में पढ़ाई से ज़्यादा मेरा मन खेलों में लगता था। आज सोचता हूँ, वे दिन कितने बेफ़िक्र थे!"
+    }
    ]
   },
   {
@@ -4471,7 +5391,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "Listen. In which state is Kaziranga?",
-     "prompt_hi": "सुनो — ‘पिछली सर्दियों में हम गुवाहाटी से बस लेकर काजीरंगा राष्ट्रीय उद्यान पहुँचे। यह असम में ब्रह्मपुत्र नदी के किनारे फैला है।’ काजीरंगा किस राज्य में है?",
+     "prompt_hi": "काजीरंगा किस राज्य में है?",
      "answer": "असम",
      "acceptable": [
       "assam",
@@ -4487,7 +5407,16 @@
       "solverAnswer": "असम",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch08-t01-p1"
     },
     {
      "id": "c5-hindi-ch08-t01-i02",
@@ -4512,7 +5441,15 @@
       "solverAnswer": "ब्रह्मपुत्र",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch08-t01-i03",
@@ -4520,7 +5457,7 @@
      "kind": "retrieval",
      "difficulty": 2,
      "prompt_en": "Which animal is Kaziranga most famous for?",
-     "prompt_hi": "सुनो — ‘ऊँची-ऊँची हाथी घास के बीच अचानक एक सींग वाला गैंडा दिखा! वह कीचड़ में लोट रहा था। गाइड भैया ने बताया कि दुनिया में सबसे ज़्यादा ऐसे गैंडे यहीं रहते हैं।’ काजीरंगा किस जानवर के लिए सबसे मशहूर है?",
+     "prompt_hi": "काजीरंगा किस जानवर के लिए सबसे मशहूर है?",
      "answer": "एक सींग वाला गैंडा",
      "acceptable": [
       "गैंडा",
@@ -4539,7 +5476,16 @@
       "solverAnswer": "एक सींग वाला गैंडा",
       "agrees": true,
       "note": "Agrees. Fixed grammar: 'दुनिया में सबसे ज़्यादा ऐसे गैंडे यहीं रहते हैं'. Fact checks out (Kaziranga holds about two-thirds of the world's one-horned rhinos)."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch08-t01-p2"
     },
     {
      "id": "c5-hindi-ch08-t01-i04",
@@ -4547,7 +5493,7 @@
      "kind": "contrast",
      "difficulty": 3,
      "prompt_en": "How is Kaziranga different from a zoo?",
-     "prompt_hi": "सुनो — ‘हमने जंगली भैंसे, बारहसिंगे और रंग-बिरंगे पक्षी भी देखे। यहाँ जानवर पिंजरों में नहीं, खुले जंगल में आज़ाद घूमते हैं।’ काजीरंगा और चिड़ियाघर में क्या फ़र्क है?",
+     "prompt_hi": "काजीरंगा और चिड़ियाघर में क्या फ़र्क है?",
      "answer": "काजीरंगा में जानवर खुले जंगल में आज़ाद घूमते हैं; चिड़ियाघर में पिंजरों या बाड़ों में रहते हैं",
      "acceptable": [
       "आज़ाद रहते हैं",
@@ -4568,7 +5514,16 @@
       "solverAnswer": "काजीरंगा में जानवर खुले जंगल में आज़ाद घूमते हैं; चिड़ियाघर में पिंजरों/बाड़ों में रहते हैं",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch08-t01-p3"
     },
     {
      "id": "c5-hindi-ch08-t01-i05",
@@ -4623,7 +5578,15 @@
       "solverAnswer": "ब्रह्मपुत्र",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch08-t01-i07",
@@ -4649,7 +5612,15 @@
       "solverAnswer": "गुवाहाटी, काजीरंगा",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch08-t01-i08",
@@ -4676,7 +5647,15 @@
       "solverAnswer": "‘ड़’ गलत; सही ‘गैंडा’ (बिंदु/नासिक्य के बाद ड)",
       "agrees": true,
       "note": "Agrees; the 'no ड़ after the nasal' rule holds for class-5 vocabulary (झंडा, ठंडा, गैंडा)."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch08-t01-i09",
@@ -4703,7 +5682,15 @@
       "solverAnswer": "उत्तर-पूर्व (पूर्वोत्तर)",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch08-t01-i10",
@@ -4730,7 +5717,15 @@
       "solverAnswer": "ऊँचाई से घास के ऊपर दूर तक दिखता है और सुरक्षित रहते हैं",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch08-t01-i11",
@@ -4758,7 +5753,15 @@
       "solverAnswer": "ये बहुत कम बचे हैं, शिकार होता है; न बचाए तो हमेशा के लिए ख़त्म हो जाएँगे",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch08-t01-i12",
@@ -4782,7 +5785,15 @@
       "solverAnswer": "(खुला) कहाँ, कैसे, क्या देखा — क्रम में",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch08-t01-i13",
@@ -4810,7 +5821,15 @@
       "solverAnswer": "(खुला) असम, ब्रह्मपुत्र किनारे, एक सींग वाला गैंडा, जीप/हाथी सफ़ारी",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch08-t01-rl-o2",
@@ -4938,6 +5957,20 @@
     "map of India puzzle",
     "train journey to the north-east",
     "nature documentaries"
+   ],
+   "passages": [
+    {
+     "id": "c5-hindi-ch08-t01-p1",
+     "text": "पिछली सर्दियों में हम गुवाहाटी से बस लेकर काजीरंगा राष्ट्रीय उद्यान पहुँचे। यह असम में ब्रह्मपुत्र नदी के किनारे फैला है।"
+    },
+    {
+     "id": "c5-hindi-ch08-t01-p2",
+     "text": "ऊँची-ऊँची हाथी घास के बीच अचानक एक सींग वाला गैंडा दिखा! वह कीचड़ में लोट रहा था। गाइड भैया ने बताया कि दुनिया में सबसे ज़्यादा ऐसे गैंडे यहीं रहते हैं।"
+    },
+    {
+     "id": "c5-hindi-ch08-t01-p3",
+     "text": "हमने जंगली भैंसे, बारहसिंगे और रंग-बिरंगे पक्षी भी देखे। यहाँ जानवर पिंजरों में नहीं, खुले जंगल में आज़ाद घूमते हैं।"
+    }
    ]
   },
   {
@@ -5091,7 +6124,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "Listen to the scene. Who broke the glass?",
-     "prompt_hi": "सुनो — ‘(स्कूल का मैदान। खिड़की का शीशा टूटा पड़ा है।) अध्यापिका: यह शीशा किसने तोड़ा? सलमा: मैडम, गेंद मेरी थी, पर शॉट मैंने नहीं मारा। रोहन: (धीरे से) मैडम, शॉट मैंने मारा था। मुझे डर लग रहा था।’ शीशा किसने तोड़ा?",
+     "prompt_hi": "शीशा किसने तोड़ा?",
      "answer": "रोहन",
      "acceptable": [
       "rohan",
@@ -5107,7 +6140,16 @@
       "solverAnswer": "रोहन (शॉट उसने मारा)",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch09-t01-p1"
     },
     {
      "id": "c5-hindi-ch09-t01-i02",
@@ -5163,7 +6205,15 @@
       "solverAnswer": "झूठ बोलने पर लोग हम पर फिर से आसानी से विश्वास नहीं करते",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch09-t01-i04",
@@ -5190,7 +6240,15 @@
       "solverAnswer": "बेकसूर सलमा को सज़ा मिल सकती थी — अन्याय होता",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch09-t01-i05",
@@ -5217,7 +6275,15 @@
       "solverAnswer": "नहीं; गेंद उसकी थी पर शीशा उसने नहीं तोड़ा",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch09-t01-i06",
@@ -5242,7 +6308,15 @@
       "solverAnswer": "अन्याय",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch09-t01-i07",
@@ -5268,7 +6342,15 @@
       "solverAnswer": "बेईमान",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch09-t01-i08",
@@ -5295,7 +6377,15 @@
       "solverAnswer": "निर्दोष",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch09-t01-i09",
@@ -5321,7 +6411,15 @@
       "solverAnswer": "मदद करना / काम में साथ देना",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch09-t01-i10",
@@ -5350,7 +6448,15 @@
       "solverAnswer": "रोहन: (धीरे से) मैडम, शॉट मैंने मारा था।",
       "agrees": true,
       "note": "Agrees; both versions (with or without 'मैडम,') are valid play lines and both are now accepted."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch09-t01-i11",
@@ -5376,7 +6482,15 @@
       "solverAnswer": "(खुला) सच मानना, माफ़ी माँगना",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch09-t01-i12",
@@ -5384,7 +6498,7 @@
      "kind": "retrieval",
      "difficulty": 2,
      "prompt_en": "What task did the teacher give Rohan?",
-     "prompt_hi": "सुनो — ‘अध्यापिका: (मुस्कुराकर) सच बोलने के लिए हिम्मत चाहिए, रोहन। कल से तुम खेल के बाद गेंदें सँभालने और मैदान ठीक रखने में हाथ बँटाओगे।’ अध्यापिका ने रोहन को क्या काम दिया?",
+     "prompt_hi": "अध्यापिका ने रोहन को क्या काम दिया?",
      "answer": "खेल के बाद गेंदें सँभालने और मैदान ठीक रखने में हाथ बँटाना",
      "acceptable": [
       "गेंदें सँभालना",
@@ -5402,7 +6516,16 @@
       "solverAnswer": "खेल के बाद गेंदें सँभालना और मैदान ठीक रखने में हाथ बँटाना",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch09-t01-p2"
     },
     {
      "id": "c5-hindi-ch09-t01-i13",
@@ -5430,7 +6553,15 @@
       "solverAnswer": "एकांकी में पात्रों के नाम के साथ संवाद, कोष्ठक में निर्देश, अभिनय के लिए; कहानी में वर्णन",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch09-t01-rl-o1",
@@ -5600,6 +6731,16 @@
     "cricket in the lane",
     "sibling quarrels at home",
     "school drama day"
+   ],
+   "passages": [
+    {
+     "id": "c5-hindi-ch09-t01-p1",
+     "text": "(स्कूल का मैदान। खिड़की का शीशा टूटा पड़ा है।) अध्यापिका: यह शीशा किसने तोड़ा? सलमा: मैडम, गेंद मेरी थी, पर शॉट मैंने नहीं मारा। रोहन: (धीरे से) मैडम, शॉट मैंने मारा था। मुझे डर लग रहा था।"
+    },
+    {
+     "id": "c5-hindi-ch09-t01-p2",
+     "text": "अध्यापिका: (मुस्कुराकर) सच बोलने के लिए हिम्मत चाहिए, रोहन। कल से तुम खेल के बाद गेंदें सँभालने और मैदान ठीक रखने में हाथ बँटाओगे।"
+    }
    ]
   },
   {
@@ -5633,7 +6774,8 @@
     {
      "id": "c5-hindi-ch10-t01-s5",
      "title": "Makes correct plurals of ई-ending nouns (मछली→मछलियाँ, नदी→नदियाँ) and applies the moral to own life",
-     "prereqSkillIds": []
+     "prereqSkillIds": [],
+     "kind": "grammar"
     }
    ],
    "expectations": [
@@ -5750,7 +6892,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "Listen to the story. What did the fishermen say?",
-     "prompt_hi": "सुनो — ‘एक तालाब में तीन मछलियाँ रहती थीं — सोचू, चटपट और सुस्ती। एक शाम दो मछुआरे किनारे पर बोले, “कल सुबह यहाँ जाल डालेंगे।”’ मछुआरों ने क्या कहा?",
+     "prompt_hi": "मछुआरों ने क्या कहा?",
      "answer": "कल सुबह यहाँ जाल डालेंगे",
      "acceptable": [
       "कल जाल डालेंगे",
@@ -5768,7 +6910,16 @@
       "solverAnswer": "कल सुबह यहाँ जाल डालेंगे",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch10-t01-p1"
     },
     {
      "id": "c5-hindi-ch10-t01-i02",
@@ -5776,7 +6927,7 @@
      "kind": "retrieval",
      "difficulty": 2,
      "prompt_en": "What did Sochu do?",
-     "prompt_hi": "सुनो — ‘सोचू बोली, “चलो, आज रात ही नाले से होकर नदी में चलें।” चटपट बोली, “मुसीबत आएगी तो उपाय सोच लूँगी।” सुस्ती ने जम्हाई ली, “जो होगा देखा जाएगा।” सोचू उसी रात चली गई।’ सोचू ने क्या किया?",
+     "prompt_hi": "सोचू ने क्या किया?",
      "answer": "उसी रात नाले से होकर नदी में चली गई",
      "acceptable": [
       "नदी में चली गई",
@@ -5794,7 +6945,16 @@
       "solverAnswer": "उसी रात नाले से होकर नदी में चली गई",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch10-t01-p2"
     },
     {
      "id": "c5-hindi-ch10-t01-i03",
@@ -5802,7 +6962,7 @@
      "kind": "why",
      "difficulty": 3,
      "prompt_en": "Why did the fisherman throw Chatpat back?",
-     "prompt_hi": "सुनो — ‘सुबह जाल पड़ा। चटपट मरने का नाटक करके पड़ी रही; मछुआरे ने उसे फेंक दिया और वह तैरकर निकल गई।’ मछुआरे ने चटपट को वापस क्यों फेंक दिया?",
+     "prompt_hi": "मछुआरे ने चटपट को वापस क्यों फेंक दिया?",
      "answer": "उसे लगा मछली मरी हुई है, और मरी मछली उसके काम की नहीं",
      "acceptable": [
       "मरी हुई लगी",
@@ -5822,7 +6982,16 @@
       "solverAnswer": "उसे मरी हुई समझकर",
       "agrees": true,
       "note": "Agrees. Fixed phrasing: passage now says 'मरने का नाटक करके'; acceptable updated."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch10-t01-p3"
     },
     {
      "id": "c5-hindi-ch10-t01-i04",
@@ -5849,7 +7018,15 @@
       "solverAnswer": "सोचू ने पहले से योजना बनाकर ख़तरे से पहले निकल गई; चटपट ने मुसीबत में तुरंत उपाय सोचा",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch10-t01-i05",
@@ -5857,7 +7034,7 @@
      "kind": "practice",
      "difficulty": 2,
      "prompt_en": "What does हाथ पर हाथ धरे बैठना mean?",
-     "prompt_hi": "कहानी कहती है — ‘सुस्ती हाथ पर हाथ धरे बैठी रही और जाल में फँस गई।’ ‘हाथ पर हाथ धरे बैठना’ — इसका मतलब क्या है?",
+     "prompt_hi": "— इसका मतलब क्या है?",
      "answer": "कुछ न करना",
      "acceptable": [
       "कुछ नहीं करना",
@@ -5879,7 +7056,8 @@
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
      },
      "ge": 4,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c5-hindi-ch10-t01-p4"
     },
     {
      "id": "c5-hindi-ch10-t01-i06",
@@ -5904,7 +7082,15 @@
       "solverAnswer": "(खुला) मुहावरे वाला वाक्य",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch10-t01-i07",
@@ -5930,7 +7116,15 @@
       "solverAnswer": "मछलियाँ",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": true
     },
     {
      "id": "c5-hindi-ch10-t01-i08",
@@ -5957,7 +7151,15 @@
       "solverAnswer": "‘मछलीयाँ’ → ‘मछलियाँ’",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch10-t01-i09",
@@ -5983,7 +7185,15 @@
       "solverAnswer": "नदियाँ, लड़कियाँ",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch10-t01-i10",
@@ -6009,7 +7219,15 @@
       "solverAnswer": "तीनों जाल में फँस जातीं",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch10-t01-i11",
@@ -6037,7 +7255,15 @@
       "solverAnswer": "लापरवाह",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch10-t01-i12",
@@ -6064,7 +7290,15 @@
       "solverAnswer": "(खुला) सोचू: पहले से रोज़ थोड़ा पढ़ना; सुस्ती: तैयारी न होने से परीक्षा ख़राब",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch10-t01-i13",
@@ -6091,7 +7325,15 @@
       "solverAnswer": "पहले से सोचो-तैयारी करो, मुसीबत में घबराओ नहीं, हाथ पर हाथ धरे मत बैठो",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch10-t01-i14",
@@ -6116,7 +7358,15 @@
       "solverAnswer": "ख, ग, क, घ",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch10-t01-rl-o1",
@@ -6273,6 +7523,24 @@
     "fishing village",
     "packing a school bag the night before",
     "Panchatantra stories"
+   ],
+   "passages": [
+    {
+     "id": "c5-hindi-ch10-t01-p1",
+     "text": "एक तालाब में तीन मछलियाँ रहती थीं — सोचू, चटपट और सुस्ती। एक शाम दो मछुआरे किनारे पर बोले, “कल सुबह यहाँ जाल डालेंगे।”"
+    },
+    {
+     "id": "c5-hindi-ch10-t01-p2",
+     "text": "सोचू बोली, “चलो, आज रात ही नाले से होकर नदी में चलें।” चटपट बोली, “मुसीबत आएगी तो उपाय सोच लूँगी।” सुस्ती ने जम्हाई ली, “जो होगा देखा जाएगा।” सोचू उसी रात चली गई।"
+    },
+    {
+     "id": "c5-hindi-ch10-t01-p3",
+     "text": "सुबह जाल पड़ा। चटपट मरने का नाटक करके पड़ी रही; मछुआरे ने उसे फेंक दिया और वह तैरकर निकल गई।"
+    },
+    {
+     "id": "c5-hindi-ch10-t01-p4",
+     "text": "सुस्ती हाथ पर हाथ धरे बैठी रही और जाल में फँस गई।’ ‘हाथ पर हाथ धरे बैठना"
+    }
    ]
   },
   {
@@ -6418,7 +7686,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "Listen. In which state are the Ajanta caves?",
-     "prompt_hi": "सुनो — ‘महाराष्ट्र की अजंता गुफ़ाओं की दीवारों पर डेढ़-दो हज़ार साल पुराने रंगीन चित्र आज भी दिखते हैं। उसी इलाक़े में एलोरा की गुफ़ाएँ हैं, जहाँ कैलाश मंदिर है, जिसे एक ही विशाल चट्टान को काटकर बनाया गया।’ अजंता की गुफ़ाएँ किस राज्य में हैं?",
+     "prompt_hi": "अजंता की गुफ़ाएँ किस राज्य में हैं?",
      "answer": "महाराष्ट्र",
      "acceptable": [
       "maharashtra",
@@ -6434,7 +7702,16 @@
       "solverAnswer": "महाराष्ट्र",
       "agrees": true,
       "note": "Agrees. Fixed fact: 'पास ही एलोरा' replaced by 'उसी इलाक़े में एलोरा की गुफ़ाएँ हैं' (they are ~100 km apart in the same region)."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch11-t01-p1"
     },
     {
      "id": "c5-hindi-ch11-t01-i02",
@@ -6442,7 +7719,7 @@
      "kind": "retrieval",
      "difficulty": 2,
      "prompt_en": "What is the Konark Sun Temple shaped like?",
-     "prompt_hi": "सुनो — ‘ओडिशा के कोणार्क में सूर्य मंदिर एक बड़े रथ जैसा है — पत्थर के चौबीस पहिए और सात घोड़े! इन्हें मशीनों से नहीं, शिल्पकारों ने छेनी-हथौड़ी से गढ़ा।’ कोणार्क का सूर्य मंदिर किस आकार का है?",
+     "prompt_hi": "कोणार्क का सूर्य मंदिर किस आकार का है?",
      "answer": "एक बड़े रथ जैसा — चौबीस पहिए और सात घोड़े",
      "acceptable": [
       "रथ जैसा",
@@ -6461,7 +7738,16 @@
       "solverAnswer": "एक बड़े रथ जैसा (24 पहिए, 7 घोड़े)",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch11-t01-p2"
     },
     {
      "id": "c5-hindi-ch11-t01-i03",
@@ -6489,7 +7775,15 @@
       "solverAnswer": "एक भी ग़लत चोट सुधारी नहीं जा सकती; बहुत बड़ी चट्टान, हाथ के औज़ार, बहुत समय",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch11-t01-i04",
@@ -6517,7 +7811,15 @@
       "solverAnswer": "पत्थर/लकड़ी पर मूर्ति और नक़्क़ाशी गढ़ने वाला कारीगर-कलाकार",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch11-t01-i05",
@@ -6543,7 +7845,15 @@
       "solverAnswer": "पुरखों से मिली क़ीमती चीज़ (विरासत) जिसे सँभालकर रखना है",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch11-t01-i06",
@@ -6569,7 +7879,15 @@
       "solverAnswer": "रंगीन",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch11-t01-i07",
@@ -6595,7 +7913,15 @@
       "solverAnswer": "विशाल, पुरानी",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch11-t01-i08",
@@ -6649,7 +7975,15 @@
       "solverAnswer": "अजंता — दीवारों के चित्र; एलोरा — चट्टान काटकर बना कैलाश मंदिर",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch11-t01-i10",
@@ -6677,7 +8011,15 @@
       "solverAnswer": "दीवारें और चित्र ख़राब हो जाएँगे, धरोहर नष्ट हो जाएगी",
       "agrees": true,
       "note": "Agrees. Fixed: nukta normalised kit-wide (ख़राब, ख़ुश, बाग़, ख़त्म, ग़लत …); plain forms kept in acceptable[] as transcription variants."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch11-t01-i11",
@@ -6704,7 +8046,15 @@
       "solverAnswer": "पूर्वी तट",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch11-t01-i12",
@@ -6731,7 +8081,15 @@
       "solverAnswer": "(खुला) इमारत का वर्णन + दो उपाय (न लिखें/कचरा न फैलाएँ आदि)",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch11-t01-i13",
@@ -6758,7 +8116,15 @@
       "solverAnswer": "क्योंकि ये कला के खज़ाने हैं — चित्र, मूर्तियाँ, नक़्क़ाशी; कला का मंदिर",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch11-t01-rl-o2",
@@ -6859,6 +8225,16 @@
     "map of India puzzle",
     "temple and festival visits",
     "art and clay modelling class"
+   ],
+   "passages": [
+    {
+     "id": "c5-hindi-ch11-t01-p1",
+     "text": "महाराष्ट्र की अजंता गुफ़ाओं की दीवारों पर डेढ़-दो हज़ार साल पुराने रंगीन चित्र आज भी दिखते हैं। उसी इलाक़े में एलोरा की गुफ़ाएँ हैं, जहाँ कैलाश मंदिर है, जिसे एक ही विशाल चट्टान को काटकर बनाया गया।"
+    },
+    {
+     "id": "c5-hindi-ch11-t01-p2",
+     "text": "ओडिशा के कोणार्क में सूर्य मंदिर एक बड़े रथ जैसा है — पत्थर के चौबीस पहिए और सात घोड़े! इन्हें मशीनों से नहीं, शिल्पकारों ने छेनी-हथौड़ी से गढ़ा।"
+    }
    ]
   },
   {
@@ -6887,7 +8263,8 @@
      "title": "Uses first-person verbs that agree with the speaker's gender (गंगा: मैं बहती हूँ; पेड़: मैं देता हूँ)",
      "prereqSkillIds": [
       "c5-hindi-ch12-t01-s1"
-     ]
+     ],
+     "kind": "grammar"
     },
     {
      "id": "c5-hindi-ch12-t01-s5",
@@ -7007,7 +8384,7 @@
      "kind": "retrieval",
      "difficulty": 1,
      "prompt_en": "Listen. Who is \"मैं\" in this story?",
-     "prompt_hi": "सुनो — ‘मैं करोड़ों लोगों को पानी देती हूँ। मेरा जन्म उत्तराखंड में गंगोत्री हिमनद के गोमुख से होता है। वहाँ मुझे भागीरथी कहते हैं। आगे चलकर मेरा नाम गंगा पड़ता है।’ इस कहानी में ‘मैं’ कौन है?",
+     "prompt_hi": "कौन है?",
      "answer": "गंगा नदी",
      "acceptable": [
       "गंगा",
@@ -7029,7 +8406,8 @@
       "note": "Agrees. Fixed: hint 1 no longer sends the child to the first sentence; hint 2 points to the last sentence, where the name is."
      },
      "ge": 3.75,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c5-hindi-ch12-t01-p1"
     },
     {
      "id": "c5-hindi-ch12-t01-i02",
@@ -7037,7 +8415,7 @@
      "kind": "retrieval",
      "difficulty": 2,
      "prompt_en": "Where is Ganga born?",
-     "prompt_hi": "सुनो — ‘मैं गंगा हूँ। मेरा जन्म उत्तराखंड में गंगोत्री हिमनद के गोमुख से होता है। वहाँ मुझे भागीरथी कहते हैं।’ गंगा का जन्म कहाँ होता है?",
+     "prompt_hi": "गंगा का जन्म कहाँ होता है?",
      "answer": "उत्तराखंड में गंगोत्री हिमनद के गोमुख से",
      "acceptable": [
       "गोमुख",
@@ -7056,7 +8434,16 @@
       "solverAnswer": "उत्तराखंड में गंगोत्री हिमनद के गोमुख से",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch12-t01-p2"
     },
     {
      "id": "c5-hindi-ch12-t01-i03",
@@ -7064,7 +8451,7 @@
      "kind": "retrieval",
      "difficulty": 2,
      "prompt_en": "Which river meets her at Devprayag?",
-     "prompt_hi": "सुनो — ‘पहाड़ों से उछलती-कूदती मैं देवप्रयाग पहुँचती हूँ, जहाँ अलकनंदा मुझसे मिलती है, और यहीं से मेरा नाम गंगा पड़ता है।’ देवप्रयाग में कौन-सी नदी गंगा से मिलती है?",
+     "prompt_hi": "देवप्रयाग में कौन-सी नदी गंगा से मिलती है?",
      "answer": "अलकनंदा",
      "acceptable": [
       "alaknanda",
@@ -7080,7 +8467,16 @@
       "solverAnswer": "अलकनंदा",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch12-t01-p3"
     },
     {
      "id": "c5-hindi-ch12-t01-i04",
@@ -7088,7 +8484,7 @@
      "kind": "practice",
      "difficulty": 2,
      "prompt_en": "What is a संगम?",
-     "prompt_hi": "सुनो — ‘प्रयागराज में मेरी बहन यमुना मुझसे गले मिलती है — इसे संगम कहते हैं।’ ‘संगम’ किसे कहते हैं?",
+     "prompt_hi": "किसे कहते हैं?",
      "answer": "दो या ज़्यादा नदियों के मिलने की जगह",
      "acceptable": [
       "नदियों का मिलना",
@@ -7108,7 +8504,16 @@
       "solverAnswer": "जहाँ दो या ज़्यादा नदियाँ मिलती हैं",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c5-hindi-ch12-t01-p4"
     },
     {
      "id": "c5-hindi-ch12-t01-i05",
@@ -7135,7 +8540,15 @@
       "solverAnswer": "संगम में नदी दूसरी नदी से मिलकर आगे बहती है; खाड़ी में वह समुद्र में समाकर यात्रा ख़त्म करती है",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch12-t01-i06",
@@ -7159,7 +8572,15 @@
       "solverAnswer": "गोमुख, देवप्रयाग, हरिद्वार, प्रयागराज, वाराणसी",
       "agrees": true,
       "note": "Agrees. Haridwar and Varanasi appear in no passage, so the item needs prior map knowledge or a teacher-supplied map."
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch12-t01-i07",
@@ -7184,7 +8605,15 @@
       "solverAnswer": "उतरती",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch12-t01-i08",
@@ -7211,7 +8640,15 @@
       "solverAnswer": "‘मैं समुद्र में मिल जाती हूँ।’",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch12-t01-i09",
@@ -7238,7 +8675,15 @@
       "solverAnswer": "बर्फ़ की नदी (ग्लेशियर)",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch12-t01-i10",
@@ -7266,7 +8711,15 @@
       "solverAnswer": "कचरे से उसका पानी गंदा होता है, जीव-जंतु और लोग बीमार होते हैं; हम कचरा न डालें, दूसरों को रोकें, सफ़ाई करें",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch12-t01-i11",
@@ -7291,7 +8744,15 @@
       "solverAnswer": "(खुला) जैसे ‘मैं नीम का पेड़ हूँ, मैं ठंडी छाँव देता हूँ।’",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch12-t01-i12",
@@ -7316,7 +8777,15 @@
       "solverAnswer": "(खुला) 3-4 वाक्य ‘मैं’ में",
       "agrees": true,
       "note": "Open-ended item. My response fits the key's shape and the exemplar is valid; hints scaffold without giving the answer early."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch12-t01-i13",
@@ -7342,7 +8811,15 @@
       "solverAnswer": "गोमुख से, देवप्रयाग, हरिद्वार, प्रयागराज, वाराणसी होकर बंगाल की खाड़ी तक",
       "agrees": true,
       "note": "Blind answer matches the key. Hindi, gloss and hints are fine."
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A3": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-hindi-ch12-t01-rl-o2",
@@ -7505,6 +8982,24 @@
     "clean-river campaign",
     "water at home",
     "festivals by the river like Chhath and Kumbh"
+   ],
+   "passages": [
+    {
+     "id": "c5-hindi-ch12-t01-p1",
+     "text": "मैं करोड़ों लोगों को पानी देती हूँ। मेरा जन्म उत्तराखंड में गंगोत्री हिमनद के गोमुख से होता है। वहाँ मुझे भागीरथी कहते हैं। आगे चलकर मेरा नाम गंगा पड़ता है।’ इस कहानी में ‘मैं"
+    },
+    {
+     "id": "c5-hindi-ch12-t01-p2",
+     "text": "मैं गंगा हूँ। मेरा जन्म उत्तराखंड में गंगोत्री हिमनद के गोमुख से होता है। वहाँ मुझे भागीरथी कहते हैं।"
+    },
+    {
+     "id": "c5-hindi-ch12-t01-p3",
+     "text": "पहाड़ों से उछलती-कूदती मैं देवप्रयाग पहुँचती हूँ, जहाँ अलकनंदा मुझसे मिलती है, और यहीं से मेरा नाम गंगा पड़ता है।"
+    },
+    {
+     "id": "c5-hindi-ch12-t01-p4",
+     "text": "प्रयागराज में मेरी बहन यमुना मुझसे गले मिलती है — इसे संगम कहते हैं।’ ‘संगम"
+    }
    ]
   }
  ],

@@ -128,16 +128,29 @@ describe("r4 content tray gate · B: each kind's rule", () => {
     assert.equal(certifyForTray({ kind: "whiteboard", script: bigBoard() }, { vp: "p360" }).ok, true);
     assert.equal(boardAt(bigBoard(), contractBox("p360")).ok, true);
   });
-  it("stagecraft (Studio v2): served only with a certificate passing at ALL THREE sizes; generated specs need a verdict; the board rung never", () => {
+  it("stagecraft (Studio v2, round 7 D8): served where certified AT THE DEVICE'S CLASS; on the 360 phone only as its board twin; generated specs need a verdict; the board rung never", () => {
     const certs = { topics: { "c6-x": { game: { serveByViewport: { p360: false, p412: true, l1366: true } }, explainer: { serveByViewport: PASS } } } };
-    const sc = (rung) => ({ kind: "stagecraft", stagecraft: { rung, archetype: "rule" } });
-    assert.equal(certifyForTray(sc("engine_default"), { vp: "p412", topicId: "c6-x", certs, factsKind: "game" }).ok, false, "fails at p360 → off everywhere");
-    // certified at all three sizes, but a 1000-unit world at the phone tray is its board twin, not the piece: refused today
-    const anim = certifyForTray(sc("engine_default"), { vp: "p412", topicId: "c6-x", certs, factsKind: "animation" });
-    assert.equal(anim.ok, false); assert.match(anim.why, /board twin/);
+    const sc = (rung, twin = false) => ({ kind: "stagecraft", stagecraft: { rung, archetype: "rule", ...(twin ? { boardTwin: { board: { w: 400, h: 300 } } } : {}) } });
+    assert.equal(certifyForTray(sc("engine_default"), { vp: "p412", topicId: "c6-x", certs, factsKind: "game" }).ok, true, "certified at p412 → served at p412");
+    assert.equal(certifyForTray(sc("engine_default"), { vp: "l1366", topicId: "c6-x", certs, factsKind: "game" }).ok, true);
+    assert.equal(certifyForTray(sc("engine_default", true), { vp: "p360", topicId: "c6-x", certs, factsKind: "game" }).ok, false, "not certified at p360 → not there");
+    // (main 2026-11-10) certified at p360, but a 1000-unit world in the 360 phone tray cannot be played and its twin is a word
+    // card: refused at every rung — the child keeps the script's held board
+    const anim = certifyForTray(sc("engine_default", true), { vp: "p360", topicId: "c6-x", certs, factsKind: "animation" });
+    assert.equal(anim.ok, false); assert.equal(anim.cert, "studio-v2-small");
+    assert.equal(certifyForTray(sc("generated_spec"), { vp: "p360", topicId: "c6-x", certs, verdict: { byViewport: PASS } }).ok, false, "a judged generated spec too");
+    // (the switch on: the twin as before — served when the piece carries one)
+    const was = process.env.STUDIO_V2_TWIN_AT_SMALL;
+    process.env.STUDIO_V2_TWIN_AT_SMALL = "on";
+    try {
+      const bare = certifyForTray(sc("engine_default"), { vp: "p360", topicId: "c6-x", certs, factsKind: "animation" });
+      assert.equal(bare.ok, false); assert.match(bare.why, /board twin/);
+      const twin = certifyForTray(sc("engine_default", true), { vp: "p360", topicId: "c6-x", certs, factsKind: "animation" });
+      assert.equal(twin.ok, true); assert.equal(twin.cert, "catalogue-twin");
+      assert.equal(certifyForTray(sc("generated_spec"), { vp: "p360", topicId: "c6-x", certs, verdict: { byViewport: PASS } }).ok, true);
+    } finally { if (was === undefined) delete process.env.STUDIO_V2_TWIN_AT_SMALL; else process.env.STUDIO_V2_TWIN_AT_SMALL = was; }
     assert.equal(certifyForTray(sc("engine_default"), { vp: "p412", topicId: "c6-y", certs }).ok, false, "no certificate = not shown");
     assert.equal(certifyForTray(sc("generated_spec"), { vp: "p360", topicId: "c6-x", certs }).ok, false);
-    assert.equal(certifyForTray(sc("generated_spec"), { vp: "p360", topicId: "c6-x", certs, verdict: { byViewport: PASS } }).ok, true);
     assert.equal(certifyForTray(sc("board"), { vp: "l1366", topicId: "c6-x", certs }).ok, false);
   });
   it("play: never judged is refused; failed at the device's class is refused; passed is shown", () => {

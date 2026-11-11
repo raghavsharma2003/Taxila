@@ -10,8 +10,8 @@
 //   /c/:cid/me              Me
 //   /c/:cid/teacher         Your teacher
 //   /c/:cid/hangar          Kaksha Hangar (ui.kaksha only; BUILD-SPEC K-P8)
-// With the ui.kaksha flag on (src/ui-v3/kaksha/flag.ts, default off), Home and the map render the Kaksha screens; the
-// flag is read at render, the Kaksha chunks load only when it is on, and every other route is unchanged.
+// Kaksha is the skin on every device (src/ui-v3/kaksha/flag.ts) unless the device once opened ?ui=classic: Home, the map and
+// the secondary screens each have a Kaksha branch and a classic branch, chosen at render; the Kaksha chunks load only when it is on.
 // Renames (§5.1): /doubt → /ask, /notes → /notebook (the old paths redirect).
 import { lazy, Suspense, type ReactNode } from "react";
 import { Navigate, type RouteObject } from "react-router-dom";

@@ -16,7 +16,7 @@ const D = {
   "line-runner@1": ["jump at the moment the runner passes the called number", "the runner never stops; speed adapts; gate revealed only after the jump", "take-off value vs the call (2.5% of range)"],
   "area-claim@1": ["stake a rectangle of exact area / perimeter, a new shape, the most area", "drift eats the field from the edges; per-plot clock", "w × h and 2(w + h) from the claimed rectangle"],
   "vault-heist@1": ["load the vault to an exact number from a moving belt; 10 of a kind regroup", "belt, laser sweep, regroup merges", "Σ place × count from the columns; drop-zero / concat signatures"],
-  "angle-cannon@1": ["turn the turret by estimate to a called angle; copy a turn; shoot only obtuse", "cloaked threats, countdown, drifting drones", "aim angle vs call (±5°); classify by angle kind"],
+  "angle-cannon@1": ["turn the lighthouse beam by estimate to a called angle; copy a turn; light only obtuse", "boats in the dark, countdown, boats coming in", "aim angle vs call (±5°); classify by angle kind"],
   "data-rush@1": ["tally cars live; then drag the line to the mean", "traffic stream, census camera, levelling animation", "tally vs true count; mean estimate vs exact mean"],
   "balance-beam@1": ["place weights to level the beam; find the crate; same off both sides; grams vs kg", "torque-driven beam with damping and end stops", "torque recomputed from placements; tray multiset; removals"],
   "food-web@1": ["draw who-eats-whom; predict a removal; manage a drought", "deterministic population model animated live", "arrows vs the closed web; trend vs the model; host re-sim of actions"],

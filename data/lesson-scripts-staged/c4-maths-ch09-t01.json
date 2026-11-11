@@ -1,0 +1,797 @@
+{
+ "topicId": "c4-maths-ch09-t01",
+ "classLevel": 4,
+ "version": 2.3,
+ "status": "draft",
+ "terms": [
+  { "hi": "guna", "en": "times (multiply)" },
+  { "hi": "pahada", "en": "times table" },
+  { "hi": "barabar group", "en": "equal groups" },
+  { "hi": "row", "en": "row" },
+  { "hi": "array", "en": "array" },
+  { "hi": "double", "en": "double" },
+  { "hi": "guna chart", "en": "multiplication chart" },
+  { "hi": "dahai", "en": "tens digit" },
+  { "hi": "ikai", "en": "ones digit" }
+ ], "greetSimpler": { "hi": "Aaj hum pahade aur guna ke chhote-chhote tareeke seekhenge.", "en": "Today we learn times tables and quick ways to multiply." }, "joints": {"asidePark":[{"hi":"Yeh guna poora hote hi {aside} ki baat zaroor karenge.","en":"Once this multiplying is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh guna khatam ho jaaye.","en":"We'll talk about {aside} too, once this multiplying is over."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein kya cheezein barabar dheron mein aati hain?","en":"What comes in equal heaps in {aside}?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."}],"askAgain":[{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."}],"backTo":[{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."},{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."},{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."}]},
+ "skills": [
+  {
+   "skillId": "c4-maths-ch09-t01-s1",
+   "hook": {
+    "convey": "equal groups everywhere (egg trays of 6, overs of 6 balls) → multiplication counts equal groups in one go; facts up to 10 × 10 come from equal groups, equal jumps and a nearby easy fact",
+    "interestSlots": [
+     {
+      "interest": "cooking",
+      "use": {
+       "hi": "Kitchen mein ande 6-6 ki tray mein aate hain, aur Maa ne 3 tray rakhi hain. Aaj dekhenge ki bina ek-ek gine kul ande kaise nikalte hain.",
+       "en": "In the kitchen eggs come in trays of 6, and Mum has kept 3 trays. Today we see how to find all the eggs without counting them one by one."
+      }
+     },
+     {
+      "interest": "cricket",
+      "use": {
+       "hi": "Cricket mein ek over mein 6 ball hoti hain. Bowler kitne over daale, usse kul ball guna se turant pata chalti hain.",
+       "en": "In cricket an over has 6 balls. However many overs a bowler bowls, multiplying tells the total balls at once."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "3 egg trays, 6 in each → 3 equal groups of 6 → 3 × 6 = 6 + 6 + 6 = 18; first number = how many groups, second = how many in each",
+     "mustSay": [
+      { "hi": "barabar group", "en": "equal groups" },
+      { "hi": "3 × 6", "en": "3 × 6" }
+     ],
+     "board": { "template": "equal-groups@1", "params": { "groups": 3, "each": 6 } },
+     "point": { "hi": "Pehle 3 tray aaye, aur har tray mein 6 ande. Yeh 6-6 ke 3 barabar group hain. 3 × 6 ka matlab hai 6 + 6 + 6, yaani 18 ande.", "en": "First 3 trays came, with 6 eggs in each tray. These are 3 equal groups of 6. 3 × 6 means 6 + 6 + 6, that is 18 eggs." },
+     "ask": {
+      "prompt": {
+       "hi": "Ab 2 tray aur aa gayin, aur har tray mein 6 ande hain. 5 tray mein kul kitne ande hain?",
+       "en": "Now 2 more trays come, with 6 eggs in each tray. How many eggs are there in 5 trays?"
+      },
+      "key": "30",
+      "accept": ["tees", "thirty", "30 ande", "30 eggs"],
+      "targets": "c4-maths-ch09-t01-m-times-as-add",
+      "wrongIfMis": "11",
+      "why": { "hi": "3 tray mein 18 the; 5 tray mein 6-6 ande hain, toh 5 × 6 = 30", "en": "3 trays held 18; 5 trays of 6 eggs each make 5 × 6 = 30" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 tray", "items": ["6-6 ande", "18"]}, "right": {"title": "5 tray", "items": ["6-6 ande"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "3 tray", "items": ["6-6 ande", "18"]}, "right": {"title": "5 tray", "items": ["6-6 ande"]}} }
+     },
+     "simpler": { "hi": "Har tray mein 6 ande hain, toh 5 tray matlab 5 baar 6. 3 tray mein 18 the, ab 2 tray ke 6-6 aur jodo.", "en": "Each tray has 6 eggs, so 5 trays means 5 times 6. 3 trays held 18, so now add 6 for each of 2 more trays." }
+    },
+    {
+     "id": "e2",
+     "convey": "4 × 5 as jumps: 4 equal jumps of 5 from 0 → 5, 10, 15, 20 → 4 × 5 = 20; × is the same jump again and again, + is one join",
+     "mustSay": [
+      { "hi": "chhalaang", "en": "jumps" },
+      { "hi": "4 × 5 = 20", "en": "4 × 5 = 20" }
+     ],
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "4 × 5", "items": ["5-5 ki 4 chhalaang", "5, 10, 15, 20"] },
+       "right": { "title": "4 + 5", "items": ["sirf ek baar jodna", "9"] }
+      }
+     },
+     "point": {
+      "hi": "0 se 5-5 ki 4 chhalaang lagao: 5, 10, 15, 20. Toh 4 × 5 = 20. Guna mein wahi chhalaang baar-baar lagti hai. 4 + 5 mein sirf ek baar jodna hota hai, woh 9 hai.",
+      "en": "Make 4 jumps of 5 from 0: 5, 10, 15, 20. So 4 × 5 = 20. In multiplying the same jump is made again and again. 4 + 5 is adding just once, which is 9."
+     },
+     "ask": {
+      "prompt": { "hi": "Isi tarah 0 se 3-3 ki 7 chhalaang lagao. Kahan pahunchoge, yaani 7 × 3 kitna hai?", "en": "In the same way make 7 jumps of 3 from 0. Where do you land, that is, what is 7 × 3?" },
+      "key": "21",
+      "accept": ["ikkees", "ikkis", "twenty-one", "twenty one", "21 par"],
+      "targets": "c4-maths-ch09-t01-m-times-as-add",
+      "wrongIfMis": "10",
+      "why": { "hi": "0 se shuru karke 3-3 ki 7 chhalaang 3, 6, 9, 12, 15, 18, 21 par pahunchti hain", "en": "starting at 0, 7 jumps of 3 land on 3, 6, 9, 12, 15, 18, 21" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "7 × 3", "items": ["3-3 ki 7 chhalaang"]}, "right": {"title": "Shuru", "items": ["0 se"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "7 × 3", "items": ["3-3 ki 7 chhalaang"]}, "right": {"title": "Shuru", "items": ["0 se"]}} }
+     },
+     "simpler": { "hi": "0 se shuru karke har chhalaang mein 3 aage jao. Aisi 7 chhalaang poori karo; jahan ruko, wahi jawab hai.", "en": "Start at 0 and go 3 forward with each jump. Make 7 such jumps; where you stop is the answer." }
+    },
+    {
+     "id": "e3",
+     "convey": "a fact next to 10: 9 × 8 → 10 × 8 = 80 is easy → 9 groups of 8 is one group of 8 fewer → 80 − 8 = 72",
+     "mustSay": [{"hi": "10 × 8 = 80", "en": "10 × 8 = 80"}, {"hi": "1 group kam", "en": "one group fewer"}],
+     "board": { "template": "compare@1", "params": {"left": {"title": "10 × 8 = 80", "items": ["8-8 ke 10 group"]}, "right": {"title": "9 × 8", "items": ["1 group kam", "80 − 8 = 72"]}} },
+     "point": { "hi": "9 × 8 nikalna hai. 10 × 8 = 80 aasaan hai, yaani 8-8 ke 10 group. 9 × 8 mein 1 group kam hai, toh 80 − 8 = 72.", "en": "We want 9 × 8. 10 × 8 = 80 is easy, that is 10 groups of 8. 9 × 8 has 1 group fewer, so 80 − 8 = 72." },
+     "ask": {
+      "prompt": {
+       "hi": "Isi tarike se 9 × 4 nikalo. 10 × 4 = 40 se shuru karo. 9 × 4 kitna hai?",
+       "en": "Find 9 × 4 the same way. Start from 10 × 4 = 40. What is 9 × 4?"
+      },
+      "key": "36",
+      "accept": ["chhattees", "chhatees", "thirty-six", "thirty six"],
+      "why": { "hi": "9 × 4 mein 10 × 4 = 40 se 1 group kam hai: 40 − 4 = 36", "en": "9 × 4 is 1 group fewer than 10 × 4 = 40: 40 − 4 = 36" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "10 × 4 = 40", "items": ["4-4 ke 10 group"]}, "right": {"title": "9 × 4", "items": ["1 group kam"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "10 × 4 = 40", "items": ["4-4 ke 10 group"]}, "right": {"title": "9 × 4", "items": ["1 group kam"]}} }
+     },
+     "simpler": { "hi": "10 × 4 = 40 mein 4 ke 10 group hain. 9 × 4 mein ek group kam hai, toh 40 mein se ek 4 hatao.", "en": "10 × 4 = 40 is 10 groups of 4. 9 × 4 has one group fewer, so take one 4 away from 40." }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Ek packet mein 9 biscuit hain. Rahul class party ke liye 7 packet laata hai. Rahul ke paas kul kitne biscuit hain?",
+     "en": "A packet has 9 biscuits. Rahul buys 7 packets for a class party. How many biscuits does Rahul have?"
+    }, "simpler": { "hi": "Har packet mein 9 biscuit hain, aur 7 packet hain. Toh 9 ko 7 baar jodna hai, yaani 7 × 9.", "en": "Each packet has 9 biscuits, and there are 7 packets. So we add 9 seven times, that is 7 × 9." },
+    "givens": [
+     { "hi": "har packet mein 9 biscuit", "en": "9 biscuits in each packet" },
+     { "hi": "kul 7 packet hain", "en": "7 packets" }
+    ],
+    "find": { "hi": "Rahul ke paas kul kitne biscuit hain", "en": "the total number of biscuits" },
+    "steps": [
+     {
+      "do": { "hi": "Pehle dekho ki yeh barabar group hain", "en": "First see that these are equal groups" },
+      "result": "7 packet, har packet mein 9, toh 7 × 9",
+      "why": { "hi": "7 packet barabar hain aur har packet mein 9 biscuit hain", "en": "the 7 packets are equal, with 9 biscuits in each packet" },
+      "simpler": { "hi": "Har packet mein 9 biscuit hain, aur 7 packet hain. Sab packet barabar hain, toh yeh 7 × 9 hai.", "en": "Each packet has 9 biscuits, and there are 7 packets. All the packets are equal, so this is 7 × 9." }
+     },
+     {
+      "do": { "hi": "Ab paas wala aasaan fact lo", "en": "Now take the easy fact next to it" },
+      "result": "7 × 10 = 70",
+      "why": { "hi": "10 se guna aasaan hai, jaise har packet mein 10 hon", "en": "multiplying by 10 is easy, as if each packet had 10" },
+      "simpler": { "hi": "Socho har packet mein 10 hote, toh 7 × 10 = 70. 10 se guna karna aasaan hai.", "en": "Imagine each packet had 10; then 7 × 10 = 70. Multiplying by 10 is easy." }
+     }
+    ],
+    "yourStep": {
+     "prompt": {
+      "hi": "Par har packet mein 10 nahi, 9 hain, yaani har packet mein 1 kam. Toh 70 mein se 7 ghatao. Kul kitne biscuit hain?",
+      "en": "But each packet has 9, not 10, so each packet has 1 fewer. So take 7 away from 70. How many biscuits in all?"
+     },
+     "key": "63",
+     "accept": ["tirsath", "tiresath", "sixty-three", "sixty three", "63 biscuit", "63 biscuits"],
+     "simpler": { "hi": "Har packet mein 1 biscuit kam hai, aur packet 7 hain. Toh 70 mein se 7 hatao.", "en": "Each packet has 1 biscuit fewer, and there are 7 packets. So take 7 away from 70." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "7 packet", "items": ["har packet mein 9", "7 × 9"]}, "right": {"title": "7 × 10", "items": ["70"]}} }, "why": { "hi": "har packet mein 1 kam hai, toh 7 × 10 = 70 mein se 7 ghatao: 70 − 7 = 63", "en": "each packet has 1 fewer, so take 7 from 7 × 10 = 70: 70 − 7 = 63" }
+    },
+    "answer": { "hi": "Rahul ke paas kul 63 biscuit hain", "en": "Rahul has 63 biscuits: 7 × 9 = 63" },
+    "why": { "hi": "har packet mein 1 kam hai, toh 7 × 10 = 70 mein se 7 ghatao: 70 − 7 = 63", "en": "each packet has 1 fewer, so take 7 from 7 × 10 = 70: 70 − 7 = 63" },
+    "board": {
+     "template": "compare@1",
+     "params": {
+      "left": { "title": "7 packet", "items": ["har packet mein 9", "7 × 9"] },
+      "right": { "title": "7 × 10", "items": ["70"] }
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "School trip mein 6 auto hain, aur har auto mein 4 bachche baithe hain. Kul kitne bachche hain?",
+      "en": "On a school trip there are 6 autos, with 4 children sitting in each auto. How many children are there in all?"
+     },
+     "key": "24",
+     "accept": ["chaubees", "chaubis", "twenty-four", "twenty four", "24 bachche", "24 children"],
+     "targets": "c4-maths-ch09-t01-m-times-as-add",
+     "wrongIfMis": "10",
+     "board": { "template": "equal-groups@1", "params": { "groups": 6, "each": 4, "hideResult": true } },
+     "why": { "hi": "6 auto mein 4-4 bachche: 6 × 4 = 24", "en": "6 autos with 4 children each: 6 × 4 = 24" },
+     "simpler": { "hi": "6 auto hain aur har auto mein 4 bachche, toh 6 baar 4 jodo. Ya 4 ke pahade mein 6 tak jao.", "en": "There are 6 autos with 4 children in each, so add 4 six times. Or go up the 4 table to 6." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 6, "each": 4} }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Cricket mein ek over mein 6 ball hoti hain. 9 over mein kul kitni ball hongi?",
+      "en": "In cricket one over has 6 balls. How many balls are there in 9 overs?"
+     },
+     "key": "54",
+     "accept": ["chauvan", "chauwan", "fifty-four", "fifty four", "54 ball", "54 balls"],
+     "targets": "c4-maths-ch09-t01-m-times-as-add",
+     "wrongIfMis": "15",
+     "board": { "template": "compare@1", "params": {"left": {"title": "Ek over", "items": ["6 ball"]}, "right": {"title": "9 over", "items": ["kul ball"]}} },
+     "why": { "hi": "ek over mein 6 ball, toh 9 over mein kul 9 × 6 = 54 ball", "en": "one over has 6 balls, so 9 overs have 9 × 6 = 54 balls in all" },
+     "simpler": { "hi": "Har over mein 6 ball hain, toh 9 over matlab 9 baar 6. 6 ke pahade mein 9 tak jao.", "en": "Each over has 6 balls, so 9 overs means 9 times 6. Go up the 6 table to 9." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Ek over", "items": ["6 ball"]}, "right": {"title": "9 over", "items": ["kul ball"]}} }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "Function mein kursiyon ki 7 row hain, aur har row mein 8 kursi. Kul kitni kursi hain?",
+      "en": "At a function there are 7 rows of chairs, with 8 chairs in each row. How many chairs are there in all?"
+     },
+     "key": "56",
+     "accept": ["chhappan", "chappan", "fifty-six", "fifty six", "56 kursi", "56 chairs"],
+     "targets": "c4-maths-ch09-t01-m-times-as-add",
+     "wrongIfMis": "15",
+     "board": { "template": "compare@1", "params": {"left": {"title": "7 row", "items": ["har row mein 8 kursi"]}, "right": {"title": "Kul kursi", "items": ["row × kursi"]}} },
+     "why": { "hi": "7 row hain aur har row mein 8 kursi, toh kul kursi 7 × 8 = 56", "en": "there are 7 rows with 8 chairs in each row, so the chairs in all are 7 × 8 = 56" },
+     "simpler": { "hi": "7 row hain aur har row mein 8 kursi, toh yeh 7 × 8 hai. 8 ke pahade mein 7 tak jao.", "en": "There are 7 rows with 8 chairs in each, so this is 7 × 8. Go up the 8 table to 7." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "7 row", "items": ["har row mein 8 kursi"]}, "right": {"title": "Kul kursi", "items": ["row × kursi"]}} }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c4-maths-ch09-t01-i01", "why": "egg trays of 6 → 3 equal groups; warm-up" },
+    { "itemId": "c4-maths-ch09-t01-rl-o1", "why": "teams of 6 players → 7 × 6 in a story" },
+    { "itemId": "c4-maths-ch09-t01-i13", "why": "quick recall 9 × 6 → via 10 × 6 − 6" },
+    { "itemId": "c4-maths-ch09-t01-i02", "why": "recall 7 × 8 → from 7 × 7 and one more 7" },
+    { "itemId": "c4-maths-ch09-t01-i10", "why": "far transfer: 3 children + 1 teacher per auto → group size first, then 8 × 4" }
+   ],
+   "remediation": [
+    {
+     "targets": "c4-maths-ch09-t01-m-times-as-add",
+     "move": "number line 0-30: 5 × 4 as 5 equal jumps of 4 → lands on 20; beside it 5 + 4 as one jump of 4 starting at 5 → lands on 9; two landings → × is repeated equal jumps, + is one join",
+     "say": { "hi": "5 × 4 matlab 4-4 ki 5 chhalaang, jo 20 par pahunchti hain. 5 + 4 matlab 5 se sirf ek chhalaang, jo 9 par rukti hai.", "en": "5 × 4 means 5 jumps of 4, which reach 20. 5 + 4 means just one jump from 5, which stops at 9." },
+     "simpler": { "hi": "5 × 4 matlab 4-4 ki 5 chhalaang, 20 tak. 5 + 4 matlab sirf ek chhalaang, 9 tak.", "en": "5 × 4 is 5 jumps of 4, up to 20. 5 + 4 is just one jump, up to 9." },
+     
+     "then": {
+      "prompt": {
+       "hi": "Ek dabbe mein 8 pencil hain. 4 dabbon mein kul kitni pencil hain?",
+       "en": "A box has 8 pencils. How many pencils are there in 4 boxes?"
+      },
+      "key": "32",
+      "accept": ["battees", "batees", "thirty-two", "thirty two", "32 pencil", "32 pencils"],
+      "targets": "c4-maths-ch09-t01-m-times-as-add",
+      "wrongIfMis": "12",
+      "board": { "template": "equal-groups@1", "params": { "groups": 4, "each": 8, "hideResult": true } },
+      "why": { "hi": "4 dabbon mein 8-8 pencil: 4 × 8 = 32", "en": "4 boxes of 8 pencils each: 4 × 8 = 32" },
+      "simpler": { "hi": "Har dabbe mein 8 pencil hain, aur 4 dabbe hain. Toh 8 ko 4 baar jodo.", "en": "Each box has 8 pencils, and there are 4 boxes. So add 8 four times." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 4, "each": 8} }
+     }
+    }
+   ],
+   "bridgeToNext": { "hi": "Ab tak humne pahade ke facts nikale. Ab kuch khaas facts dekhenge: 0 se guna, 1 se guna, kram badalna aur double karna.", "en": "So far we worked out times-table facts. Next we look at some special facts: times 0, times 1, changing the order, and doubling.", "simpler": {"hi": "Pahade ke facts nikalna aa gaya. Agle hisse mein kuch khaas facts dekhenge, jaise 0 se guna, 1 se guna aur double karna.", "en": "You can work out table facts now. Next we see some special facts, like times 0, times 1 and doubling."} }
+  },
+  {
+   "skillId": "c4-maths-ch09-t01-s2",
+   "hook": {
+    "convey": "special facts that save work: groups with nothing in them (× 0), just one group (× 1), an array turned around (order), twice the groups (double a known fact)",
+    "interestSlots": [
+     {
+      "interest": "cricket",
+      "use": {
+       "hi": "Ek bowler ne 3 over daale aur kisi bhi over mein ek bhi run nahi diya. Aaj dekhenge ki aise mein guna se kul run kaise nikalte hain.",
+       "en": "A bowler bowled 3 overs and gave away no runs in any over. Today we see how multiplying gives the total runs in a case like this."
+      }
+     },
+     {
+      "interest": "cooking",
+      "use": {
+       "hi": "Kitchen mein laddoo plate mein lagaane hain: kabhi plate khaali rehti hai, kabhi sirf 1 plate hoti hai. Aaj dekhenge ki 0 aur 1 se guna karne par kya hota hai.",
+       "en": "In the kitchen laddoos go on plates: sometimes a plate stays empty, sometimes there is only 1 plate. Today we see what happens when we multiply by 0 and by 1."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "8 + 0 keeps 8 (nothing added); 8 × 0 = 8 empty plates → no laddoos → 0; anything × 0 is 0",
+     "mustSay": [
+      { "hi": "8 × 0 = 0", "en": "8 × 0 = 0" },
+      { "hi": "khaali plate", "en": "empty plates" }
+     ],
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "8 + 0", "items": ["8 mein kuch nahi joda", "8"] },
+       "right": { "title": "8 × 0", "items": ["8 khaali plate", "0"] }
+      }
+     },
+     "point": {
+      "hi": "8 + 0 mein 8 mein kuch nahi joda, toh 8 hi raha. 8 × 0 ka matlab 8 plate, aur har plate mein 0 laddoo. 8 khaali plate mein kul 0 laddoo hain.",
+      "en": "In 8 + 0 nothing is added to 8, so it stays 8. 8 × 0 means 8 plates with 0 laddoos on each plate. 8 empty plates hold 0 laddoos in all."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "5 plate hain aur har plate khaali hai. Kya 5 × 0 = 5 hoga, haan ya nahi?",
+       "en": "There are 5 plates and every plate is empty. Is 5 × 0 = 5, yes or no?"
+      },
+      "key": "No",
+      "accept": ["nahi", "nahin", "no", "nahi, 0 hoga", "no, it is 0"],
+      "targets": "c4-maths-ch09-t01-m-times-zero",
+      "wrongIfMis": "Yes",
+      "why": { "hi": "8 khaali plate mein 0 laddoo the, toh 5 khaali plate mein bhi 0: 5 × 0 = 0", "en": "8 empty plates held 0 laddoos, so 5 empty plates hold 0 too: 5 × 0 = 0" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "8 × 0", "items": ["8 khaali plate", "0"]}, "right": {"title": "5 × 0", "items": ["5 khaali plate"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "8 × 0", "items": ["8 khaali plate", "0"]}, "right": {"title": "5 × 0", "items": ["5 khaali plate"]}} }
+     },
+     "simpler": { "hi": "Har plate khaali hai, yaani har plate pe 0 laddoo. 5 khaali plate pe bhi ek bhi laddoo nahi hota.", "en": "Every plate is empty, so each plate has 0 laddoos. 5 empty plates still hold not a single laddoo." }
+    },
+    {
+     "id": "e2",
+     "convey": "1 × 7 = 1 box of 7 pencils = 7; 7 × 1 = 7 children with 1 pencil each = 7; × 1 keeps the number the same, multiplying does not always make it bigger",
+     "mustSay": [
+      { "hi": "1 se guna", "en": "times 1" },
+      { "hi": "utna hi", "en": "the same" }
+     ],
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "1 × 7", "items": ["1 dibba", "dibbe mein 7 pencil", "kul 7"] },
+       "right": { "title": "7 × 1", "items": ["7 bachche", "har ek ke paas 1", "kul 7"] }
+      }
+     },
+     "point": {
+      "hi": "1 × 7 matlab 1 dibba, aur dibbe mein 7 pencil, toh kul 7. 7 × 1 matlab 7 bachche, har ek ke paas 1 pencil, toh bhi kul 7. 1 se guna karne par number utna hi rehta hai, bada nahi hota.",
+      "en": "1 × 7 means 1 box with 7 pencils in it, so 7 in all. 7 × 1 means 7 children with 1 pencil each, so again 7 in all. Multiplying by 1 keeps the number the same; it does not get bigger."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "1 dibbe mein 9 crayon hain. 1 × 9 ka jawab 9 se zyada hai, kam hai, ya utna hi?",
+       "en": "1 box has 9 crayons. Is the answer to 1 × 9 more than 9, less than 9, or the same?"
+      },
+      "key": "utna hi",
+      "accept": ["utna hi", "utne hi", "barabar", "same", "the same", "9", "9 hi"],
+      "targets": "c4-maths-ch09-t01-m-mult-makes-bigger",
+      "wrongIfMis": "zyada",
+      "why": { "hi": "1 × 7 mein 1 dibba aur kul 7 tha; isi tarah 1 dibba, 9 crayon, toh 1 × 9 = 9", "en": "1 × 7 was 1 box, 7 in all; so 1 box of 9 crayons gives 1 × 9 = 9" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 × 7", "items": ["1 dibba", "kul 7"]}, "right": {"title": "Crayon", "items": ["1 dibba"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "1 × 7", "items": ["1 dibba", "kul 7"]}, "right": {"title": "Crayon", "items": ["1 dibba"]}} }
+     },
+     "simpler": { "hi": "1 × 9 matlab sirf 1 dibba, jismein 9 crayon hain. Socho, ek hi dibbe mein kul kitne crayon hue.", "en": "1 × 9 means just 1 box with 9 crayons in it. Think how many crayons one box holds in all." }
+    },
+    {
+     "id": "e3",
+     "convey": "4 × 5 = 4 groups of 5 = 20 and 5 × 4 = 5 groups of 4 = 20; an array turned around swaps rows and columns, the laddoos stay the same → order does not change the answer",
+     "mustSay": [
+      { "hi": "kram badlo", "en": "change the order" },
+      { "hi": "jawab wahi", "en": "same answer" }
+     ],
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "4 × 5", "items": ["5-5 ke 4 group", "kul 20"] },
+       "right": { "title": "5 × 4", "items": ["4-4 ke 5 group", "kul 20"] }
+      }
+     },
+     "point": {
+      "hi": "4 × 5 matlab 5-5 ke 4 group, kul 20. 5 × 4 matlab 4-4 ke 5 group, kul phir bhi 20. Laddoo ka array ghumao toh row aur column badalte hain, laddoo nahi. Toh kram badlo, jawab wahi rehta hai.",
+      "en": "4 × 5 means 4 groups of 5, 20 in all. 5 × 4 means 5 groups of 4, still 20 in all. Turn an array of laddoos and the rows and columns swap, not the laddoos. So change the order and the answer stays the same."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "6 × 9 = 54 hai. Kya 9 × 6 ka jawab isse alag hoga, haan ya nahi?",
+       "en": "6 × 9 = 54. Will the answer to 9 × 6 be different from this, yes or no?"
+      },
+      "key": "No",
+      "accept": ["nahi", "nahin", "no", "nahi, 54 hi hoga", "no, it is 54"],
+      "targets": "c4-maths-ch09-t01-m-order-changes",
+      "wrongIfMis": "Yes",
+      "why": { "hi": "6 × 9 = 54 hai, aur kram badlo toh kul nahi badalta, 9 × 6 bhi 54 hai", "en": "6 × 9 = 54, and changing the order keeps the total, so 9 × 6 is 54 too" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "6 × 9", "items": ["54"]}, "right": {"title": "9 × 6", "items": ["kram badlo"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "6 × 9", "items": ["54"]}, "right": {"title": "9 × 6", "items": ["kram badlo"]}} }
+     },
+     "simpler": { "hi": "Array ko ghumao toh sirf row aur column badalte hain, laddoo wahi rehte hain. 6 × 9 aur 9 × 6 bhi aise hi hain.", "en": "Turn an array and only the rows and columns swap; the laddoos stay the same. 6 × 9 and 9 × 6 are just like that." }
+    },
+    {
+     "id": "e4",
+     "convey": "3 × 7 = 21 is known; 6 groups are twice 3 groups → 6 × 7 is double 3 × 7 → 21 + 21 = 42",
+     "mustSay": [
+      { "hi": "double", "en": "double" },
+      { "hi": "dugne group", "en": "twice as many groups" }
+     ],
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "3 × 7 = 21", "items": ["3 group"] },
+       "right": { "title": "6 × 7", "items": ["dugne group", "21 + 21 = 42"] }
+      }
+     },
+     "point": {
+      "hi": "3 × 7 = 21 hai. 6 group, 3 group ke dugne hain, toh 6 × 7 bhi 3 × 7 ka double hai: 21 + 21 = 42.",
+      "en": "3 × 7 = 21. 6 groups are twice 3 groups, so 6 × 7 is double 3 × 7: 21 + 21 = 42."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "4 × 8 = 32 hai. Toh 8 × 8 kitna hoga?",
+       "en": "4 × 8 = 32. So what is 8 × 8?"
+      },
+      "key": "64",
+      "accept": ["chausath", "chaunsath", "sixty-four", "sixty four"],
+      "why": { "hi": "8 group, 4 group ke dugne hain, toh 8 × 8 = 32 + 32 = 64", "en": "8 groups are twice 4 groups, so 8 × 8 = 32 + 32 = 64" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4 × 8 = 32", "items": ["4 group"]}, "right": {"title": "8 × 8", "items": ["dugne group"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "4 × 8 = 32", "items": ["4 group"]}, "right": {"title": "8 × 8", "items": ["dugne group"]}} }
+     },
+     "simpler": { "hi": "8 group, 4 group ka double hain. Toh 8 × 8, 4 × 8 ka double hai, yaani 32 aur 32 jodo.", "en": "8 groups are double 4 groups. So 8 × 8 is double 4 × 8, that is, add 32 and 32." }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "8 × 7 kitna hota hai? Jo fact pata hai, 4 × 7 = 28, uski madad se nikalo.",
+     "en": "What is 8 × 7? Work it out using a fact you know, 4 × 7 = 28."
+    }, "simpler": { "hi": "Humein 4 × 7 = 28 pata hai. Iski madad se 8 × 7 nikalna hai.", "en": "We know 4 × 7 = 28. We use it to find 8 × 7." },
+    "givens": [
+     { "hi": "pata hua fact: 4 × 7 = 28", "en": "known fact: 4 × 7 = 28" }
+    ],
+    "find": { "hi": "8 × 7 kitna hai", "en": "the value of 8 × 7" },
+    "steps": [
+     {
+      "do": { "hi": "Pehle 8 aur 4 ko milao", "en": "First compare 8 and 4" },
+      "result": "8, 4 ka double hai",
+      "why": { "hi": "4 aur 4 milkar 8 bante hain", "en": "4 and 4 together make 8" },
+      "simpler": { "hi": "4 aur 4 milkar 8 bante hain. Toh 8, 4 ka double hai.", "en": "4 and 4 together make 8. So 8 is double 4." }
+     },
+     {
+      "do": { "hi": "Ab group ka double socho", "en": "Now think of doubling the groups" },
+      "result": "8 × 7, 4 × 7 ka double hai",
+      "why": { "hi": "dugne group mein dugni cheezein hoti hain", "en": "twice as many groups hold twice as many things" },
+      "simpler": { "hi": "Group double hue, toh cheezein bhi double hongi. Isliye 8 × 7, 4 × 7 ka double hai.", "en": "When the groups double, the things double too. So 8 × 7 is double 4 × 7." }
+     }
+    ],
+    "yourStep": {
+     "prompt": {
+      "hi": "Ab 28 ka double karo. 28 + 28 kitna hai, yaani 8 × 7 kitna hai?",
+      "en": "Now double 28. What is 28 + 28, that is, what is 8 × 7?"
+     },
+     "key": "56",
+     "accept": ["chhappan", "chappan", "fifty-six", "fifty six"],
+     "simpler": { "hi": "28 ko 28 mein jodo. Pehle dahai jodo, phir ikai.", "en": "Add 28 to 28. Add the tens first, then the ones." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4 × 7 = 28", "items": ["pata hua fact"]}, "right": {"title": "8 × 7", "items": ["4 × 7 ka double"]}} }, "why": { "hi": "pata hua fact 4 × 7 = 28 hai, aur 8 × 7 uska double, toh 28 + 28 = 56", "en": "the known fact is 4 × 7 = 28, and 8 × 7 is its double, so 28 + 28 = 56" }
+    },
+    "answer": { "hi": "8 × 7 = 56 hai", "en": "8 × 7 = 56" },
+    "why": { "hi": "pata hua fact 4 × 7 = 28 hai, aur 8 × 7 uska double, toh 28 + 28 = 56", "en": "the known fact is 4 × 7 = 28, and 8 × 7 is its double, so 28 + 28 = 56" },
+    "board": {
+     "template": "compare@1",
+     "params": {
+      "left": { "title": "4 × 7 = 28", "items": ["pata hua fact"] },
+      "right": { "title": "8 × 7", "items": ["4 × 7 ka double"] }
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Ek bowler ne 4 over daale, aur kisi bhi over mein ek bhi run nahi diya. Usne kul kitne run diye?",
+      "en": "A bowler bowled 4 overs and gave away no runs in any over. How many runs were given away in all?"
+     },
+     "key": "0",
+     "accept": ["zero", "shunya", "0 run", "koi run nahi", "ek bhi run nahi", "no runs"],
+     "targets": "c4-maths-ch09-t01-m-times-zero",
+     "wrongIfMis": "4",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "Bowler", "items": ["4 over"] },
+       "right": { "title": "Kisi bhi over mein", "items": ["ek bhi run nahi"] }
+      }
+     },
+     "why": { "hi": "bowler ne kisi bhi over mein ek bhi run nahi diya, toh 4 × 0 = 0", "en": "the bowler gave not a single run in any over, so 4 × 0 = 0" },
+     "simpler": { "hi": "Har over mein ek bhi run nahi gaya. Khaali over jodne se kuch nahi badhta, chahe 4 over hon.", "en": "Not a single run was given in any over. Adding empty overs adds nothing, even if there are 4 overs." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Bowler", "items": ["4 over"]}, "right": {"title": "Kisi bhi over mein", "items": ["ek bhi run nahi"]}, "mark": {"side": "right", "item": 0}} }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "7 × 8 matlab 8-8 ke 7 group, aur 8 × 7 matlab 7-7 ke 8 group. {friend} ka kehna hai ki dono ke jawab alag hain. Kya yeh sahi hai?",
+      "en": "7 × 8 means 7 groups of 8, and 8 × 7 means 8 groups of 7. {friend} says the two answers are different. Is that right?"
+     },
+     "key": "No",
+     "accept": ["nahi", "nahin", "no", "nahi, dono 56 hain", "no, both are 56"],
+     "targets": "c4-maths-ch09-t01-m-order-changes",
+     "wrongIfMis": "Yes",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "7 × 8", "items": ["8-8 ke 7 group"] },
+       "right": { "title": "8 × 7", "items": ["7-7 ke 8 group"] }
+      }
+     },
+     "why": { "hi": "7 × 8 aur 8 × 7 dono 56 hain, kram badalne se kul nahi badalta", "en": "7 × 8 and 8 × 7 are both 56; changing the order does not change the total" },
+     "simpler": { "hi": "8-8 ke 7 group ka array ghumao, toh 7-7 ke 8 group ban jaate hain. Cheezein wahi rehti hain, sirf row aur column badalte hain.", "en": "Turn the array of 7 groups of 8 and it becomes 8 groups of 7. The things stay the same; only the rows and columns swap." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "7 × 8", "items": ["8-8 ke 7 group"]}, "right": {"title": "8 × 7", "items": ["7-7 ke 8 group"]}} }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "8 bachchon ke paas 1-1 pencil hai, yaani 8 × 1. Farhan kehta hai ki kul 9 pencil hain, kyunki guna se number bada hota hai. Kya Farhan sahi hai?",
+      "en": "8 children have 1 pencil each, that is 8 × 1. Farhan says there are 9 pencils in all, because multiplying makes a number bigger. Is Farhan right?"
+     },
+     "key": "No",
+     "accept": ["nahi", "nahin", "no", "nahi, 8 pencil hain", "no, there are 8"],
+     "targets": "c4-maths-ch09-t01-m-mult-makes-bigger",
+     "wrongIfMis": "Yes",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "8 × 1", "items": ["8 bachchon ke paas", "1-1 pencil"] },
+       "right": { "title": "Farhan", "items": ["9 pencil"] }
+      }
+     },
+     "why": { "hi": "Farhan ke 9 pencil galat hain; 8 bachchon ke paas 1-1 pencil, toh 8 × 1 = 8", "en": "Farhan's 9 pencils is wrong; 8 children with 1 pencil each make 8 × 1 = 8" },
+     "simpler": { "hi": "Har bachche ke paas 1 pencil hai, aur 8 bachche hain. 1 se guna karne par number wahi rehta hai, bada nahi hota.", "en": "Each child has 1 pencil, and there are 8 children. Multiplying by 1 keeps the number the same; it does not grow." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "8 × 1", "items": ["8 bachchon ke paas", "1-1 pencil"]}, "right": {"title": "Farhan", "items": ["9 pencil"]}} }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c4-maths-ch09-t01-i03", "why": "6 × 0 → 6 groups of nothing" },
+    { "itemId": "c4-maths-ch09-t01-i06", "why": "contrast 6 + 0 with 6 × 0 → adding keeps 6, empty groups give 0" },
+    { "itemId": "c4-maths-ch09-t01-i08", "why": "error spot 9 × 1 = 10 → one group of 9 is 9" },
+    { "itemId": "c4-maths-ch09-t01-i04", "why": "predict 9 × 4 from 4 × 9 = 36 → order does not change the answer" },
+    { "itemId": "c4-maths-ch09-t01-i07", "why": "3 × 8 = 24 → 6 × 8 is its double" }
+   ],
+   "remediation": [
+    {
+     "targets": "c4-maths-ch09-t01-m-times-zero",
+     "move": "plates story: 8 plates, nothing on any plate → how many laddoos on the plates; then 8 + 0 beside 8 × 0: adding nothing keeps 8, 8 groups of nothing hold nothing",
+     "say": {
+      "hi": "8 plate hain par har plate khaali hai, toh 8 plate par ek bhi laddoo nahi. 8 + 0 alag hai: wahan 8 mein kuch nahi joda, toh 8 hi raha.",
+      "en": "There are 8 plates but every plate is empty, so the 8 plates hold not a single laddoo. 8 + 0 is different: there nothing is added to 8, so it stays 8."
+     },
+     "simpler": {
+      "hi": "8 khaali plate mein ek bhi laddoo nahi. Par 8 + 0 mein 8 mein kuch nahi juda, toh 8 hi raha.",
+      "en": "8 empty plates hold no laddoo at all. But in 8 + 0 nothing is added to 8, so it stays 8."
+     },
+     
+     "then": {
+      "prompt": {
+       "hi": "6 dibbe hain aur har dibba khaali hai. 6 dibbon mein kul kitne laddoo hain?",
+       "en": "There are 6 boxes and every box is empty. How many laddoos are there in the 6 boxes?"
+      },
+      "key": "0",
+      "accept": ["zero", "shunya", "0 laddoo", "koi nahi", "ek bhi nahi", "none"],
+      "targets": "c4-maths-ch09-t01-m-times-zero",
+      "wrongIfMis": "6",
+      "board": { "template": "compare@1", "params": {"left": {"title": "6 dibbe", "items": ["har dibba khaali"]}, "right": {"title": "Kul laddoo", "items": ["6 dibbon mein"]}} },
+      "why": { "hi": "6 dibbe hain aur har dibba khaali hai, toh 6 dibbon mein kul laddoo 6 × 0 = 0", "en": "there are 6 boxes and every box is empty, so the 6 boxes hold 6 × 0 = 0 laddoos" },
+      "simpler": { "hi": "Har dibba khaali hai. 6 khaali dibbe milkar bhi koi laddoo nahi dete.", "en": "Every box is empty. 6 empty boxes together still give no laddoos." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "6 dibbe", "items": ["har dibba khaali"]}, "right": {"title": "Kul laddoo", "items": ["6 dibbon mein"]}} }
+     }
+    },
+    {
+     "targets": "c4-maths-ch09-t01-m-order-changes",
+     "move": "array of laddoos 4 rows of 6, turned a quarter turn → 6 rows of 4; no laddoo added or taken away → both totals 24",
+     "say": {
+      "hi": "4 × 6 ka array ghumao toh 6 × 4 ban jaata hai. Na koi laddoo juda, na koi hata, toh dono 24 hain.",
+      "en": "Turn the 4 × 6 array and it becomes 6 × 4. No laddoo was added and none was taken away, so both are 24."
+     },
+     "simpler": {
+      "hi": "4 × 6 ko ghumao toh 6 × 4 banta hai. Laddoo utne hi rahe, toh dono 24 hain.",
+      "en": "Turn 4 × 6 around and it is 6 × 4. The laddoos stay the same, so both are 24."
+     },
+     
+     "then": {
+      "prompt": { "hi": "Laddoo ka array: 2 row, har row mein 7. Ghumaya toh 7 row, har row mein 2. Kya kul laddoo badle, haan ya nahi?", "en": "Laddoos in 2 rows of 7, then turned to 7 rows of 2. Did the total change, yes or no?" },
+      "key": "No",
+      "accept": ["nahi", "nahin", "no", "nahi, dono 14 hain", "no, both are 14"],
+      "targets": "c4-maths-ch09-t01-m-order-changes",
+      "wrongIfMis": "Yes",
+      "board": { "template": "compare@1", "params": {"left": {"title": "2 row", "items": ["har row mein 7"]}, "right": {"title": "7 row", "items": ["har row mein 2"]}} },
+      "why": { "hi": "har row mein 7 ki 2 row, ya har row mein 2 ki 7 row, dono mein 14 laddoo hain", "en": "2 rows of 7 or 7 rows of 2, both hold 14 laddoos" },
+      "simpler": { "hi": "Array ko ghumane se sirf row aur column badle. Koi laddoo na hataaya gaya, na joda gaya.", "en": "Turning the array only swapped the rows and columns. No laddoo was taken away or added." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2 row", "items": ["har row mein 7"]}, "right": {"title": "7 row", "items": ["har row mein 2"]}} }
+     }
+    },
+    {
+     "targets": "c4-maths-ch09-t01-m-mult-makes-bigger",
+     "move": "one box with 7 pencils in it: how many groups (1), how many in each (7), how many in all (7) → one group of 7 cannot be more than 7",
+     "say": {
+      "hi": "1 × 7 matlab 7 ka sirf 1 group. Ek dibbe mein 7 pencil hain, toh kul 7 hi hain, zyada nahi.",
+      "en": "1 × 7 means just 1 group of 7. One box has 7 pencils, so there are just 7 in all, not more."
+     },
+     "simpler": {
+      "hi": "1 × 7 matlab 7 ka sirf 1 group. Toh kul 7 hi hain.",
+      "en": "1 × 7 is just 1 group of 7. So there are 7 in all."
+     },
+     
+     "then": {
+      "prompt": {
+       "hi": "1 dibbe mein 6 crayon hain. {friend} ka kehna hai ki 1 × 6 = 7. Kya yeh sahi hai?",
+       "en": "1 box has 6 crayons. {friend} says 1 × 6 = 7. Is that right?"
+      },
+      "key": "No",
+      "accept": ["nahi", "nahin", "no", "nahi, 6 hai", "no, it is 6"],
+      "targets": "c4-maths-ch09-t01-m-mult-makes-bigger",
+      "wrongIfMis": "Yes",
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": { "title": "1 dibbe mein", "items": ["6 crayon"] },
+        "right": { "title": "1 × 6", "items": ["1 dibbe mein 6"] }
+       }
+      },
+      "why": { "hi": "1 dibbe mein 6 crayon matlab kul 6, toh 1 × 6 = 6", "en": "1 box of 6 crayons is 6 in all, so 1 × 6 = 6" },
+      "simpler": { "hi": "1 dibbe mein 6 crayon hain, bas itne hi. 1 se guna karne par kuch nahi judta.", "en": "1 box has 6 crayons, just that many. Multiplying by 1 adds nothing." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 dibbe mein", "items": ["6 crayon"]}, "right": {"title": "1 × 6", "items": ["1 dibbe mein 6"]}} }
+     }
+    }
+   ],
+   "bridgeToNext": { "hi": "Ab saare pahade ek saath guna chart mein dekhenge. Wahan har row mein ek pattern chhupa hai.", "en": "Next we see all the tables together in the multiplication chart. Every row there hides a pattern.", "simpler": { "hi": "Ab guna chart dekhenge. Usme saare pahade ek saath hain.", "en": "Now we look at the multiplication chart. It has all the tables together." } }
+  },
+  {
+   "skillId": "c4-maths-ch09-t01-s3",
+   "hook": {
+    "convey": "the multiplication chart is full of patterns: along a row each next fact grows by the row's number; the 5s end in 5 or 0; the 4s are double the 2s; in the 9s the tens go up and the ones go down",
+    "interestSlots": [
+     {
+      "interest": "music",
+      "use": {
+       "hi": "Pahada ek gaana jaisa hai: 5, 10, 15, 20, har baar wahi taal. Aaj guna chart mein aisi hi music jaisi taal dhoondhenge.",
+       "en": "A times table is like a song: 5, 10, 15, 20, the same beat every time. Today we find beats like this music in the multiplication chart."
+      }
+     },
+     {
+      "interest": "games",
+      "use": {
+       "hi": "Guna chart ek game jaisa hai: pattern pakdo toh agla number bina guna kiye bata sakte ho.",
+       "en": "The multiplication chart is like a game: catch the pattern and you can tell the next number without multiplying."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "in the 5 row: 5 × 4 = 20 → the next fact 5 × 5 is 20 + 5 = 25, not 20 + 1; along a row each next fact grows by the row's own number",
+     "mustSay": [
+      { "hi": "agla fact", "en": "the next fact" },
+      { "hi": "5 aur jodo", "en": "add 5 more" }
+     ],
+     "board": { "template": "number-line-hop@1", "params": { "start": 20, "hops": [5] } },
+     "point": {
+      "hi": "5 ke pahade mein 5 × 4 = 20 hai. Agla fact 5 × 5 hai, toh 1 nahi, 5 aur jodo: 20 + 5 = 25. Pahade mein agla number utna badhta hai jitne ka pahada hai.",
+      "en": "In the 5 table, 5 × 4 = 20. The next fact is 5 × 5, so add 5 more, not 1: 20 + 5 = 25. In a table the next number grows by the table's own number."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "5 × 8 = 40 hai. Isse socho, 5 × 9 kitna hoga?",
+       "en": "5 × 8 = 40. Using this, what is 5 × 9?"
+      },
+      "key": "45",
+      "accept": ["paintaalees", "paintalis", "forty-five", "forty five"],
+      "targets": "c4-maths-ch09-t01-m-next-fact-plus-one",
+      "wrongIfMis": "41",
+      "why": { "hi": "5 ke pahade mein agla fact 5 badhta hai: 40 + 5 = 45", "en": "in the 5 table the next fact grows by 5: 40 + 5 = 45" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "5 × 8", "items": ["40"]}, "right": {"title": "5 × 9", "items": ["agla fact"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "5 × 8", "items": ["40"]}, "right": {"title": "5 × 9", "items": ["agla fact"]}} }
+     },
+     "simpler": { "hi": "5 ke pahade mein har agla number 5 badhta hai, 1 nahi. Toh 40 mein 5 jodo.", "en": "In the 5 table each next number grows by 5, not 1. So add 5 to 40." }
+    },
+    {
+     "id": "e2",
+     "convey": "the 5 table 5, 10, 15, 20, 25, 30, 35, 40 → last digit goes 5, 0, 5, 0; 5 × an odd number ends in 5, 5 × an even number ends in 0",
+     "mustSay": [
+      { "hi": "aakhri ank", "en": "last digit" },
+      { "hi": "5 ya 0", "en": "5 or 0" }
+     ],
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "5 ka pahada", "items": ["5, 10, 15, 20", "25, 30, 35, 40"] },
+       "right": { "title": "Aakhri ank", "items": ["5, 0, 5, 0"] }
+      }
+     },
+     "point": {
+      "hi": "5 ka pahada dekho: 5, 10, 15, 20, 25, 30, 35, 40. Aakhri ank baari-baari se 5, 0, 5, 0 aata hai. 5 ko odd number se guna karo toh aakhri ank 5, even number se karo toh 0.",
+      "en": "Look at the 5 table: 5, 10, 15, 20, 25, 30, 35, 40. The last digit goes 5, 0, 5, 0 in turn. Multiply 5 by an odd number and the last digit is 5; by an even number and it is 0."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Bina guna kiye batao: kya 5 × 7 ka jawab 0 par khatam hoga, haan ya nahi?",
+       "en": "Without multiplying, tell me: will the answer to 5 × 7 end in 0, yes or no?"
+      },
+      "key": "No",
+      "accept": ["nahi", "nahin", "no", "nahi, 5 par", "no, it ends in 5"],
+      "why": { "hi": "7 odd hai, aur 5 ka pahada odd number par aakhri ank 5 deta hai", "en": "7 is odd, and the 5 table gives a last digit of 5 for an odd number" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "5 ka pahada", "items": ["aakhri ank 5, 0, 5, 0"]}, "right": {"title": "7", "items": ["odd"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "5 ka pahada", "items": ["aakhri ank 5, 0, 5, 0"]}, "right": {"title": "7", "items": ["odd"]}} }
+     },
+     "simpler": { "hi": "5 ko odd number se guna karo toh aakhri ank 5 aata hai, even se karo toh 0. Ab dekho 7 odd hai ya even.", "en": "5 times an odd number ends in 5, and 5 times an even number ends in 0. Now see whether 7 is odd or even." }
+    },
+    {
+     "id": "e3",
+     "convey": "the 2 table 2, 4, 6, 8 beside the 4 table 4, 8, 12, 16 → every number in the 4 table is double the 2 table's number in the same place",
+     "mustSay": [
+      { "hi": "double", "en": "double" },
+      { "hi": "4 ka pahada", "en": "the 4 table" }
+     ],
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "2 ka pahada", "items": ["2, 4, 6, 8"] },
+       "right": { "title": "4 ka pahada", "items": ["4, 8, 12, 16"] }
+      }
+     },
+     "point": {
+      "hi": "2 ka pahada: 2, 4, 6, 8. 4 ka pahada: 4, 8, 12, 16. 4 ke pahade ka har number, 2 ke pahade ke number ka double hai.",
+      "en": "The 2 table: 2, 4, 6, 8. The 4 table: 4, 8, 12, 16. Every number in the 4 table is double the number in the 2 table."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "2 × 9 = 18 hai. Toh 4 × 9 kitna hoga?",
+       "en": "2 × 9 = 18. So what is 4 × 9?"
+      },
+      "key": "36",
+      "accept": ["chhattees", "chhatees", "thirty-six", "thirty six"],
+      "why": { "hi": "4 × 9, 2 × 9 ka double hai: 18 + 18 = 36", "en": "4 × 9 is double 2 × 9: 18 + 18 = 36" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2 × 9", "items": ["18"]}, "right": {"title": "4 × 9", "items": ["2 × 9 ka double"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "2 × 9", "items": ["18"]}, "right": {"title": "4 × 9", "items": ["2 × 9 ka double"]}} }
+     },
+     "simpler": { "hi": "4 ke pahade ka har number 2 ke pahade ka double hai. Toh 18 ka double karo.", "en": "Every number in the 4 table is double the one in the 2 table. So double 18." }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "9 ka pahada: 9, 18, 27, 36, 45. Yeh 9 × 1 se 9 × 5 tak hain. Ankon ka pattern dhoondho aur bina guna kiye 9 × 6 likho.",
+     "en": "The 9 table: 9, 18, 27, 36, 45. These are 9 × 1 to 9 × 5. Find the pattern in the digits and write 9 × 6 without multiplying."
+    }, "simpler": { "hi": "9 ke pahade mein har baar dahaai ka ank 1 badhta hai aur ekai ka ank 1 ghatta hai. 45 ke baad bhi yahi karo.", "en": "In the 9 table, each time the tens digit goes up by 1 and the ones digit goes down by 1. Do the same after 45." },
+    "givens": [
+     { "hi": "9 × 1 se 9 × 5 tak: 9, 18, 27, 36, 45", "en": "9 × 1 to 9 × 5: 9, 18, 27, 36, 45" }
+    ],
+    "find": { "hi": "pattern se 9 × 6", "en": "9 × 6 from the pattern" },
+    "steps": [
+     {
+      "do": { "hi": "Pehle dahai ke ank dekho: 0, 1, 2, 3, 4", "en": "First look at the tens digits: 0, 1, 2, 3, 4" },
+      "result": "dahai ka ank har baar 1 badhta hai",
+      "why": { "hi": "9 jodna matlab 10 jodna aur 1 ghatana, toh dahai 1 badhti hai", "en": "adding 9 is adding 10 and taking 1 away, so the tens go up by 1" },
+      "simpler": { "hi": "Dahai ke ank dekho: 0, 1, 2, 3, 4. Har baar dahai ka ank 1 badhta hai.", "en": "Look at the tens digits: 0, 1, 2, 3, 4. Each time the tens digit goes up by 1." }
+     },
+     {
+      "do": { "hi": "Ab ikai ke ank dekho: 9, 8, 7, 6, 5", "en": "Now look at the ones digits: 9, 8, 7, 6, 5" },
+      "result": "ikai ka ank har baar 1 ghatta hai",
+      "why": { "hi": "har baar wahi 1 ghataya jaata hai", "en": "that same 1 is taken away each time" },
+      "simpler": { "hi": "Ikai ke ank dekho: 9, 8, 7, 6, 5. Har baar ikai ka ank 1 ghatta hai.", "en": "Look at the ones digits: 9, 8, 7, 6, 5. Each time the ones digit goes down by 1." }
+     }
+    ],
+    "yourStep": {
+     "prompt": {
+      "hi": "Ab 45 ke baad dahai 1 badhao aur ikai 1 ghatao. 9 × 6 kitna hai?",
+      "en": "Now after 45, raise the tens by 1 and lower the ones by 1. What is 9 × 6?"
+     },
+     "key": "54",
+     "accept": ["chauvan", "chauwan", "fifty-four", "fifty four"],
+     "targets": "c4-maths-ch09-t01-m-next-fact-plus-one",
+     "wrongIfMis": "46",
+     "simpler": { "hi": "45 ke dahai wale ank mein 1 jodo. Aur ikai wale ank mein se 1 ghatao.", "en": "Add 1 to the tens digit of 45. And take 1 from the ones digit." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "9 ka pahada", "items": ["36, 45"]}, "right": {"title": "Ank", "items": ["dahai +1", "ikai −1"]}} }, "why": { "hi": "9 ka pahada 36, 45 mein dahai ank 1 badhta, ikai ank 1 ghatta hai, toh 45 ke baad 54", "en": "the 9 table's 36, 45: tens go up 1 and ones down 1, so after 45 comes 54" }
+    },
+    "answer": { "hi": "9 × 6 = 54 hai", "en": "9 × 6 = 54" },
+    "why": { "hi": "9 ka pahada 36, 45 mein dahai ank 1 badhta, ikai ank 1 ghatta hai, toh 45 ke baad 54", "en": "the 9 table's 36, 45: tens go up 1 and ones down 1, so after 45 comes 54" },
+    "board": { "template": "compare@1", "params": {"left": {"title": "9 ka pahada", "items": ["36, 45"]}, "right": {"title": "Ank", "items": ["dahai +1", "ikai −1"]}} }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "4 ke pahade mein 4 × 6 = 24 hai. Agla fact 4 × 7 hai. 4 × 7 kitna hoga?",
+      "en": "In the 4 table, 4 × 6 = 24. The next fact is 4 × 7. What is 4 × 7?"
+     },
+     "key": "28",
+     "accept": ["athaais", "atthais", "twenty-eight", "twenty eight"],
+     "targets": "c4-maths-ch09-t01-m-next-fact-plus-one",
+     "wrongIfMis": "25",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "4 × 6", "items": ["24"] },
+       "right": { "title": "Agla fact", "items": ["4 × 7"] }
+      }
+     },
+     "why": { "hi": "4 ke pahade mein agla number 4 badhta hai: 24 + 4 = 28", "en": "in the 4 table the next number grows by 4: 24 + 4 = 28" },
+     "simpler": { "hi": "4 ke pahade mein agla number 4 badhta hai. Toh 24 mein 4 jodo.", "en": "In the 4 table the next number grows by 4. So add 4 to 24." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4 × 6", "items": ["24"]}, "right": {"title": "Agla fact", "items": ["4 × 7"]}} }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Guna chart ki 3 wali row: 3, 6, 9, 12. 12 ke baad agla number kya hai?",
+      "en": "The 3 row of the multiplication chart: 3, 6, 9, 12. What is the next number after 12?"
+     },
+     "key": "15",
+     "accept": ["pandrah", "pandrah", "fifteen"],
+     "targets": "c4-maths-ch09-t01-m-next-fact-plus-one",
+     "wrongIfMis": "13",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "3 wali row", "items": ["3, 6, 9, 12"] },
+       "right": { "title": "12 ke baad", "items": ["agla number"] }
+      }
+     },
+     "why": { "hi": "3 wali row har baar 3 badhti hai, toh 12 ke baad agla number 12 + 3 = 15", "en": "the 3 row grows by 3 each time, so the next number after 12 is 12 + 3 = 15" },
+     "simpler": { "hi": "Yeh row har baar 3 badhti hai. Toh 12 mein 3 jodo.", "en": "This row grows by 3 each time. So add 3 to 12." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 wali row", "items": ["3, 6, 9, 12"]}, "right": {"title": "12 ke baad", "items": ["agla number"]}} }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "Cricket mein ek over mein 6 ball hoti hain. 7 over mein 42 ball hui. 8 over mein kitni ball hongi?",
+      "en": "In cricket one over has 6 balls. 7 overs had 42 balls. How many balls are there in 8 overs?"
+     },
+     "key": "48",
+     "accept": ["adtaalees", "artalis", "forty-eight", "forty eight", "48 ball", "48 balls"],
+     "targets": "c4-maths-ch09-t01-m-next-fact-plus-one",
+     "wrongIfMis": "43",
+     "board": { "template": "compare@1", "params": {"left": {"title": "7 over", "items": ["42 ball"]}, "right": {"title": "8 over", "items": ["ek over aur"]}} },
+     "why": { "hi": "7 over mein 42 ball, aur ek over aur matlab 6 ball aur: 42 + 6 = 48", "en": "7 overs had 42 balls, and one over more means 6 balls more: 42 + 6 = 48" },
+     "simpler": { "hi": "Ek over aur matlab 6 ball aur. Toh 42 mein 6 jodo.", "en": "One more over means 6 more balls. So add 6 to 42." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "7 over", "items": ["42 ball"]}, "right": {"title": "8 over", "items": ["ek over aur"]}} }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c4-maths-ch09-t01-i11", "why": "predict whether 5 × 9 ends in 0 or 5 → the 5s pattern" },
+    { "itemId": "c4-maths-ch09-t01-rl-h3", "why": "7 row: 7 × 7 = 49 → 7 × 8 by adding 7, not 1" },
+    { "itemId": "c4-maths-ch09-t01-i19", "why": "6 × 7 = 42 → 6 × 8 by adding one more 6" }
+   ],
+   "remediation": [
+    {
+     "targets": "c4-maths-ch09-t01-m-next-fact-plus-one",
+     "move": "3 equal groups of 6 = 18 → one more in each of the 3 groups → 3 new → the next fact in the 3 table is +3, not +1",
+     "say": { "hi": "Agla fact pichhle se utna badhta hai jitne group hain, 1 nahi. 3 group hon, toh har group mein ek aur aane se 3 naye judte hain.", "en": "The next fact grows by as many as there are groups, not by 1. With 3 groups, one more in each group adds 3 new ones." },
+     "simpler": { "hi": "Har group mein ek aur aaya, toh 3 group mein 3 naye aaye. Isliye agla fact 3 badhta hai, 1 nahi.", "en": "Each group got one more, so 3 groups got 3 new. So the next fact grows by 3, not 1." },
+     
+     "then": {
+      "prompt": {
+       "hi": "3 × 6 = 18 hai. Toh 3 × 7 kitna hoga?",
+       "en": "3 × 6 = 18. So what is 3 × 7?"
+      },
+      "key": "21",
+      "accept": ["ikkees", "ikkis", "twenty-one", "twenty one"],
+      "targets": "c4-maths-ch09-t01-m-next-fact-plus-one",
+      "wrongIfMis": "19",
+      "board": { "template": "equal-groups@1", "params": { "groups": 3, "each": 7, "hideResult": true } },
+      "why": { "hi": "3 ke pahade mein agla number 3 badhta hai: 18 + 3 = 21", "en": "in the 3 table the next number grows by 3: 18 + 3 = 21" },
+      "simpler": { "hi": "3 ke pahade mein agla number 3 badhta hai. Toh 18 mein 3 jodo.", "en": "In the 3 table the next number grows by 3. So add 3 to 18." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 3, "each": 7} }
+     }
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ]
+}

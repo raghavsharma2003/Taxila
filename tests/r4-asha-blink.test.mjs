@@ -3,14 +3,18 @@
 // (a phrase pause, a gaze shift) MOVE the next blink earlier, never add one. Before the fix the speaking face blinked
 // 29.4/min (PuppetDriver, Diya's 24 lines at rate 0, n = 8 seeds); an Asha clip read 46/min over 15 s. Driven here by
 // Diya's committed battery (evals/face-puppet/out/diya, rate -35) through the real PuppetDriver path.
-import test from "node:test";
+import test, { after, before } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
-globalThis.performance ??= { now: () => Date.now() };
+// npm test runs every file in ONE process: a performance stand-in (only where the runtime has none) is installed for this
+// file's tests and removed after them (round 7 isolation ratchet), never left behind at module level.
+const hadPerf = typeof globalThis.performance !== "undefined";
+before(() => { if (!hadPerf) globalThis.performance = { now: () => Date.now() }; });
+after(() => { if (!hadPerf) delete globalThis.performance; });
 const { PuppetDriver } = await import("../src/face-puppet/driver.ts");
 const { Behaviour } = await import("../src/avatar/behaviour.ts");
-const DIR = new URL("../evals/face-puppet/out/diya/", import.meta.url).pathname;
+const DIR = new URL("./fixtures/eval-results/face-puppet/out/diya/", import.meta.url).pathname;
 const SR = 24000, FPS = 60;
 
 function speech() {

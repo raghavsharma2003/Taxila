@@ -1,0 +1,60 @@
+From: Studio (C1, claude/r4-content)
+Subject: [PATCH 018] harness: the beat of the page up, as the seam keeps it (director15 S9b, c6 stuck 18)
+
+Supersedes the S9b half of 017. 017 no longer applies: Brain's own v6.6 P4 already drops the picture request on later parts,
+so its S9 half is in. Its S9b half (shownKind) never reached the harness, so the run's harness never told the preselect that
+a remediation's board was up.
+
+Root cause of director15 c6 stuck 18 ("picture dikhao" over the remediation's lettered hexagon, then "Screen par ek
+aakaar hai…" over the then-card's pentagon): the harness's own model of the seam. evals/hybrid-side-by-side.mjs passes
+the preselect avoid and avoidRef but no avoidKind. The run's tree, 2e9664b34, has shownKind 0 times.
+- Production: replayed through Brain's planTurn (tests/fixtures/replay.mjs, the director15 lesson) and Studio's seam,
+  row 16 reaches the seam as scriptBeat.kind "remediation". Row 18's preselect offers "unrolled", and the turn draws the
+  hexagon laid straight (unrolled@1), then the pentagon card.
+- The harness's bookkeeping on the same replay: row 18 → the card's measured@1, no second view (the run's row). With this
+  patch → unrolled.
+
+This patch keeps shownKind beside shownRef, exactly as seam.js keeps wbPrevKind: the take's lastKind, else its
+scriptBeat.kind; a paged turn's lastKind; none when no card ref is up. It passes avoidKind to the preselect.
+Pinned: tests/r8-director15.test.mjs.
+
+diff --git a/evals/hybrid-side-by-side.mjs b/evals/hybrid-side-by-side.mjs
+index 5c4599f8e..c449e74af 100644
+--- a/evals/hybrid-side-by-side.mjs
++++ b/evals/hybrid-side-by-side.mjs
+@@ -188,6 +188,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
+   // LAST page of a paged turn (L.wbPrevRef / L.wbPrevPage). Without it the preselect saw the first page of row 16 as up, the
+   // circle, and the picture over the card's bar re-drew the bar: no second view)
+   let shownRef = null;
++  // (Studio director15 S9b, c6 stuck 18: and the beat that drew it, as seam.js keeps wbPrevKind — a remediation's board up gets
++  // its own second view on a picture ask; without it the preselect never saw "remediation" and the card's board was re-drawn)
++  let shownKind = null;
+   for (let i = 0; i < MAX; i++) {
+     let text = lines?.[i];
+     let leaving = false;
+@@ -254,7 +257,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
+         // (preselect caches its pick by intentId = lessonId:wb:turn: one id per lesson, never the harness's shared LESSON.id)
+         // (one id per lesson, Studio on director9: a persona's lesson keeps its own prefix; lines are empty for the reactive child)
+         const ask = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-${persona ?? lines.join("|").length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
+-        const pick = preselect(ask, { kit, ...(shownScript ? { avoid: shownScript } : {}), ...(shownRef ? { avoidRef: shownRef } : {}) });
++        const pick = preselect(ask, { kit, ...(shownScript ? { avoid: shownScript } : {}), ...(shownRef ? { avoidRef: shownRef } : {}), ...(shownKind ? { avoidKind: shownKind } : {}) });
+         pickAsk = pick ? ask : null;
+         if (process.env.HARNESS_DEBUG_SCREEN) console.error("[screen]", kit.topicId, JSON.stringify({ intent: ask.intent, item: item?.id ?? null, phase: next.phase, pick: pick ? pick.template ?? pick.by : null }));
+         if (pick) {
+@@ -307,6 +310,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
+         shownScript = took.script ?? shownScript;
+         // (as seam.js drawn(): the card's ref when the card's own board was drawn; a second view names no card)
+         shownRef = took.lastRef !== undefined ? took.lastRef : took.by === "script" && !took.altView ? refKey(pickAsk.intent.boardRef) : null;
++        shownKind = !shownRef ? null : took.lastKind !== undefined ? took.lastKind : pickAsk.intent.scriptBeat?.kind ?? null;
+         slot = { artifact: { ...(slot?.artifact ?? {}), screen: took.screen } };
+       } else { screen = { ...screen, drawn: "preselect" }; }
+     }
+@@ -355,7 +359,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
+         try { pg = pagesBoard({ ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:pg` }, line: { ...askF.line, text: String(reply) } }, { kit, ...(shownScript ? { keep: shownScript } : {}), ...(shownRef ? { keepRef: shownRef } : {}) }); } catch { pg = null; }
+         unpaged = pg ? 0 : 1;
+         // (S7: a paged turn leaves its LAST page up — the next turn's second view is built from that page, as the seam does)
+-        if (pg?.script) { shownScript = pg.lastPage ?? pg.script; shownRef = pg.lastRef ?? null; }
++        if (pg?.script) { shownScript = pg.lastPage ?? pg.script; shownRef = pg.lastRef ?? null; shownKind = shownRef ? pg.lastKind ?? null : null; }
+         droppedPages = Math.max(0, pagesDroppedCount() - d0);
+         const text = String(reply).replace(/\s+/g, " ").trim();
+         segs = parts.map((pt, i) => {

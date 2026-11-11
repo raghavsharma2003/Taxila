@@ -30,7 +30,8 @@
      "title": "Use 'can' and 'can't' with the plain action word (We can lift, not We can lifts)",
      "prereqSkillIds": [
       "c4-english-ch01-t01-s3"
-     ]
+     ],
+     "kind": "grammar"
     }
    ],
    "expectations": [
@@ -184,7 +185,15 @@
       "solverAnswer": "Yes, they rhyme (same end sound /uː/)",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 2.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch01-t01-i03",
@@ -208,7 +217,16 @@
       "solverAnswer": "A waterfall",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch01-t01-p1"
     },
     {
      "id": "c4-english-ch01-t01-i04",
@@ -235,15 +253,24 @@
       "solverAnswer": "Because ten sticks together are much stronger than one stick alone",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch01-t01-p1"
     },
     {
      "id": "c4-english-ch01-t01-i05",
      "skillId": "c4-english-ch01-t01-s2",
      "kind": "predict",
      "difficulty": 2,
-     "prompt_en": "Riya cannot lift a heavy box of books alone. Three friends come to help her. What will happen next?",
-     "prompt_hi": "Riya akele books ka bhaari box nahi utha paati. Uske teen dost help karne aate hain. Ab aage kya hoga?",
+     "prompt_en": "{friendF} cannot lift a heavy box of books alone. Three friends come to help her. What will happen next?",
+     "prompt_hi": "{friendF} akele books ka bhaari box nahi utha paati. Uske 3 dost help karne aate hain. Ab aage kya hoga?",
      "answer": "They will lift the box together",
      "acceptable": [
       "they lift it together",
@@ -261,7 +288,16 @@
       "solverAnswer": "They will lift the box together",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 2.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false,
+     "passageId": "c4-english-ch01-t01-p1"
     },
     {
      "id": "c4-english-ch01-t01-i06",
@@ -286,7 +322,15 @@
       "solverAnswer": "One stick or one drop is weak, but many together are strong. When we work together we can do hard things.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch01-t01-i07",
@@ -309,7 +353,15 @@
       "solverAnswer": "bundle",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch01-t01-i08",
@@ -332,7 +384,15 @@
       "solverAnswer": "together",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch01-t01-i09",
@@ -357,7 +417,15 @@
       "solverAnswer": "My friends and I play cricket together.",
       "agrees": true,
       "note": "Open item; key is a sensible rubric."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch01-t01-i10",
@@ -382,7 +450,15 @@
       "solverAnswer": "Ten ants can carry a leaf.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch01-t01-i11",
@@ -406,7 +482,15 @@
       "solverAnswer": "can't",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch01-t01-i12",
@@ -433,7 +517,16 @@
       "solverAnswer": "No. It means that together we can find new chances and do things we cannot do alone.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch01-t01-p1"
     },
     {
      "id": "c4-english-ch01-t01-i13",
@@ -459,7 +552,15 @@
       "solverAnswer": "Together we can clean the park.",
       "agrees": true,
       "note": "Open item; key is a sensible rubric."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch01-t01-rl-o2",
@@ -592,7 +693,12 @@
     "planting trees in the colony",
     "tug of war on sports day"
    ],
-   "passage": "One small stick will snap in two,\nTie ten together, strong and true!\nOne raindrop alone is very small,\nBut many drops make a waterfall.\nHold my hand and I'll hold yours,\nTogether we can open doors."
+   "passages": [
+    {
+     "id": "c4-english-ch01-t01-p1",
+     "text": "One small stick will snap in two,\nTie ten together, strong and true!\nOne raindrop alone is very small,\nBut many drops make a waterfall.\nHold my hand and I'll hold yours,\nTogether we can open doors."
+    }
+   ]
   },
   {
    "topicId": "c4-english-ch02-t01",
@@ -620,7 +726,8 @@
      "title": "Tell a story in the past: went, came, found, ran (irregular past forms)",
      "prereqSkillIds": [
       "c4-english-ch02-t01-s3"
-     ]
+     ],
+     "kind": "grammar"
     },
     {
      "id": "c4-english-ch02-t01-s5",
@@ -758,7 +865,8 @@
       "note": "Key correct."
      },
      "ge": 2,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c4-english-ch02-t01-p1"
     },
     {
      "id": "c4-english-ch02-t01-i02",
@@ -782,7 +890,16 @@
       "solverAnswer": "Meena",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch02-t01-p1"
     },
     {
      "id": "c4-english-ch02-t01-i03",
@@ -807,7 +924,16 @@
       "solverAnswer": "They heard the tinkle of her bell and followed the sound to her",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch02-t01-p1"
     },
     {
      "id": "c4-english-ch02-t01-i04",
@@ -832,7 +958,16 @@
       "solverAnswer": "They might not find her in the dark",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch02-t01-p1"
     },
     {
      "id": "c4-english-ch02-t01-i05",
@@ -858,7 +993,16 @@
       "solverAnswer": "Worried, because Gauri was lost and it was getting dark",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch02-t01-p1"
     },
     {
      "id": "c4-english-ch02-t01-i06",
@@ -882,7 +1026,15 @@
       "solverAnswer": "Tinkle is a sound (a bell); twinkle is a light (a star)",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch02-t01-i07",
@@ -908,7 +1060,15 @@
       "solverAnswer": "(a) a group of trees",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch02-t01-i08",
@@ -934,7 +1094,16 @@
       "solverAnswer": "They have sharp thorns that prick",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false,
+     "passageId": "c4-english-ch02-t01-p1"
     },
     {
      "id": "c4-english-ch02-t01-i09",
@@ -959,7 +1128,15 @@
       "solverAnswer": "The friends found Gauri in the bushes.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch02-t01-i10",
@@ -983,7 +1160,15 @@
       "solverAnswer": "ran",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch02-t01-i11",
@@ -1008,7 +1193,16 @@
       "solverAnswer": "Stuck in thorny bushes in the mango grove",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch02-t01-p1"
     },
     {
      "id": "c4-english-ch02-t01-i12",
@@ -1036,7 +1230,16 @@
       "solverAnswer": "'he' is wrong for Meena: it should be 'she' (or 'they', since in the story all the friends ran)",
       "agrees": true,
       "note": "FIXED: speaker changed from Arif to a neutral 'Listen to this sentence'; 'they ran' fixes added to answer/acceptable. | prior: Key 'she' is right for the he/she target, but in the passage 'the friends ran towards the sound', so 'then they ran to the grove' is also a correct fix and should be in acceptable. Also odd framing: Arif is one of the friends who ran, so a speaker like Gopu's grandfather or a narrator would read more naturally."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch02-t01-p1"
     },
     {
      "id": "c4-english-ch02-t01-i13",
@@ -1061,7 +1264,15 @@
       "solverAnswer": "First Gauri did not come home. Next the friends went to look for her. Then Meena heard the bell. At last they found Gauri and took her home.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch02-t01-i14",
@@ -1085,7 +1296,15 @@
       "solverAnswer": "I liked the part when they found Gauri because the bell helped them.",
       "agrees": true,
       "note": "FIXED: unrelated Grandfather quote dropped; the 'I liked ... because ...' frame now in both prompts; hint 3 no longer repeats the frame. | prior: Open item, rubric fine. Minor: the prompt_en opening sentence (Grandfather's quote) is unrelated to the question asked; prompt_hi adds the 'I liked ... because ...' frame that prompt_en does not give."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch02-t01-rl-o1",
@@ -1251,7 +1470,12 @@
     "searching for a lost cricket ball",
     "a school bell"
    ],
-   "passage": "Gopu lived in a small village near a river. His grandfather's cows wore little bells, and Gopu loved their tinkling sound. One evening, the cow Gauri did not come home. Gopu and his friends Meena and Arif went to look for her. It was getting dark. Suddenly Meena said, 'Shh! Listen!' From the mango grove came a soft tinkle, tinkle. The friends ran towards the sound and found Gauri stuck in some thorny bushes. Together they freed her and walked her home. Grandfather smiled. 'Those bells are not just music,' he said. 'Today they helped you find a friend.'"
+   "passages": [
+    {
+     "id": "c4-english-ch02-t01-p1",
+     "text": "Gopu lived in a small village near a river. His grandfather's cows wore little bells, and Gopu loved their tinkling sound. One evening, the cow Gauri did not come home. Gopu and his friends Meena and Arif went to look for her. It was getting dark. Suddenly Meena said, 'Shh! Listen!' From the mango grove came a soft tinkle, tinkle. The friends ran towards the sound and found Gauri stuck in some thorny bushes. Together they freed her and walked her home. Grandfather smiled. 'Those bells are not just music,' he said. 'Today they helped you find a friend.'"
+    }
+   ]
   },
   {
    "topicId": "c4-english-ch03-t01",
@@ -1272,7 +1496,8 @@
      "title": "Give and follow safety instructions with 'Do' and 'Don't' + the plain action word",
      "prereqSkillIds": [
       "c4-english-ch03-t01-s2"
-     ]
+     ],
+     "kind": "grammar"
     },
     {
      "id": "c4-english-ch03-t01-s4",
@@ -1402,7 +1627,16 @@
       "solverAnswer": "On the footpath",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 1.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 2,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": true,
+     "passageId": "c4-english-ch03-t01-p1"
     },
     {
      "id": "c4-english-ch03-t01-i02",
@@ -1429,7 +1663,8 @@
       "note": "Key correct."
      },
      "ge": 0.5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c4-english-ch03-t01-p1"
     },
     {
      "id": "c4-english-ch03-t01-i03",
@@ -1453,7 +1688,16 @@
       "solverAnswer": "Look right, look left, and look right again",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch03-t01-p1"
     },
     {
      "id": "c4-english-ch03-t01-i04",
@@ -1478,7 +1722,15 @@
       "solverAnswer": "Because a vehicle may have come from the right (the nearest side in India) while we were looking left",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch03-t01-i05",
@@ -1501,7 +1753,15 @@
       "solverAnswer": "A helmet",
       "agrees": true,
       "note": "FIXED: 'to save your head' changed to 'to protect your head'. | prior: Minor English: 'to save your head' is an Indianism; prefer 'to protect your head'."
-     }
+     },
+     "ge": 2,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 2.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch03-t01-i06",
@@ -1525,7 +1785,15 @@
       "solverAnswer": "A footpath is for people walking; a road is for vehicles",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch03-t01-i07",
@@ -1550,7 +1818,15 @@
       "solverAnswer": "Because it has black and white stripes like a zebra",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch03-t01-i08",
@@ -1575,7 +1851,15 @@
       "solverAnswer": "Don't play on the road.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch03-t01-i09",
@@ -1600,7 +1884,15 @@
       "solverAnswer": "Always wear a seat belt in a car.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch03-t01-i10",
@@ -1625,7 +1917,15 @@
       "solverAnswer": "Don't put your hand out of the window.",
       "agrees": true,
       "note": "FIXED: prompt_en loosened to 'Do', 'Don't' or an action word, matching prompt_hi and the bare-imperative examples in answer/acceptable. | prior: Inconsistent item: prompt_en says 'Start with Do or Don't', but prompt_hi adds 'ya seedha action word se' (or start directly with an action word), and the key/acceptable include 'Sit down when the bus moves.' and 'Wait for the bus to stop.', which do not start with Do/Don't. Either loosen prompt_en to 'Start with Don't or an action word' or remove the bare-imperative examples and the extra clause in prompt_hi."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch03-t01-i11",
@@ -1651,7 +1951,15 @@
       "solverAnswer": "Do not run after it. Stay on the footpath and ask an adult to get it.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch03-t01-i12",
@@ -1676,7 +1984,15 @@
       "solverAnswer": "Wait and don't start crossing, because yellow means the light is about to change",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch03-t01-i13",
@@ -1684,7 +2000,7 @@
      "kind": "teachback",
      "difficulty": 3,
      "prompt_en": "Teach your little sister three road rules before she goes to school.",
-     "prompt_hi": "Apni chhoti behen ke school jaane se pehle use teen road rules sikhao.",
+     "prompt_hi": "Apni chhoti behen ke school jaane se pehle use 3 road rules sikhao.",
      "answer": "Walk on the footpath; cross at the zebra crossing after looking right, left and right again; never play on the road",
      "acceptable": [
       "walk on the footpath",
@@ -1702,7 +2018,15 @@
       "solverAnswer": "Walk on the footpath. Cross at the zebra crossing after looking right, left and right again. Never play on the road.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch03-t01-rl-o1",
@@ -1898,7 +2222,12 @@
     "a cycle ride in the colony",
     "Diwali shopping on a busy road"
    ],
-   "passage": "Roads are busy places. Cars, buses, bikes and autos move fast. To stay safe, walk on the footpath. Cross the road only at a zebra crossing. Before you cross, look right, look left and look right again. At a traffic signal, red means stop, yellow means get ready, and green means go. Always wear a helmet on a scooter and a seat belt in a car. Never play or run on the road."
+   "passages": [
+    {
+     "id": "c4-english-ch03-t01-p1",
+     "text": "Roads are busy places. Cars, buses, bikes and autos move fast. To stay safe, walk on the footpath. Cross the road only at a zebra crossing. Before you cross, look right, look left and look right again. At a traffic signal, red means stop, yellow means get ready, and green means go. Always wear a helmet on a scooter and a seat belt in a car. Never play or run on the road."
+    }
+   ]
   },
   {
    "topicId": "c4-english-ch04-t01",
@@ -1926,7 +2255,8 @@
      "title": "Talk about habits with 'When I ..., I ...' and add -s for he/she (When she reads, she reads)",
      "prereqSkillIds": [
       "c4-english-ch04-t01-s3"
-     ]
+     ],
+     "kind": "grammar"
     }
    ],
    "expectations": [
@@ -1946,16 +2276,16 @@
       "Adds -s for I and you instead (I plays)"
      ],
      "diagnostic": {
-      "prompt_en": "Which is right: 'Asha plays with her friends every day.' or 'Asha play with her friends every day.'?",
-      "prompt_hi": "Roz ki aadat ki baat hai. Kaunsa sahi hai: 'Asha plays with her friends every day.' ya 'Asha play with her friends every day.'?",
+      "prompt_en": "Which is right: '{friendF} plays with her friends every day.' or '{friendF} play with her friends every day.'?",
+      "prompt_hi": "Roz ki aadat ki baat hai. Kaunsa sahi hai: '{friendF} plays with her friends every day.' ya '{friendF} play with her friends every day.'?",
       "options": [
        {
-        "text": "Asha plays with her friends every day.",
+        "text": "{friendF} plays with her friends every day.",
         "misconceptionId": null,
         "correct": true
        },
        {
-        "text": "Asha play with her friends every day.",
+        "text": "{friendF} play with her friends every day.",
         "misconceptionId": "c4-english-ch04-t01-m-third-person-s",
         "correct": false
        }
@@ -2074,7 +2404,15 @@
       "solverAnswer": "Yes, they rhyme",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 2.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch04-t01-i03",
@@ -2099,7 +2437,16 @@
       "solverAnswer": "With zest",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch04-t01-p1"
     },
     {
      "id": "c4-english-ch04-t01-i04",
@@ -2125,7 +2472,15 @@
       "solverAnswer": "(a) great energy and joy",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch04-t01-i05",
@@ -2151,7 +2506,16 @@
       "solverAnswer": "When we focus on one thing we finish it and do it well; ten things done here and there are all half-done",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch04-t01-p1"
     },
     {
      "id": "c4-english-ch04-t01-i06",
@@ -2176,7 +2540,16 @@
       "solverAnswer": "He will make mistakes or take longer because he is not focusing",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch04-t01-p1"
     },
     {
      "id": "c4-english-ch04-t01-i07",
@@ -2200,7 +2573,15 @@
       "solverAnswer": "careful: doing something with care",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch04-t01-i08",
@@ -2225,7 +2606,15 @@
       "solverAnswer": "Careful means with care; careless means without care (opposites)",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch04-t01-i09",
@@ -2250,7 +2639,15 @@
       "solverAnswer": "'carefull' should be 'careful' (one l)",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch04-t01-i10",
@@ -2275,7 +2672,15 @@
       "solverAnswer": "When Meena plays, she plays with zest.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch04-t01-i11",
@@ -2300,7 +2705,15 @@
       "solverAnswer": "When Ravi eats, he eats slowly.",
       "agrees": true,
       "note": "Open item; key is a sensible rubric."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch04-t01-i12",
@@ -2325,7 +2738,16 @@
       "solverAnswer": "Do one thing at a time and finish it with care; that is better than leaving many games half-done.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false,
+     "passageId": "c4-english-ch04-t01-p1"
     },
     {
      "id": "c4-english-ch04-t01-rl-o1",
@@ -2392,18 +2814,18 @@
      "skillId": "c4-english-ch04-t01-s3",
      "kind": "contrast",
      "difficulty": 4,
-     "prompt_en": "Riya checks every name before submitting the school event list. Aman submits his list without checking it. Complete: “Riya is ___; Aman is ___.” Use words made from “care”.",
-     "prompt_hi": "Riya school event ki list dene se pehle har naam check karti hai. Aman bina check kiye list de deta hai. Complete karo: “Riya is ___; Aman is ___.” “Care” se bane words use karo.",
+     "prompt_en": "{friendF} checks every name before submitting the school event list. Aman submits his list without checking it. Complete: “{friendF} is ___; Aman is ___.” Use words made from “care”.",
+     "prompt_hi": "{friendF} school event ki list dene se pehle har naam check karti hai. Aman bina check kiye list de deta hai. Complete karo: “{friendF} is ___; Aman is ___.” “Care” se bane words use karo.",
      "answer": "careful; careless",
      "acceptable": [
       "careful and careless",
-      "Riya is careful; Aman is careless"
+      "{friendF} is careful; Aman is careless"
      ],
      "hints": [
       "Who checks the work before submitting it?",
       "The two endings show having care and lacking care.",
-      "Riya is care___; Aman is care___.",
-      "Careful; careless. Riya checks, while Aman does not."
+      "{friendF} is care___; Aman is care___.",
+      "Careful; careless. {friendF} checks, while Aman does not."
      ],
      "ge": 3.5,
      "geSource": "raters-v2",
@@ -2423,7 +2845,7 @@
      "kind": "why",
      "difficulty": 4,
      "prompt_en": "For the school exhibition, Sana starts three posters but finishes none. Neha completes one poster neatly. Why does Neha’s work better show the poem’s message?",
-     "prompt_hi": "School exhibition ke liye Sana teen posters shuru karti hai, par ek bhi poora nahi karti. Neha ek poster saaf-suthre dhang se poora karti hai. Neha ka kaam poem ka message behtar kyun dikhata hai?",
+     "prompt_hi": "School exhibition ke liye Sana 3 posters shuru karti hai, par ek bhi poora nahi karti. Neha ek poster saaf-suthre dhang se poora karti hai. Neha ka kaam poem ka message behtar kyun dikhata hai?",
      "answer": "She focuses on one task and completes it with care.",
      "acceptable": [
       "She does one thing at a time and does it well",
@@ -2518,7 +2940,12 @@
     "drawing and colouring",
     "eating a meal without the phone"
    ],
-   "passage": "When I read, I read my book,\nI do not stop to stand and look.\nWhen I play, I play with zest,\nAnd when I rest, I truly rest.\nOne thing at a time, done with care,\nIs better than ten things here and there."
+   "passages": [
+    {
+     "id": "c4-english-ch04-t01-p1",
+     "text": "When I read, I read my book,\nI do not stop to stand and look.\nWhen I play, I play with zest,\nAnd when I rest, I truly rest.\nOne thing at a time, done with care,\nIs better than ten things here and there."
+    }
+   ]
   },
   {
    "topicId": "c4-english-ch05-t01",
@@ -2546,7 +2973,8 @@
      "title": "Use 'a' and 'an' correctly before naming words (a monkey, an elephant, an old stag)",
      "prereqSkillIds": [
       "c4-english-ch05-t01-s3"
-     ]
+     ],
+     "kind": "grammar"
     },
     {
      "id": "c4-english-ch05-t01-s5",
@@ -2683,7 +3111,8 @@
       "note": "Key correct."
      },
      "ge": 2.5,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c4-english-ch05-t01-p1"
     },
     {
      "id": "c4-english-ch05-t01-i02",
@@ -2707,7 +3136,16 @@
       "solverAnswer": "A little monkey; it shook the berry tree so berries fell near him",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch05-t01-p1"
     },
     {
      "id": "c4-english-ch05-t01-i03",
@@ -2732,7 +3170,16 @@
       "solverAnswer": "She filled her trunk at the river and brought cool water for Dhruv",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch05-t01-p1"
     },
     {
      "id": "c4-english-ch05-t01-i04",
@@ -2756,7 +3203,16 @@
       "solverAnswer": "Wise, because he remembered the hidden spring and shared it",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch05-t01-p1"
     },
     {
      "id": "c4-english-ch05-t01-i05",
@@ -2782,7 +3238,15 @@
       "solverAnswer": "(a) the big branches on a stag's head",
       "agrees": true,
       "note": "Minor: acceptable 'horns' / 'seeng' is loose (antlers are not horns) but fine at class 4."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch05-t01-i06",
@@ -2807,7 +3271,15 @@
       "solverAnswer": "First: the season. Second: a place where water comes out of the ground.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch05-t01-i07",
@@ -2831,7 +3303,15 @@
       "solverAnswer": "an elephant, a monkey",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch05-t01-i08",
@@ -2856,7 +3336,15 @@
       "solverAnswer": "In the forest lived an old stag.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch05-t01-i09",
@@ -2881,7 +3369,15 @@
       "solverAnswer": "A herd of five deer came to the spring.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch05-t01-i10",
@@ -2906,7 +3402,16 @@
       "solverAnswer": "They will all go to the hidden spring Dhruv showed them, and help each other",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false,
+     "passageId": "c4-english-ch05-t01-p1"
     },
     {
      "id": "c4-english-ch05-t01-i11",
@@ -2931,7 +3436,16 @@
       "solverAnswer": "Because the monkey and the elephant were kind to him, so he was kind back, and the spring could help everyone",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch05-t01-p1"
     },
     {
      "id": "c4-english-ch05-t01-i12",
@@ -2956,7 +3470,16 @@
       "solverAnswer": "When we are kind to others, kindness comes back to us; for example, I helped my friend and she helped me later.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false,
+     "passageId": "c4-english-ch05-t01-p1"
     },
     {
      "id": "c4-english-ch05-t01-i13",
@@ -2980,7 +3503,16 @@
       "solverAnswer": "kamzor; opposite: strong",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch05-t01-p1"
     },
     {
      "id": "c4-english-ch05-t01-rl-o1",
@@ -3083,8 +3615,8 @@
      "skillId": "c4-english-ch05-t01-s5",
      "kind": "why",
      "difficulty": 4,
-     "prompt_en": "During a school trek, Riya shared her water with an injured classmate. The next day, that classmate helped Riya carry her bag. What lesson does this show: kindness can lead to friendship, or only strong people should help?",
-     "prompt_hi": "School trek mein Riya ne injured classmate ko apna paani diya. Agle din us classmate ne Riya ka bag uthane mein help ki. Kya lesson milta hai: kindness se friendship badh sakti hai, ya sirf strong logon ko help karni chahiye?",
+     "prompt_en": "During a school trek, {friendF} shared her water with an injured classmate. The next day, that classmate helped {friendF} carry her bag. What lesson does this show: kindness can lead to friendship, or only strong people should help?",
+     "prompt_hi": "School trek mein {friendF} ne injured classmate ko apna paani diya. Agle din us classmate ne {friendF} ka bag uthane mein help ki. Kya lesson milta hai: kindness se friendship badh sakti hai, ya sirf strong logon ko help karni chahiye?",
      "answer": "Kindness can lead to friendship.",
      "acceptable": [
       "Kindness leads to friendship",
@@ -3147,7 +3679,12 @@
     "feeding birds in summer",
     "an old neighbour who needs help"
    ],
-   "passage": "In a green forest lived an old stag named Dhruv. His antlers were big, but his legs were weak. One hot summer, the pond dried up, and Dhruv was too tired to walk to the far river. A little monkey saw him and shook the branches of a berry tree, so sweet berries fell near him. A kind elephant filled her trunk at the river and brought cool water for Dhruv to drink. That evening Dhruv said, 'When I was young, I found a hidden spring behind the tall rocks. Come, I will show you.' Slowly he led them there. Now all the animals had water for the whole summer."
+   "passages": [
+    {
+     "id": "c4-english-ch05-t01-p1",
+     "text": "In a green forest lived an old stag named Dhruv. His antlers were big, but his legs were weak. One hot summer, the pond dried up, and Dhruv was too tired to walk to the far river. A little monkey saw him and shook the branches of a berry tree, so sweet berries fell near him. A kind elephant filled her trunk at the river and brought cool water for Dhruv to drink. That evening Dhruv said, 'When I was young, I found a hidden spring behind the tall rocks. Come, I will show you.' Slowly he led them there. Now all the animals had water for the whole summer."
+    }
+   ]
   },
   {
    "topicId": "c4-english-ch06-t01",
@@ -3175,7 +3712,8 @@
      "title": "Use 'was' and 'were' correctly and 'for' with a length of time (for three years)",
      "prereqSkillIds": [
       "c4-english-ch06-t01-s3"
-     ]
+     ],
+     "kind": "grammar"
     }
    ],
    "expectations": [
@@ -3254,7 +3792,7 @@
      ],
      "diagnostic": {
       "prompt_en": "Louis worked on his dot code ___ three years. 'since' or 'for'?",
-      "prompt_hi": "Louis ne apne dot code par teen saal ___ kaam kiya. 'since' lagega ya 'for'?",
+      "prompt_hi": "Louis ne apne dot code par 3 saal ___ kaam kiya. 'since' lagega ya 'for'?",
       "options": [
        {
         "text": "for",
@@ -3300,7 +3838,8 @@
       "note": "Key correct."
      },
      "ge": 3,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c4-english-ch06-t01-p1"
     },
     {
      "id": "c4-english-ch06-t01-i02",
@@ -3324,7 +3863,16 @@
       "solverAnswer": "b, c, a",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch06-t01-p1"
     },
     {
      "id": "c4-english-ch06-t01-i03",
@@ -3348,7 +3896,16 @@
       "solverAnswer": "Six",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch06-t01-p1"
     },
     {
      "id": "c4-english-ch06-t01-i04",
@@ -3373,7 +3930,16 @@
       "solverAnswer": "They feel the raised dots with their fingertips",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch06-t01-p1"
     },
     {
      "id": "c4-english-ch06-t01-i05",
@@ -3381,7 +3947,7 @@
      "kind": "why",
      "difficulty": 4,
      "prompt_en": "Louis worked on his code for three years. What does this tell us about him?",
-     "prompt_hi": "Louis ne apne code par teen saal kaam kiya. Isse uske baare mein kya pata chalta hai?",
+     "prompt_hi": "Louis ne apne code par 3 saal kaam kiya. Isse uske baare mein kya pata chalta hai?",
      "answer": "He was determined and hard-working; he did not give up",
      "acceptable": [
       "he did not give up",
@@ -3399,7 +3965,16 @@
       "solverAnswer": "He was hard-working and determined; he did not give up",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch06-t01-p1"
     },
     {
      "id": "c4-english-ch06-t01-i06",
@@ -3424,7 +3999,16 @@
       "solverAnswer": "They might not have an easy way to read and write",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch06-t01-p1"
     },
     {
      "id": "c4-english-ch06-t01-i07",
@@ -3449,7 +4033,16 @@
       "solverAnswer": "No. Invent means make something new; discover means find something that was already there.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch06-t01-p1"
     },
     {
      "id": "c4-english-ch06-t01-i08",
@@ -3476,7 +4069,15 @@
       "solverAnswer": "jo dekh nahi sakta / drishtiheen / netraheen",
       "agrees": true,
       "note": "FIXED: modelled drishtiheen/netraheen; 'andha' kept last as accepted-not-modelled; misspelling fixed; English 'cannot see' removed; hint 1 no longer states the meaning. | prior: Key correct. Notes: (1) 'andha' is listed first in the answer and in acceptable; it is often used as an insult, so the teacher should model 'drishtiheen / netraheen' and treat 'andha' as accepted but not modelled. (2) 'nethraheen' is a misspelling of 'netraheen'. (3) Hint 1 'Louis could not see.' gives the meaning in English straight away, so it is close to an early leak; acceptable also lists English 'cannot see' for a Hindi-meaning question."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch06-t01-i09",
@@ -3501,7 +4102,15 @@
       "solverAnswer": "The books for blind children were very heavy.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch06-t01-i10",
@@ -3526,7 +4135,15 @@
       "solverAnswer": "Louis worked on his code for three years.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch06-t01-i11",
@@ -3550,7 +4167,15 @@
       "solverAnswer": "I was at home last Sunday. My cousins were with me.",
       "agrees": true,
       "note": "Open item; key is a sensible rubric."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch06-t01-i12",
@@ -3558,7 +4183,7 @@
      "kind": "teachback",
      "difficulty": 4,
      "prompt_en": "Your little cousin asks, 'Who was Louis Braille?' Tell her about him in three sentences.",
-     "prompt_hi": "Tumhari chhoti cousin poochhti hai, 'Louis Braille kaun the?' Use teen sentences mein batao.",
+     "prompt_hi": "Tumhari chhoti cousin poochhti hai, 'Louis Braille kaun the?' Use 3 sentences mein batao.",
      "answer": "He lost his sight as a small child, he worked hard for years and invented a six-dot code, and now blind people read it with their fingertips",
      "acceptable": [
       "he could not see",
@@ -3575,7 +4200,15 @@
       "solverAnswer": "Louis Braille hurt his eye when he was three and became blind. He worked hard and made a code of six raised dots. Today blind people read Braille with their fingertips.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch06-t01-rl-o1",
@@ -3606,7 +4239,8 @@
       "how": "code",
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
-     }
+     },
+     "passageId": "c4-english-ch06-t01-p1"
     },
     {
      "id": "c4-english-ch06-t01-rl-h1",
@@ -3741,7 +4375,12 @@
     "young inventors",
     "feeling shapes with eyes closed"
    ],
-   "passage": "Louis Braille was born in France in 1809. When he was three years old, he hurt his eye with a sharp tool in his father's workshop. Soon he could not see with either eye. At the age of ten, Louis went to a school for blind children in Paris. Their books had big raised letters and were very heavy. When he was about twelve, Louis learnt about a code of raised dots made for soldiers. It was hard to use, so he worked on it for three years. By the age of fifteen, he had made a simpler system that uses just six dots. Today, people who cannot see read Braille with their fingertips."
+   "passages": [
+    {
+     "id": "c4-english-ch06-t01-p1",
+     "text": "Louis Braille was born in France in 1809. When he was three years old, he hurt his eye with a sharp tool in his father's workshop. Soon he could not see with either eye. At the age of ten, Louis went to a school for blind children in Paris. Their books had big raised letters and were very heavy. When he was about twelve, Louis learnt about a code of raised dots made for soldiers. It was hard to use, so he worked on it for three years. By the age of fifteen, he had made a simpler system that uses just six dots. Today, people who cannot see read Braille with their fingertips."
+    }
+   ]
   },
   {
    "topicId": "c4-english-ch07-t01",
@@ -3769,7 +4408,8 @@
      "title": "Talk about my daily routine in the simple present with time words (I wake up at six, in the morning)",
      "prereqSkillIds": [
       "c4-english-ch07-t01-s3"
-     ]
+     ],
+     "kind": "grammar"
     }
    ],
    "expectations": [
@@ -3922,7 +4562,16 @@
       "solverAnswer": "At six",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch07-t01-p1"
     },
     {
      "id": "c4-english-ch07-t01-i03",
@@ -3948,7 +4597,15 @@
       "solverAnswer": "No. It means the child is always full of energy.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch07-t01-i04",
@@ -3973,7 +4630,16 @@
       "solverAnswer": "Because the line before says the child eats fresh fruit and lots of greens (and exercises), and that gives energy",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch07-t01-p1"
     },
     {
      "id": "c4-english-ch07-t01-i05",
@@ -3998,7 +4664,15 @@
       "solverAnswer": "You spread your arms and body out as far as they go",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch07-t01-i06",
@@ -4022,7 +4696,15 @@
       "solverAnswer": "A jump is one push up off the ground; skipping is light little hops from foot to foot, often over a rope",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch07-t01-i07",
@@ -4046,7 +4728,15 @@
       "solverAnswer": "I drink milk every morning.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch07-t01-i08",
@@ -4070,7 +4760,15 @@
       "solverAnswer": "We play kho-kho in the evening.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch07-t01-i09",
@@ -4094,7 +4792,15 @@
       "solverAnswer": "I wake up at seven. I brush my teeth at quarter past seven.",
       "agrees": true,
       "note": "Open item; key is a sensible rubric."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch07-t01-i10",
@@ -4118,7 +4824,16 @@
       "solverAnswer": "No, he will feel tired because he does not sleep on time, eat well or play",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false,
+     "passageId": "c4-english-ch07-t01-p1"
     },
     {
      "id": "c4-english-ch07-t01-i11",
@@ -4143,7 +4858,16 @@
       "solverAnswer": "Fit kids grow up healthy and calm, so they can work hard and help others; then the whole country is strong and kind",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch07-t01-p1"
     },
     {
      "id": "c4-english-ch07-t01-i12",
@@ -4167,7 +4891,16 @@
       "solverAnswer": "Exercise and good food keep us fit and full of energy. Fit kids make a strong nation. (then shows a stretch)",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch07-t01-p1"
     },
     {
      "id": "c4-english-ch07-t01-rl-o2",
@@ -4331,7 +5064,12 @@
     "healthy tiffin",
     "cycling in the park"
    ],
-   "passage": "Up at six, I stretch and run,\nI jump and skip beneath the sun.\nI eat fresh fruit and lots of greens,\nThat's why I'm always full of beans!\nA strong fit body, a calm clear mind,\nFit kids make a nation strong and kind."
+   "passages": [
+    {
+     "id": "c4-english-ch07-t01-p1",
+     "text": "Up at six, I stretch and run,\nI jump and skip beneath the sun.\nI eat fresh fruit and lots of greens,\nThat's why I'm always full of beans!\nA strong fit body, a calm clear mind,\nFit kids make a nation strong and kind."
+    }
+   ]
   },
   {
    "topicId": "c4-english-ch08-t01",
@@ -4359,7 +5097,8 @@
      "title": "Make suggestions and questions in a game: 'Let's + action word', 'Who will ...?', 'What are you doing?'",
      "prereqSkillIds": [
       "c4-english-ch08-t01-s3"
-     ]
+     ],
+     "kind": "grammar"
     },
     {
      "id": "c4-english-ch08-t01-s5",
@@ -4519,7 +5258,16 @@
       "solverAnswer": "He says 'Let me try'; he does the part in brackets: he throws the ball",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false,
+     "passageId": "c4-english-ch08-t01-p1"
     },
     {
      "id": "c4-english-ch08-t01-i03",
@@ -4544,7 +5292,15 @@
       "solverAnswer": "Fast and excited, because of 'Hurry' and the exclamation marks: the other team is coming",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch08-t01-i04",
@@ -4570,7 +5326,15 @@
       "solverAnswer": "(a) stones put one on top of another",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch08-t01-i05",
@@ -4595,7 +5359,15 @@
       "solverAnswer": "To put the stones back before the other team could hit them with the ball",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch08-t01-i06",
@@ -4620,7 +5392,15 @@
       "solverAnswer": "Let's play lagori after school!",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch08-t01-i07",
@@ -4644,7 +5424,16 @@
       "solverAnswer": "What are you doing?",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false,
+     "passageId": "c4-english-ch08-t01-p1"
     },
     {
      "id": "c4-english-ch08-t01-i08",
@@ -4670,7 +5459,15 @@
       "solverAnswer": "Let's guard the pile!",
       "agrees": true,
       "note": "Open item; key is a sensible rubric."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch08-t01-i09",
@@ -4695,7 +5492,15 @@
       "solverAnswer": "Because they worked together and each player had a job",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch08-t01-i10",
@@ -4720,7 +5525,15 @@
       "solverAnswer": "The other team could hit them with the ball and they might lose",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch08-t01-i11",
@@ -4744,7 +5557,15 @@
       "solverAnswer": "Your team plays with you; opponents play against you",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch08-t01-i12",
@@ -4770,7 +5591,15 @@
       "solverAnswer": "Say only the lines after your name, and do not read the words in brackets aloud, act them out",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch08-t01-i13",
@@ -4793,15 +5622,23 @@
       "solverAnswer": "Lagori!",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch08-t01-rl-h1",
      "skillId": "c4-english-ch08-t01-s2",
      "kind": "contrast",
      "difficulty": 4,
-     "prompt_en": "In a play about a cricket match, Riya reads, 'We won?' and then, 'We won!' Which line should sound excited: the first or the second?",
-     "prompt_hi": "Cricket match ke play mein Riya padhti hai, 'We won?' aur phir 'We won!' Kaunsi line excited lagegi: pehli ya doosri?",
+     "prompt_en": "In a play about a cricket match, {friendF} reads, 'We won?' and then, 'We won!' Which line should sound excited: the first or the second?",
+     "prompt_hi": "Cricket match ke play mein {friendF} padhti hai, 'We won?' aur phir 'We won!' Kaunsi line excited lagegi: pehli ya doosri?",
      "answer": "The second line",
      "acceptable": [
       "second",
@@ -4989,7 +5826,12 @@
     "a games day with cousins",
     "gilli-danda"
    ],
-   "passage": "(A school ground. Seven flat stones lie in a pile.)\nANU: Our turn to throw! Who will aim at the pile?\nKABIR: Let me try. (He throws the ball. The stones fall.) Yes!\nTENZIN: Quick! Let's rebuild the pile before they hit us with the ball!\nANU: (excited) I will pick up the stones. Kabir, you watch the ball!\nKABIR: Hurry, Anu! They are coming!\nANU: (placing the last stone) Lagori!\nTENZIN: We did it together! We are the champions!"
+   "passages": [
+    {
+     "id": "c4-english-ch08-t01-p1",
+     "text": "(A school ground. Seven flat stones lie in a pile.)\nANU: Our turn to throw! Who will aim at the pile?\nKABIR: Let me try. (He throws the ball. The stones fall.) Yes!\nTENZIN: Quick! Let's rebuild the pile before they hit us with the ball!\nANU: (excited) I will pick up the stones. Kabir, you watch the ball!\nKABIR: Hurry, Anu! They are coming!\nANU: (placing the last stone) Lagori!\nTENZIN: We did it together! We are the champions!"
+    }
+   ]
   },
   {
    "topicId": "c4-english-ch09-t01",
@@ -5017,7 +5859,8 @@
      "title": "Say game rules with 'must', 'can' and 'cannot' + the plain action word, and with numbers + plural -s",
      "prereqSkillIds": [
       "c4-english-ch09-t01-s3"
-     ]
+     ],
+     "kind": "grammar"
     },
     {
      "id": "c4-english-ch09-t01-s5",
@@ -5149,7 +5992,8 @@
       "note": "Key correct."
      },
      "ge": 3,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c4-english-ch09-t01-p1"
     },
     {
      "id": "c4-english-ch09-t01-i02",
@@ -5174,7 +6018,16 @@
       "solverAnswer": "Who was stronger",
       "agrees": true,
       "note": "FIXED: 'sher' replaced with 'baagh'. | prior: prompt_hi says 'insaan aur sher' (sher = lion); tiger is 'baagh'. Use 'baagh' to stay faithful."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch09-t01-p1"
     },
     {
      "id": "c4-english-ch09-t01-i03",
@@ -5199,7 +6052,16 @@
       "solverAnswer": "Inside a big circle, holding hands tightly",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch09-t01-p1"
     },
     {
      "id": "c4-english-ch09-t01-i04",
@@ -5224,7 +6086,16 @@
       "solverAnswer": "So the tigers could not push him out of the circle; together they were stronger",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch09-t01-p1"
     },
     {
      "id": "c4-english-ch09-t01-i05",
@@ -5249,7 +6120,16 @@
       "solverAnswer": "Aami are the people who hold hands inside the circle; Aakho are the tigers who try to push them out",
       "agrees": true,
       "note": "FIXED: acceptable no longer says the Aakho are outside (two step into the circle). | prior: Minor: acceptable 'Aami people inside, Aakho tigers outside' does not match the passage, where two Aakho players step INTO the circle."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch09-t01-p1"
     },
     {
      "id": "c4-english-ch09-t01-i06",
@@ -5274,7 +6154,15 @@
       "solverAnswer": "'I give up'; in Hindi 'main haar maanta hoon'",
       "agrees": true,
       "note": "FIXED: prompt no longer says Grandma explained it (the narrator does); 'sher' replaced with 'baagh'. | prior: Key correct, but the prompt is factually wrong about the passage: Grandma does not give the meaning. The narrator says \"'Joko!' the tiger cried, which means 'I give up.'\" prompt_en ('Which English words did Grandma use for it') and prompt_hi ('Dadi ne English mein iska kya matlab bataya') should say 'What does Joko mean in English, and what is it in Hindi?'. prompt_hi also uses 'sher' (lion) for tiger; use 'baagh'."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch09-t01-i07",
@@ -5298,7 +6186,15 @@
       "solverAnswer": "A tale is a story; a tail is the part at the back of an animal",
       "agrees": true,
       "note": "FIXED: removed 'Dono same bolte hain' from prompt_hi (it is hint 1's content). | prior: Minor: prompt_hi adds 'Dono same bolte hain' (both are said the same), which prompt_en does not say and which is hint 1's content."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch09-t01-i08",
@@ -5323,7 +6219,15 @@
       "solverAnswer": "The Aakho must push the Aami out.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch09-t01-i09",
@@ -5348,7 +6252,15 @@
       "solverAnswer": "Two tigers stepped into the circle.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch09-t01-i10",
@@ -5373,7 +6285,15 @@
       "solverAnswer": "In kabaddi, you cannot cross the line after you are out.",
       "agrees": true,
       "note": "Open item; key is a sensible rubric."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch09-t01-i11",
@@ -5398,7 +6318,16 @@
       "solverAnswer": "The tigers could push Temsu out of the circle and he would be out",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch09-t01-p1"
     },
     {
      "id": "c4-english-ch09-t01-i12",
@@ -5422,7 +6351,16 @@
       "solverAnswer": "In the game, players who hold hands cannot be pushed out; in life, friends who help each other can do hard things",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false,
+     "passageId": "c4-english-ch09-t01-p1"
     },
     {
      "id": "c4-english-ch09-t01-i13",
@@ -5430,7 +6368,7 @@
      "kind": "teachback",
      "difficulty": 3,
      "prompt_en": "Explain how to play Hekko to a friend in another state, in three or four sentences.",
-     "prompt_hi": "Doosre state ke ek dost ko Hekko kaise khelte hain, teen-chaar sentences mein samjhao.",
+     "prompt_hi": "Doosre state ke ek dost ko Hekko kaise khelte hain, 3-4 sentences mein samjhao.",
      "answer": "There are two teams, the Aami (people) and the Aakho (tigers); the Aami hold hands inside a circle; the Aakho try to push them out; a caught tiger says 'Joko'",
      "acceptable": [
       "two teams",
@@ -5448,7 +6386,16 @@
       "solverAnswer": "There are two teams, the Aami (people) and the Aakho (tigers). The Aami hold hands inside a big circle. Two Aakho step in and try to push them out. If a tiger is caught, it cries Joko, which means I give up.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch09-t01-p1"
     },
     {
      "id": "c4-english-ch09-t01-i14",
@@ -5474,15 +6421,23 @@
       "solverAnswer": "In kho-kho, one team sits in a line and one player chases the others and touches them to get them out.",
       "agrees": true,
       "note": "FIXED: bare game names removed from acceptable (now described examples); rubric states a bare name is partial credit only. | prior: Rubric fine, but acceptable lists bare game names ('kho-kho', 'kabaddi', ...) while the prompt also asks 'How is it played?'; a bare name should earn partial credit only."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch09-t01-rl-h1",
      "skillId": "c4-english-ch09-t01-s3",
      "kind": "near_transfer",
      "difficulty": 4,
-     "prompt_en": "During a kho-kho match, Kabir held the rope firmly so it would not slip from his hands. In this sentence, does “firmly” mean securely or quickly?",
-     "prompt_hi": "Kho-kho match ke dauraan Kabir ne rope firmly pakdi, taaki woh haathon se na phisle. Is sentence mein “firmly” ka matlab securely hai ya quickly?",
+     "prompt_en": "During a tug-of-war match, Kabir held the rope firmly so it would not slip from his hands. In this sentence, does “firmly” mean securely or quickly?",
+     "prompt_hi": "Tug-of-war match ke dauraan Kabir ne rope firmly pakdi, taaki woh haathon se na phisle. Is sentence mein “firmly” ka matlab securely hai ya quickly?",
      "answer": "Securely",
      "acceptable": [
       "With a strong grip",
@@ -5567,7 +6522,8 @@
       "how": "code",
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
-     }
+     },
+     "passageId": "c4-english-ch09-t01-p1"
     }
    ],
    "workedExample": {
@@ -5607,7 +6563,12 @@
     "a sports period circle game",
     "chor-police in the colony"
    ],
-   "passage": "In a village in Mokokchung, Nagaland, Grandma Imna told the children an old tale. Long ago, people and tigers argued about who was stronger. 'From that tale comes our game, Hekko,' she said. The children made two teams: the Aami, who were the people, and the Aakho, who were the tigers. The Aami stood inside a big circle and held hands tightly. Two Aakho players stepped into the circle and tried to push them out. Little Temsu was scared, but his friends held his hands firmly, and no one let go. Then the Aami caught a tiger! 'Joko!' the tiger cried, which means 'I give up.' Everyone laughed, and Grandma clapped. 'Holding together,' she said, 'is what makes you strong.'"
+   "passages": [
+    {
+     "id": "c4-english-ch09-t01-p1",
+     "text": "In a village in Mokokchung, Nagaland, Grandma Imna told the children an old tale. Long ago, people and tigers argued about who was stronger. 'From that tale comes our game, Hekko,' she said. The children made two teams: the Aami, who were the people, and the Aakho, who were the tigers. The Aami stood inside a big circle and held hands tightly. Two Aakho players stepped into the circle and tried to push them out. Little Temsu was scared, but his friends held his hands firmly, and no one let go. Then the Aami caught a tiger! 'Joko!' the tiger cried, which means 'I give up.' Everyone laughed, and Grandma clapped. 'Holding together,' she said, 'is what makes you strong.'"
+    }
+   ]
   },
   {
    "topicId": "c4-english-ch10-t01",
@@ -5635,7 +6596,8 @@
      "title": "Compare with -er + than (higher than, faster than)",
      "prereqSkillIds": [
       "c4-english-ch10-t01-s3"
-     ]
+     ],
+     "kind": "grammar"
     }
    ],
    "expectations": [
@@ -5781,7 +6743,16 @@
       "solverAnswer": "day",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch10-t01-p1"
     },
     {
      "id": "c4-english-ch10-t01-i03",
@@ -5805,7 +6776,15 @@
       "solverAnswer": "The wind",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch10-t01-i04",
@@ -5830,7 +6809,15 @@
       "solverAnswer": "Because the swing comes down fast and the wind rushes past and blows them out",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch10-t01-i05",
@@ -5856,7 +6843,15 @@
       "solverAnswer": "No. The poet says it to show how high and free it feels, like flying.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch10-t01-i06",
@@ -5882,7 +6877,16 @@
       "solverAnswer": "The child feels happy and free, as if flying. The child wishes to swing all day.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch10-t01-p1"
     },
     {
      "id": "c4-english-ch10-t01-i07",
@@ -5906,7 +6910,15 @@
       "solverAnswer": "down; forth (forward)",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 2,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 2.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch10-t01-i08",
@@ -5931,7 +6943,15 @@
       "solverAnswer": "To move gently from side to side (jhoolna / lehrana)",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch10-t01-i09",
@@ -5954,7 +6974,15 @@
       "solverAnswer": "higher",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch10-t01-i10",
@@ -5979,7 +7007,15 @@
       "solverAnswer": "My swing goes higher than your swing.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch10-t01-i11",
@@ -6004,7 +7040,15 @@
       "solverAnswer": "The swing went faster than before.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch10-t01-i12",
@@ -6029,7 +7073,15 @@
       "solverAnswer": "My bed is bigger than my chair.",
       "agrees": true,
       "note": "Open item; key is a sensible rubric."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch10-t01-i13",
@@ -6055,7 +7107,15 @@
       "solverAnswer": "The first line (it is about the swing and stay rhymes with sway/day)",
       "agrees": true,
       "note": "FIXED: modelled line changed to well-formed 'Slower, slower, I stop and stay.'; answer/acceptable updated. | prior: Choice is right, but the modelled 'correct' line 'Slow and slow, I stop and stay.' is not good English; the idiom is 'Slower and slower' (or 'Slow, slow, I stop and stay'). This is the comparatives topic (i09-i12), so the kit should not model a malformed comparative. Suggest: 'Slower, slower, I stop and stay.' and update answer/acceptable."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch10-t01-rl-o2",
@@ -6217,7 +7277,12 @@
     "a giant wheel ride",
     "flying kites on Makar Sankranti"
    ],
-   "passage": "Up I go, up to the sky,\nHigher than the birds can fly!\nDown I come, the wind rushes past,\nMy plaits fly out, I'm going fast.\nBack and forth, I swing and sway,\nI wish that I could swing all day."
+   "passages": [
+    {
+     "id": "c4-english-ch10-t01-p1",
+     "text": "Up I go, up to the sky,\nHigher than the birds can fly!\nDown I come, the wind rushes past,\nMy plaits fly out, I'm going fast.\nBack and forth, I swing and sway,\nI wish that I could swing all day."
+    }
+   ]
   },
   {
    "topicId": "c4-english-ch11-t01",
@@ -6245,7 +7310,8 @@
      "title": "Use 'reached' and naming words like luggage correctly while describing a trip",
      "prereqSkillIds": [
       "c4-english-ch11-t01-s2"
-     ]
+     ],
+     "kind": "grammar"
     },
     {
      "id": "c4-english-ch11-t01-s5",
@@ -6377,7 +7443,8 @@
       "note": "Key correct."
      },
      "ge": 3,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "passageId": "c4-english-ch11-t01-p1"
     },
     {
      "id": "c4-english-ch11-t01-i02",
@@ -6402,7 +7469,16 @@
       "solverAnswer": "Snow-capped peaks shining like silver in the morning sun",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch11-t01-p1"
     },
     {
      "id": "c4-english-ch11-t01-i03",
@@ -6428,7 +7504,16 @@
       "solverAnswer": "(a) the pointed top of a mountain",
       "agrees": true,
       "note": "Minor: hints 1 and 2 say the same thing ('highest part')."
-     }
+     },
+     "ge": 2.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "claude-B": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch11-t01-i04",
@@ -6453,7 +7538,16 @@
       "solverAnswer": "Covered with snow on top, like a white cap on a head",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch11-t01-i05",
@@ -6478,7 +7572,16 @@
       "solverAnswer": "No. The trees stood tall and straight in lines, like soldiers stand.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch11-t01-i06",
@@ -6503,7 +7606,17 @@
       "solverAnswer": "The first: her breath only looked like smoke because the air was cold",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch11-t01-p1"
     },
     {
      "id": "c4-english-ch11-t01-i07",
@@ -6528,7 +7641,16 @@
       "solverAnswer": "At last we reached the top of the pass.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "claude-B": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch11-t01-i08",
@@ -6553,7 +7675,16 @@
       "solverAnswer": "The yak walked slowly with our luggage on its back.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "claude-B": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch11-t01-i09",
@@ -6578,7 +7709,17 @@
       "solverAnswer": "It will get warmer, because the air got colder as they went higher",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false,
+     "passageId": "c4-english-ch11-t01-p1"
     },
     {
      "id": "c4-english-ch11-t01-i10",
@@ -6603,7 +7744,16 @@
       "solverAnswer": "Because Aditi only said they look magical; Father adds that they are a home for people and animals too, and rivers like the Ganga begin there",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 5,
+      "claude-B": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch11-t01-i11",
@@ -6628,7 +7778,16 @@
       "solverAnswer": "We reached Nani's house in the evening.",
       "agrees": true,
       "note": "Open item; key is a sensible rubric."
-     }
+     },
+     "ge": 3.25,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch11-t01-i12",
@@ -6651,7 +7810,16 @@
       "solverAnswer": "The fair was very crowded. The lights twinkled like stars.",
       "agrees": true,
       "note": "Open item; key is a sensible rubric."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "claude-B": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch11-t01-i13",
@@ -6674,15 +7842,25 @@
       "solverAnswer": "First the bus climbed round and round the hills. Then the air became cold. Then they saw prayer flags and a yak in a village. At last they reached the pass and saw snow-capped peaks.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false,
+     "passageId": "c4-english-ch11-t01-p1"
     },
     {
      "id": "c4-english-ch11-t01-rl-h1",
      "skillId": "c4-english-ch11-t01-s3",
      "kind": "contrast",
      "difficulty": 4,
-     "prompt_en": "Riya wrote, 'The snow-covered peaks shone like silver in the sunlight.' Does this mean the peaks were made of silver or looked bright like silver? Why?",
-     "prompt_hi": "Riya ne likha, 'The snow-covered peaks shone like silver in the sunlight.' Kya peaks chandi ki bani thi ya chandi jaisi chamak rahi thi? Kyun?",
+     "prompt_en": "{friendF} wrote, 'The snow-covered peaks shone like silver in the sunlight.' Does this mean the peaks were made of silver or looked bright like silver? Why?",
+     "prompt_hi": "{friendF} ne likha, 'The snow-covered peaks shone like silver in the sunlight.' Kya peaks chandi ki bani thi ya chandi jaisi chamak rahi thi? Kyun?",
      "answer": "They looked bright like silver; 'like' makes a comparison.",
      "acceptable": [
       "looked bright like silver",
@@ -6805,7 +7983,12 @@
     "trekking with scouts",
     "a summer holiday at Nani's village"
    ],
-   "passage": "Aditi and her family went on a trip to the Himalayas. The bus climbed round and round the hills. Tall pine trees stood in rows like green soldiers. The air became colder, and Aditi could see her breath like smoke. In a small village, colourful prayer flags flapped in the wind, and a yak walked slowly with heavy bags on its back. At last they reached the top of a mountain pass. Snow-capped peaks shone like silver in the morning sun. 'These mountains look magical,' Aditi whispered. Her father smiled. 'They are also home to many people and animals, and great rivers like the Ganga begin here.'"
+   "passages": [
+    {
+     "id": "c4-english-ch11-t01-p1",
+     "text": "Aditi and her family went on a trip to the Himalayas. The bus climbed round and round the hills. Tall pine trees stood in rows like green soldiers. The air became colder, and Aditi could see her breath like smoke. In a small village, colourful prayer flags flapped in the wind, and a yak walked slowly with heavy bags on its back. At last they reached the top of a mountain pass. Snow-capped peaks shone like silver in the morning sun. 'These mountains look magical,' Aditi whispered. Her father smiled. 'They are also home to many people and animals, and great rivers like the Ganga begin here.'"
+    }
+   ]
   },
   {
    "topicId": "c4-english-ch12-t01",
@@ -6833,7 +8016,8 @@
      "title": "Ask questions with the right question word and order (Who, What, Where, Why, Did you ...?)",
      "prereqSkillIds": [
       "c4-english-ch12-t01-s1"
-     ]
+     ],
+     "kind": "grammar"
     },
     {
      "id": "c4-english-ch12-t01-s5",
@@ -6967,7 +8151,17 @@
       "solverAnswer": "The Narmada",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "claude-B": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch12-t01-p1"
     },
     {
      "id": "c4-english-ch12-t01-i02",
@@ -6983,7 +8177,7 @@
       "seedhiyan"
      ],
      "hints": [
-      "Riya points at something going into the water.",
+      "{friendF} points at something going into the water.",
       "People bathe and pray there.",
       "Wide ... going into the water.",
       "Ghats are wide steps going down into a river."
@@ -6992,7 +8186,16 @@
       "solverAnswer": "(a) wide steps going down into a river",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "claude-B": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch12-t01-i03",
@@ -7017,7 +8220,17 @@
       "solverAnswer": "Queen Ahilyabai Holkar",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "claude-B": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false,
+     "passageId": "c4-english-ch12-t01-p1"
     },
     {
      "id": "c4-english-ch12-t01-i04",
@@ -7033,7 +8246,7 @@
      ],
      "hints": [
       "One is a thing, one is a person.",
-      "Riya pointed at the wooden machine.",
+      "{friendF} pointed at the wooden machine.",
       "The loom is the ...; the weaver is the ...",
       "A loom is the wooden machine; a weaver is the person who makes cloth on it."
      ],
@@ -7041,7 +8254,16 @@
       "solverAnswer": "A loom is the machine; a weaver is the person who weaves cloth on it",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch12-t01-i05",
@@ -7067,15 +8289,24 @@
       "solverAnswer": "No. 'of the river' shows it means the land along the side of the river.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch12-t01-i06",
      "skillId": "c4-english-ch12-t01-s1",
      "kind": "practice",
      "difficulty": 2,
-     "prompt_en": "How should you read Riya's line: 'What is that wooden machine?'",
-     "prompt_hi": "Riya ki line 'What is that wooden machine?' kaise padhoge?",
+     "prompt_en": "How should you read {friendF}'s line: 'What is that wooden machine?'",
+     "prompt_hi": "{friendF} ki line 'What is that wooden machine?' kaise padhoge?",
      "answer": "As a question, with the voice going up at the end, and with curiosity",
      "acceptable": [
       "like a question",
@@ -7119,7 +8350,16 @@
       "solverAnswer": "Where",
       "agrees": true,
       "note": "FIXED: given answer changed from 'on a loom' (instrument) to a clear place 'in Maheshwar'; hints updated. | prior: Weak item for the wh-word target: 'on a loom' is a thing/means more than a place, so 'How do weavers make sarees? On a loom.' is also a natural pairing, and the most natural question for that answer is 'What do weavers make sarees on?'. Suggest changing the given answer to a clear place (e.g. 'in Maheshwar' / 'at home') or keep 'Where' and accept that the hint must define the loom as a place they work at."
-     }
+     },
+     "ge": 2.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 3.5,
+      "claude-B": 3,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch12-t01-i08",
@@ -7143,7 +8383,16 @@
       "solverAnswer": "Who lived in the fort?",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.25,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "claude-B": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch12-t01-i09",
@@ -7168,7 +8417,16 @@
       "solverAnswer": "Why did you come to Maheshwar?",
       "agrees": true,
       "note": "FIXED: 'did' moved from hint 2 to hint 3. | prior: Hint 2 'The helper is did.' gives the key element at the second rung; consider moving it to hint 3."
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "claude-B": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch12-t01-i10",
@@ -7194,7 +8452,17 @@
       "solverAnswer": "Who taught you to weave? How long does one saree take to make?",
       "agrees": true,
       "note": "FIXED: model answer now uses Who + How (two different question words). | prior: The key's model answer 'How do you make a saree? How long does it take?' uses 'How' twice, which breaks the prompt's own condition ('two different question words'). Replace with e.g. 'Who taught you to weave? How long does one saree take?' (the acceptable list is fine)."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false,
+     "passageId": "c4-english-ch12-t01-p1"
     },
     {
      "id": "c4-english-ch12-t01-i11",
@@ -7219,7 +8487,16 @@
       "solverAnswer": "They will take a boat ride on the Narmada",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.25,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "claude-B": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch12-t01-i12",
@@ -7227,7 +8504,7 @@
      "kind": "far_transfer",
      "difficulty": 4,
      "prompt_en": "A visitor comes to your town or city. Tell them about one special place in three sentences.",
-     "prompt_hi": "Tumhare shehar mein ek mehmaan aata hai. Use kisi ek khaas jagah ke baare mein teen sentences mein batao.",
+     "prompt_hi": "Tumhare shehar mein ek mehmaan aata hai. Use kisi ek khaas jagah ke baare mein 3 sentences mein batao.",
      "answer": "Three sentences naming the place, what is there and why it is special, for example: This is the old temple. It has a big bell. People come here on festivals.",
      "acceptable": [
       "This is our market. It sells bangles. It is busy at Diwali."
@@ -7242,7 +8519,16 @@
       "solverAnswer": "This is the old fort. It has big walls. People come to see the sunset from it.",
       "agrees": true,
       "note": "Open item; key is a sensible rubric."
-     }
+     },
+     "ge": 3.75,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4.5,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch12-t01-i13",
@@ -7250,7 +8536,7 @@
      "kind": "teachback",
      "difficulty": 3,
      "prompt_en": "Your younger cousin asks, 'What is special about Maheshwar?' Tell her three things.",
-     "prompt_hi": "Tumhari chhoti cousin poochhti hai, 'Maheshwar mein kya khaas hai?' Use teen cheezein batao.",
+     "prompt_hi": "Tumhari chhoti cousin poochhti hai, 'Maheshwar mein kya khaas hai?' Use 3 cheezein batao.",
      "answer": "It is on the Narmada with ghats; Queen Ahilyabai Holkar ruled from its fort; weavers make Maheshwari sarees on looms",
      "acceptable": [
       "the ghats",
@@ -7268,7 +8554,16 @@
       "solverAnswer": "It has ghats on the river Narmada; Queen Ahilyabai Holkar ruled from its fort; weavers make soft Maheshwari sarees on looms.",
       "agrees": true,
       "note": "Key correct."
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A1": 4,
+      "claude-B": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c4-english-ch12-t01-rl-o2",
@@ -7435,7 +8730,12 @@
     "being a tour guide for a cousin",
     "a village crafts fair"
    ],
-   "passage": "(The ghats of Maheshwar. The river Narmada flows below.)\nGUIDE: Welcome to Maheshwar, on the bank of the river Narmada.\nRIYA: Look at those wide steps going into the water! What are they called?\nGUIDE: They are ghats. People come here to bathe and pray.\nSAHIL: Who lived in that big fort?\nGUIDE: Queen Ahilyabai Holkar lived and ruled here more than two hundred years ago. She built many temples and ghats.\nRIYA: (pointing) What is that wooden machine?\nGUIDE: It is a loom. Weavers make the famous Maheshwari sarees on it.\nSAHIL: (touching a saree gently) It is so soft! Can we take a boat ride?\nGUIDE: Of course. Let's go!"
+   "passages": [
+    {
+     "id": "c4-english-ch12-t01-p1",
+     "text": "(The ghats of Maheshwar. The river Narmada flows below.)\nGUIDE: Welcome to Maheshwar, on the bank of the river Narmada.\nRIYA: Look at those wide steps going into the water! What are they called?\nGUIDE: They are ghats. People come here to bathe and pray.\nSAHIL: Who lived in that big fort?\nGUIDE: Queen Ahilyabai Holkar lived and ruled here more than two hundred years ago. She built many temples and ghats.\nRIYA: (pointing) What is that wooden machine?\nGUIDE: It is a loom. Weavers make the famous Maheshwari sarees on it.\nSAHIL: (touching a saree gently) It is so soft! Can we take a boat ride?\nGUIDE: Of course. Let's go!"
+    }
+   ]
   }
  ],
  "relevel": {

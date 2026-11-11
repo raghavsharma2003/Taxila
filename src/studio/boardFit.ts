@@ -19,7 +19,7 @@
 // A "continue" board draws on the board before it (src/modules/whiteboard/StudioWhiteboard.tsx priorFor matches boards by
 // size), so a lesson's transform is decided once per (lesson, board size) by its fresh board and REUSED for every
 // continue board on it (rememberTransform / transformFor below), or the two would not line up.
-import { lintScript, opGeometry, TEXT_SIZE } from "../../shared/whiteboard.js";
+import { lintScript, opGeometry, opTextSizes, TEXT_SIZE } from "../../shared/whiteboard.js";
 import type { WhiteboardScript } from "../../shared/studio.ts";
 import { FLOORS } from "../../shared/play.ts";
 
@@ -44,8 +44,9 @@ export function textUnits(script: { ops: Op[] }): number[] {
   const byId = new Map(script.ops.map((o) => [o.id, o]));
   const out: number[] = [];
   for (const o of script.ops) {
-    if (o.op === "text") out.push(TEXT_SIZE[(o.size as "s" | "m" | "l") ?? "m"] ?? TEXT_SIZE.m);
-    else if (o.op === "label") out.push(TEXT_SIZE.s);
+    // (round 8: a text with a stacked fraction counts its numerals' own size: the smaller of the line and its stack)
+    if (o.op === "text") out.push(Math.min(TEXT_SIZE[(o.size as "s" | "m" | "l") ?? "m"] ?? TEXT_SIZE.m, ...opTextSizes(o as never, byId as never)));
+    else if (o.op === "label") out.push(Math.min(TEXT_SIZE.s, ...opTextSizes(o as never, byId as never)));
     else if (o.op === "numwork") {
       try {
         for (const t of opGeometry(o as never, byId as never).texts) if (!t.small) out.push(t.size);
@@ -74,8 +75,16 @@ function scaleOp(o: Op, f: number, dx: number, dy: number): Op {
   if ("c" in o) r.c = P(o.c);
   if (Array.isArray(o.points)) r.points = (o.points as unknown[]).map(P);
   if (o.op === "rect") { r.w = S(o.w); r.h = S(o.h); }
+  if (o.op === "numwork" && typeof o.w === "number") r.w = S(o.w);   // a number line's own length (round 7)
   if (o.op === "circle" || o.op === "sector") r.r = S(o.r);
   if (o.op === "ellipse") { r.rx = S(o.rx); r.ry = S(o.ry); }
+  // round 7 (motion ops): a move's shift and hop are lengths: scaled, never shifted
+  if (o.op === "move") { if (isPt(o.by)) r.by = [S(o.by[0]), S(o.by[1])]; if (typeof o.arc === "number") r.arc = S(o.arc); }
+  // M1: a turn's or a scale's pivot is a point (scaled and shifted); a follow's path is offsets (scaled only); a morph's
+  // points are points
+  if ((o.op === "rotate" || o.op === "scale") && "about" in o) r.about = P(o.about);
+  if (o.op === "follow" && Array.isArray(o.path)) r.path = (o.path as unknown[]).map((q) => (isPt(q) ? [S(q[0]), S(q[1])] : q));
+  if (o.op === "morph" && Array.isArray(o.to)) r.to = (o.to as unknown[]).map(P);
   return r;
 }
 

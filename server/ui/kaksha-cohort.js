@@ -6,6 +6,9 @@
 // (no URL step; ?ui=classic turns it off on a device; src/ui-v3/kaksha/flag.ts kakshaDecision), and typing ?ui=kaksha does
 // nothing for anyone outside the cohort. The answer never reveals the list. Presentation only: no safety or data switch.
 // Unset or empty: nobody (the default). Removing the env var and restarting the revision turns it off for everyone.
+// INERT (round 7 audit SEAM-07, server half): the client no longer reads `ui.kaksha` (Kaksha is the only child UI), so this answer
+// decides nothing. It is kept only so GET /api/me's shape does not change; remove uiFlagsFor, the `ui` field and TAXILA_UI_KAKSHA together
+// with the release script's carry-over when the platform stream next touches them.
 import { createHash } from "node:crypto";
 
 const sha256 = (s) => createHash("sha256").update(s).digest("hex");

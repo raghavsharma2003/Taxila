@@ -1,0 +1,27 @@
+{
+  "nodes": [
+    {
+      "id": "cp-r8-knows-walk",
+      "kind": "component",
+      "at": "2026-11-10",
+      "title": "server/director/knows-walk.js: knows.js's plan applied to the live walk, one function per call site. routes/lesson.js cuts the plan at a 'lesson' start (knowsPlanAtStart: delayedPassed read from the ledger's flags.delayed until the snapshot carries it; seen items from the ledger) and puts the prerequisite check and the first card in the warm-up after the most due item (knowsWarmup). state.js: walkStart takes the plan's beats, check order and ladder; afterCorrect/afterMiss take K1's answer (right: skill done; miss: the full unit, recorded); the hook and greet use the planned slot; walkRemedy remediates the classifier's mix-up when the skill has it; allKnown is said once by code and the last ladder is walked hardest first. brain/turn.js writes each turn's applied because records as decision_record rows (point_id knows.<choice>; the start's ride the first turn). Kill switch TAXILA_R8_KNOWS=off. With no plan every call site keeps the walk's own default."
+    },
+    {
+      "id": "ms-r8-knows-real-walk-2026-11-10",
+      "kind": "measurement",
+      "at": "2026-11-10",
+      "title": "tests/knows-walk.test.mjs (deterministic, the real step(); n = 4 pilot topics × 6 children incl. allKnown, 2026-11-10): every real walk passes assertWalkExplained with its records; the no-history child walks a prefix of the script's default (>= 8 distinct beats) with no record; meera compresses skill 1 and gets the gap opener card; meeraForgot gets compress_fallback and the full unit; kabir gets firstCard, checkOrder and hookSlot; the games-only child gets firstCard and checkOrder; allKnown opens each skill at one check, says the allKnown line once, re-teaches nothing and opens the last ladder at its hardest rung. Finding on the way: once the script's walk is spent the walk goes on with the kit's own practice (items.js selectNext), which the predicate now leaves unchecked."
+    },
+    {
+      "id": "dc-r8-allknown-ladder-hardest-first",
+      "kind": "decision",
+      "at": "2026-11-10",
+      "title": "allKnown (main's ruling 2026-11-10): the lesson neither ends early nor changes topic; on the first compressed check she says once, by code, that the topic is already known and the lesson goes straight to questions; after every check is right, the last skill's ladder is walked from its hardest rung (kit difficulty, authored order among equals); with no rung left the usual wrap. A miss on any check falls back to that skill's full unit as usual. Reverse if judged allKnown lessons run under 8 child turns or the hardest-first ladder opens on a card most such children miss."
+    }
+  ],
+  "edges": [
+    { "src": "cp-r8-knows-walk", "rel": "part_of", "dst": "dc-r8-one-reader-with-because" },
+    { "src": "cp-r8-knows-walk", "rel": "measured_by", "dst": "ms-r8-knows-real-walk-2026-11-10" },
+    { "src": "dc-r8-allknown-ladder-hardest-first", "rel": "part_of", "dst": "dc-r8-one-reader-with-because" }
+  ]
+}

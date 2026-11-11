@@ -8,11 +8,15 @@
 // `probePassed` stays false, so only a detected headset unlocks open mic. Both gaps are documented.
 import { useEffect, useState } from "react";
 
-const HEADSET = /head(set|phone)|ear(phone|bud|piece)|airpods|buds|bluetooth|\bbt\b|wired|hands-?free|usb audio/i;
+// Audit V-33: an "earpiece" label is the phone's own receiver (Chrome on Android: "Headset earpiece"), and a bare
+// "bluetooth" can be a SPEAKER ("JBL Flip 5 (Bluetooth)") that sends her voice into the room: neither counts. A Bluetooth
+// headset still matches by its own words.
+const HEADSET = /head(set|phone)|ear(phone|bud)|airpods|buds|\bbt\b|wired|hands-?free|usb audio/i;
+const NOT_HEADSET = /earpiece/i;
 
 /** Pure: does this device list contain a headset output (or a headset mic, for routes that only expose inputs)? */
 export function hasHeadset(devices: { kind: string; label: string }[]): boolean {
-  return devices.some((d) => (d.kind === "audiooutput" || d.kind === "audioinput") && HEADSET.test(d.label));
+  return devices.some((d) => (d.kind === "audiooutput" || d.kind === "audioinput") && HEADSET.test(d.label) && !NOT_HEADSET.test(d.label));
 }
 
 export function useHeadset(): boolean {

@@ -1,0 +1,410 @@
+{
+  "about": "Learning-owned (dc-r8-director20 R1): what Asha says around a child's aside, by kind of aside. returns: one question on {aside} the child can answer in a few words (what they like, what happened). replies: her answer to the child's reply, one slot {word} (a word of the child's, as said), never a fact, a taste of hers, a promise or a question. plain: the same with no slot, for when no word of the child's fits. Brain picks the kind from the aside's words (match), else 'other'. Validated by scripts/lesson-scripts/check.mjs asideReplyErrors.",
+  "kinds": {
+    "sport": {
+      "match": [
+        "cricket",
+        "football",
+        "kabaddi",
+        "khel",
+        "match",
+        "badminton",
+        "hockey",
+        "tennis",
+        "race",
+        "daud",
+        "swimming",
+        "kho-kho",
+        "volleyball",
+        "basketball",
+        "chess",
+        "shatranj"
+      ],
+      "returns": [
+        {
+          "hi": "{aside} mein tumhe sabse achha kya lagta hai?",
+          "en": "What do you like most about {aside}?"
+        },
+        {
+          "hi": "Pichhli baar {aside} mein kya hua tha?",
+          "en": "What happened in {aside} last time?"
+        },
+        {
+          "hi": "{aside} mein tumhe kya karna sabse achha lagta hai?",
+          "en": "What do you like doing most in {aside}?"
+        }
+      ],
+      "replies": [
+        {
+          "hi": "Achha, {word}! Theek hai.",
+          "en": "Oh, {word}! Okay."
+        },
+        {
+          "hi": "Oh, {word}. Achha.",
+          "en": "Oh, {word}. Okay."
+        },
+        {
+          "hi": "Hmm, {word}. Samajh gayi.",
+          "en": "Hmm, {word}. Got it."
+        }
+      ],
+      "plain": [
+        {
+          "hi": "Achha, theek hai.",
+          "en": "Okay, alright."
+        },
+        {
+          "hi": "Achha, samajh gayi.",
+          "en": "Okay, got it."
+        }
+      ]
+    },
+    "show": {
+      "match": [
+        "cartoon",
+        "film",
+        "movie",
+        "show",
+        "serial",
+        "doraemon",
+        "chhota bheem",
+        "motu patlu",
+        "shinchan",
+        "pokemon",
+        "youtube",
+        "video",
+        "tv",
+        "anime"
+      ],
+      "returns": [
+        {
+          "hi": "{aside} mein tumhe sabse achha kaun lagta hai?",
+          "en": "Who do you like best in {aside}?"
+        },
+        {
+          "hi": "{aside} mein pichhli baar kya hua tha?",
+          "en": "What happened in {aside} last time?"
+        },
+        {
+          "hi": "{aside} mein sabse mazedaar kya lagta hai?",
+          "en": "What's the most fun part of {aside}?"
+        }
+      ],
+      "replies": [
+        {
+          "hi": "Achha, {word}! Yeh batane ke liye shukriya.",
+          "en": "Oh, {word}! Thanks for telling me that."
+        },
+        {
+          "hi": "{word}... achha, samajh gayi.",
+          "en": "{word}... okay, I see."
+        },
+        {
+          "hi": "Hmm, {word}. Samajh gayi.",
+          "en": "Hmm, {word}. Got it."
+        }
+      ],
+      "plain": [
+        {
+          "hi": "Achha, yeh batane ke liye shukriya.",
+          "en": "Okay, thanks for telling me that."
+        },
+        {
+          "hi": "Hmm, achha.",
+          "en": "Hmm, okay."
+        }
+      ]
+    },
+    "food": {
+      "match": [
+        "khana",
+        "momos",
+        "pizza",
+        "samosa",
+        "biryani",
+        "maggi",
+        "chocolate",
+        "ice cream",
+        "aam",
+        "mango",
+        "laddoo",
+        "jalebi",
+        "dosa",
+        "paratha",
+        "chips",
+        "golgappe",
+        "pani puri",
+        "noodles",
+        "cake",
+        "mithai"
+      ],
+      "returns": [
+        {
+          "hi": "{aside} mein tumhe kaunsa wala sabse achha lagta hai?",
+          "en": "Which kind of {aside} do you like best?"
+        },
+        {
+          "hi": "Tumhe {aside} kiske saath khaana sabse achha lagta hai?",
+          "en": "Who do you like eating {aside} with most?"
+        },
+        {
+          "hi": "{aside} ke saath aur kya khaana achha lagta hai?",
+          "en": "What else do you like to eat with {aside}?"
+        }
+      ],
+      "replies": [
+        {
+          "hi": "{word}! Achha, samajh gayi.",
+          "en": "{word}! Okay, I see."
+        },
+        {
+          "hi": "Oh, {word}. Achha.",
+          "en": "Oh, {word}. Okay."
+        },
+        {
+          "hi": "Hmm, {word}. Samajh gayi.",
+          "en": "Hmm, {word}. Got it."
+        }
+      ],
+      "plain": [
+        {
+          "hi": "Achha, theek hai.",
+          "en": "Okay, alright."
+        },
+        {
+          "hi": "Hmm, samajh gayi.",
+          "en": "Hmm, I see."
+        }
+      ]
+    },
+    "people": {
+      "match": [
+        "dost",
+        "friend",
+        "bhai",
+        "behen",
+        "didi",
+        "bhaiya",
+        "mummy",
+        "papa",
+        "mama",
+        "nani",
+        "dadi",
+        "nana",
+        "dada",
+        "chacha",
+        "chachi",
+        "cousin",
+        "teacher",
+        "madam",
+        "sir"
+      ],
+      "returns": [
+        {
+          "hi": "{aside} ke saath tumhe kya karna achha lagta hai?",
+          "en": "What do you like doing with {aside}?"
+        },
+        {
+          "hi": "{aside} ke saath pichhli baar kya kiya?",
+          "en": "What did you do with {aside} last time?"
+        },
+        {
+          "hi": "{aside} ki kaunsi baat tumhe achhi lagti hai?",
+          "en": "What do you like about {aside}?"
+        }
+      ],
+      "replies": [
+        {
+          "hi": "Achha, {word}. Theek hai.",
+          "en": "Oh, {word}. Alright."
+        },
+        {
+          "hi": "{word}... achha, samajh gayi.",
+          "en": "{word}... okay, I see."
+        },
+        {
+          "hi": "Hmm, {word}. Samajh gayi.",
+          "en": "Hmm, {word}. Got it."
+        }
+      ],
+      "plain": [
+        {
+          "hi": "Achha, samajh gayi.",
+          "en": "Okay, got it."
+        },
+        {
+          "hi": "Hmm, theek hai.",
+          "en": "Hmm, alright."
+        }
+      ]
+    },
+    "game": {
+      "match": [
+        "game",
+        "games",
+        "ludo",
+        "carrom",
+        "minecraft",
+        "free fire",
+        "pubg",
+        "bgmi",
+        "roblox",
+        "subway surfers",
+        "candy crush",
+        "mobile game",
+        "video game",
+        "puzzle",
+        "lego",
+        "snakes and ladders",
+        "saanp seedhi"
+      ],
+      "returns": [
+        {
+          "hi": "{aside} mein tumhe sabse achha kya lagta hai?",
+          "en": "What do you like most about {aside}?"
+        },
+        {
+          "hi": "Pichhli baar {aside} mein kya hua tha?",
+          "en": "What happened in {aside} last time?"
+        },
+        {
+          "hi": "{aside} mein kya-kya karna hota hai?",
+          "en": "What do you have to do in {aside}?"
+        }
+      ],
+      "replies": [
+        {
+          "hi": "Oh, {word}! Achha, theek hai.",
+          "en": "Oh, {word}! Okay, alright."
+        },
+        {
+          "hi": "Oh, {word}. Achha.",
+          "en": "Oh, {word}. Okay."
+        },
+        {
+          "hi": "Hmm, {word}. Samajh gayi.",
+          "en": "Hmm, {word}. Got it."
+        }
+      ],
+      "plain": [
+        {
+          "hi": "Achha, samajh gayi.",
+          "en": "Okay, got it."
+        },
+        {
+          "hi": "Oh, achha.",
+          "en": "Oh, okay."
+        }
+      ]
+    },
+    "other": {
+      "match": [],
+      "returns": [
+        {
+          "hi": "{aside} ki sabse achhi baat kya hai?",
+          "en": "What is the best thing about {aside}?"
+        },
+        {
+          "hi": "{aside} ke baare mein batao, kya hua tha?",
+          "en": "Tell me about {aside}: what happened?"
+        },
+        {
+          "hi": "{aside} ki kaunsi baat tumhe yaad hai?",
+          "en": "What do you remember about {aside}?"
+        }
+      ],
+      "replies": [
+        {
+          "hi": "Achha, {word}. Batane ke liye shukriya.",
+          "en": "Oh, {word}. Thanks for telling me."
+        },
+        {
+          "hi": "{word}... achha, samajh gayi.",
+          "en": "{word}... okay, I see."
+        },
+        {
+          "hi": "Hmm, {word}. Samajh gayi.",
+          "en": "Hmm, {word}. Got it."
+        }
+      ],
+      "plain": [
+        {
+          "hi": "Achha, batane ke liye shukriya.",
+          "en": "Okay, thanks for telling me."
+        },
+        {
+          "hi": "Hmm, achha, theek hai.",
+          "en": "Hmm, okay, alright."
+        }
+      ]
+    }
+  },
+  "sad": {
+    "match": [
+      "akela",
+      "alone",
+      "bimaar",
+      "bimar",
+      "chot",
+      "chot lagi",
+      "cry",
+      "crying",
+      "dard",
+      "darr",
+      "darr lagta",
+      "darta",
+      "darti",
+      "died",
+      "dukh",
+      "gussa",
+      "haar",
+      "haar gaya",
+      "haar gayi",
+      "hurt",
+      "jhagda",
+      "kho gaya",
+      "kho gayi",
+      "ladai",
+      "lost",
+      "maara",
+      "maari",
+      "maarta",
+      "maarti",
+      "mar gaya",
+      "mar gayi",
+      "nahi mila",
+      "nahi mili",
+      "ro raha",
+      "ro rahi",
+      "rona",
+      "sad",
+      "scared",
+      "toot gaya",
+      "toot gayi",
+      "udaas"
+    ],
+    "replies": [
+      {
+        "hi": "Oh... yeh toh achha nahi hua.",
+        "en": "Oh... that didn't go well."
+      },
+      {
+        "hi": "Oh... yeh toh mushkil hai.",
+        "en": "Oh... that sounds hard."
+      },
+      {
+        "hi": "Hmm, samajh gayi. Batane ke liye shukriya.",
+        "en": "Hmm, I understand. Thank you for telling me."
+      }
+    ],
+    "rule": "Match whole words or phrases only (never inside another word: 'ro' is not in 'Roblox'). Not sad when 'nahi' negates it ('chot nahi lagi') or when the loss is the other side's ('dusri team haar gayi'). When the reply or the aside is sad, say one of these, never a {word} reply or 'wah', and ask no return that assumes liking or fun."
+  },
+  "rules": [
+    "{word}: only a noun the child said (sixer, Nobita, chutney, ludo, boat); never haan, nahi, pata nahi, kuch nahi, sab, a time word (kal, aaj) or an outcome (jeet gaya, haar gaya). If none fits, use plain.",
+    "{aside} in her line is in her voice and agrees: 'mera bhai' becomes 'tumhara bhai', 'meri didi' becomes 'tumhari didi', 'mere dost' becomes 'tumhare dost'; before mein / ke saath / ki / ka it takes the oblique form ('tumhare bhai ke saath', 'khane mein'); names (Maggi, Doraemon, Minecraft) do not change. Use the show's or game's own name, not 'TV' or 'youtube'.",
+    "A sad aside or reply (sad.match, by sad.rule) gets a sad reply and no return question.",
+    "If the child asks her back ('aapko kaun pasand hai?'), she states no taste of her own: a plain form, then the lesson.",
+    "Kind selection: a kind is chosen only when one of its match words is in the aside; when none matches, the kind is 'other' (it has no match list on purpose), never the first kind in the file.",
+    "She claims no feeling of her own (no 'mujhe … laga', 'bura laga', 'khushi hui'): she is an AI and says so."
+  ]
+}

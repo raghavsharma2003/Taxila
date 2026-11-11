@@ -8,9 +8,12 @@ import { clamp, hexA, rng } from "../../core/math.ts";
 import { roundRect, type Ctx, type TextOpts } from "../../core/draw.ts";
 import type { EngineApi } from "../../core/types.ts";
 import type { Accent } from "../../../../shared/studio-spec-ext/scene.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 
-export const ACC: Record<Accent, string> = { ion: C.ion, sci: C.sci, mint: C.mint, amber: C.amber, sun: C.sun, volt: C.volt };
-export const SUBJECT_ACCENT: Record<string, string> = { maths: C.ion, science: C.sci, evs: C.mint, english: "#FF8FB1", hindi: "#FFB547", sst: "#C9A7FF" };
+// (getters: C follows the theme, so an accent is read when it is drawn, never copied at load)
+export const ACC: Record<Accent, string> = { get ion() { return C.ion; }, get sci() { return C.sci; }, get mint() { return C.mint; }, get amber() { return C.amber; }, get sun() { return C.sun; }, get volt() { return C.volt; } };
+// (getters: C changes with the theme, so each read takes the active theme's colour)
+export const SUBJECT_ACCENT: Record<string, string> = { get maths() { return C.ion; }, get science() { return C.sci; }, get evs() { return C.mint; }, get english() { return C.kitEnglish; }, get hindi() { return C.amber; }, get sst() { return C.kitSst; } };
 export const LABEL = 38;
 
 /** Greedy word wrap at the stage's label floor; long single words are kept whole (the caller's lint catches them). */
@@ -28,7 +31,7 @@ export function wrap(api: EngineApi, ctx: Ctx, s: string, maxW: number, o: TextO
 }
 /** Draw wrapped text centred on (x, y) (block centred vertically). Returns the block height. */
 export function textBlock(api: EngineApi, ctx: Ctx, s: string, x: number, y: number, maxW: number, o: TextOpts = {}, maxLines = 3, lh = 1.18): number {
-  const size = o.size ?? LABEL;
+  const size = Math.max(o.size ?? LABEL, api.minLabel);   // the young floor: line height from the size actually drawn
   const lines = wrap(api, ctx, s, maxW, { ...o, size }, maxLines);
   const h = lines.length * size * lh;
   lines.forEach((ln, i) => api.text(ctx, ln, x, y - h / 2 + size * lh * (i + 0.5), { baseline: "middle", align: "center", maxWidth: maxW + 4, ...o, size }));
@@ -37,28 +40,28 @@ export function textBlock(api: EngineApi, ctx: Ctx, s: string, x: number, y: num
 /** A glass tile (world units) with an accent edge; `glowA` adds the active halo. */
 export function tile(ctx: Ctx, x: number, y: number, w: number, h: number, o: { accent?: string; fill?: string; edge?: number; r?: number; glowA?: number; alpha?: number } = {}): void {
   ctx.save(); ctx.globalAlpha *= o.alpha ?? 1;
-  if (o.glowA && o.glowA > 0.01) { ctx.save(); ctx.globalAlpha *= o.glowA; ctx.shadowColor = o.accent ?? C.ion; ctx.shadowBlur = 26; ctx.fillStyle = "rgba(0,0,0,.01)"; roundRect(ctx, x, y, w, h, o.r ?? 18); ctx.fill(); ctx.restore(); }
-  ctx.fillStyle = o.fill ?? "rgba(22,26,36,.92)"; roundRect(ctx, x, y, w, h, o.r ?? 18); ctx.fill();
+  if (o.glowA && o.glowA > 0.01) { ctx.save(); ctx.globalAlpha *= o.glowA; ctx.shadowColor = o.accent ?? C.ion; ctx.shadowBlur = 26; ctx.fillStyle = withAlpha(C.lo, .01); roundRect(ctx, x, y, w, h, o.r ?? 18); ctx.fill(); ctx.restore(); }
+  ctx.fillStyle = o.fill ?? withAlpha(C.bg2, .92); roundRect(ctx, x, y, w, h, o.r ?? 18); ctx.fill();
   ctx.strokeStyle = o.accent ? hexA(o.accent, 0.85) : C.line2; ctx.lineWidth = o.edge ?? 3; ctx.stroke();
-  ctx.fillStyle = "rgba(255,255,255,.04)"; roundRect(ctx, x + 3, y + 3, w - 6, 4, 2); ctx.fill();
+  ctx.fillStyle = withAlpha(C.hi, .04); roundRect(ctx, x + 3, y + 3, w - 6, 4, 2); ctx.fill();
   ctx.restore();
 }
 /** Deep backdrop: radial gradient + a faint engineering grid + vignette, tinted by the accent. Paint into api.layer. */
 export function backdrop(g: Ctx, accent: string, seed = 3, stars = 0): void {
   const gr = g.createRadialGradient(W * 0.5, H * 0.42, 40, W * 0.5, H * 0.5, W * 0.78);
-  gr.addColorStop(0, "#151A28"); gr.addColorStop(0.55, "#0D111B"); gr.addColorStop(1, "#06070B");
+  gr.addColorStop(0, C.kitBgTop); gr.addColorStop(0.55, C.kitBgMid); gr.addColorStop(1, C.kitBgEdge);
   g.fillStyle = gr; g.fillRect(0, 0, W, H);
   g.fillStyle = hexA(accent, 0.05); g.fillRect(0, 0, W, H);
-  g.strokeStyle = "rgba(255,255,255,.028)"; g.lineWidth = 1;
+  g.strokeStyle = withAlpha(C.hi, .028); g.lineWidth = 1;
   for (let x = 0; x <= W; x += 50) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke(); }
   for (let y = 0; y <= H; y += 50) { g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
-  if (stars) { const r = rng(seed); for (let i = 0; i < stars; i++) { g.globalAlpha = 0.15 + r() * 0.45; g.fillStyle = "#C9D2F2"; g.fillRect(r() * W, r() * H, 1.6, 1.6); } g.globalAlpha = 1; }
+  if (stars) { const r = rng(seed); for (let i = 0; i < stars; i++) { g.globalAlpha = 0.15 + r() * 0.45; g.fillStyle = C.kitStar; g.fillRect(r() * W, r() * H, 1.6, 1.6); } g.globalAlpha = 1; }
   const v = g.createRadialGradient(W / 2, H / 2, H * 0.45, W / 2, H / 2, W * 0.72);
-  v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,.55)");
+  v.addColorStop(0, withAlpha(C.lo, 0)); v.addColorStop(1, withAlpha(C.lo, .55));
   g.fillStyle = v; g.fillRect(0, 0, W, H);
 }
 /** Slow drifting dust motes (pure function of t). */
-export function dust(ctx: Ctx, t: number, n = 36, color = "#C9D2F2", seed = 11): void {
+export function dust(ctx: Ctx, t: number, n = 36, color = C.kitStar, seed = 11): void {
   const r = rng(seed);
   ctx.save(); ctx.fillStyle = color;
   for (let i = 0; i < n; i++) {
@@ -109,7 +112,9 @@ export { clamp, hexA };
 export class RoundFlow {
   state: "boot" | "intro" | "play" | "reveal" | "end" | "final" = "boot";
   stateT = 0; introA = 0; endA = 0; finalA = 0; round = -1;
-  constructor(private api: EngineApi, private rounds: number, private hooks: { onRound(k: number): void; onEnd?(k: number): void; onFinal(): void }) {}
+  // (plain fields, not parameter properties: node's strip-only TypeScript loads this file in the layout test)
+  private api: EngineApi; private rounds: number; private hooks: { onRound(k: number): void; onEnd?(k: number): void; onFinal(): void };
+  constructor(api: EngineApi, rounds: number, hooks: { onRound(k: number): void; onEnd?(k: number): void; onFinal(): void }) { this.api = api; this.rounds = rounds; this.hooks = hooks; }
   go(s: RoundFlow["state"]): void { this.state = s; this.stateT = 0; }
   startRound(k: number): void {
     this.round = k; this.go("intro"); this.introA = 0;
@@ -140,3 +145,4 @@ export function taskPill(api: EngineApi): (step: string, goal: string, mode?: "d
   return (step, goal, mode) => { const k = `${step}|${goal}|${mode ?? ""}`; if (k === last) return; last = k; api.task(step, goal, mode); };
 }
 export const clampX = (x: number, w = 0) => clamp(x, 70 + w / 2, W - 70 - w / 2);
+export { tally } from "../../core/dots.ts";

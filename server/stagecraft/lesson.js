@@ -18,16 +18,14 @@ import { buildCatalog } from "./catalog.js";
 import { createBuilders } from "./builders.js";
 import { catalogueTopicsByArchetype, loadCatalogue } from "./catalogue.js";
 import { PERSONAL_NEEDS } from "./config.js";
+import { SCENES } from "../forge/animate/scenes.js";
 import "./kernel-point.js";            // registers the kernel view's hooks on the bridge (detach forgets the view)
 import { ENGINE_SPECS } from "../../shared/studio-spec.ts";
 import { ENGINE_SPECS_EXT } from "../../shared/studio-spec-ext/index.ts";
 
-const MODES = new Set(["off", "shadow", "on"]);
-/** The runtime switch (read per lesson start, so an env change on the Container App needs only a restart). */
-export function stagecraftMode(env = process.env) {
-  const v = String(env.STAGECRAFT ?? "on").trim().toLowerCase();
-  return MODES.has(v) ? v : "on";
-}
+// the runtime switch lives in config.js (STUDIO-08: one default, read by this file and by StagecraftHost alike)
+export { stagecraftMode } from "./config.js";
+import { stagecraftMode } from "./config.js";
 
 let catalogMemo = null;
 /** The admissibility table (once per process): base engines + catalogue rows. */
@@ -43,6 +41,12 @@ export function productionCatalog({ fresh = false } = {}) {
     specs[id] = { kind: d.kind, subject: d.subjects[0], outcomes: { classes: d.outcomes.classes, topics: [...rows[id]], misconceptions: d.outcomes.misconceptions } };
   }
   catalogMemo = buildCatalog(specs, {});
+  // round 7 M5a: the code-built scenes (server/forge/animate/scenes.js), one "animation" archetype per pilot topic. Built by
+  // the instant rung only (noSpec: never a generated spec, never spend)
+  for (const [topicId, b] of Object.entries(SCENES)) {
+    const id = `scene:${b("en").id}`;
+    catalogMemo.rs4[id] = { kind: "animation", subject: topicId.split("-")[1], classes: [Number(topicId.slice(1, 2))], topics: [topicId], misconceptions: [], noSpec: true, boost: 1 };
+  }
   return catalogMemo;
 }
 export const _resetProductionCatalog = () => { catalogMemo = null; };
@@ -70,6 +74,16 @@ export function specChainCfg(env = process.env) {
     rpm: { [dep]: 120, "taxila-fast-bg": 120, "taxila-gpt6-luna": 60, "taxila-mistral-m35": 60, "taxila-image25-flare": 3, "taxila-image": 3, race: 6 } };
 }
 
+/**
+ * STUDIO-11 (audit 2026-11-10): the tray gate shows a generated spec only with a judge verdict at the child's sizes
+ * (forge3/tray-gate.js), and the judge lane is the forge3-qa service (forge3/gate.js judgeArtifact, FORGE3_QA_URL). With no
+ * judge lane every generated spec is paid for and then refused, so the spec rung is not launched at all; every other rung is.
+ */
+export const RUNGS_WITHOUT_JUDGE = ["steer", "library", "engine_default", "image", "live_codegen", "board"];
+export function judgeRungsCfg(env = process.env) {
+  return String(env.FORGE3_QA_URL ?? "").trim() ? {} : { rungs: RUNGS_WITHOUT_JUDGE };
+}
+
 const lastInput = new Map();     // lessonId → ms of the last turn (idle sweep)
 const IDLE_MS = 45 * 60_000;
 let sweeper = null;
@@ -90,7 +104,7 @@ export async function startStagecraft(ctx, o = {}) {
     const deps = o.deps ?? (o.builders ? {} : await productionDeps());
     const builders = o.builders ?? createBuilders({ ...deps, child: ctx.child ?? {} });
     const host = new StagecraftHost({ lessonId: ctx.lessonId, mode, catalog: o.catalog ?? productionCatalog(), builders, clock: o.clock, timerMs: o.timerMs, sink: o.sink ?? telemetrySink,
-      cfg: { ...specChainCfg(), personalNeeds: PERSONAL_NEEDS } });
+      cfg: { ...specChainCfg(), ...judgeRungsCfg(), personalNeeds: PERSONAL_NEEDS } });
     // a parent's "Only ready-made ones" / Studio off: the conductor builds nothing speculative (control "ready_made" / "off")
     const control = ctx.child?.studio_control ?? ctx.studioControl ?? "on";
     if (control !== "on") host.state.meta.control = control === "off" ? "off" : "ready_made";

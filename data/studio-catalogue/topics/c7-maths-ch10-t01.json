@@ -1274,161 +1274,16 @@
    },
    {
     "line": "L6",
-    "ok": true,
+    "ok": false,
     "errors": [],
     "fixes": 0,
-    "script": {
-     "v": 1,
-     "scriptId": "c7-maths-ch10-t01-wb-L6",
-     "line": {
-      "lessonId": "catalogue"
-     },
-     "anchor": "line_audio_start",
-     "board": {
-      "w": 800,
-      "h": 500,
-      "ground": "chalk"
-     },
-     "mode": "fresh",
-     "durationMs": 9962,
-     "ops": [
-      {
-       "id": "different",
-       "op": "text",
-       "startMs": 0,
-       "endMs": 1000,
-       "ink": "chalk",
-       "weight": 2,
-       "at": [
-        400,
-        55
-       ],
-       "text": "different signs",
-       "size": "l",
-       "align": "middle"
-      },
-      {
-       "id": "negativeResult",
-       "op": "numwork",
-       "startMs": 1100,
-       "endMs": 2600,
-       "ink": "accent",
-       "weight": 2,
-       "at": [
-        100,
-        125
-       ],
-       "layout": "equation",
-       "rows": [
-        [
-         "positi",
-         "×",
-         "negati",
-         "=",
-         "negati"
-        ]
-       ]
-      },
-      {
-       "id": "negativeResult2",
-       "op": "numwork",
-       "startMs": 2600,
-       "endMs": 4000,
-       "ink": "accent",
-       "weight": 2,
-       "at": [
-        100,
-        205
-       ],
-       "layout": "equation",
-       "rows": [
-        [
-         "negati",
-         "×",
-         "positi",
-         "=",
-         "negati"
-        ]
-       ]
-      },
-      {
-       "id": "several",
-       "op": "text",
-       "startMs": 4200,
-       "endMs": 5000,
-       "ink": "chalk",
-       "weight": 2,
-       "at": [
-        400,
-        310
-       ],
-       "text": "several factors",
-       "size": "m",
-       "align": "middle"
-      },
-      {
-       "id": "even",
-       "op": "numwork",
-       "startMs": 5000,
-       "endMs": 6500,
-       "ink": "good",
-       "weight": 2,
-       "at": [
-        100,
-        350
-       ],
-       "layout": "equation",
-       "rows": [
-        [
-         "even",
-         "negati",
-         "=",
-         "positi"
-        ]
-       ]
-      },
-      {
-       "id": "odd",
-       "op": "numwork",
-       "startMs": 6500,
-       "endMs": 8000,
-       "ink": "accent",
-       "weight": 2,
-       "at": [
-        430,
-        350
-       ],
-       "layout": "equation",
-       "rows": [
-        [
-         "odd",
-         "negati",
-         "=",
-         "negati"
-        ]
-       ]
-      },
-      {
-       "id": "braceEven",
-       "op": "highlight",
-       "startMs": 8200,
-       "endMs": 8800,
-       "ink": "good",
-       "weight": 2,
-       "target": "even",
-       "style": "underline"
-      },
-      {
-       "id": "braceOdd",
-       "op": "highlight",
-       "startMs": 8800,
-       "endMs": 9400,
-       "ink": "accent",
-       "weight": 2,
-       "target": "odd",
-       "style": "underline"
-      }
-     ]
+    "script": null,
+    "dropped": {
+     "why": [
+      "even+odd:text_overlap"
+     ],
+     "lastFeedback": "shape/lint: odd:inside_board, braceOdd:inside_board",
+     "at": "2026-10-15T12:34:22.451Z"
     }
    },
    {
@@ -1465,11 +1320,11 @@
        "layout": "equation",
        "rows": [
         [
-         "negati",
+         "negative",
          "×",
-         "negati",
+         "negative",
          "=",
-         "positi"
+         "positive"
         ]
        ]
       },
@@ -1487,11 +1342,11 @@
        "layout": "equation",
        "rows": [
         [
-         "negati",
+         "negative",
          "÷",
-         "negati",
+         "negative",
          "=",
-         "positi"
+         "positive"
         ]
        ]
       },
@@ -1509,11 +1364,11 @@
        "layout": "equation",
        "rows": [
         [
-         "negati",
+         "negative",
          "+",
-         "negati",
+         "negative",
          "=",
-         "positi"
+         "positive"
         ]
        ]
       },
@@ -1550,7 +1405,8 @@
        ]
       }
      ]
-    }
+    },
+    "repaired": "cut-words (code, from the kit)"
    }
   ],
   "model": "taxila-fast-bg"
