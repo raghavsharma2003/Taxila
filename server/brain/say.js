@@ -232,7 +232,13 @@ export function returnLineOk(x, said, topic) {
 }
 /** dc-r8-director20 W1: whether a sentence of the turn is one a person wrote (the move's point, simpler, rendered steps, say-first lines,
  *  key, close and why, bridge, card) — code never swaps a word inside one. */
-function authoredSentence(state, card) {
+function authoredSentence(state, card, kit = null) {
+  // (P1, dc-r8-director20: the script's joints are authored too — the twin pass made "sankhya rekha wala kaam" in a park "sankhya line
+  // wala kaam"; a sentence of a joint form, its slots filled with anything, is the joint's)
+  const jointRes = Object.values(kit ? scriptFor(kit)?.script?.joints ?? {} : {}).flat()
+    .flatMap((f) => [typeof f === "string" ? f : f?.hi, f?.en]).filter((x) => typeof x === "string")
+    .flatMap((f) => f.split(/(?<=[.!?।])\s+/)).map((x) => x.replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?।:]+$/, "")).filter((x) => x.replace(/\{\w+\}/g, "").length > 8)
+    .map((x) => new RegExp(`^${x.split(/\{\w+\}/).map((y) => y.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join(".{1,40}?")}$`, "u"));
   const lm = state?.lastMove ?? {};
   const txt = (x) => (typeof x === "string" ? x : x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" \n ") : "");
   const all = [lm.point, lm.simpler, lm.cardPoint, ...(lm.rendered ?? []), ...(lm.sayFirst ?? []), lm.gave?.answer, lm.gave?.why, lm.closed?.answer, lm.closed?.why,
@@ -241,7 +247,7 @@ function authoredSentence(state, card) {
   // follows the frame is — the Hindi word pass swapped "line" inside a re-posed card)
   const unframed = (k) => k.replace(/^[^:—]{0,40}(?::|—)\s*/, "");
   return (x) => { const k = String(x ?? "").replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?।:]+$/, ""); const u = unframed(k);
-    return (k.length > 8 && all.includes(k)) || (u !== k && u.length > 8 && all.includes(u)); };
+    return (k.length > 8 && all.includes(k)) || (u !== k && u.length > 8 && all.includes(u)) || jointRes.some((re) => re.test(k)); };
 }
 /** v6.11 J2: the instruction for her one sentence after the child answered her return question. */
 /** v6.11 J2 (main on the J2 replay, 12 of 60 drafts passed and 41 of 48 refusals were the child's sentence said back): the model is
@@ -2577,7 +2583,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const unpointed = (x) => (state.lastMove?.bridgeBeat?.board ? x : norm(String(x).replace(/\s*\b(?:screen|board)\s+(?:par|pe)\b/gi, "").replace(/\s+dekho\b(?=\s*[:,.]|\s)/gi, "").replace(/\s+([:,.])/g, "$1")));
     // (v6.7 V1′, main on director15: the hook is authored only — her words never stand in for it, and none follow it; her copy of
     // it is dropped as hers, the authored line is said)
-    const first = (state.lastMove?.sayFirst ?? []).map(dot).map(unpointed);
+    // (P1: the parts a return's turn held back are authored and said as written — never "unpointed" — after her reply to the child)
+    const heldK0 = new Set((state.lastMove?.heldSaid ?? []).map((x) => norm(dot(x)).toLowerCase()));
+    const first = (state.lastMove?.sayFirst ?? []).map(dot).map((x) => (heldK0.has(norm(x).toLowerCase()) ? x : unpointed(x)));
     // v6 (main, director8 hand judges: 10 / 4 / 45 firm contradictions, the checker saw 1 / 0 / 0): everything about the card
     // they just answered is said FIRST and together (the verdict with its reason, a give-up, the worked answer), so it is one
     // segment on THAT card's board; then a missed card's close (its own board); then the bridge (its own segment); then a parked
@@ -2590,18 +2598,19 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const once = (xs) => xs.filter(Boolean).map(norm).filter((x) => { const kk = keyS(x); if (!kk || seenS.has(kk)) { if (kk) guard.dupDropped = (guard.dupDropped ?? 0) + 1; return false; } seenS.add(kk); return true; });
     // (v6.3 W1, main on director11 c5-t02 steady T65: a worked example poses its question before "Diya hai …"; an authored worked
     // line keeps its question — "Kisne kam cake khaya?" was dropped as a second question)
-    const authoredQ = new Set([...(workedLines ?? []), ...(point ? [point, dot(point), ...sentences(point)] : []), ...(state.lastMove?.simpler ? [state.lastMove.simpler, dot(state.lastMove.simpler)] : []), ...(state.lastMove?.simpler ? sentences(state.lastMove.simpler) : []), ...(state.lastMove?.cardPoint ? sentences(state.lastMove.cardPoint) : [])].map(norm));
+    const authoredQ = new Set([...(workedLines ?? []), ...(point ? [point, dot(point), ...sentences(point)] : []), ...(state.lastMove?.simpler ? [state.lastMove.simpler, dot(state.lastMove.simpler)] : []), ...(state.lastMove?.simpler ? sentences(state.lastMove.simpler) : []), ...(state.lastMove?.cardPoint ? sentences(state.lastMove.cardPoint) : []), ...(state.lastMove?.heldSaid ?? []).flatMap((x) => [x, dot(x), ...sentences(x)])].map(norm));
     const noQ = (xs) => (tail ? xs.filter((x) => { const q = /[?？]/.test(x) && !authoredQ.has(norm(x)); if (q) guard.secondQuestion = (guard.secondQuestion ?? 0) + 1; return !q; }) : xs);
     // v6.1 (main's split policy B: "first trim HER own words"): a scripted turn over the word cap loses her own sentences in the
     // body (lead-ins, framings, her lines) before anything authored or code's is touched
     {
       const capW = state.ctx?.plainWords ? 45 : 60;
       const authoredS = new Set([...(point ? sentences(point) : []), ...(workedLines ?? []), ...(state.lastMove?.simpler ? sentences(state.lastMove.simpler) : []),
-        ...(state.lastMove?.cardPoint ? [state.lastMove.cardPoint] : [])].map((x) => norm(x).toLowerCase().replace(/[.!?\u0964]+$/, "")));
+        ...(state.lastMove?.cardPoint ? [state.lastMove.cardPoint] : []), ...(state.lastMove?.heldSaid ?? [])].map((x) => norm(x).toLowerCase().replace(/[.!?\u0964]+$/, "")));
       const total = [lead, ack, missS, gaveS, doneS, closedS, ...first, ...aside, ...body, tail].filter(Boolean).join(" ").split(/\s+/).filter(Boolean).length;
       if (total > capW) {
         const mineOnly = (x) => !authoredS.has(norm(x).toLowerCase().replace(/[.!?\u0964]+$/, "")) && ![...authoredS].some((a) => a && norm(x).toLowerCase().includes(a));
-        const kept = body.filter((x) => !mineOnly(x));
+        // (P1: her reply to the child's answer to a return is no lead-in of hers to trim)
+        const kept = body.filter((x) => !mineOnly(x) || (!!guard.asideResumeLine && x === guard.asideResumeLine));
         if (kept.length && kept.length < body.length) { guard.trimmedHers = body.length - kept.length; body = kept; }
       }
     }
@@ -2663,9 +2672,15 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (the return line itself — the honest line ends on its question to them — is never cut as a second question)
     const retQ = guard.returnLine && /[?？]/.test(guard.returnLine) && aside.includes(guard.returnLine) ? guard.returnLine : null;
     // v6.7 A3: an aside said again, already on the list, gets one line (no promise, nothing of hers)
-    const againLine = !honestLine && state.lastMove?.asideAgain?.topic ? asideAgainLine(state.lastMove.asideAgain.topic, lang, state) : null;
+    // (P1: an aside said again after its return was returned already — one plain line, no promise of a later talk)
+    const againLine = !honestLine && state.lastMove?.asideAgain?.topic ? (state.lastMove.asideAgain.returned ? freshOf(NEUTRAL_ACK[lang === "english" ? "english" : "hinglish"], state)
+      : asideAgainLine(state.lastMove.asideAgain.topic, lang, state)) : null;
     if (againLine) { guard.asideAgain = true; guard.againLine = againLine; }
     const asideP = once([...(honestLine ? [honestLine] : []), ...(againLine ? [againLine] : []), ...(retQ ? [retQ] : []), ...noQ(aside.filter((x) => x !== retQ).filter((x) => x === guard.returnLine || !(TASTE_CLAIM.test(x) || DENIES_AI.test(x) || (honestLine && /(?<![\p{L}])ai(?![\p{L}])/iu.test(x)))))]);
+    if (heldK0.size) {
+      const h = first.filter((x) => heldK0.has(norm(x).toLowerCase()));
+      if (h.length) { first.splice(0, first.length, ...first.filter((x) => !h.includes(x))); body = [...h, ...body.filter((x) => !h.some((y) => keyS(y) === keyS(x)))]; }
+    }
     body = once(noQ(body));
     // v6.7 A3 (main, director15: the honest line buried by the next card in the same breath): an aside question ends her turn — it is
     // said last, and the card waits (still live, re-posed on the next turn)
@@ -2684,6 +2699,19 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     if (asideQ && guard.reposeFrame) { body = body.filter((x) => !REPOSE_FRAME.test(x)); guard.reposeFrame = false; }
     if (asideQ) guard.asideEnd = true;
     if (asideQ && tail) { guard.cardHeld = true; tail = null; }
+    // P1 (dc-r8-director20: c4 offtopic 30, c5-t02 steady 50 — a return said with the next point or a worked step): a return is a turn
+    // of its own. The close of the card just answered stays; the lesson's authored parts wait, and the walk says them first next turn
+    // (guard.bodyHeld → the state's bodyUnsaid → that move's sayFirst)
+    if (asideQ && !honestLine && guard.returnLine && asideP.includes(guard.returnLine)) {
+      const isA = authoredSentence(state, card, kit);
+      const bridgeK0 = state.lastMove?.bridgeSaid ? unpointed(dot(state.lastMove.bridgeSaid)) : null;
+      const held = [...first.filter((x) => x === bridgeK0), ...body].filter((x) => sentences(x).some((y) => isA(y)));
+      if (held.length) {
+        guard.bodyHeld = held.map(norm);
+        body = [];
+        if (bridgeK0) first.splice(0, first.length, ...first.filter((x) => x !== bridgeK0));
+      }
+    }
     const assembled = (asideQ ? [...prevPart, ...closedP, ...first, ...body, ...asideP] : [...prevPart, ...closedP, ...first, ...asideP, ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
     // v6.6 V1: nothing authored or code's left to say — her draft is never the line in its place: the beat's own authored line
@@ -2719,7 +2747,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const hw = (x) => (hindiOn && x ? inHindiWords(x, { keep: keepW, card }) : x);
     // (dc-r8-director20 W1: an authored sentence keeps its words in Hindi mode too — its Hindi form is the script's own; only her
     // own sentences are turned into Hindi words)
-    if (hindiOn) { const auth = authoredSentence(state, card); const h = reply.split(/(?<=[.!?।])\s+/).map((x) => (auth(x) ? x : hw(x))).join(" "); if (h !== reply) { reply = h; guard.hindiWords = true; } }
+    if (hindiOn) { const auth = authoredSentence(state, card, kit); const h = reply.split(/(?<=[.!?।])\s+/).map((x) => (auth(x) ? x : hw(x))).join(" "); if (h !== reply) { reply = h; guard.hindiWords = true; } }
     // v6.5 F1 (director13 c4 steady 52: "Sahi—, kyunki"): a dash left before a comma goes
     { const r0 = reply.replace(/\s*[—–]\s*,/g, ",").replace(/\s*[—–]\s*(?=[.!?])/g, ""); if (r0 !== reply) { reply = r0; guard.dashFixed = true; } }
     // (v6.9 R6, main on director17: authored lines are never re-inflected — v6.8's "1, jitna tukda … liya" rewrite is gone)
@@ -2820,7 +2848,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const ssc = sentences(reply).map((x) => String(x).trim()).filter(Boolean);
     // (main's order 1, the authoredWhole predicate: c5-t01's authored hook "Cricket ki pitch socho." went as an aside fact — an
     // authored sentence is never one)
-    const authoredS = authoredSentence(state, ui?.ask?.text ?? null);
+    const authoredS = authoredSentence(state, ui?.ask?.text ?? null, kit);
     const kept = ssc.filter((x) => !canned(x) || authoredS(x));
     if (kept.length && kept.length < ssc.length) { reply = kept.join(" "); guard.cannedDropped = ssc.length - kept.length; }
     // (an aside parked THIS turn whose only mention was such a sentence is still said: code's promise, as when her words leave it out)
@@ -2864,7 +2892,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     let head = at >= 0 ? reply.slice(0, at) : reply; const tail = at >= 0 ? reply.slice(at) : "";
     // (dc-r8-director20 W1: "4 barabar tukdon the", "sankhya line", "varg ki chaaron" — code never swaps a word inside a sentence a
     // person wrote. Only her own sentences are rewritten; an authored sentence keeps its words, and Learning keeps one term per idea)
-    const isAuthored = authoredSentence(state, card);
+    const isAuthored = authoredSentence(state, card, kit);
     const headSs = head.split(/(?<=[.!?।])\s+/);
     const mine = headSs.map((x) => !isAuthored(x));
     for (const t of TWIN_WORDS) {

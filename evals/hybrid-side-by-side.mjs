@@ -273,13 +273,17 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       // 60. A card is on the table for the child only once her line has said it; and the goodbye waits for a card she said and left open)
       const lastT = [...rows].reverse().find((r) => r.who === "teacher") ?? null;
       const nrm = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
-      const cardSaid = !lastT?.card || nrm(lastT.text).includes(nrm(lastT.card).slice(0, 30));
+      // (dc-r8-director20 harness: a card held by her aside question — no card on her row — was still answered, c6 offtopic 21 "126 cm"
+      // after the AI line: a live card her last line did not say is not on the table)
+      const liveP = live ? nrm(s.ctx?.lang === "english" ? live.prompt_en ?? live.prompt_hi : live.prompt_hi ?? live.prompt_en) : "";
+      const cardSaid = lastT?.card ? nrm(lastT.text).includes(nrm(lastT.card).slice(0, 30)) : !lastT || !live || (!!liveP && nrm(lastT.text).includes(liveP.slice(0, 30)));
       const childIn = (turn) => ({ turn, teacher: [...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "",
         beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card: cardSaid ? card : null, ask: cardSaid ? ask : null, boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",
         // (H1.1: her probe or teach-back move is unkeyed: the child gives a reason; else the child reads her line)
         ...(["probe", "teachback"].includes(s.lastMove?.kind) ? { probe: true } : {}),
         // (v6.11 J2: her last turn was an aside's return question: the child answers it, about the aside)
-        ...(lastT?.returnSaid ? { returned: true } : {}) });
+        // (P1: and her question after the "Main AI teacher hoon …" line is answered the same way, about their thing)
+        ...(lastT?.returnSaid || (/Main AI teacher hoon|Main AI hoon|I'm an AI|No favourites for me/i.test(String(lastT?.text ?? "")) && /[?？]\s*$/.test(String(lastT?.text ?? ""))) ? { returned: true } : {}) });
       let out = child.reply(childIn(i));
       // (c6 steering 51: the goodbye came during an open card — up to 10 turns it waits; the child answers the card instead)
       const openSaid = !!lastT?.card && cardSaid && /[?？]\s*$/.test(String(lastT.text ?? "").trim());
@@ -377,8 +381,12 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       if (t.guard?.returnMissed && next?.lastMove?.returned) next = { ...next, later: requeueMissedReturn(next, t.guard).later };
       // (v6.8 A4, as brain/turn.js: an aside question ended her turn — the unsaid card is neither pinned nor graded)
       if (t.guard?.cardHeld && next?.activeItemId) { next = { ...next, cardUnsaid: next.activeItemId }; if (ui?.ask) ui = { ...ui, ask: null, chips: [] }; }
+      // (P1, as brain/turn.js: a return's turn held the lesson's authored parts; the next turn says them first)
+      if (t.guard?.bodyHeld?.length && next) next = { ...next, bodyUnsaid: t.guard.bodyHeld };
       if (t.guard?.asideEnd) next = { ...next, asideReplyDue: true };
       if (next) next = { ...next, returnAsked: t.guard?.asideEnd && t.guard?.returnSaid && next.lastMove?.returned?.topic ? { topic: next.lastMove.returned.topic } : undefined };
+      // (P1, as brain/turn.js: the AI line's question to them is answered on the next turn, as a return's is)
+      if (next && !next.returnAsked && t.guard?.asideEnd && t.guard?.honestNow && next.lastMove?.tasteAsked?.topic) next = { ...next, returnAsked: { topic: next.lastMove.tasteAsked.topic } };
       // (main's director2 judgement: a caught problem must be told apart from a fixed one) what was left after the rewrite, and
       // whether code replaced or repaired the line
       if (guard) guardAfter = { afterRewrite: t.guard.afterRewrite ?? null, replaced: !!t.guard.replaced, repaired: !!t.guard.repaired };

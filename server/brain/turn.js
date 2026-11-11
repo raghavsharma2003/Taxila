@@ -964,10 +964,14 @@ export async function lessonTurn(req, body, hooks = {}) {
     // v6.8 A4 (main on director16 c5-t01 steady 40): an aside question ended her turn — the card she did not say is neither
     // pinned nor graded; the next reply gets code's acknowledgement, then the card aloud (planTurn reads cardUnsaid)
     if (guard?.cardHeld && next?.activeItemId) { next.cardUnsaid = next.activeItemId; if (r.ui?.ask) r = { ...r, ui: { ...r.ui, ask: null, chips: [] } }; }
+    // (P1: a return is a turn of its own — the authored parts it held are said first on the next turn, state.js step0's sayFirst)
+    if (guard?.bodyHeld?.length && next) next.bodyUnsaid = guard.bodyHeld;
     // (v6.9 A5: her turn ended on an aside question — the next reply is read as about it, or as what it asks)
     if (guard?.asideEnd) next.asideReplyDue = true;
     // (v6.11 J2: that question was an aside's return: the reply answers it — state.js reads it as the aside's own reply)
     if (next) next.returnAsked = guard?.asideEnd && guard?.returnSaid && next.lastMove?.returned?.topic ? { topic: next.lastMove.returned.topic } : undefined;
+    // (P1, dc-r8-director20: after the "Main AI teacher hoon …" line her question to them is answered on the next turn, as a return's is)
+    if (next && !next.returnAsked && guard?.asideEnd && guard?.honestNow && next.lastMove?.tasteAsked?.topic) next.returnAsked = { topic: next.lastMove.tasteAsked.topic };
     // The content filter blocked the reply call that carried the child's words: fail CLOSED. The turn is
     // re-planned as a disclosure (safeguard move, incident row) and the fixed helpline line is sent, with no
     // further model call on the same words.

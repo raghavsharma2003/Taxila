@@ -126,11 +126,18 @@ describe("r7-brain-v69.test.mjs", () => {
     });
     for (const spec of REQUEST_TABLE.find((r) => r.id === "T1.9").rows) test(`T1.9 an aside with no card open (${spec}): no "is sawaal ke baad"`, async () => {
       const { t } = await at(spec);
+      // (2026-11-11, S1/P1: a script card answered right has no why-probe now, so on these rows a card is open — the pin's premise, no
+      // card open, holds only where it still does)
+      if (t.pl.before.activeItemId) return;
       assert.doesNotMatch(t.out.reply, /sawaal ke baad|sawaal khatam karke|after this question/i, t.out.reply);
     });
     for (const spec of REQUEST_TABLE.find((r) => r.id === "T1.10").rows) test(`T1.10 an aside said again is returned to now, once (${spec})`, async () => {
       const { t } = await at(spec);
-      assert.ok(t.pl.state.lastMove.returned, t.out.reply);
+      // (2026-11-11, P1 on director20 c4 offtopic 37: an aside said again AFTER its return gets one plain line — a second return was a
+      // return with no park; one said again before its return is returned now, once)
+      const was = (t.pl.before.later ?? []).find((e) => /cricket/i.test(String(e.topic)));
+      if (was?.servedAt != null) assert.ok(!t.pl.state.lastMove.returned, t.out.reply);
+      else assert.ok(t.pl.state.lastMove.returned, t.out.reply);
       assert.doesNotMatch(t.out.reply, /likh li hai/);
     });
     test("T1.11 \"haan\" to her check-in during a worked step (stuck c4 54): the next step, never a stop menu", async () => {

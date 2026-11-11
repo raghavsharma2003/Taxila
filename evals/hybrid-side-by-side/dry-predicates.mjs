@@ -30,6 +30,22 @@ const twinRe = (forms) => new RegExp(`(?<![\\p{L}])(?<!question\\s)(?:${[...form
 export const TWINS = JSON.parse(readFileSync(new URL("../../data/lesson-twins.json", import.meta.url), "utf8")).twins
   .map((t) => ({ en: t.en, hi: t.hi, enRe: twinRe(t.en), hiRe: twinRe(t.hi) }));
 
+const GOODBYE = /^(?:wrap|break)$/;
+const AI_LINE = /(?:Main AI teacher hoon|I'm an AI|No favourites for me|Main AI hoon)/i;
+/** The parts of a turn that are the lesson's own (a return or a park's turn is checked against them). */
+const UNIT_PART = new Set(["body", "simpler", "card", "alt", "bridge"]);
+/** A joint form with its {aside} slot as a pattern; the slot's words are captured. */
+const formRe = (f) => new RegExp(String(f).replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\\\{aside\\\}/g, "(.{2,40}?)").replace(/\s+/g, "\\s+"), "iu");
+/** The aside a turn parks (the script's asidePark forms), or null. */
+function parkOf(r, ctx) {
+  for (const re of ctx.parkRes ?? []) { const m = String(r.text ?? "").match(re); if (m) return norm(m[1] ?? "").replace(/^[.!?,\s]+/, ""); }
+  return null;
+}
+/** Whether a turn is a return to a parked aside (the harness marks it; the script's asideReturn forms otherwise). */
+function returnOf(r, ctx) {
+  return !!r.returnSaid || (ctx.retRes ?? []).some((re) => re.test(String(r.text ?? "")));
+}
+
 /** Each predicate: (lesson, row, i, ctx) → reason or null. ctx = { prevT, prevChild, script, saidCards, jointUse }. */
 export const PREDICATES = {
   /** A sentence said twice in one turn. */
@@ -163,6 +179,53 @@ export const PREDICATES = {
     }
     return null;
   },
+  /** P1 (dc-r8-director20): every park is kept. A park (her promise to talk about their aside later) gets its return before the
+   *  goodbye — and, mid-lesson, within ten turns of hers — unless her goodbye names it. director20: c5-t01 steering 24 and c5-t02
+   *  stuck 34 were never returned to. */
+  parkReturned(L, r, i, ctx) {
+    const pk = parkOf(r, ctx);
+    if (!pk) return null;
+    let n = 0;
+    for (let j = i + 1; j < L.rows.length; j++) {
+      const t = L.rows[j];
+      if (t.who !== "teacher") continue;
+      if (returnOf(t, ctx)) return null;
+      if (GOODBYE.test(String(t.move?.kind ?? t.move ?? ""))) return low(t.text).includes(low(pk)) ? null : `the park of "${pk}" not returned to before the goodbye (row ${j})`;
+      if (++n >= 10) return `the park of "${pk}" not returned to in ten turns`;
+    }
+    return null;
+  },
+  /** P1: a return answers a park; one with none (c4 offtopic 37) is a promise she never made. */
+  returnNoPark(L, r, i, ctx) {
+    if (parkOf(r, ctx)) ctx.openParks = (ctx.openParks ?? 0) + 1;
+    if (!returnOf(r, ctx)) return null;
+    if ((ctx.openParks ?? 0) > 0) { ctx.openParks--; return null; }
+    return "a return with no park before it";
+  },
+  /** P1: a return is a turn of its own: the verdict on the card just answered may come first, and nothing of the lesson after. */
+  returnAlone(L, r, i, ctx) {
+    if (!returnOf(r, ctx)) return null;
+    const unit = (r.pageParts ?? []).find((p) => UNIT_PART.has(p.part));
+    return unit || cardIn(r) ? `a return said with the lesson's ${unit?.part ?? "card"}` : null;
+  },
+  /** P1: a park's turn goes on into the live part (a park alone leaves the child nothing to do: c4 offtopic 22, c6 36). */
+  parkGoesOn(L, r, i, ctx) {
+    const pk = parkOf(r, ctx);
+    if (!pk) return null;
+    const ss = sentencesOf(r.text);
+    return ctx.parkRes.some((re) => re.test(ss.at(-1) ?? "")) ? `the turn ends on the park of "${pk}"` : null;
+  },
+  /** P1: after the "Main AI teacher hoon …" line she asks no question unless her next turn answers the child's reply. */
+  aiAskAnswered(L, r, i, ctx) {
+    // (the question is the AI line's own, ending her turn — not a card or a worked problem said after it)
+    const lastQ = ctx.prevT ? sentencesOf(ctx.prevT.text).at(-1) ?? "" : "";
+    const q = ctx.prevT && AI_LINE.test(ctx.prevT.text) && /[?？]\s*$/.test(lastQ) && !low(ctx.prevT.card ?? "").includes(low(lastQ).slice(0, 25))
+      && !(ctx.prevT.pageParts ?? []).some((p) => p.part === "body" || p.part === "card");
+    // (a request in reply — "hindi mein batao na", a picture — is served as that request)
+    if (!q || r.j2 || /·/.test(ctx.prevRead ?? "") || /^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
+    const first = (r.pageParts ?? [])[0]?.part;
+    return !first || UNIT_PART.has(first) || first === "card" ? `her question after the AI line, "${sentencesOf(ctx.prevT.text).at(-1).slice(0, 50)}", not answered` : null;
+  },
   /** A second clarify on one part (dc-r8-second-clarify-shows-not-rewords): the same authored line with the board shown, then the
    *  check-in — never the card, never the key. PENDING: reported, not gated, until the clarify column switch (C1 step 3). */
   secondClarify(L, r) {
@@ -244,11 +307,12 @@ export function lessonFlags({ rows, script }) {
   // (each form is recognised by its longest stretch with no slot in it)
   for (const [kind, forms] of Object.entries(script?.joints ?? {})) heads[kind] = (forms ?? []).map((f) => String(f?.hi ?? f ?? "").split(/\{\w+\}/).map((x) => low(x).replace(/^[\s,.:;!?]+|[\s,.:;!?]+$/g, "")).sort((a, b) => b.length - a.length)[0]?.slice(0, 32) ?? "").map((h) => (h.length >= 8 ? h : null));
   const workedBy = new Map((script?.skills ?? []).map((sk, n) => [`s${n + 1}`, sk.workedExample ?? null]));
-  const ctx = { script, prevT: null, prevChild: "", prevCls: null, saidCards: new Set(), jointUse: {}, jointHeads: heads, problemSaid: new Set(), returnDue: false, cardTurns: {},
+  const forms = (k) => (script?.joints?.[k] ?? []).flatMap((f) => [f?.hi ?? f, f?.en]).filter((x) => typeof x === "string" && x.includes("{aside}")).map(formRe);
+  const ctx = { script, parkRes: forms("asidePark"), retRes: forms("asideReturn"), prevT: null, prevChild: "", prevCls: null, saidCards: new Set(), jointUse: {}, jointHeads: heads, problemSaid: new Set(), returnDue: false, cardTurns: {},
     workedOf: (r) => workedBy.get(String(r.beat ?? "").split(":")[0]) ?? null };
   const out = [];
   rows.forEach((r, i) => {
-    if (r.who !== "teacher") { ctx.prevChild = r.text ?? ""; ctx.prevCls = String(r.read ?? "").split(" ")[0]; return; }
+    if (r.who !== "teacher") { ctx.prevChild = r.text ?? ""; ctx.prevRead = String(r.read ?? ""); ctx.prevCls = ctx.prevRead.split(" ")[0]; return; }
     ctx.returnDue = !!r.returnSaid;
     for (const [name, f] of Object.entries(PREDICATES)) { const why = f({ rows }, r, i, ctx); if (why) out.push({ row: i, predicate: name, why, text: norm(r.text).slice(0, 140) }); }
     if (cardIn(r)) ctx.saidCards.add(low(r.card).slice(0, 40));

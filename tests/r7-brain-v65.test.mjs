@@ -252,7 +252,9 @@ describe("r7-brain-v65.test.mjs", () => {
       assert.ok(String(out.reply).replace(/\s+/g, " ").trim().endsWith(String(last.p.r.ui.ask.text).replace(/\s+/g, " ").trim()), out.reply);
     }
   });
-  test("K2 predicate: 'woh wala ho gaya, aage chalo' to a why-probe moves on, never a stop menu (c5-t02 steady 54)", async () => {
+  // (retired 2026-11-11, S1 on director20: a script card answered right has no why-probe — all 42 of director20's ended on the close with
+  // nothing for the child — so this row's probe no longer exists)
+  test.skip("K2 predicate: 'woh wala ho gaya, aage chalo' to a why-probe moves on, never a stop menu (c5-t02 steady 54)", async () => {
     const { out, last } = await atLive("steady", "c5-t02", 54);
     assert.equal(last.state.lastMove?.request, "move_on");
     assert.notEqual(last.state.lastMove?.kind, "break");
