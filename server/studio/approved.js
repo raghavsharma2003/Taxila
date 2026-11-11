@@ -43,7 +43,12 @@ export const PILOT_TARGETS = Object.freeze([
  */
 export const ENGINE_HOW = Object.freeze({
   "catch-on-line@1": "ticks is the number of EQUAL GAPS from 0 to 1; set each wave's ticks (and scaffoldTicks) to a common multiple of every denominator on that line so each item lands on a tick; one fraction per item; no title or sub names where an item goes",
-  "slice-at@1": "marks false on every wave (marks draw the cut points: the child judges equal size herself); every wave's sub agrees with its own items; no sub states the rule",
+  "slice-at@1": "marks false on every wave (marks draw the cut points: the child judges equal size herself); every wave's sub agrees with its own items; no sub states the rule; the engine draws a straight bar, so name a patti or strip, never a round thing (roti, pizza)",
+  // judged 2026-11-11 (runs/2026-11-11-judge2): the faults each engine's generations shared
+  "sieve-storm@1": "rule strings in the textbook's words: multiple 'gunaj' or 'ke guna', factor 'gunankhand' or 'ke factors', prime 'abhajya (prime)', composite 'bhajya (composite)', never a literal word (pehla, joda hua, jumps of, tukde of); spelling checked (chuno)",
+  "fraction-ops@1": "no round title or sub names the method (barabar tukde, same parts, common denominator); a round aimed at a comparing mix-up compares, never adds; orchard rounds only for a multiplication topic; strings cols 'kaalam', rows 'pankti'",
+  "rule-machine@1": "a story only when its rule IS the chain applied to the input, in the order the child computes it (₹500 − 4 × 45 is not ×4 then −45: give no story there); a word-order mix-up round's sub gives the worded phrase ('20 se 5 kam') and its rule is the right order",
+  "pictograph@1": "the title names what is drawn (bar graph or picture graph); tally only where tally marks are drawn",
   "angle-cannon@1": "the beam is a lighthouse's light aimed at a mark: no weapon words in any string (never fire, shoot, turret, nishana, hit, threat, attack); say 'roshni', 'kiran', 'mod do'; angle names as the teacher says them (right angle, 90°)",
   "area-claim@1": "every string plain Roman Hinglish: no stake, claim, plot, sq or units in English; sq varg, units ikai (area 40 varg ikai)",
 });

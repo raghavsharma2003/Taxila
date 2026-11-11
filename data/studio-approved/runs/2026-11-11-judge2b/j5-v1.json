@@ -1,0 +1,42 @@
+[
+  {
+    "id": "gen-c4-maths-ch04-t01-46f828e0",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Rounds 16 (words, ones/tens), 60 (digits), 6007 (words), 7608 (digits) are correct and directly target the teen/ty mix-up (sixteen vs 60); 7608 matches a topic card key. The on-screen word form for 6007 is engine-generated and not in the spec, so it could not be checked from the packet. The coach line 'Jagah ke blocks chuno' is drawn dim on purpose but stays legible at both sizes."
+  },
+  {
+    "id": "gen-c5-maths-ch01-t01-a6b885c0",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "spec.strings.runDone",
+        "detail": "\"Heist poora\": 'heist' (a robbery/crime word) is an uncommon, adult English word that a class 5 child in a Hinglish piece is unlikely to know. A plain word such as 'Tijori mission poora' would suit the class."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Targets 10,500 / 40,006 / 1,00,000 / 1,02,345 and the place columns TTH TH H T O are correct for the Indian system and agree with the cards, and the rounds hit the zero-placeholder mix-up. How the engine words the 'show: words' rounds (40006, 102345) cannot be seen in the packet. The coach line 'Zeros ko dhyan se dekho aur load karo' is low-contrast grey but still legible at both sizes."
+  },
+  {
+    "id": "gen-c5-maths-ch13-t02-02d41791",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Screen shows 'SAHI CHUNE 0/9' in round 1 ('30 ke factors'). 30 has 8 factors (1, 2, 3, 5, 6, 10, 15, 30) and the spec sets count 12 with hitRate 0.5. The packet does not show how the engine counts the denominator (repeats? another basis?), so this is not counted as a fault. The packet also does not show whether 1 and the number itself (30, 18, 24) always appear among the 12 falling numbers. lo=1 and hi=a make them possible, and the mix-up targeting depends on them appearing."
+  }
+]
