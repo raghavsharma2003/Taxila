@@ -22,6 +22,7 @@ test("every cell says only authored fields (script paths) and carries its addres
     assert.ok(c.parts.length > 40, s.topicId);
     for (const [part, cols] of Object.entries(c.cells)) for (const [col, hs] of Object.entries(cols)) for (const [h, cell] of Object.entries(hs)) {
       assert.equal(cell.address, `${part}/${col}/${h}`);
+      if (cell.notApplicable) continue;
       for (const ref of cell.say) assert.match(ref, /^skills\[\d+\]\./, `${cell.address}: ${ref}`);
       assert.ok(["end", "checkin", "card", "next", "remediation"].includes(cell.then), cell.address);
     }
@@ -82,4 +83,16 @@ test("cached by kit hash and plan hash", (t) => {
   assert.equal(compiledFor(live[0], { kitHash: "k1" }), a);
   assert.notEqual(compiledFor(live[0], { kitHash: "k2" }), a);
   assert.notEqual(compiledFor(live[0], { kitHash: "k1", plan: { compress: [live[0].skills[0].skillId] } }), a);
+});
+
+test("main's ruling: the misconception column applies only to a card with targets; without, it is not applicable (the wrong column)", () => {
+  const s = live[0];
+  const c = compileScript(s);
+  for (const p of c.parts.filter((x) => ["card", "check", "then_card", "your_step"].includes(x.kind))) {
+    const cell = c.cells[p.id].misconception.fresh;
+    const t = p.path.split(/\.|\[|\]/).filter(Boolean).reduce((v, k) => (v == null ? v : v[k]), s)?.targets ?? p.targets;
+    if (t) assert.ok(!cell.notApplicable, cell.address); else { assert.equal(cell.notApplicable, true, cell.address); assert.equal(cell.use, "wrong"); }
+  }
+  assert.ok(c.notApplicable.length > 0);
+  assert.ok(!c.missing.some((m) => m.field === "remediation" && /targets=undefined|targets=null/.test(m.path)));
 });

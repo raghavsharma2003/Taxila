@@ -162,7 +162,7 @@ function orderOf(script, parts, plan) {
  */
 export function compileScript(script, plan = null) {
   const parts = (script?.skills ?? []).flatMap((sk, n) => partsOf(sk, n));
-  const cells = {}, holes = [], doubles = [], fallbacks = [], noBoard = [];
+  const cells = {}, holes = [], doubles = [], fallbacks = [], noBoard = [], notApplicable = [];
   const seen = new Map();
   for (const p of parts) { if (seen.has(p.id)) doubles.push({ part: p.id, why: "two parts with one id" }); seen.set(p.id, p); }
   // a mix-up two remediations of one skill target: the misconception column cannot tell them apart
@@ -200,6 +200,13 @@ export function compileScript(script, plan = null) {
         const r = rule(p.kind, c, h);
         if (!r) continue;
         const address = `${p.id}/${c}/${h}`, ruleId = `${p.kind}/${c}/${h}`;
+        // (main's ruling with Learning's first pass: the misconception column applies only to a card with `targets` — a card that tests
+        // no kit mix-up answers a wrong answer with its `wrong` column; not a hole and not a fallback, counted on its own)
+        if (c === "misconception" && !(at(script, `${p.path}.targets`) ?? p.targets)) {
+          cells[p.id][c][h] = { notApplicable: true, use: "wrong", address };
+          notApplicable.push({ part: p.id, kind: p.kind, rule: ruleId });
+          continue;
+        }
         const resolve = (r) => {
           const miss = [], say = [];
           // (alts[0] is optional: a script that has one says it in place of the same line again)
@@ -246,7 +253,7 @@ export function compileScript(script, plan = null) {
   // (the authoring cost: each missing field once per part, with the rules that name it)
   const byField = new Map();
   for (const h of holes) { const k = h.path.startsWith("remediation[") ? `${h.part}|${h.path}` : h.path; const e = byField.get(k) ?? { part: h.part, kind: h.kind, field: h.field, path: h.path, rules: [] }; e.rules.push(h.rule); byField.set(k, e); }
-  return { missing: [...byField.values()], fallbacks, secondClarifyNoBoard: noBoard, topicId: script?.topicId ?? null, order, parts, cells, holes, doubles, cellCount: Object.values(cells).reduce((n, cs) => n + Object.values(cs).reduce((m, hs) => m + Object.keys(hs).length, 0), 0) };
+  return { missing: [...byField.values()], fallbacks, secondClarifyNoBoard: noBoard, notApplicable, topicId: script?.topicId ?? null, order, parts, cells, holes, doubles, cellCount: Object.values(cells).reduce((n, cs) => n + Object.values(cs).reduce((m, hs) => m + Object.keys(hs).length, 0), 0) };
 }
 
 // (main's condition: cached by kit hash and plan hash; the trace row carries the cell's address and its because)
