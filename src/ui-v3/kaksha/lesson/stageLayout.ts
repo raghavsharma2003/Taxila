@@ -77,7 +77,7 @@ export const STAGE = {
   pipShare: 0.26, pipMin: 84, pipMax: 128, pipInset: 8,
   sideMin: 320, sideMax: 400, sideShare: 0.28,
   wideMinWidth: 900, landscapeMaxHeight: 520,
-  talk: 60, presenceRow: 72,
+  talk: 60, presenceRow: 72, capPresence: 168,
 } as const;
 
 const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
@@ -149,7 +149,8 @@ function solveWide(i: StageInput, fs: number, tall: boolean): StageLayout {
   // side column: tile (tall only) · caption (elastic) · answer (when up, if it fits there) · chips · strip · dock
   const sx = W - g - side;
   const dock = Math.round((tall ? STAGE.dockWide : STAGE.dock[i.family]) + 44 * (fs - 1));
-  const chips = i.chips && !i.play ? Math.round(STAGE.chips * Math.min(fs, 1.3)) : 0;
+  // round 8 presence: the side column has the height for the steer chips as a 2 × 2 grid of equal cells (never a cut row)
+  const chips = i.chips && !i.play ? Math.round(STAGE.chips * Math.min(fs, 1.3) * (i.presence ? 2 : 1)) : 0;
   const strip = need(i.strip);
   const tileBase = i.presence ? STAGE.presenceRow : tall ? Math.round(clamp(colH * 0.42, 200, side)) : 0;
   const hasTile = tall || !!i.presence;
@@ -170,7 +171,11 @@ function solveWide(i: StageInput, fs: number, tall: boolean): StageLayout {
   const railGap = i.presence ? STAGE.gap : 0;
   const slot: Rect = { x: stage.x, y: stage.y, w: stage.w, h: stage.h - rail - railGap };
   const railR: Rect = { x: stage.x, y: slot.y + slot.h + railGap, w: stage.w, h: rail };
-  const capH = Math.max(0, sideFree - (answerSide ? answer : 0));
+  // round 8 presence: the caption holds her last lines (capPresence), the chips sit right under it (steering what she
+  // just said), and the dock stays at the column's foot; whatever is left is one quiet gap above the dock, never between
+  // her words and the chips
+  const capFree = Math.max(0, sideFree - (answerSide ? answer : 0));
+  const capH = i.presence ? Math.min(capFree, Math.round(STAGE.capPresence * fs)) : capFree;
   let y = top;
   const tile = hasTile ? { x: sx, y, w: side, h: tileH } : null;
   if (hasTile) y += tileH + STAGE.gap;
@@ -181,6 +186,7 @@ function solveWide(i: StageInput, fs: number, tall: boolean): StageLayout {
   if (answerUnder) answerR = { x: g, y: stage.y + stage.h + STAGE.gap, w: colW, h: answer };
   const chipsR = chips ? { x: sx, y, w: side, h: chips } : null;
   if (chips) y += chips + STAGE.gap;
+  if (i.presence) y = top + colH - dock - strip;
   const stripR = strip ? { x: sx, y, w: side, h: strip } : null;
   y += strip;
   const dockR = { x: sx, y, w: side, h: dock };

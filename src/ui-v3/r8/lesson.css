@@ -47,6 +47,11 @@
 .kx-lesson[data-tx] .ks-piece .dk-chalk { color: var(--tx-board-ink); }
 /* maths set as maths on the plain board: stacked fractions in the maths face (Board.tsx mathRuns) */
 .kx-lesson[data-tx] .dk-chalk--math { font-family: var(--tx-font-math); font-weight: 400; font-size: var(--tx-t-6); letter-spacing: 0; }
+/* the plain board fills its card: its lines centred, the maths scaled to the card (container units, like the drawn
+   board's viewBox: board content scales with its box, the chrome keeps the 8-size scale) */
+.kx-lesson[data-tx] .ks-piece .dk-board { container-type: size; }
+.kx-lesson[data-tx] .ks-piece .dk-board-body { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: var(--tx-s-4); }
+.kx-lesson[data-tx] .ks-piece .dk-chalk--math { font-size: clamp(var(--tx-t-6), 16cqmin, var(--tx-t-8)); }
 .kx-lesson[data-tx] .dk-frac { display: inline-flex; flex-direction: column; align-items: stretch; vertical-align: middle; text-align: center; line-height: 1.05; margin: 0 .1em; }
 .kx-lesson[data-tx] .dk-frac-n { border-bottom: max(2px, .07em) solid currentColor; padding: 0 .14em .04em; }
 .kx-lesson[data-tx] .dk-frac-d { padding: .06em .14em 0; }
@@ -75,6 +80,17 @@
 .kx-lesson[data-tx] .dk:is([data-floor="your_turn"], [data-floor="listening"]) .ks-rail { outline: 1.5px solid var(--tx-line-2); box-shadow: var(--tx-shadow-2); }
 
 /* ── steer chips: quiet pills, the child's own words ── */
+/* one row, never a pill taller than its neighbour: labels stay on one line and the row scrolls when it must (main's
+   review of step b: "Alag tarah se" wrapped and made the row uneven at 360) */
+.kx-lesson[data-tx] .ks-steer { display: flex; gap: var(--tx-s-2); overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; }
+.kx-lesson[data-tx] .ks-steer::-webkit-scrollbar { display: none; }
+/* wide: the side column gives the chips two rows, a 2 × 2 grid of equal cells */
+.kx-lesson[data-tx] .ks:is([data-kind="wide"], [data-kind="landscape"]) .ks-steer { display: grid; grid-auto-flow: row; grid-template-columns: 1fr 1fr; grid-auto-rows: 44px; align-content: center; overflow: visible; }
+.kx-lesson[data-tx] .ks:is([data-kind="wide"], [data-kind="landscape"]) .ks-chip { width: 100%; }
+/* the row fades at its end when it scrolls on, so a cut pill reads as "more", not as clipped */
+.kx-lesson[data-tx] .ks[data-kind="phone"] .ks-steer { -webkit-mask-image: linear-gradient(90deg, black 82%, transparent); mask-image: linear-gradient(90deg, black 82%, transparent); padding-right: var(--tx-s-6); }
+.kx-lesson[data-tx] .ks-chip { flex: none; white-space: nowrap; padding: 0 var(--tx-s-4); height: 44px; }
+.kx-lesson[data-tx] .ks-chip svg { display: none; }
 .kx-lesson[data-tx] .ks-chip { border: 1.5px solid var(--tx-line-2); border-radius: var(--tx-r-3); background: var(--tx-surface); color: var(--tx-ink); font: 600 var(--tx-t-1)/1.15 var(--tx-font-ui); }
 .kx-lesson[data-tx] .ks-chip svg { color: var(--tx-ink-2); }
 .kx-lesson[data-tx] .ks-chip:hover { border-color: var(--tx-tutor); }

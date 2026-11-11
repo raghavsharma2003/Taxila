@@ -68,7 +68,20 @@ Each name is `<when>-<screen>-<size>.png`:
   - `lesson-idle`: nothing up, her turn (`your_turn`).
 - **size:** `p360` is 360 × 740 @2x; `d1366` is 1366 × 768.
 
+**About the fixture data:** the board contents and lines are the dev fixtures' (`src/child/lesson/dev/DeskDev.tsx`), not a real lesson. In particular `lesson-turn` shows "1/2 = 2/4" on the board while the question asks how many quarters make one half. That is the fake scenario's data, not the product giving the answer away.
+
 They were taken from the Kaksha Desk dev page (`src/ui-v3/kaksha/dev/desk.html?class=5&fixture=…&tx=…`, the real Desk and skin), with reduced motion on.
+
+## Fix-ups after the main loop's review of step b (2026-11-11)
+
+1. **The plain board fills its card:** its lines are centred and the maths is scaled to the card. Studio pieces (the drawn board) need Studio's renderer to fit content to the box and to fold the card head into the card. That ask is a patch: `docs/patches/to-studio/008-board-fills-card/`, with before and mock-after images.
+2. **The "1/2" label touches the square's top line.** This is Studio's layout, reported as a fault in the same patch.
+3. **The steer chips are one row, every pill one line high.** On a phone the row scrolls and fades at its end. There is no 2 × 2 grid, which would cost the board 48 px.
+4. **Wide screens:** the caption holds her last lines (up to 168 px), the chips sit right under it, and the dock stays at the column's foot. The chips steer what she just said, so they belong next to her words. The dock stays where the thumb and the eye expect it on every screen. The spare height is one quiet gap above the dock, never between her words and the chips.
+5. **The palette's three meaning roles:** focus is indigo, answer a bluish green, mix-up an ochre (A). This follows the Okabe-Ito colour-blind-safe set, so it no longer sets red against green. Studio is asked to read designed fill tints instead of stroke × alpha (the patch, §4).
+6. **The fixture's "1/2 = 2/4"** is fake data (see "About the fixture data" above).
+
+`after-*` images are re-taken after these fixes.
 
 ## Not changed (other owners)
 

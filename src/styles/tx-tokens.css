@@ -3,6 +3,9 @@
    The values are the phase-1 prototypes' (prototypes/r8-design/{a-paper,b-night}/tokens.css). Two deliberate changes:
      - A's serif is Literata, already self-hosted (src/styles/fonts.css), in place of the prototype's Source Serif 4: one face fewer to ship.
      - B's display face is Bricolage Grotesque where the page has it, else the UI face.
+     - (2026-11-11, main's review of step b) A's answer is a bluish green and its mix-up an ochre: the
+       prototype's rust beside green leaned on red against green. Focus (indigo), answer (bluish green) and mix-up
+       (ochre) follow the Okabe-Ito colour-blind-safe set, and every role also has its own shape.
    Rules (tests/r8-tx-tokens.test.mjs):
      - every text pair is at least 4.5:1 (5:1 for running text);
      - at most 8 type sizes, one spacing scale, 3 radii, under 30 colours per theme;
@@ -35,10 +38,10 @@
   --tx-board-soft: #6F675B;
   --tx-focus: #3B47B0;
   --tx-focus-fill: #DCE0F5;
-  --tx-ans: #1C7348;
-  --tx-ans-fill: #DAEEE1;
-  --tx-mix: #A84B22;
-  --tx-ok: #1C7348;
+  --tx-ans: #0B7356;
+  --tx-ans-fill: #DAEFE8;
+  --tx-mix: #8A5A00;
+  --tx-ok: #0B7356;
   /* safety and destructive actions only, never a verdict */
   --tx-danger: #A3261C;
 

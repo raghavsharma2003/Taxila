@@ -32,7 +32,9 @@ test("presence on wide screens: her tile is one presence row, the caption takes 
   const L = solveStage({ width: 1366, height: 768, family: "older", artifact: true, chips: true, presence: true });
   assert.equal(L.kind, "wide");
   assert.equal(L.tile.h, STAGE.presenceRow);
-  assert.ok(L.caption.h > 200, "the caption grows into the face's old room");
+  assert.ok(L.caption.h >= 120 && L.caption.h <= STAGE.capPresence, "the caption holds her last lines");
+  assert.equal(L.chips.y, L.caption.y + L.caption.h, "the chips sit right under her words");
+  assert.equal(L.dock.y + L.dock.h, 768 - STAGE.gutterWide, "the dock stays at the column's foot");
   assert.equal(L.rail.y, L.slot.y + L.slot.h + STAGE.gap);
   assert.equal(L.rail.y + L.rail.h, L.stage.y + L.stage.h);
   const today = solveStage({ width: 1366, height: 768, family: "older", artifact: true, chips: true });
