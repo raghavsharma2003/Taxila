@@ -34,6 +34,10 @@ export interface StageInput {
   /** Play mode (a real-game piece is up): the game's goal rail is the HUD rail and the steer chips fold away (the child
    *  steers by voice), so the game gets the most room. */
   play?: boolean;
+  /** Round 8 (src/ui-v3/r8): the teacher is a presence, not a face. There is no PiP. On a phone, while a piece is up,
+   *  a talk row (her circle and the caption) sits between the slot and the question. On wide screens her tile is a
+   *  presence row, and the caption takes the rest of the side column. */
+  presence?: boolean;
 }
 
 export interface Rect { x: number; y: number; w: number; h: number }
@@ -52,6 +56,8 @@ export interface StageLayout {
   pip: Rect | null;
   /** Wide: her tile in the side column. */
   tile: Rect | null;
+  /** Round 8 presence, phones: the talk row between the slot and the rail (inside the stage frame), while a piece is up. */
+  talk: Rect | null;
   /** Wide: the caption under her tile (phones: the caption is inside the stage when she holds it, else the rail). */
   caption: Rect | null;
   answer: Rect | null;
@@ -71,6 +77,7 @@ export const STAGE = {
   pipShare: 0.26, pipMin: 84, pipMax: 128, pipInset: 8,
   sideMin: 320, sideMax: 400, sideShare: 0.28,
   wideMinWidth: 900, landscapeMaxHeight: 520,
+  talk: 60, presenceRow: 72, capPresence: 168,
 } as const;
 
 const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
@@ -101,15 +108,19 @@ function solvePhone(i: StageInput, fs: number): StageLayout {
   const strip = need(i.strip);
   const answer = kb ? 0 : need(i.answerNeed);
   const rail = Math.max(Math.round(STAGE.rail * fs), need(i.railNeed));
+  // round 8 presence: the talk row (and a gap either side of it) inside the stage frame, while a piece is up
+  const talk = i.presence && i.artifact && !kb ? Math.round(STAGE.talk * Math.min(fs, 1.3)) : 0;
+  const talkBand = talk ? talk + 2 * STAGE.gap : i.presence ? STAGE.gap : 0;
   // top · 4 · stage · 8 · answer (+8) · chips · strip · dock · pad
   const fixed = top + 4 + STAGE.gap + (answer ? answer + STAGE.gap : 0) + chips + strip + dock + STAGE.pad;
   let stageH = H - fixed;
-  const min = kb ? rail + 64 : STAGE.stageMin;
+  const min = kb ? rail + 64 : STAGE.stageMin + talkBand;
   const overflow = stageH < min;
   stageH = Math.max(stageH, min);
   const stage: Rect = { x: g, y: top + 4, w: W - 2 * g, h: stageH };
-  const slot: Rect = { x: stage.x, y: stage.y, w: stage.w, h: stage.h - rail };
-  const railR: Rect = { x: stage.x, y: slot.y + slot.h, w: stage.w, h: rail };
+  const slot: Rect = { x: stage.x, y: stage.y, w: stage.w, h: stage.h - rail - talkBand };
+  const talkR: Rect | null = talk ? { x: stage.x, y: slot.y + slot.h + STAGE.gap, w: stage.w, h: talk } : null;
+  const railR: Rect = { x: stage.x, y: slot.y + slot.h + talkBand, w: stage.w, h: rail };
   let y = stage.y + stage.h + STAGE.gap;
   const answerR = answer ? { x: g, y, w: W - 2 * g, h: answer } : null;
   if (answer) y += answer + STAGE.gap;
@@ -120,7 +131,7 @@ function solvePhone(i: StageInput, fs: number): StageLayout {
   const dockR: Rect = { x: 0, y, w: W, h: dock };
   return {
     kind: "phone", top: { x: 0, y: 0, w: W, h: top }, stage, slot, rail: railR,
-    pip: i.artifact && !kb ? pipFor(slot) : null, tile: null, caption: null,
+    pip: i.artifact && !kb && !i.presence ? pipFor(slot) : null, tile: null, caption: null, talk: talkR,
     answer: answerR, strip: stripR, chips: chipsR, dock: dockR, overflow,
     stageShare: (stage.w * stage.h) / (W * H),
   };
@@ -138,13 +149,15 @@ function solveWide(i: StageInput, fs: number, tall: boolean): StageLayout {
   // side column: tile (tall only) · caption (elastic) · answer (when up, if it fits there) · chips · strip · dock
   const sx = W - g - side;
   const dock = Math.round((tall ? STAGE.dockWide : STAGE.dock[i.family]) + 44 * (fs - 1));
-  const chips = i.chips && !i.play ? Math.round(STAGE.chips * Math.min(fs, 1.3)) : 0;
+  // round 8 presence: the side column has the height for the steer chips as a 2 × 2 grid of equal cells (never a cut row)
+  const chips = i.chips && !i.play ? Math.round(STAGE.chips * Math.min(fs, 1.3) * (i.presence ? 2 : 1)) : 0;
   const strip = need(i.strip);
-  const tileBase = tall ? Math.round(clamp(colH * 0.42, 200, side)) : 0;
-  const fixedSide = (tall ? STAGE.gap : 0) + chips + (chips ? STAGE.gap : 0) + strip + dock;
+  const tileBase = i.presence ? STAGE.presenceRow : tall ? Math.round(clamp(colH * 0.42, 200, side)) : 0;
+  const hasTile = tall || !!i.presence;
+  const fixedSide = (hasTile ? STAGE.gap : 0) + chips + (chips ? STAGE.gap : 0) + strip + dock;
   // her tile yields (to 200) before the answer surface leaves the side column
   const short = answer - (colH - tileBase - fixedSide);
-  const tileH = tall && answer > 0 && short > 0 && short <= tileBase - 200 ? tileBase - short : tileBase;
+  const tileH = tall && !i.presence && answer > 0 && short > 0 && short <= tileBase - 200 ? tileBase - short : tileBase;
   const sideFree = colH - tileH - fixedSide;
   // The answer surface takes the caption's place in the side column when it fits (the stage keeps its full height);
   // otherwise it goes under the stage, and the stage yields.
@@ -154,12 +167,18 @@ function solveWide(i: StageInput, fs: number, tall: boolean): StageLayout {
   const overflow = stageH < STAGE.stageMin;
   stageH = Math.max(STAGE.stageMin, stageH);
   const stage: Rect = { x: g, y: top, w: colW, h: stageH };
-  const slot: Rect = { x: stage.x, y: stage.y, w: stage.w, h: stage.h - rail };
-  const railR: Rect = { x: stage.x, y: slot.y + slot.h, w: stage.w, h: rail };
-  const capH = Math.max(0, sideFree - (answerSide ? answer : 0));
+  // round 8 presence: a gap between the board card and the question card
+  const railGap = i.presence ? STAGE.gap : 0;
+  const slot: Rect = { x: stage.x, y: stage.y, w: stage.w, h: stage.h - rail - railGap };
+  const railR: Rect = { x: stage.x, y: slot.y + slot.h + railGap, w: stage.w, h: rail };
+  // round 8 presence: the caption holds her last lines (capPresence), the chips sit right under it (steering what she
+  // just said), and the dock stays at the column's foot; whatever is left is one quiet gap above the dock, never between
+  // her words and the chips
+  const capFree = Math.max(0, sideFree - (answerSide ? answer : 0));
+  const capH = i.presence ? Math.min(capFree, Math.round(STAGE.capPresence * fs)) : capFree;
   let y = top;
-  const tile = tall ? { x: sx, y, w: side, h: tileH } : null;
-  if (tall) y += tileH + STAGE.gap;
+  const tile = hasTile ? { x: sx, y, w: side, h: tileH } : null;
+  if (hasTile) y += tileH + STAGE.gap;
   const caption = { x: sx, y, w: side, h: capH };
   y += capH;
   let answerR: Rect | null = null;
@@ -167,12 +186,13 @@ function solveWide(i: StageInput, fs: number, tall: boolean): StageLayout {
   if (answerUnder) answerR = { x: g, y: stage.y + stage.h + STAGE.gap, w: colW, h: answer };
   const chipsR = chips ? { x: sx, y, w: side, h: chips } : null;
   if (chips) y += chips + STAGE.gap;
+  if (i.presence) y = top + colH - dock - strip;
   const stripR = strip ? { x: sx, y, w: side, h: strip } : null;
   y += strip;
   const dockR = { x: sx, y, w: side, h: dock };
   return {
     kind: tall ? "wide" : "landscape", top: { x: 0, y: 0, w: W, h: top }, stage, slot, rail: railR,
-    pip: !tall && i.artifact ? pipFor(slot) : null, tile, caption,
+    pip: !tall && i.artifact && !i.presence ? pipFor(slot) : null, tile, caption, talk: null,
     answer: answerR, strip: stripR, chips: chipsR, dock: dockR, overflow: overflow || sideFree < 0,
     stageShare: (stage.w * stage.h) / (W * H),
   };

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your turn · Taxila</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="../layout.css">
+<link rel="stylesheet" href="skin.css">
+<script src="../content.js" defer></script>
+</head>
+<body class="child lesson is-turn">
+<header class="lbar">
+  <a class="btn-quiet" href="#" data-i="pause"><span data-c="lesson.pause"></span></a>
+  <div class="lbar-title"><b data-c="topic"></b>
+    <ol class="phases" aria-label="Lesson parts"><li data-c="lesson.phase.1"></li><li aria-current="step"><span data-c="lesson.phase.2"></span><span class="of"> · 2 of 4</span></li><li data-c="lesson.phase.3"></li><li data-c="lesson.phase.4"></li></ol>
+  </div>
+  <button class="btn-icon" aria-label="Captions" data-i="cc"></button>
+</header>
+<main class="desk">
+  <section class="stage" aria-label="Board">
+    <p class="stage-head sr">Board</p>
+    <div class="board" data-board="halves"></div>
+    <ul class="legend"><li class="lg-focus" data-c="legend.focus"></li><li class="lg-ans" data-c="legend.ans"></li><li class="lg-mix" data-c="legend.mix"></li></ul>
+  </section>
+  <div class="talk">
+    <div class="tutor is-listening"><span class="tutor-face" aria-hidden="true">A</span><span class="tutor-meta"><b data-c="teacher.name"></b><small data-c="tutor.listening"></small></span></div>
+    <p class="caption" data-c="turn.caption"></p>
+  </div>
+  <section class="qbar"><p class="q-label" data-c="turn.label"></p><p class="q" data-c="lesson.q"></p><button class="btn-icon" aria-label="Hear it again" data-i="speaker"></button></section>
+  <div class="turn-alt">
+    <button class="btn-quiet" data-i="hint"><span data-c="turn.hint"></span></button>
+    <button class="btn-quiet" data-i="keyboard"><span data-c="turn.type"></span></button>
+  </div>
+  <div class="dock" role="status">
+    <span class="listen-ring" aria-hidden="true"><span class="wave"><i></i><i></i><i></i><i></i><i></i></span></span>
+    <span class="state"><b data-c="turn.listen"></b><small data-c="turn.listen.sub"></small></span>
+  </div>
+</main>
+</body>
+</html>

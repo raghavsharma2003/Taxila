@@ -1,0 +1,71 @@
+/* Round 8: the Kaksha screens' shared chrome under the one token set. It applies only under a root with data-tx (the
+   ?tx= switch, tx.ts; set on KxRoot and KakshaRoot). Tokens only (tests/r8-tx-tokens.test.mjs).
+   It removes the terminal chrome on every Kaksha screen:
+     - clipped corners;
+     - the starfield sky and its grid;
+     - mono uppercase labels;
+     - the "»" chevron and the sweep on the primary button;
+     - the "FLIGHT DECK" shell word;
+     - the glow and breathing.
+   Then it dresses the shared pieces as soft paper rectangles: buttons, the dock, panels, labels.
+   The selector repeats [data-tx] so it outranks the Kaksha look blocks, at most (0,3,1), whatever order the chunks load in. */
+@import "./bridge.css";
+
+.kx[data-tx][data-tx][data-tx] { background: var(--tx-bg); color: var(--tx-ink); font-family: var(--tx-font-ui); }
+.kx[data-tx][data-tx][data-tx] .kx-sky { display: none; }
+.kx[data-tx][data-tx][data-tx] .kx-screen { background: var(--tx-bg); background-image: none; }
+.kx[data-tx][data-tx][data-tx] .kx-cut { clip-path: none; }
+.kx[data-tx][data-tx][data-tx] .kx-shell { display: none; }
+
+/* labels: plain words, sentence case, the UI face */
+.kx[data-tx][data-tx][data-tx] :is(.kx-label, .kx-eyebrow, .kx-did-how, .kx-tagline) { font-family: var(--tx-font-ui); letter-spacing: 0; text-transform: none; }
+.kx[data-tx][data-tx][data-tx] .kx-label { font-size: var(--tx-t-1); font-weight: 600; color: var(--tx-ink-2); }
+.kx[data-tx][data-tx][data-tx] .kx-did-how { font-size: var(--tx-t-1); color: var(--tx-ok); }
+
+/* the brand: the arch, the word in the UI face (no mono, no orbit dot) */
+.kx[data-tx][data-tx][data-tx] .kx-mark { font: 700 var(--tx-t-3)/1 var(--tx-font-ui); letter-spacing: -.01em; text-transform: none; color: var(--tx-ink); }
+.kx[data-tx][data-tx][data-tx] .kx-mark i { width: 24px; height: 24px; transform: none; background: transparent;
+  border: 3px solid var(--tx-tutor); border-bottom: 0; border-radius: var(--tx-r-3) var(--tx-r-3) 0 0; }
+.kx[data-tx][data-tx][data-tx] .kx-mark i::after { content: none; }
+.kx[data-tx][data-tx][data-tx] .kx-wordmark { font: inherit; letter-spacing: inherit; text-transform: none; }
+
+/* headings: the display face */
+.kx[data-tx][data-tx][data-tx] :is(.kx-h1, .kx-h2, .kx-panel-title) { font-family: var(--tx-font-display); font-weight: var(--tx-display-weight); letter-spacing: -.02em; text-transform: none; color: var(--tx-ink); }
+.kx[data-tx][data-tx][data-tx] .kx-h1 { font-size: var(--tx-t-6); line-height: 1.08; }
+.kx[data-tx][data-tx][data-tx] .kx-h1::after { content: none; }
+.kx[data-tx][data-tx][data-tx] .kx-sub { color: var(--tx-ink-2); font-size: var(--tx-t-3); }
+
+/* the one primary action: a solid accent rectangle, no sweep, no chevron, no breathing */
+.kx[data-tx][data-tx][data-tx] .kx-cta { border-radius: var(--tx-r-2); background: var(--tx-accent); color: var(--tx-on-accent); box-shadow: var(--tx-shadow-1);
+  font: 700 var(--tx-t-3)/1 var(--tx-font-ui); letter-spacing: 0; text-transform: none; min-height: 56px; animation: none; filter: none; }
+.kx[data-tx][data-tx][data-tx] .kx-cta::after { content: none; }
+.kx[data-tx][data-tx][data-tx] .kx-cta-sweep { display: none; }
+.kx[data-tx][data-tx][data-tx] .kx-cta:active { transform: translateY(1px); }
+
+/* secondary buttons, tiles and panels: soft rectangles on the surface */
+.kx[data-tx][data-tx][data-tx] :is(.kx-dockbtn, .kx-ghost, .kx-station, .kx-tile, .kx-ib, .kx-did, .kx-madefor-item, .kx-panel) {
+  border-radius: var(--tx-r-1); border: 1.5px solid var(--tx-line); background: var(--tx-surface); color: var(--tx-ink); box-shadow: none; }
+.kx[data-tx][data-tx][data-tx] :is(.kx-dockbtn, .kx-ghost, .kx-station, .kx-tile, .kx-ib):hover { box-shadow: none; border-color: var(--tx-line-2); }
+.kx[data-tx][data-tx][data-tx] :is(.kx-panel, .kx-did) { border-radius: var(--tx-r-2); box-shadow: var(--tx-shadow-1); }
+.kx[data-tx][data-tx][data-tx] .kx-panel-tick { display: none; }
+.kx[data-tx][data-tx][data-tx] .kx-dockbtn { font: 600 var(--tx-t-2)/1.2 var(--tx-font-ui); color: var(--tx-ink); }
+.kx[data-tx][data-tx][data-tx] .kx-dockbtn svg { color: var(--tx-ink-2); }
+
+/* the home: her presence (Presence.tsx) in place of the face picture; the greeting and the one Start under her */
+.kx[data-tx][data-tx][data-tx] .kx-home-presence { margin: 0 auto; }
+.kx[data-tx][data-tx][data-tx] .kx-home-main { gap: var(--tx-s-6); }
+.kx[data-tx][data-tx][data-tx] .kx-home-copy .kx-cta { margin-top: var(--tx-s-5); }
+.kx[data-tx][data-tx][data-tx] .kx-home-copy .kx-dock { margin-top: var(--tx-s-4); }
+.kx[data-tx][data-tx][data-tx] .kx-home .kx-home-copy > * { animation: none; }
+.kx[data-tx][data-tx][data-tx] .tx-presence--home { flex-direction: column; text-align: center; gap: var(--tx-s-3); }
+.kx[data-tx][data-tx][data-tx] .tx-presence--home .tx-presence-face { width: 72px; height: 72px; font-size: var(--tx-t-6); }
+.kx[data-tx][data-tx][data-tx] .tx-presence--home .tx-presence-ring { inset: -7px; }
+.kx[data-tx][data-tx][data-tx] .tx-presence--home .tx-presence-meta { align-items: center; }
+
+@media (min-width: 900px) {
+  .kx[data-tx][data-tx][data-tx] .kx-home-main { grid-template-columns: minmax(0, 560px); justify-content: center; }
+  .kx[data-tx][data-tx][data-tx] .kx-home-copy { text-align: center; }
+  .kx[data-tx][data-tx][data-tx] .kx-home-copy :is(.kx-sub, .kx-cta, .kx-did, .kx-madefor) { margin-left: auto; margin-right: auto; }
+  .kx[data-tx][data-tx][data-tx] .kx-home-copy .kx-dock { justify-content: center; }
+  .kx[data-tx][data-tx][data-tx] .kx-h1 { font-size: var(--tx-t-8); }
+}

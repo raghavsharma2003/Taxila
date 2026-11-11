@@ -13,10 +13,12 @@ import "./tokens.css";
 import "./kaksha.css";
 import "./futurist.css";
 import "./kit.css";
+import { txTheme } from "../r8/tx.ts";
+import "../r8/kx.css";
 
 export function KxRoot({ family, reducedMotion, screen, children }: { family: "young" | "older"; reducedMotion: boolean; screen: string; children: ReactNode }) {
   return (
-    <div className="v3 kx" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen={screen}>
+    <div className="v3 kx" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen={screen} data-tx={txTheme() ?? undefined}>
       {children}
     </div>
   );

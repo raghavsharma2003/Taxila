@@ -1,0 +1,46 @@
+/* Direction B, "Night class": surfaces, the luminous board and the one built transition (an answer accepted). */
+
+.hero, .q, .lesson-card h2, .levelend h2, .onb h1, .offline h1 { letter-spacing: -.025em; }
+.parent .claim, .parent .pcard h3 { letter-spacing: 0; }
+
+/* depth by lightness steps and hairlines; no decoration */
+.lesson-card, .qbar, .levelend, .saved a, .dock { border: 1px solid var(--line); }
+.parent .pcard { box-shadow: var(--shadow-1); border: 1px solid var(--line); }
+.lbar { background: var(--bg); }
+.tabs { background: var(--bg); }
+.btn-secondary { background: transparent; }
+.chip { background: transparent; }
+.parent .btn-secondary { background: var(--surface); }
+
+/* the board: a luminous slate. A faint inner light, chalk strokes, and colour that glows a little where it means something */
+.stage { background: radial-gradient(120% 90% at 50% 35%, color-mix(in srgb, var(--board-bg) 92%, var(--focus)) 0%, var(--board-bg) 70%); box-shadow: var(--shadow-2); border: 1px solid var(--line); }
+.lesson-card-board { background: radial-gradient(120% 90% at 50% 35%, color-mix(in srgb, var(--board-bg) 92%, var(--focus)) 0%, var(--board-bg) 70%); border-bottom: 1px solid var(--line); }
+.bd .bd-focus, .bd .bd-focus-t { filter: drop-shadow(var(--glow) color-mix(in srgb, var(--focus) 40%, transparent)); }
+.bd .bd-ans, .bd .bd-ans-t, .bd .bd-ans-dot { filter: drop-shadow(var(--glow) color-mix(in srgb, var(--ans) 40%, transparent)); }
+.play .stage { border-color: var(--line); }
+
+/* her turn: the one volt element on the screen is the listening dock */
+.is-turn .qbar { box-shadow: none; border-color: var(--line-2); }
+.is-turn .q-label { color: var(--ink-2); }
+.tutor-face { box-shadow: inset 0 0 0 1px var(--line-2); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .tutor.is-talking .tutor-face::after { animation: ring 1.6s var(--ease-out) infinite; }
+  @keyframes ring { 0% { transform: scale(1); opacity: .9; } 70% { transform: scale(1.1); opacity: 0; } 100% { opacity: 0; } }
+  .is-turn .dock .wave i { animation: lvl 900ms ease-in-out infinite alternate; }
+  .is-turn .dock .wave i:nth-child(2n) { animation-delay: -300ms; } .is-turn .dock .wave i:nth-child(3n) { animation-delay: -600ms; }
+  @keyframes lvl { from { transform: scaleY(.45); } to { transform: scaleY(1); } }
+
+  /* THE transition of direction B: an answer accepted. The pin drops onto the mark from 28 px above and settles with a
+     slight overshoot (420 ms, --ease-settle); a ring of answer colour widens from it and fades (520 ms); the label
+     fades up (240 ms, after 200 ms); the tick draws itself (260 ms, after 380 ms). About 650 ms in all: quick enough
+     not to hold up her next sentence. */
+  [data-motion="answer"] .ans-pin { animation: pin 420ms var(--ease-settle) 300ms both; transform-box: fill-box; }
+  [data-motion="answer"] .ans-pin .bd-frac { animation: fadeup 240ms var(--ease-out) 500ms both; }
+  [data-motion="answer"] .ans-pin .ans-tick { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 260ms var(--ease-out) 680ms forwards; }
+  [data-motion="answer"] .ans-pin .bd-ans-dot { animation: pulse 520ms var(--ease-out) 640ms both; transform-box: fill-box; transform-origin: center; }
+  @keyframes pin { from { transform: translateY(-28px); opacity: 0; } 60% { opacity: 1; } to { transform: none; opacity: 1; } }
+  @keyframes fadeup { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes pulse { 0% { filter: drop-shadow(0 0 0 var(--ans)); } 40% { filter: drop-shadow(0 0 10px var(--ans)); } 100% { filter: drop-shadow(var(--glow) color-mix(in srgb, var(--ans) 40%, transparent)); } }
+}
