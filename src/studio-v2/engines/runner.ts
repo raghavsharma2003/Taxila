@@ -12,6 +12,9 @@ import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../core/ty
 import { dots } from "../core/dots.ts";
 
 const LY = 440, X0 = 90, X1 = 910, BASE_V = 170;
+// The call ("JUMP AT" + the number) sits high, below the HUD row; the gate's value pill sits between it and the gate's
+// arch, so the pill never lands on the call when the gate is mid-line (it did: a gate at −1 put "−1" on the big "−1").
+const CALL_Y = 172, GATE_H = 108, PILL_Y = LY - GATE_H - 34 - 48;
 const fmt = (v: number) => { const s = Math.abs(v) < 1e-9 ? "0" : (Math.round(v * 1000) / 1000).toString(); return s.replace("-", "−"); };
 
 function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
@@ -157,15 +160,15 @@ function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
     if (g.gate) {
       const gt = g.gate, a = Math.min(1, gt.t / 0.18), col = gt.ok ? C.mint : C.amber;
       ctx.save(); ctx.globalAlpha = a;
-      ctx.strokeStyle = gt.ok ? C.mint : C.ion; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(gt.x - 34, LY); ctx.lineTo(gt.x - 34, LY - 150); ctx.arc(gt.x, LY - 150, 34, Math.PI, 0); ctx.lineTo(gt.x + 34, LY); ctx.stroke();
+      ctx.strokeStyle = gt.ok ? C.mint : C.ion; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(gt.x - 34, LY); ctx.lineTo(gt.x - 34, LY - GATE_H); ctx.arc(gt.x, LY - GATE_H, 34, Math.PI, 0); ctx.lineTo(gt.x + 34, LY); ctx.stroke();
       bloom(ctx, gt.ok ? C.mint : C.ion, gt.x, LY - 100, 120, 0.35);
-      pill(api, ctx, fmt(callVal()), gt.x, LY - 220, { color: gt.ok ? C.mint : C.ion });
+      pill(api, ctx, fmt(callVal()), gt.x, PILL_Y, { color: gt.ok ? C.mint : C.ion });
       if (!gt.ok && gt.jx != null) {
         const yb = LY + 104; ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.setLineDash([8, 8]); ctx.beginPath(); ctx.moveTo(gt.jx, yb); ctx.lineTo(gt.x, yb); ctx.stroke(); ctx.setLineDash([]);
         ctx.beginPath(); ctx.moveTo(gt.jx, yb - 10); ctx.lineTo(gt.jx, yb + 10); ctx.moveTo(gt.x, yb - 10); ctx.lineTo(gt.x, yb + 10); ctx.stroke();
         magnifier(ctx, gt.x + (gt.x > gt.jx ? 34 : -34), LY - 40, C.amber);
         api.text(ctx, `${T.offBy} ${gt.off}`, clamp((gt.x + gt.jx) / 2, 200, 800), yb + 44, { font: "mono", size: 38, weight: 500, color: C.amber, align: "center", baseline: "middle" });
-      } else if (gt.ok) tick(ctx, gt.x + 56, LY - 180);
+      } else if (gt.ok) tick(ctx, gt.x + 56, LY - GATE_H - 10);
       ctx.restore();
     }
     if (g.state === "run" || g.state === "reveal") drawRunner(ctx, g.x, LY - 6, round().dir);
@@ -174,8 +177,8 @@ function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
     ctx.restore();
     if ((g.state === "run" || g.state === "reveal") && g.r >= 0) {
       ctx.save(); ctx.globalAlpha = g.callA;
-      api.text(ctx, T.jumpAt, 500, 150, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", track: 6 });
-      api.text(ctx, fmt(callVal()), 500, 225, { font: "display", size: 104, weight: 800, align: "center", baseline: "middle", glow: C.ion });
+      api.text(ctx, T.jumpAt, 500, CALL_Y - 55, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", track: 6 });
+      api.text(ctx, fmt(callVal()), 500, CALL_Y, { font: "display", size: 104, weight: 800, align: "center", baseline: "middle", glow: C.ion });
       ctx.restore();
     }
     if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${dots(g.r, spec.rounds.length)}`, title: round().title, sub: round().sub });

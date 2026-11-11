@@ -149,6 +149,7 @@ test("live lesson stage (Studio v2 engine, Devanagari faces loaded): every Latin
       }
       const hi = document.createElement("span"); hi.id = "p-hi"; hi.textContent = "नमस्ते"; hi.style.font = `700 40px ${getComputedStyle(stage).getPropertyValue("--sv2-ui")}`; host.appendChild(hi);
       const hi4 = document.createElement("span"); hi4.id = "p-hi4"; hi4.textContent = "नमस्ते"; hi4.style.font = `400 40px ${getComputedStyle(stage).getPropertyValue("--sv2-ui")}`; host.appendChild(hi4);
+      const hi6 = document.createElement("span"); hi6.id = "p-hi6"; hi6.textContent = "नमस्ते"; hi6.style.font = `600 40px ${getComputedStyle(stage).getPropertyValue("--sv2-ui")}`; host.appendChild(hi6);
       return out;
     }, { STAGE, WEIGHTS, LATIN });
     for (const [v, fam] of Object.entries(STAGE)) for (const w of WEIGHTS) {
@@ -159,7 +160,13 @@ test("live lesson stage (Studio v2 engine, Devanagari faces loaded): every Latin
       // (within 3 px of 1000: the stage's DOM text is laid out with its own text-rendering, the canvas without)
       if (Math.abs(m.canvas - m.dom) > 3 || Math.abs(m.canvas - m.fallback) < 10) bad.push(`${v} ${w} canvas ${m.canvas.toFixed(1)} px vs DOM ${m.dom.toFixed(1)} px (system sans ${m.fallback.toFixed(1)})`);
     }
-    for (const id of ["#p-hi", "#p-hi4"]) { const f = await used(id); if (!only(f, "Mukta")) bad.push(`Hindi ${id}: ${show(f)}`); }
+    for (const id of ["#p-hi", "#p-hi4", "#p-hi6"]) { const f = await used(id); if (!only(f, "Mukta")) bad.push(`Hindi ${id}: ${show(f)}`); }
+    // (main 2026-11-11, release 20 on a phone: 400 Hindi drew in Mukta SemiBold — the 600 file served 400-600. The used WEIGHT
+    // counts too: 400 is Mukta's regular, 600 its SemiBold. The face's own name says which file was used)
+    const name = async (id) => ((await used(id)) ?? []).filter((f) => f.familyName.startsWith("Mukta")).map((f) => f.familyName).join("+");
+    const n4 = await name("#p-hi4"), n6 = await name("#p-hi6");
+    if (/SemiBold|Bold|Medium/.test(n4)) bad.push(`Hindi 400 drawn in ${n4}, not Mukta's regular`);
+    if (!/SemiBold/.test(n6)) bad.push(`Hindi 600 drawn in ${n6}, not Mukta SemiBold`);
     if (process.env.FONT_MATCH_LOG) console.log(JSON.stringify(widths));
     assert.deepEqual(bad, []);
   } finally { await page.close(); }
@@ -176,8 +183,15 @@ test("whiteboard: the word face and a 700 run of it resolve to Atkinson Hyperleg
       t.id = "wb-word";
       const b = t.cloneNode(true); b.id = "wb-bold"; b.style.fontWeight = "700"; t.parentNode.appendChild(b);
     });
+    // (CI 2026-11-11: the clone was asked for its used fonts before it was laid out and painted — an empty list. Wait for
+    // the fonts and two frames, then ask again until the node reports a font, at most 3 s)
+    await page.evaluate(() => document.fonts.ready.then(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))));
     const bad = [];
-    for (const id of ["#wb-word", "#wb-bold"]) { const f = await used(id); if (!only(f, "Atkinson Hyperlegible Next")) bad.push(`${id}: ${show(f)}`); }
+    for (const id of ["#wb-word", "#wb-bold"]) {
+      let f = await used(id);
+      for (let i = 0; i < 15 && !f?.length; i++) { await page.waitForTimeout(200); f = await used(id); }
+      if (!only(f, "Atkinson Hyperlegible Next")) bad.push(`${id}: ${show(f)}`);
+    }
     assert.deepEqual(bad, []);
   } finally { await page.close(); }
 });

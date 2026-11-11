@@ -1,0 +1,121 @@
+{
+  "v": 1,
+  "id": "gen-c5-maths-ch13-t01-2eaa2cbb",
+  "approved": true,
+  "hash": "2eaa2cbb140d9b84094142708c671b6e",
+  "archetype": "sieve-storm@1",
+  "spec": {
+    "archetype": "sieve-storm@1",
+    "skills": [
+      "c5-maths-ch13-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Chuno",
+      "slashed": "Chuna gaya",
+      "combo": "Combo",
+      "coach": "Dhyan se",
+      "runDone": "Daud poori",
+      "prime": "abhajya (prime)",
+      "composite": "bhajya (composite)",
+      "even": "Sam",
+      "odd": "Visham",
+      "multipleOf": "Ke guna",
+      "commonOf": "Sajha guna",
+      "factorOf": "gunankhand",
+      "cfactorOf": "Sajha gunankhand",
+      "divisibleBy": "Vibhajya",
+      "coprimeWith": "Sah-abhajya",
+      "square": "Varg",
+      "palindrome": "Ulta-seedha ek",
+      "slipped": "Chook gaya",
+      "wrongCut": "Galat kata",
+      "and": "aur"
+    },
+    "title": "Sahi ko chuno",
+    "rounds": [
+      {
+        "rule": "multiple",
+        "a": 6,
+        "title": "Chuno aur kato",
+        "sub": "Tez badalte ankon par nazar rakho",
+        "lo": 1,
+        "hi": 48,
+        "count": 18,
+        "hitRate": 0.5,
+        "seed": 61,
+        "speed": 0.9,
+        "targets": "c5-maths-ch13-t01-m-factor-multiple-confuse"
+      }
+    ]
+  },
+  "for": {
+    "topic": "c5-maths-ch13-t01",
+    "skill": "c5-maths-ch13-t01-s1",
+    "misconceptionId": "c5-maths-ch13-t01-m-factor-multiple-confuse",
+    "beat": "rem:c5-maths-ch13-t01-m-factor-multiple-confuse",
+    "when": "remediation"
+  },
+  "because": {
+    "mixup": {
+      "id": "c5-maths-ch13-t01-m-factor-multiple-confuse",
+      "belief": "Confuses factors with multiples",
+      "signs": [
+        "Lists 1, 2, 3, 6 as multiples of 6",
+        "Says multiples are smaller than the number",
+        "Uses the words interchangeably"
+      ]
+    },
+    "rule": "shown only to a child the learner model holds this mix-up for, at this beat; any other child gets the script's own board"
+  },
+  "source": "generated",
+  "predicate": {
+    "ok": true,
+    "why": null
+  },
+  "render": {
+    "byViewport": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "images": [
+      {
+        "vp": "p412",
+        "file": "piece-p412.png",
+        "sha256": "0d3e079a8e445740150dedc2c7915a4079a4737284564dc613bd0516ee5ea432"
+      },
+      {
+        "vp": "l1366",
+        "file": "piece-l1366.png",
+        "sha256": "0e58a2fa6de1519c221282eef6bd97076ce91c2154e390b8d034d20100572e2c"
+      }
+    ]
+  },
+  "judge": {
+    "verdict": "pass",
+    "by": "two separate Claude Opus judges (lean, 4 reads), rubric v2, 2026-11-11, renders at da0e71b93",
+    "promptSha256": "6533992ad0d93b49abda38b305ae4177f65441f620b5d47e6317c70cd0630ba7",
+    "prompt": "data/studio-approved/JUDGE-PROMPT.md",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Round rule 'multiple' a=6 over 1-48 with count 18, hitRate 0.5; screen shows 'CHUNA GAYA 0/9' while only 8 distinct multiples of 6 (6..48) exist in range, so the engine presumably repeats a value; the seeded sequence is not in the packet, so whether the distractors include factors of 6 (1, 2, 3) that would catch the factor/multiple mix-up cannot be confirmed from the packet."
+  },
+  "judge2": {
+    "verdict": "pass",
+    "by": "Claude Opus judge B, 2026-11-11",
+    "content": "pass",
+    "faults": [],
+    "notes": "Round is rule 'multiple', a=6, lo 1..hi 48, count 18, hitRate 0.5; the screen shows 'CHUNA GAYA 0/9' (9 targets) while 1-48 holds only 8 distinct multiples of 6 (6..48), so the engine must repeat a value; from the packet alone I cannot tell whether that is intended or whether distractors include the factors of 6 (1, 2, 3) that would surface the factor/multiple mix-up. Neither counted as a fault."
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T09:46:13.435Z"
+  },
+  "approvedAt": "2026-11-11T10:00:47.063Z"
+}

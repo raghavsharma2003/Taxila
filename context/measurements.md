@@ -6688,3 +6688,10 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-8581b9f` (2026-11-11): Released 8581b9f with scripts/release.mjs: web taxila-web--s8581b9f-ikzm (was taxila-web--s59ae352-2c67), worker + canary/nightly jobs on taxila-worker:8581b9f (was 59ae352); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 8581b9f --rollback.
+
+
+<!-- merged from inbox/r8-stambh-tally.json -->
+## ms-r8-stambh-tally-cert
+- **What:** FORGE3_QA_LOCAL=1 node server/forge3/play-cert.js --only stambh --resume (local Playwright Chromium, no paid run) on the served levels of both tally entries; the 68 judged bars/picto samples were kept; the new cells and samples were merged into the committed table additively (no existing cell or sample changed).
+- **Result:** 16 of 16 2D samples pass at p360, p412 and l1366 in kagaz, chalk, blueprint and raat (c4 band). tests/r8-play-phone-seam.test.mjs: c4-maths-ch14-t01 s1 → stambh/tally, s2 / s3 → stambh/picto at p360 with first screen and evidence. tests/r8-stambh-tally-layout-browser.test.mjs: no Q1-Q4/Q6 fault, no canvas label cut or ellipsised, tally buttons ≥ 64 px, at 360x640 and 1366x768 in four states.
+- **Not measured:** a real phone; a child. (2026-11-11)

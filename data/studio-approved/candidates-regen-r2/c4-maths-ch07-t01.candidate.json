@@ -1,0 +1,91 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c4-maths-ch07-t01",
+    "archetype": "dukaan@1",
+    "misconceptionId": "c4-maths-ch07-t01-m-misalign",
+    "skillId": "c4-maths-ch07-t01-s1",
+    "beat": "rem:c4-maths-ch07-t01-m-misalign",
+    "when": "remediation",
+    "check": "c4-maths-ch07-t01-s1:c1"
+  },
+  "archetype": "dukaan@1",
+  "spec": {
+    "archetype": "dukaan@1",
+    "skills": [
+      "c4-maths-ch07-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Round",
+      "served": "Serve ho gaya",
+      "patience": "Jaldi karo",
+      "bill": "Bill",
+      "pays": "De raha hai",
+      "change": "Baaki paise",
+      "pack": "Pack karo",
+      "crates": "Petiyan",
+      "left": "Baaki",
+      "enough": "Kaafi hai",
+      "notEnough": "Kaafi nahi",
+      "budget": "Budget",
+      "coach": "Socho aur jodo",
+      "runDone": "Run poora",
+      "exact": "Bilkul sahi",
+      "short": "Kam",
+      "over": "Zyada",
+      "carry": "Aage le jao",
+      "full": "Poora",
+      "each": "Har ek",
+      "inLast": "Aakhri mein"
+    },
+    "title": "Dukaan Rush",
+    "rounds": [
+      {
+        "mode": "pay",
+        "title": "Bill sambhalo",
+        "sub": "Dhyan se hisaab karo",
+        "customers": [
+          {
+            "items": [
+              {
+                "name": "Soap",
+                "price": 50,
+                "qty": 1
+              }
+            ]
+          }
+        ],
+        "coins": true,
+        "speed": 0.9,
+        "targets": "c4-maths-ch07-t01-m-misalign"
+      }
+    ]
+  },
+  "hash": "ba2b2eeff7ee9688a1f7cb66e1e466b6",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": true,
+    "spec": {
+      "ok": true,
+      "repairs": 5,
+      "fellBack": false
+    }
+  },
+  "facts": {
+    "kind": "game",
+    "archetype": "dukaan@1",
+    "onScreen": {
+      "title": "Dukaan Rush",
+      "rounds": 1,
+      "first": "Bill sambhalo: Dhyan se hisaab karo"
+    }
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 2,
+    "at": "2026-11-11T09:44:58.763Z"
+  }
+}

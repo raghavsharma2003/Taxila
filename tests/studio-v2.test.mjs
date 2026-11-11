@@ -349,7 +349,12 @@ test("Lighthouse dial (2026-11-11): no number at an asked angle (rubric v2: a gu
   assert.deepEqual(scaleLabels("tens", 360, [90, 180, 270], tiny), []);
   assert.deepEqual(scaleLabels("tens", 360, [60, 120], tiny), [90, 180, 270], "labels elsewhere stay");
   assert.deepEqual(scaleLabels("tens", 180, [90, 40], tiny), []);
-  assert.deepEqual(scaleLabels("tens", 180, [], tiny), [90], "classify (no asked angle) keeps the scale whole");
+  // (main 2026-11-11: one rule — the dial never prints the number the wave is ABOUT, asked or sorted by; ticks stay)
+  const { aboutOf } = await import("../src/studio-v2/engines/angle.ts");
+  assert.deepEqual(scaleLabels("tens", 180, aboutOf({ mode: "classify", items: [40, 90, 120], kind: "right" }), tiny), [], "a right-angle sort hides its 90");
+  assert.deepEqual(aboutOf({ mode: "classify", items: [40, 110], kind: "obtuse" }), [90, 180]);
+  assert.deepEqual(aboutOf({ mode: "call", items: [40, 130] }), [40, 130]);
+  assert.deepEqual(scaleLabels("tens", 360, aboutOf({ mode: "classify", items: [200, 300], kind: "reflex" }), tiny), [90, 270], "a reflex sort hides its 180");
   const pro = scaleLabels("protractor", 180, [30, 70, 110, 150], tiny);
   assert.equal(pro.length, 17 - 4); for (const a of [30, 70, 110, 150]) assert.ok(!pro.includes(a), `${a} is asked: no label`);
   assert.deepEqual(scaleLabels("none", 180, [], tiny), []);
@@ -359,4 +364,51 @@ test("Lighthouse dial (2026-11-11): no number at an asked angle (rubric v2: a gu
   const bs = real.map(box);
   for (let i = 0; i < bs.length; i++) for (let j = i + 1; j < bs.length; j++) { const [p, q] = [bs[i], bs[j]]; assert.ok(p[2] + 10 <= q[0] || q[2] + 10 <= p[0] || p[3] + 10 <= q[1] || q[3] + 10 <= p[1], `${real[i]} and ${real[j]} keep a gap`); }
   assert.deepEqual(scaleLabels("protractor", 180, [90, 120], box), [30, 60, 150]);
+});
+
+test("regeneration round 2 layout faults (judges 2026-11-11): the call label is never cut, geo buttons fit their label, vault count clear of the dial", async () => {
+  // angle: "Naya mod saamne hai" in the full turn's 262-wide column at the young floor (43, mono ~0.6 em, +5 per char tracked)
+  const { callLines } = await import("../src/studio-v2/engines/angle.ts");
+  const mono = (px) => (s, tr) => s.length * (0.6 * px + tr);
+  for (const px of [38, 43]) {
+    const { lines } = callLines("Naya mod saamne hai", 262, mono(px));
+    assert.equal(lines.length, 2, `two lines at ${px}`);
+    assert.equal(lines.join(" "), "Naya mod saamne hai", "whole words, nothing dropped");
+    assert.ok(lines.every((l) => !l.includes("…")));
+  }
+  assert.deepEqual(callLines("LIGHT AT", 262, mono(38)), { lines: ["LIGHT AT"], track: 5 }, "a short label keeps its tracking");
+  const long = callLines("Agla naya mod bilkul saamne aa gaya hai dhyaan se", 262, mono(43));
+  assert.equal(long.lines.join(" "), "Agla naya mod bilkul saamne aa gaya hai dhyaan se", "a long label wraps to as many lines as it needs, never cut");
+  // geo-forge: each button as tall as its label's lines, both clear of the pin-board's rightmost column
+  const { geoButtons, GEO_GRID_X1 } = await import("../src/studio-v2/engines/ext/pure.ts");
+  const lh = 43 * 1.12;
+  for (const [nu, nc] of [[1, 1], [1, 2], [2, 2]]) {
+    const { UNDO, CHECK } = geoButtons(nu, nc, lh);
+    assert.ok(UNDO.h >= nu * lh + 16 && CHECK.h >= nc * lh + 16, `${nu}/${nc} lines fit inside their borders`);
+    assert.ok(CHECK.y >= UNDO.y + UNDO.h + 10, "the buttons do not overlap");
+    assert.ok(UNDO.x >= GEO_GRID_X1 + 20 && CHECK.x >= GEO_GRID_X1 + 20, "a clear gap to the rightmost pin column");
+    assert.ok(CHECK.x + CHECK.w <= 1000 && CHECK.y + CHECK.h <= 600);
+  }
+  // vault-heist: the loaded row's count follows its label inside the row; a label too long for a big count wraps
+  const { loadedRow, ROW_X1 } = await import("../src/studio-v2/engines/vault.ts");
+  const m43 = (s) => s.length * 0.6 * 43, wrap = (s, w) => { const out = []; let cur = ""; for (const x of s.split(" ")) { const t = cur ? cur + " " + x : x; if (!cur || m43(t) <= w) cur = t; else { out.push(cur); cur = x; } } if (cur) out.push(cur); return out; };
+  const one = loadedRow("Number taiyaar", 32, m43, wrap);
+  assert.deepEqual(one.lines, ["Number taiyaar"]); assert.ok(one.x + 32 <= ROW_X1, "label and 0 fit the row");
+  const big = loadedRow("Number taiyaar", 230, m43, wrap);
+  assert.deepEqual(big.lines, ["Number", "taiyaar"], "a long count wraps the label"); assert.ok(big.x + 230 <= ROW_X1 + 10);
+});
+
+test("dukaan: amounts are paise and the schema the model sees says so (judges 2026-11-11: price 50 meant ₹50, shown \"Soap 1 × ₹0.50\")", async () => {
+  const { DukaanSchema, rupeeLikePrices } = await import("../shared/studio-spec-ext/dukaan.ts");
+  const { z } = await import("zod");
+  const js = JSON.stringify(z.toJSONSchema(DukaanSchema, { unrepresentable: "any" }));
+  for (const f of ["price of one item", "the note the customer pays with", "the money the customer has"]) assert.ok(js.includes(f), `${f} described`);
+  assert.ok(js.includes("in paise (100 paise = ₹1): ₹50 is 5000, ₹12.50 is 1250"), "the unit stated plainly with an example");
+  const spec = (items, extra = {}) => ({ rounds: [{ mode: "pay", customers: [{ items, ...extra }] }] });
+  assert.equal(rupeeLikePrices(spec([{ name: "Soap", price: 50, qty: 1 }])), 0, "a lone 50 is not decidable: left alone");
+  assert.equal(rupeeLikePrices(spec([{ name: "Soap", price: 50, qty: 1 }, { name: "Bag", price: 45000, qty: 1 }])), 1, "50 beside ₹450 written in paise: flagged");
+  assert.equal(rupeeLikePrices(spec([{ name: "Kite", price: 3500, qty: 3 }], { pays: 20000 })), 0);
+  const X = await import("../shared/studio-spec-ext/index.ts");
+  const v = X.validateSpecExt("dukaan@1", spec([{ name: "Soap", price: 50, qty: 1 }, { name: "Bag", price: 45000, qty: 1 }]));
+  assert.ok(v.repairs.includes("price:looks-like-rupees"), "the repair notes it");
 });

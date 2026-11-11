@@ -40,6 +40,28 @@ export function scaleLabels(sc: "none" | "tens" | "protractor", range: 180 | 360
   return pick.filter((a) => !ask.has(a));
 }
 
+/** The numbers a wave is ABOUT, which its dial never prints (main 2026-11-11): the angles a call/copy wave asks for, and the
+ *  bounds of the kind a classify wave sorts by (right → 90; acute → 90; obtuse → 90, 180; reflex → 180). Ticks stay. */
+const KIND_BOUNDS: Record<string, number[]> = { acute: [90], right: [90], obtuse: [90, 180], reflex: [180] };
+export function aboutOf(w: { mode: string; items: readonly number[]; kind?: string }): number[] {
+  return w.mode === "classify" ? (KIND_BOUNDS[w.kind ?? ""] ?? []) : [...w.items];
+}
+/** The call card's label as whole-word lines, never cut (judges, regeneration round 2, 2026-11-11: "Naya mod saamne hai"
+ *  was drawn "Naya mod saamne…" at p412 and l1366 — the tracked run at the young floor wrapped one word per line, 4 > 3,
+ *  and the shared helper cut the last). Tracked when that fits in two lines, else untracked; whatever is left wraps
+ *  greedily and every line is drawn. `measure(s, track)` is the run's width at the label size. */
+export function callLines(text: string, maxW: number, measure: (s: string, track: number) => number): { lines: string[]; track: number } {
+  const words = String(text).split(/\s+/).filter(Boolean);
+  const wrap = (track: number): string[] => {
+    const lines: string[] = []; let cur = "";
+    for (const w of words) { const t = cur ? cur + " " + w : w; if (!cur || measure(t, track) <= maxW) cur = t; else { lines.push(cur); cur = w; } }
+    if (cur) lines.push(cur);
+    return lines;
+  };
+  const tracked = wrap(5);
+  return tracked.length <= 2 ? { lines: tracked, track: 5 } : { lines: wrap(0), track: 0 };
+}
+
 function create(api: EngineApi, spec: AngleSpec): EngineInstance {
   const T = spec.strings;
   const g = { state: "boot" as "boot" | "intro" | "aim" | "reveal" | "end" | "final", w: -1, i: 0, stateT: 0, ang: 30, target: 30, vel: 0, dragging: false, moved: false, callT: 0, limit: 7,
@@ -53,7 +75,8 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
   const pivot = (): XY => (wave().range === 360 ? [500, 300] : [500, clamp(g.coachTop - 52, 460, 500)]);
   // (the half turn's radius gives way to the host's task pill where it sits over the world, so the protractor's top labels
   // stay clear of it: at l1366 "60 … 120" lay under "COPY THIS TURN" — layout probe, 2026-11-11)
-  const R = () => (wave().range === 360 ? 170 : clamp(pivot()[1] - 53 - api.chromeBottom(), 290, 360));
+  // (floor 250, not 290: under a two-line young task pill the 90 label still clears it — layout probe, l1366 young)
+  const R = () => (wave().range === 360 ? 170 : clamp(pivot()[1] - 53 - api.chromeBottom(), 250, 360));
   const hud = api.hud([{ key: "wave", label: T.wave }, { key: "hits", label: T.hits }, { key: "acc", label: T.accuracy, meter: true }]);
   const accOf = (r: { err: number }[]) => (r.length ? Math.round(100 * (r.reduce((a, b) => a + (1 - Math.min(1, b.err / 30)), 0) / r.length)) : 100);
   const at = (ang: number, r: number): XY => { const [px, py] = pivot(); return [px + Math.cos(ang * DEG) * r, py - Math.sin(ang * DEG) * r]; };
@@ -222,21 +245,28 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
       const sc = wave().scaffold;
       /** boxes the reveal's label must not cover: the protractor's labels, "0°", the lighthouse, the reference card */
       const keepOut: [number, number, number, number][] = [[px + r + 30, py - 22, px + r + 90, py + 22], [px - 34, py - 30, px + 34, py + 72]];
+      // the copy wave's reference card (the full turn's box stays left of its 180 label; the half turn's box sits on the side
+      // the called angle is NOT on, so the boat and its label at the reveal never land on it)
+      const copyOn = wave().mode === "copy" && (g.state === "aim" || g.state === "reveal");
+      const cc = { x: full ? 132 : key() > 90 ? 825 : 175, y: full ? 420 : 330, w: full ? 236 : 280 };
+      const ccBox: [number, number, number, number] = [cc.x - cc.w / 2, cc.y - 150, cc.x + cc.w / 2, cc.y + 120];
       if (sc !== "none") {
         ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 3;
         for (let a = 10; a < (full ? 360 : 180); a += 10) { const big = a % 90 === 0, [x0, y0] = at(a, r - (big ? 26 : 14)), [x1, y1] = at(a, r); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); }
         const lo = { font: "mono" as const, size: 38, weight: 600 }, hh = Math.max(38, api.minLabel) * 0.5;
         const box = (a: number): [number, number, number, number] => { const [lx, ly] = at(a, r + 30), hw = api.measure(ctx, `${a}`, lo) / 2; return [lx - hw, ly - hh, lx + hw, ly + hh]; };
-        for (const a of scaleLabels(sc, full ? 360 : 180, wave().mode === "classify" ? [] : wave().items, box)) {
+        // (a number the reference card would cover is not printed while the card is up — its tick stays; the card sat on
+        // "120" and "150" of a labelled copy wave: layout probe, c5-ch03-t01, 2026-11-11)
+        const under = (b: [number, number, number, number]) => copyOn && b[0] < ccBox[2] + 6 && b[2] > ccBox[0] - 6 && b[1] < ccBox[3] + 6 && b[3] > ccBox[1] - 6;
+        for (const a of scaleLabels(sc, full ? 360 : 180, aboutOf(wave()), box)) {
+          if (under(box(a))) continue;
           const [lx, ly] = at(a, r + 30); api.text(ctx, `${a}`, lx, ly, { ...lo, color: C.ink3, align: "center", baseline: "middle" }); keepOut.push([lx - 40, ly - 22, lx + 40, ly + 22]);
         }
       }
       // reference wedge for copy mode
-      if (wave().mode === "copy" && (g.state === "aim" || g.state === "reveal")) {
-        // (the full turn's box stays left of its 180 label; the half turn's box sits on the side the called angle is NOT on,
-        // so the boat and its label at the reveal never land on it)
-        const cx = full ? 132 : key() > 90 ? 825 : 175, cy = full ? 420 : 330, a0 = g.refRot * DEG, a1 = a0 + key() * DEG, bw = full ? 236 : 280;
-        keepOut.push([cx - bw / 2, cy - 150, cx + bw / 2, cy + 120]);
+      if (copyOn) {
+        const cx = cc.x, cy = cc.y, a0 = g.refRot * DEG, a1 = a0 + key() * DEG, bw = cc.w;
+        keepOut.push(ccBox);
         ctx.save(); ctx.fillStyle = "rgba(16,19,27,.85)"; ctx.beginPath(); ctx.roundRect(cx - bw / 2, cy - 150, bw, 270, 20); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
         ctx.strokeStyle = C.ion; ctx.lineWidth = 6; ctx.lineCap = "round";
         ctx.beginPath(); ctx.moveTo(cx + Math.cos(a0) * g.refLen[0], cy - Math.sin(a0) * g.refLen[0]); ctx.lineTo(cx, cy); ctx.lineTo(cx + Math.cos(a1) * g.refLen[1], cy - Math.sin(a1) * g.refLen[1]); ctx.stroke();
@@ -272,7 +302,10 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
         // else on the lamp's side of it — layout probe, 2026-11-11: "270°" sat on the 270 label, "45° · off by 5°" on 20 and 30)
         const lab = !rv.hit && rv.off >= 0 ? `${rv.truth}° · ${T.offBy} ${rv.off}°` : `${rv.truth}°`, lw = api.measure(ctx, lab, { font: "mono", size: 40, weight: 600 }) / 2 + 26;
         const [ix, iy] = at(rv.truth, Math.max(70, rv.r - 96));
-        const spots: XY[] = [[tx, ty + 56], [tx, ty - 78], [ix, iy], ...(full ? [] : [[px, py - 100] as XY]), [tx + lw + 40, ty], [tx - lw - 40, ty]].map(([x, y]) => [clamp(x, lw, W - lw), clamp(y, 200, 590)] as XY);
+        // (then inside the half turn, nudged away from the reference card: "45° · off by 5°" found no free spot and fell back
+        // onto the 30 label — layout probe, c5-ch03-t01, 2026-11-11)
+        const away = copyOn && !full ? (cc.x < px ? 1 : -1) : 0;
+        const spots: XY[] = [[tx, ty + 56], [tx, ty - 78], [ix, iy], ...(full ? [] : [100, 72, 140, 170].flatMap((dy) => [0, 70, 140].map((dx) => [px + away * dx, py - dy] as XY))), [tx + lw + 40, ty], [tx - lw - 40, ty]].map(([x, y]) => [clamp(x, lw, W - lw), clamp(y, 200, 590)] as XY);
         const hits = ([x, y]: XY) => keepOut.some((b) => x - lw < b[2] && x + lw > b[0] && y - 31 < b[3] && y + 31 > b[1]);
         const [sx, sy] = spots.find((p) => !hits(p)) ?? spots[0];
         pill(api, ctx, lab, sx, sy, { color: rv.hit ? C.mint : !rv.hit && rv.off >= 0 ? C.amber : C.ion });
@@ -281,9 +314,13 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
       // call card + countdown
       if (g.state === "aim" && wave().mode === "call") {
         // the call card sits clear of the 90 label: the full turn's left column; inside the half turn's arc, under its top
-        const cxc = full ? 132 : 500;
-        api.text(ctx, T.threat, cxc, full ? 214 : 272, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle", track: 5, maxWidth: full ? 236 : 600 });
-        api.text(ctx, `${key()}°`, cxc, full ? 318 : 342, { font: "display", size: 88, weight: 800, align: "center", baseline: "middle", glow: C.ion });
+        // (the full turn's column runs from the stage edge to just short of the 150 label: 262 wide holds "saamne hai" whole
+        // at the young floor; the label wraps to whole lines and the number moves down under however many there are)
+        const cxc = full ? 138 : 500, cw = full ? 262 : 600, lo = { font: "mono" as const, size: 38, weight: 600 };
+        const { lines, track } = callLines(T.threat, cw, (s, tr) => api.measure(ctx, s, { ...lo, track: tr }));
+        const lh = Math.max(38, api.minLabel) * 1.12, y0 = (full ? 214 : 272) - (lines.length - 1) * lh / 2, yl = y0 + (lines.length - 1) * lh;
+        lines.forEach((ln, i) => api.text(ctx, ln, cxc, y0 + i * lh, { ...lo, color: C.ink3, align: "center", baseline: "middle", track, maxWidth: cw }));
+        api.text(ctx, `${key()}°`, cxc, Math.max(full ? 318 : 342, yl + 84), { font: "display", size: 88, weight: 800, align: "center", baseline: "middle", glow: C.ion });
       }
       if (g.state === "aim" && wave().mode !== "classify") { const k = clamp(g.callT / g.limit, 0, 1); ctx.strokeStyle = k > 0.7 ? C.amber : "rgba(255,255,255,.35)"; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(px, py, 50, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - k)); ctx.stroke(); }
     }

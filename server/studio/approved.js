@@ -49,6 +49,8 @@ export const ENGINE_HOW = Object.freeze({
   "fraction-ops@1": "no round title or sub names the method (barabar tukde, same parts, common denominator); a round aimed at a comparing mix-up compares, never adds; orchard rounds only for a multiplication topic; strings cols 'kaalam', rows 'pankti'",
   "rule-machine@1": "a story only when its rule IS the chain applied to the input, in the order the child computes it (₹500 − 4 × 45 is not ×4 then −45: give no story there); a word-order mix-up round's sub gives the worded phrase ('20 se 5 kam') and its rule is the right order",
   "pictograph@1": "the title names what is drawn (bar graph or picture graph); tally only where tally marks are drawn",
+  // (regen round 2: 4 of 4 geo-forge candidates failed on content — challenges off the topic's idea, wrong Hindi terms)
+  "geo-forge@1": "every challenge builds the topic's own idea (a square tile turned stays square: a quad square drawn tilted; radius vs diameter: a circle challenge); a shape named is exactly that shape; Hindi terms as the textbook: samdvibahu (isosceles), samabahu (equilateral), parimaap (perimeter), paridhi only for a circle, trijya (radius), vyaas (diameter), samaantar (parallel); no task label states the rule (never 'samaan disha' for parallel)",
   "angle-cannon@1": "the beam is a lighthouse's light aimed at a mark: no weapon words in any string (never fire, shoot, turret, nishana, hit, threat, attack); say 'roshni', 'kiran', 'mod do'; angle names as the teacher says them (right angle, 90°); a tens or protractor scaffold only with call/copy angles that are multiples of 10",
   "area-claim@1": "every string plain Roman Hinglish: no stake, claim, plot, sq or units in English; sq varg, units ikai (area 40 varg ikai)",
 });

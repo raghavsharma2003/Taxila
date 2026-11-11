@@ -203,8 +203,10 @@ test("approval lane, predicate (main 2026-11-10, c5-t02 withdrawn): every value 
   assert.equal(valuesOnTicks("angle-cannon@1", { waves: [an("classify", "protractor", [45, 90, 135])] }).ok, true, "classify asks a kind");
   const { ENGINE_SPECS } = await import("../shared/studio-spec.ts");
   assert.equal(valuesOnTicks("angle-cannon@1", ENGINE_SPECS["angle-cannon@1"].defaultSpec).ok, true, "the reviewed default holds its own rule");
-  // (the store: the two withdrawn pilots are gone, c6 stays)
-  assert.ok(!fs.existsSync(path.join(ROOT, "data/studio-approved/c5-maths-ch02-t02")) && !fs.existsSync(path.join(ROOT, "data/studio-approved/c4-maths-ch05-t01")));
+  // (the store: the two withdrawn pilot pieces are gone — a topic may hold a later, separately judged piece (c5-t02 round 2) — c6 stays)
+  const held = (t) => (fs.existsSync(path.join(ROOT, "data/studio-approved", t)) ? fs.readdirSync(path.join(ROOT, "data/studio-approved", t)).filter((f) => f.endsWith(".json")) : []);
+  assert.deepEqual(held("c5-maths-ch02-t02"), ["gen-c5-maths-ch02-t02-a1bc53b3.json"], "only regeneration round 2's piece");
+  assert.deepEqual(held("c4-maths-ch05-t01"), []);
   assert.ok(fs.existsSync(path.join(ROOT, "data/studio-approved/c6-maths-ch06-t01")));
 });
 
@@ -313,4 +315,14 @@ test("the approval lane's scripts parse (2026-11-11: approve-check shipped with 
   const { execFileSync } = await import("node:child_process");
   for (const f of fs.readdirSync(path.join(ROOT, "scripts")).filter((x) => /^approve-.*\.mjs$/.test(x)))
     execFileSync(process.execPath, ["--check", path.join(ROOT, "scripts", f)], { stdio: "pipe" });
+});
+
+test("instrument@1 computes its keys (regen round 2: its three topics were refused unverified_key while citing no kit item); sort-storm's model-made bins stay refused", async () => {
+  const { keysVerified } = await import("../server/stagecraft/builders.js");
+  const { validateAny } = await import("../shared/studio-spec-ext/index.ts");
+  const raw = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-approved/candidates-regen-r2", f), "utf8")).raw;
+  const ins = validateAny("instrument@1", structuredClone(raw("c4-maths-ch06-t01.refused-1.json")));
+  assert.equal(keysVerified("instrument@1", ins.spec, "c4-maths-ch06-t01"), true, "the key is the quantity the engine shows");
+  const ss = validateAny("sort-storm@1", structuredClone(raw("c6-maths-ch02-t01.refused-1.json")));
+  assert.equal(keysVerified("sort-storm@1", ss.spec, "c6-maths-ch02-t01"), false, "bins the model made up, citing unrelated kit items, are not verified");
 });

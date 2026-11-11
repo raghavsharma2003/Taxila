@@ -430,7 +430,12 @@ function fractionLine(c, tl) {
   if (!isInt(den, 2, 12) || !isInt(w, 1, 3) || den * w > 24) return { error: "fraction_line_range" };
   const N = den * w;
   const tgt = Array.isArray(c.target) && isInt(c.target[0], 0, N) && c.target[1] === den ? c.target[0] : null;
-  const mark = isInt(c.mark, 1, N) ? c.mark : null;
+  // (2026-11-11, main: a mark or target the line does not have is refused, never dropped for a bare line or another use:
+  // mark k is one of the line's marks 1..N; a mark is drawn only on a line that asks it — not with marks, hop or show)
+  if (c.target != null && tgt == null) return { error: `mark_target_missing:target ${JSON.stringify(c.target)} (the line draws 0/${den} to ${N}/${den})` };
+  if (c.mark != null && !isInt(c.mark, 1, N)) return { error: `mark_target_missing:mark ${JSON.stringify(c.mark)} (the line has marks 1-${N})` };
+  if (c.mark != null && ((Array.isArray(c.marks) && c.marks.length) || c.hop != null || c.show || tgt != null)) return { error: "mark_target_missing:mark with marks, hop, show or target is never drawn" };
+  const mark = c.mark ?? null;
   if (c.show && tgt == null) return { error: "fraction_line_show" };
   // lesson scripts (Learning, dc-r7-teaching-scripts): `marks` [{ num, label? }] are points the explanation names, each
   // labelled (default num/den) — a label must be the SAME value as its point ("3/6 = 1/2", "1", "4/4 = 1"), checked;
@@ -540,6 +545,7 @@ function fractionLine(c, tl) {
 function fractionLine2(c, tl) {
   const dens = c.dens, w = c.wholes ?? c.to ?? 1;
   if (c.from != null && c.from !== 0) return { error: "fraction_line_from" };
+  if (c.mark != null || c.hop != null || c.show) return { error: "mark_target_missing:a two-denominator line draws marks [[a, d]] and target pairs only" };
   if (dens.length !== 2 || !dens.every((d) => isInt(d, 2, 12)) || dens[0] === dens[1] || !isInt(w, 1, 2) || dens.some((d) => d * w > 24)) return { error: "fraction_line2_range" };
   const pts = (Array.isArray(c.marks) ? c.marks : []).map((m) => (Array.isArray(m) ? m : [m?.num, m?.den]));
   const asks = (Array.isArray(c.target) ? c.target : []).map((m) => (Array.isArray(m) ? m : [m?.num, m?.den]));
@@ -718,8 +724,11 @@ function numberLineHop(c, tl) {
   let marked = null;
   if (c.mark != null) {
     const m = c.mark;
+    if (c.hideResult) return { error: "mark_with_hideResult" };
+    // (a mark names the landing or one hop the line draws, never both, never a hop it does not draw)
+    if (m?.land === true && m?.hop != null) return { error: "mark_target_missing:land and hop both named" };
     const k = m?.land === true ? hops.length - 1 : Number.isInteger(m?.hop) && m.hop >= 0 && m.hop < hops.length ? m.hop : -1;
-    if (k < 0 || c.hideResult) return { error: "mark" };
+    if (k < 0) return { error: `mark_target_missing:${m?.hop != null ? `hop ${JSON.stringify(m.hop)}` : "no land or hop"} (the line draws hops 0-${hops.length - 1})` };
     const v = all[k + 1], x = round1(xOf(v));
     if (m.land !== true) tl.add({ op: "arrow", from: [round1(xOf(all[k])), y - 10], to: [x, y - 10], bend: hops[k] > 0 ? -0.6 : 0.6, weight: 3, role: ROLE.answer }, 500, { gap: 300 });
     tl.add({ op: "circle", c: [x, y], r: 13, weight: 2, role: ROLE.answer }, 400, { gap: 200 });
@@ -803,7 +812,7 @@ function placeValue(c, tl) {
   let marked = null;
   if (c.mark != null) {
     const p = MARK_PLACES.indexOf(c.mark?.place);
-    if (p < 0 || p >= n) return { error: "mark_place" };
+    if (p < 0 || p >= n) return { error: `mark_target_missing:place ${JSON.stringify(c.mark?.place ?? null)} (${value} has ${MARK_PLACES.slice(0, n).join(", ")})` };
     const i = n - 1 - p, cx = round1(x0 + i * cw + (cw - 4) / 2);
     tl.add({ op: "circle", c: [cx, y0 + 62], r: round1(Math.min(22, (cw - 4) / 2 - 1)), weight: 2, role: ROLE.answer }, 500, { gap: 300 });
     const digit = digits[i], worth = String(Number(digit) * 10 ** p);
@@ -1054,9 +1063,10 @@ function compare(c, tl) {
   if (c.mark != null) {
     const m = c.mark;
     const i = m?.side === "left" ? 0 : m?.side === "right" ? 1 : -1;
-    if (i < 0) return { error: "mark_side" };
+    if (i < 0) return { error: `mark_target_missing:side ${JSON.stringify(m?.side ?? null)} (left or right)` };
     const side = [left, right][i], x = 20 + i * 190 + colW / 2;
-    if (m.item != null && !(Number.isInteger(m.item) && m.item >= 0 && m.item < side.items.length)) return { error: "mark_item" };
+    if (m.item != null && !(Number.isInteger(m.item) && m.item >= 0 && m.item < side.items.length)) return { error: `mark_target_missing:${m.side} item ${JSON.stringify(m.item)} (the column has items 0-${side.items.length - 1})` };
+    if (m.item != null && m.add != null) return { error: "mark_target_missing:item and add both named (add appends, it rings nothing)" };
     if (m.add != null) {
       const t = String(m.add).trim();
       if (!t || t.includes("?") || [...t].length > 24 || !fitsLabel(t) || textProblem(t) || side.items.length >= 4) return { error: "mark_add" };
@@ -1266,12 +1276,61 @@ const arcPts = (cx, cy, r, deg) => Array.from({ length: Math.max(3, Math.round(d
   return [cx + r * Math.cos(a), cy - r * Math.sin(a)];
 });
 
+/** An arc of radius r round (cx, cy) from a0° to a1° (counter-clockwise, screen y down), as rounded stroke points. */
+const arcSpan = (cx, cy, r, a0, a1) => { const k = Math.max(3, Math.round(Math.abs(a1 - a0) / 12) + 1); return Array.from({ length: k }, (_, j) => { const a = rad(a0 + ((a1 - a0) * j) / (k - 1)); return [round1(cx + r * Math.cos(a)), round1(cy - r * Math.sin(a))]; }); };
+/** Does segment p-q cross box b (Liang-Barsky, exact)? */
+const segCrossesBox = (p, q, b) => {
+  let t0 = 0, t1 = 1; const dx = q[0] - p[0], dy = q[1] - p[1];
+  for (const [pp, qq] of [[-dx, p[0] - b.x], [dx, b.x + b.w - p[0]], [-dy, p[1] - b.y], [dy, b.y + b.h - p[1]]]) {
+    if (pp === 0) { if (qq < 0) return false; continue; }
+    const r = qq / pp; if (pp < 0) { if (r > t1) return false; if (r > t0) t0 = r; } else { if (r < t0) return false; if (r < t1) t1 = r; }
+  }
+  return t0 <= t1;
+};
+/** Does polyline `pts` come within `pad` of box b (negative: only through its inside)? */
+const polyHits = (pts, b, pad = 2) => { const g = { x: b.x - pad, y: b.y - pad, w: b.w + 2 * pad, h: b.h + 2 * pad }; return g.w > 0 && g.h > 0 && pts.some((p, i) => i > 0 && segCrossesBox(pts[i - 1], p, g)); };
+const boxesMeet = (a, b, pad = 3) => a.x < b.x + b.w + pad && b.x < a.x + a.w + pad && a.y < b.y + b.h + pad && b.y < a.y + a.h + pad;
+/** A text whose box is centred on (cx, cy): its op `at` and its box. */
+const centredText = (t, size, cx, cy) => { const b0 = textBox(t, size); const at = [round1(cx), round1(cy - (b0.y + b0.h / 2))]; return { at, box: textBox(t, size, at) }; };
+/** A text out along direction phi (degrees) from (ox, oy), its box `gap` beyond radius r. → { at, box, far } (far: the
+ *  distance from (ox, oy) to the box's far edge along phi). */
+const outwardText = (t, size, ox, oy, phi, r, gap) => {
+  const b0 = textBox(t, size), ext = Math.abs((b0.w / 2) * Math.cos(rad(phi))) + Math.abs((b0.h / 2) * Math.sin(rad(phi))), d = r + gap + ext;
+  return { ...centredText(t, size, ox + d * Math.cos(rad(phi)), oy - d * Math.sin(rad(phi))), far: d + ext };
+};
+
+/**
+ * angle@1: 1-3 angles side by side, each two arms from a corner and its arc. `deg` 10-180 is the angle inside the arms;
+ * 181-350 is a REFLEX angle (Learning's reader pass, 2026-11-11: "260°", "the 300° outside a 60° corner"): the arms open
+ * at 360 − deg and the arc runs the long way round, OUTSIDE the arms, its degrees (or name) written beyond the arc on the
+ * side away from both arms; `inside` (reflex only) also draws the corner's own arc, small, labelled with its degrees
+ * (`inside: true`) or a short label ("?", "x"). A `mark` on a reflex angle thickens the OUTSIDE arc.
+ */
 function angle(c, tl) {
   const list = Array.isArray(c.angles) ? c.angles : [];
-  if (list.length < 1 || list.length > 3 || !list.every((a) => a && isInt(a.deg, 10, 180) && (a.name === undefined || fitsLabel(a.name)) && (a.len === undefined || a.len === "short" || a.len === "long"))) return { error: "angles" };
+  if (list.length < 1 || list.length > 3 || !list.every((a) => a && isInt(a.deg, 10, 350) && (a.name === undefined || fitsLabel(a.name)) && (a.len === undefined || a.len === "short" || a.len === "long")
+    && (a.inside === undefined || (a.deg > 180 && (a.inside === true || (typeof a.inside === "string" && fitsLabel(a.inside) && !textProblem(a.inside))))))) return { error: "angles" };
   const n = list.length, colW = 400 / n, Lbase = n === 1 ? 150 : n === 2 ? 110 : 82;
+  // round 8 (Learning's to-studio 006): an ANSWER board's `mark` { index, show? } — "deg": angle i's measured arc, larger,
+  // with its degrees written in the answer role (its tick); "bigger" (or none): angle i's arc thickened and its name ringed.
+  // (2026-11-11: a mark naming an angle the board does not draw is refused, never moved to another angle)
+  let mk = null;
+  if (c.mark != null) {
+    const i = c.mark?.index, show = c.mark?.show ?? "bigger";
+    if (!["deg", "bigger"].includes(show)) return { error: "mark_show" };
+    if (!Number.isInteger(i) || i < 0 || i >= n) return { error: `mark_target_missing:angle ${JSON.stringify(i ?? null)} (the board draws angles 0-${n - 1})` };
+    mk = { i, show };
+  }
   const facts = { angles: n }, claims = [], geo = [];
-  list.forEach((a, i) => {
+  for (const [i, a] of list.entries()) {
+    if (a.deg > 180) {
+      const g = reflexAngle(c, tl, a, i, n, colW, mk?.i === i ? mk : null);
+      if (g.error) return g;
+      claims.push(g.claim);
+      facts[`angle${i + 1}`] = g.fact;
+      geo.push(g);
+      continue;
+    }
     const th = rad(a.deg);
     // the arms are as long as the column allows for this opening (an obtuse angle spans more than its arm)
     // (Learning: "short arms, long arms, the same angle": `len` "short" draws the arms at half length; the opening is the same)
@@ -1296,25 +1355,108 @@ function angle(c, tl) {
     if (n === 1 && c.arm && fitsLabel(c.arm)) tl.add({ op: "label", at: [vx + L * 0.72, vy + 34], text: c.arm, to: [vx + L * 0.72, vy + 4], ink: "soft" }, 520, { gap: 200 });
     if (n === 1 && c.vertex && fitsLabel(c.vertex)) tl.add({ op: "label", at: [Math.max(textBox(c.vertex, "s").w / 2 + 6, vx - 46), vy + 40], text: c.vertex, to: [vx - 3, vy + 3], ink: "soft" }, 520, { gap: 160 });
     geo.push({ vx, vy, L, th, deg: a.deg, name });
-  });
-  // round 8 (Learning's to-studio 006): an ANSWER board's `mark` { index, show? } — "deg": angle i's measured arc, larger,
-  // with its degrees written in the answer role (its tick); "bigger" (or none): angle i's arc thickened and its name ringed
-  if (c.mark != null) {
-    const i = c.mark?.index, show = c.mark?.show ?? "bigger";
-    if (!Number.isInteger(i) || i < 0 || i >= n || !["deg", "bigger"].includes(show)) return { error: "mark" };
-    const { vx, vy, L, deg } = geo[i];
-    const R = Math.min(L * 0.62, n === 1 ? 52 : 40);
-    if (deg === 90) tl.add({ op: "stroke", points: [[vx + R * 0.6, vy], [vx + R * 0.6, vy - R * 0.6], [vx, vy - R * 0.6]], weight: 3, role: ROLE.answer }, 500, { gap: 300 });
-    else tl.add({ op: "stroke", points: arcPts(vx, vy, show === "deg" ? R : n === 1 ? 34 : 26, deg), weight: 3, role: ROLE.answer }, 500, { gap: 300 });
-    if (show === "deg") {
-      // the degrees on the bisector, outside the arc (a narrow angle's out along its opening, never across an arm)
-      const half = rad(deg / 2), d = Math.min(L - 8, Math.max(R + 26, 30 / Math.sin(Math.max(half, rad(6)))));
-      const t = `${deg}°`, at = [round1(vx + d * Math.cos(half)), round1(vy - d * Math.sin(half))];
-      tl.add({ id: "mark", op: "text", at, text: t, size: "s", role: ROLE.answer }, 400, { gap: 120 });
-    } else tl.add({ id: "mark", op: "highlight", target: `n${i}`, style: "circle", role: ROLE.answer }, 500, { gap: 200 });
-    facts.marked = show === "deg" ? `angle ${i + 1}: ${deg}°` : `angle ${i + 1} is bigger`;
+  }
+  if (mk) {
+    const { i, show } = mk;
+    const gi = geo[i];
+    if (gi.reflex) {
+      // (a reflex angle's mark is on its OUTSIDE arc — the angle asked — never the corner's inside arc)
+      tl.add({ op: "stroke", points: gi.outArc, weight: 3, role: ROLE.answer }, 500, { gap: 300 });
+      if (show === "deg") tl.add({ id: "mark", op: "text", at: gi.markAt, text: `${gi.deg}°`, size: gi.markSize, role: ROLE.answer }, 400, { gap: 120 });
+      else tl.add({ id: "mark", op: "highlight", target: `n${i}`, style: "circle", role: ROLE.answer }, 500, { gap: 200 });
+    } else {
+      const { vx, vy, L, deg } = gi;
+      const R = Math.min(L * 0.62, n === 1 ? 52 : 40);
+      if (deg === 90) tl.add({ op: "stroke", points: [[vx + R * 0.6, vy], [vx + R * 0.6, vy - R * 0.6], [vx, vy - R * 0.6]], weight: 3, role: ROLE.answer }, 500, { gap: 300 });
+      else tl.add({ op: "stroke", points: arcPts(vx, vy, show === "deg" ? R : n === 1 ? 34 : 26, deg), weight: 3, role: ROLE.answer }, 500, { gap: 300 });
+      if (show === "deg") {
+        // the degrees on the bisector, outside the arc (a narrow angle's out along its opening, never across an arm)
+        const half = rad(deg / 2), d = Math.min(L - 8, Math.max(R + 26, 30 / Math.sin(Math.max(half, rad(6)))));
+        const t = `${deg}°`, at = [round1(vx + d * Math.cos(half)), round1(vy - d * Math.sin(half))];
+        tl.add({ id: "mark", op: "text", at, text: t, size: "s", role: ROLE.answer }, 400, { gap: 120 });
+      } else tl.add({ id: "mark", op: "highlight", target: `n${i}`, style: "circle", role: ROLE.answer }, 500, { gap: 200 });
+    }
+    facts.marked = show === "deg" ? `angle ${i + 1}: ${gi.deg}°` : `angle ${i + 1} is bigger`;
   }
   return { facts, claims };
+}
+
+/**
+ * One REFLEX angle (181-350°) in column i: the arms open at 360 − deg, the arc the long way round (outside), its label
+ * beyond the arc on the side facing away from both arms (the opening's bisector turned 180°: at least 90° from each arm),
+ * so it never meets an arm or the inside arc. The figure is laid out round its corner first, then shrunk until it fits
+ * its column and the board's height, and centred there. `mk` (this angle's answer mark) places the mark's degrees too.
+ */
+function reflexAngle(c, tl, a, i, n, colW, mk) {
+  // (the arm and corner names of a one-angle board sit where a reflex arc and its label go: not drawn here, so refused)
+  if (n === 1 && (c.arm || c.vertex)) return { error: "angle_reflex_parts" };
+  const open = 360 - a.deg, th = rad(open), half = open / 2, phi = 180 + half;
+  const r = n === 1 ? 34 : 26, rIn = n === 1 ? 20 : 16;
+  const size = n === 1 ? "m" : "s";
+  const name = a.name ?? `${a.deg}°`;
+  // (an answer mark "deg" with no name of its own: the mark's degrees ARE the label, in the answer role, in the name's place)
+  const nameDrawn = !(mk?.show === "deg" && a.name === undefined);
+  const inT = a.inside === true ? `${open}°` : a.inside ?? null;
+  let L = (n === 1 ? 120 : n === 2 ? 100 : 76) * (a.len === "short" ? 0.5 : 1);
+  for (let tries = 0; tries < 12; tries++, L *= 0.9) {
+    if (L < r + 12) break;
+    // laid out round a corner at (0, 0)
+    const armA = [[0, 0], [L, 0]], armB = [[0, 0], [round1(L * Math.cos(th)), round1(-L * Math.sin(th))]];
+    const outArc = arcSpan(0, 0, r, open, 360);
+    const inArc = inT == null ? null : open === 90 ? [[14, 0], [14, -14], [0, -14]] : arcSpan(0, 0, rIn, 0, open);
+    const lines = [armA, armB, outArc, ...(inArc ? [inArc] : [])];
+    // every word clear of both arms, both arcs and every word before it, its DRAWN box judged (an answer's tick
+    // included): pushed further out step by step; a word that finds no room is refused (a shorter arm cannot help)
+    const texts = [];
+    const place = (key, t, sz, role, atStep) => {
+      for (let k = 0; k <= 12; k++) {
+        const { at } = atStep(k), box = opGeometry({ op: "text", at, text: t, size: sz, ...(role ? { role } : {}) }).box;
+        if (lines.some((p) => polyHits(p, box)) || texts.some((u) => boxesMeet(u.box, box))) continue;
+        const far = Math.max(...[[box.x, box.y], [box.x + box.w, box.y], [box.x, box.y + box.h], [box.x + box.w, box.y + box.h]].map(([x, y]) => x * Math.cos(rad(phi)) - y * Math.sin(rad(phi))));
+        const out = { key, t, size: sz, at, box, far };
+        texts.push(out);
+        return out;
+      }
+      return null;
+    };
+    if (inT != null) {
+      const b0 = textBox(inT, "s"), circ = Math.hypot(b0.w / 2, b0.h / 2);
+      const d0 = Math.max(rIn + 6 + circ, (circ + 3) / Math.sin(rad(Math.min(90, half))));
+      if (!place("inside", inT, "s", null, (k) => centredText(inT, "s", (d0 + 4 * k) * Math.cos(rad(half)), -(d0 + 4 * k) * Math.sin(rad(half))))) return { error: "angle_reflex_crowded:inside" };
+    }
+    const nt0 = nameDrawn ? place("name", name, size, null, (k) => outwardText(name, size, 0, 0, phi, r, 8 + 4 * k)) : null;
+    if (nameDrawn && !nt0) return { error: "angle_reflex_crowded:name" };
+    if (mk?.show === "deg") {
+      const t = `${a.deg}°`, sz = nameDrawn ? "s" : size;
+      if (!place("mark", t, sz, ROLE.answer, (k) => outwardText(t, sz, 0, 0, phi, nt0 ? nt0.far : r, (nt0 ? 6 : 8) + 4 * k))) return { error: "angle_reflex_crowded:mark" };
+    }
+    const pts = [...armA, ...armB, ...outArc, ...texts.flatMap((t) => [[t.box.x, t.box.y], [t.box.x + t.box.w, t.box.y + t.box.h]])];
+    const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+    const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+    if (maxX - minX > colW - 10 || maxY - minY > 276) continue;
+    // centred in its column, and on the board's height
+    const vx = round1(i * colW + colW / 2 - (minX + maxX) / 2), vy = round1(BOARD.h / 2 - (minY + maxY) / 2);
+    const sh = (p) => [round1(p[0] + vx), round1(p[1] + vy)];
+    const at = (t) => [round1(t.at[0] + vx), round1(t.at[1] + vy)];
+    tl.add({ id: `h${i}`, op: "line", from: [vx, vy], to: [round1(vx + L), vy], weight: 2 }, 520, { gap: i ? 260 : 120 });
+    tl.add({ id: `r${i}`, op: "line", from: [vx, vy], to: [round1(vx + L), vy], weight: 2, ink: "accent" }, 420, { gap: 90 });
+    tl.add({ op: "rotate", target: `r${i}`, deg: -open, about: [vx, vy] }, 700 + open * 6, { gap: 120 });
+    tl.add({ op: "circle", c: [vx, vy], r: 4, fill: "accent", ink: "accent", weight: 1 }, 160, { gap: 40 });
+    if (inArc) {
+      tl.add({ op: "stroke", points: inArc.map(sh), ink: "soft", weight: 2 }, 360, { gap: 160 });
+      const t = texts.find((x) => x.key === "inside");
+      tl.add({ id: `in${i}`, op: "text", at: at(t), text: inT, size: "s", ink: inT === "?" ? "mark" : "soft" }, 300, { gap: 60 });
+    }
+    // the reflex arc goes the long way round, from the second arm on round to the first
+    tl.add({ id: `m${i}`, op: "stroke", points: outArc.map(sh), ink: "mark", weight: 2 }, 900, { gap: 200 });
+    const nt = texts.find((x) => x.key === "name");
+    if (nt) tl.add({ id: `n${i}`, op: "text", at: at(nt), text: name, size, ink: name === "?" ? "mark" : "accent" }, 400, { gap: 220 });
+    const mt = texts.find((x) => x.key === "mark");
+    return { reflex: true, vx, vy, L, deg: a.deg, name, outArc: outArc.map(sh), ...(mt ? { markAt: at(mt), markSize: mt.size } : {}),
+      claim: { id: `r${i}`, to: [round1(vx + L * Math.cos(th)), round1(vy - L * Math.sin(th))] },
+      fact: (inT != null ? `${nameDrawn ? name : `${a.deg}°`}, inside ${inT}` : nameDrawn ? name : `${a.deg}°`).slice(0, 40) };
+  }
+  return { error: "angle_reflex_fit" };
 }
 
 /**
@@ -1328,6 +1470,10 @@ function angle(c, tl) {
  *                   the lines at two places — the same gap.
  * A labelled angle writes its `value` in degrees (which must BE the angle drawn there), or "?" (the asked angle), or its
  * `name` ("a", "∠1"). counts.angles: the degrees written; counts.marks: every angle label [{ at: "angle 1", label }].
+ * 2026-11-11 (Learning's reader pass: "saamne wala kona", "bagal wala kona"): an ANSWER board's `mark` { at k, show? } —
+ * angle k (one of `angles`: the board labels only those) gets its arc thickened in the answer role and, with "deg" (the
+ * default), its degrees written as its label in the answer role (a "?" becomes the angle, e.g. 60°); "ring" rings its
+ * label instead. A mark on an angle the board does not label is refused (mark_target_missing), never moved.
  */
 function lines(c, tl) {
   const okLetter = (t) => typeof t === "string" && /^[A-Z][A-Z]?$/.test(t);
@@ -1343,6 +1489,13 @@ function lines(c, tl) {
   // (a written value must be the angle drawn there: 1 and 3 are `deg`, 2 and 4 its supplement)
   const trueAt = (at) => ((at - 1) % 2 === 0 ? deg : 180 - deg);
   for (const a of list) if (typeof a.value === "number" && a.value !== trueAt(a.at)) return { error: `lines_angle_value:${a.at}` };
+  let mk = null;
+  if (c.mark != null) {
+    const at = c.mark?.at, show = c.mark?.show ?? "deg";
+    if (!["deg", "ring"].includes(show)) return { error: "mark_show" };
+    if (!list.some((a) => a.at === at)) return { error: `mark_target_missing:angle ${JSON.stringify(at ?? null)} (the board labels angles ${list.map((a) => a.at).join(", ") || "none"})` };
+    mk = { at, show };
+  }
   const facts = {}, marks = [], written = [];
   // the four rays from a crossing at (x, y): 0 right, deg up-right, 180 left, 180+deg down-left (screen y grows down)
   const ray = (x, y, a, L) => [round1(x + L * Math.cos(rad(a))), round1(y - L * Math.sin(rad(a)))];
@@ -1351,15 +1504,30 @@ function lines(c, tl) {
     for (const a of list.filter((q) => q.at > base && q.at <= base + 4)) {
       const i = a.at - base, from = [0, deg, 180, 180 + deg][i - 1], to = [deg, 180, 180 + deg, 360][i - 1];
       const r = 28 + (i % 2 ? 0 : 4);
+      // (the marked angle: its arc in the answer role, thicker; "deg" writes its degrees as its label)
+      const m = mk?.at === a.at ? mk : null;
+      const arcStyle = m ? { weight: 3, role: ROLE.answer } : { ink: "mark", weight: 2 };
       if (Math.round(to - from) === 90) {
         const p1 = ray(x, y, from, 16), p2 = ray(x, y, to, 16), p3 = [round1(p1[0] + p2[0] - x), round1(p1[1] + p2[1] - y)];
-        tl.add({ op: "stroke", points: [p1, p3, p2], ink: "mark", weight: 2 }, 360, { gap: 120 });
-      } else tl.add({ op: "stroke", points: arcBetween(x, y, r, from, to), ink: "mark", weight: 2 }, 420, { gap: 140 });
-      const text = a.value === "?" ? "?" : typeof a.value === "number" ? `${a.value}°` : a.name ?? "?";
-      const [lx, ly] = ray(x, y, (from + to) / 2, r + 22);
-      tl.add({ op: "text", at: [lx, ly + 5], text, size: "s", ink: text === "?" ? "mark" : "accent" }, 360, { gap: 80 });
+        tl.add({ op: "stroke", points: [p1, p3, p2], ...arcStyle }, 360, { gap: 120 });
+      } else tl.add({ op: "stroke", points: arcBetween(x, y, r, from, to), ...arcStyle }, 420, { gap: 140 });
+      const shown = m?.show === "deg" ? trueAt(a.at) : a.value;
+      const text = shown === "?" ? "?" : typeof shown === "number" ? `${shown}°` : a.name ?? "?";
+      // (out along the angle's bisector, and further out while its box — an answer's tick included — would cross a line)
+      const op = { id: m?.show === "deg" ? "mark" : `a${a.at}`, op: "text", text, size: "s", ...(m?.show === "deg" ? { role: ROLE.answer } : { ink: text === "?" ? "mark" : "accent" }) };
+      const drawnLines = tl.ops.filter((o) => o.op === "line").map((o) => [o.from, o.to]);
+      let d = r + 22, lab;
+      for (; d <= r + 70; d += 4) {
+        const [lx, ly] = ray(x, y, (from + to) / 2, d);
+        lab = { ...op, at: [lx, round1(ly + 5)] };
+        const b = opGeometry(lab).box;
+        if (!drawnLines.some((pq) => polyHits(pq, b, -2))) break;
+      }
+      tl.add(lab, 360, { gap: 80 });
+      if (m?.show === "ring") tl.add({ id: "mark", op: "highlight", target: `a${a.at}`, style: "circle", role: ROLE.answer }, 500, { gap: 200 });
+      if (m) facts.marked = `angle ${a.at}: ${text}`;
       marks.push({ at: `angle ${a.at}`, label: text });
-      if (typeof a.value === "number") written.push(a.value);
+      if (typeof shown === "number") written.push(shown);
     }
   };
   if (kind === "cross") {
@@ -2054,6 +2222,9 @@ function measuredFigure(c, tl) {
   return { error: "shape" };
 }
 
+/** The templates that draw a `mark` (each refuses one naming what it does not draw), and those that draw `marks`. */
+const MARKED = new Set(["fraction-line@1", "number-line-hop@1", "place-value@1", "compare@1", "angle@1", "lines@1"]);
+const MARKS = new Set(["fraction-line@1", "number-line-scale@1"]);
 const BUILD = {
   "fraction-parts@1": fractionParts, "fraction-bars@1": fractionBars, "wholes@1": wholes, "unrolled@1": unrolled, "lines@1": lines, "fraction-line@1": fractionLine, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "number-line-scale@1": numberLineScale, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
@@ -2170,6 +2341,10 @@ export function expand(call0, { band = "B3", lessonId = "", scriptId, lang = nul
   const call = call0 && ((lang && call0.lang == null) || Array.isArray(keys)) ? { ...call0, ...(lang && call0.lang == null ? { lang } : {}), ...(Array.isArray(keys) ? { _keys: keys.map(String) } : {}) } : call0;
   const build = BUILD[call?.template];
   if (!build) return { ok: false, script: null, facts: null, errors: [`unknown_template:${call?.template}`] };
+  // (2026-11-11, main: 361 wrong marks passed build, lint and W1/W2 — those judge fit, not meaning. A `mark` on a template
+  // that draws none was dropped without a word: refused, as every template refuses a mark naming what it does not draw)
+  if (call.mark != null && !MARKED.has(call.template)) return { ok: false, script: null, facts: null, errors: [`mark_target_missing:${call.template} draws no mark`] };
+  if (call.marks != null && !(Array.isArray(call.marks) && !call.marks.length) && !MARKS.has(call.template)) return { ok: false, script: null, facts: null, errors: [`mark_target_missing:${call.template} draws no marks`] };
   const tl = timeline(PACE[band] ?? 1);
   let r;
   try { r = build(call, tl); } catch (e) { return { ok: false, script: null, facts: null, errors: [`build:${String(e?.message ?? e).slice(0, 60)}`] }; }
