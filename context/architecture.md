@@ -534,3 +534,7 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-dry-matrix-blind-to-the-reply-layer` (2026-11-11): The dry matrix held 'a give-up with help spent gets the key' at zero while the live lesson said the point again on the same three rows as director19 (c4 stuck 12, c5-t01 stuck 12, c5-t02 steering 30). In the live path the reply model's text failed a guard and was repaired to a different unit part. The dry predicates check the walk's choice; they do not see what the reply layer finally says. A gate that passes while the fault it names is live is not a gate for that fault.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-gated-sentences-fail-a-reader` (2026-11-11): Sentences that pass the script gates fail a reader about half the time: 73 of 156 agent-written simplers and whys (47%) failed an independent read, 3 of them untrue. The gates check form (length, slots, numbers on the board), not whether a sentence is simpler or true. So 'nothing a child hears that nobody read' is a measured need, and a rewrite needs its own read (9 of 73 rewrites failed again).

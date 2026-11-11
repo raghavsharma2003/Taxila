@@ -27950,6 +27950,20 @@
    "at": "2026-11-11",
    "title": "After director20: (R1) her reply after an aside is authored, not model-written: per kind of aside, three return questions and three reply forms with one slot for a word of the child's, judged by a reader before use; the model path and its predicate leave lessons (the pre-set clause fired: 3 of 7 odd). (G3) The dry predicates also run over every live run's rows, and a live run with a predicate above zero is not sent to judges; authored cells (key and why, point, simpler, remediation, joint) are said as written by code and a repair may never swap one unit part for another. (P1) Every park is queued and returned to before the goodbye, in a turn of its own; she asks no question whose answer her next turn ignores. (L1 to L4) New cells: a give-up at a check-in gets the simpler then the card; a clarify after a key gets the why reworded; a clarify at the greeting gets one plain line then the hook; a Hindi request says the part's simpler in Hindi. (S1) After a hint she re-asks only the card's question; an older card gets an authored lead-in. (W1) Code no longer swaps words inside authored sentences; one term per idea per language form is fixed in the script. The staged 30 stay held. Reverse if: the judged library reads worse than director20's model replies (then the model writes with the library as examples); or code-said cells make register fall in two or more topics (then the model may join parts under a word-for-word predicate); or question-only re-asks prove unclear (then the givens return after a second miss).",
    "source": "inbox/r8-main-8.json"
+  },
+  {
+   "id": "ms-r8-learning-read-through-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Read-through of the 156 simpler and why sentences two Sonnet agents wrote for the 30 staged scripts (all had passed check.mjs; Learning had read 3 topics). A fresh Opus agent that wrote none of them read all 156 against their problem and board with three questions (true? simpler than what it replaces? gives the answer away?): 73 failed (67 not simpler, mostly near-copies of the problem; 3 not true; 4 language; 0 giveaways). All 73 were rewritten; a second fresh agent read the rewrites: 9 failed (3 not simpler, 2 not true, 4 language), fixed and read by Learning only. Totals: 156 read, 82 fixed. Learning ae9d5be55.",
+   "source": "inbox/r8-main-9.json"
+  },
+  {
+   "id": "fd-gated-sentences-fail-a-reader",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "Sentences that pass the script gates fail a reader about half the time: 73 of 156 agent-written simplers and whys (47%) failed an independent read, 3 of them untrue. The gates check form (length, slots, numbers on the board), not whether a sentence is simpler or true. So 'nothing a child hears that nobody read' is a measured need, and a rewrite needs its own read (9 of 73 rewrites failed again).",
+   "source": "inbox/r8-main-9.json"
   }
  ],
  "edges": [
@@ -44817,6 +44831,16 @@
    "src": "dc-r8-selection-before-generation",
    "rel": "constrains",
    "dst": "dc-r8-director20"
+  },
+  {
+   "src": "fd-gated-sentences-fail-a-reader",
+   "rel": "measured_by",
+   "dst": "ms-r8-learning-read-through-2026-11-11"
+  },
+  {
+   "src": "dc-r8-director20",
+   "rel": "measured_by",
+   "dst": "ms-r8-learning-read-through-2026-11-11"
   }
  ]
 }

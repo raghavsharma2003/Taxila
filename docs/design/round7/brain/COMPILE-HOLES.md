@@ -12,7 +12,7 @@
 
 **Fallback cells:** every missing field's cells compile to a named fallback (today's behaviour) until Learning authors it: as_wrong 3. Cells left as holes with no fallback: 0.
 
-**Not applicable:** 357 misconception cells on cards with no `targets` (cards that test no kit mix-up: a wrong answer takes the `wrong` column). Not holes, not fallbacks.
+**Not applicable:** 360 misconception cells on cards with no `targets` (cards that test no kit mix-up: a wrong answer takes the `wrong` column). Not holes, not fallbacks.
 
 ## Missing fields, all scripts
 
