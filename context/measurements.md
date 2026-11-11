@@ -6744,3 +6744,11 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r8-design-minifier-has-weight` (2026-11-11): Round 8 walk (production build, 136 screens x 2 themes): the production CSS minifier wraps a selector list that holds :has() in :is() (an engine without :has() keeps the rest), and :is() takes its strongest argument's weight. tx-tokens.css's B block `[data-tx=b], :root:has(.kx[data-tx=b]:not([data-tx-surface]))` became (0,4,0) and beat the light surface (0,2,0): every B set-up and light screen rendered night in the built app only (the dev server keeps the list unwrapped). Fix: the :has() branch in :where(); tests/r8-tx-tokens.test.mjs fails on a bare :has() in a token block. Law: a dev-server screenshot does not prove the built CSS; walk the production build.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-4b9cc50` (2026-11-11): Released 4b9cc50 with scripts/release.mjs: web taxila-web--s4b9cc50-obcd (was taxila-web--s4f33e5d-dhc7), worker + canary/nightly jobs on taxila-worker:4b9cc50 (was 4f33e5d); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 4b9cc50 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-kon-place-judging-2-2026-11-11` (2026-11-11): kon/place round 2 (claude/r7-games 6746c7d47, 54 screens, two fresh Opus judges at high effort): PASS and FAIL, so not shown. n = 2 verdicts. All round-1 rulings and the three hold fixes found done; 0 wrong facts. The blocking fault (one judge): on the centre-on-arm play-out in measure, her correct number is painted in the mix-up colour and a dashed arm from her misplaced centre confirms it. Both judges: the letter O missing or struck through by the protractor's edge; inner scale numbers dropped alone at 360; lines through numbers she must read; placement honest but fiddly under a finger. Reports: docs/design/round8/games-judging/kon-place/judges/.

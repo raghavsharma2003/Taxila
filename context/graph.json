@@ -28498,6 +28498,34 @@
    "at": "2026-11-11",
    "title": "Round 8 steps h and i under ?tx=: the public site through one root (Site.tsx siteTx(); light in both themes), new-look captures on the landing (public/site/tx/), the boot skeleton on the theme's ground; World and Hangar (subject marks in tx-tokens, the orbit planet in her colour); her presence in place of the face wherever Comms is used. The walk's list of what remains: docs/design/round8/phase2/walk/README.md.",
    "source": "inbox/r8-design-phase2-hijk.json"
+  },
+  {
+   "id": "dc-r8-why-probe-pilot",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "Why-questions return as authored probes, as a pilot on the four live lessons only (about 3 per script): on a card a child could guess (yes/no, two-way compare, pick one of three) that targets a misconception, asked only after a right answer, at most once per skill per lesson. Field card.whyProbe = prompt (at most 8 words, names no number or option), reasons with authored cues in both languages (at least one sound reason), and an after line that judges nothing. The child's reason is matched against the cues by code, never a model; the child is never told; 'right, reason matched misconception X' is its own, weaker kind of evidence. Learning authors after the staged round; Brain builds the contract after director21 is judged; first measured in the run after. Proposal: docs/design/round7/learning/WHY-PROBES-PROPOSAL-2026-11-11.md. Reverse if: more than 60% of reasons read unknown on the first paid matrix, judges hear the probe as doubt in more than 1 lesson in 4, or a probe gives away a later card's answer (that probe is removed).",
+   "source": "inbox/r8-main-22.json"
+  },
+  {
+   "id": "fd-long-messages-and-publishes-restart-the-worker",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "Worker restarts 11 and 12 of this session (2026-11-11, about 19:00 and 19:08 UTC) followed a long send_message that waited on an approval prompt and an Artifact publish. The first killed integration 51's local gate at test:all; the second cut release 26 after the web step (resumed: 2 steps run, 7 resumed past). CI on claude/r8-main-candidate gave integration 51 its verdict, and scripts/release.mjs resumed cleanly, so neither cost more than minutes. Rule kept: short messages, briefs in the repo, CI as the second gate, and nothing that prompts while a release is in flight.",
+   "source": "inbox/r8-main-22.json"
+  },
+  {
+   "id": "ms-release-4b9cc50",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Released 4b9cc50 with scripts/release.mjs: web taxila-web--s4b9cc50-obcd (was taxila-web--s4f33e5d-dhc7), worker + canary/nightly jobs on taxila-worker:4b9cc50 (was 4f33e5d); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 4b9cc50 --rollback.",
+   "source": "inbox/release-4b9cc50.json"
+  },
+  {
+   "id": "ms-r8-kon-place-judging-2-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "kon/place round 2 (claude/r7-games 6746c7d47, 54 screens, two fresh Opus judges at high effort): PASS and FAIL, so not shown. n = 2 verdicts. All round-1 rulings and the three hold fixes found done; 0 wrong facts. The blocking fault (one judge): on the centre-on-arm play-out in measure, her correct number is painted in the mix-up colour and a dashed arm from her misplaced centre confirms it. Both judges: the letter O missing or struck through by the protractor's edge; inner scale numbers dropped alone at 360; lines through numbers she must read; placement honest but fiddly under a finger. Reports: docs/design/round8/games-judging/kon-place/judges/.",
+   "source": "inbox/r8-main-23.json"
   }
  ],
  "edges": [
@@ -45625,6 +45653,16 @@
    "src": "dc-r8-design-palette-one-source",
    "rel": "part_of",
    "dst": "dc-r8-design-direction-a"
+  },
+  {
+   "src": "dc-r8-why-probe-pilot",
+   "rel": "supersedes",
+   "dst": "dc-r8-no-probe-without-authored-question"
+  },
+  {
+   "src": "dc-r8-game-modes-three-laws",
+   "rel": "measured_by",
+   "dst": "ms-r8-kon-place-judging-2-2026-11-11"
   }
  ]
 }

@@ -37,3 +37,16 @@ Every ruling from the afternoon is done on the screens, and all three laws pass 
 ## Next
 
 Fix, assert, retake both packets, and send them with `kon/place`. Two fresh judges read each. Round 4 for tally: before sending, write in the packet every way a child can reach the mix-up's number without the mix-up (work it out on paper for the level law, not from the cases judges have found so far), and show the law excludes each.
+
+## kon/place (round 2, judged later the same evening from `6746c7d47`)
+
+**PASS and FAIL: not shown.** Every round-1 ruling and all three hold fixes are done on the screens; no wrong fact; the laws pass except on one screen.
+
+1. **A right number painted wrong (judge 2, blocks).** On `measure-centre-on-arm-played` she has placed the centre on an arm's end and typed 150, which is the true size. Her chip turns the mix-up colour and a dashed arm drawn from her misplaced centre runs parallel to OB, which tells her 150 was right. That breaks law 1 (a colour that says wrong on a right value) and law 2 (the screen settles her next answer), and she may change to 30 after re-placing, so the game would record a wrong-scale it caused. When the placement is off, the play-out shows the placement only: the ring and the join. Her number's chip stays neutral whatever it is, and no arm is drawn from her misplaced centre. Her number is graded only on a placed protractor.
+2. **The letter O (both judges).** It is missing on `draw-vertex-off-played` while the chip says "∠O 123°", and on the placed screens the protractor's bottom edge strikes through it, exactly where the vertex-off mix-up puts the vertex. O is visible in every pose and play-out and never on a line of the protractor.
+3. **Numbers left out at 360 (both judges).** Only inner numbers are dropped to keep numbers apart, so at that tick she sees the outer number alone, on the levels where the inner scale is the right one. A number is never dropped from one scale alone: both scales' numbers at a tick go together, or the clashing label moves along its tick. The rule never depends on the key.
+4. **Lines through the numbers she must read.** Scale numbers are drawn over the arms and her lines with a ground halo, so a line through a number never makes it unreadable (OB over the inner "160" and outer "20" on `measure-vertex-off-*-360`).
+5. **Placing with a finger.** Add four one-pixel position nudges beside the turn arrows. No snap, no reading, no cue beyond what is drawn. Both judges found the placement honest and fiddly, with her finger over the target.
+6. "Rim" becomes "kinare par" in the Hinglish strings. The size goal's end line says what she found.
+
+Send round 3 with tally round 4 and kon/name round 3.
