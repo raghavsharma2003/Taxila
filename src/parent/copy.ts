@@ -11,6 +11,9 @@ const noStop = (s: string) => String(s).replace(/[.\s]+$/, "");
 /** A "Made for" reason (madeFor.js, written to the child: "You thought …") as the parent reads it: about the child, by
  *  name. One rule for Home and Teaching (audit LEARN-17: Teaching told the parent "You thought …"). */
 export const becauseForParent = (because: string, name: string) => because.replace(/^You thought/, `${name} thought`);
+/** The teacher's word when her name is not loaded: lower case, for the middle of a sentence ("How the teacher teaches Riya");
+ *  a sentence that starts with it capitalises it with labelTitle (Design's walk, 2026-11-11: "How The teacher teaches"). */
+export const TEACHER_FALLBACK = "the teacher";
 export const labelTitle = (label: string) => (label ? label[0].toUpperCase() + label.slice(1) : label);
 
 /** The home headline. KEEP IN STEP with server/routes/parent.js HOME_COPY ("Listen to this page" says these). */

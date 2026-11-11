@@ -723,15 +723,15 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": { "hi": "Pehla bhinn 2/5 hai aur doosra bhinn 4/7. Kya yeh dono barabar bhinn hain, haan ya nahi?", "en": "The first fraction is 2/5 and the second fraction is 4/7. Are these two equal fractions, yes or no?" },
-     "key": "no",
-     "why": { "hi": "upar 2 × 2 = 4, par neeche 5 × 2 = 10 hota, 7 nahi", "en": "the top is 2 × 2 = 4, but the bottom 5 × 2 would be 10, not 7" },
-     "accept": ["nahi", "barabar nahi", "not equal", "galat"],
+     "prompt": { "hi": "2/5 ke barabar woh bhinn batao jiska neeche ka number 10 ho. Upar kya aayega?", "en": "Give the fraction equal to 2/5 whose bottom number is 10. What goes on top?" },
+     "key": "4",
+     "why": { "hi": "neeche 5 × 2 = 10 hua, toh upar bhi 2 × 2 = 4, yaani 2/5 = 4/10", "en": "the bottom went 5 × 2 = 10, so the top goes 2 × 2 = 4 too: 2/5 = 4/10" },
+     "accept": ["chaar", "char", "four", "4/10", "upar 4"],
      "targets": "c5-maths-ch02-t03-m-add-same",
-     "wrongIfMis": "yes",
-     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 0, "label": ""}, {"parts": 7, "shade": 0, "label": ""}]} },
-     "simpler": { "hi": "2/5 ke upar aur neeche ko ek hi number se guna karke dekho ki 4/7 banta hai ya nahi.", "en": "Multiply the top and bottom of 2/5 by one same number, and see whether you get 4/7." },
-     "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 2, "label": "2/5"}, {"parts": 7, "shade": 4, "label": "4/7"}]} }
+     "wrongIfMis": "7",
+     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 0, "label": ""}, {"parts": 10, "shade": 0, "label": ""}]} },
+     "simpler": { "hi": "Pehle dekho neeche ka number kis number se guna hokar 10 bana. Upar ke number ko bhi usi se guna karo.", "en": "First see what the bottom number was multiplied by to make 10. Multiply the top number by that same one." },
+     "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 2, "label": "2/5"}, {"parts": 10, "shade": 4, "label": "4/10"}]} }
     },
     {
      "id": "c2",
@@ -794,24 +794,21 @@
       "en": "Every pair of parts below is as long as one part on top. So fractions with different numbers can still be equal."
      },
      "then": {
-      "prompt": { "hi": "Do ek jitni chocolate bar hain. Ek ka 5/6 khaaya, doosri ka 10/12. Kya dono se utna hi khaaya, haan ya nahi?", "en": "Two chocolate bars are the same size. 5/6 of one is eaten, 10/12 of the other. Was the same amount eaten, yes or no?" },
-      "key": "yes",
-      "why": { "hi": "5/6 ke upar aur neeche dono × 2 karke 10/12 banta hai, toh dono bar se utna hi khaaya", "en": "5/6 with top and bottom both × 2 is 10/12, so the same amount was eaten from both bars" },
-      "accept": ["haan", "haan, utna hi", "barabar", "same"],
+      "prompt": { "hi": "Do ek jitni bar hain: ek 6 barabar tukdon mein, doosri 12 mein. Pehli ke 5 tukdon jitna doosri ke kitne tukde?", "en": "Two same-size bars: one in 6 equal pieces, the other in 12. How many pieces of the second equal 5 of the first?" },
+      "key": "10",
+      "why": { "hi": "neeche 6 × 2 = 12, toh upar bhi 5 × 2 = 10: 5/6 = 10/12", "en": "the bottom went 6 × 2 = 12, so the top goes 5 × 2 = 10: 5/6 = 10/12" },
+      "accept": ["das", "ten", "10 tukde", "10/12"],
       "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
-      "wrongIfMis": "no",
+      "wrongIfMis": "5",
       "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 6, "shade": 0, "label": ""}, {"parts": 12, "shade": 0, "label": ""}]}},
-      "simpler": {
-       "hi": "Dekho 5/6 ke upar aur neeche kis number se guna hokar 10/12 bante hain. Dono ka number ek hi ho, toh bhinn barabar hain.",
-       "en": "See what number the top and bottom of 5/6 are multiplied by to make 10/12. If it is one same number for both, the fractions are equal."
-      },
+      "simpler": { "hi": "Pehle dekho 6 kis number se guna hokar 12 bana. Phir 5 ko bhi usi number se guna karo.", "en": "First see what number 6 was multiplied by to make 12. Then multiply 5 by that same number." },
       "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 6, "shade": 5, "label": "5/6"}, {"parts": 12, "shade": 10, "label": "10/12"}]}}
      }
     },
     {
      "targets": "c5-maths-ch02-t03-m-add-same",
      "move": "1/2 and 2/3 each have a bottom one more than the top, yet 2/3 is past a half → a fixed gap between top and bottom does not keep the amount → only one multiplier for both does",
-     "say": { "hi": "1/2 mein neeche ka number upar se 1 zyada hai, aur 2/3 mein bhi, par 2/3 aadhe se aage hai. Toh farak dekhkar barabar nahi kehte. Yeh do patti 3 aur 5 hisson ki hain: inka faisla bhi guna se hoga.", "en": "In 1/2 the bottom is 1 more than the top, and in 2/3 too, but 2/3 goes past a half. So a gap never makes fractions equal. These bars are in 3 and 5 parts: they too are decided only by multiplying." },
+     "say": { "hi": "Neeche ka number upar se utna hi zyada ho, phir bhi bhinn alag ho sakte hain: koi aadha, koi aadhe se zyada. Barabar farak se bhinn barabar nahi hote. Yeh patti 3 aur 5 hisson ki hain: faisla guna se hoga.", "en": "The bottom can be the same amount more than the top and the fractions still differ: one a half, one more than a half. An equal gap does not make fractions equal. These bars have 3 and 5 parts: multiplying decides." },
      "simpler": {
       "hi": "Upar aur neeche kuch jodne se maatra badal jaati hai. Barabar dekhne ke liye guna dekho.",
       "en": "Adding something to the top and bottom changes the amount. To see equal, look at the multiplying."

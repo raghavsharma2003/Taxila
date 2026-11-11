@@ -442,10 +442,6 @@
      "why": "6 o'clock vs 9 o'clock → only one makes a square corner"
     },
     {
-     "itemId": "c4-maths-ch01-t02-i07",
-     "why": "error spot: a turned book's corners → still right angles"
-    },
-    {
      "itemId": "c4-maths-ch01-t02-rl-h1",
      "why": "harder: a tilted square noticeboard → tilting does not change the corner"
     }
@@ -913,10 +909,6 @@
     {
      "itemId": "c4-maths-ch01-t02-i04",
      "why": "say why longer arms do not make a bigger angle → an angle is the opening"
-    },
-    {
-     "itemId": "c4-maths-ch01-t02-rl-h2",
-     "why": "harder contrast: 12 cm arms opening less vs 2 cm arms opening more"
     }
    ],
    "remediation": [
@@ -1189,39 +1181,27 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": { "hi": "Ek ande ke centre se uske nukeele sire tak 4 cm hai, aur bagal ke kinaare tak 3 cm. Kya anda circle hai?", "en": "From an egg's centre to its pointed end is 4 cm, and to its side edge is 3 cm. Is the egg a circle?" },
-     "key": "No",
-     "accept": [
-      "nahi",
-      "nahin",
-      "no",
-      "nahi, doori barabar nahi",
-      "no, the distances differ"
-     ],
+     "prompt": { "hi": "Nadi ke kinaare ek chikna gol patthar mila. Uske centre se kinaara ek taraf 5 cm door hai aur doosri taraf 3 cm. Yeh patthar kaisa hai: circle, ya gol par circle nahi?", "en": "A smooth round pebble was found by the river. From its centre the edge is 5 cm away on one side and 3 cm on the other. What is this pebble: a circle, or round but not a circle?" },
+     "key": "gol par circle nahi",
+     "accept": ["round but not a circle", "circle nahi", "gol hai par circle nahi", "not a circle", "sirf gol", "gol, circle nahi"],
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
-     "wrongIfMis": "Yes",
-     "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "circle"} },
-     "why": {
-      "hi": "ande ka kinaara centre se ek taraf 3 cm aur doosri taraf 4 cm hai, toh anda circle nahi",
-      "en": "the egg's edge is 3 cm from the centre one way, 4 cm the other, so it is not a circle"
-     },
-     "simpler": {
-      "hi": "Ande ke kinaare ki doori dekho: ek taraf 3 cm, doosri taraf 4 cm. Circle mein yeh har taraf ek jitni hoti hai.",
-      "en": "Look at the egg's edge: 3 cm on one side, 4 cm on the other. In a circle it is the same on every side."
-     },
-     "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "circle"} }
+     "wrongIfMis": "circle",
+     "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "name": "circle"} },
+     "why": { "hi": "patthar ka kinaara centre se ek taraf 5 cm aur doosri taraf 3 cm hai; circle mein yeh doori barabar hoti", "en": "the pebble's edge is 5 cm from the centre one way and 3 cm the other; a circle's is equal" },
+     "simpler": { "hi": "Gol dikhna kaafi nahi hai. Dekho ki patthar ka kinaara centre se har taraf ek jitna door hai ya nahi.", "en": "Looking round is not enough. See whether or not the pebble's edge is the same distance from the centre on every side." },
+     "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "name": "circle"} }
     },
     {
      "id": "c2",
-     "prompt": { "hi": "{friend} ka kehna hai ki circle mein centre se kinaare tak har naap ek jaisa hona chahiye, sirf zyaadatar naap nahi. Kya yeh sahi hai?", "en": "{friend} says that in a circle every measurement from the centre to the edge must be the same, not just most of them. Is that right?" },
+     "prompt": { "hi": "{friend} ne ek gol ghadi ke centre se uske kinaare tak har jagah naapa, aur har baar 7 cm aaya. {friend} ka kehna hai ki ghadi ka kinaara circle hai. Kya yeh sahi hai?", "en": "{friend} measured from a round clock's centre to its edge all the way round, and got 7 cm every time. {friend} says the clock's edge is a circle. Is that right?" },
      "key": "Yes",
-     "accept": ["haan", "han", "yes", "haan, har naap ek jaisa", "yes, every one must be the same"],
+     "accept": ["haan", "han", "yes", "haan, circle hai", "yes, it is a circle"],
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
      "wrongIfMis": "No",
-     "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "circle"} },
-     "why": { "hi": "circle ka har point centre se barabar door hota hai; ek naap bhi alag ho, toh woh circle nahi", "en": "every point of a circle is equally far from the centre; if even one measurement differs, it is not a circle" },
-     "simpler": { "hi": "Jis loop ka ek naap baaki naapon se alag ho, woh circle nahi hota. Ab {friend} ki baat se milao.", "en": "A loop where one measurement differs from the rest is not a circle. Now match that with what {friend} says." },
-     "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "circle"} }
+     "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "name": "ghadi"} },
+     "why": { "hi": "ghadi ke kinaare ka har point centre se 7 cm door hai, jaise circle mein har point barabar door hota hai", "en": "every point of the clock's edge is 7 cm from the centre, as in a circle, where every point is equally far" },
+     "simpler": { "hi": "Har jagah naap ek hi aaya. Yaad karo, circle ke kinaare ki doori centre se kaisi hoti hai.", "en": "Every measurement came out the same. Remember how far a circle's edge is from its centre." },
+     "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "7 cm", "name": "ghadi"} }
     },
     {
      "id": "c3",

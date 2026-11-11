@@ -381,14 +381,11 @@
      "simpler": { "hi": "Chart mein hazaar aur das-hazaar ke khaane comma se pehle wala group hain. Pehle use hazaar ke saath padho, phir comma ke baad wala group padho.", "en": "On the chart the thousands and ten thousands places are the group before the comma. Read it first with thousand, then read the group after the comma." },
      
      "then": {
-      "prompt": { "hi": "Board par ek number hai: comma se pehle ka hissa aur comma ke baad ka hissa. Poore number ko words mein kaise padhoge?", "en": "On the board is a number: the part before the comma and the part after it. How would you read the whole number in words?" },
-      "key": "fifty thousand six hundred",
-      "accept": [
-       "pachaas hazaar chhah sau",
-       "fifty thousand and six hundred"
-      ],
+      "prompt": { "hi": "{friend} ne board wala number 'five thousand six hundred' padha. Kya yeh sahi hai?", "en": "{friend} read the number on the board as 'five thousand six hundred'. Is that right?" },
+      "key": "No",
+      "accept": ["nahi", "nahin", "no", "nahi, fifty thousand six hundred", "no, fifty thousand six hundred"],
       "targets": "c5-maths-ch01-t01-m-zero-placeholder",
-      "wrongIfMis": "five thousand six hundred",
+      "wrongIfMis": "Yes",
       "board": { "template": "compare@1", "params": {"left": {"title": "comma se pehle", "items": ["50"]}, "right": {"title": "comma ke baad", "items": ["600"]}} },
       "why": { "hi": "comma se pehle wala group hazaar ka hai, toh 50 hazaar, aur baaki 600", "en": "the group before the comma is thousands, so 50 thousand, and the rest is 600" },
       "simpler": { "hi": "Comma ke left wala hissa hazaar hai, right mein baaki. Dono hisse unke naam ke saath padho.", "en": "The part left of the comma is thousands, the rest is on the right. Read both parts with their names." }
@@ -685,8 +682,8 @@
     {
      "targets": "c5-maths-ch01-t01-m-comma-anywhere",
      "move": "place-value chart with the commas as the walls between name-bands: 3 boxes (H T O), wall = thousand; 2 boxes (Th TTh), wall = lakh; a comma is a name's edge, never decoration",
-     "say": { "hi": "Screen par 3,25,400 ke group hain: 3 lakh, 25 hazaar, aur baaki 400. Comma khaanon ke beech ki deewar hai: right ke 3 ank ke baad hazaar shuru, phir 2 ank ke baad lakh. Comma wahi lagta hai jahan naya naam shuru hota hai.", "en": "The screen shows the groups of 3,25,400: 3 lakh, 25 thousand, and the rest, 400. A comma is a wall between places: after 3 digits from the right the thousands start, after 2 more the lakhs. A comma goes only where a new name starts." }, "board": { "template": "compare@1", "params": {"left": {"title": "group", "items": ["3", "25", "400"]}, "right": {"title": "naam", "items": ["lakh", "hazaar", "baaki"]}} },
-     "simpler": { "hi": "Comma wahin lagta hai jahan naya naam shuru ho. 3,25,400 mein 3 lakh, 25 hazaar aur baaki 400 hain.", "en": "A comma goes only where a new name starts. 3,25,400 has 3 lakh, 25 thousand and the rest, 400." },
+     "say": { "hi": "Comma khaanon ke beech ki deewar hai. Right se 3 ank ke baad hazaar shuru hota hai, phir 2 ank ke baad lakh. Comma wahi lagta hai jahan naya naam shuru hota hai, kahin aur nahi.", "en": "A comma is a wall between places. After 3 digits from the right the thousands start, then after 2 more the lakhs. A comma goes only where a new name starts, nowhere else." }, "board": { "template": "compare@1", "params": {"left": {"title": "group", "items": ["3", "25", "400"]}, "right": {"title": "naam", "items": ["lakh", "hazaar", "baaki"]}} },
+     "simpler": { "hi": "Comma wahin lagta hai jahan naya naam shuru ho: right se pehle 3 ank, phir 2 ank.", "en": "A comma goes only where a new name starts: first 3 digits from the right, then 2." },
      
      "then": {
       "prompt": {
@@ -1023,7 +1020,7 @@
     {
      "targets": "c5-maths-ch01-t01-m-first-digit-compare",
      "move": "both numbers right-aligned in one chart, ones under ones; find the first place where only one number has a digit; that place decides, not the first digit",
-     "say": { "hi": "Pehle ank gino: 9,876 mein chaar, 12,345 mein paanch, toh 12,345 bada. Agar ank barabar hon, jaise 7,26,000 aur 7,62,000, toh left se ek-ek khaana milao: lakh mein dono 7, das-hazaar mein 2 aur 6, toh 7,62,000 bada.", "en": "First count digits: 9,876 has four, 12,345 has five, so 12,345 is bigger. If they match, like 7,26,000 and 7,62,000, compare place by place from the left: both have 7 lakhs, then 2 and 6 in the ten thousands, so 7,62,000 is bigger." }, "board": { "template": "compare@1", "params": {"left": {"title": "chhota", "items": ["9,876", "7,26,000"]}, "right": {"title": "bada", "items": ["12,345", "7,62,000"]}} },
+     "say": { "hi": "Pehle dono numbers ke ank gino: jismein zyada ank hain, woh bada hai, pehla ank chahe kuch bhi ho. Ank barabar hon, toh left se ek-ek khaana milao: jahan pehli baar ank alag ho, wahan bade ank wala number bada.", "en": "First count the digits of both numbers: the one with more digits is bigger, whatever its first digit. If they have the same number of digits, compare place by place from the left: where the digits first differ, the bigger digit wins." }, "board": { "template": "compare@1", "params": {"left": {"title": "chhota", "items": ["9,876", "7,26,000"]}, "right": {"title": "bada", "items": ["12,345", "7,62,000"]}} },
      "simpler": { "hi": "Pehle ank gino, zyada ank wala bada, kam ank wala chhota. Ank barabar hon toh left se milao: jahan pehli baar ank alag ho, bade ank wala bada.", "en": "First count digits: more digits means bigger, fewer means smaller. If they match, compare from the left: where the digits first differ, the bigger digit wins." },
      
      "then": {

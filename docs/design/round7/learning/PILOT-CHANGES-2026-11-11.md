@@ -380,3 +380,29 @@ check.mjs (no LESSON_SCRIPTS_DIR): ok.
 - c5-t01: rl-o1 dropped from s1's ladder; s3 rem1's say reworded ('utne hi hop', where 'ek ho' could be heard as 'is 1'); the own boards of s1 rem1 and s3 rem1 removed.
 - c5-t02: s1 rem0's say says '12 ek bada number hai'; i04 dropped from s1's ladder; s3 e3's point is the general rule (piece size decides when the count matches), and its mustSay is 'tukde ka size' instead of '3/5 > 3/8', which named fractions not on the ask's board.
 - c6: s3 rem0's say and simpler now cover a square too (share by 4), because the square cards e1 and c1 route to it; all five remediation own-boards removed.
+
+## Round after integration 49 (17:00–18:00 UTC): sentences no other unit holds, one term in c5-t01
+
+Main's 17:45 note: Brain's authoredWhole predicate read hits on the dry matrix where a turn's sentence ended with, or equalled, a
+sentence of another authored unit, and a simpler repeating what it simplifies makes the child hear the same words again. Every pair
+Brain listed is now said in other words. Keys, boards and the order of cards are unchanged; no card asks anything new.
+
+| pilot | unit | was | now |
+|---|---|---|---|
+| c4 | s1 e4 card (en) | "What fraction of the bar was eaten?" (also the m-part-part then-card's sentence) | "How much of the bar got eaten, as a fraction?" |
+| c4 | s1 yourStep card | "Barfi ka kitna hissa khaya gaya?" (the worked problem's sentence) / "What fraction of the barfi was eaten?" | "Toh khaya hua hissa kitna hai?" / "So what is the eaten part?" |
+| c4 | s3 then (m-bigger-denominator-bigger) | "… Kya woh sahi hai?" | "… Kya Rahul sahi hai?" |
+| c5-t01 | s3 then (m-not-numbers) simpler | "Woh kul ginti upar aati hai." / "That total goes on top." (the s3 c3 simpler's sentence) | "Yahi jod upar likho." / "Write that sum on top." |
+| c5-t01 | joints asidePark, greetSimpler, terms, two worked simplers, s2 bridge simpler | "sankhya rekha" / "rekha" beside the script's 210 uses of "line" (Brain's twinsData: 4 rows) | "number line" / "line" throughout; the script now says one word |
+| c5-t02 | s1 e1 ask why | "… aur upar ka woh ek hissa 1/4 hai" (ended on the point's sentence) | "… aur upar ka woh hissa 1/4 hai" |
+| c5-t02 | s3 rem (m-gap-thinking) say | "Socho, dono mein se ek-ek hissa hata do." / "Imagine taking one part from each." (s2's same remediation) | "Socho, dono patti se ek-ek hissa nikaal do." / "Picture one part removed from each bar." |
+| c5-t02 | s3 rem (m-gap-thinking) simpler | "Dono se ek-ek hissa hi gaya." / "Each lost just one part." | "Har patti ka bas ek hissa gaya." / "Each bar lost only one part." |
+| c5-t02 | s2 then (m-gap-thinking) simpler | "Dono mein ek hissa kam hai." / "Each is one part short." (its own card's sentence) | "Dono patti se ek-ek hissa gayab hai." / "Both are missing one part." |
+| c5-t02 | s2 worked simpler | "Meena aur Raju ke cake ek jaise hain. …" (the problem's first sentence) | "Dono ke cake same size ke hain. …" |
+| c5-t02 | s3 rem (m-tops-only) simpler | "Dono patti ek jitni lambi hain." / "Both bars are the same length." (its say's sentence) | "Patti dono barabar lambi hain." / "The two bars are equally long." |
+| c6 | s1 c2 card | "… Sahi mein kitni tape lagegi?" (ended on the s2 worked problem's "Kitni tape lagegi?") | "… Sahi mein kitne cm tape lagegi?" |
+| c6 | s3 then (m-l-plus-b) card | "… Chaudai kitni hai?" / "What is its breadth?" (the s3 c3 card's sentence) | "… Toh chaudai kya hogi?" / "So what is the breadth?" |
+
+check.mjs now has (h) sharedSentenceErrors: no two units share a whole sentence of three words or more, and a simpler never repeats a
+sentence of what it simplifies (a card's short question tag, five words or fewer, may close many cards). It reads 0 on all four
+pilots. The dry matrix (16 lessons) reads 0 on every predicate, the pending twinsData included.

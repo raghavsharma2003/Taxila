@@ -34,16 +34,13 @@
    "explain": [
     {
      "id": "e1",
-     "convey": "12 chairs as 3 rows of 4 → a full rectangle, none left over → 3 × 4 = 12 → 3 and 4 are factors of 12; transfer: same 12 chairs in 2 rows",
+     "convey": "12 chairs as 4 rows of 3 → a full rectangle, none left over → 4 × 3 = 12 → 4 and 3 are factors of 12; transfer: same 12 chairs in 2 rows",
      "mustSay": [
       { "hi": "barabar rows", "en": "equal rows" },
       { "hi": "12 ke factors", "en": "factors of 12" }
      ],
-     "board": { "template": "shade-grid@1", "params": { "rows": 3, "cols": 4, "shade": 0 } },
-     "point": {
-      "hi": "Yeh 12 kursiyan hain: 3 rows, aur har row mein 4, yaani 4 columns. Koi kursi nahi bachi, aur 3 × 4 = 12. Isliye 3 aur 4 dono 12 ke factors hain.",
-      "en": "These are 12 chairs: 3 rows with 4 in each row, that is 4 columns. No chair is left over, and 3 × 4 = 12. So 3 and 4 are both factors of 12."
-     },
+     "board": { "template": "shade-grid@1", "params": {"rows": 4, "cols": 3, "shade": 0} },
+     "point": { "hi": "Yeh 12 kursiyan hain: 4 rows, aur har row mein 3, yaani 3 columns. Koi kursi nahi bachi, aur 4 × 3 = 12. Isliye 4 aur 3 dono 12 ke factors hain.", "en": "These are 12 chairs: 4 rows with 3 in each row, that is 3 columns. No chair is left over, and 4 × 3 = 12. So 4 and 3 are both factors of 12." },
      "ask": {
       "prompt": {
        "hi": "Inhi 12 kursiyon ko 2 barabar rows mein lagayein, toh har row mein kitni kursiyan hongi?",
@@ -68,10 +65,7 @@
       "en": "These 6 chairs are in one long row, that is 6 columns. One row, 6 in the row, and no chair is left over. This is also a fully correct way of making equal rows."
      },
      "ask": {
-      "prompt": {
-       "hi": "Yeh 6 kursiyan 2 barabar rows mein bhi lagti hain, aur 3 barabar rows mein bhi. 4 ya 5 rows mein kursi bachti hai. Toh 6 ke saare factors kaun-kaun se hain?",
-       "en": "These 6 chairs also fit in 2 equal rows, and in 3 equal rows. With 4 or 5 rows a chair is left over. So what are all the factors of 6?"
-      },
+      "prompt": { "hi": "Yeh 6 kursiyan 2 barabar rows mein bhi lagti hain, aur 3 barabar rows mein bhi. 4 ya 5 rows mein kuch kursiyan bach jaati hain. Toh 6 ke saare factors kaun-kaun se hain?", "en": "These 6 chairs also fit in 2 equal rows, and in 3 equal rows. With 4 or 5 rows some chairs are left over. So what are all the factors of 6?" },
       "key": "1, 2, 3, 6",
       "why": { "hi": "1 × 6 aur 2 × 3 mein koi kursi nahi bachti, toh rows 1, 2, 3 ya 6 ho sakti hain", "en": "1 × 6 and 2 × 3 leave no chair over, so the rows can be 1, 2, 3 or 6" },
       "accept": ["1 2 3 6", "1, 2, 3 aur 6", "1, 2, 3 and 6"],
@@ -85,7 +79,7 @@
      "convey": "10 chairs make a rectangle 2 × 5 (and 1 × 10); 13 chairs only one long row (1 × 13) → the bigger number has fewer factors → size does not decide",
      "mustSay": [{"hi": "rectangle", "en": "rectangle"}, {"hi": "bada number", "en": "bigger number"}],
      "board": { "template": "shade-grid@1", "params": {"rows": 2, "cols": 5, "shade": 0, "labels": false} },
-     "point": { "hi": "Yeh kursiyon ka rectangle hai: 2 rows, har row mein 5. Ab 13 kursiyan socho: woh sirf ek lambi row mein lagti hain, 1 × 13. 13 bada number hai, par bade number ke factors zyada hon, yeh zaroori nahi.", "en": "This is a rectangle of chairs: 2 rows with 5 in each. Now think of 13 chairs: they fit only in one long row, 1 × 13. 13 is the bigger number, but a bigger number need not have more factors." },
+     "point": { "hi": "Yeh kursiyon ka rectangle hai: 2 rows, har row mein 5. Ab 13 kursiyan socho: 13 bada number hai. Unhe bhi aise rectangle mein lagane ki koshish karo.", "en": "This is a rectangle of chairs: 2 rows with 5 in each. Now think of 13 chairs: 13 is the bigger number. Try to set them in a rectangle like this too." },
      "ask": {
       "prompt": { "hi": "Toh kis number ke factors zyada hain, 10 ke ya 13 ke?", "en": "So which number has more factors, 10 or 13?" },
       "key": "10",
@@ -139,25 +133,25 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": { "hi": "{friend} ne 7 kursiyan lagayin: ek row mein 3, doosri mein 4. {friend} ka kehna hai ki 7 kursiyon ko barabar rows mein lagane ka koi tareeka nahi hai. Kya yeh sahi hai, haan ya nahi?", "en": "{friend} set out 7 chairs: 3 in one row, 4 in the other. {friend} says there is no way to set 7 chairs in equal rows. Is that right, yes or no?" },
-     "key": "no",
-     "why": { "hi": "7 kursiyan 1 × 7, ek lambi row mein, bina bache lag jaati hain", "en": "7 chairs fit as 1 × 7, one long row, with none left over" },
-     "accept": ["nahi", "nahi, ek lambi row mein lag sakti hain", "galat", "no, one long row works"],
+     "prompt": { "hi": "{friend} ne pehle 7 kursiyan aise lagayin: ek row mein 3, doosri mein 4. Ab {friend} ka kehna hai ki saari 7 kursiyan ek hi lambi row mein lagana bhi barabar rows ka tareeka hai. Kya yeh sahi hai, haan ya nahi?", "en": "{friend} first set out 7 chairs as 3 in one row and 4 in the other. Now {friend} says that putting all 7 chairs in one long row is also a way of making equal rows. Is that right, yes or no?" },
+     "key": "yes",
+     "why": { "hi": "ek lambi row mein saari 7 kursiyan lag jaati hain aur koi nahi bachti, yaani 1 × 7", "en": "one long row holds all 7 chairs with none left over, that is 1 × 7" },
+     "accept": ["haan", "haan, ek lambi row bhi chalti hai", "yes, one long row counts"],
      "targets": "c5-maths-ch13-t02-m-one-and-self",
-     "wrongIfMis": "yes",
+     "wrongIfMis": "no",
      "board": { "template": "equal-groups@1", "params": {"sizes": [3, 4], "title": "7 kursiyan"} },
      "simpler": { "hi": "Saari 7 kursiyan ek ke baad ek, ek hi lambi row mein rakh do. Ab dekho ki koi kursi bachti hai ya nahi.", "en": "Put all 7 chairs one after another in a single long row. Now see whether any chair is left over." }, "answerBoard": { "template": "shade-grid@1", "params": {"rows": 1, "cols": 7, "shade": 0, "labels": false} }
     },
     {
      "id": "c2",
-     "prompt": { "hi": "Ek hall mein yeh 20 kursiyan hain, 4 rows mein. Doosre hall mein 23 kursiyan hain. Kis hall ki kursiyan zyada tarah ki barabar rows mein lag sakti hain, 20 wali ya 23 wali?", "en": "One hall has these 20 chairs, in 4 rows. Another hall has 23 chairs. Which hall's chairs can be set out in equal rows in more ways, the 20 or the 23?" },
-     "key": "20",
-     "why": { "hi": "20 se 1 × 20, 2 × 10 aur 4 × 5 bante hain, par 23 se sirf 1 × 23", "en": "20 makes 1 × 20, 2 × 10 and 4 × 5, but 23 makes only 1 × 23" },
-     "accept": ["20 wali", "20 kursiyan", "the 20", "20 chairs"],
+     "prompt": { "hi": "Ek hall mein yeh 25 kursiyan hain, 5 rows mein. Doosre hall mein 29 kursiyan hain. Kis hall ki kursiyan zyada tareekon se barabar rows mein lag sakti hain, 25 wali ya 29 wali?", "en": "One hall has these 25 chairs, in 5 rows. Another hall has 29 chairs. Which hall's chairs can be set out in equal rows in more ways, the 25 or the 29?" },
+     "key": "25",
+     "why": { "hi": "25 se 1 × 25 aur 5 × 5 bante hain, par 29 se sirf 1 × 29", "en": "25 makes 1 × 25 and 5 × 5, but 29 makes only 1 × 29" },
+     "accept": ["25 wali", "25 kursiyan", "the 25", "25 chairs"],
      "targets": "c5-maths-ch13-t02-m-bigger-more-factors",
-     "wrongIfMis": "23",
-     "board": { "template": "shade-grid@1", "params": {"rows": 4, "cols": 5, "shade": 0, "labels": false} },
-     "simpler": { "hi": "Dono hall ki kursiyan 4 rows mein lagao: ek mein koi nahi bachti, doosre mein kuch bach jaati hain. Aise hi baaki rows bhi aazmao.", "en": "Put both halls' chairs in 4 rows: one leaves none over, the other leaves some. Try the other row counts the same way." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 4, "each": 5, "title": "20 ke 6 factors, 23 ke 2"} }
+     "wrongIfMis": "29",
+     "board": { "template": "shade-grid@1", "params": {"rows": 5, "cols": 5, "shade": 0, "labels": false} },
+     "simpler": { "hi": "Dono hall ki kursiyan 5 rows mein lagao: ek mein koi nahi bachti, doosre mein kuch bach jaati hain. Aise hi baaki rows bhi aazmao.", "en": "Put both halls' chairs in 5 rows: one leaves none over, the other leaves some. Try the other row counts the same way." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 5, "each": 5, "title": "25 ke 3 factors, 29 ke 2"} }
     },
     {
      "id": "c3",
@@ -172,7 +166,7 @@
     }
    ],
    "ladder": [
-    { "itemId": "c5-maths-ch13-t02-i01", "why": "12 chairs in 3 rows, the e1 case → one arrangement, find the row length" },
+    { "itemId": "c5-maths-ch13-t02-i01", "why": "12 chairs in 3 rows, e1's 4 × 3 turned round → one arrangement, find the row length" },
     { "itemId": "c5-maths-ch13-t02-rl-o1", "why": "20 shuttlecocks, choose the row count that works from 3, 4, 6 → test each by sharing" },
     { "itemId": "c5-maths-ch13-t02-i11", "why": "15 dots as every rectangle → read the factor pairs off the arrays, including the long row" },
     { "itemId": "c5-maths-ch13-t02-rl-h1", "why": "54 lights, more than one row count works among 6, 8, 9 → test each, keep all that fit" },
@@ -199,24 +193,24 @@
     {
      "targets": "c5-maths-ch13-t02-m-bigger-more-factors",
      "move": "12 counters make 1 × 12, 2 × 6, 3 × 4; 13 counters make only the single line 1 × 13 → count the shapes that worked, not the size of the number",
-     "say": { "hi": "12 kursiyan teen tareeke se lagti hain: 1 × 12, 2 × 6 aur 3 × 4. 17 kursiyan sirf ek tareeke se: 1 × 17. Number bada hone se factors zyada nahi ho jaate.", "en": "12 chairs can be set out three ways: 1 × 12, 2 × 6 and 3 × 4. 17 chairs only one way: 1 × 17. A bigger number does not mean more factors." },
+     "say": { "hi": "12 kursiyan teen tareeke se lagti hain: 1 × 12, 2 × 6 aur 3 × 4. Par koi bada number sirf ek tareeke se bhi lag sakta hai, ek lambi row mein. Number bada hone se factors zyada nahi ho jaate.", "en": "12 chairs can be set out three ways: 1 × 12, 2 × 6 and 3 × 4. But a bigger number may fit only one way, in one long row. A bigger number does not mean more factors." },
      "simpler": { "hi": "Tareeke gino, number ka size mat dekho. Jitne zyada tareeke, utne zyada factors.", "en": "Count the ways, not the size of the number. More ways means more factors." },
      
      "then": {
-      "prompt": { "hi": "Yeh 9 kursiyan hain. 11 kursiyan sirf ek lambi row mein lagti hain. Kiske factors zyada hain, 9 ya 11?", "en": "Here are 9 chairs. 11 chairs fit only in one long row. Which has more factors, 9 or 11?" },
+      "prompt": { "hi": "Yeh 9 kursiyan hain. Doosri taraf 11 kursiyan hain. Kiske factors zyada hain, 9 ya 11?", "en": "Here are 9 chairs. Over there are 11 chairs. Which has more factors, 9 or 11?" },
       "key": "9",
       "why": { "hi": "9 se 1 × 9 aur 3 × 3 bante hain, par 11 se sirf 1 × 11", "en": "9 makes 1 × 9 and 3 × 3, but 11 makes only 1 × 11" },
       "accept": ["9 ke", "9 ke zyada", "9 has more"],
       "targets": "c5-maths-ch13-t02-m-bigger-more-factors",
       "wrongIfMis": "11",
       "board": { "template": "shade-grid@1", "params": {"rows": 3, "cols": 3, "shade": 0, "labels": false} },
-      "simpler": { "hi": "Board ki kursiyan ek lambi row mein bhi lagti hain, aur barabar rows mein bhi. 11 kursiyan sirf ek tarah se lagti hain.", "en": "The chairs on the board fit in one long row, and in equal rows too. 11 chairs fit only one way." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 3, "each": 3, "title": "9 ke 3 factors, 11 ke 2"} }
+      "simpler": { "hi": "Board ki kursiyan ek lambi row mein bhi lagti hain, aur ek se zyada barabar rows mein bhi. 11 kursiyan sirf ek lambi row mein lagti hain.", "en": "The chairs on the board fit in one long row, and in more than one equal row too. 11 chairs fit only in one long row." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 3, "each": 3, "title": "9 ke 3 factors, 11 ke 2"} }
      }
     },
     {
      "targets": "c5-maths-ch13-t02-m-miss-pairs",
      "move": "3 rows of 9 chairs → one rectangle gives two factors at once, the rows and the row length → after finding a row count, write its partner",
-     "say": { "hi": "Har tareeka do factor deta hai: rows ki ginti, aur ek row ki kursiyan. Jaise 18 kursiyan 3 rows mein hon toh har row mein 6, isliye 3 ke saath 6 bhi 18 ka factor hai.", "en": "Every way gives two factors: the number of rows, and the chairs in one row. If 18 chairs are in 3 rows, each row has 6, so along with 3, 6 is also a factor of 18." },
+     "say": { "hi": "Har tareeka do factor deta hai: rows ki ginti, aur ek row ki kursiyan. Jaise 12 kursiyan 2 rows mein hon toh har row mein 6, isliye 2 ke saath 6 bhi 12 ka factor hai.", "en": "Every way gives two factors: the number of rows, and the chairs in one row. If 12 chairs are in 2 rows, each row has 6, so along with 2, 6 is also a factor of 12." },
      "simpler": { "hi": "Rows ki ginti likhne ke baad ruko. Ab ek row ki kursiyan gino, woh doosra factor hai.", "en": "After writing the number of rows, stop. Now count the chairs in one row: that is the second factor." },
      
      "then": {
@@ -279,22 +273,22 @@
     },
     {
      "id": "e2",
-     "convey": "test 1, 2, 3, ... in order for 30: 1 × 30, 2 × 15, 3 × 10, 4 fails, 5 × 6; next would be 6 × 5, already found → stop; then count the factors from the four pairs",
+     "convey": "test 1, 2, 3, ... in order for 32: 1 × 32, 2 × 16, 3 fails, 4 × 8, nothing between 4 and 8 works; next would be 8 × 4, already found → stop; then count the factors from the three pairs",
      "mustSay": [
       { "hi": "kram se", "en": "in order" },
       { "hi": "jodi dobara", "en": "the pair repeats" }
      ],
-     "board": { "template": "shade-grid@1", "params": {"rows": 5, "cols": 6, "shade": 0} },
-     "point": { "hi": "30 ki jodiyan 1 se kram se banao: 1 × 30, 2 × 15, 3 × 10. 4 se 30 poora nahi bantta. Phir 5 × 6, jaise yeh 5 rows aur 6 columns. Agli jodi 6 × 5 hogi, jo dobara aa rahi hai, isliye yahin ruk jao.", "en": "Make the pairs of 30 in order from 1: 1 × 30, 2 × 15, 3 × 10. 4 does not divide 30 exactly. Then 5 × 6, like these 5 rows and 6 columns. The next pair would be 6 × 5, which comes again, so stop here." },
+     "board": { "template": "shade-grid@1", "params": {"rows": 4, "cols": 8, "shade": 0} },
+     "point": { "hi": "32 ki jodiyan 1 se kram se banao: 1 × 32, 2 × 16. 3 se 32 poora nahi bantta. Phir 4 × 8, jaise yeh 4 rows aur 8 columns. 4 aur 8 ke beech koi number 32 ko poora nahi baantta. Agli jodi 8 × 4 hogi, jo dobara aa rahi hai, isliye yahin ruk jao.", "en": "Make the pairs of 32 in order from 1: 1 × 32, 2 × 16. 3 does not divide 32 exactly. Then 4 × 8, like these 4 rows and 8 columns. No number between 4 and 8 divides 32 exactly. The next pair would be 8 × 4, which comes again, so stop here." },
      "ask": {
-      "prompt": { "hi": "Kram se saari jodiyan mil gayin. Toh 30 ke kitne factors hain?", "en": "All the pairs are found, in order. So how many factors does 30 have?" },
-      "key": "8",
-      "why": { "hi": "30 ki chaar jodiyan 1 × 30, 2 × 15, 3 × 10 aur 5 × 6 hain, yaani 8 factors", "en": "30 has four pairs, 1 × 30, 2 × 15, 3 × 10 and 5 × 6, so 8 factors" },
-      "accept": ["8 factors", "aath", "eight"],
+      "prompt": { "hi": "Kram se saari jodiyan mil gayin. Toh 32 ke kitne factors hain?", "en": "All the pairs are found, in order. So how many factors does 32 have?" },
+      "key": "6",
+      "why": { "hi": "32 ki teen jodiyan 1 × 32, 2 × 16 aur 4 × 8 hain, yaani 6 factors", "en": "32 has three pairs, 1 × 32, 2 × 16 and 4 × 8, so 6 factors" },
+      "accept": ["6 factors", "chhe", "six"],
       "targets": "c5-maths-ch13-t02-m-miss-pairs",
-      "wrongIfMis": "6", "answerBoard": { "template": "equal-groups@1", "params": {"groups": 5, "each": 6, "title": "30 ke 8 factors"} }
+      "wrongIfMis": "3", "answerBoard": { "template": "equal-groups@1", "params": {"groups": 4, "each": 8, "title": "32 ke 6 factors"} }
      },
-     "simpler": { "hi": "Har jodi do number deti hai. Chaar jodiyan hain, toh unke number do-do karke gino.", "en": "Each pair gives two numbers. There are four pairs, so count their numbers two at a time." }
+     "simpler": { "hi": "Har jodi do number deti hai. Teen jodiyan hain, toh unke number do-do karke gino.", "en": "Each pair gives two numbers. There are three pairs, so count their numbers two at a time." }
     }
    ],
    "workedExample": {
@@ -360,7 +354,7 @@
      "targets": "c5-maths-ch13-t02-m-one-and-self",
      "wrongIfMis": "none",
      "board": { "template": "shade-grid@1", "params": {"rows": 2, "cols": 7, "shade": 0, "labels": false} },
-     "simpler": { "hi": "2 × 7 ek jodi hai. Har number ki ek jodi aur hoti hai, jo sabse chhote factor se shuru hoti hai.", "en": "2 × 7 is one pair. Every number has one more pair, which starts with the smallest factor." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 2, "each": 7, "title": "14: 1, 2, 7, 14"} }
+     "simpler": { "hi": "2 × 7 ek jodi hai. Har number ki ek jodi 1 se bhi banti hai: 1 × wahi number.", "en": "2 × 7 is one pair. Every number also has a pair made with 1: 1 × the number itself." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 2, "each": 7, "title": "14: 1, 2, 7, 14"} }
     },
     {
      "id": "c3",
@@ -388,42 +382,39 @@
     {
      "targets": "c5-maths-ch13-t02-m-miss-pairs",
      "move": "factor rainbow for 24: arcs join 1-24, 2-12, 3-8, 4-6 → each factor found brings its partner → a number with no arc is not yet checked",
-     "say": { "hi": "Har factor ka ek saathi hota hai, jiske saath guna karke number banta hai. Jaise 26 mein 2 mila, toh uska saathi 13 bhi likho, kyunki 2 × 13 = 26.", "en": "Every factor has a partner that multiplies with it to make the number. If 2 is found for 26, write its partner 13 too, because 2 × 13 = 26." },
+     "say": { "hi": "Har factor ka ek saathi hota hai, jiske saath guna karke number banta hai. Jaise 20 mein 4 mila, toh uska saathi 5 bhi likho, kyunki 4 × 5 = 20.", "en": "Every factor has a partner that multiplies with it to make the number. If 4 is found for 20, write its partner 5 too, because 4 × 5 = 20." },
      "simpler": { "hi": "Ek factor mile toh number ko usse baanto. Jo jawab aaye, wahi uska saathi hai.", "en": "When you find a factor, divide the number by it. The answer you get is its partner." },
      
      "then": {
-      "prompt": {
-       "hi": "{friend} ne 36 ke factors likhe: 1, 2, 3, 4, 6, 12, 18, 36. Kaunsa factor chhoot gaya?",
-       "en": "{friend} wrote the factors of 36: 1, 2, 3, 4, 6, 12, 18, 36. Which factor is missing?"
-      },
-      "key": "9",
-      "why": { "hi": "36 ki jodiyon mein 4 × 9 bhi hai, par list mein 4 ka saathi 9 chhoot gaya", "en": "36's pairs include 4 × 9, and the list has 4 but missed its partner 9" },
-      "accept": ["nau", "nine", "9 chhoot gaya"],
+      "prompt": { "hi": "{friend} ne 40 ke factors likhe: 1, 2, 4, 5, 10, 20, 40. Kaunsa factor chhoot gaya?", "en": "{friend} wrote the factors of 40: 1, 2, 4, 5, 10, 20, 40. Which factor is missing?" },
+      "key": "8",
+      "why": { "hi": "40 ki jodiyon mein 5 × 8 bhi hai, par list mein 5 ka saathi 8 chhoot gaya", "en": "40's pairs include 5 × 8, and the list has 5 but missed its partner 8" },
+      "accept": ["aath", "eight", "8 chhoot gaya"],
       "targets": "c5-maths-ch13-t02-m-miss-pairs",
       "wrongIfMis": "none, the list is complete",
-      "board": { "template": "shade-grid@1", "params": {"rows": 6, "cols": 6, "shade": 0, "labels": false} },
-      "simpler": { "hi": "36 ki jodiyan banao: 1 × 36, 2 × 18, 3 × 12. Ab 4 ka saathi dhoondho jo guna karke 36 banaye.", "en": "Make the pairs of 36: 1 × 36, 2 × 18, 3 × 12. Now find 4's partner that multiplies to 36." }, "answerBoard": { "template": "equal-groups@1", "params": {"sizes": [9, 9, 9, 9], "title": "9 chhoot gaya: 4 × 9"} }
+      "board": { "template": "shade-grid@1", "params": {"rows": 4, "cols": 10, "shade": 0, "labels": false} },
+      "simpler": { "hi": "40 ki jodiyan banao: 1 × 40, 2 × 20, 4 × 10. Ab 5 ka saathi dhoondho jo guna karke 40 banaye.", "en": "Make the pairs of 40: 1 × 40, 2 × 20, 4 × 10. Now find 5's partner that multiplies to 40." }, "answerBoard": { "template": "equal-groups@1", "params": {"sizes": [8, 8, 8, 8, 8], "title": "8 chhoot gaya: 5 × 8"} }
      }
     },
     {
      "targets": "c5-maths-ch13-t02-m-one-and-self",
      "move": "1 × 15 is a full pair, like one long row of 15 → both 1 and 15 divide 15 exactly → every number's list starts with 1 and ends with itself",
-     "say": { "hi": "1 × 17 bhi ek poori jodi hai, bilkul ek lambi row jaisi. Isliye 1 aur 17 dono 17 ke factors hain. Har number ki list 1 se shuru hoti hai aur khud number par khatam.", "en": "1 × 17 is also a full pair, just like one long row. So 1 and 17 are both factors of 17. Every number's list starts with 1 and ends with the number itself." },
+     "say": { "hi": "1 × 20 bhi ek poori jodi hai, bilkul ek lambi row jaisi. Isliye 1 aur 20 dono 20 ke factors hain. Har number ki list 1 se shuru hoti hai aur khud number par khatam.", "en": "1 × 20 is also a full pair, just like one long row. So 1 and 20 are both factors of 20. Every number's list starts with 1 and ends with the number itself." },
      "simpler": { "hi": "Kisi bhi number ko 1 se guna karo toh wahi number milta hai. Woh jodi bhi list mein aati hai.", "en": "Multiply any number by 1 and you get that same number. That pair goes in the list too." },
      
      "then": {
-      "prompt": { "hi": "21 ke factors {friend} ne likhe: 3 aur 7. Kaunse do factors aur aayenge?", "en": "{friend} wrote the factors of 21 as 3 and 7. Which two more factors belong?" },
-      "key": "1 and 21",
-      "why": { "hi": "3 × 7 ke saath 1 × 21 bhi 21 ki poori jodi hai", "en": "along with 3 × 7, 1 × 21 is also a full pair for 21" },
-      "accept": ["1, 21", "1 aur 21", "1 21"],
+      "prompt": { "hi": "33 ke factors {friend} ne likhe: 3 aur 11. Kaunse do factors aur aayenge?", "en": "{friend} wrote the factors of 33 as 3 and 11. Which two more factors belong?" },
+      "key": "1 and 33",
+      "why": { "hi": "3 × 11 ke saath 1 × 33 bhi 33 ki poori jodi hai", "en": "along with 3 × 11, 1 × 33 is also a full pair for 33" },
+      "accept": ["1, 33", "1 aur 33", "1 33"],
       "targets": "c5-maths-ch13-t02-m-one-and-self",
       "wrongIfMis": "none",
-      "board": { "template": "shade-grid@1", "params": {"rows": 3, "cols": 7, "shade": 0, "labels": false} },
-      "simpler": { "hi": "3 × 7 ek jodi hai. Har number ki ek jodi aur hoti hai, jo sabse chhote factor se shuru hoti hai.", "en": "3 × 7 is one pair. Every number has one more pair, which starts with the smallest factor." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 3, "each": 7, "title": "21: 1, 3, 7, 21"} }
+      "board": { "template": "number-line-scale@1", "params": {"from": 0, "to": 33, "step": 11} },
+      "simpler": { "hi": "3 × 11 ek jodi hai. Har number ki ek jodi 1 se bhi banti hai: 1 × wahi number.", "en": "3 × 11 is one pair. Every number also has a pair made with 1: 1 × the number itself." }, "answerBoard": { "template": "number-line-scale@1", "params": {"from": 0, "to": 33, "step": 11, "marks": [{"value": 33, "label": "1 × 33 = 33"}]} }
      }
     }
    ],
-   "bridgeToNext": { "hi": "Ab hum kisi bhi number ke saare factors dhoondh sakte hain. Ab is line par 7 ki table dekho, isse factor aur multiple ka rishta samjhenge.", "en": "Now we can find all the factors of any number. Now look at the table of 7 on this line; it shows how a factor and a multiple are linked.", "simpler": {"hi": "Ab is line par 7-7 ke kadam dekhenge. Isse factor aur multiple ka rishta samjhenge.", "en": "Now we look at steps of 7 on this line. It will show how a factor and a multiple are linked."} }
+   "bridgeToNext": { "hi": "Ab hum kisi bhi number ke saare factors dhoondh sakte hain. Ab 7 ki table ki chhalaangon se factor aur multiple ka rishta samjhenge.", "en": "Now we can find all the factors of any number. Next, jumps along the table of 7 will show how a factor and a multiple are linked.", "simpler": {"hi": "Ab 7-7 ki chhalaangon se factor aur multiple ka rishta samjhenge.", "en": "Next, jumps of 7 will show how a factor and a multiple are linked."} }
   },
   {
    "skillId": "c5-maths-ch13-t02-s3",
@@ -510,41 +501,32 @@
     }
    ],
    "workedExample": {
-    "problem": {
-     "hi": "Do sawaal hain. Kya 6, 45 ka factor hai? Aur kya 45, 9 ka multiple hai?",
-     "en": "There are two questions. Is 6 a factor of 45? And is 45 a multiple of 9?"
-    }, "simpler": { "hi": "Pehle dekho ki 45 ko 6 se poora baant sakte hain ya nahi. Phir dekho ki 45, 9 ke pahade mein aata hai ya nahi.", "en": "First see whether 45 can be shared by 6 exactly. Then see whether 45 comes in the table of 9." },
-    "givens": [{"hi": "number 45 hai, aur 6 aur 9 se use jaanchna hai", "en": "the number is 45, and it is to be tested with 6 and 9"}],
-    "find": { "hi": "6 se 45 poora bantta hai ya nahi, aur 9 se 45 poora bantta hai ya nahi", "en": "whether 6 divides 45 exactly, and whether 9 divides 45 exactly" },
+    "problem": { "hi": "Do sawaal hain. Kya 6, 63 ka factor hai? Aur kya 63, 9 ka multiple hai?", "en": "There are two questions. Is 6 a factor of 63? And is 63 a multiple of 9?" }, "simpler": { "hi": "Pehle dekho ki 63 ko 6 se poora baant sakte hain ya nahi. Phir dekho ki 63, 9 ke pahade mein aata hai ya nahi.", "en": "First see whether 63 can be shared by 6 exactly. Then see whether 63 comes in the table of 9." },
+    "givens": [{"hi": "number 63 hai, aur 6 aur 9 se use jaanchna hai", "en": "the number is 63, and it is to be tested with 6 and 9"}],
+    "find": { "hi": "6 se 63 poora bantta hai ya nahi, aur 9 se 63 poora bantta hai ya nahi", "en": "whether 6 divides 63 exactly, and whether 9 divides 63 exactly" },
     "steps": [
      {
-      "do": { "hi": "6 ki table mein 45 ke paas dekho", "en": "Look near 45 in the table of 6" },
-      "result": "6 × 7 = 42 aur 6 × 8 = 48, toh 45 beech mein hai aur 3 bachte hain",
-      "why": { "hi": "6 se 45 poora nahi bantta, isliye 6, 45 ka factor nahi hai", "en": "45 is not shared exactly by 6, so 6 is not a factor of 45" },
-      "simpler": { "hi": "6 × 7 = 42 aur 6 × 8 = 48 hai, aur 45 inke beech mein hai. Isliye 6 se 45 poora nahi bantta.", "en": "6 × 7 = 42 and 6 × 8 = 48, and 45 is in between. So 6 does not divide 45 exactly." }
+      "do": { "hi": "6 ki table mein 63 ke paas dekho", "en": "Look near 63 in the table of 6" },
+      "result": "6 × 10 = 60 aur 6 × 11 = 66, toh 63 beech mein hai aur 3 bachte hain",
+      "why": { "hi": "6 se 63 poora nahi bantta, isliye 6, 63 ka factor nahi hai", "en": "63 is not shared exactly by 6, so 6 is not a factor of 63" },
+      "simpler": { "hi": "6 × 10 = 60 aur 6 × 11 = 66 hai, aur 63 inke beech mein hai. Isliye 6 se 63 poora nahi bantta.", "en": "6 × 10 = 60 and 6 × 11 = 66, and 63 is in between. So 6 does not divide 63 exactly." }
      },
      {
-      "do": { "hi": "Ab 9 ki table ko 45 ki taraf badhao", "en": "Now take the table of 9 up towards 45" },
-      "result": "9 × 4 = 36, abhi 45 tak nahi pahunche",
-      "why": { "hi": "45 tabhi 9 ka multiple hai jab 9 ki chhalaangein theek 45 par giren", "en": "45 is a multiple of 9 only if jumps of 9 land exactly on 45" },
-      "simpler": { "hi": "9 ki table mein 9 × 4 = 36 tak aaye hain. Abhi 45 tak nahi pahunche, toh table aage badhani hogi.", "en": "In the table of 9 we have reached 9 × 4 = 36. We are not at 45 yet, so carry the table on." }
+      "do": { "hi": "Ab 9 ki table ko 63 ki taraf badhao", "en": "Now take the table of 9 up towards 63" },
+      "result": "9 × 4 = 36, abhi 63 tak nahi pahunche",
+      "why": { "hi": "63 tabhi 9 ka multiple hai jab 9 ki chhalaangein theek 63 par giren", "en": "63 is a multiple of 9 only if jumps of 9 land exactly on 63" },
+      "simpler": { "hi": "9 ki table mein 9 × 4 = 36 tak aaye hain. Abhi 63 tak nahi pahunche, toh table aage badhani hogi.", "en": "In the table of 9 we have reached 9 × 4 = 36. We are not at 63 yet, so carry the table on." }
      }
     ],
     "yourStep": {
-     "prompt": {
-      "hi": "9 × 4 = 36 tak aa gaye. 0 se theek 45 tak pahunchne mein 9 ki kitni chhalaang lagengi?",
-      "en": "We have reached 9 × 4 = 36. How many jumps of 9 from 0 does it take to reach exactly 45?"
-     },
-     "key": "5",
-     "accept": ["paanch", "five", "5 chhalaang", "9 × 5 = 45"],
-     "simpler": { "hi": "4 chhalaang mein 36 tak aaye. Ab 36 mein ek aur 9 jodkar dekho ki 45 aata hai ya nahi, phir chhalaang gino.", "en": "4 jumps reached 36. Now add one more 9 to 36 and see whether you get 45, then count the jumps." }, "why": { "hi": "9 × 5 = 45, toh 9 ki paanch chhalaang theek 45 par girti hain", "en": "9 × 5 = 45, so five jumps of 9 land exactly on 45" }, "answerBoard": { "template": "number-line-scale@1", "params": {"from": 0, "to": 45, "step": 9, "marks": [{"value": 45, "label": "5 chhalaang"}]} }
+     "prompt": { "hi": "9 × 4 = 36 tak aa gaye. 0 se theek 63 tak pahunchne mein 9 ki kitni chhalaang lagengi?", "en": "We have reached 9 × 4 = 36. How many jumps of 9 from 0 does it take to reach exactly 63?" },
+     "key": "7",
+     "accept": ["saat", "seven", "7 chhalaang", "9 × 7 = 63"],
+     "simpler": { "hi": "4 chhalaang mein 36 tak aaye. Ab 36 mein ek-ek karke 9 jodte jao jab tak 63 na aaye, phir saari chhalaang gino.", "en": "4 jumps reached 36. Now keep adding 9 to 36 until you get 63, then count all the jumps." }, "why": { "hi": "9 × 7 = 63, toh 9 ki saat chhalaang theek 63 par girti hain", "en": "9 × 7 = 63, so seven jumps of 9 land exactly on 63" }, "answerBoard": { "template": "number-line-scale@1", "params": {"from": 0, "to": 63, "step": 9, "marks": [{"value": 63, "label": "7 chhalaang"}]} }
     },
-    "answer": { "hi": "6, 45 ka factor nahi hai, aur 9 × 5 = 45, isliye 45, 9 ka multiple hai", "en": "6 is not a factor of 45, and 9 × 5 = 45, so 45 is a multiple of 9" },
-    "why": {
-     "hi": "6 ki table 45 ko chhod deti hai aur 3 bachte hain, par 9 ki chhalaangein theek 45 par girti hain",
-     "en": "the table of 6 skips 45 and leaves 3 over, but jumps of 9 land exactly on 45"
-    },
-    "board": { "template": "number-line-scale@1", "params": {"from": 0, "to": 45, "step": 9} }
+    "answer": { "hi": "6, 63 ka factor nahi hai, aur 9 × 7 = 63, isliye 63, 9 ka multiple hai", "en": "6 is not a factor of 63, and 9 × 7 = 63, so 63 is a multiple of 9" },
+    "why": { "hi": "6 ki table 63 ko chhod deti hai aur 3 bachte hain, par 9 ki chhalaangein theek 63 par girti hain", "en": "the table of 6 skips 63 and leaves 3 over, but jumps of 9 land exactly on 63" },
+    "board": { "template": "number-line-scale@1", "params": {"from": 0, "to": 63, "step": 9} }
    },
    "checks": [
     {
@@ -577,17 +559,14 @@
     },
     {
      "id": "c3",
-     "prompt": {
-      "hi": "{friend} ka kehna hai ki 6, 3 ka multiple hai, aur 3, 6 ka factor hai. Kya dono baatein sahi hain, haan ya nahi?",
-      "en": "{friend} says 6 is a multiple of 3, and 3 is a factor of 6. Are both statements right, yes or no?"
-     },
-     "key": "yes",
-     "why": { "hi": "3 × 2 = 6, toh 6, 3 ki table mein hai aur 3 se 6 poora bantta hai", "en": "3 × 2 = 6, so 6 is in the table of 3 and 3 divides 6 exactly" },
-     "accept": ["haan", "haan, dono sahi", "yes, both are right"],
+     "prompt": { "hi": "{friend} ne 3 ki table mein 6 dekha, isliye 6, 3 ka multiple hai. Ab ulta bolo: 3, 6 ka kya hai, factor ya multiple?", "en": "{friend} found 6 in the table of 3, so 6 is a multiple of 3. Now say it the other way: what is 3 to 6, a factor or a multiple?" },
+     "key": "factor",
+     "why": { "hi": "3 × 2 = 6, toh 3 se 6 poora bantta hai, isliye 3, 6 ka factor hai", "en": "3 × 2 = 6, so 3 divides 6 exactly, which makes 3 a factor of 6" },
+     "accept": ["factor hai", "3, 6 ka factor hai", "3 is a factor of 6", "gunankhand"],
      "targets": "c5-maths-ch13-t02-m-factor-multiple-swap",
-     "wrongIfMis": "no",
+     "wrongIfMis": "multiple",
      "board": { "template": "number-line-scale@1", "params": {"from": 0, "to": 12, "step": 3} },
-     "simpler": { "hi": "3 ki table mein 6 aata hai ya nahi, yeh dekho. Table mein aaye, toh 3 se 6 poora bantta hai.", "en": "See whether 6 is in the table of 3. If it is, then 3 divides 6 exactly." }, "answerBoard": { "template": "number-line-scale@1", "params": {"from": 0, "to": 12, "step": 3, "marks": [{"value": 6, "label": "3 × 2 = 6"}]} }
+     "simpler": { "hi": "3 se 6 poora bantta hai. Jo number kisi doosre number ko poora baantta hai, use kya kehte hain, woh yaad karo.", "en": "3 divides 6 exactly. Remember what we call a number that divides another number exactly." }, "answerBoard": { "template": "number-line-scale@1", "params": {"from": 0, "to": 12, "step": 3, "marks": [{"value": 6, "label": "3 × 2 = 6"}]} }
     }
    ],
    "ladder": [
@@ -599,22 +578,19 @@
    "remediation": [
     {
      "targets": "c5-maths-ch13-t02-m-factor-multiple-swap",
-     "move": "jumps of 4 from 0 → land on 4, 8, 12 → 12 reached exactly in 3 jumps → jump size 4 = factor of 12, landing spot 12 = multiple of 4; a factor is never bigger than the number",
-     "say": { "hi": "9-9 ki chhalaang socho: 0 se 9, 18 aur 27 par girti hai. Chhalaang ka size 9 factor hai, aur girne ki jagah 27 multiple hai. Factor kabhi apne number se bada nahi hota.", "en": "Picture jumps of 9: from 0 they land on 9, 18 and 27. The jump size 9 is the factor, and the landing spot 27 is the multiple. A factor is never bigger than its number." },
-     "simpler": { "hi": "Chhalaang chhoti hai, girne ki jagah badi. Isliye factor chhota number hai, multiple bada.", "en": "The jump is small, the landing spot is big. So the factor is the small number, the multiple the big one." },
+     "move": "jumps of 7 from 0 → land on 7, 14 → jump size 7 = factor of 14, landing spot 14 = multiple of 7; a factor is never bigger than its number, a multiple never smaller",
+     "say": { "hi": "Chhalaang ka size factor hai, aur girne ki jagah multiple. Jaise 7-7 ki chhalaang 14 par girti hai: 7, 14 ka factor hai, aur 14, 7 ka multiple. Factor kabhi apne number se bada nahi hota.", "en": "The jump size is the factor, and the landing spot is the multiple. Jumps of 7 land on 14: 7 is a factor of 14, and 14 is a multiple of 7. A factor is never bigger than its number." },
+     "simpler": { "hi": "Chhalaang ka size factor hai, girne ki jagah multiple. Factor apne number se bada kabhi nahi hota, aur multiple apne number se chhota kabhi nahi hota.", "en": "The jump size is the factor, the landing spot is the multiple. A factor is never bigger than its number, and a multiple is never smaller than it." },
      
      "then": {
-      "prompt": {
-       "hi": "Inmein se kaunsa 20 ka factor hai: 40, 5 ya 60?",
-       "en": "Which of these is a factor of 20: 40, 5 or 60?"
-      },
-      "key": "5",
-      "why": { "hi": "5 × 4 = 20, toh 5 se 20 poora bantta hai, jabki 40 aur 60, 20 se bade hain", "en": "5 × 4 = 20, so 5 divides 20 exactly, while 40 and 60 are bigger than 20" },
-      "accept": ["paanch", "five", "5 hai"],
+      "prompt": { "hi": "Wahi number chuno jo 34 ka factor ho, multiple nahi: 68, 17 ya 102?", "en": "Pick the number that is a factor of 34, not a multiple: 68, 17 or 102?" },
+      "key": "17",
+      "why": { "hi": "17 × 2 = 34, toh 17 se 34 poora bantta hai, jabki 68 aur 102, 34 ke multiple hain", "en": "17 × 2 = 34, so 17 divides 34 exactly, while 68 and 102 are multiples of 34" },
+      "accept": ["satrah", "seventeen", "17 hai"],
       "targets": "c5-maths-ch13-t02-m-factor-multiple-swap",
-      "wrongIfMis": "40",
-      "board": { "template": "number-line-scale@1", "params": {"from": 0, "to": 60, "step": 20} },
-      "simpler": { "hi": "Factor 20 ko poora baantta hai, isliye woh 20 se bada nahi ho sakta. 40 aur 60 dono 20 se bade hain.", "en": "A factor divides 20 exactly, so it cannot be bigger than 20. 40 and 60 are both bigger than 20." }, "answerBoard": { "template": "number-line-scale@1", "params": {"from": 0, "to": 60, "step": 20, "marks": [{"value": 5, "label": "5 × 4 = 20"}]} }
+      "wrongIfMis": "68",
+      "board": { "template": "number-line-scale@1", "params": {"from": 0, "to": 102, "step": 34} },
+      "simpler": { "hi": "Factor 34 ko poora baantta hai, isliye woh 34 se bada nahi ho sakta. 68 aur 102 dono 34 se bade hain.", "en": "A factor divides 34 exactly, so it cannot be bigger than 34. 68 and 102 are both bigger than 34." }, "answerBoard": { "template": "number-line-scale@1", "params": {"from": 0, "to": 102, "step": 34, "marks": [{"value": 17, "label": "17 × 2 = 34"}]} }
      }
     }
    ],

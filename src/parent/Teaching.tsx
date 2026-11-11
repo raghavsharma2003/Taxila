@@ -6,7 +6,7 @@
 //   - Made for {child}: pieces made in lessons, with the plain "because" from the kit;
 // plus What {T} remembers (the same card as Data and privacy, with Delete).
 import { parentApi } from "./api.ts";
-import { becauseForParent } from "./copy.ts";
+import { becauseForParent, labelTitle, TEACHER_FALLBACK } from "./copy.ts";
 import { Memories } from "./Pages.tsx";
 import { PageState, ParentShell, useChildren, useParentData } from "./Shell.tsx";
 
@@ -16,7 +16,7 @@ export default function Teaching() {
   const { kids, current } = useChildren();
   const d = useParentData(current ? () => parentApi.teaching(current.id) : null, [current?.id]);
   const name = current?.first_name ?? "your child";
-  const T = d.data?.teacher ?? "The teacher";
+  const T = d.data?.teacher ?? TEACHER_FALLBACK;
   return (
     <ParentShell title="How the teacher teaches" child={current} kids={kids}>
       <h1 className="pa-h1">How {T} teaches {name}</h1>
@@ -35,7 +35,7 @@ export default function Teaching() {
                   <li key={l.id} data-lesson-id={l.id}>
                     <p className="pa-h3">{l.topic ?? "A lesson"} <span className="pa-meta">· {day(l.startedAt)}</span></p>
                     {l.why.length ? <ul className="pa-list">{l.why.map((w) => <li key={w.code}>{w.text}</li>)}</ul>
-                      : <p className="pa-meta">{T} taught it the usual way: explain, a question, then practice.</p>}
+                      : <p className="pa-meta">{labelTitle(T)} taught it the usual way: explain, a question, then practice.</p>}
                     {/* round 8: what was chosen for this child and the fact behind it (server/director/knows-words.js) */}
                     {(l.because ?? []).length > 0 && <ul className="pa-list" data-testid="teaching-because">{(l.because ?? []).map((t) => <li key={t}>{t}</li>)}</ul>}
                   </li>

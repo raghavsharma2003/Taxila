@@ -32,3 +32,19 @@ test("LEARN-17: Home and Teaching word a Made-for reason the same way", async ()
     assert.match(readFileSync(new URL(`../src/parent/${f}`, import.meta.url), "utf8"), /becauseForParent\(/, f);
   }
 });
+
+test("Design's walk 2026-11-11: a teacher-name fallback is lower case mid-sentence and capitalised only where a sentence starts", async () => {
+  const { TEACHER_FALLBACK, labelTitle } = await import("../src/parent/copy.ts");
+  assert.equal(`How ${TEACHER_FALLBACK} teaches Riya`, "How the teacher teaches Riya");
+  assert.equal(labelTitle(TEACHER_FALLBACK), "The teacher");
+  assert.equal(labelTitle("Asha"), "Asha", "a loaded name is unchanged");
+  const { readdirSync } = await import("node:fs");
+  const dir = new URL("../src/parent/", import.meta.url);
+  for (const f of readdirSync(dir).filter((x) => /\.tsx?$/.test(x))) {
+    const src = readFileSync(new URL(f, dir), "utf8");
+    // (no capitalised fallback literal: it would read "How The teacher …" in the middle of a sentence)
+    assert.ok(!/\?\?\s*"(?:The teacher|Your child's teacher)"|:\s*"(?:The teacher|Your child's teacher)"/.test(src), `${f}: a capitalised teacher fallback`);
+    // (where the slot can hold the fallback, a sentence or heading that starts with it capitalises it)
+    if (src.includes("TEACHER_FALLBACK")) assert.ok(!/(?:>|`)\{T\}\s|(?:>|`)\$\{(?:T|t)\}\s/.test(src), `${f}: a sentence starts with a bare teacher slot`);
+  }
+});
