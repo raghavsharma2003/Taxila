@@ -1,0 +1,137 @@
+/* Round 8: the lesson screen under the one token set (docs/design/round8/PHASE2-BRIEF.md step b; phase 1 screens 2 and 3).
+   It applies only under .kx-lesson[data-tx] (the ?tx= switch, tx.ts). Tokens only: no literal colour, size or radius.
+   tests/r8-tx-tokens.test.mjs checks that.
+   It removes the terminal chrome on this screen:
+     - clipped corners;
+     - the grid;
+     - mono labels;
+     - the glow sky.
+   It dresses the zones as phase 1 drew them:
+     - the board is a paper card and the hero;
+     - a talk row holds her presence and the caption;
+     - the question is the second strongest thing, ringed in the "your move" colour on her turn;
+     - quiet chips;
+     - the dock. */
+/* the maths face (STIX Two Text, self-hosted by the board's own faces file; read only, Studio owns it) */
+@import "../../modules/whiteboard/faces.css";
+.kx-lesson[data-tx] {
+  --tx-scope: 1;
+}
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] { background: var(--tx-bg); color: var(--tx-ink); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"]::before { content: none; }
+
+/* ── no clipped corners, no grid, no mono ── */
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] :is([data-zone="card"], [data-zone="tray"], [data-zone="strip"], [data-zone="dock"]) > *,
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] :is(.dk-sheet, .dk-didcard, .dk-tile, .dk-btn--primary, .dk-pause),
+.kx-lesson[data-tx] :is(.ks-stage, .ks-chip, .ks-moment, .ks-moment-btn) { clip-path: none; }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="tray"] > .dk-tray::before { content: none; }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] :is(.dk-practice, .dk-ailabel, .teacher-aitag, .dk-rung, .ks-moment-k, .ks-later-head, .ks-later-due, .kx-in-trail) {
+  font-family: var(--tx-font-ui); letter-spacing: 0; text-transform: none; }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] .dk-chalk--math { font-family: var(--tx-font-math); }
+
+/* ── the top bar: the topic, and the lesson part as plain words (no segment bar, no uppercase) ── */
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="top"] { border-bottom: 1px solid var(--tx-line); background: var(--tx-bg); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="top"] .dk-pause { background: transparent; border-color: transparent; border-radius: var(--tx-r-1); color: var(--tx-ink); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="top"] .dk-short { font-weight: 700; color: var(--tx-ink); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="top"] .dk-phaseline { font-family: var(--tx-font-ui); font-size: var(--tx-t-1); letter-spacing: 0; text-transform: none; gap: var(--tx-s-3); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="top"] .dk-phaseline li { border-bottom: 0; padding-bottom: 0; color: var(--tx-ink-3); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="top"] .dk-phaseline li[aria-current] { color: var(--tx-ink); font-weight: 700; }
+
+/* ── the stage frame is only a column: the board card, the talk row and the question card sit in it with gaps ── */
+.kx-lesson[data-tx] .ks-stage { background: transparent; border: 0; overflow: visible; }
+.kx-lesson[data-tx] .ks-slot { background: var(--tx-board); border: 1px solid var(--tx-line); border-radius: var(--tx-r-2); box-shadow: var(--tx-shadow-2); }
+.kx-lesson[data-tx][data-kboard] .ks-slot { background: var(--tx-board); }
+.kx-lesson[data-tx] .ks-piece .dk-tray { background: transparent; border: 0; box-shadow: none; }
+/* the plain board's drawn wooden frame: the board card is the frame */
+.kx-lesson[data-tx] .ks-piece .dk-board-frame { display: none; }
+.kx-lesson[data-tx] .ks-piece .dk-chalk { color: var(--tx-board-ink); }
+/* maths set as maths on the plain board: stacked fractions in the maths face (Board.tsx mathRuns) */
+.kx-lesson[data-tx] .dk-chalk--math { font-family: var(--tx-font-math); font-weight: 400; font-size: var(--tx-t-6); letter-spacing: 0; }
+.kx-lesson[data-tx] .dk-frac { display: inline-flex; flex-direction: column; align-items: stretch; vertical-align: middle; text-align: center; line-height: 1.05; margin: 0 .1em; font-size: .9em; }
+.kx-lesson[data-tx] .dk-frac-n { border-bottom: max(2px, .07em) solid currentColor; padding: 0 .14em .04em; }
+.kx-lesson[data-tx] .dk-frac-d { padding: .06em .14em 0; }
+.kx-lesson[data-tx] .dk-frac-slash { display: none; }
+/* a Studio piece's own inner frame: the board card is the frame (a second ring inside it read as a box in a box) */
+.kx-lesson[data-tx] .ks-piece .st-box { box-shadow: none; }
+.kx-lesson[data-tx] .ks[data-work="none"] .ks-slot { background: transparent; border-color: transparent; box-shadow: none; }
+
+/* the talk row: her presence and the caption, the line she is saying now in full ink */
+.kx-lesson[data-tx] .ks-talk { flex: none; display: flex; align-items: center; gap: var(--tx-s-4); margin: var(--tx-s-2) 0; padding: 0 var(--tx-s-2); min-width: 0; }
+.kx-lesson[data-tx] .ks-talk-cap { flex: 1; min-width: 0; display: flex; align-items: center; }
+.kx-lesson[data-tx] .ks-talk .dk-caption { justify-content: flex-start; text-align: left; }
+.kx-lesson[data-tx] .ks-talk .dk-caption-line { font: 400 var(--tx-t-3)/1.35 var(--tx-font-ui); color: var(--tx-ink-2); -webkit-line-clamp: 2; }
+.kx-lesson[data-tx] .dk:is([data-floor="speaking"], [data-floor="showing"]) .ks-talk .dk-caption-line { color: var(--tx-ink); }
+.kx-lesson[data-tx] .ks-talk .dk-caption-line:lang(hi) { font-family: var(--tx-font-deva); }
+
+/* the question card: the second strongest thing, in the display face */
+.kx-lesson[data-tx] .ks-rail { margin-top: var(--tx-s-2); border: 0; border-radius: var(--tx-r-2); background: var(--tx-surface); box-shadow: var(--tx-shadow-1); outline: 1px solid var(--tx-line); outline-offset: -1px; overflow: hidden; }
+.kx-lesson[data-tx] .ks-talk + .ks-rail { margin-top: 0; }
+.kx-lesson[data-tx][data-tx][data-tx][data-tx] .dk[data-skin="kaksha"] [data-zone="card"] > .dk-card { box-shadow: none; background: transparent; border: 0; border-radius: 0; padding: var(--tx-s-2) var(--tx-s-2) var(--tx-s-2) var(--tx-s-4); }
+.kx-lesson[data-tx] .ks-rail .dk-ask { font-family: var(--tx-font-display); font-weight: var(--tx-display-weight); font-size: var(--tx-t-4); line-height: 1.25; letter-spacing: -.01em; color: var(--tx-ink); }
+.kx-lesson[data-tx] .ks[data-kind="wide"] .ks-rail .dk-ask { font-size: var(--tx-t-5); }
+.kx-lesson[data-tx] .ks-rail .dk-ask:lang(hi) { font-family: var(--tx-font-deva); }
+.kx-lesson[data-tx] .ks-rail .dk-hear { border-radius: var(--tx-r-1); background: transparent; border-color: transparent; color: var(--tx-ink-2); }
+/* her turn: the card lifts (a stronger shadow and edge). The dock under it carries the one "your move" colour on the screen */
+.kx-lesson[data-tx] .dk:is([data-floor="your_turn"], [data-floor="listening"]) .ks-rail { outline: 1.5px solid var(--tx-line-2); box-shadow: var(--tx-shadow-2); }
+
+/* ── steer chips: quiet pills, the child's own words ── */
+.kx-lesson[data-tx] .ks-chip { border: 1.5px solid var(--tx-line-2); border-radius: var(--tx-r-3); background: var(--tx-surface); color: var(--tx-ink); font: 600 var(--tx-t-1)/1.15 var(--tx-font-ui); }
+.kx-lesson[data-tx] .ks-chip svg { color: var(--tx-ink-2); }
+.kx-lesson[data-tx] .ks-chip:hover { border-color: var(--tx-tutor); }
+.kx-lesson[data-tx] .ks-chip:focus-visible { outline: 3px solid var(--tx-tutor); }
+
+/* ── the dock: a quiet tray while she talks; the "your move" colour when it is the child's turn ── */
+.kx-lesson[data-tx][data-tx] .dk[data-skin="kaksha"][data-v2] .dk-dock { --lamp: var(--tx-move); --lamp-ring: var(--tx-move); --lamp-ink: var(--tx-move-text);
+  --lamp-wash: color-mix(in srgb, var(--tx-move) 16%, var(--tx-surface)); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="dock"] > .dk-dock { background: var(--tx-surface-2); border: 0; border-radius: var(--tx-r-2); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="dock"] > .dk-dock[data-lamp] { background: var(--lamp-wash); box-shadow: inset 0 0 0 2.5px var(--tx-move); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] :is(.dk-side, .dk-key:not(.dk-key--send), .dk-tile) { background: var(--tx-surface); border-color: var(--tx-line-2); border-radius: var(--tx-r-1); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] :is(.dk-word-text, .dk-mode) { font-family: var(--tx-font-ui); }
+
+/* ── moments, the Later pill and sheets: soft rectangles ── */
+.kx-lesson[data-tx] :is(.ks-moment, .ks-later, .ks-later-sheet) { border-radius: var(--tx-r-2); background: var(--tx-surface); box-shadow: var(--tx-shadow-2); backdrop-filter: none; -webkit-backdrop-filter: none; }
+.kx-lesson[data-tx] .ks-moment-btn { border-radius: var(--tx-r-1); background: var(--tx-surface); }
+.kx-lesson[data-tx] .ks-moment-btn.is-primary { background: var(--tx-accent); color: var(--tx-on-accent); border-color: var(--tx-accent); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] .dk-sheet { border-radius: var(--tx-r-2); background: var(--tx-surface); }
+
+/* ── her presence: a circle with her initial and a voice ring; name and "AI teacher" always printed ── */
+.tx-presence { display: flex; align-items: center; gap: var(--tx-s-3); min-width: 0; color: var(--tx-ink); }
+.tx-presence-face { position: relative; flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--tx-tutor-soft); color: var(--tx-tutor); font: var(--tx-display-weight) var(--tx-t-3)/1 var(--tx-font-display); }
+.tx-presence-ring { position: absolute; inset: -5px; border-radius: 50%; border: 2.5px solid var(--tx-tutor); opacity: 0; }
+.tx-presence[data-state="talking"] .tx-presence-ring { opacity: 1; }
+.tx-presence[data-state="listening"] .tx-presence-ring { opacity: .35; }
+.tx-presence[data-state="thinking"] .tx-presence-ring { opacity: .6; border-style: dotted; }
+.tx-presence-meta { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.tx-presence-meta b { font-weight: 700; font-size: var(--tx-t-2); }
+.tx-presence-meta small { font-size: var(--tx-t-1); color: var(--tx-ink-2); }
+/* the talk row on a phone: the circle with "AI teacher" under it (the disclosure stays printed) */
+.tx-presence--row { flex-direction: column; gap: var(--tx-s-1); width: 64px; flex: none; }
+.tx-presence--row .tx-presence-face { width: 36px; height: 36px; font-size: var(--tx-t-2); }
+.tx-presence--row .tx-presence-meta { align-items: center; text-align: center; }
+.tx-presence--row .tx-presence-meta b { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.tx-presence--row .tx-presence-meta small { font-size: var(--tx-t-1); white-space: nowrap; }
+.tx-presence--row .tx-presence-state { display: none; }
+/* the tile on wide screens: one row at the top of the side column */
+.ks-face--tile .tx-presence--tile { height: 100%; padding: 0 var(--tx-s-2); }
+.tx-presence--tile .tx-presence-face { width: 52px; height: 52px; font-size: var(--tx-t-4); }
+/* nothing on the stage: she holds it, a larger circle, centred */
+.tx-presence--hero { flex-direction: column; justify-content: center; height: 100%; gap: var(--tx-s-4); text-align: center; }
+.tx-presence--hero .tx-presence-face { width: 96px; height: 96px; font-size: var(--tx-t-7); }
+.tx-presence--hero .tx-presence-ring { inset: -8px; border-width: 3px; }
+.tx-presence--hero .tx-presence-meta { align-items: center; }
+.tx-presence--hero .tx-presence-meta b { font-size: var(--tx-t-3); }
+.kx-lesson[data-tx] .ks-face { background: transparent; border: 0; box-shadow: none; }
+.kx-lesson[data-tx] .ks-face > .tx-presence { width: 100%; height: 100%; }
+.kx-lesson[data-tx] .ks-face--tile > .tx-presence { flex-direction: row; justify-content: flex-start; }
+.kx-lesson[data-tx] .ks-hero-cap .dk-caption-line { font: 400 var(--tx-t-4)/1.4 var(--tx-font-ui); color: var(--tx-ink); }
+.kx-lesson[data-tx] .ks-caption .dk-caption-line { font: 400 var(--tx-t-4)/1.4 var(--tx-font-ui); color: var(--tx-ink-2); -webkit-line-clamp: 6; }
+.kx-lesson[data-tx] .dk:is([data-floor="speaking"], [data-floor="showing"]) .ks-caption .dk-caption-line { color: var(--tx-ink); }
+.kx-lesson[data-tx] .ks-caption { padding: 0 var(--tx-s-2); }
+.kx-lesson[data-tx] .ks-caption .dk-caption { justify-content: flex-start; text-align: left; }
+
+/* the voice ring breathes while she talks; still under reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+  .kx-lesson[data-tx]:not([data-motion="reduced"]) .tx-presence[data-state="talking"] .tx-presence-ring { animation: tx-ring 1.6s var(--tx-ease) infinite; }
+  @keyframes tx-ring { 0% { transform: scale(1); opacity: .9; } 70% { transform: scale(1.1); opacity: 0; } 100% { opacity: 0; } }
+}

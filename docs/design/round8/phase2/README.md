@@ -1,0 +1,76 @@
+# Design revamp, phase 2: steps a and b
+
+Brief: `docs/design/round8/PHASE2-BRIEF.md`. Direction A ("Paper and ink") is the default theme. Direction B ("Night class") is the second theme on the same names.
+
+## The switch
+
+| URL on any page | effect on this device (kept in localStorage `tx.flag.ui.tx.r8`) |
+|---|---|
+| `?tx=a` | the new lesson screen, theme A |
+| `?tx=b` | the new lesson screen, theme B |
+| `?tx=off` | today's look, even after the default changes |
+| `?tx=default` | forget this device's choice |
+
+The shipped default is `TX_DEFAULT = null` in `src/ui-v3/r8/tx.ts`. Until it changes, production renders today's look for everyone; only a device that opted in sees the new screen. Turning it on for everyone is one line: `TX_DEFAULT = "a"`.
+
+The switch is presentation only. The AI disclosure, the helplines, the floor and every server truth are identical on both paths.
+
+## Step a: the token set and the two themes
+
+- **`src/styles/tx-tokens.css` is the one token set.** It holds 8 type sizes, one spacing scale of 8 steps, 3 radii, colours by role, 2 shadows and the motion.
+  - Theme A is on `:root` / `[data-tx="a"]`.
+  - Theme B is on `[data-tx="b"]`. It swaps the same names and adds no new ones.
+  - B's light parent surface is `[data-tx-surface="light"]`.
+  - The values are the phase 1 prototypes', with one change: A's serif is Literata, which is already self-hosted, in place of Source Serif 4.
+- **`src/ui-v3/r8/bridge.css`** points today's Kaksha names (`--k-*`, and the Desk's own names) at the `--tx-*` tokens under a root that carries `data-tx`. Today's components therefore take the theme without a rule of their own, and so does the board: Studio's renderer reads `--k-*` off the Desk root. The board roles land as:
+  - focus → `--tx-focus`
+  - slot and answer → `--tx-ans`
+  - mixup → `--tx-mix`
+  - muted → `--tx-ink-3`
+- **`tests/r8-tx-tokens.test.mjs`** fails:
+  - any text pair under 4.5:1 (5:1 for running text), in A, B and B's light surface;
+  - more than 8 sizes, other than 3 radii, or 30 or more colours;
+  - a B-only name;
+  - any literal colour, font size or radius, clipped corner, uppercase label or monospace in `src/ui-v3/r8/*.css`.
+- **`scripts/lint-ui.mjs`** allows hex in `src/styles/tx-tokens.css` and nowhere new.
+- **No visible change at step a:** nothing applies without `data-tx`.
+
+## Step b: the lesson screen on a phone (phase 1 screens 2 and 3)
+
+- **The teacher is a presence, not a face** (`src/ui-v3/r8/Presence.tsx`): a circle with her initial and a voice ring.
+  - "AI teacher" is always printed.
+  - The ring is solid while she talks and faint while she listens. It breathes only when motion is allowed.
+  - There is no picture. Her look stays the owner's choice.
+- **The layout** (`stageLayout.ts`, `presence: true`). On a phone the PiP is gone. While a piece is up, a talk row (her circle and the caption) sits between the board and the question. The phone column is:
+  - the top bar;
+  - the board (the hero);
+  - the talk row;
+  - the question;
+  - the chips;
+  - the dock.
+
+  Before, the column was the top bar, the "Picture" chip, the board with a face over it, the caption, the question, the chips and the dock, with the caption laid over the board. On wide screens her tile is one presence row, and the caption takes the side column. With nothing on the stage she holds it as a larger circle. `tests/r8-lesson-presence.test.mjs` pins these.
+- **The look** (`src/ui-v3/r8/lesson.css`, only under `data-tx`):
+  - The board is a paper card with a real shadow.
+  - The question is in the display face, the second strongest thing on the screen, and lifts on her turn.
+  - The chips are quiet pills.
+  - The dock is the one "your move" colour.
+  - No clipped corners, grid, mono or uppercase labels, and no glow sky.
+- **Maths set as maths on the plain board** (`Board.tsx`, `mathRuns.ts`): fractions stack in STIX Two Text under the theme. Without it, the same spans read as before, and the text content is unchanged.
+
+## Screenshots (this folder)
+
+Each name is `<when>-<screen>-<size>.png`:
+- **when:** `before` (today); `after-a` (`?tx=a`); `after-b` (`?tx=b`).
+- **screen:**
+  - `lesson-board`: a board up while she talks (fixture `work-beat`);
+  - `lesson-turn`: a board up on her turn (`work-your_turn`);
+  - `lesson-idle`: nothing up, her turn (`your_turn`).
+- **size:** `p360` is 360 × 740 @2x; `d1366` is 1366 × 768.
+
+They were taken from the Kaksha Desk dev page (`src/ui-v3/kaksha/dev/desk.html?class=5&fixture=…&tx=…`, the real Desk and skin), with reduced motion on.
+
+## Not changed (other owners)
+
+- **Studio's piece chrome.** The "Picture" chip, the beat dots and the 40 px band above a Studio piece are Studio's (`src/studio/**`). Under the theme only the piece's inner ring is dropped, by CSS in this stream's file. A Studio patch could fold the chip into the board card.
+- **The dock's controls** (Hint, Talk, 123, Wait) are the Desk's behaviour and are unchanged. Only their dress changed.
