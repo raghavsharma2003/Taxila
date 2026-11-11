@@ -501,7 +501,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     // (v6.7 H4: her line's parts and the beat each belongs on — the counter checks each part against the page drawn under it)
     const lmB = next.lastMove ?? {};
     const partBeat = { close: lmB.closeBeat?.beatId, closed: (lmB.closedBeat ?? lmB.closeBeat)?.beatId, bridge: lmB.bridgeBeat?.beatId, simpler: (lmB.simplerBeat ?? lmB.scriptBeat)?.beatId,
-      alt: lmB.cardBeat?.beatId, card: lmB.cardBeat?.beatId, body: lmB.scriptBeat?.beatId };
+      alt: lmB.cardBeat?.beatId, card: lmB.cardBeat?.beatId, body: lmB.scriptBeat?.beatId, held: (lmB.heldBeat ?? lmB.scriptBeat)?.beatId };
     let atP = 0;
     const pageParts = (tGuard?.parts?.list ?? []).map((pp) => { const o = { part: pp.part, from: atP, beat: pp.part === "close" && !/\d|kyunki|because|jawab|^(?:haan|bilkul|sahi)/i.test(pp.text) ? null : partBeat[pp.part] ?? null }; atP += String(pp.text ?? "").replace(/\s+/g, " ").trim().length + 1; return o; })
       .filter((pp) => pp.beat);

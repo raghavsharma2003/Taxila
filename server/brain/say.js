@@ -2706,11 +2706,15 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const sadLine = !honestLine && !againLine && state.lastMove?.sadAside ? asideSadLine({ lang, n: state.turn ?? 0 }) : null;
     if (sadLine) guard.sadAside = true;
     const asideP = once([...(honestLine ? [honestLine] : []), ...(againLine ? [againLine] : []), ...(sadLine ? [sadLine] : []), ...(retQ ? [retQ] : []), ...noQ(aside.filter((x) => x !== retQ).filter((x) => x === guard.returnLine || !(TASTE_CLAIM.test(x) || DENIES_AI.test(x) || (honestLine && /(?<![\p{L}])ai(?![\p{L}])/iu.test(x)))))]);
+    let heldNow = [];
     if (heldK0.size) {
       const h = first.filter((x) => heldK0.has(norm(x).toLowerCase()));
-      if (h.length) { first.splice(0, first.length, ...first.filter((x) => !h.includes(x))); body = [...h, ...body.filter((x) => !h.some((y) => keyS(y) === keyS(x)))]; }
+      if (h.length) { first.splice(0, first.length, ...first.filter((x) => !h.includes(x))); body = [...h, ...body.filter((x) => !h.some((y) => keyS(y) === keyS(x)))]; heldNow = h; }
     }
-    body = once(noQ(body));
+    // (O1/O2, main on director21 c4 offtopic 34→36: the worked problem a return held back ends on its question, and the one-question
+    // rule dropped it — the next turn began at step 1. A held part is said whole, its question with it)
+    // (already counted once while it stood first: added as it is, never dropped as its own copy)
+    body = [...heldNow, ...once(noQ(body.filter((x) => !heldNow.includes(x))))];
     // v6.7 A3 (main, director15: the honest line buried by the next card in the same breath): an aside question ends her turn — it is
     // said last, and the card waits (still live, re-posed on the next turn)
     // (v6.10 T2, main on director18 c6 offtopic 18: an aside during a worked step was answered AFTER the step — the aside comes first; on a
@@ -2780,7 +2784,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         ...first.map((x) => ({ part: x === bridgeK ? "bridge" : "close", text: x })),
         ...(asideQ ? [] : [{ part: "aside", text: asideP.join(" ") }]),
         // (main, with Studio's seam: the neutral joint after an aside reply is an aside part — the board waits for her first unit part)
-        ...body.map((x) => ({ part: guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
+        ...body.map((x) => ({ part: heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
         // (v6.11 G2: a closing split's check-in is no unit part — the board up stays under it)
         { part: tail && (tail === card || guard.cardQuestionOnly) ? "card" : state.lastMove?.splitClose ? "aside" : "body", text: tail ?? "" },
         ...(asideQ ? [{ part: "aside", text: asideP.join(" ") }] : []),

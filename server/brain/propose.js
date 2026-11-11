@@ -316,6 +316,8 @@ export function pagesOfParts(move, list, line) {
       case "close": return closing && move?.closeBeat?.board ? move.closeBeat : null;
       case "closed": return move?.closed ? (move.closedBeat ?? move.closeBeat ?? null) : null;
       case "bridge": return move?.bridgeBeat?.board ? move.bridgeBeat : null;
+      // (a part a return's turn held back: on the board of the turn that held it)
+      case "held": return move?.heldBeat?.board ? move.heldBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
       case "simpler": return move?.simplerBeat?.board ? move.simplerBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
       case "alt": case "card": return move?.cardBeat?.board ? move.cardBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
       case "body": return move?.scriptBeat?.board ? move.scriptBeat : move?.cardBeat?.board ? move.cardBeat : null;

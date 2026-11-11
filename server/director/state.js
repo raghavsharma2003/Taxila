@@ -39,6 +39,7 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
+import { compiledFor } from "./compile.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -2853,6 +2854,24 @@ function giveUpSpent(s, input, item) {
 }
 /** "Samajh nahi aaya" and its kin: a clarify, whatever request the reader named. */
 const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|didn'?t\s+understand|don'?t\s+understand|kya\s+matlab)(?![\p{L}])/iu;
+/** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
+ *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
+ *  the honest line, a held part said first, a close. */
+const ONE_TURN = ["returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck"];
+/** C1 step 3: a compiled cell's lines for this turn — { cell, lines, show } in the lesson language, or null (no script, no cell, a hole).
+ *  The walk reads what to say from the cell; the walk's own code says when. */
+function cellLines(prev, input, column) {
+  const script = scriptFor(input?.kit)?.script;
+  const addr = (() => { try { return cellAddressOf(prev, input); } catch { return null; } })();
+  if (!script || !addr) return null;
+  const cell = compiledFor(script, { kitHash: input.kit?.hash ?? null }).cells?.[addr.part]?.[column]?.[addr.help];
+  if (!cell || cell.hole || cell.notApplicable) return null;
+  const at = (path) => { let v = script; for (const seg of String(path).split(".")) { const m = /^(\w+)(?:\[(\d+)\])?$/.exec(seg); if (!m || v == null) return undefined; v = v[m[1]]; if (m[2] != null) v = Array.isArray(v) ? v[+m[2]] : undefined; } return v; };
+  const lang = cell.lang === "hi" ? "hinglish" : prev?.ctx?.lang ?? "hinglish";
+  const lines = (cell.say ?? []).map((p) => at(p)).map((v) => (v == null ? null : saidIn(v, lang))).filter((x) => x && String(x).trim()).map((x) => String(x).trim());
+  return { cell, addr, lines, show: cell.show ? at(cell.show) ?? null : null };
+}
+const carried = (lm, keep = []) => Object.fromEntries(Object.entries(lm ?? {}).filter(([k]) => keep.includes(k) || !ONE_TURN.includes(k)));
 /**
  * C1 step 2 (main, 2026-11-11: "the walk's own cell address on every teacher row"): the (part, column, help) a turn read — the part her
  * last turn was on (in compile.js's part ids), the column the child's reply asks for, and the help state of that part as the walk keeps
@@ -2921,7 +2940,11 @@ function stepCells(prev, input) {
     && prev.clarifyRun?.key === partOf(prev, prev.lastMove)) {
     const s = structuredClone(prev);
     s.turn += 1;
-    const again = { ...prev.lastMove, secondClarify: true, clarifyN: 2, checkinOk: true };
+    // (main on director21: after a key close the second clarify said only its check-in, once the close was no longer carried over. Its
+    // words are the compiled cell's — the part's own line, on its board (point/clarify/heard: the point) — never the why a third time)
+    const cl = prev.lastMove.gave && !prev.lastMove.point && !prev.lastMove.rendered?.length ? cellLines(prev, input, "clarify") : null;
+    const again = { ...carried(prev.lastMove), secondClarify: true, clarifyN: 2, checkinOk: true,
+      ...(cl?.lines?.length ? { simpler: cl.lines.join(" "), smaller: true, ...(prev.lastMove.scriptBeat ? { simplerBeat: { ...prev.lastMove.scriptBeat, ...(cl.show ? { board: cl.show } : {}) } } : {}) } : {}) };
     const ui0 = { status: "your_turn", ...(prev.lastUi?.whiteboard ? { whiteboard: prev.lastUi.whiteboard } : {}) };
     s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0;
     s.clarifyRun = { key: prev.clarifyRun.key, n: 2 };
@@ -2942,7 +2965,7 @@ function stepCells(prev, input) {
       if (sm && String(sm).trim() && input?.event === "turn") {
         const s = structuredClone(prev);
         s.turn += 1;
-        const { rendered: _r, point: _p, sayFirst: _f, gave: _g, closed: _c, workedDone: _w, ...rest } = prev.lastMove;
+        const { rendered: _r, point: _p, ...rest } = carried(prev.lastMove);
         const move = { ...rest, simpler: String(sm).trim(), smaller: true, checkinOk: true, workedSimpler: true, ...(giveUp ? {} : { clarifyN: 1, request: "clarify" }) };
         const ui0 = { status: "your_turn", ...(prev.lastUi?.whiteboard ? { whiteboard: prev.lastUi.whiteboard } : {}) };
         s.lastMove = move; s.moveVoiced = false; s.lastUi = ui0;
@@ -3370,7 +3393,9 @@ function step0(prev, input) {
     }
   }
   // P1 (dc-r8-director20): the authored parts a return's turn held back (brain/say.js guard.bodyHeld) are said first now
-  if (prev?.bodyUnsaid?.length && !["safeguard", "wrap", "break"].includes(move.kind)) { move.sayFirst = [...prev.bodyUnsaid.map(String), ...(move.sayFirst ?? [])]; move.heldSaid = prev.bodyUnsaid.map(String); }
+  if (prev?.bodyUnsaid?.length && !["safeguard", "wrap", "break"].includes(move.kind)) { move.sayFirst = [...prev.bodyUnsaid.map(String), ...(move.sayFirst ?? [])]; move.heldSaid = prev.bodyUnsaid.map(String);
+    // (O1/O2, main on director21: the held part is said on its own board — the beat of the turn that held it — never on the next part's)
+    if (prev.lastMove?.scriptBeat?.board) move.heldBeat = { ...prev.lastMove.scriptBeat }; }
   // v6.10 T2 (main on director18 c5-t02 stuck 50, offtopic 10, c6 offtopic 10: after the aside reply the card was posed bare and its
   // point was never said): after an aside reply the walk resumes at the unit's next unsaid part — the card's point when no recent turn
   // of hers said it, then the card
@@ -3883,7 +3908,7 @@ function heldTurn(prev, input) {
     // (once: a second "samajh nahi aaya" after the simpler gets the card, with nothing said twice)
     // (L1: a give-up there gets the remediation's simpler and then its card, in one turn — the teaching alone is for "samajh nahi aaya")
     if (sm && !prev.lastMove?.smaller && !giveUp && !scriptFor(input.kit)?.script?.recordedRun) {
-      const teach = { ...prev.lastMove, simpler: String(sm), smaller: true, splitTeach: true, checkinOk: true, ...(remBeatOf ? { simplerBeat: remBeatOf } : {}) };
+      const teach = { ...carried(prev.lastMove), simpler: String(sm), smaller: true, splitTeach: true, checkinOk: true, ...(remBeatOf ? { simplerBeat: remBeatOf } : {}) };
       delete teach.rendered; delete teach.point;
       s.splitHold = h;
       const teachUi = { status: "your_turn" };
@@ -3907,7 +3932,7 @@ function heldTurn(prev, input) {
     && (c?.request?.type === "clarify" || SAYS_CLARIFY.test(String(input.text ?? "")) || giveUp)) {
     const s = structuredClone(prev);
     s.turn += 1;
-    const { secondClarify: _sc, clarifyN: _cn, ...prevMove } = prev.lastMove;
+    const { secondClarify: _sc, clarifyN: _cn, ...prevMove } = carried(prev.lastMove, ["gave", "closeBeat", "closedBeat", "splitClose", "gaveCheck", "keyTwice"]);
     const again = { ...prevMove, smaller: true, gaveCheck: true, ...(prev.lastMove?.smaller ? { keyTwice: true } : {}) };
     const ui0 = { status: "your_turn" };
     s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
@@ -3951,7 +3976,7 @@ function heldTurn(prev, input) {
     const s = structuredClone(prev);
     s.turn += 1;
     const simpler = simplerOfBeat(s, input.kit, prev.lastMove);
-    const again = { ...prev.lastMove, smaller: true, checkinOk: false, ...(simpler ? { simpler } : {}) };
+    const again = { ...carried(prev.lastMove), smaller: true, checkinOk: false, ...(simpler ? { simpler } : {}) };
     s.lastMove = again; s.moveVoiced = false;
     const ui0 = { status: "your_turn", ...(prev.lastUi?.later ? { later: prev.lastUi.later } : {}) };
     s.lastUi = ui0;

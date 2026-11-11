@@ -275,8 +275,9 @@ export const PREDICATES = {
     if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
     // (a second give-up after the key and its why were said again may move on)
     if (KEY_SAID.test(p.text) && ctx.prevPrevT && KEY_SAID.test(ctx.prevPrevT.text) && !cardIn(ctx.prevPrevT)) return null;
+    // (after a second clarify on any part its help is spent: the cell's third level moves on — C1, main on director21)
+    if (p.clarifyN === 2) return null;
     if (/worked:(?:step|problem)/.test(String(p.beat ?? ""))) {
-      if (p.clarifyN === 2) return null;
       if (ctx.prevPrevT && /worked:(?:step|problem)/.test(String(ctx.prevPrevT.beat ?? "")) && ctx.prevPrevT.beat === p.beat) return null;
       return (r.pageParts ?? []).some((x) => x.part === "simpler" || x.part === "body") && r.beat === p.beat ? null : "a give-up at a worked step's check-in moved on";
     }
@@ -456,7 +457,7 @@ function scriptUses(ctx, w) {
 // ───────────── dc-r8-director21 O: the order laws, over live and dry rows ─────────────
 // Each reads the turn's page parts (each part's own beat: "e2", "worked:problem", "worked:step1", "worked" — the child's step —,
 // "rem:<mix-up>", "then:<mix-up>", "c3", "bridge") and the skill the turn is in (held.unit, else the walk's beat).
-const TEACH = new Set(["body", "simpler", "alt"]);
+const TEACH = new Set(["body", "simpler", "alt", "held"]);
 const beatOfPart = (p) => String(p?.beat ?? "").replace(/^explain:/, "");
 const skillOfRow = (r, ctx) => {
   const u = /^(.+?-s\d+):/.exec(String(r.held?.unit ?? ""))?.[1];
@@ -585,7 +586,8 @@ export const ORDER_LAWS = {
 };
 Object.assign(PREDICATES, ORDER_LAWS);
 
-export const PENDING = new Set(["twinsData", ...Object.keys(ORDER_LAWS)]);
+// (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
+export const PENDING = new Set(["twinsData", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
