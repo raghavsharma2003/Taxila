@@ -55,7 +55,7 @@ export const MODES = {
   taraazu: ["equation", "equality", "weigh", "fill"],   // r7: weigh (kg / g on a pan balance), fill (l / ml with jugs)
   nishana: ["place", "compare", "hop"],
   "kyun-lab": ["fair-test", "dhruv", "disha"],   // r7 chumbak: magnets (dhruv: poles, push and pull; disha: finding directions)
-  kon: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends"],
+  kon: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends", "place"],
   nazariya: ["views", "array", "floor", "powers", "mirror", "tri", "solid"],   // r4-khand; r7 nazariya2: tri (a triangle's cloth as half a rectangle), solid (faces / edges / corners of a solid turned in the hand)
   arena: ["pick"],
   stambh: ["bars", "picto"],
@@ -232,6 +232,16 @@ export type LabAct =
 export type KonAct =
   | { kind: "turn"; deg: number }                       // point the arm at heading `deg` (degrees, 0 = right, anticlockwise +)
   | { kind: "stop"; side: "lo" | "hi"; at: number }      // r7 kon2 ends: a stop on point `at`, −1 off the track's end (open), −2 parked
+  // r8 kon/place: the loose protractor (board px, y up): its centre moved, turned to `deg` (1° steps), locked / freed; then
+  // measure reads `n` off the scale, draw puts a dot at rim angle `r` and joins it to O ("v") or A ("e"); size picks an angle
+  | { kind: "move"; x: number; y: number }
+  | { kind: "spin"; deg: number }
+  | { kind: "lock" }
+  | { kind: "free" }
+  | { kind: "read"; n: number }
+  | { kind: "mark"; r: number }
+  | { kind: "join"; end: "v" | "e" }
+  | { kind: "pick"; which: "a" | "b" | "same" }
   | { kind: "commit" }
   | { kind: "undo" };
 // Nazariya (r4-khand): the block plot. A build act changes column heights (gravity: a block rests on the ground or a block).
