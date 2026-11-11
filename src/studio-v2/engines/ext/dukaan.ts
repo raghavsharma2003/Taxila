@@ -16,7 +16,9 @@ import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
 
 const NOTE_COL: Record<number, string> = { 50000: "#9AA0A6", 20000: "#F2C230", 10000: "#B9A4E0", 5000: "#5FC8E8", 2000: "#C7D85A", 1000: "#9C6B48" };
-const TILL_Y = 520, COUNTER = { x: 500, y: 168, w: 470, h: 250 }, GIVE = { x: 760, y: 432, w: 210, h: 64 };
+// the till sits low enough that the "pays" pill has a gap above (bill card ends 450) and below (till box TILL_Y - 6)
+// (judges, 2026-11-11: "Diye ₹20" touched the Bill card's bottom border at l1366)
+const TILL_Y = 532, COUNTER = { x: 500, y: 168, w: 470, h: 250 }, GIVE = { x: 760, y: 432, w: 210, h: 64 };
 /** estimate mode's two answers, stacked full width on the right so "Not enough" fits whole at the young floor */
 const EST = [{ val: true, x: 540, y: 296, w: 420, h: 84 }, { val: false, x: 540, y: 396, w: 420, h: 84 }] as const;
 interface Tok { v: number; x: number; y: number; tx: number; ty: number }
@@ -119,7 +121,7 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
         api.text(ctx, it.name, 170, 222 + i * step, { size: 38, weight: 700, baseline: "middle", maxWidth: 300 });
         api.text(ctx, `${it.qty} × ${rupees(it.price)}`, 470, 266 + i * step, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "right", baseline: "middle" });
       });
-      if (r.mode === "change") pill(api, ctx, `${T.pays} ${rupees(c.pays ?? 0)}`, 318, 482, { color: C.amber, size: 38 });   // between the bill card (ends 450) and the till (starts 514)
+      if (r.mode === "change") pill(api, ctx, `${T.pays} ${rupees(c.pays ?? 0)}`, 318, 488, { color: C.amber, size: 38 });   // 458-518: 8 clear of the bill card (ends 450) and of the till (starts 526)
       // patience
       ctx.save(); ctx.fillStyle = "rgba(255,255,255,.08)"; roundRect(ctx, 26, 330, 104, 10, 5); ctx.fill(); ctx.fillStyle = g.patience < 0.25 ? C.amber : C.mint; roundRect(ctx, 26, 330, 104 * g.patience, 10, 5); ctx.fill(); ctx.restore();
     }

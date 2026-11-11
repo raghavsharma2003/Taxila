@@ -13,7 +13,8 @@ import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../core/ty
 import { dots } from "../core/dots.ts";
 
 // (columns 540-970: five place headers "TTH TH H T O" a young label apart at p412 — at 560-950 "TTH" ran into "TH", 2026-11-11)
-const BELT_Y = 500, BELT_X0 = 30, BELT_X1 = 520, COL_X0 = 540, COL_X1 = 970, COL_TOP = 250, COL_BOT = 560;
+// the belt strip ends a gap short of the column panel (COL_X0 - 16): at l1366 its hatching ran into the "T" column (2026-11-11)
+const BELT_Y = 500, BELT_X0 = 30, BELT_X1 = 480, BELT_END = BELT_X1 + 16, COL_X0 = 540, COL_X1 = 970, COL_TOP = 250, COL_BOT = 560;
 const DCOL: Record<number, string> = { 1: "#8B98FF", 10: "#2FD3C7", 100: "#C69BFF", 1000: "#FFD27A", 10000: "#7FD6FF", 100000: "#F2F4F8" };
 const PLACE: Record<number, string> = { 1: "O", 10: "T", 100: "H", 1000: "TH", 10000: "TTH", 100000: "L" };
 interface Block { d: number; x: number; y: number; id: number; fly?: { x0: number; y0: number; x1: number; y1: number; t: number; col: number } }
@@ -44,7 +45,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     // over half the belt is what the target still needs (biased to the biggest place), the rest is noise to resist;
     // every 4th block is the largest still-needed denomination, so the target is always reachable in time
     const d = g.spawnN % 4 === 3 && needed.length ? needed[needed.length - 1] : api.rnd() < 0.55 && needed.length ? needed[Math.min(needed.length - 1, Math.floor(Math.pow(api.rnd(), 0.6) * needed.length))] : ds[Math.floor(api.rnd() * ds.length)];
-    g.belt.push({ d, x: BELT_X0 - 40, y: BELT_Y - 8 - blockH(d) / 2, id: g.nextId++ }); g.spawnN++;
+    g.belt.push({ d, x: BELT_X0 + blockSize(d) / 2 - 8, y: BELT_Y - 8 - blockH(d) / 2, id: g.nextId++ }); g.spawnN++;
   }
   function sendToColumn(b: Block) {
     const col = colX(b.d), n = g.counts[b.d] ?? 0;
@@ -79,18 +80,21 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     api.event("sealed", { auto, total: tot, target: round().target });
     api.facts({ round: g.r + 1, target: round().target, loaded: tot, verdict: grade.verdict, ...(grade.detail ? { detail: grade.detail } : {}) });
   }
+  /** the vault card sits below the DOM task pill wherever it lands (judges, 2026-11-11: at l1366 a two-line pill
+   *  "Tijori ●○○○ Lakshya 10,500" covered the card's top edge); capped so the card still clears the belt */
+  const cardDy = () => clamp(api.chromeBottom() + 12 - 170, 0, 24);
   const SEAL = { x: 452, y: 296, r: 44 };   // inside the vault panel: never in the PiP or label safe zones; its label clears the panel's bottom edge (judges, 2026-11-11: "SEAL" sat on the Nishana card border at p412 and l1366)
   api.onPointer({
     down(p) {
       if (g.state !== "play") return;
       if (!g.coachGone) { g.coachGone = true; api.tw.add(g, { coachA: 0 }, { dur: 0.35 }); }
-      if (Math.hypot(p.x - SEAL.x, p.y - SEAL.y) < SEAL.r + 16) { seal(false); return; }
+      if (Math.hypot(p.x - SEAL.x, p.y - SEAL.y - cardDy()) < SEAL.r + 16) { seal(false); return; }
       let best: Block | null = null, bd = 48;
       for (const b of g.belt) { const d = Math.hypot(p.x - b.x, p.y - b.y); if (d < bd) { bd = d; best = b; } }
       if (best) { g.belt.splice(g.belt.indexOf(best), 1); sendToColumn(best); return; }
       if (p.x > COL_X0 && p.x < COL_X1 && p.y > COL_TOP - 20 && p.y < COL_BOT + 30) {      // tap a column: toss one back
         const ds = [...denoms()].sort((a, b) => b - a), d = ds[clamp(Math.floor((p.x - COL_X0) / colW()), 0, ds.length - 1)];
-        if ((g.counts[d] ?? 0) > 0) { g.counts[d]--; g.belt.push({ d, x: BELT_X1 - 30, y: BELT_Y - 8 - blockH(d) / 2, id: g.nextId++ }); sfx.blip({ f: 400, f2: 250, dur: 0.08, type: "square", gain: 0.06 }); }
+        if ((g.counts[d] ?? 0) > 0) { g.counts[d]--; g.belt.push({ d, x: BELT_X1 - 40, y: BELT_Y - 8 - blockH(d) / 2, id: g.nextId++ }); sfx.blip({ f: 400, f2: 250, dur: 0.08, type: "square", gain: 0.06 }); }
       }
     },
   });
@@ -102,7 +106,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
       g.t += dt; g.spawnT -= dt;
       if (g.spawnT <= 0) { spawn(); g.spawnT = 0.5 / spec.belt; }
       const v = 120 * spec.belt;
-      for (let i = g.belt.length - 1; i >= 0; i--) { const b = g.belt[i]; b.x += v * dt; if (b.x > BELT_X1 + 30) { b.y += 300 * dt; if (b.y > H + 40) g.belt.splice(i, 1); } }
+      for (let i = g.belt.length - 1; i >= 0; i--) { const b = g.belt[i]; b.x += v * dt; if (b.x > BELT_X1) { b.y += 300 * dt; if (b.y > H + 40) g.belt.splice(i, 1); } }
       if (g.t >= round().seconds) seal(true);
     }
     for (let i = g.fliers.length - 1; i >= 0; i--) { const f = g.fliers[i]; f.fly!.t += dt / 0.38; if (f.fly!.t >= 1) { g.fliers.splice(i, 1); land(f); } }
@@ -133,8 +137,8 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
   function paintBg(c: Ctx) {
     const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#0A0B11"); gr.addColorStop(1, "#11131C"); c.fillStyle = gr; c.fillRect(0, 0, W, H);
     c.fillStyle = "#151925"; roundRect(c, COL_X0 - 16, COL_TOP - 40, COL_X1 - COL_X0 + 32, COL_BOT - COL_TOP + 90, 20); c.fill(); c.strokeStyle = "rgba(255,255,255,.08)"; c.lineWidth = 2; c.stroke();
-    c.fillStyle = "#1A1F2C"; c.fillRect(BELT_X0 - 20, BELT_Y, BELT_X1 - BELT_X0 + 60, 22);
-    c.fillStyle = "#0D0F17"; c.fillRect(BELT_X0 - 20, BELT_Y + 22, BELT_X1 - BELT_X0 + 60, 40);
+    c.fillStyle = "#1A1F2C"; c.fillRect(BELT_X0 - 20, BELT_Y, BELT_END - BELT_X0 + 20, 22);
+    c.fillStyle = "#0D0F17"; c.fillRect(BELT_X0 - 20, BELT_Y + 22, BELT_END - BELT_X0 + 20, 40);
   }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("vault", paintBg), 0, 0, W, H);
@@ -142,7 +146,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     ctx.save(); ctx.translate(fx.ox, fx.oy);
     // belt treads
     ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.lineWidth = 3; const off = api.reducedMotion ? 0 : (g.t * 120 * spec.belt) % 28;
-    for (let x = BELT_X0 - 20 + off; x < BELT_X1 + 40; x += 28) { ctx.beginPath(); ctx.moveTo(x, BELT_Y + 3); ctx.lineTo(x - 8, BELT_Y + 19); ctx.stroke(); }
+    for (let x = BELT_X0 - 12 + off; x < BELT_END; x += 28) { ctx.beginPath(); ctx.moveTo(x, BELT_Y + 3); ctx.lineTo(x - 8, BELT_Y + 19); ctx.stroke(); }
     if (g.r >= 0) {
       const ds = [...denoms()].sort((a, b) => b - a), cw = colW();
       ds.forEach((d, i) => {
@@ -160,6 +164,8 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     // vault display + seal button + laser
     if (g.r >= 0) {
       const tg = round().target, tot = total(), shownTarget = round().show === "words" && g.state !== "sealed" && g.state !== "end" ? numberWords(tg, spec.system) : groupDigits(tg, spec.system);
+      const dy = cardDy();
+      ctx.save(); ctx.translate(0, dy);
       ctx.fillStyle = "rgba(16,19,27,.92)"; roundRect(ctx, 40, 170, 480, 230, 20); ctx.fill(); ctx.strokeStyle = "rgba(139,152,255,.35)"; ctx.lineWidth = 2; ctx.stroke();
       api.text(ctx, T.target, 70, 214, { font: "mono", size: 38, weight: 600, color: C.ink3 });
       const isWords = round().show === "words" && g.state !== "sealed" && g.state !== "end";
@@ -177,19 +183,20 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
         ctx.restore();
         api.text(ctx, "SEAL", SEAL.x, SEAL.y + SEAL.r + 36, { font: "mono", size: 38, weight: 600, color: ready ? C.mint : C.ink3, align: "center" });
       }
-      if ((g.state === "sealed" || g.state === "end") && g.last) pill(api, ctx, g.last.verdict === "right" ? T.cracked : g.last.total > tg ? `${T.over} ${groupDigits(g.last.total - tg, spec.system)}` : `${T.under} ${groupDigits(tg - g.last.total, spec.system)}`, 280, 440, { color: g.last.verdict === "right" ? C.mint : C.amber });
+      ctx.restore();
+      if ((g.state === "sealed" || g.state === "end") && g.last) pill(api, ctx, g.last.verdict === "right" ? T.cracked : g.last.total > tg ? `${T.over} ${groupDigits(g.last.total - tg, spec.system)}` : `${T.under} ${groupDigits(tg - g.last.total, spec.system)}`, 280, 440 + dy, { color: g.last.verdict === "right" ? C.mint : C.amber });
     }
     fx.drawWorld(ctx);
     ctx.restore();
     if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${dots(g.r, spec.rounds.length)}`, title: round().show === "words" ? "Listen to the number" : groupDigits(round().target, spec.system), sub: round().show === "words" ? numberWords(round().target, spec.system) : round().denoms.includes(1000) ? "load it exactly, then seal" : "no thousands on the belt today", accent: C.sun });
     if (g.state === "end" && g.last) drawStatCard(api, ctx, { a: g.endA, head: g.last.verdict === "right" ? T.cracked : `${T.round} ${g.r + 1}`, color: g.last.verdict === "right" ? C.mint : C.amber, ticked: g.last.verdict === "right", stats: [[groupDigits(round().target, spec.system), T.target], [groupDigits(g.last.total, spec.system), T.loaded]], foot: g.last.detail?.includes("drop-zero") ? "a zero holds the empty place" : undefined });
     if (g.state === "final") drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.results.filter((r) => r.verdict === "right").length}/${spec.rounds.length}`, "vaults"]] });
-    drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 612, 500, 275);   // under the belt, two lines at most at the young floor: the column counts own the bottom right
+    drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 612, 496, 264);   // under the belt, two lines at most at the young floor: the column counts own the bottom right
   }
   function bot(): BotAction | null {
     if (g.state !== "play" || g.fliers.length || g.merges.length) return { type: "wait", ms: 160 };
     const tg = round().target, tot = total();
-    if (tot === tg) return { type: "tap", at: [SEAL.x, SEAL.y], after: 400 };
+    if (tot === tg) return { type: "tap", at: [SEAL.x, SEAL.y + cardDy()], after: 400 };
     if (tot > tg) { const ds = [...denoms()].sort((a, b) => a - b); for (const d of ds) if ((g.counts[d] ?? 0) > 0 && tot - d >= 0) { const cw = colW(), i = [...denoms()].sort((a, b) => b - a).indexOf(d); return { type: "tap", at: [COL_X0 + cw * (i + 0.5), COL_BOT - 60], after: 200 }; } }
     const rest = tg - tot, want = [...denoms()].sort((a, b) => b - a).filter((d) => d <= rest);
     for (const d of want) {

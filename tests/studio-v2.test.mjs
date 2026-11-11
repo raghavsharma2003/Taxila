@@ -295,3 +295,47 @@ test("line-runner range is limited in steps, not units: a class-4 4-digit line (
   for (const range of [[-100001, 0], [0, 100001], [5, 5], [7000, 3000]]) assert.ok(S.validateSpec("line-runner@1", rnd({ range, calls: ["1"] })).repairs.includes("round-range"), JSON.stringify(range));
   for (const r of S.validateSpec("line-runner@1", rnd({ range: [-90000, 90000], step: 0.01, calls: ["100"] })).spec.rounds) assert.ok((r.range[1] - r.range[0]) / r.step <= S.RUNNER_MAX_STEPS);
 });
+
+// judges, 2026-11-11 (round j2): Hindi rule phrases take the number first, the sieve's "right picks" counter counts the
+// numbers that fit the rule, and a bar chart's value axis has a line at every value its bars take.
+test("sieve-storm: a Hindi postposition rule phrase takes the number first; English keeps it after", async () => {
+  const { sieveRuleLabel, placeNumber } = await import("../src/studio-v2/engines/ext/pure.ts");
+  const hi = { multipleOf: "ke guna", factorOf: "ke factors", commonOf: "ke saman gunaj", cfactorOf: "ke saman gunak", divisibleBy: "se vibhajya", coprimeWith: "ke saath sahabhajya", and: "aur", prime: "abhajya" };
+  const en = { multipleOf: "multiples of", factorOf: "factors of", commonOf: "common multiples of", cfactorOf: "common factors of", divisibleBy: "divisible by", coprimeWith: "co-prime with", and: "and", prime: "prime" };
+  assert.equal(sieveRuleLabel(hi, { rule: "multiple", a: 6 }, "hinglish"), "6 ke guna");
+  assert.equal(sieveRuleLabel(hi, { rule: "factor", a: 30 }, "en"), "30 ke factors");   // the phrase decides, whatever the lang tag
+  assert.equal(sieveRuleLabel(hi, { rule: "cfactor", a: 18, b: 24 }, "hinglish"), "18 aur 24 ke saman gunak");
+  assert.equal(sieveRuleLabel(hi, { rule: "common", a: 4, b: 6 }), "4 aur 6 ke saman gunaj");
+  assert.equal(sieveRuleLabel(hi, { rule: "divisible", a: 3 }), "3 se vibhajya");
+  assert.equal(sieveRuleLabel(hi, { rule: "coprime", a: 12 }), "12 ke saath sahabhajya");
+  assert.equal(sieveRuleLabel(hi, { rule: "prime" }, "hinglish"), "abhajya");
+  assert.equal(sieveRuleLabel(en, { rule: "multiple", a: 6 }, "en"), "multiples of 6");
+  assert.equal(sieveRuleLabel(en, { rule: "factor", a: 30 }, "hinglish"), "factors of 30");   // an English phrase stays English
+  assert.equal(sieveRuleLabel(en, { rule: "cfactor", a: 18, b: 24 }, "en"), "common factors of 18 and 24");
+  assert.equal(placeNumber("के गुणज", "6", "hi"), "6 के गुणज");
+  assert.equal(placeNumber("guna", "6", "hinglish"), "6 guna");
+  assert.equal(placeNumber("guna", "6", "en"), "guna 6");
+});
+
+test("sieve-storm: the right-picks total is how many of the round's numbers fit the rule, not the card count", async () => {
+  const { sieveHitTotal } = await import("../src/studio-v2/engines/ext/pure.ts");
+  const { sieveStream, fits } = await import("../shared/studio-spec-ext/sieve.ts");
+  const r = { rule: "factor", a: 12, title: "t", sub: "", lo: 1, hi: 12, count: 12, hitRate: 0.5, seed: 37, speed: 0.8 };
+  const st = sieveStream(r), hits = st.filter((n) => fits(r, n)).length;
+  assert.equal(st.length, 12);
+  assert.equal(sieveHitTotal(r), hits);
+  assert.ok(hits <= 12 && hits < st.length, `${hits} of ${st.length}`);
+  assert.equal(sieveHitTotal(r, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]), 6);   // 1, 2, 3, 4, 6, 12
+});
+
+test("pictograph: the value axis has a gridline at every value a bar takes, labels a young label apart", async () => {
+  const { valueAxis } = await import("../src/studio-v2/engines/ext/pure.ts");
+  const a = valueAxis([13, 7, 10], 0, 16, 220 / 16);
+  assert.equal(a.step, 1);
+  for (const v of [13, 7, 10]) assert.equal(v % a.step, 0);
+  assert.ok(a.labelStep % a.step === 0 && a.labelStep * (220 / 16) >= 46, `labels every ${a.labelStep}`);
+  assert.equal(valueAxis([12, 8, 20], 0, 24, 290 / 24).step, 4);
+  assert.equal(valueAxis([30, 45, 60], 15, 70, 220 / 55).step, 15);
+  assert.equal(valueAxis([25, 50, 75], 0, 90, 290 / 90).step, 25);
+  assert.equal(valueAxis([], 0, 10, 29).step, 1);
+});

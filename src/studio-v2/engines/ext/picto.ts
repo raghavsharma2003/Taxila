@@ -12,6 +12,7 @@ import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core
 import { RoundFlow, backdrop, devaReady, textBlock, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
+import { valueAxis } from "./pure.ts";
 
 const CHECK = { x: 830, y: 500, w: 140, h: 66 }, COLS = [C.ion, C.sci, C.amber, "#FF8FB1", C.mint];
 function create(api: EngineApi, spec: PictoSpec): EngineInstance {
@@ -80,7 +81,7 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
       g.items = g.items.filter((it) => it.x > -80);
       if (g.si >= g.stream.length && g.items.length === 0) submitAll();
     }
-    if (r.mode === "claims" && !g.answered) { g.claimY += 44 * r.speed * dt; if (g.claimY > 430) call(!claimTruth(r, r.claims[g.ci])); }
+    if (r.mode === "claims" && !g.answered) { g.claimY = Math.max(g.claimY, claimTop()); g.claimY += 44 * r.speed * dt; if (g.claimY > 430) call(!claimTruth(r, r.claims[g.ci])); }
     if (g.answered) { g.revealT += dt; if (g.revealT > 3.2) flow.endRound(); }
     hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("right", tally(g.right - r0, (rd().mode === "claims" ? rd().claims.length : rd().cats.length)), { bump: true });
   }
@@ -110,8 +111,14 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
       const mx = maxV();
       ctx.save(); ctx.strokeStyle = C.ink2; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(AX.x0, AX.y0 - AX.h - 10); ctx.lineTo(AX.x0, AX.y0); ctx.lineTo(AX.x0 + 600, AX.y0); ctx.stroke(); ctx.restore();
       if (r.axisStart > 0) { ctx.save(); ctx.strokeStyle = C.amber; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(AX.x0 - 12, AX.y0 - 10); ctx.lineTo(AX.x0 + 12, AX.y0 - 18); ctx.moveTo(AX.x0 - 12, AX.y0 - 2); ctx.lineTo(AX.x0 + 12, AX.y0 - 10); ctx.stroke(); ctx.restore(); }
-      const step = Math.max(r.scale, Math.ceil((mx - r.axisStart) / (r.mode === "claims" ? 4 : 6) / r.scale) * r.scale);   // gridline labels a young label apart
-      for (let v = r.axisStart; v <= mx + 1e-6; v += step) { const y = yOf(v); ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(AX.x0, y); ctx.lineTo(AX.x0 + 600, y); ctx.stroke(); api.text(ctx, String(v), AX.x0 - 14, y, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "right", baseline: "middle" }); }
+      const ppu = AX.h / Math.max(1, mx - r.axisStart), ax = valueAxis(r.cats.map((c) => c.count), r.axisStart, mx, ppu);
+      const fine = ax.step * ppu >= 5, onBar = (v: number) => r.cats.some((c) => c.count === v);
+      for (let k = 0; r.axisStart + k * ax.step <= mx + 1e-6; k++) {
+        const v = r.axisStart + k * ax.step, lab = (v - r.axisStart) % ax.labelStep === 0;
+        if (!fine && !lab && !onBar(v)) continue;   // a very fine step keeps the lines a bar can stop on, and the labelled ones
+        const y = yOf(v); ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(AX.x0, y); ctx.lineTo(AX.x0 + 600, y); ctx.stroke();
+        if (lab) api.text(ctx, String(v), AX.x0 - 14, y, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "right", baseline: "middle" });
+      }
       r.cats.forEach((c, i) => {
         const x = barX(i), bw = barW(), v = r.mode === "claims" ? c.count : g.bars[i], y = yOf(v), col = COLS[i % 5], vd = g.verdicts[i];
         ctx.save(); ctx.fillStyle = hexA(col, 0.8); roundRect(ctx, x, y, bw, AX.y0 - y, 6); ctx.fill(); if (r.mode === "bars" && !done) { ctx.strokeStyle = g.drag === i ? C.volt : C.ink; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x - 6, y); ctx.lineTo(x + bw + 6, y); ctx.stroke(); } ctx.restore();
@@ -120,7 +127,7 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
       });
       if (r.mode === "claims") {
         const c = r.claims[Math.min(g.ci, r.claims.length - 1)];
-        if (!done) { ctx.save(); ctx.fillStyle = "rgba(22,26,36,.97)"; roundRect(ctx, 600 - 40, g.claimY - 40, 380, 80, 18); ctx.fill(); ctx.strokeStyle = C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); textBlock(api, ctx, claimText(r, c, T.total), 750, g.claimY, 350, { font: "display", size: 40, weight: 800 }, 1); }
+        if (!done) { const cx0 = clamp(barX(r.cats.length - 1) + barW() + 16, 560, 620), cw = 360; ctx.save(); ctx.fillStyle = "rgba(22,26,36,.97)"; roundRect(ctx, cx0, g.claimY - 40, cw, 80, 18); ctx.fill(); ctx.strokeStyle = C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); textBlock(api, ctx, claimText(r, c, T.total), cx0 + cw / 2, g.claimY, cw - 30, { font: "display", size: 40, weight: 800 }, 1); }   // right of the bars when they leave room (3 bars), so it falls beside them
         for (const [x, lab] of [[300, T.trueW], [700, T.falseW]] as [number, string][]) { ctx.save(); ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, x - 160, 480, 320, 80, 18); ctx.fill(); ctx.strokeStyle = done ? C.line : C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, lab, x, 522, { font: "display", size: 44, weight: 800, color: done ? C.ink3 : C.ink, align: "center", baseline: "middle" }); }
         if (done) pill(api, ctx, `${g.verdicts.filter((v) => v === "right").length}/${r.claims.length}`, 750, 300, { color: C.ion, size: 44 });
       }
