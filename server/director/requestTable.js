@@ -11,6 +11,7 @@ export const BEAT_KINDS = Object.freeze(["point", "worked_step", "remediation", 
  *   remediation, the remediation — never a skip past it); with nothing left to re-say, the key and its why.
  * - key: the card's key and its why.
  * - card_first: the card posed first, no simpler; its simpler comes only after a miss on it.
+ * - simpler_then_card (dc-r8-director20 L1): the part's authored simpler, then the card, in one turn; never read as yes.
  * - serve_request: the request served as asked; the card it arrived on is never graded; no aside acknowledgement.
  * - park_later: the aside kept with a promise that names no question ("thodi der mein").
  * - return_once: an aside said again is returned to now, once; after that, the one short line.
@@ -29,7 +30,8 @@ export const REQUEST_TABLE = Object.freeze([
   { id: "T1.4", request: ["language", "clarify"], beat: "open_card", shape: "live_fresh_else_key", rows: ["stuck c5-t01 10", "steering c5-t01 8"] },
   { id: "T1.5", request: ["language", "clarify"], beat: "spent_card", shape: "key", rows: ["stuck c5-t01 12"] },
   { id: "T1.6", request: ["miss"], beat: "spent_card", shape: "key", rows: ["stuck c4 48", "offtopic c4 34"] },
-  { id: "T1.7", request: ["dont_know"], beat: "checkin_after_point", shape: "card_first", rows: ["steady c5-t01 6", "stuck c5-t01 6"] },
+  // (dc-r8-director20 L1 reverses T1.7's card_first: a give-up at the check-in after a point gets the point's simpler, then the card)
+  { id: "T1.7", request: ["dont_know"], beat: "checkin_after_point", shape: "simpler_then_card", rows: ["steady c5-t01 6", "stuck c5-t01 6"] },
   // (v6.10 T2.1, main on director18: "samajh nahi aaya" at the check-in after a point re-says the point, in other authored words)
   { id: "T2.1", request: ["clarify", "another", "confused"], beat: "checkin_after_point", shape: "live_fresh_else_key", rows: ["director18 steering c4 6", "director18 steering c4 44", "director18 steering c5-t01 6"] },
   { id: "T1.8", request: ["visual", "repeat", "selftry", "language"], beat: "aside_reply", shape: "serve_request", rows: ["offtopic c4 26", "stuck c4 38", "offtopic c6 38"] },

@@ -225,7 +225,10 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       // (dc-r8-director20 harness: a card held by her aside question — no card on her row — was still answered, c6 offtopic 21 "126 cm"
       // after the AI line: a live card her last line did not say is not on the table)
       const liveP = live ? nrm(s.ctx?.lang === "english" ? live.prompt_en ?? live.prompt_hi : live.prompt_hi ?? live.prompt_en) : "";
-      const cardSaid = lastT?.card ? nrm(lastT.text).includes(nrm(lastT.card).slice(0, 30)) : !lastT || !live || (!!liveP && nrm(lastT.text).includes(liveP.slice(0, 30)));
+      // (S1: a card re-asked by its question alone — its last sentence — is on the table too)
+      const qOf = (c) => nrm(c).split(/(?<=[.!?।])\s+/).filter(Boolean).at(-1) ?? "";
+      const cardSaid = lastT?.card ? nrm(lastT.text).includes(nrm(lastT.card).slice(0, 30)) || (!!qOf(lastT.card) && nrm(lastT.text).endsWith(qOf(lastT.card)))
+        : !lastT || !live || (!!liveP && nrm(lastT.text).includes(liveP.slice(0, 30)));
       const childIn = (turn) => ({ turn, teacher: [...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "",
         beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card: cardSaid ? card : null, ask: cardSaid ? ask : null, boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",
         // (H1.1: her probe or teach-back move is unkeyed: the child gives a reason; else the child reads her line)

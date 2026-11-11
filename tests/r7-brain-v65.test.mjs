@@ -249,7 +249,10 @@ describe("r7-brain-v65.test.mjs", () => {
       // (the card itself ends her turn — an authored card can end on "batao.")
       // (v6.11 G2, main on director19: a turn with an aside's return ends on the return, and the card waits — never both)
       if (out.guard?.returnLine) { assert.ok(out.guard.cardHeld, out.reply); continue; }
-      assert.ok(String(out.reply).replace(/\s+/g, " ").trim().endsWith(String(last.p.r.ui.ask.text).replace(/\s+/g, " ").trim()), out.reply);
+      // (2026-11-11, dc-r8-director20 S1: after a simpler on a card said in her last two turns, only its question — its last sentence)
+      const cardT = String(last.p.r.ui.ask.text).replace(/\s+/g, " ").trim();
+      const end = out.guard?.cardQuestionOnly ? cardT.split(/(?<=[.!?।])\s+/).at(-1) : cardT;
+      assert.ok(String(out.reply).replace(/\s+/g, " ").trim().endsWith(end), out.reply);
     }
   });
   // (retired 2026-11-11, S1 on director20: a script card answered right has no why-probe — all 42 of director20's ended on the close with

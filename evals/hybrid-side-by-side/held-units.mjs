@@ -55,7 +55,9 @@ export function heldFlags(row, script, prev = null) {
   const text = String(row?.text ?? "");
   const flags = [];
   const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
-  if (row?.card && !norm(text).includes(norm(row.card).slice(0, 30))) flags.push({ part: "card", from: null, why: "an unsaid card on screen" });
+  // (dc-r8-director20 S1: a card re-asked by its question alone — its last sentence — is said)
+  const cq = row?.card ? String(row.card).replace(/\s+/g, " ").trim().split(/(?<=[.!?।])\s+/).at(-1) ?? "" : "";
+  if (row?.card && !norm(text).includes(norm(row.card).slice(0, 30)) && !(cq && norm(text).endsWith(norm(cq)))) flags.push({ part: "card", from: null, why: "an unsaid card on screen" });
   if (!parts.length) return flags;
   // (a held run records its held unit and switch: those are the pages; units are compared without the skill prefix)
   const loc = (u) => (u ? String(u).replace(/^[^:]*-s\d+:/, "") : null);
