@@ -16,6 +16,7 @@ import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core
 import { taskPill, RoundFlow, SUBJECT_ACCENT, devaReady, shuffled, textBlock, voltBox, wrap, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 
 const LOCO_X = 520, FRONT = 130, MAIN_Y = 500, CARD_W = 410, CARD_H = 108, BOARD_X = 640, BOARD_W = 340, BOARD_H = 116;
 const LANE_COL = [C.ion, C.sci, C.amber];
@@ -87,7 +88,7 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
     const st0 = step(), surge = flow.state === "play" && st0 && !st0.locked && st0.choice >= 0 && api.now() - st0.choseAt > 0.6 ? 2.6 : 1;   // a decided pick surges the train to the points
     const v = g.v * g.speedK * (flow.state === "play" ? surge : 0.5);
     g.s += v * dt; g.wheel += (v * dt) / 18;
-    if (!api.reducedMotion) { g.steamT -= dt; if (g.steamT <= 0) { g.steamT = 0.15; api.fx.burst(LOCO_X + 60, g.locoY - 104, { n: 2, color: "#8A94AC", speed: 40, life: 1.2, size: 15, angle: -Math.PI / 2 - 0.6, spread: 0.5, drag: 0.6, gravity: -30 }); } }
+    if (!api.reducedMotion) { g.steamT -= dt; if (g.steamT <= 0) { g.steamT = 0.15; api.fx.burst(LOCO_X + 60, g.locoY - 104, { n: 2, color: C.railSteam, speed: 40, life: 1.2, size: 15, angle: -Math.PI / 2 - 0.6, spread: 0.5, drag: 0.6, gravity: -30 }); } }
     const st = step();
     if (flow.state === "play" && st) {
       st.inT += dt;
@@ -113,9 +114,9 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
   }
   // ── drawing
   function paintSky(c: Ctx) {
-    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#0B1020"); gr.addColorStop(0.62, "#141B30"); gr.addColorStop(1, "#090B12");
+    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, C.railSkyTop); gr.addColorStop(0.62, C.railSkyMid); gr.addColorStop(1, C.railSkyBottom);
     c.fillStyle = gr; c.fillRect(0, 0, W, H); c.fillStyle = hexA(accent, 0.05); c.fillRect(0, 0, W, H);
-    const r = rng(7); for (let i = 0; i < 70; i++) { c.globalAlpha = 0.15 + r() * 0.4; c.fillStyle = "#C9D2F2"; c.fillRect(r() * W, r() * 300, 1.5, 1.5); }
+    const r = rng(7); for (let i = 0; i < 70; i++) { c.globalAlpha = 0.15 + r() * 0.4; c.fillStyle = C.railStar; c.fillRect(r() * W, r() * 300, 1.5, 1.5); }
     c.globalAlpha = 1;
   }
   function hills(ctx: Ctx, k: number, base: number, amp: number, col: string, seed: number) {
@@ -124,8 +125,8 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
     for (let x = 0; x <= W; x += 20) { const u = (x + off) / 260; ctx.lineTo(x, base - amp * (0.55 + 0.45 * Math.sin(u * 1.7 + seed) * Math.cos(u * 0.63 + seed * 2))); }
     ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
   }
-  function rails(ctx: Ctx, pts: (u: number) => [number, number], col = "rgba(190,200,225,.5)", steps = 40) {
-    ctx.save(); ctx.strokeStyle = "rgba(120,100,80,.32)"; ctx.lineWidth = 6;
+  function rails(ctx: Ctx, pts: (u: number) => [number, number], col = withAlpha(C.railRail, .5), steps = 40) {
+    ctx.save(); ctx.strokeStyle = withAlpha(C.railSleeper, .32); ctx.lineWidth = 6;
     for (let i = 0; i <= steps; i++) { const [x, y] = pts(i / steps); if (x < -30 || x > W + 30) continue; ctx.beginPath(); ctx.moveTo(x - 4, y - 10); ctx.lineTo(x + 4, y + 10); ctx.stroke(); }
     ctx.strokeStyle = col; ctx.lineWidth = 3;
     for (const off of [-7, 7]) { ctx.beginPath(); for (let i = 0; i <= steps; i++) { const [x, y] = pts(i / steps); if (i === 0) ctx.moveTo(x, y + off); else ctx.lineTo(x, y + off); } ctx.stroke(); }
@@ -135,13 +136,13 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
     if (!it) return;
     const a = o.a ?? 1, edge = o.edge ?? hexA(accent, 0.9);
     ctx.save(); ctx.globalAlpha *= a;
-    if (o.wheels) { ctx.fillStyle = "#1A1F2C"; roundRect(ctx, x + 18, y + h - 4, w - 36, 16, 6); ctx.fill(); for (const wx of [x + 60, x + w - 60]) { ctx.fillStyle = "#2A3142"; ctx.beginPath(); ctx.arc(wx, y + h + 14, 14, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.ink3; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(wx, y + h + 14); ctx.lineTo(wx + Math.cos(g.wheel) * 12, y + h + 14 + Math.sin(g.wheel) * 12); ctx.stroke(); } }
+    if (o.wheels) { ctx.fillStyle = C.railChassis; roundRect(ctx, x + 18, y + h - 4, w - 36, 16, 6); ctx.fill(); for (const wx of [x + 60, x + w - 60]) { ctx.fillStyle = C.railWheel; ctx.beginPath(); ctx.arc(wx, y + h + 14, 14, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.ink3; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(wx, y + h + 14); ctx.lineTo(wx + Math.cos(g.wheel) * 12, y + h + 14 + Math.sin(g.wheel) * 12); ctx.stroke(); } }
     if (o.glow) bloom(ctx, edge, x + w / 2, y + h / 2, w * 0.7, 0.35 * o.glow);
-    ctx.fillStyle = o.fill ?? "rgba(22,26,38,.97)"; roundRect(ctx, x, y, w, h, 16); ctx.fill();
+    ctx.fillStyle = o.fill ?? withAlpha(C.railCar, .97); roundRect(ctx, x, y, w, h, 16); ctx.fill();
     ctx.strokeStyle = edge; ctx.lineWidth = o.edge ? 4 : 3; ctx.stroke();
     ctx.restore();
     let lx = x;
-    if (o.num !== undefined) { ctx.save(); ctx.globalAlpha *= a; ctx.fillStyle = LANE_COL[o.num]; roundRect(ctx, x + 8, y + 8, 40, h - 16, 10); ctx.fill(); ctx.restore(); api.text(ctx, String(o.num + 1), x + 28, y + h / 2 + 2, { font: "display", size: 38, weight: 800, color: "#0A0C12", align: "center", baseline: "middle", alpha: a }); lx = x + 48; }
+    if (o.num !== undefined) { ctx.save(); ctx.globalAlpha *= a; ctx.fillStyle = LANE_COL[o.num]; roundRect(ctx, x + 8, y + 8, 40, h - 16, 10); ctx.fill(); ctx.restore(); api.text(ctx, String(o.num + 1), x + 28, y + h / 2 + 2, { font: "display", size: 38, weight: 800, color: C.bg, align: "center", baseline: "middle", alpha: a }); lx = x + 48; }
     const gl = o.num === undefined ? it.glyph : undefined, iw = gl ? 58 : 0;
     if (gl) drawGlyph(ctx, gl, lx + 36, y + h / 2, 50, C.ink, hexA(accent, 0.3), a);
     const tx = lx + iw + (x + w - lx - iw) / 2, tw = x + w - lx - iw - 22, to = { size: it.station ? 44 : 38, weight: 700, alpha: a, font: (it.station ? "display" : "ui") as "display" | "ui" };
@@ -149,28 +150,28 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
     textBlock(api, ctx, it.text, tx, y + h / 2, tw, to, three ? 3 : 2, three ? 0.98 : 1.1);
   }
   function boxcar(ctx: Ctx, x: number, y: number, col: string, a = 1) {
-    ctx.save(); ctx.globalAlpha *= a; ctx.fillStyle = "#1C2230"; roundRect(ctx, x, y - 62, 120, 54, 8); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.stroke();
+    ctx.save(); ctx.globalAlpha *= a; ctx.fillStyle = C.railTender; roundRect(ctx, x, y - 62, 120, 54, 8); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.stroke();
     ctx.fillStyle = hexA(col, 0.35); ctx.fillRect(x + 10, y - 52, 100, 10);
-    for (const wx of [x + 26, x + 94]) { ctx.fillStyle = "#2A3142"; ctx.beginPath(); ctx.arc(wx, y - 6, 11, 0, Math.PI * 2); ctx.fill(); }
+    for (const wx of [x + 26, x + 94]) { ctx.fillStyle = C.railWheel; ctx.beginPath(); ctx.arc(wx, y - 6, 11, 0, Math.PI * 2); ctx.fill(); }
     ctx.restore();
   }
   function loco(ctx: Ctx, x: number, y: number) {
     ctx.save();
-    bloom(ctx, "#FFE8B0", x + 150, y - 45, 120, 0.25);
-    ctx.fillStyle = "rgba(255,232,176,.07)"; ctx.beginPath(); ctx.moveTo(x + 124, y - 52); ctx.lineTo(x + 380, y - 104); ctx.lineTo(x + 380, y + 6); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = "#1E2433"; roundRect(ctx, x - 70, y - 96, 90, 80, 10); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.9); ctx.lineWidth = 3; ctx.stroke();
+    bloom(ctx, C.railLamp, x + 150, y - 45, 120, 0.25);
+    ctx.fillStyle = withAlpha(C.railLamp, .07); ctx.beginPath(); ctx.moveTo(x + 124, y - 52); ctx.lineTo(x + 380, y - 104); ctx.lineTo(x + 380, y + 6); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = C.railCab; roundRect(ctx, x - 70, y - 96, 90, 80, 10); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.9); ctx.lineWidth = 3; ctx.stroke();
     ctx.fillStyle = hexA(C.sun, 0.55); roundRect(ctx, x - 56, y - 84, 36, 28, 5); ctx.fill();
-    ctx.fillStyle = "#262E40"; roundRect(ctx, x + 10, y - 74, 116, 58, 24); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.9); ctx.stroke();
-    ctx.fillStyle = "#30394E"; ctx.fillRect(x + 50, y - 104, 20, 32); ctx.fillStyle = accent; ctx.fillRect(x + 46, y - 108, 28, 8);
-    ctx.fillStyle = "#FFE8B0"; ctx.beginPath(); ctx.arc(x + 124, y - 46, 8, 0, Math.PI * 2); ctx.fill();
-    for (const wx of [x - 44, x + 4, x + 60, x + 104]) { ctx.fillStyle = "#2A3142"; ctx.beginPath(); ctx.arc(wx, y - 6, wx === x - 44 ? 20 : 15, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.ink2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(wx, y - 6); ctx.lineTo(wx + Math.cos(g.wheel) * 13, y - 6 + Math.sin(g.wheel) * 13); ctx.stroke(); }
+    ctx.fillStyle = C.railBoiler; roundRect(ctx, x + 10, y - 74, 116, 58, 24); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.9); ctx.stroke();
+    ctx.fillStyle = C.railChimney; ctx.fillRect(x + 50, y - 104, 20, 32); ctx.fillStyle = accent; ctx.fillRect(x + 46, y - 108, 28, 8);
+    ctx.fillStyle = C.railLamp; ctx.beginPath(); ctx.arc(x + 124, y - 46, 8, 0, Math.PI * 2); ctx.fill();
+    for (const wx of [x - 44, x + 4, x + 60, x + 104]) { ctx.fillStyle = C.railWheel; ctx.beginPath(); ctx.arc(wx, y - 6, wx === x - 44 ? 20 : 15, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.ink2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(wx, y - 6); ctx.lineTo(wx + Math.cos(g.wheel) * 13, y - 6 + Math.sin(g.wheel) * 13); ctx.stroke(); }
     ctx.restore();
   }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("sky", paintSky), 0, 0, W, H);
     if (!fontOk) return;
-    hills(ctx, 0.08, 330, 70, "#121828", 1); hills(ctx, 0.2, 410, 60, "#0F1422", 2);
-    ctx.fillStyle = "#0B0E16"; ctx.fillRect(0, MAIN_Y + 16, W, H - MAIN_Y);
+    hills(ctx, 0.08, 330, 70, C.railHillsFar, 1); hills(ctx, 0.2, 410, 60, C.railHillsNear, 2);
+    ctx.fillStyle = C.railGround; ctx.fillRect(0, MAIN_Y + 16, W, H - MAIN_Y);
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     const st = step(), n = st ? nL(st) : 3;
     rails(ctx, (u) => [lerp(-20, W + 20, u), MAIN_Y], undefined, 26);
@@ -197,7 +198,7 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
           card(ctx, x, y, BOARD_W, BOARD_H, it, { edge, a: k, glow: st.choice === li ? 0.7 : 0, num: li });
           if (!st.locked) { if (st.choice === li) voltBox(ctx, x, y, BOARD_W, BOARD_H, now, 16); }
         });
-        if (!st.locked) { const kk = clamp((front() - (st.sw - g.v * g.speedK * T_READ)) / (g.v * g.speedK * T_READ), 0, 1); ctx.save(); ctx.fillStyle = kk > 0.75 ? C.amber : "rgba(255,255,255,.35)"; roundRect(ctx, BOARD_X, BOARD_Y[n][n - 1] + BOARD_H + 14, BOARD_W * (1 - kk), 6, 3); ctx.fill(); ctx.restore(); }
+        if (!st.locked) { const kk = clamp((front() - (st.sw - g.v * g.speedK * T_READ)) / (g.v * g.speedK * T_READ), 0, 1); ctx.save(); ctx.fillStyle = kk > 0.75 ? C.amber : withAlpha(C.hi, .35); roundRect(ctx, BOARD_X, BOARD_Y[n][n - 1] + BOARD_H + 14, BOARD_W * (1 - kk), 6, 3); ctx.fill(); ctx.restore(); }
       }
     }
     // the train: the head wagon (context, or the newly coupled pick) + loco
@@ -216,7 +217,7 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
         if (fresh && st.verdict === "right") tick(ctx, wx + CARD_W - 16, wy - 4, C.mint, 0.9);
         if (mode === "who" && coupled) {                                 // delivered: the true speaker's name rides on the wagon
           const who = g.items.get(st.key); const k = clamp((api.now() - st.coupledAt) * 2, 0, 1);
-          if (who) { ctx.save(); ctx.globalAlpha = k; ctx.fillStyle = "rgba(10,12,18,.92)"; roundRect(ctx, wx + 20, wy - 66, CARD_W - 40, 56, 12); ctx.fill(); ctx.strokeStyle = st.verdict === "right" ? C.mint : C.amber; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, `— ${who.text}`, wx + CARD_W / 2, wy - 38, { size: 38, weight: 700, color: st.verdict === "right" ? C.mint : C.amber, align: "center", baseline: "middle", alpha: k, maxWidth: CARD_W - 50 }); if (st.verdict !== "right") magnifier(ctx, wx + CARD_W - 16, wy - 8, C.amber, 0.9); }
+          if (who) { ctx.save(); ctx.globalAlpha = k; ctx.fillStyle = withAlpha(C.bg, .92); roundRect(ctx, wx + 20, wy - 66, CARD_W - 40, 56, 12); ctx.fill(); ctx.strokeStyle = st.verdict === "right" ? C.mint : C.amber; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, `— ${who.text}`, wx + CARD_W / 2, wy - 38, { size: 38, weight: 700, color: st.verdict === "right" ? C.mint : C.amber, align: "center", baseline: "middle", alpha: k, maxWidth: CARD_W - 50 }); if (st.verdict !== "right") magnifier(ctx, wx + CARD_W - 16, wy - 8, C.amber, 0.9); }
         }
       }
       ctx.save(); ctx.fillStyle = C.ink3; ctx.fillRect(LOCO_X - 76, g.locoY - 30, 8, 6); ctx.restore();
@@ -250,4 +251,4 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
     },
   };
 }
-export const rail: EngineDef<RailSpec> = { archetype: "story-rail@1", label: "Game · Story Rail", accent: "#FF8FB1", create };
+export const rail: EngineDef<RailSpec> = { archetype: "story-rail@1", label: "Game · Story Rail", get accent() { return C.railAccent; }, create };

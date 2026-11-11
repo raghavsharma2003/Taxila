@@ -14,13 +14,14 @@ import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core
 import { RoundFlow, backdrop, devaReady, fmtNum, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 
 const GO = { x: 820, y: 520, w: 150, h: 64 }, UNDO = { x: 820, y: 440, w: 150, h: 60 };
 const WM = { x: 70, y: 176, w: 860, h: 430 };
 const wx = (lon: number) => WM.x + ((lon + 180) / 360) * WM.w, wy = (lat: number) => WM.y + ((90 - lat) / 180) * WM.h;
 const lonOf = (x: number) => ((x - WM.x) / WM.w) * 360 - 180, latOf = (y: number) => 90 - ((y - WM.y) / WM.h) * 180;
 function create(api: EngineApi, spec: MapSpec): EngineInstance {
-  const T = spec.strings, accent = "#C9A7FF";
+  const T = spec.strings, accent = C.mapAccent;
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
   const botR = rng(api.seed * 151 + 9);
   const g = { prog: [] as string[], flying: false, flyT: 0, path: [] as [number, number][], blocked: false, tape: null as null | { a: [number, number]; b: [number, number] }, dragging: false, dial: 0, dialDrag: false, k: 0, pin: null as null | { lon: number; lat: number }, answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0, coachA: 1, coachGone: false, trace: [] as [number, number][], tracing: false, straightT: 0 };
@@ -85,12 +86,12 @@ function create(api: EngineApi, spec: MapSpec): EngineInstance {
   }
   function paintBg(c: Ctx) { backdrop(c, accent, 131, 0); }
   function paintWorld(c: Ctx) {
-    c.fillStyle = "#0E2238"; c.fillRect(WM.x, WM.y, WM.w, WM.h);
-    c.strokeStyle = "rgba(255,255,255,.1)"; c.lineWidth = 1;
+    c.fillStyle = C.mapOcean; c.fillRect(WM.x, WM.y, WM.w, WM.h);
+    c.strokeStyle = withAlpha(C.hi, .1); c.lineWidth = 1;
     for (let lo = -180; lo <= 180; lo += 30) { c.beginPath(); c.moveTo(wx(lo), WM.y); c.lineTo(wx(lo), WM.y + WM.h); c.stroke(); }
     for (let la = -90; la <= 90; la += 30) { c.beginPath(); c.moveTo(WM.x, wy(la)); c.lineTo(WM.x + WM.w, wy(la)); c.stroke(); }
-    c.strokeStyle = "rgba(255,210,122,.45)"; c.lineWidth = 2; c.beginPath(); c.moveTo(WM.x, wy(0)); c.lineTo(WM.x + WM.w, wy(0)); c.stroke(); c.beginPath(); c.moveTo(wx(0), WM.y); c.lineTo(wx(0), WM.y + WM.h); c.stroke();
-    c.fillStyle = "#3C5A3E"; c.strokeStyle = "#6E8F70"; c.lineWidth = 1.2;
+    c.strokeStyle = withAlpha(C.sun, .45); c.lineWidth = 2; c.beginPath(); c.moveTo(WM.x, wy(0)); c.lineTo(WM.x + WM.w, wy(0)); c.stroke(); c.beginPath(); c.moveTo(wx(0), WM.y); c.lineTo(wx(0), WM.y + WM.h); c.stroke();
+    c.fillStyle = C.mapLand; c.strokeStyle = C.mapCoast; c.lineWidth = 1.2;
     for (const poly of LAND) { c.beginPath(); for (let i = 0; i < poly.length; i += 2) { const x = wx(poly[i]), y = wy(poly[i + 1]); if (i) c.lineTo(x, y); else c.moveTo(x, y); } c.closePath(); c.fill(); c.stroke(); }
   }
   function render(ctx: Ctx, now: number) {
@@ -100,9 +101,9 @@ function create(api: EngineApi, spec: MapSpec): EngineInstance {
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     if (r.mode === "route" || r.mode === "scale") {
       const G = grid(r);
-      ctx.fillStyle = "#1B2B22"; ctx.fillRect(G.x0, G.y0, G.cell * r.w, G.cell * r.h);
-      ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 1; for (let i = 0; i <= r.w; i++) { ctx.beginPath(); ctx.moveTo(G.x0 + i * G.cell, G.y0); ctx.lineTo(G.x0 + i * G.cell, G.y0 + r.h * G.cell); ctx.stroke(); } for (let j = 0; j <= r.h; j++) { ctx.beginPath(); ctx.moveTo(G.x0, G.y0 + j * G.cell); ctx.lineTo(G.x0 + r.w * G.cell, G.y0 + j * G.cell); ctx.stroke(); }
-      if (r.mode === "route") for (const b of r.blocks) { ctx.fillStyle = "rgba(60,120,200,.75)"; ctx.fillRect(G.x0 + b[0] * G.cell + 1, G.y0 + b[1] * G.cell + 1, G.cell - 2, G.cell - 2); }
+      ctx.fillStyle = C.mapGrid; ctx.fillRect(G.x0, G.y0, G.cell * r.w, G.cell * r.h);
+      ctx.strokeStyle = withAlpha(C.hi, .08); ctx.lineWidth = 1; for (let i = 0; i <= r.w; i++) { ctx.beginPath(); ctx.moveTo(G.x0 + i * G.cell, G.y0); ctx.lineTo(G.x0 + i * G.cell, G.y0 + r.h * G.cell); ctx.stroke(); } for (let j = 0; j <= r.h; j++) { ctx.beginPath(); ctx.moveTo(G.x0, G.y0 + j * G.cell); ctx.lineTo(G.x0 + r.w * G.cell, G.y0 + j * G.cell); ctx.stroke(); }
+      if (r.mode === "route") for (const b of r.blocks) { ctx.fillStyle = withAlpha(C.mapBlock, .75); ctx.fillRect(G.x0 + b[0] * G.cell + 1, G.y0 + b[1] * G.cell + 1, G.cell - 2, G.cell - 2); }
       r.places.forEach((pl, i) => { const [x, y] = cc(r, pl.at); const hot = r.mode === "route" ? i === r.goal : i === r.from || i === r.to; bloom(ctx, hot ? C.volt : accent, x, y, G.cell * 0.8, hot ? 0.4 : 0.2); drawGlyph(ctx, pl.glyph ?? "house", x, y, G.cell * 0.72, C.ink, hexA(hot ? C.volt : accent, 0.35)); api.text(ctx, pl.label, clamp(x, 150, 690), y - G.cell * 0.5 - 20, { size: 38, weight: 700, align: "center", baseline: "middle", color: hot ? C.volt : C.ink2, maxWidth: 220 }); });
       // compass rose
       api.text(ctx, "N", G.x0 - 34, G.y0 + 10, { font: "display", size: 40, weight: 800, color: C.ink2, align: "center", baseline: "middle" });
@@ -110,32 +111,32 @@ function create(api: EngineApi, spec: MapSpec): EngineInstance {
       if (r.mode === "route") {
         const [sx0, sy0] = cc(r, r.start); let dx = sx0, dy = sy0;
         if (g.flying || done) { const k = g.flyT / 0.28, i = Math.min(g.path.length - 1, Math.floor(k)), f = clamp(k - i, 0, 1), a = cc(r, g.path[i]), b = cc(r, g.path[Math.min(g.path.length - 1, i + 1)]); [dx, dy] = done ? cc(r, g.path[g.path.length - 1]) : [lerp(a[0], b[0], f), lerp(a[1], b[1], f)]; ctx.save(); ctx.strokeStyle = hexA(C.volt, 0.6); ctx.lineWidth = 4; ctx.setLineDash([8, 6]); ctx.beginPath(); g.path.slice(0, i + 1).forEach((c2, j) => { const [x, y] = cc(r, c2); if (j) ctx.lineTo(x, y); else ctx.moveTo(x, y); }); ctx.lineTo(dx, dy); ctx.stroke(); ctx.restore(); }
-        ctx.save(); bloom(ctx, C.volt, dx, dy, 40, 0.5); ctx.fillStyle = "#E8ECF5"; ctx.beginPath(); ctx.arc(dx, dy, 14, 0, Math.PI * 2); ctx.fill(); for (const [ox, oy] of [[-14, -14], [14, -14], [-14, 14], [14, 14]]) { ctx.beginPath(); ctx.arc(dx + ox, dy + oy, 8 + Math.sin(now * 40) * 1.5, 0, Math.PI * 2); ctx.strokeStyle = C.ink; ctx.lineWidth = 2; ctx.stroke(); } ctx.restore();
-        dirBtns().forEach((b) => { ctx.save(); ctx.fillStyle = "rgba(22,26,36,.95)"; ctx.beginPath(); ctx.arc(b.x, b.y, 36, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = done ? C.line : C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, b.lab, b.x, b.y + 2, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle" }); });
-        g.prog.slice(-14).forEach((m, i) => { const lab = dirBtns().find((b) => b.m === m)?.lab ?? m; ctx.save(); ctx.fillStyle = "rgba(203,255,77,.12)"; roundRect(ctx, 150 + i * 46, 572, 40, 44, 8); ctx.fill(); ctx.restore(); api.text(ctx, lab, 170 + i * 46, 596, { font: "display", size: 38, weight: 800, align: "center", baseline: "middle", decor: true }); });
+        ctx.save(); bloom(ctx, C.volt, dx, dy, 40, 0.5); ctx.fillStyle = C.mapCar; ctx.beginPath(); ctx.arc(dx, dy, 14, 0, Math.PI * 2); ctx.fill(); for (const [ox, oy] of [[-14, -14], [14, -14], [-14, 14], [14, 14]]) { ctx.beginPath(); ctx.arc(dx + ox, dy + oy, 8 + Math.sin(now * 40) * 1.5, 0, Math.PI * 2); ctx.strokeStyle = C.ink; ctx.lineWidth = 2; ctx.stroke(); } ctx.restore();
+        dirBtns().forEach((b) => { ctx.save(); ctx.fillStyle = withAlpha(C.bg2, .95); ctx.beginPath(); ctx.arc(b.x, b.y, 36, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = done ? C.line : C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, b.lab, b.x, b.y + 2, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle" }); });
+        g.prog.slice(-14).forEach((m, i) => { const lab = dirBtns().find((b) => b.m === m)?.lab ?? m; ctx.save(); ctx.fillStyle = withAlpha(C.volt, .12); roundRect(ctx, 150 + i * 46, 572, 40, 44, 8); ctx.fill(); ctx.restore(); api.text(ctx, lab, 170 + i * 46, 596, { font: "display", size: 38, weight: 800, align: "center", baseline: "middle", decor: true }); });
         if (done) pill(api, ctx, g.blocked ? T.blocked : ok ? T.arrived : g.detail, 460, 200, { color: ok ? C.mint : C.amber, size: 38 });
-        for (const [b, lab] of [[UNDO, T.undo], [GO, T.go]] as [typeof GO, string][]) { ctx.save(); ctx.fillStyle = b === GO && !done ? "rgba(203,255,77,.14)" : "rgba(22,26,36,.95)"; roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = b === GO && !done ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, lab, b.x + b.w / 2, b.y + b.h / 2 + 2, { font: "display", size: 38, weight: 800, color: b === GO && !done ? C.volt : C.ink2, align: "center", baseline: "middle" }); }
+        for (const [b, lab] of [[UNDO, T.undo], [GO, T.go]] as [typeof GO, string][]) { ctx.save(); ctx.fillStyle = b === GO && !done ? withAlpha(C.volt, .14) : withAlpha(C.bg2, .95); roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = b === GO && !done ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, lab, b.x + b.w / 2, b.y + b.h / 2 + 2, { font: "display", size: 38, weight: 800, color: b === GO && !done ? C.volt : C.ink2, align: "center", baseline: "middle" }); }
       } else {
         api.text(ctx, T.scale, 880, 258, { font: "mono", size: 38, weight: 600, color: accent, align: "center", baseline: "middle", maxWidth: 240 }); api.text(ctx, `${fmtNum(r.kmPerSquare, r.kmPerSquare % 1 ? 1 : 0)} ${T.km}`, 880, 304, { font: "display", size: 44, weight: 800, color: accent, align: "center", baseline: "middle", maxWidth: 240 });
         if (g.tape) { const [a, b] = [g.tape.a, g.tape.b], len = Math.hypot(b[0] - a[0], b[1] - a[1]) / G.cell; ctx.save(); ctx.strokeStyle = C.sun; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); ctx.restore(); pill(api, ctx, `${len.toFixed(1)} □`, clamp((a[0] + b[0]) / 2, 200, 760), clamp((a[1] + b[1]) / 2 - 40, 200, 520), { color: C.sun, size: 38 }); }
         ctx.save(); ctx.strokeStyle = C.ink2; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(DIAL.x0, DIAL.y); ctx.lineTo(DIAL.x1, DIAL.y); ctx.stroke(); const kx = DIAL.x0 + (g.dial / dialMax()) * (DIAL.x1 - DIAL.x0); ctx.fillStyle = g.dialDrag ? C.volt : C.ink; ctx.beginPath(); ctx.arc(kx, DIAL.y, 16, 0, Math.PI * 2); ctx.fill(); ctx.restore();
         pill(api, ctx, `${fmtNum(g.dial, g.dial % 1 ? 1 : 0)} ${T.km}`, 880, 460, { color: done ? (ok ? C.mint : C.amber) : C.ink, size: 40 });
         if (done) pill(api, ctx, `${scaleKey(r).toFixed(1)} ${T.km}`, 880, 380, { color: C.ion, size: 38 });
-        ctx.save(); ctx.fillStyle = !done ? "rgba(203,255,77,.14)" : "rgba(255,255,255,.04)"; roundRect(ctx, GO.x, GO.y, GO.w, GO.h, 16); ctx.fill(); ctx.strokeStyle = !done ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, T.set, GO.x + GO.w / 2, GO.y + GO.h / 2 + 2, { font: "display", size: 38, weight: 800, color: !done ? C.volt : C.ink3, align: "center", baseline: "middle" });
+        ctx.save(); ctx.fillStyle = !done ? withAlpha(C.volt, .14) : withAlpha(C.hi, .04); roundRect(ctx, GO.x, GO.y, GO.w, GO.h, 16); ctx.fill(); ctx.strokeStyle = !done ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, T.set, GO.x + GO.w / 2, GO.y + GO.h / 2 + 2, { font: "display", size: 38, weight: 800, color: !done ? C.volt : C.ink3, align: "center", baseline: "middle" });
       }
     } else if (r.mode === "thread") {
       const G = grid(r), toS = (q: [number, number]): [number, number] => [G.x0 + (q[0] + 0.5) * G.cell, G.y0 + (q[1] + 0.5) * G.cell];
-      ctx.fillStyle = "#1B2B22"; ctx.fillRect(G.x0, G.y0, G.cell * r.w, G.cell * r.h);
-      ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 1; for (let i = 0; i <= r.w; i++) { ctx.beginPath(); ctx.moveTo(G.x0 + i * G.cell, G.y0); ctx.lineTo(G.x0 + i * G.cell, G.y0 + r.h * G.cell); ctx.stroke(); } for (let j = 0; j <= r.h; j++) { ctx.beginPath(); ctx.moveTo(G.x0, G.y0 + j * G.cell); ctx.lineTo(G.x0 + r.w * G.cell, G.y0 + j * G.cell); ctx.stroke(); }
-      const road = curvePts(r.curve).map(toS); ctx.save(); ctx.strokeStyle = "#8C6A44"; ctx.lineWidth = 18; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.beginPath(); road.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); ctx.strokeStyle = "rgba(255,230,180,.35)"; ctx.lineWidth = 2; ctx.setLineDash([10, 10]); ctx.stroke(); ctx.restore();
+      ctx.fillStyle = C.mapGrid; ctx.fillRect(G.x0, G.y0, G.cell * r.w, G.cell * r.h);
+      ctx.strokeStyle = withAlpha(C.hi, .08); ctx.lineWidth = 1; for (let i = 0; i <= r.w; i++) { ctx.beginPath(); ctx.moveTo(G.x0 + i * G.cell, G.y0); ctx.lineTo(G.x0 + i * G.cell, G.y0 + r.h * G.cell); ctx.stroke(); } for (let j = 0; j <= r.h; j++) { ctx.beginPath(); ctx.moveTo(G.x0, G.y0 + j * G.cell); ctx.lineTo(G.x0 + r.w * G.cell, G.y0 + j * G.cell); ctx.stroke(); }
+      const road = curvePts(r.curve).map(toS); ctx.save(); ctx.strokeStyle = C.mapRoad; ctx.lineWidth = 18; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.beginPath(); road.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); ctx.strokeStyle = withAlpha(C.mapRoadLine, .35); ctx.lineWidth = 2; ctx.setLineDash([10, 10]); ctx.stroke(); ctx.restore();
       const [ax, ay] = toS(r.curve[0]), [bx, by] = toS(r.curve[r.curve.length - 1]);
-      for (const [x, y, lab] of [[ax, ay, "A"], [bx, by, "B"]] as [number, number, string][]) { bloom(ctx, C.volt, x, y, 30, 0.5); ctx.save(); ctx.fillStyle = C.volt; ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2); ctx.fill(); ctx.restore(); api.text(ctx, lab, x, y + 1, { font: "display", size: 38, weight: 800, color: "#0B0E14", align: "center", baseline: "middle" }); }
+      for (const [x, y, lab] of [[ax, ay, "A"], [bx, by, "B"]] as [number, number, string][]) { bloom(ctx, C.volt, x, y, 30, 0.5); ctx.save(); ctx.fillStyle = C.volt; ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2); ctx.fill(); ctx.restore(); api.text(ctx, lab, x, y + 1, { font: "display", size: 38, weight: 800, color: C.mapOnBright, align: "center", baseline: "middle" }); }
       if (g.trace.length > 1) { const k = done ? clamp(g.straightT / 1.2, 0, 1) : 0, len = polyLen(g.trace); ctx.save(); ctx.strokeStyle = C.sun; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); let acc = 0; g.trace.forEach((q, i) => { if (i) acc += Math.hypot(q[0] - g.trace[i - 1][0], q[1] - g.trace[i - 1][1]); const [x, y] = toS(q), sx = 160 + (acc / Math.max(len, 1e-6)) * Math.min(600, len * G.cell), sy = 590; const X = x + (sx - x) * k, Y = y + (sy - y) * k; if (i) ctx.lineTo(X, Y); else ctx.moveTo(X, Y); }); ctx.stroke(); ctx.restore(); }
       api.text(ctx, T.scale, 870, 258, { font: "mono", size: 38, weight: 600, color: accent, align: "center", baseline: "middle", maxWidth: 240 }); api.text(ctx, `${fmtNum(r.kmPerSquare, r.kmPerSquare % 1 ? 1 : 0)} ${T.km}`, 870, 304, { font: "display", size: 44, weight: 800, color: accent, align: "center", baseline: "middle", maxWidth: 240 });
       if (done) { pill(api, ctx, g.detail, 870, 400, { color: ok ? C.mint : C.amber, size: 38 }); pill(api, ctx, `${threadKey(r).toFixed(1)} ${T.km}`, 870, 470, { color: C.ion, size: 38 }); }
     } else {
       ctx.drawImage(api.layer("world", paintWorld), 0, 0, W, H);
-      for (const la of [-60, -30, 30, 60]) api.text(ctx, `${Math.abs(la)}°${la > 0 ? T.N : T.S}`, WM.x + 8, wy(la) - 2, { font: "mono", size: 38, weight: 600, color: "rgba(255,255,255,.45)", baseline: "bottom", decor: true });
+      for (const la of [-60, -30, 30, 60]) api.text(ctx, `${Math.abs(la)}°${la > 0 ? T.N : T.S}`, WM.x + 8, wy(la) - 2, { font: "mono", size: 38, weight: 600, color: withAlpha(C.hi, .45), baseline: "bottom", decor: true });
       if (g.pin) { const x = wx(g.pin.lon), y = wy(g.pin.lat), col = done ? (ok ? C.mint : C.amber) : C.volt; bloom(ctx, col, x, y, 30, 0.6); ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y - 18, 10, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x, y - 8); ctx.lineTo(x, y); ctx.stroke(); }
       if (done && r.mode === "globe") { const t = r.pins[g.k], x = wx(t.lon), y = wy(t.lat); ctx.save(); ctx.strokeStyle = C.ion; ctx.lineWidth = 3; ctx.setLineDash([6, 6]); ctx.beginPath(); ctx.moveTo(WM.x, y); ctx.lineTo(WM.x + WM.w, y); ctx.moveTo(x, WM.y); ctx.lineTo(x, WM.y + WM.h); ctx.stroke(); ctx.restore(); }
       if (done) pill(api, ctx, r.mode === "region" ? g.detail : ok ? "✓" : `${g.detail}°`, clamp(wx(g.pin?.lon ?? 0), 200, 800), clamp(wy(g.pin?.lat ?? 0) - 60, 200, 560), { color: ok ? C.mint : C.amber, size: 38 });
@@ -180,4 +181,4 @@ function create(api: EngineApi, spec: MapSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds.map((x) => x.sub || x.title).slice(0, 3), figure: { kind: "none" }, accent }),
   };
 }
-export const map: EngineDef<MapSpec> = { archetype: "map-route@1", label: "Game · Map Room", accent: "#C9A7FF", create };
+export const map: EngineDef<MapSpec> = { archetype: "map-route@1", label: "Game · Map Room", get accent() { return C.mapAccent; }, create };

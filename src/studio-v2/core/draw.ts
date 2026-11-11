@@ -2,6 +2,7 @@
 // for verdicts (tick = got it, magnifier = look again; never a red cross — DESIGN-V3 §3.1).
 import { C, FONT, MIN, MIN_YOUNG, type FontKey } from "./tokens.ts";
 import { hexA } from "./math.ts";
+import { withAlpha } from "../../theme/palette.ts";
 
 export type Ctx = CanvasRenderingContext2D;
 const glowCache = new Map<string, HTMLCanvasElement>();
@@ -116,10 +117,10 @@ export function magnifier(ctx: Ctx, x: number, y: number, col: string = C.amber,
 /** A glass card in world units (end-of-wave cards, final cards). */
 export function card(ctx: Ctx, x: number, y: number, w: number, h: number, a = 1, scrim = true): void {
   ctx.save(); ctx.globalAlpha *= a;
-  if (scrim) { ctx.fillStyle = "rgba(10,12,18,.55)"; ctx.fillRect(0, 0, 1000, 625); }
-  ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, x, y, w, h, 28); ctx.fill();
+  if (scrim) { ctx.fillStyle = withAlpha(C.bg, .55); ctx.fillRect(0, 0, 1000, 625); }
+  ctx.fillStyle = withAlpha(C.bg2, .95); roundRect(ctx, x, y, w, h, 28); ctx.fill();
   ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
-  ctx.fillStyle = "rgba(255,255,255,.035)"; roundRect(ctx, x + 2, y + 2, w - 4, 3, 2); ctx.fill();
+  ctx.fillStyle = withAlpha(C.hi, .035); roundRect(ctx, x + 2, y + 2, w - 4, 3, 2); ctx.fill();
   ctx.restore();
 }
 /** Additive blit of a glow sprite centred at (x, y). */
