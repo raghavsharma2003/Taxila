@@ -44,6 +44,7 @@ before(async () => {
   const { appServer } = await import("./support/app-server.mjs");
   app = await appServer();
   base = app.url;
+  console.log(`# studio-stage-states: app served from ${app.kind}${app.kind === "dist" ? "" : " (dist/ is older than the client sources: run npx vite build)"}`);
   const { chromium } = await import("playwright");
   browser = await chromium.launch();
   // Warm the app once, before any case is timed: the first lesson page load transforms/parses the whole client (the dev
@@ -115,6 +116,29 @@ async function lessonWith(viewport, slot, { calls = [], build = { sha256: SHA, f
   await page.waitForFunction(() => { const b = document.querySelector('[data-testid="studio-box"]'); return !!b && b.getBoundingClientRect().width > 0; }, null, { timeout: 10_000 });
   await page.waitForTimeout(300);
   return page;
+}
+
+/**
+ * A click that cannot hang (main 2026-11-11: test 8 sat on a page.click to its 120 s timeout in a 4-way gate run; alone
+ * 3 s). Playwright waits until the target is attached, visible, stable, enabled (aria-disabled counts) and on top; this
+ * waits at most `ms`, then fails with what the page showed at that moment: is the target there, is it aria-disabled, its
+ * box, what element is on top at its centre, and the stage's state and phase (the stage marks a piece inert outside its
+ * live phases, which disables the skeleton's buttons).
+ */
+async function clickOrSay(page, sel, ms = 20_000) {
+  try { await page.click(sel, { timeout: ms }); return; }
+  catch (e) {
+    const seen = await page.evaluate((sel) => {
+      const d = (el) => (el ? `${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""}${el.getAttribute("data-testid") ? `[data-testid=${el.getAttribute("data-testid")}]` : ""}${typeof el.className === "string" && el.className ? "." + el.className.split(/\s+/).slice(0, 2).join(".") : ""}` : null);
+      const el = document.querySelector(sel), st = document.querySelector('[data-testid="studio-stage"]');
+      const stage = st ? { state: st.getAttribute("data-state"), phase: st.getAttribute("data-phase"), kind: st.getAttribute("data-kind") } : null;
+      if (!el) return { present: false, stage, tray: document.querySelector('[data-testid="tray"]')?.getAttribute("data-kind") ?? null };
+      const r = el.getBoundingClientRect(), top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+      return { present: true, ariaDisabled: el.getAttribute("aria-disabled"), box: [r.x, r.y, r.width, r.height].map(Math.round), onTop: d(top), covered: !!top && !el.contains(top), stage };
+    }, sel).catch((err) => ({ evaluateFailed: String(err?.message ?? err) }));
+    const log = String(e?.message ?? e).split("\n").filter((l) => /waiting|intercepts|not enabled|not stable|not visible|retrying|attempt/.test(l)).slice(-6).join(" | ");
+    throw new Error(`click ${sel} did not happen within ${ms} ms. The page showed: ${JSON.stringify(seen)}. Playwright: ${log}`);
+  }
 }
 
 const measure = (page) => page.evaluate(() => {
@@ -271,10 +295,10 @@ test("'Show me again' and 'Not this one' reach the server from the corner contro
   const calls = [];
   const page = await lessonWith({ width: 360, height: 800 }, { slotId: "s1", intentId: `${LESSON}:st:1`, state: "fallback_shown", artifact: skeletonOf("bar_chart_read") }, { calls });
   try {
-    await page.click('[data-testid="studio-more"]');
-    await page.click('[data-testid="studio-again"]');
-    await page.click('[data-testid="studio-more"]');
-    await page.click('[data-testid="studio-notthis"]');
+    await clickOrSay(page, '[data-testid="studio-more"]');
+    await clickOrSay(page, '[data-testid="studio-again"]');
+    await clickOrSay(page, '[data-testid="studio-more"]');
+    await clickOrSay(page, '[data-testid="studio-notthis"]');
     await page.waitForTimeout(400);
     const fb = calls.filter((c) => c.p === "/api/studio/feedback").map((c) => c.b.action);
     assert.deepEqual(fb, ["again", "not_this"]);
@@ -328,7 +352,7 @@ test("the open corner menu stays inside the clipping stage at all three viewport
   await pool(VIEWPORTS, async (vp) => {
     const page = await lessonWith(vp, { slotId: "s1", intentId: `${LESSON}:st:1`, state: "fallback_shown", artifact: skeletonOf("shade_fraction") });
     try {
-      await page.click('[data-testid="studio-more"]');
+      await clickOrSay(page, '[data-testid="studio-more"]');
       await page.waitForSelector('[data-testid="studio-menu"]');
       const r = await page.evaluate(() => {
         const g = (e) => { const b = e.getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; };
@@ -337,7 +361,7 @@ test("the open corner menu stays inside the clipping stage at all three viewport
       });
       if (!inside(r.menu, r.stage, 1)) fails.push(`${vp.width}x${vp.height}: menu ${JSON.stringify(r.menu)} outside stage ${JSON.stringify(r.stage)}`);
       for (const it of r.items) if (it.h < 44 - 0.5) fails.push(`${vp.width}x${vp.height}: menu item under 44 px`);
-      await page.click('[data-testid="studio-again"]');
+      await clickOrSay(page, '[data-testid="studio-again"]');
       if (SHOTS) await page.screenshot({ path: `${SHOTS}/w2h-menu-${vp.width}x${vp.height}.png` });
     } finally { await page.close(); }
   });
@@ -348,10 +372,10 @@ test("an answer names its item and the mount key; a second wrong try reaches the
   const calls = [];
   const page = await lessonWith({ width: 360, height: 800 }, { slotId: "s1", intentId: `${LESSON}:st:1`, state: "fallback_shown", artifact: skeletonOf("shade_fraction") }, { calls });
   try {
-    await page.click('[data-testid="sk-check"]');   // nothing shaded: wrong (rides with the next turn)
+    await clickOrSay(page, '[data-testid="sk-check"]');   // nothing shaded: wrong (rides with the next turn)
     await page.waitForTimeout(600);
     assert.equal(calls.filter((c) => c.p === "/api/lesson/turn" && c.b.moduleEvents?.length).length, 0, "one wrong try is not a milestone");
-    await page.click('[data-testid="sk-check"]');   // wrong again: stuck
+    await clickOrSay(page, '[data-testid="sk-check"]');   // wrong again: stuck
     await page.waitForTimeout(1200);
     const ans = calls.filter((c) => c.p === "/api/studio/answer");
     assert.equal(ans.length, 2);

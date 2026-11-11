@@ -27,6 +27,8 @@ before(async () => {
   const { appServer } = await import("./support/app-server.mjs");
   app = await appServer();
   base = app.url;
+  // (a stale dist/ falls back to the dev server, whose StrictMode double-mounts modules: say which one this run used)
+  console.log(`# w2b-whiteboard-browser: app served from ${app.kind}${app.kind === "dist" ? "" : " (dist/ is older than the client sources: run npx vite build)"}`);
   const { chromium } = await import("playwright");
   browser = await chromium.launch();
   if (SHOTS) mkdirSync(SHOTS, { recursive: true });
@@ -49,6 +51,12 @@ async function contextFor(viewport, reducedMotion) {
 
 async function lessonWith(viewport, { ui, moduleCommands = [], turn = null }, { reducedMotion = "no-preference" } = {}) {
   const page = await (await contextFor(viewport, reducedMotion)).newPage();
+  // (load-safe waits, 2026-11-11: the spare frame's "ready" is a window message (src/modules/prewarm.ts keeps it in memory),
+  // recorded here from the first script on, so a test waits on the event itself instead of a fixed pause)
+  await page.addInitScript(() => {
+    window.__spareReady = false;
+    window.addEventListener("message", (e) => { const d = e.data; if (d && d.type === "ready" && typeof d.moduleId === "string" && d.moduleId.startsWith("spare:")) window.__spareReady = true; });
+  });
   await page.route("**/api/**", async (route) => {
     const p = new URL(route.request().url()).pathname;
     const json = (status, body) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) });
@@ -174,8 +182,7 @@ test("explainer@1 (the explain rung) fills the module tray; every drawn word is 
   const ui = { status: "speaking", phase: "teach", handover: "answer", answerForm: "words", tray: "module" };
   const page = await lessonWith({ width: 360, height: 800 }, { ui, moduleCommands: [{ op: "mount", moduleId: "m1", engine: "explainer@1", params: { script: x.script, template: "fraction-parts@1", mode: "play", delayMs: 0 } }] }, { reducedMotion: "reduce" });
   try {
-    const iframe = await page.waitForSelector('[data-testid="tray"][data-kind="module"] iframe[data-engine="explainer@1"]', { timeout: 30_000 });
-    const frame = await iframe.contentFrame();
+    const { iframe, frame } = await moduleFrame(page);
     await frame.waitForSelector('[data-testid="explainer"] svg', { timeout: 30_000 });
     await frame.waitForFunction((end) => Number(document.querySelector("svg")?.getAttribute("data-wb-t")) >= end, x.script.durationMs, { timeout: x.script.durationMs + 8000 });
     const [box, tray] = await Promise.all([iframe.boundingBox(), page.$eval('[data-testid="tray"] .dk-tray-body', (e) => { const r = e.getBoundingClientRect(); return { height: r.height, width: r.width }; })]);
@@ -190,6 +197,28 @@ test("explainer@1 (the explain rung) fills the module tray; every drawn word is 
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/explainer-fraction-360.png` });
   } finally { await page.close(); }
 });
+
+/**
+ * The tray's explainer frame once it has drawn its board, re-found if the host swapped it (2026-11-11: on the dev server
+ * React's StrictMode mounts a module twice: the first frame is dropped and the spare adopted, and a handle taken on the
+ * first one reads "Frame was detached" / contentFrame() null: 3 of 6 failed every run, loaded or not, while dist/ was
+ * stale. The gate serves a fresh dist/, where it passed 8 of 8 under 4-way load).
+ */
+async function moduleFrame(page, { ms = 30_000, sel = '[data-testid="explainer"] svg' } = {}) {
+  const end = Date.now() + ms;
+  let last = "";
+  const dev = app?.kind === "dev" ? " — on the DEV server: React StrictMode mounts the module twice and the re-mount's adopted spare never shows in the tray (src/modules/host.tsx + prewarm.ts, reported to Games); the gate serves dist/: run npx vite build" : "";
+  while (Date.now() < end) {
+    const iframe = await page.waitForSelector('[data-testid="tray"][data-kind="module"] iframe[data-engine="explainer@1"]', { timeout: Math.max(1000, end - Date.now()) })
+      .catch((e) => { throw new Error(`no explainer frame showed in the tray${dev} (${String(e?.message ?? e).split("\n")[0]})`); });
+    const frame = await iframe.contentFrame().catch(() => null);
+    if (frame && !frame.isDetached()) {
+      const ok = await frame.waitForSelector(sel, { timeout: 3000, state: "attached" }).then(() => true).catch((e) => { last = String(e?.message ?? e).split("\n")[0]; return false; });
+      if (ok && !frame.isDetached()) return { iframe, frame };
+    } else last = "the frame was swapped before it drew";
+  }
+  throw new Error(`no explainer frame drew "${sel}" in the tray within ${ms} ms (${last})${dev}`);
+}
 
 /** Send one typed turn in the text lesson (the composer, then Enter). */
 async function typeTurn(page, text) {
@@ -206,8 +235,7 @@ test("explainer@1 inside the sandboxed frame draws from her line's audio anchor 
   // 1. no anchor: nothing drawn inside the grace, then it starts on its own
   const page = await lessonWith({ width: 360, height: 800 }, { ui, moduleCommands: mount("m1") });
   try {
-    const iframe = await page.waitForSelector('[data-testid="tray"][data-kind="module"] iframe[data-engine="explainer@1"]', { timeout: 30_000 });
-    const frame = await iframe.contentFrame();
+    const { iframe, frame } = await moduleFrame(page);
     const t0 = await firstClock(frame, '[data-testid="explainer"] svg');
     assert.ok(t0 <= 0, `drew before any anchor or grace: t=${t0}`);
     await frame.waitForFunction(() => Number(document.querySelector("svg")?.getAttribute("data-wb-t")) > 200, null, { timeout: 6000 });
@@ -215,8 +243,7 @@ test("explainer@1 inside the sandboxed frame draws from her line's audio anchor 
   // 2. the anchor fires in the APP window (where the TTS player lives): the frame's clock is measured from it
   const page2 = await lessonWith({ width: 360, height: 800 }, { ui, moduleCommands: mount("m2") });
   try {
-    const iframe = await page2.waitForSelector('[data-testid="tray"][data-kind="module"] iframe[data-engine="explainer@1"]', { timeout: 30_000 });
-    const frame = await iframe.contentFrame();
+    const { iframe, frame } = await moduleFrame(page2);
     await frame.waitForSelector('[data-testid="explainer"] svg', { timeout: 30_000 });
     const at = await page2.evaluate(() => { const at = performance.now() - 300; window.dispatchEvent(new CustomEvent("taxila:line-audio-start", { detail: { lessonId: "L-wb", at } })); return at; });
     await page2.waitForTimeout(250);
@@ -235,13 +262,14 @@ test("the first mount adopts the pre-booted spare frame (no new document), and i
   try {
     // the lesson start booted a spare (hidden, in the page body) that announced ready once its engines were imported
     await page.waitForSelector('iframe[data-spare-frame="1"]', { state: "attached", timeout: 15_000 });
-    await page.waitForTimeout(2500);
+    // (was a fixed 2.5 s pause for the spare to say ready: under 4-way load it had not, the mount made a new frame, and
+    // "the tray's frame is the adopted spare" failed. Now: its ready message itself, with a ceiling that names the cause)
+    await page.waitForFunction(() => window.__spareReady === true, null, { timeout: 30_000 })
+      .catch(() => { throw new Error("the spare frame never said ready within 30 s (prewarm.ts): the turn would mount a new frame"); });
     await typeTurn(page, "ok");
-    const iframe = await page.waitForSelector('[data-testid="tray"][data-kind="module"] iframe[data-engine="explainer@1"]', { timeout: 30_000 });
+    const { iframe } = await moduleFrame(page, { sel: '[data-testid="explainer"] svg rect' });
     const src = await iframe.getAttribute("src");
     assert.match(src, /spare%3A|spare:/, `the tray's frame is the adopted spare (${src})`);
-    const frame = await iframe.contentFrame();
-    await frame.waitForSelector('[data-testid="explainer"] svg rect', { timeout: 10_000, state: "attached" });
     const [box, tray] = await Promise.all([iframe.boundingBox(), page.$eval('[data-testid="tray"] .dk-tray-body', (e) => e.getBoundingClientRect().height)]);
     assert.ok(Math.abs(box.height - tray) <= 2, `the adopted frame fills the tray (${box.height} vs ${tray})`);
     // one module document in the tray, none created for m9 by URL
