@@ -34,10 +34,7 @@
      },
      {
       "interest": "vehicles",
-      "use": {
-       "hi": "Car ka steering kitna ghooma, yeh uske size se nahi, uske ghoomne se pata chalta hai. Chhota steering ho ya bada, quarter turn dono ka ek jaisa hota hai.",
-       "en": "How much a car's steering wheel turned is told by its turning, not its size. A small wheel or a big one, a quarter turn is the same for both."
-      }
+      "use": { "hi": "Car ka steering kitna ghooma, yeh uske size se pata chalta hai ya uske ghoomne se, yeh aaj dekhenge.", "en": "Today we find out whether how much a car's steering wheel turned is told by its size or by its turning." }
      }
     ]
    },
@@ -77,10 +74,10 @@
     },
     {
      "id": "e2",
-     "convey": "same circle, 2 of 4 parts swept = 2/4 = half turn → facing the exact opposite way (board → back wall), not the side; 3 parts = three-quarter turn; all 4 = full turn, back to the start",
-     "mustSay": [{"hi": "aadha chakkar", "en": "half turn"}, {"hi": "2/4", "en": "2/4"}, {"hi": "ulti taraf", "en": "the opposite way"}],
+     "convey": "same circle, 2 of 4 parts swept = 2/4 = half turn: one part turned you to a side wall, a half turn is one part more; 3 parts = three-quarter turn; all 4 = full turn, back to the start. Where a half turn leaves you facing is the ask's to find, not told here",
+     "mustSay": [{"hi": "aadha chakkar", "en": "half turn"}, {"hi": "2/4", "en": "2/4"}, { "hi": "ek hissa aur", "en": "one more part" }],
      "board": {"template": "fraction-parts@1", "params": {"parts": 4, "shade": 2, "whole": "circle"}},
-     "point": { "hi": "Ab 4 mein se 2 hisse bhare hain, yaani 2/4, aadha chakkar. Ek hissa ghoomkar tum side wali deewar dekhte the; ab ek hissa aur ghoomo. Chaaron hisse ghoomo toh poora chakkar.", "en": "Now 2 of the 4 parts are filled, that is 2/4, a half turn. One part turned you to a side wall; now turn one part more. All four parts make a full turn." },
+     "point": { "hi": "Ab 4 mein se 2 hisse bhare hain, yaani 2/4, aadha chakkar. Ek hissa ghoomkar tum side wali deewar dekhte ho; ab ek hissa aur ghoomo. Chaaron hisse ghoomo toh poora chakkar.", "en": "Now 2 of the 4 parts are filled, that is 2/4, a half turn. One part turns you to a side wall; now turn one more part. All four parts make a full turn." },
      "ask": {
       "prompt": {
        "hi": "Tum darwaze ki taraf dekh rahe ho aur aadha chakkar ghoomte ho. Ab darwaza tumhare peeche hoga ya side mein?",
@@ -275,7 +272,7 @@
       "targets": "c5-maths-ch03-t01-m-half-is-quarter",
       "wrongIfMis": "the window",
       "board": {"template": "fraction-parts@1", "params": {"parts": 4, "shade": 0, "whole": "circle"}},
-      "simpler": { "hi": "Aadha chakkar matlab ek quarter, phir ek aur quarter. Ek quarter ghoomkar khidki saamne aati hai; ab ek quarter aur ghoomo.", "en": "A half turn means one quarter, then one more quarter. One quarter brings the window in front; now turn one quarter more." },
+      "simpler": { "hi": "Aadha chakkar matlab ek quarter, phir ek aur quarter. Daayein ek quarter ghoomo toh khidki saamne aati hai; ab ek quarter aur ghoomo.", "en": "A half turn means one quarter, then one more. A quarter turn to the right brings the window in front; now turn one quarter more." },
       "answerBoard": {"template": "fraction-parts@1", "params": {"parts": 4, "shade": 2, "whole": "circle"}}
      }
     },
@@ -355,7 +352,7 @@
        "en": "A hand goes from 6 through 7 and 8 to 9. Is that clockwise or anticlockwise?"
       },
       "key": "clockwise",
-      "why": { "hi": "sui 6 se 7 aur 8 se hote hue 9 tak gayi, number badhte gaye, jaise ghadi ki suiyan chalti hain", "en": "the hand goes from 6 up through 7 and 8 to 9, which is the way clock hands move" },
+      "why": { "hi": "sui 6 se 7 aur 8 hote hue 9 tak gayi, ghadi ki suiyon wali taraf, isliye clockwise", "en": "the hand goes from 6 through 7 and 8 to 9, the way the clock hands go, so it is clockwise" },
       "accept": ["ghadi ki disha", "clockwise hai"],
       "targets": "c5-maths-ch03-t01-m-cw-confuse",
       "wrongIfMis": "anticlockwise",
@@ -368,14 +365,14 @@
     },
     {
      "id": "e2",
-     "convey": "the clock face in 4 equal parts, one part = one quarter turn = 3 numbers; from 12 a quarter clockwise → 3, anticlockwise → 9; half turn either way → 6 → transfer from a start that is not 12",
+     "convey": "the clock face in 4 equal parts, one part = one quarter turn = 3 numbers; from 12 a quarter turn clockwise → 3; a quarter turn anticlockwise also moves 3 numbers, the other way (its landing number is not told) → transfer from a start that is not 12",
      "mustSay": [
       {"hi": "quarter turn clockwise", "en": "quarter turn clockwise"},
       {"hi": "quarter turn anticlockwise", "en": "quarter turn anticlockwise"},
       {"hi": "3 number", "en": "3 numbers"}
      ],
      "board": {"template": "fraction-parts@1", "params": {"parts": 4, "shade": 0, "whole": "circle"}},
-     "point": { "hi": "Ghadi ka gola 4 barabar hisson mein socho, har hissa ek quarter turn. Sui 12 par ho aur quarter turn clockwise le, toh 3 par rukti hai. Har quarter turn mein sui 3 number chalti hai, clockwise ho ya anticlockwise, bas bataayi gayi taraf mein.", "en": "Think of the clock face in 4 equal parts, each part one quarter turn. With the hand at 12, a quarter turn clockwise stops it at 3. In every quarter turn the hand moves 3 numbers, clockwise or anticlockwise, just in the direction named." },
+     "point": { "hi": "Ghadi ka gola 4 barabar hisson mein socho, har hissa ek quarter turn. Sui 12 par ho aur quarter turn clockwise le, toh 3 par rukti hai. Quarter turn anticlockwise mein bhi sui 3 number chalti hai, bas ulti taraf.", "en": "Think of the clock face in 4 equal parts, each part one quarter turn. With the hand at 12, a quarter turn clockwise stops it at 3. In a quarter turn anticlockwise the hand also moves 3 numbers, just the other way." },
      "ask": {
       "prompt": {
        "hi": "Sui 2 par hai aur quarter turn clockwise ghoomti hai. Sui kis number par rukegi?",
@@ -395,14 +392,14 @@
     },
     {
      "id": "e3",
-     "convey": "three-quarter turn one way ends where a quarter turn the other way ends: 3 of 4 parts swept clockwise → the 1 part left over is the short way back, anticlockwise",
+     "convey": "three-quarter turn clockwise = 3 of 4 parts swept, with one part left empty; the child looks at the size of the empty part (how far the other way gets to the same place is the ask's to find, not told here)",
      "mustSay": [
       {"hi": "3/4", "en": "3/4"},
       {"hi": "teen-chauthai chakkar", "en": "three-quarter turn"},
-      {"hi": "ulti taraf", "en": "the other way"}
+      { "hi": "ek hissa khaali", "en": "one part empty" }
      ],
      "board": {"template": "fraction-parts@1", "params": {"parts": 4, "shade": 3, "whole": "circle"}},
-     "point": { "hi": "Is gol ke 4 mein se 3 hisse bhare hain: yeh 3/4, yaani teen-chauthai chakkar clockwise hai. Ek hissa abhi khaali bacha hai, use dhyaan se dekho.", "en": "3 of the 4 parts of this circle are filled: this is 3/4, a three-quarter turn clockwise. One part is still empty; look at it carefully." },
+     "point": { "hi": "Is gol ke 4 mein se 3 hisse bhare hain: yeh 3/4, yaani teen-chauthai chakkar clockwise hai. Bacha hai ek hissa khaali; use dhyaan se dekho.", "en": "3 of the 4 parts of this circle are filled: this is 3/4, a three-quarter turn clockwise. That leaves one part empty; look at it carefully." },
      "ask": {
       "prompt": {
        "hi": "Ek robot teen-chauthai chakkar anticlockwise ghoomta hai. Clockwise kitne quarter turn lekar woh usi taraf muh kar lega?",
@@ -418,10 +415,7 @@
       "wrongIfMis": "3 quarter turns",
       "answerBoard": {"template": "fraction-parts@1", "params": {"parts": 4, "shade": 1, "whole": "circle"}}
      },
-     "simpler": {
-      "hi": "Gol ke 4 mein se 3 hisse bhare hain, aur ek hissa khaali hai. Ulti taraf se wahi jagah bas khaali hisse jitna ghoomkar aa jaati hai.",
-      "en": "3 of the 4 parts of the circle are filled, and one part is empty. The other way, the same place comes after turning just the empty part."
-     }
+     "simpler": { "hi": "Gol ke 4 mein se 3 hisse bhare hain, aur ek hissa khaali hai. Khaali hissa kitna bada hai, dhyaan se dekho.", "en": "3 of the 4 parts are filled and one part is empty. Look carefully at how big the empty part is." }
     }
    ],
    "workedExample": {
@@ -511,17 +505,14 @@
      "targets": "c5-maths-ch03-t01-m-cw-confuse",
      "wrongIfMis": "7",
      "board": {"template": "fraction-parts@1", "params": {"parts": 4, "shade": 0, "whole": "circle"}},
-     "simpler": {
-      "hi": "Anticlockwise mein sui 4 se chhote numberon ki taraf chalti hai. Ek quarter turn mein teen number peeche gino.",
-      "en": "Anticlockwise, the hand goes from 4 towards the smaller numbers. For one quarter turn, count three numbers back."
-     },
+     "simpler": { "hi": "Anticlockwise matlab suiyon ki ulti taraf. 4 se ulti taraf teen number gino.", "en": "Anticlockwise is the opposite of the hands' way. Count three numbers back from 4." },
      "answerBoard": {"template": "fraction-parts@1", "params": {"parts": 4, "shade": 1, "whole": "circle"}}
     },
     {
      "id": "c2",
      "prompt": { "hi": "Ghadi ki sui ka raasta 2 se 1 hote hue 12 tak hai. Yeh clockwise hai ya anticlockwise?", "en": "A clock hand goes from 2 through 1 to 12. Is that clockwise or anticlockwise?" },
      "key": "anticlockwise",
-     "why": { "hi": "sui 2 se 1 aur phir 12 par gayi, number ulte gine gaye, ghadi ki suiyon ki ulti taraf", "en": "the hand goes from 2 back to 1 and then to 12, counting backwards, the opposite of the way clock hands go" },
+     "why": { "hi": "sui 2 se 1, phir 12 par gayi: yeh ghadi ki suiyon ki ulti taraf hai, isliye anticlockwise", "en": "the hand goes from 2 to 1, then to 12: the opposite of the clock hands' way, so anticlockwise" },
      "accept": ["ghadi ki ulti disha", "anticlockwise hai", "anti-clockwise", "counterclockwise", "ulti taraf"],
      "targets": "c5-maths-ch03-t01-m-cw-confuse",
      "wrongIfMis": "clockwise",
@@ -530,31 +521,13 @@
      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "clockwise", "items": ["ghadi ki taraf"]}, "right": {"title": "anticlockwise", "items": ["ulti taraf"]}, "mark": {"side": "right"}} }
     }
    ],
-   "ladder": [
-    {
-     "itemId": "c5-maths-ch03-t01-rl-o2",
-     "why": "a metro arrow from north to west by the shorter turn → name the direction (anticlockwise)"
-    },
-    {
-     "itemId": "c5-maths-ch03-t01-i04",
-     "why": "9 to 6 clockwise → three quarters, not one; direction decides the amount"
-    },
-    {"itemId": "c5-maths-ch03-t01-i05", "why": "predict: two quarter turns clockwise → facing the opposite way"},
-    {
-     "itemId": "c5-maths-ch03-t01-rl-h2",
-     "why": "two instructions in a row (quarter clockwise, half anticlockwise) → follow each from the new direction"
-    },
-    {
-     "itemId": "c5-maths-ch03-t01-i10",
-     "why": "three-quarter clockwise = one quarter anticlockwise (e3) in a dance step"
-    }
-   ],
+   "ladder": [{"itemId": "c5-maths-ch03-t01-rl-o2", "why": "a metro arrow from north to west by the shorter turn → name the direction (anticlockwise)"}, {"itemId": "c5-maths-ch03-t01-i04", "why": "9 to 6 clockwise → three quarters, not one; direction decides the amount"}, {"itemId": "c5-maths-ch03-t01-i05", "why": "predict: two quarter turns clockwise → facing the opposite way"}, {"itemId": "c5-maths-ch03-t01-rl-h2", "why": "two instructions in a row (quarter clockwise, half anticlockwise) → follow each from the new direction"}],
    "remediation": [
     {
      "targets": "c5-maths-ch03-t01-m-cw-confuse",
      "move": "a real clock face with an arrow along the hands' path; the child traces the path with a finger 12 → 1 → 2 → 3, then turns their own body the same way; the other way 12 → 11 → 10 → 9 = anticlockwise",
      "say": { "hi": "Ghadi par ungli rakho aur sui ke raaste par chalao: 12 se 1, 2, 3 ki taraf. Yahi clockwise hai. Ungli ulti taraf chale, jaise 6 se 5, 4 ki taraf, toh woh anticlockwise hai.", "en": "Put a finger on the clock and move it along the hand's path: from 12 towards 1, 2, 3. That is clockwise. If the finger goes the other way, like from 6 towards 5, 4, that is anticlockwise." },
-     "simpler": { "hi": "Sui ke raaste mein number 1, 2, 3 ki tarah aage badhein, toh clockwise; 12 ke baad phir 1 aata hai. Number ulte gine jaayein, jaise 6, 5, 4, toh anticlockwise.", "en": "If the numbers go forward along the path like 1, 2, 3, it is clockwise; after 12 comes 1 again. If they count backwards, like 6, 5, 4, it is anticlockwise." },
+     "simpler": { "hi": "Ungli usi taraf chale jidhar ghadi ki suiyan chalti hain, jaise 12 se 1 ki taraf, toh clockwise. Ulti taraf chale, jaise 6 se 5 ki taraf, toh anticlockwise.", "en": "If the finger moves the way the clock hands go, like from 12 towards 1, it is clockwise. If it goes the other way, like from 6 towards 5, it is anticlockwise." },
      "then": {
       "prompt": {
        "hi": "Shuru mein sui 5 par hai. Woh quarter turn clockwise ghoomti hai. Sui kis number par rukegi?",
@@ -796,20 +769,14 @@
      "say": { "hi": "Ghadi ko 4 quarter mein socho. 12 se 3 ek quarter hai, ek right angle. Har quarter mein sui 3 number chalti hai; ek-ek quarter gino.", "en": "Think of the clock in 4 quarters. 12 to 3 is one quarter, one right angle. In each quarter the hand moves 3 numbers; count the quarters one by one." },
      "simpler": { "hi": "Ghadi ke 4 quarter socho. 12 se 3 ek quarter, ek right angle. Har quarter mein 3 number; quarter ek-ek karke gino.", "en": "Think of the clock in 4 quarters. 12 to 3 is one quarter, one right angle. Each quarter is 3 numbers; count the quarters one at a time." },
      "then": {
-      "prompt": {
-       "hi": "Sui 1 se 7 tak clockwise jaati hai. Yeh kaunsa turn hai: quarter turn ya aadha chakkar?",
-       "en": "The hand goes clockwise from 1 to 7. Which turn is that: a quarter turn or a half turn?"
-      },
-      "key": "half turn",
-      "why": { "hi": "1 se 4 ek quarter, 4 se 7 doosra quarter: do quarter, yaani 2/4, aadha chakkar", "en": "1 to 4 is one quarter and 4 to 7 another: two quarters, 2/4, a half turn" },
-      "accept": ["aadha chakkar", "aadha", "half", "a half turn"],
+      "prompt": { "hi": "Ghadi ki sui 10 se chalti hai aur clockwise aadha chakkar poora karti hai. Ab woh kis number ki taraf ishaara karti hai?", "en": "A clock hand starts at 10 and makes a half turn clockwise. Which number does it point to now?" },
+      "key": "4",
+      "why": { "hi": "aadha chakkar do quarter hai: 10 se 1 ek quarter, 1 se 4 doosra, toh sui 4 par", "en": "a half turn is two quarters: 10 to 1 is one, 1 to 4 the other, so the hand is at 4" },
+      "accept": ["4 par", "at 4", "chaar", "four"],
       "targets": "c5-maths-ch03-t01-m-half-is-quarter",
-      "wrongIfMis": "quarter turn",
+      "wrongIfMis": "1",
       "board": {"template": "fraction-parts@1", "params": {"parts": 4, "shade": 0, "whole": "circle"}},
-      "simpler": {
-       "hi": "Ek quarter turn mein sui teen number chalti hai. 1 se 7 tak kitne number aage gaye, woh gino.",
-       "en": "In a quarter turn the hand moves three numbers. Count how many numbers on it went from 1 to 7."
-      },
+      "simpler": { "hi": "Aadha chakkar matlab do quarter turn, aur har quarter mein sui teen number chalti hai. Toh 10 se clockwise do quarter kahan khatam hote hain, woh dekho.", "en": "A half turn is two quarter turns, and each quarter moves the hand three numbers. So see where two quarters clockwise from 10 end." },
       "answerBoard": {"template": "fraction-parts@1", "params": {"parts": 4, "shade": 2, "whole": "circle"}}
      }
     },

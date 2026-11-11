@@ -139,8 +139,11 @@ export const PREDICATES = {
     const sk = id.replace(/^script:/, "").replace(/:ask:worked$/, "");
     const we = (ctx.script?.skills ?? []).find((s) => s.skillId === sk)?.workedExample;
     const a = String(we?.answer?.hi ?? we?.answer ?? "");
-    const num = a.match(/\d+(?:\.\d+)?/)?.[0];
-    return num && !new RegExp(`(?<![\\d.])${num}(?![\\d])`).test(r.text) ? `a worked example closed without its final answer (${num})` : null;
+    // (dc-r8-director20 item 6: c4's answer is "2/3" — reading only its "2", the why's "2 khaye gaye" passed it on steady 44, offtopic 48
+    // and steering 46; the whole number, a fraction whole, must be said)
+    const num = a.match(/\d+(?:[./]\d+)?/)?.[0];
+    const esc = (x) => x.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&");
+    return num && !new RegExp(`(?<![\\d./])${esc(num)}(?![\\d/])`).test(r.text) ? `a worked example closed without its final answer (${num})` : null;
   },
   /** A worked step said before its problem in the lesson (an aside resumed at step 1). */
   workedOrder(L, r, i, ctx) {
@@ -179,16 +182,19 @@ export const PREDICATES = {
   authoredWhole(L, r, i, ctx) {
     const units = (ctx.units ??= authoredUnits(ctx.script));
     const T = ` ${key(r.text)} `;
-    const TS = sentencesOf(r.text).map(key);
-    const said = (k) => TS.some((t) => t === k || t.endsWith(` ${k}`));
+    // (a unit sentence is said when a sentence of hers is it — or ends with it after a frame's ":" or "—", "Phir se dekho: …"; never as
+    // the tail of a longer sentence of hers, "… aur upar ka woh ek hissa 1/4 hai")
+    const TS = sentencesOf(r.text).map((x) => ({ k: key(x), raw: low(x) }));
+    const said = (k) => TS.some((t) => t.k === k || (t.k.endsWith(` ${k}`) && /[:—–]\s*[^:—–]*$/.test(t.raw) && key(t.raw.split(/[:—–]/).at(-1)) === k));
     // (S1: a card said whole in one of her last two turns may be re-asked by its question alone)
     const recentT = [ctx.prevT, ctx.prevPrevT].filter(Boolean).map((t) => ` ${key(t.text)} `);
     for (const u of units) {
       if (T.includes(` ${u.whole} `)) continue;
       if (/ card$/.test(u.where) && recentT.some((t) => t.includes(` ${u.whole} `)) && u.sents.filter(said).every((x) => x === u.sents.at(-1))) continue;
       const hit = u.sents.filter(said);
-      // (a sentence two units share, "Barfi ka kitna hissa khaya gaya?", proves neither was started)
-      if (!hit.some((h) => !units.some((v) => v.whole !== u.whole && v.whole.includes(h)))) continue;
+      // (a sentence two units share, "Barfi ka kitna hissa khaya gaya?", proves neither was started; nor does a short generic one —
+      // "Kya woh sahi hai?", "Kitni tape lagegi?" — which a kit card can end on too: a start is a sentence of five words or more)
+      if (!hit.some((h) => h.split(" ").length >= 5 && !units.some((v) => v.whole !== u.whole && v.whole.includes(h)))) continue;
       const miss = u.sents.filter((x) => !said(x));
       return `${u.where} not said whole (${hit.length} of ${u.sents.length} sentences${miss.length ? `; not said: "${miss[0].slice(0, 60)}"` : "; split"})`;
     }
@@ -249,8 +255,9 @@ export const PREDICATES = {
     if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
     // (a second give-up after the key and its why were said again may move on)
     if (KEY_SAID.test(p.text) && ctx.prevPrevT && KEY_SAID.test(ctx.prevPrevT.text) && !cardIn(ctx.prevPrevT)) return null;
-    if (/worked:step/.test(String(p.beat ?? ""))) {
-      if (ctx.prevPrevT && /worked:step/.test(String(ctx.prevPrevT.beat ?? "")) && ctx.prevPrevT.beat === p.beat) return null;
+    if (/worked:(?:step|problem)/.test(String(p.beat ?? ""))) {
+      if (p.clarifyN === 2) return null;
+      if (ctx.prevPrevT && /worked:(?:step|problem)/.test(String(ctx.prevPrevT.beat ?? "")) && ctx.prevPrevT.beat === p.beat) return null;
       return (r.pageParts ?? []).some((x) => x.part === "simpler" || x.part === "body") && r.beat === p.beat ? null : "a give-up at a worked step's check-in moved on";
     }
     if (KEY_SAID.test(p.text)) {
@@ -286,6 +293,8 @@ export const PREDICATES = {
   cardWholeAgain(L, r, i, ctx) {
     // (a picture turn keeps its card whole on its own page, v6.5 P3: a hint is a simpler or a miss's close)
     if (!cardIn(r) || (r.pageParts ?? []).some((x) => x.part === "alt") || !(r.pageParts ?? []).some((x) => x.part === "simpler" || x.part === "close")) return null;
+    // (a right answer's close is no hint: the card after it — a parent card coming back — is posed whole)
+    if (ctx.prevCls === "correct" && !(r.pageParts ?? []).some((x) => x.part === "simpler")) return null;
     const c = low(r.card ?? "");
     if (sentencesOf(r.card ?? "").length < 2) return null;
     const said = [ctx.prevT, ctx.prevPrevT].some((t) => t && low(t.text).includes(c));
@@ -301,12 +310,30 @@ export const PREDICATES = {
     const last = (r.pageParts ?? []).at(-1)?.part;
     return last === "close" || last === "closed" ? `the turn ends on a close: "${sentencesOf(r.text).at(-1)?.slice(0, 60)}"` : null;
   },
+  /** Main on the shadow (2026-11-11): a clarify or a give-up on a worked problem gets the problem's simpler (never step 1); a clarify on
+   *  a worked step gets that step's simpler (never the step again). Where the script has no simpler, nothing is asked of the turn. */
+  workedClarify(L, r, i, ctx) {
+    const p = ctx.prevT;
+    const m = /^s(\d+):worked:worked:(problem|step(\d+))$/.exec(String(p?.beat ?? ""));
+    if (!m || r.clarifyN === 2) return null;
+    const clar = CLARIFY.test(ctx.prevChild) || /·\s*(?:another|clarify|confused)/.test(ctx.prevRead ?? "");
+    const giveUp = !clar && GIVE_UP_ANY.test(ctx.prevChild);
+    if (!clar && !(giveUp && m[2] === "problem")) return null;
+    const we = ctx.script?.skills?.[Number(m[1]) - 1]?.workedExample;
+    const sm = m[2] === "problem" ? we?.simpler : we?.steps?.[Number(m[3]) - 1]?.simpler;
+    const t = sm?.hi ?? sm?.en ?? (typeof sm === "string" ? sm : null);
+    if (!t) return null;
+    // (said already on that part — a third ask may move on, as after a key)
+    if (key(p.text).includes(key(t))) return null;
+    return key(r.text).includes(key(t)) ? null : `a ${giveUp ? "give-up" : "clarify"} on the worked ${m[2]} not answered with its simpler`;
+  },
   /** A second clarify on one part (dc-r8-second-clarify-shows-not-rewords): the same authored line with the board shown, then the
-   *  check-in — never the card, never the key. PENDING: reported, not gated, until the clarify column switch (C1 step 3). */
-  secondClarify(L, r) {
+   *  check-in — never the card, never the key (unless the part was the key). Gated (state.js step's second-clarify cell). */
+  secondClarify(L, r, i, ctx) {
     if (r.clarifyN !== 2) return null;
     if (cardIn(r)) return "a second clarify answered with the card";
-    if (KEY_SAID.test(r.text)) return "a second clarify answered with the key";
+    // (the same line: when the part they asked about was the key and its why, it is the key again)
+    if (KEY_SAID.test(r.text) && !(ctx?.prevT && KEY_SAID.test(ctx.prevT.text))) return "a second clarify answered with the key";
     return CHECKIN.test(norm(r.text)) ? null : "a second clarify that does not end on its check-in";
   },
   /** An English word and its Hindi twin in one turn. */
@@ -374,7 +401,9 @@ function scriptUses(ctx, w) {
 }
 
 /** Predicates that report and do not gate yet (the gate test leaves them out): each names the step that makes it pass. */
-export const PENDING = new Set(["secondClarify", "twinsData"]);
+// (secondClarify gates from 2026-11-11: the stuck child says "phir bhi samajh nahi aaya" right after her first re-explanation, and the
+// walk's second-clarify cell — the same line, then the check-in — holds it at 0)
+export const PENDING = new Set(["twinsData"]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
