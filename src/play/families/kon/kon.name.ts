@@ -178,10 +178,19 @@ function arcGeo(p: NameParamsLike): ((x: number, y: number) => number)[] {
     const ha = headingOf(P[c.a][0] - v[0], P[c.a][1] - v[1]), hb = headingOf(P[c.b][0] - v[0], P[c.b][1] - v[1]);
     let d = norm(hb - ha); if (d > 180) d -= 360;
     const e1: [number, number] = [v[0] + r * Math.cos(R(ha)), v[1] + r * Math.sin(R(ha))], e2: [number, number] = [v[0] + r * Math.cos(R(ha + d)), v[1] + r * Math.sin(R(ha + d))];
+    // the sector test by cross products, not atan2 (the generator's touch-disc search calls this tens of thousands of times per
+    // level; tests/r8-games-kon-name.test.mjs holds the picker to 50 ms of CPU): inside when the point lies on the arm-a side
+    // turning towards arm b and not past arm b. Exact for |d| < 180, which every served corner is (each is 20°..160°)
+    const ua = [Math.cos(R(ha)), Math.sin(R(ha))], ub = [Math.cos(R(ha + d)), Math.sin(R(ha + d))], sg = d >= 0 ? 1 : -1;
+    const wide = Math.abs(d) >= 179.999;
+    const dist = (dx: number, dy: number) => Math.sqrt(dx * dx + dy * dy);
     return (x: number, y: number) => {
-      const phi = headingOf(x - v[0], y - v[1]), rel = d >= 0 ? norm(phi - ha) : norm(ha - phi);
-      if (rel <= Math.abs(d)) return Math.abs(Math.hypot(x - v[0], y - v[1]) - r);
-      return Math.min(Math.hypot(x - e1[0], y - e1[1]), Math.hypot(x - e2[0], y - e2[1]));
+      const wx = x - v[0], wy = y - v[1];
+      let inside: boolean;
+      if (wide) { const phi = headingOf(wx, wy), rel = d >= 0 ? norm(phi - ha) : norm(ha - phi); inside = rel <= Math.abs(d); }
+      else inside = sg * (ua[0] * wy - ua[1] * wx) >= 0 && sg * (wx * ub[1] - wy * ub[0]) >= 0;
+      if (inside) return Math.abs(dist(wx, wy) - r);
+      return Math.min(dist(x - e1[0], y - e1[1]), dist(x - e2[0], y - e2[1]));
     };
   });
 }
