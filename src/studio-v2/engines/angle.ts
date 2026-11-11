@@ -207,4 +207,4 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
     board: () => ({ title: `${g.w >= 0 && wave().mode !== "classify" ? key() : 120}° is a turn`, lines: ["Start at the zero arm and turn anticlockwise.", "Longer arms don't make a bigger angle."], figure: { kind: "angle", deg: g.w >= 0 && wave().mode !== "classify" ? key() : 120 }, accent: C.ion }),
   };
 }
-export const angle: EngineDef<AngleSpec> = { archetype: "angle-cannon@1", label: "Game · Turret", accent: C.ion, create };
+export const angle: EngineDef<AngleSpec> = { archetype: "angle-cannon@1", label: "Game · Lighthouse", accent: C.ion, create };
