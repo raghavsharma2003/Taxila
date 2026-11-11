@@ -103,6 +103,26 @@ They were taken from the Kaksha Desk dev page (`src/ui-v3/kaksha/dev/desk.html?c
 - **The wordmark** reads "Taxila" in the markup (views.tsx, Who.tsx). The current look keeps its uppercase through CSS (`.kx-mark`), so production is unchanged.
 - **Images:** `before-home*`, `after-a-home*` and `after-b-home*` (state start, and done with "One more"), from `src/ui-v3/kaksha/dev/index.html?screen=home&state=…&tx=…`.
 
+## Step d: onboarding
+
+- **The switch on set-up.** The StepFrame root (`src/onboarding/Layout.tsx`) carries `data-tx` and `data-tx-surface="light"`: these are the parent's screens, so they are light in both themes. The bridge also covers Kaksha roots nested inside a themed root, so the child-facing panels (her voice sample, her name) follow without touching their markup, which `tests/r11-asha-volt.test.mjs` pins.
+- **What `src/ui-v3/r8/onboarding.css` removes:**
+  - the carbon grid;
+  - the "// " eyebrows and legend prefixes;
+  - the slanted, glowing progress cells (now a thin line);
+  - chamfered tiles, buttons and PIN keys;
+  - corner brackets;
+  - mono uppercase labels;
+  - the "»" chevron and the sweep on the primary button;
+  - the diamond PIN dots.
+- **What is in their place:**
+  - the title in the display face;
+  - labels in sentence case;
+  - the chosen tile in the teacher's colour;
+  - one accent primary action (the 2-second hold gate keeps its behaviour).
+- **Ownership:** `src/onboarding/**` is Learning's in round 7's table. The brief assigns this screen to Design, so the only edit there is the root attribute and one import. The styling lives in this stream's file.
+- **Images:** `before-onb-class*`, `after-a-onb-class*` and `after-b-onb-class*` (step 1); `before-onb-promises-p360` and `after-a-onb-promises-p360` (step 2).
+
 ## Not changed (other owners)
 
 - **Studio's piece chrome.** The "Picture" chip, the beat dots and the 40 px band above a Studio piece are Studio's (`src/studio/**`). Under the theme only the piece's inner ring is dropped, by CSS in this stream's file. A Studio patch could fold the chip into the board card.

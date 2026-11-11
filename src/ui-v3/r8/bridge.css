@@ -8,10 +8,12 @@
      - mixup → --tx-mix
      - muted → --tx-ink-3
    Specificity: .kx[data-tx][data-tx][data-ktheme] is (0,4,0). That outranks every Kaksha look block (at most (0,3,0)),
-   whatever order the chunks load in. Nothing here applies without data-tx. */
+   whatever order the chunks load in. A Kaksha root nested inside a themed root (set-up's child panels) is bridged too:
+   [data-tx] .kx.kx[data-ktheme][data-klook] is (0,5,0). Nothing here applies without data-tx. */
 @import "../../styles/tx-tokens.css";
 
-.kx[data-tx][data-tx][data-ktheme] {
+.kx[data-tx][data-tx][data-ktheme],
+[data-tx] .kx.kx[data-ktheme][data-klook] {
   --k-void: var(--tx-bg);
   --k-deep: var(--tx-board);
   --k-raise: var(--tx-surface);
