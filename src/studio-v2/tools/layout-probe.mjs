@@ -212,7 +212,7 @@ const trim = (b) => { const h = b[3] - b[1]; return [b[0], b[1] + h * 0.15, b[2]
 const deep = (a, b, d = 2) => { const i = inter(a, b); return i[2] - i[0] > d && i[3] - i[1] > d; };
 const short = (s) => String(s).replace(/\s+/g, " ").slice(0, 24);
 /** One frame's items (draw order) → fault list [{ kind, a, b }]. PURE. */
-export function frameFaults(items, chrome) {
+export function frameFaults(items, chrome, { touch = false } = {}) {
   // the top layer: everything after the last full-stage scrim
   let from = 0;
   items.forEach((it, i) => { if (it.t === "shape" && it.alpha >= 0.3 && area(it.box) >= 0.9 * W * H) from = i + 1; });
@@ -230,6 +230,9 @@ export function frameFaults(items, chrome) {
     const a = texts[i], b = texts[j]; if (a.s === b.s && iArea(a.box, b.box) > 0.8 * area(a.box)) continue;   // a glow / outline pass
     const ta = trim(a.box), tb = trim(b.box), sm = Math.min(area(ta), area(tb));
     if (sm > 0 && iArea(ta, tb) >= 0.2 * sm) out.push({ kind: "text×text", a: short(a.s), b: short(b.s), box: inter(a.box, b.box) });
+    // (opt-in, regen r3 c5-ch01-t01: a wrapped target's top line sat on the "Lakshya" label above it, a touch the 20 % rule
+    // lets through and a judge called unreadable) two runs whose untrimmed boxes meet at all
+    else if (touch && a.s !== b.s && iArea(a.box, b.box) > 0) out.push({ kind: "text-touch", a: short(a.s), b: short(b.s), box: inter(a.box, b.box) });
   }
   for (const t of texts) for (const c of cards) {
     if (inside(t.box, c.box, 2) || !deep(t.box, c.box, 4)) continue;
@@ -283,7 +286,7 @@ function rngOf(seed) { let a = seed >>> 0; return () => { a = (a + 0x6d2b79f5) >
  * [{ kind, a, b, at, frames, box }], plus run facts. Installs fake DOM globals for the duration (restored before it returns);
  * between frames it yields only to MICROtasks, so nothing else in the process runs while they are installed.
  */
-export async function probe(archetype, spec, box, { maxSecs = 70, seed = 7 } = {}) {
+export async function probe(archetype, spec, box, { maxSecs = 70, seed = 7, touch = false } = {}) {
   const m = await loadModules();
   const def = m.ENGINES[archetype];
   const v = m.validateAny(archetype, spec);
@@ -364,7 +367,7 @@ export async function probe(archetype, spec, box, { maxSecs = 70, seed = 7 } = {
       try { inst.render(ctx, now); } catch (e) { errors.push(String(e?.message ?? e)); }
       rec.on = false;
       if (sample) {
-        const faults = frameFaults(rec.items, chromeRects(box.tray, ui, box.young)), keys = new Set();
+        const faults = frameFaults(rec.items, chromeRects(box.tray, ui, box.young), { touch }), keys = new Set();
         for (const f of faults) {
           const k = `${f.kind}|${f.a}|${f.b}`; if (keys.has(k)) continue; keys.add(k);
           // a cut must be at REST: a card sliding in or out past the edge is motion, not a still the judge is shown

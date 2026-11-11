@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "note": "Topics with NO game target for now (main 2026-11-11 08:49): their catalogue engine cannot show the targeted mix-up, and a game that cannot is worse than none. The lesson stays on the board (no approved piece = no game). Each says what an engine would need; main passes those to Games as backlog.",
+  "note": "Topics with NO game target for now (main 2026-11-11 08:49): their catalogue engine cannot show the targeted mix-up, and a game that cannot is worse than none. The lesson stays on the board (no approved piece = no game). Each says what an engine would need; main passes those to Games as backlog. Three more added 2026-11-11 13:22 (main, after regeneration round 3).",
   "topics": [
     {
       "topicId": "c6-maths-ch02-t02",
@@ -29,6 +29,27 @@
       "misconceptionId": "c6-maths-ch02-t01-m-longer-line",
       "why": "sort-storm's keys are the bins an item belongs in; for this topic (segment, line, ray) the model makes up its own bins ('Khaana 1', 'Khaana 2') and cites unrelated kit items, so no key can be verified (refused unverified_key in regeneration rounds 1 and 2, 4 attempts)",
       "needs": "a computed-key sort: items whose class the engine derives from the drawing itself (two endpoints = segment, one = ray, none = line), or a Games mode that does the same"
+    },
+    {
+      "topicId": "c4-maths-ch06-t01",
+      "engine": "instrument@1",
+      "misconceptionId": "c4-maths-ch06-t01-m-edge-start",
+      "why": "the mix-up is measuring from the ruler's edge or 1, or reading only the end number (an object from 3 to 9 called 9 cm); instrument's cut always starts at 0, so reading the end number is never wrong (judge A, regeneration round 3)",
+      "needs": "an object laid on the ruler off zero (from 3 to 9), read as end minus start"
+    },
+    {
+      "topicId": "c6-maths-ch02-t04",
+      "engine": "angle-cannon@1",
+      "misconceptionId": "c6-maths-ch02-t04-m-orientation",
+      "why": "the mix-up is that a right angle turned on its side is not a right angle; the lighthouse always draws one arm flat, so it cannot show a tilted angle (regeneration round 3 asked 90° every time)",
+      "needs": "an angle whose base arm the engine can turn to any direction, and a round that sorts tilted angles by kind"
+    },
+    {
+      "topicId": "c5-maths-ch03-t02",
+      "engine": "angle-cannon@1",
+      "misconceptionId": "c5-maths-ch03-t02-m-fits-means-right",
+      "why": "the mix-up is about checking a corner against a folded paper corner (a near-right angle that seems to fit is called right); the lighthouse has no paper-corner tool and the same flat base arm (regeneration rounds 1b and 3)",
+      "needs": "a fold-a-corner square tester the child lays on a drawn corner, showing the gap when the angle is not 90°"
     }
   ]
 }

@@ -203,17 +203,28 @@ test("approval lane, predicate (main 2026-11-10, c5-t02 withdrawn): every value 
   assert.equal(valuesOnTicks("angle-cannon@1", { waves: [an("classify", "protractor", [45, 90, 135])] }).ok, true, "classify asks a kind");
   const { ENGINE_SPECS } = await import("../shared/studio-spec.ts");
   assert.equal(valuesOnTicks("angle-cannon@1", ENGINE_SPECS["angle-cannon@1"].defaultSpec).ok, true, "the reviewed default holds its own rule");
+  // instrument@1 (regen r3, c4-ch06-t01 / c7-ch03-t01: 8 cm and 0.7 m on a 2 km rule marked every 20 m): a pour, cut or thermo
+  // target is a whole number of small marks; weigh and clock are graded by their own rules
+  const ir = (mode, scaleMax, minor, targets) => ({ mode, title: "Maap", sub: "", items: targets.map((target) => ({ target, show: "cm" })), scaleMax, minor, tol: 0, speed: 1 });
+  const offI = valuesOnTicks("instrument@1", { rounds: [ir("cut", 2000000, 20000, [700, 360, 40])] });
+  assert.equal(offI.ok, false); assert.match(offI.why, /round 1 "Maap": 700 mm is not on a mark of a scale marked every 20000/); assert.equal(offI.misses.length, 3);
+  assert.equal(valuesOnTicks("instrument@1", { rounds: [ir("cut", 3000, 30, [60, 80])] }).ok, false, "8 cm on 3 cm marks");
+  assert.equal(valuesOnTicks("instrument@1", { rounds: [ir("cut", 1000, 10, [60, 80, 350])] }).ok, true);
+  assert.equal(valuesOnTicks("instrument@1", { rounds: [ir("thermo", 420, 2, [376])] }).ok, true);
+  assert.equal(valuesOnTicks("instrument@1", { rounds: [ir("weigh", 5000, 5, [1350])] }).ok, true, "weigh: not a scale mark");
+  const { ENGINE_SPECS_EXT } = await import("../shared/studio-spec-ext/index.ts");
+  assert.equal(valuesOnTicks("instrument@1", ENGINE_SPECS_EXT["instrument@1"].defaultSpec).ok, true, "the reviewed default holds its own rule");
   // (the store: the two withdrawn pilot pieces are gone — a topic may hold a later, separately judged piece (c5-t02 round 2) — c6 stays)
   const held = (t) => (fs.existsSync(path.join(ROOT, "data/studio-approved", t)) ? fs.readdirSync(path.join(ROOT, "data/studio-approved", t)).filter((f) => f.endsWith(".json")) : []);
   assert.deepEqual(held("c5-maths-ch02-t02"), ["gen-c5-maths-ch02-t02-a1bc53b3.json"], "only regeneration round 2's piece");
-  assert.deepEqual(held("c4-maths-ch05-t01"), []);
+  assert.deepEqual(held("c4-maths-ch05-t01"), ["gen-c4-maths-ch05-t01-af82c0ad.json"], "only regeneration round 3's piece (two judges)");
   assert.ok(fs.existsSync(path.join(ROOT, "data/studio-approved/c6-maths-ch06-t01")));
 });
 
 test("no game target (main 2026-11-11 08:49): a topic whose engine cannot show its mix-up gets no generation target and no game in the tray — the lesson stays on the board", async () => {
   const { deriveTarget, noGameTarget, approvedFor } = await import("../server/studio/approved.js");
   const list = JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-approved/no-game-target.json"), "utf8")).topics;
-  assert.deepEqual(list.map((t) => t.topicId).sort(), ["c4-maths-ch14-t01", "c6-maths-ch02-t01", "c6-maths-ch02-t02", "c6-maths-ch02-t03"]);
+  assert.deepEqual(list.map((t) => t.topicId).sort(), ["c4-maths-ch06-t01", "c4-maths-ch14-t01", "c5-maths-ch03-t02", "c6-maths-ch02-t01", "c6-maths-ch02-t02", "c6-maths-ch02-t03", "c6-maths-ch02-t04"]);
   for (const t of list) {
     assert.ok(t.why && t.needs, `${t.topicId} says why and what an engine would need`);
     assert.ok(noGameTarget(t.topicId));
@@ -333,11 +344,45 @@ test("geo-forge geometry terms (main 2026-11-11): each shape/measure string hold
   const c = raw("candidates-regen-r2", "c7-maths-ch05-t02.candidate.json");
   const r = geometryTerms("c7-maths-ch05-t02", c.spec, "geo-forge@1");
   assert.equal(r.ok, false);
-  assert.match(r.why, /isosceles "Samdvipahu" \(textbook: samdvibahu\)/, "a misspelt term is refused");
+  assert.match(r.why, /isosceles "Samdvipahu" \(textbook: samdvibahu/, "a misspelt term is refused");
   assert.match(r.why, /parallel "Samaan disha"/, "the rule given as the parallel label is not the term");
   const c6 = raw("candidates-regen-r2", "c6-maths-ch08-t01.candidate.json");
-  assert.match(geometryTerms("c6-maths-ch08-t01", c6.spec, "geo-forge@1").why, /perimeter "Paridhi" \(textbook: parimaap\)/, "a circle's word for perimeter is refused");
+  assert.match(geometryTerms("c6-maths-ch08-t01", c6.spec, "geo-forge@1").why, /perimeter "Paridhi" \(textbook: parimaap/, "a circle's word for perimeter is refused");
   const good = { ...c.spec, strings: { ...c.spec.strings, isosceles: "Samdvibahu tribhuj", parallel: "Dot se samaantar rekha", trapezium: "Samlamb chaturbhuj" } };
   assert.equal(geometryTerms("c7-maths-ch05-t02", good, "geo-forge@1").ok, true);
   assert.equal(geometryTerms("c5-maths-ch13-t01", { strings: { sq: "varg" } }, "sieve-storm@1").applies, false, "other engines are not checked");
+  // (main 2026-11-11: the lesson's own words pass — a plain description made only of words the topic's script uses)
+  const lesson = JSON.stringify(JSON.parse(fs.readFileSync(path.join(ROOT, "data/lesson-scripts-staged/c7-maths-ch05-t02.json"), "utf8"))).toLowerCase();
+  assert.ok(/\bdisha\b/.test(lesson) && /\brekha/.test(lesson));
+  const plain = { ...good, strings: { ...good.strings, parallel: "Ek hi disha" } };
+  const said = ["ek", "hi", "disha"].every((w) => new RegExp(`\\b${w}\\b`).test(lesson));
+  assert.equal(geometryTerms("c7-maths-ch05-t02", plain, "geo-forge@1").ok, said, "plain words pass exactly when the script says them");
+  assert.equal(geometryTerms("c7-maths-ch05-t02", { ...good, strings: { ...good.strings, parallel: "Zebra khaana" } }, "geo-forge@1").ok, false, "words the script never says are refused");
+});
+
+test("a number word the model writes anyway is refused at generation, by name, before any paid check (main 2026-11-11, round 3: 'Teen nakshe banao' scored 6)", async () => {
+  const { createBuilders } = await import("../server/stagecraft/builders.js");
+  const { attemptOutcome } = await import("../server/studio/approved.js");
+  const { ENGINE_SPECS_EXT } = await import("../shared/studio-spec-ext/index.ts");
+  const spec = structuredClone(ENGINE_SPECS_EXT["rule-machine@1"].defaultSpec); spec.rounds[0].sub = "Teen nakshe banao";
+  let q8Called = false;
+  const b = createBuilders({ chat: async () => ({ json: structuredClone(spec), usage: {} }), q8: async () => { q8Called = true; return { ok: true }; } });
+  const r = await b.generatedSpec({ archetype: "rule-machine@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, { topicId: "c4-maths-ch03-t02", lang: "hinglish", band: "B2" });
+  assert.equal(r.ok, false); assert.equal(r.why, "number_words"); assert.equal(q8Called, false, "no content check is spent on it");
+  assert.match(attemptOutcome(r).why, /number_words: "Teen nakshe banao" — write digits/);
+});
+
+test("a word that mixes scripts is refused, in every engine (main 2026-11-11, round 3: 'Tribhuज', 'Samलamb')", async () => {
+  const { mixedScriptWords, mixedScriptInSpec, attemptOutcome } = await import("../server/studio/approved.js");
+  assert.deepEqual(mixedScriptWords("Tribhuज aur Samलamb chaturbhuj"), ["Tribhuज", "Samलamb"]);
+  assert.deepEqual(mixedScriptWords("tribhuj त्रिभुज, पानी-water"), [], "each word in one script passes, in a mixed line too");
+  assert.deepEqual(mixedScriptInSpec({ rounds: [{ title: "Bhinn", sub: "हिस्सेdaar" }], strings: { a: "ok" } }), ["हिस्सेdaar"]);
+  const { createBuilders } = await import("../server/stagecraft/builders.js");
+  const { ENGINE_SPECS_EXT } = await import("../shared/studio-spec-ext/index.ts");
+  const spec = structuredClone(ENGINE_SPECS_EXT["rule-machine@1"].defaultSpec); spec.rounds[0].sub = "Niyam dhoondhoज";
+  let q8Called = false;
+  const b = createBuilders({ chat: async () => ({ json: structuredClone(spec), usage: {} }), q8: async () => { q8Called = true; return { ok: true }; } });
+  const r = await b.generatedSpec({ archetype: "rule-machine@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, { topicId: "c4-maths-ch03-t02", lang: "hinglish", band: "B2" });
+  assert.equal(r.ok, false); assert.equal(r.why, "mixed_script"); assert.equal(q8Called, false);
+  assert.match(attemptOutcome(r).why, /mixed_script: "dhoondhoज" — one script per word/);
 });

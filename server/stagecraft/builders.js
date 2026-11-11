@@ -17,6 +17,7 @@ import { ENGINE_SPECS, validateSpec, specJsonSchema } from "../../shared/studio-
 import { ENGINE_SPECS_EXT, validateAny } from "../../shared/studio-spec-ext/index.ts";
 import { authoredSpec, kitTopicAny, unknownKitIds, titleOf, stringsOfSpec } from "./catalogue.js";
 import { keyTerms } from "../forge/explainer/terms.js";
+import { mixedScriptInSpec, numberWords } from "../studio/approved.js";
 import { sceneFor } from "../forge/animate/scenes.js";
 
 /** topicId → kit topic (data/kits/c4-c7, every subject since ship5 p4-content: the catalogue covers all six), read once. */
@@ -169,6 +170,12 @@ export function createBuilders(deps = {}) {
     // the model authored (a tap answer, a date, a bin, an order, a rhyme) is never graded against: the spec is refused and
     // the checked engine default serves.
     if (!keysVerified(c.archetype, v.spec, key.topicId)) return { ok: false, usd, why: "unverified_key" };
+    // (main 2026-11-11, round 3: "Teen nakshe banao" in a geo-forge sub reached the content check and scored 6 — the digits rule
+    // is in the prompt, but a number word the model writes anyway is refused here, by name, before any paid check)
+    const nw = []; JSON.stringify(v.spec ?? {}, (k, val) => { if (typeof val === "string" && numberWords(val).length) nw.push(val); return val; });
+    if (nw.length) return { ok: false, usd, why: "number_words", words: nw.slice(0, 4) };
+    const ms = mixedScriptInSpec(v.spec);   // (main 2026-11-11: "Tribhuज" — a word in two scripts is never right)
+    if (ms.length) return { ok: false, usd, why: "mixed_script", words: ms.slice(0, 4) };
     // Q8 on every child-visible string the model WROTE: strings already in this topic's checked authored spec (or the
     // reviewed default) were checked when that spec was; the new ones go through Content Safety (+ the brain classifier
     // for Hindi / Hinglish) — fail closed (ship5 p4-content: this keeps Content Safety to the strings that need it)

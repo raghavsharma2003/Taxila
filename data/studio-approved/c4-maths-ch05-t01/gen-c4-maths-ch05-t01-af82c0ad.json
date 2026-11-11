@@ -1,0 +1,151 @@
+{
+  "v": 1,
+  "id": "gen-c4-maths-ch05-t01-af82c0ad",
+  "approved": true,
+  "hash": "af82c0ad59197bd66e30a6748e0298e7",
+  "archetype": "slice-at@1",
+  "spec": {
+    "archetype": "slice-at@1",
+    "skills": [
+      "c4-maths-ch05-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Dhyan se dekho",
+      "wave": "Agla round",
+      "cut": "Kato",
+      "parts": "Hisse chuno",
+      "exact": "Bilkul sahi",
+      "close": "Kaafi paas",
+      "offBy": "Thoda chook gaye",
+      "runDone": "Round poora",
+      "accuracy": "Tumhari pakad",
+      "sliced": "Kata gaya",
+      "chain": "Lagataar sahi",
+      "smaller": "Chhota tukda"
+    },
+    "waves": [
+      {
+        "title": "3 hisse",
+        "sub": "Bar ko 3 hisso mein kato",
+        "items": [
+          {
+            "parts": 3
+          }
+        ],
+        "gravity": 0.85,
+        "gap": 2.6,
+        "marks": false,
+        "targets": "c4-maths-ch05-t01-m-unequal-parts"
+      },
+      {
+        "title": "4 hisse",
+        "sub": "Bar ko 4 hisso mein kato",
+        "items": [
+          {
+            "parts": 4
+          }
+        ],
+        "gravity": 0.95,
+        "gap": 2.4,
+        "marks": false,
+        "targets": "c4-maths-ch05-t01-m-unequal-parts"
+      },
+      {
+        "title": "5 hisse",
+        "sub": "Bar ko 5 hisso mein kato",
+        "items": [
+          {
+            "parts": 5
+          }
+        ],
+        "gravity": 0.9,
+        "gap": 2.8,
+        "marks": false,
+        "targets": "c4-maths-ch05-t01-m-unequal-parts"
+      },
+      {
+        "title": "6 hisse",
+        "sub": "Bar ko 6 hisso mein kato",
+        "items": [
+          {
+            "parts": 6
+          }
+        ],
+        "gravity": 1,
+        "gap": 2.5,
+        "marks": false,
+        "targets": "c4-maths-ch05-t01-m-unequal-parts"
+      }
+    ]
+  },
+  "for": {
+    "topic": "c4-maths-ch05-t01",
+    "skill": "c4-maths-ch05-t01-s1",
+    "misconceptionId": "c4-maths-ch05-t01-m-unequal-parts",
+    "beat": "rem:c4-maths-ch05-t01-m-unequal-parts",
+    "when": "remediation"
+  },
+  "because": {
+    "mixup": {
+      "id": "c4-maths-ch05-t01-m-unequal-parts",
+      "belief": "Thinks the parts need not be equal to be called halves, thirds or quarters",
+      "signs": [
+        "Calls any 3 pieces 'thirds'",
+        "Cuts a cake into 4 uneven pieces and calls each a quarter",
+        "Counts pieces without checking size"
+      ]
+    },
+    "rule": "shown only to a child the learner model holds this mix-up for, at this beat; any other child gets the script's own board"
+  },
+  "source": "generated",
+  "predicate": {
+    "ok": true,
+    "why": null
+  },
+  "render": {
+    "byViewport": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "images": [
+      {
+        "vp": "p412",
+        "file": "piece-p412.png",
+        "sha256": "d74633adc7828cf49bc0a5b29f9375653fc6759ec25282e9d516cd7510a3ed2a"
+      },
+      {
+        "vp": "l1366",
+        "file": "piece-l1366.png",
+        "sha256": "bb84be2d1032185239542a1bc4b25722e837bee0216aa774612af7bd34eeb2c1"
+      }
+    ]
+  },
+  "judge": {
+    "verdict": "pass",
+    "by": "a separate Claude judge (Opus, packet only)",
+    "promptSha256": "6533992ad0d93b49abda38b305ae4177f65441f620b5d47e6317c70cd0630ba7",
+    "prompt": "data/studio-approved/JUDGE-PROMPT.md",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Sub text 'Bar ko 3 hisso mein kato' uses the common informal Roman spelling 'hisso' (for hisson); treated as an accepted Roman Hinglish variant, not a misspelling. Waves 2-4 screens are not shown; judged from the spec, whose titles and subs match each wave's parts count (3, 4, 5, 6), with marks false throughout."
+  },
+  "judge2": {
+    "verdict": "pass",
+    "by": "a second separate Claude judge (Opus, packet only)",
+    "content": "pass",
+    "faults": [],
+    "notes": "Each wave's title, sub and items agree (3/4/5/6 hisse with parts 3/4/5/6). marks:false on every wave, so no cut points are drawn. No sub states the equal-size rule. On screen the text is 'KATO 3 hisse chuno', '3 hisse chuno' and 'Dhyan se dekho'; it is legible at both sizes. 'hisso' (for hisson) and 'chook' are accepted as informal Roman Hinglish spellings."
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T12:45:20.938Z"
+  },
+  "approvedAt": "2026-11-11T13:01:14.250Z"
+}

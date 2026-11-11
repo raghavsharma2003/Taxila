@@ -14,7 +14,7 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { checkSpec, kitTopicAny } from "../server/stagecraft/catalogue.js";
-import { specHash, fileHash, JUDGED_SIZES, APPROVAL_SIZES, numberWords, oddCaseWords, valuesOnTicks, untranslatedStrings, geometryTerms } from "../server/studio/approved.js";
+import { specHash, fileHash, JUDGED_SIZES, APPROVAL_SIZES, numberWords, oddCaseWords, mixedScriptInSpec, valuesOnTicks, untranslatedStrings, geometryTerms } from "../server/studio/approved.js";
 import { boardTwinFor } from "../server/stagecraft/builders.js";
 
 const arg = (k, d = null) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -91,10 +91,13 @@ try {
     const untr = untranslatedStrings(p.archetype, pred0.spec ?? p.spec);
     // (main 2026-11-11: geo-forge's geometry words from the textbook and the topic's own script terms)
     const geo = geometryTerms(p.topicId, pred0.spec ?? p.spec, p.archetype);
+    // (main 2026-11-11: a word that mixes scripts, "Tribhuज", is never right — every engine)
+    const mixed = mixedScriptInSpec(pred0.spec ?? p.spec);
     // (the digits rule is a predicate too: a number word in a child-visible string fails before any judge — rubric v2 item 4)
     const pred = pred0.ok && !ticks.ok ? { ...pred0, ok: false, why: `values off the ticks: ${ticks.why}` }
       : pred0.ok && !untr.ok ? { ...pred0, ok: false, why: untr.why }
       : pred0.ok && words.length ? { ...pred0, ok: false, why: `number words (digits rule): ${words.slice(0, 4).join(", ")}` }
+      : pred0.ok && mixed.length ? { ...pred0, ok: false, why: `a word mixes scripts: ${mixed.slice(0, 4).map((w) => `"${w}"`).join(", ")}` }
       : pred0.ok && oddCase.length ? { ...pred0, ok: false, why: `a case break inside a word (a typo): ${oddCase.slice(0, 4).map((w) => `"${w}"`).join(", ")}` }
       : pred0.ok && !geo.ok ? { ...pred0, ok: false, why: geo.why } : pred0;
     const dir = path.join(OUT, p.id);
