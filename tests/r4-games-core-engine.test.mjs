@@ -33,6 +33,13 @@ before(async () => {
   base = server.resolvedUrls.local[0];
   const { chromium } = await import("playwright");
   browser = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
+  // Warm the dev server once, before any scenario is timed: the first load makes Vite transform the whole 3D engine, which took
+  // longer than page.goto's default 30 s under the gate's parallel load (load average 10 on 4 cores, 2026-11-11). Same rule as
+  // tests/engines-browser.test.mjs: a generous ceiling here, readiness waits in the scenarios.
+  const warm = await browser.newPage({ viewport: { width: 360, height: 800 } });
+  await warm.goto(url(GOALS.place), { timeout: 120_000 });
+  await warm.waitForFunction(() => window.__play && document.querySelector("[data-render]")?.getAttribute("data-render") !== "wait", null, { timeout: 120_000 });
+  await warm.close();
 });
 after(async () => { await browser?.close(); await server?.close(); });
 
@@ -40,7 +47,7 @@ async function open(g, extra = "") {
   const page = await browser.newPage({ viewport: { width: 360, height: 800 } });
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e.message)));
-  await page.goto(url(g, extra));
+  await page.goto(url(g, extra), { timeout: 60_000 }); // a ceiling: the engine is warm (before), so this only waits on a loaded page
   await page.waitForFunction(() => window.__play && document.querySelector("[data-render]")?.getAttribute("data-render") !== "wait", null, { timeout: 30000 });
   await page.waitForFunction(() => !window.__play.stage3d || window.__play.stage3d.perf().drawn > 2, null, { timeout: 30000 });
   await page.waitForTimeout(300);

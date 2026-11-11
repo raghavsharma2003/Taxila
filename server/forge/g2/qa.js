@@ -246,6 +246,29 @@ async function playOnce(browser, { html, levels, init, wrongPaths = true, captur
   }
 }
 
+/** A play needs at least this many graded items before a constant key position counts as a leak (see browserGate). */
+export const KEY_POSITION_MIN_ITEMS = 3;
+
+/** The mechanic call a Budget.slow_call finding names ("<name> <ms>ms" → "<name>"). */
+const slowName = (f) => String(f.detail ?? "").replace(/\s+\d+ms$/, "");
+
+/**
+ * PURE. Q3.binding's findings over the gate's two plays. Contract refusals and throws block from either play. A slow call is
+ * wall clock on a page the OS can preempt, so one over-budget call is a note; it blocks only when the SAME mechanic call is
+ * over budget in BOTH plays (a slow mechanic is slow every time; a preempted page is not).
+ * @param {{code: string, detail?: string}[]} a @param {{code: string, detail?: string}[]} b
+ */
+export function bindingFindings(a = [], b = []) {
+  const bind = (f) => /^(ForgeContract|Agent|Budget)\./.test(f.code);
+  const slowB = new Set(b.filter((f) => f.code === "Budget.slow_call").map(slowName));
+  const blockers = [], notes = [];
+  for (const f of a.filter(bind)) {
+    if (f.code !== "Budget.slow_call") blockers.push(f);
+    else (slowB.has(slowName(f)) ? blockers : notes).push(f);
+  }
+  return { blockers, notes };
+}
+
 /**
  * The browser half of the gate.
  * @param {{ html: string, levels: object[] (server LevelSpecs, with truth), topicId: string, ageBand: string, lang?: string, seed?: number, capture?: boolean, browser?: import("playwright-core").Browser }} o
@@ -260,7 +283,9 @@ export async function browserGate(o) {
     const a = await playOnce(browser, { html: o.html, levels: o.levels, init, capture: !!o.capture });
     const b = await playOnce(browser, { html: o.html, levels: o.levels, init });
     const gates = [...a.checks];
-    const constAt = (p) => p.length >= 3 && new Set(p).size === 1;
+    // KEY_POSITION_MIN_ITEMS: a play with fewer graded items never trips the check. With 1 or 2 items a constant position is
+    // what any honest shuffle shows most of the time (2 items on 4 options: 1 in 4), so it says nothing about a leak.
+    const constAt = (p) => p.length >= KEY_POSITION_MIN_ITEMS && new Set(p).size === 1;
     // constant within EACH play is the leak a child can use (after two items they know where the key sits), whether or not the two
     // plays agree on the index: a mechanic that pins the key to one slot per mount is as leaky as one that pins it to slot 1
     if (constAt(a.keyPositions) && constAt(b.keyPositions)) gates.push({ id: "leak.key_position", status: "fail", detail: `key at one option throughout each of two plays (options ${a.keyPositions[0]} and ${b.keyPositions[0]})` });
@@ -268,7 +293,7 @@ export async function browserGate(o) {
     gates.push({ id: "Q2.network", status: a.external.length ? "fail" : "pass", detail: a.external.slice(0, 4).join(" ") });
     gates.push({ id: "Q2.csp_violations", status: a.violations.length ? "fail" : "pass", detail: a.violations.slice(0, 3).map((v) => `${v.dir} ${v.uri}`).join("; ") });
     gates.push({ id: "Q2.protocol", status: a.events.some((e) => e.type === "protocol_violation") ? "fail" : "pass", detail: "" });
-    const blockers = a.seamFindings.filter((f) => /^(ForgeContract|Agent|Budget)\./.test(f.code));
+    const { blockers, notes } = bindingFindings(a.seamFindings, b.seamFindings);
     gates.push({ id: "Q3.binding", status: blockers.length ? "fail" : "pass", detail: blockers.slice(0, 4).map((f) => `${f.code} ${f.detail}`).join("; ") });
     const errs = a.events.filter((e) => e.type === "error");
     gates.push({ id: "Q3.no_error_events", status: errs.length ? "fail" : "pass", detail: errs.slice(0, 3).map((e) => e.message).join("; ") });
@@ -300,7 +325,7 @@ export async function browserGate(o) {
       if (!ok && (p.misc || null) !== (kitMisc || null)) truthFails.push(`${p.item}: misc ${p.misc} ≠ kit ${kitMisc}`);
     }
     gates.push({ id: "Q5.answer_key", status: answers.length && !truthFails.length ? "pass" : "fail", detail: truthFails.slice(0, 4).join("; ") || `${answers.length} answers re-graded against the kit` });
-    const metrics = { playMs: a.ms, events: a.events.length, answers: answers.length, items: expected, findings: a.seamFindings.length };
+    const metrics = { playMs: a.ms, events: a.events.length, answers: answers.length, items: expected, findings: a.seamFindings.length, notes: notes.map((f) => `${f.code} ${f.detail}`) };
     return { gates, metrics, frames: a.frames, trace: a.events };
   } finally {
     if (own) await browser.close();
