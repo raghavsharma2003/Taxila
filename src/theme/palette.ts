@@ -97,16 +97,16 @@ const PAPER_STUDIO: StudioColours = {
   ink: "#1C1A16", ink2: "#4B453C", ink3: "#655E53",
   // her indigo for the part in focus; the child's move is marigold's text-safe dark (--move-text); green for right,
   // rust for "look again"; the science teal and the sun deepened to carry on paper
-  // (answer #185850 and mix-up #B6581E, not the prototype's #1C7348 / #A84B22: those two merge for a red-green-blind
-  // child (tests/theme-palette.test.mjs); these differ in lightness, 8.1 against 4.7 : 1 on paper, and both carry text)
-  ion: "#3B47B0", ionDeep: "#2A3490", volt: "#7E4C00", mint: "#185850", amber: "#B6581E",
+  // (Design's A values, 2026-11-11: answer #0B736A and mix-up #8A5A00, 0.152 apart for a red-green-blind child and 5.62 /
+  // 5.83 : 1 on paper. The prototype's #1C7348 / #A84B22, and Design's first #0B7356, merged under the deuteranopia check)
+  ion: "#3B47B0", ionDeep: "#2A3490", volt: "#7E4C00", mint: "#0B736A", amber: "#8A5A00",
   sci: "#0E6B66", sun: "#8A5A00", line: "rgba(28,26,22,.10)", line2: "rgba(28,26,22,.22)",
   hi: "#1C1A16", lo: "#000000", onBright: "#1C1A16",
 };
 const PAPER_BOARD: BoardPaletteValues = {
   ground: "#FFFDF8", edge: "#E0D7C7", fillAlpha: 0.26,
-  ink: { chalk: "#1C1A16", ink: "#1C1A16", accent: "#3B47B0", mark: "#B6581E", good: "#185850", soft: "#6F675B" },
-  role: { focus: "#3B47B0", slot: "#185850", answer: "#185850", mixup: "#B6581E", muted: "#6F675B" },
+  ink: { chalk: "#1C1A16", ink: "#1C1A16", accent: "#3B47B0", mark: "#8A5A00", good: "#0B736A", soft: "#6F675B" },
+  role: { focus: "#3B47B0", slot: "#0B736A", answer: "#0B736A", mixup: "#8A5A00", muted: "#6F675B" },
 };
 export const PAPER: Theme = {
   name: "paper",
