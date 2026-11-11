@@ -12,9 +12,9 @@ import { drawCoach, drawIntro, drawStatCard, pill } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
 import { dots } from "../core/dots.ts";
 
-const PIV: XY = [500, 380], PEG = 76, TRAY_Y = 560;
+const PIV: XY = [500, 380], PEG = 76, TRAY_Y = 560, STACK_TOP = 186;
 type Side = "left" | "right";
-interface Item { id: number; w: number; side: Side | null; d: number; fixed: boolean; unknown: boolean; tx: number; ty: number; x: number; y: number }
+interface Item { id: number; w: number; side: Side | null; d: number; fixed: boolean; unknown: boolean; tx: number; ty: number; x: number; y: number; ox?: number; foot?: number }
 
 function create(api: EngineApi, spec: BeamSpec): EngineInstance {
   const T = spec.strings;
@@ -47,14 +47,23 @@ function create(api: EngineApi, spec: BeamSpec): EngineInstance {
     for (const w of tray) { const it = mk(w, null, 0, false, false); it.x = it.tx = x; it.y = it.ty = TRAY_Y; g.items.push(it); x += 110; }
   }
   function stackAll(snap = false) {
-    // items on the same peg stack upward; tray items sit in their slots
-    const slots = new Map<string, number>();
-    for (const it of g.items) {
-      if (!it.side) continue;
-      const k = `${it.side}:${it.d}`, n = slots.get(k) ?? 0; slots.set(k, n + 1);
-      const sz = sizeOf(it.w);
-      it.ty = n * (sz + 4) + sz / 2 + 8;       // lift above the beam (applied in beam frame at render)
-      if (snap) { it.x = 0; it.y = it.ty; }
+    // items on the same peg stack straight up (gravity), each on top of the ones below it: the lift is the sum of the
+    // heights under it, not n × its own size (mixed weights on one peg overlapped: layout probe, 2026-11-11)
+    // A stack that would climb into the host's task pill / HUD row (the top STACK_TOP units) goes two abreast when both
+    // neighbouring pegs on that side are empty (round 4's five crates on one peg reached y 140).
+    const pegs = new Map<string, Item[]>();
+    for (const it of g.items) if (it.side) { const k = `${it.side}:${it.d}`; pegs.set(k, [...(pegs.get(k) ?? []), it]); }
+    for (const [k, its] of pegs) {
+      const [side, d] = [k.split(":")[0], +k.split(":")[1]], tall = its.reduce((a, it) => a + sizeOf(it.w) + 6, 0) > PIV[1] - 12 - STACK_TOP;
+      const cols = tall && !pegs.has(`${side}:${d - 1}`) && !pegs.has(`${side}:${d + 1}`) ? 2 : 1;
+      let below = 0, foot = 0;
+      for (let r = 0; r * cols < its.length; r++) {
+        const row = its.slice(r * cols, r * cols + cols), rs = Math.max(...row.map((it) => sizeOf(it.w)));
+        row.forEach((it, i) => { it.ty = below + rs / 2; it.ox = row.length === 2 ? (i ? 1 : -1) * (rs / 2 + 3) : 0; });
+        if (r === 0) foot = row.length === 2 ? rs + 3 : rs / 2;
+        below += rs + 6;
+      }
+      for (const it of its) { it.foot = foot; if (snap) { it.x = 0; it.y = it.ty; } }
     }
   }
   api.onPointer({
@@ -95,7 +104,10 @@ function create(api: EngineApi, spec: BeamSpec): EngineInstance {
   function posOf(it: Item): XY {
     if (!it.side) return [it.x, it.y];
     if (pans()) { const [hx, hy] = beamPt(it.side, 4); const n = on(it.side).indexOf(it); return [hx - 30 + (n % 3) * 30, hy + 150 - Math.floor(n / 3) * 34 - sizeOf(it.w) / 2]; }
-    return beamPt(it.side, it.d, it.ty);
+    // upright crates: the stack rises world-vertically from the peg, and the seat clears the tilted beam's top face
+    // under the crate's lower corner (rotated stacks fanned out and their corners crossed)
+    const [bx, by] = beamPt(it.side, it.d), seat = 12 / Math.cos(g.theta) + (it.foot ?? sizeOf(it.w) / 2) * Math.abs(Math.tan(g.theta));
+    return [bx + (it.ox ?? 0), by - seat - it.ty];
   }
   function update(dt: number) {
     g.stateT += dt;
@@ -166,14 +178,15 @@ function create(api: EngineApi, spec: BeamSpec): EngineInstance {
     ctx.save(); ctx.translate(PIV[0], PIV[1]); ctx.rotate(g.theta);
     bloom(ctx, lv ? C.mint : C.ion, 0, 0, bl, lv ? 0.22 : 0.1);
     const gr = ctx.createLinearGradient(0, -12, 0, 12); gr.addColorStop(0, "#C9CFE0"); gr.addColorStop(1, "#6B7390");
-    ctx.fillStyle = gr; roundRect(ctx, -bl, -10, bl * 2, 20, 8); ctx.fill();
+    // the bar is one thick rounded stroke: a filled rect tilted 14° claimed a 225-unit-tall box and every crate in it
+    ctx.strokeStyle = gr; ctx.lineWidth = 20; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(-bl + 10, 0); ctx.lineTo(bl - 10, 0); ctx.stroke(); ctx.lineCap = "butt";
     if (!pans()) for (const s of [-1, 1]) for (let d = 1; d <= 5; d++) { const x = s * d * PEG; ctx.fillStyle = "#1A1F2C"; ctx.beginPath(); ctx.arc(x, 0, 6, 0, Math.PI * 2); ctx.fill(); api.text(ctx, `${d}`, x, 46, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", decor: true }); }
     ctx.fillStyle = "#2F3547"; ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
     if (pans()) for (const side of ["left", "right"] as Side[]) { const [hx, hy] = beamPt(side, 4); ctx.strokeStyle = C.ink3; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(hx - 60, hy + 150); ctx.moveTo(hx, hy); ctx.lineTo(hx + 60, hy + 150); ctx.stroke(); ctx.fillStyle = "#3A4157"; roundRect(ctx, hx - 80, hy + 150, 160, 14, 6); ctx.fill(); }
     // hover target
     if (g.drag && g.hover) { const [hx, hy] = beamPt(g.hover.side, g.hover.d, pans() ? -110 : 30); ctx.strokeStyle = C.volt; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(hx, pans() ? hy + 260 : hy, 36, 0, Math.PI * 2); ctx.stroke(); }
-    for (const it of g.items) if (it.side && g.drag?.it !== it) { const [x, y] = posOf(it); drawCrate(ctx, it, x, y, pans() ? 0 : g.theta); }
+    for (const it of g.items) if (it.side && g.drag?.it !== it) { const [x, y] = posOf(it); drawCrate(ctx, it, x, y, 0); }
     for (const it of g.items) if (!it.side && g.drag?.it !== it) drawCrate(ctx, it, it.x, it.y, 0);
     if (g.drag) drawCrate(ctx, g.drag.it, g.drag.it.x, g.drag.it.y, 0);
     // equation strip on win
@@ -184,7 +197,7 @@ function create(api: EngineApi, spec: BeamSpec): EngineInstance {
       else if (rd.mode === "sameBoth" && rd.unknown) eq = `${rd.unknown.n}x = ${R.reduce((a, p) => a + p.w, 0)}  →  x = ${rd.unknown.w}`;
       else if (rd.mode === "pans") eq = `${R.map((p) => p.w).join(" + ")} = 1000 ${T.g} = 1 ${T.kg}`;
       else eq = `${L.map((p) => `${p.w}×${p.d}`).join(" + ")} = ${R.map((p) => `${p.w}×${p.d}`).join(" + ")}`;
-      ctx.save(); ctx.globalAlpha = g.reveal; pill(api, ctx, eq, 500, 150, { color: C.mint }); ctx.restore();
+      ctx.save(); ctx.globalAlpha = g.reveal; pill(api, ctx, eq, 500, Math.max(150, api.chromeBottom() + 6 + 31), { color: C.mint });   // below the task pill / HUD row ctx.restore();
     }
     fx.drawWorld(ctx); ctx.restore();
     if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${dots(g.r, spec.rounds.length)}`, title: round().title, sub: round().sub, accent: C.sun });

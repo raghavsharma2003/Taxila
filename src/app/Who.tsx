@@ -93,7 +93,7 @@ export default function Who() {
     return scope(
       <KxPage family={young ? "young" : "older"} reducedMotion={reduced} screen="who" bare meTo="/who" className="kx-whosel">
         <header className="kx-top">
-          <span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">TAXILA</span></span>
+          <span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">Taxila</span></span>
           <span className="kx-sp" />
           <Link to="/parent" className="kx-ib kx-cut parent-door" aria-label="Parent corner, for grown-ups"><Glyph name="door" size={22} /></Link>
         </header>

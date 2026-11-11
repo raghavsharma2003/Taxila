@@ -58,6 +58,8 @@ export const ALLOW = {
     // r4 Kaksha (BUILD-SPEC K-P7)
     ["src/ui-v3/kaksha/tokens.css", "the Kaksha palette is defined here (mirrors tokens.ts; tests/r4-kaksha-lint.test.mjs K-MIRROR and K-CONTRAST)"],
     ["src/ui-v3/kaksha/tokens.ts", "the Kaksha palette's source of truth (night / dawn); every other Kaksha file uses the --k-* variables"],
+    // round 8 (docs/design/round8/PHASE2-BRIEF.md §1)
+    ["src/styles/tx-tokens.css", "THE round 8 token set (themes A and B) is defined here; tests/r8-tx-tokens.test.mjs measures every text pair"],
   ],
   "L-DEVA": [
     // ship5 integration (p2-face)

@@ -63,8 +63,9 @@ function create(api: EngineApi, spec: AngleSumSpec): EngineInstance {
       if (al > 0.5) { ctx.save(); ctx.globalAlpha = (al - 0.5) * 2 * tA; ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(P[0] - 260, P[1]); ctx.lineTo(P[0] + 260, P[1]); ctx.stroke(); ctx.restore(); }
     }
     ctx.restore();
-    // the running sum lives in screen space (outside the camera), clear of the safe zones
-    if (tA > 0.01 && V("sum.a") > 0.01) { const cs = corners(pts), sum = cs.reduce((x, c) => x + c.s, 0); ctx.save(); ctx.globalAlpha = V("sum.a"); pill(api, ctx, `${cs.map((c) => Math.round(c.s)).join("° + ")}° = ${Math.round(sum)}°`, 500, 190, { color: C.mint }); ctx.restore(); }
+    // the running sum lives in screen space (outside the camera), below the straight line: the apex's angle label climbs
+    // to y ≈ 175 when the triangle is tall, so a pill up top sat on it (layout probe, 2026-11-11)
+    if (tA > 0.01 && V("sum.a") > 0.01) { const cs = corners(pts), sum = cs.reduce((x, c) => x + c.s, 0); ctx.save(); ctx.globalAlpha = V("sum.a"); pill(api, ctx, `${cs.map((c) => Math.round(c.s)).join("° + ")}° = ${Math.round(sum)}°`, 500, 588, { color: C.mint }); ctx.restore(); }
     if (V("lbl.straight") > 0.01) { ctx.save(); ctx.globalAlpha = V("lbl.straight"); ctx.strokeStyle = C.mint; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(P[0], P[1], WR + 20, Math.PI, 0); ctx.stroke(); api.text(ctx, T.straight, 500, 380, { font: "mono", size: 40, weight: 700, color: C.mint, align: "center" }); ctx.restore(); }
     const ti = V("title.a"); if (ti > 0.01) { ctx.save(); ctx.globalAlpha = ti; api.text(ctx, T.title, 500, 200, { font: "display", size: 96, weight: 800, align: "center", baseline: "middle" }); ctx.restore(); }
     api.fx.drawWorld(ctx);

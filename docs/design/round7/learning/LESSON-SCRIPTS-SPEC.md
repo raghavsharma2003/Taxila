@@ -85,3 +85,16 @@ they speak over; the beat's `convey` must point at something visible on that boa
 7. `convey`, `why`, `move`, `do` are shapes: no quotable sentences.
 8. Class level: c4 = halves/thirds/quarters of shapes and collections and unit-fraction comparison; c5 = fractions on a
    number line up to improper fractions; c6 = perimeter of polygons, 2(l+b), 4×side, finding a side, cost problems.
+
+### Rules from the staged reader pass (main, 2026-11-11; each is also a check.mjs predicate)
+9. A card's key is never heard in its own spoken prompt. Her voice says numerals in words ("60,040" → "sixty thousand
+   forty"), so a read-aloud or place-value card puts its number on its own board and the prompt points at it.
+10. A card's key is never said earlier in the script with that card's own numbers: in the hook, a point, a simpler, a why,
+   a worked step, an earlier card, or an earlier skill's line ("4 × 7 = 28" in s2's worked example before s3 asks 4 × 7).
+11. A card never repeats a kit ladder item (same numbers, same answer). Ask something the practice does not.
+12. A remediation's then-card uses a different object from its say: the say acts the idea out on one thing, and the
+   then-card asks about another. The say never states the then-card's key, including a yes/no or word key.
+13. A skill never asks the same question frame twice. Frames are compared with numbers and letter names masked
+   ("ray XY ke kitne endpoints?" asked for KL, then for GH, is one question).
+14. A rule is stated with its limit, or only for cases inside it: "clockwise goes to bigger numbers" breaks at 12, and
+   "a multiple is never smaller than its number" breaks at 0. Do not delete a rule the point needs. Give its limit.

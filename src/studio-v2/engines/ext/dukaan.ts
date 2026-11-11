@@ -9,7 +9,7 @@ import { C, W, H } from "../../core/tokens.ts";
 import { clamp, hexA, lerp, rng } from "../../core/math.ts";
 import { magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
-import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
+import { drawIntro, drawStatCard, pill, wrapLines } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
@@ -22,6 +22,10 @@ const TILL_Y = 532, COUNTER = { x: 500, y: 168, w: 470, h: 250 }, GIVE = { x: 76
 /** estimate mode's two answers, stacked full width on the right so "Not enough" fits whole at the young floor */
 const EST = [{ val: true, x: 540, y: 296, w: 420, h: 84 }, { val: false, x: 540, y: 396, w: 420, h: 84 }] as const;
 interface Tok { v: number; x: number; y: number; tx: number; ty: number }
+/** One pile per denomination on the counter (2026-11-11, class 5 pay specs: a big bill laid out note by note ran past
+ *  the counter and under the result pill). A pile is the note or coin, plus a "×n" badge beside it when n > 1. */
+interface Pile { v: number; n: number; x: number; y: number; w: number; badgeW: number }
+const PILE_GAP = 12, ROW_GAP = 10, MAX_TOKS = 60;
 
 function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
   const T = spec.strings, accent = C.amber;
@@ -40,13 +44,28 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
   const denoms = () => { const r = rd(); return (DENOMS as readonly number[]).filter((d) => (r.mode === "pay" || r.mode === "change") && (r.coins || d >= 1000)); };
   const till = () => { const ds = denoms(), n = ds.length, w = Math.min(96, (W - 60) / n - 8); return ds.map((v, i) => ({ v, x: 30 + i * ((W - 60) / n) + ((W - 60) / n - w) / 2, w })); };
   function start() {
-    g.toks = []; g.answered = false; g.verdict = ""; g.revealT = 0; g.choice = null; g.crates = []; g.patience = 1;
+    g.toks = []; piles = []; g.answered = false; g.verdict = ""; g.revealT = 0; g.choice = null; g.crates = []; g.patience = 1;
     const r = rd();
     if (r.mode === "pack") g.pile = r.jobs[g.k].n;
     api.task(`${T.round} ${flow.round + 1}`, r.mode === "pay" ? T.bill : r.mode === "change" ? T.change : r.mode === "pack" ? `${T.pack}: ${r.jobs[g.k].need === "all" ? T.carry : T.full}` : `${T.enough}?`);
   }
   const counterSum = () => g.toks.reduce((a, t) => a + t.v, 0);
-  function layoutToks() { let x = COUNTER.x + 20, y = COUNTER.y + 24, rowH = 0; for (const t of g.toks) { const w = t.v >= 1000 ? 118 : 56, h = t.v >= 1000 ? 58 : 56; if (x + w > COUNTER.x + COUNTER.w - 14) { x = COUNTER.x + 20; y += rowH + 10; rowH = 0; } t.tx = x + w / 2; t.ty = y + h / 2; x += w + 10; rowH = Math.max(rowH, h); } }
+  let piles: Pile[] = [], lastCtx: Ctx | undefined;
+  const badgeO = { font: "mono", size: 38, weight: 700 } as const;
+  /** Piles, biggest value first, flowed into rows across the counter's full height (the result pill sits below it). */
+  function layoutToks(ctx?: Ctx) {
+    const counts = new Map<number, number>(); for (const t of g.toks) counts.set(t.v, (counts.get(t.v) ?? 0) + 1);
+    const vs = [...counts.keys()].sort((a, b) => b - a);
+    let x = COUNTER.x + 18, y = COUNTER.y + 18, rowH = 0;
+    piles = vs.map((v) => {
+      const n = counts.get(v)!, noteW = v >= 1000 ? 112 : 54, h = v >= 1000 ? 54 : 54;
+      const badgeW = n > 1 ? (ctx ? api.measure(ctx, `×${n}`, badgeO) : 24 * String(n).length + 30) + 6 : 0;
+      const w = noteW + (badgeW ? 8 + badgeW : 0);
+      if (x + w > COUNTER.x + COUNTER.w - 14 && x > COUNTER.x + 18) { x = COUNTER.x + 18; y += rowH + ROW_GAP; rowH = 0; }
+      const p = { v, n, x, y, w, badgeW }; x += w + PILE_GAP; rowH = Math.max(rowH, h); return p;
+    });
+    for (const p of piles) { let i = 0; const cx = p.x + (p.v >= 1000 ? 56 : 27), cy = p.y + 27; for (const t of g.toks) if (t.v === p.v) { const k = Math.min(i++, 2); t.tx = cx + k * 3; t.ty = cy - k * 3; } }
+  }
   function judge(value: unknown, local: string) {
     if (g.answered) return;
     const grade = api.answer(`r${flow.round + 1}:${g.k}`, value, local);
@@ -62,9 +81,11 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
       if (!g.coachGone) { g.coachGone = true; api.tw.add(g, { coachA: 0 }, { dur: 0.3 }); }
       const r = r2();
       if (r.mode === "pay" || r.mode === "change") {
-        for (const t of till()) if (p.x >= t.x && p.x <= t.x + t.w && p.y >= TILL_Y - 10 && p.y <= TILL_Y + 90) { if (g.toks.length >= 24) return; g.toks.push({ v: t.v, x: t.x + t.w / 2, y: TILL_Y + 40, tx: 0, ty: 0 }); layoutToks(); sfx.blip({ f: t.v >= 1000 ? 300 : 900, dur: 0.05, type: t.v >= 1000 ? "triangle" : "sine", gain: 0.08 }); api.record("counter", { add: t.v }); return; }
-        const hit = g.toks.findIndex((t) => Math.abs(p.x - t.tx) < (t.v >= 1000 ? 60 : 30) && Math.abs(p.y - t.ty) < 30);
-        if (hit >= 0) { const [t] = g.toks.splice(hit, 1); layoutToks(); api.record("counter", { remove: t.v }); return; }
+        for (const t of till()) if (p.x >= t.x && p.x <= t.x + t.w && p.y >= TILL_Y - 10 && p.y <= TILL_Y + 90) { if (g.toks.length >= MAX_TOKS) return; g.toks.push({ v: t.v, x: t.x + t.w / 2, y: TILL_Y + 40, tx: 0, ty: 0 }); layoutToks(lastCtx); sfx.blip({ f: t.v >= 1000 ? 300 : 900, dur: 0.05, type: t.v >= 1000 ? "triangle" : "sine", gain: 0.08 }); api.record("counter", { add: t.v }); return; }
+        // a tap on a pile (its note or its badge) takes one of that value back
+        const pile = piles.find((q) => p.x >= q.x - 4 && p.x <= q.x + q.w + 4 && p.y >= q.y - 4 && p.y <= q.y + 58);
+        const hit = pile ? g.toks.map((t) => t.v).lastIndexOf(pile.v) : -1;
+        if (hit >= 0) { const [t] = g.toks.splice(hit, 1); layoutToks(lastCtx); api.record("counter", { remove: t.v }); return; }
         if (p.x >= GIVE.x && p.x <= GIVE.x + GIVE.w && p.y >= GIVE.y && p.y <= GIVE.y + GIVE.h && g.toks.length) { const c = r.customers[g.k], key = r.mode === "pay" ? billOf(c) : (c.pays ?? 0) - billOf(c); judge(g.toks.map((t) => t.v), counterSum() === key ? "right" : "wrong"); }
       } else if (r.mode === "pack") {
         const j = r.jobs[g.k];
@@ -98,7 +119,8 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
     hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("served", tally(g.roundR, units()), { bump: true });
     hud.set("pat", `${Math.round(g.patience * 100)}%`, { meter: g.patience, tone: g.patience < 0.25 ? "amber" : null });
   }
-  function note(ctx: Ctx, v: number, x: number, y: number, s = 1) {
+  function note(ctx: Ctx, v: number, x: number, y: number, s = 1, bare = false) {
+    if (bare) { ctx.save(); ctx.fillStyle = v >= 1000 ? (NOTE_COL[v] ?? "#999") : v === 50 ? "#B7BCC4" : "#C9CED6"; ctx.globalAlpha *= 0.4; /* a faint edge under the pile, not an opaque card on the one above it */ if (v >= 1000) roundRect(ctx, x - 56 * s, y - 27 * s, 112 * s, 54 * s, 6); else { ctx.beginPath(); ctx.arc(x, y, 27 * s, 0, Math.PI * 2); } ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,.35)"; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); return; }
     if (v >= 1000) { const w = 112 * s, h = 54 * s; ctx.save(); ctx.fillStyle = NOTE_COL[v] ?? "#999"; roundRect(ctx, x - w / 2, y - h / 2, w, h, 6); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,.35)"; ctx.lineWidth = 2; ctx.stroke(); if (s >= 1) { ctx.fillStyle = "rgba(255,255,255,.25)"; ctx.beginPath(); ctx.arc(x + w * 0.28, y, h * 0.3, 0, Math.PI * 2); ctx.fill(); } ctx.restore(); api.text(ctx, String(v / 100), s < 1 ? x : x - w * 0.12, y + 2, { font: "display", size: 38 * Math.max(1, s), weight: 800, color: "#14161C", align: "center", baseline: "middle" }); }
     else { const r = 27 * s; ctx.save(); ctx.fillStyle = v >= 1000 ? "#C9B26A" : v === 50 ? "#B7BCC4" : "#C9CED6"; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,.35)"; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); api.text(ctx, v >= 100 ? String(v / 100) : "½", x, y + 2, { font: "display", size: 38, weight: 800, color: "#14161C", align: "center", baseline: "middle" }); }
   }
@@ -139,15 +161,31 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
     }
     if (r.mode === "pay" || r.mode === "change") {
       ctx.save(); ctx.fillStyle = "rgba(14,16,22,.7)"; roundRect(ctx, COUNTER.x, COUNTER.y, COUNTER.w, COUNTER.h, 18); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
-      for (const t of g.toks) note(ctx, t.v, t.x, t.y);
+      // each pile: the copies under it bare, its top note or coin with its value, then "×n" beside it
+      lastCtx = ctx;
+      for (const q of piles) {
+        const mine = g.toks.filter((t) => t.v === q.v), top = mine[mine.length - 1];
+        mine.slice(0, -1).forEach((t) => note(ctx, t.v, t.x, t.y, 1, true));
+        if (top) note(ctx, top.v, top.x, top.y);
+        if (q.n > 1) api.text(ctx, `×${q.n}`, q.x + q.w - q.badgeW / 2, q.y + 29, { ...badgeO, color: C.amber, align: "center", baseline: "middle" });
+      }
       // till
       for (const t of till()) { ctx.save(); ctx.fillStyle = "rgba(18,16,14,.9)"; roundRect(ctx, t.x - 2, TILL_Y - 6, t.w + 4, 92, 12); ctx.fill(); ctx.restore(); note(ctx, t.v, t.x + t.w / 2, TILL_Y + 40, t.v >= 1000 ? Math.min(0.82, t.w / 120) : 1); }
       const can = g.toks.length > 0 && !g.answered;
+      // (the result pill takes the hand-over button's place once the act is done: it sat on the counter's own notes)
+      if (!g.answered) {
       ctx.save(); ctx.fillStyle = can ? "rgba(203,255,77,.14)" : "rgba(255,255,255,.04)"; roundRect(ctx, GIVE.x, GIVE.y, GIVE.w, GIVE.h, 16); ctx.fill(); ctx.strokeStyle = can ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
       api.text(ctx, r.mode === "pay" ? T.bill + " →" : T.change + " →", GIVE.x + GIVE.w / 2, GIVE.y + GIVE.h / 2 + 2, { font: "display", size: 38, weight: 800, color: can ? C.volt : C.ink3, align: "center", baseline: "middle" });
-      if (g.answered) {
+      } else {
         const c = r.customers[g.k], key = r.mode === "pay" ? billOf(c) : (c.pays ?? 0) - billOf(c), sum = counterSum(), ok = g.verdict === "right";
-        pill(api, ctx, ok ? `${T.exact} ${rupees(key)}` : `${rupees(sum)} · ${sum < key ? T.short : T.over} ${rupees(Math.abs(key - sum))}`, COUNTER.x + COUNTER.w / 2, COUNTER.y + COUNTER.h - 34, { color: ok ? C.mint : C.amber, size: 38 });
+        // (left of centre it would meet the bill card, which ends at x 486; a young-size "₹10 · over by ₹4.50" is that wide)
+        // (at the young size on a phone the whole line is wider than the room right of the bill: keep "over by ₹4.50", the
+        // part the child acts on; the bill is on its card)
+        const room = W - 12 - COUNTER.x, wOf = (m: string) => api.measure(ctx, m, { font: "mono", size: 38, weight: 600 }) + 36;
+        const diff = `${sum < key ? T.short : T.over} ${rupees(Math.abs(key - sum))}`, full = ok ? `${T.exact} ${rupees(key)}` : `${rupees(sum)} · ${diff}`;
+        const msg = ok || wOf(full) <= room ? full : diff;
+        const pw = wOf(msg), px = clamp(COUNTER.x + COUNTER.w / 2, COUNTER.x + pw / 2, W - 12 - pw / 2);
+        pill(api, ctx, msg, px, GIVE.y + GIVE.h / 2, { color: ok ? C.mint : C.amber, size: 38 });
         if (ok) tick(ctx, COUNTER.x + COUNTER.w - 20, COUNTER.y + 20, C.mint, 0.9); else magnifier(ctx, COUNTER.x + COUNTER.w - 24, COUNTER.y + 24, C.amber, 0.9);
       }
     } else if (r.mode === "pack") {
@@ -186,7 +224,14 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.served]] });
     // the coach sits inside the empty counter it points at, never over the bill card (judges, 2026-11-11: "Notes aur sikke counter
     // par rakho" over the Bill card at p412 and l1366); it fades on the first tap, before any note lands there
-    drawCoach(api, ctx, r.mode === "pay" || r.mode === "change" ? T.coach : "", flow.state === "play" ? g.coachA : 0, now, COUNTER.y + COUNTER.h - 40, COUNTER.w - 40, COUNTER.x + COUNTER.w / 2);
+    // (drawn here, not with drawCoach: its three-line cap cut the young-size coach to "…to put them on the" and lost
+    // "counter". The counter is empty while the coach shows, so every line fits in it, centred)
+    const ca = flow.state === "play" && (r.mode === "pay" || r.mode === "change") ? g.coachA : 0;
+    if (ca > 0.01 && T.coach) {
+      const co = { font: "mono", size: 38, weight: 500 } as const, lines = wrapLines(api, ctx, T.coach, COUNTER.w - 40, co), lh = Math.max(38, api.minLabel) * 1.15;
+      const y0 = COUNTER.y + COUNTER.h / 2 - ((lines.length - 1) * lh) / 2 + lh * 0.3, alpha = ca * (0.65 + 0.35 * Math.sin(now * 4));
+      lines.forEach((ln, i) => api.text(ctx, ln, COUNTER.x + COUNTER.w / 2, y0 + i * lh, { ...co, color: C.ink2, align: "center", alpha }));
+    }
   }
   function bot(): BotAction | null {
     if (flow.state !== "play" || g.answered) return { type: "wait", ms: 300 };

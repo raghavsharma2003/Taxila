@@ -1,0 +1,129 @@
+/* Round 8: THE token set (docs/design/round8/PHASE2-BRIEF.md §1; decision dc-r8-design-direction-a).
+   Direction A "Paper and ink" is the default theme. data-tx="b" swaps the SAME names to direction B "Night class".
+   The values are the phase-1 prototypes' (prototypes/r8-design/{a-paper,b-night}/tokens.css). Two deliberate changes:
+     - A's serif is Literata, already self-hosted (src/styles/fonts.css), in place of the prototype's Source Serif 4: one face fewer to ship.
+     - B's display face is Bricolage Grotesque where the page has it, else the UI face.
+     - (2026-11-11, main's review of step b) A's answer is a bluish green and its mix-up an ochre: the
+       prototype's rust beside green leaned on red against green. Focus (indigo), answer (bluish green) and mix-up
+       (ochre) follow the Okabe-Ito colour-blind-safe set, and every role also has its own shape.
+   Rules (tests/r8-tx-tokens.test.mjs):
+     - every text pair is at least 4.5:1 (5:1 for running text);
+     - at most 8 type sizes, one spacing scale, 3 radii, under 30 colours per theme;
+     - components read --tx-* (or the --k-* names src/ui-v3/r8/bridge.css points at them), never a literal.
+   Nothing changes on screen until a root carries data-tx (the switch: src/ui-v3/r8/tx.ts). */
+
+:root, [data-tx="a"] {
+  /* ground and surfaces: warm paper */
+  --tx-bg: #F4EFE6;
+  --tx-surface: #FFFDF8;
+  --tx-surface-2: #EBE4D7;
+  --tx-line: #E0D7C7;
+  --tx-line-2: #C9BBA3;
+  /* ink */
+  --tx-ink: #1C1A16;
+  --tx-ink-2: #4B453C;
+  --tx-ink-3: #655E53;
+  /* the one warm accent, marigold: the primary action and "your move" */
+  --tx-accent: #EFA52E;
+  --tx-on-accent: #1C1A16;
+  --tx-move: #EFA52E;
+  --tx-on-move: #1C1A16;
+  --tx-move-text: #7E4C00;
+  /* the teacher: indigo */
+  --tx-tutor: #3B47B0;
+  --tx-tutor-soft: #E2E4F5;
+  /* the board is paper; colour carries meaning (the board's roles: shared/whiteboard.js ROLE) */
+  --tx-board: #FFFDF8;
+  --tx-board-ink: #1C1A16;
+  --tx-board-soft: #6F675B;
+  --tx-focus: #3B47B0;
+  --tx-focus-fill: #DCE0F5;
+  --tx-ans: #0B7356;
+  --tx-ans-fill: #DAEFE8;
+  --tx-mix: #8A5A00;
+  --tx-ok: #0B7356;
+  /* safety and destructive actions only, never a verdict */
+  --tx-danger: #A3261C;
+
+  --tx-font-ui: "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --tx-font-display: "Literata", Georgia, serif;
+  --tx-font-read: "Literata", Georgia, serif;
+  --tx-font-math: "Board STIX Two Text", "STIX Two Text", "Cambria Math", serif;
+  --tx-font-deva: "Mukta", "Noto Sans Devanagari", sans-serif;
+  --tx-display-weight: 600;
+
+  /* type: 8 sizes */
+  --tx-t-1: 14px; --tx-t-2: 16px; --tx-t-3: 18px; --tx-t-4: 21px; --tx-t-5: 26px; --tx-t-6: 32px; --tx-t-7: 44px; --tx-t-8: 60px;
+  /* space: one scale */
+  --tx-s-1: 4px; --tx-s-2: 8px; --tx-s-3: 12px; --tx-s-4: 16px; --tx-s-5: 24px; --tx-s-6: 32px; --tx-s-7: 48px; --tx-s-8: 64px;
+  /* corners: three */
+  --tx-r-1: 8px; --tx-r-2: 16px; --tx-r-3: 999px;
+  /* real shadows, warm */
+  --tx-shadow-1: 0 1px 2px rgb(60 40 10 / .06), 0 2px 6px rgb(60 40 10 / .05);
+  --tx-shadow-2: 0 1px 2px rgb(60 40 10 / .06), 0 10px 28px -6px rgb(60 40 10 / .16);
+  --tx-glow: 0 0 0;
+  /* motion */
+  --tx-ease: cubic-bezier(.22, .7, .2, 1);
+  --tx-ease-settle: cubic-bezier(.2, .9, .25, 1.18);
+  --tx-dur-1: 160ms; --tx-dur-2: 320ms; --tx-dur-3: 700ms;
+  --tx-scheme: light;
+}
+
+[data-tx="b"] {
+  /* the dark kept and calmed: one blue-grey family, no pure black */
+  --tx-bg: #0F1218;
+  --tx-surface: #171B24;
+  --tx-surface-2: #1E2330;
+  --tx-line: #262C39;
+  --tx-line-2: #3A4254;
+  --tx-ink: #EEF1F6;
+  --tx-ink-2: #B4BBC9;
+  --tx-ink-3: #9098AA;
+  /* volt lime: ONLY "your move" */
+  --tx-accent: #CBFF4D;
+  --tx-on-accent: #0F1218;
+  --tx-move: #CBFF4D;
+  --tx-on-move: #0F1218;
+  --tx-move-text: #CBFF4D;
+  --tx-tutor: #8F9BFF;
+  --tx-tutor-soft: #252B4A;
+  /* the board: a luminous slate */
+  --tx-board: #131B26;
+  --tx-board-ink: #F3F1EA;
+  --tx-board-soft: #8F9CAE;
+  --tx-focus: #8F9BFF;
+  --tx-focus-fill: #283260;
+  --tx-ans: #4FE0A2;
+  --tx-ans-fill: #133A2D;
+  --tx-mix: #FFB54A;
+  --tx-ok: #4FE0A2;
+  --tx-danger: #FF8A80;
+
+  --tx-font-display: "Bricolage Grotesque", "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --tx-display-weight: 700;
+  --tx-r-1: 6px; --tx-r-2: 12px; --tx-r-3: 999px;
+  --tx-shadow-1: none;
+  --tx-shadow-2: 0 18px 48px -12px #0F1218;
+  --tx-glow: 0 0 6px;
+  --tx-scheme: dark;
+}
+
+/* B's parent screens are light (direction B's README): a subtree marked data-tx-surface="light" */
+[data-tx="b"] [data-tx-surface="light"], [data-tx="b"][data-tx-surface="light"] {
+  --tx-bg: #F6F6F2;
+  --tx-surface: #FFFFFF;
+  --tx-surface-2: #ECECE6;
+  --tx-line: #ECECE6;
+  --tx-line-2: #C6C6BD;
+  --tx-ink: #15171C;
+  --tx-ink-2: #474C57;
+  --tx-ink-3: #474C57;
+  --tx-accent: #3F4FD8;
+  --tx-on-accent: #FFFFFF;
+  --tx-tutor: #3F4FD8;
+  --tx-tutor-soft: #E6E8FB;
+  --tx-ok: #0B7D55;
+  --tx-danger: #A3261C;
+  --tx-font-read: "Literata", Georgia, serif;
+  --tx-scheme: light;
+}
