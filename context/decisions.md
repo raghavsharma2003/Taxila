@@ -9899,3 +9899,22 @@ Round 8 C2 phone seam: a level that what is known about her moved INSIDE the fir
 
 ## Merged inbox entries (write-up from the entry text)
 - `dc-r8-staged-scripts-read-in-full` (2026-11-11): Every staged script is read in full by an independent reader before a child hears it; no sampling. Order: two new check.mjs rules first (the same question twice in a script; a crossing or outside-angle card posed on angle@1), then batch 1's 52 faults fixed with a second read per rewrite, then the other 25 scripts in batches of 5 (about 3.7M tokens). A mark on a board may be derived only from the card's key. Reason: 5.9% of gated sentences faulted with 3 untrue and 10 giveaways in five scripts, which is about 18 untrue sentences and 60 giveaways across the batch, and the scattered ones are what no predicate finds. Reverse if: after the two predicates a batch faults under 2% with no untrue sentence; then the remaining scripts are sampled (one reader per two scripts).
+
+
+<!-- merged from inbox/r8-stambh-tally.json -->
+## dc-r8-stambh-tally-mode
+**c4-maths-ch14-t01 s1 (tally marks and a table) is played on stambh/tally, a new mode with its own logic (src/play/families/stambh/tally.logic.ts), beside bars and picto. Two goals: `keep` (things pass one at a time, waiting for her stroke; she picks the row and presses "|" or "╱"; then writes each row's total) and `read` (a row of tallies stands; she writes how many). Coverage: two entries after the topic's picto entry, ACTS s1 only; s2 / s3 stay the pictograph's; the topic's no-skill fallback is still picto.** (2026-11-11)
+- Evidence: answer, bundles, crossesMissing, mal ride the grade's facts, first in order, so the lesson's PLAY row (12 pairs, 6 of lead) carries bundles=n.
+- The scene never runs on a clock: the next thing comes only after a stroke (games are never timed).
+- The read mal plays out on a number line: her number labelled, the tally's place unlabelled, one hop per unit between (the gap is the bundles); no string states the answer.
+- Reversal: if children's play logs show the row-then-button act costs more than the tally itself (many row picks per stroke), fold the row pick into the scene (each thing walks to the row she taps) and measure again.
+
+## dc-r8-stambh-tally-every-stroke-legal
+**No stroke is refused for its shape. A line across over fewer or more than four standing lines closes a group that is no bundle; a fifth standing line is a mark but no bundle. At the check the law regroups each row by fives and draws a dashed ring and a cross mark on every group that is no bundle.** (2026-11-11)
+- Why: a law that refused the line across until four stood would let "try ╱, else |" pass with no idea of the bundle (a shortcut the proof suite tries: every stroke across fails).
+- Reversal: if a judged walk shows children reading the ring as a rule they cannot act on (they repeat the same tally after the ring), add the teacher's demo of one bundle (view demo()) before changing the law.
+
+## dc-r8-stambh-tally-keep-mal
+**In keep, tally-four is named only when BOTH halves of the belief show: no line across anywhere (one stroke per thing) and every total = 4 × groups of five + the rest. Strokes right with short totals, or no cross with true totals, are an ordinary miss (why not_bundled / totals_off).** (2026-11-11)
+- Why: the kit's signs are "writes five as five standing lines" and "totals from tallies come out too small"; one half alone is also what a careless count or a child who never learned the cross does, and a signature must name one belief.
+- Reversal: if the learner model shows children who miss keep with no-cross-true-totals later hitting tally-four on read at a high rate, map that pattern to tally-four too.

@@ -28020,6 +28020,34 @@
    "at": "2026-11-11",
    "title": "Released 8581b9f with scripts/release.mjs: web taxila-web--s8581b9f-ikzm (was taxila-web--s59ae352-2c67), worker + canary/nightly jobs on taxila-worker:8581b9f (was 59ae352); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 8581b9f --rollback.",
    "source": "inbox/release-8581b9f.json"
+  },
+  {
+   "id": "dc-r8-stambh-tally-mode",
+   "kind": "decision",
+   "title": "stambh/tally: c4-maths-ch14-t01 s1 gets a law game (keep a tally in fives while a scene passes, then the table; read a row of tallies); tally-four is the topic's third mapped mix-up",
+   "at": "2026-11-11",
+   "source": "inbox/r8-stambh-tally.json"
+  },
+  {
+   "id": "dc-r8-stambh-tally-every-stroke-legal",
+   "kind": "decision",
+   "title": "stambh/tally law: every stroke is legal (a fifth standing line, a line across over fewer or more than four); the law groups by five only at the check and rings the groups that are no bundle, with no words",
+   "at": "2026-11-11",
+   "source": "inbox/r8-stambh-tally.json"
+  },
+  {
+   "id": "dc-r8-stambh-tally-keep-mal",
+   "kind": "decision",
+   "title": "stambh/tally keep: tally-four's signature is no line across anywhere AND each total four per group of five; either half alone is not named tally-four",
+   "at": "2026-11-11",
+   "source": "inbox/r8-stambh-tally.json"
+  },
+  {
+   "id": "ms-r8-stambh-tally-cert",
+   "kind": "measurement",
+   "title": "stambh/tally cert: 16 of 16 2D samples (4 arts × 2 goals × 2 seeds, c4 band) pass at p360, p412 and l1366; merged additively into certs/play.json",
+   "at": "2026-11-11",
+   "source": "inbox/r8-stambh-tally.json"
   }
  ],
  "edges": [
@@ -44942,6 +44970,21 @@
    "src": "dc-r8-staged-scripts-read-in-full",
    "rel": "caused_by",
    "dst": "fd-gated-sentences-fail-a-reader"
+  },
+  {
+   "src": "dc-r8-stambh-tally-every-stroke-legal",
+   "rel": "part_of",
+   "dst": "dc-r8-stambh-tally-mode"
+  },
+  {
+   "src": "dc-r8-stambh-tally-keep-mal",
+   "rel": "part_of",
+   "dst": "dc-r8-stambh-tally-mode"
+  },
+  {
+   "src": "ms-r8-stambh-tally-cert",
+   "rel": "part_of",
+   "dst": "dc-r8-stambh-tally-mode"
   }
  ]
 }
