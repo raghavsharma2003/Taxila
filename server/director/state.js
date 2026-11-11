@@ -1358,6 +1358,9 @@ function practice(s, input, item) {
   // (owner-truth patch 07)
   if (s.lastMove?.kind === "break" && !["right", "wrong"].includes(verdict(cls))) return plan(moveKindFor(item), SH.pose({ item, prefix: "back to the question, fresh" }), { item, probe: probeFor(item), chips: optionChips(item) });
   if (s.pendingWhy === item.id) return afterWhy(s, input, item);
+  // dc-r8-director20 G3 (fault 5, live on c4 stuck 12, c5-t01 stuck 12, c5-t02 steering 30 and offtopic 24): a give-up on a card whose
+  // help is spent gets its key and why — before a beat's "pata nahi" re-teach, which said the point again instead
+  if (giveUpSpent(s, input, item)) return leaveItem(s, input, item, SH.reposeMissed());
   // dc-r7-script-walk-v2 R1: a v2 beat's question met with "pata nahi" (or a beat not said) is taught again, smaller
   const beatTurn = scriptOn() && item.scriptAsk ? walkBeatTurn(s, input, item) : null;
   if (beatTurn) return beatTurn;
@@ -1494,6 +1497,9 @@ function afterMiss(s, input, item) {
       // line said — gives the key, never the same simpler again)
       || (verdict(input.cls) === "wrong" && !helpLeft(s, input.kit, item) && helpSpentOn(s, input.kit, item) && responseShape("miss", "spent_card") === "key"))
     && !helpLeft(s, input.kit, item)) return leaveItem(s, input, item, SH.reposeMissed());
+  // dc-r8-director20 G3 (fault 5, live on c4 stuck 12, c5-t01 stuck 12, c5-t02 steering 30 and offtopic 24): a give-up ("pata nahi",
+  // "mujhe nahi pata", "aap batao") on a card whose help is spent — it had a miss, or she has said it twice — gets its key and why,
+  // never the point or the card again
   // round 7 T2: a scripted check answered wrong gets its misconception's scripted remediation and keyed follow-up
   const remedy = scriptOn() ? walkRemedy(s, input, item) : null;
   if (remedy) return remedy;
@@ -2815,12 +2821,50 @@ const isScriptCard = scriptCardOf;
  *   "module": a module-only turn; `cls` is set only for a machine-truth module answer on the active item.
  * @returns the step; `hold: true` when a module-only turn changed nothing (the last move and UI stand).
  */
+/** Her last line said a key and posed no card (a give-up's or a close's check-in): what she said, not which path built it. */
+function keySaidNoCard(prev) {
+  const lastT = String([...(prev?.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").replace(/\s+/g, " ");
+  const card = String(prev?.lastUi?.ask?.text ?? "").replace(/\s+/g, " ").slice(0, 30);
+  return /(?:sahi jawab|jawab hai|jawab:|poora jawab|the answer (?:is|was))/i.test(lastT) && !(card && lastT.includes(card));
+}
+/** The part a move is about: its live card and its beat. */
+const partOf = (st, mv) => { const b = mv?.scriptBeat; return `${st?.activeItemId ?? st?.splitHold?.activeItemId ?? ""}|${b ? `${b.skillId}:${b.beatId}` : ""}`; };
+/** A give-up: not knowing the answer, or asking for it (dc-r8-director20 G3; "hindi mein batao na" is a request, not one). */
+const GIVE_UP_WORDS = /(?<![\p{L}])(?:pata\s+nahi|nahi\s+pata|aap\s+(?:hi\s+)?batao|tum\s+batao|i\s+(?:don'?t|do\s+not)\s+know|give\s+up|chhodo|nahi\s+aata)(?![\p{L}])/iu;
+/** A give-up ("pata nahi", "mujhe nahi pata", "aap batao": the child's words, whatever the reader flagged) on a script card whose help
+ *  is spent: it had a miss, or she has said it twice (dc-r8-director20 G3, fault 5). */
+function giveUpSpent(s, input, item) {
+  if (!scriptOn() || scriptFor(input.kit)?.script?.recordedRun || !item || !isScriptCard(item) || !GIVE_UP_WORDS.test(String(input.text ?? ""))) return false;
+  if (!["stuck", "unknown", "off"].includes(verdict(input.cls)) && input.cls?.outcome !== "no_evidence") return false;
+  return (s.misses?.[item.id] ?? 0) >= 1 || (s.cardHelp?.id === item.id ? s.cardHelp.misses ?? 0 : 0) >= 1 || (s.cardSaidN?.[item.id] ?? 0) >= 2;
+}
+/** "Samajh nahi aaya" and its kin: a clarify, whatever request the reader named. */
+const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|didn'?t\s+understand|don'?t\s+understand|kya\s+matlab)(?![\p{L}])/iu;
 export function step(prev, input) {
+  // (main on C1 ruling 5, the stuck child's "samajh nahi aaya" after a key's check-in: read as "another", it moved to the next point
+  // and posed its card — clarifyCard. The child's words say clarify: so does the request)
+  if (input?.event === "turn" && input.cls?.request?.type === "another" && SAYS_CLARIFY.test(String(input.text ?? "")) && !input.cls.flags?.distress
+    && keySaidNoCard(prev))
+    input = { ...input, cls: { ...input.cls, request: { ...input.cls.request, type: "clarify", src: "says_clarify" } } };
   const out = step0(prev, input);
+  // (dc-r8-second-clarify-shows-not-rewords, main's reversal clause: the judges count second-clarify rows. A clarify on the same live
+  // part as the clarify before it is the n-th, recorded on the move, on every path (a held half included); any other turn ends the run)
+  if (out?.state && input?.event === "turn") {
+    // (the same part: the one her last re-explanation was about is the one they still do not get)
+    const partKey = partOf(prev, prev?.lastMove);
+    const clar = out.move?.request === "clarify" || input.cls?.request?.type === "clarify" || SAYS_CLARIFY.test(String(input.text ?? ""));
+    if (clar) {
+      const n = prev?.clarifyRun?.key === partKey ? prev.clarifyRun.n + 1 : 1;
+      out.state.clarifyRun = { key: partOf(out.state, out.state.lastMove), n };
+      if (out.state.lastMove) out.state.lastMove = { ...out.state.lastMove, clarifyN: n };
+    } else out.state.clarifyRun = undefined;
+  }
   // (v6.11 G2, main on director19: "Phir se dekho:" on cards never asked — a card is posed when the turn that goes out carries it,
   // whatever path built that turn (a split's held half included); a pose her line did not say, A4's cardUnsaid, is no posing)
   const askF = out?.ui?.ask?.itemId;
   if (askF && out.state && (out.state.posedAt?.[askF] == null || prev?.cardUnsaid === askF)) out.state.posedAt = { ...(out.state.posedAt ?? {}), [askF]: out.state.turn };
+  // (dc-r8-director20 G3, fault 5: how many turns have said each card — a give-up on a card said twice has had its help)
+  if (askF && out.state && out.state.cardUnsaid !== askF) out.state.cardSaidN = { ...(out.state.cardSaidN ?? {}), [askF]: (out.state.cardSaidN?.[askF] ?? 0) + 1 };
   return out;
 }
 function step0(prev, input) {
@@ -2885,7 +2929,10 @@ function step0(prev, input) {
   s.returnAnswer = prev.returnAsked && input.cls?.asideReply ? { topic: prev.returnAsked.topic, said: String(input.text ?? "").replace(/\s+/g, " ").trim().slice(0, 80) } : undefined;
   s.returnAsked = undefined;
   // (a safety read or a stop over a split turn: the held half is let go; the card comes back through the walk)
-  if (s.splitHold) { if (s.splitHold.activeItemId && !s.activeItemId) s.activeItemId = s.splitHold.activeItemId; s.splitHold = undefined; }
+  // (dc-r8-director20, c5-t02 offtopic 24-32: "drawing karke samjhao" at a key's check-in let the held worked problem go, and the worked
+  // example began at step 1 — the picture is answered as a picture (P6), and a held worked problem stays held for the next turn)
+  const keepWorked = s.splitHold?.move?.kind === "worked_example" && !s.splitHold.teach && prev.lastMove?.splitClose && input.cls?.request?.type === "visual" && !input.cls?.flags?.distress;
+  if (s.splitHold && !keepWorked) { if (s.splitHold.activeItemId && !s.activeItemId) s.activeItemId = s.splitHold.activeItemId; s.splitHold = undefined; }
   // QA 14.4.1 (brain/say.js selfPosedVerdict): was a kit item on the table when the child spoke? null: her own words were
   // (a worked step, an explain), so a sum she asked there is checked in code even when this move poses the next card
   if (input.event === "turn") s.priorItemId = prev.lastMove ? prev.lastMove.itemId ?? null : undefined;
@@ -3341,11 +3388,6 @@ function step0(prev, input) {
   }
   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
   if (p.request) move.request = p.request;
-  // (dc-r8-second-clarify-shows-not-rewords, main's reversal clause: the judges count second-clarify rows — a clarify on the same live
-  // part as the clarify before it is the n-th, recorded on the move; any other turn ends the run)
-  { const partKey = `${s.activeItemId ?? ""}|${prev?.lastMove?.scriptBeat ? `${prev.lastMove.scriptBeat.skillId}:${prev.lastMove.scriptBeat.beatId}` : ""}`;
-    if (p.request === "clarify") { const n = prev?.clarifyRun?.key === partKey ? prev.clarifyRun.n + 1 : 1; s.clarifyRun = { key: partKey, n }; move.clarifyN = n; }
-    else s.clarifyRun = undefined; }
   // (v6.11 G2: how many times each joint kind has been said this lesson — brain/say.js rotates the authored forms by it)
   if (p.request === "language") s.langN = (s.langN ?? 0) + 1;
   if (["ask_again", "unheard"].includes(p.request)) s.askAgainN = (s.askAgainN ?? 0) + 1;
@@ -3470,7 +3512,9 @@ export function splitLong(out, input) {
   // v6.10 R7 (main on director18 c5-t01 stuck 60, c5-t02 steady 48, c6 steering 22: key, new point and new card stacked in one turn of
   // 80-100 words): after a give-up the turn is the key and its why, then a check-in; the next point comes on the next turn
   // (a replay of a recorded run walks what that run walked: tests/fixtures/replay.mjs runScriptOf marks it recordedRun)
-  const gaveTurn = !!move.gave?.answer && !!(move.point || move.rendered?.length) && !scriptFor(input.kit)?.script?.recordedRun;
+  // (dc-r8-director20, main's item 7: a key is followed by a check-in, never by the next card — after a miss or a give-up too, and when
+  // the next card comes without a point of its own)
+  const gaveTurn = !!move.gave?.answer && !!(move.point || move.rendered?.length || (ui?.ask?.text && String(ui.ask.itemId ?? "").startsWith("script:"))) && !scriptFor(input.kit)?.script?.recordedRun;
   // v6.11 G2 (main on director19 c4 steady 62, 76: a planned board change not drawn — the next unit's point said over the closed card's
   // board): a close and the next unit's teaching go in one turn only when Studio can draw the switch between their boards (its own
   // heldBoard, asked here); when it cannot, the close ends the turn on a check-in and the next unit comes on the next turn
@@ -3706,6 +3750,18 @@ function heldTurn(prev, input) {
   // v6.11 G2 (main on director19 c6 stuck 38: an aside after a split's first half dropped the held half — the worked problem was never
   // said and the walk resumed at step 1): an aside is answered (or parked) and the held half still comes, on this turn
   // (and "samajh nahi aaya" to a closing split's check-in — after a key — is answered by the held teaching, never by skipping it: c5-t01)
+  // dc-r8-director20 L2 (c5-t01 offtopic 44, and the key turns G3 now splits): a clarify after a key is answered by its why again and
+  // the check-in; it does not move on. Once: a second clarify gets the held half. (Its simpler wording is Learning's to author; until
+  // then the authored why is said again.)
+  if (!h.teach && prev.lastMove?.gave?.answer && prev.lastMove?.splitClose && !prev.lastMove?.smaller && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun
+    && (c?.request?.type === "clarify" || SAYS_CLARIFY.test(String(input.text ?? "")))) {
+    const s = structuredClone(prev);
+    s.turn += 1;
+    const again = { ...prev.lastMove, smaller: true, gaveCheck: true };
+    const ui0 = { status: "your_turn" };
+    s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
+    return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+  }
   const retAns = prev.returnAsked && c?.asideReply && !c?.help;
   if (((c?.request?.type === "uptake" && !c.help) || (!h.teach && lost) || retAns) && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
     const s = structuredClone(prev);

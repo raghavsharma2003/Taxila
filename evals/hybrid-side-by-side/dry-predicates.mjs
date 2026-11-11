@@ -17,6 +17,8 @@ const cardIn = (r) => !!r?.card && low(r.text).includes(low(r.card).slice(0, 30)
 const REPOSE = /^(?:Phir se dekho|Ek baar aur dekho|Ek baar phir dekho|Look again|One more look)\s*:/i;
 const KEY_SAID = /(?:is sawaal ka|iska|yahan|pichhle sawaal ka|woh wala:?) (?:sahi )?jawab|sahi jawab:|the answer (?:here )?(?:is|was)|iska jawab hai/i;
 const GIVE_UP = /\b(?:aap batao|aap hi batao|tum batao|batao na|nahi pata,? aap|pata nahi,? aap|give up|i give up|chhodo|nahi aata)\b/i;
+/** Any give-up: "pata nahi" bare, "mujhe nahi pata", "aap batao", "nahi aata"… (a request for the answer, or not knowing it). */
+const GIVE_UP_ANY = /(?<![\p{L}])(?:pata\s+nahi|nahi\s+pata|aap\s+(?:hi\s+)?batao|tum\s+batao|i\s+(?:don'?t|do\s+not)\s+know|give\s+up|chhodo|nahi\s+aata)(?![\p{L}])/iu;
 const CLARIFY = /\b(?:samajh nahi aaya|samajh nahi aa raha|samjha nahi|samjhi nahi|didn'?t understand|don'?t understand|kya matlab)\b/i;
 const CHECKIN = /(?:Yahan tak (?:theek|saaf) hai|Ab tak samajh aaya|Yeh hissa saaf hua|Yeh kadam (?:saaf hai|samajh aaya)|Does that make sense so far|Clear so far|All good so far|Is that (?:part|step) clear)\?\s*$/i;
 const RET_STOP = new Set(["maine", "mujhe", "mera", "meri", "mere", "aapko", "tumhe", "hain", "kyunki", "jab", "woh", "sabse", "lagti", "lagta", "with", "that", "this", "have", "when"]);
@@ -80,12 +82,16 @@ export const PREDICATES = {
     const newCard = !ctx.prevT?.card || low(ctx.prevT.card) !== low(r.card);
     return newCard && !/bridge/.test(JSON.stringify(r.pageParts)) ? "a key, a new point and a new card in one turn" : null;
   },
-  /** A give-up with the card's help spent, answered without the key. */
+  /** A give-up with the card's help spent, answered without the key (fault 5). dc-r8-director20 G3: it survived director20 on c4 stuck 12,
+   *  c5-t01 stuck 12 and c5-t02 steering 30 — a bare "pata nahi" / "mujhe nahi pata" is a give-up too, and the help is spent once the
+   *  card had a miss or was already said twice; the turn must say the key, whatever card it poses or drops. */
   giveUpNoKey(L, r, i, ctx) {
-    if (!GIVE_UP.test(ctx.prevChild) || !r.check || r.check.gave || KEY_SAID.test(r.text)) return null;
-    const same = ctx.prevT?.check?.itemId === r.check.itemId;
-    const repeat = same && sentencesOf(r.text).some((x) => words(x) >= 4 && low(ctx.prevT.text).includes(low(x)));
-    return same && (r.check.misses ?? 0) >= 1 && repeat ? "a give-up answered by re-saying her last turn, no key" : null;
+    if (!GIVE_UP_ANY.test(ctx.prevChild)) return null;
+    const card = ctx.prevT?.check?.itemId;
+    if (!card || ctx.prevT?.check?.gave) return null;
+    const spent = (ctx.prevT.check.misses ?? 0) >= 1 || (ctx.cardTurns[card] ?? 0) >= 2;
+    if (!spent || r.check?.gave || KEY_SAID.test(r.text)) return null;
+    return `a give-up with the help spent (${(ctx.prevT.check.misses ?? 0)} miss, said ${ctx.cardTurns[card] ?? 0}×), answered without the key`;
   },
   /** A clarify at a check-in (after a point, a key or a remediation) answered with the card alone. */
   clarifyCard(L, r, i, ctx) {
@@ -138,6 +144,14 @@ export const PREDICATES = {
       : !theirs.some((w) => new RegExp(`(?<![\\p{L}])${w}`, "iu").test(s0)) ? "none of their words" : null;
     return why ? `the reply to their answer is ${why}: "${s0.slice(0, 70)}"` : null;
   },
+  /** A second clarify on one part (dc-r8-second-clarify-shows-not-rewords): the same authored line with the board shown, then the
+   *  check-in — never the card, never the key. PENDING: reported, not gated, until the clarify column switch (C1 step 3). */
+  secondClarify(L, r) {
+    if (r.clarifyN !== 2) return null;
+    if (cardIn(r)) return "a second clarify answered with the card";
+    if (KEY_SAID.test(r.text)) return "a second clarify answered with the key";
+    return CHECKIN.test(norm(r.text)) ? null : "a second clarify that does not end on its check-in";
+  },
   /** An English word and its Hindi twin in one turn. */
   twins(L, r) {
     for (const t of TWINS) { const e = r.text.match(t.enRe), h = r.text.match(t.hiRe); if (e && h) return `"${e[0]}" beside "${h[0]}"`; }
@@ -145,13 +159,16 @@ export const PREDICATES = {
   },
 };
 
+/** Predicates that report and do not gate yet (the gate test leaves them out): each names the step that makes it pass. */
+export const PENDING = new Set(["secondClarify"]);
+
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
   const heads = {};
   // (each form is recognised by its longest stretch with no slot in it)
   for (const [kind, forms] of Object.entries(script?.joints ?? {})) heads[kind] = (forms ?? []).map((f) => String(f?.hi ?? f ?? "").split(/\{\w+\}/).map((x) => low(x).replace(/^[\s,.:;!?]+|[\s,.:;!?]+$/g, "")).sort((a, b) => b.length - a.length)[0]?.slice(0, 32) ?? "").map((h) => (h.length >= 8 ? h : null));
   const workedBy = new Map((script?.skills ?? []).map((sk, n) => [`s${n + 1}`, sk.workedExample ?? null]));
-  const ctx = { script, prevT: null, prevChild: "", prevCls: null, saidCards: new Set(), jointUse: {}, jointHeads: heads, problemSaid: new Set(), returnDue: false,
+  const ctx = { script, prevT: null, prevChild: "", prevCls: null, saidCards: new Set(), jointUse: {}, jointHeads: heads, problemSaid: new Set(), returnDue: false, cardTurns: {},
     workedOf: (r) => workedBy.get(String(r.beat ?? "").split(":")[0]) ?? null };
   const out = [];
   rows.forEach((r, i) => {
@@ -159,6 +176,7 @@ export function lessonFlags({ rows, script }) {
     ctx.returnDue = !!r.returnSaid;
     for (const [name, f] of Object.entries(PREDICATES)) { const why = f({ rows }, r, i, ctx); if (why) out.push({ row: i, predicate: name, why, text: norm(r.text).slice(0, 140) }); }
     if (cardIn(r)) ctx.saidCards.add(low(r.card).slice(0, 40));
+    if (r.check?.itemId) ctx.cardTurns[r.check.itemId] = (ctx.cardTurns[r.check.itemId] ?? 0) + 1;
     ctx.prevT = r;
   });
   return out;

@@ -8,11 +8,11 @@ import { TYPE_TABLE, PART_KINDS, COLUMNS, HELP, compileScript, compiledFor, clea
 const ROOT = new URL("..", import.meta.url);
 const live = readdirSync(new URL("data/lesson-scripts", ROOT)).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(readFileSync(new URL(`data/lesson-scripts/${f}`, ROOT), "utf8")));
 
-test("the type table: 9 part kinds × 12 columns × 3 help states, answers on cards only", () => {
-  assert.equal(PART_KINDS.length, 9);
+test("the type table: 10 part kinds (the hook, Loop's ask D) × 12 columns × 3 help states, answers on cards only", () => {
+  assert.equal(PART_KINDS.length, 10);
   assert.equal(COLUMNS.length, 12);
   assert.deepEqual(HELP, ["fresh", "heard", "spent"]);
-  assert.equal(TYPE_TABLE.length, 324);
+  assert.equal(TYPE_TABLE.length, 360);
   for (const x of TYPE_TABLE) if (["right", "wrong", "misconception"].includes(x.column)) assert.equal(!!x.rule, ["card", "your_step", "then_card", "check"].includes(x.kind), x.id);
 });
 
@@ -65,18 +65,41 @@ test("no hole is silent: every missing field's cells compile to a named fallback
   assert.ok(compileScript(s).missing.some((m) => m.path === "skills[0].workedExample.simpler"));
 });
 
-test("Loop's corrections: a compressed skill opens on one check that branches; the misconception column keys per mix-up", () => {
+test("Loop's review (COMPILE-REVIEW.md asks A-F): branch cells, one hardest-first marker, bridges after the branch, the hook, { choice, on }", () => {
   const s = live[0];
+  const ids = s.skills.map((x) => x.skillId);
+  // A, E: the compressed check's miss cells say nothing and take onMiss, with the fallback's because; right keeps its why
   const sk = s.skills[0];
   const c = compileScript(s, { compressAt: { [sk.skillId]: sk.checks[0].id } });
   const u = c.order.find((x) => x.recheck);
   assert.equal(u.unit, `${sk.skillId}:check:${sk.checks[0].id}`);
   assert.equal(u.onRight, "skip");
-  assert.ok(u.onMiss.length > 3 && !u.onMiss.includes(u.unit));
-  assert.ok(u.because.some((b) => b.kind === "compress_fallback"));
-  const mis = c.cells[`${sk.skillId}:check:${sk.checks[0].id}`].misconception.fresh;
-  assert.equal(mis.remedy.byMixup, "misconception:<id>");
-  assert.match(String(mis.remedy.default), /:rem:\d+$/);
+  assert.ok(u.onMiss.length > 3 && !u.onMiss.some((x) => x.unit === u.unit));
+  assert.deepEqual(u.because, [{ choice: "compress", on: sk.skillId }, { choice: "compress_fallback", on: sk.skillId }]);
+  for (const col of ["wrong", "misconception", "give_up"]) for (const h of ["fresh", "heard", "spent"]) {
+    const cell = c.cells[u.unit][col][h];
+    assert.deepEqual([cell.say, cell.then, cell.help], [[], "onMiss", "keep"], cell.address);
+    assert.deepEqual(cell.because, [{ choice: "compress_fallback", on: sk.skillId }]);
+  }
+  assert.deepEqual(c.cells[u.unit].right.fresh.say.length, 1);
+  // the mix-up map is resolved: every remediated mix-up of the skill to its part
+  const mis = compileScript(s).cells[`${sk.skillId}:check:${sk.checks[0].id}`].misconception.fresh;
+  assert.ok(Object.keys(mis.remedy.byMixup).length >= 1 && Object.values(mis.remedy.byMixup).every((x) => /:rem:\d+$/.test(x)));
+  // B, C: allKnown — one hardest-first marker after the LAST compressed skill; every bridge is in order
+  const all = compileScript(s, { compress: ids, allKnown: true, because: [{ choice: "allKnown", on: s.topicId }] });
+  assert.equal(all.order.filter((x) => x.ladder === "hardestFirst").length, 1);
+  assert.equal(all.order.find((x) => x.ladder === "hardestFirst").skillId, ids.at(-1));
+  const bridges = compileScript(s).parts.filter((p) => p.kind === "bridge").map((p) => p.id);
+  assert.deepEqual(all.order.filter((x) => bridges.includes(x.unit)).map((x) => x.unit), bridges);
+  assert.equal(all.order.filter((x) => x.sayFirst).length, 1);
+  assert.equal(all.order.find((x) => x.sayFirst).joint, "allKnown");
+  // D: a hook part per skill with slots, its cell on the plan's slot; none for a compressed skill
+  const hooked = compileScript(s, { hookSlot: { index: 1 }, because: [{ choice: "hookSlot", on: sk.skillId }] });
+  assert.ok(hooked.order.some((x) => x.unit === `${sk.skillId}:hook` && x.because?.[0]?.choice === "hookSlot"));
+  assert.deepEqual(hooked.cells[`${sk.skillId}:hook`].repeat.fresh.say, ["skills[0].hook.interestSlots[1].use"]);
+  assert.ok(!c.order.some((x) => x.unit === `${sk.skillId}:hook`));
+  // F: a card id in compressAt is not taken as a part id
+  assert.ok(!compileScript(s, { compressAt: { [sk.skillId]: `script:${sk.skillId}:${sk.checks[0].id}` } }).order.some((x) => x.recheck));
 });
 
 test("cached by kit hash and plan hash", (t) => {
@@ -84,7 +107,9 @@ test("cached by kit hash and plan hash", (t) => {
   const a = compiledFor(live[0], { kitHash: "k1" });
   assert.equal(compiledFor(live[0], { kitHash: "k1" }), a);
   assert.notEqual(compiledFor(live[0], { kitHash: "k2" }), a);
-  assert.notEqual(compiledFor(live[0], { kitHash: "k1", plan: { compress: [live[0].skills[0].skillId] } }), a);
+  assert.notEqual(compiledFor(live[0], { kitHash: "k1", plan: { compress: [live[0].skills[0].skillId], because: [{ choice: "compress", on: live[0].skills[0].skillId }] } }), a);
+  // (Loop's ask G: a plan with no because is no plan — one child, one map)
+  assert.equal(compiledFor(live[0], { kitHash: "k1", plan: { compress: [], because: [] } }), a);
 });
 
 test("main's ruling: the misconception column applies only to a card with targets; without, it is not applicable (the wrong column)", () => {

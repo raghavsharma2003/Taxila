@@ -201,12 +201,9 @@ describe("r7-brain-v66.test.mjs", () => {
       const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
       return { out, last, plans };
     };
-    test("the last card of a skill gives its key and why before the bridge (c5-t02 stuck 54); the '?' mark is said in words", async () => {
-      const { out, last } = await live("stuck", "c5-t02", 54);
-      assert.ok(last.state.lastMove?.gave?.answer, JSON.stringify(last.state.lastMove));
-      assert.ok(norm(out.reply).toLowerCase().includes(norm(last.state.lastMove.gave.answer).toLowerCase()), out.reply);
-      assert.doesNotMatch(out.reply, /'\s*\?\s*'/, out.reply);
-    });
+    // (retired, dc-r8-director20 G3: "the last card of a skill gives its key and why before the bridge; the '?' mark is said in words"
+    // (c5-t02 stuck 54) — from row 30 the walk gives a spent card's key on the child's give-up, so director14's recorded child lines answer
+    // other cards by row 54 and that turn is no longer a key. A replay is a pin, not proof; the key's close is held by the dry matrix)
     test("the parent card is re-posed after its then-card, even where a probe would come between (c5-t02 stuck 66)", async () => {
       const { last, plans } = await live("stuck", "c5-t02", 66);
       // (v6.9 T1.6: the then-card can close earlier — its key given at once — and the parent comes back there)
