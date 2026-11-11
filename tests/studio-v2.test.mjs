@@ -349,7 +349,12 @@ test("Lighthouse dial (2026-11-11): no number at an asked angle (rubric v2: a gu
   assert.deepEqual(scaleLabels("tens", 360, [90, 180, 270], tiny), []);
   assert.deepEqual(scaleLabels("tens", 360, [60, 120], tiny), [90, 180, 270], "labels elsewhere stay");
   assert.deepEqual(scaleLabels("tens", 180, [90, 40], tiny), []);
-  assert.deepEqual(scaleLabels("tens", 180, [], tiny), [90], "classify (no asked angle) keeps the scale whole");
+  // (main 2026-11-11: one rule — the dial never prints the number the wave is ABOUT, asked or sorted by; ticks stay)
+  const { aboutOf } = await import("../src/studio-v2/engines/angle.ts");
+  assert.deepEqual(scaleLabels("tens", 180, aboutOf({ mode: "classify", items: [40, 90, 120], kind: "right" }), tiny), [], "a right-angle sort hides its 90");
+  assert.deepEqual(aboutOf({ mode: "classify", items: [40, 110], kind: "obtuse" }), [90, 180]);
+  assert.deepEqual(aboutOf({ mode: "call", items: [40, 130] }), [40, 130]);
+  assert.deepEqual(scaleLabels("tens", 360, aboutOf({ mode: "classify", items: [200, 300], kind: "reflex" }), tiny), [90, 270], "a reflex sort hides its 180");
   const pro = scaleLabels("protractor", 180, [30, 70, 110, 150], tiny);
   assert.equal(pro.length, 17 - 4); for (const a of [30, 70, 110, 150]) assert.ok(!pro.includes(a), `${a} is asked: no label`);
   assert.deepEqual(scaleLabels("none", 180, [], tiny), []);

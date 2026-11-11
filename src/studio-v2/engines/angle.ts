@@ -40,6 +40,13 @@ export function scaleLabels(sc: "none" | "tens" | "protractor", range: 180 | 360
   return pick.filter((a) => !ask.has(a));
 }
 
+/** The numbers a wave is ABOUT, which its dial never prints (main 2026-11-11): the angles a call/copy wave asks for, and the
+ *  bounds of the kind a classify wave sorts by (right → 90; acute → 90; obtuse → 90, 180; reflex → 180). Ticks stay. */
+const KIND_BOUNDS: Record<string, number[]> = { acute: [90], right: [90], obtuse: [90, 180], reflex: [180] };
+export function aboutOf(w: { mode: string; items: readonly number[]; kind?: string }): number[] {
+  return w.mode === "classify" ? (KIND_BOUNDS[w.kind ?? ""] ?? []) : [...w.items];
+}
+
 function create(api: EngineApi, spec: AngleSpec): EngineInstance {
   const T = spec.strings;
   const g = { state: "boot" as "boot" | "intro" | "aim" | "reveal" | "end" | "final", w: -1, i: 0, stateT: 0, ang: 30, target: 30, vel: 0, dragging: false, moved: false, callT: 0, limit: 7,
@@ -227,7 +234,7 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
         for (let a = 10; a < (full ? 360 : 180); a += 10) { const big = a % 90 === 0, [x0, y0] = at(a, r - (big ? 26 : 14)), [x1, y1] = at(a, r); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); }
         const lo = { font: "mono" as const, size: 38, weight: 600 }, hh = Math.max(38, api.minLabel) * 0.5;
         const box = (a: number): [number, number, number, number] => { const [lx, ly] = at(a, r + 30), hw = api.measure(ctx, `${a}`, lo) / 2; return [lx - hw, ly - hh, lx + hw, ly + hh]; };
-        for (const a of scaleLabels(sc, full ? 360 : 180, wave().mode === "classify" ? [] : wave().items, box)) {
+        for (const a of scaleLabels(sc, full ? 360 : 180, aboutOf(wave()), box)) {
           const [lx, ly] = at(a, r + 30); api.text(ctx, `${a}`, lx, ly, { ...lo, color: C.ink3, align: "center", baseline: "middle" }); keepOut.push([lx - 40, ly - 22, lx + 40, ly + 22]);
         }
       }
