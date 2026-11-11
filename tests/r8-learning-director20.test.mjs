@@ -85,3 +85,32 @@ test("reader pass rules: one question once per script; crossing cards on a cross
   m.skills[0].checks[0].answerBoard.params.mark = { index: 1, show: "bigger" };
   assert.deepEqual(markGroundErrors(m), []);
 });
+
+test("reader pass batch 3: a key heard in its own spoken prompt; a key said earlier; a card repeating a kit ladder item", async () => {
+  const { spokenKeyErrors, earlierKeyErrors, ladderRepeatErrors } = await import("../scripts/lesson-scripts/check.mjs");
+  const card = (id, hi, key, extra = {}) => ({ id, prompt: { hi, en: hi }, key, ...extra });
+  const sk = (checks, more = {}) => ({ skills: [{ skillId: "t-s1", explain: [], workedExample: null, checks, remediation: [], ...more }] });
+  // her voice says 60,040 as "sixty thousand forty": a read-in-words card speaks its key
+  assert.ok(spokenKeyErrors(sk([card("c1", "Chart mein 60,040 hai. Ise words mein kaise padhenge?", "sixty thousand forty")])).some((x) => /c1: its key "sixty thousand forty" is heard/.test(x)));
+  // a place card hears its value inside the number; a choice card names its options
+  assert.ok(spokenKeyErrors(sk([card("c1", "7382 mein 7 ki value kitni hai?", "7000")])).length > 0);
+  assert.deepEqual(spokenKeyErrors(sk([card("c1", "Kaunsa bada hai, 987 ya 1012?", "1,012")])), []);
+  // "three hundred" inside "three hundred sixty" is another number
+  assert.deepEqual(spokenKeyErrors(sk([card("c1", "360° − 60° kitna hai?", "300°")])), []);
+  // an earlier skill's worked example says 4 × 7 = 28 before a later card asks 4 × 7
+  const two = { skills: [
+    { skillId: "t-s1", explain: [], checks: [], remediation: [], workedExample: { problem: { hi: "8 × 7? Jo fact pata hai, 4 × 7 = 28, uski madad lo." }, steps: [], yourStep: card("y", "Ab 28 ka double?", "56") } },
+    { skillId: "t-s2", explain: [], workedExample: null, remediation: [], checks: [card("c1", "4 × 6 = 24 hai. Agla fact 4 × 7 kitna hoga?", "28")] }] };
+  assert.ok(earlierKeyErrors(two).some((x) => /t-s2\/c1: its key 28 is already said, with its prompt's 4, 7/.test(x)));
+  // in a skill: a then-card whose key a check's why already worked out; a value with another unit is another quantity
+  const s = sk([card("c1", "Red 4 bundle, Blue 2 bundle 3 line. Kitne zyada?", "7", { why: { hi: "red 20, blue 2 bundle 3 line = 13, toh 7" } }),
+    card("c2", "Wire ₹15 per metre, 20 m. Kitna kharch?", "₹300"), card("c3", "Perimeter 70 cm, lambai 20 cm. Chaudai?", "15 cm")],
+    { remediation: [{ targets: "x", say: { hi: "s" }, then: card("t", "Tally mein 2 bundle aur 3 line. Kul kitne?", "13") }] });
+  const e = earlierKeyErrors(s);
+  assert.ok(e.some((x) => /remediation\[0\]\.then: its key 13 is already said in c1/.test(x)), e.join("\n"));
+  assert.ok(!e.some((x) => /c3: its key 15/.test(x)), "₹15 is not 15 cm");
+  // the kit ladder
+  const kit = { topicId: "t", items: [{ id: "t-i08", prompt_en: "What is 1/4 of 20 marbles?", answer: "5" }] };
+  assert.ok(ladderRepeatErrors(sk([card("c1", "In 20 kanchon ka 1/4 kitna hai?", "5")]), kit).some((x) => /repeats kit ladder item i08/.test(x)));
+  assert.deepEqual(ladderRepeatErrors(sk([card("c1", "In 28 kanchon ka 1/4 kitna hai?", "7")]), kit), []);
+});

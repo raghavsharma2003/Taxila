@@ -28135,6 +28135,27 @@
    "at": "2026-11-11",
    "title": "Released ed80148 with scripts/release.mjs: web taxila-web--sed80148-xrd9 (was taxila-web--s8581b9f-ikzm), worker + canary/nightly jobs on taxila-worker:ed80148 (was 8581b9f); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs ed80148 --rollback.",
    "source": "inbox/release-ed80148.json"
+  },
+  {
+   "id": "dc-r8-design-direction-a",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "The design revamp's phase 2 starts on direction A, 'Paper and ink', as the default theme, with direction B kept as a complete second theme that swaps the same tokens by one root attribute. The owner had not chosen on the comparison page in a day and had said the call on the UI was the main loop's; A is the Design session's recommendation and the main loop's. The lesson screen on a phone is built first and shown to the owner on production behind a switch before the rest. Brief: docs/design/round8/PHASE2-BRIEF.md. The teacher's look stays the owner's choice. Reverse if: the owner, shown the lesson screen, prefers B (B's theme is polished, A stays as the alternate) or prefers the current look (only the non-taste fixes are kept).",
+   "source": "inbox/r8-main-16.json"
+  },
+  {
+   "id": "studio-approval-lane-closed-2026-11-11",
+   "kind": "decision",
+   "title": "The Studio generation approval lane closes after round 3 (main, 2026-11-11 13:22): 13 of the 34 scripted topics have a two-judge approved game, 7 have no game target, and 14 are refused. $0.175 spent on generation, 8.32M judge tokens. Yield fell from 6/22 in round 2 to 2/18 in round 3; what remains is missed mix-ups and engine limits that no prompt hint fixes. Table: docs/design/round7/studio/approval-lane-close-2026-11-11.md. Reverse, one topic at a time and never in rounds, when an engine gains the capability its no-game entry names or Games' families cover the topic with an executable mal-rule.",
+   "at": "2026-11-11",
+   "source": "inbox/studio-approval-lane-close.json"
+  },
+  {
+   "id": "studio-predicate-mixed-script",
+   "kind": "decision",
+   "title": "A word that mixes Latin and Devanagari letters (\"Tribhuज\") is refused in every engine: an approve-check predicate, and a refusal at generation before any paid check (mixed_script). No catalogue or stored spec (398 files) has one. Reverse only if a deliberate mixed-script word is ever wanted (none known).",
+   "at": "2026-11-11",
+   "source": "inbox/studio-approval-lane-close.json"
   }
  ],
  "edges": [
@@ -45122,6 +45143,16 @@
    "src": "dc-r8-generation-lane-closes",
    "rel": "supersedes",
    "dst": "dc-r8-stop-judging-old-catalogue"
+  },
+  {
+   "src": "dc-r8-design-direction-a",
+   "rel": "supersedes",
+   "dst": "dc-r8-design-revamp-two-directions"
+  },
+  {
+   "src": "dc-owner-direction-is-main-loops-2026-11-10",
+   "rel": "constrains",
+   "dst": "dc-r8-design-direction-a"
   }
  ]
 }

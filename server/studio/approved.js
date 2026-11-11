@@ -52,7 +52,7 @@ export const ENGINE_HOW = Object.freeze({
   // (regen round 2: 4 of 4 geo-forge candidates failed on content — challenges off the topic's idea, wrong Hindi terms)
   "geo-forge@1": "every challenge builds the topic's own idea (a square tile turned stays square: a quad square drawn tilted; radius vs diameter: a circle challenge); a shape named is exactly that shape; Hindi terms as the textbook: samdvibahu (isosceles), samabahu (equilateral), parimaap (perimeter), paridhi only for a circle, trijya (radius), vyaas (diameter), samaantar (parallel); no task label states the rule (never 'samaan disha' for parallel)",
   // (regen 2b: c5-maths-ch05-t01, a km topic, became a jug of ml; c4-ch06-t01 wrote 6 meaning 6 cm on a mm ruler)
-  "instrument@1": "the mode is the topic's quantity: length topics cut (km and m on a long rule: show 'km+m', scaleMax up to 2000000 mm), capacity pours, mass weighs; every number in the base unit (cut mm: 6 cm is 60); a length-reading mix-up round starts the object off 0 (from 3 to 9)",
+  "instrument@1": "the mode is the topic's quantity: length topics cut, capacity pours, mass weighs; every number in the base unit (cut mm: 6 cm is 60); scaleMax just above the round's largest target, and every target a whole number of minor marks (cm targets: minor 10; 0.7 m: minor 100); a km rule only for a km topic",
   "angle-cannon@1": "the beam is a lighthouse's light aimed at a mark: no weapon words in any string (never fire, shoot, turret, nishana, hit, threat, attack); say 'roshni', 'kiran', 'mod do'; angle names as the teacher says them (right angle, 90°); a tens or protractor scaffold only with call/copy angles that are multiples of 10",
   "area-claim@1": "every string plain Roman Hinglish: no stake, claim, plot, sq or units in English; sq varg, units ikai (area 40 varg ikai)",
 });
@@ -105,9 +105,11 @@ function scriptOf(topicId) {
  * geometry term the topic's script does not say (its `terms` block, the teacher's words). → { ok, applies, why, terms }.
  */
 const GEO_KEY_TERMS = { perimeter: ["parimaap", "parimap", "perimeter"], area: ["kshetrafal", "area"], isosceles: ["samdvibahu", "isosceles"],
-  scalene: ["vishambahu", "vishmabahu", "scalene"], right: ["samkon", "samkoni", "right"], obtuse: ["adhikkon", "adhik", "obtuse"], acute: ["nyunkon", "nyun", "nyoon", "acute"],
-  square: ["varg", "square"], rectangle: ["aayat", "rectangle"], triangle: ["tribhuj", "triangle"], parallelogram: ["samaantar", "samantar", "samanantar", "samaanantar", "parallelogram"],
-  rhombus: ["samchaturbhuj", "rhombus"], trapezium: ["samlamb", "trapezium"], perpendicular: ["lamb", "lambvat", "perpendicular"], parallel: ["samaantar", "samantar", "samanantar", "samaanantar", "parallel"] };
+  scalene: ["vishambahu", "vishmabahu", "vishamabahu", "scalene"], right: ["samkon", "samkoni", "right"], obtuse: ["adhikkon", "adhik", "obtuse"], acute: ["nyunkon", "nyun", "nyoon", "acute"],
+  square: ["varg", "square"], rectangle: ["aayat", "rectangle"], triangle: ["tribhuj", "tribhuja", "triangle"], parallelogram: ["samaantar", "samantar", "samanantar", "samaanantar", "parallelogram"],
+  rhombus: ["samchaturbhuj", "samachaturbhuj", "rhombus"], trapezium: ["samlamb", "samalamb", "trapezium"], perpendicular: ["lamb", "lambvat", "lambavat", "perpendicular"], parallel: ["samaantar", "samantar", "samanantar", "samaanantar", "parallel"] };
+// (accepted spellings: the transliterations a textbook reader meets — samalamb, vishamabahu, tribhuja — not a changed letter
+// like samdvipahu)
 // the textbook's technical geometry words (common words — kona, rekha, bindu, kiran, varg — are left out: they are everyday Hindi)
 const GEO_HI = ["samdvibahu", "samabahu", "vishambahu", "parimaap", "paridhi", "trijya", "vyaas", "samaantar", "samkon", "nyunkon", "adhikkon", "sarlkon",
   "pravarkon", "tribhuj", "chaturbhuj", "aayat", "vritt", "kendra", "jeeva", "rekhakhand", "shirsh", "vikarn", "kshetrafal", "samlamb", "samchaturbhuj", "lambvat", "konmaapak"];
@@ -117,18 +119,24 @@ const wordsOf = (s) => String(s ?? "").toLowerCase().normalize("NFKC").match(/[a
 export function geometryTerms(topicId, spec, archetype = spec?.archetype) {
   if (archetype !== "geo-forge@1") return { ok: true, applies: false, why: null, terms: [] };
   const bad = [];
+  // (main 2026-11-11: "the game speaks the lesson's words" — a plain description passes when every word of it is one the
+  // topic's own script uses, in its terms block or its spoken lines: "Bahar ki lambai" where the script says it)
+  const script = scriptOf(topicId);
+  const lesson = new Set(); JSON.stringify(script ?? {}, (k, v) => { if (typeof v === "string") for (const w of wordsOf(v)) lesson.add(w); return v; });
   for (const [k, ok] of Object.entries(GEO_KEY_TERMS)) {
     const v = spec?.strings?.[k];
     if (typeof v !== "string" || !v.trim()) continue;
     const ws = wordsOf(v);
-    if (!ws.some((w) => ok.includes(w))) bad.push(`${k} "${v}" (textbook: ${ok[0]})`);
+    if (ws.some((w) => ok.includes(w))) continue;
+    if (ws.length && ws.every((w) => lesson.has(w) && !GEO_HI.some((t) => t !== w && w.length >= 7 && lev(w, t) <= 2))) continue;
+    bad.push(`${k} "${v}" (textbook: ${ok[0]}, or the lesson's own words)`);
   }
-  const terms = scriptOf(topicId)?.terms;
+  const terms = script?.terms;
   const said = new Set((Array.isArray(terms) ? terms : []).flatMap((t) => wordsOf(`${t.hi ?? ""} ${t.en ?? ""}`)));
   if (said.size) JSON.stringify(spec?.rounds ?? [], (key, v) => {
     if (typeof v === "string" && ["title", "sub", "label"].includes(key)) for (const w of wordsOf(v)) {
       const t = GEO_HI.includes(w) ? w : w.length >= 7 ? GEO_HI.find((x) => x.length >= 7 && lev(w, x) <= 2) : null;
-      if (t && !said.has(w)) bad.push(`"${w}"${w === t ? "" : ` (~${t})`} in a ${key}: not one of this topic's words`);
+      if (t && !said.has(w) && !(w === t && lesson.has(w))) bad.push(`"${w}"${w === t ? "" : ` (~${t})`} in a ${key}: not one of this topic's words`);
     }
     return v;
   });
@@ -159,13 +167,18 @@ const NUMBER_WORDS = ["teen"];
 export function numberWords(text) { const t = String(text ?? "").toLowerCase(); return NUMBER_WORDS.filter((w) => new RegExp(`(^|[^a-z])${w}([^a-z]|$)`).test(t)); }
 /** Words with a case break inside them ("KAafi", "sAhi"): a typo a child reads as a misspelling (judged 2026-11-11, c4-ch05-t01). */
 export function oddCaseWords(text) { return [...String(text ?? "").matchAll(/\p{L}*(?:\p{Lu}{2}\p{Ll}|\p{Ll}\p{Lu})\p{L}*/gu)].map((m) => m[0]); }
+/** main 2026-11-11 (regen r3: "Tribhuज", "Samलamb"): one word that mixes Latin and Devanagari letters. Never right, in any
+ *  engine: a word is written in one script. */
+export function mixedScriptWords(text) { return [...String(text ?? "").matchAll(/[\p{L}\p{M}]+/gu)].map((m) => m[0]).filter((w) => /[A-Za-z]/.test(w) && /[\u0900-\u097F]/.test(w)); }
+/** Every mixed-script word in a spec's strings (any key, any depth). */
+export function mixedScriptInSpec(spec) { const out = []; JSON.stringify(spec ?? {}, (k, v) => { if (typeof v === "string") out.push(...mixedScriptWords(v)); return v; }); return [...new Set(out)]; }
 /** The plain-words reason for a content refusal that a number word explains. */
 export function numberWordHint(findings) {
   const hits = (findings ?? []).filter((f) => f.text && numberWords(f.text).length);
   return hits.length ? `; ${hits.map((f) => `the content check scored "${f.text}" (${f.key}) ${String(f.code).replace(/^content_safety_/, "")}; number words such as ${numberWords(f.text).map((w) => `'${w}'`).join(", ")} are the likely cause: write digits`).join("; ")}` : "";
 }
 export function attemptOutcome(r) {
-  if (!r?.ok) return { kind: "refused", why: String(r?.why ?? "refused") };
+  if (!r?.ok) return { kind: "refused", why: `${String(r?.why ?? "refused")}${Array.isArray(r?.words) && r.words.length ? `: ${r.words.map((w) => `"${w}"`).join(", ")} — ${r.why === "mixed_script" ? "one script per word" : "write digits"}` : ""}` };
   if (!r.payload?.spec) return { kind: "refused", why: "ok but no spec in the payload" };
   const failed = Object.entries(r.checks ?? {}).filter(([k, v]) => v === false || (v && typeof v === "object" && v.ok === false)).map(([k]) => k);
   if (failed.length) return { kind: "refused", why: `ok, but its checks failed: ${failed.join(", ")}${numberWordHint(r.checks?.contentFindings)}` };
@@ -198,6 +211,16 @@ export function valuesOnTicks(archetype, spec) {
     for (const [wi, w] of (spec?.waves ?? []).entries()) {
       if (!["tens", "protractor"].includes(w?.scaffold) || w?.mode === "classify") continue;
       for (const a of w.items ?? []) if (Number(a) % 10 !== 0) misses.push(`wave ${wi + 1} "${w.title ?? ""}": ${a}° is not on a tick of a ${w.scaffold} scaffold (ticks every 10°)`);
+    }
+  }
+  // (regen r3, c4-ch06-t01 and c7-ch03-t01: 8 cm and 0.7 m asked on a 2 km rule whose small marks are 20 m apart. A pour, cut
+  // or thermo target is a whole number of the scale's small marks, so the child can stop or cut exactly on it)
+  if (archetype === "instrument@1") {
+    const unit = { pour: "ml", cut: "mm", thermo: "tenths of a °C" };
+    for (const [ri, r] of (spec?.rounds ?? []).entries()) {
+      const m = Number(r?.minor);
+      if (!unit[r?.mode] || !(m > 0)) continue;
+      for (const it of r.items ?? []) { const q = Number(it?.target) / m; if (Math.abs(q - Math.round(q)) > 1e-9) misses.push(`round ${ri + 1} "${r.title ?? ""}": ${it.target} ${unit[r.mode]} is not on a mark of a scale marked every ${m}`); }
     }
   }
   return { ok: misses.length === 0, why: misses.length ? misses.slice(0, 4).join("; ") : null, misses };
