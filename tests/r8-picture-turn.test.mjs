@@ -159,3 +159,69 @@ test("v6.11 (director19 c5-t02 11 turns, c5-t01 3, c4 steady 46): the board up h
   const only = BF.heldBoard(ask({ board: RECT, unit: "s1:c1", switchTo: { board: PENT, unit: "s1:c2", atChar: 3 } }, ack, [{ part: "aside", text: ack }]), keep);
   assert.ok(only.kept && only.lastRef === keep.keepRef && only.screens.length === 1);
 });
+
+// ── director20 (docs/design/round7/judgements/director20-2026-11-11.md, mechanism 10): a picture line never gives the open
+// card's key and never ships with a hole. The asks are built as the Director builds them (scriptBeat.answers = [key, ...accept],
+// server/director/state.js answersOf) from the two cards the rows were on.
+const scriptCard = (T, skill, id) => {
+  const j = JSON.parse(readFileSync(new URL(`../data/lesson-scripts/${T}.json`, import.meta.url), "utf8"));
+  const e = j.skills[skill].explain.find((x) => x.id === id);
+  return { ref: e.board, answers: [String(e.ask.key), ...(e.ask.accept ?? []).map(String)] };
+};
+const askWith = (ref, answers) => askOf({ T: "d20", path: "/x", ref, answers });
+
+test("director20 c4 steady 18: a picture line gives no key — \"1 rangin, yaani aadha\" over the card whose key is No (accepted as \"nahi, 1/2 hai\"), and over a sentence key \"No, it's ½\"", () => {
+  const c = scriptCard("c4-maths-ch05-t01", 0, "e1");
+  assert.deepEqual(c.ref, { template: "fraction-parts@1", params: { parts: 2, shade: 1, whole: "roti" } }, "the row's card");
+  for (const answers of [c.answers, ["No, it's ½"], ["No, it's 1/2"], ["nahi, aadha hai ya ½"]]) for (const variant of [0, 1]) {
+    const pt = BF.pictureTurn(askWith(c.ref, answers), { variant });
+    assert.ok(pt?.view && pt.line, `${answers[0]} v${variant}: the view stays`);
+    assert.ok(!/aadha|1\/2|½|yaani/.test(pt.line), `${answers[0]} v${variant}: "${pt.line}" states the key`);
+    assert.equal(pt.line, variant ? "Ab isi ko patti bana kar dekho: 2 barabar hisse, 1 rangin" : "Wahi poora ab patti mein hai: 2 barabar hisse, 1 rangin");
+  }
+});
+
+test("director20: lineStatesKey reads a key's value tokens wherever they stand — ½ ¼ ¾ ⅓ … as a/b, a/b inside words, an integer only in a short key with one integer", () => {
+  const S = BF.lineStatesKey;
+  assert.ok(S("1 rangin, yaani aadha", ["No, it's ½"]));
+  assert.ok(S("yeh 1/2 hai", ["No, it's ½"]) && S("yeh ½ hai", ["No, it's ½"]) && S("do-chauthai", ["No, it's ½"]));
+  assert.ok(S("teen-chauthai", ["haan, ¾"]) && S("ek-tihaai", ["⅓ hai"]) && S("1/8", ["⅛"]) && S("2/8", ["nahi, ¼ hai"]));
+  assert.ok(S("yaani aadha", ["nahi, 1/2 hai"]), "a/b inside words");
+  assert.ok(S("8 barabar gaps", ["8 gaps"]) && S("aath gaps", ["No, it's 8"]), "an integer in a short key");
+  // (the bound: an integer counts only in a key of at most KEY_INT_WORDS words with exactly one integer outside its fractions)
+  assert.ok(!S("2 tukde", ["12 laddoo 2 barabar group mein jaayein toh har group mein 6"]), "a long sentence key's incidental integer");
+  assert.ok(!S("2 tukde", ["2 × 6 = 12"]), "several integers: none is the key");
+  assert.ok(!S("1 rangin, 2 barabar hisse", ["No, it's ½"]), "the fraction's own digits are not integer keys");
+  assert.ok(!S("1 rangin", ["No"]) && !S("aadha", ["Yes"]), "a key with no value states nothing");
+  // (unchanged for the plain keys every caller passed before)
+  assert.ok(S("yaani aadha", ["1/2"]) && S("2/4", ["1/2"]) && S("aath", ["8"]) && !S("18 cm", ["8"]));
+});
+
+test("director20 c5-t01 steady and stuck 18: a picture line never has a hole — the quiet 8-gap scale is named without its count, never \"aur ek ___ barabar hisson mein\"", () => {
+  const c = scriptCard("c5-maths-ch02-t01", 0, "e2");
+  assert.deepEqual(c.ref, { template: "fraction-line@1", params: { dens: [5, 8], from: 0, to: 1, marks: [[1, 5]] } }, "the row's card");
+  assert.equal(c.answers[0], "8");
+  const want = [
+    "Dekho, yeh do barabar pattiyaan hain: ek 5 barabar hisson mein, 1 rangin, yaani ek bata paanch, aur doosri patti bhi barabar hisson mein bati hai",
+    "Ab in do pattiyon ko milao: pehli 5 barabar hisson mein, 1 rangin, yaani ek bata paanch, aur doosri patti bhi barabar hisson mein bati hai",
+  ];
+  for (const variant of [0, 1]) {
+    const pt = BF.pictureTurn(askWith(c.ref, c.answers), { variant });
+    assert.ok(pt?.view, `v${variant}: the view stays (the 8-gap bar drawn unnamed)`);
+    assert.equal(pt.line, want[variant]);
+    assert.ok(!BF.lineHasBlank(pt.line) && !BF.lineStatesKey(pt.line, c.answers), `v${variant}: "${pt.line}"`);
+  }
+});
+
+test("director20: the picture-line predicate — a line with a blank or stating a key is rewritten (the other caption shape) or not said (no view)", () => {
+  const H = BF.lineHasBlank;
+  for (const l of ["aur ek ___ barabar hisson mein", "aur ek barabar hisson mein", "ek alag-alag tukde", "nishaan … par", "2 barabar hisse, , 1 rangin", "kul lambai [ ] hai", "1 rangin,"])
+    assert.ok(H(l), `a blank: "${l}"`);
+  for (const l of ["ek 5 barabar hisson mein", "doosri patti bhi barabar hisson mein bati hai", "Dekho, yeh ek patti hai, barabar hisson mein", "dono barabar gaps mein"])
+    assert.ok(!H(l), `no blank: "${l}"`);
+  const C = BF.cleanPictureLine;
+  assert.equal(C(["2 barabar hisse, 1 rangin, yaani aadha", "x"], ["No, it's ½"]), "2 barabar hisse, 1 rangin", "the naming clause is dropped");
+  assert.equal(C(["aur ek barabar hisson mein", "aur doosri patti bhi barabar hisson mein bati hai"], ["8"]), "aur doosri patti bhi barabar hisson mein bati hai", "rewritten in the other shape");
+  assert.equal(C(["8 barabar hisse", "aath hisse"], ["8"]), null, "neither shape clean: not said");
+  assert.equal(C(["aur ek ___ barabar hisson mein"], []), null, "a hole is never said, key or no key");
+});

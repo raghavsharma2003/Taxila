@@ -12,8 +12,12 @@ import { EnvelopeExt, MARKUP, TargetsField, UNGRADED, arr, envelope, isObj, num,
 
 export const DENOMS = [50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100, 50] as const;   // paise: ₹500 … 50 paise
 const DK_STRINGS = { round: "Round", served: "served", patience: "patience", bill: "Bill", pays: "Pays", change: "Change", pack: "Pack", crates: "crates", left: "left over", enough: "Enough", notEnough: "Not enough", budget: "Has", coach: "Tap notes and coins to put them on the counter", runDone: "Shop closed", exact: "EXACT", short: "short by", over: "over by", carry: "carry them all", full: "full crates to sell", each: "each", inLast: "in the last" };
-const Item = z.object({ name: z.string().min(1).max(14).refine((s) => !MARKUP.test(s)), price: z.number().int().min(50).max(5000000), qty: z.number().int().min(1).max(99) });
-const Customer = z.object({ items: z.array(Item).min(1).max(3), pays: z.number().int().min(100).max(5000000).optional(), budget: z.number().int().min(100).max(5000000).optional() });
+// Every amount (price, pays, budget) is in PAISE, and the JSON schema says so in each field's description (the model sees
+// it): judges, regeneration round 2, 2026-11-11 — a spec wrote { "name": "Soap", "price": 50 } meaning ₹50 and the shop
+// showed "Soap 1 × ₹0.50". The field names stay (stored specs keep validating).
+export const PAISE_NOTE = "in paise (100 paise = ₹1): ₹50 is 5000, ₹12.50 is 1250; a multiple of 50";
+const Item = z.object({ name: z.string().min(1).max(14).refine((s) => !MARKUP.test(s)), price: z.number().int().min(50).max(5000000).describe(`price of one item, ${PAISE_NOTE}`), qty: z.number().int().min(1).max(99) });
+const Customer = z.object({ items: z.array(Item).min(1).max(3), pays: z.number().int().min(100).max(5000000).optional().describe(`the note the customer pays with (change mode), ${PAISE_NOTE}`), budget: z.number().int().min(100).max(5000000).optional().describe(`the money the customer has (estimate mode), ${PAISE_NOTE}`) });
 const DkRound = z.discriminatedUnion("mode", [
   z.object({ mode: z.literal("pay"), title: z.string().min(1).max(22), sub: z.string().max(40), customers: z.array(Customer).min(1).max(5), coins: z.boolean(), speed: z.number().min(0.6).max(1.5), ...TargetsField }),
   z.object({ mode: z.literal("change"), title: z.string().min(1).max(22), sub: z.string().max(40), customers: z.array(Customer).min(1).max(5), coins: z.boolean(), speed: z.number().min(0.6).max(1.5), ...TargetsField }),
@@ -51,8 +55,23 @@ function cust(c: unknown, r: string[], needPays: boolean, needBudget: boolean) {
   if (needBudget) { const b = reqNum(c.budget, 100, 5000000, "budget", r, true); if (b === null || Math.abs(b - bill) < bill * 0.04) { r.push("budget:too-close-to-call"); return null; } out.budget = b; }
   return out;
 }
+/** Amounts that look like rupees written where paise belong: a sub-rupee price (50 paise, the only one the schema allows)
+ *  in a spec whose other amounts are whole rupees of ₹10 or more — both readings cannot be meant, so the 50 was ₹50.
+ *  Decidable only when the spec mixes the two; a spec whose every amount is small is left alone (nothing to compare). */
+export function rupeeLikePrices(raw: unknown): number {
+  if (!isObj(raw) || !Array.isArray(raw.rounds)) return 0;
+  const prices: number[] = [], others: number[] = [];
+  for (const rd of raw.rounds) if (isObj(rd) && Array.isArray(rd.customers)) for (const c of rd.customers) {
+    if (!isObj(c)) continue;
+    for (const k of ["pays", "budget"] as const) if (typeof c[k] === "number") others.push(c[k] as number);
+    if (Array.isArray(c.items)) for (const i of c.items) if (isObj(i) && typeof i.price === "number") prices.push(i.price);
+  }
+  const big = [...prices, ...others].some((a) => a >= 1000 && a % 100 === 0);
+  return big ? prices.filter((p) => p < 100).length : 0;
+}
 function repairDukaan(raw: Record<string, unknown>, r: string[]): DukaanSpec | null {
   const env = envelope(raw, dkDefault, r);
+  if (rupeeLikePrices(raw) > 0) r.push("price:looks-like-rupees");   // flagged, not changed: the bill is still exact as written
   const rounds: DkRoundT[] = [];
   for (const x of arr(raw.rounds, "rounds", r).slice(0, 4)) {
     if (!isObj(x)) { r.push("round"); continue; }

@@ -99,6 +99,12 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
     c.fillStyle = "#101712"; roundRect(c, gx - 14, gy - 14, s * cols + 28, s * rows + 28, 18); c.fill(); c.strokeStyle = "rgba(255,255,255,.08)"; c.lineWidth = 2; c.stroke();
     for (let r = 0; r < rows; r++) for (let cc = 0; cc < cols; cc++) { c.fillStyle = (r + cc) % 2 ? "#16211A" : "#18241C"; c.fillRect(gx + cc * s + 1, gy + r * s + 1, s - 2, s - 2); }
   }
+  /** A size pill's centre: above the plot (top `y`, height `hh`) when that clears the host's chrome, else below it, else just
+   *  inside its top (a plot on the grid's top row put "2 × 6" under the laptop task pill: layout probe, 2026-11-11). */
+  const ph = () => Math.max(40, api.minLabel) + 22;
+  const tagY = (y: number, hh: number) => (y - 30 - ph() / 2 >= api.chromeBottom() + 6 ? y - 30 : y + hh + 30 + ph() / 2 <= H - 8 ? y + hh + 30 : y + ph() / 2 + 8);
+  /** a pill's centre x keeping all of it on the stage */
+  const tagX = (ctx: Ctx, s0: string, x: number) => { const hw = api.measure(ctx, s0, { font: "mono", size: 40, weight: 600 }) / 2 + 18; return clamp(x, hw + 8, W - 8 - hw); };
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("field", paintBg), 0, 0, W, H);
     const fx = api.fx;
@@ -124,19 +130,20 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
       }
       ctx.strokeStyle = C.mint; ctx.lineWidth = 5; ctx.strokeRect(x, y, q.w * s, q.h * s);
       bloom(ctx, C.mint, x + (q.w * s) / 2, y + (q.h * s) / 2, Math.max(q.w, q.h) * s * 0.8, 0.25);
-      pill(api, ctx, `${q.w} × ${q.h}`, x + (q.w * s) / 2, y - 30, { color: C.mint });
+      pill(api, ctx, `${q.w} × ${q.h}`, x + (q.w * s) / 2, tagY(y, q.h * s), { color: C.mint });
     }
     if (g.drag) {
       const q = rectOf(g.drag.a, g.drag.b), x = gx + q.c * s, y = gy + q.r * s, bad = overlapsDrift(q);
       ctx.fillStyle = bad ? "rgba(255,181,71,.14)" : "rgba(203,255,77,.16)"; ctx.fillRect(x, y, q.w * s, q.h * s);
       ctx.strokeStyle = bad ? C.amber : C.volt; ctx.lineWidth = 5; ctx.strokeRect(x, y, q.w * s, q.h * s);
       ctx.fillStyle = bad ? C.amber : C.volt; for (let i = 0; i < q.w; i++) ctx.fillRect(x + i * s + s / 2 - 3, y - 9, 6, 6); for (let j = 0; j < q.h; j++) ctx.fillRect(x - 9, y + j * s + s / 2 - 3, 6, 6);
-      pill(api, ctx, `${q.w} × ${q.h}`, clamp(x + (q.w * s) / 2, 200, 800), clamp(y - 30, 190, 600), { color: bad ? C.amber : C.ink });
+      pill(api, ctx, `${q.w} × ${q.h}`, clamp(x + (q.w * s) / 2, 200, 800), tagY(y, q.h * s), { color: bad ? C.amber : C.ink });
     }
     if (g.flash) {
       const q = g.flash.rect, x = gx + q.c * s, y = gy + q.r * s, a = 1 - clamp((g.flash.t - 1.2) / 0.6, 0, 1);
       ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = C.amber; ctx.lineWidth = 5; ctx.setLineDash([10, 8]); ctx.strokeRect(x, y, q.w * s, q.h * s); ctx.setLineDash([]);
-      pill(api, ctx, g.flash.text, clamp(x + (q.w * s) / 2, 260, 740), clamp(y + q.h * s + 34, 200, 600), { color: C.amber });
+      // (kept whole on the stage and above the round's time bar: clamped to y 600 its lower half ran off the bottom edge)
+      pill(api, ctx, g.flash.text, tagX(ctx, g.flash.text, x + (q.w * s) / 2), clamp(y + q.h * s + 34, 200, Math.min(H - 8, gy + rows * s + 16) - ph() / 2), { color: C.amber });
       ctx.restore();
     }
     if (g.state === "play" || g.state === "won") {
@@ -158,11 +165,14 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
   function drawCompare(ctx: Ctx, c: { shapes: { w: number; h: number }[]; per: number }, a: number) {
     ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = "rgba(10,12,18,.8)"; ctx.fillRect(0, 0, W, H);
     // two short lines, not one 860-unit line: the long line ran into the PiP corner (safe-zone battery, 2026-10-05)
-    api.text(ctx, `SAME PERIMETER (${c.per})`, 500, 140, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", track: 3, maxWidth: 620 });
-    api.text(ctx, `DIFFERENT AREA`, 500, 190, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", track: 3, maxWidth: 620 });
-    const cs = 34;
+    // (the two lines start below the host's HUD row / task pill — on a laptop they sat under it — and the shapes fit between
+    // them and the shape labels at 520)
+    const t0 = Math.max(140, api.chromeBottom() + 8 + Math.max(38, api.minLabel));
+    api.text(ctx, `SAME PERIMETER (${c.per})`, 500, t0, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", track: 3, maxWidth: 620 });
+    api.text(ctx, `DIFFERENT AREA`, 500, t0 + 50, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", track: 3, maxWidth: 620 });
+    const top = t0 + 72, bottom = 470, maxH = Math.max(1, ...c.shapes.map((sh) => sh.h)), cs = Math.min(34, (bottom - top) / maxH), mid = clamp(330, top + (maxH * cs) / 2, bottom - (maxH * cs) / 2);
     c.shapes.forEach((sh, i) => {
-      const cx = 290 + i * 420, x = cx - (sh.w * cs) / 2, y = 330 - (sh.h * cs) / 2;
+      const cx = 290 + i * 420, x = cx - (sh.w * cs) / 2, y = mid - (sh.h * cs) / 2;
       ctx.fillStyle = i ? "rgba(139,152,255,.35)" : "rgba(61,220,151,.35)"; ctx.fillRect(x, y, sh.w * cs, sh.h * cs);
       ctx.strokeStyle = i ? C.ion : C.mint; ctx.lineWidth = 5; ctx.strokeRect(x, y, sh.w * cs, sh.h * cs);
       api.text(ctx, `${sh.w} × ${sh.h}`, cx, 520, { font: "display", size: 52, weight: 800, align: "center" });

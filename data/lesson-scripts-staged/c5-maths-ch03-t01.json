@@ -16,8 +16,8 @@
   {"hi": "anticlockwise / ghadi ki ulti disha", "en": "anticlockwise"},
   {"hi": "sui", "en": "clock hand / pointer"},
   {"hi": "ulti taraf", "en": "the opposite way"}
- ],
- "joints": {"asidePark":[{"hi":"Yeh ghoomna poora hote hi {aside} ki baat zaroor karenge.","en":"Once these turns is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh ghoomna khatam ho jaaye.","en":"We'll talk about {aside} too, once these turns is over."},{"hi":"Mazedaar, {aside} ki baat hum zaroor karenge, bas thodi der mein.","en":"Fun, we will surely talk about {aside}, just in a little while."}],"asideReturn":[{"hi":"{aside} mein tum kab-kab poora ghoom jaate ho?","en":"When do you turn all the way round in {aside}?"},{"hi":"{aside} wali baat batao na, tumne pehli baar kab kiya?","en":"Tell me about {aside}: when did you first do it?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in English."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}]},
+ ], "greetSimpler": { "hi": "Aaj hum ghoomne ki baat karenge: chhota chakkar, aadha chakkar aur poora chakkar.", "en": "Today we talk about turning: a small turn, a half turn and a full turn." },
+ "joints": {"asidePark":[{"hi":"Yeh ghoomna khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish these turns, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh ghoomna khatam ho jaaye.","en":"We'll talk about {aside} too, right after these turns."},{"hi":"Mazedaar, {aside} ki baat hum zaroor karenge, bas thodi der mein.","en":"Fun, we will surely talk about {aside}, just in a little while."}],"asideReturn":[{"hi":"{aside} mein tum kab-kab poora ghoom jaate ho?","en":"When do you turn all the way round in {aside}?"},{"hi":"{aside} wali baat batao na, tumhe uski kaunsi baat pasand hai?","en":"Tell me about {aside}: what do you like about it?"},{"hi":"Ab {aside} ki baat, usmein sabse mazedaar kya hai?","en":"Now {aside}: what is the most fun part of it?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}],"backTo":[{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."}]},
  "skills": [
   {
    "skillId": "c5-maths-ch03-t01-s1",
@@ -190,7 +190,7 @@
       "hi": "Gole mein aadha chakkar 4 mein se 2 hisse hai, aur phir ek quarter turn aur liya. Kavya kul kitna chakkar ghoomi?",
       "en": "On the circle a half turn is 2 of the 4 parts, and then one more quarter turn was made. How much has Kavya turned in all?"
      },
-     "key": "3/4 turn", "why": { "hi": "aadha chakkar chaar mein se 2 hisse hai aur quarter turn ek hissa, toh kul 3 hisse ghoome", "en": "a half turn is 2 of 4 parts and a quarter turn is 1 more, so she turned 3 of 4 parts" },
+     "key": "3/4 turn", "why": { "hi": "aadha chakkar 4 mein se 2 hisse hai aur quarter turn 1 hissa aur, toh Kavya 3/4 chakkar ghoomi", "en": "a half turn is 2 of 4 parts and a quarter turn is 1 more, so Kavya turned a 3/4 turn" },
      "accept": [
       "3/4",
       "3/4 chakkar",
@@ -479,7 +479,7 @@
     "problem": {
      "hi": "Ghadi jaise dial par sui 12 par hai. Card par likha hai: pehle aadha chakkar clockwise, phir quarter turn anticlockwise. Sui kis number par rukegi?",
      "en": "On a dial marked like a clock, the pointer is at 12. The card says: first a half turn clockwise, then a quarter turn anticlockwise. At which number does the pointer stop?"
-    }, "simpler": { "hi": "Ghadi jaise dial par sui 12 par hai. Card ke hisaab se pehle aadha chakkar clockwise, phir quarter turn anticlockwise. Dekhna hai ki sui kis number par rukegi.", "en": "On a clock-like dial the pointer is at 12. The card says a half turn clockwise first, then a quarter turn anticlockwise. We see which number the pointer stops at." },
+    }, "simpler": { "hi": "Pehle aadha chakkar: dekho 12 se sui kahan pahunchi. Phir wahan se ek quarter turn ulti taraf ghumao.", "en": "First the half turn: see where the pointer gets to from 12. Then turn it one quarter turn the other way from there." },
     "givens": [
      {
       "hi": "sui shuru mein 12 par hai, pehle aadha chakkar clockwise, phir ek quarter turn anticlockwise",
@@ -643,7 +643,7 @@
      }
     }
    ],
-   "bridgeToNext": { "hi": "Har quarter turn mein ghadi ki sui 3 number aage jaati hai. Agle hisse mein dekhenge ki ek quarter turn ek right angle hota hai.", "en": "In every quarter turn the clock hand moves 3 numbers on. Next we will see that one quarter turn is one right angle.", "simpler": {"hi": "Quarter turn mein ghadi ki sui 3 number chalti hai. Agle hisse mein ek quarter turn ko right angle se jodenge.", "en": "In a quarter turn the clock hand moves 3 numbers. Next we connect one quarter turn with the right angle."} }
+   "bridgeToNext": { "hi": "Har quarter turn mein ghadi ki sui 3 number aage jaati hai. Agle hisse mein dekhenge ki ek quarter turn ek right angle hota hai.", "en": "In every quarter turn the clock hand moves 3 numbers on. Next we will see that one quarter turn is one right angle.", "simpler": { "hi": "Ab dekhenge ki ek quarter turn hi ek right angle hai.", "en": "Now we see that one quarter turn is one right angle." } }
   },
   {
    "skillId": "c5-maths-ch03-t01-s3",
@@ -734,7 +734,7 @@
     "problem": {
      "hi": "Minute ki sui 12 se chalkar clockwise 9 tak jaati hai. Yeh kaunsa turn hai?",
      "en": "The minute hand starts at 12 and turns clockwise to 9. What turn is that?"
-    }, "simpler": { "hi": "Minute ki sui 12 se clockwise 9 tak jaati hai. Dekhna hai ki yeh kaunsa turn hai.", "en": "The minute hand goes clockwise from 12 to 9. We see which turn that is." },
+    }, "simpler": { "hi": "Ghadi ke 4 quarter hain: 12 se 3, 3 se 6, 6 se 9, aur 9 se 12. 12 se 9 tak kitne quarter hain, yeh gino.", "en": "The clock has 4 quarters: 12 to 3, 3 to 6, 6 to 9, and 9 to 12. Count the quarters from 12 to 9." },
     "givens": [
      {"hi": "sui 12 se shuru hokar clockwise 9 tak jaati hai", "en": "the hand starts at 12 and goes clockwise to 9"}
     ],

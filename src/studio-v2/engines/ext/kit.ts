@@ -109,7 +109,9 @@ export { clamp, hexA };
 export class RoundFlow {
   state: "boot" | "intro" | "play" | "reveal" | "end" | "final" = "boot";
   stateT = 0; introA = 0; endA = 0; finalA = 0; round = -1;
-  constructor(private api: EngineApi, private rounds: number, private hooks: { onRound(k: number): void; onEnd?(k: number): void; onFinal(): void }) {}
+  // (plain fields, not parameter properties: node's strip-only TypeScript loads this file in the layout test)
+  private api: EngineApi; private rounds: number; private hooks: { onRound(k: number): void; onEnd?(k: number): void; onFinal(): void };
+  constructor(api: EngineApi, rounds: number, hooks: { onRound(k: number): void; onEnd?(k: number): void; onFinal(): void }) { this.api = api; this.rounds = rounds; this.hooks = hooks; }
   go(s: RoundFlow["state"]): void { this.state = s; this.stateT = 0; }
   startRound(k: number): void {
     this.round = k; this.go("intro"); this.introA = 0;

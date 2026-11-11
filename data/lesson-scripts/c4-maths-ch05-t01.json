@@ -40,7 +40,7 @@
    "hi": "baantna",
    "en": "to share"
   }
- ], "joints": {"asidePark":[{"hi":"Yeh baantna poora hote hi {aside} ki baat zaroor karenge.","en":"Once this sharing is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh baantna khatam ho jaaye.","en":"We'll talk about {aside} too, once this sharing is over."},{"hi":"Achha, {aside} wali baat main yaad rakhti hoon, thodi der mein usi par aayenge.","en":"Okay, I'll keep the {aside} bit in mind, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein tumne kabhi kuch barabar baanta hai?","en":"Have you ever shared something equally in {aside}?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in English."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}]},
+ ], "greetSimpler": { "hi": "Aaj hum ek cheez ko barabar hisson mein baantna seekhenge, aur un hisson ke naam.", "en": "Today we learn to share one thing into equal parts, and the names of those parts." }, "joints": {"asidePark":[{"hi":"Yeh baantna khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish this sharing, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh baantna khatam ho jaaye.","en":"We'll talk about {aside} too, right after this sharing."},{"hi":"Achha, {aside} wali baat main yaad rakhti hoon, thodi der mein usi par aayenge.","en":"Okay, I'll keep the {aside} bit in mind, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} mein tumne kabhi kuch barabar baanta hai?","en":"Have you ever shared something equally in {aside}?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"},{"hi":"Ab {aside} ki baari, uske baare mein thoda aur batao na?","en":"Now it's {aside}'s turn: will you tell me a bit more about it?"}],"hindiSwitch":[{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."}],"askAgain":[{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."}],"backTo":[{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."}]},
  "skills": [
   {
    "skillId": "c4-maths-ch05-t01-s1",
@@ -251,7 +251,7 @@
      ],
      "targets": "c4-maths-ch05-t01-m-part-part",
      "wrongIfMis": "2/1",
-     "simpler": { "hi": "Upar ka number tumne abhi nikala, 2. Neeche ka bhi, 3. Bas dono ko ek fraction mein likh do.", "en": "You already found the top, 2, and the bottom, 3. Just put them into one fraction." },
+     "simpler": { "hi": "Humne dekha, neeche 3 aata hai aur upar 2. Bas dono ko ek fraction mein likh do.", "en": "We saw that 3 goes below and 2 on top. Just put them into one fraction." },
      "board": { "template": "fraction-parts@1", "params": {"parts": 3, "shade": 2, "whole": "bar", "hideResult": true} }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts":3,"shade":2,"whole":"bar"} }
     },
     "answer": { "hi": "barfi ka 2/3 hissa khaya gaya", "en": "2/3 of the barfi was eaten" },
@@ -375,20 +375,14 @@
      "simpler": { "hi": "Ek tukda matlab ek chauthaai, do tukde matlab do chauthaai. Bas khaye hue chauthaai gino, bache hue tukde nahi.", "en": "One piece is one quarter, two pieces are two quarters. Just count the quarters eaten, not the pieces left over." },
      "board": { "template": "fraction-parts@1", "params": {"parts": 4, "shade": 0, "whole": "bar"} },
      "then": {
-      "prompt": { "hi": "Chocolate bar ke 4 barabar tukde the, aur 3 kha liye. Bar ka kitna hissa khaya, fraction mein?", "en": "A chocolate bar had 4 equal pieces, and 3 got eaten. What fraction of the bar was eaten?" },
-      "key": "3/4",
-      "accept": [
-       "teen-chauthaai",
-       "teen chauthaai",
-       "three quarters",
-       "three-quarters",
-       "three fourths"
-      ],
+      "prompt": { "hi": "Chocolate bar ke 4 barabar tukde the, aur 2 kha liye. Bar ka kitna hissa khaya, fraction mein?", "en": "A chocolate bar had 4 equal pieces, and 2 got eaten. What fraction of the bar was eaten?" },
+      "key": "2/4",
+      "accept": ["do-chauthaai", "do chauthaai", "two quarters", "1/2", "aadha"],
       "targets": "c4-maths-ch05-t01-m-part-part",
-      "wrongIfMis": "3/1",
+      "wrongIfMis": "2/2",
       "board": { "template": "fraction-parts@1", "params": {"parts": 4, "shade": 0, "whole": "bar"} },
-      "why": { "hi": "bar ke 4 barabar tukdon mein se 3 khaye gaye, yaani 3/4", "en": "3 of the bar's 4 equal pieces were eaten, so 3/4" },
-      "answerBoard": { "template": "fraction-parts@1", "params": {"parts":4,"shade":3,"whole":"bar"} },
+      "why": { "hi": "bar ke 4 barabar tukdon mein se 2 khaye gaye, yaani 2/4", "en": "2 of the bar’s 4 equal pieces were eaten, so 2/4" },
+      "answerBoard": { "template": "fraction-parts@1", "params": {"parts":4,"shade":2,"whole":"bar"} },
       "simpler": { "hi": "Bar kaatne par 4 tukde bane, woh neeche. Upar ke liye sirf khaye hue tukde gino.", "en": "Cutting the bar made 4 pieces; that goes at the bottom. For the top, count only the eaten pieces." }
      }
     }
@@ -458,7 +452,7 @@
       "key": "5",
       "accept": ["paanch", "five", "5 kanche", "5 marbles"],
       "why": { "hi": "4 barabar group banao toh har group mein 5 kanche aate hain, aur 4 × 5 = 20", "en": "make 4 equal groups and each group gets 5 marbles, and 4 × 5 = 20" },
-      "board": { "template": "equal-groups@1", "params": {"sizes": [10, 10]} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 4, "each": 5} }
+      "board": { "template": "equal-groups@1", "params": {"sizes": [10, 10]} }, "answerBoard": { "template": "equal-groups@1", "params": { "groups": 4, "each": 5 } }
      },
      "simpler": { "hi": "4 group banane hain. Dono group ko phir se 2 barabar hisson mein baanto.", "en": "You need 4 groups. Split each of the two groups into 2 equal parts again." }
     }

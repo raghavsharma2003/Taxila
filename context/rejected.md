@@ -3008,3 +3008,7 @@ Replays stay as regression pins. Evidence for a walk fix is a predicate over the
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-replay-pass-rate-as-proof-of-reply-quality` (2026-11-11): Rejected: reading the J2 replay's pass rate (76 of 80 clean under the predicate) as evidence that her reply after an aside is good. In director20 the same code produced 7 model sentences of which the judges found 3 odd or wrong, and most first drafts were the next card's text. The predicate measures safe and on the child's word; it cannot measure whether a sentence answers what the child said. A sentence a child hears is judged by a reader or it is authored.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-pushing-on-passes-alone` (2026-11-11): Rejected as a habit: pushing an integration on 'the failing suite passes alone and the diff does not touch it'. Used three times on 2026-11-10 and 11 (integrations 32, 37, 38). Each time the cause, once found, was specific and not load: a wall-clock assertion, a test assumption broken by another stream's data, a 1-in-256 chance failure in a product gate. The pushes did no harm, but the reasoning given at the time ('load') was wrong in every case that was later explained. A failure that passes alone gets a root-cause task the same hour, and the push message says 'cause unknown' rather than naming one.

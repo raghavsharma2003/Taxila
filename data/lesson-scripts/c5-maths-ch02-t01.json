@@ -48,7 +48,7 @@
    "hi": "dedh",
    "en": "one and a half"
   }
- ], "joints": {"asidePark":[{"hi":"Yeh sankhya rekha wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once this number line is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh sankhya rekha wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once this number line is over."},{"hi":"Wah, {aside} ki baat sambhaal ke rakhi hai, baad mein zaroor sunungi.","en":"Oh, I've kept the {aside} bit safe, and I'll surely hear it later."}],"asideReturn":[{"hi":"{aside} mein tum kitni door tak jaate ho?","en":"How far do you go in {aside}?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"},{"hi":"{aside} wali baat batao na, tumne pehli baar kab kiya?","en":"Tell me about {aside}: when did you first do it?"}],"hindiSwitch":[{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in English."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."}],"askAgain":[{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."}]},
+ ], "greetSimpler": { "hi": "Aaj hum bhinn ko ek seedhi rekha par jagah denge.", "en": "Today we give fractions their place on a straight line." }, "joints": {"asidePark":[{"hi":"Yeh sankhya rekha wala kaam khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish this number line, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh sankhya rekha wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, right after this number line."},{"hi":"Wah, {aside} ki baat sambhaal ke rakhi hai, baad mein zaroor sunungi.","en":"Oh, I've kept the {aside} bit safe, and I'll surely hear it later."}],"asideReturn":[{"hi":"{aside} mein tum kitni door tak jaate ho?","en":"How far do you go in {aside}?"},{"hi":"Chalo, {aside} ke baare mein batao, tumhe woh kyun pasand hai?","en":"Okay, tell me about {aside}: why do you like it?"},{"hi":"{aside} wali baat batao na, tumhe uski kaunsi baat pasand hai?","en":"Tell me about {aside}: what do you like about it?"}],"hindiSwitch":[{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."}],"askAgain":[{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."}],"backTo":[{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."},{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."},{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."}]},
  "skills": [
   {
    "skillId": "c5-maths-ch02-t01-s1",
@@ -114,11 +114,11 @@
        "usi line par"
       ],
       "targets": "c5-maths-ch02-t01-m-not-numbers",
-      "wrongIfMis": "near 3",
+      "wrongIfMis": "near 3", "simpler": { "hi": "1/2 bhi 0 aur 1 ke beech tha, 2 ke paas nahi. 1/3 bhi ek poore ka ek tukda hai.", "en": "1/2 sat between 0 and 1, not near 2. 1/3 is also a piece of one whole." },
       "why": { "hi": "neeche ka 3 matlab 0 se 1 ke 3 barabar gaps, aur pehla gap isi line par khatam hota hai", "en": "the bottom 3 means 3 equal gaps from 0 to 1, and the first gap ends right on this line" },
       "board": { "template": "fraction-line@1", "params": {"dens": [2, 3], "from": 0, "to": 1, "marks": [[1, 2]]} }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [2, 3], "from": 0, "to": 1, "marks": [[1, 2], [1, 3]]} }
      },
-     "simpler": { "hi": "1/2 bhi 0 aur 1 ke beech tha, 2 ke paas nahi. 1/3 bhi ek poore ka ek tukda hai.", "en": "1/2 sat between 0 and 1, not near 2. 1/3 is also a piece of one whole." }
+     "simpler": { "hi": "Line ke theek beech mein ek mark hai. Woh line ko do barabar gaps mein baant-ta hai, isliye uska naam 1/2 hai.", "en": "There is a mark right in the middle of the line. It splits the line into two equal gaps, so its name is 1/2." }
     },
     {
      "id": "e2",
@@ -709,26 +709,14 @@
      "simpler": { "hi": "Khilona ek hi patthar par hai. Ek jagah, ek number, 4/5 km.", "en": "The toy is on one stone. One spot, one number: 4/5 km." },
      "board": { "template": "fraction-line@1", "params": {"den": 5, "from": 0, "to": 1, "marks": [{"num": 4, "label": "4/5"}]} },
      "then": {
-      "prompt": { "hi": "Highway 0 se 1 km, har 1/5 km par patthar. Khilona 0 ke baad doosre patthar par ruka. Kis number par hai?", "en": "A highway from 0 to 1 km, a stone every 1/5 km. The toy stops at the second stone after 0. What number is it on?" },
-      "key": "2/5 km",
-      "accept": [
-       "2/5",
-       "do bata paanch km",
-       "two fifths km"
-      ],
+      "prompt": { "hi": "Highway 0 se 1 km, har 1/8 km par patthar. Khilona 0 ke baad teesre patthar par ruka. Kis number par hai?", "en": "A highway from 0 to 1 km, a stone every 1/8 km. The toy stops at the third stone after 0. What number is it on?" },
+      "key": "3/8 km",
+      "accept": ["3/8", "teen bata aath km", "three eighths km"],
       "targets": "c5-maths-ch02-t01-m-not-numbers",
-      "board": {
-       "template": "fraction-line@1",
-       "params": {
-        "den": 5,
-        "from": 0,
-        "to": 1,
-        "mark": 2
-       }
-      },
-      "why": { "hi": "har patthar 1/5 km aage hai, toh doosra patthar 2/5 km par", "en": "each stone is 1/5 km further on, so the second stone is at 2/5 km" },
-      "answerBoard": { "template": "fraction-line@1", "params": { "den": 5, "from": 0, "to": 1, "marks": [ { "num": 2, "label": "2/5" } ], "hop": { "num": 2 } } },
-      "simpler": { "hi": "Ek patthar se agla, 1/5 km. 0 se doosre patthar tak aise kitne tukde hain, gino.", "en": "Stone to stone is 1/5 km. Count how many of those there are from 0 to the second stone." }
+      "board": { "template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "mark": 3} },
+      "why": { "hi": "har patthar 1/8 km aage hai, toh teesra patthar 3/8 km par", "en": "each stone is 1/8 km further on, so the third stone is at 3/8 km" },
+      "answerBoard": { "template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "marks": [{"num": 3, "label": "3/8"}], "hop": {"num": 3}} },
+      "simpler": { "hi": "Ek patthar se agla, 1/8 km. 0 se teesre patthar tak aise kitne tukde hain, gino.", "en": "Stone to stone is 1/8 km. Count how many of those there are from 0 to the third stone." }
      }
     }
    ],

@@ -55,10 +55,10 @@ export const MODES = {
   taraazu: ["equation", "equality", "weigh", "fill"],   // r7: weigh (kg / g on a pan balance), fill (l / ml with jugs)
   nishana: ["place", "compare", "hop"],
   "kyun-lab": ["fair-test", "dhruv", "disha"],   // r7 chumbak: magnets (dhruv: poles, push and pull; disha: finding directions)
-  kon: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends"],
+  kon: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends", "place", "name"],
   nazariya: ["views", "array", "floor", "powers", "mirror", "tri", "solid"],   // r4-khand; r7 nazariya2: tri (a triangle's cloth as half a rectangle), solid (faces / edges / corners of a solid turned in the hand)
   arena: ["pick"],
-  stambh: ["bars", "picto"],
+  stambh: ["bars", "picto", "tally"],   // r8 tally: tallies kept in fives while a scene passes (keep) or read off a row (read)
   yantra: ["beam", "circuit", "pendulum", "roshni"],   // r7 roshni: sources of light and materials (a light bench, the eye on its right)
   kaal: ["place", "order"],
   vakya: ["rail"],
@@ -232,6 +232,20 @@ export type LabAct =
 export type KonAct =
   | { kind: "turn"; deg: number }                       // point the arm at heading `deg` (degrees, 0 = right, anticlockwise +)
   | { kind: "stop"; side: "lo" | "hi"; at: number }      // r7 kon2 ends: a stop on point `at`, −1 off the track's end (open), −2 parked
+  // r8 kon/place: the loose protractor (board px, y up): its centre moved, turned to `deg` (1° steps), locked / freed; then
+  // measure reads `n` off the scale, draw puts a dot at rim angle `r` and joins it to O ("v") or A ("e"); size picks an angle
+  | { kind: "move"; x: number; y: number }
+  | { kind: "spin"; deg: number }
+  | { kind: "lock" }
+  | { kind: "free" }
+  | { kind: "read"; n: number }
+  | { kind: "mark"; r: number }
+  | { kind: "join"; end: "v" | "e" }
+  | { kind: "pick"; which: "a" | "b" | "same" }
+  // r8 kon/name: say taps a lettered point (`at`: 0 = the vertex, 1..3 = the ray ends) or clears the name; find taps an arc
+  | { kind: "letter"; at: number }
+  | { kind: "arc"; at: number }
+  | { kind: "clear" }
   | { kind: "commit" }
   | { kind: "undo" };
 // Nazariya (r4-khand): the block plot. A build act changes column heights (gravity: a block rests on the ground or a block).
@@ -257,6 +271,8 @@ export type StambhAct =
   | { kind: "drop"; col: number; half?: boolean }       // a crate (or, where the level allows, a half crate) onto column `col`
   | { kind: "lift"; col: number }                       // the top crate off column `col`
   | { kind: "check" }                                   // the law compares every bar with the data
+  | { kind: "mark"; row: number; across?: boolean }     // tally keep: one stroke (standing, or the line across) for the thing passing, on row `row`
+  | { kind: "total"; row: number; n: number | null }    // tally: the number written in row `row`'s total cell (null clears it)
   | { kind: "undo" };
 // Yantra (round 7 E6, science puzzle-physics). Parts sit on a board; the child places and turns them, wires terminals or sets
 // knobs, then RUNs: the law (never a physics engine) decides what happens, and the view animates it.

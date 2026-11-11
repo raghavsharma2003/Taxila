@@ -27,7 +27,7 @@ const BLURB: Record<string, string> = {
   "line-runner@1": "Tap to jump as the runner crosses the called number. Negatives, backwards runs, decimals.",
   "area-claim@1": "Stake plots on a grid before the drift takes them: exact area, exact perimeter, then the most area.",
   "vault-heist@1": "Grab blocks off a moving belt to load the vault to an exact number. Ten of a kind regroup.",
-  "angle-cannon@1": "Turn a turret by estimate to hit cloaked threats at called angles. Copy turns; shoot only obtuse.",
+  "angle-cannon@1": "Turn a lighthouse beam by estimate to light the boat at a called angle. Copy turns; light only obtuse.",
   "food-web@1": "Draw who-eats-whom, predict a removal, then keep a forest alive through a drought.",
   "phase-shift@1": "Heat, cool, fan and lid a beaker of real particles. Watch 0 °C and 100 °C hold while the state changes.",
   "balance-beam@1": "Torque physics: level the beam, unmask a mystery crate, take the same off both sides.",

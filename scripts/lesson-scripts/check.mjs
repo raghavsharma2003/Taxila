@@ -17,6 +17,7 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { BOARD_REFS } from "../../server/forge/explainer/board-ref.js";
+import { toSpoken } from "../../server/voice/spoken.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 // LESSON_SCRIPTS_DIR (relative to the repo root): check a staged folder, e.g. data/lesson-scripts-v2, before it goes live
@@ -300,7 +301,10 @@ export function figureOf(board) {
     case "number-line-scale@1": return `scale${JSON.stringify([p.from, p.to, p.step])}`;
     // (to-studio 006, D14.7a: an answer mark on these four is a highlight on the same figure)
     case "compare@1": case "angle@1": case "number-line-hop@1": case "place-value@1": { const { mark, ...rest } = p; return `${board.template}${JSON.stringify(rest)}`; }
-    default: return `${board.template}${JSON.stringify(p)}`;
+    // (a crossing is the same figure whatever its angles are labelled: the posing board asks "?", the answer board names it)
+    case "lines@1": return p.kind === "cross" ? `cross[${p.deg}]` : `lines${JSON.stringify({ ...p, angles: undefined })}`;
+    // (hideResult only hides the answer cell: a posing board with it and its answer board without it draw the same figure)
+    default: { const { hideResult, ...rest } = p; return `${board.template}${JSON.stringify(rest)}`; }
   }
 }
 /** state.js scriptWhyOf drops a why longer than this. */
@@ -463,7 +467,7 @@ export function unitFigureErrors(s) {
  * whole by the "?"-drop). A card's prompt and the worked problem (its question) may ask. */
 export function rhetoricalQuestionErrors(s) {
   const e = [];
-  const ok = (path) => /\.(ask\.prompt|prompt|problem)$/.test(path) || /checks\[\d+\]\.prompt$/.test(path) || /then\.prompt$/.test(path) || /yourStep\.prompt$/.test(path);
+  const ok = (path) => /\.(ask\.prompt|prompt|problem|ask)$/.test(path) || /checks\[\d+\]\.prompt$/.test(path) || /then\.prompt$/.test(path) || /yourStep\.prompt$/.test(path);
   const walk = (x, path) => {
     if (Array.isArray(x)) return x.forEach((v, i) => walk(v, `${path}[${i}]`));
     if (!x || typeof x !== "object" || x.template) return;
@@ -592,7 +596,8 @@ export function whyVerbErrors(s) {
  *   the card).
  * - no form holds an English word whose Hindi twin the same script's spoken Hindi uses (data/lesson-twins.json,
  *   shared with Brain's dry-matrix predicate). */
-export const JOINT_KINDS = ["asidePark", "asideReturn", "hindiSwitch", "askAgain"];
+// (director20 S1: backTo, coming back to an earlier card: one sentence, no slot, no question)
+export const JOINT_KINDS = ["asidePark", "asideReturn", "hindiSwitch", "askAgain", "backTo"];
 export const JOINT_MAX_WORDS = 16;
 export const TWINS = JSON.parse(readFileSync(new URL("../../data/lesson-twins.json", import.meta.url), "utf8")).twins;
 const wordRe = (w) => new RegExp(`(?<![\\p{L}])${w.replace(/\s+/g, "\\s+")}(?![\\p{L}])`, "iu");
@@ -606,6 +611,17 @@ export function twinsUsedBy(s) {
   return TWINS.filter((p) => p.hi.some((h) => wordRe(h).test(t)));
 }
 const sentencesOf = (t) => String(t ?? "").trim().split(/(?<=[.!?？।])\s+(?=\S)/).filter((x) => /[\p{L}\p{N}{]/u.test(x));
+/** director20 R2: when the child says "samajh nahi aaya" or "pata nahi" to her opening, one plain sentence of what today is
+ * about (`greetSimpler` { hi, en }), then the hook: one sentence, no question, at most 20 words. */
+export function greetErrors(s) {
+  const g = s.greetSimpler; if (!g) return ["greetSimpler: one plain sentence { hi, en } of what today is about (director20 R2)"];
+  const e = [];
+  for (const lang of ["hi", "en"]) { const t = String(g[lang] ?? "").trim(); const at = `greetSimpler${lang === "en" ? " (en)" : ""}`;
+    if (!t) { e.push(`${at}: empty`); continue; }
+    if (/[?？]/.test(t) || t.split(/(?<=[.!?])\s+(?=\S)/).length !== 1) e.push(`${at}: one plain sentence, no question`);
+    if (t.split(/\s+/).length > 20) e.push(`${at}: at most 20 words`); }
+  return e;
+}
 export function jointErrors(s) {
   const e = [], j = s.joints;
   if (!j || typeof j !== "object") return ["joints: a { asidePark, asideReturn, hindiSwitch, askAgain } block, three forms each (D13)"];
@@ -643,10 +659,12 @@ export function jointErrors(s) {
           if (/[?？]/.test(t)) e.push(`${at}: asks nothing`);
           if (sents.length !== 1) e.push(`${at}: one plain sentence`);
           if (lang === "hi" && !/\bhindi\b/i.test(t)) e.push(`${at}: says plainly she will say it in Hindi`);
-          if (lang === "en" && !/\benglish\b/i.test(t)) e.push(`${at}: says plainly she will say it in English`);
+          // (director20: .en is the English of the same line, "I'll say it in Hindi"; it never promises English)
+          if (lang === "en" && (!/\bhindi\b/i.test(t) || /\benglish\b/i.test(t))) e.push(`${at}: the en is the same line in English: "I'll say it in Hindi"`);
           if (/\b(baant|milaa|chal|naap|gin)\w*/i.test(t) && lang === "hi") e.push(`${at}: an odd verb for switching language ("${t.match(/\b(baant|milaa|chal|naap|gin)\w*/i)[0]}"): say she will say it in Hindi`);
           if (/\bab se\b|\baage se\b|\bhamesha\b|from now on|\bfrom now\b|from here on/i.test(t)) e.push(`${at}: a switch promises nothing beyond this turn (no "ab se" / "from now on")`);
         }
+        if (kind === "backTo" && (sents.length !== 1 || /[?？]/.test(t))) e.push(`${at}: one sentence that brings her back to the earlier card, asking nothing`);
         if (kind === "askAgain") {
           if (/[?？]/.test(t)) e.push(`${at}: never a question (a yes/no card would take it as the card)`);
           if (/sunai|suna nahi|sun nahi|saaf nahi|chhoot|hear|heard|missed|clearly|awaaz/i.test(t)) e.push(`${at}: never claims she did not hear (the child may have spoken clearly)`);
@@ -714,6 +732,9 @@ export function v22Errors(s) {
     const cards = [...k.explain.filter((b) => b.ask).map((b) => [`${b.id}.ask`, b.ask]), ...k.checks.map((c, i) => [`checks[${i}]`, c]),
       ...k.remediation.map((r, i) => [`remediation[${i}].then`, r.then ?? {}])];
     for (const [where, c] of cards) {
+      // (director20 S1: a card whose question is not its last sentence carries `ask`, the question alone, re-asked after a hint)
+      if (c.ask !== undefined) for (const lang of ["hi", "en"]) { const q = String(c.ask?.[lang] ?? "").trim();
+        if (!/[?？]$/.test(q) || (q.match(/[?？]/g) ?? []).length !== 1 || q.split(/\s+/).length > 20) e.push(at(`${where}.ask${lang === "en" ? " (en)" : ""}: the card's question alone, one sentence ending in "?", at most 20 words`)); }
       if (!String(c.why?.hi ?? "").trim() || !String(c.why?.en ?? "").trim()) { e.push(at(`${where}: an authored why { hi, en } for its key`)); continue; }
       if (/^\s*kyunki\b/i.test(c.why.hi)) e.push(at(`${where}.why: starts with "kyunki" (the runtime adds it)`));
       if (/^\s*toh\b/i.test(c.why.hi)) e.push(at(`${where}.why: a clause with no leading "Toh"`));
@@ -859,7 +880,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit));
   return e;
 }
 
@@ -999,4 +1020,249 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     }
   }
   process.exit(bad ? 1 : 0);
+}
+
+/** director20 R1 (dc-r8-director20): data/lesson-aside-replies.json, her authored lines around an aside, per kind. Every kind
+ * has 3 returns (one question on {aside}), 3 replies (one {word} slot, no question), 2 plain (no slot, no question); the sad
+ * set has 3 replies (no slot, no question). No other slot; at most 16 words; no named topic (TOPICS) in her own words. */
+export function asideReplyErrors(d) {
+  const e = [], KINDS = ["sport", "show", "food", "people", "game", "other"];
+  const words = (t) => String(t).replace(/\{[a-z]+\}/g, "X").split(/\s+/).filter(Boolean).length;
+  const form = (at, f, { slot, question }) => {
+    for (const lang of ["hi", "en"]) { const t = String(f?.[lang] ?? "").trim(), w = `${at}${lang === "en" ? " (en)" : ""}`;
+      if (!t) { e.push(`${w}: empty`); continue; }
+      const slots = t.match(/\{[^}]*\}/g) ?? [];
+      if (slot ? slots.length !== 1 || slots[0] !== slot : slots.length) e.push(`${w}: ${slot ? `exactly one ${slot}` : "no slot"}`);
+      if (question ? !/[?？]$/.test(t) || (t.match(/[?？]/g) ?? []).length !== 1 : /[?？]/.test(t)) e.push(`${w}: ${question ? "one question, nothing after it" : "asks nothing"}`);
+      if (words(t) > 16) e.push(`${w}: ${words(t)} words > 16`);
+      // (main on director20: she claims no feeling of her own, she is an AI)
+      if (/\bmujhe\b[^.]*\b(laga|lagi|lagta|lagti)\b|\bbura laga\b|\bkhushi hui\b|\bachha laga\b|\bI(?:'m| am) (?:sorry|glad|happy|sad)\b|\bI (?:feel|felt|love|like)\b/i.test(t)) e.push(`${w}: claims a feeling of her own`);
+    }
+  };
+  for (const k of KINDS) { const v = d?.kinds?.[k];
+    if (!v) { e.push(`kinds.${k}: missing`); continue; }
+    if ((v.returns ?? []).length !== 3) e.push(`kinds.${k}.returns: 3 forms`);
+    if ((v.replies ?? []).length !== 3) e.push(`kinds.${k}.replies: 3 forms`);
+    if ((v.plain ?? []).length !== 2) e.push(`kinds.${k}.plain: 2 forms`);
+    (v.returns ?? []).forEach((f, i) => form(`kinds.${k}.returns[${i}]`, f, { slot: "{aside}", question: true }));
+    // (main on director20: a return never assumes an activity the kind does not guarantee: a person or an 'other' aside was
+    // not played or eaten)
+    if (k === "people" || k === "other") (v.returns ?? []).forEach((f, i) => { if (/\b(khela|kheli|khele|khelte|khaya|khayi|khaye|khaate|dekha|dekhi|padha|banaya|played|ate|watched|eaten)\b/i.test(`${f?.hi} ${f?.en}`)) e.push(`kinds.${k}.returns[${i}]: assumes an activity (played, ate, watched) the kind does not guarantee`); });
+    (v.replies ?? []).forEach((f, i) => form(`kinds.${k}.replies[${i}]`, f, { slot: "{word}", question: false }));
+    (v.plain ?? []).forEach((f, i) => form(`kinds.${k}.plain[${i}]`, f, { slot: null, question: false }));
+  }
+  if ((d?.sad?.replies ?? []).length !== 3) e.push("sad.replies: 3 forms");
+  (d?.sad?.replies ?? []).forEach((f, i) => form(`sad.replies[${i}]`, f, { slot: null, question: false }));
+  return e;
+}
+
+/** director20 W1 (dc-r8-director20; "line… rekha", "Square… varg", "group… samooh" in one turn): one term per idea per spoken
+ * form. No { hi } form holds both words of a twin pair (data/lesson-twins.json). Allowed: the `terms` glossary, and a gloss
+ * that introduces a term in a point or its mustSay ("line yaani rekha", "acute angle, yaani nyun kon", "obtuse angle, adhik
+ * kon"). "question mark" is not the twin of nishaan. */
+export function oneTermErrors(s) {
+  const glossed = new Map();
+  const e = [], wre = (w) => `(?<![\\p{L}])${w.replace(/\s+/g, "\\s+")}(?![\\p{L}])`;
+  const walk = (x, path) => {
+    if (Array.isArray(x)) return x.forEach((v, i) => walk(v, `${path}[${i}]`));
+    if (!x || typeof x !== "object" || x.template) return;
+    if (typeof x.hi === "string") {
+      const t = x.hi.replace(/question\s+mark/gi, "");
+      for (const p of TWINS) {
+        const en = p.en.find((w) => new RegExp(wre(w), "iu").test(t)), hi = p.hi.find((w) => new RegExp(wre(w), "iu").test(t));
+        if (!en || !hi) continue;
+        const m = /\.(point|mustSay\[\d+\])$/.test(path) ? [[en, hi], [hi, en]].map(([a, b]) => t.match(new RegExp(`(\\p{L}+\\s+)?${wre(a)}(\\s+\\p{L}+)?\\s*,?\\s*(yaani\\s+)?(\\p{L}+\\s+)?${wre(b)}`, "iu"))).find(Boolean) : null;
+        if (!m) { e.push(`${path}: "${en}" and "${hi}" in one form: one term per idea (twins.json)`); continue; }
+        // (a gloss introduces one term once per script: keyed by the glossed phrase; a point and its own mustSay are one beat)
+        // (the word before a gloss names the term only when it is not a function word: "acute angle" vs "obtuse angle")
+        const term = m[0].toLowerCase().replace(/\s+/g, " ").replace(/^(bhi|par|ki|ka|ke|yeh|ye|woh|wo|toh|aur|use|is|us|ek|jo|hai|hain|the|a|an|this|that|and|its) /, ""), beat = path.replace(/\.(point|mustSay\[\d+\])$/, "");
+        if (glossed.has(term) && glossed.get(term) !== beat) e.push(`${path}: "${m[0]}" glossed again: a term is glossed once per script`);
+        else glossed.set(term, beat);
+      }
+    }
+    for (const [k, v] of Object.entries(x)) if (k !== "hi" && k !== "en") walk(v, path ? `${path}.${k}` : k);
+  };
+  walk(s.skills, "skills");
+  return e;
+}
+
+/** The keyed cards of a script in walk order: [where, card, posing board]. */
+function cardsInOrder(s) { return s.skills.flatMap((k) => [...k.explain.filter((b) => b.ask).map((b) => [`${k.skillId}/${b.id}`, b.ask, b.ask.board ?? b.board, "ask"]),
+  ...(k.workedExample?.yourStep ? [[`${k.skillId}/workedExample.yourStep`, k.workedExample.yourStep, k.workedExample.yourStep.board ?? k.workedExample.board, "yourStep"]] : []),
+  ...k.checks.map((c) => [`${k.skillId}/${c.id}`, c, c.board, "check"]), ...k.remediation.map((r, i) => r.then && [`${k.skillId}/remediation[${i}].then`, r.then, r.then.board, "then"]).filter(Boolean)]); }
+
+/** main on the staged reader pass, batch 1 (c5-ch02-t03 s2 e2 repeats s1 e2; s2 c3 "3/4 = ?/8" answered in s1 e3's why; c7 s2
+ * c1 = s2 e1; a then-card reusing check c2's exact numbers): the same question is never asked twice in a script — two cards
+ * with the same prompt numbers and the same key — and a then-card never reuses a check's exact prompt numbers. */
+export function repeatErrors(s) {
+  const e = [], said = (x) => [x?.hi, x?.en].filter(Boolean).join(" ");
+  const nums = (t) => (String(t ?? "").replace(/,(?=\d{3}\b)/g, "").match(/\d+(?:[./]\d+)?/g) ?? []).sort().join(" ");
+  const keyOf = (c) => String(c.key ?? "").toLowerCase().replace(/[^\p{L}\p{N}/.]+/gu, " ").trim();
+  const seen = new Map(), checkNums = new Map();
+  for (const [where, c, , kind] of cardsInOrder(s)) {
+    const n = nums(c.prompt?.hi ?? c.prompt?.en);
+    if (!n) continue;
+    const sig = `${n}|${keyOf(c)}`;
+    if (seen.has(sig)) e.push(`${where}: asks the same as ${seen.get(sig)} (numbers ${n}, key ${c.key}): one question once per script`);
+    else seen.set(sig, where);
+    if (kind === "check") checkNums.set(n, where);
+    if (kind === "then" && checkNums.has(n) && (n.split(" ").length >= 2 || n.split(" ").some((x) => Number(x) > 10))) e.push(`${where}: reuses ${checkNums.get(n)}'s exact numbers (${n}): a then-card asks something new`);
+  }
+  return [...new Set(e)];
+}
+
+/** main on batch 1 (c6/c7: "bagal wala kona", "theek saamne wala" said over separate angles): a card about crossing lines is
+ * posed on a board that draws the crossing (lines@1 kind cross), never on angle@1, which draws separate angles. */
+function crossingRe() { return /\b(crossing|kaat(?:-|\s)?t[ie]|kaatti|kat(?:-|\s)?ti|saamne wal[aie]|bagal wal[aie]|vertically opposite|shirshabhimukh|linear pair|rekhik yugm)\b/i; }
+export function crossingBoardErrors(s) {
+  const e = [], said = (x) => [x?.hi, x?.en].filter(Boolean).join(" ");
+  for (const k of s.skills) {
+    for (const b of k.explain) if (b.ask) { const board = b.ask.board ?? b.board;
+      if (board?.template === "angle@1" && crossingRe().test(`${said(b.point)} ${said(b.ask.prompt)} ${said(b.ask.why)}`)) e.push(`${k.skillId}/${b.id}: speaks of crossing lines over angle@1 (separate angles): pose it on lines@1 { kind: "cross" }`); }
+    for (const [where, c, board] of cardsInOrder({ skills: [{ ...k, explain: [] }] }))
+      if (board?.template === "angle@1" && crossingRe().test(`${said(c.prompt)} ${said(c.why)}`)) e.push(`${where}: speaks of crossing lines over angle@1 (separate angles): pose it on lines@1 { kind: "cross" }`);
+  }
+  return e;
+}
+
+/** main on the 361 ungrounded marks: an answer board's mark is derived only from the card's key — a keyed angle (by name or by
+ * its drawn degrees), a keyed column title or item, a keyed hop landing, a keyed place or digit value — never from a guess
+ * about which side or which angle. A compare `add` is refused (its column is a guess). */
+export function markGroundErrors(s) {
+  const e = [], num = (x) => { const m = String(x ?? "").replace(/,/g, "").match(/-?\d+(?:\.\d+)?/); return m ? Number(m[0]) : null; };
+  const norm = (x) => String(x ?? "").toLowerCase().replace(/[₹°,]/g, "").replace(/\b(angle|kon|wala|wali|ka|ki|ke)\b/g, " ").replace(/\s+/g, " ").trim();
+  for (const [where, c] of cardsInOrder(s)) {
+    const ab = c.answerBoard, m = ab?.params?.mark;
+    if (!m || !["angle@1", "compare@1", "number-line-hop@1", "place-value@1"].includes(ab.template)) continue;
+    const forms = [c.key, ...(c.accept ?? [])].map(norm).filter(Boolean), p = ab.params;
+    let ok = true;
+    if (ab.template === "angle@1") { const a = p.angles?.[m.index]; ok = !!a && (forms.some((f) => a.name && norm(a.name).endsWith(f)) || num(c.key) === a.deg); }
+    if (ab.template === "compare@1") { const col = p[m.side];
+      ok = !m.add && !!col && (m.item === undefined ? forms.some((f) => norm(col.title) === f || norm(col.title).includes(f)) : forms.some((f) => norm(col.items?.[m.item]) === f)); }
+    if (ab.template === "number-line-hop@1") { let at = Number(p.start ?? 0); const lands = (p.hops ?? []).map((h) => (at += Number(h)));
+      ok = m.land ? lands.at(-1) === num(c.key) : lands[m.hop] === num(c.key); }
+    if (!ok) e.push(`${where}.answerBoard.mark: not named by the card's key (${c.key}): a mark is derived from the key only`);
+  }
+  return e;
+}
+
+/** main on batch 3 (c5-ch01-t01: "60,040 ko words mein padho", "8,06,125 … lakh?"): her voice speaks a numeral in words
+ * (server/voice/spoken.js, the same renderer), so a card whose key — or an accept form — can be heard in the spoken form of
+ * its own prompt gives its answer aloud. The number goes on the board only, and the prompt points at it. A key the written
+ * prompt already offers (a choice card) is the `leaks` rule's, not this one's. */
+// (a spoken number heard whole: "three hundred" inside "three hundred sixty", "thirty" inside "thirty six", is another number)
+function inNumber(sp, sf) {
+  const NUMTOK = /^(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|lakh|lakhs|crore|crores|point|upon)$/;
+  for (let i = sp.indexOf(sf); i >= 0; i = sp.indexOf(sf, i + 1)) {
+    const prev = sp.slice(0, i).trim().split(" ").at(-1) ?? "", next = sp.slice(i + sf.length).trim().split(" ")[0] ?? "";
+    const sfFirst = sf.trim().split(" ")[0], sfLast = sf.trim().split(" ").at(-1);
+    if ((NUMTOK.test(sfFirst) && NUMTOK.test(prev)) || (NUMTOK.test(sfLast) && NUMTOK.test(next))) continue;
+    return true;
+  }
+  return false;
+}
+function spNorm(t) { return ` ${String(t ?? "").toLowerCase().replace(/[-‐–]/g, " ").replace(/[^\p{L}\p{N}/.]+/gu, " ").replace(/\s+/g, " ").trim()} `; }
+export function spokenKeyErrors(s) {
+  const e = [];
+  for (const [where, c] of cardsInOrder(s)) for (const [lang, mode] of [["hi", "hinglish"], ["en", "english"]]) {
+    const raw = c.prompt?.[lang];
+    if (!raw) continue;
+    // (a choice card names its options aloud: "kaunsa bada hai, 987 ya 1012?" is the leaks rule's, not this one's)
+    if (/\s(ya|or)\s/i.test(` ${raw} `)) continue;
+    // (a place-value or read-aloud card: "7382 mein 7 ki value?" is answered by the "seven thousand" she says inside the number)
+    const place = /\b(value|jagah|place|expanded|keemat|kimat|sthaan|words|shabdon|padh|read)\b/i.test(raw);
+    const sp = spNorm(toSpoken(raw, { mode })), rw = spNorm(String(raw).replace(/(\d),(?=\d{2,3}\b)/g, "$1"));
+    for (const f of [c.key, ...(c.accept ?? [])].map((v) => String(v ?? "").trim()).filter(Boolean)) {
+      if (YESNO.test(f)) continue;
+      const sf = spNorm(toSpoken(f, { mode }));
+      if (sf.trim().length < 3 || (!/\s/.test(sf.trim()) && (NUMWORD.test(sf.trim()) || YESNO.test(sf.trim()) || COMMON.test(sf.trim())))) continue;
+      if ((place ? sp.includes(sf) : inNumber(sp, sf)) && !rw.includes(spNorm(f.replace(/(\d),(?=\d{2,3}\b)/g, "$1"))) && !rw.includes(sf)) { e.push(`${where}: its key "${f}" is heard in its own spoken prompt ("${toSpoken(raw, { mode }).slice(0, 80)}"): put the number on the board only and point at it`); break; }
+    }
+  }
+  return [...new Set(e)];
+}
+
+/** main on batch 3 (c4-ch09: "4 × 7 = 28" said four times before c1 asks 4 × 7): a card's key is never stated in an earlier
+ * spoken field of its skill — hook, points, mustSay, simplers, whys, the worked example, earlier cards — unless the card's own
+ * prompt names it (a choice). Numbers above 10 and fractions, by their unit-free value; word keys by keyValues. And a then-card's
+ * key is never stated in any why, point or worked line of its skill (a remediation fires after them). */
+export function earlierKeyErrors(s) {
+  const e = [];
+  const said = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
+  const core = (v) => { const m = String(v ?? "").trim().replace(/^(₹|rs\.?\s*)/i, "").replace(/,(?=\d{2,3}\b)/g, "").match(/^(\d+(?:[./]\d+)?)(?:\s*(?:°|%|[\p{L}.]{1,8}))?$/u); if (!m) return null; return /^\d+$/.test(m[1]) && Number(m[1]) <= 10 ? null : m[1]; };
+  const hasNum = (t, c) => new RegExp(`(^|[^\\d/.,])${c.replace(/[./]/g, "\\$&")}([^\\d/]|$)`).test(` ${String(t).replace(/(\d),(?=\d{2,3}\b)/g, "$1")} `);
+  // (the line works this card's own problem: two of its numbers, or one that is a fraction, a decimal or above 10)
+  const shares = (t, pn, h) => { const sh = pn.filter((n) => n !== h && hasNum(t, n)); return sh.length >= 2 || sh.some((n) => /[./]/.test(n) || Number(n) > 10); };
+  const valuesOf = (c) => { const kv = keyValues(c); return { nums: [...new Set([core(c.key), ...kv.nums].filter(Boolean))], words: kv.words }; };
+  // (a value with another unit is another quantity: "₹15 per metre" is not the key "15 cm")
+  const UNIT = /^(mm|cm|m|km|g|kg|ml|l|litre|litres|metre|metres|meter|minute|minutes|min|hour|hours|ghante|rupaye|rupees|paise|°|degree)\b/i;
+  const unitOf = (k) => { const m = String(k ?? "").match(/^(₹)?\s*[\d.,/]+\s*(°|[\p{L}]+)?/u); return m?.[1] ? "₹" : m?.[2] && UNIT.test(m[2]) ? m[2].toLowerCase() : null; };
+  const sameQty = (t, n, u) => { if (!u) return hasNum(t, n); const re = new RegExp(`(^|[^\\d/.,])(₹\\s*)?${n.replace(/[./]/g, "\\$&")}(?![\\d/])\\s*(°|[\\p{L}]+)?`, "gu");
+    for (const m of ` ${String(t).replace(/(\d),(?=\d{2,3}\b)/g, "$1")} `.matchAll(re)) { const tu = m[2] ? "₹" : m[3] && UNIT.test(m[3]) ? m[3].toLowerCase() : null; if (!tu || tu === u || tu.startsWith(u) || u.startsWith(tu)) return true; } return false; };
+  const states = (t, c) => { const v = valuesOf(c), own = said(c.prompt), u = unitOf(c.key);
+    return [...v.nums.filter((n) => !defined.has(n) && sameQty(t, n, u) && !hasNum(own, n)), ...v.words.filter((w) => hasWord(t, w) && !hasWord(own, w))]; };
+  // (a constant the lesson defines in a mustSay — "right angle = 90°", "1 m = 100 cm" — is recalled, not given away)
+  const defined = new Set(), before = [];
+  for (const k of s.skills) {
+    for (const b of k.explain) for (const m of b.mustSay ?? []) for (const n of said(m).replace(/(\d),(?=\d{2,3}\b)/g, "$1").match(/\d+(?:[./]\d+)?/g) ?? []) defined.add(n);
+    const seq = [];   // [kind, label, text | card]
+    (k.hook?.interestSlots ?? []).forEach((h, i) => seq.push(["t", `hook[${i}]`, said(h.use)]));
+    for (const b of k.explain) {
+      seq.push(["t", `${b.id}.point`, [said(b.point), ...(b.mustSay ?? []).map(said), said(b.simpler)].join(" ")]);
+      if (b.ask) { seq.push(["c", b.id, b.ask]); seq.push(["t", `${b.id}.ask`, `${said(b.ask.simpler)} ${said(b.ask.why)}`]); }
+    }
+    const we = k.workedExample;
+    if (we) {
+      // (the worked answer and why are said after the child's yourStep: the steps before it, the close after it)
+      seq.push(["t", "workedExample.problem", [said(we.problem), ...(we.givens ?? []).map(said)].join(" ")]);
+      seq.push(["t", "workedExample", [...(we.steps ?? []).flatMap((x) => [said(x.do), String(x.result ?? ""), said(x.why), said(x.simpler)]), said(we.simpler)].join(" ")]);
+      if (we.yourStep) { seq.push(["c", "workedExample.yourStep", we.yourStep]); seq.push(["t", "workedExample.yourStep", `${said(we.yourStep.simpler)} ${said(we.yourStep.why)}`]); }
+      seq.push(["t", "workedExample.answer", `${said(we.answer)} ${said(we.why)}`]);
+    }
+    for (const c of k.checks) { seq.push(["c", c.id, c]); seq.push(["t", c.id, `${said(c.simpler)} ${said(c.why)}`]); }
+    seq.forEach(([kind, id, c], i) => {
+      if (kind !== "c") return;
+      // (the numbers of the question itself: its last sentence that asks, "What is 4 × 7?" after "4 × 6 = 24 hai")
+      const q = (lang) => { const t = String(c.prompt?.[lang] ?? ""); const qs = t.split(/(?<=[.?!])\s+/).filter((x) => x.includes("?")); return qs.length ? qs.at(-1) : t; };
+      const pn = [...new Set(([q("hi"), q("en")].join(" ").replace(/(\d),(?=\d{2,3}\b)/g, "$1").match(/\d+(?:[./]\d+)?/g) ?? []).filter((n) => n !== "0" && n !== "1"))];
+      const allPn = [...new Set((said(c.prompt).replace(/(\d),(?=\d{2,3}\b)/g, "$1").match(/\d+(?:[./]\d+)?/g) ?? []).filter((n) => n !== "0" && n !== "1"))];
+      // (in its skill: the key said with one of the card's own numbers, or a word key — a value in passing in another problem,
+      // "30 cm" for a hexagon before a 30 m room, is not this card's answer)
+      // (the worked problem's own given is its yourStep's answer when the maths says so: vertically opposite angles are equal)
+      const given = id === "workedExample.yourStep" ? said(we?.problem) : "";
+      for (const [, at, t] of seq.slice(0, i).filter(([kk]) => kk === "t")) {
+        const hit = states(t, c).filter((h) => (!/\d/.test(h) || shares(t, allPn, h)) && !(given && hasNum(given, h)));
+        if (hit.length) e.push(`${k.skillId}/${id}: its key ${hit.join(", ")} is already said in ${at}`); }
+      // (an earlier skill: the line solved this card — its key with every number its question gives — not a number in passing)
+      for (const [, at, t] of before) { const hit = states(t, c).filter((h) => /\d/.test(h) && !pn.includes(h)); if (hit.length && pn.length && pn.every((n) => hasNum(t, n))) e.push(`${k.skillId}/${id}: its key ${hit.join(", ")} is already said, with its prompt's ${pn.join(", ")}, in ${at}`); }
+    });
+    // (an earlier skill's lines were said too: c4-ch09's s2 worked "4 × 7 = 28" before s3 c1 asks 4 × 7)
+    before.push(...seq.filter(([kk]) => kk === "t").map(([kk, id, t]) => [kk, `${k.skillId}/${id}`, t]));
+    // then-cards: against every why, point and worked line of the skill
+    const teach = seq.filter(([kk]) => kk === "t");
+    (k.remediation ?? []).forEach((r, j) => { if (!r.then) return;
+      const tn = [...new Set((said(r.then.prompt).replace(/(\d),(?=\d{2,3}\b)/g, "$1").match(/\d+(?:[./]\d+)?/g) ?? []).filter((n) => n !== "0" && n !== "1"))];
+      for (const [, at, t] of teach) { const hit = states(t, r.then).filter((h) => !/\d/.test(h) || shares(t, tn, h)); if (hit.length) e.push(`${k.skillId}/remediation[${j}].then: its key ${hit.join(", ")} is already said in ${at}`); } });
+  }
+  return [...new Set(e)];
+}
+
+/** main on batch 3 (c4-ch14: a then-card = ladder rung i02; a worked problem = rung i04): a script card never repeats a kit
+ * ladder item — the same prompt numbers and the same answer — and a worked problem never uses an item's numbers with its answer. */
+export function ladderRepeatErrors(s, kit) {
+  if (!kit?.items?.length) return [];
+  const e = [], said = (x) => (x && typeof x === "object" ? (x.en ?? x.hi ?? "") : String(x ?? ""));
+  const nums = (t) => (String(t ?? "").replace(/(\d),(?=\d{2,3}\b)/g, "$1").match(/\d+(?:[./]\d+)?/g) ?? []).sort().join(" ");
+  const keyNum = (v) => (String(v ?? "").replace(/(\d),(?=\d{2,3}\b)/g, "$1").match(/\d+(?:[./]\d+)?/) ?? [String(v ?? "").toLowerCase().trim()])[0];
+  const items = kit.items.map((it) => ({ id: it.id.replace(`${kit.topicId}-`, ""), n: nums(it.prompt_en), a: keyNum(it.answer) })).filter((x) => x.n);
+  for (const [where, c] of cardsInOrder(s)) {
+    const n = nums(said(c.prompt)), a = keyNum(c.key);
+    const hit = n && items.find((it) => it.n === n && it.a === a);
+    if (hit) e.push(`${where}: repeats kit ladder item ${hit.id} (numbers ${n}, answer ${c.key}): ask something the practice does not`);
+  }
+  for (const k of s.skills) { const we = k.workedExample; if (!we?.problem) continue;
+    const n = nums(said(we.problem)), last = keyNum(String(we.steps?.at(-1)?.result ?? ""));
+    const hit = n && items.find((it) => it.n === n && (it.a === last || n.split(" ").length >= 2 && it.a === keyNum(said(we.answer))));
+    if (hit) e.push(`${k.skillId}/workedExample: repeats kit ladder item ${hit.id} (numbers ${n}): the worked problem uses its own numbers`); }
+  return [...new Set(e)];
 }

@@ -1,0 +1,140 @@
+{
+  "v": 1,
+  "id": "gen-c4-maths-ch04-t01-46f828e0",
+  "approved": true,
+  "hash": "46f828e06d91e583e7daa8750b1f0f1a",
+  "archetype": "vault-heist@1",
+  "spec": {
+    "archetype": "vault-heist@1",
+    "skills": [
+      "c4-maths-ch04-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Jagah ke blocks chuno",
+      "round": "Chakkar",
+      "target": "Nishana",
+      "loaded": "jama",
+      "over": "zyada",
+      "under": "kam",
+      "cracked": "Tijori khul gayi",
+      "regroup": "Phir se jodo",
+      "runDone": "Khel poora",
+      "words": "bolkar padho",
+      "time": "samay"
+    },
+    "system": "indian",
+    "belt": 1,
+    "rounds": [
+      {
+        "target": 16,
+        "seconds": 30,
+        "show": "words",
+        "denoms": [
+          1,
+          10
+        ]
+      },
+      {
+        "target": 60,
+        "seconds": 30,
+        "show": "digits",
+        "denoms": [
+          1,
+          10
+        ]
+      },
+      {
+        "target": 6007,
+        "seconds": 40,
+        "show": "words",
+        "denoms": [
+          1,
+          10,
+          100,
+          1000
+        ]
+      },
+      {
+        "target": 7608,
+        "seconds": 45,
+        "show": "digits",
+        "denoms": [
+          1,
+          10,
+          100,
+          1000
+        ]
+      }
+    ]
+  },
+  "for": {
+    "topic": "c4-maths-ch04-t01",
+    "skill": "c4-maths-ch04-t01-s1",
+    "misconceptionId": "c4-maths-ch04-t01-m-teen-ty",
+    "beat": "rem:c4-maths-ch04-t01-m-teen-ty",
+    "when": "remediation"
+  },
+  "because": {
+    "mixup": {
+      "id": "c4-maths-ch04-t01-m-teen-ty",
+      "belief": "Treats a '-teen' number word like a '-ty' word, so 'sixteen' is written as 6 tens (60) instead of 1 ten and 6 ones",
+      "signs": [
+        "Writes 'two thousand five hundred thirteen' as 2530",
+        "Reads 2519 aloud as 'two thousand five hundred ninety'",
+        "Says fourteen and forty both have 4 tens"
+      ]
+    },
+    "rule": "shown only to a child the learner model holds this mix-up for, at this beat; any other child gets the script's own board"
+  },
+  "source": "generated",
+  "predicate": {
+    "ok": true,
+    "why": null
+  },
+  "render": {
+    "byViewport": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "images": [
+      {
+        "vp": "p412",
+        "file": "piece-p412.png",
+        "sha256": "fd20e93fd257835a8ef22e566efd23c8faabbfc461163c8055a42642c36c3430"
+      },
+      {
+        "vp": "l1366",
+        "file": "piece-l1366.png",
+        "sha256": "d2c4af0e6381360bfd945290d601cfcdc53146ab40324d865665567efb211eff"
+      }
+    ]
+  },
+  "judge": {
+    "verdict": "pass",
+    "by": "two separate Claude Opus judges (lean, 4 reads), 2026-11-11, renders at b80ed49b7",
+    "promptSha256": "6533992ad0d93b49abda38b305ae4177f65441f620b5d47e6317c70cd0630ba7",
+    "prompt": "data/studio-approved/JUDGE-PROMPT.md",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Rounds 16 (words, ones/tens), 60 (digits), 6007 (words), 7608 (digits) are correct and directly target the teen/ty mix-up (sixteen vs 60); 7608 matches a topic card key. The on-screen word form for 6007 is engine-generated and not in the spec, so it could not be checked from the packet. The coach line 'Jagah ke blocks chuno' is drawn dim on purpose but stays legible at both sizes."
+  },
+  "judge2": {
+    "verdict": "pass",
+    "by": "Claude Opus judge B, 2026-11-11",
+    "content": "pass",
+    "faults": [],
+    "notes": "Targets 16 (words), 60 (digits), 6007 (words), 7608 (digits) are correct, 7608 agrees with the card key, and every round's denoms can build its target exactly. Putting 'sixteen' next to 60 tests the teen/ty mix-up directly. The strings are short Hinglish and none gives away an answer. The target word 'sixteen' is the item the child must build (show: words), not a title or label, so the digits rule does not apply to it. At both sizes the coach line 'Jagah ke blocks chuno' is low-contrast grey but still legible and not cut off."
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T06:22:10.303Z"
+  },
+  "approvedAt": "2026-11-11T07:40:29.624Z"
+}

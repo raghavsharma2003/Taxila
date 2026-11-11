@@ -16,8 +16,8 @@
   {"hi": "seedhi line", "en": "straight line"},
   {"hi": "khulaav", "en": "opening (between the arms)"},
   {"hi": "tirchha", "en": "tilted"}
- ],
- "joints": {"asidePark":[{"hi":"Yeh kone pehchaanna poora hote hi {aside} ki baat zaroor karenge.","en":"Once these corners is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh kone pehchaanna khatam ho jaaye.","en":"We'll talk about {aside} too, once these corners is over."},{"hi":"{aside} ka zikr achha laga, uski baat thodi der baad karte hain.","en":"I liked hearing about {aside}, and we'll talk about it a bit later."}],"asideReturn":[{"hi":"{aside} mein tumhe kaun-se kone dikhte hain?","en":"What corners do you see in {aside}?"},{"hi":"Toh {aside} mein tumhare saath aur kaun hota hai?","en":"So who else is with you in {aside}?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"}],"hindiSwitch":[{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in English."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."}],"askAgain":[{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."}]},
+ ], "greetSimpler": { "hi": "Aaj hum kone pehchaanenge: chhota, seedha aur khula.", "en": "Today we sort corners: small, square and wide open." },
+ "joints": {"asidePark":[{"hi":"Yeh kone pehchaanna khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish these corners, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh kone pehchaanna khatam ho jaaye.","en":"We'll talk about {aside} too, right after these corners."},{"hi":"{aside} ka zikr achha laga, uski baat thodi der baad karte hain.","en":"I liked hearing about {aside}, and we'll talk about it a bit later."}],"asideReturn":[{"hi":"{aside} mein tumhe kaun-se kone dikhte hain?","en":"What corners do you see in {aside}?"},{"hi":"Toh {aside} ki sabse achhi baat kya hai?","en":"So what is the best thing about {aside}?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"}],"hindiSwitch":[{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."}],"askAgain":[{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."}],"backTo":[{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."},{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."},{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."}]},
  "skills": [
   {
    "skillId": "c5-maths-ch03-t02-s1",
@@ -95,7 +95,7 @@
       "accept": ["nahi", "nahin", "nahi, chhota hai", "no, it is smaller"],
       "targets": "c5-maths-ch03-t02-m-fits-means-right",
       "wrongIfMis": "yes",
-      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "paper corner"}, {"deg": 50, "name": "samosa ki nok"}], "mark": {"index": 1, "show": "bigger"}} }
+      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "paper corner"}, {"deg": 50, "name": "samosa ki nok"}]} }
      },
      "simpler": {
       "hi": "Paper corner ki nok angle ke kone par rakho aur ek bhuja kinaare se milao. Doosri bhuja bhi kinaare par bilkul mile, tabhi right angle hai.",
@@ -184,7 +184,7 @@
       "en": "A corner where both edges match exactly is a right angle. Just count such corners."
      },
      "board": {"template": "angle@1", "params": {"angles": [{"deg": 90, "name": "note ka kona"}, {"deg": 50, "name": "samosa ki nok"}, {"deg": 90, "name": "deewar ka kona"}]}},
-     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "note ka kona"}, {"deg": 50, "name": "samosa ki nok"}, {"deg": 90, "name": "deewar ka kona"}], "mark": {"index": 1, "show": "bigger"}} },
+     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "note ka kona"}, {"deg": 50, "name": "samosa ki nok"}, {"deg": 90, "name": "deewar ka kona"}]} },
      "why": {
       "hi": "note ka kona aur deewar ka kona paper corner se bilkul milte hain, par samosa ki nok nahi milti",
       "en": "the note's corner and the wall corner match the paper corner exactly, but the samosa tip does not"
@@ -220,7 +220,7 @@
       "hi": "Doosri bhuja paper ke andar ruk gayi aur gap bacha. Matlab yeh kona paper corner jitna nahi khula.",
       "en": "The second arm stopped inside the paper with a gap. That means this corner did not open as wide as the paper corner."
      },
-     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "paper corner"}, {"deg": 55, "name": "kona"}], "mark": {"index": 1, "show": "bigger"}} }
+     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "paper corner"}, {"deg": 55, "name": "kona"}]} }
     },
     {
      "id": "c2",
@@ -288,7 +288,7 @@
        "hi": "Doosri bhuja paper ke bahar nikli, matlab kona paper corner se zyada khula hai. Right angle mein dono bhujayein kinaaron par bilkul milti hain.",
        "en": "The other arm went outside the paper, so the corner opens wider than the paper corner. In a right angle both arms match the edges exactly."
       },
-      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "paper corner"}, {"deg": 125, "name": "angle"}], "mark": {"index": 1, "show": "bigger"}} }
+      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "paper corner"}, {"deg": 125, "name": "angle"}]} }
      }
     },
     {
@@ -370,7 +370,7 @@
       "accept": ["acute angle", "B acute hai", "nyoon kon"],
       "targets": "c5-maths-ch03-t02-m-fits-means-right",
       "wrongIfMis": "right angle",
-      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40, "name": "A"}, {"deg": 70, "name": "B"}], "mark": {"index": 0, "show": "bigger"}} }
+      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40, "name": "A"}, {"deg": 70, "name": "B"}]} }
      },
      "simpler": {
       "hi": "Paper corner rakho, doosri bhuja andar reh jaaye aur gap bache, toh angle right angle se chhota hai. Right angle se chhote angle ka ek khaas naam hota hai.",
@@ -397,7 +397,7 @@
        "en": "B's other arm goes outside the paper corner, but the arms have not opened to a straight line"
       },
       "accept": ["obtuse angle", "B obtuse hai", "adhik kon"],
-      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 120, "name": "A"}, {"deg": 150, "name": "B"}], "mark": {"index": 0, "show": "bigger"}} }
+      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 120, "name": "A"}, {"deg": 150, "name": "B"}]} }
      },
      "simpler": {
       "hi": "Doosri bhuja paper ke bahar nikli, toh angle right angle se bada hai. Bhujayein abhi seedhi line nahi banatin, aur aise angle ka bhi apna naam hai.",
@@ -426,7 +426,7 @@
       "accept": ["nahi", "nahin", "nahi, aadha chakkar hai", "no, it is a half turn"],
       "targets": "c5-maths-ch03-t02-m-straight-is-obtuse",
       "wrongIfMis": "yes",
-      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 150, "name": "obtuse"}, {"deg": 180, "name": "aadha chakkar"}], "mark": {"index": 1, "show": "bigger"}} }
+      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 150, "name": "obtuse"}, {"deg": 180, "name": "aadha chakkar"}]} }
      },
      "simpler": {
       "hi": "Obtuse angle right angle se bada hota hai, par aadhe chakkar se chhota. Jab bhujayein ek seedhi line mein aa jaayein, toh woh aadha chakkar hai.",
@@ -438,7 +438,7 @@
     "problem": {
      "hi": "5 baje minute ki sui 12 par aur ghante ki sui 5 par hoti hai. Dono suiyon ke beech ka angle acute hai, right angle hai ya obtuse?",
      "en": "At 5 o'clock the minute hand is on 12 and the hour hand on 5. Is the angle between the two hands acute, a right angle or obtuse?"
-    }, "simpler": { "hi": "5 baje minute ki sui 12 par aur ghante ki sui 5 par hoti hai. Dono suiyon ke beech ka angle acute hai, right angle hai ya obtuse, yeh dekhna hai.", "en": "At 5 o'clock the minute hand is on 12 and the hour hand on 5. We see whether the angle between the hands is acute, a right angle or obtuse." },
+    }, "simpler": { "hi": "3 baje suiyan right angle banati hain. 5 baje ghante ki sui 3 se aage hai. Ab socho, angle right angle se chhota hai ya bada.", "en": "At 3 o'clock the hands make a right angle. At 5 o'clock the hour hand is past 3. Now think whether the angle is smaller or bigger than a right angle." },
     "givens": [
      {
       "hi": "minute ki sui 12 par hai aur ghante ki sui 5 par",
@@ -484,7 +484,7 @@
       "en": "An angle smaller than a right angle is acute. This angle is bigger than a right angle, so think of the other name."
      },
      "board": {"template": "angle@1", "params": {"angles": [{"deg": 90, "name": "3 baje"}, {"deg": 150, "name": "5 baje"}]}},
-     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "3 baje"}, {"deg": 150, "name": "5 baje"}], "mark": {"index": 1, "show": "bigger"}} },
+     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "3 baje"}, {"deg": 150, "name": "5 baje"}]} },
      "why": {
       "hi": "5 baje ka angle 3 baje ke right angle se bada hai, par aadhe chakkar se chhota",
       "en": "the angle at 5 o'clock is bigger than the right angle at 3 o'clock, but smaller than a half turn"
@@ -520,7 +520,7 @@
       "hi": "Dono panne ek seedhi line mein hain, yeh aadha chakkar hai. Obtuse angle aadhe chakkar se chhota hota hai.",
       "en": "Both pages lie in one straight line, which is a half turn. An obtuse angle is smaller than a half turn."
      },
-     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "khuli kitaab"}], "mark": {"index": 0, "show": "bigger"}} }
+     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "khuli kitaab"}]} }
     },
     {
      "id": "c2",
@@ -562,7 +562,7 @@
       "hi": "Doosra kinaara paper ke andar raha aur gap bacha. Matlab nok right angle se kam khuli hai.",
       "en": "The other edge stayed inside with a gap. That means the tip opens less than a right angle."
      },
-     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "paper corner"}, {"deg": 45, "name": "pizza ki nok"}], "mark": {"index": 1, "show": "bigger"}} }
+     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "paper corner"}, {"deg": 45, "name": "pizza ki nok"}]} }
     }
    ],
    "ladder": [
@@ -614,7 +614,7 @@
        "hi": "Dono hisse ek seedhi line mein hain, yeh aadha chakkar hai. Obtuse angle aadhe chakkar se chhota hota hai.",
        "en": "Both parts lie in one straight line, which is a half turn. An obtuse angle is smaller than a half turn."
       },
-      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "folding scale"}], "mark": {"index": 0, "show": "bigger"}} }
+      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "folding scale"}]} }
      }
     },
     {
@@ -646,11 +646,11 @@
        "hi": "Doosri bhuja paper ke andar rahi aur gap bacha. Matlab angle right angle se kam khula hai.",
        "en": "The other arm stayed inside with a gap. That means the angle opens less than a right angle."
       },
-      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "paper corner"}, {"deg": 50, "name": "angle"}], "mark": {"index": 1, "show": "bigger"}} }
+      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "paper corner"}, {"deg": 50, "name": "angle"}]} }
      }
     }
    ],
-   "bridgeToNext": { "hi": "Ab teeno naam aa gaye: acute, right aur obtuse. Agle hisse mein dekhenge ki angle ko palatne se ya bhujayein lambi karne se uska type badalta hai ya nahi.", "en": "Now you know all three names: acute, right and obtuse. Next we see whether flipping an angle or making its arms longer changes its type.", "simpler": {"hi": "Acute, right aur obtuse, teeno naam aa gaye. Agle hisse mein dekhenge ki angle palatne ya bhujayein lambi karne se uska type badalta hai ya nahi.", "en": "You know the names acute, right and obtuse now. Next we see whether flipping an angle or lengthening its arms changes its type."} }
+   "bridgeToNext": { "hi": "Ab teeno naam aa gaye: acute, right aur obtuse. Agle hisse mein dekhenge ki angle ko palatne se ya bhujayein lambi karne se uska type badalta hai ya nahi.", "en": "Now you know all three names: acute, right and obtuse. Next we see whether flipping an angle or making its arms longer changes its type.", "simpler": { "hi": "Ab ek angle ko palat kar dekhenge. Uska type badla ya nahi, yeh dekhna hai.", "en": "Now we flip an angle over. We see whether its type changes or not." } }
   },
   {
    "skillId": "c5-maths-ch03-t02-s3",
@@ -700,7 +700,7 @@
       "accept": ["acute angle", "ab bhi acute", "still acute", "nyoon kon"],
       "targets": "c5-maths-ch03-t02-m-orientation",
       "wrongIfMis": "obtuse",
-      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "A"}], "mark": {"index": 0, "show": "bigger"}} }
+      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "A"}]} }
      },
      "simpler": {
       "hi": "Palatne se angle ka munh doosri taraf ho jaata hai. Uski bhujaon ke beech ki jagah utni hi rehti hai.",
@@ -729,7 +729,7 @@
       "accept": ["acute angle", "ab bhi acute", "still acute", "nyoon kon"],
       "targets": "c5-maths-ch03-t02-m-arm-length",
       "wrongIfMis": "obtuse",
-      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "A", "len": "short"}], "mark": {"index": 0, "show": "bigger"}} }
+      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 50, "name": "A", "len": "short"}]} }
      },
      "simpler": {
       "hi": "Bhujayein lambi karna aise hai jaise lines aage tak kheench dena. Bhujaon ke beech ka khulaav wahi rehta hai.",
@@ -758,7 +758,7 @@
       "accept": ["obtuse angle", "ab bhi obtuse", "still obtuse", "adhik kon"],
       "targets": "c5-maths-ch03-t02-m-arm-length",
       "wrongIfMis": "acute",
-      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 130, "name": "B"}], "mark": {"index": 0, "show": "bigger"}} }
+      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 130, "name": "B"}]} }
      },
      "simpler": {
       "hi": "Palatna aur bhujayein chhoti karna, dono khulaav ko nahi chhoote. Toh type wahi rehta hai jo khulaav batata hai.",
@@ -815,7 +815,7 @@
       "en": "Only the opening decides an angle's type. Kavya's opening is just as wide as Vikram's angle."
      },
      "board": {"template": "angle@1", "params": {"angles": [{"deg": 90, "name": "Vikram", "len": "short"}]}},
-     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "Vikram", "len": "short"}], "mark": {"index": 0, "show": "bigger"}} },
+     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "Vikram", "len": "short"}]} },
      "why": {
       "hi": "Kavya ka khulaav Vikram ke right angle jitna hi hai, toh uska angle bhi right angle hai",
       "en": "Kavya's opening is as wide as Vikram's right angle, so her angle is a right angle too"
@@ -851,7 +851,7 @@
       "hi": "Angle ka type uske khulaav se tay hota hai, disha se nahi. Dono angle ka size ek hi hai.",
       "en": "An angle's type depends on its opening, not its direction. Both angles are the same size."
      },
-     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 70, "name": "baayein khulta"}, {"deg": 70, "name": "daayein khulta"}], "mark": {"index": 1, "show": "bigger"}} }
+     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 70, "name": "baayein khulta"}, {"deg": 70, "name": "daayein khulta"}]} }
     },
     {
      "id": "c2",
@@ -872,7 +872,7 @@
       "hi": "Bhujayein 1 cm se 15 cm lambi hui, par khulaav wahi raha. Lambi bhuja se angle bada nahi hota.",
       "en": "The arms went from 1 cm to 15 cm, but the opening stayed the same. Longer arms do not make an angle bigger."
      },
-     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40, "name": "1 cm bhujayein", "len": "short"}], "mark": {"index": 0, "show": "bigger"}} }
+     "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 40, "name": "1 cm bhujayein", "len": "short"}]} }
     },
     {
      "id": "c3",
@@ -944,7 +944,7 @@
        "hi": "Palatne se sirf disha badalti hai, khulaav wahi rehta hai. Toh angle ka type bhi wahi rehta hai.",
        "en": "Flipping changes only the direction; the opening stays the same. So the angle's type stays the same too."
       },
-      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 130, "name": "P"}], "mark": {"index": 0, "show": "bigger"}} }
+      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 130, "name": "P"}]} }
      }
     },
     {
@@ -976,7 +976,7 @@
        "hi": "Bhujayein 2 cm se 20 cm hui, par khulaav nahi badla. Lambi bhuja se angle ka type nahi badalta.",
        "en": "The arms went from 2 cm to 20 cm, but the opening did not change. Longer arms do not change the angle's type."
       },
-      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "2 cm bhujayein", "len": "short"}], "mark": {"index": 0, "show": "bigger"}} }
+      "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "2 cm bhujayein", "len": "short"}]} }
      }
     },
     {

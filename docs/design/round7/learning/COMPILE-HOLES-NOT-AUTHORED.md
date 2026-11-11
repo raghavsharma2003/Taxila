@@ -36,15 +36,14 @@ card's simpler, then its key). `byMixup` still routes a recognised kit mix-up to
 
 
 ## Staged 30 (after dc-r8-second-clarify-shows-not-rewords, approved)
-Filled: 90 worked-problem simplers, 60 bridge simplers, 6 yourStep whys, and **6 card `targets`**. Each of the six points at
+Filled: 90 worked-problem simplers, 60 bridge simplers, 6 yourStep whys, and **5 card `targets`**. Each of the five points at
 the skill's existing remediation for the mix-up the card's wrong answer shows:
 - c4-ch06-t01 s2 e3 and its yourStep (460 cm and 550 cm into m and cm) → m-is-10cm;
 - c5-ch05-t01 s2 e3 (6200 m into km and m) → km-100m;
 - c6-ch07-t05 s3 e1 and e2 (adding mixed fractions) → add-across;
-- c6-ch07-t04 s3 e4 (3/4 vs 9/8: comparing only the denominators picks 3/4) → only-num-den.
 
 The 109 cards below have no `targets`, so under the ruling their misconception cells do not apply. On each, either no kit
-mix-up of the skill produces a wrong answer, or the mix-up gives the right answer anyway. Examples: ordering 6271, 1890
+mix-up of the skill produces a wrong answer, or the mix-up gives the right answer anyway. A sixth card, c6-ch07-t04 s3 e4 (3/4 vs 9/8), was first given only-num-den, then removed: its remediation compares each fraction with 1/2, but both fractions are above 1/2 (it is 9/8 > 1 that decides), so the remediation cannot help. Examples: ordering 6271, 1890
 and 4302 by thousands only still gives the right order; odd/even of 9 + 6 does not test odd + odd. Only one of them records
 a distractor (c4-ch07-t01 s1 e2, "Yes"), and that answer is a slip, not misaligned columns.
 

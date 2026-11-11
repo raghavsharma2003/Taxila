@@ -44,7 +44,7 @@
    "hi": "sankhya rekha",
    "en": "number line"
   }
- ], "joints": {"asidePark":[{"hi":"Yeh aadhe se mukabla poora hote hi {aside} ki baat zaroor karenge.","en":"Once comparing with a half is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh aadhe se mukabla khatam ho jaaye.","en":"We'll talk about {aside} too, once comparing with a half is over."},{"hi":"Mazedaar, {aside} ki baat hum zaroor karenge, bas thodi der mein.","en":"Fun, we will surely talk about {aside}, just in a little while."}],"asideReturn":[{"hi":"{aside} mein kya tumne kabhi aadha bhara dekha hai?","en":"Have you seen something half full in {aside}?"},{"hi":"{aside} wali baat batao na, tumne pehli baar kab kiya?","en":"Tell me about {aside}: when did you first do it?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"}],"hindiSwitch":[{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in English."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."}],"askAgain":[{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."}]},
+ ], "greetSimpler": { "hi": "Aaj hum do bhinn ko milakar dekhenge ki kaunsa bada hai.", "en": "Today we compare two fractions to see which is bigger." }, "joints": {"asidePark":[{"hi":"Yeh aadhe se mukabla khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish comparing with a half, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh aadhe se mukabla khatam ho jaaye.","en":"We'll talk about {aside} too, right after comparing with a half."},{"hi":"Mazedaar, {aside} ki baat hum zaroor karenge, bas thodi der mein.","en":"Fun, we will surely talk about {aside}, just in a little while."}],"asideReturn":[{"hi":"{aside} mein kya tumne kabhi aadha bhara dekha hai?","en":"Have you seen something half full in {aside}?"},{"hi":"{aside} wali baat batao na, tumhe uski kaunsi baat pasand hai?","en":"Tell me about {aside}: what do you like about it?"},{"hi":"Ab {aside} ki baat, usmein sabse mazedaar kya hai?","en":"Now {aside}: what is the most fun part of it?"}],"hindiSwitch":[{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."}],"askAgain":[{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."}],"backTo":[{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."},{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."}]},
  "skills": [
   {
    "skillId": "c6-maths-ch07-t04-s1",
@@ -232,7 +232,7 @@
      ],
      "targets": "c6-maths-ch07-t04-m-bigger-den-bigger",
      "wrongIfMis": "4/7, 4/9, 4/11",
-     "simpler": { "hi": "Sabne 4 tukde khaaye, toh sabse chhote tukde wala sabse chhota hai. Jiske cake ke sabse zyada tukde hain, use pehle likho.", "en": "Everyone ate 4 pieces, so the one with the smallest pieces is the smallest. Write first the cake with the most pieces." }, "why": { "hi": "cake ke tukde Ravi 11, Neha 9, Imran 7; sabne 4 tukde khaye hain, toh 4/11, 4/9, 4/7", "en": "all ate 4 pieces, and an eleventh is the smallest piece, so 4/11, 4/9, 4/7" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Cake ke tukde", "items": ["Ravi: 11", "Neha: 9", "Imran: 7"]}, "right": {"title": "Khaye", "items": ["4 tukde"]}, "mark": {"side": "right", "add": "jawab: 4/11, 4/9, 4/7"}} }
+     "simpler": { "hi": "Sabne 4 tukde khaaye, toh sabse chhote tukde wala sabse chhota hai. Jiske cake ke sabse zyada tukde hain, use pehle likho.", "en": "Everyone ate 4 pieces, so the one with the smallest pieces is the smallest. Write first the cake with the most pieces." }, "why": { "hi": "cake ke tukde Ravi 11, Neha 9, Imran 7; sabne 4 tukde khaye hain, toh 4/11, 4/9, 4/7", "en": "all ate 4 pieces, and an eleventh is the smallest piece, so 4/11, 4/9, 4/7" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Cake ke tukde", "items": ["Ravi: 11", "Neha: 9", "Imran: 7"]}, "right": {"title": "Khaye", "items": ["4 tukde"]}} }
     },
     "answer": {
      "hi": "kram hai 4/11, 4/9, 4/7: Ravi ne sabse kam cake khaya aur Imran ne sabse zyada",
@@ -602,7 +602,7 @@
      ],
      "targets": "c6-maths-ch07-t04-m-gap",
      "wrongIfMis": "dono barabar",
-     "simpler": { "hi": "25/30 aur 24/30, dono mein neeche ka number same hai. Ab bas upar ke numbers milao.", "en": "25/30 and 24/30 have the same bottom number. Now just compare the top numbers." }, "why": { "hi": "pehli bhinn 25/30, doosri bhinn 24/30; 25 hisse 24 se zyada hain, toh 5/6 badi hai", "en": "5/6 = 25/30 and 4/5 = 24/30, and 25 parts are more than 24, so 5/6" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pehli bhinn", "items": ["5 × 5 = 25", "6 × 5 = 30"]}, "right": {"title": "Doosri bhinn", "items": ["4 × 6 = 24", "5 × 6 = 30"]}, "mark": {"side": "right", "add": "jawab: 5/6"}} }
+     "simpler": { "hi": "25/30 aur 24/30, dono mein neeche ka number same hai. Ab bas upar ke numbers milao.", "en": "25/30 and 24/30 have the same bottom number. Now just compare the top numbers." }, "why": { "hi": "pehli bhinn 25/30, doosri bhinn 24/30; 25 hisse 24 se zyada hain, toh 5/6 badi hai", "en": "5/6 = 25/30 and 4/5 = 24/30, and 25 parts are more than 24, so 5/6" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pehli bhinn", "items": ["5 × 5 = 25", "6 × 5 = 30"]}, "right": {"title": "Doosri bhinn", "items": ["4 × 6 = 24", "5 × 6 = 30"]}} }
     },
     "answer": {
      "hi": "5/6 bada hai, 4/5 se thoda sa zyada",
@@ -971,7 +971,7 @@
        "hi": "Ab 3/4 aur 9/8 lo. Kaunsa bada hai: 3/4 ya 9/8?",
        "en": "Now take 3/4 and 9/8. Which is bigger: 3/4 or 9/8?"
       },
-      "key": "9/8", "targets": "c6-maths-ch07-t04-m-only-num-den",
+      "key": "9/8", 
       "accept": [
        "9 by 8"
       ],

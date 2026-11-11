@@ -1,0 +1,93 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c4-maths-ch01-t02",
+    "archetype": "geo-forge@1",
+    "misconceptionId": "c4-maths-ch01-t02-m-tilted-not-right",
+    "skillId": "c4-maths-ch01-t02-s1",
+    "beat": "rem:c4-maths-ch01-t02-m-tilted-not-right",
+    "when": "remediation",
+    "check": "c4-maths-ch01-t02-s1:c1"
+  },
+  "why": "fell_back",
+  "checks": null,
+  "spec": null,
+  "validator": {
+    "fellBack": true,
+    "repairs": [
+      "challenge:infeasible",
+      "challenge:infeasible",
+      "round:challenges",
+      "fallback-default"
+    ]
+  },
+  "raw": {
+    "archetype": "geo-forge@1",
+    "skills": [
+      "c4-maths-ch01-t02"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Round",
+      "built": "Ban gaya",
+      "check": "Jaancho",
+      "undo": "Peechhe",
+      "coach": "Madad",
+      "runDone": "Round khatam",
+      "perimeter": "Ghera",
+      "area": "Kshetrafal",
+      "units": "Ikai",
+      "sq": "Varg",
+      "polygon": "Bahubhuja",
+      "sticks": "Dandiyan",
+      "rigid": "Mazboot",
+      "parallel": "Samaanantar",
+      "perpendicular": "Lambavat",
+      "equidistant": "Barabar doori",
+      "angle": "Kona",
+      "right": "Samkon",
+      "isosceles": "Samdvipahu",
+      "scalene": "Vishambahu",
+      "obtuse": "Adhik kon",
+      "acute": "Nyoon kon",
+      "square": "Varg",
+      "rectangle": "Aayat",
+      "parallelogram": "Samantar chaturbhuj",
+      "rhombus": "Samchaturbhuj",
+      "trapezium": "Samalamb chaturbhuj",
+      "kite": "Patang",
+      "any": "Koi bhi",
+      "triangle": "Tribhuj",
+      "make": "Banao",
+      "withArea": "Kshetrafal ke saath",
+      "withPerim": "Ghere ke saath",
+      "noTriangle": "Tribhuj nahi",
+      "wobbles": "Hil raha hai",
+      "holds": "Tikta hai",
+      "closes": "Band hota hai",
+      "gap": "Khaali jagah",
+      "time": "Samay"
+    },
+    "title": "Tedha Tile",
+    "rounds": [
+      {
+        "title": "Ghumao aur dekho",
+        "sub": "Tile ko alag dishaon mein rakho",
+        "time": 60,
+        "challenges": [
+          {
+            "kind": "angle",
+            "deg": 90,
+            "tol": 1
+          },
+          {
+            "kind": "angle",
+            "deg": 90,
+            "tol": 1
+          }
+        ],
+        "targets": "c4-maths-ch01-t02-m-tilted-not-right"
+      }
+    ]
+  }
+}

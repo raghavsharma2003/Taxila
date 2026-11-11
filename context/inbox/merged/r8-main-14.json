@@ -1,0 +1,34 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-tally-judged-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Games' new mode stambh/tally (class 4 tally marks; mix-up tally-four) read by two independent Opus judges at high effort from the judge packet and its 16 screens (360x640 and 1366x768): both FAIL, agreeing on the core. Build faults: none (keys right, nothing cut off, digits, Hinglish, large targets, no answer given before the child acts). Blocking: the keep goal names the mix-up only when no cross is drawn and every total is short, so the child who draws correct bundles and counts 4 per bundle is logged as an ordinary miss with no consequence shown; the read level has exactly 5 bundles and no single lines, so the mix-up's answer (20) equals a skipped bundle's; the ring and cross on five standing lines can be read as 'five is too many'. Also: after one wrong check the answer can be read off the number line; her wrong answer is green and the truth amber. Reports in docs/design/round8/games-judging/stambh-tally/judges/. About 120k tokens per judge."
+  },
+  {
+   "id": "ms-r8-staged-reader-batches-2-4-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Reader pass over the staged scripts, batches 2 to 4 (Learning; five scripts each, one fresh Opus reader per script). Batch 2: 850 fields read, 66 faulted (7.8%), about 5 untrue, about 23 giveaways; all fixed; of 104 rewrites, 24 failed their second read. Batch 3: 837 read, 87 faulted (10.4%), 9 untrue, 44 giveaways; 10 of them cards whose prompt holds the number that is the key, which she would say aloud because numerals are spoken as words. Batch 4: 889 read, 109 faulted (12.3%), about 13 untrue, about 64 giveaways, mostly word-keyed (a remediation acting out its own then-card; the same question frame asked 3 or 4 times). Wrong keys: 0 in all four batches (about 500 cards). With batch 1: 3,462 fields read in 20 scripts, 349 faulted (10.1%). The rate rises because readers keep finding new kinds of giveaway, not because later scripts are worse. Tokens so far about 4.6M."
+  },
+  {
+   "id": "dc-r8-predicates-from-the-read",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "Every fault kind the reader pass finds twice becomes a check.mjs rule and a line in the authoring brief: (c) a card's key must not be heard in the spoken form of its own prompt (the number goes on the board only); a key must not be stated in an earlier spoken field of the skill or equal a kit ladder item; (d) a then-card's key, word or number, must not be restated by its own remediation's say; (e) a word or letter key must not be asked twice in a skill over the same question frame. The four live pilots are read field by field as well, before the last staged batches, because the new rules found 15 hits in them. A changed kit item is blind-solved again before merge. A rewrite is not done until a reader who did not write it passes it. Reverse if: the final report shows the predicates would have caught under half of the faults readers found; then the reading, not the rules, is the control and every new script is read in full for good."
+  },
+  {
+   "id": "dc-r8-game-modes-need-two-judges",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "A new game mode from Games (a family mode with proven levels) reaches a child only after two independent judges pass it from a self-contained packet (screens at phone and laptop sizes, givens, key, what the mix-up child does and sees, every string). Proof suites and certs show a level is solvable and its mal-rule has a signature; they do not show that the evidence can tell the mix-up from a slip or that the feedback teaches the right thing, which is what both judges found in stambh/tally. A topic stays in no-game-target.json until its mode passes. Reverse if: three modes in a row pass both judges with no blocking fault; then one judge suffices."
+  }
+ ],
+ "edges": [
+  {"src": "dc-r8-game-modes-need-two-judges", "rel": "measured_by", "dst": "ms-r8-tally-judged-2026-11-11"},
+  {"src": "dc-r8-predicates-from-the-read", "rel": "measured_by", "dst": "ms-r8-staged-reader-batches-2-4-2026-11-11"},
+  {"src": "dc-r8-staged-scripts-read-in-full", "rel": "measured_by", "dst": "ms-r8-staged-reader-batches-2-4-2026-11-11"},
+  {"src": "fd-content-check-scores-romanised-hindi-terms", "rel": "measured_by", "dst": "ms-r8-regen-round1-2026-11-11"}
+ ]
+}

@@ -17,7 +17,7 @@
   { "hi": "sabse bada common factor", "en": "highest common factor" },
   { "hi": "lowest terms / saral roop", "en": "lowest terms / simplest form" },
   { "hi": "sankhya rekha", "en": "number line" }
- ], "joints": {"asidePark":[{"hi":"Yeh bhinn wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once these fractions is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh bhinn wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once these fractions is over."},{"hi":"{aside} wali baat mujhe yaad rahegi, thodi der mein wahi poochhungi.","en":"I'll remember the {aside} bit, and I'll ask about it in a little while."}],"asideReturn":[{"hi":"{aside} mein kya kuch hisson mein bant-ta hai?","en":"Does anything in {aside} get cut into parts?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"},{"hi":"Toh {aside} mein tumhare saath aur kaun hota hai?","en":"So who else is with you in {aside}?"}],"hindiSwitch":[{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in English."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."}],"askAgain":[{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."}]},
+ ], "greetSimpler": { "hi": "Aaj hum dekhenge ki ek hi hissa alag bhinn se kaise likha ja sakta hai.", "en": "Today we see how the same amount can be written as different fractions." }, "joints": {"asidePark":[{"hi":"Yeh bhinn wala kaam khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish these fractions, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh bhinn wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, right after these fractions."},{"hi":"{aside} wali baat mujhe yaad rahegi, thodi der mein wahi poochhungi.","en":"I'll remember the {aside} bit, and I'll ask about it in a little while."}],"asideReturn":[{"hi":"{aside} mein kya kuch hisson mein bant-ta hai?","en":"Does anything in {aside} get cut into parts?"},{"hi":"Ab {aside} ki baari, uske baare mein thoda aur batao na?","en":"Now it's {aside}'s turn: will you tell me a bit more about it?"},{"hi":"Toh {aside} ki sabse achhi baat kya hai?","en":"So what is the best thing about {aside}?"}],"hindiSwitch":[{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."}],"askAgain":[{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."}],"backTo":[{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."},{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."},{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."}]},
  "skills": [
   {
    "skillId": "c6-maths-ch07-t03-s1",
@@ -118,7 +118,7 @@
     "problem": {
      "hi": "Meena ne ek roti ka 3/4 khaaya. Babu ne usi size ki doosri roti ka 6/8 khaaya. Kya dono ne barabar roti khaayi?",
      "en": "Meena ate 3/4 of a roti. Babu ate 6/8 of another roti of the same size. Did they both eat the same amount of roti?"
-    }, "simpler": { "hi": "Meena ne ek roti ka 3/4 khaaya, aur Babu ne usi size ki doosri roti ka 6/8. Dekhna hai ki dono ne barabar roti khaayi ya nahi.", "en": "Meena ate 3/4 of a roti, and Babu ate 6/8 of another roti of the same size. We need to see whether they ate the same amount." },
+    }, "simpler": { "hi": "3/4 aur 6/8 ko ek jaisi do roti par socho. Har chauthai ko do mein todo, aur dekho kitne aathve bante hain.", "en": "Picture 3/4 and 6/8 on two same rotis. Split each quarter into two, and see how many eighths you get." },
     "givens": [
      { "hi": "Meena ka hissa: roti ka 3/4", "en": "Meena's share: 3/4 of a roti" },
      { "hi": "Babu ka hissa: usi size ki roti ka 6/8", "en": "Babu's share: 6/8 of a same-size roti" }
@@ -315,7 +315,7 @@
       "accept": ["3 by 5", "teen bata paanch", "three fifths"],
       "targets": "c6-maths-ch07-t03-m-one-side",
       "wrongIfMis": "3/25",
-      "why": { "hi": "9/12 jaisa, dono ko 5 se bhaag: upar 15 ÷ 5 = 3, neeche 25 ÷ 5 = 5, wahi amount 3/5", "en": "like 9/12 to 3/4: top 15 ÷ 5 = 3 and bottom 25 ÷ 5 = 5, so 3/5" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "9/12", "items": ["upar 9 ÷ 3 = 3", "neeche 12 ÷ 3 = 4"]}, "right": {"title": "3/4", "items": ["dono ko 3 se bhaag", "wahi amount"]}, "mark": {"side": "right", "add": "jawab: 3/5"}} }
+      "why": { "hi": "9/12 jaisa, dono ko 5 se bhaag: upar 15 ÷ 5 = 3, neeche 25 ÷ 5 = 5, wahi amount 3/5", "en": "like 9/12 to 3/4: top 15 ÷ 5 = 3 and bottom 25 ÷ 5 = 5, so 3/5" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "9/12", "items": ["upar 9 ÷ 3 = 3", "neeche 12 ÷ 3 = 4"]}, "right": {"title": "3/4", "items": ["dono ko 3 se bhaag", "wahi amount"]}} }
      },
      "simpler": { "hi": "9/12 ke upar aur neeche dono ko 3 se bhaag do. Upar 3, neeche 4, wahi 3/4 wapas mil gaya.", "en": "Divide both the top and bottom of 9/12 by 3. The top is 3 and the bottom 4, so we are back at 3/4." }
     },
@@ -346,7 +346,7 @@
       "accept": ["4 by 10", "chaar bata das", "four tenths"],
       "targets": "c6-maths-ch07-t03-m-add-same",
       "wrongIfMis": "4/7",
-      "why": { "hi": "jaise 1/2 se 2/4 bana, dono ko 2 se guna, 2/3 wala 1 joda nahi: 2/5 = 4/10", "en": "top 2 × 2 = 4 and bottom 5 × 2 = 10, so 4/10, just as 1/2 became 2/4" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "dono mein 1 joda", "items": ["1/2 se 2/3"]}, "right": {"title": "dono ko 2 se guna", "items": ["1/2 se 2/4"]}, "mark": {"side": "right", "add": "jawab: 4/10"}} }
+      "why": { "hi": "jaise 1/2 se 2/4 bana, dono ko 2 se guna, 2/3 wala 1 joda nahi: 2/5 = 4/10", "en": "top 2 × 2 = 4 and bottom 5 × 2 = 10, so 4/10, just as 1/2 became 2/4" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "dono mein 1 joda", "items": ["1/2 se 2/3"]}, "right": {"title": "dono ko 2 se guna", "items": ["1/2 se 2/4"]}} }
      },
      "simpler": { "hi": "1/2 ke upar aur neeche 1 jodne se 2/3 bana, jo aadhe se zyada hai. Dono ko 2 se guna karne se 2/4 bana, jo theek aadha hai.", "en": "Adding 1 to the top and bottom of 1/2 made 2/3, which is more than half. Multiplying both by 2 made 2/4, exactly half." }
     }
@@ -384,7 +384,7 @@
      "accept": ["baarah", "twelve"],
      "targets": "c6-maths-ch07-t03-m-one-side",
      "wrongIfMis": "4",
-     "simpler": { "hi": "Neeche 3 se guna hua tha. Ab 4/7 ke upar wale number ko bhi 3 se guna karo.", "en": "The bottom was multiplied by 3. Now multiply the top number of 4/7 by 3 as well." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4/7", "items": ["neeche 7"]}, "right": {"title": "naya bhinn", "items": ["neeche 21", "21 ÷ 7 = 3"]}, "mark": {"side": "right", "add": "jawab: 12"}} }, "why": { "hi": "naya bhinn: neeche 21 = 7 × 3, toh upar bhi 4 × 3 = 12", "en": "the bottom 7 × 3 = 21, so the top is 4 × 3 = 12 too" }
+     "simpler": { "hi": "Neeche 3 se guna hua tha. Ab 4/7 ke upar wale number ko bhi 3 se guna karo.", "en": "The bottom was multiplied by 3. Now multiply the top number of 4/7 by 3 as well." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4/7", "items": ["neeche 7"]}, "right": {"title": "naya bhinn", "items": ["neeche 21", "21 ÷ 7 = 3"]}} }, "why": { "hi": "naya bhinn: neeche 21 = 7 × 3, toh upar bhi 4 × 3 = 12", "en": "the bottom 7 × 3 = 21, so the top is 4 × 3 = 12 too" }
     },
     "answer": { "hi": "21 ke upar 12 aayega, yaani 4/7 = 12/21", "en": "12 goes on top of 21, so 4/7 = 12/21" },
     "why": {
@@ -409,7 +409,7 @@
      "wrongIfMis": "5",
      "board": { "template": "compare@1", "params": {"left": {"title": "5/6", "items": ["neeche 6"]}, "right": {"title": "barabar bhinn", "items": ["neeche 36"]}} },
      "why": { "hi": "barabar bhinn ka neeche 6 × 6 = 36, toh upar bhi 5 × 6 = 30", "en": "at the bottom 6 × 6 = 36, so on top too 5 × 6 = 30" },
-     "simpler": { "hi": "Dekho 5/6 ke neeche wale number ko kis number se guna karein ki 36 aaye. Upar wale number ko bhi usi se guna karo.", "en": "See what the bottom number of 5/6 must be multiplied by to make 36. Multiply the top number by that too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "5/6", "items": ["neeche 6"]}, "right": {"title": "barabar bhinn", "items": ["neeche 36"]}, "mark": {"side": "right", "add": "jawab: 30"}} }
+     "simpler": { "hi": "Dekho 5/6 ke neeche wale number ko kis number se guna karein ki 36 aaye. Upar wale number ko bhi usi se guna karo.", "en": "See what the bottom number of 5/6 must be multiplied by to make 36. Multiply the top number by that too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "5/6", "items": ["neeche 6"]}, "right": {"title": "barabar bhinn", "items": ["neeche 36"]}} }
     },
     {
      "id": "c2",
@@ -429,7 +429,7 @@
       }
      },
      "why": { "hi": "barabar bhinn ka upar 28 ÷ 4 = 7, toh neeche bhi 36 ÷ 4 = 9", "en": "on top 28 ÷ 4 = 7, so at the bottom too 36 ÷ 4 = 9" },
-     "simpler": { "hi": "Dekho 28/36 ke upar wale number ko kis number se bhaag dein ki 7 aaye. Neeche wale number ko bhi usi se bhaag do.", "en": "See what the top number of 28/36 must be divided by to give 7. Divide the bottom number by that too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "28/36", "items": ["upar 28"]}, "right": {"title": "barabar bhinn", "items": ["upar 7"]}, "mark": {"side": "right", "add": "jawab: 9"}} }
+     "simpler": { "hi": "Dekho 28/36 ke upar wale number ko kis number se bhaag dein ki 7 aaye. Neeche wale number ko bhi usi se bhaag do.", "en": "See what the top number of 28/36 must be divided by to give 7. Divide the bottom number by that too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "28/36", "items": ["upar 28"]}, "right": {"title": "barabar bhinn", "items": ["upar 7"]}} }
     },
     {
      "id": "c3",
@@ -443,7 +443,7 @@
      "wrongIfMis": "yes",
      "board": { "template": "compare@1", "params": {"left": {"title": "3/7", "items": ["dono mein 2 joda"]}, "right": {"title": "5/9", "items": ["likha"]}} },
      "why": { "hi": "3/7 aadhe se kam hai par 5/9 aadhe se zyada; dono mein 2 joda, guna nahi kiya, isliye likha galat", "en": "3/7 is less than a half but 5/9 is more than a half, and adding 2 to both is not multiplying" },
-     "simpler": { "hi": "Barabar bhinn upar aur neeche ko ek hi number se guna karke bante hain. Yahan dono mein 2 joda gaya hai, guna nahi kiya.", "en": "Equal fractions come from multiplying the top and bottom by the same number. Here 2 was added to both, not multiplied." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3/7", "items": ["dono mein 2 joda"]}, "right": {"title": "5/9", "items": ["likha"]}, "mark": {"side": "left", "add": "jawab: no"}} }
+     "simpler": { "hi": "Barabar bhinn upar aur neeche ko ek hi number se guna karke bante hain. Yahan dono mein 2 joda gaya hai, guna nahi kiya.", "en": "Equal fractions come from multiplying the top and bottom by the same number. Here 2 was added to both, not multiplied." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3/7", "items": ["dono mein 2 joda"]}, "right": {"title": "5/9", "items": ["likha"]}} }
     }
    ],
    "ladder": [
@@ -468,7 +468,7 @@
       "wrongIfMis": "2",
       "board": { "template": "compare@1", "params": {"left": {"title": "2/3", "items": ["neeche 3"]}, "right": {"title": "barabar bhinn", "items": ["neeche 9"]}} },
       "why": { "hi": "barabar bhinn ka neeche 3 × 3 = 9, toh upar bhi 2 × 3 = 6", "en": "at the bottom 3 × 3 = 9, so on top too 2 × 3 = 6" },
-      "simpler": { "hi": "Dekho 2/3 ke neeche wale number ko kis number se guna karein ki 9 aaye. Upar wale number ko bhi usi se guna karo.", "en": "See what the bottom number of 2/3 must be multiplied by to make 9. Multiply the top number by that too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2/3", "items": ["neeche 3"]}, "right": {"title": "barabar bhinn", "items": ["neeche 9"]}, "mark": {"side": "right", "add": "jawab: 6"}} }
+      "simpler": { "hi": "Dekho 2/3 ke neeche wale number ko kis number se guna karein ki 9 aaye. Upar wale number ko bhi usi se guna karo.", "en": "See what the bottom number of 2/3 must be multiplied by to make 9. Multiply the top number by that too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2/3", "items": ["neeche 3"]}, "right": {"title": "barabar bhinn", "items": ["neeche 9"]}} }
      }
     },
     {
@@ -485,7 +485,7 @@
       "wrongIfMis": "17",
       "board": { "template": "compare@1", "params": {"left": {"title": "2/5", "items": ["neeche 5"]}, "right": {"title": "barabar bhinn", "items": ["neeche 20"]}} },
       "why": { "hi": "barabar bhinn ka neeche 5 × 4 = 20, toh upar bhi 2 × 4 = 8", "en": "at the bottom 5 × 4 = 20, so on top too 2 × 4 = 8" },
-      "simpler": { "hi": "Dekho 2/5 ke neeche wale number ko kis number se guna karein ki 20 aaye. Upar wale number ko bhi usi se guna karo.", "en": "See what the bottom number of 2/5 must be multiplied by to make 20. Multiply the top number by that too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2/5", "items": ["neeche 5"]}, "right": {"title": "barabar bhinn", "items": ["neeche 20"]}, "mark": {"side": "right", "add": "jawab: 8"}} }
+      "simpler": { "hi": "Dekho 2/5 ke neeche wale number ko kis number se guna karein ki 20 aaye. Upar wale number ko bhi usi se guna karo.", "en": "See what the bottom number of 2/5 must be multiplied by to make 20. Multiply the top number by that too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2/5", "items": ["neeche 5"]}, "right": {"title": "barabar bhinn", "items": ["neeche 20"]}} }
      }
     }
    ],
@@ -538,7 +538,7 @@
       },
       "key": "4/5",
       "accept": ["4 by 5", "chaar bata paanch", "four fifths"],
-      "why": { "hi": "16 aur 20 ka sabse bada common factor 4 hai, 16 ÷ 4 = 4, 20 ÷ 4 = 5, yaani 4/5", "en": "the biggest common factor of 16 and 20 is 4: 16 ÷ 4 = 4, 20 ÷ 4 = 5, so 4/5" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "16 ke factor", "items": ["1, 2, 4, 8, 16"]}, "right": {"title": "20 ke factor", "items": ["1, 2, 4, 5, 10, 20"]}, "mark": {"side": "right", "add": "jawab: 4/5"}} }
+      "why": { "hi": "16 aur 20 ka sabse bada common factor 4 hai, 16 ÷ 4 = 4, 20 ÷ 4 = 5, yaani 4/5", "en": "the biggest common factor of 16 and 20 is 4: 16 ÷ 4 = 4, 20 ÷ 4 = 5, so 4/5" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "16 ke factor", "items": ["1, 2, 4, 8, 16"]}, "right": {"title": "20 ke factor", "items": ["1, 2, 4, 5, 10, 20"]}} }
      },
      "simpler": { "hi": "16 aur 20 dono ki factor list dekho. Jo numbers dono mein hain, woh common factors hain: 1, 2 aur 4.", "en": "Look at the factor lists of 16 and 20. The numbers in both lists are the common factors: 1, 2 and 4." }
     },
@@ -569,7 +569,7 @@
       "accept": ["3 by 7", "teen bata saat", "three sevenths"],
       "targets": "c6-maths-ch07-t03-m-stop-early",
       "wrongIfMis": "9/21",
-      "why": { "hi": "9 aur 21 mein 3 abhi common: 9 ÷ 3 = 3, 21 ÷ 3 = 7; 3/7 mein sirf 1 common", "en": "9 and 21 still share 3: 9 ÷ 3 = 3, 21 ÷ 3 = 7, and 3/7 shares only 1" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "16/24", "items": ["16 ÷ 2 = 8", "24 ÷ 2 = 12"]}, "right": {"title": "8/12", "items": ["8 ÷ 4 = 2", "12 ÷ 4 = 3"]}, "mark": {"side": "right", "add": "jawab: 3/7"}} }
+      "why": { "hi": "9 aur 21 mein 3 abhi common: 9 ÷ 3 = 3, 21 ÷ 3 = 7; 3/7 mein sirf 1 common", "en": "9 and 21 still share 3: 9 ÷ 3 = 3, 21 ÷ 3 = 7, and 3/7 shares only 1" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "16/24", "items": ["16 ÷ 2 = 8", "24 ÷ 2 = 12"]}, "right": {"title": "8/12", "items": ["8 ÷ 4 = 2", "12 ÷ 4 = 3"]}} }
      },
      "simpler": { "hi": "16/24 ko 2 se bhaag diya toh 8/12 mila. 8 aur 12 abhi bhi 4 se poore bat-te hain, isliye tab tak bhaag do jab tak common factor sirf 1 bache.", "en": "Dividing 16/24 by 2 gave 8/12. But 8 and 12 still both divide by 4, so keep dividing until the only common factor is 1." }
     },
@@ -598,7 +598,7 @@
       },
       "key": "5/8",
       "accept": ["5 by 8", "paanch bata aath", "five eighths"],
-      "why": { "hi": "20/50 ki tarah ek hi kadam: 35 ÷ 7 = 5, 56 ÷ 7 = 8, yaani 5/8", "en": "in one step, like 20/50: 35 ÷ 7 = 5 and 56 ÷ 7 = 8, so 5/8" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "20/50", "items": ["20 ÷ 10 = 2", "50 ÷ 10 = 5"]}, "right": {"title": "2/5", "items": ["ek hi kadam"]}, "mark": {"side": "right", "add": "jawab: 5/8"}} }
+      "why": { "hi": "20/50 ki tarah ek hi kadam: 35 ÷ 7 = 5, 56 ÷ 7 = 8, yaani 5/8", "en": "in one step, like 20/50: 35 ÷ 7 = 5 and 56 ÷ 7 = 8, so 5/8" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "20/50", "items": ["20 ÷ 10 = 2", "50 ÷ 10 = 5"]}, "right": {"title": "2/5", "items": ["ek hi kadam"]}} }
      },
      "simpler": { "hi": "20 aur 50 dono 10 se poore bat-te hain. Ek hi baar 10 se bhaag do, toh seedha 2/5 milta hai.", "en": "Both 20 and 50 divide exactly by 10. Divide by 10 just once and you get 2/5 straight away." }
     }
@@ -607,7 +607,7 @@
     "problem": {
      "hi": "18/24 ko lowest terms mein likho.",
      "en": "Write 18/24 in lowest terms."
-    }, "simpler": { "hi": "Humein 18/24 ko lowest terms mein likhna hai.", "en": "We need to write 18/24 in lowest terms." },
+    }, "simpler": { "hi": "18 aur 24 dono ko ek hi number se baanto. Jab tak baant sako, baantte raho.", "en": "Divide both 18 and 24 by the same number. Keep dividing as long as you can." },
     "givens": [
      { "hi": "bhinn 18/24, upar 18 aur neeche 24", "en": "the fraction 18/24, with 18 on top and 24 at the bottom" }
     ],
@@ -635,7 +635,7 @@
      "accept": ["3 by 4", "teen bata chaar", "three quarters"],
      "targets": "c6-maths-ch07-t03-m-stop-early",
      "wrongIfMis": "9/12",
-     "simpler": { "hi": "Upar ke 9 ko 3 se bhaag do. Phir neeche ke 12 ko bhi 3 se bhaag do.", "en": "Divide the top 9 by 3. Then divide the bottom 12 by 3 too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "18 aur 24", "items": ["18 ÷ 2 = 9", "24 ÷ 2 = 12"]}, "right": {"title": "9 aur 12", "items": ["dono 3 ki table"]}, "mark": {"side": "right", "add": "jawab: 3/4"}} }, "why": { "hi": "9 aur 12 dono 3 ki table mein: 9 ÷ 3 = 3, 12 ÷ 3 = 4, yaani 3/4", "en": "18/24 ÷ 2 gave 9/12, then 9 ÷ 3 = 3 and 12 ÷ 3 = 4, so 3/4" }
+     "simpler": { "hi": "Upar ke 9 ko 3 se bhaag do. Phir neeche ke 12 ko bhi 3 se bhaag do.", "en": "Divide the top 9 by 3. Then divide the bottom 12 by 3 too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "18 aur 24", "items": ["18 ÷ 2 = 9", "24 ÷ 2 = 12"]}, "right": {"title": "9 aur 12", "items": ["dono 3 ki table"]}} }, "why": { "hi": "9 aur 12 dono 3 ki table mein: 9 ÷ 3 = 3, 12 ÷ 3 = 4, yaani 3/4", "en": "18/24 ÷ 2 gave 9/12, then 9 ÷ 3 = 3 and 12 ÷ 3 = 4, so 3/4" }
     },
     "answer": { "hi": "18/24 lowest terms mein 3/4 hai", "en": "18/24 in lowest terms is 3/4" },
     "why": {
@@ -669,7 +669,7 @@
       }
      },
      "why": { "hi": "upar 24, neeche 40 ko 2 se bhaag diya; 12 aur 20 mein 4 abhi common hai, yaani 3/5", "en": "12 and 20 still share 4: 12 ÷ 4 = 3, 20 ÷ 4 = 5, so 3/5" },
-     "simpler": { "hi": "12 aur 20 mein ab bhi ek common factor bacha hai. Dekho dono kis bade number ke pahade mein aate hain, aur dono ko usse bhaag do.", "en": "12 and 20 still share a common factor. Find the biggest times table they are both in, and divide both by that number." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar 24", "items": ["neeche 40"]}, "right": {"title": "2 se bhaag", "items": ["upar 12", "neeche 20"]}, "mark": {"side": "right", "add": "jawab: 3/5"}} }
+     "simpler": { "hi": "12 aur 20 mein ab bhi ek common factor bacha hai. Dekho dono kis bade number ke pahade mein aate hain, aur dono ko usse bhaag do.", "en": "12 and 20 still share a common factor. Find the biggest times table they are both in, and divide both by that number." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar 24", "items": ["neeche 40"]}, "right": {"title": "2 se bhaag", "items": ["upar 12", "neeche 20"]}} }
     },
     {
      "id": "c2",
@@ -689,7 +689,7 @@
       }
      },
      "why": { "hi": "upar 45, neeche 60: sabse bada common factor 15 se bhaag do; 3/4 mein common factor sirf 1 hai", "en": "the biggest common factor of 45 and 60 is 15: 45 ÷ 15 = 3, 60 ÷ 15 = 4, so 3/4" },
-     "simpler": { "hi": "45 aur 60 ka sabse bada common factor dhoondo. Upar aur neeche dono ko usi se bhaag do.", "en": "Find the biggest common factor of 45 and 60. Divide both the top and the bottom by it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar 45", "items": ["neeche 60"]}, "right": {"title": "lowest terms", "items": ["common factor sirf 1"]}, "mark": {"side": "right", "add": "jawab: 3/4"}} }
+     "simpler": { "hi": "45 aur 60 ka sabse bada common factor dhoondo. Upar aur neeche dono ko usi se bhaag do.", "en": "Find the biggest common factor of 45 and 60. Divide both the top and the bottom by it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar 45", "items": ["neeche 60"]}, "right": {"title": "lowest terms", "items": ["common factor sirf 1"]}} }
     }
    ],
    "ladder": [
@@ -723,7 +723,7 @@
        }
       },
       "why": { "hi": "upar 30, neeche 42 ko 2 se bhaag diya; 15 aur 21 mein 3 abhi common hai, yaani 5/7", "en": "15 and 21 still share 3: 15 ÷ 3 = 5, 21 ÷ 3 = 7, so 5/7" },
-      "simpler": { "hi": "15 aur 21 mein ab bhi ek common factor bacha hai. Dono kis pahade mein aate hain, dekho, aur dono ko usse bhaag do.", "en": "15 and 21 still share a common factor. See which times table both are in, and divide both by that number." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar 30", "items": ["neeche 42"]}, "right": {"title": "2 se bhaag", "items": ["upar 15", "neeche 21"]}, "mark": {"side": "right", "add": "jawab: 5/7"}} }
+      "simpler": { "hi": "15 aur 21 mein ab bhi ek common factor bacha hai. Dono kis pahade mein aate hain, dekho, aur dono ko usse bhaag do.", "en": "15 and 21 still share a common factor. See which times table both are in, and divide both by that number." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar 30", "items": ["neeche 42"]}, "right": {"title": "2 se bhaag", "items": ["upar 15", "neeche 21"]}} }
      }
     }
    ],

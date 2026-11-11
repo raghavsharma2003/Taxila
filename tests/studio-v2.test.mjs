@@ -295,3 +295,120 @@ test("line-runner range is limited in steps, not units: a class-4 4-digit line (
   for (const range of [[-100001, 0], [0, 100001], [5, 5], [7000, 3000]]) assert.ok(S.validateSpec("line-runner@1", rnd({ range, calls: ["1"] })).repairs.includes("round-range"), JSON.stringify(range));
   for (const r of S.validateSpec("line-runner@1", rnd({ range: [-90000, 90000], step: 0.01, calls: ["100"] })).spec.rounds) assert.ok((r.range[1] - r.range[0]) / r.step <= S.RUNNER_MAX_STEPS);
 });
+
+// judges, 2026-11-11 (round j2): Hindi rule phrases take the number first, the sieve's "right picks" counter counts the
+// numbers that fit the rule, and a bar chart's value axis has a line at every value its bars take.
+test("sieve-storm: a Hindi postposition rule phrase takes the number first; English keeps it after", async () => {
+  const { sieveRuleLabel, placeNumber } = await import("../src/studio-v2/engines/ext/pure.ts");
+  const hi = { multipleOf: "ke guna", factorOf: "ke factors", commonOf: "ke saman gunaj", cfactorOf: "ke saman gunak", divisibleBy: "se vibhajya", coprimeWith: "ke saath sahabhajya", and: "aur", prime: "abhajya" };
+  const en = { multipleOf: "multiples of", factorOf: "factors of", commonOf: "common multiples of", cfactorOf: "common factors of", divisibleBy: "divisible by", coprimeWith: "co-prime with", and: "and", prime: "prime" };
+  assert.equal(sieveRuleLabel(hi, { rule: "multiple", a: 6 }, "hinglish"), "6 ke guna");
+  assert.equal(sieveRuleLabel(hi, { rule: "factor", a: 30 }, "en"), "30 ke factors");   // the phrase decides, whatever the lang tag
+  assert.equal(sieveRuleLabel(hi, { rule: "cfactor", a: 18, b: 24 }, "hinglish"), "18 aur 24 ke saman gunak");
+  assert.equal(sieveRuleLabel(hi, { rule: "common", a: 4, b: 6 }), "4 aur 6 ke saman gunaj");
+  assert.equal(sieveRuleLabel(hi, { rule: "divisible", a: 3 }), "3 se vibhajya");
+  assert.equal(sieveRuleLabel(hi, { rule: "coprime", a: 12 }), "12 ke saath sahabhajya");
+  assert.equal(sieveRuleLabel(hi, { rule: "prime" }, "hinglish"), "abhajya");
+  assert.equal(sieveRuleLabel(en, { rule: "multiple", a: 6 }, "en"), "multiples of 6");
+  assert.equal(sieveRuleLabel(en, { rule: "factor", a: 30 }, "hinglish"), "factors of 30");   // an English phrase stays English
+  assert.equal(sieveRuleLabel(en, { rule: "cfactor", a: 18, b: 24 }, "en"), "common factors of 18 and 24");
+  assert.equal(placeNumber("के गुणज", "6", "hi"), "6 के गुणज");
+  assert.equal(placeNumber("guna", "6", "hinglish"), "6 guna");
+  assert.equal(placeNumber("guna", "6", "en"), "guna 6");
+});
+
+test("sieve-storm: the right-picks total is how many of the round's numbers fit the rule, not the card count", async () => {
+  const { sieveHitTotal } = await import("../src/studio-v2/engines/ext/pure.ts");
+  const { sieveStream, fits } = await import("../shared/studio-spec-ext/sieve.ts");
+  const r = { rule: "factor", a: 12, title: "t", sub: "", lo: 1, hi: 12, count: 12, hitRate: 0.5, seed: 37, speed: 0.8 };
+  const st = sieveStream(r), hits = st.filter((n) => fits(r, n)).length;
+  assert.equal(st.length, 12);
+  assert.equal(sieveHitTotal(r), hits);
+  assert.ok(hits <= 12 && hits < st.length, `${hits} of ${st.length}`);
+  assert.equal(sieveHitTotal(r, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]), 6);   // 1, 2, 3, 4, 6, 12
+});
+
+test("pictograph: the value axis has a gridline at every value a bar takes, labels a young label apart", async () => {
+  const { valueAxis } = await import("../src/studio-v2/engines/ext/pure.ts");
+  const a = valueAxis([13, 7, 10], 0, 16, 220 / 16);
+  assert.equal(a.step, 1);
+  for (const v of [13, 7, 10]) assert.equal(v % a.step, 0);
+  assert.ok(a.labelStep % a.step === 0 && a.labelStep * (220 / 16) >= 46, `labels every ${a.labelStep}`);
+  assert.equal(valueAxis([12, 8, 20], 0, 24, 290 / 24).step, 4);
+  assert.equal(valueAxis([30, 45, 60], 15, 70, 220 / 55).step, 15);
+  assert.equal(valueAxis([25, 50, 75], 0, 90, 290 / 90).step, 25);
+  assert.equal(valueAxis([], 0, 10, 29).step, 1);
+});
+
+test("Lighthouse dial (2026-11-11): no number at an asked angle (rubric v2: a guide mark that draws the asked tick gives the answer); protractor numbers thin until neighbours keep a gap", async () => {
+  const { scaleLabels } = await import("../src/studio-v2/engines/angle.ts");
+  // a label box like the engine's: radius 320 about (500, 470), 3 digits ~23 units each, 38 tall
+  const box = (a) => { const x = 500 + Math.cos(a * Math.PI / 180) * 320, y = 470 - Math.sin(a * Math.PI / 180) * 320, hw = String(a).length * 11.5; return [x - hw, y - 19, x + hw, y + 19]; };
+  const tiny = (a) => [a * 20, 0, a * 20 + 1, 1];   // labels that never touch: no thinning
+  // c5-ch03-t01: a tens dial calling 90/180/270 printed exactly those three
+  assert.deepEqual(scaleLabels("tens", 360, [90, 180, 270], tiny), []);
+  assert.deepEqual(scaleLabels("tens", 360, [60, 120], tiny), [90, 180, 270], "labels elsewhere stay");
+  assert.deepEqual(scaleLabels("tens", 180, [90, 40], tiny), []);
+  // (main 2026-11-11: one rule — the dial never prints the number the wave is ABOUT, asked or sorted by; ticks stay)
+  const { aboutOf } = await import("../src/studio-v2/engines/angle.ts");
+  assert.deepEqual(scaleLabels("tens", 180, aboutOf({ mode: "classify", items: [40, 90, 120], kind: "right" }), tiny), [], "a right-angle sort hides its 90");
+  assert.deepEqual(aboutOf({ mode: "classify", items: [40, 110], kind: "obtuse" }), [90, 180]);
+  assert.deepEqual(aboutOf({ mode: "call", items: [40, 130] }), [40, 130]);
+  assert.deepEqual(scaleLabels("tens", 360, aboutOf({ mode: "classify", items: [200, 300], kind: "reflex" }), tiny), [90, 270], "a reflex sort hides its 180");
+  const pro = scaleLabels("protractor", 180, [30, 70, 110, 150], tiny);
+  assert.equal(pro.length, 17 - 4); for (const a of [30, 70, 110, 150]) assert.ok(!pro.includes(a), `${a} is asked: no label`);
+  assert.deepEqual(scaleLabels("none", 180, [], tiny), []);
+  // c6-ch02-t03: "110" ran into "100" at l1366; at the real size the numbers thin to every 30° and every pair keeps its gap
+  const real = scaleLabels("protractor", 180, [], box);
+  assert.deepEqual(real, [30, 60, 90, 120, 150]);
+  const bs = real.map(box);
+  for (let i = 0; i < bs.length; i++) for (let j = i + 1; j < bs.length; j++) { const [p, q] = [bs[i], bs[j]]; assert.ok(p[2] + 10 <= q[0] || q[2] + 10 <= p[0] || p[3] + 10 <= q[1] || q[3] + 10 <= p[1], `${real[i]} and ${real[j]} keep a gap`); }
+  assert.deepEqual(scaleLabels("protractor", 180, [90, 120], box), [30, 60, 150]);
+});
+
+test("regeneration round 2 layout faults (judges 2026-11-11): the call label is never cut, geo buttons fit their label, vault count clear of the dial", async () => {
+  // angle: "Naya mod saamne hai" in the full turn's 262-wide column at the young floor (43, mono ~0.6 em, +5 per char tracked)
+  const { callLines } = await import("../src/studio-v2/engines/angle.ts");
+  const mono = (px) => (s, tr) => s.length * (0.6 * px + tr);
+  for (const px of [38, 43]) {
+    const { lines } = callLines("Naya mod saamne hai", 262, mono(px));
+    assert.equal(lines.length, 2, `two lines at ${px}`);
+    assert.equal(lines.join(" "), "Naya mod saamne hai", "whole words, nothing dropped");
+    assert.ok(lines.every((l) => !l.includes("…")));
+  }
+  assert.deepEqual(callLines("LIGHT AT", 262, mono(38)), { lines: ["LIGHT AT"], track: 5 }, "a short label keeps its tracking");
+  const long = callLines("Agla naya mod bilkul saamne aa gaya hai dhyaan se", 262, mono(43));
+  assert.equal(long.lines.join(" "), "Agla naya mod bilkul saamne aa gaya hai dhyaan se", "a long label wraps to as many lines as it needs, never cut");
+  // geo-forge: each button as tall as its label's lines, both clear of the pin-board's rightmost column
+  const { geoButtons, GEO_GRID_X1 } = await import("../src/studio-v2/engines/ext/pure.ts");
+  const lh = 43 * 1.12;
+  for (const [nu, nc] of [[1, 1], [1, 2], [2, 2]]) {
+    const { UNDO, CHECK } = geoButtons(nu, nc, lh);
+    assert.ok(UNDO.h >= nu * lh + 16 && CHECK.h >= nc * lh + 16, `${nu}/${nc} lines fit inside their borders`);
+    assert.ok(CHECK.y >= UNDO.y + UNDO.h + 10, "the buttons do not overlap");
+    assert.ok(UNDO.x >= GEO_GRID_X1 + 20 && CHECK.x >= GEO_GRID_X1 + 20, "a clear gap to the rightmost pin column");
+    assert.ok(CHECK.x + CHECK.w <= 1000 && CHECK.y + CHECK.h <= 600);
+  }
+  // vault-heist: the loaded row's count follows its label inside the row; a label too long for a big count wraps
+  const { loadedRow, ROW_X1 } = await import("../src/studio-v2/engines/vault.ts");
+  const m43 = (s) => s.length * 0.6 * 43, wrap = (s, w) => { const out = []; let cur = ""; for (const x of s.split(" ")) { const t = cur ? cur + " " + x : x; if (!cur || m43(t) <= w) cur = t; else { out.push(cur); cur = x; } } if (cur) out.push(cur); return out; };
+  const one = loadedRow("Number taiyaar", 32, m43, wrap);
+  assert.deepEqual(one.lines, ["Number taiyaar"]); assert.ok(one.x + 32 <= ROW_X1, "label and 0 fit the row");
+  const big = loadedRow("Number taiyaar", 230, m43, wrap);
+  assert.deepEqual(big.lines, ["Number", "taiyaar"], "a long count wraps the label"); assert.ok(big.x + 230 <= ROW_X1 + 10);
+});
+
+test("dukaan: amounts are paise and the schema the model sees says so (judges 2026-11-11: price 50 meant ₹50, shown \"Soap 1 × ₹0.50\")", async () => {
+  const { DukaanSchema, rupeeLikePrices } = await import("../shared/studio-spec-ext/dukaan.ts");
+  const { z } = await import("zod");
+  const js = JSON.stringify(z.toJSONSchema(DukaanSchema, { unrepresentable: "any" }));
+  for (const f of ["price of one item", "the note the customer pays with", "the money the customer has"]) assert.ok(js.includes(f), `${f} described`);
+  assert.ok(js.includes("in paise (100 paise = ₹1): ₹50 is 5000, ₹12.50 is 1250"), "the unit stated plainly with an example");
+  const spec = (items, extra = {}) => ({ rounds: [{ mode: "pay", customers: [{ items, ...extra }] }] });
+  assert.equal(rupeeLikePrices(spec([{ name: "Soap", price: 50, qty: 1 }])), 0, "a lone 50 is not decidable: left alone");
+  assert.equal(rupeeLikePrices(spec([{ name: "Soap", price: 50, qty: 1 }, { name: "Bag", price: 45000, qty: 1 }])), 1, "50 beside ₹450 written in paise: flagged");
+  assert.equal(rupeeLikePrices(spec([{ name: "Kite", price: 3500, qty: 3 }], { pays: 20000 })), 0);
+  const X = await import("../shared/studio-spec-ext/index.ts");
+  const v = X.validateSpecExt("dukaan@1", spec([{ name: "Soap", price: 50, qty: 1 }, { name: "Bag", price: 45000, qty: 1 }]));
+  assert.ok(v.repairs.includes("price:looks-like-rupees"), "the repair notes it");
+});

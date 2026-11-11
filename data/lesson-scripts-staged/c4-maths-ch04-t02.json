@@ -56,8 +56,8 @@
    "hi": "chhalaang",
    "en": "jump"
   }
- ],
- "joints": {"asidePark":[{"hi":"Yeh numbers ka mukabla poora hote hi {aside} ki baat zaroor karenge.","en":"Once comparing these numbers is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh numbers ka mukabla khatam ho jaaye.","en":"We'll talk about {aside} too, once comparing these numbers is over."},{"hi":"{aside} wali baat mujhe yaad rahegi, thodi der mein wahi poochhungi.","en":"I'll remember the {aside} bit, and I'll ask about it in a little while."}],"asideReturn":[{"hi":"{aside} mein kaunsi cheez sabse zyada hoti hai?","en":"What is there the most of in {aside}?"},{"hi":"Ab {aside} ki baari, usmein tum kya-kya karte ho?","en":"Now it's {aside}'s turn: what do you do in it?"},{"hi":"Toh {aside} mein tumhare saath aur kaun hota hai?","en":"So who else is with you in {aside}?"}],"hindiSwitch":[{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in English."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in English."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."}],"askAgain":[{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."}]},
+ ], "greetSimpler": { "hi": "Aaj hum chaar ank wale numbers ki tulna karenge aur unhe chhote se bade ke kram mein lagayenge.", "en": "Today we compare four-digit numbers and put them in order from small to big." },
+ "joints": {"asidePark":[{"hi":"In numbers ka mukabla khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish comparing these numbers, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas in numbers ka mukabla khatam ho jaaye.","en":"We'll talk about {aside} too, right after comparing these numbers."},{"hi":"{aside} wali baat mujhe yaad rahegi, thodi der mein wahi poochhungi.","en":"I'll remember the {aside} bit, and I'll ask about it in a little while."}],"asideReturn":[{"hi":"{aside} mein kaunsi cheez sabse zyada hoti hai?","en":"What is there the most of in {aside}?"},{"hi":"Ab {aside} ki baari, uske baare mein thoda aur batao na?","en":"Now it's {aside}'s turn: will you tell me a bit more about it?"},{"hi":"Toh {aside} ki sabse achhi baat kya hai?","en":"So what is the best thing about {aside}?"}],"hindiSwitch":[{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."},{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."}],"askAgain":[{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."},{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."}],"backTo":[{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."},{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."},{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."}]},
  "skills": [
   {
    "skillId": "c4-maths-ch04-t02-s1",
@@ -128,11 +128,8 @@
       ],
       "targets": "c4-maths-ch04-t02-m-big-digits",
       "wrongIfMis": "987",
-      "why": {
-       "hi": "987 ke sirf 3 ank hain, jabki 1012 ke 4 ank hain, toh 1012 bada hai",
-       "en": "like 999 and 1000, 987 has only 3 digits while 1012 has 4"
-      },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "999", "items": ["3 ank"]}, "right": {"title": "1000", "items": ["4 ank"]}, "mark": {"side": "right", "add": "jawab: 1012"}} }
+      "why": { "hi": "987 ke sirf 3 ank hain, jabki 1012 ke 4 ank hain, toh 1012 bada hai", "en": "987 has only 3 digits while 1012 has 4, so 1012 is bigger" },
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "999", "items": ["3 ank"]}, "right": {"title": "1000", "items": ["4 ank"]}} }
      },
      "simpler": {
       "hi": "Pehle ank gino. 987 mein sirf 3 ank hain, aur doosre number mein 4 ank hain, hazaar ki jagah ke saath.",
@@ -189,7 +186,7 @@
        "hi": "hazaar mein dono ke 7 hain, par sau mein 5, 2 se bada hai, toh 7531 bada hai",
        "en": "like 4815 beat 4392 with 8 hundreds to 3, 7531 is bigger with 5 hundreds to 2"
       },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4815", "items": ["8 sau"]}, "right": {"title": "4392", "items": ["3 sau"]}, "mark": {"side": "right", "add": "jawab: 7531"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4815", "items": ["8 sau"]}, "right": {"title": "4392", "items": ["3 sau"]}} }
      },
      "simpler": {
       "hi": "Dono mein hazaar ka ank ek jaisa hai. Toh agli jagah, sau ke ank milao: jiska sau bada, wahi number bada.",
@@ -226,10 +223,7 @@
        }
       }
      },
-     "point": {
-      "hi": "2946 aur 2973 mein hazaar ki jagah dono mein 2, aur sau ki jagah dono mein 9. Dono barabar hain, toh agli jagah, dahaai, dekho: 4 aur 7. 7 dahaai zyada hai, toh 2973 bada hai, bhale hi 2946 ke ekai mein 6 hai aur 2973 ke ekai mein 3.",
-      "en": "In 2946 and 2973 both have 2 in the thousands place and 9 in the hundreds place. Both are equal, so look at the next place, the tens: 4 and 7. 7 tens is more, so 2973 is bigger, even though 2946 has 6 in the ones and 2973 has 3."
-     },
+     "point": { "hi": "2946 aur 2973 mein hazaar ki jagah dono mein 2, aur sau ki jagah dono mein 9. Yeh dono jagah barabar hain, toh agli jagah, dahaai, dekho: 4 aur 7. 7 dahaai zyada hai, toh 2973 bada hai, bhale hi 2946 ke ekai mein 6 hai aur 2973 ke ekai mein 3.", "en": "In 2946 and 2973 both have 2 in the thousands place and 9 in the hundreds place. Both these places match, so look at the next place, the tens: 4 and 7. 7 tens is more, so 2973 is bigger, even though 2946 has 6 in the ones and 2973 has 3." },
      "ask": {
       "prompt": {
        "hi": "Ab 6158 aur 6183 lo. Kaunsa bada hai, 6158 ya 6183?",
@@ -246,7 +240,7 @@
        "hi": "hazaar aur sau barabar hain, par dahaai mein 8, 5 se bada hai, toh 6183 bada hai",
        "en": "like 2973 beat 2946 on the tens, 6183 is bigger than 6158, with 8 tens to 5"
       },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2946", "items": ["4 dahaai"]}, "right": {"title": "2973", "items": ["7 dahaai"]}, "mark": {"side": "right", "add": "jawab: 6183"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2946", "items": ["4 dahaai"]}, "right": {"title": "2973", "items": ["7 dahaai"]}} }
      },
      "simpler": {
       "hi": "Hazaar aur sau dono mein barabar hain. Toh dahaai ke ank milao, jiska dahaai bada woh number bada.",
@@ -258,7 +252,7 @@
     "problem": {
      "hi": "Video game mein Sohan ka score 6482 hai aur Pooja ka score 6428. Kiska score zyada hai?",
      "en": "In a video game, Sohan's score is 6482 and Pooja's score is 6428. Whose score is higher?"
-    }, "simpler": { "hi": "Video game mein Sohan ka score 6482 hai aur Pooja ka 6428. Dekhna hai ki kiska score zyada hai.", "en": "In a video game, Sohan's score is 6482 and Pooja's is 6428. We see whose score is higher." },
+    }, "simpler": { "hi": "Dono score mein hazaar aur sau ke ank ek jaise hain. Ab dahaai ke ank milao.", "en": "Both scores have the same thousands and hundreds digits. Now compare the tens digits." },
     "givens": [
      {
       "hi": "Sohan ka score 6482 hai aur Pooja ka score 6428.",
@@ -478,7 +472,7 @@
       "hi": "Aakhri ank se nahi, baayen se shuru karo. Hazaar barabar hain, toh sau ke ank milao.",
       "en": "Do not start from the last digit, start from the left. The thousands are equal, so compare the hundreds."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4287", "items": ["aakhri ank 7"]}, "right": {"title": "4310", "items": ["aakhri ank 0"]}, "mark": {"side": "right", "add": "jawab: No"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4287", "items": ["aakhri ank 7"]}, "right": {"title": "4310", "items": ["aakhri ank 0"]}} }
     }
    ],
    "ladder": [
@@ -506,20 +500,11 @@
    "remediation": [
     {
      "targets": "c4-maths-ch04-t02-m-right-to-left",
-     "move": "both numbers as place-value blocks side by side, biggest blocks first: thousand-cubes equal → hundred-flats 2 and 3 → the 87 small blocks can never make up one more hundred",
-     "say": {
-      "hi": "Pehle bade blocks dekho: dono mein 4 hazaar, par 4310 mein 3 sau aur 4287 mein sirf 2 sau. Bache 87 chhote blocks milkar bhi ek sau nahi banate.",
-      "en": "Look at the big blocks first: both have 4 thousands, but 4310 has 3 hundreds and 4287 only 2 hundreds. The 87 small blocks left together do not make even one hundred."
-     },
-     "simpler": {
-      "hi": "Pehle hazaar dekho, dono mein 4. Phir sau dekho: 4310 mein 3, 4287 mein sirf 2. Isliye 4310 bada hai.",
-      "en": "Check the thousands first: both have 4. Then the hundreds: 4310 has 3, 4287 only 2. So 4310 is bigger."
-     },
+     "move": "both numbers side by side, biggest place first: thousands equal → hundreds 3 and 2 → the 90 left over in 5290 can never make up one more hundred",
+     "say": { "hi": "Pehle sabse badi jagah dekho: 5371 aur 5290, dono mein 5 hazaar, par 5371 mein 3 sau aur 5290 mein sirf 2 sau. 5290 ke bache 90 milkar bhi ek sau nahi banate.", "en": "Look at the biggest place first: 5371 and 5290 both have 5 thousands, but 5371 has 3 hundreds and 5290 only 2. The 90 left in 5290 together do not make even one hundred." },
+     "simpler": { "hi": "Pehle hazaar dekho, dono mein 5. Phir sau dekho: 5371 mein 3, 5290 mein sirf 2. Isliye 5371 bada hai.", "en": "Check the thousands first: both have 5. Then the hundreds: 5371 has 3, 5290 only 2. So 5371 is bigger." },
      "then": {
-      "prompt": {
-       "hi": "Isha ke 5196 points hain, Rohit ke 5203 points. Kiske points zyada hain, Isha ya Rohit? Pehle bade blocks dekho.",
-       "en": "Isha has 5196 points, Rohit has 5203 points. Who has more points, Isha or Rohit? Look at the big blocks first."
-      },
+      "prompt": { "hi": "Isha ke 5196 points hain, Rohit ke 5203 points. Kiske points zyada hain, Isha ya Rohit? Pehle sabse badi jagah dekho.", "en": "Isha has 5196 points, Rohit has 5203 points. Who has more points, Isha or Rohit? Look at the biggest place first." }, "ask": { "hi": "Kiske points zyada hain, Isha ya Rohit?", "en": "Who has more points, Isha or Rohit?" },
       "key": "Rohit",
       "accept": [
        "Rohit ke",
@@ -548,24 +533,15 @@
        "hi": "Rohit ke 5203 mein 2 sau hain, Isha ke 5196 mein sirf 1 sau, aur hazaar dono ke 5 hain",
        "en": "Rohit's 5203 has 2 hundreds, while Isha's 5196 has only 1"
       },
-      "simpler": {
-       "hi": "Bade block, yaani hazaar aur sau, pehle dekho. 5196 aur 5203 mein hazaar barabar hai, toh sau ka ank milao.",
-       "en": "Look at the big blocks, thousands and hundreds, first. 5196 and 5203 have equal thousands, so compare the hundreds digit."
-      },
+      "simpler": { "hi": "Badi jagah, yaani hazaar aur sau, pehle dekho. 5196 aur 5203 mein hazaar barabar hai, toh sau ka ank milao.", "en": "Look at the big places, thousands and hundreds, first. 5196 and 5203 have equal thousands, so compare the hundreds digit." },
       "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Isha", "items": ["5196 points"]}, "right": {"title": "Rohit", "items": ["5203 points"]}, "mark": {"side": "right"}} }
      }
     },
     {
      "targets": "c4-maths-ch04-t02-m-big-digits",
-     "move": "count on from 1999: one more makes 2000 → 1998 has not reached 2000 yet, 2010 is already past it; both placed against the 2000 mark",
-     "say": {
-      "hi": "1999 mein 1 jodo toh 2000 banta hai, toh 1998 abhi 2000 tak bhi nahi pahuncha. 2010 toh 2000 se bhi aage hai.",
-      "en": "Add 1 to 1999 and you get 2000, so 1998 has not even reached 2000. 2010 is already past 2000."
-     },
-     "simpler": {
-      "hi": "1998 abhi 2000 tak nahi pahuncha, aur 2010 toh 2000 ke aage hai. Isliye 2010 bada hai.",
-      "en": "1998 has not reached 2000, and 2010 is past 2000. So 2010 is bigger."
-     },
+     "move": "add 5 to 995 to make 1000 → 995 has not reached 1000 yet, 1004 is already past it; both placed against the 1000 mark",
+     "say": { "hi": "995 mein 5 jodo toh 1000 banta hai, toh 995 abhi 1000 tak bhi nahi pahuncha. 1004 toh 1000 se bhi aage hai.", "en": "Add 5 to 995 and you get 1000, so 995 has not even reached 1000. 1004 is already past 1000." },
+     "simpler": { "hi": "995 abhi 1000 tak nahi pahuncha, aur 1004 toh 1000 ke aage hai. Isliye 1004 bada hai.", "en": "995 has not reached 1000, and 1004 is past 1000. So 1004 is bigger." },
      "then": {
       "prompt": {
        "hi": "Sana ke paas 2995 rupaye hain, Gopi ke paas 3008 rupaye. Kiske paas zyada hain, Sana ya Gopi?",
@@ -607,7 +583,7 @@
      }
     }
    ],
-   "bridgeToNext": { "hi": "Do numbers ki tulna ab aa gayi. Ab chaar numbers ko ek saath kram mein lagayenge, wahi jagah-jagah dekhne ke tarike se.", "en": "Now you can compare two numbers. Next we put four numbers in order together, with the same place-by-place way.", "simpler": {"hi": "Do numbers ki tulna aa gayi. Agle hisse mein chaar numbers ko ek saath kram mein lagayenge.", "en": "Now you can compare two numbers. Next we put four numbers in order together."} }
+   "bridgeToNext": { "hi": "Do numbers ki tulna ab aa gayi. Ab kai numbers ko ek saath kram mein lagayenge, wahi jagah-jagah dekhne ke tarike se.", "en": "Now you can compare two numbers. Next we put several numbers in order together, with the same place-by-place way.", "simpler": { "hi": "Do numbers ki tulna aa gayi. Agle hisse mein kai numbers ko ek saath kram mein lagayenge.", "en": "Now you can compare two numbers. Next we put several numbers in order together." } }
   },
   {
    "skillId": "c4-maths-ch04-t02-s2",
@@ -756,7 +732,7 @@
        "hi": "sab mein 3 hazaar; sau mein 3257 ka 2 sabse chhota, aur 3725 ke 2 dahaai, 3752 ke 5 se kam hain",
        "en": "like 4083 before 4091, equal hundreds go by the tens: 3257, 3725, 3752"
       },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4083", "items": ["0 sau, 8 dahaai"]}, "right": {"title": "4091", "items": ["0 sau, 9 dahaai"]}, "mark": {"side": "right", "add": "jawab: 3257, 3725, 3752"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4083", "items": ["0 sau, 8 dahaai"]}, "right": {"title": "4091", "items": ["0 sau, 9 dahaai"]}} }
      },
      "simpler": {
       "hi": "Teeno ke hazaar barabar hain, toh sau ka ank dekho. Jinka sau bhi barabar ho, unka dahaai milao.",
@@ -809,11 +785,8 @@
       ],
       "targets": "c4-maths-ch04-t02-m-thousands-only",
       "wrongIfMis": "2640, 2406, 2460",
-      "why": {
-       "hi": "chhote se bade ka ulta karo: 2406, 2460, 2640 ulta hokar 2640, 2460, 2406 banta hai",
-       "en": "just as 1508, 1580, 1805 turned into 1805, 1580, 1508, the 6 hundreds of 2640 comes first: 2640, 2460, 2406"
-      },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Chhote se bade", "items": ["1508, 1580, 1805"]}, "right": {"title": "Ulta", "items": ["1805, 1580, 1508"]}, "mark": {"side": "left", "add": "jawab: 2640, 2460, 2406"}} }
+      "why": { "hi": "chhote se bade 1508, 1580, 1805 ulta hokar 1805, 1580, 1508; isi tarah 2406, 2460, 2640 ka ulta 2640, 2460, 2406", "en": "smallest to biggest 1508, 1580, 1805 turned around is 1805, 1580, 1508; so 2406, 2460, 2640 turns into 2640, 2460, 2406" },
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Chhote se bade", "items": ["1508, 1580, 1805"]}, "right": {"title": "Ulta", "items": ["1805, 1580, 1508"]}} }
      },
      "simpler": {
       "hi": "Pehle chhote se bade ka kram banao. Phir us kram ko ulta padho.",
@@ -825,7 +798,7 @@
     "problem": {
      "hi": "Chaar gaon ki aabaadi 4087, 4870, 4708 aur 4078 log hai. Inhe bade se chhote ke kram mein lagao.",
      "en": "Four villages have populations of 4087, 4870, 4708 and 4078 people. Arrange the populations from biggest to smallest."
-    }, "simpler": { "hi": "Chaar gaon ki aabaadi 4087, 4870, 4708 aur 4078 log hai. Inhe bade se chhote ke kram mein likhna hai.", "en": "Four villages have populations of 4087, 4870, 4708 and 4078 people. We write them from biggest to smallest." },
+    }, "simpler": { "hi": "Chaaron numbers mein hazaar ka ank 4 hai. Isliye ab sau ka ank dekho.", "en": "All four numbers have 4 in the thousands. So now look at the hundreds digit." },
     "givens": [
      {
       "hi": "Chaar aabaadi 4087, 4870, 4708 aur 4078 hain, aur kram bade se chhote ka chahiye.",
@@ -847,10 +820,7 @@
        "hi": "hazaar ka ank sab mein barabar hai",
        "en": "the thousands digit is the same in all four"
       },
-      "simpler": {
-       "hi": "Chaaron numbers mein hazaar ki jagah 4 hai. Sab barabar hain, toh agli jagah dekhni padegi.",
-       "en": "All four numbers have 4 in the thousands place. They are all equal, so we must look at the next place."
-      }
+      "simpler": { "hi": "Chaaron numbers mein hazaar ki jagah 4 hai. Hazaar sab mein barabar hai, toh agli jagah dekhni padegi.", "en": "All four numbers have 4 in the thousands place. The thousands are all equal, so we must look at the next place." }
      },
      {
       "do": {
@@ -978,15 +948,12 @@
        }
       }
      },
-     "why": {
-      "hi": "sau 3, 2, 5, 2 hain; dahaai mein 3, 5 se chhota hai: chhote se bade kram 1235, 1253, 1325, 1532",
-      "en": "the hundreds are 3, 2, 5, 2, and tens 3 is less than 5, so 1235, 1253, 1325, 1532"
-     },
+     "why": { "hi": "sau 3, 2, 5, 2 hain; dahaai mein 3, 5 se chhota hai: chhote se bade ka kram 1235, 1253, 1325, 1532", "en": "the hundreds are 3, 2, 5, 2, and tens 3 is less than 5, so 1235, 1253, 1325, 1532" },
      "simpler": {
       "hi": "Sab mein hazaar barabar hai, toh sau ke ank dekho. Jinka sau bhi barabar ho, unke dahaai milao.",
       "en": "All have equal thousands, so look at the hundreds digits. Where the hundreds are also equal, compare the tens."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Numbers", "items": ["1325", "1253", "1532", "1235"]}, "right": {"title": "Kram", "items": ["chhote se bade"]}, "mark": {"side": "right", "add": "1235, 1253, 1325, 1532"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Numbers", "items": ["1325", "1253", "1532", "1235"]}, "right": {"title": "Kram", "items": ["chhote se bade"]}} }
     },
     {
      "id": "c2",
@@ -1001,35 +968,13 @@
      ],
      "targets": "c4-maths-ch04-t02-m-thousands-only",
      "wrongIfMis": "3064, 3460, 3406, 2980",
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Numbers",
-        "items": [
-         "3064",
-         "2980",
-         "3460",
-         "3406"
-        ]
-       },
-       "right": {
-        "title": "Kram",
-        "items": [
-         "bade se chhote"
-        ]
-       }
-      }
-     },
-     "why": {
-      "hi": "2980 mein sirf 2 hazaar hain, aur dahaai 6, 0 se bada hai: bade se chhote kram 3460, 3406, 3064, 2980",
-      "en": "2980 has 2 thousands; the others have 0, 4, 4 hundreds, and tens 6 beats 0: 3460, 3406, 3064, 2980"
-     },
+     "board": { "template": "compare@1", "params": {"left": {"title": "3 hazaar", "items": ["3064", "3460", "3406"]}, "right": {"title": "2 hazaar", "items": ["2980"]}} },
+     "why": { "hi": "2980 ke sirf 2 hazaar; 3064 ke 0 sau; 3460 aur 3406 ke 4 sau, par 3460 ke 6 dahaai zyada", "en": "2980 has only 2 thousands; 3064 has 0 hundreds; 3460 and 3406 have 4 hundreds, but 3460 has more tens" },
      "simpler": {
       "hi": "Pehle hazaar dekho: 2980 mein sabse kam hazaar hain. Baaki teen ke sau aur dahaai milao, phir bade se chhote mein lagao.",
       "en": "Look at the thousands first: 2980 has the fewest thousands. Compare the hundreds and tens of the other three, then order biggest to smallest."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Numbers", "items": ["3064", "2980", "3460", "3406"]}, "right": {"title": "Kram", "items": ["bade se chhote"]}, "mark": {"side": "right", "add": "3460, 3406, 3064, 2980"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 hazaar", "items": ["3064", "3460", "3406"]}, "right": {"title": "2 hazaar", "items": ["2980"]}} }
     }
    ],
    "ladder": [
@@ -1093,19 +1038,16 @@
         }
        }
       },
-      "why": {
-       "hi": "sau mein 8053 ka 0 sabse chhota hai, aur dahaai 0, 5 se chhota: chhote se bade kram 8053, 8305, 8350",
-       "en": "the 0 hundreds of 8053 is smallest, and between 8305 and 8350 the tens 0 is less than 5"
-      },
+      "why": { "hi": "sau mein 8053 ka 0 sabse chhota hai, aur dahaai 0, 5 se chhota: chhote se bade ka kram 8053, 8305, 8350", "en": "the 0 hundreds of 8053 is smallest, and between 8305 and 8350 the tens 0 is less than 5" },
       "simpler": {
        "hi": "Teeno mein hazaar barabar hai, toh sau ka ank dekho. Jinka sau bhi barabar ho, unke dahaai milao.",
        "en": "All three have equal thousands, so look at the hundreds digit. Where the hundreds are also equal, compare the tens."
       },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Numbers", "items": ["8350", "8053", "8305"]}, "right": {"title": "Kram", "items": ["chhote se bade"]}, "mark": {"side": "left", "add": "jawab: 8053, 8305, 8350"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Numbers", "items": ["8350", "8053", "8305"]}, "right": {"title": "Kram", "items": ["chhote se bade"]}} }
      }
     }
    ],
-   "bridgeToNext": { "hi": "Kram mein lagana aa gaya. Ab inhi numbers ko number line par unki sahi doori par rakhenge.", "en": "Now you can put numbers in order. Next we place such numbers on a number line at the right distance.", "simpler": {"hi": "Numbers ko kram mein lagana aa gaya. Agle hisse mein aise numbers ko number line par unki jagah par rakhenge.", "en": "You can put numbers in order now. Next we place such numbers on a number line, each in its right spot."} }
+   "bridgeToNext": { "hi": "Kram mein lagana aa gaya. Ab inhi numbers ko number line par unki sahi doori par rakhenge.", "en": "Now you can put numbers in order. Next we place such numbers on a number line at the right distance.", "simpler": { "hi": "Numbers ko kram mein lagana aa gaya. Ab unhe number line par rakhenge.", "en": "You can put numbers in order now. Next we put them on a number line." } }
   },
   {
    "skillId": "c4-maths-ch04-t02-s3",
@@ -1163,7 +1105,7 @@
       "prompt": {
        "hi": "Isi 0 se 10000 wali line par 7000 kahan aayega? 0 ke baad kaunsa nishaan, batao.",
        "en": "On this same line from 0 to 10000, where does 7000 go? Which mark after 0?"
-      },
+      }, "ask": { "hi": "7000 is rekha par 0 ke baad kaunse nishaan par aayega?", "en": "On which mark after 0 does 7000 go on this line?" },
       "key": "7",
       "accept": [
        "saatvan",
@@ -1272,7 +1214,7 @@
     "problem": {
      "hi": "Ek number line 6000 se 7000 tak hai, aur har 100 par barabar nishaan hain, yaani 10 chhalaang. 6300 aur 6800 mein se 7000 ke zyada paas kaun hai?",
      "en": "A number line goes from 6000 to 7000, with equal marks every 100, so 10 jumps. Of 6300 and 6800, which is closer to 7000?"
-    }, "simpler": { "hi": "Ek number line 6000 se 7000 tak hai, aur har 100 par nishaan hai. Dekhna hai ki 6300 aur 6800 mein se 7000 ke zyada paas kaun hai.", "en": "A number line goes from 6000 to 7000, with a mark every 100. We see which of 6300 and 6800 is closer to 7000." },
+    }, "simpler": { "hi": "6300 se 7000 tak kitni chhalaang hain, aur 6800 se 7000 tak kitni, yeh gino.", "en": "Count the jumps from 6300 to 7000, and from 6800 to 7000." },
     "givens": [
      {
       "hi": "Line 6000 se 7000 tak hai, har 100 par nishaan hai, aur numbers 6300 aur 6800 hain.",
@@ -1336,7 +1278,7 @@
       "hi": "6000 se 7000 ki line par har nishaan 100 ka hai, aur 6800 se 7000 tak 2 chhalaang hain",
       "en": "of the 10 jumps of 100, 6300 is 7 from 7000 and 6800 is only 2"
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "6000 se 7000", "items": ["har nishaan 100", "10 chhalaang"]}, "right": {"title": "Numbers", "items": ["6300", "6800"]}, "mark": {"side": "right", "add": "jawab: 2"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "6000 se 7000", "items": ["har nishaan 100", "10 chhalaang"]}, "right": {"title": "Numbers", "items": ["6300", "6800"]}} }
     },
     "answer": {
      "hi": "6800, 7000 ke zyada paas hai: woh sirf 2 chhalaang yaani 200 door hai, jabki 6300 poori 7 chhalaang yaani 700 door hai",

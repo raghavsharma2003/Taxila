@@ -1,0 +1,1012 @@
+{
+ "note": "Known Studio v2 layout faults (tests/studio-v2-layout.test.mjs). Each is a real overlap or cut-off the probe found and nobody has fixed yet; the test fails on any fault NOT listed here and on any listed fault that no longer happens (remove it: node src/studio-v2/tools/layout-probe.mjs --catalogue 1 --write-known). Keys: kind|a|b, numbers as #.",
+ "reasons": {
+  "angle-sum@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the triangle's angle labels sit under the sum card (\"#° + #° + #° = #°\") at the reveal",
+  "balance-beam@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): weights stacked on one peg overlap each other; the equation card sits under the task pill at l1366",
+  "beat-line@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): word cards scroll past the stage edges and collide at the hit line",
+  "data-rush@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): a tally number sits on the coach line",
+  "era-drop@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the dropped event card covers the timeline's year labels; the event card and year chips sit under the task pill at l1366",
+  "fair-test@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the FAIR TEST stamp lands on the variable cards",
+  "field-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): compass letters (N, S) sit on the well card",
+  "food-web@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the effect cards (\"x: goes down\") cover animal names and counts and run past the right edge",
+  "heat-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): readout cards cross the thermometer labels and the stage edge",
+  "land-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the river share card is cut at the stage edge",
+  "life-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): organ cards (mouth, large intestine) under the task pill at l1366; a rate card cut at the edge",
+  "map-route@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): place cards under the task pill at l1366; the DELIVERED / ARRIVED card lands on place cards",
+  "motion-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the distance label sits under the task pill at l1366",
+  "pattern-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): results (\"# lines make #\", \"# solutions\") under the task pill at l1366 and over the figure's numbers",
+  "phase-shift@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the plateau caption card covers the HEAT label and sits under the task pill at l1366",
+  "ray-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): result cards (HIT, i = r, image size) are cut at the stage edge",
+  "scale-cinematic@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): planet names overlap each other and the planet discs at the scale stops; one caption runs off the edge",
+  "scene-explainer@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): scene cards overlap each other (MYTH / NOT TRUE; the catalogue explainer's word cards)",
+  "shadow-play@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): material names sit on the count cards; a card under the task pill at l1366; labels cut at the edge",
+  "sky-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the city card drawn twice on itself; the % lit card cut at the edge (catalogue)",
+  "solid-view@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the count cards (# of # faces / edges / corners) sit under the task pill at l1366",
+  "story-rail@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the lane cards overlap each other and the wagon number badges while they slide; the coach line crosses the bottom lane card",
+  "town-lab@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the trades / profit cards at the bottom are cut by the stage edge; the park card meets a count card",
+  "zero-pair@1": "found by the check's first run (2026-11-11), not fixed in this pass (per-engine layout work): the running total card covers a counter label"
+ },
+ "faults": {
+  "angle-sum@1|default|p412": [
+   "covered|#°|card[#° + #° + #° = #°]",
+   "text×card|#°|card[#° + #° + #° = #°]",
+   "text×text|#°|#° + #° + #° = #°"
+  ],
+  "angle-sum@1|default|l1366": [
+   "covered|#°|card[#° + #° + #° = #°]",
+   "text×card|#°|card[#° + #° + #° = #°]",
+   "text×text|#°|#° + #° + #° = #°"
+  ],
+  "angle-sum@1|default|l1366y": [
+   "covered|#°|card[#° + #° + #° = #°]",
+   "text×card|#°|card[#° + #° + #° = #°]",
+   "text×text|#°|#° + #° + #° = #°"
+  ],
+  "balance-beam@1|default|p412": [
+   "card×card|card[#]|card[#]",
+   "card×card|card[#]|card[x]",
+   "card×card|card[x]|card[#]",
+   "card×card|card[x]|card[x]",
+   "text×card|#|card[#]",
+   "text×card|#|card[x]",
+   "text×card|x|card[#]"
+  ],
+  "balance-beam@1|default|l1366": [
+   "card×card|card[#]|card[#]",
+   "card×card|card[#]|card[x]",
+   "card×card|card[x]|card[#]",
+   "card×card|card[x]|card[x]",
+   "chrome|#|task",
+   "chrome|#×# = #×#|task",
+   "chrome|card[#]|task",
+   "chrome|card[#×# = #×#]|task",
+   "chrome|card[x × # = #×# + #×# → x = ]|task",
+   "chrome|card[x]|task",
+   "chrome|x × # = #×# + #×# → x = |task",
+   "chrome|x|task",
+   "text×card|#|card[#]",
+   "text×card|#|card[x]",
+   "text×card|x|card[#]"
+  ],
+  "balance-beam@1|default|l1366y": [
+   "card×card|card[#]|card[#]",
+   "card×card|card[#]|card[x]",
+   "card×card|card[x]|card[#]",
+   "card×card|card[x]|card[x]",
+   "chrome|#|task",
+   "chrome|#×# = #×#|task",
+   "chrome|card[#]|task",
+   "chrome|card[#×# = #×#]|task",
+   "chrome|card[x × # = #×# + #×# → x = ]|task",
+   "chrome|card[x]|task",
+   "chrome|x × # = #×# + #×# → x = |task",
+   "chrome|x|task",
+   "text×card|#|card[#]",
+   "text×card|#|card[x]",
+   "text×card|x|card[#]"
+  ],
+  "balance-beam@1|c7-maths-ch15-t01:game|p412": [
+   "card×card|card[#]|card[#]",
+   "card×card|card[#]|card[x]",
+   "card×card|card[x]|card[x]",
+   "text×card|#|card[#]",
+   "text×card|x|card[#]"
+  ],
+  "balance-beam@1|c7-maths-ch15-t01:game|l1366": [
+   "card×card|card[#]|card[#]",
+   "card×card|card[#]|card[x]",
+   "card×card|card[x]|card[x]",
+   "chrome|#×# = #×# + #×#|task",
+   "chrome|card[#×# = #×# + #×#]|task",
+   "chrome|card[x × # = #×# + #×# → x = ]|task",
+   "chrome|x × # = #×# + #×# → x = |task",
+   "text×card|#|card[#]",
+   "text×card|x|card[#]"
+  ],
+  "balance-beam@1|c7-maths-ch15-t01:game|l1366y": [
+   "card×card|card[#]|card[#]",
+   "card×card|card[#]|card[x]",
+   "card×card|card[x]|card[x]",
+   "chrome|#×# = #×# + #×#|task",
+   "chrome|card[#×# = #×# + #×#]|task",
+   "chrome|card[x × # = #×# + #×# → x = ]|task",
+   "chrome|x × # = #×# + #×# → x = |task",
+   "text×card|#|card[#]",
+   "text×card|x|card[#]"
+  ],
+  "beat-line@1|default|p412": [
+   "cut|back|frame",
+   "cut|card[back]|frame",
+   "cut|card[beak]|frame"
+  ],
+  "beat-line@1|default|l1366": [
+   "cut|back|frame",
+   "cut|card[back]|frame",
+   "cut|card[beak]|frame"
+  ],
+  "beat-line@1|default|l1366y": [
+   "cut|back|frame",
+   "cut|card[back]|frame",
+   "cut|card[beak]|frame"
+  ],
+  "beat-line@1|c4-english-ch01-t01:game|p412": [
+   "card×card|card[two]|card[ten]",
+   "cut|card[to]|frame",
+   "text×card|ten|card[two]",
+   "text×card|two|card[ten]"
+  ],
+  "beat-line@1|c4-english-ch01-t01:game|l1366": [
+   "card×card|card[two]|card[ten]",
+   "cut|card[to]|frame",
+   "text×card|ten|card[two]",
+   "text×card|two|card[ten]"
+  ],
+  "beat-line@1|c4-english-ch01-t01:game|l1366y": [
+   "card×card|card[two]|card[ten]",
+   "cut|card[to]|frame",
+   "text×card|ten|card[two]",
+   "text×card|two|card[ten]"
+  ],
+  "data-rush@1|default|p412": [
+   "text×text|#|Tap every car as it pass"
+  ],
+  "data-rush@1|default|l1366": [
+   "text×text|#|Tap every car as it pass"
+  ],
+  "data-rush@1|default|l1366y": [
+   "text×text|#|Tap every car as it pass"
+  ],
+  "era-drop@1|default|p412": [
+   "covered|# BCE|card[Alexander]",
+   "covered|# BCE|card[Bindusara]",
+   "covered|# BCE|card[Chandragupta]",
+   "covered|# BCE|card[The Kalinga war]",
+   "text×card|# BCE|card[Alexander]",
+   "text×card|# BCE|card[Bindusara]",
+   "text×card|# BCE|card[Chandragupta]",
+   "text×card|# BCE|card[The Kalinga war]"
+  ],
+  "era-drop@1|default|l1366": [
+   "chrome|# BCE|task",
+   "chrome|card[# BCE]|task",
+   "chrome|card[Alexander reaches]|task",
+   "chrome|card[Bindusara]|task",
+   "chrome|card[Chandragupta]|task",
+   "chrome|card[The Kalinga war]|task",
+   "covered|# BCE|card[Alexander reaches]",
+   "covered|# BCE|card[Bindusara]",
+   "covered|# BCE|card[Chandragupta]",
+   "covered|# BCE|card[The Kalinga war]",
+   "text×card|# BCE|card[Alexander reaches]",
+   "text×card|# BCE|card[Bindusara]",
+   "text×card|# BCE|card[Chandragupta]",
+   "text×card|# BCE|card[The Kalinga war]"
+  ],
+  "era-drop@1|default|l1366y": [
+   "chrome|# BCE|task",
+   "chrome|Alexander|task",
+   "chrome|Bindusara|task",
+   "chrome|Chandragupta|task",
+   "chrome|card[# BCE]|task",
+   "chrome|card[Alexander]|task",
+   "chrome|card[Bindusara]|task",
+   "chrome|card[Chandragupta]|task",
+   "chrome|card[The Kalinga war]|task",
+   "covered|# BCE|card[Alexander]",
+   "covered|# BCE|card[Bindusara]",
+   "covered|# BCE|card[Chandragupta]",
+   "covered|# BCE|card[The Kalinga war]",
+   "text×card|# BCE|card[Alexander]",
+   "text×card|# BCE|card[Bindusara]",
+   "text×card|# BCE|card[Chandragupta]",
+   "text×card|# BCE|card[The Kalinga war]"
+  ],
+  "era-drop@1|c4-evs-ch01-t02:game|l1366": [
+   "chrome|#|task",
+   "chrome|card[#]|task",
+   "chrome|card[A red traffic light]|task",
+   "chrome|card[Fixed signs and]|task",
+   "chrome|card[Random]|task",
+   "chrome|card[Talking]|task",
+   "chrome|card[Waving goodbye]|task",
+   "chrome|card[Writing a letter]|task"
+  ],
+  "era-drop@1|c4-evs-ch01-t02:game|l1366y": [
+   "chrome|#|task",
+   "chrome|A red traffic|task",
+   "chrome|Fixed signs and|task",
+   "chrome|Random|task",
+   "chrome|card[#]|task",
+   "chrome|card[A red traffic]|task",
+   "chrome|card[Fixed signs and]|task",
+   "chrome|card[Random]|task",
+   "chrome|card[Talking]|task",
+   "chrome|card[Waving goodbye]|task",
+   "chrome|card[Writing a letter]|task"
+  ],
+  "fair-test@1|default|p412": [
+   "card×card|card[#]|card[FAIR TEST]",
+   "covered|#|card[FAIR TEST]",
+   "text×card|#|card[FAIR TEST]",
+   "text×card|FAIR TEST|card[#]"
+  ],
+  "fair-test@1|default|l1366": [
+   "card×card|card[#]|card[FAIR TEST]",
+   "covered|#|card[FAIR TEST]",
+   "text×card|#|card[FAIR TEST]",
+   "text×card|FAIR TEST|card[#]"
+  ],
+  "fair-test@1|default|l1366y": [
+   "card×card|card[#]|card[FAIR TEST]",
+   "chrome|FAIR TEST|task",
+   "chrome|card[FAIR TEST]|task",
+   "covered|#|card[FAIR TEST]",
+   "text×card|#|card[FAIR TEST]",
+   "text×card|FAIR TEST|card[#]"
+  ],
+  "fair-test@1|c4-evs-ch07-t01:game|p412": [
+   "card×card|card[#]|card[FAIR TEST]",
+   "covered|#|card[FAIR TEST]",
+   "text×card|#|card[FAIR TEST]",
+   "text×card|FAIR TEST|card[#]"
+  ],
+  "fair-test@1|c4-evs-ch07-t01:game|l1366": [
+   "card×card|card[#]|card[FAIR TEST]",
+   "covered|#|card[FAIR TEST]",
+   "text×card|#|card[FAIR TEST]",
+   "text×card|FAIR TEST|card[#]"
+  ],
+  "fair-test@1|c4-evs-ch07-t01:game|l1366y": [
+   "card×card|card[#]|card[FAIR TEST]",
+   "chrome|FAIR TEST|task",
+   "chrome|card[FAIR TEST]|task",
+   "covered|#|card[FAIR TEST]",
+   "text×card|#|card[FAIR TEST]",
+   "text×card|FAIR TEST|card[#]"
+  ],
+  "field-lab@1|default|p412": [
+   "card×card|card[well]|card[N]",
+   "card×card|card[well]|card[S]",
+   "text×card|N|card[well]",
+   "text×card|S|card[well]"
+  ],
+  "field-lab@1|default|l1366": [
+   "card×card|card[well]|card[N]",
+   "card×card|card[well]|card[S]",
+   "text×card|N|card[well]",
+   "text×card|S|card[well]"
+  ],
+  "field-lab@1|default|l1366y": [
+   "card×card|card[well]|card[N]",
+   "card×card|card[well]|card[S]",
+   "text×card|N|card[well]",
+   "text×card|S|card[well]"
+  ],
+  "food-web@1|default|p412": [
+   "covered|#|card[grass: goes down]",
+   "covered|#|card[insects: goes down]",
+   "covered|Deer|card[grass: goes down]",
+   "covered|Deer|card[insects: goes down]",
+   "covered|you: goes|card[grass: goes down]",
+   "covered|you: goes|card[insects: goes down]",
+   "cut|card[grass: goes down]|frame",
+   "cut|card[insects: goes down]|frame",
+   "cut|insects: goes down|frame",
+   "text×card|#|card[grass: goes down]",
+   "text×card|#|card[insects: goes down]",
+   "text×card|Deer|card[grass: goes down]",
+   "text×card|Deer|card[insects: goes down]",
+   "text×card|you: goes|card[down]",
+   "text×card|you: goes|card[grass: goes down]",
+   "text×card|you: goes|card[insects: goes down]",
+   "text×text|#|grass: goes down",
+   "text×text|#|insects: goes down",
+   "text×text|#|you: goes"
+  ],
+  "food-web@1|default|l1366": [
+   "chrome|DROUGHT|task",
+   "chrome|Snakes|task",
+   "chrome|card[DROUGHT]|task",
+   "covered|#|card[grass: goes down]",
+   "covered|#|card[insects: goes down]",
+   "covered|Deer|card[grass: goes down]",
+   "covered|Deer|card[insects: goes down]",
+   "covered|you: goes|card[grass: goes down]",
+   "covered|you: goes|card[insects: goes down]",
+   "cut|card[insects: goes down]|frame",
+   "text×card|Deer|card[grass: goes down]",
+   "text×card|Deer|card[insects: goes down]",
+   "text×card|you: goes|card[down]",
+   "text×card|you: goes|card[grass: goes down]",
+   "text×card|you: goes|card[insects: goes down]",
+   "text×text|#|grass: goes down",
+   "text×text|#|insects: goes down"
+  ],
+  "food-web@1|default|l1366y": [
+   "chrome|DROUGHT|task",
+   "chrome|Snakes|task",
+   "chrome|card[DROUGHT]|task",
+   "covered|#|card[grass: goes down]",
+   "covered|#|card[insects: goes down]",
+   "covered|Deer|card[grass: goes down]",
+   "covered|Deer|card[insects: goes down]",
+   "covered|you: goes|card[grass: goes down]",
+   "covered|you: goes|card[insects: goes down]",
+   "cut|card[grass: goes down]|frame",
+   "cut|card[insects: goes down]|frame",
+   "cut|insects: goes down|frame",
+   "text×card|#|card[grass: goes down]",
+   "text×card|#|card[insects: goes down]",
+   "text×card|Deer|card[grass: goes down]",
+   "text×card|Deer|card[insects: goes down]",
+   "text×card|you: goes|card[down]",
+   "text×card|you: goes|card[grass: goes down]",
+   "text×card|you: goes|card[insects: goes down]",
+   "text×text|#|grass: goes down",
+   "text×text|#|insects: goes down",
+   "text×text|#|you: goes"
+  ],
+  "food-web@1|c4-evs-ch03-t02:game|p412": [
+   "covered|#|card[frogs: goes down]",
+   "covered|#|card[insects: goes down]",
+   "covered|Deer|card[frogs: goes down]",
+   "covered|Deer|card[insects: goes down]",
+   "covered|you: goes|card[frogs: goes down]",
+   "covered|you: goes|card[insects: goes down]",
+   "cut|card[frogs: goes down]|frame",
+   "cut|card[insects: goes down]|frame",
+   "cut|insects: goes down|frame",
+   "text×card|#|card[frogs: goes down]",
+   "text×card|#|card[insects: goes down]",
+   "text×card|Deer|card[frogs: goes down]",
+   "text×card|Deer|card[insects: goes down]",
+   "text×card|you: goes|card[down]",
+   "text×card|you: goes|card[frogs: goes down]",
+   "text×card|you: goes|card[insects: goes down]",
+   "text×text|#|frogs: goes down",
+   "text×text|#|insects: goes down",
+   "text×text|#|you: goes"
+  ],
+  "food-web@1|c4-evs-ch03-t02:game|l1366": [
+   "chrome|Snakes|task",
+   "covered|#|card[frogs: goes down]",
+   "covered|#|card[insects: goes down]",
+   "covered|Deer|card[frogs: goes down]",
+   "covered|Deer|card[insects: goes down]",
+   "covered|you: goes|card[frogs: goes down]",
+   "covered|you: goes|card[insects: goes down]",
+   "cut|card[insects: goes down]|frame",
+   "text×card|Deer|card[frogs: goes down]",
+   "text×card|Deer|card[insects: goes down]",
+   "text×card|you: goes|card[down]",
+   "text×card|you: goes|card[frogs: goes down]",
+   "text×card|you: goes|card[insects: goes down]",
+   "text×text|#|frogs: goes down",
+   "text×text|#|insects: goes down"
+  ],
+  "food-web@1|c4-evs-ch03-t02:game|l1366y": [
+   "chrome|Snakes|task",
+   "covered|#|card[frogs: goes down]",
+   "covered|#|card[insects: goes down]",
+   "covered|Deer|card[frogs: goes down]",
+   "covered|Deer|card[insects: goes down]",
+   "covered|you: goes|card[frogs: goes down]",
+   "covered|you: goes|card[insects: goes down]",
+   "cut|card[frogs: goes down]|frame",
+   "cut|card[insects: goes down]|frame",
+   "cut|insects: goes down|frame",
+   "text×card|#|card[frogs: goes down]",
+   "text×card|#|card[insects: goes down]",
+   "text×card|Deer|card[frogs: goes down]",
+   "text×card|Deer|card[insects: goes down]",
+   "text×card|you: goes|card[down]",
+   "text×card|you: goes|card[frogs: goes down]",
+   "text×card|you: goes|card[insects: goes down]",
+   "text×text|#|frogs: goes down",
+   "text×text|#|insects: goes down",
+   "text×text|#|you: goes"
+  ],
+  "heat-lab@1|default|p412": [
+   "cut|again|frame",
+   "text×card|land|card[→ to]",
+   "text×card|start|card[evaporate]"
+  ],
+  "heat-lab@1|default|l1366y": [
+   "chrome|# a.m.|task",
+   "chrome|# p.m.|task",
+   "cut|again|frame",
+   "text×card|land|card[→ to]",
+   "text×card|start|card[evaporate]"
+  ],
+  "heat-lab@1|c6-science-ch09-t01:game|p412": [
+   "cut|again|frame",
+   "text×card|start|card[evaporate]"
+  ],
+  "heat-lab@1|c6-science-ch09-t01:game|l1366y": [
+   "cut|again|frame",
+   "text×card|start|card[evaporate]"
+  ],
+  "land-lab@1|default|p412": [
+   "cut|card[#% of the river]|frame"
+  ],
+  "land-lab@1|default|l1366": [
+   "cut|card[#% of the river]|frame"
+  ],
+  "land-lab@1|default|l1366y": [
+   "chrome|card[SAFE]|task",
+   "cut|card[#% of the river]|frame"
+  ],
+  "land-lab@1|c4-evs-ch09-t01:game|p412": [
+   "cut|card[#% of the river]|frame"
+  ],
+  "land-lab@1|c4-evs-ch09-t01:game|l1366": [
+   "cut|card[#% of the river]|frame"
+  ],
+  "land-lab@1|c4-evs-ch09-t01:game|l1366y": [
+   "chrome|card[SAFE]|task",
+   "cut|card[#% of the river]|frame"
+  ],
+  "life-lab@1|default|p412": [
+   "cut|card[# per min]|frame"
+  ],
+  "life-lab@1|default|l1366": [
+   "chrome|card[large intestine]|task",
+   "chrome|card[mouth]|task",
+   "chrome|mouth|task",
+   "cut|card[# per min]|frame"
+  ],
+  "life-lab@1|default|l1366y": [
+   "chrome|card[large intestine]|task",
+   "chrome|card[mouth]|task",
+   "chrome|large intestine|task",
+   "chrome|mouth|task",
+   "cut|card[# per min]|frame"
+  ],
+  "life-lab@1|c7-science-ch09-t01:game|l1366": [
+   "chrome|card[large intestine]|task",
+   "chrome|card[mouth]|task",
+   "chrome|mouth|task"
+  ],
+  "life-lab@1|c7-science-ch09-t01:game|l1366y": [
+   "chrome|card[large intestine]|task",
+   "chrome|card[mouth]|task",
+   "chrome|large intestine|task",
+   "chrome|mouth|task"
+  ],
+  "map-route@1|default|p412": [
+   "card×card|card[School]|card[DELIVERED]",
+   "text×card|Clinic|card[School]",
+   "text×card|DELIVERED|card[School]",
+   "text×card|Market|card[Village]"
+  ],
+  "map-route@1|default|l1366": [
+   "card×card|card[School]|card[DELIVERED]",
+   "chrome|DELIVERED|task",
+   "chrome|card[DELIVERED]|task",
+   "chrome|card[School]|task",
+   "chrome|card[Village]|task",
+   "text×card|Clinic|card[School]",
+   "text×card|DELIVERED|card[School]",
+   "text×card|Market|card[Village]"
+  ],
+  "map-route@1|default|l1366y": [
+   "card×card|card[School]|card[DELIVERED]",
+   "chrome|DELIVERED|task",
+   "chrome|Village|task",
+   "chrome|card[DELIVERED]|task",
+   "chrome|card[School]|task",
+   "chrome|card[Village]|task",
+   "text×card|Clinic|card[School]",
+   "text×card|DELIVERED|card[School]",
+   "text×card|Market|card[Village]"
+  ],
+  "map-route@1|c4-evs-ch02-t01:game|p412": [
+   "card×card|card[Hospital]|card[ARRIVED]",
+   "card×card|card[Market]|card[ARRIVED]",
+   "text×card|ARRIVED|card[Hospital]",
+   "text×card|ARRIVED|card[Market]",
+   "text×card|PostOffice|card[Market]"
+  ],
+  "map-route@1|c4-evs-ch02-t01:game|l1366": [
+   "card×card|card[Hospital]|card[ARRIVED]",
+   "card×card|card[Market]|card[ARRIVED]",
+   "text×card|ARRIVED|card[Hospital]",
+   "text×card|ARRIVED|card[Market]",
+   "text×card|PostOffice|card[Market]"
+  ],
+  "map-route@1|c4-evs-ch02-t01:game|l1366y": [
+   "card×card|card[Hospital]|card[ARRIVED]",
+   "card×card|card[Market]|card[ARRIVED]",
+   "chrome|card[ARRIVED]|task",
+   "text×card|ARRIVED|card[Hospital]",
+   "text×card|ARRIVED|card[Market]",
+   "text×card|PostOffice|card[Market]"
+  ],
+  "motion-lab@1|default|p412": [
+   "text×card|time →|card[gap #.# m]"
+  ],
+  "motion-lab@1|default|l1366": [
+   "chrome|distance|task"
+  ],
+  "motion-lab@1|default|l1366y": [
+   "chrome|distance|task",
+   "text×card|time →|card[gap #.# m]"
+  ],
+  "motion-lab@1|c4-evs-ch07-t02:game|p412": [
+   "text×card|time →|card[gap #.# m]"
+  ],
+  "motion-lab@1|c4-evs-ch07-t02:game|l1366": [
+   "chrome|distance|task"
+  ],
+  "motion-lab@1|c4-evs-ch07-t02:game|l1366y": [
+   "chrome|distance|task",
+   "text×card|time →|card[gap #.# m]"
+  ],
+  "pattern-lab@1|default|p412": [
+   "covered|#|card[# lines make #]",
+   "covered|#° / #°|card[#°]",
+   "covered|undefined|shape",
+   "text×card|#° / #°|card[#°]",
+   "text×text|#|# lines make #",
+   "text×text|undefined|NaN",
+   "text×text|undefined|undefined"
+  ],
+  "pattern-lab@1|default|l1366": [
+   "chrome|# lines make #|task",
+   "chrome|# of #|task",
+   "chrome|# solutions|task",
+   "chrome|#|task",
+   "chrome|#°|task",
+   "chrome|card[# lines make #]|task",
+   "chrome|card[# of #]|task",
+   "chrome|card[# solutions]|task",
+   "chrome|card[#°]|task",
+   "chrome|·|task",
+   "covered|#|card[# lines make #]",
+   "covered|#° / #°|card[#°]",
+   "covered|undefined|shape",
+   "text×card|#° / #°|card[#°]",
+   "text×text|#|# lines make #",
+   "text×text|undefined|NaN",
+   "text×text|undefined|undefined"
+  ],
+  "pattern-lab@1|default|l1366y": [
+   "chrome|# lines make #|task",
+   "chrome|# of #|task",
+   "chrome|# solutions|task",
+   "chrome|#|task",
+   "chrome|#° / #°|task",
+   "chrome|#°|task",
+   "chrome|card[# lines make #]|task",
+   "chrome|card[# of #]|task",
+   "chrome|card[# solutions]|task",
+   "chrome|card[#°]|task",
+   "chrome|·|task",
+   "covered|#|card[# lines make #]",
+   "covered|#° / #°|card[#°]",
+   "covered|undefined|shape",
+   "text×card|#° / #°|card[#°]",
+   "text×text|#|# lines make #",
+   "text×text|undefined|NaN",
+   "text×text|undefined|undefined"
+  ],
+  "pattern-lab@1|c7-maths-ch06-t02:game|p412": [
+   "covered|#|card[# lines make #]",
+   "covered|undefined|shape",
+   "text×text|#|# lines make #",
+   "text×text|undefined|NaN",
+   "text×text|undefined|undefined"
+  ],
+  "pattern-lab@1|c7-maths-ch06-t02:game|l1366": [
+   "chrome|# lines make #|task",
+   "chrome|#|task",
+   "chrome|card[# lines make #]|task",
+   "chrome|·|task",
+   "covered|#|card[# lines make #]",
+   "covered|undefined|shape",
+   "text×text|#|# lines make #",
+   "text×text|undefined|NaN",
+   "text×text|undefined|undefined"
+  ],
+  "pattern-lab@1|c7-maths-ch06-t02:game|l1366y": [
+   "chrome|# lines make #|task",
+   "chrome|#|task",
+   "chrome|card[# lines make #]|task",
+   "chrome|card[#]|task",
+   "chrome|·|task",
+   "covered|#|card[# lines make #]",
+   "covered|undefined|shape",
+   "text×text|#|# lines make #",
+   "text×text|undefined|NaN",
+   "text×text|undefined|undefined"
+  ],
+  "phase-shift@1|default|p412": [
+   "text×card|LID|card[COLD]",
+   "text×text|HEAT|# °C holds: heat is ma",
+   "text×text|HEAT|# °C holds: heat is melt"
+  ],
+  "phase-shift@1|default|l1366": [
+   "chrome|# °C holds: heat is ma|task",
+   "chrome|card[# °C holds: heat is ma]|task",
+   "covered|HEAT|card[# °C holds: heat is ma]",
+   "covered|HEAT|card[# °C holds: heat is melt]",
+   "text×text|HEAT|# °C holds: heat is ma",
+   "text×text|HEAT|# °C holds: heat is melt"
+  ],
+  "phase-shift@1|default|l1366y": [
+   "chrome|# °C holds: heat is ma|task",
+   "chrome|# °C holds: heat is melt|task",
+   "chrome|vapour · invisible|task",
+   "text×card|LID|card[COLD]",
+   "text×text|HEAT|# °C holds: heat is ma",
+   "text×text|HEAT|# °C holds: heat is melt"
+  ],
+  "phase-shift@1|c5-evs-ch01-t01:game|p412": [
+   "covered|HEAT|card[bubbles show boiling]",
+   "text×card|HEAT|card[bubbles show boiling]",
+   "text×card|LID|card[COLD]"
+  ],
+  "phase-shift@1|c5-evs-ch01-t01:game|l1366": [
+   "chrome|bubbles show boiling|task",
+   "chrome|card[bubbles show boiling]|task"
+  ],
+  "phase-shift@1|c5-evs-ch01-t01:game|l1366y": [
+   "chrome|bubbles show boiling|task",
+   "chrome|card[bubbles show boiling]|task",
+   "covered|HEAT|card[bubbles show boiling]",
+   "text×card|HEAT|card[bubbles show boiling]",
+   "text×card|LID|card[COLD]"
+  ],
+  "ray-lab@1|default|p412": [
+   "card×card|card[image #.# cm · upside do]|card[LOCK]",
+   "cut|card[HIT]|frame",
+   "cut|card[i = #° r = #°]|frame",
+   "cut|card[image #.# cm · upside do]|frame"
+  ],
+  "ray-lab@1|default|l1366": [
+   "cut|card[HIT]|frame",
+   "cut|card[i = #° r = #°]|frame",
+   "cut|card[image #.# cm · upside do]|frame"
+  ],
+  "ray-lab@1|default|l1366y": [
+   "card×card|card[image #.# cm · upside do]|card[LOCK]",
+   "cut|card[HIT]|frame",
+   "cut|card[i = #° r = #°]|frame",
+   "cut|card[image #.# cm · upside do]|frame"
+  ],
+  "ray-lab@1|c7-science-ch11-t03:game|p412": [
+   "card×card|card[image #.# cm · upside do]|card[LOCK]",
+   "cut|card[HIT]|frame",
+   "cut|card[i = #° r = #°]|frame",
+   "cut|card[image #.# cm · upside do]|frame"
+  ],
+  "ray-lab@1|c7-science-ch11-t03:game|l1366": [
+   "cut|card[HIT]|frame",
+   "cut|card[i = #° r = #°]|frame",
+   "cut|card[image #.# cm · upside do]|frame"
+  ],
+  "ray-lab@1|c7-science-ch11-t03:game|l1366y": [
+   "card×card|card[image #.# cm · upside do]|card[LOCK]",
+   "cut|card[HIT]|frame",
+   "cut|card[i = #° r = #°]|frame",
+   "cut|card[image #.# cm · upside do]|frame"
+  ],
+  "scale-cinematic@1|default|p412": [
+   "covered|Jupiter|shape",
+   "covered|Saturn|shape",
+   "cut|AU|frame",
+   "cut|Earth · peppercorn, # mm|frame",
+   "cut|Sun · football, # cm|frame",
+   "text×text|#|Neptune",
+   "text×text|#|Saturn",
+   "text×text|#|Venus",
+   "text×text|Earth|Jupiter",
+   "text×text|Mercury|Earth",
+   "text×text|Uranus|# steps",
+   "text×text|Venus|Mars"
+  ],
+  "scale-cinematic@1|default|l1366": [
+   "covered|Jupiter|shape",
+   "covered|Saturn|shape",
+   "cut|Earth · peppercorn, # mm|frame",
+   "text×text|#|Neptune",
+   "text×text|#|Saturn",
+   "text×text|Mercury|Earth",
+   "text×text|Uranus|# steps",
+   "text×text|Venus|Mars"
+  ],
+  "scale-cinematic@1|default|l1366y": [
+   "covered|Jupiter|shape",
+   "covered|Saturn|shape",
+   "cut|AU|frame",
+   "cut|Earth · peppercorn, # mm|frame",
+   "cut|Sun · football, # cm|frame",
+   "text×text|#|Neptune",
+   "text×text|#|Saturn",
+   "text×text|#|Venus",
+   "text×text|Earth|Jupiter",
+   "text×text|Mercury|Earth",
+   "text×text|Uranus|# steps",
+   "text×text|Venus|Mars"
+  ],
+  "scene-explainer@1|default|p412": [
+   "card×card|card[MYTH]|card[NOT TRUE]",
+   "text×card|NOT TRUE|card[MYTH]"
+  ],
+  "scene-explainer@1|default|l1366": [
+   "card×card|card[MYTH]|card[NOT TRUE]",
+   "chrome|Vapour in|task"
+  ],
+  "scene-explainer@1|default|l1366y": [
+   "card×card|card[MYTH]|card[NOT TRUE]",
+   "chrome|Puddle|task",
+   "chrome|Vapour in|task",
+   "chrome|air|task",
+   "text×card|NOT TRUE|card[MYTH]"
+  ],
+  "scene-explainer@1|c4-english-ch01-t01:explainer|p412": [
+   "card×card|card[Many sticks]|card[Raindrops]",
+   "card×card|card[bundle]|card[One stick]",
+   "card×card|card[together]|card[Raindrops]",
+   "card×card|card[together]|card[Waterfall]",
+   "covered|bundle|card[One stick]",
+   "covered|strong|card[Raindrops]",
+   "text×card|One stick|card[bundle]",
+   "text×card|Waterfall|card[together]",
+   "text×card|bundle|card[One stick]",
+   "text×card|new chances|card[Waterfall]",
+   "text×card|strong|card[Raindrops]",
+   "text×card|together|card[Waterfall]",
+   "text×card|weak alone|card[Raindrops]"
+  ],
+  "scene-explainer@1|c4-english-ch01-t01:explainer|l1366": [
+   "card×card|card[bundle]|card[One stick]",
+   "card×card|card[together]|card[Raindrops]",
+   "card×card|card[together]|card[Waterfall]",
+   "covered|bundle|card[One stick]",
+   "covered|strong together|card[Raindrops]",
+   "text×card|One stick|card[bundle]",
+   "text×card|bundle|card[One stick]",
+   "text×card|made by drops|card[together]",
+   "text×card|many together|card[together]",
+   "text×card|new chances|card[Waterfall]",
+   "text×card|strong together|card[Raindrops]",
+   "text×card|together|card[Raindrops]"
+  ],
+  "scene-explainer@1|c4-english-ch01-t01:explainer|l1366y": [
+   "card×card|card[Many sticks]|card[Raindrops]",
+   "card×card|card[bundle]|card[One stick]",
+   "card×card|card[together]|card[Raindrops]",
+   "card×card|card[together]|card[Waterfall]",
+   "covered|bundle|card[One stick]",
+   "covered|strong|card[Raindrops]",
+   "text×card|One stick|card[bundle]",
+   "text×card|Waterfall|card[together]",
+   "text×card|bundle|card[One stick]",
+   "text×card|new chances|card[Waterfall]",
+   "text×card|strong|card[Raindrops]",
+   "text×card|together|card[Waterfall]",
+   "text×card|weak alone|card[Raindrops]"
+  ],
+  "shadow-play@1|default|p412": [
+   "cut|Translucent|frame",
+   "cut|Transparent|frame",
+   "cut|card[shadow colour: dark]|frame",
+   "text×card|Tracing|card[Glass]",
+   "text×card|Translucent|card[#]",
+   "text×card|Transparent|card[#]",
+   "text×card|card|card[Red]",
+   "text×text|Translucent|#",
+   "text×text|Transparent|#"
+  ],
+  "shadow-play@1|default|l1366": [
+   "chrome|card[Opaque]|task",
+   "text×card|Translucent|card[#]",
+   "text×card|Transparent|card[#]",
+   "text×card|card|card[Red]",
+   "text×text|Translucent|#",
+   "text×text|Transparent|#"
+  ],
+  "shadow-play@1|default|l1366y": [
+   "chrome|card[#]|task",
+   "chrome|card[Glass]|task",
+   "chrome|card[Opaque]|task",
+   "cut|Translucent|frame",
+   "cut|Transparent|frame",
+   "cut|card[shadow colour: dark]|frame",
+   "text×card|Tracing|card[Glass]",
+   "text×card|Translucent|card[#]",
+   "text×card|Transparent|card[#]",
+   "text×card|card|card[Red]",
+   "text×text|Translucent|#",
+   "text×text|Transparent|#"
+  ],
+  "shadow-play@1|c4-evs-ch10-t01:game|p412": [
+   "cut|Translucent|frame",
+   "cut|Transparent|frame",
+   "text×card|Tracing|card[Glass]",
+   "text×card|Translucent|card[#]",
+   "text×card|Transparent|card[#]",
+   "text×text|Translucent|#",
+   "text×text|Transparent|#"
+  ],
+  "shadow-play@1|c4-evs-ch10-t01:game|l1366": [
+   "text×card|Translucent|card[#]",
+   "text×card|Transparent|card[#]",
+   "text×text|Translucent|#",
+   "text×text|Transparent|#"
+  ],
+  "shadow-play@1|c4-evs-ch10-t01:game|l1366y": [
+   "chrome|card[Glass]|task",
+   "chrome|card[Opaque]|task",
+   "cut|Translucent|frame",
+   "cut|Transparent|frame",
+   "text×card|Tracing|card[Glass]",
+   "text×card|Translucent|card[#]",
+   "text×card|Transparent|card[#]",
+   "text×text|Translucent|#",
+   "text×text|Transparent|#"
+  ],
+  "sky-lab@1|default|p412": [
+   "card×card|card[Delhi]|card[Delhi]"
+  ],
+  "sky-lab@1|default|l1366": [
+   "card×card|card[Delhi]|card[Delhi]"
+  ],
+  "sky-lab@1|default|l1366y": [
+   "card×card|card[Delhi]|card[Delhi]"
+  ],
+  "sky-lab@1|c4-evs-ch10-t02:game|p412": [
+   "cut|card[#% lit]|frame"
+  ],
+  "sky-lab@1|c4-evs-ch10-t02:game|l1366": [
+   "cut|card[#% lit]|frame"
+  ],
+  "sky-lab@1|c4-evs-ch10-t02:game|l1366y": [
+   "cut|card[#% lit]|frame"
+  ],
+  "solid-view@1|default|l1366": [
+   "chrome|card[# of # corners]|task",
+   "chrome|card[# of # edges]|task",
+   "chrome|card[#/# views]|task"
+  ],
+  "solid-view@1|default|l1366y": [
+   "chrome|card[# of # corners]|task",
+   "chrome|card[# of # edges]|task",
+   "chrome|card[#/# views]|task"
+  ],
+  "solid-view@1|c4-maths-ch01-t01:game|l1366": [
+   "chrome|card[# of # corners]|task",
+   "chrome|card[# of # edges]|task",
+   "chrome|card[# of # faces]|task"
+  ],
+  "solid-view@1|c4-maths-ch01-t01:game|l1366y": [
+   "chrome|card[# of # corners]|task",
+   "chrome|card[# of # edges]|task",
+   "chrome|card[# of # faces]|task"
+  ],
+  "story-rail@1|default|p412": [
+   "text×card|Tap a wagon before the t|card[#]"
+  ],
+  "story-rail@1|default|l1366": [
+   "text×card|Tap a wagon before the t|card[#]"
+  ],
+  "story-rail@1|default|l1366y": [
+   "chrome|card[#]|task",
+   "chrome|card[Fox wants the food]|task",
+   "chrome|card[He flatters the]|task",
+   "text×card|Tap a wagon before the t|card[#]"
+  ],
+  "story-rail@1|c4-english-ch02-t01:game|p412": [
+   "text×card|Tap a wagon before the t|card[#]",
+   "text×card|bushes|card[#]",
+   "text×card|her|card[#]",
+   "text×card|sound|card[#]"
+  ],
+  "story-rail@1|c4-english-ch02-t01:game|l1366": [
+   "text×card|Tap a wagon before the t|card[#]"
+  ],
+  "story-rail@1|c4-english-ch02-t01:game|l1366y": [
+   "chrome|card[#]|task",
+   "chrome|card[Friends]|task",
+   "chrome|card[Gauri had a bell]|task",
+   "chrome|card[Meena heard a]|task",
+   "chrome|card[The bell made a]|task",
+   "text×card|Tap a wagon before the t|card[#]",
+   "text×card|bushes|card[#]",
+   "text×card|her|card[#]",
+   "text×card|sound|card[#]"
+  ],
+  "town-lab@1|default|p412": [
+   "card×card|card[park]|card[# of #]",
+   "cut|# of #|frame",
+   "cut|# trades|frame",
+   "cut|card[# of #]|frame",
+   "cut|card[# trades]|frame",
+   "cut|card[profit #]|frame",
+   "cut|card[saved #]|frame",
+   "cut|profit #|frame",
+   "cut|saved #|frame",
+   "text×card|stock #|card[price ₹#]"
+  ],
+  "town-lab@1|default|l1366": [
+   "card×card|card[park]|card[# of #]",
+   "cut|# of #|frame",
+   "cut|# trades|frame",
+   "cut|card[# of #]|frame",
+   "cut|card[# trades]|frame",
+   "cut|card[profit #]|frame",
+   "cut|card[saved #]|frame",
+   "cut|profit #|frame",
+   "cut|saved #|frame"
+  ],
+  "town-lab@1|default|l1366y": [
+   "card×card|card[park]|card[# of #]",
+   "cut|# of #|frame",
+   "cut|# trades|frame",
+   "cut|card[# of #]|frame",
+   "cut|card[# trades]|frame",
+   "cut|card[profit #]|frame",
+   "cut|card[saved #]|frame",
+   "cut|profit #|frame",
+   "cut|saved #|frame",
+   "text×card|stock #|card[price ₹#]"
+  ],
+  "town-lab@1|c4-evs-ch01-t01:game|p412": [
+   "cut|# of #|frame",
+   "cut|# trades|frame",
+   "cut|card[# of #]|frame",
+   "cut|card[# trades]|frame",
+   "cut|card[profit #]|frame",
+   "cut|card[saved #]|frame",
+   "cut|profit #|frame",
+   "cut|saved #|frame",
+   "text×card|Letters|card[route]",
+   "text×card|cleaning|card[Seller]",
+   "text×text|Seller|has",
+   "text×text|Sweeper|has",
+   "text×text|cleaning|wants water",
+   "text×text|vegetables|wants"
+  ],
+  "town-lab@1|c4-evs-ch01-t01:game|l1366": [
+   "cut|# of #|frame",
+   "cut|# trades|frame",
+   "cut|card[# of #]|frame",
+   "cut|card[# trades]|frame",
+   "cut|card[profit #]|frame",
+   "cut|card[saved #]|frame",
+   "cut|profit #|frame",
+   "cut|saved #|frame",
+   "text×card|cleaning|card[Seller]",
+   "text×text|vegetables|wants"
+  ],
+  "town-lab@1|c4-evs-ch01-t01:game|l1366y": [
+   "cut|# of #|frame",
+   "cut|# trades|frame",
+   "cut|card[# of #]|frame",
+   "cut|card[# trades]|frame",
+   "cut|card[profit #]|frame",
+   "cut|card[saved #]|frame",
+   "cut|profit #|frame",
+   "cut|saved #|frame",
+   "text×card|Letters|card[route]",
+   "text×card|cleaning|card[Seller]",
+   "text×text|Seller|has",
+   "text×text|Sweeper|has",
+   "text×text|cleaning|wants water",
+   "text×text|vegetables|wants"
+  ],
+  "zero-pair@1|default|p412": [
+   "covered|−#|card[= −#]",
+   "text×card|−#|card[= −#]"
+  ],
+  "zero-pair@1|default|l1366": [
+   "covered|−#|card[= −#]",
+   "text×card|−#|card[= −#]"
+  ],
+  "zero-pair@1|default|l1366y": [
+   "covered|−#|card[= −#]",
+   "text×card|−#|card[= −#]"
+  ]
+ }
+}

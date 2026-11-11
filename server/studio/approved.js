@@ -43,8 +43,17 @@ export const PILOT_TARGETS = Object.freeze([
  */
 export const ENGINE_HOW = Object.freeze({
   "catch-on-line@1": "ticks is the number of EQUAL GAPS from 0 to 1; set each wave's ticks (and scaffoldTicks) to a common multiple of every denominator on that line so each item lands on a tick; one fraction per item; no title or sub names where an item goes",
-  "slice-at@1": "marks false on every wave (marks draw the cut points: the child judges equal size herself); every wave's sub agrees with its own items; no sub states the rule",
-  "angle-cannon@1": "the beam is a lighthouse's light aimed at a mark: no weapon words in any string (never fire, shoot, turret, nishana, hit, threat, attack); say 'roshni', 'kiran', 'mod do'; angle names as the teacher says them (right angle, 90°)",
+  "slice-at@1": "marks false on every wave (marks draw the cut points: the child judges equal size herself); every wave's sub agrees with its own items; no sub states the rule; the engine draws a straight bar, so name a patti or strip, never a round thing (roti, pizza)",
+  // judged 2026-11-11 (runs/2026-11-11-judge2): the faults each engine's generations shared
+  "sieve-storm@1": "rule strings in the textbook's words: multiple 'gunaj' or 'ke guna', factor 'gunankhand' or 'ke factors', prime 'abhajya (prime)', composite 'bhajya (composite)', never a literal word (pehla, joda hua, jumps of, tukde of); spelling checked (chuno)",
+  "fraction-ops@1": "no round title or sub names the method (barabar tukde, same parts, common denominator); a round aimed at a comparing mix-up compares, never adds; orchard rounds only for a multiplication topic; strings cols 'kaalam', rows 'pankti'",
+  "rule-machine@1": "a story only when its rule IS the chain applied to the input, in the order the child computes it (₹500 − 4 × 45 is not ×4 then −45: give no story there); a word-order mix-up round's sub gives the worded phrase ('20 se 5 kam') and its rule is the right order",
+  "pictograph@1": "the title names what is drawn (bar graph or picture graph); tally only where tally marks are drawn",
+  // (regen round 2: 4 of 4 geo-forge candidates failed on content — challenges off the topic's idea, wrong Hindi terms)
+  "geo-forge@1": "every challenge builds the topic's own idea (a square tile turned stays square: a quad square drawn tilted; radius vs diameter: a circle challenge); a shape named is exactly that shape; Hindi terms as the textbook: samdvibahu (isosceles), samabahu (equilateral), parimaap (perimeter), paridhi only for a circle, trijya (radius), vyaas (diameter), samaantar (parallel); no task label states the rule (never 'samaan disha' for parallel)",
+  // (regen 2b: c5-maths-ch05-t01, a km topic, became a jug of ml; c4-ch06-t01 wrote 6 meaning 6 cm on a mm ruler)
+  "instrument@1": "the mode is the topic's quantity: length topics cut, capacity pours, mass weighs; every number in the base unit (cut mm: 6 cm is 60); scaleMax just above the round's largest target, and every target a whole number of minor marks (cm targets: minor 10; 0.7 m: minor 100); a km rule only for a km topic",
+  "angle-cannon@1": "the beam is a lighthouse's light aimed at a mark: no weapon words in any string (never fire, shoot, turret, nishana, hit, threat, attack); say 'roshni', 'kiran', 'mod do'; angle names as the teacher says them (right angle, 90°); a tens or protractor scaffold only with call/copy angles that are multiples of 10",
   "area-claim@1": "every string plain Roman Hinglish: no stake, claim, plot, sq or units in English; sq varg, units ikai (area 40 varg ikai)",
 });
 /**
@@ -52,7 +61,14 @@ export const ENGINE_HOW = Object.freeze({
  * script's checks target (the first remediation beat, as the pilots were). → { topicId, archetype, misconceptionId, how? }
  * or null (no script, no game, or no targeted check).
  */
+/** main 2026-11-11 08:49: topics whose catalogue engine cannot show the targeted mix-up get NO game target (a game that cannot
+ *  is worse than none; the lesson stays on the board). data/studio-approved/no-game-target.json says what an engine would need. */
+export function noGameTarget(topicId) {
+  try { return (JSON.parse(fs.readFileSync(path.join(REPO, "data/studio-approved/no-game-target.json"), "utf8")).topics ?? []).find((t) => t.topicId === topicId) ?? null; }
+  catch { return null; }
+}
 export function deriveTarget(topicId) {
+  if (noGameTarget(topicId)) return null;
   const pilot = PILOT_TARGETS.find((t) => t.topicId === topicId);
   if (pilot) return pilot;
   const j = scriptOf(topicId);
@@ -82,6 +98,50 @@ function scriptOf(topicId) {
   }
   return null;
 }
+/**
+ * main 2026-11-11 (geo-forge terms): the game's geometry words cannot drift from the lesson. Two rules, geo-forge only:
+ * (1) each shape/measure string holds the textbook term for its key, in Hindi or English ("perimeter": "Paridhi" is refused —
+ * paridhi is a circle's; "isosceles": "Samdvipahu" is a misspelling of samdvibahu); (2) a title, sub or label uses no textbook
+ * geometry term the topic's script does not say (its `terms` block, the teacher's words). → { ok, applies, why, terms }.
+ */
+const GEO_KEY_TERMS = { perimeter: ["parimaap", "parimap", "perimeter"], area: ["kshetrafal", "area"], isosceles: ["samdvibahu", "isosceles"],
+  scalene: ["vishambahu", "vishmabahu", "vishamabahu", "scalene"], right: ["samkon", "samkoni", "right"], obtuse: ["adhikkon", "adhik", "obtuse"], acute: ["nyunkon", "nyun", "nyoon", "acute"],
+  square: ["varg", "square"], rectangle: ["aayat", "rectangle"], triangle: ["tribhuj", "tribhuja", "triangle"], parallelogram: ["samaantar", "samantar", "samanantar", "samaanantar", "parallelogram"],
+  rhombus: ["samchaturbhuj", "samachaturbhuj", "rhombus"], trapezium: ["samlamb", "samalamb", "trapezium"], perpendicular: ["lamb", "lambvat", "lambavat", "perpendicular"], parallel: ["samaantar", "samantar", "samanantar", "samaanantar", "parallel"] };
+// (accepted spellings: the transliterations a textbook reader meets — samalamb, vishamabahu, tribhuja — not a changed letter
+// like samdvipahu)
+// the textbook's technical geometry words (common words — kona, rekha, bindu, kiran, varg — are left out: they are everyday Hindi)
+const GEO_HI = ["samdvibahu", "samabahu", "vishambahu", "parimaap", "paridhi", "trijya", "vyaas", "samaantar", "samkon", "nyunkon", "adhikkon", "sarlkon",
+  "pravarkon", "tribhuj", "chaturbhuj", "aayat", "vritt", "kendra", "jeeva", "rekhakhand", "shirsh", "vikarn", "kshetrafal", "samlamb", "samchaturbhuj", "lambvat", "konmaapak"];
+const lev = (a, b) => { const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]); for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[a.length][b.length]; };
+const wordsOf = (s) => String(s ?? "").toLowerCase().normalize("NFKC").match(/[a-z]+/g) ?? [];
+export function geometryTerms(topicId, spec, archetype = spec?.archetype) {
+  if (archetype !== "geo-forge@1") return { ok: true, applies: false, why: null, terms: [] };
+  const bad = [];
+  // (main 2026-11-11: "the game speaks the lesson's words" — a plain description passes when every word of it is one the
+  // topic's own script uses, in its terms block or its spoken lines: "Bahar ki lambai" where the script says it)
+  const script = scriptOf(topicId);
+  const lesson = new Set(); JSON.stringify(script ?? {}, (k, v) => { if (typeof v === "string") for (const w of wordsOf(v)) lesson.add(w); return v; });
+  for (const [k, ok] of Object.entries(GEO_KEY_TERMS)) {
+    const v = spec?.strings?.[k];
+    if (typeof v !== "string" || !v.trim()) continue;
+    const ws = wordsOf(v);
+    if (ws.some((w) => ok.includes(w))) continue;
+    if (ws.length && ws.every((w) => lesson.has(w) && !GEO_HI.some((t) => t !== w && w.length >= 7 && lev(w, t) <= 2))) continue;
+    bad.push(`${k} "${v}" (textbook: ${ok[0]}, or the lesson's own words)`);
+  }
+  const terms = script?.terms;
+  const said = new Set((Array.isArray(terms) ? terms : []).flatMap((t) => wordsOf(`${t.hi ?? ""} ${t.en ?? ""}`)));
+  if (said.size) JSON.stringify(spec?.rounds ?? [], (key, v) => {
+    if (typeof v === "string" && ["title", "sub", "label"].includes(key)) for (const w of wordsOf(v)) {
+      const t = GEO_HI.includes(w) ? w : w.length >= 7 ? GEO_HI.find((x) => x.length >= 7 && lev(w, x) <= 2) : null;
+      if (t && !said.has(w) && !(w === t && lesson.has(w))) bad.push(`"${w}"${w === t ? "" : ` (~${t})`} in a ${key}: not one of this topic's words`);
+    }
+    return v;
+  });
+  return bad.length ? { ok: false, applies: true, why: `geometry terms: ${bad.join("; ")}`, terms: bad } : { ok: true, applies: true, why: null, terms: [] };
+}
 export function beatFor(topicId, misconceptionId) {
   try {
     const j = scriptOf(topicId);
@@ -105,13 +165,20 @@ export function beatFor(topicId, misconceptionId) {
 // ordinary English or harmless and would warn on every English explainer)
 const NUMBER_WORDS = ["teen"];
 export function numberWords(text) { const t = String(text ?? "").toLowerCase(); return NUMBER_WORDS.filter((w) => new RegExp(`(^|[^a-z])${w}([^a-z]|$)`).test(t)); }
+/** Words with a case break inside them ("KAafi", "sAhi"): a typo a child reads as a misspelling (judged 2026-11-11, c4-ch05-t01). */
+export function oddCaseWords(text) { return [...String(text ?? "").matchAll(/\p{L}*(?:\p{Lu}{2}\p{Ll}|\p{Ll}\p{Lu})\p{L}*/gu)].map((m) => m[0]); }
+/** main 2026-11-11 (regen r3: "Tribhuज", "Samलamb"): one word that mixes Latin and Devanagari letters. Never right, in any
+ *  engine: a word is written in one script. */
+export function mixedScriptWords(text) { return [...String(text ?? "").matchAll(/[\p{L}\p{M}]+/gu)].map((m) => m[0]).filter((w) => /[A-Za-z]/.test(w) && /[\u0900-\u097F]/.test(w)); }
+/** Every mixed-script word in a spec's strings (any key, any depth). */
+export function mixedScriptInSpec(spec) { const out = []; JSON.stringify(spec ?? {}, (k, v) => { if (typeof v === "string") out.push(...mixedScriptWords(v)); return v; }); return [...new Set(out)]; }
 /** The plain-words reason for a content refusal that a number word explains. */
 export function numberWordHint(findings) {
   const hits = (findings ?? []).filter((f) => f.text && numberWords(f.text).length);
   return hits.length ? `; ${hits.map((f) => `the content check scored "${f.text}" (${f.key}) ${String(f.code).replace(/^content_safety_/, "")}; number words such as ${numberWords(f.text).map((w) => `'${w}'`).join(", ")} are the likely cause: write digits`).join("; ")}` : "";
 }
 export function attemptOutcome(r) {
-  if (!r?.ok) return { kind: "refused", why: String(r?.why ?? "refused") };
+  if (!r?.ok) return { kind: "refused", why: `${String(r?.why ?? "refused")}${Array.isArray(r?.words) && r.words.length ? `: ${r.words.map((w) => `"${w}"`).join(", ")} — ${r.why === "mixed_script" ? "one script per word" : "write digits"}` : ""}` };
   if (!r.payload?.spec) return { kind: "refused", why: "ok but no spec in the payload" };
   const failed = Object.entries(r.checks ?? {}).filter(([k, v]) => v === false || (v && typeof v === "object" && v.ok === false)).map(([k]) => k);
   if (failed.length) return { kind: "refused", why: `ok, but its checks failed: ${failed.join(", ")}${numberWordHint(r.checks?.contentFindings)}` };
@@ -136,6 +203,24 @@ export function valuesOnTicks(archetype, spec) {
         if (!(Number(t) > 1)) continue;
         if ((v[0] * t) % v[1] !== 0) misses.push(`wave ${wi + 1} "${w.title ?? ""}": ${label} is not on a tick of a line with ${name} ${t}`);
       }
+    }
+  }
+  // (main 2026-11-11, c5-ch03-t02: a "tens" dial, ticks every 10°, asked 45° and 135°. A wave that asks for angles — call,
+  // copy — on a drawn scaffold ("tens", "protractor": both tick every 10°) asks only angles on a tick; classify asks a kind)
+  if (archetype === "angle-cannon@1") {
+    for (const [wi, w] of (spec?.waves ?? []).entries()) {
+      if (!["tens", "protractor"].includes(w?.scaffold) || w?.mode === "classify") continue;
+      for (const a of w.items ?? []) if (Number(a) % 10 !== 0) misses.push(`wave ${wi + 1} "${w.title ?? ""}": ${a}° is not on a tick of a ${w.scaffold} scaffold (ticks every 10°)`);
+    }
+  }
+  // (regen r3, c4-ch06-t01 and c7-ch03-t01: 8 cm and 0.7 m asked on a 2 km rule whose small marks are 20 m apart. A pour, cut
+  // or thermo target is a whole number of the scale's small marks, so the child can stop or cut exactly on it)
+  if (archetype === "instrument@1") {
+    const unit = { pour: "ml", cut: "mm", thermo: "tenths of a °C" };
+    for (const [ri, r] of (spec?.rounds ?? []).entries()) {
+      const m = Number(r?.minor);
+      if (!unit[r?.mode] || !(m > 0)) continue;
+      for (const it of r.items ?? []) { const q = Number(it?.target) / m; if (Math.abs(q - Math.round(q)) > 1e-9) misses.push(`round ${ri + 1} "${r.title ?? ""}": ${it.target} ${unit[r.mode]} is not on a mark of a scale marked every ${m}`); }
     }
   }
   return { ok: misses.length === 0, why: misses.length ? misses.slice(0, 4).join("; ") : null, misses };
@@ -208,8 +293,11 @@ export function untranslatedStrings(archetype, spec) {
   const lang = String(spec?.lang ?? "en");
   if (lang === "en") return { ok: true, why: null, keys: [] };
   const d = defaultStrings[archetype] ?? {};
-  const keys = Object.entries(spec?.strings ?? {}).filter(([k, v]) => typeof v === "string" && v === d[k] && v.trim().split(/\s+/).length >= 2).map(([k]) => k);
-  return { ok: keys.length === 0, why: keys.length ? `English engine strings left in a ${lang} piece: ${keys.map((k) => `${k} "${spec.strings[k]}"`).join(", ")}` : null, keys };
+  const own = spec?.strings ?? {};
+  // a string left as the engine's English, or left out (the engine then draws its English default), or blank
+  const keys = Object.entries(d).filter(([k, dv]) => typeof dv === "string" && dv.trim().split(/\s+/).length >= 2
+    && (own[k] === undefined || own[k] === dv || (typeof own[k] === "string" && !own[k].trim()))).map(([k]) => k);
+  return { ok: keys.length === 0, why: keys.length ? `English engine strings left in a ${lang} piece: ${keys.map((k) => `${k} "${own[k] ?? d[k]}"${own[k] === undefined ? " (missing)" : ""}`).join(", ")}` : null, keys };
 }
 /** Is `spec` the archetype's reviewed engine default (shared/studio-spec*.ts defaultSpec)? */
 export async function _loadDefaults() {

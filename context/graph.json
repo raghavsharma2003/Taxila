@@ -27950,6 +27950,212 @@
    "at": "2026-11-11",
    "title": "After director20: (R1) her reply after an aside is authored, not model-written: per kind of aside, three return questions and three reply forms with one slot for a word of the child's, judged by a reader before use; the model path and its predicate leave lessons (the pre-set clause fired: 3 of 7 odd). (G3) The dry predicates also run over every live run's rows, and a live run with a predicate above zero is not sent to judges; authored cells (key and why, point, simpler, remediation, joint) are said as written by code and a repair may never swap one unit part for another. (P1) Every park is queued and returned to before the goodbye, in a turn of its own; she asks no question whose answer her next turn ignores. (L1 to L4) New cells: a give-up at a check-in gets the simpler then the card; a clarify after a key gets the why reworded; a clarify at the greeting gets one plain line then the hook; a Hindi request says the part's simpler in Hindi. (S1) After a hint she re-asks only the card's question; an older card gets an authored lead-in. (W1) Code no longer swaps words inside authored sentences; one term per idea per language form is fixed in the script. The staged 30 stay held. Reverse if: the judged library reads worse than director20's model replies (then the model writes with the library as examples); or code-said cells make register fall in two or more topics (then the model may join parts under a word-for-word predicate); or question-only re-asks prove unclear (then the givens return after a second miss).",
    "source": "inbox/r8-main-8.json"
+  },
+  {
+   "id": "ms-r8-learning-read-through-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Read-through of the 156 simpler and why sentences two Sonnet agents wrote for the 30 staged scripts (all had passed check.mjs; Learning had read 3 topics). A fresh Opus agent that wrote none of them read all 156 against their problem and board with three questions (true? simpler than what it replaces? gives the answer away?): 73 failed (67 not simpler, mostly near-copies of the problem; 3 not true; 4 language; 0 giveaways). All 73 were rewritten; a second fresh agent read the rewrites: 9 failed (3 not simpler, 2 not true, 4 language), fixed and read by Learning only. Totals: 156 read, 82 fixed. Learning ae9d5be55.",
+   "source": "inbox/r8-main-9.json"
+  },
+  {
+   "id": "fd-gated-sentences-fail-a-reader",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "Sentences that pass the script gates fail a reader about half the time: 73 of 156 agent-written simplers and whys (47%) failed an independent read, 3 of them untrue. The gates check form (length, slots, numbers on the board), not whether a sentence is simpler or true. So 'nothing a child hears that nobody read' is a measured need, and a rewrite needs its own read (9 of 73 rewrites failed again).",
+   "source": "inbox/r8-main-9.json"
+  },
+  {
+   "id": "fd-give-up-predicate-too-narrow",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "Correction of fd-dry-matrix-blind-to-the-reply-layer. 'A give-up with help spent gets no key' survived director20 because its dry predicate was too narrow (it knew only 'aap batao' and 'pata nahi, aap', and required a re-said sentence), not because the fault lives only in the reply layer. With the predicate widened (any bare 'pata nahi' / 'nahi pata' / 'aap batao' / 'nahi aata'; help spent once the card had a miss or was said twice; the turn must say the key) the dry walk fails on the same three rows as the live run plus c5-t02 offtopic 24: the walk itself drops the key before any model text exists. The repair seen on c5-t02 steering 30 (guard mustsay,leak) is a separate reply-layer fault. Found by Brain with check-run.mjs over director20's rows. Lesson: a predicate at zero means nothing until it has been run over rows known to hold the fault.",
+   "source": "inbox/r8-main-10.json"
+  },
+  {
+   "id": "fd-g2-key-position-check-fails-by-chance",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "The G2 browser gate's leak.key_position check (server/forge/g2/qa.js) failed a correct game by chance. The kit re-shuffles options with crypto randomness on every mount, and one play failed if the key sat at the same option index on all items; on a topic with 4,4,4,4,2 options that happens about once in 256 plays with nothing wrong. In tests/forge-g2-browser it surfaced as 'the scripted builder ran out of responses' (once in integration 38's test:all); in production it would send the builder back to the model for a paid round. Reproduced by an agent: 1 failure in about 365 gate runs, no effect of CPU load (0 in 18 runs under 4 to 16 busy loops alone); forcing a constant position reproduces the exact error. Fixed: the gate plays twice already, and now fails only when the key is constant within each of the two plays (about 1 in 65,536 by chance), whether or not the two plays agree on the index, so a mechanic that pins the key to one slot per mount is still caught. Not proven: that the one failure seen in test:all was this check (the output did not record which check failed). Also noted, not seen firing: a 50 ms wall-clock Budget.slow_call in the kit runtime.",
+   "source": "inbox/r8-main-11.json"
+  },
+  {
+   "id": "rj-pushing-on-passes-alone",
+   "kind": "rejection",
+   "at": "2026-11-11",
+   "title": "Rejected as a habit: pushing an integration on 'the failing suite passes alone and the diff does not touch it'. Used three times on 2026-11-10 and 11 (integrations 32, 37, 38). Each time the cause, once found, was specific and not load: a wall-clock assertion, a test assumption broken by another stream's data, a 1-in-256 chance failure in a product gate. The pushes did no harm, but the reasoning given at the time ('load') was wrong in every case that was later explained. A failure that passes alone gets a root-cause task the same hour, and the push message says 'cause unknown' rather than naming one.",
+   "source": "inbox/r8-main-11.json"
+  },
+  {
+   "id": "fd-staged-answer-marks-ungrounded",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "361 of the 439 answer marks on the staged 30 scripts' boards were not grounded in their card's key: 273 compare boards carried an 'add' mark on a guessed column and 88 angle boards marked an angle that is not the keyed one. Found by Learning's reader pass on 2026-11-11 and removed (Learning 1856620d6); 78 remain (keyed name, keyed degree, keyed item, landing, digit). The marks had passed the board build, the layout lint and the W1/W2 checks, which test that a mark fits, not that it marks the right thing. The staged scripts were never served to a child. The four live pilots' marks were judged in director20 (21 of 21 right in c5-t02; no contradiction in any topic). Release 19's note said 'answer marks on 438 boards': most of those were in held lessons and wrong.",
+   "source": "inbox/r8-main-12.json"
+  },
+  {
+   "id": "ms-r8-staged-reader-batch1-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Reader pass over the staged scripts, batch 1 (Learning): five scripts (c4-ch03-t01, c5-ch02-t03, c5-ch05-t01, c6-ch02-t04, c7-ch05-t01), one fresh Opus reader each, reading every spoken field against its kit and boards; 740k tokens. 886 fields read, 87 faulted (9.8%): 35 were answer marks not grounded in the key; the other 52 (5.9%) were board 17, language 19, giveaway 10, untrue 3, remediation 1, worked example 1, class level 1. Keys: 0 wrong in about 125 cards (every reader solved every card). By field: why 43, prompt 14, point 9, worked 6, joint 6, remediation 3, simpler 2, bridge 2, hook 2. Six of the 10 giveaways are a later card reusing an earlier card's numbers or question.",
+   "source": "inbox/r8-main-13.json"
+  },
+  {
+   "id": "dc-r8-staged-scripts-read-in-full",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "Every staged script is read in full by an independent reader before a child hears it; no sampling. Order: two new check.mjs rules first (the same question twice in a script; a crossing or outside-angle card posed on angle@1), then batch 1's 52 faults fixed with a second read per rewrite, then the other 25 scripts in batches of 5 (about 3.7M tokens). A mark on a board may be derived only from the card's key. Reason: 5.9% of gated sentences faulted with 3 untrue and 10 giveaways in five scripts, which is about 18 untrue sentences and 60 giveaways across the batch, and the scattered ones are what no predicate finds. Reverse if: after the two predicates a batch faults under 2% with no untrue sentence; then the remaining scripts are sampled (one reader per two scripts).",
+   "source": "inbox/r8-main-13.json"
+  },
+  {
+   "id": "fd-bold-latin-fell-to-system-font-release-19",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "In production (releases 18 and 19) every bold Latin label on the lesson stage rendered in the system sans (Roboto on Android), and Hindi at weight 400 in the Atkinson stack rendered in the system font, not Mukta. Cause: Chromium picks a family's weight segment before it looks at unicode-range, and the Devanagari face was declared at 400-600 and 700-900 against a Latin 400-700 face, so Latin at 700 and above matched a segment with no Latin glyphs. Found by Studio with CDP's used-font report and canvas widths on the built stage and on taxila.dev in a Pixel 7 emulation; fixed by declaring the same weight ranges for both scripts in every family (Studio bcc7db378), held by tests/r8-font-match-browser.test.mjs (failed before, passes after). The design review of 2026-11-10 judged screens that carried this fault.",
+   "source": "inbox/r8-main-13.json"
+  },
+  {
+   "id": "ms-release-8581b9f",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Released 8581b9f with scripts/release.mjs: web taxila-web--s8581b9f-ikzm (was taxila-web--s59ae352-2c67), worker + canary/nightly jobs on taxila-worker:8581b9f (was 59ae352); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 8581b9f --rollback.",
+   "source": "inbox/release-8581b9f.json"
+  },
+  {
+   "id": "dc-r8-stambh-tally-mode",
+   "kind": "decision",
+   "title": "stambh/tally: c4-maths-ch14-t01 s1 gets a law game (keep a tally in fives while a scene passes, then the table; read a row of tallies); tally-four is the topic's third mapped mix-up",
+   "at": "2026-11-11",
+   "source": "inbox/r8-stambh-tally.json"
+  },
+  {
+   "id": "dc-r8-stambh-tally-every-stroke-legal",
+   "kind": "decision",
+   "title": "stambh/tally law: every stroke is legal (a fifth standing line, a line across over fewer or more than four); the law groups by five only at the check and rings the groups that are no bundle, with no words",
+   "at": "2026-11-11",
+   "source": "inbox/r8-stambh-tally.json"
+  },
+  {
+   "id": "dc-r8-stambh-tally-keep-mal",
+   "kind": "decision",
+   "title": "stambh/tally keep: tally-four's signature is no line across anywhere AND each total four per group of five; either half alone is not named tally-four",
+   "at": "2026-11-11",
+   "source": "inbox/r8-stambh-tally.json"
+  },
+  {
+   "id": "ms-r8-stambh-tally-cert",
+   "kind": "measurement",
+   "title": "stambh/tally cert: 16 of 16 2D samples (4 arts × 2 goals × 2 seeds, c4 band) pass at p360, p412 and l1366; merged additively into certs/play.json",
+   "at": "2026-11-11",
+   "source": "inbox/r8-stambh-tally.json"
+  },
+  {
+   "id": "dc-r8-kon-place-law",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/place replaces kon/set for c6-maths-ch02-t03: the child places a LOOSE protractor (drag the body; turn it by a handle on its body about its own centre, 1° snap in the law; 'Rakh do' locks it) and then measures ∠AOB (taps a number on the outer or inner band, ±1), draws ∠AOB = θ on OA (a dot on the rim, joined to O or to A), or (size) says which of two angles under a big and a small protractor is more. Placement passes when the centre is within tolPx = 8 board px of O and the base line is within ±3° of an arm (for measure, with the other arm crossing the half-disc). The reading (and draw's mark) is graded on the protractor AS PLACED (the scale whose 0 sits on the placed arm), and a placement that is off never solves: a misplaced protractor read correctly is vertex-off (the bottom edge on O: the centre PD = 20 board px off O along the normal), else a refusal. Mal-rules vertex-off, wrong-scale, join-wrong-end, tool-size, each with its own signature in the moment ('shown'): the arm the misplaced protractor measures drawn from its centre beside OB; her number's arm on the 0-on-the-arm scale; the angle made at A with its number; both readings side by side. Evidence: grade.facts placed (the FIRST decision's placement) / centre_px / base_deg / read, and the lesson's facts row leads with placed=ok|off (server/play/routes.js seamLead). Coverage: draw [s3, s2, s1], measure [s2, s1], size [s2] (s1 IS placing the protractor, so it is admitted here although the design note named s3, s2). Reverse if: a child pilot shows children cannot drag the protractor to within 8 px on a phone (placement misses with no belief named above ~30%), or judges call the scale tap a pick from a list.",
+   "source": "inbox/r8-kon-place-name.json"
+  },
+  {
+   "id": "dc-r8-kon-place-board",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/place draws on a fixed 320 × 340 board (y up) the view scales into its box; acts carry board coordinates, so the server replays a placement on any device. At a 360 px phone the play canvas is about 360 × 350 (harness play mode) and the protractor (radius 105) is 216 px wide; the turning handle sits ON the body (half way up, at the scale's 90), because a handle hanging below the base fell off the canvas at rest; a small protractor (size, radius 78) numbers its inner scale every 60° (every 30° the numbers touched: Q3.apart at p360 in the first cert run). Controls keep two rows in every state so the board never rescales between placing and reading. Reverse if: the stage contract's p360 box shrinks below 330 px of canvas height (the protractor then falls under 200 px), or a phone pilot shows the on-body handle is grabbed when the child means to move the protractor.",
+   "source": "inbox/r8-kon-place-name.json"
+  },
+  {
+   "id": "dc-r8-kon-name-law",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/name for c6-maths-ch02-t02 (s1): three lettered rays from a vertex, two ray ends joined, so the figure has five angles (three at the vertex, two triangle corners). say: the lit angle is named by tapping three letters ('Yahi naam'); find: a shown name's arc is tapped (one tap among five: chance weight). The law: right when the middle letter is the vertex and the outer two lie on its arms, either order (ABC = CBA); whatever is given, the law lights the angle the three letters actually denote at the middle letter, solid when it is one of the five, dashed (with its two rays) when not. Mal-rule vertex-name: say, the right three letters with the vertex first or last; find, the angle at the shown name's first or last letter (only names whose such reading is a drawn angle are served). Shortcut-free: a say level whose three letters read left to right or top to bottom put the vertex in the middle is never served, a find level whose answer is the widest arc is never served, and letters are drawn at random from ABCDEOPQRS (fade 1 keeps the vertex 'O', as the book first does). Evidence: said / picked name, vertex_ok, arms_ok in the grade facts; mal in the trail. Built as its own law file on kon (kon.name.ts, not inside kon.lines.ts) so every earlier kon goal keeps its pinned generator output. Reverse if: a pilot shows children pass say by tapping the lit arc's nearest letters in some fixed order the shortcut check does not cover, or the triangle corners confuse class 6 more than they test the name rule (then serve vertex-only figures and drop 'find' corners).",
+   "source": "inbox/r8-kon-place-name.json"
+  },
+  {
+   "id": "ms-r8-tally-judged-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Games' new mode stambh/tally (class 4 tally marks; mix-up tally-four) read by two independent Opus judges at high effort from the judge packet and its 16 screens (360x640 and 1366x768): both FAIL, agreeing on the core. Build faults: none (keys right, nothing cut off, digits, Hinglish, large targets, no answer given before the child acts). Blocking: the keep goal names the mix-up only when no cross is drawn and every total is short, so the child who draws correct bundles and counts 4 per bundle is logged as an ordinary miss with no consequence shown; the read level has exactly 5 bundles and no single lines, so the mix-up's answer (20) equals a skipped bundle's; the ring and cross on five standing lines can be read as 'five is too many'. Also: after one wrong check the answer can be read off the number line; her wrong answer is green and the truth amber. Reports in docs/design/round8/games-judging/stambh-tally/judges/. About 120k tokens per judge.",
+   "source": "inbox/r8-main-14.json"
+  },
+  {
+   "id": "ms-r8-staged-reader-batches-2-4-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Reader pass over the staged scripts, batches 2 to 4 (Learning; five scripts each, one fresh Opus reader per script). Batch 2: 850 fields read, 66 faulted (7.8%), about 5 untrue, about 23 giveaways; all fixed; of 104 rewrites, 24 failed their second read. Batch 3: 837 read, 87 faulted (10.4%), 9 untrue, 44 giveaways; 10 of them cards whose prompt holds the number that is the key, which she would say aloud because numerals are spoken as words. Batch 4: 889 read, 109 faulted (12.3%), about 13 untrue, about 64 giveaways, mostly word-keyed (a remediation acting out its own then-card; the same question frame asked 3 or 4 times). Wrong keys: 0 in all four batches (about 500 cards). With batch 1: 3,462 fields read in 20 scripts, 349 faulted (10.1%). The rate rises because readers keep finding new kinds of giveaway, not because later scripts are worse. Tokens so far about 4.6M.",
+   "source": "inbox/r8-main-14.json"
+  },
+  {
+   "id": "dc-r8-predicates-from-the-read",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "Every fault kind the reader pass finds twice becomes a check.mjs rule and a line in the authoring brief: (c) a card's key must not be heard in the spoken form of its own prompt (the number goes on the board only); a key must not be stated in an earlier spoken field of the skill or equal a kit ladder item; (d) a then-card's key, word or number, must not be restated by its own remediation's say; (e) a word or letter key must not be asked twice in a skill over the same question frame. The four live pilots are read field by field as well, before the last staged batches, because the new rules found 15 hits in them. A changed kit item is blind-solved again before merge. A rewrite is not done until a reader who did not write it passes it. Reverse if: the final report shows the predicates would have caught under half of the faults readers found; then the reading, not the rules, is the control and every new script is read in full for good.",
+   "source": "inbox/r8-main-14.json"
+  },
+  {
+   "id": "dc-r8-game-modes-need-two-judges",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "A new game mode from Games (a family mode with proven levels) reaches a child only after two independent judges pass it from a self-contained packet (screens at phone and laptop sizes, givens, key, what the mix-up child does and sees, every string). Proof suites and certs show a level is solvable and its mal-rule has a signature; they do not show that the evidence can tell the mix-up from a slip or that the feedback teaches the right thing, which is what both judges found in stambh/tally. A topic stays in no-game-target.json until its mode passes. Reverse if: three modes in a row pass both judges with no blocking fault; then one judge suffices.",
+   "source": "inbox/r8-main-14.json"
+  },
+  {
+   "id": "ms-r8-live-pilots-read-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "The four LIVE pilot scripts read field by field (Learning; one fresh Opus reader per script, same question list as the staged pass): 782 spoken fields read, 79 faulted (10.1%), 7 untrue, 48 giveaways, 0 wrong keys in about 123 cards. Per script: c4-ch05-t01 26 of 178, c5-ch02-t01 23 of 204, c5-ch02-t02 18 of 205, c6-ch06-t01 12 of 195. Worst: all 12 yes/no cards in c4 are keyed 'No', so a child who always says 'nahi' passes every misconception probe. Untrue examples: a rule that the bottom number equals the line's gaps (false on a 0 to 2 line); 'adding every side always works' (false for curves); 'no piece gets a fraction name' over a board showing 1/2. These scripts were in production (releases 16 to 21) and had been through four judged director runs.",
+   "source": "inbox/r8-main-15.json"
+  },
+  {
+   "id": "fd-director-runs-do-not-read-the-script",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "Four judged director runs (17 to 20), each with four Opus judges reading 16 lessons, did not find what one field-level read of the same four scripts found: 79 faulted fields, 7 untrue sentences, and a lesson whose yes/no keys are all 'No'. A director run judges the conversation (does she listen, does the screen match her words, is the answer graded right) on the paths a simulated child happens to walk; it does not judge whether each authored sentence is true, simpler, or gives a later answer away, and a rule-based child never exploits an all-'No' key. The scale gate therefore needs both: a script that has passed a full independent read, and a director run on it.",
+   "source": "inbox/r8-main-15.json"
+  },
+  {
+   "id": "ms-r8-regen-round3-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Approval lane, rounds 2, 2b and 3 (generated by main, judged by Studio with two Opus judges under rubric v2, a second judge only after a first pass). Round 2: 26 topics, 22 candidates ($0.043); 6 stored, 4 refused by checks before a judge, 12 by judges. Round 2b (three instrument topics, $0.004): 0 of 3 stored (unit faults in the spec). Round 3: 19 topics, 18 candidates ($0.029); 2 stored, 6 refused by checks (4 geometry-term or mixed-script strings, 2 values off their ticks), 10 by judges (6 wrong fact or missed mix-up, 2 register, 1 engine layout, 1 angle engine limit). Lane total $0.175 of the $0.25 cap; 13 of the 34 scripted topics have an approved game. About 92k tokens per judge run.",
+   "source": "inbox/r8-main-15.json"
+  },
+  {
+   "id": "dc-r8-generation-lane-closes",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "The generated-game lane stops running in rounds after round 3, at 13 approved topics. The yield fell from 6 of 22 to 2 of 18 and the remaining refusals are 'misses the mix-up' and engine limits, which a prompt cannot fix and which cannot be checked without an executable mal-rule (Studio's predicate agreed with judges on 6 of 25). Seven topics are on the no-game list with what an engine would need. From here a topic gets a game one at a time: when an engine gains the capability it needs, or when Games builds a family mode with a playable mal-rule, each judged by two judges. A lesson with no approved game stays on the board. Reverse if: Games' modes also fail two judges at this rate over three modes; then games are not the route to showing a mix-up and the board and the teacher carry it.",
+   "source": "inbox/r8-main-15.json"
+  },
+  {
+   "id": "ms-release-ed80148",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Released ed80148 with scripts/release.mjs: web taxila-web--sed80148-xrd9 (was taxila-web--s8581b9f-ikzm), worker + canary/nightly jobs on taxila-worker:ed80148 (was 8581b9f); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs ed80148 --rollback.",
+   "source": "inbox/release-ed80148.json"
+  },
+  {
+   "id": "dc-r8-design-direction-a",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "The design revamp's phase 2 starts on direction A, 'Paper and ink', as the default theme, with direction B kept as a complete second theme that swaps the same tokens by one root attribute. The owner had not chosen on the comparison page in a day and had said the call on the UI was the main loop's; A is the Design session's recommendation and the main loop's. The lesson screen on a phone is built first and shown to the owner on production behind a switch before the rest. Brief: docs/design/round8/PHASE2-BRIEF.md. The teacher's look stays the owner's choice. Reverse if: the owner, shown the lesson screen, prefers B (B's theme is polished, A stays as the alternate) or prefers the current look (only the non-taste fixes are kept).",
+   "source": "inbox/r8-main-16.json"
+  },
+  {
+   "id": "studio-approval-lane-closed-2026-11-11",
+   "kind": "decision",
+   "title": "The Studio generation approval lane closes after round 3 (main, 2026-11-11 13:22): 13 of the 34 scripted topics have a two-judge approved game, 7 have no game target, and 14 are refused. $0.175 spent on generation, 8.32M judge tokens. Yield fell from 6/22 in round 2 to 2/18 in round 3; what remains is missed mix-ups and engine limits that no prompt hint fixes. Table: docs/design/round7/studio/approval-lane-close-2026-11-11.md. Reverse, one topic at a time and never in rounds, when an engine gains the capability its no-game entry names or Games' families cover the topic with an executable mal-rule.",
+   "at": "2026-11-11",
+   "source": "inbox/studio-approval-lane-close.json"
+  },
+  {
+   "id": "studio-predicate-mixed-script",
+   "kind": "decision",
+   "title": "A word that mixes Latin and Devanagari letters (\"Tribhuज\") is refused in every engine: an approve-check predicate, and a refusal at generation before any paid check (mixed_script). No catalogue or stored spec (398 files) has one. Reverse only if a deliberate mixed-script word is ever wanted (none known).",
+   "at": "2026-11-11",
+   "source": "inbox/studio-approval-lane-close.json"
   }
  ],
  "edges": [
@@ -44817,6 +45023,136 @@
    "src": "dc-r8-selection-before-generation",
    "rel": "constrains",
    "dst": "dc-r8-director20"
+  },
+  {
+   "src": "fd-gated-sentences-fail-a-reader",
+   "rel": "measured_by",
+   "dst": "ms-r8-learning-read-through-2026-11-11"
+  },
+  {
+   "src": "dc-r8-director20",
+   "rel": "measured_by",
+   "dst": "ms-r8-learning-read-through-2026-11-11"
+  },
+  {
+   "src": "fd-give-up-predicate-too-narrow",
+   "rel": "supersedes",
+   "dst": "fd-dry-matrix-blind-to-the-reply-layer"
+  },
+  {
+   "src": "fd-give-up-predicate-too-narrow",
+   "rel": "measured_by",
+   "dst": "ms-director20-2026-11-11"
+  },
+  {
+   "src": "dc-r8-director20",
+   "rel": "caused_by",
+   "dst": "fd-give-up-predicate-too-narrow"
+  },
+  {
+   "src": "rj-pushing-on-passes-alone",
+   "rel": "caused_by",
+   "dst": "fd-g2-key-position-check-fails-by-chance"
+  },
+  {
+   "src": "rj-load-as-the-cause-of-a-test-failure",
+   "rel": "constrains",
+   "dst": "rj-pushing-on-passes-alone"
+  },
+  {
+   "src": "fd-staged-answer-marks-ungrounded",
+   "rel": "caused_by",
+   "dst": "fd-gated-sentences-fail-a-reader"
+  },
+  {
+   "src": "dc-r8-staged-scripts-read-in-full",
+   "rel": "measured_by",
+   "dst": "ms-r8-staged-reader-batch1-2026-11-11"
+  },
+  {
+   "src": "fd-staged-answer-marks-ungrounded",
+   "rel": "measured_by",
+   "dst": "ms-r8-staged-reader-batch1-2026-11-11"
+  },
+  {
+   "src": "dc-r8-staged-scripts-read-in-full",
+   "rel": "caused_by",
+   "dst": "fd-gated-sentences-fail-a-reader"
+  },
+  {
+   "src": "dc-r8-stambh-tally-every-stroke-legal",
+   "rel": "part_of",
+   "dst": "dc-r8-stambh-tally-mode"
+  },
+  {
+   "src": "dc-r8-stambh-tally-keep-mal",
+   "rel": "part_of",
+   "dst": "dc-r8-stambh-tally-mode"
+  },
+  {
+   "src": "ms-r8-stambh-tally-cert",
+   "rel": "part_of",
+   "dst": "dc-r8-stambh-tally-mode"
+  },
+  {
+   "src": "dc-r8-kon-place-law",
+   "rel": "inherits",
+   "dst": "dc-r4g1-kon-angles-law"
+  },
+  {
+   "src": "dc-r8-kon-place-board",
+   "rel": "part_of",
+   "dst": "dc-r8-kon-place-law"
+  },
+  {
+   "src": "dc-r8-kon-name-law",
+   "rel": "inherits",
+   "dst": "dc-r4g1-kon-angles-law"
+  },
+  {
+   "src": "dc-r8-game-modes-need-two-judges",
+   "rel": "measured_by",
+   "dst": "ms-r8-tally-judged-2026-11-11"
+  },
+  {
+   "src": "dc-r8-predicates-from-the-read",
+   "rel": "measured_by",
+   "dst": "ms-r8-staged-reader-batches-2-4-2026-11-11"
+  },
+  {
+   "src": "dc-r8-staged-scripts-read-in-full",
+   "rel": "measured_by",
+   "dst": "ms-r8-staged-reader-batches-2-4-2026-11-11"
+  },
+  {
+   "src": "fd-director-runs-do-not-read-the-script",
+   "rel": "measured_by",
+   "dst": "ms-r8-live-pilots-read-2026-11-11"
+  },
+  {
+   "src": "dc-r8-predicates-from-the-read",
+   "rel": "measured_by",
+   "dst": "ms-r8-live-pilots-read-2026-11-11"
+  },
+  {
+   "src": "dc-r8-generation-lane-closes",
+   "rel": "measured_by",
+   "dst": "ms-r8-regen-round3-2026-11-11"
+  },
+  {
+   "src": "dc-r8-generation-lane-closes",
+   "rel": "supersedes",
+   "dst": "dc-r8-stop-judging-old-catalogue"
+  },
+  {
+   "src": "dc-r8-design-direction-a",
+   "rel": "supersedes",
+   "dst": "dc-r8-design-revamp-two-directions"
+  },
+  {
+   "src": "dc-owner-direction-is-main-loops-2026-11-10",
+   "rel": "constrains",
+   "dst": "dc-r8-design-direction-a"
   }
  ]
 }

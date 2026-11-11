@@ -13,8 +13,8 @@
   {"hi": "ikai", "en": "unit"},
   {"hi": "badalna", "en": "to convert"},
   {"hi": "lagbhag", "en": "about (roughly)"}
- ],
- "joints": {"asidePark":[{"hi":"Yeh metre-kilometre wala kaam poora hote hi {aside} ki baat zaroor karenge.","en":"Once these metres and kilometres is done, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh metre-kilometre wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, once these metres and kilometres is over."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} ke liye tum kitni door jaate ho?","en":"How far do you go for {aside}?"},{"hi":"Ab {aside} ki baat, usmein sabse mushkil kya lagta hai?","en":"Now {aside}: what feels hardest about it?"},{"hi":"Chalo, {aside} ke baare mein batao, woh kab hota hai?","en":"Okay, tell me about {aside}: when does it happen?"}],"hindiSwitch":[{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in English."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in English."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in English."}],"askAgain":[{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."}]},
+ ], "greetSimpler": { "hi": "Aaj hum lambi dooriyan km, m aur cm mein naapna seekhenge.", "en": "Today we learn to measure long distances in km, m and cm." },
+ "joints": {"asidePark":[{"hi":"Yeh metre-kilometre wala kaam khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish these metres and kilometres, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh metre-kilometre wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, right after these metres and kilometres."},{"hi":"Haan, {aside} wali baat pakki, thodi der mein usi par lautenge.","en":"Yes, the {aside} bit is a promise, and we'll come back to it soon."}],"asideReturn":[{"hi":"{aside} ke liye tum kitni door jaate ho?","en":"How far do you go for {aside}?"},{"hi":"Ab {aside} ki baat, usmein sabse mazedaar kya hai?","en":"Now {aside}: what is the most fun part of it?"},{"hi":"Chalo, {aside} ke baare mein batao, tumhe woh kyun pasand hai?","en":"Okay, tell me about {aside}: why do you like it?"}],"hindiSwitch":[{"hi":"Haan, Hindi mein samjhaati hoon.","en":"Yes, I'll explain it in Hindi."},{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."}],"askAgain":[{"hi":"Phir se batao, aaram se.","en":"Tell me again, take your time."},{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."}],"backTo":[{"hi":"Achha, ab pehle wale sawaal ko phir se dekhte hain.","en":"Okay, let's look at the earlier question again."},{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."},{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."}]},
  "skills": [
   {
    "skillId": "c5-maths-ch05-t01-s1",
@@ -60,7 +60,7 @@
       "accept": ["das", "ten", "10 daud", "das daud"],
       "targets": "c5-maths-ch05-t01-m-km-100m",
       "wrongIfMis": "1",
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "100 m", "items": ["ek daud"]}, "right": {"title": "1 km", "items": ["1000 m"]}, "mark": {"side": "left", "add": "jawab: 10"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "100 m", "items": ["ek daud"]}, "right": {"title": "1 km", "items": ["1000 m"]}} }
      },
      "simpler": {
       "hi": "100 m ki daud ek ke baad ek jodte jao. Jab kul 1000 m ho jaayein, tab 1 km poora hota hai.",
@@ -132,7 +132,7 @@
     "problem": {
      "hi": "Park ke chaaron taraf ka raasta 250 m lamba hai. Rahul ko theek 1 km chalna hai. Rahul ko raaste ke kitne chakkar lagane honge?",
      "en": "The path around a park is 250 m long. Rahul wants to walk exactly 1 km. How many rounds of the path must Rahul walk?"
-    }, "simpler": { "hi": "Park ke raaste ka ek chakkar 250 m ka hai. Rahul ko theek 1 km chalna hai. Kitne chakkar lagane honge, yeh nikalna hai.", "en": "One round of the park path is 250 m. Rahul wants to walk exactly 1 km. We find how many rounds he must walk." },
+    }, "simpler": { "hi": "1 km mein 1000 m hote hain, aur ek chakkar 250 m ka hai. Gino, kitne 250 milkar 1000 bante hain.", "en": "1 km has 1000 m, and one round is 250 m. Count how many 250s make 1000." },
     "givens": [
      {
       "hi": "ek chakkar 250 m ka hai, aur Rahul ko 1 km chalna hai",
@@ -317,7 +317,7 @@
      }
     }
    ],
-   "bridgeToNext": { "hi": "Ab hum km, m aur cm ke beech badalna seekhenge, jab ek doori do unit mein likhi ho.", "en": "Next we learn to convert between km, m and cm, when one distance is written in two units.", "simpler": {"hi": "Ab ek doori ko ek unit se doosre unit mein badalna seekhenge, km, m aur cm ke beech.", "en": "Next we learn to change a distance from one unit to another, between km, m and cm."} }
+   "bridgeToNext": { "hi": "Ab hum km, m aur cm ke beech badalna seekhenge, jab ek doori do unit mein likhi ho.", "en": "Next we learn to convert between km, m and cm, when one distance is written in two units.", "simpler": { "hi": "Ab seekhenge ki 2 km 50 m jaisi doori ko sirf metre mein kaise likhte hain.", "en": "Next we learn to write a distance like 2 km 50 m in metres only." } }
   },
   {
    "skillId": "c5-maths-ch05-t01-s2",
@@ -373,13 +373,10 @@
     },
     {
      "id": "e2",
-     "convey": "mixed units: 2 km 50 m → km first, 2 km = 2000 m → add 50 → 2050 m; on the place-value chart the empty hundreds place holds 0, so never 250",
+     "convey": "mixed units: 2 km 50 m → km first, 2 km = 2000 m → add 50 → 2050 m; in 2050 the hundreds place holds 0, so never 250; on the line the whole km come first, then the metres left over",
      "mustSay": [{"hi": "pehle km ko metre banao", "en": "change the km to metres first"}, {"hi": "2050 m", "en": "2050 m"}],
      "board": {"template": "number-line-scale@1", "params": {"from": 0, "to": 3000, "step": 1000, "marks": [{"value": 2000, "label": "2 km"}]}},
-     "point": {
-      "hi": "2 km 50 m mein pehle km ko metre banao: 2 km = 2000 m. Phir 50 m jodo: 2000 + 50 = 2050 m. Dekho, sau ke khaane mein 0 baitha hai, isliye yeh 250 nahi hai. Rekha par km wala hissa pehle aata hai.",
-      "en": "In 2 km 50 m, first change the km to metres: 2 km = 2000 m. Then add 50 m: 2000 + 50 = 2050 m. See, a 0 sits in the hundreds place, so this is not 250. On the line the km part comes first."
-     },
+     "point": { "hi": "2 km 50 m mein pehle km ko metre banao: 2 km = 2000 m. Phir 50 m jodo: 2000 + 50 = 2050 m. 2050 mein sau ki jagah 0 aata hai, isliye yeh 250 nahi hai. Rekha par poore km pehle aate hain, phir bache metre.", "en": "In 2 km 50 m, first change the km to metres: 2 km = 2000 m. Then add 50 m: 2000 + 50 = 2050 m. In 2050 a 0 goes in the hundreds place, so it is not 250. On the line the whole km come first, then the metres left over." },
      "ask": {
       "prompt": {
        "hi": "Ek cycle race 3 km 40 m ki hai. Isi tarah socho: race kitne metre ki hai?",
@@ -393,10 +390,7 @@
       "board": {"template": "number-line-scale@1", "params": {"from": 0, "to": 4000, "step": 1000, "marks": [{"value": 3000, "label": "3 km"}]}},
       "answerBoard": {"template": "number-line-scale@1", "params": {"from": 0, "to": 4000, "step": 1000, "marks": [{"value": 3040, "label": "3040 m"}]}}
      },
-     "simpler": {
-      "hi": "Pehle 2 km ko 2000 m banao, phir 50 m jodo, toh 2050 m. Sau ke khaane mein 0 hai, isliye yeh 250 nahi.",
-      "en": "First make 2 km into 2000 m, then add 50 m to get 2050 m. The hundreds place holds 0, so it is not 250."
-     }
+     "simpler": { "hi": "Pehle 2 km ko 2000 m banao, phir 50 m jodo, toh 2050 m. 2050 mein sau ki jagah 0 aata hai, isliye yeh 250 nahi.", "en": "First make 2 km into 2000 m, then add 50 m to get 2050 m. In 2050 the hundreds place holds 0, so it is not 250." }
     },
     {
      "id": "e3",
@@ -431,7 +425,7 @@
     "problem": {
      "hi": "Ek pahadi raasta 4 km 85 m lamba hai. Is raaste ki lambai sirf metre mein likho.",
      "en": "A hill path is 4 km 85 m long. Write the length of this path in metres only."
-    }, "simpler": { "hi": "Ek pahadi raasta 4 km 85 m lamba hai. Uski lambai sirf metre mein likhni hai.", "en": "A hill path is 4 km 85 m long. We write its length in metres only." },
+    }, "simpler": { "hi": "1 km mein 1000 m hote hain, toh pehle 4 km ko metre mein badlo. Phir usme 85 m jodo.", "en": "1 km has 1000 m, so first change 4 km into metres. Then add 85 m." },
     "givens": [{"hi": "pahadi raasta 4 km 85 m lamba hai", "en": "the hill path is 4 km 85 m long"}],
     "find": {"hi": "raaste ki lambai metre mein", "en": "the length of the path in metres"},
     "steps": [
@@ -639,7 +633,7 @@
      }
     }
    ],
-   "bridgeToNext": { "hi": "Ab hum yeh chunenge ki kis cheez ko cm mein naapein, kise m mein aur kise km mein.", "en": "Next we choose which things to measure in cm, which in m and which in km.", "simpler": {"hi": "Agle hisse mein dekhenge ki kaunsi cheez cm mein, kaunsi m mein aur kaunsi km mein naapna theek hai.", "en": "Next we see which things are sensible to measure in cm, which in m and which in km."} }
+   "bridgeToNext": { "hi": "Ab hum yeh chunenge ki kis cheez ko cm mein naapein, kise m mein aur kise km mein.", "en": "Next we choose which things to measure in cm, which in m and which in km.", "simpler": { "hi": "Ab dekhenge kaunsi cheez kis unit mein naapein.", "en": "Now we see which unit to measure each thing in." } }
   },
   {
    "skillId": "c5-maths-ch05-t01-s3",
@@ -687,7 +681,7 @@
       },
       "accept": ["cm", "centimetre", "cm mein", "centimetre mein"],
       "board": {"template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}}},
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}, "mark": {"side": "right", "add": "jawab: cm"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}} }
      },
      "simpler": {
       "hi": "1 centimetre lagbhag nakhoon ki chaudai hai, toh chhoti cheezein usmein naapte hain. 1 metre ek lamba kadam hai, toh kamra aur ped metre mein naapte hain.",
@@ -720,7 +714,7 @@
       "targets": "c5-maths-ch05-t01-m-km-for-big",
       "wrongIfMis": "km",
       "board": {"template": "compare@1", "params": {"left": {"title": "1 m", "items": ["kadam"]}, "right": {"title": "1 km", "items": ["12 minute"]}}},
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 m", "items": ["kadam"]}, "right": {"title": "1 km", "items": ["12 minute"]}, "mark": {"side": "right", "add": "jawab: m"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 m", "items": ["kadam"]}, "right": {"title": "1 km", "items": ["12 minute"]}} }
      },
      "simpler": {
       "hi": "1 metre lagbhag ek lamba kadam hai, aur 1 km chalne mein lagbhag 12 minute lagte hain. Oonchi cheez ke liye socho: kuch kadam, ya bahut minute ki chaal.",
@@ -732,21 +726,15 @@
     "problem": {
      "hi": "Har cheez ke liye cm, m ya km chuno: school bag ki lambai, cricket pitch ki lambai, aur Jaipur se Delhi ki train yatra.",
      "en": "Choose cm, m or km for each: the length of a school bag, the length of a cricket pitch, and the train journey from Jaipur to Delhi."
-    }, "simpler": { "hi": "School bag, cricket pitch aur Jaipur se Delhi ki train yatra, in teeno ke liye cm, m ya km mein se ek unit chunni hai.", "en": "For a school bag, a cricket pitch and the train journey from Jaipur to Delhi, we choose one unit each from cm, m and km." },
+    }, "simpler": { "hi": "Teen cheezein hain: bag, cricket pitch aur Jaipur se Delhi ka safar. Pehle socho har ek kitna lamba hai, phir unit chuno.", "en": "There are three things: a bag, a cricket pitch and the trip from Jaipur to Delhi. First think how long each one is, then choose the unit." },
     "givens": [{"hi": "chunne ke liye unit: cm, m aur km", "en": "units to choose from: cm, m and km"}],
     "find": {"hi": "teeno cheezon ke liye sahi unit", "en": "a suitable unit for all three"},
     "steps": [
      {
       "do": {"hi": "School bag ki lambai ke liye unit chuno", "en": "Choose the unit for the length of the school bag"},
       "result": "cm",
-      "why": {
-       "hi": "bag 1 m se chhota hai, lagbhag 40 cm, aur scale par naap sakte hain",
-       "en": "the bag is shorter than 1 m, about 40 cm, and fits along a ruler"
-      },
-      "simpler": {
-       "hi": "School bag ek lambe kadam se chhota hai, aur scale par naap sakte hain. Isliye uske liye cm theek hai.",
-       "en": "A school bag is shorter than one big stride and fits along a ruler. So cm is right for it."
-      }
+      "why": { "hi": "bag 1 m se chhota hai, lagbhag 40 cm, ek lambe kadam se bhi kam", "en": "the bag is shorter than 1 m, about 40 cm, less than one big stride" },
+      "simpler": { "hi": "School bag ek lambe kadam se bhi chhota hai. Isliye uske liye cm theek hai.", "en": "A school bag is shorter than even one big stride. So cm is right for it." }
      },
      {
       "do": {
@@ -776,7 +764,7 @@
       "en": "Jaipur to Delhi is very far; walking there would take days. For distances between places we use the biggest unit."
      },
      "board": {"template": "compare@1", "params": {"left": {"title": "School bag", "items": ["cm"]}, "right": {"title": "Cricket pitch", "items": ["m"]}}},
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "School bag", "items": ["cm"]}, "right": {"title": "Cricket pitch", "items": ["m"]}, "mark": {"side": "right", "add": "jawab: km"}} },
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "School bag", "items": ["cm"]}, "right": {"title": "Cricket pitch", "items": ["m"]}} },
      "why": {
       "hi": "school bag cm mein aur cricket pitch m mein naapte hain, par Jaipur se Delhi ki doori km mein",
       "en": "a school bag is measured in cm and a cricket pitch in m, but Jaipur to Delhi in km"
@@ -812,7 +800,7 @@
       "hi": "12 lambe kadam lagbhag ek bade ped jitne oonche hote hain. 12 nakhoon bahut chhote hain, aur 12 km bahut bade.",
       "en": "12 big strides is about as tall as a big tree. 12 fingernails is far too small, and 12 km far too big."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}, "mark": {"side": "right", "add": "jawab: m"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}} }
     },
     {
      "id": "c2",
@@ -833,7 +821,7 @@
       "hi": "Playground ko lambe kadam se naap sakte hain. Nakhoon jitna unit bahut chhota hai, aur km bahut bada.",
       "en": "A playground can be measured in long strides. A fingernail-sized unit is too small, and km is too big."
      },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}, "mark": {"side": "right", "add": "jawab: m"}} }
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}} }
     }
    ],
    "ladder": [
@@ -871,7 +859,7 @@
        "hi": "9 lambe kadam ek bijli ke khambe jitne oonche lagte hain. 9 nakhoon bahut chhote hain, aur 9 km bahut bade.",
        "en": "9 big strides is about as tall as an electric pole. 9 fingernails is far too small, and 9 km far too big."
       },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}, "mark": {"side": "right", "add": "jawab: m"}} }
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}} }
      }
     }
    ],

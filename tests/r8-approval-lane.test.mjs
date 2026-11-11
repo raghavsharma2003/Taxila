@@ -192,9 +192,50 @@ test("approval lane, predicate (main 2026-11-10, c5-t02 withdrawn): every value 
   assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(0, 0, [["1/3"]])] }).ok, true, "an unmarked line holds any value");
   assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(0, 4, [["1/3"]])] }).ok, false, "a scaffold that is drawn must hold it too");
   assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(6, 6, [["1/2", "3/6"], ["1 1/3"]])] }).ok, true, "a mixed number, and both labels of a pod");
-  // (the store: the two withdrawn pilots are gone, c6 stays)
-  assert.ok(!fs.existsSync(path.join(ROOT, "data/studio-approved/c5-maths-ch02-t02")) && !fs.existsSync(path.join(ROOT, "data/studio-approved/c4-maths-ch05-t01")));
+  // angle-cannon@1 (main 2026-11-11, c5-ch03-t02: a "tens" dial asked 45° and 135°): a call/copy wave on a tick scaffold asks
+  // only angles on its 10° ticks; classify asks a kind (any bearing); no scaffold holds any angle
+  const an = (mode, scaffold, items) => ({ title: "Kone dekho", sub: "s", mode, items, range: 180, scaffold, speed: 0.9 });
+  const offT = valuesOnTicks("angle-cannon@1", { waves: [an("call", "tens", [45, 90, 135])] });
+  assert.equal(offT.ok, false); assert.match(offT.why, /wave 1 "Kone dekho": 45° is not on a tick of a tens scaffold/); assert.equal(offT.misses.length, 2);
+  assert.equal(valuesOnTicks("angle-cannon@1", { waves: [an("copy", "protractor", [25])] }).ok, false);
+  assert.equal(valuesOnTicks("angle-cannon@1", { waves: [an("call", "tens", [40, 90, 130])] }).ok, true);
+  assert.equal(valuesOnTicks("angle-cannon@1", { waves: [an("call", "none", [45, 135])] }).ok, true, "no scaffold: any angle");
+  assert.equal(valuesOnTicks("angle-cannon@1", { waves: [an("classify", "protractor", [45, 90, 135])] }).ok, true, "classify asks a kind");
+  const { ENGINE_SPECS } = await import("../shared/studio-spec.ts");
+  assert.equal(valuesOnTicks("angle-cannon@1", ENGINE_SPECS["angle-cannon@1"].defaultSpec).ok, true, "the reviewed default holds its own rule");
+  // instrument@1 (regen r3, c4-ch06-t01 / c7-ch03-t01: 8 cm and 0.7 m on a 2 km rule marked every 20 m): a pour, cut or thermo
+  // target is a whole number of small marks; weigh and clock are graded by their own rules
+  const ir = (mode, scaleMax, minor, targets) => ({ mode, title: "Maap", sub: "", items: targets.map((target) => ({ target, show: "cm" })), scaleMax, minor, tol: 0, speed: 1 });
+  const offI = valuesOnTicks("instrument@1", { rounds: [ir("cut", 2000000, 20000, [700, 360, 40])] });
+  assert.equal(offI.ok, false); assert.match(offI.why, /round 1 "Maap": 700 mm is not on a mark of a scale marked every 20000/); assert.equal(offI.misses.length, 3);
+  assert.equal(valuesOnTicks("instrument@1", { rounds: [ir("cut", 3000, 30, [60, 80])] }).ok, false, "8 cm on 3 cm marks");
+  assert.equal(valuesOnTicks("instrument@1", { rounds: [ir("cut", 1000, 10, [60, 80, 350])] }).ok, true);
+  assert.equal(valuesOnTicks("instrument@1", { rounds: [ir("thermo", 420, 2, [376])] }).ok, true);
+  assert.equal(valuesOnTicks("instrument@1", { rounds: [ir("weigh", 5000, 5, [1350])] }).ok, true, "weigh: not a scale mark");
+  const { ENGINE_SPECS_EXT } = await import("../shared/studio-spec-ext/index.ts");
+  assert.equal(valuesOnTicks("instrument@1", ENGINE_SPECS_EXT["instrument@1"].defaultSpec).ok, true, "the reviewed default holds its own rule");
+  // (the store: the two withdrawn pilot pieces are gone — a topic may hold a later, separately judged piece (c5-t02 round 2) — c6 stays)
+  const held = (t) => (fs.existsSync(path.join(ROOT, "data/studio-approved", t)) ? fs.readdirSync(path.join(ROOT, "data/studio-approved", t)).filter((f) => f.endsWith(".json")) : []);
+  assert.deepEqual(held("c5-maths-ch02-t02"), ["gen-c5-maths-ch02-t02-a1bc53b3.json"], "only regeneration round 2's piece");
+  assert.deepEqual(held("c4-maths-ch05-t01"), ["gen-c4-maths-ch05-t01-af82c0ad.json"], "only regeneration round 3's piece (two judges)");
   assert.ok(fs.existsSync(path.join(ROOT, "data/studio-approved/c6-maths-ch06-t01")));
+});
+
+test("no game target (main 2026-11-11 08:49): a topic whose engine cannot show its mix-up gets no generation target and no game in the tray — the lesson stays on the board", async () => {
+  const { deriveTarget, noGameTarget, approvedFor } = await import("../server/studio/approved.js");
+  const list = JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-approved/no-game-target.json"), "utf8")).topics;
+  assert.deepEqual(list.map((t) => t.topicId).sort(), ["c4-maths-ch06-t01", "c4-maths-ch14-t01", "c5-maths-ch03-t02", "c6-maths-ch02-t01", "c6-maths-ch02-t02", "c6-maths-ch02-t03", "c6-maths-ch02-t04"]);
+  for (const t of list) {
+    assert.ok(t.why && t.needs, `${t.topicId} says why and what an engine would need`);
+    assert.ok(noGameTarget(t.topicId));
+    assert.equal(deriveTarget(t.topicId), null, `${t.topicId}: no regeneration target`);
+    assert.deepEqual(approvedFor({ topicId: t.topicId, misconceptionId: t.misconceptionId }), [], `${t.topicId}: nothing approved to serve`);
+    const cat = JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-catalogue/topics", `${t.topicId}.json`), "utf8")).game;
+    if (!cat) continue;
+    const r = certifyForTray({ kind: "stagecraft", stagecraft: { rung: "library", archetype: cat.archetype, spec: cat.spec } }, { vp: "l1366", topicId: t.topicId, factsKind: "game" });
+    assert.equal(r.ok, false, `${t.topicId}: the catalogue game is refused (unjudged), so the board stays`);
+  }
+  assert.ok(deriveTarget("c5-maths-ch13-t02"), "a topic not on the list keeps its target");
 });
 
 test("never served (main 2026-11-11): a piece the predicates or judges refused is refused by the tray gate even with STUDIO_CATALOGUE_JUDGED off; the store, not the catalogue, decides what a child sees", async () => {
@@ -221,13 +262,127 @@ test("never served (main 2026-11-11): a piece the predicates or judges refused i
 test("predicate (2026-11-11, c5-t01 retry 5 split on 'Run complete'): a Hinglish spec that leaves an engine's English string of 2+ words untranslated fails before any judge", async () => {
   const { untranslatedStrings } = await import("../server/studio/approved.js");
   const spec = (strings, lang = "hinglish") => ({ lang, strings });
-  assert.deepEqual(untranslatedStrings("catch-on-line@1", spec({ runDone: "Run complete", wave: "Wave" })).keys, ["runDone"], "a shared single word passes");
-  assert.equal(untranslatedStrings("catch-on-line@1", spec({ runDone: "Daud poori" })).ok, true);
+  const { ENGINE_SPECS } = await import("../shared/studio-spec.ts");
+  const all = Object.fromEntries(Object.entries(ENGINE_SPECS["catch-on-line@1"].defaultSpec.strings).map(([k, v]) => [k, `${v} (hinglish)`]));
+  assert.deepEqual(untranslatedStrings("catch-on-line@1", spec({ ...all, runDone: "Run complete", wave: "Wave" })).keys, ["runDone"], "a shared single word passes");
+  assert.equal(untranslatedStrings("catch-on-line@1", spec({ ...all, runDone: "Daud poori" })).ok, true);
   assert.equal(untranslatedStrings("catch-on-line@1", spec({ runDone: "Run complete" }, "en")).ok, true, "an English piece keeps its English");
+  // (2026-11-11: a string LEFT OUT is drawn as the engine's English default; a blank one too)
+  const { runDone, ...rest } = all;
+  assert.deepEqual(untranslatedStrings("catch-on-line@1", spec(rest)).keys, ["runDone"], "a missing multi-word string is refused");
+  assert.deepEqual(untranslatedStrings("catch-on-line@1", spec({ ...all, runDone: " " })).keys, ["runDone"], "a blank one too");
+});
+
+test("the spec prompt shows an example in another language with its strings' keys only, values blank (c5-t02: 'Run complete' copied 3 times)", async () => {
+  const { specPrompt } = await import("../server/stagecraft/builders.js");
+  const user = specPrompt({ archetype: "catch-on-line@1", need: "practice", premise: {} }, { topicId: "c5-maths-ch02-t02", lang: "hinglish", band: "B3" })[1].content;
+  assert.ok(!user.includes("Run complete"), "the English example's strings are not in a Hinglish prompt");
+  assert.match(user, /"runDone":""/);
+  const en = specPrompt({ archetype: "catch-on-line@1", need: "practice", premise: {} }, { topicId: "c5-maths-ch02-t02", lang: "en", band: "B3" })[1].content;
+  assert.ok(en.includes("Run complete"), "an English lesson keeps the example's strings");
+});
+
+test("an aimed spec prompt carries the mix-up's signs and its diagnostic case (main 2026-11-11: 3 of 4 judged pieces missed the mix-up)", async () => {
+  const { kitSlice, specPrompt } = await import("../server/stagecraft/builders.js");
+  const m = kitSlice("c4-maths-ch03-t01", "c4-maths-ch03-t01-m-any-odd-digit").misconceptions[0];
+  assert.deepEqual(m.case, { question: "Is 36 odd or even?", mixupAnswer: "Odd, because it has a 3", answer: "Even" });
+  assert.ok(m.signs.length >= 1);
+  const user = specPrompt({ archetype: "sieve-storm@1", need: "contrast_misconception", premise: { misconceptionId: m.id } }, { topicId: "c4-maths-ch03-t01", lang: "hinglish", band: "B3" })[1].content;
+  assert.match(user, /belief's answer and the true answer differ/);
+  assert.ok(user.lastIndexOf("Return only the JSON") > user.indexOf("belief's answer"), "the request stays last");
+});
+
+test("keysVerified option (a), a BOUND match (main 2026-11-11): a key citing a kit item is verified only when its key and its givens equal the item's", async () => {
+  const { boundToKit } = await import("../server/stagecraft/builders.js");
+  const { kitTopicAny } = await import("../server/stagecraft/catalogue.js");
+  const kit = kitTopicAny("c4-maths-ch03-t02");
+  assert.equal(boundToKit({ src: "c4-maths-ch03-t02-i01", key: "14", prompt: "2, 5, 8, 11, ?" }, kit), true, "same givens, same key");
+  assert.equal(boundToKit({ src: "c4-maths-ch03-t02-i01", key: "14", prompt: "3, 6, 9, 12, ?" }, kit), false, "the key equals the kit's, the givens differ: refused");
+  assert.equal(boundToKit({ src: "c4-maths-ch03-t02-i01", key: "15", prompt: "2, 5, 8, 11, ?" }, kit), false, "the givens match, the key does not");
+  assert.equal(boundToKit({ key: "14", prompt: "2, 5, 8, 11, ?" }, kit), false, "no cited item, no bound match");
+  assert.equal(boundToKit({ src: "c4-maths-ch03-t02-i99", key: "14", prompt: "2, 5, 8, 11, ?" }, kit), false, "an item the kit does not have");
+});
+
+test("rule-machine's reviewed outcomes list c4-maths-ch03-t02: a generated rule-machine spec there is on topic (main 2026-11-11)", async () => {
+  const { createBuilders } = await import("../server/stagecraft/builders.js");
+  const { ENGINE_SPECS_EXT } = await import("../shared/studio-spec-ext/index.ts");
+  assert.ok(ENGINE_SPECS_EXT["rule-machine@1"].outcomes.topics.includes("c4-maths-ch03-t02"));
+  const spec = structuredClone(ENGINE_SPECS_EXT["rule-machine@1"].defaultSpec);
+  const b = createBuilders({ chat: async () => ({ json: structuredClone(spec), usage: {} }), q8: async () => ({ ok: true }) });
+  const on = await b.generatedSpec({ archetype: "rule-machine@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, { topicId: "c4-maths-ch03-t02", lang: "hinglish", band: "B2" });
+  assert.equal(on.ok, true); assert.equal(on.checks.onTopic, true);
+  const off = await b.generatedSpec({ archetype: "rule-machine@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, { topicId: "c4-maths-ch02-t01", lang: "hinglish", band: "B2" });
+  assert.equal(off.checks?.onTopic ?? false, false, "a topic in no reviewed outcome and no catalogue spec stays off topic");
+});
+
+test("predicate (judged 2026-11-11, c4-ch05-t01 'KAafi PAAS'): a case break inside a word is a typo, caught before a judge", async () => {
+  const { oddCaseWords } = await import("../server/studio/approved.js");
+  assert.deepEqual(oddCaseWords("KAafi PAAS"), ["KAafi"]);
+  assert.deepEqual(oddCaseWords("BILKUL SAHI · Rang bharo · Daura 1 · TODAI · ₹12.50"), [], "all-caps feedback and sentence case pass");
+  assert.deepEqual(oddCaseWords("sAhi"), ["sAhi"]);
 });
 
 test("the approval lane's scripts parse (2026-11-11: approve-check shipped with a duplicate declaration no test loaded)", async () => {
   const { execFileSync } = await import("node:child_process");
   for (const f of fs.readdirSync(path.join(ROOT, "scripts")).filter((x) => /^approve-.*\.mjs$/.test(x)))
     execFileSync(process.execPath, ["--check", path.join(ROOT, "scripts", f)], { stdio: "pipe" });
+});
+
+test("instrument@1 computes its keys (regen round 2: its three topics were refused unverified_key while citing no kit item); sort-storm's model-made bins stay refused", async () => {
+  const { keysVerified } = await import("../server/stagecraft/builders.js");
+  const { validateAny } = await import("../shared/studio-spec-ext/index.ts");
+  const raw = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-approved/candidates-regen-r2", f), "utf8")).raw;
+  const ins = validateAny("instrument@1", structuredClone(raw("c4-maths-ch06-t01.refused-1.json")));
+  assert.equal(keysVerified("instrument@1", ins.spec, "c4-maths-ch06-t01"), true, "the key is the quantity the engine shows");
+  const ss = validateAny("sort-storm@1", structuredClone(raw("c6-maths-ch02-t01.refused-1.json")));
+  assert.equal(keysVerified("sort-storm@1", ss.spec, "c6-maths-ch02-t01"), false, "bins the model made up, citing unrelated kit items, are not verified");
+});
+
+test("geo-forge geometry terms (main 2026-11-11): each shape/measure string holds the textbook term; a round's words use no geometry term the topic's script does not say", async () => {
+  const { geometryTerms } = await import("../server/studio/approved.js");
+  const raw = (dir, f) => JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-approved", dir, f), "utf8"));
+  const c = raw("candidates-regen-r2", "c7-maths-ch05-t02.candidate.json");
+  const r = geometryTerms("c7-maths-ch05-t02", c.spec, "geo-forge@1");
+  assert.equal(r.ok, false);
+  assert.match(r.why, /isosceles "Samdvipahu" \(textbook: samdvibahu/, "a misspelt term is refused");
+  assert.match(r.why, /parallel "Samaan disha"/, "the rule given as the parallel label is not the term");
+  const c6 = raw("candidates-regen-r2", "c6-maths-ch08-t01.candidate.json");
+  assert.match(geometryTerms("c6-maths-ch08-t01", c6.spec, "geo-forge@1").why, /perimeter "Paridhi" \(textbook: parimaap/, "a circle's word for perimeter is refused");
+  const good = { ...c.spec, strings: { ...c.spec.strings, isosceles: "Samdvibahu tribhuj", parallel: "Dot se samaantar rekha", trapezium: "Samlamb chaturbhuj" } };
+  assert.equal(geometryTerms("c7-maths-ch05-t02", good, "geo-forge@1").ok, true);
+  assert.equal(geometryTerms("c5-maths-ch13-t01", { strings: { sq: "varg" } }, "sieve-storm@1").applies, false, "other engines are not checked");
+  // (main 2026-11-11: the lesson's own words pass — a plain description made only of words the topic's script uses)
+  const lesson = JSON.stringify(JSON.parse(fs.readFileSync(path.join(ROOT, "data/lesson-scripts-staged/c7-maths-ch05-t02.json"), "utf8"))).toLowerCase();
+  assert.ok(/\bdisha\b/.test(lesson) && /\brekha/.test(lesson));
+  const plain = { ...good, strings: { ...good.strings, parallel: "Ek hi disha" } };
+  const said = ["ek", "hi", "disha"].every((w) => new RegExp(`\\b${w}\\b`).test(lesson));
+  assert.equal(geometryTerms("c7-maths-ch05-t02", plain, "geo-forge@1").ok, said, "plain words pass exactly when the script says them");
+  assert.equal(geometryTerms("c7-maths-ch05-t02", { ...good, strings: { ...good.strings, parallel: "Zebra khaana" } }, "geo-forge@1").ok, false, "words the script never says are refused");
+});
+
+test("a number word the model writes anyway is refused at generation, by name, before any paid check (main 2026-11-11, round 3: 'Teen nakshe banao' scored 6)", async () => {
+  const { createBuilders } = await import("../server/stagecraft/builders.js");
+  const { attemptOutcome } = await import("../server/studio/approved.js");
+  const { ENGINE_SPECS_EXT } = await import("../shared/studio-spec-ext/index.ts");
+  const spec = structuredClone(ENGINE_SPECS_EXT["rule-machine@1"].defaultSpec); spec.rounds[0].sub = "Teen nakshe banao";
+  let q8Called = false;
+  const b = createBuilders({ chat: async () => ({ json: structuredClone(spec), usage: {} }), q8: async () => { q8Called = true; return { ok: true }; } });
+  const r = await b.generatedSpec({ archetype: "rule-machine@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, { topicId: "c4-maths-ch03-t02", lang: "hinglish", band: "B2" });
+  assert.equal(r.ok, false); assert.equal(r.why, "number_words"); assert.equal(q8Called, false, "no content check is spent on it");
+  assert.match(attemptOutcome(r).why, /number_words: "Teen nakshe banao" — write digits/);
+});
+
+test("a word that mixes scripts is refused, in every engine (main 2026-11-11, round 3: 'Tribhuज', 'Samलamb')", async () => {
+  const { mixedScriptWords, mixedScriptInSpec, attemptOutcome } = await import("../server/studio/approved.js");
+  assert.deepEqual(mixedScriptWords("Tribhuज aur Samलamb chaturbhuj"), ["Tribhuज", "Samलamb"]);
+  assert.deepEqual(mixedScriptWords("tribhuj त्रिभुज, पानी-water"), [], "each word in one script passes, in a mixed line too");
+  assert.deepEqual(mixedScriptInSpec({ rounds: [{ title: "Bhinn", sub: "हिस्सेdaar" }], strings: { a: "ok" } }), ["हिस्सेdaar"]);
+  const { createBuilders } = await import("../server/stagecraft/builders.js");
+  const { ENGINE_SPECS_EXT } = await import("../shared/studio-spec-ext/index.ts");
+  const spec = structuredClone(ENGINE_SPECS_EXT["rule-machine@1"].defaultSpec); spec.rounds[0].sub = "Niyam dhoondhoज";
+  let q8Called = false;
+  const b = createBuilders({ chat: async () => ({ json: structuredClone(spec), usage: {} }), q8: async () => { q8Called = true; return { ok: true }; } });
+  const r = await b.generatedSpec({ archetype: "rule-machine@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, { topicId: "c4-maths-ch03-t02", lang: "hinglish", band: "B2" });
+  assert.equal(r.ok, false); assert.equal(r.why, "mixed_script"); assert.equal(q8Called, false);
+  assert.match(attemptOutcome(r).why, /mixed_script: "dhoondhoज" — one script per word/);
 });
