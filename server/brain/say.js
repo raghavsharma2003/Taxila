@@ -2469,7 +2469,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const simpler = state.lastMove?.simpler ? norm(state.lastMove.simpler) : null;
       const ps = sentences(point).map(norm).filter(Boolean);
       const p1 = ps.find((x) => !saidBefore(x)) ?? ps[0] ?? point;
-      body = simpler ? sentences(simpler).map(norm).filter(Boolean).map(dot) : [dot(p1)];
+      // (main's order 1, authoredWhole; O3 on director21: with no simpler left the point is said whole — one sentence of it is a cut part)
+      void p1;
+      body = simpler ? sentences(simpler).map(norm).filter(Boolean).map(dot) : ps.map(dot);
       guard.smaller = simpler ? "authored" : "point";
     } else if (point && kindNow === "explain") {
       // v6.1 R7: the point is said in its authored words (her paraphrase of it is model-written teaching); one short framing

@@ -587,7 +587,7 @@ export const ORDER_LAWS = {
 Object.assign(PREDICATES, ORDER_LAWS);
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced"].includes(k))]);
+export const PENDING = new Set(["twinsData", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {

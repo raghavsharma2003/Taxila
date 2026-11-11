@@ -980,7 +980,9 @@ function walkLadder(s, kit) {
 function walkRemedy(s, input, item) {
   const { kit } = input;
   // round 8 K3: the mix-up the classifier named on this answer when the skill remediates it, else the card's authored target
-  const targets = verdict(input.cls) === "wrong" ? knowsRemedy(s, item, input.cls, skillScriptOf(kit, item.skillId)) : null;
+  // (O3, main on director21 c5-t02 stuck 16: "4/1", read incorrect, got a remediation — a remediation follows only the answer that shows
+  // its misconception; a plain miss gets the wrong-answer cell, the card's simpler)
+  const targets = verdict(input.cls) === "wrong" && input.cls?.outcome === "misconception" ? knowsRemedy(s, item, input.cls, skillScriptOf(kit, item.skillId)) : null;
   if (!targets || (s.remedied ?? []).includes(targets)) return null;
   const r = skillScriptOf(kit, item.skillId)?.remediation?.find((x) => x.targets === targets);
   if (!r) return null;
@@ -1771,12 +1773,15 @@ function helpMove(s, input, item, help) {
     const b = [...(sk?.explain ?? [])].reverse().find((x) => x.point);
     const lang = s.ctx.lang ?? "hinglish";
     friendOf = s.ctx.firstName ?? "";
-    const line = r?.say ? saidIn(r.say, lang) : b?.point ? saidIn(b.point, lang) : null;
-    const board = r?.say ? r.board ?? null : b?.board ?? null;
+    // (O3, main on director21: a remediation is never help — "another" on a check gets the check's own simpler, else the last point)
+    void r;
+    const own = (item.scriptCheck?.simpler ?? item.scriptThen?.simpler) ? saidIn(item.scriptCheck?.simpler ?? item.scriptThen?.simpler, lang) : null;
+    const line = own ?? (b?.point ? saidIn(b.point, lang) : null);
+    const board = own ? null : b?.board ?? null;
     if (line) {
       return plan("reteach", SH.ANOTHER_ASKED, { item, probe: probeFor(item), skillId: item.skillId, request: help,
         rendered: [/[.!?।]$/.test(line.trim()) ? line.trim() : `${line.trim()}.`],
-        scriptBeat: { scriptId: scriptIdOf(kit), skillId: item.skillId, beatId: r?.say ? `rem:${targets}` : `explain:${b.id}`, kind: r?.say ? "remediation" : "explain", ...(board ? { board } : {}) } });
+        scriptBeat: own ? { ...(cardBeatRef(s, kit, item) ?? {}), scriptId: scriptIdOf(kit), skillId: item.skillId } : { scriptId: scriptIdOf(kit), skillId: item.skillId, beatId: `explain:${b.id}`, kind: "explain", ...(board ? { board } : {}) } });
     }
   }
   if (!item) {
@@ -3316,7 +3321,8 @@ function step0(prev, input) {
     // (a replay of a recorded run walks what that run walked: tests/fixtures/replay.mjs runScriptOf marks it recordedRun)
     const k2 = !scriptFor(input.kit)?.script?.recordedRun;
     const remDone = k2 && !!rem && ((s.remedied ?? []).includes(rem.targets) || (s.remSaid ?? []).includes(normLine(saidIn(rem.say ?? "", lang) ?? "")));
-    const wrongNow = !k2 || ["incorrect", "misconception", "partial"].includes(input?.cls?.outcome);
+    // (O3: a remediation's words are help only after its misconception's answer — never after a plain miss or a give-up)
+    const wrongNow = !k2 || input?.cls?.outcome === "misconception";
     const remRungs = remDone || !wrongNow ? [] : [{ text: rem?.say, beat: remOf(rem) }, { text: rem?.simpler, beat: remOf(rem) }];
     const pointRung = k2 && !wrongNow && item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked"
       ? { text: sk?.explain?.find((b) => b.id === item.scriptAsk.beatId)?.point ?? null, beat: beatOf(item.scriptAsk.beatId) } : { text: null };
@@ -3351,7 +3357,10 @@ function step0(prev, input) {
       const rb = rem?.board ? { scriptId: scriptIdOf(input.kit), skillId: live.skillId, beatId: `rem:${rem.targets}`, kind: "remediation", board: rem.board } : null;
       const bb = beat?.board ? { scriptId: scriptIdOf(input.kit), skillId: live.skillId, beatId: `explain:${beat.id}`, kind: "explain", board: beat.board } : null;
       const remDone = !scriptFor(input.kit)?.script?.recordedRun && !!rem && ((s.remedied ?? []).includes(rem.targets) || (s.remSaid ?? []).includes(normLine(saidIn(rem.say ?? "", lang) ?? "")));
-      const next = [{ t: meta?.simpler }, { t: beat?.simpler, b: bb }, ...(remDone ? [] : [{ t: rem?.say, b: rb }, { t: rem?.simpler, b: rb }])].map((x) => ({ ...x, t: x.t ? saidIn(x.t, lang) : null }))
+      // (O3, main on director21 c4 stuck 8, c5-t02 steady 8: a give-up or a clarify on a card got its remediation's say over the card's
+      // board — the remediation is not the next rung unless the answer showed its misconception)
+      const misNow = input?.cls?.outcome === "misconception";
+      const next = [{ t: meta?.simpler }, { t: beat?.simpler, b: bb }, ...(remDone || !misNow ? [] : [{ t: rem?.say, b: rb }, { t: rem?.simpler, b: rb }])].map((x) => ({ ...x, t: x.t ? saidIn(x.t, lang) : null }))
         .filter((x) => x.t && String(x.t).trim()).find((x) => !help.said.includes(normLine(x.t)));
       delete move.simplerBeat;
       if (next) { move.simpler = String(next.t).trim(); if (next.b) move.simplerBeat = next.b; } else delete move.simpler;
@@ -3784,7 +3793,9 @@ export function liveBeatSimpler(s, kit, { prevMove = null } = {}) {
       const c = sk.checks?.find((x) => x.id === live.scriptCheck.checkId);
       const t = said(c?.simpler) ?? said(live.scriptCheck.simpler);
       const crem = sk.remediation?.find((x) => x.targets === live.scriptCheck.targets);
-      if (t) return { text: t, alts: [said(crem?.simpler)].filter((x) => x && x !== t), beat: { ...base, beatId: live.scriptCheck.checkId, kind: "check", ...(ref.board ? { board: ref.board } : {}) } };
+      // (O3: the check's remediation is not another wording of the check)
+      void crem;
+      if (t) return { text: t, alts: [], beat: { ...base, beatId: live.scriptCheck.checkId, kind: "check", ...(ref.board ? { board: ref.board } : {}) } };
       return null;
     }
     // (v6.7 P5, main on director15 c5-t02 steering 8, c6 steering 8: the then-card's own simpler was drawn on the remediation's
