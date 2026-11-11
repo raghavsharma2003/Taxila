@@ -463,7 +463,7 @@ export function unitFigureErrors(s) {
  * whole by the "?"-drop). A card's prompt and the worked problem (its question) may ask. */
 export function rhetoricalQuestionErrors(s) {
   const e = [];
-  const ok = (path) => /\.(ask\.prompt|prompt|problem)$/.test(path) || /checks\[\d+\]\.prompt$/.test(path) || /then\.prompt$/.test(path) || /yourStep\.prompt$/.test(path);
+  const ok = (path) => /\.(ask\.prompt|prompt|problem|ask)$/.test(path) || /checks\[\d+\]\.prompt$/.test(path) || /then\.prompt$/.test(path) || /yourStep\.prompt$/.test(path);
   const walk = (x, path) => {
     if (Array.isArray(x)) return x.forEach((v, i) => walk(v, `${path}[${i}]`));
     if (!x || typeof x !== "object" || x.template) return;
@@ -592,7 +592,8 @@ export function whyVerbErrors(s) {
  *   the card).
  * - no form holds an English word whose Hindi twin the same script's spoken Hindi uses (data/lesson-twins.json,
  *   shared with Brain's dry-matrix predicate). */
-export const JOINT_KINDS = ["asidePark", "asideReturn", "hindiSwitch", "askAgain"];
+// (director20 S1: backTo, coming back to an earlier card: one sentence, no slot, no question)
+export const JOINT_KINDS = ["asidePark", "asideReturn", "hindiSwitch", "askAgain", "backTo"];
 export const JOINT_MAX_WORDS = 16;
 export const TWINS = JSON.parse(readFileSync(new URL("../../data/lesson-twins.json", import.meta.url), "utf8")).twins;
 const wordRe = (w) => new RegExp(`(?<![\\p{L}])${w.replace(/\s+/g, "\\s+")}(?![\\p{L}])`, "iu");
@@ -606,6 +607,17 @@ export function twinsUsedBy(s) {
   return TWINS.filter((p) => p.hi.some((h) => wordRe(h).test(t)));
 }
 const sentencesOf = (t) => String(t ?? "").trim().split(/(?<=[.!?？।])\s+(?=\S)/).filter((x) => /[\p{L}\p{N}{]/u.test(x));
+/** director20 R2: when the child says "samajh nahi aaya" or "pata nahi" to her opening, one plain sentence of what today is
+ * about (`greetSimpler` { hi, en }), then the hook: one sentence, no question, at most 20 words. */
+export function greetErrors(s) {
+  const g = s.greetSimpler; if (!g) return ["greetSimpler: one plain sentence { hi, en } of what today is about (director20 R2)"];
+  const e = [];
+  for (const lang of ["hi", "en"]) { const t = String(g[lang] ?? "").trim(); const at = `greetSimpler${lang === "en" ? " (en)" : ""}`;
+    if (!t) { e.push(`${at}: empty`); continue; }
+    if (/[?？]/.test(t) || t.split(/(?<=[.!?])\s+(?=\S)/).length !== 1) e.push(`${at}: one plain sentence, no question`);
+    if (t.split(/\s+/).length > 20) e.push(`${at}: at most 20 words`); }
+  return e;
+}
 export function jointErrors(s) {
   const e = [], j = s.joints;
   if (!j || typeof j !== "object") return ["joints: a { asidePark, asideReturn, hindiSwitch, askAgain } block, three forms each (D13)"];
@@ -643,10 +655,12 @@ export function jointErrors(s) {
           if (/[?？]/.test(t)) e.push(`${at}: asks nothing`);
           if (sents.length !== 1) e.push(`${at}: one plain sentence`);
           if (lang === "hi" && !/\bhindi\b/i.test(t)) e.push(`${at}: says plainly she will say it in Hindi`);
-          if (lang === "en" && !/\benglish\b/i.test(t)) e.push(`${at}: says plainly she will say it in English`);
+          // (director20: .en is the English of the same line, "I'll say it in Hindi"; it never promises English)
+          if (lang === "en" && (!/\bhindi\b/i.test(t) || /\benglish\b/i.test(t))) e.push(`${at}: the en is the same line in English: "I'll say it in Hindi"`);
           if (/\b(baant|milaa|chal|naap|gin)\w*/i.test(t) && lang === "hi") e.push(`${at}: an odd verb for switching language ("${t.match(/\b(baant|milaa|chal|naap|gin)\w*/i)[0]}"): say she will say it in Hindi`);
           if (/\bab se\b|\baage se\b|\bhamesha\b|from now on|\bfrom now\b|from here on/i.test(t)) e.push(`${at}: a switch promises nothing beyond this turn (no "ab se" / "from now on")`);
         }
+        if (kind === "backTo" && (sents.length !== 1 || /[?？]/.test(t))) e.push(`${at}: one sentence that brings her back to the earlier card, asking nothing`);
         if (kind === "askAgain") {
           if (/[?？]/.test(t)) e.push(`${at}: never a question (a yes/no card would take it as the card)`);
           if (/sunai|suna nahi|sun nahi|saaf nahi|chhoot|hear|heard|missed|clearly|awaaz/i.test(t)) e.push(`${at}: never claims she did not hear (the child may have spoken clearly)`);
@@ -714,6 +728,9 @@ export function v22Errors(s) {
     const cards = [...k.explain.filter((b) => b.ask).map((b) => [`${b.id}.ask`, b.ask]), ...k.checks.map((c, i) => [`checks[${i}]`, c]),
       ...k.remediation.map((r, i) => [`remediation[${i}].then`, r.then ?? {}])];
     for (const [where, c] of cards) {
+      // (director20 S1: a card whose question is not its last sentence carries `ask`, the question alone, re-asked after a hint)
+      if (c.ask !== undefined) for (const lang of ["hi", "en"]) { const q = String(c.ask?.[lang] ?? "").trim();
+        if (!/[?？]$/.test(q) || (q.match(/[?？]/g) ?? []).length !== 1 || q.split(/\s+/).length > 20) e.push(at(`${where}.ask${lang === "en" ? " (en)" : ""}: the card's question alone, one sentence ending in "?", at most 20 words`)); }
       if (!String(c.why?.hi ?? "").trim() || !String(c.why?.en ?? "").trim()) { e.push(at(`${where}: an authored why { hi, en } for its key`)); continue; }
       if (/^\s*kyunki\b/i.test(c.why.hi)) e.push(at(`${where}.why: starts with "kyunki" (the runtime adds it)`));
       if (/^\s*toh\b/i.test(c.why.hi)) e.push(at(`${where}.why: a clause with no leading "Toh"`));
@@ -859,7 +876,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s));
   return e;
 }
 
@@ -999,4 +1016,33 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     }
   }
   process.exit(bad ? 1 : 0);
+}
+
+/** director20 R1 (dc-r8-director20): data/lesson-aside-replies.json, her authored lines around an aside, per kind. Every kind
+ * has 3 returns (one question on {aside}), 3 replies (one {word} slot, no question), 2 plain (no slot, no question); the sad
+ * set has 3 replies (no slot, no question). No other slot; at most 16 words; no named topic (TOPICS) in her own words. */
+export function asideReplyErrors(d) {
+  const e = [], KINDS = ["sport", "show", "food", "people", "game", "other"];
+  const words = (t) => String(t).replace(/\{[a-z]+\}/g, "X").split(/\s+/).filter(Boolean).length;
+  const form = (at, f, { slot, question }) => {
+    for (const lang of ["hi", "en"]) { const t = String(f?.[lang] ?? "").trim(), w = `${at}${lang === "en" ? " (en)" : ""}`;
+      if (!t) { e.push(`${w}: empty`); continue; }
+      const slots = t.match(/\{[^}]*\}/g) ?? [];
+      if (slot ? slots.length !== 1 || slots[0] !== slot : slots.length) e.push(`${w}: ${slot ? `exactly one ${slot}` : "no slot"}`);
+      if (question ? !/[?？]$/.test(t) || (t.match(/[?？]/g) ?? []).length !== 1 : /[?？]/.test(t)) e.push(`${w}: ${question ? "one question, nothing after it" : "asks nothing"}`);
+      if (words(t) > 16) e.push(`${w}: ${words(t)} words > 16`);
+    }
+  };
+  for (const k of KINDS) { const v = d?.kinds?.[k];
+    if (!v) { e.push(`kinds.${k}: missing`); continue; }
+    if ((v.returns ?? []).length !== 3) e.push(`kinds.${k}.returns: 3 forms`);
+    if ((v.replies ?? []).length !== 3) e.push(`kinds.${k}.replies: 3 forms`);
+    if ((v.plain ?? []).length !== 2) e.push(`kinds.${k}.plain: 2 forms`);
+    (v.returns ?? []).forEach((f, i) => form(`kinds.${k}.returns[${i}]`, f, { slot: "{aside}", question: true }));
+    (v.replies ?? []).forEach((f, i) => form(`kinds.${k}.replies[${i}]`, f, { slot: "{word}", question: false }));
+    (v.plain ?? []).forEach((f, i) => form(`kinds.${k}.plain[${i}]`, f, { slot: null, question: false }));
+  }
+  if ((d?.sad?.replies ?? []).length !== 3) e.push("sad.replies: 3 forms");
+  (d?.sad?.replies ?? []).forEach((f, i) => form(`sad.replies[${i}]`, f, { slot: null, question: false }));
+  return e;
 }
