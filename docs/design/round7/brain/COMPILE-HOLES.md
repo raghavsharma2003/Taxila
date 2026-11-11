@@ -6,29 +6,29 @@
 
 **Missing fields** are counted once per field of the script, however many rules name it. **Rule holes** count every (part, column, help) cell that names a missing field.
 
-**Scripts:** 34 (4 live, 30 staged). Missing fields: 1112. Rule holes: 2967. Doubles: 0.
+**Scripts:** 34 (4 live, 30 staged). Missing fields: 1081. Rule holes: 2862. Doubles: 0.
 
 ## Missing fields, all scripts
 
 | Part kind, field | Missing | What it is |
 |---|---|---|
-| bridge simpler | 68 | a simpler of the bridge into the next skill, for a clarify on it |
-| card remediation | 93 | a remediation for the mix-up an explain card targets (the misconception column's default) |
+| bridge simpler | 60 | a simpler of the bridge into the next skill, for a clarify on it |
+| card remediation | 91 | a remediation for the mix-up an explain card targets (the misconception column's default) |
 | point alts[0] | 287 | a second other wording of a point, for a clarify after its simpler was heard (point/clarify/heard, checkin/clarify/heard) |
 | remediation alts[0] | 174 | a second other wording of a remediation, for a second clarify on it |
 | worked_step alts[0] | 338 | a second other wording of a worked step (or the problem), for a second clarify on it |
-| worked_step simpler | 102 | the worked problem's own simpler (its steps have one), for a clarify on the problem |
+| worked_step simpler | 90 | the worked problem's own simpler (its steps have one), for a clarify on the problem |
 | your_step remediation | 35 | a remediation for the mix-up the worked example's own card targets |
-| your_step why | 15 | the why of the worked example's own card (said with a right answer) |
+| your_step why | 6 | the why of the worked example's own card (said with a right answer) |
 
 ## Per script
 
 | Script | Where | Parts | Cells | Missing | bridge simpler | card remediation | point alts[0] | remediation alts[0] | worked_step alts[0] | worked_step simpler | your_step remediation | your_step why | Doubles |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| c4-maths-ch05-t01 | live | 61 | 1881 | 35 | 2 | 3 | 10 | 5 | 8 | 3 | 1 | 3 | 0 |
-| c5-maths-ch02-t01 | live | 68 | 2106 | 39 | 2 | 4 | 9 | 9 | 9 | 3 | 0 | 3 | 0 |
-| c5-maths-ch02-t02 | live | 70 | 2160 | 38 | 2 | 3 | 11 | 7 | 9 | 3 | 0 | 3 | 0 |
-| c6-maths-ch06-t01 | live | 64 | 1962 | 33 | 2 | 1 | 9 | 6 | 12 | 3 | 0 | 0 | 0 |
+| c4-maths-ch05-t01 | live | 61 | 1881 | 27 | 0 | 3 | 10 | 5 | 8 | 0 | 1 | 0 | 0 |
+| c5-maths-ch02-t01 | live | 68 | 2106 | 30 | 0 | 3 | 9 | 9 | 9 | 0 | 0 | 0 | 0 |
+| c5-maths-ch02-t02 | live | 70 | 2160 | 29 | 0 | 2 | 11 | 7 | 9 | 0 | 0 | 0 | 0 |
+| c6-maths-ch06-t01 | live | 64 | 1962 | 28 | 0 | 1 | 9 | 6 | 12 | 0 | 0 | 0 | 0 |
 | c4-maths-ch01-t02 | staged | 56 | 1728 | 33 | 2 | 5 | 9 | 3 | 9 | 3 | 2 | 0 | 0 |
 | c4-maths-ch03-t01 | staged | 56 | 1728 | 34 | 2 | 4 | 8 | 5 | 9 | 3 | 3 | 0 | 0 |
 | c4-maths-ch03-t02 | staged | 53 | 1638 | 29 | 2 | 2 | 7 | 5 | 9 | 3 | 1 | 0 | 0 |
@@ -72,23 +72,23 @@
 | point/clarify/spent | 287 |
 | remediation/clarify/heard | 174 |
 | remediation/clarify/spent | 174 |
-| worked_step/clarify/fresh | 102 |
-| card/misconception/fresh | 93 |
-| card/misconception/heard | 93 |
-| card/misconception/spent | 93 |
-| bridge/clarify/fresh | 68 |
-| bridge/clarify/heard | 68 |
-| bridge/clarify/spent | 68 |
+| card/misconception/fresh | 91 |
+| card/misconception/heard | 91 |
+| card/misconception/spent | 91 |
+| worked_step/clarify/fresh | 90 |
+| bridge/clarify/fresh | 60 |
+| bridge/clarify/heard | 60 |
+| bridge/clarify/spent | 60 |
 | your_step/misconception/fresh | 35 |
 | your_step/misconception/heard | 35 |
 | your_step/misconception/spent | 35 |
-| your_step/clarify/heard | 15 |
-| your_step/clarify/spent | 15 |
-| your_step/give_up/spent | 15 |
-| your_step/right/fresh | 15 |
-| your_step/right/heard | 15 |
-| your_step/right/spent | 15 |
-| your_step/wrong/spent | 15 |
+| your_step/clarify/heard | 6 |
+| your_step/clarify/spent | 6 |
+| your_step/give_up/spent | 6 |
+| your_step/right/fresh | 6 |
+| your_step/right/heard | 6 |
+| your_step/right/spent | 6 |
+| your_step/wrong/spent | 6 |
 
 ## Doubles
 
