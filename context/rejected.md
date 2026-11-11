@@ -3028,3 +3028,7 @@ Tried (round 8, first build): naming keep's tally-four only when no line across 
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-key-and-why-again-after-a-key` (2026-11-11): Tried (L1 and L2 of dc-r8-director20, Brain c7f18ae5): after a key, a give-up or a clarify gets the key and its why again, at most twice. What broke in director21: the same why was said three turns running with only its opener rotated (c4 stuck 12 to 16 and 36 to 40, c5-t01 stuck 34 to 38, c5-t02 stuck 28 to 32, c6 stuck 24 to 28 and steering 16 to 20); all 8 second clarifies merely repeated; judges scored it as not listening. Replaced by authored second wordings and a rule that no authored sentence is said in two consecutive turns.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r8-tally-one-bundle-slips-only` (2026-11-11): Tried (round 8, rounds 1-3): telling tally-four apart only from one-bundle slips (a bundle skipped or twice, one line off). Broke (evening judging, both judges): 2 bundles + 2 lines = 12; the mix-up gives 10, and so does counting the bundles right and dropping the loose lines, a reading the list did not have. Replaced by dc-r8-tally-slip-law (every slip and reading listed from the law, each asserted on every level).

@@ -28561,6 +28561,70 @@
    "at": "2026-11-11",
    "title": "Tried (L1 and L2 of dc-r8-director20, Brain c7f18ae5): after a key, a give-up or a clarify gets the key and its why again, at most twice. What broke in director21: the same why was said three turns running with only its opener rotated (c4 stuck 12 to 16 and 36 to 40, c5-t01 stuck 34 to 38, c5-t02 stuck 28 to 32, c6 stuck 24 to 28 and steering 16 to 20); all 8 second clarifies merely repeated; judges scored it as not listening. Replaced by authored second wordings and a rule that no authored sentence is said in two consecutive turns.",
    "source": "inbox/r8-main-24.json"
+  },
+  {
+   "id": "dc-r8-kon-scale-lettering",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/place scale numbers keep 4 px apart (box = advance width x figure height): outer numbers where they were, each inner number hugging its long tick, and where two would still come closer at this size and turn the fewest numbers that part every pair are left out (inner before outer, nearest the top; 0, 90, 180 always print; both size protractors print the same set). At 360 x 640 fade 1 flat that is only the inner 100. Letters A, B, O keep the same 4 px from numbers. One layout function for the view and the headless layout check (every generated level, every turn, 360 and 1366). Reverse if: children misread the scale where a number is left out (then a larger board or a magnified scale, never a smaller font than the floor).",
+   "source": "inbox/r8-kon-place-scale.json"
+  },
+  {
+   "id": "dc-r8-kon-fixed-control-band",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/place measure and draw keep a three-row control band from the first screen on a phone, so the protractor keeps one size in every state (177 px at 360 x 640, 474 px at 1366; was 213 px before the lock and 181 / 178 px after). Supersedes the cost noted in dc-r8-kon-measure-typed-reading. Reverse if: children cannot read the 5 degree ticks at 177 px (then a magnified scale).",
+   "source": "inbox/r8-kon-place-scale.json"
+  },
+  {
+   "id": "dc-r8-tally-slip-law",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "stambh/tally serves a level only when the mix-up's numbers are no single slip's and no other reading's: the packet lists six slips (a loose line missed / twice, a bundle skipped / twice, a bundle's line across missed / counted again) and seven readings (loose lines dropped / doubled, the line across as a sixth, the lines across alone, each group as one, each bundle as ten, the loose lines alone) with when each equals the mix-up. The law: no row with as many loose lines as bundles (6, 12, 18, 24); read 3, 4 or 6-9 bundles with a loose line; keep bundles in two rows or more, one of them two bundles, so the mix-up is at least three slips away and no choice of one slip or reading per row reaches it (read: two). sign=five only with no line across and >= 3 groups of five. Cost: fade 1 read is 16-19 (was 11-19) and keep 15-18 things (was 10-14). Reverse if: a pilot shows children slip in a way the list does not have, or the larger fade-1 scene tires class 4.",
+   "source": "inbox/r8-tally-name-r3.json"
+  },
+  {
+   "id": "dc-r8-tally-playout-fades",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "stambh/tally: the count over each group plays, holds about a second and fades (gone about 3.5 s after the check; a tipped fifth line stands again); nothing stays over the tally while a try remains, since the 5s left over the bundles let her add up the key (law 2; evening ruling 2, replacing round-2 ruling 3's 'a 5 stays'). read's arrow shows after the first miss only; from the second miss her dot on the line and nothing else. Reverse if: children in a pilot miss the count (then a replay control, never a count that stays).",
+   "source": "inbox/r8-tally-name-r3.json"
+  },
+  {
+   "id": "dc-r8-chance-pick-silent-to-lesson",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "Central (every family, law 3): a mix-up from one pick among a few reaches the lesson exactly as an ordinary miss does until it repeats on another surface: no mid-level seam (was kind misconception with pick=1), no entry in the trail's mal, no chanceMis on the lesson's evidence rows (nameOnRepeat strips it from an unnamed row), and the trace records the moment as law_refused. The session still remembers it from the grade (afterLevelBody). On the repeat the row is named and the trail carries the mal-rule. kon/name find also stops reporting sign, vertex_ok and arms_ok (one tap tells nothing about the vertex). Reverse if: the lesson needs to know a one-pick miss happened (then a plain miss count, never the mix-up).",
+   "source": "inbox/r8-tally-name-r3.json"
+  },
+  {
+   "id": "dc-r8-kon-name-read-like-text",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/name (both goals): a level is refused when reading the asked angle's letters off the screen like text puts the vertex in the middle: letters within one letter height (22 board px) are one row and within one letter width (16) one column, rows top-to-bottom or bottom-to-top and each row either way, columns likewise; by the points and by where their letters are drawn (labelPoints, which the view now draws from). find tries 1000 figures (was 160) because the rule refuses most; it still serves about 6 per request, keyed at the vertex about a third of the time and at a triangle corner otherwise. Reverse if: the picker's CPU p95 passes its 50 ms bar.",
+   "source": "inbox/r8-tally-name-r3.json"
+  },
+  {
+   "id": "ms-r8-kon-name-picker-cpu-r3",
+   "kind": "measurement",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "kon/name picker CPU after the read-like-text refusal (tests/_cpu-ms.mjs cpuNow, pickLevels x 60 requests, say + find, fades 1-3, seeds 700-729, this container): p50 15.3 ms, p95 19.0 ms, max 19.3 ms; bar 50 ms (round 2: p95 16-20 ms). With 1600 find tries it was p95 36 ms, so 1000 was kept.",
+   "source": "inbox/r8-tally-name-r3.json"
+  },
+  {
+   "id": "rj-r8-tally-one-bundle-slips-only",
+   "kind": "rejection",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "Tried (round 8, rounds 1-3): telling tally-four apart only from one-bundle slips (a bundle skipped or twice, one line off). Broke (evening judging, both judges): 2 bundles + 2 lines = 12; the mix-up gives 10, and so does counting the bundles right and dropping the loose lines, a reading the list did not have. Replaced by dc-r8-tally-slip-law (every slip and reading listed from the law, each asserted on every level).",
+   "source": "inbox/r8-tally-name-r3.json"
   }
  ],
  "edges": [

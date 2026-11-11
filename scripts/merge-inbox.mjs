@@ -17,6 +17,9 @@ const files = readdirSync(INBOX).filter((f) => f.endsWith(".json") && (process.a
 let failed = 0, merged = 0;
 for (const f of files) {
   const box = JSON.parse(readFileSync(join(INBOX, f), "utf8"));
+  // "rejected" is the commonest slip for the kind "rejection" (two inbox files on 2026-11-11 lost their rejection
+  // nodes to it: one refused whole, one merged without the node). Read it as the kind it means.
+  for (const node of box.nodes || []) if (node?.kind === "rejected") node.kind = "rejection";
   // Refuse the whole file before touching the graph.
   const known = new Set(ids);
   for (const node of box.nodes || []) if (node?.id && g.kinds[node.kind] && node.title) known.add(node.id);
