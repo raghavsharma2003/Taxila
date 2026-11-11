@@ -192,9 +192,37 @@ test("approval lane, predicate (main 2026-11-10, c5-t02 withdrawn): every value 
   assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(0, 0, [["1/3"]])] }).ok, true, "an unmarked line holds any value");
   assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(0, 4, [["1/3"]])] }).ok, false, "a scaffold that is drawn must hold it too");
   assert.equal(valuesOnTicks("catch-on-line@1", { waves: [wave(6, 6, [["1/2", "3/6"], ["1 1/3"]])] }).ok, true, "a mixed number, and both labels of a pod");
+  // angle-cannon@1 (main 2026-11-11, c5-ch03-t02: a "tens" dial asked 45° and 135°): a call/copy wave on a tick scaffold asks
+  // only angles on its 10° ticks; classify asks a kind (any bearing); no scaffold holds any angle
+  const an = (mode, scaffold, items) => ({ title: "Kone dekho", sub: "s", mode, items, range: 180, scaffold, speed: 0.9 });
+  const offT = valuesOnTicks("angle-cannon@1", { waves: [an("call", "tens", [45, 90, 135])] });
+  assert.equal(offT.ok, false); assert.match(offT.why, /wave 1 "Kone dekho": 45° is not on a tick of a tens scaffold/); assert.equal(offT.misses.length, 2);
+  assert.equal(valuesOnTicks("angle-cannon@1", { waves: [an("copy", "protractor", [25])] }).ok, false);
+  assert.equal(valuesOnTicks("angle-cannon@1", { waves: [an("call", "tens", [40, 90, 130])] }).ok, true);
+  assert.equal(valuesOnTicks("angle-cannon@1", { waves: [an("call", "none", [45, 135])] }).ok, true, "no scaffold: any angle");
+  assert.equal(valuesOnTicks("angle-cannon@1", { waves: [an("classify", "protractor", [45, 90, 135])] }).ok, true, "classify asks a kind");
+  const { ENGINE_SPECS } = await import("../shared/studio-spec.ts");
+  assert.equal(valuesOnTicks("angle-cannon@1", ENGINE_SPECS["angle-cannon@1"].defaultSpec).ok, true, "the reviewed default holds its own rule");
   // (the store: the two withdrawn pilots are gone, c6 stays)
   assert.ok(!fs.existsSync(path.join(ROOT, "data/studio-approved/c5-maths-ch02-t02")) && !fs.existsSync(path.join(ROOT, "data/studio-approved/c4-maths-ch05-t01")));
   assert.ok(fs.existsSync(path.join(ROOT, "data/studio-approved/c6-maths-ch06-t01")));
+});
+
+test("no game target (main 2026-11-11 08:49): a topic whose engine cannot show its mix-up gets no generation target and no game in the tray — the lesson stays on the board", async () => {
+  const { deriveTarget, noGameTarget, approvedFor } = await import("../server/studio/approved.js");
+  const list = JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-approved/no-game-target.json"), "utf8")).topics;
+  assert.deepEqual(list.map((t) => t.topicId).sort(), ["c4-maths-ch14-t01", "c6-maths-ch02-t02", "c6-maths-ch02-t03"]);
+  for (const t of list) {
+    assert.ok(t.why && t.needs, `${t.topicId} says why and what an engine would need`);
+    assert.ok(noGameTarget(t.topicId));
+    assert.equal(deriveTarget(t.topicId), null, `${t.topicId}: no regeneration target`);
+    assert.deepEqual(approvedFor({ topicId: t.topicId, misconceptionId: t.misconceptionId }), [], `${t.topicId}: nothing approved to serve`);
+    const cat = JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-catalogue/topics", `${t.topicId}.json`), "utf8")).game;
+    if (!cat) continue;
+    const r = certifyForTray({ kind: "stagecraft", stagecraft: { rung: "library", archetype: cat.archetype, spec: cat.spec } }, { vp: "l1366", topicId: t.topicId, factsKind: "game" });
+    assert.equal(r.ok, false, `${t.topicId}: the catalogue game is refused (unjudged), so the board stays`);
+  }
+  assert.ok(deriveTarget("c5-maths-ch13-t02"), "a topic not on the list keeps its target");
 });
 
 test("never served (main 2026-11-11): a piece the predicates or judges refused is refused by the tray gate even with STUDIO_CATALOGUE_JUDGED off; the store, not the catalogue, decides what a child sees", async () => {
