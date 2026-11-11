@@ -119,3 +119,11 @@
 .kx-lesson[data-tx] .ks-caption { padding: 0 var(--tx-s-2); }
 .kx-lesson[data-tx] .ks-caption .dk-caption { justify-content: flex-start; text-align: left; }
 
+
+/* step f: a piece that has not drawn yet (Studio marks its box .st-empty): her line fills the board card instead of an
+   empty box; no "making" words, no spinner (owner: never show build state) */
+.kx-lesson[data-tx] .ks-standby { display: none; }
+.kx-lesson[data-tx] .ks-slot:has(.st-empty) .ks-piece { visibility: hidden; }
+.kx-lesson[data-tx] .ks-slot:has(.st-empty) .ks-standby { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: var(--tx-s-6); text-align: center; }
+.kx-lesson[data-tx] .ks-standby-line { margin: 0; font: var(--tx-display-weight) var(--tx-t-5)/1.35 var(--tx-font-display); color: var(--tx-ink); text-wrap: balance; }
+.kx-lesson[data-tx] .ks-standby-line:lang(hi) { font-family: var(--tx-font-deva); }

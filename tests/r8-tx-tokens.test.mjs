@@ -22,7 +22,7 @@ function block(selectorStart) {
   return out;
 }
 const A = block(':root, [data-tx="a"]');
-const B = { ...A, ...block('[data-tx="b"] {') };
+const B = { ...A, ...block('[data-tx="b"], :root:has') };
 const BLIGHT = { ...B, ...block('[data-tx="b"] [data-tx-surface="light"]') };
 
 const hex = (v) => { assert.match(v, /^#[0-9A-Fa-f]{6}$/, `not a 6-digit hex: ${v}`); return v; };
@@ -65,7 +65,7 @@ test("the set's shape: 8 type sizes, one spacing scale, 3 radii, under 30 colour
   const colours = (t) => new Set(Object.values(t).flatMap((v) => v.match(/#[0-9A-Fa-f]{6}\b|rgb\([^)]*\)/g) ?? []).map((c) => c.toUpperCase().replace(/\s*\/.*\)/, ")")));
   assert.ok(colours(A).size < 30, `A has ${colours(A).size} colours`);
   assert.ok(new Set([...colours(B), ...colours(BLIGHT)]).size < 30 + 1, `B (with its light surface) has too many colours`);
-  for (const k of Object.keys(block('[data-tx="b"] {'))) assert.ok(k in A, `B defines --${k}, which A does not`);
+  for (const k of Object.keys(block('[data-tx="b"], :root:has'))) assert.ok(k in A, `B defines --${k}, which A does not`);
 });
 
 test("the round 8 component CSS reads tokens only and carries none of the terminal chrome", () => {
