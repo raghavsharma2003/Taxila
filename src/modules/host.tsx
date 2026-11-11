@@ -95,6 +95,11 @@ const NOTICE_STYLE: CSSProperties = {
 // words (her speech, the ask, the activity's prompts) stay in the lesson language.
 const say = (key: "slow" | "dead", _lang?: string) => W1B[`module.${key}`];
 
+/** Is this mount command the one the live slot already shows (same params and goal; the engine is compared by the caller)? */
+function sameMount(init: { params?: unknown; goal?: unknown }, cmd: { params?: unknown; goal?: unknown }): boolean {
+  return JSON.stringify(init.params ?? null) === JSON.stringify(cmd.params ?? null) && (init.goal ?? null) === (cmd.goal ?? null);
+}
+
 /** Network Information API (Chromium, Android WebView); absent elsewhere. */
 function networkScaled(ms: number): number {
   const type = (navigator as Navigator & { connection?: { effectiveType?: string } }).connection?.effectiveType;
@@ -113,6 +118,7 @@ export function ModuleHost({
   fill = false,
 }: ModuleHostProps) {
   const slots = useRef(new Map<string, Slot>());
+  const keySeq = useRef(0);
   const [tiles, setTiles] = useState<Tile[]>([]);
   /** Set by the effect below (it owns kill); called from each iframe's onLoad. */
   const onFrameLoad = useRef<(key: string) => void>(() => {});
@@ -126,7 +132,10 @@ export function ModuleHost({
 
   useEffect(() => {
     const map = slots.current;
-    let seq = 0;
+    // keys stay unique across effect runs (StrictMode runs this effect twice on the dev server): a key restarting at 1 let
+    // React reuse the first run's tile DOM, an adopted spare's included, for the second run's slot
+    let seq = keySeq.current;
+    const next = () => (keySeq.current = ++seq);
 
     const setStatus = (key: string, status: TileStatus) => setTiles((ts) => ts.map((t) => (t.key === key ? { ...t, status } : t)));
     const report = (slot: Slot, message: string) => {
@@ -188,8 +197,12 @@ export function ModuleHost({
 
     const apply = (cmd: ModuleCommand) => {
       if (cmd.op === "mount") {
+        // idempotent (Studio, 2026-11-11): the same mount again (a re-sent command, or the board's own mount replayed)
+        // keeps the live frame; dropping it adopted the spare and could leave the tray empty
+        const live = map.get(cmd.moduleId);
+        if (live && live.engine === cmd.engine && sameMount(live.init, cmd)) return;
         drop(cmd.moduleId);
-        const key = `${cmd.moduleId}:${++seq}`;
+        const key = `${cmd.moduleId}:${next()}`;
         // the pre-booted spare (major 4): React and the engine chunks already up, so the mount paints from memory
         const spareFrame = adoptSpare(latest.current.frameSrc);
         const slot: Slot = {
