@@ -101,7 +101,7 @@
       "wrongIfMis": "9 cm",
       "why": { "hi": "pencil 1 se 6 tak 5 khaane thi; patta 1 se 9 tak hai, toh 9 − 1 = 8 khaane", "en": "the pencil went 1 to 6, 5 spaces; the leaf goes 1 to 9, so 9 − 1 = 8 spaces" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pencil", "items": ["1 se 6 tak", "5 khaane"]}, "right": {"title": "Patta", "items": ["1 se 9 tak"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "Pencil", "items": ["1 se 6 tak", "5 khaane"]}, "right": {"title": "Patta", "items": ["1 se 9 tak"]}} }
      },
-     "simpler": { "hi": "Nishaan nahi, beech ke khaane gino. 1 se 9 tak ke khaane gino, ya 9 mein se 1 ghatao.", "en": "Count the spaces, not the marks. Count the spaces from 1 to 9, or take 1 away from 9." }
+     "simpler": { "hi": "Patta 1 ke nishaan se shuru hota hai. 1 se 9 tak ke khaane gino, ya 9 mein se 1 ghatao.", "en": "The leaf starts at the 1 mark. Count the spaces from 1 to 9, or take 1 away from 9." }
     }
    ],
    "workedExample": {
@@ -188,10 +188,7 @@
       "hi": "Lambai khaane ginkar nikalti hai, nishaan ginkar nahi. 4 se 9 tak 1-1 cm ke 5 khaane hain, aur 9 − 4 = 5 bhi hai.",
       "en": "Length comes from counting the spaces, not the marks. From 4 to 9 there are 5 spaces of 1 cm, and 9 − 4 = 5 too."
      },
-     "simpler": {
-      "hi": "Khaane gino, nishaan nahi. 4 se 9 tak 1 cm ke 5 khaane hain, toh lambai 5 cm hai.",
-      "en": "Count the spaces, not the marks. From 4 to 9 there are 5 spaces of 1 cm, so the length is 5 cm."
-     },
+     "simpler": { "hi": "Har khaana 1 cm ka hai. 4 se 9 tak 5 khaane, toh lambai 5 cm.", "en": "Each space is 1 cm. From 4 to 9 there are 5 spaces, so the length is 5 cm." }, "board": { "template": "compare@1", "params": {"left": {"title": "4 se 9 tak", "items": ["5 khaane"]}, "right": {"title": "9 − 4", "items": ["5"]}} },
      
      "then": {
       "prompt": {
@@ -351,11 +348,11 @@
      "wrongIfMis": "40 cm",
      "board": { "template": "compare@1", "params": {"left": {"title": "Deewar", "items": ["4 m lambi"]}, "right": {"title": "1 m", "items": ["100 cm"]}} },
      "why": { "hi": "deewar 4 m lambi hai, aur har 1 m mein 100 cm, toh 4 m = 400 cm", "en": "the wall is 4 m long, and each 1 m has 100 cm, so 4 m = 400 cm" },
-     "simpler": { "hi": "Har metre mein sau cm hote hain. Deewar 4 m hai, toh sau cm ko 4 baar jodo.", "en": "Each metre has a hundred cm. The wall is 4 m, so add a hundred cm 4 times." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Deewar", "items": ["4 m lambi"]}, "right": {"title": "1 m", "items": ["100 cm"]}} }
+     "simpler": { "hi": "Ek metre sau cm ka hota hai. Deewar 4 m hai, toh sau cm ko 4 baar jodo.", "en": "One metre is a hundred cm. The wall is 4 m, so add a hundred cm 4 times." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Deewar", "items": ["4 m lambi"]}, "right": {"title": "1 m", "items": ["100 cm"]}} }
     },
     {
      "id": "c2",
-     "prompt": { "hi": "Ek rassi 8 m 7 cm lambi hai. Rassi kitne cm lambi hai?", "en": "A rope is 8 m 7 cm long. How many cm long is the rope?" },
+     "prompt": { "hi": "Ek rassi 8 m 7 cm lambi hai. Rassi kitne cm lambi hai?", "en": "A rope is 8 m 7 cm long. What is the rope's length in cm?" },
      "key": "807 cm",
      "accept": ["807", "aath sau saat", "eight hundred seven", "807 centimetre"],
      "targets": "c4-maths-ch06-t01-m-concat-units",
@@ -417,10 +414,10 @@
      "targets": "c4-maths-ch06-t01-m-concat-units",
      "move": "place-value chart where the metre fills the hundreds place: 1 m 3 cm → 100 + 3 → 103; joining the digits as 13 drops the hundred",
      "say": { "hi": "Pehle metre ko cm banao, phir bache hue cm jodo. 1 m 3 cm = 100 + 3 = 103 cm, 13 cm nahi.", "en": "First change the metre to cm, then add the extra cm. 1 m 3 cm = 100 + 3 = 103 cm, not 13 cm." }, "board": { "template": "compare@1", "params": {"left": {"title": "1 m 3 cm", "items": ["100 + 3 = 103 cm"]}, "right": {"title": "13 cm nahi", "items": ["100 chhoot gaya"]}} },
-     "simpler": { "hi": "1 m matlab 100 cm. Usme 3 cm aur jodo, toh 103 cm hota hai.", "en": "1 m is 100 cm. Add the extra 3 cm and you get 103 cm." },
+     "simpler": { "hi": "1 m matlab 100 cm. Usme 3 cm aur jodo, toh 103 cm hota hai, 13 cm nahi.", "en": "1 m is 100 cm. Add the extra 3 cm and you get 103 cm, not 13 cm." },
      
      "then": {
-      "prompt": { "hi": "Ek paani ka pipe 9 m 4 cm lamba hai. Woh kitne cm lamba hai?", "en": "A water pipe is 9 m 4 cm long. How many cm long is it?" },
+      "prompt": { "hi": "Ek paani ka pipe 9 m 4 cm lamba hai. Woh kitne cm lamba hai?", "en": "A water pipe is 9 m 4 cm long. How long is it in cm?" },
       "key": "904 cm",
       "accept": ["904", "nau sau chaar", "nine hundred four", "904 centimetre"],
       "targets": "c4-maths-ch06-t01-m-concat-units",
@@ -608,7 +605,7 @@
      "wrongIfMis": "rassi",
      "board": { "template": "compare@1", "params": { "left": { "title": "Seedhi", "items": ["3 m"] }, "right": { "title": "Rassi", "items": ["250 cm"] } } },
      "why": { "hi": "3 m = 300 cm, jo 250 cm se zyada hai", "en": "3 m = 300 cm, which is more than 250 cm" },
-     "simpler": { "hi": "Pehle dono ko cm mein badlo, har metre sau cm. 3 m ko cm mein badal kar 250 cm se milao.", "en": "First change both to cm, each metre is a hundred cm. Change 3 m to cm and compare it with 250 cm." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Seedhi", "items": ["3 m"]}, "right": {"title": "Rassi", "items": ["250 cm"]}, "mark": {"side": "left"}} }
+     "simpler": { "hi": "Dono ko ek hi unit mein lao: har metre sau cm. 3 m ko cm mein badal kar 250 cm se milao.", "en": "Bring both to one unit: each metre is a hundred cm. Change 3 m to cm and compare it with 250 cm." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Seedhi", "items": ["3 m"]}, "right": {"title": "Rassi", "items": ["250 cm"]}, "mark": {"side": "left"}} }
     }
    ],
    "ladder": [

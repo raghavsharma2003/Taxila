@@ -103,61 +103,37 @@
     }
    ],
    "workedExample": {
-    "problem": {
-     "hi": "Rekha ki gullak khaali hai. Woh roz usme ₹7 daalti hai. Kya kisi din gullak mein theek ₹50 honge?",
-     "en": "Rekha's piggy bank is empty. Every day she puts ₹7 in it. Will there ever be exactly ₹50 in the piggy bank?"
-    }, "simpler": { "hi": "Har din ₹7 judte hain: 7, 14, 21, aise aage. Dekho yeh ginti kabhi theek 50 par aati hai ya nahi.", "en": "₹7 is added every day: 7, 14, 21, and on. See whether this count ever lands exactly on 50." },
+    "problem": { "hi": "Rekha ki gullak khaali hai. Woh roz usme ₹8 daalti hai. Kya kisi din gullak mein theek ₹50 honge?", "en": "Rekha's piggy bank is empty. Every day she puts ₹8 in it. Will there ever be exactly ₹50 in the piggy bank?" }, "simpler": { "hi": "Har din ₹8 judte hain: 8, 16, 24, aise aage. Dekho yeh ginti kabhi theek 50 par aati hai ya nahi.", "en": "₹8 is added every day: 8, 16, 24, and on. See whether this count ever lands exactly on 50." },
     "givens": [
-     {
-      "hi": "gullak shuru mein khaali hai aur roz ₹7 judte hain",
-      "en": "the piggy bank starts empty and ₹7 is added every day"
-     }
+     { "hi": "gullak shuru mein khaali hai aur roz ₹8 judte hain", "en": "the piggy bank starts empty and ₹8 is added every day" }
     ],
     "find": {"hi": "kya gullak mein kabhi theek ₹50 honge", "en": "whether the piggy bank ever holds exactly ₹50"},
     "steps": [
      {
-      "do": {"hi": "7 ki skip counting karo", "en": "Skip count by 7"},
-      "result": "₹7, ₹14, ₹21, ₹28, ₹35, ₹42, ₹49",
-      "why": { "hi": "roz ₹7 judte hain, toh har din ke baad gullak mein 7 ka multiple hota hai", "en": "₹7 is added each day, so after each day the piggy bank holds a multiple of 7" },
-      "simpler": {
-       "hi": "Gullak mein roz 7 judte hain. Toh paise 7 ki ginti mein badhte hain: 7, 14, 21, aur aage 49 tak.",
-       "en": "7 is added to the piggy bank every day. So the money grows by counting in 7s: 7, 14, 21, and on up to 49."
-      }
+      "do": { "hi": "8 ki skip counting karo", "en": "Skip count by 8" },
+      "result": "₹8, ₹16, ₹24, ₹32, ₹40, ₹48",
+      "why": { "hi": "roz ₹8 judte hain, toh har din ke baad gullak mein 8 ka multiple hota hai", "en": "₹8 is added each day, so after each day the piggy bank holds a multiple of 8" },
+      "simpler": { "hi": "Gullak mein roz 8 judte hain. Toh paise 8 ki ginti mein badhte hain: 8, 16, 24, aur aage 48 tak.", "en": "8 is added to the piggy bank every day. So the money grows by counting in 8s: 8, 16, 24, and on up to 48." }
      },
      {
-      "do": {"hi": "₹49 ke baad agla din dekho", "en": "Look at the day after ₹49"},
+      "do": { "hi": "₹48 ke baad agla din dekho", "en": "Look at the day after ₹48" },
       "result": "₹56",
-      "why": {"hi": "49 mein 7 jodne se 56 banta hai", "en": "49 plus 7 makes 56"},
-      "simpler": {
-       "hi": "49 ke baad agle din 7 aur judte hain. 49 aur 7 milkar 56 banta hai.",
-       "en": "The day after 49, 7 more is added. 49 and 7 together make 56."
-      }
+      "why": { "hi": "48 mein 8 jodne se 56 banta hai", "en": "48 plus 8 makes 56" },
+      "simpler": { "hi": "48 ke baad agle din 8 aur judte hain. 48 aur 8 milkar 56 banta hai.", "en": "The day after 48, 8 more is added. 48 and 8 together make 56." }
      }
     ],
     "yourStep": {
-     "prompt": {
-      "hi": "Ab dono steps ki list dekho. Kya kisi din gullak mein theek ₹50 honge, haan ya nahi?",
-      "en": "Now look at the lists from both steps. Will the piggy bank ever hold exactly ₹50, yes or no?"
-     },
+     "prompt": { "hi": "Ab gullak ki ginti dekho. Kya kisi din gullak mein theek ₹50 honge, haan ya nahi?", "en": "Now look at the piggy bank's count. Will the piggy bank ever hold exactly ₹50, yes or no?" },
      "key": "No",
      "accept": ["nahi", "nahin", "no", "kabhi nahi", "never"],
-     "simpler": {
-      "hi": "Gullak mein 49 ke baad seedha 56 aata hai. Dekho 50 list mein hai, ya in dono ke beech chhoot jaata hai.",
-      "en": "In the piggy bank, 49 is followed straight by 56. See whether 50 is in the list or gets skipped between these two."
-     },
-     "board": {"template": "number-line-hop@1", "params": {"start": 42, "hops": [7, 7]}},
-     "answerBoard": {"template": "number-line-hop@1", "params": {"start": 42, "hops": [7, 7]}},
-     "why": {
-      "hi": "7 ki ginti 42, 49 ke baad seedhe 56 par jaati hai, toh 50 chhoot jaata hai",
-      "en": "counting by 7 goes 42, 49 and then straight to 56, so 50 is skipped"
-     }
+     "simpler": { "hi": "Gullak mein 48 ke baad seedha 56 aata hai. Dekho 50 list mein hai, ya in dono ke beech chhoot jaata hai.", "en": "In the piggy bank, 48 is followed straight by 56. See whether 50 is in the list or gets skipped between these two." },
+     "board": { "template": "number-line-hop@1", "params": {"start": 40, "hops": [8, 8]} },
+     "answerBoard": { "template": "number-line-hop@1", "params": {"start": 40, "hops": [8, 8]} },
+     "why": { "hi": "8 ki ginti 40, 48 ke baad seedhe 56 par jaati hai, toh 50 chhoot jaata hai", "en": "counting by 8 goes 40, 48 and then straight to 56, so 50 is skipped" }
     },
     "answer": {"hi": "gullak mein kabhi theek ₹50 nahi honge", "en": "the piggy bank will never hold exactly ₹50"},
-    "why": {
-     "hi": "50, 49 aur 56 ke beech aata hai, aur 7 ki skip counting use chhod deti hai",
-     "en": "50 lies between 49 and 56, and skip counting by 7 jumps over it"
-    },
-    "board": {"template": "number-line-hop@1", "params": {"start": 42, "hops": [7, 7]}}
+    "why": { "hi": "50, 48 aur 56 ke beech aata hai, aur 8 ki skip counting use chhod deti hai", "en": "50 lies between 48 and 56, and skip counting by 8 jumps over it" },
+    "board": { "template": "number-line-hop@1", "params": {"start": 40, "hops": [8, 8]} }
    },
    "checks": [
     {
@@ -216,7 +192,7 @@
    "remediation": [
     {
      "targets": "c5-maths-ch13-t01-m-factor-multiple-confuse",
-     "move": "number line, frog jumping 6 at a time from 0, landing spots coloured → child lists landings; could the frog ever land on 2 or 3 → no, those divide 6 (factors), multiples are landings",
+     "move": "number line, frog jumping 6 at a time from 0, landing spots coloured → child lists landings; could the frog ever land on 2 or 3 → no, those divide 6 (factors), multiples are landings", "board": { "template": "number-line-hop@1", "params": {"start": 0, "hops": [6, 6]} },
      "say": {
       "hi": "Socho ek mendhak 0 se 6-6 ki chhalaang lagata hai: woh 6, 12 aur aage girta hai. 2 aur 3 par woh kabhi nahi girta, woh 6 ke factors hain, multiples nahi.",
       "en": "Picture a frog jumping 6 at a time from 0: it lands on 6, 12 and on. It never lands on 2 or 3; those are factors of 6, not multiples."
@@ -265,10 +241,7 @@
       "targets": "c5-maths-ch13-t01-m-finite-multiples",
       "wrongIfMis": "koi nahi",
       "board": {"template": "number-line-hop@1", "params": {"start": 48, "hops": [6, 6]}},
-      "simpler": {
-       "hi": "Multiples ki list kabhi khatam nahi hoti. 60 mein ek aur 6 jodo.",
-       "en": "A list of multiples never ends. Add one more 6 to 60."
-      },
+      "simpler": { "hi": "6 ki ginti 60 par nahi rukti. 60 mein ek aur 6 jodo.", "en": "Counting by 6 does not stop at 60. Add one more 6 to 60." },
       "answerBoard": {"template": "number-line-hop@1", "params": {"start": 48, "hops": [6, 6]}}
      }
     }
@@ -329,7 +302,7 @@
      "convey": "multiples of 10: 10, 20, 30, 40, 50; of 25: 25, 50 → the first common multiple is 50; 10 × 25 is common too but comes much later",
      "mustSay": [{"hi": "pehla common multiple", "en": "first common multiple"}, {"hi": "10 × 25", "en": "10 × 25"}],
      "board": { "template": "compare@1", "params": {"left": {"title": "10 ke multiples", "items": ["10, 20, 30", "40, 50"]}, "right": {"title": "25 ke multiples", "items": ["25, 50"]}} },
-     "point": { "hi": "10 ke multiples 10, 20, 30, 40, 50 hain, aur 25 ke multiples 25, 50. Dono mein sabse pehle 50 aata hai, toh pehla common multiple 50 hai. 10 × 25 ka guna bhi common hai, par woh pehla nahi, bahut baad mein aata hai.", "en": "The multiples of 10 are 10, 20, 30, 40, 50, and of 25 are 25, 50. 50 comes first in both, so the first common multiple is 50. 10 × 25 multiplied is also common, but it is not the first; it comes much later." },
+     "point": { "hi": "10 ke multiples 10, 20, 30, 40, 50 hain, aur 25 ke multiples 25, 50. Dono mein sabse pehle 50 aata hai, toh pehla common multiple 50 hai. 10 × 25 bhi common hai, par woh pehla nahi, bahut baad mein aata hai.", "en": "The multiples of 10 are 10, 20, 30, 40, 50, and of 25 are 25, 50. 50 comes first in both, so the first common multiple is 50. 10 × 25 is also common, but it is not the first; it comes much later." },
      "ask": {
       "prompt": { "hi": "10 aur 25 ki dono list aage badhao. Inka doosra common multiple kaunsa hai?", "en": "Continue both lists, for 10 and for 25. What is their second common multiple?" },
       "key": "100",
@@ -405,24 +378,15 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Ek mendhak 6-6 aur ek khargosh 10-10 ki chhalaang lagata hai, dono 0 se. Pehli baar dono ek hi number par kahaan girenge?",
-      "en": "A frog jumps 6 at a time and a rabbit 10 at a time, both from 0. Where do they first land on the same number?"
-     },
+     "prompt": { "hi": "Laddoo 6-6 ke dibbon mein aate hain aur barfi 10-10 ke dibbon mein. Dono mithaiyon ke pieces barabar chahiye, aur dibbe poore lene hain. Har mithai ke kam se kam kitne pieces lene honge?", "en": "Laddoos come in boxes of 6 and barfis in boxes of 10. We want the same number of pieces of each, buying whole boxes. What is the smallest number of pieces of each sweet we must buy?" },
      "key": "30",
-     "why": {
-      "hi": "mendhak ki 6-6 aur khargosh ki 10-10 ki chhalaang pehli baar 30 par milti hain",
-      "en": "the first number both the frog's 6-jumps and the rabbit's 10-jumps land on is 30"
-     },
-     "accept": ["tees", "thirty", "30 par"],
+     "why": { "hi": "6 ki ginti aur 10 ki ginti pehli baar 30 par milti hai: laddoo ke 5 dibbe, barfi ke 3 dibbe", "en": "counting by 6 and counting by 10 first meet at 30: 5 boxes of laddoos, 3 boxes of barfis" },
+     "accept": ["tees", "thirty", "30 pieces", "30 piece"],
      "targets": "c5-maths-ch13-t01-m-product-only",
      "wrongIfMis": "60",
-     "board": {"template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Khargosh", "items": ["10-10 ki chhalaang"]}}},
-     "simpler": {
-      "hi": "6 ki ginti aur 10 ki ginti, dono list likho. Jo number dono mein sabse pehle aaye, wahan dono milenge.",
-      "en": "Write both lists, counting by 6 and counting by 10. The first number in both is where they meet."
-     },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Khargosh", "items": ["10-10 ki chhalaang"]}} }
+     "board": { "template": "compare@1", "params": {"left": {"title": "Laddoo", "items": ["6-6 ke dibbe"]}, "right": {"title": "Barfi", "items": ["10-10 ke dibbe"]}} },
+     "simpler": { "hi": "Dono ki ginti alag-alag likho, ek 6 se aur ek 10 se. Dono liston mein pehla common number dhoondho.", "en": "Write two counts, one by 6 and one by 10. Find the first number common to both lists." },
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Laddoo", "items": ["6-6 ke dibbe"]}, "right": {"title": "Barfi", "items": ["10-10 ke dibbe"]}} }
     },
     {
      "id": "c2",
@@ -473,7 +437,6 @@
      "itemId": "c5-maths-ch13-t01-i11",
      "why": "mark both jumps on a 0-24 line → every number with two marks: 12, 24"
     },
-    {"itemId": "c5-maths-ch13-t01-i04", "why": "two common multiples of 4 and 6 → 12 and 24, not only the product"},
     {
      "itemId": "c5-maths-ch13-t01-rl-o2",
      "why": "chairs in rows of 4 or 6 → pick the total that is a common multiple"
@@ -486,17 +449,17 @@
    "remediation": [
     {
      "targets": "c5-maths-ch13-t01-m-product-only",
-     "move": "two rows of a hundred chart, multiples of 4 marked in one and of 6 in the other → first number marked twice is 12 → ask whether it came before 24",
+     "move": "two rows of a hundred chart, multiples of 4 marked in one and of 6 in the other → first number marked twice is 12 → ask whether it came before 24", "board": { "template": "compare@1", "params": {"left": {"title": "4 ke multiples", "items": ["4, 8, 12"]}, "right": {"title": "6 ke multiples", "items": ["6, 12"]}} },
      "say": {
       "hi": "4 ki list 4, 8, 12 hai aur 6 ki list 6, 12. 12 dono mein aa gaya, toh 4 × 6 tak rukna hi nahi pada.",
       "en": "The list for 4 is 4, 8, 12 and for 6 it is 6, 12. 12 is already in both, so we never had to wait for 4 × 6."
      },
      "simpler": { "hi": "Dono list saath likho aur pehle common number par ruk jao. Woh aksar guna se pehle hi aa jaata hai.", "en": "Write both lists together and stop at the first common number. It often comes before the product." },
-     "then": { "prompt": {"hi": "Ek mendhak 6-6 aur ek khargosh 14-14 ki chhalaang lagata hai, dono 0 se. Pehli baar dono kis number par milenge?", "en": "A frog jumps 6 at a time and a rabbit 14, both from 0. On which number do they first meet?"}, "key": "42", "why": {"hi": "mendhak ki 6-6 aur khargosh ki 14-14 ki chhalaang pehli baar 42 par milti hain", "en": "the first number both the frog's 6-jumps and the rabbit's 14-jumps land on is 42"}, "accept": ["bayaalees", "byalis", "forty-two", "forty two"], "targets": "c5-maths-ch13-t01-m-product-only", "wrongIfMis": "84", "board": {"template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Khargosh", "items": ["14-14 ki chhalaang"]}}}, "simpler": {"hi": "6 ki ginti aur 14 ki ginti, dono list likho. Dono mein sabse pehle aane wala number dhoondho.", "en": "Write both lists, counting by 6 and counting by 14. Find the first number that is in both."}, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Khargosh", "items": ["14-14 ki chhalaang"]}} } }
+     "then": { "prompt": { "hi": "Chart par 6 ke multiples ko laal aur 14 ke multiples ko hara rang diya. Pehla number kaunsa jis par dono rang hain?", "en": "On a chart, multiples of 6 are red and multiples of 14 green. Which first number has both colours?" }, "key": "42", "why": { "hi": "14 aur 28 par sirf hara hai; 42 = 6 × 7, toh 42 par laal aur hara dono", "en": "14 and 28 have only green; 42 = 6 × 7, so 42 has both red and green" }, "accept": ["bayaalees", "byalis", "forty-two", "forty two"], "targets": "c5-maths-ch13-t01-m-product-only", "wrongIfMis": "84", "board": { "template": "compare@1", "params": {"left": {"title": "Laal", "items": ["6 ke multiples"]}, "right": {"title": "Hara", "items": ["14 ke multiples"]}} }, "simpler": { "hi": "14 ke multiples ek-ek karke lo, aur har ek par dekho ki woh 6 ki ginti mein aata hai ya nahi.", "en": "Take the multiples of 14 one by one, and check each to see whether it comes when counting by 6." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Laal", "items": ["6 ke multiples"]}, "right": {"title": "Hara", "items": ["14 ke multiples"]}} } }
     },
     {
      "targets": "c5-maths-ch13-t01-m-factor-multiple-confuse",
-     "move": "contrast: 2 divides 4 and 6 (a common factor, smaller) vs a common multiple sits in both skip-count lists (12, bigger) → multiples of 4 and 6 are never smaller than 6",
+     "move": "contrast: 2 divides 4 and 6 (a common factor, smaller) vs a common multiple sits in both skip-count lists (12, bigger) → multiples of 4 and 6 are never smaller than 6", "board": { "template": "compare@1", "params": {"left": {"title": "4 aur 6 ka factor", "items": ["2"]}, "right": {"title": "4 aur 6 ka common multiple", "items": ["12"]}} },
      "say": {
       "hi": "2 se 4 aur 6 poore bant jaate hain, isliye 2 dono ka factor hai. Common multiple dono ki skip counting list mein aata hai, jaise 12.",
       "en": "4 and 6 both divide exactly by 2, so 2 is a factor of both. A common multiple is in both skip-counting lists, like 12."
@@ -513,7 +476,7 @@
       "targets": "c5-maths-ch13-t01-m-factor-multiple-confuse",
       "wrongIfMis": "Yes",
       "board": { "template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Khargosh", "items": ["9-9 ki chhalaang"]}} },
-      "simpler": { "hi": "6 ki list 6 se shuru hoti hai, aur 9 ki list 9 se. Inse chhota koi number in liston mein nahi aata.", "en": "The list for 6 starts at 6, and the list for 9 starts at 9. No smaller number comes in these lists." },
+      "simpler": { "hi": "6 ki list 6 se shuru hoti hai, aur 9 ki list 9 se. Dono liston mein 6 se chhota kuch nahi milta.", "en": "The list for 6 starts at 6, and the list for 9 starts at 9. Neither list has anything below 6." },
       "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Mendhak", "items": ["6-6 ki chhalaang"]}, "right": {"title": "Khargosh", "items": ["9-9 ki chhalaang"]}} }
      }
     }
@@ -549,7 +512,7 @@
      "board": {"template": "compare@1", "params": {"left": {"title": "Ghanti A", "items": ["4, 8, 12, 16"]}, "right": {"title": "Ghanti B", "items": ["6, 12"]}}},
      "point": { "hi": "Ghanti A har 4 minute par bajti hai: 4, 8, 12, 16. Ghanti B har 6 minute par: 6, 12. Dono abhi saath baji, aur agli baar 12 minute baad saath bajengi. 4 aur 6 ka sabse chhota common multiple 12 hai.", "en": "Bell A rings every 4 minutes: 4, 8, 12, 16. Bell B every 6 minutes: 6, 12. Both just rang together, and they ring together next after 12 minutes. The smallest common multiple of 4 and 6 is 12." },
      "ask": {
-      "prompt": { "hi": "Us pehli baar ke baad, yeh dono ghantiyan shuru se kitne minute par phir saath bajengi?", "en": "After that first time, how many minutes from the start will these two bells next ring together?" },
+      "prompt": { "hi": "Abhi ke baad yeh dono ghantiyan doosri baar kitne minute par saath bajengi?", "en": "Counting from now, after how many minutes will these two bells ring together for the second time?" },
       "key": "24",
       "why": {
        "hi": "ghanti A ki list 20, 24 aur ghanti B ki 18, 24 tak jaati hai, toh 12 ke baad agla common 24",
@@ -622,10 +585,10 @@
       }
      },
      {
-      "do": {"hi": "dono liston ka pehla common number lo", "en": "Take the first common number of both lists"},
-      "result": "20 din",
-      "why": { "hi": "20 dono liston mein sabse pehle aata hai; 4 × 10 ka guna baad mein aata hai", "en": "20 comes first in both lists; 4 × 10 multiplied comes later" },
-      "simpler": { "hi": "Dono liston mein sabse pehle 20 aata hai. 4 × 10 ka guna bhi common hai, par woh baad mein aata hai.", "en": "20 comes first in both lists. 4 × 10 multiplied is also common, but it comes later." }
+      "do": { "hi": "Ab 1 June se din jodkar tareekh nikaalna dekho", "en": "Now see how to get a date by adding days to 1 June" },
+      "result": "1 June ke 4 din baad 5 June",
+      "why": { "hi": "har din ek tareekh aage badhti hai, toh 4 din jodne se 1 June se 5 June", "en": "each day moves the date one on, so adding 4 days takes 1 June to 5 June" },
+      "simpler": { "hi": "Har din tareekh ek aage jaati hai. 1 June mein 4 din jodo toh 5 June aata hai.", "en": "Each day the date moves one on. Add 4 days to 1 June and you get 5 June." }
      }
     ],
     "yourStep": {
@@ -719,8 +682,8 @@
     {
      "targets": "c5-maths-ch13-t01-m-product-only",
      "move": "two timelines side by side, bell every 4 and bell every 6 → write both lists only until a number repeats → 12 comes before 24 → stop at the first match, not at the product",
-     "say": { "hi": "Dono ki list saath likho aur pehla common number milte hi ruk jao. Har 4 minute aur har 6 minute wali ghantiyan 12 minute par hi mil jaati hain, dono ka guna aane tak rukna nahi padta.", "en": "Write both lists side by side and stop at the first common number. The 4-minute and 6-minute bells meet at 12 minutes already; we do not wait for the two multiplied." },
-     "simpler": { "hi": "Dono list saath likho aur pehle common number par ruko. 4 minute aur 6 minute wali ghantiyan 12 par hi mil jaati hain, guna tak nahi rukte.", "en": "Write both lists together and stop at the first common number. The 4-minute and 6-minute bells meet at 12; we do not wait for the product." },
+     "say": { "hi": "Dono ki list saath likho aur pehla common number milte hi ruk jao. Dono ka guna bhi common hota hai, par pehla common number kai baar usse kaafi pehle aa jaata hai.", "en": "Write both lists side by side and stop as soon as you reach the first common number. The product of the two is common too, but the first common number often comes well before it." },
+     "simpler": { "hi": "Ginti karte jao, aur jo number pehle dono liston mein mile, wahin ruko. Guna tak pahunchna zaroori nahi.", "en": "Keep counting, and stop at the first number found in both lists. You need not go all the way to the product." },
      "then": {
       "prompt": {
        "hi": "Ek bus har 8 minute aur ek train har 10 minute par aati hai. Abhi dono saath aayi. Kitne minute baad phir saath aayengi?",

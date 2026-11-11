@@ -3601,28 +3601,31 @@
      "skillId": "c5-maths-ch02-t03-s1",
      "kind": "practice",
      "difficulty": 1,
-     "prompt_en": "Fold a chapati into 2, then into 4. One half is the same as how many quarters?",
-     "prompt_hi": "Chapati ko 2 mein, phir 4 mein modo. Ek aadha kitne chauthai ke barabar hai?",
-     "answer": "2 quarters (2/4)",
+     "prompt_en": "A strip is cut into 5 equal parts, and then each part into 3 equal pieces. One fifth is the same as how many fifteenths?",
+     "prompt_hi": "Ek patti ke 5 barabar hisse kiye, phir har hisse ke 3 barabar tukde. Ek 1/5 kitne 1/15 ke barabar hai?",
+     "answer": "3 fifteenths (3/15)",
      "acceptable": [
-      "2",
-      "2/4",
-      "two"
+      "3",
+      "3/15",
+      "three",
+      "teen"
      ],
      "hints": [
-      "When you fold the half again, what happens to it?",
-      "The half splits into 2 pieces.",
-      "1 half = ___ quarters.",
-      "2 quarters: 1/2 = 2/4."
+      "When you cut one fifth into 3, what happens to it?",
+      "Each fifth becomes 3 small pieces.",
+      "1/5 = ___/15.",
+      "3 fifteenths: 1/5 = 3/15."
      ],
      "targetsMisconception": "c5-maths-ch02-t03-m-more-pieces-more",
      "verified": {
-      "solverAnswer": "2 quarters",
+      "solverAnswer": "3/15",
       "agrees": true,
-      "note": "Blind-solved before reading key; matches. prompt_hi matches prompt_en. Class-5 appropriate."
+      "how": "claude-blind",
+      "date": "2026-11-11"
      },
      "ge": 3.75,
-     "geSource": "raters-v2"
+     "geSource": "raters-v2",
+     "note": "2026-11-11 (Learning reader pass, staged round 9): was 'one half = how many quarters' (2/4), stated in s1's points and worked example; now 1/5 = 3/15, a pair the script never says."
     },
     {
      "id": "c5-maths-ch02-t03-i02",
@@ -3726,24 +3729,25 @@
      "skillId": "c5-maths-ch02-t03-s1",
      "kind": "predict",
      "difficulty": 2,
-     "prompt_en": "A paper strip has 1/2 shaded. Predict: if I fold it to make twice as many parts, how many parts will be shaded, and what fraction will it be?",
-     "prompt_hi": "Ek kaagaz ki strip ka 1/2 rang hai. Andaaza lagao: agar main use modkar do guna parts bana doon, toh kitne parts rang wale honge aur fraction kya hoga?",
-     "answer": "2 of 4 parts: 2/4",
+     "prompt_en": "A paper strip has 1/7 shaded. Predict: if I fold it to make twice as many parts, how many parts will be shaded, and what fraction will it be?",
+     "prompt_hi": "Ek kaagaz ki patti ka 1/7 rang hai. Andaaza lagao: agar main use modkar do guna parts bana doon, toh kitne parts rang wale honge aur fraction kya hoga?",
+     "answer": "2 of 14 parts: 2/14",
      "acceptable": [
-      "2/4",
+      "2/14",
       "2 parts"
      ],
      "hints": [
       "What happens to each part when you fold again?",
       "Every part splits into 2.",
-      "1 shaded part becomes ___ shaded parts out of 4.",
-      "2/4, the same amount as 1/2."
+      "1 shaded part becomes ___ shaded parts out of 14.",
+      "2/14, the same amount as 1/7."
      ],
      "targetsMisconception": "c5-maths-ch02-t03-m-more-pieces-more",
      "verified": {
-      "solverAnswer": "2 of 4 parts: 2/4",
+      "solverAnswer": "2/14",
       "agrees": true,
-      "note": "Blind-solved before reading key; matches. prompt_hi matches prompt_en. Class-5 appropriate."
+      "how": "claude-blind",
+      "date": "2026-11-11"
      },
      "ge": 4.5,
      "geSource": "claude-v2",
@@ -3752,7 +3756,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "note": "2026-11-11 (Learning reader pass, staged round 9): was 1/2 folded to 2/4, worked in s1's points; now 1/7 folded to 2/14."
     },
     {
      "id": "c5-maths-ch02-t03-i06",
@@ -3856,25 +3861,27 @@
      "skillId": "c5-maths-ch02-t03-s1",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Kabir says 4/8 of a pizza is more than 1/2 because 4 slices is more than 1. Is he right?",
-     "prompt_hi": "Kabir kehta hai pizza ka 4/8, 1/2 se zyada hai kyunki 4 slice, 1 se zyada hai. Kya woh sahi hai?",
-     "answer": "No, they are the same amount: the 4 slices are smaller",
+     "prompt_en": "Kabir says 3/18 of a cake is more than 1/6 because 3 pieces is more than 1. Is he right?",
+     "prompt_hi": "Kabir kehta hai cake ka 3/18, 1/6 se zyada hai kyunki 3 tukde, 1 se zyada hain. Kya woh sahi hai?",
+     "answer": "No, they are the same amount: the 3 pieces are smaller",
      "acceptable": [
       "no",
+      "nahi",
       "same",
       "barabar"
      ],
      "hints": [
-      "How big is each of the 4 slices?",
-      "Each eighth is a quarter of a half.",
-      "4 eighths fill exactly ___ of the pizza.",
-      "No: 4/8 = 1/2, the same amount."
+      "How big is each of the 3 pieces?",
+      "Each eighteenth is a third of a sixth.",
+      "3 eighteenths fill exactly ___ of the cake.",
+      "No: 3/18 = 1/6, the same amount."
      ],
      "targetsMisconception": "c5-maths-ch02-t03-m-more-pieces-more",
      "verified": {
-      "solverAnswer": "No; 4/8 = 1/2, same amount",
+      "solverAnswer": "no (3/18 = 1/6)",
       "agrees": true,
-      "note": "Blind-solved before reading key; matches. prompt_hi matches prompt_en. Class-5 appropriate."
+      "how": "claude-blind",
+      "date": "2026-11-11"
      },
      "ge": 4.5,
      "geSource": "claude-v2",
@@ -3883,7 +3890,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "reason",
-     "tooEasy": false
+     "tooEasy": false,
+     "note": "2026-11-11 (Learning reader pass, staged round 9): was 4/8 vs 1/2, stated in s1's e3 point; now 3/18 vs 1/6."
     },
     {
      "id": "c5-maths-ch02-t03-i10",
@@ -3923,23 +3931,25 @@
      "skillId": "c5-maths-ch02-t03-s3",
      "kind": "far_transfer",
      "difficulty": 4,
-     "prompt_en": "Mummy needs 3/4 cup of sugar but only has a 1/8 cup spoon. How many spoonfuls does she need?",
-     "prompt_hi": "Mummy ko 3/4 cup cheeni chahiye par uske paas sirf 1/8 cup ka chammach hai. Kitne chammach chahiye?",
-     "answer": "6",
+     "prompt_en": "Mummy needs 5/6 cup of sugar but only has a 1/12 cup spoon. How many spoonfuls does she need?",
+     "prompt_hi": "Mummy ko 5/6 cup cheeni chahiye par uske paas sirf 1/12 cup ka chammach hai. Kitne chammach chahiye?",
+     "answer": "10",
      "acceptable": [
-      "six",
-      "6 spoons"
+      "ten",
+      "das",
+      "10 spoons"
      ],
      "hints": [
-      "How many eighths make one quarter?",
-      "1/4 = 2/8.",
-      "3/4 = ___/8.",
-      "6 spoonfuls: 3/4 = 6/8."
+      "How many twelfths make one sixth?",
+      "1/6 = 2/12.",
+      "5/6 = ___/12.",
+      "10 spoonfuls: 5/6 = 10/12."
      ],
      "verified": {
-      "solverAnswer": "6",
+      "solverAnswer": "10",
       "agrees": true,
-      "note": "Blind-solved before reading key; matches. prompt_hi matches prompt_en. Class-5 appropriate."
+      "how": "claude-blind",
+      "date": "2026-11-11"
      },
      "ge": 5,
      "geSource": "claude-v2",
@@ -3948,29 +3958,33 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "transfer",
-     "tooEasy": false
+     "tooEasy": false,
+     "note": "2026-11-11 (Learning reader pass, staged round 9): was 3/4 cup with a 1/8 spoon (6), s1 e3's own numbers; now 5/6 cup with a 1/12 spoon."
     },
     {
      "id": "c5-maths-ch02-t03-i12",
      "skillId": "c5-maths-ch02-t03-s1",
      "kind": "translate_rep",
      "difficulty": 3,
-     "prompt_en": "On a fraction wall with halves, quarters and eighths, which fractions line up exactly with 1/2?",
-     "prompt_hi": "Halves, quarters aur eighths wali fraction wall par kaun se fractions 1/2 ke saath bilkul line mein aate hain?",
-     "answer": "2/4 and 4/8",
+     "prompt_en": "On a fraction wall with fifths and fifteenths, which fifteenths line up exactly with 2/5?",
+     "prompt_hi": "Fifths aur fifteenths wali fraction wall par kitne fifteenths 2/5 ke saath bilkul line mein aate hain?",
+     "answer": "6/15",
      "acceptable": [
-      "2/4, 4/8"
+      "6",
+      "6/15",
+      "six fifteenths"
      ],
      "hints": [
-      "Where does the 1/2 block end?",
-      "Look straight down from the end of 1/2.",
-      "In the quarters row it ends after 2; in the eighths row after ___.",
-      "2/4 and 4/8."
+      "Where does the 2/5 block end?",
+      "Look straight down from the end of 2/5.",
+      "Each fifth is 3 fifteenths, so 2 fifths are ___ fifteenths.",
+      "6/15."
      ],
      "verified": {
-      "solverAnswer": "2/4 and 4/8",
+      "solverAnswer": "6/15",
       "agrees": true,
-      "note": "Blind-solved before reading key; matches. prompt_hi matches prompt_en. Class-5 appropriate."
+      "how": "claude-blind",
+      "date": "2026-11-11"
      },
      "ge": 4.5,
      "geSource": "claude-v2",
@@ -3979,7 +3993,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "apply",
-     "tooEasy": false
+     "tooEasy": false,
+     "note": "2026-11-11 (Learning reader pass, staged round 9): was 1/2 lining up with 2/4 and 4/8, said word for word in s1's e3 point; now 2/5 = 6/15."
     },
     {
      "id": "c5-maths-ch02-t03-i13",

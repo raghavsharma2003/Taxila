@@ -541,7 +541,7 @@
      "targets": "c4-maths-ch04-t02-m-big-digits",
      "move": "add 5 to 995 to make 1000 → 995 has not reached 1000 yet, 1004 is already past it; both placed against the 1000 mark",
      "say": { "hi": "995 mein 5 jodo toh 1000 banta hai, toh 995 abhi 1000 tak bhi nahi pahuncha. 1004 toh 1000 se bhi aage hai.", "en": "Add 5 to 995 and you get 1000, so 995 has not even reached 1000. 1004 is already past 1000." }, "board": { "template": "compare@1", "params": {"left": {"title": "995", "items": ["+ 5 = 1000"]}, "right": {"title": "1004", "items": ["1000 se aage"]}} },
-     "simpler": { "hi": "995 abhi 1000 tak nahi pahuncha, aur 1004 toh 1000 ke aage hai. Isliye 1004 bada hai.", "en": "995 has not reached 1000, and 1004 is past 1000. So 1004 is bigger." },
+     "simpler": { "hi": "995 mein 5 jodo toh 1000 banta hai, aur 1004 toh 1000 ke aage hai. Isliye 1004 bada hai.", "en": "Add 5 to 995 to get 1000, and 1004 is past 1000. So 1004 is bigger." },
      "then": {
       "prompt": {
        "hi": "Sana ke paas 2995 rupaye hain, Gopi ke paas 3008 rupaye. Kiske paas zyada hain, Sana ya Gopi?",
@@ -949,18 +949,12 @@
       }
      },
      "why": { "hi": "sau 3, 2, 5, 2 hain; dahaai mein 3, 5 se chhota hai: chhote se bade ka kram 1235, 1253, 1325, 1532", "en": "the hundreds are 3, 2, 5, 2, and tens 3 is less than 5, so 1235, 1253, 1325, 1532" },
-     "simpler": {
-      "hi": "Sab mein hazaar barabar hai, toh sau ke ank dekho. Jinka sau bhi barabar ho, unke dahaai milao.",
-      "en": "All have equal thousands, so look at the hundreds digits. Where the hundreds are also equal, compare the tens."
-     },
+     "simpler": { "hi": "Chaaron ke hazaar ek jaise hain, toh sau ke ank se shuru karo. Jin do numbers ke sau bhi ek jaise hon, unka faisla dahaai se karo.", "en": "All four have the same thousands, so start with the hundreds digits. When two numbers have the same hundreds too, let the tens decide." },
      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Numbers", "items": ["1325", "1253", "1532", "1235"]}, "right": {"title": "Kram", "items": ["chhote se bade"]}} }
     },
     {
      "id": "c2",
-     "prompt": {
-      "hi": "Chaar cricket match mein itne darshak aaye: 3064, 2980, 3460 aur 3406. Inhe bade se chhote ke kram mein lagao.",
-      "en": "Four cricket matches had these crowds: 3064, 2980, 3460 and 3406. Put them in order from biggest to smallest."
-     },
+     "prompt": { "hi": "Chaar cricket match mein itne darshak aaye: 3064, 2980, 3460 aur 3406. Inhe sabse bade se sabse chhote tak kram mein likho.", "en": "Four cricket matches had these crowds: 3064, 2980, 3460 and 3406. Write them in order from the biggest down to the smallest." },
      "key": "3460, 3406, 3064, 2980",
      "accept": [
       "3460 3406 3064 2980",
@@ -1039,10 +1033,7 @@
        }
       },
       "why": { "hi": "sau mein 8053 ka 0 sabse chhota hai, aur dahaai 0, 5 se chhota: chhote se bade ka kram 8053, 8305, 8350", "en": "the 0 hundreds of 8053 is smallest, and between 8305 and 8350 the tens 0 is less than 5" },
-      "simpler": {
-       "hi": "Teeno mein hazaar barabar hai, toh sau ka ank dekho. Jinka sau bhi barabar ho, unke dahaai milao.",
-       "en": "All three have equal thousands, so look at the hundreds digit. Where the hundreds are also equal, compare the tens."
-      },
+      "simpler": { "hi": "8350, 8053 aur 8305 ke hazaar ek jaise hain, toh sau ke ank milao. Do numbers ke sau bhi ek jaise niklen, toh unka dahaai dekho.", "en": "8350, 8053 and 8305 have the same thousands, so compare the hundreds. If two numbers have the same hundreds too, look at their tens." },
       "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Numbers", "items": ["8350", "8053", "8305"]}, "right": {"title": "Kram", "items": ["chhote se bade"]}} }
      }
     }

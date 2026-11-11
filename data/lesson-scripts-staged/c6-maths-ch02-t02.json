@@ -155,10 +155,9 @@
     }
    ],
    "ladder": [
-    { "itemId": "c6-maths-ch02-t02-i01", "why": "first straight use: read the vertex off a three-letter name (the middle letter)" },
-    { "itemId": "c6-maths-ch02-t02-rl-o2", "why": "choose between two names: the shared starting point of the beams goes in the middle" },
+    { "itemId": "c6-maths-ch02-t02-i12", "why": "retrieval: the two rays that make an angle are called its arms" },
+    { "itemId": "c6-maths-ch02-t02-i09", "why": "error-spot: vertex B named 'angle BAC' → the vertex letter goes in the middle" },
     { "itemId": "c6-maths-ch02-t02-rl-o1", "why": "build the three-letter name from a map: paths from a gate → gate letter in the middle" },
-    { "itemId": "c6-maths-ch02-t02-i08", "why": "from name to drawing: where the arc goes (the vertex) and which rays are the arms" },
     { "itemId": "c6-maths-ch02-t02-rl-h1", "why": "three tracks from one junction → spot which names show the same angle (outer letters swapped)" }
    ],
    "remediation": [
@@ -169,14 +168,14 @@
      "simpler": { "hi": "Vertex wala letter hamesha beech mein jaata hai. Baaki do letter kinaron par, kisi bhi kram mein.", "en": "The vertex letter always goes in the middle. The other two go at the ends, in either order." },
      
      "then": {
-      "prompt": { "hi": "Angle ka vertex V hai, ek arm par point U aur doosri par point W. Teen letters mein iska ek naam batao.", "en": "The vertex is V, with point U on one arm and point W on the other. Say a three-letter name for it." },
-      "key": "angle UVW",
-      "why": { "hi": "vertex V hai, toh V beech mein aata hai, U aur W kinaron par", "en": "the vertex is V, so V goes in the middle, with U and W at the ends" },
-      "accept": ["UVW", "WVU", "angle WVU", "∠UVW", "∠WVU"],
+      "prompt": { "hi": "Angle UVW ki do arms kaun-si rays hain?", "en": "Which two rays are the arms of angle UVW?" },
+      "key": "ray VU aur ray VW",
+      "why": { "hi": "angle UVW ka vertex beech wala V hai, aur har arm vertex se shuru hoti hai: ray VU aur ray VW", "en": "the vertex of angle UVW is the middle letter V, and each arm starts at the vertex: ray VU and ray VW" },
+      "accept": ["VU aur VW", "ray VW aur ray VU", "VU and VW", "ray VU and ray VW", "VW aur VU"],
       "targets": "c6-maths-ch02-t02-m-vertex-name",
-      "wrongIfMis": "angle VUW",
+      "wrongIfMis": "ray UV aur ray UW",
       "board": { "template": "angle@1", "params": {"angles": [{"deg": 45, "name": "angle"}], "vertex": "V"} },
-      "simpler": { "hi": "V vertex hai, toh V naam ke beech wale khaane mein jaata hai. U aur W kinaron wale khaanon mein.", "en": "V is the vertex, so V goes in the middle slot of the name. U and W go in the end slots." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 45, "name": "angle"}], "vertex": "V"} }
+      "simpler": { "hi": "Pehle naam ka beech wala letter dhoondho, woh vertex hai. Har arm ka naam usi letter se shuru hota hai.", "en": "First find the middle letter of the name; that is the vertex. Each arm's name begins with that letter." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 45, "name": "angle"}], "vertex": "V"} }
      }
     }
    ],
@@ -219,7 +218,7 @@
       "why": { "hi": "board par angle B ki doosri arm angle A ki doosri arm se kahin zyada ghoomkar khuli hai", "en": "on the board angle B's second arm has turned open much further than angle A's" },
       "accept": ["B", "B bada", "angle B bada hai"], "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 35, "name": "angle A"}, {"deg": 110, "name": "angle B"}], "mark": {"index": 1, "show": "bigger"}} }
      },
-     "simpler": { "hi": "Angle ek ghumaav hai, jaise darwaza kabze par ghoomkar khulta hai. Arm jitni zyada ghoomi, angle utna bada.", "en": "An angle is a turn, like a door turning open on its hinge. The more the arm turns, the bigger the angle." }
+     "simpler": { "hi": "Angle ek ghumaav hai, jaise darwaza kabze par ghoomkar khulta hai. Zyada ghumaav ka matlab bada angle.", "en": "An angle is a turn, like a door turning open on its hinge. More turning means a bigger angle." }
     },
     {
      "id": "e2",
@@ -283,7 +282,7 @@
       "do": { "hi": "Ab 4 baje ke liye bhi wahi dekho", "en": "Now see the same for 4 o'clock" },
       "result": "4 baje: 12 se 4 tak ghumaav",
       "why": { "hi": "sui 12 se 1, 2, 3 ko paar karke 4 tak ghoomi", "en": "the hand turned from 12 past 1, 2 and 3 to 4" },
-      "simpler": { "hi": "4 baje ghante wali sui 12 se chalkar 4 par ruki. Itna hi uska ghumaav hai.", "en": "At 4 o'clock the hour hand went from 12 and stopped on 4. That is how far it turned." }
+      "simpler": { "hi": "4 baje ghante wali sui 12 se chali aur beech ke saare number paar karke 4 par ruki.", "en": "At 4 o'clock the hour hand left 12, passed every number in between, and stopped on 4." }
      }
     ],
     "yourStep": {
@@ -329,18 +328,18 @@
     {
      "targets": "c6-maths-ch02-t02-m-full-turn-zero",
      "move": "pointer that drags a ribbon behind it: start at 12, turn past 3, 6, 9 back to 12 → count the quarter turns passed (1, 2, 3, 4) → same end position, but the ribbon shows a whole circle swept → angle = turn swept, not end position",
-     "say": { "hi": "Sui ke peechhe ek ribbon socho jo ghoomte hue jagah rang deta hai. Sui 12 se 3, 6, 9 hokar wapas 12 par aaye, toh ribbon har taraf rang deta hai. Sui wahin ruki, par chaar quarter turn ghoomi.", "en": "Imagine a ribbon behind the hand that colours the space as it turns. If the hand goes from 12 past 3, 6, 9 back to 12, the ribbon colours all the way round. It stopped where it started, but turned four quarter turns." },
+     "say": { "hi": "Sui ke peechhe ek ribbon socho jo ghoomte hue jagah rang deta hai. Sui ek baar poora ghoomkar wahin aa jaaye, toh ribbon poora gola rang deta hai. Sui wahin ruki jahan se chali thi, par chaar quarter turn ghoomi.", "en": "Imagine a ribbon behind the hand that colours the space as it turns. If the hand goes all the way round once and comes back, the ribbon colours the whole circle. It stopped where it started, but it turned four quarter turns." },
      "simpler": { "hi": "Ruki kahan, yeh mat dekho. Ghoomte hue sui kitne quarter turn chali, woh gino.", "en": "Do not look at where it stopped. Count how many quarter turns the hand went through while turning." },
      
      "then": {
-      "prompt": { "hi": "Sui 12 se do poore chakkar lagaakar phir 6 tak gayi. Kul kitne quarter turn hue?", "en": "A hand went two full turns from 12 and then on to 6. How many quarter turns is that in all?" },
-      "key": "10",
-      "why": { "hi": "do poore chakkar 8 quarter turn hain, phir 12 se 6 tak 2 aur, toh 8 + 2 = 10", "en": "two full turns are 8 quarter turns, then 12 to 6 is 2 more, so 8 + 2 = 10" },
-      "accept": ["das", "10 quarter turn", "10 quarter turns"],
+      "prompt": { "hi": "Sui P 12 se 3 quarter turn ghoomkar 9 par ruki. Sui Q ek poora chakkar ghoomkar wapas 12 par ruki. Kya P zyada ghoomi?", "en": "Hand P turned 3 quarter turns from 12, stopping on 9. Hand Q turned one full turn, stopping back on 12. Did P turn more?" },
+      "key": "nahi",
+      "why": { "hi": "P 3 quarter turn ghoomi, aur Q ka poora chakkar 4 quarter turn hai; Q zyada ghoomi, chahe wapas 12 par ruki", "en": "P turned 3 quarter turns, Q's full turn is 4 quarter turns; Q turned more, though it stopped back on 12" },
+      "accept": ["no", "nahin", "nahi, Q zyada ghoomi", "no, Q turned more"],
       "targets": "c6-maths-ch02-t02-m-full-turn-zero",
-      "wrongIfMis": "2",
-      "board": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "phir 12 se 6"}]} },
-      "simpler": { "hi": "Pehle dono poore chakkaron ke quarter turn gino. Phir 12 se 6 tak ke quarter turn gino, aur dono jodo.", "en": "First count the quarter turns in the two full turns. Then count the quarter turns from 12 to 6, and add them." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 180, "name": "phir 12 se 6"}]} }
+      "wrongIfMis": "haan",
+      "board": { "template": "shape@1", "params": {"shape": "circle", "name": "poora chakkar"} },
+      "simpler": { "hi": "Dono suiyon ke quarter turn gino, rukne ki jagah chhod do.", "en": "Count the quarter turns of both hands, and leave aside where they stopped." }, "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "name": "poora chakkar"} }
      }
     }
    ],
@@ -498,18 +497,17 @@
     },
     {
      "id": "c3",
-     "prompt": { "hi": "Angle S ki arms bahut lambi hain aur angle T ki chhoti. Copy rakhne par T ki doosri arm, S ki doosri arm se bahar rehti hai. Kaunsa angle bada hai: S ya T?", "en": "Angle S has very long arms and angle T short ones. With a copy laid on, T's second arm stays outside S's. Which angle is bigger: S or T?" },
-     "key": "angle T",
-     "why": { "hi": "T ki doosri arm S ki arm se bahar hai, toh T zyada ghooma; lambi arms ghumaav nahi badaltin", "en": "T's second arm lies outside S's, so T turned more; long arms do not change the turn" },
-     "accept": ["T", "T bada", "angle T bada hai"],
+     "prompt": { "hi": "Angle S ek quarter turn khula hai aur uski arms 5 cm hain. Uski arms 15 cm tak badha di, disha nahi badli. Ab angle S kitne quarter turn khula hai?", "en": "Angle S is open one quarter turn and its arms are 5 cm. Its arms are extended to 15 cm without changing their direction. How many quarter turns is angle S open now?" },
+     "key": "1",
+     "why": { "hi": "arms lambi hui par disha nahi badli, toh angle S ab bhi 1 quarter turn khula hai", "en": "the arms got longer but kept their direction, so angle S is still open 1 quarter turn" },
+     "accept": ["ek", "one", "1 quarter turn", "ek quarter turn", "ab bhi ek"],
      "targets": "c6-maths-ch02-t02-m-longer-arms",
-     "wrongIfMis": "angle S",
-     "board": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "angle S", "len": "long"}, {"deg": 95, "name": "angle T", "len": "short"}]} },
-     "simpler": { "hi": "Arms ki lambai se ghumaav nahi badalta. Copy rakhne par jiski doosri arm bahar rahe, woh angle bada hai.", "en": "Arm length does not change the turn. With the copy laid on, the angle whose second arm stays outside is bigger." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 60, "name": "angle S", "len": "long"}, {"deg": 95, "name": "angle T", "len": "short"}], "mark": {"index": 1, "show": "bigger"}} }
+     "wrongIfMis": "3",
+     "board": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "angle S", "len": "short"}]} },
+     "simpler": { "hi": "Arms lambi hui, par dono ki disha wahi rahi. Toh dono arms ke beech ka ghumaav bhi wahi hai.", "en": "The arms got longer, but both kept their direction. So the turn between the two arms is the same too." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "angle S", "len": "short"}]} }
     }
    ],
    "ladder": [
-    { "itemId": "c6-maths-ch02-t02-i03", "why": "predict: same quarter-turn opening with 2 cm and 10 cm arms → equal" },
     { "itemId": "c6-maths-ch02-t02-i06", "why": "error-spot: a narrow angle with long arms called bigger → the wide one is bigger, only the turn counts" },
     { "itemId": "c6-maths-ch02-t02-rl-h3", "why": "superposed angles whose second arms overlap but one drawing has longer arms → equal, and say why" },
     { "itemId": "c6-maths-ch02-t02-i04", "why": "explain in words why longer arms do not make a bigger angle (same directions, same turn)" }
@@ -519,20 +517,17 @@
      "targets": "c6-maths-ch02-t02-m-longer-arms",
      "move": "angle-maker with two arms that stretch: pull the arms longer while watching the opening → the opening does not change → the turn is the angle, arm length is not",
      "say": { "hi": "Ek angle-maker socho jiski do pattiyan kheenchne par lambi ho jaati hain. Pattiyan kheencho aur dekho ki unki disha aur unke beech ka khulapan kya karte hain. Angle ghumaav se banta hai.", "en": "Imagine an angle-maker whose two strips get longer when you pull them. Pull the strips and watch what their directions and the opening between them do. An angle comes from the turn." },
-     "simpler": {
-      "hi": "Angle-maker ki pattiyan lambi karo, par khulapan wahi rehta hai. Angle ghumaav se banta hai, lambai se nahi.",
-      "en": "Make the angle-maker's strips longer, and the opening stays the same. An angle comes from the turn, not the length."
-     },
+     "simpler": { "hi": "Pattiyan kheencho aur sirf unke beech ka khulapan dekho. Angle ghumaav se banta hai, lambai se nahi.", "en": "Pull the strips and watch only the opening between them. An angle comes from the turn, not the length." },
      
      "then": {
-      "prompt": { "hi": "Angle E chhoti arms wala quarter turn hai. F ki arms lambi hain, par woh aadha quarter turn khula. Bada kaunsa: E ya F?", "en": "Angle E is a quarter turn with short arms. F has long arms but opens only half a quarter turn. Which is bigger: E or F?" },
-      "key": "angle E",
-      "why": { "hi": "E poora quarter turn khula hai aur F sirf aadha quarter turn; F ki lambi arms uska ghumaav nahi badhaatin", "en": "E is open a quarter turn and F only half of one; F's long arms do not add to its turn" },
-      "accept": ["E", "E bada", "angle E bada hai"],
+      "prompt": { "hi": "E ki arms 4 cm, F ki 12 cm. E ki copy F par rakhi, toh doosri arms theek ek doosre par padi. Kya F bada angle hai?", "en": "E has 4 cm arms, F has 12 cm arms. A copy of E laid on F has its second arm right on F's. Is F the bigger angle?" },
+      "key": "nahi",
+      "why": { "hi": "doosri arms ek doosre par padi, toh dono ka ghumaav barabar hai; F ki lambi arms use bada nahi banati", "en": "the second arms lie one on the other, so both turns are equal; F's longer arms do not make it bigger" },
+      "accept": ["no", "nahin", "nahi, dono barabar", "no, they are equal", "dono barabar khule hain"],
       "targets": "c6-maths-ch02-t02-m-longer-arms",
-      "wrongIfMis": "angle F",
-      "board": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "angle E", "len": "short"}, {"deg": 45, "name": "angle F", "len": "long"}]} },
-      "simpler": { "hi": "Arms ki lambai chhodo. Dekho kaunsa angle zyada khula hai: quarter turn ya aadha quarter turn.", "en": "Leave the arm length aside. See which angle is open more: a quarter turn or half a quarter turn." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "angle E", "len": "short"}, {"deg": 45, "name": "angle F", "len": "long"}], "mark": {"index": 0, "show": "bigger"}} }
+      "wrongIfMis": "haan",
+      "board": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "angle E", "len": "short"}, {"deg": 90, "name": "angle F", "len": "long"}]} },
+      "simpler": { "hi": "Arms ki lambai chhodo. Copy rakhne par doosri arms kahan padi, sirf woh dekho.", "en": "Leave the arm length aside. Look only at where the second arms fell when the copy was laid on." }, "answerBoard": { "template": "angle@1", "params": {"angles": [{"deg": 90, "name": "angle E", "len": "short"}, {"deg": 90, "name": "angle F", "len": "long"}]} }
      }
     },
     {

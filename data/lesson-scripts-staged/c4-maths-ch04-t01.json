@@ -205,24 +205,12 @@
       },
       "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Shabdon mein", "items": ["two thousand", "three hundred", "forty-five"]}, "right": {"title": "Jagah mein", "items": ["hazaar: 2", "sau: 3", "dahai 4, ikai 5", "2345"]}} }
      },
-     "simpler": {
-      "hi": "Har bola hua hissa apni jagah mein sirf ek ank deta hai. Six thousand se hazaar ki jagah, one hundred se sau ki jagah, aur twenty-eight se dahai aur ikai.",
-      "en": "Each spoken part gives just one digit in its own place. Six thousand fills thousands, one hundred fills hundreds, and twenty-eight fills tens and ones."
-     }
+     "simpler": { "hi": "Six thousand se hazaar ki jagah, one hundred se sau ki jagah bharo. Twenty-eight akela dahai aur ikai, dono jagah bharta hai.", "en": "Six thousand fills the thousands place, one hundred the hundreds. Twenty-eight on its own fills both the tens and the ones." }
     },
     {
      "id": "e3",
      "convey": "a -teen word = 1 ten and some ones (sixteen = 16); a -ty word = many tens, 0 ones (sixty = 60); the last two places of a 4-digit number come from that word",
-     "mustSay": [
-      {
-       "hi": "sixteen = 16",
-       "en": "sixteen = 16"
-      },
-      {
-       "hi": "sixty = 60",
-       "en": "sixty = 60"
-      }
-     ],
+     "mustSay": [{"hi": "1 dahai aur 6 ikai", "en": "1 ten and 6 ones"}, {"hi": "6 dahai aur 0 ikai", "en": "6 tens and 0 ones"}],
      "board": {
       "template": "compare@1",
       "params": {
@@ -305,10 +293,7 @@
        "en": "Put three thousand in the thousands place and eight hundred in the hundreds place"
       },
       "result": "hazaar mein 3, sau mein 8",
-      "why": {
-       "hi": "har bola hua hissa apni jagah mein sirf ek ank deta hai",
-       "en": "each spoken part gives just one digit in its own place"
-      },
+      "why": { "hi": "three thousand aur eight hundred, dono hisse apni jagah mein ek-ek ank dete hain", "en": "three thousand and eight hundred each give one digit in their own place" },
       "simpler": {
        "hi": "Three thousand se hazaar ke khaane mein 3 aata hai. Eight hundred se sau ke khaane mein 8 aata hai.",
        "en": "Three thousand puts 3 in the thousands box. Eight hundred puts 8 in the hundreds box."
@@ -446,10 +431,7 @@
       "hi": "har jagah ek ank aata hai: 9 hazaar, 3 sau, aur forty-one se dahai 4, ikai 1, toh 9341",
       "en": "nine thousand gives 9, three hundred gives 3, and forty-one gives 4 tens and 1 one: 9341"
      },
-     "simpler": {
-      "hi": "Har jagah mein ek ank: hazaar, sau, dahai, ikai. Forty-one mein chaar dahai aur ek ikai hain.",
-      "en": "One digit in each place: thousands, hundreds, tens, ones. Forty-one has four tens and one one."
-     },
+     "simpler": { "hi": "Chaaron jagah ko ek-ek ank do. Forty-one mein chaar dahai aur ek ikai hain.", "en": "Give each of the four places one digit. Forty-one has four tens and one one." },
      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "nine thousand", "items": ["three hundred", "forty-one"]}, "right": {"title": "Jagah", "items": ["hazaar, sau", "dahai, ikai"]}} }
     },
     {
@@ -495,73 +477,23 @@
      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Scoreboard", "items": ["2614"]}, "right": {"title": "Padha", "items": ["two thousand", "six hundred", "forty"]}} }
     }
    ],
-   "ladder": [
-    {
-     "itemId": "c4-maths-ch04-t01-i01",
-     "why": "number name → numeral with every place filled, no zeros: 2345"
-    },
-    {
-     "itemId": "c4-maths-ch04-t01-rl-o1",
-     "why": "numeral → number name: read 4218 place by place, with a teen word at the end"
-    },
-    {
-     "itemId": "c4-maths-ch04-t01-i03",
-     "why": "read aloud a numeral with an empty tens place: 7608"
-    },
-    {
-     "itemId": "c4-maths-ch04-t01-rl-h1",
-     "why": "metro distance in words with fourteen → numeral; teen word in a story"
-    },
-    {
-     "itemId": "c4-maths-ch04-t01-i13",
-     "why": "quick recall: the biggest 4-digit number, 9 in every place"
-    }
-   ],
+   "ladder": [{"itemId": "c4-maths-ch04-t01-rl-o1", "why": "numeral → number name: read 4218 place by place, with a teen word at the end"}, {"itemId": "c4-maths-ch04-t01-rl-h1", "why": "metro distance in words with fourteen → numeral; teen word in a story"}, {"itemId": "c4-maths-ch04-t01-i13", "why": "quick recall: the biggest 4-digit number, 9 in every place"}],
    "remediation": [
     {
      "targets": "c4-maths-ch04-t01-m-concat",
      "move": "place-value chart with exactly 4 boxes, one digit per box; build five thousand three hundred sixty-one box by box → 5361; the spoken parts never sit side by side",
-     "say": { "hi": "Number ke sirf 4 khaane hote hain: hazaar, sau, dahai, ikai, aur har khaane mein ek hi ank. Bole gaye hisse saath-saath chipkaakar nahi likhte: har hissa apne khaane mein ek ank deta hai.", "en": "A number has just 4 boxes: thousands, hundreds, tens, ones, and each box holds one digit. The spoken parts are not stuck side by side: each part gives one digit in its own box." },
-     "simpler": { "hi": "Har khaane mein sirf ek ank jaata hai. Har bola gaya hissa apne khaane ka ek ank hai.", "en": "Each box takes just one digit. Each spoken part is one digit in its own box." },
+     "say": { "hi": "Number ke sirf 4 khaane hote hain: hazaar, sau, dahai, ikai, aur har khaane mein ek hi ank. Bole gaye hisse saath-saath chipkaakar nahi likhte: thousand wala hissa hazaar ke khaane mein jaata hai, hundred wala sau mein, aur aakhri hissa dahai aur ikai mein.", "en": "A number has just 4 boxes: thousands, hundreds, tens, ones, one digit in each. The spoken parts are not stuck side by side: the thousand part goes in thousands, the hundred part in hundreds, the last part in tens and ones." },
+     "simpler": { "hi": "Har khaane mein sirf ek ank jaata hai. Aakhri hissa dahai aur ikai, dono khaane bharta hai.", "en": "Each box takes just one digit. The last part fills both the tens and the ones." },
      "then": {
-      "prompt": {
-       "hi": "Seven thousand two hundred eighty-four ko numbers mein likho, har khaane mein ek ank.",
-       "en": "Write seven thousand two hundred eighty-four in numbers, one digit in each box."
-      },
-      "key": "7284",
-      "accept": [
-       "7,284"
-      ],
+      "prompt": { "hi": "{friend} ne seven thousand two hundred eighty-four ko numbers mein likha, jo board par hai. Kya yeh sahi hai?", "en": "{friend} wrote seven thousand two hundred eighty-four in numbers, as shown on the board. Is that right?" },
+      "key": "Yes",
+      "accept": ["haan", "han", "yes", "sahi hai", "haan sahi hai", "haan, 7284 sahi hai"],
       "targets": "c4-maths-ch04-t01-m-concat",
-      "wrongIfMis": "700020084",
-      "board": {
-       "template": "compare@1",
-       "params": {
-        "left": {
-         "title": "seven thousand",
-         "items": [
-          "two hundred",
-          "eighty-four"
-         ]
-        },
-        "right": {
-         "title": "Jagah",
-         "items": [
-          "hazaar, sau",
-          "dahai, ikai"
-         ]
-        }
-       }
-      },
-      "why": {
-       "hi": "eighty-four se dahai 8 aur ikai 4 aate hain, aur baaki jagah 7 hazaar, 2 sau, toh 7284",
-       "en": "seven thousand gives 7, two hundred gives 2, and eighty-four gives 8 tens and 4 ones: 7284"
-      },
-      "simpler": {
-       "hi": "Har jagah mein sirf ek ank: hazaar, sau, dahai, ikai. Eighty-four mein aath dahai aur chaar ikai hain.",
-       "en": "Only one digit in each place: thousands, hundreds, tens, ones. Eighty-four has eight tens and four ones."
-      },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "seven thousand", "items": ["two hundred", "eighty-four"]}, "right": {"title": "Jagah", "items": ["hazaar, sau", "dahai, ikai"]}} }
+      "wrongIfMis": "No",
+      "board": { "template": "compare@1", "params": {"left": {"title": "Shabdon mein", "items": ["seven thousand", "two hundred", "eighty-four"]}, "right": {"title": "Likha number", "items": ["7284"]}} },
+      "why": { "hi": "shabdon mein seven thousand two hundred eighty-four ke 4 ank: 7, 2, 8, 4; likha number 7284 sahi", "en": "in words, seven thousand two hundred eighty-four gives 4 digits, 7, 2, 8, 4; the written number 7284 is right" },
+      "simpler": { "hi": "Shabdon ke har hisse se apni jagah ka ank aata hai. Board wale number ke ank unse milao.", "en": "Each part of the words gives the digit for its own place. Match the digits on the board with them." },
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Shabdon mein", "items": ["seven thousand", "two hundred", "eighty-four"]}, "right": {"title": "Likha number", "items": ["7284"]}} }
      }
     },
     {
@@ -814,7 +746,7 @@
        "hi": "ank ki value uski jagah se banti hai",
        "en": "a digit's value comes from its place"
       },
-      "simpler": { "hi": "Ank ki value uski jagah se aati hai. Hazaar wala 5 toh 5000 ke barabar hai, aur sau wala 7, 700 ke barabar.", "en": "A digit's value comes from its place. The 5 in the thousands is worth 5000, and the 7 in the hundreds is worth 700." }
+      "simpler": { "hi": "Jagah hi batati hai ki ank kitne ka hai. Hazaar wala 5 toh 5000 ke barabar hai, aur sau wala 7, 700 ke barabar.", "en": "The place tells how much a digit is worth. The 5 in the thousands is worth 5000, and the 7 in the hundreds is worth 700." }
      }
     ],
     "yourStep": {
@@ -837,20 +769,20 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": { "hi": "Ek school ne board par likhe number jitni notebook khareedin. Is number mein ank 3 ki value kitni hai?", "en": "A school bought as many notebooks as the number on the board. What is the 3 worth in this number?" },
-     "key": "300",
-     "accept": ["3 sau", "teen sau", "three hundred"],
+     "prompt": { "hi": "Ek school ne board par likhe number jitni notebook khareedin. Is number mein ank 5 ki value kitni hai?", "en": "A school bought as many notebooks as the number on the board. What is the 5 worth in this number?" },
+     "key": "50",
+     "accept": ["pachaas", "fifty", "5 dahai"],
      "targets": "c4-maths-ch04-t01-m-face-value",
-     "wrongIfMis": "3",
-     "board": { "template": "place-value@1", "params": {"value": 4360} },
-     "why": { "hi": "board wale number mein 3 sau ki jagah par hai, aur 3 sau = 300", "en": "in the number on the board the 3 is in the hundreds place, and 3 hundreds = 300" },
-     "simpler": { "hi": "Board par 3 baayen se doosre khaane mein hai, yaani sau ki jagah. Ab socho, 3 sau kitne hote hain.", "en": "On the board the 3 is in the second box from the left, the hundreds place. Now think how much 3 hundreds is." },
-     "answerBoard": { "template": "place-value@1", "params": {"value": 4360, "mark": {"place": "hundreds", "value": true}} }
+     "wrongIfMis": "5",
+     "board": { "template": "place-value@1", "params": {"value": 3456} },
+     "why": { "hi": "board wale number mein 5 dahai ki jagah par hai, toh uski value 50 hai", "en": "in the number on the board the 5 is in the tens place, so it is worth 50" },
+     "simpler": { "hi": "Board par 5 ikai se theek pehle wale khaane mein hai, yaani dahai ki jagah. Ab socho, 5 dahai kitne hote hain.", "en": "On the board the 5 is in the box just before the ones, the tens place. Now think how much 5 tens is." },
+     "answerBoard": { "template": "place-value@1", "params": {"value": 3456, "mark": {"place": "tens", "value": true}} }
     },
     {
      "id": "c2",
      "prompt": {
-      "hi": "Godown mein 1000-1000 pencil ke 6 carton, 10-10 pencil ke 4 packet aur 3 khuli pencil hain. 100 wala koi packet nahi. Kul kitni pencil?",
+      "hi": "Godown mein 6 carton hain, har carton mein 1000 pencil; 4 packet, har packet mein 10 pencil; aur 3 khuli pencil. 100 wala koi packet nahi. Kul kitni pencil?",
       "en": "A storeroom has 6 cartons of 1000 pencils each, 4 packets of 10 pencils each and 3 loose pencils. There is no packet of 100. How many pencils in all?"
      },
      "key": "6043",
@@ -1209,10 +1141,7 @@
      ],
      "targets": "c4-maths-ch04-t01-m-drop-zero",
      "wrongIfMis": "642",
-     "simpler": {
-      "hi": "Forty-two mein chaar dahai aur do ikai hain. Unhe dahai aur ikai ke khaanon mein rakho.",
-      "en": "Forty-two has four tens and two ones. Put them in the tens and ones boxes."
-     },
+     "simpler": { "hi": "Forty-two mein chaar dahai aur do ikai hain. Chaar ko dahai mein aur do ko ikai mein likho.", "en": "Forty-two has four tens and two ones. Write the four in tens and the two in ones." },
      "why": {
       "hi": "shabdon mein se hazaar ki jagah 6, sau mein 0, aur forty-two se dahai 4, ikai 2 aata hai: 6042",
       "en": "six thousand forty-two gives 6 thousands, 0 hundreds, 4 tens and 2 ones: 6042"
@@ -1250,10 +1179,7 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Ek gaon ki aabaadi paanch hazaar nau hai. Yeh number ankon mein likho.",
-      "en": "A village has a population of five thousand nine. Write this number in digits."
-     },
+     "prompt": { "hi": "Ek gaon ki aabaadi paanch hazaar nau hai. Yeh aabaadi ankon mein likho.", "en": "A village has a population of five thousand nine. Write the population in digits." },
      "key": "5009",
      "accept": [
       "5,009"
@@ -1359,10 +1285,7 @@
       "hi": "5608 mein 6 sau ki jagah par hai, toh expanded form mein 6 ka hissa 600 hai",
       "en": "in 5608 the 6 is in the hundreds place, so its part is 600"
      },
-     "simpler": {
-      "hi": "5608 mein 6 kis jagah par hai, woh dekho. Daayen se pehli jagah ikai, doosri dahai, teesri sau.",
-      "en": "See which place the 6 is in 5608. From the right, the first place is ones, the second tens, the third hundreds."
-     },
+     "simpler": { "hi": "5608 mein 6 kis jagah par hai, woh dekho. Daayen se jagah gino: ikai, phir dahai, phir sau.", "en": "See which place the 6 is in 5608. Count the places from the right: ones, then tens, then hundreds." },
      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Number", "items": ["5608"]}, "right": {"title": "Expanded form", "items": ["6 ka hissa"]}} }
     }
    ],

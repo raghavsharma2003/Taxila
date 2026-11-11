@@ -3264,7 +3264,9 @@
    "topicId": "c6-maths-ch02-t01",
    "notes": [
     "2026-11-11: skillExamples[0] step (d) gave the whole answer '(a) point, (b) ray, (c) line segment, (d) line' as its result. Now '(d) line', re-solved.",
-    "2026-11-11: item i13 hint 2 said 'A dot means it stops there', which is false: ray AB passes through its dot B. Now 'A dot at an end means that end stops there; an arrow means it goes on.' The prompt's fixed name Diya is now the {friendF} slot. Key unchanged (a ray has one endpoint; two dots make a segment), re-solved."
+    "2026-11-11: item i13 hint 2 said 'A dot means it stops there', which is false: ray AB passes through its dot B. Now 'A dot at an end means that end stops there; an arrow means it goes on.' The prompt's fixed name Diya is now the {friendF} slot. Key unchanged (a ray has one endpoint; two dots make a segment), re-solved.",
+    "2026-11-11 (Learning reader pass, staged round 6): item i09 — was four villages → 6, the s3 explain ask's own case; now nine villages, a count taught nowhere in the script. Re-solved blind; agrees.",
+    "2026-11-11 (Learning reader pass, staged round 8): item rl-h3 — was five players → 10 segments, the s3 explain ask's own numbers and answer (rule (e)); the ladder has no spare item; now ten players → 45. Re-solved blind; agrees."
    ],
    "topicType": "T2",
    "skills": [
@@ -3699,23 +3701,25 @@
      "skillId": "c6-maths-ch02-t01-s3",
      "kind": "far_transfer",
      "difficulty": 4,
-     "prompt_en": "Four villages, no three in a straight line, are each joined by a straight road to every other village. How many roads?",
-     "prompt_hi": "Chaar gaon hain, koi 3 ek seedhi line mein nahi. Har gaon har doosre gaon se seedhi sadak se juda hai. Kitni sadakein?",
-     "answer": "6",
+     "prompt_en": "Nine villages, no three in a straight line, are each joined by a straight road to every other village. How many roads?",
+     "prompt_hi": "Nau gaon hain, koi 3 ek seedhi line mein nahi. Har gaon har doosre gaon se seedhi sadak se juda hai. Kitni sadakein?",
+     "answer": "36",
      "acceptable": [
-      "6 roads",
-      "chhe"
+      "36 roads",
+      "chhattees",
+      "thirty-six"
      ],
      "hints": [
       "How many roads leave the first village?",
-      "First village has 3 roads, the second has 2 new ones, the third 1 new one.",
-      "3 + 2 + 1 = ___.",
-      "6 roads."
+      "The first village has 8 roads, the second 7 new ones, and so on down to 1.",
+      "8 + 7 + 6 + 5 + 4 + 3 + 2 + 1 = ___.",
+      "36 roads."
      ],
      "verified": {
-      "solverAnswer": "6",
+      "solverAnswer": "36",
       "agrees": true,
-      "note": ""
+      "how": "claude-blind",
+      "date": "2026-11-11"
      },
      "ge": 5,
      "geSource": "claude-v2",
@@ -3724,7 +3728,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "apply",
-     "tooEasy": false
+     "tooEasy": false,
+     "note": "2026-11-11 (Learning reader pass, staged round 6): was four villages → 6, the s3 explain ask's own case; now nine villages, a count taught nowhere in the script."
     },
     {
      "id": "c6-maths-ch02-t01-i10",
@@ -3989,32 +3994,32 @@
      "skillId": "c6-maths-ch02-t01-s3",
      "kind": "near_transfer",
      "difficulty": 4,
-     "prompt_en": "Five players stand at five marked points on a kabaddi-court diagram. Draw one line segment joining every pair of points. How many different segments are there?",
-     "prompt_hi": "Kabaddi court ke diagram mein paanch players paanch marked points par khade hain. Har pair ke points ko ek line segment se jodo. Kul kitne alag segments banenge?",
-     "answer": "10 segments",
+     "prompt_en": "Ten players stand at ten marked points on a kabaddi-court diagram. Draw one line segment joining every pair of points. How many different segments are there?",
+     "prompt_hi": "Kabaddi court ke diagram mein das players das marked points par khade hain. Har pair ke points ko ek line segment se jodo. Kul kitne alag segments banenge?",
+     "answer": "45 segments",
      "acceptable": [
-      "10",
-      "ten",
-      "das",
-      "10 line segments"
+      "45",
+      "forty-five",
+      "paintaalees",
+      "45 line segments"
      ],
      "hints": [
       "How many other points can each point join?",
       "Counting from both ends repeats every segment.",
       "Count all joins, then divide by ___.",
-      "10 segments: 5 × 4 counts each join twice."
+      "45 segments: 10 × 9 counts each join twice."
      ],
      "ge": 5.5,
      "geSource": "raters-v2",
      "demand": "apply",
      "relevel": "harder",
      "verified": {
-      "solverAnswer": "10",
+      "solverAnswer": "45",
       "agrees": true,
-      "how": "code",
-      "solver": "DeepSeek-V4-Pro",
-      "date": "2026-10-04"
-     }
+      "how": "claude-blind",
+      "date": "2026-11-11"
+     },
+     "note": "2026-11-11 (Learning reader pass, staged round 8): was five players → 10 segments, the s3 explain ask's own numbers and answer (rule (e)); the ladder has no spare item; now ten players → 45."
     }
    ],
    "workedExample": {
@@ -6605,30 +6610,31 @@
      "skillId": "c6-maths-ch02-t04-s3",
      "kind": "far_transfer",
      "difficulty": 4,
-     "prompt_en": "At exactly 8:00, the minute hand points to 12 and the hour hand to 8. What type of angle is the smaller angle between the hands: acute, right or obtuse?",
-     "prompt_hi": "Bilkul 8:00 baje minute hand 12 par aur hour hand 8 par hai. Dono ke beech chhota angle acute, right ya obtuse hai?",
-     "answer": "Obtuse",
+     "prompt_en": "At exactly 11:00, the minute hand points to 12 and the hour hand to 11. What type of angle is the smaller angle between the hands: acute, right or obtuse?",
+     "prompt_hi": "Bilkul 11:00 baje minute hand 12 par aur hour hand 11 par hai. Dono ke beech chhota angle acute, right ya obtuse hai?",
+     "answer": "Acute",
      "acceptable": [
-      "obtuse angle",
-      "adhik kon"
+      "acute angle",
+      "nyun kon",
+      "acute"
      ],
      "hints": [
       "How many hour-mark gaps lie along the shorter path?",
       "Each gap is one-twelfth of a full turn.",
       "Shorter angle = ___ gaps × ___° per gap.",
-      "Obtuse: four gaps make 120°, between 90° and 180°."
+      "Acute: one gap makes 30°, less than 90°."
      ],
      "ge": 5.25,
      "geSource": "raters-v2",
      "demand": "transfer",
      "relevel": "harder",
      "verified": {
-      "solverAnswer": "Obtuse",
+      "solverAnswer": "acute (30°)",
       "agrees": true,
-      "how": "code",
-      "solver": "DeepSeek-V4-Pro",
-      "date": "2026-10-04"
-     }
+      "how": "claude-blind",
+      "date": "2026-11-11"
+     },
+     "note": "2026-11-11 (Learning reader pass, staged round 9): was 8:00 → obtuse (120°), the same frame and answer as i09 (4 o'clock, 120°) in the same ladder; now 11:00 → acute (30°)."
     }
    ],
    "workedExample": {
@@ -6737,6 +6743,9 @@
      "answer": "Smaller angle 60° (acute); larger angle 300° (reflex).",
      "why": "clock = full turn 360° in 12 equal spaces → 30° each; type from the measure only; smaller + larger = 360°"
     }
+   ],
+   "notes": [
+    "2026-11-11 (Learning reader pass, staged round 9): item rl-h3 — was 8:00 → obtuse (120°), the same frame and answer as i09 (4 o'clock) in the s3 ladder; now 11:00 → acute (30°). Re-solved blind; agrees."
    ]
   },
   {
@@ -22083,23 +22092,26 @@
      "skillId": "c6-maths-ch07-t05-s3",
      "kind": "near_transfer",
      "difficulty": 3,
-     "prompt_en": "You mix 1/2 litre of milk with 1/4 litre of water. How much liquid is there?",
-     "prompt_hi": "1/2 litre doodh mein 1/4 litre paani milaya. Kul kitna hua?",
-     "answer": "3/4 litre",
+     "prompt_en": "Two ropes, 2 1/3 m and 1 1/2 m long, are joined end to end. What is their total length?",
+     "prompt_hi": "2 1/3 m aur 1 1/2 m ki do rassiyan jodi. Kul lambai kitni hai?",
+     "answer": "3 5/6 m",
      "acceptable": [
-      "3/4",
-      "pauna litre"
+      "3 5/6",
+      "23/6",
+      "23/6 m",
+      "teen poore paanch bata chhe"
      ],
      "hints": [
-      "Write 1/2 in quarters.",
-      "1/2 = 2/4.",
-      "2/4 + 1/4 = ___ litre.",
-      "3/4 litre."
+      "Add the whole metres first.",
+      "2 + 1 = 3; now add 1/3 and 1/2.",
+      "1/3 = 2/6 and 1/2 = 3/6, so 2/6 + 3/6 = ___.",
+      "3 5/6 m."
      ],
      "verified": {
-      "solverAnswer": "3/4 litre",
+      "solverAnswer": "3 5/6 m",
       "agrees": true,
-      "note": ""
+      "how": "claude-blind",
+      "date": "2026-11-11"
      },
      "ge": 5.25,
      "geSource": "claude-v2",
@@ -22109,7 +22121,8 @@
       "rubric": "6ef389e48b5d5752"
      },
      "demand": "apply",
-     "tooEasy": false
+     "tooEasy": false,
+     "note": "2026-11-11 (Learning reader pass, staged round 6): was 1/2 L + 1/4 L = 3/4 L, tagged s3 (mixed fractions) but a sum below 1 that repeated i03; now a mixed-fraction sum."
     },
     {
      "id": "c6-maths-ch07-t05-i10",
@@ -22347,7 +22360,7 @@
      "skillId": "c6-maths-ch07-t05-s1",
      "kind": "practice",
      "difficulty": 4,
-     "prompt_en": "A metro card had ₹11/15 of its starting balance left. A trip used ₹4/15 of the starting balance, then a refund added ₹2/15. What fraction of the starting balance is left?",
+     "prompt_en": "A metro card had 11/15 of its starting balance left. A trip used 4/15 of the starting balance, then a refund added 2/15. What fraction of the starting balance is left?",
      "prompt_hi": "Metro card mein shuru ke balance ka 11/15 bacha tha. Ek trip mein 4/15 kharch hua, phir 2/15 refund mila. Ab shuru ke balance ka kitna hissa bacha hai?",
      "answer": "3/5",
      "acceptable": [
@@ -22371,7 +22384,8 @@
       "how": "code",
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
-     }
+     },
+     "note": "2026-11-11 (Learning reader pass, staged round 6): ₹ removed from prompt_en (it read as fractions of a rupee; the Hindi had none)."
     },
     {
      "id": "c6-maths-ch07-t05-rl-h2",
@@ -22531,6 +22545,10 @@
      "answer": "4 1/6 km",
      "why": "mixed fraction = wholes + fraction; fractions → same-size parts (sixths) before adding; extra whole from 7/6 carried into the wholes; check: between 1 + 2 = 3 and 2 + 3 = 5"
     }
+   ],
+   "notes": [
+    "2026-11-11 (Learning reader pass, staged round 6): item i09 — was 1/2 L + 1/4 L = 3/4 L, tagged s3 (mixed fractions) but a sum below 1 that repeated i03; now a mixed-fraction sum. Re-solved blind; agrees.",
+    "2026-11-11 (Learning reader pass, staged round 6): item rl-h1 — ₹ removed from prompt_en (it read as fractions of a rupee; the Hindi had none). Text only; key unchanged."
    ]
   },
   {

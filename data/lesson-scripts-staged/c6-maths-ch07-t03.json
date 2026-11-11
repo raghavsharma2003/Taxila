@@ -156,18 +156,18 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": { "hi": "Do ek jaise pizza hain. Farhan ne pehle pizza ke 5 barabar slice mein se 2 khaaye. Ritu ne doosre pizza ke 10 barabar slice mein se 3 khaaye. Zyada kisne khaaya: Farhan ne, Ritu ne, ya dono ne barabar?", "en": "There are two identical pizzas. Farhan ate 2 of the 5 equal slices of the first pizza. Ritu ate 3 of the 10 equal slices of the second pizza. Who ate more: Farhan, Ritu, or did they eat the same?" },
-     "key": "Farhan",
-     "accept": ["Farhan ne", "Farhan ne zyada khaaya", "Farhan ate more"],
+     "prompt": { "hi": "Do ek jaise pizza hain. Farhan ne 5 barabar slice mein se 2 khaaye, Ritu ne 10 barabar slice mein se 3. Ritu kehti hai ki usne zyada khaaya, kyunki 3 bada hai 2 se. Kya Ritu sahi hai?", "en": "Two identical pizzas. Farhan ate 2 of 5 equal slices, Ritu 3 of 10 equal slices. Ritu says she ate more, because 3 is bigger than 2. Is Ritu right?" },
+     "key": "no",
+     "accept": ["nahi", "na", "no", "nahi, Farhan ne zyada khaaya", "galat"],
      "targets": "c6-maths-ch07-t03-m-bigger-numbers-bigger",
-     "wrongIfMis": "Ritu",
+     "wrongIfMis": "yes",
      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 5}, {"parts": 10}]} },
-     "why": { "hi": "2/5 ke har slice ko 2 mein baanto toh 4/10 banta hai; Ritu ka 3/10 kam hai, toh Farhan ne zyada khaaya", "en": "Split each slice of 2/5 in 2 and it makes 4/10; Ritu's 3/10 is less, so Farhan ate more" },
+     "why": { "hi": "2/5 ke har slice ko 2 mein baanto toh 4/10; Ritu ka 3/10 kam hai, toh Ritu sahi nahi", "en": "split each slice of 2/5 in 2 and it is 4/10; Ritu's 3/10 is less, so Ritu is not right" },
      "simpler": { "hi": "Pehle pizza ke har slice ko 2 chhote slice mein baanto. Phir dono ke khaaye slice 10 mein se gino aur milao.", "en": "Split each slice of the first pizza into 2 smaller slices. Then count both eaten shares out of 10 and compare." }, "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 5, "shade": 2, "title": "2/5"}, {"parts": 10, "shade": 3, "title": "3/10"}]} }
     },
     {
      "id": "c2",
-     "prompt": { "hi": "Yeh sankhya rekha 0 se 1 tak 9 barabar hisson mein bati hai. 0 ke baad chhatha nishaan chuna gaya hai. Kya yeh nishaan 2/3 ke barabar hai, haan ya nahi?", "en": "This number line from 0 to 1 is split into 9 equal parts. The 6th mark after 0 is circled. Is this mark equal to 2/3, yes or no?" },
+     "prompt": { "hi": "Yeh sankhya rekha 0 se 1 tak 9 barabar hisson mein bati hai. 0 ke baad chhatha nishaan chuna gaya hai. Kya yeh nishaan 2/3 ke barabar hai, haan ya nahi?", "en": "This number line from 0 to 1 is split into 9 equal parts. The 6th mark after 0 is picked out. Is this mark equal to 2/3, yes or no?" },
      "key": "yes",
      "accept": ["haan", "haan, barabar", "yes, equal"],
      "targets": "c6-maths-ch07-t03-m-bigger-numbers-bigger",
@@ -191,17 +191,14 @@
      "simpler": { "hi": "Tukde zyada, par har tukda chhota. Amount wahi rehta hai.", "en": "More pieces, but smaller pieces. The amount stays the same." },
      
      "then": {
-      "prompt": {
-       "hi": "Do ek jaisi roti: ek ka 1/3, doosri ka 3/9. Zyada kaunsa hai: 1/3, 3/9, ya dono barabar?",
-       "en": "Two identical rotis: 1/3 of one, 3/9 of the other. Which is more: 1/3, 3/9, or are they equal?"
-      },
-      "key": "dono barabar",
-      "accept": ["barabar", "same", "equal", "they are equal"],
+      "prompt": { "hi": "8 tukdon wali roti mein 2 tukde rang wale hain. Do-do tukde jodkar 4 barabar hisse banao: kitne hisse rang wale honge?", "en": "A roti of 8 equal pieces has 2 shaded. Join the pieces in twos into 4 equal parts: how many parts are shaded?" },
+      "key": "1",
+      "accept": ["ek", "one", "1 hissa", "ek hissa"],
       "targets": "c6-maths-ch07-t03-m-bigger-numbers-bigger",
-      "wrongIfMis": "3/9",
-      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 3}, {"parts": 9}]} },
-      "why": { "hi": "1/3 roti ke har hisse ko 3 chhote tukdon mein baanto toh 9 mein se 3 tukde bante hain, wahi amount", "en": "split each part of the roti into 3 smaller pieces and 1/3 becomes 3 of 9 pieces, the same amount" },
-      "simpler": { "hi": "1/3 wali roti ke har hisse ko chhote barabar tukdon mein baanto, taaki dono roti ke tukde ek jaise hon. Phir rang wale tukde milao.", "en": "Split each part of the 1/3 roti into smaller equal pieces so both rotis have the same pieces. Then compare the shaded pieces." }, "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 3, "shade": 1, "title": "1/3"}, {"parts": 9, "shade": 3, "title": "3/9"}]} }
+      "wrongIfMis": "2",
+      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 8, "shade": 2}, {"parts": 4}]} },
+      "why": { "hi": "8 mein se 2 rang wale tukde judkar ek hissa banate hain, toh 4 hisson mein 1 rang wala: 2/8 = 1/4", "en": "of 8 pieces, the 2 shaded pieces join into one part, so 1 of the 4 parts is shaded: 2/8 = 1/4" },
+      "simpler": { "hi": "Do tukde jodne par hisse kam aur bade ho jaate hain. Rang wali jagah utni hi rehti hai, bas use naye bade hisson mein gino.", "en": "Joining two pieces makes fewer, bigger parts. The shaded area stays the same; just count it in the new big parts." }, "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 8, "shade": 2, "title": "2/8"}, {"parts": 4, "shade": 1, "title": "1/4"}]} }
      }
     }
    ],
@@ -348,7 +345,7 @@
      "accept": ["baarah", "twelve"],
      "targets": "c6-maths-ch07-t03-m-one-side",
      "wrongIfMis": "4",
-     "simpler": { "hi": "Neeche 3 se guna hua tha. Ab 4/7 ke upar wale number ko bhi 3 se guna karo.", "en": "The bottom was multiplied by 3. Now multiply the top number of 4/7 by 3 as well." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4/7", "items": ["neeche 7"]}, "right": {"title": "naya bhinn", "items": ["neeche 21", "21 ÷ 7 = 3"]}} }, "why": { "hi": "naya bhinn: neeche 21 = 7 × 3, toh upar bhi 4 × 3 = 12", "en": "the bottom 7 × 3 = 21, so the top is 4 × 3 = 12 too" }
+     "simpler": { "hi": "Neeche ka 7, 3 se guna hokar 21 bana. Ab 4/7 ke upar ko bhi 3 se guna karo.", "en": "The bottom 7 times 3 became 21. Now multiply the top of 4/7 by 3 as well." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4/7", "items": ["neeche 7"]}, "right": {"title": "naya bhinn", "items": ["neeche 21", "21 ÷ 7 = 3"]}} }, "why": { "hi": "naya bhinn: neeche 21 = 7 × 3, toh upar bhi 4 × 3 = 12", "en": "the bottom 7 × 3 = 21, so the top is 4 × 3 = 12 too" }
     },
     "answer": { "hi": "21 ke upar 12 aayega, yaani 4/7 = 12/21", "en": "12 goes on top of 21, so 4/7 = 12/21" },
     "why": {
@@ -401,10 +398,10 @@
      "key": "6/14",
      "accept": ["6 by 14", "chhah bata chaudah", "six fourteenths"],
      "targets": "c6-maths-ch07-t03-m-add-same",
-     "wrongIfMis": "5/9", "board": { "template": "compare@1", "params": {"left": {"title": "3 aur 7", "items": ["barabar?"]}, "right": {"title": "5 aur 9", "items": ["6 aur 14"]}} },
+     "wrongIfMis": "5/9", "board": { "template": "compare@1", "params": {"left": {"title": "3 aur 7", "items": ["barabar?"]}, "right": {"title": "kaunsa", "items": ["5 aur 9", "6 aur 14"]}} },
      
-     "why": { "hi": "3/7 ke dono ko 2 se guna karo toh 6/14; 5/9 mein dono mein 2 joda, guna nahi kiya", "en": "Multiply both of 3/7 by 2 and you get 6/14; 5/9 has 2 added to both, not multiplied" },
-     "simpler": { "hi": "Barabar bhinn upar aur neeche ko ek hi number se guna karke bante hain. Dekho kaunsa bhinn 3/7 ke upar aur neeche ko ek hi number se guna karke banta hai.", "en": "Equal fractions come from multiplying the top and bottom by the same number. See which fraction comes from multiplying the top and bottom of 3/7 by one number." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 aur 7", "items": ["barabar?"]}, "right": {"title": "5 aur 9", "items": ["6 aur 14"]}} }
+     "why": { "hi": "kaunsa barabar hai, yeh guna se pata chalta hai: 3/7 ke dono ko 2 se guna toh 6/14; 5/9 mein 2 joda", "en": "multiplying tells which is equal: both of 3/7 times 2 give 6/14; 5/9 has 2 added to both" },
+     "simpler": { "hi": "Dekho 3/7 ke upar aur neeche ko ek hi number se guna karke kaunsa bhinn banta hai. Dono mein ek hi number jodne se yahan amount badal jaata hai.", "en": "See which fraction you get by multiplying the top and bottom of 3/7 by one number. Adding one number to both changes the amount here." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 aur 7", "items": ["barabar?"]}, "right": {"title": "kaunsa", "items": ["5 aur 9", "6 aur 14"]}} }
     }
    ],
    "ladder": [
@@ -418,18 +415,18 @@
     {
      "targets": "c6-maths-ch07-t03-m-one-side",
      "move": "bar of 3 equal parts, 2 shaded; split every third into 2 → total parts double (3 → 6) and shaded parts double too (2 → 4) → both numbers change by the same × 2",
-     "say": { "hi": "Sirf neeche ko guna karne se amount badal jaata hai. Amount wahi rakhne ke liye upar aur neeche dono ko ek hi number se guna karo: neeche dugna hua, toh upar bhi dugna.", "en": "Multiplying only the bottom changes the amount. To keep the same amount, multiply the top and the bottom by the same number: if the bottom is doubled, the top is doubled too." },
-     "simpler": { "hi": "Neeche ko jis number se guna kiya, upar ko bhi usi se guna karo.", "en": "Whatever the bottom is multiplied by, multiply the top by the same." },
+     "say": { "hi": "Sirf neeche ko 1 se bade number se guna karne se har hissa chhota ho jaata hai, par rang wale hisse utne hi rehte hain, toh amount ghat jaata hai.", "en": "Multiplying only the bottom by a number bigger than 1 makes every part smaller while the shaded parts stay as many, so the amount shrinks." },
+     "simpler": { "hi": "Neeche ko 1 se bade number se guna karo, toh tukde chhote ho jaate hain. Rang wale tukde utne hi rehte hain, isliye amount kam ho jaata hai.", "en": "Multiply the bottom by a number bigger than 1 and the pieces get smaller. The shaded pieces stay as many, so the amount gets less." },
      
      "then": {
-      "prompt": { "hi": "2/7 ke barabar ek bhinn hai jiska neeche 14 hai. Uske upar kya aayega?", "en": "A fraction equal to 2/7 has 14 at the bottom. What goes on its top?" },
-      "key": "4",
-      "accept": ["chaar", "four"],
+      "prompt": { "hi": "2/9 ka neeche 9 ko 5 se guna karke 45 banaya. Upar ka 2: 2 hi rahega, ya use bhi 5 se guna karoge?", "en": "The bottom 9 of 2/9 was multiplied by 5 to make 45. The top 2: does it stay 2, or do you multiply it by 5 too?" },
+      "key": "5 se guna",
+      "accept": ["use bhi 5 se guna", "5 se guna karunga", "10", "multiply by 5", "multiply it by 5 too"],
       "targets": "c6-maths-ch07-t03-m-one-side",
-      "wrongIfMis": "2",
-      "board": { "template": "compare@1", "params": {"left": {"title": "2/7", "items": ["neeche 7"]}, "right": {"title": "barabar bhinn", "items": ["neeche 14"]}} },
-      "why": { "hi": "barabar bhinn ka neeche 7 × 2 = 14, toh upar bhi 2 × 2 = 4", "en": "at the bottom 7 × 2 = 14, so on top too 2 × 2 = 4" },
-      "simpler": { "hi": "Dekho 2/7 ke neeche wale number ko kis number se guna karein ki 14 aaye. Upar wale number ko bhi usi se guna karo.", "en": "See what the bottom number of 2/7 must be multiplied by to make 14. Multiply the top number by that too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2/7", "items": ["neeche 7"]}, "right": {"title": "barabar bhinn", "items": ["neeche 14"]}} }
+      "wrongIfMis": "2 hi rahega",
+      "board": { "template": "compare@1", "params": {"left": {"title": "2/9", "items": ["neeche 9"]}, "right": {"title": "5 se guna", "items": ["neeche 45"]}} },
+      "why": { "hi": "neeche 9 ko 5 se guna karke 45, toh upar bhi 2 × 5 = 10; 2/9 = 10/45", "en": "the bottom 9 was multiplied by 5 to make 45, so the top too: 2 × 5 = 10; 2/9 = 10/45" },
+      "simpler": { "hi": "Amount wahi rakhna hai. Neeche 9 se 45 hua, toh har hissa paanch guna chhota ho gaya; ab socho rang wale hisson ka kya hona chahiye.", "en": "The amount must stay the same. The bottom went from 9 to 45, so each part got five times smaller; now think what must happen to the shaded parts." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2/9", "items": ["neeche 9"]}, "right": {"title": "5 se guna", "items": ["neeche 45"]}} }
      }
     },
     {
@@ -439,14 +436,14 @@
      "simpler": { "hi": "Ek hi number jodne se aam taur par amount badal jaata hai. Dono ko ek hi number se guna karo.", "en": "Adding the same number usually changes the amount. Multiply both by the same number instead." },
      
      "then": {
-      "prompt": { "hi": "{friend} ne 1/4 ke upar aur neeche dono mein 2 joda aur 3/6 likha. Kya 3/6, 1/4 ke barabar hai, haan ya nahi?", "en": "{friend} added 2 to both the top and bottom of 1/4 and wrote 3/6. Is 3/6 equal to 1/4, yes or no?" },
-      "key": "no",
-      "accept": ["nahi", "galat", "barabar nahi", "not equal"],
+      "prompt": { "hi": "{friend} ne 1/4 ke upar aur neeche dono mein 2 joda aur 3/6 likha. 3/6, 1/4 se bada hai, chhota, ya barabar?", "en": "{friend} added 2 to both the top and bottom of 1/4 and wrote 3/6. Is 3/6 bigger than 1/4, smaller, or equal?" },
+      "key": "bada",
+      "accept": ["3/6 bada hai", "bigger", "zyada", "3/6 is bigger"],
       "targets": "c6-maths-ch07-t03-m-add-same",
-      "wrongIfMis": "yes",
+      "wrongIfMis": "barabar",
       "board": { "template": "compare@1", "params": {"left": {"title": "1/4", "items": ["dono mein 2 joda"]}, "right": {"title": "3/6", "items": ["likha"]}} },
-      "why": { "hi": "1/4 = 3/12, par likha 3/6 = 6/12, toh amount alag hai; dono mein 2 joda, guna nahi kiya", "en": "1/4 = 3/12, but the written 3/6 = 6/12, so the amounts differ; 2 was added to both, not multiplied" },
-      "simpler": { "hi": "Barabar bhinn upar aur neeche ko ek hi number se guna karke bante hain. Dekho 1/4 se 3/6 tak upar aur neeche ke saath kya kiya gaya.", "en": "Equal fractions come from multiplying the top and bottom by the same number. See what was done to the top and bottom to go from 1/4 to 3/6." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1/4", "items": ["dono mein 2 joda"]}, "right": {"title": "3/6", "items": ["likha"]}} }
+      "why": { "hi": "1/4 ke dono mein 2 joda aur 3/6 likha; 3/6 aadha hai, aur 1/4 aadhe se kam, toh 3/6 bada", "en": "2 was added to both of 1/4 to write 3/6; 3/6 is a half, 1/4 is less, so 3/6 is bigger" },
+      "simpler": { "hi": "3/6 theek aadha hai. Ab 1/4 ko aadhe se milao.", "en": "3/6 is exactly a half. Now compare 1/4 with a half." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1/4", "items": ["dono mein 2 joda"]}, "right": {"title": "3/6", "items": ["likha"]}} }
      }
     }
    ],
@@ -553,13 +550,10 @@
       "en": "The biggest common factor of 20 and 50 is 10. Divide both by 10 at once: 20 ÷ 10 = 2 and 50 ÷ 10 = 5, so straight to 2/5, in one step."
      },
      "ask": {
-      "prompt": {
-       "hi": "35/56 mein upar aur neeche ka sabse bada common factor 7 hai. Ek hi baar mein bhaag do: lowest terms kya hoga?",
-       "en": "In 35/56 the biggest common factor of the top and bottom is 7. Divide once: what is the lowest-terms fraction?"
-      },
-      "key": "5/8",
-      "accept": ["5 by 8", "paanch bata aath", "five eighths"],
-      "why": { "hi": "20/50 ki tarah ek hi kadam: 35 ÷ 7 = 5, 56 ÷ 7 = 8, yaani 5/8", "en": "in one step, like 20/50: 35 ÷ 7 = 5 and 56 ÷ 7 = 8, so 5/8" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "20/50", "items": ["20 ÷ 10 = 2", "50 ÷ 10 = 5"]}, "right": {"title": "2/5", "items": ["ek hi kadam"]}} }
+      "prompt": { "hi": "35/56 ko ek hi kadam mein lowest terms tak le jaana hai. Upar aur neeche ko kis number se bhaag doge?", "en": "35/56 is to go to lowest terms in one step. Which number do you divide the top and bottom by?" },
+      "key": "7",
+      "accept": ["saat", "seven", "7 se", "by 7"],
+      "why": { "hi": "20/50 ki tarah ek hi kadam: 35 = 5 × 7, 56 = 8 × 7, toh sabse bada common factor 7", "en": "one step, like 20/50: 35 = 5 × 7 and 56 = 8 × 7, so the biggest common factor is 7" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "20/50", "items": ["20 ÷ 10 = 2", "50 ÷ 10 = 5"]}, "right": {"title": "2/5", "items": ["ek hi kadam"]}} }
      },
      "simpler": { "hi": "20 aur 50 dono 10 se poore bat-te hain. Ek hi baar 10 se bhaag do, toh seedha 2/5 milta hai.", "en": "Both 20 and 50 divide exactly by 10. Divide by 10 just once and you get 2/5 straight away." }
     }
@@ -599,7 +593,7 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": { "hi": "{friend} kehta hai ki 12/20 lowest terms mein hai kyunki usne 24/40 ko ek baar bhaag de diya. Kya woh sahi hai, haan ya nahi?", "en": "{friend} says 12/20 is in lowest terms because he already divided 24/40 once. Is he right, yes or no?" },
+     "prompt": { "hi": "{friendM} kehta hai ki 12/20 lowest terms mein hai kyunki usne 24/40 ko ek baar bhaag de diya. Kya woh sahi hai, haan ya nahi?", "en": "{friendM} says 12/20 is in lowest terms because he already divided 24/40 once. Is he right, yes or no?" },
      "key": "no",
      "accept": ["nahi", "galat", "sahi nahi", "not right"],
      "targets": "c6-maths-ch07-t03-m-stop-early",
@@ -610,14 +604,14 @@
     },
     {
      "id": "c2",
-     "prompt": { "hi": "Ek bhinn ka upar 28 aur neeche 70 hai. Ise lowest terms mein likho, jahan upar aur neeche ka common factor sirf 1 ho.", "en": "A fraction has 28 on top and 70 at the bottom. Write it in lowest terms, where the only common factor of the top and bottom is 1." },
-     "key": "2/5",
-     "accept": ["2 by 5", "do bata paanch", "two fifths"],
+     "prompt": { "hi": "30/84 ko bhaag dete-dete do bachchon ke do jawab aaye. Lowest terms mein kaunsa hai: 15/42 ya 5/14?", "en": "Dividing 30/84 down, two children got two answers. Which is in lowest terms: 15/42 or 5/14?" },
+     "key": "5/14",
+     "accept": ["5 by 14", "paanch bata chaudah", "five fourteenths", "doosra jawab"],
      "targets": "c6-maths-ch07-t03-m-stop-early",
-     "wrongIfMis": "14/35",
-     "board": { "template": "compare@1", "params": {"left": {"title": "upar 28", "items": ["neeche 70"]}, "right": {"title": "lowest terms", "items": ["common factor sirf 1"]}} },
-     "why": { "hi": "upar 28 aur neeche 70 ko sabse bade common factor 14 se bhaag do: 2/5, ab common factor sirf 1", "en": "divide the top 28 and bottom 70 by their biggest common factor 14: 2/5, whose only common factor is 1" },
-     "simpler": { "hi": "28 aur 70 ka sabse bada common factor dhoondo. Upar aur neeche dono ko usi se bhaag do.", "en": "Find the biggest common factor of 28 and 70. Divide both the top and the bottom by it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar 28", "items": ["neeche 70"]}, "right": {"title": "lowest terms", "items": ["common factor sirf 1"]}} }
+     "wrongIfMis": "15/42",
+     "board": { "template": "compare@1", "params": {"left": {"title": "jawab", "items": ["15 aur 42"]}, "right": {"title": "jawab", "items": ["5 aur 14"]}} },
+     "why": { "hi": "pehla jawab 15/42: 3 abhi common hai; doosra jawab 5/14: sirf 1 common, toh lowest terms", "en": "the first answer 15/42 still shares 3; the second answer 5/14 shares only 1, so it is in lowest terms" },
+     "simpler": { "hi": "Har jawab ke upar aur neeche ke factor dekho. Jiske upar-neeche mein koi bada common factor na bache, wahi lowest terms hai.", "en": "Look at the factors of the top and bottom of each answer. The one with no bigger common factor left is in lowest terms." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "jawab", "items": ["15 aur 42"]}, "right": {"title": "jawab", "items": ["5 aur 14"]}} }
     }
    ],
    "ladder": [
@@ -635,23 +629,14 @@
      "simpler": { "hi": "1 se bada common factor bacha ho, toh aur bhaag karo.", "en": "If a common factor bigger than 1 is left, keep dividing." },
      
      "then": {
-      "prompt": {
-       "hi": "Upar 30, neeche 42. {friend} ne dono ko 2 se bhaag diya: upar 15, neeche 21. Lowest terms mein aakhri bhinn kya hoga?",
-       "en": "Top 30, bottom 42. {friend} divided both by 2: top 15, bottom 21. What is the final fraction in lowest terms?"
-      },
-      "key": "5/7",
-      "accept": ["5 by 7", "paanch bata saat", "five sevenths"],
+      "prompt": { "hi": "{friendF} ne 30/42 ko 2 se bhaag dekar 15/21 likha. 15 aur 21 mein 1 ke alawa kaunsa common factor abhi bacha hai?", "en": "{friendF} divided 30/42 by 2 and wrote 15/21. Apart from 1, which common factor do 15 and 21 still share?" },
+      "key": "3",
+      "accept": ["teen", "three", "3 bacha hai"],
       "targets": "c6-maths-ch07-t03-m-stop-early",
-      "wrongIfMis": "15/21",
-      "board": {
-       "template": "compare@1",
-       "params": {
-        "left": { "title": "upar 30", "items": ["neeche 42"] },
-        "right": { "title": "2 se bhaag", "items": ["upar 15", "neeche 21"] }
-       }
-      },
-      "why": { "hi": "upar 30, neeche 42 ko 2 se bhaag diya; 15 aur 21 mein 3 abhi common hai, yaani 5/7", "en": "15 and 21 still share 3: 15 ÷ 3 = 5, 21 ÷ 3 = 7, so 5/7" },
-      "simpler": { "hi": "15 aur 21 mein ab bhi ek common factor bacha hai. Dono kis pahade mein aate hain, dekho, aur dono ko usse bhaag do.", "en": "15 and 21 still share a common factor. See which times table both are in, and divide both by that number." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "upar 30", "items": ["neeche 42"]}, "right": {"title": "2 se bhaag", "items": ["upar 15", "neeche 21"]}} }
+      "wrongIfMis": "koi nahi",
+      "board": { "template": "compare@1", "params": {"left": {"title": "30/42", "items": ["2 se bhaag"]}, "right": {"title": "15/21", "items": ["common factor?"]}} },
+      "why": { "hi": "30/42 ko 2 se bhaag diya: 15/21; 15 = 3 × 5, 21 = 3 × 7, toh common factor 3", "en": "30/42 ÷ 2 gave 15/21; 15 = 3 × 5 and 21 = 3 × 7, so 3 is common" },
+      "simpler": { "hi": "Dekho 15 aur 21 dono kis pahade mein aate hain. Wahi number dono ko poora bhaag deta hai.", "en": "See which times table both 15 and 21 are in. That number divides both exactly." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "30/42", "items": ["2 se bhaag"]}, "right": {"title": "15/21", "items": ["common factor?"]}} }
      }
     }
    ],

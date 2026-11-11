@@ -99,13 +99,10 @@
      "convey": "the same distance in two units: 3 km = 3000 m → the bigger unit gives the smaller number, the smaller unit the bigger number, because one km holds 1000 m",
      "mustSay": [
       {"hi": "bada unit, chhota number", "en": "bigger unit, smaller number"},
-      {"hi": "3 km = 3000 m", "en": "3 km = 3000 m"}
+      { "hi": "ek hi doori", "en": "the same distance" }
      ],
      "board": {"template": "compare@1", "params": {"left": {"title": "3 km", "items": ["chhota number"]}, "right": {"title": "3000 m", "items": ["bada number"]}}},
-     "point": {
-      "hi": "Ek hi doori ko dekho: 3 km = 3000 m. km mein likho toh chhota number aata hai, metre mein likho toh bada number. Bada unit, chhota number, kyunki ek km mein 1000 m samaate hain. Yeh rekha metre mein hai.",
-      "en": "Look at one distance: 3 km = 3000 m. Written in km it is a smaller number, written in metres a bigger number. Bigger unit, smaller number, because one km holds 1000 m. This line is in metres."
-     },
+     "point": { "hi": "Ek hi doori ko km mein likho toh chhota number aata hai, metre mein likho toh bada number. Bada unit, chhota number, kyunki ek km mein bahut saare metre samaate hain. Yeh rekha metre mein hai.", "en": "Write the same distance in km and you get a smaller number; write it in metres and you get a bigger one. Bigger unit, smaller number, because one km holds many metres. This line is in metres." },
      "ask": {
       "prompt": {
        "hi": "Ek sadak 8000 m lambi hai. Yeh sadak kitne km lambi hai?",
@@ -122,10 +119,7 @@
       "board": {"template": "number-line-scale@1", "params": {"from": 0, "to": 8000, "step": 4000, "marks": [{"value": 8000, "label": "sadak"}]}},
       "answerBoard": {"template": "number-line-scale@1", "params": {"from": 0, "to": 8000, "step": 4000, "marks": [{"value": 4000, "label": "4 km"}, {"value": 8000, "label": "8 km"}]}}
      },
-     "simpler": {
-      "hi": "3 km aur 3000 m ek hi doori hai. km bada unit hai, isliye usmein number chhota aata hai.",
-      "en": "3 km and 3000 m are one and the same distance. km is the bigger unit, so its number comes out smaller."
-     }
+     "simpler": { "hi": "Wahi doori km mein likho toh number chhota, metre mein likho toh bada. km bada unit hai, isliye usmein number chhota aata hai.", "en": "Write that distance in km and the number is small; in metres it is big. km is the bigger unit, so its number comes out smaller." }
     }
    ],
    "workedExample": {
@@ -209,10 +203,7 @@
     },
     {
      "id": "c2",
-     "prompt": {
-      "hi": "Ek kapde ka than 3 m lamba hai. Woh kitne cm lamba hai?",
-      "en": "A roll of cloth is 3 m long. How many cm long is it?"
-     },
+     "prompt": { "hi": "Ek kapde ka than 3 m lamba hai. Woh kitne cm lamba hai?", "en": "A roll of cloth is 3 m long. What is its length in cm?" },
      "key": "300 cm",
      "why": {"hi": "har m ke 100 cm, yaani 3 × 100 = 300", "en": "each m is 100 cm, so 3 × 100 = 300"},
      "accept": ["300", "teen sau", "three hundred", "300 centimetre", "teen sau cm"],
@@ -241,19 +232,7 @@
      "answerBoard": {"template": "number-line-scale@1", "params": {"from": 0, "to": 6000, "step": 1000, "marks": [{"value": 600, "label": "600 m"}, {"value": 6000, "label": "6 km"}]}}
     }
    ],
-   "ladder": [
-    {"itemId": "c5-maths-ch05-t01-i01", "why": "recall 1 km = 1000 m → the base fact, warm-up"},
-    {"itemId": "c5-maths-ch05-t01-i14", "why": "recall 1 m = 100 cm → the second fact, kept apart from the first"},
-    {"itemId": "c5-maths-ch05-t01-rl-o2", "why": "use 1 m = 100 cm in a situation → 100 − 40 = 60 cm left"},
-    {
-     "itemId": "c5-maths-ch05-t01-i08",
-     "why": "explain why m → km gives a smaller number → bigger unit holds 1000 m"
-    },
-    {
-     "itemId": "c5-maths-ch05-t01-rl-h1",
-     "why": "100 m markers along 1 km → 900 m is the last marker before 1000 m"
-    }
-   ],
+   "ladder": [{"itemId": "c5-maths-ch05-t01-rl-o2", "why": "use 1 m = 100 cm in a situation → 100 − 40 = 60 cm left"}, {"itemId": "c5-maths-ch05-t01-i08", "why": "explain why m → km gives a smaller number → bigger unit holds 1000 m"}, {"itemId": "c5-maths-ch05-t01-rl-h1", "why": "100 m markers along 1 km → 900 m is the last marker before 1000 m"}],
    "remediation": [
     {
      "targets": "c5-maths-ch05-t01-m-km-100m",
@@ -345,14 +324,11 @@
      "id": "e1",
      "convey": "km → m: each km is 1000 m → 4 km = 4 × 1000 = 4000 m; changing to the smaller unit makes the number bigger",
      "mustSay": [
-      {"hi": "4 km = 4000 m", "en": "4 km = 4000 m"},
+      { "hi": "1000 se guna", "en": "multiply by 1000" },
       {"hi": "chhota unit, bada number", "en": "smaller unit, bigger number"}
      ],
      "board": {"template": "compare@1", "params": {"left": {"title": "1 km", "items": ["1000 m"]}, "right": {"title": "4 km", "items": ["4 × 1000", "4000 m"]}}},
-     "point": {
-      "hi": "Har km mein 1000 m hote hain. Toh 4 km = 4 × 1000 = 4000 m. Dekho, chhote unit metre mein badla toh number bada ho gaya: chhota unit, bada number. Yeh rekha km mein bani hai.",
-      "en": "Every km has 1000 m. So 4 km = 4 × 1000 = 4000 m. See, changing to the smaller unit, metres, made the number bigger: smaller unit, bigger number. This line is marked in km."
-     },
+     "point": { "hi": "Har km mein 1000 m hote hain, toh km ko metre banane ke liye km ki sankhya ko 1000 se guna karo. Chhote unit, metre, mein badlo toh number bada ho jaata hai: chhota unit, bada number. Yeh rekha km mein bani hai.", "en": "Every km has 1000 m, so to change km to metres, multiply the number of km by 1000. Changing to the smaller unit, metres, makes the number bigger: smaller unit, bigger number. This line is marked in km." },
      "ask": {
       "prompt": {
        "hi": "Ek train 7 km chali. Train kitne metre chali?",
@@ -363,20 +339,17 @@
       "accept": ["7000", "saat hazaar", "seven thousand", "7000 metre"],
       "targets": "c5-maths-ch05-t01-m-km-100m",
       "wrongIfMis": "700 m",
-      "board": {"template": "number-line-scale@1", "params": {"from": 0, "to": 7, "step": 1, "marks": [{"value": 7, "label": "train"}]}},
+      "board": { "template": "number-line-scale@1", "params": {"from": 0, "to": 7, "step": 1, "marks": [{"value": 1, "label": "1000 m"}, {"value": 7, "label": "train"}]} },
       "answerBoard": {"template": "number-line-scale@1", "params": {"from": 0, "to": 7, "step": 1, "marks": [{"value": 1, "label": "1000 m"}, {"value": 7, "label": "7000 m"}]}}
      },
-     "simpler": {
-      "hi": "Har km mein 1000 m hote hain. Toh 4 km matlab 1000 ko 4 se guna, yaani 4000 m.",
-      "en": "Every km has 1000 m. So 4 km means 1000 times 4, that is 4000 m."
-     }
+     "simpler": { "hi": "Ek km 1000 m ke barabar hai. Toh jitne km hain, utni baar 1000 m lo.", "en": "One km equals 1000 m. So take 1000 m as many times as there are km." }
     },
     {
      "id": "e2",
      "convey": "mixed units: 2 km 50 m → km first, 2 km = 2000 m → add 50 → 2050 m; in 2050 the hundreds place holds 0, so never 250; on the line the whole km come first, then the metres left over",
-     "mustSay": [{"hi": "pehle km ko metre banao", "en": "change the km to metres first"}, {"hi": "2050 m", "en": "2050 m"}],
+     "mustSay": [{"hi": "pehle km ko metre banao", "en": "change the km to metres first"}, { "hi": "sau ki jagah 0", "en": "a 0 in the hundreds place" }],
      "board": {"template": "number-line-scale@1", "params": {"from": 0, "to": 3000, "step": 1000, "marks": [{"value": 2000, "label": "2 km"}]}},
-     "point": { "hi": "2 km 50 m mein pehle km ko metre banao: 2 km = 2000 m. Phir 50 m jodo: 2000 + 50 = 2050 m. 2050 mein sau ki jagah 0 aata hai, isliye yeh 250 nahi hai. Rekha par poore km pehle aate hain, phir bache metre.", "en": "In 2 km 50 m, first change the km to metres: 2 km = 2000 m. Then add 50 m: 2000 + 50 = 2050 m. In 2050 a 0 goes in the hundreds place, so it is not 250. On the line the whole km come first, then the metres left over." },
+     "point": { "hi": "km aur m wali doori mein pehle km ko metre banao, phir bache metre jodo. Bache metre sau se kam hon, toh sau ki jagah 0 aata hai; use chhodna mat. Rekha par poore km pehle aate hain, phir bache metre.", "en": "In a distance in km and m, change the km to metres first, then add the metres left over. If the leftover metres are fewer than a hundred, a 0 goes in the hundreds place; don't drop it. On the line the whole km come first, then the metres left over." },
      "ask": {
       "prompt": {
        "hi": "Ek cycle race 3 km 40 m ki hai. Isi tarah socho: race kitne metre ki hai?",
@@ -390,17 +363,14 @@
       "board": {"template": "number-line-scale@1", "params": {"from": 0, "to": 4000, "step": 1000, "marks": [{"value": 3000, "label": "3 km"}]}},
       "answerBoard": {"template": "number-line-scale@1", "params": {"from": 0, "to": 4000, "step": 1000, "marks": [{"value": 3040, "label": "3040 m"}]}}
      },
-     "simpler": { "hi": "Pehle 2 km ko 2000 m banao, phir 50 m jodo, toh 2050 m. 2050 mein sau ki jagah 0 aata hai, isliye yeh 250 nahi.", "en": "First make 2 km into 2000 m, then add 50 m to get 2050 m. In 2050 the hundreds place holds 0, so it is not 250." }
+     "simpler": { "hi": "Pehle km ko metre mein badlo, phir bache metre jodo. Sau ka khaana khaali rahe toh wahan 0 likho.", "en": "First turn the km into metres, then add the leftover metres. If the hundreds place stays empty, write 0 there." }
     },
     {
      "id": "e3",
      "convey": "m → km and m: 4500 m → take out the full thousands → 4000 m = 4 km, 500 m left → 4 km 500 m; changing to the bigger unit makes the number smaller",
-     "mustSay": [{"hi": "har 1000 m = 1 km", "en": "every 1000 m = 1 km"}, {"hi": "4 km 500 m", "en": "4 km 500 m"}],
+     "mustSay": [{"hi": "har 1000 m = 1 km", "en": "every 1000 m = 1 km"}, { "hi": "jo metre bachein", "en": "the metres left over" }],
      "board": {"template": "compare@1", "params": {"left": {"title": "4500 m", "items": ["4000 m + 500 m"]}, "right": {"title": "km aur m", "items": ["4 km 500 m"]}}},
-     "point": {
-      "hi": "Ulta bhi kar sakte hain. 4500 m mein 4000 m hain, aur har 1000 m = 1 km, toh 4000 m = 4 km. Bache 500 m. Toh 4500 m = 4 km 500 m. Yeh rekha metre mein hai.",
-      "en": "We can go the other way too. 4500 m has 4000 m in it, and every 1000 m = 1 km, so 4000 m = 4 km. 500 m are left. So 4500 m = 4 km 500 m. This line is in metres."
-     },
+     "point": { "hi": "Ulta bhi kar sakte hain. Har 1000 m = 1 km, toh metre mein jitne poore hazaar hain, utne km likho, aur jo metre bachein woh m mein. Board ki rekha par doori metre mein likhi hai.", "en": "We can go the other way too. Every 1000 m = 1 km, so write as many km as there are whole thousands in the metres, and the metres left over in m. The line on the board shows the distance in metres." },
      "ask": {
       "prompt": {
        "hi": "Ek sadak 6200 m lambi hai. Uski lambai km aur m mein batao.",
@@ -415,10 +385,7 @@
       "board": {"template": "number-line-scale@1", "params": {"from": 0, "to": 7000, "step": 1000, "marks": [{"value": 6200, "label": "6200 m"}]}},
       "answerBoard": {"template": "number-line-scale@1", "params": {"from": 0, "to": 7000, "step": 1000, "marks": [{"value": 6200, "label": "6 km 200 m"}]}}
      },
-     "simpler": {
-      "hi": "4500 m mein se 4000 m alag karo, woh 4 km hai. Bache 500 m, toh 4 km 500 m.",
-      "en": "Take 4000 m out of 4500 m; that is 4 km. 500 m are left, so it is 4 km 500 m."
-     }
+     "simpler": { "hi": "Metre mein se poore hazaar alag karo, har hazaar ek km hai. Jo bache, woh metre mein likho.", "en": "Take the whole thousands out of the metres; each thousand is one km. Write what is left in metres." }
     }
    ],
    "workedExample": {
@@ -445,10 +412,7 @@
       "do": {"hi": "Ab 4 km ko metre mein badlo", "en": "Now change 4 km to metres"},
       "result": "4 × 1000 = 4000 m",
       "why": {"hi": "har km mein 1000 m hote hain", "en": "every km has 1000 m"},
-      "simpler": {
-       "hi": "Har km mein 1000 m hain. 4 km matlab 1000 ko 4 baar lo, yaani 4000 m.",
-       "en": "Every km has 1000 m. 4 km means 1000 taken 4 times, that is 4000 m."
-      }
+      "simpler": { "hi": "Har km mein 1000 m hain. 4 km matlab 1000 ko 4 baar lo, yaani 4000 m.", "en": "Each km holds 1000 m. 4 km means 1000 taken 4 times, that is 4000 m." }
      }
     ],
     "yourStep": {
@@ -496,42 +460,27 @@
     },
     {
      "id": "c2",
-     "prompt": {
-      "hi": "Ek metro line 5 km 75 m lambi hai. Yeh kitne metre hai?",
-      "en": "A metro line is 5 km 75 m long. How many metres is this?"
-     },
-     "key": "5075 m",
-     "why": {"hi": "5 km = 5000 m, aur 5000 + 75 = 5075", "en": "5 km = 5000 m, and 5000 + 75 = 5075"},
-     "accept": ["5075", "paanch hazaar pachhattar", "five thousand seventy-five", "five thousand seventy five", "5075 metre"],
+     "prompt": { "hi": "Ek metro line 10 km 60 m lambi hai. Yeh kitne metre hai?", "en": "A metro line is 10 km 60 m long. How many metres is this?" },
+     "key": "10060 m",
+     "why": { "hi": "10 km = 10000 m, aur 10000 + 60 = 10060", "en": "10 km = 10000 m, and 10000 + 60 = 10060" },
+     "accept": ["10060", "das hazaar saath", "ten thousand sixty", "ten thousand and sixty", "10060 metre"],
      "targets": "c5-maths-ch05-t01-m-mixed-concat",
-     "wrongIfMis": "575 m",
-     "board": {"template": "number-line-scale@1", "params": {"from": 0, "to": 6000, "step": 1000, "marks": [{"value": 5000, "label": "5 km"}]}},
-     "simpler": {
-      "hi": "Pehle 5 km ko metre mein badlo. Phir usmein 75 m jodo.",
-      "en": "First change 5 km to metres. Then add 75 m to it."
-     },
-     "answerBoard": {"template": "number-line-scale@1", "params": {"from": 0, "to": 6000, "step": 1000, "marks": [{"value": 5075, "label": "5075 m"}]}}
+     "wrongIfMis": "1060 m",
+     "board": { "template": "number-line-scale@1", "params": {"from": 9000, "to": 12000, "step": 1000, "marks": [{"value": 10000, "label": "10 km"}]} },
+     "simpler": { "hi": "Pehle 10 km ko metre mein badlo. Phir usmein 60 m jodo.", "en": "First change 10 km to metres. Then add 60 m to it." },
+     "answerBoard": { "template": "number-line-scale@1", "params": {"from": 9000, "to": 12000, "step": 1000, "marks": [{"value": 10060, "label": "10060 m"}]} }
     },
     {
      "id": "c3",
-     "prompt": {
-      "hi": "Ek gaon ki sadak 7000 m lambi hai. Yeh kitne km hai?",
-      "en": "A village road is 7000 m long. How many km is this?"
-     },
-     "key": "7 km",
-     "why": {
-      "hi": "7000 m mein 7 baar 1000 m hai, aur har 1000 m ek km",
-      "en": "7000 m is 7 lots of 1000 m, and each 1000 m is one km"
-     },
-     "accept": ["7", "saat km", "seven km", "7 kilometre", "saat"],
+     "prompt": { "hi": "Ek gaon ki sadak 11000 m lambi hai. Yeh kitne km hai?", "en": "A village road is 11000 m long. How many km is this?" },
+     "key": "11 km",
+     "why": { "hi": "11000 m mein 11 baar 1000 m hai, aur har 1000 m ek km", "en": "11000 m is 11 lots of 1000 m, and each 1000 m is one km" },
+     "accept": ["11", "gyarah km", "eleven km", "11 kilometre", "gyarah"],
      "targets": "c5-maths-ch05-t01-m-convert-direction",
-     "wrongIfMis": "7000000 km",
-     "board": {"template": "number-line-scale@1", "params": {"from": 0, "to": 7000, "step": 1000, "marks": [{"value": 7000, "label": "sadak"}]}},
-     "simpler": {
-      "hi": "Har hazaar m ek km hota hai. Dekho 7000 m mein hazaar kitni baar aata hai.",
-      "en": "Every thousand m is one km. See how many thousands are in 7000 m."
-     },
-     "answerBoard": {"template": "number-line-scale@1", "params": {"from": 0, "to": 7000, "step": 1000, "marks": [{"value": 1000, "label": "1 km"}, {"value": 7000, "label": "7 km"}]}}
+     "wrongIfMis": "11000000 km",
+     "board": { "template": "number-line-scale@1", "params": {"from": 9000, "to": 12000, "step": 1000, "marks": [{"value": 11000, "label": "sadak"}]} },
+     "simpler": { "hi": "Ek km mein hazaar m samaate hain. Dekho 11000 m mein hazaar kitni baar aata hai.", "en": "One km holds a thousand m. See how many thousands are in 11000 m." },
+     "answerBoard": { "template": "number-line-scale@1", "params": {"from": 9000, "to": 12000, "step": 1000, "marks": [{"value": 11000, "label": "11 km"}]} }
     }
    ],
    "ladder": [
@@ -557,7 +506,7 @@
       "en": "1 km is 1000 m. Write 1000 m for every km."
      },
      "then": {
-      "prompt": { "hi": "Ek nahar 12 km lambi hai. Woh kitne metre lambi hai?", "en": "A canal is 12 km long. How many metres long is it?" },
+      "prompt": { "hi": "Ek nahar 12 km lambi hai. Woh kitne metre lambi hai?", "en": "A canal is 12 km long. What is its length in metres?" },
       "key": "12000 m",
       "why": { "hi": "har km ke 1000 m, yaani 12 × 1000 = 12000", "en": "each km is 1000 m, so 12 × 1000 = 12000" },
       "accept": ["12000", "12,000", "barah hazaar", "twelve thousand", "12000 metre"],
@@ -570,20 +519,11 @@
     },
     {
      "targets": "c5-maths-ch05-t01-m-mixed-concat",
-     "move": "place-value chart: km in the thousands place, metres in the last three places → 2 in thousands, 50 in tens and ones → empty hundreds gets 0 → 2050, never 250",
-     "say": {
-      "hi": "km hazaar ke khaane mein baithta hai, metre aakhri teen khaanon mein. 2 km 50 m mein sau ka khaana khaali hai, wahan 0 aata hai: 2050 m. Rekha par pehle poore km aate hain, phir bache metre.",
-      "en": "The km sits in the thousands place, the metres in the last three places. In 2 km 50 m the hundreds place is empty, and a 0 goes there: 2050 m. On the line the whole km come first, then the metres left over."
-     },
-     "simpler": {
-      "hi": "2 km 50 m mein sau ka khaana khaali hai. Wahan 0 likho: 2050 m.",
-      "en": "In 2 km 50 m the hundreds place is empty. Put a 0 there: 2050 m."
-     },
+     "move": "place-value chart: km in the thousands place, metres in the last three places → 6 in thousands, 30 in tens and ones → empty hundreds gets 0 → 6030, never 630", "board": { "template": "compare@1", "params": {"left": {"title": "6 km 30 m", "items": ["sau ka khaana khaali"]}, "right": {"title": "6030 m", "items": ["wahan 0"]}} },
+     "say": { "hi": "km hazaar ke khaane mein baithta hai, metre aakhri teen khaanon mein. 6 km 30 m mein sau ka khaana khaali hai, wahan 0 aata hai: 6030 m.", "en": "The km sits in the thousands place, the metres in the last three places. In 6 km 30 m the hundreds place is empty, and a 0 goes there: 6030 m." },
+     "simpler": { "hi": "30 m sirf dahai aur ikai mein aata hai. Isliye 6 ke baad pehle 0 likho, phir 30: 6030 m.", "en": "30 m fills only the tens and ones. So after the 6 write a 0 first, then 30: 6030 m." },
      "then": {
-      "prompt": {
-       "hi": "Ek daud 1 km 5 m lambi hai. Woh kitne metre lambi hai?",
-       "en": "A race is 1 km 5 m long. How many metres long is it?"
-      },
+      "prompt": { "hi": "Ek daud 1 km 5 m lambi hai. Woh kitne metre lambi hai?", "en": "A race is 1 km 5 m long. How long is it in metres?" },
       "key": "1005 m",
       "why": {"hi": "1 km = 1000 m, aur 1000 + 5 = 1005", "en": "1 km = 1000 m, and 1000 + 5 = 1005"},
       "accept": ["1005", "ek hazaar paanch", "one thousand five", "one thousand and five", "1005 metre"],
@@ -609,21 +549,15 @@
       "en": "A km is a big step, a m a small one. Big steps take fewer, so the number in km is smaller."
      },
      "then": {
-      "prompt": {"hi": "Ek doori 3000 m hai. Yeh kitne km hai?", "en": "A distance is 3000 m. How many km is it?"},
-      "key": "3 km",
-      "why": {
-       "hi": "3000 m mein 3 baar 1000 m hai, aur har 1000 m ek km",
-       "en": "3000 m is 3 lots of 1000 m, and each 1000 m is one km"
-      },
-      "accept": ["3", "teen km", "three km", "3 kilometre", "teen"],
+      "prompt": { "hi": "Ek doori 14000 m hai. Yeh kitne km hai?", "en": "A distance is 14000 m. How many km is it?" },
+      "key": "14 km",
+      "why": { "hi": "14000 m mein 14 baar 1000 m hai, aur har 1000 m ek km", "en": "14000 m is 14 lots of 1000 m, and each 1000 m is one km" },
+      "accept": ["14", "chaudah km", "fourteen km", "14 kilometre", "chaudah"],
       "targets": "c5-maths-ch05-t01-m-convert-direction",
-      "wrongIfMis": "3000000 km",
-      "board": {"template": "number-line-scale@1", "params": {"from": 0, "to": 3000, "step": 1000, "marks": [{"value": 3000, "label": "doori"}]}},
-      "simpler": {
-       "hi": "Har hazaar m ek km hota hai. Dekho 3000 m mein hazaar kitni baar aata hai.",
-       "en": "Every thousand m is one km. See how many thousands are in 3000 m."
-      },
-      "answerBoard": {"template": "number-line-scale@1", "params": {"from": 0, "to": 3000, "step": 1000, "marks": [{"value": 3000, "label": "3 km"}]}}
+      "wrongIfMis": "14000000 km",
+      "board": { "template": "number-line-scale@1", "params": {"from": 8000, "to": 14000, "step": 2000, "marks": [{"value": 14000, "label": "doori"}]} },
+      "simpler": { "hi": "Har hazaar m ek km hota hai. Dekho 14000 m mein hazaar kitni baar aata hai.", "en": "Every thousand m is one km. See how many thousands are in 14000 m." },
+      "answerBoard": { "template": "number-line-scale@1", "params": {"from": 8000, "to": 14000, "step": 2000, "marks": [{"value": 14000, "label": "14 km"}]} }
      }
     }
    ],
@@ -771,7 +705,7 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": { "hi": "Ek bada aam ka ped lagbhag 15 m ooncha hai. Agar woh zameen par leta ho aur tum uske saath-saath chalo, toh kuch second lagenge ya kai minute?", "en": "A big mango tree is about 15 m tall. If it lay on the ground and you walked along it, would it take a few seconds or many minutes?" },
+     "prompt": { "hi": "Ek bada aam ka ped lagbhag 15 m ooncha hai. Agar woh gir kar zameen par pada ho aur tum uske saath-saath chalo, toh kuch second lagenge ya kai minute?", "en": "A big mango tree is about 15 m tall. If it had fallen and lay on the ground and you walked along it, would it take a few seconds or many minutes?" },
      "key": "kuch second",
      "why": { "hi": "15 m bas 15 lambe kadam hain, kuch second ki chaal; kai minute toh km jitni doori mein lagte hain", "en": "15 m is just 15 long strides, a few seconds' walk; many minutes is for a km-long distance" },
      "accept": ["a few seconds", "seconds", "kuch hi second", "second", "few seconds"],
@@ -781,27 +715,7 @@
      "simpler": { "hi": "Ek metre lagbhag ek lamba kadam hai. Socho, 15 kadam chalne mein kitna samay lagta hai.", "en": "A metre is about one long stride. Think how long it takes to walk 15 strides." },
      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 m", "items": ["kadam"]}, "right": {"title": "1 km", "items": ["kai minute"]}} }
     },
-    {
-     "id": "c2",
-     "prompt": {
-      "hi": "School ke playground ki lambai naapni hai. Kaunsa unit sahi hai: cm, m ya km?",
-      "en": "We need to measure the length of the school playground. Which unit is right: cm, m or km?"
-     },
-     "key": "m",
-     "why": {
-      "hi": "playground ko kadam se naap sakte hain; nakhoon jitna cm bahut chhota aur km bahut bada hai",
-      "en": "a playground can be paced in strides; a fingernail-sized cm is too small and km too big"
-     },
-     "accept": ["m", "metre", "m mein", "metre mein"],
-     "targets": "c5-maths-ch05-t01-m-km-for-big",
-     "wrongIfMis": "km",
-     "board": {"template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}}},
-     "simpler": {
-      "hi": "Playground ko lambe kadam se naap sakte hain. Nakhoon jitna unit bahut chhota hai, aur km bahut bada.",
-      "en": "A playground can be measured in long strides. A fingernail-sized unit is too small, and km is too big."
-     },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 cm", "items": ["nakhoon"]}, "right": {"title": "1 m", "items": ["kadam"]}} }
-    }
+    { "id": "c2", "prompt": {"hi": "School ke playground ke board par lambai '90' likhi hai, par unit mit gaya hai. {friendF} kehti hai ki yeh 90 m hogi. Kya yeh andaaza theek hai?", "en": "The school playground's sign gives its length as '90', but the unit has rubbed off. {friendF} says it must be 90 m. Is that a sensible guess?"}, "key": "Yes", "why": {"hi": "90 m matlab lagbhag 90 lambe kadam, ek playground jitna; 90 km toh ghanton ki chaal hai", "en": "90 m is about 90 long strides, playground-sized; 90 km would be hours of walking"}, "accept": ["haan", "han", "yes", "haan, 90 m", "yes, 90 m", "haan, theek hai"], "targets": "c5-maths-ch05-t01-m-km-for-big", "wrongIfMis": "No", "board": { "template": "compare@1", "params": {"left": {"title": "1 m", "items": ["lagbhag 1 kadam"]}, "right": {"title": "playground", "items": ["90 ?"]}} }, "simpler": {"hi": "90 m ka matlab lagbhag 90 lambe kadam. Socho, playground ek sire se doosre tak itna lamba lagta hai ya nahi.", "en": "90 m means about 90 long strides. Think whether a playground feels that long from end to end."}, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "1 m", "items": ["lagbhag 1 kadam"]}, "right": {"title": "playground", "items": ["90 ?"]}} } }
    ],
    "ladder": [
     {"itemId": "c5-maths-ch05-t01-i10", "why": "three objects, three units: pencil cm, door m, Delhi to Agra km"},
@@ -811,11 +725,8 @@
    "remediation": [
     {
      "targets": "c5-maths-ch05-t01-m-km-for-big",
-     "move": "benchmark ladder: 1 m = one big stride, 1 km = about a 12-minute walk → the child sizes the thing in strides before choosing",
-     "say": {
-      "hi": "1 m lagbhag ek lamba kadam hai, aur 1 km chalne mein lagbhag 12 minute lagte hain. Kuch bhi bada lage, pehle socho ki woh kitne kadam ka hai.",
-      "en": "1 m is about one big stride, and walking 1 km takes about 12 minutes. However big something looks, first think how many strides it is."
-     },
+     "move": "benchmark ladder: 1 m = one big stride, 1 km = about a 12-minute walk → the child sizes the thing in strides before choosing", "board": { "template": "compare@1", "params": {"left": {"title": "1 m", "items": ["1 lamba kadam"]}, "right": {"title": "1 km", "items": ["12 minute ki chaal"]}} },
+     "say": { "hi": "Ek lamba kadam lagbhag 1 m hota hai, aur 12 minute ki chaal lagbhag 1 km. Kuch bhi bada lage, pehle socho ki woh kitne kadam ka hai.", "en": "One big stride is about 1 m, and a 12-minute walk is about 1 km. However big something looks, first think how many strides it is." },
      "simpler": {
       "hi": "1 m lagbhag ek lamba kadam hai. 1 km chalne mein lagbhag 12 minute lagte hain.",
       "en": "1 m is about one big stride. Walking 1 km takes about 12 minutes."

@@ -122,17 +122,14 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Salma ne ek bottle ka 2/9 juice piya aur Deepak ne usi bottle ka 5/9. Dono ne milkar bottle ka kitna hissa piya?",
-      "en": "Salma drank 2/9 of a bottle of juice and Deepak drank 5/9 of the same bottle. How much of the bottle did they drink together?"
-     },
-     "key": "7/9",
-     "accept": ["7 by 9", "seven ninths"],
+     "prompt": { "hi": "Salma ne ek bottle ka 2/9 juice piya aur Deepak ne usi bottle ka 6/9. Dono ne milkar bottle ka kitna hissa piya?", "en": "Salma drank 2/9 of a bottle of juice and Deepak drank 6/9 of the same bottle. How much of the bottle did they drink together?" },
+     "key": "8/9",
+     "accept": ["8 by 9", "eight ninths"],
      "targets": "c6-maths-ch07-t05-m-add-across",
-     "wrongIfMis": "7/18",
+     "wrongIfMis": "8/18",
      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 9, "shade": 0, "label": ""}]} },
-     "why": { "hi": "2 naven hisse aur 5 naven hisse milkar 7 naven hisse, yaani 7/9 hote hain", "en": "2 ninths and 5 ninths make 7 ninths, that is 7/9" },
-     "simpler": { "hi": "2/9 aur 5/9 dono naven hisse hain. Neeche wahi rakho aur upar ke numbers jodo.", "en": "2/9 and 5/9 are both ninths. Keep the bottom the same and add the top numbers." }, "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 9, "shade": 7, "label": "7/9"}]} }
+     "why": { "hi": "2 naven hisse aur 6 naven hisse milkar 8 naven hisse, yaani 8/9 hote hain", "en": "2 ninths and 6 ninths make 8 ninths, that is 8/9" },
+     "simpler": { "hi": "2/9 aur 6/9 dono naven hisse hain. Naven hisse naven hi rehte hain, bas unhe gino.", "en": "2/9 and 6/9 are both ninths. Ninths stay ninths; just count them." }, "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 9, "shade": 8, "label": "8/9"}]} }
     },
     {
      "id": "c2",
@@ -159,25 +156,22 @@
     {
      "targets": "c6-maths-ch07-t05-m-add-across",
      "move": "same bar, shading grows: 1/5 then 2/5 more → 3 parts shaded, each part still a fifth → the part size never doubles, so the denominator stays 5",
-     "say": { "hi": "Ek size ke hisse jodne ka matlab sirf hisse ginna hai. Hisse ka size nahi badalta, isliye neeche ka number wahi rehta hai: 1/6 aur 2/6 milkar 3/6, 3/12 nahi.", "en": "Adding same-size parts just counts the parts. The size of a part does not change, so the bottom number stays the same: 1/6 and 2/6 make 3/6, not 3/12." },
+     "say": { "hi": "Ek size ke hisse jodne ka matlab sirf hisse ginna hai. Hisse ka size nahi badalta, isliye neeche ka number wahi rehta hai. Neeche ka number badha diya, toh har hissa chhota ho jaata hai, aur jawab galat ho jaata hai.", "en": "Adding same-size parts just counts the parts. The size of a part does not change, so the bottom number stays the same. If you make the bottom number bigger, every part gets smaller, and the answer goes wrong." },
      "simpler": { "hi": "Hisse ka size wahi rehta hai. Bas upar ke number jodo.", "en": "The part size stays the same. Just add the top numbers." },
      
      "then": {
-      "prompt": {
-       "hi": "Jug mein 2/7 litre doodh tha aur 4/7 litre aur daala. Ab jug mein kitna doodh hai?",
-       "en": "A jug had 2/7 litre of milk and 4/7 litre more was poured in. How much milk is in the jug now?"
-      },
-      "key": "6/7 litre",
-      "accept": ["6/7", "6 by 7", "six sevenths"],
+      "prompt": { "hi": "Jug mein 2/5 litre doodh tha aur 2/5 litre aur daala. Ab jug mein kitna doodh hai?", "en": "A jug had 2/5 litre of milk and 2/5 litre more was poured in. How much milk is in the jug now?" },
+      "key": "4/5 litre",
+      "accept": ["4/5", "4 by 5", "four fifths"],
       "targets": "c6-maths-ch07-t05-m-add-across",
-      "wrongIfMis": "6/14 litre",
-      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 7, "shade": 0, "label": ""}]} },
-      "why": { "hi": "2 saatve hisse aur 4 saatve hisse milkar 6 saatve, yaani 6/7 litre hote hain", "en": "2 sevenths and 4 sevenths make 6 sevenths, that is 6/7 litre" },
-      "simpler": { "hi": "2/7 aur 4/7 dono saatve hisse hain. Neeche wahi rakho aur upar ke numbers jodo.", "en": "2/7 and 4/7 are both sevenths. Keep the bottom the same and add the top numbers." }, "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 7, "shade": 6, "label": "6/7"}]} }
+      "wrongIfMis": "4/10 litre",
+      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 0, "label": ""}]} },
+      "why": { "hi": "2 paanchve hisse aur 2 paanchve hisse milkar 4 paanchve, yaani 4/5 litre hote hain", "en": "2 fifths and 2 fifths make 4 fifths, that is 4/5 litre" },
+      "simpler": { "hi": "Dono baar paanchve hisse daale gaye. Paanchve hisse gino; hisse ka naam nahi badalta.", "en": "Both times fifths were poured in. Count the fifths; the name of the part does not change." }, "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 4, "label": "4/5"}]} }
      }
     }
    ],
-   "bridgeToNext": { "hi": "Ab tak saare hisse ek hi size ke the. Agle hisse mein hisse alag size ke honge, jaise chauthai aur aathva, aur pehle unhe ek size ka banayenge.", "en": "So far all the parts were the same size. In the next part the parts will be different sizes, like quarters and eighths, and we will make them the same size first.", "simpler": {"hi": "Ab alag size ke hisson, jaise chauthai aur aathva, ko ek size ka banana seekhenge. Board par ek line upar chauthai mein aur neeche aathve mein bati hai.", "en": "Now we learn to make parts of different sizes, like quarters and eighths, the same size. On the board one line is split into quarters above and eighths below."} }
+   "bridgeToNext": { "hi": "Ab tak saare hisse ek hi size ke the. Agle hisse mein hisse alag size ke honge, jaise chauthai aur aathve hisse, aur pehle unhe ek size ka banayenge.", "en": "So far all the parts were the same size. In the next part the parts will be different sizes, like quarters and eighths, and we will make them the same size first.", "simpler": {"hi": "Ab alag size ke hisson, jaise chauthai aur aathve hisson, ko ek size ka banana seekhenge. Board par ek line upar chauthai mein aur neeche aathve mein bati hai.", "en": "Now we learn to make parts of different sizes, like quarters and eighths, the same size. On the board one line is split into quarters above and eighths below."} }
   },
   {
    "skillId": "c6-maths-ch07-t05-s2",
@@ -186,10 +180,7 @@
     "interestSlots": [
      {
       "interest": "cooking",
-      "use": {
-       "hi": "Recipe mein aadha cup doodh aur chauthai cup paani daalna hai. Aadha aur chauthai alag size ke hisse hain, isliye kul kitna hua, yeh jaanne ke liye dono ko ek jaise hisson mein badalna padta hai.",
-       "en": "A recipe needs half a cup of milk and a quarter cup of water. A half and a quarter are different-size parts, so to know the total, both have to be changed into the same kind of parts."
-      }
+      "use": { "hi": "Recipe mein teen-chauthai cup doodh aur ek-tihai cup paani daalna hai. Chauthai aur tihai alag size ke hisse hain, isliye kul kitna hua, yeh jaanne ke liye dono ko ek jaise hisson mein badalna padta hai.", "en": "A recipe needs three quarters of a cup of milk and a third of a cup of water. A quarter and a third are different-size parts, so to know the total, both have to be changed into the same kind of parts." }
      },
      {
       "interest": "games",
@@ -244,7 +235,7 @@
       "wrongIfMis": "2/8",
       "why": { "hi": "1/2 = 3/6, aur 3/6 + 1/6 = 4/6", "en": "1/2 = 3/6, and 3/6 + 1/6 = 4/6" }, "answerBoard": { "template": "fraction-line@1", "params": {"den": 6, "from": 0, "to": 1, "marks": [{"num": 3, "label": "3/6 = 1/2"}, {"num": 4, "label": "4/6"}]} }
      },
-     "simpler": { "hi": "Aadha aur tihaai alag size ke hisse hain, isliye seedhe nahi jud sakte. Line ke 6 gap mein 1/2 = 3/6 aur 1/3 = 2/6, ab dono jud jaate hain.", "en": "A half and a third are different-size parts, so they cannot be added straight away. On 6 gaps, 1/2 = 3/6 and 1/3 = 2/6, and now they add." }
+     "simpler": { "hi": "Aadhe aur tihaai ka size alag hai, toh pehle dono ko ek size mein badalna hai. Line ke 6 gap mein 1/2 = 3/6 aur 1/3 = 2/6, ab dono jud jaate hain.", "en": "A half and a third are not the same size, so first both go into one size. On 6 gaps, 1/2 = 3/6 and 1/3 = 2/6, and now they add." }
     },
     {
      "id": "e3",
@@ -265,7 +256,7 @@
       "accept": ["7 by 20", "seven twentieths"],
       "targets": "c6-maths-ch07-t05-m-change-only-den",
       "wrongIfMis": "2/20",
-      "why": { "hi": "jaise 2/5 = 8/20 aur 1/4 = 5/20 bane, waise 3/5 = 12/20; 12/20 − 5/20 = 7/20", "en": "3/5 = 12/20 and 1/4 = 5/20, and 12/20 − 5/20 = 7/20" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2/5", "items": ["8/20"]}, "right": {"title": "1/4", "items": ["5/20"]}} }
+      "why": { "hi": "jaise 2/5 = 8/20 bana, waise 3/5 = 12/20; 1/4 = 5/20, toh 12/20 − 5/20 = 7/20", "en": "just as 2/5 = 8/20, 3/5 = 12/20; 1/4 = 5/20, so 12/20 − 5/20 = 7/20" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "2/5", "items": ["8/20"]}, "right": {"title": "1/4", "items": ["5/20"]}} }
      },
      "simpler": { "hi": "5 aur 4 dono ke pahade mein 20 aata hai. 2/5 = 8/20 aur 1/4 = 5/20 banao, phir upar ke numbers jodo.", "en": "20 is in both the 5 and 4 times tables. Make 2/5 = 8/20 and 1/4 = 5/20, then add the top numbers." }
     }
@@ -274,7 +265,7 @@
     "problem": {
      "hi": "Kheer mein 3/4 cup doodh aur 1/6 cup malai daali gayi. Kheer mein kul kitne cup doodh aur malai hai?",
      "en": "3/4 cup of milk and 1/6 cup of cream went into the kheer. How many cups of milk and cream are in the kheer altogether?"
-    }, "simpler": { "hi": "Kheer mein 3/4 cup doodh aur 1/6 cup malai daali gayi. Kul kitne cup hue, yeh chahiye.", "en": "3/4 cup of milk and 1/6 cup of cream went into the kheer. We need the total in cups." },
+    }, "simpler": { "hi": "Doodh 3/4 cup hai aur malai 1/6 cup. Dono ko milakar kul cup batane hain.", "en": "The milk is 3/4 cup and the cream 1/6 cup. We have to say the total cups of both together." },
     "givens": [
      { "hi": "doodh 3/4 cup hai", "en": "the milk is 3/4 cup" },
      { "hi": "malai 1/6 cup hai", "en": "the cream is 1/6 cup" }
@@ -306,9 +297,9 @@
      "accept": ["11 by 12", "eleven twelfths"],
      "targets": "c6-maths-ch07-t05-m-add-across",
      "wrongIfMis": "11/24",
-     "simpler": { "hi": "9/12 aur 2/12 dono baarahve hisse hain. Neeche wahi rakho aur upar ke numbers jodo.", "en": "9/12 and 2/12 are both twelfths. Keep the bottom the same and add the top numbers." }, "why": { "hi": "3/4 = 9/12 aur 1/6 = 2/12, aur 9/12 + 2/12 = 11/12", "en": "3/4 = 9/12 and 1/6 = 2/12, and 9/12 + 2/12 = 11/12" }, "answerBoard": { "template": "fraction-line@1", "params": {"den": 12, "from": 0, "to": 1, "marks": [{"num": 2, "label": "2/12 = 1/6"}, {"num": 9, "label": "9/12 = 3/4"}, {"num": 11, "label": "11/12"}]} }
+     "simpler": { "hi": "9/12 aur 2/12 ab ek hi size ke hisse hain. Barahve hisse gino, 12 neeche hi rahega.", "en": "9/12 and 2/12 are now parts of one size. Count the twelfths; 12 stays at the bottom." }, "why": { "hi": "3/4 = 9/12 aur 1/6 = 2/12, aur 9/12 + 2/12 = 11/12", "en": "3/4 = 9/12 and 1/6 = 2/12, and 9/12 + 2/12 = 11/12" }, "answerBoard": { "template": "fraction-line@1", "params": {"den": 12, "from": 0, "to": 1, "marks": [{"num": 2, "label": "2/12 = 1/6"}, {"num": 9, "label": "9/12 = 3/4"}, {"num": 11, "label": "11/12"}]} }
     },
-    "answer": { "hi": "kheer mein kul 11/12 cup doodh aur malai hai", "en": "there are 11/12 cup of milk and cream in the kheer altogether" },
+    "answer": { "hi": "kheer mein kul 11/12 cup doodh aur malai hai", "en": "there is 11/12 cup of milk and cream in the kheer altogether" },
     "why": {
      "hi": "dono ko barahve hisson mein badal kar joda, aur 11/12, 3/4 se zyada aur 1 se kam hai, jo theek hai",
      "en": "both were changed into twelfths before adding, and 11/12 is more than 3/4 and less than 1, which makes sense"
@@ -355,33 +346,24 @@
      "targets": "c6-maths-ch07-t05-m-add-across",
      "wrongIfMis": "2/7",
      "board": { "template": "compare@1", "params": { "left": { "title": "Sawaal", "items": ["1/3 + 1/4"] }, "right": { "title": "Likha", "items": ["2/7"] } } },
-     "why": { "hi": "sawaal 1/3 + 1/4 mein 1/3 = 4/12, 1/4 = 3/12, toh 7/12; likha 2/7 galat hai", "en": "1/3 = 4/12 and 1/4 = 3/12, and 4/12 + 3/12 = 7/12" },
-     "simpler": { "hi": "Neeche ke numbers kabhi nahi jodte. 1/3 aur 1/4 ko pehle ek common neeche wale number par badlo.", "en": "The bottom numbers are never added. First change 1/3 and 1/4 to one common bottom number." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Sawaal", "items": ["1/3 + 1/4"]}, "right": {"title": "Likha", "items": ["2/7"]}} }
+     "why": { "hi": "sawaal 1/3 + 1/4 mein 1/3 = 4/12 aur 1/4 = 3/12, toh 7/12; likha 2/7 galat hai", "en": "in the question 1/3 + 1/4, 1/3 = 4/12 and 1/4 = 3/12, so 7/12; the 2/7 written is wrong" },
+     "simpler": { "hi": "Neeche wale numbers ko jod dena hi galti hai. Pehle dono bhinnon ko ek common neeche wale number par badlo.", "en": "Adding the bottom numbers is the mistake. First change both fractions to one common bottom number." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Sawaal", "items": ["1/3 + 1/4"]}, "right": {"title": "Likha", "items": ["2/7"]}} }
     }
    ],
-   "ladder": [
-    { "itemId": "c6-maths-ch07-t05-i03", "why": "first unlike sum: one denominator already fits the other, 1/2 + 1/4" },
-    { "itemId": "c6-maths-ch07-t05-i12", "why": "same idea on a fraction strip in eighths: 1/4 covers 2 eighths" },
-    { "itemId": "c6-maths-ch07-t05-i05", "why": "error-spot: 2/5 for 1/2 + 1/3, judged by sense (less than 1/2) and redone" },
-    { "itemId": "c6-maths-ch07-t05-i07", "why": "taking away with twelfths: 2/3 − 1/4, both fractions renamed" },
-    { "itemId": "c6-maths-ch07-t05-rl-h2", "why": "unlike take-away in a recipe: how much more oats to add" }
-   ],
+   "ladder": [{"itemId": "c6-maths-ch07-t05-i12", "why": "same idea on a fraction strip in eighths: 1/4 covers 2 eighths"}, {"itemId": "c6-maths-ch07-t05-i11", "why": "compare two sums with a shared third: 1/3 + 1/3 against 1/3 + 1/6, and by how much"}, {"itemId": "c6-maths-ch07-t05-i07", "why": "taking away with twelfths: 2/3 − 1/4, both fractions renamed"}, {"itemId": "c6-maths-ch07-t05-rl-h2", "why": "unlike take-away in a recipe: how much more oats to add"}],
    "remediation": [
     {
      "targets": "c6-maths-ch07-t05-m-add-across",
      "move": "sense first, on a line with halves above and fifths below: 2/5 sits before 1/2, but 1/2 litre plus 1/3 litre must be more than 1/2 litre → adding the bottoms cannot be right → change to same-size parts first",
-     "say": { "hi": "1/2 litre mein aur paani daalne par paani 1/2 litre se zyada hi hoga. Isliye neeche ke number nahi jodte. Pehle dono ko ek size ke hisson mein badalte hain, phir upar ke number jodte hain.", "en": "Pouring more water into 1/2 litre must give more than 1/2 litre. So the bottom numbers are never added. First both are changed into same-size parts, then the top numbers are added." },
-     "simpler": { "hi": "Neeche ke number mat jodo. Pehle ek size ke hisse banao.", "en": "Do not add the bottom numbers. First make same-size parts." },
+     "say": { "hi": "Upar se upar aur neeche se neeche jodo, toh jawab dono bhinnon mein bade wale se zyada nahi hota. Par kuch aur jodne par kul badhna chahiye. Isliye pehle dono ko ek size ke hisson mein badlo, phir upar ke number jodo.", "en": "Add top to top and bottom to bottom, and the answer is never more than the bigger fraction. But adding more must make the total grow. So first change both into same-size parts, then add the tops." },
+     "simpler": { "hi": "Neeche wale number jodne se jawab chhota reh jaata hai. Pehle ek size ke hisse banao.", "en": "Adding the bottom numbers leaves the answer too small. First make same-size parts." },
      
      "then": {
-      "prompt": {
-       "hi": "Jug mein 1/5 litre paani hai. Usme 1/2 litre aur daala. Ab jug mein kitna paani hai?",
-       "en": "A jug has 1/5 litre of water. 1/2 litre more is poured in. How much water is in the jug now?"
-      },
-      "key": "7/10 litre",
-      "accept": ["7/10", "7 by 10", "seven tenths"],
+      "prompt": { "hi": "Ravi ne somvaar ko kitaab ka 1/5 hissa padha, mangalvaar ko 1/2. Do din mein kitaab ka kitna hissa padha?", "en": "Ravi read 1/5 of a book on Monday and 1/2 of it on Tuesday. How much of the book did he read in the two days?" },
+      "key": "7/10",
+      "accept": ["7 by 10", "seven tenths"],
       "targets": "c6-maths-ch07-t05-m-add-across",
-      "wrongIfMis": "2/7 litre",
+      "wrongIfMis": "2/7",
       "board": { "template": "fraction-line@1", "params": {"dens": [2, 10], "from": 0, "to": 1} },
       "why": { "hi": "1/5 = 2/10 aur 1/2 = 5/10, aur 2/10 + 5/10 = 7/10", "en": "1/5 = 2/10 and 1/2 = 5/10, and 2/10 + 5/10 = 7/10" },
       "simpler": { "hi": "1/5 aur 1/2 dono ko dasve hisson mein badlo. Phir upar ke numbers jodo.", "en": "Change both 1/5 and 1/2 into tenths. Then add the top numbers." }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [2, 10], "from": 0, "to": 1, "marks": [[1, 2], [2, 10], [7, 10]]} }
@@ -390,7 +372,7 @@
     {
      "targets": "c6-maths-ch07-t05-m-change-only-den",
      "move": "a half laid over a line in sixths: the half covers 3 sixths, not 1 → 1/2 = 3/6; the bottom × 3 means the top × 3 too",
-     "say": { "hi": "Neeche ko jis number se guna kiya, upar ko bhi usi se guna karna padta hai. 1/3 = 3/9 hai, 1/9 nahi, kyunki ek tihai mein 3 naven hisse samaate hain.", "en": "Whatever the bottom is multiplied by, the top must be multiplied by too. 1/3 = 3/9, not 1/9, because three ninths fit in one third." },
+     "say": { "hi": "Neeche ko jis number se guna kiya, upar ko bhi usi se guna karna padta hai. Sirf neeche ka number badhaya, toh har hissa chhota ho gaya par hisson ki ginti utni hi rahi, aur bhinn ki value ghat gayi.", "en": "Whatever the bottom is multiplied by, the top must be multiplied by too. If only the bottom grows, each part gets smaller but the count of parts stays the same, and the fraction's value drops." },
      "simpler": { "hi": "Upar aur neeche dono ko ek hi number se guna karo.", "en": "Multiply the top and the bottom by the same number." },
      
      "then": {
@@ -448,7 +430,7 @@
       "prompt": { "hi": "Isi tarah 3 1/6 aur 2 4/6 ko jodo. Jod kitna hai?", "en": "In the same way, add 3 1/6 and 2 4/6. What is the sum?" },
       "key": "5 5/6", "targets": "c6-maths-ch07-t05-m-add-across",
       "accept": ["35/6", "5 and 5/6"],
-      "why": { "hi": "jaise 1/5 + 2/5, waise poore 3 + 2 = 5 aur hisse 1/6 + 4/6 = 5/6", "en": "wholes 3 + 2 = 5 and parts 1/6 + 4/6 = 5/6" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Poore", "items": ["2", "1"]}, "right": {"title": "Hisse", "items": ["1/5", "2/5"]}} }
+      "why": { "hi": "poore 3 + 2 = 5 aur hisse 1/6 + 4/6 = 5/6, toh 5 5/6", "en": "wholes 3 + 2 = 5 and parts 1/6 + 4/6 = 5/6, so 5 5/6" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Poore", "items": ["2", "1"]}, "right": {"title": "Hisse", "items": ["1/5", "2/5"]}} }
      },
      "simpler": { "hi": "Pehle poore jodo: 2 aur 1 se 3 poore. Phir hisse jodo: 1/5 + 2/5 = 3/5, aur dono ko saath likho.", "en": "First add the wholes: 2 and 1 make 3 wholes. Then add the parts: 1/5 + 2/5 = 3/5, and write them together." }
     },
@@ -490,7 +472,7 @@
       "accept": ["32/7", "4 and 4/7"],
       "targets": "c6-maths-ch07-t05-m-mixed-wholes",
       "wrongIfMis": "5 3/7",
-      "why": { "hi": "3 1/5 = 2 6/5 jaisa: 6 2/7 = 5 9/7, ab 1 5/7 nikalo, toh 4 aur 4/7 bache", "en": "6 2/7 = 5 9/7, so wholes 5 − 1 = 4 and parts 9/7 − 5/7 = 4/7" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 1/5", "items": ["= 2 6/5"]}, "right": {"title": "Nikalo", "items": ["1 3/5"]}} }
+      "why": { "hi": "jaise 3 1/5 = 2 6/5, waise 6 2/7 = 5 9/7; ab 1 5/7 nikalo, toh 4 4/7", "en": "just as 3 1/5 = 2 6/5, 6 2/7 = 5 9/7; take out 1 5/7, and 4 4/7 is left" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 1/5", "items": ["= 2 6/5"]}, "right": {"title": "Nikalo", "items": ["1 3/5"]}} }
      },
      "simpler": { "hi": "1/5 mein se 3/5 nahi nikal sakta, isliye 3 poore mein se ek khol do, woh 5/5 ban jaata hai. Ab 3 1/5 = 2 6/5, phir ghatao.", "en": "3/5 cannot come out of 1/5, so open one of the 3 wholes into 5/5. Now 3 1/5 = 2 6/5, and then subtract." }
     }
@@ -579,14 +561,10 @@
      "wrongIfMis": "3 3/8 m",
      "board": { "template": "compare@1", "params": { "left": { "title": "Pipe", "items": ["5 m"] }, "right": { "title": "Alag kiya", "items": ["2 3/8 m"] } } },
      "why": { "hi": "pipe 5 m = 4 8/8, alag kiya 2 3/8: 4 − 2 = 2, 8/8 − 3/8 = 5/8", "en": "5 = 4 8/8, so wholes 4 − 2 = 2 and parts 8/8 − 3/8 = 5/8" },
-     "simpler": { "hi": "5 m mein se ek poora metre khol kar aathve hisson mein badlo. Phir poore aur hisse alag-alag ghatao.", "en": "Open one whole metre of the 5 m into eighths. Then subtract the wholes and the parts separately." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pipe", "items": ["5 m"]}, "right": {"title": "Alag kiya", "items": ["2 3/8 m"]}} }
+     "simpler": { "hi": "5 m mein se ek poora metre khol kar aathve hisson mein badlo. Uske baad poore se poore aur hisse se hisse ghatao.", "en": "Open one whole metre of the 5 m into eighths. After that, take wholes from wholes and parts from parts." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pipe", "items": ["5 m"]}, "right": {"title": "Alag kiya", "items": ["2 3/8 m"]}} }
     }
    ],
-   "ladder": [
-    { "itemId": "c6-maths-ch07-t05-i09", "why": "unlike parts in a mix: milk and water in litres, a sum under 1" },
-    { "itemId": "c6-maths-ch07-t05-i10", "why": "mixed take-away where the part on top is too small: ribbon for a rakhi stall" },
-    { "itemId": "c6-maths-ch07-t05-rl-h3", "why": "mixed take-away with unlike parts and a borrowed whole: cloth for team flags" }
-   ],
+   "ladder": [{"itemId": "c6-maths-ch07-t05-i09", "why": "mixed sum with unlike parts: two ropes, 2 1/3 m + 1 1/2 m, thirds and halves into sixths → 3 5/6 m"}, {"itemId": "c6-maths-ch07-t05-i10", "why": "mixed take-away where the part on top is too small: ribbon for a rakhi stall"}, {"itemId": "c6-maths-ch07-t05-rl-h3", "why": "mixed take-away with unlike parts and a borrowed whole: cloth for team flags"}],
    "remediation": [
     {
      "targets": "c6-maths-ch07-t05-m-mixed-wholes",
@@ -612,7 +590,7 @@
      "targets": "c6-maths-ch07-t05-m-add-across",
      "move": "mixed fractions keep the same rule: wholes with wholes; parts into same-size parts first (halves and thirds into sixths), never bottom + bottom",
      "say": { "hi": "Mishrit bhinn mein bhi neeche ke number nahi jodte. Poore alag jodo, aur hisson ko pehle ek size ke hisson mein badlo, phir jodo.", "en": "In mixed fractions too, the bottom numbers are never added. Add the wholes separately, and first change the parts into same-size parts, then add them." },
-     "simpler": { "hi": "Neeche ke number mat jodo. Poore alag, hisse ek size ke banakar.", "en": "Do not add the bottom numbers. Wholes on their own, parts made the same size." },
+     "simpler": { "hi": "Poore alag jodo. Hisse pehle ek size ke banao, phir jodo.", "en": "Add the wholes on their own. Make the parts one size first, then add." },
      
      "then": {
       "prompt": {
