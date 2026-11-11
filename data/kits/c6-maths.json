@@ -5044,8 +5044,8 @@
      "id": "c6-maths-ch02-t03-m-vertex-off",
      "belief": "Lines up the bottom edge of the protractor instead of putting its centre point on the vertex",
      "signs": [
-      "Places the vertex at the corner of the protractor's edge",
-      "Gets readings a few degrees off",
+      "Places the vertex on the protractor's bottom edge, not at the small centre mark",
+      "Gets readings a few degrees off (about 6 to 8 degrees: 133 for 125)",
       "Does not look for the small centre mark"
      ],
      "diagnostic": {
@@ -5058,13 +5058,13 @@
         "correct": true
        },
        {
-        "text": "Anywhere on the arm BA",
+        "text": "The protractor's bottom edge just touching B, wherever along the edge",
         "misconceptionId": "c6-maths-ch02-t03-m-vertex-off",
         "correct": false
        },
        {
-        "text": "On point A",
-        "misconceptionId": "c6-maths-ch02-t03-m-vertex-off",
+        "text": "On point A, at the end of arm BA",
+        "misconceptionId": "c6-maths-ch02-t03-m-centre-on-arm",
         "correct": false
        }
       ]
@@ -5072,6 +5072,40 @@
      "remediation": {
       "representation": "A magnified view of the protractor centre over the vertex, with a wrong placement shown side by side",
       "moveShape": "Child moves the protractor until the centre dot covers the vertex; compare the two readings; ask which placement matches the turn"
+     }
+    },
+    {
+     "id": "c6-maths-ch02-t03-m-centre-on-arm",
+     "belief": "Puts the protractor's centre mark (or its corner) somewhere other than the vertex: on an arm, or at an arm's end point",
+     "signs": [
+      "Puts the centre mark on point A or C, the end of an arm",
+      "Sets the protractor's corner, not its centre mark, at the vertex",
+      "Reads a number tens of degrees off, or finds no reading at all"
+     ],
+     "diagnostic": {
+      "prompt_en": "To measure angle ABC, Riya put the protractor's centre mark on point A. Will her reading be right?",
+      "prompt_hi": "Angle ABC naapne ke liye Riya ne protractor ka centre mark point A par rakha. Kya uski reading sahi aayegi?",
+      "options": [
+       {
+        "text": "No: the centre mark must sit on B, the vertex",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Yes: A is on the angle too",
+        "misconceptionId": "c6-maths-ch02-t03-m-centre-on-arm",
+        "correct": false
+       },
+       {
+        "text": "Yes, if the baseline lies along BA",
+        "misconceptionId": "c6-maths-ch02-t03-m-centre-on-arm",
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "The centre mark slid along arm BA from A back to B, with the reading shown at each place",
+      "moveShape": "Child slides the centre mark from the arm's end back to the vertex and watches the reading settle; names the vertex as the middle letter of the angle's name"
      }
     },
     {
@@ -5188,7 +5222,7 @@
       "Centre on the ___, baseline along one ___.",
       "On the vertex, with the baseline lying along one arm."
      ],
-     "targetsMisconception": "c6-maths-ch02-t03-m-vertex-off",
+     "targetsMisconception": "c6-maths-ch02-t03-m-centre-on-arm",
      "verified": {
       "solverAnswer": "centre mark on the vertex, baseline along one arm",
       "agrees": true,
@@ -5851,6 +5885,9 @@
      "answer": "∠PQR = 125°",
      "why": "draw = measure in reverse: centre on vertex, baseline on first arm, count from the 0 on that arm, join the mark to the vertex"
     }
+   ],
+   "notes": [
+    "2026-11-11 (main, from Games): m-vertex-off mixed two mistakes. Its belief and 'a few degrees off' sign are the bottom-edge mistake (the centre mark sits mid-edge, so a reading is 6-8 degrees off); its sign 'vertex at the corner of the edge' and diagnostic options 'anywhere on arm BA' / 'on point A' are a different mistake, the centre mark off the vertex altogether (tens of degrees off, or no reading). Split: vertex-off keeps the bottom-edge mistake (sign now 'on the bottom edge', a bottom-edge diagnostic option); new m-centre-on-arm takes the arm and end-point placements, with its own signs, diagnostic and remediation. Item i02 (where must the centre go) now targets m-centre-on-arm; i10 (bottom edge at the vertex) stays on vertex-off."
    ]
   },
   {
