@@ -140,8 +140,12 @@ test("director5 SC2: a scripted remediation board goes up only on the turn its e
   const BF = await import("../server/stagecraft/board-first.js");
   const { kitFromFile } = await import("../server/content/kits.js");
   const { getTopic } = await import("../server/content/curriculum.js");
-  const sc = JSON.parse(fs.readFileSync("data/lesson-scripts/c5-maths-ch02-t01.json", "utf8"));
-  const rem = sc.skills[0].remediation[1];
+  // (the director7 turn's own remediation, pinned: the live c5-t01 s1 whole-number-bias remediation was re-authored by Learning's
+  // reader pass of 2026-11-11 — its say is now the general rule, so its own board is no longer drawn — and this test is about the
+  // two-page turn itself, so it keeps the say and boards the turn was played on)
+  const rem = { targets: "c5-maths-ch02-t01-m-whole-number-bias", board: { template: "fraction-line@1", params: { dens: [5, 6], from: 0, to: 1, marks: [[5, 5]] } },
+    say: { hi: "Ek hi line, 0 se 1. Upar 5 barabar tukde, neeche 6, aur dono milkar wahi ek poora. 6 bada number hai, par wahi poora zyada tukdon mein bata, toh neeche ka har tukda thoda chhota hai." },
+    then: { prompt: { hi: "Upar pehla mark 1/5 hai, neeche line 6 barabar tukdon mein. 1/6 kahaan aayega: 0 aur 1/5 ke beech, ya 1/5 ke baad?" }, board: { template: "fraction-line@1", params: { dens: [5, 6], from: 0, to: 1, marks: [[1, 5]] } }, key: "between 0 and 1/5" } };
   const T = "c5-maths-ch02-t01", kit = kitFromFile(getTopic(T));
   // every v2 remediation board is "spoken" on its own say; an unrelated line holds it
   const ask = (id, text, { kind = "remediation", ref = rem.board, request } = {}) => ({ intent: { intentId: `${id}:wb:1`, lessonId: id, kind: "whiteboard", beat: "explain", style: { band: "B3" },
@@ -201,7 +205,9 @@ test("director5: every v2 script board is preselected as the script's and drawn 
     }
   }
   // (director17 D12, main: the held board draws no remediation board of its own, so c6 and c5-t02 removed theirs: 53 at D12)
-  assert.ok(n >= 50, `${n} script boards`);
+  // (Learning's reader pass, 2026-11-11: remediation says made general, so 10 own boards the say no longer spoke were removed — the
+  // same D12 rule — and 2 explain asks gained boards: 48)
+  assert.ok(n >= 45, `${n} script boards`);
   assert.deepEqual(misses.filter((m) => !KNOWN.has(m)), []);
 });
 
