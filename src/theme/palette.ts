@@ -77,9 +77,11 @@ const NIGHT_CHALK: BoardPaletteValues = {
 };
 const NIGHT_PAPER: BoardPaletteValues = {
   ground: "#FFFBF2", edge: "#D9CDB8", fillAlpha: 0.26,
-  ink: { chalk: "#2B2620", ink: "#2B2620", accent: "#1F5FBF", mark: "#C8641A", good: "#2E7D4F", soft: "#8A7F70" },
-  // (design r8's paper direction: --focus #3B47B0, --ans #1C7348, --mix #A84B22, --board-soft #6F675B)
-  role: { focus: "#3B47B0", slot: "#1C7348", answer: "#1C7348", mixup: "#A84B22", muted: "#6F675B" },
+  // (main 2026-11-11, the night faults the role palette found, fixed on purpose: soft #8A7F70 was 3.80 : 1 on this
+  // ground, now #6F675B at 5.4 : 1; answer #1C7348 and mix-up #A84B22 merged for a red-green-blind child, now Design's
+  // #0B736A / #8A5A00. Under night only the symmetry template's grid boards draw on this ground)
+  ink: { chalk: "#2B2620", ink: "#2B2620", accent: "#1F5FBF", mark: "#C8641A", good: "#2E7D4F", soft: "#6F675B" },
+  role: { focus: "#3B47B0", slot: "#0B736A", answer: "#0B736A", mixup: "#8A5A00", muted: "#6F675B" },
 };
 export const NIGHT: Theme = {
   name: "night",

@@ -50,7 +50,9 @@ test("no colour literal outside src/theme/palette.ts in the board and engine pat
 test("night is today's look: the board palettes equal the tables they replaced", async () => {
   const { paletteFor } = await import("../src/modules/whiteboard/palette.ts");
   const chalk = { ground: "#1F3B30", edge: "#8C6B4A", fillAlpha: 0.32, ink: { chalk: "#F5F2E8", ink: "#F5F2E8", accent: "#F2C66D", mark: "#F4A261", good: "#9ED8A6", soft: "#BFD3C6" }, role: { focus: "#A9B4FF", slot: "#7FE0B0", answer: "#7FE0B0", mixup: "#FFB54A", muted: "#9DB3A6" } };
-  const paper = { ground: "#FFFBF2", edge: "#D9CDB8", fillAlpha: 0.26, ink: { chalk: "#2B2620", ink: "#2B2620", accent: "#1F5FBF", mark: "#C8641A", good: "#2E7D4F", soft: "#8A7F70" }, role: { focus: "#3B47B0", slot: "#1C7348", answer: "#1C7348", mixup: "#A84B22", muted: "#6F675B" } };
+  // (night's paper ground changed ON PURPOSE on 2026-11-11, main's ruling: soft #8A7F70 → #6F675B, answer #1C7348 → #0B736A,
+  // mix-up #A84B22 → #8A5A00; everything else is the table it replaced)
+  const paper = { ground: "#FFFBF2", edge: "#D9CDB8", fillAlpha: 0.26, ink: { chalk: "#2B2620", ink: "#2B2620", accent: "#1F5FBF", mark: "#C8641A", good: "#2E7D4F", soft: "#6F675B" }, role: { focus: "#3B47B0", slot: "#0B736A", answer: "#0B736A", mixup: "#8A5A00", muted: "#6F675B" } };
   assert.deepEqual(paletteFor("chalk"), chalk);
   assert.deepEqual(paletteFor("paper"), paper);
   assert.deepEqual(paletteFor("grid"), { ...paper, grid: "#E6DCCB" });
@@ -87,10 +89,7 @@ function deutan(hex) {
 // Live night values that fail (found by this test, 2026-11-11): night must not change in this work, so they are listed,
 // reported to main, and may not grow. The board's meaning survives them by SHAPE (a mix-up is always dashed, an answer a
 // tick or a box: shared/whiteboard.js ROLE, and the greyscale predicate), not by colour.
-const NIGHT_KNOWN = new Set([
-  "night board paper soft: #8A7F70 on #FFFBF2", "night board grid soft: #8A7F70 on #FFFBF2",
-  "night board paper: answer #1C7348 and mixup #A84B22", "night board grid: answer #1C7348 and mixup #A84B22",
-]);
+const NIGHT_KNOWN = new Set([]);   // (the 4 found on 2026-11-11 were fixed on purpose: soft ink, and answer / mix-up on night's paper ground)
 const known = (msg) => [...NIGHT_KNOWN].some((k) => msg.startsWith(k));
 const apart = (a, b) => { const [p, q] = [deutan(a), deutan(b)]; return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]); };
 
@@ -115,7 +114,7 @@ test("contrast on both themes: text 4.5:1, marks and lines 3:1, and focus / answ
     for (const [x, y] of [["focus", "answer"], ["focus", "mixup"], ["answer", "mixup"]]) if (apart(R[x], R[y]) < 0.15) fails.push(`${t.name}: ${x} ${R[x]} and ${y} ${R[y]} merge for a red-green-blind child`);
   }
   assert.deepEqual(fails.filter((f) => !known(f)), []);
-  assert.equal(fails.filter(known).length, NIGHT_KNOWN.size, "a listed night failure no longer fails: take it off NIGHT_KNOWN");
+  assert.equal(fails.filter(known).length, NIGHT_KNOWN.size);
 });
 
 test("a lesson's theme reaches the board and the engines by data-board-theme on an ancestor; none, or an unknown one, is night", async () => {
