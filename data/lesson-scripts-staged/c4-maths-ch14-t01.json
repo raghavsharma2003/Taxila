@@ -60,10 +60,7 @@
      },
      {
       "interest": "animals",
-      "use": {
-       "hi": "Socho garden mein har bird ke aane par ek line kheenchni hai. Shaam tak bahut lines ho jaati hain, toh unhe paanch-paanch ke bundle mein ginna aasaan hai.",
-       "en": "Imagine you sit in the garden and draw one line each time a bird comes. By evening there are many lines, so counting them in bundles of five is easy."
-      }
+      "use": { "hi": "Socho tum garden mein baithe ho aur har bird ke aane par ek line kheenchte ho. Shaam tak bahut lines ho jaati hain, toh unhe paanch-paanch ke bundle mein ginna aasaan hai.", "en": "Imagine you sit in the garden and draw one line each time a bird comes. By evening there are many lines, so counting them in bundles of five is easy." }
      }
     ]
    },
@@ -138,31 +135,8 @@
        "en": "one row for each fruit"
       }
      ],
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Phal",
-        "items": [
-         "Aam",
-         "Kela",
-         "Seb"
-        ]
-       },
-       "right": {
-        "title": "Tally",
-        "items": [
-         "1 bundle, 3 line",
-         "2 bundle",
-         "4 line"
-        ]
-       }
-      }
-     },
-     "point": {
-      "hi": "Yeh tally table hai: har phal ki ek row, aur uske aage uski tally. Aam ki tally 1 bundle aur 3 line hai, toh Aam ke aage 8 likhte hain. Kela ki tally 2 bundle hai, aur Seb ki 4 line.",
-      "en": "This is a tally table: one row for each fruit, with its tally beside it. Mango's tally is 1 bundle and 3 lines, so we write 8 beside Mango. Banana's tally is 2 bundles, and Apple's is 4 lines."
-     },
+     "board": { "template": "compare@1", "params": {"left": {"title": "Phal", "items": ["Aam", "Kela", "Seb"]}, "right": {"title": "Tally", "items": ["1 bundle, 3 line", "2 bundle, 1 line", "3 line"]}} },
+     "point": { "hi": "Yeh tally table hai: har phal ki ek row, aur uske aage uski tally. Aam ki tally 1 bundle aur 3 line hai, toh Aam ke aage 8 likhte hain. Kele ki tally 2 bundle aur 1 line hai, aur Seb ki 3 line.", "en": "This is a tally table: one row for each fruit, with its tally beside it. Mango's tally is 1 bundle and 3 lines, so we write 8 beside Mango. Banana's tally is 2 bundles and 1 line, and Apple's is 3 lines." },
      "ask": {
       "prompt": {
        "hi": "Har bachche ne ek hi vote diya. Is table ke hisaab se kul kitne bachchon ne vote diya?",
@@ -176,8 +150,8 @@
        "twenty two"
       ],
       "targets": "c4-maths-ch14-t01-m-tally-four",
-      "wrongIfMis": "20",
-      "why": { "hi": "aam 1 bundle 3 line = 8, kela 2 bundle = 10, seb 4, toh har phal jodkar 22 bante hain", "en": "mango 1 bundle 3 lines = 8, banana 2 bundles = 10, apple 4, so all the fruits together make 22" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Phal", "items": ["Aam", "Kela", "Seb"]}, "right": {"title": "Tally", "items": ["1 bundle, 3 line", "2 bundle", "4 line"]}} }
+      "wrongIfMis": "19",
+      "why": { "hi": "aam 1 bundle 3 line = 8, kela 2 bundle 1 line = 11, seb 3, toh teeno phal milakar 22", "en": "mango 1 bundle 3 lines = 8, banana 2 bundles 1 line = 11, apple 3, so the three fruits make 22" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Phal", "items": ["Aam", "Kela", "Seb"]}, "right": {"title": "Tally", "items": ["1 bundle, 3 line", "2 bundle, 1 line", "3 line"]}} }
      },
      "simpler": { "hi": "Table mein har phal ke aage uski tally hai. Aam ki tally 1 bundle aur 3 line hai, isliye uske aage 8 likha.", "en": "In the table each fruit has its tally beside it. Mango's tally is 1 bundle and 3 lines, so 8 is written beside it." }
     }
@@ -250,14 +224,14 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": { "hi": "Class ne pasandida rang chuna. Laal ki tally mein 4 bundle hain, Neela ki tally mein 2 bundle aur 3 line. Laal ko Neela se kitne vote zyada mile?", "en": "The class chose a favourite colour. Red's tally has 4 bundles, Blue's tally has 2 bundles and 3 lines. How many more votes did Red get than Blue?" },
+     "prompt": { "hi": "Class ne pasandida rang chuna. Laal ki tally mein 4 bundle hain, Neele ki tally mein 2 bundle aur 3 line. Laal ko Neele se kitne vote zyada mile?", "en": "The class chose a favourite colour. Red's tally has 4 bundles, Blue's tally has 2 bundles and 3 lines. How many more votes did Red get than Blue?" },
      "key": "7",
      "accept": ["7 vote", "saat", "seven"],
      "targets": "c4-maths-ch14-t01-m-tally-four",
      "wrongIfMis": "5",
-     "board": { "template": "compare@1", "params": {"left": {"title": "Laal", "items": ["4 bundle"]}, "right": {"title": "Neela", "items": ["2 bundle", "3 line"]}} },
-     "why": { "hi": "laal 4 bundle = 20, neela 2 bundle 3 line = 13, toh 20 − 13 = 7", "en": "red's 4 bundles = 20, blue's 2 bundles 3 lines = 13, so 20 − 13 = 7" },
-     "simpler": { "hi": "Laal ke 4 bundle aur Neela ke 2 bundle aur 3 line, dono ko pehle number mein badlo. Phir bade number mein se chhota ghatao.", "en": "Turn Red's 4 bundles and Blue's 2 bundles and 3 lines into numbers first. Then take the smaller number from the bigger one." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Laal", "items": ["4 bundle"]}, "right": {"title": "Neela", "items": ["2 bundle", "3 line"]}} }
+     "board": { "template": "compare@1", "params": {"left": {"title": "Laal", "items": ["4 bundle"]}, "right": {"title": "Neele", "items": ["2 bundle", "3 line"]}} },
+     "why": { "hi": "laal 4 bundle = 20, neele ke 2 bundle 3 line = 13, toh 20 − 13 = 7", "en": "red's 4 bundles = 20, blue's 2 bundles 3 lines = 13, so 20 − 13 = 7" },
+     "simpler": { "hi": "Laal ke 4 bundle aur Neele ke 2 bundle aur 3 line, dono ko pehle number mein badlo. Phir bade number mein se chhota ghatao.", "en": "Turn Red's 4 bundles and Blue's 2 bundles and 3 lines into numbers first. Then take the smaller number from the bigger one." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Laal", "items": ["4 bundle"]}, "right": {"title": "Neele", "items": ["2 bundle", "3 line"]}} }
     },
     {
      "id": "c2",
@@ -306,14 +280,14 @@
      },
      
      "then": {
-      "prompt": { "hi": "Ek tally mein 2 bundle aur 3 akeli line hain. Kul kitne vote hain?", "en": "A tally has 2 bundles and 3 single lines. How many votes in all?" },
-      "key": "13",
-      "accept": ["13 vote", "terah", "thirteen"],
+      "prompt": { "hi": "Ek tally mein 5 bundle aur 4 akeli line hain. Kul kitne vote hain?", "en": "A tally has 5 bundles and 4 single lines. How many votes in all?" },
+      "key": "29",
+      "accept": ["29 vote", "unatees", "untees", "twenty-nine", "twenty nine"],
       "targets": "c4-maths-ch14-t01-m-tally-four",
-      "wrongIfMis": "11",
-      "board": { "template": "compare@1", "params": {"left": {"title": "Tally", "items": ["2 bundle", "3 akeli line"]}, "right": {"title": "Vote", "items": ["kul"]}} },
-      "why": { "hi": "tally ke 2 bundle matlab 10 hain, aur 3 akeli line milakar kul 13 vote hote hain", "en": "the tally's 2 bundles are 10, and 3 single lines make 13 votes in all" },
-      "simpler": { "hi": "2 bundle ki saari lines bundle-bundle karke gino. Phir 3 akeli line bhi jodo.", "en": "Count all the lines in the 2 bundles, bundle by bundle. Then add the 3 single lines too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Tally", "items": ["2 bundle", "3 akeli line"]}, "right": {"title": "Vote", "items": ["kul"]}} }
+      "wrongIfMis": "24",
+      "board": { "template": "compare@1", "params": {"left": {"title": "Tally", "items": ["5 bundle", "4 akeli line"]}, "right": {"title": "Vote", "items": ["kul"]}} },
+      "why": { "hi": "tally ke 5 bundle matlab 25 hain, aur 4 akeli line milakar kul 29 vote hote hain", "en": "the tally's 5 bundles are 25, and 4 single lines make 29 votes in all" },
+      "simpler": { "hi": "5 bundle ki saari lines bundle-bundle karke gino. Phir 4 akeli line bhi jodo.", "en": "Count all the lines in the 5 bundles, bundle by bundle. Then add the 4 single lines too." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Tally", "items": ["5 bundle", "4 akeli line"]}, "right": {"title": "Vote", "items": ["kul"]}} }
      }
     }
    ],
@@ -423,7 +397,7 @@
       "why": {
        "hi": "gaana club 4 × 5 = 20, drawing club 2 × 5 = 10, toh 20 − 10 = 10",
        "en": "singing club 4 × 5 = 20, drawing club 2 × 5 = 10, so 20 − 10 = 10"
-      }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 4, "each": 5} }
+      }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Gaana", "items": ["4 × 5 = 20"]}, "right": {"title": "Drawing", "items": ["2 pictures"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "Gaana", "items": ["4 × 5 = 20"]}, "right": {"title": "Drawing", "items": ["2 pictures"]}} }
      },
      "simpler": { "hi": "Har row ki pictures ko key ke 5 se guna karo. Gaana club ki 4 pictures ka matlab 4 × 5 = 20 bachche.", "en": "Multiply each row's pictures by the key's 5. The singing club's 4 pictures mean 4 × 5 = 20 children." }
     }
@@ -606,15 +580,9 @@
    "remediation": [
     {
      "targets": "c4-maths-ch14-t01-m-count-pictures",
-     "move": "a picture as a box that opens: key 6 → each of 3 pictures holds 6 → skip-count the row 6, 12, 18 → the number is pictures × key; then a fresh row with a new key",
-     "say": {
-      "hi": "Har picture ek dabba hai, aur key batati hai ki dabbe ke andar kitne hain. Key 1 picture = 6 ho, toh 3 pictures matlab 6, 12, 18, sirf 3 nahi.",
-      "en": "Each picture is a box, and the key tells how many are inside it. If the key is 1 picture = 6, then 3 pictures mean 6, 12, 18, not just 3."
-     },
-     "simpler": {
-      "hi": "Har picture mein 6 hain. Toh 3 pictures matlab 6, 12, 18, sirf 3 nahi.",
-      "en": "Each picture holds 6. So 3 pictures mean 6, 12, 18, not just 3."
-     },
+     "move": "a picture as a box that opens: key 7 → each of 3 pictures holds 7 → skip-count the row 7, 14, 21 → the number is pictures × key; then a fresh row with a new key",
+     "say": { "hi": "Har picture ek dabba hai, aur key batati hai ki dabbe ke andar kitne hain. Key 1 picture = 7 ho, toh 3 pictures matlab 7, 14, 21, sirf 3 nahi.", "en": "Each picture is a box, and the key tells how many are inside it. If the key is 1 picture = 7, then 3 pictures mean 7, 14, 21, not just 3." },
+     "simpler": { "hi": "Har picture mein 7 hain. Toh 3 pictures matlab 7, 14, 21, sirf 3 nahi.", "en": "Each picture holds 7. So 3 pictures mean 7, 14, 21, not just 3." },
      
      "then": {
       "prompt": {
@@ -664,10 +632,7 @@
     "interestSlots": [
      {
       "interest": "cooking",
-      "use": {
-       "hi": "Kitchen mein ek hafte ki roti ka pictograph banao, key 1 roti ki picture = 10 roti. Kisi din 25 roti bani, toh poori pictures se baat nahi banegi, aadhi picture chahiye.",
-       "en": "Make a pictograph of a week's rotis in the kitchen, key 1 roti picture = 10 rotis. One day 25 rotis were made, so whole pictures will not do; we need half a picture."
-      }
+      "use": { "hi": "Kitchen mein ek hafte ki roti ka pictograph banao, key 1 roti ki picture = 10 roti. Kisi din 45 roti bani, toh poori pictures se baat nahi banegi, aadhi picture chahiye.", "en": "Make a pictograph of a week's rotis in the kitchen, key 1 roti picture = 10 rotis. One day 45 rotis were made, so whole pictures will not do; we need half a picture." }
      },
      {
       "interest": "nature",
@@ -752,7 +717,7 @@
         "title": "Gubbare",
         "items": [
          "Laal: 30",
-         "Neela: 25",
+         "Neele: 25",
          "Peela: 15"
         ]
        },
@@ -764,15 +729,9 @@
        }
       }
      },
-     "point": {
-      "hi": "Mele mein gubbare bike: Laal 30, Neela 25, Peela 15. Humne key li 1 picture = 10 gubbare, kyunki har number 10 ya 10 ke aadhe se ban jaata hai. Laal ke 30 gubbare ke liye 3 pictures banengi.",
-      "en": "Balloons sold at the fair: Red 30, Blue 25, Yellow 15. We took the key 1 picture = 10 balloons, because every number is made of 10s or half of 10. Red's 30 balloons get 3 pictures."
-     },
+     "point": { "hi": "Mele mein gubbare bike: Laal 30, Neele 25, Peele 15. Humne key li 1 picture = 10 gubbare, kyunki har number 10-10 ke poore hisson se, ya unke saath ek aadhe 10 se, ban jaata hai. Laal ke 30 gubbaron ke liye 3 pictures banengi.", "en": "Balloons sold at the fair: Red 30, Blue 25, Yellow 15. We took the key 1 picture = 10 balloons, because every number is made of whole 10s, or whole 10s and one half of 10. Red's 30 balloons get 3 pictures." },
      "ask": {
-      "prompt": {
-       "hi": "Isi key se Neela ke 25 gubbare ke liye kitni pictures banengi?",
-       "en": "With the same key, how many pictures will Blue's 25 balloons get?"
-      },
+      "prompt": { "hi": "Isi key se Neele ke 25 gubbaron ke liye kitni pictures banengi?", "en": "With the same key, how many pictures will Blue's 25 balloons get?" },
       "key": "2 aur aadhi",
       "accept": [
        "2 aur aadhi picture",
@@ -787,25 +746,19 @@
       ],
       "targets": "c4-maths-ch14-t01-m-half-picture",
       "wrongIfMis": "3",
-      "why": { "hi": "key 1 picture = 10 hai; neela ke 25 mein 2 poori picture ke 20 aur 5 bachte hain, jo aadha hai", "en": "the key is 1 picture = 10; blue's 25 is 2 whole pictures, 20, with 5 left, which is a half" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Neela", "items": ["25"]}, "right": {"title": "Key", "items": ["1 picture = 10"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "Neela", "items": ["25"]}, "right": {"title": "Key", "items": ["1 picture = 10"]}} }
+      "why": { "hi": "key 1 picture = 10 hai; neele ke 25 mein 2 poori picture ke 20 aur 5 bachte hain, jo aadha hai", "en": "the key is 1 picture = 10; blue's 25 is 2 whole pictures, 20, with 5 left, which is a half" }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Neele", "items": ["25"]}, "right": {"title": "Key", "items": ["1 picture = 10"]}} }, "board": { "template": "compare@1", "params": {"left": {"title": "Neele", "items": ["25"]}, "right": {"title": "Key", "items": ["1 picture = 10"]}} }
      },
      "simpler": { "hi": "Har picture 10 gubbare hai, aur aadhi picture 10 ka aadha. Laal ke 30 gubbare mein 10 teen baar aata hai, isliye 3 pictures.", "en": "Each picture is 10 balloons, and half a picture is half of 10. Red's 30 balloons hold 10 three times, so 3 pictures." }
     }
    ],
    "workedExample": {
-    "problem": {
-     "hi": "Ek pictograph mein 1 chhatri ki picture = 4 baarish ke din. September ki row mein 3 chhatri aur 1 aadhi chhatri hai. September mein kitne din baarish hui?",
-     "en": "In a pictograph, 1 umbrella picture = 4 rainy days. September's row has 3 umbrellas and half an umbrella. How many rainy days were there in September?"
-    }, "simpler": { "hi": "Ek chhatri 4 din hai. Pehle 3 poori chhatriyon ke din gino. Phir aadhi chhatri ke din jodo.", "en": "One umbrella is 4 days. First count the days for the 3 whole umbrellas. Then add the days for the half umbrella." },
+    "problem": { "hi": "Ek pictograph mein 1 chhatri ki picture = 4 baarish ke din. September ki row mein 4 chhatri aur 1 aadhi chhatri hai. September mein kitne din baarish hui?", "en": "In a pictograph, 1 umbrella picture = 4 rainy days. September's row has 4 umbrellas and half an umbrella. How many rainy days were there in September?" }, "simpler": { "hi": "Ek chhatri 4 din hai. Pehle 4 poori chhatriyon ke din gino. Phir aadhi chhatri ke din jodo.", "en": "One umbrella is 4 days. First count the days for the 4 whole umbrellas. Then add the days for the half umbrella." },
     "givens": [
      {
       "hi": "key mein 1 chhatri = 4 din",
       "en": "key: 1 umbrella = 4 days"
      },
-     {
-      "hi": "September: 3 poori chhatri aur 1 aadhi chhatri",
-      "en": "September: 3 whole umbrellas and half an umbrella"
-     }
+     { "hi": "September: 4 poori chhatri aur 1 aadhi chhatri", "en": "September: 4 whole umbrellas and half an umbrella" }
     ],
     "find": {
      "hi": "September mein baarish ke din",
@@ -813,16 +766,13 @@
     },
     "steps": [
      {
-      "do": {
-       "hi": "Poori chhatriyon ko key se guna karo, 3 × 4",
-       "en": "Multiply the whole umbrellas by the key, 3 × 4"
-      },
-      "result": "12 din",
+      "do": { "hi": "Poori chhatriyon ko key se guna karo, 4 × 4", "en": "Multiply the whole umbrellas by the key, 4 × 4" },
+      "result": "16 din",
       "why": {
        "hi": "har poori chhatri 4 din ke barabar hai",
        "en": "each whole umbrella stands for 4 days"
       },
-      "simpler": { "hi": "Har poori chhatri 4 din hai. Toh 3 poori chhatriyan matlab 3 × 4 = 12 din.", "en": "Each whole umbrella is 4 days. So 3 whole umbrellas mean 3 × 4 = 12 days." }
+      "simpler": { "hi": "Har poori chhatri 4 din hai. Toh 4 poori chhatriyan matlab 4 × 4 = 16 din.", "en": "Each whole umbrella is 4 days. So 4 whole umbrellas mean 4 × 4 = 16 days." }
      },
      {
       "do": {
@@ -842,39 +792,15 @@
       "hi": "Ab poori chhatriyon ke din aur aadhi chhatri ke din jodo. September mein kitne din baarish hui?",
       "en": "Now add the days for the whole umbrellas and the half umbrella. How many rainy days were there in September?"
      },
-     "key": "14",
-     "accept": [
-      "14 din",
-      "chaudah",
-      "fourteen"
-     ],
+     "key": "18",
+     "accept": ["18 din", "athaarah", "atharah", "eighteen"],
      "targets": "c4-maths-ch14-t01-m-half-picture",
-     "wrongIfMis": "16",
-     "simpler": { "hi": "Poori chhatriyon ke 12 din aur aadhi chhatri ke 2 din, ab dono ko jodo.", "en": "The whole umbrellas give 12 days and the half umbrella gives 2 days; now add the two." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Key", "items": ["1 chhatri = 4 din"]}, "right": {"title": "September", "items": ["3 chhatri", "1 aadhi chhatri"]}} }, "why": { "hi": "1 chhatri = 4 din, toh 3 chhatri ke 12 din aur aadhi chhatri ke 2 din: 12 + 2 = 14", "en": "1 umbrella = 4 days, so 3 umbrellas are 12 days and the half umbrella 2 days: 12 + 2 = 14" }
+     "wrongIfMis": "20",
+     "simpler": { "hi": "Poori chhatriyon ke 16 din aur aadhi chhatri ke 2 din, ab dono ko jodo.", "en": "The whole umbrellas give 16 days and the half umbrella gives 2 days; now add the two." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Key", "items": ["1 chhatri = 4 din"]}, "right": {"title": "September", "items": ["4 chhatri", "1 aadhi chhatri"]}} }, "why": { "hi": "1 chhatri = 4 din, toh 4 chhatri ke 16 din aur aadhi chhatri ke 2 din: 16 + 2 = 18", "en": "1 umbrella = 4 days, so 4 umbrellas are 16 days and the half umbrella 2 days: 16 + 2 = 18" }
     },
-    "answer": {
-     "hi": "September mein 14 din baarish hui",
-     "en": "there were 14 rainy days in September"
-    },
-    "why": { "hi": "1 chhatri = 4 din, toh 3 chhatri ke 12 din aur aadhi chhatri ke 2 din: 12 + 2 = 14", "en": "1 umbrella = 4 days, so 3 umbrellas are 12 days and the half umbrella 2 days: 12 + 2 = 14" },
-    "board": {
-     "template": "compare@1",
-     "params": {
-      "left": {
-       "title": "Key",
-       "items": [
-        "1 chhatri = 4 din"
-       ]
-      },
-      "right": {
-       "title": "September",
-       "items": [
-        "3 chhatri",
-        "1 aadhi chhatri"
-       ]
-      }
-     }
-    }
+    "answer": { "hi": "September mein 18 din baarish hui", "en": "there were 18 rainy days in September" },
+    "why": { "hi": "1 chhatri = 4 din, toh 4 chhatri ke 16 din aur aadhi chhatri ke 2 din: 16 + 2 = 18", "en": "1 umbrella = 4 days, so 4 umbrellas are 16 days and the half umbrella 2 days: 16 + 2 = 18" },
+    "board": { "template": "compare@1", "params": {"left": {"title": "Key", "items": ["1 chhatri = 4 din"]}, "right": {"title": "September", "items": ["4 chhatri", "1 aadhi chhatri"]}} }
    },
    "checks": [
     {
@@ -977,50 +903,19 @@
    "remediation": [
     {
      "targets": "c4-maths-ch14-t01-m-half-picture",
-     "move": "open the half picture: key 6 → a whole picture holds 6, the half holds half of 6 = 3; never a whole, never nothing; then a fresh row with a new key",
-     "say": {
-      "hi": "Aadhi picture ko poori mat gino, aur chhodo bhi mat. Key 1 picture = 6 ho, toh aadhi picture 6 ka aadha, yaani 3.",
-      "en": "Do not count half a picture as a whole one, and do not leave it out. If the key is 1 picture = 6, half a picture is half of 6, that is 3."
-     },
-     "simpler": {
-      "hi": "1 picture 6 hai, toh aadhi picture 6 ka aadha, yaani 3.",
-      "en": "1 picture is 6, so half a picture is half of 6, that is 3."
-     },
+     "move": "open the half picture: key 12 → a whole picture holds 12, the half holds half of 12 = 6; never a whole, never nothing; then a fresh row with a new key",
+     "say": { "hi": "Aadhi picture ko poori mat gino, aur chhodo bhi mat. Key 1 picture = 12 ho, toh aadhi picture 12 ka aadha, yaani 6.", "en": "Do not count half a picture as a whole one, and do not leave it out. If the key is 1 picture = 12, half a picture is half of 12, that is 6." },
+     "simpler": { "hi": "1 picture 12 hai, toh aadhi picture 12 ka aadha, yaani 6.", "en": "1 picture is 12, so half a picture is half of 12, that is 6." },
      
      "then": {
-      "prompt": {
-       "hi": "Key: 1 picture = 8 laddoo. Row mein 5 poori aur 1 aadhi picture hai. Kitne laddoo hain?",
-       "en": "Key: 1 picture = 8 laddoos. A row has 5 whole pictures and 1 half picture. How many laddoos are there?"
-      },
-      "key": "44",
-      "accept": [
-       "44 laddoo",
-       "chavalis",
-       "forty-four",
-       "forty four"
-      ],
+      "prompt": { "hi": "Key: 1 picture = 16 laddoo. Row mein 4 poori aur 1 aadhi picture hai. Kitne laddoo hain?", "en": "Key: 1 picture = 16 laddoos. A row has 4 whole pictures and 1 half picture. How many laddoos are there?" },
+      "key": "72",
+      "accept": ["72 laddoo", "bahattar", "bahattar laddoo", "seventy-two", "seventy two"],
       "targets": "c4-maths-ch14-t01-m-half-picture",
-      "wrongIfMis": "48",
-      "board": {
-       "template": "compare@1",
-       "params": {
-        "left": {
-         "title": "Key",
-         "items": [
-          "1 picture = 8 laddoo"
-         ]
-        },
-        "right": {
-         "title": "Row",
-         "items": [
-          "5 poori picture",
-          "1 aadhi picture"
-         ]
-        }
-       }
-      },
-      "why": { "hi": "5 poori picture 5 × 8 = 40 laddoo, aadhi picture 4: 40 + 4 = 44", "en": "5 whole pictures are 5 × 8 = 40 laddoos, the half picture 4: 40 + 4 = 44" },
-      "simpler": { "hi": "Har poori picture 8 laddoo hai, aur aadhi picture 8 ka aadha. 5 poori pictures ke laddoo nikalo, phir aadhi wale jodo.", "en": "Each whole picture is 8 laddoos, and half a picture is half of 8. Find the laddoos for the 5 whole pictures, then add the half." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Key", "items": ["1 picture = 8 laddoo"]}, "right": {"title": "Row", "items": ["5 poori picture", "1 aadhi picture"]}} }
+      "wrongIfMis": "80",
+      "board": { "template": "compare@1", "params": {"left": {"title": "Key", "items": ["1 picture = 16 laddoo"]}, "right": {"title": "Row", "items": ["4 poori picture", "1 aadhi picture"]}} },
+      "why": { "hi": "4 poori picture 4 × 16 = 64 laddoo, aadhi picture 8: 64 + 8 = 72", "en": "4 whole pictures are 4 × 16 = 64 laddoos, the half picture 8: 64 + 8 = 72" },
+      "simpler": { "hi": "Har poori picture 16 laddoo hai, aur aadhi picture 16 ka aadha. 4 poori pictures ke laddoo nikalo, phir aadhi wale jodo.", "en": "Each whole picture is 16 laddoos, and half a picture is half of 16. Find the laddoos for the 4 whole pictures, then add the half." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Key", "items": ["1 picture = 16 laddoo"]}, "right": {"title": "Row", "items": ["4 poori picture", "1 aadhi picture"]}} }
      }
     }
    ],
