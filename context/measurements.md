@@ -6656,3 +6656,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r8-j2-replay-2026-11-10` (2026-11-10): J2 replay (her one reply sentence when she returns to a parked aside), run by main on int/r6 e43790b66: 3 off-topic exchanges (c4, c5-t02, c6), each one's own prompt sent to the live reply model 20 times; n = 60 drafts, $0.053. 12 of 60 pass the replyToReturnOk predicate (4, 6 and 2 of 20). Of 48 refusals: echo 41 (the draft repeats the child's sentence), promise 4, rule 2, lesson 1. 4 drafts used a man's verb form and 1 promised to remember; both were refused only because they also echoed. Simulated child, one seed, two distinct child sentences. Results in evals/hybrid-side-by-side/results/2026-11-10-j2-replay/.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-59ae352` (2026-11-11): Released 59ae352 with scripts/release.mjs: web taxila-web--s59ae352-2c67 (was taxila-web--sd71c2ca-yt3l), worker + canary/nightly jobs on taxila-worker:59ae352 (was d71c2ca); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 59ae352 --rollback.

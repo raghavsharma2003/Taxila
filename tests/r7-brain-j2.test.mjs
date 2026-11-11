@@ -3,7 +3,7 @@
 // unsaid part. The sentence is held by replyToReturnOk; the dry matrix's returnReply predicate reads the turn (tests/r7-dry-matrix).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { replyToReturnOk, replyToReturnNoteOf } from "../server/brain/say.js";
+import { replyToReturnOk, replyToReturnNoteOf, replyToReturnWhy, j2WordsOf } from "../server/brain/say.js";
 import { PREDICATES, TWINS } from "../evals/hybrid-side-by-side/dry-predicates.mjs";
 
 test("J2: her one sentence on their answer passes only in its shape", () => {
@@ -18,7 +18,10 @@ test("J2: her one sentence on their answer passes only in its shape", () => {
     "Yeh toh bahut mazedaar baat hai.",                               // none of their words
     "Sixer wala pal sach mein itna zabardast hota hoga ki poora stadium khade hokar taali bajata hoga.", // > 14 words
   ]) assert.equal(replyToReturnOk(bad, said), false, bad);
-  assert.match(replyToReturnNoteOf(said, "cricket"), /and the child answered: "sixer/);
+  // (main on the J2 replay: 41 of 48 refusals said the child's sentence back — the note carries their words, never their sentence)
+  const note = replyToReturnNoteOf(said, "cricket");
+  assert.doesNotMatch(note, /jab ball seedha|bahar jaati/);
+  assert.match(note, /"ball", "sixer"/);
 });
 
 test("J2 predicate: a re-park, a question or no lesson after the reply is flagged; the joint or one sentence of theirs is not", () => {
@@ -37,4 +40,19 @@ test("twins: the predicate reads Learning's one list (data/lesson-twins.json), m
   assert.ok(tw("Is number line par sankhya rekha ke nishaan dekho."));
   assert.match(tw("Yeh rectangle ek aayat hai."), /rectangle/);
   assert.equal(tw("Question mark ke baad rekha dekho."), null);
+});
+
+test("J2 (main on the J2 replay): her words as a woman, no promise to remember; the model is given words, not the sentence", () => {
+  const said = "batting sabse achhi lagti hai";
+  assert.equal(replyToReturnWhy("Batting ka khel samajh gaya, mazedaar cheez.", said), "masculine");
+  assert.equal(replyToReturnWhy("Main batting dekh raha hoon, mazedaar.", said), "masculine");
+  assert.equal(replyToReturnWhy("Batting wali baat main yaad rakhungi.", said), "remember");
+  assert.equal(replyToReturnWhy("Agli baar batting par aur sunungi.", said), "remember");
+  // the replay's passing drafts still pass
+  for (const ok of ["Batting ka maza alag hi hai, Riya.", "Batting dekhna bhi mazedaar lagta hai."]) assert.equal(replyToReturnWhy(ok, said), null, ok);
+  assert.equal(replyToReturnWhy("Virat ka chauka dekhkar cricket ka maza badh jaata hai.", "jab Virat chauka maarta hai, woh"), null);
+  // the words: the last noun-like word first, never a stop word, a verb form or a taste word; the topic when none is left
+  assert.deepEqual(j2WordsOf("jab Virat chauka maarta hai, woh", "cricket"), ["chauka", "virat"]);
+  assert.deepEqual(j2WordsOf("batting sabse achhi lagti hai", "cricket"), ["batting"]);
+  assert.deepEqual(j2WordsOf("mujhe pasand hai", "cricket"), ["cricket"]);
 });

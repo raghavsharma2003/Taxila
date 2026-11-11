@@ -9875,3 +9875,11 @@ Round 8 Play item I: when Studio (C1) refuses a Studio v2 world at 360 px and of
 
 ## Merged inbox entries (write-up from the entry text)
 - `dc-r8-j2-prompt-carries-words-not-the-sentence` (2026-11-10): The J2 reply prompt carries one or two content words picked by code from what the child said, never the child's sentence, so the model cannot echo it; the predicate is unchanged (RULE_SAID and LESSON_SAID are not loosened) and gains two clauses of its own: a man's first-person verb form, and a promise to remember. Target on the same replay: at least 16 of 20 per exchange. Reverse if: the rerun is under 16 of 20, in which case the neutral line stays and the reply sentence moves to the offline judged library (selection before generation) instead of a third prompt change.
+
+
+<!-- merged from inbox/r8-play-seam.json -->
+## `dc-r8-play-because-in-entry-level` (2026-11-10)
+
+Round 8 C2 phone seam: a level that what is known about her moved INSIDE the first game carries a because. The play level picker (src/play/core/pick.ts) reads her posteriors and pL, so an open mix-up or her P(skill) can change the first coverage entry's garam level with no entry or focus change; chooseEntry compared against a 'today's' level that already carried her inputs, so it wrote no because. Seen on the pilot topics at p360: Kabir/Player got a different todo-jodo/strips or nazariya/floor level from a new child's, Meera a different arena challenge, with only the studio_gate record. Now server/play/start.js passes `plainOf` (the first entry's level for a child with nothing known, same fade) and server/play/choose.js treats a move off it as a departure: `play.pick_mixup` when the level tells her active belief apart, else `play.pick_fit` ('<family/mode> at her level', her P(skill) vs the class default's first-try). Evidence: the dry matrix predicate in tests/r8-play-phone-seam.test.mjs (a game or level that differs from a new child's always carries a kt_misconception or kt_skill_state because) failed before the change, passes after.
+
+**Reverse if:** the pick_mixup why-line on an in-entry move proves noisy for children (keep the record for the parent/teacher, drop the line), or the level picker stops reading mis/pL (plainOf then always equals the served level).
