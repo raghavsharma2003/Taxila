@@ -213,7 +213,7 @@ test("approval lane, predicate (main 2026-11-10, c5-t02 withdrawn): every value 
 test("no game target (main 2026-11-11 08:49): a topic whose engine cannot show its mix-up gets no generation target and no game in the tray — the lesson stays on the board", async () => {
   const { deriveTarget, noGameTarget, approvedFor } = await import("../server/studio/approved.js");
   const list = JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-approved/no-game-target.json"), "utf8")).topics;
-  assert.deepEqual(list.map((t) => t.topicId).sort(), ["c4-maths-ch14-t01", "c6-maths-ch02-t02", "c6-maths-ch02-t03"]);
+  assert.deepEqual(list.map((t) => t.topicId).sort(), ["c4-maths-ch14-t01", "c6-maths-ch02-t01", "c6-maths-ch02-t02", "c6-maths-ch02-t03"]);
   for (const t of list) {
     assert.ok(t.why && t.needs, `${t.topicId} says why and what an engine would need`);
     assert.ok(noGameTarget(t.topicId));
@@ -325,4 +325,19 @@ test("instrument@1 computes its keys (regen round 2: its three topics were refus
   assert.equal(keysVerified("instrument@1", ins.spec, "c4-maths-ch06-t01"), true, "the key is the quantity the engine shows");
   const ss = validateAny("sort-storm@1", structuredClone(raw("c6-maths-ch02-t01.refused-1.json")));
   assert.equal(keysVerified("sort-storm@1", ss.spec, "c6-maths-ch02-t01"), false, "bins the model made up, citing unrelated kit items, are not verified");
+});
+
+test("geo-forge geometry terms (main 2026-11-11): each shape/measure string holds the textbook term; a round's words use no geometry term the topic's script does not say", async () => {
+  const { geometryTerms } = await import("../server/studio/approved.js");
+  const raw = (dir, f) => JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-approved", dir, f), "utf8"));
+  const c = raw("candidates-regen-r2", "c7-maths-ch05-t02.candidate.json");
+  const r = geometryTerms("c7-maths-ch05-t02", c.spec, "geo-forge@1");
+  assert.equal(r.ok, false);
+  assert.match(r.why, /isosceles "Samdvipahu" \(textbook: samdvibahu\)/, "a misspelt term is refused");
+  assert.match(r.why, /parallel "Samaan disha"/, "the rule given as the parallel label is not the term");
+  const c6 = raw("candidates-regen-r2", "c6-maths-ch08-t01.candidate.json");
+  assert.match(geometryTerms("c6-maths-ch08-t01", c6.spec, "geo-forge@1").why, /perimeter "Paridhi" \(textbook: parimaap\)/, "a circle's word for perimeter is refused");
+  const good = { ...c.spec, strings: { ...c.spec.strings, isosceles: "Samdvibahu tribhuj", parallel: "Dot se samaantar rekha", trapezium: "Samlamb chaturbhuj" } };
+  assert.equal(geometryTerms("c7-maths-ch05-t02", good, "geo-forge@1").ok, true);
+  assert.equal(geometryTerms("c5-maths-ch13-t01", { strings: { sq: "varg" } }, "sieve-storm@1").applies, false, "other engines are not checked");
 });

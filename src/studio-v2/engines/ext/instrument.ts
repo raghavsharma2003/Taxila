@@ -129,7 +129,10 @@ function create(api: EngineApi, spec: InstrumentSpec): EngineInstance {
       ctx.strokeStyle = "rgba(220,230,255,.75)"; ctx.lineWidth = 4; ctx.strokeRect(JUG.x, JUG.y, JUG.w, JUG.h);
       const major = r.minor * (r.scaleMax / r.minor > 20 ? 5 : 2);
       let top = 0;
-      for (let v = r.minor; v <= r.scaleMax + 1e-6; v += r.minor) { const y = jugY(v), big = Math.abs(v / major - Math.round(v / major)) < 1e-6; ctx.strokeStyle = big ? C.ink : C.ink3; ctx.lineWidth = big ? 3 : 2; ctx.beginPath(); ctx.moveTo(JUG.x + JUG.w, y); ctx.lineTo(JUG.x + JUG.w - (big ? 30 : 16), y); ctx.stroke(); if (big) { top = v; api.text(ctx, String(Math.round(v)), JUG.x + JUG.w + 12, y, { font: "mono", size: 38, weight: 600, color: C.ink2, baseline: "middle" }); } }
+      // numbers on every k-th major mark so neighbours never stack at the child's floor (as the ruler and thermometer;
+      // c7-maths-ch03-t01 regen 2b: a 100 ml jug in 5s printed 20 numbers on top of each other — render check Q3.apart)
+      const every = Math.max(1, Math.ceil((Math.max(38, api.minLabel) * 1.15) / Math.abs(jugY(major) - jugY(0))));
+      for (let v = r.minor; v <= r.scaleMax + 1e-6; v += r.minor) { const y = jugY(v), big = Math.abs(v / major - Math.round(v / major)) < 1e-6; ctx.strokeStyle = big ? C.ink : C.ink3; ctx.lineWidth = big ? 3 : 2; ctx.beginPath(); ctx.moveTo(JUG.x + JUG.w, y); ctx.lineTo(JUG.x + JUG.w - (big ? 30 : 16), y); ctx.stroke(); if (big && Math.round(v / major) % every === 0) { top = v; api.text(ctx, String(Math.round(v)), JUG.x + JUG.w + 12, y, { font: "mono", size: 38, weight: 600, color: C.ink2, baseline: "middle" }); } }
       // the unit after the top number (above the jug it sat under the laptop task pill)
       api.text(ctx, "ml", JUG.x + JUG.w + 22 + api.measure(ctx, String(Math.round(top)), { font: "mono", size: 38, weight: 600 }), jugY(top), { font: "mono", size: 38, weight: 600, color: C.ink3, baseline: "middle" });
       if (!g.answered) api.text(ctx, T.hold, 790, 380, { font: "mono", size: 38, weight: 600, color: g.pouring ? C.volt : C.ink2, align: "center", baseline: "middle" });
