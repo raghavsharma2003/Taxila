@@ -39,7 +39,7 @@ export function gradeActs(level, rawActs, { final = false } = {}) {
 export function lessonEvidence(grade, level) {
   if (!grade?.evidence?.length) return [];
   return grade.evidence.map((e) => ({
-    skillId: e.skillId, outcome: e.outcome, ...(e.misconceptionId ? { misconceptionId: e.misconceptionId } : {}),
+    skillId: e.skillId, outcome: e.outcome, ...(e.misconceptionId ? { misconceptionId: e.misconceptionId } : {}), ...(e.chanceMis ? { chanceMis: e.chanceMis } : {}),
     ...(e.discriminates ? { discriminates: e.discriminates } : {}), source: "game", itemId: `play:${level.levelId}`, probe: "P10", hintsUsed: 0, weight: e.weight,
   }));
 }

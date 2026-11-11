@@ -568,5 +568,8 @@ function grade(level: PlayLevel<AakashParams>, acts: PlayActEnvelope<AakashAct>[
 
 export const aakashLogic: FamilyLogic<AakashParams, AakashState, AakashAct> = {
   family: "aakash", modes: AAKASH_MODES, malRules: AAKASH_MAL,
+  // round 8 law 3 (dc-r8-game-modes-three-laws): mix-ups these goals see from ONE pick among five or fewer (a tool, a
+  // bin, a lane, a claim; server/forge3/qa/laws.mjs found each): reported at chance weight, named only on a repeat
+  chancePicks: ["din:sun-goes", "saal:trip-day", "chaaya:phase-shadow", "kab:phase-shadow", "dhoop:slant-same", "jhuk:axis-turns", "jhuk:near-summer"],
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };

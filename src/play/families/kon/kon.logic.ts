@@ -316,7 +316,8 @@ function generate(req: GenRequest): Candidate<KonParams>[] {
       fade: req.fade, goal, params, targets: Object.values(req.misMap), mal: req.misMap, slip: null, context: "space", seed: req.seed,
       proof: { solvable: true, shortcutFree: true, minActs: 2, solutions: 1, discriminates: [], pFirstTry: 0, score: 0, genMs: 0 } },
   });
-  if (isNameGoal(goal)) return generateName(goal, rnd, req.fade).map(({ params, sig }) => mk(params as KonParams, sig));
+  // name: her first level of the mode (no name signature played yet) is the only one whose vertex may be O at fade 1
+  if (isNameGoal(goal)) return generateName(goal, rnd, req.fade, !(req.recent ?? []).some((r) => r.startsWith("name:"))).map(({ params, sig }) => mk(params as KonParams, sig));
   if (isPlaceGoal(goal)) return generatePlace(goal, g, rnd, req.fade).map(({ params, sig }) => mk(params as KonParams, sig));
   if (isLineGoal(goal)) return generateLine(goal, g, rnd, req.fade).map(({ params, sig }) => mk(params as KonParams, sig));
   if (goal === "turn") {
@@ -433,5 +434,10 @@ export const konLogic: FamilyLogic<KonParams, KonState, KonAct> = {
   // r8 place/size: one pick among three (P, Q, the same)
   // r8 name/find: one tap among five arcs
   oneDecision: ["kind", "turn", "corr", "alt", "size", "find"],   // zone kind, turn, and cross (corr, alt): one dial or one pick (main 2026-11-10: turn and cross join the chance weight)
+  // round 8 law 3: place/draw's join to A is one of two buttons (judging round 2, kon/place 4); ends' ray-two-ends is one stop
+  // among a few (LAWS-AUDIT): both at chance weight, named on a repeat on another surface
+  chancePicks: ["draw:join-wrong-end", "ends:ray-two-ends"],
+  // name: a second first-letter pick counts on a level with other letters; the rest: the level's params
+  surfaceOf: (l: PlayLevel<KonParams>) => (isNameGoal(l.params.goal) ? `${l.params.goal}:${l.params.lets}` : JSON.stringify(l.params)),
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };

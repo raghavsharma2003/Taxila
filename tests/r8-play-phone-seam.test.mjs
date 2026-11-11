@@ -175,7 +175,9 @@ async function seamFor(topicId, skillId, learner, C, kit, childId) {
     assert.equal(g.target, level.skillId);
     assert.equal(g.playTrail.firstTry, false); assert.ok(g.playTrail.misses >= 1);
     assert.deepEqual(g.playTrail.mal[0], { rule: mal, mis: level.mal[mal] });
-    assert.equal(g.misconceptionId, level.mal[mal], "the mal-rule's kit misconception reaches her learner state");
+    // round 8 law 3: a mix-up from one pick among a few is not kept from that pick (chanceMis, no misconception on her state)
+    if (wrong.grade.evidence[0]?.chanceMis) assert.equal(g.misconceptionId, undefined, "one pick names nothing");
+    else assert.equal(g.misconceptionId, level.mal[mal], "the mal-rule's kit misconception reaches her learner state");
     const wp = pairs(W.row);
     // (a mal-rule that commits a state the solver's acts cannot undo ends not solved: the verdict is the grade's own)
     assert.equal(wp.verdict, wrong.grade.verdict); assert.equal(wp.first_try, "0"); assert.equal(wp.misses, String(g.playTrail.misses));

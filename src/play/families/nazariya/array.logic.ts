@@ -153,4 +153,6 @@ function board(level: PlayLevel<ArrayParams>, s: NzState) {
 }
 
 export const arrayLogic = makeLogic<ArrayParams>({ mode: "array", malRules: ARRAY_MAL, validate, check, name, predict, gate, afterBuild, solve, shortcut, malActs, generate, facts, board });
+// round 8 law 3: "same or not" after a turn is one pick of two: the mix-up it shows is at chance weight, named only on a repeat
+arrayLogic.chancePicks = ["turn:order-changes"];
 export const arrayHelpers = { pitCells, pitFilled, pour, zeros };

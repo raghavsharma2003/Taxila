@@ -59,11 +59,13 @@ for (const fam of FAMS) {
         const wg = gradeActs(level, env(w), { final: true });
         assert.notEqual(wg.grade.verdict, "solved", level.levelId);
         assert.ok(["incorrect", "partial"].includes(wg.grade.evidence[0]?.outcome), `${level.levelId} ${wg.grade.evidence[0]?.outcome}`);
-        assert.equal(wg.grade.evidence[0].weight, GAME_WEIGHT, `${level.levelId}: a miss is not luck`);
+        // a plain miss is not luck (GAME_WEIGHT); round 8 law 3: a mix-up seen from that one pick is at chance weight, unnamed
+        assert.equal(wg.grade.evidence[0].weight, wg.grade.evidence[0].chanceMis ? CHANCE_WEIGHT : GAME_WEIGHT, `${level.levelId}: a miss is not luck`);
+        assert.equal(wg.grade.evidence[0].misconceptionId, undefined, `${level.levelId}: one pick names no mix-up`);
         misses++;
         // a recovery after the miss still solves, and its evidence is the miss's, at the game weight
         const back = gradeActs(level, env([...w, ...sol]), { final: true });
-        if (back.grade.verdict === "solved") assert.equal(back.grade.evidence[0].weight, GAME_WEIGHT);
+        if (back.grade.verdict === "solved") assert.equal(back.grade.evidence[0].weight, back.grade.evidence[0].chanceMis ? CHANCE_WEIGHT : GAME_WEIGHT);
       } else { other++; assert.equal(rows[0].weight, GAME_WEIGHT, `${level.levelId} keeps the game weight`); }
     }
     assert.ok(one >= 6 && misses === one, `${fam}: ${one} one-decision levels, ${misses} misses`);

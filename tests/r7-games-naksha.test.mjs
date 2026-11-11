@@ -136,7 +136,7 @@ for (const [mode, goal, grammar] of CASES) {
         assert.equal(mc.length, 1, `${c.signature} ${mal}`);
         assert.equal(mc[0].misconceptionId, mal);
         const g = nakshaLogic.grade(level, env(acts));
-        assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, `k-${mal}`);
+        assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal((g.evidence[0].misconceptionId ?? g.evidence[0].chanceMis), `k-${mal}`);
       }
     }
     for (const m of EXPECT(goal, grammar)) assert.ok(seen.has(m), `${mode}/${goal}: mal-rule ${m} never discriminated`);
@@ -428,7 +428,7 @@ for (const e of NE()) for (const fade of [1, 2, 3]) {
       for (const kitId of level.proof.discriminates) {
         const mal = Object.keys(level.mal).find((m) => level.mal[m] === kitId && nakshaLogic.malActs(level, m));
         const mg = gradeActs(level, env(nakshaLogic.malActs(level, mal)), { final: true });
-        assert.equal(mg.grade.evidence[0].misconceptionId, kitId);
+        assert.equal((mg.grade.evidence[0].misconceptionId ?? mg.grade.evidence[0].chanceMis), kitId);
       }
       // the teacher never says a value the child has not produced yet (the ship's coordinates are the given, not a key)
       const hidden = hiddenOf(level);
