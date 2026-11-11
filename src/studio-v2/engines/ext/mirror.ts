@@ -10,6 +10,7 @@ import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
 
 const CHECK = { x: 830, y: 450, w: 140, h: 70 };
 function create(api: EngineApi, spec: MirrorSpec): EngineInstance {
@@ -117,7 +118,7 @@ function create(api: EngineApi, spec: MirrorSpec): EngineInstance {
     if (r.mode !== "turn") btn(ctx, CHECK, T.check, !done);
     if (done) { if (ok) tick(ctx, 900, 400, C.mint, 1.1); else magnifier(ctx, 895, 400, C.amber, 1.1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: g.verdict === "right", color: g.verdict === "right" ? C.mint : C.amber, stats: [[`${g.right}/${g.n}`, T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
     drawCoach(api, ctx, "", 0, now, 600);

@@ -14,7 +14,7 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { checkSpec, kitTopicAny } from "../server/stagecraft/catalogue.js";
-import { specHash, fileHash, JUDGED_SIZES, APPROVAL_SIZES, numberWords } from "../server/studio/approved.js";
+import { specHash, fileHash, JUDGED_SIZES, APPROVAL_SIZES, numberWords, valuesOnTicks } from "../server/studio/approved.js";
 import { boardTwinFor } from "../server/stagecraft/builders.js";
 
 const arg = (k, d = null) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -23,6 +23,9 @@ const CANDS = arg("--candidates"), SAMPLE = Number(arg("--catalogue-sample", "0"
 // --catalogue-all: every catalogue game AND explainer (main's ruling 2026-11-10: the whole catalogue is re-judged on rubric v1);
 // --skip <dir>: leave out pieces that already have a packet there (a resumed run)
 const ALL = process.argv.includes("--catalogue-all"), SKIP = arg("--skip");
+// --only <ids.json>: a JSON list of piece ids (cat-<topic>, cat-<topic>-explainer) — main 2026-11-10: judge on demand, only
+// the pieces that can be shown soon (the scripted topics)
+const ONLY = arg("--only") ? new Set(JSON.parse(fs.readFileSync(arg("--only"), "utf8"))) : null;
 
 /** A seeded shuffle (mulberry32): the same seed draws the same sample. */
 export function seededSample(list, n, seed) {
@@ -45,7 +48,7 @@ function pieces() {
     return fs.readdirSync(dir).filter((f) => f.endsWith(".json")).sort().map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), "utf8"))).flatMap((r) =>
       [["game", ""], ["explainer", "-explainer"]].filter(([k]) => r[k]?.archetype && r[k]?.spec)
         .map(([k, suf]) => ({ id: `cat-${r.topicId}${suf}`, topicId: r.topicId, archetype: r[k].archetype, spec: r[k].spec, mixup: null, source: "catalogue", piece: k })))
-      .filter((p) => !done.has(p.id));
+      .filter((p) => !done.has(p.id) && (!ONLY || ONLY.has(p.id)));
   }
   if (SAMPLE > 0) {
     const dir = path.resolve("data/studio-catalogue/topics");
@@ -80,8 +83,10 @@ try {
     const kit = kitTopicAny(p.topicId);
     // (main 2026-11-10: a romanised number word in a child-visible string trips the content check — say so in plain words)
     const words = []; JSON.stringify(p.spec ?? {}, (k, v) => { if (typeof v === "string" && numberWords(v).length) words.push(`"${v}"`); return v; });
-    if (words.length) console.log(`${p.id}: WARNING number words in ${words.slice(0, 6).join(", ")} — the content check reads them as English; write numbers in digits`);
-    const pred = checkSpec(p.archetype, p.spec, kit);
+    if (words.length) console.log(`${p.id}: WARNING number words in ${words.slice(0, 6).join(", ")} — a likely cause of a content-check score; write numbers in digits`);
+    // (main 2026-11-10: the board must be able to show its own answer — every placed value on a tick)
+    const pred0 = checkSpec(p.archetype, p.spec, kit), ticks = valuesOnTicks(p.archetype, pred0.spec ?? p.spec);
+    const pred = pred0.ok && !ticks.ok ? { ...pred0, ok: false, why: `values off the ticks: ${ticks.why}` } : pred0;
     const dir = path.join(OUT, p.id);
     fs.mkdirSync(dir, { recursive: true });
     // (rendered as the child gets it: with its board twin, which the stage shows where the 1000-unit world is too small to play —

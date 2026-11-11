@@ -10,6 +10,7 @@ import { bloom, roundRect, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
 import { pill, voltRing } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
 const S = SHADOW, OT = S.torchY - S.objH / 2, OB = S.torchY + S.objH / 2;
 type Step = ShadowSpec["steps"][number];
@@ -31,7 +32,7 @@ function create(api: EngineApi, spec: ShadowSpec): EngineInstance {
     api.resetLog("samples");
     g.si = i; g.phase = "play"; g.stepT = 0; g.hold = 0; g.inBand = 0; g.clock = 0; g.samples = []; g.holder = null; g.tested = new Set(); g.sorted = {}; g.reveal = 0;
     const st = spec.steps[i];
-    api.task(`${T.step} ${i + 1}/${spec.steps.length}`, st.kind === "size" ? `Make the shadow ${st.factor}${T.times}` : st.kind === "catch" ? T.band : T.sort);
+    api.task(`${T.step} ${dots(i, spec.steps.length)}`, st.kind === "size" ? `Make the shadow ${st.factor}${T.times}` : st.kind === "catch" ? T.band : T.sort);
     api.event("step_start", { step: i + 1, kind: st.kind, targets: st.targets ?? null });
   }
   api.onPointer({
@@ -61,7 +62,7 @@ function create(api: EngineApi, spec: ShadowSpec): EngineInstance {
   }
   function met(verdict: string, msg: string) {
     g.results.push(verdict); g.phase = "met"; g.stepT = 0;
-    api.task(`${T.step} ${g.si + 1}/${spec.steps.length}`, msg, verdict === "right" ? "done" : "warn");
+    api.task(`${T.step} ${dots(g.si, spec.steps.length)}`, msg, verdict === "right" ? "done" : "warn");
     if (verdict === "right") { api.fx.flash(C.mint, 0.1); sfx.blip({ f: 659, dur: 0.12, type: "triangle", gain: 0.14 }); setTimeout(() => sfx.blip({ f: 988, dur: 0.18, type: "triangle", gain: 0.12 }), 110); }
   }
   function update(dt: number) {

@@ -11,6 +11,7 @@ import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, fmtNum, textBlock } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
 
 const CARD = { x: 610, y: 168, w: 360, h: 130 }, BTN = { x: 700, y: 470, w: 230, h: 70 };
 function create(api: EngineApi, spec: InstrumentSpec): EngineInstance {
@@ -173,7 +174,7 @@ function create(api: EngineApi, spec: InstrumentSpec): EngineInstance {
       if (ok) tick(ctx, CARD.x + CARD.w - 20, CARD.y + 18, C.mint, 0.9); else magnifier(ctx, CARD.x + CARD.w - 24, CARD.y + 22, C.amber, 0.9);
     }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.measured]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.measured]] });
     drawCoach(api, ctx, "", 0, now, 600);

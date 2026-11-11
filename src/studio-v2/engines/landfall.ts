@@ -9,6 +9,7 @@ import { bloom, card, glow, magnifier, roundRect, tick, type Ctx } from "../core
 import { sfx } from "../core/sfx.ts";
 import { drawCoach } from "../core/ui.ts";
 import type { EngineApi, EngineDef, EngineInstance, Knob } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
 const LINE_Y = 505, X0 = 120, X1 = 880, LOCK_Y = 352, SPAWN_Y = 150, BASE_HALF = 50;
 const TOL = { exact: 12, close: 28 };
@@ -151,7 +152,7 @@ function create(api: EngineApi, spec: LandfallSpec): EngineInstance {
   }
   function syncHud() {
     if (g.waveIdx < 0) return;
-    hud.set("wave", `${g.waveIdx + 1}/${waves.length}`);
+    hud.set("wave", `${dots(g.waveIdx, waves.length)}`);
     hud.set("chain", `×${g.chain}`, { tone: g.chain >= 5 ? "ion" : null, bump: true });
     const p = g.results.length ? precisionOf(g.results) : null;
     hud.set("prec", p == null ? "—" : `${p}%`, { meter: p == null ? 0 : p / 100, tone: p != null && p >= 90 ? "mint" : null });

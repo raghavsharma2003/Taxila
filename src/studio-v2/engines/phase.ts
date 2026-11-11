@@ -10,6 +10,7 @@ import { bloom, roundRect, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
 import { pill, voltRing } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
 const BK = { x0: 360, x1: 640, top: 250, bot: 540 }, N = 96, SL = { x: 190, y0: 250, y1: 530 }, BTN = { fan: { x: 870, y: 330 }, lid: { x: 870, y: 430 } };
 interface P { x: number; y: number; vx: number; vy: number; role: "ice" | "liq" | "vap" | "drop" | "gone"; site: number }
@@ -42,8 +43,8 @@ function create(api: EngineApi, spec: PhaseSpec): EngineInstance {
   function startStep(i: number) {
     g.si = i; g.from = s.t; g.base = s; g.stepT = 0; g.pick = null; g.warn = 0;
     const st = spec.steps[i];
-    if (st.kind === "probe") { g.phase = "probe"; api.task(`${T.step} ${i + 1}/${spec.steps.length}`, `${T.predict}: ${WATER_PROBES[st.probe].q}`); }
-    else { g.phase = "goal"; api.task(`${T.step} ${i + 1}/${spec.steps.length}`, st.goal === "evaporate" ? `${st.text} (${T.noBoil} ${st.tMax} °C)` : st.text); }
+    if (st.kind === "probe") { g.phase = "probe"; api.task(`${T.step} ${dots(i, spec.steps.length)}`, `${T.predict}: ${WATER_PROBES[st.probe].q}`); }
+    else { g.phase = "goal"; api.task(`${T.step} ${dots(i, spec.steps.length)}`, st.goal === "evaporate" ? `${st.text} (${T.noBoil} ${st.tMax} °C)` : st.text); }
     api.event("step_start", { step: i + 1, kind: st.kind, targets: st.targets ?? null });
   }
   const chips = () => { const st = step(); if (!st || st.kind !== "probe") return []; const opts = WATER_PROBES[st.probe].options; return opts.map((o, i) => ({ o, x: 500 + (i - (opts.length - 1) / 2) * 290, y: 586, w: 270, h: 70 })); };
@@ -77,7 +78,7 @@ function create(api: EngineApi, spec: PhaseSpec): EngineInstance {
         if (waterGoalMet(st.goal, s, g.base, st.arg)) {
           const grade = api.answer(`s${g.si + 1}`, { log: { $hostLog: "controls" }, until: s.t, from: g.from }, "right");
           g.results.push(grade.verdict); g.phase = "met"; g.stepT = 0;
-          api.task(`${T.step} ${g.si + 1}/${spec.steps.length}`, `${T.done}: ${st.text}`, "done");
+          api.task(`${T.step} ${dots(g.si, spec.steps.length)}`, `${T.done}: ${st.text}`, "done");
           api.fx.flash(C.mint, 0.1); sfx.blip({ f: 659, dur: 0.12, type: "triangle", gain: 0.14 }); setTimeout(() => sfx.blip({ f: 988, dur: 0.18, type: "triangle", gain: 0.12 }), 110);
           api.facts({ step: st.goal, verdict: grade.verdict, T: +s.T.toFixed(1), ice: +s.ice.toFixed(2), gone: +(s.vapour + s.escaped).toFixed(2), droplets: +s.droplets.toFixed(2) });
         }

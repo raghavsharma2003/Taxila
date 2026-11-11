@@ -16,6 +16,7 @@ import { sfx } from "../../core/sfx.ts";
 import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, taskPill } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
 
 const BTN = { x: 800, y: 520, w: 170, h: 66 }, RESET = { x: 770, y: 572, w: 220, h: 44 };
 const ROD = { x0: 230, x1: 660 };
@@ -189,7 +190,7 @@ function create(api: EngineApi, spec: HeatSpec): EngineInstance {
     }
     if (done) { const tx = r.mode === "separate" ? 660 : 765; if (ok) tick(ctx, tx, 200, C.mint, 1); else magnifier(ctx, tx - 5, 200, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
   }

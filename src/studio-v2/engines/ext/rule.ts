@@ -12,6 +12,7 @@ import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, fmtNum, textBlock } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
 
 // (round 7 readability: the tray sits a little higher so a young child's two-line coach under it stays clear)
 const MACH = { x: 330, y: 290, w: 340, h: 130 }, RUN = { x: 790, y: 460, w: 180, h: 70 }, TRAY_Y = 468;
@@ -138,7 +139,7 @@ function create(api: EngineApi, spec: RuleSpec): EngineInstance {
     }
     if (g.ran && g.runT > 0.9) { if (ok) tick(ctx, 960, 200, C.mint, 1); else magnifier(ctx, 955, 200, C.amber, 1); if (r.mode === "build" || r.mode === "seq") pill(api, ctx, ok ? T.works : T.fix, r.mode === "build" ? 500 : 830, r.mode === "build" ? MACH.y - 34 : MACH.y + MACH.h / 2, { color: ok ? C.mint : C.amber, size: 38 }); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: g.verdict === "right", color: g.verdict === "right" ? C.mint : C.amber, stats: [[`${g.right}/${g.n}`, T.built]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.built]] });
     drawCoach(api, ctx, T.coach, flow.state === "play" && (r.mode === "build" || r.mode === "seq" || r.mode === "inverse") ? g.coachA : 0, now, 616, 980);
