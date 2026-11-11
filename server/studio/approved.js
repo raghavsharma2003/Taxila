@@ -51,6 +51,8 @@ export const ENGINE_HOW = Object.freeze({
   "pictograph@1": "the title names what is drawn (bar graph or picture graph); tally only where tally marks are drawn",
   // (regen round 2: 4 of 4 geo-forge candidates failed on content — challenges off the topic's idea, wrong Hindi terms)
   "geo-forge@1": "every challenge builds the topic's own idea (a square tile turned stays square: a quad square drawn tilted; radius vs diameter: a circle challenge); a shape named is exactly that shape; Hindi terms as the textbook: samdvibahu (isosceles), samabahu (equilateral), parimaap (perimeter), paridhi only for a circle, trijya (radius), vyaas (diameter), samaantar (parallel); no task label states the rule (never 'samaan disha' for parallel)",
+  // (regen 2b: c5-maths-ch05-t01, a km topic, became a jug of ml; c4-ch06-t01 wrote 6 meaning 6 cm on a mm ruler)
+  "instrument@1": "the mode is the topic's quantity: length topics cut (km and m on a long rule: show 'km+m', scaleMax up to 2000000 mm), capacity pours, mass weighs; every number in the base unit (cut mm: 6 cm is 60); a length-reading mix-up round starts the object off 0 (from 3 to 9)",
   "angle-cannon@1": "the beam is a lighthouse's light aimed at a mark: no weapon words in any string (never fire, shoot, turret, nishana, hit, threat, attack); say 'roshni', 'kiran', 'mod do'; angle names as the teacher says them (right angle, 90°); a tens or protractor scaffold only with call/copy angles that are multiples of 10",
   "area-claim@1": "every string plain Roman Hinglish: no stake, claim, plot, sq or units in English; sq varg, units ikai (area 40 varg ikai)",
 });
@@ -95,6 +97,42 @@ function scriptOf(topicId) {
     try { return JSON.parse(fs.readFileSync(path.join(REPO, d, `${topicId}.json`), "utf8")); } catch { /* next */ }
   }
   return null;
+}
+/**
+ * main 2026-11-11 (geo-forge terms): the game's geometry words cannot drift from the lesson. Two rules, geo-forge only:
+ * (1) each shape/measure string holds the textbook term for its key, in Hindi or English ("perimeter": "Paridhi" is refused —
+ * paridhi is a circle's; "isosceles": "Samdvipahu" is a misspelling of samdvibahu); (2) a title, sub or label uses no textbook
+ * geometry term the topic's script does not say (its `terms` block, the teacher's words). → { ok, applies, why, terms }.
+ */
+const GEO_KEY_TERMS = { perimeter: ["parimaap", "parimap", "perimeter"], area: ["kshetrafal", "area"], isosceles: ["samdvibahu", "isosceles"],
+  scalene: ["vishambahu", "vishmabahu", "scalene"], right: ["samkon", "samkoni", "right"], obtuse: ["adhikkon", "adhik", "obtuse"], acute: ["nyunkon", "nyun", "nyoon", "acute"],
+  square: ["varg", "square"], rectangle: ["aayat", "rectangle"], triangle: ["tribhuj", "triangle"], parallelogram: ["samaantar", "samantar", "samanantar", "samaanantar", "parallelogram"],
+  rhombus: ["samchaturbhuj", "rhombus"], trapezium: ["samlamb", "trapezium"], perpendicular: ["lamb", "lambvat", "perpendicular"], parallel: ["samaantar", "samantar", "samanantar", "samaanantar", "parallel"] };
+// the textbook's technical geometry words (common words — kona, rekha, bindu, kiran, varg — are left out: they are everyday Hindi)
+const GEO_HI = ["samdvibahu", "samabahu", "vishambahu", "parimaap", "paridhi", "trijya", "vyaas", "samaantar", "samkon", "nyunkon", "adhikkon", "sarlkon",
+  "pravarkon", "tribhuj", "chaturbhuj", "aayat", "vritt", "kendra", "jeeva", "rekhakhand", "shirsh", "vikarn", "kshetrafal", "samlamb", "samchaturbhuj", "lambvat", "konmaapak"];
+const lev = (a, b) => { const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]); for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[a.length][b.length]; };
+const wordsOf = (s) => String(s ?? "").toLowerCase().normalize("NFKC").match(/[a-z]+/g) ?? [];
+export function geometryTerms(topicId, spec, archetype = spec?.archetype) {
+  if (archetype !== "geo-forge@1") return { ok: true, applies: false, why: null, terms: [] };
+  const bad = [];
+  for (const [k, ok] of Object.entries(GEO_KEY_TERMS)) {
+    const v = spec?.strings?.[k];
+    if (typeof v !== "string" || !v.trim()) continue;
+    const ws = wordsOf(v);
+    if (!ws.some((w) => ok.includes(w))) bad.push(`${k} "${v}" (textbook: ${ok[0]})`);
+  }
+  const terms = scriptOf(topicId)?.terms;
+  const said = new Set((Array.isArray(terms) ? terms : []).flatMap((t) => wordsOf(`${t.hi ?? ""} ${t.en ?? ""}`)));
+  if (said.size) JSON.stringify(spec?.rounds ?? [], (key, v) => {
+    if (typeof v === "string" && ["title", "sub", "label"].includes(key)) for (const w of wordsOf(v)) {
+      const t = GEO_HI.includes(w) ? w : w.length >= 7 ? GEO_HI.find((x) => x.length >= 7 && lev(w, x) <= 2) : null;
+      if (t && !said.has(w)) bad.push(`"${w}"${w === t ? "" : ` (~${t})`} in a ${key}: not one of this topic's words`);
+    }
+    return v;
+  });
+  return bad.length ? { ok: false, applies: true, why: `geometry terms: ${bad.join("; ")}`, terms: bad } : { ok: true, applies: true, why: null, terms: [] };
 }
 export function beatFor(topicId, misconceptionId) {
   try {
