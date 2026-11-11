@@ -144,7 +144,7 @@ export function mountStage(host: HTMLElement, make: (api: ViewApi) => View, opts
     dirty = false;
     const t0 = performance.now();
     try {
-      targets = []; audit.texts = []; audit.clipped = 0;
+      targets = []; audit.texts = []; audit.clipped = 0; audit.marks = []; audit.segs = [];
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
       // a partial repaint (the view says only these regions move, and no shake / flash / particles are live)
       const rects = !full && !fx.busy && fx.ox === 0 && fx.oy === 0 ? (view.dirty?.() ?? null) : null;

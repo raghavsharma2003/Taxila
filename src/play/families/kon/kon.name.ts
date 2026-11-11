@@ -22,10 +22,10 @@ export const isNameGoal = (g: string | undefined): g is NameGoal => NAME_GOALS.i
 export const NBW = 320, NBH = 300;
 /** the letters a figure may use (the vertex is any of them) */
 export const LETTERS = "ABCDEOPQRS";
-/** a letter's touch circle and an arc handle's (board px; the view keeps ≥ 64 px for classes 6-9) */
+/** a letter's touch radius (board px): points stay 2 × HIT + 4 apart, so their touch squares (48-64 px) never overlap */
 export const HIT = 32;
 /** each angle's arc (and its handle) radius: the two at the vertex between neighbouring rays, the wide one, the two corners */
-export const ARC_R = [50, 50, 84, 30, 30];
+export const ARC_R = [50, 50, 84, 24, 24];
 
 export interface NameFields {
   /** four letters: the vertex, then the ends of rays 1, 2, 3 */
@@ -166,6 +166,66 @@ export function handles(p: NameParamsLike): [number, number][] {
   });
 }
 
+/** find: a tap within BAND board px of an arc is a tap on that arc (the nearest arc wins, so no two arcs share a point) */
+export const BAND = 44;
+/** the distance from (x, y) to corner k's arc (radius ARC_R[k] about its vertex, between its two arms) */
+export function arcDist(p: NameParamsLike, k: number, x: number, y: number): number { return arcGeo(p)[k](x, y); }
+/** each arc's distance function (the figure's geometry worked out once) */
+function arcGeo(p: NameParamsLike): ((x: number, y: number) => number)[] {
+  const P = points(p);
+  return corners(p).map((c, k) => {
+    const v = P[c.v], r = ARC_R[k];
+    const ha = headingOf(P[c.a][0] - v[0], P[c.a][1] - v[1]), hb = headingOf(P[c.b][0] - v[0], P[c.b][1] - v[1]);
+    let d = norm(hb - ha); if (d > 180) d -= 360;
+    const e1: [number, number] = [v[0] + r * Math.cos(R(ha)), v[1] + r * Math.sin(R(ha))], e2: [number, number] = [v[0] + r * Math.cos(R(ha + d)), v[1] + r * Math.sin(R(ha + d))];
+    return (x: number, y: number) => {
+      const phi = headingOf(x - v[0], y - v[1]), rel = d >= 0 ? norm(phi - ha) : norm(ha - phi);
+      if (rel <= Math.abs(d)) return Math.abs(Math.hypot(x - v[0], y - v[1]) - r);
+      return Math.min(Math.hypot(x - e1[0], y - e1[1]), Math.hypot(x - e2[0], y - e2[1]));
+    };
+  });
+}
+const hitWith = (G: ((x: number, y: number) => number)[], x: number, y: number) => {
+  let best = -1, bd = BAND;
+  for (let k = 0; k < G.length; k++) { const d = G[k](x, y); if (d <= bd) { bd = d; best = k; } }
+  return best;
+};
+/** find: which arc a tap at board point (x, y) is on (-1: none within BAND) */
+export function arcHit(p: NameParamsLike, x: number, y: number): number { return hitWith(arcGeo(p), x, y); }
+/**
+ * find: each arc's touch disc (board px, centre and diameter `side`, 48 or 56): a round target that lies wholly in the arc's
+ * own tap region, so no two discs overlap and each is ≥ 48 CSS px across wherever 1 board px ≥ 1 CSS px (a phone). null when
+ * an arc has none (the generator never serves that figure). Squares do not fit beside a short corner arc; discs do.
+ */
+export function arcTargets(p: NameParamsLike, min = 48): ({ x: number; y: number; side: number } | null)[] {
+  const one = arcTarget(p, min);
+  return [0, 1, 2, 3, 4].map(one);
+}
+/** does every arc have its touch disc? (the generator's check: the short corner arcs, which fail most, first) */
+export const arcTargetsOk = (p: NameParamsLike, min = 48) => { const one = arcTarget(p, min); return [3, 4, 0, 1, 2].every((k) => one(k) !== null); };
+function arcTarget(p: NameParamsLike, min: number): (k: number) => { x: number; y: number; side: number } | null {
+  const P = points(p), G = arcGeo(p), C = corners(p);
+  // the rim first (where a disc usually leaves its arc's region), then half way out, then the centre
+  const ring = [[1, 16], [0.5, 8], [0, 1]].flatMap(([f, n]) => Array.from({ length: n }, (_, i) => [f * Math.cos((2 * Math.PI * i) / n), f * Math.sin((2 * Math.PI * i) / n)]));
+  return (k: number) => {
+    const c = C[k], v = P[c.v], ha = headingOf(P[c.a][0] - v[0], P[c.a][1] - v[1]), hb = headingOf(P[c.b][0] - v[0], P[c.b][1] - v[1]);
+    let d = norm(hb - ha); if (d > 180) d -= 360;
+    // centres on a 7 px grid around the arc, nearest the arc's middle first; a disc passes when its centre, 8 points half way
+    // out and 16 on its rim are all on this arc
+    const r0 = ARC_R[k], hm = ha + d / 2, mx = v[0] + r0 * Math.cos(R(hm)), my = v[1] + r0 * Math.sin(R(hm)), ext = r0 + BAND;
+    const cands: [number, number, number][] = [];
+    for (let x = v[0] - ext; x <= v[0] + ext; x += 7) for (let y = v[1] - ext; y <= v[1] + ext; y += 7) {
+      if (x < 0 || x > NBW || y < 0 || y > NBH || G[k](x, y) > BAND / 2) continue;
+      cands.push([x, y, Math.hypot(x - mx, y - my)]);
+    }
+    cands.sort((a, b) => a[2] - b[2]);
+    // (checked 4 px wider than it is said to be, so the region between the sample points holds too)
+    const fits = (x: number, y: number, side: number) => ring.every(([u, w]) => hitWith(G, x + (u * (side + 8)) / 2, y + (w * (side + 8)) / 2) === k);
+    for (const [x, y] of cands) if (fits(x, y, min)) return { x, y, side: fits(x, y, min + 8) ? min + 8 : min };
+    return null;
+  };
+}
+
 export function nameValueFacts(p: NameParamsLike): Facts {
   return p.goal === "find" ? { name: `∠${spell(p, nameOf(asked(p), p.ord ?? 0))}` } : { lit: "angle" };
 }
@@ -231,11 +291,12 @@ export function generateName(goal: NameGoal, rnd: () => number, fade: number): {
     if (!P.every(([x, y]) => x >= 26 && x <= NBW - 26 && y >= 26 && y <= NBH - 26)) continue;
     const apart = (Q: [number, number][], d: number) => Q.every((a, i) => Q.every((b, j) => j <= i || Math.hypot(a[0] - b[0], a[1] - b[1]) >= d));
     if (!apart(P, 2 * HIT + 4)) continue;
-    if (goal === "find" && !apart(handles(params), 44)) continue;
     if (corners(params).some((c) => (sizeOf(params, nameOf(c)) ?? 0) < 20)) continue;
     if (shortcutName(params)) continue;
     // find: only names whose first- or last-letter reading is one of the figure's angles (the belief shows somewhere real)
     if (goal === "find" && vertexNamePick(params) < 0) continue;
+    // find: every arc has a touch square of its own (≥ 48 board px, wholly in its own tap band)
+    if (goal === "find" && !arcTargetsOk(params)) continue;
     seen.add(sig); out.push({ params, sig });
   }
   return out;

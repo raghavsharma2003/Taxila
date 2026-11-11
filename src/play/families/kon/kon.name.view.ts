@@ -1,6 +1,7 @@
 // Kon · name, the 2D view (r8; the law is kon.name.ts). Three rays from a vertex, their ends lettered, two ends joined: the
 // figure's five angles. say: one angle is lit (a filled arc); tap three letters in order (the name builds in a chip under
-// the figure), "Yahi naam". find: a name is shown; tap the arc of the angle it names (each angle has an arc handle). After a
+// the figure), "Yahi naam". find: a name is shown; tap the arc of the angle it names (a tap near an arc is on the nearest
+// arc; each arc's touch square lies wholly in its own band, so no two overlap). After a
 // decision the law lights the angle the name actually denotes, at its middle letter: solid when it is one of the figure's
 // angles, dashed (with its two rays) when it is not; the angle meant stays lit beside it. No timer, no hint of where the
 // vertex goes.
@@ -10,7 +11,8 @@ import { clamp, type ControlSpec, type FamilyView, type Readout, type ViewDeps }
 import { say } from "../../copy.ts";
 import { word } from "../../engines/words.ts";
 import type { KonParams, KonState } from "./kon.logic.ts";
-import { ARC_R, HIT, NBH, NBW, asked, corners, denotes, handles, initName, nameOf, points, segments, sizeOf, spell } from "./kon.name.ts";
+import { ARC_R, NBH, NBW, arcHit, arcTargets, asked, corners, denotes, initName, nameOf, points, segments, sizeOf, spell } from "./kon.name.ts";
+import { around, freeSpot, type Avoid, type Box } from "./kon.spot.ts";
 
 type Pt = [number, number];
 const RUN_END = 1.2;
@@ -25,7 +27,18 @@ export function makeNameView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   const S = (x: number, y: number): Pt => [ox + x * s, oy + (NBH - y) * s];
   const rad = (d: number) => (d * Math.PI) / 180;
   const deg = (x: number, y: number) => (((Math.atan2(y, x) * 180) / Math.PI) % 360 + 360) % 360;
-  const hitR = () => Math.max(api.young ? 24 : 32, HIT * s);
+  const B = (X: number, Y: number): Pt => [(X - ox) / s, NBH - (Y - oy) / s];
+  /** say: a letter's touch square's half side: as big as 32 px, never under 24 (a 48 px target), and never overlapping the
+   *  next one's (the generator keeps the points 68 board px apart, so ≥ 48 apart on one axis; 1 board px ≥ 1 CSS px) */
+  const centres = (): Pt[] => points(p).map((q) => S(...q));
+  /** find: each arc's touch square (board px), fixed by the figure */
+  const arcSq = goal === "find" ? arcTargets(p) : [];
+  function hitR(): number {
+    const C = centres();
+    let m = Infinity;
+    C.forEach((a, i) => C.forEach((b, j) => { if (j > i) m = Math.min(m, Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]))); }));
+    return Math.max(24, Math.min(32, Math.floor(m / 2)));
+  }
 
   function layout(w: number, h: number): void {
     s = Math.min(w / NBW, h / NBH);
@@ -45,16 +58,10 @@ export function makeNameView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   }
   function pointer(kind: PointerKind, X: number, Y: number): void {
     if (kind !== "down" || st().done) return;
-    const P = points(p).map((q) => S(...q)), r = hitR();
-    if (goal === "say") {
-      const i = P.findIndex(([x, y]) => Math.hypot(X - x, Y - y) <= r);
-      if (i >= 0 && ns().taps.length < 3) { truthAt = -1; act({ kind: "letter", at: i }); }
-      return;
-    }
-    const H = handles(p).map((q) => S(...q));
-    let best = -1, bd = Infinity;
-    H.forEach(([x, y], k) => { const d = Math.hypot(X - x, Y - y); if (d <= r && d < bd) { bd = d; best = k; } });
-    if (best >= 0) act({ kind: "arc", at: best });
+    if (goal === "find") { const k = arcHit(p, ...B(X, Y)); if (k >= 0) act({ kind: "arc", at: k }); return; }
+    // the touch squares never overlap, so at most one holds the finger
+    const r = hitR(), best = centres().findIndex(([x, y]) => Math.abs(X - x) <= r && Math.abs(Y - y) <= r);
+    if (best >= 0 && ns().taps.length < 3) { truthAt = -1; act({ kind: "letter", at: best }); }
   }
   const update = () => { /* nothing moves on its own */ };
   const busy = () => truthAt >= 0 && api.t - truthAt < RUN_END;
@@ -75,21 +82,21 @@ export function makeNameView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   function draw(c: CanvasRenderingContext2D): void {
     const Pn = api.P, P = points(p), S0 = st(), N = ns(), C = corners(p), want = p.ask ?? 0;
     // the figure: rays and the joined pair
-    for (const [i, j] of segments(p)) Pn.stroke(c, [S(...P[i]), S(...P[j])], { role: "ink", width: 3.5 });
+    for (const [i, j] of segments(p)) { Pn.stroke(c, [S(...P[i]), S(...P[j])], { role: "ink", width: 3.5 }); Pn.noteSeg("arm", S(...P[i]), S(...P[j])); }
     // say: the lit angle
     if (goal === "say") arc(c, nameOf(C[want]), arcR(want), "q2", { fill: true });
-    // find: an arc handle for every angle
+    // find: every angle's arc, bold enough to tap (the one she tapped in her colour)
     if (goal === "find") C.forEach((cc, k) => {
-      arc(c, nameOf(cc), arcR(k), "ink3", { width: 2 });
-      const [hx, hy] = S(...handles(p)[k]);
-      Pn.circle(c, hx, hy, 9, { role: N.picked === k ? "you" : "ink3", width: 2.5, fill: N.picked === k });
-      api.target(`arc-${k}`, hx - hitR(), hy - hitR(), hitR() * 2, hitR() * 2);
+      arc(c, nameOf(cc), arcR(k), N.picked === k ? "you" : "ink2", { width: N.picked === k ? 5 : 3.5 });
+      const q = arcSq[k];
+      if (q) { const [hx, hy] = S(q.x, q.y), h = (q.side * s) / 2; api.target(`arc-${k}`, hx - h, hy - h, 2 * h, 2 * h); }
     });
     // the points and their letters (the letters sit outward from the vertex; the vertex's opposite its rays)
     const V = P[0];
     P.forEach((q, i) => {
       const [x, y] = S(...q), tapped = N.taps.includes(i);
       Pn.circle(c, x, y, tapped ? 7 : 4.5, { role: tapped ? "you" : "ink", fill: true });
+      Pn.note("dot", x - 8, y - 8, 16, 16);
       let away: number;
       if (i === 0) { const m = [1, 2, 3].map((j) => deg(P[j][0] - V[0], P[j][1] - V[1])).reduce((acc, h) => [acc[0] + Math.cos(rad(h)), acc[1] + Math.sin(rad(h))], [0, 0]); away = deg(-m[0], -m[1]); }
       else away = deg(q[0] - V[0], q[1] - V[1]);
@@ -102,7 +109,9 @@ export function makeNameView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     const spots: Pt[] = [[NBW / 2, 14], [NBW / 2, NBH - 14], [56, 14], [NBW - 56, 14], [56, NBH - 14], [NBW - 56, NBH - 14]];
     const far = (q: Pt) => Math.min(...P.map((pt) => Math.hypot(pt[0] - q[0], pt[1] - q[1])));
     const [nx, ny] = S(...spots.reduce((a, b) => (far(b) > far(a) + 1 ? b : a)));
-    if (goal === "say" && N.taps.length) Pn.chip(c, `∠${spell(p, N.taps)}${"_".repeat(3 - N.taps.length)}`, nx, ny, { size: 16, role: "you" });
+    // (in the say play-out her name moves to the corner it denotes: it is shown once)
+    const running = truthAt >= 0 && S0.commits > 0 && !S0.done && api.t - truthAt > 0.5 && sizeOf(p, N.said ?? []) !== null;
+    if (goal === "say" && N.taps.length && !running) Pn.chip(c, `∠${spell(p, N.taps)}${"_".repeat(3 - N.taps.length)}`, nx, ny, { size: 16, role: "you" });
     if (goal === "find") Pn.chip(c, `∠${spell(p, nameOf(C[want], p.ord ?? 0))}`, nx, ny, { size: 16, role: "ink" });
     if (truthAt >= 0 && S0.commits > 0) drawRun(c);
   }
@@ -112,8 +121,9 @@ export function makeNameView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     const t = goal === "say" ? (N.said ?? []) : N.picked !== null ? nameOf(C[N.picked]) : [];
     if (t.length !== 3) return;
     if (S0.done) {
-      const [x, y] = S(...P[asked(p).v]);
-      Pn.tick(c, x + 26, y - 26, 18, clamp((api.t - truthAt - 0.3) / 0.3, 0, 1));
+      // beside the vertex of the angle she named, clear of its letter, the rays and the other marks
+      const o = S(...P[asked(p).v]), at = freeSpot(around(o, [28, 40, 54], -Math.PI / 4), 24, 20, avoidHere(), canvasBox()) ?? [o[0] + 26, o[1] - 26];
+      Pn.tick(c, at[0], at[1], 18, clamp((api.t - truthAt - 0.3) / 0.3, 0, 1));
       return;
     }
     const j = goal === "say" ? denotes(p, t) : (N.picked as number);
@@ -121,28 +131,48 @@ export function makeNameView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     else if (sizeOf(p, t) !== null) {
       // not one of the figure's angles: its two rays, dashed, and its arc
       const v = P[t[1]];
-      for (const e of [t[0], t[2]]) Pn.stroke(c, [S(...v), S(v[0] + (P[e][0] - v[0]) * k, v[1] + (P[e][1] - v[1]) * k)], { role: "look", width: 3, dash: [7, 5] });
+      for (const e of [t[0], t[2]]) { const b = S(v[0] + (P[e][0] - v[0]) * k, v[1] + (P[e][1] - v[1]) * k); Pn.stroke(c, [S(...v), b], { role: "look", width: 3, dash: [7, 5] }); Pn.noteSeg("ray", S(...v), b); }
       arc(c, t, 30, "look", { width: 3, dash: [5, 4], k });
     }
     // the name of what lit up, at its corner, once it has drawn
     if (api.t - truthAt > 0.5 && sizeOf(p, t) !== null) {
-      const [x, y] = S(...P[t[1]]);
-      Pn.chip(c, `∠${spell(p, t)}`, clamp(x, 40, api.w - 40), clamp(y + (P[t[1]][1] > NBH / 2 ? 34 : -34), 18, api.h - 18), { size: 15, role: "look" });
+      // beside its corner, clear of every point, letter, line and chip (the first free spot, nearest first)
+      const o = S(...P[t[1]]), cx = (P[1][0] + P[2][0] + P[3][0]) / 3, cy = (P[1][1] + P[2][1] + P[3][1]) / 3, [gx, gy] = S(cx, cy);
+      const away = Math.atan2(o[1] - gy, o[0] - gx), name = `∠${spell(p, t)}`, { w, h } = Pn.chipSize(c, name, { size: 15 });
+      const cands = around(o, [30, 40, 52, 66, 82, 100], away, 24).map(([x, y]): Pt => [x + Math.sign(x - o[0]) * w * 0.3, y]);
+      const at = freeSpot(cands, w, h, avoidHere(), canvasBox()) ?? [clamp(o[0], w / 2 + 2, api.w - w / 2 - 2), clamp(o[1] + (P[t[1]][1] > NBH / 2 ? 34 : -34), h / 2 + 2, api.h - h / 2 - 2)];
+      Pn.chip(c, name, at[0], at[1], { size: 15, role: "look" });
     }
   }
 
+  const canvasBox = (): Box => ({ x: 2, y: 2, w: api.w - 4, h: api.h - 4 });
+  /** what a chip or a tick must keep clear of: every line, dot, letter and mark drawn so far this frame */
+  function avoidHere(): Avoid {
+    const A = api.P.audit;
+    return {
+      segs: A.segs.map((g): [Pt, Pt] => [[g.x0, g.y0], [g.x1, g.y1]]),
+      boxes: [...A.texts.map((t) => ({ x: t.x - t.w / 2, y: t.y - t.px * 0.6, w: t.w, h: t.px * 1.2 })), ...A.marks.filter((m) => m.kind !== "dot")],
+      dots: A.marks.filter((m) => m.kind === "dot").map((m) => ({ c: [m.x + m.w / 2, m.y + m.h / 2] as Pt, r: m.w / 2 })),
+    };
+  }
   function goalLine(): string {
     if (goal === "say") return word(lang, "kon.goal.say");
     return word(lang, "kon.goal.find", { n: `∠${spell(p, nameOf(corners(p)[p.ask ?? 0], p.ord ?? 0))}` });
   }
   const readouts = (): Readout[] => [];
   function controls(): ControlSpec[] {
+    // solved: the same controls, all off, so the board keeps its size and the figure does not move (judge packet)
+    if (st().done) return live().map((c) => ({ ...c, disabled: true, you: false }));
+    return live();
+  }
+  function live(): ControlSpec[] {
     const S0 = st(), N = ns();
-    if (S0.done) return [];
-    const undo: ControlSpec = { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) };
+    const undo: ControlSpec = { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", disabled: S0.depth === 0, onPress: () => act({ kind: "undo" }) };
     if (goal === "find") return [undo];
     return [
       { id: "clear", label: word(lang, "kon.clear"), kind: "secondary", group: "go", disabled: !N.taps.length, onPress: () => act({ kind: "clear" }) },
+      // one step back (her last letter): beside "Mita do", which clears all three
+      undo,
       { id: "commit", label: word(lang, "kon.name"), kind: "primary", group: "go", you: N.taps.length === 3, disabled: N.taps.length !== 3, onPress: () => act({ kind: "commit" }) },
     ];
   }
