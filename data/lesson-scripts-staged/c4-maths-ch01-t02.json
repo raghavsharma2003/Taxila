@@ -41,7 +41,7 @@
    "en": "distance"
   }
  ], "greetSimpler": { "hi": "Aaj hum kone ko kaagaz ke tester se jaanchenge, aur gol cheezein banayenge.", "en": "Today we check corners with a paper tester, and draw round shapes." },
- "joints": {"asidePark":[{"hi":"Yeh jaanch poora hote hi {aside} ki baat zaroor karenge.","en":"Once we finish this check, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh jaanch khatam ho jaaye.","en":"We'll talk about {aside} too, right after this check."},{"hi":"{aside} ka zikr achha laga, uski baat thodi der baad karte hain.","en":"I liked hearing about {aside}, and we'll talk about it a bit later."}],"asideReturn":[{"hi":"{aside} mein tumhe sabse mazedaar kya laga?","en":"What did you find the most fun in {aside}?"},{"hi":"Toh {aside} ki sabse achhi baat kya hai?","en":"So what is the best thing about {aside}?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"}],"hindiSwitch":[{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."}],"askAgain":[{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."}],"backTo":[{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."},{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."},{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."}]},
+ "joints": {"asidePark":[{"hi":"Yeh jaanch khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish this check, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh jaanch khatam ho jaaye.","en":"We'll talk about {aside} too, right after this check."},{"hi":"{aside} ka zikr achha laga, uski baat thodi der baad karte hain.","en":"I liked hearing about {aside}, and we'll talk about it a bit later."}],"asideReturn":[{"hi":"{aside} mein tumhe sabse mazedaar kya lagta hai?","en":"What do you find the most fun in {aside}?"},{"hi":"Toh {aside} ki sabse achhi baat kya hai?","en":"So what is the best thing about {aside}?"},{"hi":"Ab tumhari {aside} wali baat, usmein tumhe sabse achha kya lagta hai?","en":"Now your {aside}: what do you like most about it?"}],"hindiSwitch":[{"hi":"Achha, isko Hindi mein bolti hoon.","en":"Okay, I'll say this one in Hindi."},{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."}],"askAgain":[{"hi":"Apna jawab dobara batao.","en":"Tell me your answer again."},{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."}],"backTo":[{"hi":"Chalo, pehle wale sawaal ki taraf wapas aate hain.","en":"Let's come back to the earlier question."},{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."},{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."}]},
  "skills": [
   {
    "skillId": "c4-maths-ch01-t02-s1",
@@ -476,7 +476,7 @@
       "wrongIfMis": "No",
       "board": { "template": "shape@1", "params": {"shape": "rectangle", "copies": 2, "names": ["darwaza", "tircha"]} },
       "why": { "hi": "darwaza rectangle hai, aur tircha chhapne se uske kone nahi badalte, woh ab bhi right angle hain", "en": "the door is a rectangle, and printing it slanting does not change its corners; they are still right angles" },
-      "simpler": { "hi": "Photo mein darwaza sirf tircha hai. Tircha karne se disha badalti hai, kone nahi badalte.", "en": "In the photo the door is only slanting. Slanting changes which way it faces, not its corners." },
+      "simpler": { "hi": "Photo mein darwaza sirf tircha chhapa hai. Socho ki tircha karne se uske kone badalte hain ya wahi rehte hain.", "en": "In the photo the door is only printed slanting. Think about whether slanting changes its corners or leaves them the same." },
       "answerBoard": { "template": "shape@1", "params": {"shape": "rectangle", "copies": 2, "names": ["darwaza", "tircha"], "corner": "right angle"} }
      }
     }
@@ -540,12 +540,12 @@
       "en": "Put the tester on the corner. If the corner is narrower than the tester, it is less than a right angle. If the corner opens wider than the tester, it is more than a right angle. If it fits exactly, it equals a right angle."
      },
      "ask": {
-      "prompt": { "hi": "Ek kitaab khuli rakhi hai. Uske do panno ke beech ka kona tester se zyada khula hai. Yeh angle right angle se kam hai ya zyada?", "en": "A book lies open. The corner between its two pages opens wider than the tester. Is this angle less or more than a right angle?" },
+      "prompt": { "hi": "Ek kitaab khuli rakhi hai. Tester ko panno ke kone mein rakha, toh ek panna tester ke bahar nikal gaya. Yeh angle right angle se kam hai ya zyada?", "en": "A book lies open. When the tester is put in the corner between its pages, one page goes outside the tester. Is this angle less or more than a right angle?" },
       "key": "zyada",
       "accept": ["more", "right angle se zyada", "more than a right angle", "zyada hai", "bada"],
-      "why": { "hi": "panno ka kona tester se bhi zyada khula hai, aur tester khud ek right angle hai", "en": "the corner between the pages opens wider than the tester, and the tester itself is a right angle" },
-      "board": { "template": "compare@1", "params": {"left": {"title": "Kona", "items": ["tester se zyada khula"]}, "right": {"title": "Tester", "items": ["right angle"]}} },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Kona", "items": ["tester se zyada khula"]}, "right": {"title": "Tester", "items": ["right angle"]}} }
+      "why": { "hi": "ek panna tester ke bahar nikla, yaani kona tester se zyada khula hai, aur tester khud ek right angle hai", "en": "one page went outside the tester, so the corner opens wider than the tester, and the tester itself is a right angle" },
+      "board": { "template": "compare@1", "params": {"left": {"title": "Kona", "items": ["kitaab ka kona"]}, "right": {"title": "Tester", "items": ["right angle"]}} },
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Kona", "items": ["kitaab ka kona"]}, "right": {"title": "Tester", "items": ["right angle"]}} }
      },
      "simpler": { "hi": "Tester ko kone se milao. Kona tester se tang ho toh angle chhota hai, aur tester se bhi khula ho toh angle bada hai.", "en": "Hold the tester against the corner. If the corner is narrower than the tester the angle is smaller, and if it opens beyond the tester the angle is bigger." }
     },
@@ -856,7 +856,7 @@
     },
     {
      "id": "c2",
-     "prompt": { "hi": "Ek darwaze ke kone ki bhuja 2 m lambi hai, aur tester us kone par bilkul fit hota hai. {friend} ka kehna hai ki yeh angle right angle se bada hai, kyunki bhuja bahut lambi hai. Kya yeh sahi hai?", "en": "A door's corner has arms 2 m long, and the tester fits that corner exactly. {friend} says this angle is bigger than a right angle because the arms are very long. Is that right?" },
+     "prompt": { "hi": "Ek darwaze ke kone ki ek bhuja 2 m lambi hai, aur tester us kone par bilkul fit hota hai. {friend} ka kehna hai ki yeh angle right angle se bada hai, kyunki bhuja bahut lambi hai. Kya yeh sahi hai?", "en": "A door's corner has one arm 2 m long, and the tester fits that corner exactly. {friend} says this angle is bigger than a right angle because the arm is very long. Is that right?" },
      "key": "No",
      "accept": ["nahi", "nahin", "no", "nahi, right angle ke barabar hai", "no, it equals a right angle"],
      "targets": "c4-maths-ch01-t02-m-arm-length",
@@ -1037,7 +1037,7 @@
       }
      ],
      "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "sikka"} },
-     "point": { "hi": "Sikke ke centre se uska har point barabar door hai, isliye sikka circle hai. Nimbu ek taraf thoda lamba hai, centre se doori badalti rehti hai. Isliye nimbu gol toh hai, par circle nahi.", "en": "Every point of the coin is equally far from its centre, so the coin is a circle. A lemon is a little longer one way; the distance from the centre keeps changing. So a lemon is round, but not a circle." },
+     "point": { "hi": "Sikke ke kinaare ka har point centre se barabar door hai, isliye sikka circle hai. Nimbu ek taraf thoda lamba hai, centre se doori badalti rehti hai. Isliye nimbu gol toh hai, par circle nahi.", "en": "Every point on the coin's edge is equally far from its centre, so the coin is a circle. A lemon is a little longer one way; the distance from the centre keeps changing. So a lemon is round, but not a circle." },
      "ask": {
       "prompt": {
        "hi": "Ek roti ke centre se kinaara ek taraf 8 cm hai aur doosri taraf 10 cm. Kya yeh roti circle hai, haan ya nahi?",
@@ -1240,7 +1240,7 @@
     },
     {
      "id": "c2",
-     "prompt": { "hi": "{friend} ne haath se ek gol loop banaya aur centre se kinaare tak chaar baar naapa: 5 cm, 5 cm, 5 cm aur 6 cm. {friend} kehta hai ki teen naap 5 cm hain, toh loop circle hai. Kya yeh sahi hai?", "en": "{friend} drew a round loop by hand and measured from its centre to the edge four times: 5 cm, 5 cm, 5 cm and 6 cm. {friend} says three are 5 cm, so the loop is a circle. Is that right?" },
+     "prompt": { "hi": "{friend} ne haath se ek gol loop banaya aur centre se kinaare tak chaar baar naapa: 5 cm, 5 cm, 5 cm aur 6 cm. {friend} ka kehna hai ki teen naap 5 cm hain, toh loop circle hai. Kya yeh sahi hai?", "en": "{friend} drew a round loop by hand and measured from its centre to the edge four times: 5 cm, 5 cm, 5 cm and 6 cm. {friend} says three are 5 cm, so the loop is a circle. Is that right?" },
      "key": "No",
      "accept": ["nahi", "nahin", "no", "nahi, ek jagah 6 cm hai", "no, one place is 6 cm"],
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
@@ -1265,8 +1265,8 @@
        "name": "circle"
       }
      },
-     "why": { "hi": "thali ka har point centre se barabar door hai, jabki aam ek taraf lamba hai", "en": "every point of the plate is equally far from its centre, while the mango is longer one way" },
-     "simpler": { "hi": "Circle wahi hai jiska har kinaara centre se ek jitna door ho. Aam ek taraf lamba hota hai.", "en": "A circle is the one whose edge is the same distance from the centre everywhere. A mango is longer one way." },
+     "why": { "hi": "thali ke kinaare ka har point centre se barabar door hai, jabki aam ek taraf lamba hai", "en": "every point on the plate's rim is equally far from its centre, while the mango is longer one way" },
+     "simpler": { "hi": "Circle wahi hai jiska har kinaara centre se ek jitna door ho. Socho ki dono mein se kiska kinaara har taraf barabar door hai.", "en": "A circle is the one whose edge is the same distance from the centre everywhere. Think about which of the two has its edge equally far on every side." },
      "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "thali"} }
     }
    ],
@@ -1304,17 +1304,7 @@
       "hi": "Circle mein centre se har point ki doori barabar hoti hai. Oval mein yeh doori badalti hai, isliye oval circle nahi.",
       "en": "In a circle every point is the same distance from the centre. In an oval it changes, so an oval is not a circle."
      },
-     "then": {
-      "prompt": { "hi": "Ek plate ke centre se kinaara har taraf 9 cm door hai. Kya plate circle hai?", "en": "From the centre of a plate, the edge is 9 cm away on every side. Is the plate a circle?" },
-      "key": "Yes",
-      "accept": ["haan", "han", "yes", "haan, har taraf 9 cm", "yes, it is 9 cm all round"],
-      "targets": "c4-maths-ch01-t02-m-round-is-circle",
-      
-      "board": { "template": "measured@1", "params": {"shape": "circle", "r": 9, "unit": "cm"} },
-      "why": { "hi": "plate ka kinaara centre se har taraf 9 cm door hai, toh plate circle hai", "en": "the plate's edge is 9 cm from the centre on every side, so the plate is a circle" },
-      "simpler": { "hi": "Circle mein centre se kinaara har taraf ek jitna door hota hai. Plate mein har taraf 9 cm hai.", "en": "In a circle the edge is the same distance from the centre on every side. The plate has 9 cm on every side." },
-      "answerBoard": { "template": "measured@1", "params": {"shape": "circle", "r": 9, "unit": "cm"} }
-     }
+     "then": { "prompt": { "hi": "Ek gol tray ke centre se kinaare tak chaar naap hain: 12 cm, 12 cm, 10 cm aur 12 cm. Kya tray circle hai?", "en": "From a round tray’s centre to its edge: 12 cm, 12 cm, 10 cm and 12 cm. Is the tray a circle?" }, "key": "No", "accept": ["nahi", "nahin", "no", "nahi, ek naap 10 cm hai", "no, one is 10 cm"], "targets": "c4-maths-ch01-t02-m-round-is-circle", "wrongIfMis": "Yes", "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "circle"} }, "why": { "hi": "teen naap 12 cm par ek 10 cm hai; circle mein sab naap barabar hote hain, toh tray circle nahi", "en": "three are 12 cm but one is 10 cm; in a circle all are equal, so the tray is not a circle" }, "simpler": {"hi": "Circle mein centre se kinaara har taraf ek jitna door hota hai. Chaaron naap dhyaan se dekho.", "en": "In a circle the edge is the same distance from the centre on every side. Look carefully at all four measurements."}, "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "circle"} } }
     }
    ],
    "bridgeToNext": null
