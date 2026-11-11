@@ -2,8 +2,14 @@
    Atkinson Hyperlegible Next 34,024 · Literata 39,260 · Andika 12,768 (Latin cold path ≈ 86 KB; Young skips
    Literata). Mukta keeps its Devanagari subset only, loaded by unicode-range when a caption, card or tray string
    is in Devanagari. index.html preloads only Atkinson. OFL: public/fonts/OFL-NOTICE.txt. */
+/* Atkinson is one variable file declared as two weight segments, 400 600 | 700 (it rendered 400-700 before; a 700 segment
+   keeps 800-900 at 700): the stage's Devanagari faces (src/studio-v2/engines/ext/deva.css) join these exact segments, because
+   Chromium picks a family's weight segment before unicode-range, and a segment with no Latin face sends Latin to system-ui
+   (tests/r8-font-match-browser.test.mjs). Same URL twice: one download. */
 @font-face { font-family:"Atkinson Hyperlegible Next"; src:url(/fonts/atkinson-hyperlegible-next-latin.woff2) format("woff2");
-  font-weight:400 700; font-display:swap; unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  font-weight:400 600; font-display:swap; unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:"Atkinson Hyperlegible Next"; src:url(/fonts/atkinson-hyperlegible-next-latin.woff2) format("woff2");
+  font-weight:700; font-display:swap; unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
 @font-face { font-family:"Literata"; src:url(/fonts/literata-latin.woff2) format("woff2");
   font-weight:400 600; font-display:swap; unicode-range:U+0000-00FF,U+2000-206F; }
 @font-face { font-family:"Andika"; src:url(/fonts/andika-400-latin.woff2) format("woff2"); font-weight:400; font-display:swap; }

@@ -339,3 +339,24 @@ test("pictograph: the value axis has a gridline at every value a bar takes, labe
   assert.equal(valueAxis([25, 50, 75], 0, 90, 290 / 90).step, 25);
   assert.equal(valueAxis([], 0, 10, 29).step, 1);
 });
+
+test("Lighthouse dial (2026-11-11): no number at an asked angle (rubric v2: a guide mark that draws the asked tick gives the answer); protractor numbers thin until neighbours keep a gap", async () => {
+  const { scaleLabels } = await import("../src/studio-v2/engines/angle.ts");
+  // a label box like the engine's: radius 320 about (500, 470), 3 digits ~23 units each, 38 tall
+  const box = (a) => { const x = 500 + Math.cos(a * Math.PI / 180) * 320, y = 470 - Math.sin(a * Math.PI / 180) * 320, hw = String(a).length * 11.5; return [x - hw, y - 19, x + hw, y + 19]; };
+  const tiny = (a) => [a * 20, 0, a * 20 + 1, 1];   // labels that never touch: no thinning
+  // c5-ch03-t01: a tens dial calling 90/180/270 printed exactly those three
+  assert.deepEqual(scaleLabels("tens", 360, [90, 180, 270], tiny), []);
+  assert.deepEqual(scaleLabels("tens", 360, [60, 120], tiny), [90, 180, 270], "labels elsewhere stay");
+  assert.deepEqual(scaleLabels("tens", 180, [90, 40], tiny), []);
+  assert.deepEqual(scaleLabels("tens", 180, [], tiny), [90], "classify (no asked angle) keeps the scale whole");
+  const pro = scaleLabels("protractor", 180, [30, 70, 110, 150], tiny);
+  assert.equal(pro.length, 17 - 4); for (const a of [30, 70, 110, 150]) assert.ok(!pro.includes(a), `${a} is asked: no label`);
+  assert.deepEqual(scaleLabels("none", 180, [], tiny), []);
+  // c6-ch02-t03: "110" ran into "100" at l1366; at the real size the numbers thin to every 30° and every pair keeps its gap
+  const real = scaleLabels("protractor", 180, [], box);
+  assert.deepEqual(real, [30, 60, 90, 120, 150]);
+  const bs = real.map(box);
+  for (let i = 0; i < bs.length; i++) for (let j = i + 1; j < bs.length; j++) { const [p, q] = [bs[i], bs[j]]; assert.ok(p[2] + 10 <= q[0] || q[2] + 10 <= p[0] || p[3] + 10 <= q[1] || q[3] + 10 <= p[1], `${real[i]} and ${real[j]} keep a gap`); }
+  assert.deepEqual(scaleLabels("protractor", 180, [90, 120], box), [30, 60, 150]);
+});

@@ -21,6 +21,24 @@ interface Boat { i: number; ang: number; r: number; v: number; alive: boolean; l
 interface Flash { ang: number; r: number; hit: boolean; t: number }
 /** The beam's colour: warm lamplight (the palette's sun token). */
 const LAMP = C.sun;
+/** Least gap (world units) between two neighbouring scale labels. */
+const LABEL_GAP = 10;
+/**
+ * The dial's numbers. Both scaffolds tick every 10°; "tens" numbers the right angles (90, 180, 270), "protractor" numbers
+ * the ticks at the finest step of 10°, 30° or 90° whose labels keep a LABEL_GAP between every pair at the label's real size
+ * (`box` measures one: "110" ran into "100" at l1366, 2026-11-11). In a wave that asks for angles (`asked`: call, copy) no
+ * number is drawn at an asked angle — its tick stays, the other numbers stay so the scale is still a scale (rubric v2: a
+ * guide mark that draws the asked tick gives the answer; c5-ch03-t01 printed 90/180/270 at the called 90/180/270).
+ */
+export function scaleLabels(sc: "none" | "tens" | "protractor", range: 180 | 360, asked: readonly number[], box: (a: number) => [number, number, number, number]): number[] {
+  if (sc === "none") return [];
+  const lattice = (step: number) => { const out: number[] = []; for (let a = step; a < range; a += step) out.push(a); return out; };
+  const clear = (as: number[]) => { const bs = as.map(box); return bs.every((p, i) => bs.every((q, j) => j <= i || p[2] + LABEL_GAP <= q[0] || q[2] + LABEL_GAP <= p[0] || p[3] + LABEL_GAP <= q[1] || q[3] + LABEL_GAP <= p[1])); };
+  const steps = sc === "tens" ? [90] : [10, 30, 90];
+  const pick = steps.map(lattice).find(clear) ?? lattice(90);
+  const ask = new Set(asked.map((a) => Math.round(a)));
+  return pick.filter((a) => !ask.has(a));
+}
 
 function create(api: EngineApi, spec: AngleSpec): EngineInstance {
   const T = spec.strings;
@@ -206,7 +224,12 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
       const keepOut: [number, number, number, number][] = [[px + r + 30, py - 22, px + r + 90, py + 22], [px - 34, py - 30, px + 34, py + 72]];
       if (sc !== "none") {
         ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 3;
-        for (let a = 10; a < (full ? 360 : 180); a += 10) { const big = a % 90 === 0, [x0, y0] = at(a, r - (big ? 26 : 14)), [x1, y1] = at(a, r); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); if (sc === "protractor" || big) { const [lx, ly] = at(a, r + 30); api.text(ctx, `${a}`, lx, ly, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle" }); keepOut.push([lx - 40, ly - 22, lx + 40, ly + 22]); } }
+        for (let a = 10; a < (full ? 360 : 180); a += 10) { const big = a % 90 === 0, [x0, y0] = at(a, r - (big ? 26 : 14)), [x1, y1] = at(a, r); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); }
+        const lo = { font: "mono" as const, size: 38, weight: 600 }, hh = Math.max(38, api.minLabel) * 0.5;
+        const box = (a: number): [number, number, number, number] => { const [lx, ly] = at(a, r + 30), hw = api.measure(ctx, `${a}`, lo) / 2; return [lx - hw, ly - hh, lx + hw, ly + hh]; };
+        for (const a of scaleLabels(sc, full ? 360 : 180, wave().mode === "classify" ? [] : wave().items, box)) {
+          const [lx, ly] = at(a, r + 30); api.text(ctx, `${a}`, lx, ly, { ...lo, color: C.ink3, align: "center", baseline: "middle" }); keepOut.push([lx - 40, ly - 22, lx + 40, ly + 22]);
+        }
       }
       // reference wedge for copy mode
       if (wave().mode === "copy" && (g.state === "aim" || g.state === "reveal")) {

@@ -49,7 +49,7 @@ export const ENGINE_HOW = Object.freeze({
   "fraction-ops@1": "no round title or sub names the method (barabar tukde, same parts, common denominator); a round aimed at a comparing mix-up compares, never adds; orchard rounds only for a multiplication topic; strings cols 'kaalam', rows 'pankti'",
   "rule-machine@1": "a story only when its rule IS the chain applied to the input, in the order the child computes it (₹500 − 4 × 45 is not ×4 then −45: give no story there); a word-order mix-up round's sub gives the worded phrase ('20 se 5 kam') and its rule is the right order",
   "pictograph@1": "the title names what is drawn (bar graph or picture graph); tally only where tally marks are drawn",
-  "angle-cannon@1": "the beam is a lighthouse's light aimed at a mark: no weapon words in any string (never fire, shoot, turret, nishana, hit, threat, attack); say 'roshni', 'kiran', 'mod do'; angle names as the teacher says them (right angle, 90°)",
+  "angle-cannon@1": "the beam is a lighthouse's light aimed at a mark: no weapon words in any string (never fire, shoot, turret, nishana, hit, threat, attack); say 'roshni', 'kiran', 'mod do'; angle names as the teacher says them (right angle, 90°); a tens or protractor scaffold only with call/copy angles that are multiples of 10",
   "area-claim@1": "every string plain Roman Hinglish: no stake, claim, plot, sq or units in English; sq varg, units ikai (area 40 varg ikai)",
 });
 /**
@@ -57,7 +57,14 @@ export const ENGINE_HOW = Object.freeze({
  * script's checks target (the first remediation beat, as the pilots were). → { topicId, archetype, misconceptionId, how? }
  * or null (no script, no game, or no targeted check).
  */
+/** main 2026-11-11 08:49: topics whose catalogue engine cannot show the targeted mix-up get NO game target (a game that cannot
+ *  is worse than none; the lesson stays on the board). data/studio-approved/no-game-target.json says what an engine would need. */
+export function noGameTarget(topicId) {
+  try { return (JSON.parse(fs.readFileSync(path.join(REPO, "data/studio-approved/no-game-target.json"), "utf8")).topics ?? []).find((t) => t.topicId === topicId) ?? null; }
+  catch { return null; }
+}
 export function deriveTarget(topicId) {
+  if (noGameTarget(topicId)) return null;
   const pilot = PILOT_TARGETS.find((t) => t.topicId === topicId);
   if (pilot) return pilot;
   const j = scriptOf(topicId);
@@ -143,6 +150,14 @@ export function valuesOnTicks(archetype, spec) {
         if (!(Number(t) > 1)) continue;
         if ((v[0] * t) % v[1] !== 0) misses.push(`wave ${wi + 1} "${w.title ?? ""}": ${label} is not on a tick of a line with ${name} ${t}`);
       }
+    }
+  }
+  // (main 2026-11-11, c5-ch03-t02: a "tens" dial, ticks every 10°, asked 45° and 135°. A wave that asks for angles — call,
+  // copy — on a drawn scaffold ("tens", "protractor": both tick every 10°) asks only angles on a tick; classify asks a kind)
+  if (archetype === "angle-cannon@1") {
+    for (const [wi, w] of (spec?.waves ?? []).entries()) {
+      if (!["tens", "protractor"].includes(w?.scaffold) || w?.mode === "classify") continue;
+      for (const a of w.items ?? []) if (Number(a) % 10 !== 0) misses.push(`wave ${wi + 1} "${w.title ?? ""}": ${a}° is not on a tick of a ${w.scaffold} scaffold (ticks every 10°)`);
     }
   }
   return { ok: misses.length === 0, why: misses.length ? misses.slice(0, 4).join("; ") : null, misses };
