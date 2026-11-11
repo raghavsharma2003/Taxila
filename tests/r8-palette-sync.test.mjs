@@ -34,12 +34,9 @@ const BOARD_ROLE = { focus: "tx-focus", slot: "tx-ans", answer: "tx-ans", mixup:
 const PAPER_ROLE = { ground: "tx-board", ink: "tx-board-ink", inkQuiet: "tx-ink-2", focus: "tx-focus", answer: "tx-ans", mixup: "tx-mix", child: "tx-move-text", right: "tx-ans", wrong: "tx-mix" };
 
 // Sent to Studio as patch 009 (2026-11-11). Remove each line as Studio lands it. The seven theme A lines went at
-// integration 50: Studio's d3ad0daac took answer #0B736A and mix-up #8A5A00.
+// integration 50: Studio's d3ad0daac took answer #0B736A and mix-up #8A5A00. The four theme B lines went at
+// integration 51: Studio's c122d4c30 took Design's night chalk values. Nothing is pending.
 const PENDING = new Set([
-  "B board.chalk.role.focus #A9B4FF ≠ --tx-focus #8F9BFF",
-  "B board.chalk.role.slot #7FE0B0 ≠ --tx-ans #4FE0A2",
-  "B board.chalk.role.answer #7FE0B0 ≠ --tx-ans #4FE0A2",
-  "B board.chalk.role.muted #9DB3A6 ≠ --tx-board-soft #8F9CAE",
 ]);
 
 async function differences() {
