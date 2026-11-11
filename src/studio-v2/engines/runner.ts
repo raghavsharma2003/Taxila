@@ -130,13 +130,28 @@ function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
       const rd = round(), stepN = Math.round(span() / rd.step), labels = g.scaffold > 0 ? "all" : rd.labels;
       bloom(ctx, C.ion, 500, LY, 460, 0.18);
       ctx.strokeStyle = C.ink; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(X0, LY); ctx.lineTo(X1, LY); ctx.stroke();
-      const every = stepN > 12 ? 2 : 1;
+      // Ticks: at most ~40 drawn (a line counted in fine steps keeps every n-th mark). Labels: ends first, then zero, then
+      // the rest the mode asks for, each kept only if it clears the labels already placed (measured at the size drawn, the
+      // young floor included), so a 4-digit line ([3000, 7000] in 1000s) reads "3000 · 4000 · …" and a crowded one falls
+      // back to its ends, never to overlapping numerals.
+      const tickEvery = Math.max(1, Math.ceil(stepN / 40)), every = stepN > 12 ? 2 : 1;
+      const lo = { font: "mono" as const, size: stepN > 16 ? 38 : 40, weight: 600 };
+      const want: number[] = [0, stepN];
+      if (labels !== "ends") for (let k = 0; k <= stepN; k++) if (Math.abs(rd.range[0] + k * rd.step) < 1e-9) want.push(k);
+      if (labels === "all") for (let k = 0; k <= stepN; k += every * tickEvery) want.push(k);
+      const placed: [number, number, number][] = [];
+      for (const k of want) {
+        if (placed.some((p) => p[0] === k)) continue;
+        const v = rd.range[0] + k * rd.step, x = xOf(v), w = api.measure(ctx, fmt(v), lo);
+        if (placed.some(([, a, b]) => x - w / 2 < b + 14 && x + w / 2 > a - 14)) continue;
+        placed.push([k, x - w / 2, x + w / 2]);
+      }
       for (let k = 0; k <= stepN; k++) {
         const v = rd.range[0] + k * rd.step, x = xOf(v), end = k === 0 || k === stepN, zero = Math.abs(v) < 1e-9;
+        if (!end && !zero && k % tickEvery) continue;
         ctx.strokeStyle = end || zero ? C.ink : C.ink3; ctx.lineWidth = end || zero ? 6 : 4;
         ctx.beginPath(); ctx.moveTo(x, LY - (end || zero ? 20 : 12)); ctx.lineTo(x, LY + (end || zero ? 20 : 12)); ctx.stroke();
-        const show = labels === "all" ? k % every === 0 || end : labels === "ends" ? end : zero || end;
-        if (show) api.text(ctx, fmt(v), x, LY + 62, { font: "mono", size: stepN > 16 ? 38 : 40, weight: 600, color: zero ? C.ink : C.ink2, align: "center" });
+        if (placed.some((p) => p[0] === k)) api.text(ctx, fmt(v), x, LY + 62, { ...lo, color: zero ? C.ink : C.ink2, align: "center" });
       }
     }
     if (g.gate) {

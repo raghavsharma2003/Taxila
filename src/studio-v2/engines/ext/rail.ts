@@ -13,7 +13,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { taskPill, RoundFlow, SUBJECT_ACCENT, devaReady, shuffled, textBlock, voltBox, wrap } from "./kit.ts";
+import { taskPill, RoundFlow, SUBJECT_ACCENT, devaReady, shuffled, textBlock, voltBox, wrap, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
 
@@ -34,8 +34,9 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
   const task = taskPill(api);
   const hud = api.hud([{ key: "round", label: T.round }, { key: "picked", label: T.picked }, { key: "streak", label: T.streak }]);
   const rd = (): RailRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) {
+    onRound(k) { r0 = g.right;
       const r = spec.rounds[k];
       g.items.clear();
       if (r.mode === "sequence") for (const c of r.cards) g.items.set(c.id, c);
@@ -107,7 +108,7 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
       }
     }
     hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`);
-    hud.set("picked", `${g.right}/${g.n}`, { bump: true });
+    hud.set("picked", tally(g.right - r0, g.steps.length), { bump: true });
     hud.set("streak", String(g.streak), { tone: g.streak >= 3 ? "mint" : null });
   }
   // ── drawing

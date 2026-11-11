@@ -11,7 +11,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady, taskPill } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, taskPill, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
 
 const CHECK = { x: 800, y: 530, w: 170, h: 62 };
@@ -26,8 +26,9 @@ function create(api: EngineApi, spec: PatternSpec): EngineInstance {
   const g = { grid: [] as (number | null)[], pool: [] as (number | null)[], drag: -1, dragXY: [0, 0] as [number, number], cur: "", found: [] as string[], flash: "", flashT: 0, map: {} as Record<string, number>, shapes: [] as number[], answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0, plan: [] as number[], sol: null as number[] | null, slip: false };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }]);
   const rd = (): PlRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) {
+    onRound(k) { r0 = g.right;
       const r = spec.rounds[k];
       Object.assign(g, { grid: Array(9).fill(null), pool: [], drag: -1, cur: "", found: [], flash: "", flashT: 0, map: {}, shapes: [], answered: false, verdict: "", detail: "", revealT: 0, slip: botR() < 0.12 });
       if (r.mode === "magic") { const pool = [...r.tiles]; for (const [c, v] of r.givens) { g.grid[c] = v; pool.splice(pool.indexOf(v), 1); } g.pool = pool; g.sol = magicSolve(r); }
@@ -92,7 +93,7 @@ function create(api: EngineApi, spec: PatternSpec): EngineInstance {
     if (flow.state === "intro" && flow.stateT < 0.05) hud.show(true);
     g.flashT = Math.max(0, g.flashT - dt);
     if (g.answered) { g.revealT += dt; if (g.revealT > 3) flow.endRound(); }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true });
   }
   function paintBg(c: Ctx) { backdrop(c, accent, 197, 0); }
   function btn(ctx: Ctx, b: { x: number; y: number; w: number; h: number }, label: string, on: boolean, now: number, col: string = C.volt) {
@@ -149,7 +150,7 @@ function create(api: EngineApi, spec: PatternSpec): EngineInstance {
     if (done) { pill(api, ctx, g.detail, 400, 160 + 0, { color: ok ? C.mint : C.amber, size: 38 }); if (ok) tick(ctx, 720, 590, C.mint, 1); else magnifier(ctx, 715, 590, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
-    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.done]] });
+    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[tally(g.right - r0, 1), T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
   }
   function bot(): BotAction | null {

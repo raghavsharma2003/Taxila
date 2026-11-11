@@ -271,3 +271,27 @@ test("progress is dots, never numerals (main 2026-11-10: 'WAVE 1/3' reads as a f
     assert.doesNotMatch(s, /\$\{[^{}]+? \+ ?1\} ?\/ ?\$\{[^{}]+?\.length\}/, `${f} writes a numeral counter`);
   }
 });
+
+test("HUD counters: a round's total from its first frame, never \"0/0\" (judges 2026-11-11: dukaan \"SERVE HUE 0/0\" in a one-customer round, geo-forge \"BAN GAYA 0/0\" with two tasks)", async () => {
+  const { tally } = await import("../src/studio-v2/core/dots.ts");
+  assert.equal(tally(0, 1), "0/1"); assert.equal(tally(0, 2), "0/2"); assert.equal(tally(2, 2), "2/2");
+  assert.notEqual(tally(0, 0), "0/0"); assert.equal(tally(3, 2), "3/3");   // never a total below the count
+  // no engine writes a running "<right>/<answered>" readout (answered is 0 until the first answer)
+  for (const f of fs.readdirSync(path.join(repo, "src/studio-v2/engines"), { recursive: true }).filter((x) => String(x).endsWith(".ts"))) {
+    const s = fs.readFileSync(path.join(repo, "src/studio-v2/engines", String(f)), "utf8");
+    for (const line of s.split("\n").filter((l) => l.includes("hud.set("))) assert.doesNotMatch(line, /\$\{g\.\w+\}\/\$\{g\.(n|roundN)\}/, `${f} writes a done/answered counter`);
+  }
+});
+
+test("line-runner range is limited in steps, not units: a class-4 4-digit line ([3000, 7000]) is expressible", () => {
+  const rnd = (o) => ({ ...S.ENGINE_SPECS["line-runner@1"].defaultSpec, rounds: [{ title: "Big numbers", sub: "", range: [3000, 7000], step: 1000, labels: "all", calls: ["4520", "3980", "6305", "6350"], speed: 0.9, dir: 1, ...o }] });
+  let v = S.validateSpec("line-runner@1", rnd({}));
+  assert.deepEqual(v.repairs, []); assert.deepEqual(v.spec.rounds[0].range, [3000, 7000]); assert.equal(v.spec.rounds[0].step, 1000);
+  v = S.validateSpec("line-runner@1", rnd({ step: 1 }));           // 4000 steps of 1: the step is repaired, the round kept
+  assert.ok(v.repairs.includes("round-step") && !v.repairs.includes("round-range"));
+  assert.ok((7000 - 3000) / v.spec.rounds[0].step <= S.RUNNER_MAX_STEPS && v.spec.rounds[0].calls.length === 4);
+  v = S.validateSpec("line-runner@1", rnd({ range: [0, 100000], step: 10000, calls: ["45000"] }));
+  assert.deepEqual(v.repairs, []);
+  for (const range of [[-100001, 0], [0, 100001], [5, 5], [7000, 3000]]) assert.ok(S.validateSpec("line-runner@1", rnd({ range, calls: ["1"] })).repairs.includes("round-range"), JSON.stringify(range));
+  for (const r of S.validateSpec("line-runner@1", rnd({ range: [-90000, 90000], step: 0.01, calls: ["100"] })).spec.rounds) assert.ok((r.range[1] - r.range[0]) / r.step <= S.RUNNER_MAX_STEPS);
+});

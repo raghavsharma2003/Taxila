@@ -127,10 +127,13 @@
 .st-box[data-rail] .sv2-hud.on ~ .sv2-task, .st-box[data-rail] .sv2-hud.on ~ .sv2-task.swap {
   top: calc(6px - var(--rail)) !important; left: 6px !important; right: 52px !important; transform: none !important;
   max-width: none !important; margin-left: 0 !important; padding: .5em .8em !important; }
-.st-box[data-rail] .sv2-hud.on ~ .sv2-task, .st-box[data-rail] .sv2-hud.on ~ .sv2-task.swap { top: calc(48px - var(--rail)) !important; }
-.st-stage[data-young] .st-box[data-rail] .sv2-hud.on ~ .sv2-task, .st-stage[data-young] .st-box[data-rail] .sv2-hud.on ~ .sv2-task.swap { top: calc(52px - var(--rail)) !important; }
+/* 2026-11-11 (judges: geo-forge "SAMAY 60s" cut off at the 412 rail's right edge): the readouts wrap to a second row rather
+   than run off the band, and the task pill sits on the band's floor, just above the world, so a second readout row never
+   lands on it (two rows of readouts + a one-line goal fit the 112 / 124 px band). */
+.st-box[data-rail] .sv2-hud.on ~ .sv2-task, .st-box[data-rail] .sv2-hud.on ~ .sv2-task.swap { top: auto !important; bottom: calc(100% + 6px) !important; }
+.st-box[data-rail] .sv2-hud { flex-wrap: wrap !important; row-gap: 4px !important; }
 .st-box[data-rail] .sv2-task .step { display: none !important; }
-.st-box[data-rail] .sv2-hud .box { padding: .5em .7em !important; }
+.st-box[data-rail] .sv2-hud .box { padding: .4em .55em !important; gap: .4em !important; letter-spacing: .02em !important; }   /* tighter, never a smaller type */
 /* round 7 readability: on a phone rail a third readout ran off the band at the young floor (dukaan "PATIENCE 92%" clipped
    at 412 px). A readout the world already draws (the customer's patience bar) and HUD meters are left out of the band. */
 .st-box[data-rail] .sv2-hud .box[data-key="pat"], .st-box[data-rail] .sv2-hud .box .meter { display: none !important; }

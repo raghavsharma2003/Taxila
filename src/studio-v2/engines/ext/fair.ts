@@ -10,7 +10,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady, textBlock, voltBox } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, textBlock, voltBox, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
 
@@ -25,8 +25,9 @@ function create(api: EngineApi, spec: FairSpec): EngineInstance {
     right: 0, n: 0, coachA: 1, coachGone: false, diff: [] as string[], doneT: 0 };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "calls", label: T.correct }, { key: "day", label: T.day }]);
   const rd = (): FtRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) {
+    onRound(k) { r0 = g.right;
       const r = spec.rounds[k]; g.sel.clear(); g.day = 0; g.running = false; g.ran = false; g.verdict = ""; g.answered = false; g.pick = null; g.drops = 0; g.diff = []; g.doneT = 0;
       g.setups = r.mode === "predict" ? r.setups.map((c) => ({ ...c })) : r.mode === "design" ? r.start.map((c) => ({ ...c })) : r.mode === "conclude" ? [] : [];
       api.event("round_start", { round: k + 1, mode: r.mode, model: spec.model });
@@ -85,12 +86,13 @@ function create(api: EngineApi, spec: FairSpec): EngineInstance {
     if (!fontOk) return;
     flow.tick(dt, 1.8);
     if (flow.state === "intro" && flow.stateT < 0.05) hud.show(true);
+    if (flow.round >= 0 && flow.state !== "play") { hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("calls", tally(g.right - r0, 1), { bump: true }); }   // the round's readouts from its intro on, never a stale or "0/0" count
     if (flow.state !== "play") return;
     const r = rd();
     if (g.running) { g.day += dt * (M.days / 4.2); if (g.day >= M.days) { g.day = M.days; g.running = false; g.ran = true; g.doneT = 0; if (rd().mode === "predict") api.task(`${T.round} ${flow.round + 1}`, `${T.predict}: ${M.outcome}`); /* the outcome named only in the reveal, after the child's run */ api.facts({ model: spec.model, results: g.setups.map((c) => (ftShows(M, c) ? M.outcome : "no")).join(",") }); } }
     if (g.ran || (g.answered && (r.mode === "conclude" || r.mode === "drip"))) { g.doneT += dt; if (g.doneT > 3.0) flow.endRound(); }
     if (r.mode === "drip" && g.holding && !g.answered) { g.dripT += dt; if (g.dripT > 0.32) { g.dripT = 0; g.drops++; sfx.blip({ f: 900, dur: 0.03, type: "sine", gain: 0.06 }); api.record("drops", { n: g.drops }); } }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("calls", `${g.right}/${g.n}`, { bump: true }); hud.set("day", r.mode === "drip" ? String(g.drops) : g.day.toFixed(M.days > 2 ? 0 : 1));
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("calls", tally(g.right - r0, 1), { bump: true }); hud.set("day", r.mode === "drip" ? String(g.drops) : g.day.toFixed(M.days > 2 ? 0 : 1));
     if (r.mode === "drip") hud.label("day", T.drops);
   }
   // ── the setups, drawn by model

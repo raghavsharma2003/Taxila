@@ -10,7 +10,7 @@ import { magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
 
 const LOCK = { x: 830, y: 510, w: 140, h: 66 }, TRAY = { x: 150, y: 300, w: 640, h: 200 }, POS = "#FFB547", NEG = "#5FA8FF";
@@ -22,8 +22,9 @@ function create(api: EngineApi, spec: ZeroSpec): EngineInstance {
   const g = { tray: [] as Tok[], belt: [] as { s: 1 | -1; x: number }[], beltT: 0, takenPos: 0, takenNeg: 0, sel: -1, selGroup: 0, answered: false, verdict: "", revealT: 0, right: 0, n: 0, coachA: 1, coachGone: false };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }, { key: "val", label: T.value }]);
   const rd = (): ZpRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) {
+    onRound(k) { r0 = g.right;
       const r = spec.rounds[k]; g.tray = []; g.belt = []; g.beltT = 0; g.takenPos = 0; g.takenNeg = 0; g.sel = -1; g.selGroup = 0; g.answered = false; g.verdict = ""; g.revealT = 0;
       if (r.mode === "subtract") for (let i = 0; i < Math.abs(r.start); i++) g.tray.push({ s: r.start > 0 ? 1 : -1, x: 0, y: 0, group: -1 });
       if (r.mode === "groups" && r.share) for (let i = 0; i < Math.abs(r.k * r.m); i++) g.tray.push({ s: r.m > 0 ? 1 : -1, x: 0, y: 0, group: -1 });
@@ -80,12 +81,13 @@ function create(api: EngineApi, spec: ZeroSpec): EngineInstance {
     flow.tick(dt, 1.8);
     if (flow.state === "intro" && flow.stateT < 0.05) hud.show(true);
     if (flow.state === "intro" && flow.stateT < 0.05) layout();
+    if (flow.round >= 0 && flow.state !== "play") { hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true }); }   // the round's readouts from its intro on, never a stale or "0/0" count
     if (flow.state !== "play") return;
     const r = rd();
     if (r.mode === "make" && !g.answered) { g.beltT -= dt; if (g.beltT <= 0) { g.belt.push({ s: api.rnd() < 0.5 ? 1 : -1, x: W + 30 }); g.beltT = 0.75 / r.speed; } for (const t of g.belt) t.x -= 130 * r.speed * dt; g.belt = g.belt.filter((t) => t.x > -40); }
     if (g.answered) { g.revealT += dt; if (g.revealT > 3.0) flow.endRound(); }
     const { pos, neg } = counts();
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", `${g.right}/${g.n}`, { bump: true }); hud.set("val", `${pos - neg >= 0 ? "+" : "−"}${Math.abs(pos - neg)}`);
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true }); hud.set("val", `${pos - neg >= 0 ? "+" : "−"}${Math.abs(pos - neg)}`);
   }
   function token(ctx: Ctx, s: 1 | -1, x: number, y: number, dim = false, sel = false) { ctx.save(); ctx.globalAlpha *= dim ? 0.45 : 1; ctx.fillStyle = s > 0 ? POS : NEG; ctx.beginPath(); ctx.arc(x, y, 19, 0, Math.PI * 2); ctx.fill(); if (sel) { ctx.strokeStyle = C.volt; ctx.lineWidth = 4; ctx.stroke(); } ctx.strokeStyle = "#0A0C12"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x - 9, y); ctx.lineTo(x + 9, y); if (s > 0) { ctx.moveTo(x, y - 9); ctx.lineTo(x, y + 9); } ctx.stroke(); ctx.restore(); }
   function paintBg(c: Ctx) { backdrop(c, accent, 121, 0); }
@@ -112,7 +114,7 @@ function create(api: EngineApi, spec: ZeroSpec): EngineInstance {
     if (done) { if (ok) tick(ctx, 960, 200, C.mint, 1); else magnifier(ctx, 955, 200, C.amber, 1); pill(api, ctx, `= ${zpKey(r) >= 0 ? "+" : "−"}${Math.abs(zpKey(r))}`, 470, 548, { color: ok ? C.mint : C.amber, size: 40 }); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
-    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: g.verdict === "right", color: g.verdict === "right" ? C.mint : C.amber, stats: [[`${g.right}/${g.n}`, T.done]] });
+    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: g.verdict === "right", color: g.verdict === "right" ? C.mint : C.amber, stats: [[tally(g.right - r0, 1), T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
     drawCoach(api, ctx, T.coach, flow.state === "play" && r.mode === "make" ? g.coachA : 0, now, 150);
   }

@@ -120,12 +120,13 @@ export function nearestSimple(x: number): string | null {
   }
   return best && best.err <= 0.015 ? (best.d === 1 ? `${best.n}` : `${best.n}/${best.d}`) : null;
 }
-/** A signed decimal or integer call ("-3", "0.45", "-2.5"); fractions allowed for the runner too. */
+/** A signed decimal or integer call ("-3", "0.45", "-2.5", "45000": up to six digits, the runner's ±100000 line); fractions
+ *  allowed for the runner too. */
 export function parseNum(input: unknown): number | null {
   if (typeof input === "number" && Number.isFinite(input)) return input;
   if (typeof input !== "string") return null;
   const s = input.trim().replace("−", "-");
-  if (/^-?\d{1,4}(\.\d{1,3})?$/.test(s)) return +s;
+  if (/^-?\d{1,6}(\.\d{1,3})?$/.test(s)) return +s;
   const neg = s.startsWith("-"), f = parseFrac(neg ? s.slice(1) : s);
   return f ? (neg ? -1 : 1) * fracValue(f) : null;
 }
@@ -632,17 +633,23 @@ const runnerDefault: RunnerSpec = {
     { title: "Beyond the point", sub: "0 to 1 · tenths marked", range: [0, 1], step: 0.1, labels: "ends", calls: ["0.4", "0.45", "0.125", "0.5"], speed: 0.85, dir: 1, targets: "c7-maths-ch03-t03-m-longer-bigger" },
   ],
 };
+/** line-runner range bounds: values within ±RUNNER_MAX; a round spans at most RUNNER_MAX_STEPS of its step; the steps a
+ *  round may count in (the larger ones for 4- and 5-digit lines, e.g. [3000, 7000] in 1000s). */
+export const RUNNER_MAX = 100000, RUNNER_MAX_STEPS = 1000;
+export const RUNNER_STEPS = [0.01, 0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000, 10000];
 function repairRunner(raw: Record<string, unknown>, r: string[]): RunnerSpec | null {
   const env = envelope(raw, runnerDefault, r);
   const rounds: RunnerSpec["rounds"] = [];
   for (const w of arr(raw.rounds, "rounds", r).slice(0, 6)) {
     if (!isObj(w)) { r.push("round:not-an-object"); continue; }
     const rg = Array.isArray(w.range) && w.range.length === 2 && typeof w.range[0] === "number" && typeof w.range[1] === "number" && Number.isFinite(w.range[0]) && Number.isFinite(w.range[1]) ? [w.range[0], w.range[1]] as [number, number] : null;
-    if (!rg || rg[1] <= rg[0] || rg[0] < -1000 || rg[1] > 1000 || rg[1] - rg[0] > 1000) { r.push("round-range"); continue; }
+    // The limit is in steps, not units (2026-11-11: a 1000-unit cap meant a class-4 4-digit comparison, [3000, 7000], could
+    // never be expressed): values within ±RUNNER_MAX, at most RUNNER_MAX_STEPS steps of the round's step end to end.
+    if (!rg || rg[1] <= rg[0] || rg[0] < -RUNNER_MAX || rg[1] > RUNNER_MAX) { r.push("round-range"); continue; }
     const span = rg[1] - rg[0];
-    const steps = [0.01, 0.1, 0.25, 0.5, 1, 2, 5, 10, 50, 100];
-    let step = typeof w.step === "number" && steps.includes(w.step) ? w.step : NaN;
-    if (!Number.isFinite(step) || span / step > 40 || span / step < 2) { if (w.step !== undefined) r.push("round-step"); step = steps.find((s) => span / s <= 20 && span / s >= 2) ?? span / 10; }
+    let step = typeof w.step === "number" && RUNNER_STEPS.includes(w.step) ? w.step : NaN;
+    if (!Number.isFinite(step) || span / step > 40 || span / step < 2) { if (w.step !== undefined) r.push("round-step"); step = RUNNER_STEPS.find((s) => span / s <= 20 && span / s >= 2) ?? span / 10; }
+    if (span / step > RUNNER_MAX_STEPS) { r.push("round-range"); continue; }
     const calls: string[] = [];
     for (const c of arr(w.calls, "calls", r).slice(0, 8)) {
       const v = parseNum(c);
