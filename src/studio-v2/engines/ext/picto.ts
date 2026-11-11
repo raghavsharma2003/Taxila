@@ -42,7 +42,7 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
     g.ci++; g.claimY = claimTop(); if (g.ci >= r.claims.length) { g.answered = true; g.revealT = 0; }
   }
   const counterBtns = () => { const n = rd().cats.length, w = Math.min(250, (W - 100) / n - 14); /* a fruit name fits its bin at the young floor */ return rd().cats.map((c, i) => ({ i, x: 60 + i * ((W - 100) / n), y: 440, w, h: 140 })); };
-  const rowY = (i: number) => 196 + i * 72;
+  const rowY = (i: number) => Math.max(196, Math.min(206, api.chromeBottom() + 38)) + i * 72;   // first row's buttons clear the task pill
   // claims mode lifts the chart so its category labels clear the SAHI / GALAT buttons, and a claim card enters below the
   // stage chrome (judges' renders 2026-11-11: the buttons covered "Books Stars Balls" and the axis 0; the first claim sat
   // under the task pill at l1366)
@@ -98,7 +98,9 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
       for (const it of g.items) { const c = r.cats[it.cat]; ctx.save(); ctx.fillStyle = "rgba(22,26,36,.96)"; roundRect(ctx, it.x - 54, 214, 108, 84, 16); ctx.fill(); ctx.strokeStyle = COLS[it.cat % 5]; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); if (c.glyph) drawGlyph(ctx, c.glyph, it.x, 256, 56, C.ink, hexA(COLS[it.cat % 5], 0.35)); else api.text(ctx, c.label.slice(0, 1), it.x, 258, { font: "display", size: 44, weight: 800, align: "center", baseline: "middle" }); }
       counterBtns().forEach((b) => { const c = r.cats[b.i], col = COLS[b.i % 5], v = g.verdicts[b.i]; ctx.save(); ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, b.x, b.y, b.w, b.h, 18); ctx.fill(); ctx.strokeStyle = done ? (v === "right" ? C.mint : C.amber) : col; ctx.lineWidth = 4; ctx.stroke(); ctx.restore(); api.text(ctx, c.label, b.x + b.w / 2, b.y + 30, { size: 38, weight: 700, align: "center", baseline: "middle", maxWidth: b.w - 12 }); marks(ctx, g.tally[b.i], b.x + 18, b.y + 92); if (done) api.text(ctx, String(c.count), b.x + b.w - 24, b.y + 92, { font: "display", size: 40, weight: 800, color: v === "right" ? C.mint : C.amber, align: "center", baseline: "middle" }); });
     } else if (r.mode === "picto") {
-      pill(api, ctx, `${T.key} ${r.scale}`, 600, 150, { color: accent, size: 38 });
+      // the key sits under the last row (at y 150 it lay under the task pill at l1366 and over the first row's + / ½;
+      // layout probe and judges, 2026-11-11), left of the check button
+      pill(api, ctx, `${T.key} ${r.scale}`, 470, rowY(r.cats.length - 1) + 72, { color: accent, size: 38 });
       r.cats.forEach((c, i) => {
         const y = rowY(i), v = g.verdicts[i];
         api.text(ctx, c.label, 70, y + 2, { size: 38, weight: 700, baseline: "middle", maxWidth: 200 });

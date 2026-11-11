@@ -117,13 +117,14 @@ function create(api: EngineApi, spec: RuleSpec): EngineInstance {
         { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle", decor: true });
     } else if (r.mode === "seq") {
       [1, 2, 3].forEach((n, i) => { const cx = 250 + i * 250; drawPattern(ctx, r.pattern, n, cx, 200); api.text(ctx, `${T.step} ${n}: ${patternCount(r.pattern, n)}`, cx, 266, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" }); });
-      machine(ctx, now); tray(ctx); runBtn(ctx);
-      if (g.ran && g.runT > 0.6) pill(api, ctx, `${T.predict} ${r.ask}: ${runOps(built(), r.ask) ?? "?"}`, 500, 455, { color: ok ? C.mint : C.amber, size: 40 });
+      // (the run's answer takes the tray's place once it shows: at y 455 it lay over the tray's tiles — layout probe, 2026-11-11)
+      machine(ctx, now); if (!(g.ran && g.runT > 0.6)) tray(ctx); runBtn(ctx);
+      if (g.ran && g.runT > 0.6) pill(api, ctx, `${T.predict} ${r.ask}: ${runOps(built(), r.ask) ?? "?"}`, 500, TRAY_Y + 33, { color: ok ? C.mint : C.amber, size: 40 });
     } else if (r.mode === "inverse") {
       const out = runOps(r.rule, r.secret)!;
       textBlock(api, ctx, `? → ${r.rule.join(" → ")} → ${fmtNum(out)}`, 500, 200, 820, { font: "display", size: 48, weight: 800 }, 1);
-      machine(ctx, now); tray(ctx); runBtn(ctx);
-      if (g.ran && g.runT > 0.5) { const got = runOps(built(), out); pill(api, ctx, `${fmtNum(out)} → ${got === null ? "?" : fmtNum(got)}`, 500, 455, { color: ok ? C.mint : C.amber, size: 40 }); }
+      machine(ctx, now); if (!(g.ran && g.runT > 0.5)) tray(ctx); runBtn(ctx);
+      if (g.ran && g.runT > 0.5) { const got = runOps(built(), out); pill(api, ctx, `${fmtNum(out)} → ${got === null ? "?" : fmtNum(got)}`, 500, TRAY_Y + 33, { color: ok ? C.mint : C.amber, size: 40 }); }
     } else if (r.mode === "brackets") {
       const pos = tokenPos(r);
       r.tokens.forEach((t, i) => { const q = pos[i]; api.text(ctx, t, q.x, q.y, { font: "display", size: 64, weight: 800, align: "center", baseline: "middle", color: /^\d/.test(t) ? C.ink : accent }); if (i % 2 === 0 && !g.ran) { const p = 0.5 + 0.5 * Math.sin(now * 4 + i); ctx.save(); ctx.strokeStyle = C.volt; ctx.globalAlpha = 0.2 + 0.25 * p; ctx.lineWidth = 2; roundRect(ctx, q.x - q.w / 2 - 6, q.y - 46, q.w + 12, 92, 14); ctx.stroke(); ctx.restore(); } });

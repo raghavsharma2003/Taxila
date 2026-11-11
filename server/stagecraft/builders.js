@@ -25,7 +25,12 @@ export function kitTopic(topicId) { return kitTopicAny(topicId); }
 export function kitSlice(topicId, misconceptionId = null) {
   const t = kitTopic(topicId);
   if (!t) return { topicId };
-  const mis = (t.misconceptions ?? []).filter((m) => !misconceptionId || m.id === misconceptionId).map((m) => ({ id: m.id, belief: m.belief }));
+  // (main 2026-11-11, regen round 1: 3 of 4 judged pieces "missed the mix-up" — the slice gave only the belief. An aimed
+  // slice adds its signs and its diagnostic case: the question, the mix-up's answer and the true one.)
+  const caseOf = (m) => { const o = m.diagnostic?.options ?? []; const wrong = o.find((x) => x.misconceptionId === m.id), right = o.find((x) => x.correct);
+    return m.diagnostic?.prompt_en && wrong ? { question: m.diagnostic.prompt_en, mixupAnswer: wrong.text, answer: right?.text ?? null } : null; };
+  const mis = (t.misconceptions ?? []).filter((m) => !misconceptionId || m.id === misconceptionId)
+    .map((m) => (misconceptionId ? { id: m.id, belief: m.belief, signs: (m.signs ?? []).slice(0, 3), case: caseOf(m) } : { id: m.id, belief: m.belief }));
   return { topicId, misconceptions: mis.length ? mis : (t.misconceptions ?? []).map((m) => ({ id: m.id, belief: m.belief })),
     items: (t.items ?? []).slice(0, 8).map((i) => ({ prompt: i.prompt_en, answer: i.answer, kind: i.kind, targets: i.targetsMisconception ?? null })) };
 }
@@ -36,9 +41,13 @@ export function specPrompt(c, key) {
   const schema = JSON.stringify(ENGINE_SPECS[a] ? specJsonSchema(a) : schemaOfExt(a));
   // ship5 p4-content: the example is THIS topic's checked authored spec when the catalogue has one (the shape is right and
   // the content is on-topic), else the archetype's reviewed default (a different lesson)
-  const ex = JSON.stringify(authoredSpec(key.topicId, a) ?? d.defaultSpec).slice(0, 5000);
+  // (2026-11-11, c5-maths-ch02-t02 refused 3 times for "Run complete": the model copied an English example's strings into a
+  // Hinglish piece. An example in another language shows its strings' keys only, values blank, for the model to fill.)
+  const exSpec = structuredClone(authoredSpec(key.topicId, a) ?? d.defaultSpec), want = key.lang === "hi" ? "hi" : key.lang === "en" ? "en" : "hinglish";
+  if (exSpec?.strings && String(exSpec.lang ?? "en") !== want) exSpec.strings = Object.fromEntries(Object.keys(exSpec.strings).map((k) => [k, ""]));
+  const ex = JSON.stringify(exSpec).slice(0, 5000);
   const slice = JSON.stringify(kitSlice(key.topicId, c.premise?.misconceptionId ?? null)).slice(0, 3500);
-  const aim = c.need === "contrast_misconception" ? `aimed at the misconception ${c.premise?.misconceptionId ?? "listed"}`
+  const aim = c.need === "contrast_misconception" ? `aimed at the misconception ${c.premise?.misconceptionId ?? "listed"}: one round holds cases like its case, where the belief's answer and the true answer differ`
     : c.need === "re_represent" ? "a different representation of the same idea" : c.need === "practice" ? "practice after an untimed success" : `need ${c.need}`;
   // (the approval lane: a target may say HOW this engine shows the mix-up, in the engine's own terms — closed text from code,
   // never a child's words; c5-t02's two spec calls fell back pairing unequal fractions, which catch-on-line refuses)
@@ -173,7 +182,9 @@ export function createBuilders(deps = {}) {
         catch (e) { contentSafe = false; contentFindings = [{ key: "-", code: `q8_threw: ${String(e?.code ?? e?.message ?? e).slice(0, 60)}`, text: null }]; }
       }
     }
-    const onTopic = !!ENGINE_SPECS[c.archetype]?.outcomes.topics.includes(key.topicId) || !!authoredSpec(key.topicId, c.archetype);
+    // (main 2026-11-11: an extension engine's reviewed outcomes count too — rule-machine computes its own keys, so a topic
+    // listed there, c4-maths-ch03-t02, is on topic without an authored catalogue spec)
+    const onTopic = !!(ENGINE_SPECS[c.archetype] ?? ENGINE_SPECS_EXT[c.archetype])?.outcomes?.topics?.includes(key.topicId) || !!authoredSpec(key.topicId, c.archetype);
     return { ok: true, usd, payload: { rung: "generated_spec", archetype: c.archetype, spec: v.spec, lateBind: [] }, checks: ok({ spec: { ok: true, repairs: v.repairs.length, fellBack: false }, contentSafe, onTopic, ...(contentFindings ? { contentFindings } : {}) }), facts: facts(c, factsOfSpec(c.archetype, v.spec)) };
   }
 
@@ -232,8 +243,27 @@ export function keysVerified(archetype, spec, topicId) {
     pairs.add(`${norm(k.prompt)}\u0000${norm(k.key)}`);
     if (k.src) bySrc.set(k.src, [...(bySrc.get(k.src) ?? []), norm(k.key)]);
   }
-  return mine.every((k) => (k.src && bySrc.has(k.src) ? bySrc.get(k.src).includes(norm(k.key)) && !!k.src
-    : pairs.has(`${norm(k.prompt)}\u0000${norm(k.key)}`)));
+  const kit = kitTopicAny(topicId);
+  return mine.every((k) => (k.src && bySrc.has(k.src) ? bySrc.get(k.src).includes(norm(k.key))
+    : pairs.has(`${norm(k.prompt)}\u0000${norm(k.key)}`)) || boundToKit(k, kit));
+}
+/** The numbers a question gives, as a sorted list ("3 1/2 of 48" → 1,2,3,48). */
+const givensOf = (s) => (String(s ?? "").match(/\d+(?:\.\d+)?/g) ?? []).map(Number).sort((a, b) => a - b).join(",");
+/**
+ * main 2026-11-11 (keysVerified option a, BOUND match): a generated key that cites a verified kit item is verified only when
+ * its key AND its givens equal that item's — a key that merely equals some kit answer ("5") is refused, since the generated
+ * question's true answer may be something else. Givens are the item's numbers; an item without numbers must be asked in
+ * the kit's own words (fail closed).
+ */
+export function boundToKit(k, kit) {
+  if (!k?.src || !kit) return false;
+  const it = (kit.items ?? []).find((i) => i.id === k.src);
+  if (!it || it.verified === false) return false;
+  const answers = [it.answer, ...(Array.isArray(it.acceptable) ? it.acceptable : [])].map(norm);
+  if (!answers.includes(norm(k.key))) return false;
+  const kg = givensOf(it.prompt_en);
+  if (kg) return givensOf(k.prompt) === kg;
+  return [it.prompt_en, it.prompt_hi].some((p) => p && norm(k.prompt) === norm(p));
 }
 
 function setPath(obj, path, value) {

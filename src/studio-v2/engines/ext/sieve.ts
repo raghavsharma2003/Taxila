@@ -109,9 +109,14 @@ function create(api: EngineApi, spec: SieveSpec): EngineInstance {
       } else {
         const k = clamp(c.t / 1.2, 0, 1), col = c.ok ? C.mint : C.amber;
         if (c.state === "vault") { ctx.save(); ctx.globalAlpha = 1 - k; hex(ctx, c.x, VAULT - R + k * 40, R * (1 - k * 0.4)); ctx.fillStyle = hexA(col, 0.25); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); }
-        if (!c.ok || c.state === "vault") api.text(ctx, c.ok ? String(c.n) : c.proof ?? "", c.x, (c.state === "vault" ? VAULT - R : c.y) - 64 - k * 30, { font: "mono", size: 38, weight: 600, color: col, align: "center", baseline: "middle", alpha: 1 - k * 0.8 });
+        if (c.ok && c.state === "vault") api.text(ctx, String(c.n), c.x, VAULT - R - 64 - k * 30, { font: "mono", size: 38, weight: 600, color: col, align: "center", baseline: "middle", alpha: 1 - k * 0.8 });
       }
     }
+    // the proof of the latest slip or wrong cut, on the vault floor under the columns: drawn where the crystal was, it lay
+    // over the crystals still falling in that column and its neighbours (layout probe, 2026-11-11)
+    { const c = [...g.crs].reverse().find((x) => x.state !== "fall" && !x.ok && x.t < 1.2);
+      if (c) { const o = { font: "mono" as const, size: 38, weight: 600 }, hw = api.measure(ctx, c.proof ?? "", o) / 2 + 12, k = clamp(c.t / 1.2, 0, 1);
+        api.text(ctx, c.proof ?? "", clamp(c.x, hw, W - hw), VAULT + 34, { ...o, color: C.amber, align: "center", baseline: "middle", alpha: 1 - k * 0.6 }); } }
     for (const p of g.pieces) { const a = 1 - p.t / 1.4; ctx.save(); ctx.globalAlpha = a; hex(ctx, p.x, p.y, 30); ctx.fillStyle = hexA(p.col, 0.25); ctx.fill(); ctx.strokeStyle = p.col; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, p.s, p.x, p.y + 2, { font: "display", size: 38, weight: 800, color: p.col, align: "center", baseline: "middle", alpha: a, decor: true }); }
     if (g.trail.length > 1) { ctx.save(); ctx.strokeStyle = C.volt; ctx.lineCap = "round"; for (let i = 1; i < g.trail.length; i++) { const a = 1 - (api.now() - g.trail[i].t) / 0.25; ctx.globalAlpha = clamp(a, 0, 1); ctx.lineWidth = 6 * a; ctx.beginPath(); ctx.moveTo(g.trail[i - 1].x, g.trail[i - 1].y); ctx.lineTo(g.trail[i].x, g.trail[i].y); ctx.stroke(); } ctx.restore(); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);

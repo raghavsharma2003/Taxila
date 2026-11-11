@@ -112,8 +112,10 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
     if (r.mode !== "pack") {
       const c = r.customers[g.k];
       drawGlyph(ctx, "person", 78, 250, 110, C.ink2, hexA(C.amber, 0.18));
-      ctx.save(); ctx.fillStyle = "rgba(24,22,30,.97)"; roundRect(ctx, 150, 150, 336, 300, 18); ctx.fill(); ctx.strokeStyle = hexA(C.amber, 0.7); ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
-      api.text(ctx, r.mode === "estimate" ? `${T.budget} ${rupees(c.budget ?? 0)}` : T.bill, 318, 184, { font: "mono", size: 38, weight: 600, color: C.amber, align: "center", baseline: "middle", maxWidth: 320 });
+      // (the card's top clears the task pill over the world at l1366, whose bottom sits at y ~154: layout probe 2026-11-11)
+      const top = Math.max(150, Math.min(160, api.chromeBottom() + 6));
+      ctx.save(); ctx.fillStyle = "rgba(24,22,30,.97)"; roundRect(ctx, 150, top, 336, 450 - top, 18); ctx.fill(); ctx.strokeStyle = hexA(C.amber, 0.7); ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+      api.text(ctx, r.mode === "estimate" ? `${T.budget} ${rupees(c.budget ?? 0)}` : T.bill, 318, top + 31, { font: "mono", size: 38, weight: 600, color: C.amber, align: "center", baseline: "middle", maxWidth: 320 });
       // (a name and its price line a full young label apart — 44 units: at 43-unit young text the old 36 overlapped, "Pencil box"
       // over "1 × ₹0.50" at p412, 2026-11-10 — rows spaced to fit three in the card)
       const items = c.items.slice(0, 3), step = items.length >= 3 ? 86 : 96;
@@ -143,7 +145,7 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
       // the pile
       const pr = rng(j.n * 7 + 1);
       for (let i = 0; i < Math.min(g.pile, 160); i++) { const x = 80 + pr() * 380, y = 220 + pr() * 190; ctx.fillStyle = hexA(C.amber, 0.85); ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fill(); }
-      api.text(ctx, `${g.pile} ${j.thing}`, 270, 190, { font: "display", size: 44, weight: 800, align: "center", baseline: "middle" });
+      api.text(ctx, `${g.pile} ${j.thing}`, 270, Math.max(190, Math.min(204, api.chromeBottom() + 26)), { font: "display", size: 44, weight: 800, align: "center", baseline: "middle" });
       api.text(ctx, `${j.per} ${T.each}`, 270, 450, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
       // crates
       g.crates.forEach((n, i) => {
@@ -156,7 +158,9 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
         if (x === 560) api.text(ctx, lab, x + 100, 472, { font: "display", size: 40, weight: 800, color: on ? C.volt : C.ink3, align: "center", baseline: "middle" });
         else tick(ctx, x + 95, 470, on ? C.volt : C.ink3, 1);
       }
-      if (g.answered) { const key = packKey(j), ok = g.verdict === "right"; pill(api, ctx, `${key} ${T.crates}${j.n % j.per ? ` · ${j.n % j.per} ${j.need === "all" ? T.inLast : T.left}` : ""}`, 640, 408, { color: ok ? C.mint : C.amber, size: 38 }); }
+      // (the answer pill sits under the buttons, centred: at (640, 408) a long answer lay over the pile's "12 each" line and,
+      // at the young floor, ran off the right edge — layout probe, 2026-11-11)
+      if (g.answered) { const key = packKey(j), ok = g.verdict === "right"; pill(api, ctx, `${key} ${T.crates}${j.n % j.per ? ` · ${j.n % j.per} ${j.need === "all" ? T.inLast : T.left}` : ""}`, 500, 538, { color: ok ? C.mint : C.amber, size: 38 }); }
     } else {
       const c = r.customers[g.k], bill = billOf(c), enough = (c.budget ?? 0) >= bill;
       for (const b of EST) {
