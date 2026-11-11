@@ -1,0 +1,301 @@
+[
+  {
+    "id": "gen-c4-maths-ch04-t01-46f828e0",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "p412 screen, block tray at bottom left",
+        "detail": "The leftmost place-value block in the tray is cut off by the card's left edge (only a sliver shows beside the second block). The coach line 'Jagah ke blocks chuno' is very low-contrast grey on near-black and sits under the hatched strip."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screen, block tray and T/O panel",
+        "detail": "The leftmost block in the tray is cut off at the card's left edge. The hatched tray strip and the 'Jagah ke blocks chuno' coach box run into the 'T' column of the T/O panel and overlap it (the strip ends past the T box's left edge). The coach text is low-contrast grey on near-black."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": false,
+      "l1366": false
+    },
+    "notes": "Truth, on-topic and give-away checks pass: the rounds 16 ('sixteen' in words) and 60 (digits) put the teen/ty mix-up side by side; 6007 and 7608 are correct and 7608 agrees with the topic card. The rounds after the first screen are not shown, so their rendering could not be judged."
+  },
+  {
+    "id": "gen-c4-maths-ch09-t01-d595d575",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "spec.rounds[1] (\"rule\": \"multiple\", \"a\": 8, \"targets\": \"c4-maths-ch09-t01-m-times-as-add\")",
+        "detail": "The mix-up is treating × as + (\"Says 3 × 5 = 8\"). Both rounds only ask the child to pick multiples of 6 and of 8 from 0-56; nothing puts a product next to its sum (e.g. 6 × 4 vs 6 + 4 = 10) or asks the child to compute a × b, so a child holding the belief is never shown where it goes wrong. The round marked as targeting the mix-up is an ordinary multiples sieve."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "screen label at p412 \"ke guna 6\" and at l1366 \"Round 1 ke guna 6\" (from strings.multipleOf \"ke guna\" + a)",
+        "detail": "Word order is wrong in Hindi: it should read \"6 ke guna\" (multiples of 6). \"ke guna 6\" is ungrammatical and unclear for a class 4 child."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "lo is 0, so 0 may appear as a card; whether the engine grades 0 as a multiple of 6/8 (true mathematically, confusing at class 4) cannot be told from the packet."
+  },
+  {
+    "id": "gen-c4-maths-ch14-t01-6619f522",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "spec.rounds[0] (mode \"claims\", targets \"c4-maths-ch14-t01-m-tally-four\"); screen",
+        "detail": "The mix-up is \"Reads a bundle of tally marks as 4, counting only the standing lines\". The screen shows a bar graph (Books, Stars, Balls) with no tally marks at all, so a child who reads a five-bundle as 4 never meets a tally bundle and the belief cannot go wrong here."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "title \"Tally Tracker\", round title \"Tally check\"",
+        "detail": "The words say tally, but the picture is a bar graph with no tally marks; the words disagree with the picture."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "cats[0] \"Books\" count 13, cats[1] \"Stars\" count 7; axis ticks 0, 4, 8, 12, 16",
+        "detail": "The axis ticks are in steps of 4, so the bars for 13 and 7 (and 10 for Balls) fall between ticks and cannot be read exactly from the drawn board, yet the claims (\"total\", \"diff\", \"same\") ask the child to judge exact values. Also the spec says \"scale\": 2, which does not match the 4-step axis."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screen: claim card \"Books > Stars\"",
+        "detail": "At 1366 px the header box \"Round 1 diye gaye daave jaancho\" overlaps the claim card, cutting off the word \"Books\" in \"Books > Stars\"."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": false
+    },
+    "notes": "Claims \"total\" (a 0, b 2, value 0) and \"diff\" (a 2, b 1, value 0) carry value 0; I cannot tell from the packet whether the engine fills these values or shows 0, so the graded keys of those claims could not be checked."
+  },
+  {
+    "id": "gen-c5-maths-ch01-t01-a6b885c0",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screen: target banner 'Tijori ●○○○ Lakshya 10,500' over the 'Lakshya 10,500 / jama hua 0 / SEAL' card",
+        "detail": "The bottom edge of the green-outlined target banner overlaps the top edge (orange line) of the Lakshya card below it; the two panels collide instead of being laid out separately."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "p412 and l1366 screens: teal/purple token bar at the left edge above the coach strip",
+        "detail": "The teal element at the far left is cut off by the frame edge at both sizes (only a sliver is visible), so a loadable token is clipped off-screen."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": false,
+      "l1366": false
+    },
+    "notes": "Spec targets (10,500; 40,006; 1,00,000; 1,02,345) are correct and aimed at the zero-placeholder mix-up; the 'words' rounds' displayed wording is not in the spec, so their spelling could not be checked."
+  },
+  {
+    "id": "gen-c5-maths-ch02-t01-e14f359b",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "The ticks in every wave equal the denominators (2, 3, 4, 5), so each item lands on a drawn mark. With ticks 3 the board draws 2 inner marks, which catches a child who counts marks and calls the first one 1/2. No title or sub says where an item goes. The labels are Roman Hinglish with no number words. 'safai' for precision and 'Daura' for wave are unusual word choices but understandable. The coach line 'Dock ko drag karke chalao' is low-contrast grey but legible at both sizes."
+  },
+  {
+    "id": "gen-c5-maths-ch02-t03-9c0c5f81",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "rounds[2] (mode \"join\", title \"Pattiyan milao\", sub \"Pattiyan saath rakhkar kaam karo\", a [1,2], b [2,4], op \"+\")",
+        "detail": "The mix-up is \"Thinks 2/4 is more than 1/2 because there are more pieces\". This round asks the child to add 1/2 + 2/4 (= 1). Adding the strips does not set them side by side for a comparison, so a child who believes 2/4 > 1/2 can do the sum without that belief ever going wrong. The piece never asks whether 1/2 and 2/4 are the same amount."
+      },
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "rounds[0] (mode \"orchard\", sub \"2 hisse aur 4 hisse dekho\", a [1,2], b [2,4]); screen p412/l1366",
+        "detail": "The orchard round uses a column/row area grid (\"Seedhi\" / \"Pankti\", each with \"Rang bharo\") and a \"TODAI\" harvest button, which is a product (fraction-of-fraction) model. It does not compare 1/2 with 2/4. The sub-title \"2 hisse aur 4 hisse dekho\" never asks which is more or whether they are equal, so the mix-up is not exposed."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "spec.strings.cols \"Seedhi\" (screen label above the first stepper)",
+        "detail": "\"Seedhi\" means stairs or straight, not columns. A class-5 child will not read it as \"columns\" next to \"Pankti\" (rows). The same screen also shows \"Rang bharo\" twice with nothing to tell the two shade counters apart."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "From the packet alone I could not confirm what the fraction-ops@1 orchard mode grades for a [1,2], b [2,4] (a product or a build-both task). Neither first screen shows the target fractions 1/2 and 2/4, so it is unclear how the child learns what to build. I did not count that as a separate fault."
+  },
+  {
+    "id": "gen-c5-maths-ch13-t01-19a24d05",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "spec.strings.prime",
+        "detail": "\"prime\": \"pehla\" — 'pehla' means 'first', not prime (abhajya). A wrong label for the concept in the spec."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "spec.strings.composite",
+        "detail": "\"composite\": \"joda hua\" — 'joined' is not a correct rendering of composite (bhajya) number."
+      },
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "spec.rounds[2] (targets the factor-multiple mix-up), label from spec.strings.commonOf",
+        "detail": "The mix-up round is labelled \"saath wale\" 4 \"aur\" 6, which never says multiples (or jumps); with \"factorOf\": \"tukde of\" and \"cfactorOf\": \"saath tukde\" alongside, the label does not separate common multiples from common factors, so it does not confront the child's confusion of the two words."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "spec.strings.coach / screen footer",
+        "detail": "\"Dhyan se chunno\" is misspelt ('chuno'); the same spec spells it \"chuno\" in round 1 sub \"Jo sahi lage, use chuno\"."
+      },
+      {
+        "item": 4,
+        "kind": "language_mix",
+        "where": "spec.strings.multipleOf / factorOf, screen label",
+        "detail": "\"jumps of 3\" and \"tukde of\" mix English grammar into the Hinglish labels (English phrase 'jumps of' on screen; 'tukde of' is neither Hindi nor English), unclear for a class 5 child."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Counter shows \"SAHI CHUNAV 0/12\" while round 1 has count 12 with hitRate 0.5; cannot tell from the packet whether the denominator counts correct picks or all items, so not counted."
+  },
+  {
+    "id": "gen-c5-maths-ch13-t02-02d41791",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "rule label on screen (p412 and l1366), built from strings.factorOf \"ke factors\" + a: 30",
+        "detail": "Screen shows \"ke factors 30\" (p412) and \"Daur 1  ke factors 30\" (l1366). The Hinglish word order is backwards: it must read \"30 ke factors\". As shown, a class-5 child reads \"of factors 30\", and on the laptop it reads as \"round 1's factors 30\", so the instruction is garbled."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Rounds use lo 1 to hi = the number (30, 18, 24), so 1 and the number itself can fall and would test the 'one-and-self' mix-up. With count 12 and hitRate 0.5, the packet does not show whether 1 and the number itself are sure to appear in each round. Not counted."
+  },
+  {
+    "id": "gen-c6-maths-ch05-t01-6bba5006",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "rule banner on screen (p412 and l1366); spec.strings.factorOf",
+        "detail": "Banner reads \"ke gunak 12\" (l1366: \"Daura 1 ke gunak 12\"), built from strings.factorOf \"ke gunak\" placed before the number. In Hindi/Hinglish the number must come first (\"12 ke gunak\"); as shown it is broken word order a class 6 child would read as garbled."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "counter on screen: \"SAHI CHUNAV 0/12\" in round 1 (rule factor, a 12, lo 1, hi 12, count 12)",
+        "detail": "\"sahi chunav\" (correct picks) out of 12 says there are 12 right choices, but 12 has only 6 factors (1, 2, 3, 4, 6, 12 per the topic key). The words disagree with the round."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Content itself is on target for the mix-up: round 1 range 1-12 includes 1 and 12 as factors of 12; round 2 range 1-18 covers the common factors of 18 and 24 (1, 2, 3, 6). Whether the engine's \"/12\" denominator means items shown rather than correct picks cannot be confirmed from the packet, but the label \"sahi chunav\" states correct picks."
+  },
+  {
+    "id": "gen-c6-maths-ch07-t01-9b75c799",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "waves[0].title / waves[0].sub; waves[2].title",
+        "detail": "Wave 1 says \"Roti ke tukde\" / \"Roti ko 3, 4 ya 5 hisson mein baanto\" and wave 3 says \"Roti ki baant\", but the slice-at engine draws a straight bar (screen: a bar with \"Bar par swipe karo\"; wave 4 sub itself says \"Bar ko ...\"). The words name a roti while the picture the child cuts is a bar, so words disagree with the picture."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Only wave 1's first item is visible in the images; titles/subs of later waves are judged from the spec alone. The on-screen label \"3 barabar hisse\" is the task instruction (cut 3 equal parts), not counted as giving the answer."
+  },
+  {
+    "id": "gen-c6-maths-ch07-t05-9d902d52",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "spec.rounds[0].title",
+        "detail": "Round 1 title \"Barabar tukde\" (equal pieces) states the rule the child is meant to find in this round: to add 1/2 + 1/3 you must first cut both bars into same-size parts (topic key: \"we need same-size parts (sixths) to count them together\"). The child is told the idea before working out that the hisse count must make the pieces equal."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Round 2 (mode \"orchard\", \"Khet ki todai\", a=1/2, b=1/3, no op) and round 3 are not shown on the first screen, so how they render cannot be checked. Round 3 (2/3 − 1/4 = 5/12) targets \"c6-maths-ch07-t05-m-change-only-den\", which is not described in the packet; the maths itself is sound."
+  },
+  {
+    "id": "gen-c7-maths-ch02-t01-f9a649a6",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "rounds[0] title \"Samosa Aur Chai\", sub \"Bill ko machine mein badlo\", rule [\"×3\",\"+15\"], inputs [10,15,20]; screen shows 10/15/20 -> chahiye 45/60/75",
+        "detail": "The round says to turn the samosa-and-chai bill into a machine, but the graded rule ×3 then +15 (3x + 15) is not that bill. The verified key for the bill is 3 × 15 + 2 × 10 (= ₹65). The inputs 10, 15 and 20 mean nothing in that story, so the words disagree with what the round grades."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "rounds[1] title \"Notebook Wala Din\", sub \"Rakam ke saath kaam karo\", rule [\"×4\",\"-45\"], inputs [45,50,500]",
+        "detail": "The story matches the card 'Meena had ₹500 ... 4 notebooks at ₹45 each', whose key is 500 − 4 × 45. The graded rule is ×4 then −45, which gives 4x − 45: with input 500 that is 1955, not ₹320. The numbers are in the wrong roles, so the graded answer contradicts the verified key."
+      },
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "rounds[1] rule [\"×4\",\"-45\"]; rounds[0] rule [\"×3\",\"+15\"]",
+        "detail": "The mix-up is writing an expression in the order the words appear (for example 5 − 20 for '5 less than 20'). No round gives a worded phrase to translate. Round 2 grades the subtraction backwards (subtracting 45 rather than subtracting from 500), so it reinforces the reversed-order belief instead of showing where it goes wrong."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": ""
+  }
+]

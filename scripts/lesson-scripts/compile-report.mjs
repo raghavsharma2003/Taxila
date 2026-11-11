@@ -24,16 +24,16 @@ out.push("# C1 step 1: holes and doubles per script (generated)", "",
   `**Type table:** ${TYPE_TABLE.length} cells (9 part kinds × 12 columns × 3 help states), ${TYPE_TABLE.filter((x) => x.rule).length} of them apply (the answer columns are for cards only).`, "",
   "**Missing fields** are counted once per field of the script, however many rules name it. **Rule holes** count every (part, column, help) cell that names a missing field.", "",
   `**Scripts:** ${rows.length} (${rows.filter((r) => r.where === "live").length} live, ${rows.filter((r) => r.where === "staged").length} staged). Missing fields: ${rows.reduce((n, r) => n + r.c.missing.length, 0)}. Rule holes: ${rows.reduce((n, r) => n + r.c.holes.length, 0)}. Doubles: ${rows.reduce((n, r) => n + r.c.doubles.length, 0)}.`, "",
+  `**Second clarify** (dc-r8-second-clarify-shows-not-rewords): it shows the part's board and says the same authored line once more (alts[0] when the script has one). Second clarifies with no board to show (repetition alone): ${rows.reduce((n, r) => n + r.c.secondClarifyNoBoard.length, 0)}. A third clarify is clarify/spent: on a card its key and why; on a point or check-in, the card; on a worked step, the next step; on a remediation, its then-card.`, "",
+  `**Fallback cells:** every missing field's cells compile to a named fallback (today's behaviour) until Learning authors it: ${Object.entries(rows.flatMap((r) => r.c.fallbacks).reduce((m, x) => ({ ...m, [x.fallback]: (m[x.fallback] ?? 0) + 1 }), {})).map(([k, n]) => `${k} ${n}`).join(", ")}. Cells left as holes with no fallback: ${rows.reduce((n, r) => n + Object.values(r.c.cells).flatMap((cs) => Object.values(cs).flatMap((hs) => Object.values(hs))).filter((c) => c.hole).length, 0)}.`, "",
+  `**Not applicable:** ${rows.reduce((n, r) => n + r.c.notApplicable.length, 0)} misconception cells on cards with no \`targets\` (cards that test no kit mix-up: a wrong answer takes the \`wrong\` column). Not holes, not fallbacks.`, "",
   "## Missing fields, all scripts", "", "| Part kind, field | Missing | What it is |", "|---|---|---|");
 const WHAT = {
-  "point alts[0]": "a second other wording of a point, for a clarify after its simpler was heard (point/clarify/heard, checkin/clarify/heard)",
-  "worked_step alts[0]": "a second other wording of a worked step (or the problem), for a second clarify on it",
-  "remediation alts[0]": "a second other wording of a remediation, for a second clarify on it",
-  "worked_step simpler": "the worked problem's own simpler (its steps have one), for a clarify on the problem",
-  "bridge simpler": "a simpler of the bridge into the next skill, for a clarify on it",
-  "card remediation": "a remediation for the mix-up an explain card targets (the misconception column's default)",
-  "your_step remediation": "a remediation for the mix-up the worked example's own card targets",
-  "your_step why": "the why of the worked example's own card (said with a right answer)",
+  "worked_step simpler": "the worked problem's own simpler (its steps have one), for a clarify on the problem. Fallback: resay_show",
+  "bridge simpler": "a simpler of the bridge into the next skill, for a clarify on it. Fallback: next",
+  "card remediation": "a remediation for the mix-up an explain card targets (the misconception column's default). Fallback: as_wrong",
+  "your_step remediation": "a remediation for the mix-up the worked example's own card targets. Fallback: as_wrong",
+  "your_step why": "the why of the worked example's own card. Fallback: worked_answer (right), key_only (key cells)",
 };
 for (const k of KEYS) out.push(`| ${k} | ${total(k)} | ${WHAT[k] ?? ""} |`);
 out.push("", "## Per script", "", `| Script | Where | Parts | Cells | Missing | ${KEYS.join(" | ")} | Doubles |`, `|---|---|---|---|---|${KEYS.map(() => "---").join("|")}|---|`);

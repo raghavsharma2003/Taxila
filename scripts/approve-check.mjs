@@ -86,9 +86,11 @@ try {
     if (words.length) console.log(`${p.id}: WARNING number words in ${words.slice(0, 6).join(", ")} — a likely cause of a content-check score; write numbers in digits`);
     // (main 2026-11-10: the board must be able to show its own answer — every placed value on a tick)
     const pred0 = checkSpec(p.archetype, p.spec, kit), ticks = valuesOnTicks(p.archetype, pred0.spec ?? p.spec);
-    const words = untranslatedStrings(p.archetype, pred0.spec ?? p.spec);
+    const untr = untranslatedStrings(p.archetype, pred0.spec ?? p.spec);
+    // (the digits rule is a predicate too: a number word in a child-visible string fails before any judge — rubric v2 item 4)
     const pred = pred0.ok && !ticks.ok ? { ...pred0, ok: false, why: `values off the ticks: ${ticks.why}` }
-      : pred0.ok && !words.ok ? { ...pred0, ok: false, why: words.why } : pred0;
+      : pred0.ok && !untr.ok ? { ...pred0, ok: false, why: untr.why }
+      : pred0.ok && words.length ? { ...pred0, ok: false, why: `number words (digits rule): ${words.slice(0, 4).join(", ")}` } : pred0;
     const dir = path.join(OUT, p.id);
     fs.mkdirSync(dir, { recursive: true });
     // (rendered as the child gets it: with its board twin, which the stage shows where the 1000-unit world is too small to play —

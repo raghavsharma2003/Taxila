@@ -9,10 +9,14 @@ import { magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
 import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
 
-const GO = { x: 760, y: 556, w: 210, h: 62 }, FIELD = { x: 110, y: 190, w: 420, h: 300 };
+// Orchard: four steppers own the right column, a young label above each, clear of the row above and of the stage chrome;
+// its HARVEST button sits under the field (renders 2026-11-11: "Rang bharo" sat on the stepper buttons at p412 and the first
+// label under the task pill at l1366).
+const GO_R = { x: 760, y: 556, w: 210, h: 62 }, GO_O = { x: 320, y: 548, w: 210, h: 62 }, FIELD = { x: 110, y: 190, w: 420, h: 270 };
+const ROW = 104, BTN_H = 52, LABEL_DY = 50;
 function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
   const T = spec.strings, accent = C.amber;
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
@@ -20,15 +24,17 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
   const g = { cols: 1, cs: 0, rows: 1, rs: 0, scoops: 0, pourT: 0, parts: 1, poured: 0, answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0 };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }]);
   const rd = (): FoRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) { Object.assign(g, { cols: 1, cs: 0, rows: 1, rs: 0, scoops: 0, pourT: 0, parts: 1, poured: 0, answered: false, verdict: "", detail: "", revealT: 0 }); api.task(`${T.round} ${k + 1}`, spec.rounds[k].sub || spec.rounds[k].title); api.event("round_start", { round: k + 1, mode: spec.rounds[k].mode }); sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 }); },
+    onRound(k) { r0 = g.right; Object.assign(g, { cols: 1, cs: 0, rows: 1, rs: 0, scoops: 0, pourT: 0, parts: 1, poured: 0, answered: false, verdict: "", detail: "", revealT: 0 }); api.task(`${T.round} ${k + 1}`, spec.rounds[k].sub || spec.rounds[k].title); api.event("round_start", { round: k + 1, mode: spec.rounds[k].mode }); sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 }); },
     onEnd(k) { api.event("round_end", { round: k + 1, verdict: g.verdict }); },
     onFinal() { api.task("", T.runDone, "done"); api.done({ right: g.right, of: g.n }); },
   });
+  const GO = () => (rd().mode === "orchard" ? GO_O : GO_R);
   const steppers = (): { key: "cols" | "cs" | "rows" | "rs" | "parts"; label: string; y: number; max: () => number }[] => {
-    const r = rd();
-    if (r.mode === "orchard") return [{ key: "cols", label: T.cols, y: 240, max: () => 12 }, { key: "cs", label: T.shade, y: 330, max: () => g.cols }, { key: "rows", label: T.rows, y: 420, max: () => 12 }, { key: "rs", label: T.shade, y: 510, max: () => g.rows }];
-    if (r.mode === "join") return [{ key: "parts", label: T.cut, y: 240, max: () => 24 }];
+    const r = rd(), y0 = clamp(api.chromeBottom() + 6 + LABEL_DY + 22, 232, 280);   // the first label's top below the chrome
+    if (r.mode === "orchard") return [{ key: "cols", label: T.cols, y: y0, max: () => 12 }, { key: "cs", label: T.shade, y: y0 + ROW, max: () => g.cols }, { key: "rows", label: T.rows, y: y0 + 2 * ROW, max: () => 12 }, { key: "rs", label: T.shade, y: y0 + 3 * ROW, max: () => g.rows }];
+    if (r.mode === "join") return [{ key: "parts", label: T.cut, y: Math.max(240, y0), max: () => 24 }];
     return [];
   };
   function go() {
@@ -46,7 +52,7 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
   api.onPointer({
     down(p) {
       if (flow.state !== "play" || g.answered) return;
-      if (p.x >= GO.x && p.x <= GO.x + GO.w && p.y >= GO.y && p.y <= GO.y + GO.h) { go(); return; }
+      const B = GO(); if (p.x >= B.x && p.x <= B.x + B.w && p.y >= B.y && p.y <= B.y + B.h) { go(); return; }
       const r = rd();
       if (r.mode === "scoop") { if (p.x >= 560 && p.x <= 780 && p.y >= 300 && p.y <= 400) { g.scoops++; g.pourT = 0.5; sfx.noise({ dur: 0.18, f: 1800, filter: "bandpass", gain: 0.08 }); api.record("scoop", { n: g.scoops }); } return; }
       for (const s of steppers()) { if (p.y < s.y - 30 || p.y > s.y + 30) continue; const cur = g[s.key]; if (p.x >= 640 && p.x <= 700) g[s.key] = Math.max(s.key === "cs" || s.key === "rs" ? 0 : 1, cur - 1); else if (p.x >= 880 && p.x <= 940) g[s.key] = Math.min(s.max(), cur + 1); else continue; if (s.key === "cols") g.cs = Math.min(g.cs, g.cols); if (s.key === "rows") g.rs = Math.min(g.rs, g.rows); sfx.blip({ f: 400 + g[s.key] * 30, dur: 0.04, type: "triangle", gain: 0.07 }); api.record("stepper", { [s.key]: g[s.key] }); }
@@ -57,9 +63,10 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
     flow.tick(dt, 1.8);
     if (flow.state === "intro" && flow.stateT < 0.05) hud.show(true);
     g.pourT = Math.max(0, g.pourT - dt);
+    if (flow.round >= 0 && flow.state !== "play") { hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true }); }   // the round's readouts from its intro on, never a stale or "0/0" count
     if (flow.state !== "play") return;
     if (g.answered) { g.revealT += dt; g.poured = Math.min(1, g.poured + dt * 0.8); if (g.revealT > 3.2) flow.endRound(); }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true });
   }
   function bar(ctx: Ctx, x: number, y: number, w: number, h: number, f: F, n: number, col: string, own: number) {
     ctx.save(); ctx.fillStyle = "rgba(18,22,32,.95)"; roundRect(ctx, x, y, w, h, 10); ctx.fill();
@@ -68,7 +75,7 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
     if (n > 1) for (let i = 1; i < n; i++) { const xx = x + (w * i) / n, lines = (i * own) % n === 0; ctx.strokeStyle = lines ? C.ink2 : hexA(C.amber, 0.7); ctx.lineWidth = 2; ctx.setLineDash(lines ? [] : [6, 6]); ctx.beginPath(); ctx.moveTo(xx, y + 6); ctx.lineTo(xx, y + h - 6); ctx.stroke(); ctx.setLineDash([]); }
     ctx.strokeStyle = C.ink; ctx.lineWidth = 4; roundRect(ctx, x, y, w, h, 10); ctx.stroke(); ctx.restore();
   }
-  function stepperUI(ctx: Ctx) { for (const s of steppers()) { api.text(ctx, s.label, 790, s.y - 46, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle" }); for (const [x, t] of [[640, "−"], [880, "+"]] as [number, string][]) { ctx.save(); ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, x, s.y - 28, 60, 56, 12); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); api.text(ctx, t, x + 30, s.y + 2, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle" }); } api.text(ctx, String(g[s.key]), 790, s.y + 2, { font: "display", size: 48, weight: 800, align: "center", baseline: "middle" }); } }
+  function stepperUI(ctx: Ctx) { for (const s of steppers()) { api.text(ctx, s.label, 790, s.y - LABEL_DY, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle" }); for (const [x, t] of [[640, "−"], [880, "+"]] as [number, string][]) { ctx.save(); ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, x, s.y - BTN_H / 2, 60, BTN_H, 12); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); api.text(ctx, t, x + 30, s.y + 2, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle" }); } api.text(ctx, String(g[s.key]), 790, s.y + 2, { font: "display", size: 48, weight: 800, align: "center", baseline: "middle" }); } }
   function paintBg(c: Ctx) { backdrop(c, accent, 111, 0); }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
@@ -109,23 +116,23 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
       if (done) { const k = ease.outCubic(g.poured); const show: F = [res[0] * k, res[1]]; bar(ctx, 150, 440, 460, 70, show, ok ? n : 1, ok ? C.mint : C.amber, ok ? n : 1); pill(api, ctx, ok ? `${(res[0] * n) / res[1]}/${n} = ${fstr(res)}` : g.detail, 380, 548, { color: ok ? C.mint : C.amber, size: 38 }); }
       stepperUI(ctx);
     }
-    const lab = r.mode === "orchard" ? T.harvest : r.mode === "scoop" ? T.full : T.pour;
-    ctx.save(); ctx.fillStyle = !done ? "rgba(203,255,77,.14)" : "rgba(255,255,255,.04)"; roundRect(ctx, GO.x, GO.y, GO.w, GO.h, 16); ctx.fill(); ctx.strokeStyle = !done ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
-    api.text(ctx, lab, GO.x + GO.w / 2, GO.y + GO.h / 2 + 2, { font: "display", size: 38, weight: 800, color: !done ? C.volt : C.ink3, align: "center", baseline: "middle", maxWidth: GO.w - 10 });
+    const lab = r.mode === "orchard" ? T.harvest : r.mode === "scoop" ? T.full : T.pour, GOB = GO();
+    ctx.save(); ctx.fillStyle = !done ? "rgba(203,255,77,.14)" : "rgba(255,255,255,.04)"; roundRect(ctx, GOB.x, GOB.y, GOB.w, GOB.h, 16); ctx.fill(); ctx.strokeStyle = !done ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+    api.text(ctx, lab, GOB.x + GOB.w / 2, GOB.y + GOB.h / 2 + 2, { font: "display", size: 38, weight: 800, color: !done ? C.volt : C.ink3, align: "center", baseline: "middle", maxWidth: GOB.w - 10 });
     if (done) { if (ok) tick(ctx, 960, 200, C.mint, 1); else magnifier(ctx, 955, 200, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
-    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: g.verdict === "right", color: g.verdict === "right" ? C.mint : C.amber, stats: [[`${g.right}/${g.n}`, T.done]] });
+    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: g.verdict === "right", color: g.verdict === "right" ? C.mint : C.amber, stats: [[tally(g.right - r0, 1), T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
     void now;
   }
   function bot(): BotAction | null {
     if (flow.state !== "play" || g.answered) return { type: "wait", ms: 300 };
     const r = rd(), slip = botR() < 0.1, tap = (key: string, up: boolean): BotAction => ({ type: "tap", at: [up ? 910 : 670, steppers().find((s) => s.key === key)!.y], after: 120 });
-    if (r.mode === "orchard") { const want = { cols: r.b[1], cs: r.b[0], rows: r.a[1], rs: r.a[0] + (slip ? 1 : 0) } as Record<string, number>; for (const k of ["cols", "cs", "rows", "rs"] as const) if (g[k] !== Math.min(want[k], k === "cs" ? g.cols : k === "rs" ? g.rows : 12)) return tap(k, g[k] < want[k]); return { type: "tap", at: [GO.x + 80, GO.y + 33], after: 700 }; }
-    if (r.mode === "scoop") { const want = fdiv(r.whole, r.part) + (slip ? 1 : 0); if (g.scoops < want) return { type: "tap", at: [670, 350], after: 220 }; return { type: "tap", at: [GO.x + 80, GO.y + 33], after: 700 }; }
+    if (r.mode === "orchard") { const want = { cols: r.b[1], cs: r.b[0], rows: r.a[1], rs: r.a[0] + (slip ? 1 : 0) } as Record<string, number>; for (const k of ["cols", "cs", "rows", "rs"] as const) if (g[k] !== Math.min(want[k], k === "cs" ? g.cols : k === "rs" ? g.rows : 12)) return tap(k, g[k] < want[k]); return { type: "tap", at: [GO().x + 80, GO().y + 33], after: 700 }; }
+    if (r.mode === "scoop") { const want = fdiv(r.whole, r.part) + (slip ? 1 : 0); if (g.scoops < want) return { type: "tap", at: [670, 350], after: 220 }; return { type: "tap", at: [GO().x + 80, GO().y + 33], after: 700 }; }
     const want = slip ? Math.max(r.a[1], r.b[1]) + 1 : (r.a[1] * r.b[1]) / (function gg(a: number, b: number): number { return b ? gg(b, a % b) : a; })(r.a[1], r.b[1]);
-    if (g.parts !== want) return tap("parts", g.parts < want); return { type: "tap", at: [GO.x + 80, GO.y + 33], after: 700 };
+    if (g.parts !== want) return tap("parts", g.parts < want); return { type: "tap", at: [GO().x + 80, GO().y + 33], after: 700 };
   }
   return {
     update, render, bot,

@@ -316,7 +316,8 @@ function gatedSlot(L, p, state = p.state, where = "slot") {
  * main's ruling (2026-11-10, ENGINES-360.md): on a phone too small to play a Studio v2 world, the lesson offers in its place the
  * PLAY FAMILY that covers the skill (data/play/coverage.json): the Games picker chooses the family and level (forge3/live.js →
  * server/play/start.js startSession → choose.js chooseEntry) from the skill and the device's size; the piece carries its
- * because ("phone: <family> covers this skill") into the facts row. Only a game's place (an explainer's keeps the script's
+ * because records (the play side's: the picker's own, then the studio_gate one) and the lead record's kind as the facts
+ * row's `chose` value (rowOf prints only onScreen). Only a game's place (an explainer's keeps the script's
  * board); once per skill per lesson; asynchronous — the play piece goes up as an asked-for one does (pendingPlay, early slot).
  * Switch STUDIO_PHONE_PLAY ("off": the script's board only).
  */
@@ -334,8 +335,8 @@ function phonePlayFor(L, p) {
     L.phonePlayAsked.add(key);
     phonePlayStats.asked++;
     const lessonId = L.lessonId, vp = viewportOf(lessonId).vp;
-    // (C2 Games, 2026-11-10: buildLive is the door; `reason: "phone"` makes the play side write its own because record — ours
-    // stays until theirs lands, theirs wins where both are present; `need` is the beat's own goal, for a truthful trace)
+    // (C2 Games, 2026-11-10: buildLive is the door; `reason: "phone"` makes the play side write its own because record, which
+    // is in r.because with the picker's; `need` is the beat's own goal, for a truthful trace)
     buildLive({ ask: "game", need: p.need ?? "practice", reason: "phone", lessonId, child: { id: child.id, class_level: child.class_level, language_pref: child.language_pref }, skillId, topicId, vp, lesson: L.forge3 ?? null },
       { q: deps.q ?? undefined }).then((r) => {
       if (!r?.artifact?.play || L.safety || lessons.get(lessonId) !== L) return;
@@ -343,8 +344,15 @@ function phonePlayFor(L, p) {
       const fam = r.artifact.play.family, n = [...L.pieces.values()].filter((x) => x.source === "play").length + 1;
       const intentId = `${lessonId}:play:${n}`;
       const because = `phone: ${fam} covers this skill`;
-      const piece = { intentId, slotId: `${intentId}:slot`, kind: "game", archetype: `play:${fam}/${r.artifact.play.mode}`, source: "play", phone: true, because,
-        artifact: r.artifact, facts: { ...(r.facts ?? {}), because }, skillId: r.artifact.play.skillId ?? skillId, need: "practice", requested: false, state: "ready", retired: false, createdAt: Date.now(), composeMs: r.ms, instead: p.intentId };
+      // the play side's because records win (the picker's own first, then studio_gate); the lead record's kind rides the
+      // facts row as `chose` (rowOf prints only onScreen: a top-level facts.because never reached the reply)
+      const records = Array.isArray(r.because) ? r.because.filter((b) => b && typeof b.kind === "string") : [];
+      const lead = records.find((b) => b.source !== "studio_gate") ?? records[0] ?? null;
+      const chose = lead ? lead.kind.replace(/^play\./, "") : "studio_gate";
+      const onScreen = { ...(r.facts?.onScreen ?? {}) };
+      const piece = { intentId, slotId: `${intentId}:slot`, kind: "game", archetype: `play:${fam}/${r.artifact.play.mode}`, source: "play", phone: true, because, becauseRecords: records,
+        artifact: r.artifact, facts: { ...(r.facts ?? {}), because, onScreen: { ...(onScreen.game ? { game: onScreen.game } : {}), chose, ...onScreen } },
+        skillId: r.artifact.play.skillId ?? skillId, need: "practice", requested: false, state: "ready", retired: false, createdAt: Date.now(), composeMs: r.ms, instead: p.intentId };
       L.pieces.set(intentId, piece);
       L.pendingPlay = { intentId, turn: L.turn };
       traceRecord("studio.phone_play", { family: fam, skillId: piece.skillId, vp, instead: p.archetype ?? null });

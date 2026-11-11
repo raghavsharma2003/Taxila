@@ -10,7 +10,7 @@ import { bloom, magnifier, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard, pill } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
-import { dots } from "../core/dots.ts";
+import { dots, tally } from "../core/dots.ts";
 
 interface Drone { i: number; ang: number; r: number; v: number; alive: boolean; shot: boolean; t: number }
 interface Shot { ang: number; r: number; hit: boolean; t: number; truth: number | null; off: number }
@@ -112,7 +112,7 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
     if (g.state === "reveal" && g.stateT > (g.reveal?.hit ? 1.3 : 2.1)) { g.i++; if (g.i < wave().items.length) nextCall(); else endWave(); }
     if (g.state === "end" && g.stateT > 3.1) { if (g.w + 1 < spec.waves.length) startWave(g.w + 1); else { g.state = "final"; g.finalA = 0; api.tw.add(g, { finalA: 1 }, { dur: 0.6 }); api.task("", T.runDone, "done"); api.done({ hits: g.hits, shots: g.n, accuracy: accOf(g.results) }); } }
     if (g.w >= 0 && g.state !== "final") {
-      hud.set("wave", `${dots(g.w, spec.waves.length)}`); hud.set("hits", `${g.hits}/${g.n}`, { bump: true });
+      hud.set("wave", `${dots(g.w, spec.waves.length)}`); hud.set("hits", tally(g.waveRes.filter((x) => x.verdict === "right").length, wave().items.length), { bump: true });   // the wave in play, "0/4" from its intro on
       const a = g.results.length ? accOf(g.results) : null; hud.set("acc", a == null ? "—" : `${a}%`, { meter: a == null ? 0 : a / 100, tone: a != null && a >= 85 ? "mint" : null });
     }
   }
@@ -207,4 +207,4 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
     board: () => ({ title: `${g.w >= 0 && wave().mode !== "classify" ? key() : 120}° is a turn`, lines: ["Start at the zero arm and turn anticlockwise.", "Longer arms don't make a bigger angle."], figure: { kind: "angle", deg: g.w >= 0 && wave().mode !== "classify" ? key() : 120 }, accent: C.ion }),
   };
 }
-export const angle: EngineDef<AngleSpec> = { archetype: "angle-cannon@1", label: "Game · Turret", accent: C.ion, create };
+export const angle: EngineDef<AngleSpec> = { archetype: "angle-cannon@1", label: "Game · Lighthouse", accent: C.ion, create };

@@ -12,7 +12,8 @@ import { drawCoach, drawIntro, drawStatCard, pill } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../core/types.ts";
 import { dots } from "../core/dots.ts";
 
-const BELT_Y = 500, BELT_X0 = 30, BELT_X1 = 520, COL_X0 = 560, COL_X1 = 950, COL_TOP = 250, COL_BOT = 560;
+// (columns 540-970: five place headers "TTH TH H T O" a young label apart at p412 — at 560-950 "TTH" ran into "TH", 2026-11-11)
+const BELT_Y = 500, BELT_X0 = 30, BELT_X1 = 520, COL_X0 = 540, COL_X1 = 970, COL_TOP = 250, COL_BOT = 560;
 const DCOL: Record<number, string> = { 1: "#8B98FF", 10: "#2FD3C7", 100: "#C69BFF", 1000: "#FFD27A", 10000: "#7FD6FF", 100000: "#F2F4F8" };
 const PLACE: Record<number, string> = { 1: "O", 10: "T", 100: "H", 1000: "TH", 10000: "TTH", 100000: "L" };
 interface Block { d: number; x: number; y: number; id: number; fly?: { x0: number; y0: number; x1: number; y1: number; t: number; col: number } }
@@ -78,7 +79,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     api.event("sealed", { auto, total: tot, target: round().target });
     api.facts({ round: g.r + 1, target: round().target, loaded: tot, verdict: grade.verdict, ...(grade.detail ? { detail: grade.detail } : {}) });
   }
-  const SEAL = { x: 455, y: 338, r: 44 };   // inside the vault panel: never in the PiP or label safe zones
+  const SEAL = { x: 452, y: 296, r: 44 };   // inside the vault panel: never in the PiP or label safe zones; its label clears the panel's bottom edge (judges, 2026-11-11: "SEAL" sat on the Nishana card border at p412 and l1366)
   api.onPointer({
     down(p) {
       if (g.state !== "play") return;
@@ -162,9 +163,10 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
       ctx.fillStyle = "rgba(16,19,27,.92)"; roundRect(ctx, 40, 170, 480, 230, 20); ctx.fill(); ctx.strokeStyle = "rgba(139,152,255,.35)"; ctx.lineWidth = 2; ctx.stroke();
       api.text(ctx, T.target, 70, 214, { font: "mono", size: 38, weight: 600, color: C.ink3 });
       const isWords = round().show === "words" && g.state !== "sealed" && g.state !== "end";
-      api.text(ctx, shownTarget, 70, isWords ? 268 : 280, { font: isWords ? "ui" : "display", size: isWords ? 40 : 76, weight: 800, maxWidth: 340 });
+      api.text(ctx, shownTarget, 70, isWords ? 268 : 280, { font: isWords ? "ui" : "display", size: isWords ? 40 : 76, weight: 800, maxWidth: 320 });   // clear of the seal dial
       api.text(ctx, T.loaded, 70, 340, { font: "mono", size: 38, weight: 600, color: C.ink3 });
-      api.text(ctx, groupDigits(tot, spec.system), 250, 344, { font: "display", size: 52, weight: 800, color: tot === tg ? C.mint : tot > tg ? C.amber : C.ink });
+      const lx = Math.max(250, 70 + api.measure(ctx, T.loaded, { font: "mono", size: 38, weight: 600 }) + 24);   // after its label, however long ("jama hua" ran under the 0)
+      api.text(ctx, groupDigits(tot, spec.system), lx, 344, { font: "display", size: 52, weight: 800, color: tot === tg ? C.mint : tot > tg ? C.amber : C.ink, maxWidth: Math.max(80, SEAL.x - SEAL.r - 16 - lx) });
       if (g.state === "play") {
         const k = clamp(g.t / round().seconds, 0, 1), ly = 175 + k * 220;
         ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.strokeStyle = "rgba(255,150,120,.8)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(44, ly); ctx.lineTo(516, ly); ctx.stroke(); bloom(ctx, "#FF9A78", 280, ly, 120, 0.25); ctx.restore();
@@ -173,7 +175,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
         ctx.strokeStyle = ready ? C.mint : C.line2; ctx.lineWidth = 4; ctx.stroke();
         ctx.strokeStyle = ready ? C.mint : C.ink2; ctx.lineWidth = 5; for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2 + now * (ready ? 1.2 : 0.2); ctx.beginPath(); ctx.moveTo(SEAL.x + Math.cos(a) * 18, SEAL.y + Math.sin(a) * 18); ctx.lineTo(SEAL.x + Math.cos(a) * 36, SEAL.y + Math.sin(a) * 36); ctx.stroke(); }
         ctx.restore();
-        api.text(ctx, "SEAL", SEAL.x, SEAL.y + SEAL.r + 38, { font: "mono", size: 38, weight: 600, color: ready ? C.mint : C.ink3, align: "center" });
+        api.text(ctx, "SEAL", SEAL.x, SEAL.y + SEAL.r + 36, { font: "mono", size: 38, weight: 600, color: ready ? C.mint : C.ink3, align: "center" });
       }
       if ((g.state === "sealed" || g.state === "end") && g.last) pill(api, ctx, g.last.verdict === "right" ? T.cracked : g.last.total > tg ? `${T.over} ${groupDigits(g.last.total - tg, spec.system)}` : `${T.under} ${groupDigits(tg - g.last.total, spec.system)}`, 280, 440, { color: g.last.verdict === "right" ? C.mint : C.amber });
     }
@@ -182,7 +184,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${dots(g.r, spec.rounds.length)}`, title: round().show === "words" ? "Listen to the number" : groupDigits(round().target, spec.system), sub: round().show === "words" ? numberWords(round().target, spec.system) : round().denoms.includes(1000) ? "load it exactly, then seal" : "no thousands on the belt today", accent: C.sun });
     if (g.state === "end" && g.last) drawStatCard(api, ctx, { a: g.endA, head: g.last.verdict === "right" ? T.cracked : `${T.round} ${g.r + 1}`, color: g.last.verdict === "right" ? C.mint : C.amber, ticked: g.last.verdict === "right", stats: [[groupDigits(round().target, spec.system), T.target], [groupDigits(g.last.total, spec.system), T.loaded]], foot: g.last.detail?.includes("drop-zero") ? "a zero holds the empty place" : undefined });
     if (g.state === "final") drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.results.filter((r) => r.verdict === "right").length}/${spec.rounds.length}`, "vaults"]] });
-    drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 612, 470, 275);   // under the belt: the column counts own the bottom right
+    drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 612, 500, 275);   // under the belt, two lines at most at the young floor: the column counts own the bottom right
   }
   function bot(): BotAction | null {
     if (g.state !== "play" || g.fliers.length || g.merges.length) return { type: "wait", ms: 160 };
@@ -203,4 +205,4 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     board: () => { const tg = round().target, s = String(tg); return { title: groupDigits(tg, spec.system), lines: [numberWords(tg, spec.system), s.split("").map((ch, i) => `${ch} ${PLACE[10 ** (s.length - 1 - i)] ?? ""}`).join("  ·  ")], figure: { kind: "none" }, accent: C.sun }; },
   };
 }
-export const vault: EngineDef<VaultSpec> = { archetype: "vault-heist@1", label: "Game · Vault Heist", accent: C.sun, create };
+export const vault: EngineDef<VaultSpec> = { archetype: "vault-heist@1", label: "Game · Number Vault", accent: C.sun, create };

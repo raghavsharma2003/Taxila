@@ -1,0 +1,109 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c5-maths-ch13-t01",
+    "archetype": "sieve-storm@1",
+    "misconceptionId": "c5-maths-ch13-t01-m-factor-multiple-confuse",
+    "skillId": "c5-maths-ch13-t01-s1",
+    "beat": "rem:c5-maths-ch13-t01-m-factor-multiple-confuse",
+    "when": "remediation",
+    "check": "c5-maths-ch13-t01-s1:c1"
+  },
+  "archetype": "sieve-storm@1",
+  "spec": {
+    "archetype": "sieve-storm@1",
+    "skills": [
+      "c5-maths-ch13-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Daura",
+      "slashed": "sahi chunav",
+      "combo": "lagataar",
+      "coach": "Dhyan se chunno",
+      "runDone": "Khel khatam",
+      "prime": "pehla",
+      "composite": "joda hua",
+      "even": "sam",
+      "odd": "visham",
+      "multipleOf": "jumps of",
+      "commonOf": "saath wale",
+      "factorOf": "tukde of",
+      "cfactorOf": "saath tukde",
+      "divisibleBy": "poora banta hai",
+      "coprimeWith": "alag saathi",
+      "square": "barabar guna",
+      "palindrome": "ulta seedha same",
+      "slipped": "chook gaya",
+      "wrongCut": "yeh nahi",
+      "and": "aur"
+    },
+    "title": "Number Storm",
+    "rounds": [
+      {
+        "rule": "multiple",
+        "a": 3,
+        "title": "Pehla daura",
+        "sub": "Jo sahi lage, use chuno",
+        "lo": 3,
+        "hi": 24,
+        "count": 12,
+        "hitRate": 0.5,
+        "seed": 31,
+        "speed": 0.8
+      },
+      {
+        "rule": "factor",
+        "a": 12,
+        "title": "Doosra daura",
+        "sub": "Har sankhya ko gaur se dekho",
+        "lo": 1,
+        "hi": 12,
+        "count": 12,
+        "hitRate": 0.5,
+        "seed": 47,
+        "speed": 1
+      },
+      {
+        "rule": "common",
+        "a": 4,
+        "b": 6,
+        "title": "Aakhri daura",
+        "sub": "Dono taraf ki soch milao",
+        "lo": 4,
+        "hi": 24,
+        "count": 12,
+        "hitRate": 0.35,
+        "seed": 71,
+        "speed": 1.1,
+        "targets": "c5-maths-ch13-t01-m-factor-multiple-confuse"
+      }
+    ]
+  },
+  "hash": "19a24d05120dd056b74a4e0262dda875",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": true,
+    "spec": {
+      "ok": true,
+      "repairs": 0,
+      "fellBack": false
+    }
+  },
+  "facts": {
+    "kind": "game",
+    "archetype": "sieve-storm@1",
+    "onScreen": {
+      "title": "Number Storm",
+      "rounds": 3,
+      "first": "Pehla daura: Jo sahi lage, use chuno"
+    }
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T06:24:22.584Z"
+  }
+}

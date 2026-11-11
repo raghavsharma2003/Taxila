@@ -11,7 +11,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady, taskPill, textBlock } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, taskPill, textBlock, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
 
 const LOCK = { x: 800, y: 520, w: 170, h: 66 };
@@ -40,8 +40,9 @@ function create(api: EngineApi, spec: SkySpec): EngineInstance {
   };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }]);
   const rd = (): SkRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) {
+    onRound(k) { r0 = g.right;
       const r = spec.rounds[k];
       Object.assign(g, { net: 0, dragAng: NaN, moon: 90, sun: 180, dragWhat: "", lst: 6, lst0: 6, pointer: null, sel: "", edges: [], picked: "", answered: false, verdict: "", detail: "", revealT: 0 });
       g.rot = r.mode === "daynight" ? startRot(r) : 0; g.day = r.mode === "season" ? (SEASON_DAY[r.ask] + 150) % 365 : 0; if (r.mode === "eclipse" && r.nodes) g.sun = (r.node + 110) % 360;
@@ -102,7 +103,7 @@ function create(api: EngineApi, spec: SkySpec): EngineInstance {
     flow.tick(dt, 1.8);
     if (flow.state === "intro" && flow.stateT < 0.05) hud.show(true);
     if (g.answered) { g.revealT += dt; if (g.revealT > 3.2) flow.endRound(); }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true });
   }
   function paintBg(c: Ctx) { backdrop(c, accent, 173, 140); }
   function readout(ctx: Ctx, label: string, value: string, y: number, color: string = C.ink) {
@@ -199,7 +200,7 @@ function create(api: EngineApi, spec: SkySpec): EngineInstance {
     if (done) { if (ok) tick(ctx, 965, 470, C.mint, 1); else magnifier(ctx, 960, 470, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
-    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.done]] });
+    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[tally(g.right - r0, 1), T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
   }
   function bot(): BotAction | null {
