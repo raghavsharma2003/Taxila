@@ -1,0 +1,934 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "version": 2.3,
+ "status": "draft",
+ "terms": [
+  {
+   "hi": "bhinn",
+   "en": "fraction"
+  },
+  {
+   "hi": "number line",
+   "en": "number line"
+  },
+  {
+   "hi": "barabar hisse",
+   "en": "equal parts"
+  },
+  {
+   "hi": "ansh",
+   "en": "numerator"
+  },
+  {
+   "hi": "har",
+   "en": "denominator"
+  },
+  {
+   "hi": "poora",
+   "en": "one whole"
+  },
+  {
+   "hi": "aadha",
+   "en": "one half"
+  },
+  {
+   "hi": "ek chauthai",
+   "en": "one quarter"
+  },
+  {
+   "hi": "teen chauthai",
+   "en": "three quarters"
+  },
+  {
+   "hi": "sava",
+   "en": "one and a quarter"
+  },
+  {
+   "hi": "dedh",
+   "en": "one and a half"
+  }
+ ], "greetSimpler": { "hi": "Aaj hum bhinn ko ek seedhi line par jagah denge.", "en": "Today we give fractions their place on a straight line." }, "joints": {"asidePark":[{"hi":"Yeh number line wala kaam khatam hote hi {aside} ki baat zaroor karenge.","en":"Once we finish this number line, we will surely talk about {aside}."},{"hi":"{aside} ki baat bhi hogi, bas yeh number line wala kaam khatam ho jaaye.","en":"We'll talk about {aside} too, right after this number line."},{"hi":"Wah, {aside} ki baat sambhaal ke rakhi hai, baad mein zaroor sunungi.","en":"Oh, I've kept the {aside} bit safe, and I'll surely hear it later."}],"asideReturn":[{"hi":"{aside} mein kya kuch aage-peeche chalta ya badhta hai?","en":"Does anything in {aside} move along or go forward?"},{"hi":"Chalo, {aside} ke baare mein batao, tumhe woh kyun pasand hai?","en":"Okay, tell me about {aside}: why do you like it?"},{"hi":"{aside} wali baat batao na, tumhe uski kaunsi baat pasand hai?","en":"Tell me about {aside}: what do you like about it?"}],"hindiSwitch":[{"hi":"Achha, yeh baat Hindi mein kehti hoon.","en":"Okay, let me put this in Hindi."},{"hi":"Bilkul, ab yeh Hindi mein bolti hoon.","en":"Of course, I'll say this in Hindi now."},{"hi":"Theek hai, main yeh Hindi mein bolti hoon.","en":"Sure, I'll say it in Hindi."}],"askAgain":[{"hi":"Apna jawab phir se bolo.","en":"Say your answer again."},{"hi":"Ek baar aur bolo, main sun rahi hoon.","en":"Say it once more, I'm listening."},{"hi":"Ek baar aur batao.","en":"Tell me once more."}],"backTo":[{"hi":"Ab us sawaal par lautte hain jo humne pehle chhoda tha.","en":"Now let's return to the question we left earlier."},{"hi":"Theek hai, ab wapas usi sawaal par chalte hain.","en":"Alright, let's go back to that question now."},{"hi":"Chalo, ab pichhle sawaal par wapas chalte hain.","en":"Okay, let's go back to the earlier question."}]},
+ "skills": [
+  {
+   "skillId": "c5-maths-ch02-t01-s1",
+   "hook": {
+    "convey": "one whole stretch from start = 0 to finish = 1; stopping exactly halfway → standing on a real spot → 0 and 1 have no name for it → fractions are numbers that live between 0 and 1",
+    "interestSlots": [
+     {
+      "interest": "cricket",
+      "use": { "hi": "Cricket ki pitch socho. Ek stump 0 par, doosra 1 par. Batsman run lene bhaaga aur theek beech mein ruk gaya. Woh pitch ki ek pakki jagah par khada hai, toh us jagah ka bhi ek number hai.", "en": "Picture a cricket pitch. One stump at 0, the other at 1. The batsman sets off for a run and stops right in the middle. He's standing on a real spot, so that spot has a number too." }
+     },
+     {
+      "interest": "vehicles",
+      "use": { "hi": "Ghar 0 par, school 1 km par. School bus aadhe raaste mein ruk gayi. Na 0 par, na 1 par, beech mein kahin. Us jagah ka bhi number hota hai.", "en": "Home is at 0, school at 1 km. The school bus stops halfway. Not at 0, not at 1, somewhere in between. That place has a number too." }
+     },
+     {
+      "interest": "games",
+      "use": { "hi": "Game mein level ka bar 0 se bharna shuru hota hai, aur 1 par level khatam. Abhi bar aadha bhara hai. Matlab woh 0 aur 1 ke beech ke ek number par ruka hai.", "en": "In a game the level bar starts filling at 0, and at 1 the level is done. Right now it's half full. So it has stopped at a number between 0 and 1." }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "0 and 1 at the ends; one cut exactly in the middle → 2 equal gaps; the middle mark = 1/2 → 1/2 is a number with its own place, between 0 and 1, not at 2",
+     "mustSay": [
+      {
+       "hi": "2 barabar gaps",
+       "en": "2 equal gaps"
+      },
+      {
+       "hi": "1/2",
+       "en": "1/2"
+      }
+     ],
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 2,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/2"
+        }
+       ]
+      }
+     },
+     "point": { "hi": "Yeh rahi 0 se 1 tak ki line. Upar theek beech mein ek mark hai, toh upar line ke 2 barabar gaps ban gaye. Is mark ka naam hai 1/2.", "en": "Here's a line from 0 to 1. On top, one mark right in the middle, and now the top of the line has 2 equal gaps. This mark is called 1/2." },
+     "ask": {
+      "prompt": { "hi": "{friend} ka kehna hai ki 1/3 toh 3 ke paas aata hai. Tumhe kya lagta hai: 1/3 isi 0 se 1 wali line par hai, ya 3 ke paas?", "en": "{friend} says 1/3 goes near 3. What do you think: is 1/3 on this line from 0 to 1, or near 3?" },
+      "key": "on this line",
+      "accept": [
+       "isi line par",
+       "is line par",
+       "0 se 1 wali line par",
+       "0 aur 1 ke beech",
+       "between 0 and 1",
+       "0 and 1",
+       "0 aur 1",
+       "on the line from 0 to 1",
+       "on the same line",
+       "usi line par"
+      ],
+      "targets": "c5-maths-ch02-t01-m-not-numbers",
+      "wrongIfMis": "near 3", "simpler": { "hi": "1/3 ka neeche wala number 3 dekho: woh batata hai 0 se 1 ko kitne barabar gaps mein kaatna hai. 1/3 bhi ek poore ka ek tukda hai.", "en": "Look at the bottom number of 1/3, the 3: it says how many equal gaps to cut 0 to 1 into. 1/3 is also a piece of one whole." },
+      "why": { "hi": "neeche ka 3 matlab 0 se 1 ke 3 barabar gaps, aur pehla gap isi line par khatam hota hai", "en": "the bottom 3 means 3 equal gaps from 0 to 1, and the first gap ends right on this line" },
+      "board": { "template": "fraction-line@1", "params": {"dens": [2, 3], "from": 0, "to": 1, "marks": [[1, 2]]} }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [2, 3], "from": 0, "to": 1, "marks": [[1, 2], [1, 3]]} }
+     },
+     "simpler": { "hi": "Line ke theek beech mein ek mark hai. Woh line ko do barabar gaps mein baant-ta hai, isliye uska naam 1/2 hai.", "en": "There is a mark right in the middle of the line. It splits the line into two equal gaps, so its name is 1/2." }
+    },
+    {
+     "id": "e2",
+     "convey": "same 0 to 1, now 6 marks inside → 7 equal gaps (gaps = marks inside + 1); bottom number = number of equal gaps in 0 to 1; first mark from 0 = end of 1 gap = 1/7; the name comes from gaps, not marks",
+     "mustSay": [{"hi": "6 marks", "en": "6 marks"}, {"hi": "7 barabar gaps", "en": "7 equal gaps"}, {"hi": "1/7", "en": "1/7"}],
+     "board": { "template": "fraction-line@1", "params": {"dens": [7, 8], "from": 0, "to": 1, "marks": [[1, 7]]} },
+     "point": { "hi": "Wahi 0 se 1 ki line, par ab upar 6 marks hain. Marks mat gino, gaps gino: 7 barabar gaps. Toh 0 ke baad pehla mark hai 1/7.", "en": "Same line from 0 to 1, but now there are 6 marks on top. Don't count the marks, count the gaps: 7 equal gaps. So the first mark after 0 is 1/7." },
+     "ask": {
+      "prompt": { "hi": "Ab line ke neeche dekho. Wahan 0 aur 1 ke beech 7 marks hain, sab barabar doori par. Neeche line kitne barabar gaps mein bati hai?", "en": "Now look under the line. There are 7 marks between 0 and 1, all evenly spaced. How many equal gaps does that make below?" },
+      "key": "8",
+      "accept": [
+       "8 gaps",
+       "8 barabar gaps",
+       "aath",
+       "eight"
+      ],
+      "targets": "c5-maths-ch02-t01-m-count-marks",
+      "wrongIfMis": "7",
+      "why": { "hi": "beech ke marks se gaps hamesha ek zyada, toh 7 marks ke 8 gaps", "en": "there's always one more gap than marks in between, so 7 marks make 8 gaps" },
+      "board": { "template": "fraction-line@1", "params": {"dens": [7, 8], "from": 0, "to": 1, "marks": [[1, 7]]} }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [7, 8], "from": 0, "to": 1} }
+     },
+     "simpler": { "hi": "Upar 6 marks the aur gaps 7, yaani gaps ek zyada. Neeche ke 7 marks par bhi yahi chalega.", "en": "On top there were 6 marks and 7 gaps, one more gap. The same works for the 7 marks below." }
+    },
+    {
+     "id": "e3",
+     "convey": "the same 0 to 1 in 8 equal gaps → more gaps than the 7 before → each gap smaller; 1/8 = first mark, right next to 0; 1/2 still the middle mark (4 of the 8 gaps); more equal gaps in the same whole → each gap shorter → 1/8 sits closer to 0 than 1/7 and 1/2",
+     "mustSay": [
+      {
+       "hi": "8 barabar gaps",
+       "en": "8 equal gaps"
+      },
+      {
+       "hi": "1/8",
+       "en": "1/8"
+      },
+      {
+       "hi": "chhota gap",
+       "en": "smaller gap"
+      }
+     ],
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 8,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/8"
+        },
+        {
+         "num": 4,
+         "label": "1/2"
+        }
+       ]
+      }
+     },
+     "point": { "hi": "Ab wahi 0 se 1, par upar 8 barabar gaps hain. 7 gaps se zyada gaps, toh har ek chhota gap hai. Pehla mark 1/8, bilkul 0 se chipka hua.", "en": "Now the same 0 to 1, but on top there are 8 equal gaps. More gaps than 7, so each one is a smaller gap. The first mark is 1/8, right up against 0." },
+     "ask": {
+      "prompt": { "hi": "Ab neeche dekho: wahi line 10 barabar gaps mein kati hai. 0 ke zyada paas kaun rukega: 1/8 ya 1/10?", "en": "Now look below: the same line cut into 10 equal gaps. Which stops closer to 0: 1/8 or 1/10?" },
+      "key": "1/10",
+      "accept": [
+       "one tenth",
+       "ek bata das",
+       "1 by 10"
+      ],
+      "targets": "c5-maths-ch02-t01-m-whole-number-bias",
+      "wrongIfMis": "1/8",
+      "why": { "hi": "10 gaps wala har gap 8 gaps wale se chhota hai, isliye 1/10 pehle ruk jaata hai, 0 ke paas", "en": "a gap out of 10 is smaller than a gap out of 8, so 1/10 stops sooner, nearer 0" },
+      "board": { "template": "fraction-line@1", "params": {"dens": [8, 10], "from": 0, "to": 1, "marks": [[1, 8]]} }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [8, 10], "from": 0, "to": 1, "marks": [[1, 8], [1, 10]]} }
+     },
+     "simpler": { "hi": "8 gaps hue toh pehla mark 1/8 ekdum 0 ke paas aa gaya. Gaps jitne zyada, pehla mark 0 ke utna hi paas.", "en": "With 8 gaps, the first mark, 1/8, moved right up to 0. The more gaps, the closer the first mark sits to 0." }
+    }
+   ],
+   "workedExample": {
+    "problem": { "hi": "Ghar 0 par hai aur school 1 km par. Beech raaste mein 3 bijli ke khambe barabar doori par khade hain. Pehla khamba ghar se kitne km door hai?", "en": "Home is at 0 and school is at 1 km. Along the road between them stand 3 electric poles, evenly spaced. How many km from home is the first pole?" }, "simpler": { "hi": "Ghar se school tak 1 km ka raasta hai, aur beech mein 3 khambe barabar doori par hain. Pehla khamba kahan hai, yeh dhoondhna hai.", "en": "The road from home to school is 1 km, with 3 poles evenly spaced between. We need where the first pole stands." },
+    "givens": [{ "hi": "poora raasta 1 km ka, aur beech mein 3 khambe", "en": "a 1 km road with 3 poles in between" }],
+    "find": { "hi": "pehle khambe ki doori, km mein", "en": "how far the first pole is, in km" },
+    "steps": [
+     {
+      "do": { "hi": "Ek line kheencho, ghar 0 par aur school 1 par", "en": "Draw a line with home at 0 and school at 1" },
+      "result": "0 se 1 tak ki line",
+      "why": { "hi": "ghar se school tak ka poora raasta hi humara ek poora hai", "en": "the whole road from home to school is our one whole" },
+      "simpler": { "hi": "Bas do jagah pakki karo: ghar 0 par, school 1 par. Beech ka saara raasta ek poora hai.", "en": "Fix just two spots: home at 0, school at 1. All the road in between is one whole." }
+     },
+     {
+      "do": { "hi": "Khambe mat gino, unke beech ke gaps gino", "en": "Don't count the poles, count the gaps between them" },
+      "result": "3 khambe, toh 4 barabar hisse",
+      "why": { "hi": "beech mein jitne marks hon, gaps hamesha usse ek zyada", "en": "there is always one more gap than marks in between" },
+      "simpler": { "hi": "Ghar se pehle khambe tak ek gap, phir khambe se khamba, aur aakhri khambe se school tak ek. 3 khambe, 4 gaps.", "en": "Home to the first pole is one gap, then pole to pole, then the last pole to school. 3 poles, 4 gaps." }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Raasta 4 barabar gaps mein bata hai, aur pehla khamba ghar se bas ek gap door hai. Woh kitne km par hai?", "en": "The road is in 4 equal gaps, and the first pole is just one gap from home. At how many km is it?" },
+     "key": "1/4 km", "why": { "hi": "raasta 4 barabar gaps mein bata hai aur pehla khamba theek ek gap par hai", "en": "the road is in 4 equal gaps and the first pole stands exactly one gap along" },
+     "accept": [
+      "1/4",
+      "ek chauthai km",
+      "ek chauthai",
+      "one quarter km",
+      "quarter km"
+     ],
+     "targets": "c5-maths-ch02-t01-m-count-marks",
+     "wrongIfMis": "1/3 km",
+     "simpler": { "hi": "Poora 1 km, 4 barabar tukde. Ek tukda poore ka kaunsa hissa hai, bas yahi socho.", "en": "The whole 1 km, in 4 equal pieces. Just think which part of the whole one piece is." },
+     "answerBoard": { "template": "fraction-line@1", "params": { "den": 4, "from": 0, "to": 1, "marks": [ { "num": 1, "label": "1/4" } ] } }
+    },
+    "answer": { "hi": "pehla khamba ghar se 1/4 km door hai", "en": "the first pole is 1/4 km from home" },
+    "why": { "hi": "4 barabar gaps mein har gap 1/4 km ka hai, aur pehla khamba 0 se theek ek gap par khada hai", "en": "with 4 equal gaps each gap is 1/4 km, and the first pole stands exactly one gap from 0" },
+    "board": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": { "hi": "Is line par 0 aur 1 ke beech 10 marks hain, barabar doori par. 0 ke baad pehla mark kaunsa fraction hai?", "en": "This line has 10 evenly spaced marks between 0 and 1. What fraction is the first mark after 0?" },
+     "key": "1/11",
+     "accept": ["one eleventh", "ek bata gyarah", "1 by 11"],
+     "targets": "c5-maths-ch02-t01-m-count-marks",
+     "wrongIfMis": "1/10",
+     "board": { "template": "fraction-line@1", "params": {"den": 11, "from": 0, "to": 1, "mark": 1} },
+     "why": { "hi": "10 marks se line ke 11 barabar gaps bante hain, aur pehla mark ek gap par hai, yaani 1/11", "en": "10 marks make 11 equal gaps, and the first mark is one gap along, at 1/11" },
+     "answerBoard": { "template": "fraction-line@1", "params": {"den": 11, "from": 0, "to": 1, "marks": [{"num": 1, "label": "1/11"}]} },
+     "simpler": { "hi": "Marks chhodo, gaps gino. 0 se 1 ki line par 10 marks se jitne gaps bane, wahi neeche wala number hai.", "en": "Forget the marks, count the gaps. On a line from 0 to 1, however many gaps the 10 marks make, that's the bottom number." }
+    },
+    {
+     "id": "c2",
+     "prompt": { "hi": "{friend} kehta hai 1/11 line par 1/4 ke baad aata hai, kyunki 11, 4 se bada hai. {friend} sahi hai ya galat?", "en": "{friend} says 1/11 comes after 1/4 on the line, because 11 is bigger than 4. Is {friend} right or wrong?" },
+     "key": "wrong",
+     "accept": ["galat", "galat hai", "{friend} galat hai", "sahi nahi", "not right", "{friend} is wrong"],
+     "targets": "c5-maths-ch02-t01-m-whole-number-bias",
+     "wrongIfMis": "right",
+     "board": { "template": "fraction-line@1", "params": {"dens": [4, 11], "from": 0, "to": 1} },
+     "why": { "hi": "wahi poora 11 mein bata toh har gap chhota, isliye 1/11 pehle rukta hai, 1/4 se pehle; {friend} galat hai", "en": "the same whole cut into 11 makes each gap smaller, so 1/11 stops sooner, before 1/4; {friend} is wrong" },
+     "answerBoard": { "template": "fraction-line@1", "params": {"dens": [4, 11], "from": 0, "to": 1, "marks": [[1, 4], [1, 11]]} },
+     "simpler": { "hi": "Socho ek roti 4 logon mein bati, ya 11 logon mein. Jis baar tukda chhota mile, woh line par pehle rukta hai.", "en": "Imagine one roti shared among 4, or among 11. Whichever way the piece is smaller stops earlier on the line." }
+    },
+    {
+     "id": "c3",
+     "prompt": { "hi": "Line 0 se 1 tak 9 barabar gaps mein hai. Ek khilona chalkar pehle mark par ruka. {friend} kehta hai woh kisi number par nahi khada. Woh kis number par khada hai?", "en": "The line from 0 to 1 is in 9 equal gaps. A toy walks along and stops at the first mark. {friend} says it is not standing on any number. What number is it on?" },
+     "key": "1/9",
+     "accept": ["ek bata nau", "one ninth", "1 by 9", "1/9 par"],
+     "targets": "c5-maths-ch02-t01-m-not-numbers",
+     "wrongIfMis": "no number",
+     "board": { "template": "fraction-line@1", "params": {"den": 9, "from": 0, "to": 1, "mark": 1} },
+     "why": { "hi": "line ke 9 barabar gaps hain, aur pehla mark 0 se ek gap par: ek pakki jagah, ek number, 1/9", "en": "the line has 9 equal gaps, and the first mark is one gap from 0: one real spot, one number, 1/9" },
+     "answerBoard": { "template": "fraction-line@1", "params": {"den": 9, "from": 0, "to": 1, "marks": [{"num": 1, "label": "1/9"}]} },
+     "simpler": { "hi": "Khilona hawa mein nahi, line ki ek jagah par khada hai. 0 se 1 tak kitne barabar gaps hain, aur woh kitne gap chala, yeh dekho.", "en": "The toy is not in the air; it stands on one spot of the line. See how many equal gaps run from 0 to 1, and how many gaps it walked." }
+    }
+   ],
+   "ladder": [{"itemId": "c5-maths-ch02-t01-i01", "why": "den 2: one cut, gaps obvious → fraction as a place on the road; same den as e1"}, {"itemId": "c5-maths-ch02-t01-i13", "why": "den 4 (halves halved, as in e2 and the worked example) → 2nd mark = 2/4 → same spot as 1/2; gap-value thinking, not mark counting"}, {"itemId": "c5-maths-ch02-t01-i08", "why": "den 5 given only as marks (4 inside) → must convert marks to gaps; error-spot on the count-marks trap"}, {"itemId": "c5-maths-ch02-t01-rl-h1", "why": "den 6 again but given as 5 inside marks → contrasts with rl-o1 (same den, gaps given) → explain why the label is wrong"}],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch02-t01-m-count-marks",
+     "move": "ribbon at a tailor's shop, 0 to 1 m, one line cut in 7 on top and 12 below; marks = chalk marks (nishaan), gaps = ribbon pieces; marks inside + 1 = pieces; a mark's name comes from counting pieces, not marks; top: 6 marks → 7 pieces → first mark at 1/7 m; then below: 11 marks → 12 pieces → 1/12 m (the trap says 1/11)",
+     "say": { "hi": "Darzi ka ribbon socho, 0 se 1 metre. Upar 6 chalk ke nishaan hain, aur ribbon ke 7 barabar tukde. Pehla nishaan pehle tukde ke end par hai, isliye uska naam 1/7 metre. Naam tukde ginkar milta hai, nishaan ginkar nahi.", "en": "Picture a tailor's ribbon, 0 to 1 metre. On top there are 6 chalk marks, and the ribbon is in 7 equal pieces. The first mark ends the first piece, so its name is 1/7 metre. The name comes from counting pieces, not marks." },
+     "simpler": { "hi": "6 nishaan, 7 tukde. Tukde gino, toh pehla nishaan 1/7 metre par hai.", "en": "6 marks, 7 pieces. Count the pieces, and the first mark is at 1/7 metre." },
+     "board": { "template": "fraction-line@1", "params": {"dens": [7, 12], "from": 0, "to": 1, "marks": [[1, 7]]} },
+     "then": { "prompt": { "hi": "Ribbon ki neeche wali line par 11 nishaan hain, barabar doori par. Pehla nishaan kitne metre par hai?", "en": "On the ribbon's lower line there are 11 evenly spaced marks. At how many metres is the first mark?" }, "key": "1/12 m", "accept": ["1/12", "1/12 metre", "ek bata barah metre", "one twelfth of a metre"], "targets": "c5-maths-ch02-t01-m-count-marks", "wrongIfMis": "1/11 m", "board": { "template": "fraction-line@1", "params": {"dens": [7, 12], "from": 0, "to": 1, "marks": [[1, 7]]} }, "why": {"hi": "11 nishaan se ribbon ke 12 barabar tukde bante hain, aur pehla nishaan pehle tukde ke end par, 1/12 metre par", "en": "11 marks cut the ribbon into 12 equal pieces, and the first mark ends the first piece, at 1/12 metre"}, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [7, 12], "from": 0, "to": 1, "marks": [[1, 7], [1, 12]]} }, "simpler": {"hi": "Nishaan nahi, tukde gino. Tukde hamesha nishaanon se ek zyada hote hain.", "en": "Count the pieces, not the marks. There's always one more piece than marks."} }
+    },
+    {
+     "targets": "c5-maths-ch02-t01-m-whole-number-bias",
+     "move": "on the then-card's own board (one 0-to-1 line, fifths on top, sixths below, 1/5 marked), naming none of its numbers: both rows are the same whole; a bigger bottom number shares the same whole into more pieces, so each piece is smaller → bigger bottom number = smaller piece; then the child places 1/6: between 0 and 1/5, not after it",
+     "say": { "hi": "Upar aur neeche, dono ek hi line hain, 0 se 1 tak: wahi ek poora. Fraction ka neeche wala number jitna bada, wahi poora utne zyada tukdon mein bata, aur har tukda utna chhota. Bada number matlab bada tukda nahi.", "en": "Top and bottom are the same line, 0 to 1: the same one whole. The bigger a fraction's bottom number, the more pieces that same whole is shared into, and the smaller each piece. A bigger number does not mean a bigger piece." },
+     "simpler": { "hi": "Ek hi poora, zyada tukde, toh har tukda chhota. Fraction ka neeche wala number bada ho, toh uska tukda chhota.", "en": "One whole, more pieces, so each piece is smaller. When a fraction's bottom number is bigger, its piece is smaller." },
+     
+     "then": { "prompt": {"hi": "Upar pehla mark 1/5 hai, neeche line 6 barabar tukdon mein. 1/6 kahaan aayega: 0 aur 1/5 ke beech, ya 1/5 ke baad?", "en": "On top the first mark is 1/5; below, the line is in 6 equal pieces. Where does 1/6 go: between 0 and 1/5, or after 1/5?"}, "key": "between 0 and 1/5", "accept": ["0 aur 1/5 ke beech", "1/5 se pehle", "before 1/5", "pehle", "before"], "targets": "c5-maths-ch02-t01-m-whole-number-bias", "wrongIfMis": "after 1/5", "board": {"template": "fraction-line@1", "params": {"dens": [5, 6], "from": 0, "to": 1, "marks": [[1, 5]]}}, "why": {"hi": "6 tukdon wala har tukda 5 tukdon wale se chhota hai, isliye 1/6, 0 aur 1/5 ke beech rukta hai", "en": "a piece out of 6 is smaller than a piece out of 5, so 1/6 stops between 0 and 1/5"}, "answerBoard": {"template": "fraction-line@1", "params": {"dens": [5, 6], "from": 0, "to": 1, "marks": [[1, 5], [1, 6]]}}, "simpler": {"hi": "1/6 wala tukda 1/5 wale tukde se chhota hai. Chhota tukda pehle ruk jaata hai.", "en": "A 1/6 piece is smaller than a 1/5 piece. A smaller piece stops sooner."} }
+    },
+    {
+     "targets": "c5-maths-ch02-t01-m-not-numbers",
+     "move": "road from home (0) to the chai stall (1 km), one line in 7 equal stretches on top; a toy walks from home and stops at the first mark → it stands on one real spot of the road → that spot has a number, 1/7 km; then the same road in 6 stretches below: the toy stops at the fifth mark after 0 → that spot is a number too, 5/6 km (the trap says 5 and 6)",
+     "say": { "hi": "Ghar se chai ki dukaan tak sadak hai, 0 se 1 km. Upar woh 7 barabar hisson mein hai. Khilona chala aur pehle mark par ruk gaya. Woh sadak ki ek pakki jagah par khada hai, aur us jagah ka number hai 1/7 km.", "en": "There's a road from home to the chai stall, 0 to 1 km. On top it's in 7 equal stretches. A toy walks and stops at the first mark. It's standing on a real spot of the road, and that spot's number is 1/7 km." },
+     "simpler": { "hi": "Khilona hawa mein nahi, sadak ki ek pakki jagah par khada hai. Us jagah ka bhi number hai, 1/7 km.", "en": "The toy isn't floating; it stands on one real spot of the road. That spot has a number too, 1/7 km." },
+     "board": { "template": "fraction-line@1", "params": {"dens": [7, 6], "from": 0, "to": 1, "marks": [[1, 7]]} },
+     "then": { "prompt": { "hi": "Neeche wahi sadak 6 barabar hisson mein hai. Khilona neeche 0 ke baad paanchve mark par ruka. Woh kis number par hai?", "en": "Below, the same road is in 6 equal stretches. The toy stops at the fifth mark after 0 below. What number is it on?" }, "key": "5/6 km", "accept": ["5/6", "paanch bata chhah km", "paanch bata chhah", "five sixths km", "five sixths"], "targets": "c5-maths-ch02-t01-m-not-numbers", "wrongIfMis": "5 and 6", "board": {"template": "fraction-line@1", "params": {"dens": [7, 6], "from": 0, "to": 1, "marks": [[1, 7]]}}, "why": { "hi": "neeche sadak 6 barabar hisson mein hai, aur paanchva mark 0 se paanch kadam par hai: ek pakki jagah, 5/6 km", "en": "the lower road is in 6 equal stretches and the fifth mark is five steps from 0: one real spot, 5/6 km" }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [7, 6], "from": 0, "to": 1, "marks": [[1, 7], [5, 6]]} }, "simpler": { "hi": "Neeche bhi wahi sadak hai, 6 barabar hisson mein. 0 se paanchve mark tak kitne hisse hain, gino.", "en": "The line below is the same road, in 6 equal stretches. Count the stretches from 0 to the fifth mark." } }
+    }
+   ],
+   "bridgeToNext": { "hi": "Abhi tak hum 0 se sirf ek hop chale. Ab ek se zyada hop chalenge, aur upar ka number batayega kitne.", "en": "So far we've taken just one hop from 0. Now we'll take more than one, and the top number will tell us how many.", "simpler": {"hi": "Ab tak 0 se ek hop chale. Ab upar ka number batayega kitne hop chalne hain.", "en": "So far we took one hop from 0. Now the top number tells us how many hops to take."} }
+  },
+  {
+   "skillId": "c5-maths-ch02-t01-s2",
+   "hook": {
+    "convey": "same 0-to-1 stretch cut into equal stretches; the stop is not the first mark but several stretches on → its name needs two facts: how many equal stretches make the whole (bottom), how many are covered from 0 (top)",
+    "interestSlots": [
+     {
+      "interest": "cricket",
+      "use": { "hi": "Cricket pitch ko 4 barabar hisson mein baanto. Batsman 0 wale stump se bhaaga aur 3 hisse paar karke ruka. Uski jagah batane ke liye do cheezein chahiye: pitch ke kitne hisse hain, aur usne kitne paar kiye.", "en": "Split a cricket pitch into 4 equal parts. The batsman runs from the stump at 0 and stops after 3 parts. To name his spot we need two things: how many parts the pitch has, and how many he crossed." }
+     },
+     {
+      "interest": "games",
+      "use": { "hi": "Game ka loading bar 0 se 1 tak hai, 5 barabar khaanon mein. Abhi 2 khaane bhare hain. Kitna bhara, yeh batane ke liye do number chahiye, neeche wala aur upar wala.", "en": "A game's loading bar runs from 0 to 1, in 5 equal boxes. Right now 2 boxes are full. To say how full it is, we need two numbers, a bottom one and a top one." }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "thirds: bottom 3 → 0 to 1 in 3 equal gaps; top 2 → 2 hops of 1/3 from 0; landing mark = 2/3 → one point, one number, not 2 and 3 separately",
+     "mustSay": [
+      {
+       "hi": "3 barabar gaps",
+       "en": "3 equal gaps"
+      },
+      {
+       "hi": "2 hop",
+       "en": "2 hops"
+      },
+      {
+       "hi": "2/3",
+       "en": "2/3"
+      }
+     ],
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 3,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 2,
+         "label": "2/3"
+        }
+       ],
+       "hop": {
+        "num": 2
+       }
+      }
+     },
+     "point": { "hi": "Is baar upar line 3 barabar gaps mein kati hai, har gap 1/3. 0 se 2 hop lagao, ek, do, aur hum 2/3 par aa gaye. 2/3 ek hi jagah hai, ek hi number.", "en": "This time, on top, the line is cut into 3 equal gaps, each gap 1/3. Take 2 hops from 0, one, two, and we're at 2/3. 2/3 is one place, one number." },
+     "ask": {
+      "prompt": { "hi": "Neeche wali line 8 barabar gaps mein kati hai. 0 se 5 hop lo. Kis fraction par pahunche?", "en": "The lower line is cut into 8 equal gaps. Take 5 hops from 0. Which fraction do you land on?" },
+      "key": "5/8",
+      "accept": ["paanch bata aath", "five eighths", "5 by 8"],
+      "why": { "hi": "har hop 1/8 ka, aur aise 5 hop mile toh 5/8", "en": "each hop is 1/8, and 5 of them make 5/8" },
+      "board": { "template": "fraction-line@1", "params": {"dens": [3, 8], "from": 0, "to": 1, "marks": [[2, 3]]} }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [3, 8], "from": 0, "to": 1, "marks": [[2, 3], [5, 8]]} }
+     },
+     "simpler": { "hi": "Fraction ka neeche wala number batata hai ek poore ke kitne barabar gaps, upar wala batata hai kitne hop. Pehle neeche wali line ke gaps gino, phir hop.", "en": "A fraction's bottom number says how many equal gaps one whole has, its top says how many hops. First count the gaps on the lower line, then the hops." }
+    },
+    {
+     "id": "e2",
+     "convey": "still thirds: 3 hops of 1/3 → every gap used → land exactly on 1 → 3/3 = 1; top < bottom → stop before 1; top = bottom → reach 1",
+     "mustSay": [
+      {
+       "hi": "3/3 = 1",
+       "en": "3/3 = 1"
+      },
+      { "hi": "upar wala number aur neeche wala number barabar", "en": "top number and bottom number are equal" }
+     ],
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 3,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 3,
+         "label": "3/3 = 1"
+        }
+       ],
+       "hop": {
+        "num": 3
+       }
+      }
+     },
+     "point": { "hi": "Upar ki line 3 barabar gaps mein bati hai. 0 se teen gap chalo toh theek 1 aata hai, isliye wahan 3/3 = 1. Jab fraction ka upar wala number aur neeche wala number barabar ho, chalna theek 1 par khatam hota hai.", "en": "The top line is cut into 3 equal gaps. Walk three gaps from 0 and you land exactly on 1, so there 3/3 = 1. When a fraction's top number and bottom number are equal, the walk ends exactly on 1." },
+     "ask": {
+      "prompt": { "hi": "Neeche wali line par har hop 1/5 ka hai. 0 se chalkar theek 1 par utarne ke liye kitne hop chahiye?", "en": "On the lower line each hop is 1/5. How many hops from 0 to land exactly on 1?" },
+      "key": "5",
+      "accept": [
+       "5 hop",
+       "5 hops",
+       "paanch",
+       "five",
+       "5/5"
+      ],
+      "wrongIfMis": "4",
+      "why": { "hi": "1/5 ke 5 hop milkar 5/5 banate hain, aur 5/5 = 1", "en": "5 hops of 1/5 make 5/5, and 5/5 = 1" },
+      "board": { "template": "fraction-line@1", "params": {"dens": [3, 5], "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [3, 5], "from": 0, "to": 1, "marks": [[3, 3], [5, 5]]} }
+     },
+     "simpler": { "hi": "Teen gap chalkar 1 aaya, kyunki 3/3 = 1. Ab 1/5 wale hop mein bhi fraction ka upar wala number neeche wale ke barabar lao.", "en": "Three gaps reached 1, because 3/3 = 1. With 1/5 hops too, make the fraction's top number match its bottom number." }
+    },
+    {
+     "id": "e3",
+     "convey": "each third cut in 2 → 6 equal gaps; the middle = half of the 6 gaps = 3 gaps → 3/6 = 1/2; fewer than half the gaps (2/6) → before the middle; more than half (5/6) → after the middle",
+     "mustSay": [
+      {
+       "hi": "6 barabar gaps",
+       "en": "6 equal gaps"
+      },
+      {
+       "hi": "3/6 = 1/2",
+       "en": "3/6 = 1/2"
+      },
+      {
+       "hi": "beech",
+       "en": "middle"
+      }
+     ],
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 6,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 2,
+         "label": "2/6"
+        },
+        {
+         "num": 3,
+         "label": "3/6 = 1/2"
+        },
+        {
+         "num": 5,
+         "label": "5/6"
+        }
+       ]
+      }
+     },
+     "point": { "hi": "Ab line ke 6 barabar gaps hain. Theek beech ka mark 3/6 hai, aur 3, 6 ka aadha hai, toh 3/6 = 1/2. 2/6 beech se pehle aata hai, 5/6 beech ke baad.", "en": "Now the line has 6 equal gaps. The mark right in the middle is 3/6, and 3 is half of 6, so 3/6 = 1/2. 2/6 comes before the middle, 5/6 after it." },
+     "ask": {
+      "prompt": { "hi": "Isi line par 4/6 kahaan aayega: beech se pehle, ya beech ke baad?", "en": "On this same line, where does 4/6 go: before the middle, or after it?" },
+      "key": "after the middle",
+      "accept": [
+       "beech ke baad",
+       "baad mein",
+       "after",
+       "after 1/2"
+      ],
+      "wrongIfMis": "before the middle",
+      "why": { "hi": "beech 3/6 par hai, aur upar ka 4 usse ek zyada, toh ek gap aage, beech ke baad", "en": "the middle is at 3/6, and a top of 4 is one more, so one gap on, after the middle" },
+      "answerBoard": { "template": "fraction-line@1", "params": { "den": 6, "from": 0, "to": 1, "marks": [ { "num": 3, "label": "3/6" }, { "num": 4, "label": "4/6" } ] } }
+     },
+     "simpler": { "hi": "Beech 3/6 par hai. Upar ka number 3 se chhota ho toh pehle, bada ho toh baad.", "en": "The middle is at 3/6. A top number below 3 comes before it, above 3 comes after." }
+    }
+   ],
+   "workedExample": {
+    "problem": { "hi": "Ek number line 0 se 1 tak hai. Is par 2/5 ka mark dhoondo.", "en": "A number line runs from 0 to 1. Find the mark for 2/5." }, "simpler": { "hi": "0 se 1 ki ek line hai, aur us par 2/5 dikhana hai. Neeche ka 5 aur upar ka 2, dono kaam aayenge.", "en": "There is a line from 0 to 1, and we show 2/5 on it. The bottom 5 and the top 2 both help." },
+    "givens": [{ "hi": "2/5 mein neeche 5, upar 2", "en": "2/5 has 5 on the bottom and 2 on top" }],
+    "find": { "hi": "2/5 wala mark", "en": "the mark for 2/5" },
+    "steps": [
+     {
+      "do": { "hi": "Neeche ka 5 dekho, aur 0 se 1 ko 5 barabar gaps mein kaato", "en": "Read the bottom 5 and cut 0 to 1 into 5 equal gaps" },
+      "result": "5 barabar hisse, beech mein 4 marks",
+      "why": { "hi": "neeche wala number hi poore ke gaps ginta hai", "en": "the bottom number is the count of gaps in the whole" },
+      "simpler": { "hi": "2/5 ka neeche wala 5 hai. Toh line ke 5 barabar tukde karo, beech mein 4 marks aayenge.", "en": "The bottom of 2/5 is 5. So cut the line into 5 equal pieces; 4 marks land in between." }
+     },
+     {
+      "do": { "hi": "Ab dekho ek gap kitne ka hai", "en": "Now see what one gap is worth" },
+      "result": "har hissa 1/5",
+      "why": { "hi": "5 barabar gaps milke 1 poora banate hain", "en": "5 equal gaps together make 1 whole" },
+      "simpler": { "hi": "Paanch gaps, aur sab milke ek poora. Toh ek gap poore ka 1/5 hai.", "en": "Five gaps make one whole together. So one gap is 1/5 of the whole." }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Ab upar wala number. 0 se utne gap aage chalo. 0 ke baad kaunse mark par ruke?", "en": "Now the top number. Move that many gaps on from 0. Which mark after 0 do you stop at?" },
+     "key": "the 2nd mark", "why": { "hi": "upar ka 2 kehta hai 1/5 ke do gap chalo, isliye hum doosre mark par rukte hain", "en": "the top 2 says take two gaps of 1/5, so we stop at the second mark" },
+     "accept": [
+      "2nd mark",
+      "2nd",
+      "second mark",
+      "doosra mark",
+      "doosre mark par",
+      "doosra"
+     ],
+     "targets": "c5-maths-ch02-t01-m-count-marks",
+     "wrongIfMis": "the 1st mark",
+     "simpler": { "hi": "2/5 ka upar wala 2 hai. 0 se ek-ek gap karke chalo, aur gino.", "en": "The top of 2/5 is 2. Step from 0 one gap at a time, and count." },
+     "answerBoard": { "template": "fraction-line@1", "params": { "den": 5, "from": 0, "to": 1, "marks": [ { "num": 2, "label": "2/5" } ], "hop": { "num": 2 } } }
+    },
+    "answer": { "hi": "2/5, 0 ke baad doosra mark hai", "en": "2/5 is the 2nd mark after 0" },
+    "why": { "hi": "upar ka 2 kehta hai 0 se 1/5 ke 2 gap chalo", "en": "the top 2 says move 2 gaps of 1/5 from 0" },
+    "board": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 5,
+      "from": 0,
+      "to": 1,
+      "target": [
+       2,
+       5
+      ]
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": { "hi": "0 aur 1 ke beech 5 marks hain, sab barabar doori par. 0 ke baad chautha mark kaunsa fraction hai?", "en": "There are 5 evenly spaced marks between 0 and 1. What fraction is the 4th mark after 0?" },
+     "key": "4/6",
+     "accept": [
+      "2/3",
+      "four sixths",
+      "chaar bata chhah",
+      "two thirds"
+     ],
+     "targets": "c5-maths-ch02-t01-m-count-marks",
+     "wrongIfMis": "4/5",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 6,
+       "from": 0,
+       "to": 1,
+       "mark": 4
+      }
+     },
+     "why": { "hi": "5 marks se 6 barabar gaps bante hain, aur chautha mark 4 gaps par hai, yaani 4/6", "en": "5 marks make 6 equal gaps, and the 4th mark is 4 gaps along, at 4/6" },
+     "answerBoard": { "template": "fraction-line@1", "params": { "den": 6, "from": 0, "to": 1, "marks": [ { "num": 4, "label": "4/6" } ] } },
+     "simpler": { "hi": "Pehle gaps gino, woh marks se ek zyada hote hain. Phir 0 se chaar gap chalo.", "en": "First count the gaps, one more than the marks. Then walk four gaps from 0." }
+    },
+    {
+     "id": "c2",
+     "prompt": { "hi": "Do tarah ke hop, 0 se 1 ki line par: 1/4 ke 3 hop, aur 1/8 ke 3 hop. 1 ke zyada paas kaun hai: 3/4 ya 3/8?", "en": "Two kinds of hops on a line from 0 to 1: 3 hops of 1/4, and 3 hops of 1/8. Which is closer to 1: 3/4 or 3/8?" },
+     "key": "3/4",
+     "accept": [
+      "three quarters",
+      "teen chauthai"
+     ],
+     "targets": "c5-maths-ch02-t01-m-whole-number-bias",
+     "wrongIfMis": "3/8",
+     "board": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 1} },
+     "why": { "hi": "1/4 ka hop 1/8 ke hop se do guna lamba hai, toh 3 lambe hop 3/4 tak, 1 ke zyada paas", "en": "a 1/4 hop is twice a 1/8 hop, so 3 long hops reach 3/4, nearer 1" },
+     "answerBoard": { "template": "fraction-line@1", "params": { "dens": [4, 8], "from": 0, "to": 1, "marks": [ [3, 4], [3, 8] ] } },
+     "simpler": { "hi": "Hop ginti mein barabar hain, 3 aur 3. Farak hop ki lambai ka hai: 1/4 wala hop lamba hai.", "en": "The hop count is the same, 3 and 3. The difference is hop length: a 1/4 hop is longer." }
+    },
+    {
+     "id": "c3",
+     "prompt": { "hi": "{friend} kehta hai 3/4 do number hain, 3 aur 4. 0 se 1 ki line par 3/4 dikhane ke liye kitne mark lagaoge: ek ya do?", "en": "{friend} says 3/4 is two numbers, 3 and 4. To show 3/4 on a 0-to-1 line, how many marks do you put: one or two?" },
+     "key": "one mark",
+     "accept": ["one", "ek", "ek mark", "ek hi mark", "1 mark", "just one"],
+     "targets": "c5-maths-ch02-t01-m-not-numbers",
+     "wrongIfMis": "two marks",
+     "board": { "template": "fraction-line@1", "params": {"den": 4, "from": 0, "to": 1, "target": [3, 4]} },
+     "why": { "hi": "3/4 akela ek number hai, toh line par uski sirf ek jagah hai: 0 se 3 gap chalkar, wahi ek mark", "en": "3/4 is a single number, so it has just one place on the line: 3 gaps on from 0, that one mark" },
+     "answerBoard": { "template": "fraction-line@1", "params": {"den": 4, "from": 0, "to": 1, "marks": [{"num": 3, "label": "3/4"}]} },
+     "simpler": { "hi": "3/4 ka neeche wala 4 gaps batata hai, upar wala 3 batata hai kitne gap chalo. Chalna jahan rukta hai, wahi 3/4 hai.", "en": "In 3/4 the bottom 4 gives the gaps and the top 3 says how many gaps to walk. Where the walk stops, that is 3/4." }
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c5-maths-ch02-t01-i11",
+     "why": "den 4: quarters already known from s1 and the c4 roti → carry a shaded 3 of 4 onto the line; top = gaps moved"
+    },
+    { "itemId": "c5-maths-ch02-t01-i06", "why": "den 3: before or after the middle with thirds → 1/3 before, 2/3 after; carries e3's middle test (sixths) to a den whose middle is not a mark" },
+    {
+     "itemId": "c5-maths-ch02-t01-rl-o2",
+     "why": "den 5 reversed: given the mark, name the fraction → 4/5 km; read the line instead of marking it"
+    },
+    {
+     "itemId": "c5-maths-ch02-t01-i09",
+     "why": "den 10: each fifth split in 2 → many small gaps, unit given as 1/10 km → 7 steps = 7/10"
+    },
+    {
+     "itemId": "c5-maths-ch02-t01-rl-h2",
+     "why": "den 8 against den 4 → two different cuts, same stopping point (6/8 = 3/4); closes the loop back to quarters"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch02-t01-m-count-marks",
+     "move": "hop arrows instead of marks on one line, sixths on top: each hop = one equal gap = 1/6; hops start at 0, the start is not a hop; 2 hops of 1/6 → 2/6; then below: 9 marks → 10 gaps → 3rd mark = 3/10",
+     "say": { "hi": "Marks ki jagah hop socho. Upar line ke 6 barabar gaps hain, toh har hop 1/6. 0 khud hop nahi hai, wahan se bas shuru karte hain. 0 se 2 hop, toh 2/6.", "en": "Think in hops instead of marks. On top the line has 6 equal gaps, so each hop is 1/6. 0 itself isn't a hop; we just start there. 2 hops from 0 is 2/6." },
+     "simpler": { "hi": "0 par sirf shuruaat hai. Har hop ek gap, yaani 1/6. Do hop, toh 2/6.", "en": "0 is just the start. Each hop is one gap, 1/6. Two hops, 2/6." },
+     "board": { "template": "fraction-line@1", "params": {"dens": [6, 10], "from": 0, "to": 1, "marks": [[2, 6]]} },
+     "then": { "prompt": { "hi": "Neeche wali line par 0 aur 1 ke beech 9 marks hain, barabar doori par. 0 ke baad teesra mark kaunsa fraction hai?", "en": "The lower line has 9 evenly spaced marks between 0 and 1. What fraction is the third mark after 0?" }, "key": "3/10", "accept": ["teen bata das", "three tenths", "3 by 10"], "targets": "c5-maths-ch02-t01-m-count-marks", "wrongIfMis": "3/9", "board": { "template": "fraction-line@1", "params": {"dens": [6, 10], "from": 0, "to": 1, "marks": [[2, 6]]} }, "why": { "hi": "9 marks se 10 barabar gaps bante hain, aur teesra mark 3 gaps par hai, yaani 3/10", "en": "9 marks make 10 equal gaps, and the third mark is 3 gaps along, at 3/10" }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [6, 10], "from": 0, "to": 1, "marks": [[2, 6], [3, 10]]} }, "simpler": { "hi": "Pehle gaps gino, marks se ek zyada; wahi fraction ka neeche wala number hai. Fraction ka upar wala number: 0 se teesre mark tak kitne gaps.", "en": "First count the gaps, one more than the marks; that is the fraction's bottom number. Its top number: how many gaps from 0 to the third mark." } }
+    },
+    {
+     "targets": "c5-maths-ch02-t01-m-whole-number-bias",
+     "move": "same number of hops, different hop size, on one 0-to-1 line, thirds on top, sixths below: a 1/3 hop is two 1/6 hops long; 2 hops of 1/6 stop at 2/6, 2 hops of 1/3 at 2/3 → bigger bottom number = shorter hops; then: 3 hops of 1/6 against 2/3",
+     "say": { "hi": "Upar aur neeche, dono taraf 2 hop lo, par hop ki lambai alag hai. 1/3 ka hop 1/6 ke hop se do guna lamba hai. Toh 2 chhote hop 2/6 par rukte hain, aur 2 lambe hop 2/3 tak jaate hain.", "en": "Take 2 hops on top and 2 below, but the hops differ in length. A 1/3 hop is twice a 1/6 hop. So 2 short hops stop at 2/6, and 2 long hops reach 2/3." },
+     "simpler": { "hi": "Hop do-do hi hain. 1/3 wala hop bada, toh 2/3 aage, aur 1/6 wala chhota, toh 2/6 peeche.", "en": "Two hops each. The 1/3 hop is bigger, so 2/3 is further on, and the 1/6 hop is smaller, so 2/6 stays back." },
+     "board": { "template": "fraction-line@1", "params": {"dens": [3, 6], "from": 0, "to": 1, "marks": [[2, 3], [2, 6]]} },
+     "then": { "prompt": {"hi": "Upar 1/3 ke 2 hop 2/3 tak gaye. Neeche 1/6 ke 3 hop: woh 2/3 se pehle rukenge, ya baad mein?", "en": "On top, 2 hops of 1/3 reached 2/3. Below, 3 hops of 1/6: do they stop before 2/3, or after?"}, "key": "before 2/3", "accept": ["2/3 se pehle", "pehle", "before", "beech par", "at the middle"], "targets": "c5-maths-ch02-t01-m-whole-number-bias", "wrongIfMis": "after 2/3", "board": {"template": "fraction-line@1", "params": {"dens": [3, 6], "from": 0, "to": 1, "marks": [[2, 3], [2, 6]]}}, "why": { "hi": "1/6 ke 3 hop sirf beech tak jaate hain, aur 2/3 beech se aage hai", "en": "3 hops of 1/6 reach only the middle, and 2/3 is past the middle" }, "answerBoard": {"template": "fraction-line@1", "params": {"dens": [3, 6], "from": 0, "to": 1, "marks": [[2, 3], [3, 6]]}}, "simpler": {"hi": "Do chhote 1/6 hop milkar ek lamba 1/3 hop banate hain. 3 chhote hop, 2 lambe hop se kam padte hain.", "en": "Two short 1/6 hops make one long 1/3 hop. 3 short hops fall short of 2 long ones."} }
+    },
+    {
+     "targets": "c5-maths-ch02-t01-m-not-numbers",
+     "move": "on the then-card's own board (a 0-to-1 km line in eighths, the third stone marked), naming none of its numbers: each mark is a stone, one real spot of the road; wherever the toy stops it stands on one spot, so that spot has one number, a fraction, not two numbers; then {friend} says the toy at the third stone stands on 3 and 8 → say it as one number, 3/8 km",
+     "say": { "hi": "Line par har mark sadak ka ek patthar hai, ek pakki jagah. Khilona jis patthar par rukta hai, wahan uski ek hi jagah hai, toh number bhi ek hi: ek fraction, do alag number nahi.", "en": "Each mark on the line is a stone on the road, one real spot. Whichever stone the toy stops on, it is in one place, so it has one number: one fraction, not two separate numbers." },
+     "simpler": { "hi": "Khilona ek hi patthar par khada hai. Ek jagah ka ek hi number hota hai, ek fraction.", "en": "The toy stands on one stone. One spot has one number: one fraction." },
+     "board": { "template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "mark": 3} },
+     "then": {
+      "prompt": { "hi": "Har 1/8 km par patthar hai. Khilona 0 ke baad teesre par ruka. {friend} kehta hai yeh 3 aur 8 hain. Tum ek number batao.", "en": "A stone every 1/8 km. The toy stops at the third stone after 0. {friend} says it's 3 and 8. Say it as one number." },
+      "key": "3/8 km",
+      "accept": ["3/8", "teen bata aath km", "three eighths km"],
+      "targets": "c5-maths-ch02-t01-m-not-numbers", "wrongIfMis": "3 and 8",
+      "board": { "template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "mark": 3} },
+      "why": { "hi": "har patthar 1/8 km aage hai, toh teesra patthar 3/8 km par", "en": "each stone is 1/8 km further on, so the third stone is at 3/8 km" },
+      "answerBoard": { "template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "marks": [{"num": 3, "label": "3/8"}], "hop": {"num": 3}} },
+      "simpler": { "hi": "Patthar se patthar 1/8 km hai. Shuru se teesre patthar tak aise kitne tukde hain, gino.", "en": "Stone to stone is 1/8 km. Count how many of those there are from the start to the third stone." }
+     }
+    }
+   ],
+   "bridgeToNext": { "hi": "Upar ka number neeche se chhota tha toh hum 1 se pehle ruke. Dono barabar, jaise 3/3, toh theek 1 par. Ab line ko 2 tak le chalte hain.", "en": "When the top was smaller than the bottom, we stopped before 1. Both equal, like 3/3, and we landed right on 1. Now let's take the line on to 2.", "simpler": {"hi": "Ab tak hum 1 tak hi gaye. Ab line 2 tak jaayegi.", "en": "So far we only went up to 1. Now the line goes on to 2."} }
+  },
+  {
+   "skillId": "c5-maths-ch02-t01-s3",
+   "hook": {
+    "convey": "one whole is finished and the mover keeps going → the stopping point is past 1 → it needs a fraction name bigger than 1 → the line must go on beyond 1",
+    "interestSlots": [
+     {
+      "interest": "cricket",
+      "use": { "hi": "Cricket mein ek run matlab pitch ki poori lambai, yaani 1. Batsman ek run pura karke doosre ke liye bhaaga, aur aadhi pitch par ruk gaya. Woh 1 se aage hai, toh uska fraction bhi 1 se bada hoga.", "en": "In cricket one run is the full length of the pitch, that is 1. The batsman finishes one run, sets off on a second, and stops halfway. He's past 1, so his fraction is bigger than 1." }
+     },
+     {
+      "interest": "vehicles",
+      "use": { "hi": "Train station 0 se chali, station 1 paar kiya, aur station 2 se pehle raaste mein ruk gayi. Uski jagah 1 ke aage hai, toh number line ko bhi 1 ke aage le jaana padega.", "en": "A train leaves station 0, passes station 1, and stops before station 2. Its spot is past 1, so the number line has to go past 1 too." }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "the line does not stop at 1 → it carries on to 2; the second whole is cut the same way → 4 equal gaps per whole, all the same size; 4 gaps from 0 = 4/4 = 1; the gap count from 0 keeps growing past 4",
+     "mustSay": [
+      {
+       "hi": "4 barabar gaps",
+       "en": "4 equal gaps"
+      },
+      {
+       "hi": "4/4 = 1",
+       "en": "4/4 = 1"
+      },
+      {
+       "hi": "1 ke aage",
+       "en": "beyond 1"
+      }
+     ],
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 2,
+       "marks": [
+        {
+         "num": 4,
+         "label": "4/4 = 1"
+        }
+       ]
+      }
+     },
+     "point": { "hi": "Line ab 1 par nahi rukti, 2 tak jaati hai. Upar har poore ke 4 barabar gaps, aur 1 wala mark hai 4/4, yaani 4/4 = 1. 1 ke aage bhi gaps usi size mein chalte rehte hain.", "en": "Now the line doesn't stop at 1; it goes on to 2. On top each whole has 4 equal gaps, and the mark at 1 is 4/4, so 4/4 = 1. Beyond 1 the gaps keep going, same size." },
+     "ask": {
+      "prompt": { "hi": "Ab neeche dekho: wahan har hop 1/5 ka hai. 0 se 6 hop lo. 1 se pehle rukoge, ya 1 ke baad?", "en": "Now look below: there each hop is 1/5. Take 6 hops from 0. Do you stop before 1, or after?" },
+      "key": "after",
+      "accept": ["after 1", "1 ke baad", "baad mein", "past 1", "6/5"],
+      "targets": "c5-maths-ch02-t01-m-all-less-than-one",
+      "wrongIfMis": "before",
+      "why": { "hi": "5 hop se 5/5 = 1 aa gaya, toh chhatha hop 1 ke baad, 6/5 par", "en": "5 hops already make 5/5 = 1, so the 6th hop lands after 1, at 6/5" },
+      "board": { "template": "fraction-line@1", "params": {"dens": [4, 5], "from": 0, "to": 2, "marks": [[4, 4]]} }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [4, 5], "from": 0, "to": 2, "marks": [[4, 4], [6, 5]]} }
+     },
+     "simpler": { "hi": "Yaad karo, 4/4 = 1 tha. Ab socho 1/5 wale kitne hop milkar theek 1 banate hain, phir apne hop usse milao.", "en": "Remember, 4/4 = 1. Now think how many 1/5 hops make exactly 1, then compare your hops with that." }
+    },
+    {
+     "id": "e2",
+     "convey": "6 hops of 1/4 from 0: the first 4 hops fill one whole → reach 1; 2 more hops → past 1 → 6/4 = 1 and 2/4; top > bottom → beyond 1",
+     "mustSay": [
+      {
+       "hi": "6/4",
+       "en": "6/4"
+      },
+      {
+       "hi": "upar ka number bada",
+       "en": "top number bigger"
+      }
+     ],
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 2,
+       "marks": [
+        {
+         "num": 6,
+         "label": "6/4"
+        }
+       ],
+       "hop": {
+        "num": 6
+       }
+      }
+     },
+     "point": { "hi": "Upar dekho, har gap 1/4. 0 se 6 hop lo: pehle 4 hop 1 tak, phir do hop aur, aur hum 6/4 par, 1 ke aage. 6/4 mein upar ka number bada hai neeche ke 4 se, isliye hum 1 ke aage nikal gaye.", "en": "Look at the top, each gap 1/4. Take 6 hops from 0: the first 4 reach 1, then two more, and we're at 6/4, past 1. In 6/4 the top number is bigger than the bottom 4, so we went past 1." },
+     "ask": {
+      "prompt": { "hi": "Is baar neeche har hop 1/2 ka hai. 0 se 4 hop lo. Kis poore number par pahunchoge?", "en": "This time each hop below is 1/2. Take 4 hops from 0. Which whole number do you reach?" },
+      "key": "2", "targets": "c5-maths-ch02-t01-m-all-less-than-one",
+      "accept": ["at 2", "on 2", "2 par", "theek 2 par", "do", "two"],
+      "wrongIfMis": "1",
+      "why": { "hi": "1/2 ke 4 hop yaani 4/2, aur har 2 hop se ek poora banta hai, toh 4/2 = 2", "en": "4 hops of 1/2 make 4/2, and every 2 hops make one whole, so 4/2 = 2" },
+      "board": { "template": "fraction-line@1", "params": {"dens": [4, 2], "from": 0, "to": 2, "marks": [[6, 4]]} }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [4, 2], "from": 0, "to": 2, "marks": [[4, 2]]} }
+     },
+     "simpler": { "hi": "Pehle dekho kitne hop se 1 banta hai. Phir 4 hop ko utne-utne ke group mein baanto.", "en": "First see how many hops make 1. Then split the 4 hops into groups of that size." }
+    },
+    {
+     "id": "e3",
+     "convey": "thirds on a line to 3: every 3 gaps = one whole → 3/3 = 1; group the gaps in threes to find which wholes a fraction has passed; top above 3 → past 1",
+     "mustSay": [
+      {
+       "hi": "3/3 = 1",
+       "en": "3/3 = 1"
+      },
+      {
+       "hi": "teen-teen gaps",
+       "en": "groups of three gaps"
+      }
+     ],
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 3,
+       "from": 0,
+       "to": 3,
+       "marks": [
+        {
+         "num": 3,
+         "label": "3/3 = 1"
+        }
+       ]
+      }
+     },
+     "point": { "hi": "Yeh line 0 se 3 tak hai, har poore ke 3 barabar gaps. Pehle teen gaps 1 par khatam hote hain, wahan 3/3 = 1. Teen-teen gaps ka ek group, aur har group ek poora.", "en": "This line runs from 0 to 3, each whole in 3 equal gaps. The first three gaps end at 1, where it says 3/3 = 1. Take the gaps in groups of three gaps; each group is one whole." },
+     "ask": {
+      "prompt": { "hi": "Teen-teen ke group banao: 7/3 mein kitne poore group hain?", "en": "Make groups of three: how many full groups are in 7/3?" },
+      "key": "2",
+      "accept": ["2 group", "2 groups", "2 poore group", "do", "do group", "two"],
+      "targets": "c5-maths-ch02-t01-m-all-less-than-one",
+      "wrongIfMis": "0",
+      "why": { "hi": "7/3 ke 7 gaps mein teen-teen ke 2 poore group hain, 6/3 = 2, aur 1 gap bachta hai", "en": "7/3 has 7 gaps: 2 full groups of three, 6/3 = 2, and 1 gap left over" },
+      "answerBoard": { "template": "fraction-line@1", "params": {"den": 3, "from": 0, "to": 3, "marks": [{"num": 6, "label": "6/3"}, {"num": 7, "label": "7/3"}], "hop": {"num": 7}} }
+     },
+     "simpler": { "hi": "Har 3 gaps par ek poora number aata hai. Ab 7/3 ke gaps ko teen-teen karke gino.", "en": "Every 3 gaps reach a whole number. Now count the gaps of 7/3 in threes." }
+    }
+   ],
+   "workedExample": {
+    "problem": { "hi": "Ek number line 0 se 2 tak hai. Is par 7/4 ka mark dhoondo.", "en": "A number line runs from 0 to 2. Find the mark for 7/4." }, "simpler": { "hi": "Is baar line 0 se 2 tak hai, aur us par 7/4 dikhana hai. Neeche ka 4 aur upar ka 7, dono kaam aayenge.", "en": "This time the line runs from 0 to 2, and we show 7/4 on it. The bottom 4 and the top 7 both help." },
+    "givens": [{ "hi": "7/4 mein neeche 4, upar 7", "en": "7/4 has 4 on the bottom and 7 on top" }],
+    "find": { "hi": "7/4 wala mark", "en": "the mark for 7/4" },
+    "steps": [
+     {
+      "do": { "hi": "Line par 0, 1 aur 2 likho, aur har poore ke 4 barabar gaps karo", "en": "Write 0, 1 and 2 on the line, and cut each whole into 4 equal gaps" },
+      "result": "0 se 2 tak 8 barabar hisse, har hissa 1/4",
+      "why": { "hi": "neeche 4 hai, aur 7/4, 1 ke aage bhi ja sakta hai, isliye line 2 tak chahiye", "en": "the bottom is 4, and 7/4 may go past 1, so the line has to reach 2" },
+      "simpler": { "hi": "0, 1, 2 likho. Har poore ke 4 barabar tukde, toh kul 8 gaps, har gap 1/4.", "en": "Write 0, 1, 2. Four equal pieces in each whole, so 8 gaps in all, each one 1/4." }
+     },
+     {
+      "do": { "hi": "Upar ka 7 matlab 7 gap chalna hai, toh pehle 4 gap chalo", "en": "The top 7 means 7 gaps to move, so first move 4" },
+      "result": "4/4 = 1",
+      "why": { "hi": "ek poore mein 4 quarter hote hain, aur 7, 4 se bada hai", "en": "one whole holds 4 quarters, and 7 is bigger than 4" },
+      "simpler": { "hi": "7 gap chalne hain. Pehle 4 chalo, tum 1 par aa gaye, kyunki 4/4 = 1.", "en": "7 gaps to move. Move 4 first and you're at 1, because 4/4 = 1." }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Kul 7 gap chalne the, aur 4 gap mein hum 1 tak aa gaye. 1 ke baad aur kitne gap bache?", "en": "We had 7 gaps to move, and 4 got us to 1. How many more are left after 1?" },
+     "key": "3", "why": { "hi": "7 mein se 4 gap chal kar hum 1 par pahunche, aur 7 − 4 = 3 gap bache", "en": "4 of the 7 gaps took us to 1, and 7 − 4 = 3 gaps are left" },
+     "accept": [
+      "3 gap",
+      "3 gaps",
+      "3 aur",
+      "teen",
+      "three"
+     ],
+     "targets": "c5-maths-ch02-t01-m-all-less-than-one",
+     "simpler": { "hi": "Kul 7 the, 4 ho gaye. Baaki nikalne ke liye 7 mein se 4 ghatao.", "en": "7 in all, 4 done. Take 4 away from 7 to get the rest." },
+     "answerBoard": { "template": "fraction-line@1", "params": { "den": 4, "from": 0, "to": 2, "marks": [ { "num": 4, "label": "1" } ], "hop": { "num": 7 } } }
+    },
+    "answer": { "hi": "7/4, 1 ke baad teesra mark hai, yaani 1 aur 3/4, 2 se bas ek gap pehle", "en": "7/4 is the 3rd mark after 1, that is 1 and 3/4, just one gap before 2" },
+    "why": { "hi": "7 = 4 + 3: pehle 4 quarter se 1 poora hua, baaki 3 quarter 1 ke aage gaye", "en": "7 = 4 + 3: the first 4 quarters make 1 whole, the other 3 go past 1" },
+    "board": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 2,
+      "target": [
+       7,
+       4
+      ]
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": { "hi": "Ek line lo, 0 se 2 tak, har poora 3 barabar gaps mein. 5/3 kin do poore numbers ke beech aata hai?", "en": "Take a line from 0 to 2, each whole in 3 equal gaps. Between which two whole numbers is 5/3?" },
+     "key": "between 1 and 2",
+     "accept": [
+      "1 and 2",
+      "1 aur 2 ke beech",
+      "1 aur 2",
+      "after 1, before 2"
+     ],
+     "targets": "c5-maths-ch02-t01-m-all-less-than-one",
+     "wrongIfMis": "between 0 and 1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 3,
+       "from": 0,
+       "to": 2,
+       "target": [
+        5,
+        3
+       ]
+      }
+     },
+     "why": { "hi": "3/3 = 1 aur 6/3 = 2, aur 5/3 dono ke beech hai", "en": "3/3 = 1 and 6/3 = 2, and 5/3 sits between them" },
+     "answerBoard": { "template": "fraction-line@1", "params": { "den": 3, "from": 0, "to": 2, "marks": [ { "num": 5, "label": "5/3" } ] } },
+     "simpler": { "hi": "3 gaps milke ek poora. 5/3 ka upar wala 3 se bada hai, toh 1 ke aage dhoondo.", "en": "3 gaps make one whole. The top of 5/3 is bigger than 3, so look past 1." }
+    },
+    {
+     "id": "c2",
+     "prompt": { "hi": "Line 0 se 2 tak. 1/6 ke 11 hop lo, ya 1/12 ke 11 hop. 0 se zyada door kaun gaya: 11/6 ya 11/12?", "en": "A line from 0 to 2. Take 11 hops of 1/6, or 11 hops of 1/12. Which goes further from 0: 11/6 or 11/12?" },
+     "key": "11/6",
+     "accept": ["gyarah bata chhah", "eleven sixths", "1 aur 5/6", "1 5/6", "11 by 6"],
+     "targets": "c5-maths-ch02-t01-m-whole-number-bias",
+     "wrongIfMis": "11/12",
+     "board": { "template": "fraction-line@1", "params": {"dens": [6, 12], "from": 0, "to": 2} },
+     "why": { "hi": "1/6 ka hop 1/12 ke hop se do guna hai, toh 11 lambe hop 11/6 tak, 11/12 se kaafi aage", "en": "a 1/6 hop is twice a 1/12 hop, so 11 long hops reach 11/6, well past 11/12" },
+     "answerBoard": { "template": "fraction-line@1", "params": {"dens": [6, 12], "from": 0, "to": 2, "marks": [[11, 6], [11, 12]]} },
+     "simpler": { "hi": "Hop dono taraf 11 hain. Lamba hop kaunsa hai, 1/6 wala ya 1/12 wala, bas yeh socho.", "en": "11 hops on each side. Just think which hop is longer, the 1/6 one or the 1/12 one." }
+    },
+    {
+     "id": "c3",
+     "prompt": { "hi": "Line 0 se 3 tak hai, har poora 5 barabar gaps mein. 2 ke baad doosra mark kaunsa fraction hai?", "en": "The line runs from 0 to 3, each whole in 5 equal gaps. What fraction is the 2nd mark after 2?" },
+     "key": "12/5",
+     "accept": ["barah bata paanch", "twelve fifths", "2 2/5", "2 aur 2/5", "12 by 5"],
+     "targets": "c5-maths-ch02-t01-m-not-numbers",
+     "wrongIfMis": "2/5",
+     "board": { "template": "fraction-line@1", "params": {"den": 5, "from": 0, "to": 3, "mark": 12} },
+     "why": { "hi": "har 5 gaps se ek poora, toh 2 tak 10 gaps hain; 2 gap aur chalo toh kul 12, yaani 12/5", "en": "every 5 gaps make one whole, so 2 is 10 gaps from 0; 2 more gaps make 12, so 12/5" },
+     "answerBoard": { "template": "fraction-line@1", "params": {"den": 5, "from": 0, "to": 3, "marks": [{"num": 12, "label": "12/5"}]} },
+     "simpler": { "hi": "Pehle gino 0 se 2 tak kitne gaps hain, phir usme 2 aur jodo. Woh kul ginti upar aati hai.", "en": "First count the gaps from 0 to 2, then add 2 more. That total goes on top." }
+    }
+   ],
+   "ladder": [{"itemId": "c5-maths-ch02-t01-i04", "why": "den 4 on 0 to 2, same den and line as e1, e2 and the worked example → 5/4 = one quarter past 1; smallest step beyond 1"}, {"itemId": "c5-maths-ch02-t01-i14", "why": "den 3, no line given → decide before/after 1 from top vs bottom alone (4 > 3); moves the rule off the picture"}, {"itemId": "c5-maths-ch02-t01-i10", "why": "den 2 inside a story: 1 km + half km → count in halves → 3/2; build the improper fraction from a real distance"}],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch02-t01-m-all-less-than-one",
+     "move": "eighth-hops laid end to end on a 0-to-2 line, no squeezing: 8 hops fill 0 to 1 exactly → 1 is full → the 9th hop must go past 1; then below, sixths on laps: 7 hops → 7/6 lap; a fraction is a length, and lengths can exceed one whole",
+     "say": { "hi": "Upar hop 1/8 ke hain, line 0 se 2 tak. Pehle 8 hop 0 se 1 ko poora bhar dete hain, isliye 1 wala mark 8/8 hai. Naunve hop ki jagah andar bachi hi nahi, toh woh 1 ke aage utarta hai.", "en": "On top the hops are 1/8 each, on a line from 0 to 2. The first 8 hops fill 0 to 1 completely, so the mark at 1 is 8/8. There's no room left inside for the ninth hop, so it lands past 1." },
+     "simpler": { "hi": "8/8 = 1, matlab 0 se 1 bhar gaya. Naunva hop andar nahi aata, 1 ke aage jaata hai.", "en": "8/8 = 1, so 0 to 1 is full. The ninth hop doesn't fit inside; it goes past 1." },
+     "board": { "template": "fraction-line@1", "params": {"dens": [8, 6], "from": 0, "to": 2, "marks": [[8, 8]]} },
+     "then": {
+      "prompt": { "hi": "Neeche ki line 0 se 2 lap tak hai, har lap 6 barabar hisson mein. Runner 0 se 7 hop daudta hai. Fraction mein kitne lap?", "en": "The lower line runs 0 to 2 laps, each lap in 6 equal parts. A runner makes 7 hops from 0. How many laps, as a fraction?" },
+      "key": "7/6",
+      "accept": [
+       "7/6 lap",
+       "1 aur 1/6",
+       "1 1/6",
+       "saat bata chhah"
+      ],
+      "targets": "c5-maths-ch02-t01-m-all-less-than-one",
+      "board": { "template": "fraction-line@1", "params": {"dens": [8, 6], "from": 0, "to": 2, "marks": [[8, 8]]} },
+      "why": { "hi": "har hissa 1/6 lap hai, aur runner ne 7 hisse daude, toh 7/6 lap", "en": "each part is 1/6 of a lap and the runner ran 7 parts, so 7/6 laps" },
+      "answerBoard": { "template": "fraction-line@1", "params": {"dens": [8, 6], "from": 0, "to": 2, "marks": [[8, 8], [7, 6]]} },
+      "simpler": { "hi": "Har lap ke 6 hisse, toh neeche 6. Upar woh ginti, jitne hisse runner daudta hai.", "en": "6 parts per lap, so 6 on the bottom. On top, the number of parts the runner runs." }
+     }
+    },
+    {
+     "targets": "c5-maths-ch02-t01-m-whole-number-bias",
+     "move": "on the then-card's own board (a 0-to-2 line, fifths on top, tenths below), naming none of its numbers: same top number → same hop count; a bigger bottom number → shorter hops → the same number of hops stops sooner; then the child judges 9/5 against 9/10",
+     "say": { "hi": "Jab do fractions ka upar wala number ek jaisa ho, toh dono mein utne hi hop hain; farak hop ki lambai ka hai. Neeche wala number bada ho, toh poora zyada tukdon mein banta, har hop chhota, aur utne hi hop jaldi rukte hain.", "en": "When two fractions have the same top number, both take the same number of hops; only the hop length differs. A bigger bottom number cuts the whole into more pieces, so each hop is shorter and the same hops stop sooner." },
+     "simpler": { "hi": "Hop ginti mein barabar hain. Bas socho, kiska ek hop lamba hai: upar wali line ka ya neeche wali ka.", "en": "The hop count is the same. Just think whose one hop is longer: the top line's or the bottom line's." },
+     
+     "then": { "prompt": { "hi": "Ek nayi line, 0 se 2, upar har poora 5 barabar gaps mein, neeche 10 mein. 0 se zyada door kaun hai, 9/5 ya 9/10?", "en": "A new line, 0 to 2, each whole in 5 equal gaps on top and 10 below. Which is further from 0, 9/5 or 9/10?" }, "key": "9/5", "accept": ["nau bata paanch", "1 aur 4/5", "1 4/5", "nine fifths"], "targets": "c5-maths-ch02-t01-m-whole-number-bias", "wrongIfMis": "9/10", "board": { "template": "fraction-line@1", "params": {"dens": [5, 10], "from": 0, "to": 2} }, "why": { "hi": "dono mein 9 hop, par 1/5 ka hop 1/10 ka do guna, toh 9/5, 1 ke aage, aur 9/10, 1 se pehle", "en": "both are 9 hops, but a 1/5 hop is twice a 1/10 hop: 9/5 is past 1, 9/10 before 1" }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [5, 10], "from": 0, "to": 2, "marks": [[9, 5], [9, 10]]} }, "simpler": {"hi": "Har fraction mein upar aur neeche wala number milao. Upar wala bada ho, toh woh poore ke aage nikal jaata hai.", "en": "In each fraction, compare the top and the bottom. If the top is bigger, it goes past a whole."} }
+    },
+    {
+     "targets": "c5-maths-ch02-t01-m-not-numbers",
+     "move": "train between stations, on the then-card's own board (stations 0, 1, 2, each stretch in 5 equal parts): station 1 = 5/5; wherever the train halts is one real spot on the track with one number: the parts counted from 0, over 5; then a train from station 1 that goes 3 parts on",
+     "say": { "hi": "Yeh stations ki line hai, 0 se 2. Har do station ke beech 5 barabar hisse, toh station 1 par 1 = 5/5. Train jahan ruke, woh ek pakki jagah hai, aur us jagah ka ek hi number: 0 se gine hue hisse, bata 5.", "en": "This is a line of stations, 0 to 2. Between stations there are 5 equal parts, so at station 1, 1 = 5/5. Wherever the train stops is one real spot, and that spot has one number: the parts counted from 0, over 5." },
+     "simpler": { "hi": "5 hisse milke ek poora, isliye 1 = 5/5. Train jahan ruke, 0 se wahan tak ke hisse gino: woh ginti bata 5, ek hi number.", "en": "5 parts make one whole, so 1 = 5/5. Wherever the train stops, count the parts from 0 to there: that count over 5, one number." },
+     "board": { "template": "fraction-line@1", "params": {"den": 5, "from": 0, "to": 2, "mark": 8} },
+     "then": {
+      "prompt": { "hi": "Isi 0 se 2 ki line par ek doosri train station 1 se chali aur 3 hisse aage ruki. Woh kis fraction par khadi hai?", "en": "On this line from 0 to 2, another train starts at station 1 and stops 3 parts on. What fraction is it standing on?" },
+      "key": "8/5",
+      "accept": [
+       "1 3/5",
+       "1 aur 3/5",
+       "aath bata paanch"
+      ],
+      "targets": "c5-maths-ch02-t01-m-not-numbers",
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 5,
+        "from": 0,
+        "to": 2,
+        "mark": 8
+       }
+      },
+      "why": { "hi": "station 1 = 5/5 hai, aur 3 hisse aage 5 + 3 = 8, yaani 8/5", "en": "station 1 is 5/5, and 3 parts on makes 5 + 3 = 8 parts, that is 8/5" },
+      "answerBoard": { "template": "fraction-line@1", "params": { "den": 5, "from": 0, "to": 2, "marks": [ { "num": 5, "label": "1 = 5/5" }, { "num": 8, "label": "8/5" } ] } },
+      "simpler": { "hi": "1 tak pahunchne mein jitne hisse lage, usme 3 aur jodo. Yahi jod upar likho.", "en": "Take the parts it takes to reach 1 and add 3 more. Write that sum on top." }
+     }
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ]
+}

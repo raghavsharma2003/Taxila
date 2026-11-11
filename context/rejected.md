@@ -3024,3 +3024,7 @@ Tried (round 8, first build): naming keep's tally-four only when no line across 
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-r8-count-left-over-each-bundle` (2026-11-11): Tried (the main loop's ruling 3 for stambh/tally, afternoon of 2026-11-11): after a first miss in read, leave a count of 5 over each bundle so the gap is tied to the bundles. What broke: with the 5s and the loose lines on screen the retry is 5+5+5+5+1, read off the screen, which is law 2 (after a miss the screen never holds the key while a try remains) and the game doing the skill for her. Both round-3 judges saw it. Now the count plays over each bundle and fades.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-key-and-why-again-after-a-key` (2026-11-11): Tried (L1 and L2 of dc-r8-director20, Brain c7f18ae5): after a key, a give-up or a clarify gets the key and its why again, at most twice. What broke in director21: the same why was said three turns running with only its opener rotated (c4 stuck 12 to 16 and 36 to 40, c5-t01 stuck 34 to 38, c5-t02 stuck 28 to 32, c6 stuck 24 to 28 and steering 16 to 20); all 8 second clarifies merely repeated; judges scored it as not listening. Replaced by authored second wordings and a rule that no authored sentence is said in two consecutive turns.
