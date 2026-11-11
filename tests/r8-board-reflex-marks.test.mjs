@@ -198,7 +198,9 @@ describe("3. a mark naming what the board does not draw is refused (mark_target_
         walk(JSON.parse(readFileSync(`${dir}/${f}`, "utf8")), "");
       }
     }
-    assert.ok(n > 1000 && marked > 100, `${n} boards, ${marked} marked`);
+    // the floor only proves the walk is not vacuous. It was 100 when the staged scripts carried 439 marks; Learning removed the 361
+    // that were not grounded in their card's key (1856620d6), leaving 87 marked boards on int/r6 at integration 42.
+    assert.ok(n > 1000 && marked > 50, `${n} boards, ${marked} marked`);
     assert.deepEqual(fails, []);
   });
 });
