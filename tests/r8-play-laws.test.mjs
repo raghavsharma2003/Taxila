@@ -93,11 +93,13 @@ describe("r8 play laws: law 3 in the grade and on the server", () => {
     const A = { family: "todo-jodo", mode: "strips", levelId: "a", params: { a: 1 } }, B = { family: "todo-jodo", mode: "strips", levelId: "b", params: { a: 2 } };
     assert.notEqual(surfaceOf(A), surfaceOf(B));
     const row = { skillId: "s", outcome: "incorrect", chanceMis: "kit-x", weight: CHANCE_WEIGHT };
-    assert.deepEqual(nameOnRepeat([row], {}, A), [row], "a first sighting is not named");
+    // (an unnamed row leaves without its chanceMis: nothing about a one-pick mix-up reaches the lesson; evening ruling kon/name 3)
+    const { chanceMis: _c, ...plain } = row;
+    assert.deepEqual(nameOnRepeat([row], {}, A), [plain], "a first sighting is not named");
     const s1 = afterLevelBody({}, { grade: { evidence: [row] }, level: A });
     assert.deepEqual(s1.chance, [{ mis: "kit-x", surface: surfaceOf(A) }]);
     assert.equal(s1.nextFocus, "kit-x", "the next level aims at it");
-    assert.deepEqual(nameOnRepeat([row], s1, A), [row], "the same surface again names nothing");
+    assert.deepEqual(nameOnRepeat([row], s1, A), [plain], "the same surface again names nothing");
     const named = nameOnRepeat([row], s1, B)[0];
     assert.equal(named.misconceptionId, "kit-x"); assert.equal(named.weight, GAME_WEIGHT);
     assert.deepEqual(nameOnRepeat([{ ...row, chanceMis: "kit-y" }], s1, B)[0].misconceptionId, undefined, "another mix-up is not named by this one");

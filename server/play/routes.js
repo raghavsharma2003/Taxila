@@ -24,8 +24,7 @@ import { requireChild } from "../auth.js";
 import { signSession, verifySession } from "./session.js";
 import { afterLevelBody, artFor, coverage, currentLevel, entryByKey, entryOfBody, nameOnRepeat, nextBody, play3dOff } from "./levels.js";
 import { recentFromPrev, startSession } from "./start.js";
-import { gradeActs, lessonEvidence } from "./grade.js";
-import { logicFor } from "../../src/play/families/index.ts";
+import { chancePick, gradeActs, lessonEvidence } from "./grade.js";
 import { reactionFor } from "./react.js";
 import { mapStateFrom, worldFamily } from "./world.js";
 import { signEvidence, signHomeEvidence, signSeam } from "./evidence.js";
@@ -79,9 +78,10 @@ function seamOf(grade, level, moments, impasse) {
   if (impasse) return { kind: "impasse", facts: grade?.facts ?? {} };
   if (grade) return { kind: "level_end", facts: { ...grade.facts, verdict: grade.verdict }, bareItem: level.fade === 3 && grade.verdict === "solved" ? { skillId: level.skillId } : null };
   const mis = moments.find((m) => m.kind === "misconception_consequence");
-  // round 8 law 3: a mix-up from one pick among a few is not named to the lesson (pick=1, no misconception id)
-  const pick = !!level.goal && (!!logicFor(level.family, level.mode)?.oneDecision?.includes(level.goal) || !!logicFor(level.family, level.mode)?.chancePicks?.includes(level.goal));
-  if (mis) return { kind: "misconception", facts: { ...mis.facts, misconception: pick ? "" : level.mal[mis.misconceptionId] ?? "", ...(pick ? { pick: 1 } : {}) } };
+  // round 8 law 3: a mix-up from one pick among a few reaches the lesson as an ordinary miss does: no seam at all (evening
+  // ruling kon/name 3: nothing about it reaches the teacher's view until it repeats)
+  if (mis && chancePick(level, mis.misconceptionId)) return null;
+  if (mis) return { kind: "misconception", facts: { ...mis.facts, misconception: level.mal[mis.misconceptionId] ?? "" } };
   if (moments.some((m) => m.kind === "prediction_violated")) return { kind: "prediction", facts: moments.find((m) => m.kind === "prediction_violated").facts };
   return null;
 }
@@ -147,7 +147,10 @@ export const routes = {
     // signed WITH the rows. From the home (no lessonId) the same rows, as source "home", and the trail are signed for the
     // child alone (homeToken), and (round 8 follow-up A) folded right here into her learner state through the learner's
     // mapping (server/play/home.js foldHomeLevel; TAXILA_HOME_PLAY_FOLD on unless off)
-    const trail = ended ? g.trail : null;
+    // (a mix-up from one pick is left out of the trail, grade.js; once it is named here on a repeat, the trail carries it)
+    const named = rows.find((r) => r.named === "repeat")?.misconceptionId ?? null;
+    const rule = named ? Object.keys(level.mal ?? {}).find((k) => level.mal[k] === named) ?? null : null;
+    const trail = !ended || !g.trail ? null : rule && !g.trail.mal.some((x) => x.rule === rule) ? { ...g.trail, mal: [...g.trail.mal, { rule, mis: named }].slice(0, 4) } : g.trail;
     const evidenceToken = ended && s.lessonId && rows.length ? signEvidence({ childId: s.childId, lessonId: s.lessonId, levelId: level.levelId, rows, ...(trail ? { trail } : {}) }) : undefined;
     const homeToken = ended && !s.lessonId && rows.length ? signHomeEvidence({ childId: s.childId, levelId: level.levelId, rows, ...(trail ? { trail } : {}) }) : undefined;
     const home = homeToken ? await foldHomeLevel({ child, token: homeToken, skillOk: (id) => id === entry.skillId || (entry.skillIds ?? []).includes(id), q: dbq, write: playDeps.writeHome }) : null;
@@ -162,7 +165,8 @@ export const routes = {
       row: playFactsRow({ game: `${level.family}/${level.mode}`, ...(seam.kind === "level_end" ? seamLead(seam, trail, s, s2) : {}), ...seam.facts }) }) : undefined;
     // release 12 flight recorder: every act's grade moment, and the level's outcome when it ends
     traceRecord(ended ? "play.outcome" : "play.act", { family: level.family, mode: level.mode, levelId: level.levelId, final: !!b.final, impasse: !!b.impasse,
-      moments: fresh.map((m) => m.kind), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen, home: !s.lessonId, ...(home ? { homeFolded: home.folded, homeCapped: home.capped } : {}), ...(trail ? { trail } : {}) } : {}),
+      // (a mix-up from one pick is recorded as the ordinary miss it is graded as)
+      moments: fresh.map((m) => (m.kind === "misconception_consequence" && chancePick(level, m.misconceptionId) ? "law_refused" : m.kind)), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen, home: !s.lessonId, ...(home ? { homeFolded: home.folded, homeCapped: home.capped } : {}), ...(trail ? { trail } : {}) } : {}),
       reaction: typeof reaction === "string" ? reaction : reaction?.text ?? null, engine: seenEngine }, { ...(typeof s.lessonId === "string" && s.lessonId.length === 36 ? { sid: s.lessonId } : {}) });
     const out = { levelId: level.levelId, moments: fresh, reaction, ...(seamToken ? { seamToken } : {}), ...(ended ? { grade: g.grade, doors: doorsFor(s2, entry, s.lang, child?.first_name), evidence: rows, ...(trail ? { trail } : {}), ...(evidenceToken ? { evidenceToken } : {}), ...(homeToken ? { homeToken } : {}) } : {}),
       seam, sessionId: sessionOut(s2) };

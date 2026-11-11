@@ -36,7 +36,8 @@ function servedLevel(goal) {
 function largestLevel(goal) {
   const lv = servedLevel(goal);
   if (goal === "read") return tallyLogic.validate({ ...lv, levelId: `${lv.levelId}-largest`, params: { ...lv.params, counts: [READ_MAX] } });
-  const counts = [KEEP_ROW_MAX, 8, KEEP_SCENE_MAX - KEEP_ROW_MAX - 8], seq = [];
+  // (14, 9, 5: no row with as many loose lines as bundles, evening ruling 1)
+  const counts = [KEEP_ROW_MAX, 9, KEEP_SCENE_MAX - KEEP_ROW_MAX - 9], seq = [];
   // the things pass round-robin while each kind has some left
   const left = [...counts];
   while (seq.length < KEEP_SCENE_MAX) for (let r = 0; r < 3; r++) if (left[r] > 0) { seq.push(r); left[r]--; }

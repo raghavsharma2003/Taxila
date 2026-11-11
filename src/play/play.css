@@ -125,6 +125,12 @@
 /* r8 kon place / name (judging round 2): the line under the board changes with the state (after "Rakh do", and the end line
    with its checks), so on a phone it always keeps room for two lines: the board never moves when the line does */
 .pl-root[data-family="kon"][data-mode="place"]:not([data-layout="wide"]) .pl-goal, .pl-root[data-family="kon"][data-mode="name"]:not([data-layout="wide"]) .pl-goal { min-height: 2.5em; }
+/* r8 kon place (the hold of 2026-11-11): the protractor never changes size while she reads. measure and draw grow from two
+   rows of controls (↺ ↻ · Wapas, Rakh do) to three after "Rakh do" (the number pad and its row; the dot's nudges, the two
+   joins and their row), which shrank the board under her. On a phone the controls keep a band of three rows from the first
+   screen (3 × 48 + 2 × 8 + the 8 + 12 padding), the rows standing at its foot, so the go row stays where her thumb is and
+   the world box (and the protractor drawn in it) keeps one size in every state of the level. */
+.pl-root[data-family="kon"][data-mode="place"]:not([data-layout="wide"]):is([data-goal="measure"], [data-goal="draw"]) .pl-controls { min-height: max(180px, var(--pl-keep-h, 0px)); justify-content: flex-end; }
 .pl-root[data-family="arena"] .pl-goal { display: block; -webkit-line-clamp: unset; overflow: visible; font-size: 17px; }
 .pl-row--options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .pl-row--options .pl-btn { white-space: normal; line-height: 1.25; min-height: 56px; padding: 8px 12px; text-align: left; font-size: 17px; }

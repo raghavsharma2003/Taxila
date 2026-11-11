@@ -105,6 +105,14 @@ export function mountStage(host: HTMLElement, make: (api: ViewApi) => View, opts
   }
   const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(() => resize()) : null;
   ro?.observe(host);
+  // the web fonts the art draws in (Geist Mono's scale numbers, Atkinson's labels): a canvas draws a face that has not loaded
+  // yet in the fallback, and nothing else would repaint a still board, so the stage asks for them now and, when one arrives,
+  // repaints with the layers and the layout dropped (both were measured in the fallback). kon/place lays its scale numbers
+  // out in Geist Mono's 0.6 em: a board left in a narrower fallback is not the board the layout check proved.
+  const fonts = typeof document !== "undefined" ? document.fonts : undefined;
+  const refont = () => { if (!disposed) { layers.clear(); resize(); } };
+  fonts?.addEventListener?.("loadingdone", refont);
+  for (const f of new Set(Object.values(art.font))) for (const wt of [400, 700]) fonts?.load?.(`${wt} 16px ${f}`).catch(() => { /* the fallback stays */ });
 
   // ── pointer: one active pointer (the child's finger)
   let active: number | null = null;
@@ -187,7 +195,7 @@ export function mountStage(host: HTMLElement, make: (api: ViewApi) => View, opts
     setArt(id) { art = ART[id]; audit.art = id; P = new Painter(art, audit, opts.young); layers.clear(); dirty = true; full = true; },
     resize, invalidate() { dirty = true; full = true; },
     dispose() {
-      if (disposed) return; disposed = true; cancelAnimationFrame(raf); ro?.disconnect();
+      if (disposed) return; disposed = true; cancelAnimationFrame(raf); ro?.disconnect(); fonts?.removeEventListener?.("loadingdone", refont);
       document.removeEventListener("visibilitychange", onVis);
       try { view.dispose?.(); } catch { /* gone */ }
       canvas.remove();

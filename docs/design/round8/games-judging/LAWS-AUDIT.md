@@ -82,7 +82,7 @@ Each item is green on a part she got right, drawn beside her wrong parts in the 
 - `paheli/cipher` and `paheli/magic`: columns and lines that are right.
 - `yantra/roshni`: judged-right frames, with a tick.
 - `todo-jodo/atoms`: an atom she split out herself.
-- `stambh/tally`: the 5 over each bundle (ruling 3).
+- `stambh/tally`: the count over each group (1 to 5) while it plays. Since the evening judging (ruling 2) it fades: nothing stays over the tally while a try remains.
 
 ## Per family (3 seeds, 3 goals per mode; L = law broken now, A = allowed, F = fixed here)
 

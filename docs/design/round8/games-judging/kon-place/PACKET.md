@@ -1,6 +1,6 @@
 # Judge packet: `kon/place`, placing the protractor (class 6 maths, "Measuring and drawing angles")
 
-This packet is meant to be read on its own: everything a judge needs is in this file and the 54 screenshots beside it. Code: branch `claude/r8-kon-round2` (the fixes after judging round 2, `RULINGS-2026-11-11.md`); every screenshot was retaken on it. **Not yet checked on a real phone, or with a child.**
+This packet is meant to be read on its own: everything a judge needs is in this file and the 54 screenshots beside it. Code: branch `claude/r8-kon-place-scale` (the fixes after judging round 2, `RULINGS-2026-11-11.md`, and after main's hold of the same day: "Changes after the hold"); every screenshot was retaken on it. **Not yet checked on a real phone, or with a child.**
 
 **Topic:** c6-maths-ch02-t03, "Measuring and drawing angles". Class 6, age band 10–12. Three goals: `measure` (skill s2, also s1), `draw` (s3, s2, s1) and `size` (s2).
 
@@ -24,7 +24,7 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 ## The rule the game enforces (never stated on screen)
 
 A protractor is **placed** when both of these hold:
-- its small centre dot is within 11 board-units of the vertex O (about 11 CSS px on a 360 px phone before the lock, about 10 after it, about 25 px on the 1366 screen; see Sizes);
+- its small centre dot is within 11 board-units of the vertex O (about 9 CSS px on a 360 px phone, about 25 px on the 1366 screen; see Sizes);
 - its straight base line is within ±3° of an arm. For `measure`, the other arm must also cross the half-disc, i.e. the protractor opens towards it.
 
 Everything after that is graded on what the protractor shows *as placed*:
@@ -36,7 +36,7 @@ Everything after that is graded on what the protractor shows *as placed*:
 
 ## Goal 1: `measure` (read the angle)
 
-**What she sees.** Two black arms from a dot O, with letters A and B at the arm ends and O near the dot. A loose, see-through half-disc protractor rests below the figure, slightly tilted. It has a printed outer scale and a printed inner scale. Numbers are printed every 20° at fade 1 (as in the shots), every 30° at fade 2, and only 0, 90 and 180 at fade 3; small ticks are every 5°, longer every 10°. A round blue-violet handle with two turning arrows sits on the protractor's body. The instruction under the board reads "Protractor se ∠AOB naapo". There are two small arrow buttons (↺ ↻), "Wapas" and "Rakh do". Shots: `measure-initial-*`, `measure-placed-*`.
+**What she sees.** Two black arms from a dot O, with letters A and B at the arm ends and O near the dot. A loose, see-through half-disc protractor rests below the figure, slightly tilted. It has a printed outer scale and a printed inner scale. Numbers are printed every 20° at fade 1 (as in the shots), every 30° at fade 2, and only 0, 90 and 180 at fade 3; where two numbers would stand closer than 4 px at the screen's size and the protractor's turn, one of them is left out (at 360 × 640, protractor flat: the inner 100, beside the inner 80; see "Changes after the hold"); small ticks are every 5°, longer every 10°. A round blue-violet handle with two turning arrows sits on the protractor's body. The instruction under the board reads "Protractor se ∠AOB naapo". There are two small arrow buttons (↺ ↻), "Wapas" and "Rakh do". Shots: `measure-initial-*`, `measure-placed-*`.
 
 **What she does, in order.**
 1. She drags the protractor by its body to move it.
@@ -124,7 +124,7 @@ The kit's `tool-size` belief ("Thinks a bigger protractor gives a bigger reading
   - `size`: one pick among three, so a first-try solve enters the learner model at the "chance" weight. She can pick again after a miss and passes within three presses, but not first-try. Any of the three can be the key, so no fixed habit ("the bigger tool", "always Barabar") wins more than a third of the levels.
 - **End screens.** A first-try solve ends with a full green tick; a solve after a miss ends with a **pale** tick. The line under the board says what she did and how many checks it took, with no praise: "Tumne 150° likha · jaanch: 1" (measure), "Tumne ∠AOB = 130° banaya · jaanch: 2" (draw), "Jaanch: 1" (size). Shots: `*-end-*` (one check), `*-end-after-miss-*` (two checks, pale tick).
 - **What the teacher receives.** `placed` (ok or off, at her first decision), `centre_px`, `base_deg`, `read` (measure), `made` and `at` (draw), `pick` (size), the mix-up if named, and `sign=join-wrong-end` where it applies. The teacher is not told the measure reading before she gives it. The game never speaks.
-- **Sizes.** The board is a fixed 320 × 340 units scaled into the box. At 360 px, before the lock (two rows of buttons), 1 unit is about 1.0 CSS px and the protractor about 215 px wide; after the lock the number pad takes a third row, so 1 unit is about 0.87 CSS px and the protractor about 185 px wide while she reads. The turning handle's touch area is 64 px. **The centre tolerance is 11 units** (placement happens before the lock, so about 11 CSS px at 360; about 25 px at 1366); the bottom-edge placement sits 24 units off, outside it. The line under the board always keeps room for two lines on a phone, so the board does not move when the line changes.
+- **Sizes.** The board is a fixed 320 × 340 units scaled into the box. In `measure` and `draw` on a phone the buttons keep a band of three rows from the first screen, so the board has one size in every state: at 360 × 640, 1 unit is 0.84 CSS px and the protractor 177 px wide (first screen, placed, locked, typed, each miss, the end); at 1366 × 768 it is 474 px wide throughout. The turning handle's touch area is 64 px. **The centre tolerance is 11 units** (about 9 CSS px at 360; about 25 px at 1366); the bottom-edge placement sits 24 units off, outside it. The line under the board always keeps room for two lines on a phone, so the board does not move when the line changes.
   - Measure and draw angles are every 5° from 20° to 160°, never within 10° of 0, 90 or 180, and never a printed number at fades 1 and 2. Half open clockwise (OA points left). At fade 1 the first arm lies flat or within 10° of flat; at higher fades it can tilt up to 50° either way.
   - Size angles run 20° to 150°, never within 10° of 90°.
 - **Not checked yet:** on a real phone, or with a child. The 11-unit tolerance stands until it is tried on a phone (reversal: more than about 30% placement misses with no belief named).
@@ -174,10 +174,32 @@ Rulings: `docs/design/round8/games-judging/RULINGS-2026-11-11.md` (kon/place 1�
 
 Also fixed while retaking: the vertex-off protractor's top numbers could be cut at the board's top edge on some mirrored levels (the generator now keeps the numbers' full height on the board), and the letter O stands a little further from the vertex so the vertex-off ring never touches it.
 
+## Changes after the hold
+
+Main held kon/place's judging on 2026-11-11 for three faults. All 54 screens were retaken after the fixes.
+
+1. **Scale numbers ran together.** On the inner scale at 360, "80" and "100" touched ("80100") once the board shrank after "Rakh do". The lettering now works like this (`src/play/families/kon/kon.scale.ts`, one function used by both the view and the layout check):
+   - The outer numbers stand where they did.
+   - Each inner number now sits just inside the end of its long tick, however wide it is and however the protractor is turned. Before, every inner number stood at one fixed radius.
+   - The inner 0 and 180 lie along the base, lifted just clear of the base line, where an arm runs.
+   - If two numbers (outer, inner, or one of each) would still come within 4 px of each other at this screen size and turn, the fewest numbers that clear every such pair are left out. Inner numbers go before outer ones, and the ends 0, 90 and 180 always print.
+   - At 360 × 640 with the protractor flat at fade 1, only the inner 100 is left out. The inner 80 and the outer 100 and 80 still print at those ticks. On a protractor tilted 5–10° (some fade-1 levels), two or three inner numbers drop. At fades 2 and 3 a tilted protractor can drop the inner 150 or 30.
+   - Nothing is left out at 1366, or on either size protractor. The two size protractors always print the same numbers.
+   - Numbers stay as digits, at the 14 px floor.
+   - The letters A, B and O also keep 4 px clear of every number. Before, O stood against the resting protractor's 80 ("80O"); now it takes the nearest clear spot around the vertex.
+   - The three laws are untouched: a number left out depends only on the screen size and the protractor's turn, never on the key, and the cert's law check finds 0 breaks.
+2. **The check now compares numbers with each other.** `tests/r8-games-kon-layout.test.mjs` checks every scale number's box against every other's (at least 4 px apart; a box is the number's advance width by its figure height):
+   - Headless, on every generated level of `measure`, `draw` and `size` (fades 1–3, six seeds). It checks every pose a level serves (resting, placed, vertex-off, centre-on-arm; both size protractors) and every whole turn of the loose protractor. It runs at the world boxes of 360 × 640 and 1366 × 768 with the view's own layout function.
+   - In the browser, on the served levels, every screen at both sizes, with the widths the browser measured. These are compared with the headless model (within 0.6 px), and the world box with the headless one.
+   - Letters against numbers, the same way.
+3. **The protractor changed size while she read.** At 360 the number pad added a third row of buttons after "Rakh do", and the protractor shrank from 213 px to 181 px (`measure`) or 178 px (`draw`). Now `measure` and `draw` keep a band of three button rows from the first screen on a phone (`src/play/play.css`), with the rows at its foot. The board keeps one box in every state: the protractor is 177 × 109 px at 360 and 474 × 291 px at 1366, on the first, placed, locked, typed, miss and end screens. The layout check asserts this for each goal at both sizes. Size (one row of three buttons) was already constant: 176 and 243 px at 360, 352 and 488 px at 1366.
+
+**Centre-on-arm screens.** The check still exempts the protractor's own numbers cut at the board's edge (and the ring over its 0) on the centre-on-arm screens. Her protractor is centred on A, so part of it lies off the canvas at both sizes: it cuts 140, 160 and 180 at 360, and 160 and 180 at 1366. That is her placement, not the layout, and no layout of the scale can bring numbers back from beyond the screen's edge.
+
 ## Known issues still open
 
 1. **`centre-on-arm` mapping** goes live with integration 49 (the kit id is on Learning's branch, not yet on the integration branch). The game names it already where a level maps it; the shots show it with that mapping.
-2. **The board is smaller while she reads** (new): the number pad takes a third row of buttons on a phone, so after the lock the protractor is about 185 px wide at 360 instead of about 215. The numbers stay at the 14 px floor. Reverse if children cannot read the 5° ticks at that size.
+2. **The protractor is 177 px wide at 360 × 640** (fixed after the hold: it no longer changes size, but it now has the smaller size in every state, where before only the first screen had about 213 px). The numbers stay at the 14 px floor. Reverse if children cannot read the 5° ticks at that size.
 3. `kon/ends` (same family, not in this packet) was fixed to the laws too: its open-end light is green only when solved, the asked figure is no longer drawn after a miss, and `ray-two-ends` is at chance weight.
 
 ## Screenshots (54)

@@ -56,7 +56,7 @@ export const ALLOWED = {
   "yantra/roshni": [{ law: 1, re: /\(stroke\)/, why: "each thing she judged right gets a green frame and a tick, a wrong one look" }],
   "todo-jodo/atoms": [{ law: 2, re: /the key/, why: "the common atom is one she split out herself: her tree, not a shown key" }],
   "kaal/order": [{ law: 1, re: /\(stroke, chip, text/, why: "a stone she landed right flies its year in green; a miss is drawn in look" }, { law: 2, re: /the key "\d+"/, why: "each stone's year is its own task line when it comes up (a given of that step); the key is where it lies" }],
-  "stambh/tally": [{ law: 2, re: /the key "\d+"/, why: "ruling 3 (2026-11-11): the count over each bundle stays (5 over a bundle), the same in keep and read; a row of one bundle is 5" }],
+  "stambh/tally": [{ law: 2, re: /the key "\d+"/, why: "the count over each group runs 1..5 (a row's count can be one of those digits) and then fades: nothing stays over the tally while a try remains (evening ruling 2, 2026-11-11; tests/r8-games-stambh-tally asserts the faded screen)" }],
 };
 const GREEN_BAD = new Set(["text", "chip", "circle", "stroke", "body", "color"]);
 /** her own values: every number and string field of every act she made */

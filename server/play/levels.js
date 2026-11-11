@@ -245,10 +245,12 @@ export function surfaceOf(level) {
  */
 export function nameOnRepeat(rows, s, level) {
   const prior = Array.isArray(s?.chance) ? s.chance : [];
-  if (!prior.length) return rows;
-  const here = surfaceOf(level);
-  return rows.map((r) => (r?.chanceMis && !r.misconceptionId && prior.some((p) => p?.mis === r.chanceMis && p?.surface !== here)
-    ? { ...r, misconceptionId: r.chanceMis, weight: GAME_WEIGHT, named: "repeat" } : r));
+  const here = prior.length ? surfaceOf(level) : null;
+  // a row not named here leaves without its chanceMis: nothing about a mix-up from one pick reaches the lesson (evening
+  // ruling kon/name 3); the session remembers it from the grade (afterLevelBody), not from these rows
+  const unnamed = (r) => { const { chanceMis: _c, ...rest } = r; return rest; };
+  return rows.map((r) => (!r?.chanceMis || r.misconceptionId ? r
+    : prior.some((p) => p?.mis === r.chanceMis && p?.surface !== here) ? { ...r, misconceptionId: r.chanceMis, weight: GAME_WEIGHT, named: "repeat" } : unnamed(r)));
 }
 export function artFor(s, entry) {
   return pickArt({ family: entry.family, subject: entry.subject === "maths" ? "maths" : "science", topicId: entry.topicId, classLevel: s.classLevel, topicArts: entry.arts, childArt: s.childArt ?? null, lastArt: s.lastArt ?? null });

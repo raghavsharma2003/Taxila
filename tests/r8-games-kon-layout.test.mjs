@@ -8,11 +8,20 @@
 // over a point, two touch targets of one kind overlapping (arc targets are discs), the vertex-off ring before her first
 // decision, an English accessible label in a Hinglish lesson, and the board moving when the game is solved. KON_SHOTS=<dir>
 // also writes a PNG of every screen. Runs in `npm test` when Chromium is installed; FORGE3_BROWSER=0 skips it.
+// Since the hold of 2026-11-11 (kon/place: the inner "80100" at 360 after "Rakh do"; the protractor shrinking when the pad
+// came): every two scale numbers (outer and inner, outer against inner) keep SCALE_GAP px between their boxes, checked
+// HEADLESSLY on every generated level of every kon/place goal (every pose the level serves, and every whole turn she can
+// give the protractor) at the world box of 360 × 640 and of 1366 × 768, with the view's own layout function
+// (kon.scale.ts), and in the browser on the served levels with the widths the browser measured; and the protractor's drawn
+// size is the same on every screen of a level (first, placed and locked, typed, each miss, the end) at both sizes.
 import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { konLogic } from "../src/play/families/kon/kon.logic.ts";
+import { BW, BH, PR, PRINT_EVERY, SIZE_PRINT_EVERY, TOL_PX, initPlace, goodPose, vertexOffPose, centreOnArmPose, sizeFigs } from "../src/play/families/kon/kon.place.ts";
+import { SCALE_GAP, INK_H, monoMeasure, scaleLabels, scaleOmit } from "../src/play/families/kon/kon.scale.ts";
 
 const browsersDir = process.env.PLAYWRIGHT_BROWSERS_PATH || "/opt/pw-browsers";
 const haveChromium = existsSync(browsersDir) && readdirSync(browsersDir).some((d) => d.startsWith("chromium"));
@@ -82,6 +91,83 @@ export function screenFaults(probe, minTarget = 64) {
   return out;
 }
 
+/** the world box (the play canvas, CSS px) kon/place is drawn in, by goal: measured in the browser (the check below refuses
+ *  a box that differs, so these cannot go stale). measure and draw keep a three-row band of controls from the first screen
+ *  on a phone (play.css), so their box never changes inside a level */
+export const WORLD = {
+  "360x640": { measure: { w: 360, h: 287 }, draw: { w: 360, h: 287 }, size: { w: 360, h: 399 } },
+  "1366x768": { measure: { w: 1005, h: 768 }, draw: { w: 1005, h: 768 }, size: { w: 1005, h: 768 } },
+};
+/** the room between two number boxes (px; negative: they overlap). The test's own arithmetic, not kon.scale.ts's */
+const roomBetween = (p, q) => Math.max(Math.abs(p.x - q.x) - (p.w + q.w) / 2, Math.abs(p.y - q.y) - (p.h + q.h) / 2);
+/** every pair of numbers closer than SCALE_GAP: [a, b, room] */
+export function numberClashes(L, gap = SCALE_GAP) {
+  const out = [];
+  for (let i = 0; i < L.length; i++) for (let j = i + 1; j < L.length; j++) { const g = roomBetween(L[i], L[j]); if (g < gap - 0.01) out.push([L[i].s, L[j].s, +g.toFixed(2)]); }
+  return out;
+}
+/** the numbers one protractor prints, as the view lays them out (headless widths: Geist Mono's 0.6 em) */
+function printedNumbers({ rot, R, rad0, every, radii, fs = 14 }) {
+  const omit = scaleOmit(radii ?? [{ R, rad0 }], every, fs, monoMeasure, rot);
+  return scaleLabels({ rot, R, rad0, every, fs, measure: monoMeasure, omit });
+}
+const placeReq = (goal, seed, fade) => ({ family: "kon", mode: "place", goal, topicId: "t", skillId: "t-s1", classLevel: 6, fade, mis: {}, misMap: {}, grammar: { tol: 3, tolPx: TOL_PX }, recent: [], seed });
+
+it("kon/place scale numbers: no two closer than SCALE_GAP px, every generated level, every pose and turn, 360 and 1366 (headless)", () => {
+  const faults = [];
+  let levels = 0, checked = 0;
+  for (const goal of ["measure", "draw", "size"]) for (const fade of [1, 2, 3]) for (const seed of [1, 7, 42, 99, 123, 2026]) {
+    for (const c of konLogic.generate(placeReq(goal, seed, fade))) {
+      const p = konLogic.validate(c.level).params;
+      levels++;
+      for (const [tag, sizes] of Object.entries(WORLD)) {
+        const box = sizes[goal], s = Math.min(box.w / BW, box.h / BH);
+        assert.ok(s > 0.5, `${tag} ${goal}: world box ${JSON.stringify(box)}`);
+        const sets = [];
+        if (goal === "size") {
+          // both protractors upright, printing the same numbers
+          const radii = sizeFigs(p).map((f) => ({ R: f.rad * s, rad0: f.rad })), every = SIZE_PRINT_EVERY[p.scale];
+          for (const r of radii) sets.push([`r${r.rad0}`, printedNumbers({ rot: 0, ...r, every, radii })]);
+          // the same numbers on both
+          const shown = sets.map(([, L]) => L.map((l) => `${l.ring}${l.a}`).sort().join(","));
+          if (shown[0] !== shown[1]) faults.push(`${tag} ${c.level.levelId}: the two protractors print different numbers (${shown.join(" | ")})`);
+        } else {
+          const every = PRINT_EVERY[p.scale];
+          const poses = { rest: initPlace(p).pose, placed: goodPose(p), "vertex-off": vertexOffPose(p), "centre-on-arm": centreOnArmPose(p) };
+          for (const [k, q] of Object.entries(poses)) sets.push([k, printedNumbers({ rot: q.rot, R: PR * s, rad0: PR, every })]);
+        }
+        for (const [k, L] of sets) {
+          checked++;
+          for (const [a, b, g] of numberClashes(L)) faults.push(`${tag} ${c.level.levelId} ${k}: "${a}" and "${b}" ${g} px apart`);
+          // both scales stay numbered: the ends of both, and 90 where the fade prints it
+          for (const want of ["outer0", "outer180", "inner0", "inner180"]) if (!L.some((l) => `${l.ring}${l.a}` === want)) faults.push(`${tag} ${c.level.levelId} ${k}: ${want} not printed`);
+          if (L.filter((l) => l.ring === "inner").length < Math.min(4, 180 / (goal === "size" ? SIZE_PRINT_EVERY[p.scale] : PRINT_EVERY[p.scale]))) faults.push(`${tag} ${c.level.levelId} ${k}: the inner scale is too bare (${L.filter((l) => l.ring === "inner").map((l) => l.s)})`);
+        }
+      }
+    }
+  }
+  // every whole turn she can give the loose protractor, at every fade and both sizes
+  for (const [tag, sizes] of Object.entries(WORLD)) for (const goal of ["measure", "draw"]) {
+    const box = sizes[goal], s = Math.min(box.w / BW, box.h / BH);
+    for (const every of new Set(Object.values(PRINT_EVERY))) for (let rot = 0; rot < 360; rot++) {
+      checked++;
+      for (const [a, b, g] of numberClashes(printedNumbers({ rot, R: PR * s, rad0: PR, every }))) faults.push(`${tag} ${goal} every ${every}° turn ${rot}: "${a}" and "${b}" ${g} px apart`);
+    }
+  }
+  assert.ok(levels >= 100, `${levels} levels`);
+  assert.deepEqual(faults.slice(0, 40), [], `${faults.length} faults over ${checked} protractors`);
+});
+
+it("numberClashes: two numbers 3 px apart side by side clash, 6 px apart do not; diagonal neighbours by both axes", () => {
+  const n = (s, x, y, w = 16.8, h = 14 * INK_H) => ({ s, x, y, w, h });
+  assert.equal(numberClashes([n("80", 0, 0), n("100", 16.8 / 2 + 25.2 / 2 + 3, 0, 25.2)]).length, 1);
+  assert.equal(numberClashes([n("80", 0, 0), n("100", 16.8 / 2 + 25.2 / 2 + 6, 0, 25.2)]).length, 0);
+  assert.equal(numberClashes([n("80", 0, 0), n("60", 10, 14 * INK_H + 5)]).length, 0);   // overlapping in x, 5 px apart in y
+  // the hold's own case: at 360 (s ≈ 0.844), turn 0, fade 1, the inner 80 and 100 are no longer both printed side by side
+  const L = printedNumbers({ rot: 0, R: PR * 0.844, rad0: PR, every: 20 });
+  assert.deepEqual(numberClashes(L), []);
+});
+
 describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1366 × 768", { skip: SKIP, timeout: 300_000 }, () => {
   let browser, served, levels = [];
   before(async () => {
@@ -108,6 +194,7 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
       page.on("pageerror", (e) => errors.push(String(e.message)));
       await page.goto(served.base);
       await page.waitForFunction(() => window.__forge3?.ready === true);
+      let mono = null;
       for (let level of levels) {
         const logic = LOGIC[`${level.family}/${level.mode}`], sol = logic.solve(level);
         // the screens: first; mid-play (the solver's acts but the decision); each mal-rule played out; the end
@@ -121,14 +208,28 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
           ...signs.map((m) => [`late-${m}`, [...(logic.malActs(level, m) ?? []), ...(level.params.goal === "find" ? sol : sol.slice(-2))]]).filter(([, a]) => a.length > sol.length),
           // size: every pick (a miss plays out both readings; the solved tick sits with the pick, or between the figures for "same")
           ...(level.params.goal === "size" ? ["a", "b", "same"].map((w) => [`pick-${w}`, [{ kind: "pick", which: w }]]) : []), ["end", sol]];
-        for (const [name, acts] of plays) {
+        // measure: the number typed on the pad, before "Yahi hai" (keys, not acts)
+        const read = level.params.goal === "measure" ? sol[sol.length - 1] : null;
+        if (read?.kind === "read") plays.splice(2, 0, ["typed", sol.slice(0, -1), String(read.n).split("").map((d) => `k${d}`)]);
+        const drawn = [];   // the protractor's drawn size and the world box, screen by screen
+        for (const [name, acts, keys = []] of plays) {
           await page.evaluate((j) => window.__forge3.show(j), { play: { level, art: "kagaz", lang: "hinglish", classLevel: 6, debug: true }, tray: { w: size.w, h: size.h }, id: `${level.levelId}-${name}` });
           await page.waitForFunction(() => !!window.__play?.dispatch && !!document.querySelector("canvas.pl-canvas"));
+          // the scale numbers are laid out in Geist Mono (0.6 em): once the play chunk (and its @font-face) is on the page, the
+          // face loads before the boards are measured, or the check says why not (CI 2026-11-11 measured 8 px a figure at 14 px)
+          if (mono === null) {
+            mono = await page.evaluate(async () => { try { const l = await document.fonts.load('700 14px "Geist Mono"'); return l.map((f) => f.status).join(",") || "no face"; } catch (e) { return `error ${e?.message ?? e}`; } });
+            if (!/loaded/.test(mono)) faults.push(`${size.tag}: Geist Mono did not load (${mono})`);
+            await page.waitForTimeout(100);
+          }
           for (const a of acts) await page.evaluate((x) => window.__play.dispatch(x), a);
+          for (const k of keys) await page.evaluate((id) => window.__play.press(id), k);
           await page.waitForTimeout(acts.length ? 1700 : 300);
           const probe = await page.evaluate(() => {
             const c = document.querySelector("canvas.pl-canvas").getBoundingClientRect(), a = window.__play.audit;
             return {
+              nums: a.texts.filter((t) => /^\d{1,3}$/.test(t.s)).map((t) => ({ s: t.s, x: t.x, y: t.y, w: t.w, px: t.px })),
+              letters: a.texts.filter((t) => /^[A-Z]$/.test(t.s)).map((t) => ({ s: t.s, x: t.x, y: t.y, w: t.w, px: t.px })),
               canvas: { w: c.width, h: c.height },
               texts: a.texts.map((t) => ({ s: t.s, w: t.w, h: t.px * 1.2, x0: t.align === "left" ? t.x : t.align === "right" ? t.x - t.w : t.x - t.w / 2, y0: t.y - t.px * 0.6 })),
               targets: a.targets, clipped: a.clipped, marks: a.marks, segs: a.segs, lang: "hinglish",
@@ -146,7 +247,31 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
           // the board does not move when the game is solved (the controls keep their rows)
           if (name === "mid") midBox = probe.box;
           if (name === "end" && midBox && ["x", "y", "w", "h"].some((k) => Math.abs(midBox[k] - probe.box[k]) > 0.5)) faults.push(`${size.tag} ${level.levelId}: the board moved on solving (${JSON.stringify(midBox)} → ${JSON.stringify(probe.box)})`);
+          // the hold of 2026-11-11: the scale numbers as the browser drew and measured them keep SCALE_GAP px apart (outer,
+          // inner, outer against inner), and the headless width model (Geist Mono's 0.6 em) is the browser's
+          if (level.mode === "place") {
+            for (const [a, b, g] of numberClashes(probe.nums.map((t) => ({ ...t, h: t.px * INK_H })))) faults.push(`${size.tag} ${level.levelId} ${name}: numbers "${a}" and "${b}" ${g} px apart`);
+            // nor does a letter stand against a number (the resting protractor's 80 beside O read as "80O")
+            const box = (t) => ({ s: t.s, x: t.x, y: t.y, w: t.w, h: t.px * INK_H });
+            for (const l of probe.letters) for (const n of probe.nums) { const g = roomBetween(box(l), box(n)); if (g < SCALE_GAP - 0.01) faults.push(`${size.tag} ${level.levelId} ${name}: letter "${l.s}" and number "${n.s}" ${g.toFixed(2)} px apart`); }
+            for (const t of probe.nums) if (Math.abs(t.w - monoMeasure(t.s, t.px)) > 0.6) faults.push(`${size.tag} ${level.levelId} ${name}: "${t.s}" measured ${t.w.toFixed(2)} px, the headless model ${monoMeasure(t.s, t.px).toFixed(2)}`);
+            // the world box is the one the headless check lays the numbers out in
+            const want = WORLD[size.tag][level.params.goal];
+            if (Math.abs(want.w - probe.canvas.w) > 0.5 || Math.abs(want.h - probe.canvas.h) > 0.5) faults.push(`${size.tag} ${level.levelId} ${name}: world box ${probe.canvas.w}x${probe.canvas.h}, WORLD says ${want.w}x${want.h}`);
+            drawn.push({ name, box: probe.box, prot: probe.marks.filter((m) => m.kind === "protractor").map((m) => `${m.w.toFixed(1)}x${m.h.toFixed(1)}`).join(" ") });
+          }
           if (process.env.KON_SHOTS) { mkdirSync(process.env.KON_SHOTS, { recursive: true }); await page.screenshot({ path: join(process.env.KON_SHOTS, `${level.mode}-${level.goal}-${size.tag}-${level.levelId.replace(/[^a-z0-9]/gi, "_")}-${name}.png`) }); }
+        }
+        // the hold of 2026-11-11: the protractor keeps its drawn size (and the board its box) on every screen of the level:
+        // the first screen, placed and locked, typed, each miss played out, the end
+        if (level.mode === "place") {
+          const want = ["first", "mid", "end", ...(read ? ["typed"] : [])];
+          for (const n of want) if (!drawn.some((d) => d.name === n)) faults.push(`${size.tag} ${level.levelId}: no ${n} screen measured`);
+          if (!drawn.some((d) => d.name.startsWith("mal-") || d.name.startsWith("pick-"))) faults.push(`${size.tag} ${level.levelId}: no miss screen measured`);
+          const sizes = new Set(drawn.map((d) => d.prot)), boxes = new Set(drawn.map((d) => `${d.box.x.toFixed(1)},${d.box.y.toFixed(1)},${d.box.w.toFixed(1)}x${d.box.h.toFixed(1)}`));
+          if (sizes.size !== 1 || [...sizes][0] === "") faults.push(`${size.tag} ${level.levelId}: the protractor's drawn size changes: ${drawn.map((d) => `${d.name} ${d.prot}`).join(" · ")}`);
+          if (boxes.size !== 1) faults.push(`${size.tag} ${level.levelId}: the board's box changes: ${[...boxes].join(" · ")}`);
+          if (process.env.KON_SIZES) console.log(`${size.tag} ${level.levelId} protractor ${[...sizes].join(" | ")} box ${[...boxes].join(" | ")}`);
         }
       }
       assert.deepEqual(errors, [], `page errors at ${size.tag}`);

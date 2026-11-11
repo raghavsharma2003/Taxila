@@ -1,0 +1,19 @@
+{
+  "source": "C2 Games, the kon/place hold of 2026-11-11 (branch claude/r8-kon-place-scale): docs/design/round8/games-judging/kon-place/PACKET.md ('Changes after the hold'); src/play/families/kon/kon.scale.ts, kon.place.view.ts; src/play/play.css, PlayStage.tsx (data-goal); tests/r8-games-kon-layout.test.mjs",
+  "nodes": [
+    {
+      "id": "dc-r8-kon-scale-lettering",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-11-11",
+      "title": "kon/place scale numbers keep 4 px apart (box = advance width x figure height): outer numbers where they were, each inner number hugging its long tick, and where two would still come closer at this size and turn the fewest numbers that part every pair are left out (inner before outer, nearest the top; 0, 90, 180 always print; both size protractors print the same set). At 360 x 640 fade 1 flat that is only the inner 100. Letters A, B, O keep the same 4 px from numbers. One layout function for the view and the headless layout check (every generated level, every turn, 360 and 1366). Reverse if: children misread the scale where a number is left out (then a larger board or a magnified scale, never a smaller font than the floor)."
+    },
+    {
+      "id": "dc-r8-kon-fixed-control-band",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-11-11",
+      "title": "kon/place measure and draw keep a three-row control band from the first screen on a phone, so the protractor keeps one size in every state (177 px at 360 x 640, 474 px at 1366; was 213 px before the lock and 181 / 178 px after). Supersedes the cost noted in dc-r8-kon-measure-typed-reading. Reverse if: children cannot read the 5 degree ticks at 177 px (then a magnified scale)."
+    }
+  ]
+}

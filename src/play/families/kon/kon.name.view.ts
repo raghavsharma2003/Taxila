@@ -17,7 +17,7 @@ import { clamp, type ControlSpec, type FamilyView, type Readout, type ViewDeps }
 import { say } from "../../copy.ts";
 import { word } from "../../engines/words.ts";
 import type { KonParams, KonState } from "./kon.logic.ts";
-import { DRAW_R, NBH, NBW, arcHit, arcTargets, asked, corners, dashR, denotes, initName, nameOf, points, segments, sizeOf, spell } from "./kon.name.ts";
+import { DRAW_R, NBH, NBW, arcHit, arcTargets, asked, corners, dashR, denotes, initName, labelPoints, nameOf, points, segments, sizeOf, spell } from "./kon.name.ts";
 import { ROLE, around, freeSpot, type Avoid, type Box } from "./kon.spot.ts";
 
 type Pt = [number, number];
@@ -31,6 +31,9 @@ export function makeNameView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   const ns = () => st().nm ?? initName();
   let s = 1, ox = 0, oy = 0, truthAt = -1;
   const S = (x: number, y: number): Pt => [ox + x * s, oy + (NBH - y) * s];
+  /** a type size that grows with the board (evening ruling kon/name 4: at 1366 the chips scale with the figure); a phone
+   *  (about 1.1 CSS px per board px) keeps the sizes as they are */
+  const z = (px: number) => Math.round(px * clamp(s / 1.12, 1, 2));
   const rad = (d: number) => (d * Math.PI) / 180;
   const deg = (x: number, y: number) => (((Math.atan2(y, x) * 180) / Math.PI) % 360 + 360) % 360;
   const B = (X: number, Y: number): Pt => [(X - ox) / s, NBH - (Y - oy) / s];
@@ -101,16 +104,14 @@ export function makeNameView(api: ViewApi, depsIn: ViewDeps): FamilyView {
       if (q) { const [hx, hy] = S(q.x, q.y), h = (q.side * s) / 2; api.target(`arc-${k}`, hx - h, hy - h, 2 * h, 2 * h); }
     });
     // the points and their letters (the letters sit outward from the vertex; the vertex's opposite its rays)
-    const V = P[0];
+    // (where the letters stand is the law's labelPoints: the shortcut check reads them where they are drawn)
+    const LP = labelPoints(p);
     P.forEach((q, i) => {
       const [x, y] = S(...q), tapped = N.taps.includes(i);
       Pn.circle(c, x, y, tapped ? 7 : 4.5, { role: tapped ? ROLE.focus : "ink", fill: true });
       Pn.note("dot", x - 8, y - 8, 16, 16);
-      let away: number;
-      if (i === 0) { const m = [1, 2, 3].map((j) => deg(P[j][0] - V[0], P[j][1] - V[1])).reduce((acc, h) => [acc[0] + Math.cos(rad(h)), acc[1] + Math.sin(rad(h))], [0, 0]); away = deg(-m[0], -m[1]); }
-      else away = deg(q[0] - V[0], q[1] - V[1]);
-      const [lx, ly] = S(q[0] + 18 * Math.cos(rad(away)), q[1] + 18 * Math.sin(rad(away)));
-      Pn.text(c, (p.lets ?? "OABC")[i], lx, ly, { size: 18, weight: 700, role: tapped ? ROLE.focus : "ink2" });
+      const [lx, ly] = S(...LP[i]);
+      Pn.text(c, (p.lets ?? "OABC")[i], lx, ly, { size: z(18), weight: 700, role: tapped ? ROLE.focus : "ink2" });
       if (goal === "say" && !S0.done) api.target(`pt-${i}`, x - hitR(), y - hitR(), hitR() * 2, hitR() * 2);
     });
     // say: the name so far, under the figure
@@ -120,9 +121,9 @@ export function makeNameView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     const [nx, ny] = S(...spots.reduce((a, b) => (far(b) > far(a) + 1 ? b : a)));
     // (in the say play-out her name moves to the corner it denotes: it is shown once)
     const running = truthAt >= 0 && S0.commits > 0 && !S0.done && api.t - truthAt > 0.5 && sizeOf(p, N.said ?? []) !== null;
-    if (goal === "say" && N.taps.length && !running) Pn.chip(c, `∠${spell(p, N.taps)}${"_".repeat(3 - N.taps.length)}`, nx, ny, { size: 16, role: ROLE.focus });
+    if (goal === "say" && N.taps.length && !running) Pn.chip(c, `∠${spell(p, N.taps)}${"_".repeat(3 - N.taps.length)}`, nx, ny, { size: z(16), role: ROLE.focus });
     const askedName = `∠${spell(p, nameOf(C[want], p.ord ?? 0))}`;
-    if (goal === "find" && !(missOn && api.t - truthAt > 0.3 && N.picked !== null)) Pn.chip(c, askedName, nx, ny, { size: 16, role: "ink" });
+    if (goal === "find" && !(missOn && api.t - truthAt > 0.3 && N.picked !== null)) Pn.chip(c, askedName, nx, ny, { size: z(16), role: "ink" });
     if (truthAt >= 0 && S0.commits > 0) drawRun(c, [nx, ny]);
   }
   /** the law lights the angle the name denotes (at its middle letter); the one asked stays lit */
@@ -133,10 +134,10 @@ export function makeNameView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     if (S0.done) {
       // beside the vertex of the angle she named, clear of its letter, the rays and the other marks; pale after a miss (the
       // end screen tells a first-try solve from a later one, without words)
-      const o = S(...P[asked(p).v]), at = freeSpot(around(o, [28, 40, 54], -Math.PI / 4), 24, 20, avoidHere(), canvasBox()) ?? [o[0] + 26, o[1] - 26];
+      const o = S(...P[asked(p).v]), at = freeSpot(around(o, [z(28), z(40), z(54), z(70)], -Math.PI / 4), z(24), z(20), avoidHere(), canvasBox()) ?? [o[0] + z(26), o[1] - z(26)];
       const kt = clamp((api.t - truthAt - 0.3) / 0.3, 0, 1);
-      if (S0.commits > 1) { c.save(); c.globalAlpha *= 0.42; Pn.tick(c, at[0], at[1], 18, kt); c.restore(); }
-      else Pn.tick(c, at[0], at[1], 18, kt);
+      if (S0.commits > 1) { c.save(); c.globalAlpha *= 0.42; Pn.tick(c, at[0], at[1], z(18), kt); c.restore(); }
+      else Pn.tick(c, at[0], at[1], z(18), kt);
       return;
     }
     if (goal === "find") return drawFindMiss(c, t, spot);
@@ -164,10 +165,10 @@ export function makeNameView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     if (api.t - truthAt > 0.5 && sizeOf(p, t) !== null) {
       // beside its corner, clear of every point, letter, line and chip (the first free spot, nearest first)
       const o = S(...P[t[1]]), cx = (P[1][0] + P[2][0] + P[3][0]) / 3, cy = (P[1][1] + P[2][1] + P[3][1]) / 3, [gx, gy] = S(cx, cy);
-      const away = Math.atan2(o[1] - gy, o[0] - gx), name = `∠${spell(p, t)}`, { w, h } = Pn.chipSize(c, name, { size: 15 });
+      const away = Math.atan2(o[1] - gy, o[0] - gx), name = `∠${spell(p, t)}`, { w, h } = Pn.chipSize(c, name, { size: z(15) });
       const cands = around(o, [30, 40, 52, 66, 82, 100], away, 24).map(([x, y]): Pt => [x + Math.sign(x - o[0]) * w * 0.3, y]);
       const at = freeSpot(cands, w, h, avoidHere(), canvasBox()) ?? [clamp(o[0], w / 2 + 2, api.w - w / 2 - 2), clamp(o[1] + (P[t[1]][1] > NBH / 2 ? 34 : -34), h / 2 + 2, api.h - h / 2 - 2)];
-      Pn.chip(c, name, at[0], at[1], { size: 15, role: ROLE.mixup });
+      Pn.chip(c, name, at[0], at[1], { size: z(15), role: ROLE.mixup });
     }
   }
   /**
@@ -179,23 +180,32 @@ export function makeNameView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     if (api.t - truthAt <= 0.3) return;
     const Pn = api.P, C = corners(p), want = p.ask ?? 0;
     const asked0 = `∠${spell(p, nameOf(C[want], p.ord ?? 0))}`, hers = `∠${spell(p, t)} = ∠${spell(p, [t[2], t[1], t[0]])}`;
-    const A = Pn.chipSize(c, asked0, { size: 16 }), H = Pn.chipSize(c, hers, { size: 15 }), gap = 26, w = A.w + gap + H.w, h = Math.max(A.h, H.h);
-    // one row where it is clear of the figure (the asked name's own spot first), else the two stacked
-    const xs = [spot[0], api.w / 2, w / 2 + 4, api.w - w / 2 - 4], ys = [spot[1], 18, api.h - 18];
-    const row = freeSpot(ys.flatMap((y) => xs.map((x): Pt => [x, y])), w, h, avoidHere(), canvasBox());
-    if (row) {
-      const x0 = row[0] - w / 2;
-      Pn.chip(c, asked0, x0 + A.w / 2, row[1], { size: 16, role: "ink" });
-      Pn.text(c, "≠", x0 + A.w + gap / 2, row[1], { size: 18, weight: 700, role: ROLE.mixup });
-      Pn.chip(c, hers, x0 + A.w + gap + H.w / 2, row[1], { size: 15, role: ROLE.mixup });
+    const A = Pn.chipSize(c, asked0, { size: z(16) }), H = Pn.chipSize(c, hers, { size: z(15) }), gap = z(26), w = A.w + gap + H.w, h = Math.max(A.h, H.h);
+    // beside the figure (evening ruling kon/name 4): to its right or left, level with its middle; else just above or below
+    // it; else the asked name's own spot or a corner of the board. One row where it fits, else the two stacked
+    const fig = [...points(p), ...labelPoints(p)].map((q) => S(...q)), m = z(14);
+    const fx0 = Math.min(...fig.map((q) => q[0])) - m, fx1 = Math.max(...fig.map((q) => q[0])) + m;
+    const fy0 = Math.min(...fig.map((q) => q[1])) - m, fy1 = Math.max(...fig.map((q) => q[1])) + m, fcx = (fx0 + fx1) / 2, fcy = (fy0 + fy1) / 2;
+    const side = (bw: number): Pt[] => [[fx1 + bw / 2, fcy], [fx0 - bw / 2, fcy]];
+    const beside = (bw: number, bh: number): Pt[] => [[fcx, fy0 - bh / 2], [fcx, fy1 + bh / 2],
+      ...[spot[1], 18 + bh / 2 - h / 2, api.h - 18 - bh / 2 + h / 2].flatMap((y) => [spot[0], api.w / 2, bw / 2 + 4, api.w - bw / 2 - 4].map((x): Pt => [x, y]))];
+    const W2 = Math.max(A.w, H.w), H2 = A.h + H.h + z(22);
+    // the row at the figure's side; else the two stacked at its side (a wide screen); else the row near it
+    const row = freeSpot(side(w), w, h, avoidHere(), canvasBox());
+    const colSide = row ? null : freeSpot(side(W2), W2, H2, avoidHere(), canvasBox());
+    const row2 = row ?? (colSide ? null : freeSpot(beside(w, h), w, h, avoidHere(), canvasBox()));
+    if (row2) {
+      const x0 = row2[0] - w / 2;
+      Pn.chip(c, asked0, x0 + A.w / 2, row2[1], { size: z(16), role: "ink" });
+      Pn.text(c, "≠", x0 + A.w + gap / 2, row2[1], { size: z(18), weight: 700, role: ROLE.mixup });
+      Pn.chip(c, hers, x0 + A.w + gap + H.w / 2, row2[1], { size: z(15), role: ROLE.mixup });
       return;
     }
-    const W2 = Math.max(A.w, H.w), H2 = A.h + H.h + 22;
-    const col = freeSpot(ys.flatMap((y) => xs.map((x): Pt => [x, y + (y > api.h / 2 ? -H2 / 2 + h / 2 : H2 / 2 - h / 2)])), W2, H2, avoidHere(), canvasBox()) ?? [api.w / 2, api.h - H2 / 2 - 4];
+    const col = colSide ?? freeSpot(beside(W2, H2), W2, H2, avoidHere(), canvasBox()) ?? [api.w / 2, api.h - H2 / 2 - 4];
     const top = col[1] - H2 / 2;
-    Pn.chip(c, asked0, col[0], top + A.h / 2, { size: 16, role: "ink" });
-    Pn.text(c, "≠", col[0], top + A.h + 11, { size: 18, weight: 700, role: ROLE.mixup });
-    Pn.chip(c, hers, col[0], top + A.h + 22 + H.h / 2, { size: 15, role: ROLE.mixup });
+    Pn.chip(c, asked0, col[0], top + A.h / 2, { size: z(16), role: "ink" });
+    Pn.text(c, "≠", col[0], top + A.h + z(11), { size: z(18), weight: 700, role: ROLE.mixup });
+    Pn.chip(c, hers, col[0], top + A.h + z(22) + H.h / 2, { size: z(15), role: ROLE.mixup });
   }
 
   const canvasBox = (): Box => ({ x: 2, y: 2, w: api.w - 4, h: api.h - 4 });
@@ -210,8 +220,10 @@ export function makeNameView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   }
   function goalLine(): string {
     const S0 = st(), N = ns();
-    // the end: a neutral line of what she did, with the number of checks (no praise, no rule)
-    if (S0.done) return goal === "say" && N.said ? word(lang, "kon.end.read", { n: `∠${spell(p, N.said)}`, k: S0.commits }) : word(lang, "kon.end.checks", { k: S0.commits });
+    // the end: a neutral line of what she did, with the number of checks (no praise, no rule); find names the angle she
+    // found (evening ruling kon/name 5)
+    if (S0.done) return goal === "say" && N.said ? word(lang, "kon.end.read", { n: `∠${spell(p, N.said)}`, k: S0.commits })
+      : word(lang, "kon.end.find", { n: `∠${spell(p, nameOf(corners(p)[p.ask ?? 0], p.ord ?? 0))}`, k: S0.commits });
     if (goal === "say") return word(lang, "kon.goal.say");
     return word(lang, "kon.goal.find", { n: `∠${spell(p, nameOf(corners(p)[p.ask ?? 0], p.ord ?? 0))}` });
   }

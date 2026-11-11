@@ -13,11 +13,13 @@
 //     is a bundle; the table is right when every total is the row's count;
 //   - keep: once the scene has passed she may keep it again from the start ("again": strokes and totals clear; undo
 //     brings them back), which is how a tally is repaired after the strip has folded away.
-// Mal-rule (deterministic malActs), named only where its answer differs from every one-bundle slip (one bundle skipped,
-// one bundle counted twice, one single line off): the generator serves only such levels and the law re-checks it.
+// Mal-rule (deterministic malActs), named only on givens where its answer is no slip's and no other reading's (TALLY_SLIPS:
+// read needs two of them, keep three, to reach it; tellsApart): the generator serves only such levels and the law
+// re-checks it.
 //   tally-four  read: a bundle read as its four standing lines (answer 4 × bundles + singles, short by the bundles);
 //               keep, from the marks ("five"): one stroke per thing and no line across anywhere, whatever the totals
-//               (five written as five standing lines, the kit's second sign; judges round 2, ruling 4);
+//               (five written as five standing lines, the kit's second sign; judges round 2, ruling 4), on a level of at
+//               least three groups of five (evening ruling 1);
 //               keep, from the totals ("counted"): one stroke per thing, lines across drawn, and every total the row's
 //               count less its bundles (each wrong total short by exactly its row's bundles)
 import type { Candidate, FamilyLogic, Facts, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel, StambhAct } from "../../../../shared/play.ts";
@@ -66,17 +68,60 @@ const MAX_SCENE = 30;
 export const READ_MAX = 49, KEEP_ROW_MAX = 14, KEEP_SCENE_MAX = 28;
 
 /**
- * Can the evidence tell tally-four from a one-bundle slip on these givens? The mix-up's totals (each row less its
- * bundles) must differ from every totals vector one slip away from the truth: one row with one bundle skipped (−5), one
- * bundle counted twice (+5), or one single line off (±1). Read: never when the bundles are 1 (n − 1) or 5 (n − 5).
+ * The ways a child reaches a row's number WITHOUT the mix-up (evening ruling 5, 2026-11-11: worked out from the law and
+ * listed in the packet). A row holds n = 5b + s strokes: b bundles, s loose lines (0 ≤ s ≤ 4).
+ *   slips (one thing, by accident): a loose line missed or counted twice (n ∓ 1), a bundle skipped or counted twice
+ *         (n ∓ 5), a bundle's line across missed or counted again (that bundle as 4 or 6: n ∓ 1);
+ *   readings (a way of reading the whole tally that is not the mix-up's): the loose lines dropped (5b), the loose lines
+ *         counted twice (n + s), the line across as a sixth line (6b + s), the lines across alone (b), each group as one
+ *         (b + s), each bundle as ten (10b + s), the loose lines alone (s).
+ */
+export const TALLY_SLIPS: readonly { id: string; kind: "slip" | "reading"; of: (b: number, s: number) => number | null }[] = [
+  { id: "loose-missed", kind: "slip", of: (b, s) => (s >= 1 ? 5 * b + s - 1 : null) },
+  { id: "loose-twice", kind: "slip", of: (b, s) => (s >= 1 ? 5 * b + s + 1 : null) },
+  { id: "bundle-skipped", kind: "slip", of: (b, s) => (b >= 1 ? 5 * b + s - 5 : null) },
+  { id: "bundle-twice", kind: "slip", of: (b, s) => (b >= 1 ? 5 * b + s + 5 : null) },
+  { id: "bundle-as-4", kind: "slip", of: (b, s) => (b >= 1 ? 5 * b + s - 1 : null) },
+  { id: "bundle-as-6", kind: "slip", of: (b, s) => (b >= 1 ? 5 * b + s + 1 : null) },
+  { id: "loose-dropped", kind: "reading", of: (b, s) => (s >= 1 ? 5 * b : null) },
+  { id: "loose-doubled", kind: "reading", of: (b, s) => (s >= 1 ? 5 * b + 2 * s : null) },
+  { id: "cross-as-sixth", kind: "reading", of: (b, s) => (b >= 1 ? 6 * b + s : null) },
+  { id: "crosses-only", kind: "reading", of: (b) => (b >= 1 ? b : null) },
+  { id: "groups", kind: "reading", of: (b, s) => (b >= 1 ? b + s : null) },
+  { id: "bundle-as-ten", kind: "reading", of: (b, s) => (b >= 1 ? 10 * b + s : null) },
+  { id: "loose-only", kind: "reading", of: (b, s) => (b >= 1 ? s : null) },
+];
+/** a slip's own change to a number (a line or a bundle missed or counted twice), applied after a first slip or reading */
+const SLIP_DELTAS = [-1, 1, -5, 5];
+/** the fewest steps (one slip or one reading each; a reading reads the tally as drawn, so it comes first) from a row of n
+ *  to `target`: 0, 1, 2, or 3 meaning "three or more" */
+export function slipsTo(n: number, target: number): number {
+  if (target === n) return 0;
+  const b = Math.floor(n / 5), s = n % 5, one = new Set<number>();
+  for (const sl of TALLY_SLIPS) { const v = sl.of(b, s); if (v !== null && v !== n) one.add(v); }
+  if (one.has(target)) return 1;
+  for (const v of one) for (const d of SLIP_DELTAS) if (v + d === target) return 2;
+  return 3;
+}
+/** the fewest steps, summed over the rows, that give the mix-up's totals without it: read 2, keep 3 */
+export const MIN_SLIPS = { read: 2, keep: 3 } as const;
+/**
+ * Can the evidence tell tally-four from the slips and readings above? The level law (evening ruling 1):
+ *   - no row holding a bundle has as many loose lines as bundles (2 bundles + 2 lines = 12: the mix-up reads 10, and so
+ *     does counting the bundles right and dropping the loose lines);
+ *   - read: at least three bundles, never five (n − 5 is a bundle skipped), at least one loose line;
+ *   - keep: bundles in at least two rows;
+ *   - the mix-up's totals are at least MIN_SLIPS steps from the truth (read 2, keep 3), summed over the rows, and some row
+ *     is two steps away (no choice of one slip or reading per row gives them; in keep, a row of two bundles).
  */
 export function tellsApart(counts: readonly number[]): boolean {
-  const mal = counts.map(four);
-  if (mal.every((m, r) => m === counts[r])) return false;
-  for (let r = 0; r < counts.length; r++) for (const d of [-5, 5, -1, 1]) {
-    if (mal.every((m, k) => m === (k === r ? counts[k] + d : counts[k]))) return false;
-  }
-  return true;
+  const read = counts.length === 1;
+  if (counts.some((c) => c >= 5 && c % 5 === Math.floor(c / 5))) return false;
+  if (read) { const b = Math.floor(counts[0] / 5); if (b < 3 || b === 5 || counts[0] % 5 === 0) return false; }
+  else if (counts.filter((c) => c >= 5).length < 2) return false;
+  // (some row two steps away: no choice of one slip or reading per row gives her totals)
+  const steps = counts.map((c) => slipsTo(c, four(c)));
+  return Math.max(...steps) >= 2 && steps.reduce((a, x) => a + x, 0) >= MIN_SLIPS[read ? "read" : "keep"];
 }
 
 /** the strokes a count is tallied in: bundles (four standing, the fifth across), then the loose standing lines */
@@ -116,18 +161,21 @@ export function tallyHidden(level: PlayLevel<unknown>): number[] {
  * the law's commit pass (a gap after every group, groupsOf); else the child's own (a gap after each line across only).
  * Returns each standing stroke's x and line, each line across's span, the lines used, and the sizes chosen.
  */
-export function tallyFlow(marks: readonly boolean[], width: number, height: number, grouped: boolean, maxStroke = 34) {
+export function tallyFlow(marks: readonly boolean[], width: number, height: number, grouped: boolean, maxStroke = 34, band = 0) {
   const groups: { from: number; len: number }[] = [];
   if (grouped) for (const g of groupsOf(marks)) groups.push({ from: g.from, len: g.len });
   else { let from = 0; marks.forEach((m, i) => { if (m) { groups.push({ from, len: i - from + 1 }); from = i + 1; } }); if (from < marks.length) groups.push({ from, len: marks.length - from }); }
-  // one pass of the flow at stroke spacing sp: a group wraps whole when it fits a fresh line, else stroke by stroke
-  const flow = (sp: number) => {
+  const unitsOf = (g: { from: number; len: number }) => Math.max(1, marks.slice(g.from, g.from + g.len).filter((m) => !m).length);
+  // one pass of the flow at stroke spacing sp: a group wraps whole when it fits a fresh line, else stroke by stroke; with a
+  // plan (lineOf: each group's line), each group goes on its planned line
+  const flow = (sp: number, lineOf?: (gi: number) => number) => {
     const gap = sp * 1.4, x00 = sp * 0.6;
     const stand: { i: number; x: number; line: number }[] = [], across: { i: number; x0: number; x1: number; line: number }[] = [];
     let x = x00, line = 0, right = x00;
-    for (const g of groups) {
-      const units = Math.max(1, marks.slice(g.from, g.from + g.len).filter((m) => !m).length);
-      if (x > x00 && x + units * sp > width && x00 + units * sp <= width) { line++; x = x00; }
+    for (const [gi, g] of groups.entries()) {
+      const units = unitsOf(g);
+      if (lineOf) { if (lineOf(gi) !== line) { line = lineOf(gi); x = x00; } }
+      else if (x > x00 && x + units * sp > width && x00 + units * sp <= width) { line++; x = x00; }
       let x0 = x, l0 = line;
       for (let k = g.from; k < g.from + g.len; k++) {
         if (marks[k]) {
@@ -151,17 +199,36 @@ export function tallyFlow(marks: readonly boolean[], width: number, height: numb
   const score = (b: { sp: number; sh: number }) => Math.min(b.sp * 2.4, b.sh);
   // one line's exact width in spacings: the lead-in, each group's standing lines (a lone line across takes one), the gaps
   const units1 = 0.6 + groups.reduce((a, g) => a + Math.max(1, marks.slice(g.from, g.from + g.len).filter((m) => !m).length), 0) + 1.4 * Math.max(0, groups.length - 1);
+  // on two lines or more, loose lines after the last line across are never put under a closed group (evening ruling 4):
+  // the closed groups fill the first lines q at a time and the rest, with the loose lines last, take the last line, so the
+  // loose lines stand beyond the end of the line above
+  const last = groups[groups.length - 1], loose = !!last && !marks.slice(last.from, last.from + last.len).some((m) => m);
+  const closed = groups.length - (loose ? 1 : 0);
+  // the strokes' height and the pitch from one line to the next: one line takes the box; on two or more, between two lines
+  // of strokes at least half a stroke's height and at least `band` (room for the play-out's count) (evening ruling 4)
+  const vert = (lines: number, sp: number) => {
+    if (lines === 1) return { sh: Math.min(maxStroke, height * 0.72, sp * 4.2), lineH: height };
+    const sh = Math.max(1, Math.min(maxStroke, sp * 4.2, height / (1.5 * lines - 0.5), (height - (lines - 1) * band) / lines));
+    return { sh, lineH: sh + Math.max(sh / 2, band) };
+  };
+  const plan = (lines: number) => {
+    if (!loose || closed < lines) return null;
+    const q = Math.floor(closed / lines), lineOf = (gi: number) => (gi < q * (lines - 1) ? Math.floor(gi / q) : lines - 1);
+    const widths = Array.from({ length: lines }, () => 0.6 - 1.4);
+    groups.forEach((g, gi) => { widths[lineOf(gi)] += unitsOf(g) + 1.4; });
+    return { lineOf, units: Math.max(...widths) };
+  };
   for (let lines = 1; lines <= 8; lines++) {
-    const perLine = Math.ceil(B / lines);
-    const sp = Math.min(maxStroke * 0.4, width / (lines === 1 ? units1 + 0.01 : perLine * 5.4 + 0.6));
-    const f = flow(sp);
+    const perLine = Math.ceil(B / lines), pl = lines > 1 ? plan(lines) : null;
+    const sp = Math.min(maxStroke * 0.4, width / (lines === 1 ? units1 + 0.01 : pl ? pl.units + 0.01 : perLine * 5.4 + 0.6));
+    const f = flow(sp, pl?.lineOf);
     if (f.lines > lines) continue;
-    const lineH = height / lines, sh = Math.min(maxStroke, lineH * 0.72, sp * 4.2);
+    const { sh, lineH } = vert(lines, sp);
     if (!fewest && sp >= 8 && sh >= 22) fewest = { sp, sh, lineH, f };
     if (!best || score({ sp, sh }) > score(best) + 0.01) best = { sp, sh, lineH, f };
   }
   if (fewest) best = fewest;
-  if (!best) { const sp = Math.max(2, width / (B * 5.4 + 0.6)), f = flow(sp), lineH = height / f.lines; best = { sp, sh: Math.min(maxStroke, lineH * 0.72), lineH, f }; }
+  if (!best) { const sp = Math.max(2, width / (B * 5.4 + 0.6)), f = flow(sp); best = { sp, ...vert(f.lines, sp), f }; }
   return { sp: best.sp, sh: best.sh, lineH: best.lineH, lines: best.f.lines, stand: best.f.stand, across: best.f.across, right: best.f.right };
 }
 
@@ -209,7 +276,9 @@ export function tallyFourSign(p: TallyParams, s: Pick<TallyState, "marks" | "tot
   if (!tellsApart(p.counts)) return null;
   if (p.goal === "read") return s.totals[0] === four(p.counts[0]) ? "counted" : null;
   if (!p.cats.every((_, r) => s.marks[r].length === p.counts[r])) return null;
-  if (s.marks.every((m) => m.every((x) => !x))) return "five";
+  // "five": no line across in any row, and the level holds at least three groups of five (evening ruling 1)
+  if (s.marks.every((m) => m.every((x) => !x))) return p.counts.reduce((a, c) => a + Math.floor(c / 5), 0) >= 3 ? "five" : null;
+  // "counted": every row holding bundles short by exactly its own bundles, every other row right
   if (p.counts.every((c, r) => s.totals[r] === four(c))) return "counted";
   return null;
 }
@@ -345,12 +414,12 @@ function generate(req: GenRequest): Candidate<TallyParams>[] {
       fade: req.fade, goal, params, targets: Object.values(req.misMap), mal: req.misMap, slip: null, context: params.ctx, seed: req.seed,
       proof: { solvable: true, shortcutFree: true, minActs: 2, solutions: 1, discriminates: [], pFirstTry: 0, score: 0, genMs: 0 } },
   });
-  // the sizes by fade: read 11-19 / 11-34 / 21-49 (at most nine bundles and four); keep a scene of 10-14 / 12-22 / 16-28
-  // things. Served only where tally-four's answer differs from every one-bundle slip (tellsApart): read never with one or
-  // five bundles, never bundles only (at least one single line); keep with at least two bundles across the rows.
-  const RANGE = { 1: [11, 19], 2: [11, 34], 3: [21, READ_MAX] }[labels] as [number, number];
-  const SCENE = { 1: [10, 14], 2: [12, 22], 3: [16, KEEP_SCENE_MAX] }[labels] as [number, number];
-  for (let k = 0; k < 60 && out.length < 16; k++) {
+  // the sizes by fade: read 16-19 / 16-34 / 21-49 (three to nine bundles, never five); keep a scene of 15-18 / 17-23 /
+  // 20-28 things. Served only where the law tells tally-four from every slip and reading (tellsApart): read with at least
+  // three bundles and a loose line; keep with bundles in at least two rows; no row with as many loose lines as bundles
+  const RANGE = { 1: [16, 19], 2: [16, 34], 3: [21, READ_MAX] }[labels] as [number, number];
+  const SCENE = { 1: [15, 18], 2: [17, 23], 3: [20, KEEP_SCENE_MAX] }[labels] as [number, number];
+  for (let k = 0; k < 400 && out.length < 16; k++) {
     const ctx = ctxIds[Math.floor(rnd() * ctxIds.length)], all = TALLY_CONTEXTS[ctx];
     if (goal === "read") {
       const n = int(RANGE[0], RANGE[1]);
@@ -364,16 +433,9 @@ function generate(req: GenRequest): Candidate<TallyParams>[] {
     }
     const nc = labels === 1 ? 2 : Math.min(3, all.length);
     const start = Math.floor(rnd() * (all.length - nc + 1)), cats = all.slice(start, start + nc);
-    const total = int(SCENE[0], SCENE[1]);
-    // every row at least 2; two bundles across the rows (two rows reach 5, or one row 10); the rest share what is left
-    const counts = cats.map(() => 2);
-    const big = Math.floor(rnd() * nc);
-    if (rnd() < 0.3) counts[big] = 10;
-    else { counts[big] = 5; counts[(big + 1 + Math.floor(rnd() * (nc - 1))) % nc] = 5; }
-    let left = total - counts.reduce((a, c) => a + c, 0);
-    if (left < 0) continue;
-    while (left > 0) { const r = Math.floor(rnd() * nc); if (counts[r] < KEEP_ROW_MAX) { counts[r]++; left--; } else if (counts.every((c) => c >= KEEP_ROW_MAX)) break; }
-    if (!tellsApart(counts)) continue;
+    // each row 2..KEEP_ROW_MAX things; the scene's size by fade; the law decides (tellsApart)
+    const counts = cats.map(() => int(2, KEEP_ROW_MAX)), total = counts.reduce((a, c) => a + c, 0);
+    if (total < SCENE[0] || total > SCENE[1] || !tellsApart(counts)) continue;
     const seq: number[] = [];
     counts.forEach((c, r) => { for (let i = 0; i < c; i++) seq.push(r); });
     for (let i = seq.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [seq[i], seq[j]] = [seq[j], seq[i]]; }
