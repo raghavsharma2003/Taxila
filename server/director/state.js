@@ -1442,8 +1442,11 @@ function afterCorrect(s, input, item) {
   // (S1 and P1, dc-r8-director20: in a scripted lesson a why-probe has no authored line, so all 42 probe turns of director20 ended on
   // the close with nothing for the child — and an aside on the next turn got a park with no lesson after it. A script card answered
   // right goes on to the next part, its close first)
+  // (main, 16:10: probes return only as authored questions — a script card gets a probe turn only when it carries an authored probe
+  // field; none does yet, and the say path for one is to be built with it)
   const scriptedCard = scriptOn() && !!scriptIdOf(kit) && String(item.id ?? "").startsWith("script:") && !scriptFor(kit)?.script?.recordedRun;
-  const probePlan = unaided && !parentWaits && !scriptedCard ? probePlanFor(s, item, kit, input.voice) : null;
+  const authoredProbe = item.scriptAsk?.probe ?? item.scriptCheck?.probe ?? item.scriptThen?.probe ?? null;
+  const probePlan = unaided && !parentWaits && (!scriptedCard || !!authoredProbe) ? probePlanFor(s, item, kit, input.voice) : null;
   if (probePlan) {
     s.pendingWhy = item.id;
     s.pendingProbe = probePlan;

@@ -182,16 +182,19 @@ export const PREDICATES = {
   authoredWhole(L, r, i, ctx) {
     const units = (ctx.units ??= authoredUnits(ctx.script));
     const T = ` ${key(r.text)} `;
-    const TS = sentencesOf(r.text).map(key);
-    const said = (k) => TS.some((t) => t === k || t.endsWith(` ${k}`));
+    // (a unit sentence is said when a sentence of hers is it — or ends with it after a frame's ":" or "—", "Phir se dekho: …"; never as
+    // the tail of a longer sentence of hers, "… aur upar ka woh ek hissa 1/4 hai")
+    const TS = sentencesOf(r.text).map((x) => ({ k: key(x), raw: low(x) }));
+    const said = (k) => TS.some((t) => t.k === k || (t.k.endsWith(` ${k}`) && /[:—–]\s*[^:—–]*$/.test(t.raw) && key(t.raw.split(/[:—–]/).at(-1)) === k));
     // (S1: a card said whole in one of her last two turns may be re-asked by its question alone)
     const recentT = [ctx.prevT, ctx.prevPrevT].filter(Boolean).map((t) => ` ${key(t.text)} `);
     for (const u of units) {
       if (T.includes(` ${u.whole} `)) continue;
       if (/ card$/.test(u.where) && recentT.some((t) => t.includes(` ${u.whole} `)) && u.sents.filter(said).every((x) => x === u.sents.at(-1))) continue;
       const hit = u.sents.filter(said);
-      // (a sentence two units share, "Barfi ka kitna hissa khaya gaya?", proves neither was started)
-      if (!hit.some((h) => !units.some((v) => v.whole !== u.whole && v.whole.includes(h)))) continue;
+      // (a sentence two units share, "Barfi ka kitna hissa khaya gaya?", proves neither was started; nor does a short generic one —
+      // "Kya woh sahi hai?", "Kitni tape lagegi?" — which a kit card can end on too: a start is a sentence of five words or more)
+      if (!hit.some((h) => h.split(" ").length >= 5 && !units.some((v) => v.whole !== u.whole && v.whole.includes(h)))) continue;
       const miss = u.sents.filter((x) => !said(x));
       return `${u.where} not said whole (${hit.length} of ${u.sents.length} sentences${miss.length ? `; not said: "${miss[0].slice(0, 60)}"` : "; split"})`;
     }
@@ -289,6 +292,8 @@ export const PREDICATES = {
   cardWholeAgain(L, r, i, ctx) {
     // (a picture turn keeps its card whole on its own page, v6.5 P3: a hint is a simpler or a miss's close)
     if (!cardIn(r) || (r.pageParts ?? []).some((x) => x.part === "alt") || !(r.pageParts ?? []).some((x) => x.part === "simpler" || x.part === "close")) return null;
+    // (a right answer's close is no hint: the card after it — a parent card coming back — is posed whole)
+    if (ctx.prevCls === "correct" && !(r.pageParts ?? []).some((x) => x.part === "simpler")) return null;
     const c = low(r.card ?? "");
     if (sentencesOf(r.card ?? "").length < 2) return null;
     const said = [ctx.prevT, ctx.prevPrevT].some((t) => t && low(t.text).includes(c));

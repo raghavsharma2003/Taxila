@@ -22,6 +22,7 @@ test("R1: the kind by a whole match word, else 'other' (never the first kind in 
 
 test("R1 rule 3: sad by whole words, not when negated, not the other side's loss, not a shot in a game", () => {
   assert.equal(isSadAside("mera kutta bimaar hai"), true);
+  // (Learning's data, 4f3e2d19: a hitting verb is sad only with a person as its object — a bare "maara" is a cricket shot)
   assert.equal(isSadAside("usne mujhe maara"), true);
   assert.equal(isSadAside("chot nahi lagi"), false);
   assert.equal(isSadAside("dusri team haar gayi"), false);
