@@ -1,0 +1,180 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c4-maths-ch03-t02",
+    "archetype": "rule-machine@1",
+    "misconceptionId": "c4-maths-ch03-t02-m-first-step-only",
+    "skillId": "c4-maths-ch03-t02-s1",
+    "beat": "rem:c4-maths-ch03-t02-m-first-step-only",
+    "when": "remediation",
+    "check": "c4-maths-ch03-t02-s1:c1"
+  },
+  "why": "ok, but its checks failed: onTopic",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": false,
+    "contentSafe": true,
+    "spec": {
+      "ok": true,
+      "repairs": 1,
+      "fellBack": false
+    }
+  },
+  "spec": {
+    "archetype": "rule-machine@1",
+    "skills": [
+      "c4-maths-ch03-t02"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Round",
+      "built": "machines",
+      "run": "CHALAO",
+      "want": "kram",
+      "got": "mila",
+      "coach": "Tiles chuno, phir CHALAO",
+      "runDone": "Machine ruk gayi",
+      "step": "step",
+      "predict": "andaaza",
+      "inverse": "ulta chalao",
+      "target": "lakshya",
+      "steps": "steps",
+      "pick": "shuruat chuno",
+      "works": "SAHI",
+      "fix": "sab steps dekho"
+    },
+    "title": "Pattern Machine",
+    "rounds": [
+      {
+        "mode": "build",
+        "title": "Number check",
+        "sub": "har badlav ko dhyan se dekho",
+        "rule": [
+          "×2"
+        ],
+        "inputs": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "tiles": [
+          "×2",
+          "+3",
+          "-2"
+        ],
+        "targets": "c4-maths-ch03-t02-m-first-step-only"
+      },
+      {
+        "mode": "build",
+        "title": "Do patterns",
+        "sub": "har jagah jaanch karke chuno",
+        "rule": [
+          "+3"
+        ],
+        "inputs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "tiles": [
+          "+3",
+          "+2",
+          "×3"
+        ],
+        "targets": "c4-maths-ch03-t02-m-first-step-only"
+      }
+    ]
+  },
+  "validator": {
+    "fellBack": false,
+    "repairs": [
+      "seq:rule-does-not-match-pattern"
+    ]
+  },
+  "raw": {
+    "archetype": "rule-machine@1",
+    "skills": [
+      "c4-maths-ch03-t02"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Round",
+      "built": "machines",
+      "run": "CHALAO",
+      "want": "kram",
+      "got": "mila",
+      "coach": "Tiles chuno, phir CHALAO",
+      "runDone": "Machine ruk gayi",
+      "step": "step",
+      "predict": "andaaza",
+      "inverse": "ulta chalao",
+      "target": "lakshya",
+      "steps": "steps",
+      "pick": "shuruat chuno",
+      "works": "SAHI",
+      "fix": "sab steps dekho"
+    },
+    "title": "Pattern Machine",
+    "rounds": [
+      {
+        "mode": "build",
+        "title": "Number check",
+        "sub": "har badlav ko dhyan se dekho",
+        "rule": [
+          "×2"
+        ],
+        "inputs": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "tiles": [
+          "×2",
+          "+3",
+          "-2"
+        ],
+        "targets": "c4-maths-ch03-t02-m-first-step-only"
+      },
+      {
+        "mode": "seq",
+        "title": "Sticks ki line",
+        "sub": "aage badhte hue pattern dekho",
+        "pattern": "sticks-triangles",
+        "rule": [
+          "+2"
+        ],
+        "tiles": [
+          "+2",
+          "+3",
+          "×2"
+        ],
+        "ask": 4,
+        "targets": "c4-maths-ch03-t02-m-first-step-only"
+      },
+      {
+        "mode": "build",
+        "title": "Do patterns",
+        "sub": "har jagah jaanch karke chuno",
+        "rule": [
+          "+3"
+        ],
+        "inputs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "tiles": [
+          "+3",
+          "+2",
+          "×3"
+        ],
+        "targets": "c4-maths-ch03-t02-m-first-step-only"
+      }
+    ]
+  }
+}

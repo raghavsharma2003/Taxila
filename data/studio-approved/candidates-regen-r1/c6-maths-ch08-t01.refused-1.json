@@ -1,0 +1,301 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c6-maths-ch08-t01",
+    "archetype": "geo-forge@1",
+    "misconceptionId": "c6-maths-ch08-t01-m-diameter-radius",
+    "skillId": "c6-maths-ch08-t01-s1",
+    "beat": "rem:c6-maths-ch08-t01-m-diameter-radius",
+    "when": "remediation",
+    "check": "c6-maths-ch08-t01-s1:c1"
+  },
+  "why": "ok, but its checks failed: contentSafe",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": false,
+    "spec": {
+      "ok": true,
+      "repairs": 4,
+      "fellBack": false
+    },
+    "contentFindings": [
+      {
+        "key": "strings.perpendicular",
+        "code": "content_safety_2",
+        "text": "Bindu se samkon par"
+      }
+    ]
+  },
+  "spec": {
+    "archetype": "geo-forge@1",
+    "skills": [
+      "c6-maths-ch08-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Round",
+      "built": "taiyaar",
+      "check": "JAANCH",
+      "undo": "WAPAS",
+      "coach": "Compass ka faasla badalne se pehle socho",
+      "runDone": "Blueprints poore",
+      "perimeter": "paridhi",
+      "area": "kshetrafal",
+      "units": "units",
+      "sq": "varg units",
+      "polygon": "bhujayen",
+      "sticks": "Lakdiyaan chuno",
+      "rigid": "Mazboot banao: hilna nahi chahiye",
+      "parallel": "Bindu se line ke samaantar",
+      "perpendicular": "Bindu se samkon par",
+      "equidistant": "Har bindu se barabar door pin rakho",
+      "angle": "Kon banao",
+      "right": "samkon triangle",
+      "isosceles": "samdvipah triangle",
+      "scalene": "vishambahu triangle",
+      "obtuse": "adhik kon triangle",
+      "acute": "nyoon kon triangle",
+      "square": "varg",
+      "rectangle": "aayat",
+      "parallelogram": "samaantar chaturbhuj",
+      "rhombus": "samchaturbhuj",
+      "trapezium": "samalamb chaturbhuj",
+      "kite": "patang aakaar",
+      "any": "koi bhi aakaar",
+      "triangle": "triangle",
+      "make": "Banao",
+      "withArea": "kshetrafal ke saath",
+      "withPerim": "paridhi ke saath",
+      "noTriangle": "Aise 3 chuno jo band na hon",
+      "wobbles": "HILTA HAI",
+      "holds": "MAZBOOT HAI",
+      "closes": "BAND HOTA HAI",
+      "gap": "KHAALI JAGAH",
+      "time": "samay"
+    },
+    "title": "Gol naqsha chunauti",
+    "rounds": [
+      {
+        "title": "Peg ke ird-gird",
+        "sub": "2 binduon ke paas jagah banao",
+        "time": 45,
+        "challenges": [
+          {
+            "kind": "equidistant",
+            "points": [
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                6
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Doori ka test",
+        "sub": "alag jagahon par pin aazmao",
+        "time": 60,
+        "challenges": [
+          {
+            "kind": "equidistant",
+            "points": [
+              [
+                4,
+                4
+              ],
+              [
+                8,
+                4
+              ]
+            ]
+          },
+          {
+            "kind": "perpendicular",
+            "line": [
+              [
+                3,
+                3
+              ],
+              [
+                8,
+                3
+              ]
+            ],
+            "through": [
+              6,
+              6
+            ]
+          }
+        ],
+        "targets": "c6-maths-ch08-t01-m-diameter-radius"
+      }
+    ]
+  },
+  "validator": {
+    "fellBack": false,
+    "repairs": [
+      "challenge:infeasible",
+      "challenge:infeasible",
+      "challenge:infeasible",
+      "round:challenges"
+    ]
+  },
+  "raw": {
+    "archetype": "geo-forge@1",
+    "skills": [
+      "c6-maths-ch08-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Round",
+      "built": "taiyaar",
+      "check": "JAANCH",
+      "undo": "WAPAS",
+      "coach": "Compass ka faasla badalne se pehle socho",
+      "runDone": "Blueprints poore",
+      "perimeter": "paridhi",
+      "area": "kshetrafal",
+      "units": "units",
+      "sq": "varg units",
+      "polygon": "bhujayen",
+      "sticks": "Lakdiyaan chuno",
+      "rigid": "Mazboot banao: hilna nahi chahiye",
+      "parallel": "Bindu se line ke samaantar",
+      "perpendicular": "Bindu se samkon par",
+      "equidistant": "Har bindu se barabar door pin rakho",
+      "angle": "Kon banao",
+      "right": "samkon triangle",
+      "isosceles": "samdvipah triangle",
+      "scalene": "vishambahu triangle",
+      "obtuse": "adhik kon triangle",
+      "acute": "nyoon kon triangle",
+      "square": "varg",
+      "rectangle": "aayat",
+      "parallelogram": "samaantar chaturbhuj",
+      "rhombus": "samchaturbhuj",
+      "trapezium": "samalamb chaturbhuj",
+      "kite": "patang aakaar",
+      "any": "koi bhi aakaar",
+      "triangle": "triangle",
+      "make": "Banao",
+      "withArea": "kshetrafal ke saath",
+      "withPerim": "paridhi ke saath",
+      "noTriangle": "Aise 3 chuno jo band na hon",
+      "wobbles": "HILTA HAI",
+      "holds": "MAZBOOT HAI",
+      "closes": "BAND HOTA HAI",
+      "gap": "KHAALI JAGAH",
+      "time": "samay"
+    },
+    "title": "Gol naqsha chunauti",
+    "rounds": [
+      {
+        "title": "Peg ke ird-gird",
+        "sub": "2 binduon ke paas jagah banao",
+        "time": 45,
+        "challenges": [
+          {
+            "kind": "equidistant",
+            "points": [
+              [
+                3,
+                3
+              ],
+              [
+                8,
+                3
+              ]
+            ]
+          },
+          {
+            "kind": "equidistant",
+            "points": [
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                6
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Compass ki chaal",
+        "sub": "3 binduon ke saath naqsha banao",
+        "time": 60,
+        "challenges": [
+          {
+            "kind": "equidistant",
+            "points": [
+              [
+                3,
+                3
+              ],
+              [
+                8,
+                3
+              ],
+              [
+                3,
+                6
+              ]
+            ]
+          },
+          {
+            "kind": "angle",
+            "deg": 90,
+            "tol": 5
+          }
+        ],
+        "targets": "c6-maths-ch08-t01-m-diameter-radius"
+      },
+      {
+        "title": "Doori ka test",
+        "sub": "alag jagahon par pin aazmao",
+        "time": 60,
+        "challenges": [
+          {
+            "kind": "equidistant",
+            "points": [
+              [
+                4,
+                4
+              ],
+              [
+                8,
+                4
+              ]
+            ]
+          },
+          {
+            "kind": "perpendicular",
+            "line": [
+              [
+                3,
+                3
+              ],
+              [
+                8,
+                3
+              ]
+            ],
+            "through": [
+              6,
+              6
+            ]
+          }
+        ],
+        "targets": "c6-maths-ch08-t01-m-diameter-radius"
+      }
+    ]
+  }
+}

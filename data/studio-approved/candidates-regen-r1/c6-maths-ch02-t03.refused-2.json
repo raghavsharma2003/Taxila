@@ -1,0 +1,239 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c6-maths-ch02-t03",
+    "archetype": "angle-cannon@1",
+    "misconceptionId": "c6-maths-ch02-t03-m-vertex-off",
+    "skillId": "c6-maths-ch02-t03-s1",
+    "beat": "rem:c6-maths-ch02-t03-m-vertex-off",
+    "when": "remediation",
+    "check": "c6-maths-ch02-t03-s1:c1"
+  },
+  "why": "ok, but its checks failed: contentSafe",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": false,
+    "spec": {
+      "ok": true,
+      "repairs": 1,
+      "fellBack": false
+    },
+    "contentFindings": [
+      {
+        "key": "strings.right",
+        "code": "content_safety_2",
+        "text": "SEEDHA KON"
+      },
+      {
+        "key": "strings.coach",
+        "code": "brain_violence",
+        "text": "Turret ghumao, chhodo aur fire karo"
+      },
+      {
+        "key": "strings.threat",
+        "code": "brain_violence",
+        "text": "KHATRA YAHAN HAI"
+      },
+      {
+        "key": "strings.only",
+        "code": "brain_violence",
+        "text": "SIRF NISHANA LAGAO"
+      },
+      {
+        "key": "strings.hit",
+        "code": "brain_violence",
+        "text": "SEEDHA HIT"
+      },
+      {
+        "key": "waves.0.sub",
+        "code": "brain_violence",
+        "text": "Turret ko alag turns ke liye taiyar karo"
+      },
+      {
+        "key": "waves.1.sub",
+        "code": "brain_violence",
+        "text": "Turret aur protractor ko dhyan se milao"
+      },
+      {
+        "key": "waves.3.sub",
+        "code": "brain_violence",
+        "text": "Turret ko wide turns ke liye sambhalo"
+      }
+    ]
+  },
+  "spec": {
+    "archetype": "angle-cannon@1",
+    "skills": [
+      "c6-maths-ch02-t03"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Turret ghumao, chhodo aur fire karo",
+      "wave": "Lahar",
+      "threat": "KHATRA YAHAN HAI",
+      "copy": "YEH TURN MILAO",
+      "only": "SIRF NISHANA LAGAO",
+      "hit": "SEEDHA HIT",
+      "close": "PAAS",
+      "offBy": "degree ka fark",
+      "runDone": "Sector saaf",
+      "accuracy": "sahi nishane",
+      "hits": "hits",
+      "acute": "TEZ KON",
+      "right": "SEEDHA KON",
+      "obtuse": "KHULA KON",
+      "reflex": "BAHAR KA KON"
+    },
+    "waves": [
+      {
+        "title": "Turn practice",
+        "sub": "Turret ko alag turns ke liye taiyar karo",
+        "mode": "call",
+        "items": [
+          90,
+          180
+        ],
+        "range": 360,
+        "scaffold": "tens",
+        "speed": 0.7
+      },
+      {
+        "title": "Protractor setup",
+        "sub": "Turret aur protractor ko dhyan se milao",
+        "mode": "copy",
+        "items": [
+          70,
+          40,
+          30,
+          60
+        ],
+        "range": 180,
+        "scaffold": "protractor",
+        "speed": 0.8
+      },
+      {
+        "title": "Kon pehchano",
+        "sub": "Har shape ko dekhkar uska tag chuno",
+        "mode": "classify",
+        "items": [
+          30,
+          40,
+          60,
+          65
+        ],
+        "kind": "acute",
+        "range": 180,
+        "scaffold": "protractor",
+        "speed": 0.9
+      },
+      {
+        "title": "Bada turn",
+        "sub": "Turret ko wide turns ke liye sambhalo",
+        "mode": "call",
+        "items": [
+          115,
+          150,
+          180,
+          270
+        ],
+        "range": 360,
+        "scaffold": "none",
+        "speed": 1.05
+      }
+    ]
+  },
+  "validator": {
+    "fellBack": false,
+    "repairs": [
+      "items:dropped"
+    ]
+  },
+  "raw": {
+    "archetype": "angle-cannon@1",
+    "skills": [
+      "c6-maths-ch02-t03"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Turret ghumao, chhodo aur fire karo",
+      "wave": "Lahar",
+      "threat": "KHATRA YAHAN HAI",
+      "copy": "YEH TURN MILAO",
+      "only": "SIRF NISHANA LAGAO",
+      "hit": "SEEDHA HIT",
+      "close": "PAAS",
+      "offBy": "degree ka fark",
+      "runDone": "Sector saaf",
+      "accuracy": "sahi nishane",
+      "hits": "hits",
+      "acute": "TEZ KON",
+      "right": "SEEDHA KON",
+      "obtuse": "KHULA KON",
+      "reflex": "BAHAR KA KON"
+    },
+    "waves": [
+      {
+        "title": "Turn practice",
+        "sub": "Turret ko alag turns ke liye taiyar karo",
+        "mode": "call",
+        "items": [
+          90,
+          180,
+          360
+        ],
+        "range": 360,
+        "scaffold": "tens",
+        "speed": 0.7,
+        "targets": "c6-maths-ch02-t03-m-vertex-off"
+      },
+      {
+        "title": "Protractor setup",
+        "sub": "Turret aur protractor ko dhyan se milao",
+        "mode": "copy",
+        "items": [
+          70,
+          40,
+          30,
+          60
+        ],
+        "range": 180,
+        "scaffold": "protractor",
+        "speed": 0.8,
+        "targets": "c6-maths-ch02-t03-m-vertex-off"
+      },
+      {
+        "title": "Kon pehchano",
+        "sub": "Har shape ko dekhkar uska tag chuno",
+        "mode": "classify",
+        "items": [
+          30,
+          40,
+          60,
+          65
+        ],
+        "kind": "acute",
+        "range": 180,
+        "scaffold": "protractor",
+        "speed": 0.9,
+        "targets": "c6-maths-ch02-t03-m-vertex-off"
+      },
+      {
+        "title": "Bada turn",
+        "sub": "Turret ko wide turns ke liye sambhalo",
+        "mode": "call",
+        "items": [
+          115,
+          150,
+          180,
+          270
+        ],
+        "range": 360,
+        "scaffold": "none",
+        "speed": 1.05,
+        "targets": "c6-maths-ch02-t03-m-vertex-off"
+      }
+    ]
+  }
+}
