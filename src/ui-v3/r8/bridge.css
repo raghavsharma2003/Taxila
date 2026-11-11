@@ -1,0 +1,61 @@
+/* Round 8: the bridge from today's Kaksha names to the one token set (src/styles/tx-tokens.css). Under a root with
+   data-tx, every --k-* name (and the Desk's own names, which desk.kaksha.css points at --k-*) reads a --tx-* token. So
+   today's components take the new theme without a rule of their own, and the board renderer does too: it reads --k-*
+   off the Desk root (src/modules/whiteboard/palette.ts kakshaBoardSkin).
+   The board roles land as:
+     - focus → --tx-focus
+     - slot and answer → --tx-ans
+     - mixup → --tx-mix
+     - muted → --tx-ink-3
+   Specificity: .kx[data-tx][data-tx][data-ktheme] is (0,4,0). That outranks every Kaksha look block (at most (0,3,0)),
+   whatever order the chunks load in. Nothing here applies without data-tx. */
+@import "../../styles/tx-tokens.css";
+
+.kx[data-tx][data-tx][data-ktheme] {
+  --k-void: var(--tx-bg);
+  --k-deep: var(--tx-board);
+  --k-raise: var(--tx-surface);
+  --k-bar: var(--tx-surface-2);
+  --k-panel: var(--tx-surface);
+  --k-panel-solid: var(--tx-surface);
+  --k-line: var(--tx-line);
+  --k-line-2: var(--tx-line-2);
+  --k-ink: var(--tx-ink);
+  --k-ink-2: var(--tx-ink-2);
+  --k-ink-3: var(--tx-ink-3);
+  --k-move: var(--tx-move);
+  --k-move-deep: var(--tx-move);
+  --k-on-move: var(--tx-on-move);
+  --k-her: var(--tx-tutor);
+  --k-secure: var(--tx-ans);
+  --k-look: var(--tx-mix);
+  --k-rose: var(--tx-danger);
+  --k-ion: var(--tx-focus);
+  --k-lit-1: var(--tx-surface);
+  --k-lit-2: var(--tx-surface);
+  --k-lit-3: var(--tx-surface-2);
+  --k-sans: var(--tx-font-ui);
+  --k-mono: var(--tx-font-ui);
+  --k-deva: var(--tx-font-deva);
+  --k-cut: 0px;
+  --k-e-out: var(--tx-ease);
+  color-scheme: var(--tx-scheme);
+  background: var(--tx-bg);
+  color: var(--tx-ink);
+  font-family: var(--tx-font-ui);
+}
+
+.kx[data-tx][data-tx][data-ktheme] .dk[data-skin="kaksha"][data-v2] {
+  color-scheme: var(--tx-scheme);
+  --radius-pill: var(--tx-r-3); --radius-card: var(--tx-r-2); --radius-md: var(--tx-r-1); --radius-sm: var(--tx-r-1);
+  --radius-lg: var(--tx-r-2); --radius-tile: var(--tx-r-1); --radius-window: var(--tx-r-2); --radius-xs: var(--tx-r-1);
+  --elev-card: var(--tx-shadow-1); --elev-sheet: var(--tx-shadow-2);
+  --stage: var(--tx-surface); --stage-pool: var(--tx-surface);
+  --font-ui: var(--tx-font-ui); --font-heading: var(--tx-font-display);
+  --veil: color-mix(in srgb, var(--tx-ink) 40%, transparent);
+  --nib: var(--tx-accent); --on-nib: var(--tx-on-accent);
+  --nib-soft: color-mix(in srgb, var(--tx-accent) 18%, var(--tx-surface));
+  --listen: var(--tx-tutor); --on-listen: var(--tx-surface);
+  --focus: var(--tx-tutor); --focus-halo: var(--tx-surface);
+  background: var(--tx-bg);
+}
