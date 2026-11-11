@@ -1,6 +1,21 @@
 // Pure layout and wording helpers of the ext engines: no canvas, no host, no class syntax, so node tests import them
 // directly (tests/studio-v2.test.mjs). The engines (sieve.ts, picto.ts) draw with what these return.
 import { fits, sieveStream, type SvRoundT } from "../../../../shared/studio-spec-ext/sieve.ts";
+import { GEO_COLS } from "../../../../shared/studio-spec-ext/geo.ts";
+
+/** geo-forge's pin-board origin and pitch (world units) and its rightmost pin column's centre. */
+export const GEO_OX = 190, GEO_S = 50, GEO_GRID_X1 = GEO_OX + (GEO_COLS - 1) * GEO_S;
+export type Btn = { x: number; y: number; w: number; h: number };
+/** geo-forge's UNDO / CHECK stack right of the pin-board, each button as tall as its label's lines (judges, regeneration
+ *  round 2, 2026-11-11: the two-line "Check karo" overflowed a 70-tall button's top and bottom border at l1366, and the
+ *  buttons' edge at 812 sat on the rightmost pin column at 800). `nUndo`/`nCheck` are the labels' line counts and `lh`
+ *  their line height, both at the drawn size. Wide enough for CHECK at the young floor; 22 clear of the last column. */
+export function geoButtons(nUndo: number, nCheck: number, lh: number): { UNDO: Btn; CHECK: Btn } {
+  const x = GEO_GRID_X1 + 22, w = 178, pad = 22;
+  const UNDO = { x, y: 300, w, h: Math.max(62, Math.ceil(nUndo * lh + pad)) };
+  const CHECK = { x, y: UNDO.y + UNDO.h + 18, w, h: Math.max(70, Math.ceil(nCheck * lh + pad)) };
+  return { UNDO, CHECK };
+}
 
 /** a rule phrase + its number(s) in the phrase's own word order (judges, 2026-11-11: "ke guna 6" is broken Hindi). A Hindi
  *  postposition phrase ("ke guna", "ke factors", "se vibhajya", Devanagari के/का/की/से/को) takes the number first: "6 ke guna";

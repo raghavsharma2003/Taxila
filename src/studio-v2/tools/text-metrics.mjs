@@ -11,13 +11,13 @@ const b64 = (p) => fs.readFileSync(path.join(repo, p)).toString("base64");
 const FACES = [
   { family: "Bricolage Grotesque", key: "display", src: "src/studio-v2/gallery/fonts/bricolage-latin.woff2", weight: "200 800" },
   { family: "Geist Mono", key: "mono", src: "src/studio-v2/gallery/fonts/geist-mono-latin.woff2", weight: "100 900" },
-  { family: "Atkinson Hyperlegible Next", key: "ui", src: "public/fonts/atkinson-hyperlegible-next-latin.woff2", weight: ["400 600", "700"],   // as src/styles/fonts.css declares it
+  { family: "Atkinson Hyperlegible Next", key: "ui", src: "public/fonts/atkinson-hyperlegible-next-latin.woff2", weight: ["400 500", "600", "700"],   // as src/styles/fonts.css declares it
     unicodeRange: "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD" },
 ];
 // the Devanagari faces exactly as src/studio-v2/engines/ext/deva.css declares them under each stage family
-const M6 = "src/studio-v2/engines/ext/fonts/mukta-600-devanagari.woff2", M7 = "src/studio-v2/engines/ext/fonts/mukta-700-devanagari.woff2";
+const M4 = "src/studio-v2/engines/ext/fonts/mukta-400-devanagari.woff2", M6 = "src/studio-v2/engines/ext/fonts/mukta-600-devanagari.woff2", M7 = "src/studio-v2/engines/ext/fonts/mukta-700-devanagari.woff2";
 // (the stage's own segments: Bricolage 200 800 and Geist 100 900 from core/fonts.css; deva.css's ui-v3-only segments are left out)
-const DEVA = { display: [{ src: M7, weight: "200 800" }], mono: [{ src: M6, weight: "100 900" }], ui: [{ src: M6, weight: "400 600" }, { src: M7, weight: "700" }] };
+const DEVA = { display: [{ src: M7, weight: "200 800" }], mono: [{ src: M6, weight: "100 900" }], ui: [{ src: M4, weight: "400 500" }, { src: M6, weight: "600" }, { src: M7, weight: "700" }] };
 const WEIGHTS = [400, 500, 600, 700, 800];
 const chars = [];
 for (let c = 32; c < 127; c++) chars.push(String.fromCharCode(c));
