@@ -88,3 +88,11 @@ test("workedFinal reads the whole final answer, a fraction whole", async () => {
   assert.match(f("Haan, sahi hai, kyunki 3 barabar tukdon mein se 2 khaye gaye; bacha hua 1 tukda neeche nahi jaata.") ?? "", /2\/3/);
   assert.equal(f("Haan, sahi hai. Toh poora jawab: barfi ka 2/3 hissa khaya gaya."), null);
 });
+
+// Main on the shadow (2026-11-11): a clarify or a give-up on a worked problem says the problem's simpler, a clarify on a step the step's
+test("workedClarify flags director20's worked-problem rows; every teacher row of a dry turn carries the walk's cell address", async () => {
+  const flags = checkRun(RUN).filter((x) => x.predicate === "workedClarify");
+  assert.ok(flags.length >= 1, "director20 had clarifies on worked parts answered with the next step");
+  const { cellAddressOf } = await import("../server/director/state.js");
+  assert.equal(cellAddressOf(null, { event: "turn" }), null);
+});

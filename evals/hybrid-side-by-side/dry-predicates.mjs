@@ -255,8 +255,9 @@ export const PREDICATES = {
     if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
     // (a second give-up after the key and its why were said again may move on)
     if (KEY_SAID.test(p.text) && ctx.prevPrevT && KEY_SAID.test(ctx.prevPrevT.text) && !cardIn(ctx.prevPrevT)) return null;
-    if (/worked:step/.test(String(p.beat ?? ""))) {
-      if (ctx.prevPrevT && /worked:step/.test(String(ctx.prevPrevT.beat ?? "")) && ctx.prevPrevT.beat === p.beat) return null;
+    if (/worked:(?:step|problem)/.test(String(p.beat ?? ""))) {
+      if (p.clarifyN === 2) return null;
+      if (ctx.prevPrevT && /worked:(?:step|problem)/.test(String(ctx.prevPrevT.beat ?? "")) && ctx.prevPrevT.beat === p.beat) return null;
       return (r.pageParts ?? []).some((x) => x.part === "simpler" || x.part === "body") && r.beat === p.beat ? null : "a give-up at a worked step's check-in moved on";
     }
     if (KEY_SAID.test(p.text)) {
@@ -308,6 +309,23 @@ export const PREDICATES = {
     if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? "")) || cardIn(r) || /[?？]\s*$/.test(norm(r.text))) return null;
     const last = (r.pageParts ?? []).at(-1)?.part;
     return last === "close" || last === "closed" ? `the turn ends on a close: "${sentencesOf(r.text).at(-1)?.slice(0, 60)}"` : null;
+  },
+  /** Main on the shadow (2026-11-11): a clarify or a give-up on a worked problem gets the problem's simpler (never step 1); a clarify on
+   *  a worked step gets that step's simpler (never the step again). Where the script has no simpler, nothing is asked of the turn. */
+  workedClarify(L, r, i, ctx) {
+    const p = ctx.prevT;
+    const m = /^s(\d+):worked:worked:(problem|step(\d+))$/.exec(String(p?.beat ?? ""));
+    if (!m || r.clarifyN === 2) return null;
+    const clar = CLARIFY.test(ctx.prevChild) || /·\s*(?:another|clarify|confused)/.test(ctx.prevRead ?? "");
+    const giveUp = !clar && GIVE_UP_ANY.test(ctx.prevChild);
+    if (!clar && !(giveUp && m[2] === "problem")) return null;
+    const we = ctx.script?.skills?.[Number(m[1]) - 1]?.workedExample;
+    const sm = m[2] === "problem" ? we?.simpler : we?.steps?.[Number(m[3]) - 1]?.simpler;
+    const t = sm?.hi ?? sm?.en ?? (typeof sm === "string" ? sm : null);
+    if (!t) return null;
+    // (said already on that part — a third ask may move on, as after a key)
+    if (key(p.text).includes(key(t))) return null;
+    return key(r.text).includes(key(t)) ? null : `a ${giveUp ? "give-up" : "clarify"} on the worked ${m[2]} not answered with its simpler`;
   },
   /** A second clarify on one part (dc-r8-second-clarify-shows-not-rewords): the same authored line with the board shown, then the
    *  check-in — never the card, never the key (unless the part was the key). Gated (state.js step's second-clarify cell). */

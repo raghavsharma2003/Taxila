@@ -2853,7 +2853,56 @@ function giveUpSpent(s, input, item) {
 }
 /** "Samajh nahi aaya" and its kin: a clarify, whatever request the reader named. */
 const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|didn'?t\s+understand|don'?t\s+understand|kya\s+matlab)(?![\p{L}])/iu;
+/**
+ * C1 step 2 (main, 2026-11-11: "the walk's own cell address on every teacher row"): the (part, column, help) a turn read — the part her
+ * last turn was on (in compile.js's part ids), the column the child's reply asks for, and the help state of that part as the walk keeps
+ * it. Pure; null when the reply asks for no column (a plain "haan") or the walk is not on a script part.
+ */
+export function cellAddressOf(prev, input) {
+  if (!prev || input?.event !== "turn") return null;
+  const kit = input.kit, lm = prev.lastMove ?? {}, sb = lm.scriptBeat;
+  const text = String(input.text ?? ""), cls = input.cls ?? {}, rq = cls.request?.type ?? null;
+  const column = SAYS_CLARIFY.test(text) || ["clarify", "another", "confused"].includes(rq) ? "clarify" : rq === "language" ? "hindi"
+    : ["repeat", "which"].includes(rq) ? "repeat" : rq === "visual" ? "picture" : ["selftry", "thinking"].includes(rq) ? "try_first"
+      : rq === "uptake" ? "aside" : rq === "move_on" ? "move_on" : GIVE_UP_WORDS.test(text) ? "give_up"
+        : cls.outcome === "correct" ? "right" : cls.outcome === "misconception" ? "misconception" : ["incorrect", "partial"].includes(cls.outcome) ? "wrong" : null;
+  if (!column) return null;
+  const script = scriptFor(kit)?.script ?? null;
+  if (lm.kind === "greet") return script?.greetSimpler ? { part: `${script.topicId ?? "lesson"}:greet`, column, help: "fresh" } : null;
+  const cardId = prev.lastUi?.ask?.itemId ?? null;
+  const live = cardId ?? (lm.gave?.answer ? prev.activeItemId ?? lm.itemId ?? null : null);
+  let part = null;
+  const m = /^script:(.+?):(?:ask:(.+)|then:(.+)|([^:]+))$/.exec(String(live ?? ""));
+  if (m) {
+    const S = m[1], sk = skillScriptOf(kit, S);
+    if (m[2]) part = m[2] === "worked" ? `${S}:worked:yourStep` : `${S}:${m[2]}:card`;
+    else if (m[3]) { const i = (sk?.remediation ?? []).findIndex((r) => r.targets === m[3]); part = i >= 0 ? `${S}:rem:${i}:then` : null; }
+    else part = `${S}:check:${m[4]}`;
+  } else if (lm.simplerBeat?.kind === "remediation" || sb?.kind === "remediation") {
+    const rb = lm.simplerBeat?.kind === "remediation" ? lm.simplerBeat : sb;
+    const i = (skillScriptOf(kit, rb.skillId)?.remediation ?? []).findIndex((r) => `rem:${r.targets}` === String(rb.beatId));
+    part = i >= 0 ? `${rb.skillId}:rem:${i}` : null;
+  } else if (sb?.skillId) {
+    const S = sb.skillId, b = String(sb.beatId ?? "");
+    if (sb.kind === "explain") part = lm.checkinOk || lm.splitTeach ? `${S}:${b}:checkin` : `${S}:${b}:point`;
+    else if (/^worked:(?:problem|step\d+)$/.test(b)) part = `${S}:${b}`;
+    else if (sb.kind === "remediation") { const i = (skillScriptOf(kit, S)?.remediation ?? []).findIndex((r) => `rem:${r.targets}` === b); part = i >= 0 ? `${S}:rem:${i}` : null; }
+    else if (sb.kind === "hook") part = `${S}:hook`;
+  }
+  if (!part) return null;
+  // (help as the walk keeps it: a miss on the card or its key said is spent; a simpler said on it, or a clarify on this part, is heard)
+  const spent = !!live && ((prev.misses?.[live] ?? 0) >= 1 || (prev.cardHelp?.id === live && (prev.cardHelp.misses ?? 0) >= 1) || !!lm.gave?.answer);
+  const heard = (!!live && prev.cardHelp?.id === live && (prev.cardHelp.said ?? []).length > 0) || (lm.clarifyN ?? 0) >= 1;
+  return { part, column, help: spent ? "spent" : heard ? "heard" : "fresh" };
+}
 export function step(prev, input) {
+  const out = stepCells(prev, input);
+  // (the cell address the turn read rides on the move and the state's lastMove: the harness writes it on each teacher row)
+  const cell = (() => { try { return cellAddressOf(prev, input); } catch { return null; } })();
+  if (cell && out?.state?.lastMove) { out.state.lastMove = { ...out.state.lastMove, cell }; if (out.move) out.move = { ...out.move, cell }; }
+  return out;
+}
+function stepCells(prev, input) {
   // (main on C1 ruling 5, the stuck child's "samajh nahi aaya" after a key's check-in: read as "another", it moved to the next point
   // and posed its card — clarifyCard. The child's words say clarify: so does the request)
   if (input?.event === "turn" && input.cls?.request?.type === "another" && SAYS_CLARIFY.test(String(input.text ?? "")) && !input.cls.flags?.distress
@@ -2878,6 +2927,29 @@ export function step(prev, input) {
     s.clarifyRun = { key: prev.clarifyRun.key, n: 2 };
     // (the card waits: held for the turn after, as a split's teaching half holds it)
     return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+  }
+  // (main on the shadow, 2026-11-11: a clarify on a worked problem moved on to step 1 and a clarify on a step re-said the step. The cell:
+  // a clarify — or a give-up — on the worked problem says the problem's simpler, a clarify on a step says that step's simpler, then the
+  // check-in; the walk stays where it is, and the next reply goes on to the next step)
+  {
+    const wm = /^worked:(problem|step(\d+))$/.exec(String(prev?.lastMove?.scriptBeat?.beatId ?? ""));
+    const giveUp = GIVE_UP_WORDS.test(String(input?.text ?? "")) && !SAYS_CLARIFY.test(String(input?.text ?? ""));
+    if (wm && clar0 && !giveUp || (wm && wm[1] === "problem" && giveUp && !input?.cls?.flags?.distress)) {
+      const we = scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && prev.lastMove.kind === "worked_example" && !prev.lastMove.secondClarify && !prev.lastMove.workedSimpler
+        ? skillScriptOf(input.kit, prev.lastMove.scriptBeat.skillId)?.workedExample : null;
+      const sm0 = we ? (wm[1] === "problem" ? we.simpler : we.steps?.[Number(wm[2]) - 1]?.simpler) : null;
+      const sm = sm0 ? saidIn(sm0, prev.ctx?.lang ?? "hinglish") : null;
+      if (sm && String(sm).trim() && input?.event === "turn") {
+        const s = structuredClone(prev);
+        s.turn += 1;
+        const { rendered: _r, point: _p, sayFirst: _f, gave: _g, closed: _c, workedDone: _w, ...rest } = prev.lastMove;
+        const move = { ...rest, simpler: String(sm).trim(), smaller: true, checkinOk: true, workedSimpler: true, ...(giveUp ? {} : { clarifyN: 1, request: "clarify" }) };
+        const ui0 = { status: "your_turn", ...(prev.lastUi?.whiteboard ? { whiteboard: prev.lastUi.whiteboard } : {}) };
+        s.lastMove = move; s.moveVoiced = false; s.lastUi = ui0;
+        if (!giveUp) s.clarifyRun = { key: partOf(prev, prev.lastMove), n: 1 };
+        return { state: s, move, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(move, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+      }
+    }
   }
   const out = step0(prev, input);
   // (dc-r8-second-clarify-shows-not-rewords, main's reversal clause: the judges count second-clarify rows. A clarify on the same live

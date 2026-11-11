@@ -2487,7 +2487,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const goOn = () => (afterProblem ? null : state.lastMove?.checkinOk && !checkinLately ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state)
       : afterRem ? freshOf(BEAT_ASK[L0], state) : stepOpened() || kindNow !== "worked_example" ? null : freshOf(WORKED_GO[L0], state));
     // (dc-r8-second-clarify-shows-not-rewords: a second clarify on one part is the same line again, then the check-in, never the card)
-    let tail = state.lastMove?.secondClarify ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state) : card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
+    let tail = state.lastMove?.secondClarify || state.lastMove?.workedSimpler ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state) : card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
       // (v6.10 R7, main on director18: "Ab aage chalte hain." was left hanging after every bridge — nothing is appended after a bridge;
       // after a give-up's key, a check-in)
       : state.lastMove?.splitClose ? (state.lastMove.gaveCheck ? rotateOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state) : null)
