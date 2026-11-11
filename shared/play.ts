@@ -55,7 +55,7 @@ export const MODES = {
   taraazu: ["equation", "equality", "weigh", "fill"],   // r7: weigh (kg / g on a pan balance), fill (l / ml with jugs)
   nishana: ["place", "compare", "hop"],
   "kyun-lab": ["fair-test", "dhruv", "disha"],   // r7 chumbak: magnets (dhruv: poles, push and pull; disha: finding directions)
-  kon: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends", "place"],
+  kon: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends", "place", "name"],
   nazariya: ["views", "array", "floor", "powers", "mirror", "tri", "solid"],   // r4-khand; r7 nazariya2: tri (a triangle's cloth as half a rectangle), solid (faces / edges / corners of a solid turned in the hand)
   arena: ["pick"],
   stambh: ["bars", "picto"],
@@ -242,6 +242,10 @@ export type KonAct =
   | { kind: "mark"; r: number }
   | { kind: "join"; end: "v" | "e" }
   | { kind: "pick"; which: "a" | "b" | "same" }
+  // r8 kon/name: say taps a lettered point (`at`: 0 = the vertex, 1..3 = the ray ends) or clears the name; find taps an arc
+  | { kind: "letter"; at: number }
+  | { kind: "arc"; at: number }
+  | { kind: "clear" }
   | { kind: "commit" }
   | { kind: "undo" };
 // Nazariya (r4-khand): the block plot. A build act changes column heights (gravity: a block rests on the ground or a block).

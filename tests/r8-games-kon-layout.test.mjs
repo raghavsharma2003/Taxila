@@ -15,7 +15,7 @@ const browsersDir = process.env.PLAYWRIGHT_BROWSERS_PATH || "/opt/pw-browsers";
 const haveChromium = existsSync(browsersDir) && readdirSync(browsersDir).some((d) => d.startsWith("chromium"));
 const SKIP = process.env.FORGE3_BROWSER === "0" ? "FORGE3_BROWSER=0" : !haveChromium ? "no Chromium" : false;
 const SIZES = [{ tag: "360x640", w: 360, h: 640 }, { tag: "1366x768", w: 1366, h: 768 }];
-export const KEYS = ["kon/place"];
+export const KEYS = ["kon/place", "kon/name"];
 
 /** the faults on one screen (pure: the probe's numbers in, the refusals out) */
 export function screenFaults(probe, minTarget = 64) {
