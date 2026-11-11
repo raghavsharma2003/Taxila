@@ -28226,6 +28226,20 @@
    "at": "2026-11-11",
    "title": "Release 22 (4b2c60a) was deployed on a gate stamp written by hand from the main loop's own gate: tsc, vite build, prompt budget, test:all (716 suites, 7148 pass, 0 fail, browser suites included) and the single-process leak check, all on the clean committed tree. CI could not give a verdict (its browser job could not install Chromium). The stamp records that it is manual and why. This is allowed only when every gate command passed locally on the exact clean commit and the CI failure is in the runner before any test ran. Reverse if: a hand-stamped release ships a fault that CI's own run would have caught; then a release waits for CI or for scripts/deploy-azure.mjs --gate, however long that takes.",
    "source": "inbox/r8-main-18.json"
+  },
+  {
+   "id": "ms-tx-switch-on-production-release-23",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "The ?tx= switch checked on production after release 23 (377f1a3), one browser device at 360 x 740, n = 1 walk: landing on /?tx=a stores the choice; /start (no query) then renders set-up with data-tx=a on a light surface, the title in Literata 600 (loaded), paper background rgb(246,243,236); /start?tx=off stores off and no themed root remains. Before the fix (release 22, 4 routes) 0 of 4 kept the choice. The CI browser job on this commit logged 16 mirror-resolve failures and still ran its 146 tests, so the install fallback (or a late apt recovery) held.",
+   "source": "inbox/r8-main-19.json"
+  },
+  {
+   "id": "ms-release-377f1a3",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Released 377f1a3 with scripts/release.mjs: web taxila-web--s377f1a3-221c (was taxila-web--s4b2c60a-6cxo), worker + canary/nightly jobs on taxila-worker:377f1a3 (was 4b2c60a); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 377f1a3 --rollback.",
+   "source": "inbox/release-377f1a3.json"
   }
  ],
  "edges": [
@@ -45268,6 +45282,11 @@
    "src": "dc-r8-release-22-local-stamp",
    "rel": "measured_by",
    "dst": "ms-release-4b2c60a"
+  },
+  {
+   "src": "fd-tx-switch-lost-on-redirect-release-22",
+   "rel": "measured_by",
+   "dst": "ms-tx-switch-on-production-release-23"
   }
  ]
 }

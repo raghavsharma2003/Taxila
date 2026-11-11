@@ -6715,3 +6715,8 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-4b2c60a` (2026-11-11): Released 4b2c60a with scripts/release.mjs: web taxila-web--s4b2c60a-6cxo (was taxila-web--sed80148-xrd9), worker + canary/nightly jobs on taxila-worker:4b2c60a (was ed80148); evidence local gate stamp 2026-11-11T15:28:01.921Z; migrations skip. Rollback: node scripts/release.mjs 4b2c60a --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-tx-switch-on-production-release-23` (2026-11-11): The ?tx= switch checked on production after release 23 (377f1a3), one browser device at 360 x 740, n = 1 walk: landing on /?tx=a stores the choice; /start (no query) then renders set-up with data-tx=a on a light surface, the title in Literata 600 (loaded), paper background rgb(246,243,236); /start?tx=off stores off and no themed root remains. Before the fix (release 22, 4 routes) 0 of 4 kept the choice. The CI browser job on this commit logged 16 mirror-resolve failures and still ran its 146 tests, so the install fallback (or a late apt recovery) held.
+- `ms-release-377f1a3` (2026-11-11): Released 377f1a3 with scripts/release.mjs: web taxila-web--s377f1a3-221c (was taxila-web--s4b2c60a-6cxo), worker + canary/nightly jobs on taxila-worker:377f1a3 (was 4b2c60a); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 377f1a3 --rollback.
