@@ -75,7 +75,7 @@
   --tx-scheme: light;
 }
 
-[data-tx="b"] {
+[data-tx="b"], :root:has(.kx[data-tx="b"]:not([data-tx-surface])) {
   /* the dark kept and calmed: one blue-grey family, no pure black */
   --tx-bg: #0F1218;
   --tx-surface: #171B24;

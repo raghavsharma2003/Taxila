@@ -138,6 +138,22 @@ They were taken from the Kaksha Desk dev page (`src/ui-v3/kaksha/dev/desk.html?c
 - **Ownership:** `src/parent/**` is Learning's. The brief assigns this screen to Design, so the edits there are the root attributes and one import per file. The styling is in this stream's file.
 - **Images:** `before-parent*`, `after-a-parent*` and `after-b-parent*` (`-full` is the whole page; the bottom tab bar is painted once at its viewport position). Taken against `tests/e2e-design-b3-parent.mjs`'s own API fixtures, unlocked with its PIN.
 
+## Step f: the designed fallbacks
+
+- **The offline home.** The review's blank white page (`92-err-offline-home`) was the capture tool's own picture: headless Chromium's network-error page, taken with no service worker. On the production build with its worker (the real path: `/sw.js` serves the last good shell offline), the app boots and its gate said "Something went wrong. Try again." on a rose ring. That reads as the child's fault, and the network is not something that went wrong in the app. Now:
+  - when the device reports it is offline, the gate says **"You're offline. Today's lesson needs the internet. Nothing is lost: it picks up where you left off."**, with a calm ring and one Try again;
+  - when the network comes back, the shell tries again by itself (`online` event);
+  - a real server failure still says the old words.
+
+  The words apply in every look. Under `?tx=` the card is the paper state card, and the page around it takes the theme's ground (it was dark at the edges).
+- **Empty stage boxes.** A Studio piece that has not drawn yet (Studio marks its box `.st-empty`) left an empty card on the stage (`100-lesson-19/20`). Under the theme, her current line fills the board card in the display face, or the question when she is not speaking, until the piece draws. There are no "making" words and no spinner: the owner's rule is never to show build state.
+- **Images:**
+  - `before-offline-p360`: today, with the service worker;
+  - `after-current-offline-p360`: today's look with the new words;
+  - `after-a-offline-p360` and `after-b-offline-p360`;
+  - `before-lesson-studio*`, `before-lesson-play*`, and their `after-a-*` and `after-b-*` versions.
+- **Tests:** `tests/r8-lesson-presence.test.mjs` (step f case).
+
 ## Not changed (other owners)
 
 - **Studio's piece chrome.** The "Picture" chip, the beat dots and the 40 px band above a Studio piece are Studio's (`src/studio/**`). Under the theme only the piece's inner ring is dropped, by CSS in this stream's file. A Studio patch could fold the chip into the board card.

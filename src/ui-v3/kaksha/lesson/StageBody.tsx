@@ -124,6 +124,15 @@ export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray, 
           style={{ height: L.slot.h, ...(pipZone ? { ["--pip-zone-w" as string]: `${pipZone.w}px`, ["--pip-zone-h" as string]: `${pipZone.h}px`,
             ["--pip-zone-right" as string]: `${pipZone.right}px`, ["--pip-zone-bottom" as string]: `${pipZone.bottom}px` } : {}) }}>
           {work && <div className="ks-piece" key={pieceKey(work)}>{renderTray(work)}</div>}
+          {/* round 8 step f: the designed fallback for a piece that has not drawn yet (Studio's .st-empty). The stage is never
+              an empty box and never says it is making something: her current line (or the question) fills the card until the
+              piece draws. Shown by CSS only while the slot holds an empty piece (src/ui-v3/r8/lesson.css). */}
+          {work && presence && (
+            <div className="ks-standby" aria-hidden="true">
+              {/* (the Devanagari face only for Devanagari text: Hinglish in Latin letters keeps the display face) */}
+              <p className="ks-standby-line" lang={/[\u0900-\u097F]/.test(m.caption.text || m.ask?.text || "") ? "hi" : undefined}>{m.caption.text || m.ask?.text || ""}</p>
+            </div>
+          )}
           {!work && capOn && !L.caption && <div className="ks-hero-cap">{<Caption text={m.caption.text} speaking={m.caption.speaking} visible lang={m.caption.lang} soundFailed={m.caption.soundFailed} />}</div>}
           {work && faceAt !== "tile" && capOn && !presence && (
             <div className="ks-subtitle" data-testid="subtitle"><Caption text={m.caption.text} speaking={m.caption.speaking} visible lang={m.caption.lang} soundFailed={m.caption.soundFailed} /></div>

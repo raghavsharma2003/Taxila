@@ -11,6 +11,9 @@
    The selector repeats [data-tx] so it outranks the Kaksha look blocks, at most (0,3,1), whatever order the chunks load in. */
 @import "./bridge.css";
 
+/* the page behind a themed screen (the shell's gate, the edges of a centred card) takes the theme's ground too */
+:is(html, body):has(.kx[data-tx]) { background: var(--tx-bg); }
+.kx[data-tx][data-tx][data-tx] .cs-gate, .cs-gate:has(.kx[data-tx]) { background: var(--tx-bg); }
 .kx[data-tx][data-tx][data-tx] { background: var(--tx-bg); color: var(--tx-ink); font-family: var(--tx-font-ui); }
 .kx[data-tx][data-tx][data-tx] .kx-sky { display: none; }
 .kx[data-tx][data-tx][data-tx] .kx-screen { background: var(--tx-bg); background-image: none; }
@@ -69,3 +72,11 @@
   .kx[data-tx][data-tx][data-tx] .kx-home-copy .kx-dock { justify-content: center; }
   .kx[data-tx][data-tx][data-tx] .kx-h1 { font-size: var(--tx-t-8); }
 }
+
+/* round 8 step f: the designed states (offline, missing, signed out): a quiet paper card, the glyph in a soft disc;
+   no rose ring for being offline (it is not an error the child made) */
+.kx[data-tx][data-tx][data-tx] .kx-state { border-radius: var(--tx-r-2); border: 1px solid var(--tx-line); background: var(--tx-surface); box-shadow: var(--tx-shadow-1); }
+.kx[data-tx][data-tx][data-tx] .kx-state-ring { border: 0; background: var(--tx-surface-2); color: var(--tx-ink-2); box-shadow: none; }
+.kx[data-tx][data-tx][data-tx] .kx-state[data-tone="rose"] .kx-state-ring { color: var(--tx-danger); background: var(--tx-surface-2); }
+.kx[data-tx][data-tx][data-tx] .kx-state-title { font: var(--tx-display-weight) var(--tx-t-5)/1.2 var(--tx-font-display); letter-spacing: -.01em; color: var(--tx-ink); }
+.kx[data-tx][data-tx][data-tx] .kx-state-line { font-size: var(--tx-t-3); color: var(--tx-ink-2); }

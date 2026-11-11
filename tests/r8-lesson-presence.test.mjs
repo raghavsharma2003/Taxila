@@ -58,3 +58,16 @@ test("the plain board's maths lines split into fractions to stack, the text unch
   const back = (rs) => rs.map((r) => ("frac" in r ? `${r.frac[0]}/${r.frac[1]}` : r.text)).join("");
   for (const s of ["1/2 = 2/4", "3/4 > 1/2 and 7/8", "no maths"]) assert.equal(back(mathRuns(s)), s);
 });
+
+test("step f: the offline state has its own words (never 'something went wrong'), in the copy's style", async () => {
+  const fs = await import("node:fs");
+  const copy = fs.readFileSync(new URL("../src/child/copy.ts", import.meta.url), "utf8");
+  const title = /offlineTitle:\s*"([^"]+)"/.exec(copy)?.[1], line = /offlineLine:\s*"([^"]+)"/.exec(copy)?.[1];
+  assert.equal(title, "You're offline.");
+  assert.ok(line && !/!|went wrong|error/i.test(line), "calm, no exclamation, not an error");
+  const shell = fs.readFileSync(new URL("../src/child/ChildShell.tsx", import.meta.url), "utf8");
+  assert.match(shell, /offline \? t\("offlineTitle"\)/, "the gate says offline when the device is offline");
+  assert.match(shell, /addEventListener\("online"/, "it tries again by itself when the network returns");
+  const stage = fs.readFileSync(new URL("../src/ui-v3/kaksha/lesson/StageBody.tsx", import.meta.url), "utf8");
+  assert.match(stage, /ks-standby/, "a piece that has not drawn yet never leaves an empty board card");
+});
