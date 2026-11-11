@@ -16,9 +16,27 @@ import "../../ui-v3/kaksha/tokens.css";
 import "../../ui-v3/kaksha/kaksha.css";
 import "../../ui-v3/kaksha/futurist.css";
 import "../../styles/landing.css";
+import "../../ui-v3/r8/site.css";
+import { txAttrs } from "../../ui-v3/r8/tx.ts";
 
 /** The site root's scope: Kaksha's Volt night, as K's shell sets it on a child screen (never a palette of our own). */
 export const VOLT_NIGHT = { className: "kx sv", "data-klook": "volt", "data-ktheme": "night" } as const;
+/** Round 8: the ?tx= switch on the site root (grown-ups' pages: the light surface in both themes; src/ui-v3/r8/site.css). */
+export const siteTx = () => txAttrs("light");
+/** Round 8: under ?tx= the landing shows captures of the new look (public/site/tx/<theme>-<name>.webp, taken from the
+ *  dev pages); the game capture stays, its screens are Games' and not yet themed. */
+const TX_SHOTS = new Set(["home", "desk", "turn", "world"]);
+export const siteShot = (src: string) => {
+  const t = siteTx()["data-tx"];
+  const m = /^\/site\/(\w+)\.webp$/.exec(src);
+  return t && m && TX_SHOTS.has(m[1]) ? `/site/tx/${t}-${m[1]}.webp` : src;
+};
+/** Round 8: a screenshot tag without the HUD "// " and capitals under ?tx= ("// LIVE LESSON" reads "Live lesson"). */
+export const siteTag = (t: string) => {
+  if (!siteTx()["data-tx"]) return t;
+  const w = t.replace(/^\/\/\s*/, "").toLowerCase();
+  return w.charAt(0).toUpperCase() + w.slice(1);
+};
 
 /** The brand mark: an open book whose spine rises into a pen nib. Same glyph as public/favicon.svg (brand.mjs). */
 export function BrandMark({ size = 32 }: { size?: number }) {
@@ -76,7 +94,7 @@ export function SiteHeader({ home }: { home?: boolean }) {
   return (
     <header className="sv-header">
       <div className="sv-wrap sv-header-row">
-        <Link to="/" className="sv-brand" aria-label="Taxila home"><BrandMark size={30} /><span>TAXILA</span></Link>
+        <Link to="/" className="sv-brand" aria-label="Taxila home"><BrandMark size={30} /><span>Taxila</span></Link>
         <nav className="sv-nav" aria-label="Site">
           {home ? <a href="#lesson">How a lesson works</a> : <NavLink to="/#lesson">How a lesson works</NavLink>}
           <NavLink to="/promises">Our promises</NavLink>
@@ -110,7 +128,7 @@ export function SiteFooter() {
     <footer className="sv-footer">
       <div className="sv-wrap sv-footer-grid">
         <div className="sv-stack">
-          <Link to="/" className="sv-brand" aria-label="Taxila home"><BrandMark size={26} /><span>TAXILA</span></Link>
+          <Link to="/" className="sv-brand" aria-label="Taxila home"><BrandMark size={26} /><span>Taxila</span></Link>
           <p className="sv-meta">A personal AI teacher for classes 1 to 9. The teacher is an AI and always says so.</p>
         </div>
         <nav className="sv-stack sv-footer-nav" aria-label="Footer">
@@ -146,7 +164,7 @@ export function SitePage({ children, title }: { children: ReactNode; title: stri
   useEffect(() => { document.title = `${title} · Taxila`; }, [title]);
   useCanonical();
   return (
-    <div {...VOLT_NIGHT}>
+    <div {...VOLT_NIGHT} {...siteTx()}>
       <a className="sv-skip" href="#main">Skip to content</a>
       <SiteHeader />
       <main id="main" className="sv-main">{children}</main>

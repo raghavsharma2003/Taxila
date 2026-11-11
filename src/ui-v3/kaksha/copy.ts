@@ -86,6 +86,10 @@ export const KX = {
   emoteThanks: K("Thanks", "Thanks", "धन्यवाद"),
   emoteFun: K("That was fun", "Maza aaya", "मज़ा आया"),
   emoteSent: K("Sent to {T}.", "{T} ko bhej diya.", "{T} को भेज दिया।"),
+  // round 8 (?tx=): the home's one true line (src/ui-v3/r8/homeLine.ts); counts in digits
+  jarOne: K("Your 1 question from last time comes first.", "Pichhli baar ka 1 sawaal pehle aayega.", "पिछली बार का 1 सवाल पहले आएगा।"),
+  jarMany: K("Your {n} questions from last time come first.", "Pichhli baar ke {n} sawaal pehle aayenge.", "पिछली बार के {n} सवाल पहले आएँगे।"),
+  lessonToday: K("Lesson time today: {time}.", "Aaj lesson ka time: {time}.", "आज पाठ का समय: {time}।"),
   jarWaiting: K("Your questions from last time are waiting. She brings them back in the next lesson.", "Pichhli baar ke sawaal intezaar mein hain.", "पिछली बार के सवाल इंतज़ार में हैं।"),
   // r7 app-nav-unified: the one dock (nav.tsx)
   navHome: K("Home", "Home", "होम"),

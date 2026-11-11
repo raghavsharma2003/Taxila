@@ -82,7 +82,7 @@ export function KakshaHome() {
           lessonTo={state === "homework" ? startTo : null} testSubject={subjectName(plan.testWindow?.subject ?? plan.topic?.subject ?? null)}
           did={plan.did[0] ? { ask: plan.did[0].ask, answer: plan.did[0].answer, withHelp: plan.did[0].withHelp } : null}
           madeFor={plan.madeFor.map((it) => ({ id: it.id, title: it.title, still: it.still, to: `/c/${cid}/notebook?made=${encodeURIComponent(it.id)}` }))}
-          jarWaiting={(plan.jarWaiting ?? 0) > 0}
+          jarWaiting={(plan.jarWaiting ?? 0) > 0} jarCount={plan.jarWaiting ?? 0}
           startTo={state === "homework" ? `/c/${cid}/ask?homework=1` : continueTo ?? startTo} resuming={!!continueTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} lessonTime={plan.schedule?.today ? clock(plan.schedule.time) : null} go={go}
           dock={dockForPlan(kn.dock, plan)} meTo={kn.meTo} />
       </div>

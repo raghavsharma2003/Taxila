@@ -158,3 +158,64 @@ They were taken from the Kaksha Desk dev page (`src/ui-v3/kaksha/dev/desk.html?c
 
 - **Studio's piece chrome.** The "Picture" chip, the beat dots and the 40 px band above a Studio piece are Studio's (`src/studio/**`). Under the theme only the piece's inner ring is dropped, by CSS in this stream's file. A Studio patch could fold the chip into the board card.
 - **The dock's controls** (Hint, Talk, 123, Wait) are the Desk's behaviour and are unchanged. Only their dress changed.
+
+## The home's one true line (main's ruling 3, 2026-11-11)
+
+Under `?tx=`, on the start state, the line under the greeting is one true thing or nothing (`src/ui-v3/r8/homeLine.ts`):
+1. Parked questions: "Your 2 questions from last time come first." (singular for one; the count is the server's `plan.jarWaiting`).
+2. Resuming: "Pick up where you left off."
+3. Today's time: "Lesson time today: 4:30 pm." (`plan.schedule`).
+4. Otherwise nothing. The old filler ("Just start. Asha takes it from there.") is not shown.
+
+The other states (done, capped, resting, homework, test) keep their own line. There is never a card or a topic title. Test: `tests/r8-home-line.test.mjs`. Images: `after-{a,b}-home-line-{jar,time,none}-p360.png`.
+
+## The palette: one source (main's ruling 2)
+
+`tests/r8-palette-sync.test.mjs` reads Studio's `src/theme/palette.ts` (read-only) and fails when a board role differs from `tx-tokens.css`. It compares:
+- theme A with `PAPER`;
+- theme B with `NIGHT.board.chalk.role`.
+
+Studio's file still holds its draft values, so the 11 differences are listed as pending and sent as `docs/patches/to-studio/009-palette-roles/`. The test also fails when a pending one lands, so the list only shrinks.
+
+## Step h: the public pages
+
+- **The switch.** Every public page goes through one root (`VOLT_NIGHT` in `src/app/landing/Site.tsx`): the landing, promises, privacy, help, pricing, leaving and not found. That root now also carries `siteTx()`, which is `data-tx` and `data-tx-surface="light"`. The site is for grown-ups, so it is light in both themes, like set-up and the parent corner.
+  - `/signin`, `/start/phone` and `/pair` are StepFrame screens, already themed at step d.
+  - `/trust` redirects to `/promises`.
+- **What `src/ui-v3/r8/site.css` removes:**
+  - the HUD grid and the glow washes;
+  - the floating screenshot;
+  - the corner brackets and clipped corners;
+  - the "// " eyebrows and the mono uppercase tags;
+  - the rotated-diamond bullets;
+  - the uppercase wordmark and buttons.
+- **What is in their place:**
+  - headings in Literata;
+  - body text in Atkinson;
+  - the evidence claim and quotes in the reading face;
+  - paper cards with a real shadow;
+  - one accent action;
+  - links and markers in her indigo.
+
+  Green is used only for "Secure", the site's one "right".
+- **The screenshots on the landing** show the new look under `?tx=`: `public/site/tx/{a,b}-{home,desk,turn,world}.webp`, taken from the dev pages at 600 × 1333. The game capture stays, because Games' screens are not themed yet. The "turn" capture uses the plain your-turn fixture, so the board never shows the answer to the question under it.
+- **The tags** ("// LIVE LESSON") read "Live lesson" under the switch. The wordmark is "Taxila" in the markup; the current look keeps its capitals through CSS.
+- **The boot skeleton** (`index.html`) was black with a neon orbit before the app loaded. A device that chose a theme now gets the theme's ground and a soft circle (`data-boot-tx`, read from `?tx=` or the stored choice).
+- **Ownership:** `tests/r11-site-volt.test.mjs` pins the SitePage root markup. Its pattern now also allows ` {...siteTx()}`; its intent (every public page goes through SitePage) is unchanged.
+- **Images:** `before-site-*`, `after-a-site-*` and `after-b-site-*` for the landing, promises, help and sign-in, at p360 and d1366.
+
+## Step i: World and Hangar
+
+- **Subjects.** `tx-tokens.css` gains six subject marks (`--tx-maths` … `--tx-social`). In A they are deep enough to read on paper. In B they reuse its role colours, because B's colour budget is full. The bridge maps the Kaksha ring names (`--k-r-*`) to them, so the orbit canvas, the legend and the stations follow.
+- **The planet** is her indigo lit on a soft tint, not a dark ball.
+- **The controls.**
+  - The segmented controls are pills, and the chosen one takes her tint, not a black block.
+  - The orbit and settlement panels are paper cards.
+  - The "// Planet" eyebrow is plain.
+  - The New badge is a sentence-case pill.
+- **Hangar:**
+  - the loadout card is rounded;
+  - the slot labels ("Hull", "Trail") are in sentence case;
+  - the tiles are rounded.
+- **Images:** `before-world-*`, `after-a-world-*`, `after-b-world-*`, `before-hangar-*`, `after-a-hangar-*` and `after-b-hangar-*`.
+- **What remains:** Notebook, Ask, Me, Teacher and Practice are reached only in the real app. Step j's walk lists them as found.
