@@ -2861,6 +2861,21 @@ export function step(prev, input) {
   if (input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && GIVE_UP_WORDS.test(String(input.text ?? "")) && !SAYS_CLARIFY.test(String(input.text ?? ""))
     && !input.cls?.flags?.distress && /^worked:step/.test(String(prev?.lastMove?.scriptBeat?.beatId ?? "")) && !prev?.lastUi?.ask && !prev?.lastMove?.smaller)
     input = { ...input, cls: { ...(input.cls ?? {}), outcome: "no_evidence", flags: { ...(input.cls?.flags ?? {}), dontKnow: false }, request: { type: "another", src: "giveup_step" } } };
+  // (dc-r8-second-clarify-shows-not-rewords, made a cell for director21: "phir bhi samajh nahi aaya" straight after her answer to a clarify
+  // on the same part gets that same line again — its board up — and then a check-in; never the card, never the next part)
+  const clar0 = input?.event === "turn" && (input.cls?.request?.type === "clarify" || input.cls?.request?.type === "another" || SAYS_CLARIFY.test(String(input.text ?? "")))
+    && !input.cls?.flags?.distress && !GIVE_UP_WORDS.test(String(input.text ?? "").replace(SAYS_CLARIFY, ""));
+  if (clar0 && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && prev?.lastMove?.clarifyN === 1 && !prev.lastMove.secondClarify
+    && prev.clarifyRun?.key === partOf(prev, prev.lastMove)) {
+    const s = structuredClone(prev);
+    s.turn += 1;
+    const again = { ...prev.lastMove, secondClarify: true, clarifyN: 2, checkinOk: true };
+    const ui0 = { status: "your_turn", ...(prev.lastUi?.whiteboard ? { whiteboard: prev.lastUi.whiteboard } : {}) };
+    s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0;
+    s.clarifyRun = { key: prev.clarifyRun.key, n: 2 };
+    // (the card waits: held for the turn after, as a split's teaching half holds it)
+    return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+  }
   const out = step0(prev, input);
   // (dc-r8-second-clarify-shows-not-rewords, main's reversal clause: the judges count second-clarify rows. A clarify on the same live
   // part as the clarify before it is the n-th, recorded on the move, on every path (a held half included); any other turn ends the run)
@@ -3813,11 +3828,12 @@ function heldTurn(prev, input) {
   // the check-in; it does not move on. Once: a second clarify gets the held half. (Its simpler wording is Learning's to author; until
   // then the authored why is said again.)
   // (dc-r8-second-clarify-shows-not-rewords: asked a second time, the same line again and the check-in — a third ask gets the held half)
-  if (!h.teach && prev.lastMove?.gave?.answer && prev.lastMove?.splitClose && (!prev.lastMove?.smaller || !prev.lastMove?.keyTwice) && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun
+  if (!h.teach && prev.lastMove?.gave?.answer && prev.lastMove?.splitClose && (!prev.lastMove?.smaller || !prev.lastMove?.keyTwice) && !prev.lastMove?.secondClarify && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun
     && (c?.request?.type === "clarify" || SAYS_CLARIFY.test(String(input.text ?? "")) || giveUp)) {
     const s = structuredClone(prev);
     s.turn += 1;
-    const again = { ...prev.lastMove, smaller: true, gaveCheck: true, ...(prev.lastMove?.smaller ? { keyTwice: true } : {}) };
+    const { secondClarify: _sc, clarifyN: _cn, ...prevMove } = prev.lastMove;
+    const again = { ...prevMove, smaller: true, gaveCheck: true, ...(prev.lastMove?.smaller ? { keyTwice: true } : {}) };
     const ui0 = { status: "your_turn" };
     s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
     return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };

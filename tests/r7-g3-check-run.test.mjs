@@ -78,3 +78,13 @@ test("S1: the re-ask predicates flag director20's rows", () => {
   for (const f of ["stuck-c4-ch05-t01 8 cardWholeAgain", "stuck-c5-ch02-t01 48 splitCardEmpty", "stuck-c6-ch06-t01 62 splitCardEmpty", "stuck-c5-ch02-t01 32 bareClose"])
     assert.ok(flags.includes(f), `${f} in ${flags.filter((x) => /cardWholeAgain|splitCardEmpty|bareClose/.test(x)).join(", ")}`);
 });
+
+// dc-r8-director20 item 6: c4's worked answer is "2/3"; the predicate read only its "2", which the why's "2 khaye gaye" satisfied
+test("workedFinal reads the whole final answer, a fraction whole", async () => {
+  const { PREDICATES } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const script = { skills: [{ skillId: "c4-x-s1", workedExample: { answer: { hi: "barfi ka 2/3 hissa khaya gaya" } } }] };
+  const ctx = { prevT: { check: { itemId: "script:c4-x-s1:ask:worked" } }, prevCls: "correct", script };
+  const f = (text) => PREDICATES.workedFinal({}, { who: "teacher", text }, 0, ctx);
+  assert.match(f("Haan, sahi hai, kyunki 3 barabar tukdon mein se 2 khaye gaye; bacha hua 1 tukda neeche nahi jaata.") ?? "", /2\/3/);
+  assert.equal(f("Haan, sahi hai. Toh poora jawab: barfi ka 2/3 hissa khaya gaya."), null);
+});

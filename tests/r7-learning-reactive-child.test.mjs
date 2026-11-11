@@ -189,3 +189,17 @@ test("director9: an imperative ask is a question; 'which question?' is capped pe
     assert.ok(whichRun !== -1 && whichRun <= WHICH_MAX, `${persona}/${seed}: ${replies.map((x) => x.text).join(" | ")}`);
   }
 });
+
+// dc-r8-director20 harness: her return question is answered with an answer that fits it; with toEnd the child stays until the
+// script is spent
+test("harness: a return answer fits the question, and a toEnd child stays until scriptDone", async () => {
+  const { createReactiveChild: mk } = await import("../evals/child-sim/reactive.mjs");
+  const ans = (q) => mk({ persona: "offtopic", seed: 3 }).reply({ turn: 5, teacher: `Haan, sahi hai. ${q}`, returned: true }).text;
+  assert.match(ans("Pichhli baar cricket mein kya hua tha?"), /tha|the$/);
+  assert.match(ans("Cricket mein tumhe kya karna sabse achha lagta hai?"), /karna|pakadna/);
+  assert.match(ans("Cricket mein tumhe sabse achha kaun lagta hai?"), /^(?:Virat|Rohit|Dhoni)$/);
+  const c = mk({ persona: "steady", seed: 5, toEnd: true });
+  const kinds = Array.from({ length: 60 }, (_, t) => c.reply({ turn: t, teacher: "Theek hai." }).kind);
+  assert.ok(!kinds.includes("leave"), "stays while the script is not spent");
+  assert.equal(c.reply({ turn: 61, teacher: "Theek hai.", scriptDone: true }).kind, "leave");
+});

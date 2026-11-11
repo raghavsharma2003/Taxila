@@ -24,7 +24,7 @@ import { instructionsFor } from "../server/compiler/instructions.js";
 import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, screenFacts, pointSaid } from "../server/brain/say.js";
 import { saidMust, scriptOn, scriptWhyNot, scriptFor, fillFriend } from "../server/director/script.js";
 const scriptForKit = (kit) => scriptFor(kit)?.script ?? null;
-import { createReactiveChild, maxTurnsFor } from "./child-sim/reactive.mjs";
+import { createReactiveChild, maxTurnsFor, TO_END_MAX, LEAVE_WAIT as LEAVE_WAIT_H } from "./child-sim/reactive.mjs";
 import { withheldStated, pictureMismatch, authoredWhys, borrowedWhy, verdictMisplaced, falseAnswerNumbers } from "./hybrid-side-by-side/checks.mjs";
 import { drawnContradictions } from "./hybrid-side-by-side/drawn-pages.mjs";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
@@ -164,7 +164,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
   const seeded = learner ? seedLearner(kit.topicId, learner) : null;
   // H1 (director5): a reactive scripted child answers what is on the table, by persona; else the fixed lines
   // (--second-clarify: the stuck child also asks "samajh nahi aaya" twice on one point and one worked step — main's C1 ruling 5)
-  const child = persona ? createReactiveChild({ persona, seed: 7, kit, name: "Riya", clarify2: process.argv.includes("--second-clarify") }) : null;
+  // (dc-r8-director20 harness: the steady lesson runs to the end of the script, so the third skill is heard)
+  const toEnd = persona === "steady" && !process.argv.includes("--steady-leaves");
+  const child = persona ? createReactiveChild({ persona, seed: 7, kit, name: "Riya", clarify2: process.argv.includes("--second-clarify") || persona === "stuck", toEnd }) : null;
   const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend baby elephant" }, ageBand: classLevel <= 3 ? "6-9" : "10-15", lang: "hinglish",
     interests: seeded ? seeded.interests : ["cricket"], firstMeeting: !seeded, hasCallback: false, topicTitle: kit.title ?? kit.topicId, classLevel, sessionId: LESSON.id, teacher: lane };
   const s0 = initLessonState({ topicId: kit.topicId, kit, ctx, seed: 7, now: 0, ...(seeded ? { knows: seeded.plan, warmupItems: seeded.warmup } : {}) });
@@ -193,7 +195,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
   s.recent = [...(s.recent ?? []), { who: "teacher", text: opening }];
   let live = { state: newLearnerState({ childId: CHILD(classLevel).id, classLevel }), maxSeq: 0 };
   // (H1.1: the persona sets its own budget, Learning maxTurnsFor: steady leaves at 40, so skills 2-3 are reached)
-  const MAX = child ? maxTurnsFor(persona) : lines.length;
+  const MAX = child ? (toEnd ? TO_END_MAX + LEAVE_WAIT_H : maxTurnsFor(persona)) : lines.length;
+  const lastSkill = scriptFor(kit)?.script?.skills?.at(-1)?.skillId ?? null;
   let lastBoardUp = false;
   // (v6.1 harness: the board the child saw last turn, to tell a picture ask that drew something new from one that re-drew it)
   let lastScreenKey = null;
@@ -235,6 +238,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
         ...(["probe", "teachback"].includes(s.lastMove?.kind) ? { probe: true } : {}),
         // (v6.11 J2: her last turn was an aside's return question: the child answers it, about the aside)
         // (P1: and her question after the "Main AI teacher hoon …" line is answered the same way, about their thing)
+        // (toEnd: the script is spent once its last skill was reached and its walk is over)
+        ...(lastSkill && (s.introduced ?? []).includes(lastSkill) && !s.walk ? { scriptDone: true } : {}),
         ...(lastT?.returnSaid || (/Main AI teacher hoon|Main AI hoon|I'm an AI|No favourites for me/i.test(String(lastT?.text ?? "")) && /[?？]\s*$/.test(String(lastT?.text ?? ""))) ? { returned: true } : {}) });
       let out = child.reply(childIn(i));
       // (c6 steering 51: the goodbye came during an open card — up to 10 turns it waits; the child answers the card instead)

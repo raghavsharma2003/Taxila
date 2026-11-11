@@ -2486,7 +2486,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const stepOpened = () => (body ?? []).some((x) => STEP_OPENER.test(String(x ?? "").trim()) || STEP_LABEL.test(String(x ?? "").trim())) || STEP_OPENER.test(String(workedLines?.[0] ?? "").trim());
     const goOn = () => (afterProblem ? null : state.lastMove?.checkinOk && !checkinLately ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state)
       : afterRem ? freshOf(BEAT_ASK[L0], state) : stepOpened() || kindNow !== "worked_example" ? null : freshOf(WORKED_GO[L0], state));
-    let tail = card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
+    // (dc-r8-second-clarify-shows-not-rewords: a second clarify on one part is the same line again, then the check-in, never the card)
+    let tail = state.lastMove?.secondClarify ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state) : card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
       // (v6.10 R7, main on director18: "Ab aage chalte hain." was left hanging after every bridge — nothing is appended after a bridge;
       // after a give-up's key, a check-in)
       : state.lastMove?.splitClose ? (state.lastMove.gaveCheck ? rotateOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state) : null)
@@ -2590,7 +2591,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const usedWhy = [];
       const keyW = (w) => String(w ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
       // (dc-r8-director20 L2: asked again after a key — "samajh nahi aaya", "pata nahi" — the why is the answer, said again by design)
-      const prevW = state.lastMove?.gaveCheck && state.lastMove?.smaller ? "" : keyW(herPrev);
+      const prevW = (state.lastMove?.gaveCheck && state.lastMove?.smaller) || state.lastMove?.secondClarify ? "" : keyW(herPrev);
       const once1 = (x) => {
         if (!x) return x;
         const m = /,\s*(?:kyunki|because)\s+([^.!?\u0964]+)([.!?\u0964]?)\s*$/iu.exec(x);
@@ -2835,7 +2836,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (their own word said back is no exemption — "Virat ke cover drive … mashhoor" answered "aapko Virat pasand hai?"; the park's
       // promise is kept, and so is a line spoken to them)
       const nm = (y) => String(y ?? "").replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?]+$/, "");
-      const isRet = (!!guard.returnLine && nm(x) === nm(guard.returnLine)) || (!!guard.againLine && nm(x) === nm(guard.againLine)) || (!!guard.returnReplyLine && nm(x) === nm(guard.returnReplyLine));
+      const isRet = (!!guard.returnLine && nm(x) === nm(guard.returnLine)) || (!!guard.againLine && nm(x) === nm(guard.againLine)) || (!!guard.returnReplyLine && (nm(x) === nm(guard.returnReplyLine) || nm(guard.returnReplyLine).includes(nm(x))));
       return !!w && !isRet && !PROMISE_SAID.test(x) && !/(?<![\p{L}])(?:ke\s+baad|baad\s+mein|karenge|yaad\s+rahega|later)(?![\p{L}])/iu.test(x)
         && !/(?<![\p{L}])(?:tum|tumne|tumhe|tumhari|tumhara|tumko|you|your|ai)(?![\p{L}])/iu.test(x) && !LESSON_SAID.test(x) && !/\d/.test(x); };
     const ssc = sentences(reply).map((x) => String(x).trim()).filter(Boolean);

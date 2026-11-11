@@ -139,8 +139,11 @@ export const PREDICATES = {
     const sk = id.replace(/^script:/, "").replace(/:ask:worked$/, "");
     const we = (ctx.script?.skills ?? []).find((s) => s.skillId === sk)?.workedExample;
     const a = String(we?.answer?.hi ?? we?.answer ?? "");
-    const num = a.match(/\d+(?:\.\d+)?/)?.[0];
-    return num && !new RegExp(`(?<![\\d.])${num}(?![\\d])`).test(r.text) ? `a worked example closed without its final answer (${num})` : null;
+    // (dc-r8-director20 item 6: c4's answer is "2/3" — reading only its "2", the why's "2 khaye gaye" passed it on steady 44, offtopic 48
+    // and steering 46; the whole number, a fraction whole, must be said)
+    const num = a.match(/\d+(?:[./]\d+)?/)?.[0];
+    const esc = (x) => x.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&");
+    return num && !new RegExp(`(?<![\\d./])${esc(num)}(?![\\d/])`).test(r.text) ? `a worked example closed without its final answer (${num})` : null;
   },
   /** A worked step said before its problem in the lesson (an aside resumed at step 1). */
   workedOrder(L, r, i, ctx) {
@@ -302,11 +305,12 @@ export const PREDICATES = {
     return last === "close" || last === "closed" ? `the turn ends on a close: "${sentencesOf(r.text).at(-1)?.slice(0, 60)}"` : null;
   },
   /** A second clarify on one part (dc-r8-second-clarify-shows-not-rewords): the same authored line with the board shown, then the
-   *  check-in — never the card, never the key. PENDING: reported, not gated, until the clarify column switch (C1 step 3). */
-  secondClarify(L, r) {
+   *  check-in — never the card, never the key (unless the part was the key). Gated (state.js step's second-clarify cell). */
+  secondClarify(L, r, i, ctx) {
     if (r.clarifyN !== 2) return null;
     if (cardIn(r)) return "a second clarify answered with the card";
-    if (KEY_SAID.test(r.text)) return "a second clarify answered with the key";
+    // (the same line: when the part they asked about was the key and its why, it is the key again)
+    if (KEY_SAID.test(r.text) && !(ctx?.prevT && KEY_SAID.test(ctx.prevT.text))) return "a second clarify answered with the key";
     return CHECKIN.test(norm(r.text)) ? null : "a second clarify that does not end on its check-in";
   },
   /** An English word and its Hindi twin in one turn. */
@@ -374,7 +378,9 @@ function scriptUses(ctx, w) {
 }
 
 /** Predicates that report and do not gate yet (the gate test leaves them out): each names the step that makes it pass. */
-export const PENDING = new Set(["secondClarify", "twinsData"]);
+// (secondClarify gates from 2026-11-11: the stuck child says "phir bhi samajh nahi aaya" right after her first re-explanation, and the
+// walk's second-clarify cell — the same line, then the check-in — holds it at 0)
+export const PENDING = new Set(["twinsData"]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
