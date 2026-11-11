@@ -221,9 +221,64 @@ test("never served (main 2026-11-11): a piece the predicates or judges refused i
 test("predicate (2026-11-11, c5-t01 retry 5 split on 'Run complete'): a Hinglish spec that leaves an engine's English string of 2+ words untranslated fails before any judge", async () => {
   const { untranslatedStrings } = await import("../server/studio/approved.js");
   const spec = (strings, lang = "hinglish") => ({ lang, strings });
-  assert.deepEqual(untranslatedStrings("catch-on-line@1", spec({ runDone: "Run complete", wave: "Wave" })).keys, ["runDone"], "a shared single word passes");
-  assert.equal(untranslatedStrings("catch-on-line@1", spec({ runDone: "Daud poori" })).ok, true);
+  const { ENGINE_SPECS } = await import("../shared/studio-spec.ts");
+  const all = Object.fromEntries(Object.entries(ENGINE_SPECS["catch-on-line@1"].defaultSpec.strings).map(([k, v]) => [k, `${v} (hinglish)`]));
+  assert.deepEqual(untranslatedStrings("catch-on-line@1", spec({ ...all, runDone: "Run complete", wave: "Wave" })).keys, ["runDone"], "a shared single word passes");
+  assert.equal(untranslatedStrings("catch-on-line@1", spec({ ...all, runDone: "Daud poori" })).ok, true);
   assert.equal(untranslatedStrings("catch-on-line@1", spec({ runDone: "Run complete" }, "en")).ok, true, "an English piece keeps its English");
+  // (2026-11-11: a string LEFT OUT is drawn as the engine's English default; a blank one too)
+  const { runDone, ...rest } = all;
+  assert.deepEqual(untranslatedStrings("catch-on-line@1", spec(rest)).keys, ["runDone"], "a missing multi-word string is refused");
+  assert.deepEqual(untranslatedStrings("catch-on-line@1", spec({ ...all, runDone: " " })).keys, ["runDone"], "a blank one too");
+});
+
+test("the spec prompt shows an example in another language with its strings' keys only, values blank (c5-t02: 'Run complete' copied 3 times)", async () => {
+  const { specPrompt } = await import("../server/stagecraft/builders.js");
+  const user = specPrompt({ archetype: "catch-on-line@1", need: "practice", premise: {} }, { topicId: "c5-maths-ch02-t02", lang: "hinglish", band: "B3" })[1].content;
+  assert.ok(!user.includes("Run complete"), "the English example's strings are not in a Hinglish prompt");
+  assert.match(user, /"runDone":""/);
+  const en = specPrompt({ archetype: "catch-on-line@1", need: "practice", premise: {} }, { topicId: "c5-maths-ch02-t02", lang: "en", band: "B3" })[1].content;
+  assert.ok(en.includes("Run complete"), "an English lesson keeps the example's strings");
+});
+
+test("an aimed spec prompt carries the mix-up's signs and its diagnostic case (main 2026-11-11: 3 of 4 judged pieces missed the mix-up)", async () => {
+  const { kitSlice, specPrompt } = await import("../server/stagecraft/builders.js");
+  const m = kitSlice("c4-maths-ch03-t01", "c4-maths-ch03-t01-m-any-odd-digit").misconceptions[0];
+  assert.deepEqual(m.case, { question: "Is 36 odd or even?", mixupAnswer: "Odd, because it has a 3", answer: "Even" });
+  assert.ok(m.signs.length >= 1);
+  const user = specPrompt({ archetype: "sieve-storm@1", need: "contrast_misconception", premise: { misconceptionId: m.id } }, { topicId: "c4-maths-ch03-t01", lang: "hinglish", band: "B3" })[1].content;
+  assert.match(user, /belief's answer and the true answer differ/);
+  assert.ok(user.lastIndexOf("Return only the JSON") > user.indexOf("belief's answer"), "the request stays last");
+});
+
+test("keysVerified option (a), a BOUND match (main 2026-11-11): a key citing a kit item is verified only when its key and its givens equal the item's", async () => {
+  const { boundToKit } = await import("../server/stagecraft/builders.js");
+  const { kitTopicAny } = await import("../server/stagecraft/catalogue.js");
+  const kit = kitTopicAny("c4-maths-ch03-t02");
+  assert.equal(boundToKit({ src: "c4-maths-ch03-t02-i01", key: "14", prompt: "2, 5, 8, 11, ?" }, kit), true, "same givens, same key");
+  assert.equal(boundToKit({ src: "c4-maths-ch03-t02-i01", key: "14", prompt: "3, 6, 9, 12, ?" }, kit), false, "the key equals the kit's, the givens differ: refused");
+  assert.equal(boundToKit({ src: "c4-maths-ch03-t02-i01", key: "15", prompt: "2, 5, 8, 11, ?" }, kit), false, "the givens match, the key does not");
+  assert.equal(boundToKit({ key: "14", prompt: "2, 5, 8, 11, ?" }, kit), false, "no cited item, no bound match");
+  assert.equal(boundToKit({ src: "c4-maths-ch03-t02-i99", key: "14", prompt: "2, 5, 8, 11, ?" }, kit), false, "an item the kit does not have");
+});
+
+test("rule-machine's reviewed outcomes list c4-maths-ch03-t02: a generated rule-machine spec there is on topic (main 2026-11-11)", async () => {
+  const { createBuilders } = await import("../server/stagecraft/builders.js");
+  const { ENGINE_SPECS_EXT } = await import("../shared/studio-spec-ext/index.ts");
+  assert.ok(ENGINE_SPECS_EXT["rule-machine@1"].outcomes.topics.includes("c4-maths-ch03-t02"));
+  const spec = structuredClone(ENGINE_SPECS_EXT["rule-machine@1"].defaultSpec);
+  const b = createBuilders({ chat: async () => ({ json: structuredClone(spec), usage: {} }), q8: async () => ({ ok: true }) });
+  const on = await b.generatedSpec({ archetype: "rule-machine@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, { topicId: "c4-maths-ch03-t02", lang: "hinglish", band: "B2" });
+  assert.equal(on.ok, true); assert.equal(on.checks.onTopic, true);
+  const off = await b.generatedSpec({ archetype: "rule-machine@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, { topicId: "c4-maths-ch02-t01", lang: "hinglish", band: "B2" });
+  assert.equal(off.checks?.onTopic ?? false, false, "a topic in no reviewed outcome and no catalogue spec stays off topic");
+});
+
+test("predicate (judged 2026-11-11, c4-ch05-t01 'KAafi PAAS'): a case break inside a word is a typo, caught before a judge", async () => {
+  const { oddCaseWords } = await import("../server/studio/approved.js");
+  assert.deepEqual(oddCaseWords("KAafi PAAS"), ["KAafi"]);
+  assert.deepEqual(oddCaseWords("BILKUL SAHI · Rang bharo · Daura 1 · TODAI · ₹12.50"), [], "all-caps feedback and sentence case pass");
+  assert.deepEqual(oddCaseWords("sAhi"), ["sAhi"]);
 });
 
 test("the approval lane's scripts parse (2026-11-11: approve-check shipped with a duplicate declaration no test loaded)", async () => {

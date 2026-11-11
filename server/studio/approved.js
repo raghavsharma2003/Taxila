@@ -110,6 +110,8 @@ export function beatFor(topicId, misconceptionId) {
 // ordinary English or harmless and would warn on every English explainer)
 const NUMBER_WORDS = ["teen"];
 export function numberWords(text) { const t = String(text ?? "").toLowerCase(); return NUMBER_WORDS.filter((w) => new RegExp(`(^|[^a-z])${w}([^a-z]|$)`).test(t)); }
+/** Words with a case break inside them ("KAafi", "sAhi"): a typo a child reads as a misspelling (judged 2026-11-11, c4-ch05-t01). */
+export function oddCaseWords(text) { return [...String(text ?? "").matchAll(/\p{L}*(?:\p{Lu}{2}\p{Ll}|\p{Ll}\p{Lu})\p{L}*/gu)].map((m) => m[0]); }
 /** The plain-words reason for a content refusal that a number word explains. */
 export function numberWordHint(findings) {
   const hits = (findings ?? []).filter((f) => f.text && numberWords(f.text).length);
@@ -213,8 +215,11 @@ export function untranslatedStrings(archetype, spec) {
   const lang = String(spec?.lang ?? "en");
   if (lang === "en") return { ok: true, why: null, keys: [] };
   const d = defaultStrings[archetype] ?? {};
-  const keys = Object.entries(spec?.strings ?? {}).filter(([k, v]) => typeof v === "string" && v === d[k] && v.trim().split(/\s+/).length >= 2).map(([k]) => k);
-  return { ok: keys.length === 0, why: keys.length ? `English engine strings left in a ${lang} piece: ${keys.map((k) => `${k} "${spec.strings[k]}"`).join(", ")}` : null, keys };
+  const own = spec?.strings ?? {};
+  // a string left as the engine's English, or left out (the engine then draws its English default), or blank
+  const keys = Object.entries(d).filter(([k, dv]) => typeof dv === "string" && dv.trim().split(/\s+/).length >= 2
+    && (own[k] === undefined || own[k] === dv || (typeof own[k] === "string" && !own[k].trim()))).map(([k]) => k);
+  return { ok: keys.length === 0, why: keys.length ? `English engine strings left in a ${lang} piece: ${keys.map((k) => `${k} "${own[k] ?? d[k]}"${own[k] === undefined ? " (missing)" : ""}`).join(", ")}` : null, keys };
 }
 /** Is `spec` the archetype's reviewed engine default (shared/studio-spec*.ts defaultSpec)? */
 export async function _loadDefaults() {

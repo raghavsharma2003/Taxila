@@ -101,7 +101,8 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
       const wholes = r.whole[0] / r.whole[1];
       for (let k = 1; k < total; k++) { const y = jy + jh - (k / total) * jh; ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(jx, y); ctx.lineTo(jx + 26, y); ctx.stroke(); }
       for (let u = 1; u <= Math.floor(wholes); u++) { const y = jy + jh - (u / wholes) * jh; ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(jx, y); ctx.lineTo(jx + 50, y); ctx.stroke(); api.text(ctx, `${u}`, jx - 16, y, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "right", baseline: "middle" }); }
-      api.text(ctx, `${r.dec ? fdec(r.whole) : fstr(r.whole)} ${r.unit}`, jx + jw / 2, jy - 26, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
+      // (the jar's size is written under it: above it, at y 154, the task pill covered it at l1366 — layout probe 2026-11-11)
+      api.text(ctx, `${r.dec ? fdec(r.whole) : fstr(r.whole)} ${r.unit}`, jx + jw / 2, jy + jh + 32, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
       ctx.save(); ctx.fillStyle = done ? "rgba(255,255,255,.04)" : "rgba(22,26,36,.95)"; roundRect(ctx, 560, 300, 220, 100, 20); ctx.fill(); ctx.strokeStyle = done ? C.line : C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
       api.text(ctx, `${T.scoop} ${r.dec ? fdec(r.part) : fstr(r.part)}`, 670, 352, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle" });
       if (g.pourT > 0) { ctx.fillStyle = hexA(C.sun, 0.8); ctx.fillRect(jx + jw / 2 - 6, jy - 60 + (1 - g.pourT * 2) * 0, 12, 60); }

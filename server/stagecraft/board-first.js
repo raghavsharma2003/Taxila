@@ -590,8 +590,8 @@ const ALT_VIEWS = new Set(["parts", "line", "wholes", "strips", "unrolled", "rou
 /** The row a second view's line is written from (and judged against before her line exists). */
 // (round 8: NUM_HI, fracSay and lineStatesKey moved to server/forge/explainer/states-key.js — the templates use the key
 // predicate and this file imports templates.js; re-exported here so every caller is unchanged)
-import { NUM_HI, fracSay, lineStatesKey } from "../forge/explainer/states-key.js";
-export { fracSay, lineStatesKey };
+import { NUM_HI, fracSay, lineStatesKey, lineHasBlank, keyTokens } from "../forge/explainer/states-key.js";
+export { fracSay, lineStatesKey, lineHasBlank };
 /** Her picture line for a second view, built from what the view draws (no full stop: Brain ends the line and keeps the
  *  card's "?"). Equal / unequal is the view's own: a whole is equal unless it says equal: false (wholes@1's default) —
  *  "barabar" for equal parts, "alag-alag" only for unequal ones (main v6.9 S11, c4 stuck 18: an equal Cake said "alag-alag"). */
@@ -609,7 +609,13 @@ function altSay(ac0, variant = 0, { quiet = new Set() } = {}) {
   }
   // (a count the card asks and the board draws is described, never said: "barabar hisson mein")
   const nOf = (n) => (quiet.has(n) ? "" : `${n} `);
-  const bar = (b) => `${nOf(b.parts)}barabar hisson mein${b.shade ? `, ${b.shade} rangin${named(b)}` : ""}`;
+  const shadeOf = (b) => (b.shade ? `, ${b.shade} rangin${named(b)}` : "");
+  const bar = (b) => `${nOf(b.parts)}barabar hisson mein${shadeOf(b)}`;
+  const ord = (i) => ["pehli", "doosri", "teesri"][i] ?? "agli";
+  // (director20 c5-t01 steady and stuck 18: "aur ek barabar hisson mein" — a quiet count left its article "ek" standing, a hole
+  // where the 8 had been. A quiet bar of several is named by its place, as a whole sentence: "doosri patti bhi barabar hisson
+  // mein bati hai" — the part without its count, never a slot)
+  const item = (x, i) => (quiet.has(x.parts) ? `${ord(i)} patti${i ? " bhi" : ""} barabar hisson mein bati hai${shadeOf(x)}` : v ? `${ord(i)} ${bar(x)}` : `ek ${bar(x)}`);
   if (ac.template === "shade-grid@1") return v ? `Ab inhe ek jaal mein gino: ${ac.rows} qatarein hain, aur har qatar mein ${ac.cols}`
     : `Wahi ${NUM_HI[ac.rows] ?? ac.rows} group ab ek jaal mein hain: ${ac.rows} qatarein, har qatar mein ${ac.cols}`;
   if (ac.wholes) {
@@ -623,8 +629,8 @@ function altSay(ac0, variant = 0, { quiet = new Set() } = {}) {
   if (ac.bars) {
     if (ac.bars.length === 1) return v ? `Is patti ko gino: yeh ${bar(ac.bars[0])} bati hai` : `Dekho, yeh ek patti hai, ${bar(ac.bars[0])}`;
     const n = (NUM_HI[ac.bars.length] ?? String(ac.bars.length));
-    return v ? `Ab in ${n} pattiyon ko milao: ${ac.bars.map((x, i) => `${["pehli", "doosri", "teesri"][i] ?? "agli"} ${bar(x)}`).join(", aur ")}`
-      : `Dekho, yeh ${n} barabar pattiyaan hain: ${ac.bars.map((x) => `ek ${bar(x)}`).join(", aur ")}`;
+    return v ? `Ab in ${n} pattiyon ko milao: ${ac.bars.map(item).join(", aur ")}`
+      : `Dekho, yeh ${n} barabar pattiyaan hain: ${ac.bars.map(item).join(", aur ")}`;
   }
   if (ac.template === "fraction-parts@1") {
     const form = ac.whole === "bar" ? "patti" : "gol", rest = `${ac.parts} barabar hisse${ac.shade ? `, ${ac.shade} rangin${ac.hideResult ? "" : `, yaani ${fracSay(ac.shade, ac.parts)}`}` : ""}`;
@@ -1083,7 +1089,7 @@ function heldViewCall(ask, variant = 0) {
       if (ac0.bars.every((b) => quiet.has(b.parts) && !b.shade)) return null;
     }
     const { view, ...call } = ac0;
-    return { call, view: ALT_VIEWS.has(view) ? view : "parts", line: altSay(ac0, variant, { quiet }) };
+    return { call, view: ALT_VIEWS.has(view) ? view : "parts", line: altSay(ac0, variant, { quiet }), lineOf: (k) => altSay(ac0, k, { quiet }) };
   } catch { return null; }
 }
 /**
@@ -1113,14 +1119,34 @@ export function pictureTurn(ask, { keepRef = null, keepPage = null, variant = 0 
     const script = splitBoard(panel.script, right, { leftStill: upSame });
     if (!script) { heldCounts.splitRefused++; return none; }
     // (v6.11: her picture line never states the open card's key, in digits or in words — a naming clause that would is dropped;
-    // a line that still states it has no view at all)
-    const keys = liveKeys(ask, "");
-    let line = v.line;
-    if (keys.length && lineStatesKey(line, keys)) line = line.split(";").map((part) => part.replace(/,\s*yaani\s+[^,;]+/g, (m) => (lineStatesKey(m, keys) ? "" : m))).join(";");
-    if (keys.length && lineStatesKey(line, keys)) return none;
+    // director20: nor does it ship with a blank — a line that still states the key or has a hole is rewritten in the view's
+    // other caption shape, and with neither clean there is no view at all)
+    const line = cleanPictureLine([v.line, v.lineOf(variant + 1)], pictureKeys(ask));
+    if (line == null) return none;
     return { board, view: { call: v.call, view: v.view, script: right, facts: ax.script.facts ?? null, template: v.call.template }, line, script,
       layout: { split: true, panels: [{ side: "left", role: "held", template: board.template, unit: h.unit ?? null }, { side: "right", role: "view", template: v.call.template, view: v.view }] } };
   } catch { return null; }
+}
+/** director20 (c4 steady 18: the key "No" — accepted as "nahi, 1/2 hai" — and "yaani aadha" said over it): the keys a picture
+ *  line must not state — the live card's key in every form it is given (answers[0]; a key with no value of its own, a "No",
+ *  by the values its accepted answers give: "nahi, 1/2 hai"). lineStatesKey reads each one's value tokens. → string[]. */
+export function pictureKeys(ask) {
+  const beat = ask?.intent?.scriptBeat;
+  if (!Array.isArray(beat?.answers) || !beat.answers.length || revealOf(beat).length) return [];
+  const [key, ...accept] = beat.answers.map((a) => String(a ?? ""));
+  return keyTokens(key).length ? [key, ...liveKeys(ask, "")] : [key, ...accept.filter((a) => keyTokens(a).length)];
+}
+/** The first of `lines` that, with a naming clause stating a key dropped (", yaani …"), states no key and has no blank — or
+ *  null (no line can be said: the turn has no view). PURE. */
+export function cleanPictureLine(lines, keys) {
+  for (const l0 of lines) {
+    let line = String(l0 ?? "").trim();
+    if (!line) continue;
+    if (keys.length && lineStatesKey(line, keys)) line = line.split(";").map((part) => part.replace(/,\s*yaani\s+[^,;]+/g, (m) => (lineStatesKey(m, keys) ? "" : m))).join(";");
+    if ((keys.length && lineStatesKey(line, keys)) || lineHasBlank(line)) continue;
+    return line;
+  }
+  return null;
 }
 /** A picture turn's view and line, from pictureTurn (the same call that draws it): → { call, view, line } or null (no view). */
 export function heldAltOf(ask, o = {}) {
