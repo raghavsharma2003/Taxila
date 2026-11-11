@@ -219,3 +219,16 @@ Studio's file still holds its draft values, so the 11 differences are listed as 
   - the tiles are rounded.
 - **Images:** `before-world-*`, `after-a-world-*`, `after-b-world-*`, `before-hangar-*`, `after-a-hangar-*` and `after-b-hangar-*`.
 - **What remains:** Notebook, Ask, Me, Teacher and Practice are reached only in the real app. Step j's walk lists them as found.
+
+## The landing's captures are true pairs (main, 2026-11-11)
+
+The hero showed a "1/2 × 1/2 = 1/4" board under her line "1/2 barabar 2/4". The dev Desk's fixture had taken its board from one teaching moment and its caption from another.
+
+**What changed:**
+- **One card per moment.** The fixtures now read board, line and question from one card (`src/child/lesson/dev/cards.ts`).
+- **Real boards.** The drawn boards are the server's own explainer output plus the lesson's beat card.
+- **No card answers its own question.** The plain board no longer prints the answer to its own question (`1/2 = ?/4`). The dev lesson script's board turn says the same.
+- **A test holds all three.** `tests/r8-dev-cards.test.mjs` checks that the boards equal `expand()`, that DeskDev has no line or board text of its own, and that no card's board or line answers its question.
+- **Retaken captures.** The landing captures (`public/site/tx/`) and `*-lesson-board-*` were retaken on the build that has Studio's patch 008, so the card head is folded in and the board fills its card.
+
+**The owner's page:** `OWNER-BEFORE-AFTER.md`, with six side-by-side pairs in `owner/`.

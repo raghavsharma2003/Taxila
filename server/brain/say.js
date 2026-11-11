@@ -5,7 +5,7 @@
 import { readFileSync } from "node:fs";
 import { boardWords } from "./board-words.js";
 import { inHindiWords } from "./register.js";
-import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside } from "./asideReplies.js";
+import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside, asideReplyForms, asideReturnForms } from "./asideReplies.js";
 import { responseShape } from "../director/requestTable.js";
 import { cardPageRefused } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
@@ -255,6 +255,64 @@ function authoredSentence(state, card, kit = null) {
   const unframed = (k) => k.replace(/^[^:—]{0,40}(?::|—)\s*/, "");
   return (x) => { const k = String(x ?? "").replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?।:]+$/, ""); const u = unframed(k);
     return (k.length > 8 && all.includes(k)) || (u !== k && u.length > 8 && all.includes(u)) || jointRes.some((re) => re.test(k)); };
+}
+/** dc-r8-director20 W1, main on integration 51 (c5-t01 steady 96: the key's why "toh line par uski sirf ek jagah hai … wahi ek mark" said as
+ *  "toh rekha par … wahi ek nishaan" after "Bilkul sahi, kyunki" — the sentence test missed a why with code's frame in front): where in a
+ *  line the authored text is. Every authored field — the move's point, simpler, card point, rendered steps, say-first lines (greetSimpler,
+ *  the bridge, the held body), the key and its why (gave, closed, workedDone), the return line, the card, the script's joints, and
+ *  Learning's aside reply and return forms — is found in the line case-blind, whole or sentence by sentence, wherever it stands; code's
+ *  word passes (Hindi words, twins) touch only what lies outside these spans. Returns (text) => [[from, to], …], merged. */
+export function authoredSpans(state, card, kit = null) {
+  const lm = state?.lastMove ?? {};
+  const txt = (x) => (typeof x === "string" ? [x] : x && typeof x === "object" ? [x.hi, x.en].filter((y) => typeof y === "string") : []);
+  const fields = [lm.point, lm.simpler, lm.cardPoint, ...(lm.rendered ?? []), ...(lm.sayFirst ?? []), lm.gave?.answer, lm.gave?.why, lm.closed?.answer,
+    lm.closed?.why, lm.workedDone?.answer, lm.workedDone?.why, lm.bridgeSaid, lm.returned?.line, card].flatMap(txt);
+  const clean = (x) => String(x).replace(/\s+/g, " ").trim().replace(/[.!?।:;,]+$/, "").trim();
+  const pieces = [...new Set(fields.flatMap((f) => [f, ...f.split(/(?<=[.!?।])\s+/), ...f.split(/(?<=[.!?।:;])\s+/)]).map(clean).filter((x) => x.length > 8))]
+    .sort((a, b) => b.length - a.length);
+  const esc = (y) => y.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const slotRe = (f) => { const parts = clean(f).split(/\{\w+\}/); return parts.join("").replace(/\s+/g, "").length > 8 ? new RegExp(parts.map((y) => esc(y).replace(/\s+/g, "\\s+")).join(".{1,40}?"), "giu") : null; };
+  // (every spoken string of the script is authored — the why of the beat just closed (lastMove.closeBeat), a joint, a hook — found
+  // wherever it is said; a slot ("{friend}") matches what filled it)
+  const script = kit ? scriptFor(kit)?.script ?? null : null;
+  const fromScript = script ? scriptStrings(script) : { plain: [], slotted: [] };
+  const allPieces = [...new Set([...pieces, ...fromScript.plain])].sort((a, b) => b.length - a.length);
+  pieces.splice(0, pieces.length, ...allPieces);
+  const forms = asideReplyForms();
+  const lib = [...forms.plain, ...forms.sad, ...asideReturnForms()];
+  const res = [...fromScript.slotted, ...lib].map(slotRe).filter(Boolean);
+  const wordRes = forms.word.map((re) => new RegExp(re.source.replace(/^\^/, "").replace(/\$$/, "").replace(/\\ /g, "\\s+"), "giu"));
+  return (text) => {
+    const t = String(text ?? ""); const low = t.toLowerCase(); const spans = [];
+    for (const p of pieces) { const k = p.toLowerCase(); let i = low.indexOf(k); while (i >= 0) { spans.push([i, i + k.length]); i = low.indexOf(k, i + k.length); } }
+    for (const re of [...res, ...wordRes]) { re.lastIndex = 0; let m; while ((m = re.exec(t))) { if (!m[0].length) { re.lastIndex++; continue; } spans.push([m.index, m.index + m[0].length]); } }
+    spans.sort((a, b) => a[0] - b[0]);
+    const out = [];
+    for (const s of spans) { const l = out.at(-1); if (l && s[0] <= l[1]) l[1] = Math.max(l[1], s[1]); else out.push([...s]); }
+    return out;
+  };
+}
+const SCRIPT_STRINGS = new WeakMap();
+/** Every spoken string of a lesson script (its hi and en forms, whole and sentence by sentence; ids, templates, keys' accept lists and
+ *  notes left out), split into those with a slot and those without. Cached per script. */
+function scriptStrings(script) {
+  if (SCRIPT_STRINGS.has(script)) return SCRIPT_STRINGS.get(script);
+  const SKIP = new Set(["id", "itemId", "skillId", "beatId", "template", "params", "board", "answerBoard", "accept", "targets", "wrongIfMis", "key", "topicId", "scriptId", "ladder", "notes", "source", "version", "recordedRun", "match"]);
+  const out = new Set();
+  const walk = (o) => { if (typeof o === "string") { out.add(o); return; } if (Array.isArray(o)) { o.forEach(walk); return; } if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) if (!SKIP.has(k)) walk(v); };
+  walk(script);
+  const clean = (x) => String(x).replace(/\s+/g, " ").trim().replace(/[.!?।:;,]+$/, "").trim();
+  const all = [...out].filter((x) => /\p{L}{2,}/u.test(x) && x.trim().split(/\s+/).length >= 3)
+    .flatMap((f) => [f, ...f.split(/(?<=[.!?।])\s+/), ...f.split(/(?<=[.!?।:;])\s+/)]).map(clean).filter((x) => x.length > 8 && x.split(" ").length >= 3);
+  const r = { plain: [...new Set(all.filter((x) => !/\{\w+\}/.test(x)))], slotted: [...new Set(all.filter((x) => /\{\w+\}/.test(x)))] };
+  SCRIPT_STRINGS.set(script, r);
+  return r;
+}
+/** A word pass over a line that leaves every authored span byte for byte: `fn` runs on each stretch between them. */
+export function outsideAuthored(text, spans, fn) {
+  const t = String(text ?? ""); let at = 0; let out = "";
+  for (const [a, b] of spans) { if (a > at) out += fn(t.slice(at, a)); out += t.slice(a, b); at = b; }
+  return out + (at < t.length ? fn(t.slice(at)) : "");
 }
 /** v6.11 J2: the instruction for her one sentence after the child answered her return question. */
 /** v6.11 J2 (main on the J2 replay, 12 of 60 drafts passed and 41 of 48 refusals were the child's sentence said back): the model is
@@ -2486,7 +2544,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const stepOpened = () => (body ?? []).some((x) => STEP_OPENER.test(String(x ?? "").trim()) || STEP_LABEL.test(String(x ?? "").trim())) || STEP_OPENER.test(String(workedLines?.[0] ?? "").trim());
     const goOn = () => (afterProblem ? null : state.lastMove?.checkinOk && !checkinLately ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state)
       : afterRem ? freshOf(BEAT_ASK[L0], state) : stepOpened() || kindNow !== "worked_example" ? null : freshOf(WORKED_GO[L0], state));
-    let tail = card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
+    // (dc-r8-second-clarify-shows-not-rewords: a second clarify on one part is the same line again, then the check-in, never the card)
+    let tail = state.lastMove?.secondClarify || state.lastMove?.workedSimpler ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state) : card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
       // (v6.10 R7, main on director18: "Ab aage chalte hain." was left hanging after every bridge — nothing is appended after a bridge;
       // after a give-up's key, a check-in)
       : state.lastMove?.splitClose ? (state.lastMove.gaveCheck ? rotateOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state) : null)
@@ -2590,7 +2649,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const usedWhy = [];
       const keyW = (w) => String(w ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
       // (dc-r8-director20 L2: asked again after a key — "samajh nahi aaya", "pata nahi" — the why is the answer, said again by design)
-      const prevW = state.lastMove?.gaveCheck && state.lastMove?.smaller ? "" : keyW(herPrev);
+      const prevW = (state.lastMove?.gaveCheck && state.lastMove?.smaller) || state.lastMove?.secondClarify ? "" : keyW(herPrev);
       const once1 = (x) => {
         if (!x) return x;
         const m = /,\s*(?:kyunki|because)\s+([^.!?\u0964]+)([.!?\u0964]?)\s*$/iu.exec(x);
@@ -2731,10 +2790,14 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // v6 R4: Hindi asked for: her spoken words in Hindi from here on (the card and the beat's must-say words stay)
     const hindiOn = state.ctx?.lang === "hindi" && !!state.ctx?.langPinned;
     const keepW = (state.lastMove?.mustSay ?? []).flatMap((m) => (typeof m === "object" && m ? [m.hi, m.en] : [m]));
-    const hw = (x) => (hindiOn && x ? inHindiWords(x, { keep: keepW, card }) : x);
+    const hw0 = (x) => (hindiOn && x ? inHindiWords(x, { keep: keepW, card }) : x);
+    // (main on integration 51: no word pass over authored text — the page parts and the card's copy are kept as the spoken line is)
+    const spansNow = hindiOn ? authoredSpans(state, card, kit) : null;
+    const hw = (x) => (hindiOn && x ? outsideAuthored(x, spansNow(x), hw0) : x);
     // (dc-r8-director20 W1: an authored sentence keeps its words in Hindi mode too — its Hindi form is the script's own; only her
     // own sentences are turned into Hindi words)
-    if (hindiOn) { const auth = authoredSentence(state, card, kit); const h = reply.split(/(?<=[.!?।])\s+/).map((x) => (auth(x) ? x : hw(x))).join(" "); if (h !== reply) { reply = h; guard.hindiWords = true; } }
+    // (main on integration 51: by span, not by sentence — a why after code's "Bilkul sahi, kyunki" is still the script's)
+    if (hindiOn) { const h = hw(reply); if (h !== reply) { reply = h; guard.hindiWords = true; } }
     // v6.5 F1 (director13 c4 steady 52: "Sahi—, kyunki"): a dash left before a comma goes
     { const r0 = reply.replace(/\s*[—–]\s*,/g, ",").replace(/\s*[—–]\s*(?=[.!?])/g, ""); if (r0 !== reply) { reply = r0; guard.dashFixed = true; } }
     // (v6.9 R6, main on director17: authored lines are never re-inflected — v6.8's "1, jitna tukda … liya" rewrite is gone)
@@ -2835,7 +2898,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (their own word said back is no exemption — "Virat ke cover drive … mashhoor" answered "aapko Virat pasand hai?"; the park's
       // promise is kept, and so is a line spoken to them)
       const nm = (y) => String(y ?? "").replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?]+$/, "");
-      const isRet = (!!guard.returnLine && nm(x) === nm(guard.returnLine)) || (!!guard.againLine && nm(x) === nm(guard.againLine)) || (!!guard.returnReplyLine && nm(x) === nm(guard.returnReplyLine));
+      const isRet = (!!guard.returnLine && nm(x) === nm(guard.returnLine)) || (!!guard.againLine && nm(x) === nm(guard.againLine)) || (!!guard.returnReplyLine && (nm(x) === nm(guard.returnReplyLine) || nm(guard.returnReplyLine).includes(nm(x))));
       return !!w && !isRet && !PROMISE_SAID.test(x) && !/(?<![\p{L}])(?:ke\s+baad|baad\s+mein|karenge|yaad\s+rahega|later)(?![\p{L}])/iu.test(x)
         && !/(?<![\p{L}])(?:tum|tumne|tumhe|tumhari|tumhara|tumko|you|your|ai)(?![\p{L}])/iu.test(x) && !LESSON_SAID.test(x) && !/\d/.test(x); };
     const ssc = sentences(reply).map((x) => String(x).trim()).filter(Boolean);
@@ -2885,9 +2948,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     let head = at >= 0 ? reply.slice(0, at) : reply; const tail = at >= 0 ? reply.slice(at) : "";
     // (dc-r8-director20 W1: "4 barabar tukdon the", "sankhya line", "varg ki chaaron" — code never swaps a word inside a sentence a
     // person wrote. Only her own sentences are rewritten; an authored sentence keeps its words, and Learning keeps one term per idea)
-    const isAuthored = authoredSentence(state, card, kit);
-    const headSs = head.split(/(?<=[.!?।])\s+/);
-    const mine = headSs.map((x) => !isAuthored(x));
+    // (main on integration 51: by span — an authored why after code's frame is the script's word for word)
+    const spansOf = authoredSpans(state, card, kit);
     for (const t of TWIN_WORDS) {
       // ("question mark" is punctuation, not a mark on a line)
       const alt = (xs) => xs.map((x) => x.replace(/\s+/g, "\\s+")).join("|");
@@ -2908,17 +2970,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const enOf = (m) => { const plural = t.hi0.findIndex((x) => x.toLowerCase() === m.toLowerCase()) > 0;
         const pl = cardW && !/s$/.test(cardW) && t.en0.includes(`${cardW}s`) ? `${cardW}s` : cardW;
         return cardW ? (plural ? pl : cardW) : to(m, t.hi0, t.en0); };
-      let changed = false;
-      for (let k = 0; k < headSs.length; k++) {
-        if (!mine[k]) continue;
-        const x0 = headSs[k];
-        headSs[k] = cardEn ? x0.replace(reHi, (m) => enOf(m)) : x0.replace(reEn, (m) => to(m, t.en0, t.hi0));
-        reEn.lastIndex = 0; reHi.lastIndex = 0;
-        if (headSs[k] !== x0) changed = true;
-      }
-      if (changed) guard.twinsOne = true;
+      const h0 = head;
+      head = outsideAuthored(head, spansOf(head), (x0) => { const x = cardEn ? x0.replace(reHi, (m) => enOf(m)) : x0.replace(reEn, (m) => to(m, t.en0, t.hi0)); reEn.lastIndex = 0; reHi.lastIndex = 0; return x; });
+      if (head !== h0) guard.twinsOne = true;
     }
-    if (guard.twinsOne) { head = headSs.join(" "); reply = (head + " " + tail).replace(/\s+/g, " ").trim(); } }
+    if (guard.twinsOne) reply = (head + " " + tail).replace(/\s+/g, " ").trim(); }
   // v6.6 P4: the parts follow every edit above, word by word; the page plan reads them (guard.parts.list)
   if (guard.lineParts) { guard.lineParts = alignParts(guard.lineParts, reply); if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts }; }
   // The final words, checked once more (debug and the evals read it): what reached the child.

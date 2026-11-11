@@ -59,6 +59,9 @@ const PROFILE = {
 // (v6.7 H4, main on director15 c6 stuck 77: the wait ran out with the card still open after a miss) 10 turns
 export const LEAVE_WAIT = 10;
 export const maxTurnsFor = (persona) => (PROFILE[persona]?.leaveAfter ?? MIN_TURNS) + 1 + LEAVE_WAIT;
+/** dc-r8-director20 harness (main: no lesson reached its third skill, so class-level depth was never heard): with toEnd, the child
+ *  stays past leaveAfter until the harness says the script is spent (input.scriptDone), up to this many turns. */
+export const TO_END_MAX = 140;
 
 /** Names the harness uses for a girl (verbs agree: "gayi", "karti"); any other name gets the masculine forms. [U] extend with the
  *  harness's personas. A trailing -a / -i / -ee is read as a girl's name unless listed as a boy's. */
@@ -100,6 +103,11 @@ const LINES = {
   clarifyWorked: ["yeh step samajh nahi aaya"],
   clarifyAgain: ["phir bhi samajh nahi aaya"],
   returned: ["sixer, jab ball seedha bahar jaati hai", "batting sabse achhi lagti hai", "jab Virat chauka maarta hai, woh", "fielding karna, catch pakadna"],
+  // (dc-r8-director20 harness: the answer fits her return question — what happened, what they like doing, who, what they like most)
+  returnedWhat: ["maine do sixer maare the", "hum match jeet gaye the", "maine ek catch pakda tha"],
+  returnedDoing: ["batting karna", "bowling karna", "catch pakadna"],
+  returnedWho: ["Virat", "Rohit", "Dhoni"],
+  returnedLike: ["sixer", "batting", "chauka"],
   leave: ["bas aaj ke liye itna hi", "ab main {jaata|jaati} hoon, bye", "thak {gaya|gayi}, bye"],
 };
 
@@ -157,7 +165,7 @@ export function wrongAnswer({ card, ask }, kit, rng) {
   return { text: nearMiss(card?.key ?? ask?.key ?? "", rng), from: null };
 }
 
-export function createReactiveChild({ persona = "steady", seed = 1, kit = null, name = "Riya", clarify2 = false } = {}) {
+export function createReactiveChild({ persona = "steady", seed = 1, kit = null, name = "Riya", clarify2 = false, toEnd = false } = {}) {
   if (!PROFILE[persona]) throw new Error(`reactive child: unknown persona ${persona}`);
   const P = PROFILE[persona], rng = rngOf(seed, persona), girl = isGirlName(name);
   // the event schedule, each turn shifted 0-1 by the seed (deterministic), never two events on one turn
@@ -212,15 +220,21 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
       if (cLeave && cLeave.key != null && String(cLeave.key).trim()) liveLeave = cidLeave;
       const openCard = posed(input.teacher) && (cLeave && cLeave.key != null && String(cLeave.key).trim() ? !answered.has(cidLeave)
         : !!liveLeave && !answered.has(liveLeave));
-      if (turn >= P.leaveAfter && turn >= MIN_TURNS && (!openCard || turn >= P.leaveAfter + LEAVE_WAIT)) return say({ text: pick(rng, LINES.leave), kind: "leave" });
+      // (toEnd: past leaveAfter the child stays until the script is spent — then the goodbye, as before)
+      const stays = toEnd && !input.scriptDone && turn < TO_END_MAX;
+      if (!stays && turn >= P.leaveAfter && turn >= MIN_TURNS && (!openCard || turn >= P.leaveAfter + LEAVE_WAIT || toEnd)) return say({ text: pick(rng, LINES.leave), kind: "leave" });
       // (the turn right after her re-explanation of a clarify: "phir bhi samajh nahi aaya", once)
       if (clarifyAgain) { clarifyAgain = false; return say({ text: LINES.clarifyAgain[0], kind: "event", event: "clarifyAgain" }); }
       if (at.has(turn)) { pending.push(at.get(turn)); at.delete(turn); }
       // (v6.11 J2: her return question about the aside is answered, before any event or card: the child's reply to what she asked)
       if (input.returned) {
         const h = [...String(kit?.topicId ?? "")].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
-        const k = (h + returnN++) % LINES.returned.length;
-        return say({ text: LINES.returned[k], kind: "event", event: "returned" });
+        // (the answer fits what she asked: what happened, what they like doing, who, what they like most; else the old lines)
+        const q = String(input.teacher ?? "").split(/(?<=[.!?।])\s+/).at(-1) ?? "";
+        const pool = /kya\s+hua|what\s+happened|kya\s+kiya/i.test(q) ? LINES.returnedWhat : /kya\s+karna|doing/i.test(q) ? LINES.returnedDoing
+          : /\bkaun\b|\bwho\b/i.test(q) ? LINES.returnedWho : /sabse\s+achha\s+kya|sabse\s+mazedaar|achhi\s+baat|like\s+most|best\s+thing|kya\s+lagta/i.test(q) ? LINES.returnedLike : LINES.returned;
+        const k = (h + returnN++) % pool.length;
+        return say({ text: pool[k], kind: "event", event: "returned" });
       }
       if (pending.length) {
         const c0 = input.card ?? input.ask ?? null;

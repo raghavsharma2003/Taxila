@@ -2,7 +2,7 @@
 
 **Source:** `node scripts/lesson-scripts/compile-report.mjs` over server/director/compile.js. Do not edit by hand.
 
-**Type table:** 360 cells (9 part kinds × 12 columns × 3 help states), 306 of them apply (the answer columns are for cards only).
+**Type table:** 396 cells (9 part kinds × 12 columns × 3 help states), 333 of them apply (the answer columns are for cards only).
 
 **Missing fields** are counted once per field of the script, however many rules name it. **Rule holes** count every (part, column, help) cell that names a missing field.
 
@@ -12,7 +12,7 @@
 
 **Fallback cells:** every missing field's cells compile to a named fallback (today's behaviour) until Learning authors it: . Cells left as holes with no fallback: 0.
 
-**Not applicable:** 363 misconception cells on cards with no `targets` (cards that test no kit mix-up: a wrong answer takes the `wrong` column). Not holes, not fallbacks.
+**Not applicable:** 369 misconception cells on cards with no `targets` (cards that test no kit mix-up: a wrong answer takes the `wrong` column). Not holes, not fallbacks.
 
 ## Missing fields, all scripts
 
@@ -23,40 +23,40 @@
 
 | Script | Where | Parts | Cells | Missing |  | Doubles |
 |---|---|---|---|---||---|
-| c4-maths-ch05-t01 | live | 64 | 1962 | 0 |  | 0 |
-| c5-maths-ch02-t01 | live | 71 | 2187 | 0 |  | 0 |
-| c5-maths-ch02-t02 | live | 73 | 2241 | 0 |  | 0 |
-| c6-maths-ch06-t01 | live | 67 | 2043 | 0 |  | 0 |
-| c4-maths-ch01-t02 | staged | 59 | 1809 | 0 |  | 0 |
-| c4-maths-ch03-t01 | staged | 59 | 1809 | 0 |  | 0 |
-| c4-maths-ch03-t02 | staged | 56 | 1719 | 0 |  | 0 |
-| c4-maths-ch04-t01 | staged | 65 | 1998 | 0 |  | 0 |
-| c4-maths-ch04-t02 | staged | 56 | 1710 | 0 |  | 0 |
-| c4-maths-ch06-t01 | staged | 60 | 1836 | 0 |  | 0 |
-| c4-maths-ch07-t01 | staged | 59 | 1800 | 0 |  | 0 |
-| c4-maths-ch09-t01 | staged | 66 | 2025 | 0 |  | 0 |
-| c4-maths-ch14-t01 | staged | 48 | 1467 | 0 |  | 0 |
-| c5-maths-ch01-t01 | staged | 56 | 1719 | 0 |  | 0 |
-| c5-maths-ch02-t03 | staged | 62 | 1899 | 0 |  | 0 |
-| c5-maths-ch03-t01 | staged | 57 | 1737 | 0 |  | 0 |
-| c5-maths-ch03-t02 | staged | 66 | 2025 | 0 |  | 0 |
-| c5-maths-ch05-t01 | staged | 61 | 1872 | 0 |  | 0 |
-| c5-maths-ch13-t01 | staged | 57 | 1755 | 0 |  | 0 |
-| c5-maths-ch13-t02 | staged | 62 | 1908 | 0 |  | 0 |
-| c6-maths-ch02-t01 | staged | 60 | 1827 | 0 |  | 0 |
-| c6-maths-ch02-t02 | staged | 60 | 1827 | 0 |  | 0 |
-| c6-maths-ch02-t03 | staged | 59 | 1791 | 0 |  | 0 |
-| c6-maths-ch02-t04 | staged | 63 | 1917 | 0 |  | 0 |
-| c6-maths-ch05-t01 | staged | 64 | 1953 | 0 |  | 0 |
-| c6-maths-ch07-t01 | staged | 59 | 1800 | 0 |  | 0 |
-| c6-maths-ch07-t03 | staged | 63 | 1917 | 0 |  | 0 |
-| c6-maths-ch07-t04 | staged | 65 | 1980 | 0 |  | 0 |
-| c6-maths-ch07-t05 | staged | 61 | 1863 | 0 |  | 0 |
-| c6-maths-ch08-t01 | staged | 63 | 1917 | 0 |  | 0 |
-| c7-maths-ch02-t01 | staged | 56 | 1701 | 0 |  | 0 |
-| c7-maths-ch03-t01 | staged | 65 | 1980 | 0 |  | 0 |
-| c7-maths-ch05-t01 | staged | 61 | 1881 | 0 |  | 0 |
-| c7-maths-ch05-t02 | staged | 64 | 1953 | 0 |  | 0 |
+| c4-maths-ch05-t01 | live | 65 | 1989 | 0 |  | 0 |
+| c5-maths-ch02-t01 | live | 72 | 2214 | 0 |  | 0 |
+| c5-maths-ch02-t02 | live | 74 | 2268 | 0 |  | 0 |
+| c6-maths-ch06-t01 | live | 68 | 2070 | 0 |  | 0 |
+| c4-maths-ch01-t02 | staged | 60 | 1836 | 0 |  | 0 |
+| c4-maths-ch03-t01 | staged | 60 | 1836 | 0 |  | 0 |
+| c4-maths-ch03-t02 | staged | 57 | 1746 | 0 |  | 0 |
+| c4-maths-ch04-t01 | staged | 66 | 2025 | 0 |  | 0 |
+| c4-maths-ch04-t02 | staged | 57 | 1737 | 0 |  | 0 |
+| c4-maths-ch06-t01 | staged | 61 | 1863 | 0 |  | 0 |
+| c4-maths-ch07-t01 | staged | 60 | 1827 | 0 |  | 0 |
+| c4-maths-ch09-t01 | staged | 67 | 2052 | 0 |  | 0 |
+| c4-maths-ch14-t01 | staged | 49 | 1494 | 0 |  | 0 |
+| c5-maths-ch01-t01 | staged | 57 | 1746 | 0 |  | 0 |
+| c5-maths-ch02-t03 | staged | 63 | 1926 | 0 |  | 0 |
+| c5-maths-ch03-t01 | staged | 58 | 1764 | 0 |  | 0 |
+| c5-maths-ch03-t02 | staged | 67 | 2052 | 0 |  | 0 |
+| c5-maths-ch05-t01 | staged | 62 | 1899 | 0 |  | 0 |
+| c5-maths-ch13-t01 | staged | 58 | 1782 | 0 |  | 0 |
+| c5-maths-ch13-t02 | staged | 63 | 1935 | 0 |  | 0 |
+| c6-maths-ch02-t01 | staged | 61 | 1854 | 0 |  | 0 |
+| c6-maths-ch02-t02 | staged | 61 | 1854 | 0 |  | 0 |
+| c6-maths-ch02-t03 | staged | 63 | 1917 | 0 |  | 0 |
+| c6-maths-ch02-t04 | staged | 64 | 1944 | 0 |  | 0 |
+| c6-maths-ch05-t01 | staged | 65 | 1980 | 0 |  | 0 |
+| c6-maths-ch07-t01 | staged | 60 | 1827 | 0 |  | 0 |
+| c6-maths-ch07-t03 | staged | 64 | 1944 | 0 |  | 0 |
+| c6-maths-ch07-t04 | staged | 66 | 2007 | 0 |  | 0 |
+| c6-maths-ch07-t05 | staged | 62 | 1890 | 0 |  | 0 |
+| c6-maths-ch08-t01 | staged | 64 | 1944 | 0 |  | 0 |
+| c7-maths-ch02-t01 | staged | 57 | 1728 | 0 |  | 0 |
+| c7-maths-ch03-t01 | staged | 66 | 2007 | 0 |  | 0 |
+| c7-maths-ch05-t01 | staged | 62 | 1908 | 0 |  | 0 |
+| c7-maths-ch05-t02 | staged | 65 | 1980 | 0 |  | 0 |
 
 ## Rule holes per rule
 

@@ -3020,3 +3020,7 @@ Tried (round 8, first build): a dashed ring and a small ✗ on each group of fiv
 
 ## rj-r8-stambh-tally-both-halves
 Tried (round 8, first build): naming keep's tally-four only when no line across appears anywhere AND every total is four per group of five. Broke (two judges, 2026-11-11): the main form, correct bundles counted by their standing lines (Bus 5, Auto 6), was logged as an ordinary miss with only dashed boxes; and a 1-bundle level could not tell the mix-up from a one-off slip. Replaced by dc-r8-stambh-tally-keep-mal-v2 and dc-r8-stambh-tally-tells-apart.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r8-count-left-over-each-bundle` (2026-11-11): Tried (the main loop's ruling 3 for stambh/tally, afternoon of 2026-11-11): after a first miss in read, leave a count of 5 over each bundle so the gap is tied to the bundles. What broke: with the 5s and the loose lines on screen the retry is 5+5+5+5+1, read off the screen, which is law 2 (after a miss the screen never holds the key while a try remains) and the game doing the skill for her. Both round-3 judges saw it. Now the count plays over each bundle and fades.

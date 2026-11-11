@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { logicFor } from "../../src/play/families/index.ts";
 import { pickLevels } from "../../src/play/core/pick.ts";
-import { pickArt } from "../../shared/play.ts";
+import { GAME_WEIGHT, pickArt } from "../../shared/play.ts";
 import { registerKaalEvents } from "../../src/play/families/kaal/kaal.logic.ts";
 import { fillFriendDeep } from "../director/friend.js";
 import { adaptAfter, chooseEntry, liftedPL, settleBecause } from "./choose.js";
@@ -214,6 +214,13 @@ export function afterLevelBody(s, { grade = null, level = null, history = null }
   if (!grade || !level) return s2;
   const seen = (grade.evidence ?? []).find((r) => r.misconceptionId)?.misconceptionId ?? null;
   if (seen) s2.nextFocus = seen;
+  // round 8 law 3: a mix-up seen from one pick is remembered (not named) with the surface it was seen on; the next level
+  // aims at it, so a second sighting on another surface can name it (nameOnRepeat)
+  const pick = (grade.evidence ?? []).find((r) => r.chanceMis && !r.misconceptionId)?.chanceMis ?? null;
+  if (pick) {
+    s2.chance = [...(Array.isArray(s.chance) ? s.chance : []), { mis: pick, surface: surfaceOf(level) }].slice(-4);
+    if (!seen) s2.nextFocus = pick;
+  }
   const step = adaptAfter({ grade, level, s, beliefOf });
   if (typeof step?.lift === "number") s2.nextLift = step.lift;
   if (step?.because) s2.nextBecause = step.because;
@@ -221,6 +228,27 @@ export function afterLevelBody(s, { grade = null, level = null, history = null }
   const sw = seen ? switchAfter({ ...s, ...(typeof s2.nextLift === "number" ? { nextLift: s2.nextLift } : {}) }, entryByKey(s.key), seen) : null;
   if (sw) { s2.nextKey = sw.key; s2.nextSwitch = sw.because; }
   return s2;
+}
+/** round 8 law 3: what a level shows (the family's surfaceOf, else its params), as a short key. Pure. */
+export function surfaceOf(level) {
+  let k = null;
+  try { k = logicFor(level.family, level.mode)?.surfaceOf?.(level) ?? null; } catch { k = null; }
+  const str = typeof k === "string" && k ? k : JSON.stringify(level?.params ?? null);
+  let h = 2166136261;
+  for (const ch of `${level?.family}/${level?.mode}|${str}`) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); }
+  return (h >>> 0).toString(36);
+}
+/**
+ * Round 8 law 3 (dc-r8-game-modes-three-laws): a mix-up from one pick among a few is not kept from that pick
+ * (gradeLevel reports it as `chanceMis` at chance weight). It is named here when the session saw the same mix-up from a
+ * pick on a level whose surface differs: the row then carries misconceptionId at the game weight. Pure.
+ */
+export function nameOnRepeat(rows, s, level) {
+  const prior = Array.isArray(s?.chance) ? s.chance : [];
+  if (!prior.length) return rows;
+  const here = surfaceOf(level);
+  return rows.map((r) => (r?.chanceMis && !r.misconceptionId && prior.some((p) => p?.mis === r.chanceMis && p?.surface !== here)
+    ? { ...r, misconceptionId: r.chanceMis, weight: GAME_WEIGHT, named: "repeat" } : r));
 }
 export function artFor(s, entry) {
   return pickArt({ family: entry.family, subject: entry.subject === "maths" ? "maths" : "science", topicId: entry.topicId, classLevel: s.classLevel, topicArts: entry.arts, childArt: s.childArt ?? null, lastArt: s.lastArt ?? null });

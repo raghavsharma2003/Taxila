@@ -8,11 +8,11 @@ import { TYPE_TABLE, PART_KINDS, COLUMNS, HELP, compileScript, compiledFor, clea
 const ROOT = new URL("..", import.meta.url);
 const live = readdirSync(new URL("data/lesson-scripts", ROOT)).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(readFileSync(new URL(`data/lesson-scripts/${f}`, ROOT), "utf8")));
 
-test("the type table: 10 part kinds (the hook, Loop's ask D) × 12 columns × 3 help states, answers on cards only", () => {
-  assert.equal(PART_KINDS.length, 10);
+test("the type table: 11 part kinds (the hook, Loop's ask D; the greeting, L3) × 12 columns × 3 help states, answers on cards only", () => {
+  assert.equal(PART_KINDS.length, 11);
   assert.equal(COLUMNS.length, 12);
   assert.deepEqual(HELP, ["fresh", "heard", "spent"]);
-  assert.equal(TYPE_TABLE.length, 360);
+  assert.equal(TYPE_TABLE.length, 396);
   for (const x of TYPE_TABLE) if (["right", "wrong", "misconception"].includes(x.column)) assert.equal(!!x.rule, ["card", "your_step", "then_card", "check"].includes(x.kind), x.id);
 });
 
@@ -23,7 +23,8 @@ test("every cell says only authored fields (script paths) and carries its addres
     for (const [part, cols] of Object.entries(c.cells)) for (const [col, hs] of Object.entries(cols)) for (const [h, cell] of Object.entries(hs)) {
       assert.equal(cell.address, `${part}/${col}/${h}`);
       if (cell.notApplicable) continue;
-      for (const ref of cell.say) assert.match(ref, /^skills\[\d+\]\./, `${cell.address}: ${ref}`);
+      // (the greeting's line is the script's top-level greetSimpler, L3)
+      for (const ref of cell.say) assert.match(ref, /^(?:skills\[\d+\]\.|greetSimpler$)/, `${cell.address}: ${ref}`);
       assert.ok(["end", "checkin", "card", "next", "remediation"].includes(cell.then), cell.address);
     }
     assert.deepEqual(c.doubles, [], s.topicId);

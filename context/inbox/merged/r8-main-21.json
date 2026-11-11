@@ -1,0 +1,39 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-game-modes-judging-3-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Third judging of the new game modes (claude/r7-games 609dda81c; two fresh Opus judges at high effort per mode, packet plus every screenshot, with the three laws as item K): stambh/tally round 3 FAIL and FAIL; kon/name round 2 PASS and FAIL; kon/place held for a scale-number fix. n = 4 verdicts. All afternoon rulings found done on the screens and laws 1 to 3 pass on both modes. Blocking faults: tally, a row of 2 bundles and 2 lines gives the mix-up's number (10) to a child who drops her loose lines (both judges); kon/name, on the second say level reading the letters like text gives the key because two points sit at one height (one judge blocks, the other should-fix). Reports: docs/design/round8/games-judging/<mode>/judges/."
+  },
+  {
+   "id": "rj-r8-count-left-over-each-bundle",
+   "kind": "rejection",
+   "at": "2026-11-11",
+   "title": "Tried (the main loop's ruling 3 for stambh/tally, afternoon of 2026-11-11): after a first miss in read, leave a count of 5 over each bundle so the gap is tied to the bundles. What broke: with the 5s and the loose lines on screen the retry is 5+5+5+5+1, read off the screen, which is law 2 (after a miss the screen never holds the key while a try remains) and the game doing the skill for her. Both round-3 judges saw it. Now the count plays over each bundle and fades."
+  },
+  {
+   "id": "fd-slip-sets-found-by-judges-not-by-law",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "In three rounds the tally mode's 'which wrong answers prove the mix-up' law was widened each time by a case a judge found (5 bundles; then loose lines equal to bundles), never by working out on paper every way to reach the mix-up's number. A level law built from found cases stays one case behind. Round 4's packet must list every such way and show the law excludes each."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-game-modes-three-laws",
+   "rel": "measured_by",
+   "dst": "ms-r8-game-modes-judging-3-2026-11-11"
+  },
+  {
+   "src": "rj-r8-count-left-over-each-bundle",
+   "rel": "caused_by",
+   "dst": "dc-r8-game-modes-three-laws"
+  },
+  {
+   "src": "fd-slip-sets-found-by-judges-not-by-law",
+   "rel": "measured_by",
+   "dst": "ms-r8-game-modes-judging-3-2026-11-11"
+  }
+ ]
+}

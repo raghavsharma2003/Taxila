@@ -22,7 +22,6 @@ export function asideKindOf(text) {
 
 // (sad.rule: not sad when "nahi" negates it — "chot nahi lagi" — or when the loss is the other side's — "dusri team haar gayi")
 const NEGATED = (w) => new RegExp(`(?<![\\p{L}])${esc(w)}\\s+(?:\\p{L}+\\s+)?(?:nahi|nahin|na)(?![\\p{L}])|(?<![\\p{L}])(?:nahi|nahin)\\s+${esc(w)}(?![\\p{L}])`, "iu");
-const SHOT = /(?<![\p{L}])(?:chauka|chhakka|sixer|six|four|boundary|goal|shot|smash|ball)\s+(?:\p{L}+\s+)?maar/iu;
 const OTHER_SIDE = /(?<![\p{L}])(?:dusri|doosri|saamne\s+wali|other)\s+team(?![\p{L}])/iu;
 /** Whether an aside or a reply is sad (Learning's sad list, whole words, by its rule). */
 export function isSadAside(text) {
@@ -30,8 +29,6 @@ export function isSadAside(text) {
   const hits = (DATA.sad?.match ?? []).filter((w) => hasWord(t, [w]));
   if (!hits.length) return false;
   if (OTHER_SIDE.test(t) && hits.every((w) => /^(?:haar|haar gaya|haar gayi|lost)$/i.test(w))) return false;
-  // (a shot in a game is no hurt: "chauka maarta hai", "sixer maara", "goal maara" — the list's maara / maarta mean hitting someone)
-  if (SHOT.test(t) && hits.every((w) => /^maar/i.test(w))) return false;
   return hits.some((w) => !NEGATED(w).test(t));
 }
 
@@ -83,6 +80,11 @@ export function asideReplyLine({ said = "", topic = "", lang = "hinglish", n = 0
   if (word) { const f = pickN(k?.replies, n); if (f) return { line: cap(fill(formOf(f, lang), { word })), form: "word" }; }
   const p = pickN(k?.plain, n);
   return { line: p ? formOf(p, lang) : null, form: "plain" };
+}
+
+/** Every return question form, both languages, slots as written ("{aside}"): authored text code's word passes leave alone. */
+export function asideReturnForms() {
+  return Object.values(KINDS).flatMap((k) => (k.returns ?? []).flatMap((f) => [f?.hi, f?.en])).filter((x) => typeof x === "string" && x.trim());
 }
 
 /** Every form a reply may take, for the dry predicate: { word: [RegExp with a (word) group], plain: [string], sad: [string] }. */

@@ -309,6 +309,9 @@ function grade(level: PlayLevel<AtomsParams>, acts: PlayActEnvelope<AtomsAct>[])
 
 export const atomsLogic: FamilyLogic<AtomsParams, AtomsState, AtomsAct> = {
   family: "todo-jodo", modes: ["atoms"], malRules: ATOMS_MAL,
+  // round 8 law 3 (dc-r8-game-modes-three-laws): mix-ups these goals see from ONE pick among five or fewer (a tool, a
+  // bin, a lane, a claim; server/forge3/qa/laws.mjs found each): reported at chance weight, named only on a repeat
+  chancePicks: ["two-trees:different-trees"],
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };
 export const atomsView = { leaves, leafValues, treeDone, stripOf, isPrime };
