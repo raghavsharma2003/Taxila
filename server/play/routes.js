@@ -70,7 +70,9 @@ export function seamLead(seam, trail, s, s2) {
   const next = kind(s2?.nextSwitch ?? s2?.nextBecause);
   return { ...(seam.facts?.verdict ? { verdict: seam.facts.verdict } : {}),
     ...(trail ? { first_try: trail.firstTry ? 1 : 0, misses: trail.misses, ...(trail.extra !== null && trail.extra !== undefined ? { extra: trail.extra } : {}) } : {}),
-    ...(chose ? { chose } : {}), ...(next ? { next } : {}) };
+    ...(chose ? { chose } : {}), ...(next ? { next } : {}),
+    // r8 kon/place: whether her protractor sat right at her first decision, so the teacher can name it without guessing
+    ...(seam.facts?.placed === "ok" || seam.facts?.placed === "off" ? { placed: seam.facts.placed } : {}) };
 }
 function seamOf(grade, level, moments, impasse) {
   if (impasse) return { kind: "impasse", facts: grade?.facts ?? {} };

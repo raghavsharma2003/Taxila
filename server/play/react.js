@@ -15,6 +15,7 @@ import { pendulumHidden } from "../../src/play/families/yantra/pendulum.logic.ts
 import { roshniHidden } from "../../src/play/families/yantra/roshni.logic.ts";
 import { openingOf } from "../../src/play/families/kon/kon.logic.ts";
 import { angle2 } from "../../src/play/families/kon/kon.lines.ts";
+import { placeHidden } from "../../src/play/families/kon/kon.place.ts";
 import { hopValue } from "../../src/play/families/nishana/line.logic.ts";
 import { weighHidden } from "../../src/play/families/taraazu/weigh.logic.ts";
 import { kaalHidden } from "../../src/play/families/kaal/kaal.logic.ts";
@@ -133,6 +134,8 @@ export function hiddenOf(level) {
   // r7 jaanch: the words that give the idea away (iodine shows starch, not sugar; a water patch dries away; one food can hold
   // more than one) are never said first. Checked by family first
   if (level.family === "jaanch") return jaanchHidden(level);
+  // r8 kon/place: the reading of the angle she measures is never said first ("place" is also a nishana / kaal mode)
+  if (level.family === "kon" && level.mode === "place") return placeHidden(p);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];

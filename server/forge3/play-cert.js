@@ -5,7 +5,7 @@
 // (server/forge3/qa/checks.js; class 4-5 at the 16 px floor). The verdict table is what compose() may offer at a size.
 //
 //   FORGE3_QA_LOCAL=1 node server/forge3/play-cert.js --harness <built harness dir> [--out server/forge3/certs/play.json]
-//     [--shots <dir>] [--shot-every 7] [--seeds 2] [--only <family>] [--no-focus]
+//     [--shots <dir>] [--shot-every 7] [--seeds 2] [--only <family> | <family/mode>] [--no-focus]
 // Round 4 G1: a (family, mode) that a real-game engine renders (src/play/engines/registry.ts) is judged on BOTH renderers a
 // child can get: the 2D view (a 2D-tier device, the board twin) in every art direction, cells `<art>@c<band>` as before
 // (what forge3 compose reads), and the 3D engine in every theme of its art pack, cells `3d:<theme>@c<band>` (the harness
@@ -83,13 +83,15 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const arg = (k, d) => { const i = argv.indexOf(`--${k}`); return i >= 0 ? argv[i + 1] : d; };
   const out = arg("out", PLAY_CERT_FILE);
   const only = arg("only", null);
+  // --only takes a family ("kon") or one of its modes ("kon/place": a new mode is judged without re-judging the family)
+  const mine = (key) => !!only && (only.includes("/") ? String(key ?? "") === only : String(key ?? "").startsWith(`${only}/`));
   const shots = arg("shots", null);
   // a 2D sample is shot every Nth (default 7; 1 shoots them all, e.g. to look at every goal of one family)
   const shotEvery = Math.max(1, Number(arg("shot-every", 7)) || 7);
   const seeds = Number(arg("seeds", "2")) || 2;
   const { FAMILY_ARTS } = await import("../../shared/play.ts");
   const { coverage } = await import("../play/levels.js");
-  const entries = (coverage().entries ?? []).filter((e) => !only || e.family === only);
+  const entries = (coverage().entries ?? []).filter((e) => !only || mine(`${e.family}/${e.mode}`));
   const { engineFor } = await import("../../src/play/engines/registry.ts");
   const { ENGINE_THEMES } = await import("../../src/play/engines/core3d/api.ts");
   const { server, base } = await serveHarness(arg("harness"));
@@ -99,8 +101,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const table = { v: 2, qa: QA_VERSION, at: new Date().toISOString(), viewports: PLAY_VIEWPORTS.map((v) => v.vp), source: "data/play/coverage.json entries, served levels (garam door), seeds 0..k-1; 3d:<theme> cells = the real-game engine (round 4 G1)", pieces: {}, samples: [] };
   if (prior) {
     // --only: keep every other family's cells and samples as judged before
-    for (const [k, v] of Object.entries(prior.pieces ?? {})) if (!k.startsWith(`${only}/`)) table.pieces[k] = v;
-    table.samples = (prior.samples ?? []).filter((x) => !String(x.key ?? "").startsWith(`${only}/`));
+    for (const [k, v] of Object.entries(prior.pieces ?? {})) if (!mine(k)) table.pieces[k] = v;
+    table.samples = (prior.samples ?? []).filter((x) => !mine(x.key));
   }
   // --resume (with --only): a run cut short (the container restarts) keeps this family's samples already judged in the r7
   // format (each records its box), rebuilds their cells from them, and skips those coverage entries; the table is
@@ -109,7 +111,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const done = new Set();
   if (resume) {
     for (const x of prior.samples ?? []) {
-      if (!String(x.key ?? "").startsWith(`${only}/`) || !x.box) continue;
+      if (!mine(x.key) || !x.box) continue;
       table.samples.push(x);
       done.add(`${x.topicId}|${x.key}|${x.goal}`);
       const band = (x.classLevel ?? 6) <= 5 ? 4 : 7;

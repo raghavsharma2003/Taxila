@@ -67,6 +67,8 @@ export const VIEWS: Record<string, MakeView> = {
   "kon/lines": makeKonView,
   "kon/cross": makeKonView,
   "kon/ends": makeKonView,
+  "kon/place": makeKonView,
+  "kon/name": makeKonView,
   "nazariya/views": makePlotView,
   "nazariya/array": makePlotView,
   "nazariya/floor": makePlotView,

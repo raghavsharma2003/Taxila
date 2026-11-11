@@ -14,7 +14,7 @@ import { playKtEvents, signEvidence } from "../server/play/evidence.js";
 import { temper } from "../server/learner/kt/bktr.js";
 
 const env = (acts) => acts.map((act, i) => ({ seq: i + 1, t: i * 400, via: "touch", act }));
-const ONE = { "galti-pakdo": ["pakdo"], hissa: ["shift"], nazariya: ["more"], kon: ["kind", "turn", "corr", "alt"] };
+const ONE = { "galti-pakdo": ["pakdo"], hissa: ["shift"], nazariya: ["more"], kon: ["kind", "turn", "corr", "alt", "size", "find"] };
 const FAMS = Object.keys(ONE);
 const sessionOf = (e, child, fade) => ({ childId: child, key: entryKey(e), skillId: e.skillId, lessonId: null, classLevel: e.classLevel, fade, lang: "hinglish", childArt: null, lastArt: null,
   mis: {}, pL: undefined, n: 0, seed: seedOf(child, entryKey(e), 0), door: "garam", recent: [], hist: null });
@@ -35,7 +35,7 @@ test("chance weight: the constant is the arena's (GAME_WEIGHT × the controllerE
   assert.equal(CHANCE_WEIGHT, GAME_WEIGHT * 0.5);
   assert.equal(temper({ via: "game", controllerEasy: true }), CHANCE_WEIGHT, "the arena's own path");
   const marked = [...new Set(Object.values(LOGIC))].filter((l) => l.oneDecision?.length).map((l) => `${l.family}:${l.oneDecision.join(",")}`).sort();
-  assert.deepEqual(marked, ["galti-pakdo:pakdo", "hissa:shift", "kon:kind,turn,corr,alt", "nazariya:more"]);
+  assert.deepEqual(marked, ["galti-pakdo:pakdo", "hissa:shift", "kon:kind,turn,corr,alt,size,find", "nazariya:more"]);
 });
 
 for (const fam of FAMS) {
