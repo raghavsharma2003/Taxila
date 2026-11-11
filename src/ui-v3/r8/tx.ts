@@ -64,3 +64,10 @@ export function txTheme(): TxTheme | null {
 export function _resetTxForTests(): void {
   cached = undefined;
 }
+
+/** The root attributes for a screen under the switch. surface "light" is for the parent's screens (light in both themes). */
+export function txAttrs(surface?: "light"): Record<string, string> {
+  const t = txTheme();
+  if (!t) return {};
+  return surface ? { "data-tx": t, "data-tx-surface": surface } : { "data-tx": t };
+}

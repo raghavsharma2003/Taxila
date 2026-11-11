@@ -123,6 +123,21 @@ They were taken from the Kaksha Desk dev page (`src/ui-v3/kaksha/dev/desk.html?c
 - **Ownership:** `src/onboarding/**` is Learning's in round 7's table. The brief assigns this screen to Design, so the only edit there is the root attribute and one import. The styling lives in this stream's file.
 - **Images:** `before-onb-class*`, `after-a-onb-class*` and `after-b-onb-class*` (step 1); `before-onb-promises-p360` and `after-a-onb-promises-p360` (step 2).
 
+## Step e: the parent corner
+
+- **The switch on the corner.** The shell root and the PIN gate (`src/parent/Shell.tsx`, `Gate.tsx`) carry `data-tx` and `data-tx-surface="light"` through `txAttrs("light")` (tx.ts). The corner is light in both themes.
+- **What `src/ui-v3/r8/parent.css` removes:**
+  - the HUD grid;
+  - the "// " mono eyebrows (now sentence-case labels);
+  - corner-bracket panels (now soft paper cards with a real shadow);
+  - chamfered buttons and the four "state" chips (now rounded pills in sentence case);
+  - mono dates;
+  - the inset tick hovers.
+- **The reading face.** Claims, headlines, the home task and letters are set in Literata. The parent's one primary action is the accent.
+- **Her picture in the top bar** is hidden. Her look is the owner's choice, and the corner names her in words.
+- **Ownership:** `src/parent/**` is Learning's. The brief assigns this screen to Design, so the edits there are the root attributes and one import per file. The styling is in this stream's file.
+- **Images:** `before-parent*`, `after-a-parent*` and `after-b-parent*` (`-full` is the whole page; the bottom tab bar is painted once at its viewport position). Taken against `tests/e2e-design-b3-parent.mjs`'s own API fixtures, unlocked with its PIN.
+
 ## Not changed (other owners)
 
 - **Studio's piece chrome.** The "Picture" chip, the beat dots and the 40 px band above a Studio piece are Studio's (`src/studio/**`). Under the theme only the piece's inner ring is dropped, by CSS in this stream's file. A Studio patch could fold the chip into the board card.
