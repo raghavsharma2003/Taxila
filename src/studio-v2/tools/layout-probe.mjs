@@ -57,7 +57,24 @@ export function textWidth(s, font, ls = 0) {
 // ── the recording 2D context ────────────────────────────────────────────────────────────────────────────────────────────
 const mul = (m, n) => [m[0] * n[0] + m[2] * n[1], m[1] * n[0] + m[3] * n[1], m[0] * n[2] + m[2] * n[3], m[1] * n[2] + m[3] * n[3], m[0] * n[4] + m[2] * n[5] + m[4], m[1] * n[4] + m[3] * n[5] + m[5]];
 /** A gradient remembers its stops' alphas: a fill that fades to nothing (a beam, a glow) is not an opaque shape. */
-const grad = () => ({ stops: [], addColorStop(_o, c) { this.stops.push(styleAlpha(c)); } });
+const grad = () => ({ stops: [], raw: [], addColorStop(o, c) { this.stops.push(styleAlpha(c)); this.raw.push(`${o}:${colourKey(c)}`); } });
+// ── the colour trace (opt-in: probe(..., { colours: true })) ────────────────────────────────────────────────────────────
+// Theme work (main 2026-11-11): every colour an engine USES (at a fill, a stroke, a text run; a shadow with blur), in
+// draw order, normalised to r,g,b,a, hashed. The night theme must keep this hash for every engine run: "no pixel of the
+// live night look may change" checked without a browser. Colours set and never drawn with do not count.
+const NAMED = { transparent: [0, 0, 0, 0], black: [0, 0, 0, 1], white: [255, 255, 255, 1] };
+export function colourKey(c) {
+  if (c && typeof c === "object") return "grad[" + (c.raw ?? []).join(";") + "]";
+  const v = String(c ?? "").trim().toLowerCase();
+  if (NAMED[v]) return NAMED[v].join(",");
+  let m = /^#([0-9a-f]{3,8})$/.exec(v);
+  if (m) { let h = m[1]; if (h.length <= 4) h = [...h].map((x) => x + x).join(""); const n = (i) => parseInt(h.slice(i, i + 2), 16); return [n(0), n(2), n(4), h.length === 8 ? +(n(6) / 255).toFixed(3) : 1].join(","); }
+  m = /^rgba?\(([^)]*)\)$/.exec(v);
+  if (m) { const p = m[1].split(/[\s,/]+/).filter(Boolean).map(Number); return [p[0], p[1], p[2], p.length > 3 ? +(+p[3]).toFixed(3) : 1].join(","); }
+  return "?" + v;
+}
+let colourLog = null;
+const logColour = (ctx, op, style) => { if (!colourLog) return; colourLog.update(`${op}|${colourKey(style)}|${+ctx.s.globalAlpha.toFixed(3)}|${ctx.s.globalCompositeOperation}${ctx.s.shadowBlur > 0 ? "|sh:" + colourKey(ctx.s.shadowColor) : ""}\n`); colourLog.n++; };
 class RecCtx {
   constructor(rec) {
     this.rec = rec;   // null: a sink (layers, glow sprites)
@@ -112,10 +129,10 @@ class RecCtx {
     for (let i = 0; i <= n; i++) { const a = a0 + (ccw ? -1 : 1) * span * (i / n), ex = Math.cos(a) * rx, ey = Math.sin(a) * ry; this.add(x + ex * cr - ey * sr, y + ex * sr + ey * cr); }
   }
   clip() { if (!this.path) return; const c = this.s.clip, p = this.path; this.s.clip = c ? [Math.max(c[0], p[0]), Math.max(c[1], p[1]), Math.min(c[2], p[2]), Math.min(c[3], p[3])] : [...p]; }
-  fill() { if (this.path) this.shape(this.path, this.s.fillStyle); }
-  stroke() {}
-  fillRect(x, y, w, h) { const keep = this.path; this.path = null; this.rect(x, y, w, h); const b = this.path; this.path = keep; if (b) this.shape(b, this.s.fillStyle); }
-  strokeRect() {} clearRect() {}
+  fill() { logColour(this, "f", this.s.fillStyle); if (this.path) this.shape(this.path, this.s.fillStyle); }
+  stroke() { logColour(this, "s", this.s.strokeStyle); }
+  fillRect(x, y, w, h) { logColour(this, "f", this.s.fillStyle); const keep = this.path; this.path = null; this.rect(x, y, w, h); const b = this.path; this.path = keep; if (b) this.shape(b, this.s.fillStyle); }
+  strokeRect() { logColour(this, "s", this.s.strokeStyle); } clearRect() {}
   shape(b, style) {
     if (!this.rec || !this.rec.on) return;
     const a = this.s.globalAlpha, comp = this.s.globalCompositeOperation;
@@ -126,8 +143,8 @@ class RecCtx {
   clipped(b) { const c = this.s.clip; if (!c) return [...b]; const r = [Math.max(b[0], c[0]), Math.max(b[1], c[1]), Math.min(b[2], c[2]), Math.min(b[3], c[3])]; return r[2] - r[0] > 0.5 && r[3] - r[1] > 0.5 ? r : null; }
   // text
   measureText(s) { const w = textWidth(s, this.s.font, parseFloat(this.s.letterSpacing) || 0), f = parseFont(this.s.font); return { width: w, actualBoundingBoxAscent: f.size * 0.75, actualBoundingBoxDescent: f.size * 0.2, actualBoundingBoxLeft: 0, actualBoundingBoxRight: w, fontBoundingBoxAscent: f.size * 0.9, fontBoundingBoxDescent: f.size * 0.25 }; }
-  fillText(s, x, y, maxW) { this.text(s, x, y, maxW); }
-  strokeText(s, x, y, maxW) { this.text(s, x, y, maxW); }
+  fillText(s, x, y, maxW) { logColour(this, "t", this.s.fillStyle); this.text(s, x, y, maxW); }
+  strokeText(s, x, y, maxW) { logColour(this, "ts", this.s.strokeStyle); this.text(s, x, y, maxW); }
   text(s, x, y, maxW) {
     if (!this.rec || !this.rec.on || this.s.globalAlpha < 0.5 || this.s.globalCompositeOperation !== "source-over") return;
     if (this.flags && (this.flags.decor || this.flags.fx)) return;
@@ -264,7 +281,7 @@ export async function loadModules() {
     import("../engines/index.ts"), import("../engines/ext/index.ts"), import("../../../shared/studio-spec-ext/index.ts"), import("../../../shared/studio-spec.ts"),
     import("../core/draw.ts"), import("../core/fx.ts"), import("../core/tween.ts"), import("../core/tokens.ts"),
   ]);
-  mods = { ENGINES: { ...base.ENGINES, ...ext.ENGINES_EXT }, ENGINE_SPECS: spec.ENGINE_SPECS, ENGINE_SPECS_EXT: specExt.ENGINE_SPECS_EXT, validateAny: specExt.validateAny, gradeAny: specExt.gradeAny, makeText: draw.makeText, FX: fx.FX, Tweens: tween.Tweens, MIN: tokens.MIN };
+  mods = { ENGINES: { ...base.ENGINES, ...ext.ENGINES_EXT }, ENGINE_SPECS: spec.ENGINE_SPECS, ENGINE_SPECS_EXT: specExt.ENGINE_SPECS_EXT, validateAny: specExt.validateAny, gradeAny: specExt.gradeAny, makeText: draw.makeText, FX: fx.FX, Tweens: tween.Tweens, MIN: tokens.MIN, useStudioTheme: tokens.useStudioTheme };
   return mods;
 }
 export function defaultSpecOf(m, archetype) { return structuredClone((m.ENGINE_SPECS_EXT[archetype] ?? m.ENGINE_SPECS[archetype]).defaultSpec); }
@@ -286,7 +303,13 @@ function rngOf(seed) { let a = seed >>> 0; return () => { a = (a + 0x6d2b79f5) >
  * [{ kind, a, b, at, frames, box }], plus run facts. Installs fake DOM globals for the duration (restored before it returns);
  * between frames it yields only to MICROtasks, so nothing else in the process runs while they are installed.
  */
-export async function probe(archetype, spec, box, { maxSecs = 70, seed = 7, touch = false } = {}) {
+export async function probe(archetype, spec, box, { maxSecs = 70, seed = 7, touch = false, colours = false, theme = "night" } = {}) {
+  (await loadModules()).useStudioTheme(theme);
+  if (colours) { const h = (await import("node:crypto")).createHash("sha1"); colourLog = { n: 0, update: (x) => h.update(x), digest: () => h.digest("hex").slice(0, 16) }; }
+  try { return await probeRun(archetype, spec, box, { maxSecs, seed, touch }); }
+  finally { colourLog = null; (await loadModules()).useStudioTheme("night"); }
+}
+async function probeRun(archetype, spec, box, { maxSecs, seed, touch }) {
   const m = await loadModules();
   const def = m.ENGINES[archetype];
   const v = m.validateAny(archetype, spec);
@@ -353,7 +376,7 @@ export async function probe(archetype, spec, box, { maxSecs = 70, seed = 7, touc
   let inst = null, frames = 0;
   install();
   try {
-    try { inst = def.create(api, v.spec); } catch (e) { return { faults: [], errors: ["boot: " + (e?.message ?? e)], actions, secs: 0, done }; }
+    try { inst = def.create(api, v.spec); } catch (e) { return { faults: [], errors: ["boot: " + (e?.message ?? e)], actions, secs: 0, done, ...(colourLog ? { colours: { n: colourLog.n, hash: colourLog.digest() } } : {}) }; }
     for (frames = 0; now < maxSecs && !(done && now - doneAt > 2); frames++) {
       await null;   // microtasks only (engines that wait on a promise, e.g. the Devanagari font gate)
       for (const [id, tm] of [...timers]) if (tm.at <= now) { timers.delete(id); try { tm.fn(); } catch (e) { errors.push(String(e?.message ?? e)); } }
@@ -382,7 +405,8 @@ export async function probe(archetype, spec, box, { maxSecs = 70, seed = 7, touc
       if (errors.length > 50) break;
     }
   } finally { uninstall(); try { inst?.dispose?.(); } catch { /* gone */ } }
-  return { faults: [...found.values()], errors: [...new Set(errors)].slice(0, 5), actions, secs: +now.toFixed(1), done, repairs: v.repairs?.length ?? 0, fellBack: !!v.fellBack };
+  return { faults: [...found.values()], errors: [...new Set(errors)].slice(0, 5), actions, secs: +now.toFixed(1), done, repairs: v.repairs?.length ?? 0, fellBack: !!v.fellBack,
+    ...(colourLog ? { colours: { n: colourLog.n, hash: colourLog.digest() } } : {}) };
 }
 
 // ── the known-failure list (tests/fixtures/studio-v2-layout-known.json) ──────────────────────────────────────────────────

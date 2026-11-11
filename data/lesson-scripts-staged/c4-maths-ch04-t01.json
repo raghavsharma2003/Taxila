@@ -666,15 +666,9 @@
        "value": 7382
       }
      },
-     "point": {
-      "hi": "Ank ki value uski jagah se banti hai. 7382 mein 3 sau ki jagah par hai, isliye uski value 300 hai. 8 dahaai ki jagah par hai, value 80, aur 2 ekai ki jagah par, value 2.",
-      "en": "A digit's value comes from its place. In 7382 the 3 is in the hundreds place, so it is worth 300. The 8 is in the tens place, worth 80, and the 2 is in the ones place, worth 2."
-     },
+     "point": { "hi": "Ank ki value uski jagah se banti hai. Board par likhe number mein 3 sau ki jagah par hai, isliye uski value 300 hai. 8 dahaai ki jagah par hai, value 80, aur 2 ekai ki jagah par, value 2.", "en": "A digit's value comes from its place. In the number on the board the 3 is in the hundreds place, so it is worth 300. The 8 is in the tens place, worth 80, and the 2 is in the ones place, worth 2." },
      "ask": {
-      "prompt": {
-       "hi": "Isi number 7382 mein 7 ki value kitni hai?",
-       "en": "In this same number 7382, what is the 7 worth?"
-      },
+      "prompt": { "hi": "Isi board wale number mein 7 ki value kitni hai?", "en": "In this same number on the board, what is the 7 worth?" },
       "key": "7000",
       "accept": [
        "7 hazaar",
@@ -689,14 +683,11 @@
       },
       "answerBoard": { "template": "place-value@1", "params": {"value": 7382, "mark": {"place": "thousands", "value": true}} }
      },
-     "simpler": {
-      "hi": "7382 mein 7 sabse baayen hai, yaani hazaar ki jagah. Ab socho, 7 hazaar kitna hota hai.",
-      "en": "In 7382 the 7 is furthest left, in the thousands place. Now think how much 7 thousands is."
-     }
+     "simpler": { "hi": "Board par 7 sabse baayen khaane mein hai, yaani hazaar ki jagah. Ab socho, 7 hazaar kitna hota hai.", "en": "On the board the 7 is in the box furthest left, the thousands place. Now think how much 7 thousands is." }
     },
     {
      "id": "e2",
-     "convey": "same digit 5 in two numbers: 5281 → thousands place → 5000; 8125 → ones place → 5; same digit, different place, different value",
+     "convey": "same digit 5 in two numbers: 5281 → thousands place → 5000; 8125 → ones place → 5; same digit, different place, different value; asked: the 4 of 7040 (on its own board) in the tens",
      "mustSay": [
       {
        "hi": "ank wahi, jagah alag",
@@ -731,30 +722,15 @@
       "en": "Both numbers have a 5. In 5281 the 5 is in the thousands place, so it is worth 5000. In 8125 the same 5 is in the ones place, so it is worth just 5. Same digit, different place, different value."
      },
      "ask": {
-      "prompt": {
-       "hi": "4391 mein 9 kis jagah par hai, aur uski value kitni hai?",
-       "en": "In 4391, which place is the 9 in, and what is it worth?"
-      },
-      "key": "90",
-      "accept": [
-       "9 dahaai",
-       "nabbe",
-       "ninety",
-       "dahaai, 90",
-       "tens, 90"
-      ],
+      "prompt": { "hi": "Ab board par naya number hai. Usme 4 kis jagah par hai, aur uski value kitni hai?", "en": "Now there is a new number on the board. Which place is the 4 in, and what is it worth?" }, "board": { "template": "place-value@1", "params": {"value": 7040} },
+      "key": "40",
+      "accept": ["4 dahaai", "chaalees", "forty", "dahaai, 40", "tens, 40"],
       "targets": "c4-maths-ch04-t01-m-face-value",
-      "wrongIfMis": "9",
-      "why": {
-       "hi": "4391 mein 9 dahaai ki jagah par hai, toh uski value 90 hai, jaise ekai ka 5 sirf 5 tha",
-       "en": "as 5 is worth 5000 in 5281 but 5 in 8125, the 9 of 4391 is in the tens: 90"
-      },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "5281", "items": ["5 hazaar ki jagah", "value 5000"]}, "right": {"title": "8125", "items": ["5 ekai ki jagah", "value 5"]}} }
+      "wrongIfMis": "4",
+      "why": { "hi": "board wale number mein 4 dahaai ki jagah par hai, toh uski value 40 hai, jaise ekai ka 5 sirf 5 tha", "en": "as 5 is worth 5000 in 5281 but 5 in 8125, the 4 on the board is in the tens: 40" },
+      "answerBoard": { "template": "place-value@1", "params": {"value": 7040, "mark": {"place": "tens", "value": true}} }
      },
-     "simpler": {
-      "hi": "Daayen se gino: pehle ekai, phir dahaai. 4391 mein 9 kis jagah par hai, woh dekho, phir socho 9 dahaai kitne hote hain.",
-      "en": "Count from the right: first ones, then tens. See which place the 9 is in 4391, then think how much 9 tens is."
-     }
+     "simpler": { "hi": "Board par daayen se gino: pehle ekai, phir dahaai. 4 kis khaane mein hai, woh dekho, phir socho 4 dahaai kitne hote hain.", "en": "Count the boxes on the board from the right: first ones, then tens. See which box the 4 is in, then think how much 4 tens is." }
     },
     {
      "id": "e3",
@@ -854,7 +830,7 @@
      }
     ],
     "yourStep": {
-     "prompt": { "hi": "Ab tum batao: 5739 mein 3 ki value kitni hai?", "en": "Now you tell me: what is the 3 in 5739 worth?" },
+     "prompt": { "hi": "Ab tum batao: ticket wale number mein 3 ki value kitni hai?", "en": "Now you tell me: what is the 3 in the ticket number worth?" },
      "key": "30",
      "accept": ["tees", "thirty", "30 hai", "3 dahaai"],
      "targets": "c4-maths-ch04-t01-m-face-value",
@@ -873,33 +849,15 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Ek school ne 2864 notebook khareedi. Is number mein ank 8 ki value kitni hai?",
-      "en": "A school bought 2864 notebooks. What is the 8 worth in this number?"
-     },
-     "key": "800",
-     "accept": [
-      "8 sau",
-      "aath sau",
-      "eight hundred"
-     ],
+     "prompt": { "hi": "Ek school ne utni notebook khareedi jitna board par likha number hai. Is number mein ank 2 ki value kitni hai?", "en": "A school bought as many notebooks as the number on the board. What is the 2 worth in this number?" },
+     "key": "200",
+     "accept": ["2 sau", "do sau", "two hundred"],
      "targets": "c4-maths-ch04-t01-m-face-value",
-     "wrongIfMis": "8",
-     "board": {
-      "template": "place-value@1",
-      "params": {
-       "value": 2864
-      }
-     },
-     "why": {
-      "hi": "2864 mein 8 sau ki jagah par hai, aur 8 sau = 800",
-      "en": "in 2864 the 8 is in the hundreds place, and 8 hundreds = 800"
-     },
-     "simpler": {
-      "hi": "2864 mein 8 baayen se doosri jagah par hai, yaani sau ki jagah. Ab socho, 8 sau kitne hote hain.",
-      "en": "In 2864 the 8 is second from the left, the hundreds place. Now think how much 8 hundreds is."
-     },
-     "answerBoard": { "template": "place-value@1", "params": {"value": 2864, "mark": {"place": "hundreds", "value": true}} }
+     "wrongIfMis": "2",
+     "board": { "template": "place-value@1", "params": {"value": 4218} },
+     "why": { "hi": "board wale number mein 2 sau ki jagah par hai, aur 2 sau = 200", "en": "in the number on the board the 2 is in the hundreds place, and 2 hundreds = 200" },
+     "simpler": { "hi": "Board par 2 baayen se doosre khaane mein hai, yaani sau ki jagah. Ab socho, 2 sau kitne hote hain.", "en": "On the board the 2 is in the second box from the left, the hundreds place. Now think how much 2 hundreds is." },
+     "answerBoard": { "template": "place-value@1", "params": {"value": 4218, "mark": {"place": "hundreds", "value": true}} }
     },
     {
      "id": "c2",
@@ -993,10 +951,7 @@
       "en": "A 1 in the thousands place is one big block. It holds 1000 small cubes, so that 1 means 1000."
      },
      "then": {
-      "prompt": {
-       "hi": "6215 mein ank 6 kis jagah par hai? Uski value kitni hai?",
-       "en": "In 6215, which place is the 6 in? What is it worth?"
-      }, "ask": { "hi": "6215 mein ank 6 kis jagah par hai, aur uski value kitni hai?", "en": "In 6215, which place is the 6 in, and what is it worth?" },
+      "prompt": { "hi": "Board par likhe number mein ank 6 kis jagah par hai? Uski value kitni hai?", "en": "In the number on the board, which place is the 6 in? What is it worth?" }, "ask": { "hi": "Board par likhe number mein ank 6 kis jagah par hai, aur uski value kitni hai?", "en": "In the number on the board, which place is the 6 in, and what is it worth?" },
       "key": "6000",
       "accept": [
        "6 hazaar",
@@ -1005,21 +960,10 @@
       ],
       "targets": "c4-maths-ch04-t01-m-face-value",
       "wrongIfMis": "6",
-      "board": {
-       "template": "place-value@1",
-       "params": {
-        "value": 6215
-       }
-      },
-      "why": {
-       "hi": "6215 mein 6 hazaar ki jagah par hai, toh uski value 6000 hai",
-       "en": "in 6215 the 6 is in the thousands place, so it is worth 6000"
-      },
-      "simpler": {
-       "hi": "6215 mein 6 sabse baayen hai, yaani hazaar ki jagah. Ab socho, 6 hazaar kitna hota hai.",
-       "en": "In 6215 the 6 is on the far left, the thousands place. Now think how much 6 thousands is."
-      },
-      "answerBoard": { "template": "place-value@1", "params": {"value": 6215, "mark": {"place": "thousands", "value": true}} }
+      "board": { "template": "place-value@1", "params": {"value": 6007} },
+      "why": { "hi": "board wale number mein 6 hazaar ki jagah par hai, toh uski value 6000 hai", "en": "in the number on the board the 6 is in the thousands place, so it is worth 6000" },
+      "simpler": { "hi": "Board par 6 sabse baayen khaane mein hai, yaani hazaar ki jagah. Ab socho, 6 hazaar kitna hota hai.", "en": "On the board the 6 is in the box on the far left, the thousands place. Now think how much 6 thousands is." },
+      "answerBoard": { "template": "place-value@1", "params": {"value": 6007, "mark": {"place": "thousands", "value": true}} }
      }
     },
     {
