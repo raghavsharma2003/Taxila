@@ -105,7 +105,7 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
   const [tx] = useState(() => txTheme());
   const renderBody = useMemo(() => (stageFirst() ? (p: DeskBodyParts) => <StageBody {...p} presence={!!tx} /> : undefined), [tx]);
   return (
-    <div className="v3 kx kx-lesson" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen="lesson" data-tx={tx ?? undefined}
+    <div className="v3 kx kx-lesson" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen="lesson" data-tx={tx ?? undefined} data-board-theme={tx === "a" ? "paper" : tx === "b" ? "night" : undefined}
       data-kboard={look.board ?? undefined} data-krim={look.rim ?? undefined}
       style={{ ...(look.board ? { ["--kboard" as string]: `var(--k-hue-${look.board})` } : {}), ...(look.rim ? { ["--krim" as string]: `var(--k-hue-${look.rim})` } : {}) }}>
       <PlayBriefingContext.Provider value={briefing}>{children({ skin: "kaksha", renderSummary, renderIntake, renderBody })}</PlayBriefingContext.Provider>

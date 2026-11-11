@@ -16,6 +16,8 @@ import { readStore, writeStore } from "../app/storage.ts";
 import { isRelock } from "./api.ts";
 import { BOARD_NAME, fmtTime, parentError } from "./copy.ts";
 import { useGate, VOLT_CALM } from "./Gate.tsx";
+import { txAttrs } from "../ui-v3/r8/tx.ts";
+import "../ui-v3/r8/parent.css";
 
 const PARENT_CHILD_KEY = "tx.parentChild";
 
@@ -152,7 +154,7 @@ export function ParentShell({ title, children, child, kids, noTabs, wide, side }
   const onSwitch = (id: string) => nav(`${loc.pathname}?c=${id}`);
   const active = (e: Entry) => e.match.test(loc.pathname);
   return (
-    <div className="pa kx" {...VOLT_CALM} data-parent-shell="" data-tabs={noTabs ? "off" : "on"}>
+    <div className="pa kx" {...VOLT_CALM} {...txAttrs("light")} data-parent-shell="" data-tabs={noTabs ? "off" : "on"}>
       <a className="skip" href="#pa-main">Skip to content</a>
       <aside className="pa-rail" aria-label="Parent corner">
         <div className="pa-rail-brand"><Brand to={`/parent${q(cid)}`} /></div>

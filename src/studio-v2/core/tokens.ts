@@ -10,12 +10,17 @@ export const MIN = { label: 38, value: 48, stroke: 4, target: 130 };
  *  unit, so no text a young child sees is drawn below 43 units (16 / 0.376). Applied once, in the shared text helper
  *  (draw.ts makeText), never per engine; engines read it as `api.minLabel` for their layout math. */
 export const MIN_YOUNG = { label: 43 } as const;
-export const C = {
-  bg: "#0A0C12", bg1: "#10131B", bg2: "#161A24", bg3: "#1F2431", stage: "#0D1017", board: "#0E1118",
-  ink: "#F2F4F8", ink2: "#A9B0C0", ink3: "#848CA0",
-  ion: "#8B98FF", ionDeep: "#4F5BD5", volt: "#CBFF4D", mint: "#3DDC97", amber: "#FFB547",
-  sci: "#2FD3C7", sun: "#FFD27A", line: "rgba(255,255,255,.08)", line2: "rgba(255,255,255,.15)",
-} as const;
+import { NIGHT, themeOf, type StudioColours, type ThemeName } from "../../theme/palette.ts";
+/** The active theme's engine colours (src/theme/palette.ts: the one colour file). Engines read `C.x` when they draw, so
+ *  `useStudioTheme` before an engine is created switches everything it paints; night (today's look) is the default. */
+export const C: StudioColours = { ...NIGHT.studio };
+let activeTheme: ThemeName = "night";
+export function useStudioTheme(name: ThemeName | string | null | undefined): ThemeName {
+  const t = themeOf(name);
+  Object.assign(C, t.studio); activeTheme = t.name;
+  return activeTheme;
+}
+export const studioTheme = (): ThemeName => activeTheme;
 export const FONT = {
   display: '"Bricolage Grotesque", system-ui, sans-serif',
   ui: '"Atkinson Hyperlegible Next", system-ui, sans-serif',

@@ -45,11 +45,11 @@ Round 8 tokens (`src/styles/tx-tokens.css`), as of this patch:
 | muted | `#6F675B` | `#8F9CAE` | `--tx-board-soft` |
 | focus (stroke) | `#3B47B0` indigo | `#8F9BFF` | `--tx-focus` |
 | focus (fill) | `#DCE0F5` | `#283260` | `--tx-focus-fill` |
-| slot and answer | `#0B7356` bluish green | `#4FE0A2` | `--tx-ans` |
+| slot and answer | `#0B736A` bluish green | `#4FE0A2` | `--tx-ans` |
 | slot fill | `#DAEFE8` | `#133A2D` | `--tx-ans-fill` |
 | mixup | `#8A5A00` ochre | `#FFB54A` amber | `--tx-mix` |
 
-**What changed for A:** answer moved from `#1C7348` to the bluish green `#0B7356`, and mixup from rust `#A84B22` to ochre `#8A5A00`. Focus, answer and mix-up now follow the Okabe-Ito colour-blind-safe set (blue, bluish green, orange). Every pair is measured at 5.2:1 or better on the ground (`tests/r8-tx-tokens.test.mjs`).
+**What changed for A:** answer moved from `#1C7348` to the bluish green `#0B736A` (your deuteranopia check asked for it to move bluer than our first `#0B7356`), and mixup from rust `#A84B22` to ochre `#8A5A00`. Focus, answer and mix-up now follow the Okabe-Ito colour-blind-safe set (blue, bluish green, orange). Every pair is measured at 5.2:1 or better on the ground (`tests/r8-tx-tokens.test.mjs`).
 
 **Your PAPER role table** in `src/modules/whiteboard/palette.ts` still carries the phase 1 values (`answer #1C7348`, `mixup #A84B22`). Please take the new ones.
 
