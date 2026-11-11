@@ -16,9 +16,10 @@ import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, taskPill, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 
 const SL = { x0: 800, x1: 960, y: 560 };
-const JUICE_COL: Record<string, string> = { saliva: "#9FE7FF", gastric: "#FF8F6B", bile: "#C6E85C", pancreatic: "#FFD36B" };
+const JUICE_COL: Record<string, string> = { get saliva() { return C.lifeSaliva; }, get gastric() { return C.lifeGastric; }, get bile() { return C.lifeBile; }, get pancreatic() { return C.lifePancreatic; } };
 const CHIP = (i: number) => ({ x: 140 + (i % 2) * 320, y: 492 + Math.floor(i / 2) * 64, w: 300, h: 56 });
 const PATH: Record<(typeof STATIONS)[number], [number, number][]> = {
   mouth: [[160, 200], [290, 200]], pipe: [[290, 200], [320, 270]], stomach: [[320, 270], [400, 305], [500, 295], [545, 250]],
@@ -84,8 +85,8 @@ function create(api: EngineApi, spec: LifeSpec): EngineInstance {
         g.running = true; g.acc += dt;
         while (g.acc >= LEAF_DT) { g.acc -= LEAF_DT; g.opens.push(+g.open.toFixed(3)); g.leaf = leafStep(r, g.leaf, g.open, LEAF_DT); g.t += LEAF_DT; if (g.leaf.wilt >= 3.99) { api.fx.shake(4, 0.3); sfx.blip({ f: 160, f2: 90, dur: 0.3, gain: 0.12 }); api.record("wilt", { t: g.t }); } }
         const o = g.leaf.wilt > 0 ? 0 : g.open, rr = rng(Math.floor(g.t * 40));
-        if (rr() < o * 0.9) g.parts.push({ x: 380 + (rr() - 0.5) * 30, y: 520, vx: (rr() - 0.5) * 30, vy: -90, c: "#B8C2D9", life: 1.2 });
-        if (rr() < o * r.heat * 0.7) g.parts.push({ x: 400 + (rr() - 0.5) * 20, y: 450, vx: 60 + rr() * 50, vy: 70, c: "#6FB8FF", life: 1.1 });
+        if (rr() < o * 0.9) g.parts.push({ x: 380 + (rr() - 0.5) * 30, y: 520, vx: (rr() - 0.5) * 30, vy: -90, c: C.lifeCO2, life: 1.2 });
+        if (rr() < o * r.heat * 0.7) g.parts.push({ x: 400 + (rr() - 0.5) * 20, y: 450, vx: 60 + rr() * 50, vy: 70, c: C.lifeWater, life: 1.1 });
         if (g.t >= r.time - 1e-6) judge({ open: g.opens }, g.leaf.sugar >= r.goal ? "right" : "wrong");
       } else if (r.mode === "breath") {
         if (g.running) {
@@ -96,7 +97,7 @@ function create(api: EngineApi, spec: LifeSpec): EngineInstance {
           if (g.t >= r.dur) judge({ breaths: g.breaths }, g.o2 >= O2_LOW ? "right" : "wrong");
         }
         const dv = g.pull - g.vol; g.vol += dv * Math.min(1, dt * 10);
-        if (dv > 0.01) { const rr = rng(Math.floor(g.t * 60)); if (rr() < 0.8) g.parts.push({ x: 400 + (rr() - 0.5) * 16, y: 150, vx: 0, vy: 160, c: "#9FE7FF", life: 0.5 }); }
+        if (dv > 0.01) { const rr = rng(Math.floor(g.t * 60)); if (rr() < 0.8) g.parts.push({ x: 400 + (rr() - 0.5) * 16, y: 150, vx: 0, vy: 160, c: C.lifeSaliva, life: 0.5 }); }
       } else {
         g.running = true;
         { g.t += dt; if (g.t >= GUT_END) { const out = gutRun(r, g.drops); judge({ drops: g.drops }, out.missed.length ? "wrong" : "right"); } }
@@ -112,7 +113,7 @@ function create(api: EngineApi, spec: LifeSpec): EngineInstance {
   function bar(ctx: Ctx, label: string, value: string, f: number, x: number, y: number, color: string, mark?: number) {
     if (label) api.text(ctx, label, x, y, { font: "mono", size: 38, weight: 600, color: C.ink2, baseline: "middle", maxWidth: 180 });
     api.text(ctx, value, x, y + 44, { font: "display", size: 40, weight: 800, color, baseline: "middle", maxWidth: 180 });
-    const by = y + 72; ctx.save(); ctx.fillStyle = "rgba(255,255,255,.08)"; roundRect(ctx, x, by, 180, 22, 11); ctx.fill(); ctx.fillStyle = color; roundRect(ctx, x, by, Math.max(8, 180 * clamp(f, 0, 1)), 22, 11); ctx.fill();
+    const by = y + 72; ctx.save(); ctx.fillStyle = withAlpha(C.hi, .08); roundRect(ctx, x, by, 180, 22, 11); ctx.fill(); ctx.fillStyle = color; roundRect(ctx, x, by, Math.max(8, 180 * clamp(f, 0, 1)), 22, 11); ctx.fill();
     if (mark !== undefined) { ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + 180 * mark, by - 6); ctx.lineTo(x + 180 * mark, by + 28); ctx.stroke(); }
     ctx.restore();
   }
@@ -124,30 +125,30 @@ function create(api: EngineApi, spec: LifeSpec): EngineInstance {
     if (r.mode === "leaf") {
       const f = g.t / r.time, sx = lerp(170, 640, f), sy = 230 - Math.sin(f * Math.PI) * 50, wilt = g.leaf.wilt > 0, o = wilt ? 0 : g.open, dry = 1 - g.leaf.water / r.water0;
       bloom(ctx, C.sun, sx, sy, 70 * (r.light / 100), 0.7); ctx.save(); ctx.fillStyle = C.sun; ctx.globalAlpha = 0.5 + 0.5 * (r.light / 100); ctx.beginPath(); ctx.arc(sx, sy, 22, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-      if (r.transport) { ctx.save(); ctx.strokeStyle = "#4F7A3A"; ctx.lineWidth = 26; ctx.beginPath(); ctx.moveTo(380, 470); ctx.lineTo(380, 615); ctx.stroke(); ctx.fillStyle = "#6FB8FF"; ctx.fillStyle = "#6FB8FF"; for (let i = 0; i < 6; i++) { const y = 615 - ((now * 90 * (0.3 + o) + i * 26) % 150); ctx.fillRect(372, y, 5, 10); } ctx.fillStyle = "#FFB547"; for (let i = 0; i < 6; i++) { const y = 470 + ((now * 70 * (0.2 + o) + i * 26) % 150); ctx.fillRect(384, y, 5, 10); } ctx.restore(); api.text(ctx, `${T.xylem} ↑`, 350, 600, { font: "mono", size: 38, weight: 600, color: "#6FB8FF", align: "right", baseline: "middle" }); api.text(ctx, `${T.phloem} ↓`, 410, 600, { font: "mono", size: 38, weight: 600, color: "#FFB547", baseline: "middle" }); }
+      if (r.transport) { ctx.save(); ctx.strokeStyle = C.lifeStem; ctx.lineWidth = 26; ctx.beginPath(); ctx.moveTo(380, 470); ctx.lineTo(380, 615); ctx.stroke(); ctx.fillStyle = C.lifeWater; ctx.fillStyle = C.lifeWater; for (let i = 0; i < 6; i++) { const y = 615 - ((now * 90 * (0.3 + o) + i * 26) % 150); ctx.fillRect(372, y, 5, 10); } ctx.fillStyle = C.amber; for (let i = 0; i < 6; i++) { const y = 470 + ((now * 70 * (0.2 + o) + i * 26) % 150); ctx.fillRect(384, y, 5, 10); } ctx.restore(); api.text(ctx, `${T.xylem} ↑`, 350, 600, { font: "mono", size: 38, weight: 600, color: C.lifeWater, align: "right", baseline: "middle" }); api.text(ctx, `${T.phloem} ↓`, 410, 600, { font: "mono", size: 38, weight: 600, color: C.amber, baseline: "middle" }); }
       ctx.save(); ctx.translate(380, 360); ctx.rotate(wilt ? 0.25 : -0.04 + dry * 0.12);
-      const lg = ctx.createLinearGradient(-230, 0, 230, 0); lg.addColorStop(0, wilt ? "#7D7A3A" : "#2F7D3A"); lg.addColorStop(1, wilt ? "#9A8E44" : "#4FB860"); ctx.fillStyle = lg;
-      ctx.beginPath(); ctx.moveTo(-240, 0); ctx.quadraticCurveTo(0, -150, 240, 0); ctx.quadraticCurveTo(0, 120, -240, 0); ctx.fill(); ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-230, 0); ctx.lineTo(230, 0); ctx.stroke();
+      const lg = ctx.createLinearGradient(-230, 0, 230, 0); lg.addColorStop(0, wilt ? C.lifeLeafWiltDark : C.lifeLeafDark); lg.addColorStop(1, wilt ? C.lifeLeafWilt : C.lifeLeaf); ctx.fillStyle = lg;
+      ctx.beginPath(); ctx.moveTo(-240, 0); ctx.quadraticCurveTo(0, -150, 240, 0); ctx.quadraticCurveTo(0, 120, -240, 0); ctx.fill(); ctx.strokeStyle = withAlpha(C.hi, .25); ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-230, 0); ctx.lineTo(230, 0); ctx.stroke();
       for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(i * 70, 0); ctx.lineTo(i * 70 + 50, -50); ctx.moveTo(i * 70, 0); ctx.lineTo(i * 70 + 50, 40); ctx.stroke(); }
       // stoma on the underside
-      ctx.fillStyle = "#1A3020"; ctx.beginPath(); ctx.ellipse(0, 70, 34 * (0.2 + o * 0.8), 14, 0, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "#8BD99A"; ctx.lineWidth = 8; ctx.beginPath(); ctx.ellipse(-8 - o * 14, 70, 22, 16, 0, Math.PI * 0.5, Math.PI * 1.5); ctx.stroke(); ctx.beginPath(); ctx.ellipse(8 + o * 14, 70, 22, 16, 0, -Math.PI * 0.5, Math.PI * 0.5); ctx.stroke();
+      ctx.fillStyle = C.lifeStoma; ctx.beginPath(); ctx.ellipse(0, 70, 34 * (0.2 + o * 0.8), 14, 0, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.lifeGuardCell; ctx.lineWidth = 8; ctx.beginPath(); ctx.ellipse(-8 - o * 14, 70, 22, 16, 0, Math.PI * 0.5, Math.PI * 1.5); ctx.stroke(); ctx.beginPath(); ctx.ellipse(8 + o * 14, 70, 22, 16, 0, -Math.PI * 0.5, Math.PI * 0.5); ctx.stroke();
       ctx.restore();
       for (const q of g.parts) { ctx.save(); ctx.globalAlpha = clamp(q.life, 0, 1); ctx.fillStyle = q.c; ctx.beginPath(); ctx.arc(q.x, q.y, 5, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
-      api.text(ctx, "CO₂ ↑", 290, 515, { font: "mono", size: 38, weight: 600, color: "#B8C2D9", align: "center", baseline: "middle", decor: true });
+      api.text(ctx, "CO₂ ↑", 290, 515, { font: "mono", size: 38, weight: 600, color: C.lifeCO2, align: "center", baseline: "middle", decor: true });
       if (wilt && !done) pill(api, ctx, T.wilted, 380, 250, { color: C.amber, size: 40 });
       bar(ctx, T.sugar, `${g.leaf.sugar.toFixed(1)} / ${r.goal}`, g.leaf.sugar / (r.goal * 1.3), 790, 200, C.sun, 1 / 1.3);
-      bar(ctx, T.water, `${g.leaf.water.toFixed(1)}`, g.leaf.water / r.water0, 790, 320, "#6FB8FF");
+      bar(ctx, T.water, `${g.leaf.water.toFixed(1)}`, g.leaf.water / r.water0, 790, 320, C.lifeWater);
       api.text(ctx, T.stomata, 880, 456, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle", maxWidth: 200 });
       api.text(ctx, o > 0.05 ? T.open : T.closed, 880, 500, { font: "display", size: 40, weight: 800, color: o > 0.05 ? C.mint : C.ink2, align: "center", baseline: "middle", maxWidth: 200 });
       ctx.save(); ctx.strokeStyle = C.line2; ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(SL.x0, SL.y); ctx.lineTo(SL.x1, SL.y); ctx.stroke(); ctx.strokeStyle = C.mint; ctx.beginPath(); ctx.moveTo(SL.x0, SL.y); ctx.lineTo(SL.x0 + g.open * (SL.x1 - SL.x0), SL.y); ctx.stroke(); ctx.fillStyle = g.slide ? C.volt : C.ink; ctx.beginPath(); ctx.arc(SL.x0 + g.open * (SL.x1 - SL.x0), SL.y, 18, 0, Math.PI * 2); ctx.fill(); ctx.restore();
     } else if (r.mode === "breath") {
       const v = g.vol, dy = g.pull * 90;
-      ctx.save(); ctx.strokeStyle = "#B8C2D9"; ctx.lineWidth = 10; ctx.beginPath(); ctx.moveTo(400, 150); ctx.lineTo(400, 230); ctx.moveTo(400, 230); ctx.lineTo(340, 270); ctx.moveTo(400, 230); ctx.lineTo(460, 270); ctx.stroke();
-      for (const sgn of [-1, 1]) { const cx = 400 + sgn * (95 + v * 18), cy = 340; const lg = ctx.createRadialGradient(cx, cy - 20, 10, cx, cy, 110); lg.addColorStop(0, "#FFB2B8"); lg.addColorStop(1, "#C25B6B"); ctx.fillStyle = lg; ctx.beginPath(); ctx.ellipse(cx, cy + v * 18, 70 + v * 22, 110 + v * 34, 0, 0, Math.PI * 2); ctx.fill(); }
-      ctx.strokeStyle = hexA("#E8ECF5", 0.35); ctx.lineWidth = 6; for (let i = 0; i < 5; i++) { const y = 230 + i * 48; ctx.beginPath(); ctx.ellipse(400, y + 40, 200 + v * 18 + i * 4, 30, 0, Math.PI * 0.05, Math.PI * 0.95); ctx.stroke(); }
+      ctx.save(); ctx.strokeStyle = C.lifeCO2; ctx.lineWidth = 10; ctx.beginPath(); ctx.moveTo(400, 150); ctx.lineTo(400, 230); ctx.moveTo(400, 230); ctx.lineTo(340, 270); ctx.moveTo(400, 230); ctx.lineTo(460, 270); ctx.stroke();
+      for (const sgn of [-1, 1]) { const cx = 400 + sgn * (95 + v * 18), cy = 340; const lg = ctx.createRadialGradient(cx, cy - 20, 10, cx, cy, 110); lg.addColorStop(0, C.lifeLungHi); lg.addColorStop(1, C.lifeLung); ctx.fillStyle = lg; ctx.beginPath(); ctx.ellipse(cx, cy + v * 18, 70 + v * 22, 110 + v * 34, 0, 0, Math.PI * 2); ctx.fill(); }
+      ctx.strokeStyle = hexA(C.lifeRib, 0.35); ctx.lineWidth = 6; for (let i = 0; i < 5; i++) { const y = 230 + i * 48; ctx.beginPath(); ctx.ellipse(400, y + 40, 200 + v * 18 + i * 4, 30, 0, Math.PI * 0.05, Math.PI * 0.95); ctx.stroke(); }
       ctx.strokeStyle = C.sci; ctx.lineWidth = 10; ctx.beginPath(); ctx.moveTo(190, 470); ctx.quadraticCurveTo(400, 400 + dy * 1.6, 610, 470); ctx.stroke(); ctx.restore();
       const hy = 470 + g.pull * 110; ctx.save(); ctx.fillStyle = g.drag ? C.volt : C.ink; roundRect(ctx, 340, hy, 120, 40, 20); ctx.fill(); ctx.restore();
-      api.text(ctx, "⇕", 400, hy + 21, { font: "display", size: 38, weight: 800, color: "#0B0E14", align: "center", baseline: "middle", decor: true });
+      api.text(ctx, "⇕", 400, hy + 21, { font: "display", size: 38, weight: 800, color: C.lifeOnBright, align: "center", baseline: "middle", decor: true });
       for (const q of g.parts) { ctx.save(); ctx.globalAlpha = clamp(q.life * 2, 0, 1); ctx.fillStyle = q.c; ctx.beginPath(); ctx.arc(q.x, q.y, 5, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
       if (!g.running && !done) pill(api, ctx, T.pull, 400, 600, { color: C.volt, size: 38 });
       const lowF = O2_LOW;
@@ -158,15 +159,15 @@ function create(api: EngineApi, spec: LifeSpec): EngineInstance {
     } else {
       // gut tube
       ctx.save(); ctx.lineCap = "round"; ctx.lineJoin = "round";
-      for (const s of STATIONS) { const pts = PATH[s]; ctx.strokeStyle = s === "small" ? "#C77B8B" : s === "large" ? "#A86C5E" : "#D49AA6"; ctx.lineWidth = s === "stomach" ? 46 : s === "large" ? 30 : 22; ctx.beginPath(); pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); }
+      for (const s of STATIONS) { const pts = PATH[s]; ctx.strokeStyle = s === "small" ? C.lifeSmallGut : s === "large" ? C.lifeLargeGut : C.lifeGut; ctx.lineWidth = s === "stomach" ? 46 : s === "large" ? 30 : 22; ctx.beginPath(); pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); }
       ctx.restore();
       const cur = stationAt(g.t);
-      for (const [k, x, y] of LABELS) { const on = cur === k && g.running; ctx.save(); ctx.fillStyle = "rgba(10,13,20,.82)"; const w = api.measure(ctx, T[k as keyof typeof T], { size: 38, weight: 700 }) + 24; roundRect(ctx, x - w / 2, y - 24, w, 48, 12); ctx.fill(); ctx.restore(); api.text(ctx, T[k as keyof typeof T], x, y, { size: 38, weight: 700, color: on ? C.volt : C.ink2, align: "center", baseline: "middle" }); }
+      for (const [k, x, y] of LABELS) { const on = cur === k && g.running; ctx.save(); ctx.fillStyle = withAlpha(C.lifeLabelGround, .82); const w = api.measure(ctx, T[k as keyof typeof T], { size: 38, weight: 700 }) + 24; roundRect(ctx, x - w / 2, y - 24, w, 48, 12); ctx.fill(); ctx.restore(); api.text(ctx, T[k as keyof typeof T], x, y, { size: 38, weight: 700, color: on ? C.volt : C.ink2, align: "center", baseline: "middle" }); }
       // absorption into blood along the small intestine
       const out = gutRun(r, g.drops);
-      if (cur === "small" || cur === "large" || done) for (let i = 0; i < out.absorbed.length * 6; i++) { const [x, y] = along(PATH.small, ((now * 0.2 + i / 18) % 1)); ctx.save(); ctx.fillStyle = "#FF5A6E"; ctx.globalAlpha = 0.7; ctx.beginPath(); ctx.arc(x, y - 18, 4, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+      if (cur === "small" || cur === "large" || done) for (let i = 0; i < out.absorbed.length * 6; i++) { const [x, y] = along(PATH.small, ((now * 0.2 + i / 18) % 1)); ctx.save(); ctx.fillStyle = C.lifeBlood; ctx.globalAlpha = 0.7; ctx.beginPath(); ctx.arc(x, y - 18, 4, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
       const [bx, by] = bolusAt(g.t); bloom(ctx, C.sun, bx, by, 34, 0.5);
-      const cols: Record<string, string> = { starch: "#F5E6B8", protein: "#E8A07A", fat: "#F7D44C" };
+      const cols: Record<string, string> = { starch: C.lifeStarch, protein: C.lifeProtein, fat: C.lifeFat };
       r.meal.forEach((n, i) => { const dg = (out.absorbed as string[]).includes(n); ctx.save(); ctx.fillStyle = cols[n]; ctx.globalAlpha = dg ? 0.45 : 1; ctx.beginPath(); ctx.arc(bx + (i - (r.meal.length - 1) / 2) * 16, by, dg ? 6 : 11, 0, Math.PI * 2); ctx.fill(); ctx.restore(); });
       for (const s of g.splash) if (s.t < 1) { ctx.save(); ctx.globalAlpha = 1 - s.t; ctx.strokeStyle = s.c; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(s.x, s.y, 14 + s.t * 40, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); }
       JUICES.forEach((j, i) => { const c = CHIP(i), live = !done && g.drops.length < r.drops; ctx.save(); ctx.fillStyle = hexA(JUICE_COL[j], live ? 0.16 : 0.05); roundRect(ctx, c.x, c.y, c.w, c.h, 14); ctx.fill(); ctx.strokeStyle = hexA(JUICE_COL[j], live ? 0.9 : 0.3); ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, T[j], c.x + c.w / 2, c.y + c.h / 2 + 1, { size: 38, weight: 700, color: live ? JUICE_COL[j] : C.ink3, align: "center", baseline: "middle", maxWidth: c.w - 16 }); });
@@ -196,4 +197,4 @@ function create(api: EngineApi, spec: LifeSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds.map((x) => x.sub || x.title).slice(0, 3), figure: { kind: "none" }, accent }),
   };
 }
-export const life: EngineDef<LifeSpec> = { archetype: "life-lab@1", label: "Simulation · Life Lab", accent: C.mint, create };
+export const life: EngineDef<LifeSpec> = { archetype: "life-lab@1", label: "Simulation · Life Lab", get accent() { return C.mint; }, create };

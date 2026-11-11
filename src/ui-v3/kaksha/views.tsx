@@ -16,6 +16,9 @@ import { tr7 } from "../../copy/en.ts";
 import type { HangarItem, World } from "./world.ts";
 import type { TeacherFloor } from "../../ui/teacher/Teacher.tsx";
 import type { TapSource } from "../../avatar/tap.ts";
+import { txTheme } from "../r8/tx.ts";
+import { Presence } from "../r8/Presence.tsx";
+import { homeLine } from "../r8/homeLine.ts";
 
 export type Go = (to: string) => void;
 
@@ -65,6 +68,8 @@ export interface HomeViewProps extends NavProps {
   madeFor?: Array<{ id: string; title: string; still: string | null; to: string }>;
   /** Questions parked in earlier lessons still waiting (a calm line, never a count). */
   jarWaiting?: boolean;
+  /** round 8 (?tx=): how many parked questions wait (the server's plan.jarWaiting), for the home's one true line. */
+  jarCount?: number;
   startTo: string;
   worldTo: string;
   parentTo: string;
@@ -87,6 +92,11 @@ export function HomeView(p: HomeViewProps) {
   const sub = p.resuming && p.state === "start" ? kt("resumeSub") : p.state === "done" ? kt("doneSub") : p.state === "capped" ? kt("cappedSub")
     : p.state === "resting" ? kt("restSub", { time: p.opensAt ? clock(p.opensAt) : "" }) : p.state === "homework" ? kt("homeworkSub")
       : p.state === "test" ? kt("testSub", { subject: p.testSubject || "school" }) : kt("openSub", { T: p.teacher.name });
+  // round 8 (?tx=): on the start state the line under the greeting is the one true line, or nothing (homeLine.ts)
+  const tx = !!txTheme();
+  const one = tx ? homeLine({ state: p.state, jar: p.jarCount ?? (p.jarWaiting ? 1 : 0), resuming: !!p.resuming, lessonTime: p.lessonTime }) : null;
+  const oneText = !one ? null : one.kind === "jar" ? (one.n === 1 ? kt("jarOne") : kt("jarMany", { n: String(one.n) }))
+    : one.kind === "resume" ? kt("resumeSub") : kt("lessonToday", { time: one.time ?? "" });
   const cta = p.state === "start" || p.state === "done" || p.state === "homework" || p.state === "test";
   const ctaWord = p.state === "homework" ? kt("homeworkCta") : p.state === "test" ? kt("reviseCta") : p.state === "done" ? kt("anotherCta") : kt("start");
   return (
@@ -94,20 +104,25 @@ export function HomeView(p: HomeViewProps) {
       <Sky screen="home" reducedMotion={p.reducedMotion} />
       {p.meTo ? (
         <KxTopBar go={p.go} meTo={p.meTo} parentTo={p.parentTo}
-          brand={<span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">TAXILA</span></span>} />
+          brand={<span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">Taxila</span></span>} />
       ) : (
         <header className="kx-top">
-          <span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">TAXILA</span></span>
+          <span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">Taxila</span></span>
           {futurist() && <span className="kx-shell">{KX_NAMES.shell}</span>}
         </header>
       )}
       <main className="kx-home-main">
-        <Comms className="kx-home-face" teacherId={p.teacher.id} teacherName={p.teacher.name} band={p.teacher.band} form={p.teacher.form} tier={p.teacher.tier}
-          floor={p.floor ?? "idle"} framing="medium" reducedMotion={p.reducedMotion} meters={p.meters} />
+        {txTheme() ? (
+          // round 8 (?tx=): her presence, never a face picture; her name and "AI teacher" printed
+          <div className="kx-home-presence"><Presence name={p.teacher.name} floor={p.floor ?? "idle"} size="home" /></div>
+        ) : (
+          <Comms className="kx-home-face" teacherId={p.teacher.id} teacherName={p.teacher.name} band={p.teacher.band} form={p.teacher.form} tier={p.teacher.tier}
+            floor={p.floor ?? "idle"} framing="medium" reducedMotion={p.reducedMotion} meters={p.meters} />
+        )}
         <section className="kx-home-copy" data-testid="primary-card" data-state={p.state}>
           <h1 className="kx-h1">{greet}</h1>
-          <p className="kx-sub">{sub}</p>
-          {p.lessonTime && p.state === "start" && <p className="kx-tagline" data-testid="home-lesson-time">{kt("lessonTime", { time: p.lessonTime })}</p>}
+          {tx && p.state === "start" ? (oneText && <p className="kx-sub" data-testid="home-one-line" data-line={one?.kind}>{oneText}</p>) : <p className="kx-sub">{sub}</p>}
+          {!tx && p.lessonTime && p.state === "start" && <p className="kx-tagline" data-testid="home-lesson-time">{kt("lessonTime", { time: p.lessonTime })}</p>}
           {cta && p.resuming ? (
             // r5 QA D24: the same CTA continuing an open lesson; its accessible name still names her as an AI teacher
             <A to={p.startTo} go={p.go} className="kx-cta kx-cut" testid="start-lesson" label={`${kt("continueCta")}, with ${p.teacher.name}, ${kt("aiTeacher")}`}>
@@ -143,7 +158,7 @@ export function HomeView(p: HomeViewProps) {
               ))}</ul>
             </section>
           )}
-          {p.jarWaiting && (p.state === "start" || p.state === "test") && <p className="kx-sub kx-jar" data-testid="jar-waiting">{kt("jarWaiting")}</p>}
+          {p.jarWaiting && ((!tx && p.state === "start") || p.state === "test") && <p className="kx-sub kx-jar" data-testid="jar-waiting">{kt("jarWaiting")}</p>}
           {p.dock ? (
             // r7: World, Notebook, Practice and Ask live in the one dock; the parent door is in the top bar. Only the
             // sibling switch stays here (audit B06).

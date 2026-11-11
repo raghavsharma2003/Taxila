@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Icon } from "../../ui/index.ts";
 import { useSurface } from "../band.ts";
-import { Helplines, PrimaryCta, PromiseSpot, Rupee, SiteFooter, SiteHeader, VOLT_NIGHT, useCanonical } from "./Site.tsx";
+import { Helplines, PrimaryCta, PromiseSpot, Rupee, SiteFooter, SiteHeader, VOLT_NIGHT, siteShot, siteTag, siteTx, useCanonical } from "./Site.tsx";
 import { SITE_PROMISES } from "../promises.ts";
 
 /** A capture of the real app in a device frame with HUD corner brackets. The hero's first one is eager (LCP). */
@@ -21,8 +21,8 @@ function Shot({ src, alt, eager, tag, className = "" }: { src: string; alt: stri
   return (
     <figure className={`sv-shot ${className}`}>
       <span className="sv-br sv-br--a" aria-hidden="true" /><span className="sv-br sv-br--b" aria-hidden="true" />
-      <img src={src} alt={alt} width={600} height={1333} decoding="async" loading={eager ? "eager" : "lazy"} {...(eager ? { fetchPriority: "high" as const } : {})} />
-      {tag && <figcaption className="sv-shot-tag">{tag}</figcaption>}
+      <img src={siteShot(src)} alt={alt} width={600} height={1333} decoding="async" loading={eager ? "eager" : "lazy"} {...(eager ? { fetchPriority: "high" as const } : {})} />
+      {tag && <figcaption className="sv-shot-tag">{siteTag(tag)}</figcaption>}
     </figure>
   );
 }
@@ -46,7 +46,7 @@ function LoopShot({ poster, src, alt, tag }: { poster: string; src: string; alt:
       {play
         ? <video src={src} poster={poster} width={600} height={1331} autoPlay muted loop playsInline preload="auto" aria-label={alt} />
         : <img src={poster} alt={alt} width={600} height={1331} decoding="async" loading="lazy" />}
-      <figcaption className="sv-shot-tag">{tag}</figcaption>
+      <figcaption className="sv-shot-tag">{siteTag(tag)}</figcaption>
     </figure>
   );
 }
@@ -115,7 +115,7 @@ export default function Landing() {
   }, [hash]);
 
   return (
-    <div {...VOLT_NIGHT} data-page="landing">
+    <div {...VOLT_NIGHT} {...siteTx()} data-page="landing">
       <a className="sv-skip" href="#main">Skip to content</a>
       <SiteHeader home />
       <main id="main">

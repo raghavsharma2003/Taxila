@@ -1,0 +1,97 @@
+/* Round 8, step d: set-up (src/onboarding, the StepFrame root .onb-volt.kx) under the one token set, behind the ?tx=
+   switch. These are the parent's screens, so they are light in both themes: data-tx-surface="light" on the root, which
+   B swaps to its light set.
+   It removes:
+     - the carbon grid;
+     - the "// " eyebrows and legend prefixes;
+     - the slanted, glowing progress cells;
+     - chamfered tiles, buttons and keys;
+     - corner brackets;
+     - mono uppercase labels;
+     - the "»" chevron and the sweep on the primary button;
+     - the diamond PIN dots.
+   Tokens only (tests/r8-tx-tokens.test.mjs). The selector repeats [data-tx] to outrank volt.css: at most (0,4,1). */
+@import "./bridge.css";
+
+.onb-volt.kx[data-tx][data-tx] {
+  --radius-xs: var(--tx-r-1); --radius-sm: var(--tx-r-1); --radius-md: var(--tx-r-1); --radius-lg: var(--tx-r-2); --radius-tile: var(--tx-r-1); --radius-card: var(--tx-r-2);
+  --elev-card: var(--tx-shadow-1);
+  --onb-cut: 0px; --onb-cut-sm: 0px; --onb-accent: var(--tx-tutor);
+  --font-heading: var(--tx-font-display); --font-title: var(--tx-font-display); --font-display: var(--tx-font-display);
+  --nib: var(--tx-accent); --on-nib: var(--tx-on-accent);
+  background: var(--tx-bg); color: var(--tx-ink);
+}
+.onb-v2.onb-volt.kx[data-tx][data-tx]::before { content: none; }
+.onb-volt.kx[data-tx][data-tx] :focus-visible { outline: 3px solid var(--tx-tutor); outline-offset: 2px; }
+/* the title takes focus on every step change for screen readers; it never draws a focus box (as volt.css) */
+.onb-volt.kx[data-tx][data-tx] .onb-title:is(:focus, :focus-visible) { outline: none; box-shadow: none; }
+
+/* the frame: Back, "Step n of 5" in plain words, a thin progress line */
+.onb-volt.kx[data-tx][data-tx] .iconbtn { clip-path: none; border-radius: var(--tx-r-1); border-color: transparent; background: transparent; color: var(--tx-ink-2); }
+.onb-volt.kx[data-tx][data-tx] .onb-count { font: 600 var(--tx-t-1)/1 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-ink-2); }
+.onb-volt.kx[data-tx][data-tx] .onb-steps { gap: var(--tx-s-1); padding-block: var(--tx-s-1) var(--tx-s-4); }
+.onb-volt.kx[data-tx][data-tx] .onb-seg { height: 4px; border-radius: var(--tx-r-3); transform: none; background: var(--tx-line-2); box-shadow: none; animation: none; }
+.onb-volt.kx[data-tx][data-tx] .onb-seg--on { background: var(--tx-tutor); }
+.onb-volt.kx[data-tx][data-tx] .onb-eyebrow { display: none; }
+.onb-volt.kx[data-tx][data-tx] .onb-title { font: var(--tx-display-weight) var(--tx-t-6)/1.12 var(--tx-font-display); letter-spacing: -.02em; color: var(--tx-ink); }
+.onb-volt.kx[data-tx][data-tx] :is(.t-lead, .muted, .hint, .t-note, .t-meta) { color: var(--tx-ink-2); }
+.onb-volt.kx[data-tx][data-tx] :is(.t-h3, h2) { font-family: var(--tx-font-display); }
+.onb-volt.kx[data-tx][data-tx] :is(.label, .fs legend, .field label, .field .label) { font: 700 var(--tx-t-2)/1.3 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-ink); }
+.onb-volt.kx[data-tx][data-tx] :is(.fs legend, .field > label)::before { content: none; }
+.onb-volt.kx[data-tx][data-tx] .onb-main a:not(.btn) { color: var(--tx-tutor); }
+.onb-volt.kx[data-tx][data-tx] .brand { --nib: var(--tx-tutor); --on-nib: var(--tx-surface); font: 700 var(--tx-t-3)/1 var(--tx-font-ui); letter-spacing: 0; color: var(--tx-ink); }
+
+/* buttons: the one move is a solid accent rectangle; no chevron, no sweep, no uppercase */
+.onb-volt.kx[data-tx][data-tx] .btn { clip-path: none; border-radius: var(--tx-r-2); font-family: var(--tx-font-ui); }
+.onb-volt.kx[data-tx][data-tx] .btn-primary { background: var(--tx-accent); background-image: none; color: var(--tx-on-accent); animation: none;
+  font: 700 var(--tx-t-3)/1.1 var(--tx-font-ui); letter-spacing: 0; text-transform: none; box-shadow: var(--tx-shadow-1); }
+.onb-volt.kx[data-tx][data-tx] .btn-primary:not(.hold)::after { content: none; }
+.onb-volt.kx[data-tx][data-tx] :is(.btn-primary:disabled, .btn-primary[aria-disabled="true"]) { background: var(--tx-surface-2); color: var(--tx-ink-2); box-shadow: none; }
+.onb-volt.kx[data-tx][data-tx] .btn-secondary { background: var(--tx-surface); color: var(--tx-ink); border: 1.5px solid var(--tx-line-2); }
+.onb-volt.kx[data-tx][data-tx] .btn-quiet { font: 600 var(--tx-t-2)/1 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-ink-2); }
+.onb-volt.kx[data-tx][data-tx] .btn-quiet:hover { color: var(--tx-tutor); }
+.onb-volt.kx[data-tx][data-tx] .onb-ghost { border-radius: var(--tx-r-2); border: 1.5px solid var(--tx-line-2); background: var(--tx-surface); color: var(--tx-ink);
+  font: 600 var(--tx-t-2)/1 var(--tx-font-ui); letter-spacing: 0; text-transform: none; }
+.onb-volt.kx[data-tx][data-tx] .onb-ghost:hover { box-shadow: none; border-color: var(--tx-tutor); }
+
+/* tiles: soft rectangles; the chosen one in the teacher's colour */
+.onb-volt.kx[data-tx][data-tx] .tile { clip-path: none; border-radius: var(--tx-r-1); border: 1.5px solid var(--tx-line-2); background: var(--tx-surface); color: var(--tx-ink); font: 700 var(--tx-t-3)/1.15 var(--tx-font-ui); box-shadow: none; }
+.onb-volt.kx[data-tx][data-tx] .tile:hover { box-shadow: none; border-color: var(--tx-tutor); }
+.onb-volt.kx[data-tx][data-tx] :is(.tile[aria-pressed="true"], .tile[aria-checked="true"]) { border-color: var(--tx-tutor); background: var(--tx-tutor-soft); color: var(--tx-ink); box-shadow: inset 0 0 0 1.5px var(--tx-tutor); }
+.onb-volt.kx[data-tx][data-tx] .tile .tile-tick { color: var(--tx-tutor); }
+
+/* inputs and panels */
+.onb-volt.kx[data-tx][data-tx] :is(.input, .phone-cc, .pw-toggle) { border-radius: var(--tx-r-1); border: 1.5px solid var(--tx-line-2); background: var(--tx-surface); color: var(--tx-ink); box-shadow: none; }
+.onb-volt.kx[data-tx][data-tx] .input { font: 400 var(--tx-t-3)/1.3 var(--tx-font-ui); }
+.onb-volt.kx[data-tx][data-tx] .input:focus-visible { border-color: var(--tx-tutor); box-shadow: 0 0 0 3px var(--tx-tutor-soft); }
+.onb-volt.kx[data-tx][data-tx] .input[aria-invalid="true"] { border-color: var(--tx-mix); box-shadow: none; }
+.onb-volt.kx[data-tx][data-tx] :is(.phone-cc, .pw-toggle) { font: 600 var(--tx-t-2)/1 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-ink-2); }
+.onb-volt.kx[data-tx][data-tx] .field-error { color: var(--tx-mix); }
+.onb-volt.kx[data-tx][data-tx] .alert { border-radius: var(--tx-r-1); border: 1.5px solid var(--tx-mix); background: var(--tx-surface); color: var(--tx-ink); }
+.onb-volt.kx[data-tx][data-tx] .card { border-radius: var(--tx-r-2); border: 1px solid var(--tx-line); background: var(--tx-surface); box-shadow: var(--tx-shadow-1); }
+.onb-volt.kx[data-tx][data-tx] details > summary { font: 700 var(--tx-t-2)/1.3 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-tutor); }
+.onb-volt.kx[data-tx][data-tx] .chip { border-radius: var(--tx-r-3); border: 1.5px solid var(--tx-line-2); background: var(--tx-surface); }
+.onb-volt.kx[data-tx][data-tx] .chip[aria-pressed="true"] { border-color: var(--tx-tutor); box-shadow: inset 0 0 0 1.5px var(--tx-tutor); }
+.onb-volt.kx[data-tx][data-tx] :is(.speaker, .onb-play, .consent-row .iconbtn) { border-radius: var(--tx-r-1); border: 1.5px solid var(--tx-line-2); background: var(--tx-surface); color: var(--tx-tutor); box-shadow: none; }
+.onb-volt.kx[data-tx][data-tx] :is(.speaker, .onb-play)[aria-pressed="true"] { background: var(--tx-tutor); color: var(--tx-surface); box-shadow: none; }
+.onb-volt.kx[data-tx][data-tx] .promise-li { border-bottom-color: var(--tx-line); }
+.onb-volt.kx[data-tx][data-tx] .promise-icon { border-radius: var(--tx-r-1); background: var(--tx-tutor-soft); color: var(--tx-tutor); }
+.onb-volt.kx[data-tx][data-tx] .hold .hold-fill { background: color-mix(in srgb, var(--tx-on-accent) 18%, var(--tx-accent)); }
+
+/* the PIN pad: round dots, soft keys; OK stays quiet (the accent is the step's one move) */
+.onb-volt.kx[data-tx][data-tx] .pin-dot { border-radius: 50%; transform: none; border: 2px solid var(--tx-tutor); }
+.onb-volt.kx[data-tx][data-tx] .pin-dot[data-on="true"] { background: var(--tx-tutor); box-shadow: none; }
+.onb-volt.kx[data-tx][data-tx] .pin-key { clip-path: none; border-radius: var(--tx-r-1); border: 1.5px solid var(--tx-line-2); background: var(--tx-surface); color: var(--tx-ink); font: 600 var(--tx-t-5)/1 var(--tx-font-ui); }
+.onb-volt.kx[data-tx][data-tx] .pin-key.btn-primary { background: var(--tx-tutor-soft); border-color: var(--tx-tutor); color: var(--tx-ink); font: 700 var(--tx-t-3)/1 var(--tx-font-ui); letter-spacing: 0; text-transform: none; }
+.onb-volt.kx[data-tx][data-tx] .stepper-val strong { font-family: var(--tx-font-ui); }
+
+/* the child's moments (her voice, her name): the same paper, a quiet frame, no "// " or star tag */
+.onb-volt.kx[data-tx][data-tx] .onb-kid.kx { border: 1.5px solid var(--tx-line); border-radius: var(--tx-r-2); background: var(--tx-surface); box-shadow: none; }
+.onb-volt.kx[data-tx][data-tx] .onb-kid-tag { font: 700 var(--tx-t-2)/1.2 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-ink); }
+.onb-volt.kx[data-tx][data-tx] .onb-kid-tag::before { content: none; }
+.onb-volt.kx[data-tx][data-tx] .onb-kid .tile, .onb-volt.kx[data-tx][data-tx] .onb-kid :is(.onb-play, .input) { border-width: 1.5px; box-shadow: none; }
+
+@media (min-width: 1024px) {
+  .onb-volt.kx[data-tx][data-tx] .onb-sheet { border-radius: var(--tx-r-2); border: 1px solid var(--tx-line); background: var(--tx-surface); box-shadow: var(--tx-shadow-2); }
+  .onb-volt.kx[data-tx][data-tx] .onb-title { font-size: var(--tx-t-7); }
+}

@@ -5,6 +5,7 @@
 // Adaptive: two misses in a row slow the fall 14% and switch the scaffold ticks on; a chain of 3 speeds it 7%.
 import { centuryOf, eraPairs, ordinal, type EraRoundT, type EraSpec } from "../../../../shared/studio-spec-ext/era.ts";
 import { C, W, H } from "../../core/tokens.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 import { clamp, ease, hexA, rng } from "../../core/math.ts";
 import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
@@ -17,7 +18,7 @@ const X0 = 90, X1 = 910, LINE_Y = 470, POD_W = 360, POD_H = 112, TOP = 150, LAND
 interface Pod { idx: number; x: number; y: number; landed: boolean; t: number }
 
 function create(api: EngineApi, spec: EraSpec): EngineInstance {
-  const T = spec.strings, accent = "#C9A7FF";
+  const T = spec.strings, accent = C.eraAccent;
   const devaNeeded = /[ऀ-ॿ]/.test(JSON.stringify(spec));
   let fontOk = !devaNeeded; if (devaNeeded) void devaReady().then(() => { fontOk = true; });
   const { min, max } = spec.axis, span = max - min;
@@ -99,7 +100,7 @@ function create(api: EngineApi, spec: EraSpec): EngineInstance {
   function paintBg(c: Ctx) { backdrop(c, accent, 17, 60); }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
-    dust(ctx, now, 26, "#D9C8FF", 5);
+    dust(ctx, now, 26, C.eraDust, 5);
     if (!fontOk) return;
     const r = rd(); if (!r) return;
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
@@ -108,7 +109,7 @@ function create(api: EngineApi, spec: EraSpec): EngineInstance {
     if (min < 0 && max > 0) { const zx = X(0); ctx.save(); ctx.strokeStyle = hexA(accent, 0.8); ctx.lineWidth = 3; ctx.setLineDash([8, 8]); ctx.beginPath(); ctx.moveTo(zx, LINE_Y - 40); ctx.lineTo(zx, LINE_Y + 26); ctx.stroke(); ctx.restore(); }
     if (r.mode === "century") {
       const c0 = centuryOf(min || 1), c1 = centuryOf(max);
-      for (let c = c0; c <= c1; c++) { if (c === 0) continue; const a = c > 0 ? (c - 1) * 100 : c * 100, b = c > 0 ? c * 100 : (c + 1) * 100, xa = X(clamp(a, min, max)), xb = X(clamp(b, min, max)); if (xb - xa < 4) continue; ctx.fillStyle = (c & 1) ? "rgba(201,167,255,.10)" : "rgba(255,255,255,.04)"; ctx.fillRect(xa, LINE_Y - 30, xb - xa, 60); if (xb - xa > 90) api.text(ctx, `${ordinal(c)}`, (xa + xb) / 2, LINE_Y + 56, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle" }); }
+      for (let c = c0; c <= c1; c++) { if (c === 0) continue; const a = c > 0 ? (c - 1) * 100 : c * 100, b = c > 0 ? c * 100 : (c + 1) * 100, xa = X(clamp(a, min, max)), xb = X(clamp(b, min, max)); if (xb - xa < 4) continue; ctx.fillStyle = (c & 1) ? withAlpha(C.eraAccent, .10) : withAlpha(C.hi, .04); ctx.fillRect(xa, LINE_Y - 30, xb - xa, 60); if (xb - xa > 90) api.text(ctx, `${ordinal(c)}`, (xa + xb) / 2, LINE_Y + 56, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle" }); }
     }
     // end labels always; scaffold ticks when on
     api.text(ctx, yearLabel(min), X0, LINE_Y + 100, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
@@ -124,13 +125,13 @@ function create(api: EngineApi, spec: EraSpec): EngineInstance {
     if (r.mode !== "order") {
       const dx = r.mode === "century" ? snapCentury(g.dock).x : g.dock, col = g.dragging ? C.volt : C.ink;
       ctx.save(); bloom(ctx, col, dx, LINE_Y, 70, 0.4); ctx.strokeStyle = col; ctx.lineWidth = 7; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(dx - 44, LINE_Y - 30); ctx.lineTo(dx - 44, LINE_Y - 4); ctx.lineTo(dx + 44, LINE_Y - 4); ctx.lineTo(dx + 44, LINE_Y - 30); ctx.stroke(); ctx.restore();
-      if (!g.reveal && g.pods[0]) { ctx.save(); ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.lineWidth = 2; ctx.setLineDash([6, 10]); ctx.beginPath(); ctx.moveTo(g.pods[0].x, g.pods[0].y + POD_H); ctx.lineTo(dx, LINE_Y - 34); ctx.stroke(); ctx.restore(); }
+      if (!g.reveal && g.pods[0]) { ctx.save(); ctx.strokeStyle = withAlpha(C.hi, .18); ctx.lineWidth = 2; ctx.setLineDash([6, 10]); ctx.beginPath(); ctx.moveTo(g.pods[0].x, g.pods[0].y + POD_H); ctx.lineTo(dx, LINE_Y - 34); ctx.stroke(); ctx.restore(); }
     }
     // pods
     for (const p of g.pods) {
       const it = r.items[p.idx], rv = g.reveal;
       const tone = !rv ? hexA(accent, 0.9) : r.mode === "order" ? (p.idx === rv.pick ? (rv.verdict === "right" ? C.mint : C.amber) : C.line2) : rv.verdict === "right" ? C.mint : rv.verdict === "partial" ? C.amber : C.ion;
-      ctx.save(); bloom(ctx, tone, p.x, p.y + POD_H / 2, POD_W * 0.6, 0.25); ctx.fillStyle = "rgba(24,20,38,.97)"; roundRect(ctx, p.x - POD_W / 2, p.y, POD_W, POD_H, 18); ctx.fill(); ctx.strokeStyle = tone; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
+      ctx.save(); bloom(ctx, tone, p.x, p.y + POD_H / 2, POD_W * 0.6, 0.25); ctx.fillStyle = withAlpha(C.eraPod, .97); roundRect(ctx, p.x - POD_W / 2, p.y, POD_W, POD_H, 18); ctx.fill(); ctx.strokeStyle = tone; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
       textBlock(api, ctx, it.text, p.x, p.y + POD_H / 2, POD_W - 26, { size: 38, weight: 700 }, 3, 0.98);
       if (rv && r.mode === "order") pill(api, ctx, yearLabel(it.value), p.x, p.y - 34, { color: p.idx === (rd().items[eraPairs(r)[g.k][0]].value <= rd().items[eraPairs(r)[g.k][1]].value ? eraPairs(r)[g.k][0] : eraPairs(r)[g.k][1]) ? C.mint : C.ink2, size: 38 });
       if (rv && r.mode === "order" && p.idx === rv.pick && rv.verdict === "right") tick(ctx, p.x + POD_W / 2 - 10, p.y - 4, C.mint, 0.9);
@@ -175,4 +176,4 @@ function create(api: EngineApi, spec: EraSpec): EngineInstance {
     },
   };
 }
-export const era: EngineDef<EraSpec> = { archetype: "era-drop@1", label: "Game · Era Drop", accent: "#C9A7FF", create };
+export const era: EngineDef<EraSpec> = { archetype: "era-drop@1", label: "Game · Era Drop", get accent() { return C.eraAccent; }, create };

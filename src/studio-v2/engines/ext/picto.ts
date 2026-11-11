@@ -4,6 +4,7 @@
 // not start at zero. The host grades each row, bar, tally or call from the spec's counts.
 import { claimText, claimTruth, tallyStream, type PdRoundT, type PictoSpec } from "../../../../shared/studio-spec-ext/picto.ts";
 import { C, W, H } from "../../core/tokens.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 import { clamp, hexA, rng } from "../../core/math.ts";
 import { magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
@@ -15,7 +16,7 @@ import { dots } from "../../core/dots.ts";
 import { valueAxis } from "./pure.ts";
 
 // CHECK holds "CHECK" at the young floor with a margin
-const CHECK = { x: 816, y: 500, w: 158, h: 66 }, COLS = [C.ion, C.sci, C.amber, "#FF8FB1", C.mint];
+const CHECK = { x: 816, y: 500, w: 158, h: 66 }, COLS = () => [C.ion, C.sci, C.amber, C.pictoPink, C.mint];
 function create(api: EngineApi, spec: PictoSpec): EngineInstance {
   const T = spec.strings, accent = C.sci;
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
@@ -94,10 +95,10 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
     const r = rd(); if (!r) return; const done = g.answered;
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     if (r.mode === "tally") {
-      ctx.fillStyle = "#121621"; ctx.fillRect(0, 300, W, 14);
+      ctx.fillStyle = C.pictoShelf; ctx.fillRect(0, 300, W, 14);
       ctx.save(); ctx.strokeStyle = hexA(C.volt, 0.6); ctx.lineWidth = 4; ctx.setLineDash([10, 8]); ctx.beginPath(); ctx.moveTo(500, 190); ctx.lineTo(500, 320); ctx.stroke(); ctx.restore();
-      for (const it of g.items) { const c = r.cats[it.cat]; ctx.save(); ctx.fillStyle = "rgba(22,26,36,.96)"; roundRect(ctx, it.x - 54, 214, 108, 84, 16); ctx.fill(); ctx.strokeStyle = COLS[it.cat % 5]; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); if (c.glyph) drawGlyph(ctx, c.glyph, it.x, 256, 56, C.ink, hexA(COLS[it.cat % 5], 0.35)); else api.text(ctx, c.label.slice(0, 1), it.x, 258, { font: "display", size: 44, weight: 800, align: "center", baseline: "middle" }); }
-      counterBtns().forEach((b) => { const c = r.cats[b.i], col = COLS[b.i % 5], v = g.verdicts[b.i]; ctx.save(); ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, b.x, b.y, b.w, b.h, 18); ctx.fill(); ctx.strokeStyle = done ? (v === "right" ? C.mint : C.amber) : col; ctx.lineWidth = 4; ctx.stroke(); ctx.restore(); api.text(ctx, c.label, b.x + b.w / 2, b.y + 30, { size: 38, weight: 700, align: "center", baseline: "middle", maxWidth: b.w - 12 }); marks(ctx, g.tally[b.i], b.x + 18, b.y + 92); if (done) api.text(ctx, String(c.count), b.x + b.w - 24, b.y + 92, { font: "display", size: 40, weight: 800, color: v === "right" ? C.mint : C.amber, align: "center", baseline: "middle" }); });
+      for (const it of g.items) { const c = r.cats[it.cat]; ctx.save(); ctx.fillStyle = withAlpha(C.bg2, .96); roundRect(ctx, it.x - 54, 214, 108, 84, 16); ctx.fill(); ctx.strokeStyle = COLS()[it.cat % 5]; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); if (c.glyph) drawGlyph(ctx, c.glyph, it.x, 256, 56, C.ink, hexA(COLS()[it.cat % 5], 0.35)); else api.text(ctx, c.label.slice(0, 1), it.x, 258, { font: "display", size: 44, weight: 800, align: "center", baseline: "middle" }); }
+      counterBtns().forEach((b) => { const c = r.cats[b.i], col = COLS()[b.i % 5], v = g.verdicts[b.i]; ctx.save(); ctx.fillStyle = withAlpha(C.bg2, .95); roundRect(ctx, b.x, b.y, b.w, b.h, 18); ctx.fill(); ctx.strokeStyle = done ? (v === "right" ? C.mint : C.amber) : col; ctx.lineWidth = 4; ctx.stroke(); ctx.restore(); api.text(ctx, c.label, b.x + b.w / 2, b.y + 30, { size: 38, weight: 700, align: "center", baseline: "middle", maxWidth: b.w - 12 }); marks(ctx, g.tally[b.i], b.x + 18, b.y + 92); if (done) api.text(ctx, String(c.count), b.x + b.w - 24, b.y + 92, { font: "display", size: 40, weight: 800, color: v === "right" ? C.mint : C.amber, align: "center", baseline: "middle" }); });
     } else if (r.mode === "picto") {
       // the key sits under the last row (at y 150 it lay under the task pill at l1366 and over the first row's + / ½;
       // layout probe and judges, 2026-11-11), left of the check button
@@ -107,8 +108,8 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
         // (from x 40, ending short of its count: "Elephants" ran into "12" at the young floor)
         api.text(ctx, c.label, 40, y + 2, { size: 38, weight: 700, baseline: "middle", maxWidth: 316 - 62 - api.measure(ctx, String(c.count), { font: "mono", size: 38, weight: 600 }) });
         api.text(ctx, String(c.count), 316, y + 2, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "right", baseline: "middle" });
-        for (let k = 0; k < Math.ceil(g.sym[i]); k++) { const half = k + 1 > g.sym[i], x = 345 + k * 30; ctx.save(); if (half) { ctx.beginPath(); ctx.rect(x - 14, y - 20, 14, 40); ctx.clip(); } if (c.glyph) drawGlyph(ctx, c.glyph, x, y, 34, C.ink, hexA(COLS[i % 5], 0.6)); else { ctx.fillStyle = COLS[i % 5]; ctx.beginPath(); ctx.arc(x, y, 13, 0, Math.PI * 2); ctx.fill(); } ctx.restore(); }
-        for (const [bx, lab] of [[640, "+"], [720, T.half]] as [number, string][]) { ctx.save(); ctx.fillStyle = done ? "rgba(255,255,255,.04)" : "rgba(22,26,36,.95)"; roundRect(ctx, bx, y - 28, 70, 56, 12); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); api.text(ctx, lab, bx + 35, y + 2, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle" }); }
+        for (let k = 0; k < Math.ceil(g.sym[i]); k++) { const half = k + 1 > g.sym[i], x = 345 + k * 30; ctx.save(); if (half) { ctx.beginPath(); ctx.rect(x - 14, y - 20, 14, 40); ctx.clip(); } if (c.glyph) drawGlyph(ctx, c.glyph, x, y, 34, C.ink, hexA(COLS()[i % 5], 0.6)); else { ctx.fillStyle = COLS()[i % 5]; ctx.beginPath(); ctx.arc(x, y, 13, 0, Math.PI * 2); ctx.fill(); } ctx.restore(); }
+        for (const [bx, lab] of [[640, "+"], [720, T.half]] as [number, string][]) { ctx.save(); ctx.fillStyle = done ? withAlpha(C.hi, .04) : withAlpha(C.bg2, .95); roundRect(ctx, bx, y - 28, 70, 56, 12); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); api.text(ctx, lab, bx + 35, y + 2, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle" }); }
         if (done) { if (v === "right") tick(ctx, 815, y, C.mint, 0.8); else { magnifier(ctx, 815, y, C.amber, 0.8); api.text(ctx, String(c.count / r.scale), 870, y + 2, { font: "mono", size: 38, weight: 600, color: C.amber, baseline: "middle" }); } }
       });
     } else {
@@ -129,11 +130,11 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
       for (let k = 0; r.axisStart + k * ax.step <= mx + 1e-6; k++) {
         const v = r.axisStart + k * ax.step, lab = (v - r.axisStart) % ax.labelStep === 0;
         if (!fine && !lab && !onBar(v)) continue;   // a very fine step keeps the lines a bar can stop on, and the labelled ones
-        const y = yOf(v); ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(AX.x0, y); ctx.lineTo(AX.x0 + 600, y); ctx.stroke();
+        const y = yOf(v); ctx.strokeStyle = withAlpha(C.hi, .08); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(AX.x0, y); ctx.lineTo(AX.x0 + 600, y); ctx.stroke();
         if (lab) api.text(ctx, String(v), AX.x0 - 14, y, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "right", baseline: "middle" });
       }
       r.cats.forEach((c, i) => {
-        const x = barX(i), bw = barW(), v = r.mode === "claims" ? c.count : g.bars[i], y = yOf(v), col = COLS[i % 5], vd = g.verdicts[i];
+        const x = barX(i), bw = barW(), v = r.mode === "claims" ? c.count : g.bars[i], y = yOf(v), col = COLS()[i % 5], vd = g.verdicts[i];
         ctx.save(); ctx.fillStyle = hexA(col, 0.8); roundRect(ctx, x, y, bw, AX.y0 - y, 6); ctx.fill(); if (r.mode === "bars" && !done) { ctx.strokeStyle = g.drag === i ? C.volt : C.ink; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x - 6, y); ctx.lineTo(x + bw + 6, y); ctx.stroke(); } ctx.restore();
         api.text(ctx, c.label, x + bw / 2, AX.y0 + 30 + (stagger && i % 2 ? rowH : 0), { ...lab, color: C.ink2, align: "center", baseline: "middle" });
         if (r.mode === "bars") { api.text(ctx, String(c.count), x + bw / 2, countY, { font: "mono", size: 38, weight: 600, color: done ? (vd === "right" ? C.mint : C.amber) : C.ink, align: "center", baseline: "middle" }); }
@@ -144,13 +145,13 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
           // (a claim wider than the card takes two lines and the card grows: cut to one line, "Guava − Banana = 7" lost its "= 7")
           const cx0 = clamp(barX(r.cats.length - 1) + barW() + 16, 560, 620), cw = 360, ct = claimText(r, c, T.total), co = { font: "display", size: 40, weight: 800 } as const;
           const ch = Math.max(80, wrap(api, ctx, ct, cw - 30, { ...co, size: Math.max(40, api.minLabel) }, 2).length * Math.max(40, api.minLabel) * 1.18 + 26);
-          ctx.save(); ctx.fillStyle = "rgba(22,26,36,.97)"; roundRect(ctx, cx0, g.claimY - ch / 2, cw, ch, 18); ctx.fill(); ctx.strokeStyle = C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); textBlock(api, ctx, ct, cx0 + cw / 2, g.claimY, cw - 30, co, 2);
+          ctx.save(); ctx.fillStyle = withAlpha(C.bg2, .97); roundRect(ctx, cx0, g.claimY - ch / 2, cw, ch, 18); ctx.fill(); ctx.strokeStyle = C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); textBlock(api, ctx, ct, cx0 + cw / 2, g.claimY, cw - 30, co, 2);
         }
-        for (const [x, lab] of [[300, T.trueW], [700, T.falseW]] as [number, string][]) { ctx.save(); ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, x - 160, 480, 320, 80, 18); ctx.fill(); ctx.strokeStyle = done ? C.line : C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, lab, x, 522, { font: "display", size: 44, weight: 800, color: done ? C.ink3 : C.ink, align: "center", baseline: "middle" }); }
+        for (const [x, lab] of [[300, T.trueW], [700, T.falseW]] as [number, string][]) { ctx.save(); ctx.fillStyle = withAlpha(C.bg2, .95); roundRect(ctx, x - 160, 480, 320, 80, 18); ctx.fill(); ctx.strokeStyle = done ? C.line : C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, lab, x, 522, { font: "display", size: 44, weight: 800, color: done ? C.ink3 : C.ink, align: "center", baseline: "middle" }); }
         if (done) pill(api, ctx, `${g.verdicts.filter((v) => v === "right").length}/${r.claims.length}`, 750, 300, { color: C.ion, size: 44 });
       }
     }
-    if (r.mode === "picto" || r.mode === "bars") { const on = !done; ctx.save(); ctx.fillStyle = on ? "rgba(203,255,77,.14)" : "rgba(255,255,255,.04)"; roundRect(ctx, CHECK.x, CHECK.y, CHECK.w, CHECK.h, 16); ctx.fill(); ctx.strokeStyle = on ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, T.check, CHECK.x + CHECK.w / 2, CHECK.y + CHECK.h / 2 + 2, { font: "display", size: 38, weight: 800, color: on ? C.volt : C.ink3, align: "center", baseline: "middle" }); }
+    if (r.mode === "picto" || r.mode === "bars") { const on = !done; ctx.save(); ctx.fillStyle = on ? withAlpha(C.volt, .14) : withAlpha(C.hi, .04); roundRect(ctx, CHECK.x, CHECK.y, CHECK.w, CHECK.h, 16); ctx.fill(); ctx.strokeStyle = on ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, T.check, CHECK.x + CHECK.w / 2, CHECK.y + CHECK.h / 2 + 2, { font: "display", size: 38, weight: 800, color: on ? C.volt : C.ink3, align: "center", baseline: "middle" }); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.verdicts.filter((v) => v === "right").length}/${g.verdicts.length}`, T.right]] });
@@ -175,4 +176,4 @@ function create(api: EngineApi, spec: PictoSpec): EngineInstance {
     board: () => { const r0 = spec.rounds[0]; return { title: spec.title, lines: [r0.cats.map((c) => `${c.label} ${c.count}`).join(" · ")], figure: { kind: "bars", values: r0.cats.map((c) => c.count), labels: r0.cats.map((c) => c.label.slice(0, 6)) }, accent }; },
   };
 }
-export const picto: EngineDef<PictoSpec> = { archetype: "pictograph@1", label: "Game · Data Desk", accent: C.sci, create };
+export const picto: EngineDef<PictoSpec> = { archetype: "pictograph@1", label: "Game · Data Desk", get accent() { return C.sci; }, create };

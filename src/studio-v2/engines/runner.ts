@@ -4,6 +4,7 @@
 // decimals target the kit misconceptions. The take-off value is the act; the host grades it.
 import { parseNum, type RunnerSpec } from "../../../shared/studio-spec.ts";
 import { C, W, H } from "../core/tokens.ts";
+import { withAlpha } from "../../theme/palette.ts";
 import { clamp, rng } from "../core/math.ts";
 import { bloom, magnifier, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
@@ -98,12 +99,12 @@ function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
     }
   }
   function paintBg(c: Ctx) {
-    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#090B12"); gr.addColorStop(0.68, "#121732"); gr.addColorStop(1, "#0A0C14");
+    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, C.runSkyTop); gr.addColorStop(0.68, C.runSkyMid); gr.addColorStop(1, C.runSkyLow);
     c.fillStyle = gr; c.fillRect(0, 0, W, H);
-    const r2 = rng(5); c.fillStyle = "#0C0F1D";
+    const r2 = rng(5); c.fillStyle = C.runCity;
     for (let x = -20; x < W + 20;) { const w = 40 + r2() * 80, h = 40 + r2() * 120; c.fillRect(x, LY - 40 - h, w, h + 40); x += w + 4; }
-    c.fillStyle = "rgba(139,152,255,.06)"; for (let i = 0; i < 60; i++) c.fillRect(r2() * W, LY - 160 + r2() * 110, 3, 4);
-    c.fillStyle = "#0B0D16"; c.fillRect(0, LY, W, H - LY);
+    c.fillStyle = withAlpha(C.ion, .06); for (let i = 0; i < 60; i++) c.fillRect(r2() * W, LY - 160 + r2() * 110, 3, 4);
+    c.fillStyle = C.runGround; c.fillRect(0, LY, W, H - LY);
   }
   function drawRunner(ctx: Ctx, x: number, y: number, dir: number) {
     const ph = g.phase, air = g.jumpT >= 0 && g.jumpT < 0.62, lift = air ? Math.sin((g.jumpT / 0.62) * Math.PI) * 120 : 0;
@@ -113,19 +114,19 @@ function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
     const legA = air ? 0.9 : Math.sin(ph) * 0.9, legB = air ? -0.4 : Math.sin(ph + Math.PI) * 0.9;
     const hip = { x: 0, y: -52 }, sh = { x: 10, y: -104 };
     const limb = (ox: number, oy: number, a1: number, a2: number, l1: number, l2: number) => { const kx = ox + Math.sin(a1) * l1, ky = oy + Math.cos(a1) * l1; ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(kx, ky); ctx.lineTo(kx + Math.sin(a1 + a2) * l2, ky + Math.cos(a1 + a2) * l2); ctx.stroke(); };
-    ctx.strokeStyle = "rgba(242,244,248,.55)"; limb(hip.x, hip.y, legB, -0.9 - Math.max(0, -legB), 28, 28); limb(sh.x, sh.y, -legB * 0.9, 1.4, 24, 22);
+    ctx.strokeStyle = withAlpha(C.ink, .55); limb(hip.x, hip.y, legB, -0.9 - Math.max(0, -legB), 28, 28); limb(sh.x, sh.y, -legB * 0.9, 1.4, 24, 22);
     ctx.strokeStyle = C.ink; limb(hip.x, hip.y, legA, -0.9 - Math.max(0, -legA), 28, 28);
     ctx.beginPath(); ctx.moveTo(hip.x, hip.y); ctx.lineTo(sh.x, sh.y); ctx.stroke();
     limb(sh.x, sh.y, legA * 0.9, 1.4, 24, 22);
     ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(16, -124, 14, 0, Math.PI * 2); ctx.fill();
-    if (!api.reducedMotion) { ctx.strokeStyle = "rgba(139,152,255,.5)"; ctx.lineWidth = 4; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(-30 - i * 22, -70 - i * 14); ctx.lineTo(-70 - i * 30, -70 - i * 14); ctx.stroke(); } }
+    if (!api.reducedMotion) { ctx.strokeStyle = withAlpha(C.ion, .5); ctx.lineWidth = 4; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(-30 - i * 22, -70 - i * 14); ctx.lineTo(-70 - i * 30, -70 - i * 14); ctx.stroke(); } }
     ctx.restore();
   }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
     const fx = api.fx;
     ctx.save(); ctx.translate(fx.ox, fx.oy);
-    ctx.strokeStyle = "rgba(139,152,255,.12)"; ctx.lineWidth = 1.5;
+    ctx.strokeStyle = withAlpha(C.ion, .12); ctx.lineWidth = 1.5;
     const sc = api.reducedMotion ? 0 : (g.phase * 0.25) % 1;
     for (let j = 0; j < 7; j++) { const z = (j + sc) / 7, y = LY + Math.pow(z, 2) * (H - LY); ctx.globalAlpha = 0.2 + 0.8 * z; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
     ctx.globalAlpha = 1;
@@ -205,4 +206,4 @@ function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
     board: () => { const rd = round(); const marks = rd.calls.slice(0, 4).map((c) => ({ v: parseNum(c)!, label: c.replace("-", "−") })); return { title: rd.title, lines: ["Further right means bigger, even below zero.", "−7 is colder than −2: it sits further left."], figure: { kind: "numberline", min: rd.range[0], max: rd.range[1], marks }, accent: C.ion }; },
   };
 }
-export const runner: EngineDef<RunnerSpec> = { archetype: "line-runner@1", label: "Game · Gate Runner", accent: C.ion, create };
+export const runner: EngineDef<RunnerSpec> = { archetype: "line-runner@1", label: "Game · Gate Runner", get accent() { return C.ion; }, create };

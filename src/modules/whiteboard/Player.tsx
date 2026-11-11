@@ -6,10 +6,11 @@
 //
 // Used by the Studio stage's `whiteboard` renderer (StudioWhiteboard.tsx) and by the frame's explainer@1 engine (the
 // template rungs). Reduced motion: every op appears complete at its startMs, nothing is animated along a path.
+import type { ThemeName } from "../../theme/palette.ts";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import type { WbOp, WhiteboardScript } from "../../../shared/studio.ts";
 import { erasers, isIdentity, isMotionOp, morphAt, motionMatrix, opGeometry, opProgress, sweepAt, textFace, visibleShare, TEXT_FACES, type OpGeometry } from "../../../shared/whiteboard.js";
-import { paletteFor, roleColor, type BoardSkin, type Ink, type Palette, type Role } from "./palette.ts";
+import { paletteFor, roleColor, roleFill, type BoardSkin, type Ink, type Palette, type Role } from "./palette.ts";
 // round 8 (board grammar item 7): the board's faces, self-hosted (Vite bundles the woff2 files)
 import "./faces.css";
 
@@ -48,6 +49,8 @@ export interface WhiteboardPlayerProps {
   /** r4: the skin's board (its palette, palette.ts kakshaBoardSkin); absent = today's board. The faces are the board's own
    *  under every skin (round 8 item 7: the fit measures them; shared/whiteboard.js TEXT_FACES). */
   skin?: BoardSkin | null;
+  /** the lesson's theme (src/theme/palette.ts); night when absent. A skin (Kaksha's tokens) still wins when given. */
+  theme?: ThemeName;
 }
 
 export { onLineClock } from "./lineClock.ts";
@@ -78,10 +81,10 @@ function useTimeline(startAt: number | null, endMs: number, frozenAt: number | u
   return t;
 }
 
-export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion = false, width = "100%", height = "100%", className, pulse, onDone, frozenAt, clauseOnsets, switchAt, onTapText, skin }: WhiteboardPlayerProps) {
+export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion = false, width = "100%", height = "100%", className, pulse, onDone, frozenAt, clauseOnsets, switchAt, onTapText, skin, theme }: WhiteboardPlayerProps) {
   const script = useMemo(() => onLineClock(given, clauseOnsets, switchAt), [given, clauseOnsets, switchAt]);
   // r4: under a skin (Kaksha) the board takes the skin's palette; without one, exactly as before
-  const pal = skin?.palette ?? paletteFor(script.board.ground);
+  const pal = skin?.palette ?? paletteFor(script.board.ground, theme);
   const { w: BW, h: BH } = script.board;
   const all = useMemo(() => [...(prior ?? []), ...script.ops], [prior, script]);
   const byId = useMemo(() => new Map(all.map((o) => [o.id, o])), [all]);
@@ -171,8 +174,9 @@ const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion, sweep =
   return (
     <g opacity={vis} data-op={op.op} data-id={op.id}>
       {clip && <defs><clipPath id={clipId}><rect x={clip.x - 2} y={clip.y - 2} width={clip.w + 4} height={clip.h + 4} /></clipPath></defs>}
-      {fillInk && g.fill && fillP > 0 && <path d={g.fill} fill={fillInk} fillOpacity={pal.fillAlpha * fillP} stroke="none" clipPath={clipId ? `url(#${clipId})` : undefined} />}
-      {g.slotFill && share(0) > 0 && <path d={g.slotFill} fill={color} fillOpacity={pal.fillAlpha * 0.6} stroke="none" />}
+      {/* (a palette with designed tints fills focus and answer with them at full strength: patch 008) */}
+      {fillInk && g.fill && fillP > 0 && <path d={g.fill} fill={roleFill(pal, role) ?? fillInk} fillOpacity={(roleFill(pal, role) ? 1 : pal.fillAlpha) * fillP} stroke="none" clipPath={clipId ? `url(#${clipId})` : undefined} />}
+      {g.slotFill && share(0) > 0 && <path d={g.slotFill} fill={roleFill(pal, role ?? "slot") ?? color} fillOpacity={roleFill(pal, role ?? "slot") ? 1 : pal.fillAlpha * 0.6} stroke="none" />}
       {g.paths.map((d, i) => {
         const s = share(i);
         // round 8: a dashed op (a mix-up line, a slot box) or a dashed path of its drawing (a slot's box round its "?")

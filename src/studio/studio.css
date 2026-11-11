@@ -145,6 +145,10 @@
 .st-cardhead { position: absolute; display: flex; align-items: center; gap: 8px; overflow: hidden;
   font: 600 14px/1 var(--font-ui, system-ui, sans-serif); color: var(--ink); }
 .st-stage[data-young] .st-cardhead { font-size: 16px; }
+/* patch 008 (round 8 card, under [data-tx]): the head sits over the box's top-left corner, on the board's own ground, above
+   the drawing (the drawing keeps that corner clear: boardView.ts keepHeadClear) */
+.st-cardhead.is-folded { z-index: 3; width: max-content; padding: 0 8px; border-radius: 999px;
+  background: var(--tx-board, var(--k-deep, var(--surface))); }
 .st-chip-kind { padding: 6px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); white-space: nowrap; }
 .st-chip-check { margin-left: auto; padding: 6px 10px; border-radius: 999px; border: 1px dashed var(--ink-2); color: var(--ink-2); white-space: nowrap; }
 .st-beat { display: inline-flex; gap: 4px; align-items: center; }
