@@ -206,9 +206,16 @@ test("director20: lineStatesKey reads a key's value tokens wherever they stand â
 });
 
 test("director20 c5-t01 steady and stuck 18: a picture line never has a hole â€” the quiet 8-gap scale is named without its count, never \"aur ek ___ barabar hisson mein\"", () => {
-  const c = scriptCard("c5-maths-ch02-t01", 0, "e2");
-  assert.deepEqual(c.ref, { template: "fraction-line@1", params: { dens: [5, 8], from: 0, to: 1, marks: [[1, 5]] } }, "the row's card");
-  assert.equal(c.answers[0], "8");
+  // (Learning's reader pass, c4881b652: the live c5-t01 e2 now says 7 marks over a dens [7, 8] board, so its picture line no
+  // longer names a 5. The director20 row is pinned here as it was; the live card is checked for holes and keys just below.)
+  const c = { ref: { template: "fraction-line@1", params: { dens: [5, 8], from: 0, to: 1, marks: [[1, 5]] } }, answers: ["8", "8 gaps", "8 barabar gaps", "aath", "eight"] };
+  const live = scriptCard("c5-maths-ch02-t01", 0, "e2");
+  assert.equal(live.answers[0], "8");
+  for (const variant of [0, 1]) {
+    const pt = BF.pictureTurn(askWith(live.ref, live.answers), { variant });
+    assert.ok(pt?.view, `live v${variant}: the view stays`);
+    if (pt.line) assert.ok(!BF.lineHasBlank(pt.line) && !BF.lineStatesKey(pt.line, live.answers), `live v${variant}: "${pt.line}"`);
+  }
   const want = [
     "Dekho, yeh do barabar pattiyaan hain: ek 5 barabar hisson mein, 1 rangin, yaani ek bata paanch, aur doosri patti bhi barabar hisson mein bati hai",
     "Ab in do pattiyon ko milao: pehli 5 barabar hisson mein, 1 rangin, yaani ek bata paanch, aur doosri patti bhi barabar hisson mein bati hai",
