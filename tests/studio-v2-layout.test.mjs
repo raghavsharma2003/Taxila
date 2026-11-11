@@ -81,7 +81,9 @@ test("every Studio v2 engine: no overlap or cut-off beyond the known list (defau
 
 test("the engines fixed on 2026-11-11 stay clean on their reviewed default spec", async () => {
   // the judged faults this check was built from, fixed in this pass: none of these engines may come back to the list
-  const fixed = ["angle-cannon@1", "dukaan@1", "fraction-ops@1", "geo-forge@1", "pictograph@1", "rule-machine@1", "sieve-storm@1", "vault-heist@1"];
+  const fixed = ["angle-cannon@1", "dukaan@1", "fraction-ops@1", "geo-forge@1", "pictograph@1", "rule-machine@1", "sieve-storm@1", "vault-heist@1",
+    // (main 13:22 item c: the remaining maths engines)
+    "angle-sum@1", "balance-beam@1", "data-rush@1", "pattern-lab@1", "solid-view@1", "zero-pair@1"];
   const known = JSON.parse(fs.readFileSync(KNOWN_FILE, "utf8"));
   for (const a of fixed) for (const b of BOXES) assert.equal(known.faults[`${a}|default|${b.vp}`], undefined, `${a} ${b.vp} is on the known list`);
 });
@@ -95,4 +97,19 @@ test("vault-heist: a words target that wraps runs down from under its label, tou
     assert.deepEqual(r.errors, [], b.vp);
     assert.deepEqual(r.faults.map(faultKey), [], `${b.vp}: text runs meet`);
   }
+});
+
+test("dukaan: every catalogue spec plays clean at every box — the counter piles notes by value (class 5 bills overflowed it)", { timeout: 180_000 }, async () => {
+  // a big bill laid out note by note ran past the counter and under the result pill (c5-maths-ch06-t01: 8 × ₹500); the
+  // counter now holds one pile per value with "×n", and the result pill takes the hand-over button's place
+  const dir = new URL("../data/studio-catalogue/topics/", import.meta.url);
+  const bad = [];
+  for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".json"))) {
+    const c = JSON.parse(fs.readFileSync(new URL(f, dir), "utf8"));
+    for (const g of [c.game, ...(c.games ?? [])].filter((x) => x?.archetype === "dukaan@1")) for (const b of BOXES) {
+      const r = await probe("dukaan@1", g.spec, b);
+      if (r.errors.length || r.faults.length) bad.push(`${f} ${b.vp}: ${[...r.errors, ...r.faults.map(faultKey)].slice(0, 3).join(" | ")}`);
+    }
+  }
+  assert.deepEqual(bad, []);
 });

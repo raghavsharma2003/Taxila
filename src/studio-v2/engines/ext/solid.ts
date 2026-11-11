@@ -18,6 +18,8 @@ function create(api: EngineApi, spec: SolidSpec): EngineInstance {
   const T = spec.strings, accent = C.ion;
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
   const botR = rng(api.seed * 193 + 29), setTask = taskPill(api);
+  /** A top pill's centre (h 60): below the host's task pill where it sits over the world (l1366: the count card was under it). */
+  const pillY = () => Math.max(190, api.chromeBottom() + 40);
   const g = { yaw: 0.6, pitch: 0.42, drag: false, last: [0, 0] as [number, number], moved: 0, marked: new Set<string>(), h: [] as number[][], answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0, botTurn: 0 };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }]);
   const rd = (): SolidRoundT => spec.rounds[Math.max(0, flow.round)];
@@ -108,8 +110,8 @@ function create(api: EngineApi, spec: SolidSpec): EngineInstance {
       api.text(ctx, `${g.marked.size}`, 885, 290, { font: "display", size: 60, weight: 800, color: C.volt, align: "center", baseline: "middle" });
       api.text(ctx, T.marked, 885, 344, { size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle", maxWidth: 210 });
       textBlock(api, ctx, T[r.solid], SC.x, 600, 520, { size: 38, weight: 700, color: C.ink2 }, 1);
-      if (!done && g.moved === 0 && g.marked.size === 0) pill(api, ctx, T.turn, SC.x, 190, { color: C.volt, size: 38 });
-      if (done) pill(api, ctx, g.detail, SC.x, 190, { color: ok ? C.mint : C.amber, size: 38 });
+      if (!done && g.moved === 0 && g.marked.size === 0) pill(api, ctx, T.turn, SC.x, pillY(), { color: C.volt, size: 38 });
+      if (done) pill(api, ctx, g.detail, SC.x, pillY(), { color: ok ? C.mint : C.amber, size: 38 });
       lockBtn(ctx, !done && g.marked.size > 0, now);
     } else {
       const d = r.heights.length, w = r.heights[0].length, s = 60, cx = 290, cy = 440;
@@ -122,7 +124,7 @@ function create(api: EngineApi, spec: SolidSpec): EngineInstance {
       const maxH = Math.max(3, ...g.h.flat()), mt = viewsMatch(r.heights, g.h), vs = 16;
       const blocks: [string, number[][], number[][], boolean][] = [[T.top, viewTop(r.heights), viewTop(g.h), mt.top], [T.front, colGrid(viewFront(r.heights), maxH), colGrid(viewFront(g.h), maxH), mt.front], [T.side, colGrid([...viewSide(r.heights)].reverse(), maxH), colGrid([...viewSide(g.h)].reverse(), maxH), mt.side]];
       blocks.forEach(([lab, tgt, mine, ok2], i) => { const y0 = 180 + i * 116; api.text(ctx, lab, 830, y0 + 18, { size: 38, weight: 700, color: ok2 ? C.mint : C.ink2, baseline: "middle" }); const gx = 830, gy = y0 + 44; viewGrid(ctx, mine, gx, gy, vs, "#7FB2FF", false); viewGrid(ctx, tgt, gx, gy, vs, ok2 ? C.mint : C.sun, true); });
-      if (done) pill(api, ctx, g.detail, 300, 190, { color: ok ? C.mint : C.amber, size: 38 });
+      if (done) pill(api, ctx, g.detail, 300, pillY(), { color: ok ? C.mint : C.amber, size: 38 });
       lockBtn(ctx, !done && g.h.flat().some((v) => v > 0), now);
     }
     if (done) { if (ok) tick(ctx, 965, 470, C.mint, 1); else magnifier(ctx, 960, 470, C.amber, 1); }

@@ -133,7 +133,7 @@ function create(api: EngineApi, spec: DataSpec): EngineInstance {
     if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${M} minutes · ${theme.unit}`, title: "Count the cars", sub: `${T.scale} ${step}` });
     if (g.state === "census") pill(api, ctx, T.census, 500, 330, { color: C.mint });
     if (g.state === "final") drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.tallyRight}/${M}`, "exact tallies"], [`${Math.round(mean * 100) / 100}`, "mean"], [`${g.meanAnswer?.v ?? "—"}`, "your line"]], foot: g.meanAnswer && !spec.counts.some((c) => Math.abs(c - mean) < 0.01) ? "the mean need not be one of the counts" : undefined, footColor: C.ink2 });
-    drawCoach(api, ctx, T.coach, g.state === "count" ? g.coachA : 0, now, 600);
+    drawCoach(api, ctx, T.coach, g.state === "count" ? g.coachA : 0, now, 330);   // in the gap between the road and the chart: at the bottom it sat on the minute numbers
   }
   function bot(): BotAction | null {
     if (g.state === "count") {
