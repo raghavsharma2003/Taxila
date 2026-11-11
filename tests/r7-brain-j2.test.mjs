@@ -56,3 +56,12 @@ test("J2 (main on the J2 replay): her words as a woman, no promise to remember; 
   assert.deepEqual(j2WordsOf("batting sabse achhi lagti hai", "cricket"), ["batting"]);
   assert.deepEqual(j2WordsOf("mujhe pasand hai", "cricket"), ["cricket"]);
 });
+
+test("J2 (main on the replay rerun): echo reads the child's real sentence; har and a bare hota hai pass, a reason does not", () => {
+  const said = "batting sabse achhi lagti hai";
+  assert.equal(replyToReturnWhy("Batting tumhe sabse achhi lagti hai.", said), "echo");
+  assert.equal(replyToReturnWhy("Har ball par batting mazedaar lagti hogi.", said), null);
+  assert.equal(replyToReturnWhy("Batting ka maza alag hota hai.", said), null);
+  assert.equal(replyToReturnWhy("Batting kyunki sabse mazedaar hai.", said), "rule");
+  assert.equal(replyToReturnWhy("Batting mein barabar runs bante hain.", said), "lesson");
+});

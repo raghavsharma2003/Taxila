@@ -63,6 +63,8 @@ export const MATRIX_TOPICS = [["c6-maths-ch06-t01", 6], ["c5-maths-ch02-t01", 5]
 const CHILD = (cls) => ({ id: "00000000-0000-0000-0000-00000000aaaa", legal_mode: "M1", class_level: cls });
 const LESSON = { id: "11111111-1111-1111-1111-11111111aaaa", started_at: new Date(0).toISOString() };
 
+// (the child's line on the turn being answered: --j2-live reads the echo clause against it, not against the note's words)
+let childSaidNow = "";
 if (DRY) {
   // stubbed lines: the agent's call fails (it falls back, as on a live error) and her line is a fixed sentence
   // the dry meter counts the calls a live run would make (her line, and the classifier when code cannot decide), to size caps
@@ -93,11 +95,15 @@ if (DRY) {
     const j2Chat = async (d, msgs, opts) => {
       const note = [...(msgs ?? [])].reverse().find((m) => m.role === "system")?.content ?? "";
       // (the note gives the model the child's words, not their sentence: the clauses read against those words)
-      const said = /their own words? for it: ((?:"[^"]+"(?:, )?)+)/.exec(String(note))?.[1]?.replace(/"/g, "").replace(/,/g, " ");
-      if (!said) { dryCall("reply"); return { text: dryText(msgs) }; }
+      // (main on the rerun: the clauses read against the child's REAL sentence — code has it — whatever the note carries; the prompt
+      // itself must not carry it: the replay checks that too)
+      const words = /their own words? for it: ((?:"[^"]+"(?:, )?)+)/.exec(String(note))?.[1]?.replace(/"/g, "").replace(/,/g, " ");
+      if (!words) { dryCall("reply"); return { text: dryText(msgs) }; }
+      const said = childSaidNow || words;
+      const leaked = !!childSaidNow && JSON.stringify(msgs).toLowerCase().includes(childSaidNow.toLowerCase());
       const est = usdOf(d, { in: Math.round(JSON.stringify(msgs).length / 4), cached: 0, out: 300, reasoning: 0 }) * J2_LIVE;
       if (report.usd + est > J2_USD) { report.stopped = `the next exchange (~$${est.toFixed(4)}) would pass $${J2_USD} (spent ~$${report.usd.toFixed(4)})`; save(); console.error(`STOP: ${report.stopped}`); process.exit(4); }
-      const x = { said, samples: [] };
+      const x = { said, words, sentenceInPrompt: leaked, samples: [] };
       for (let k = 0; k < J2_LIVE; k++) {
         const r = await live(d, msgs, { ...(opts ?? {}), maxTokens: 220, effort: "none", timeoutMs: 15000 });
         const ss = sents(r?.text).map((y) => ({ s: y, why: replyToReturnWhy(y, said) }));
@@ -268,7 +274,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       // (c6 steering 51: the goodbye came during an open card — up to 10 turns it waits; the child answers the card instead)
       const openSaid = !!lastT?.card && cardSaid && /[?？]\s*$/.test(String(lastT.text ?? "").trim());
       if (out.kind === "leave" && openSaid && leaveWait < 10) { leaveWait++; out = child.reply(childIn(-1)); }
-      text = out.text; leaving = out.kind === "leave";
+      text = out.text; leaving = out.kind === "leave"; childSaidNow = String(text ?? "").replace(/\s+/g, " ").trim();
     }
     if (text == null) break;
     const now = (i + 1) * 20_000;
