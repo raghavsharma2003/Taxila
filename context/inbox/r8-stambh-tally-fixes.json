@@ -1,0 +1,51 @@
+{
+ "source": "C2 Games r8 (branch claude/r8-tally-fixes): fixes after judging round 1 of stambh/tally (docs/design/round8/games-judging/stambh-tally/PACKET.md, 'Changes after judging round 1'); src/play/families/stambh/tally.logic.ts, tally.view.ts; tests/r8-games-stambh-tally.test.mjs, tests/r8-stambh-tally-layout-browser.test.mjs",
+ "nodes": [
+  {
+   "id": "dc-r8-stambh-tally-keep-mal-v2",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "stambh/tally keep names tally-four in two forms from the kit's signs: 'counted' (one stroke per thing, every total the count less its bundles, crosses or not) and 'five' (no line across anywhere, totals right); supersedes dc-r8-stambh-tally-keep-mal"
+  },
+  {
+   "id": "dc-r8-stambh-tally-tells-apart",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "stambh/tally serves only givens where tally-four's answer differs from every one-bundle slip (skipped, counted twice, one single off): read never bundles only, never 1 or 5 bundles; keep at least two bundles; the law refuses the rest"
+  },
+  {
+   "id": "dc-r8-stambh-tally-playout-count",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "stambh/tally check play-out: a count 1..5 over each closed group's strokes in a row that is not right, the fifth standing line tipping across; read's number line shows hops only on the first check; a retry solve ends with pale ticks; keep repairs by 'Phir se rakho' (the scene again, undoable)"
+  },
+  {
+   "id": "rj-r8-stambh-tally-ring-cross",
+   "kind": "rejected",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "A dashed ring + ✗ on five standing lines at the check (two judges, round 1: it reads as 'five is too many', which feeds tally-four)"
+  },
+  {
+   "id": "rj-r8-stambh-tally-both-halves",
+   "kind": "rejected",
+   "status": "proposed",
+   "at": "2026-11-11",
+   "title": "Naming keep's tally-four only when no cross AND short totals both show (two judges, round 1: missed the main form, bundles drawn right and counted by their standing lines)"
+  }
+ ],
+ "edges": [
+  { "src": "dc-r8-stambh-tally-keep-mal-v2", "rel": "supersedes", "dst": "dc-r8-stambh-tally-keep-mal" },
+  { "src": "dc-r8-stambh-tally-tells-apart", "rel": "part_of", "dst": "dc-r8-stambh-tally-mode" },
+  { "src": "dc-r8-stambh-tally-playout-count", "rel": "supersedes", "dst": "dc-r8-stambh-tally-every-stroke-legal" },
+  { "src": "rj-r8-stambh-tally-ring-cross", "rel": "part_of", "dst": "dc-r8-stambh-tally-mode" },
+  { "src": "rj-r8-stambh-tally-both-halves", "rel": "part_of", "dst": "dc-r8-stambh-tally-mode" }
+ ],
+ "md": {
+  "decisions": "## dc-r8-stambh-tally-keep-mal-v2\n**keep names tally-four when one stroke was made per thing in every row AND either every total is the row's count less its bundles (crosses drawn or not: 'counted', the main form) or there is no line across anywhere with every total right ('five', the kit's sign 'writes five as five standing lines'). The moment and the facts carry sign=counted|five.** (2026-11-11)\n- Guarantee: over random acts a check is named exactly when a test-written signature holds; every one-bundle slip (with or without one missing cross) is never named.\n- Reversal: if play logs show many 'five' children whose later read answers are right, split 'five' into its own mapped mix-up (never learned the cross) instead of tally-four.\n\n## dc-r8-stambh-tally-tells-apart\n**Givens are served only where tally-four's answer differs from every one-bundle slip: read rows always have a single line and never 1 or 5 bundles (n − 1 and n − 5 collide with a one-off and a skipped bundle); keep has at least two bundles across the rows. validate() refuses other givens.** (2026-11-11)\n- Cost: fade 1 read starts at 11 (two bundles), not 6.\n- Reversal: if the learner model can weigh an ambiguous miss as partial evidence for both, the one-bundle levels can return as practice levels without mal evidence.\n\n## dc-r8-stambh-tally-playout-count\n**At a check, rows that are not right play out each closed group's worth: a count 1..5 over its strokes (the 5 on the line across, or on a fifth standing line that then tips across the four), the last number staying over the group. Ticks mean 'this total is the row's count'. Read's number line shows the truth's place and unit hops only on the first check; later checks show her number and an arrow. A solve after a retry ends with pale ticks and 'jaanch: k'. Keep repairs marks with 'Phir se rakho' (the scene passes again; Wapas restores).** (2026-11-11)\n- Reversal: if children re-keep the scene and repeat five standing lines after seeing the tip, add the teacher's one-bundle demo (view demo()) before the second keep.",
+  "rejected": "## rj-r8-stambh-tally-ring-cross\nTried (round 8, first build): a dashed ring and a small ✗ on each group of five standing lines (or a short close) at the check. Broke (two independent judges, 2026-11-11): on five standing lines a ✗ reads as 'five is too many', the opposite of the lesson, and feeds tally-four. Replaced by dc-r8-stambh-tally-playout-count (count the group, tip the fifth line).\n\n## rj-r8-stambh-tally-both-halves\nTried (round 8, first build): naming keep's tally-four only when no line across appears anywhere AND every total is four per group of five. Broke (two judges, 2026-11-11): the main form, correct bundles counted by their standing lines (Bus 5, Auto 6), was logged as an ordinary miss with only dashed boxes; and a 1-bundle level could not tell the mix-up from a one-off slip. Replaced by dc-r8-stambh-tally-keep-mal-v2 and dc-r8-stambh-tally-tells-apart."
+ }
+}

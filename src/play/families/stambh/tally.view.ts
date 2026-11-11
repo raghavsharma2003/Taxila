@@ -1,14 +1,18 @@
 // Stambh · tally, the 2D view (round 8). Nothing here runs on a clock: the scene moves on only when the child marks.
 //   keep  the scene strip on top: the thing passing now stands in the middle (the next one waits faint behind it), and the
-//         two big buttons sit at the strip's right: "|" a standing line, "╱" the line across. Below, one row per kind: its
-//         picture and name, its tally, its total cell. Tap a row to pick it, then a button: one stroke there for the thing
-//         passing, which then moves on. When the scene has passed, the buttons go; tap a total cell and write its number
-//         on the pad. Strokes lie as she makes them (a gap only after her own line across).
+//         two big buttons sit at the strip's right: "|" a standing line, "╱" the line across. Below, one row per kind (a
+//         card: the picked one outlined): its picture and name, its tally, its total cell. Tap a row to pick it, then a
+//         button: one stroke there for the thing passing, which then moves on. When the scene has passed, the buttons go;
+//         tap a row or its total cell and write the number on the pad. "Phir se rakho" lets the scene pass again (her
+//         strokes clear; "Wapas" brings them back). Strokes lie as she makes them (a gap only after her own line across).
 //   read  one row of tallies, big; the answer cell under it; the pad.
-// At a check the law regroups every row by fives and shows it: each group of five standing lines (or a line across that
-// closes no four) gets a dashed ring and a cross mark, never words. A read answer off the tally plays out on a number
-// line: her number first, then (later) the tally's own place, unlabelled, with one hop per unit between. No live total, no
-// count of strokes on screen: what a row holds is hers to count.
+// At a check every total cell gets a tick (her number is the row's count) or a dashed box. In a row that is not right the
+// law's groups play out what they are worth: a count runs over each closed group's strokes, one digit at a time, and its
+// last number stays over the group; a group of five standing lines has its fifth line tip across the four as the count
+// reaches it. Never words. A read answer off the tally plays out on a number line: on the first check her number, then
+// the tally's own place (unmarked by any number) and one hop per unit between; on later checks only her number and the
+// way to go, no unit ticks. A level solved after a retry ends with pale ticks, a first-try solve with full ones. No live
+// total, no count of strokes before a check: what a row holds is hers to count.
 import type { Moment, StambhAct } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import type { Role } from "../../core/styles.ts";
@@ -68,6 +72,7 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (last?.kind === "mark") { if (refused) api.sfx("refuse"); else { api.sfx("drop"); movedAt = api.reduced ? -9 : api.t; } }
     if (last?.kind === "total") api.sfx(refused ? "refuse" : "tap");
     if (last?.kind === "undo") { checkedAt = -1; checkedSnap = null; api.sfx("tap"); }
+    if (last?.kind === "again") { checkedAt = -1; checkedSnap = null; sel = -1; api.sfx(refused ? "refuse" : "slide"); }
     if (last?.kind === "check" && refused !== "scene_first" && refused !== "fill_first") { checkedAt = api.t; checkedSnap = snap(st()); }
     else if (last?.kind === "check") api.sfx("refuse");
     // the scene has passed: the first empty total cell is picked for the pad
@@ -88,11 +93,13 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const id = api.hit(x, y);
     if (!id) return;
     const r = Number(id.split("-")[1]);
-    if (id.startsWith("row-") && !sceneOver()) { sel = r; api.sfx("select"); api.invalidate(); deps.changed(); return; }
-    if (id.startsWith("tot-") && (!keep || sceneOver())) { sel = r; api.sfx("select"); api.invalidate(); deps.changed(); return; }
+    // a row picks itself for strokes while the scene passes, and its total cell once it has passed
+    if (id.startsWith("row-") || (id.startsWith("tot-") && (!keep || sceneOver()))) { sel = r; api.sfx("select"); api.invalidate(); deps.changed(); return; }
     if ((id === "btn-stand" || id === "btn-across") && sel >= 0 && !sceneOver()) act({ kind: "mark", row: sel, across: id === "btn-across" });
   }
-  const busy = () => (api.t - movedAt < 0.5) || (checkedAt >= 0 && api.t - checkedAt < 1.6);
+  // the play-out's beats (seconds after the check): the count starts, one digit per stroke, the fifth line tips across
+  const COUNT0 = 0.25, STEP = 0.26, TIP = 0.35;
+  const busy = () => (api.t - movedAt < 0.5) || (checkedAt >= 0 && api.t - checkedAt < COUNT0 + 5 * STEP + TIP + 0.2);
   const showCheck = () => checkedSnap !== null && checkedSnap === snap(st());
 
   // ── the things that pass: one simple shape per kind, in the row's hue ──
@@ -132,33 +139,51 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     c.restore();
   }
 
-  /** a row's strokes in the box (x, y, bw, bh); grouped = the law's commit pass (rings on groups that are no bundle) */
-  function drawTally(c: CanvasRenderingContext2D, marks: readonly boolean[], x: number, y: number, bw: number, bh: number, role: Role, grouped: boolean, ringK: number): void {
+  /**
+   * A row's strokes in the box (x, y, bw, bh). grouped = the law's commit pass (a gap after every group); playOut = the
+   * row is not right, so its closed groups play out what they are worth: a count over the strokes, one digit at a time
+   * (1, 2, 3, 4 on the standing lines and the last on the line across, or on a fifth standing line, which then tips across
+   * the four), the last number staying over the group. A group closed early (a line across after fewer than four) is
+   * counted the same way, to what it holds.
+   */
+  function drawTally(c: CanvasRenderingContext2D, marks: readonly boolean[], x: number, y: number, bw: number, bh: number, role: Role, grouped: boolean, playOut: boolean): void {
     const P = api.P, f = tallyFlow(marks, bw, bh, grouped, keep ? clamp(rowH * 0.42, 30, 56) : 56);
     const top = y + (bh - f.lineH * f.lines) / 2;
     const ly = (line: number) => top + f.lineH * line + f.lineH / 2;
     const width = clamp(f.sp * 0.32, 1.8, 4.5);
-    for (const s of f.stand) P.stroke(c, [[x + s.x, ly(s.line) - f.sh / 2], [x + s.x, ly(s.line) + f.sh / 2]], { role, width });
+    const age = playOut ? (api.reduced ? 99 : api.t - checkedAt) : -1;
+    const groups = playOut ? groupsOf(marks).filter((g) => g.kind !== "open") : [];
+    // the fifth standing line of a group of five, once the count reaches it, tips across (drawn by the play-out below)
+    const tipping = new Set<number>();
+    if (age >= COUNT0 + 4 * STEP) for (const g of groups) if (g.kind === "five") tipping.add(g.from + 4);
+    for (const s of f.stand) if (!tipping.has(s.i)) P.stroke(c, [[x + s.x, ly(s.line) - f.sh / 2], [x + s.x, ly(s.line) + f.sh / 2]], { role, width });
     for (const a of f.across) P.stroke(c, [[x + a.x0, ly(a.line) + f.sh * 0.42], [x + a.x1, ly(a.line) - f.sh * 0.42]], { role, width: width + 0.5 });
-    if (!grouped || ringK <= 0) return;
-    // the commit pass: a dashed ring and a cross mark on every group that is no bundle (five standing, or a short close)
-    for (const g of groupsOf(marks)) {
-      if (g.kind !== "five" && g.kind !== "short") continue;
-      const xs: number[] = [], lines = new Set<number>();
-      for (const s of f.stand) if (s.i >= g.from && s.i < g.from + g.len) { xs.push(s.x); lines.add(s.line); }
-      for (const a of f.across) if (a.i >= g.from && a.i < g.from + g.len) { xs.push(a.x0 + f.sp * 0.5, a.x1 - f.sp * 0.5); lines.add(a.line); }
-      for (const line of lines) {
-        const lx = xs.length ? Math.min(...xs) : 0, rx = xs.length ? Math.max(...xs) : 0;
-        const cx = x + (lx + rx) / 2, cy = ly(line), rx2 = (rx - lx) / 2 + f.sp * 0.9, ry = f.sh / 2 + 5;
-        const pts: [number, number][] = [];
-        for (let k = 0; k <= 28; k++) { const a = (k / 28) * Math.PI * 2; pts.push([cx + Math.cos(a) * rx2, cy + Math.sin(a) * ry]); }
-        c.save(); c.globalAlpha = clamp(ringK, 0, 1);
-        P.stroke(c, pts, { role: "look", width: 2, dash: [4, 3] });
-        const mx = cx + rx2 - 2, my = cy - ry + 2, m = 5;
-        P.stroke(c, [[mx - m, my - m], [mx + m, my + m]], { role: "look", width: 2.5 });
-        P.stroke(c, [[mx + m, my - m], [mx - m, my + m]], { role: "look", width: 2.5 });
-        c.restore();
+    if (!playOut || age < COUNT0) return;
+    const digit = clamp(f.sh * 0.5, 16, 20);
+    for (const g of groups) {
+      // each stroke's place: a standing line at its x, a line across at its right end (where the hand finishes it)
+      const at: { x: number; line: number }[] = [];
+      for (let i = g.from; i < g.from + g.len; i++) {
+        const s = f.stand.find((q) => q.i === i), a = f.across.find((q) => q.i === i);
+        if (s) at.push({ x: s.x, line: s.line }); else if (a) at.push({ x: a.x1 - f.sp * 0.5, line: a.line });
       }
+      if (!at.length) continue;
+      const k = Math.min(g.len, Math.floor((age - COUNT0) / STEP) + 1);
+      const last = at[at.length - 1], first = at[0];
+      if (g.kind === "five" && k >= 5) {
+        // the fifth line tips across the four standing before it
+        const s5 = f.stand.find((q) => q.i === g.from + 4)!, s1 = at[0], s4 = at[3];
+        const t = api.reduced ? 1 : clamp((age - COUNT0 - 4 * STEP) / TIP, 0, 1), e = t * t * (3 - 2 * t);
+        const yy = ly(s5.line), sameLine = s1.line === s5.line;
+        const from: [[number, number], [number, number]] = [[s5.x, yy + f.sh / 2], [s5.x, yy - f.sh / 2]];
+        const to: [[number, number], [number, number]] = sameLine ? [[s1.x - f.sp * 0.5, yy + f.sh * 0.42], [s4.x + f.sp * 0.5, yy - f.sh * 0.42]] : [[s5.x - f.sp * 0.5, yy + f.sh * 0.42], [s5.x + f.sp * 0.5, yy - f.sh * 0.42]];
+        const pt = (j: 0 | 1): [number, number] => [x + from[j][0] + (to[j][0] - from[j][0]) * e, from[j][1] + (to[j][1] - from[j][1]) * e];
+        P.stroke(c, [pt(0), pt(1)], { role: "look", width: width + 0.5 });
+      }
+      // the count: the digit of the stroke reached now; once the group is counted, its last number over the group's middle
+      const done = age >= COUNT0 + g.len * STEP;
+      const cx = done ? x + (first.x + last.x) / 2 : x + at[k - 1].x, line = done ? first.line : at[k - 1].line;
+      P.text(c, String(k), cx, ly(line) - f.sh / 2 - digit * 0.7, { size: digit, role: "look", font: "mono", weight: 700 });
     }
   }
   /** a total cell: her number (or empty); picked = the pad writes here */
@@ -170,9 +195,12 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (picked) P.stroke(c, [[cx - cw / 2 - 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy + ch / 2 + 3], [cx - cw / 2 - 3, cy + ch / 2 + 3]], { role: "you", width: 3, closed: true });
     if (v !== null) P.text(c, String(v), cx, cy + 1, { size: keep ? 22 : 30, role: "ink", font: "mono", weight: 700 });
     if (checked) {
-      const ok = v === p.counts[r] && (!keep || (s.marks[r].length === p.counts[r] && s.marks[r].every((m, i) => m === (i % 5 === 4))));
+      // a tick says her number is the row's count (a row's strokes play out on the row itself); a solve after a retry
+      // ends with pale ticks, a first-try solve with full ones (the end screen tells the two apart truthfully, no words)
+      const ok = v === p.counts[r];
       const k = clamp((api.t - checkedAt) / 0.4, 0, 1);
-      if (ok) P.tick(c, cx + cw / 2 - 2, cy - ch / 2 - 2, 18, k);
+      if (ok && s.done && s.checks > 1) { c.save(); c.globalAlpha *= 0.42; P.tick(c, cx + cw / 2 - 2, cy - ch / 2 - 2, 18, k); c.restore(); }
+      else if (ok) P.tick(c, cx + cw / 2 - 2, cy - ch / 2 - 2, 18, k);
       else P.stroke(c, [[cx - cw / 2 - 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy + ch / 2 + 3], [cx - cw / 2 - 3, cy + ch / 2 + 3]], { role: "look", width: 2.5, dash: [5, 4], closed: true });
     }
   }
@@ -206,13 +234,15 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     for (let r = 0; r < n; r++) {
       const y0 = rowsY + rowH * r, cy2 = y0 + rowH / 2;
       if (r > 0) P.stroke(c, [[10, y0], [w - 10, y0]], { role: "ink3", width: 1, alpha: 0.35 });
-      if (!over) api.target(`row-${r}`, 0, y0, w - cellW - 20, rowH);
-      if (!over && !s.done && r === sel) P.stroke(c, [[5, y0 + 6], [5, y0 + rowH - 6]], { role: "you", width: 5 });
+      if (!s.done) api.target(`row-${r}`, 0, y0, w - cellW - 20, rowH);
+      // each row a card while the scene passes (tap it to pick it); the picked row outlined, in either phase
+      if (!s.done && (!over || r === sel)) P.body(c, 4, y0 + 4, w - cellW - 28, rowH - 8, { role: "panel", r: 12, state: r === sel ? "selected" : "idle" });
       // its picture and its name side by side, as the scene shows it
       const is = w < 600 ? 28 : clamp(rowH * 0.36, 28, 44);
       thing(c, p.cats[r], 14 + is / 2, cy2, is, ROLES[r]);
       P.textFit(c, catName(r), (14 + is + 6 + gut) / 2, cy2, gut - is - 22, 22, { size: 17, role: "ink", weight: 700 });
-      drawTally(c, s.marks[r], tallyX, y0 + 6, tallyW, rowH - 12, "ink", checked, checked ? (api.t - checkedAt) / 0.4 : 0);
+      const rowOk = s.marks[r].length === p.counts[r] && s.marks[r].every((m, i) => m === (i % 5 === 4)) && s.totals[r] === p.counts[r];
+      drawTally(c, s.marks[r], tallyX, y0 + 6, tallyW, rowH - 12, "ink", checked, checked && !rowOk);
       drawCell(c, r, w - 12 - cellW / 2, cy2, cellW, clamp(rowH - 22, 34, 56), over, checked);
     }
   }
@@ -221,36 +251,48 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const is = 30;
     thing(c, p.cats[0], 16 + is / 2, 46, is, "q1");
     P.text(c, catName(0), 16 + is + 10, 46, { size: 18, role: "ink", weight: 700, align: "left", maxW: w - is - 48 });
-    drawTally(c, s.marks[0], tallyX, readTop, tallyW, readH, "ink", false, 0);
+    drawTally(c, s.marks[0], tallyX, readTop, tallyW, readH, "ink", false, false);
     P.text(c, "=", w / 2 - cellW / 2 - 18, cellY + 32, { size: 26, role: "ink2", weight: 700 });
     drawCell(c, 0, w / 2, cellY + 32, cellW, 60, true, checked);
-    if (checked && !s.done) numberLine(c, s.totals[0] ?? 0, p.counts[0]);
+    if (checked && !s.done) numberLine(c, s.totals[0] ?? 0, p.counts[0], s.checks <= 1);
   }
-  /** a read off the tally, played out: her number on a line, then the tally's own place (unlabelled), one hop per unit */
-  function numberLine(c: CanvasRenderingContext2D, hers: number, truth: number): void {
-    const P = api.P, x0 = 24, x1 = w - 24, top = Math.max(hers, truth), R = Math.ceil((top + 3) / 5) * 5, y = Math.min(lineY, h - 30);
+  /**
+   * A read off the tally, played out. Her number is drawn in the "look" colour of her dashed answer box (never the colour
+   * of a tick). First check: her number on a line with unit ticks, then the tally's own place (a plain triangle, no
+   * number) and one hop per unit between. Later checks: no unit ticks, no place, no hops: only her number and an arrow
+   * the way to go, so the answer is never read off the line on a retry.
+   */
+  function numberLine(c: CanvasRenderingContext2D, hers: number, truth: number, first: boolean): void {
+    const P = api.P, x0 = 24, x1 = w - 24, y = Math.min(lineY, h - 30);
+    const R = first ? Math.ceil((Math.max(hers, truth) + 3) / 5) * 5 : Math.max(10, Math.ceil((hers * 1.6 + 4) / 5) * 5);
     const X = (v: number) => x0 + ((x1 - x0) * v) / R;
     P.stroke(c, [[x0, y], [x1, y]], { role: "ink2", width: 2 });
-    for (let v = 0; v <= R; v++) {
+    if (first) for (let v = 0; v <= R; v++) {
       const big = v % 5 === 0;
       if (big || (x1 - x0) / R >= 5) P.stroke(c, [[X(v), y - (big ? 8 : 4)], [X(v), y + (big ? 8 : 4)]], { role: "ink3", width: big ? 2 : 1 });
     }
+    else P.stroke(c, [[X(0), y - 8], [X(0), y + 8]], { role: "ink3", width: 2 });
     P.text(c, "0", X(0), y + 20, { size: 16, role: "ink2", font: "mono" });
     // her number first
-    P.circle(c, X(hers), y, 7, { role: "you", fill: true });
-    P.chip(c, String(hers), X(hers), y - 26, { size: 16, role: "you" });
-    // then the tally's own place, and the hops between
+    P.circle(c, X(hers), y, 7, { role: "look", fill: true });
+    P.chip(c, String(hers), X(hers), y - 26, { size: 16, role: "look" });
     const age = api.t - checkedAt;
-    if (age >= 0.6 || api.reduced) {
-      const k = api.reduced ? 1 : clamp((api.t - checkedAt - 0.6) / 0.6, 0, 1);
-      P.stroke(c, [[X(truth), y + 6], [X(truth) - 7, y + 18], [X(truth) + 7, y + 18]], { role: "look", width: 3, closed: true });
-      const gap = truth - hers, step = Math.sign(gap), hops = Math.abs(gap);
-      if (hops > 0 && hops <= 15) for (let i = 0; i < hops * k; i++) {
-        const a = X(hers + step * i), b = X(hers + step * (i + 1)), m = (a + b) / 2, hh = Math.min(14, Math.abs(b - a) * 0.8 + 4);
-        P.stroke(c, [[a, y - 2], [m - (b - a) * 0.25, y - hh], [m + (b - a) * 0.25, y - hh], [b, y - 2]], { role: "look", width: 2 });
-      }
-      else if (hops > 15) P.stroke(c, [[X(hers), y - 3], [(X(hers) + X(truth)) / 2, y - 22], [X(truth), y - 3]], { role: "look", width: 2, alpha: k });
+    if (!(age >= 0.6 || api.reduced)) return;
+    const k = api.reduced ? 1 : clamp((age - 0.6) / 0.6, 0, 1), dir = Math.sign(truth - hers);
+    if (!first) {
+      // the way to go from her number: an arrow of a fixed length, no ticks to count along
+      const ax = X(hers) + dir * 12, bx = ax + dir * 44 * k;
+      if (dir) { P.stroke(c, [[ax, y + 18], [bx, y + 18]], { role: "ink2", width: 3 }); P.stroke(c, [[bx - dir * 8, y + 11], [bx, y + 18], [bx - dir * 8, y + 25]], { role: "ink2", width: 3 }); }
+      return;
     }
+    // the tally's own place, and the hops between
+    P.stroke(c, [[X(truth), y + 6], [X(truth) - 7, y + 18], [X(truth) + 7, y + 18]], { role: "ink", width: 3, closed: true });
+    const hops = Math.abs(truth - hers);
+    if (hops > 0 && hops <= 15) for (let i = 0; i < hops * k; i++) {
+      const a = X(hers + dir * i), b = X(hers + dir * (i + 1)), m = (a + b) / 2, hh = Math.min(14, Math.abs(b - a) * 0.8 + 4);
+      P.stroke(c, [[a, y - 2], [m - (b - a) * 0.25, y - hh], [m + (b - a) * 0.25, y - hh], [b, y - 2]], { role: "ink2", width: 2 });
+    }
+    else if (hops > 15) P.stroke(c, [[X(hers), y - 3], [(X(hers) + X(truth)) / 2, y - 22], [X(truth), y - 3]], { role: "ink2", width: 2, alpha: k });
   }
   function draw(c: CanvasRenderingContext2D): void {
     api.P.textFit(c, W(`stambh.ctx.${p.ctx}`), w / 2, 16, w - 24, 24, { size: 16, role: "ink2", weight: 700 });
@@ -258,7 +300,15 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   }
   function update(): void { /* positions follow api.t; nothing to integrate */ }
 
-  const goal = (): string => W(keep ? "stambh.goal.keep" : "stambh.goal.read");
+  // the line under the world says what she does now (never the rule, never where a stroke goes); at the end, a neutral
+  // line of what she did, in digits (no praise, no rule)
+  const goal = (): string => {
+    const s = st();
+    if (s.done) return keep ? W("stambh.end.keep", { n: p.seq.length, k: s.checks }) : W("stambh.end.read", { n: s.totals[0] ?? 0, k: s.checks });
+    if (!keep) return W("stambh.goal.read");
+    if (!sceneOver()) return W("stambh.goal.keep");
+    return W(s.checks > 0 ? "stambh.goal.fix" : "stambh.goal.table");
+  };
   // no live readout: a running count of a row IS the answer the tally is there to give
   const readouts = (): Readout[] => [];
   function controls(): ControlSpec[] {
@@ -272,6 +322,8 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     }
     const ready = writing && s.totals.every((t) => t !== null);
     out.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", disabled: s.acts === 0, onPress: () => act({ kind: "undo" }) });
+    // keep: the strip has folded away, so the tally is repaired by keeping the scene again (undo brings the old one back)
+    if (keep && sceneOver()) out.push({ id: "again", label: W("stambh.again"), kind: "secondary", group: "go", onPress: () => act({ kind: "again" }) });
     out.push({ id: "done", label: W("stambh.check"), kind: "primary", group: "go", you: ready, disabled: !ready, onPress: () => act({ kind: "check" }) });
     return out;
   }

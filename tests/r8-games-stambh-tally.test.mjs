@@ -5,16 +5,21 @@
 //   - goal met ⇔ an independent oracle (the tally written as text, read with a regular expression, never the law's
 //     helpers), over ≥ 2000 random acts per goal; the law never throws;
 //   - tally-four lands on its own misconception with its own signature (read: 4 × bundles + singles, gap = bundles;
-//     keep: no line across, totals short by the groups of five) and no other wrong answer is named tally-four;
+//     keep "counted": every total short by exactly its row's bundles, crosses drawn or not; keep "five": no line across
+//     anywhere with the totals right) and no other wrong answer is named tally-four: no one-bundle slip, and over random
+//     acts a check is named ⇔ the signature written from the kit's signs; on every generated level the mix-up's answer
+//     differs from every one-bundle slip (skipped, counted twice, one single off) and no read row is bundles only;
+//   - keep it again ("again") once the scene has passed; undo brings the old tally back;
 //   - tampered params are refused; a verdict field in an act never decides; the first check decides the evidence;
 //   - the server serves a proven level for every coverage entry at every fade, the solver's acts grade solved, the mal
 //     acts fold the kit id, and the PLAY facts row carries bundles=n; the picto entry of the topic still serves;
-//   - ten bundles fit a 360 px row; the generator and the picker are fast in CPU time (tests/_cpu-ms.mjs);
+//   - ten bundles fit a 360 px row; the largest keep row lies on one line, the largest read row splits no group; the
+//     generator and the picker are fast in CPU time (tests/_cpu-ms.mjs);
 //   - every word the view shows exists in all three languages; no clock, randomness or colour literal in the law or view.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { tallyLogic as L, TALLY_MAL, TALLY_CONTEXTS, tallyFlow, tallyOf, groupsOf, four, idleWays } from "../src/play/families/stambh/tally.logic.ts";
+import { tallyLogic as L, TALLY_MAL, TALLY_CONTEXTS, tallyFlow, tallyOf, groupsOf, idleWays, tallyFourActs, READ_MAX, KEEP_ROW_MAX } from "../src/play/families/stambh/tally.logic.ts";
 import { stambhLogic } from "../src/play/families/stambh/stambh.logic.ts";
 import { coverage, entryKey, levelsFor, currentLevel, seedOf, hasPlay, entryFor } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
@@ -40,6 +45,15 @@ const levels = (goal, seeds = [1, 7, 42, 99, 123, 512]) => {
 const text = (marks) => marks.map((m) => (m ? "/" : "|")).join("");
 const isTallyOf = (t, k) => /^(\|\|\|\|\/)*\|{0,4}$/.test(t) && t.length === k;
 const oracle = (level, s) => level.params.counts.every((c, r) => s.totals[r] === c && (level.params.goal === "read" || isTallyOf(text(s.marks[r]), c)));
+/** tally-four's signature, written here from the kit's signs (not from the law): read, the total is 4 per bundle plus
+ *  the singles; keep, one stroke per thing in every row and EITHER every total is the row's count less its bundles
+ *  (crosses drawn or not) OR there is no "/" anywhere and every total is the count (five as five standing lines) */
+const signature = (level, s) => {
+  const { counts, goal } = level.params, short = counts.map((c) => c - Math.floor(c / 5));
+  if (goal === "read") return s.totals[0] === short[0];
+  if (!counts.every((c, r) => s.marks[r].length === c)) return false;
+  return counts.every((c, r) => s.totals[r] === short[r]) || (counts.every((c, r) => s.totals[r] === c) && !s.marks.some((m) => text(m).includes("/")));
+};
 
 for (const goal of ["keep", "read"]) {
   test(`stambh/tally/${goal}: every level validates, solves cleanly, is shortcut-free; tally-four lands on its own misconception`, () => {
@@ -88,24 +102,58 @@ test("stambh/tally: tally-four's signature is the belief, and no other wrong ans
     }
   }
   for (const level of levels("keep")) {
-    const p = level.params, r = run(level, L.malActs(level, "tally-four"));
+    const p = level.params, B = p.counts.reduce((a, c) => a + Math.floor(c / 5), 0);
+    const named = (acts) => run(level, acts).ms.find((m) => m.kind === "misconception_consequence");
+    // the main form (judges, round 1): the bundles drawn right, each total counted off its standing lines → named
+    const r = run(level, L.malActs(level, "tally-four"));
     p.counts.forEach((c, k) => {
-      assert.ok(r.s.marks[k].every((m) => !m), "keep: no line across anywhere");
-      assert.equal(r.s.marks[k].length, c, "one stroke per thing");
-      assert.equal(r.s.totals[k], c - Math.floor(c / 5), "each total short by its groups of five");
-      assert.equal(groupsOf(r.s.marks[k]).filter((g) => g.kind === "five").length, Math.floor(c / 5), "the commit pass rings each group of five");
+      assert.ok(isTallyOf(text(r.s.marks[k]), c), "keep (counted): the strokes are a true tally");
+      assert.equal(r.s.totals[k], c - Math.floor(c / 5), "each total short by exactly its row's bundles");
     });
     const mc = r.ms.find((m) => m.kind === "misconception_consequence");
-    assert.equal(mc.facts.crossesMissing, p.counts.reduce((a, c) => a + Math.floor(c / 5), 0));
-    assert.equal(mc.facts.bundles, 0);
-    // near the belief but not it: the strokes right and the totals short, or no cross and the totals right → not named
+    assert.equal(mc.facts.sign, "counted"); assert.equal(mc.facts.bundles, B); assert.equal(mc.facts.gap, B);
+    assert.equal(r.s.sign, "counted"); assert.equal(L.facts(level, r.s).sign, "counted");
+    // the same totals with no line across drawn (crosses or not) → named, "counted"
+    assert.equal(named(tallyFourActs(p, "plain"))?.facts.sign, "counted");
+    // the kit's second sign: five written as five standing lines, the totals right → named, "five"
+    const five = run(level, tallyFourActs(p, "five")), m5 = five.ms.find((m) => m.kind === "misconception_consequence");
+    assert.equal(m5?.facts.sign, "five"); assert.equal(m5.facts.crossesMissing, B); assert.equal(m5.facts.bundles, 0); assert.equal(m5.facts.gap, B);
+    p.counts.forEach((c, k) => assert.equal(groupsOf(five.s.marks[k]).filter((g) => g.kind === "five").length, Math.floor(c / 5)));
+    // every one-bundle slip (one total 5 short, 5 over, 1 off; the strokes right, or with one line across missing): never named
     const right = L.solve(level).filter((a) => a.kind === "mark");
-    const short = [...right, ...p.counts.map((c, k) => ({ kind: "total", row: k, n: four(c) })), { kind: "check" }];
-    const standTrue = [...right.map((a) => ({ ...a, across: false })), ...p.counts.map((c, k) => ({ kind: "total", row: k, n: c })), { kind: "check" }];
-    for (const acts of [short, standTrue]) assert.ok(!run(level, acts).ms.some((m) => m.kind === "misconception_consequence"), level.levelId);
-    const nb = run(level, standTrue).ms.at(-1);
-    assert.equal(nb.facts.why, "not_bundled");
+    let firstCross = right.findIndex((a) => a.across);
+    const oneMissing = right.map((a, i) => (i === firstCross ? { ...a, across: false } : a));
+    for (const marks of [right, oneMissing]) for (let k = 0; k < p.counts.length; k++) for (const d of [-5, 5, -1, 1]) {
+      const totals = p.counts.map((c, j) => (j === k ? c + d : c));
+      if (totals.some((t) => t < 0 || t > 99)) continue;
+      const acts = [...marks, ...totals.map((n, j) => ({ kind: "total", row: j, n })), { kind: "check" }];
+      assert.ok(!named(acts), `${level.levelId}: a slip of ${d} on row ${k} was named tally-four`);
+    }
+    // one line across missing with the totals right (a slip of the hand, not the belief): an ordinary miss, not bundled
+    const slip = [...oneMissing, ...p.counts.map((n, j) => ({ kind: "total", row: j, n })), { kind: "check" }];
+    assert.ok(!named(slip)); assert.equal(run(level, slip).ms.at(-1).facts.why, "not_bundled");
   }
+});
+
+test("stambh/tally: on EVERY generated level (both goals) the mix-up's answer differs from every one-bundle slip", () => {
+  // computed here, independently of the law: the mix-up reads each bundle as 4; a slip skips one bundle, counts one twice,
+  // or is one single line off, in one row
+  const bundleFour = (c) => 4 * Math.floor(c / 5) + (c % 5);
+  let n = 0;
+  for (const goal of ["keep", "read"]) for (const level of levels(goal, [1, 2, 3, 5, 7, 11, 42, 99, 123, 512, 777, 2024])) {
+    const counts = level.params.counts, mal = counts.map(bundleFour);
+    if (goal === "read") assert.ok(counts[0] % 5 !== 0, `${level.levelId}: a read row of bundles only`);
+    for (let r = 0; r < counts.length; r++) for (const d of [-5, 5, -1, 1]) {
+      const slip = counts.map((c, k) => (k === r ? c + d : c));
+      assert.notDeepEqual(mal, slip, `${level.levelId}: tally-four ${mal} = a slip of ${d} on row ${r}`);
+    }
+    assert.notDeepEqual(mal, counts);
+    n++;
+  }
+  assert.ok(n >= 150, `${n} levels`);
+  // and the law refuses givens where they collide (served nowhere): 25 (5 × 4 = 4 × 5), 30, 7 (one bundle: 6 = 7 − 1)
+  const read = levels("read", [3])[0];
+  for (const c of [25, 30, 7, 27]) assert.equal(L.validate({ ...read, params: { ...read.params, counts: [c] } }), null, String(c));
 });
 
 test("stambh/tally: the law's rules (every stroke legal; groups by five at the check; the scene first; the totals; undo)", () => {
@@ -134,8 +182,19 @@ test("stambh/tally: the law's rules (every stroke legal; groups by five at the c
   assert.deepEqual(groupsOf(Array(7).fill(false)).map((g) => g.kind), ["five", "open"]);
   assert.deepEqual(groupsOf([false, false, true, false]).map((g) => g.kind), ["short", "open"]);
   assert.deepEqual(groupsOf(tallyOf(12)).map((g) => g.kind), ["bundle", "bundle", "open"]);
+  // keep it again: only once the scene has passed; strokes and totals clear, the scene starts over; undo brings them back
+  const k2 = levels("keep", [5])[0];
+  let s2 = L.init(k2);
+  assert.equal(L.apply(k2, s2, { kind: "again" }, 1).refused, "scene_first");
+  for (const a of L.solve(k2).filter((x) => x.kind !== "check")) s2 = L.apply(k2, s2, a, 1).state;
+  const kept = s2;
+  s2 = L.apply(k2, s2, { kind: "again" }, 1).state;
+  assert.equal(s2.at, 0); assert.ok(s2.marks.every((m) => m.length === 0)); assert.ok(s2.totals.every((t) => t === null));
+  s2 = L.apply(k2, s2, { kind: "undo" }, 1).state;
+  assert.deepEqual(s2.marks, kept.marks); assert.deepEqual(s2.totals, kept.totals); assert.equal(s2.at, kept.at);
   const read = levels("read", [3])[0];
   assert.equal(L.apply(read, L.init(read), { kind: "mark", row: 0 }, 1).refused, "given");
+  assert.equal(L.apply(read, L.init(read), { kind: "again" }, 1).refused, "given");
   assert.deepEqual(hiddenOf(read), [read.params.counts[0]], "the teacher never says the count first");
   assert.deepEqual(hiddenOf(level), [...new Set(p.counts)]);
 });
@@ -167,31 +226,38 @@ test("stambh/tally: a verdict field in an act never decides; the first check dec
 });
 
 for (const goal of ["keep", "read"]) {
-  test(`stambh/tally/${goal}: ≥ 2000 random acts; a check is solved ⇔ the oracle; never throws; generator work bounded (counted)`, () => {
-    let seed = 11, acts = 0, solved = 0;
+  test(`stambh/tally/${goal}: ≥ 2000 random acts; a check is solved ⇔ the oracle, named tally-four ⇔ its signature; never throws; generator work bounded (counted)`, () => {
+    let seed = 11, acts = 0, solved = 0, named = 0, ordinary = 0;
     const rnd = () => ((seed = (seed * 1103515245 + 12345) >>> 0) / 2 ** 32);
     const counts = [];
     for (let g = 0; g < 30; g++) {
       const cands = L.generate(req(goal, 300 + g, { fade: 1 + (g % 3) }));
       counts.push(cands.length);
       for (const c of cands.slice(0, 3)) {
-        const level = L.validate(c.level), sol = L.solve(level), rows = level.params.cats.length;
+        const level = L.validate(c.level), rows = level.params.cats.length;
+        // a third of the walks pursue the solve, a third one of tally-four's forms, a third wander; each with noise
+        const mode = rnd(), forms = goal === "keep" ? ["counted", "five", "plain"] : ["counted"];
+        const sol = mode < 0.34 ? L.solve(level) : mode < 0.67 ? tallyFourActs(level.params, forms[Math.floor(rnd() * forms.length)]) : null;
         let s = L.init(level), k = 0;
-        const pursue = rnd() < 0.5;
         for (let i = 0; i < 120 && !s.done; i++) {
           const r = rnd(), row = Math.floor(rnd() * (rows + 1));
-          const a = pursue ? (r < 0.75 && k < sol.length ? sol[k++] : r < 0.88 ? { kind: "mark", row, across: rnd() < 0.3 } : { kind: "check", solved: true })
-            : r < 0.45 ? { kind: "mark", row, across: rnd() < 0.25 } : r < 0.7 ? { kind: "total", row, n: rnd() < 0.1 ? null : Math.floor(rnd() * 30) } : r < 0.85 ? { kind: "check" } : { kind: "undo" };
+          const a = sol ? (r < 0.8 && k < sol.length ? sol[k++] : r < 0.86 ? { kind: "mark", row, across: rnd() < 0.3 } : r < 0.92 ? { kind: "total", row, n: Math.floor(rnd() * 20) } : r < 0.96 ? { kind: "undo" } : { kind: "check", solved: true })
+            : r < 0.45 ? { kind: "mark", row, across: rnd() < 0.25 } : r < 0.7 ? { kind: "total", row, n: rnd() < 0.1 ? null : Math.floor(rnd() * 30) } : r < 0.83 ? { kind: "check" } : r < 0.97 ? { kind: "undo" } : { kind: "again" };
           const before = s, out = L.apply(level, s, a, i + 1);
           acts++;
-          if (a.kind === "check" && !["scene_first", "fill_first", "level_over"].includes(out.refused)) assert.equal(out.state.done, oracle(level, before), `${level.levelId}: law and oracle disagree`);
+          if (a.kind === "check" && !["scene_first", "fill_first", "level_over"].includes(out.refused)) {
+            assert.equal(out.state.done, oracle(level, before), `${level.levelId}: law and oracle disagree`);
+            const isNamed = out.moments.some((m) => m.kind === "misconception_consequence" && m.misconceptionId === "tally-four");
+            assert.equal(isNamed, !out.state.done && signature(level, before), `${level.levelId}: named ${isNamed} for ${JSON.stringify(before.totals)} ${before.marks.map(text).join(" ")}`);
+            if (isNamed) named++; else if (!out.state.done) ordinary++;
+          }
           s = out.state;
         }
         if (L.goalMet(level, s)) { solved++; assert.ok(oracle(level, s)); }
       }
     }
     assert.ok(acts >= 2000, `only ${acts} acts`);
-    assert.ok(solved > 0);
+    assert.ok(solved > 0 && named > 0 && ordinary > 0, `solved ${solved}, named ${named}, ordinary misses ${ordinary}`);
     assert.ok(Math.max(...counts) <= 48, `${Math.max(...counts)} candidates per call (measured 2026-11-11: 16; bound is 3x)`);
   });
 }
@@ -209,6 +275,22 @@ test("stambh/tally: ten bundles (and four) fit a 360 px row; the flow never leav
   }
   const ten = tallyFlow(tallyOf(50), 292, 96, false);
   assert.ok(ten.sp >= 5 && ten.sh >= 16, `ten bundles at 360: spacing ${ten.sp}, height ${ten.sh}`);
+  // the largest served rows at 360 (judges, round 1: Auto 7 had wrapped): a keep row of KEEP_ROW_MAX strokes in the keep
+  // tally box (126 px wide, 70-150 px tall) lies on ONE line, as she drew it and as the law groups it; the largest read
+  // row (READ_MAX) fits the read box with no group split across lines
+  for (const height of [70, 100, 150]) for (const n of [5, 7, 9, 10, KEEP_ROW_MAX]) for (const grouped of [false, true]) {
+    const f = tallyFlow(tallyOf(n), 126, height, grouped, 56);
+    assert.equal(f.lines, 1, `keep ${n} at 126x${height} (${grouped ? "grouped" : "hers"}): ${f.lines} lines`);
+    assert.ok(f.sp >= 8 && f.sh >= 22, `keep ${n}: spacing ${f.sp}, height ${f.sh}`);
+  }
+  for (const height of [96, 140, 220]) {
+    const marks = tallyOf(READ_MAX), f = tallyFlow(marks, 292, height, false, 56);
+    assert.ok(f.right <= 292.01 && f.lines * f.lineH <= height + 0.01);
+    for (const g of groupsOf(marks)) {
+      const lines = new Set([...f.stand, ...f.across.map((a) => ({ i: a.i, line: a.line }))].filter((q) => q.i >= g.from && q.i < g.from + g.len).map((q) => q.line));
+      assert.equal(lines.size, 1, `read ${READ_MAX} at 292x${height}: a group split across lines`);
+    }
+  }
   // five standing lines without a cross, as she drew them, still fit
   const five = tallyFlow(Array(14).fill(false), 168, 40, true);
   assert.equal(five.stand.length, 14);
@@ -289,7 +371,7 @@ for (const e of TE()) for (const fade of [1, 2, 3]) {
       assert.equal(mg.grade.evidence[0].misconceptionId, "c4-maths-ch14-t01-m-tally-four");
       const mrow = playFactsRow({ game: "stambh/tally", verdict: mg.grade.verdict, first_try: 0, misses: 1, chose: "pick_fit", next: "fade_up", ...mg.grade.facts });
       assert.match(mrow, / mal=tally-four/, mrow);
-      if (e.goal === "keep") assert.match(mrow, / crossesMissing=\d+/, mrow);
+      if (e.goal === "keep") assert.match(mrow, / sign=counted/, mrow);
       assert.match(mrow, / answer=[\d,]+/, mrow);
     }
     assert.ok(seen.size >= 2, `${seen.size} distinct levels over 4 children`);
