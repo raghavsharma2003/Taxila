@@ -822,5 +822,8 @@ function grade(level: PlayLevel<GatiParams>, acts: PlayActEnvelope<GatiAct>[]): 
 
 export const gatiLogic: FamilyLogic<GatiParams, GatiState, GatiAct> = {
   family: "gati", modes: GATI_MODES, malRules: GATI_MAL,
+  // round 8 law 3 (dc-r8-game-modes-three-laws): mix-ups these goals see from ONE pick among five or fewer (a tool, a
+  // bin, a lane, a claim; server/forge3/qa/laws.mjs found each): reported at chance weight, named only on a repeat
+  chancePicks: ["do-gati:one-type", "prakaar:curve-circular", "ek-saa:keeps-moving", "ek-saa:same-totals", "ek-saa:uniform-slow"],
   validate, init, apply, goalMet, generate, solve, shortcut, malActs: gatiMalActs, grade, facts, board,
 };

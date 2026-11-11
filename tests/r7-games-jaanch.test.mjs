@@ -217,7 +217,7 @@ for (const [mode, goal] of CASES) {
         const mc = m.ms.filter((x) => x.kind === "misconception_consequence");
         assert.equal(mc.length, 1, `${c.signature} ${mal}`); assert.equal(mc[0].misconceptionId, mal);
         const mg = L.grade(level, env(acts));
-        assert.equal(mg.evidence[0].outcome, "incorrect"); assert.equal(mg.evidence[0].misconceptionId, `k-${mal}`);
+        assert.equal(mg.evidence[0].outcome, "incorrect"); assert.equal((mg.evidence[0].misconceptionId ?? mg.evidence[0].chanceMis), `k-${mal}`);
       }
       // every level can show its belief (sugar on every iodine card, water or tomato on every paper card, a positive in dono)
       assert.ok(WANT[goal].every((m) => L.malActs(level, m)), `${c.signature} cannot show ${WANT[goal]}`);
@@ -404,7 +404,7 @@ for (const e of JG()) for (const fade of [1, 2, 3]) {
       for (const kitId of level.proof.discriminates) {
         const mal = Object.keys(level.mal).find((m) => level.mal[m] === kitId && L.malActs(level, m));
         const mg = gradeActs(level, env(L.malActs(level, mal)), { final: true });
-        assert.equal(mg.grade.evidence[0].misconceptionId, kitId);
+        assert.equal((mg.grade.evidence[0].misconceptionId ?? mg.grade.evidence[0].chanceMis), kitId);
       }
       assert.ok(level.proof.discriminates.length > 0, "a level that can show a belief is served");
       assert.ok(hiddenOf(level).length > 0, "hidden values");

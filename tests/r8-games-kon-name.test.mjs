@@ -89,7 +89,9 @@ for (const goal of ["say", "find"]) {
         assert.ok(picked.v === shown[0] || picked.v === shown[2]);
       }
       const g = konLogic.grade(level, env(m), { final: true });
-      assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, "k-vn");
+      // round 8 law 3 (ruling kon/name 2): in find one tap among the corners names nothing (kept at chance weight as chanceMis); a
+      // three-tap name in say names it
+      assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, goal === "say" ? "k-vn" : undefined); assert.equal(g.evidence[0].chanceMis, goal === "say" ? undefined : "k-vn");
     }
     assert.ok(n >= 20, `only ${n} levels`);
     assert.ok(mals >= n / 2, `vertex-name applied on ${mals} of ${n}`);

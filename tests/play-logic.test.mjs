@@ -167,7 +167,7 @@ describe("play logic: generated levels are proven", () => {
           const mg = gradeLevel(logic, level, env(logic.malActs(level, mal)), { final: true });
           assert.ok(mg.moments.some((x) => x.kind === "misconception_consequence" && x.misconceptionId === mal), `${level.levelId}: ${mal} did not show`);
           assert.equal(mg.evidence[0]?.outcome, "incorrect");
-          assert.equal(mg.evidence[0]?.misconceptionId, kitId);
+          assert.equal((mg.evidence[0]?.misconceptionId ?? mg.evidence[0]?.chanceMis), kitId);
         }
       }
     });

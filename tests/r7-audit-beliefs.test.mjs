@@ -49,7 +49,7 @@ for (const c of CASES) {
       assert.deepEqual(mc.map((x) => x.misconceptionId), [c.mal], `${lv.levelId}: named as ${c.mal} alone`);
       const g = gradeActs(lv, env(ma), { final: true });
       assert.notEqual(g.grade.verdict, "solved");
-      assert.ok(g.grade.evidence.some((x) => x.misconceptionId === c.kit), `${lv.levelId}: evidence folds the kit id`);
+      assert.ok(g.grade.evidence.some((x) => x.misconceptionId === c.kit || x.chanceMis === c.kit), `${lv.levelId}: evidence folds the kit id (round 8 law 3: from one pick, as chanceMis)`);
       const sol = L.solve(lv);
       assert.ok(L.goalMet(lv, play(L, lv, sol).s), `${lv.levelId}: the right acts win`);
       assert.equal(gradeActs(lv, env(sol), { final: true }).grade.verdict, "solved");

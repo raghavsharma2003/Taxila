@@ -140,7 +140,7 @@ for (const [mode, goal, grammar] of CASES) {
         assert.equal(mc.length, 1, `${c.signature} ${mal}`);
         assert.equal(mc[0].misconceptionId, mal);
         const g = hissaLogic.grade(level, env(acts));
-        assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, `k-${mal}`);
+        assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal((g.evidence[0].misconceptionId ?? g.evidence[0].chanceMis), `k-${mal}`);
       }
     }
     for (const m of expectOf(goal, grammar)) assert.ok(seen.has(m), `${mode}/${goal}: mal-rule ${m} never discriminated`);
@@ -381,7 +381,7 @@ for (const e of HE()) for (const fade of [1, 2, 3]) {
       for (const kitId of level.proof.discriminates) {
         const mal = Object.keys(level.mal).find((m) => level.mal[m] === kitId && hissaLogic.malActs(level, m));
         const mg = gradeActs(level, env(hissaLogic.malActs(level, mal)), { final: true });
-        assert.equal(mg.grade.evidence[0].misconceptionId, kitId);
+        assert.equal((mg.grade.evidence[0].misconceptionId ?? mg.grade.evidence[0].chanceMis), kitId);
       }
       const hidden = hiddenOf(level);
       assert.ok(Array.isArray(hidden) && hidden.length > 0, "hidden values");
@@ -434,7 +434,7 @@ test("hissa pour (GAMES-08): a committed right count wins (correct, game weight)
       const acts = hissaLogic.malActs(level, mal);
       assert.equal(acts[0].kind, "count", "the belief is in the count said");
       const g = gradeActs(level, env(acts), { final: true });
-      assert.equal(g.grade.evidence[0].outcome, "incorrect"); assert.equal(g.grade.evidence[0].misconceptionId, level.mal[mal]);
+      assert.equal(g.grade.evidence[0].outcome, "incorrect"); assert.equal((g.grade.evidence[0].misconceptionId ?? g.grade.evidence[0].chanceMis), level.mal[mal]);
       mapped++;
     }
     levels++;

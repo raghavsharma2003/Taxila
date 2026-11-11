@@ -215,7 +215,8 @@ export const makeLabView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     // the fair-test meter: how many conditions differ (one = a fair test)
     // the fair-test meter, top right: the dots (one per condition, lit when it differs) and the count
     const label = diffs.length === 0 ? (lang === "en" ? "nothing differs" : lang === "hi" ? "कुछ अलग नहीं" : "kuch alag nahi") : say(lang, "lab.differ", { n: diffs.length });
-    const mrole: Role | undefined = diffs.length === 1 ? "good" : diffs.length > 1 ? "look" : undefined;
+    // round 8 law 1: green only for her right; in predict the set-up is given, so its meter is neutral
+    const mrole: Role | undefined = diffs.length === 1 ? (p.goal === "predict" ? "ink2" : "good") : diffs.length > 1 ? "look" : undefined;
     c.save(); c.font = `700 15px ${api.art.font.ui}`; const lw = c.measureText(label).width; c.restore();
     const chipW = lw + 18, dotsW = factors.length * 13, mx = meterX - chipW / 2;
     P.chip(c, label, mx, titleY, { size: 15, role: mrole, font: "ui" });

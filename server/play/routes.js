@@ -22,9 +22,10 @@
 import { readJson, send, HttpError } from "../http.js";
 import { requireChild } from "../auth.js";
 import { signSession, verifySession } from "./session.js";
-import { afterLevelBody, artFor, coverage, currentLevel, entryByKey, entryOfBody, nextBody, play3dOff } from "./levels.js";
+import { afterLevelBody, artFor, coverage, currentLevel, entryByKey, entryOfBody, nameOnRepeat, nextBody, play3dOff } from "./levels.js";
 import { recentFromPrev, startSession } from "./start.js";
 import { gradeActs, lessonEvidence } from "./grade.js";
+import { logicFor } from "../../src/play/families/index.ts";
 import { reactionFor } from "./react.js";
 import { mapStateFrom, worldFamily } from "./world.js";
 import { signEvidence, signHomeEvidence, signSeam } from "./evidence.js";
@@ -78,7 +79,9 @@ function seamOf(grade, level, moments, impasse) {
   if (impasse) return { kind: "impasse", facts: grade?.facts ?? {} };
   if (grade) return { kind: "level_end", facts: { ...grade.facts, verdict: grade.verdict }, bareItem: level.fade === 3 && grade.verdict === "solved" ? { skillId: level.skillId } : null };
   const mis = moments.find((m) => m.kind === "misconception_consequence");
-  if (mis) return { kind: "misconception", facts: { ...mis.facts, misconception: level.mal[mis.misconceptionId] ?? "" } };
+  // round 8 law 3: a mix-up from one pick among a few is not named to the lesson (pick=1, no misconception id)
+  const pick = !!level.goal && (!!logicFor(level.family, level.mode)?.oneDecision?.includes(level.goal) || !!logicFor(level.family, level.mode)?.chancePicks?.includes(level.goal));
+  if (mis) return { kind: "misconception", facts: { ...mis.facts, misconception: pick ? "" : level.mal[mis.misconceptionId] ?? "", ...(pick ? { pick: 1 } : {}) } };
   if (moments.some((m) => m.kind === "prediction_violated")) return { kind: "prediction", facts: moments.find((m) => m.kind === "prediction_violated").facts };
   return null;
 }
@@ -137,7 +140,8 @@ export const routes = {
     const seenEngine = typeof b.engine === "string" && engineFor(level.family, level.mode, level.goal)?.id === b.engine ? b.engine : null;
     const { reaction, history } = reactionFor(fresh, { lang: s.lang, level, solved: g.solved, engine: seenEngine, history: s.hist ?? undefined, nowS: (Date.now() / 1000) });
     const ended = !!g.grade;
-    const rows = ended ? lessonEvidence(g.grade, level) : [];
+    // round 8 law 3: a mix-up seen from one pick is named only when it repeats on a level whose surface differs
+    const rows = ended ? nameOnRepeat(lessonEvidence(g.grade, level), s, level) : [];
     // inside a lesson: the server's own rows, signed for this child and lesson (the turn folds only a verified token)
     // round 8 P3: the level's trail (the server's own replay: misses, mal-rules, undos, acts vs the solver's minimum) is
     // signed WITH the rows. From the home (no lessonId) the same rows, as source "home", and the trail are signed for the
