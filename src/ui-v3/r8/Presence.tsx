@@ -7,6 +7,7 @@
 import type { ReactNode } from "react";
 import type { Floor } from "../../lesson/floor.ts";
 import { STATE, presenceState, type PresenceSize } from "./presence.ts";
+import "./presence.css";
 
 export function Presence({ name, floor, size, children }: { name: string; floor?: Floor; size: PresenceSize; children?: ReactNode }) {
   const state = presenceState(floor);

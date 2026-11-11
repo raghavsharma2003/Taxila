@@ -1,7 +1,7 @@
 // The words and state of her presence (Presence.tsx), pure so the tests import it.
 import type { Floor } from "../../lesson/floor.ts";
 
-export type PresenceSize = "row" | "tile" | "hero";
+export type PresenceSize = "row" | "tile" | "hero" | "home";
 
 export const STATE: Partial<Record<Floor, string>> = {
   speaking: "Talking",

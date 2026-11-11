@@ -83,6 +83,26 @@ They were taken from the Kaksha Desk dev page (`src/ui-v3/kaksha/dev/desk.html?c
 
 `after-*` images are re-taken after these fixes.
 
+## Step c: the child home
+
+- **Every Kaksha screen carries the switch.** `KxRoot` (kit.tsx) and `KakshaRoot` (Shell.tsx) set `data-tx`. `src/ui-v3/r8/kx.css` drops the terminal chrome on all of them:
+  - the starfield sky and its grid;
+  - clipped corners;
+  - mono uppercase labels;
+  - the "FLIGHT DECK" shell word;
+  - the "»" chevron, the sweep and the breathing on the primary button.
+
+  The shared pieces (buttons, the dock, panels, labels, headings) take the tokens. World, Hangar and the other Kaksha pages pick this up too; steps d to g dress them where they need more.
+- **The home:**
+  - her presence (a circle, her name, "AI teacher") replaces the face picture;
+  - the greeting is in the display face;
+  - one Start in the accent;
+  - the dock links are quiet rectangles.
+
+  No topic and no plan card on the home: that is the standing decision "Just start. Asha takes it from there." (main, 2026-10-10, `KakshaHome.tsx`), so the phase 1 prototype's topic card is not built.
+- **The wordmark** reads "Taxila" in the markup (views.tsx, Who.tsx). The current look keeps its uppercase through CSS (`.kx-mark`), so production is unchanged.
+- **Images:** `before-home*`, `after-a-home*` and `after-b-home*` (state start, and done with "One more"), from `src/ui-v3/kaksha/dev/index.html?screen=home&state=…&tx=…`.
+
 ## Not changed (other owners)
 
 - **Studio's piece chrome.** The "Picture" chip, the beat dots and the 40 px band above a Studio piece are Studio's (`src/studio/**`). Under the theme only the piece's inner ring is dropped, by CSS in this stream's file. A Studio patch could fold the chip into the board card.

@@ -16,6 +16,8 @@ import { tr7 } from "../../copy/en.ts";
 import type { HangarItem, World } from "./world.ts";
 import type { TeacherFloor } from "../../ui/teacher/Teacher.tsx";
 import type { TapSource } from "../../avatar/tap.ts";
+import { txTheme } from "../r8/tx.ts";
+import { Presence } from "../r8/Presence.tsx";
 
 export type Go = (to: string) => void;
 
@@ -94,16 +96,21 @@ export function HomeView(p: HomeViewProps) {
       <Sky screen="home" reducedMotion={p.reducedMotion} />
       {p.meTo ? (
         <KxTopBar go={p.go} meTo={p.meTo} parentTo={p.parentTo}
-          brand={<span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">TAXILA</span></span>} />
+          brand={<span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">Taxila</span></span>} />
       ) : (
         <header className="kx-top">
-          <span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">TAXILA</span></span>
+          <span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">Taxila</span></span>
           {futurist() && <span className="kx-shell">{KX_NAMES.shell}</span>}
         </header>
       )}
       <main className="kx-home-main">
-        <Comms className="kx-home-face" teacherId={p.teacher.id} teacherName={p.teacher.name} band={p.teacher.band} form={p.teacher.form} tier={p.teacher.tier}
-          floor={p.floor ?? "idle"} framing="medium" reducedMotion={p.reducedMotion} meters={p.meters} />
+        {txTheme() ? (
+          // round 8 (?tx=): her presence, never a face picture; her name and "AI teacher" printed
+          <div className="kx-home-presence"><Presence name={p.teacher.name} floor={p.floor ?? "idle"} size="home" /></div>
+        ) : (
+          <Comms className="kx-home-face" teacherId={p.teacher.id} teacherName={p.teacher.name} band={p.teacher.band} form={p.teacher.form} tier={p.teacher.tier}
+            floor={p.floor ?? "idle"} framing="medium" reducedMotion={p.reducedMotion} meters={p.meters} />
+        )}
         <section className="kx-home-copy" data-testid="primary-card" data-state={p.state}>
           <h1 className="kx-h1">{greet}</h1>
           <p className="kx-sub">{sub}</p>

@@ -77,7 +77,7 @@ test("the round 8 component CSS reads tokens only and carries none of the termin
       const at = `${f}:${i + 1}`;
       if (/#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(/.test(line)) bad.push(`${at} literal colour`);
       if (/font-size\s*:\s*[\d.]+(px|rem|em)/.test(line) || /font\s*:\s*[^;]*\b\d+px/.test(line)) bad.push(`${at} literal font size`);
-      for (const m of line.matchAll(/border-radius\s*:\s*([^;}]+)/g)) if (!/^(50%|0|var\(--tx-r-\d\)|inherit)$/.test(m[1].trim())) bad.push(`${at} literal radius ${m[1].trim()}`);
+      for (const m of line.matchAll(/border-radius\s*:\s*([^;}]+)/g)) if (!m[1].trim().split(/\s+/).every((v) => /^(50%|0|var\(--tx-r-\d\)|inherit)$/.test(v))) bad.push(`${at} literal radius ${m[1].trim()}`);
       if (/clip-path\s*:\s*polygon/.test(line)) bad.push(`${at} clipped corner`);
       if (/text-transform\s*:\s*uppercase/.test(line)) bad.push(`${at} uppercase label`);
       if (/monospace|Geist Mono|--k-mono\)/.test(line) && !/--k-mono\s*:/.test(line)) bad.push(`${at} monospace`);
