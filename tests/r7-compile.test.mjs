@@ -29,12 +29,37 @@ test("every cell says only authored fields (script paths) and carries its addres
   }
 });
 
-test("a hole is a field the script lacks; a script given that field loses the hole", () => {
+test("dc-r8-second-clarify-shows-not-rewords: a second clarify shows the board and re-says; a third is clarify/spent; alts[0] optional", () => {
   const s = structuredClone(live[0]);
-  const before = compileScript(s).missing.filter((m) => m.path === "skills[0].explain[0].alts[0]");
-  assert.equal(before.length, 1);
-  s.skills[0].explain[0].alts = [{ hi: "Doosre shabdon mein: roti ke do barabar tukde.", en: "In other words: the roti in two equal pieces." }];
-  assert.equal(compileScript(s).missing.filter((m) => m.path === "skills[0].explain[0].alts[0]").length, 0);
+  const sk = s.skills[0], b = sk.explain[0];
+  const second = compileScript(s).cells[`${sk.skillId}:${b.id}:point`].clarify.heard;
+  assert.deepEqual(second.say, ["skills[0].explain[0].point"]);
+  assert.equal(second.show, "skills[0].explain[0].board");
+  assert.equal(second.then, "checkin");
+  assert.equal(second.help, "spent");
+  assert.ok(second.secondClarify);
+  const third = compileScript(s).cells[`${sk.skillId}:${b.id}:point`].clarify.spent;
+  assert.deepEqual(third.say, []);
+  assert.equal(third.then, "card");
+  assert.ok(third.thirdClarify);
+  // a script that authors alts[0] says it in place of the same line again
+  b.alts = [{ hi: "Doosre shabdon mein: roti ke do barabar tukde.", en: "In other words: the roti in two equal pieces." }];
+  assert.deepEqual(compileScript(s).cells[`${sk.skillId}:${b.id}:point`].clarify.heard.say, ["skills[0].explain[0].alts[0]"]);
+  assert.ok(!compileScript(live[0]).missing.some((m) => /alts\[0\]/.test(m.path)), "alts[0] is never a hole");
+});
+
+test("no hole is silent: every missing field's cells compile to a named fallback, and the field is still listed", () => {
+  for (const s of live) {
+    const c = compileScript(s);
+    for (const cs of Object.values(c.cells)) for (const hs of Object.values(cs)) for (const cell of Object.values(hs)) assert.ok(!cell.hole, cell.address);
+    assert.equal(c.fallbacks.length > 0, c.missing.length > 0, s.topicId);
+  }
+  // the worked problem has no simpler: its clarify re-says it and shows its board (resay_show), and the field is listed for Learning
+  const s = live[0], sk = s.skills[0];
+  const cell = compileScript(s).cells[`${sk.skillId}:worked:problem`].clarify.fresh;
+  assert.equal(cell.fallback, "resay_show");
+  assert.deepEqual(cell.say, ["skills[0].workedExample.problem"]);
+  assert.ok(compileScript(s).missing.some((m) => m.path === "skills[0].workedExample.simpler"));
 });
 
 test("Loop's corrections: a compressed skill opens on one check that branches; the misconception column keys per mix-up", () => {
