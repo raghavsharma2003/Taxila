@@ -176,8 +176,15 @@ test("whiteboard: the word face and a 700 run of it resolve to Atkinson Hyperleg
       t.id = "wb-word";
       const b = t.cloneNode(true); b.id = "wb-bold"; b.style.fontWeight = "700"; t.parentNode.appendChild(b);
     });
+    // (CI 2026-11-11: the clone was asked for its used fonts before it was laid out and painted — an empty list. Wait for
+    // the fonts and two frames, then ask again until the node reports a font, at most 3 s)
+    await page.evaluate(() => document.fonts.ready.then(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))));
     const bad = [];
-    for (const id of ["#wb-word", "#wb-bold"]) { const f = await used(id); if (!only(f, "Atkinson Hyperlegible Next")) bad.push(`${id}: ${show(f)}`); }
+    for (const id of ["#wb-word", "#wb-bold"]) {
+      let f = await used(id);
+      for (let i = 0; i < 15 && !f?.length; i++) { await page.waitForTimeout(200); f = await used(id); }
+      if (!only(f, "Atkinson Hyperlegible Next")) bad.push(`${id}: ${show(f)}`);
+    }
     assert.deepEqual(bad, []);
   } finally { await page.close(); }
 });
