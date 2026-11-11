@@ -10,8 +10,8 @@
 //   401 → "signedout" (the shell asks a grown-up to sign in).
 // While the first read is in flight the home shows a neutral busy card with NO action (source "loading"): a Start link
 // before the server answered could start a lesson the server is about to refuse (capped / resting / done).
-// "resume" is shown as "start" until the lesson route can resume a lesson by id (RESUME_BY_ID): a "Continue" card whose
-// tap starts a new lesson would be a signal that lies (§3.4). The server's own state stays in `serverState`.
+// "resume" is a real Continue now (RESUME_BY_ID is true: the lesson route reopens a lesson by id); the flag stays so a build
+// that cannot resume shows "start" rather than a Continue that starts a new lesson (§3.4). The server's own state stays in `serverState`.
 import { useCallback, useEffect, useState } from "react";
 import type { ChildHomeState, ChildPlanResponse, DidCard, MadeForItem } from "../../shared/contracts.ts";
 import { ApiError, getJson } from "../lesson/api.ts";
@@ -27,6 +27,8 @@ export interface HomePlan {
   did: DidCard[];
   tried: number | null;
   opensAt: string | null;
+  /** SEAM-11: the parent's planned lesson time ("5:00" 24-hour, minutes, and whether today is a lesson day); a plan, never a lock. */
+  schedule?: { time: string; minutes: number | null; today: boolean } | null;
   /** The parent's lesson hours (resting names the control that refused: W1-A item 2). Null when not known. */
   window?: { from: string; to: string } | null;
   surfaces: { map: boolean; notebook: boolean; resume: boolean };
@@ -43,6 +45,10 @@ export interface HomePlan {
   testWindow: { subject: string; from: string; to: string } | null;
   /** The parent's per-child "Tap and type only" (server truth, any device). */
   textOnly: boolean;
+  /** r7 app-home-plan-states: the parent's homework help is on until this time (state "homework"). */
+  homework?: { until: string } | null;
+  /** r7: questions parked in earlier lessons and still waiting (the Question jar; null until the server stores them). */
+  jarWaiting?: number;
 }
 
 const STATES = new Set<ChildHomeState>(["start", "first", "resume", "done", "capped", "resting", "homework", "test_window", "safety_hold"]);
@@ -67,11 +73,25 @@ function writeCache(cid: string, c: Cached): void {
 
 const ALL_SURFACES = { map: true, notebook: true, resume: true };
 
+/** r7 app-nav-unified: the parent's hidden surfaces as last seen on this device (the dock on screens that do not read the
+ *  plan). Everything shows until a plan read says otherwise. */
+export function cachedSurfaces(cid: string): HomePlan["surfaces"] {
+  return { ...ALL_SURFACES, ...(readCache(cid)?.surfaces ?? {}) };
+}
+
 /** r5 QA D24: the lesson route reopens a lesson by id (POST /api/lesson/start {resumeLessonId}; the cascade and text lanes
  *  every home start uses), so "Continue" is true now. */
 export const RESUME_BY_ID = true;
 /** The server's page-hide grace (TAXILA_PAGEHIDE_GRACE_MS, 120 s) plus a margin: when a "resume" Home re-reads its plan. */
 export const RESUME_RECHECK_MS = 125_000;
+
+/** SEAM-11: the plan answer's `schedule` ({ time, minutes, today }; server/routes/child.js scheduleOf). The contract field is
+ *  Brain's (docs/patches/to-brain/005-plan-schedule.patch), so it is read through a structural cast until that lands. */
+export function scheduleFrom(r: unknown): HomePlan["schedule"] {
+  const s = (r as { schedule?: { time?: unknown; minutes?: unknown; today?: unknown } | null } | null)?.schedule;
+  if (!s || typeof s.time !== "string" || !/^\d{1,2}:\d{2}/.test(s.time)) return null;
+  return { time: s.time, minutes: typeof s.minutes === "number" ? s.minutes : null, today: s.today !== false };
+}
 
 /** Server response → the home's plan. Pure (unit-tested). */
 export function fromServer(r: ChildPlanResponse): HomePlan {
@@ -85,6 +105,7 @@ export function fromServer(r: ChildPlanResponse): HomePlan {
     did: (summary?.cards ?? []).slice(0, 3),
     tried: summary?.tried ?? null,
     opensAt: r.opensAt ?? null,
+    schedule: scheduleFrom(r),
     window: r.plan?.window ?? null,
     surfaces: { ...ALL_SURFACES, ...(r.surfaces ?? {}) },
     packReady: !!r.packReady,
@@ -92,6 +113,8 @@ export function fromServer(r: ChildPlanResponse): HomePlan {
     madeFor: Array.isArray(r.madeFor) ? r.madeFor.slice(0, 3) : [],
     testWindow: r.testWindow ?? null,
     textOnly: !!r.textOnly,
+    homework: r.homework ?? null,
+    jarWaiting: Math.max(0, Number(r.jar?.waiting) || 0),
   };
 }
 

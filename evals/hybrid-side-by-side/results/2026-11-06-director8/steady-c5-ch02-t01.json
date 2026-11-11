@@ -1,0 +1,4159 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "steady",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya! Main Asha, tumhari AI teacher. Aaj fractions ko number line par cricket pitch jaise dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "classifyMs": 1131,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket pitch ko ek number line socho: ek stump 0 par hai aur doosra stump 1 par. Batsman run ke liye bhaaga aur theek beech mein ruk gaya. Woh pitch ke ek pakke spot par khada hai, aur us spot ka bhi ek number hota hai. Achha, Riya.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1035,
+   "replyReadyMs": 2166,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1131,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan samajh gayi",
+   "read": "no_evidence",
+   "classifyMs": 1047,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Screen par 0 se 1 ki line hai, theek beech ka mark 2 barabar gaps banata hai: 1/2. Zoya ka kehna hai ki 1/3, 3 ke paas aata hai. 1/3 kahaan hai: isi 0 se 1 wali line par, ya 3 ke paas?",
+   "move": "explain",
+   "card": "Zoya ka kehna hai ki 1/3, 3 ke paas aata hai. 1/3 kahaan hai: isi 0 se 1 wali line par, ya 3 ke paas?",
+   "replyMs": 1936,
+   "replyReadyMs": 2983,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1936,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 2,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/2"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/2",
+     "numbers": "0 1 1/2"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 2,
+       "ticks": 3,
+       "innerTicks": 1
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/2",
+       "label": "1/2"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 2,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/2"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "1/2"
+    ]
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "near 3",
+   "read": "misconception",
+   "classifyMs": 995,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "1/3 mein 3 parts banate hain, 3 par nahi. Screen par ghar se chai ki dukaan tak ki sadak hai, 0 se 1 km, aur ek khilona beech wale mark par ruka hai. Woh sadak ke ek pakke spot par khada hai, aur us spot ka number 1/2 km hai, 0 aur 1 ke beech. Wahi 0 se 1 km ki sadak ab 8 barabar hisson mein bati hai. Khilona pehle hisse ke end par ruka. Woh kis number par hai?",
+   "move": "reteach",
+   "card": "Wahi 0 se 1 km ki sadak ab 8 barabar hisson mein bati hai. Khilona pehle hisse ke end par ruka. Woh kis number par hai?",
+   "replyMs": 3011,
+   "replyReadyMs": 4006,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 4006,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c5-maths-ch02-t01-m-not-numbers",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 2,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/2"
+      }
+     ],
+     "hop": {
+      "num": 1
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-not-numbers",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "rem:c5-maths-ch02-t01-m-not-numbers",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    },
+    {
+     "from": 244,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/2",
+     "numbers": "0 1 1/2"
+    },
+    "counts": {
+     "hops": 1,
+     "lines": [
+      {
+       "gaps": 2,
+       "ticks": 3,
+       "innerTicks": 1
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/2",
+       "label": "1/2"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 2,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/2"
+       }
+      ],
+      "hop": {
+       "num": 1
+      }
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "0 se 1 km ko 8 equal parts mein baanto. Pehla part khatam hone par number fraction mein kaise likhoge? Try karo. Wahi 0 se 1 km ki sadak ab 8 barabar hisson mein bati hai. Khilona pehle hisse ke end par ruka. Woh kis number par hai?",
+   "move": "hint",
+   "card": "Wahi 0 se 1 km ki sadak ab 8 barabar hisson mein bati hai. Khilona pehle hisse ke end par ruka. Woh kis number par hai?",
+   "replyMs": 1102,
+   "replyReadyMs": 1103,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1103,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c5-maths-ch02-t01-m-not-numbers",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 8,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-not-numbers",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "?",
+     "numbers": "0 1"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 8,
+       "ticks": 9,
+       "innerTicks": 7
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 8,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "ek bata aath km",
+   "read": "correct",
+   "classifyMs": 928,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Aur pehle wale sawaal ka jawab isi line par tha, kyunki yeh mark 0 se 1 ko 2 barabar gaps mein baant raha hai, aur is mark ka naam 1/2 hai. Screen par wahi 0 se 1 ki line hai, par ab beech mein 3 marks hain. Marks nahi, gaps dekho: 4 barabar gaps hain, isliye 0 ke baad pehla mark 1/4 hai. Agar 0 aur 1 ke beech 7 marks barabar doori par lage hon, toh line kitne barabar gaps mein bategi?",
+   "move": "explain",
+   "card": "Agar 0 aur 1 ke beech 7 marks barabar doori par lage hon, toh line kitne barabar gaps mein bategi?",
+   "replyMs": 2207,
+   "replyReadyMs": 3135,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3135,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "e1",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    },
+    {
+     "from": 156,
+     "beat": "e2",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/4",
+     "numbers": "0 1 1/4"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/4",
+       "label": "1/4"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/4"
+       }
+      ]
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "mustsay",
+    "ask"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "answerinq",
+     "long"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "8 barabar gaps",
+   "read": "correct",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul, Riya—tumne marks ke baad ek extra gap gina. Tumne 8 gaps kaise jaana?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 941,
+   "replyReadyMs": 942,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 942,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/4",
+     "numbers": "0 1 1/4"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/4",
+       "label": "1/4"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/4"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "1/4"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "jodte jodte aaya",
+   "read": "incorrect",
+   "classifyMs": 1933,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Screen par 0 se 1 ki line ab 8 barabar gaps mein bati hai. Pehla mark 1/8 hai, bilkul 0 ke paas, aur beech wala mark abhi bhi 1/2 hai. Agar yahi line 10 barabar gaps mein bati ho, toh 0 ke zyada paas kaun hoga: 1/5 ya 1/10?",
+   "move": "explain",
+   "card": "Agar yahi line 10 barabar gaps mein bati ho, toh 0 ke zyada paas kaun hoga: 1/5 ya 1/10?",
+   "replyMs": 2610,
+   "replyReadyMs": 4543,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2610,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 8,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/8"
+      },
+      {
+       "num": 4,
+       "label": "1/2"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/8 | 1/2",
+     "numbers": "0 1 1/8 1/2"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 8,
+       "ticks": 9,
+       "innerTicks": 7
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/8",
+       "label": "1/8"
+      },
+      {
+       "at": "4/8",
+       "label": "1/2"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 8,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/8"
+       },
+       {
+        "num": 4,
+        "label": "1/2"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "1/8",
+     "1/2"
+    ]
+   },
+   "guard": [
+    "mustsay",
+    "long",
+    "twoq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/5",
+   "read": "misconception",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "1/5 sahi nahi hai. Screen par 0 se 1 ki ek hi line par teen mark hain: 1/2, 1/4 aur 1/8, aur 1/8 bilkul 0 ke paas hai. Neeche ka number jitna bada, hissa utna chhota, aur woh 0 ke utna paas rukta hai. Screen par 0 se 1 ki line par 1/3 ka mark hai. 1/6 kahaan aayega: 0 aur 1/3 ke beech, ya 1/3 ke baad?",
+   "move": "reteach",
+   "card": "Screen par 0 se 1 ki line par 1/3 ka mark hai. 1/6 kahaan aayega: 0 aur 1/3 ke beech, ya 1/3 ke baad?",
+   "replyMs": 3731,
+   "replyReadyMs": 3732,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3732,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c5-maths-ch02-t01-m-whole-number-bias",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 8,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/8"
+      },
+      {
+       "num": 2,
+       "label": "1/4"
+      },
+      {
+       "num": 4,
+       "label": "1/2"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-whole-number-bias",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "rem:c5-maths-ch02-t01-m-whole-number-bias",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    },
+    {
+     "from": 201,
+     "beat": "then:c5-maths-ch02-t01-m-whole-number-bias",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/8 | 1/4 | 1/2",
+     "numbers": "0 1 1/8 1/4 1/2"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 8,
+       "ticks": 9,
+       "innerTicks": 7
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/8",
+       "label": "1/8"
+      },
+      {
+       "at": "2/8",
+       "label": "1/4"
+      },
+      {
+       "at": "4/8",
+       "label": "1/2"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 8,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/8"
+       },
+       {
+        "num": 2,
+        "label": "1/4"
+       },
+       {
+        "num": 4,
+        "label": "1/2"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "1/8",
+     "1/4",
+     "1/2"
+    ]
+   },
+   "guard": [
+    "long",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "leak",
+     "ask"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1096,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, chalo isi sawaal par wapas aate hain. Screen par 0 se 1 ki line par 1/3 ka mark hai. 1/6 kahaan aayega: 0 aur 1/3 ke beech, ya 1/3 ke baad?",
+   "move": "reteach",
+   "card": "Screen par 0 se 1 ki line par 1/3 ka mark hai. 1/6 kahaan aayega: 0 aur 1/3 ke beech, ya 1/3 ke baad?",
+   "replyMs": 2153,
+   "replyReadyMs": 3249,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3249,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c5-maths-ch02-t01-m-whole-number-bias",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 3,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/3"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-whole-number-bias",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "?",
+     "numbers": "0 1"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 3,
+       "ticks": 4,
+       "innerTicks": 2
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/3",
+       "label": "?"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 3,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/3"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1"
+    ]
+   },
+   "guard": [
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "leak",
+     "samecard"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "between 0 and 1/3",
+   "read": "correct",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul, Riya—pehla pole 0 aur 1 km ke beech pehla barabar gap banata hai. Aur pehle wale sawaal ka jawab 1/10 tha, kyunki pehla mark 1/8 hai, bilkul 0 ke paas, aur beech wala mark abhi bhi 1/2 hai. Ghar 0 par hai aur school 1 km par. Ghar aur school ke beech raaste mein 3 bijli ke khambe barabar doori par lage hain. Pehla khamba ghar se kitne km door hai? Diya hai: ghar 0 par, school 1 km par, beech mein 3 khambe, barabar doori par. Dhoondhna hai: pehle khambe ki ghar se doori, km mein. Yeh kadam saaf hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2128,
+   "replyReadyMs": 2128,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2128,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:problem",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "e3",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    },
+    {
+     "from": 198,
+     "beat": "worked:problem",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "?",
+     "numbers": "0 1"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1"
+    ]
+   },
+   "guard": [
+    "invented"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "quiz"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "classifyMs": 1146,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "3 poles se 4 equal gaps bante hain. Line banao aur ghar ko 0 par, school ko 1 par likho: 0 se 1 tak ki line, kyunki 0 se 1 tak ka poora raasta hi humara ek poora hai. Yahan tak theek hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2072,
+   "replyReadyMs": 3218,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2072,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "?",
+     "numbers": "0 1"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1"
+    ]
+   },
+   "guard": [
+    "quiz"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai haan",
+   "read": "no_evidence",
+   "classifyMs": 1060,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "3 poles se 4 equal gaps bante hain. Khambe nahi, beech ke gaps gino: 3 khambe, toh 4 barabar hisse, kyunki beech ke marks se gaps hamesha ek zyada hote hain. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 5308,
+   "replyReadyMs": 6368,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 5308,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "?",
+     "numbers": "0 1"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1"
+    ]
+   },
+   "guard": [
+    "quiz"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi, aap batao",
+   "read": "no_evidence",
+   "classifyMs": 1012,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "3 khambe 4 barabar gaps banate hain. Raasta 4 barabar gaps mein bata hai, aur pehla khamba ghar se theek ek gap door hai. Toh pehla khamba kitne km par hai?",
+   "move": "worked_example",
+   "card": "Raasta 4 barabar gaps mein bata hai, aur pehla khamba ghar se theek ek gap door hai. Toh pehla khamba kitne km par hai?",
+   "replyMs": 2182,
+   "replyReadyMs": 3194,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2182,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "?",
+     "numbers": "0 1"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1"
+    ]
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence · selftry",
+   "classifyMs": 1133,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "0 se 1 km ko 4 equal gaps mein baanto; pehla khamba ek gap door hai. Pehla khamba kitne km par hoga? Raasta 4 barabar gaps mein bata hai, aur pehla khamba ghar se theek ek gap door hai. Toh pehla khamba kitne km par hai?",
+   "move": "practice",
+   "card": "Raasta 4 barabar gaps mein bata hai, aur pehla khamba ghar se theek ek gap door hai. Toh pehla khamba kitne km par hai?",
+   "replyMs": 1773,
+   "replyReadyMs": 2906,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2906,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "?",
+     "numbers": "0 1"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1"
+    ]
+   },
+   "guard": [
+    "praise",
+    "affirms",
+    "flat"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "samecard"
+    ],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/4 km",
+   "read": "correct",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, Riya. Tumne 4 equal gaps mein pehla gap 1/4 liya. Ab batao, tumhe kaise pata chala ki pehla khamba 1/4 km par hai?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 1181,
+   "replyReadyMs": 1181,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1181,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "?",
+     "numbers": "0 1"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 1630,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Toh poora jawab: pehla khamba ghar se 1/4 km door hai, kyunki raasta 4 barabar gaps mein bata hai, har gap 1/4 km ka, aur pehla khamba 0 se ek gap par hai. Screen par 0 se 1 tak ki line hai, aur beech mein 2 marks barabar doori par hain. 0 ke baad pehla mark kaunsa fraction hai?",
+   "move": "practice",
+   "card": "Screen par 0 se 1 tak ki line hai, aur beech mein 2 marks barabar doori par hain. 0 ke baad pehla mark kaunsa fraction hai?",
+   "replyMs": 857,
+   "replyReadyMs": 2487,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1630,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 3,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:c1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "worked",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    },
+    {
+     "from": 156,
+     "beat": "c1",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "?",
+     "numbers": "0 1"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 3,
+       "ticks": 4,
+       "innerTicks": 2
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 3,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "drawn": "preselect"
+   }
+  },
+  {
+   "who": "child",
+   "text": "ek bata teen",
+   "read": "correct",
+   "classifyMs": 1121,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Yahan 2 marks se 3 equal gaps bante hain, isliye tumne pehla fraction 1/3 pehchana. Ek baar 0 se 1 ko 3 barabar gaps mein baanto, ek baar 10 barabar gaps mein. 0 ke zyada paas kaun hai: 1/3 ya 1/10?",
+   "move": "practice",
+   "card": "Ek baar 0 se 1 ko 3 barabar gaps mein baanto, ek baar 10 barabar gaps mein. 0 ke zyada paas kaun hai: 1/3 ya 1/10?",
+   "replyMs": 1041,
+   "replyReadyMs": 2162,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2162,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "noconfirm"
+    ]
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      3,
+      10
+     ],
+     "from": 0,
+     "to": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "numbers": "0 1"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 3,
+       "ticks": 4,
+       "innerTicks": 2
+      },
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       3,
+       10
+      ],
+      "from": 0,
+      "to": 1
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1"
+    ]
+   },
+   "guard": [
+    "noconfirm"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao na",
+   "read": "no_evidence · language",
+   "classifyMs": 909,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, ab Hindi mein baat karte hain. Riya, 0 se 1 tak ki line socho. Jis fraction ka hissa chhota hota hai, uska bindu 0 ke zyada paas hota hai. Ek baar 0 se 1 ko 3 barabar gaps mein baanto, ek baar 10 barabar gaps mein. 0 ke zyada paas kaun hai: 1/3 ya 1/10?",
+   "move": "practice",
+   "card": "Ek baar 0 se 1 ko 3 barabar gaps mein baanto, ek baar 10 barabar gaps mein. 0 ke zyada paas kaun hai: 1/3 ya 1/10?",
+   "replyMs": 1262,
+   "replyReadyMs": 2171,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2171,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      3,
+      10
+     ],
+     "from": 0,
+     "to": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "numbers": "0 1"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 3,
+       "ticks": 4,
+       "innerTicks": 2
+      },
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       3,
+       10
+      ],
+      "from": 0,
+      "to": 1
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "ek bata das",
+   "read": "correct",
+   "classifyMs": 1297,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, Riya—tumne pehchana ki chhota hissa 0 ke zyada paas hota hai. 0 se 3 tak ki number line par 1/2 kin do poore numbers ke beech aata hai?",
+   "move": "practice",
+   "card": "0 se 3 tak ki number line par 1/2 kin do poore numbers ke beech aata hai?",
+   "replyMs": 1279,
+   "replyReadyMs": 2576,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2576,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 2,
+     "from": 0,
+     "to": 3,
+     "target": [
+      1,
+      2
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:c3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/2",
+     "numbers": "0 1 2 3 1/2"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 6,
+       "gapsPerWhole": 2,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 2,
+      "from": 0,
+      "to": 3,
+      "target": [
+       1,
+       2
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "1/2"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "at 2",
+   "read": "misconception",
+   "classifyMs": 1785,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "1/2 ko 0 se 1 ke beech aadhe bindu par socho, 2 ke paas nahi. Yeh kis do poore numbers ke beech hoga? 0 se 3 tak ki number line par 1/2 kin do poore numbers ke beech aata hai?",
+   "move": "hint",
+   "card": "0 se 3 tak ki number line par 1/2 kin do poore numbers ke beech aata hai?",
+   "replyMs": 1738,
+   "replyReadyMs": 3523,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3523,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 2,
+     "from": 0,
+     "to": 3,
+     "target": [
+      1,
+      2
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:c3",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/2",
+     "numbers": "0 1 2 3 1/2"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 6,
+       "gapsPerWhole": 2,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 2,
+      "from": 0,
+      "to": 3,
+      "target": [
+       1,
+       2
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "1/2"
+    ]
+   },
+   "guard": [
+    "leak",
+    "samecard"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "samecard"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "0 aur 1 ke beech",
+   "read": "correct",
+   "classifyMs": 890,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, 1/2, 0 aur 1 ke beech hota hai. Ab tak humne 0 se sirf ek gap liya, jaise 1/4. Agle hisse mein 0 se 2 ya 3 gap chalenge, aur upar ka number batayega ki kitne gap chalna hai. Screen par 0 se 1 ki line 3 barabar gaps mein bati hai. 0 se 2 hop lage hain, har hop 1/3 ka, aur hum 2/3 wale mark par pahunche. 2/3 ek hi jagah hai, ek hi number. Ab line ko 4 barabar gaps mein baanto aur 0 se 3 hop lo. Kis fraction par pahunchoge?",
+   "move": "explain",
+   "card": "Ab line ko 4 barabar gaps mein baanto aur 0 se 3 hop lo. Kis fraction par pahunchoge?",
+   "replyMs": 955,
+   "replyReadyMs": 1845,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1845,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s2:explain:e1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 3,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 2,
+       "label": "2/3"
+      }
+     ],
+     "hop": {
+      "num": 2
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s2:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "c3",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    },
+    {
+     "from": 180,
+     "beat": "e1",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "2/3",
+     "numbers": "0 1 2/3"
+    },
+    "counts": {
+     "hops": 2,
+     "lines": [
+      {
+       "gaps": 3,
+       "ticks": 4,
+       "innerTicks": 2
+      }
+     ],
+     "marks": [
+      {
+       "at": "2/3",
+       "label": "2/3"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 3,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 2,
+        "label": "2/3"
+       }
+      ],
+      "hop": {
+       "num": 2
+      }
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "teen bata chaar",
+   "read": "correct",
+   "classifyMs": 875,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul, Riya—tumne 3 hops ko 3/4 likha. Tumhe kaise pata chala ki neeche 4 aayega?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 1033,
+   "replyReadyMs": 1908,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1908,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 3,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 2,
+       "label": "2/3"
+      }
+     ],
+     "hop": {
+      "num": 2
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "2/3",
+     "numbers": "0 1 2/3"
+    },
+    "counts": {
+     "hops": 2,
+     "lines": [
+      {
+       "gaps": 3,
+       "ticks": 4,
+       "innerTicks": 2
+      }
+     ],
+     "marks": [
+      {
+       "at": "2/3",
+       "label": "2/3"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 3,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 2,
+        "label": "2/3"
+       }
+      ],
+      "hop": {
+       "num": 2
+      }
+     }
+    },
+    "drawn": "preselect"
+   }
+  },
+  {
+   "who": "child",
+   "text": "jodte jodte aaya",
+   "read": "incorrect",
+   "classifyMs": 1823,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Screen par teesra hop dekho: woh theek 1 par utra, aur wahan likha hai 3/3 = 1. 3/3 mein upar aur neeche barabar hain, isliye hop theek 1 par khatam hue. Agar har hop 1/5 ka ho, toh 0 se chalkar theek 1 tak pahunchne mein kitne hop lagenge?",
+   "move": "explain",
+   "card": "Agar har hop 1/5 ka ho, toh 0 se chalkar theek 1 tak pahunchne mein kitne hop lagenge?",
+   "replyMs": 1673,
+   "replyReadyMs": 3496,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1823,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 3,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 3,
+       "label": "3/3 = 1"
+      }
+     ],
+     "hop": {
+      "num": 3
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s2:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "3/3 = 1",
+     "numbers": "0 1 3/3"
+    },
+    "counts": {
+     "hops": 3,
+     "lines": [
+      {
+       "gaps": 3,
+       "ticks": 4,
+       "innerTicks": 2
+      }
+     ],
+     "marks": [
+      {
+       "at": "3/3",
+       "label": "3/3 = 1"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 3,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 3,
+        "label": "3/3 = 1"
+       }
+      ],
+      "hop": {
+       "num": 3
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "3/3"
+    ]
+   },
+   "guard": [
+    "mustsay",
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "incorrect",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "4 sahi nahi hai. 4 hop se 4/5 tak pahunchoge; 1 tak pahunchne ke liye ek aur 1/5 hop chahiye. Kul kitne hop? Agar har hop 1/5 ka ho, toh 0 se chalkar theek 1 tak pahunchne mein kitne hop lagenge?",
+   "move": "hint",
+   "card": "Agar har hop 1/5 ka ho, toh 0 se chalkar theek 1 tak pahunchne mein kitne hop lagenge?",
+   "replyMs": 1038,
+   "replyReadyMs": 1039,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1039,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 3,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 3,
+       "label": "3/3 = 1"
+      }
+     ],
+     "hop": {
+      "num": 3
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s2:ask:e2",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "incorrect",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "3/3 = 1",
+     "numbers": "0 1 3/3"
+    },
+    "counts": {
+     "hops": 3,
+     "lines": [
+      {
+       "gaps": 3,
+       "ticks": 4,
+       "innerTicks": 2
+      }
+     ],
+     "marks": [
+      {
+       "at": "3/3",
+       "label": "3/3 = 1"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 3,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 3,
+        "label": "3/3 = 1"
+       }
+      ],
+      "hop": {
+       "num": 3
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "3/3"
+    ]
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "5 hai na",
+   "read": "correct",
+   "classifyMs": 1487,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Screen par 0 se 1 ki line 6 barabar gaps mein bati hai. Beech wala mark 3/6 hai, yaani 1/2, kyunki 3, 6 ka aadha hai. Line par 2/6 aur 5/6 bhi likhe hain: 2/6 beech se pehle, 5/6 beech ke baad. Isi line par 4/6 kahaan aayega: beech se pehle ya beech ke baad?",
+   "move": "explain",
+   "card": "Isi line par 4/6 kahaan aayega: beech se pehle ya beech ke baad?",
+   "replyMs": 1104,
+   "replyReadyMs": 2591,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2591,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s2:explain:e3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 6,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 2,
+       "label": "2/6"
+      },
+      {
+       "num": 3,
+       "label": "3/6 = 1/2"
+      },
+      {
+       "num": 5,
+       "label": "5/6"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s2:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "2/6 | 3/6 = 1/2 | 5/6",
+     "numbers": "0 1 2/6 3/6 1/2 5/6"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "2/6",
+       "label": "2/6"
+      },
+      {
+       "at": "3/6",
+       "label": "3/6 = 1/2"
+      },
+      {
+       "at": "5/6",
+       "label": "5/6"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 6,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 2,
+        "label": "2/6"
+       },
+       {
+        "num": 3,
+        "label": "3/6 = 1/2"
+       },
+       {
+        "num": 5,
+        "label": "5/6"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "2/6",
+     "3/6",
+     "1/2",
+     "5/6"
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "after",
+   "read": "correct",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, sahi—4/6, 3/6 se bada hai, isliye beech ke baad aayega. Tumhe kaise pata chala ki 4/6, 3/6 se bada hai?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 1130,
+   "replyReadyMs": 1131,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1131,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 6,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 2,
+       "label": "2/6"
+      },
+      {
+       "num": 3,
+       "label": "3/6 = 1/2"
+      },
+      {
+       "num": 5,
+       "label": "5/6"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "2/6 | 3/6 = 1/2 | 5/6",
+     "numbers": "0 1 2/6 3/6 1/2 5/6"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "2/6",
+       "label": "2/6"
+      },
+      {
+       "at": "3/6",
+       "label": "3/6 = 1/2"
+      },
+      {
+       "at": "5/6",
+       "label": "5/6"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 6,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 2,
+        "label": "2/6"
+       },
+       {
+        "num": 3,
+        "label": "3/6 = 1/2"
+       },
+       {
+        "num": 5,
+        "label": "5/6"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "2/6",
+     "3/6",
+     "1/2",
+     "5/6"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe laga aisa hi hoga",
+   "read": "incorrect",
+   "classifyMs": 975,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Ek number line 0 se 1 tak hai. Is line par 2/5 kahaan aayega, woh mark dhoondo. Diya hai: line 0 se 1 tak, fraction 2/5 hai: neeche 5, upar 2. Dhoondhna hai: 2/5 wala mark. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2428,
+   "replyReadyMs": 3403,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2428,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:worked:worked:problem",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 5,
+     "from": 0,
+     "to": 1,
+     "target": [
+      2,
+      5
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "2/5",
+     "numbers": "0 1 2/5"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 5,
+       "ticks": 6,
+       "innerTicks": 4
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 5,
+      "from": 0,
+      "to": 1,
+      "target": [
+       2,
+       5
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "2/5"
+    ]
+   },
+   "guard": [
+    "invented"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "classifyMs": 820,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "0 se 1 ko 5 barabar hisson mein baanto. Neeche ka 5 dekho aur 0 se 1 ko 5 barabar gaps mein baanto: 5 barabar hisse, beech mein 4 marks, kyunki neeche ka number batata hai ki poora kitne barabar gaps mein bata hai. Yeh kadam saaf hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2135,
+   "replyReadyMs": 2955,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2135,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:worked:worked:step1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 5,
+     "from": 0,
+     "to": 1,
+     "target": [
+      2,
+      5
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "2/5",
+     "numbers": "0 1 2/5"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 5,
+       "ticks": 6,
+       "innerTicks": 4
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 5,
+      "from": 0,
+      "to": 1,
+      "target": [
+       2,
+       5
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "2/5"
+    ]
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 937,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Accha, batane ke liye thanks! Ab ek gap ki value dekho: har hissa 1/5, kyunki 5 barabar gaps milkar 1 poora banate hain. Yahan tak theek hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 3664,
+   "replyReadyMs": 4601,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 3664,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:worked:worked:step2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 5,
+     "from": 0,
+     "to": 1,
+     "target": [
+      2,
+      5
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "2/5",
+     "numbers": "0 1 2/5"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 5,
+       "ticks": 6,
+       "innerTicks": 4
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 5,
+      "from": 0,
+      "to": 1,
+      "target": [
+       2,
+       5
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "2/5"
+    ]
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "answerinq",
+     "quiz"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1139,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Ab upar ka number dekho aur 0 se utne gap aage chalo. 0 ke baad kaunse mark par rukoge?",
+   "move": "worked_example",
+   "card": "Ab upar ka number dekho aur 0 se utne gap aage chalo. 0 ke baad kaunse mark par rukoge?",
+   "replyMs": 988,
+   "replyReadyMs": 2127,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1139,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 5,
+     "from": 0,
+     "to": 1,
+     "target": [
+      2,
+      5
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s2:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "2/5",
+     "numbers": "0 1 2/5"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 5,
+       "ticks": 6,
+       "innerTicks": 4
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 5,
+      "from": 0,
+      "to": 1,
+      "target": [
+       2,
+       5
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "2/5"
+    ]
+   },
+   "guard": [
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "2nd mark",
+   "read": "correct",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, Riya—tumne upar ke 2 ko dekhkar doosre mark par rukna chuna. Toh poora jawab: 2/5, 0 ke baad doosra mark hai, kyunki upar ka 2 batata hai ki 0 se 1/5 ke 2 gap chalna hai. Screen par 0 se 1 tak ki line hai, aur beech mein 5 marks barabar doori par hain. 0 ke baad chautha mark kaunsa fraction hai?",
+   "move": "practice",
+   "card": "Screen par 0 se 1 tak ki line hai, aur beech mein 5 marks barabar doori par hain. 0 ke baad chautha mark kaunsa fraction hai?",
+   "replyMs": 1232,
+   "replyReadyMs": 1232,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1232,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:check:c1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 6,
+     "from": 0,
+     "to": 1,
+     "mark": 4
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s2:c1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "worked",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    },
+    {
+     "from": 177,
+     "beat": "c1",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "?",
+     "numbers": "0 1"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 4",
+       "label": "?"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 6,
+      "from": 0,
+      "to": 1,
+      "mark": 4
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "4/6 hai na",
+   "read": "correct",
+   "classifyMs": 702,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. 4/6 nahi—5 marks se 6 barabar gaps bante hain; tumne marks aur gaps ko mila diya. 0 se 1 ki line par 1/4 ke 3 hop lo, ya 1/8 ke 3 hop. 1 ke zyada paas kaun hai: 3/4 ya 3/8?",
+   "move": "practice",
+   "card": "0 se 1 ki line par 1/4 ke 3 hop lo, ya 1/8 ke 3 hop. 1 ke zyada paas kaun hai: 3/4 ya 3/8?",
+   "replyMs": 972,
+   "replyReadyMs": 1674,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1674,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "noconfirm"
+    ]
+   },
+   "beat": "s2:check:c2",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "1/4 ke 3 hop",
+      "items": [
+       "0 se 1"
+      ]
+     },
+     "right": {
+      "title": "1/8 ke 3 hop",
+      "items": [
+       "0 se 1"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s2:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "1/4 ke 3 hop | 1/8 ke 3 hop | 0 se 1 | 0",
+     "numbers": "1/4 3 1/8 0 1"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "1/4 ke 3 hop",
+       "items": 1,
+       "quantities": []
+      },
+      {
+       "title": "1/8 ke 3 hop",
+       "items": 1,
+       "quantities": []
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "1/4 ke 3 hop",
+       "items": [
+        "0 se 1"
+       ]
+      },
+      "right": {
+       "title": "1/8 ke 3 hop",
+       "items": [
+        "0 se 1"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1/4",
+     "3",
+     "1/8",
+     "0",
+     "1"
+    ]
+   },
+   "guard": [
+    "noconfirm"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "teen chauthai",
+   "read": "correct",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul, Riya—tumne 3/4 chuna, kyunki 3/4, 1 ke zyada paas hota hai. Ab agla fraction dekhenge. 0 se 3 tak ki number line par 3/4 kin do poore numbers ke beech aata hai?",
+   "move": "practice",
+   "card": "0 se 3 tak ki number line par 3/4 kin do poore numbers ke beech aata hai?",
+   "replyMs": 1113,
+   "replyReadyMs": 1114,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1114,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:check:c3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 3,
+     "target": [
+      3,
+      4
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s2:c3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "3/4",
+     "numbers": "0 1 2 3 3/4"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 12,
+       "gapsPerWhole": 4,
+       "ticks": 13,
+       "innerTicks": 11
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 3,
+      "target": [
+       3,
+       4
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "3/4"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "0 and 1",
+   "read": "correct",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, Riya—3/4, 0 aur 1 ke beech hota hai. Jab upar ka number neeche wale se chhota hota hai, hum 1 se pehle rukte hain. Dono barabar hon toh theek 1 par. Ab dekhenge ki upar ka number bada ho toh hop 1 ke aage kaise jaate hain. Screen par line 0 se 2 tak hai. Har poora 4 barabar gaps mein bata hai, aur 1 wale mark par likha hai 4/4 = 1. Gaps 1 ke aage bhi usi size mein chalte rehte hain. Ab ek line socho jahan har hop 1/3 ka hai. 0 se 4 hop lo. Tum 1 se pehle rukoge ya 1 ke baad?",
+   "move": "explain",
+   "card": "Ab ek line socho jahan har hop 1/3 ka hai. 0 se 4 hop lo. Tum 1 se pehle rukoge ya 1 ke baad?",
+   "replyMs": 850,
+   "replyReadyMs": 851,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 851,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s3:explain:e1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 2,
+     "marks": [
+      {
+       "num": 4,
+       "label": "4/4 = 1"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s3:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "c3",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    },
+    {
+     "from": 229,
+     "beat": "e1",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "4/4 = 1",
+     "numbers": "0 1 2 4/4"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 8,
+       "gapsPerWhole": 4,
+       "ticks": 9,
+       "innerTicks": 7
+      }
+     ],
+     "marks": [
+      {
+       "at": "4/4",
+       "label": "4/4 = 1"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 2,
+      "marks": [
+       {
+        "num": 4,
+        "label": "4/4 = 1"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "2",
+     "4/4"
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "baad mein",
+   "read": "correct",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, Riya—4/3, 1 se baad hota hai. Tumhe kaise pata chala ki 4/3, 1 ke baad jayega?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 1144,
+   "replyReadyMs": 1145,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1145,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s3:explain:e1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 2,
+     "marks": [
+      {
+       "num": 4,
+       "label": "4/4 = 1"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "4/4 = 1",
+     "numbers": "0 1 2 4/4"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 8,
+       "gapsPerWhole": 4,
+       "ticks": 9,
+       "innerTicks": 7
+      }
+     ],
+     "marks": [
+      {
+       "at": "4/4",
+       "label": "4/4 = 1"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 2,
+      "marks": [
+       {
+        "num": 4,
+        "label": "4/4 = 1"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "2",
+     "4/4"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "kyunki hisse barabar the, maine wahi dekha",
+   "read": "correct",
+   "classifyMs": 1536,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, Riya—tumne dekha ki 3/3 tak 1 poora hota hai. Screen par 0 se 6 hop dekho, har hop 1/4 ka. Pehle 4 hop 1 tak pahunche, phir 2 hop aur, aur hum 6/4 wale mark par aaye, 1 aur 2 ke beech. Ab ek alag line socho, jis par har hop 1/2 ka hai. 0 se 6 hop lo. Tum kis poore number par pahunchoge?",
+   "move": "explain",
+   "card": "Ab ek alag line socho, jis par har hop 1/2 ka hai. 0 se 6 hop lo. Tum kis poore number par pahunchoge?",
+   "replyMs": 2161,
+   "replyReadyMs": 3697,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2161,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s3:explain:e2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 2,
+     "marks": [
+      {
+       "num": 6,
+       "label": "6/4"
+      }
+     ],
+     "hop": {
+      "num": 6
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s3:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "6/4",
+     "numbers": "0 1 2 6/4"
+    },
+    "counts": {
+     "hops": 6,
+     "lines": [
+      {
+       "gaps": 8,
+       "gapsPerWhole": 4,
+       "ticks": 9,
+       "innerTicks": 7
+      }
+     ],
+     "marks": [
+      {
+       "at": "6/4",
+       "label": "6/4"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 2,
+      "marks": [
+       {
+        "num": 6,
+        "label": "6/4"
+       }
+      ],
+      "hop": {
+       "num": 6
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "2",
+     "6/4"
+    ]
+   },
+   "guard": [
+    "mustsay",
+    "long",
+    "noconfirm"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "long"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "correct",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, Riya—6 hop, har hop 1/2, milkar 3 poore bante hain. Screen par line 0 se 3 tak hai, aur har poora 3 barabar gaps mein bata hai. Pehle 3 gaps 1 par khatam hote hain, wahan likha hai 3/3 = 1. Gaps ke teen-teen ke group banao. 7/3 kin do poore numbers ke beech aayega?",
+   "move": "explain",
+   "card": "Gaps ke teen-teen ke group banao. 7/3 kin do poore numbers ke beech aayega?",
+   "replyMs": 1158,
+   "replyReadyMs": 1158,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1158,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s3:explain:e3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 3,
+     "from": 0,
+     "to": 3,
+     "marks": [
+      {
+       "num": 3,
+       "label": "3/3 = 1"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s3:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "3/3 = 1",
+     "numbers": "0 1 2 3 3/3"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 9,
+       "gapsPerWhole": 3,
+       "ticks": 10,
+       "innerTicks": 8
+      }
+     ],
+     "marks": [
+      {
+       "at": "3/3",
+       "label": "3/3 = 1"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 3,
+      "from": 0,
+      "to": 3,
+      "marks": [
+       {
+        "num": 3,
+        "label": "3/3 = 1"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "3/3"
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "between 0 and 1",
+   "read": "misconception",
+   "classifyMs": 935,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, yeh jawab nahi hai. Screen par 0 se 2 ki line par 1/4 ke 5 hop hain: pehle 4 hop 0 se 1 ko bhar dete hain, jahan likha hai 4/4 = 1. Paanchva hop andar nahi samaata, isliye woh 1 ke aage utarta hai. Line 0 se 2 lap tak hai, aur har lap ke 6 barabar hisse hain. Runner 7 hisse daudta hai. Kitne lap hue, fraction mein?",
+   "move": "reteach",
+   "card": "Line 0 se 2 lap tak hai, aur har lap ke 6 barabar hisse hain. Runner 7 hisse daudta hai. Kitne lap hue, fraction mein?",
+   "replyMs": 2674,
+   "replyReadyMs": 3609,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3609,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s3:remediation:rem:c5-maths-ch02-t01-m-all-less-than-one",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 2,
+     "marks": [
+      {
+       "num": 4,
+       "label": "4/4 = 1"
+      }
+     ],
+     "hop": {
+      "num": 5
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s3:then:c5-maths-ch02-t01-m-all-less-than-one",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "rem:c5-maths-ch02-t01-m-all-less-than-one",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    },
+    {
+     "from": 204,
+     "beat": "then:c5-maths-ch02-t01-m-all-less-than-one",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "4/4 = 1",
+     "numbers": "0 1 2 4/4"
+    },
+    "counts": {
+     "hops": 5,
+     "lines": [
+      {
+       "gaps": 8,
+       "gapsPerWhole": 4,
+       "ticks": 9,
+       "innerTicks": 7
+      }
+     ],
+     "marks": [
+      {
+       "at": "4/4",
+       "label": "4/4 = 1"
+      },
+      {
+       "at": "5/4",
+       "label": ""
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 2,
+      "marks": [
+       {
+        "num": 4,
+        "label": "4/4 = 1"
+       }
+      ],
+      "hop": {
+       "num": 5
+      }
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "long",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "7/6 lap",
+   "read": "correct",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, Riya—7 hisse, har lap mein 6 hisse, isliye 7/6 lap. Aur pehle wale sawaal ka jawab 2 aur 3 ke beech tha, kyunki pehle 3 gaps 1 par khatam hote hain, wahan likha hai 3/3 = 1. Ek number line 0 se 2 tak hai. Is line par 7/4 kahaan aayega, woh mark dhoondo. Diya hai: line 0 se 2 tak, fraction 7/4 hai: neeche 4, upar 7. Dhoondhna hai: 7/4 wala mark. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1334,
+   "replyReadyMs": 1335,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1335,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s3:worked:worked:problem",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 2,
+     "target": [
+      7,
+      4
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "e3",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    },
+    {
+     "from": 180,
+     "beat": "worked:problem",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "7/4",
+     "numbers": "0 1 2 7/4"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 8,
+       "gapsPerWhole": 4,
+       "ticks": 9,
+       "innerTicks": 7
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 2,
+      "target": [
+       7,
+       4
+      ]
+     }
+    },
+    "drawn": "preselect"
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 1017,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Line par 0, 1 aur 2 likho, aur dono poore 4-4 barabar gaps mein baanto: 0 se 2 tak 8 barabar hisse, har hissa 1/4, kyunki neeche ka 4 hai, aur 7/4, 1 ke aage ja sakta hai, isliye line 2 tak chahiye. Yeh kadam saaf hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2850,
+   "replyReadyMs": 3867,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3867,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s3:worked:worked:step1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 2,
+     "target": [
+      7,
+      4
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "7/4",
+     "numbers": "0 1 2 7/4"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 8,
+       "gapsPerWhole": 4,
+       "ticks": 9,
+       "innerTicks": 7
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 2,
+      "target": [
+       7,
+       4
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "2",
+     "7/4"
+    ]
+   },
+   "guard": [
+    "quiz",
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "thak gayi, bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1050,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum thak gayi ho—ab teen choices hain: padhai jaari rakhein, chhota break lein, ya aaj ke liye rok dein. Tum kya chunogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2961,
+   "replyReadyMs": 4011,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2961,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "guard": [
+    "wrap",
+    "nochoice",
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

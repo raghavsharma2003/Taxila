@@ -1,0 +1,12 @@
+import { initLessonState, step } from "/home/user/Taxila/server/director/state.js";
+import { kitFromFile } from "/home/user/Taxila/server/content/kits.js";
+import { getTopic, findTopic } from "/home/user/Taxila/server/content/curriculum.js";
+import { requestOf } from "/home/user/Taxila/server/director/requests.js";
+import { CTX, cls } from "/home/user/Taxila/tests/fixtures/kit.mjs";
+const K = kitFromFile(getTopic("c5-maths-ch02-t01")); const NE = cls("no_evidence");
+console.log("findTopic(geometry, 5):", findTopic("geometry", 5)?.id ?? null);
+let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 5 }, seed: 2, now: 0 }), { event: "start", kit: K, now: 0 });
+for (let i = 0; i < 3; i++) r = step(r.state, { event: "turn", kit: K, cls: NE, now: (i + 1) * 20000 });
+const text = "didi, pehla gap… fractions boring hai, geometry padhao, triangles";
+const b = step(r.state, { event: "turn", kit: K, cls: { ...NE, source: "request", request: requestOf(text) }, text, now: 90000 });
+console.log("t4 →", b.move.kind, b.move.request, JSON.stringify(b.ui?.chips ?? []).slice(0, 200), "|", b.move.shape.slice(0, 120));

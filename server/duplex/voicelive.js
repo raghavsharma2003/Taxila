@@ -49,7 +49,23 @@ export function voiceLiveUrl(cfg) {
  * The session: the ear only. Server echo cancellation needs the audio modality and a voice even though nothing is ever
  * spoken (Voice Live refuses AEC with modalities text-only); create_response false keeps it silent. Pure.
  */
-export function voiceLiveSession({ silenceMs = D5_DEFAULT_SILENCE_MS, reference = true, dns = true } = {}) {
+/**
+ * Round 7 (B4, voice-d5-ear-asr): the ear's transcription model. TAXILA_D5_ASR = "azure-speech" (default, unchanged) or an
+ * OpenAI transcribe model Voice Live hosts ("gpt-4o-transcribe", "gpt-4o-mini-transcribe"), which stream deltas and were
+ * the better arm on short code-mixed answers (docs/research/voice/asr-kids-hinglish.md). Anything else is the default.
+ * Not switched by default: the swap needs a live arm first (needs-live-check).
+ */
+export const D5_ASR_MODELS = new Set(["azure-speech", "gpt-4o-transcribe", "gpt-4o-mini-transcribe"]);
+export const d5AsrModel = (env = process.env) => (D5_ASR_MODELS.has(String(env.TAXILA_D5_ASR ?? "")) ? String(env.TAXILA_D5_ASR) : "azure-speech");
+
+/** The input_audio_transcription block: azure-speech takes the languages and the lesson's phrase list; a transcribe model neither. */
+export function transcriptionConfig({ model = "azure-speech", phrases = [] } = {}) {
+  if (model !== "azure-speech") return { model };
+  const list = Array.isArray(phrases) ? phrases.filter((p) => typeof p === "string" && p).slice(0, 500) : [];
+  return { model, language: "hi-IN,en-IN", ...(list.length ? { phrase_list: list } : {}) };
+}
+
+export function voiceLiveSession({ silenceMs = D5_DEFAULT_SILENCE_MS, reference = true, dns = true, asr = "azure-speech", phrases = [] } = {}) {
   return {
     modalities: ["text", "audio"],
     instructions: "Listen only. Never respond.",
@@ -58,7 +74,7 @@ export function voiceLiveSession({ silenceMs = D5_DEFAULT_SILENCE_MS, reference 
     input_audio_sampling_rate: 16000,
     input_audio_echo_cancellation: reference ? { type: "server_echo_cancellation", reference_source: "client", channels: 2 } : { type: "server_echo_cancellation" },
     ...(dns ? { input_audio_noise_reduction: { type: "azure_deep_noise_suppression" } } : {}),
-    input_audio_transcription: { model: "azure-speech", language: "hi-IN,en-IN" },
+    input_audio_transcription: transcriptionConfig({ model: asr, phrases }),
     turn_detection: turnDetection(silenceMs),
   };
 }
@@ -138,8 +154,10 @@ export function fromClientText(text, { silenceMs } = {}) {
  *   openUpstream(url, headers) → a WebSocket-like { send, close, readyState, onopen, onmessage, onclose, onerror }
  */
 export class VoiceLiveRelay {
-  constructor({ cfg, client, openUpstream, now = () => Date.now(), setTimer = setTimeout, clearTimer = clearTimeout, maxSessionMs = D5_MAX_SESSION_MS, silenceMs = D5_DEFAULT_SILENCE_MS, onEnd = () => {} }) {
+  constructor({ cfg, client, openUpstream, now = () => Date.now(), setTimer = setTimeout, clearTimer = clearTimeout, maxSessionMs = D5_MAX_SESSION_MS, silenceMs = D5_DEFAULT_SILENCE_MS, onEnd = () => {}, asr = "azure-speech", phrases = [] }) {
     this.cfg = cfg;
+    this.asr = asr;
+    this.phrases = phrases;
     this.client = client;
     this.now = now;
     this.onEnd = onEnd;
@@ -169,7 +187,7 @@ export class VoiceLiveRelay {
     let e;
     try { e = JSON.parse(typeof data === "string" ? data : Buffer.from(data).toString("utf8")); } catch { return; }
     if (e?.type === "session.created" && !this.ready) {
-      this.upSend({ type: "session.update", session: voiceLiveSession({ silenceMs: this.silenceMs }) });
+      this.upSend({ type: "session.update", session: voiceLiveSession({ silenceMs: this.silenceMs, asr: this.asr, phrases: this.phrases }) });
     }
     if (e?.type === "session.updated" && !this.ready) {
       this.ready = true;

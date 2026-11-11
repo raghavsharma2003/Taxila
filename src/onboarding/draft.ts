@@ -12,8 +12,14 @@ export interface Draft {
   child?: {
     firstName?: string; classLevel?: number; board?: string; schoolMedium?: string; languagePref?: string;
     address?: "tum" | "aap"; interests?: string[]; comfort?: boolean; hardToHear?: boolean;
+    /** round 7 F: "Spell it how it sounds" (child.name_spoken, 038) */
+    nameSpoken?: string | null;
   };
   childId?: string;                                             // the profile created at P6
+  /** round 7 F item 2: "which chapter is school on?" ({ subject: chapter number }), written after the child exists */
+  schoolChapter?: Record<string, number>;
+  /** r7 (Learning to-app/007): "How does Maths feel for {name} right now?" ({ subject: view }), written after the child exists */
+  parentView?: Record<string, "hard" | "fine" | "easy">;
 }
 const KEY = "tx.onboarding";
 
@@ -41,6 +47,11 @@ export const clearDraft = () => {
   const { lang } = readStore<Draft>(KEY, {});
   writeStore(KEY, lang ? { lang } : null);
 };
+/**
+ * PURE. What "Add a child" does to a draft when it starts: forget the child id an earlier, interrupted set-up saved, so the
+ * new child is created rather than PATCHed over the first one (audit LEARN-09). The class and name being typed stay.
+ */
+export const draftForAdd = (d: Draft): Draft => (d.childId ? { ...d, childId: undefined } : d);
 export const clearDraftChild = () => {
   const d = readStore<Draft>(KEY, {});
   writeStore(KEY, { ...d, child: undefined, childId: undefined });

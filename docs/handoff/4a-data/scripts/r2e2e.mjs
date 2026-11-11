@@ -1,0 +1,18 @@
+const R = process.argv[2];
+const { initLessonState, step } = await import(R + "/server/director/state.js");
+const { kitFromFile } = await import(R + "/server/content/kits.js");
+const { getTopic } = await import(R + "/server/content/curriculum.js");
+const { classifyFast, targetFor } = await import(R + "/server/director/classify.js");
+const { CTX, cls } = await import(R + "/tests/fixtures/kit.mjs");
+const K = kitFromFile(getTopic("c9-maths-ch08-t02"));
+const NE = cls("no_evidence");
+const turn = (r, c, extra = {}) => step(r.state, { event: "turn", kit: K, cls: c, now: (r.state.turn + 1) * 20000, ...extra });
+let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 9 }, seed: 3, now: 0 }), { event: "start", kit: K, now: 0 });
+for (let i = 0; i < 12 && !(r.state.phase === "practice" && r.move.itemId && !r.move.itemId.startsWith("fade:")); i++) r = turn(r, NE);
+const item = K.items.find((x) => x.id === r.move.itemId);
+const heard = "Bilkul, yeh thoda mushkil hai. Kya Chapter 1 se shuru karein?";
+const f = classifyFast({ target: targetFor(r.state, K, item), childText: "haan", typed: true, heard });
+console.log("classifyFast:", JSON.stringify(f.result ?? f).slice(0, 200));
+const c = f.result ?? { ...NE, request: f.request };
+const b = turn(r, c, { text: "haan" });
+console.log("Director:", b.move.kind, b.move.request, JSON.stringify(b.ui?.chips ?? []).slice(0, 140), "| card re-posed:", b.move.itemId === item.id);

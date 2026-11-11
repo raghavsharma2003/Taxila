@@ -1,0 +1,10 @@
+import { initLessonState, step } from "/home/user/Taxila/server/director/state.js";
+import { kit, CTX, cls } from "/home/user/Taxila/tests/fixtures/kit.mjs";
+const K = kit();
+const fresh = () => step(initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 }).state;
+const turn = (state, text, c, extra = {}) => step(state, { event: "turn", kit: K, cls: c, text, now: 20_000, ...extra });
+const b = cls("no_evidence");
+const open = turn(fresh(), "sab bekaar lagta hai, koi mujhse baat nahi karta", { ...b, source: "model", flags: { ...b.flags, distress: true, distressKind: "model", distressAbout: "sad_or_lonely" } }).state;
+console.log("tier", open.safeguard?.tier);
+const r = turn(open, "kuch aur padhte hain", { ...b, request: { type: "change_topic", whole: true }, flags: { ...b.flags, wantsToStop: true } });
+console.log(r.move.kind, r.move.checkin, r.move.request, r.state.safeguard, r.move.shape.slice(0, 200), JSON.stringify(r.ui?.chips));

@@ -4,6 +4,12 @@
 // the outcome names it needs are written out here from LEARNER-MODEL §6.1, so a generator bug cannot be "confirmed"
 // by the same bug. It also checks COMPLETENESS (a count claim must cite every row that counts, not a convenient
 // subset) and that every rendered line maps to an admitted claim or registered fixed copy.
+import { restSignals } from "./rest.js";
+import { NOT_PLACEMENT } from "../learner/kt/placement.js";
+import { CHANGE_MIN_DELTA, CHANGE_MIN_MONTHS, CHANGE_MIN_N, CHANGE_P, CHANGE_P_MANY, WAYS_MIN_N } from "./config.js";
+import { pRose } from "./stats.js";
+/** S5: the explain formats a parent line may name (written out here, not taken from the generator). */
+const WAY_CODES = new Set(["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"]);
 
 const ITEM = { "item.open": ["C0", "C1", "C2", "C3", "C4", "IDK", "NA"], "item.mcq2": ["first_correct", "wrong"], "item.mcq3": ["first_correct", "wrong"],
   "item.mcq4": ["first_correct", "wrong"], solo: ["C0", "C1", "fail"] };
@@ -23,6 +29,10 @@ const localDate = (at, tz) => new Intl.DateTimeFormat("en-CA", { timeZone: tz, y
 const learningDate = (at, tz) => localDate(ms(at) - 4 * 3600_000, tz);
 const dateSlot = (at, tz) => { const [y, m, d] = localDate(at, tz).split("-").map(Number); return { y, m, d }; };
 const sameDate = (a, b) => a && b && a.y === b.y && a.m === b.m && a.d === b.d;
+// round 7 F (S6): hinted = an item answer that needed one or more hints; solved-after-hint = then right with them
+// C1 is "right on a later try, no hint"; solo has no hint ladder (audit LEARN-13)
+const hintedR = (r) => scored(r) && r.cls === "item.open" && ["C2", "C3", "C4"].includes(nameOf(r));
+const solvedR = (r) => scored(r) && r.cls === "item.open" && ["C2", "C3"].includes(nameOf(r));
 
 /**
  * @param {{ q: (text: string, params?: any[]) => Promise<any[]> }} db
@@ -31,18 +41,43 @@ const sameDate = (a, b) => a && b && a.y === b.y && a.m === b.m && a.d === b.d;
  * @returns {Promise<{ claims: { id: string, shapeId: string, ok: boolean, why: string[] }[], lines: { total: number, mapped: number }, supported: number, total: number }>}
  */
 export async function checkReport(db, report, lookup) {
-  const child = (await db.q(`select c.id, c.first_name, coalesce(cr.tz, 'Asia/Kolkata') as tz from child c left join child_routine cr on cr.child_id = c.id where c.id = $1`, [report.child_id]))[0];
+  const child = (await db.q(`select c.id, c.first_name, coalesce(cr.tz, 'Asia/Kolkata') as tz, cr.bedtime from child c left join child_routine cr on cr.child_id = c.id where c.id = $1`, [report.child_id]))[0];
   const from = ms(report.window_from), to = ms(report.window_to);
   const inWin = (at) => ms(at) >= from && ms(at) < to;
   const out = [];
+  // S14 (term): the window's scored rows per titled skill per learning month, read once, written out here (not claims.js)
+  let termCache = null;
+  const termView = async () => {
+    if (termCache) return termCache;
+    const rows0 = await db.q(`select * from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 and ${NOT_PLACEMENT} order by seq`, [report.child_id, report.window_from, report.window_to]);
+    const late = new Set(rows0.map((r) => String(r.id)).filter((id) => id.endsWith(":late")).map((id) => id.slice(0, -5)));
+    const rows = rows0.filter((r) => !late.has(String(r.id)) && scored(r));
+    const perSkill = new Map();
+    for (const r of rows) for (const k of r.skill_ids || []) { if (!perSkill.has(k)) perSkill.set(k, []); perSkill.get(k).push(r); }
+    for (const k of [...perSkill.keys()]) if (!(await lookup.skillTitle(k))) perSkill.delete(k);
+    const comp = new Map();
+    for (const [k, list] of perSkill) {
+      const byMo = new Map();
+      for (const r of list) { const mo = learningDate(r.occurred_at, child.tz).slice(0, 7); if (!byMo.has(mo)) byMo.set(mo, []); byMo.get(mo).push(r); }
+      const full = [...byMo].filter(([, l]) => l.length >= CHANGE_MIN_N).sort((a, b) => (a[0] < b[0] ? -1 : 1));
+      if (full.length < 2) continue;
+      const [a, la] = full[0], [b, lb] = full.at(-1);
+      const gap = (Number(b.slice(0, 4)) - Number(a.slice(0, 4))) * 12 + Number(b.slice(5)) - Number(a.slice(5));
+      if (gap >= CHANGE_MIN_MONTHS) comp.set(k, { a, b, la, lb });
+    }
+    return (termCache = { perSkill, comp });
+  };
   for (const c of report.claims) {
     const why = [];
-    const ids = { ev: [], lesson: [], skill: [] };
+    const ids = { ev: [], lesson: [], skill: [], jar: [], test: [], way: [] };
     for (const f of c.factIds) {
       const [kind, ...rest] = String(f).split(":");
       const id = rest.join(":");
       if (kind === "kt_evidence") ids.ev.push(id); else if (kind === "lesson") ids.lesson.push(id);
       else if (kind === "kt_skill_state") ids.skill.push(id);
+      else if (kind === "question_jar") ids.jar.push(id);
+      else if (kind === "test_window") ids.test.push(id);
+      else if (kind === "decision_record") ids.way.push(id);
       else why.push(`unknown fact kind ${kind}`);
     }
     const ev = ids.ev.length ? await db.q("select * from kt_evidence where child_id = $1 and id = any($2::text[]) order by seq", [report.child_id, ids.ev]) : [];
@@ -58,7 +93,7 @@ export async function checkReport(db, report, lookup) {
     const onSkill = (r) => (r.skill_ids || []).includes(c.skillId);
     if (ev.some((r) => c.skillId && !onSkill(r) && !c.shapeId.startsWith("header"))) why.push("a cited row is on another skill");
     // completeness reads: every row in the window on this skill
-    const all0 = c.skillId ? await db.q("select * from kt_evidence where child_id = $1 and $2 = any(skill_ids) and occurred_at < $3 order by seq", [report.child_id, c.skillId, report.window_to]) : [];
+    const all0 = c.skillId ? await db.q(`select * from kt_evidence where child_id = $1 and $2 = any(skill_ids) and occurred_at < $3 and ${NOT_PLACEMENT} order by seq`, [report.child_id, c.skillId, report.window_to]) : [];
     // a row with a late correction (`<id>:late`) is replaced by it: the correction is the row that counts
     const corrected = new Set(all0.map((r) => String(r.id)).filter((id) => id.endsWith(":late")).map((id) => id.slice(0, -5)));
     const all = all0.filter((r) => !corrected.has(String(r.id)));
@@ -92,7 +127,7 @@ export async function checkReport(db, report, lookup) {
       else if (ms(sk.next_review_at) < Math.max(to, report.created_at ? ms(report.created_at) : to)) why.push("re-check date already past when the report was made");
     };
     switch (c.shapeId) {
-      case "header.daily": case "header.weekly": case "header.zero": case "header.nolesson": {
+      case "header.daily": case "header.weekly": case "header.monthly": case "header.term": case "header.zero": case "header.zero_month": case "header.zero_term": case "header.nolesson": {
         // a lesson counts when something in it was graded or it ran ≥ 5 min, and it was not an abandoned start
         const win0 = await db.q("select id, started_at, ended_at, state from lesson where child_id = $1 and started_at >= $2 and started_at < $3", [report.child_id, report.window_from, report.window_to]);
         const win = win0.filter((l) => {
@@ -102,20 +137,20 @@ export async function checkReport(db, report, lookup) {
           return !!l.ended_at && ms(l.ended_at) - ms(l.started_at) >= 300_000;
         });
         if (win.map((l) => String(l.id)).sort().join(",") !== lessons.map((l) => String(l.id)).sort().join(",")) why.push("header does not cite exactly the window's lessons");
-        if (c.shapeId === "header.zero") { if (win.length) why.push("zero header but lessons exist"); break; }
+        if (c.shapeId === "header.zero" || c.shapeId === "header.zero_month" || c.shapeId === "header.zero_term") { if (win.length) why.push("zero header but lessons exist"); break; }
         if (c.shapeId === "header.nolesson") {
           if (win.length) why.push("no-lesson header but lessons exist");
-          const inside = await db.q("select id from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3", [report.child_id, report.window_from, report.window_to]);
+          const inside = await db.q(`select id from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 and ${NOT_PLACEMENT}`, [report.child_id, report.window_from, report.window_to]);
           if (!inside.length || inside.map((r) => r.id).sort().join(",") !== ev.map((r) => r.id).sort().join(",")) why.push("no-lesson header does not cite exactly the window's evidence");
           break;
         }
         if (s.lessons !== win.length) why.push("lessons slot ≠ lesson rows");
         // an open lesson (ended_at null) runs to its last evidence row in the window (session_id = lesson id), else 0 min
-        const winEv = await db.q("select id, session_id, occurred_at from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 order by seq", [report.child_id, report.window_from, report.window_to]);
+        const winEv = await db.q(`select id, session_id, occurred_at from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 and ${NOT_PLACEMENT} order by seq`, [report.child_id, report.window_from, report.window_to]);
         const endOf = (l) => { if (l.ended_at) return ms(l.ended_at); const es = winEv.filter((r) => r.session_id === String(l.id)); return es.length ? Math.max(...es.map((r) => ms(r.occurred_at))) : ms(l.started_at); };
         const min = Math.round(win.reduce((a, l) => a + endOf(l) - ms(l.started_at), 0) / 60_000);
         if (s.min !== min) why.push(`min slot ${s.min} ≠ ${min}`);
-        if (c.shapeId === "header.weekly" && s.days !== new Set(win.map((l) => learningDate(l.started_at, child.tz))).size) why.push("days slot ≠ distinct learning days");
+        if (["header.weekly", "header.monthly", "header.term"].includes(c.shapeId) && s.days !== new Set(win.map((l) => learningDate(l.started_at, child.tz))).size) why.push("days slot ≠ distinct learning days");
         break;
       }
       case "st.delayed": delayedPair(true); break;
@@ -156,6 +191,132 @@ export async function checkReport(db, report, lookup) {
         break;
       }
       case "home.skill": if (!ev.length) why.push("home activity cites no success"); exact(firstTry, "home activity: first-try successes"); break;
+      // ───────────── round 7 F: monthly sections and the weekly exam line ─────────────
+      case "hold.week": case "hold.few": {
+        // every scored answer in the window whose previous contact with each of its skills (any row) was ≥ 7 days earlier
+        const rows0 = await db.q(`select * from kt_evidence where child_id = $1 and occurred_at < $2 and ${NOT_PLACEMENT} order by seq`, [report.child_id, report.window_to]);
+        const late = new Set(rows0.map((r) => String(r.id)).filter((id) => id.endsWith(":late")).map((id) => id.slice(0, -5)));
+        const rows = rows0.filter((r) => !late.has(String(r.id)));
+        const last = new Map(), want = [];
+        for (const r of rows) {
+          const prev = (r.skill_ids || []).map((k) => last.get(k)).filter((x) => x !== undefined);
+          if (inWin(r.occurred_at) && scored(r) && prev.length && Math.min(...prev.map((p) => ms(r.occurred_at) - p)) >= 7 * 86_400_000) want.push(r);
+          for (const k of r.skill_ids || []) last.set(k, ms(r.occurred_at));
+        }
+        if (want.map((r) => r.id).sort().join(",") !== ev.map((r) => r.id).sort().join(",")) why.push("holding-up line does not cite exactly the window's after-a-week answers");
+        if (s.n !== want.length) why.push(`n slot ${s.n} ≠ ${want.length}`);
+        if (c.shapeId === "hold.week") { if (want.length < 3) why.push("hold.week needs ≥ 3"); if (s.k !== want.filter(firstTry).length) why.push("k slot ≠ first-try answers"); }
+        else if (want.length >= 3) why.push("hold.few used with ≥ 3");
+        break;
+      }
+      case "hard.hint": {
+        const winEv = await db.q(`select * from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 and ${NOT_PLACEMENT} order by seq`, [report.child_id, report.window_from, report.window_to]);
+        const late = new Set(winEv.map((r) => String(r.id)).filter((id) => id.endsWith(":late")).map((id) => id.slice(0, -5)));
+        const rows = winEv.filter((r) => !late.has(String(r.id)));
+        const hinted = rows.filter(hintedR);
+        if (hinted.map((r) => r.id).sort().join(",") !== ev.map((r) => r.id).sort().join(",")) why.push("hint line does not cite exactly the window's hinted answers");
+        if (s.h !== hinted.length || s.k !== hinted.filter(solvedR).length) why.push(`h/k slots ${s.h}/${s.k} ≠ ${hinted.length}/${hinted.filter(solvedR).length}`);
+        if (rows.filter(scored).length < 5) why.push("fewer than 5 scored answers in the month");
+        break;
+      }
+      case "curious.asked": case "curious.asked_open": {
+        const all = await db.q("select id, learning, created_at, answered_at from question_jar where child_id = $1 and created_at >= $2 and created_at < $3",
+          [report.child_id, report.window_from, report.window_to]).catch(() => []);
+        const asked = all.filter((j) => j.learning);
+        if (asked.map((j) => String(j.id)).sort().join(",") !== [...ids.jar].sort().join(",")) why.push("curiosity line does not cite exactly the month's own questions");
+        if (s.q !== asked.length) why.push(`q slot ${s.q} ≠ ${asked.length}`);
+        // answered as of when the report was made (a question answered after that does not change what it said)
+        const made = report.created_at ? ms(report.created_at) : to;
+        const back = asked.filter((j) => j.answered_at && ms(j.answered_at) <= made).length;
+        if (c.shapeId === "curious.asked" ? s.k !== back || back < 1 : back !== 0) why.push("k slot ≠ questions answered by the time of the report");
+        break;
+      }
+      case "ways.used": case "ways.used_term": {
+        // S5, re-derived: the month's explain_format decisions in the child's counted lessons (the routine line's rule)
+        const win0 = await db.q("select id, started_at, ended_at, state from lesson where child_id = $1 and started_at >= $2 and started_at < $3", [report.child_id, report.window_from, report.window_to]);
+        const counted = new Set(win0.filter((l) => { const st = l.state ?? {}; if (String(st.abandoned) === "true") return false; if (Array.isArray(st.did) && st.did.length) return true; return !!l.ended_at && ms(l.ended_at) - ms(l.started_at) >= 300_000; }).map((l) => String(l.id)));
+        const all = await db.q(`select d.id, d.lesson_id, d.chosen from decision_record d join lesson l on l.id = d.lesson_id
+            where l.child_id = $1 and d.point_id = 'explain_format' and d.at >= $2 and d.at < $3`, [report.child_id, report.window_from, report.window_to]);
+        const ways = all.filter((d) => counted.has(String(d.lesson_id)) && WAY_CODES.has(d.chosen));
+        if (ways.map((d) => String(d.id)).sort().join(",") !== [...ids.way].sort().join(",")) why.push("ways line does not cite exactly the month's explain decisions");
+        const per = new Map();
+        for (const d of ways) per.set(d.chosen, (per.get(d.chosen) ?? 0) + 1);
+        const top = [...per].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))[0];
+        if (s.n !== ways.length || ways.length < WAYS_MIN_N) why.push(`n slot ${s.n} ≠ ${ways.length} decisions (min ${WAYS_MIN_N})`);
+        if (s.k !== per.size) why.push(`k slot ≠ ${per.size} distinct ways`);
+        if (!top || s.way !== top[0] || s.t !== top[1]) why.push("way/t slots ≠ the most used way and its count");
+        break;
+      }
+      case "routine.days": case "routine.days_term": {
+        const win0 = await db.q("select id, started_at, ended_at, state from lesson where child_id = $1 and started_at >= $2 and started_at < $3", [report.child_id, report.window_from, report.window_to]);
+        const win = win0.filter((l) => { const st = l.state ?? {}; if (String(st.abandoned) === "true") return false; if (Array.isArray(st.did) && st.did.length) return true; return !!l.ended_at && ms(l.ended_at) - ms(l.started_at) >= 300_000; });
+        if (win.map((l) => String(l.id)).sort().join(",") !== lessons.map((l) => String(l.id)).sort().join(",")) why.push("routine line does not cite exactly the month's lessons");
+        if (s.n !== new Set(win.map((l) => learningDate(l.started_at, child.tz))).size) why.push("n slot ≠ distinct learning days");
+        if (s.d !== Math.round((to - from) / 86_400_000)) why.push("d slot ≠ days in the month");
+        const winEv = await db.q(`select session_id, occurred_at from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 and ${NOT_PLACEMENT}`, [report.child_id, report.window_from, report.window_to]);
+        const mins = win.map((l) => { const e = l.ended_at ? ms(l.ended_at) : Math.max(ms(l.started_at), ...winEv.filter((r) => r.session_id === String(l.id)).map((r) => ms(r.occurred_at))); return Math.round((e - ms(l.started_at)) / 60_000); }).sort((a, b) => a - b);
+        const med = mins.length % 2 ? mins[(mins.length - 1) / 2] : Math.round((mins[mins.length / 2 - 1] + mins[mins.length / 2]) / 2);
+        if (s.m !== med) why.push(`m slot ${s.m} ≠ median ${med}`);
+        break;
+      }
+      case "rest.afterbed": case "rest.longer": {
+        // S15, re-derived from the database: the 28 days of counted lessons before the window's end (the routine rule)
+        if (report.cadence !== "weekly" && report.cadence !== "monthly") why.push("a routine-and-rest line outside a weekly or monthly report");
+        const rows = await db.q("select id, started_at, ended_at, state from lesson where child_id = $1 and started_at >= $2 and started_at < $3",
+          [report.child_id, new Date(to - 28 * 86_400_000).toISOString(), report.window_to]);
+        const counted = rows.filter((l) => { const st = l.state ?? {}; if (String(st.abandoned) === "true") return false; if (Array.isArray(st.did) && st.did.length) return true; return !!l.ended_at && ms(l.ended_at) - ms(l.started_at) >= 300_000; })
+          .map((l) => ({ id: String(l.id), startedAt: new Date(l.started_at).toISOString(), endedAt: l.ended_at ? new Date(l.ended_at).toISOString() : null }));
+        const sig = restSignals(counted, { bedtime: child.bedtime, tz: child.tz, to: report.window_to });
+        const got = c.shapeId === "rest.afterbed" ? sig.afterBed : sig.longer;
+        const cited = c.factIds.filter((f) => f.startsWith("lesson:")).map((f) => f.slice(7)).sort().join(",");
+        if (!got) why.push(`${c.shapeId}: its threshold does not fire on the lesson rows`);
+        else {
+          if (got.ids.join(",") !== cited) why.push("does not cite exactly the lessons the rule counts");
+          if (c.shapeId === "rest.afterbed" && (s.k !== got.k || s.d !== got.d)) why.push(`k/d slots ${s.k}/${s.d} ≠ ${got.k}/${got.d}`);
+          if (c.shapeId === "rest.longer" && (s.n1 !== got.n1 || s.n2 !== got.n2)) why.push(`n1/n2 slots ${s.n1}/${s.n2} ≠ ${got.n1}/${got.n2}`);
+        }
+        break;
+      }
+      case "next.recheck": {
+        const sk = sks[0];
+        if (!sk?.next_review_at || !sameDate(s.date, dateSlot(sk.next_review_at, child.tz))) why.push("date slot ≠ kt_skill_state.next_review_at");
+        else if (ms(sk.next_review_at) < Math.max(to, report.created_at ? ms(report.created_at) : to)) why.push("re-check date already past when the report was made");
+        break;
+      }
+      case "exam.review": {
+        const st = (await db.q("select state->'school'->'testWindows' as tw from conductor_state where child_id = $1", [report.child_id]).catch(() => []))[0];
+        const tws = Array.isArray(st?.tw) ? st.tw : [];
+        const lastDay = localDate(to - 86_400_000, child.tz), firstDay = localDate(from + 4 * 3600_000, child.tz);
+        const ok = ids.test.length === 1 && tws.some((t) => `${t.subject}:${t.from}:${t.to}` === ids.test[0] && t.subject === s.subject && t.from <= lastDay && t.to >= firstDay);
+        if (!ok) why.push("exam line does not cite a parent-entered test window overlapping the week");
+        break;
+      }
+      // ───────────── round 7 F batch R2: the term report, S14 Then → now ─────────────
+      case "change.row": {
+        if (report.cadence !== "term") why.push("a Then → now row outside a term report");
+        const { comp } = await termView();
+        const x = comp.get(c.skillId);
+        if (!x) { why.push("the skill has no two full months (≥ 10 answers each, ≥ 2 apart) in the term"); break; }
+        const mo = (m) => ({ y: Number(m.slice(0, 4)), m: Number(m.slice(5)) });
+        if (s.m1?.y !== mo(x.a).y || s.m1?.m !== mo(x.a).m || s.m2?.y !== mo(x.b).y || s.m2?.m !== mo(x.b).m) why.push("m1/m2 ≠ the first and last full months");
+        const k1 = x.la.filter(firstTry).length, k2 = x.lb.filter(firstTry).length;
+        if (s.n1 !== x.la.length || s.k1 !== k1 || s.n2 !== x.lb.length || s.k2 !== k2) why.push(`n1/k1/n2/k2 ${s.n1}/${s.k1}/${s.n2}/${s.k2} ≠ ${x.la.length}/${k1}/${x.lb.length}/${k2}`);
+        if ([...x.la, ...x.lb].map((r) => String(r.id)).sort().join(",") !== ev.map((r) => String(r.id)).sort().join(",")) why.push("row does not cite exactly the two months' answers");
+        const pMin = comp.size > 4 ? CHANGE_P_MANY : CHANGE_P;
+        if (!(k2 / x.lb.length - k1 / x.la.length >= CHANGE_MIN_DELTA - 1e-9)) why.push(`rise under ${CHANGE_MIN_DELTA}`);
+        if (!(pRose(k1, x.la.length, k2, x.lb.length) >= pMin)) why.push(`P(now > then) under ${pMin} (${comp.size} skills compared)`);
+        break;
+      }
+      case "still.count": {
+        if (report.cadence !== "term") why.push("a still-learning line outside a term report");
+        const { perSkill } = await termView();
+        const rowSkills = new Set(report.claims.filter((x) => x.shapeId === "change.row").map((x) => x.skillId));
+        const rest = [...perSkill].filter(([k]) => !rowSkills.has(k));
+        if (s.n !== rest.length || !rest.length) why.push(`n slot ${s.n} ≠ ${rest.length} other practised topics`);
+        const want = [...new Set(rest.flatMap(([, l]) => l.map((r) => String(r.id))))].sort().join(",");
+        if (want !== [...new Set(ev.map((r) => String(r.id)))].sort().join(",")) why.push("still-learning line does not cite exactly those topics' answers");
+        break;
+      }
       default: why.push(`no check for shape ${c.shapeId}`);
     }
     out.push({ id: c.id, shapeId: c.shapeId, ok: !why.length, why });

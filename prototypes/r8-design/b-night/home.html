@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home · Taxila</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="../layout.css">
+<link rel="stylesheet" href="skin.css">
+<script src="../content.js" defer></script>
+</head>
+<body class="child scr-home has-tabs">
+<header class="appbar">
+  <span class="brand" data-i="arch">Taxila</span>
+  <nav class="topnav" aria-label="Main">
+    <a href="home.html" aria-current="page" data-i="home"><span data-c="nav.home"></span></a>
+    <a href="#" data-i="map"><span data-c="nav.map"></span></a>
+    <a href="#" data-i="practice"><span data-c="nav.practice"></span></a>
+    <a href="#" data-i="ask"><span data-c="nav.ask"></span></a>
+    <a href="#" data-i="notebook"><span data-c="nav.notebook"></span></a>
+  </nav>
+  <a class="btn-quiet" href="parent.html" data-c="home.forparents"></a>
+</header>
+<main class="home">
+  <section class="home-hello">
+    <div class="tutor tutor-lg"><span class="tutor-face" aria-hidden="true">A</span><span class="tutor-meta"><b data-c="teacher.name"></b><small data-c="teacher.role"></small></span></div>
+    <h1 class="hero" data-c="home.hi"></h1>
+    <p class="parked wide-only" data-c="home.parked"></p>
+    <a class="btn-quiet wide-only notyou" href="#" data-i="swap"><span data-c="home.notyou"></span></a>
+  </section>
+  <section class="lesson-card" aria-labelledby="lc-t">
+    <div class="lesson-card-board" data-board="halves" aria-hidden="true"></div>
+    <div class="lesson-card-body">
+      <p class="eyebrow" data-c="home.eyebrow"></p>
+      <h2 id="lc-t" data-c="home.title"></h2>
+      <p class="lead" data-c="home.lead"></p>
+      <a class="btn-primary" href="lesson-board.html" data-i="play"><span data-c="home.go"></span></a>
+    </div>
+  </section>
+  <div class="home-foot phone-only">
+    <p class="parked" data-c="home.parked"></p>
+    <a class="btn-quiet" href="#" data-i="swap"><span data-c="home.notyou"></span></a>
+  </div>
+</main>
+<nav class="tabs" aria-label="Main">
+  <a href="home.html" aria-current="page" data-i="home"><span data-c="nav.home"></span></a>
+  <a href="#" data-i="map"><span data-c="nav.map"></span></a>
+  <a href="#" data-i="practice"><span data-c="nav.practice"></span></a>
+  <a href="#" data-i="ask"><span data-c="nav.ask"></span></a>
+  <a href="#" data-i="notebook"><span data-c="nav.notebook"></span></a>
+</nav>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+ "nodes": [
+  {
+   "id": "rj-r7-main-push-on-testall-only",
+   "kind": "rejection",
+   "at": "2026-11-08",
+   "title": "Main loop: pushing an integration after reading only the test:all summary. Integration 14e (int/r6 694f58557) was pushed while its status file said tsc=1 vite=1; the cause was the integration worktree's stale node_modules (App's new qrcode-generator dependency was in package.json and the lockfile but not installed), so the pushed tree was in fact sound, confirmed by npm ci then tsc 0, vite 0. What broke: the wait-loop printed only the test:all tail and the push step did not read the tsc/vite lines. Fix: the push step checks every status line (tsc, vite, testall) is 0, and an integration whose merge touches package-lock.json runs npm ci before its gate. The same session also merged integration 14e into the worktree while 14d's single-process `DATABASE_URL= npm test` was still running; it reported 2 failures (r7-app-notebook: the old 3-tab test read App's new 4-tab Notebook source), which were the edit, not the code. Fix: no merge, npm ci or file edit in the integration worktree until every gate stage, single-process included, has written its status; a contaminated run is re-run, not read."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "rejected": "\n## `rj-r7-main-push-on-testall-only` (2026-11-08)\n\nThe main loop pushed integration 14e (int/r6 694f58557) after reading only the test:all summary. The status file said tsc=1 vite=1.\n\nThe cause was the integration worktree's stale node_modules: App's new `qrcode-generator` dependency was in package.json and the lockfile but not installed. So the pushed tree was sound; after `npm ci`, tsc and vite both passed.\n\n**What broke:** the push step never read the tsc and vite lines.\n\n**Fix:**\n- Before a push, every status line (tsc, vite, testall) must be 0.\n- Any integration whose merge touches package-lock.json runs `npm ci` before its gate.\n\n**The same session also edited the tree mid-gate.** It merged integration 14e into the worktree while 14d's single-process run was still going. The run reported 2 failures: the old 3-tab r7-app-notebook test read App's new 4-tab Notebook source. That was the edit, not the code.\n\n**Fix:** no merge, `npm ci` or file edit in the integration worktree until every gate stage, single-process included, has written its status. A contaminated run is re-run, not read.\n"
+ }
+}

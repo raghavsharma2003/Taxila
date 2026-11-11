@@ -1,0 +1,26 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-fraction-line-board",
+      "kind": "decision",
+      "at": "2026-11-05",
+      "title": "Main (director3 judgement): a fraction ON A NUMBER LINE is drawn as fraction-line@1, never a shaded circle. Used by the code pick (pick.js fractionLineIn: 'number line', 'mark', 'gap', 'nishaan', '0 to 1', or a lesson whose worked example is on the line and a text asking where) and by the claims board (her line). The kit's solved example hops to its point and names it; a named mark asked for its fraction gets a tall tick and '?' (no dot: W9 reads a dot as the answer); an asked fraction is written above the line, never placed. W9: a line labelled with every whole number of its range is its axis.",
+      "reversal": "children read the '?' tick as pointing at the answer, or a fraction-of-a-whole lesson starts drawing lines (then narrow ON_A_LINE)"
+    },
+    {
+      "id": "ms-r7-fraction-line-board",
+      "kind": "measurement",
+      "at": "2026-11-05",
+      "n": 20,
+      "method": "codePick over c5-maths-ch02-t01 (worked example + 19 items), before vs after; each fraction-line board through the full gate on its item (retimeToLine, withheldValues); code only",
+      "title": "c5 fractions on a line: before 8 fraction-parts (shaded circle), 3 number-line-hop, 9 none; after 18 fraction-line, 2 none; 18/18 pass the full gate with the item's answers withheld. Also fires on c6-ch07-t02 (3), c6-ch07-t03 (1), c4-ch05-t02 (1); never on mixed numbers, decimal lines or a roti."
+    },
+    {
+      "id": "dc-r7-board-refs",
+      "kind": "decision",
+      "at": "2026-11-05",
+      "title": "Lesson-script board refs (dc-r7-teaching-scripts): BoardRef = { template, withhold?: 'item', ...params } | { auto: true }. The vocabulary is server/forge/explainer/board-ref.js BOARD_REFS (24 templates, each with param ranges and an example that renders). resolveBoardRef (pure, turn and author time) and certifyBoardRef (the full W0-W19 gate against the beat's stand-in line, answers withheld; Learning runs it in CI). Brain adopted it in shared/contracts.ts on explain[], worked, checks[] and remediation[]; preselect will read intent.boardRef. An absent or failing ref falls back to Studio's pick.",
+      "reversal": "scripts need boards no template can draw (then add a template, never free-form params)"
+    }
+  ]
+}

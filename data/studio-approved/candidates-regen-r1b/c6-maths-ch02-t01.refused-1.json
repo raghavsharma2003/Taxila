@@ -1,0 +1,217 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c6-maths-ch02-t01",
+    "archetype": "sort-storm@1",
+    "misconceptionId": "c6-maths-ch02-t01-m-longer-line",
+    "skillId": "c6-maths-ch02-t01-s1",
+    "beat": "rem:c6-maths-ch02-t01-m-longer-line",
+    "when": "remediation",
+    "check": "c6-maths-ch02-t01-s1:c1"
+  },
+  "why": "fell_back",
+  "checks": null,
+  "spec": null,
+  "validator": {
+    "fellBack": true,
+    "repairs": [
+      "byProp:bins-must-be-values",
+      "byProp:bins-must-be-values",
+      "byProp:bins-must-be-values",
+      "fallback-default"
+    ]
+  },
+  "raw": {
+    "archetype": "sort-storm@1",
+    "skills": [
+      "c6-maths-ch02-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Round",
+      "sorted": "sort ho gaya",
+      "tests": "tests",
+      "coach": "Cards padho aur sort karo",
+      "runDone": "Belt clear",
+      "missed": "missed",
+      "why": "kyunki",
+      "yes": "haan",
+      "no": "nahin",
+      "magnetic": "magnetic",
+      "light": "light",
+      "floats": "float karta hai",
+      "conducts": "conducts",
+      "burns": "burns",
+      "starch": "starch",
+      "tMagnet": "Magnet",
+      "tTorch": "Torch",
+      "tTank": "Paani",
+      "tTester": "Circuit",
+      "tFlame": "Flame",
+      "tIodine": "Iodine",
+      "tPaper": "Paper",
+      "tBiuret": "Copper test",
+      "tTurmeric": "Turmeric",
+      "tLitmus": "Litmus",
+      "tRose": "China rose",
+      "fat": "fat",
+      "protein": "protein",
+      "acidity": "acidity",
+      "acid": "acid",
+      "base": "base",
+      "neutral": "neutral"
+    },
+    "title": "Line Sketch Storm",
+    "rounds": [
+      {
+        "title": "Sketch dekho",
+        "sub": "Har card ko sahi dabbe mein rakho",
+        "byProp": "floats",
+        "bins": [
+          {
+            "id": "dabbaA",
+            "label": "Dabba A",
+            "glyph": "box"
+          },
+          {
+            "id": "dabbaB",
+            "label": "Dabba B",
+            "glyph": "box"
+          }
+        ],
+        "tools": [],
+        "items": [
+          {
+            "id": "beam",
+            "text": "Torch beam",
+            "glyph": "torch",
+            "bin": "dabbaB",
+            "src": "c6-maths-ch02-t01-i01"
+          },
+          {
+            "id": "ruleredge",
+            "text": "Ruler edge",
+            "glyph": "ruler",
+            "bin": "dabbaA",
+            "src": "c6-maths-ch02-t01-i02"
+          },
+          {
+            "id": "fixed",
+            "text": "Fixed length",
+            "glyph": "ruler",
+            "bin": "dabbaA",
+            "src": "c6-maths-ch02-t01-i03"
+          },
+          {
+            "id": "endless",
+            "text": "Goes on forever",
+            "glyph": "road",
+            "bin": "dabbaB",
+            "src": "c6-maths-ch02-t01-i03"
+          }
+        ],
+        "speed": 1.05
+      },
+      {
+        "title": "Drawing compare",
+        "sub": "Paper par bane sketches dekho",
+        "byProp": "floats",
+        "bins": [
+          {
+            "id": "dabbaA",
+            "label": "Dabba A",
+            "glyph": "box"
+          },
+          {
+            "id": "dabbaB",
+            "label": "Dabba B",
+            "glyph": "box"
+          }
+        ],
+        "tools": [],
+        "items": [
+          {
+            "id": "samexy",
+            "text": "XY, 3 cm",
+            "glyph": "ruler",
+            "bin": "dabbaB",
+            "src": "c6-maths-ch02-t01-i06"
+          },
+          {
+            "id": "longxy",
+            "text": "XY, 10 cm",
+            "glyph": "ruler",
+            "bin": "dabbaB",
+            "src": "c6-maths-ch02-t01-i06"
+          },
+          {
+            "id": "endpoints",
+            "text": "2 endpoints",
+            "glyph": "spark",
+            "bin": "dabbaA",
+            "src": "c6-maths-ch02-t01-i03"
+          },
+          {
+            "id": "forever",
+            "text": "No fixed length",
+            "glyph": "road",
+            "bin": "dabbaB",
+            "src": "c6-maths-ch02-t01-i07"
+          }
+        ],
+        "speed": 0.9,
+        "targets": "c6-maths-ch02-t01-m-longer-line"
+      },
+      {
+        "title": "Final check",
+        "sub": "Naye cards ko jaldi se rakho",
+        "byProp": "floats",
+        "bins": [
+          {
+            "id": "dabbaA",
+            "label": "Dabba A",
+            "glyph": "box"
+          },
+          {
+            "id": "dabbaB",
+            "label": "Dabba B",
+            "glyph": "box"
+          }
+        ],
+        "tools": [],
+        "items": [
+          {
+            "id": "measure",
+            "text": "Length measure hoti",
+            "glyph": "ruler",
+            "bin": "dabbaA",
+            "src": "c6-maths-ch02-t01-i07"
+          },
+          {
+            "id": "unfixed",
+            "text": "Length fixed nahi",
+            "glyph": "road",
+            "bin": "dabbaB",
+            "src": "c6-maths-ch02-t01-i07"
+          },
+          {
+            "id": "rahul",
+            "text": "Rahul ka 10 cm",
+            "glyph": "pen",
+            "bin": "dabbaB",
+            "src": "c6-maths-ch02-t01-i06"
+          },
+          {
+            "id": "same",
+            "text": "Wahi XY line",
+            "glyph": "road",
+            "bin": "dabbaB",
+            "src": "c6-maths-ch02-t01-i06"
+          }
+        ],
+        "speed": 0.75,
+        "targets": "c6-maths-ch02-t01-m-longer-line"
+      }
+    ]
+  }
+}

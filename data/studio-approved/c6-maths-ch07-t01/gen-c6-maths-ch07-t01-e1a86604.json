@@ -1,0 +1,158 @@
+{
+  "v": 1,
+  "id": "gen-c6-maths-ch07-t01-e1a86604",
+  "approved": true,
+  "hash": "e1a866043cdbc6a80c3ed8c1ca78144d",
+  "archetype": "slice-at@1",
+  "spec": {
+    "archetype": "slice-at@1",
+    "skills": [
+      "c6-maths-ch07-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Patti ko dhyan se dekho",
+      "wave": "Agli patti taiyar",
+      "cut": "Patti kaato",
+      "parts": "Hisse chuno",
+      "exact": "Bilkul sahi",
+      "close": "Kaafi paas",
+      "offBy": "Thoda chook gaye",
+      "runDone": "Daud poori",
+      "accuracy": "Kitni sahi",
+      "sliced": "Patti kati",
+      "chain": "Lagatar sahi",
+      "smaller": "Chhota hissa"
+    },
+    "waves": [
+      {
+        "title": "3 hisse wali patti",
+        "sub": "3 hisse wali pattiyan dekho",
+        "items": [
+          {
+            "parts": 3
+          },
+          {
+            "cut": "1/3"
+          },
+          {
+            "parts": 3
+          }
+        ],
+        "gravity": 0.8,
+        "gap": 2.8,
+        "marks": false,
+        "targets": "c6-maths-ch07-t01-m-unequal-parts"
+      },
+      {
+        "title": "4 hisse wali patti",
+        "sub": "4 hisse wali pattiyan dekho",
+        "items": [
+          {
+            "parts": 4
+          },
+          {
+            "cut": "1/4"
+          },
+          {
+            "parts": 4
+          }
+        ],
+        "gravity": 0.9,
+        "gap": 2.5,
+        "marks": false,
+        "targets": "c6-maths-ch07-t01-m-unequal-parts"
+      },
+      {
+        "title": "Alag pattiyan",
+        "sub": "3 aur 4 hisse wali pattiyan dekho",
+        "items": [
+          {
+            "cut": "1/3"
+          },
+          {
+            "parts": 4
+          },
+          {
+            "cut": "1/4"
+          },
+          {
+            "parts": 3
+          }
+        ],
+        "gravity": 1,
+        "gap": 2.2,
+        "marks": false,
+        "targets": "c6-maths-ch07-t01-m-unequal-parts"
+      }
+    ]
+  },
+  "for": {
+    "topic": "c6-maths-ch07-t01",
+    "skill": "c6-maths-ch07-t01-s1",
+    "misconceptionId": "c6-maths-ch07-t01-m-unequal-parts",
+    "beat": "rem:c6-maths-ch07-t01-m-unequal-parts",
+    "when": "remediation"
+  },
+  "because": {
+    "mixup": {
+      "id": "c6-maths-ch07-t01-m-unequal-parts",
+      "belief": "Thinks the parts of a whole need not be equal to be called halves, thirds or quarters",
+      "signs": [
+        "Calls any of 3 unequal pieces '1/3'",
+        "Cuts a roti into 4 rough pieces and calls each a quarter"
+      ]
+    },
+    "rule": "shown only to a child the learner model holds this mix-up for, at this beat; any other child gets the script's own board"
+  },
+  "source": "generated",
+  "predicate": {
+    "ok": true,
+    "why": null
+  },
+  "render": {
+    "byViewport": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "images": [
+      {
+        "vp": "p412",
+        "file": "piece-p412.png",
+        "sha256": "1ce81ae33b0c3368d1f3826beddc6f3870b716eb51644b8de8f69862e4a38b55"
+      },
+      {
+        "vp": "l1366",
+        "file": "piece-l1366.png",
+        "sha256": "ebf61290ceb186ec614e06275059dc3dd2693afb6c2ecb1bc11228e172e5c172"
+      }
+    ]
+  },
+  "judge": {
+    "verdict": "pass",
+    "by": "two separate Claude Opus judges (lean, 4 reads), rubric v2, 2026-11-11, renders at da0e71b93",
+    "promptSha256": "6533992ad0d93b49abda38b305ae4177f65441f620b5d47e6317c70cd0630ba7",
+    "prompt": "data/studio-approved/JUDGE-PROMPT.md",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "marks:false on every wave, so the child places cuts and judges equal size herself; this works against the unequal-parts mix-up. Each wave's sub matches its items (wave 1 all 3s, wave 2 all 4s, wave 3 mixed 3 and 4). No round objects are named. All labels are Hinglish with digits. The p412 screen shows a slightly darker band across the top of the play area, but nothing is cut off or hard to read."
+  },
+  "judge2": {
+    "verdict": "pass",
+    "by": "Claude Opus judge B, 2026-11-11",
+    "content": "pass",
+    "faults": [],
+    "notes": "The engine's grading of how close a cut must be (\"Kaafi paas\" against \"Bilkul sahi\") is not in the packet, so I could not check from the packet whether a cut into clearly unequal parts gets enough feedback to correct the unequal-parts mix-up. Every wave has marks false, and each title and sub-title agrees with its items (3, 4, and a mix of 3 and 4 parts). The pieces are strips (patti), not round things. No rule or answer is stated."
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T09:46:59.987Z"
+  },
+  "approvedAt": "2026-11-11T10:00:47.066Z"
+}

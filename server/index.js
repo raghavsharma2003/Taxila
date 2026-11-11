@@ -6,11 +6,12 @@ import { handle, register } from "./router.js";
 import { routes as lesson } from "./routes/lesson.js";
 import { routes as tts } from "./routes/tts.js";
 import { routes as parent } from "./routes/parent.js";
-import { routes as modules } from "./routes/modules.js";
 import { routes as voice } from "./routes/voice.js";
 import { routes as tutor } from "./routes/tutor.js";
-import { routes as forge } from "./routes/forge.js";
+// round 7, stream G: child device pairing (a child-scoped session on the child's own device; server/pair)
+import { routes as pair } from "./pair/routes.js";
 import { routes as child } from "./routes/child.js";
+import { routes as placement } from "./routes/placement.js";
 // W1-C: the test clock (GET/POST /api/test/clock; @taxila.test accounts only). Seam applied by W1-D, owner of this file.
 import { routes as testClock } from "./comprehension/testclock.js";
 // W2-D: the mid-sitting realtime → cascade lane switch (POST /api/lesson/lane). One-line seam; the route lives in W2-D's module.
@@ -35,6 +36,12 @@ import { routes as relational } from "./relational/routes.js";
 import { routes as play } from "./play/routes.js";
 // release 12 flight recorder: POST /api/trace/batch and /api/trace/blob (T-server, server/trace). One line.
 import { routes as trace } from "./trace/routes.js";
+// round 7, stream G: the owner ops page (TAXILA_OPS_FOR)
+import { routes as ops } from "./ops/routes.js";
+// r7 app-auth-email-otp (stream E): guardian sign-in by an emailed code
+import { routes as signin } from "./signin/code.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...lane });
+register({ ...lesson, ...tts, ...parent, ...voice, ...tutor, ...child, ...placement, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...ops, ...signin, ...lane });
 export { handle, register };
+// child device pairing, registered on its own (the line above stays as App's 002 patch expects)
+register(pair);

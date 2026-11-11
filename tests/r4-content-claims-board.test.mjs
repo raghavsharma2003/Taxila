@@ -9,6 +9,7 @@ import { claimsCalls, shadedIn } from "../server/stagecraft/claims-board.js";
 import { claimsNotDrawn, screenClaims } from "../server/studio/qa/semantics.js";
 import { certifyForTray } from "../server/forge3/tray-gate.js";
 import { expand } from "../server/forge/explainer/templates.js";
+import { settledScript } from "../shared/whiteboard.js";
 
 const ask = (text) => ({ intent: { intentId: "L:wb:1", lessonId: "L", kind: "whiteboard" }, line: { lessonId: "L", text }, kit: null, mode: "fresh" });
 const board = (text) => { const a = ask(text); return codeBoard(a, { lessonId: "L" }, gateCtxFor(a, {})); };
@@ -39,7 +40,7 @@ describe("r4 content: the claims board", () => {
   ]) it(`a board that draws her claims passes the gate and is legible at 360: "${line.slice(0, 48)}…"`, () => {
     const r = board(line);
     assert.ok(r?.ok, "a board is drawn");
-    assert.deepEqual(claimsNotDrawn(line, r.script.ops), []);
+    assert.deepEqual(claimsNotDrawn(line, settledScript(r.script).ops)   /* round 7 M2: what a moving board shows is judged where it ends */, []);
     assert.ok(certifyForTray({ kind: "whiteboard", script: r.script }, { vp: "p360" }).ok);
     // a question in her line is never answered on the board (W9 inside the gate; the result is "?")
     if (/kitne|how many/i.test(line)) assert.ok(!r.script.ops.some((o) => o.op === "numwork" && JSON.stringify(o.rows).includes('"12"')), "no total drawn for a question");
@@ -55,7 +56,7 @@ describe("r4 content: claims boards on the owner-5 lines of this branch's local 
     const r = board(line);
     assert.ok(r?.ok, "a board is drawn");
     assert.equal(r.template, "fraction-of@1");
-    assert.deepEqual(claimsNotDrawn(line, r.script.ops), []);
+    assert.deepEqual(claimsNotDrawn(line, settledScript(r.script).ops)   /* round 7 M2: what a moving board shows is judged where it ends */, []);
     assert.ok(!JSON.stringify(r.script.ops).includes('"6"'), "the 6 she asks for is not written");
   });
   it("three more lines of the 52-board battery: 'ek part shade hai', a shaded block of the grid, an order to shade", () => {

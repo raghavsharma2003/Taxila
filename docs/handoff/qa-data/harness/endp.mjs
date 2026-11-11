@@ -1,0 +1,18 @@
+import fs from "fs";
+import { launch, open, PHONE, BASE, sleep, shot } from "/home/user/Taxila/tests/e2e/qa-lib.mjs";
+const Q = process.env.QA_OUT; const ACC = process.env.QA_ACC; const acc = JSON.parse(fs.readFileSync(Q + "/accounts.json"))[ACC];
+const b = await launch(); const { ctx, page, log } = await open(b, PHONE, { init: () => { try { localStorage.setItem(`taxila.child.${location.pathname.split("/")[2]}.prefs`, JSON.stringify({ hello: true })); } catch {} } });
+await ctx.addCookies(JSON.parse(fs.readFileSync(`${Q}/state-${ACC}.json`)).cookies);
+const calls = []; page.on("request", (r) => { if (/\/api\/lesson\/(start|end)$/.test(r.url())) calls.push(r.url().split("/").pop()); });
+const word = () => page.locator("[data-testid=state-word]").innerText().catch(() => "");
+await page.goto(`${BASE}/c/${acc.cid}/`); await sleep(3000);
+await page.locator("[data-testid=start-lesson]").click();
+for (let i = 0; i < 200 && !/Your turn/.test(await word()); i++) await sleep(250);
+await page.getByRole("button", { name: /Pause/ }).first().click(); await sleep(1500);
+await shot(page, `endp-${ACC}-pause`);
+const vis = await page.locator("[data-testid=pause-end]").isVisible();
+await page.locator("[data-testid=pause-end]").click({ timeout: 5000 }).catch((e) => console.log("click fail", String(e).slice(0, 200)));
+await sleep(6000);
+await shot(page, `endp-${ACC}-after`);
+console.log(JSON.stringify({ vis, calls, path: new URL(page.url()).pathname.replace(/\/c\/[^/]+/, ""), text: (await page.locator("body").innerText()).replace(/\s+/g, " ").slice(0, 200), http: log.http }));
+await b.close();

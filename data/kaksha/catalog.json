@@ -1,6 +1,6 @@
 {
   "_doc": "Kaksha world catalogue (docs/design/round4/app/BUILD-SPEC.md §4). A STRUCTURE rises in the settlement and an ITEM opens in the Hangar only when a skill whose title or topic matches its pattern is `secure` in GET /api/child/map. Patterns are case-insensitive regexes over `${subject} ${chapter} ${title} ${label}`. First matching structure rule wins; a skill matching no rule raises the subject's default structure. Items: an item opens when ANY secure skill matches; it is never bought, never random and never taken away. Labels are English chrome (G-EN-1).",
-  "version": 1,
+  "version": 2,
   "structures": [
     { "kind": "stepwell", "label": "Stepwell", "why": "Equal steps for equal parts", "match": "equivalent|equal (share|part)|fraction.*(equal|same)" },
     { "kind": "bridge", "label": "Bridge", "why": "Equal spans along a line", "match": "number line|integer|negative|decimal" },
@@ -24,6 +24,18 @@
     { "id": "visor-prime", "kind": "board", "label": "Prime visor", "hue": "hindi", "opensWith": "Primes and factors", "match": "prime|factor" },
     { "id": "rim-light", "kind": "rim", "label": "Lamplight frame", "hue": "her", "opensWith": "Light and shadow", "match": "light|shadow" },
     { "id": "trail-magnet", "kind": "trail", "label": "Field-line trail", "hue": "science", "opensWith": "Magnets", "match": "magnet" },
-    { "id": "board-library", "kind": "board", "label": "Ink board", "hue": "english", "opensWith": "Any idea about a story or poem", "match": "story|poem|summar" }
+    { "id": "board-library", "kind": "board", "label": "Ink board", "hue": "english", "opensWith": "Any idea about a story or poem", "match": "story|poem|summar" },
+    { "id": "hull-ratio", "kind": "hull", "label": "Ratio hull", "hue": "secure", "opensWith": "Ratio and proportion", "match": "ratio|proportion|percent" },
+    { "id": "hull-orbit", "kind": "hull", "label": "Orbit hull", "hue": "ion", "opensWith": "The sun, moon and planets", "match": "planet|moon|solar|orbit|star" },
+    { "id": "trail-wave", "kind": "trail", "label": "Wave trail", "hue": "science", "opensWith": "Sound and waves", "match": "sound|wave|vibrat" },
+    { "id": "trail-ink", "kind": "trail", "label": "Ink trail", "hue": "english", "opensWith": "Any idea about grammar", "match": "noun|verb|adjective|tense|grammar|sentence" },
+    { "id": "board-grid", "kind": "board", "label": "Graph board", "hue": "plasma", "opensWith": "Data and graphs", "match": "data|graph|bar chart|pictograph|tally" },
+    { "id": "board-map", "kind": "board", "label": "Map board", "hue": "secure", "opensWith": "Any idea about maps or places", "match": "map|direction|latitude|longitude|continent" },
+    { "id": "board-varnamala", "kind": "board", "label": "Akshar board", "hue": "hindi", "opensWith": "Any idea in Hindi", "match": "vyakaran|sangya|kriya|kavita|kahani" },
+    { "id": "rim-cell", "kind": "rim", "label": "Cell frame", "hue": "science", "opensWith": "Cells and living things", "match": "cell|tissue|organism|living" },
+    { "id": "rim-shape", "kind": "rim", "label": "Shape frame", "hue": "plasma", "opensWith": "Shapes and symmetry", "match": "shape|symmetr|polygon|triangle|circle" },
+    { "id": "emote-spark", "kind": "emote", "label": "Spark", "hue": "her", "opensWith": "Any idea, secure", "match": "." },
+    { "id": "emote-wave", "kind": "emote", "label": "Wave", "hue": "ion", "opensWith": "Any idea about motion or force", "match": "motion|force|speed|push|pull" },
+    { "id": "emote-star", "kind": "emote", "label": "Star", "hue": "english", "opensWith": "Any idea about a story or poem", "match": "story|poem|summar" }
   ]
 }

@@ -1,0 +1,59 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r5-failed-board-why",
+      "kind": "decision",
+      "at": "2026-10-21",
+      "title": "A failed board records why, in codes only: live:<check ids | planner reason | nothing_to_draw | error> template:<none | invalid | gate | not_the_ask(kind) | same_page | tray | unsynced | off_screen | error> (fc8be3ff). Before, the reason only reached the server console."
+    },
+    {
+      "id": "dc-r5-subject-not-verb",
+      "kind": "decision",
+      "at": "2026-10-21",
+      "title": "freeSubjectOf refuses a subject made of verbs and fillers, using the same VERBISH / ASK_STOP lists as visualAskOf. kaha / kahi / kahe / कहा are verbs (b42cc474). 38aad918 drew 'bola' as a board label."
+    },
+    {
+      "id": "dc-r5-kept-subject-spent",
+      "kind": "decision",
+      "at": "2026-10-21",
+      "title": "A kept subject (s.offTopic) is spent once a board is asked for it, and a later picture ask naming nothing does not reuse it (2c440b5e, main decision (b)). Reversal: if the seam's draw result reaches the Director, spend on a DRAWN board instead of an asked one."
+    },
+    {
+      "id": "dc-r5-picture-under-board",
+      "kind": "decision",
+      "at": "2026-10-21",
+      "title": "A revealed picture stays under a new board until the board draws. A board that fails gives the screen and the turn's slot back to the picture, and a board taken down before drawing takes the picture with it (8d53d3a1)."
+    },
+    {
+      "id": "ms-r5-subject-not-verb",
+      "kind": "measurement",
+      "at": "2026-10-21",
+      "n": 3790,
+      "method": "freeSubjectOf / visualAskOf / requestOf before vs after over every distinct sim-lab 14.2-14.4 child line",
+      "title": "Free subjects go 157 -> 113. All 44 removed were junk (hue, toh, aur, खींच, tha, और, sab …), no real subject was lost, visualAskOf is unchanged, and one requestOf drops its junk subject 'Iska'."
+    },
+    {
+      "id": "ms-r5-picture-under-board",
+      "kind": "measurement",
+      "at": "2026-10-21",
+      "n": 3,
+      "method": "38aad918 (TEST) studio events per turn (main's dump) walked through the new seam rules; sim-lab records carry no pictures",
+      "title": "Empty screen at turn end goes from 3 turns (t9, t10, t11) to 0."
+    },
+    {
+      "id": "open-r5-ask-subject-first",
+      "kind": "open",
+      "at": "2026-10-21",
+      "title": "Proposal (a), parked by main: keep req.subject ?? visualAskOf(text).subject ?? freeSubjectOf(text). It moves 96 readings over the sim-lab lines. A code-read Director replay changes s.offTopic on 5 of 4,068 turns and no move (0 visualUnavailable or off-kit sketch flips); its effect is on model-read requests and needs a sim-lab A/B. Odd readings: 'cake' (a predicate bug that takes a past-clause photo mention over the asked clause), 'दी कोन' (दी missing from ASK_STOP), 'laddoo' over 'recipe' (a fair reading)."
+    }
+  ],
+  "edges": [
+    { "from": "dc-r5-subject-not-verb", "to": "ms-r5-subject-not-verb", "kind": "measured_by" },
+    { "from": "dc-r5-picture-under-board", "to": "ms-r5-picture-under-board", "kind": "measured_by" }
+  ],
+  "md": {
+    "decisions": "## dc-r5-failed-board-why — a failed board says why (2026-10-21)\n\n38aad918 had two boards fail with why: null. The live board's failing checks went only to the server console, and the template's refusal went nowhere. The failed slot now carries both as codes (never the child's words), so the trace explains itself. A later draw of the same piece clears it.\n\n## dc-r5-subject-not-verb — a verb is never the thing to draw (2026-10-21)\n\nThe child said 'aapne toh bola picture dikhao'. freeSubjectOf named 'bola', the Director kept it, and the board drew 'bola' as a label on two pages. The subject readers now share one list of verbs and fillers.\n\n## dc-r5-kept-subject-spent — a kept subject is used once (2026-10-21)\n\nThe kept subject rode on every later picture ask that named nothing: in 38aad918, t7 and t9-t11 all asked for 'bola'. It is now spent once a board is asked for it. The Director can't see whether that board drew, so 'asked' stands in for 'drawn' until the seam's result reaches it.\n\n## dc-r5-picture-under-board — never an empty screen after a failed board (2026-10-21)\n\nOn 38aad918 t9-t11 a picture was revealed, the same turn's board retired it, and then the board failed. The child saw nothing three turns running and said so. The picture now stays under the board until the board draws. If the board fails, the picture comes back, and it becomes the turn's slot.\n",
+    "measurements": "## ms-r5-subject-not-verb (2026-10-21, n = 3,790 distinct sim-lab child lines)\n\nfreeSubjectOf readings go 157 -> 113. All 44 removed were fillers or verbs. No real subject is lost, and visualAskOf is unchanged.\n\n## ms-r5-picture-under-board (2026-10-21, n = 3 turns of 38aad918)\n\nEmpty screen at turn end goes 3 -> 0, from main's per-turn studio events walked through the new rules. The sim-lab records have no pictures to count.\n",
+    "open": "## open-r5-ask-subject-first — the ask's own subject before a guessed one (parked, 2026-10-21)\n\nThe idea is to keep the subject visualAskOf reads before freeSubjectOf's guess (on 38aad918 t6 that is 'triangle', not nothing). Main parked it until three things exist: how many readings flip offTopic or visualUnavailable (code replay: 5 offTopic, 0 moves; the real effect is on model-read requests), the odd readings fixed or explained (cake: past-clause photo mention; दी: stop word; laddoo: fair), and a sim-lab A/B on the affected cards.\n"
+  }
+}

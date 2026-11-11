@@ -67,6 +67,47 @@ function devFrameCors(): Plugin {
  * the bundle is written this deletes dist/assets/gen/** except manifest.json. It also warns when a master has landed
  * that the manifest does not ship yet (run `node scripts/gen-assets.mjs`), so a stale manifest is visible in the log.
  */
+/**
+ * The 3D rig looks' GLBs (public/assets/teacher/<look>/<rev>/*.glb: the generated heads the owner rejected,
+ * owner-rejects-generated-faces) are fetched ONLY by the face.rig path (src/avatar/flags.ts, default off), so a
+ * production build drops them from dist unless VITE_FACE_RIG=1 builds that path in (round 7 face cleanup). The look
+ * index (src/avatar/looks.gen.json), the plates, runtime.json, publish-look.mjs and the rig tests are untouched: the
+ * files stay in public/ for dev (/dev/avatar with ?facerig=1) and for a VITE_FACE_RIG=1 build. With the flag off a
+ * stray rig request 404s and the face falls back to the look's plate, the same face (TutorFace's own rule).
+ */
+export function rigGlbs(env: Record<string, string | undefined> = process.env): Plugin {
+  let outDir = "dist";
+  return {
+    name: "taxila:rig-glbs",
+    apply: "build",
+    configResolved(c) {
+      outDir = isAbsolute(c.build.outDir) ? c.build.outDir : join(c.root, c.build.outDir);
+    },
+    closeBundle() {
+      if (env.VITE_FACE_RIG === "1") return;
+      const teacher = join(outDir, "assets", "teacher");
+      if (!existsSync(teacher)) return;
+      let removed = 0;
+      for (const look of readdirSync(teacher, { withFileTypes: true })) {
+        if (!look.isDirectory()) continue;
+        for (const rev of readdirSync(join(teacher, look.name), { withFileTypes: true })) {
+          if (!rev.isDirectory()) continue;
+          for (const f of readdirSync(join(teacher, look.name, rev.name))) {
+            if (!f.endsWith(".glb")) continue;
+            rmSync(join(teacher, look.name, rev.name, f), { force: true });
+            removed++;
+          }
+        }
+      }
+      // APP-62: the KTX2 texture decoder (basis/r180, ~580 KB) is requested only by the rig loader (src/avatar/three/rig.ts) to
+      // decode those GLBs' textures; with the GLBs gone nothing on default flags can ask for it. The plates stay (fallback).
+      const basis = join(teacher, "basis");
+      if (existsSync(basis)) { rmSync(basis, { recursive: true, force: true }); removed++; }
+      if (removed) this.info?.(`dropped ${removed} rig GLB(s) and the texture decoder from ${teacher} (face.rig is off; VITE_FACE_RIG=1 keeps them)`);
+    },
+  };
+}
+
 function artMasters(): Plugin {
   let outDir = "dist";
   let root = process.cwd();
@@ -101,7 +142,7 @@ function artMasters(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), moduleFrameCsp(), devFrameCors(), artMasters()],
+  plugins: [react(), moduleFrameCsp(), devFrameCors(), artMasters(), rigGlbs()],
   server: {
     port: 5173,
     proxy: { "/api": "http://localhost:8790" },

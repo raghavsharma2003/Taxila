@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-voice-child-text-seam",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 (Voice → C1 Studio M4): the child's words reach server code in-process through server/duplex/childText.js: onChildText(lessonId, fn) → unsubscribe; events { lessonId, itemId, seq, text (the turn's cumulative, echo-filtered text), final, t, at }. Finals come from every turn route: /api/lesson/turn-audio here, /api/lesson/turn through docs/patches/to-brain/012. Each is emitted before the turn runs, so one source works on every lane, including D5's default ear, which has no partials. Live partials come from the device (cascadeLink, ≤ 1 post / 400 ms, the newest text) to POST /api/duplex/child-text only when /api/duplex/config says partialPost: true, which needs TAXILA_DUPLEX_PARTIAL_POST=on and duplex on. With no listener, that route answers 204 without reading the database; otherwise it allows only the caller's own child's open lesson and ≤ 1 post per 300 ms. Safety by predicate: text scanSafety reads as distress is never handed to a listener. The registered route is new because /api/duplex/partial sits in the unregistered slice table. Reverse (unset TAXILA_DUPLEX_PARTIAL_POST) if the extra posts show up in replica load or D4 first-sound."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-voice-child-text-seam",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-voice-child-text-seam` — the child's words, in-process, for Studio's speculative builds (2026-11-05)\n\nStudio's M4 policy re-ranks and invalidates pre-built pieces from what the child is saying. Its build decisions live server-side, so the seam is a server emitter, not a client event. Finals are the reliable source on every lane. D5's default ear gives one final per turn, so partials are a pure speed-up where the ear provides them (D4, or a delta-streaming D5 ear); they are off by default because each one is a request. Nothing distress-shaped is ever passed on, so nothing is built from a disclosure. Tests: tests/r7-voice-child-text.test.mjs.\n"
+ }
+}

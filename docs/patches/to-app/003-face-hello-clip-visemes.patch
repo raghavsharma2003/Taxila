@@ -1,0 +1,37 @@
+diff --git a/src/child/voice.ts b/src/child/voice.ts
+index 49a7d2b0..1bfb9327 100644
+--- a/src/child/voice.ts
++++ b/src/child/voice.ts
+@@ -4,6 +4,7 @@
+ // three family languages (public/audio/hello-*.mp3, the onboarding clips). She is the one teacher (round 4,
+ // dc-r4-single-teacher-asha), so every child's Hello has a greeting in her voice.
+ import { useEffect, useRef, useState } from "react";
++import { attachClipVisemes } from "../face-puppet/clipBridge.ts";
+ 
+ const HELLO: Record<string, Partial<Record<"english" | "hindi" | "hinglish", string>>> = {
+   asha: { english: "/audio/hello-en.mp3", hindi: "/audio/hello-hi.mp3", hinglish: "/audio/hello-hinglish.mp3" },
+@@ -19,6 +20,7 @@ export function helloClip(teacherId: string, lang: string): string | null {
+ export function useVoiceClip(src: string | null) {
+   const el = useRef<HTMLAudioElement | null>(null);
+   const ctx = useRef<AudioContext | null>(null);
++  const detach = useRef<(() => void) | null>(null);
+   const an = useRef<AnalyserNode | null>(null);
+   const buf = useRef<Float32Array<ArrayBuffer> | null>(null);
+   const [playing, setPlaying] = useState(false);
+@@ -35,6 +37,7 @@ export function useVoiceClip(src: string | null) {
+     },
+   }).current;
+   useEffect(() => () => {
++    detach.current?.();
+     el.current?.pause();
+     void ctx.current?.close().catch(() => {});
+   }, []);
+@@ -62,6 +65,8 @@ export function useVoiceClip(src: string | null) {
+       } catch {
+         /* no meter: her lips rest; the sound still plays */
+       }
++      // her clip's viseme sidecar (Face stream): the puppet lip-syncs the clip like a live reply, not from the meter alone
++      detach.current = attachClipVisemes(a, src, ctx.current);
+     }
+     void ctx.current?.resume().catch(() => {});
+     el.current.currentTime = 0;

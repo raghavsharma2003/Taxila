@@ -28,6 +28,10 @@ export interface StudioMessage {
 export interface EngineApi {
   readonly archetype: string; readonly reducedMotion: boolean; readonly seed: number;
   readonly fx: FX; readonly tw: Tweens;
+  /** classes 4-5 (the stage's young flag): text is drawn at ≥ MIN_YOUNG.label by the host's text helper */
+  readonly young: boolean;
+  /** the label floor in world units for this child (43 young, else 38): use it for layout math (line heights, boxes) */
+  readonly minLabel: number;
   rnd(): number;
   text(ctx: Ctx, s: string, x: number, y: number, o?: TextOpts): void;
   measure(ctx: Ctx, s: string, o?: TextOpts): number;
@@ -39,6 +43,8 @@ export interface EngineApi {
   hud(defs: HudDef[]): { set(key: string, value: string, o?: { tone?: HudTone; meter?: number; bump?: boolean }): void; label(key: string, text: string): void; show(on: boolean): void };
   task(step: string, goal: string, mode?: "done" | "warn" | null): void;
   caption(text: string): void;
+  /** world y of the bottom of the host's DOM chrome (task pill, HUD row) where it sits over the world; 0 when none does */
+  chromeBottom(): number;
   progress(frac: number, marks?: number[]): void;
   /** the child's RAW act; the host grades it against the validated spec and returns that grade. Any `{ $hostLog: name }`
    *  inside `value` is replaced by the HOST's own record of that input channel (see `record`), never the frame's copy. */

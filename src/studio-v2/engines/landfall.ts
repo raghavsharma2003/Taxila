@@ -4,10 +4,13 @@
 // Truth = exact rationals from shared/studio-spec.ts; the host grades each landing (PAE) from the validated spec.
 import { fracValue, nearestSimple, parseFrac, type Frac, type LandfallSpec } from "../../../shared/studio-spec.ts";
 import { C, W, H } from "../core/tokens.ts";
+import { withAlpha } from "../../theme/palette.ts";
 import { clamp, ease, lerp, rng } from "../core/math.ts";
 import { bloom, card, glow, magnifier, roundRect, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
+import { drawCoach } from "../core/ui.ts";
 import type { EngineApi, EngineDef, EngineInstance, Knob } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
 const LINE_Y = 505, X0 = 120, X1 = 880, LOCK_Y = 352, SPAWN_Y = 150, BASE_HALF = 50;
 const TOL = { exact: 12, close: 28 };
@@ -150,7 +153,7 @@ function create(api: EngineApi, spec: LandfallSpec): EngineInstance {
   }
   function syncHud() {
     if (g.waveIdx < 0) return;
-    hud.set("wave", `${g.waveIdx + 1}/${waves.length}`);
+    hud.set("wave", `${dots(g.waveIdx, waves.length)}`);
     hud.set("chain", `×${g.chain}`, { tone: g.chain >= 5 ? "ion" : null, bump: true });
     const p = g.results.length ? precisionOf(g.results) : null;
     hud.set("prec", p == null ? "—" : `${p}%`, { meter: p == null ? 0 : p / 100, tone: p != null && p >= 90 ? "mint" : null });
@@ -159,12 +162,12 @@ function create(api: EngineApi, spec: LandfallSpec): EngineInstance {
   // ── render
   function paintSky(c: Ctx) {
     c.fillStyle = C.bg; c.fillRect(0, 0, W, H);
-    const sky = c.createLinearGradient(0, 0, 0, LINE_Y); sky.addColorStop(0, "#090B11"); sky.addColorStop(0.7, "#0E1220"); sky.addColorStop(1, "#151A33");
+    const sky = c.createLinearGradient(0, 0, 0, LINE_Y); sky.addColorStop(0, C.landSkyTop); sky.addColorStop(0.7, C.landSkyMid); sky.addColorStop(1, C.landSkyLow);
     c.fillStyle = sky; c.fillRect(0, 0, W, LINE_Y);
-    const hg = c.createRadialGradient(500, LINE_Y, 10, 500, LINE_Y, 520); hg.addColorStop(0, "rgba(139,152,255,.22)"); hg.addColorStop(1, "rgba(139,152,255,0)");
+    const hg = c.createRadialGradient(500, LINE_Y, 10, 500, LINE_Y, 520); hg.addColorStop(0, withAlpha(C.ion, .22)); hg.addColorStop(1, withAlpha(C.ion, 0));
     c.fillStyle = hg; c.fillRect(-20, -20, W + 40, LINE_Y + 20);
-    c.fillStyle = "#0B0D15"; c.fillRect(-20, LINE_Y, W + 40, H - LINE_Y + 20);
-    c.strokeStyle = "rgba(139,152,255,.10)"; c.lineWidth = 1.5;
+    c.fillStyle = C.landfallGround; c.fillRect(-20, LINE_Y, W + 40, H - LINE_Y + 20);
+    c.strokeStyle = withAlpha(C.ion, .10); c.lineWidth = 1.5;
     const vpY = LINE_Y - 150;
     for (let i = -10; i <= 10; i++) { const xb = 500 + i * 70; c.beginPath(); c.moveTo(lerp(500, xb, (LINE_Y - vpY) / (H + 40 - vpY)), LINE_Y); c.lineTo(xb, H + 40); c.stroke(); }
   }
@@ -178,7 +181,7 @@ function create(api: EngineApi, spec: LandfallSpec): EngineInstance {
       ctx.globalAlpha = (0.25 + 0.5 * s.z) * (0.7 + 0.3 * Math.sin(s.tw)); ctx.fillStyle = s.z > 0.8 ? C.ion : C.ink2; ctx.fillRect(x - r / 2, s.y - r / 2, r, r);
     }
     ctx.globalAlpha = 1;
-    ctx.strokeStyle = "rgba(139,152,255,.10)"; ctx.lineWidth = 1.5;
+    ctx.strokeStyle = withAlpha(C.ion, .10); ctx.lineWidth = 1.5;
     const scroll = api.reducedMotion ? 0 : (now * 0.35) % 1;
     for (let j = 0; j < 7; j++) { const z = (j + scroll) / 7, y = LINE_Y + Math.pow(z, 2.1) * (H - LINE_Y + 30); ctx.globalAlpha = 0.25 + 0.75 * z; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
     ctx.globalAlpha = 1;
@@ -190,7 +193,8 @@ function create(api: EngineApi, spec: LandfallSpec): EngineInstance {
     if (g.state === "intro" || g.introA > 0.01) drawIntro(ctx);
     if (g.endCard && g.endCard.a > 0.01) drawEnd(ctx, g.endCard);
     if (g.finalCard) drawFinal(ctx, g.finalCard);
-    if (g.coachA > 0.01 && g.state !== "boot") api.text(ctx, T.coach, 500, 600, { font: "mono", size: 38, weight: 500, color: C.ink2, align: "center", alpha: g.coachA * (0.65 + 0.35 * Math.sin(now * 4)) });
+    // below the number line's labels (they end at y 573) and between its ends; wraps rather than run into them
+    if (g.state !== "boot") drawCoach(api, ctx, T.coach, g.coachA, now, 612, 760);
     fx.drawScreen(ctx);
   }
   function drawLine(ctx: Ctx) {
@@ -206,7 +210,7 @@ function create(api: EngineApi, spec: LandfallSpec): EngineInstance {
     }
     const ticks = g.scaffoldLeft > 0 ? Math.max(w.ticks, w.scaffoldTicks) : w.ticks;
     if (ticks > 1) {
-      ctx.strokeStyle = g.scaffoldLeft > 0 && w.ticks < ticks ? "rgba(139,152,255,.8)" : C.ink3; ctx.lineWidth = 4;
+      ctx.strokeStyle = g.scaffoldLeft > 0 && w.ticks < ticks ? withAlpha(C.ion, .8) : C.ink3; ctx.lineWidth = 4;
       for (let v = w.line[0]; v < w.line[1]; v++) for (let k = 1; k < ticks; k++) { const x = xOf(v + k / ticks); if (x > xEnd) continue; ctx.beginPath(); ctx.moveTo(x, LINE_Y - 12); ctx.lineTo(x, LINE_Y + 12); ctx.stroke(); }
     }
   }
@@ -234,10 +238,10 @@ function create(api: EngineApi, spec: LandfallSpec): EngineInstance {
     if (p.phase === "dive") { ctx.save(); ctx.scale(1 / p.sc, 1 / p.sc); ctx.globalAlpha = 0.6 * (1 - p.dive); ctx.strokeStyle = C.ion; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(p.trueX - p.x, LINE_Y - p.y); ctx.stroke(); ctx.restore(); }
     if (p.phase === "fall" && !api.reducedMotion) { ctx.save(); ctx.globalCompositeOperation = "lighter"; const fl = 26 + Math.sin(p.flame) * 6 + Math.sin(p.flame * 2.7) * 4; ctx.globalAlpha = 0.75; ctx.drawImage(glow(C.ion, 30), -22, h / 2 - 12, 44, fl + 24); ctx.restore(); }
     ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = 0.4 * p.a; ctx.drawImage(glow(C.ion, 80), -w / 2 - 34, -h / 2 - 34, w + 68, h + 68); ctx.restore();
-    const grd = ctx.createLinearGradient(0, -h / 2, 0, h / 2); grd.addColorStop(0, "#232A45"); grd.addColorStop(1, "#141829");
+    const grd = ctx.createLinearGradient(0, -h / 2, 0, h / 2); grd.addColorStop(0, C.landCardTop); grd.addColorStop(1, C.landCardLow);
     ctx.fillStyle = grd; roundRect(ctx, -w / 2, -h / 2, w, h, 30); ctx.fill();
     ctx.strokeStyle = C.ion; ctx.lineWidth = 4; ctx.stroke();
-    ctx.strokeStyle = "rgba(255,255,255,.10)"; ctx.lineWidth = 2; roundRect(ctx, -w / 2 + 6, -h / 2 + 6, w - 12, h - 12, 24); ctx.stroke();
+    ctx.strokeStyle = withAlpha(C.hi, .10); ctx.lineWidth = 2; roundRect(ctx, -w / 2 + 6, -h / 2 + 6, w - 12, h - 12, 24); ctx.stroke();
     if (f.whole) api.text(ctx, String(f.w), 0, 2, { font: "display", size: wholeSize, weight: 800, align: "center", baseline: "middle" });
     else if (f.decimal) api.text(ctx, f.label, 0, 4, { font: "display", size: 54, weight: 800, align: "center", baseline: "middle" });
     else {
@@ -255,7 +259,7 @@ function create(api: EngineApi, spec: LandfallSpec): EngineInstance {
       ctx.save(); ctx.globalAlpha = a;
       ctx.strokeStyle = col; ctx.lineWidth = 5; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(m.x, LINE_Y - 34); ctx.lineTo(m.x, LINE_Y + 10); ctx.stroke();
       const y = LINE_Y - 96, lw = api.measure(ctx, m.label, { font: "mono", size: 40, weight: 600 }) + 36, bx = clamp(m.x - lw / 2, 190, 830 - lw);
-      ctx.fillStyle = "rgba(16,19,27,.86)"; roundRect(ctx, bx, y - 30, lw, 60, 14); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = withAlpha(C.bg1, .86); roundRect(ctx, bx, y - 30, lw, 60, 14); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke();
       api.text(ctx, m.label, bx + lw / 2, y + 2, { font: "mono", size: 40, weight: 600, color: col, align: "center", baseline: "middle" });
       if (!m.ok) {
         const yb = LINE_Y + 36;
@@ -269,7 +273,7 @@ function create(api: EngineApi, spec: LandfallSpec): EngineInstance {
   }
   function drawIntro(ctx: Ctx) {
     const a = g.introA, w = wave(); if (a <= 0.01) return;
-    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = "rgba(10,12,18,.45)"; ctx.fillRect(0, 0, W, H);
+    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = withAlpha(C.bg, .45); ctx.fillRect(0, 0, W, H);
     const sc = 1 + (1 - ease.outCubic(Math.min(1, g.stateT / 0.5))) * 0.25;
     api.text(ctx, `${T.wave.toUpperCase()} ${g.waveIdx + 1} ${T.of.toUpperCase()} ${waves.length}`, 500, 220, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", track: 6 });
     ctx.save(); ctx.translate(500, 300); ctx.scale(sc, sc); api.text(ctx, w.title, 0, 0, { font: "display", size: 104, weight: 800, align: "center", baseline: "middle", track: -3 }); ctx.restore();
@@ -321,4 +325,4 @@ function create(api: EngineApi, spec: LandfallSpec): EngineInstance {
     },
   };
 }
-export const landfall: EngineDef<LandfallSpec> = { archetype: "catch-on-line@1", label: "Game · Landfall", accent: C.ion, create };
+export const landfall: EngineDef<LandfallSpec> = { archetype: "catch-on-line@1", label: "Game · Landfall", get accent() { return C.ion; }, create };

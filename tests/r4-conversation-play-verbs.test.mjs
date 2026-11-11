@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { MODES } from "../shared/play.ts";
-import { PLAY_ACTS, playActOf, playCheck } from "../server/director/play-verbs.js";
+import { PLAY_ACTS, PLAY_ACTS_DATA, verbsFrom, playActOf, playCheck } from "../server/director/play-verbs.js";
 import { initLessonState, step } from "../server/director/state.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { kit, CTX, cls, BRIEF } from "./fixtures/kit.mjs";
@@ -36,4 +36,16 @@ test("compile: with a Khand build piece up, the last check is the build verb, no
   assert.doesNotMatch(text.split("ONE MORE CHECK")[1], /the only question this turn/);
   const plain = instructionsFor({ ...st, playOn: undefined }, K, "text");
   assert.doesNotMatch(plain, /question card is folded away/);
+});
+
+test("round 7: a mode the code table lacks is read from Games' data/play/verbs.json; bad entries are skipped", () => {
+  const v = verbsFrom({ newfam: { roll: { act: "roll", hi: "gend ghumao", en: "roll the ball" }, bad: { act: "x", hi: "" } }, junk: 3 });
+  assert.deepEqual(Object.keys(v), ["newfam"]);
+  assert.deepEqual(Object.keys(v.newfam), ["roll"]);
+  assert.deepEqual(verbsFrom(null), {});
+  for (const [family, modes] of Object.entries(PLAY_ACTS_DATA)) for (const mode of Object.keys(modes)) {
+    const a = playActOf(family, mode);
+    assert.ok(a.act && a.hi && a.en, `${family}/${mode}`);
+    if (a.act !== "choose") assert.doesNotMatch(`${a.hi} ${a.en}`, /chun|choose|pick/i, `${family}/${mode}`);
+  }
 });

@@ -148,7 +148,7 @@
      "kind": "practice",
      "difficulty": 1,
      "prompt_en": "Three goats go out of the gate. Draw one line on the wall for each goat. How many lines will you draw?",
-     "prompt_hi": "Teen bakriyan gate se bahar gayin. Har bakri ke liye deewar pe ek line banao. Kitni lines banengi?",
+     "prompt_hi": "3 bakriyan gate se bahar gayin. Har bakri ke liye deewar pe ek line banao. Kitni lines banengi?",
      "answer": "3 lines: |||",
      "acceptable": [
       "3",
@@ -475,7 +475,8 @@
      "Evening: for each sheep that comes back, ___ one mark.",
      "5 sheep came back, so ___ marks are crossed off.",
      "___ mark is left alone, so one sheep is still outside."
-    ]
+    ],
+    "skillId": "c3-maths-ch01-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -498,6 +499,64 @@
     "fishing boats",
     "cricket players walking off the field",
     "mangoes in a heap"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch01-t01-s1",
+     "source": "What’s in a Name? — Deba and Deep mark the wall for each cow leaving",
+     "problem": "Deba’s 5 cows go out of the gate one by one. Deba makes a mark on the wall for each cow. How many marks will be on the wall?",
+     "givens": [
+      "5 cows go out one by one",
+      "one mark for each cow"
+     ],
+     "find": "the marks on the wall",
+     "steps": [
+      {
+       "do": "first cow goes out → one mark",
+       "result": "|"
+      },
+      {
+       "do": "one mark for each next cow",
+       "result": "| | | | |"
+      },
+      {
+       "do": "check: no cow marked twice, none skipped",
+       "result": "5 marks for 5 cows"
+      }
+     ],
+     "answer": "5 marks, one for each cow",
+     "why": "one cow → one mark → marks match the cows one to one → no number names needed"
+    },
+    {
+     "skillId": "c3-maths-ch01-t01-s3",
+     "source": "What’s in a Name? — keeping track with one pebble for each animal, without number names",
+     "problem": "In the morning Deep drops one pebble in a pot for each goat that goes out. Deep does not know number names. In the evening, how can he use the pebbles to check that every goat is back, and why does it work?",
+     "givens": [
+      "one pebble in the pot for each goat going out",
+      "Deep does not know number names"
+     ],
+     "find": "how Deep checks, and why it works",
+     "steps": [
+      {
+       "do": "each pebble stands for one goat",
+       "result": "pebble ↔ goat"
+      },
+      {
+       "do": "each goat coming in → take out one pebble",
+       "result": "one pebble out per goat"
+      },
+      {
+       "do": "pot empty → every pebble found its goat",
+       "result": "no goat missing"
+      },
+      {
+       "do": "pebble still in the pot",
+       "result": "a goat is still out"
+      }
+     ],
+     "answer": "Take out one pebble for each goat that comes in: if the pot ends empty, every goat is back, because each pebble stood for one goat",
+     "why": "one pebble for one goat → match each goat back to a pebble → nothing left over means nothing missing → works without number names"
+    }
    ]
   },
   {
@@ -579,8 +638,8 @@
       "Bundles look wider than four lines"
      ],
      "diagnostic": {
-      "prompt_en": "Asha drew 5 standing lines and then one line across them. How many marks did she make?",
-      "prompt_hi": "Asha ne 5 khadi lines banayi aur phir ek line unke upar aadi. Usne kitne mark banaye?",
+      "prompt_en": "{friendF} drew 5 standing lines and then one line across them. How many marks did she make?",
+      "prompt_hi": "{friendF} ne 5 khadi lines banayi aur phir ek line unke upar aadi. Usne kitne mark banaye?",
       "options": [
        {
         "text": "6: one too many for a bundle of 5",
@@ -811,8 +870,8 @@
      "skillId": "c3-maths-ch01-t02-s2",
      "kind": "near_transfer",
      "difficulty": 2,
-     "prompt_en": "At the mela, Riya kept tallies of balloons sold: 5 bundles and 2 loose lines. How many balloons did she sell?",
-     "prompt_hi": "Mele mein Riya ne bike gubbaaron ki tally rakhi: 5 bundle aur 2 alag lines. Kitne gubbaare bike?",
+     "prompt_en": "At the mela, {friendF} kept tallies of balloons sold: 5 bundles and 2 loose lines. How many balloons did she sell?",
+     "prompt_hi": "Mele mein {friendF} ne bike gubbaaron ki tally rakhi: 5 bundle aur 2 alag lines. Kitne gubbaare bike?",
      "answer": "27",
      "acceptable": [
       "twenty-seven",
@@ -962,7 +1021,8 @@
      "Count the bundles in 5s: 5, 10, ___.",
      "Now add the loose lines one by one: 16, ___.",
      "So the tally shows ___."
-    ]
+    ],
+    "skillId": "c3-maths-ch01-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -985,6 +1045,59 @@
     "birds at a feeder",
     "cars passing the gate",
     "names starting with each letter"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch01-t02-s1",
+     "source": "What’s in a Name? — tally marks in bundles of 5 for names starting with a letter",
+     "problem": "In Nisha’s class, 8 children have names that start with R. Say how you would show 8 with tally marks: how many bundles of 5, and how many loose lines?",
+     "givens": [
+      "8 names start with R"
+     ],
+     "find": "the tally for 8",
+     "steps": [
+      {
+       "do": "4 children → 4 standing lines",
+       "result": "| | | |"
+      },
+      {
+       "do": "5th child → one line across the 4",
+       "result": "1 bundle of 5"
+      },
+      {
+       "do": "3 more children → 3 standing lines",
+       "result": "5 + 3 = 8"
+      }
+     ],
+     "answer": "1 bundle of 5 and 3 loose lines",
+     "why": "4 standing lines + 1 across = a bundle of 5 → loose lines for the rest → bundles let us count fast in 5s"
+    },
+    {
+     "skillId": "c3-maths-ch01-t02-s3",
+     "source": "What’s in a Name? — comparing letter counts shown in tallies",
+     "problem": "Names starting with A: 2 bundles and 3 loose lines. Names starting with S: 1 bundle and 4 loose lines. Which letter has more names, and how many more?",
+     "givens": [
+      "A: 2 bundles and 3 loose lines",
+      "S: 1 bundle and 4 loose lines"
+     ],
+     "find": "which letter has more names, and by how many",
+     "steps": [
+      {
+       "do": "read A: 5, 10, then 11, 12, 13",
+       "result": "13"
+      },
+      {
+       "do": "read S: 5, then 6, 7, 8, 9",
+       "result": "9"
+      },
+      {
+       "do": "find the difference",
+       "result": "13 − 9 = 4"
+      }
+     ],
+     "answer": "A has more names: 4 more (13 and 9)",
+     "why": "read each tally as bundles of 5 plus loose lines → compare the totals, not how long the rows look → difference = how many more"
+    }
    ]
   },
   {
@@ -1114,6 +1227,42 @@
      "remediation": {
       "representation": "Shape-rotate tool that spins the same solid into many positions",
       "moveShape": "Child turns a real party cap every way and counts its faces each time; ask if anything changed"
+     }
+    },
+    {
+     "id": "c3-maths-ch02-t01-m-any-shape-stacks",
+     "skillId": "c3-maths-ch02-t01-s3",
+     "source": "Toy Joy — building toys from solid shapes that can sit on each other",
+     "belief": "Chooses shapes for a toy by how they look, not by their faces, so puts a ball or a cone on its point at the bottom and expects the toy to stand",
+     "signs": [
+      "Puts a ball at the bottom of a tower",
+      "Stands a cone on its point and puts a block on it",
+      "Says the toy fell because it was pushed, not because of the shape"
+     ],
+     "diagnostic": {
+      "prompt_en": "Meena is building a toy tower with a cube and a ball. One of them must go at the bottom so the tower stands. Which one should she put at the bottom?",
+      "prompt_hi": "Meena ek cube aur ek ball se toy tower bana rahi hai. Inme se ek neeche rakhna hai taaki tower khada rahe. Neeche kaun sa rakhna chahiye?",
+      "options": [
+       {
+        "text": "A cube",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "A ball",
+        "misconceptionId": "c3-maths-ch02-t01-m-any-shape-stacks",
+        "correct": false
+       },
+       {
+        "text": "None of them: a tower always falls",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Real blocks: a cube, a ball and a cone tried one by one at the bottom of a 2-block tower",
+      "moveShape": "try each shape at the bottom → see which one stays → feel its faces → flat face down and flat face up holds a block; curved face rolls"
      }
     }
    ],
@@ -1431,6 +1580,32 @@
       "solverAnswer": "A ball (or a laddoo, marble)",
       "agrees": true
      }
+    },
+    {
+     "id": "c3-maths-ch02-t01-i14",
+     "skillId": "c3-maths-ch02-t01-s3",
+     "kind": "near_transfer",
+     "difficulty": 2,
+     "source": "Toy Joy — choosing solid shapes for a toy (wheels that roll)",
+     "prompt_en": "Arjun is making a toy cart. He needs 4 wheels that can roll. Should he use cubes or cylinders for the wheels?",
+     "prompt_hi": "Arjun ek toy cart bana raha hai. Use 4 wheels chahiye jo roll kar sakein. Wheels ke liye cubes lega ya cylinders?",
+     "answer": "Cylinders: their curved side rolls",
+     "acceptable": [
+      "cylinders",
+      "cylinder",
+      "cylinders, because the curved side rolls"
+     ],
+     "hints": [
+      "What must a wheel do?",
+      "A wheel must roll.",
+      "Which shape has a curved side: cube or cylinder?",
+      "A cylinder has a curved side, so it rolls: use cylinders."
+     ],
+     "verified": {
+      "solverAnswer": "Cylinders (they roll on their curved side; cubes have flat faces and do not roll)",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand; quality round re-solved (young band C3A)"
+     }
     }
    ],
    "workedExample": {
@@ -1446,7 +1621,8 @@
      "Look at the bottom: another flat ___.",
      "Run your finger around the side: it is ___.",
      "So a cylinder has ___ flat faces and 1 curved face."
-    ]
+    ],
+    "skillId": "c3-maths-ch02-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -1469,6 +1645,63 @@
     "birthday caps",
     "steel glasses",
     "laddoos and oranges"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch02-t01-s1",
+     "source": "Toy Joy — naming the solid shapes in a Channapatna toy",
+     "problem": "A Channapatna toy doll has a ball for a head, a body like a round candle, and a party-cap hat. Name the shape of each part.",
+     "givens": [
+      "head like a ball",
+      "body like a round candle",
+      "hat like a party cap"
+     ],
+     "find": "the solid shape of each part",
+     "steps": [
+      {
+       "do": "head: round all over, rolls any way",
+       "result": "sphere"
+      },
+      {
+       "do": "body: 2 flat circles and a curved side",
+       "result": "cylinder"
+      },
+      {
+       "do": "hat: 1 flat circle and a point",
+       "result": "cone"
+      }
+     ],
+     "answer": "Head sphere (ball shape), body cylinder (candle or can shape), hat cone (cap shape)",
+     "why": "check the flat and curved faces of each part → match them to the solid with those faces → name that solid"
+    },
+    {
+     "skillId": "c3-maths-ch02-t01-s3",
+     "source": "Toy Joy — building toys from solid shapes that can sit on each other",
+     "problem": "Ravi has a cube, a cone and a ball. He wants a 2-block toy tower with a pointed top that does not fall. Which two shapes does he use, and which goes at the bottom?",
+     "givens": [
+      "a cube, a cone and a ball",
+      "2 blocks",
+      "pointed top",
+      "must not fall"
+     ],
+     "find": "the two shapes and their order",
+     "steps": [
+      {
+       "do": "bottom needs flat faces: one on the floor, one to hold the top",
+       "result": "cube"
+      },
+      {
+       "do": "top must be pointed and sit flat",
+       "result": "cone, flat circle down"
+      },
+      {
+       "do": "ball has no flat face, it rolls off",
+       "result": "ball not used"
+      }
+     ],
+     "answer": "Cube at the bottom, cone on top; the ball is not used",
+     "why": "a block stays only where a flat face sits on a flat face → choose each part by its faces → a shape with only a curved face rolls away"
+    }
    ]
   },
   {
@@ -1774,8 +2007,8 @@
      "skillId": "c3-maths-ch02-t02-s2",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Riya drew the top view of a birthday cap as a triangle. Is that right?",
-     "prompt_hi": "Riya ne birthday cap ka upar wala view tikon banaya. Kya yeh sahi hai?",
+     "prompt_en": "{friendF} drew the top view of a birthday cap as a triangle. Is that right?",
+     "prompt_hi": "{friendF} ne birthday cap ka upar wala view tikon banaya. Kya yeh sahi hai?",
      "answer": "No. From the top it looks like a circle, with the tip as a dot in the middle",
      "acceptable": [
       "no",
@@ -1872,7 +2105,7 @@
      "kind": "translate_rep",
      "difficulty": 3,
      "prompt_en": "Here are 3 views: top is a square, front is a square, side is a square. Name the solid.",
-     "prompt_hi": "Teen view hain: upar se square, saamne se square, side se square. Kaunsa solid hai?",
+     "prompt_hi": "3 view hain: upar se square, saamne se square, side se square. Kaunsa solid hai?",
      "answer": "A cube",
      "acceptable": [
       "cube",
@@ -1952,7 +2185,8 @@
      "Put your eye right above it: you see a ___, with the tip as a dot in the middle.",
      "Now put your eye at the side: two ___ lines meet at the tip, with a straight bottom.",
      "So the top view is a circle and the side view is a ___."
-    ]
+    ],
+    "skillId": "c3-maths-ch02-t02-s1"
    },
    "formats": {
     "primary": "F3",
@@ -1975,6 +2209,63 @@
     "cricket stadium from a drone",
     "toy blocks",
     "kites seen from below"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch02-t02-s2",
+     "source": "Toy Joy — matching top, front and side views to an object",
+     "problem": "An object looks like a rectangle from the top, a rectangle from the front, and a rectangle from the side. Is it a ball, a steel glass or a matchbox?",
+     "givens": [
+      "top view: rectangle",
+      "front view: rectangle",
+      "side view: rectangle",
+      "choices: ball, steel glass, matchbox"
+     ],
+     "find": "the object",
+     "steps": [
+      {
+       "do": "ball from the top",
+       "result": "circle, so not the ball"
+      },
+      {
+       "do": "steel glass from the top",
+       "result": "circle, so not the glass"
+      },
+      {
+       "do": "matchbox from top, front, side",
+       "result": "rectangles every time"
+      }
+     ],
+     "answer": "The matchbox",
+     "why": "check each object’s views against the given views → drop any that does not match → the one left fits every view"
+    },
+    {
+     "skillId": "c3-maths-ch02-t02-s3",
+     "source": "Toy Joy — the same object seen from different places",
+     "problem": "Nisha looks at a round tin with straight sides from right above it. Kabir looks at the same tin from the side. Nisha says it looks like a circle. Kabir says it looks like a rectangle. Who is right?",
+     "givens": [
+      "a round tin with straight sides",
+      "Nisha’s eye is right above the tin",
+      "Kabir’s eye is at the side"
+     ],
+     "find": "who is right",
+     "steps": [
+      {
+       "do": "eye above → only the round lid shows",
+       "result": "Nisha sees a circle"
+      },
+      {
+       "do": "eye at the side → height and width show",
+       "result": "Kabir sees a rectangle"
+      },
+      {
+       "do": "same tin, different places",
+       "result": "both are right"
+      }
+     ],
+     "answer": "Both are right",
+     "why": "what you see depends on where your eye is → top shows the round lid → side shows the height → one object, different views"
+    }
    ]
   },
   {
@@ -2361,7 +2652,7 @@
      "kind": "translate_rep",
      "difficulty": 3,
      "prompt_en": "Show 118 in three ways: with bundles, on a place-value chart, and in words.",
-     "prompt_hi": "118 ko teen tarah se dikhao: bundles se, place-value chart pe, aur shabdon mein.",
+     "prompt_hi": "118 ko 3 tarah se dikhao: bundles se, place-value chart pe, aur shabdon mein.",
      "answer": "1 hundred, 1 ten, 8 ones; H 1, T 1, O 8; one hundred eighteen",
      "acceptable": [
       "1 hundred 1 ten 8 ones",
@@ -2462,7 +2753,8 @@
      "Tens place: ___.",
      "Ones place: no loose sticks, so write ___ to hold the place.",
      "The number is ___, read as one hundred forty."
-    ]
+    ],
+    "skillId": "c3-maths-ch03-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -2485,6 +2777,63 @@
     "cricket runs",
     "train coach seats",
     "roll numbers in school"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch03-t01-s1",
+     "source": "Double Century — bundles of 100, bundles of 10 and loose sticks",
+     "problem": "Show 153 with sticks: bundles of hundred, bundles of ten and loose sticks.",
+     "givens": [
+      "the number 153"
+     ],
+     "find": "how many bundles of hundred, bundles of ten and loose sticks",
+     "steps": [
+      {
+       "do": "hundreds digit 1",
+       "result": "1 bundle of hundred"
+      },
+      {
+       "do": "tens digit 5",
+       "result": "5 bundles of ten"
+      },
+      {
+       "do": "ones digit 3",
+       "result": "3 loose sticks"
+      },
+      {
+       "do": "check",
+       "result": "100 + 50 + 3 = 153"
+      }
+     ],
+     "answer": "1 bundle of hundred, 5 bundles of ten and 3 loose sticks",
+     "why": "each place tells which bundle → hundreds, tens, loose ones → putting the bundles back together gives the number"
+    },
+    {
+     "skillId": "c3-maths-ch03-t01-s3",
+     "source": "Double Century — pages of the 200-page notebook, just after and 10 more",
+     "problem": "Mohan is on page 109 of his 200-page notebook. Which page comes just after? Which page is 10 pages later?",
+     "givens": [
+      "Mohan is on page 109",
+      "the notebook has 200 pages"
+     ],
+     "find": "the page just after and the page 10 later",
+     "steps": [
+      {
+       "do": "just after → one more page",
+       "result": "109 + 1 = 110"
+      },
+      {
+       "do": "10 ones make a new ten",
+       "result": "1 hundred, 1 ten, 0 ones"
+      },
+      {
+       "do": "10 later → one more ten",
+       "result": "109 + 10 = 119"
+      }
+     ],
+     "answer": "110 comes just after; 119 is 10 pages later",
+     "why": "just after → add 1 loose stick → 10 loose sticks become a new ten → 10 more → add one bundle of ten, the ones stay"
+    }
    ]
   },
   {
@@ -2973,7 +3322,8 @@
      "Jump to the next ten: 46 to 50 is ___.",
      "Jump in tens from 50 to 100: 5 jumps of 10 is ___.",
      "Add the jumps: 4 + 50 = ___. Check: 46 + 54 = 100."
-    ]
+    ],
+    "skillId": "c3-maths-ch03-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -2996,6 +3346,60 @@
     "km stones on a highway",
     "a 100-bead mala",
     "marks out of 100"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch03-t02-s1",
+     "source": "Double Century — making 100 with bundles of ten",
+     "problem": "Seema has 4 bundles of 10 sticks, which is 40 sticks. How many more sticks does she need to make 100?",
+     "givens": [
+      "4 bundles of 10 sticks = 40 sticks"
+     ],
+     "find": "the sticks needed to make 100",
+     "steps": [
+      {
+       "do": "100 sticks → bundles of ten",
+       "result": "10 bundles"
+      },
+      {
+       "do": "bundles still needed",
+       "result": "10 − 4 = 6"
+      },
+      {
+       "do": "6 bundles of ten → sticks",
+       "result": "60 sticks"
+      }
+     ],
+     "answer": "60 sticks: 40 + 60 = 100",
+     "why": "100 is 10 tens → count the tens she has → the missing tens make the partner"
+    },
+    {
+     "skillId": "c3-maths-ch03-t02-s3",
+     "source": "Double Century — Bholu’s jumps of 1 and 10 to reach 100",
+     "problem": "Bholu is on 38 on the number line. He makes jumps of 1 to reach the next ten, then jumps of 10 to reach 100. How far does he jump in all?",
+     "givens": [
+      "Bholu starts on 38",
+      "jumps of 1, then jumps of 10",
+      "goal: 100"
+     ],
+     "find": "how far he jumps in all (the distance from 38 to 100)",
+     "steps": [
+      {
+       "do": "jumps of 1: 38 to 40",
+       "result": "2"
+      },
+      {
+       "do": "jumps of 10: 40 to 100",
+       "result": "6 jumps of 10 = 60"
+      },
+      {
+       "do": "add the jumps",
+       "result": "2 + 60 = 62"
+      }
+     ],
+     "answer": "62: 2 jumps of 1 and 6 jumps of 10",
+     "why": "ones first to reach a tens number → then whole tens to 100 → add the jumps → that is the partner of 38"
+    }
    ]
   },
   {
@@ -3043,11 +3447,11 @@
       "Says any number is fine for an estimate"
      ],
      "diagnostic": {
-      "prompt_en": "Riya says 'about 100 chana', because one handful has about 10 and she took 10 handfuls. Golu says '500', because he likes that number. Whose estimate is better?",
-      "prompt_hi": "Riya kehti hai 'lagbhag 100 chane', kyunki ek mutthi mein lagbhag 10 hain aur usne 10 mutthi li. Golu kehta hai '500', kyunki use yeh number pasand hai. Kiska andaaza behtar hai?",
+      "prompt_en": "{friendF} says 'about 100 chana', because one handful has about 10 and she took 10 handfuls. Golu says '500', because he likes that number. Whose estimate is better?",
+      "prompt_hi": "{friendF} kehti hai 'lagbhag 100 chane', kyunki ek mutthi mein lagbhag 10 hain aur usne 10 mutthi li. Golu kehta hai '500', kyunki use yeh number pasand hai. Kiska andaaza behtar hai?",
       "options": [
        {
-        "text": "Riya's: she used a reason",
+        "text": "{friendF}'s: she used a reason",
         "misconceptionId": null,
         "correct": true
        },
@@ -3124,6 +3528,42 @@
      "remediation": {
       "representation": "Two collections shown with one-to-one matching lines",
       "moveShape": "Child groups both collections in tens on screen; ask which has more groups"
+     }
+    },
+    {
+     "id": "c3-maths-ch03-t03-m-leftover-as-ten",
+     "skillId": "c3-maths-ch03-t03-s2",
+     "source": "Double Century — checking an estimate by grouping in tens",
+     "belief": "When checking by groups of 10, counts the small leftover pile as one more ten",
+     "signs": [
+      "Says 9 groups of 10 and 7 left over is 100",
+      "Counts the leftover pile in the same skip count as the full groups",
+      "Gets a check that always lands on a tens number"
+     ],
+     "diagnostic": {
+      "prompt_en": "Kiran checks her estimate of marbles. She makes 8 groups of 10 marbles, and 6 marbles are left over. How many marbles are there?",
+      "prompt_hi": "Kiran apne marbles ka estimate check karti hai. Woh 10-10 marbles ke 8 groups banati hai, aur 6 marbles bach jaate hain. Kitne marbles hain?",
+      "options": [
+       {
+        "text": "86",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "90",
+        "misconceptionId": "c3-maths-ch03-t03-m-leftover-as-ten",
+        "correct": false
+       },
+       {
+        "text": "14",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Full groups of 10 marbles in cups, and the leftover marbles loose beside them",
+      "moveShape": "skip count only the full cups in tens → stop → the loose marbles are ones → add each one on: 81, 82 … → a cup that is not full is not a ten"
      }
     }
    ],
@@ -3456,7 +3896,8 @@
      "See how many handfuls the bag gives: about ___.",
      "Estimate: 10 handfuls of about 10 is about ___.",
      "Check: 9 groups of 10 and 8 extra is ___, close to 100."
-    ]
+    ],
+    "skillId": "c3-maths-ch03-t03-s1"
    },
    "formats": {
     "primary": "F3",
@@ -3479,6 +3920,63 @@
     "people in a bus",
     "mangoes in a basket",
     "birds on a wire"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch03-t03-s2",
+     "source": "Double Century — checking an estimate by grouping in tens",
+     "problem": "Anu estimated about 100 bangles in a box. To check, she puts them in groups of 10. She makes 9 groups, and 4 bangles are left over. How many bangles are there, and was her estimate close?",
+     "givens": [
+      "estimate: about 100",
+      "9 groups of 10",
+      "4 left over"
+     ],
+     "find": "the number of bangles, and whether the estimate was close",
+     "steps": [
+      {
+       "do": "count the groups in tens",
+       "result": "9 tens = 90"
+      },
+      {
+       "do": "add the leftover bangles",
+       "result": "90 + 4 = 94"
+      },
+      {
+       "do": "compare with 100",
+       "result": "100 − 94 = 6, close"
+      }
+     ],
+     "answer": "94 bangles; the estimate of 100 was close",
+     "why": "groups of 10 count fast in tens → leftovers are ones, added at the end → a small gap means a good estimate"
+    },
+    {
+     "skillId": "c3-maths-ch03-t03-s3",
+     "source": "Double Century — a reason for an estimate, and judging if it is close",
+     "problem": "Tara says there are about 100 peanuts in a jar. Her reason: one spoon holds about 10 peanuts, and the jar took 10 spoons. When counted, there are 96. A good estimate has a reason and is within 10 of the count. Was her estimate good?",
+     "givens": [
+      "one spoon holds about 10",
+      "the jar took 10 spoons",
+      "the count is 96",
+      "good = has a reason and is within 10 of the count"
+     ],
+     "find": "whether the estimate was good",
+     "steps": [
+      {
+       "do": "check the reason",
+       "result": "10 spoons of about 10 is about 100"
+      },
+      {
+       "do": "gap from the count",
+       "result": "100 − 96 = 4"
+      },
+      {
+       "do": "4 is less than 10",
+       "result": "close enough: good"
+      }
+     ],
+     "answer": "Yes, a good estimate: it has a reason, and 100 is only 4 away from 96",
+     "why": "a known small group (one spoon) → count the groups → estimate in tens → close to the count means a good estimate, it need not be exact"
+    }
    ]
   },
   {
@@ -3668,18 +4166,18 @@
      "skillId": "c3-maths-ch04-t01-s2",
      "kind": "practice",
      "difficulty": 3,
-     "prompt_en": "Riya has 40 marbles. That is 15 more than Golu has. How many marbles does Golu have?",
-     "prompt_hi": "Riya ke paas 40 kanche hain. Yeh Golu se 15 zyada hain. Golu ke paas kitne hain?",
+     "prompt_en": "{friendF} has 40 marbles. That is 15 more than Golu has. How many marbles does Golu have?",
+     "prompt_hi": "{friendF} ke paas 40 kanche hain. Yeh Golu se 15 zyada hain. Golu ke paas kitne hain?",
      "answer": "25",
      "acceptable": [
       "twenty-five",
       "pachchees"
      ],
      "hints": [
-      "Who has more, Riya or Golu?",
+      "Who has more, {friendF} or Golu?",
       "Golu has fewer, so take the extra away.",
       "40 − 15 = ___.",
-      "25: Golu has 15 fewer than Riya."
+      "25: Golu has 15 fewer than {friendF}."
      ],
      "targetsMisconception": "c3-maths-ch04-t01-m-more-means-add",
      "verified": {
@@ -3741,8 +4239,8 @@
      "skillId": "c3-maths-ch04-t01-s2",
      "kind": "contrast",
      "difficulty": 3,
-     "prompt_en": "Story A: Riya has 30 bangles. Meera has 12 more than Riya. How many has Meera? Story B: Riya has 30 bangles. That is 12 more than Meera has. How many has Meera?",
-     "prompt_hi": "Kahani A: Riya ke paas 30 choodiyan. Meera ke paas Riya se 12 zyada. Meera ke paas kitni? Kahani B: Riya ke paas 30 choodiyan. Yeh Meera se 12 zyada hain. Meera ke paas kitni?",
+     "prompt_en": "Story A: {friendF} has 30 bangles. Kavya has 12 more than {friendF}. How many has Kavya? Story B: {friendF} has 30 bangles. That is 12 more than Kavya has. How many has Kavya?",
+     "prompt_hi": "Kahani A: {friendF} ke paas 30 choodiyan. Kavya ke paas {friendF} se 12 zyada. Kavya ke paas kitni? Kahani B: {friendF} ke paas 30 choodiyan. Yeh Kavya se 12 zyada hain. Kavya ke paas kitni?",
      "answer": "A: 42. B: 18",
      "acceptable": [
       "42 and 18",
@@ -3750,9 +4248,9 @@
      ],
      "hints": [
       "In each story, who has more?",
-      "A: Meera has more. B: Riya has more.",
+      "A: Kavya has more. B: {friendF} has more.",
       "A: 30 + 12 = ___. B: 30 − 12 = ___.",
-      "A: Meera has 42. B: Meera has 18. Same words, different stories."
+      "A: Kavya has 42. B: Kavya has 18. Same words, different stories."
      ],
      "targetsMisconception": "c3-maths-ch04-t01-m-more-means-add",
      "verified": {
@@ -3839,9 +4337,9 @@
      "skillId": "c3-maths-ch04-t01-s3",
      "kind": "translate_rep",
      "difficulty": 3,
-     "prompt_en": "Draw two bars for: 'Riya has 35 shells, Golu has 20. How many more does Riya have?' Which part of the picture is the answer?",
-     "prompt_hi": "Do bar banao: 'Riya ke paas 35 seepiyan, Golu ke paas 20. Riya ke paas kitni zyada?' Picture ka kaunsa hissa jawab hai?",
-     "answer": "The extra part of Riya's bar beyond Golu's: 15",
+     "prompt_en": "Draw two bars for: '{friendF} has 35 shells, Golu has 20. How many more does {friendF} have?' Which part of the picture is the answer?",
+     "prompt_hi": "Do bar banao: '{friendF} ke paas 35 seepiyan, Golu ke paas 20. {friendF} ke paas kitni zyada?' Picture ka kaunsa hissa jawab hai?",
+     "answer": "The extra part of {friendF}'s bar beyond Golu's: 15",
      "acceptable": [
       "the extra part",
       "15"
@@ -3849,12 +4347,12 @@
      "hints": [
       "Which bar is longer?",
       "Line up the bars from the same start.",
-      "The bit of Riya's bar past Golu's is 35 − 20 = ___.",
-      "The extra part of Riya's bar: 15 shells."
+      "The bit of {friendF}'s bar past Golu's is 35 − 20 = ___.",
+      "The extra part of {friendF}'s bar: 15 shells."
      ],
      "targetsMisconception": "c3-maths-ch04-t01-m-more-means-add",
      "verified": {
-      "solverAnswer": "Two bars from the same start; the extra part of Riya's bar is the answer, 15",
+      "solverAnswer": "Two bars from the same start; the extra part of {friendF}'s bar is the answer, 15",
       "agrees": true
      }
     },
@@ -3934,8 +4432,8 @@
      "skillId": "c3-maths-ch04-t01-s3",
      "kind": "retrieval",
      "difficulty": 2,
-     "prompt_en": "Riya has 25 pencils. Golu has 18. How many fewer pencils does Golu have?",
-     "prompt_hi": "Riya ke paas 25 pencil hain. Golu ke paas 18. Golu ke paas kitni kam hain?",
+     "prompt_en": "{friendF} has 25 pencils. Golu has 18. How many fewer pencils does Golu have?",
+     "prompt_hi": "{friendF} ke paas 25 pencil hain. Golu ke paas 18. Golu ke paas kitni kam hain?",
      "answer": "7",
      "acceptable": [
       "seven",
@@ -3966,7 +4464,8 @@
      "'How many more' asks for the ___ between the piles.",
      "Count up from 29: 1 to reach 30, then ___ to reach 47, so 18.",
      "Check: 29 + ___ = 47. Nani has 18 more."
-    ]
+    ],
+    "skillId": "c3-maths-ch04-t01-s3"
    },
    "formats": {
     "primary": "F4",
@@ -3989,6 +4488,68 @@
     "rides at a mela",
     "cricket runs",
     "mango trees"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch04-t01-s1",
+     "source": "Vacation with My Nani Maa — Nani Maa’s balushahis, a put-together story",
+     "problem": "Nani Maa made 35 balushahis in the morning and 24 in the evening. How many balushahis did she make in all?",
+     "givens": [
+      "35 in the morning",
+      "24 in the evening"
+     ],
+     "find": "the balushahis in all",
+     "steps": [
+      {
+       "do": "picture: two plates put together",
+       "result": "join, so add"
+      },
+      {
+       "do": "add the tens",
+       "result": "30 + 20 = 50"
+      },
+      {
+       "do": "add the ones",
+       "result": "5 + 4 = 9"
+      },
+      {
+       "do": "put them together",
+       "result": "50 + 9 = 59"
+      }
+     ],
+     "answer": "59 balushahis",
+     "why": "two groups joined → add → tens with tens, ones with ones → put the tens and ones together"
+    },
+    {
+     "skillId": "c3-maths-ch04-t01-s2",
+     "source": "Vacation with My Nani Maa — the stamp collection, picturing the story instead of the word ‘more’",
+     "problem": "Nisha has 45 stamps. That is 18 more than Kabir has. How many stamps does Kabir have?",
+     "givens": [
+      "Nisha has 45 stamps",
+      "Nisha has 18 more than Kabir"
+     ],
+     "find": "Kabir’s stamps",
+     "steps": [
+      {
+       "do": "picture: Nisha’s pile is the bigger pile",
+       "result": "Kabir has fewer"
+      },
+      {
+       "do": "Kabir’s pile = Nisha’s pile without the extra 18",
+       "result": "subtract"
+      },
+      {
+       "do": "take away",
+       "result": "45 − 18 = 27"
+      },
+      {
+       "do": "check",
+       "result": "27 + 18 = 45"
+      }
+     ],
+     "answer": "27 stamps",
+     "why": "picture who has more → the word ‘more’ is about Nisha’s pile → Kabir’s pile is smaller → take the extra away"
+    }
    ]
   },
   {
@@ -4449,7 +5010,8 @@
      "Add 10 counters: box and ___.",
      "Take away 3 counters: box and ___.",
      "Take away the box (your number): ___ counters are left, whatever was in the box."
-    ]
+    ],
+    "skillId": "c3-maths-ch04-t02-s2"
    },
    "formats": {
     "primary": "F8",
@@ -4472,6 +5034,62 @@
     "a magic show at a mela",
     "dice and cards",
     "newspaper puzzles"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch04-t02-s1",
+     "source": "Vacation with My Nani Maa — Nani Maa’s number trick, trying it and noticing the answers",
+     "problem": "Nani Maa’s trick: think of a number, add 8, then take away your number. Try it with 3, then with 10. What do you notice?",
+     "givens": [
+      "the trick: add 8, then take away your number",
+      "try 3, then 10"
+     ],
+     "find": "the answers and the pattern",
+     "steps": [
+      {
+       "do": "start with 3",
+       "result": "3 + 8 = 11; 11 − 3 = 8"
+      },
+      {
+       "do": "start with 10",
+       "result": "10 + 8 = 18; 18 − 10 = 8"
+      },
+      {
+       "do": "compare the answers",
+       "result": "8 both times"
+      }
+     ],
+     "answer": "The answer is 8 both times: it is always 8",
+     "why": "follow each step with a number → write the answers side by side → the same answer each time is the pattern"
+    },
+    {
+     "skillId": "c3-maths-ch04-t02-s3",
+     "source": "Vacation with My Nani Maa — the stick game (take 1 or 2, last stick wins)",
+     "problem": "Put 5 pencils in a row in front of you: they are the sticks. You and Nani Maa play the stick game. Each turn you take 1 or 2 sticks. Whoever takes the last stick wins. You go first. How many sticks should you take?",
+     "givens": [
+      "5 sticks",
+      "take 1 or 2 each turn",
+      "last stick wins",
+      "you go first"
+     ],
+     "find": "how many sticks to take first",
+     "steps": [
+      {
+       "do": "aim: leave 3 sticks for Nani Maa",
+       "result": "5 − 2 = 3, so take 2"
+      },
+      {
+       "do": "Nani Maa takes 1",
+       "result": "2 left: you take both and win"
+      },
+      {
+       "do": "Nani Maa takes 2",
+       "result": "1 left: you take it and win"
+      }
+     ],
+     "answer": "Take 2 sticks, so 3 are left for Nani Maa",
+     "why": "leave 3 → whatever she takes (1 or 2), 1 or 2 are left for you → you take the last stick"
+    }
    ]
   },
   {
@@ -4683,7 +5301,7 @@
      "kind": "practice",
      "difficulty": 2,
      "prompt_en": "Start at 78. Jump back 10 two times, then 1 three times. Where are you?",
-     "prompt_hi": "78 se shuru karo. Peeche 10 ki do chhalaang, phir 1 ki teen. Kahaan ho?",
+     "prompt_hi": "78 se shuru karo. Peeche 10 ki do chhalaang, phir 1 ki 3. Kahaan ho?",
      "answer": "55",
      "acceptable": [
       "fifty-five",
@@ -4850,7 +5468,7 @@
      "kind": "translate_rep",
      "difficulty": 3,
      "prompt_en": "Write the number sentence for these jumps: start at 28, three jumps of 10 forward, then two jumps of 1 forward.",
-     "prompt_hi": "In chhalaangon ka number sentence likho: 28 se shuru, aage 10 ki teen chhalaang, phir 1 ki do.",
+     "prompt_hi": "In chhalaangon ka number sentence likho: 28 se shuru, aage 10 ki 3 chhalaang, phir 1 ki do.",
      "answer": "28 + 32 = 60",
      "acceptable": [
       "28 + 32 = 60",
@@ -4952,7 +5570,8 @@
      "Jump back 2 tens: 57, 47, ___.",
      "Jump back 4 ones: 36, 35, 34, ___.",
      "You land on 33, so 57 − 24 = ___."
-    ]
+    ],
+    "skillId": "c3-maths-ch04-t03-s2"
    },
    "formats": {
     "primary": "F3",
@@ -4975,6 +5594,68 @@
     "cricket score jumps",
     "a Ludo board",
     "floors in a lift"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch04-t03-s1",
+     "source": "Vacation with My Nani Maa — the frog’s jumps of 10 and 1 on the number line",
+     "problem": "The frog sits on 26. Find 26 + 32 by making jumps of 10 and then jumps of 1.",
+     "givens": [
+      "start at 26",
+      "add 32: 3 tens and 2 ones"
+     ],
+     "find": "where the frog lands",
+     "steps": [
+      {
+       "do": "stand on 26, not a jump",
+       "result": "26"
+      },
+      {
+       "do": "jump 3 tens",
+       "result": "36, 46, 56"
+      },
+      {
+       "do": "jump 2 ones",
+       "result": "57, 58"
+      },
+      {
+       "do": "land",
+       "result": "26 + 32 = 58"
+      }
+     ],
+     "answer": "58",
+     "why": "the start is where you stand → tens jumps change only the tens → ones jumps finish → the landing spot is the answer"
+    },
+    {
+     "skillId": "c3-maths-ch04-t03-s3",
+     "source": "Vacation with My Nani Maa — distance on the number line by counting the jumps",
+     "problem": "How far is it from 34 to 52 on the number line? Make jumps of 1 and 10, then add up how far you jumped.",
+     "givens": [
+      "from 34",
+      "to 52"
+     ],
+     "find": "the distance from 34 to 52",
+     "steps": [
+      {
+       "do": "stand on 34, not a jump",
+       "result": "34"
+      },
+      {
+       "do": "jumps of 1 from 34 to 40",
+       "result": "6"
+      },
+      {
+       "do": "one jump of 10 to 50, then 2 ones to 52",
+       "result": "10 + 2 = 12"
+      },
+      {
+       "do": "add the jumps",
+       "result": "6 + 12 = 18"
+      }
+     ],
+     "answer": "18",
+     "why": "count the jumps, not the marks → the start is not a jump → ones to a tens number, then tens, then ones → add them"
+    }
    ]
   },
   {
@@ -5097,6 +5778,42 @@
      "remediation": {
       "representation": "Animated turn of a square tile with side lengths shown",
       "moveShape": "Child turns a real square tile slowly; ask what changed and what stayed the same"
+     }
+    },
+    {
+     "id": "c3-maths-ch05-t01-m-start-corner-twice",
+     "skillId": "c3-maths-ch05-t01-s1",
+     "source": "Fun with Shapes — counting the sides and corners of 2D shapes",
+     "belief": "Going round a shape, counts the starting corner again at the end, so a square gets 5 corners and a triangle 4",
+     "signs": [
+      "Says a square has 5 corners",
+      "Touches the first corner again and keeps counting",
+      "Gets one more corner than sides"
+     ],
+     "diagnostic": {
+      "prompt_en": "Golu goes round a square tile touching each corner. He says 1, 2, 3, 4, then touches the first corner again and says 5. How many corners does the square tile have?",
+      "prompt_hi": "Golu ek square tile ke har corner ko chhoota hai. Woh bolta hai 1, 2, 3, 4, phir pehle corner ko dobara chhookar bolta hai 5. Square tile ke kitne corners hain?",
+      "options": [
+       {
+        "text": "4",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "5",
+        "misconceptionId": "c3-maths-ch05-t01-m-start-corner-twice",
+        "correct": false
+       },
+       {
+        "text": "8",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A paper square with a small sticker put on each corner as it is touched",
+      "moveShape": "put a sticker on the first corner → go round, one sticker per new corner → reach a corner that already has a sticker → stop"
      }
     }
    ],
@@ -5424,7 +6141,8 @@
      "Check the corners: all are ___ corners.",
      "Check the sides: opposite sides are ___, but not all four are equal.",
      "So it is a ___, but not a square."
-    ]
+    ],
+    "skillId": "c3-maths-ch05-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -5447,6 +6165,64 @@
     "sandwiches and parathas cut into pieces",
     "kites",
     "a carrom board"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch05-t01-s1",
+     "source": "Fun with Shapes — sides and corners of triangles and rectangles",
+     "problem": "Count the sides and corners of a triangle-shaped paper flag and of a rectangle-shaped door.",
+     "givens": [
+      "a triangle-shaped flag",
+      "a rectangle-shaped door"
+     ],
+     "find": "the sides and corners of each",
+     "steps": [
+      {
+       "do": "flag: run a finger along each straight side",
+       "result": "3 sides"
+      },
+      {
+       "do": "flag: touch each corner once",
+       "result": "3 corners"
+      },
+      {
+       "do": "door: go round once, stop at the start",
+       "result": "4 sides, 4 corners"
+      }
+     ],
+     "answer": "Flag: 3 sides and 3 corners. Door: 4 sides and 4 corners",
+     "why": "go round the shape once → touch each side and each corner one time → stop where you started, do not count it again"
+    },
+    {
+     "skillId": "c3-maths-ch05-t01-s3",
+     "source": "Fun with Shapes — a square is a square in any position or size",
+     "problem": "Ravi has a big square tile lying flat. He also has a small square tile, and he turns it so it stands on one corner, pointing down. Are both tiles still squares?",
+     "givens": [
+      "a big square tile lying flat",
+      "a small square tile turned to stand on one corner"
+     ],
+     "find": "whether both are squares",
+     "steps": [
+      {
+       "do": "count the sides of each",
+       "result": "4 sides each"
+      },
+      {
+       "do": "check the sides",
+       "result": "all 4 sides equal in each"
+      },
+      {
+       "do": "check the corners",
+       "result": "4 square corners in each"
+      },
+      {
+       "do": "turning and size do not change sides or corners",
+       "result": "both are squares"
+      }
+     ],
+     "answer": "Yes, both are squares",
+     "why": "a shape is named by its sides and corners → turning or making it bigger keeps the same sides and corners → so the name stays"
+    }
    ]
   },
   {
@@ -5573,6 +6349,42 @@
      "remediation": {
       "representation": "Cut-and-join tool with a draggable cut line",
       "moveShape": "Child drags the cut line from corner to corner; ask what shapes appear"
+     }
+    },
+    {
+     "id": "c3-maths-ch05-t02-m-join-makes-same-shape",
+     "skillId": "c3-maths-ch05-t02-s1",
+     "source": "Fun with Shapes — joining tangram triangles to make new shapes",
+     "belief": "Thinks two same shapes put together always make a bigger copy of that shape (two triangles must make a big triangle)",
+     "signs": [
+      "Says two triangles can only make a triangle",
+      "Does not try joining along different sides",
+      "Is surprised that two triangles make a square"
+     ],
+     "diagnostic": {
+      "prompt_en": "Rani has two same small tangram triangles. Each has one square corner, two short sides and one long side. She puts the two LONG sides together, touching all along. Her friend says two triangles together always make a bigger triangle. What shape did Rani make?",
+      "prompt_hi": "Rani ke paas do same chhote tangram triangles hain. Har ek mein ek square corner, do chhoti sides aur ek lambi side hai. Woh dono LAMBI sides ko poora milakar jodti hai. Uski dost kehti hai ki do triangles milkar hamesha bada triangle banate hain. Rani ne kaun si shape banayi?",
+      "options": [
+       {
+        "text": "A square",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "A bigger triangle",
+        "misconceptionId": "c3-maths-ch05-t02-m-join-makes-same-shape",
+        "correct": false
+       },
+       {
+        "text": "A circle",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Two same small tangram triangles joined first along the long sides, then along the short sides",
+      "moveShape": "join along the long sides → a square → join along a short side → a bigger triangle → which sides touch decides the new shape"
      }
     }
    ],
@@ -5751,8 +6563,8 @@
      "skillId": "c3-maths-ch05-t02-s2",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Riya says a square cannot be cut into triangles, only into smaller squares. Is she right?",
-     "prompt_hi": "Riya kehti hai square ko tikon mein nahi kaat sakte, sirf chhote squares mein. Kya woh sahi hai?",
+     "prompt_en": "{friendF} says a square cannot be cut into triangles, only into smaller squares. Is she right?",
+     "prompt_hi": "{friendF} kehti hai square ko tikon mein nahi kaat sakte, sirf chhote squares mein. Kya woh sahi hai?",
      "answer": "No: a corner-to-corner cut makes 2 triangles",
      "acceptable": [
       "no",
@@ -5904,7 +6716,8 @@
      "Turn one so that their ___ sides touch.",
      "The square corners now sit at opposite ends, making a ___.",
      "Nothing was added or cut, so the square covers the ___ space as the 2 triangles."
-    ]
+    ],
+    "skillId": "c3-maths-ch05-t02-s1"
    },
    "formats": {
     "primary": "F3",
@@ -5927,6 +6740,61 @@
     "floor tiles",
     "rangoli pieces",
     "kite making"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch05-t02-s2",
+     "source": "Fun with Shapes — splitting a shape into smaller shapes by folding and cutting",
+     "problem": "Fold a square paper in half like a book, so the two halves match. Open it and cut along the fold. What shapes do you get?",
+     "givens": [
+      "a square paper",
+      "fold in half like a book",
+      "cut along the fold"
+     ],
+     "find": "the shapes of the pieces",
+     "steps": [
+      {
+       "do": "fold like a book",
+       "result": "fold line down the middle"
+      },
+      {
+       "do": "cut along the fold",
+       "result": "2 pieces"
+      },
+      {
+       "do": "each piece: 4 sides, square corners, 2 long and 2 short sides",
+       "result": "2 rectangles"
+      }
+     ],
+     "answer": "2 rectangles",
+     "why": "where you cut decides the pieces → a side-to-side cut keeps square corners → each half has 2 long and 2 short sides → a rectangle"
+    },
+    {
+     "skillId": "c3-maths-ch05-t02-s3",
+     "source": "Fun with Shapes — tangram pictures from the same pieces cover the same space",
+     "problem": "Raju makes a boat from 3 tangram pieces. Then he moves the same 3 pieces to make a house. Which covers more space, the boat or the house?",
+     "givens": [
+      "the boat uses 3 tangram pieces",
+      "the house uses the same 3 pieces, moved"
+     ],
+     "find": "which covers more space",
+     "steps": [
+      {
+       "do": "boat pieces",
+       "result": "3 pieces"
+      },
+      {
+       "do": "house pieces",
+       "result": "the same 3 pieces, nothing added or cut"
+      },
+      {
+       "do": "same pieces → same space",
+       "result": "both cover the same space"
+      }
+     ],
+     "answer": "Both cover the same space",
+     "why": "the space comes from the pieces → moving pieces does not add or cut any → so the space stays the same"
+    }
    ]
   },
   {
@@ -6384,7 +7252,8 @@
      "Run your finger along the round part: it is a ___ edge.",
      "Find where the two edges meet: one point at each ___.",
      "So: 1 straight edge, 1 curved edge and ___ corners."
-    ]
+    ],
+    "skillId": "c3-maths-ch05-t03-s2"
    },
    "formats": {
     "primary": "F3",
@@ -6407,6 +7276,66 @@
     "letters of the alphabet",
     "kites",
     "clocks"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch05-t03-s1",
+     "source": "Fun with Shapes — sorting by straight edges, curved edges or both",
+     "problem": "Sort a bangle, a ruler and half a roti into: only straight edges, only curved edges, or both.",
+     "givens": [
+      "a bangle",
+      "a ruler",
+      "half a roti"
+     ],
+     "find": "which group each object goes in",
+     "steps": [
+      {
+       "do": "bangle: the edge bends all the way round",
+       "result": "only curved"
+      },
+      {
+       "do": "ruler: the edges do not bend",
+       "result": "only straight"
+      },
+      {
+       "do": "half roti: a straight cut and a round part",
+       "result": "both"
+      }
+     ],
+     "answer": "Bangle: only curved. Ruler: only straight. Half roti: both",
+     "why": "run a finger along each edge → bends means curved, no bend means straight → an object with one of each goes in ‘both’"
+    },
+    {
+     "skillId": "c3-maths-ch05-t03-s3",
+     "source": "Fun with Shapes — drawing shapes on a dot grid with straight lines between dots",
+     "problem": "On a dot grid, a gap is the space from one dot to the next. Golu starts at a dot and draws straight lines: 3 gaps across, 2 gaps down, 3 gaps back, and 2 gaps up to where he started. What shape did he draw?",
+     "givens": [
+      "straight lines between dots",
+      "3 gaps across, 2 down, 3 back, 2 up",
+      "ends where he started"
+     ],
+     "find": "the shape Golu drew",
+     "steps": [
+      {
+       "do": "count the lines",
+       "result": "4 straight sides"
+      },
+      {
+       "do": "across then down, back then up",
+       "result": "4 square corners"
+      },
+      {
+       "do": "sides: 3, 2, 3, 2 gaps",
+       "result": "opposite sides equal, not all equal"
+      },
+      {
+       "do": "name it",
+       "result": "a rectangle"
+      }
+     ],
+     "answer": "A rectangle (3 gaps long and 2 gaps wide)",
+     "why": "join dots with straight lines only → opposite sides the same number of gaps → square corners at the dots → a rectangle"
+    }
    ]
   },
   {
@@ -6775,8 +7704,8 @@
      "skillId": "c3-maths-ch06-t01-s2",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Riya wrote 'two hundred fifty' as 20050. Is that right?",
-     "prompt_hi": "Riya ne 'two hundred fifty' ko 20050 likha. Kya yeh sahi hai?",
+     "prompt_en": "{friendF} wrote 'two hundred fifty' as 20050. Is that right?",
+     "prompt_hi": "{friendF} ne 'two hundred fifty' ko 20050 likha. Kya yeh sahi hai?",
      "answer": "No. It is 250: 2 hundreds, 5 tens, 0 ones",
      "acceptable": [
       "no",
@@ -6925,7 +7854,8 @@
      "Tens place: there are no tens, so write ___ to hold the place.",
      "Ones place: ___.",
      "The number is ___: three hundred eight."
-    ]
+    ],
+    "skillId": "c3-maths-ch06-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -6948,6 +7878,67 @@
     "pages of a storybook",
     "runs in a test match",
     "school roll numbers"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch06-t01-s1",
+     "source": "House of Hundreds – I — showing a number with ₹100 notes, ₹10 notes and ₹1 coins",
+     "problem": "Show ₹235 with ₹100 notes, ₹10 notes and ₹1 coins.",
+     "givens": [
+      "₹235",
+      "₹100 notes, ₹10 notes and ₹1 coins"
+     ],
+     "find": "how many of each",
+     "steps": [
+      {
+       "do": "hundreds digit 2",
+       "result": "two ₹100 notes"
+      },
+      {
+       "do": "tens digit 3",
+       "result": "three ₹10 notes"
+      },
+      {
+       "do": "ones digit 5",
+       "result": "five ₹1 coins"
+      },
+      {
+       "do": "check",
+       "result": "200 + 30 + 5 = 235"
+      }
+     ],
+     "answer": "Two ₹100 notes, three ₹10 notes and five ₹1 coins",
+     "why": "each digit’s place says which note or coin → hundreds → ₹100, tens → ₹10, ones → ₹1 → adding them gives the amount"
+    },
+    {
+     "skillId": "c3-maths-ch06-t01-s3",
+     "source": "House of Hundreds – I — breaking a number into hundreds, tens and ones",
+     "problem": "Break 704 into hundreds, tens and ones.",
+     "givens": [
+      "the number 704"
+     ],
+     "find": "the hundreds, tens and ones of 704",
+     "steps": [
+      {
+       "do": "7 in the hundreds place",
+       "result": "700"
+      },
+      {
+       "do": "0 in the tens place",
+       "result": "0 tens"
+      },
+      {
+       "do": "4 in the ones place",
+       "result": "4"
+      },
+      {
+       "do": "join them",
+       "result": "700 + 0 + 4 = 704"
+      }
+     ],
+     "answer": "700 + 0 + 4: 7 hundreds, 0 tens and 4 ones",
+     "why": "a digit’s worth comes from its place → 7 in the hundreds is 700 → 0 holds the empty tens → the parts add back to the number"
+    }
    ]
   },
   {
@@ -7071,6 +8062,42 @@
      "remediation": {
       "representation": "Crocodile-mouth animation that opens towards the bigger pile of notes",
       "moveShape": "Child builds both numbers in notes and turns the open side to the bigger pile; ask which way it faces"
+     }
+    },
+    {
+     "id": "c3-maths-ch06-t02-m-same-hundreds-unsorted",
+     "skillId": "c3-maths-ch06-t02-s2",
+     "source": "House of Hundreds – I — ordering 3-digit numbers by hundreds, then tens, then ones",
+     "belief": "Orders numbers by the hundreds digit only; numbers with the same hundreds are left in the order they were given",
+     "signs": [
+      "Writes 534 before 518 because 534 came first",
+      "Sorts the hundreds correctly but never checks the tens",
+      "Order changes when the same numbers are given in a different order"
+     ],
+     "diagnostic": {
+      "prompt_en": "Put 534, 290 and 518 in order, smallest first. Which number comes last?",
+      "prompt_hi": "534, 290 aur 518 ko order mein lagao, sabse chhota pehle. Sabse last mein kaun sa number aayega?",
+      "options": [
+       {
+        "text": "534",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "518",
+        "misconceptionId": "c3-maths-ch06-t02-m-same-hundreds-unsorted",
+        "correct": false
+       },
+       {
+        "text": "290",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Each number shown with ₹100, ₹10 and ₹1 notes, put in piles by the number of ₹100 notes",
+      "moveShape": "pile by ₹100 notes first → a pile with 2 numbers → compare their ₹10 notes → still the same → compare ₹1 coins → place each one"
      }
     }
    ],
@@ -7269,7 +8296,7 @@
      "kind": "near_transfer",
      "difficulty": 3,
      "prompt_en": "Three schools have 456, 465 and 546 children. Which is the biggest school, and which is the smallest?",
-     "prompt_hi": "Teen schoolon mein 456, 465 aur 546 bachche hain. Sabse bada school kaunsa, sabse chhota kaunsa?",
+     "prompt_hi": "3 schoolon mein 456, 465 aur 546 bachche hain. Sabse bada school kaunsa, sabse chhota kaunsa?",
      "answer": "Biggest 546, smallest 456",
      "acceptable": [
       "546 and 456"
@@ -7391,7 +8418,8 @@
      "Tens: 7 in 472 and ___ in 427. 7 tens is more.",
      "We do not need the ___ now.",
      "So 472 ___ 427."
-    ]
+    ],
+    "skillId": "c3-maths-ch06-t02-s1"
    },
    "formats": {
     "primary": "F3",
@@ -7414,6 +8442,58 @@
     "prices at a shop",
     "pages in books",
     "people at a mela"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch06-t02-s2",
+     "source": "House of Hundreds – I — ordering 3-digit numbers (train seats)",
+     "problem": "Three trains have 418, 381 and 413 seats. Write the three numbers down first, then put them in order, smallest first.",
+     "givens": [
+      "418, 381, 413"
+     ],
+     "find": "the order, smallest first",
+     "steps": [
+      {
+       "do": "look at the hundreds",
+       "result": "381 has 3 hundreds: smallest"
+      },
+      {
+       "do": "418 and 413: hundreds and tens the same",
+       "result": "look at the ones"
+      },
+      {
+       "do": "ones: 3 and 8",
+       "result": "413 before 418"
+      }
+     ],
+     "answer": "381, 413, 418",
+     "why": "hundreds first → the smallest hundreds goes first → same hundreds and tens → the ones decide → keep going until all are placed"
+    },
+    {
+     "skillId": "c3-maths-ch06-t02-s3",
+     "source": "House of Hundreds – I — using < and > with place value",
+     "problem": "Put < or > between 586 and 568, and say why.",
+     "givens": [
+      "586 and 568"
+     ],
+     "find": "the sign and the reason",
+     "steps": [
+      {
+       "do": "hundreds: 5 and 5",
+       "result": "same"
+      },
+      {
+       "do": "tens: 8 tens and 6 tens",
+       "result": "8 tens is more"
+      },
+      {
+       "do": "open side faces the bigger number",
+       "result": "586 > 568"
+      }
+     ],
+     "answer": "586 > 568 (586 is greater than 568), because 8 tens is more than 6 tens",
+     "why": "hundreds first → equal, so tens decide → the open mouth of the sign faces the bigger number"
+    }
    ]
   },
   {
@@ -7524,7 +8604,7 @@
      ],
      "diagnostic": {
       "prompt_en": "Three plates have 4, 4 and 3 puris. Can we write 3 × 4 for this?",
-      "prompt_hi": "Teen plate mein 4, 4 aur 3 puri hain. Kya iske liye 3 × 4 likh sakte hain?",
+      "prompt_hi": "3 plate mein 4, 4 aur 3 puri hain. Kya iske liye 3 × 4 likh sakte hain?",
       "options": [
        {
         "text": "No, the groups are not equal",
@@ -7541,6 +8621,42 @@
      "remediation": {
       "representation": "Plates lined up so the missing puri shows as an empty spot",
       "moveShape": "Child matches the plates side by side; ask what is missing to make them equal"
+     }
+    },
+    {
+     "id": "c3-maths-ch07-t01-m-turn-changes-total",
+     "skillId": "c3-maths-ch07-t01-s3",
+     "source": "Raksha Bandhan — the same array turned around has the same total",
+     "belief": "Thinks turning an array changes the total, so 4 rows of 3 and 3 rows of 4 must be different amounts",
+     "signs": [
+      "Says there are more now because there are more rows",
+      "Counts again after turning and expects a new number",
+      "Thinks 3 × 4 and 4 × 3 give different answers"
+     ],
+     "diagnostic": {
+      "prompt_en": "{friendF} puts laddoos on a plate in 3 rows of 4. Then she turns the plate, so now there are 4 rows of 3. Did the number of laddoos change?",
+      "prompt_hi": "{friendF} ek plate par laddoo 3 rows mein rakhti hai, har row mein 4. Phir woh plate ghuma deti hai, ab 4 rows hain, har row mein 3. Kya laddoo kam ya zyada hue?",
+      "options": [
+       {
+        "text": "No, there are still 12 laddoos",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Yes, there are more now, because there are more rows",
+        "misconceptionId": "c3-maths-ch07-t01-m-turn-changes-total",
+        "correct": false
+       },
+       {
+        "text": "No, there are still 7 laddoos",
+        "misconceptionId": "c3-maths-ch07-t01-m-adds-the-numbers",
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A real plate of 12 laddoos in 3 rows of 4, turned a quarter turn in front of the child",
+      "moveShape": "count the rows of 4 → turn the plate → nothing picked up, nothing put down → count the rows of 3 → same 12"
      }
     }
    ],
@@ -7870,7 +8986,8 @@
      "There are 4 rows, so it is 4 groups of 5: 4 × ___.",
      "Skip count by 5 for each row: 5, 10, 15, ___.",
      "4 × 5 = ___ rakhis. Turning the thali shows 5 × 4 = 20 too."
-    ]
+    ],
+    "skillId": "c3-maths-ch07-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -7893,6 +9010,68 @@
     "auto-rickshaws",
     "chairs at a party",
     "cricket teams"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch07-t01-s1",
+     "source": "Raksha Bandhan — sweets in boxes as equal groups",
+     "problem": "Didi puts 3 laddoos in each of 4 boxes for her brothers. How many laddoos are there? Write the multiplication fact.",
+     "givens": [
+      "4 boxes",
+      "3 laddoos in each box"
+     ],
+     "find": "the total and the fact",
+     "steps": [
+      {
+       "do": "check each box has the same",
+       "result": "3 in each box"
+      },
+      {
+       "do": "4 boxes → 4 groups of 3",
+       "result": "4 × 3"
+      },
+      {
+       "do": "skip count by 3, one count per box",
+       "result": "3, 6, 9, 12"
+      },
+      {
+       "do": "write the fact",
+       "result": "4 × 3 = 12"
+      }
+     ],
+     "answer": "12 laddoos: 4 × 3 = 12 (3 × 4 = 12 is also fine)",
+     "why": "equal groups only → number of groups × size of each group → skip count the group size once per group"
+    },
+    {
+     "skillId": "c3-maths-ch07-t01-s3",
+     "source": "Raksha Bandhan — rakhis in rows on a thali, turned around",
+     "problem": "Rakhis on a thali are in 2 rows of 5. Amma turns the thali, and now there are 5 rows of 2. Is the total the same?",
+     "givens": [
+      "2 rows of 5",
+      "after turning: 5 rows of 2"
+     ],
+     "find": "whether the total changed",
+     "steps": [
+      {
+       "do": "2 rows of 5",
+       "result": "2 × 5 = 10"
+      },
+      {
+       "do": "turn the thali",
+       "result": "5 rows of 2"
+      },
+      {
+       "do": "skip count by 2 for each row",
+       "result": "5 × 2 = 10"
+      },
+      {
+       "do": "no rakhi added or taken",
+       "result": "same total"
+      }
+     ],
+     "answer": "Yes, the same: 2 × 5 = 5 × 2 = 10 rakhis",
+     "why": "turning the thali moves the rows, not the rakhis → nothing added or taken → the total stays the same"
+    }
    ]
   },
   {
@@ -8376,7 +9555,8 @@
      "5 groups of 4 are ___.",
      "2 more groups of 4 are ___.",
      "20 + 8 = ___, so 7 × 4 = 28."
-    ]
+    ],
+    "skillId": "c3-maths-ch07-t02-s3"
    },
    "formats": {
     "primary": "F3",
@@ -8399,6 +9579,56 @@
     "legs of animals",
     "₹5 coins",
     "packets of biscuits"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch07-t02-s1",
+     "source": "Raksha Bandhan — building the table of 5 by skip counting",
+     "problem": "Each hand has 5 fingers. How many fingers are on 6 hands? Use skip counting.",
+     "givens": [
+      "5 fingers on each hand",
+      "6 hands"
+     ],
+     "find": "the fingers on 6 hands",
+     "steps": [
+      {
+       "do": "skip count by 5, one count per hand",
+       "result": "5, 10, 15, 20, 25, 30"
+      },
+      {
+       "do": "6 hands → 6 groups of 5",
+       "result": "6 × 5 = 30"
+      }
+     ],
+     "answer": "30 fingers: 6 × 5 = 30",
+     "why": "each hand is one group of 5 → skip count by 5 once per hand → the last count is the total"
+    },
+    {
+     "skillId": "c3-maths-ch07-t02-s2",
+     "source": "Raksha Bandhan — building the table of 4 by doubling the table of 2",
+     "problem": "Each box has 4 sweets: 2 red and 2 green. How many sweets are in 6 boxes? Count the red sweets first, then double.",
+     "givens": [
+      "4 sweets in each box: 2 red and 2 green",
+      "6 boxes"
+     ],
+     "find": "the sweets in 6 boxes",
+     "steps": [
+      {
+       "do": "red sweets: 2 in each of 6 boxes",
+       "result": "6 × 2 = 12"
+      },
+      {
+       "do": "green sweets are the same → double",
+       "result": "12 + 12 = 24"
+      },
+      {
+       "do": "check by skip counting in 4s",
+       "result": "4, 8, 12, 16, 20, 24"
+      }
+     ],
+     "answer": "24 sweets: 6 × 4 = 24",
+     "why": "each group of 4 is two groups of 2 → the 4 table is the 2 table doubled → skip counting checks it"
+    }
    ]
   },
   {
@@ -8771,17 +10001,17 @@
      "skillId": "c3-maths-ch08-t01-s3",
      "kind": "far_transfer",
      "difficulty": 4,
-     "prompt_en": "Riya and 3 friends share one pizza equally. Golu and 1 friend share a same-size pizza equally. Who gets more pizza?",
-     "prompt_hi": "Riya aur uske 3 dost ek pizza barabar baantte hain. Golu aur uska 1 dost utna hi bada pizza barabar baantte hain. Kisko zyada milega?",
-     "answer": "Golu: he gets a half, Riya gets a quarter",
+     "prompt_en": "{friendF} and 3 friends share one pizza equally. Golu and 1 friend share a same-size pizza equally. Who gets more pizza?",
+     "prompt_hi": "{friendF} aur uske 3 dost ek pizza barabar baantte hain. Golu aur uska 1 dost utna hi bada pizza barabar baantte hain. Kisko zyada milega?",
+     "answer": "Golu: he gets a half, {friendF} gets a quarter",
      "acceptable": [
       "Golu",
       "a half"
      ],
      "hints": [
       "How many people share each pizza?",
-      "Riya's pizza: 4 people. Golu's: 2 people.",
-      "Golu gets a ___, Riya gets a ___.",
+      "{friendF}'s pizza: 4 people. Golu's: 2 people.",
+      "Golu gets a ___, {friendF} gets a ___.",
       "Golu gets more: a half is bigger than a quarter."
      ],
      "targetsMisconception": "c3-maths-ch08-t01-m-quarter-bigger",
@@ -8852,7 +10082,8 @@
      "Fold it in half again: now there are ___ equal parts.",
      "Each part is a ___: one of 4 equal parts.",
      "2 quarters make a ___, and 4 quarters make the whole roti."
-    ]
+    ],
+    "skillId": "c3-maths-ch08-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -8875,6 +10106,64 @@
     "chocolate bars",
     "paper folding",
     "watermelon slices"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch08-t01-s1",
+     "source": "Fair Share — equal parts: halves must match",
+     "problem": "Meena cuts a chapati into 2 pieces. She puts one piece on top of the other, and one piece sticks out past the edge. Are the 2 pieces halves?",
+     "givens": [
+      "1 chapati cut into 2 pieces",
+      "one piece sticks out when put on the other"
+     ],
+     "find": "whether the 2 pieces are halves",
+     "steps": [
+      {
+       "do": "put one piece on the other",
+       "result": "one piece sticks out"
+      },
+      {
+       "do": "pieces do not match",
+       "result": "the pieces are not equal"
+      },
+      {
+       "do": "not equal → not halves",
+       "result": "they are not halves"
+      }
+     ],
+     "answer": "No. The pieces are not equal, so they are not halves.",
+     "why": "halves are 2 equal parts → put one on the other → match means equal → sticking out means not halves"
+    },
+    {
+     "skillId": "c3-maths-ch08-t01-s3",
+     "source": "Fair Share — a half and a quarter of the same roti",
+     "problem": "Nisha gets half of a roti. Ravi gets a quarter of a roti of the same size. Who gets more roti?",
+     "givens": [
+      "Nisha: half of a roti",
+      "Ravi: a quarter of a same-size roti"
+     ],
+     "find": "who gets more",
+     "steps": [
+      {
+       "do": "half → roti folded into 2 equal parts",
+       "result": "Nisha gets 1 of 2 parts"
+      },
+      {
+       "do": "quarter → roti folded into 4 equal parts",
+       "result": "Ravi gets 1 of 4 parts"
+      },
+      {
+       "do": "put 1 quarter on top of a half",
+       "result": "it covers only part of the half"
+      },
+      {
+       "do": "part of the half → smaller",
+       "result": "a half is bigger than a quarter"
+      }
+     ],
+     "answer": "Nisha gets more: a half is bigger than a quarter of the same roti.",
+     "why": "same roti → shared among 4 instead of 2 → each part smaller → a quarter is less than a half"
+    }
    ]
   },
   {
@@ -8990,11 +10279,11 @@
       "Compares halves of different wholes as equal"
      ],
      "diagnostic": {
-      "prompt_en": "Riya ate half of a box of 10 laddoos. Golu ate half of a box of 6 laddoos. Did they eat the same number?",
-      "prompt_hi": "Riya ne 10 laddoo ke dibbe ka aadha khaaya. Golu ne 6 laddoo ke dibbe ka aadha. Kya dono ne barabar khaaye?",
+      "prompt_en": "{friendF} ate half of a box of 10 laddoos. Golu ate half of a box of 6 laddoos. Did they eat the same number?",
+      "prompt_hi": "{friendF} ne 10 laddoo ke dibbe ka aadha khaaya. Golu ne 6 laddoo ke dibbe ka aadha. Kya dono ne barabar khaaye?",
       "options": [
        {
-        "text": "No: Riya ate 5 and Golu ate 3",
+        "text": "No: {friendF} ate 5 and Golu ate 3",
         "misconceptionId": null,
         "correct": true
        },
@@ -9232,22 +10521,22 @@
      "skillId": "c3-maths-ch08-t02-s1",
      "kind": "near_transfer",
      "difficulty": 3,
-     "prompt_en": "Riya ate half of a box of 10 laddoos. Golu ate half of a box of 6 laddoos. Who ate more?",
-     "prompt_hi": "Riya ne 10 laddoo ke dibbe ka aadha khaaya. Golu ne 6 laddoo ke dibbe ka aadha. Kisne zyada khaaye?",
-     "answer": "Riya: 5 laddoos, while Golu ate 3",
+     "prompt_en": "{friendF} ate half of a box of 10 laddoos. Golu ate half of a box of 6 laddoos. Who ate more?",
+     "prompt_hi": "{friendF} ne 10 laddoo ke dibbe ka aadha khaaya. Golu ne 6 laddoo ke dibbe ka aadha. Kisne zyada khaaye?",
+     "answer": "{friendF}: 5 laddoos, while Golu ate 3",
      "acceptable": [
-      "Riya",
+      "{friendF}",
       "5 vs 3"
      ],
      "hints": [
       "Find each half.",
       "Half of 10 and half of 6.",
-      "Riya ___, Golu ___.",
-      "Riya ate more: 5 vs 3."
+      "{friendF} ___, Golu ___.",
+      "{friendF} ate more: 5 vs 3."
      ],
      "targetsMisconception": "c3-maths-ch08-t02-m-half-fixed-amount",
      "verified": {
-      "solverAnswer": "Riya (5 vs 3)",
+      "solverAnswer": "{friendF} (5 vs 3)",
       "agrees": true
      }
     },
@@ -9280,8 +10569,8 @@
      "skillId": "c3-maths-ch08-t02-s2",
      "kind": "far_transfer",
      "difficulty": 4,
-     "prompt_en": "Nani has ₹40. She gives half to Riya, and then half of what is left to Golu. How much does Golu get?",
-     "prompt_hi": "Nani ke paas ₹40 hain. Woh aadha Riya ko deti hain, phir jo bacha uska aadha Golu ko. Golu ko kitna mila?",
+     "prompt_en": "Nani has ₹40. She gives half to {friendF}, and then half of what is left to Golu. How much does Golu get?",
+     "prompt_hi": "Nani ke paas ₹40 hain. Woh aadha {friendF} ko deti hain, phir jo bacha uska aadha Golu ko. Golu ko kitna mila?",
      "answer": "₹10",
      "acceptable": [
       "10",
@@ -9289,7 +10578,7 @@
       "das"
      ],
      "hints": [
-      "How much does Riya get first?",
+      "How much does {friendF} get first?",
       "Half of 40 is 20, so 20 is left.",
       "Half of 20 is ___.",
       "₹10."
@@ -9361,7 +10650,8 @@
      "Put out 4 plates and give ___ laddoo to each plate, again and again.",
      "When all 12 are given out, each plate has ___.",
      "So a quarter of 12 is 3 (and half of 12 is ___, two plates together)."
-    ]
+    ],
+    "skillId": "c3-maths-ch08-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -9384,6 +10674,63 @@
     "ribbons",
     "marbles",
     "mangoes from the tree"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch08-t02-s1",
+     "source": "Fair Share — half of a collection by sharing into 2 equal groups",
+     "problem": "Find half of 10 bangles.",
+     "givens": [
+      "10 bangles"
+     ],
+     "find": "half of 10 bangles",
+     "steps": [
+      {
+       "do": "put out 2 plates",
+       "result": "2 empty plates"
+      },
+      {
+       "do": "one bangle to each plate, again and again",
+       "result": "5 bangles on each plate"
+      },
+      {
+       "do": "check both plates together",
+       "result": "5 + 5 = 10"
+      },
+      {
+       "do": "half is one plate",
+       "result": "5 bangles"
+      }
+     ],
+     "answer": "Half of 10 bangles is 5 bangles.",
+     "why": "half → 2 equal groups → share one at a time → one group is the half"
+    },
+    {
+     "skillId": "c3-maths-ch08-t02-s3",
+     "source": "Fair Share — sharing an odd number by cutting one into halves",
+     "problem": "Nisha and Ravi share 3 mangoes fairly. How much does each child get?",
+     "givens": [
+      "3 mangoes",
+      "2 children"
+     ],
+     "find": "each child's share",
+     "steps": [
+      {
+       "do": "give 1 mango to each child",
+       "result": "1 each, 1 mango left"
+      },
+      {
+       "do": "cut the last mango into 2 equal parts",
+       "result": "2 halves"
+      },
+      {
+       "do": "give one half to each child",
+       "result": "each gets 1 and a half mangoes"
+      }
+     ],
+     "answer": "Each child gets 1 and a half mangoes.",
+     "why": "share whole ones first → one is left → cut it into 2 equal halves → each gets a half more"
+    }
    ]
   },
   {
@@ -9506,6 +10853,42 @@
      "remediation": {
       "representation": "Zoomed line from 300 to 400 with 380 marked and both distances shown",
       "moveShape": "Child counts tens from 380 to each hundred; ask which trip is shorter"
+     }
+    },
+    {
+     "id": "c3-maths-ch09-t01-m-halfway-adds-five",
+     "skillId": "c3-maths-ch09-t01-s2",
+     "source": "House of Hundreds – II — the number halfway between two hundreds",
+     "belief": "Thinks the number halfway between two hundreds is the hundred plus 5 (halfway between 300 and 400 is 305), as halfway between 30 and 40 is 35",
+     "signs": [
+      "Says halfway between 300 and 400 is 305",
+      "Puts 305 in the middle of the 300 to 400 gap",
+      "Says halfway between 600 and 700 is 605"
+     ],
+     "diagnostic": {
+      "prompt_en": "Ravi says the number exactly halfway between 300 and 400 is 305. What is the number halfway between 300 and 400?",
+      "prompt_hi": "Ravi kehta hai ki 300 aur 400 ke bilkul beech mein 305 aata hai. 300 aur 400 ke beech mein kaunsa number hai?",
+      "options": [
+       {
+        "text": "350",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "305",
+        "misconceptionId": "c3-maths-ch09-t01-m-halfway-adds-five",
+        "correct": false
+       },
+       {
+        "text": "340",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A 300 to 400 gap shown as 10 bundles of 10 sticks laid in a row",
+      "moveShape": "the gap holds 100 → half of 100 is 50 → step 50 from 300 → 350, not 305"
      }
     }
    ],
@@ -9704,8 +11087,8 @@
      "skillId": "c3-maths-ch09-t01-s1",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Riya's line shows 0, 100, 200, 300 with small gaps, and then 400, 500 with big gaps. What is wrong?",
-     "prompt_hi": "Riya ki line mein 0, 100, 200, 300 chhote gap mein, aur phir 400, 500 bade gap mein hain. Kya galat hai?",
+     "prompt_en": "{friendF}'s line shows 0, 100, 200, 300 with small gaps, and then 400, 500 with big gaps. What is wrong?",
+     "prompt_hi": "{friendF} ki line mein 0, 100, 200, 300 chhote gap mein, aur phir 400, 500 bade gap mein hain. Kya galat hai?",
      "answer": "The gaps must all be equal, because each one is 100",
      "acceptable": [
       "gaps must be equal",
@@ -9854,7 +11237,8 @@
      "640 has 6 hundreds, so it is between 600 and ___.",
      "Halfway between them is ___, and 640 is just before it.",
      "Put 640 a little before the ___ of the 600 to 700 gap."
-    ]
+    ],
+    "skillId": "c3-maths-ch09-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -9877,6 +11261,59 @@
     "pages in a fat book",
     "steps up to a hill temple",
     "seats in a cinema hall"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch09-t01-s1",
+     "source": "House of Hundreds – II — the hundreds on a number line with equal gaps",
+     "problem": "Ravi lays same-size sticks in a line, starting at 0. Each stick is 100. What number is at the end of the 4th stick?",
+     "givens": [
+      "same-size sticks in a line from 0",
+      "each stick = 100"
+     ],
+     "find": "the number at the end of the 4th stick",
+     "steps": [
+      {
+       "do": "same sticks → same gaps",
+       "result": "every gap is 100"
+      },
+      {
+       "do": "count 4 sticks by hundreds",
+       "result": "100, 200, 300, 400"
+      }
+     ],
+     "answer": "400.",
+     "why": "each gap is the same 100 → equal sticks give equal gaps → count the sticks in hundreds"
+    },
+    {
+     "skillId": "c3-maths-ch09-t01-s3",
+     "source": "House of Hundreds – II — the nearest hundred on the number line",
+     "problem": "A school has 630 children. Is 630 nearer to 600 or to 700?",
+     "givens": [
+      "630 children"
+     ],
+     "find": "the nearest hundred to 630",
+     "steps": [
+      {
+       "do": "find the two hundreds around 630",
+       "result": "600 and 700"
+      },
+      {
+       "do": "find the halfway mark",
+       "result": "650"
+      },
+      {
+       "do": "count the gaps",
+       "result": "630 − 600 = 30 and 700 − 630 = 70"
+      },
+      {
+       "do": "smaller gap wins",
+       "result": "nearer to 600"
+      }
+     ],
+     "answer": "Nearer to 600 (6 hundreds).",
+     "why": "find the hundreds on each side → see which side of the halfway mark it falls → the closer hundred is the nearest"
+    }
    ]
   },
   {
@@ -10015,6 +11452,42 @@
      "remediation": {
       "representation": "Notes-and-coins exchange: one ₹100 note opened into ten ₹10 notes",
       "moveShape": "Child opens a hundred, removes one ten, and re-reads; ask how many tens are left"
+     }
+    },
+    {
+     "id": "c3-maths-ch09-t02-m-hundred-changes-tens",
+     "skillId": "c3-maths-ch09-t02-s2",
+     "source": "House of Hundreds – II — patterns going up or down by 100",
+     "belief": "When adding or taking away 100, changes the tens digit instead of the hundreds digit (353 + 100 = 363)",
+     "signs": [
+      "Writes 253, 353, 363 for a pattern going up by 100",
+      "Says 100 more than 456 is 466",
+      "Changes the middle digit for every jump"
+     ],
+     "diagnostic": {
+      "prompt_en": "A pattern goes up by 100: 253, 353, ___. Golu writes 363. What is the next number?",
+      "prompt_hi": "Pattern 100 se badhta hai: 253, 353, ___. Golu 363 likhta hai. Agla number kya hai?",
+      "options": [
+       {
+        "text": "453",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "363",
+        "misconceptionId": "c3-maths-ch09-t02-m-hundred-changes-tens",
+        "correct": false
+       },
+       {
+        "text": "354",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Bundles of 100 sticks, 10 sticks and loose sticks; one bundle of 100 added",
+      "moveShape": "say what was added: a bundle of 100 → only the hundreds go up by 1 → tens and ones stay the same"
      }
     }
    ],
@@ -10183,8 +11656,8 @@
      "skillId": "c3-maths-ch09-t02-s1",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Counting by 10, Golu wrote 690, 700, 710, 720. Riya wrote 690, 6100, 6110. Who is right?",
-     "prompt_hi": "10-10 ginte hue Golu ne likha 690, 700, 710, 720. Riya ne likha 690, 6100, 6110. Kaun sahi hai?",
+     "prompt_en": "Counting by 10, Golu wrote 690, 700, 710, 720. {friendF} wrote 690, 6100, 6110. Who is right?",
+     "prompt_hi": "10-10 ginte hue Golu ne likha 690, 700, 710, 720. {friendF} ne likha 690, 6100, 6110. Kaun sahi hai?",
      "answer": "Golu. After 9 tens, 10 tens make a new hundred: 690 + 10 = 700",
      "acceptable": [
       "Golu"
@@ -10339,6 +11812,34 @@
       "solverAnswer": "556",
       "agrees": true
      }
+    },
+    {
+     "id": "c3-maths-ch09-t02-i15",
+     "skillId": "c3-maths-ch09-t02-s2",
+     "source": "House of Hundreds – II — patterns going up by 100",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "Count on by 100: 253, 353, ___, ___. What are the next two numbers?",
+     "prompt_hi": "100 ke jump se aage gino: 253, 353, ___, ___. Agle do number kya hain?",
+     "answer": "453, 553",
+     "acceptable": [
+      "453, 553",
+      "453 and 553",
+      "four hundred fifty-three, five hundred fifty-three",
+      "chaar sau tirpan, paanch sau tirpan"
+     ],
+     "hints": [
+      "Which digit changes when you add 100?",
+      "Only the hundreds digit goes up by 1.",
+      "353 + 100 = ___",
+      "453, then 553."
+     ],
+     "targetsMisconception": "c3-maths-ch09-t02-m-hundred-changes-tens",
+     "verified": {
+      "solverAnswer": "453, 553",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand; quality round re-solved (young band C3B)"
+     }
     }
    ],
    "workedExample": {
@@ -10354,7 +11855,8 @@
      "495 + 10: the tens are already 9, so 9 tens and 1 ten make ___ tens.",
      "10 tens make 1 hundred: the hundreds go from 4 to ___ and the tens become 0.",
      "The next number is ___."
-    ]
+    ],
+    "skillId": "c3-maths-ch09-t02-s1"
    },
    "formats": {
     "primary": "F3",
@@ -10377,6 +11879,67 @@
     "page numbers",
     "railway coach numbers",
     "a savings jar"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch09-t02-s2",
+     "source": "House of Hundreds – II — patterns going up by 100",
+     "problem": "Ravi has 125 sticks. Each day he gets one more bundle of 100 sticks: 125, 225, 325, ___, ___. What are the next two numbers?",
+     "givens": [
+      "125, 225, 325",
+      "one bundle of 100 more each day"
+     ],
+     "find": "the next two numbers",
+     "steps": [
+      {
+       "do": "see what changes",
+       "result": "the hundreds digit goes up by 1"
+      },
+      {
+       "do": "see what stays",
+       "result": "2 tens and 5 ones stay"
+      },
+      {
+       "do": "add one more bundle",
+       "result": "325 + 100 = 425"
+      },
+      {
+       "do": "add one more bundle again",
+       "result": "425 + 100 = 525"
+      }
+     ],
+     "answer": "425, 525",
+     "why": "one bundle of 100 → one more hundred → only the hundreds digit changes"
+    },
+    {
+     "skillId": "c3-maths-ch09-t02-s3",
+     "source": "House of Hundreds – II — finding the rule by the digit that changes",
+     "problem": "Find the rule: 617, 627, 637, 647.",
+     "givens": [
+      "617, 627, 637, 647"
+     ],
+     "find": "the rule of the pattern",
+     "steps": [
+      {
+       "do": "look at the hundreds digit",
+       "result": "6 every time"
+      },
+      {
+       "do": "look at the ones digit",
+       "result": "7 every time"
+      },
+      {
+       "do": "look at the tens digit",
+       "result": "1, 2, 3, 4: up by 1"
+      },
+      {
+       "do": "one more ten each time",
+       "result": "the rule is add 10"
+      }
+     ],
+     "answer": "Add 10 each time.",
+     "why": "find the digit that changes → the tens go up by 1 → one more ten → add 10"
+    }
    ]
   },
   {
@@ -10505,6 +12068,42 @@
      "remediation": {
       "representation": "Metre-tape sim showing a chalk mark where each scale-length ends",
       "moveShape": "Child moves the scale only to the chalk mark each time; ask what would happen with a gap"
+     }
+    },
+    {
+     "id": "c3-maths-ch10-t01-m-unit-any-word",
+     "skillId": "c3-maths-ch10-t01-s2",
+     "source": "Fun at Class Party! — choosing centimetres or metres",
+     "belief": "Thinks the unit word does not matter, so writes a small thing in metres (a pencil is 15 m long)",
+     "signs": [
+      "Says a pencil is about 15 m long",
+      "Writes the classroom as 8 cm long",
+      "Picks cm or m without comparing with the 1 m scale"
+     ],
+     "diagnostic": {
+      "prompt_en": "{friendF}'s pencil is about as long as her hand. Golu says it is 15 m long. Which is right for the pencil?",
+      "prompt_hi": "{friendF} ki pencil lagbhag uske haath jitni lambi hai. Golu kehta hai pencil 15 m lambi hai. Pencil ke liye kya sahi hai?",
+      "options": [
+       {
+        "text": "15 cm",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "15 m",
+        "misconceptionId": "c3-maths-ch10-t01-m-unit-any-word",
+        "correct": false
+       },
+       {
+        "text": "150 m",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A pencil held against a 1 metre scale, next to the classroom door",
+      "moveShape": "compare the thing with the 1 m scale → much shorter → cm → many scales long → m"
      }
     }
    ],
@@ -10709,8 +12308,8 @@
      "skillId": "c3-maths-ch10-t01-s3",
      "kind": "near_transfer",
      "difficulty": 3,
-     "prompt_en": "Riya is 1 m and 25 cm tall. How many centimetres is that?",
-     "prompt_hi": "Riya 1 m aur 25 cm lambi hai. Kitne centimetre hue?",
+     "prompt_en": "{friendF} is 1 m and 25 cm tall. How many centimetres is that?",
+     "prompt_hi": "{friendF} 1 m aur 25 cm lambi hai. Kitne centimetre hue?",
      "answer": "125 cm",
      "acceptable": [
       "125"
@@ -10821,6 +12420,34 @@
       "solverAnswer": "At 0",
       "agrees": true
      }
+    },
+    {
+     "id": "c3-maths-ch10-t01-i14",
+     "skillId": "c3-maths-ch10-t01-s2",
+     "source": "Fun at Class Party! — choosing centimetres or metres",
+     "kind": "practice",
+     "difficulty": 1,
+     "prompt_en": "Would you measure the length of an eraser in centimetres or in metres?",
+     "prompt_hi": "Eraser ki lambai tum centimetre mein naapoge ya metre mein?",
+     "answer": "Centimetres",
+     "acceptable": [
+      "centimetres",
+      "centimetre",
+      "cm",
+      "centimeter"
+     ],
+     "hints": [
+      "Is an eraser longer or shorter than the 1 metre scale?",
+      "It is much shorter than 1 metre.",
+      "Small things are measured in ___.",
+      "Centimetres."
+     ],
+     "targetsMisconception": "c3-maths-ch10-t01-m-unit-any-word",
+     "verified": {
+      "solverAnswer": "Centimetres",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand; quality round re-solved (young band C3B)"
+     }
     }
    ],
    "workedExample": {
@@ -10836,7 +12463,8 @@
      "Look where it ends: at ___.",
      "Count the centimetre gaps between 3 and 10: 10 − 3 = ___.",
      "The crayon is ___ cm long."
-    ]
+    ],
+    "skillId": "c3-maths-ch10-t01-s1"
    },
    "formats": {
     "primary": "F3",
@@ -10859,6 +12487,65 @@
     "a height chart on the wall",
     "pencils and crayons",
     "a cloth shop"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch10-t01-s2",
+     "source": "Fun at Class Party! — choosing centimetres or metres",
+     "problem": "Ravi wants to measure his school bag and the length of his classroom. Which one should he measure in centimetres, and which one in metres?",
+     "givens": [
+      "a school bag",
+      "a classroom",
+      "a 1 metre scale"
+     ],
+     "find": "cm or m for each",
+     "steps": [
+      {
+       "do": "hold the bag next to the 1 m scale",
+       "result": "the bag is shorter than the scale"
+      },
+      {
+       "do": "shorter than 1 metre → small unit",
+       "result": "the bag in cm"
+      },
+      {
+       "do": "lay the 1 m scale along the classroom",
+       "result": "it fits many times"
+      },
+      {
+       "do": "many metres long → big unit",
+       "result": "the classroom in m"
+      }
+     ],
+     "answer": "The school bag in centimetres; the classroom in metres.",
+     "why": "compare with the 1 m scale → shorter than it → cm → many scales long → m"
+    },
+    {
+     "skillId": "c3-maths-ch10-t01-s3",
+     "source": "Fun at Class Party! — 1 metre is 100 centimetres",
+     "problem": "Nisha's ribbon is 1 m long. Ravi's ribbon is 85 cm long. Whose ribbon is longer, and by how much?",
+     "givens": [
+      "Nisha's ribbon: 1 m",
+      "Ravi's ribbon: 85 cm"
+     ],
+     "find": "the longer ribbon and the difference",
+     "steps": [
+      {
+       "do": "change 1 m to cm",
+       "result": "100 cm"
+      },
+      {
+       "do": "compare 100 cm and 85 cm",
+       "result": "100 is more than 85"
+      },
+      {
+       "do": "find the difference",
+       "result": "100 − 85 = 15"
+      }
+     ],
+     "answer": "Nisha's ribbon is longer, by 15 cm.",
+     "why": "same unit first → 1 m is 100 cm → then compare the numbers"
+    }
    ]
   },
   {
@@ -10991,6 +12678,42 @@
      "remediation": {
       "representation": "Metre strip folded twice with each part's cm length shown",
       "moveShape": "Child folds the strip into 4 and reads where the first fold is; ask how many cm one part is"
+     }
+    },
+    {
+     "id": "c3-maths-ch10-t02-m-fold-ends-not-matched",
+     "skillId": "c3-maths-ch10-t02-s2",
+     "source": "Fun at Class Party! — folding a metre strip into halves",
+     "belief": "Folds the metre strip without making the ends meet and still calls the two parts half metres",
+     "signs": [
+      "Folds anywhere and cuts at the fold",
+      "Calls a longer and a shorter piece 'two half metres'",
+      "Does not check the ends before cutting"
+     ],
+     "diagnostic": {
+      "prompt_en": "Golu folds a 1 m ribbon, but one end sticks out past the other end. He cuts at the fold. Is each piece half a metre?",
+      "prompt_hi": "Golu 1 m ribbon fold karta hai, par ek end doosre end se bahar nikla hua hai. Woh fold par kaat deta hai. Kya har piece half metre hai?",
+      "options": [
+       {
+        "text": "No, the pieces are not equal",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Yes, a fold makes halves",
+        "misconceptionId": "c3-maths-ch10-t02-m-fold-ends-not-matched",
+        "correct": false
+       },
+       {
+        "text": "Yes, each is 50 m",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A metre-long ribbon folded twice: once with the ends meeting, once with one end sticking out",
+      "moveShape": "ends must meet before the fold → put one piece on the other → same length → only then half a metre"
      }
     }
    ],
@@ -11338,7 +13061,8 @@
      "A quarter metre is 100 cm shared into 4 equal parts: ___ cm.",
      "Add them: 100 + ___.",
      "1 and a quarter metres is ___ cm."
-    ]
+    ],
+    "skillId": "c3-maths-ch10-t02-s3"
    },
    "formats": {
     "primary": "F3",
@@ -11361,6 +13085,60 @@
     "a garden pipe",
     "flower garlands",
     "a rangoli border"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch10-t02-s1",
+     "source": "Fun at Class Party! — half metre and quarter metre in centimetres",
+     "problem": "Meena has a half-metre ribbon. Ravi has a quarter-metre ribbon. How many centimetres long is each ribbon?",
+     "givens": [
+      "Meena: half a metre",
+      "Ravi: a quarter metre"
+     ],
+     "find": "each ribbon in cm",
+     "steps": [
+      {
+       "do": "1 metre in cm",
+       "result": "100 cm"
+      },
+      {
+       "do": "half → 2 equal parts of 100 cm",
+       "result": "50 + 50 = 100, so half a metre is 50 cm"
+      },
+      {
+       "do": "quarter → half of a half",
+       "result": "25 + 25 = 50, so a quarter metre is 25 cm"
+      }
+     ],
+     "answer": "Meena's ribbon is 50 cm; Ravi's ribbon is 25 cm.",
+     "why": "1 m is 100 cm → half is 2 equal parts → quarter is 4 equal parts → 50 cm and 25 cm"
+    },
+    {
+     "skillId": "c3-maths-ch10-t02-s2",
+     "source": "Fun at Class Party! — folding a metre strip into halves",
+     "problem": "For the party, Nisha needs a half-metre paper strip. She has a 1 m strip and no scale. How can she get half a metre?",
+     "givens": [
+      "a 1 m paper strip",
+      "no scale"
+     ],
+     "find": "a half-metre piece",
+     "steps": [
+      {
+       "do": "bring the two ends together and fold",
+       "result": "a fold in the middle"
+      },
+      {
+       "do": "open the strip",
+       "result": "2 equal parts"
+      },
+      {
+       "do": "cut at the fold",
+       "result": "2 pieces, each half a metre (50 cm)"
+      }
+     ],
+     "answer": "Fold the strip so the two ends meet, then cut at the fold. The 2 pieces are equal, so each is half a metre (50 cm).",
+     "why": "ends meet → the 2 parts are equal → 2 equal parts of 1 m → each is half a metre"
+    }
    ]
   },
   {
@@ -11466,8 +13244,8 @@
       "Counts cups only"
      ],
      "diagnostic": {
-      "prompt_en": "Riya filled a bucket with 6 big mugs. Golu filled the same bucket with 10 small cups. Golu says his bucket holds more. Is he right?",
-      "prompt_hi": "Riya ne baalti 6 bade mug se bhari. Golu ne wahi baalti 10 chhote cup se bhari. Golu kehta hai uski baalti mein zyada aata hai. Kya woh sahi hai?",
+      "prompt_en": "{friendF} filled a bucket with 6 big mugs. Golu filled the same bucket with 10 small cups. Golu says his bucket holds more. Is he right?",
+      "prompt_hi": "{friendF} ne baalti 6 bade mug se bhari. Golu ne wahi baalti 10 chhote cup se bhari. Golu kehta hai uski baalti mein zyada aata hai. Kya woh sahi hai?",
       "options": [
        {
         "text": "No, it is the same bucket; his cups were smaller",
@@ -11484,6 +13262,42 @@
      "remediation": {
       "representation": "Side-by-side cup counter with a big mug and a small cup filling the same bucket",
       "moveShape": "Child pours one mug into small cups to see how many it fills; ask why the counts differ"
+     }
+    },
+    {
+     "id": "c3-maths-ch11-t01-m-packet-counted-as-litre",
+     "skillId": "c3-maths-ch11-t01-s2",
+     "source": "Filling and Lifting — litres and half litres",
+     "belief": "Counts each half-litre packet or bottle as 1 litre (4 half-litre bottles = 4 litres)",
+     "signs": [
+      "Says 4 half-litre bottles make 4 litres",
+      "Says 2 half-litre packets make 2 litres",
+      "Counts bottles instead of half litres"
+     ],
+     "diagnostic": {
+      "prompt_en": "Amma pours 4 half-litre bottles of milk into a pot. Golu says there are 4 litres of milk. How much milk is in the pot?",
+      "prompt_hi": "Amma 4 half-litre bottle doodh patile mein daalti hai. Golu kehta hai 4 litre doodh hai. Patile mein kitna doodh hai?",
+      "options": [
+       {
+        "text": "2 litres",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "4 litres",
+        "misconceptionId": "c3-maths-ch11-t01-m-packet-counted-as-litre",
+        "correct": false
+       },
+       {
+        "text": "Half a litre",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Half-litre bottles poured two at a time into a 1 litre jug",
+      "moveShape": "2 half litres fill 1 litre → pair up the bottles → count the pairs as litres"
      }
     }
    ],
@@ -11635,8 +13449,8 @@
      "skillId": "c3-maths-ch11-t01-s1",
      "kind": "contrast",
      "difficulty": 3,
-     "prompt_en": "Riya counted 6 big mugs to fill the bucket. Golu counted 10 small cups for the same bucket. Why are the numbers different?",
-     "prompt_hi": "Riya ne baalti bharne ke liye 6 bade mug gine. Golu ne usi baalti ke liye 10 chhote cup. Number alag kyun hain?",
+     "prompt_en": "{friendF} counted 6 big mugs to fill the bucket. Golu counted 10 small cups for the same bucket. Why are the numbers different?",
+     "prompt_hi": "{friendF} ne baalti bharne ke liye 6 bade mug gine. Golu ne usi baalti ke liye 10 chhote cup. Number alag kyun hain?",
      "answer": "The cups are different sizes; smaller cups need more to fill the same bucket",
      "acceptable": [
       "different cup sizes",
@@ -11796,6 +13610,34 @@
       "solverAnswer": "1 litre",
       "agrees": true
      }
+    },
+    {
+     "id": "c3-maths-ch11-t01-i14",
+     "skillId": "c3-maths-ch11-t01-s1",
+     "source": "Filling and Lifting — comparing by counting same-size glasses",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "A matka fills 8 glasses of water. A lota fills 3 of the same glasses. Which one holds more, and how many glasses more?",
+     "prompt_hi": "Ek matke se 8 glass paani bharta hai. Ek lote se waise hi 3 glass bharte hain. Kisme zyada aata hai, aur kitne glass zyada?",
+     "answer": "The matka, 5 glasses more",
+     "acceptable": [
+      "matka",
+      "the matka",
+      "matka, 5 glasses",
+      "matka, five glasses",
+      "matka, paanch glass"
+     ],
+     "hints": [
+      "Are the glasses the same size?",
+      "Yes, so more glasses means it holds more.",
+      "8 − 3 = ___",
+      "The matka holds 5 glasses more."
+     ],
+     "verified": {
+      "solverAnswer": "The matka holds more, by 5 glasses.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand; quality round re-solved (young band C3B)"
+     }
     }
    ],
    "workedExample": {
@@ -11811,7 +13653,8 @@
      "Fill the bottle and ___ it into the empty jug.",
      "The jug is not full yet, so the ___ holds more.",
      "Check with cups: the bottle fills 4 cups and the jug fills ___ of the same cups."
-    ]
+    ],
+    "skillId": "c3-maths-ch11-t01-s1"
    },
    "formats": {
     "primary": "F3",
@@ -11834,6 +13677,60 @@
     "the school water cooler",
     "cooking dal",
     "a watering can for plants"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch11-t01-s2",
+     "source": "Filling and Lifting — litres and half litres",
+     "problem": "Amma needs 2 and a half litres of milk for kheer. Milk comes in half-litre packets. How many packets does she need?",
+     "givens": [
+      "2 and a half litres",
+      "half-litre packets"
+     ],
+     "find": "the number of packets",
+     "steps": [
+      {
+       "do": "1 litre → half-litre packets",
+       "result": "2 packets"
+      },
+      {
+       "do": "2 litres → 2 packets and 2 packets",
+       "result": "2 + 2 = 4 packets"
+      },
+      {
+       "do": "half a litre more → 1 packet",
+       "result": "4 + 1 = 5 packets"
+      }
+     ],
+     "answer": "5 packets.",
+     "why": "2 half litres make 1 litre → count packets litre by litre → add 1 packet for the half"
+    },
+    {
+     "skillId": "c3-maths-ch11-t01-s3",
+     "source": "Filling and Lifting — pouring does not change how much water there is",
+     "problem": "A steel glass is full of water. Ravi pours all of it into a tall, thin glass, and the water stands much higher. Is there more water now?",
+     "givens": [
+      "1 full steel glass",
+      "all of it poured into a tall, thin glass"
+     ],
+     "find": "whether the water is more",
+     "steps": [
+      {
+       "do": "check: anything added or spilled?",
+       "result": "nothing added, nothing spilled"
+      },
+      {
+       "do": "pour it back into the steel glass",
+       "result": "the steel glass is full again"
+      },
+      {
+       "do": "higher water → thinner glass",
+       "result": "the same water"
+      }
+     ],
+     "answer": "No. It is the same amount of water; it only looks higher because the glass is thin.",
+     "why": "nothing added or spilled → pour back → same level as before → height alone does not tell the amount"
+    }
    ]
   },
   {
@@ -11961,6 +13858,42 @@
      "remediation": {
       "representation": "Seesaw picture: the heavier child sits on the low end",
       "moveShape": "Child presses down on one pan with a finger; ask which side the push made go down"
+     }
+    },
+    {
+     "id": "c3-maths-ch11-t02-m-counts-weights",
+     "skillId": "c3-maths-ch11-t02-s2",
+     "source": "Filling and Lifting — weighing with kilogram and half-kilogram weights",
+     "belief": "Counts the number of weights on the pan instead of adding what each weight is (a 1 kg and a half kg weight make '2 kg')",
+     "signs": [
+      "Says one 1 kg and one half kg weight make 2 kg",
+      "Says 3 half kg weights make 3 kg",
+      "Counts the weights without reading them"
+     ],
+     "diagnostic": {
+      "prompt_en": "Tomatoes balance one 1 kg weight and one half kg weight. Golu says the tomatoes weigh 2 kg because there are 2 weights. How much do the tomatoes weigh?",
+      "prompt_hi": "Tamatar ek 1 kg weight aur ek half kg weight ke barabar hain. Golu kehta hai 2 weight hain, isliye tamatar 2 kg ke hain. Tamatar kitne kg ke hain?",
+      "options": [
+       {
+        "text": "1 and a half kg",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "2 kg",
+        "misconceptionId": "c3-maths-ch11-t02-m-counts-weights",
+        "correct": false
+       },
+       {
+        "text": "Half a kg",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Weights on a pan, each read aloud: a 1 kg weight and a half kg weight",
+      "moveShape": "read each weight → 1 kg and half kg → put them together → 1 and a half kg, not the number of weights"
      }
     }
    ],
@@ -12288,7 +14221,8 @@
      "Add weights to the other pan until the two pans are ___.",
      "The weights used are 2 kg and a ___ kg.",
      "So the potatoes weigh ___ and a half kg."
-    ]
+    ],
+    "skillId": "c3-maths-ch11-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -12311,6 +14245,61 @@
     "school bags",
     "watermelons",
     "cotton and iron"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch11-t02-s1",
+     "source": "Filling and Lifting — the heavier pan goes down",
+     "problem": "On a balance, a bag of onions is on the left pan and a pumpkin is on the right pan. The left pan goes down. Which is heavier?",
+     "givens": [
+      "onions on the left pan",
+      "pumpkin on the right pan",
+      "left pan goes down"
+     ],
+     "find": "the heavier thing",
+     "steps": [
+      {
+       "do": "see which pan goes down",
+       "result": "the left pan"
+      },
+      {
+       "do": "heavier side goes down",
+       "result": "the onions are heavier"
+      },
+      {
+       "do": "the pan that goes up is lighter",
+       "result": "the pumpkin is lighter"
+      }
+     ],
+     "answer": "The bag of onions is heavier.",
+     "why": "the heavier thing pulls its pan down → the left pan is down → the onions on it are heavier"
+    },
+    {
+     "skillId": "c3-maths-ch11-t02-s3",
+     "source": "Filling and Lifting — 1 kg of anything weighs the same",
+     "problem": "A big bag of 1 kg murmura is on one pan. A small packet of 1 kg salt is on the other pan. Which pan goes down, or do the pans stay level?",
+     "givens": [
+      "1 kg murmura in a big bag",
+      "1 kg salt in a small packet"
+     ],
+     "find": "which pan goes down",
+     "steps": [
+      {
+       "do": "read both weights",
+       "result": "1 kg and 1 kg"
+      },
+      {
+       "do": "same weight on both pans",
+       "result": "the pans stay level"
+      },
+      {
+       "do": "murmura is light for its size",
+       "result": "a big bag is needed to make 1 kg"
+      }
+     ],
+     "answer": "Neither: both are 1 kg, so the pans stay level.",
+     "why": "1 kg is 1 kg → same weight → pans level → size does not decide weight"
+    }
    ]
   },
   {
@@ -12449,6 +14438,42 @@
      "remediation": {
       "representation": "Place-value chart with H, T, O headings that numbers snap into",
       "moveShape": "Child writes both numbers in the chart by place; ask which place the 3 of 37 belongs in"
+     }
+    },
+    {
+     "id": "c3-maths-ch12-t01-m-estimate-hundreds-digit",
+     "skillId": "c3-maths-ch12-t01-s3",
+     "source": "Give and Take — estimate first and check the sum",
+     "belief": "Estimates a sum by keeping only the hundreds digits, so 296 + 403 is 'about 600'",
+     "signs": [
+      "Says 296 + 403 is about 600",
+      "Always goes down to the hundred below when estimating",
+      "Calls a correct sum of 699 wrong because it is not near 600"
+     ],
+     "diagnostic": {
+      "prompt_en": "Kishan has 296 marigold saplings and 403 rose saplings. About how many saplings is that in all?",
+      "prompt_hi": "Kishan ke paas 296 marigold aur 403 rose ke paudhe hain. Kul milaakar lagbhag kitne paudhe hue?",
+      "options": [
+       {
+        "text": "About 700",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "About 600",
+        "misconceptionId": "c3-maths-ch12-t01-m-estimate-hundreds-digit",
+        "correct": false
+       },
+       {
+        "text": "About 1000",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "296 and 403 marked on a 0 to 1000 number line, each next to its nearest hundred",
+      "moveShape": "find the nearest hundred for each number → 296 is near 300 → 403 is near 400 → add the nearest hundreds"
      }
     }
    ],
@@ -12792,7 +14817,8 @@
      "Tens: 6 + 5 + 1 = ___ tens. Write 2, carry 1 hundred.",
      "Hundreds: 2 + 1 + 1 = ___.",
      "268 + 154 = ___. Estimate check: about 270 + 150 = 420."
-    ]
+    ],
+    "skillId": "c3-maths-ch12-t01-s2"
    },
    "formats": {
     "primary": "F2",
@@ -12815,6 +14841,69 @@
     "money saved for Diwali",
     "school library books",
     "mangoes picked"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch12-t01-s1",
+     "source": "Give and Take — adding place by place (Kishan's nursery)",
+     "problem": "Kishan has 324 marigold saplings and 152 rose saplings. How many saplings does he have in all?",
+     "givens": [
+      "324 marigold saplings",
+      "152 rose saplings"
+     ],
+     "find": "the total number of saplings",
+     "steps": [
+      {
+       "do": "add the ones",
+       "result": "4 + 2 = 6"
+      },
+      {
+       "do": "add the tens",
+       "result": "2 + 5 = 7"
+      },
+      {
+       "do": "add the hundreds",
+       "result": "3 + 1 = 4"
+      },
+      {
+       "do": "read the answer",
+       "result": "324 + 152 = 476"
+      }
+     ],
+     "answer": "476 saplings.",
+     "why": "ones with ones, tens with tens, hundreds with hundreds → no column makes 10 → write each sum"
+    },
+    {
+     "skillId": "c3-maths-ch12-t01-s3",
+     "source": "Give and Take — estimate first and check the sum",
+     "problem": "Kishan sold 389 saplings on Monday and 205 on Tuesday. Golu says he sold 1094 in all. Does that make sense?",
+     "givens": [
+      "389 on Monday",
+      "205 on Tuesday",
+      "Golu's sum: 1094"
+     ],
+     "find": "whether 1094 makes sense",
+     "steps": [
+      {
+       "do": "389 is about 400, 205 is about 200",
+       "result": "400 and 200"
+      },
+      {
+       "do": "add the estimates",
+       "result": "400 + 200 = 600"
+      },
+      {
+       "do": "compare 1094 with about 600",
+       "result": "1094 is far too big"
+      },
+      {
+       "do": "add exactly",
+       "result": "389 + 205 = 594"
+      }
+     ],
+     "answer": "No. It should be about 600; the exact sum is 594.",
+     "why": "round to hundreds → quick sum → a real sum must be close to it → far away means a mistake"
+    }
    ]
   },
   {
@@ -12931,8 +15020,8 @@
       "Uses the ten twice"
      ],
      "diagnostic": {
-      "prompt_en": "Riya opened a ten in 352 to do 12 − 8 in the ones. How many tens are left in the top number?",
-      "prompt_hi": "Riya ne 352 mein ek dahaai kholi taaki ikaai mein 12 − 8 kar sake. Ab upar wale number mein kitni dahaai bachi?",
+      "prompt_en": "{friendF} opened a ten in 352 to do 12 − 8 in the ones. How many tens are left in the top number?",
+      "prompt_hi": "{friendF} ne 352 mein ek dahaai kholi taaki ikaai mein 12 − 8 kar sake. Ab upar wale number mein kitni dahaai bachi?",
       "options": [
        {
         "text": "4 tens",
@@ -12949,6 +15038,42 @@
      "remediation": {
       "representation": "Column board where opening a ten visibly removes one ten-rod",
       "moveShape": "Child moves one ten-rod into the ones and recounts the tens; ask what the 5 became"
+     }
+    },
+    {
+     "id": "c3-maths-ch12-t02-m-misaligned-subtract",
+     "skillId": "c3-maths-ch12-t02-s1",
+     "source": "Give and Take — subtracting place by place",
+     "belief": "Lines the numbers up from the left when the second number is shorter, so 586 − 42 is done as 586 − 420",
+     "signs": [
+      "Gets 166 for 586 − 42",
+      "Puts the 4 of 42 under the hundreds",
+      "Does not say 'ones under ones' before taking away"
+     ],
+     "diagnostic": {
+      "prompt_en": "Kishan had 586 saplings and sold 42. Golu wrote 166. How many saplings are left?",
+      "prompt_hi": "Kishan ke paas 586 paudhe the aur usne 42 beche. Golu ne 166 likha. Kitne paudhe bache?",
+      "options": [
+       {
+        "text": "544",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "166",
+        "misconceptionId": "c3-maths-ch12-t02-m-misaligned-subtract",
+        "correct": false
+       },
+       {
+        "text": "546",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Notes and coins for 586 in three trays (₹100, ₹10, ₹1), with 42 as 4 tens and 2 ones",
+      "moveShape": "say each digit's place first → 42 is 4 tens and 2 ones → take ones from ones, tens from tens"
      }
     }
    ],
@@ -13144,22 +15269,22 @@
      "skillId": "c3-maths-ch12-t02-s2",
      "kind": "contrast",
      "difficulty": 3,
-     "prompt_en": "For 352 − 128, Riya got 234 and Meera got 224. Who is right, and what did the other forget?",
-     "prompt_hi": "352 − 128 mein Riya ko 234 aaya aur Meera ko 224. Kaun sahi hai, aur doosri kya bhool gayi?",
-     "answer": "Meera. Riya opened a ten but forgot to make the 5 tens into 4 tens",
+     "prompt_en": "For 352 − 128, {friendF} got 234 and Kavya got 224. Who is right, and what did the other forget?",
+     "prompt_hi": "352 − 128 mein {friendF} ko 234 aaya aur Kavya ko 224. Kaun sahi hai, aur doosri kya bhool gayi?",
+     "answer": "Kavya. {friendF} opened a ten but forgot to make the 5 tens into 4 tens",
      "acceptable": [
-      "Meera",
+      "Kavya",
       "224"
      ],
      "hints": [
       "Check both by adding 128.",
       "128 + 224 = 352; 128 + 234 = 362.",
       "After opening a ten, 5 tens become ___ tens.",
-      "Meera is right; Riya forgot to reduce the tens."
+      "Kavya is right; {friendF} forgot to reduce the tens."
      ],
      "targetsMisconception": "c3-maths-ch12-t02-m-opened-ten-not-reduced",
      "verified": {
-      "solverAnswer": "Meera is right; Riya forgot to reduce the tens",
+      "solverAnswer": "Kavya is right; {friendF} forgot to reduce the tens",
       "agrees": true
      }
     },
@@ -13291,7 +15416,8 @@
      "Open 1 hundred into 10 tens: 4 hundreds, ___ tens, 4 ones.",
      "Open 1 ten into 10 ones: 4 hundreds, 9 tens, ___ ones. Now 14 − 6 = 8, 9 − 8 = 1, 4 − 2 = 2.",
      "504 − 286 = ___. Check: 286 + 218 = 504."
-    ]
+    ],
+    "skillId": "c3-maths-ch12-t02-s3"
    },
    "formats": {
     "primary": "F2",
@@ -13314,6 +15440,68 @@
     "seats left on a train",
     "pages left to read",
     "sweets left after Diwali"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch12-t02-s1",
+     "source": "Give and Take — subtracting place by place (saplings left)",
+     "problem": "Kishan had 485 saplings. He sent 163 to a school. How many saplings are left?",
+     "givens": [
+      "485 saplings",
+      "163 sent"
+     ],
+     "find": "the saplings left",
+     "steps": [
+      {
+       "do": "take away the ones",
+       "result": "5 − 3 = 2"
+      },
+      {
+       "do": "take away the tens",
+       "result": "8 − 6 = 2"
+      },
+      {
+       "do": "take away the hundreds",
+       "result": "4 − 1 = 3"
+      },
+      {
+       "do": "read the answer and check",
+       "result": "485 − 163 = 322, 322 + 163 = 485"
+      }
+     ],
+     "answer": "322 saplings are left.",
+     "why": "each top digit is big enough → take away place by place → check by adding back"
+    },
+    {
+     "skillId": "c3-maths-ch12-t02-s2",
+     "source": "Give and Take — opening a ten when the ones are too few",
+     "problem": "Ravi has ₹342. He pays ₹127 for a book. How much money is left?",
+     "givens": [
+      "₹342",
+      "pays ₹127"
+     ],
+     "find": "the money left",
+     "steps": [
+      {
+       "do": "2 ones, take away 7 → too few → open one ₹10 note",
+       "result": "3 tens and 12 ones"
+      },
+      {
+       "do": "take away the ones",
+       "result": "12 − 7 = 5"
+      },
+      {
+       "do": "take away the tens, then the hundreds",
+       "result": "3 − 2 = 1, 3 − 1 = 2"
+      },
+      {
+       "do": "read the answer and check",
+       "result": "342 − 127 = 215, 215 + 127 = 342"
+      }
+     ],
+     "answer": "₹215 is left.",
+     "why": "too few ones → change one ten into 10 ones → the tens become one less → then take away place by place"
+    }
    ]
   },
   {
@@ -13391,8 +15579,8 @@
       "Says 5 coins beat 1 note"
      ],
      "diagnostic": {
-      "prompt_en": "Riya has 5 coins of ₹1. Golu has one note of ₹10. Who has more money?",
-      "prompt_hi": "Riya ke paas ₹1 ke 5 sikke hain. Golu ke paas ₹10 ka ek note. Kiske paas zyada paise hain?",
+      "prompt_en": "{friendF} has 5 coins of ₹1. Golu has one note of ₹10. Who has more money?",
+      "prompt_hi": "{friendF} ke paas ₹1 ke 5 sikke hain. Golu ke paas ₹10 ka ek note. Kiske paas zyada paise hain?",
       "options": [
        {
         "text": "Golu: ₹10 is more than ₹5",
@@ -13400,7 +15588,7 @@
         "correct": true
        },
        {
-        "text": "Riya, because she has more coins",
+        "text": "{friendF}, because she has more coins",
         "misconceptionId": "c3-maths-ch12-t03-m-more-coins-more-money",
         "correct": false
        }
@@ -13438,6 +15626,42 @@
      "remediation": {
       "representation": "Shop role-play where the shopkeeper counts up from the price to the money given",
       "moveShape": "Child plays shopkeeper and counts up from 35 to 50; ask if change can be more than what was paid"
+     }
+    },
+    {
+     "id": "c3-maths-ch12-t03-m-barter-any-swap",
+     "skillId": "c3-maths-ch12-t03-s1",
+     "source": "Give and Take — barter and why money is easier",
+     "belief": "Thinks barter works whenever both people have something, without checking that each wants the other's thing",
+     "signs": [
+      "Says mangoes can be swapped for rice even when the rice seller wants shoes",
+      "Thinks having something to give is enough",
+      "Cannot say why money helps"
+     ],
+     "diagnostic": {
+      "prompt_en": "Meena has bangles and wants rice. The rice seller wants a goat, not bangles. Can they swap?",
+      "prompt_hi": "Meena ke paas choodiyan hain, use chawal chahiye. Chawal waale ko bakri chahiye, choodiyan nahi. Kya woh badal sakte hain?",
+      "options": [
+       {
+        "text": "No, he does not want bangles",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Yes, both have something",
+        "misconceptionId": "c3-maths-ch12-t03-m-barter-any-swap",
+        "correct": false
+       },
+       {
+        "text": "Yes, if Meena asks nicely",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Two children, each holding a thing and saying what they want",
+      "moveShape": "ask each person: do you want what the other has → both must say yes → if one says no, use money"
      }
     }
    ],
@@ -13638,17 +15862,17 @@
      "skillId": "c3-maths-ch12-t03-s2",
      "kind": "near_transfer",
      "difficulty": 3,
-     "prompt_en": "Riya has 4 coins of ₹2. Golu has one ₹10 note. Who has more money?",
-     "prompt_hi": "Riya ke paas ₹2 ke 4 sikke hain. Golu ke paas ₹10 ka ek note. Kiske paas zyada paise?",
-     "answer": "Golu: ₹10 is more than Riya's ₹8",
+     "prompt_en": "{friendF} has 4 coins of ₹2. Golu has one ₹10 note. Who has more money?",
+     "prompt_hi": "{friendF} ke paas ₹2 ke 4 sikke hain. Golu ke paas ₹10 ka ek note. Kiske paas zyada paise?",
+     "answer": "Golu: ₹10 is more than {friendF}'s ₹8",
      "acceptable": [
       "Golu",
       "10 vs 8"
      ],
      "hints": [
-      "How many rupees does Riya have?",
+      "How many rupees does {friendF} have?",
       "Count in 2s: 2, 4, 6, 8.",
-      "Riya ₹___, Golu ₹10.",
+      "{friendF} ₹___, Golu ₹10.",
       "Golu has more: ₹10 vs ₹8."
      ],
      "targetsMisconception": "c3-maths-ch12-t03-m-more-coins-more-money",
@@ -13765,7 +15989,8 @@
      "Change = money given − total cost = 100 − ___.",
      "Count up from 53: 7 to reach 60, then ___ to reach 100, so 47.",
      "The change is ₹___. Check: 53 + 47 = 100."
-    ]
+    ],
+    "skillId": "c3-maths-ch12-t03-s2"
    },
    "formats": {
     "primary": "F4",
@@ -13788,6 +16013,62 @@
     "the kirana shop",
     "a stationery shop",
     "buying a cricket ball"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch12-t03-s1",
+     "source": "Give and Take — why money is easier than barter",
+     "problem": "Golu has 4 mangoes and wants a kite. The kite seller wants milk, not mangoes. Golu also has ₹10, and the kite costs ₹10. How can Golu get the kite?",
+     "givens": [
+      "Golu: 4 mangoes and ₹10",
+      "kite seller wants milk",
+      "kite costs ₹10"
+     ],
+     "find": "how Golu gets the kite",
+     "steps": [
+      {
+       "do": "try a swap: mangoes for the kite",
+       "result": "no swap: the seller wants milk"
+      },
+      {
+       "do": "pay with money",
+       "result": "₹10 for the kite"
+      },
+      {
+       "do": "everyone takes money",
+       "result": "Golu gets the kite"
+      }
+     ],
+     "answer": "He pays ₹10 for the kite. A swap does not work because the seller does not want mangoes; money works because everyone takes it.",
+     "why": "barter needs both to want each other's things → here they do not → money is taken by everyone"
+    },
+    {
+     "skillId": "c3-maths-ch12-t03-s3",
+     "source": "Give and Take — buying within a budget; price is not set by size",
+     "problem": "At the haat you have ₹50. You buy small clay diyas for ₹35. Then you can buy a big balloon for ₹10 or a toy car for ₹45. Which one can you still buy?",
+     "givens": [
+      "₹50 to spend",
+      "diyas ₹35",
+      "balloon ₹10 or toy car ₹45"
+     ],
+     "find": "the second thing you can buy",
+     "steps": [
+      {
+       "do": "pay for the diyas",
+       "result": "50 − 35 = 15"
+      },
+      {
+       "do": "what costs ₹15 or less?",
+       "result": "the balloon (₹10); the toy car (₹45) costs too much"
+      },
+      {
+       "do": "money left after the balloon",
+       "result": "15 − 10 = 5"
+      }
+     ],
+     "answer": "The big balloon; you will have ₹5 left.",
+     "why": "pay for the first thing → see the money left → only a price within it fits → the big balloon is the cheap one"
+    }
    ]
   },
   {
@@ -14203,7 +16484,7 @@
      "kind": "far_transfer",
      "difficulty": 4,
      "prompt_en": "The cricket match on TV starts at half past 3. Your clock shows 3 o'clock. How long do you have to wait?",
-     "prompt_hi": "TV pe cricket match saadhe teen baje shuru hoga. Tumhari ghadi mein 3 baje hain. Kitni der rukna padega?",
+     "prompt_hi": "TV pe cricket match 3:30 baje shuru hoga. Tumhari ghadi mein 3 baje hain. Kitni der rukna padega?",
      "answer": "Half an hour (30 minutes)",
      "acceptable": [
       "30 minutes",
@@ -14283,7 +16564,8 @@
      "The long hand is at 9: count by 5s: 5, 10, … ___ minutes.",
      "45 minutes past 7 is ___.",
      "We also say quarter to ___, because 15 minutes are left until 8."
-    ]
+    ],
+    "skillId": "c3-maths-ch13-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -14306,6 +16588,59 @@
     "the morning routine",
     "tuition class",
     "Dadi's medicine time"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch13-t01-s1",
+     "source": "Time Goes On — the hour hand and the minute hand",
+     "problem": "Nisha's school bus comes when the short hand of the clock is at 7 and the long hand is at 12. What time does the bus come?",
+     "givens": [
+      "short hand at 7",
+      "long hand at 12"
+     ],
+     "find": "the time",
+     "steps": [
+      {
+       "do": "short hand → hour hand",
+       "result": "the hour is 7"
+      },
+      {
+       "do": "long hand at 12 → minute hand",
+       "result": "0 minutes"
+      },
+      {
+       "do": "read the time",
+       "result": "7 o'clock"
+      }
+     ],
+     "answer": "7 o'clock.",
+     "why": "short hand tells the hour → long hand at 12 means no minutes past → read the hour"
+    },
+    {
+     "skillId": "c3-maths-ch13-t01-s3",
+     "source": "Time Goes On — the hour hand between numbers at half past",
+     "problem": "It is half past 9. Where does the short hand point?",
+     "givens": [
+      "half past 9"
+     ],
+     "find": "where the short hand points",
+     "steps": [
+      {
+       "do": "half past 9 → 30 minutes after 9",
+       "result": "the long hand is at 6"
+      },
+      {
+       "do": "in 1 hour the short hand moves from 9 to 10",
+       "result": "half the hour has gone"
+      },
+      {
+       "do": "half the way from 9 to 10",
+       "result": "halfway between 9 and 10"
+      }
+     ],
+     "answer": "Between 9 and 10 (halfway between them).",
+     "why": "the short hand moves slowly all hour → half the hour gone → half the way to the next number"
+    }
    ]
   },
   {
@@ -14796,7 +17131,8 @@
      "From 27 to 30 September: ___ jumps (28, 29, 30).",
      "From 30 September to 4 October: ___ jumps (1, 2, 3, 4).",
      "3 + 4 = ___ days, exactly 1 week."
-    ]
+    ],
+    "skillId": "c3-maths-ch13-t02-s3"
    },
    "formats": {
     "primary": "F3",
@@ -14819,6 +17155,59 @@
     "school exams",
     "a plant-growing diary",
     "a cricket series"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch13-t02-s1",
+     "source": "Time Goes On — reading days and dates on a calendar page",
+     "problem": "5 June is a Monday. What day is 12 June, and what day is 19 June?",
+     "givens": [
+      "5 June is a Monday"
+     ],
+     "find": "the days of 12 June and 19 June",
+     "steps": [
+      {
+       "do": "one week is 7 days",
+       "result": "the same day comes again after 7 days"
+      },
+      {
+       "do": "7 days after 5 June",
+       "result": "5 + 7 = 12, so 12 June is a Monday"
+      },
+      {
+       "do": "7 days after 12 June",
+       "result": "12 + 7 = 19, so 19 June is a Monday"
+      }
+     ],
+     "answer": "12 June and 19 June are both Mondays.",
+     "why": "a week has 7 days → the dates in one column go up by 7 → same column, same day"
+    },
+    {
+     "skillId": "c3-maths-ch13-t02-s2",
+     "source": "Time Goes On — counting jumps from one date to another",
+     "problem": "Today is 12 March. Ravi's birthday is on 18 March. How many days until his birthday?",
+     "givens": [
+      "today: 12 March",
+      "birthday: 18 March"
+     ],
+     "find": "the days left",
+     "steps": [
+      {
+       "do": "start on 12, do not count it",
+       "result": "12 is today"
+      },
+      {
+       "do": "jump day by day to 18",
+       "result": "13, 14, 15, 16, 17, 18: 6 jumps"
+      },
+      {
+       "do": "check",
+       "result": "18 − 12 = 6"
+      }
+     ],
+     "answer": "6 days.",
+     "why": "today is the start, not a jump → count the jumps to the birthday → jumps are the days left"
+    }
    ]
   },
   {
@@ -15092,22 +17481,22 @@
      "skillId": "c3-maths-ch14-t01-s3",
      "kind": "contrast",
      "difficulty": 3,
-     "prompt_en": "Riya completed half a heart by flipping it. Golu completed it by copying it the same way. Which one makes a heart?",
-     "prompt_hi": "Riya ne aadha dil palat ke poora kiya. Golu ne usi tarah copy karke. Kiska dil bana?",
-     "answer": "Riya's: the other half must be flipped like a mirror",
+     "prompt_en": "{friendF} completed half a heart by flipping it. Golu completed it by copying it the same way. Which one makes a heart?",
+     "prompt_hi": "{friendF} ne aadha dil palat ke poora kiya. Golu ne usi tarah copy karke. Kiska dil bana?",
+     "answer": "{friendF}'s: the other half must be flipped like a mirror",
      "acceptable": [
-      "Riya",
-      "Riya's"
+      "{friendF}",
+      "{friendF}'s"
      ],
      "hints": [
       "What does a mirror do to a picture?",
       "It flips it.",
       "The second half must be ___.",
-      "Riya's: flipping makes a heart; copying makes a lopsided shape."
+      "{friendF}'s: flipping makes a heart; copying makes a lopsided shape."
      ],
      "targetsMisconception": "c3-maths-ch14-t01-m-copies-not-flips",
      "verified": {
-      "solverAnswer": "Riya's: flipping makes a heart",
+      "solverAnswer": "{friendF}'s: flipping makes a heart",
       "agrees": true
      }
     },
@@ -15274,7 +17663,8 @@
      "Fold along a ___ line through the middle: the top and bottom halves match.",
      "Try corner to corner: the halves do ___ match.",
      "So H has ___ lines of symmetry: one standing and one sleeping."
-    ]
+    ],
+    "skillId": "c3-maths-ch14-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -15297,6 +17687,56 @@
     "butterflies and leaves",
     "pottery",
     "letters in names"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch14-t01-s1",
+     "source": "The Surajkund Fair — the fold test for symmetry",
+     "problem": "A phulkari cloth has a flower on the left of a middle line and the same flower on the right. Ravi folds the cloth along the middle line, and the two flowers fall exactly on each other. Is the design symmetrical along that line?",
+     "givens": [
+      "a flower on each side of the middle line",
+      "after folding, the flowers fall exactly on each other"
+     ],
+     "find": "whether the design is symmetrical along the line",
+     "steps": [
+      {
+       "do": "fold along the middle line",
+       "result": "the left half lies on the right half"
+      },
+      {
+       "do": "check the match",
+       "result": "the flowers fall exactly on each other"
+      },
+      {
+       "do": "halves match → symmetrical",
+       "result": "yes, symmetrical along the middle line"
+      }
+     ],
+     "answer": "Yes, it is symmetrical along the middle line.",
+     "why": "fold on the line → both halves fall exactly on each other → the design is the same on both sides"
+    },
+    {
+     "skillId": "c3-maths-ch14-t01-s3",
+     "source": "The Surajkund Fair — completing the other half by flipping",
+     "problem": "Nisha draws an up-down line on her paper. She puts one dot 3 steps to the left of the line. Where does the matching dot go, to make the design the same on both sides?",
+     "givens": [
+      "an up-down line",
+      "one dot 3 steps to the left of the line"
+     ],
+     "find": "the place of the matching dot",
+     "steps": [
+      {
+       "do": "flip like a mirror across the line",
+       "result": "left turns to right"
+      },
+      {
+       "do": "3 steps left → 3 steps right",
+       "result": "a dot 3 steps to the right of the line"
+      }
+     ],
+     "answer": "3 steps to the right of the line.",
+     "why": "flipping keeps the dot the same distance from the line → just on the other side"
+    }
    ]
   },
   {
@@ -15373,8 +17813,8 @@
       "Cannot say how they know all are found"
      ],
      "diagnostic": {
-      "prompt_en": "Riya made patterns of 3 beads in a row, each red or blue, by trying randomly. She found 6 and stopped because she couldn't think of more. Has she surely found them all?",
-      "prompt_hi": "Riya ne 3 motiyon ki line banayi, har moti laal ya neela, bina kram ke try karke. Use 6 mile aur woh ruk gayi kyunki aur nahi soojhe. Kya use pakka saare mil gaye?",
+      "prompt_en": "{friendF} made patterns of 3 beads in a row, each red or blue, by trying randomly. She found 6 and stopped because she couldn't think of more. Has she surely found them all?",
+      "prompt_hi": "{friendF} ne 3 motiyon ki line banayi, har moti laal ya neela, bina kram ke try karke. Use 6 mile aur woh ruk gayi kyunki aur nahi soojhe. Kya use pakka saare mil gaye?",
       "options": [
        {
         "text": "Not sure: an organised list shows there are 8",
@@ -15749,7 +18189,8 @@
      "Put the blue bead in the middle: R ___ R.",
      "Put the blue bead last: R R ___.",
      "The blue bead has only ___ places, so there are exactly 3 rows. On a string you can turn around, BRR and RRB are the same, so 2 malas."
-    ]
+    ],
+    "skillId": "c3-maths-ch14-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -15772,6 +18213,57 @@
     "tiles for a floor border",
     "flags with coloured stripes",
     "kite tails with ribbons"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c3-maths-ch14-t02-s1",
+     "source": "The Surajkund Fair — making bead patterns with given beads",
+     "problem": "Nisha has 1 red bead (R), 1 blue bead (B) and 1 yellow bead (Y). She puts the red bead first in a row. What different rows can she make?",
+     "givens": [
+      "1 red, 1 blue, 1 yellow bead",
+      "red bead first"
+     ],
+     "find": "all the rows with red first",
+     "steps": [
+      {
+       "do": "red first",
+       "result": "R _ _"
+      },
+      {
+       "do": "blue next, then yellow",
+       "result": "R B Y"
+      },
+      {
+       "do": "yellow next, then blue",
+       "result": "R Y B"
+      }
+     ],
+     "answer": "2 rows: R B Y and R Y B.",
+     "why": "red is fixed first → only blue and yellow change places → 2 ways"
+    },
+    {
+     "skillId": "c3-maths-ch14-t02-s3",
+     "source": "The Surajkund Fair — when two arrangements are the same",
+     "problem": "Ravi's bead string reads red, blue. Meena's reads blue, red. You can turn a string around. Are they the same string?",
+     "givens": [
+      "Ravi: red, blue",
+      "Meena: blue, red",
+      "a string can be turned around"
+     ],
+     "find": "whether they are the same",
+     "steps": [
+      {
+       "do": "turn Ravi's string around",
+       "result": "it reads blue, red"
+      },
+      {
+       "do": "compare with Meena's",
+       "result": "the same order"
+      }
+     ],
+     "answer": "Yes, they are the same string; Meena's is Ravi's turned around.",
+     "why": "a string can be turned → read it from the other end → if that matches, it is the same pattern"
+    }
    ]
   }
  ]

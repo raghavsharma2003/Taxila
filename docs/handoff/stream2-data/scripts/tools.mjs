@@ -1,0 +1,13 @@
+const t = await import("/home/user/Taxila/server/studio/tools.js");
+const L = "00000000-0000-4000-8000-000000000001";
+const show = async (spec, say) => { const r = await t.boardShow(L, spec, { say, topicId: "c4-maths-ch05-t01" }); console.log(spec.kind, JSON.stringify(r).slice(0, 300)); };
+await show({ kind: "write", lines: ["Half = 1/2", "Quarter = 1/4"] }, "Half matlab 1/2, aur quarter matlab 1/4.");
+await show({ kind: "write", lines: ["Half = 1/2", "Quarter = 1/4"] }, "Half matlab 1/2, aur quarter matlab 1/4.");
+await show({ kind: "number_line", mark: ["1/4"] }, "1/4 number line par: 0 aur 1 ke beech 4 barabar hisse, pehla mark.");
+await show({ kind: "table", columns: ["Fraction", "Parts"], rows: [["1/2", "2"], ["1/4", "4"]] }, "Fraction aur parts: 1/2 mein 2 parts, 1/4 mein 4 parts.");
+await show({ kind: "shapes", shapes: [{ shape: "parts", parts: 4, shaded: 1, label: "1/4" }] }, "Ek roti ke 4 barabar parts, ek shaded: 1/4.");
+await show({ kind: "shapes", shapes: [{ shape: "polygon", sides: 6, label: "hexagon" }] }, "Hexagon ke 6 sides hote hain.");
+await show({ kind: "draw", subject: "gun" }, "x");
+console.log(JSON.stringify(t.screenNow(L)).slice(0, 200));
+console.log(JSON.stringify(t.boardClear(L)));
+process.exit(0);

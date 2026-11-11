@@ -13,7 +13,8 @@
 //   - adaptive resolution: if the median frame over ~1.5 s is slower than 52 fps, the backing store steps down
 //     2 → 1.5 → 1.25 → 1 (never back up within a mount); `visibilitychange` pauses everything.
 import { ENGINE_SPECS, gradeAnswer, validateSpec, type Graded } from "../../../shared/studio-spec.ts";
-import { C, FONT, W, H } from "./tokens.ts";
+import { C, FONT, W, H, useStudioTheme } from "./tokens.ts";
+import { themeAt } from "../../theme/theme-attr.ts";
 import { clamp, ease, rng } from "./math.ts";
 import { makeText, type SafeHit, type TooSmall } from "./draw.ts";
 import { FX } from "./fx.ts";
@@ -34,6 +35,11 @@ export interface MountOptions {
   onMessage?: (m: StudioMessage) => void;
   fault?: "boot" | "transient" | "permanent";  // test builds only: injected engine faults
   sound?: boolean;
+  /** classes 4-5: no text below MIN_YOUNG.label (43 units). Omitted: read from the lesson stage that holds the slot
+   *  (StudioStage marks itself `data-young="1"`), so every mount path (stagecraft controller, piece wrapper) gets it. */
+  young?: boolean;
+  /** the lesson's theme (src/theme/palette.ts); absent: the nearest data-board-theme above the slot, else night */
+  theme?: string;
 }
 export interface PerfSummary { n: number; fps: number; p50: number; p95: number; p99: number; over20ms: number; over33ms: number; dpr: number; dprChanges: { at: number; from: number; to: number; medMs: number }[] }
 export interface StudioHandle {
@@ -66,7 +72,9 @@ export function mountStudio(slot: HTMLElement, def: EngineDef, opts: MountOption
   const tooSmall: TooSmall[] = [];
   const safeHits: SafeHit[] = [];
   let scaleRef = 1;
-  const { text, measure } = makeText(tooSmall, safeHits, () => scaleRef);
+  let youngNow: boolean | null = opts.young ?? null;
+  const young = (): boolean => youngNow ?? (slot.isConnected ? (youngNow = !!slot.closest('[data-young="1"]')) : false);
+  const { text, measure, minLabel } = makeText(tooSmall, safeHits, () => scaleRef, { young });
   const rnd = rng(seed * 7919 + 13);
   let facts: Record<string, string | number> = {};
   let agreeN = 0, agreeK = 0, disposed = false, maxAnswer = 0, maxInjected = 0;
@@ -185,6 +193,21 @@ export function mountStudio(slot: HTMLElement, def: EngineDef, opts: MountOption
       taskEl.classList.remove("swap");
     }, 160);
   }
+  // the DOM chrome over the world (task pill, HUD row), in world y: engines keep top-of-world text below it (drawCoach)
+  let chromeAt = -1e9, chromeB = 0;
+  function chromeBottom(): number {
+    const now = performance.now();
+    if (now - chromeAt < 250) return chromeB;
+    chromeAt = now; chromeB = 0;
+    const cr = canvas.getBoundingClientRect();
+    if (!cr.height) return chromeB;
+    for (const el of [hudEl, taskEl]) {
+      if (el === hudEl ? !hudEl.classList.contains("on") : taskEl.classList.contains("hidden")) continue;
+      const r = el.getBoundingClientRect();
+      if (r.height > 0 && r.bottom > cr.top) chromeB = Math.max(chromeB, ((r.bottom - cr.top) / cr.height) * H);
+    }
+    return chromeB;
+  }
   let capText = "";
   function caption(t: string) { if (t === capText) return; capText = t; if (!t) { capEl.classList.add("off"); return; } capEl.textContent = t; capEl.classList.remove("off"); }
   let marksSet = false;
@@ -214,11 +237,13 @@ export function mountStudio(slot: HTMLElement, def: EngineDef, opts: MountOption
   const tw = new Tweens();
   const api: EngineApi = {
     archetype, reducedMotion, seed, fx, tw,
+    get young() { return young(); },
+    get minLabel() { return minLabel(); },
     rnd, text, measure, layer,
     hitstop: (ms) => { if (!reducedMotion) hitstopLeft = Math.max(hitstopLeft, Math.min(ms, 80) / 1000); },
     onPointer: (h) => { handlers.push(h); },
     onKey: (h) => { keyHandlers.push(h); },
-    hud, task, caption, progress,
+    hud, task, caption, progress, chromeBottom,
     answer(itemId, value, local) {
       const full = withHostLogs(value);
       const grade: Graded = gradeAnswer(archetype, spec, itemId, full);
@@ -351,6 +376,7 @@ export function mountStudio(slot: HTMLElement, def: EngineDef, opts: MountOption
     resize();
     try {
       if (opts.fault === "boot") throw new Error("injected boot fault");
+      useStudioTheme(opts.theme ?? themeAt(slot));
       inst = def.create(api, spec);
       try { const b = inst.board?.(); if (b) boardSpec = sanitizeBoard(b, specDef.title); } catch { /* default board */ }
     } catch (e) {

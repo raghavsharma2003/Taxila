@@ -7,10 +7,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createHmac } from "node:crypto";
 
-process.env.FORGE_DB_CACHE = "off";
-process.env.FORGE_BLOB = "off";
-process.env.AZURE_OPENAI_ENDPOINT ||= "https://example.invalid/openai/v1";
-process.env.AZURE_OPENAI_API_KEY ||= "x";
+// npm test runs every file in one process: the env this file needs is set for its tests only, and put back after
+const ENV0 = Object.fromEntries(["FORGE_DB_CACHE", "FORGE_BLOB", "AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_API_KEY"].map((k) => [k, process.env[k]]));
+const restoreEnv = (saved) => { for (const [k, v] of Object.entries(saved)) { if (v === undefined) delete process.env[k]; else process.env[k] = v; } };
 
 const { requestFill, prefetchLessonFills, primeLearner, practiceOrder, flushUpgrades, fillKey, TURN_NEED_BY_MS, _learnerMemoClear, learnerFor } = await import("../server/forge/index.js");
 const { _memClear, getFill, upgrades } = await import("../server/forge/cache.js");
@@ -19,7 +18,6 @@ const { gradeEvent } = await import("../server/forge/grade.js");
 const { plan, liveRenderers, G1_RENDERERS } = await import("../server/forge/planner.js");
 const { diagnosticItems, activitiesFor } = await import("../server/forge/derive.js");
 const { HOOKS, DECOR } = await import("../server/forge/strings.js");
-const { publicFill, limit, _limitsClear } = await import("../server/routes/forge.js");
 const { stringToSign, signRequest } = await import("../server/forge/blob.js");
 const { buildPracticeQueue } = await import("../server/director/items.js");
 const { getKit } = await import("../server/content/index.js");
@@ -33,13 +31,17 @@ const { _setChat } = await import("../server/forge/generator.js");
 let modelCalls = 0;
 let modelReply = null;      // null → the model is unreachable; else the JSON the stubbed model returns
 before(() => {
+  process.env.FORGE_DB_CACHE = "off";
+  process.env.FORGE_BLOB = "off";
+  process.env.AZURE_OPENAI_ENDPOINT ||= "https://example.invalid/openai/v1";
+  process.env.AZURE_OPENAI_API_KEY ||= "x";
   _setChat(async () => {
     modelCalls++;
     if (!modelReply) throw Object.assign(new Error("offline"), { code: "network" });
     return { text: JSON.stringify(modelReply), json: modelReply, finishReason: "stop" };
   });
 });
-after(() => _setChat(null));
+after(() => { _setChat(null); restoreEnv(ENV0); });
 beforeEach(async () => { await flushUpgrades(); _memClear(); _learnerMemoClear(); modelCalls = 0; modelReply = null; });
 
 describe("child-name check: serve-time, kit-exempt, never child-free state", () => {
@@ -215,27 +217,6 @@ describe("results are private copies", () => {
   });
 });
 
-describe("client view and routes", () => {
-  test("a scene fill's client view carries no grade, binding, misconception map or distractors", async () => {
-    const kit = await getKit("c6-maths-ch07-t05", { generate: false });
-    const diag = diagnosticItems(kit).find((d) => d.id === "diag:c6-maths-ch07-t05-m-add-across");
-    const r = await requestFill({ kit, item: diag, move: "practice", learner: learnerOf("Asha"), renderers: R_ALL });
-    assert.equal(r.renderer, "scene@1");
-    const pub = JSON.stringify(publicFill(r, "req-1"));
-    // (the item id itself, diag:<misconceptionId>, is the Director's public id and rides in goal; it names no answer)
-    for (const s of ["\"grade\"", "binding", "miscMap", "distractors", "keyBasis", "\"acceptable\""]) assert.ok(!pub.includes(s), s);
-  });
-  test("per-child limits: 30 requests a minute, then 429; another child is unaffected; the window slides", () => {
-    _limitsClear();
-    for (let i = 0; i < 30; i++) limit("a", "requests", 1000 + i);
-    assert.throws(() => limit("a", "requests", 2000), (e) => e.status === 429);
-    limit("b", "requests", 2000);
-    limit("a", "requests", 1000 + 60_001);
-    for (let i = 0; i < 3; i++) limit("a", "prefetch", 5000);
-    assert.throws(() => limit("a", "prefetch", 5001), (e) => e.status === 429);
-  });
-});
-
 describe("drift pins", () => {
   test("liveRenderers is pinned to the frame registry (with and without the scene flag)", () => {
     const src = readFileSync(new URL("../src/modules/frame/registry.ts", import.meta.url), "utf8");
@@ -249,7 +230,7 @@ describe("drift pins", () => {
     for (const r of G1_RENDERERS) assert.ok(registered.includes(r), `G1 derives ${r} but the frame does not register it`);
   });
   test("the vendored scene@1 validator equals the docs source (header and --emit guard aside)", () => {
-    const docs = readFileSync(new URL("../docs/research/content/genui-scene-dsl.mjs", import.meta.url), "utf8").split("\n");
+    const docs = readFileSync(new URL("./fixtures/genui-scene-dsl.mjs", import.meta.url), "utf8").split("\n");
     const vend = readFileSync(new URL("../server/forge/scene/dsl.mjs", import.meta.url), "utf8").split("\n").slice(4);
     const strip = (lines) => lines.filter((l) => !l.includes('process.argv.includes("--emit")'));
     assert.equal(strip(vend).join("\n"), strip(docs).join("\n"));

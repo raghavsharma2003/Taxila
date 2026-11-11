@@ -1,0 +1,13 @@
+const { requestOf } = await import("/home/user/Taxila/server/director/requests.js");
+const { initLessonState, step } = await import("/home/user/Taxila/server/director/state.js");
+const { kitFromFile } = await import("/home/user/Taxila/server/content/kits.js");
+const { getTopic } = await import("/home/user/Taxila/server/content/curriculum.js");
+const { CTX, cls } = await import("/home/user/Taxila/tests/fixtures/kit.mjs");
+const { whiteboardAskOf } = await import("/home/user/Taxila/server/brain/propose.js");
+const req = requestOf("Picture dikhao"); console.log("requestOf", JSON.stringify(req));
+const kit = kitFromFile(getTopic("c5-maths-ch02-t01"));
+let r = step(initLessonState({ topicId: kit.topicId, kit, ctx: { ...CTX, classLevel: 5, ageBand: "10-12" }, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
+console.log("start move", r.move.kind, "beat", JSON.stringify(r.state.beat ?? r.state.plan?.beats?.[0]?.type ?? null).slice(0, 80));
+const r1 = step(r.state, { event: "turn", kit, cls: { ...cls("no_evidence"), request: req }, text: "Picture dikhao", now: 20000 });
+console.log("t1 move", r1.move.kind, "visual", JSON.stringify(r1.move.visual ?? null), "request", r1.move.request, "module", r1.state.module?.engine ?? "-");
+console.log("ask", JSON.stringify(whiteboardAskOf({ beat: { type: "hook" }, lane: "text", move: r1.move, requested: !!r1.move.visual })).slice(0, 200));

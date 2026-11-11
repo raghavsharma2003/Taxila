@@ -8,13 +8,20 @@ export type ClassLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export type Band4 = "B1" | "B2" | "B3" | "B4";
 export type Band3 = "A" | "B" | "C";
 export type ContractBand = "6-9" | "10-15";
-export interface BandRow { b4: Band4; b3: Band3; contract: ContractBand; typicalAge: [number, number] }
+/**
+ * The teacher's register (round 7 decision D3, dc-r7-age-bands; OWNER-RESET #1): young = classes 1-3, preteen = 4-6,
+ * teen = 7-9. Class 4 is preteen: the older look and register (no baby-animal protégé, no babyish shapes). `contract`
+ * follows it (young → "6-9", preteen / teen → "10-15"), so every legacy reader of the age band moves with it.
+ */
+export type Register = "young" | "preteen" | "teen";
+export interface BandRow { b4: Band4; b3: Band3; contract: ContractBand; register: Register; typicalAge: [number, number] }
+// Brain owns this table (PIPELINE §A, round 7); server/learner/bands.js and the client band modules derive from it.
 export const BANDS: Readonly<Record<ClassLevel, BandRow>> = {
-  1: { b4: "B1", b3: "A", contract: "6-9", typicalAge: [6, 7] }, 2: { b4: "B1", b3: "A", contract: "6-9", typicalAge: [7, 8] },
-  3: { b4: "B2", b3: "A", contract: "6-9", typicalAge: [8, 9] }, 4: { b4: "B2", b3: "B", contract: "6-9", typicalAge: [9, 10] },
-  5: { b4: "B3", b3: "B", contract: "10-15", typicalAge: [10, 11] }, 6: { b4: "B3", b3: "B", contract: "10-15", typicalAge: [11, 12] },
-  7: { b4: "B3", b3: "C", contract: "10-15", typicalAge: [12, 13] }, 8: { b4: "B4", b3: "C", contract: "10-15", typicalAge: [13, 14] },
-  9: { b4: "B4", b3: "C", contract: "10-15", typicalAge: [14, 15] },
+  1: { b4: "B1", b3: "A", contract: "6-9", register: "young", typicalAge: [6, 7] }, 2: { b4: "B1", b3: "A", contract: "6-9", register: "young", typicalAge: [7, 8] },
+  3: { b4: "B2", b3: "A", contract: "6-9", register: "young", typicalAge: [8, 9] }, 4: { b4: "B2", b3: "B", contract: "10-15", register: "preteen", typicalAge: [9, 10] },
+  5: { b4: "B3", b3: "B", contract: "10-15", register: "preteen", typicalAge: [10, 11] }, 6: { b4: "B3", b3: "B", contract: "10-15", register: "preteen", typicalAge: [11, 12] },
+  7: { b4: "B3", b3: "C", contract: "10-15", register: "teen", typicalAge: [12, 13] }, 8: { b4: "B4", b3: "C", contract: "10-15", register: "teen", typicalAge: [13, 14] },
+  9: { b4: "B4", b3: "C", contract: "10-15", register: "teen", typicalAge: [14, 15] },
 };
 /** Grade-equivalent: 0.0 = start of Class 1; 5.0 = start of Class 6; a month ≈ 0.1. */
 export type GE = number;
@@ -82,7 +89,9 @@ export interface EvidenceEvent {
    * `studio` (W2 seam commit; LIVE-STUDIO §3.10): a host-graded answer inside a Studio piece, ×0.75 like a module. Nothing
    * writes it yet: W2-H adds the weight, and 017_studio.sql widens the kt_evidence via check (012 lists the rest).
    */
-  via?: "dialogue" | "game" | "module" | "callback" | "weave" | "studio";
+  /** "late": a blind verdict that arrived after its answer was folded (comprehension/later.js); "placement": a θ prior site
+   *  from a placement result (learner/kt/placement.js). Both are written to kt_evidence.via. */
+  via?: "dialogue" | "game" | "module" | "callback" | "weave" | "studio" | "late" | "placement";
   ebo?: string;
   /** The probe shape (C01-C36) that elicited the answer. */
   shapeId?: string;
@@ -144,6 +153,8 @@ export interface Ledger {
   skills: Record<SkillId, KtSkillState>; mis: Record<MisconceptionId, MisconceptionState>;
   ability: Record<string, EpochAbility>; seen: Record<string, number | null>; lastSeq: number;
   session: unknown | null;
+  /** placement prior sites waiting for their subject's first event, by subject (kt/ledger.js) */
+  placementPending?: Record<string, unknown>;
 }
 
 // ───────────────────────────── the CHILD brief (§9.1) ─────────────────────────────

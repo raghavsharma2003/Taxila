@@ -1,0 +1,177 @@
+[
+  {
+    "id": "cat-c4-maths-ch01-t02",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "rounds[1].title",
+        "detail": "Title \"Draw a true circle\" disagrees with its own round: the only challenge is kind \"equidistant\" (strings.equidistant: \"Place a pin the same distance from each dot\"), i.e. place one centre pin equidistant from (3,3), (7,3), (5,1). No circle is drawn by the child."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": "Counter \"BUILT 0/0\" shows a denominator of 0 although round 1 has one challenge; cannot tell from the packet whether this is the engine's attempted/correct convention, so not counted. Round 2 equidistant point is (5,3), a grid pin, so it is placeable."
+  },
+  {
+    "id": "cat-c4-maths-ch01-t02-explainer",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "scene s2 label \"same\" / beat L8",
+        "detail": "The label \"Same angle\" is shown on screen at the start of L8 (cue show [long, short, same]) and is itself the graded answer (task.answer \"same\") to \"Which statement is correct about these two square corners?\"."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "task.prompt with scene s2",
+        "detail": "Prompt says \"these two square corners\" and labels say \"Long arms\" / \"Short arms\", but scene s2 draws only one angle (element \"square\", deg 90, rot 35, labelled \"Turned corner\"). Words disagree with the picture."
+      },
+      {
+        "item": 1,
+        "kind": "other",
+        "where": "task.options",
+        "detail": "Prompt asks \"Which statement is correct\" but the options are the labels \"Long arms\", \"Short arms\", \"Same angle\" — two of them are not statements about which angle is bigger, so the choice is ill-formed."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": ""
+  },
+  {
+    "id": "cat-c4-maths-ch03-t01",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "rounds[1].sub, rounds[2].title, rounds[3].sub",
+        "detail": "\"Look at the ones place\", \"Read the last digit\", \"Check each ones digit quickly\" state the rule the child is meant to find (only the ones digit decides odd/even; the topic's own card asks \"How do you know without pairing all 58 things?\" with key \"only the ones digit ... matters\")."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screenshot",
+        "detail": "The falling number hexagon \"2\" is overlapped by the \"Round 1 even\" banner; its top edge is hidden behind the banner."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": false },
+    "notes": "\"RIGHT CALLS 0/0\" likely counts attempts; not counted."
+  },
+  {
+    "id": "cat-c4-maths-ch03-t01-explainer",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "scene s4 nodes n43 / n34",
+        "detail": "Node \"43\" carries sub \"odd\" and node \"34\" carries sub \"even\", shown with the prompt \"Which is even?\"; the labels state the answer (task.answer \"n34\")."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "text.L6",
+        "detail": "\"Their two leftovers pair up, making 8, an even number.\" reads as if the two leftovers make 8; the leftovers make 1 pair, and it is the total 3 + 5 = 8 that is even."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": "Beat L2 has a cue with \"at\": \"s1\" (not a time) and L7 has a \"count\" cue to 1 on node \"8 rotis\"; cannot tell from the packet how these render. narration is empty."
+  },
+  {
+    "id": "cat-c4-maths-ch03-t02",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screenshot",
+        "detail": "The \"order\" column heading is overlapped and partly cut by the \"Round 1 make every number fit\" banner; the coach line \"Tap tiles to fill the machine, then RUN\" runs into the bottom of the tiles \"-10 +10 -5 ×2\"."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": false },
+    "notes": "Round 1 inputs 50, 45, 40, 35 themselves step by -5 while the machine rule is -10 (outputs 40, 35, 30, 25); this is correct as an input-output machine, so not counted. Round 2 joined triangles: sticks = 2n+1 matches rule [×2, +1]."
+  },
+  {
+    "id": "cat-c4-maths-ch03-t02-explainer",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "text.L4 and scene s3 node n27",
+        "detail": "L4 says \"Apply it to 22: the next number is 27.\" and s3 shows node \"27\" sub \"next\"; the task then asks \"Which number comes next in 7, 12, 17, 22?\" with answer opt27 — the same question already answered."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "text.L6",
+        "detail": "\"Some steps change regularly. On a calendar, moving down one column adds 7 days.\" — the calendar example has a constant step of +7; saying the steps change contradicts it."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": ""
+  },
+  {
+    "id": "cat-c4-maths-ch04-t01",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screenshot",
+        "detail": "The \"SEAL\" label overlaps the bottom border of the TARGET 2,345 card."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": false },
+    "notes": "Blocks on the conveyor at the left edge are partly off-screen at both sizes; appears to be motion on a belt, not counted. Targets 2345, 4050, 7009, 6543 are all buildable from denoms 1, 10, 100, 1000."
+  },
+  {
+    "id": "cat-c4-maths-ch04-t01-explainer",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "text.L5 and scene s4 option subs",
+        "detail": "L5 says \"so four thousand fifty is 4050\" and the task then asks \"Tap the number that shows four thousand fifty.\"; also options \"450\" (sub \"missing place\") and \"40050\" (sub \"extra place\") are marked wrong on screen while \"4050\" has no such mark."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "scene s1 label \"places\"",
+        "detail": "Label \"Four places\" writes a number as a word; it must be digits (\"4 places\")."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "scene s3 element \"ex\"",
+        "detail": "Bar with parts 4, shaded 1, text \"6042\" — a bar with 1 of 4 parts shaded does not show 6042 (6 thousands, 0 hundreds, 4 tens, 2 ones); the picture disagrees with L7 and the labels d1-d4."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": ""
+  },
+  {
+    "id": "cat-c4-maths-ch04-t02-explainer",
+    "verdict": "pass",
+    "faults": [],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": "Scene s4 (3012 1st ... 3210 4th) and the s1 myth \"Start comparing from the right\" are never shown by any beat; cannot tell whether that is intended. Cannot tell from the packet whether the s2 place labels line up under the digits of 6482 / 6428."
+  },
+  {
+    "id": "cat-c4-maths-ch05-t01",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "waves[0].marks: true; first screen",
+        "detail": "Wave \"Halves and quarters\" has marks on; the screen shows a guide tick drawn exactly at the middle of the bar under the prompt \"1/2\" — the guide mark draws the asked cut point."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": ""
+  }
+]

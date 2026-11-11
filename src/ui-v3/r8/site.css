@@ -1,0 +1,130 @@
+/* Round 8, step h: the public site (landing, promises, privacy, help, pricing, leaving, not found) under the one token
+   set. It applies only when the site root carries data-tx (the ?tx= switch; Site.tsx siteTx()). The site is for
+   grown-ups, so it is the light surface in both themes, like set-up and the parent corner. Tokens only
+   (tests/r8-tx-tokens.test.mjs).
+   What goes:
+     - the HUD grid behind the hero, the glow washes, the floating screenshot;
+     - corner brackets, clipped corners, "// " eyebrows, mono uppercase tags, rotated diamond bullets;
+     - the uppercase wordmark and buttons.
+   What comes:
+     - headings in the display face, body in the UI face, claims and quotes in the reading face;
+     - soft paper cards with a real shadow;
+     - one accent primary action per screen;
+     - her colour (the tutor indigo) for links and markers. Green is kept for "secure", which is the site's only
+       "right" (the games' rulings 2026-11-11: green means right only).
+   The selector repeats [data-tx] to outrank landing.css (0,2,1) and the Kaksha looks whatever order chunks load in. */
+@import "./kx.css";
+
+.sv[data-tx][data-tx] { font: 400 var(--tx-t-2)/1.55 var(--tx-font-ui); color: var(--tx-ink); background: var(--tx-bg); }
+.sv[data-tx][data-tx] .sv-grid-bg { display: none; }
+.sv[data-tx][data-tx] .kx-label { font: 600 var(--tx-t-1)/1.3 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-ink-2); }
+.sv[data-tx][data-tx] .kx-label::before { content: none; }
+.sv[data-tx][data-tx] .sv-meta { color: var(--tx-ink-3); font-size: var(--tx-t-1); }
+.sv[data-tx][data-tx] .sv-br { display: none; }
+.sv[data-tx][data-tx] .kx-cut { clip-path: none; }
+.sv[data-tx][data-tx] .sv-skip { background: var(--tx-ink); color: var(--tx-surface); border-radius: var(--tx-r-1); }
+
+/* header: paper, a hairline, the arch and the word */
+.sv[data-tx][data-tx] .sv-header { background: color-mix(in srgb, var(--tx-bg) 92%, transparent); border-bottom: 1px solid var(--tx-line); }
+.sv[data-tx][data-tx] .sv-brand { font: 700 var(--tx-t-3)/1 var(--tx-font-ui); letter-spacing: -.01em; text-transform: none; color: var(--tx-ink); }
+.sv[data-tx][data-tx] .sv-brand svg { color: var(--tx-tutor); }
+.sv[data-tx][data-tx] :is(.sv-nav a, .sv-signin) { color: var(--tx-ink-2); font-size: var(--tx-t-2); }
+.sv[data-tx][data-tx] .sv-nav a:is(:hover, [aria-current="page"]) { color: var(--tx-ink); box-shadow: inset 0 -2px 0 var(--tx-tutor); }
+.sv[data-tx][data-tx] .sv-start { border-radius: var(--tx-r-1); font: 700 var(--tx-t-2)/1 var(--tx-font-ui); letter-spacing: 0; text-transform: none;
+  color: var(--tx-surface); background: var(--tx-ink); }
+
+/* hero: the claim in the display face, the screenshots as plain cards */
+.sv[data-tx][data-tx] .sv-h1 { font: var(--tx-display-weight) var(--tx-t-7)/1.08 var(--tx-font-display); letter-spacing: -.02em; }
+.sv[data-tx][data-tx] .sv-hl { color: var(--tx-tutor); }
+.sv[data-tx][data-tx] .sv-sub { font-size: var(--tx-t-3); color: var(--tx-ink-2); }
+.sv[data-tx][data-tx] .sv-cta { text-transform: none; letter-spacing: 0; }
+.sv[data-tx][data-tx] .sv-ghost { border-radius: var(--tx-r-2); border: 1.5px solid var(--tx-line-2); background: var(--tx-surface); color: var(--tx-ink); }
+.sv[data-tx][data-tx] .sv-ghost:hover { border-color: var(--tx-ink-3); }
+.sv[data-tx][data-tx] .sv-hud li { border-radius: var(--tx-r-3); border: 1px solid var(--tx-line); background: var(--tx-surface);
+  font: 600 var(--tx-t-1)/1 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-ink-2); }
+.sv[data-tx][data-tx] .sv-hud svg { color: var(--tx-ok); }
+.sv[data-tx][data-tx] .sv-hero-stage::before { content: none; }
+.sv[data-tx][data-tx] .sv-shot :is(img, video) { border: 1px solid var(--tx-line); border-radius: var(--tx-r-2); background: var(--tx-surface-2); box-shadow: var(--tx-shadow-2); }
+.sv[data-tx][data-tx] .sv-shot-tag { font: 600 var(--tx-t-1)/1.2 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-ink-3); }
+.sv[data-tx][data-tx] .sv-shot--main { animation: none; }
+
+@media (min-width: 520px) { .sv[data-tx][data-tx] .sv-h1 { font-size: var(--tx-t-7); } }
+@media (min-width: 980px) { .sv[data-tx][data-tx] .sv-h1 { font-size: var(--tx-t-8); } .sv[data-tx][data-tx] .sv-sub { font-size: var(--tx-t-4); } }
+
+/* sections: the alternate band is the second paper, headings in the display face */
+.sv[data-tx][data-tx] .sv-sect { border-top: 1px solid var(--tx-line); }
+.sv[data-tx][data-tx] .sv-sect--alt { background: var(--tx-surface); }
+.sv[data-tx][data-tx] .sv-h2 { font: var(--tx-display-weight) var(--tx-t-6)/1.12 var(--tx-font-display); letter-spacing: -.015em; }
+.sv[data-tx][data-tx] .sv-h3 { font: 700 var(--tx-t-4)/1.25 var(--tx-font-ui); letter-spacing: 0; }
+.sv[data-tx][data-tx] .sv-lead { font-size: var(--tx-t-3); color: var(--tx-ink-2); }
+.sv[data-tx][data-tx] :is(.sv-note, .sv-callout) { border-left: 0; border-radius: var(--tx-r-2); background: var(--tx-tutor-soft); color: var(--tx-ink); }
+.sv[data-tx][data-tx] .sv-note svg { color: var(--tx-tutor); }
+@media (min-width: 900px) { .sv[data-tx][data-tx] .sv-h2 { font-size: var(--tx-t-7); } }
+
+.sv[data-tx][data-tx] .sv-n { border-radius: 50%; border: 0; background: var(--tx-tutor-soft); color: var(--tx-tutor); font: 700 var(--tx-t-2)/1 var(--tx-font-ui); }
+.sv[data-tx][data-tx] .sv-points h3 { font: 700 var(--tx-t-3)/1.3 var(--tx-font-ui); }
+.sv[data-tx][data-tx] .sv-points p { color: var(--tx-ink-2); }
+
+/* the four plain words: quiet pills; only "secure" is green */
+.sv[data-tx][data-tx] .sv-chip { border-radius: var(--tx-r-2); border: 1px solid var(--tx-line); background: var(--tx-surface); }
+.sv[data-tx][data-tx] .sv-chip[data-level="0"] .sv-ss { color: var(--tx-ink-3); }
+.sv[data-tx][data-tx] .sv-chip[data-level="1"] .sv-ss { color: var(--tx-tutor); }
+.sv[data-tx][data-tx] :is(.sv-chip[data-level="2"], .sv-chip--got) .sv-ss { color: var(--tx-move-text); }
+.sv[data-tx][data-tx] .sv-chip[data-level="3"] .sv-ss { color: var(--tx-ok); }
+
+/* panels: paper cards */
+.sv[data-tx][data-tx] .sv-panel { border-radius: var(--tx-r-2); border: 1px solid var(--tx-line); background: var(--tx-surface); box-shadow: var(--tx-shadow-1); }
+.sv[data-tx][data-tx] .sv-sample { border-radius: var(--tx-r-3); font: 700 var(--tx-t-1)/1 var(--tx-font-ui); letter-spacing: 0; text-transform: none;
+  color: var(--tx-ink); background: var(--tx-surface-2); }
+.sv[data-tx][data-tx] .sv-evidence-claim { font: var(--tx-display-weight) var(--tx-t-4)/1.3 var(--tx-font-read); }
+.sv[data-tx][data-tx] .sv-timeline { border-left: 2px solid var(--tx-line); }
+.sv[data-tx][data-tx] .sv-timeline li::before { border-radius: 50%; transform: none; background: var(--tx-tutor); }
+.sv[data-tx][data-tx] .sv-time { font: 600 var(--tx-t-1)/1.2 var(--tx-font-ui); letter-spacing: 0; color: var(--tx-tutor); }
+.sv[data-tx][data-tx] .sv-quote { font-family: var(--tx-font-read); font-style: normal; color: var(--tx-ink); }
+
+/* promises */
+.sv[data-tx][data-tx] .sv-promise h3 { font: 700 var(--tx-t-3)/1.3 var(--tx-font-ui); }
+.sv[data-tx][data-tx] .sv-promise p { color: var(--tx-ink-2); }
+.sv[data-tx][data-tx] .sv-spot { border-radius: 50%; border: 0; color: var(--tx-tutor); background: var(--tx-tutor-soft); }
+.sv[data-tx][data-tx] .sv-more { color: var(--tx-tutor); }
+.sv[data-tx][data-tx] .sv-more:hover { color: var(--tx-ink); }
+
+/* FAQ */
+.sv[data-tx][data-tx] :is(.sv-faq, .sv-faq li) { border-color: var(--tx-line); }
+.sv[data-tx][data-tx] .sv-faq-q { font: 600 var(--tx-t-3)/1.35 var(--tx-font-ui); color: var(--tx-ink); }
+.sv[data-tx][data-tx] .sv-faq-q:hover { color: var(--tx-tutor); }
+.sv[data-tx][data-tx] .sv-faq-sign::before, .sv[data-tx][data-tx] .sv-faq-sign::after { background: var(--tx-ink-2); }
+.sv[data-tx][data-tx] .sv-faq-a p { color: var(--tx-ink-2); }
+
+/* safety and helplines: wording and numbers unchanged; calm, never alarm red */
+.sv[data-tx][data-tx] .sv-safety { border-color: var(--tx-line); }
+.sv[data-tx][data-tx] .sv-safety .sv-h3 svg { color: var(--tx-tutor); }
+.sv[data-tx][data-tx] .sv-tel { border-radius: var(--tx-r-2); border: 1.5px solid var(--tx-line-2); background: var(--tx-surface); color: var(--tx-ink); }
+.sv[data-tx][data-tx] .sv-tel:hover { border-color: var(--tx-ink-3); }
+.sv[data-tx][data-tx] .sv-tel-num { font: 700 var(--tx-t-3)/1 var(--tx-font-ui); letter-spacing: 0; color: var(--tx-tutor); }
+
+/* the closing call and the footer */
+.sv[data-tx][data-tx] .sv-final { border-top: 1px solid var(--tx-line); background: var(--tx-surface); }
+.sv[data-tx][data-tx] .sv-footer { border-top: 1px solid var(--tx-line); background: var(--tx-bg); }
+.sv[data-tx][data-tx] .sv-footer-nav a { color: var(--tx-ink-2); }
+.sv[data-tx][data-tx] .sv-footer-nav a:hover { color: var(--tx-ink); }
+
+/* the public pages (Public.tsx, Pricing.tsx) */
+.sv[data-tx][data-tx] .sv-page-h1 { font: var(--tx-display-weight) var(--tx-t-6)/1.12 var(--tx-font-display); letter-spacing: -.015em; }
+.sv[data-tx][data-tx] .sv-page-h2 { font: 700 var(--tx-t-4)/1.3 var(--tx-font-ui); }
+.sv[data-tx][data-tx] .sv-page p { color: var(--tx-ink-2); font-size: var(--tx-t-3); }
+.sv[data-tx][data-tx] .sv-page a:not([class]) { color: var(--tx-tutor); }
+.sv[data-tx][data-tx] .sv-list li { color: var(--tx-ink-2); font-size: var(--tx-t-3); }
+.sv[data-tx][data-tx] .sv-list li::before { border-radius: 50%; transform: none; background: var(--tx-tutor); }
+.sv[data-tx][data-tx] .sv-list strong { color: var(--tx-ink); }
+.sv[data-tx][data-tx] .sv-help-icon { border-radius: 50%; border: 0; color: var(--tx-tutor); background: var(--tx-tutor-soft); }
+.sv[data-tx][data-tx] .sv-row h2 { font: 700 var(--tx-t-3)/1.3 var(--tx-font-ui); }
+.sv[data-tx][data-tx] .sv-btn { border-radius: var(--tx-r-1); border: 1.5px solid var(--tx-line-2); background: var(--tx-surface); color: var(--tx-ink); font: 600 var(--tx-t-2)/1 var(--tx-font-ui); }
+.sv[data-tx][data-tx] .sv-btn:hover { border-color: var(--tx-ink-3); }
+.sv[data-tx][data-tx] .sv-btn[aria-pressed="true"] { border-color: var(--tx-tutor); box-shadow: inset 0 0 0 1px var(--tx-tutor); }
+.sv[data-tx][data-tx] .sv-btn--strong { background: var(--tx-accent); color: var(--tx-on-accent); border-color: var(--tx-accent); }
+.sv[data-tx][data-tx] .sv-nf { font: var(--tx-display-weight) var(--tx-t-8)/1 var(--tx-font-display); letter-spacing: 0; color: var(--tx-tutor); text-shadow: none; }
+.sv[data-tx][data-tx] .sv-plan-name { font: var(--tx-display-weight) var(--tx-t-4)/1.2 var(--tx-font-display); }
+.sv[data-tx][data-tx] .sv-plan-for { color: var(--tx-ink-3); font-size: var(--tx-t-2); }
+.sv[data-tx][data-tx] .sv-plan-price b { font: 700 var(--tx-t-6)/1 var(--tx-font-ui); letter-spacing: -.01em; color: var(--tx-ink); }
+.sv[data-tx][data-tx] .sv-plan-price--tbd b { font-size: var(--tx-t-5); color: var(--tx-tutor); }

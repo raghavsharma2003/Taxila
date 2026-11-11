@@ -1,13 +1,61 @@
 // GET /api/duplex/voicelive?lessonId=… (WebSocket upgrade): the D5 lesson stream (server/duplex/voicelive.js). The same
-// gates as POST /api/voice/stt-token (the child's own open lesson, core_tutoring consent, a per-guardian rate) plus the
-// cohort: only a request whose /api/duplex/config answer is { lane: "d5" } may open it. Served by server/serve.mjs
+// gates as POST /api/voice/stt-token (the child's own open lesson, core_tutoring consent, a per-guardian rate) plus the lane:
+// only a request whose /api/duplex/config answer is { lane: "d5" } may open it — round 7 (D2), that is every consented child
+// while the global switch is on (no cohort gate; the kill switch TAXILA_DUPLEX=off or a pinned d4 lane refuses). Served by server/serve.mjs
 // (Azure Container Apps); the Vercel shim cannot hold a socket, and the client falls back to D4 when this refuses.
 import { one } from "../db.js";
-import { requireChild, hasConsent } from "../auth.js";
+import { requireChild, hasConsent, CHILD_SCOPE } from "../auth.js";
+import { childScoped } from "../pair/scope.js";
 import { HttpError } from "../http.js";
 import { acceptWebSocket, refuseUpgrade, upgradeProblem } from "../ws.js";
 import { modeFor } from "./config.js";
-import { VoiceLiveRelay, voiceLiveConfig } from "./voicelive.js";
+import { VoiceLiveRelay, voiceLiveConfig, d5AsrModel } from "./voicelive.js";
+import { lessonPhrases } from "./phrases.js";
+import { d5Session } from "../cost/meter.js";
+
+// ───── round 7 (Platform 002, the India D5 relay taxila-d5-sin): a cross-host relay has no session cookie and no same
+// origin, so taxila-web authorizes exactly as the upgrade does (authorizeD5) and mints a single-use, 60 s, one-lesson HMAC
+// ticket (server/relay-ticket.js, Platform's); the relay (TAXILA_ROLE=d5relay) verifies it with no database. No relay URL
+// set → { url: null } and the client keeps today's same-origin socket (also the rollback: unset TAXILA_D5_RELAY_URL).
+/** Platform's ticket module, loaded on first use (injectable for tests). */
+const ticketLib = () => import("../relay-ticket.js");
+/** Tickets this relay process has already accepted (verifyRelayTicket bounds it). */
+const seenTickets = new Set();
+
+/** POST /api/duplex/ticket { lessonId } → { url, ticket } | { url: null }. */
+export async function d5Ticket(req, body, { env = process.env, authorize = {}, lib = ticketLib } = {}) {
+  const lessonId = String(body?.lessonId ?? "");
+  const relay = String(env.TAXILA_D5_RELAY_URL ?? "").trim();
+  const who = await authorizeD5(req, { lessonId, env, ...authorize });
+  if (!relay) return { url: null };
+  const { mintRelayTicket } = await lib();
+  const ticket = mintRelayTicket({ lessonId, childId: String(who.child.id), guardianId: String(who.guardian.id), mode: "on" }, { env });
+  return { url: relay.replace(/\/+$/, ""), ticket };
+}
+
+/** The relay's own authorization: the ticket for this lesson, or null with the reason (never a database). */
+export async function relayWho(req, { env = process.env, lib = ticketLib, seen = seenTickets } = {}) {
+  const q = new URL(req.url ?? "/", "http://x").searchParams;
+  const lessonId = q.get("lessonId") ?? "";
+  const { verifyRelayTicket } = await lib();
+  const v = verifyRelayTicket(q.get("ticket") ?? "", { lessonId, env, seen });
+  if (!v.ok) return { who: null, reason: v.reason };
+  return { who: { guardian: { id: v.guardianId }, child: { id: v.childId }, lesson: { id: v.lessonId, state: null } }, reason: null };
+}
+
+/** How long the phrase list may wait on the kit before the stream opens without its answers (names + core only). */
+export const D5_PHRASES_MS = 300;
+
+/** Round 7 (B4): the lesson's phrase list for the ear; the kit lookup never holds the stream open longer than D5_PHRASES_MS. */
+export async function phrasesFor(lesson, { kit = defaultKit, timeoutMs = D5_PHRASES_MS } = {}) {
+  let timer;
+  const k = await Promise.race([
+    Promise.resolve().then(() => kit(lesson)).catch(() => null),
+    new Promise((r) => { timer = setTimeout(() => r(null), timeoutMs); }),
+  ]).finally(() => clearTimeout(timer));
+  return lessonPhrases({ state: lesson?.state ?? null, kit: k });
+}
+const defaultKit = async (lesson) => (await import("../brain/rows.js")).kitFor(lesson.topic_id, lesson.state);
 
 export const D5_PATH = "/api/duplex/voicelive";
 export const D5_OPENS_PER_MINUTE = 10;
@@ -35,11 +83,11 @@ export async function authorizeD5(req, { lessonId, env = process.env, lookupLess
   if (lesson.ended_at) throw new HttpError(409, "lesson has ended");
   if (!(await consent(guardian.id, kid.id, "core_tutoring"))) throw new HttpError(403, "core_tutoring consent is required for voice");
   const m = await mode(req, { env });
-  if (m?.lane !== "d5") throw new HttpError(403, "not on lane d5");
+  if (m?.duplex !== "on" || m?.lane !== "d5") throw new HttpError(403, "not on lane d5");
   return { guardian, child: kid, lesson };
 }
 
-const defaultLesson = (id) => one("select id, child_id, state, ended_at from lesson where id = $1", [id]);
+const defaultLesson = (id) => one("select id, child_id, topic_id, state, ended_at from lesson where id = $1", [id]);
 
 /**
  * The upgrade handler. `openUpstream` defaults to Node's global WebSocket (undici; it takes a headers option), so the
@@ -49,21 +97,36 @@ export async function handleD5Upgrade(req, socket, head, deps = {}) {
   const env = deps.env ?? process.env;
   const problem = upgradeProblem(req);
   if (problem) return refuseUpgrade(socket, 400, `bad upgrade: ${problem}`);
-  // same-origin only: a page on another origin must not stream a signed-in child's mic through the cookie
-  const origin = String(req.headers.origin ?? "");
-  const host = String(req.headers["x-forwarded-host"] ?? req.headers.host ?? "");
-  if (origin && host && new URL(origin, "http://x").host !== host) return refuseUpgrade(socket, 403, "cross-origin");
-  const lessonId = new URL(req.url ?? "/", "http://x").searchParams.get("lessonId");
   let who;
-  try {
-    who = await authorizeD5(req, { lessonId, env, ...(deps.authorize ?? {}) });
-  } catch (e) {
-    return refuseUpgrade(socket, e instanceof HttpError ? e.status : 401, e instanceof HttpError ? e.message : "not signed in");
+  if (env.TAXILA_ROLE === "d5relay") {
+    // the India relay: no cookie, no same origin, no database. taxila-web already authorized this lesson and signed the
+    // ticket; one use, 60 s, this lesson only (Platform 002)
+    const r = await relayWho(req, { env, ...(deps.relay ?? {}) }).catch(() => ({ who: null, reason: "ticket_error" }));
+    if (!r.who) return refuseUpgrade(socket, 401, `ticket refused (${r.reason})`);
+    who = r.who;
+  } else {
+    // same-origin only: a page on another origin must not stream a signed-in child's mic through the cookie
+    const origin = String(req.headers.origin ?? "");
+    const host = String(req.headers["x-forwarded-host"] ?? req.headers.host ?? "");
+    if (origin && host && new URL(origin, "http://x").host !== host) return refuseUpgrade(socket, 403, "cross-origin");
+    const lessonId = new URL(req.url ?? "/", "http://x").searchParams.get("lessonId");
+    // audit V-12: the upgrade never passes the router, the only other place that sets the child-scope mark; without it a
+    // paired child device (no parent session) was refused 403 here and fell back to D4
+    req[CHILD_SCOPE] = childScoped("GET /api/duplex/voicelive");
+    try {
+      who = await authorizeD5(req, { lessonId, env, ...(deps.authorize ?? {}) });
+    } catch (e) {
+      return refuseUpgrade(socket, e instanceof HttpError ? e.status : 401, e instanceof HttpError ? e.message : "not signed in");
+    }
   }
   // the browser gave up while we authorised (a reload, a lost network): accepting now would open an upstream nobody hears
   if (socket.destroyed || socket.writable === false) return null;
   if (!allowD5(who.guardian.id)) return refuseUpgrade(socket, 429, "too many voice sessions; wait a minute");
   const cfg = voiceLiveConfig(env);
+  // round 7 (B4): the ear's model and the lesson's phrase list (bounded wait; a slow kit only drops its answers)
+  // (the India relay has no lesson row: the core list only; the names and kit answers stay on taxila-web's own path)
+  const phrases = env.TAXILA_ROLE === "d5relay" ? lessonPhrases({}) : await phrasesFor(who.lesson, deps.phrases ?? {});
+  if (socket.destroyed || socket.writable === false) return null;
   const ws = acceptWebSocket(req, socket, head);
   live.set(who.guardian.id, (live.get(who.guardian.id) ?? 0) + 1);
   const openUpstream = deps.openUpstream ?? ((url, headers) => new WebSocket(url, { headers }));
@@ -71,12 +134,16 @@ export async function handleD5Upgrade(req, socket, head, deps = {}) {
   try {
     relay = new VoiceLiveRelay({
       cfg,
+      asr: d5AsrModel(env),
+      phrases,
       client: { send: (t) => ws.send(t), close: (c, r) => ws.close(c, r) },
       openUpstream,
       onEnd: (s) => {
         live.set(who.guardian.id, Math.max(0, (live.get(who.guardian.id) ?? 1) - 1));
         // numbers only: never words, never audio, never the key
         console.log(`[d5] stream ended ${s.reason} ms=${s.ms} frames=${s.framesIn} appends=${s.appends} events=${s.eventsOut} dropped=${s.dropped}`);
+        // round 7 (Platform cost ledger): the Voice Live session's seconds, at the relay's close (never throws)
+        d5Session({ sec: (Number(s.ms) || 0) / 1000, reason: s.reason });
       },
     });
   } catch {

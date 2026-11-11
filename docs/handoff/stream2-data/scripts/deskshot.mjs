@@ -1,0 +1,11 @@
+const { createServer } = await import("vite");
+const ROOT = "/home/user/Taxila/";
+const vite = await createServer({ root: ROOT, configFile: ROOT + "vite.config.ts", logLevel: "error", server: { port: 0, strictPort: false, host: "127.0.0.1", hmr: false } });
+await vite.listen(); const base = vite.resolvedUrls.local[0].replace(/\/$/, "");
+const browser = await (await import("playwright")).chromium.launch();
+const [w, h, fx, band] = process.argv.slice(3);
+const page = await browser.newPage({ viewport: { width: +w, height: +h } });
+await page.goto(`${base}/dev/desk?fixture=${fx}&band=${band}&theme=light&motion=reduce`); await page.waitForTimeout(2500);
+await page.screenshot({ path: process.argv[2] });
+console.log(await page.evaluate(() => [...document.querySelectorAll('[data-testid="caption"], .dk-caption, .dk-caption-line')].map((e) => { const b = e.getBoundingClientRect(); return `${e.className} ${Math.round(b.y)} ${Math.round(b.height)} ${getComputedStyle(e).display} "${e.textContent.slice(0, 40)}"`; })));
+await browser.close(); await vite.close();

@@ -8,6 +8,7 @@ import { teacherRecord } from "../../ui/teacher/useTeacher.ts";
 import { kidLook, nextStep, StepFrame } from "../Layout.tsx";
 import { setLangPref, useDraft } from "../draft.ts";
 import { LangTile, LANGS, type Speak } from "./Meet.tsx";
+import { teacherBandFor } from "../teacherBand.ts";
 
 const BOARDS = [{ value: "cbse", label: "CBSE" }, { value: "rbse", label: "RBSE" }, { value: "other-state", label: "Other" }];
 
@@ -23,15 +24,17 @@ export function ClassStep() {
     set((cur) => ({ lang: l.ui, child: { ...(cur.child ?? {}), languagePref: l.id } }));
     setLangPref(l.ui);
   };
-  const rec = teacherRecord(defaultTutorFor({ class_level: c.classLevel ?? 5 }), (c.classLevel ?? 5) <= 4 ? "b2" : "b3");
-  const ready = !!c.classLevel && !!c.board && !!speak;
-  const why = !c.classLevel || !c.board ? "Choose a class and a board" : `Choose how ${rec.name} speaks`;
+  const rec = teacherRecord(defaultTutorFor({ class_level: c.classLevel ?? 5 }), teacherBandFor(c.classLevel));
+  // the board is optional: CBSE unless the parent picks another (audit LEARN-45: nothing but the header reads it)
+  const board = c.board ?? "cbse";
+  const ready = !!c.classLevel && !!speak;
+  const why = !c.classLevel ? "Choose a class" : `Choose how ${rec.name} speaks`;
   return (
     <StepFrame step="class" back={adding} title={adding ? "Add a child: which class are they in?" : "Which class is your child in?"} docTitle="Class and board"
       footer={
         <div className="onb-go">
           {!ready && <span className="t-note" id="class-why">{why}</span>}
-          <Button block disabled={!ready} aria-describedby={ready ? undefined : "class-why"} onClick={() => nav(nextStep("class", adding))}>Continue</Button>
+          <Button block disabled={!ready} aria-describedby={ready ? undefined : "class-why"} onClick={() => { if (!c.board) setC({ board }); nav(nextStep("class", adding)); }}>Continue</Button>
         </div>
       }>
       <fieldset className="fs"><legend className="label">Class</legend>
@@ -39,7 +42,7 @@ export function ClassStep() {
           options={[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => ({ value: n, label: `Class ${n}` }))} />
       </fieldset>
       <fieldset className="fs"><legend className="label">Board</legend>
-        <TileGroup label="Board" columns={3} value={c.board ?? null} onChange={(v) => setC({ board: v })} options={BOARDS} />
+        <TileGroup label="Board" columns={3} value={board} onChange={(v) => setC({ board: v })} options={BOARDS} />
       </fieldset>
       {/* release 11: her voice faces the child, so it sits in the child's family look (young: Volt day) */}
       <section className="kx onb-volt onb-kid" {...kidLook(c.classLevel)}>

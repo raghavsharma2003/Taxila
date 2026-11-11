@@ -1,0 +1,21 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-equip-sync-seal-once",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "The Hangar's equip set follows the child across devices through Learning's GET/PUT /api/child/equip (src/ui-v3/kaksha/equipSync.ts; memory.ts stays device-local per the economy test): the server's set wins when it has one and is kept on the device; every equip PUTs the whole set; the lesson reads it before tinting the stage. A seal shows 'since {date}' from Learning's sealedAt, and a chapter that dipped and re-sealed (its first sealedAt older than a stamp in the start read) is not shown again. Reverse: Learning moves the equip store.",
+   "source": "inbox/r7-app-18.json"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-app-equip-sync-seal-once",
+   "rel": "part_of",
+   "dst": "dc-r7-app-chapter-seals"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-app-equip-sync-seal-once`\nA child who equips a frame on the family tablet finds it on their own phone too. The device copy remains the offline fallback, and nothing about equipping ever touches the world or the lesson's teaching. A seal is a once-in-a-chapter moment: Learning keeps the first time a chapter sealed, so a skill fading and coming back never replays it.\n"
+ }
+}

@@ -1,0 +1,199 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj perimeter padhenge—cricket ground ke chaaron taraf ki boundary jaisa. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 901
+  },
+  {
+   "who": "teacher",
+   "text": "Badhiya, Riya—cricket ground ki boundary karo: uske chaaron taraf ek round lagane par kitni distance hogi? Andaza batao; ant mein Golu ko samjhaogi.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1416,
+   "replyReadyMs": 2317
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 1270
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Tum kis baare mein baat karna chahti ho? Iske baad perimeter par lautenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1155,
+   "replyReadyMs": 2425
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1156
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, rectangle ki boundary ki total length perimeter hoti hai. Ismein 50 m aur 30 m ki chaar sides jodni hain. Total batao.",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2368,
+   "replyReadyMs": 3524,
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1638
+  },
+  {
+   "who": "teacher",
+   "text": "Isko ek baar poora karke dekhte hain. Diya hai: 3, 50 m aur 30 m. Pehle: 2 × (50 + 30) = 2 × 80 = 160 m. Yeh kadam saaf hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1044,
+   "replyReadyMs": 2682
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 1064
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, table par rectangle ke chaaron sides ki lambai dekho; har side-gap gino. Tumhe total kitne gaps dikh rahe hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2789,
+   "replyReadyMs": 3853,
+   "screen": {
+    "kind": "game",
+    "game": "nazariya/floor",
+    "goal": "perimeter"
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "no_evidence",
+   "classifyMs": 1013
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, hum dono rectangle ki boundary trace karte hain. Tum ek side ke gaps ginogi, main agla side ginungi. Tumne kitne gaps gine?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2415,
+   "replyReadyMs": 3428,
+   "guard": [
+    "gameclaim",
+    "flat"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 1038
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, boring lag raha hai—chalo mode badlein. Screen par choose karo: picture, mini-story, ya perimeter race. Kaunsa try karein?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1452,
+   "replyReadyMs": 2490
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1152
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, inmein se ek chuno: Picture dikhao, Kahani mein batao, ya Game khelte hain. Tum kya choose karogi?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1441,
+   "replyReadyMs": 2593
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "no_evidence",
+   "classifyMs": 1260
+  },
+  {
+   "who": "teacher",
+   "text": "Ek din Meena rectangle ke chaaron taraf chali: pehle 50 m, phir 30 m, phir wahi do sides. Total boundary ke liye kaunsi sides jodengi?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1351,
+   "replyReadyMs": 2611
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1212
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, ruk sakte hain. Tum chuno: lesson jaari rakhein, chhota break lein, ya aaj ke liye band karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 3324,
+   "replyReadyMs": 4536,
+   "guard": [
+    "wrap",
+    "nochoice"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

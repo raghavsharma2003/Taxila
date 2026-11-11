@@ -1,0 +1,414 @@
+// Studio v2 node tests (RS-4 pre-work). Moved from src/studio-v2/tests/ (audit STUDIO-07: npm test / test:all read tests/ only).
+// What is pinned: the client catalogue equals the spec registry; reviewed defaults validate untouched; a seeded fuzz of
+// 300 mutated specs per engine never throws and ALWAYS yields a spec that passes the strict schema; outcome tags exist in
+// data/curriculum and data/kits; grading uses the raw act only (a forged `correct` changes nothing); shared truths
+// (circuit solver, number words, shadow geometry, ecosystem cascades, water plateaus, timeline compile) hold.
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import * as S from "../shared/studio-spec.ts";
+import { mutateSpec } from "../src/studio-v2/core/mutate.ts";
+import { compileTimeline, valueAt, chunksOf } from "../src/studio-v2/core/timeline.ts";
+import { sanitizeBoard } from "../src/studio-v2/core/board.ts";
+import { ENGINES } from "../src/studio-v2/engines/index.ts";
+
+const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const A = S.ARCHETYPES_V2;
+
+test("catalogue: client engines == spec registry, ≥ 12 engines, the required mix", () => {
+  assert.deepEqual(Object.keys(ENGINES).sort(), [...A].sort());
+  assert.ok(A.length >= 12, `only ${A.length} engines`);
+  const kinds = A.map((a) => S.ENGINE_SPECS[a].kind);
+  assert.ok(kinds.filter((k) => k === "game").length >= 6, "≥ 6 real-time games");
+  assert.ok(kinds.filter((k) => k === "explainer").length >= 4, "≥ 4 cinematic explainers");
+  assert.ok(kinds.filter((k) => k === "simulation").length >= 2, "≥ 2 simulations");
+});
+
+test("reviewed defaults validate with zero repairs and pass their own strict schema as-is", () => {
+  for (const a of A) {
+    const p = S.ENGINE_SPECS[a].schema.safeParse(S.ENGINE_SPECS[a].defaultSpec);
+    assert.ok(p.success, `${a} default fails its schema: ${JSON.stringify(p.error?.issues?.slice(0, 2))}`);
+    const v = S.validateSpec(a, structuredClone(S.ENGINE_SPECS[a].defaultSpec));
+    assert.equal(v.fellBack, false, a); assert.deepEqual(v.repairs, [], a);
+  }
+});
+
+test("spec fuzz: 300 mutated specs per engine never throw and always pass the strict schema", () => {
+  const summary = {};
+  for (const a of A) {
+    let repaired = 0, fellBack = 0, clean = 0;
+    for (let seed = 1; seed <= 300; seed++) {
+      const m = mutateSpec(S.ENGINE_SPECS[a].defaultSpec, seed);
+      const v = S.validateSpec(a, m.spec);
+      const p = S.ENGINE_SPECS[a].schema.safeParse(v.spec);
+      assert.ok(p.success, `${a} seed ${seed} (${m.kind}) produced an invalid spec: ${JSON.stringify(p.error?.issues?.slice(0, 2))}`);
+      if (v.fellBack) fellBack++; else if (v.repairs.length) repaired++; else clean++;
+    }
+    summary[a] = { repaired, fellBack, clean };
+  }
+  // non-object inputs of every shape fall back to the reviewed default
+  for (const a of A) for (const junk of [null, undefined, 42, "nope", "{\"truncated\":", [], [1, 2]]) { const v = S.validateSpec(a, junk); assert.equal(v.fellBack, true); }
+  console.log("fuzz summary (n=300 each):", JSON.stringify(summary));
+});
+
+test("outcome tags exist in data/curriculum and data/kits; wave targets are tagged misconceptions", () => {
+  const topics = new Set(), miscs = new Set();
+  for (const f of fs.readdirSync(path.join(repo, "data/curriculum"))) {
+    if (!/^c[4-7]-(maths|science|evs)\.json$/.test(f)) continue;
+    for (const ch of JSON.parse(fs.readFileSync(path.join(repo, "data/curriculum", f), "utf8")).chapters) for (const t of ch.topics ?? []) topics.add(t.id);
+  }
+  for (const f of fs.readdirSync(path.join(repo, "data/kits"))) {
+    if (!/^c[4-7]-(maths|science|evs)\.json$/.test(f)) continue;
+    const j = JSON.parse(fs.readFileSync(path.join(repo, "data/kits", f), "utf8"));
+    for (const t of j.topics ?? []) for (const m of t.misconceptions ?? []) miscs.add(m.id);
+  }
+  for (const a of A) {
+    const d = S.ENGINE_SPECS[a];
+    for (const t of d.outcomes.topics) assert.ok(topics.has(t), `${a}: unknown topic ${t}`);
+    for (const m of d.outcomes.misconceptions) assert.ok(miscs.has(m), `${a}: unknown misconception ${m}`);
+    for (const s of d.defaultSpec.skills) assert.ok(topics.has(s), `${a}: default skill ${s}`);
+    const targets = JSON.stringify(d.defaultSpec).match(/"targets":"([^"]+)"/g) ?? [];
+    for (const t of targets) { const id = t.slice(11, -1); assert.ok(d.outcomes.misconceptions.includes(id), `${a}: target ${id} not in outcomes`); }
+  }
+  assert.ok(!A.some((a) => S.ENGINE_SPECS[a].outcomes.topics.some((t) => t.startsWith("c7-science-ch06"))), "the adolescence chapter gets no generated piece (child-safety floor)");
+});
+
+test("grading: raw act only; a forged `correct` claim changes nothing", () => {
+  const g = (a, id, v) => S.gradeAnswer(a, S.ENGINE_SPECS[a].defaultSpec, id, v);
+  // Landfall
+  assert.equal(g("catch-on-line@1", "w1:1/2", 0.5).verdict, "right");
+  assert.equal(g("catch-on-line@1", "w1:1/2", 0.8).verdict, "wrong");
+  assert.equal(g("catch-on-line@1", "w1:1/2", { value: 0.8, correct: true }).verdict, "wrong");
+  assert.equal(g("catch-on-line@1", "w1:9/10", 0.9).verdict, "ungraded", "an item that is not in the spec grades nothing");
+  // Circuit Lab: the host re-solves the circuit as built
+  const preset = S.ENGINE_SPECS["circuit-bench@1"].defaultSpec.steps[0].preset.map((p) => ({ at: p.at, type: p.put, ...(p.plus ? { plus: p.plus } : {}) }));
+  assert.equal(g("circuit-bench@1", "step:close", { edges: [...preset, { at: "1,1-2,1", type: "wire" }] }).verdict, "right");
+  assert.equal(g("circuit-bench@1", "step:close", { edges: preset, correct: true }).verdict, "wrong", "an open loop is wrong whatever the frame claims");
+  const loop = [...preset, { at: "1,1-2,1", type: "wire" }];
+  assert.equal(g("circuit-bench@1", "step:switch", { edges: loop.map((e) => (e.at === "3,0-3,1" ? { at: e.at, type: "switch", closed: true } : e)) }).verdict, "right");
+  assert.equal(g("circuit-bench@1", "step:switch", { edges: [...loop, { at: "3,0-4,0", type: "switch", closed: true }] }).verdict, "wrong", "a switch outside the loop switches nothing");
+  const tested = g("circuit-bench@1", "step:test", { tested: ["coin", "pencil", "ruler", "eraser"] });
+  assert.equal(tested.verdict, "right"); assert.equal(tested.truth.pencil, "conducts"); assert.equal(tested.truth.ruler, "blocks");
+  assert.equal(g("circuit-bench@1", "step:test", { tested: ["coin", "nail", "ruler", "eraser"] }).verdict, "wrong", "pencil lead must be tested");
+  // Moon
+  assert.equal(g("orbital-explainer@1", "evening_half_moon", 88).verdict, "right");
+  assert.equal(g("orbital-explainer@1", "evening_half_moon", 272).detail, "morning-half-moon");
+  // Slice
+  assert.equal(g("slice-at@1", "w1:0", 0.51).verdict, "right");
+  assert.equal(g("slice-at@1", "w3:0", [0.333, 0.667]).verdict, "right");
+  assert.equal(g("slice-at@1", "w3:0", [0.2, 0.667]).verdict, "wrong");
+  // Runner
+  assert.equal(g("line-runner@1", "r1:0", -3.2).verdict, "right");
+  assert.equal(g("line-runner@1", "r2:1", 7).detail, "mirror-sign");
+  // Plot
+  assert.equal(g("area-claim@1", "r1", { w: 4, h: 3 }).verdict, "right");
+  assert.equal(g("area-claim@1", "r3", { w: 4, h: 4 }).verdict, "right");
+  assert.equal(g("area-claim@1", "r3", { w: 5, h: 3 }).verdict, "right", "5×3 also has perimeter 16");
+  assert.equal(g("area-claim@1", "r3", { w: 4, h: 3 }).verdict, "wrong");
+  assert.equal(g("area-claim@1", "r3", { w: 4, h: 4, correct: false }).verdict, "right", "a claim cannot fail a right act either");
+  assert.equal(g("area-claim@1", "r5", { w: 5, h: 5 }).verdict, "right");
+  assert.equal(g("area-claim@1", "r5", { w: 6, h: 4 }).verdict, "partial");
+  // Vault: the host totals the columns; a dropped zero is named
+  assert.equal(g("vault-heist@1", "r1", { counts: { 1: 2, 10: 5, 100: 1, 1000: 3 } }).verdict, "right");
+  assert.equal(g("vault-heist@1", "r2", { counts: { 1: 0, 10: 5, 100: 4, 1000: 0 } }).detail, "c4-maths-ch04-t01-m-drop-zero");
+  assert.equal(g("vault-heist@1", "r1", { counts: { 1: 2 }, total: 3152, correct: true }).verdict, "wrong");
+  // Turret
+  assert.equal(g("angle-cannon@1", "w1:2", 131).verdict, "right");
+  assert.equal(g("angle-cannon@1", "w1:3", 150).detail, "c6-maths-ch02-t03-m-wrong-scale");
+  assert.equal(g("angle-cannon@1", "w3:1", { fired: true }).verdict, "right");
+  assert.equal(g("angle-cannon@1", "w3:0", { fired: true }).verdict, "wrong");
+  // Forest
+  assert.equal(g("food-web@1", "s2", { predict: "down" }).verdict, "right");
+  assert.equal(g("food-web@1", "s3", { predict: "down" }).verdict, "right");
+  const arrows = S.foodLinks(S.ENGINE_SPECS["food-web@1"].defaultSpec.species).map(([f, e]) => `${f}>${e}`);
+  assert.equal(g("food-web@1", "s1", arrows).verdict, "right");
+  assert.match(g("food-web@1", "s1", arrows.map((a) => a.split(">").reverse().join(">"))).detail, /^reversed:/);
+  assert.equal(g("food-web@1", "s4", []).verdict, "wrong", "doing nothing through the drought loses species");
+  const smart = [{ day: 25, species: "deer", kind: "cull" }, { day: 28, species: "deer", kind: "cull" }, { day: 30, species: "insects", kind: "add" }, { day: 33, species: "insects", kind: "add" }];
+  assert.equal(g("food-web@1", "s4", smart).verdict, "right");
+  // Phase shift: the host replays the control log
+  const melt = { log: [{ t: 0, heat: 0, fan: 0, lid: 0 }, { t: 0.1, heat: 1, fan: 0, lid: 0 }], until: 20, from: 0 };
+  assert.equal(g("phase-shift@1", "s1", melt).verdict, "right");
+  assert.equal(g("phase-shift@1", "s1", { log: [], until: 20, from: 0, correct: true }).verdict, "wrong");
+  assert.equal(g("phase-shift@1", "s3", { pick: "water vapour" }).verdict, "right");
+  assert.equal(g("phase-shift@1", "s3", { pick: "air" }).verdict, "wrong");
+  // Tilt
+  assert.equal(g("balance-beam@1", "r1", { left: [], right: [{ w: 6, d: 1 }] }).verdict, "right");
+  assert.equal(g("balance-beam@1", "r1", { left: [], right: [{ w: 2, d: 1 }] }).verdict, "wrong");
+  assert.equal(g("balance-beam@1", "r1", { left: [], right: [{ w: 3, d: 2 }] }).detail, "weight-not-in-tray");
+  assert.equal(g("balance-beam@1", "r4", { removedLeft: [{ w: 1, d: 2 }, { w: 1, d: 2 }, { w: 1, d: 2 }], removedRight: [{ w: 1, d: 2 }, { w: 1, d: 2 }, { w: 1, d: 2 }] }).verdict, "right");
+  assert.equal(g("balance-beam@1", "r4", { removedLeft: [{ w: 1, d: 2 }], removedRight: [] }).detail, "c7-maths-ch15-t02-m-one-side");
+  assert.equal(g("balance-beam@1", "r5", { left: [], right: [{ w: 500, d: 4 }, { w: 200, d: 4 }, { w: 200, d: 4 }, { w: 100, d: 4 }] }).verdict, "right");
+  // Shadow
+  assert.equal(g("shadow-play@1", "s1", { torchX: S.torchForFactor(2) }).verdict, "right");
+  assert.equal(g("shadow-play@1", "s1", { torchX: S.torchForFactor(1.5) }).verdict, "wrong");
+  const st = S.ENGINE_SPECS["shadow-play@1"].defaultSpec.steps[2], samples = [];
+  for (let t = 0; t <= 6; t += 0.1) samples.push([+t.toFixed(2), S.torchForFactor(S.shadowBand(t, st.lo, st.hi).f)]);
+  assert.equal(g("shadow-play@1", "s3", { samples }).verdict, "right");
+  assert.equal(g("shadow-play@1", "s4", { sorted: { card: "opaque", tracing: "translucent", glass: "transparent", redcard: "opaque" } }).verdict, "right");
+  // Explainers and the census
+  assert.equal(g("water-cycle@1", "tap_vapour", { x: 300, y: 250 }).verdict, "right");
+  assert.equal(g("water-cycle@1", "tap_vapour", { x: 715, y: 212 }).verdict, "wrong");
+  assert.equal(g("scale-cinematic@1", "place_planet", { au: 1.7 }).verdict, "right");
+  assert.equal(g("angle-sum@1", "third_angle", { angle: 55 }).verdict, "right");
+  assert.equal(g("data-rush@1", "m1", 4).verdict, "right");
+  assert.equal(g("data-rush@1", "mean", 6.1).verdict, "right");
+  assert.equal(g("data-rush@1", "mean", 7).detail, "c7-maths-ch13-t02-m-mean-in-data");
+});
+
+test("shared truths", () => {
+  // circuit: one cell (1.5 V, 0.4 Ω) + one 5 Ω bulb → I = 1.5 / 5.42 (+ wire resistance)
+  const N = S.circuitNid;
+  const loop = (cells) => [...cells, { a: N(0, 0), b: N(1, 0), comp: { type: "bulb" } }, { a: N(1, 0), b: N(1, 1), comp: { type: "wire" } }, { a: N(0, 1), b: N(1, 1), comp: { type: "wire" } }];
+  const one = S.solveCircuit(loop([{ a: N(0, 0), b: N(0, 1), comp: { type: "cell", plus: N(0, 0) } }]));
+  assert.ok(Math.abs(Math.abs(one.I[1]) - 1.5 / (5 + 0.4 + 0.04)) < 2e-3, `I = ${one.I[1]}`);
+  const series = [{ a: N(0, 0), b: N(0, 1), comp: { type: "cell", plus: N(0, 0) } }];
+  const two = S.solveCircuit([{ a: N(0, 0), b: N(1, 0), comp: { type: "bulb" } }, { a: N(1, 0), b: N(2, 0), comp: { type: "wire" } }, { a: N(2, 0), b: N(2, 1), comp: { type: "wire" } }, { a: N(1, 1), b: N(2, 1), comp: { type: "cell", plus: N(2, 1) } }, { a: N(0, 1), b: N(1, 1), comp: { type: "cell", plus: N(1, 1) } }, ...series.slice(1), { a: N(0, 0), b: N(0, 1), comp: { type: "wire" } }]);
+  assert.ok(Math.abs(two.I[0]) > Math.abs(one.I[1]) * 1.7, "two cells in series aid");
+  // number words
+  assert.equal(S.numberWords(4050), "four thousand fifty");
+  assert.equal(S.numberWords(7006), "seven thousand six");
+  assert.equal(S.numberWords(205000), "two lakh five thousand");
+  assert.equal(S.groupDigits(2050000), "20,50,000");
+  assert.equal(S.groupDigits(2050000, "international"), "2,050,000");
+  // shadow geometry inverse
+  for (const f of [1.4, 2, 2.3]) assert.ok(Math.abs(S.shadowFactor(S.torchForFactor(f)) - f) < 1e-9);
+  // ecosystem: the baseline stays near equilibrium; removals cascade the textbook way
+  const all = S.SPECIES_IDS, base = S.ecoRun(all, 150), last = base[150].pop;
+  for (const id of all) assert.ok(Math.abs(last[id] / S.ECO_EQ[id] - 1) < 0.08, `${id} drifted: ${last[id]}`);
+  assert.equal(S.ecoTrend(all, "snake", "frog", 70), "up");
+  assert.equal(S.ecoTrend(all, "snake", "insects", 70), "down");
+  assert.equal(S.ecoTrend(all, "tiger", "deer", 70), "up");
+  // water: the 0 °C plateau holds while ice remains; boiling holds 100 °C
+  let w = S.waterInit(-12), plateau = 0;
+  for (let i = 0; i < 60 * 40; i++) { w = S.waterStep(w, { heat: 1, fan: 0, lid: 0 }); if (w.ice > 0.02 && w.ice < 0.98) { assert.ok(Math.abs(w.T) < 1e-9, `T=${w.T} while melting`); plateau++; } if (w.liquid > 0.05 && w.liquid < 0.95 && w.T > 99) assert.ok(w.T <= 100 + 1e-9); }
+  assert.ok(plateau > 60, "a visible plateau");
+  // evaporation below boiling is faster with a fan and cools the water
+  let a0 = S.waterInit(40), a1 = S.waterInit(40);
+  for (let i = 0; i < 60 * 30; i++) { a0 = S.waterStep(a0, { heat: 0, fan: 0, lid: 0 }); a1 = S.waterStep(a1, { heat: 0, fan: 1, lid: 0 }); }
+  assert.ok(a1.escaped + a1.vapour > 3 * (a0.escaped + a0.vapour)); assert.ok(a1.T < a0.T);
+});
+
+test("timeline: closed verbs, clause anchors with pre-roll, deterministic values", () => {
+  const cfg = { init: { "x.a": 0, "orb": 0 }, showable: ["x"], labels: [], verbs: { orbit: { prop: "orb", key: "to" } } };
+  const text = { L1: "One clause here. Two clause there." };
+  const tl = compileTimeline([{ line: "L1", gap: 0.3, cues: [{ at: "s2", do: "show", target: "x", dur: 0.5 }, { at: 0, do: "explode" }, { at: "end", do: "orbit", to: 90, dur: 1 }, { at: "end", do: "interactive" }] }], text, {}, cfg);
+  assert.ok(tl.repairs.includes("verb:explode"));
+  const seg = tl.tracks["x.a"][0];
+  const ch = chunksOf(S.estimateLine(text.L1));
+  assert.ok(Math.abs(seg.t0 - (0.8 + ch.chunks[1].t0 - 0.4)) < 1e-9, "cue = line start + clause offset − 400 ms");
+  assert.equal(valueAt(tl, cfg.init, "orb", 999), 90);
+  assert.equal(valueAt(tl, cfg.init, "x.a", tl.tracks["x.a"][0].t0 - 0.01), 0);
+  assert.equal(valueAt(tl, cfg.init, "x.a", 50), valueAt(tl, cfg.init, "x.a", 50), "state = f(t)");
+});
+
+test("board fallback sanitises anything and JSON schemas export for the planner", () => {
+  const b = sanitizeBoard({ title: "<b>x</b>".repeat(20), lines: Array(9).fill("y".repeat(200)) }, "T");
+  assert.ok(b.title.length <= 40 && !/[<>]/.test(b.title)); assert.equal(b.lines.length, 4); assert.ok(b.lines.every((l) => l.length <= 64));
+  assert.equal(sanitizeBoard(null, "Fallback").title, "Fallback");
+  for (const a of A) { const js = S.specJsonSchema(a); assert.ok(js && typeof js === "object" && js.type === "object", a); }
+});
+
+test("failure-shaped labels never reach the stage (fuzz seed 5: \"NaN\" as a unit label)", () => {
+  for (const a of A) {
+    const d = S.ENGINE_SPECS[a], keys = Object.keys(d.defaultSpec.strings ?? {});
+    if (!keys.length) continue;
+    for (const junk of ["NaN", "undefined", "null", "[object Object]", "Infinity sq"]) {
+      const v = S.validateSpec(a, { ...d.defaultSpec, strings: { ...d.defaultSpec.strings, [keys[0]]: junk } });
+      assert.equal(v.spec.strings[keys[0]], d.defaultSpec.strings[keys[0]], `${a} kept ${junk}`);
+      assert.ok(d.schema.safeParse(v.spec).success);
+    }
+  }
+});
+
+test("fx.pop keeps every pop clear of the coach band (approval-lane pilot c4 slice-at, 2026-11-10: a miss pop on a bar falling out of the bottom was drawn over the coach line)", async () => {
+  const { FX } = await import("../src/studio-v2/core/fx.ts");
+  const fx = new FX(false, () => 0.5, () => {});
+  for (const y of [300, 560, 620, 700]) fx.pop("Barabar parts", 500, y, { size: 44, rise: 50 });
+  for (const t of fx.T) assert.ok(t.y + t.size * 0.5 <= 575, `a pop at y ${t.y} reaches the coach band`);
+  assert.equal(fx.T[0].y, 300, "a pop well above the band is where it was asked");
+});
+
+test("young floor: for classes 4-5 the shared text helper never draws below MIN_YOUNG.label (43 units = 16 px at a 412 phone's 0.376 scale), whatever the engine asks or the transform", async () => {
+  const { makeText } = await import("../src/studio-v2/core/draw.ts");
+  const { MIN, MIN_YOUNG } = await import("../src/studio-v2/core/tokens.ts");
+  assert.equal(MIN_YOUNG.label, 43);
+  assert.ok(MIN_YOUNG.label * 0.376 >= 16, "16 px at the p412 world scale");
+  const fake = (k = 1) => {
+    const calls = [];
+    let tf = { a: k, b: 0, c: 0, d: k, e: 0, f: 0 };
+    const ctx = { font: "", textAlign: "left", textBaseline: "alphabetic", globalAlpha: 1, fillStyle: "",
+      getTransform: () => tf, setTransform: (a, b, c, d, e, f) => { tf = { a, b, c, d, e, f }; },
+      measureText: (s) => ({ width: String(s).length * 0.6 * Number(/(\d+(?:\.\d+)?)px/.exec(ctx.font)?.[1] ?? 10) }),
+      fillText: (s, x, y) => calls.push({ s, x, y, px: Number(/(\d+(?:\.\d+)?)px/.exec(ctx.font)[1]) }),
+      save() {}, restore() {} };
+    return { ctx, calls };
+  };
+  const sizeOf = (young, size, k = 1) => { const { ctx, calls } = fake(k); const t = makeText([], [], () => 1, { young: () => young }); t.text(ctx, "Hi", 0, 0, { size }); return calls[0].px * k; };
+  assert.equal(sizeOf(true, 38), 43, "a 38-unit label draws at 43 for a young child");
+  assert.equal(sizeOf(true, 60), 60, "larger text is untouched");
+  assert.equal(sizeOf(false, 38), MIN.label, "classes 6+ keep the 38-unit floor");
+  assert.ok(Math.abs(sizeOf(true, 38, 0.5) - 43) < 1e-9, "inside a 0.5 scale the run is enlarged so it still renders at 43 world units");
+  // measure sees the drawn size (layout math), and a long run shrinks toward the floor, then wraps, never cut
+  const { ctx, calls } = fake();
+  const t = makeText([], [], () => 1, { young: () => true });
+  assert.equal(t.measure(ctx, "abcd", { size: 38 }), 4 * 0.6 * 43);
+  assert.equal(t.minLabel(), 43);
+  t.text(ctx, "start again now", 0, 100, { size: 60, maxWidth: 200, align: "center", baseline: "middle" });
+  assert.ok(calls.every((c) => c.px >= 43), "never below the floor");
+  assert.ok(calls.length > 1 && calls.every((c) => !c.s.includes("…")), "wrapped, not ellipsised");
+  assert.equal(calls.map((c) => c.s).join(" "), "start again now");
+});
+
+test("progress is dots, never numerals (main 2026-11-10: 'WAVE 1/3' reads as a fraction on a maths screen)", async () => {
+  const { dots } = await import("../src/studio-v2/core/dots.ts");
+  assert.equal(dots(0, 3), "●○○"); assert.equal(dots(2, 3), "●●●"); assert.equal(dots(5, 3), "●●●");
+  // (no engine writes a "<n+1>/<length>" counter)
+  for (const f of fs.readdirSync(path.join(repo, "src/studio-v2/engines"), { recursive: true }).filter((x) => String(x).endsWith(".ts"))) {
+    const s = fs.readFileSync(path.join(repo, "src/studio-v2/engines", String(f)), "utf8");
+    assert.doesNotMatch(s, /\$\{[^{}]+? \+ ?1\} ?\/ ?\$\{[^{}]+?\.length\}/, `${f} writes a numeral counter`);
+  }
+});
+
+test("HUD counters: a round's total from its first frame, never \"0/0\" (judges 2026-11-11: dukaan \"SERVE HUE 0/0\" in a one-customer round, geo-forge \"BAN GAYA 0/0\" with two tasks)", async () => {
+  const { tally } = await import("../src/studio-v2/core/dots.ts");
+  assert.equal(tally(0, 1), "0/1"); assert.equal(tally(0, 2), "0/2"); assert.equal(tally(2, 2), "2/2");
+  assert.notEqual(tally(0, 0), "0/0"); assert.equal(tally(3, 2), "3/3");   // never a total below the count
+  // no engine writes a running "<right>/<answered>" readout (answered is 0 until the first answer)
+  for (const f of fs.readdirSync(path.join(repo, "src/studio-v2/engines"), { recursive: true }).filter((x) => String(x).endsWith(".ts"))) {
+    const s = fs.readFileSync(path.join(repo, "src/studio-v2/engines", String(f)), "utf8");
+    for (const line of s.split("\n").filter((l) => l.includes("hud.set("))) assert.doesNotMatch(line, /\$\{g\.\w+\}\/\$\{g\.(n|roundN)\}/, `${f} writes a done/answered counter`);
+  }
+});
+
+test("line-runner range is limited in steps, not units: a class-4 4-digit line ([3000, 7000]) is expressible", () => {
+  const rnd = (o) => ({ ...S.ENGINE_SPECS["line-runner@1"].defaultSpec, rounds: [{ title: "Big numbers", sub: "", range: [3000, 7000], step: 1000, labels: "all", calls: ["4520", "3980", "6305", "6350"], speed: 0.9, dir: 1, ...o }] });
+  let v = S.validateSpec("line-runner@1", rnd({}));
+  assert.deepEqual(v.repairs, []); assert.deepEqual(v.spec.rounds[0].range, [3000, 7000]); assert.equal(v.spec.rounds[0].step, 1000);
+  v = S.validateSpec("line-runner@1", rnd({ step: 1 }));           // 4000 steps of 1: the step is repaired, the round kept
+  assert.ok(v.repairs.includes("round-step") && !v.repairs.includes("round-range"));
+  assert.ok((7000 - 3000) / v.spec.rounds[0].step <= S.RUNNER_MAX_STEPS && v.spec.rounds[0].calls.length === 4);
+  v = S.validateSpec("line-runner@1", rnd({ range: [0, 100000], step: 10000, calls: ["45000"] }));
+  assert.deepEqual(v.repairs, []);
+  for (const range of [[-100001, 0], [0, 100001], [5, 5], [7000, 3000]]) assert.ok(S.validateSpec("line-runner@1", rnd({ range, calls: ["1"] })).repairs.includes("round-range"), JSON.stringify(range));
+  for (const r of S.validateSpec("line-runner@1", rnd({ range: [-90000, 90000], step: 0.01, calls: ["100"] })).spec.rounds) assert.ok((r.range[1] - r.range[0]) / r.step <= S.RUNNER_MAX_STEPS);
+});
+
+// judges, 2026-11-11 (round j2): Hindi rule phrases take the number first, the sieve's "right picks" counter counts the
+// numbers that fit the rule, and a bar chart's value axis has a line at every value its bars take.
+test("sieve-storm: a Hindi postposition rule phrase takes the number first; English keeps it after", async () => {
+  const { sieveRuleLabel, placeNumber } = await import("../src/studio-v2/engines/ext/pure.ts");
+  const hi = { multipleOf: "ke guna", factorOf: "ke factors", commonOf: "ke saman gunaj", cfactorOf: "ke saman gunak", divisibleBy: "se vibhajya", coprimeWith: "ke saath sahabhajya", and: "aur", prime: "abhajya" };
+  const en = { multipleOf: "multiples of", factorOf: "factors of", commonOf: "common multiples of", cfactorOf: "common factors of", divisibleBy: "divisible by", coprimeWith: "co-prime with", and: "and", prime: "prime" };
+  assert.equal(sieveRuleLabel(hi, { rule: "multiple", a: 6 }, "hinglish"), "6 ke guna");
+  assert.equal(sieveRuleLabel(hi, { rule: "factor", a: 30 }, "en"), "30 ke factors");   // the phrase decides, whatever the lang tag
+  assert.equal(sieveRuleLabel(hi, { rule: "cfactor", a: 18, b: 24 }, "hinglish"), "18 aur 24 ke saman gunak");
+  assert.equal(sieveRuleLabel(hi, { rule: "common", a: 4, b: 6 }), "4 aur 6 ke saman gunaj");
+  assert.equal(sieveRuleLabel(hi, { rule: "divisible", a: 3 }), "3 se vibhajya");
+  assert.equal(sieveRuleLabel(hi, { rule: "coprime", a: 12 }), "12 ke saath sahabhajya");
+  assert.equal(sieveRuleLabel(hi, { rule: "prime" }, "hinglish"), "abhajya");
+  assert.equal(sieveRuleLabel(en, { rule: "multiple", a: 6 }, "en"), "multiples of 6");
+  assert.equal(sieveRuleLabel(en, { rule: "factor", a: 30 }, "hinglish"), "factors of 30");   // an English phrase stays English
+  assert.equal(sieveRuleLabel(en, { rule: "cfactor", a: 18, b: 24 }, "en"), "common factors of 18 and 24");
+  assert.equal(placeNumber("के गुणज", "6", "hi"), "6 के गुणज");
+  assert.equal(placeNumber("guna", "6", "hinglish"), "6 guna");
+  assert.equal(placeNumber("guna", "6", "en"), "guna 6");
+});
+
+test("sieve-storm: the right-picks total is how many of the round's numbers fit the rule, not the card count", async () => {
+  const { sieveHitTotal } = await import("../src/studio-v2/engines/ext/pure.ts");
+  const { sieveStream, fits } = await import("../shared/studio-spec-ext/sieve.ts");
+  const r = { rule: "factor", a: 12, title: "t", sub: "", lo: 1, hi: 12, count: 12, hitRate: 0.5, seed: 37, speed: 0.8 };
+  const st = sieveStream(r), hits = st.filter((n) => fits(r, n)).length;
+  assert.equal(st.length, 12);
+  assert.equal(sieveHitTotal(r), hits);
+  assert.ok(hits <= 12 && hits < st.length, `${hits} of ${st.length}`);
+  assert.equal(sieveHitTotal(r, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]), 6);   // 1, 2, 3, 4, 6, 12
+});
+
+test("pictograph: the value axis has a gridline at every value a bar takes, labels a young label apart", async () => {
+  const { valueAxis } = await import("../src/studio-v2/engines/ext/pure.ts");
+  const a = valueAxis([13, 7, 10], 0, 16, 220 / 16);
+  assert.equal(a.step, 1);
+  for (const v of [13, 7, 10]) assert.equal(v % a.step, 0);
+  assert.ok(a.labelStep % a.step === 0 && a.labelStep * (220 / 16) >= 46, `labels every ${a.labelStep}`);
+  assert.equal(valueAxis([12, 8, 20], 0, 24, 290 / 24).step, 4);
+  assert.equal(valueAxis([30, 45, 60], 15, 70, 220 / 55).step, 15);
+  assert.equal(valueAxis([25, 50, 75], 0, 90, 290 / 90).step, 25);
+  assert.equal(valueAxis([], 0, 10, 29).step, 1);
+});
+
+test("Lighthouse dial (2026-11-11): no number at an asked angle (rubric v2: a guide mark that draws the asked tick gives the answer); protractor numbers thin until neighbours keep a gap", async () => {
+  const { scaleLabels } = await import("../src/studio-v2/engines/angle.ts");
+  // a label box like the engine's: radius 320 about (500, 470), 3 digits ~23 units each, 38 tall
+  const box = (a) => { const x = 500 + Math.cos(a * Math.PI / 180) * 320, y = 470 - Math.sin(a * Math.PI / 180) * 320, hw = String(a).length * 11.5; return [x - hw, y - 19, x + hw, y + 19]; };
+  const tiny = (a) => [a * 20, 0, a * 20 + 1, 1];   // labels that never touch: no thinning
+  // c5-ch03-t01: a tens dial calling 90/180/270 printed exactly those three
+  assert.deepEqual(scaleLabels("tens", 360, [90, 180, 270], tiny), []);
+  assert.deepEqual(scaleLabels("tens", 360, [60, 120], tiny), [90, 180, 270], "labels elsewhere stay");
+  assert.deepEqual(scaleLabels("tens", 180, [90, 40], tiny), []);
+  // (main 2026-11-11: one rule — the dial never prints the number the wave is ABOUT, asked or sorted by; ticks stay)
+  const { aboutOf } = await import("../src/studio-v2/engines/angle.ts");
+  assert.deepEqual(scaleLabels("tens", 180, aboutOf({ mode: "classify", items: [40, 90, 120], kind: "right" }), tiny), [], "a right-angle sort hides its 90");
+  assert.deepEqual(aboutOf({ mode: "classify", items: [40, 110], kind: "obtuse" }), [90, 180]);
+  assert.deepEqual(aboutOf({ mode: "call", items: [40, 130] }), [40, 130]);
+  assert.deepEqual(scaleLabels("tens", 360, aboutOf({ mode: "classify", items: [200, 300], kind: "reflex" }), tiny), [90, 270], "a reflex sort hides its 180");
+  const pro = scaleLabels("protractor", 180, [30, 70, 110, 150], tiny);
+  assert.equal(pro.length, 17 - 4); for (const a of [30, 70, 110, 150]) assert.ok(!pro.includes(a), `${a} is asked: no label`);
+  assert.deepEqual(scaleLabels("none", 180, [], tiny), []);
+  // c6-ch02-t03: "110" ran into "100" at l1366; at the real size the numbers thin to every 30° and every pair keeps its gap
+  const real = scaleLabels("protractor", 180, [], box);
+  assert.deepEqual(real, [30, 60, 90, 120, 150]);
+  const bs = real.map(box);
+  for (let i = 0; i < bs.length; i++) for (let j = i + 1; j < bs.length; j++) { const [p, q] = [bs[i], bs[j]]; assert.ok(p[2] + 10 <= q[0] || q[2] + 10 <= p[0] || p[3] + 10 <= q[1] || q[3] + 10 <= p[1], `${real[i]} and ${real[j]} keep a gap`); }
+  assert.deepEqual(scaleLabels("protractor", 180, [90, 120], box), [30, 60, 150]);
+});
+
+test("regeneration round 2 layout faults (judges 2026-11-11): the call label is never cut, geo buttons fit their label, vault count clear of the dial", async () => {
+  // angle: "Naya mod saamne hai" in the full turn's 262-wide column at the young floor (43, mono ~0.6 em, +5 per char tracked)
+  const { callLines } = await import("../src/studio-v2/engines/angle.ts");
+  const mono = (px) => (s, tr) => s.length * (0.6 * px + tr);
+  for (const px of [38, 43]) {
+    const { lines } = callLines("Naya mod saamne hai", 262, mono(px));
+    assert.equal(lines.length, 2, `two lines at ${px}`);
+    assert.equal(lines.join(" "), "Naya mod saamne hai", "whole words, nothing dropped");
+    assert.ok(lines.every((l) => !l.includes("…")));
+  }
+  assert.deepEqual(callLines("LIGHT AT", 262, mono(38)), { lines: ["LIGHT AT"], track: 5 }, "a short label keeps its tracking");
+  const long = callLines("Agla naya mod bilkul saamne aa gaya hai dhyaan se", 262, mono(43));
+  assert.equal(long.lines.join(" "), "Agla naya mod bilkul saamne aa gaya hai dhyaan se", "a long label wraps to as many lines as it needs, never cut");
+  // geo-forge: each button as tall as its label's lines, both clear of the pin-board's rightmost column
+  const { geoButtons, GEO_GRID_X1 } = await import("../src/studio-v2/engines/ext/pure.ts");
+  const lh = 43 * 1.12;
+  for (const [nu, nc] of [[1, 1], [1, 2], [2, 2]]) {
+    const { UNDO, CHECK } = geoButtons(nu, nc, lh);
+    assert.ok(UNDO.h >= nu * lh + 16 && CHECK.h >= nc * lh + 16, `${nu}/${nc} lines fit inside their borders`);
+    assert.ok(CHECK.y >= UNDO.y + UNDO.h + 10, "the buttons do not overlap");
+    assert.ok(UNDO.x >= GEO_GRID_X1 + 20 && CHECK.x >= GEO_GRID_X1 + 20, "a clear gap to the rightmost pin column");
+    assert.ok(CHECK.x + CHECK.w <= 1000 && CHECK.y + CHECK.h <= 600);
+  }
+  // vault-heist: the loaded row's count follows its label inside the row; a label too long for a big count wraps
+  const { loadedRow, ROW_X1 } = await import("../src/studio-v2/engines/vault.ts");
+  const m43 = (s) => s.length * 0.6 * 43, wrap = (s, w) => { const out = []; let cur = ""; for (const x of s.split(" ")) { const t = cur ? cur + " " + x : x; if (!cur || m43(t) <= w) cur = t; else { out.push(cur); cur = x; } } if (cur) out.push(cur); return out; };
+  const one = loadedRow("Number taiyaar", 32, m43, wrap);
+  assert.deepEqual(one.lines, ["Number taiyaar"]); assert.ok(one.x + 32 <= ROW_X1, "label and 0 fit the row");
+  const big = loadedRow("Number taiyaar", 230, m43, wrap);
+  assert.deepEqual(big.lines, ["Number", "taiyaar"], "a long count wraps the label"); assert.ok(big.x + 230 <= ROW_X1 + 10);
+});
+
+test("dukaan: amounts are paise and the schema the model sees says so (judges 2026-11-11: price 50 meant ₹50, shown \"Soap 1 × ₹0.50\")", async () => {
+  const { DukaanSchema, rupeeLikePrices } = await import("../shared/studio-spec-ext/dukaan.ts");
+  const { z } = await import("zod");
+  const js = JSON.stringify(z.toJSONSchema(DukaanSchema, { unrepresentable: "any" }));
+  for (const f of ["price of one item", "the note the customer pays with", "the money the customer has"]) assert.ok(js.includes(f), `${f} described`);
+  assert.ok(js.includes("in paise (100 paise = ₹1): ₹50 is 5000, ₹12.50 is 1250"), "the unit stated plainly with an example");
+  const spec = (items, extra = {}) => ({ rounds: [{ mode: "pay", customers: [{ items, ...extra }] }] });
+  assert.equal(rupeeLikePrices(spec([{ name: "Soap", price: 50, qty: 1 }])), 0, "a lone 50 is not decidable: left alone");
+  assert.equal(rupeeLikePrices(spec([{ name: "Soap", price: 50, qty: 1 }, { name: "Bag", price: 45000, qty: 1 }])), 1, "50 beside ₹450 written in paise: flagged");
+  assert.equal(rupeeLikePrices(spec([{ name: "Kite", price: 3500, qty: 3 }], { pays: 20000 })), 0);
+  const X = await import("../shared/studio-spec-ext/index.ts");
+  const v = X.validateSpecExt("dukaan@1", spec([{ name: "Soap", price: 50, qty: 1 }, { name: "Bag", price: 45000, qty: 1 }]));
+  assert.ok(v.repairs.includes("price:looks-like-rupees"), "the repair notes it");
+});

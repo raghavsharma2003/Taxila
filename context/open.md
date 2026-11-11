@@ -126,3 +126,105 @@ RESET-PLAN §9 needs these owner decisions:
 | O-R6 | Approve a consented child panel (n ≥ 24) for X1, X4, X6 and the Fun Toolkit. |
 | O-R7 | A human reviews the synthetic safeguarding incidents that block deletion of 3 leftover production test accounts. |
 | O-R9 | Approve the Wave 2.5 Azure envelope, about USD 60-90 [E]. |
+
+
+<!-- merged from inbox/r143-kit-deep-kinds.json -->
+## open-r143-kit-kind-pose-mismatch (2026-10-15)
+
+`deep: false` fixes the evidence weight only.
+
+- **Pose:** shallow error_spot items keep the planted-mistake pose. Predict items keep the predict engine mode. Why-kind items skip the follow-up why. A re-tag needs blind-solver re-verification.
+- **Split items:** 2608 (33.9%) stay deep unread.
+- **Error_spot boundary:** whether refuting a stated false claim from a fact counts as error_spot (12 of 25) needs an owner call.
+
+
+<!-- merged from inbox/r5-38aad918-s2.json -->
+## open-r5-ask-subject-first — the ask's own subject before a guessed one (parked, 2026-10-21)
+
+The idea is to keep the subject visualAskOf reads before freeSubjectOf's guess (on 38aad918 t6 that is 'triangle', not nothing). Main parked it until three things exist: how many readings flip offTopic or visualUnavailable (code replay: 5 offTopic, 0 moves; the real effect is on model-read requests), the odd readings fixed or explained (cake: past-clause photo mention; दी: stop word; laddoo: fair), and a sim-lab A/B on the affected cards.
+
+
+<!-- merged from inbox/r1442-s2.json -->
+## open-r1442-board-truth-unmeasured — not measured on sim-lab (2026-10-22)
+
+The two board-truth fixes rest on QA's three lessons and tests that fail on base. Sim-lab cannot measure them as it stands. The shape fix needs a re-run to count 'picture nahi hai' under a board, and the sim-lab records do not carry the board-to-board sequences at slot level. A QA re-run of 7545d1fd, 13ec94a7 and 897a7453's shapes is the measurement.
+
+
+<!-- merged from inbox/r7-m3-1.json -->
+## open-r7-m3-verification-deadline (2026-11-05)
+
+The Learn page (2026-11-03) says not qualifying for Milestone 3 within 180 days of business verification cancels the sponsorship. The sponsorship started 2026-07-08. If that was the verification day, the deadline is 2027-01-04, and the 60-day clock must start by 2026-11-06. The keeper cannot make day 1 earlier than the first full day after `apply`. Unknown: the real verification date, and whether the clause applies to sponsorships granted before it was published. The owner reads it in the Founders Hub portal (docs/design/round7/M3.md §1).
+
+
+<!-- merged from inbox/r7-main-15.json -->
+## `fd-r7-m3-verification-date-2026-07-15` (2026-11-06)
+
+Resolves `open-r7-m3-verification-deadline`.
+
+**Business verification completed on 2026-07-15.** Microsoft's Startup and Partner Programs Ops Desk mailed that day (ticket 2607100030006859) that it "has been completed successfully". The ticket was opened 2026-07-10, after the first attempt failed.
+
+| Counting from | Deadline (180 days) | Day 1 of the 60 must fall on or before |
+|---|---|---|
+| 2026-07-15, verification completed | 2027-01-11 | 2026-11-13 |
+| 2026-07-10, ticket opened (worst case) | 2027-01-06 | 2026-11-08 |
+
+The earlier date, 2026-07-08, was the sponsorship's start. It was used on 2026-11-05 and was a week too early. The portal's own recorded date has not been read.
+
+
+<!-- merged from inbox/r7-main-16.json -->
+## `fd-r7-m3-subscription-inventory-2026-11-06` (2026-11-06)
+
+**Projects in the subscription:** Taxila, Vyakti, and the companion and sales-enabler projects. The milestones count services across all of them.
+
+**Cost Management, closed days 10-22 to 11-04:**
+- ≥ $1 every day: PostgreSQL 6.27, Container Apps 4.4 (including Vyakti's), Virtual Machines 1.33 (Vyakti's vl-vm-cin only).
+- Fluctuating: Foundry Models and Foundry Tools.
+- Under $1: Container Registry 0.77, Load Balancer 0.60, Virtual Network 0.24, Storage 0.15, Azure Monitor 0.15.
+
+**Limits:**
+- The service principal is Contributor only: no role assignments, no locks.
+- Container Instances has 0 core quota.
+- Public IPs: 100 per region.
+
+**taxila-cin-pg over 30 days:** ~11 connections, CPU ~8% on average (62% at peak), ~2.4 of 8 GB memory. taxila-sin-staging has a DATABASE_URL.
+
+
+<!-- merged from inbox/r7-m4-1.json -->
+## open-r7-m4-billing-assumptions (2026-11-06)
+
+What only live billing can settle, on the first closed day after the M4 apply (2026-11-08 or later, visible about 2 days after):
+1. Do the 10 unattached Standard public IPs bill $0.005/h? Expect Virtual Network ≈ $1.56. If it is ≈ $0.36, attach them as secondary ipconfigs on the VM's NIC.
+2. Does taxila-m3-lb bill 24 Included + 72 Overage hours ($1.32), with the VM's NIC in its pool?
+3. Did managed Run Command pass the protectedParameter as an env var? The apply prints M3-RUNNER-OK, or M3-RUNNER-FAIL no env parameter.
+4. Does the ledger show runs by both aca and vm?
+5. Did 2026-11-06 count as day 1 (the report's `day1`; `status` prints the day-1 candidate line)?
+
+
+<!-- merged from inbox/r7-audit-docs-memory.json -->
+## op-audit-build-gpu-aws-owner
+Does the AWS GPU build harness (`scripts/gpu`) stay? It runs the 3D face jobs and the voice training scripts; nothing in the product runs it, and it calls a service outside the Azure-only rule. The question is the owner's. Until it is answered nothing under `scripts/gpu` is deleted or extended.
+
+
+<!-- merged from inbox/r7-audit-seams.json -->
+## seams-signals-layer-unwired
+The decision `sig-layer-evidence-not-authority` (2026-10-04) built the layer in new modules and left integration to SIGNALS-SPEC §8.2. On 2026-11-10 nothing live imports `server/signals/index.js` or `src/signals/index.ts`; `TAXILA_SIGNALS` can flip nothing. The voice-signal adapter (`server/voicesig/**`) does the job instead. Owner's call: wire or retire (keep `server/signals/text.js` and `linguistic.js`, which are live). Report: SEAM-04.
+
+
+<!-- merged from inbox/r7-audit-voice.json -->
+## open-r7-audit-voice-holdcue-live (2026-11-10)
+Audit V-22. `r3vs-holdcue-shadow` keeps the thinking-pause cue shadow until a children's pilot; `rejected.md` records 0 of 12 cut-offs prevented and one 2.0 s false delay. The cue is wired into the live engine (`src/duplex/liveTap.ts:50-54`) and went live when hands-free became every child's default. Decide: unsubscribe it, or record the decision to run it live.
+
+## open-r7-audit-voice-expressive-default (2026-11-10)
+Audit V-27. Expressive SSML is default on for DragonHD (`w2g-expressive-layer-built`); `rj-ssml-delivery-plan-2026-10-04` records listeners scoring the same shape below plain. The blind test named as the reversal condition has not run.
+
+
+<!-- merged from inbox/r7-audit-voice-fix.json -->
+## `fd-r7-audit-voice-switch-translit-not-wired`
+
+Record correction (audit V-29). `rs7-voice-switch` and `rs7-translit-roman-to-devanagari` read as shipped steps; neither is called by any live path (`voice-switch.js` styleFor / synthesize, `translit/index.js` toDevanagari are reached only from tests and evals). Main decided not to wire them now. One data fix landed: `bara` is no longer a hand entry for twelve (`sabse bara` would have become `सबसे बारह`); NUMBER_AMBIG still reads it as twelve in a run of numbers.
+
+
+<!-- merged from inbox/r8-play-follow.json -->
+## open-play-difficulty-not-calibrated (2026-11-10)
+
+OPEN: play difficulty is not calibrated across families. Each level's proof.pFirstTry is the family generator's own estimate (solver-derived), so 'band garam 0.75' in kila and in todo-jodo are not the same difficulty, and the P1 fit term and the P2 lift/step-down compare uncalibrated numbers when they cross families (most visibly at a family switch). A calibration needs measured first-try outcomes per family x band: for a +-0.1 95% CI on a first-try rate near p = 0.7, n = z^2 p(1-p) / h^2 = 1.96^2 x 0.21 / 0.01 = 81 first-try outcomes per family x band; with children contributing several levels each (cluster m ~ 5, intra-child correlation rho ~ 0.2) the design effect 1 + (m-1) rho = 1.8 makes it ~146 per cell, i.e. ~30 families x 3 bands x 146 = ~13k levels. Re-fit: a 1PL (Rasch) model P(first try) = sigmoid(theta_child - b_level) with b_level = b_family,mode + beta_fade x fade + beta . level features (the generator's own difficulty knobs), child ability as a random effect (seeded from the ledger pL); then replace proof.pFirstTry by the fitted probability at the median child of the band and re-check the picker's BAND targets. Until then no cross-family difficulty claim is made to a parent.

@@ -42,7 +42,28 @@ test("the owner-2 stall: the same card is never pinned past the cap, and a back 
   assert.ok(laddered, `the back moved down the ladder (kind ${r.move.kind}, chips ${r.ui?.chips?.length ?? 0})`);
   // the model's guess ("slower") on "ek min... haan bolo" never holds the card past the cap
   r = turn(r, withReq("slower", "note"), "ek min... haan bolo");
+  // round 7 S3 + main's stall split: distracted / away turns (this one) keep the owner-2 cap: the card is let go gracefully
   assert.ok(!(r.move.itemId === item && askOf(r) === ask0 && (r.state.pinRun ?? 0) > LIMITS.cardMax), `pinned ${r.state.pinRun} turns`);
+  assert.ok((r.state.pinItem !== item) || (r.state.pinRun ?? 0) <= LIMITS.cardMax, `card cap held (pin ${r.state.pinItem} × ${r.state.pinRun})`);
+});
+test("S3 stall split: stuck turns ('pata nahi', 'nahi aata') hold the card past the cap, down the support ladder, up to twice it", () => {
+  let r = toPractice();
+  const item = r.move.itemId;
+  const stuck = { ...NE, flags: { ...NE.flags, dontKnow: true } };
+  let held = 0;
+  for (let i = 0; i < LIMITS.cardMax * 2 + 1; i++) { r = turn(r, stuck, i % 2 ? "nahi aata" : "pata nahi"); if (r.move.itemId === item) held++; }
+  assert.ok(held > LIMITS.cardMax, `held ${held} turns`);
+  assert.ok((r.state.pinItem !== item) || (r.state.pinRun ?? 0) <= LIMITS.cardMax * 2, `the stall guard let it go (pin ${r.state.pinItem} × ${r.state.pinRun})`);
+});
+test("TAXILA_R7_ONE_LIVE=off: the owner-2 stall's card cap as before", (t) => {
+  const was = process.env.TAXILA_R7_ONE_LIVE;
+  process.env.TAXILA_R7_ONE_LIVE = "off";
+  t.after(() => { if (was === undefined) delete process.env.TAXILA_R7_ONE_LIVE; else process.env.TAXILA_R7_ONE_LIVE = was; });
+  let r = toPractice();
+  const item = r.move.itemId;
+  r = turn(r, withReq("confused", "p5"), "sorry kya bola? samajh nahi aaya");
+  r = turn(r, withReq("back", "p5"), "mummy bula rahi thi, haan");
+  r = turn(r, withReq("slower", "note"), "ek min... haan bolo");
   assert.ok((r.state.pinItem !== item) || (r.state.pinRun ?? 0) <= LIMITS.cardMax, `card cap held (pin ${r.state.pinItem} × ${r.state.pinRun})`);
 });
 
@@ -72,9 +93,10 @@ test("bareAck: a bare acknowledgement, never content (lever 5's trigger)", async
   for (const t of ["haan ready hoon", "liquid", "haan, evaporation", "pata nahi", "samajh nahi aaya", "ok 4", "ek min... haan bolo"]) assert.equal(bareAck(t), false, t);
 });
 
-test("lever 5 (TAXILA_ACK_CLOSE): off by default; on, a bare okay to a teaching question holds the step ONCE, then it advances", async () => {
+test("lever 5 (TAXILA_ACK_CLOSE): on by default since round 7; a bare okay to a teaching question holds the step ONCE, then it advances; off restores the old flow", async () => {
   const { ackCloseOn } = await import("../server/director/state.js");
-  assert.equal(ackCloseOn({}), false, "default off");
+  assert.equal(ackCloseOn({}), true, "default on (round 7 A6, PIPELINE §A Brain item 3)");
+  assert.equal(ackCloseOn({ TAXILA_ACK_CLOSE: "off" }), false);
   const was = process.env.TAXILA_ACK_CLOSE;
   try {
     const s0 = initLessonState({ topicId: EVS.topicId, kit: EVS, ctx: { ...CTX, lang: "hinglish", classLevel: 5, ageBand: "10-15" }, seed: 7, now: 0 });
@@ -83,7 +105,7 @@ test("lever 5 (TAXILA_ACK_CLOSE): off by default; on, a bare okay to a teaching 
     assert.equal(r.move.kind, "hook");
     const withAsk = (rr, q) => ({ ...rr, state: { ...rr.state, recent: [...(rr.state.recent ?? []), { who: "teacher", text: q }] } });
     const hookQ = "Kitchen mein garam chai se bhaap uthti hai. Aapke hisaab se woh bhaap thandi hokar kis form mein badlegi?";
-    delete process.env.TAXILA_ACK_CLOSE;
+    process.env.TAXILA_ACK_CLOSE = "off";
     const off = turn(withAsk(r, hookQ), NE, "ok");
     assert.notEqual(off.move.kind, "reteach", "off: the next teach step as before");
     process.env.TAXILA_ACK_CLOSE = "on";

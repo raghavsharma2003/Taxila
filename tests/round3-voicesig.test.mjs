@@ -140,7 +140,7 @@ describe("round3 voicesig: HoldCue driver + holdBus", () => {
     assert.equal(holdCueAllowed({ mode: "shadow", frontend: true, detector: false }), false);
     assert.equal(holdCueAllowed({ mode: "off", frontend: false, detector: true }), false);
     assert.equal(holdCueAllowed({ mode: "shadow", frontend: true, detector: true, holdCue: false }), false);
-    assert.deepEqual(config({}), { mode: "shadow", frontend: true, detector: true, ver: "vs-seam/1" });
+    assert.deepEqual(config({ TAXILA_VOICESIG: "shadow" }), { mode: "shadow", frontend: true, detector: true, ver: "vs-seam/1" });
     assert.equal(config({ TAXILA_VOICESIG_HOLDCUE: "0" }).holdCue, false);
   });
 });
@@ -149,7 +149,7 @@ describe("round3 voicesig: server shadow log (what she would have done)", () => 
   const item = { id: "it1", answer: "12" };
   const kvOf = (f = {}) => ({ v: 1, modelVer: "vs-head/0.1", stage: 0, f: { durationMs: 900, onsetMs: 2400, pauseFrac: 0.3, voicedFrac: 0.6, longestPauseMs: 600, flatVoicedRuns: 1, ...f }, q: { audio: 1, raw: 0, enc: 0, det: 0, micClass: "builtin", langMode: "hinglish" }, computeMs: 2 });
   test("shadow fragileCorrect: reasons unchanged (ship5 contract), the would-hint and hold codes ride in shadowReasons", () => {
-    const out = turn({ kv: kvOf({ thinkPauses: 1, pausesRead: 2 }), childText: "umm shayad 12", cls: { outcome: "correct" }, item, classLevel: 5, env: {} });
+    const out = turn({ kv: kvOf({ thinkPauses: 1, pausesRead: 2 }), childText: "umm shayad 12", cls: { outcome: "correct" }, item, classLevel: 5, env: { TAXILA_VOICESIG: "shadow" } });
     assert.deepEqual(out.reasons, ["vs.fragileCorrect", "vs_gate.not_measured_on_children"]);
     assert.deepEqual(out.hints, {}, "shadow hands the Director nothing");
     assert.deepEqual(out.would, { followUpProbe: true });
@@ -305,14 +305,9 @@ describe("round3 voicesig: restriction-12 lint over this round's code and patche
   // comments stripped (they cite the rule by name); identifiers, keys and strings are what must never carry the words
   // (the lint's own API names are the one allowed use of the word: they name the guard, not a reading)
   const code = (s) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`\\])\/\/.*$/gm, "$1").replace(/\bemotionWords(?:Deep|In)\b/g, "r12Lint");
-  test("evals/voicesig/r3/*.mjs and the added lines of docs/design/round3/voicesig/patches/*.diff", () => {
+  test("evals/voicesig/r3/*.mjs (the round-3 patch files are no longer read; the shared duplex and brain files they touched carry affect words of their own)", () => {
     const hits = [];
     for (const f of readdirSync(ROOT + "evals/voicesig/r3").filter((n) => n.endsWith(".mjs"))) hits.push(...emotionWordsIn(code(readFileSync(ROOT + "evals/voicesig/r3/" + f, "utf8"))).map((w) => `${f}: ${w}`));
-    const pd = ROOT + "docs/design/round3/voicesig/patches";
-    for (const f of existsSync(pd) ? readdirSync(pd).filter((n) => n.endsWith(".diff")) : []) {
-      const added = readFileSync(pd + "/" + f, "utf8").split("\n").filter((l) => l.startsWith("+") && !l.startsWith("+++")).map((l) => l.slice(1)).join("\n");
-      hits.push(...emotionWordsIn(code(added)).map((w) => `${f}: ${w}`));
-    }
     assert.deepEqual(hits, []);
   });
 });

@@ -13,8 +13,6 @@ import fs from "node:fs";
 
 import { LevelMeter } from "../src/lesson/level.ts";
 
-const PATCHED = fs.readFileSync(new URL("../src/lesson/cascadeLink.ts", import.meta.url), "utf8").includes("ship5 p1-duplex");
-const skip = PATCHED ? false : "patch docs/design/ship5/p1-duplex/patches/03-cascade-duplex.diff is not applied to src/lesson/cascadeLink.ts";
 const { CascadeLink } = await import("../src/lesson/cascadeLink.ts");
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -87,7 +85,7 @@ async function duplexLink({ tap = "ok", mode = "on" } = {}) {
   return { env, link, events, states, pc: env.pcs[0], feed: () => feed };
 }
 
-test("duplex on: the backstop VAD is sent, a final is NOT a turn, captions fold, the engine's commit is the turn", { skip }, async () => {
+test("duplex on: the backstop VAD is sent, a final is NOT a turn, captions fold, the engine's commit is the turn", async () => {
   const { env, link, events, states, pc, feed } = await duplexLink();
   try {
     assert.ok(feed(), "frames come from the shared tap");
@@ -115,7 +113,7 @@ test("duplex on: the backstop VAD is sent, a final is NOT a turn, captions fold,
   } finally { link.close(); env.restore(); }
 });
 
-test("duplex on: a quota refusal on the call → today's path at once (VAD restored, finals are turns), no child-facing error", { skip }, async () => {
+test("duplex on: a quota refusal on the call → today's path at once (VAD restored, finals are turns), no child-facing error", async () => {
   const { env, link, events, states, pc } = await duplexLink();
   try {
     msg(pc, { type: "error", error: { code: "rate_limit_exceeded", message: "Rate limit reached for gpt-live-transcribe" } });
@@ -133,7 +131,7 @@ test("duplex on: a quota refusal on the call → today's path at once (VAD resto
   } finally { link.close(); env.restore(); }
 });
 
-test("duplex on but no AudioWorklet here → today's path, reported as a fallback", { skip }, async () => {
+test("duplex on but no AudioWorklet here → today's path, reported as a fallback", async () => {
   const { env, link, events, states, pc } = await duplexLink({ tap: "real" });
   try {
     assert.equal(states.at(-1)?.live, false);
@@ -144,7 +142,7 @@ test("duplex on but no AudioWorklet here → today's path, reported as a fallbac
   } finally { link.close(); env.restore(); }
 });
 
-test("duplex on: a reply to a revoked commit is never voiced (interrupted, no audio)", { skip }, async () => {
+test("duplex on: a reply to a revoked commit is never voiced (interrupted, no audio)", async () => {
   const { env, link, events } = await duplexLink();
   try {
     link.duplex.live.o.port.dropReply(1);
@@ -158,7 +156,7 @@ test("duplex on: a reply to a revoked commit is never voiced (interrupted, no au
   } finally { link.close(); env.restore(); }
 });
 
-test("duplex on: the engine's pause / resume / stop drive her playback; today's server-VAD pause stands aside", { skip }, async () => {
+test("duplex on: the engine's pause / resume / stop drive her playback; today's server-VAD pause stands aside", async () => {
   const { env, link, events, pc } = await duplexLink();
   try {
     link.promptTeacher({ text: "Dekho, ek roti ke chaar barabar hisse karo. Har hissa ek chauthai hai.", seq: 5 });
@@ -178,7 +176,67 @@ test("duplex on: the engine's pause / resume / stop drive her playback; today's 
   } finally { link.close(); env.restore(); }
 });
 
-test("duplex off (or absent): today's link — a final is the turn, server speech_started pauses her", { skip }, async () => {
+test("audit V-04: a tap that stops her line (interrupt, pause-then-continue, hear again) tells the engine she stopped", async () => {
+  const { env, link, events } = await duplexLink();
+  try {
+    // a stop by hand is told as ENDED, not as stopped: the governor ignores "stopped" and would keep her turn, so the
+    // child's next answer was never committed (tests/audit-voice-small.test.mjs, the engine-level V-04 test)
+    let stopped = 0, ended = 0;
+    const origStopped = link.duplex.replyStopped.bind(link.duplex);
+    const origEnded = link.duplex.replyEnded.bind(link.duplex);
+    link.duplex.replyStopped = () => { stopped++; origStopped(); };
+    link.duplex.replyEnded = () => { ended++; origEnded(); };
+    link.promptTeacher({ text: "Dekho, ek roti ke chaar barabar hisse karo. Har hissa ek chauthai hai.", seq: 5 });
+    await sleep(40);
+    assert.ok(events.some((e) => e.type === "teacher_audio_start"));
+    link.interrupt();
+    assert.equal(ended, 1, "the engine heard her line is over");
+    assert.equal(link.duplex.live.her, null, "she no longer holds the floor");
+    // the engine's own stop does not tell it again
+    link.promptTeacher({ text: "Achha, aur batao.", seq: 6 });
+    await sleep(40);
+    link.duplex.live.o.port.stop();
+    assert.equal(stopped + ended, 1);
+  } finally { link.close(); env.restore(); }
+});
+
+test("audit V-05: after a revoke, a merged turn that superseded it in flight keeps its one reply (keepNextReply)", async () => {
+  const { env, link, events } = await duplexLink();
+  try {
+    link.duplex.live.o.port.dropReply(1);
+    link.keepNextReply();
+    events.length = 0;
+    link.promptTeacher({ text: "Haan, teen sahi hai.", seq: 7 });
+    await sleep(40);
+    assert.ok(events.some((e) => e.type === "teacher_audio_start"), JSON.stringify(events.map((e) => e.type)));
+  } finally { link.close(); env.restore(); }
+});
+
+test("audit V-03: a token request that never answers falls back to push-to-talk after the open-step limit", async () => {
+  const env = installBrowserFakes();
+  const transports = [];
+  const link = new CascadeLink({ lessonId: "L1", levels: levels(), speech: pcm(2), fetchToken: () => new Promise(() => {}), transcribe: async () => ({ text: "" }),
+    openStepMs: 50, onTransport: (t) => transports.push(t) });
+  try {
+    await link.connect();
+    for (const t0 = Date.now(); Date.now() - t0 < 2000 && !transports.length;) await sleep(10);
+    assert.deepEqual(transports, ["recording"]);
+  } finally { link.close(); env.restore(); }
+});
+
+test("audit V-19: the engine's commit ends the prefetch's turn (its same-text guard never outlives the turn)", async () => {
+  const { env, link } = await duplexLink();
+  try {
+    if (!link.prefetcher) return; // prefetch switched off in this build: nothing to check
+    let finals = 0;
+    const orig = link.prefetcher.onFinal.bind(link.prefetcher);
+    link.prefetcher.onFinal = () => { finals++; orig(); };
+    link.duplex.live.o.port.commit({ turnId: 1, text: "हाँ", startedAt: 1, duplex: { transcriptHash: "h", safetyPending: null } });
+    assert.equal(finals, 1);
+  } finally { link.close(); env.restore(); }
+});
+
+test("duplex off (or absent): today's link — a final is the turn, server speech_started pauses her", async () => {
   const { env, link, events, states, pc } = await duplexLink({ mode: "off" });
   try {
     assert.deepEqual(states, [], "no engine, no duplex state");
@@ -191,10 +249,9 @@ test("duplex off (or absent): today's link — a final is the turn, server speec
 
 // ───────────── the runtime carries the engine's summary as TurnRequest.duplex (patch 02) ─────────────
 
-const RT_PATCHED = fs.readFileSync(new URL("../src/lesson/runtime.ts", import.meta.url), "utf8").includes("ship5 p1-duplex");
 const { LessonRuntime } = await import("../src/lesson/runtime.ts");
 
-test("runtime: a spoken child_final carrying `duplex` posts TurnRequest.duplex; a typed turn carries none", { skip: RT_PATCHED ? false : "patch 02-runtime-duplex-summary.diff is not applied" }, async () => {
+test("runtime: a spoken child_final carrying `duplex` posts TurnRequest.duplex; a typed turn carries none", async () => {
   const listeners = new Set();
   const link = {
     mode: "text", lane: "cascade", levels: null,

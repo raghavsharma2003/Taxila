@@ -1,0 +1,93 @@
+/* Round 8, step e: the parent corner (src/parent, roots .pa.kx and .pa-gate.kx) under the one token set, behind the
+   ?tx= switch.
+   It is light in both themes (data-tx-surface="light"), in the reading face (Literata), with no slash labels.
+   It removes:
+     - the HUD grid;
+     - the "// " mono eyebrows;
+     - corner-bracket panels;
+     - chamfered buttons and state chips;
+     - mono uppercase labels;
+     - the inset "tick" hovers;
+     - the teacher's picture in the top bar (her look is the owner's choice; the corner names her in words).
+   Tokens only (tests/r8-tx-tokens.test.mjs). The selector repeats [data-tx] to outrank parent.css's calm Volt rules,
+   at most (0,5,0). */
+@import "./bridge.css";
+
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] {
+  --bg: var(--tx-bg); --paper: var(--tx-bg); --surface: var(--tx-surface); --surface-2: var(--tx-surface-2); --tray: var(--tx-surface-2);
+  --ink: var(--tx-ink); --ink-2: var(--tx-ink-2); --line: var(--tx-line-2); --tile-border: var(--tx-line-2);
+  --p-bg: var(--tx-bg); --p-ink: var(--tx-ink); --p-ink-2: var(--tx-ink-2); --p-ink-3: var(--tx-ink-3);
+  --nib: var(--tx-accent); --on-nib: var(--tx-on-accent); --focus: var(--tx-tutor); --focus-halo: var(--tx-surface);
+  --font-ui: var(--tx-font-ui); --font-text: var(--tx-font-read); --font-title: var(--tx-font-read); --font-heading: var(--tx-font-read); --font-display: var(--tx-font-read);
+  --radius-card: var(--tx-r-2); --radius-sm: var(--tx-r-1); --radius-xs: var(--tx-r-1); --radius-pill: var(--tx-r-3); --elev-card: var(--tx-shadow-1);
+  --pa-cut: 0px; --pa-br: 0px;
+  background: var(--tx-bg); background-image: none; color: var(--tx-ink); font-family: var(--tx-font-ui); color-scheme: light;
+}
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] :focus-visible { outline: 3px solid var(--tx-tutor); outline-offset: 2px; }
+
+/* reading: the claims, headlines and letters in the reading face */
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] :is(h1, h2, h3, .pa-h1, .pa-h2, .pa-headline, .pa-claim-text, .pa-alert-title, .pa-report-title, .pa-ev-skill) {
+  font-family: var(--tx-font-read); letter-spacing: -.005em; color: var(--tx-ink); }
+.pa.kx[data-tx][data-tx][data-tx] .pa-h1 { font-size: var(--tx-t-6); font-weight: 600; line-height: 1.15; }
+.pa.kx[data-tx][data-tx][data-tx] :is(.pa-headline, .pa-claim-text) { font-size: var(--tx-t-4); line-height: 1.4; font-weight: 600; }
+.pa.kx[data-tx][data-tx][data-tx] :is(.pa-try, .pa-card) p { font-family: var(--tx-font-read); font-size: var(--tx-t-3); line-height: 1.5; }
+
+/* labels: sentence case, the UI face, no "// " */
+.pa.kx[data-tx][data-tx][data-tx] .pa-eyebrow, :is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] .pa-card-title {
+  font: 600 var(--tx-t-1)/1.3 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-ink-2); }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] :is(.pa-eyebrow, .pa-card-title)::before { content: none; }
+.pa.kx[data-tx][data-tx][data-tx] .pa-ev-date { font: 600 var(--tx-t-1)/1.3 var(--tx-font-ui); letter-spacing: 0; color: var(--tx-ink-2); }
+
+/* cards: soft paper rectangles with a real shadow, no corner brackets */
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] .pa-card { border: 1px solid var(--tx-line); border-radius: var(--tx-r-2); background: var(--tx-surface); box-shadow: var(--tx-shadow-1); }
+.pa.kx[data-tx][data-tx][data-tx] .pa-try { border-left: 1px solid var(--tx-line); }
+.pa.kx[data-tx][data-tx][data-tx] .pa-alert { border: 1.5px solid var(--tx-danger); }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] :is(.pa-note, .pa-stale, .pa-confirm, .pa-quote) { background: var(--tx-surface-2); border: 0; border-radius: var(--tx-r-1); }
+
+/* the four plain words: rounded pills in sentence case; the shape and the word carry the level */
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] .state { clip-path: none; border-radius: var(--tx-r-3); border-width: 1.5px; min-height: 32px; padding: 2px var(--tx-s-3) 2px var(--tx-s-2);
+  font: 600 var(--tx-t-1)/1.3 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-ink); background: var(--tx-surface); }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] .state-1 { --c: var(--tx-tutor); background: var(--tx-surface); }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] .state-2 { --c: var(--tx-tutor); background: var(--tx-tutor-soft); }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] .state-3 { --c: var(--tx-ok); background: var(--tx-ans-fill); }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] .state-tag { font: 400 var(--tx-t-1)/1.3 var(--tx-font-ui); color: var(--tx-ink-2); }
+
+/* buttons: soft rectangles; the corner's one primary action in the accent */
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] .btn { clip-path: none; border-radius: var(--tx-r-2); font-weight: 600; letter-spacing: 0; text-transform: none; }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] :is(.btn-primary, .btn-primary[data-volt]) { background: var(--tx-accent); color: var(--tx-on-accent); border-color: var(--tx-accent); text-transform: none; letter-spacing: 0; }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] :is(.btn-secondary, .btn-danger, .btn-destructive) { background: var(--tx-surface); color: var(--tx-ink); border: 1.5px solid var(--tx-line-2); }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] .btn-secondary:hover { box-shadow: none; border-color: var(--tx-tutor); }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] :is(.pa-how, .pa-textbtn, .pa-gate-help, .pa-here) { color: var(--tx-tutor); }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] :is(.input, input, select, textarea) { border-radius: var(--tx-r-1); }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] .pin-key { border-radius: var(--tx-r-1); clip-path: none; background: var(--tx-surface); color: var(--tx-ink); border: 1.5px solid var(--tx-line-2); font-family: var(--tx-font-ui); }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] .pin-key.btn-primary { background: var(--tx-accent); color: var(--tx-on-accent); border-color: var(--tx-accent); text-transform: none; letter-spacing: 0; }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] .pa-gate-icon { clip-path: none; border-radius: 50%; background: var(--tx-tutor-soft); color: var(--tx-tutor); }
+.pa.kx[data-tx][data-tx][data-tx] .pa-seg { border-radius: var(--tx-r-3); border-color: var(--tx-line-2); background: var(--tx-surface); }
+.pa.kx[data-tx][data-tx][data-tx] .pa-seg-btn[aria-selected="true"] { background: var(--tx-ink); color: var(--tx-surface); }
+
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] .brand { --nib: var(--tx-tutor); --on-nib: var(--tx-surface); color: var(--tx-ink); }
+
+/* the frame: a quiet top bar, the tabs, the rail; no picture of her */
+.pa.kx[data-tx][data-tx][data-tx] .pa-top { background: var(--tx-bg); border-bottom: 1px solid var(--tx-line); backdrop-filter: none; }
+.pa.kx[data-tx][data-tx][data-tx] :is(.pa-teacher-face, .pa-teacher-disc) { display: none; }
+.pa.kx[data-tx][data-tx][data-tx] :is(.pa-kid-avatar, .pa-kid-disc) { border-radius: 50%; }
+.pa.kx[data-tx][data-tx][data-tx] .pa-tabs { background: var(--tx-surface); border-top: 1px solid var(--tx-line); }
+.pa.kx[data-tx][data-tx][data-tx] .pa-tab { color: var(--tx-ink-3); }
+.pa.kx[data-tx][data-tx][data-tx] .pa-tab.is-active { color: var(--tx-ink); box-shadow: none; }
+.pa.kx[data-tx][data-tx][data-tx] .pa-tab.is-active svg { color: var(--tx-tutor); }
+.pa.kx[data-tx][data-tx][data-tx] :is(.pa-rowlink, .pa-topic, .pa-skill-row, .pa-chap-mini, .pa-choice, .pa-danger, .pa-group-save, .pa-claim + .pa-claim) { border-color: var(--tx-line); }
+.pa.kx[data-tx][data-tx][data-tx] .pa-rowlink:hover { box-shadow: none; background: var(--tx-surface-2); }
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] dialog.sheet { background: var(--tx-surface); color: var(--tx-ink); border: 1px solid var(--tx-line); border-radius: var(--tx-r-2) var(--tx-r-2) 0 0; }
+.pa.kx[data-tx][data-tx][data-tx] .pa-ev-list::before { background: var(--tx-line-2); }
+.pa.kx[data-tx][data-tx][data-tx] .pa-ev-row { border-bottom-color: var(--tx-line); }
+
+@media (min-width: 900px) {
+  .pa.kx[data-tx][data-tx][data-tx] { background-image: none; }
+  .pa.kx[data-tx][data-tx][data-tx] .pa-rail { background: var(--tx-bg); border-right: 1px solid var(--tx-line); }
+  .pa.kx[data-tx][data-tx][data-tx] .pa-rail .pa-switch { border-radius: var(--tx-r-1); border-color: var(--tx-line-2); background: var(--tx-surface); }
+  .pa.kx[data-tx][data-tx][data-tx] .pa-rail-item { border-radius: var(--tx-r-1); color: var(--tx-ink-2); }
+  .pa.kx[data-tx][data-tx][data-tx] .pa-rail-item:hover { box-shadow: none; background: var(--tx-surface-2); }
+  .pa.kx[data-tx][data-tx][data-tx] .pa-rail-item.is-active { background: var(--tx-surface-2); color: var(--tx-ink); box-shadow: none; }
+  .pa.kx[data-tx][data-tx][data-tx] .pa-rail-item.is-active svg { color: var(--tx-tutor); }
+  .pa.kx[data-tx][data-tx][data-tx] .pa-top { background: transparent; border-bottom: 0; }
+}

@@ -1,0 +1,91 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c6-maths-ch06-t01",
+    "archetype": "area-claim@1",
+    "misconceptionId": "c6-maths-ch06-t01-m-area-perimeter",
+    "skillId": "c6-maths-ch06-t01-s1",
+    "beat": "rem:c6-maths-ch06-t01-m-area-perimeter",
+    "when": "remediation",
+    "check": "c6-maths-ch06-t01-s1:c2"
+  },
+  "archetype": "area-claim@1",
+  "spec": {
+    "archetype": "area-claim@1",
+    "skills": [
+      "c6-maths-ch06-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Grid par plot banao",
+      "round": "Round",
+      "area": "area",
+      "perimeter": "perimeter",
+      "claim": "CLAIMED",
+      "need": "chahiye",
+      "sq": "sq",
+      "units": "units",
+      "newShape": "naya shape",
+      "maxArea": "sabse zyada area",
+      "runDone": "Field complete",
+      "timeUp": "Time up"
+    },
+    "grid": {
+      "cols": 15,
+      "rows": 10
+    },
+    "drift": 0,
+    "rounds": [
+      {
+        "goal": "area",
+        "target": 40,
+        "seconds": 25,
+        "different": false
+      },
+      {
+        "goal": "perimeter",
+        "target": 26,
+        "seconds": 15,
+        "different": true,
+        "targets": "c6-maths-ch06-t01-m-area-perimeter"
+      },
+      {
+        "goal": "perimeter",
+        "target": 28,
+        "seconds": 10,
+        "different": true
+      },
+      {
+        "goal": "maxArea",
+        "target": 40,
+        "seconds": 25,
+        "different": true
+      }
+    ]
+  },
+  "hash": "0f8030730e626b7aa5c7a592b3fbb7d3",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": true,
+    "spec": {
+      "ok": true,
+      "repairs": 0,
+      "fellBack": false
+    }
+  },
+  "facts": {
+    "kind": "game",
+    "archetype": "area-claim@1",
+    "onScreen": {
+      "title": "Plot",
+      "rounds": 4
+    }
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-10T14:41:08.470Z"
+  }
+}

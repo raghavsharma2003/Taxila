@@ -2656,3 +2656,367 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 - **Claimed in review:** a kept board is re-gated against the open question, so it can't leak that question's answer.
 - **What broke:** the check only certifies legibility. A board showing 160 was re-sent while a question keyed 160 was open.
 - **Lesson:** a gate is no protection until a test shows the content refused.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r144-wordtoks-keep-marks` (2026-10-15): Keeping Devanagari vowel signs (\p{M}) in spoken-number.js wordToks so 'बटा' tokenises whole (4A, 14.4 spoken fractions): it moved 206 of 2,008 sim-lab Devanagari tail verdicts that had nothing to do with fractions, e.g. 'पाँच मीटर' for '5 m' true -> false. Replaced by reading a spoken Devanagari fraction as one number before tokenising (DEVA_FRACTION), which moved only the 2 fraction lines.
+- `rj-r144-ignore-devanagari-tail` (2026-10-15): Fixing the keep-marks side effect by having tailAgrees ignore a Devanagari tail entirely (4A, 14.4 spoken fractions): it moved 832 of 2,008 sim-lab Devanagari tail verdicts the other way (contradicting tails stopped vetoing). Replaced by DEVA_FRACTION with wordToks unchanged (2 moved, both fraction lines false -> true, 0 unit readings moved).
+- `rj-r5-unenforced-verdict-gate-cited` (2026-10-15): REJECTED claim (4B, 2026-10-15): "her verdict cannot sound before value end + VERDICT.delayMs" was cited as the protection against a verdict on an abandoned value. The gate was computed (governor G7 verdictNotBefore) and emitted on the speak command but NOTHING enforced it (live.ts / cascadeDuplex / the link never read it). Lesson: a computed gate is not a protection until a test shows the sound waiting for it. Now enforced: dc-r5-verdict-hold-2500.
+- `rj-r5-w9-open-key-withheld-when-said` (2026-10-15): Round 5 (QA pass 15, TEST 1695e941): withholding the open item's key from the board even when her line says it (whiteboard.js withheldValues). Rejected: it broke the pinned design in tests/studio-qa.test.mjs 'W9 no reveal … a value she says herself': 'she said it: the board only repeats her', and the MCQ options she reads aloud are hers to draw; and 1695e941 had no item open (activeItemId null, warmup), so it would not have fixed the case anyway. The fix is the self-answered-question predicate (studio/request.js selfAnswer): her line loses the clause that states its own question's answer, and the board never draws it (W18 ctx.answers). Reversal: only if a measured leak needs a key withheld that she says, and then without breaking said-is-hers.
+
+
+<!-- merged from inbox/r144-main.json -->
+## rj-r144-beside-brief-rewrite (2026-10-21)
+
+- **Tried:** rewriting the distress brief to also exclude tiredness and boredom with the lesson.
+- **What broke:** a lesson worry ('galat toh nahi hai na? dar lag raha hai') went 0/5 → 3/5 distress.
+
+
+<!-- merged from inbox/r144-tier-main.json -->
+## rj-r144-bare-ok-everywhere (2026-10-21)
+
+A whole-reply bare okay as fine.js FINE broke the 14.3 rule that a bare yes / okay after the full script is agreement, not a state (2 tests). It answers the check-in's own question only, so it lives in bareOk(), read by the check-in branch alone.
+
+
+<!-- merged from inbox/r144-tier2-main.json -->
+## rj-r144-escalate-not-fine (2026-10-21)
+
+The first tier cut escalated any reply to a check-in that was neither clearly fine nor a carry-on. The check-in's own question invites exactly the words that fail that test ("main dar gayi thi", "okay, bas tired"), so 2 of 6 scripted fright/secrecy cards escalated to the full script on the child's answer. Replaced by dc-r144-checkin-next-turn.
+
+
+<!-- merged from inbox/r144-qa9ad8-main.json -->
+## rj-r144-note-alone — a brief note against the history (2026-10-21)
+
+A pre-emptive 'the check was done' note, added while the care line still said 'or a grown-up they trust' and the history still carried 'main mar jaunga', left the safeguarding call in 4 of 6 replay runs. The model resolved the contradiction toward safety. Change the trigger, not only the instruction.
+
+
+<!-- merged from inbox/r144-qa9ad8b-main.json -->
+## rj-r144-checkin-no-grownup — the check-in may still send a hurt child to an adult (2026-10-21)
+
+'No sending them to a grown-up this turn' was added to the check-in brief with no measured effect (0/30 vs 0/30), then removed before it shipped. An injury check-in needs the practical 'show it to mummy' (QA XS1 7b6a4169). A blanket ban would have taken that away. The full script's hand-off and the check-in's practical care are different acts.
+
+
+<!-- merged from inbox/r1441-burn-main.json -->
+## rj-r1441-unsafe-now-check-tier — not making every unsafe_now read a check-in (2026-10-21)
+
+Considered: putting unsafe_now in the check tier when only a model read it. Rejected: the predicate misses 'ghar mein aag lag gayi hai', 'mujhe bachao', 'koi mujhe pakad ke le ja raha hai' and 'help me someone is outside my door'. 'Are you okay?' as the first answer to 'mujhe bachao' is the wrong trade.
+
+
+<!-- merged from inbox/r5-census-s2.json -->
+## rj-r5-worked-number-guard (2026-10-21)
+
+- **Tried:** a reply guard for worked-example numbers on a non-worked-example move.
+- **What broke:** 14 of 1567 sim-lab lines, at most 2 real; the rest is legitimate teaching it would strip.
+- **Lesson:** the census turn's numbers came from the transcript history; the fix is the screen following the move.
+
+<!-- 14.4.1 integration: stream write-ups from their inbox titles (4B r144-duplex, stream 2 r5-census-s2) -->
+## rj-r144-governor-carry-check (2026-10-21)
+
+Not shipped: carrying a hushed burst over her line into the next turn at her_end when her line did NOT hand over (governor carryCheck: its words decide, a lone continuer or no words drop back to idle). Measured on the 132 recorded D5 runs (66 scenarios × owner + phone): 0 commits changed with it on or off, before and after the fan-in fix (the fold-in path, phase overlap at her_end, already carries; the loss was the fan-in's). Revisit only if production shows a request said over an explanation, read as a short burst, lost.
+
+## rj-r144-negation-never-subtracted (2026-10-21)
+
+Rejected (main 2026-10-21): the literal bar "a negation is never subtracted as echo, whatever". Measured on the same 41,259 sim lab pairs: negation loss 510 → 0, but her own echoed negations leak into the child's turn — echo floors 2,029 → 10,917 tokens left (same script) and 15,521 → 23,824 (cross-script); a stray "nahi" of hers beside the child's "haan" inverts the child, a more frequent meaning flip than the one it removes. Shipped instead: dc-r144-negation-surface-key (510 → 169 for +1 % cross-script floor, 0 D5 commits changed).
+
+## rj-r5-offer-guard (2026-10-21)
+
+Not built (census F4 P0 3437b744, main): a reply guard for an offer the turn has no path for. Sim-lab 14.2-14.4: 26 of 4384 lines name a game in a question, 11 in topics with no game path, of which most are interest questions, 2 the ways offer (fixed by 64a1b78b) and 1 a free-text offer: about 1 line in 4384. The census case was a topic-switch offer answered while the reply model was unavailable; its causes are an agreement to her own offer not read as that request (4A, requests.js) and the unavailable fallback ignoring a pending request (F10 family).
+
+
+<!-- merged from inbox/r1441-simlab-wire-main.json -->
+## rj-r5-simlab-turn-only-screen — a simulated child that sees only the turn response (2026-10-21)
+
+The sim lab's child saw only what the turn response carried. A board that arrived a second later never reached it. 1,521 turns in 938 lessons across 65 runs showed the child an empty screen that the real client would have filled. Judgements that rest on the child's 'nothing on screen' after a planning slot are not evidence of a product failure. A simulated client must subscribe to everything the real client subscribes to.
+
+
+<!-- merged from inbox/r1441-endrecord-main.json -->
+## rj-r1441-record-fence-alone (2026-10-21)
+
+An output-only fence using the child-speech safety predicate. It misses the writer's third-person report ("Riya said she wants to die") and the referral sentence that tips off the guardian. Withholding the child's words from the writer is the mechanism. The fence is the backstop.
+
+## rj-r145-kit-deep-marks (2026-10-21, stream 4A)
+
+The deep-kind audit's 1,927 "plain" marks were measured and rejected. Sim lab: 64 cards × 2 arms, agent, decided child. The judge read agreed 68% in both arms. The marks asked an understood child fewer deep items (66 → 47), and doubled the "untested" understood under-reads (11/42 → 23/46). The switch, the marks file and the plain-evidence patch are removed. Reverse if a later audit shows a marked-plain item mis-reads a child, measured the same way.
+
+
+<!-- merged from inbox/r1441-heldsilence-main.json -->
+## rj-r1441-shared-branch-worktrees (2026-10-21)
+
+One branch checked out in two worktrees. A commit in one moved the other's HEAD under its unchanged files, so a gate could stamp a commit it never tested. One branch, one worktree; the merging tree works detached.
+
+## rj-r1442-pedagogy-guard-on-safety-copy (2026-10-22, main safety review)
+
+A reply-honesty guard (the claimed-mistake strip) that also ran on safeguard turns. It read the disclosure reassurance "You did nothing wrong by telling me." as a mistake claim and removed it. Every pedagogy guard that rewrites or strips a reply stays off safeguard turns, and a negation of fault is never a fault.
+
+## rj-r1442-source-env-file (2026-10-22)
+
+Sourcing .env.local in bash (`. ./.env.local`). A value with an unquoted & is run as a background job, and its contents are echoed into the tool output; a test-branch credential was exposed in a stream's own transcript. Load env only with `node --env-file`, or one `export` per key, never by sourcing the file. Rotating the exposed test-branch password is the owner's call.
+
+
+<!-- merged from inbox/r1443-helped-main.json -->
+## rj-r1443-fold-predicate-rereads (2026-10-22)
+
+The first cut folded every model re-read in a predicate episode into the passive 14.3 hold. That would have dropped the active hand-off that got p08's child to a neighbour. Rejected before measurement; the same-story restart replaced it.
+
+## rj-r1443-partial-revert-apply (2026-10-22)
+
+The A/B run reverted only some of a patch's paths, so re-applying the whole patch failed silently. Revert exactly the patch's paths, or apply with --include, and check git diff --stat.
+
+
+<!-- merged from inbox/r7-face-remerge.json -->
+## rj-r4-lamp2-painted-keys-premium
+**Tried (2026-10-10, round 4 rig2, docs/design/round4/asha/rig2/):** the grown-up Asha (option 4, cardigan + print kurta) as PAINTED KEYS instead of lamp1's mesh warp: 10 mouths, 5 eye keys and 2 brow keys, each an Azure gpt-image-2 edit of the approved rig-b front, registered and composited only inside its region (SSIM outside 1.0); swapped with 45 ms crossfades by a Canvas 2D KeyRig the unchanged PuppetDriver drives; rigid head motion only (roll <= 1.2 deg). **Broke:** blind judges (lamp1's prompt, 3 gpt-5.6-sol + 2 Kimi K2.6, r8 in every run): uncanny 3, 2, 0, 2 /5 over J1-J4, the final build 2/10 pooled (identical images 0/5 then 2/5); premium 2.4-2.8 vs r8 3.0-3.6 in the same runs. Named: mouth interiors differ key to key (each mouth repainted from scratch), a still head, the thinking glance; more rigid motion (P3) brought 'proportions swim' back. Passed: same person 5/5, childish 0/5, rest SSIM 0.989, pack 133 KB, 60 fps at 4x on the 80 px row (headless), bilabials 132/132 on the 24-line battery (lamp2 text rule), calm safety face, lip-sync median +15 ms. Kill rule applied after 3 polish rounds; lamp2 is a HELD look, r8 stays live. **v3 (same day):** all open mouths repainted from one master key, a breathing / translation life layer: uncanny 1, 1, 0 /5 (inside the bar), premium 2.6, 2.8, 2.8 vs r8 3.4, 3.0, 3.2 in the same runs: still fails premium. **Reverse if:** a painted-key build passes uncanny <= 1/5 AND premium >= r8's same-run score in two consecutive rounds of the same panel (lead: one mouth model sheet sharing teeth, op-r4-asha-mouth-model-sheet).
+
+## rj-r4-image-model-turn-keys
+**Tried (2026-10-10, lamp2 v3):** two head-turn keys (prompted 'about 3 degrees') as gpt-image-2 edits of the approved front, to give the head motion without bending the painting. **Broke:** registered on the shoulders, the head moved and rescaled ~40 px and its features were redrawn (a 50% mix shows two bindis and doubled brows), so neither a cut nor a dissolve can hide the change (docs/design/round4/asha/rig2/evidence/v3-turnkeys-dissolve.webp). Also tried: the option-4 front flattened automatically into a 'flat vector' base (mean-shift + Lab k-means, 16 / 28 colours): blotchy posterised planes, cheaper than the painting (evidence/armD-flat-probe.webp); not built. **Reverse if:** an image model holds identity and framing to < 3 px on a 3-degree turn edit, or the turn keys are artist-drawn on one model sheet.
+
+
+<!-- merged from inbox/r7-main-2.json -->
+## rj-r7-inbox-file-reedited-after-merge (2026-11-04, main loop, round 7 integration 2)
+
+What was tried: streams kept appending to their one inbox file (context/inbox/r7-<stream>.json) across batches. What broke: the main loop's merge moves each merged file to context/inbox/merged/, which git records as a rename. A later edit to the old path follows the rename on merge, so the new entries landed in merged/ and were never read into the graph. Integration 2 found 28 such nodes (Brain 3, Face 15, Platform 6, Studio 2, Voice 2), moved them back as *-remerge.json and merged them. Rule since: a new file per batch, never re-edit a pushed inbox file (docs/design/round7/PIPELINE.md §O). A check that would catch it: after each integration, every node id in context/inbox/merged/*.json must exist in graph.json.
+
+
+## rj-r7-create-copies-all-secrets (2026-11-04, round 7, Platform; written up by main loop)
+
+Rejected: creating a new Container App by copying ALL of the source app's secrets (scripts/deploy-azure.mjs --create from taxila-web, as it stood until 2026-11-04). A staging app built that way would have stored production's DATABASE_URL (and every other production secret) even after its env was re-pointed to the TEST database, so one direct read of a stale secret name, or a later env edit, could reach production data. Found while scripting taxila-staging. Now --create copies only the secrets that the new app's env and its registries reference. Never reintroduce a whole-store copy; a new app gets exactly what it reads.
+
+
+<!-- merged from inbox/r7-main-10.json -->
+## `rj-r7-inbox-md-string-per-char`
+
+What was tried: inbox files carry their prose in `md`, documented as an object keyed by document (`decisions`, `measurements`, `rejected`). App's r7-app-3..7 sent `md` as one plain string. `scripts/merge-inbox.mjs` ran `Object.entries(box.md)`, which on a string yields one entry per character. So each character was appended to a file named after its index: context/0.md … context/1308.md.
+
+What broke: integration 5 (425c1ae1a) committed all 1,309 of those files. App's prose never reached decisions.md, and `context.mjs --check` passed, because it only reads the four known documents. It flagged App's nodes as "written up nowhere", and they got title-only write-ups, which hid the cause. A Learning edge written as {from, to, kind} with relation `supports` was silently skipped too.
+
+Fix (integration 6):
+- merge-inbox routes a string `md` to the document of the file's most common node kind;
+- an unknown key goes to architecture.md with a warning, never to a new file;
+- edges are accepted as {from, to, kind} as well;
+- `context.mjs --check` fails on any file in context/ other than the known documents;
+- the junk was removed and App's five prose blocks re-applied to decisions.md.
+
+Lesson: a check that only reads the files it expects cannot see files it does not expect. It has to list the directory.
+
+
+<!-- merged from inbox/r7-main-16.json -->
+## `rj-r7-m3-container-name-m3` (2026-11-06)
+
+Rejected: the ledger container name "m3".
+
+Azure blob container names must be 3-63 characters, and the fake Azure in the test never checked that. The first live dry run failed with 400 OutOfRangeInput. It was renamed to m3-ledger, and a test pins the rule. Lesson: a fake must enforce the real service's input rules.
+
+
+<!-- merged from inbox/r7-main-17.json -->
+## `rj-r7-code-spec-unstreamed` (2026-11-06)
+
+Rejected: speculating the reply in parallel with the distress read on code-classified turns, without streaming (`TAXILA_CODE_SPEC`).
+
+**Result:** first-audio-ready p50 was 1,954 ms with the change against 1,852 ms without it (p90 3,498 vs 3,123), over 160 turns.
+
+**Why it lost:**
+- It displaced the 970 ms early-clause path.
+- 19% of speculations missed on the facts row.
+
+The flag stays off. Next, if pursued: stream the speculation and hold its first clause until the read returns.
+
+
+<!-- merged from inbox/r7-main-19.json -->
+## `rj-r7-m3-image-409` (2026-11-06)
+
+Rejected: treating ACR's async-poll 409 "Tag … already exists" as a failure. It aborted the first M4 apply.
+
+Now read as "already present", and verified live.
+
+Lesson: fakes must model a provider's async-poll error codes.
+
+
+<!-- merged from inbox/r7-main-27.json -->
+## `rj-r7-main-push-on-testall-only` (2026-11-08)
+
+The main loop pushed integration 14e (int/r6 694f58557) after reading only the test:all summary. The status file said tsc=1 vite=1.
+
+The cause was the integration worktree's stale node_modules: App's new `qrcode-generator` dependency was in package.json and the lockfile but not installed. So the pushed tree was sound; after `npm ci`, tsc and vite both passed.
+
+**What broke:** the push step never read the tsc and vite lines.
+
+**Fix:**
+- Before a push, every status line (tsc, vite, testall) must be 0.
+- Any integration whose merge touches package-lock.json runs `npm ci` before its gate.
+
+**The same session also edited the tree mid-gate.** It merged integration 14e into the worktree while 14d's single-process run was still going. The run reported 2 failures: the old 3-tab r7-app-notebook test read App's new 4-tab Notebook source. That was the edit, not the code.
+
+**Fix:** no merge, `npm ci` or file edit in the integration worktree until every gate stage, single-process included, has written its status. A contaminated run is re-run, not read.
+
+
+<!-- merged from inbox/r7-main-28.json -->
+## `rj-r7-known-words-devanagari-fragments` (2026-11-08)
+
+Deferred to the safety pass.
+
+`evals/safety-robust/build-known.mjs` splits Devanagari at combining marks. Regenerating known-words after the c8/c9 Hindi language kits therefore added fragments that are not words (विृक्ष, िचार, क्त, सु), alongside real ones.
+
+They are harmless today, since KNOWN_NEAR only stops a token being read as a solo slot word. But a fragment could mask a garbled safety word.
+
+**Not fixed now,** under the build-first directive: existing safety code stays as it is. The safety pass should tokenise by grapheme cluster and re-derive the list.
+
+
+<!-- merged from inbox/r7-main-32.json -->
+## `rj-r7-pages-found-by-text-search` (2026-11-09)
+
+The tried approach: find a turn's page boundaries by searching the finished line for each part's text (`segmentsAt`: `spanOf` on `guard.parts`, with a `closureEnd` fallback).
+
+**What broke:** it fails whenever a pass edits the line after the part texts are taken. It has now broken three times:
+- v6.3's dedupe cut remediation fragments;
+- refused pages left their lines spoken over the wrong board;
+- v6.5's F1 opener swap emptied the close part. That put 16 graded closes over the next card's board in director14.
+
+Replaced by pages by construction (v6.6 P4).
+
+## `rj-r7-proxy-contradiction-trend` (2026-11-09)
+
+The tried approach: read the gate's automatic contradiction counter as a trend line.
+
+**What broke:** on director14 it read 17 → 9 while the hand count went 13 → 22. It checks `closeBeat.board`, not the page actually drawn, so it is blind to both of the run's main mechanisms.
+
+Hand counts stay the gate. The counter must pass a director14 fixture before its numbers count as evidence.
+
+
+<!-- merged from inbox/r7-main-34.json -->
+## `rj-r7-question-drop-on-authored-text` (2026-11-09)
+
+The tried approach: drop every '?' sentence outside the card on scripted turns (v6.6), to stop model-written questions.
+
+**What broke:** it also removed authored rhetorical questions in points, added by Learning's register rewrite. director16 lost c5-t02's e1 point and c4's e3 point in all 8 of those lessons.
+
+A guard aimed at one author's text must check who wrote the sentence, not its punctuation.
+
+
+<!-- merged from inbox/r7-audit-docs-memory.json -->
+## `rj-audit-inbox-edges-silently-skipped`
+An edge written in an inbox file is not an edge in the memory until someone has checked. The merger skips an edge whose relation it does not know, or whose end is missing, and says so only on the console; the file is then moved to `merged/` and the check passes. By 2026-11-09, 229 edges had been lost this way. The cost is concrete: a decision that was replaced in words (the 3D teacher, the studio evidence rule, the old benches) still comes back from a query as current. What to do instead: use only the seven relations, and make the merger fail rather than skip.
+
+
+<!-- merged from inbox/r7-audit-learner.json -->
+## rj-audit-brief-hardstop-on-every-plan
+**Tried (Learning patch 006, round 7):** `lessonBriefOf` put `hardStopAt` = the lesson slot's window end on every brief and rebuilt `wrapAt` from HH:MM on the plan's day. **Broke (audit 2026-11-09, LEARN-01):** the window ends at 20:00 (classes 1-2), 20:30 (3-4), 21:00 (5-7), 21:30 (8-9). Any lesson started after it, on a day a plan existed, was past its hard stop at once: the first child turn's move was `wrap` (class 2 at 20:05, class 5 at 21:10; the same lesson with no brief opened on the hook). It was a clock gate on default flags, which `dc-r14-no-clock-gates` had removed. A 23:40 start also got a wrap time 23 hours in the past. **Instead:** `learner-brief-hardstop-limits-only`. Lesson: a time rebuilt from a clock string on 'the plan's day' is only right inside the window it was planned for; and anything that can end a lesson is a gate, whatever it is called.
+
+## rj-audit-lesson-path-never-discriminates
+**Tried:** `learner/live.js answerEvents` built item events from Director evidence without `discriminates`; only games and Studio set it. **Broke (audit 2026-11-09, LEARN-03):** three hits put a mix-up at p = 0.983, and six unaided right answers on items that target it left it at 0.983 with `resolvedAt` null, while the legacy `misconception_state` row resolved after one. The teacher's brief and the parent Home (legacy table) said cleared; the Director's beliefs and the reports (ledger) said open. **Instead:** a right answer on a kit item with `targetsMisconception`, a script remediation follow-up or a keyed script check carries `discriminates`. Test: tests/r7-audit-learner.test.mjs.
+
+## rj-audit-hinted-includes-c1
+**Tried (round 7 F, S6):** hinted = item.open C1-C4, solved = C1-C2. **Broke (audit 2026-11-09, LEARN-13):** C1 is 'right on a later try, no hint' (kt/adapter.js openOutcome), so five second-try answers read 'Taxila gave a hint before any answer 5 times; 5 of those were then solved', and reports/check.js used the same sets so the checker agreed with the error. **Instead:** hinted = C2-C4, solved = C2-C3. Lesson: a checker that copies the rule it checks cannot find the rule wrong.
+
+## rj-audit-reteach-unanswered-as-failed
+**Tried (W1-C):** at the 30-day horizon `resolveAttempt` closed an attempt nothing ever answered as `failed` with reward 0 (pinned by tests/comprehension-reteach.test.mjs). **Broke (audit 2026-11-09, LEARN-27):** the 0 goes to the arm's population posterior, so every child who simply did not come back counted against the teaching method for all children, and the attempt read as a failed class for that child. **Instead:** closed with no outcome and no reward (the SQL already skips a null reward).
+
+
+<!-- merged from inbox/r7-audit-platform.json -->
+## rj-r7-audit-uncaught-decode-kills-replica
+**What was there:** `decodeURIComponent(req.url…)` at the top of the request listener in `server/serve.mjs`, outside any try. **What broke:** `GET /%` threw `URIError`; nothing under `server/` handles `uncaughtException`, so the process exited and every lesson, stream and voice socket on the replica dropped, from one request with no sign-in (reproduced locally, n=1, 2026-11-09). **Now:** the decode is caught and answers 400 (`6fa4df68`, `tests/r7-audit-platform-serve.test.mjs`). **Rule:** code that runs in the bare listener before `handle()` must not throw; the router's try/catch does not cover it. The same decode in `parseCookies` turned any cookie with a bare `%` into a 500 on every signed-in route.
+
+## rj-r7-audit-rollback-fallback-picks-failed-revision
+**What was there:** `trafficRoles` in `scripts/deploy-azure.mjs` fell back to the newest revision that was not current and not `Unhealthy` when no traffic entry carried the `previous` label. **What broke (read from the code, not run against Azure):** the deploy's own PATCH drops the `previous` label, and a failed smoke leaves traffic as `[prev current]` with the new revision deactivated, so the fallback chose the failed revision and `rollback()` re-activated it at 100%; `release.mjs` printed the rollback hint exactly in that case. **Now (`891d1d8c`):** rollback goes to the captured revision and never guesses. **Rule:** a rollback target is recorded before the change, never inferred after it.
+
+## rj-r7-audit-count-then-write-try-limit
+**What was there:** `verifyCode` in `server/signin/code.js` read the wrong-try count, tested the code, then inserted the attempt. **What broke:** requests sent together all read a count under the limit, so the 5-try bound did not hold; and each new code reset the count while older codes stayed valid. **Now (`14b31b7b`):** the attempt is written before it is counted, and a new code spends the earlier ones. The in-process burst limiter in front (`server/routes/parent.js` `rateLimit`) is keyed on a caller-chosen value and is still open with Learning (audit PLAT-10).
+
+## r7-audit-platform-calendar-kept
+The platform audit listed calendar among six tables nothing reads. The migration test that checks every dropped table against server/ and scripts/ SQL found server/conductor/view.js:108 reading it (the Conductor's day-kind lookup). Migration 050 drops module_run, rate_bucket, kt_params, voicesig.calibration and voicesig.population_norm only. Reversal: if the Conductor stops reading calendar, drop it in a later migration.
+
+## rj-r7-audit-cap-teacher-agent-pool
+**Proposed (audit PLAT-40, fixed in 4e0904a5, reverted 2026-11-10 on main's decision):** add the teacher agent's deployment (`TAXILA_TEACHER_DEPLOY`, default taxila-gpt6) to `sharedHot()` whenever a lesson can reach the agent lane, so a live agent turn is protected from background traffic on the same pool. **Why it was rejected:** `server/lanes.js`'s header records the earlier measurement (W2-E fixer, `createLanes` with a fake clock): capping background calls on a deployment that no hot lane shares made the 21st prefetch build wait 55 s and starved live Studio builds and the live whiteboard. taxila-gpt6 is a Studio build arm, so the cap brings that back. **Reverse only if:** a measurement shows agent turns on taxila-gpt6 actually getting 429s or queueing behind Studio traffic (see platform-proposals.md, PLAT-40), and the fix protects those turns without capping Studio builds (for example a separate deployment for the agent).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r7-audit-skill-row-missing` (2026-11-09): Drafted and caught by the skeptic pass before it shipped (audit 2026-11-09, first fix for CD-01): counting only askable skills in the topic's skillCount, on the belief that a skill with no item never gets a skill_state row. Wrong: the explain step, the faded worked step (keyed to kit.skills[0]) and teach-back all write the row, as 'practising'. The count then passes and every(LEARNED) still fails. Instead: filter the states themselves to askable skills as well as the count.
+- `rj-r7-audit-face-parked-stage-holds-slot` (2026-11-09): Tried (review v4 park/adopt + ship5 one-running-stage rule, as shipped to int/r6 21a): a face stage parked on unmount only stopped drawing and kept its place in the page's one-running-stage list until its park timer disposed it. Broke: the safety Help sheet mounts a second live face over the lesson's; when the sheet closed, the lesson's suspended stage stayed frozen for 1.5 s, or 10 s for a worker-backed stage (HANDOFF_PARK_MS, the default), over her voice. Now: PuppetStage.park() yields the slot at once and start() takes it back on adoption (tests/r7-audit-face.test.mjs FACE-01). Any new way to keep a stage alive off the page must yield the slot the same way.
+- `rj-r7-audit-face-server-reads-public` (2026-11-09): Tried (face-home-daily-greeting): server code deciding whether a shipped file exists by looking under public/. Broke: the production image copies dist/, server/, shared/, data/ and src/ only, so the check was always false there and GET /api/tutors/greeting could never return a clip. Now: the served build (dist/, or TAXILA_DIST) is checked first, then public/ (server/face-puppet/greetings.js clipDirs). tests/runtime-image-imports.test.mjs covers imports, not file reads: any server file read outside those five folders fails silently in production.
+
+
+<!-- merged from inbox/r7-audit-voice.json -->
+## rj-r7-audit-voice-stop-without-telling-engine (2026-11-10)
+**Tried (shipped until the audit):** `CascadeLink.stopReply` cleared `current` before stopping playback, and only `finishReply` (reached from the playback's `ended`) told the duplex engine. **Broke:** a stop from a tap (pause, hear again, a typed answer) never reached the engine. It kept her 'speaking': on D4 half-duplex the mic stayed gated for 30 s in the repro and two answers were dropped as her echo. `herStopped` alone is not enough either: the governor's `her_stopped` is a no-op, so the floor stays hers. **Instead:** a stop by hand reports her line as ended (`stopByHand` → `duplex.replyEnded()`). Rule: whoever tells the engine she started must tell it she stopped on every path (tests/audit-voice-link.test.mjs, V-04).
+
+## rj-r7-audit-voice-bridge-dropped-sink (2026-11-10)
+**Tried (shipped until the audit):** `UiBridge.cachingStream = async (req, signal) => fetchSpeechStream(req, signal)`. **Broke:** `SpeechStreamFetch` has a third argument, the player's `ClauseSink`. Without it clause onsets were emitted at parse time with no `playAt` and viseme and word batches were dropped, in the child app only (the dev pages build the link without the bridge, and the bridge test called it with two arguments). This silently undid `w2gfix-clause-events-on-player-clock`. **Instead:** the wrapper is typed as `SpeechStreamFetch` and passes the sink (V-13).
+
+
+<!-- merged from inbox/r7-main-35.json -->
+## `rj-r7-auto-counter-as-gate-input` (2026-11-10)
+
+The tried approach: an automatic contradiction counter as an input to the scale gate (gate.v6, then H3, H4 and H5).
+
+**What broke:** four versions over four runs, each fitted to the last run's mechanisms and blind to the next run's.
+- H3 read `closeBeat.board`, not the page drawn.
+- H4 never compared single-page turns (1 of 8 on director16).
+- H5 passed its director16 fixture 8/8, then on director17 caught 3 of 16 with over 100 false flags: it reads the harness's `held` record, not the take, and predates the split view.
+
+Hand judging by four judges is the only screen. The counter stays a development aid and is never quoted as evidence.
+
+
+<!-- merged from inbox/r7-audit-tests-evals.json -->
+## lint-over-patch-files-for-affect-words
+**Tried: replace the patch-file scan in p3-voicesig-server and round3-voicesig with a scan of every file the patches touched. It failed at once: server/brain/reasons.js and turn.js legitimately carry affect words (frustration, boredom, affect). Kept: scan only voicesig-owned files; the shared files are no longer linted.**
+
+
+<!-- merged from inbox/r7-audit-voice-fix.json -->
+## `rj-r7-audit-voice-verdict-at-her-start`
+
+**Tried:** (audit V-09) nothing in the app sends the governor's `her_verdict`, so a closed-answer reply stayed revocable for its whole length and a "हाँ" four seconds in cut it. First fix: mark the verdict played when her reply starts.
+
+**What broke:** `tests/duplex-runtime.test.mjs` "G7 revoke … (fast mouth, late verdict)": her uptake sounds BEFORE the verdict word (verdictNotBefore is after her start), and a child correction in that gap must still revoke.
+
+**Instead:** revocable until `max(herStartAt, verdictNotBefore) + REVOCABLE_MS` (1.5 s), or until `her_verdict` if anything ever sends it.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-app-static-text-tests` (2026-11-10): Rejected: tests that match a source file's text to prove a UI fix (they passed while behaviour was broken: APP-01, 02, 04, 06). Where the logic can be pulled into a pure .ts module or measured in Chromium, test that
+
+
+<!-- merged from inbox/r7-main-39.json -->
+## `rj-release-blocked-on-neon-key` (2026-11-10)
+
+The tried approach: waiting on `NEON_API_KEY` and `NEON_PROJECT_ID` to release round 7, listed as the owner's item from director16 to director18.
+
+**What broke:**
+- The release sat blocked for about five days on a key the owner did not want to supply, while the session held a Neon connector able to take the backup branch and run the same statements.
+- The record was wrong: OWNER.md said the block was "production migration 041". Production was at 030, and 16 files were pending. Nobody had read production's `schema_migrations` until release day.
+
+**Lesson:** read the target's state before naming a blocker, and ask the owner for the decision (may I use the connector?) rather than for a key.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r8-k3-ledger-remediation` (2026-11-10): Tried (round 8 Loop, before merge): remediating her open ledger mix-up instead of the card's authored target when the classifier named nothing on a wrong answer. What broke (design review, no run): it answers a mix-up the wrong answer did not show, e.g. a count-the-marks card missed gets the 'fractions are not numbers' remediation. Instead: the ledger mix-up's check is asked first (dc-r8-k3-ledger-asks-classifier-remediates).
+
+
+<!-- merged from inbox/r7-main-40.json -->
+## `rj-r7-replay-tests-as-proof-of-walk-fixes` (2026-11-10)
+
+The tried approach: proving a walk fix with a test that replays a recorded lesson up to one row and checks the next move (the tests behind v6.6 to v6.10).
+
+**What broke:**
+- The clarify-at-a-check-in row was reported fixed in v6.10, with a test on director18's rows c4 steering 6 and c5-t01 steering 6. It failed on those same two rows in director19, its third failing run. The paid run walks a new lesson whose earlier turns differ from the recording.
+- No test of that form can see a fault nobody listed: a park sentence said twice in a row, a re-pose frame on a first posing, a return stacked on a card. All three were new in director19 and all three are visible in a free 27-second dry run.
+
+Replays stay as regression pins. Evidence for a walk fix is a predicate over the whole dry matrix, seen failing before the fix.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-load-as-the-cause-of-a-test-failure` (2026-11-10): Rejected: writing a failure that 'passes alone' off as machine load. Tried twice on 2026-11-10 for m4-break; the cause was state crossing test files (fd-m4-break-stray-fetch-across-files), deterministic for the day's seed. A failure that passes alone gets its preceding files replayed in one process before it is called load. Still open and unexplained: r12-voice-trace test 14 ('speaking' vs 'thinking') under 4-way parallel runs, and r4-khand-law's wall-clock 'generator p95 <= 50 ms' (63.7 ms once, while another job loaded the machine).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-replay-pass-rate-as-proof-of-reply-quality` (2026-11-11): Rejected: reading the J2 replay's pass rate (76 of 80 clean under the predicate) as evidence that her reply after an aside is good. In director20 the same code produced 7 model sentences of which the judges found 3 odd or wrong, and most first drafts were the next card's text. The predicate measures safe and on the child's word; it cannot measure whether a sentence answers what the child said. A sentence a child hears is judged by a reader or it is authored.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-pushing-on-passes-alone` (2026-11-11): Rejected as a habit: pushing an integration on 'the failing suite passes alone and the diff does not touch it'. Used three times on 2026-11-10 and 11 (integrations 32, 37, 38). Each time the cause, once found, was specific and not load: a wall-clock assertion, a test assumption broken by another stream's data, a 1-in-256 chance failure in a product gate. The pushes did no harm, but the reasoning given at the time ('load') was wrong in every case that was later explained. A failure that passes alone gets a root-cause task the same hour, and the push message says 'cause unknown' rather than naming one.
+
+
+<!-- merged from inbox/r8-stambh-tally-fixes.json -->
+## rj-r8-stambh-tally-ring-cross
+Tried (round 8, first build): a dashed ring and a small ✗ on each group of five standing lines (or a short close) at the check. Broke (two independent judges, 2026-11-11): on five standing lines a ✗ reads as 'five is too many', the opposite of the lesson, and feeds tally-four. Replaced by dc-r8-stambh-tally-playout-count (count the group, tip the fifth line).
+
+## rj-r8-stambh-tally-both-halves
+Tried (round 8, first build): naming keep's tally-four only when no line across appears anywhere AND every total is four per group of five. Broke (two judges, 2026-11-11): the main form, correct bundles counted by their standing lines (Bus 5, Auto 6), was logged as an ordinary miss with only dashed boxes; and a 1-bundle level could not tell the mix-up from a one-off slip. Replaced by dc-r8-stambh-tally-keep-mal-v2 and dc-r8-stambh-tally-tells-apart.

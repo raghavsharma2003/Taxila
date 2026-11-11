@@ -9,13 +9,15 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { NavLink, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Art, Button, Icon, type IconName } from "../ui/index.ts";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
-import { loadMe, refreshMe, type ChildRow } from "../app/api.ts";
+import { loadMe, postJson, refreshMe, type ChildRow } from "../app/api.ts";
 import { Brand, Loading } from "../app/Shell.tsx";
 import { bandForClass } from "../app/band.ts";
 import { readStore, writeStore } from "../app/storage.ts";
 import { isRelock } from "./api.ts";
 import { BOARD_NAME, fmtTime, parentError } from "./copy.ts";
 import { useGate, VOLT_CALM } from "./Gate.tsx";
+import { txAttrs } from "../ui-v3/r8/tx.ts";
+import "../ui-v3/r8/parent.css";
 
 const PARENT_CHILD_KEY = "tx.parentChild";
 
@@ -71,6 +73,13 @@ export function useParentData<T>(fn: (() => Promise<T>) | null, deps: unknown[],
   return { data, err, stale, reload, setData };
 }
 
+/** Sign out of the parent account (the rail at 900 px and wider, and the More page). */
+export async function signOut(nav: (to: string) => void) {
+  await postJson("/api/auth/logout", {}).catch(() => {});
+  await refreshMe().catch(() => {});
+  nav("/");
+}
+
 type Entry = { key: string; to: (cid: string) => string; label: string; icon: IconName; tab?: boolean; match: RegExp };
 const q = (cid: string) => (cid ? `?c=${cid}` : "");
 export const ENTRIES: Entry[] = [
@@ -78,12 +87,14 @@ export const ENTRIES: Entry[] = [
   { key: "progress", to: (c) => `/parent/progress${q(c)}`, label: "Progress", icon: "book", tab: true, match: /^\/parent\/progress/ },
   { key: "lessons", to: (c) => `/parent/lessons${q(c)}`, label: "Lessons", icon: "list", tab: true, match: /^\/parent\/lessons/ },
   { key: "notes", to: (c) => `/parent/notes${q(c)}`, label: "Notes", icon: "clock", match: /^\/parent\/notes/ },
+  // audit LEARN-35: at 900 px and wider the rail replaces the tabs and More, so everything More lists must be here too
+  { key: "teaching", to: (c) => `/parent/teaching${q(c)}`, label: "How the teacher teaches", icon: "spark", match: /^\/parent\/teaching/ },
   { key: "controls", to: (c) => `/parent/controls${q(c)}`, label: "Controls", icon: "shield", match: /^\/parent\/controls/ },
   { key: "children", to: (c) => `/parent/children${q(c)}`, label: "Children", icon: "plus", match: /^\/parent\/children/ },
   { key: "data", to: (c) => `/parent/data${q(c)}`, label: "Data and privacy", icon: "lock", match: /^\/parent\/data|^\/parent\/pin/ },
   { key: "help", to: (c) => `/parent/help${q(c)}`, label: "Help and safety", icon: "help", match: /^\/parent\/help/ },
 ];
-const MORE_MATCH = /^\/parent\/(more|notes|controls|children|data|help|pin)/;
+const MORE_MATCH = /^\/parent\/(more|notes|teaching|controls|children|data|help|pin)/;
 
 function TeacherBadge({ child }: { child: ChildRow }) {
   const rec = teacherRecord(child.teacher_id, bandForClass(child.class_level));
@@ -143,7 +154,7 @@ export function ParentShell({ title, children, child, kids, noTabs, wide, side }
   const onSwitch = (id: string) => nav(`${loc.pathname}?c=${id}`);
   const active = (e: Entry) => e.match.test(loc.pathname);
   return (
-    <div className="pa kx" {...VOLT_CALM} data-parent-shell="" data-tabs={noTabs ? "off" : "on"}>
+    <div className="pa kx" {...VOLT_CALM} {...txAttrs("light")} data-parent-shell="" data-tabs={noTabs ? "off" : "on"}>
       <a className="skip" href="#pa-main">Skip to content</a>
       <aside className="pa-rail" aria-label="Parent corner">
         <div className="pa-rail-brand"><Brand to={`/parent${q(cid)}`} /></div>
@@ -157,6 +168,7 @@ export function ParentShell({ title, children, child, kids, noTabs, wide, side }
           ))}
         </nav>
         <Button variant="secondary" small onClick={lockNow} className="pa-rail-lock"><Icon name="lock" size={20} /> Lock</Button>
+        <Button variant="quiet" small onClick={() => signOut(nav)} className="pa-rail-signout"><Icon name="door" size={20} /> Sign out</Button>
       </aside>
       <div className="pa-main">
         <header className="pa-top">

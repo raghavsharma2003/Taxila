@@ -9,7 +9,9 @@ import type { LessonStartRequest, LessonStartResponse, TtsRequest, TurnRequest, 
 import { anchorPerfTime, isVisemeFrame, partPlayAt, puppetCut, puppetVisemes, type TtsVisemeFrame } from "../face-puppet/ttsBridge.ts";
 import { ApiError } from "./api.ts";
 import { markLineAudioStart } from "../modules/whiteboard/clock.ts";
-import { adpcmWanted, decodeAdpcm } from "./adpcm.ts";
+import { boardHoldMs } from "../studio/boardHold.ts";
+import { adpcmWanted, decodeAdpcm, codecOverride } from "./adpcm.ts";
+import { OpusPcmDecoder, opusSupported } from "./opus.ts";
 
 export const PCM_RATE = 24_000;
 /** Lead before the first chunk plays: absorbs network jitter between chunks without audible delay. */
@@ -104,9 +106,20 @@ export type SpeechStreamFetch = (req: TtsRequest, signal: AbortSignal, sink?: Cl
 // server frames only when asked (Accept below); an older server answers raw audio/pcm and the client reads it as before.
 
 export const FRAMES_ACCEPT = "application/x-taxila-pcm-frames;v=2";
-export const FRAME = { pcm: 0, event: 1, header: 2, turn: 3, end: 4, adpcm: 5 } as const;
-/** The Accept a TTS request sends: frames v2, plus `codec=adpcm` on a slow link (round 5, QA D12; ./adpcm.ts). */
-export const framesAccept = (): string => (adpcmWanted() ? `${FRAMES_ACCEPT};codec=adpcm` : FRAMES_ACCEPT);
+export const FRAME = { pcm: 0, event: 1, header: 2, turn: 3, end: 4, adpcm: 5, opus: 6 } as const;
+/**
+ * The Accept a TTS request sends: frames v2 plus a codec preference list, first that the server can encode wins.
+ * Round 7 (QA D12): `opus` first wherever WebCodecs decodes it (every link: ~3 KB/s against PCM's 48), then `adpcm` on a
+ * slow link (round 5, ./adpcm.ts); none of them → PCM. `?tts=pcm|adpcm|opus` forces one.
+ */
+export const framesAccept = (): string => {
+  const forced = codecOverride();
+  const list = forced === "pcm" ? [] : forced === "adpcm" ? ["adpcm"] : [
+    ...(forced === "opus" || opusSupported() === true ? ["opus"] : []),
+    ...(adpcmWanted() ? ["adpcm"] : []),
+  ];
+  return list.length ? `${FRAMES_ACCEPT};codec=${list.join("+")}` : FRAMES_ACCEPT;
+};
 export interface TtsFrame {
   type: number;
   /** PCM bytes for type 0, the parsed JSON otherwise. */
@@ -120,7 +133,15 @@ export interface TtsFrame {
 export interface TtsClauseEvent { t: "clause"; clause: number; part: number; atSample: number; atMs: number; playAt?: number }
 /** What the frame stream tells listeners: the reply it belongs to, plus the frame's JSON. */
 export type TtsEvent = { req: TtsRequest } & ({ kind: "header"; data: Record<string, unknown> } | { kind: "clause"; data: TtsClauseEvent }
-  | { kind: "voice"; data: Record<string, unknown> } | { kind: "end"; data: Record<string, unknown> } | { kind: "visemes"; data: TtsVisemeFrame });
+  | { kind: "voice"; data: Record<string, unknown> } | { kind: "end"; data: Record<string, unknown> } | { kind: "visemes"; data: TtsVisemeFrame }
+  | { kind: "words"; data: TtsWordsEvent });
+/**
+ * Round 7 (Studio board-sync anchorSteps): her words' REAL onsets, from Azure Speech word boundaries (DragonHD over the
+ * websocket; mini-tts gives none, so no event). `playAt` / `endAt` are performance.now() ms at which the word sounds, on
+ * the player's own timeline (start lead, board hold, underrun gaps and resumes included), like a clause's playAt. A
+ * timeline that moves (an underrun, a resume) re-sends the part's words with `reanchored: true`: the latest one wins.
+ */
+export interface TtsWordsEvent { part: number; words: { w: string; playAt: number; endAt: number }[]; reanchored?: boolean }
 
 const listeners = new Set<(e: TtsEvent) => void>();
 /** Subscribe to framed-TTS events (clause onsets, header, end); returns the unsubscribe. */
@@ -155,6 +176,8 @@ export class FrameParser {
       if (type === FRAME.pcm) out.push({ type, payload: body.slice() });
       // round 5 (QA D12): an ADPCM frame becomes a PCM frame here, so nothing after the parser changes
       else if (type === FRAME.adpcm) out.push({ type: FRAME.pcm, payload: decodeAdpcm(body) });
+      // round 7 (QA D12): an Opus packet stays a type-6 frame here (decoding is async); readFrames / pcmOfFrames decode it
+      else if (type === FRAME.opus) out.push({ type, payload: body.slice() });
       else {
         try {
           out.push({ type, payload: JSON.parse(new TextDecoder().decode(body)) as Record<string, unknown> });
@@ -170,16 +193,17 @@ export class FrameParser {
 }
 
 /** Async iteration over the frames of a framed body. */
-export async function* readFrames(body: ReadableStream<Uint8Array>): AsyncGenerator<TtsFrame> {
+export async function* readFrames(body: ReadableStream<Uint8Array>, opus: OpusPcmDecoder = new OpusPcmDecoder()): AsyncGenerator<TtsFrame> {
   const reader = body.getReader();
   const parser = new FrameParser();
   try {
     for (;;) {
       const { done, value } = await reader.read();
       if (done) return;
-      for (const f of parser.push(value)) yield f;
+      for (const f of parser.push(value)) yield f.type === FRAME.opus ? { type: FRAME.pcm, payload: await opus.decode(f.payload as Uint8Array) } : f;
     }
   } finally {
+    opus.close();
     reader.releaseLock();
   }
 }
@@ -188,7 +212,7 @@ export async function* readFrames(body: ReadableStream<Uint8Array>): AsyncGenera
  * A framed body → a PCM-only stream (what PcmStreamPlayer plays), JSON frames going to `onFrame`. The first frame is
  * awaited by the caller of `onTurn`-style consumers through `onFrame`.
  */
-export function pcmOfFrames(body: ReadableStream<Uint8Array>, onFrame: (f: TtsFrame) => void): ReadableStream<Uint8Array> {
+export function pcmOfFrames(body: ReadableStream<Uint8Array>, onFrame: (f: TtsFrame) => void, opus: OpusPcmDecoder = new OpusPcmDecoder()): ReadableStream<Uint8Array> {
   const reader = body.getReader();
   const parser = new FrameParser();
   return new ReadableStream<Uint8Array>({
@@ -196,12 +220,16 @@ export function pcmOfFrames(body: ReadableStream<Uint8Array>, onFrame: (f: TtsFr
       for (;;) {
         const { done, value } = await reader.read();
         if (done) {
+          opus.close();
           ctl.close();
           return;
         }
         let pushed = false;
         for (const f of parser.push(value)) {
-          if (f.type === FRAME.pcm) {
+          if (f.type === FRAME.opus) {
+            ctl.enqueue(await opus.decode(f.payload as Uint8Array));
+            pushed = true;
+          } else if (f.type === FRAME.pcm) {
             ctl.enqueue(f.payload as Uint8Array);
             pushed = true;
           } else onFrame(f);
@@ -210,6 +238,7 @@ export function pcmOfFrames(body: ReadableStream<Uint8Array>, onFrame: (f: TtsFr
       }
     },
     cancel(reason) {
+      opus.close();
       return reader.cancel(reason);
     },
   });
@@ -242,7 +271,9 @@ export function turnAudioEnabled(): boolean {
   } catch {
     /* storage blocked */
   }
-  return (import.meta as { env?: Record<string, string> }).env?.VITE_TURN_AUDIO === "1";
+  // round 7 (B5, voice-first-sound-latency b): the fold is the default (the turn and her audio on one response, and the
+  // streamed Director clauses ride it); VITE_TURN_AUDIO=0 or ?turnaudio=0 turns it off
+  return (import.meta as { env?: Record<string, string> }).env?.VITE_TURN_AUDIO !== "0";
 }
 
 interface Fold { stream: ReadableStream<Uint8Array>; at: number; req: TtsRequest; sink: ClauseSink | null; pending: TtsClauseEvent[]; pendingV: TtsVisemeFrame[] }
@@ -271,7 +302,24 @@ export function takeFoldedAudio(lessonId: string, seq: number, sink?: ClauseSink
 
 /** POST /api/lesson/turn-audio → the TurnResponse; the reply's audio is parked for the link's speech fetch. */
 export function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Promise<TurnResponse> {
-  return postFolded<TurnResponse>("/api/lesson/turn-audio", req, (t) => (Number.isInteger(t.teacherReplySeq) ? { lessonId: req.lessonId, seq: t.teacherReplySeq as number } : null), signal, req.lessonId);
+  return postFolded<TurnResponse>("/api/lesson/turn-audio", req, (t) => {
+    if (!Number.isInteger(t.teacherReplySeq)) return null;
+    // round 7 (Studio's patch to Voice): a board milliseconds away holds her first clause for it (src/studio/boardHold.ts)
+    const hold = boardHoldMs(t.ui?.studioSlot);
+    if (hold > 0) boardHolds.set(foldKey(req.lessonId, t.teacherReplySeq as number), hold); else boardHolds.delete(foldKey(req.lessonId, t.teacherReplySeq as number));
+    return { lessonId: req.lessonId, seq: t.teacherReplySeq as number };
+  }, signal, req.lessonId);
+}
+
+/** round 7: lessonId:seq → how long her first sample waits for this reply's board (ms); taken once by play(). */
+const boardHolds = new Map<string, number>();
+/** The hold for this reply, once (a replay or a resume never waits again). */
+function takeBoardHold(req: TtsRequest | undefined): number {
+  if (!req) return 0;
+  const k = foldKey(req.lessonId, req.seq);
+  const ms = boardHolds.get(k) ?? 0;
+  boardHolds.delete(k);
+  return ms;
 }
 
 /**
@@ -356,6 +404,7 @@ async function postFolded<T>(path: string, req: unknown, keyOf: (t: T) => { less
   let audioFollows = false;
   let streaming = false;
   let early: EarlySay | null = null;
+  let endError: ApiError | null = null;
   void (async () => {
     try {
       for await (const f of readFrames(body)) {
@@ -394,6 +443,10 @@ async function postFolded<T>(path: string, req: unknown, keyOf: (t: T) => { less
           const w = writer.write(f.payload as Uint8Array);
           if (streaming && !early && !gotTurn) w.catch(() => {});
           else await w;
+        } else if (f.type === FRAME.end && !gotTurn) {
+          // audit V-25: a turn that failed after her first clause ends the stream with its real status (was always 502)
+          const d = f.payload as Record<string, unknown>;
+          if (d.status === "error") endError = new ApiError(typeof d.code === "number" ? d.code : 502, typeof d.error === "string" ? d.error : `${path} failed`, d);
         } else if (f.type === FRAME.event && (f.payload as Record<string, unknown>).t === "say") {
           try { early?.say(String((f.payload as Record<string, unknown>).text ?? "")); } catch { /* captions only */ }
         } else if (ttsReq) {
@@ -410,7 +463,7 @@ async function postFolded<T>(path: string, req: unknown, keyOf: (t: T) => { less
           } else if (e) emit(e);
         }
       }
-      if (!gotTurn) rejectTurn(new ApiError(502, `${path} ended without a response`, null));
+      if (!gotTurn) rejectTurn(endError ?? new ApiError(502, `${path} ended without a response`, null));
       await writer.close().catch(() => {});
     } catch (e) {
       if (!gotTurn) rejectTurn(e);
@@ -446,6 +499,8 @@ export class PcmStreamPlayer {
   readonly output: GainNode;
   /** Times audio ran out mid-reply (each one lengthens the next reply's start lead). */
   underruns = 0;
+  /** Audio ran out mid-reply and no bytes came for this long: the stream stalled, so the line ends (audit V-02). */
+  stallMs = 5_000;
   private readonly ctx: AudioContext;
   private current: { stop: () => void } | null = null;
   private lead = START_LEAD_S;
@@ -500,6 +555,7 @@ export class PcmStreamPlayer {
     const clauses: TtsClauseEvent[] = [];
     const emitted = new Set<TtsClauseEvent>();
     const req = opts.req;
+    const holdS = takeBoardHold(req) / 1000;   // round 7: her first sample waits for a board milliseconds away
     const perfNow = () => (typeof performance !== "undefined" ? performance.now() : Date.now());
     /** Emit every not-yet-emitted onset inside [from, to), which starts sounding at ctx time `startAt`. */
     const emitClauses = (from: number, to: number, startAt: number) => {
@@ -525,16 +581,22 @@ export class PcmStreamPlayer {
         vSent.add(f);
         try {
           if (vAnchor?.ref !== anchor) vAnchor = { ref: anchor, perf: anchorPerfTime(anchor.at, ctx) };
-          puppetVisemes(f, partPlayAt(f, anchor.pos, vAnchor.perf), reqKey);
+          const partAt = partPlayAt(f, anchor.pos, vAnchor.perf);
+          puppetVisemes(f, partAt, reqKey);
+          if (req && f.w?.length) {
+            emit({ req, kind: "words", data: { part: f.part, words: f.w.map(([ms, dur, w]) => ({ w, playAt: partAt + ms, endAt: partAt + ms + Math.max(0, dur) })), ...(reanchored ? { reanchored: true } : {}) } });
+          }
         } catch {
           /* the face never stops the voice */
         }
       }
     };
+    let reanchored = false;
     const reanchorVisemes = () => {
       if (!vSent.size) return;
       puppetCut();
       vSent.clear();
+      reanchored = true;
     };
     const sink: ClauseSink = {
       visemes: (f) => {
@@ -572,9 +634,23 @@ export class PcmStreamPlayer {
       }
       sources.clear();
     };
+    // audit V-02: a stream that stops sending (no bytes, no close, no error) once her audio has run out would keep the
+    // line "speaking" for good; past stallMs with nothing sounding and nothing arriving, the line ends with what played
+    let stallTimer: ReturnType<typeof setTimeout> | null = null;
+    const armStall = () => {
+      if (stallTimer) clearTimeout(stallTimer);
+      stallTimer = null;
+      if (finished || streamDone || paused || !didStart) return;
+      stallTimer = setTimeout(() => {
+        stallTimer = null;
+        if (finished || streamDone || paused || sources.size > 0) return;
+        finish("completed");
+      }, this.stallMs);
+    };
     const finish = (status: "completed" | "stopped" | "failed") => {
       if (finished) return;
       finished = true;
+      if (stallTimer) clearTimeout(stallTimer);
       abort.abort();
       silenceSources();
       if (vSent.size) puppetCut();
@@ -613,7 +689,7 @@ export class PcmStreamPlayer {
           this.underruns++;
           this.lead = Math.min(MAX_LEAD_S, this.lead + LEAD_STEP_S);
         }
-        nextAt = now + (didStart ? RESUME_LEAD_S : this.lead);
+        nextAt = now + (didStart ? RESUME_LEAD_S : this.lead + holdS);
         anchor = { at: nextAt, pos: schedPos };
         reanchorVisemes();
       }
@@ -638,6 +714,7 @@ export class PcmStreamPlayer {
         sources.delete(src);
         src.disconnect();
         maybeDone();
+        if (sources.size === 0) armStall();
       };
     };
     /** The sample sounding now. */
@@ -653,6 +730,7 @@ export class PcmStreamPlayer {
           if (done || finished) break;
           append(decoder.push(value));
           pump();
+          armStall();
         }
         streamDone = true;
         maybeDone();
@@ -694,6 +772,7 @@ export class PcmStreamPlayer {
         this.duck(1);
         pump();
         maybeDone();
+        armStall();
       },
       remainingS: () => (total - (paused ? schedPos : heardPos())) / PCM_RATE,
     };

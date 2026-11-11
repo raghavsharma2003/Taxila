@@ -1,6 +1,9 @@
 @font-face { font-family: "Bricolage Grotesque"; src: url("./fonts/bricolage-latin.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
 @font-face { font-family: "Geist Mono"; src: url("./fonts/geist-mono-latin.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
-@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("./fonts/atkinson-next-latin.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+/* Atkinson in the app's two weight segments (src/styles/fonts.css: 400 600 | 700), which ext/deva.css's Devanagari faces join */
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("./fonts/atkinson-next-latin.woff2") format("woff2"); font-weight: 400 500; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("./fonts/atkinson-next-latin.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("./fonts/atkinson-next-latin.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 
 /* DESIGN-V3 tokens. Night is the child default; Day is a real theme (parents, daylight). */
 :root {

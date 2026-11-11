@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-script-why-figure",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Round 7 F: a lesson-script card's why must name only the figure its closing board draws (check.mjs whyFigureErrors: line/mark, bar, round whole, group sizes, 'not equal'), and a judgement card's answerBoard draws the judged figure; where no template can draw it (2 unequal parts, unequal groups) the card has no answerBoard rather than an equal stand-in. Reverse if: Studio ships templates for unequal parts and groups (then the removed answerBoards return) or the runtime stops speaking the why over the board."
+  },
+  {
+   "id": "dc-r7-kit-chapter-scope",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Round 7 F: class 8-9 kit additions stay inside the NCERT chapter's own statements and topic order (no Cantor set; the rectangle converse only as 'equal diagonals that bisect each other'; no later-topic facts); anything needing an unstated result becomes an error-spot on the forward fact or is dropped. Reverse if: a board other than NCERT is targeted whose chapter states more."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## `dc-r7-script-why-figure` (2026-11-08, F Learning)\nDirector11 found that whys and answer boards spoke about one figure while the screen showed another: a why naming a number line over a picture of rotis, or an equal cake drawn under a card that judged an unequal one. Two fixes follow from that. `scripts/lesson-scripts/check.mjs` now refuses a why whose named figure does not match the board it closes over. A judgement card's answerBoard now draws the judged figure, with the equal figure beside it when the why contrasts the two. Three cards lost their answerBoard because no template draws 2 unequal parts or unequal groups. Studio has been asked for both templates.\n\n**Reverse if:** those templates ship (put the boards back), or the runtime stops speaking the why over the board.\n\n## `dc-r7-kit-chapter-scope` (2026-11-08, F Learning)\nIn the c8 depth pilot, two items sat outside the chapter: the Cantor set, and a rectangle test that leaned on parallelogram facts from a later topic. Both are now replaced, and both replacements were blind-solved 6/6. Every c8/c9 author prompt now carries the chapter-scope brief in `docs/design/round7/learning/C89-KIT-GAPS.md`: chapter statements only, topic order, a cited section for each addition, an error-spot item or nothing when a result is out of scope, and misconceptions about the skill's own move.\n\n**Reverse if:** a non-NCERT board whose chapter states more is targeted."
+ }
+}

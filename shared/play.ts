@@ -22,16 +22,66 @@ export const PLAY_VERSION = "play@1" as const;
 export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "kon",          // round 4 G1: angles as an amount of turning (E1 Antariksh angles)
   "nazariya",   // r4-khand: block world (views, arrays, area/perimeter, squares/cubes, mirror)
+  "arena",        // round 4 G1: ITEM-ARENA, one verified kit item per level, graded against its verified key
+  "stambh",     // round 7: bar graphs and pictographs built from falling crates / stacked icons
+  "yantra",     // round 7 E6: science puzzle-physics (mirrors route a beam, circuits close a loop, a pendulum keeps a beat)
+  "kaal",       // round 7: SST time — Kaal-nadi, events placed on a river of time (BCE left, CE right, no year 0)
+  "vakya",      // round 7: English / Hindi grammar, a sentence built as a train of word wagons (one verified kit item per level)
+  "kila",       // round 7 E4: turn-based tower defence on a numbered path (multiples, factors, LCM); a beat moves only on a press
+  "naksha",     // round 7: maps and grids (lat / long, grid routes and directions, map scale, shapes on a dot grid)
+  "ghadi",      // round 7: time and clocks (a geared clock set by hand, bus trips, a race podium, a month calendar); never timed
+  "darpan",     // round 7: symmetry (mirror lines laid and folded; a turntable's smallest turn and order of turn symmetry)
+  "feeta",      // round 7: length and distance (a ribbon cut against a ruler, a rope off a cm tape, a garden fence, a trip meter, routes in order)
+  "guna",       // round 7: multi-digit multiplication and division (a field cut into place-value pieces, a godown shared into trucks, stories with leftovers)
+  "kram",       // round 7: growing patterns and sequences (a figure grown a stage, a bag for a far stage, step / rule machines, rhythms, L-pieces)
+  "hissa",      // round 7: multiplying and dividing fractions and decimals (a sheet folded twice, a jug poured into cups, a tenths grid, a place-value slide, stories)
+  "koshtak",    // round 7: expressions (tray walls between terms, one lid to make a value, a bracket opened as jumps, like terms in bins)
+  "parkar",     // round 7: ruler-and-compass constructions (triangles built from arcs and rays, bisectors, the 60° angle, altitudes by set-square)
+  "aankde",     // round 7: data (slips tallied in bundles of five, a lost row, the size sold most; towers levelled, a pour line; a line of cards folded to its middle)
+  "paheli",     // round 7: number puzzles (bags loaded by parity, magic squares, letter sums with carries, reverse-and-add palindromes)
+  "galti-pakdo", // round 7: a friend's working of an equation checked on the taraazu; the first wrong line caught and mended
+  "chhaano",    // round 7: separating mixtures (class 6 science): methods chosen and applied in turn until every part is recovered
+  "gati",       // round 7: motion (a reference point, the types of motion, speed on a marked track, uniform trails); the child steps the clock
+  "bhaap",      // round 7: processes of water and air (states, evaporation and condensation, convection and breezes, the water cycle and groundwater); the child runs them a step at a time
+  "aakash",     // round 7: the Earth's motions, seasons and eclipses (class 7 science): a model the child spins and moves round, a step at a time
+  "rang",       // round 7: acids, bases, indicators and neutralisation (class 7 science): a dropper the child works a drop at a time
+  "badlaav",    // round 7: physical and chemical changes, rusting and combustion (class 7 science): changes the child runs, undoes and tends a step at a time
+  "jaanch",     // round 7: testing food for starch and fat (class 6 science): iodine a drop at a time, a food rubbed on paper left to dry a Wait at a time
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
 export const MODES = {
   "todo-jodo": ["atoms", "strips", "bundles"],
-  taraazu: ["equation", "equality"],
-  nishana: ["place", "compare"],
-  "kyun-lab": ["fair-test"],
-  kon: ["turn", "set"],
-  nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
+  taraazu: ["equation", "equality", "weigh", "fill"],   // r7: weigh (kg / g on a pan balance), fill (l / ml with jugs)
+  nishana: ["place", "compare", "hop"],
+  "kyun-lab": ["fair-test", "dhruv", "disha"],   // r7 chumbak: magnets (dhruv: poles, push and pull; disha: finding directions)
+  kon: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends", "place", "name"],
+  nazariya: ["views", "array", "floor", "powers", "mirror", "tri", "solid"],   // r4-khand; r7 nazariya2: tri (a triangle's cloth as half a rectangle), solid (faces / edges / corners of a solid turned in the hand)
+  arena: ["pick"],
+  stambh: ["bars", "picto", "tally"],   // r8 tally: tallies kept in fives while a scene passes (keep) or read off a row (read)
+  yantra: ["beam", "circuit", "pendulum", "roshni"],   // r7 roshni: sources of light and materials (a light bench, the eye on its right)
+  kaal: ["place", "order"],
+  vakya: ["rail"],
+  kila: ["multiples", "factors", "lcm", "divisibility"],
+  naksha: ["locate", "route", "scale", "shape"],
+  ghadi: ["set", "run", "race", "calendar"],
+  darpan: ["mirror", "turn", "tile"],   // r7 tilings2: tile (copies laid round one point until the corner closes)
+  feeta: ["measure", "fence", "trip", "compare", "thread", "thermo", "scale", "touch"],   // r7 naap: science measuring (a thread along a curve, thermometers, a scale read right, touch against a thermometer)
+  guna: ["field", "pack", "story", "yard"],   // r7 place2: yard (a truck loaded to a named number; comma posts set for lakhs and crores)
+  kram: ["grow", "machine", "beats", "nest"],
+  hissa: ["fold", "pour", "grid", "story"],
+  koshtak: ["tray", "bin"],
+  parkar: ["build", "bisect", "drop"],
+  aankde: ["tally", "stack", "line"],
+  paheli: ["pairs", "magic", "cipher", "mirror"],
+  "galti-pakdo": ["kaapi"],   // the friend's notebook (kaapi)
+  chhaano: ["sukha", "geela"], // dry mixtures (handpick, thresh, winnow, sieve); mixtures in water (settle, decant, filter, evaporate)
+  gati: ["drishti", "raftaar", "nishaan"],   // the viewpoint (drishti), speed (raftaar), the marks (nishaan)
+  bhaap: ["avastha", "bhaapan", "hawa", "chakra"],   // states of water (avastha), evaporation and condensation (bhaapan), convection (hawa), the water cycle (chakra)
+  aakash: ["chakkar", "ritu", "grahan"],   // rotation and revolution (chakkar), seasons (ritu), eclipses (grahan)
+  rang: ["pehchaan", "milao"],   // natural indicators (pehchaan), neutralisation (milao)
+  badlaav: ["palat", "aag"],   // physical and chemical changes (palat), rusting and combustion (aag)
+  jaanch: ["neela", "daag", "thali"],   // the iodine test for starch (neela), the paper test for fat (daag), both tests on one food (thali)
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -62,6 +112,14 @@ export const FLOORS = Object.freeze({
 
 /** In-game evidence weight into the learner model (the existing `game-evidence-into-kt-not-bayesnets` decision). */
 export const GAME_WEIGHT = 0.5;
+/**
+ * The chance-adjusted weight (games audit GAMES-03): a CORRECT outcome on a one-decision goal (`FamilyLogic.oneDecision`:
+ * one pick among a few lines, kinds, places or corners, which a lucky first tap lands 20 to 40 % of the time) enters the
+ * learner model at the arena's weight, GAME_WEIGHT × the controllerEasy temper 0.5 (server/play/evidence.js, kt/bktr.js).
+ * An incorrect or partial outcome on the same goal keeps GAME_WEIGHT: a miss is not luck.
+ */
+export const CHANCE_WEIGHT = 0.25;
+export type GameWeight = typeof GAME_WEIGHT | typeof CHANCE_WEIGHT;
 
 // ───────────────────────────── levels ─────────────────────────────
 
@@ -148,6 +206,14 @@ export type BalanceAct =
   | { kind: "drop"; n: number }                         // equality mode: put n cubes in the box (replaces its content)
   | { kind: "name"; x: number }                         // name the bag's value
   | { kind: "undo" };
+// Taraazu weigh / fill (round 7, measurement): real weights onto the right pan, real jugs into the vessel; the beam stays
+// locked while loading and only "weigh" (Tolo / Dekho) lets the law answer
+export type WeighAct =
+  | { kind: "load"; weight: number }                    // one weight of `weight` g from the box onto the right pan
+  | { kind: "unload"; weight: number }                  // one weight of `weight` g off the pan, back into the box
+  | { kind: "pour"; jug: number }                       // fill: one full jug of `jug` ml into the vessel
+  | { kind: "weigh" }                                   // unlock the beam (weigh) / check the water (fill)
+  | { kind: "undo" };
 // Nishana
 export type LineAct =
   | { kind: "place"; which: number; x: number }         // put marker `which` at line coordinate x (a number in [lo, hi])
@@ -165,6 +231,21 @@ export type LabAct =
 // Kon (round 4 G1, angles)
 export type KonAct =
   | { kind: "turn"; deg: number }                       // point the arm at heading `deg` (degrees, 0 = right, anticlockwise +)
+  | { kind: "stop"; side: "lo" | "hi"; at: number }      // r7 kon2 ends: a stop on point `at`, −1 off the track's end (open), −2 parked
+  // r8 kon/place: the loose protractor (board px, y up): its centre moved, turned to `deg` (1° steps), locked / freed; then
+  // measure reads `n` off the scale, draw puts a dot at rim angle `r` and joins it to O ("v") or A ("e"); size picks an angle
+  | { kind: "move"; x: number; y: number }
+  | { kind: "spin"; deg: number }
+  | { kind: "lock" }
+  | { kind: "free" }
+  | { kind: "read"; n: number }
+  | { kind: "mark"; r: number }
+  | { kind: "join"; end: "v" | "e" }
+  | { kind: "pick"; which: "a" | "b" | "same" }
+  // r8 kon/name: say taps a lettered point (`at`: 0 = the vertex, 1..3 = the ray ends) or clears the name; find taps an arc
+  | { kind: "letter"; at: number }
+  | { kind: "arc"; at: number }
+  | { kind: "clear" }
   | { kind: "commit" }
   | { kind: "undo" };
 // Nazariya (r4-khand): the block plot. A build act changes column heights (gravity: a block rests on the ground or a block).
@@ -176,8 +257,282 @@ export type NazariyaAct =
   | { kind: "name"; n: number }                         // say how many blocks (array count; the next square / cube number)
   | { kind: "predict"; same: boolean }                  // array "turn": the turned array takes the same number of blocks?
   | { kind: "check" }                                   // commit the build: the law compares it with the goal
+  | { kind: "apex"; x: number; z: number }              // tri "more": the second tent's top corner to grid point (x, z)
+  | { kind: "turn"; dir: "left" | "right" | "over" }    // solid: turn the solid a quarter round, or tip it over
+  | { kind: "mark"; el: "face" | "edge" | "corner"; i: number }   // solid: stamp face i / run along edge i / pin corner i
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct;
+// ITEM-ARENA (round 4 G1)
+export type ArenaAct =
+  | { kind: "aim"; option: string }                     // point at a target (an option id)
+  | { kind: "fire" }                                    // the shot: graded against the verified key
+  | { kind: "undo" };
+// Stambh (round 7, bar graphs and pictographs): one crate / icon at a time on a column (bars) or a row (picto)
+export type StambhAct =
+  | { kind: "drop"; col: number; half?: boolean }       // a crate (or, where the level allows, a half crate) onto column `col`
+  | { kind: "lift"; col: number }                       // the top crate off column `col`
+  | { kind: "check" }                                   // the law compares every bar with the data
+  | { kind: "mark"; row: number; across?: boolean }     // tally keep: one stroke (standing, or the line across) for the thing passing, on row `row`
+  | { kind: "total"; row: number; n: number | null }    // tally: the number written in row `row`'s total cell (null clears it)
+  | { kind: "again" }                                   // tally keep: the scene passes again from the start (her strokes and totals clear)
+  | { kind: "undo" };
+// Yantra (round 7 E6, science puzzle-physics). Parts sit on a board; the child places and turns them, wires terminals or sets
+// knobs, then RUNs: the law (never a physics engine) decides what happens, and the view animates it.
+export type YantraAct =
+  | { kind: "place"; part: string; x: number; y: number; rot?: number }   // beam: a part (a mirror) onto a board cell, at `rot` degrees
+  | { kind: "rotate"; id: string; rot: number }                         // beam: turn a placed part to `rot` degrees
+  | { kind: "remove"; id: string }                                      // beam: take a placed part off
+  | { kind: "wire"; a: string; b: string }                              // circuit: join terminal `a` to terminal `b`
+  | { kind: "unwire"; a: string; b: string }                            // circuit: cut that wire
+  | { kind: "toggle"; id: string }                                      // circuit: open / close a switch
+  | { kind: "set"; knob: string; value: number }                        // pendulum: a knob (length, mass, swing) to a value
+  | { kind: "run" }                                                     // run the machine: the law answers
+  | { kind: "count"; at: number }                                       // pendulum (oscillation): "one more", `at` s after the release
+  | { kind: "undo" };
+// Kaal (round 7, SST time): the boat carries a stone along the river of time; `year` is a real year (negative = BCE, never 0)
+export type KaalAct =
+  | { kind: "place"; which: number; year: number }      // bring the boat with stone `which` to `year` (the law refuses year 0)
+  | { kind: "check" }                                   // RUN: drop the stone; the law compares it with the event's verified year
+  | { kind: "undo" };
+// Vakya (round 7, grammar): word wagons coupled into a sentence train; a form wagon turns on its turntable; RUN checks it
+export type VakyaAct =
+  | { kind: "couple"; wagon: string; at: number }       // couple wagon `wagon` onto the track at position `at` (0 = right behind the engine); a coupled wagon moves
+  | { kind: "uncouple"; wagon: string }                 // send a coupled wagon back to the yard
+  | { kind: "turn"; wagon: string; form: number }       // turn a form wagon's turntable to its form `form` (an index into the wagon's forms)
+  | { kind: "run" }                                     // the train rolls through the signal: the law compares it with the verified key
+  | { kind: "undo" };
+// Kila (round 7 E4, turn-based tower defence): a numbered path 1..n; a tower standing on square p fires on p, 2p, 3p, …; the
+// wave moves one square per "next" (or to the end on "run") and never on a clock; the law judges the wave at its end
+export type KilaAct =
+  | { kind: "place"; at: number }                       // a tower onto square `at` (its period is `at`)
+  | { kind: "remove"; at: number }                      // take the tower on square `at` down
+  | { kind: "mark"; at: number }                        // a net on square `at` (toggle) / the trap moved to square `at`
+  | { kind: "next" }                                    // the wave moves one square
+  | { kind: "run" }                                     // the wave runs to the end of the path
+  | { kind: "undo" };
+// Naksha (round 7, maps and grids): set something up on the map (a spot, a program of steps, the fuel, fence corners), then
+// go; the law (a plain simulation) answers and nothing moves on a clock
+export type NakshaAct =
+  | { kind: "put"; x: number; y: number }                // locate: the drone to (longitude x, latitude y); scale: the pump x cm along the road; shape: a fence corner at dot (x, y)
+  | { kind: "step"; dir: "n" | "e" | "s" | "w" | "f" | "l" | "r" }   // route: one more step of the program (a direction, or forward / turn left / turn right)
+  | { kind: "set"; value: number }                       // scale: the fuel in the tank (real units)
+  | { kind: "run" }                                      // go: the law answers
+  | { kind: "undo" };
+// Ghadi (round 7, time and clocks): a geared clock (t = minutes since midnight; the hour hand follows the minute hand, and
+// passing 12 turns a.m. into p.m.), a trip ticket, a podium, a calendar flag; nothing moves on a clock, "run" lets the law answer
+export type GhadiAct =
+  | { kind: "wind"; by: number }                         // turn the minute hand by `by` minutes (signed; the hour hand follows)
+  | { kind: "hour"; h: number }                          // the hour hand dropped in hour sector h (0..11, 0 = 12): the minutes stay
+  | { kind: "half"; pm: boolean }                        // the day strip: a.m. (midnight to noon) or p.m. (noon to midnight)
+  | { kind: "ticket"; h: number; m: number }             // trip: the ticket's hours and minutes
+  | { kind: "put"; lane: number; at: number }            // race: runner `lane` onto podium step `at` (0 = first; swaps)
+  | { kind: "pick"; day: number }                        // calendar: the flag onto date `day`
+  | { kind: "run" }                                      // ring the bell / run the bus / run the race / hop the days: the law answers
+  | { kind: "undo" };
+// Darpan (round 7, symmetry): lay mirror lines and fold, or turn a figure on a turntable and spin; the law (plain geometry)
+// answers on the go and nothing moves on a clock
+export type DarpanAct =
+  | { kind: "line"; deg: number }                        // mirror: lay (or lift) the fold line through the centre at this angle
+  | { kind: "turn"; by: number }                         // turn: move the dial by this many degrees (clockwise +)
+  | { kind: "mark" }                                     // turn (order): mark (or unmark) the dial's present stop
+  | { kind: "lay"; t: number; c?: number }               // tile: lay a copy of tray tile t round the point (its corner c there)
+  | { kind: "lift"; j: number }                          // tile: lift the j-th copy laid
+  | { kind: "run" }                                      // fold / spin / tile the floor: the law answers
+  | { kind: "undo" };
+// Feeta (round 7, length and distance): set a measuring instrument (a ribbon's cut on a ruler from 0, a cm tape, a fence
+// roll, a trip meter) or put lengths in order; the law (plain arithmetic in one unit) answers on "run", never on a clock.
+// r7 naap (science measuring, class 6): a thread laid along a curve and straightened on a scale, thermometers matched to
+// jobs, dipped and read, a scale read from its zero with the eye above, things put on a warmth shelf before a thermometer
+// checks them; the reading set on the same counter wheels
+export type FeetaAct =
+  | { kind: "mark"; at: number }                         // the instrument set to `at` of its own unit (cm, m): the cut / the meter
+  | { kind: "put"; lane: number; at: number }            // compare: item `lane` onto slot `at` (0 = shortest; swaps); naap: onto bin / step `at`
+  | { kind: "tool"; t: number }                          // thread: take the thread (0), the rubber band (1) or the ruler (2)
+  | { kind: "pin"; i: number }                           // thread: press the tool at point i of the curve (again = lifted off it)
+  | { kind: "lift" }                                     // thread: straighten what is laid onto the scale (again = lay it again)
+  | { kind: "dip" }                                      // thermo/read: the thermometer into the liquid (again = taken out)
+  | { kind: "slide"; at: number }                        // scale/ruler: the object's left end lined up at cm position `at`
+  | { kind: "eye"; at: number }                          // scale/ruler: the eye left of (−1), above (0) or right of (1) the end
+  | { kind: "run" }                                    // lay the ribbon / fence the garden / ride the trip / ride the routes: the law answers
+  | { kind: "undo" };
+// Guna (round 7, multi-digit multiplication and division): a field a × b cut into place-value pieces (each fills with its
+// tiles) and a truck loaded with place-value crates; a godown of crates shared one round at a time into equal trucks (a
+// crate opened into ten of the next place when it cannot be shared); a story's vehicles / packets / jar set, then run
+export type GunaAct =
+  | { kind: "cut"; side: number; at: number }            // field: a cut on side 0 (a, across) or 1 (b, down) at unit `at` (again = lifted)
+  | { kind: "round"; side: number; to: number }          // field (round): the side stretched / shrunk to a round length
+  | { kind: "crate"; place: number; by: number }         // field: one crate of 10^place on (+1) or off (−1) the truck
+  | { kind: "open"; place: number }                      // pack: one crate of 10^place opened into ten of the next place down
+  | { kind: "deal"; place: number }                      // pack: one crate of 10^place into every truck (one round)
+  | { kind: "count"; n: number }                         // story: the vehicles / packets set out, or the jar's count
+  | { kind: "stamp"; i: number; to: number }             // field (check): docket i marked 1 (could be right) or 2 (send back)
+  | { kind: "post"; at: number }                         // yard (commas): a comma post left of place `at` (again = lifted)
+  | { kind: "run" }                                      // drive onto the weighbridge / send the trucks / run the story: the law answers
+  | { kind: "undo" };
+// Kram (round 7, growing patterns and sequences): tiles laid to grow a figure a stage, a bag filled for a far stage, a step
+// or rule machine's dials set, rhythms laid on a shelf, L-pieces / staircases picked for a frame; the law answers on "run"
+export type KramAct =
+  | { kind: "cell"; x: number; y: number }                // next: a tile laid on (or lifted off) the build board at (x, y)
+  | { kind: "bag"; place: number; by: number }            // far / count: one piece of 10^place into (+1) or out of (−1) the bag
+  | { kind: "dial"; which: number; to: number }           // machine: dial 0 (step: the sign · rule: a) or 1 (the number · b) set to `to`
+  | { kind: "lay"; r: string }                            // lay: a rhythm of S / L laid on the new shelf (again = lifted)
+  | { kind: "pick"; i: number }                           // nest: tray piece i picked (again = put back)
+  | { kind: "run" }                                       // grow it / run the machine / play the rhythms / nest the pieces: the law answers
+  | { kind: "undo" };
+// Parkar (round 7, ruler-and-compass constructions): open the compass on its ruler, swing arcs from spots, lay the
+// protractor or the set-square, join two spots with the ruler, pin where two marks cross; the law (plain coordinate geometry)
+// answers on "run", never on a clock. A spot exists only where tool marks put it: nothing is dragged into place
+export type ParkarAct =
+  | { kind: "open"; r: number }                          // the compass opened to r cm on its ruler
+  | { kind: "arc"; at: string }                          // an arc swung round spot `at` at the present opening
+  | { kind: "ray"; at: string; deg: number }             // the protractor at vertex `at`, zero on its arm: a ray at `deg`
+  | { kind: "square"; at: string; on: number }           // the set-square along mark `on` (−1: the page's edge), its edge through `at`
+  | { kind: "join"; p: string; q: string }               // the ruler through two spots
+  | { kind: "pin"; a: number; b: number; k: number }     // a spot pinned at crossing k of marks a and b
+  | { kind: "run" }                                      // lay the tracing / walk the line / measure: the law answers
+  | { kind: "undo" };
+// Aankde (round 7, data and statistics): survey slips stroked into tally rows (upright, or across the four before it), a
+// lost row stroked, the stock crate put on a size; a block moved between towers, a level line set; value cards swapped and
+// the peg set on a card or a gap; the law answers on "run", never on a clock
+export type AankdeAct =
+  | { kind: "mark"; row: number; across: boolean }       // tally: the top slip (missing: one stroke) into row `row`, upright or across
+  | { kind: "crown"; row: number }                       // mode: the stock crate on row `row` (again = lifted)
+  | { kind: "move"; from: number; to: number }           // even: the top block of tower `from` onto tower `to`
+  | { kind: "line"; at: number }                         // pour: the level line at `at` blocks
+  | { kind: "swap"; i: number; j: number }               // middle: the cards at places i and j swapped
+  | { kind: "peg"; at: number }                          // middle: the peg at slot `at` (2i on card i, 2i + 1 in the gap after it)
+  | { kind: "run" }                                      // count / level / pour / fold: the law answers
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct | ChhaanoAct | GatiAct | ChumbakAct | BhaapAct | AakashAct | RangAct | BadlaavAct | JaanchAct;
+// Kyun-Lab chumbak (round 7, magnets, class 6 science): a pin touched along a hidden magnet and its poles flagged; carriages
+// turned round and pushed together; a marked magnet's pole brought to an end; a snapped magnet's new ends labelled; magnets
+// dipped into pins; a hung magnet twisted and let go, a map turned; she turns, the compass box turns, she walks off the iron;
+// the law answers on "run" (or on a claim), never on a clock
+export type ChumbakAct =
+  | { kind: "probe"; at: number }                        // dhruv/sira: a pin touched to spot `at` along the cover
+  | { kind: "mark"; at: number }                         // dhruv/sira: spot `at` flagged as a pole (again = off)
+  | { kind: "flip"; i: number }                          // dhruv/jodo: carriage i turned round
+  | { kind: "near"; i: number; end: number; p: string }  // dhruv/pakka, todo: the marked magnet's pole p ("N" / "S") to thing i's end (0 left, 1 right)
+  | { kind: "label"; i: number; end: number; v: string } // dhruv/todo: piece i's end labelled "N", "S" or "-" (no pole)
+  | { kind: "claim"; i: number }                         // dhruv/pakka: bar i is the magnet; taakat: magnet i is the stronger
+  | { kind: "dip"; i: number }                           // dhruv/taakat: magnet i dipped into the pins and lifted
+  | { kind: "twist"; by: number }                        // disha/latkao: the hung magnet turned a quarter (±1) in the hand
+  | { kind: "let" }                                      // disha/latkao: let go; it hangs free
+  | { kind: "spin"; by: number }                         // disha/latkao: the map turned a quarter (±1)
+  | { kind: "turn"; by: number }                         // disha: she turns a quarter (±1), the compass in her hands with her
+  | { kind: "dial"; by: number }                         // disha: the compass box turned a quarter (±1) in her hands
+  | { kind: "go"; to: number }                           // disha/loha: she walks to spot `to` (0 by the iron, 1 away)
+  | { kind: "run" }                                      // lift the cover / push the train / check the labels / the map is set / read the compass
+  | { kind: "undo" };
+// Bhaap (round 7, processes of water and air, class 6-7 science): a tool used once (heat, cool, a wait, a sail, a rain; `at` the
+// bench place it acts on), a thing put out (a glass from the fridge, a device high or low on the wall), or "ho gaya"; the law
+// answers each at once, never on a clock
+export type BhaapAct =
+  | { kind: "use"; m: string; at?: number }      // tool m (heat, cool, lid, sugar, plate, wait, wipe, day, night, sail, sun, rise, rain, flow, pit, pump)
+  | { kind: "put"; what: string; at: number }    // bhaapan: a thing from the fridge onto bench place `at`; kamra: a device high (0) or low (1)
+  | { kind: "done" }
+  | { kind: "undo" };
+// Aakash (round 7, the Earth's motions, seasons and eclipses, class 7 science): the model moved a step (the Earth spun an eighth
+// of a turn or moved a quarter of the way round, the Moon moved on, months passed, a day of sunshine, the Sun or the axis
+// tried), or the card's moment claimed ("Now!", "Here!", "Eclipse!"); the law answers each at once, never on a clock
+export type AakashAct =
+  | { kind: "use"; m: string }                   // spin, round, sun, tilt, shine, moon, months
+  | { kind: "done" }
+  | { kind: "undo" };
+// Rang (round 7, acids, bases, indicators and neutralisation, class 7 science): a drop from a cup onto an indicator, a cup
+// sorted acidic / basic / neutral by its colours (pehchaan), or a dropper's drop into the glass, "Danger!" or "Done" (milao);
+// the law answers each at once, never on a clock
+export type RangAct =
+  | { kind: "drop"; at: number; ind: string }    // pehchaan: a drop from cup `at` onto indicator `ind` (blue, red, haldi, gudhal)
+  | { kind: "sort"; at: number; bin: string }    // pehchaan: cup `at` sorted (acid, base, neutral)
+  | { kind: "use"; m: string }                   // milao: soda, antacid, lime, lemon, water, danger
+  | { kind: "done" }
+  | { kind: "undo" };
+// Badlaav (round 7, physical and chemical changes, rusting and combustion, class 7 science): a change run, marked, undone and
+// filed (palat); a solid put on the tawa or into the water; a side of a sigri's fire triangle taken away or given more; a fire
+// let burn down a wait at a time and what it became placed; iron put somewhere damp or dry and another day (aag). The law answers
+// each at once, never on a clock; no act lights a fire
+export type BadlaavAct =
+  | { kind: "run" }                              // palat: run the card's change
+  | { kind: "mark"; s: string }                  // nishaan: a sign it showed (gas, colour, heat, smell, solid) or "same"
+  | { kind: "file"; bin: string }                // ulta: back, same, new
+  | { kind: "put"; at: number; to: string }      // ghol: the solid to tawa / water (at 0); jang: piece `at` to damp / dry
+  | { kind: "place"; p: string; to: string }     // raakh: a product (co2, vapour, smoke, ash) to air / left
+  | { kind: "use"; m: string; at?: number }      // cool, warm, wait, stir, gone, fuel, lid, unlid, fan, look, day, wipe (at)
+  | { kind: "done" }
+  | { kind: "undo" };
+// Jaanch (round 7, testing food for starch and fat, class 6 science): a drop of dilute iodine from the lab bench's labelled
+// bottle; a food rubbed on paper, the paper left to dry a Wait at a time and held to the light; a result said once seen; Next
+// food (thali). The law answers each at once, never on a clock; no act eats, tastes or touches anything
+export type JaanchAct =
+  | { kind: "drop" }                             // one drop of dilute iodine on the food in front
+  | { kind: "use"; m: string }                   // rub (a drop for a liquid), wait, light
+  | { kind: "mark"; t: string; v: string }       // a result said: t starch | fat, v yes | no
+  | { kind: "next" }                             // thali: Next food, once both are said
+  | { kind: "done" }
+  | { kind: "undo" };
+// Chhaano (round 7, separating mixtures, class 6 science): a method applied to one pile (sukha) or one vessel (geela), a dry
+// solid scooped into its jar, or "ho gaya"; the law answers at once, never on a clock (settling advances one wait at a time)
+export type ChhaanoAct =
+  | { kind: "use"; m: string; at: number; spot?: "near" | "far" }   // method m on pile / vessel `at` (winnow: the sack near or far)
+  | { kind: "take"; at: number; jar: number }                       // geela: the dry solid at `at` scooped into jar `jar`
+  | { kind: "done" }                                                // "ho gaya": every part is separated / recovered
+  | { kind: "undo" };
+// Paheli (round 7, number puzzles): load bags onto the boat, put number tiles on the grid, give letters digit tiles, set a
+// start; the law (plain arithmetic: pairing, line sums, column addition with carries, reverse-and-add) answers on "run"
+export type PaheliAct =
+  | { kind: "load"; i: number }                           // pairs: dock item i onto the boat (again = off)
+  | { kind: "put"; v: number; cell: number }              // magic: tile v on cell 0..8 (a filled cell swaps; −1 = back to the tray)
+  | { kind: "digit"; l: string; d: number }               // cipher: letter l takes digit tile d (−1 = none)
+  | { kind: "start"; n: number }                          // mirror: the 2-digit start
+  | { kind: "run" }                                       // sail / add the lines / add it up / reverse and add: the law answers
+  | { kind: "undo" };
+// Galti Pakdo (round 7, checking a friend's working of an equation): the claim weighed in a line on the taraazu, the first
+// line that breaks flagged, its fix taken from three offers, or "sab sahi"; the law answers at once, never on a clock
+export type GaltiAct =
+  | { kind: "check"; line: number }                       // the claim x = v weighed in line `line` (0 = the question)
+  | { kind: "flag"; line: number }                        // line `line` is the first that breaks (the flagged line again: the offers reopen)
+  | { kind: "fix"; i: number }                            // mend: offer i takes the flagged line's place; the law rewrites below it
+  | { kind: "sab" }                                       // "sab sahi": every line follows
+  | { kind: "undo" };
+// Gati (round 7, motion): the clock steps only when the child taps it; watch from a reference (or ride along), put things
+// on bins, tick types, flag the faster mover, set the speedometer; the law answers on "run"
+export type GatiAct =
+  | { kind: "tick" }                                      // the clock steps one interval (never on its own)
+  | { kind: "view"; ref: number }                         // watch from reference `ref` (do-gati: 0 the ground, 1 riding along)
+  | { kind: "put"; lane: number; at: number }             // lane `lane` onto bin `at` (at rest / moving; a type; uniform / not)
+  | { kind: "tag"; lane: number; at: number }             // do-gati: type `at` ticked on (or off) for lane `lane`
+  | { kind: "chalk"; lane: number }                       // raftaar/aage: a mark where lane `lane`'s mover is, at the clock's time
+  | { kind: "pick"; lane: number }                        // raftaar/aage: the lane flagged faster (both marks for the same time first)
+  | { kind: "mark"; at: number }                          // the speedometer / m/s counter set to `at`
+  | { kind: "run" }                                       // the law answers the set-up
+  | { kind: "undo" };
+// Hissa (round 7, multiplying and dividing fractions and decimals): a sheet folded across and down (the overlap tagged by
+// counting pieces); rope pieces laid on a metre track; a jug poured into full cups, the part-cup tagged as a fraction of a
+// cup; a tenths grid shaded both ways and the label's point placed; digits slid on a place-value chart; a bar spent twice
+// (the second fold laid on the piece left or the whole bar); a recipe's cup folded into shares and laid per person
+export type HissaAct =
+  | { kind: "fold"; side: number; n: number }            // fold side 0 (across / the whole bar / the cup's amount) or 1 (down / the second bar) into n parts
+  | { kind: "shade"; side: number; k: number }           // shade / take k of that side's parts (grid: k tenths)
+  | { kind: "base"; on: number }                         // story (rest): the second fold lies on the piece left (1) or the whole bar (2)
+  | { kind: "lay"; n: number }                           // rope pieces laid / recipe shares laid
+  | { kind: "count"; n: number }                        // pour: how many full cups the jug will fill, said before the first pour
+  | { kind: "pour" }                                     // one full cup from the jug (a cup it cannot fill is refused)
+  | { kind: "tag"; part: number; v: number }             // the tag's top (0) or bottom (1)
+  | { kind: "slide"; by: number }                        // the chart's digits one place left (+1, × 10) or right (−1)
+  | { kind: "zero" }                                     // a zero written at the end of the digits (again = rubbed out)
+  | { kind: "point"; at: number }                        // the label's decimal point, `at` digits from the right
+  | { kind: "run" }                                      // cut / pour / read the chart / run the story: the law answers
+  | { kind: "undo" };
+// Koshtak (round 7, expressions): tray walls snapped between the numbers of a row (the counter works each tray, then joins
+// them); one lid laid over a run of numbers; an opened bracket's jumps turned forward / back; term cards put into bins
+// (each bin closes into one term); the law answers on "run"
+export type KoshtakAct =
+  | { kind: "wall"; at: number }                         // terms: a tray wall in gap `at` (between number at and at + 1; again = lifted)
+  | { kind: "lid"; from: number; to: number }            // lid: the lid over numbers from..to (the same lid again = lifted)
+  | { kind: "flip"; at: number }                         // open: the jump after gap `at` turned forward / back
+  | { kind: "bin"; card: number; to: number }            // like: card `card` into bin `to` (−1 = back on the belt)
+  | { kind: "run" }                                      // run the counter / walk both / close the bins: the law answers
+  | { kind: "undo" };
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -233,7 +588,7 @@ export interface PlayEvidence {
   misconceptionId?: string;
   /** a correct act on a level built to discriminate this misconception */
   discriminates?: string;
-  via: "game"; weight: typeof GAME_WEIGHT;
+  via: "game"; weight: GameWeight;
   levelId: string; actSeq: number;
 }
 export interface PlayGrade {
@@ -299,6 +654,9 @@ export interface FamilyLogic<P = unknown, S = unknown, A extends PlayActBody = P
   board(level: PlayLevel<P>, state: S): { title: string; lines: string[] };
   /** the family's mal-rule ids (the coverage file maps them to kit misconception ids per topic) */
   malRules: readonly string[];
+  /** goals decided by ONE pick a lucky first tap can land (games audit GAMES-03): their correct evidence enters at
+   *  CHANCE_WEIGHT (gradeLevel reads this), never a second decision bolted on */
+  oneDecision?: readonly string[];
 }
 
 // ───────────────────────────── art direction (DESIGN.md §4) ─────────────────────────────
@@ -328,6 +686,31 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   "kyun-lab": ["kagaz", "blueprint", "raat", "chalk"],
   kon: ["blueprint", "raat", "kagaz", "chalk"],
   nazariya: ["kagaz", "blueprint", "chalk", "raat"],
+  arena: ["raat", "blueprint", "kagaz", "chalk"],
+  stambh: ["kagaz", "chalk", "blueprint", "raat"],
+  yantra: ["blueprint", "raat", "chalk", "kagaz"],
+  kaal: ["kagaz", "chalk", "blueprint", "raat"],
+  vakya: ["kagaz", "chalk", "blueprint", "raat"],
+  kila: ["kagaz", "blueprint", "chalk", "raat"],
+  naksha: ["kagaz", "blueprint", "chalk", "raat"],
+  ghadi: ["kagaz", "chalk", "blueprint", "raat"],
+  darpan: ["kagaz", "blueprint", "chalk", "raat"],
+  feeta: ["kagaz", "chalk", "blueprint", "raat"],
+  guna: ["kagaz", "chalk", "blueprint", "raat"],
+  kram: ["kagaz", "chalk", "blueprint", "raat"],
+  hissa: ["kagaz", "chalk", "blueprint", "raat"],
+  koshtak: ["kagaz", "chalk", "blueprint", "raat"],
+  parkar: ["kagaz", "blueprint", "chalk", "raat"],
+  aankde: ["kagaz", "chalk", "blueprint", "raat"],
+  paheli: ["kagaz", "chalk", "blueprint", "raat"],
+  "galti-pakdo": ["kagaz", "chalk", "blueprint", "raat"],
+  chhaano: ["kagaz", "chalk", "blueprint", "raat"],
+  gati: ["kagaz", "chalk", "blueprint", "raat"],
+  bhaap: ["kagaz", "chalk", "blueprint", "raat"],
+  aakash: ["kagaz", "chalk", "blueprint", "raat"],
+  rang: ["kagaz", "chalk", "blueprint", "raat"],
+  badlaav: ["kagaz", "chalk", "blueprint", "raat"],
+  jaanch: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;
@@ -402,7 +785,16 @@ export interface PlayStartRequest {
   skillId?: string; topicId?: string;
   lessonId?: string;                 // inside a lesson: the session is tied to it (seam facts, evidence)
   lang?: Lang; art?: ArtId | null; fade?: Fade;
+  /** round 8 follow-up C: the fade is the Director's deliberate choice (honoured inside a lesson only): it beats her history */
+  fadeFrom?: "director";
+  /** round 8 follow-up F: her previous play session token (the server verifies it): what she just played, for novelty */
+  prev?: string;
 }
+/** Round 8 H: the child's "why this game" line (server/play/why.js; display only, never a grade). `speak`: the first time
+ *  this reason is shown in the session (the client still does not speak it while the lesson's teacher is speaking). */
+export interface PlayWhy { text: string; speak: boolean; reason: "mixup" | "up" | "down" | "switch" }
+/** Round 8: why a game / level / fade was chosen (server/play/choose.js). */
+export interface PlayBecause { choice: string; fact: string; source: string; kind?: string; when?: "earlier" | "now"; mis?: string }
 export interface PlayStartResponse {
   sessionId: string;
   level: PlayLevel;
@@ -413,6 +805,20 @@ export interface PlayStartResponse {
   world: PlayWorldFamily | null;
   /** round 4: the base dress when a real-game engine renders this level (the model's delta comes from /api/play/dress) */
   dress?: import("../src/play/engines/core3d/api.ts").DressedSpec | null;
+  because?: PlayBecause[];
+  why?: PlayWhy;
+}
+/** Round 8 P3: a level's trail (server/play/trail.js buildTrail). Child-free, fixed shape, bounded. */
+export interface PlayTrail {
+  v: 1; levelId: string | null; skillId: string | null; game: string | null; fade: Fade;
+  solved: boolean; firstTry: boolean;
+  /** mal-rule signatures + near misses before the win */
+  misses: number; refused: number;
+  /** ≤ 4: the family mal-rule id and the kit misconception id it maps to */
+  mal: { rule: string | null; mis: string | null }[];
+  undos: number; hints: number;
+  /** acts to the win, the solver's minimum, and the difference (null when unsolved or unknown) */
+  acts: number; minActs: number | null; extra: number | null;
 }
 /** POST /api/play/act: the acts since the last post (the server replays ALL acts of the level each time). */
 export interface PlayActRequest { sessionId: string; levelId: string; acts: PlayActEnvelope[]; final?: boolean; impasse?: boolean;
@@ -434,6 +840,11 @@ export interface PlayActResponse {
   /** inside a lesson, with a grade: the server's evidence rows signed for this child and lesson (server/play/evidence.js).
    *  The lesson turn folds ONLY a verified token, once per level; the plain `evidence` rows above are for display. */
   evidenceToken?: string;
+  /** round 8 P3, with a grade: how the level went, from the server's own replay (server/play/trail.js); a report only */
+  trail?: PlayTrail;
+  /** round 8 P3, home play (no lesson), with a grade: the same rows as source "home" plus the trail, signed for the child
+   *  (server/play/evidence.js signHomeEvidence). Nothing folds it yet (server/play/home.js, TAXILA_HOME_PLAY_FOLD off). */
+  homeToken?: string;
   /** inside a lesson, with a seam: the seam's telegraphic facts row signed for this child and lesson (the Director's PLAY row
    *  is read only from a verified token, never from words or values the device sends) */
   seamToken?: string;
@@ -442,7 +853,10 @@ export interface PlayActResponse {
 }
 /** POST /api/play/next */
 export interface PlayNextRequest { sessionId: string; door: Door }
-export interface PlayNextResponse { sessionId: string; level: PlayLevel; art: ArtPick; bank: Reaction[]; dress?: import("../src/play/engines/core3d/api.ts").DressedSpec | null }
+export interface PlayNextResponse { sessionId: string; level: PlayLevel; art: ArtPick; bank: Reaction[]; dress?: import("../src/play/engines/core3d/api.ts").DressedSpec | null;
+  because?: PlayBecause[]; why?: PlayWhy;
+  /** round 8 follow-up B: the session switched family (once at most): the new family's world, to remount */
+  switched?: { from: string; to: string }; world?: PlayWorldFamily | null }
 /** POST /api/play/dress { sessionId } → the validated dress for the current level (base when late / invalid / off) */
 export interface PlayDressResponse { dress: import("../src/play/engines/core3d/api.ts").DressedSpec; source: "model" | "base"; ms: number }
 /** GET /api/play/world?childId= */

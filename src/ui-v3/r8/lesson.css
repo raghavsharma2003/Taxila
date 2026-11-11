@@ -1,0 +1,129 @@
+/* Round 8: the lesson screen under the one token set (docs/design/round8/PHASE2-BRIEF.md step b; phase 1 screens 2 and 3).
+   It applies only under .kx-lesson[data-tx] (the ?tx= switch, tx.ts). Tokens only: no literal colour, size or radius.
+   tests/r8-tx-tokens.test.mjs checks that.
+   It removes the terminal chrome on this screen:
+     - clipped corners;
+     - the grid;
+     - mono labels;
+     - the glow sky.
+   It dresses the zones as phase 1 drew them:
+     - the board is a paper card and the hero;
+     - a talk row holds her presence and the caption;
+     - the question is the second strongest thing, ringed in the "your move" colour on her turn;
+     - quiet chips;
+     - the dock. */
+/* the maths face (STIX Two Text, self-hosted by the board's own faces file; read only, Studio owns it) */
+@import "../../modules/whiteboard/faces.css";
+.kx-lesson[data-tx] {
+  --tx-scope: 1;
+}
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] { background: var(--tx-bg); color: var(--tx-ink); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"]::before { content: none; }
+
+/* ── no clipped corners, no grid, no mono ── */
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] :is([data-zone="card"], [data-zone="tray"], [data-zone="strip"], [data-zone="dock"]) > *,
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] :is(.dk-sheet, .dk-didcard, .dk-tile, .dk-btn--primary, .dk-pause),
+.kx-lesson[data-tx] :is(.ks-stage, .ks-chip, .ks-moment, .ks-moment-btn) { clip-path: none; }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="tray"] > .dk-tray::before { content: none; }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] :is(.dk-practice, .dk-ailabel, .teacher-aitag, .dk-rung, .ks-moment-k, .ks-later-head, .ks-later-due, .kx-in-trail) {
+  font-family: var(--tx-font-ui); letter-spacing: 0; text-transform: none; }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] .dk-chalk--math { font-family: var(--tx-font-math); }
+
+/* ── the top bar: the topic, and the lesson part as plain words (no segment bar, no uppercase) ── */
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="top"] { border-bottom: 1px solid var(--tx-line); background: var(--tx-bg); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="top"] .dk-pause { background: transparent; border-color: transparent; border-radius: var(--tx-r-1); color: var(--tx-ink); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="top"] .dk-short { font-weight: 700; color: var(--tx-ink); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="top"] .dk-phaseline { font-family: var(--tx-font-ui); font-size: var(--tx-t-1); letter-spacing: 0; text-transform: none; gap: var(--tx-s-3); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="top"] .dk-phaseline li { border-bottom: 0; padding-bottom: 0; color: var(--tx-ink-3); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="top"] .dk-phaseline li[aria-current] { color: var(--tx-ink); font-weight: 700; }
+
+/* ── the stage frame is only a column: the board card, the talk row and the question card sit in it with gaps ── */
+.kx-lesson[data-tx] .ks-stage { background: transparent; border: 0; overflow: visible; }
+.kx-lesson[data-tx] .ks-slot { background: var(--tx-board); border: 1px solid var(--tx-line); border-radius: var(--tx-r-2); box-shadow: var(--tx-shadow-2); }
+.kx-lesson[data-tx][data-kboard] .ks-slot { background: var(--tx-board); }
+.kx-lesson[data-tx] .ks-piece .dk-tray { background: transparent; border: 0; box-shadow: none; }
+/* the plain board's drawn wooden frame: the board card is the frame */
+.kx-lesson[data-tx] .ks-piece .dk-board-frame { display: none; }
+.kx-lesson[data-tx] .ks-piece .dk-chalk { color: var(--tx-board-ink); }
+/* maths set as maths on the plain board: stacked fractions in the maths face (Board.tsx mathRuns) */
+.kx-lesson[data-tx] .dk-chalk--math { font-family: var(--tx-font-math); font-weight: 400; font-size: var(--tx-t-6); letter-spacing: 0; }
+/* the plain board fills its card: its lines centred, the maths scaled to the card (container units, like the drawn
+   board's viewBox: board content scales with its box, the chrome keeps the 8-size scale) */
+.kx-lesson[data-tx] .ks-piece .dk-board { container-type: size; }
+.kx-lesson[data-tx] .ks-piece .dk-board-body { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: var(--tx-s-4); }
+.kx-lesson[data-tx] .ks-piece .dk-chalk--math { font-size: clamp(var(--tx-t-6), 16cqmin, var(--tx-t-8)); }
+.kx-lesson[data-tx] .dk-frac { display: inline-flex; flex-direction: column; align-items: stretch; vertical-align: middle; text-align: center; line-height: 1.05; margin: 0 .1em; }
+.kx-lesson[data-tx] .dk-frac-n { border-bottom: max(2px, .07em) solid currentColor; padding: 0 .14em .04em; }
+.kx-lesson[data-tx] .dk-frac-d { padding: .06em .14em 0; }
+.kx-lesson[data-tx] .dk-frac-slash { display: none; }
+/* a Studio piece's own inner frame: the board card is the frame (a second ring inside it read as a box in a box) */
+.kx-lesson[data-tx] .ks-piece .st-box { box-shadow: none; }
+.kx-lesson[data-tx] .ks[data-work="none"] .ks-slot { background: transparent; border-color: transparent; box-shadow: none; }
+
+/* the talk row: her presence and the caption, the line she is saying now in full ink */
+.kx-lesson[data-tx] .ks-talk { flex: none; display: flex; align-items: center; gap: var(--tx-s-4); margin: var(--tx-s-2) 0; padding: 0 var(--tx-s-2); min-width: 0; }
+.kx-lesson[data-tx] .ks-talk-cap { flex: 1; min-width: 0; display: flex; align-items: center; }
+.kx-lesson[data-tx] .ks-talk .dk-caption { justify-content: flex-start; text-align: left; }
+.kx-lesson[data-tx] .ks-talk .dk-caption-line { font: 400 var(--tx-t-3)/1.35 var(--tx-font-ui); color: var(--tx-ink-2); -webkit-line-clamp: 2; }
+.kx-lesson[data-tx] .dk:is([data-floor="speaking"], [data-floor="showing"]) .ks-talk .dk-caption-line { color: var(--tx-ink); }
+.kx-lesson[data-tx] .ks-talk .dk-caption-line:lang(hi) { font-family: var(--tx-font-deva); }
+
+/* the question card: the second strongest thing, in the display face */
+.kx-lesson[data-tx] .ks-rail { margin-top: var(--tx-s-2); border: 0; border-radius: var(--tx-r-2); background: var(--tx-surface); box-shadow: var(--tx-shadow-1); outline: 1px solid var(--tx-line); outline-offset: -1px; overflow: hidden; }
+.kx-lesson[data-tx] .ks-talk + .ks-rail { margin-top: 0; }
+.kx-lesson[data-tx][data-tx][data-tx][data-tx] .dk[data-skin="kaksha"] [data-zone="card"] > .dk-card { box-shadow: none; background: transparent; border: 0; border-radius: 0; padding: var(--tx-s-2) var(--tx-s-2) var(--tx-s-2) var(--tx-s-4); }
+.kx-lesson[data-tx] .ks-rail .dk-ask { font-family: var(--tx-font-display); font-weight: var(--tx-display-weight); font-size: var(--tx-t-4); line-height: 1.25; letter-spacing: -.01em; color: var(--tx-ink); }
+.kx-lesson[data-tx] .ks[data-kind="wide"] .ks-rail .dk-ask { font-size: var(--tx-t-5); }
+.kx-lesson[data-tx] .ks-rail .dk-ask:lang(hi) { font-family: var(--tx-font-deva); }
+.kx-lesson[data-tx] .ks-rail .dk-hear { border-radius: var(--tx-r-1); background: transparent; border-color: transparent; color: var(--tx-ink-2); }
+/* her turn: the card lifts (a stronger shadow and edge). The dock under it carries the one "your move" colour on the screen */
+.kx-lesson[data-tx] .dk:is([data-floor="your_turn"], [data-floor="listening"]) .ks-rail { outline: 1.5px solid var(--tx-line-2); box-shadow: var(--tx-shadow-2); }
+
+/* ── steer chips: quiet pills, the child's own words ── */
+/* one row, never a pill taller than its neighbour: labels stay on one line and the row scrolls when it must (main's
+   review of step b: "Alag tarah se" wrapped and made the row uneven at 360) */
+.kx-lesson[data-tx] .ks-steer { display: flex; gap: var(--tx-s-2); overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; }
+.kx-lesson[data-tx] .ks-steer::-webkit-scrollbar { display: none; }
+/* wide: the side column gives the chips two rows, a 2 × 2 grid of equal cells */
+.kx-lesson[data-tx] .ks:is([data-kind="wide"], [data-kind="landscape"]) .ks-steer { display: grid; grid-auto-flow: row; grid-template-columns: 1fr 1fr; grid-auto-rows: 44px; align-content: center; overflow: visible; }
+.kx-lesson[data-tx] .ks:is([data-kind="wide"], [data-kind="landscape"]) .ks-chip { width: 100%; }
+/* the row fades at its end when it scrolls on, so a cut pill reads as "more", not as clipped */
+.kx-lesson[data-tx] .ks[data-kind="phone"] .ks-steer { -webkit-mask-image: linear-gradient(90deg, black 82%, transparent); mask-image: linear-gradient(90deg, black 82%, transparent); padding-right: var(--tx-s-6); }
+.kx-lesson[data-tx] .ks-chip { flex: none; white-space: nowrap; padding: 0 var(--tx-s-4); height: 44px; }
+.kx-lesson[data-tx] .ks-chip svg { display: none; }
+.kx-lesson[data-tx] .ks-chip { border: 1.5px solid var(--tx-line-2); border-radius: var(--tx-r-3); background: var(--tx-surface); color: var(--tx-ink); font: 600 var(--tx-t-1)/1.15 var(--tx-font-ui); }
+.kx-lesson[data-tx] .ks-chip svg { color: var(--tx-ink-2); }
+.kx-lesson[data-tx] .ks-chip:hover { border-color: var(--tx-tutor); }
+.kx-lesson[data-tx] .ks-chip:focus-visible { outline: 3px solid var(--tx-tutor); }
+
+/* ── the dock: a quiet tray while she talks; the "your move" colour when it is the child's turn ── */
+.kx-lesson[data-tx][data-tx] .dk[data-skin="kaksha"][data-v2] .dk-dock { --lamp: var(--tx-move); --lamp-ring: var(--tx-move); --lamp-ink: var(--tx-move-text);
+  --lamp-wash: color-mix(in srgb, var(--tx-move) 16%, var(--tx-surface)); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="dock"] > .dk-dock { background: var(--tx-surface-2); border: 0; border-radius: var(--tx-r-2); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] [data-zone="dock"] > .dk-dock[data-lamp] { background: var(--lamp-wash); box-shadow: inset 0 0 0 2.5px var(--tx-move); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] :is(.dk-side, .dk-key:not(.dk-key--send), .dk-tile) { background: var(--tx-surface); border-color: var(--tx-line-2); border-radius: var(--tx-r-1); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] :is(.dk-word-text, .dk-mode) { font-family: var(--tx-font-ui); }
+
+/* ── moments, the Later pill and sheets: soft rectangles ── */
+.kx-lesson[data-tx] :is(.ks-moment, .ks-later, .ks-later-sheet) { border-radius: var(--tx-r-2); background: var(--tx-surface); box-shadow: var(--tx-shadow-2); backdrop-filter: none; -webkit-backdrop-filter: none; }
+.kx-lesson[data-tx] .ks-moment-btn { border-radius: var(--tx-r-1); background: var(--tx-surface); }
+.kx-lesson[data-tx] .ks-moment-btn.is-primary { background: var(--tx-accent); color: var(--tx-on-accent); border-color: var(--tx-accent); }
+.kx-lesson[data-tx] .dk[data-skin="kaksha"] .dk-sheet { border-radius: var(--tx-r-2); background: var(--tx-surface); }
+
+.kx-lesson[data-tx] .ks-face { background: transparent; border: 0; box-shadow: none; }
+.kx-lesson[data-tx] .ks-face > .tx-presence { width: 100%; height: 100%; }
+.kx-lesson[data-tx] .ks-face--tile > .tx-presence { flex-direction: row; justify-content: flex-start; }
+.kx-lesson[data-tx] .ks-hero-cap .dk-caption-line { font: 400 var(--tx-t-4)/1.4 var(--tx-font-ui); color: var(--tx-ink); }
+.kx-lesson[data-tx] .ks-caption .dk-caption-line { font: 400 var(--tx-t-4)/1.4 var(--tx-font-ui); color: var(--tx-ink-2); -webkit-line-clamp: 6; }
+.kx-lesson[data-tx] .dk:is([data-floor="speaking"], [data-floor="showing"]) .ks-caption .dk-caption-line { color: var(--tx-ink); }
+.kx-lesson[data-tx] .ks-caption { padding: 0 var(--tx-s-2); }
+.kx-lesson[data-tx] .ks-caption .dk-caption { justify-content: flex-start; text-align: left; }
+
+
+/* step f: a piece that has not drawn yet (Studio marks its box .st-empty): her line fills the board card instead of an
+   empty box; no "making" words, no spinner (owner: never show build state) */
+.kx-lesson[data-tx] .ks-standby { display: none; }
+.kx-lesson[data-tx] .ks-slot:has(.st-empty) .ks-piece { visibility: hidden; }
+.kx-lesson[data-tx] .ks-slot:has(.st-empty) .ks-standby { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: var(--tx-s-6); text-align: center; }
+.kx-lesson[data-tx] .ks-standby-line { margin: 0; font: var(--tx-display-weight) var(--tx-t-5)/1.35 var(--tx-font-display); color: var(--tx-ink); text-wrap: balance; }
+.kx-lesson[data-tx] .ks-standby-line:lang(hi) { font-family: var(--tx-font-deva); }

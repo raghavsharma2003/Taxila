@@ -1,0 +1,72 @@
+From: Studio (C1, claude/r4-content)
+Subject: [PATCH 017] harness: each part as pagesBoard takes it (the card's own page), and the beat of the page up (director14 S9, S9b)
+
+S9 (director14 c5-t01 steady 18, stuck 18, offtopic 26, steering 14). Production pages a picture turn correctly. Studio's
+seam on the run's own shape draws c5-t01 stuck 18 as fraction-bars (the example) then fraction-line den 8 from "Isi".
+evals/hybrid-side-by-side.mjs checks the parts one by one, and each part kept the turn's picture `request` and no
+ofCard. So every part was preselected as a second view, and the record said bars on both pages. This patch takes each
+part as pagesBoard does: the request on the first page only, its own ofCard, and cardPage on a LATER part whose ofCard is
+true (pagesBoard's mark: Studio's preselect gives that page the card's own board, never a second view). Not on the first
+part: Brain marks the card's board ofCard true before her line exists, and that page of a picture turn is the view.
+S9b (c6 stuck 18). Studio gives a remediation's board up its own second view. For that, the harness keeps shownKind
+beside shownRef, as seam.js keeps wbPrevKind: the take's lastKind or its scriptBeat.kind, and a paged turn's lastKind.
+It passes avoidKind to the preselect.
+Checked on the run's c5-t01 stuck 18 card part (den 8 line, key 8): old → fraction-bars@1; with 017 → fraction-line@1.
+
+diff --git a/evals/hybrid-side-by-side.mjs b/evals/hybrid-side-by-side.mjs
+index 91b8ff188..b80db8dee 100644
+--- a/evals/hybrid-side-by-side.mjs
++++ b/evals/hybrid-side-by-side.mjs
+@@ -187,6 +187,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
+   // LAST page of a paged turn (L.wbPrevRef / L.wbPrevPage). Without it the preselect saw the first page of row 16 as up, the
+   // circle, and the picture over the card's bar re-drew the bar: no second view)
+   let shownRef = null;
++  // (Studio director14 S9b: and the beat that drew it — a remediation's board up gets its own second view on a picture ask)
++  let shownKind = null;
+   for (let i = 0; i < MAX; i++) {
+     let text = lines?.[i];
+     let leaving = false;
+@@ -253,7 +255,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
+         // (preselect caches its pick by intentId = lessonId:wb:turn: one id per lesson, never the harness's shared LESSON.id)
+         // (one id per lesson, Studio on director9: a persona's lesson keeps its own prefix; lines are empty for the reactive child)
+         const ask = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-${persona ?? lines.join("|").length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
+-        const pick = preselect(ask, { kit, ...(shownScript ? { avoid: shownScript } : {}), ...(shownRef ? { avoidRef: shownRef } : {}) });
++        const pick = preselect(ask, { kit, ...(shownScript ? { avoid: shownScript } : {}), ...(shownRef ? { avoidRef: shownRef } : {}), ...(shownKind ? { avoidKind: shownKind } : {}) });
+         pickAsk = pick ? ask : null;
+         if (process.env.HARNESS_DEBUG_SCREEN) console.error("[screen]", kit.topicId, JSON.stringify({ intent: ask.intent, item: item?.id ?? null, phase: next.phase, pick: pick ? pick.template ?? pick.by : null }));
+         if (pick) {
+@@ -304,6 +306,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
+         shownScript = took.script ?? shownScript;
+         // (as seam.js drawn(): the card's ref when the card's own board was drawn; a second view names no card)
+         shownRef = took.lastRef !== undefined ? took.lastRef : took.by === "script" && !took.altView ? refKey(pickAsk.intent.boardRef) : null;
++        shownKind = !shownRef ? null : took.lastKind !== undefined ? took.lastKind : pickAsk.intent.scriptBeat?.kind ?? null;
+         slot = { artifact: { ...(slot?.artifact ?? {}), screen: took.screen } };
+       } else { screen = { ...screen, drawn: "preselect" }; }
+     }
+@@ -337,7 +340,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
+     if (lane === "director" && reply && (next.lastMove?.scriptBeat || next.lastMove?.cardBeat)) {
+       const item = boardItemOf(next, kit, findItem);
+       const askF = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-seg-${++SEG_N}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: reply, ...(tGuard?.parts ? { parts: tGuard.parts } : {}) } });
+-      const parts = [{ atChar: 0, boardRef: askF.intent.boardRef, scriptBeat: askF.intent.scriptBeat }, ...(askF.intent.segments ?? [])].filter((x) => x.boardRef);
++      const parts = [{ atChar: 0, boardRef: askF.intent.boardRef, scriptBeat: askF.intent.scriptBeat, ...(typeof askF.intent.ofCard === "boolean" ? { ofCard: askF.intent.ofCard } : {}) }, ...(askF.intent.segments ?? [])].filter((x) => x.boardRef);
+       // (v6.3 harness, main on director11: the screen field and the picture check read what is actually DRAWN — her final line's
+       // pages as the seam pages them — never the board preselected before her line existed)
+       drawn = parts.map((pt) => ({ from: pt.atChar, board: pt.boardRef, beat: pt.scriptBeat?.beatId ?? null }));
+@@ -352,12 +355,15 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
+         try { pg = pagesBoard({ ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:pg` }, line: { ...askF.line, text: String(reply) } }, { kit, ...(shownScript ? { keep: shownScript } : {}), ...(shownRef ? { keepRef: shownRef } : {}) }); } catch { pg = null; }
+         unpaged = pg ? 0 : 1;
+         // (S7: a paged turn leaves its LAST page up — the next turn's second view is built from that page, as the seam does)
+-        if (pg?.script) { shownScript = pg.lastPage ?? pg.script; shownRef = pg.lastRef ?? null; }
++        if (pg?.script) { shownScript = pg.lastPage ?? pg.script; shownRef = pg.lastRef ?? null; shownKind = shownRef ? pg.lastKind ?? null : null; }
+         droppedPages = Math.max(0, pagesDroppedCount() - d0);
+         const text = String(reply).replace(/\s+/g, " ").trim();
+         segs = parts.map((pt, i) => {
+           const segText = text.slice(pt.atChar, parts[i + 1]?.atChar ?? text.length);
+-          const a = { ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:s${i}`, boardRef: pt.boardRef, scriptBeat: pt.scriptBeat, segments: undefined, segmentPlan: undefined }, line: { ...askF.line, text: "" } };
++          // (Studio director14 S9: each part as pagesBoard takes it — the picture request on the first page only, and the part's
++          // own ofCard: the card part of a picture turn is the card's own board, not a second second view)
++          const a = { ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:s${i}`, boardRef: pt.boardRef, scriptBeat: pt.scriptBeat, segments: undefined, segmentPlan: undefined,
++            ...(i ? { request: undefined } : {}), ofCard: typeof pt.ofCard === "boolean" ? pt.ofCard : undefined, cardPage: i && pt.ofCard === true ? true : undefined }, line: { ...askF.line, text: "" } };
+           const pk = preselect(a, { kit });
+           let scr = pk?.screen ?? null;
+           try { const aR = { ...a, line: { ...a.line, text: segText } }; const tk = takePreselected(aR, gateCtxFor(aR, { kit, redact: [], prior: [] })); if (tk?.screen) scr = tk.screen; } catch { /* the preselect's board */ }

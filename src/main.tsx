@@ -4,6 +4,8 @@ import { routes } from "./app/routes.tsx";
 import { installBeacon, reportClientError } from "./app/beacon.ts";
 import { installTrace } from "./trace/index.ts";
 import { installStaleBuildReload } from "./app/staleBuild.ts";
+import { installApp } from "./app/install.ts";
+import { txTheme } from "./ui-v3/r8/tx.ts";
 import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/ui.css";
@@ -17,6 +19,15 @@ installBeacon();
 // round 5 (owner tab, 2026-10-13: err.resource /assets/Landing-*.js): a tab open across a deploy reloads once when a lazy
 // chunk of its old build is gone, reported as a `manual` beacon (src/app/staleBuild.ts; the one mechanism, r5 QA + rel 14)
 installStaleBuildReload((payload) => reportClientError("manual", payload ?? new Error("vite:preloadError (stale chunk; reloading once)")));
+
+// r7 app-pwa-install: the installable app (the shell worker in production builds; the browser's install offer held for
+// Me and Who to show on a tap, never a pop-up)
+installApp(import.meta.env.PROD);
+
+// round 8: the ?tx= switch is read here, on the page the device lands on, before the router can redirect. Release 22
+// read it only when a themed screen mounted: /who?tx=a redirects to /start/class first and the choice was lost, so a
+// link with ?tx=a did nothing on a device that was not already inside a lesson (src/ui-v3/r8/tx.ts keeps it per device)
+txTheme();
 
 // A render crash never reaches window.onerror: React Router's errorElement (a class error boundary) catches it first
 // and the owner sees an error page nobody hears about (smooth G2's white screen). React 19 reports every error an

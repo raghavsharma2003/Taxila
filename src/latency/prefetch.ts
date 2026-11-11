@@ -138,7 +138,8 @@ export class TurnPrefetcher {
     this.cancel();
     this.item = itemId;
     this.text = "";
-    this.sentText = "";
+    // audit V-19: the same-text guard survives an item change (the engine sends "duplex", the link the transcription item
+    // id): the same words were posted again, each a duplicate classify and speculative reply. onFinal ends the turn's guard
     this.sentCount = 0;
   }
 

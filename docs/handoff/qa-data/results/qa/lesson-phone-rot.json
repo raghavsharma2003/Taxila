@@ -1,0 +1,1727 @@
+{
+ "console": [
+  "warning: [.WebGL-0x36f400113e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x36f400113e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x36f400113e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x36f400113e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+  "warning: cascade: transcription call unavailable, falling back to push-to-talk Error: transcription channel did not open\n    at http://127.0.0.1:8090/assets/LessonScreen-CtTBMXkF.js:2:33169",
+  "error: Failed to load resource: the server responded with a status of 400 (Bad Request)"
+ ],
+ "pageerror": [],
+ "failed": [],
+ "http": [
+  "POST /api/studio/viewport 400"
+ ],
+ "trace": [
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 1,
+   "t": 1792001326338,
+   "mono": 123,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/c/39dc24db-7c7f-42eb-8079-14e2a1643791/lesson/new",
+    "how": "load",
+    "title": "Taxila · a personal AI teacher"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 2,
+   "t": 1792001326340,
+   "mono": 125,
+   "kind": "dev.info",
+   "tier": 1,
+   "data": {
+    "ua": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
+    "lang": "en-IN",
+    "viewport": {
+     "w": 393,
+     "h": 876
+    },
+    "dpr": 2.75,
+    "screen": {
+     "w": 393,
+     "h": 876
+    },
+    "touch": 1,
+    "memoryGB": 8,
+    "cores": 4,
+    "connection": {
+     "type": "4g",
+     "down": 1.35,
+     "rtt": 100,
+     "saveData": false
+    },
+    "reducedMotion": false,
+    "standalone": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 3,
+   "t": 1792001326371,
+   "mono": 156,
+   "kind": "net.req",
+   "rid": "222ac304-1",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 4,
+   "t": 1792001326726,
+   "mono": 511,
+   "kind": "net.req",
+   "rid": "222ac304-2",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/duplex/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 5,
+   "t": 1792001326011,
+   "mono": 545,
+   "kind": "net.res",
+   "rid": "222ac304-2",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/duplex/config",
+    "status": 200,
+    "ms": 23,
+    "bytes": 19,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "duplex": "shadow"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 6,
+   "t": 1792001326005,
+   "mono": 584,
+   "kind": "net.res",
+   "rid": "222ac304-1",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "status": 200,
+    "ms": 423,
+    "bytes": 11,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 7,
+   "t": 1792001326079,
+   "mono": 658,
+   "kind": "net.req",
+   "rid": "222ac304-3",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/child/map?childId=39dc24db-7c7f-42eb-8079-14e2a1643791"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 8,
+   "t": 1792001326093,
+   "mono": 672,
+   "kind": "net.req",
+   "rid": "222ac304-4",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/child/map?childId=39dc24db-7c7f-42eb-8079-14e2a1643791"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 9,
+   "t": 1792001326267,
+   "mono": 846,
+   "kind": "net.req",
+   "rid": "222ac304-5",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/face/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 10,
+   "t": 1792001326275,
+   "mono": 854,
+   "kind": "mic.mode",
+   "tier": 1,
+   "data": {
+    "mode": "tap",
+    "reasons": [
+     "not_older_family",
+     "talk_pref_tap",
+     "no_headset_detected",
+     "echo_probe_not_built",
+     "duplex_not_resolved_yet"
+    ],
+    "older": false,
+    "wanted": "tap",
+    "headset": false,
+    "echoDemoted": false,
+    "duplexLive": false,
+    "duplexFallback": null,
+    "transport": null,
+    "pushToTalk": true,
+    "ui": "child-desk",
+    "duplexSource": null
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 11,
+   "t": 1792001326381,
+   "mono": 960,
+   "kind": "net.req",
+   "rid": "222ac304-6",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/lesson/start",
+    "body": {
+     "childId": "39dc24db-7c7f-42eb-8079-14e2a1643791",
+     "mode": "cascade",
+     "purpose": "lesson"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 12,
+   "t": 1792001326385,
+   "mono": 964,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": null,
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 13,
+   "t": 1792001326385,
+   "mono": 964,
+   "kind": "ui.render.card",
+   "tier": 1,
+   "data": {
+    "empty": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 14,
+   "t": 1792001326385,
+   "mono": 964,
+   "kind": "ui.render.tray",
+   "tier": 1,
+   "data": {
+    "empty": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 15,
+   "t": 1792001326402,
+   "mono": 981,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": null,
+    "sheet": null,
+    "strip": null,
+    "gate": "starting",
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 16,
+   "t": 1792001327043,
+   "mono": 1032,
+   "kind": "net.res",
+   "rid": "222ac304-5",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/face/config",
+    "status": 200,
+    "ms": 143,
+    "bytes": 55,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "puppet2d": true,
+     "visemes": true,
+     "rev": "r8",
+     "look": "r8"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 17,
+   "t": 1792001327087,
+   "mono": 1076,
+   "kind": "ui.media",
+   "tier": 1,
+   "data": {
+    "phase": "mount",
+    "tag": "iframe",
+    "w": 2,
+    "h": 2,
+    "src": "/modules.html"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 18,
+   "t": 1792001327149,
+   "mono": 1138,
+   "kind": "ui.media",
+   "tier": 1,
+   "data": {
+    "phase": "mount",
+    "tag": "canvas",
+    "w": 359,
+    "h": 405,
+    "zone": "teacher",
+    "testid": "teacher-window"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 19,
+   "t": 1792001327007,
+   "mono": 1839,
+   "kind": "net.res",
+   "rid": "222ac304-3",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/child/map?childId=39dc24db-7c7f-42eb-8079-14e2a1643791",
+    "status": 200,
+    "ms": 1174,
+    "bytes": 189492,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "bytes": 181754
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 20,
+   "t": 1792001331157,
+   "mono": 7234,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 4992,
+    "at": 2072
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 21,
+   "t": 1792001331171,
+   "mono": 7248,
+   "kind": "perf.lcp",
+   "tier": 1,
+   "data": {
+    "t": 1132,
+    "el": "img.teacher-ground-art",
+    "url": "/assets/art/bg/[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 22,
+   "t": 1792001331372,
+   "mono": 7449,
+   "kind": "net.res",
+   "rid": "222ac304-4",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/child/map?childId=39dc24db-7c7f-42eb-8079-14e2a1643791",
+    "status": 200,
+    "ms": 6399,
+    "bytes": 189492,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "bytes": 181754
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 23,
+   "t": 1792001331375,
+   "mono": 7452,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "tap",
+    "pushToTalk": true,
+    "transport": "webrtc",
+    "lane": "cascade"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 24,
+   "t": 1792001331382,
+   "mono": 7459,
+   "kind": "net.sse",
+   "rid": "222ac304-7",
+   "tier": 1,
+   "data": {
+    "path": "/api/studio/stream",
+    "phase": "open-request"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 25,
+   "t": 1792001331382,
+   "mono": 7459,
+   "kind": "trace.session",
+   "tier": 1,
+   "data": {
+    "from": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+    "to": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+    "lesson": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 26,
+   "t": 1792001331384,
+   "mono": 7461,
+   "kind": "mic.duplex",
+   "tier": 1,
+   "data": {
+    "mode": "shadow",
+    "source": "server_shadow",
+    "device": null,
+    "server": "shadow",
+    "build": "on",
+    "asks": [
+     {
+      "status": 200,
+      "ms": 33,
+      "duplex": "shadow",
+      "retry": false,
+      "cohort": null
+     }
+    ]
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 27,
+   "t": 1792001331384,
+   "mono": 7461,
+   "kind": "mic.mode",
+   "tier": 1,
+   "data": {
+    "mode": "tap",
+    "reasons": [
+     "not_older_family",
+     "talk_pref_tap",
+     "no_headset_detected",
+     "echo_probe_not_built",
+     "duplex_shadow_only"
+    ],
+    "older": false,
+    "wanted": "tap",
+    "headset": false,
+    "echoDemoted": false,
+    "duplexLive": false,
+    "duplexFallback": null,
+    "transport": null,
+    "pushToTalk": true,
+    "ui": "child-desk",
+    "duplex": "shadow",
+    "duplexSource": "server_shadow"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 28,
+   "t": 1792001331385,
+   "mono": 7462,
+   "kind": "net.res",
+   "rid": "222ac304-6",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/lesson/start",
+    "status": 201,
+    "ms": 6116,
+    "bytes": 1437,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "lessonId": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+     "topic": {
+      "id": "c4-maths-ch08-t01",
+      "title": "Grams and kilograms",
+      "chapter": "Weigh it, Pour it"
+     },
+     "teacher": {
+      "id": "asha",
+      "name": "Asha",
+      "characterName": "Asha",
+      "addressedAs": "Asha didi",
+      "pronouns": {
+       "subject": "she",
+       "object": "her",
+       "possessive": "her"
+      },
+      "voice": "marin",
+      "role": "AI teacher",
+      "lookRev": 1,
+      "signatureColor": "#3E7C74"
+     },
+     "moduleCommands": [],
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Grams and kilograms",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Tumne grams ya kilograms kahan dekhe hain?"
+      }
+     },
+     "address": "tum",
+     "moment": {
+      "move": "greet",
+      "verdict": "ungraded",
+      "engagement": "warming",
+      "teacherAffect": {
+       "display": "neutral_warm",
+       "intensity": 1,
+       "cause": "none",
+       "turn": 0
+      },
+      "bondStage": "meeting",
+      "safety": false,
+      "childLaughed": false,
+      "thinkAloud": false,
+      "band": "B2",
+      "lang": "hinglish"
+     },
+     "teacherOpening": "Namaste Riya, aaj hum grams aur kilograms se weights compare karenge. Tumne grams ya kilograms kahan dekhe hain?",
+     "teacherOpeningSeq": 1,
+     "debug": {
+      "move": {
+       "kind": "greet",
+       "shape": "greet Riya by name, warm and unhurried; one line on today's topic (Grams and kilograms); then one easy question about them; address them with tum forms (tum, tumhara, tumne), never tu"
+      },
+      "kitVerified": true,
+      "timings": [
+       {
+        "kind": "chat",
+        "deployment": "taxila-fast",
+        "status": 200,
+        "ms": 1720,
+        "attempt": 0,
+        "tokens": "[masked]"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 29,
+   "t": 1792001331601,
+   "mono": 7678,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 214,
+    "at": 7464
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 30,
+   "t": 1792001331729,
+   "mono": 7806,
+   "kind": "net.req",
+   "rid": "222ac304-8",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "body": {
+     "lessonId": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+     "box": {
+      "w": 361,
+      "h": 468
+     },
+     "young": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 31,
+   "t": 1792001331732,
+   "mono": 7809,
+   "kind": "net.sse",
+   "rid": "222ac304-7",
+   "tier": 1,
+   "data": {
+    "path": "/api/studio/stream",
+    "phase": "open"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 32,
+   "t": 1792001334473,
+   "mono": 8403,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 263,
+    "at": 7930
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 33,
+   "t": 1792001334473,
+   "mono": 8403,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 206,
+    "at": 8196
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 34,
+   "t": 1792001334476,
+   "mono": 8406,
+   "kind": "net.res",
+   "rid": "222ac304-8",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "status": 200,
+    "ms": 124,
+    "bytes": 27,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "vp": "p360",
+     "tight": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 35,
+   "t": 1792001334867,
+   "mono": 8797,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "open",
+    "lane": "cascade",
+    "label": "Fake Default Audio Input",
+    "echoCancellation": true,
+    "noiseSuppression": true,
+    "autoGainControl": true,
+    "sampleRate": 48000,
+    "ctxRate": 44100
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 36,
+   "t": 1792001334868,
+   "mono": 8798,
+   "kind": "net.req",
+   "rid": "222ac304-9",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/stt-token",
+    "body": {
+     "lessonId": "ebbb985e-ee39-4970-b516-3228589f0aa1"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 37,
+   "t": 1792001334877,
+   "mono": 8807,
+   "kind": "tts.request",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-1",
+    "seq": 1,
+    "text": "Namaste Riya, aaj hum grams aur kilograms se weights compare karenge. Tumne grams ya kilograms kahan dekhe hain?",
+    "chars": 112,
+    "lane": "cascade",
+    "voice": null,
+    "voiceNote": "chosen server-side (see srv tts events)"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 38,
+   "t": 1792001334897,
+   "mono": 8827,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": "starting",
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 39,
+   "t": 1792001334897,
+   "mono": 8827,
+   "kind": "ui.render.card",
+   "tier": 1,
+   "data": {
+    "text": "Tumne grams ya kilograms kahan dekhe hain?",
+    "source": "server",
+    "lines": []
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 40,
+   "t": 1792001334904,
+   "mono": 8834,
+   "kind": "net.req",
+   "rid": "222ac304-a",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/tts-stream",
+    "body": {
+     "lessonId": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+     "seq": 1
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 41,
+   "t": 1792001335180,
+   "mono": 9110,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 42,
+   "t": 1792001335326,
+   "mono": 9256,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 248,
+    "at": 8854
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 43,
+   "t": 1792001335328,
+   "mono": 9258,
+   "kind": "net.req",
+   "rid": "222ac304-b",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "body": {
+     "lessonId": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+     "box": {
+      "w": 361,
+      "h": 457
+     },
+     "young": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 44,
+   "t": 1792001335152,
+   "mono": 9420,
+   "kind": "tts.start",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-1",
+    "seq": 1,
+    "msFromRequest": 672
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 45,
+   "t": 1792001335157,
+   "mono": 9425,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "speaking",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 46,
+   "t": 1792001335158,
+   "mono": 9612,
+   "kind": "net.res",
+   "rid": "222ac304-a",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/tts-stream",
+    "status": 200,
+    "ms": 434,
+    "bytes": 472104,
+    "type": "application/x-taxila-pcm-frames;v=2",
+    "body": {
+     "bytes": 472104
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 47,
+   "t": 1792001335300,
+   "mono": 9754,
+   "kind": "asr.config",
+   "tier": 1,
+   "data": {
+    "lane": "cascade",
+    "model": "taxila-live-transcribe",
+    "language": null,
+    "promptChars": 187,
+    "turnDetection": "server_vad"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 48,
+   "t": 1792001335305,
+   "mono": 9759,
+   "kind": "net.res",
+   "rid": "222ac304-9",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/stt-token",
+    "status": 200,
+    "ms": 656,
+    "bytes": 651,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "token": "[masked]",
+     "expiresAt": 1792001455,
+     "base": "https://raghavsharma1729-compan-resource.openai.azure.com/openai/v1",
+     "session": {
+      "type": "transcription",
+      "include": [
+       "item.input_audio_transcription.logprobs"
+      ],
+      "audio": {
+       "input": {
+        "noise_reduction": {
+         "type": "near_field"
+        },
+        "transcription": {
+         "model": "taxila-live-transcribe",
+         "prompt": "A young child aged 6 to 9 in India answers a teacher aloud in Hindi, English, or a Hindi-English mix. Write Hindi words in Devanagari and English words in Latin script, exactly as spoken."
+        },
+        "turn_detection": {
+         "type": "server_vad",
+         "threshold": 0.6,
+         "prefix_padding_ms": 300,
+         "silence_duration_ms": 900
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 49,
+   "t": 1792001335305,
+   "mono": 9759,
+   "kind": "net.res",
+   "rid": "222ac304-b",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "status": 200,
+    "ms": 196,
+    "bytes": 27,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "vp": "p360",
+     "tight": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 50,
+   "t": 1792001335514,
+   "mono": 9968,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 203,
+    "at": 9761
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 51,
+   "t": 1792001335516,
+   "mono": 9970,
+   "kind": "net.req",
+   "rid": "222ac304-c",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/voicesig/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 52,
+   "t": 1792001336317,
+   "mono": 10457,
+   "kind": "net.res",
+   "rid": "222ac304-c",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/voicesig/config",
+    "status": 200,
+    "ms": 170,
+    "bytes": 67,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "mode": "shadow",
+     "frontend": true,
+     "detector": true,
+     "ver": "vs-seam/1"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 53,
+   "t": 1792001337164,
+   "mono": 11304,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 220,
+    "at": 10809
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 54,
+   "t": 1792001337164,
+   "mono": 11304,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 268,
+    "at": 11035
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 55,
+   "t": 1792001338078,
+   "mono": 12218,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 272,
+    "at": 11735
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 56,
+   "t": 1792001338078,
+   "mono": 12218,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 203,
+    "at": 12014
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 57,
+   "t": 1792001338560,
+   "mono": 12700,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 204,
+    "at": 12232
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 58,
+   "t": 1792001338560,
+   "mono": 12700,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 250,
+    "at": 12450
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 59,
+   "t": 1792001339027,
+   "mono": 13167,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 272,
+    "at": 12711
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 60,
+   "t": 1792001339528,
+   "mono": 13668,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 237,
+    "at": 13399
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 61,
+   "t": 1792001341483,
+   "mono": 15623,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 243,
+    "at": 15370
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 62,
+   "t": 1792001342528,
+   "mono": 16668,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 245,
+    "at": 16253
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 63,
+   "t": 1792001342969,
+   "mono": 17109,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 231,
+    "at": 16877
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 64,
+   "t": 1792001343495,
+   "mono": 17635,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 202,
+    "at": 17428
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 65,
+   "t": 1792001344145,
+   "mono": 18285,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 218,
+    "at": 17882
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 66,
+   "t": 1792001344566,
+   "mono": 18706,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 229,
+    "at": 18476
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 67,
+   "t": 1792001345093,
+   "mono": 19233,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 311,
+    "at": 18712
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 68,
+   "t": 1792001345093,
+   "mono": 19234,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 204,
+    "at": 19029
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 69,
+   "t": 1792001345437,
+   "mono": 19577,
+   "kind": "tts.end",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-1",
+    "seq": 1,
+    "status": "completed",
+    "playedFully": true,
+    "msUnplayed": 0,
+    "msFromStart": 10098
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 70,
+   "t": 1792001345442,
+   "mono": 19582,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "your_turn",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 71,
+   "t": 1792001345685,
+   "mono": 19825,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 328,
+    "at": 19239
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 72,
+   "t": 1792001345685,
+   "mono": 19825,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 240,
+    "at": 19585
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 73,
+   "t": 1792001346013,
+   "mono": 20153,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "transport",
+    "transport": "recording",
+    "why": "transcription channel did not open",
+    "lane": "cascade"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 74,
+   "t": 1792001346017,
+   "mono": 20157,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "tap",
+    "pushToTalk": true,
+    "transport": "recording",
+    "lane": "cascade"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 75,
+   "t": 1792001346022,
+   "mono": 20162,
+   "kind": "mic.mode",
+   "tier": 1,
+   "data": {
+    "mode": "tap",
+    "reasons": [
+     "transcription_call_unavailable",
+     "not_older_family",
+     "talk_pref_tap",
+     "no_headset_detected",
+     "echo_probe_not_built",
+     "duplex_shadow_only"
+    ],
+    "older": false,
+    "wanted": "tap",
+    "headset": false,
+    "echoDemoted": false,
+    "duplexLive": false,
+    "duplexFallback": null,
+    "transport": "recording",
+    "pushToTalk": true,
+    "ui": "child-desk",
+    "duplex": "shadow",
+    "duplexSource": "server_shadow"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 76,
+   "t": 1792001346022,
+   "mono": 20162,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "your_turn",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": "PTT",
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 77,
+   "t": 1792001346037,
+   "mono": 20177,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 316,
+    "at": 19835
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 78,
+   "t": 1792001346393,
+   "mono": 20533,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 210,
+    "at": 20179
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 79,
+   "t": 1792001346479,
+   "mono": 20619,
+   "kind": "net.req",
+   "rid": "222ac304-d",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "body": {
+     "lessonId": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+     "box": {
+      "w": 844,
+      "h": 25
+     },
+     "young": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 80,
+   "t": 1792001346074,
+   "mono": 20831,
+   "kind": "net.res",
+   "rid": "222ac304-d",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "status": 400,
+    "ms": 138,
+    "bytes": 23,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "error": "invalid box"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 81,
+   "t": 1792001349083,
+   "mono": 23840,
+   "kind": "net.req",
+   "rid": "222ac304-e",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "body": {
+     "lessonId": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+     "box": {
+      "w": 361,
+      "h": 457
+     },
+     "young": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "ebbb985e-ee39-4970-b516-3228589f0aa1",
+   "pid": "222ac304-0e8d-4861-8ff8-03d0f223f0c1",
+   "src": "client",
+   "seq": 82,
+   "t": 1792001350133,
+   "mono": 24080,
+   "kind": "net.res",
+   "rid": "222ac304-e",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "status": 200,
+    "ms": 107,
+    "bytes": 27,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "vp": "p360",
+     "tight": false
+    }
+   }
+  }
+ ]
+}

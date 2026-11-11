@@ -14,6 +14,8 @@ import { dhdStreamWs } from "./azureTtsWs.js";
 export const dhdVisemesOn = (env = process.env) => env.TAXILA_DHD_VISEMES !== "0";
 import { plainSsml } from "./expressive/compile/dhd.js";
 import { count } from "./expressive/telemetry.js";
+// round 7 (Platform cost ledger, docs/patches/from-platform/001): one meter call where the spend happens; never throws
+import { ttsSpent } from "../cost/meter.js";
 
 export const PCM_RATE = 24_000;
 /** Bytes per second of PCM16 mono at PCM_RATE. */
@@ -184,6 +186,8 @@ async function speechStreamOnce(text, { voice, instructions, signal, timeoutMs =
     log("tts_stream", DEPLOY.tts, res.status, Math.round(performance.now() - t0));
     throw new AzureError(`tts_stream ${DEPLOY.tts} HTTP ${res.status}: ${msg}`, res.status);
   }
+  // the synthesis is billed once it is accepted (a later abort does not refund the characters sent)
+  ttsSpent({ engine: DEPLOY.tts, chars: body.input.length, ms: Math.round(performance.now() - t0), status: res.status });
   const reader = res.body.getReader();
   let first = 0;
   const chunks = {
@@ -305,7 +309,27 @@ export function speakChunk(written, style, signal, render, lane) {
 //     that reply goes straight to the character's mini-tts voice;
 //   - a lesson that fell back stays on mini-tts until the breaker closes (a new epoch), so it is never the probe;
 //   - voice.expr.engine_fallback counts lesson switches (one per lesson per epoch; one per reply without a lesson id).
+// Round 7 (B3, QA D30 same-voice failover): the breaker is per voice PER SPEECH REGION, and a second region
+// (AZURE_SPEECH_REGION_2 / AZURE_SPEECH_KEY_2, optional AZURE_SPEECH_ENDPOINT_2) speaks the SAME DragonHD voice before any
+// identity change: primary fails → region 2 tries the same SSML (same voice, same cache key) → only when both fail does
+// the reply move to mini-tts. Region 2 is a different Azure Speech resource, so a regional outage or a throttled key no
+// longer changes who the child hears.
 export const BREAKER_OPEN_MS = 60_000;
+/**
+ * The Speech regions DragonHD may use, primary first. The second is an env view the existing clients read unchanged
+ * (azureTts.js / azureTtsWs.js take `env`; the websocket pool is keyed by region). Pure.
+ * @returns {{ id: "r1" | "r2", region: string, env: NodeJS.ProcessEnv | undefined }[]}
+ */
+export function dhdRegions(env = process.env) {
+  const out = [];
+  if (env.AZURE_SPEECH_REGION && env.AZURE_SPEECH_KEY) out.push({ id: "r1", region: String(env.AZURE_SPEECH_REGION), env: env === process.env ? undefined : env });
+  const r2 = env.AZURE_SPEECH_REGION_2, k2 = env.AZURE_SPEECH_KEY_2;
+  if (r2 && k2 && !(r2 === env.AZURE_SPEECH_REGION && k2 === env.AZURE_SPEECH_KEY)) {
+    out.push({ id: "r2", region: String(r2), env: { ...env, AZURE_SPEECH_REGION: r2, AZURE_SPEECH_KEY: k2, AZURE_SPEECH_ENDPOINT: env.AZURE_SPEECH_ENDPOINT_2 ?? "" } });
+  }
+  return out;
+}
+const bkey = (voice, rid) => (rid && rid !== "r1" ? `${voice}@${rid}` : voice);
 const breakers = new Map(); // dhd voice → { state: "closed" | "open" | "half", until, epoch }
 const stuckLessons = new Map(); // lessonId → { voice, epoch } (LRU-bounded)
 const MAX_STUCK = 2000;
@@ -314,27 +338,29 @@ const breakerOf = (voice) => {
   if (!b) breakers.set(voice, (b = { state: "closed", until: 0, epoch: 0 }));
   return b;
 };
-/** May this request try DragonHD for `voice`? "try" (closed), "probe" (the one half-open request), "skip". */
-function admitDhd(voice, now = Date.now()) {
-  const b = breakerOf(voice);
+/** May this request try DragonHD for `voice` (in region `rid`)? "try" (closed), "probe" (the one half-open request), "skip". */
+function admitDhd(voice, now = Date.now(), rid) {
+  const b = breakerOf(bkey(voice, rid));
   if (b.state === "closed") return "try";
   if (b.state === "open" && now >= b.until) { b.state = "half"; return "probe"; }
   return "skip";
 }
-function dhdSucceeded(voice) {
-  const b = breakerOf(voice);
-  if (b.state !== "closed") { b.state = "closed"; b.epoch += 1; console.info(`[voice] dhd ${voice} back: breaker closed`); }
+function dhdSucceeded(voice, rid) {
+  const b = breakerOf(bkey(voice, rid));
+  if (b.state !== "closed") { b.state = "closed"; b.epoch += 1; console.info(`[voice] dhd ${voice}${rid && rid !== "r1" ? ` (${rid})` : ""} back: breaker closed`); }
 }
-function dhdFailed(voice, now = Date.now()) {
-  const b = breakerOf(voice);
+function dhdFailed(voice, now = Date.now(), rid) {
+  const b = breakerOf(bkey(voice, rid));
   b.state = "open";
   b.until = now + BREAKER_OPEN_MS;
 }
+/** A voice's epoch across its regions: any region closing again lets a stuck lesson back onto DragonHD. */
+const voiceEpoch = (voice) => breakerOf(voice).epoch + (breakers.get(`${voice}@r2`)?.epoch ?? 0);
 function lessonStuck(lessonId, voice) {
   if (!lessonId) return false;
   const s = stuckLessons.get(lessonId);
   if (!s || s.voice !== voice) return false;
-  if (breakerOf(voice).epoch !== s.epoch) { stuckLessons.delete(lessonId); return false; }
+  if (voiceEpoch(voice) !== s.epoch) { stuckLessons.delete(lessonId); return false; }
   return true;
 }
 /** The reply (lane) moves to mini-tts; counted and logged once per lesson switch. */
@@ -345,7 +371,7 @@ function fallBack(lane, voice, style, why) {
   if (lessonId && lessonStuck(lessonId, voice)) return; // this lesson already switched in this epoch
   if (lessonId) {
     stuckLessons.delete(lessonId);
-    stuckLessons.set(lessonId, { voice, epoch: breakerOf(voice).epoch });
+    stuckLessons.set(lessonId, { voice, epoch: voiceEpoch(voice) });
     while (stuckLessons.size > MAX_STUCK) stuckLessons.delete(stuckLessons.keys().next().value);
   }
   count("engine_fallback");
@@ -365,8 +391,8 @@ export const dhdBreaker = {
   failed: (voice) => dhdFailed(voice),
 };
 /** Tests only. */
-export const __breaker = { reset: () => { breakers.clear(); stuckLessons.clear(); }, state: (voice) => ({ ...breakerOf(voice) }),
-  expire: (voice) => { breakerOf(voice).until = 0; } };
+export const __breaker = { reset: () => { breakers.clear(); stuckLessons.clear(); }, state: (voice, rid) => ({ ...breakerOf(bkey(voice, rid)) }),
+  expire: (voice, rid) => { breakerOf(bkey(voice, rid)).until = 0; } };
 
 function speakDhd(written, style, signal, render, lane) {
   const ssml = render?.ssml ?? plainSsml(written, style.dhd, style.spoken);
@@ -402,25 +428,44 @@ function speakDhd(written, style, signal, render, lane) {
       if (signal?.aborted) throw new AzureError(`dhd_stream ${voice} aborted`, 0, "aborted");
       // the breaker decides at the START of a reply; once a part of this reply spoke DragonHD, the rest of it tries
       // DragonHD too (one voice per reply outranks the breaker; a part's own failure still moves the reply over)
-      if (lane?.engine !== "dhd" && admitDhd(voice) === "skip") return await oai(self, "breaker open");
-      try {
-        // V4: the websocket carries Diya's visemes. Part 0 of a reply asks for visemes only (first sound must not wait:
-        // words + visemes cost a median +378 ms of first audio, evals/face-puppet/out/ttfb-warm.json); later parts, prefetched
-        // while part 0 plays, also ask for word boundaries (the face's Hindi retroflex curls). A websocket failure
-        // retries on REST (same voice, no visemes) before the breaker counts it.
-        const partNo = lane ? (lane.parts = (lane.parts ?? 0) + 1) - 1 : 0;
-        if (dhdVisemesOn()) {
-          try { const r = await dhdStreamWs(ssml, { signal, words: partNo > 0 }); chunks = r.chunks; self.marks = r.marks; }
-          catch (e) { if (signal?.aborted || e?.code === "aborted") throw e; console.warn(`[voice] dhd ws failed (${e?.code || e?.status || "error"}), REST: ${String(e?.message || e).slice(0, 100)}`); ({ chunks } = await dhdStream(ssml, { signal })); }
-        } else ({ chunks } = await dhdStream(ssml, { signal }));
-        dhdSucceeded(voice);
-        if (lane) lane.engine = "dhd";
-      } catch (e) {
-        if (signal?.aborted || e?.code === "aborted") throw e;
-        dhdFailed(voice);
-        // identity change: the character's gpt-4o-mini-tts voice speaks this part and the rest of the reply (plain words)
-        return await oai(self, `${e?.code || e?.status || "error"}: ${String(e?.message || e).slice(0, 120)}`);
+      // round 7 (B3): every configured region, primary first, each behind its own breaker; the same voice in region 2
+      // before any identity change. Once a part of this reply spoke DragonHD the breaker does not stop the next part
+      // (one voice per reply), in whichever region still answers.
+      // The reply keeps the region that spoke its first part (lane.region): it is tried first and past its breaker; any other
+      // region only when its own breaker admits it.
+      const regions = dhdRegions();
+      const pinned = lane?.engine === "dhd" ? (lane.region ?? "r1") : null;
+      const ordered = pinned ? [...regions.filter((r) => r.id === pinned), ...regions.filter((r) => r.id !== pinned)] : regions;
+      const tryable = ordered.length ? ordered.filter((r) => r.id === pinned || admitDhd(voice, Date.now(), r.id) !== "skip") : [{ id: "r1", env: undefined }];
+      if (!tryable.length) return await oai(self, "breaker open");
+      // V4: the websocket carries Diya's visemes. Part 0 of a reply asks for visemes only (first sound must not wait:
+      // words + visemes cost a median +378 ms of first audio, evals/face-puppet/out/ttfb-warm.json); later parts, prefetched
+      // while part 0 plays, also ask for word boundaries (the face's Hindi retroflex curls). A websocket failure
+      // retries on REST (same voice, no visemes) before the breaker counts it.
+      const partNo = lane ? (lane.parts = (lane.parts ?? 0) + 1) - 1 : 0;
+      let lastErr = null;
+      for (const r of tryable) {
+        const env = r.env ? { env: r.env } : {};
+        try {
+          if (dhdVisemesOn()) {
+            try { const res = await dhdStreamWs(ssml, { signal, words: partNo > 0, ...env }); chunks = res.chunks; self.marks = res.marks; }
+            catch (e) { if (signal?.aborted || e?.code === "aborted") throw e; console.warn(`[voice] dhd ws failed (${e?.code || e?.status || "error"}), REST: ${String(e?.message || e).slice(0, 100)}`); ({ chunks } = await dhdStream(ssml, { signal, ...env })); }
+          } else ({ chunks } = await dhdStream(ssml, { signal, ...env }));
+          dhdSucceeded(voice, r.id);
+          ttsSpent({ engine: voice, chars: ssml.length, status: 200 });
+          if (r.id !== "r1") { self.region = r.id; count("region_failover"); }
+          if (lane) { lane.engine = "dhd"; lane.region = r.id; }
+          lastErr = null;
+          break;
+        } catch (e) {
+          if (signal?.aborted || e?.code === "aborted") throw e;
+          dhdFailed(voice, Date.now(), r.id);
+          lastErr = e;
+          if (tryable.length > 1 && r !== tryable[tryable.length - 1]) console.warn(`[voice] dhd ${voice} ${r.id} failed (${e?.code || e?.status || "error"}): same voice, next region`);
+        }
       }
+      // identity change: the character's gpt-4o-mini-tts voice speaks this part and the rest of the reply (plain words)
+      if (lastErr) return await oai(self, `${lastErr?.code || lastErr?.status || "error"}: ${String(lastErr?.message || lastErr).slice(0, 120)}`);
     } finally {
       decided();
     }

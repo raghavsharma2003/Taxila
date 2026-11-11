@@ -1,0 +1,10 @@
+import { startPicture, _setPictureDeps } from "/home/user/Taxila/server/studio/picture.js";
+import { studioSeam } from "/home/user/Taxila/server/studio/seam.js";
+import { boardShow } from "/home/user/Taxila/server/studio/tools.js";
+_setPictureDeps({ generate: async () => ({ b64: Buffer.from("jpeg").toString("base64"), deployment: "stub" }), moderate: async () => 0 });
+const id = "00000000-0000-4000-8000-000000000999";
+await boardShow(id, { kind: "write", lines: ["Aloo"] }, { say: "Aloo ek tuber hai." });
+const shown = await new Promise((res) => startPicture(id, "aloo", { reveal: (pic) => res(studioSeam.showImage(id, pic)) }));
+console.log(shown?.artifact?.kind, shown?.state);
+console.log(studioSeam.slotFor(id, null, { beat: "explain", tray: null }));
+console.log(JSON.stringify(studioSeam.statusFacts?.(id, {}))?.slice(0,600));

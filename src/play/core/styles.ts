@@ -51,13 +51,15 @@ export type Role = "q1" | "q2" | "q3" | "q4" | "panel" | "ink" | "ink2" | "ink3"
  */
 export type Material = "water" | "ice" | "rust" | "wood" | "iron" | "steel" | "clay" | "soil" | "cotton" | "roti" | "mould" | "leaf" | "leafPale"
   | "starch" | "nostarch" | "black" | "white" | "red" | "blue" | "copper" | "aluminium" | "brass" | "plastic" | "wool" | "glow" | "paper"
-  | "seed" | "sprout" | "oil" | "paint" | "graphite" | "rubber" | "salt" | "magnetN" | "magnetS" | "sun" | "frost" | "shadow";
+  | "seed" | "sprout" | "oil" | "paint" | "graphite" | "rubber" | "salt" | "magnetN" | "magnetS" | "sun" | "frost" | "shadow"
+  | "pink" | "turmeric" | "hibiscus";   // r7 rang: hibiscus dark pink (magenta) in an acid; turmeric yellow; hibiscus water's own purplish colour
 const MAT_LIGHT: Record<Material, string> = {
   water: "#5E9FD6", ice: "#CFE9F7", rust: "#A4471F", wood: "#B27A45", iron: "#5D6168", steel: "#9AA3AD", clay: "#B9734E", soil: "#7A5233",
   cotton: "#FBF9F4", roti: "#D8A45E", mould: "#6F8F5A", leaf: "#3F8A3A", leafPale: "#E8EDCF", starch: "#1F2240", nostarch: "#C99A2E",
   black: "#1B1B1B", white: "#F6F6F2", red: "#C8402F", blue: "#2F5DA8", copper: "#B8652F", aluminium: "#C9CED3", brass: "#C9A13B", plastic: "#E2574C",
   wool: "#C65B7C", glow: "#FFD34D", paper: "#EFE7D6", seed: "#B9A06A", sprout: "#4F9A3E", oil: "#D8B23A", paint: "#3F6FB5", graphite: "#3B3D42",
   rubber: "#5A4A3F", salt: "#F1F1EE", magnetN: "#C8402F", magnetS: "#2F5DA8", sun: "#F2B21B", frost: "#BFE3F5", shadow: "#2A2420",
+  pink: "#C2307A", turmeric: "#E9B526", hibiscus: "#8E6A9E",
 };
 const MAT_DARK: Record<Material, string> = {
   ...MAT_LIGHT,
@@ -71,8 +73,12 @@ export const roleColor = (a: ArtTokens, r: Role): string => (r === "panel" ? a.p
 
 export interface AuditText { s: string; px: number; x: number; y: number; w: number; align: CanvasTextAlign }
 export interface AuditTarget { id: string; x: number; y: number; w: number; h: number }
-export interface Audit { frame: number; texts: AuditText[]; targets: AuditTarget[]; box: { w: number; h: number }; art: ArtId; young: boolean; /** labels that could not fit their box even wrapped at the floor (drawn with an ellipsis): must be 0 */ clipped: number }
-export function newAudit(art: ArtId, young: boolean): Audit { return { frame: 0, texts: [], targets: [], box: { w: 0, h: 0 }, art, young, clipped: 0 }; }
+/** a drawn mark's box (a tick, a chip, a ring, a point's dot): the layout checks hold marks clear of letters and lines */
+export interface AuditMark { kind: string; x: number; y: number; w: number; h: number }
+/** a drawn line a view declares (an arm, a ray): chips must not sit across it */
+export interface AuditSeg { kind: string; x0: number; y0: number; x1: number; y1: number }
+export interface Audit { frame: number; texts: AuditText[]; targets: AuditTarget[]; box: { w: number; h: number }; art: ArtId; young: boolean; /** labels that could not fit their box even wrapped at the floor (drawn with an ellipsis): must be 0 */ clipped: number; marks: AuditMark[]; segs: AuditSeg[] }
+export function newAudit(art: ArtId, young: boolean): Audit { return { frame: 0, texts: [], targets: [], box: { w: 0, h: 0 }, art, young, clipped: 0, marks: [], segs: [] }; }
 
 // ───────────────────────────── the painter ─────────────────────────────
 
@@ -286,6 +292,7 @@ export class Painter {
     const size = Math.max(o.size ?? 16, this.minText), padX = size * 0.6, h = size * 1.8;
     c.save(); c.font = `700 ${size}px ${this.art.font[o.font ?? "mono"]}`; const tw = c.measureText(s).width; c.restore();
     const w = tw + padX * 2, a = this.art;
+    this.audit.marks?.push({ kind: "chip", x: cx - w / 2, y: cy - h / 2, w, h });
     c.save();
     c.fillStyle = a.dark ? "rgba(8,10,16,0.78)" : "rgba(255,252,245,0.94)"; rr(c, cx - w / 2, cy - h / 2, w, h, h / 2); c.fill();
     c.strokeStyle = o.role ? this.color(o.role) : a.panelEdge; c.lineWidth = 1.5; rr(c, cx - w / 2, cy - h / 2, w, h, h / 2); c.stroke();
@@ -293,8 +300,18 @@ export class Painter {
     this.text(c, s, cx, cy + 0.5, { size, role: o.role ?? "ink", weight: 700, font: o.font ?? "mono" });
     return { w, h };
   }
+  /** A chip's box for `s` (as chip() would draw it), to place it before drawing. */
+  chipSize(c: CanvasRenderingContext2D, s: string, o: { size?: number; font?: "ui" | "mono" | "display" } = {}): { w: number; h: number } {
+    const size = Math.max(o.size ?? 16, this.minText);
+    c.save(); c.font = `700 ${size}px ${this.art.font[o.font ?? "mono"]}`; const tw = c.measureText(s).width; c.restore();
+    return { w: tw + size * 1.2, h: size * 1.8 };
+  }
+  /** Record a drawn mark's box, or a drawn line, for the layout checks (draws nothing). */
+  note(kind: string, x: number, y: number, w: number, h: number): void { this.audit.marks?.push({ kind, x, y, w, h }); }
+  noteSeg(kind: string, a: [number, number], b: [number, number]): void { this.audit.segs?.push({ kind, x0: a[0], y0: a[1], x1: b[0], y1: b[1] }); }
   /** A tick (goal met): the only "right" mark there is, and it sits on the work. */
   tick(c: CanvasRenderingContext2D, x: number, y: number, s: number, k = 1): void {
+    if (k > 0) this.audit.marks?.push({ kind: "tick", x: x - s * 0.4 - 2, y: y - s * 0.35 - 2, w: s * 0.85 + 4, h: s * 0.65 + 4 });
     c.save(); c.strokeStyle = this.art.good; c.lineWidth = Math.max(3, s * 0.16); c.lineCap = "round"; c.lineJoin = "round";
     c.beginPath(); const p1 = [x - s * 0.4, y], p2 = [x - s * 0.1, y + s * 0.3], p3 = [x + s * 0.45, y - s * 0.35];
     c.moveTo(p1[0], p1[1]);

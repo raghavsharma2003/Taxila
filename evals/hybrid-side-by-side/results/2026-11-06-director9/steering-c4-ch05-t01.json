@@ -1,0 +1,2570 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj fractions, yaani equal shares, seekhenge. Cooking mein cake ko barabar baantna kaisa lagega?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 1050,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Maa ne kitchen mein ek garam roti banayi, aur tum do bhai-behen ho. Roti ke 2 tukde honge. Aaj dekhenge ki dono ka hissa kab sach mein barabar hota hai. Socho ek cake do bachchon mein baantna hai: dono pieces same size hone chahiye. Tum kaise kaatogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1020,
+   "replyReadyMs": 2070,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2070,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 1289,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Dekho, roti ke 2 barabar tukde hain, aur 1 tukda rangin hai. Yeh tukda roti ka aadha hai, yaani 1/2. Neeche wala 2 batata hai ki poori roti ke kitne barabar tukde bane. Upar wala 1 batata hai ki humne kitne tukde liye. Is roti mein 1 tukda rangin hai aur 1 bina rang ka. Kya isliye rangin hissa 1/1 hai, haan ya nahi?",
+   "move": "explain",
+   "card": "Is roti mein 1 tukda rangin hai aur 1 bina rang ka. Kya isliye rangin hissa 1/1 hai, haan ya nahi?",
+   "replyMs": 1139,
+   "replyReadyMs": 2428,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2428,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 2,
+     "shade": 1,
+     "whole": "roti"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 2"
+    },
+    "counts": {
+     "parts": 2,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "2",
+     "1/2"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "Yes",
+   "read": "misconception",
+   "classifyMs": 1314,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, rangin tukda poori roti nahi; woh total barabar tukdon mein se ek hai. Poori roti ke 4 barabar tukde neeche aate hain, aur khaya hua 1 rangin tukda upar. Bache hue tukde neeche kabhi nahi aate. Ek chocolate bar ke 4 barabar tukde kiye, aur 3 tukde kha liye. Bar ka kitna hissa khaya, fraction mein batao.",
+   "move": "reteach",
+   "card": "Ek chocolate bar ke 4 barabar tukde kiye, aur 3 tukde kha liye. Bar ka kitna hissa khaya, fraction mein batao.",
+   "replyMs": 2119,
+   "replyReadyMs": 3433,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3433,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c4-maths-ch05-t01-m-part-part",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:then:c4-maths-ch05-t01-m-part-part",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e1",
+     "template": "fraction-parts@1",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 2,
+       "shade": 1,
+       "whole": "roti"
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 77,
+     "atClause": 1,
+     "estMs": 5320,
+     "beat": "rem:c4-maths-ch05-t01-m-part-part",
+     "template": "fraction-parts@1",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 4,
+       "shade": 1,
+       "whole": "circle"
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 200,
+     "atClause": 3,
+     "estMs": 14060,
+     "beat": "then:c4-maths-ch05-t01-m-part-part",
+     "template": "shade-grid@1",
+     "board": {
+      "template": "shade-grid@1",
+      "params": {
+       "rows": 1,
+       "cols": 4,
+       "shade": 3,
+       "labels": false,
+       "hideResult": true
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 4"
+    },
+    "counts": {
+     "parts": 4,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "4",
+     "1/4"
+    ]
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "thoda hindi mein samjhao",
+   "read": "no_evidence · language",
+   "classifyMs": 1811,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Zaroor. Bhinn mein neeche kul barabar tukde likhte hain. Upar jitne tukde khaye ya liye, woh likhte hain. Ek chocolate bar ke 4 barabar tukde kiye, aur 3 tukde kha liye. Bar ka kitna hissa khaya, fraction mein batao.",
+   "move": "practice",
+   "card": "Ek chocolate bar ke 4 barabar tukde kiye, aur 3 tukde kha liye. Bar ka kitna hissa khaya, fraction mein batao.",
+   "replyMs": 933,
+   "replyReadyMs": 2744,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2744,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch05-t01-m-part-part",
+   "boardRef": {
+    "template": "shade-grid@1",
+    "params": {
+     "rows": 1,
+     "cols": 4,
+     "shade": 3,
+     "labels": false,
+     "hideResult": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:then:c4-maths-ch05-t01-m-part-part",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shade-grid@1",
+    "onScreen": {},
+    "counts": {
+     "parts": 4,
+     "shaded": 3,
+     "rows": 1,
+     "cols": 4
+    },
+    "boardRef": {
+     "template": "shade-grid@1",
+     "params": {
+      "rows": 1,
+      "cols": 4,
+      "shade": 3,
+      "labels": false,
+      "hideResult": true
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   }
+  },
+  {
+   "who": "child",
+   "text": "kis cheez ka jawab dun?",
+   "read": "no_evidence",
+   "classifyMs": 1417,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Chocolate ke kul 4 barabar tukde the; Riya ne unmein se 3 kha liye. Ek chocolate bar ke 4 barabar tukde kiye, aur 3 tukde kha liye. Bar ka kitna hissa khaya, fraction mein batao.",
+   "move": "repair",
+   "card": "Ek chocolate bar ke 4 barabar tukde kiye, aur 3 tukde kha liye. Bar ka kitna hissa khaya, fraction mein batao.",
+   "replyMs": 1218,
+   "replyReadyMs": 2635,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1417,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch05-t01-m-part-part",
+   "boardRef": {
+    "template": "shade-grid@1",
+    "params": {
+     "rows": 1,
+     "cols": 4,
+     "shade": 3,
+     "labels": false,
+     "hideResult": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:then:c4-maths-ch05-t01-m-part-part",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shade-grid@1",
+    "onScreen": {},
+    "counts": {
+     "parts": 4,
+     "shaded": 3,
+     "rows": 1,
+     "cols": 4
+    },
+    "boardRef": {
+     "template": "shade-grid@1",
+     "params": {
+      "rows": 1,
+      "cols": 4,
+      "shade": 3,
+      "labels": false,
+      "hideResult": true
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   }
+  },
+  {
+   "who": "child",
+   "text": "kis cheez ka jawab dun?",
+   "read": "no_evidence",
+   "classifyMs": 2014,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Bhinn mein upar khaye tukde aur neeche kul tukde likho. Ek chocolate bar ke 4 barabar tukde kiye, aur 3 tukde kha liye. Bar ka kitna hissa khaya, fraction mein batao.",
+   "move": "repair",
+   "card": "Ek chocolate bar ke 4 barabar tukde kiye, aur 3 tukde kha liye. Bar ka kitna hissa khaya, fraction mein batao.",
+   "replyMs": 732,
+   "replyReadyMs": 2746,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2014,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch05-t01-m-part-part",
+   "boardRef": {
+    "template": "shade-grid@1",
+    "params": {
+     "rows": 1,
+     "cols": 4,
+     "shade": 3,
+     "labels": false,
+     "hideResult": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:then:c4-maths-ch05-t01-m-part-part",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shade-grid@1",
+    "onScreen": {},
+    "counts": {
+     "parts": 4,
+     "shaded": 3,
+     "rows": 1,
+     "cols": 4
+    },
+    "boardRef": {
+     "template": "shade-grid@1",
+     "params": {
+      "rows": 1,
+      "cols": 4,
+      "shade": 3,
+      "labels": false,
+      "hideResult": true
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   }
+  },
+  {
+   "who": "child",
+   "text": "drawing karke samjhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1303,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Chalo, ise picture mein dekhte hain. Ek chocolate bar ke 4 barabar tukde kiye, aur 3 tukde kha liye. Bar ka kitna hissa khaya, fraction mein batao.",
+   "move": "reteach",
+   "card": "Ek chocolate bar ke 4 barabar tukde kiye, aur 3 tukde kha liye. Bar ka kitna hissa khaya, fraction mein batao.",
+   "replyMs": 914,
+   "replyReadyMs": 2217,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2217,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch05-t01-m-part-part",
+   "boardRef": {
+    "template": "shade-grid@1",
+    "params": {
+     "rows": 1,
+     "cols": 4,
+     "shade": 3,
+     "labels": false,
+     "hideResult": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:then:c4-maths-ch05-t01-m-part-part",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shade-grid@1",
+    "onScreen": {},
+    "counts": {
+     "parts": 4,
+     "shaded": 3,
+     "rows": 1,
+     "cols": 4
+    },
+    "boardRef": {
+     "template": "shade-grid@1",
+     "params": {
+      "rows": 1,
+      "cols": 4,
+      "shade": 3,
+      "labels": false,
+      "hideResult": true
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   }
+  },
+  {
+   "who": "child",
+   "text": "kis cheez ka jawab dun?",
+   "read": "no_evidence",
+   "classifyMs": 1396,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Pichhle sawaal ka jawab 3/4 tha, kyunki bar ke 4 barabar tukde the aur unme se 3 khaye gaye. Aur pehle wale sawaal ka sahi jawab: nahi, kyunki roti ke 2 barabar tukde hain, toh rangin 1 tukda 1/2 hai, 1/1 nahi. Chalo, aage badhein?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2087,
+   "replyReadyMs": 3483,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2087,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch05-t01-m-part-part",
+   "boardRef": {
+    "template": "shade-grid@1",
+    "params": {
+     "rows": 1,
+     "cols": 4,
+     "shade": 3,
+     "labels": false,
+     "hideResult": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 1,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    },
+    "statedFalse": [
+     "1/1"
+    ]
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c4-maths-ch05-t01-m-part-part",
+     "template": "shade-grid@1",
+     "board": {
+      "template": "shade-grid@1",
+      "params": {
+       "rows": 1,
+       "cols": 4,
+       "shade": 3,
+       "labels": false,
+       "hideResult": true
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 93,
+     "atClause": 1,
+     "estMs": 7220,
+     "beat": "e1",
+     "template": "fraction-parts@1",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 2,
+       "shade": 1,
+       "whole": "roti"
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 211,
+     "atClause": 2,
+     "estMs": 15960,
+     "beat": "then:c4-maths-ch05-t01-m-part-part",
+     "template": "shade-grid@1",
+     "board": {
+      "template": "shade-grid@1",
+      "params": {
+       "rows": 1,
+       "cols": 4,
+       "shade": 3,
+       "labels": false,
+       "hideResult": true
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shade-grid@1",
+    "onScreen": {},
+    "counts": {
+     "parts": 4,
+     "shaded": 3,
+     "rows": 1,
+     "cols": 4
+    },
+    "boardRef": {
+     "template": "shade-grid@1",
+     "params": {
+      "rows": 1,
+      "cols": 4,
+      "shade": 3,
+      "labels": false,
+      "hideResult": true
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   },
+   "guard": [
+    "stage"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi, aap batao",
+   "read": "no_evidence",
+   "classifyMs": 1088,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Cake A ke bhi 3 tukde hain, Cake B ke bhi 3 tukde. Par Cake A mein 1 bada, 2 chhote hain, toh uska tukda 1/3 nahi hai. Cake B mein sab barabar hain, isliye wahan har tukda 1/3 hai, yaani ek-tihaai. Ab tak samajh aaya?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1068,
+   "replyReadyMs": 2156,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1088,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Cake A",
+      "items": [
+       "3 tukde",
+       "1 bada, 2 chhote",
+       "1/3 nahi"
+      ]
+     },
+     "right": {
+      "title": "Cake B",
+      "items": [
+       "3 tukde",
+       "sab barabar",
+       "har tukda 1/3"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "Cake A | Cake B | 3 tukde | 3 tukde | 1 ",
+     "numbers": "3 1 2 1/3"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Cake A",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        },
+        {
+         "n": 1,
+         "what": "bada"
+        }
+       ]
+      },
+      {
+       "title": "Cake B",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        }
+       ]
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Cake A",
+       "items": [
+        "3 tukde",
+        "1 bada, 2 chhote",
+        "1/3 nahi"
+       ]
+      },
+      "right": {
+       "title": "Cake B",
+       "items": [
+        "3 tukde",
+        "sab barabar",
+        "har tukda 1/3"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "3",
+     "1",
+     "2",
+     "1/3"
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe nahi pata",
+   "read": "no_evidence",
+   "classifyMs": 1094,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Cake A mein 3 tukde hain, par unka size barabar nahi. Riya, haan ya nahi bolo. Yeh kadam saaf hai?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2137,
+   "replyReadyMs": 3231,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2137,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Cake A",
+      "items": [
+       "3 tukde",
+       "1 bada, 2 chhote",
+       "1/3 nahi"
+      ]
+     },
+     "right": {
+      "title": "Cake B",
+      "items": [
+       "3 tukde",
+       "sab barabar",
+       "har tukda 1/3"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": false,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "Cake A | Cake B | 3 tukde | 3 tukde | 1 ",
+     "numbers": "3 1 2 1/3"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Cake A",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        },
+        {
+         "n": 1,
+         "what": "bada"
+        }
+       ]
+      },
+      {
+       "title": "Cake B",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        }
+       ]
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Cake A",
+       "items": [
+        "3 tukde",
+        "1 bada, 2 chhote",
+        "1/3 nahi"
+       ]
+      },
+      "right": {
+       "title": "Cake B",
+       "items": [
+        "3 tukde",
+        "sab barabar",
+        "har tukda 1/3"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "3",
+     "1",
+     "2",
+     "1/3"
+    ]
+   },
+   "guard": [
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "classifyMs": 1149,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Yaad rakho: bhinn mein tukde ekdum barabar hone chahiye. Pizza ke tukdon ka size dhyaan se dekho. Ek pizza ke 3 tukde kiye: ek bada aur do chhote. Kya chhota tukda pizza ka ek-tihaai hai, haan ya nahi?",
+   "move": "practice",
+   "card": "Ek pizza ke 3 tukde kiye: ek bada aur do chhote. Kya chhota tukda pizza ka ek-tihaai hai, haan ya nahi?",
+   "replyMs": 727,
+   "replyReadyMs": 1876,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1149,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Cake A",
+      "items": [
+       "3 tukde",
+       "1 bada, 2 chhote",
+       "1/3 nahi"
+      ]
+     },
+     "right": {
+      "title": "Cake B",
+      "items": [
+       "3 tukde",
+       "sab barabar",
+       "har tukda 1/3"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "Cake A | Cake B | 3 tukde | 3 tukde | 1 ",
+     "numbers": "3 1 2 1/3"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Cake A",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        },
+        {
+         "n": 1,
+         "what": "bada"
+        }
+       ]
+      },
+      {
+       "title": "Cake B",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        }
+       ]
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Cake A",
+       "items": [
+        "3 tukde",
+        "1 bada, 2 chhote",
+        "1/3 nahi"
+       ]
+      },
+      "right": {
+       "title": "Cake B",
+       "items": [
+        "3 tukde",
+        "sab barabar",
+        "har tukda 1/3"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "3",
+     "1",
+     "2",
+     "1/3"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "ruko, main khud karti hoon",
+   "read": "no_evidence · thinking",
+   "classifyMs": 1007,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—tum khud karo. Main chup rehti hoon.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1017,
+   "replyReadyMs": 2024,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2024,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": null,
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Cake A",
+      "items": [
+       "3 tukde",
+       "1 bada, 2 chhote",
+       "1/3 nahi"
+      ]
+     },
+     "right": {
+      "title": "Cake B",
+      "items": [
+       "3 tukde",
+       "sab barabar",
+       "har tukda 1/3"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "Cake A | Cake B | 3 tukde | 3 tukde | 1 ",
+     "numbers": "3 1 2 1/3"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Cake A",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        },
+        {
+         "n": 1,
+         "what": "bada"
+        }
+       ]
+      },
+      {
+       "title": "Cake B",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        }
+       ]
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Cake A",
+       "items": [
+        "3 tukde",
+        "1 bada, 2 chhote",
+        "1/3 nahi"
+       ]
+      },
+      "right": {
+       "title": "Cake B",
+       "items": [
+        "3 tukde",
+        "sab barabar",
+        "har tukda 1/3"
+       ]
+      }
+     }
+    },
+    "drawn": "preselect"
+   }
+  },
+  {
+   "who": "child",
+   "text": "aapko virat pasand hai?",
+   "read": "no_evidence · uptake",
+   "classifyMs": 1644,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Virat ke shots cricket mein kaafi mazedaar lagte hain, Riya. Yaad karo: Cake A ke bhi 3 tukde hain, Cake B ke bhi 3 tukde. Par Cake A mein 1 bada, 2 chhote hain, toh uska tukda 1/3 nahi hai. Cake B mein sab barabar hain, isliye wahan har tukda 1/3 hai, yaani ek-tihaai. Ek pizza ke 3 tukde kiye: ek bada aur do chhote. Kya chhota tukda pizza ka ek-tihaai hai, haan ya nahi?",
+   "move": "practice",
+   "card": "Ek pizza ke 3 tukde kiye: ek bada aur do chhote. Kya chhota tukda pizza ka ek-tihaai hai, haan ya nahi?",
+   "replyMs": 1106,
+   "replyReadyMs": 2750,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2750,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Cake A",
+      "items": [
+       "3 tukde",
+       "1 bada, 2 chhote",
+       "1/3 nahi"
+      ]
+     },
+     "right": {
+      "title": "Cake B",
+      "items": [
+       "3 tukde",
+       "sab barabar",
+       "har tukda 1/3"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "Cake A | Cake B | 3 tukde | 3 tukde | 1 ",
+     "numbers": "3 1 2 1/3"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Cake A",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        },
+        {
+         "n": 1,
+         "what": "bada"
+        }
+       ]
+      },
+      {
+       "title": "Cake B",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        }
+       ]
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Cake A",
+       "items": [
+        "3 tukde",
+        "1 bada, 2 chhote",
+        "1/3 nahi"
+       ]
+      },
+      "right": {
+       "title": "Cake B",
+       "items": [
+        "3 tukde",
+        "sab barabar",
+        "har tukda 1/3"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "3",
+     "1",
+     "2",
+     "1/3"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "nahin",
+   "read": "correct",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul, Riya—chhota tukda ek-tihaai nahi, kyunki teenon tukde barabar nahi hain. Aur Virat ki baat: Virat Kohli India ke liye batting karte hain, aur unka cover drive bahut mashhoor hai. Tumne yeh kaise pehchana?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 834,
+   "replyReadyMs": 834,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 834,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Cake A",
+      "items": [
+       "3 tukde",
+       "1 bada, 2 chhote",
+       "1/3 nahi"
+      ]
+     },
+     "right": {
+      "title": "Cake B",
+      "items": [
+       "3 tukde",
+       "sab barabar",
+       "har tukda 1/3"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "Cake A | Cake B | 3 tukde | 3 tukde | 1 ",
+     "numbers": "3 1 2 1/3"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Cake A",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        },
+        {
+         "n": 1,
+         "what": "bada"
+        }
+       ]
+      },
+      {
+       "title": "Cake B",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        }
+       ]
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Cake A",
+       "items": [
+        "3 tukde",
+        "1 bada, 2 chhote",
+        "1/3 nahi"
+       ]
+      },
+      "right": {
+       "title": "Cake B",
+       "items": [
+        "3 tukde",
+        "sab barabar",
+        "har tukda 1/3"
+       ]
+      }
+     }
+    },
+    "drawn": "preselect"
+   }
+  },
+  {
+   "who": "child",
+   "text": "woh wala ho gaya, aage chalo",
+   "read": "no_evidence",
+   "classifyMs": 1229,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne sahi pehchana ki tukde barabar nahi the. Aage badhein, thodi der rukhein, ya aaj ke liye band karein—kya chunogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2147,
+   "replyReadyMs": 3376,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2147,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": null,
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Cake A",
+      "items": [
+       "3 tukde",
+       "1 bada, 2 chhote",
+       "1/3 nahi"
+      ]
+     },
+     "right": {
+      "title": "Cake B",
+      "items": [
+       "3 tukde",
+       "sab barabar",
+       "har tukda 1/3"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "Cake A | Cake B | 3 tukde | 3 tukde | 1 ",
+     "numbers": "3 1 2 1/3"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Cake A",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        },
+        {
+         "n": 1,
+         "what": "bada"
+        }
+       ]
+      },
+      {
+       "title": "Cake B",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        }
+       ]
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Cake A",
+       "items": [
+        "3 tukde",
+        "1 bada, 2 chhote",
+        "1/3 nahi"
+       ]
+      },
+      "right": {
+       "title": "Cake B",
+       "items": [
+        "3 tukde",
+        "sab barabar",
+        "har tukda 1/3"
+       ]
+      }
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "nostop",
+    "nochoice"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, woh maine bata diya",
+   "read": "no_evidence",
+   "classifyMs": 1355,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, woh sawaal tum pehle hi kar chuki ho. Ab sirf itna batao: tumne kaise jaana ki chhota tukda ek-tihaai nahi hai?",
+   "move": "practice",
+   "card": null,
+   "replyMs": 1992,
+   "replyReadyMs": 3347,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1992,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Cake A",
+      "items": [
+       "3 tukde",
+       "1 bada, 2 chhote",
+       "1/3 nahi"
+      ]
+     },
+     "right": {
+      "title": "Cake B",
+      "items": [
+       "3 tukde",
+       "sab barabar",
+       "har tukda 1/3"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "Cake A | Cake B | 3 tukde | 3 tukde | 1 ",
+     "numbers": "3 1 2 1/3"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Cake A",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        },
+        {
+         "n": 1,
+         "what": "bada"
+        }
+       ]
+      },
+      {
+       "title": "Cake B",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        }
+       ]
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Cake A",
+       "items": [
+        "3 tukde",
+        "1 bada, 2 chhote",
+        "1/3 nahi"
+       ]
+      },
+      "right": {
+       "title": "Cake B",
+       "items": [
+        "3 tukde",
+        "sab barabar",
+        "har tukda 1/3"
+       ]
+      }
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "affirms"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "thoda guess kiya, pakka nahi",
+   "read": "no_evidence",
+   "classifyMs": 1125,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, tumne apna tareeka bataya. Is circle ke 3 barabar hisse hain, aur 1 hissa rangin hai. Yeh rangin hissa ek-tihaai hai, yaani 1/3. Neeche ka 3 poore circle ke saare barabar hisse batata hai. Agar is circle ka ek aur hissa bhi rang dein, toh circle ka kitna hissa rangin hoga, fraction mein?",
+   "move": "explain",
+   "card": "Agar is circle ka ek aur hissa bhi rang dein, toh circle ka kitna hissa rangin hoga, fraction mein?",
+   "replyMs": 2012,
+   "replyReadyMs": 3137,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2012,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 3,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e2",
+     "template": "compare@1",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Cake A",
+        "items": [
+         "3 tukde",
+         "1 bada, 2 chhote",
+         "1/3 nahi"
+        ]
+       },
+       "right": {
+        "title": "Cake B",
+        "items": [
+         "3 tukde",
+         "sab barabar",
+         "har tukda 1/3"
+        ]
+       }
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 34,
+     "atClause": 1,
+     "estMs": 1900,
+     "beat": "e3",
+     "template": "fraction-parts@1",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 3,
+       "shade": 1,
+       "whole": "circle"
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 3"
+    },
+    "counts": {
+     "parts": 3,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "3",
+     "1/3"
+    ]
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Pehle 1 hissa rangin tha. Bhinn likho. Agar is circle ka ek aur hissa bhi rang dein, toh circle ka kitna hissa rangin hoga, fraction mein?",
+   "move": "explain",
+   "card": "Agar is circle ka ek aur hissa bhi rang dein, toh circle ka kitna hissa rangin hoga, fraction mein?",
+   "replyMs": 968,
+   "replyReadyMs": 969,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 969,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 3,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": false,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 3"
+    },
+    "counts": {
+     "parts": 3,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "do-tihaai",
+   "read": "correct",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi: 2 hisson mein se 2 rangin hain, isliye 2/3, yaani do-tihaai. Ab circle ke 4 barabar hisse hain. 1 hissa rangin hai, 3 bina rang ke. Rangin hissa ek-chauthaai hai, yaani 1/4. Neeche poore circle ke 4 hisse aate hain, bache hue 3 nahi. Yeh kadam saaf hai?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1175,
+   "replyReadyMs": 1175,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1175,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s1:explain:e4",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e3",
+     "template": "fraction-parts@1",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 3,
+       "shade": 1,
+       "whole": "circle"
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 67,
+     "atClause": 1,
+     "estMs": 4560,
+     "beat": "e4",
+     "template": "fraction-parts@1",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 4,
+       "shade": 1,
+       "whole": "circle"
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 4"
+    },
+    "counts": {
+     "parts": 4,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai haan",
+   "read": "no_evidence",
+   "classifyMs": 1115,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. Zoya ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+   "move": "practice",
+   "card": "Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. Zoya ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+   "replyMs": 2052,
+   "replyReadyMs": 3167,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2052,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e4",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e4",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 4"
+    },
+    "counts": {
+     "parts": 4,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "4",
+     "1/4"
+    ]
+   },
+   "guard": [
+    "praise",
+    "affirms"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "praise",
+     "affirms",
+     "ask"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "Yes",
+   "read": "misconception",
+   "classifyMs": 1424,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yes sahi nahi hai. Riya, Zoya ne 3 bache hue tukde dekhe. Bhinn banate waqt neeche kul barabar tukde aate hain. Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. Zoya ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+   "move": "hint",
+   "card": "Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. Zoya ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+   "replyMs": 1154,
+   "replyReadyMs": 2578,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2578,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e4",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e4",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 4"
+    },
+    "counts": {
+     "parts": 4,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "4",
+     "1/4"
+    ]
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "No",
+   "read": "correct",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Diya hai: ek poori barfi, barfi ke 3 barabar tukde, 2 tukde khaye gaye hain. Dhoondhna hai: barfi ka kitna hissa khaya, bhinn mein. Yeh kadam saaf hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1149,
+   "replyReadyMs": 1149,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1149,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "invented"
+    ]
+   },
+   "beat": "s1:worked:worked:problem",
+   "boardRef": {
+    "template": "shade-grid@1",
+    "params": {
+     "rows": 1,
+     "cols": 3,
+     "shade": 2,
+     "labels": false,
+     "hideResult": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e4",
+     "template": "fraction-parts@1",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 4,
+       "shade": 1,
+       "whole": "circle"
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 16,
+     "atClause": 0,
+     "estMs": 1140,
+     "beat": "worked:problem",
+     "template": "shade-grid@1",
+     "board": {
+      "template": "shade-grid@1",
+      "params": {
+       "rows": 1,
+       "cols": 3,
+       "shade": 2,
+       "labels": false,
+       "hideResult": true
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shade-grid@1",
+    "onScreen": {},
+    "counts": {
+     "parts": 3,
+     "shaded": 2,
+     "rows": 1,
+     "cols": 3
+    },
+    "boardRef": {
+     "template": "shade-grid@1",
+     "params": {
+      "rows": 1,
+      "cols": 3,
+      "shade": 2,
+      "labels": false,
+      "hideResult": true
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   },
+   "guard": [
+    "invented"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 1226,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Pehla kadam dekho. Pehle neeche wala number likho: 3, kyunki neeche poori barfi ke saare barabar tukde aate hain. Yahan tak theek hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 906,
+   "replyReadyMs": 2132,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2132,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "shade-grid@1",
+    "params": {
+     "rows": 1,
+     "cols": 3,
+     "shade": 2,
+     "labels": false,
+     "hideResult": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shade-grid@1",
+    "onScreen": {},
+    "counts": {
+     "parts": 3,
+     "shaded": 2,
+     "rows": 1,
+     "cols": 3
+    },
+    "boardRef": {
+     "template": "shade-grid@1",
+     "params": {
+      "rows": 1,
+      "cols": 3,
+      "shade": 2,
+      "labels": false,
+      "hideResult": true
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai haan",
+   "read": "no_evidence",
+   "classifyMs": 1691,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Iska shuruaati hissa dekhte hain. Ab upar wala number likho: 2, kyunki upar woh tukde aate hain jo khaye gaye. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 933,
+   "replyReadyMs": 2624,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1691,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step2",
+   "boardRef": {
+    "template": "shade-grid@1",
+    "params": {
+     "rows": 1,
+     "cols": 3,
+     "shade": 2,
+     "labels": false,
+     "hideResult": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shade-grid@1",
+    "onScreen": {},
+    "counts": {
+     "parts": 3,
+     "shaded": 2,
+     "rows": 1,
+     "cols": 3
+    },
+    "boardRef": {
+     "template": "shade-grid@1",
+     "params": {
+      "rows": 1,
+      "cols": 3,
+      "shade": 2,
+      "labels": false,
+      "hideResult": true
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   }
+  },
+  {
+   "who": "child",
+   "text": "thak gayi, bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1514,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, thak gayi ho—koi baat nahi. Aage chalein, chhota break lein, ya aaj ke liye rok dein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2076,
+   "replyReadyMs": 3590,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2076,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "verdictSeg": 0
+    }
+   },
+   "guard": [
+    "wrap",
+    "nochoice"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

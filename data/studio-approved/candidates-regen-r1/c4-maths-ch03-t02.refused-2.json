@@ -1,0 +1,143 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c4-maths-ch03-t02",
+    "archetype": "rule-machine@1",
+    "misconceptionId": "c4-maths-ch03-t02-m-first-step-only",
+    "skillId": "c4-maths-ch03-t02-s1",
+    "beat": "rem:c4-maths-ch03-t02-m-first-step-only",
+    "when": "remediation",
+    "check": "c4-maths-ch03-t02-s1:c1"
+  },
+  "why": "ok, but its checks failed: onTopic",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": false,
+    "contentSafe": true,
+    "spec": {
+      "ok": true,
+      "repairs": 1,
+      "fellBack": false
+    }
+  },
+  "spec": {
+    "archetype": "rule-machine@1",
+    "skills": [
+      "c4-maths-ch03-t02"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Daura",
+      "built": "machine bani",
+      "run": "CHALAO",
+      "want": "chahiye",
+      "got": "mila",
+      "coach": "Tiles chuno, machine banao, phir CHALAO",
+      "runDone": "Factory band",
+      "step": "kadam",
+      "predict": "andaza",
+      "inverse": "ulta chalao",
+      "target": "nishana",
+      "steps": "kadams",
+      "pick": "Shuruat chuno",
+      "works": "SAHI",
+      "fix": "har kadam jaancho"
+    },
+    "title": "Machine Karkhana",
+    "rounds": [
+      {
+        "mode": "build",
+        "title": "Input se output",
+        "sub": "Har dafa dhyan se dekho",
+        "rule": [
+          "+3"
+        ],
+        "inputs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "tiles": [
+          "+3",
+          "+2",
+          "-3",
+          "×2"
+        ],
+        "targets": "c4-maths-ch03-t02-m-first-step-only"
+      }
+    ]
+  },
+  "validator": {
+    "fellBack": false,
+    "repairs": [
+      "seq:rule-does-not-match-pattern"
+    ]
+  },
+  "raw": {
+    "archetype": "rule-machine@1",
+    "skills": [
+      "c4-maths-ch03-t02"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Daura",
+      "built": "machine bani",
+      "run": "CHALAO",
+      "want": "chahiye",
+      "got": "mila",
+      "coach": "Tiles chuno, machine banao, phir CHALAO",
+      "runDone": "Factory band",
+      "step": "kadam",
+      "predict": "andaza",
+      "inverse": "ulta chalao",
+      "target": "nishana",
+      "steps": "kadams",
+      "pick": "Shuruat chuno",
+      "works": "SAHI",
+      "fix": "har kadam jaancho"
+    },
+    "title": "Machine Karkhana",
+    "rounds": [
+      {
+        "mode": "build",
+        "title": "Input se output",
+        "sub": "Har dafa dhyan se dekho",
+        "rule": [
+          "+3"
+        ],
+        "inputs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "tiles": [
+          "+3",
+          "+2",
+          "-3",
+          "×2"
+        ],
+        "targets": "c4-maths-ch03-t02-m-first-step-only"
+      },
+      {
+        "mode": "seq",
+        "title": "Lakdi ki line",
+        "sub": "Tasveer ko dhyan se dekho",
+        "pattern": "sticks-triangles",
+        "rule": [
+          "+2"
+        ],
+        "tiles": [
+          "+2",
+          "+3",
+          "-2",
+          "×2"
+        ],
+        "ask": 4,
+        "targets": "c4-maths-ch03-t02-m-first-step-only"
+      }
+    ]
+  }
+}

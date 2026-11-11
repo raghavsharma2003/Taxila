@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-homework-lane",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Ask?homework=1 (Homework help) calls Learning's POST /api/homework/match (≤ 1.5 s; timeout/refusal/null start at once with no topic), asks 'Is this from <topic>?' only for rungs kit_item and topic, and starts with purpose 'homework': Yes sends topicId (+ matchItemId on kit_item), Not this sends matchTopicId null. Contracts: Brain 007 (LessonStartRequest.matchTopicId/matchItemId, HomeworkMatch*). Reverse: Learning changes the ladder or the chip proves a friction point in the owner's test.",
+   "source": "inbox/r7-app-6.json"
+  },
+  {
+   "id": "dc-r7-app-debrief-made",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "The Debrief's Made for you strip shows the pieces she built in THIS session: the plan's madeFor feed read when the lesson opens and again at the Debrief, the new ids shown (no clock: tests/r4-kaksha-desk), each replaying in the Notebook (?made=). An unknown first read shows nothing. 'What helped?' (Learning POST /api/child/reflect, df82b4a9) and the emote (Brain, after director3) are agreed and wired once their routes are in int. Reverse: MadeForItem gains a lessonId (filter by it instead).",
+   "source": "inbox/r7-app-6.json"
+  }
+ ],
+ "edges": [],
+ "md": "## dc-r7-app-homework-lane\nHomework help should feel like 'show Asha your question', not a form. So there is one tap to ask, at most one quick confirm when the book chapter is clear, and then the lesson. The child never sees the match or waits for it; if the match is slow or empty, the lesson just starts. The confirm uses the topic's own name. 'Not this' is respected: the start tells the server the child refused that topic rather than leaving it to guess.\n\n## dc-r7-app-debrief-made\nThe child should leave a session seeing what was made for them: the game or animation, ready to play again. The made-for feed has no lesson id, and the lesson frame must not read a clock. So 'this session' means 'new since the lesson opened', using the same before/after reads the Debrief already does for 'Now secure'.\n"
+}

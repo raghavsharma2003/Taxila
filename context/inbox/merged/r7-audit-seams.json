@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "seams-audit-2026-11-10",
+   "kind": "measurement",
+   "title": "Seams sweep (n = 133 routes, 325 env names, 1,280 product files, 75 child/guardian/lesson foreign keys): every FK cascades or sets null; 11 seam findings, 2 at P1 (four parent controls with no reader; game voice numbers)",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "seams-signals-layer-unwired",
+   "kind": "open",
+   "title": "The signals layer (server/signals index/backstop/priors/quality/session/states, src/signals) has been built but not wired since 2026-10-04: wire per SIGNALS-SPEC §8.2 or retire",
+   "at": "2026-11-10"
+  }
+ ],
+ "edges": [
+  {
+   "src": "seams-signals-layer-unwired",
+   "rel": "constrains",
+   "dst": "sig-layer-evidence-not-authority"
+  }
+ ],
+ "md": {
+  "measurements": "## seams-audit-2026-11-10\nMethod: scripts in `docs/design/round7/audit/seams-scripts/` over the working tree at int/r6 21a (no network, no DB). n: 133 registered routes, 325 environment names, 1,280 product files in the import graph, 75 foreign keys to child/guardian/lesson. Results: no client call to a missing route; every FK cascades or sets null (a child or account erase cannot fail on a reference); `UiDirectives.readAloud` is never sent; four parent controls (`extra_time`, `data_saver`, `captions_always`, `comfort_mode`) have no reader outside the parent routes; the game voice grammar reads number words 0-13, 15, 20 only. Report: `docs/design/round7/audit/seams.md`.\n",
+  "open": "## seams-signals-layer-unwired\nThe decision `sig-layer-evidence-not-authority` (2026-10-04) built the layer in new modules and left integration to SIGNALS-SPEC §8.2. On 2026-11-10 nothing live imports `server/signals/index.js` or `src/signals/index.ts`; `TAXILA_SIGNALS` can flip nothing. The voice-signal adapter (`server/voicesig/**`) does the job instead. Owner's call: wire or retire (keep `server/signals/text.js` and `linguistic.js`, which are live). Report: SEAM-04.\n"
+ }
+}

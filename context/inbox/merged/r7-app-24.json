@@ -1,0 +1,29 @@
+{
+ "nodes": [
+  {
+   "id": "m-r7-app-lesson-replay-d10-2026-11-07",
+   "kind": "measurement",
+   "at": "2026-11-07",
+   "title": "director10 steady-c6-ch06-t01 replayed through the real Desk at 360 (59 board renders from 42 teacher turns, run tree 14883b7f). Every board drew, with no text overlap, no text off the board and the caption on screen. Paged timing, re-composed with pagesBoard's rules: 1 of 17 non-last pages is crushed. T55 p0's perimeter trace has 3 of 4 follow ops squeezed into its last 120 ms, and it redraws the board already up. The pinned question names another figure in 15 of 58 board renders. Caption clauses cut by the two-line clamp: 39/273 at 360 and 6/273 at 412 before the fix, 0/343 after.",
+   "source": "inbox/r7-app-24.json"
+  },
+  {
+   "id": "dc-r7-app-caption-char-budget",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "A caption clause is chunked into the fewest pieces of at most 9 words AND 38 characters, balanced by length (captions.ts), so a chunk always fits the two-line caption at the narrowest box (195 px beside her picture at 360 px). Reverse: word timestamps arrive (E-8), or the caption box gets wider than about 24 characters a line at 360.",
+   "source": "inbox/r7-app-24.json"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-app-caption-char-budget",
+   "rel": "measured_by",
+   "dst": "m-r7-app-lesson-replay-d10-2026-11-07"
+  }
+ ],
+ "md": {
+  "measurements": "## `m-r7-app-lesson-replay-d10-2026-11-07`\nMethod and per-turn findings: docs/design/round7/app/LESSON-REPLAY-d10.md.\n",
+  "decisions": "## `dc-r7-app-caption-char-budget`\nShe says the whole sentence, and the caption showed only part of it on one in seven clauses at 360. Each caption piece is now short enough to fit.\n"
+ }
+}

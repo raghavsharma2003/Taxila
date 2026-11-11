@@ -14,11 +14,12 @@ export interface RecipeLevel {
 export interface RecipeDress { dress: { theme: string; wrapper: string; pace: string } }
 export interface Recipe { title: string; mode: string; lines: Array<{ key: "built" | "checks" | "params" | "look"; text: string }> }
 
-const ENGINE: Record<string, KxKey> = { antariksh: "engAntariksh", khand: "engKhand" };
+const ENGINE: Record<string, KxKey> = { antariksh: "engAntariksh", khand: "engKhand", yantra: "engYantra" };
 const WRAPPER: Record<string, KxKey> = { "beacon-rescue": "wrapBeacon", "mine-sweep": "wrapMines", "comet-catch": "wrapComet" };
 const MODE: Record<string, KxKey> = { "nishana:place": "modeLine", "nishana:compare": "modeCompare" };
 const THEME: Record<string, KxKey> = {
   "neela-nebula": "themeBlue", "laal-grah": "themeRed", "hara-toofan": "themeGreen", mitti: "themeClay", barf: "themeSnow", jungle: "themeJungle",
+  lab: "themeLab", rooftop: "themeRooftop", bench: "themeBench",
 };
 const PACE: Record<string, KxKey> = { steady: "paceSteady", brisk: "paceBrisk" };
 const MAL: Record<string, KxKey> = {

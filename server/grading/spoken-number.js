@@ -57,9 +57,16 @@ const SPECIAL = { half: 0.5, aadha: 0.5, adha: 0.5, aadhi: 0.5, "आधा": 0.5
 const PREFIX = { sawa: 0.25, savva: 0.25, saade: 0.5, sade: 0.5, saadhe: 0.5, sadhe: 0.5, paune: -0.25 };
 const SIGN = new Set(["minus", "negative", "ऋण"]);
 const JOIN = new Set(["and", "aur"]);
-const OVER = new Set(["by", "upon", "bata", "over"]);
+// "बटा" is the Devanagari "bata"; azure-speech also writes it "बता" (4B: 6/6), which is a fraction only BETWEEN two numbers
+// (the OVER branch below already asks for a number on each side)
+const OVER = new Set(["by", "upon", "bata", "over", "बटा", "बता"]);
+// main 14.4 (4B's finding): a Devanagari "दो" right after a verb stem is the verb ("मुझे बता दो", "समझा दो"), not 2 — unless a
+// fraction claims it as its denominator ("एक बता दो"). Not घटा / जोड़: "घटा दो" there is arithmetic on a number said before.
+const DO_VERB_STEMS = new Set(["बता", "समझा", "दिखा", "सुना", "कर", "दे", "लिख", "बोल", "सिखा", "बना"]);
 /** "do" and "no" are English words too: a number only next to another number word. */
 const WEAK = new Set(["do", "no", "das", "saath", "tees", "bees"]);
+const ONE_TIME = new Set(["एक", "ek"]);
+const TIME_WORD = new Set(["बार", "baar", "bar"]);
 
 function wordNum(w) {
   if (EN1.includes(w)) return { v: EN1.indexOf(w), k: "unit" };
@@ -148,7 +155,7 @@ export function numberPhrases(raw, { split = false, lang = "mixed" } = {}) {
     .replace(/(?<=\d),(?=\d)/g, "").replace(/(\p{L})-(?=\p{L})/gu, "$1 ");
   // digit fractions and mixed numbers first ("1 1/2", "3/4", "3 by 4", "3 upon 4"), then decimals
   s = s.replace(/(\d+)\s+(\d+)\s*\/\s*(\d+)/g, (_, w, n, d) => (+d ? ` #${+w + +n / +d}# ` : " #NaN# "))
-    .replace(/(-?\d+(?:\.\d+)?)\s*(?:\/|\bby\b|\bupon\b|\bbata\b)\s*(\d+(?:\.\d+)?)/g, (_, n, d) => (+d ? ` #${+n / +d}# ` : " #NaN# "));
+    .replace(/(-?\d+(?:\.\d+)?)\s*(?:\/|\bby\b|\bupon\b|\bbata\b|बटा|बता)\s*(\d+(?:\.\d+)?)/g, (_, n, d) => (+d ? ` #${+n / +d}# ` : " #NaN# "));
   const toks = s.split(/[^\p{L}\p{M}\p{N}#.\-]+/u).map((t) => t.replace(/^[.\-]+(?=\D)|[.\-]+$/g, "").replace(/^\.(?=\d)/, "0.")).filter(Boolean);
   const phrases = [];   // each: number
   let cur = null;        // { total, part, last, sign, prefix, num }
@@ -170,9 +177,13 @@ export function numberPhrases(raw, { split = false, lang = "mixed" } = {}) {
       const neg = t.startsWith("-");
       const v = Math.abs(Number(t));
       if (cur && cur.part === null && !cur.total && (cur.sign === -1 || cur.prefix)) { cur.part = v; if (neg) cur.sign = -1; continue; }
+      // the digit denominator of an open fraction ("2 over 5", "1.5 over 9")
+      if (cur && cur.num !== null && cur.part === null && !cur.total) { cur.part = v; if (!(next && next in SCALE)) { if (!close()) return null; } continue; }
       if (!close()) return null;
       open(); cur.part = v; cur.last = "digits"; if (neg) cur.sign = -1;
-      if (!(next && next in SCALE)) { if (!close()) return null; }
+      // "2 बता दो": a digit numerator stays open for an OVER word with a number after it (4B's shared fixture)
+      const after = toks[i + 2];
+      if (!(next && (next in SCALE || (OVER.has(next) && after && (wordNum(after) || /^\d/.test(after)))))) { if (!close()) return null; }
       continue;
     }
     if (SIGN.has(t) && next && (/^\d/.test(next) || wordNum(next) || next in SPECIAL)) { if (!close()) return null; open(); cur.sign = -1; continue; }
@@ -186,6 +197,8 @@ export function numberPhrases(raw, { split = false, lang = "mixed" } = {}) {
       i = j - 1; if (!close()) return null;
       continue;
     }
+    // "एक बार और दिखा दो" (once more): एक बार with words after it is "once", not a value; a reply that ends "एक बार" keeps 1
+    if (ONE_TIME.has(t) && TIME_WORD.has(next) && toks[i + 2]) { if (!close()) return null; i++; continue; }
     if (t in PREFIX) { if (!close()) return null; open(); cur.prefix = PREFIX[t]; continue; }
     if (t in SPECIAL && !((t === "half" || t === "quarter") && cur && cur.part !== null)) { if (!close()) return null; phrases.push(SPECIAL[t]); continue; }
     if (cur && t in DEN && cur.part !== null && cur.num === null) {           // "three fourths", "teen chauthai", "one half"
@@ -200,6 +213,7 @@ export function numberPhrases(raw, { split = false, lang = "mixed" } = {}) {
       continue;
     }
     if (JOIN.has(t) && cur && cur.part !== null) continue;                   // "one hundred and twelve"
+    if (t === "दो" && DO_VERB_STEMS.has(toks[i - 1]) && !(cur && cur.num !== null)) { if (!close()) return null; continue; }
     const w0 = wordNum(t);
     const w = w0 && lang === "en" && w0.hi ? null : w0;
     if (w && !(WEAK.has(t) && !cur && !(next && (next in SCALE || wordNum(next) || next in DEN || OVER.has(next))) && toks.length > 2)) {
@@ -282,9 +296,13 @@ function wordsAfterNumber(raw) {
   if (i < 0) return [];
   return toks.slice(i + 1).filter((t) => !isNumTok(t) && !FILL.has(t)).map(canonWord);
 }
+const DEVA_NUM = "(?:\\d+|एक|दो|तीन|चार|पाँच|पांच|छह|छः|छे|सात|आठ|नौ|दस|ग्यारह|बारह|तेरह|चौदह|पंद्रह|सोलह|सत्रह|अठारह|उन्नीस|बीस)";
+const DEVA_FRACTION = new RegExp(`${DEVA_NUM}\\s+(?:बटा|बता)\\s+${DEVA_NUM}(?=\\s|$|[.,!?।])`, "gu");
 /** Does the child's reply name only things the key names? true when nothing is said after the number. */
 export function tailAgrees(key, text) {
-  const kt = new Set(wordsAfterNumber(key)), ct = wordsAfterNumber(text);
+  // round 5 (14.4): a spoken Devanagari fraction ("एक बटा दो", "तीन बता चार") is the number itself, never words after it.
+  // Removed before the old tokens are read, so no other Devanagari tail verdict moves (main's check: 2,007 sim-lab lines)
+  const kt = new Set(wordsAfterNumber(key)), ct = wordsAfterNumber(String(text ?? "").replace(DEVA_FRACTION, " 1 "));
   return ct.every((w) => kt.has(w));
 }
 

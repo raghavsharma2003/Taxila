@@ -1,0 +1,160 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket pitch jaisi number line par fractions ki jagah dhoondhenge. Zero aur one ke beech aadhe raste par kaunsa number aayega?",
+   "move": "hook",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?"
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Ghar se chai ki dukaan tak do barabar chhote raste socho; beech tak ek rasta tay hota hai. Do barabar raston mein se ek raste ko fraction mein kya bolenge?",
+   "move": "hint",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 4164,
+   "replyReadyMs": 4165
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 1193
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, pehle wala tareeka clear nahi hua. Ek roti ko do barabar tukdon mein baanto; ek tukda aadha hota hai, jise one by two kehte hain. Zero se one tak bhi do barabar gaps hon, toh beech ka mark kya hoga?",
+   "move": "reteach",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 3248,
+   "replyReadyMs": 4441
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 726
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, dheere dheere karte hain. Abhi sirf itna socho: zero se one tak ke raste ko do barabar gaps mein baanta hai. Zero se beech tak kitne gaps hain?",
+   "move": "hint",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2501,
+   "replyReadyMs": 3227
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 719
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, Hindi mein dheere-dheere batati hoon. Shunya se ek tak ka raasta do barabar hisson mein baanta hai. Shunya se beech tak kitna hissa hai?",
+   "move": "repair",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2368,
+   "replyReadyMs": 3087
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "incorrect",
+   "classifyMs": 1598
+  },
+  {
+   "who": "teacher",
+   "text": "Paanch nahi. Cricket mein poori pitch ko do barabar hisson mein baanto, toh beech tak sirf ek hissa hota hai. Do mein se ek hisse ko aadha kehte hain. Shunya se beech tak kitne hisse tay hue?",
+   "move": "reteach",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 3747,
+   "replyReadyMs": 5345
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Ek poori roti ko do barabar tukdon mein baanto. Bas ek tukda uthao. Tumhare haath mein kitne tukde hain?",
+   "move": "reteach",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2458,
+   "replyReadyMs": 2459
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 912
+  },
+  {
+   "who": "teacher",
+   "text": "socho, roti ke do barabar tukde hain aur ek tukda alag rakha hai. Us ek tukde ko aadha kehte hain. Shunya se ek tak ka raasta bhi do barabar hisson mein ho, toh beech ka naam kya hoga?",
+   "move": "repair",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 3082,
+   "replyReadyMs": 3994
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1413
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, tum roti wali baat ke saath ho. Ab bas ek chhoti baat: roti ke do barabar tukdon mein se ek tukde ko kya kehte hain?",
+   "move": "probe",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2377,
+   "replyReadyMs": 3790
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "incorrect",
+   "classifyMs": 1088
+  },
+  {
+   "who": "teacher",
+   "text": "Saat nahi. Aise ek hisse ko aadha kehte hain. Do barabar tukdon wali roti ka ek tukda kya kehlaata hai?",
+   "move": "reteach",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2826,
+   "replyReadyMs": 3914
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1089
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum aaj ke liye rukna chahti ho. Teen vikalp hain: jaari rakhein, chhota break lein, ya aaj yahin ruk jaayen.",
+   "move": "break",
+   "card": null,
+   "replyMs": 1403,
+   "replyReadyMs": 2492
+  }
+ ]
+}
