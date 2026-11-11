@@ -224,7 +224,7 @@ test("approval lane, predicate (main 2026-11-10, c5-t02 withdrawn): every value 
 test("no game target (main 2026-11-11 08:49): a topic whose engine cannot show its mix-up gets no generation target and no game in the tray — the lesson stays on the board", async () => {
   const { deriveTarget, noGameTarget, approvedFor } = await import("../server/studio/approved.js");
   const list = JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-approved/no-game-target.json"), "utf8")).topics;
-  assert.deepEqual(list.map((t) => t.topicId).sort(), ["c4-maths-ch14-t01", "c6-maths-ch02-t01", "c6-maths-ch02-t02", "c6-maths-ch02-t03"]);
+  assert.deepEqual(list.map((t) => t.topicId).sort(), ["c4-maths-ch06-t01", "c4-maths-ch14-t01", "c5-maths-ch03-t02", "c6-maths-ch02-t01", "c6-maths-ch02-t02", "c6-maths-ch02-t03", "c6-maths-ch02-t04"]);
   for (const t of list) {
     assert.ok(t.why && t.needs, `${t.topicId} says why and what an engine would need`);
     assert.ok(noGameTarget(t.topicId));
@@ -370,4 +370,19 @@ test("a number word the model writes anyway is refused at generation, by name, b
   const r = await b.generatedSpec({ archetype: "rule-machine@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, { topicId: "c4-maths-ch03-t02", lang: "hinglish", band: "B2" });
   assert.equal(r.ok, false); assert.equal(r.why, "number_words"); assert.equal(q8Called, false, "no content check is spent on it");
   assert.match(attemptOutcome(r).why, /number_words: "Teen nakshe banao" — write digits/);
+});
+
+test("a word that mixes scripts is refused, in every engine (main 2026-11-11, round 3: 'Tribhuज', 'Samलamb')", async () => {
+  const { mixedScriptWords, mixedScriptInSpec, attemptOutcome } = await import("../server/studio/approved.js");
+  assert.deepEqual(mixedScriptWords("Tribhuज aur Samलamb chaturbhuj"), ["Tribhuज", "Samलamb"]);
+  assert.deepEqual(mixedScriptWords("tribhuj त्रिभुज, पानी-water"), [], "each word in one script passes, in a mixed line too");
+  assert.deepEqual(mixedScriptInSpec({ rounds: [{ title: "Bhinn", sub: "हिस्सेdaar" }], strings: { a: "ok" } }), ["हिस्सेdaar"]);
+  const { createBuilders } = await import("../server/stagecraft/builders.js");
+  const { ENGINE_SPECS_EXT } = await import("../shared/studio-spec-ext/index.ts");
+  const spec = structuredClone(ENGINE_SPECS_EXT["rule-machine@1"].defaultSpec); spec.rounds[0].sub = "Niyam dhoondhoज";
+  let q8Called = false;
+  const b = createBuilders({ chat: async () => ({ json: structuredClone(spec), usage: {} }), q8: async () => { q8Called = true; return { ok: true }; } });
+  const r = await b.generatedSpec({ archetype: "rule-machine@1", kind: "game", need: "practice" }, "taxila-fast-bg", new AbortController().signal, { topicId: "c4-maths-ch03-t02", lang: "hinglish", band: "B2" });
+  assert.equal(r.ok, false); assert.equal(r.why, "mixed_script"); assert.equal(q8Called, false);
+  assert.match(attemptOutcome(r).why, /mixed_script: "dhoondhoज" — one script per word/);
 });

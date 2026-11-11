@@ -167,13 +167,18 @@ const NUMBER_WORDS = ["teen"];
 export function numberWords(text) { const t = String(text ?? "").toLowerCase(); return NUMBER_WORDS.filter((w) => new RegExp(`(^|[^a-z])${w}([^a-z]|$)`).test(t)); }
 /** Words with a case break inside them ("KAafi", "sAhi"): a typo a child reads as a misspelling (judged 2026-11-11, c4-ch05-t01). */
 export function oddCaseWords(text) { return [...String(text ?? "").matchAll(/\p{L}*(?:\p{Lu}{2}\p{Ll}|\p{Ll}\p{Lu})\p{L}*/gu)].map((m) => m[0]); }
+/** main 2026-11-11 (regen r3: "Tribhuज", "Samलamb"): one word that mixes Latin and Devanagari letters. Never right, in any
+ *  engine: a word is written in one script. */
+export function mixedScriptWords(text) { return [...String(text ?? "").matchAll(/[\p{L}\p{M}]+/gu)].map((m) => m[0]).filter((w) => /[A-Za-z]/.test(w) && /[\u0900-\u097F]/.test(w)); }
+/** Every mixed-script word in a spec's strings (any key, any depth). */
+export function mixedScriptInSpec(spec) { const out = []; JSON.stringify(spec ?? {}, (k, v) => { if (typeof v === "string") out.push(...mixedScriptWords(v)); return v; }); return [...new Set(out)]; }
 /** The plain-words reason for a content refusal that a number word explains. */
 export function numberWordHint(findings) {
   const hits = (findings ?? []).filter((f) => f.text && numberWords(f.text).length);
   return hits.length ? `; ${hits.map((f) => `the content check scored "${f.text}" (${f.key}) ${String(f.code).replace(/^content_safety_/, "")}; number words such as ${numberWords(f.text).map((w) => `'${w}'`).join(", ")} are the likely cause: write digits`).join("; ")}` : "";
 }
 export function attemptOutcome(r) {
-  if (!r?.ok) return { kind: "refused", why: `${String(r?.why ?? "refused")}${Array.isArray(r?.words) && r.words.length ? `: ${r.words.map((w) => `"${w}"`).join(", ")} — write digits` : ""}` };
+  if (!r?.ok) return { kind: "refused", why: `${String(r?.why ?? "refused")}${Array.isArray(r?.words) && r.words.length ? `: ${r.words.map((w) => `"${w}"`).join(", ")} — ${r.why === "mixed_script" ? "one script per word" : "write digits"}` : ""}` };
   if (!r.payload?.spec) return { kind: "refused", why: "ok but no spec in the payload" };
   const failed = Object.entries(r.checks ?? {}).filter(([k, v]) => v === false || (v && typeof v === "object" && v.ok === false)).map(([k]) => k);
   if (failed.length) return { kind: "refused", why: `ok, but its checks failed: ${failed.join(", ")}${numberWordHint(r.checks?.contentFindings)}` };
