@@ -11,6 +11,7 @@ import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, tally } from "./kit.ts";
 import { dots } from "../../core/dots.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 
 // Orchard: four steppers own the right column, a young label above each, clear of the row above and of the stage chrome;
 // its HARVEST button sits under the field (renders 2026-11-11: "Rang bharo" sat on the stepper buttons at p412 and the first
@@ -69,13 +70,13 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
     hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true });
   }
   function bar(ctx: Ctx, x: number, y: number, w: number, h: number, f: F, n: number, col: string, own: number) {
-    ctx.save(); ctx.fillStyle = "rgba(18,22,32,.95)"; roundRect(ctx, x, y, w, h, 10); ctx.fill();
+    ctx.save(); ctx.fillStyle = withAlpha(C.fracopsCard, .95); roundRect(ctx, x, y, w, h, 10); ctx.fill();
     ctx.fillStyle = hexA(col, 0.8); ctx.fillRect(x + 3, y + 3, (w - 6) * (f[0] / f[1]), h - 6);
     ctx.strokeStyle = C.ink; ctx.lineWidth = 4; for (let i = 1; i < own; i++) { const xx = x + (w * i) / own; ctx.beginPath(); ctx.moveTo(xx, y); ctx.lineTo(xx, y + h); ctx.stroke(); }
     if (n > 1) for (let i = 1; i < n; i++) { const xx = x + (w * i) / n, lines = (i * own) % n === 0; ctx.strokeStyle = lines ? C.ink2 : hexA(C.amber, 0.7); ctx.lineWidth = 2; ctx.setLineDash(lines ? [] : [6, 6]); ctx.beginPath(); ctx.moveTo(xx, y + 6); ctx.lineTo(xx, y + h - 6); ctx.stroke(); ctx.setLineDash([]); }
     ctx.strokeStyle = C.ink; ctx.lineWidth = 4; roundRect(ctx, x, y, w, h, 10); ctx.stroke(); ctx.restore();
   }
-  function stepperUI(ctx: Ctx) { for (const s of steppers()) { api.text(ctx, s.label, 790, s.y - LABEL_DY, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle" }); for (const [x, t] of [[640, "−"], [880, "+"]] as [number, string][]) { ctx.save(); ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, x, s.y - BTN_H / 2, 60, BTN_H, 12); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); api.text(ctx, t, x + 30, s.y + 2, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle" }); } api.text(ctx, String(g[s.key]), 790, s.y + 2, { font: "display", size: 48, weight: 800, align: "center", baseline: "middle" }); } }
+  function stepperUI(ctx: Ctx) { for (const s of steppers()) { api.text(ctx, s.label, 790, s.y - LABEL_DY, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle" }); for (const [x, t] of [[640, "−"], [880, "+"]] as [number, string][]) { ctx.save(); ctx.fillStyle = withAlpha(C.bg2, .95); roundRect(ctx, x, s.y - BTN_H / 2, 60, BTN_H, 12); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); api.text(ctx, t, x + 30, s.y + 2, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle" }); } api.text(ctx, String(g[s.key]), 790, s.y + 2, { font: "display", size: 48, weight: 800, align: "center", baseline: "middle" }); } }
   function paintBg(c: Ctx) { backdrop(c, accent, 111, 0); }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
@@ -84,12 +85,12 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     if (r.mode === "orchard") {
       const cw = FIELD.w / g.cols, rh = FIELD.h / g.rows;
-      ctx.fillStyle = "#3A2E22"; ctx.fillRect(FIELD.x, FIELD.y, FIELD.w, FIELD.h);
+      ctx.fillStyle = C.fracopsField; ctx.fillRect(FIELD.x, FIELD.y, FIELD.w, FIELD.h);
       ctx.fillStyle = hexA(C.sun, 0.35); ctx.fillRect(FIELD.x, FIELD.y, cw * g.cs, FIELD.h);
       ctx.fillStyle = hexA(C.sci, 0.35); ctx.fillRect(FIELD.x, FIELD.y, FIELD.w, rh * g.rs);
       const hk = done ? ease.outCubic(clamp(g.revealT / 0.8, 0, 1)) : 0;
       ctx.fillStyle = hexA(C.mint, 0.55 + 0.35 * hk); ctx.fillRect(FIELD.x, FIELD.y, cw * g.cs, rh * g.rs);
-      ctx.strokeStyle = "rgba(255,255,255,.55)"; ctx.lineWidth = 2; for (let i = 1; i < g.cols; i++) { ctx.beginPath(); ctx.moveTo(FIELD.x + i * cw, FIELD.y); ctx.lineTo(FIELD.x + i * cw, FIELD.y + FIELD.h); ctx.stroke(); } for (let j = 1; j < g.rows; j++) { ctx.beginPath(); ctx.moveTo(FIELD.x, FIELD.y + j * rh); ctx.lineTo(FIELD.x + FIELD.w, FIELD.y + j * rh); ctx.stroke(); }
+      ctx.strokeStyle = withAlpha(C.hi, .55); ctx.lineWidth = 2; for (let i = 1; i < g.cols; i++) { ctx.beginPath(); ctx.moveTo(FIELD.x + i * cw, FIELD.y); ctx.lineTo(FIELD.x + i * cw, FIELD.y + FIELD.h); ctx.stroke(); } for (let j = 1; j < g.rows; j++) { ctx.beginPath(); ctx.moveTo(FIELD.x, FIELD.y + j * rh); ctx.lineTo(FIELD.x + FIELD.w, FIELD.y + j * rh); ctx.stroke(); }
       ctx.strokeStyle = C.ink; ctx.lineWidth = 4; ctx.strokeRect(FIELD.x, FIELD.y, FIELD.w, FIELD.h);
       stepperUI(ctx);
       if (done) pill(api, ctx, `${g.cs * g.rs}/${g.cols * g.rows} = ${fstr(fmul(r.a, r.b))}${ok ? "" : " ?"}`, FIELD.x + FIELD.w / 2, FIELD.y + FIELD.h + 46, { color: ok ? C.mint : C.amber, size: 40 });
@@ -99,11 +100,11 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
       if (lvl > 1) { ctx.fillStyle = hexA(C.sun, 0.6); ctx.fillRect(jx + jw, jy - 4, 10, 60 * Math.min(1, lvl - 1) + 20); }
       ctx.strokeStyle = C.ink; ctx.lineWidth = 4; ctx.strokeRect(jx, jy, jw, jh);
       const wholes = r.whole[0] / r.whole[1];
-      for (let k = 1; k < total; k++) { const y = jy + jh - (k / total) * jh; ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(jx, y); ctx.lineTo(jx + 26, y); ctx.stroke(); }
+      for (let k = 1; k < total; k++) { const y = jy + jh - (k / total) * jh; ctx.strokeStyle = withAlpha(C.hi, .18); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(jx, y); ctx.lineTo(jx + 26, y); ctx.stroke(); }
       for (let u = 1; u <= Math.floor(wholes); u++) { const y = jy + jh - (u / wholes) * jh; ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(jx, y); ctx.lineTo(jx + 50, y); ctx.stroke(); api.text(ctx, `${u}`, jx - 16, y, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "right", baseline: "middle" }); }
       // (the jar's size is written under it: above it, at y 154, the task pill covered it at l1366 — layout probe 2026-11-11)
       api.text(ctx, `${r.dec ? fdec(r.whole) : fstr(r.whole)} ${r.unit}`, jx + jw / 2, jy + jh + 32, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
-      ctx.save(); ctx.fillStyle = done ? "rgba(255,255,255,.04)" : "rgba(22,26,36,.95)"; roundRect(ctx, 560, 300, 220, 100, 20); ctx.fill(); ctx.strokeStyle = done ? C.line : C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = done ? withAlpha(C.hi, .04) : withAlpha(C.bg2, .95); roundRect(ctx, 560, 300, 220, 100, 20); ctx.fill(); ctx.strokeStyle = done ? C.line : C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
       api.text(ctx, `${T.scoop} ${r.dec ? fdec(r.part) : fstr(r.part)}`, 670, 352, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle" });
       if (g.pourT > 0) { ctx.fillStyle = hexA(C.sun, 0.8); ctx.fillRect(jx + jw / 2 - 6, jy - 60 + (1 - g.pourT * 2) * 0, 12, 60); }
       pill(api, ctx, `${g.scoops} ${T.scoops}`, 670, 250, { color: done ? (ok ? C.mint : C.amber) : C.ink, size: 40 });
@@ -118,7 +119,7 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
       stepperUI(ctx);
     }
     const lab = r.mode === "orchard" ? T.harvest : r.mode === "scoop" ? T.full : T.pour, GOB = GO();
-    ctx.save(); ctx.fillStyle = !done ? "rgba(203,255,77,.14)" : "rgba(255,255,255,.04)"; roundRect(ctx, GOB.x, GOB.y, GOB.w, GOB.h, 16); ctx.fill(); ctx.strokeStyle = !done ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.fillStyle = !done ? withAlpha(C.volt, .14) : withAlpha(C.hi, .04); roundRect(ctx, GOB.x, GOB.y, GOB.w, GOB.h, 16); ctx.fill(); ctx.strokeStyle = !done ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
     api.text(ctx, lab, GOB.x + GOB.w / 2, GOB.y + GOB.h / 2 + 2, { font: "display", size: 38, weight: 800, color: !done ? C.volt : C.ink3, align: "center", baseline: "middle", maxWidth: GOB.w - 10 });
     if (done) { if (ok) tick(ctx, 960, 200, C.mint, 1); else magnifier(ctx, 955, 200, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
@@ -142,4 +143,4 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
     board: () => { const r0 = spec.rounds[0]; return { title: spec.title, lines: [r0.mode === "orchard" ? `${fstr(r0.a)} of ${fstr(r0.b)} = ${fstr(fmul(r0.a, r0.b))}` : r0.mode === "scoop" ? `${fstr(r0.whole)} ÷ ${fstr(r0.part)} = ${fdiv(r0.whole, r0.part)}` : `${fstr(r0.a)} ${r0.op} ${fstr(r0.b)} = ${fstr(fadd(r0.a, r0.b, r0.op === "+" ? 1 : -1))}`], figure: { kind: "none" }, accent }; },
   };
 }
-export const fracops: EngineDef<FracOpsSpec> = { archetype: "fraction-ops@1", label: "Game · Fraction Works", accent: C.amber, create };
+export const fracops: EngineDef<FracOpsSpec> = { archetype: "fraction-ops@1", label: "Game · Fraction Works", get accent() { return C.amber; }, create };

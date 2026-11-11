@@ -5,6 +5,7 @@
 // place-value misconceptions. The column counts are the act; the host totals and grades them.
 import { groupDigits, numberWords, type VaultSpec } from "../../../shared/studio-spec.ts";
 import { C, W, H } from "../core/tokens.ts";
+import { withAlpha } from "../../theme/palette.ts";
 import { clamp, ease, lerp } from "../core/math.ts";
 import { bloom, roundRect, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
@@ -24,7 +25,7 @@ export function loadedRow(label: string, countW: number, measure: (s: string) =>
 // (columns 540-970: five place headers "TTH TH H T O" a young label apart at p412 — at 560-950 "TTH" ran into "TH", 2026-11-11)
 // the belt strip ends a gap short of the column panel (COL_X0 - 16): at l1366 its hatching ran into the "T" column (2026-11-11)
 const BELT_Y = 500, BELT_X0 = 30, BELT_X1 = 480, BELT_END = BELT_X1 + 16, COL_X0 = 540, COL_X1 = 970, COL_TOP = 250, COL_BOT = 560;
-const DCOL: Record<number, string> = { 1: "#8B98FF", 10: "#2FD3C7", 100: "#C69BFF", 1000: "#FFD27A", 10000: "#7FD6FF", 100000: "#F2F4F8" };
+const DCOL = (): Record<number, string> => ({ 1: C.ion, 10: C.sci, 100: C.vaultDigit100, 1000: C.sun, 10000: C.vaultDigit10000, 100000: C.ink });
 const PLACE: Record<number, string> = { 1: "O", 10: "T", 100: "H", 1000: "TH", 10000: "TTH", 100000: "L" };
 interface Block { d: number; x: number; y: number; id: number; fly?: { x0: number; y0: number; x1: number; y1: number; t: number; col: number } }
 
@@ -67,7 +68,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
   }
   function land(b: Block) {
     g.counts[b.d] = (g.counts[b.d] ?? 0) + 1;
-    api.fx.burst(b.fly!.x1, b.fly!.y1, { n: 8, color: DCOL[b.d], speed: 160, life: 0.35, size: 8 });
+    api.fx.burst(b.fly!.x1, b.fly!.y1, { n: 8, color: DCOL()[b.d], speed: 160, life: 0.35, size: 8 });
     const next = b.d * 10;
     if (g.counts[b.d] >= 10 && denoms().includes(next)) {
       g.counts[b.d] -= 10;
@@ -136,38 +137,38 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     }
   }
   function drawBlock(ctx: Ctx, d: number, x: number, y: number, sc = 1) {
-    const w = blockSize(d) * sc, h = blockH(d) * sc, col = DCOL[d] ?? C.ink;
+    const w = blockSize(d) * sc, h = blockH(d) * sc, col = DCOL()[d] ?? C.ink;
     ctx.save(); ctx.translate(x, y);
     bloom(ctx, col, 0, 0, w * 0.9, 0.25);
     const dep = Math.min(10, w * 0.18);
-    ctx.fillStyle = "rgba(0,0,0,.35)"; roundRect(ctx, -w / 2 + dep, -h / 2 + dep * 0.6, w, h, 5); ctx.fill();
-    const gr = ctx.createLinearGradient(0, -h / 2, 0, h / 2); gr.addColorStop(0, col); gr.addColorStop(1, "rgba(20,24,40,.9)");
+    ctx.fillStyle = withAlpha(C.lo, .35); roundRect(ctx, -w / 2 + dep, -h / 2 + dep * 0.6, w, h, 5); ctx.fill();
+    const gr = ctx.createLinearGradient(0, -h / 2, 0, h / 2); gr.addColorStop(0, col); gr.addColorStop(1, withAlpha(C.vaultTileShade, .9));
     ctx.fillStyle = gr; roundRect(ctx, -w / 2, -h / 2, w, h, 5); ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,.55)"; ctx.lineWidth = 2; ctx.stroke();
-    ctx.strokeStyle = "rgba(10,12,18,.35)"; ctx.lineWidth = 1.5;
+    ctx.strokeStyle = withAlpha(C.hi, .55); ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = withAlpha(C.bg, .35); ctx.lineWidth = 1.5;
     if (d === 10 || d === 10000) for (let k = 1; k < 10; k++) { const xx = -w / 2 + (w * k) / 10; ctx.beginPath(); ctx.moveTo(xx, -h / 2 + 2); ctx.lineTo(xx, h / 2 - 2); ctx.stroke(); }
     if (d === 1000 || d === 100000) for (let k = 1; k < 4; k++) { ctx.beginPath(); ctx.moveTo(-w / 2 + (w * k) / 4, -h / 2 + 3); ctx.lineTo(-w / 2 + (w * k) / 4, h / 2 - 3); ctx.moveTo(-w / 2 + 3, -h / 2 + (h * k) / 4); ctx.lineTo(w / 2 - 3, -h / 2 + (h * k) / 4); ctx.stroke(); }
     ctx.restore();
   }
   function paintBg(c: Ctx) {
-    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#0A0B11"); gr.addColorStop(1, "#11131C"); c.fillStyle = gr; c.fillRect(0, 0, W, H);
-    c.fillStyle = "#151925"; roundRect(c, COL_X0 - 16, COL_TOP - 40, COL_X1 - COL_X0 + 32, COL_BOT - COL_TOP + 90, 20); c.fill(); c.strokeStyle = "rgba(255,255,255,.08)"; c.lineWidth = 2; c.stroke();
-    c.fillStyle = "#1A1F2C"; c.fillRect(BELT_X0 - 20, BELT_Y, BELT_END - BELT_X0 + 20, 22);
-    c.fillStyle = "#0D0F17"; c.fillRect(BELT_X0 - 20, BELT_Y + 22, BELT_END - BELT_X0 + 20, 40);
+    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, C.vaultBgTop); gr.addColorStop(1, C.vaultBg); c.fillStyle = gr; c.fillRect(0, 0, W, H);
+    c.fillStyle = C.vaultTray; roundRect(c, COL_X0 - 16, COL_TOP - 40, COL_X1 - COL_X0 + 32, COL_BOT - COL_TOP + 90, 20); c.fill(); c.strokeStyle = withAlpha(C.hi, .08); c.lineWidth = 2; c.stroke();
+    c.fillStyle = C.vaultBelt; c.fillRect(BELT_X0 - 20, BELT_Y, BELT_END - BELT_X0 + 20, 22);
+    c.fillStyle = C.vaultBeltEdge; c.fillRect(BELT_X0 - 20, BELT_Y + 22, BELT_END - BELT_X0 + 20, 40);
   }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("vault", paintBg), 0, 0, W, H);
     const fx = api.fx;
     ctx.save(); ctx.translate(fx.ox, fx.oy);
     // belt treads
-    ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.lineWidth = 3; const off = api.reducedMotion ? 0 : (g.t * 120 * spec.belt) % 28;
+    ctx.strokeStyle = withAlpha(C.hi, .12); ctx.lineWidth = 3; const off = api.reducedMotion ? 0 : (g.t * 120 * spec.belt) % 28;
     for (let x = BELT_X0 - 12 + off; x < BELT_END; x += 28) { ctx.beginPath(); ctx.moveTo(x, BELT_Y + 3); ctx.lineTo(x - 8, BELT_Y + 19); ctx.stroke(); }
     if (g.r >= 0) {
       const ds = [...denoms()].sort((a, b) => b - a), cw = colW();
       ds.forEach((d, i) => {
         const x = COL_X0 + cw * i, cx = x + cw / 2;
-        ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.lineWidth = 2; roundRect(ctx, x + 6, COL_TOP, cw - 12, COL_BOT - COL_TOP, 12); ctx.stroke();
-        api.text(ctx, spec.system === "indian" || d < 10000 ? PLACE[d] : PLACE[d], cx, COL_TOP - 14, { font: "mono", size: 38, weight: 600, color: DCOL[d], align: "center" });
+        ctx.strokeStyle = withAlpha(C.hi, .12); ctx.lineWidth = 2; roundRect(ctx, x + 6, COL_TOP, cw - 12, COL_BOT - COL_TOP, 12); ctx.stroke();
+        api.text(ctx, spec.system === "indian" || d < 10000 ? PLACE[d] : PLACE[d], cx, COL_TOP - 14, { font: "mono", size: 38, weight: 600, color: DCOL()[d], align: "center" });
         const n = g.counts[d] ?? 0;
         for (let k = 0; k < Math.min(n, 12); k++) drawBlock(ctx, d, cx, stackY(d, k, n), 0.9);
         api.text(ctx, String(n), cx, COL_BOT + 44, { font: "display", size: 48, weight: 800, align: "center", color: n >= 10 ? C.amber : C.ink });
@@ -181,7 +182,7 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
       const tg = round().target, tot = total(), shownTarget = round().show === "words" && g.state !== "sealed" && g.state !== "end" ? numberWords(tg, spec.system) : groupDigits(tg, spec.system);
       const dy = cardDy();
       ctx.save(); ctx.translate(0, dy);
-      ctx.fillStyle = "rgba(16,19,27,.92)"; roundRect(ctx, 40, 170, 480, 230, 20); ctx.fill(); ctx.strokeStyle = "rgba(139,152,255,.35)"; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = withAlpha(C.bg1, .92); roundRect(ctx, 40, 170, 480, 230, 20); ctx.fill(); ctx.strokeStyle = withAlpha(C.ion, .35); ctx.lineWidth = 2; ctx.stroke();
       api.text(ctx, T.target, 70, 214, { font: "mono", size: 38, weight: 600, color: C.ink3, maxWidth: SEAL.x - SEAL.r - 16 - 70 });
       const isWords = round().show === "words" && g.state !== "sealed" && g.state !== "end";
       if (!isWords) api.text(ctx, shownTarget, 70, 280, { font: "display", size: 76, weight: 800, maxWidth: 320 });   // clear of the seal dial
@@ -205,9 +206,9 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
       api.text(ctx, totS, lx, 360, { ...cnt, color: tot === tg ? C.mint : tot > tg ? C.amber : C.ink, maxWidth: Math.max(80, ROW_X1 - lx) });
       if (g.state === "play") {
         const k = clamp(g.t / round().seconds, 0, 1), ly = 175 + k * 220;
-        ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.strokeStyle = "rgba(255,150,120,.8)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(44, ly); ctx.lineTo(516, ly); ctx.stroke(); bloom(ctx, "#FF9A78", 280, ly, 120, 0.25); ctx.restore();
+        ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.strokeStyle = withAlpha(C.vaultLaser, .8); ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(44, ly); ctx.lineTo(516, ly); ctx.stroke(); bloom(ctx, C.vaultLaserGlow, 280, ly, 120, 0.25); ctx.restore();
         const ready = tot === tg;
-        ctx.save(); ctx.fillStyle = ready ? "rgba(61,220,151,.18)" : "rgba(22,26,36,.95)"; ctx.beginPath(); ctx.arc(SEAL.x, SEAL.y, SEAL.r, 0, Math.PI * 2); ctx.fill();
+        ctx.save(); ctx.fillStyle = ready ? withAlpha(C.mint, .18) : withAlpha(C.bg2, .95); ctx.beginPath(); ctx.arc(SEAL.x, SEAL.y, SEAL.r, 0, Math.PI * 2); ctx.fill();
         ctx.strokeStyle = ready ? C.mint : C.line2; ctx.lineWidth = 4; ctx.stroke();
         ctx.strokeStyle = ready ? C.mint : C.ink2; ctx.lineWidth = 5; for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2 + now * (ready ? 1.2 : 0.2); ctx.beginPath(); ctx.moveTo(SEAL.x + Math.cos(a) * 18, SEAL.y + Math.sin(a) * 18); ctx.lineTo(SEAL.x + Math.cos(a) * 36, SEAL.y + Math.sin(a) * 36); ctx.stroke(); }
         ctx.restore();
@@ -242,4 +243,4 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
     board: () => { const tg = round().target, s = String(tg); return { title: groupDigits(tg, spec.system), lines: [numberWords(tg, spec.system), s.split("").map((ch, i) => `${ch} ${PLACE[10 ** (s.length - 1 - i)] ?? ""}`).join("  ·  ")], figure: { kind: "none" }, accent: C.sun }; },
   };
 }
-export const vault: EngineDef<VaultSpec> = { archetype: "vault-heist@1", label: "Game · Number Vault", accent: C.sun, create };
+export const vault: EngineDef<VaultSpec> = { archetype: "vault-heist@1", label: "Game · Number Vault", get accent() { return C.sun; }, create };

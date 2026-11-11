@@ -14,6 +14,7 @@ import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core
 import { RoundFlow, SUBJECT_ACCENT, backdrop, devaReady, shuffled, textBlock, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 
 // IT_W 300: a 220-unit text slot beside the glyph holds a one-word name ("Scratching", "Aluminium") at the young floor
 const PAD_X = 520, PAD_Y = 285, IT_W = 300, IT_H = 96, BIN_Y = 448, BIN_H = 160, TOOL_X = 30, TOOL_W = 150;
@@ -109,7 +110,7 @@ function create(api: EngineApi, spec: SortSpec): EngineInstance {
   function drawItem(ctx: Ctx, l: Live, a = 1, tone?: string) {
     const it = itemOf(l.id); if (!it) return;
     ctx.save(); ctx.globalAlpha *= a; bloom(ctx, tone ?? accent, l.x, l.y, IT_W * 0.55, 0.22);
-    ctx.fillStyle = "rgba(22,26,36,.97)"; roundRect(ctx, l.x - IT_W / 2, l.y - IT_H / 2, IT_W, IT_H, 18); ctx.fill(); ctx.strokeStyle = tone ?? hexA(accent, 0.9); ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
+    ctx.fillStyle = withAlpha(C.bg2, .97); roundRect(ctx, l.x - IT_W / 2, l.y - IT_H / 2, IT_W, IT_H, 18); ctx.fill(); ctx.strokeStyle = tone ?? hexA(accent, 0.9); ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
     const gl = it.glyph; if (gl) drawGlyph(ctx, gl, l.x - IT_W / 2 + 40, l.y, 46, C.ink, hexA(accent, 0.3), a);
     textBlock(api, ctx, breakable(ctx, it.text, IT_W - (gl ? 80 : 26)), l.x + (gl ? 26 : 0), l.y, IT_W - (gl ? 80 : 26), { size: 38, weight: 700, alpha: a }, 2, 1.04);
   }
@@ -136,18 +137,18 @@ function create(api: EngineApi, spec: SortSpec): EngineInstance {
       const pass = val === "transparent" ? 1 : val === "translucent" ? 0.45 : 0;
       drawGlyph(ctx, "torch", 250, py, 70, C.ink, hexA(C.sun, 0.5));
       ctx.fillStyle = hexA(C.sun, 0.22 * k); ctx.beginPath(); ctx.moveTo(290, py - 12); ctx.lineTo(px - IT_W / 2, py - 46); ctx.lineTo(px - IT_W / 2, py + 46); ctx.lineTo(290, py + 12); ctx.closePath(); ctx.fill();
-      if (k2 > 0) { ctx.fillStyle = hexA(C.sun, 0.22 * pass * k2); ctx.beginPath(); ctx.moveTo(px + IT_W / 2, py - 46); ctx.lineTo(800, py - 80); ctx.lineTo(800, py + 80); ctx.lineTo(px + IT_W / 2, py + 46); ctx.closePath(); ctx.fill(); ctx.fillStyle = pass > 0.9 ? hexA(C.sun, 0.8) : pass > 0 ? hexA(C.sun, 0.35) : "#05060A"; roundRect(ctx, 800, py - 90, 22, 180, 6); ctx.fill(); }
+      if (k2 > 0) { ctx.fillStyle = hexA(C.sun, 0.22 * pass * k2); ctx.beginPath(); ctx.moveTo(px + IT_W / 2, py - 46); ctx.lineTo(800, py - 80); ctx.lineTo(800, py + 80); ctx.lineTo(px + IT_W / 2, py + 46); ctx.closePath(); ctx.fill(); ctx.fillStyle = pass > 0.9 ? hexA(C.sun, 0.8) : pass > 0 ? hexA(C.sun, 0.35) : C.sortScreenDark; roundRect(ctx, 800, py - 90, 22, 180, 6); ctx.fill(); }
       api.text(ctx, val ?? "", 810, py + 124, { font: "mono", size: 38, weight: 600, color: pass > 0.9 ? C.sun : pass > 0 ? C.amber : C.ink2, align: "center", baseline: "middle", alpha: k2 });
     } else if (tl.tool === "tank") {
       const ty = lerp(H, py - 70, ease.outCubic(k)), floats = val === "yes";
-      ctx.fillStyle = "rgba(80,150,255,.25)"; ctx.fillRect(px - 170, ty, 340, 200); ctx.strokeStyle = "rgba(160,200,255,.6)"; ctx.lineWidth = 3; ctx.strokeRect(px - 170, ty, 340, 200);
+      ctx.fillStyle = withAlpha(C.sortWater, .25); ctx.fillRect(px - 170, ty, 340, 200); ctx.strokeStyle = withAlpha(C.sortWaterEdge, .6); ctx.lineWidth = 3; ctx.strokeRect(px - 170, ty, 340, 200);
       if (k2 > 0) api.text(ctx, `${T.floats}: ${floats ? T.yes : T.no}`, side(`${T.floats}: ${floats ? T.yes : T.no}`, px + 180), PAD_Y, { align: "left", font: "mono", size: 38, weight: 600, color: floats ? C.mint : C.ink2, baseline: "middle", alpha: k2 });
       if (g.cur && g.cur.id === tl.id && g.cur.state === "pad") g.cur.y = PAD_Y + (floats ? Math.sin(now * 3) * 4 : 90 * ease.inQuad(k2));
     } else if (tl.tool === "tester") {
       const yes = val === "yes";
       ctx.strokeStyle = C.ink2; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(px - IT_W / 2 - 10, py); ctx.lineTo(px - IT_W / 2 - 60, py); ctx.lineTo(px - IT_W / 2 - 60, py + 110); ctx.lineTo(px + IT_W / 2 + 60, py + 110); ctx.lineTo(px + IT_W / 2 + 60, py); ctx.lineTo(px + IT_W / 2 + 10, py); ctx.stroke();
       if (yes && k2 > 0) bloom(ctx, C.sun, px, py + 110, 90, 0.7 * k2);
-      drawGlyph(ctx, "bulb", px, py + 110, 64, C.ink, yes && k2 > 0 ? hexA(C.sun, 0.9) : "rgba(255,255,255,.05)");
+      drawGlyph(ctx, "bulb", px, py + 110, 64, C.ink, yes && k2 > 0 ? hexA(C.sun, 0.9) : withAlpha(C.hi, .05));
       api.text(ctx, `${T.conducts}: ${yes ? T.yes : T.no}`, side(`${T.conducts}: ${yes ? T.yes : T.no}`, px + IT_W / 2 + 70), py + IT_H / 2 + 30, { align: "left", font: "mono", size: 38, weight: 600, color: yes ? C.mint : C.ink2, baseline: "middle", alpha: k2 });
     } else if (tl.tool === "flame") {
       const yes = val === "yes";
@@ -156,19 +157,19 @@ function create(api: EngineApi, spec: SortSpec): EngineInstance {
       api.text(ctx, `${T.burns}: ${yes ? T.yes : T.no}`, side(`${T.burns}: ${yes ? T.yes : T.no}`, px + IT_W / 2 + 30), py - 70, { align: "left", font: "mono", size: 38, weight: 600, color: yes ? C.amber : C.ink2, baseline: "middle", alpha: k2 });
     } else if (tl.tool === "iodine") {
       const yes = val === "yes", dy = lerp(110, py - IT_H / 2 - 30, ease.outCubic(k));
-      drawGlyph(ctx, "beaker", spot + 20, dy - 40, 60, C.ink, hexA("#A0522D", 0.6));
-      if (k2 > 0) { ctx.fillStyle = yes ? hexA("#1B1446", 0.9 * k2) : hexA("#C8862B", 0.8 * k2); ctx.beginPath(); ctx.ellipse(spot, py - 6, 34 * k2, 22 * k2, 0, 0, Math.PI * 2); ctx.fill(); }
+      drawGlyph(ctx, "beaker", spot + 20, dy - 40, 60, C.ink, hexA(C.sortSample, 0.6));
+      if (k2 > 0) { ctx.fillStyle = yes ? hexA(C.sortIodineBlue, 0.9 * k2) : hexA(C.sortIodineBrown, 0.8 * k2); ctx.beginPath(); ctx.ellipse(spot, py - 6, 34 * k2, 22 * k2, 0, 0, Math.PI * 2); ctx.fill(); }
       api.text(ctx, `${T.starch}: ${yes ? T.yes : T.no}`, side(`${T.starch}: ${yes ? T.yes : T.no}`, px + IT_W / 2 + 30), py - 70, { align: "left", font: "mono", size: 38, weight: 600, color: yes ? C.ion : C.ink2, baseline: "middle", alpha: k2 });
     } else {
       // reagent drops: paper patch (fat), copper sulphate + caustic soda (protein: violet), indicators (acid / base)
       const dy = lerp(110, py - IT_H / 2 - 30, ease.outCubic(k));
-      drawGlyph(ctx, tl.tool === "paper" ? "letter" : tl.tool === "rose" ? "flower" : "beaker", spot + 20, dy - 40, 60, C.ink, "rgba(255,255,255,.08)");
-      let col = "#888", word = "";
-      if (tl.tool === "paper") { col = val === "yes" ? "rgba(255,240,200,.55)" : "rgba(255,255,255,.12)"; word = `${T.fat}: ${val === "yes" ? T.yes : T.no}`; }
-      else if (tl.tool === "biuret") { col = val === "yes" ? "#7B3FC4" : "#3C7FD9"; word = `${T.protein}: ${val === "yes" ? T.yes : T.no}`; }
-      else if (tl.tool === "turmeric") { col = val === "base" ? "#C4302B" : "#E8B923"; word = val === "base" ? T.base : `${T.acid} / ${T.neutral}`; }
-      else if (tl.tool === "litmus") { col = val === "acid" ? "#D9413B" : val === "base" ? "#3C6FD9" : "#8A6FB0"; word = (T as Record<string, string>)[val ?? "neutral"] ?? ""; }
-      else if (tl.tool === "rose") { col = val === "acid" ? "#C2185B" : val === "base" ? "#2E9E4F" : "#C98BB0"; word = (T as Record<string, string>)[val ?? "neutral"] ?? ""; }
+      drawGlyph(ctx, tl.tool === "paper" ? "letter" : tl.tool === "rose" ? "flower" : "beaker", spot + 20, dy - 40, 60, C.ink, withAlpha(C.hi, .08));
+      let col = C.sortNeutral, word = "";
+      if (tl.tool === "paper") { col = val === "yes" ? withAlpha(C.sortGreaseSpot, .55) : withAlpha(C.hi, .12); word = `${T.fat}: ${val === "yes" ? T.yes : T.no}`; }
+      else if (tl.tool === "biuret") { col = val === "yes" ? C.sortBiuretViolet : C.sortBiuretBlue; word = `${T.protein}: ${val === "yes" ? T.yes : T.no}`; }
+      else if (tl.tool === "turmeric") { col = val === "base" ? C.sortTurmericRed : C.sortTurmeric; word = val === "base" ? T.base : `${T.acid} / ${T.neutral}`; }
+      else if (tl.tool === "litmus") { col = val === "acid" ? C.sortLitmusRed : val === "base" ? C.sortLitmusBlue : C.sortLitmusPurple; word = (T as Record<string, string>)[val ?? "neutral"] ?? ""; }
+      else if (tl.tool === "rose") { col = val === "acid" ? C.sortRoseAcid : val === "base" ? C.sortRoseBase : C.sortRose; word = (T as Record<string, string>)[val ?? "neutral"] ?? ""; }
       if (k2 > 0) { ctx.fillStyle = col; ctx.globalAlpha = fade * k2; ctx.beginPath(); ctx.ellipse(spot, py - 4, 40 * k2, 26 * k2, 0, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = fade; }
       api.text(ctx, word, side(word, px + IT_W / 2 + 30), py - 70, { align: "left", font: "mono", size: 38, weight: 600, color: C.ink, baseline: "middle", alpha: k2 });
     }
@@ -181,14 +182,14 @@ function create(api: EngineApi, spec: SortSpec): EngineInstance {
     const r = rd(); if (!r) return;
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     // belt
-    ctx.fillStyle = "#121621"; ctx.fillRect(200, PAD_Y + IT_H / 2 + 6, W - 200, 22);
-    ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 3; for (let x = 200 - g.beltOff; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, PAD_Y + IT_H / 2 + 8); ctx.lineTo(x + 18, PAD_Y + IT_H / 2 + 26); ctx.stroke(); }
+    ctx.fillStyle = C.sortBelt; ctx.fillRect(200, PAD_Y + IT_H / 2 + 6, W - 200, 22);
+    ctx.strokeStyle = withAlpha(C.hi, .08); ctx.lineWidth = 3; for (let x = 200 - g.beltOff; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, PAD_Y + IT_H / 2 + 8); ctx.lineTo(x + 18, PAD_Y + IT_H / 2 + 26); ctx.stroke(); }
     // pad
     ctx.save(); ctx.strokeStyle = hexA(accent, 0.5); ctx.lineWidth = 3; ctx.setLineDash([10, 8]); roundRect(ctx, PAD_X - IT_W / 2 - 16, PAD_Y - IT_H / 2 - 16, IT_W + 32, IT_H + 32, 24); ctx.stroke(); ctx.restore();
     // tools
     for (const t of tools()) {
       const active = g.tool?.tool === t.tool && g.cur?.id === g.tool?.id;
-      ctx.save(); ctx.fillStyle = active ? hexA(accent, 0.2) : "rgba(22,26,36,.95)"; roundRect(ctx, t.x, t.y, TOOL_W, 96, 18); ctx.fill(); ctx.strokeStyle = active ? accent : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = active ? hexA(accent, 0.2) : withAlpha(C.bg2, .95); roundRect(ctx, t.x, t.y, TOOL_W, 96, 18); ctx.fill(); ctx.strokeStyle = active ? accent : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
       drawGlyph(ctx, TOOL_GLYPH[t.tool], t.x + TOOL_W / 2, t.y + 40, 54, C.ink, hexA(accent, 0.3));
       api.text(ctx, (T as Record<string, string>)[TOOL_NAME[t.tool]] ?? t.tool, t.x + TOOL_W / 2, t.y + 122, { size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle", maxWidth: TOOL_W + 10 });
     }
@@ -196,7 +197,7 @@ function create(api: EngineApi, spec: SortSpec): EngineInstance {
     for (const b of bins()) {
       const fl = g.binFlash.get(b.id), fk = fl ? clamp(1 - (api.now() - fl.t) / 0.8, 0, 1) * (api.now() >= fl.t ? 1 : 0) : 0, edge = fk > 0 ? (fl!.ok ? C.mint : C.amber) : hexA(accent, 0.7);
       ctx.save(); if (fk > 0) bloom(ctx, edge, b.x + b.w / 2, BIN_Y + BIN_H / 2, b.w * 0.7, 0.4 * fk);
-      ctx.fillStyle = "rgba(18,22,32,.96)"; roundRect(ctx, b.x, BIN_Y, b.w, BIN_H, 20); ctx.fill(); ctx.strokeStyle = edge; ctx.lineWidth = 4; ctx.stroke();
+      ctx.fillStyle = withAlpha(C.sortBin, .96); roundRect(ctx, b.x, BIN_Y, b.w, BIN_H, 20); ctx.fill(); ctx.strokeStyle = edge; ctx.lineWidth = 4; ctx.stroke();
       ctx.fillStyle = hexA(accent, 0.08); roundRect(ctx, b.x + 8, BIN_Y + 8, b.w - 16, 10, 5); ctx.fill(); ctx.restore();
       // (picture high, the label's block centred under it: a two-line label's first line ran under the picture)
       if (b.glyph) drawGlyph(ctx, b.glyph, b.x + b.w / 2, BIN_Y + 38, 48, C.ink, hexA(accent, 0.3));
@@ -205,7 +206,7 @@ function create(api: EngineApi, spec: SortSpec): EngineInstance {
     // the item and its clock
     const c = g.cur;
     if (c && c.state !== "gone") {
-      if (c.state === "pad" || c.state === "drag") { const k = clamp(g.padT / g.belt, 0, 1); ctx.save(); ctx.strokeStyle = k > 0.75 ? C.amber : "rgba(255,255,255,.35)"; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(PAD_X + IT_W / 2 + 40, PAD_Y - IT_H / 2 - 10, 18, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - k)); ctx.stroke(); ctx.restore(); }
+      if (c.state === "pad" || c.state === "drag") { const k = clamp(g.padT / g.belt, 0, 1); ctx.save(); ctx.strokeStyle = k > 0.75 ? C.amber : withAlpha(C.hi, .35); ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(PAD_X + IT_W / 2 + 40, PAD_Y - IT_H / 2 - 10, 18, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - k)); ctx.stroke(); ctx.restore(); }
       drawItem(ctx, c, 1, c.state === "drag" ? C.volt : undefined);
     }
     drawTool(ctx, now);
@@ -234,4 +235,4 @@ function create(api: EngineApi, spec: SortSpec): EngineInstance {
     board: () => { const r0 = spec.rounds[0]; return { title: spec.title, lines: r0.bins.slice(0, 3).map((b) => `${b.label}: ${r0.items.filter((i) => i.bin === b.id).slice(0, 3).map((i) => i.text).join(", ")}`), figure: { kind: "none" }, accent }; },
   };
 }
-export const sort: EngineDef<SortSpec> = { archetype: "sort-storm@1", label: "Game · Test Bench", accent: C.sci, create };
+export const sort: EngineDef<SortSpec> = { archetype: "sort-storm@1", label: "Game · Test Bench", get accent() { return C.sci; }, create };

@@ -6,6 +6,7 @@
 // customer leaves. The truth is always shown after the act (exact bill, exact change, the remainder in the crate).
 import { DENOMS, billOf, packKey, rupees, type DkRoundT, type DukaanSpec } from "../../../../shared/studio-spec-ext/dukaan.ts";
 import { C, W, H } from "../../core/tokens.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 import { clamp, hexA, lerp, rng } from "../../core/math.ts";
 import { magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
@@ -15,7 +16,7 @@ import { RoundFlow, backdrop, devaReady, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 import { dots } from "../../core/dots.ts";
 
-const NOTE_COL: Record<number, string> = { 50000: "#9AA0A6", 20000: "#F2C230", 10000: "#B9A4E0", 5000: "#5FC8E8", 2000: "#C7D85A", 1000: "#9C6B48" };
+const NOTE_COL = (): Record<number, string> => ({ 50000: C.dkNote500, 20000: C.dkNote200, 10000: C.dkNote100, 5000: C.dkNote50, 2000: C.dkNote20, 1000: C.dkNote10 });
 // the till sits low enough that the "pays" pill has a gap above (bill card ends 450) and below (till box TILL_Y - 6)
 // (judges, 2026-11-11: "Diye ₹20" touched the Bill card's bottom border at l1366)
 const TILL_Y = 532, COUNTER = { x: 500, y: 168, w: 470, h: 250 }, GIVE = { x: 760, y: 432, w: 210, h: 64 };
@@ -120,11 +121,11 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
     hud.set("pat", `${Math.round(g.patience * 100)}%`, { meter: g.patience, tone: g.patience < 0.25 ? "amber" : null });
   }
   function note(ctx: Ctx, v: number, x: number, y: number, s = 1, bare = false) {
-    if (bare) { ctx.save(); ctx.fillStyle = v >= 1000 ? (NOTE_COL[v] ?? "#999") : v === 50 ? "#B7BCC4" : "#C9CED6"; ctx.globalAlpha *= 0.4; /* a faint edge under the pile, not an opaque card on the one above it */ if (v >= 1000) roundRect(ctx, x - 56 * s, y - 27 * s, 112 * s, 54 * s, 6); else { ctx.beginPath(); ctx.arc(x, y, 27 * s, 0, Math.PI * 2); } ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,.35)"; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); return; }
-    if (v >= 1000) { const w = 112 * s, h = 54 * s; ctx.save(); ctx.fillStyle = NOTE_COL[v] ?? "#999"; roundRect(ctx, x - w / 2, y - h / 2, w, h, 6); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,.35)"; ctx.lineWidth = 2; ctx.stroke(); if (s >= 1) { ctx.fillStyle = "rgba(255,255,255,.25)"; ctx.beginPath(); ctx.arc(x + w * 0.28, y, h * 0.3, 0, Math.PI * 2); ctx.fill(); } ctx.restore(); api.text(ctx, String(v / 100), s < 1 ? x : x - w * 0.12, y + 2, { font: "display", size: 38 * Math.max(1, s), weight: 800, color: "#14161C", align: "center", baseline: "middle" }); }
-    else { const r = 27 * s; ctx.save(); ctx.fillStyle = v >= 1000 ? "#C9B26A" : v === 50 ? "#B7BCC4" : "#C9CED6"; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,.35)"; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); api.text(ctx, v >= 100 ? String(v / 100) : "½", x, y + 2, { font: "display", size: 38, weight: 800, color: "#14161C", align: "center", baseline: "middle" }); }
+    if (bare) { ctx.save(); ctx.fillStyle = v >= 1000 ? (NOTE_COL()[v] ?? C.dkNoteUnknown) : v === 50 ? C.dkCoinSmall : C.dkCoin; ctx.globalAlpha *= 0.4; /* a faint edge under the pile, not an opaque card on the one above it */ if (v >= 1000) roundRect(ctx, x - 56 * s, y - 27 * s, 112 * s, 54 * s, 6); else { ctx.beginPath(); ctx.arc(x, y, 27 * s, 0, Math.PI * 2); } ctx.fill(); ctx.strokeStyle = withAlpha(C.lo, .35); ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); return; }
+    if (v >= 1000) { const w = 112 * s, h = 54 * s; ctx.save(); ctx.fillStyle = NOTE_COL()[v] ?? C.dkNoteUnknown; roundRect(ctx, x - w / 2, y - h / 2, w, h, 6); ctx.fill(); ctx.strokeStyle = withAlpha(C.lo, .35); ctx.lineWidth = 2; ctx.stroke(); if (s >= 1) { ctx.fillStyle = withAlpha(C.hi, .25); ctx.beginPath(); ctx.arc(x + w * 0.28, y, h * 0.3, 0, Math.PI * 2); ctx.fill(); } ctx.restore(); api.text(ctx, String(v / 100), s < 1 ? x : x - w * 0.12, y + 2, { font: "display", size: 38 * Math.max(1, s), weight: 800, color: C.onBright, align: "center", baseline: "middle" }); }
+    else { const r = 27 * s; ctx.save(); ctx.fillStyle = v >= 1000 ? C.dkCoinGold : v === 50 ? C.dkCoinSmall : C.dkCoin; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = withAlpha(C.lo, .35); ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); api.text(ctx, v >= 100 ? String(v / 100) : "½", x, y + 2, { font: "display", size: 38, weight: 800, color: C.onBright, align: "center", baseline: "middle" }); }
   }
-  function paintBg(c: Ctx) { backdrop(c, C.amber, 41, 0); c.fillStyle = "rgba(60,40,24,.55)"; c.fillRect(0, 430, W, H - 430); c.fillStyle = "rgba(255,200,120,.08)"; c.fillRect(0, 426, W, 6); }
+  function paintBg(c: Ctx) { backdrop(c, C.amber, 41, 0); c.fillStyle = withAlpha(C.dkCounter, .55); c.fillRect(0, 430, W, H - 430); c.fillStyle = withAlpha(C.dkLamp, .08); c.fillRect(0, 426, W, 6); }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
     if (!fontOk) return;
@@ -145,7 +146,7 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
       const nLines = rows.reduce((a, q) => a + (q.one ? 1 : 2), 0), rowsTop = top + 58;
       const bottom = clamp(rowsTop + nLines * lh + (rows.length - 1) * 12 + 14, 450, r.mode === "change" ? 450 : 512);
       const gap = clamp((bottom - 10 - rowsTop - nLines * lh) / Math.max(1, rows.length - 1), 0, 30);
-      ctx.save(); ctx.fillStyle = "rgba(24,22,30,.97)"; roundRect(ctx, 150, top, 336, bottom - top, 18); ctx.fill(); ctx.strokeStyle = hexA(C.amber, 0.7); ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = withAlpha(C.dkCard, .97); roundRect(ctx, 150, top, 336, bottom - top, 18); ctx.fill(); ctx.strokeStyle = hexA(C.amber, 0.7); ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
       api.text(ctx, r.mode === "estimate" ? `${T.budget} ${rupees(c.budget ?? 0)}` : T.bill, 318, top + 31, { font: "mono", size: 38, weight: 600, color: C.amber, align: "center", baseline: "middle", maxWidth: 320 });
       // (a name and its price line a full young label apart: at 43-unit young text 36 overlapped, "Pencil box" over "1 × ₹0.50")
       let ly = rowsTop + lh / 2;
@@ -157,10 +158,10 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
       }
       if (r.mode === "change") pill(api, ctx, `${T.pays} ${rupees(c.pays ?? 0)}`, 318, 488, { color: C.amber, size: 38 });   // 458-518: 8 clear of the bill card (ends 450) and of the till (starts 526)
       // patience
-      ctx.save(); ctx.fillStyle = "rgba(255,255,255,.08)"; roundRect(ctx, 26, 330, 104, 10, 5); ctx.fill(); ctx.fillStyle = g.patience < 0.25 ? C.amber : C.mint; roundRect(ctx, 26, 330, 104 * g.patience, 10, 5); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.fillStyle = withAlpha(C.hi, .08); roundRect(ctx, 26, 330, 104, 10, 5); ctx.fill(); ctx.fillStyle = g.patience < 0.25 ? C.amber : C.mint; roundRect(ctx, 26, 330, 104 * g.patience, 10, 5); ctx.fill(); ctx.restore();
     }
     if (r.mode === "pay" || r.mode === "change") {
-      ctx.save(); ctx.fillStyle = "rgba(14,16,22,.7)"; roundRect(ctx, COUNTER.x, COUNTER.y, COUNTER.w, COUNTER.h, 18); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = withAlpha(C.dkTray, .7); roundRect(ctx, COUNTER.x, COUNTER.y, COUNTER.w, COUNTER.h, 18); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
       // each pile: the copies under it bare, its top note or coin with its value, then "×n" beside it
       lastCtx = ctx;
       for (const q of piles) {
@@ -170,11 +171,11 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
         if (q.n > 1) api.text(ctx, `×${q.n}`, q.x + q.w - q.badgeW / 2, q.y + 29, { ...badgeO, color: C.amber, align: "center", baseline: "middle" });
       }
       // till
-      for (const t of till()) { ctx.save(); ctx.fillStyle = "rgba(18,16,14,.9)"; roundRect(ctx, t.x - 2, TILL_Y - 6, t.w + 4, 92, 12); ctx.fill(); ctx.restore(); note(ctx, t.v, t.x + t.w / 2, TILL_Y + 40, t.v >= 1000 ? Math.min(0.82, t.w / 120) : 1); }
+      for (const t of till()) { ctx.save(); ctx.fillStyle = withAlpha(C.dkTill, .9); roundRect(ctx, t.x - 2, TILL_Y - 6, t.w + 4, 92, 12); ctx.fill(); ctx.restore(); note(ctx, t.v, t.x + t.w / 2, TILL_Y + 40, t.v >= 1000 ? Math.min(0.82, t.w / 120) : 1); }
       const can = g.toks.length > 0 && !g.answered;
       // (the result pill takes the hand-over button's place once the act is done: it sat on the counter's own notes)
       if (!g.answered) {
-      ctx.save(); ctx.fillStyle = can ? "rgba(203,255,77,.14)" : "rgba(255,255,255,.04)"; roundRect(ctx, GIVE.x, GIVE.y, GIVE.w, GIVE.h, 16); ctx.fill(); ctx.strokeStyle = can ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = can ? withAlpha(C.volt, .14) : withAlpha(C.hi, .04); roundRect(ctx, GIVE.x, GIVE.y, GIVE.w, GIVE.h, 16); ctx.fill(); ctx.strokeStyle = can ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
       api.text(ctx, r.mode === "pay" ? T.bill + " →" : T.change + " →", GIVE.x + GIVE.w / 2, GIVE.y + GIVE.h / 2 + 2, { font: "display", size: 38, weight: 800, color: can ? C.volt : C.ink3, align: "center", baseline: "middle" });
       } else {
         const c = r.customers[g.k], key = r.mode === "pay" ? billOf(c) : (c.pays ?? 0) - billOf(c), sum = counterSum(), ok = g.verdict === "right";
@@ -198,11 +199,11 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
       // crates
       g.crates.forEach((n, i) => {
         const cx = 570 + (i % 4) * 100, cy = 180 + Math.floor(i / 4) * 66, full = n === j.per;
-        ctx.save(); ctx.fillStyle = "rgba(60,45,25,.6)"; roundRect(ctx, cx, cy, 90, 56, 8); ctx.fill(); ctx.fillStyle = "rgba(150,110,60,.9)"; const fh = 56 * (n / j.per); roundRect(ctx, cx, cy + 56 - fh, 90, fh, 8); ctx.fill(); ctx.strokeStyle = full ? C.ink2 : C.amber; ctx.lineWidth = 3; roundRect(ctx, cx, cy, 90, 56, 8); ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.fillStyle = withAlpha(C.dkCrate, .6); roundRect(ctx, cx, cy, 90, 56, 8); ctx.fill(); ctx.fillStyle = withAlpha(C.dkCrateFill, .9); const fh = 56 * (n / j.per); roundRect(ctx, cx, cy + 56 - fh, 90, fh, 8); ctx.fill(); ctx.strokeStyle = full ? C.ink2 : C.amber; ctx.lineWidth = 3; roundRect(ctx, cx, cy, 90, 56, 8); ctx.stroke(); ctx.restore();
         api.text(ctx, String(n), cx + 45, cy + 30, { font: "mono", size: 38, weight: 600, color: full ? C.ink : C.amber, align: "center", baseline: "middle", maxWidth: 88 });
       });
       for (const [x, lab, on] of [[560, `+ ${T.crates}`, g.pile > 0 && !g.answered], [780, "✔", g.crates.length > 0 && !g.answered]] as [number, string, boolean][]) {
-        ctx.save(); ctx.fillStyle = on ? "rgba(203,255,77,.14)" : "rgba(255,255,255,.04)"; roundRect(ctx, x, 440, x === 560 ? 200 : 190, 60, 16); ctx.fill(); ctx.strokeStyle = on ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.fillStyle = on ? withAlpha(C.volt, .14) : withAlpha(C.hi, .04); roundRect(ctx, x, 440, x === 560 ? 200 : 190, 60, 16); ctx.fill(); ctx.strokeStyle = on ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
         if (x === 560) api.text(ctx, lab, x + 100, 472, { font: "display", size: 40, weight: 800, color: on ? C.volt : C.ink3, align: "center", baseline: "middle" });
         else tick(ctx, x + 95, 470, on ? C.volt : C.ink3, 1);
       }
@@ -213,7 +214,7 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
       const c = r.customers[g.k], bill = billOf(c), enough = (c.budget ?? 0) >= bill;
       for (const b of EST) {
         const val = b.val, chosen = g.choice === val, edge = g.answered ? (val === enough ? C.mint : chosen ? C.amber : C.line2) : C.volt;
-        ctx.save(); ctx.fillStyle = "rgba(22,24,30,.95)"; roundRect(ctx, b.x, b.y, b.w, b.h, 18); ctx.fill(); ctx.strokeStyle = edge; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.fillStyle = withAlpha(C.dkButton, .95); roundRect(ctx, b.x, b.y, b.w, b.h, 18); ctx.fill(); ctx.strokeStyle = edge; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
         api.text(ctx, val ? T.enough : T.notEnough, b.x + b.w / 2, b.y + b.h / 2 + 2, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle", maxWidth: b.w - 24 });
       }
       if (g.answered) pill(api, ctx, `${T.bill} ${rupees(bill)}`, 750, 226, { color: enough ? C.mint : C.amber, size: 40 });
@@ -254,4 +255,4 @@ function create(api: EngineApi, spec: DukaanSpec): EngineInstance {
     board: () => { const r0 = spec.rounds[0]; if (r0.mode === "pack") { const j = r0.jobs[0]; return { title: spec.title, lines: [`${j.n} ${j.thing}, ${j.per} in a crate`, `${Math.floor(j.n / j.per)} full, ${j.n % j.per} left over`], figure: { kind: "none" }, accent }; } const c = r0.customers[0]; return { title: spec.title, lines: [...c.items.map((i) => `${i.qty} × ${i.name} at ${rupees(i.price)}`).slice(0, 3), `${T.bill}: ${rupees(billOf(c))}`], figure: { kind: "none" }, accent }; },
   };
 }
-export const dukaan: EngineDef<DukaanSpec> = { archetype: "dukaan@1", label: "Game · Dukaan Rush", accent: C.amber, create };
+export const dukaan: EngineDef<DukaanSpec> = { archetype: "dukaan@1", label: "Game · Dukaan Rush", get accent() { return C.amber; }, create };
