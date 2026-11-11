@@ -51,7 +51,10 @@ export interface StudioColours {
 /** The board's inks per ground (src/modules/whiteboard/palette.ts reads these). */
 export interface BoardInks { chalk: string; accent: string; ink: string; mark: string; good: string; soft: string }
 export interface BoardRoleInks { focus: string; slot: string; answer: string; mixup: string; muted: string }
-export interface BoardPaletteValues { ground: string; edge: string; grid?: string; fillAlpha: number; ink: BoardInks; role: BoardRoleInks }
+/** Designed fill tints (Design, patch 008): a focus area and an answer / slot box are filled with these, at full strength,
+ *  instead of the stroke colour at fillAlpha (indigo at 0.3 on paper read lilac-grey and muddy). Absent: stroke × fillAlpha. */
+export interface BoardFills { focus: string; answer: string }
+export interface BoardPaletteValues { ground: string; edge: string; grid?: string; fillAlpha: number; ink: BoardInks; role: BoardRoleInks; fills?: BoardFills }
 
 export interface Theme {
   name: ThemeName;
@@ -109,6 +112,8 @@ const PAPER_BOARD: BoardPaletteValues = {
   ground: "#FFFDF8", edge: "#E0D7C7", fillAlpha: 0.26,
   ink: { chalk: "#1C1A16", ink: "#1C1A16", accent: "#3B47B0", mark: "#8A5A00", good: "#0B736A", soft: "#6F675B" },
   role: { focus: "#3B47B0", slot: "#0B736A", answer: "#0B736A", mixup: "#8A5A00", muted: "#6F675B" },
+  // (Design's --tx-focus-fill / --tx-ans-fill for A)
+  fills: { focus: "#DCE0F5", answer: "#DAEFE8" },
 };
 export const PAPER: Theme = {
   name: "paper",
