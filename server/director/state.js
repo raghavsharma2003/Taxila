@@ -17,7 +17,6 @@
 // The route classifies, updates the learner model, then calls step with the updated skill snapshot.
 // branchesFor() runs step() on a synthetic right and wrong reply: the voice lane's "if right / if not"
 // lines are the director's own next moves, never a second guess at them.
-import { inHindiWords } from "../brain/register.js";
 import { heldBoard as studioHeldBoard } from "../stagecraft/board-first.js";
 import { unitBoardOf, firstUnitOf } from "../brain/propose.js";
 import { stopKind, signalsOf } from "../relational/signals.js";
@@ -886,7 +885,7 @@ export function scriptKeyOf(kit, id) {
   if (m[4]) { const r = sk.remediation?.find((x) => x.targets === m[5]); return r?.then && typeof r.then === "object" ? r.then.key ?? null : r?.thenKey ?? null; }
   return sk.checks?.find((c) => c.id === m[6])?.key ?? null;
 }
-/** v6.3 T1′: `text` without its sentences that state the numeric key of a script card already closed (not `live`), or null. */
+/** v6.3 T1′: `text` when none of its sentences states the numeric key of a script card already closed (not `live`), else null. */
 function withoutClosedKeys(text, s, kit, live) {
   if (!text) return text ?? null;
   const keys = [...new Set([...(s.itemsDone ?? []), ...(s.skipped ?? [])].filter((id) => String(id).startsWith("script:") && id !== live?.id)
@@ -895,8 +894,8 @@ function withoutClosedKeys(text, s, kit, live) {
   const esc = (k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const hit = (x) => keys.some((k) => new RegExp(`(?<![\\d/])${esc(k)}(?![\\d/])`).test(x));
   const ss = String(text).match(/[^.!?\u0964]+[.!?\u0964]*/g)?.map((x) => x.trim()).filter(Boolean) ?? [];
-  const kept = ss.filter((x) => !hit(x));
-  return kept.length === ss.length ? text : kept.length ? kept.join(" ") : null;
+  // (main's order 1, G3: an authored line is said whole or not at all — never cut to the sentences without a closed key)
+  return ss.some(hit) ? null : text;
 }
 /** v4 W1: a live script card's authored reminder line in the lesson's language, or null. */
 function cardPointOf(s, kit, item) {
@@ -3256,7 +3255,9 @@ function step0(prev, input) {
     // 1/4." on e3's card, e2's answer said again): a reminder or a simpler said on a card never restates a closed card's answer
     // (v6.4 P2: a remediation's words are said whole — never cut to a fragment; a sentence that would restate a closed card's key
     // only leaves a recap or a beat's simpler, whole sentences at a time)
-    if (move.simpler && live && move.simplerBeat?.kind !== "remediation") { const sm = withoutClosedKeys(move.simpler, s, input.kit, live); if (sm) move.simpler = sm; else { delete move.simpler; delete move.simplerBeat; } }
+    // (main's order 1, dc-r8-director20 G3: an authored part is said whole — a simpler is the card's own help, written by Learning for
+    // this card, and is never cut to its sentences without a closed key: c5-t01 e3's simpler lost "8 gaps hue toh pehla mark 1/8 ekdum
+    // 0 ke paas aa gaya." to e2's key 1/8 and was said half)
     // director7 cause 2 (main: option a): a turn whose board is not the live card's own board (a remediation's say on its board,
     // then its then-card on then.board) switches to the card's board where the card starts (brain/propose.js: intent.cardBoard,
     // the clause index; Studio stages the change there)
@@ -3942,9 +3943,10 @@ function uiFor(s, p, move, item, kit) {
     // 10/10 then-cards and the child never heard their setup; v2.2 caps them at 120 characters at the source)
     const full = String(promptFor(item, s.ctx.lang) ?? "").replace(/\s+/g, " ").trim();
     const text0 = isScriptCard(item) ? full : askText(full);
-    // v6.1 R10 (main, director9: Hindi asked for, the card still said "fraction mein batao", c6 0/4): in the Hindi mode a scripted
-    // card is shown and read in Hindi words too (brain/register.js; its numbers, and its key's and accept forms' words, as they are)
-    const text = s.ctx.lang === "hindi" && s.ctx.langPinned && isScriptCard(item) ? inHindiWords(text0, { keep: [item.answer, ...(item.acceptable ?? [])].map(String) }) : text0;
+    // (dc-r8-director20 W1 and G3, retiring v6.1 R10: a scripted card is an authored sentence and is shown and said as written, in the
+    // Hindi mode too — code swapped "line" for "rekha" inside the card, which the authoredWhole predicate flagged on 65 dry turns. The
+    // one-term-per-idea rule is met in the script's data, not by code)
+    const text = text0;
     if (!isObjective(text, kit, topic)) ui.ask = { text, itemId: item.id };
   }
   // Choices on screen always take the tray: a choice item is never left with its options only in speech behind an

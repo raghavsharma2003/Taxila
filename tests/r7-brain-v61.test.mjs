@@ -177,17 +177,25 @@ describe("r7-brain-v61.test.mjs", () => {
     assert.match(r.state.lastMove.returned.said ?? "", /cricket/i, "their words carried");
   });
 
-  test("R10: in the Hindi mode a scripted card is shown and read in Hindi words", async () => {
-    setScriptForTest(T1, runScript(T1));
+  // (retired 2026-11-11, dc-r8-director20 W1 and G3: a scripted card is authored and is said as written in the Hindi mode too; the
+  // R10 swap put "rekha" inside cards that say "line" — the authoredWhole dry predicate. The test now holds the reverse)
+  test("W1 (was R10): in the Hindi mode a scripted card is shown and read as written", async () => {
+    const { readFileSync } = await import("node:fs");
+    setScriptForTest(T1, JSON.parse(readFileSync(new URL("../data/lesson-scripts/c5-maths-ch02-t01.json", import.meta.url), "utf8")));
     const L = walkOf(T1);
     for (let i = 0; i < 4 && !L.r.state.activeItemId; i++) L.t("haan");
     const lang = { ...cls("no_evidence"), request: { type: "language", lang: "hindi" } };
     L.t("Hindi mein bolo", lang);
     assert.equal(L.r.state.ctx.lang, "hindi");
-    L.t("haan");
-    const card = L.r.ui?.ask?.text ?? "";
-    assert.ok(card, "a card is up");
-    assert.doesNotMatch(card, /\b(?:fraction|equal|parts?)\b/i, card);
+    // (walk on to a card whose authored words include one the old swap changed: line, fraction, marks)
+    const sw = /\b(?:line|fraction|marks?|equal|parts?)\b/i;
+    let seen = 0;
+    for (let i = 0; i < 40 && seen < 2; i++) {
+      const sc = L.r.state.scriptCard, card = L.r.ui?.ask?.text ?? "";
+      if (card && sc?.prompt_hi && sw.test(sc.prompt_hi)) { assert.equal(card, String(sc.prompt_hi).replace(/\s+/g, " ").trim(), "the card as written"); seen++; }
+      L.t(sc ? String(sc.answer) : "haan", sc ? cls("correct") : cls("no_evidence"));
+    }
+    assert.ok(seen >= 1, "a card with such a word was reached");
     // (a word of the card's own key or accept forms stays: "isi line par" is how they answer it)
     const { inHindiWords } = await import("../server/brain/register.js");
     assert.equal(inHindiWords("Kitne equal parts hain? isi line par", { keep: ["on this line", "isi line par"] }), "Kitne barabar hisse hain? isi line par");

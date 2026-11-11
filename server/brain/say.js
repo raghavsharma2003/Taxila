@@ -237,7 +237,11 @@ function authoredSentence(state, card) {
   const txt = (x) => (typeof x === "string" ? x : x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" \n ") : "");
   const all = [lm.point, lm.simpler, lm.cardPoint, ...(lm.rendered ?? []), ...(lm.sayFirst ?? []), lm.gave?.answer, lm.gave?.why, lm.closed?.answer, lm.closed?.why,
     lm.workedDone?.answer, lm.workedDone?.why, lm.bridgeSaid, card].map(txt).filter(Boolean).map((x) => x.replace(/\s+/g, " ").toLowerCase()).join(" \n ");
-  return (x) => { const k = String(x ?? "").replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?।:]+$/, ""); return k.length > 8 && all.includes(k); };
+  // (main's order 1: a sentence whose head is a frame of code's, "Phir se dekho: …", "Haan, pehle tum try karo — …", is authored when what
+  // follows the frame is — the Hindi word pass swapped "line" inside a re-posed card)
+  const unframed = (k) => k.replace(/^[^:—]{0,40}(?::|—)\s*/, "");
+  return (x) => { const k = String(x ?? "").replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?।:]+$/, ""); const u = unframed(k);
+    return (k.length > 8 && all.includes(k)) || (u !== k && u.length > 8 && all.includes(u)); };
 }
 /** v6.11 J2: the instruction for her one sentence after the child answered her return question. */
 /** v6.11 J2 (main on the J2 replay, 12 of 60 drafts passed and 41 of 48 refusals were the child's sentence said back): the model is
@@ -2814,7 +2818,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       return !!w && !isRet && !PROMISE_SAID.test(x) && !/(?<![\p{L}])(?:ke\s+baad|baad\s+mein|karenge|yaad\s+rahega|later)(?![\p{L}])/iu.test(x)
         && !/(?<![\p{L}])(?:tum|tumne|tumhe|tumhari|tumhara|tumko|you|your|ai)(?![\p{L}])/iu.test(x) && !LESSON_SAID.test(x) && !/\d/.test(x); };
     const ssc = sentences(reply).map((x) => String(x).trim()).filter(Boolean);
-    const kept = ssc.filter((x) => !canned(x));
+    // (main's order 1, the authoredWhole predicate: c5-t01's authored hook "Cricket ki pitch socho." went as an aside fact — an
+    // authored sentence is never one)
+    const authoredS = authoredSentence(state, ui?.ask?.text ?? null);
+    const kept = ssc.filter((x) => !canned(x) || authoredS(x));
     if (kept.length && kept.length < ssc.length) { reply = kept.join(" "); guard.cannedDropped = ssc.length - kept.length; }
     // (an aside parked THIS turn whose only mention was such a sentence is still said: code's promise, as when her words leave it out)
     const parkedNow = (state.later ?? []).find((e) => e.at === state.turn && e.servedAt == null && e.share);

@@ -144,6 +144,25 @@ export const PREDICATES = {
       : !theirs.some((w) => new RegExp(`(?<![\\p{L}])${w}`, "iu").test(s0)) ? "none of their words" : null;
     return why ? `the reply to their answer is ${why}: "${s0.slice(0, 70)}"` : null;
   },
+  /** Main's order 1 (dc-r8-director20 G3 b, c): every authored part she starts is said whole — a point, a simpler, a card, a remediation,
+   *  a worked problem or given, a hook, a bridge, greetSimpler. A turn that says one sentence of an authored unit (one no other unit
+   *  holds) and not the whole unit, word for word in one run, dropped or changed a part of it: a sentence cut, a word swapped, another
+   *  line put inside it. Frames before a sentence ("Phir se dekho: …") are allowed; the unit's own words are not touched. */
+  authoredWhole(L, r, i, ctx) {
+    const units = (ctx.units ??= authoredUnits(ctx.script));
+    const T = ` ${key(r.text)} `;
+    const TS = sentencesOf(r.text).map(key);
+    const said = (k) => TS.some((t) => t === k || t.endsWith(` ${k}`));
+    for (const u of units) {
+      if (T.includes(` ${u.whole} `)) continue;
+      const hit = u.sents.filter(said);
+      // (a sentence two units share, "Barfi ka kitna hissa khaya gaya?", proves neither was started)
+      if (!hit.some((h) => !units.some((v) => v.whole !== u.whole && v.whole.includes(h)))) continue;
+      const miss = u.sents.filter((x) => !said(x));
+      return `${u.where} not said whole (${hit.length} of ${u.sents.length} sentences${miss.length ? `; not said: "${miss[0].slice(0, 60)}"` : "; split"})`;
+    }
+    return null;
+  },
   /** A second clarify on one part (dc-r8-second-clarify-shows-not-rewords): the same authored line with the board shown, then the
    *  check-in — never the card, never the key. PENDING: reported, not gated, until the clarify column switch (C1 step 3). */
   secondClarify(L, r) {
@@ -167,6 +186,35 @@ export const PREDICATES = {
     return t && scriptUses(ctx, t.e) && scriptUses(ctx, t.h) ? `"${t.e}" beside "${t.h}" (both in the script)` : null;
   },
 };
+
+/** Every authored unit of a lesson script, in both forms: { where, whole, sents } (keys; sentences of three words or more). A unit
+ *  with a slot is filled by code and left out. */
+export function authoredUnits(script) {
+  const out = [];
+  const add = (where, v) => {
+    for (const t of typeof v === "string" ? [v] : [v?.hi, v?.en]) {
+      if (!t || /\{\w+\}/.test(t)) continue;
+      const sents = sentencesOf(t).map(key).filter((k) => k.split(" ").length >= 3);
+      if (sents.length) out.push({ where, whole: key(t), sents });
+    }
+  };
+  add("greetSimpler", script?.greetSimpler);
+  for (const [n, sk] of (script?.skills ?? []).entries()) {
+    const S = `s${n + 1}`;
+    for (const sl of sk.hook?.interestSlots ?? []) add(`${S} hook`, sl.use);
+    for (const e of sk.explain ?? []) { add(`${S} ${e.id} point`, e.point); add(`${S} ${e.id} simpler`, e.simpler); add(`${S} ${e.id} card`, e.ask?.prompt); add(`${S} ${e.id} ask.simpler`, e.ask?.simpler); }
+    for (const m of sk.remediation ?? []) { add(`${S} rem ${m.targets}`, m.say); add(`${S} rem ${m.targets} simpler`, m.simpler); add(`${S} then ${m.targets} card`, m.then?.prompt); add(`${S} then ${m.targets} simpler`, m.then?.simpler); }
+    const we = sk.workedExample;
+    if (we) {
+      add(`${S} worked problem`, we.problem); add(`${S} worked simpler`, we.simpler); (we.givens ?? []).forEach((g, k) => add(`${S} worked given ${k + 1}`, g));
+      (we.steps ?? []).forEach((st, k) => add(`${S} worked step ${k + 1} simpler`, st.simpler));
+      add(`${S} yourStep card`, we.yourStep?.prompt); add(`${S} yourStep simpler`, we.yourStep?.simpler);
+    }
+    for (const c of sk.checks ?? []) { add(`${S} ${c.id} card`, c.prompt); add(`${S} ${c.id} simpler`, c.simpler); }
+    add(`${S} bridge`, sk.bridgeToNext);
+  }
+  return out;
+}
 
 /** The first twin pair in a turn, not a gloss ("line yaani rekha", "rekha, yaani line"): { e, h } or null. */
 function twinHit(text) {
