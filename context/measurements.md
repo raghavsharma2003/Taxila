@@ -6660,3 +6660,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-59ae352` (2026-11-11): Released 59ae352 with scripts/release.mjs: web taxila-web--s59ae352-2c67 (was taxila-web--sd71c2ca-yt3l), worker + canary/nightly jobs on taxila-worker:59ae352 (was d71c2ca); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 59ae352 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-j2-replay-3-2026-11-11` (2026-11-11): J2 replays 2 and 3 (her reply sentence on returning to an aside), run by main. Replay 2 on Brain 16b0f0fcc (the note carries the child's words, not their sentence): 50 of 60 pass the predicate, but 13 of c5's passes repeat the child's real sentence (it still reached the model through the turn's history, and the replay read echo against the chosen words), so 37 of 60 clean; c6 12 of 20 with 5 refused on the word 'har' and 3 on a bare 'hota hai'. Replay 3 on Brain 4c87cafeb (the child's line cut from the reply call; lesson and rule clauses narrowed for this sentence only): 4 exchanges x 20 = 80 drafts, 76 clean (18, 20, 20, 18), no echo, $0.071. Simulated child, one seed, three child sentences. The replay shows safe and on-topic, not well-written: no judge has read the sentences.
