@@ -124,7 +124,7 @@ describe("stambh/tally layout: no overlap or cut-off at 360 x 640 and 1366 x 768
         initial: [],
         mid: [{ kind: "total", row: 0, n: Number(String(p.counts[0])[0]) }],
         mal,
-        // a later check, still off: no unit ticks and no hops to the answer, only her number and the way to go
+        // a later check, still off: the count over each bundle again, her number and the way to go (no ticks, no hops)
         retry: [...mal, { kind: "total", row: 0, n: p.counts[0] - 2 }, ...checkOf],
         end: sol,
         "end-retry": [...mal, ...totalsOf(sol)],
@@ -135,7 +135,12 @@ describe("stambh/tally layout: no overlap or cut-off at 360 x 640 and 1366 x 768
         await shoot(`${goal}-${phase}`, size);
         for (const f of faults(r)) bad.push(`${phase}: ${f}`);
         if (phase === "mal") { assert.equal(r.st.mal, "tally-four", "the mal state is the one played out"); assert.equal(r.st.sign, "counted"); }
-        if (phase === "mal-five") { assert.equal(r.st.mal, "tally-four"); assert.equal(r.st.sign, "five"); }
+        if (phase === "mal-five") {
+          assert.equal(r.st.mal, "tally-four"); assert.equal(r.st.sign, "five");
+          // round 2, ruling 1: the line points only at keeping the tally again; Jaancho waits until something changes
+          assert.match(r.goalLine, /^Tally phir se rakho$/, r.goalLine);
+          assert.ok(r.controls.some((c) => c.id === "done" && c.disabled), "Jaancho waits");
+        }
         if (phase.startsWith("end")) {
           assert.equal(r.st.done, true);
           assert.equal(r.st.checks, phase === "end" ? 1 : 2);

@@ -74,12 +74,16 @@ function holds(texts, value) {
 }
 
 let MOD = null;
+/** the meaning roles (answer, focus, mix-up) as the painter role that draws each: src/play/core/styles.ts LAW_ROLES, the one
+ *  map a Design token patch fills; the checks never read a colour */
+let ROLE = { answer: "good", focus: "focus", mixup: "look" };
 async function mods() {
   if (MOD) return MOD;
-  const [{ ART, Painter, newAudit }, { VIEWS }, { logicFor }, { hiddenOf }] = await Promise.all([
+  const [{ ART, Painter, newAudit, LAW_ROLES }, { VIEWS }, { logicFor }, { hiddenOf }] = await Promise.all([
     import("../../../src/play/core/styles.ts"), import("../../../src/play/families/views.ts"), import("../../../src/play/families/index.ts"), import("../../play/react.js"),
   ]);
   MOD = { ART, Painter, newAudit, VIEWS, logicFor, hiddenOf };
+  ROLE = LAW_ROLES;
   return MOD;
 }
 
@@ -163,7 +167,7 @@ export async function lawsFor(level, opts = {}) {
   checked++;
   if (first.err) breaks.push({ law: 0, state: "initial", what: `view threw: ${first.err}` });
   const given = first.texts;
-  for (const u of first.uses) if (u.role === "good" && u.op !== "particle") { breaks.push({ law: 1, state: "initial", what: `green before any act (${u.op})` }); break; }
+  for (const u of first.uses) if (u.role === ROLE.answer && u.op !== "particle") { breaks.push({ law: 1, state: "initial", what: `green before any act (${u.op})` }); break; }
   for (const u of first.uses) if (u.role === "you") uses.add(u.op);
   // ── each mal-rule's acts, step by step: the screen after the first miss while a try remains
   const mals = Object.keys(level.mal ?? {}).filter((id) => (logic.malRules ?? []).includes(id));
@@ -187,15 +191,15 @@ export async function lawsFor(level, opts = {}) {
     if (s.err) breaks.push({ law: 0, state: `mal:${mal}`, what: `view threw: ${s.err}` });
     for (const u of s.uses) if (u.role === "you") uses.add(u.op);
     // law 1: green only as a tick on a part she got right
-    const bad = [...new Set(s.uses.filter((u) => u.role === "good" && GREEN_BAD.has(u.op)).map((u) => u.op))];
-    const said = [...new Set(s.uses.filter((u) => u.role === "good" && u.s).map((u) => u.s))].slice(0, 3);
+    const bad = [...new Set(s.uses.filter((u) => u.role === ROLE.answer && GREEN_BAD.has(u.op)).map((u) => u.op))];
+    const said = [...new Set(s.uses.filter((u) => u.role === ROLE.answer && u.s).map((u) => u.s))].slice(0, 3);
     if (bad.length) breaks.push({ law: 1, state: `mal:${mal}`, what: `green on an unsolved screen after a miss (${bad.join(", ")}${said.length ? `: ${said.map((x) => JSON.stringify(x)).join(" ")}` : ""})` });
-    const ticks = s.uses.filter((u) => u.op === "tick" || u.op === "body:good").length, looks = s.uses.filter((u) => u.role === "look").length;
+    const ticks = s.uses.filter((u) => u.op === "tick" || u.op === `body:${ROLE.answer}`).length, looks = s.uses.filter((u) => u.role === ROLE.mixup).length;
     if (ticks && !looks) breaks.push({ law: 1, state: `mal:${mal}`, what: `only right-marks (${ticks}) and no look mark on an unsolved screen after a miss` });
     // law 2: no hidden value appears after the miss that was not a given and is not hers
     const mine = ownValues(m.ctl.acts.map((e) => e.act));
     // a value drawn in green is a part she already got right (law 1 holds green to that): hers, not the key
-    const rightParts = s.uses.filter((u) => u.role === "good" && u.s).map((u) => u.s);
+    const rightParts = s.uses.filter((u) => u.role === ROLE.answer && u.s).map((u) => u.s);
     for (const v of hidden) {
       if (holds(given, v) || mine.has(String(v).toLowerCase()) || holds(rightParts, v)) continue;
       if (holds(s.texts, v)) { breaks.push({ law: 2, state: `mal:${mal}`, what: `the key "${v}" is on screen after a miss` }); break; }

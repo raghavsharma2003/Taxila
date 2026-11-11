@@ -67,6 +67,12 @@ const MAT_DARK: Record<Material, string> = {
   leaf: "#5BB255", starch: "#3A3F7A", black: "#2A2A2E", copper: "#D98A4E", graphite: "#62666E", rubber: "#7D6A5C", shadow: "#05070B",
 };
 export type BodyState = "idle" | "hover" | "selected" | "good" | "look" | "dim" | "ghost";
+/**
+ * Round 8 law 1 ("green means right, and only right"): the meaning roles Design names (answer, focus, mix-up) and the
+ * painter role that draws each. This is the one place the law checks (server/forge3/qa/laws.mjs) read; a Design token
+ * patch fills this map, never a colour literal in a check.
+ */
+export const LAW_ROLES = { answer: "good", focus: "focus", mixup: "look" } as const satisfies Record<"answer" | "focus" | "mixup", Role>;
 // round 8 law 1 ("green means right, and only right"): the lime "your move" hue belongs to the DOM action button; on the
 // canvas a "you" (her pick, her unchecked mark) is drawn in the focus colour, so nothing lime-green sits on a wrong thing
 export const roleColor = (a: ArtTokens, r: Role): string => (r === "panel" ? a.panel : r === "you" ? a.focus : (a as unknown as Record<string, string>)[r] ?? a.ink);

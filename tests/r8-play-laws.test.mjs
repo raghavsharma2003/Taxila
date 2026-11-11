@@ -44,10 +44,11 @@ describe("r8 play laws: every served level of every family", () => {
 
 describe("r8 play laws: law 1 in the painter", () => {
   it("a selected body and a canvas \"you\" are the focus colour; focus is never the good green nor a quantity hue", async () => {
-    const { ART, Painter, newAudit, roleColor } = await import("../src/play/core/styles.ts");
+    const { ART, Painter, newAudit, roleColor, LAW_ROLES } = await import("../src/play/core/styles.ts");
     for (const a of Object.values(ART)) {
       assert.equal(roleColor(a, "you"), a.focus, a.id);
       assert.equal(roleColor(a, "focus"), a.focus, a.id);
+      assert.equal(roleColor(a, LAW_ROLES.focus), a.focus); assert.equal(roleColor(a, LAW_ROLES.answer), a.good); assert.equal(roleColor(a, LAW_ROLES.mixup), a.look);
       for (const k of ["good", "q1", "q2", "q3", "q4", "you", "look"]) assert.notEqual(a.focus.toLowerCase(), a[k].toLowerCase(), `${a.id} focus vs ${k}`);
       // the hue of focus is blue-violet (200..300 deg), far from green (90..160)
       const n = parseInt(a.focus.slice(1), 16), r = (n >> 16) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
