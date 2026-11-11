@@ -81,7 +81,9 @@ test("every Studio v2 engine: no overlap or cut-off beyond the known list (defau
 
 test("the engines fixed on 2026-11-11 stay clean on their reviewed default spec", async () => {
   // the judged faults this check was built from, fixed in this pass: none of these engines may come back to the list
-  const fixed = ["angle-cannon@1", "dukaan@1", "fraction-ops@1", "geo-forge@1", "pictograph@1", "rule-machine@1", "sieve-storm@1", "vault-heist@1"];
+  const fixed = ["angle-cannon@1", "dukaan@1", "fraction-ops@1", "geo-forge@1", "pictograph@1", "rule-machine@1", "sieve-storm@1", "vault-heist@1",
+    // (main 13:22 item c: the remaining maths engines)
+    "angle-sum@1", "balance-beam@1", "data-rush@1", "pattern-lab@1", "solid-view@1", "zero-pair@1"];
   const known = JSON.parse(fs.readFileSync(KNOWN_FILE, "utf8"));
   for (const a of fixed) for (const b of BOXES) assert.equal(known.faults[`${a}|default|${b.vp}`], undefined, `${a} ${b.vp} is on the known list`);
 });
