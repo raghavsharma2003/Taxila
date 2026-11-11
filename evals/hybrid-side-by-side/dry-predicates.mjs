@@ -13,7 +13,9 @@ const low = (t) => norm(t).toLowerCase();
 const sentencesOf = (t) => norm(t).split(/(?<=[.!?।])\s+(?=\S)/).map((x) => x.trim()).filter(Boolean);
 const key = (t) => low(t).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
 const words = (t) => norm(t).split(" ").filter(Boolean).length;
-const cardIn = (r) => !!r?.card && low(r.text).includes(low(r.card).slice(0, 30));
+// (S1: a card re-asked by its question alone — its last sentence — is said too)
+const cardQ = (c) => sentencesOf(c).at(-1) ?? "";
+const cardIn = (r) => !!r?.card && (low(r.text).includes(low(r.card).slice(0, 30)) || (sentencesOf(r.card).length > 1 && low(r.text).endsWith(low(cardQ(r.card)))));
 
 const REPOSE = /^(?:Phir se dekho|Ek baar aur dekho|Ek baar phir dekho|Look again|One more look)\s*:/i;
 const KEY_SAID = /(?:is sawaal ka|iska|yahan|pichhle sawaal ka|woh wala:?) (?:sahi )?jawab|sahi jawab:|the answer (?:here )?(?:is|was)|iska jawab hai|poora jawab:?|the full answer/i;
@@ -24,6 +26,7 @@ const CLARIFY = /\b(?:samajh nahi aaya|samajh nahi aa raha|samjha nahi|samjhi na
 const CHECKIN = /(?:Yahan tak (?:theek|saaf) hai|Ab tak samajh aaya|Yeh hissa saaf hua|Yeh kadam (?:saaf hai|samajh aaya)|Does that make sense so far|Clear so far|All good so far|Is that (?:part|step) clear)\?\s*$/i;
 const RET_STOP = new Set(["maine", "mujhe", "mera", "meri", "mere", "aapko", "tumhe", "hain", "kyunki", "jab", "woh", "sabse", "lagti", "lagta", "with", "that", "this", "have", "when"]);
 const TASTE = /(?<![\p{L}])(?:mujhe\s+(?:bhi\s+)?\S+(?:\s+\S+)?\s+pasand|meri\s+favourite|mera\s+favourite|mujhe\s+(?:bhi\s+)?achha\s+lagta|i\s+(?:also\s+)?(?:love|like|enjoy)|my\s+favou?rite)/iu;
+const SPLIT_CARD_RE = /(?:Ab isi par ek sawaal|Ab is par ek chhota sawaal|Ab ise ek sawaal se dekhte hain|Now a question on this|Now a small question on this|Let's try a question on it)[.!]?/i;
 const JOINT_ONLY = /^(?:achha|theek hai|hmm,? achha|okay|alright|right|haan)[.!,]?$/i;
 /** English words and their Hindi twins: Learning's one list (data/lesson-twins.json, also read by scripts/lesson-scripts/check.mjs and
  *  by server/brain/say.js). Each side's forms longest first, so "number line" is tried before "line". */
@@ -178,8 +181,11 @@ export const PREDICATES = {
     const T = ` ${key(r.text)} `;
     const TS = sentencesOf(r.text).map(key);
     const said = (k) => TS.some((t) => t === k || t.endsWith(` ${k}`));
+    // (S1: a card said whole in one of her last two turns may be re-asked by its question alone)
+    const recentT = [ctx.prevT, ctx.prevPrevT].filter(Boolean).map((t) => ` ${key(t.text)} `);
     for (const u of units) {
       if (T.includes(` ${u.whole} `)) continue;
+      if (/ card$/.test(u.where) && recentT.some((t) => t.includes(` ${u.whole} `)) && u.sents.filter(said).every((x) => x === u.sents.at(-1))) continue;
       const hit = u.sents.filter(said);
       // (a sentence two units share, "Barfi ka kitna hissa khaya gaya?", proves neither was started)
       if (!hit.some((h) => !units.some((v) => v.whole !== u.whole && v.whole.includes(h)))) continue;
@@ -274,6 +280,26 @@ export const PREDICATES = {
     const ack = sentencesOf(r.text).find((x) => /hindi mein/i.test(x));
     const rest = low(r.text.replace(ack ?? "", "")).replace(low(p.card ?? ""), "");
     return ack && low(p.text).includes(rest.trim().slice(0, 40)) ? `"${ack}" with nothing changed` : null;
+  },
+  /** S1 (dc-r8-director20): after a hint on a card said whole in one of her last two turns, she asks only its question (its last
+   *  sentence, or the card's ask) — the whole card said again is fault 7 (23 times in c5-t01). */
+  cardWholeAgain(L, r, i, ctx) {
+    // (a picture turn keeps its card whole on its own page, v6.5 P3: a hint is a simpler or a miss's close)
+    if (!cardIn(r) || (r.pageParts ?? []).some((x) => x.part === "alt") || !(r.pageParts ?? []).some((x) => x.part === "simpler" || x.part === "close")) return null;
+    const c = low(r.card ?? "");
+    if (sentencesOf(r.card ?? "").length < 2) return null;
+    const said = [ctx.prevT, ctx.prevPrevT].some((t) => t && low(t.text).includes(c));
+    return said && low(r.text).includes(c) ? "the whole card said again after a hint, said whole in her last two turns" : null;
+  },
+  /** S1: "Ab isi par ek sawaal." only when the card follows in the same turn. */
+  splitCardEmpty(L, r) {
+    return SPLIT_CARD_RE.test(r.text) && !cardIn(r) ? `"${norm(r.text).match(SPLIT_CARD_RE)[0]}" with no card after it` : null;
+  },
+  /** S1: no turn ends on a close with nothing for the child — a close is followed by the next part, a card or a check-in. */
+  bareClose(L, r) {
+    if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? "")) || cardIn(r) || /[?？]\s*$/.test(norm(r.text))) return null;
+    const last = (r.pageParts ?? []).at(-1)?.part;
+    return last === "close" || last === "closed" ? `the turn ends on a close: "${sentencesOf(r.text).at(-1)?.slice(0, 60)}"` : null;
   },
   /** A second clarify on one part (dc-r8-second-clarify-shows-not-rewords): the same authored line with the board shown, then the
    *  check-in — never the card, never the key. PENDING: reported, not gated, until the clarify column switch (C1 step 3). */

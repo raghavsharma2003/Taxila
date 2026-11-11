@@ -70,3 +70,11 @@ test("L3: a clarify at the greeting is answered with greetSimpler, then the hook
   assert.equal(of("Aaj hum barabar hisse seekhenge. Socho, ek roti."), 0);
   assert.equal(of("Socho, ek roti."), 1);
 });
+
+// S1 (dc-r8-director20): the whole card said again after a hint (c4 stuck 8), "Ab isi par ek sawaal." with no card (c5-t01 stuck 48,
+// c6 stuck 62) and a turn ending on a close (c5-t01 stuck 32, a why-probe that asked nothing) are flagged on director20's rows
+test("S1: the re-ask predicates flag director20's rows", () => {
+  const flags = checkRun(RUN).map((x) => `${x.lesson} ${x.row} ${x.predicate}`);
+  for (const f of ["stuck-c4-ch05-t01 8 cardWholeAgain", "stuck-c5-ch02-t01 48 splitCardEmpty", "stuck-c6-ch06-t01 62 splitCardEmpty", "stuck-c5-ch02-t01 32 bareClose"])
+    assert.ok(flags.includes(f), `${f} in ${flags.filter((x) => /cardWholeAgain|splitCardEmpty|bareClose/.test(x)).join(", ")}`);
+});

@@ -3271,7 +3271,14 @@ function step0(prev, input) {
     }
   }
   // (dc-r8-director20 L1: a give-up at the check-in after a point — the point's authored simpler, then the card it held)
-  if (input.cls?.request?.src === "simpler_then_card" && !move.simpler) { const sm = simplerOfBeat(s, input.kit, prev?.lastMove); if (sm) { move.simpler = sm; move.smaller = true; } }
+  if (input.cls?.request?.src === "simpler_then_card" && !move.simpler) {
+    const sm = simplerOfBeat(s, input.kit, prev?.lastMove);
+    if (sm) {
+      move.simpler = sm; move.smaller = true;
+      // (said on this card: its help has used it, so a give-up or a miss next climbs past it — T1.6, never the same simpler again)
+      if (s.activeItemId) { const hp = s.cardHelp?.id === s.activeItemId ? s.cardHelp : { id: s.activeItemId, said: [], misses: 0 }; s.cardHelp = { ...hp, said: [...hp.said, normLine(sm)] }; }
+    }
+  }
   // P1 (dc-r8-director20): the authored parts a return's turn held back (brain/say.js guard.bodyHeld) are said first now
   if (prev?.bodyUnsaid?.length && !["safeguard", "wrap", "break"].includes(move.kind)) { move.sayFirst = [...prev.bodyUnsaid.map(String), ...(move.sayFirst ?? [])]; move.heldSaid = prev.bodyUnsaid.map(String); }
   // v6.10 T2 (main on director18 c5-t02 stuck 50, offtopic 10, c6 offtopic 10: after the aside reply the card was posed bare and its
