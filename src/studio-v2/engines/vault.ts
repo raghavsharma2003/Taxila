@@ -184,7 +184,18 @@ function create(api: EngineApi, spec: VaultSpec): EngineInstance {
       ctx.fillStyle = "rgba(16,19,27,.92)"; roundRect(ctx, 40, 170, 480, 230, 20); ctx.fill(); ctx.strokeStyle = "rgba(139,152,255,.35)"; ctx.lineWidth = 2; ctx.stroke();
       api.text(ctx, T.target, 70, 214, { font: "mono", size: 38, weight: 600, color: C.ink3, maxWidth: SEAL.x - SEAL.r - 16 - 70 });
       const isWords = round().show === "words" && g.state !== "sealed" && g.state !== "end";
-      api.text(ctx, shownTarget, 70, isWords ? 268 : 280, { font: isWords ? "ui" : "display", size: isWords ? 40 : 76, weight: 800, maxWidth: 320 });   // clear of the seal dial
+      if (!isWords) api.text(ctx, shownTarget, 70, 280, { font: "display", size: 76, weight: 800, maxWidth: 320 });   // clear of the seal dial
+      else {
+        // (regen r3, c5-ch01-t01: "ten thousand five hundred" wrapped about its one-line spot and its top line sat on the
+        // "Lakshya" label. The lines run DOWN from under the label: the first clear of the seal dial, the second may take the
+        // card's width; a target that needs a third line steps the size down)
+        const wo = (size: number) => ({ font: "ui" as const, size, weight: 800 });
+        const fit = (size: number) => { const first = wrapLines(api, ctx, shownTarget, 320, wo(size)); if (first.length <= 1) return first; const rest = wrapLines(api, ctx, first.slice(1).join(" "), ROW_X1 - 70, wo(size)); return [first[0], ...rest]; };
+        let size = Math.max(40, api.minLabel), lines = fit(size);
+        if (lines.length > 2) { size = Math.max(32, api.minLabel); lines = fit(size); }
+        const lh = size * 1.1;
+        lines.forEach((ln, i) => api.text(ctx, ln, 70, 262 + i * lh, { ...wo(size), maxWidth: i === 0 ? 320 : ROW_X1 - 70 }));
+      }
       // the loaded row: label, then the count after it ("jama hua" ran under the 0); a label too long to leave the count
       // its room wraps to whole lines about the row (never under the dial: the row runs the card's full width)
       const lo = { font: "mono" as const, size: 38, weight: 600 }, totS = groupDigits(tot, spec.system), cnt = { font: "display" as const, size: 52, weight: 800 };

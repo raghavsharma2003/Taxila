@@ -85,3 +85,14 @@ test("the engines fixed on 2026-11-11 stay clean on their reviewed default spec"
   const known = JSON.parse(fs.readFileSync(KNOWN_FILE, "utf8"));
   for (const a of fixed) for (const b of BOXES) assert.equal(known.faults[`${a}|default|${b.vp}`], undefined, `${a} ${b.vp} is on the known list`);
 });
+
+test("vault-heist: a words target that wraps runs down from under its label, touching nothing (regen r3, c5-ch01-t01)", { timeout: 120_000 }, async () => {
+  // judge A: "ten thousand five hundred" wrapped about its one-line spot and its top line sat on "Lakshya". The 20 % overlap
+  // rule let that touch through, so this run asks the probe's stricter opt-in rule: no two text runs meet at all
+  const { spec } = JSON.parse(fs.readFileSync(new URL("./fixtures/studio-v2-vault-words.json", import.meta.url), "utf8"));
+  for (const b of BOXES) {
+    const r = await probe("vault-heist@1", spec, b, { touch: true });
+    assert.deepEqual(r.errors, [], b.vp);
+    assert.deepEqual(r.faults.map(faultKey), [], `${b.vp}: text runs meet`);
+  }
+});
