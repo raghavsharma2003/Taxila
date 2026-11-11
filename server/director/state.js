@@ -3341,6 +3341,11 @@ function step0(prev, input) {
   }
   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
   if (p.request) move.request = p.request;
+  // (dc-r8-second-clarify-shows-not-rewords, main's reversal clause: the judges count second-clarify rows — a clarify on the same live
+  // part as the clarify before it is the n-th, recorded on the move; any other turn ends the run)
+  { const partKey = `${s.activeItemId ?? ""}|${prev?.lastMove?.scriptBeat ? `${prev.lastMove.scriptBeat.skillId}:${prev.lastMove.scriptBeat.beatId}` : ""}`;
+    if (p.request === "clarify") { const n = prev?.clarifyRun?.key === partKey ? prev.clarifyRun.n + 1 : 1; s.clarifyRun = { key: partKey, n }; move.clarifyN = n; }
+    else s.clarifyRun = undefined; }
   // (v6.11 G2: how many times each joint kind has been said this lesson — brain/say.js rotates the authored forms by it)
   if (p.request === "language") s.langN = (s.langN ?? 0) + 1;
   if (["ask_again", "unheard"].includes(p.request)) s.askAgainN = (s.askAgainN ?? 0) + 1;

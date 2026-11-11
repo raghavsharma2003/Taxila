@@ -22,6 +22,7 @@ test("every cell says only authored fields (script paths) and carries its addres
     assert.ok(c.parts.length > 40, s.topicId);
     for (const [part, cols] of Object.entries(c.cells)) for (const [col, hs] of Object.entries(cols)) for (const [h, cell] of Object.entries(hs)) {
       assert.equal(cell.address, `${part}/${col}/${h}`);
+      if (cell.notApplicable) continue;
       for (const ref of cell.say) assert.match(ref, /^skills\[\d+\]\./, `${cell.address}: ${ref}`);
       assert.ok(["end", "checkin", "card", "next", "remediation"].includes(cell.then), cell.address);
     }
@@ -29,12 +30,37 @@ test("every cell says only authored fields (script paths) and carries its addres
   }
 });
 
-test("a hole is a field the script lacks; a script given that field loses the hole", () => {
+test("dc-r8-second-clarify-shows-not-rewords: a second clarify shows the board and re-says; a third is clarify/spent; alts[0] optional", () => {
   const s = structuredClone(live[0]);
-  const before = compileScript(s).missing.filter((m) => m.path === "skills[0].explain[0].alts[0]");
-  assert.equal(before.length, 1);
-  s.skills[0].explain[0].alts = [{ hi: "Doosre shabdon mein: roti ke do barabar tukde.", en: "In other words: the roti in two equal pieces." }];
-  assert.equal(compileScript(s).missing.filter((m) => m.path === "skills[0].explain[0].alts[0]").length, 0);
+  const sk = s.skills[0], b = sk.explain[0];
+  const second = compileScript(s).cells[`${sk.skillId}:${b.id}:point`].clarify.heard;
+  assert.deepEqual(second.say, ["skills[0].explain[0].point"]);
+  assert.equal(second.show, "skills[0].explain[0].board");
+  assert.equal(second.then, "checkin");
+  assert.equal(second.help, "spent");
+  assert.ok(second.secondClarify);
+  const third = compileScript(s).cells[`${sk.skillId}:${b.id}:point`].clarify.spent;
+  assert.deepEqual(third.say, []);
+  assert.equal(third.then, "card");
+  assert.ok(third.thirdClarify);
+  // a script that authors alts[0] says it in place of the same line again
+  b.alts = [{ hi: "Doosre shabdon mein: roti ke do barabar tukde.", en: "In other words: the roti in two equal pieces." }];
+  assert.deepEqual(compileScript(s).cells[`${sk.skillId}:${b.id}:point`].clarify.heard.say, ["skills[0].explain[0].alts[0]"]);
+  assert.ok(!compileScript(live[0]).missing.some((m) => /alts\[0\]/.test(m.path)), "alts[0] is never a hole");
+});
+
+test("no hole is silent: every missing field's cells compile to a named fallback, and the field is still listed", () => {
+  for (const s of live) {
+    const c = compileScript(s);
+    for (const cs of Object.values(c.cells)) for (const hs of Object.values(cs)) for (const cell of Object.values(hs)) assert.ok(!cell.hole, cell.address);
+    assert.equal(c.fallbacks.length > 0, c.missing.length > 0, s.topicId);
+  }
+  // the worked problem has no simpler: its clarify re-says it and shows its board (resay_show), and the field is listed for Learning
+  const s = live[0], sk = s.skills[0];
+  const cell = compileScript(s).cells[`${sk.skillId}:worked:problem`].clarify.fresh;
+  assert.equal(cell.fallback, "resay_show");
+  assert.deepEqual(cell.say, ["skills[0].workedExample.problem"]);
+  assert.ok(compileScript(s).missing.some((m) => m.path === "skills[0].workedExample.simpler"));
 });
 
 test("Loop's corrections: a compressed skill opens on one check that branches; the misconception column keys per mix-up", () => {
@@ -57,4 +83,16 @@ test("cached by kit hash and plan hash", (t) => {
   assert.equal(compiledFor(live[0], { kitHash: "k1" }), a);
   assert.notEqual(compiledFor(live[0], { kitHash: "k2" }), a);
   assert.notEqual(compiledFor(live[0], { kitHash: "k1", plan: { compress: [live[0].skills[0].skillId] } }), a);
+});
+
+test("main's ruling: the misconception column applies only to a card with targets; without, it is not applicable (the wrong column)", () => {
+  const s = live[0];
+  const c = compileScript(s);
+  for (const p of c.parts.filter((x) => ["card", "check", "then_card", "your_step"].includes(x.kind))) {
+    const cell = c.cells[p.id].misconception.fresh;
+    const t = p.path.split(/\.|\[|\]/).filter(Boolean).reduce((v, k) => (v == null ? v : v[k]), s)?.targets ?? p.targets;
+    if (t) assert.ok(!cell.notApplicable, cell.address); else { assert.equal(cell.notApplicable, true, cell.address); assert.equal(cell.use, "wrong"); }
+  }
+  assert.ok(c.notApplicable.length > 0);
+  assert.ok(!c.missing.some((m) => m.field === "remediation" && /targets=undefined|targets=null/.test(m.path)));
 });
