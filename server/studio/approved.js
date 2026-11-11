@@ -92,7 +92,7 @@ export const fileHash = (file) => createHash("sha256").update(fs.readFileSync(fi
  * (`<skillId>:<checkId>`). → { skillId, beat, when, check } or null.
  */
 /** A topic's script: live (data/lesson-scripts) or staged (data/lesson-scripts-staged); null when it has none. */
-function scriptOf(topicId) {
+export function scriptOf(topicId) {
   for (const d of ["data/lesson-scripts", "data/lesson-scripts-staged"]) {
     try { return JSON.parse(fs.readFileSync(path.join(REPO, d, `${topicId}.json`), "utf8")); } catch { /* next */ }
   }

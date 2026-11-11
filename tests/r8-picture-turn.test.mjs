@@ -225,3 +225,32 @@ test("director20: the picture-line predicate — a line with a blank or stating 
   assert.equal(C(["8 barabar hisse", "aath hisse"], ["8"]), null, "neither shape clean: not said");
   assert.equal(C(["aur ek ___ barabar hisson mein"], []), null, "a hole is never said, key or no key");
 });
+
+test("main 21:08 (director20 c5-t01 offtopic 28): a picture line states no value a card still to come in the skill asks for — nor a later 1/b by its count of parts", async () => {
+  const ST = await import("../server/stagecraft/script-terms.js");
+  const ask = (beatId) => ({ kit: { topicId: "c5-maths-ch02-t01" }, intent: { skillId: "c5-maths-ch02-t01-s1", scriptBeat: { beatId } } });
+  assert.deepEqual(ST.laterKeys(ask("e2")), ["1/10", "1/4 km", "1/3"], "the cards after e2, in walk order (e3, worked, c1–c3)");
+  assert.deepEqual(ST.laterKeys(ask("c3")), [], "nothing after the last check");
+  assert.ok(ST.laterKeys(ask("rem:x")).includes("8"), "an unknown beat counts every card in the skill");
+  assert.deepEqual(ST.laterKeys({ kit: { topicId: "no-such-topic" }, intent: { skillId: "x" } }), []);
+  assert.ok(ST.lineStatesCount("aur ek 12 barabar hisson mein", ["1/12"]) && ST.lineStatesCount("12 equal parts", ["1/12"]) && ST.lineStatesCount("0 se 1 tak 12 gaps", ["1/12"]));
+  assert.ok(!ST.lineStatesCount("12 cm lambi", ["1/12"]) && !ST.lineStatesCount("12 barabar hisse", ["3/12"]), "only a unit fraction's count of parts");
+  const C = BF.cleanPictureLine;
+  assert.equal(C(["Dekho, yeh patti hai, aur ek 12 barabar hisson mein", "doosri patti bhi barabar hisson mein bati hai"], ["8"], { later: ["1/12"] }), "doosri patti bhi barabar hisson mein bati hai", "a later 1/12 by its count: the other shape");
+  assert.equal(C(["nishaan 1/3 par", "yahan 1/3 hai"], ["8"], { later: ["1/3"] }), null, "a later card's key in both shapes: not said");
+  assert.equal(C(["8 barabar gaps", "x"], [], { later: [] }), "8 barabar gaps", "no later keys: as before");
+});
+
+test("main 21:08 (director20 c6 stuck 18, steering 14): a picture line says the script's own terms — the form the script's Hinglish lines use", async () => {
+  const ST = await import("../server/stagecraft/script-terms.js");
+  const { scriptOf } = await import("../server/studio/approved.js");
+  const c6 = ST.ownTerms(scriptOf("c6-maths-ch06-t01")), lines = ST.ownTerms(scriptOf("c6-maths-ch02-t01"));
+  assert.ok(c6.some((t) => t.own === "triangle" && t.others.includes("tribhuj")), "c6-ch06's script says triangle");
+  assert.equal(ST.inScriptTerms("Is tribhuj ki 3 bhujayein seedhi karke ek line par rakhi hain", c6), "Is triangle ki 3 bhujayein seedhi karke ek line par rakhi hain");
+  assert.equal(ST.inScriptTerms("Tribhuj dekho", c6), "Triangle dekho", "case kept");
+  assert.equal(ST.inScriptTerms("Yeh rekha hai aur yeh rekhakhand", lines), "Yeh line hai aur yeh line segment", "c6-ch02's script says line and line segment");
+  assert.equal(ST.inScriptTerms("0 se 1 ki sankhya rekha", lines), "0 se 1 ki sankhya rekha", "a compound is never half-swapped");
+  assert.equal(ST.inScriptTerms("ek tribhuj", []), "ek tribhuj", "no terms: unchanged");
+  // a term the script says both ways equally, or never, is left alone
+  assert.deepEqual(ST.ownTerms({ terms: [{ hi: "rekha", en: "line" }], skills: [{ explain: [{ say: { hi: "ek rekha, ek line" } }] }] }), []);
+});

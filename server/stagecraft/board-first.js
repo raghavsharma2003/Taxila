@@ -32,6 +32,7 @@ import { expand } from "../forge/explainer/templates.js";
 import { splitSentences } from "../voice/sentences.js";
 import { clausesOf as voiceClausesOf } from "../voice/expressive/align.js";
 import { normalizeScript, LIMITS as WB_LIMITS } from "../../shared/whiteboard.js";
+import { laterKeys, lineStatesCount, termsOf, inScriptTerms } from "./script-terms.js";
 
 /** = server/studio/seam.js STUDIO_ROW_PREFIX (not imported: seam.js imports this file; tests/round2-content.test.mjs pins equality). */
 export const STUDIO_ROW_PREFIX = "on screen now (values to use when you point at the screen; never what is hidden): ";
@@ -1123,8 +1124,11 @@ export function pictureTurn(ask, { keepRef = null, keepPage = null, variant = 0 
     // (v6.11: her picture line never states the open card's key, in digits or in words — a naming clause that would is dropped;
     // director20: nor does it ship with a blank — a line that still states the key or has a hole is rewritten in the view's
     // other caption shape, and with neither clean there is no view at all)
-    const line = cleanPictureLine([v.line, v.lineOf(variant + 1)], pictureKeys(ask));
-    if (line == null) return none;
+    // (main 21:08, director20 c5-t01 offtopic 28: nor a value a card still to come in the skill asks for — "12 barabar hisson"
+    // gave a later 1/12 away; c6 stuck 18: and it says the script's own terms, "triangle" where the script says triangle)
+    const line0 = cleanPictureLine([v.line, v.lineOf(variant + 1)], pictureKeys(ask), { later: laterKeys(ask) });
+    if (line0 == null) return none;
+    const line = inScriptTerms(line0, termsOf(ask));
     return { board, view: { call: v.call, view: v.view, script: right, facts: ax.script.facts ?? null, template: v.call.template }, line, script,
       layout: { split: true, panels: [{ side: "left", role: "held", template: board.template, unit: h.unit ?? null }, { side: "right", role: "view", template: v.call.template, view: v.view }] } };
   } catch { return null; }
@@ -1140,12 +1144,14 @@ export function pictureKeys(ask) {
 }
 /** The first of `lines` that, with a naming clause stating a key dropped (", yaani …"), states no key and has no blank — or
  *  null (no line can be said: the turn has no view). PURE. */
-export function cleanPictureLine(lines, keys) {
+export function cleanPictureLine(lines, keys, { later = [] } = {}) {
+  const all = [...keys, ...later];
+  const states = (s) => (all.length > 0 && lineStatesKey(s, all)) || lineStatesCount(s, later);
   for (const l0 of lines) {
     let line = String(l0 ?? "").trim();
     if (!line) continue;
-    if (keys.length && lineStatesKey(line, keys)) line = line.split(";").map((part) => part.replace(/,\s*yaani\s+[^,;]+/g, (m) => (lineStatesKey(m, keys) ? "" : m))).join(";");
-    if ((keys.length && lineStatesKey(line, keys)) || lineHasBlank(line)) continue;
+    if (states(line)) line = line.split(";").map((part) => part.replace(/,\s*yaani\s+[^,;]+/g, (m) => (states(m) ? "" : m))).join(";");
+    if (states(line) || lineHasBlank(line)) continue;
     return line;
   }
   return null;
