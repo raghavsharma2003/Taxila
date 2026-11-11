@@ -164,6 +164,7 @@ async function seamFor(topicId, skillId, learner, C, kit, childId) {
   const rp = pairs(R.row);
   assert.equal(rp.game, key); assert.equal(rp.verdict, "solved"); assert.equal(rp.first_try, "1"); assert.equal(rp.misses, "0");
   assert.equal(rp.chose, (because[0]?.kind ?? "").replace(/^play\./, ""), "the row names the choice's because kind");
+  if (key === "stambh/tally") assert.match(rp.bundles ?? "", /^\d+$/, "the tally's row says how many bundles");
   out.evidence.push("right");
   const mal = Object.keys(level.mal ?? {}).find((m) => logic.malActs(level, m));
   if (mal) {
@@ -201,6 +202,38 @@ describe("round 8: Studio's phone routing → the play family, end to end (dry, 
         const childId = uuid();
         for (const learner of LEARNERS) (table[topicId] ??= {})[`${sk.id} × ${learner}`] = await seamFor(topicId, sk.id, learner, C, kit, childId);
       }
+    });
+  }
+
+  // r8 stambh/tally: c4 tally marks and pictographs has no lesson script (so no seeded learners): a new child, every kit
+  // skill. s1 is the tally's (keep or read), s2 / s3 the pictograph's; the tally's PLAY row also carries bundles=n.
+  test("c4-maths-ch14-t01 (tally marks and pictographs): every kit skill × a new child gets an admitted family at p360, its because, a first screen and its evidence", async () => {
+    const topicId = "c4-maths-ch14-t01", kit = kitFromFile(getTopic(topicId));
+    const C = { children: { new: { input: {} } } };
+    const keys = {};
+    for (const sk of kit.skills) {
+      assert.ok(admitPlay(sk.id, topicId), `${sk.id}: admitted`);
+      keys[sk.id] = (await seamFor(topicId, sk.id, "new", C, kit, uuid())).key;
+    }
+    assert.equal(keys[`${topicId}-s1`], "stambh/tally");
+    for (const sk of ["s2", "s3"]) assert.equal(keys[`${topicId}-${sk}`], "stambh/picto");
+  });
+
+  // r8 C2 Games: the round-8 engine modes (kon/place on c6-maths-ch02-t03; kon/name on c6-maths-ch02-t02). No lesson script is
+  // live for these topics yet, so children.mjs has no seeded learners for them: a new child (nothing known) takes every kit
+  // skill through the same door, checks and evidence as the pilot topics.
+  for (const [topicId, game] of [["c6-maths-ch02-t03", "kon/place"], ["c6-maths-ch02-t02", "kon/name"]]) {
+    test(`${topicId}: every kit skill gets an admitted family at p360 (${game} among them), its because, a first screen and its evidence`, async () => {
+      const kit = kitFromFile(getTopic(topicId));
+      const C = { children: { new: { input: {} } } };
+      const keys = new Set();
+      for (const sk of kit.skills) {
+        assert.ok(admitPlay(sk.id, topicId), `${sk.id}: admitted`);
+        const row = await seamFor(topicId, sk.id, "new", C, kit, uuid());
+        keys.add(row.key);
+        assert.ok(row.evidence.length >= 1);
+      }
+      assert.ok(keys.has(game), `${game} served for one of the skills: ${[...keys]}`);
     });
   }
 

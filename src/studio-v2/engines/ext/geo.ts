@@ -7,17 +7,25 @@ import { C, W, H } from "../../core/tokens.ts";
 import { clamp, hexA, rng } from "../../core/math.ts";
 import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
-import { drawCoach, drawIntro, drawStatCard, pill } from "../../core/ui.ts";
+import { drawCoach, drawIntro, drawStatCard, pill, wrapLines } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, backdrop, devaReady, tally } from "./kit.ts";
+import { GEO_OX, GEO_S, geoButtons, type Btn } from "./pure.ts";
 import { dots } from "../../core/dots.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 
-const OX = 200, OY = 182, S = 50, UNDO = { x: 812, y: 300, w: 168, h: 62 }, CHECK = { x: 812, y: 380, w: 168, h: 70 };   // wide enough for CHECK at the young floor
+// (the pin-board starts at x 190 so its rightmost column (x 790) keeps a clear gap to the buttons: at OX 200 the column sat
+// at x 800, against the buttons' edge at 812 — judges, regeneration round 2, l1366; the button stack is pure.ts geoButtons)
+const OX = GEO_OX, OY = 182, S = GEO_S;
 const px = (p: P2): [number, number] => [OX + p[0] * S, OY + p[1] * S];
 function create(api: EngineApi, spec: GeoSpec): EngineInstance {
   const T = spec.strings, accent = C.ion;
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
   const botR = rng(api.seed * 127 + 3);
+  // the buttons are laid out each frame from their labels' measured lines (render), the pointer and the bot read the same rects
+  let { UNDO, CHECK } = geoButtons(1, 1, 43);
+  const btnFont = { font: "display" as const, size: 38, weight: 800 };
+  const btnLines = (ctx: Ctx, lab: string): string[] => (api.measure(ctx, lab, btnFont) <= CHECK.w - 16 ? [lab] : wrapLines(api, ctx, lab, CHECK.w - 16, btnFont));
   const g = { ci: 0, pts: [] as P2[], closed: false, pick: [] as number[], edges: [] as [number, number][], bA: -1, clock: 0, answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0, coachA: 1, coachGone: false };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "built", label: T.built }, { key: "clock", label: T.time, meter: true }]);
   const rd = (): GfRoundT => spec.rounds[Math.max(0, flow.round)];
@@ -90,7 +98,7 @@ function create(api: EngineApi, spec: GeoSpec): EngineInstance {
     const r = rd(); if (!r) return; const c = ch();
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     const ok = g.verdict === "right", done = g.answered;
-    if (c.kind !== "sticks") for (let i = 0; i < GEO_COLS; i++) for (let j = 0; j < GEO_ROWS; j++) { const [x, y] = px([i, j]); ctx.fillStyle = "rgba(200,210,240,.35)"; ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); }
+    if (c.kind !== "sticks") for (let i = 0; i < GEO_COLS; i++) for (let j = 0; j < GEO_ROWS; j++) { const [x, y] = px([i, j]); ctx.fillStyle = withAlpha(C.geoDot, .35); ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); }
     if (c.kind === "parallel" || c.kind === "perpendicular") {
       const [a, b] = c.line.map((q) => px(q as P2)); const dx = b[0] - a[0], dy = b[1] - a[1], k = 2000 / Math.hypot(dx, dy);
       ctx.save(); ctx.strokeStyle = C.sun; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(a[0] - dx * k, a[1] - dy * k); ctx.lineTo(a[0] + dx * k, a[1] + dy * k); ctx.stroke(); ctx.restore();
@@ -106,11 +114,11 @@ function create(api: EngineApi, spec: GeoSpec): EngineInstance {
       ctx.save(); ctx.lineCap = "round";
       for (let i = 0; i < n; i++) { const a = P[i], b = P[(i + 1) % n]; ctx.strokeStyle = C.ink; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
       for (const [i, j] of g.edges) { ctx.strokeStyle = C.volt; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(P[i][0], P[i][1]); ctx.lineTo(P[j][0], P[j][1]); ctx.stroke(); }
-      P.forEach(([x, y], i) => { ctx.fillStyle = i === g.bA ? C.volt : "#2A3142"; ctx.beginPath(); ctx.arc(x, y, 14, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.ink2; ctx.lineWidth = 3; ctx.stroke(); });
+      P.forEach(([x, y], i) => { ctx.fillStyle = i === g.bA ? C.volt : C.geoPin; ctx.beginPath(); ctx.arc(x, y, 14, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.ink2; ctx.lineWidth = 3; ctx.stroke(); });
       ctx.restore();
       pill(api, ctx, isRigid ? T.holds : T.wobbles, 500, 530, { color: isRigid ? C.mint : C.amber, size: 38 });
     } else if (c.kind === "sticks") {
-      stickRects(c).forEach((q, i) => { const sel = g.pick.includes(i); ctx.save(); ctx.fillStyle = sel ? C.volt : ["#E0457B", "#5FC8E8", "#F2C230", "#7BD389", "#B9A4E0", "#FF9E5E"][i % 6]; roundRect(ctx, q.x, q.y, q.w, q.h, 8); ctx.fill(); ctx.restore(); api.text(ctx, String(q.s), q.x - 30, q.y + q.h / 2 + 2, { font: "mono", size: 38, weight: 600, align: "center", baseline: "middle" }); });
+      stickRects(c).forEach((q, i) => { const sel = g.pick.includes(i); ctx.save(); ctx.fillStyle = sel ? C.volt : [C.geoStickPink, C.geoStickBlue, C.geoStickGold, C.geoStickGreen, C.geoStickLilac, C.geoStickOrange][i % 6]; roundRect(ctx, q.x, q.y, q.w, q.h, 8); ctx.fill(); ctx.restore(); api.text(ctx, String(q.s), q.x - 30, q.y + q.h / 2 + 2, { font: "mono", size: 38, weight: 600, align: "center", baseline: "middle" }); });
       if (g.pick.length === 3) {
         const [a, b, cc] = g.pick.map((i) => c.sticks[i]).sort((x, y) => y - x), close = canTriangle(a, b, cc), base0: [number, number] = [520, 520], sc = 26;
         ctx.save(); ctx.lineCap = "round"; ctx.lineWidth = 8; ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.moveTo(base0[0], base0[1]); ctx.lineTo(base0[0] + a * sc, base0[1]); ctx.stroke();
@@ -130,9 +138,12 @@ function create(api: EngineApi, spec: GeoSpec): EngineInstance {
       }
       if (done && g.closed && simple(g.pts)) pill(api, ctx, rectilinear(g.pts) ? `${T.perimeter} ${perimeterRect(g.pts)} · ${T.area} ${area2(g.pts) / 2}` : `${T.area} ${area2(g.pts) / 2}`, 500, 528, { color: ok ? C.mint : C.amber, size: 38 });
     }
-    // buttons
-    for (const [b, lab, on] of [[UNDO, T.undo, !done], [CHECK, T.check, !done]] as [typeof UNDO, string, boolean][]) { ctx.save(); ctx.fillStyle = on ? (b === CHECK ? "rgba(203,255,77,.14)" : "rgba(22,26,36,.95)") : "rgba(255,255,255,.04)"; roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = on ? (b === CHECK ? C.volt : C.line2) : C.line; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, lab, b.x + b.w / 2, b.y + b.h / 2 + 2, { font: "display", size: 38, weight: 800, color: on ? (b === CHECK ? C.volt : C.ink2) : C.ink3, align: "center", baseline: "middle", maxWidth: b.w - 12 }); }
-    if (done) { if (ok) tick(ctx, 900, 230, C.mint, 1.1); else magnifier(ctx, 895, 230, C.amber, 1.1); if (!(g.closed && simple(g.pts))) pill(api, ctx, g.detail.slice(0, 34), 500, 556, { color: ok ? C.mint : C.amber, size: 38 }); }
+    // buttons (each as tall as its label's lines)
+    const lu = btnLines(ctx, T.undo), lc = btnLines(ctx, T.check), blh = Math.max(38, api.minLabel) * 1.12;
+    ({ UNDO, CHECK } = geoButtons(lu.length, lc.length, blh));
+    for (const [b, lines, on] of [[UNDO, lu, !done], [CHECK, lc, !done]] as [Btn, string[], boolean][]) { ctx.save(); ctx.fillStyle = on ? (b === CHECK ? withAlpha(C.volt, .14) : withAlpha(C.bg2, .95)) : withAlpha(C.hi, .04); roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = on ? (b === CHECK ? C.volt : C.line2) : C.line; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); lines.forEach((ln, i) => api.text(ctx, ln, b.x + b.w / 2, b.y + b.h / 2 + 2 + (i - (lines.length - 1) / 2) * blh, { ...btnFont, color: on ? (b === CHECK ? C.volt : C.ink2) : C.ink3, align: "center", baseline: "middle", maxWidth: b.w - 12 })); }
+    // (a frame's HOLDS / WOBBLES pill already says the result: the host's "n braces" detail lay over it — layout probe 2026-11-11)
+    if (done) { if (ok) tick(ctx, 900, 230, C.mint, 1.1); else magnifier(ctx, 895, 230, C.amber, 1.1); if (!(g.closed && simple(g.pts)) && c.kind !== "rigid") pill(api, ctx, g.detail.slice(0, 34), 500, 556, { color: ok ? C.mint : C.amber, size: 38 }); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
     if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[tally(g.right - r0, rd().challenges.length), T.built]] });
@@ -177,4 +188,4 @@ function create(api: EngineApi, spec: GeoSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds[0].challenges.slice(0, 3).map(prompt), figure: { kind: "grid", w: 6, h: 3 }, accent }),
   };
 }
-export const geo: EngineDef<GeoSpec> = { archetype: "geo-forge@1", label: "Game · Geo Forge", accent: C.ion, create };
+export const geo: EngineDef<GeoSpec> = { archetype: "geo-forge@1", label: "Game · Geo Forge", get accent() { return C.ion; }, create };

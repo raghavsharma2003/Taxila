@@ -4,11 +4,15 @@ import { C, W, H } from "./tokens.ts";
 import { ease } from "./math.ts";
 import { card, tick, type Ctx, type TextOpts } from "./draw.ts";
 import type { EngineApi } from "./types.ts";
+import { withAlpha } from "../../theme/palette.ts";
 
 export function drawIntro(api: EngineApi, ctx: Ctx, o: { a: number; t: number; kicker: string; title: string; sub?: string; accent?: string }): void {
   if (o.a <= 0.01) return;
   ctx.save(); ctx.globalAlpha = o.a;
-  ctx.fillStyle = "rgba(10,12,18,.5)"; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = withAlpha(C.bg, .5); ctx.fillRect(0, 0, W, H);
+  // the whole block steps down below the host's chrome where it sits over the world (the kicker's top is at ~190)
+  const dy = Math.min(60, Math.max(0, api.chromeBottom() + 10 - 190));
+  ctx.translate(0, dy);
   const sc = 1 + (1 - ease.outCubic(Math.min(1, o.t / 0.5))) * 0.22;
   api.text(ctx, o.kicker.toUpperCase(), 500, 220, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", track: 6 });
   ctx.save(); ctx.translate(500, 300); ctx.scale(sc, sc);
@@ -21,7 +25,9 @@ export function drawIntro(api: EngineApi, ctx: Ctx, o: { a: number; t: number; k
 }
 export function drawStatCard(api: EngineApi, ctx: Ctx, o: { a: number; head: string; color?: string; stats: [string, string][]; foot?: string; footColor?: string; ticked?: boolean }): void {
   if (o.a <= 0.01) return;
-  const h = o.foot ? 400 : 300, y = (H - h) / 2 - 10 + (1 - o.a) * 18;
+  // (below the host's DOM chrome where it sits over the world: at l1366 the task pill under the HUD row reached y ~178 and
+  // covered the card's head — layout probe, tests/studio-v2-layout.test.mjs, 2026-11-11)
+  const h = o.foot ? 400 : 300, y = Math.max((H - h) / 2 - 10, Math.min(api.chromeBottom() + 10, H - h - 12)) + (1 - o.a) * 18;
   card(ctx, 100, y, 800, h, o.a);
   ctx.save(); ctx.globalAlpha = o.a;
   const col = o.color ?? C.mint;
@@ -69,7 +75,7 @@ export function pill(api: EngineApi, ctx: Ctx, text: string, x: number, y: numbe
   const size = o.size ?? 40, w = api.measure(ctx, text, { font: "mono", size, weight: 600 }) + 36, h = size + 22;
   const x0 = o.align === "left" ? x : x - w / 2;
   ctx.save();
-  ctx.fillStyle = o.fill ?? "rgba(16,19,27,.88)";
+  ctx.fillStyle = o.fill ?? withAlpha(C.bg1, .88);
   ctx.beginPath(); ctx.roundRect(x0, y - h / 2, w, h, 14); ctx.fill();
   ctx.strokeStyle = o.color ?? C.line2; ctx.lineWidth = 2; ctx.stroke();
   api.text(ctx, text, x0 + w / 2, y + 2, { font: "mono", size, weight: 600, color: o.color ?? C.ink, align: "center", baseline: "middle" });

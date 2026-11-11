@@ -4,6 +4,7 @@
 // decimals target the kit misconceptions. The take-off value is the act; the host grades it.
 import { parseNum, type RunnerSpec } from "../../../shared/studio-spec.ts";
 import { C, W, H } from "../core/tokens.ts";
+import { withAlpha } from "../../theme/palette.ts";
 import { clamp, rng } from "../core/math.ts";
 import { bloom, magnifier, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
@@ -12,6 +13,9 @@ import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../core/ty
 import { dots } from "../core/dots.ts";
 
 const LY = 440, X0 = 90, X1 = 910, BASE_V = 170;
+// The call ("JUMP AT" + the number) sits high, below the HUD row; the gate's value pill sits between it and the gate's
+// arch, so the pill never lands on the call when the gate is mid-line (it did: a gate at −1 put "−1" on the big "−1").
+const CALL_Y = 172, GATE_H = 108, PILL_Y = LY - GATE_H - 34 - 48;
 const fmt = (v: number) => { const s = Math.abs(v) < 1e-9 ? "0" : (Math.round(v * 1000) / 1000).toString(); return s.replace("-", "−"); };
 
 function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
@@ -95,12 +99,12 @@ function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
     }
   }
   function paintBg(c: Ctx) {
-    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#090B12"); gr.addColorStop(0.68, "#121732"); gr.addColorStop(1, "#0A0C14");
+    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, C.runSkyTop); gr.addColorStop(0.68, C.runSkyMid); gr.addColorStop(1, C.runSkyLow);
     c.fillStyle = gr; c.fillRect(0, 0, W, H);
-    const r2 = rng(5); c.fillStyle = "#0C0F1D";
+    const r2 = rng(5); c.fillStyle = C.runCity;
     for (let x = -20; x < W + 20;) { const w = 40 + r2() * 80, h = 40 + r2() * 120; c.fillRect(x, LY - 40 - h, w, h + 40); x += w + 4; }
-    c.fillStyle = "rgba(139,152,255,.06)"; for (let i = 0; i < 60; i++) c.fillRect(r2() * W, LY - 160 + r2() * 110, 3, 4);
-    c.fillStyle = "#0B0D16"; c.fillRect(0, LY, W, H - LY);
+    c.fillStyle = withAlpha(C.ion, .06); for (let i = 0; i < 60; i++) c.fillRect(r2() * W, LY - 160 + r2() * 110, 3, 4);
+    c.fillStyle = C.runGround; c.fillRect(0, LY, W, H - LY);
   }
   function drawRunner(ctx: Ctx, x: number, y: number, dir: number) {
     const ph = g.phase, air = g.jumpT >= 0 && g.jumpT < 0.62, lift = air ? Math.sin((g.jumpT / 0.62) * Math.PI) * 120 : 0;
@@ -110,19 +114,19 @@ function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
     const legA = air ? 0.9 : Math.sin(ph) * 0.9, legB = air ? -0.4 : Math.sin(ph + Math.PI) * 0.9;
     const hip = { x: 0, y: -52 }, sh = { x: 10, y: -104 };
     const limb = (ox: number, oy: number, a1: number, a2: number, l1: number, l2: number) => { const kx = ox + Math.sin(a1) * l1, ky = oy + Math.cos(a1) * l1; ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(kx, ky); ctx.lineTo(kx + Math.sin(a1 + a2) * l2, ky + Math.cos(a1 + a2) * l2); ctx.stroke(); };
-    ctx.strokeStyle = "rgba(242,244,248,.55)"; limb(hip.x, hip.y, legB, -0.9 - Math.max(0, -legB), 28, 28); limb(sh.x, sh.y, -legB * 0.9, 1.4, 24, 22);
+    ctx.strokeStyle = withAlpha(C.ink, .55); limb(hip.x, hip.y, legB, -0.9 - Math.max(0, -legB), 28, 28); limb(sh.x, sh.y, -legB * 0.9, 1.4, 24, 22);
     ctx.strokeStyle = C.ink; limb(hip.x, hip.y, legA, -0.9 - Math.max(0, -legA), 28, 28);
     ctx.beginPath(); ctx.moveTo(hip.x, hip.y); ctx.lineTo(sh.x, sh.y); ctx.stroke();
     limb(sh.x, sh.y, legA * 0.9, 1.4, 24, 22);
     ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(16, -124, 14, 0, Math.PI * 2); ctx.fill();
-    if (!api.reducedMotion) { ctx.strokeStyle = "rgba(139,152,255,.5)"; ctx.lineWidth = 4; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(-30 - i * 22, -70 - i * 14); ctx.lineTo(-70 - i * 30, -70 - i * 14); ctx.stroke(); } }
+    if (!api.reducedMotion) { ctx.strokeStyle = withAlpha(C.ion, .5); ctx.lineWidth = 4; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(-30 - i * 22, -70 - i * 14); ctx.lineTo(-70 - i * 30, -70 - i * 14); ctx.stroke(); } }
     ctx.restore();
   }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
     const fx = api.fx;
     ctx.save(); ctx.translate(fx.ox, fx.oy);
-    ctx.strokeStyle = "rgba(139,152,255,.12)"; ctx.lineWidth = 1.5;
+    ctx.strokeStyle = withAlpha(C.ion, .12); ctx.lineWidth = 1.5;
     const sc = api.reducedMotion ? 0 : (g.phase * 0.25) % 1;
     for (let j = 0; j < 7; j++) { const z = (j + sc) / 7, y = LY + Math.pow(z, 2) * (H - LY); ctx.globalAlpha = 0.2 + 0.8 * z; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
     ctx.globalAlpha = 1;
@@ -157,15 +161,15 @@ function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
     if (g.gate) {
       const gt = g.gate, a = Math.min(1, gt.t / 0.18), col = gt.ok ? C.mint : C.amber;
       ctx.save(); ctx.globalAlpha = a;
-      ctx.strokeStyle = gt.ok ? C.mint : C.ion; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(gt.x - 34, LY); ctx.lineTo(gt.x - 34, LY - 150); ctx.arc(gt.x, LY - 150, 34, Math.PI, 0); ctx.lineTo(gt.x + 34, LY); ctx.stroke();
+      ctx.strokeStyle = gt.ok ? C.mint : C.ion; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(gt.x - 34, LY); ctx.lineTo(gt.x - 34, LY - GATE_H); ctx.arc(gt.x, LY - GATE_H, 34, Math.PI, 0); ctx.lineTo(gt.x + 34, LY); ctx.stroke();
       bloom(ctx, gt.ok ? C.mint : C.ion, gt.x, LY - 100, 120, 0.35);
-      pill(api, ctx, fmt(callVal()), gt.x, LY - 220, { color: gt.ok ? C.mint : C.ion });
+      pill(api, ctx, fmt(callVal()), gt.x, PILL_Y, { color: gt.ok ? C.mint : C.ion });
       if (!gt.ok && gt.jx != null) {
         const yb = LY + 104; ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.setLineDash([8, 8]); ctx.beginPath(); ctx.moveTo(gt.jx, yb); ctx.lineTo(gt.x, yb); ctx.stroke(); ctx.setLineDash([]);
         ctx.beginPath(); ctx.moveTo(gt.jx, yb - 10); ctx.lineTo(gt.jx, yb + 10); ctx.moveTo(gt.x, yb - 10); ctx.lineTo(gt.x, yb + 10); ctx.stroke();
         magnifier(ctx, gt.x + (gt.x > gt.jx ? 34 : -34), LY - 40, C.amber);
         api.text(ctx, `${T.offBy} ${gt.off}`, clamp((gt.x + gt.jx) / 2, 200, 800), yb + 44, { font: "mono", size: 38, weight: 500, color: C.amber, align: "center", baseline: "middle" });
-      } else if (gt.ok) tick(ctx, gt.x + 56, LY - 180);
+      } else if (gt.ok) tick(ctx, gt.x + 56, LY - GATE_H - 10);
       ctx.restore();
     }
     if (g.state === "run" || g.state === "reveal") drawRunner(ctx, g.x, LY - 6, round().dir);
@@ -174,8 +178,8 @@ function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
     ctx.restore();
     if ((g.state === "run" || g.state === "reveal") && g.r >= 0) {
       ctx.save(); ctx.globalAlpha = g.callA;
-      api.text(ctx, T.jumpAt, 500, 150, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", track: 6 });
-      api.text(ctx, fmt(callVal()), 500, 225, { font: "display", size: 104, weight: 800, align: "center", baseline: "middle", glow: C.ion });
+      api.text(ctx, T.jumpAt, 500, CALL_Y - 55, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", track: 6 });
+      api.text(ctx, fmt(callVal()), 500, CALL_Y, { font: "display", size: 104, weight: 800, align: "center", baseline: "middle", glow: C.ion });
       ctx.restore();
     }
     if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${dots(g.r, spec.rounds.length)}`, title: round().title, sub: round().sub });
@@ -202,4 +206,4 @@ function create(api: EngineApi, spec: RunnerSpec): EngineInstance {
     board: () => { const rd = round(); const marks = rd.calls.slice(0, 4).map((c) => ({ v: parseNum(c)!, label: c.replace("-", "−") })); return { title: rd.title, lines: ["Further right means bigger, even below zero.", "−7 is colder than −2: it sits further left."], figure: { kind: "numberline", min: rd.range[0], max: rd.range[1], marks }, accent: C.ion }; },
   };
 }
-export const runner: EngineDef<RunnerSpec> = { archetype: "line-runner@1", label: "Game · Gate Runner", accent: C.ion, create };
+export const runner: EngineDef<RunnerSpec> = { archetype: "line-runner@1", label: "Game · Gate Runner", get accent() { return C.ion; }, create };

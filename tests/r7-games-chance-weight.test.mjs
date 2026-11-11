@@ -14,7 +14,7 @@ import { playKtEvents, signEvidence } from "../server/play/evidence.js";
 import { temper } from "../server/learner/kt/bktr.js";
 
 const env = (acts) => acts.map((act, i) => ({ seq: i + 1, t: i * 400, via: "touch", act }));
-const ONE = { "galti-pakdo": ["pakdo"], hissa: ["shift"], nazariya: ["more"], kon: ["kind", "turn", "corr", "alt"] };
+const ONE = { "galti-pakdo": ["pakdo"], hissa: ["shift"], nazariya: ["more"], kon: ["kind", "turn", "corr", "alt", "size", "find"] };
 const FAMS = Object.keys(ONE);
 const sessionOf = (e, child, fade) => ({ childId: child, key: entryKey(e), skillId: e.skillId, lessonId: null, classLevel: e.classLevel, fade, lang: "hinglish", childArt: null, lastArt: null,
   mis: {}, pL: undefined, n: 0, seed: seedOf(child, entryKey(e), 0), door: "garam", recent: [], hist: null });
@@ -28,6 +28,9 @@ function wrongActs(level, logic) {
   // kon turn and cross (main 2026-11-10): the dial a quarter turn off the answer
   if (["turn", "corr", "alt"].includes(level.goal)) { const d = logic.solve(level).find((a) => a.kind === "turn")?.deg ?? 0; return [{ kind: "turn", deg: (d + 90) % 360 }, { kind: "commit" }]; }
   if (level.goal === "more") return [{ kind: "apex", x: p.tri.x0, z: p.tri.zb - 1 }, { kind: "check" }];
+  // kon/place size (one pick among P, Q, the same): any other pick. Since the judge round, size claims no mal-rule (tool-size was
+  // dropped from this goal), so a level whose key is "the same" has no mal acts and needs a plain wrong pick here
+  if (level.goal === "size") { const right = logic.solve(level).find((a) => a.kind === "pick")?.which; return [{ kind: "pick", which: ["a", "b", "same"].find((w) => w !== right) }]; }
   return null;
 }
 
@@ -35,7 +38,7 @@ test("chance weight: the constant is the arena's (GAME_WEIGHT × the controllerE
   assert.equal(CHANCE_WEIGHT, GAME_WEIGHT * 0.5);
   assert.equal(temper({ via: "game", controllerEasy: true }), CHANCE_WEIGHT, "the arena's own path");
   const marked = [...new Set(Object.values(LOGIC))].filter((l) => l.oneDecision?.length).map((l) => `${l.family}:${l.oneDecision.join(",")}`).sort();
-  assert.deepEqual(marked, ["galti-pakdo:pakdo", "hissa:shift", "kon:kind,turn,corr,alt", "nazariya:more"]);
+  assert.deepEqual(marked, ["galti-pakdo:pakdo", "hissa:shift", "kon:kind,turn,corr,alt,size,find", "nazariya:more"]);
 });
 
 for (const fam of FAMS) {

@@ -190,8 +190,10 @@ test("v6.9 S10 (director17 c5-t01 e2, steady/stuck 18, offtopic 28): the split v
   const e2 = BF.heldBoard(heldPic(LINE48, ["8"]), {});
   assert.ok(e2?.split);
   // (main v6.11, director19 steady/stuck 18: the view DRAWS the 8-gap scale the card asks about — unnamed — and her line names
-  // it without its count, so the key is never said)
-  assert.equal(e2.altLine, "Dekho, yeh do barabar pattiyaan hain: ek 4 barabar hisson mein, 1 rangin, yaani ek-chauthai, aur ek barabar hisson mein");
+  // it without its count, so the key is never said; director20 steady/stuck 18: "aur ek barabar hisson mein" read as a hole where
+  // the 8 was stripped — the quiet bar is named by its place, never with a bare "ek")
+  assert.equal(e2.altLine, "Dekho, yeh do barabar pattiyaan hain: ek 4 barabar hisson mein, 1 rangin, yaani ek-chauthai, aur doosri patti bhi barabar hisson mein bati hai");
+  assert.ok(!BF.lineHasBlank(e2.altLine));
   assert.deepEqual(BF.heldAltOf(heldPic(LINE48, ["8"])).call.bars, [{ parts: 4, shade: 1, label: "1/4" }, { parts: 8, shade: 0, label: "" }]);
   assert.ok(!BF.lineStatesKey(e2.altLine, ["8"]));
   assert.doesNotMatch(e2.altLine, /\b1 barabar hisson|\bek 1\b/);

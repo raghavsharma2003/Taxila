@@ -3008,3 +3008,15 @@ Replays stay as regression pins. Evidence for a walk fix is a predicate over the
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-replay-pass-rate-as-proof-of-reply-quality` (2026-11-11): Rejected: reading the J2 replay's pass rate (76 of 80 clean under the predicate) as evidence that her reply after an aside is good. In director20 the same code produced 7 model sentences of which the judges found 3 odd or wrong, and most first drafts were the next card's text. The predicate measures safe and on the child's word; it cannot measure whether a sentence answers what the child said. A sentence a child hears is judged by a reader or it is authored.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-pushing-on-passes-alone` (2026-11-11): Rejected as a habit: pushing an integration on 'the failing suite passes alone and the diff does not touch it'. Used three times on 2026-11-10 and 11 (integrations 32, 37, 38). Each time the cause, once found, was specific and not load: a wall-clock assertion, a test assumption broken by another stream's data, a 1-in-256 chance failure in a product gate. The pushes did no harm, but the reasoning given at the time ('load') was wrong in every case that was later explained. A failure that passes alone gets a root-cause task the same hour, and the push message says 'cause unknown' rather than naming one.
+
+
+<!-- merged from inbox/r8-stambh-tally-fixes.json -->
+## rj-r8-stambh-tally-ring-cross
+Tried (round 8, first build): a dashed ring and a small ✗ on each group of five standing lines (or a short close) at the check. Broke (two independent judges, 2026-11-11): on five standing lines a ✗ reads as 'five is too many', the opposite of the lesson, and feeds tally-four. Replaced by dc-r8-stambh-tally-playout-count (count the group, tip the fifth line).
+
+## rj-r8-stambh-tally-both-halves
+Tried (round 8, first build): naming keep's tally-four only when no line across appears anywhere AND every total is four per group of five. Broke (two judges, 2026-11-11): the main form, correct bundles counted by their standing lines (Bus 5, Auto 6), was logged as an ordinary miss with only dashed boxes; and a 1-bundle level could not tell the mix-up from a one-off slip. Replaced by dc-r8-stambh-tally-keep-mal-v2 and dc-r8-stambh-tally-tells-apart.

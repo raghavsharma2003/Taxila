@@ -81,6 +81,15 @@ export function ChildShell({ children }: { children?: ReactNode }) {
   const [me, setMe] = useState<MeResponse | null>(null);
   const [state, setState] = useState<"loading" | "ok" | "signedout" | "missing" | "error">("loading");
   const [n, setN] = useState(0);
+  // round 8 step f: the device's own network state; when it comes back, the shell tries again by itself
+  const [online, setOnline] = useState(() => (typeof navigator === "undefined" ? true : navigator.onLine !== false));
+  useEffect(() => {
+    const up = () => { setOnline(true); setN((x) => x + 1); };
+    const down = () => setOnline(false);
+    window.addEventListener("online", up);
+    window.addEventListener("offline", down);
+    return () => { window.removeEventListener("online", up); window.removeEventListener("offline", down); };
+  }, []);
   const [prefs, setPrefs] = usePrefs(cid);
   const osReduced = useReducedMotionQuery();
 
@@ -128,6 +137,7 @@ export function ChildShell({ children }: { children?: ReactNode }) {
   };
 
   if (!ctx) {
+    const offline = !online;
     return (
       <div {...rootAttrs}>
         <main className="cs-gate" aria-busy={state === "loading"} data-testid="child-gate">
@@ -137,8 +147,9 @@ export function ChildShell({ children }: { children?: ReactNode }) {
             // Kaksha boot look (r7 app-secondary-screens-kaksha): the gate is a Kaksha state panel, not the old card
             <KxRoot family="older" reducedMotion={false} screen="gate">
               <div className="kx-screen kx-page"><main className="kx-page-main kx-home-state">
-                <StatePanel glyph={state === "error" ? "offline" : "door"} tone={state === "error" ? "rose" : undefined} headId="kx-gate-h"
-                  title={state === "error" ? t("connectionWeak") : state === "missing" ? tr7("gate.missing") : t("grownupSignIn")}>
+                <StatePanel glyph={state === "error" ? "offline" : "door"} tone={state === "error" && !offline ? "rose" : undefined} headId="kx-gate-h"
+                  title={state === "error" ? (offline ? t("offlineTitle") : t("connectionWeak")) : state === "missing" ? tr7("gate.missing") : t("grownupSignIn")}
+                  line={state === "error" && offline ? t("offlineLine") : undefined}>
                   {state === "error" ? (
                     <Ghost onClick={() => setN((x) => x + 1)}><Glyph name="replay" size={20} /> {t("tryAgain")}</Ghost>
                   ) : (
@@ -152,7 +163,8 @@ export function ChildShell({ children }: { children?: ReactNode }) {
           )}
           {state !== "loading" && !kxBoot() && (
             <div className="cs-card cs-gate-card">
-              <h1 tabIndex={-1}>{state === "error" ? t("connectionWeak") : state === "missing" ? tr7("gate.missing") : t("grownupSignIn")}</h1>
+              <h1 tabIndex={-1}>{state === "error" ? (offline ? t("offlineTitle") : t("connectionWeak")) : state === "missing" ? tr7("gate.missing") : t("grownupSignIn")}</h1>
+              {state === "error" && offline && <p>{t("offlineLine")}</p>}
               {state === "error" ? (
                 <button type="button" className="cs-btn cs-btn--primary" onClick={() => setN((x) => x + 1)}>{t("tryAgain")}</button>
               ) : (

@@ -1,0 +1,145 @@
+{
+  "v": 1,
+  "id": "gen-c7-maths-ch02-t01-92068f8b",
+  "approved": true,
+  "hash": "92068f8b5ef06033f8963c9ad9c9fcb8",
+  "archetype": "rule-machine@1",
+  "spec": {
+    "archetype": "rule-machine@1",
+    "skills": [
+      "c7-maths-ch02-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Round",
+      "built": "Machine ready",
+      "run": "Chalao",
+      "want": "Kya chahiye?",
+      "got": "Kya mila?",
+      "coach": "Socho aur check karo",
+      "runDone": "Run complete",
+      "step": "Step",
+      "predict": "Pehle andaza",
+      "inverse": "Ulta socho",
+      "target": "Lakshya",
+      "steps": "Steps",
+      "pick": "Tile chuno",
+      "works": "Sahi kaam karta hai",
+      "fix": "Dobara sudharo"
+    },
+    "title": "Baat se Machine",
+    "rounds": [
+      {
+        "mode": "build",
+        "title": "Kam wala vakya",
+        "sub": "20 se 5 kam",
+        "rule": [
+          "-5"
+        ],
+        "inputs": [
+          20,
+          30,
+          50,
+          80
+        ],
+        "tiles": [
+          "-5",
+          "+5",
+          "-20",
+          "×5"
+        ],
+        "targets": "c7-maths-ch02-t01-m-words-order"
+      },
+      {
+        "mode": "build",
+        "title": "Roz ka hisaab",
+        "sub": "Har din 3 rupaye kam",
+        "rule": [
+          "-3"
+        ],
+        "inputs": [
+          18,
+          25,
+          40,
+          60
+        ],
+        "tiles": [
+          "-3",
+          "+3",
+          "-18",
+          "×3"
+        ],
+        "targets": "c7-maths-ch02-t01-m-words-order"
+      }
+    ]
+  },
+  "for": {
+    "topic": "c7-maths-ch02-t01",
+    "skill": "c7-maths-ch02-t01-s1",
+    "misconceptionId": "c7-maths-ch02-t01-m-words-order",
+    "beat": "rem:c7-maths-ch02-t01-m-words-order",
+    "when": "remediation"
+  },
+  "because": {
+    "mixup": {
+      "id": "c7-maths-ch02-t01-m-words-order",
+      "belief": "Writes an expression in the order the words appear ('5 less than 20' as 5 − 20)",
+      "signs": [
+        "Writes '8 less than 50' as 8 − 50",
+        "Translates word by word",
+        "Gets negative or impossible answers in simple stories"
+      ]
+    },
+    "rule": "shown only to a child the learner model holds this mix-up for, at this beat; any other child gets the script's own board"
+  },
+  "source": "generated",
+  "predicate": {
+    "ok": true,
+    "why": null
+  },
+  "render": {
+    "byViewport": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "images": [
+      {
+        "vp": "p412",
+        "file": "piece-p412.png",
+        "sha256": "b1f48d896a09f8abb618f66d5e05696dc5f61077ae6565ce6b2a016e17a4b72a"
+      },
+      {
+        "vp": "l1366",
+        "file": "piece-l1366.png",
+        "sha256": "30e2d1ddb6850d3e99d8cced5580292ba4285ef48008ce107d22155558b42362"
+      }
+    ]
+  },
+  "judge": {
+    "verdict": "pass",
+    "by": "two separate Claude Opus judges (lean, 4 reads), rubric v2, 2026-11-11, renders at da0e71b93",
+    "promptSha256": "6533992ad0d93b49abda38b305ae4177f65441f620b5d47e6317c70cd0630ba7",
+    "prompt": "data/studio-approved/JUDGE-PROMPT.md",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Round 2 sub 'Har din 3 rupaye kam' is read as one day's change (rule -3, 18->15 etc.), which matches the rule. Only round 1's first screen is rendered, so I could not see how round 2 lays out on screen. Round 1 ('20 se 5 kam', where -5 is the correct tile and -20 is the reversed-order distractor) shows the word-order mix-up where it goes wrong."
+  },
+  "judge2": {
+    "verdict": "pass",
+    "by": "Claude Opus judge B, 2026-11-11",
+    "content": "pass",
+    "faults": [],
+    "notes": "Round 1 '20 se 5 kam' rule -5: 20,30,50,80 -> 15,25,45,75 correct, with -20 tile as the word-order trap. Round 2 'Har din 3 rupaye kam' rule -3 is correct but has no 'X se Y kam' phrase, so it only weakly probes the word-order mix-up; round 1 carries it. The conveyor bar passes behind '80' and '75' but they stay legible."
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T09:47:50.407Z"
+  },
+  "approvedAt": "2026-11-11T10:00:47.072Z"
+}

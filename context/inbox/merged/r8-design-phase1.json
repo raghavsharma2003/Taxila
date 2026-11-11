@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "cp-r8-design-prototypes",
+   "kind": "component",
+   "at": "2026-11-10",
+   "title": "Round 8 design phase 1: two directions as static prototypes in prototypes/r8-design/ (A 'Paper and ink', B 'Night class'). 8 screens each (home, lesson board, her turn, worked number line with a Devanagari caption, game level end, parent home, onboarding step 1, offline home) from one shared content.js (words, icons, board SVGs drawn with role classes) and one layout.css (zones); each direction has one tokens.css and one skin.css. board.html is the owner's comparison page (today / A / B per screen, data-URI images). Tools: tools/shoot.mjs (screens + audit), tools/contrast.mjs (pairs into each README), tools/board.py. No product code changed."
+  },
+  {
+   "id": "ms-r8-design-prototype-audit",
+   "kind": "measurement",
+   "at": "2026-11-10",
+   "title": "Prototype audit (tools/shoot.mjs, Playwright, 8 screens x 2 directions x 360x740@2 and 1366x768): 0 horizontal scroll, 0 touch targets under 44 px, no text under 14 px, running text 16 px or more (14 px only for labels, eyebrows, the heard receipt). Contrast (tools/contrast.mjs, WCAG 2.x): A 28 pairs, B 28 pairs, all at or above minimum (5:1 body, 4.5:1 labels); colours per token file A 18, B 27; 8 type sizes, 3 radii, one spacing scale each. board.html 0.75 MB, no horizontal scroll at 400 px."
+  },
+  {
+   "id": "open-r8-design-pick",
+   "kind": "open",
+   "at": "2026-11-10",
+   "title": "The owner picks A or B from prototypes/r8-design/board.html; the design session recommends A (one light theme for child and parent, the board as a typeset paper page, closest to the Brilliant bar; reverse to B if a check with 11-15-year-olds says A reads young or the owner prefers the dark). Phase 2 (tokens, lesson and board, home, onboarding, parent corner, classic skin retired) waits on the pick."
+  }
+ ],
+ "edges": [
+  { "src": "cp-r8-design-prototypes", "rel": "part_of", "dst": "dc-r8-design-revamp-two-directions" },
+  { "src": "cp-r8-design-prototypes", "rel": "measured_by", "dst": "ms-r8-design-prototype-audit" },
+  { "src": "open-r8-design-pick", "rel": "blocks", "dst": "cp-r8-design-prototypes" }
+ ]
+}

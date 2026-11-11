@@ -1,0 +1,147 @@
+{
+  "v": 1,
+  "id": "gen-c5-maths-ch13-t02-02d41791",
+  "approved": true,
+  "hash": "02d41791e27145be19df308f3ed0b666",
+  "archetype": "sieve-storm@1",
+  "spec": {
+    "archetype": "sieve-storm@1",
+    "skills": [
+      "c5-maths-ch13-t02"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Daur",
+      "slashed": "sahi chune",
+      "combo": "jodi",
+      "coach": "Numbers ko dhyan se swipe karo",
+      "runDone": "Storm khatam",
+      "prime": "abhajya",
+      "composite": "sanyukt",
+      "even": "sam",
+      "odd": "visham",
+      "multipleOf": "ke multiples",
+      "commonOf": "ke common multiples",
+      "factorOf": "ke factors",
+      "cfactorOf": "ke common factors",
+      "divisibleBy": "se poori tarah kat-ta hai",
+      "coprimeWith": "ke saath sah-abhajya",
+      "square": "varg numbers",
+      "palindrome": "ulta-seedha same",
+      "slipped": "chhoot gaya",
+      "wrongCut": "yeh nahi",
+      "and": "aur"
+    },
+    "title": "Factor Ki Baarish",
+    "rounds": [
+      {
+        "rule": "factor",
+        "a": 30,
+        "title": "Dhyan Se Chuno",
+        "sub": "Har number ko gaur se dekho",
+        "lo": 1,
+        "hi": 30,
+        "count": 12,
+        "hitRate": 0.5,
+        "seed": 30,
+        "speed": 1,
+        "targets": "c5-maths-ch13-t02-m-one-and-self"
+      },
+      {
+        "rule": "factor",
+        "a": 18,
+        "title": "Chhupi Jodiyan",
+        "sub": "Jodiyon ko ek-ek karke dekho",
+        "lo": 1,
+        "hi": 18,
+        "count": 12,
+        "hitRate": 0.5,
+        "seed": 18,
+        "speed": 1,
+        "targets": "c5-maths-ch13-t02-m-one-and-self"
+      },
+      {
+        "rule": "factor",
+        "a": 24,
+        "title": "Rows Ka Khel",
+        "sub": "Sab options par nazar rakho",
+        "lo": 1,
+        "hi": 24,
+        "count": 12,
+        "hitRate": 0.5,
+        "seed": 24,
+        "speed": 1,
+        "targets": "c5-maths-ch13-t02-m-one-and-self"
+      }
+    ]
+  },
+  "for": {
+    "topic": "c5-maths-ch13-t02",
+    "skill": "c5-maths-ch13-t02-s1",
+    "misconceptionId": "c5-maths-ch13-t02-m-one-and-self",
+    "beat": "rem:c5-maths-ch13-t02-m-one-and-self",
+    "when": "remediation"
+  },
+  "because": {
+    "mixup": {
+      "id": "c5-maths-ch13-t02-m-one-and-self",
+      "belief": "Thinks 1 and the number itself are not factors",
+      "signs": [
+        "Leaves out 1 and 24 when listing factors of 24",
+        "Says a 1-row arrangement doesn't count",
+        "Says 7 has no factors"
+      ]
+    },
+    "rule": "shown only to a child the learner model holds this mix-up for, at this beat; any other child gets the script's own board"
+  },
+  "source": "generated",
+  "predicate": {
+    "ok": true,
+    "why": null
+  },
+  "render": {
+    "byViewport": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "images": [
+      {
+        "vp": "p412",
+        "file": "piece-p412.png",
+        "sha256": "a503a76d861657e280085a380e589f455722b75727af467a3313ad84ace66eae"
+      },
+      {
+        "vp": "l1366",
+        "file": "piece-l1366.png",
+        "sha256": "681639f8736e71507980bee9a68a404b3853981dc0c33e0e17b1fb974c080877"
+      }
+    ]
+  },
+  "judge": {
+    "verdict": "pass",
+    "by": "two separate Claude Opus judges (lean, 4 reads), 2026-11-11, renders at b80ed49b7",
+    "promptSha256": "6533992ad0d93b49abda38b305ae4177f65441f620b5d47e6317c70cd0630ba7",
+    "prompt": "data/studio-approved/JUDGE-PROMPT.md",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Screen shows 'SAHI CHUNE 0/9' in round 1 ('30 ke factors'). 30 has 8 factors (1, 2, 3, 5, 6, 10, 15, 30) and the spec sets count 12 with hitRate 0.5. The packet does not show how the engine counts the denominator (repeats? another basis?), so this is not counted as a fault. The packet also does not show whether 1 and the number itself (30, 18, 24) always appear among the 12 falling numbers. lo=1 and hi=a make them possible, and the mix-up targeting depends on them appearing."
+  },
+  "judge2": {
+    "verdict": "pass",
+    "by": "Claude Opus judge B, 2026-11-11",
+    "content": "pass",
+    "faults": [],
+    "notes": "Screen shows 'SAHI CHUNE 0/9' for round 1 ('30 ke factors'). 30 has 8 factors (1, 2, 3, 5, 6, 10, 15, 30) and the spec gives count 12, hitRate 0.5. The packet does not show how the engine gets 9, for example whether numbers can repeat in the stream, so this is not counted. The packet also does not show whether 1 and the number itself (30, 18, 24) actually fall in each round's stream, which is what lets the piece catch the one-and-self mix-up. The range is lo=1 to hi=a, so both are possible."
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T06:24:34.057Z"
+  },
+  "approvedAt": "2026-11-11T07:40:29.626Z"
+}

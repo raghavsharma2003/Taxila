@@ -4,6 +4,7 @@
 // The rectangle (w, h) is the act; the host grades it. Same-perimeter shapes are laid side by side after the round.
 import { maxAreaForPerimeter, type AreaSpec } from "../../../shared/studio-spec.ts";
 import { C, W, H } from "../core/tokens.ts";
+import { withAlpha } from "../../theme/palette.ts";
 import { clamp, rng } from "../core/math.ts";
 import { bloom, roundRect, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
@@ -95,10 +96,16 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
     if (g.r >= 0) hud.set("plot", `${dots(g.r, spec.rounds.length)}`);
   }
   function paintBg(c: Ctx) {
-    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#0A0D12"); gr.addColorStop(1, "#0F1511"); c.fillStyle = gr; c.fillRect(0, 0, W, H);
-    c.fillStyle = "#101712"; roundRect(c, gx - 14, gy - 14, s * cols + 28, s * rows + 28, 18); c.fill(); c.strokeStyle = "rgba(255,255,255,.08)"; c.lineWidth = 2; c.stroke();
-    for (let r = 0; r < rows; r++) for (let cc = 0; cc < cols; cc++) { c.fillStyle = (r + cc) % 2 ? "#16211A" : "#18241C"; c.fillRect(gx + cc * s + 1, gy + r * s + 1, s - 2, s - 2); }
+    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, C.areaBgTop); gr.addColorStop(1, C.areaBg); c.fillStyle = gr; c.fillRect(0, 0, W, H);
+    c.fillStyle = C.areaPlot; roundRect(c, gx - 14, gy - 14, s * cols + 28, s * rows + 28, 18); c.fill(); c.strokeStyle = withAlpha(C.hi, .08); c.lineWidth = 2; c.stroke();
+    for (let r = 0; r < rows; r++) for (let cc = 0; cc < cols; cc++) { c.fillStyle = (r + cc) % 2 ? C.areaSoil : C.areaSoilAlt; c.fillRect(gx + cc * s + 1, gy + r * s + 1, s - 2, s - 2); }
   }
+  /** A size pill's centre: above the plot (top `y`, height `hh`) when that clears the host's chrome, else below it, else just
+   *  inside its top (a plot on the grid's top row put "2 × 6" under the laptop task pill: layout probe, 2026-11-11). */
+  const ph = () => Math.max(40, api.minLabel) + 22;
+  const tagY = (y: number, hh: number) => (y - 30 - ph() / 2 >= api.chromeBottom() + 6 ? y - 30 : y + hh + 30 + ph() / 2 <= H - 8 ? y + hh + 30 : y + ph() / 2 + 8);
+  /** a pill's centre x keeping all of it on the stage */
+  const tagX = (ctx: Ctx, s0: string, x: number) => { const hw = api.measure(ctx, s0, { font: "mono", size: 40, weight: 600 }) / 2 + 18; return clamp(x, hw + 8, W - 8 - hw); };
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("field", paintBg), 0, 0, W, H);
     const fx = api.fx;
@@ -109,39 +116,40 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
         const t0 = driftAt[r * cols + c], k = clamp((g.t - t0) / 0.6, 0, 1), warn = clamp((g.t - (t0 - 1.2)) / 1.2, 0, 1);
         if (k <= 0 && warn <= 0) continue;
         const x = gx + c * s, y = gy + r * s;
-        if (k > 0) { ctx.fillStyle = `rgba(52,60,82,${0.92 * k})`; ctx.fillRect(x + 1, y + 1, s - 2, s - 2); ctx.strokeStyle = `rgba(132,140,160,${0.35 * k})`; ctx.lineWidth = 2; ctx.beginPath(); const o = (now * 14) % 12; for (let d = -s; d < s; d += 12) { ctx.moveTo(x + d + o, y + s); ctx.lineTo(x + d + o + s, y); } ctx.save(); ctx.beginPath(); ctx.rect(x + 1, y + 1, s - 2, s - 2); ctx.clip(); ctx.stroke(); ctx.restore(); }
-        else { ctx.fillStyle = `rgba(132,140,160,${0.12 * warn})`; ctx.fillRect(x + 1, y + 1, s - 2, s - 2); }
+        if (k > 0) { ctx.fillStyle = withAlpha(C.areaPaved, 0.92 * k); ctx.fillRect(x + 1, y + 1, s - 2, s - 2); ctx.strokeStyle = withAlpha(C.ink3, 0.35 * k); ctx.lineWidth = 2; ctx.beginPath(); const o = (now * 14) % 12; for (let d = -s; d < s; d += 12) { ctx.moveTo(x + d + o, y + s); ctx.lineTo(x + d + o + s, y); } ctx.save(); ctx.beginPath(); ctx.rect(x + 1, y + 1, s - 2, s - 2); ctx.clip(); ctx.stroke(); ctx.restore(); }
+        else { ctx.fillStyle = withAlpha(C.ink3, 0.12 * warn); ctx.fillRect(x + 1, y + 1, s - 2, s - 2); }
       }
     }
     if (g.claimed) {
       const q = g.claimed, x = gx + q.c * s, y = gy + q.r * s;
-      for (let r = 0; r < q.h; r++) for (let c = 0; c < q.w; c++) { const k = clamp((q.t - (c + r) * 0.04) / 0.25, 0, 1); ctx.fillStyle = `rgba(61,220,151,${0.42 * k})`; ctx.fillRect(x + c * s + 2, y + r * s + 2, s - 4, s - 4); }
+      for (let r = 0; r < q.h; r++) for (let c = 0; c < q.w; c++) { const k = clamp((q.t - (c + r) * 0.04) / 0.25, 0, 1); ctx.fillStyle = withAlpha(C.mint, 0.42 * k); ctx.fillRect(x + c * s + 2, y + r * s + 2, s - 4, s - 4); }
       for (const sp of sprouts) {
         const k = clamp((q.t - sp.d) / 0.5, 0, 1); if (k <= 0) continue;
         const top = sp.y - s * 0.5 * k * sp.h, lf = s * 0.16 * k;
-        ctx.strokeStyle = "#7BE3A9"; ctx.lineWidth = 3; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(sp.x, sp.y); ctx.lineTo(sp.x, top); ctx.stroke();
-        ctx.fillStyle = "#7BE3A9"; ctx.beginPath(); ctx.ellipse(sp.x - lf * 0.9, top + lf * 0.4, lf, lf * 0.45, -0.6, 0, Math.PI * 2); ctx.ellipse(sp.x + lf * 0.9, top + lf * 0.1, lf, lf * 0.45, 0.6, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = C.areaSprout; ctx.lineWidth = 3; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(sp.x, sp.y); ctx.lineTo(sp.x, top); ctx.stroke();
+        ctx.fillStyle = C.areaSprout; ctx.beginPath(); ctx.ellipse(sp.x - lf * 0.9, top + lf * 0.4, lf, lf * 0.45, -0.6, 0, Math.PI * 2); ctx.ellipse(sp.x + lf * 0.9, top + lf * 0.1, lf, lf * 0.45, 0.6, 0, Math.PI * 2); ctx.fill();
       }
       ctx.strokeStyle = C.mint; ctx.lineWidth = 5; ctx.strokeRect(x, y, q.w * s, q.h * s);
       bloom(ctx, C.mint, x + (q.w * s) / 2, y + (q.h * s) / 2, Math.max(q.w, q.h) * s * 0.8, 0.25);
-      pill(api, ctx, `${q.w} × ${q.h}`, x + (q.w * s) / 2, y - 30, { color: C.mint });
+      pill(api, ctx, `${q.w} × ${q.h}`, x + (q.w * s) / 2, tagY(y, q.h * s), { color: C.mint });
     }
     if (g.drag) {
       const q = rectOf(g.drag.a, g.drag.b), x = gx + q.c * s, y = gy + q.r * s, bad = overlapsDrift(q);
-      ctx.fillStyle = bad ? "rgba(255,181,71,.14)" : "rgba(203,255,77,.16)"; ctx.fillRect(x, y, q.w * s, q.h * s);
+      ctx.fillStyle = bad ? withAlpha(C.amber, .14) : withAlpha(C.volt, .16); ctx.fillRect(x, y, q.w * s, q.h * s);
       ctx.strokeStyle = bad ? C.amber : C.volt; ctx.lineWidth = 5; ctx.strokeRect(x, y, q.w * s, q.h * s);
       ctx.fillStyle = bad ? C.amber : C.volt; for (let i = 0; i < q.w; i++) ctx.fillRect(x + i * s + s / 2 - 3, y - 9, 6, 6); for (let j = 0; j < q.h; j++) ctx.fillRect(x - 9, y + j * s + s / 2 - 3, 6, 6);
-      pill(api, ctx, `${q.w} × ${q.h}`, clamp(x + (q.w * s) / 2, 200, 800), clamp(y - 30, 190, 600), { color: bad ? C.amber : C.ink });
+      pill(api, ctx, `${q.w} × ${q.h}`, clamp(x + (q.w * s) / 2, 200, 800), tagY(y, q.h * s), { color: bad ? C.amber : C.ink });
     }
     if (g.flash) {
       const q = g.flash.rect, x = gx + q.c * s, y = gy + q.r * s, a = 1 - clamp((g.flash.t - 1.2) / 0.6, 0, 1);
       ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = C.amber; ctx.lineWidth = 5; ctx.setLineDash([10, 8]); ctx.strokeRect(x, y, q.w * s, q.h * s); ctx.setLineDash([]);
-      pill(api, ctx, g.flash.text, clamp(x + (q.w * s) / 2, 260, 740), clamp(y + q.h * s + 34, 200, 600), { color: C.amber });
+      // (kept whole on the stage and above the round's time bar: clamped to y 600 its lower half ran off the bottom edge)
+      pill(api, ctx, g.flash.text, tagX(ctx, g.flash.text, x + (q.w * s) / 2), clamp(y + q.h * s + 34, 200, Math.min(H - 8, gy + rows * s + 16) - ph() / 2), { color: C.amber });
       ctx.restore();
     }
     if (g.state === "play" || g.state === "won") {
       const k = clamp(g.t / round().seconds, 0, 1), y = gy + rows * s + 22;
-      ctx.fillStyle = "rgba(255,255,255,.08)"; roundRect(ctx, gx, y, cols * s, 6, 3); ctx.fill();
+      ctx.fillStyle = withAlpha(C.hi, .08); roundRect(ctx, gx, y, cols * s, 6, 3); ctx.fill();
       ctx.fillStyle = k > 0.8 ? C.amber : C.ink3; roundRect(ctx, gx, y, cols * s * (1 - k), 6, 3); ctx.fill();
     }
     if (g.state === "lost") pill(api, ctx, T.timeUp, 500, 380, { color: C.amber });
@@ -156,14 +164,17 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
     if (api.chromeBottom() + 10 + Math.max(38, api.minLabel) * 1.6 < gy - 14) drawCoach(api, ctx, T.coach, g.state === "play" ? g.coachA : 0, now, 140);
   }
   function drawCompare(ctx: Ctx, c: { shapes: { w: number; h: number }[]; per: number }, a: number) {
-    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = "rgba(10,12,18,.8)"; ctx.fillRect(0, 0, W, H);
+    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = withAlpha(C.bg, .8); ctx.fillRect(0, 0, W, H);
     // two short lines, not one 860-unit line: the long line ran into the PiP corner (safe-zone battery, 2026-10-05)
-    api.text(ctx, `SAME PERIMETER (${c.per})`, 500, 140, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", track: 3, maxWidth: 620 });
-    api.text(ctx, `DIFFERENT AREA`, 500, 190, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", track: 3, maxWidth: 620 });
-    const cs = 34;
+    // (the two lines start below the host's HUD row / task pill — on a laptop they sat under it — and the shapes fit between
+    // them and the shape labels at 520)
+    const t0 = Math.max(140, api.chromeBottom() + 8 + Math.max(38, api.minLabel));
+    api.text(ctx, `SAME PERIMETER (${c.per})`, 500, t0, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", track: 3, maxWidth: 620 });
+    api.text(ctx, `DIFFERENT AREA`, 500, t0 + 50, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", track: 3, maxWidth: 620 });
+    const top = t0 + 72, bottom = 470, maxH = Math.max(1, ...c.shapes.map((sh) => sh.h)), cs = Math.min(34, (bottom - top) / maxH), mid = clamp(330, top + (maxH * cs) / 2, bottom - (maxH * cs) / 2);
     c.shapes.forEach((sh, i) => {
-      const cx = 290 + i * 420, x = cx - (sh.w * cs) / 2, y = 330 - (sh.h * cs) / 2;
-      ctx.fillStyle = i ? "rgba(139,152,255,.35)" : "rgba(61,220,151,.35)"; ctx.fillRect(x, y, sh.w * cs, sh.h * cs);
+      const cx = 290 + i * 420, x = cx - (sh.w * cs) / 2, y = mid - (sh.h * cs) / 2;
+      ctx.fillStyle = i ? withAlpha(C.ion, .35) : withAlpha(C.mint, .35); ctx.fillRect(x, y, sh.w * cs, sh.h * cs);
       ctx.strokeStyle = i ? C.ion : C.mint; ctx.lineWidth = 5; ctx.strokeRect(x, y, sh.w * cs, sh.h * cs);
       api.text(ctx, `${sh.w} × ${sh.h}`, cx, 520, { font: "display", size: 52, weight: 800, align: "center" });
       api.text(ctx, `area ${sh.w * sh.h}`, cx, 570, { font: "mono", size: 40, weight: 600, color: i ? C.ion : C.mint, align: "center" });
@@ -193,4 +204,4 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
     board: () => { const rd = round(); return { title: rd.goal === "area" ? `Area ${rd.target} square units` : `Perimeter ${rd.target} units`, lines: ["Area counts the squares inside.", "Perimeter walks the edge, all four sides."], figure: (() => { if (rd.goal !== "area") { const half = rd.target / 2, w = Math.ceil(half / 2); return { kind: "grid" as const, w, h: Math.max(1, half - w) }; } let w = Math.ceil(Math.sqrt(rd.target)); while (rd.target % w) w++; return { kind: "grid" as const, w, h: rd.target / w }; })(), accent: C.mint }; },
   };
 }
-export const area: EngineDef<AreaSpec> = { archetype: "area-claim@1", label: "Game · Plot", accent: C.mint, create };
+export const area: EngineDef<AreaSpec> = { archetype: "area-claim@1", label: "Game · Plot", get accent() { return C.mint; }, create };

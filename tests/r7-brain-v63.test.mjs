@@ -190,8 +190,8 @@ describe("r7-brain-v63.test.mjs", () => {
       const ps = pagesOf(last, out, kit);
       const lm = last.state.lastMove;
       const sm0 = String(lm.simpler ?? "").split(/(?<=[.!?])\s/)[0];
-      // (v6.4 L1: in the Hindi mode her words, the simpler's too, are said in Hindi words)
-      const sm = last.state.ctx?.lang === "hindi" && last.state.ctx?.langPinned ? inHindiWords(sm0) : sm0;
+      // (dc-r8-director20 W1: an authored simpler is said as written, in the Hindi mode too — v6.4 L1's rewrite applies to her own words only)
+      const sm = sm0;
       const onRem = ps.find((p) => sm && p.text.includes(sm.slice(0, 30)));
       const rem = (kit && last.state.lastMove?.simplerBeat?.board) ?? null;
       if (!onRem || !String(onRem.scriptBeat?.beatId ?? "").startsWith("rem:")) bad.push(`${persona} ${topic} T${t}: remediation words on ${onRem?.scriptBeat?.beatId} | ${onRem?.text?.slice(0, 80)}`);
@@ -240,7 +240,8 @@ describe("r7-brain-v63.test.mjs", () => {
   test("R7 (main's D5 row): her own lesson claim before a scripted card goes (c4 steady T48: 'Dobara check karke dekha: tukde barabar hain')", async () => {
     const { out } = await at("steady", "c4", 48);
     assert.doesNotMatch(out.reply, /tukde barabar hain aur 1 tukda khaya gaya/, out.reply);
-    assert.match(out.reply, /Chocolate ka kitna hissa khaya, bhinn mein batao\./, "the card stays: " + out.reply);
+    // (dc-r8-director20 W1/G3, 2026-11-11: the card stays as written — no Hindi-word swap inside it)
+    assert.match(out.reply, /Chocolate ka kitna hissa khaya, fraction mein batao\./, "the card stays: " + out.reply);
   });
   test("W1: a worked example poses its question before 'Diya hai …' (c5-t02 steady, the cake problem)", async () => {
     const T = TOPIC["c5-t02"];

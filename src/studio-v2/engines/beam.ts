@@ -5,6 +5,7 @@
 // kilogram on a pan scale. Placements are the act; the host recomputes the torque from the spec and grades.
 import { torque, type BeamSpec } from "../../../shared/studio-spec.ts";
 import { C, W, H } from "../core/tokens.ts";
+import { withAlpha } from "../../theme/palette.ts";
 import { DEG, lerp } from "../core/math.ts";
 import { bloom, roundRect, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
@@ -12,9 +13,9 @@ import { drawCoach, drawIntro, drawStatCard, pill } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
 import { dots } from "../core/dots.ts";
 
-const PIV: XY = [500, 380], PEG = 76, TRAY_Y = 560;
+const PIV: XY = [500, 380], PEG = 76, TRAY_Y = 560, STACK_TOP = 186;
 type Side = "left" | "right";
-interface Item { id: number; w: number; side: Side | null; d: number; fixed: boolean; unknown: boolean; tx: number; ty: number; x: number; y: number }
+interface Item { id: number; w: number; side: Side | null; d: number; fixed: boolean; unknown: boolean; tx: number; ty: number; x: number; y: number; ox?: number; foot?: number }
 
 function create(api: EngineApi, spec: BeamSpec): EngineInstance {
   const T = spec.strings;
@@ -47,14 +48,23 @@ function create(api: EngineApi, spec: BeamSpec): EngineInstance {
     for (const w of tray) { const it = mk(w, null, 0, false, false); it.x = it.tx = x; it.y = it.ty = TRAY_Y; g.items.push(it); x += 110; }
   }
   function stackAll(snap = false) {
-    // items on the same peg stack upward; tray items sit in their slots
-    const slots = new Map<string, number>();
-    for (const it of g.items) {
-      if (!it.side) continue;
-      const k = `${it.side}:${it.d}`, n = slots.get(k) ?? 0; slots.set(k, n + 1);
-      const sz = sizeOf(it.w);
-      it.ty = n * (sz + 4) + sz / 2 + 8;       // lift above the beam (applied in beam frame at render)
-      if (snap) { it.x = 0; it.y = it.ty; }
+    // items on the same peg stack straight up (gravity), each on top of the ones below it: the lift is the sum of the
+    // heights under it, not n × its own size (mixed weights on one peg overlapped: layout probe, 2026-11-11)
+    // A stack that would climb into the host's task pill / HUD row (the top STACK_TOP units) goes two abreast when both
+    // neighbouring pegs on that side are empty (round 4's five crates on one peg reached y 140).
+    const pegs = new Map<string, Item[]>();
+    for (const it of g.items) if (it.side) { const k = `${it.side}:${it.d}`; pegs.set(k, [...(pegs.get(k) ?? []), it]); }
+    for (const [k, its] of pegs) {
+      const [side, d] = [k.split(":")[0], +k.split(":")[1]], tall = its.reduce((a, it) => a + sizeOf(it.w) + 6, 0) > PIV[1] - 12 - STACK_TOP;
+      const cols = tall && !pegs.has(`${side}:${d - 1}`) && !pegs.has(`${side}:${d + 1}`) ? 2 : 1;
+      let below = 0, foot = 0;
+      for (let r = 0; r * cols < its.length; r++) {
+        const row = its.slice(r * cols, r * cols + cols), rs = Math.max(...row.map((it) => sizeOf(it.w)));
+        row.forEach((it, i) => { it.ty = below + rs / 2; it.ox = row.length === 2 ? (i ? 1 : -1) * (rs / 2 + 3) : 0; });
+        if (r === 0) foot = row.length === 2 ? rs + 3 : rs / 2;
+        below += rs + 6;
+      }
+      for (const it of its) { it.foot = foot; if (snap) { it.x = 0; it.y = it.ty; } }
     }
   }
   api.onPointer({
@@ -95,7 +105,10 @@ function create(api: EngineApi, spec: BeamSpec): EngineInstance {
   function posOf(it: Item): XY {
     if (!it.side) return [it.x, it.y];
     if (pans()) { const [hx, hy] = beamPt(it.side, 4); const n = on(it.side).indexOf(it); return [hx - 30 + (n % 3) * 30, hy + 150 - Math.floor(n / 3) * 34 - sizeOf(it.w) / 2]; }
-    return beamPt(it.side, it.d, it.ty);
+    // upright crates: the stack rises world-vertically from the peg, and the seat clears the tilted beam's top face
+    // under the crate's lower corner (rotated stacks fanned out and their corners crossed)
+    const [bx, by] = beamPt(it.side, it.d), seat = 12 / Math.cos(g.theta) + (it.foot ?? sizeOf(it.w) / 2) * Math.abs(Math.tan(g.theta));
+    return [bx + (it.ox ?? 0), by - seat - it.ty];
   }
   function update(dt: number) {
     g.stateT += dt;
@@ -135,19 +148,19 @@ function create(api: EngineApi, spec: BeamSpec): EngineInstance {
     api.facts({ round: g.r + 1, mode: rd.mode, verdict: grade.verdict, ...(rd.unknown ? { crate: rd.unknown.w } : {}) });
   }
   function paintBg(c: Ctx) {
-    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#0B0C13"); gr.addColorStop(1, "#13141D"); c.fillStyle = gr; c.fillRect(0, 0, W, H);
-    const v = c.createRadialGradient(500, 330, 30, 500, 330, 520); v.addColorStop(0, "rgba(255,210,122,.07)"); v.addColorStop(1, "rgba(255,210,122,0)"); c.fillStyle = v; c.fillRect(0, 0, W, H);
-    c.fillStyle = "#171A25"; roundRect(c, 120, TRAY_Y - 46, 760, 92, 22); c.fill(); c.strokeStyle = "rgba(255,255,255,.06)"; c.lineWidth = 2; c.stroke();
+    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, C.beamBgTop); gr.addColorStop(1, C.beamBg); c.fillStyle = gr; c.fillRect(0, 0, W, H);
+    const v = c.createRadialGradient(500, 330, 30, 500, 330, 520); v.addColorStop(0, withAlpha(C.sun, .07)); v.addColorStop(1, withAlpha(C.sun, 0)); c.fillStyle = v; c.fillRect(0, 0, W, H);
+    c.fillStyle = C.beamFloor; roundRect(c, 120, TRAY_Y - 46, 760, 92, 22); c.fill(); c.strokeStyle = withAlpha(C.hi, .06); c.lineWidth = 2; c.stroke();
   }
   function drawCrate(ctx: Ctx, it: Item, x: number, y: number, rot: number) {
     const s = sizeOf(it.w), revealed = it.unknown && (g.state === "won" || g.state === "end");
     ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
-    if (pans() && !it.unknown) { ctx.fillStyle = "#9AA3B8"; roundRect(ctx, -s / 2, -s / 2, s, s, 6); ctx.fill(); ctx.strokeStyle = "rgba(255,255,255,.4)"; ctx.lineWidth = 2; ctx.stroke(); api.text(ctx, `${it.w}`, 0, 2, { font: "mono", size: 38, weight: 700, color: "#0B0D14", align: "center", baseline: "middle", decor: true }); ctx.restore(); return; }
-    const col = it.unknown ? (revealed ? C.mint : C.sun) : it.w >= 1000 ? "#C9D0E6" : C.ion;
+    if (pans() && !it.unknown) { ctx.fillStyle = C.beamPan; roundRect(ctx, -s / 2, -s / 2, s, s, 6); ctx.fill(); ctx.strokeStyle = withAlpha(C.hi, .4); ctx.lineWidth = 2; ctx.stroke(); api.text(ctx, `${it.w}`, 0, 2, { font: "mono", size: 38, weight: 700, color: C.beamLabelDark, align: "center", baseline: "middle", decor: true }); ctx.restore(); return; }
+    const col = it.unknown ? (revealed ? C.mint : C.sun) : it.w >= 1000 ? C.beamKilo : C.ion;
     bloom(ctx, col, 0, 0, s * 0.9, it.unknown ? 0.35 : 0.18);
-    const gr = ctx.createLinearGradient(0, -s / 2, 0, s / 2); gr.addColorStop(0, it.unknown ? "#3A2E14" : "#232A45"); gr.addColorStop(1, it.unknown ? "#211A0B" : "#141829");
+    const gr = ctx.createLinearGradient(0, -s / 2, 0, s / 2); gr.addColorStop(0, it.unknown ? C.beamMysteryTop : C.beamCrateTop); gr.addColorStop(1, it.unknown ? C.beamMysteryLow : C.beamCrateLow);
     ctx.fillStyle = gr; roundRect(ctx, -s / 2, -s / 2, s, s, 10); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.stroke();
-    if (it.unknown && !revealed) { ctx.strokeStyle = "rgba(255,210,122,.35)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-s / 2 + 8, -s / 2 + 8); ctx.lineTo(s / 2 - 8, s / 2 - 8); ctx.moveTo(s / 2 - 8, -s / 2 + 8); ctx.lineTo(-s / 2 + 8, s / 2 - 8); ctx.stroke(); }
+    if (it.unknown && !revealed) { ctx.strokeStyle = withAlpha(C.sun, .35); ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-s / 2 + 8, -s / 2 + 8); ctx.lineTo(s / 2 - 8, s / 2 - 8); ctx.moveTo(s / 2 - 8, -s / 2 + 8); ctx.lineTo(-s / 2 + 8, s / 2 - 8); ctx.stroke(); }
     const lbl = it.unknown ? (revealed ? `${it.w}` : "x") : `${it.w}`;
     api.text(ctx, lbl, 0, 3, { font: "display", size: Math.max(38, Math.min(56, s * 0.55)), weight: 800, align: "center", baseline: "middle", color: it.unknown && !revealed ? C.sun : C.ink });
     ctx.restore();
@@ -156,24 +169,25 @@ function create(api: EngineApi, spec: BeamSpec): EngineInstance {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     // fulcrum
-    ctx.fillStyle = "#262C3D"; ctx.beginPath(); ctx.moveTo(PIV[0], PIV[1] + 6); ctx.lineTo(PIV[0] - 56, PIV[1] + 128); ctx.lineTo(PIV[0] + 56, PIV[1] + 128); ctx.closePath(); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = C.beamFulcrum; ctx.beginPath(); ctx.moveTo(PIV[0], PIV[1] + 6); ctx.lineTo(PIV[0] - 56, PIV[1] + 128); ctx.lineTo(PIV[0] + 56, PIV[1] + 128); ctx.closePath(); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
     // level gauge arc
-    ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(PIV[0], PIV[1], 96, Math.PI * 1.35, Math.PI * 1.65); ctx.stroke();
+    ctx.strokeStyle = withAlpha(C.hi, .12); ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(PIV[0], PIV[1], 96, Math.PI * 1.35, Math.PI * 1.65); ctx.stroke();
     const lv = Math.abs(g.theta) < 0.6 * DEG && moments().tq === 0;
     ctx.strokeStyle = lv ? C.mint : C.ink3; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(PIV[0], PIV[1]); ctx.lineTo(PIV[0] + Math.sin(g.theta) * 96, PIV[1] - Math.cos(g.theta) * 96); ctx.stroke();
     // beam
     const bl = 5.6 * PEG;
     ctx.save(); ctx.translate(PIV[0], PIV[1]); ctx.rotate(g.theta);
     bloom(ctx, lv ? C.mint : C.ion, 0, 0, bl, lv ? 0.22 : 0.1);
-    const gr = ctx.createLinearGradient(0, -12, 0, 12); gr.addColorStop(0, "#C9CFE0"); gr.addColorStop(1, "#6B7390");
-    ctx.fillStyle = gr; roundRect(ctx, -bl, -10, bl * 2, 20, 8); ctx.fill();
-    if (!pans()) for (const s of [-1, 1]) for (let d = 1; d <= 5; d++) { const x = s * d * PEG; ctx.fillStyle = "#1A1F2C"; ctx.beginPath(); ctx.arc(x, 0, 6, 0, Math.PI * 2); ctx.fill(); api.text(ctx, `${d}`, x, 46, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", decor: true }); }
-    ctx.fillStyle = "#2F3547"; ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI * 2); ctx.fill();
+    const gr = ctx.createLinearGradient(0, -12, 0, 12); gr.addColorStop(0, C.beamBarHi); gr.addColorStop(1, C.beamBarLo);
+    // the bar is one thick rounded stroke: a filled rect tilted 14° claimed a 225-unit-tall box and every crate in it
+    ctx.strokeStyle = gr; ctx.lineWidth = 20; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(-bl + 10, 0); ctx.lineTo(bl - 10, 0); ctx.stroke(); ctx.lineCap = "butt";
+    if (!pans()) for (const s of [-1, 1]) for (let d = 1; d <= 5; d++) { const x = s * d * PEG; ctx.fillStyle = C.beamPeg; ctx.beginPath(); ctx.arc(x, 0, 6, 0, Math.PI * 2); ctx.fill(); api.text(ctx, `${d}`, x, 46, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", decor: true }); }
+    ctx.fillStyle = C.beamHook; ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
-    if (pans()) for (const side of ["left", "right"] as Side[]) { const [hx, hy] = beamPt(side, 4); ctx.strokeStyle = C.ink3; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(hx - 60, hy + 150); ctx.moveTo(hx, hy); ctx.lineTo(hx + 60, hy + 150); ctx.stroke(); ctx.fillStyle = "#3A4157"; roundRect(ctx, hx - 80, hy + 150, 160, 14, 6); ctx.fill(); }
+    if (pans()) for (const side of ["left", "right"] as Side[]) { const [hx, hy] = beamPt(side, 4); ctx.strokeStyle = C.ink3; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(hx - 60, hy + 150); ctx.moveTo(hx, hy); ctx.lineTo(hx + 60, hy + 150); ctx.stroke(); ctx.fillStyle = C.beamHanger; roundRect(ctx, hx - 80, hy + 150, 160, 14, 6); ctx.fill(); }
     // hover target
     if (g.drag && g.hover) { const [hx, hy] = beamPt(g.hover.side, g.hover.d, pans() ? -110 : 30); ctx.strokeStyle = C.volt; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(hx, pans() ? hy + 260 : hy, 36, 0, Math.PI * 2); ctx.stroke(); }
-    for (const it of g.items) if (it.side && g.drag?.it !== it) { const [x, y] = posOf(it); drawCrate(ctx, it, x, y, pans() ? 0 : g.theta); }
+    for (const it of g.items) if (it.side && g.drag?.it !== it) { const [x, y] = posOf(it); drawCrate(ctx, it, x, y, 0); }
     for (const it of g.items) if (!it.side && g.drag?.it !== it) drawCrate(ctx, it, it.x, it.y, 0);
     if (g.drag) drawCrate(ctx, g.drag.it, g.drag.it.x, g.drag.it.y, 0);
     // equation strip on win
@@ -184,7 +198,7 @@ function create(api: EngineApi, spec: BeamSpec): EngineInstance {
       else if (rd.mode === "sameBoth" && rd.unknown) eq = `${rd.unknown.n}x = ${R.reduce((a, p) => a + p.w, 0)}  →  x = ${rd.unknown.w}`;
       else if (rd.mode === "pans") eq = `${R.map((p) => p.w).join(" + ")} = 1000 ${T.g} = 1 ${T.kg}`;
       else eq = `${L.map((p) => `${p.w}×${p.d}`).join(" + ")} = ${R.map((p) => `${p.w}×${p.d}`).join(" + ")}`;
-      ctx.save(); ctx.globalAlpha = g.reveal; pill(api, ctx, eq, 500, 150, { color: C.mint }); ctx.restore();
+      ctx.save(); ctx.globalAlpha = g.reveal; pill(api, ctx, eq, 500, Math.max(150, api.chromeBottom() + 6 + 31), { color: C.mint });   // below the task pill / HUD row ctx.restore();
     }
     fx.drawWorld(ctx); ctx.restore();
     if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.round} ${dots(g.r, spec.rounds.length)}`, title: round().title, sub: round().sub, accent: C.sun });
@@ -222,4 +236,4 @@ function create(api: EngineApi, spec: BeamSpec): EngineInstance {
     board: () => { const rd = round(); return { title: rd.mode === "pans" ? "1 kg = 1000 g" : rd.mode === "sameBoth" ? "Same off both sides" : "Weight × distance", lines: rd.mode === "pans" ? ["A kilogram balances a thousand grams."] : ["The beam is level when both sides turn equally.", "Do the same to both sides and it stays level."], figure: { kind: "beam", left: rd.unknown ? "x" : rd.left.map((p) => `${p.w}×${p.d}`).join("+") || "?", right: rd.right.map((p) => `${p.w}×${p.d}`).join("+") || "?" }, accent: C.sun }; },
   };
 }
-export const beam: EngineDef<BeamSpec> = { archetype: "balance-beam@1", label: "Game · Tilt", accent: C.sun, create };
+export const beam: EngineDef<BeamSpec> = { archetype: "balance-beam@1", label: "Game · Tilt", get accent() { return C.sun; }, create };

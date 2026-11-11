@@ -1,0 +1,39 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-game-modes-judging-2-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Second judging of the three new game modes (stambh/tally round 2, kon/place and kon/name on their fixed packets; claude/r7-games 2b09259c1): n = 6 verdicts, two fresh Opus judges at high effort per mode, each reading the packet and every screenshot (22, 36 and 14 images). Method: the judges' rubric plus items A to J in each mode's judges/PROMPT file. Result: 6 of 6 FAIL. 0 wrong facts, keys or scales found in any mode. Faults both judges of a mode found: tally, green ticks beside 'Koi kul badlo' on an unsolved level and green on a wrong row's outline; kon/place, the tap prints the reading in measure and the asked arm is drawn after a miss in draw; kon/name, a wrong tap turns the solved green in find and the mix-up is named from one tap among five. About 0.78M judge tokens. Reports: docs/design/round8/games-judging/<mode>/judges/."
+  },
+  {
+   "id": "dc-r8-game-modes-three-laws",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "Three laws for every game family, each asserted in the family's cert on every generated level: (1) green means right and only right (selection takes the focus colour, her wrong value the mix-up colour); (2) after a miss the screen never holds the key while a try remains (not the key, a mark it can be counted off, a line to trace, or readings that settle the next pick); (3) a mix-up is named only by an act a guess rarely produces (a pick among five or fewer is chance weight and is not kept from one pick; it is named on a repeat on a level with a different surface or when a constructed act agrees). Also: the game never does the skill for her (in kon/place measure she types the reading). Per-mode rulings: docs/design/round8/games-judging/RULINGS-2026-11-11.md. No mode is shown until two fresh judges pass it. Reverse if: law 2 leaves children stuck (with a child, or in two judges' reading, a child who missed cannot find her error from the screen): then the play-out may show the truth on the figure, not as a number, after the second miss."
+  },
+  {
+   "id": "fd-game-screens-fail-after-the-act",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "In all three new game modes the maths was right and the faults were in what the screen tells the child after she acts: a colour that says right over a wrong thing, the answer left on screen after a miss, and a mix-up recorded from a pick a guess produces 1 time in 5 or 1 in 2. Certs of 4472/4472 and 16/16 did not see any of them, because the certs checked keys and layouts, not the meaning of a colour or what a miss reveals."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-game-modes-three-laws",
+   "rel": "measured_by",
+   "dst": "ms-r8-game-modes-judging-2-2026-11-11"
+  },
+  {
+   "src": "dc-r8-game-modes-need-two-judges",
+   "rel": "constrains",
+   "dst": "dc-r8-game-modes-three-laws"
+  },
+  {
+   "src": "dc-r8-game-modes-three-laws",
+   "rel": "caused_by",
+   "dst": "fd-game-screens-fail-after-the-act"
+  }
+ ]
+}

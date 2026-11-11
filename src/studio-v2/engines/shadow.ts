@@ -11,6 +11,7 @@ import { sfx } from "../core/sfx.ts";
 import { pill, voltRing } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
 import { dots } from "../core/dots.ts";
+import { withAlpha } from "../../theme/palette.ts";
 
 const S = SHADOW, OT = S.torchY - S.objH / 2, OB = S.torchY + S.objH / 2;
 type Step = ShadowSpec["steps"][number];
@@ -88,10 +89,10 @@ function create(api: EngineApi, spec: ShadowSpec): EngineInstance {
     if (g.phase !== "final") { hud.set("step", `${Math.min(g.si + 1, spec.steps.length)}/${spec.steps.length}`); hud.set("size", `${f().toFixed(2)}×`, { tone: st && st.kind === "size" && Math.abs(f() - st.factor) / st.factor <= 0.03 ? "mint" : null }); }
   }
   function paintBg(c: Ctx) {
-    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#08090E"); gr.addColorStop(1, "#0E1016"); c.fillStyle = gr; c.fillRect(0, 0, W, H);
-    c.fillStyle = "#161922"; c.fillRect(0, S.table, W, H - S.table);
-    c.strokeStyle = "rgba(255,255,255,.08)"; c.lineWidth = 2; c.beginPath(); c.moveTo(0, S.table); c.lineTo(W, S.table); c.stroke();
-    c.strokeStyle = "rgba(255,255,255,.12)"; c.lineWidth = 6; c.lineCap = "round"; c.beginPath(); c.moveTo(S.torchMin - 30, S.torchY + 46); c.lineTo(S.torchMax + 30, S.torchY + 46); c.stroke();
+    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, C.shadowSkyTop); gr.addColorStop(1, C.shadowSkyBottom); c.fillStyle = gr; c.fillRect(0, 0, W, H);
+    c.fillStyle = C.shadowTable; c.fillRect(0, S.table, W, H - S.table);
+    c.strokeStyle = withAlpha(C.hi, .08); c.lineWidth = 2; c.beginPath(); c.moveTo(0, S.table); c.lineTo(W, S.table); c.stroke();
+    c.strokeStyle = withAlpha(C.hi, .12); c.lineWidth = 6; c.lineCap = "round"; c.beginPath(); c.moveTo(S.torchMin - 30, S.torchY + 46); c.lineTo(S.torchMax + 30, S.torchY + 46); c.stroke();
   }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
@@ -102,36 +103,36 @@ function create(api: EngineApi, spec: ShadowSpec): EngineInstance {
     // light cone to the screen (additive), then the shadow wedge cut from it
     const top = S.screenTop, bot = S.table;
     ctx.save(); ctx.globalCompositeOperation = "lighter";
-    const cone = ctx.createRadialGradient(src[0], src[1], 10, src[0], src[1], S.screenX - src[0] + 80); cone.addColorStop(0, "rgba(255,226,160,.55)"); cone.addColorStop(1, "rgba(255,210,140,.10)");
+    const cone = ctx.createRadialGradient(src[0], src[1], 10, src[0], src[1], S.screenX - src[0] + 80); cone.addColorStop(0, withAlpha(C.shadowLight, .55)); cone.addColorStop(1, withAlpha(C.shadowLightFar, .10));
     ctx.fillStyle = cone; ctx.beginPath(); ctx.moveTo(src[0], src[1]); ctx.lineTo(S.screenX, top); ctx.lineTo(S.screenX, bot); ctx.closePath(); ctx.fill(); ctx.restore();
     const fac = f(), yT = yAt(fac, true), yB = Math.min(bot, yAt(fac, false));
     if (mat) {
-      ctx.save(); ctx.fillStyle = `rgba(6,7,11,${0.94 * (1 - pass) * (st?.kind === "materials" ? g.reveal : 1)})`; ctx.beginPath(); ctx.moveTo(S.objX, OT); ctx.lineTo(S.screenX, yT); ctx.lineTo(S.screenX, yB); ctx.lineTo(S.objX, OB); ctx.closePath(); ctx.fill(); ctx.restore();
-      ctx.save(); ctx.strokeStyle = "rgba(255,226,160,.55)"; ctx.lineWidth = 2; ctx.setLineDash([6, 6]); ctx.beginPath(); ctx.moveTo(src[0], src[1]); ctx.lineTo(S.screenX, yT); ctx.moveTo(src[0], src[1]); ctx.lineTo(S.screenX, yB); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = withAlpha(C.shadowShade, 0.94 * (1 - pass) * (st?.kind === "materials" ? g.reveal : 1)); ctx.beginPath(); ctx.moveTo(S.objX, OT); ctx.lineTo(S.screenX, yT); ctx.lineTo(S.screenX, yB); ctx.lineTo(S.objX, OB); ctx.closePath(); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.strokeStyle = withAlpha(C.shadowLight, .55); ctx.lineWidth = 2; ctx.setLineDash([6, 6]); ctx.beginPath(); ctx.moveTo(src[0], src[1]); ctx.lineTo(S.screenX, yT); ctx.moveTo(src[0], src[1]); ctx.lineTo(S.screenX, yB); ctx.stroke(); ctx.restore();
     }
     // screen
-    ctx.fillStyle = "#E9E3D2"; ctx.globalAlpha = 0.9; ctx.fillRect(S.screenX, top, 26, bot - top); ctx.globalAlpha = 1;
-    if (mat) { ctx.fillStyle = `rgba(10,11,16,${0.95 * (1 - pass)})`; ctx.fillRect(S.screenX, yT, 26, yB - yT); }
-    ctx.fillStyle = "#3A3F4E"; ctx.fillRect(S.screenX + 26, top, 6, bot - top);
+    ctx.fillStyle = C.shadowScreen; ctx.globalAlpha = 0.9; ctx.fillRect(S.screenX, top, 26, bot - top); ctx.globalAlpha = 1;
+    if (mat) { ctx.fillStyle = withAlpha(C.shadowShadeScreen, 0.95 * (1 - pass)); ctx.fillRect(S.screenX, yT, 26, yB - yT); }
+    ctx.fillStyle = C.shadowScreenEdge; ctx.fillRect(S.screenX + 26, top, 6, bot - top);
     // targets on the screen
     if (st && st.kind === "size" && g.phase === "play") { const t1 = yAt(st.factor, true), t2 = Math.min(bot, yAt(st.factor, false)); ctx.strokeStyle = C.ion; ctx.lineWidth = 4; for (const y of [t1, t2]) { ctx.beginPath(); ctx.moveTo(S.screenX - 30, y); ctx.lineTo(S.screenX + 50, y); ctx.stroke(); } pill(api, ctx, `${st.factor}${T.times.split(" ")[0]}`, S.screenX - 70, t1 - 4, { color: C.ion, size: 38 }); }
-    if (st && st.kind === "catch" && g.phase === "play") { const b = shadowBand(g.clock, st.lo, st.hi), y1 = yAt(b.f + b.half, true), y2 = yAt(b.f - b.half, true); ctx.fillStyle = "rgba(139,152,255,.28)"; ctx.fillRect(S.screenX - 36, y1, 100, y2 - y1); ctx.strokeStyle = C.ion; ctx.lineWidth = 3; ctx.strokeRect(S.screenX - 36, y1, 100, y2 - y1); const k = clamp(g.inBand / st.seconds, 0, 1); ctx.fillStyle = "rgba(255,255,255,.1)"; roundRect(ctx, 300, 150, 400, 12, 6); ctx.fill(); ctx.fillStyle = C.mint; roundRect(ctx, 300, 150, 400 * k, 12, 6); ctx.fill(); }
+    if (st && st.kind === "catch" && g.phase === "play") { const b = shadowBand(g.clock, st.lo, st.hi), y1 = yAt(b.f + b.half, true), y2 = yAt(b.f - b.half, true); ctx.fillStyle = withAlpha(C.ion, .28); ctx.fillRect(S.screenX - 36, y1, 100, y2 - y1); ctx.strokeStyle = C.ion; ctx.lineWidth = 3; ctx.strokeRect(S.screenX - 36, y1, 100, y2 - y1); const k = clamp(g.inBand / st.seconds, 0, 1); ctx.fillStyle = withAlpha(C.hi, .1); roundRect(ctx, 300, 150, 400, 12, 6); ctx.fill(); ctx.fillStyle = C.mint; roundRect(ctx, 300, 150, 400 * k, 12, 6); ctx.fill(); }
     // object (or material) on its post
-    ctx.fillStyle = "#2A2F3D"; ctx.fillRect(S.objX - 4, OB, 8, S.table - OB);
+    ctx.fillStyle = C.shadowStand; ctx.fillRect(S.objX - 4, OB, 8, S.table - OB);
     if (mat) drawMaterial(ctx, mat, S.objX, S.torchY, 1);
-    else { ctx.strokeStyle = "rgba(255,255,255,.2)"; ctx.setLineDash([6, 6]); ctx.lineWidth = 3; roundRect(ctx, S.objX - 30, OT, 60, S.objH, 8); ctx.stroke(); ctx.setLineDash([]); }
+    else { ctx.strokeStyle = withAlpha(C.hi, .2); ctx.setLineDash([6, 6]); ctx.lineWidth = 3; roundRect(ctx, S.objX - 30, OT, 60, S.objH, 8); ctx.stroke(); ctx.setLineDash([]); }
     if (st && st.kind === "materials" && g.holder === "redcard" && g.reveal > 0.6) pill(api, ctx, `${T.shadowColour}: dark`, S.screenX - 150, 560, { color: C.ink, size: 38 });
     // torch
     ctx.save(); ctx.translate(g.tx, S.torchY);
-    bloom(ctx, "#FFE2A0", 14, 0, 70, 0.7);
-    ctx.fillStyle = "#2C3142"; roundRect(ctx, -86, -18, 86, 36, 10); ctx.fill(); ctx.fillStyle = "#3C4256"; roundRect(ctx, -20, -26, 30, 52, 8); ctx.fill();
-    ctx.fillStyle = "#FFF1C8"; ctx.beginPath(); ctx.arc(10, 0, 9, 0, Math.PI * 2); ctx.fill();
+    bloom(ctx, C.shadowLight, 14, 0, 70, 0.7);
+    ctx.fillStyle = C.shadowTorch; roundRect(ctx, -86, -18, 86, 36, 10); ctx.fill(); ctx.fillStyle = C.shadowTorchHead; roundRect(ctx, -20, -26, 30, 52, 8); ctx.fill();
+    ctx.fillStyle = C.shadowBulb; ctx.beginPath(); ctx.arc(10, 0, 9, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
     if (g.phase === "play" && st && st.kind !== "materials" && !g.dragTorch && g.stepT < 4) voltRing(ctx, g.tx - 30, S.torchY, 56, now);
     // materials tray and bins
     if (st && st.kind === "materials") {
-      st.items.forEach((it, k) => { if (g.sorted[it] || g.holder === it || g.drag?.id === it) return; const [x, y] = cardPos(k); ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, x - 74, y - 46, 148, 92, 14); ctx.fill(); ctx.strokeStyle = g.tested.has(it) ? C.ion : C.line2; ctx.lineWidth = 2; ctx.stroke(); drawMaterial(ctx, it, x, y - 8, 0.4); api.text(ctx, SHORT[it], x, y + 34, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", maxWidth: 144 }); });
-      KINDS.forEach((kind, k) => { const [x, y] = binPos(k), n = Object.values(g.sorted).filter((v) => v === kind).length; ctx.fillStyle = "rgba(16,19,27,.9)"; roundRect(ctx, x - 134, y - 40, 268, 80, 16); ctx.fill(); ctx.strokeStyle = g.drag ? C.volt : C.line2; ctx.lineWidth = 2; ctx.stroke(); api.text(ctx, (T as Record<string, string>)[kind], x - 18, y + 2, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle", maxWidth: 230 }); api.text(ctx, `${n}`, x + 112, y + 2, { font: "display", size: 38, weight: 800, align: "center", baseline: "middle" }); });
+      st.items.forEach((it, k) => { if (g.sorted[it] || g.holder === it || g.drag?.id === it) return; const [x, y] = cardPos(k); ctx.fillStyle = withAlpha(C.bg2, .95); roundRect(ctx, x - 74, y - 46, 148, 92, 14); ctx.fill(); ctx.strokeStyle = g.tested.has(it) ? C.ion : C.line2; ctx.lineWidth = 2; ctx.stroke(); drawMaterial(ctx, it, x, y - 8, 0.4); api.text(ctx, SHORT[it], x, y + 34, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", maxWidth: 144 }); });
+      KINDS.forEach((kind, k) => { const [x, y] = binPos(k), n = Object.values(g.sorted).filter((v) => v === kind).length; ctx.fillStyle = withAlpha(C.bg1, .9); roundRect(ctx, x - 134, y - 40, 268, 80, 16); ctx.fill(); ctx.strokeStyle = g.drag ? C.volt : C.line2; ctx.lineWidth = 2; ctx.stroke(); api.text(ctx, (T as Record<string, string>)[kind], x - 18, y + 2, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle", maxWidth: 230 }); api.text(ctx, `${n}`, x + 112, y + 2, { font: "display", size: 38, weight: 800, align: "center", baseline: "middle" }); });
       if (g.phase === "met") st.items.forEach((it) => { const k = KINDS.indexOf(SHADOW_MATERIALS[it].kind as (typeof KINDS)[number]); const [x, y] = binPos(k); if (g.sorted[it] === SHADOW_MATERIALS[it].kind) tick(ctx, x + 150, y - 20); });
       if (g.drag) drawMaterial(ctx, g.drag.id, g.drag.x, g.drag.y, 0.8);
     }
@@ -140,10 +141,10 @@ function create(api: EngineApi, spec: ShadowSpec): EngineInstance {
   function drawMaterial(ctx: Ctx, id: ShadowMat, x: number, y: number, sc: number) {
     const m = SHADOW_MATERIALS[id], w = 46 * sc, h = S.objH * sc;
     ctx.save(); ctx.translate(x, y);
-    const fill = id === "redcard" ? "#C2334D" : id === "card" ? "#8C6B4A" : id === "wood" ? "#6E4E33" : id === "tracing" ? "rgba(235,240,255,.55)" : id === "frosted" ? "rgba(200,225,240,.5)" : "rgba(190,235,255,.18)";
+    const fill = id === "redcard" ? C.shadowRedCard : id === "card" ? C.shadowCard : id === "wood" ? C.shadowWood : id === "tracing" ? withAlpha(C.shadowTracing, .55) : id === "frosted" ? withAlpha(C.shadowFrosted, .5) : withAlpha(C.shadowGlass, .18);
     ctx.fillStyle = fill; roundRect(ctx, -w / 2, -h / 2, w, h, 6 * sc); ctx.fill();
-    ctx.strokeStyle = m.kind === "transparent" ? "rgba(220,240,255,.7)" : "rgba(255,255,255,.3)"; ctx.lineWidth = 2; ctx.stroke();
-    if (id === "glass" || id === "frosted") { ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.beginPath(); ctx.moveTo(-w / 2 + 6, -h / 2 + 10); ctx.lineTo(-w / 2 + 14, -h / 2 + 30); ctx.stroke(); }
+    ctx.strokeStyle = m.kind === "transparent" ? withAlpha(C.shadowGlassEdge, .7) : withAlpha(C.hi, .3); ctx.lineWidth = 2; ctx.stroke();
+    if (id === "glass" || id === "frosted") { ctx.strokeStyle = withAlpha(C.hi, .6); ctx.beginPath(); ctx.moveTo(-w / 2 + 6, -h / 2 + 10); ctx.lineTo(-w / 2 + 14, -h / 2 + 30); ctx.stroke(); }
     ctx.restore();
   }
   function bot(): BotAction | null {
@@ -165,4 +166,4 @@ function create(api: EngineApi, spec: ShadowSpec): EngineInstance {
     board: () => ({ title: "Closer light, bigger shadow", lines: ["Light travels in straight lines past the edges.", "A red card still makes a dark shadow."], figure: { kind: "none" }, accent: C.sun }),
   };
 }
-export const shadow: EngineDef<ShadowSpec> = { archetype: "shadow-play@1", label: "Sim · Light", accent: C.sun, create };
+export const shadow: EngineDef<ShadowSpec> = { archetype: "shadow-play@1", label: "Sim · Light", get accent() { return C.sun; }, create };

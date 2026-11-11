@@ -5,6 +5,10 @@
 //
 //   node --env-file=.env.local evals/hybrid-side-by-side.mjs [--matrix] [--topic <id>] [--class 6] [--scenario steady,offtopic,stuck] [--cap 150] [--usd 2] [--out <dir>]
 //   node evals/hybrid-side-by-side.mjs --dry      plumbing check: no network, stubbed model lines, nothing to judge
+//   --learners meera,meeraForgot,kabir,player     round 8 (integration 26, "taught this child"): each lesson starts from a seeded
+//                                                 learner (evals/knows-her/seed.mjs: the knows.js plan, warm-up and interests);
+//                                                 with --matrix, every topic × every learner on --scenario (default steady).
+//                                                 Each teacher row carries `because`: the records the walk acted on that turn.
 //
 // No database: the route's own planTurn (routes/lesson.js __test) plans each turn on an in-memory learner state, as
 // tests/learner-live.test.mjs does. The child is scripted (a fixed line per turn, whatever she said), so both lanes hear
@@ -37,6 +41,7 @@ import { heldPicture, pictureTruth } from "../server/brain/picture.js";
 import { gateCtxFor } from "../server/stagecraft/board-sync.js";
 import { entryFor } from "../server/play/levels.js";
 import { askTruth, VISUAL_NOT_YET, VISUAL_DRAWING } from "../server/director/shapes.js";
+import { seedLearner } from "./knows-her/seed.mjs";
 
 const { planTurn } = __test;
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
@@ -63,67 +68,16 @@ export const MATRIX_TOPICS = [["c6-maths-ch06-t01", 6], ["c5-maths-ch02-t01", 5]
 const CHILD = (cls) => ({ id: "00000000-0000-0000-0000-00000000aaaa", legal_mode: "M1", class_level: cls });
 const LESSON = { id: "11111111-1111-1111-1111-11111111aaaa", started_at: new Date(0).toISOString() };
 
-// (the child's line on the turn being answered: --j2-live reads the echo clause against it, not against the note's words)
-let childSaidNow = "";
 if (DRY) {
   // stubbed lines: the agent's call fails (it falls back, as on a live error) and her line is a fixed sentence
   // the dry meter counts the calls a live run would make (her line, and the classifier when code cannot decide), to size caps
-  // (v6.11 J2: the dry stand-in for her one sentence on the child's answer to her return question — a sentence with one of their
-  // words, so the matrix runs the J2 path and its predicate without a model)
   const STUB = "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?";
-  const dryText = (msgs) => {
-    const note = [...(msgs ?? [])].reverse().find((m) => m.role === "system")?.content ?? "";
-    // (the J2 note carries the child's words, never their sentence: "their own word(s) for it: "a", "b"")
-    const w = /their own words? for it: "([^"]+)"/.exec(String(note))?.[1]?.toLowerCase() ?? null;
-    return w ? `${w[0].toUpperCase()}${w.slice(1)} wala pal sach mein zabardast lagta hoga. ${STUB}` : STUB;
-  };
-  // (main, live offtopic after release 18: J2's sentence was the joint 2 times in 3. --j2-live N, with --dry: the lesson stays dry, and
-  // each turn that answers a child's reply to her return sends ITS OWN prompt to the live reply model N times; every draft's sentences
-  // are read by replyToReturnWhy (the clause that refuses each) and written to <out>/j2-replay.json. Spend is estimated before each
-  // exchange (request characters / 4 in, 300 out); an exchange that would pass --j2-usd (default 0.10) is not sent, and the run stops.
-  // Needs the reply model's endpoint: node --env-file=.env.local … --dry --j2-live 20)
-  const J2_LIVE = Number(arg("j2-live", "0"));
-  if (J2_LIVE > 0) {
-    if (!process.env.AZURE_OPENAI_ENDPOINT) { console.error("--j2-live needs the reply model: run with node --env-file=.env.local"); process.exit(2); }
-    const { usdOf } = await import("../server/azure.js");
-    const { replyToReturnWhy } = await import("../server/brain/say.js");
-    const J2_USD = Number(arg("j2-usd", "0.10"));
-    const live = replyDeps.chat;
-    const report = { n: J2_LIVE, usdCap: J2_USD, usd: 0, exchanges: [] };
-    const save = () => { mkdirSync(OUT, { recursive: true }); writeFileSync(`${OUT}/j2-replay.json`, JSON.stringify(report, null, 1) + "\n"); };
-    const sents = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?।])\s+(?=\S)/).filter(Boolean);
-    const j2Chat = async (d, msgs, opts) => {
-      const note = [...(msgs ?? [])].reverse().find((m) => m.role === "system")?.content ?? "";
-      // (the note gives the model the child's words, not their sentence: the clauses read against those words)
-      // (main on the rerun: the clauses read against the child's REAL sentence — code has it — whatever the note carries; the prompt
-      // itself must not carry it: the replay checks that too)
-      const words = /their own words? for it: ((?:"[^"]+"(?:, )?)+)/.exec(String(note))?.[1]?.replace(/"/g, "").replace(/,/g, " ");
-      if (!words) { dryCall("reply"); return { text: dryText(msgs) }; }
-      const said = childSaidNow || words;
-      const leaked = !!childSaidNow && JSON.stringify(msgs).toLowerCase().includes(childSaidNow.toLowerCase());
-      const est = usdOf(d, { in: Math.round(JSON.stringify(msgs).length / 4), cached: 0, out: 300, reasoning: 0 }) * J2_LIVE;
-      if (report.usd + est > J2_USD) { report.stopped = `the next exchange (~$${est.toFixed(4)}) would pass $${J2_USD} (spent ~$${report.usd.toFixed(4)})`; save(); console.error(`STOP: ${report.stopped}`); process.exit(4); }
-      const x = { said, words, sentenceInPrompt: leaked, samples: [] };
-      for (let k = 0; k < J2_LIVE; k++) {
-        const r = await live(d, msgs, { ...(opts ?? {}), maxTokens: 220, effort: "none", timeoutMs: 15000 });
-        const ss = sents(r?.text).map((y) => ({ s: y, why: replyToReturnWhy(y, said) }));
-        x.samples.push({ text: r?.text ?? "", pass: ss.some((y) => y.why === null), sentences: ss });
-      }
-      report.usd += est;
-      const refused = {};
-      for (const sm of x.samples.filter((y) => !y.pass)) { const w = sm.sentences[0]?.why ?? "none"; refused[w] = (refused[w] ?? 0) + 1; }
-      x.passRate = x.samples.filter((y) => y.pass).length / J2_LIVE;
-      x.firstSentenceRefusedBy = refused;
-      report.exchanges.push(x); save();
-      dryCall("reply");
-      return { text: dryText(msgs) };
-    };
-    replyDeps.chat = j2Chat;
-    replyDeps.chatStream = async (d, msgs, opts) => j2Chat(d, msgs, opts);
-  } else {
-    replyDeps.chat = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
-    replyDeps.chatStream = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
-  }
+  // (dc-r8-director20 R1: her reply after an aside is authored and chosen by code, so the dry stub needs no stand-in for it)
+  const dryText = () => STUB;
+  // (dc-r8-director20 R1: --j2-live measured the model's reply sentence, which is gone — the reply is Learning's, chosen by code)
+  replyDeps.chat = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
+  replyDeps.chatStream = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
+
 } else if (!process.env.AZURE_OPENAI_ENDPOINT) {
   console.error("no AZURE_OPENAI_ENDPOINT: run with node --env-file=.env.local, or --dry for the plumbing check");
   process.exit(2);
@@ -205,12 +159,17 @@ async function classOf(state, kit, text, classLevel) {
 }
 
 /** One lesson on one lane: the opening, then every scripted line. */
-async function lesson(lane, kit, classLevel, lines, persona = null) {
+async function lesson(lane, kit, classLevel, lines, persona = null, learner = null) {
+  // round 8: a seeded learner (her plan, warm-up, start records and interests); none = the no-history child as before
+  const seeded = learner ? seedLearner(kit.topicId, learner) : null;
   // H1 (director5): a reactive scripted child answers what is on the table, by persona; else the fixed lines
-  const child = persona ? createReactiveChild({ persona, seed: 7, kit, name: "Riya" }) : null;
+  // (--second-clarify: the stuck child also asks "samajh nahi aaya" twice on one point and one worked step — main's C1 ruling 5)
+  const child = persona ? createReactiveChild({ persona, seed: 7, kit, name: "Riya", clarify2: process.argv.includes("--second-clarify") }) : null;
   const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend baby elephant" }, ageBand: classLevel <= 3 ? "6-9" : "10-15", lang: "hinglish",
-    interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: kit.title ?? kit.topicId, classLevel, sessionId: LESSON.id, teacher: lane };
-  let r = step(initLessonState({ topicId: kit.topicId, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
+    interests: seeded ? seeded.interests : ["cricket"], firstMeeting: !seeded, hasCallback: false, topicTitle: kit.title ?? kit.topicId, classLevel, sessionId: LESSON.id, teacher: lane };
+  const s0 = initLessonState({ topicId: kit.topicId, kit, ctx, seed: 7, now: 0, ...(seeded ? { knows: seeded.plan, warmupItems: seeded.warmup } : {}) });
+  if (seeded && s0.knows) s0.knowsApplied = seeded.applied;
+  let r = step(s0, { event: "start", kit, now: 0 });
   const brief = { firstName: "Riya", classLevel, ageBand: ctx.ageBand, languagePref: "hinglish", interests: ["cricket"], recentWins: [], activeMisconceptions: [],
     memoryCallbacks: [], vibe: { pace: "medium", verbosity: "brief", humour: "medium" }, relationshipStage: "first_meeting (0 sessions together)" };
   let s = { ...r.state, brief, mode: "text", kitVerified: kit.verified, kitHash: kit.hash };
@@ -230,7 +189,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     else openFell = out?.error ?? "no line";
   }
   opening ??= (await textReply({ instructions: instructionsFor(s, kit), state: s, kit, childText: "", ui: r.ui, module: null })).reply;
-  rows.push({ who: "teacher", text: opening, move: openMove, card: say(r), ...(openFell ? { fellBack: openFell } : {}) });
+  rows.push({ who: "teacher", text: opening, move: openMove, card: say(r), ...(openFell ? { fellBack: openFell } : {}), ...(r.state.knowsApplied?.length ? { because: r.state.knowsApplied } : {}) });
   s.recent = [...(s.recent ?? []), { who: "teacher", text: opening }];
   let live = { state: newLearnerState({ childId: CHILD(classLevel).id, classLevel }), maxSeq: 0 };
   // (H1.1: the persona sets its own budget, Learning maxTurnsFor: steady leaves at 40, so skills 2-3 are reached)
@@ -263,18 +222,22 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       // 60. A card is on the table for the child only once her line has said it; and the goodbye waits for a card she said and left open)
       const lastT = [...rows].reverse().find((r) => r.who === "teacher") ?? null;
       const nrm = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
-      const cardSaid = !lastT?.card || nrm(lastT.text).includes(nrm(lastT.card).slice(0, 30));
+      // (dc-r8-director20 harness: a card held by her aside question — no card on her row — was still answered, c6 offtopic 21 "126 cm"
+      // after the AI line: a live card her last line did not say is not on the table)
+      const liveP = live ? nrm(s.ctx?.lang === "english" ? live.prompt_en ?? live.prompt_hi : live.prompt_hi ?? live.prompt_en) : "";
+      const cardSaid = lastT?.card ? nrm(lastT.text).includes(nrm(lastT.card).slice(0, 30)) : !lastT || !live || (!!liveP && nrm(lastT.text).includes(liveP.slice(0, 30)));
       const childIn = (turn) => ({ turn, teacher: [...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "",
         beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card: cardSaid ? card : null, ask: cardSaid ? ask : null, boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",
         // (H1.1: her probe or teach-back move is unkeyed: the child gives a reason; else the child reads her line)
         ...(["probe", "teachback"].includes(s.lastMove?.kind) ? { probe: true } : {}),
         // (v6.11 J2: her last turn was an aside's return question: the child answers it, about the aside)
-        ...(lastT?.returnSaid ? { returned: true } : {}) });
+        // (P1: and her question after the "Main AI teacher hoon …" line is answered the same way, about their thing)
+        ...(lastT?.returnSaid || (/Main AI teacher hoon|Main AI hoon|I'm an AI|No favourites for me/i.test(String(lastT?.text ?? "")) && /[?？]\s*$/.test(String(lastT?.text ?? ""))) ? { returned: true } : {}) });
       let out = child.reply(childIn(i));
       // (c6 steering 51: the goodbye came during an open card — up to 10 turns it waits; the child answers the card instead)
       const openSaid = !!lastT?.card && cardSaid && /[?？]\s*$/.test(String(lastT.text ?? "").trim());
       if (out.kind === "leave" && openSaid && leaveWait < 10) { leaveWait++; out = child.reply(childIn(-1)); }
-      text = out.text; leaving = out.kind === "leave"; childSaidNow = String(text ?? "").replace(/\s+/g, " ").trim();
+      text = out.text; leaving = out.kind === "leave";
     }
     if (text == null) break;
     const now = (i + 1) * 20_000;
@@ -283,6 +246,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     rows.push({ who: "child", text, read: c.outcome + (c.request?.type ? ` · ${c.request.type}` : ""), classifyMs, classifyPath: c.path ?? null });
     lastClassify = { ms: classifyMs, path: c.path ?? null };
     const activeItem = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
+    const knowsBefore = (s.knowsApplied ?? []).length;
     const p = await planTurn(s, c, { kit, child: CHILD(classLevel), lesson: LESSON, activeItem, moduleOnly: false, moduleEvents: [],
       answer: text, childText: text, leaked: false, live: Promise.resolve(live), carried: [], now });
     live = { state: p.learner.after, maxSeq: live.maxSeq };
@@ -366,8 +330,12 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       if (t.guard?.returnMissed && next?.lastMove?.returned) next = { ...next, later: requeueMissedReturn(next, t.guard).later };
       // (v6.8 A4, as brain/turn.js: an aside question ended her turn — the unsaid card is neither pinned nor graded)
       if (t.guard?.cardHeld && next?.activeItemId) { next = { ...next, cardUnsaid: next.activeItemId }; if (ui?.ask) ui = { ...ui, ask: null, chips: [] }; }
+      // (P1, as brain/turn.js: a return's turn held the lesson's authored parts; the next turn says them first)
+      if (t.guard?.bodyHeld?.length && next) next = { ...next, bodyUnsaid: t.guard.bodyHeld };
       if (t.guard?.asideEnd) next = { ...next, asideReplyDue: true };
       if (next) next = { ...next, returnAsked: t.guard?.asideEnd && t.guard?.returnSaid && next.lastMove?.returned?.topic ? { topic: next.lastMove.returned.topic } : undefined };
+      // (P1, as brain/turn.js: the AI line's question to them is answered on the next turn, as a return's is)
+      if (next && !next.returnAsked && t.guard?.asideEnd && t.guard?.honestNow && next.lastMove?.tasteAsked?.topic) next = { ...next, returnAsked: { topic: next.lastMove.tasteAsked.topic } };
       // (main's director2 judgement: a caught problem must be told apart from a fixed one) what was left after the rewrite, and
       // whether code replaced or repaired the line
       if (guard) guardAfter = { afterRewrite: t.guard.afterRewrite ?? null, replaced: !!t.guard.replaced, repaired: !!t.guard.repaired };
@@ -559,7 +527,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     if (!heldRec && lane === "director" && reply && next.heldUp?.unit) heldRec = { unit: next.heldUp.unit, changed: false, kept: true, drawn: "kept", pages: [], intent: { unit: next.heldUp.unit, noUnit: true }, layout: { split: false } };
     rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), ...(next?.lastMove?.clarifyN ? { clarifyN: next.lastMove.clarifyN } : {}), ...(tGuard?.j2 ? { j2: { line: tGuard.j2.line ?? null, refused: tGuard.j2.refused ?? [] } } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
       gate: { delivered, answered, verdictGiven, contradictions, contradictionsV6, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),
-      ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
+      ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}),
+      // round 8: the because records this turn acted on (what the judge reads to see why a choice was made)
+      ...((next.knowsApplied ?? []).length > knowsBefore ? { because: next.knowsApplied.slice(knowsBefore) } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
     lastBoardUp = boardUp;
     if (screen?.kind === "whiteboard") lastScreenKey = screenKeyOf(screen);
@@ -571,14 +541,18 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
 
 const md = (name, topic, A, B) => {
   const side = (rows) => rows.map((r) => r.who === "child" ? `**child:** ${r.text}  _(${r.read})_`
-    : `**Asha** [${r.move}${r.beat ? ` · beat ${r.beat}` : ""}${r.check ? ` · check ${r.check.itemId}${r.check.misses ? ` (${r.check.misses} miss)` : ""}${r.check.gave ? " gave" : ""}` : ""}${r.boardUp ? " · board up" : ""}${r.replyReadyMs != null ? ` · ready ${r.replyReadyMs} ms` : ""}${r.fellBack ? ` · fell back: ${r.fellBack}` : ""}${r.guard ? ` · guard ${r.guard.join(",")}` : ""}]: ${r.text}${r.card ? `\n  > card: ${r.card}` : ""}${r.screen ? `\n  > screen: ${r.screen.kind === "game" ? `game ${r.screen.game}` : r.screen.kind === "whiteboard" ? `board ${r.screen.template ?? r.screen.by ?? ""} ${JSON.stringify(r.screen.onScreen ?? {})}${r.screen.boardRef ? ` · ref ${JSON.stringify(r.screen.boardRef)}` : ""}` : `nothing (${r.screen.why})`}` : ""}`).join("\n\n");
+    : `**Asha** [${r.move}${r.beat ? ` · beat ${r.beat}` : ""}${r.check ? ` · check ${r.check.itemId}${r.check.misses ? ` (${r.check.misses} miss)` : ""}${r.check.gave ? " gave" : ""}` : ""}${r.boardUp ? " · board up" : ""}${r.replyReadyMs != null ? ` · ready ${r.replyReadyMs} ms` : ""}${r.fellBack ? ` · fell back: ${r.fellBack}` : ""}${r.guard ? ` · guard ${r.guard.join(",")}` : ""}]: ${r.text}${r.card ? `\n  > card: ${r.card}` : ""}${r.because ? `\n  > because: ${r.because.map((b) => `${b.choice} on ${b.on} ← ${b.fact?.kind}${b.fact?.misconceptionId ? ` ${b.fact.misconceptionId}` : ""}${b.fact?.path ? ` (${b.fact.path})` : ""} [${b.source}]`).join("; ")}` : ""}${r.screen ? `\n  > screen: ${r.screen.kind === "game" ? `game ${r.screen.game}` : r.screen.kind === "whiteboard" ? `board ${r.screen.template ?? r.screen.by ?? ""} ${JSON.stringify(r.screen.onScreen ?? {})}${r.screen.boardRef ? ` · ref ${JSON.stringify(r.screen.boardRef)}` : ""}` : `nothing (${r.screen.why})`}` : ""}`).join("\n\n");
   return `# ${name} · ${topic}${DRY ? " (DRY: stubbed lines, nothing to judge)" : ""}\n\n## Director\n\n${side(A)}\n\n## Agent\n\n${side(B)}\n`;
 };
 
 const MATRIX = process.argv.includes("--matrix");
+const LEARNERS = arg("learners", "").split(",").map((x) => x.trim()).filter(Boolean);
 // H1 (director5): --reactive plays the reactive child (evals/child-sim/reactive.mjs), persona = the scenario name
 const REACTIVE = process.argv.includes("--reactive");
-const runs = MATRIX
+const runs = LEARNERS.length
+  ? (MATRIX ? (arg("topics", "") ? arg("topics", "").split(",").map((t) => [t.trim(), Number(/^c(\d+)-/.exec(t.trim())?.[1] ?? 6)]) : [...MATRIX_TOPICS, ["c5-maths-ch02-t02", 5]])
+    : [[arg("topic", "c6-maths-ch06-t01"), Number(arg("class", "6"))]]).flatMap(([topicId, classLevel]) => LEARNERS.map((learner) => ({ topicId, classLevel, name: arg("scenario", "steady"), learner })))
+  : MATRIX
   ? (arg("topics", "") ? arg("topics", "").split(",").map((t) => [t.trim(), Number(/^c(\d+)-/.exec(t.trim())?.[1] ?? 6)]) : MATRIX_TOPICS).flatMap(([topicId, classLevel]) => (arg("scenario", "") ? arg("scenario", "").split(",").map((x) => x.trim()) : ["steady", "offtopic", "stuck", "steering"]).map((name) => ({ topicId, classLevel, name })))
   : arg("scenario", "steady,offtopic,stuck").split(",").filter((n) => SCENARIOS[n]).map((name) => ({ topicId: arg("topic", "c6-maths-ch06-t01"), classLevel: Number(arg("class", "6")), name }));
 // (a run finished in parts: --skip leaves out lessons already written, by output name)
@@ -591,20 +565,20 @@ if (process.env.TAXILA_R7_SCRIPT && scriptOn()) {
 }
 const dir = OUT;
 mkdirSync(dir, { recursive: true });
-for (const { topicId, classLevel, name: scenario } of runs) {
+for (const { topicId, classLevel, name: scenario, learner = null } of runs) {
   const kit = kitFromFile(getTopic(topicId));
   // (two topics of one class in one run, director5's c5 t01 and t02: named by topic)
-  const name = MATRIX ? (arg("topics", "") ? `${scenario}-${topicId.replace(/-maths-/, "-")}` : `${scenario}-c${classLevel}`) : scenario;
+  const name = learner ? `${learner}-${scenario}-${topicId.replace(/-maths-/, "-")}` : MATRIX ? (arg("topics", "") ? `${scenario}-${topicId.replace(/-maths-/, "-")}` : `${scenario}-c${classLevel}`) : scenario;
   if (SKIP.has(name)) continue;
   // one lane after the other, so neither lane's latency is measured while the other is calling
   // --agent-only: the agent lane alone (main 2026-11-04: the agent half rerun with its production invariants)
   const AGENT_ONLY = process.argv.includes("--agent-only");
-  const A = AGENT_ONLY ? [] : await lesson("director", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null);
+  const A = AGENT_ONLY ? [] : await lesson("director", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null, learner);
   // --director-only: the Director lane alone (main 2026-11-04: the Director-half rerun after block 2; the agent lane is frozen)
   const DIRECTOR_ONLY = process.argv.includes("--director-only");
-  const B = DIRECTOR_ONLY ? [] : await lesson("agent", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null);
+  const B = DIRECTOR_ONLY ? [] : await lesson("agent", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null, learner);
   const deployments = { reply: DEPLOY.reply, classify: DEPLOY.classify, agent: teacherDeployment() };
-  writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario, dry: DRY, deployments, director: A, agent: B }, null, 1) + "\n");
+  writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario, ...(learner ? { learner, knows: seedLearner(topicId, learner).plan } : {}), dry: DRY, deployments, director: A, agent: B }, null, 1) + "\n");
   // (a script run whose lesson walked no script beat is a broken run, never a result: it stops loudly)
   if (process.env.TAXILA_R7_SCRIPT && scriptOn() && A?.length && !A.some((r) => r.beat)) {
     console.error(`NO SCRIPT BEATS: ${name} walked no script beat (${topicId}); stopping`); stopWith(6, "no script beats");

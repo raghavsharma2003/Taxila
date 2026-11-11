@@ -807,7 +807,7 @@ export function angleKind(a: number): "acute" | "right" | "obtuse" | "straight" 
 const angleDefault: AngleSpec = {
   archetype: "angle-cannon@1", skills: ["c5-maths-ch03-t01", "c6-maths-ch02-t03", "c6-maths-ch02-t04"], lang: "en", strings: { ...AN_STRINGS },
   waves: [
-    { title: "Calibrate", sub: "turn from the zero arm, anticlockwise", mode: "call", items: [90, 45, 135, 30], range: 180, scaffold: "tens", speed: 0.8 },
+    { title: "Calibrate", sub: "turn from the zero arm, anticlockwise", mode: "call", items: [90, 40, 130, 30], range: 180, scaffold: "tens", speed: 0.8 },
     { title: "Copy the turn", sub: "long arms or short, the turn is the angle", mode: "copy", items: [60, 120, 25, 150], range: 180, scaffold: "none", speed: 0.85, targets: "c5-maths-ch03-t01-m-angle-is-length" },
     { title: "Obtuse only", sub: "more than a right angle, less than straight", mode: "classify", items: [40, 110, 95, 150, 70, 125], kind: "obtuse", range: 180, scaffold: "none", speed: 0.9 },
     { title: "Past straight", sub: "the full turn is open now", mode: "call", items: [200, 270, 315, 160], range: 360, scaffold: "none", speed: 0.9, targets: "c5-maths-ch03-t01-m-half-is-quarter" },
