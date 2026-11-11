@@ -1,0 +1,22 @@
+[
+  {
+    "id": "gen-c6-maths-ch02-t02-fc1d791c",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "spec.waves (all three): modes call/copy/classify with items [30,45,60,90], [90,120,135,150], [40,90,110,180,270]",
+        "detail": "The targeted mix-up is 'Thinks the letters of an angle can be written in any order, so the vertex need not be the middle letter'. No round names an angle with letters, shows points A/B/C, or asks which letter is the vertex. The rounds only turn a beam to a degree value or sort by size, so a child holding the vertex-naming belief would never meet it here. 'Naam ka mod' / 'Har kona apna naam dhoondta hai' means type names (acute/right/obtuse/reflex), not vertex-letter names."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "spec.strings.hits = \"milaans\"; screen top pill \"MILAANS 0/4\" (p412 and l1366)",
+        "detail": "'milaans' is not a word: it puts the English plural -s on the Hindi 'milaan'. A child would read it as a misspelling."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": "Wave 3 ('classify', kind 'right', range 360) includes 180, which is a straight angle and fits none of the string labels acute/right/obtuse/reflex. The packet does not show how the engine grades 180 in this mode, so it is not counted."
+  }
+]
