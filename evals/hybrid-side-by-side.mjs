@@ -69,11 +69,10 @@ if (DRY) {
   // (v6.11 J2: the dry stand-in for her one sentence on the child's answer to her return question — a sentence with one of their
   // words, so the matrix runs the J2 path and its predicate without a model)
   const STUB = "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?";
-  const J2_SKIP = new Set(["mujhe", "maine", "sabse", "achhi", "achha", "lagti", "lagta", "seedha", "bahar", "jaati", "maarta"]);
   const dryText = (msgs) => {
     const note = [...(msgs ?? [])].reverse().find((m) => m.role === "system")?.content ?? "";
-    const said = /and the child answered: "([^"]*)"/.exec(String(note))?.[1];
-    const w = said ? (said.toLowerCase().match(/\p{L}{4,}/gu) ?? []).find((x) => !J2_SKIP.has(x)) : null;
+    // (the J2 note carries the child's words, never their sentence: "their own word(s) for it: "a", "b"")
+    const w = /their own words? for it: "([^"]+)"/.exec(String(note))?.[1]?.toLowerCase() ?? null;
     return w ? `${w[0].toUpperCase()}${w.slice(1)} wala pal sach mein zabardast lagta hoga. ${STUB}` : STUB;
   };
   // (main, live offtopic after release 18: J2's sentence was the joint 2 times in 3. --j2-live N, with --dry: the lesson stays dry, and
@@ -93,7 +92,8 @@ if (DRY) {
     const sents = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?।])\s+(?=\S)/).filter(Boolean);
     const j2Chat = async (d, msgs, opts) => {
       const note = [...(msgs ?? [])].reverse().find((m) => m.role === "system")?.content ?? "";
-      const said = /and the child answered: "([^"]*)"/.exec(String(note))?.[1];
+      // (the note gives the model the child's words, not their sentence: the clauses read against those words)
+      const said = /their own words? for it: ((?:"[^"]+"(?:, )?)+)/.exec(String(note))?.[1]?.replace(/"/g, "").replace(/,/g, " ");
       if (!said) { dryCall("reply"); return { text: dryText(msgs) }; }
       const est = usdOf(d, { in: Math.round(JSON.stringify(msgs).length / 4), cached: 0, out: 300, reasoning: 0 }) * J2_LIVE;
       if (report.usd + est > J2_USD) { report.stopped = `the next exchange (~$${est.toFixed(4)}) would pass $${J2_USD} (spent ~$${report.usd.toFixed(4)})`; save(); console.error(`STOP: ${report.stopped}`); process.exit(4); }

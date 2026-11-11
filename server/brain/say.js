@@ -231,11 +231,25 @@ export function returnLineOk(x, said, topic) {
   return all.some((w) => new RegExp(`(?<![\\p{L}])${w}`, "iu").test(t));
 }
 /** v6.11 J2: the instruction for her one sentence after the child answered her return question. */
+/** v6.11 J2 (main on the J2 replay, 12 of 60 drafts passed and 41 of 48 refusals were the child's sentence said back): the model is
+ *  never shown what the child said, only one or two of their content words, chosen here — the last noun-like word first (not a stop
+ *  word, a verb form, a lesson word or a number). [] when there is none; the aside's own topic is the fallback word. */
+const J2_WORD_STOP = new Set(["mujhe", "pasand", "pasandida", "favourite", "favorite", "maine", "mera", "meri", "mere", "aapko", "aapka", "tumhe", "sabse", "bahut", "achha", "achhi", "achhe", "accha",
+  "acchi", "lagta", "lagti", "lagte", "seedha", "bahar", "andar", "jaati", "jaata", "jaate", "maarta", "maarti", "karta", "karti", "karte", "kyunki",
+  "woh", "wala", "wali", "wale", "jab", "phir", "bhi", "aur", "kuch", "sach", "really", "very", "like", "when", "that", "this", "what", "with", "have"]);
+export function j2WordsOf(said, topic = null) {
+  const ws = (String(said ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])
+    .filter((w) => !J2_WORD_STOP.has(w) && !RET_STOP.has(w) && !LESSON_SAID.test(w) && !/(?:ta|ti|te|na|ni|ne|ya|yi|ye|kar|kara)$/.test(w));
+  const out = [...new Set(ws.reverse())].slice(0, 2);
+  const t = String(topic ?? "").toLowerCase().match(/\p{L}{3,}/u)?.[0];
+  return out.length ? out : t ? [t] : [];
+}
 export function replyToReturnNoteOf(said, topic, lang = "hinglish") {
   const en = lang === "english";
+  const ws = j2WordsOf(said, topic);
   // (main, live offtopic after release 18: the joint 2 times in 3 — the note names every clause replyToReturnWhy holds it to, in that
-  // order; a shape, never a line to recite)
-  return `You asked about ${topic} and the child answered: "${String(said).replace(/"/g, "'").slice(0, 80)}". Start your turn with ONE short sentence (${en ? "in English" : "in simple Hinglish, Roman script"}) that reacts to that answer. It is checked, and dropped if it breaks any of these: 3 to 14 words; contains one of the child's own words for their thing; no question; no number; no word of the lesson (parts, fractions, lines, sides, shapes, sums); not a general rule or reason (no "${en ? "because / always / means" : "hota hai / kyunki / matlab / hamesha"}"); nothing about what you yourself like, feel or do; does not open with praise ("wah", "shabash"); never three of their words in a row; no promise to talk later. Then the move.`;
+  // order; a shape, never a line to recite. The child's sentence is not in it: only their words, so it cannot be said back)
+  return `You asked about ${topic}; the child answered, and their own word${ws.length > 1 ? "s" : ""} for it: ${ws.map((w) => `"${w}"`).join(", ")}. Start your turn with ONE short sentence (${en ? "in English" : "in simple Hinglish, Roman script"}) that reacts to it, using ${ws.length > 1 ? "one of those words" : "that word"}. It is checked, and dropped if it breaks any of these: 3 to 14 words; no question; no number; no word of the lesson (parts, fractions, lines, sides, shapes, sums); not a general rule or reason (no "${en ? "because / always / means" : "hota hai / kyunki / matlab / hamesha"}"); nothing about what you yourself like, feel or do; you are a woman (never "gaya", "raha", "karta" for yourself); no promise to remember it or to talk later; does not open with praise ("wah", "shabash"). Then the move.`;
 }
 /** v6.11 J2: her one sentence after the child answered her return: ≤ 14 words, no question, no taste of hers, a content word of
  *  theirs, nothing of the lesson, no promise, never their words said back. null-safe; the neutral joint is said when it fails. */
@@ -251,6 +265,9 @@ export function replyToReturnWhy(x, said) {
   if (LESSON_SAID.test(t)) return "lesson";
   if (RULE_SAID.test(t)) return "rule";
   if (PROMISE_SAID.test(t) || /(?<![\p{L}])(?:baad\s+mein|thodi\s+der|later)(?![\p{L}])/iu.test(t)) return "promise";
+  // (main on the J2 replay: 4 drafts spoke as a man, "samajh gaya"; one promised to remember, "yeh baat yaad rakhungi")
+  if (J2_MASCULINE.test(t)) return "masculine";
+  if (J2_REMEMBER.test(t)) return "remember";
   if (/(?<![\p{L}])(?:tumne|aapne|you)\s+(?:kaha|bataya|bola|said|told)/iu.test(t) || /^(?:wah|waah|shabash|wow)\b/iu.test(t)) return "echo";
   // (their words, never said back: three of them in a row is an echo)
   const tw = String(said ?? "").toLowerCase().match(/\p{L}+/gu) ?? [];
@@ -261,6 +278,10 @@ export function replyToReturnWhy(x, said) {
 /** v6.11 J2: her one sentence after the child answered her return: ≤ 14 words, no question, no taste of hers, a content word of
  *  theirs, nothing of the lesson, no promise, never their words said back (replyToReturnWhy names the clause that refuses). */
 export const replyToReturnOk = (x, said) => replyToReturnWhy(x, said) === null;
+/** Her own first-person verb in a masculine form (she is a woman): "samajh gaya", "main dekh raha hoon", "main karta hoon". */
+const J2_MASCULINE = /(?<![\p{L}])(?:samajh\s+gaya|(?:main|mai|maine)\s+(?:\p{L}+\s+){0,3}(?:gaya|raha|karta|chahta|sakta|dekhta|sunta|sochta|janta|jaanta)(?![\p{L}])|(?:gaya|raha|karta|chahta|sakta|dekhta|sunta|sochta|janta|jaanta)\s+(?:hoon|hun|tha)(?![\p{L}]))/iu;
+/** A promise to remember, or to come back to it next time. */
+const J2_REMEMBER = /(?<![\p{L}])(?:yaad\s+rakh\w*|yaad\s+rahega|yaad\s+rahegi|agli\s+baar|next\s+time|i'?ll\s+remember|i\s+will\s+remember)(?![\p{L}])/iu;
 const J2_STOP = new Set(["sabse", "lagta", "lagti", "lagte", "jaati", "jaata", "maarta", "karta", "karti", "woh", "jab"]);
 /** v6.3 R2: her own promise to come back, with no topic named (said once: code's park already promises). */
 const PROMISE_SAID = /(?<![\p{L}])(?:wapas\s+aa\w*|laut\w*|baat\s+kar(?:enge|ungi|unga)|uspar\s+aa\w*|baad\s+mein\s+(?:aa|baat)\w*|come\s+back|talk\s+about\s+it)(?![\p{L}])/iu;
