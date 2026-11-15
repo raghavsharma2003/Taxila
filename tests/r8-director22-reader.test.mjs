@@ -27,9 +27,10 @@ test("'haan, samajh aaya' is a yes, never a wrong answer to a card whose key is 
   assert.equal(readByAsked(st(), { outcome: "incorrect", confidence: 0.9, flags: {} }, "haan", kitWith("nahi")).outcome, "incorrect");
 });
 
-test("a stop in code's words is a stop whether or not the model flagged it; an aside where nothing of hers is open is an aside", () => {
+test("a stop in code's words is a stop whether or not the model flagged it", () => {
   assert.equal(readByAsked(st(), { outcome: "no_evidence", flags: {} }, "ab main jaati hoon, bye", kitWith("3")).flags.wantsToStop, true);
-  assert.equal(readByAsked(st(), { outcome: "no_evidence", flags: {} }, "kal maine cricket khela, sixer maara", kitWith("3")).request?.type, "uptake");
+  // (an aside with no request is the walk's to read — state.js step0 — and readerAgrees reads it the same way)
+  assert.equal(readByAsked(st(), { outcome: "no_evidence", flags: {} }, "kal maine cricket khela, sixer maara", kitWith("3")).request, undefined);
 });
 
 test("while the teach-back is open a line is its answer or a non-answer: no request is read from it", () => {

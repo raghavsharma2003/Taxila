@@ -4,13 +4,12 @@
 // only when code's check passes.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
 import { checkRun } from "../evals/hybrid-side-by-side/check-run.mjs";
 import { childSentenceOk } from "../server/brain/say.js";
 
-const D22 = new URL("../evals/hybrid-side-by-side/results/2026-11-15-director22", import.meta.url).pathname;
+const D22 = new URL("./fixtures/eval-results/director22", import.meta.url).pathname;
 
-test("T1: director22's steady endings said the teach-back's key before its answer board — flagged from the pages", { skip: !existsSync(D22) }, () => {
+test("T1: director22's steady endings said the teach-back's key before its answer board — flagged from the pages", () => {
   const rows = checkRun(D22).filter((x) => x.predicate === "teachbackKeyBoard").map((x) => `${x.lesson} ${x.row}`);
   for (const r of ["steady-c4-ch05-t01 136", "steady-c5-ch02-t01 146", "steady-c5-ch02-t02 140", "steady-c6-ch06-t01 142"]) assert.ok(rows.includes(r), `${r} in ${rows.join(", ")}`);
 });

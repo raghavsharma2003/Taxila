@@ -7,6 +7,7 @@
 
 import { readFileSync } from "node:fs";
 import { asideReplyForms, phraseOf } from "../../server/brain/asideReplies.js";
+import { asideTopic } from "../../server/director/state.js";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const low = (t) => norm(t).toLowerCase();
@@ -605,7 +606,8 @@ export const ORDER_LAWS = {
       yes: quiet, ack: quiet, done: quiet, reason: quiet || out === "correct",
       aside_reply: aside && !rq,
       // (an aside is read when the walk takes it up: a request, the flag, or her next turn naming it — the walk's own aside reading)
-      aside: REQ.aside.includes(rq) || (quiet && (flags.has("offTopic") || (() => { const w = (String(ctx.prevChild).toLowerCase().match(/cricket|virat|sixer|dhoni|rohit|match/) ?? [])[0]; return !!w && low(r.text).includes(w); })())),
+      // (state.js step0 reads a no-request line naming an aside of theirs as an aside — the same code, asideTopic, read here)
+      aside: REQ.aside.includes(rq) || (quiet && (flags.has("offTopic") || !!asideTopic(ctx.prevChild ?? "", ["cricket"]))),
       stop: REQ.stop.includes(rq) || flags.has("wantsToStop"),
     }[want] ?? (REQ[want] ?? []).includes(rq);
     return ok ? null : `the child meant ${want}; the walk read "${ctx.prevRead}"${flags.size ? ` (${[...flags].join(", ")})` : ""}: "${String(ctx.prevChild).slice(0, 50)}"`;

@@ -5,7 +5,7 @@
 // The HTTP route (server/routes/lesson.js) stays a thin adapter; lessonTurn(req, body) is the exported turn handler,
 // the seam W2-G's /api/lesson/turn-audio calls. Auth, dedupe/replay, the late-turn and outbox semantics are unchanged.
 import { alignParts } from "./lineParts.js";
-import { requeueMissedReturn, cardUnsaidNow, asideTopic, teachbackReading } from "../director/state.js";
+import { requeueMissedReturn, cardUnsaidNow, teachbackReading } from "../director/state.js";
 import { responseShape } from "../director/requestTable.js";
 import { q, one, guardStmt, GUARD_FAILED } from "../db.js";
 import { need, bad, forbidden, notFound, unauthorized, HttpError } from "../http.js";
@@ -2148,11 +2148,6 @@ export function readByAsked(state, cls, text, kit = null) {
   const item = state?.activeItemId && kit ? findItem(state, kit, state.activeItemId) : null;
   if (["correct", "incorrect", "partial", "misconception"].includes(cls.outcome) && YES_ONLY.test(t) && !(item && YES_NO_KEY.test(String(item.answer ?? "").trim())))
     cls = { ...cls, outcome: "no_evidence", confidence: 1, yes: true };
-  // (an aside said where no question of hers is open — "kal maine cricket khela" after a key's check-in — is an aside, never a plain "achha")
-  if (cls.outcome === "no_evidence" && !cls.request && !cls.asideReply && !/\d/.test(t) && !YES_ONLY.test(t)) {
-    const topic = asideTopic(t, state?.ctx?.interests ?? []);
-    if (topic) cls = { ...cls, request: { type: "uptake", src: "aside_words", topic } };
-  }
   // (the teach-back's own answer: read against its key here, the same reading the walk acts on)
   const tbRead = teachbackReading(state, kit, t);
   if (tbRead) cls = { ...cls, outcome: tbRead, confidence: 1 };
