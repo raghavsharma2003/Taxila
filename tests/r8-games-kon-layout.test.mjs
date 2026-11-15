@@ -250,7 +250,7 @@ it("numberClashes: two numbers 3 px apart side by side clash, 6 px apart do not;
   assert.deepEqual(numberClashes(L), []);
 });
 
-describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1366 × 768", { skip: SKIP, timeout: 300_000 }, () => {
+describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1366 × 768", { skip: SKIP, timeout: 900_000 }, () => {
   let browser, served, levels = [];
   before(async () => {
     process.env.PLAYWRIGHT_BROWSERS_PATH ||= browsersDir;
@@ -264,7 +264,7 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
   });
   after(async () => { await browser?.close(); served?.server.close(); });
 
-  it("every served level, every screen", async () => {
+  it("every served level, every screen", { timeout: 900_000 }, async () => {
     const { LOGIC } = await import("../src/play/families/index.ts");
     assert.ok(levels.length >= 6, `${levels.length} levels`);
     const faults = [];
@@ -300,6 +300,9 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
           await page.evaluate(() => { window.__play = undefined; });
           await page.evaluate((j) => window.__forge3.show(j), { play: { level, art: "kagaz", lang: "hinglish", classLevel: 6, debug: true }, tray: { w: size.w, h: size.h }, id: `${level.levelId}-${name}` });
           await page.waitForFunction((id) => !!window.__play?.dispatch && window.__play.level?.levelId === id && !!document.querySelector("canvas.pl-canvas"), level.levelId);
+          // and the stage has stopped re-mounting (the same hooks 300 ms apart): a stage mounted again after the acts starts a
+          // fresh view without her play-out (a standalone run, 2026-11-15: chip and ring missing on a centre-on-arm board)
+          await page.waitForFunction(() => { const same = window.__playSeen === window.__play; window.__playSeen = window.__play; return same; }, null, { polling: 300, timeout: 6000 }).catch(() => {});
           // the scale numbers are laid out in Geist Mono (0.6 em): once the play chunk (and its @font-face) is on the page, the
           // face loads before the boards are measured, or the check says why not (CI 2026-11-11 measured 8 px a figure at 14 px)
           if (mono === null) {
@@ -311,6 +314,8 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
           for (const k of keys) await page.evaluate((id) => window.__play.press(id), k);
           const took = await page.evaluate(() => window.__play.acts().length);
           if (took < acts.length) faults.push(`${size.tag} ${level.levelId} ${name}: ${took} of ${acts.length} acts reached the board`);
+          const remounted = await page.evaluate(() => new Promise((r) => setTimeout(() => r(window.__play !== window.__playSeen), 400)));
+          if (remounted) faults.push(`${size.tag} ${level.levelId} ${name}: the stage re-mounted after her acts`);
           await page.waitForTimeout(acts.length ? 1700 : 300);
           // and then until the board has settled (two audits 250 ms apart alike): a loaded runner can still be drawing a
           // play-out after the fixed wait (gate 2026-11-15: a vertex-off chip not yet drawn at the probe)
@@ -334,9 +339,10 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
             };
           });
           screens++;
-          // (centre-on-arm: her protractor centred on A runs past the board's edge, so its own scale numbers there are cut, and its 0 sits by O under the ring: her
-          // placement, not the layout; every other fault still counts)
-          for (const f of screenFaults(probe)) if (!(name === "mal-centre-on-arm" && /^(cut|ring×text) "\d+"$/.test(f))) faults.push(`${size.tag} ${level.levelId} ${name}: ${f}`);
+          // (centre-on-arm: her protractor centred on A runs past the board's edge, and its 0 sits by O under the ring: her
+          // placement, not the layout; every other fault still counts. Gate 1, night ruling 1: a number the board's edge
+          // would cut is not drawn, so no "cut" number is excused here any more)
+          for (const f of screenFaults(probe)) if (!(name === "mal-centre-on-arm" && /^ring×text "\d+"$/.test(f))) faults.push(`${size.tag} ${level.levelId} ${name}: ${f}`);
           // the vertex-off ring is a consequence of a committed decision: never on the first screen or before the decision
           if ((name === "first" || name === "mid") && probe.marks.some((m) => m.kind === "ring")) faults.push(`${size.tag} ${level.levelId} ${name}: centre ring before a decision`);
           // the board does not move when the game is solved (the controls keep their rows)

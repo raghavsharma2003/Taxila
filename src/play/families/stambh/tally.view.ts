@@ -25,7 +25,16 @@ import type { Role } from "../../core/styles.ts";
 import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
-import { groupsOf, tallyFlow, TALLY_CONTEXTS, type TallyParams, type TallyState } from "./tally.logic.ts";
+import { groupsOf, numberLineAt, tallyFlow, TALLY_CONTEXTS, type TallyParams, type TallyState } from "./tally.logic.ts";
+
+/**
+ * The count's digits over a group: a digit's centre stands COUNT_LIFT digit-heights above its line's strokes. On two lines
+ * or more a digit is the floor size (16) and read keeps READ_BAND between the lines, so the second line's digits (a box
+ * of 16 from 3.2 to 19.2 above their own strokes) stand clear of the first line's strokes by more than they stand off
+ * their own (gate 1, night ruling 2: the 5s had sat 2-3 px under the first line's strokes).
+ */
+const COUNT_LIFT = 0.7, READ_BAND = 26;
+const countDigit = (f: { sh: number; lines: number }) => (f.lines > 1 ? 16 : clamp(f.sh * 0.5, 16, 20));
 
 /** each kind's hue is its place in its scene (Kada is the same colour in keep and read; round 2, ruling 5) */
 const ROLES: Role[] = ["q1", "q2", "q3", "q4"];
@@ -159,8 +168,9 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
    * counted the same way, to what it holds.
    */
   function drawTally(c: CanvasRenderingContext2D, marks: readonly boolean[], x: number, y: number, bw: number, bh: number, role: Role, grouped: boolean, playOut: boolean): void {
-    // (read: two lines keep a band between them for the count's digits over the second line)
-    const P = api.P, f = tallyFlow(marks, bw, bh, grouped, keep ? clamp(rowH * 0.42, 30, 56) : 56, keep ? 0 : 21);
+    // (read: two lines keep a band between them for the count's digits over the second line, READ_BAND: the digits there
+    // stand clear of the first line's strokes; gate 1, night ruling 2)
+    const P = api.P, f = tallyFlow(marks, bw, bh, grouped, keep ? clamp(rowH * 0.42, 30, 56) : 56, keep ? 0 : READ_BAND);
     // lineH is the pitch from one line to the next (one line: the box); the lines are centred in the box
     const span = f.lines > 1 ? f.sh + f.lineH * (f.lines - 1) : f.lineH, top = y + (bh - span) / 2;
     const ly = (line: number) => (f.lines > 1 ? top + f.sh / 2 + f.lineH * line : top + f.lineH / 2);
@@ -183,7 +193,8 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   }
   /** the count over each closed group (and a group of five's fifth line tipping across), at `age` seconds into the play-out */
   function drawCount(c: CanvasRenderingContext2D, f: ReturnType<typeof tallyFlow>, x: number, ly: (line: number) => number, width: number, age: number, groups: ReturnType<typeof groupsOf>): void {
-    const P = api.P, digit = clamp(f.sh * 0.5, 16, 20);
+    // (on two lines or more the digits keep the floor size, so they fit the band between the lines: countDigit)
+    const P = api.P, digit = countDigit(f);
     for (const g of groups) {
       // each stroke's place: a standing line at its x, a line across at its right end (where the hand finishes it)
       const at: { x: number; line: number }[] = [];
@@ -207,7 +218,7 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       // the count: the digit of the stroke reached now; once the group is counted, its last number over the group's middle
       const done = age >= COUNT0 + g.len * STEP;
       const cx = done ? x + (first.x + last.x) / 2 : x + at[k - 1].x, line = done ? first.line : at[k - 1].line;
-      P.text(c, String(k), cx, ly(line) - f.sh / 2 - digit * 0.7, { size: digit, role: "look", font: "mono", weight: 700 });
+      P.text(c, String(k), cx, ly(line) - f.sh / 2 - digit * COUNT_LIFT, { size: digit, role: "look", font: "mono", weight: 700 });
     }
   }
   /** a total cell: her number (or empty); picked = the pad writes here; marksOk = the row's marks are right */
@@ -291,9 +302,10 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
    * way to go: no unit ticks, no place for the answer and no hops, so the answer is never counted off the line (law 2).
    */
   function numberLine(c: CanvasRenderingContext2D, hers: number, truth: number, arrow: boolean): void {
+    // one scale for the whole level, from its fade (gate 1, night ruling 1): never from her number or the key, so a
+    // bigger number never stands left of a smaller one
     const P = api.P, x0 = 24, x1 = w - 24, y = Math.min(lineY, h - 30);
-    const R = Math.max(10, Math.ceil((hers * 1.6 + 4) / 5) * 5);
-    const X = (v: number) => x0 + ((x1 - x0) * v) / R;
+    const X = (v: number) => x0 + (x1 - x0) * numberLineAt(p, v);
     P.stroke(c, [[x0, y], [x1, y]], { role: "ink2", width: 2 });
     P.stroke(c, [[X(0), y - 8], [X(0), y + 8]], { role: "ink3", width: 2 });
     P.text(c, "0", X(0), y + 20, { size: 16, role: "ink2", font: "mono" });

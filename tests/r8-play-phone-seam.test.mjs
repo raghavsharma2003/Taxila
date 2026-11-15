@@ -32,6 +32,7 @@ import { whyLine } from "../server/play/why.js";
 import { LOGIC } from "../src/play/families/index.ts";
 import { env } from "../src/play/core/pick.ts";
 import { MIN_BOX } from "../src/play/core/box.ts";
+import { namingOn } from "../shared/play.ts";
 import { __test } from "../server/routes/lesson.js";
 import { playEventsOf } from "../server/brain/turn.js";
 import { initLessonState, step } from "../server/director/state.js";
@@ -177,6 +178,8 @@ async function seamFor(topicId, skillId, learner, C, kit, childId) {
     // round 8 law 3: a mix-up from one pick among a few is not kept from that pick (chanceMis, no misconception on her
     // state), and nothing about it reaches the lesson, the trail included (evening ruling kon/name 3)
     if (wrong.grade.evidence[0]?.chanceMis) { assert.equal(g.misconceptionId, undefined, "one pick names nothing"); assert.deepEqual(g.playTrail.mal, [], "nor does the trail"); }
+    // dc-r8-game-gate-play-then-evidence: a mode on gate 1 alone (naming off) names no mix-up at all
+    else if (!namingOn(level.family, level.mode)) { assert.equal(g.misconceptionId, undefined, "naming off names nothing"); assert.deepEqual(g.playTrail.mal, [], "nor does the trail"); }
     else { assert.equal(g.misconceptionId, level.mal[mal], "the mal-rule's kit misconception reaches her learner state"); assert.deepEqual(g.playTrail.mal[0], { rule: mal, mis: level.mal[mal] }); }
     const wp = pairs(W.row);
     // (a mal-rule that commits a state the solver's acts cannot undo ends not solved: the verdict is the grade's own)

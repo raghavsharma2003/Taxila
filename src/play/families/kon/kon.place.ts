@@ -52,8 +52,10 @@ export const TOL_PX = 11;
 export const R_BIG = 108, R_SMALL = 78;
 /** base within ±BASE_TOL° of an arm; a reading within READ_TOL of what the scale shows */
 export const BASE_TOL = 3, READ_TOL = 2;
-/** where the loose protractor rests at the start: low on the board, under the angle (its centre's y) */
-export const REST_Y = PD + 4;
+/** where the loose protractor rests at the start: low on the board, under the angle (its centre's y). Gate 1 (night rulings,
+ *  2026-11-11): the resting protractor is wholly on the board, its strip REST_MARGIN board px clear of the bottom edge (at
+ *  PD + 4 a tilted strip met the edge at 360) */
+export const REST_Y = PD + 8, REST_MARGIN = 6;
 /** the angle's figure stays above this line (the resting protractor, with its numbers, stays under it) */
 export const FIG_LO = 156;
 /** the numbers the protractor prints at each scale setting: "10" every 20° (every 10° would touch at 360), "30" every 30°,
@@ -85,6 +87,9 @@ export interface PlaceState {
   pose: Pose; locked: boolean; mark: number | null;
   /** the placement at the first committed decision (the evidence's `placed`) */
   first: Placed | null; read: number | null; joined: "v" | "e" | null; pick: string | null; made: number | null;
+  /** measure: the misses she has made on a placed protractor (gate 1, night ruling 2: from the second her number's arm is
+   *  no longer drawn, or the misses become a too-high, too-low guide); absent until the first */
+  placedMisses?: number;
 }
 
 export const norm = (d: number) => ((d % 360) + 360) % 360;
@@ -299,9 +304,11 @@ function commitMeasure(p: PlaceParamsLike, s: PlaceState, mal: Record<string, st
   if (!ap) return { pl: next, commit: { kind: "law_refused", facts: { ...f, why: "placed_off" } } };
   const e = Math.abs(n - ap.value);
   if (e <= READ_TOL) return { pl: next, commit: { kind: "solved", done: true, facts: f } };
+  // a miss on a placed protractor (counted: the view stops drawing her number's arm from the second)
+  const missed = { ...next, placedMisses: (s.placedMisses ?? 0) + 1 };
   if ("wrong-scale" in mal && Math.abs(n - (180 - ap.value)) <= READ_TOL && Math.abs(180 - 2 * ap.value) > 2 * READ_TOL)
-    return { pl: next, commit: { kind: "misconception_consequence", mis: "wrong-scale", facts: { ...f, shown: "other_scale" } } };
-  return { pl: next, commit: { kind: e <= 2 * READ_TOL + 1 ? "near_miss" : "law_refused", facts: { ...f, gap: `${Math.round(e)}°`, why: "read_off" } } };
+    return { pl: missed, commit: { kind: "misconception_consequence", mis: "wrong-scale", facts: { ...f, shown: "other_scale" } } };
+  return { pl: missed, commit: { kind: e <= 2 * READ_TOL + 1 ? "near_miss" : "law_refused", facts: { ...f, gap: `${Math.round(e)}°`, why: "read_off" } } };
 }
 function commitDraw(p: PlaceParamsLike, s: PlaceState, mal: Record<string, string>): StepOut {
   const pl = placement(p, s.pose), mark = s.mark as number, end = s.joined as "v" | "e";
@@ -429,15 +436,15 @@ export function validatePlace<P extends PlaceParamsLike>(q: Partial<P>): P | nul
   return { goal: q.goal, start: norm(start), theta, mirror: !!q.mirror, tol, scale, vx, vy, tolPx, x0, y0, r0: norm(r0) } as unknown as P;
 }
 
-/** every point a placed protractor (rim, labels, strip) covers, for the board fit */
-function poseFits(pose: Pose, rad = PR): boolean {
+/** every point a placed protractor (rim, labels, strip) covers, for the board fit, `m` board px inside the board */
+export function poseFits(pose: Pose, rad = PR, m = 2): boolean {
   const pts: [number, number][] = [];
   for (let r = 0; r <= 180; r += 10) pts.push(rimPoint(pose, r, rad + 23));   // (the numbers stand 13 px out and are ~17 px tall)
   // the outer 0 and 180 sit off the base line, and their numbers run wider than the rim
   pts.push(rimPoint(pose, 5, rad + 28), rimPoint(pose, 175, rad + 28));
   const [nx, ny] = inward(pose), [bx, by] = dir(pose.rot);
   for (const s of [-1, 1]) pts.push([pose.x + s * bx * (rad + 4) - nx * PD, pose.y + s * by * (rad + 4) - ny * PD]);
-  return pts.every(([x, y]) => x >= 2 && x <= BW - 2 && y >= 2 && y <= BH - 2);
+  return pts.every(([x, y]) => x >= m && x <= BW - m && y >= m && y <= BH - m);
 }
 /** an arm's end with its letter (16 px, 24 board px beyond the end) on the board and above the resting protractor */
 const inBoard = ([x, y]: [number, number], lo = FIG_LO) => x >= 32 && x <= BW - 32 && y >= lo && y <= BH - 32;
@@ -487,7 +494,8 @@ export function generatePlace(goal: PlaceGoal, g: { tol?: number; tolPx?: number
     // the vertex-off one) and the resting one fit the board too
     if (!hs.every((h) => { const [c, s] = dir(h); return inBoard([vx + ARM * c, vy + ARM * s]); }) || !inBoard([vx, vy - 16])) continue;
     const good = goodPose(params), vo = vertexOffPose(params), rest = initPlace(params).pose;
-    if (!poseFits(good) || !poseFits(vo) || !poseFits(rest) || rest.y + PR + 18 > FIG_LO) continue;
+    // (the resting one wholly on the board, REST_MARGIN clear of its edges: gate 1, night rulings)
+    if (!poseFits(good) || !poseFits(vo) || !poseFits(rest, PR, REST_MARGIN) || rest.y + PR + 18 > FIG_LO) continue;
     // the rest pose is no placement, and the mal-rules show: vertex-off moves the reading (measure) or the made angle (draw)
     if (placement(params, initPlace(params).pose).ok) continue;
     if (goal === "measure") {

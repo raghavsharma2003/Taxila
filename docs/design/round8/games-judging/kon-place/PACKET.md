@@ -1,6 +1,6 @@
 # Judge packet: `kon/place`, placing the protractor (class 6 maths, "Measuring and drawing angles")
 
-This packet is meant to be read on its own: everything a judge needs is in this file and the 56 screenshots beside it. **Round 3.** Code: branch `claude/r8-kon-place-r3` (the fixes after the evening judging, `RULINGS-2026-11-11-evening.md`, kon/place 1–6: see "Changes for round 3" first; before it, the fixes after `RULINGS-2026-11-11.md` and after main's hold of the same day). Every screenshot was retaken on it. **Not yet checked on a real phone, or with a child.**
+This packet is meant to be read on its own: everything a judge needs is in this file and the 58 screenshots beside it. **Gate 1:** the night rulings' fixes are on branch `claude/r8-gate1-place-tally` (see "Gate 1 fixes (night rulings)" first; the screens they change were retaken there). **Round 3.** Code: branch `claude/r8-kon-place-r3` (the fixes after the evening judging, `RULINGS-2026-11-11-evening.md`, kon/place 1–6: see "Changes for round 3" first; before it, the fixes after `RULINGS-2026-11-11.md` and after main's hold of the same day). Every screenshot was retaken on it. **Not yet checked on a real phone, or with a child.**
 
 **Topic:** c6-maths-ch02-t03, "Measuring and drawing angles". Class 6, age band 10–12. Three goals: `measure` (skill s2, also s1), `draw` (s3, s2, s1) and `size` (s2).
 
@@ -60,15 +60,15 @@ Everything after that is graded on what the protractor shows *as placed*:
 ### Mal-rule `centre-on-arm` (*)
 - **Kit belief:** "Puts the protractor's centre mark (or its corner) somewhere other than the vertex: on an arm, or at an arm's end point". Signs: "Puts the centre mark on point A or C, the end of an arm", "Sets the protractor's corner, not its centre mark, at the vertex", "Reads a number tens of degrees off, or finds no reading at all".
 - **What the game takes as this placement** (each a placement a guess rarely makes, law 3): the centre mark within 11 units of an arm's end point (A, or B in `measure`) with the base along that arm (±3°); or the protractor's bottom corner within 11 units of O with the base along an arm.
-- **What a child holding it does** (shot `measure-centre-on-arm-played-*`): she puts the centre mark on A with the base along OA, locks it, and types what she thinks she reads (150). Part of the protractor then runs past the board's edge: it is her own placement.
-- **What the screen then shows:** the brown ring on O and the dashed brown join from O to where her centre is (here along OA, to A): the placement only. Her "150°" chip stays neutral (150 is the true size; round 2 painted it brown and drew an arm from her centre parallel to OB, which told her 150 was right). No arm is drawn from her centre. In `draw` (shot `draw-centre-on-arm-played-*`): the ring and join, her arm from O through the dot she marked on the misplaced protractor, its arc and "∠O 52°".
+- **What a child holding it does** (shot `measure-centre-on-arm-played-*`): she puts the centre mark on A with the base along OA, locks it, and types what she thinks she reads (150). Part of the protractor then runs past the board's edge: it is her own placement. A scale number that would not stand wholly on the board is not drawn, and neither is the other number at its tick (gate 1), so no cut "140" reads "40".
+- **What the screen then shows:** the brown ring on O and the dashed brown join from O to where her centre is (here along OA, to A): the placement only. Her "150°" chip stays neutral (150 is the true size; round 2 painted it brown and drew an arm from her centre parallel to OB, which told her 150 was right). No arm is drawn from her centre. In `draw` (shot `draw-centre-on-arm-played-*`): the ring and join, her arm from O through the dot she marked on the misplaced protractor, its arc and the chip "∠O" (gate 1: no number on it).
 - **How it is graded.** Never right (an off placement never solves), and her number is not graded (whatever she types, the same decision). Named `centre-on-arm` only on a level that maps it; the ring and the join are shown only where it is named (an unnamed off placement never shows where the centre belongs).
 
 ### Mal-rule `wrong-scale`
 - **Kit belief:** "Reads the wrong scale on the protractor, e.g. gets 130° for a 50° angle". Signs: "Gives a reading over 90° for an obviously narrow angle", "Always reads the outer scale", "Two readings for the same angle add to 180°".
 - **What a child holding it does.** She places the protractor correctly and types the other scale's number: 180 − 150 = **30**. Shots: `measure-wrong-scale-typed-*`, `measure-wrong-scale-played-*`.
-- **What the screen then shows:** a dashed brown arm from O at 30° from OA, i.e. the arm her number means on the scale whose 0 is on OA, far from OB; a dashed brown arc between OB and that arm (no number on it); her "30°" chip in brown. The true size is never shown.
-- **When the game names it.** When her typed number is within ±2° of 180 minus the true reading, and the angle is not close to 90° (where the two scales would agree). Any other wrong number is an ordinary miss with the same arm drawn and no mix-up named; within 5° it is recorded as a near miss.
+- **What the screen then shows:** a dashed brown arm from O at 30° from OA, i.e. the arm her number means on the scale whose 0 is on OA, far from OB, **stopping inside the inner number ring** (gate 1: running on, it met the outer scale at 150, the key); a dashed brown arc between OB and that arm (no number on it); her "30°" chip in brown. The true size is never shown. **From her second miss on a placed protractor** her arm and arc are no longer drawn, only her brown chip (gate 1: miss after miss, the arm had become a too-high, too-low guide). Shot: `measure-second-miss-played-*` (30, then 140).
+- **When the game names it.** When her typed number is within ±2° of 180 minus the true reading, and the angle is not close to 90° (where the two scales would agree). Any other wrong number is an ordinary miss with the same arm drawn (first placed miss only) and no mix-up named; within 5° it is recorded as a near miss.
 - **What a first-try solve says.** Only on a level where the outer scale is the wrong one (as here) does a first-try solve count as evidence that she chose the right scale. On a level where OA points right, the outer scale is the right one, a child who always reads the outer scale solves it, and her solve says nothing about scales (it counts only as a correct placement).
 
 ## Goal 2: `draw` (draw an angle of a given size)
@@ -77,27 +77,27 @@ Everything after that is graded on what the protractor shows *as placed*:
 
 **What she does, in order.**
 1. She drags, turns and presses "Rakh do" exactly as in `measure`. The instruction changes to **"Kinare par 130° ka bindu lagao, phir jodo"**. Shots: `draw-placed-*`, `draw-locked-*`.
-2. She taps the rim of the protractor to put a blue-violet dot. Tapping the rim again moves it, and **↺ ↻ move the dot 1° along the rim** (1° is under 2 px on a phone, too fine for a finger). The arrows say which way it moves round the rim, not "−1"/"+1", because a number would name one of the two scales. Shot: `draw-dot-*`.
+2. She taps the rim of the protractor to put a blue-violet dot, a hollow ring, so the tick under it shows through. Tapping the rim again moves it, and **↺ ↻ move the dot 1° along the rim** (1° is under 2 px on a phone, too fine for a finger). The arrows say which way it moves round the rim, not "−1"/"+1", because a number would name one of the two scales. Shot: `draw-dot-*`.
 3. She presses "O se jodo" or "A se jodo" to join the dot to O or to A with the ruler. Both are off until a dot is placed. **The two buttons' order changes from level to level** (here "A se jodo" comes first).
 4. "Phir se rakho" unfreezes the protractor and clears the dot; "Wapas" undoes her last step. After a miss, a new dot ends the play-out of the old one: nothing is measured until she joins again.
 
 **This level's givens and key** (level `kon-place:draw:130:180m`). OA flat, pointing **left**; **asked angle 130°** (not a printed number at fade 1). She must place the protractor (centre on O, base on OA), put the dot at **130 on the scale whose 0 is on OA** (here the inner scale), and join it to **O**. The game then draws her arm from O through the dot in green, with its letter **B** at its end and a green tick beside it. Shot: `draw-end-*`. Draw accepts the protractor either way round; it reads whichever scale has its 0 on OA.
 
-**After any miss** the screen shows only *her* arm (brown), a brown arc at the corner it starts from, and a brown chip naming the angle it really makes, e.g. "∠O 50°". **The asked arm is never drawn**: there is no line to trace.
+**After any miss** the screen shows only *her* arm (brown), a brown arc at the corner it starts from, and a brown chip naming that corner, "∠O" or "∠A", **with no number** (gate 1: her arm lies across the placed protractor and she reads it there herself; a printed size turned a retry into arithmetic). **The asked arm is never drawn**: there is no line to trace.
 
 ### Mal-rule `vertex-off`
 - **What a child holding it does.** Bottom edge on OA with O on it (centre 24 units above O); dot at 130 on the scale; joined to O. Shot: `draw-vertex-off-played-*`.
-- **What the screen then shows:** the brown ring on O with the dashed line to the protractor's centre; her arm from O through the dot, in brown; a brown arc at O and the chip "∠O 123°", the angle her arm really makes (not 130).
+- **What the screen then shows:** the brown ring on O with the dashed line to the protractor's centre; her arm from O through the dot, in brown; a brown arc at O and the chip "∠O" (her arm really makes 123°, which she reads on the protractor herself).
 
 ### Mal-rule `wrong-scale`
 - **What a child holding it does.** Places the protractor correctly, marks 130 on the *other* (outer) scale, which puts the dot 50° from OA, joins to O. Shot: `draw-wrong-scale-played-*`.
-- **What the screen then shows:** her brown arm, a brown arc at O and "∠O 50°".
+- **What the screen then shows:** her brown arm (it makes 50°), a brown arc at O and the chip "∠O".
 - As in `measure`, it is told apart only on levels where the outer scale is the wrong one (OA points left, as here).
 
 ### Mal-rule `join-wrong-end` (at chance weight)
 - **Kit belief:** "Believes the degree mark can be joined to either end of the first arm, so joins it to the far end instead of to the vertex where the protractor's centre was".
 - **What a child holding it does.** Places the protractor correctly, puts the dot at the right mark (130), then presses "A se jodo". Shot: `draw-join-wrong-end-played-*`.
-- **What the screen then shows:** her brown line from A (the far end of OA) through the dot; a small brown arc at A; a chip "∠A 22°" (the angle that line makes at A).
+- **What the screen then shows:** her brown line from A (the far end of OA) through the dot; a small brown arc at A; a chip "∠A" (the line makes 22° there; no number on the chip).
 - **How it is graded.** Not right. It is the `join-wrong-end` signature only when the dot itself was at the right mark. Because the join is one of two buttons, a guess makes it half the time, so one join puts **nothing on her record**: the grade keeps it at chance weight (`chanceMis`), and the play server names it only if she makes it again on a level whose surface differs (the shared law-3 rule). The teacher also sees `sign=join-wrong-end`.
 
 ## Goal 3: `size` (which angle is more?)
@@ -155,9 +155,21 @@ The lesson is in Hinglish (shown), Hindi or English; the game shows only the les
 | join buttons, draw (order varies) | O se jodo · A se jodo | O से जोड़ो · A से जोड़ो | Join to O · Join to A |
 | size buttons | ∠P · Barabar · ∠Q | ∠P · बराबर · ∠Q | ∠P · Same · ∠Q |
 | undo button | Wapas | वापस | Undo |
-| chips | 150° (her own number) · ∠O 123° · ∠O 50° · ∠A 22° · ∠P = ∠Q · ∠P · ∠Q | same | same |
+| chips | 150° (her own number) · ∠O · ∠A · ∠P = ∠Q · ∠P · ∠Q | same | same |
 
 "Rakh do" uses "do" as the verb "give/put", not the number two. Every spoken label is in the lesson's language with no number word. The game shows no feedback words: no "right", no "wrong", no hint text. The round "T" at the top is the teacher's avatar from the lesson shell, not part of the game.
+
+## Gate 1 fixes (night rulings)
+
+Rulings: `docs/design/round8/games-judging/RULINGS-2026-11-11-night.md`, "kon/place: passes gate 1" (three fixes, and two minor ones in the same commit). Branch `claude/r8-gate1-place-tally`. Only the screens these change were retaken (360 × 640 at 2× pixel density; 1366 × 768 taken at 2× and scaled to 1×; RGB, no palette reduction); one is new (`measure-second-miss-played`). The gate-2 items (join-wrong-end's sign, the vertex-off tolerance) are not in this commit.
+
+| Ruling | Change | Shots | Test |
+|---|---|---|---|
+| 1. A scale number not wholly on the board is not drawn | The view drops every number whose figures and halo do not lie wholly inside the board (`kon.scale.ts` `onBoard`), and with it the other number at its tick, so no scale is ever left numbered alone. Only her own placement can push numbers off the board (centre-on-arm); at rest nothing is dropped. The browser layout check no longer excuses a cut number on the centre-on-arm screens. | `measure-centre-on-arm-played-*`, `draw-centre-on-arm-played-*` | `tests/r8-games-kon-place.test.mjs` "gate 1, ruling 1": the real view on every generated measure and draw level (fades 1–3, six seeds), rest / placed / vertex-off / centre-on-arm, at 360 and 1366: no drawn number outside the board, none on one scale alone, and some centre-on-arm screen does drop numbers; `tests/r8-games-kon-layout.test.mjs` (browser): no `cut` fault on any screen |
+| 2. Measure, wrong-scale: her arm stops inside the inner number ring; after two placed misses no arm | Her dashed arm now runs only as far as `innerReach` allows: short of where a three-figure inner number would stand at its heading, and 4 px short of any number it would meet (a slid one included); her arc shrinks with it where it must. The law counts her misses on a placed protractor (`placedMisses`, undone by "Wapas"); from the second the arm and arc are not drawn and her brown chip stays. | `measure-wrong-scale-played-*`, `measure-second-miss-played-*` (new) | `tests/r8-games-kon-place.test.mjs` "gate 1, ruling 2": every generated measure level where wrong-scale applies, at 360 and 1366: her arm's end is nearer the centre than every number it points at, no number lies on it; after a second miss no arm from her centre and her chip still drawn; undo returns the count |
+| 3. Draw: the miss chip carries no number | The chip names the corner only: "∠O" or "∠A". | `draw-vertex-off-played-*`, `draw-wrong-scale-played-*`, `draw-join-wrong-end-played-*`, `draw-centre-on-arm-played-*` | `tests/r8-games-kon-place.test.mjs` "gate 1, ruling 3": every generated draw level, every miss (four mal-rules and a plain miss), at 360 and 1366: the chip is drawn and no text but the scale's own numbers holds a digit |
+| Minor: the rim dot is a hollow ring | The dot is stroked, never filled (2.5 px ring, radius 6), so the tick under it shows through, in every colour it takes (focus, the mix-up's brown, green at the end). | `draw-dot-*`, `draw-end-*`, `draw-end-after-miss-*`, the draw `*-played` shots | the same test: on every generated draw level the dot's circle is stroked and never filled |
+| Minor: the resting protractor is wholly on the board | It rests 4 board px higher (`REST_Y` = PD + 8) and the generator serves only a rest whose every point stays 6 board px inside the board (`poseFits(rest, PR, REST_MARGIN)`; a tilted strip had met the bottom edge at 360). | `measure-initial-*`, `measure-turned-*`, `draw-initial-*` | `tests/r8-games-kon-place.test.mjs` "gate 1 (minor)": every generated measure and draw level at 360 and 1366: every line of the resting protractor at least 4 px inside the board, and every number it lays out drawn and on the board |
 
 ## Changes for round 3
 
@@ -219,7 +231,7 @@ Main held kon/place's judging on 2026-11-11 for three faults. All 54 screens wer
 ## Screenshots (56)
 
 `<goal>-<step>-{360x640,1366x768}.png`:
-- measure: `initial`, `turned` (round 3: the loose protractor turned 12°), `placed`, `locked`, `typed`, `vertex-off-typed`, `vertex-off-played`, `centre-on-arm-played`, `wrong-scale-typed`, `wrong-scale-played`, `end`, `end-after-miss`
+- measure: `initial`, `turned` (round 3: the loose protractor turned 12°), `placed`, `locked`, `typed`, `vertex-off-typed`, `vertex-off-played`, `centre-on-arm-played`, `wrong-scale-typed`, `wrong-scale-played`, `second-miss-played` (gate 1: 30, then 140), `end`, `end-after-miss`
 - draw: `initial`, `placed`, `locked`, `dot`, `vertex-off-played`, `centre-on-arm-played`, `wrong-scale-played`, `join-wrong-end-played`, `end`, `end-after-miss`
 - size: `initial`, `wrong-pick-played`, `end` (level 1, key "Barabar"); `other-initial`, `other-same-played`, `other-end-after-miss` (level 2, key ∠Q)
 

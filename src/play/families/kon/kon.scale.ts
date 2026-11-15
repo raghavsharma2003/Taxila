@@ -90,6 +90,37 @@ export function scaleLabels(o: ScaleOpts, cx = 0, cy = 0): ScaleLabel[] {
   return out;
 }
 
+/** the room a scale number's halo takes beyond its figures' box (px; the painter's halo is max(3, 0.32 em) wide) */
+export const HALO_PAD = 3;
+/**
+ * Gate 1 (night rulings, 2026-11-11, kon/place ruling 1): a scale number that is not wholly on the board is not drawn (a cut
+ * "140" read "40", a cut "160" read "0"). The board is the box the view draws in (`box`, screen px); a number whose box and
+ * halo do not lie wholly inside it goes, and with it the other number at its tick (judging round 3, ruling 3: never one
+ * scale alone; the ends too, which only her own placement can push off the board).
+ */
+export function onBoard(L: ScaleLabel[], box: Box, pad = HALO_PAD): ScaleLabel[] {
+  const cut = (l: ScaleLabel) => l.x - l.w / 2 - pad < box.x || l.x + l.w / 2 + pad > box.x + box.w || l.y - l.h / 2 - pad < box.y || l.y + l.h / 2 + pad > box.y + box.h;
+  const off = new Set(L.filter(cut).map((l) => l.a));
+  return L.filter((l) => !off.has(l.a));
+}
+/**
+ * Gate 1 (night rulings, kon/place ruling 2): how far (screen px) her number's arm may run from the protractor's centre at
+ * heading `deg` (degrees, y up, as the labels' own turn: rot + reading) and stay inside the inner number ring, so it is
+ * never read off either scale (a wrong-scale arm met the outer scale at the key): short of where a three-figure inner number
+ * would stand at that heading, and SCALE_GAP px short of every number the ray would meet (a number slid inward included).
+ */
+export function innerReach(o: ScaleOpts, deg: number): number {
+  const w = o.measure("180", o.fs), h = o.fs * INK_H, c = Math.cos(RAD(deg)), s = Math.sin(RAD(deg));
+  const ext = (Math.abs(c) * w) / 2 + (Math.abs(s) * h) / 2;
+  let reach = o.R - longTick(o.rad0) - INNER_PAD - 2 * ext - SCALE_GAP;
+  const L = scaleLabels(o);
+  for (let t = 0; t <= reach; t += 0.5) {
+    const x = c * t, y = -s * t;
+    if (L.some((l) => Math.hypot(Math.max(Math.abs(x - l.x) - l.w / 2, 0), Math.max(Math.abs(y - l.y) - l.h / 2, 0)) < SCALE_GAP)) { reach = Math.max(0, t - 0.5); break; }
+  }
+  return Math.max(0, reach);
+}
+
 /** the room between two labels' boxes (px; negative when they overlap): the larger of the two axis gaps */
 export function labelGap(p: ScaleLabel, q: ScaleLabel): number {
   const gx = Math.abs(p.x - q.x) - (p.w + q.w) / 2, gy = Math.abs(p.y - q.y) - (p.h + q.h) / 2;
