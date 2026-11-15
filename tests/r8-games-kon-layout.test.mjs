@@ -307,6 +307,10 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
           for (const a of acts) await page.evaluate((x) => window.__play.dispatch(x), a);
           for (const k of keys) await page.evaluate((id) => window.__play.press(id), k);
           await page.waitForTimeout(acts.length ? 1700 : 300);
+          // and then until the board has settled (two audits 250 ms apart alike): a loaded runner can still be drawing a
+          // play-out after the fixed wait (gate 2026-11-15: a vertex-off chip not yet drawn at the probe)
+          await page.evaluate(() => { window.__settleK = null; });
+          await page.waitForFunction(() => { const a = window.__play?.audit; if (!a) return false; const k = JSON.stringify([a.marks?.length, a.texts?.length, a.segs?.length, a.uses?.length]); const same = window.__settleK === k; window.__settleK = k; return same; }, null, { polling: 250, timeout: 8000 }).catch(() => {});
           const probe = await page.evaluate(() => {
             const c = document.querySelector("canvas.pl-canvas").getBoundingClientRect(), a = window.__play.audit;
             return {
